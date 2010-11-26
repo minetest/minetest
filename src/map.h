@@ -1,0 +1,430 @@
+/*
+(c) 2010 Perttu Ahola <celeron55@gmail.com>
+*/
+
+#ifndef MAP_HEADER
+#define MAP_HEADER
+
+#include <jmutex.h>
+#include <jthread.h>
+#include <iostream>
+#include <malloc.h>
+
+#ifdef _WIN32
+	#include <windows.h>
+	#define sleep_s(x) Sleep((x*1000))
+#else
+	#include <unistd.h>
+	#define sleep_s(x) sleep(x)
+#endif
+
+#include "common_irrlicht.h"
+#include "heightmap.h"
+#include "loadstatus.h"
+#include "mapnode.h"
+#include "mapblock.h"
+#include "mapsector.h"
+#include "constants.h"
+
+class InvalidFilenameException : public BaseException
+{
+public:
+	InvalidFilenameException(const char *s):
+		BaseException(s)
+	{}
+};
+
+#define MAPTYPE_BASE 0
+#define MAPTYPE_SERVER 1
+#define MAPTYPE_CLIENT 2
+
+class Map : public NodeContainer, public Heightmappish
+{
+protected:
+
+	std::ostream &m_dout;
+
+	core::map<v2s16, MapSector*> m_sectors;
+	JMutex m_sector_mutex;
+
+	v3f m_camera_position;
+	v3f m_camera_direction;
+	JMutex m_camera_mutex;
+
+	// Be sure to set this to NULL when the cached sector is deleted 
+	MapSector *m_sector_cache;
+	v2s16 m_sector_cache_p;
+
+	WrapperHeightmap m_hwrapper;
+
+public:
+
+	v3s16 drawoffset; // for drawbox()
+
+	Map(std::ostream &dout);
+	virtual ~Map();
+
+	virtual u16 nodeContainerId() const
+	{
+		return NODECONTAINER_ID_MAP;
+	}
+
+	virtual s32 mapType() const
+	{
+		return MAPTYPE_BASE;
+	}
+
+	void updateCamera(v3f pos, v3f dir)
+	{
+		JMutexAutoLock lock(m_camera_mutex);
+		m_camera_position = pos;
+		m_camera_direction = dir;
+	}
+
+	/*void StartUpdater()
+	{
+		updater.Start();
+	}
+
+	void StopUpdater()
+	{
+		updater.setRun(false);
+		while(updater.IsRunning())
+			sleep_s(1);
+	}
+
+	bool UpdaterIsRunning()
+	{
+		return updater.IsRunning();
+	}*/
+
+	static core::aabbox3d<f32> getNodeBox(v3s16 p)
+	{
+		return core::aabbox3d<f32>(
+			(float)p.X * BS - 0.5*BS,
+			(float)p.Y * BS - 0.5*BS,
+			(float)p.Z * BS - 0.5*BS,
+			(float)p.X * BS + 0.5*BS,
+			(float)p.Y * BS + 0.5*BS,
+			(float)p.Z * BS + 0.5*BS
+		);
+	}
+
+	//bool sectorExists(v2s16 p);
+	MapSector * getSectorNoGenerate(v2s16 p2d);
+	/*
+		This is overloaded by ClientMap and ServerMap to allow
+		their differing fetch methods.
+	*/
+	virtual MapSector * emergeSector(v2s16 p) = 0;
+	
+	// Returns InvalidPositionException if not found
+	MapBlock * getBlockNoCreate(v3s16 p);
+	//virtual MapBlock * getBlock(v3s16 p, bool generate=true);
+	
+	// Returns InvalidPositionException if not found
+	f32 getGroundHeight(v2s16 p, bool generate=false);
+	void setGroundHeight(v2s16 p, f32 y, bool generate=false);
+
+	// Returns InvalidPositionException if not found
+	bool isNodeUnderground(v3s16 p);
+	
+	// virtual from NodeContainer
+	bool isValidPosition(v3s16 p)
+	{
+		v3s16 blockpos = getNodeBlockPos(p);
+		MapBlock *blockref;
+		try{
+			blockref = getBlockNoCreate(blockpos);
+		}
+		catch(InvalidPositionException &e)
+		{
+			return false;
+		}
+		return true;
+		/*v3s16 relpos = p - blockpos*MAP_BLOCKSIZE;
+		bool is_valid = blockref->isValidPosition(relpos);
+		return is_valid;*/
+	}
+	
+	// virtual from NodeContainer
+	MapNode getNode(v3s16 p)
+	{
+		v3s16 blockpos = getNodeBlockPos(p);
+		MapBlock * blockref = getBlockNoCreate(blockpos);
+		v3s16 relpos = p - blockpos*MAP_BLOCKSIZE;
+
+		return blockref->getNode(relpos);
+	}
+
+	// virtual from NodeContainer
+	void setNode(v3s16 p, MapNode & n)
+	{
+		v3s16 blockpos = getNodeBlockPos(p);
+		MapBlock * blockref = getBlockNoCreate(blockpos);
+		v3s16 relpos = p - blockpos*MAP_BLOCKSIZE;
+		blockref->setNode(relpos, n);
+	}
+
+	/*MapNode getNodeGenerate(v3s16 p)
+	{
+		v3s16 blockpos = getNodeBlockPos(p);
+		MapBlock * blockref = getBlock(blockpos);
+		v3s16 relpos = p - blockpos*MAP_BLOCKSIZE;
+
+		return blockref->getNode(relpos);
+	}*/
+
+	/*void setNodeGenerate(v3s16 p, MapNode & n)
+	{
+		v3s16 blockpos = getNodeBlockPos(p);
+		MapBlock * blockref = getBlock(blockpos);
+		v3s16 relpos = p - blockpos*MAP_BLOCKSIZE;
+		blockref->setNode(relpos, n);
+	}*/
+
+	void unspreadLight(core::map<v3s16, u8> & from_nodes,
+			core::map<v3s16, bool> & light_sources,
+			core::map<v3s16, MapBlock*> & modified_blocks);
+
+	void unLightNeighbors(v3s16 pos, u8 lightwas,
+			core::map<v3s16, bool> & light_sources,
+			core::map<v3s16, MapBlock*> & modified_blocks);
+	
+	void spreadLight(core::map<v3s16, bool> & from_nodes,
+			core::map<v3s16, MapBlock*> & modified_blocks);
+	
+	void lightNeighbors(v3s16 pos,
+			core::map<v3s16, MapBlock*> & modified_blocks);
+
+	v3s16 getBrightestNeighbour(v3s16 p);
+
+	s16 propagateSunlight(v3s16 start,
+			core::map<v3s16, MapBlock*> & modified_blocks);
+	
+	void updateLighting(core::map<v3s16, MapBlock*>  & a_blocks,
+			core::map<v3s16, MapBlock*> & modified_blocks);
+			
+	/*
+		These handle lighting but not faces.
+	*/
+	void addNodeAndUpdate(v3s16 p, MapNode n,
+			core::map<v3s16, MapBlock*> &modified_blocks);
+	void removeNodeAndUpdate(v3s16 p,
+			core::map<v3s16, MapBlock*> &modified_blocks);
+	
+	/*
+		Updates the faces of the given block and blocks on the
+		leading edge.
+	*/
+	void updateMeshes(v3s16 blockpos);
+
+	//core::aabbox3d<s16> getDisplayedBlockArea();
+
+	//bool updateChangedVisibleArea();
+	
+	virtual void save(bool only_changed){assert(0);};
+
+	/*
+		Updates usage timers
+	*/
+	void timerUpdate(float dtime);
+	
+	// Takes cache into account
+	// sector mutex should be locked when calling
+	void deleteSectors(core::list<v2s16> &list, bool only_blocks);
+	
+	// Returns count of deleted sectors
+	u32 deleteUnusedSectors(float timeout, bool only_blocks=false,
+			core::list<v3s16> *deleted_blocks=NULL);
+
+	// For debug printing
+	virtual void PrintInfo(std::ostream &out);
+};
+
+struct MapgenParams
+{
+	MapgenParams()
+	{
+		heightmap_blocksize = 64;
+		height_randmax = "constant 70.0";
+		height_randfactor = "constant 0.6";
+		height_base = "linear 0 80 0";
+		plants_amount = "1.0";
+	}
+	s16 heightmap_blocksize;
+	std::string height_randmax;
+	std::string height_randfactor;
+	std::string height_base;
+	std::string plants_amount;
+};
+
+class ServerMap : public Map
+{
+public:
+	/*
+		savedir: directory to which map data should be saved
+	*/
+	ServerMap(std::string savedir, MapgenParams params);
+	~ServerMap();
+
+	s32 mapType() const
+	{
+		return MAPTYPE_SERVER;
+	}
+
+	/*
+		Forcefully get a sector from somewhere
+	*/
+	MapSector * emergeSector(v2s16 p);
+	/*
+		Forcefully get a block from somewhere.
+
+		Exceptions:
+		- InvalidPositionException: possible if only_from_disk==true
+		
+		changed_blocks:
+		- All already existing blocks that were modified are added.
+			- If found on disk, nothing will be added.
+			- If generated, the new block will not be included.
+
+		lighting_invalidated_blocks:
+		- All blocks that have heavy-to-calculate lighting changes
+		  are added.
+			- updateLighting() should be called for these.
+		
+		- A block that is in changed_blocks may not be in
+		  lighting_invalidated_blocks.
+	*/
+	MapBlock * emergeBlock(
+			v3s16 p,
+			bool only_from_disk,
+			core::map<v3s16, MapBlock*> &changed_blocks,
+			core::map<v3s16, MapBlock*> &lighting_invalidated_blocks
+	);
+
+	void createDir(std::string path);
+	void createSaveDir();
+	// returns something like "xxxxxxxx"
+	std::string getSectorSubDir(v2s16 pos);
+	// returns something like "map/sectors/xxxxxxxx"
+	std::string getSectorDir(v2s16 pos);
+	std::string createSectorDir(v2s16 pos);
+	// dirname: final directory name
+	v2s16 getSectorPos(std::string dirname);
+	v3s16 getBlockPos(std::string sectordir, std::string blockfile);
+
+	void save(bool only_changed);
+	void loadAll();
+
+	void saveMasterHeightmap();
+	void loadMasterHeightmap();
+
+	// The sector mutex should be locked when calling most of these
+	
+	// This only saves sector-specific data such as the heightmap
+	// (no MapBlocks)
+	void saveSectorMeta(ServerMapSector *sector);
+	MapSector* loadSectorMeta(std::string dirname);
+	
+	// Full load of a sector including all blocks.
+	// returns true on success, false on failure.
+	bool loadSectorFull(v2s16 p2d);
+	// If sector is not found in memory, try to load it from disk.
+	// Returns true if sector now resides in memory
+	//bool deFlushSector(v2s16 p2d);
+	
+	void saveBlock(MapBlock *block);
+	// This will generate a sector with getSector if not found.
+	void loadBlock(std::string sectordir, std::string blockfile, MapSector *sector);
+
+	// Gets from master heightmap
+	void getSectorCorners(v2s16 p2d, s16 *corners);
+
+	// For debug printing
+	virtual void PrintInfo(std::ostream &out);
+
+private:
+	UnlimitedHeightmap *m_heightmap;
+	std::string m_savedir;
+	bool m_map_saving_enabled;
+};
+
+class Client;
+
+class ClientMap : public Map, public scene::ISceneNode
+{
+public:
+	ClientMap(
+			Client *client,
+			video::SMaterial *materials,
+			scene::ISceneNode* parent,
+			scene::ISceneManager* mgr,
+			s32 id
+	);
+
+	~ClientMap();
+
+	s32 mapType() const
+	{
+		return MAPTYPE_CLIENT;
+	}
+
+	/*
+		Forcefully get a sector from somewhere
+	*/
+	MapSector * emergeSector(v2s16 p);
+
+	void deSerializeSector(v2s16 p2d, std::istream &is);
+
+	/*
+		ISceneNode methods
+	*/
+
+	virtual void OnRegisterSceneNode()
+	{
+		if(IsVisible)
+		{
+			//SceneManager->registerNodeForRendering(this, scene::ESNRP_SKY_BOX);
+			SceneManager->registerNodeForRendering(this, scene::ESNRP_SOLID);
+			SceneManager->registerNodeForRendering(this, scene::ESNRP_TRANSPARENT);
+		}
+
+		ISceneNode::OnRegisterSceneNode();
+	}
+
+	virtual void render()
+	{
+		video::IVideoDriver* driver = SceneManager->getVideoDriver();
+		driver->setTransform(video::ETS_WORLD, AbsoluteTransformation);
+		renderMap(driver, m_materials, SceneManager->getSceneNodeRenderPass());
+	}
+	
+	virtual const core::aabbox3d<f32>& getBoundingBox() const
+	{
+		return m_box;
+	}
+
+	void renderMap(video::IVideoDriver* driver,
+		video::SMaterial *materials, s32 pass);
+
+	// Update master heightmap mesh
+	void updateMesh();
+
+	// For debug printing
+	virtual void PrintInfo(std::ostream &out);
+	
+private:
+	Client *m_client;
+	
+	video::SMaterial *m_materials;
+
+	core::aabbox3d<f32> m_box;
+	
+	// This is the master heightmap mesh
+	scene::SMesh *mesh;
+	JMutex mesh_mutex;
+};
+
+#endif
+

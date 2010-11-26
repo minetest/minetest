@@ -1,0 +1,44 @@
+# This file is read by default from:
+# ../minetest.conf
+# ../../minetest.conf
+# Any other path can be chosen by passing the path as a parameter
+# to the program, eg. "minetest.exe ../minetest.conf.example"
+
+dedicated_server =
+
+# Client side stuff
+
+wanted_fps = 30
+fps_max = 60
+viewing_range_nodes_max = 300
+viewing_range_nodes_min = 20
+screenW = 
+screenH = 
+host_game = 
+port = 30000
+address = celer.oni.biz
+name = 
+
+random_input = false
+client_delete_unused_sectors_timeout = 1200
+
+# Server side stuff
+
+# - The possible generators are:
+# (Indeed you can do all of them with only "power" 8))
+# H=value:
+#     constant <value>
+# H=slope.dot(pos):
+#     linear <height> <slope.X> <slope.Y>
+# H=slope.dot(pos^power):
+#     power <height> <slope.X> <slope.Y> <power>
+
+mapgen_heightmap_blocksize = 64
+mapgen_height_randmax = constant 70.0
+mapgen_height_randfactor = constant 0.6
+mapgen_height_base = linear 0 80 0
+mapgen_plants_amount = constant 1.0
+
+creative_mode = false
+
+
