@@ -242,21 +242,32 @@ public:
 	virtual void PrintInfo(std::ostream &out);
 };
 
-struct MapgenParams
+// Master heightmap parameters
+struct HMParams
 {
-	MapgenParams()
+	HMParams()
 	{
 		heightmap_blocksize = 64;
 		height_randmax = "constant 70.0";
 		height_randfactor = "constant 0.6";
 		height_base = "linear 0 80 0";
-		plants_amount = "1.0";
 	}
 	s16 heightmap_blocksize;
 	std::string height_randmax;
 	std::string height_randfactor;
 	std::string height_base;
-	std::string plants_amount;
+};
+
+// Map parameters
+struct MapParams
+{
+	MapParams()
+	{
+		plants_amount = 1.0;
+		//max_objects_in_block = 30;
+	}
+	float plants_amount;
+	//u16 max_objects_in_block;
 };
 
 class ServerMap : public Map
@@ -265,7 +276,7 @@ public:
 	/*
 		savedir: directory to which map data should be saved
 	*/
-	ServerMap(std::string savedir, MapgenParams params);
+	ServerMap(std::string savedir, HMParams hmp, MapParams mp);
 	~ServerMap();
 
 	s32 mapType() const
@@ -346,6 +357,8 @@ public:
 
 private:
 	UnlimitedHeightmap *m_heightmap;
+	MapParams m_params;
+
 	std::string m_savedir;
 	bool m_map_saving_enabled;
 };

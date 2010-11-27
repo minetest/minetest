@@ -1160,7 +1160,7 @@ void Map::PrintInfo(std::ostream &out)
 	ServerMap
 */
 
-ServerMap::ServerMap(std::string savedir, MapgenParams params):
+ServerMap::ServerMap(std::string savedir, HMParams hmp, MapParams mp):
 	Map(dout_server),
 	m_heightmap(NULL)
 {
@@ -1212,15 +1212,19 @@ ServerMap::ServerMap(std::string savedir, MapgenParams params):
 	}
 
 	dstream<<DTIME<<"Initializing new map."<<std::endl;
-
+	
+	// Create master heightmap
 	ValueGenerator *maxgen =
-			ValueGenerator::deSerialize(params.height_randmax);
+			ValueGenerator::deSerialize(hmp.height_randmax);
 	ValueGenerator *factorgen =
-			ValueGenerator::deSerialize(params.height_randfactor);
+			ValueGenerator::deSerialize(hmp.height_randfactor);
 	ValueGenerator *basegen =
-			ValueGenerator::deSerialize(params.height_base);
+			ValueGenerator::deSerialize(hmp.height_base);
 	m_heightmap = new UnlimitedHeightmap
-			(params.heightmap_blocksize, maxgen, factorgen, basegen);
+			(hmp.heightmap_blocksize, maxgen, factorgen, basegen);
+	
+	// Set map parameters
+	m_params = mp;
 	
 	// Create zero sector
 	emergeSector(v2s16(0,0));
@@ -1386,7 +1390,7 @@ MapSector * ServerMap::emergeSector(v2s16 p2d)
 	{
 		// Avgslope is the derivative of a hill
 		float t = avgslope * avgslope;
-		float a = MAP_BLOCKSIZE * 2;
+		float a = MAP_BLOCKSIZE * 2 * m_params.plants_amount;
 		u32 tree_max;
 		if(t > 0.03)
 			tree_max = a / (t/0.03);
@@ -1408,7 +1412,7 @@ MapSector * ServerMap::emergeSector(v2s16 p2d)
 	{
 		// Pitness usually goes at around -0.5...0.5
 		u32 bush_max = 0;
-		u32 a = MAP_BLOCKSIZE * 3;
+		u32 a = MAP_BLOCKSIZE * 3.0 * m_params.plants_amount;
 		if(pitness > 0)
 			bush_max = (pitness*a*4);
 		if(bush_max > a)

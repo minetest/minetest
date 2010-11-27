@@ -352,6 +352,11 @@ public:
 		m_objects.getObjects(origin, max_d, dest);
 	}
 
+	s32 getObjectCount()
+	{
+		return m_objects.getCount();
+	}
+
 private:
 
 	/*

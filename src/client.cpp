@@ -14,10 +14,6 @@
 	#define sleep_ms(x) usleep(x*1000)
 #endif
 
-/*
-	FIXME: This thread can access the environment at any time
-*/
-
 void * ClientUpdateThread::Thread()
 {
 	ThreadStarted();
@@ -144,6 +140,22 @@ void Client::step(float dtime)
 		m_con.RunTimeouts(dtime);
 	}
 
+	/*
+		Packet counter
+	*/
+	{
+		static float counter = -0.001;
+		counter -= dtime;
+		if(counter <= 0.0)
+		{
+			counter = 10.0;
+			
+			dout_client<<"Client packetcounter:"<<std::endl;
+			m_packetcounter.print(dout_client);
+			m_packetcounter.clear();
+		}
+	}
+
 	{
 		/*
 			Delete unused sectors
@@ -171,7 +183,9 @@ void Client::step(float dtime)
 
 			if(num > 0)
 			{
-				dstream<<DTIME<<"Client: Deleted blocks of "<<num
+				/*dstream<<DTIME<<"Client: Deleted blocks of "<<num
+						<<" unused sectors"<<std::endl;*/
+				dstream<<DTIME<<"Client: Deleted "<<num
 						<<" unused sectors"<<std::endl;
 				
 				/*
@@ -433,11 +447,18 @@ void Client::Receive()
 void Client::ProcessData(u8 *data, u32 datasize, u16 sender_peer_id)
 {
 	DSTACK(__FUNCTION_NAME);
+
 	// Ignore packets that don't even fit a command
 	if(datasize < 2)
+	{
+		m_packetcounter.add(60000);
 		return;
+	}
 
 	ToClientCommand command = (ToClientCommand)readU16(&data[0]);
+
+	//dstream<<"Client: received command="<<command<<std::endl;
+	m_packetcounter.add((u16)command);
 	
 	/*
 		If this check is removed, be sure to change the queue

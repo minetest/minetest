@@ -201,6 +201,28 @@ struct PlayerInfo
 
 u32 PIChecksum(core::list<PlayerInfo> &l);
 
+/*
+	Used for queueing and sorting block transfers in containers
+	
+	Lower priority number means higher priority.
+*/
+struct PrioritySortedBlockTransfer
+{
+	PrioritySortedBlockTransfer(float a_priority, v3s16 a_pos, u16 a_dest_peer)
+	{
+		priority = a_priority;
+		pos = a_pos;
+		dest_peer = a_dest_peer;
+	}
+	bool operator < (PrioritySortedBlockTransfer &other)
+	{
+		return priority < other.priority;
+	}
+	float priority;
+	v3s16 pos;
+	u16 a_dest_peer;
+};
+
 class RemoteClient
 {
 public:
@@ -252,6 +274,8 @@ public:
 	void BlockEmerged();
 	
 	// Increments timeouts and removes timed-out blocks from list
+	// NOTE: This doesn't fix the server-not-sending-block bug
+	//       because it is related to emerging, not sending.
 	//void RunSendingTimeouts(float dtime, float timeout);
 
 	void PrintInfo(std::ostream &o)
@@ -310,6 +334,15 @@ private:
 	JMutex m_blocks_sending_mutex;
 };
 
+/*struct ServerSettings
+{
+	ServerSettings()
+	{
+		creative_mode = false;
+	}
+	bool creative_mode;
+};*/
+
 class Server : public con::PeerHandler
 {
 public:
@@ -319,7 +352,10 @@ public:
 	Server(
 			std::string mapsavedir,
 			bool creative_mode,
-			MapgenParams mapgen_params
+			HMParams hm_params,
+			MapParams map_params,
+			float objectdata_inverval,
+			u16 active_object_range
 		);
 	~Server();
 	void start(unsigned short port);
@@ -377,8 +413,11 @@ private:
 	EmergeThread m_emergethread;
 
 	BlockEmergeQueue m_emerge_queue;
-
+	
+	// Settings
 	bool m_creative_mode;
+	float m_objectdata_interval;
+	u16 m_active_object_range;
 
 	friend class EmergeThread;
 	friend class RemoteClient;

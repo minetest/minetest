@@ -879,6 +879,12 @@ public:
 	// origin is relative to block
 	void getObjects(v3f origin, f32 max_d,
 			core::array<DistanceSortedObject> &dest);
+	
+	// Number of objects
+	s32 getCount()
+	{
+		return m_objects.size();
+	}
 
 private:
 	JMutex m_mutex;

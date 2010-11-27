@@ -284,56 +284,8 @@ void RemoteClient::SendBlocks(Server *server, float dtime)
 	v3s16 center = getNodeBlockPos(center_nodepos);
 
 	/*
-		Find out what block the player is going to next and set
-		center to it.
-
-		Don't react to speeds under the initial value of highest_speed
+		Get the starting value of the block finder radius.
 	*/
-	/*f32 highest_speed = 0.1 * BS;
-	v3s16 dir(0,0,0);
-	if(abs(playerspeed.X) > highest_speed)
-	{
-		highest_speed = playerspeed.X;
-		if(playerspeed.X > 0)
-			dir = v3s16(1,0,0);
-		else
-			dir = v3s16(-1,0,0);
-	}
-	if(abs(playerspeed.Y) > highest_speed)
-	{
-		highest_speed = playerspeed.Y;
-		if(playerspeed.Y > 0)
-			dir = v3s16(0,1,0);
-		else
-			dir = v3s16(0,-1,0);
-	}
-	if(abs(playerspeed.Z) > highest_speed)
-	{
-		highest_speed = playerspeed.Z;
-		if(playerspeed.Z > 0)
-			dir = v3s16(0,0,1);
-		else
-			dir = v3s16(0,0,-1);
-	}
-
-	center += dir;*/
-	
-	/*
-		Calculate the starting value of the block finder radius.
-
-		The radius shall be the last used value minus the
-		maximum moved distance.
-	*/
-	/*s16 d_start = m_last_block_find_d;
-	if(max_moved >= d_start)
-	{
-		d_start = 0;
-	}
-	else
-	{
-		d_start -= max_moved;
-	}*/
-	
 	s16 last_nearest_unsent_d;
 	s16 d_start;
 	{
@@ -382,10 +334,6 @@ void RemoteClient::SendBlocks(Server *server, float dtime)
 	
 	/*
 		TODO: Get this from somewhere
-		TODO: Values more than 7 make placing and removing blocks very
-		      sluggish when the map is being generated. This is
-			  because d is looped every time from 0 to d_max if no
-			  blocks are found for sending.
 	*/
 	//s16 d_max = 7;
 	s16 d_max = 8;
@@ -659,6 +607,10 @@ void RemoteClient::SendObjectData(
 		in memory):
 		- Set blocks changed
 		- Add blocks to emerge queue if they are not found
+
+		SUGGESTION: These could be ignored from the backside of the player
+
+		TODO: Keep track of total size of packet and stop when it is too big
 	*/
 
 	Player *player = server->m_env.getPlayer(peer_id);
@@ -669,9 +621,14 @@ void RemoteClient::SendObjectData(
 	v3s16 center_nodepos = floatToInt(playerpos);
 	v3s16 center = getNodeBlockPos(center_nodepos);
 
-	s16 d_max = ACTIVE_OBJECT_D_BLOCKS;
+	//s16 d_max = ACTIVE_OBJECT_D_BLOCKS;
+	s16 d_max = server->m_active_object_range;
+	
+	// Number of blocks whose objects were written to bos
+	u16 blockcount = 0;
 
-	core::map<v3s16, MapBlock*> blocks;
+	//core::map<v3s16, MapBlock*> blocks;
+	std::ostringstream bos(std::ios_base::binary);
 
 	for(s16 d = 0; d <= d_max; d++)
 	{
@@ -691,13 +648,18 @@ void RemoteClient::SendObjectData(
 				if(m_blocks_sent.find(p) == NULL)
 					continue;
 			}
-
+			
+			// Try stepping block and add it to a send queue
 			try
 			{
 
 			// Get block
 			MapBlock *block = server->m_env.getMap().getBlockNoCreate(p);
 
+			// Skip block if there are no objects
+			if(block->getObjectCount() == 0)
+				continue;
+			
 			// Step block if not in stepped_blocks and add to stepped_blocks
 			if(stepped_blocks.find(p) == NULL)
 			{
@@ -705,9 +667,28 @@ void RemoteClient::SendObjectData(
 				stepped_blocks.insert(p, true);
 				block->setChangedFlag();
 			}
-			
-			// Add block to queue
-			blocks.insert(p, block);
+
+			/*
+				Write objects
+			*/
+
+			// Write blockpos
+			writeV3S16(buf, p);
+			bos.write((char*)buf, 6);
+
+			// Write objects
+			block->serializeObjects(bos, serialization_version);
+
+			blockcount++;
+
+			/*
+				Stop collecting objects if data is already too big
+			*/
+			// Sum of player and object data sizes
+			s32 sum = (s32)os.tellp() + 2 + (s32)bos.tellp();
+			// break out if data too big
+			if(sum > MAX_OBJECTDATA_SIZE)
+				d = d_max+1;
 			
 			} //try
 			catch(InvalidPositionException &e)
@@ -729,11 +710,10 @@ void RemoteClient::SendObjectData(
 		}
 	}
 
+#if 0
 	/*
 		Write objects
 	*/
-
-	u16 blockcount = blocks.size();
 
 	// Write block count
 	writeU16(buf, blockcount);
@@ -751,11 +731,21 @@ void RemoteClient::SendObjectData(
 		MapBlock *block = i.getNode()->getValue();
 		block->serializeObjects(os, serialization_version);
 	}
-	
+#endif
+
+	// Write block count
+	writeU16(buf, blockcount);
+	os.write((char*)buf, 2);
+
+	// Write block objects
+	os<<bos.str();
+
 	/*
 		Send data
 	*/
 	
+	//dstream<<"Server: Sending object data to "<<peer_id<<std::endl;
+
 	// Make data buffer
 	std::string s = os.str();
 	SharedBuffer<u8> data((u8*)s.c_str(), s.size());
@@ -898,13 +888,18 @@ u32 PIChecksum(core::list<PlayerInfo> &l)
 Server::Server(
 		std::string mapsavedir,
 		bool creative_mode,
-		MapgenParams mapgen_params
+		HMParams hm_params,
+		MapParams map_params,
+		float objectdata_interval,
+		u16 active_object_range
 	):
-	m_env(new ServerMap(mapsavedir, mapgen_params), dout_server),
+	m_env(new ServerMap(mapsavedir, hm_params, map_params), dout_server),
 	m_con(PROTOCOL_ID, 512, CONNECTION_TIMEOUT, this),
 	m_thread(this),
 	m_emergethread(this),
-	m_creative_mode(creative_mode)
+	m_creative_mode(creative_mode),
+	m_objectdata_interval(objectdata_interval),
+	m_active_object_range(active_object_range)
 {
 	m_env_mutex.Init();
 	m_con_mutex.Init();
@@ -980,6 +975,7 @@ void Server::step(float dtime)
 void Server::AsyncRunStep()
 {
 	DSTACK(__FUNCTION_NAME);
+	
 	float dtime;
 	{
 		JMutexAutoLock lock1(m_step_dtime_mutex);
@@ -1033,7 +1029,7 @@ void Server::AsyncRunStep()
 
 	// Run time- and client- related stuff
 	// NOTE: If you intend to add something here, check that it
-	// doesn't fit in RemoteClient::SendBlocks for exampel.
+	// doesn't fit in RemoteClient::SendBlocks for example.
 	/*{
 		// Clients are behind connection lock
 		JMutexAutoLock lock(m_con_mutex);
@@ -1055,8 +1051,7 @@ void Server::AsyncRunStep()
 	{
 		static float counter = 0.0;
 		counter += dtime;
-		//TODO: Get value from somewhere
-		if(counter >= 0.1)
+		if(counter >= m_objectdata_interval)
 		{
 			JMutexAutoLock lock1(m_env_mutex);
 			JMutexAutoLock lock2(m_con_mutex);
@@ -1930,12 +1925,12 @@ void Server::peerAdded(con::Peer *peer)
 				bool r = player->inventory.addItem(item);
 				assert(r == true);
 			}
-			// Rat
+			/*// Rat
 			{
 				InventoryItem *item = new MapBlockObjectItem("Rat");
 				bool r = player->inventory.addItem(item);
 				assert(r == true);
-			}
+			}*/
 		}
 		else
 		{

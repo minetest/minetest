@@ -1,14 +1,6 @@
 Minetest-c55
 ---------------
 
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
-OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
-THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
-FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
-IN THE SOFTWARE.
-
 Copyright (c) 2010 Perttu Ahola <celeron55@gmail.com>
 
 An InfiniMiner/Minecraft inspired game.
@@ -16,9 +8,13 @@ An InfiniMiner/Minecraft inspired game.
 This is a development version:
 - Don't expect it to work as well as a finished game will.
 - Please report any bugs to me. That way I can fix them to the next release.
+	- debug.txt is very useful when the game crashes.
 
-Server information:
-- I usually have a server running at celer.oni.biz on port 30000
+Public servers:
+	kray.dy.fi :30000 (friend's server - usually in creative mode)
+	celer.oni.biz :30000 (main development server)
+- Both of these have very limited bandwidth and the game will become laggy
+  with 4-5 players.
 - If you want to run a server, I can list you on my website and in here.
 
 Features, as of now:
@@ -35,8 +31,9 @@ Controls:
 - R: Toggle full view range
 
 Configuration file:
-- Can be passed as parameter to the executable.
-- If not given as parameter, these are checked, in order:
+- An optional configuration file can be used. See minetest.conf.example.
+- Path to file can be passed as a parameter to the executable.
+- If not given as a parameter, these are checked, in order:
 	../minetest.conf
 	../../minetest.conf
 
@@ -50,14 +47,35 @@ Running on GNU/Linux:
     LD_LIBRARY_PATH=. ./fasttest
 - If it doesn't work, use wine. I aim at 100% compatibility with wine.
 
-COPYING (License of Minetest-c55):
-- This version of the game is FREEWARE.
-- You can play this version of the game without charge.
-- You can redistribute this version of the game without charge, only with
-  these same license terms you are reading now, and provided that you give
-  proper information about who has made the game (me) and where to get the
-  original copy and new versions (http://celer.oni.biz/~celeron55/minetest).
-- You are not allowed to sell this game for a price.
+Compiling on GNU/Linux:
+- You need:
+* Irrlicht:
+	http://downloads.sourceforge.net/irrlicht/irrlicht-1.7.2.zip
+* JThread:
+	http://research.edm.uhasselt.be/~jori/page/index.php?n=CS.Jthread
+- Neither of which can probably be found from your distro's repository.
+- Compiling each of them should be fairly unproblematic, though.
+
+
+License of Minetest-c55
+-----------------------
+
+Minetest-c55
+Copyright (C) 2010 celeron55, Perttu Ahola <celeron55@gmail.com>
+
+This program is free software; you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation; either version 2 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License along
+with this program; if not, write to the Free Software Foundation, Inc.,
+51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
 
 Irrlicht

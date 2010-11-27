@@ -5,7 +5,7 @@
 
 enum ToClientCommand
 {
-	TOCLIENT_INIT=0x10,
+	TOCLIENT_INIT = 0x10,
 	/*
 		Server's reply to TOSERVER_INIT.
 		Sent second after connected.
@@ -15,11 +15,11 @@ enum ToClientCommand
 		[3] v3s16 player's position + v3f(0,BS/2,0) floatToInt'd
 	*/
 
-	TOCLIENT_BLOCKDATA=0x20, //TODO: Multiple blocks
-	TOCLIENT_ADDNODE,
-	TOCLIENT_REMOVENODE,
+	TOCLIENT_BLOCKDATA = 0x20, //TODO: Multiple blocks
+	TOCLIENT_ADDNODE = 0x21,
+	TOCLIENT_REMOVENODE = 0x22,
 	
-	TOCLIENT_PLAYERPOS,
+	TOCLIENT_PLAYERPOS = 0x23,
 	/*
 		[0] u16 command
 		// Followed by an arbitary number of these:
@@ -31,7 +31,7 @@ enum ToClientCommand
 		[N+2+12+12+4] s32 yaw*100
 	*/
 
-	TOCLIENT_PLAYERINFO,
+	TOCLIENT_PLAYERINFO = 0x24,
 	/*
 		[0] u16 command
 		// Followed by an arbitary number of these:
@@ -40,22 +40,22 @@ enum ToClientCommand
 		[N] char[20] name
 	*/
 	
-	TOCLIENT_OPT_BLOCK_NOT_FOUND, // Not used
+	TOCLIENT_OPT_BLOCK_NOT_FOUND = 0x25, // Not used
 
-	TOCLIENT_SECTORMETA,
+	TOCLIENT_SECTORMETA = 0x26, // Not used
 	/*
 		[0] u16 command
 		[2] u8 sector count
 		[3...] v2s16 pos + sector metadata
 	*/
 
-	TOCLIENT_INVENTORY,
+	TOCLIENT_INVENTORY = 0x27,
 	/*
 		[0] u16 command
 		[2] serialized inventory
 	*/
 	
-	TOCLIENT_OBJECTDATA,
+	TOCLIENT_OBJECTDATA = 0x28,
 	/*
 		Sent as unreliable.
 
@@ -84,7 +84,7 @@ enum ToServerCommand
 		[3] u8[20] player_name
 	*/
 
-	TOSERVER_INIT2,
+	TOSERVER_INIT2 = 0x11,
 	/*
 		Sent as an ACK for TOCLIENT_INIT.
 		After this, the server can send data.
@@ -93,10 +93,10 @@ enum ToServerCommand
 	*/
 
 	TOSERVER_GETBLOCK=0x20, // Not used
-	TOSERVER_ADDNODE, // Not used
-	TOSERVER_REMOVENODE, // deprecated
+	TOSERVER_ADDNODE = 0x21, // Not used
+	TOSERVER_REMOVENODE = 0x22, // deprecated
 
-	TOSERVER_PLAYERPOS,
+	TOSERVER_PLAYERPOS = 0x23,
 	/*
 		[0] u16 command
 		[2] v3s32 position*100
@@ -105,7 +105,7 @@ enum ToServerCommand
 		[2+12+12+4] s32 yaw*100
 	*/
 
-	TOSERVER_GOTBLOCKS,
+	TOSERVER_GOTBLOCKS = 0x24,
 	/*
 		[0] u16 command
 		[2] u8 count
@@ -114,7 +114,7 @@ enum ToServerCommand
 		...
 	*/
 
-	TOSERVER_DELETEDBLOCKS,
+	TOSERVER_DELETEDBLOCKS = 0x25,
 	/*
 		[0] u16 command
 		[2] u8 count
@@ -123,14 +123,14 @@ enum ToServerCommand
 		...
 	*/
 
-	TOSERVER_ADDNODE_FROM_INVENTORY, // deprecated
+	TOSERVER_ADDNODE_FROM_INVENTORY = 0x26, // deprecated
 	/*
 		[0] u16 command
 		[2] v3s16 pos
 		[8] u16 i
 	*/
 
-	TOSERVER_CLICK_OBJECT,
+	TOSERVER_CLICK_OBJECT = 0x27,
 	/*
 		length: 13
 		[0] u16 command
@@ -140,7 +140,7 @@ enum ToServerCommand
 		[11] u16 item
 	*/
 
-	TOSERVER_CLICK_GROUND,
+	TOSERVER_CLICK_GROUND = 0x28,
 	/*
 		length: 17
 		[0] u16 command
@@ -150,14 +150,14 @@ enum ToServerCommand
 		[15] u16 item
 	*/
 	
-	TOSERVER_RELEASE,
+	TOSERVER_RELEASE = 0x29,
 	/*
 		length: 3
 		[0] u16 command
 		[2] u8 button
 	*/
 
-	TOSERVER_SIGNTEXT,
+	TOSERVER_SIGNTEXT = 0x30,
 	/*
 		u16 command
 		v3s16 blockpos

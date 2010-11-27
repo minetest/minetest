@@ -3,7 +3,7 @@
 */
 
 /*
-	Debug stack and assertion
+	Debug stuff
 */
 
 #ifndef DEBUG_HEADER
@@ -172,5 +172,58 @@ private:
 			DEBUG_STACK_TEXT_SIZE, __VA_ARGS__);\
 	DebugStacker __debug_stacker(__buf);
 
-#endif
+/*
+	Packet counter
+*/
+
+class PacketCounter
+{
+public:
+	PacketCounter()
+	{
+	}
+
+	void add(u16 command)
+	{
+		core::map<u16, u16>::Node *n = m_packets.find(command);
+		if(n == NULL)
+		{
+			m_packets[command] = 1;
+		}
+		else
+		{
+			n->setValue(n->getValue()+1);
+		}
+	}
+
+	void clear()
+	{
+		for(core::map<u16, u16>::Iterator
+				i = m_packets.getIterator();
+				i.atEnd() == false; i++)
+		{
+			i.getNode()->setValue(0);
+		}
+	}
+
+	void print(std::ostream &o)
+	{
+		for(core::map<u16, u16>::Iterator
+				i = m_packets.getIterator();
+				i.atEnd() == false; i++)
+		{
+			o<<"cmd "<<i.getNode()->getKey()
+					<<" count "<<i.getNode()->getValue()
+					<<std::endl;
+		}
+	}
+
+private:
+	// command, count
+	core::map<u16, u16> m_packets;
+};
+
+
+#endif // DEBUG_HEADER
+
 

@@ -1,7 +1,24 @@
 /*
-(c) 2010 Perttu Ahola <celeron55@gmail.com>
+Minetest-c55
+Copyright (C) 2010 celeron55, Perttu Ahola <celeron55@gmail.com>
 
-Minetest
+This program is free software; you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation; either version 2 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License along
+with this program; if not, write to the Free Software Foundation, Inc.,
+51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+*/
+
+/*
+=============================== NOTES ==============================
 
 NOTE: VBO cannot be turned on for fast-changing stuff because there
       is an apparanet memory leak in irrlicht when using it
@@ -137,43 +154,39 @@ TODO: Make fetching sector's blocks more efficient when rendering
 
 TODO: Make the video backend selectable
 
-TODO: A timestamp to blocks
-
-TODO: Client side:
-      - The server sends all active objects of the active blocks
-	    at constant intervals. They should fit in a few packets.
-      - The client keeps track of what blocks at the moment are
-	    having active objects in them.
-      - All blocks going in and out of the active buffer are recorded.
-	    - For outgoing blocks, objects are removed from the blocks
-		  and from the scene
-	    - For incoming blocks, objects are added to the blocks and
-		  to the scene.
-
-TODO: Server side:
+Block object server side:
       - A "near blocks" buffer, in which some nearby blocks are stored.
 	  - For all blocks in the buffer, objects are stepped(). This
 	    means they are active.
-      - All blocks going in and out of the buffer are recorded.
-	    - For outgoing blocks, a timestamp is written.
-	    - For incoming blocks, the time difference is calculated and
+      - TODO All blocks going in and out of the buffer are recorded.
+	    - TODO For outgoing blocks, a timestamp is written.
+	    - TODO For incoming blocks, the time difference is calculated and
 	      objects are stepped according to it.
+TODO: A timestamp to blocks
 
 TODO: Add config parameters for server's sending and generating distance
-
-TODO: Make amount of trees and other plants configurable
-      - Save to a metafile
 
 TODO: Copy the text of the last picked sign to inventory in creative
       mode
 
 TODO: Untie client network operations from framerate
 
-TODO: Make a copy of close-range environment on client for showing
+SUGG: Make a copy of close-range environment on client for showing
       on screen, with minimal mutexes to slow the main loop down
 
-TODO: Make a PACKET_COMBINED which contains many subpackets. Utilize
+SUGG: Make a PACKET_COMBINED which contains many subpackets. Utilize
       it by sending more stuff in a single packet.
+	  - Add a packet queue to RemoteClient, from which packets will be
+	    combined with object data packets
+		- This is not exactly trivial: the object data packets are
+		  sometimes very big by themselves
+
+SUGG: Split MapBlockObject serialization to to-client and to-disk
+      - This will allow saving ages of rats on disk but not sending
+	    them to clients
+
+TODO: Fix the long-lived Server Block Emerge Jam bug
+      - Is it related to the client deleting blocks?
 
 Doing now:
 ======================================================================
@@ -261,10 +274,6 @@ video::SMaterial g_materials[MATERIALS_COUNT];
 // All range-related stuff below is locked behind this
 JMutex g_range_mutex;
 
-// Blocks are generated in this range from the player
-// This is limited vertically to half by Client::fetchBlocks()
-s16 g_forcedfetch_range_nodes = FORCEDFETCH_RANGE;
-
 // Blocks are viewed in this range from the player
 s16 g_viewing_range_nodes = 60;
 
@@ -305,7 +314,10 @@ float g_client_delete_unused_sectors_timeout = 1200;
 
 // Server stuff
 bool g_creative_mode = false;
-MapgenParams g_mapgen_params;
+HMParams g_hm_params;
+MapParams g_map_params;
+float g_objectdata_interval = 0.2;
+u16 g_active_object_range = 2;
 
 /*
 	Random stuff
@@ -395,21 +407,11 @@ bool parseConfigObject(std::istream &is)
 	}
 	else if(name == "viewing_range_nodes_max")
 	{
-		s32 v = atoi(value.c_str());
-		if(v < 0)
-			v = 0;
-		if(v > 32767)
-			v = 32767;
-		g_viewing_range_nodes_max = v;
+		g_viewing_range_nodes_max = stoi(value, 0, 32767);
 	}
 	else if(name == "viewing_range_nodes_min")
 	{
-		s32 v = atoi(value.c_str());
-		if(v < 0)
-			v = 0;
-		if(v > 32767)
-			v = 32767;
-		g_viewing_range_nodes_min = v;
+		g_viewing_range_nodes_min = stoi(value, 0, 32767);
 	}
 	else if(name=="screenW")
 		g_screenW = value;
@@ -439,19 +441,29 @@ bool parseConfigObject(std::istream &is)
 	{
 		s32 d = atoi(value.c_str());
 		if(d > 0 && (d & (d-1)) == 0)
-			g_mapgen_params.heightmap_blocksize = d;
+			g_hm_params.heightmap_blocksize = d;
 		else
 			dstream<<"Invalid value in config file: \""
 					<<line<<"\""<<std::endl;
 	}
 	else if(name == "mapgen_height_randmax")
-		g_mapgen_params.height_randmax = value;
+		g_hm_params.height_randmax = value;
 	else if(name == "mapgen_height_randfactor")
-		g_mapgen_params.height_randfactor = value;
+		g_hm_params.height_randfactor = value;
 	else if(name == "mapgen_height_base")
-		g_mapgen_params.height_base = value;
+		g_hm_params.height_base = value;
 	else if(name == "mapgen_plants_amount")
-		g_mapgen_params.plants_amount = value;
+	{
+		std::istringstream vis(value);
+		vis>>g_map_params.plants_amount;
+	}
+	else if(name == "objectdata_inverval")
+	{
+		std::istringstream vis(value);
+		vis>>g_objectdata_interval;
+	}
+	else if(name == "active_object_range")
+		g_active_object_range = stoi(value, 0, 65535);
 	
 	else
 	{
@@ -1161,7 +1173,9 @@ int main(int argc, char *argv[])
 		std::cout<<"========================"<<std::endl;
 		std::cout<<std::endl;
 
-		Server server("../map", g_creative_mode, g_mapgen_params);
+		Server server("../map", g_creative_mode, g_hm_params,
+				g_map_params, g_objectdata_interval,
+				g_active_object_range);
 		server.start(port);
 	
 		for(;;)
@@ -1429,7 +1443,9 @@ int main(int argc, char *argv[])
 	*/
 	SharedPtr<Server> server;
 	if(hosting){
-		server = new Server("../map", g_creative_mode, g_mapgen_params);
+		server = new Server("../map", g_creative_mode, g_hm_params,
+				g_map_params, g_objectdata_interval,
+				g_active_object_range);
 		server->start(port);
 	}
 	

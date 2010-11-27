@@ -266,6 +266,8 @@ private:
 	bool m_inventory_updated;
 
 	core::map<v3s16, bool> m_active_blocks;
+
+	PacketCounter m_packetcounter;
 };
 
 #endif

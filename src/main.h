@@ -12,7 +12,6 @@ extern std::string getTimestamp();
 #include <jmutex.h>
 
 extern JMutex g_range_mutex;
-extern s16 g_forcedfetch_range_nodes;
 extern s16 g_viewing_range_nodes;
 //extern s16 g_actual_viewing_range_nodes;
 extern bool g_viewing_range_all;
@@ -41,10 +40,6 @@ extern video::SMaterial g_materials[MATERIALS_COUNT];
 //extern video::SMaterial g_mesh_materials[3];
 
 extern IrrlichtDevice *g_device;
-
-// Settings
-#include "map.h"
-extern MapgenParams g_mapgen_params;
 
 #endif
 

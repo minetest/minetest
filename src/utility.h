@@ -603,5 +603,15 @@ inline bool is_yes(std::string s)
 	return false;
 }
 
+inline s32 stoi(std::string s, s32 min, s32 max)
+{
+	s32 i = atoi(s.c_str());
+	if(i < min)
+		i = min;
+	if(i > max)
+		i = max;
+	return i;
+}
+
 #endif
 
