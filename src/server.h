@@ -208,11 +208,11 @@ u32 PIChecksum(core::list<PlayerInfo> &l);
 */
 struct PrioritySortedBlockTransfer
 {
-	PrioritySortedBlockTransfer(float a_priority, v3s16 a_pos, u16 a_dest_peer)
+	PrioritySortedBlockTransfer(float a_priority, v3s16 a_pos, u16 a_peer_id)
 	{
 		priority = a_priority;
 		pos = a_pos;
-		dest_peer = a_dest_peer;
+		peer_id = a_peer_id;
 	}
 	bool operator < (PrioritySortedBlockTransfer &other)
 	{
@@ -220,7 +220,7 @@ struct PrioritySortedBlockTransfer
 	}
 	float priority;
 	v3s16 pos;
-	u16 a_dest_peer;
+	u16 peer_id;
 };
 
 class RemoteClient
@@ -252,8 +252,13 @@ public:
 	{
 	}
 	
-	// Connection and environment should be locked when this is called
-	void SendBlocks(Server *server, float dtime);
+	/*
+		Finds block that should be sent next to the client.
+		Environment should be locked when this is called.
+		dtime is used for resetting send radius at slow interval
+	*/
+	void GetNextBlocks(Server *server, float dtime,
+			core::array<PrioritySortedBlockTransfer> &dest);
 
 	// Connection and environment should be locked when this is called
 	// steps() objects of blocks not found in active_blocks, then
@@ -272,6 +277,18 @@ public:
 	void SetBlocksNotSent(core::map<v3s16, MapBlock*> &blocks);
 
 	void BlockEmerged();
+
+	/*bool IsSendingBlock(v3s16 p)
+	{
+		JMutexAutoLock lock(m_blocks_sending_mutex);
+		return (m_blocks_sending.find(p) != NULL);
+	}*/
+
+	s32 SendingCount()
+	{
+		JMutexAutoLock lock(m_blocks_sending_mutex);
+		return m_blocks_sending.size();
+	}
 	
 	// Increments timeouts and removes timed-out blocks from list
 	// NOTE: This doesn't fix the server-not-sending-block bug
