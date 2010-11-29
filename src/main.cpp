@@ -19,6 +19,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 /*
 =============================== NOTES ==============================
+NOTE: Things starting with TODO are sometimes only suggestions.
 
 NOTE: VBO cannot be turned on for fast-changing stuff because there
       is an apparanet memory leak in irrlicht when using it (not sure)
@@ -64,13 +65,12 @@ TODO: - Scripting
 
 SUGGESTION: Modify client to calculate single changes asynchronously
 
-TODO: Moving players more smoothly. Calculate moving animation from
-      data sent by server.
+TODO: Moving players more smoothly. Calculate moving animation
+      in a way that doesn't make the player jump to the right place
+	  immediately when the server sends a new position
 
 TODO: There are some lighting-related todos and fixmes in
       ServerMap::emergeBlock
-
-TODO: Make a dirt node and use it under water
 
 FIXME: When a new sector is generated, it may change the ground level
        of it's and it's neighbors border that two blocks that are
@@ -81,55 +81,32 @@ SUGGESTION: Use same technique for sector heightmaps as what we're
             using for UnlimitedHeightmap? (getting all neighbors
 			when generating)
 
-TODO: Set server to automatically find a good spawning place in some
+SUGG: Set server to automatically find a good spawning place in some
       place where there is water and land.
 	  - Map to have a getWalkableNear(p)
+	  - Is this a good idea? It's part of the game to find a good place.
 
 TODO: Transfer more blocks in a single packet
 SUGG: A blockdata combiner class, to which blocks are added and at
       destruction it sends all the stuff in as few packets as possible.
 
-TODO: If player is on ground, mainly fetch ground-level blocks
-TODO: Fetch stuff mainly from the viewing direction
+SUGG: If player is on ground, mainly fetch ground-level blocks
+SUGG: Fetch stuff mainly from the viewing direction
 
-TODO: Expose Connection's seqnums and ACKs to server and client.
+SUGG: Expose Connection's seqnums and ACKs to server and client.
       - This enables saving many packets and making a faster connection
 	  - This also enables server to check if client has received the
 	    most recent block sent, for example.
-
 TODO: Add a sane bandwidth throttling system to Connection
-
-FIXME: There still are *some* tiny glitches in lighting as seen from
-       the client side. The server calculates them right but sometimes
-	   they don't get transferred properly.
-	   - Server probably checks that a block is not sent, then continues
-	   to sending it, then the emerge thread marks it as unsent and then
-	   the sender sends the block as it was before emerging?
-TODO: How about adding a "revision" field to MapBlocks?
 
 SUGG: More fine-grained control of client's dumping of blocks from
       memory
 	  - ...What does this mean in the first place?
 
-TODO: Somehow prioritize the sending of blocks and combine the block
-      send queue lengths
-	  - Take two blocks to be sent next from each client and assign
-	    a priority value to them
-	  - Priority is the same as distance from player
-	  - Take the highest priority ones and send them. Send as many as
-	    fits in the global send queue maximum length (sum of lengths
-		of client queues)
 TODO: Make the amount of blocks sending to client and the total
 	  amount of blocks dynamically limited. Transferring blocks is the
 	  main network eater of this system, so it is the one that has
 	  to be throttled so that RTTs stay low.
-FIXME: There is a bug that sometimes the EmergeThread bumps to
-       the client's emerge counter being already 0, and also the
-	   sending queue size of the client can float to 1 or 2, which
-	   stops the map from loading at all.
-	   - A quick hack could be applied to ignore the error of
-	     being at 0 and timing out old entries
-SUGG: Make client send GOTBLOCKS before updating meshes
 
 TODO: Server to load starting inventory from disk
 
@@ -137,17 +114,7 @@ TODO: PLayers to only be hidden when the client quits.
 TODO: - Players to be saved on disk, with inventory
 TODO: Players to be saved as text in map/players/<name>
 
-SUGGESTION: A map editing mode (similar to dedicated server mode)
-
-TODO: Maybe: Create a face calculation queue on the client that is
-      processed in a separate thread
-TODO: Make client's mesh updates to happen in a thread similar to
-      server's EmergeThread.
-	  - This is not really needed, mesh update is really fast
-	  - Instead, the lighting update can be slow
-	  - So, this todo is not really a todo. It is a not-todo.
-SUGG: Make server to send all modified blocks after a node change
-      after all the stuff including lighting have been updated
+SUGG: A map editing mode (similar to dedicated server mode)
 
 TODO: Make fetching sector's blocks more efficient when rendering
       sectors that have very large amounts of blocks (on client)
@@ -169,16 +136,16 @@ SUGG: Add a time value to the param of footstepped grass and check it
       against a global timer when a block is accessed, to make old
 	  steps fade away.
 
-
 TODO: Add config parameters for server's sending and generating distance
 
 TODO: Copy the text of the last picked sign to inventory in creative
       mode
 
 TODO: Untie client network operations from framerate
+      - Needs some input queues or something
 
 SUGG: Make a copy of close-range environment on client for showing
-      on screen, with minimal mutexes to slow the main loop down
+      on screen, with minimal mutexes to slow down the main loop
 
 SUGG: Make a PACKET_COMBINED which contains many subpackets. Utilize
       it by sending more stuff in a single packet.
@@ -193,8 +160,8 @@ SUGG: Split MapBlockObject serialization to to-client and to-disk
 
 TODO: Get rid of GotSplitPacketException
 
-Before release:
-======================================================================
+SUGG: Implement lighting using VoxelManipulator
+      - Would it be significantly faster?
 
 TODO: Check what goes wrong with caching map to disk (Kray)
 
@@ -203,7 +170,6 @@ TODO: Remove LazyMeshUpdater. It is not used as supposed.
 Doing now:
 ======================================================================
 
-TODO: Implement lighting using VoxelManipulator
 
 ======================================================================
 

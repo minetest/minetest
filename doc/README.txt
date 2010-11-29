@@ -56,6 +56,10 @@ Compiling on GNU/Linux:
 - Neither of which can probably be found from your distro's repository.
 - Compiling each of them should be fairly unproblematic, though.
 
+Compiling on Windows:
+- Be sure to
+  #define JMUTEX_CRITICALSECTION
+  in jmutex.h before compiling it. Otherwise mutexes will be very slow.
 
 License of Minetest-c55
 -----------------------
