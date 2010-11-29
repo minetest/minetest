@@ -1780,16 +1780,15 @@ MapBlock * ServerMap::emergeBlock(
 				MapNode n;
 				n.d = MATERIAL_MESE;
 				
-				if(rand()%8 == 0)
-					block->setNode(cp, n);
+				if(is_ground_material(block->getNode(cp).d))
+					if(rand()%8 == 0)
+						block->setNode(cp, n);
 
 				for(u16 i=0; i<26; i++)
 				{
-					if(!is_ground_material(block->getNode(cp+g_26dirs[i]).d))
-						continue;
-
-					if(rand()%8 == 0)
-						block->setNode(cp+g_26dirs[i], n);
+					if(is_ground_material(block->getNode(cp+g_26dirs[i]).d))
+						if(rand()%8 == 0)
+							block->setNode(cp+g_26dirs[i], n);
 				}
 			}
 		}
@@ -1798,15 +1797,25 @@ MapBlock * ServerMap::emergeBlock(
 	/*
 		Create a few rats in empty blocks underground
 	*/
-	/*if(is_underground && low_block_is_empty == true)
+	if(is_underground)
 	{
 		//for(u16 i=0; i<2; i++)
 		{
-			v3s16 pos(8, 1, 8);
-			RatObject *obj = new RatObject(NULL, -1, intToFloat(pos));
-			block->addObject(obj);
+			v3s16 cp(
+				(rand()%(MAP_BLOCKSIZE-2))+1,
+				(rand()%(MAP_BLOCKSIZE-2))+1,
+				(rand()%(MAP_BLOCKSIZE-2))+1
+			);
+
+			// Check that the place is empty
+			//if(!is_ground_material(block->getNode(cp).d))
+			if(1)
+			{
+				RatObject *obj = new RatObject(NULL, -1, intToFloat(cp));
+				block->addObject(obj);
+			}
 		}
-	}*/
+	}
 	
 	/*
 		Add block to sector.
@@ -2491,31 +2500,8 @@ void ServerMap::loadBlock(std::string sectordir, std::string blockfile, MapSecto
 		Convert old formats to new and save
 	*/
 
-	if(version == 0 || version == 1)
-	{
-		dstream<<"Block ("<<p3d.X<<","<<p3d.Y<<","<<p3d.Z<<")"
-				" is in old format. Updating lighting and saving"
-				" modified blocks in new format."<<std::endl;
-
-		// Old version has zero lighting, update it
-		core::map<v3s16, MapBlock*> blocks_changed;
-		blocks_changed.insert(block->getPos(), block);
-		core::map<v3s16, MapBlock*> modified_blocks;
-		updateLighting(blocks_changed, modified_blocks);
-		
-		// Close input file
-		is.close();
-		
-		// Save modified blocks
-		core::map<v3s16, MapBlock * >::Iterator i = modified_blocks.getIterator();
-		for(; i.atEnd() == false; i++)
-		{
-			MapBlock *b2 = i.getNode()->getValue();
-			saveBlock(b2);
-		}
-	}
-	// Save blocks in new format
-	else if(version < SER_FMT_VER_HIGHEST)
+	// Save old format blocks in new format
+	if(version < SER_FMT_VER_HIGHEST)
 	{
 		saveBlock(block);
 	}

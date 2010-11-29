@@ -148,9 +148,9 @@ void Client::step(float dtime)
 		counter -= dtime;
 		if(counter <= 0.0)
 		{
-			counter = 10.0;
+			counter = 20.0;
 			
-			dout_client<<"Client packetcounter:"<<std::endl;
+			dout_client<<"Client packetcounter (20s):"<<std::endl;
 			m_packetcounter.print(dout_client);
 			m_packetcounter.clear();
 		}

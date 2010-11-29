@@ -15,8 +15,10 @@
 	      loadable by any version. Other compatibility is not
 		  maintained.
 	Serialization format versions:
+	== Unsupported ==
 	0: original networked test with 1-byte nodes
 	1: update with 2-byte nodes
+	== Supported ==
 	2: lighting is transmitted in param
 	3: optional fetching of far blocks
 	4: block compression
@@ -31,7 +33,7 @@
 // Highest supported serialization version
 #define SER_FMT_VER_HIGHEST 9
 // Lowest supported serialization version
-#define SER_FMT_VER_LOWEST 0
+#define SER_FMT_VER_LOWEST 2
 
 #define ser_ver_supported(v) (v >= SER_FMT_VER_LOWEST && v <= SER_FMT_VER_HIGHEST)
 
