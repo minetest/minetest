@@ -247,6 +247,10 @@
 				RelativePath=".\src\utility.cpp"
 				>
 			</File>
+			<File
+				RelativePath=".\src\voxel.cpp"
+				>
+			</File>
 		</Filter>
 		<Filter
 			Name="Header Files"
