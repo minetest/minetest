@@ -340,7 +340,7 @@ void set_default_settings()
 	g_settings.set("ravines_amount", "1.0");
 	g_settings.set("objectdata_interval", "0.2");
 	g_settings.set("active_object_range", "2");
-	g_settings.set("max_simultaneous_block_sends_per_client", "2");
+	g_settings.set("max_simultaneous_block_sends_per_client", "1");
 	g_settings.set("max_simultaneous_block_sends_server_total", "4");
 }
 

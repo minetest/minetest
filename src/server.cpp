@@ -302,8 +302,10 @@ void RemoteClient::GetNextBlocks(Server *server, float dtime,
 		d_start = m_nearest_unsent_d;
 	}
 
-	u16 maximum_simultaneous_block_sends = g_settings.getU16
+	u16 maximum_simultaneous_block_sends_setting = g_settings.getU16
 			("max_simultaneous_block_sends_per_client");
+	u16 maximum_simultaneous_block_sends = 
+			maximum_simultaneous_block_sends_setting;
 
 	/*
 		Check the time from last addNode/removeNode.
@@ -380,13 +382,20 @@ void RemoteClient::GetNextBlocks(Server *server, float dtime,
 
 				Also, don't send blocks that are already flying.
 			*/
-			if(d > BLOCK_SEND_DISABLE_LIMITS_MAX_D)
+			
+			u16 maximum_simultaneous_block_sends_now =
+					maximum_simultaneous_block_sends;
+			
+			if(d <= BLOCK_SEND_DISABLE_LIMITS_MAX_D)
+					maximum_simultaneous_block_sends_now =
+							maximum_simultaneous_block_sends_setting;
+
 			{
 				JMutexAutoLock lock(m_blocks_sending_mutex);
 				
 				// Limit is dynamically lowered when building
 				if(m_blocks_sending.size()
-						>= maximum_simultaneous_block_sends)
+						>= maximum_simultaneous_block_sends_now)
 				{
 					/*dstream<<"Not sending more blocks. Queue full. "
 							<<m_blocks_sending.size()

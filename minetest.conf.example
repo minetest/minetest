@@ -50,6 +50,6 @@
 
 #active_object_range = 2
 
-#max_simultaneous_block_sends_per_client = 2
+#max_simultaneous_block_sends_per_client = 1
 #max_simultaneous_block_sends_server_total = 4
 

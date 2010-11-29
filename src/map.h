@@ -143,10 +143,10 @@ public:
 	*/
 	JMutexAutoLock * waitCaches()
 	{
-		dstream<<"waitCaches() begin"<<std::endl;
+		//dstream<<"waitCaches() begin"<<std::endl;
 		JMutexAutoLock waitcachelock(m_waitcache_mutex);
 		JMutexAutoLock *lock = new JMutexAutoLock(m_cache_mutex);
-		dstream<<"waitCaches() end"<<std::endl;
+		//dstream<<"waitCaches() end"<<std::endl;
 		return lock;
 	}
 
