@@ -194,6 +194,7 @@ SUGG: Split MapBlockObject serialization to to-client and to-disk
 TODO: Get rid of GotSplitPacketException
 
 Before release:
+======================================================================
 
 TODO: Check what goes wrong with caching map to disk (Kray)
 
