@@ -297,7 +297,13 @@ bool UDPSocket::WaitData(int timeout_ms)
 		dstream<<(int)m_handle<<": Select failed: "<<strerror(errno)<<std::endl;
 #endif
 #ifdef _WIN32
-		dstream<<(int)m_handle<<": WSAGetLastError()="<<WSAGetLastError()<<std::endl;
+		int e = WSAGetLastError();
+		dstream<<(int)m_handle<<": WSAGetLastError()="<<e<<std::endl;
+		if(e == 10004 /*=WSAEINTR*/)
+		{
+			dstream<<"WARNING: Ignoring WSAEINTR."<<std::endl;
+			return false;
+		}
 #endif
 		throw SocketException("Select failed");
 	}

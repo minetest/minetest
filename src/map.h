@@ -106,6 +106,7 @@ public:
 
 	void cacheCreated()
 	{
+		dstream<<"cacheCreated() begin"<<std::endl;
 		JMutexAutoLock waitcachelock(m_waitcache_mutex);
 		JMutexAutoLock countlock(m_count_mutex);
 
@@ -114,10 +115,13 @@ public:
 			m_cache_mutex.Lock();
 			
 		m_count++;
+
+		dstream<<"cacheCreated() end"<<std::endl;
 	}
 
 	void cacheRemoved()
 	{
+		dstream<<"cacheRemoved() begin"<<std::endl;
 		JMutexAutoLock countlock(m_count_mutex);
 
 		assert(m_count > 0);
@@ -127,6 +131,8 @@ public:
 		// If this is the last one, release the cache lock
 		if(m_count == 0)
 			m_cache_mutex.Unlock();
+
+		dstream<<"cacheRemoved() end"<<std::endl;
 	}
 
 	/*
@@ -137,8 +143,11 @@ public:
 	*/
 	JMutexAutoLock * waitCaches()
 	{
+		dstream<<"waitCaches() begin"<<std::endl;
 		JMutexAutoLock waitcachelock(m_waitcache_mutex);
-		return new JMutexAutoLock(m_cache_mutex);
+		JMutexAutoLock *lock = new JMutexAutoLock(m_cache_mutex);
+		dstream<<"waitCaches() end"<<std::endl;
+		return lock;
 	}
 
 private:

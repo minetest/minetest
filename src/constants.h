@@ -56,8 +56,9 @@
 // The distance of how far objects will be sent to client
 //#define ACTIVE_OBJECT_D_BLOCKS 2
 
-// Wether to catch all std::exceptions
-#define CATCH_UNHANDLED_EXCEPTIONS 0
+// Wether to catch all std::exceptions.
+// Assert will be called on such an event.
+#define CATCH_UNHANDLED_EXCEPTIONS 1
 
 /*
 	Collecting active blocks is stopped after object data

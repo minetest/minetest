@@ -41,6 +41,7 @@
 				Name="VCCLCompilerTool"
 				AdditionalIncludeDirectories="&quot;C:\Program Files\Microsoft Platform SDK for Windows Server 2003 R2\Include&quot;;&quot;..\jthread\jthread-1.2.1\src&quot;;&quot;..\irrlicht\irrlicht-1.7.1\include&quot;"
 				PreprocessorDefinitions="WIN32"
+				BufferSecurityCheck="true"
 				EnableEnhancedInstructionSet="1"
 				FloatingPointModel="2"
 				DebugInformationFormat="1"
@@ -117,10 +118,11 @@
 				OmitFramePointers="true"
 				WholeProgramOptimization="true"
 				AdditionalIncludeDirectories="&quot;C:\Program Files\Microsoft Platform SDK for Windows Server 2003 R2\Include&quot;;&quot;..\jthread\jthread-1.2.1\src&quot;;&quot;..\irrlicht\irrlicht-1.7.1\include&quot;"
-				PreprocessorDefinitions="WIN32;_HAS_ITERATOR_DEBUGGING=0,UNITTEST_DISABLE"
+				PreprocessorDefinitions="WIN32;_HAS_ITERATOR_DEBUGGING=0,UNITTEST_DISABLE,_CRT_SECURE_NO_DEPRECATE"
 				BufferSecurityCheck="false"
 				EnableEnhancedInstructionSet="1"
 				FloatingPointModel="2"
+				DebugInformationFormat="0"
 			/>
 			<Tool
 				Name="VCManagedResourceCompilerTool"
@@ -135,6 +137,7 @@
 				Name="VCLinkerTool"
 				AdditionalLibraryDirectories="&quot;C:\Program Files\Microsoft Platform SDK for Windows Server 2003 R2\Lib&quot;;&quot;..\jthread\jthread-1.2.1\Release&quot;;&quot;..\irrlicht\irrlicht-1.7.1\lib\Win32-visualstudio&quot;"
 				IgnoreDefaultLibraryNames="libcmtd.lib"
+				GenerateDebugInformation="false"
 				LinkTimeCodeGeneration="1"
 			/>
 			<Tool

@@ -474,6 +474,18 @@ public:
 						dstream<<DTIME<<"Enabled full viewing range"<<std::endl;
 					}
 				}
+
+				// Print debug stacks
+				if(event.KeyInput.Key == irr::KEY_KEY_P
+						&& g_game_focused)
+				{
+					dstream<<"-----------------------------------------"
+							<<std::endl;
+					dstream<<DTIME<<"Printing debug stacks:"<<std::endl;
+					dstream<<"-----------------------------------------"
+							<<std::endl;
+					debug_stacks_print();
+				}
 			}
 		}
 
@@ -2213,7 +2225,7 @@ int main(int argc, char *argv[])
 	{
 		dstream<<DTIME<<"Connection timed out."<<std::endl;
 	}
-#if CATCH_EXCEPTIONS
+#if CATCH_UNHANDLED_EXCEPTIONS
 	/*
 		This is what has to be done in every thread to get suitable debug info
 	*/

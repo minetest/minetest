@@ -1522,7 +1522,7 @@ MapSector * ServerMap::emergeSector(v2s16 p2d)
 	*/
 	if(m_params.ravines_amount != 0)
 	{
-		if(rand()%(s32)(10.0 / m_params.ravines_amount) == 0)
+		if(rand()%(s32)(20.0 / m_params.ravines_amount) == 0)
 		{
 			s16 s = 6;
 			s16 x = rand()%(MAP_BLOCKSIZE-s*2-1)+s;
@@ -1662,8 +1662,16 @@ MapBlock * ServerMap::emergeBlock(
 	for(s16 x0=0; x0<MAP_BLOCKSIZE; x0++)
 	{
 		//dstream<<"emergeBlock: x0="<<x0<<", z0="<<z0<<std::endl;
+
 		float surface_y_f = sector->getGroundHeight(v2s16(x0,z0));
-		assert(surface_y_f > GROUNDHEIGHT_VALID_MINVALUE);
+		//assert(surface_y_f > GROUNDHEIGHT_VALID_MINVALUE);
+		if(surface_y_f < GROUNDHEIGHT_VALID_MINVALUE)
+		{
+			dstream<<"WARNING: Surface height not found in sector "
+					"for block that is being emerged"<<std::endl;
+			surface_y_f = 0.0;
+		}
+
 		s16 surface_y = surface_y_f;
 		//avg_ground_y += surface_y;
 		if(surface_y < lowest_ground_y)
@@ -2452,6 +2460,9 @@ void ServerMap::saveBlock(MapBlock *block)
 void ServerMap::loadBlock(std::string sectordir, std::string blockfile, MapSector *sector)
 {
 	DSTACK(__FUNCTION_NAME);
+
+	try{
+
 	// Block file is map/sectors/xxxxxxxx/xxxx
 	std::string fullpath = m_savedir+"/sectors/"+sectordir+"/"+blockfile;
 	std::ifstream is(fullpath.c_str(), std::ios_base::binary);
@@ -2483,7 +2494,8 @@ void ServerMap::loadBlock(std::string sectordir, std::string blockfile, MapSecto
 		block = sector->createBlankBlockNoInsert(p3d.Y);
 		created_new = true;
 	}
-
+	
+	// deserialize block data
 	block->deSerialize(is, version);
 	
 	/*
@@ -2509,6 +2521,14 @@ void ServerMap::loadBlock(std::string sectordir, std::string blockfile, MapSecto
 	
 	// We just loaded it from the disk, so it's up-to-date.
 	block->resetChangedFlag();
+
+	}
+	catch(SerializationError &e)
+	{
+		dstream<<"WARNING: Invalid block data on disk "
+				"(SerializationError). Ignoring."
+				<<std::endl;
+	}
 }
 
 // Gets from master heightmap

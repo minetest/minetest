@@ -670,7 +670,9 @@ void RemoteClient::SendObjectData(
 			s32 sum = (s32)os.tellp() + 2 + (s32)bos.tellp();
 			// break out if data too big
 			if(sum > MAX_OBJECTDATA_SIZE)
-				d = d_max+1;
+			{
+				goto skip_subsequent;
+			}
 			
 			} //try
 			catch(InvalidPositionException &e)
@@ -692,28 +694,7 @@ void RemoteClient::SendObjectData(
 		}
 	}
 
-#if 0
-	/*
-		Write objects
-	*/
-
-	// Write block count
-	writeU16(buf, blockcount);
-	os.write((char*)buf, 2);
-	
-	for(core::map<v3s16, MapBlock*>::Iterator
-			i = blocks.getIterator();
-			i.atEnd() == false; i++)
-	{
-		v3s16 p = i.getNode()->getKey();
-		// Write blockpos
-		writeV3S16(buf, p);
-		os.write((char*)buf, 6);
-		// Write objects
-		MapBlock *block = i.getNode()->getValue();
-		block->serializeObjects(os, serialization_version);
-	}
-#endif
+skip_subsequent:
 
 	// Write block count
 	writeU16(buf, blockcount);

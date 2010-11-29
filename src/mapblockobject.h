@@ -11,6 +11,7 @@
 #include "serialization.h"
 #include "mapnode.h"
 #include "constants.h"
+#include "debug.h"
 
 enum
 {

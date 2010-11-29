@@ -356,9 +356,10 @@ public:
 			
 			// This is a "Standard MeshBuffer",
 			// it's a typedeffed CMeshBuffer<video::S3DVertex>
-			scene::IMeshBuffer *buf = new scene::SMeshBuffer();
+			scene::SMeshBuffer *buf = new scene::SMeshBuffer();
 			// Set material
-			((scene::SMeshBuffer*)buf)->Material = p.material;
+			buf->Material = p.material;
+			//((scene::SMeshBuffer*)buf)->Material = p.material;
 			// Use VBO
 			//buf->setHardwareMappingHint(scene::EHM_STATIC);
 			// Add to mesh

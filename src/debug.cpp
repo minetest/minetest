@@ -84,7 +84,7 @@ DebugStack::DebugStack(threadid_t id)
 
 void DebugStack::print(FILE *file, bool everything)
 {
-	fprintf(file, "BEGIN STACK: Debug stack for thread %x:\n",
+	fprintf(file, "DEBUG STACK FOR THREAD %x:\n",
 			(unsigned int)threadid);
 
 	for(int i=0; i<stack_max_i; i++)
@@ -92,11 +92,10 @@ void DebugStack::print(FILE *file, bool everything)
 		if(i == stack_i && everything == false)
 			continue;
 
-		if(everything == true && i == stack_i)
-			fprintf(file, "END OF STACK.\n"
-					"! Continuing beyond stack end:\n");
-
-		fprintf(file, "#%d  %s\n", i, stack[i]);
+		if(i < stack_i)
+			fprintf(file, "#%d  %s\n", i, stack[i]);
+		else
+			fprintf(file, "(Leftover data: #%d  %s)\n", i, stack[i]);
 	}
 
 	if(stack_i == DEBUG_STACK_SIZE)

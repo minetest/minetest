@@ -21,8 +21,8 @@ CXXFLAGS = -O2 -ffast-math -Wall -g -pipe
 #CXXFLAGS = -O3 -ffast-math -Wall -g
 #CXXFLAGS = -O2 -ffast-math -Wall -g
 
-#FASTCXXFLAGS = -O3 -ffast-math -Wall -fomit-frame-pointer -pipe -funroll-loops -mtune=i686
-FASTCXXFLAGS = -O3 -ffast-math -Wall -fomit-frame-pointer -pipe -funroll-loops -mtune=i686 -fwhole-program
+FASTCXXFLAGS = -O3 -ffast-math -Wall -fomit-frame-pointer -pipe -funroll-loops -mtune=i686
+#FASTCXXFLAGS = -O3 -ffast-math -Wall -fomit-frame-pointer -pipe -funroll-loops -mtune=i686 -fwhole-program
 
 #Default target
 
@@ -53,9 +53,9 @@ all_linux all_win32: $(DESTPATH)
 fast_linux: $(FASTDESTPATH)
 
 $(FASTDESTPATH): $(SOURCES)
-	@#$(CXX) -o $(FASTDESTPATH) $(SOURCES) $(CPPFLAGS) $(FASTCXXFLAGS) $(LDFLAGS) -DUNITTEST_DISABLE
+	$(CXX) -o $(FASTDESTPATH) $(SOURCES) $(CPPFLAGS) $(FASTCXXFLAGS) $(LDFLAGS) -DUNITTEST_DISABLE
 	@# Errno doesn't work ("error: ‘__errno_location’ was not declared in this scope")
-	cat $(SOURCES) | $(CXX) -o $(FASTDESTPATH) -x c++ - -Isrc/ $(CPPFLAGS) $(FASTCXXFLAGS) $(LDFLAGS) -DUNITTEST_DISABLE -DDISABLE_ERRNO
+	@#cat $(SOURCES) | $(CXX) -o $(FASTDESTPATH) -x c++ - -Isrc/ $(CPPFLAGS) $(FASTCXXFLAGS) $(LDFLAGS) -DUNITTEST_DISABLE -DDISABLE_ERRNO
 
 $(DESTPATH): $(OBJECTS)
 	$(CXX) -o $@ $(OBJECTS) $(LDFLAGS)

@@ -33,8 +33,16 @@ void MapBlockObject::setBlockChanged()
 */
 void MovingObject::move(float dtime, v3f acceleration)
 {
-	//m_pos += dtime * 3.0;
-
+	DSTACK("%s: typeid=%i, pos=(%f,%f,%f), speed=(%f,%f,%f)"
+			", dtime=%f, acc=(%f,%f,%f)",
+			__FUNCTION_NAME,
+			getTypeId(),
+			m_pos.X, m_pos.Y, m_pos.Z,
+			m_speed.X, m_speed.Y, m_speed.Z,
+			dtime,
+			acceleration.X, acceleration.Y, acceleration.Z
+			);
+	
 	v3s16 oldpos_i = floatToInt(m_pos);
 	
 	if(m_block->isValidPosition(oldpos_i) == false)
@@ -50,6 +58,16 @@ void MovingObject::move(float dtime, v3f acceleration)
 		m_pos += m_speed * dtime;
 		return;
 	}
+	
+	// Set insane speed to zero
+	// Otherwise there will be divides by zero and other silly stuff
+	if(m_speed.getLength() > 1000.0*BS)
+		m_speed = v3f(0,0,0);
+		
+	// Limit speed to a reasonable value
+	float speed_limit = 20.0*BS;
+	if(m_speed.getLength() > speed_limit)
+		m_speed = m_speed * (speed_limit / m_speed.getLength());
 
 	v3f position = m_pos;
 	v3f oldpos = position;
@@ -471,40 +489,53 @@ MapBlockObject * MapBlockObjectList::get(s16 id)
 
 void MapBlockObjectList::step(float dtime, bool server)
 {
+	DSTACK(__FUNCTION_NAME);
+	
 	JMutexAutoLock lock(m_mutex);
-
+	
 	core::map<s16, bool> ids_to_delete;
 
-	for(core::map<s16, MapBlockObject*>::Iterator
-			i = m_objects.getIterator();
-			i.atEnd() == false; i++)
 	{
-		MapBlockObject *obj = i.getNode()->getValue();
-		
-		if(server)
-		{
-			bool to_delete = obj->serverStep(dtime);
+		DSTACK("%s: stepping objects", __FUNCTION_NAME);
 
-			if(to_delete)
-				ids_to_delete.insert(obj->m_id, true);
-		}
-		else
+		for(core::map<s16, MapBlockObject*>::Iterator
+				i = m_objects.getIterator();
+				i.atEnd() == false; i++)
 		{
-			obj->clientStep(dtime);
+			MapBlockObject *obj = i.getNode()->getValue();
+			
+			DSTACK("%s: stepping object type %i", __FUNCTION_NAME,
+					obj->getTypeId());
+
+			if(server)
+			{
+				bool to_delete = obj->serverStep(dtime);
+
+				if(to_delete)
+					ids_to_delete.insert(obj->m_id, true);
+			}
+			else
+			{
+				obj->clientStep(dtime);
+			}
 		}
 	}
 
-	// Delete objects in delete queue
-	for(core::map<s16, bool>::Iterator
-			i = ids_to_delete.getIterator();
-			i.atEnd() == false; i++)
 	{
-		s16 id = i.getNode()->getKey();
+		DSTACK("%s: deleting objects", __FUNCTION_NAME);
 
-		MapBlockObject *obj = m_objects[id];
-		obj->removeFromScene();
-		delete obj;
-		m_objects.remove(id);
+		// Delete objects in delete queue
+		for(core::map<s16, bool>::Iterator
+				i = ids_to_delete.getIterator();
+				i.atEnd() == false; i++)
+		{
+			s16 id = i.getNode()->getKey();
+
+			MapBlockObject *obj = m_objects[id];
+			obj->removeFromScene();
+			delete obj;
+			m_objects.remove(id);
+		}
 	}
 	
 	/*
@@ -513,36 +544,42 @@ void MapBlockObjectList::step(float dtime, bool server)
 
 	if(server == false)
 		return;
-
-	for(core::map<s16, MapBlockObject*>::Iterator
-			i = m_objects.getIterator();
-			i.atEnd() == false; i++)
+	
 	{
-		MapBlockObject *obj = i.getNode()->getValue();
+		DSTACK("%s: object wrap loop", __FUNCTION_NAME);
 
-		v3s16 pos_i = floatToInt(obj->m_pos);
-
-		if(m_block->isValidPosition(pos_i))
+		for(core::map<s16, MapBlockObject*>::Iterator
+				i = m_objects.getIterator();
+				i.atEnd() == false; i++)
 		{
-			// No wrap
-			continue;
+			MapBlockObject *obj = i.getNode()->getValue();
+
+			v3s16 pos_i = floatToInt(obj->m_pos);
+
+			if(m_block->isValidPosition(pos_i))
+			{
+				// No wrap
+				continue;
+			}
+
+			bool impossible = wrapObject(obj);
+
+			if(impossible)
+			{
+				// No wrap
+				continue;
+			}
+
+			// Restart find
+			i = m_objects.getIterator();
 		}
-
-		bool impossible = wrapObject(obj);
-
-		if(impossible)
-		{
-			// No wrap
-			continue;
-		}
-
-		// Restart find
-		i = m_objects.getIterator();
 	}
 }
 
 bool MapBlockObjectList::wrapObject(MapBlockObject *object)
 {
+	DSTACK(__FUNCTION_NAME);
+	
 	// No lock here; this is called so that the lock is already locked.
 	//JMutexAutoLock lock(m_mutex);
 
