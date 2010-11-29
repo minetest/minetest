@@ -8,8 +8,11 @@
 #include "common_irrlicht.h"
 #include "debug.h"
 #include "strfnd.h"
+#include "exceptions.h"
 #include <iostream>
+#include <fstream>
 #include <string>
+#include <sstream>
 
 extern const v3s16 g_26dirs[26];
 
@@ -612,6 +615,158 @@ inline s32 stoi(std::string s, s32 min, s32 max)
 		i = max;
 	return i;
 }
+
+inline s32 stoi(std::string s)
+{
+	return atoi(s.c_str());
+}
+
+/*
+	Config stuff
+*/
+
+class Settings
+{
+public:
+
+	// Returns false on EOF
+	bool parseConfigObject(std::istream &is)
+	{
+		if(is.eof())
+			return false;
+		
+		// NOTE: This function will be expanded to allow multi-line settings
+		std::string line;
+		std::getline(is, line);
+		//dstream<<"got line: \""<<line<<"\""<<std::endl;
+
+		std::string trimmedline = trim(line);
+		
+		// Ignore comments
+		if(trimmedline[0] == '#')
+			return true;
+
+		//dstream<<"trimmedline=\""<<trimmedline<<"\""<<std::endl;
+
+		Strfnd sf(trim(line));
+
+		std::string name = sf.next("=");
+		name = trim(name);
+
+		if(name == "")
+			return true;
+		
+		std::string value = sf.next("\n");
+		value = trim(value);
+
+		dstream<<"Config name=\""<<name<<"\" value=\""
+				<<value<<"\""<<std::endl;
+		
+		m_settings[name] = value;
+		
+		return true;
+	}
+
+	// Returns true on success
+	bool readConfigFile(const char *filename)
+	{
+		std::ifstream is(filename);
+		if(is.good() == false)
+		{
+			dstream<<"Error opening configuration file: "
+					<<filename<<std::endl;
+			return false;
+		}
+
+		dstream<<"Parsing configuration file: "
+				<<filename<<std::endl;
+				
+		while(parseConfigObject(is));
+		
+		return true;
+	}
+
+	void set(std::string name, std::string value)
+	{
+		m_settings[name] = value;
+	}
+
+	std::string get(std::string name)
+	{
+		core::map<std::string, std::string>::Node *n;
+		n = m_settings.find(name);
+		if(n == NULL)
+			throw SettingNotFoundException("Setting not found");
+
+		return n->getValue();
+	}
+
+	bool getBool(std::string name)
+	{
+		return is_yes(get(name));
+	}
+	
+	// Asks if empty
+	bool getBoolAsk(std::string name, std::string question, bool def)
+	{
+		std::string s = get(name);
+		if(s != "")
+			return is_yes(s);
+		
+		char templine[10];
+		std::cout<<question<<" [y/N]: ";
+		std::cin.getline(templine, 10);
+		s = templine;
+
+		if(s == "")
+			return def;
+
+		return is_yes(s);
+	}
+
+	float getFloat(std::string name)
+	{
+		float f;
+		std::istringstream vis(get(name));
+		vis>>f;
+		return f;
+	}
+
+	u16 getU16(std::string name)
+	{
+		return stoi(get(name), 0, 65535);
+	}
+
+	u16 getU16Ask(std::string name, std::string question, u16 def)
+	{
+		std::string s = get(name);
+		if(s != "")
+			return stoi(s, 0, 65535);
+		
+		char templine[10];
+		std::cout<<question<<" ["<<def<<"]: ";
+		std::cin.getline(templine, 10);
+		s = templine;
+
+		if(s == "")
+			return def;
+
+		return stoi(s, 0, 65535);
+	}
+
+	s16 getS16(std::string name)
+	{
+		return stoi(get(name), -32768, 32767);
+	}
+
+	s32 getS32(std::string name)
+	{
+		return stoi(get(name));
+	}
+
+private:
+	core::map<std::string, std::string> m_settings;
+};
 
 #endif
 

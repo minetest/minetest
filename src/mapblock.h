@@ -38,7 +38,9 @@ enum
 {
 	NODECONTAINER_ID_MAPBLOCK,
 	NODECONTAINER_ID_MAPSECTOR,
-	NODECONTAINER_ID_MAP
+	NODECONTAINER_ID_MAP,
+	NODECONTAINER_ID_MAPBLOCKCACHE,
+	NODECONTAINER_ID_VOXELMANIPULATOR,
 };
 
 class NodeContainer
@@ -243,6 +245,35 @@ public:
 	void setNode(v3s16 p, MapNode & n)
 	{
 		setNode(p.X, p.Y, p.Z, n);
+	}
+
+	/*
+		Non-checking variants of the above
+	*/
+
+	MapNode getNodeNoCheck(s16 x, s16 y, s16 z)
+	{
+		if(data == NULL)
+			throw InvalidPositionException();
+		return data[z*MAP_BLOCKSIZE*MAP_BLOCKSIZE + y*MAP_BLOCKSIZE + x];
+	}
+	
+	MapNode getNodeNoCheck(v3s16 p)
+	{
+		return getNodeNoCheck(p.X, p.Y, p.Z);
+	}
+	
+	void setNodeNoCheck(s16 x, s16 y, s16 z, MapNode & n)
+	{
+		if(data == NULL)
+			throw InvalidPositionException();
+		data[z*MAP_BLOCKSIZE*MAP_BLOCKSIZE + y*MAP_BLOCKSIZE + x] = n;
+		setChangedFlag();
+	}
+	
+	void setNodeNoCheck(v3s16 p, MapNode & n)
+	{
+		setNodeNoCheck(p.X, p.Y, p.Z, n);
 	}
 
 	/*

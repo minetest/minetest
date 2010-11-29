@@ -164,7 +164,9 @@ void UDPSocket::Bind(unsigned short port)
 
     if(bind(m_handle, (const sockaddr*)&address, sizeof(sockaddr_in)) < 0)
     {
+#ifndef DISABLE_ERRNO
 		dstream<<(int)m_handle<<": Bind failed: "<<strerror(errno)<<std::endl;
+#endif
 		throw SocketException("Failed to bind socket");
     }
 }
@@ -291,7 +293,9 @@ bool UDPSocket::WaitData(int timeout_ms)
 	}
 	else if(result < 0){
 		// Error
+#ifndef DISABLE_ERRNO
 		dstream<<(int)m_handle<<": Select failed: "<<strerror(errno)<<std::endl;
+#endif
 #ifdef _WIN32
 		dstream<<(int)m_handle<<": WSAGetLastError()="<<WSAGetLastError()<<std::endl;
 #endif

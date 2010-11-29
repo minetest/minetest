@@ -178,7 +178,10 @@ void * EmergeThread::Thread()
 				modified_blocks.insert(block->getPos(), block);
 			}
 			
-			//TimeTaker timer("** updateLighting", g_device);
+			/*dstream<<"lighting "<<lighting_invalidated_blocks.size()
+					<<" blocks"<<std::endl;
+			TimeTaker timer("** updateLighting", g_device);*/
+			
 			// Update lighting without locking the environment mutex,
 			// add modified blocks to changed blocks
 			map.updateLighting(lighting_invalidated_blocks, modified_blocks);
@@ -222,11 +225,11 @@ void * EmergeThread::Thread()
 				client->SetBlocksNotSent(modified_blocks);
 			}
 			
-			if(q->peer_ids.find(client->peer_id) != NULL)
+			/*if(q->peer_ids.find(client->peer_id) != NULL)
 			{
 				// Decrement emerge queue count of client
 				client->BlockEmerged();
-			}
+			}*/
 		}
 		
 	}
@@ -246,282 +249,6 @@ void * EmergeThread::Thread()
 	return NULL;
 }
 
-#if 0
-void RemoteClient::SendBlocks(Server *server, float dtime)
-{
-	DSTACK(__FUNCTION_NAME);
-	
-	/*
-		Find what blocks to send to the client next, and send them.
-
-		Throttling is based on limiting the amount of blocks "flying"
-		at a given time.
-	*/
-
-	// Can't send anything without knowing version
-	if(serialization_version == SER_FMT_VER_INVALID)
-	{
-		dstream<<"RemoteClient::SendBlocks(): Not sending, no version."
-				<<std::endl;
-		return;
-	}
-
-	{
-		JMutexAutoLock lock(m_blocks_sending_mutex);
-		
-		if(m_blocks_sending.size() >= MAX_SIMULTANEOUS_BLOCK_SENDS)
-		{
-			//dstream<<"Not sending any blocks, Queue full."<<std::endl;
-			return;
-		}
-	}
-
-	Player *player = server->m_env.getPlayer(peer_id);
-
-	v3f playerpos = player->getPosition();
-	v3f playerspeed = player->getSpeed();
-
-	v3s16 center_nodepos = floatToInt(playerpos);
-
-	v3s16 center = getNodeBlockPos(center_nodepos);
-
-	/*
-		Get the starting value of the block finder radius.
-	*/
-	s16 last_nearest_unsent_d;
-	s16 d_start;
-	{
-		JMutexAutoLock lock(m_blocks_sent_mutex);
-		
-		if(m_last_center != center)
-		{
-			m_nearest_unsent_d = 0;
-			m_last_center = center;
-		}
-
-		static float reset_counter = 0;
-		reset_counter += dtime;
-		if(reset_counter > 5.0)
-		{
-			reset_counter = 0;
-			m_nearest_unsent_d = 0;
-		}
-
-		last_nearest_unsent_d = m_nearest_unsent_d;
-		
-		d_start = m_nearest_unsent_d;
-	}
-
-	u16 maximum_simultaneous_block_sends = MAX_SIMULTANEOUS_BLOCK_SENDS;
-
-	{
-		SharedPtr<JMutexAutoLock> lock(m_time_from_building.getLock());
-		m_time_from_building.m_value += dtime;
-		/*
-			Check the time from last addNode/removeNode.
-			Decrease send rate if player is building stuff.
-		*/
-		if(m_time_from_building.m_value
-				< FULL_BLOCK_SEND_ENABLE_MIN_TIME_FROM_BUILDING)
-		{
-			maximum_simultaneous_block_sends
-				= LIMITED_MAX_SIMULTANEOUS_BLOCK_SENDS;
-		}
-	}
-
-	// Serialization version used
-	//u8 ser_version = serialization_version;
-
-	//bool has_incomplete_blocks = false;
-	
-	/*
-		TODO: Get this from somewhere
-	*/
-	//s16 d_max = 7;
-	s16 d_max = 8;
-
-	//TODO: Get this from somewhere (probably a bigger value)
-	s16 d_max_gen = 5;
-	
-	//dstream<<"Starting from "<<d_start<<std::endl;
-
-	for(s16 d = d_start; d <= d_max; d++)
-	{
-		//dstream<<"RemoteClient::SendBlocks(): d="<<d<<std::endl;
-		
-		//if(has_incomplete_blocks == false)
-		{
-			JMutexAutoLock lock(m_blocks_sent_mutex);
-			/*
-				If m_nearest_unsent_d was changed by the EmergeThread
-				(it can change it to 0 through SetBlockNotSent),
-				update our d to it.
-				Else update m_nearest_unsent_d
-			*/
-			if(m_nearest_unsent_d != last_nearest_unsent_d)
-			{
-				d = m_nearest_unsent_d;
-			}
-			else
-			{
-				m_nearest_unsent_d = d;
-			}
-			last_nearest_unsent_d = m_nearest_unsent_d;
-		}
-
-		/*
-			Get the border/face dot coordinates of a "d-radiused"
-			box
-		*/
-		core::list<v3s16> list;
-		getFacePositions(list, d);
-		
-		core::list<v3s16>::Iterator li;
-		for(li=list.begin(); li!=list.end(); li++)
-		{
-			v3s16 p = *li + center;
-			
-			/*
-				Send throttling
-				- Don't allow too many simultaneous transfers
-
-				Also, don't send blocks that are already flying.
-			*/
-			{
-				JMutexAutoLock lock(m_blocks_sending_mutex);
-				
-				if(m_blocks_sending.size()
-						>= maximum_simultaneous_block_sends)
-				{
-					/*dstream<<"Not sending more blocks. Queue full. "
-							<<m_blocks_sending.size()
-							<<std::endl;*/
-					return;
-				}
-
-				if(m_blocks_sending.find(p) != NULL)
-					continue;
-			}
-			
-			/*
-				Do not go over-limit
-			*/
-			if(p.X < -MAP_GENERATION_LIMIT / MAP_BLOCKSIZE
-			|| p.X > MAP_GENERATION_LIMIT / MAP_BLOCKSIZE
-			|| p.Y < -MAP_GENERATION_LIMIT / MAP_BLOCKSIZE
-			|| p.Y > MAP_GENERATION_LIMIT / MAP_BLOCKSIZE
-			|| p.Z < -MAP_GENERATION_LIMIT / MAP_BLOCKSIZE
-			|| p.Z > MAP_GENERATION_LIMIT / MAP_BLOCKSIZE)
-				continue;
-
-			bool generate = d <= d_max_gen;
-		
-			// Limit the generating area vertically to half
-			if(abs(p.Y - center.Y) > d_max_gen / 2)
-				generate = false;
-			
-			/*
-				Don't send already sent blocks
-			*/
-			{
-				JMutexAutoLock lock(m_blocks_sent_mutex);
-				
-				if(m_blocks_sent.find(p) != NULL)
-					continue;
-			}
-					
-			/*
-				Check if map has this block
-			*/
-			MapBlock *block = NULL;
-			try
-			{
-				block = server->m_env.getMap().getBlockNoCreate(p);
-			}
-			catch(InvalidPositionException &e)
-			{
-			}
-			
-			bool surely_not_found_on_disk = false;
-			if(block != NULL)
-			{
-				/*if(block->isIncomplete())
-				{
-					has_incomplete_blocks = true;
-					continue;
-				}*/
-
-				if(block->isDummy())
-				{
-					surely_not_found_on_disk = true;
-				}
-			}
-
-			/*
-				If block has been marked to not exist on disk (dummy)
-				and generating new ones is not wanted, skip block. TODO
-			*/
-			if(generate == false && surely_not_found_on_disk == true)
-			{
-				// get next one.
-				continue;
-			}
-
-			/*
-				Add inexistent block to emerge queue.
-			*/
-			if(block == NULL || surely_not_found_on_disk)
-			{
-				// Block not found.
-				SharedPtr<JMutexAutoLock> lock
-						(m_num_blocks_in_emerge_queue.getLock());
-				
-				//TODO: Get value from somewhere
-				//TODO: Balance between clients
-				//if(server->m_emerge_queue.size() < 1)
-
-				// Allow only one block in emerge queue
-				if(m_num_blocks_in_emerge_queue.m_value == 0)
-				{
-					// Add it to the emerge queue and trigger the thread
-					
-					u8 flags = 0;
-					if(generate == false)
-						flags |= TOSERVER_GETBLOCK_FLAG_OPTIONAL;
-					
-					{
-						m_num_blocks_in_emerge_queue.m_value++;
-					}
-
-					server->m_emerge_queue.addBlock(peer_id, p, flags);
-					server->m_emergethread.trigger();
-				}
-				
-				// get next one.
-				continue;
-			}
-
-			/*
-				Send block
-			*/
-			
-			/*dstream<<"RemoteClient::SendBlocks(): d="<<d<<", p="
-				<<"("<<p.X<<","<<p.Y<<","<<p.Z<<")"
-				<<" sending queue size: "<<m_blocks_sending.size()<<std::endl;*/
-
-			server->SendBlockNoLock(peer_id, block, serialization_version);
-			
-			/*
-				Add to history
-			*/
-			SentBlock(p);
-		}
-	}
-
-	// Don't add anything here. The loop breaks by returning.
-}
-#endif // backup of SendBlocks
-
 void RemoteClient::GetNextBlocks(Server *server, float dtime,
 		core::array<PrioritySortedBlockTransfer> &dest)
 {
@@ -531,7 +258,8 @@ void RemoteClient::GetNextBlocks(Server *server, float dtime,
 	{
 		JMutexAutoLock lock(m_blocks_sending_mutex);
 		
-		if(m_blocks_sending.size() >= MAX_SIMULTANEOUS_BLOCK_SENDS)
+		if(m_blocks_sending.size() >= g_settings.getU16
+				("max_simultaneous_block_sends_per_client"))
 		{
 			//dstream<<"Not sending any blocks, Queue full."<<std::endl;
 			return;
@@ -574,15 +302,17 @@ void RemoteClient::GetNextBlocks(Server *server, float dtime,
 		d_start = m_nearest_unsent_d;
 	}
 
-	u16 maximum_simultaneous_block_sends = MAX_SIMULTANEOUS_BLOCK_SENDS;
+	u16 maximum_simultaneous_block_sends = g_settings.getU16
+			("max_simultaneous_block_sends_per_client");
 
+	/*
+		Check the time from last addNode/removeNode.
+		
+		Decrease send rate if player is building stuff.
+	*/
 	{
 		SharedPtr<JMutexAutoLock> lock(m_time_from_building.getLock());
 		m_time_from_building.m_value += dtime;
-		/*
-			Check the time from last addNode/removeNode.
-			Decrease send rate if player is building stuff.
-		*/
 		if(m_time_from_building.m_value
 				< FULL_BLOCK_SEND_ENABLE_MIN_TIME_FROM_BUILDING)
 		{
@@ -646,9 +376,11 @@ void RemoteClient::GetNextBlocks(Server *server, float dtime,
 			/*
 				Send throttling
 				- Don't allow too many simultaneous transfers
+				- EXCEPT when the blocks are very close
 
 				Also, don't send blocks that are already flying.
 			*/
+			if(d >= BLOCK_SEND_DISABLE_LIMITS_MAX_D)
 			{
 				JMutexAutoLock lock(m_blocks_sending_mutex);
 				
@@ -722,7 +454,7 @@ void RemoteClient::GetNextBlocks(Server *server, float dtime,
 
 			/*
 				If block has been marked to not exist on disk (dummy)
-				and generating new ones is not wanted, skip block. TODO
+				and generating new ones is not wanted, skip block.
 			*/
 			if(generate == false && surely_not_found_on_disk == true)
 			{
@@ -735,16 +467,12 @@ void RemoteClient::GetNextBlocks(Server *server, float dtime,
 			*/
 			if(block == NULL || surely_not_found_on_disk)
 			{
-				// Block not found.
-				SharedPtr<JMutexAutoLock> lock
-						(m_num_blocks_in_emerge_queue.getLock());
+				/*SharedPtr<JMutexAutoLock> lock
+						(m_num_blocks_in_emerge_queue.getLock());*/
 				
 				//TODO: Get value from somewhere
-				//TODO: Balance between clients
-				//if(server->m_emerge_queue.size() < 1)
-
 				// Allow only one block in emerge queue
-				if(m_num_blocks_in_emerge_queue.m_value == 0)
+				if(server->m_emerge_queue.peerItemCount(peer_id) < 1)
 				{
 					// Add it to the emerge queue and trigger the thread
 					
@@ -752,10 +480,6 @@ void RemoteClient::GetNextBlocks(Server *server, float dtime,
 					if(generate == false)
 						flags |= TOSERVER_GETBLOCK_FLAG_OPTIONAL;
 					
-					{
-						m_num_blocks_in_emerge_queue.m_value++;
-					}
-
 					server->m_emerge_queue.addBlock(peer_id, p, flags);
 					server->m_emergethread.trigger();
 				}
@@ -880,7 +604,7 @@ void RemoteClient::SendObjectData(
 	v3s16 center = getNodeBlockPos(center_nodepos);
 
 	//s16 d_max = ACTIVE_OBJECT_D_BLOCKS;
-	s16 d_max = server->m_active_object_range;
+	s16 d_max = g_settings.getS16("active_object_range");
 	
 	// Number of blocks whose objects were written to bos
 	u16 blockcount = 0;
@@ -956,9 +680,9 @@ void RemoteClient::SendObjectData(
 				// Fetch the block only if it is on disk.
 				
 				// Grab and increment counter
-				SharedPtr<JMutexAutoLock> lock
+				/*SharedPtr<JMutexAutoLock> lock
 						(m_num_blocks_in_emerge_queue.getLock());
-				m_num_blocks_in_emerge_queue.m_value++;
+				m_num_blocks_in_emerge_queue.m_value++;*/
 				
 				// Add to queue as an anonymous fetch from disk
 				u8 flags = TOSERVER_GETBLOCK_FLAG_OPTIONAL;
@@ -1072,12 +796,12 @@ void RemoteClient::SetBlocksNotSent(core::map<v3s16, MapBlock*> &blocks)
 	}
 }
 
-void RemoteClient::BlockEmerged()
+/*void RemoteClient::BlockEmerged()
 {
 	SharedPtr<JMutexAutoLock> lock(m_num_blocks_in_emerge_queue.getLock());
 	assert(m_num_blocks_in_emerge_queue.m_value > 0);
 	m_num_blocks_in_emerge_queue.m_value--;
-}
+}*/
 
 /*void RemoteClient::RunSendingTimeouts(float dtime, float timeout)
 {
@@ -1145,19 +869,13 @@ u32 PIChecksum(core::list<PlayerInfo> &l)
 
 Server::Server(
 		std::string mapsavedir,
-		bool creative_mode,
 		HMParams hm_params,
-		MapParams map_params,
-		float objectdata_interval,
-		u16 active_object_range
+		MapParams map_params
 	):
 	m_env(new ServerMap(mapsavedir, hm_params, map_params), dout_server),
 	m_con(PROTOCOL_ID, 512, CONNECTION_TIMEOUT, this),
 	m_thread(this),
-	m_emergethread(this),
-	m_creative_mode(creative_mode),
-	m_objectdata_interval(objectdata_interval),
-	m_active_object_range(active_object_range)
+	m_emergethread(this)
 {
 	m_env_mutex.Init();
 	m_con_mutex.Init();
@@ -1196,7 +914,7 @@ void Server::start(unsigned short port)
 	m_thread.stop();
 	
 	// Initialize connection
-	m_con.setTimeoutMs(50);
+	m_con.setTimeoutMs(30);
 	m_con.Serve(port);
 
 	// Start thread
@@ -1287,7 +1005,7 @@ void Server::AsyncRunStep()
 
 	// Run time- and client- related stuff
 	// NOTE: If you intend to add something here, check that it
-	// doesn't fit in RemoteClient::SendBlocks for example.
+	// doesn't fit in RemoteClient::GetNextBlocks for example.
 	/*{
 		// Clients are behind connection lock
 		JMutexAutoLock lock(m_con_mutex);
@@ -1309,7 +1027,7 @@ void Server::AsyncRunStep()
 	{
 		static float counter = 0.0;
 		counter += dtime;
-		if(counter >= m_objectdata_interval)
+		if(counter >= g_settings.getFloat("objectdata_interval"))
 		{
 			JMutexAutoLock lock1(m_env_mutex);
 			JMutexAutoLock lock2(m_con_mutex);
@@ -1318,9 +1036,22 @@ void Server::AsyncRunStep()
 			counter = 0.0;
 		}
 	}
-
+	
+	// Trigger emergethread (it gets somehow gets to a
+	// non-triggered but bysy state sometimes)
 	{
-		// Save map
+		static float counter = 0.0;
+		counter += dtime;
+		if(counter >= 2.0)
+		{
+			counter = 0.0;
+			
+			m_emergethread.trigger();
+		}
+	}
+
+	// Save map
+	{
 		static float counter = 0.0;
 		counter += dtime;
 		if(counter >= SERVER_MAP_SAVE_INTERVAL)
@@ -1619,7 +1350,7 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 		// Left click
 		if(button == 0)
 		{
-			if(m_creative_mode == false)
+			if(g_settings.getBool("creative_mode") == false)
 			{
 			
 				// Skip if inventory has no free space
@@ -1684,8 +1415,6 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 				{
 					return;
 				}
-				// Otherwise remove it
-				m_env.getMap().removeNodeAndUpdate(p_under, modified_blocks);
 			}
 			catch(InvalidPositionException &e)
 			{
@@ -1707,13 +1436,19 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 			// Send as reliable
 			m_con.SendToAll(0, reply, true);
 			
-			if(m_creative_mode == false)
+			if(g_settings.getBool("creative_mode") == false)
 			{
 				// Add to inventory and send inventory
 				InventoryItem *item = new MaterialItem(material, 1);
 				player->inventory.addItem(item);
 				SendInventory(player->peer_id);
 			}
+
+			/*
+				Remove the node
+				(this takes some time so it is done after the quick stuff)
+			*/
+			m_env.getMap().removeNodeAndUpdate(p_under, modified_blocks);
 
 		} // button == 0
 		/*
@@ -1744,9 +1479,6 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 					MapNode n2 = m_env.getMap().getNode(p_over);
 					if(n2.d != MATERIAL_AIR)
 						return;
-
-					core::map<v3s16, MapBlock*> modified_blocks;
-					m_env.getMap().addNodeAndUpdate(p_over, n, modified_blocks);
 				}
 				catch(InvalidPositionException &e)
 				{
@@ -1758,7 +1490,7 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 				// Reset build time counter
 				getClient(peer->id)->m_time_from_building.set(0.0);
 				
-				if(m_creative_mode == false)
+				if(g_settings.getBool("creative_mode") == false)
 				{
 					// Remove from inventory and send inventory
 					if(mitem->getCount() == 1)
@@ -1779,6 +1511,14 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 				n.serialize(&reply[8], peer_ser_ver);
 				// Send as reliable
 				m_con.SendToAll(0, reply, true);
+				
+				/*
+					Add node.
+
+					This takes some time so it is done after the quick stuff
+				*/
+				core::map<v3s16, MapBlock*> modified_blocks;
+				m_env.getMap().addNodeAndUpdate(p_over, n, modified_blocks);
 			}
 			/*
 				Handle block object items
@@ -1828,7 +1568,7 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 
 				//dout_server<<"Placed object"<<std::endl;
 
-				if(m_creative_mode == false)
+				if(g_settings.getBool("creative_mode") == false)
 				{
 					// Remove from inventory and send inventory
 					player->inventory.deleteItem(item_i);
@@ -2168,7 +1908,7 @@ void Server::peerAdded(con::Peer *peer)
 			Add stuff to inventory
 		*/
 		
-		if(m_creative_mode)
+		if(g_settings.getBool("creative_mode"))
 		{
 			// Give all materials
 			assert(USEFUL_MATERIAL_COUNT <= PLAYER_INVENTORY_SIZE);
@@ -2327,35 +2067,6 @@ void Server::SendInventory(u16 peer_id)
 	m_con.Send(peer_id, 0, data, true);
 }
 
-#if 0
-void Server::SendBlocks(float dtime)
-{
-	DSTACK(__FUNCTION_NAME);
-	//dstream<<"Server::SendBlocks(): BEGIN"<<std::endl;
-
-	JMutexAutoLock envlock(m_env_mutex);
-	JMutexAutoLock conlock(m_con_mutex);
-
-	for(core::map<u16, RemoteClient*>::Iterator
-		i = m_clients.getIterator();
-		i.atEnd() == false; i++)
-	{
-		RemoteClient *client = i.getNode()->getValue();
-		assert(client->peer_id == i.getNode()->getKey());
-		
-		if(client->serialization_version == SER_FMT_VER_INVALID)
-			continue;
-
-		//dstream<<"Server::SendBlocks(): sending blocks for client "<<client->peer_id<<std::endl;
-		
-		//u16 peer_id = client->peer_id;
-		client->SendBlocks(this, dtime);
-	}
-
-	//dstream<<"Server::SendBlocks(): END"<<std::endl;
-}
-#endif
-
 void Server::SendBlocks(float dtime)
 {
 	DSTACK(__FUNCTION_NAME);
@@ -2390,8 +2101,9 @@ void Server::SendBlocks(float dtime)
 
 	for(u32 i=0; i<queue.size(); i++)
 	{
-		//TODO: Calculate value dynamically
-		if(total_sending >= MAX_SIMULTANEOUS_BLOCK_SENDS_SERVER_TOTAL)
+		//TODO: Calculate limit dynamically
+		if(total_sending >= g_settings.getS32
+				("max_simultaneous_block_sends_server_total"))
 			break;
 		
 		PrioritySortedBlockTransfer q = queue[i];

@@ -1,6 +1,5 @@
 #include "test.h"
 #include "common_irrlicht.h"
-
 #include "debug.h"
 #include "map.h"
 #include "player.h"
@@ -10,6 +9,7 @@
 #include "connection.h"
 #include "utility.h"
 #include "serialization.h"
+#include "voxel.h"
 #include <sstream>
 
 #ifdef _WIN32
@@ -122,6 +122,45 @@ struct TestMapNode
 		assert(n.light_propagates() == true);
 		n.d = 0;
 		assert(n.light_propagates() == false);
+	}
+};
+
+struct TestVoxelManipulator
+{
+	void Run()
+	{
+		VoxelArea a(v3s16(-1,-1,-1), v3s16(1,1,1));
+		assert(a.index(0,0,0) == 1*3*3 + 1*3 + 1);
+		assert(a.index(-1,-1,-1) == 0);
+
+		VoxelManipulator v;
+
+		v.print(dstream);
+
+		dstream<<"*** Setting (-1,0,-1)=2 ***"<<std::endl;
+
+		//v[v3s16(-1,0,-1)] = MapNode(2);
+		v[v3s16(-1,0,-1)].d = 2;
+
+		v.print(dstream);
+
+ 		assert(v[v3s16(-1,0,-1)].d == 2);
+
+		dstream<<"*** Reading from inexistent (0,0,-1) ***"<<std::endl;
+
+		assert(v[v3s16(0,0,-1)].d == MATERIAL_IGNORE);
+
+		v.print(dstream);
+
+		dstream<<"*** Adding area ***"<<std::endl;
+
+		v.addArea(a);
+		
+		v.print(dstream);
+
+		assert(v[v3s16(-1,0,-1)].d == 2);
+		assert(v[v3s16(0,1,1)].d == MATERIAL_IGNORE);
+		
 	}
 };
 
@@ -906,6 +945,7 @@ void run_tests()
 	TEST(TestUtilities);
 	TEST(TestCompress);
 	TEST(TestMapNode);
+	TEST(TestVoxelManipulator);
 	TEST(TestMapBlock);
 	TEST(TestMapSector);
 	TEST(TestHeightmap);

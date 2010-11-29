@@ -21,11 +21,15 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 =============================== NOTES ==============================
 
 NOTE: VBO cannot be turned on for fast-changing stuff because there
-      is an apparanet memory leak in irrlicht when using it
+      is an apparanet memory leak in irrlicht when using it (not sure)
+
+NOTE: iostream.imbue(std::locale("C")) is very slow
+NOTE: Global locale is now set at initialization
 
 SUGGESTION: add a second lighting value to the MS nibble of param of
 	air to tell how bright the air node is when there is no sunlight.
 	When day changes to night, these two values can be interpolated.
+
 TODO: Fix address to be ipv6 compatible
 
 TODO: ESC Pause mode in which the cursor is not kept at the center of window.
@@ -93,9 +97,7 @@ TODO: Expose Connection's seqnums and ACKs to server and client.
 	  - This also enables server to check if client has received the
 	    most recent block sent, for example.
 
-SUGG: Add a time value to the param of footstepped grass and check it
-      against a global timer when a block is accessed, to make old
-	  steps fade away.
+TODO: Add a sane bandwidth throttling system to Connection
 
 FIXME: There still are *some* tiny glitches in lighting as seen from
        the client side. The server calculates them right but sometimes
@@ -105,8 +107,9 @@ FIXME: There still are *some* tiny glitches in lighting as seen from
 	   the sender sends the block as it was before emerging?
 TODO: How about adding a "revision" field to MapBlocks?
 
-TODO: More fine-grained control of client's dumping of blocks from
+SUGG: More fine-grained control of client's dumping of blocks from
       memory
+	  - ...What does this mean in the first place?
 
 TODO: Somehow prioritize the sending of blocks and combine the block
       send queue lengths
@@ -129,9 +132,6 @@ FIXME: There is a bug that sometimes the EmergeThread bumps to
 SUGG: Make client send GOTBLOCKS before updating meshes
 
 TODO: Server to load starting inventory from disk
-
-NOTE: iostream.imbue(std::locale("C")) is very slow
-NOTE: Global locale is now set at initialization
 
 TODO: PLayers to only be hidden when the client quits.
 TODO: - Players to be saved on disk, with inventory
@@ -158,11 +158,17 @@ Block object server side:
       - A "near blocks" buffer, in which some nearby blocks are stored.
 	  - For all blocks in the buffer, objects are stepped(). This
 	    means they are active.
-      - TODO All blocks going in and out of the buffer are recorded.
-	    - TODO For outgoing blocks, a timestamp is written.
-	    - TODO For incoming blocks, the time difference is calculated and
+	  - TODO: A global active buffer is needed for the server
+      - TODO: All blocks going in and out of the buffer are recorded.
+	    - TODO: For outgoing blocks, a timestamp is written.
+	    - TODO: For incoming blocks, the time difference is calculated and
 	      objects are stepped according to it.
 TODO: A timestamp to blocks
+
+SUGG: Add a time value to the param of footstepped grass and check it
+      against a global timer when a block is accessed, to make old
+	  steps fade away.
+
 
 TODO: Add config parameters for server's sending and generating distance
 
@@ -185,12 +191,16 @@ SUGG: Split MapBlockObject serialization to to-client and to-disk
       - This will allow saving ages of rats on disk but not sending
 	    them to clients
 
-TODO: Fix the long-lived Server Block Emerge Jam bug
-      - Is it related to the client deleting blocks?
+TODO: Get rid of GotSplitPacketException
+
+Before release:
+
+TODO: Check what goes wrong with caching map to disk (Kray)
 
 Doing now:
 ======================================================================
 
+TODO: Implement lighting using VoxelManipulator
 
 ======================================================================
 
@@ -202,7 +212,7 @@ Doing now:
 	the starting place to a static direction.
 
 	This allows one to move around with the player and see what
-	is actually drawn behind solid things etc.
+	is actually drawn behind solid things and behind the player.
 */
 #define FIELD_OF_VIEW_TEST 0
 
@@ -265,7 +275,8 @@ const char *g_material_filenames[MATERIALS_COUNT] =
 	"../data/tree.png",
 	"../data/leaves.png",
 	"../data/grass_footsteps.png",
-	"../data/mese.png"
+	"../data/mese.png",
+	"../data/mud.png"
 };
 
 video::SMaterial g_materials[MATERIALS_COUNT];
@@ -296,28 +307,39 @@ bool g_viewing_range_all = false;
 	These are loaded from the config file.
 */
 
-std::string g_dedicated_server;
+Settings g_settings;
 
-// Client stuff
-float g_wanted_fps = FPS_DEFAULT_WANTED;
-float g_fps_max = FPS_DEFAULT_MAX;
-s16 g_viewing_range_nodes_max = 300;
-s16 g_viewing_range_nodes_min = 20;
-std::string g_screenW;
-std::string g_screenH;
-std::string g_host_game;
-std::string g_port;
-std::string g_address;
-std::string g_name;
-bool g_random_input = false;
-float g_client_delete_unused_sectors_timeout = 1200;
+// Sets default settings
+void set_default_settings()
+{
+	g_settings.set("dedicated_server", "");
 
-// Server stuff
-bool g_creative_mode = false;
-HMParams g_hm_params;
-MapParams g_map_params;
-float g_objectdata_interval = 0.2;
-u16 g_active_object_range = 2;
+	// Client stuff
+	g_settings.set("wanted_fps", "30");
+	g_settings.set("fps_max", "60");
+	g_settings.set("viewing_range_nodes_max", "300");
+	g_settings.set("viewing_range_nodes_min", "20");
+	g_settings.set("screenW", "");
+	g_settings.set("screenH", "");
+	g_settings.set("host_game", "");
+	g_settings.set("port", "");
+	g_settings.set("address", "");
+	g_settings.set("name", "");
+	g_settings.set("random_input", "false");
+	g_settings.set("client_delete_unused_sectors_timeout", "1200");
+
+	// Server stuff
+	g_settings.set("creative_mode", "false");
+	g_settings.set("heightmap_blocksize", "128");
+	g_settings.set("height_randmax", "constant 70.0");
+	g_settings.set("height_randfactor", "constant 0.6");
+	g_settings.set("height_base", "linear 0 35 0");
+	g_settings.set("plants_amount", "1.0");
+	g_settings.set("objectdata_interval", "0.2");
+	g_settings.set("active_object_range", "2");
+	g_settings.set("max_simultaneous_block_sends_per_client", "2");
+	g_settings.set("max_simultaneous_block_sends_server_total", "4");
+}
 
 /*
 	Random stuff
@@ -354,144 +376,6 @@ std::ostream *derr_server_ptr = &dstream;
 std::ostream *dout_client_ptr = &dstream;
 std::ostream *derr_client_ptr = &dstream;
 
-/*
-	Config stuff
-*/
-
-// Returns false on EOF
-bool parseConfigObject(std::istream &is)
-{
-	// float g_wanted_fps
-	// s16 g_viewing_range_nodes_max
-
-	if(is.eof())
-		return false;
-	
-	std::string line;
-	std::getline(is, line);
-	//dstream<<"got line: \""<<line<<"\""<<std::endl;
-
-	std::string trimmedline = trim(line);
-	
-	// Ignore comments
-	if(trimmedline[0] == '#')
-		return true;
-
-	//dstream<<"trimmedline=\""<<trimmedline<<"\""<<std::endl;
-
-	Strfnd sf(trim(line));
-
-	std::string name = sf.next("=");
-	name = trim(name);
-
-	if(name == "")
-		return true;
-	
-	std::string value = sf.next("\n");
-	value = trim(value);
-
-	dstream<<"Config name=\""<<name<<"\" value=\""
-			<<value<<"\""<<std::endl;
-	
-	if(name == "dedicated_server")
-		g_dedicated_server = value;
-	
-	// Client stuff
-	else if(name == "wanted_fps")
-	{
-		g_wanted_fps = atof(value.c_str());
-	}
-	else if(name == "fps_max")
-	{
-		g_fps_max = atof(value.c_str());
-	}
-	else if(name == "viewing_range_nodes_max")
-	{
-		g_viewing_range_nodes_max = stoi(value, 0, 32767);
-	}
-	else if(name == "viewing_range_nodes_min")
-	{
-		g_viewing_range_nodes_min = stoi(value, 0, 32767);
-	}
-	else if(name=="screenW")
-		g_screenW = value;
-	else if(name=="screenH")
-		g_screenH = value;
-	else if(name == "host_game")
-		g_host_game = value;
-	else if(name == "port")
-		g_port = value;
-	else if(name == "address")
-		g_address = value;
-	else if(name == "name")
-		g_name = value;
-	else if(name == "random_input")
-		g_random_input = is_yes(value);
-	else if(name == "client_delete_unused_sectors_timeout")
-	{
-		std::istringstream vis(value);
-		//vis.imbue(std::locale("C"));
-		vis>>g_client_delete_unused_sectors_timeout;
-	}
-	
-	// Server stuff
-	else if(name == "creative_mode")
-		g_creative_mode = is_yes(value);
-	else if(name == "mapgen_heightmap_blocksize")
-	{
-		s32 d = atoi(value.c_str());
-		if(d > 0 && (d & (d-1)) == 0)
-			g_hm_params.heightmap_blocksize = d;
-		else
-			dstream<<"Invalid value in config file: \""
-					<<line<<"\""<<std::endl;
-	}
-	else if(name == "mapgen_height_randmax")
-		g_hm_params.height_randmax = value;
-	else if(name == "mapgen_height_randfactor")
-		g_hm_params.height_randfactor = value;
-	else if(name == "mapgen_height_base")
-		g_hm_params.height_base = value;
-	else if(name == "mapgen_plants_amount")
-	{
-		std::istringstream vis(value);
-		vis>>g_map_params.plants_amount;
-	}
-	else if(name == "objectdata_inverval")
-	{
-		std::istringstream vis(value);
-		vis>>g_objectdata_interval;
-	}
-	else if(name == "active_object_range")
-		g_active_object_range = stoi(value, 0, 65535);
-	
-	else
-	{
-		dstream<<"Unknown option in config file: \""
-				<<line<<"\""<<std::endl;
-	}
-
-	return true;
-}
-
-// Returns true on success
-bool readConfigFile(const char *filename)
-{
-	std::ifstream is(filename);
-	if(is.good() == false)
-	{
-		dstream<<DTIME<<"Error opening configuration file: "
-				<<filename<<std::endl;
-		return false;
-	}
-
-	dstream<<DTIME<<"Parsing configuration file: "
-			<<filename<<std::endl;
-			
-	while(parseConfigObject(is));
-	
-	return true;
-}
 
 /*
 	Timestamp stuff
@@ -875,9 +759,11 @@ void updateViewingRange(f32 frametime, Client *client)
 	// Range_all messes up frametime_avg
 	if(g_viewing_range_all == true)
 		return;
+
+	float wanted_fps = g_settings.getFloat("wanted_fps");
 	
 	// Initialize to the target value
-	static float frametime_avg = 1.0/g_wanted_fps;
+	static float frametime_avg = 1.0/wanted_fps;
 	frametime_avg = frametime_avg * 0.9 + frametime * 0.1;
 
 	static f32 counter = 0;
@@ -892,7 +778,7 @@ void updateViewingRange(f32 frametime, Client *client)
 	//float freetime_ratio = 0.4;
 	float freetime_ratio = FREETIME_RATIO;
 
-	float frametime_wanted = (1.0/(g_wanted_fps/(1.0-freetime_ratio)));
+	float frametime_wanted = (1.0/(wanted_fps/(1.0-freetime_ratio)));
 
 	float fraction = sqrt(frametime_avg / frametime_wanted);
 
@@ -925,11 +811,14 @@ void updateViewingRange(f32 frametime, Client *client)
 
 	JMutexAutoLock lock(g_range_mutex);
 	
+	s16 viewing_range_nodes_min = g_settings.getS16("viewing_range_nodes_min");
+	s16 viewing_range_nodes_max = g_settings.getS16("viewing_range_nodes_max");
+
 	s16 n = (float)g_viewing_range_nodes / fraction;
-	if(n < g_viewing_range_nodes_min)
-		n = g_viewing_range_nodes_min;
-	if(n > g_viewing_range_nodes_max)
-		n = g_viewing_range_nodes_max;
+	if(n < viewing_range_nodes_min)
+		n = viewing_range_nodes_min;
+	if(n > viewing_range_nodes_max)
+		n = viewing_range_nodes_max;
 
 	bool can_change = true;
 
@@ -1050,9 +939,10 @@ int main(int argc, char *argv[])
 	disable_stderr = true;
 #endif
 
+	// Initialize debug streams
 	debugstreams_init(disable_stderr, DEBUGFILE);
+	// Initialize debug stacks
 	debug_stacks_init();
-
 
 	DSTACK(__FUNCTION_NAME);
 
@@ -1063,6 +953,10 @@ int main(int argc, char *argv[])
 		Basic initialization
 	*/
 
+	// Initialize default settings
+	set_default_settings();
+	
+	// Print startup message
 	dstream<<DTIME<<"minetest-c55"
 			" with SER_FMT_VER_HIGHEST="<<(int)SER_FMT_VER_HIGHEST
 			<<", ENABLE_TESTS="<<ENABLE_TESTS
@@ -1096,7 +990,7 @@ int main(int argc, char *argv[])
 	
 	if(argc >= 2)
 	{
-		readConfigFile(argv[1]);
+		g_settings.readConfigFile(argv[1]);
 	}
 	else
 	{
@@ -1108,7 +1002,7 @@ int main(int argc, char *argv[])
 
 		for(u32 i=0; i<2; i++)
 		{
-			bool r = readConfigFile(filenames[i]);
+			bool r = g_settings.readConfigFile(filenames[i]);
 			if(r)
 				break;
 		}
@@ -1120,6 +1014,17 @@ int main(int argc, char *argv[])
 	g_range_mutex.Init();
 	assert(g_range_mutex.IsInitialized());
 
+	// Read map parameters from settings
+
+	HMParams hm_params;
+	hm_params.blocksize = g_settings.getU16("heightmap_blocksize");
+	hm_params.randmax = g_settings.get("height_randmax");
+	hm_params.randfactor = g_settings.get("height_randfactor");
+	hm_params.base = g_settings.get("height_base");
+
+	MapParams map_params;
+	map_params.plants_amount = g_settings.getFloat("plants_amount");
+
 	/*
 		Ask some stuff
 	*/
@@ -1127,40 +1032,13 @@ int main(int argc, char *argv[])
 	std::cout<<std::endl<<std::endl;
 	char templine[100];
 	
-	std::cout<<"Dedicated server? [y = yes]: ";
-	if(g_dedicated_server != "")
-	{
-		std::cout<<g_dedicated_server<<std::endl;
-		snprintf(templine, 100, "%s", g_dedicated_server.c_str());
-	}
-	else
-	{
-		std::cin.getline(templine, 100);
-	}
-
-	bool dedicated = false;
-	if(templine[0] == 'y')
-		dedicated = true;
-	if(dedicated)
-		std::cout<<"-> yes"<<std::endl;
-	else
-		std::cout<<"-> no"<<std::endl;
+	// Dedicated?
+	bool dedicated = g_settings.getBoolAsk
+			("dedicated_server", "Dedicated server?", false);
+	std::cout<<"dedicated = "<<dedicated<<std::endl;
 	
-	std::cout<<"Port [empty=30000]: ";
-	if(g_port != "")
-	{
-		std::cout<<g_port<<std::endl;
-		snprintf(templine, 100, "%s", g_port.c_str());
-	}
-	else
-	{
-		std::cin.getline(templine, 100);
-	}
-	unsigned short port;
-	if(templine[0] == 0)
-		port = 30000;
-	else
-		port = atoi(templine);
+	// Port?
+	u16 port = g_settings.getU16Ask("port", "Port", 30000);
 	std::cout<<"-> "<<port<<std::endl;
 	
 	if(dedicated)
@@ -1173,17 +1051,15 @@ int main(int argc, char *argv[])
 		std::cout<<"========================"<<std::endl;
 		std::cout<<std::endl;
 
-		Server server("../map", g_creative_mode, g_hm_params,
-				g_map_params, g_objectdata_interval,
-				g_active_object_range);
+		Server server("../map", hm_params, map_params);
 		server.start(port);
 	
 		for(;;)
 		{
 			// This is kind of a hack but can be done like this
 			// because server.step() is very light
-			sleep_ms(100);
-			server.step(0.1);
+			sleep_ms(30);
+			server.step(0.030);
 
 			static int counter = 0;
 			counter--;
@@ -1214,10 +1090,10 @@ int main(int argc, char *argv[])
 	char connect_name[100] = "";
 
 	std::cout<<"Address to connect to [empty = host a game]: ";
-	if(g_address != "" && is_yes(g_host_game) == false)
+	if(g_settings.get("address") != "" && is_yes(g_settings.get("host_game")) == false)
 	{
-		std::cout<<g_address<<std::endl;
-		snprintf(connect_name, 100, "%s", g_address.c_str());
+		std::cout<<g_settings.get("address")<<std::endl;
+		snprintf(connect_name, 100, "%s", g_settings.get("address").c_str());
 	}
 	else
 	{
@@ -1235,9 +1111,9 @@ int main(int argc, char *argv[])
 		std::cout<<"-> "<<connect_name<<std::endl;
 	
 	char playername[PLAYERNAME_SIZE] = "";
-	if(g_name != "")
+	if(g_settings.get("name") != "")
 	{
-		snprintf(playername, PLAYERNAME_SIZE, "%s", g_name.c_str());
+		snprintf(playername, PLAYERNAME_SIZE, "%s", g_settings.get("name").c_str());
 	}
 	else
 	{
@@ -1254,10 +1130,10 @@ int main(int argc, char *argv[])
 	u16 screenH;
 	bool fullscreen = false;
 	
-	if(g_screenW != "" && g_screenH != "")
+	if(g_settings.get("screenW") != "" && g_settings.get("screenH") != "")
 	{
-		screenW = atoi(g_screenW.c_str());
-		screenH = atoi(g_screenH.c_str());
+		screenW = atoi(g_settings.get("screenW").c_str());
+		screenH = atoi(g_settings.get("screenH").c_str());
 	}
 	else
 	{
@@ -1343,7 +1219,7 @@ int main(int argc, char *argv[])
 	
 	device->setResizable(true);
 
-	if(g_random_input)
+	if(g_settings.getBool("random_input"))
 		g_input = new RandomInputHandler();
 	else
 		g_input = new RealInputHandler(device, &receiver);
@@ -1443,9 +1319,7 @@ int main(int argc, char *argv[])
 	*/
 	SharedPtr<Server> server;
 	if(hosting){
-		server = new Server("../map", g_creative_mode, g_hm_params,
-				g_map_params, g_objectdata_interval,
-				g_active_object_range);
+		server = new Server("../map", hm_params, map_params);
 		server->start(port);
 	}
 	
@@ -1455,7 +1329,7 @@ int main(int argc, char *argv[])
 
 	// TODO: Get rid of the g_materials parameter or it's globalness
 	Client client(device, g_materials,
-			g_client_delete_unused_sectors_timeout,
+			g_settings.getFloat("client_delete_unused_sectors_timeout"),
 			playername);
 	
 	Address connect_address(0,0,0,0, port);
@@ -1648,7 +1522,7 @@ int main(int argc, char *argv[])
 		*/
 
 		{
-			float fps_max = g_fps_max;
+			float fps_max = g_settings.getFloat("fps_max");
 			u32 frametime_min = 1000./fps_max;
 			
 			if(busytime_u32 < frametime_min)
@@ -2326,7 +2200,7 @@ int main(int argc, char *argv[])
 	delete g_input;
 
 	/*
-	In the end, delete the Irrlicht device.
+		In the end, delete the Irrlicht device.
 	*/
 	device->drop();
 

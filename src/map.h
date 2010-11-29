@@ -26,12 +26,129 @@
 #include "mapsector.h"
 #include "constants.h"
 
-class InvalidFilenameException : public BaseException
+class Map;
+
+/*
+	A cache for short-term fast access to map data
+
+	NOTE: This doesn't really make anything more efficient
+	NOTE: Use VoxelManipulator, if possible
+	TODO: Get rid of this?
+*/
+class MapBlockPointerCache : public NodeContainer
 {
 public:
-	InvalidFilenameException(const char *s):
-		BaseException(s)
-	{}
+	MapBlockPointerCache(Map *map);
+	~MapBlockPointerCache();
+
+	virtual u16 nodeContainerId() const
+	{
+		return NODECONTAINER_ID_MAPBLOCKCACHE;
+	}
+
+	MapBlock * getBlockNoCreate(v3s16 p);
+
+	// virtual from NodeContainer
+	bool isValidPosition(v3s16 p)
+	{
+		v3s16 blockpos = getNodeBlockPos(p);
+		MapBlock *blockref;
+		try{
+			blockref = getBlockNoCreate(blockpos);
+		}
+		catch(InvalidPositionException &e)
+		{
+			return false;
+		}
+		return true;
+	}
+	
+	// virtual from NodeContainer
+	MapNode getNode(v3s16 p)
+	{
+		v3s16 blockpos = getNodeBlockPos(p);
+		MapBlock * blockref = getBlockNoCreate(blockpos);
+		v3s16 relpos = p - blockpos*MAP_BLOCKSIZE;
+
+		return blockref->getNodeNoCheck(relpos);
+	}
+
+	// virtual from NodeContainer
+	void setNode(v3s16 p, MapNode & n)
+	{
+		v3s16 blockpos = getNodeBlockPos(p);
+		MapBlock * block = getBlockNoCreate(blockpos);
+		v3s16 relpos = p - blockpos*MAP_BLOCKSIZE;
+		block->setNodeNoCheck(relpos, n);
+		m_modified_blocks[blockpos] = block;
+	}
+
+	core::map<v3s16, MapBlock*> m_modified_blocks;
+	
+private:
+	Map *m_map;
+	core::map<v3s16, MapBlock*> m_blocks;
+
+	u32 m_from_cache_count;
+	u32 m_from_map_count;
+};
+
+class CacheLock
+{
+public:
+	CacheLock()
+	{
+		m_count = 0;
+		m_count_mutex.Init();
+		m_cache_mutex.Init();
+		m_waitcache_mutex.Init();
+	}
+
+	void cacheCreated()
+	{
+		JMutexAutoLock waitcachelock(m_waitcache_mutex);
+		JMutexAutoLock countlock(m_count_mutex);
+
+		// If this is the first cache, grab the cache lock
+		if(m_count == 0)
+			m_cache_mutex.Lock();
+			
+		m_count++;
+	}
+
+	void cacheRemoved()
+	{
+		JMutexAutoLock countlock(m_count_mutex);
+
+		assert(m_count > 0);
+
+		m_count--;
+		
+		// If this is the last one, release the cache lock
+		if(m_count == 0)
+			m_cache_mutex.Unlock();
+	}
+
+	/*
+		This lock should be taken when removing stuff that can be
+		pointed by the cache.
+
+		You'll want to grab this in a SharedPtr.
+	*/
+	JMutexAutoLock * waitCaches()
+	{
+		JMutexAutoLock waitcachelock(m_waitcache_mutex);
+		return new JMutexAutoLock(m_cache_mutex);
+	}
+
+private:
+	// Count of existing caches
+	u32 m_count;
+	JMutex m_count_mutex;
+	// This is locked always when there are some caches
+	JMutex m_cache_mutex;
+	// Locked so that when waitCaches() is called, no more caches are created
+	JMutex m_waitcache_mutex;
 };
 
 #define MAPTYPE_BASE 0
@@ -60,6 +177,13 @@ protected:
 public:
 
 	v3s16 drawoffset; // for drawbox()
+	
+	/*
+		Used by MapBlockPointerCache.
+
+		waitCaches() can be called to remove all caches before continuing
+	*/
+	CacheLock m_blockcachelock;
 
 	Map(std::ostream &dout);
 	virtual ~Map();
@@ -154,7 +278,7 @@ public:
 		MapBlock * blockref = getBlockNoCreate(blockpos);
 		v3s16 relpos = p - blockpos*MAP_BLOCKSIZE;
 
-		return blockref->getNode(relpos);
+		return blockref->getNodeNoCheck(relpos);
 	}
 
 	// virtual from NodeContainer
@@ -163,7 +287,7 @@ public:
 		v3s16 blockpos = getNodeBlockPos(p);
 		MapBlock * blockref = getBlockNoCreate(blockpos);
 		v3s16 relpos = p - blockpos*MAP_BLOCKSIZE;
-		blockref->setNode(relpos, n);
+		blockref->setNodeNoCheck(relpos, n);
 	}
 
 	/*MapNode getNodeGenerate(v3s16 p)
@@ -247,15 +371,15 @@ struct HMParams
 {
 	HMParams()
 	{
-		heightmap_blocksize = 64;
-		height_randmax = "constant 70.0";
-		height_randfactor = "constant 0.6";
-		height_base = "linear 0 80 0";
+		blocksize = 64;
+		randmax = "constant 70.0";
+		randfactor = "constant 0.6";
+		base = "linear 0 80 0";
 	}
-	s16 heightmap_blocksize;
-	std::string height_randmax;
-	std::string height_randfactor;
-	std::string height_base;
+	s16 blocksize;
+	std::string randmax;
+	std::string randfactor;
+	std::string base;
 };
 
 // Map parameters

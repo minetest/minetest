@@ -17,10 +17,25 @@
 
 #define MATERIALS_COUNT 256
 
-// This is completely ignored. It doesn't create faces with anything.
+/*
+	Ignored node.
+
+	param is used for custom information in special containers,
+	like VoxelManipulator.
+
+	Anything that stores MapNodes doesn't have to preserve parameters
+	associated with this material.
+	
+	Doesn't create faces with anything and is considered being
+	out-of-map in the game map.
+*/
 #define MATERIAL_IGNORE 255
-// This is the common material through which the player can walk
-// and which is transparent to light
+#define MATERIAL_IGNORE_DEFAULT_PARAM 0
+
+/*
+	The common material through which the player can walk and which
+	is transparent to light
+*/
 #define MATERIAL_AIR 254
 
 /*
@@ -63,6 +78,8 @@ enum Material
 	MATERIAL_GRASS_FOOTSTEPS,
 	
 	MATERIAL_MESE,
+
+	MATERIAL_MUD,
 	
 	// This is set to the number of the actual values in this enum
 	USEFUL_MATERIAL_COUNT
@@ -126,15 +143,27 @@ inline u8 face_materials(u8 m1, u8 m2)
 		return 2;
 }
 
+/*
+	Returns true for materials that form the base ground that
+	follows the main heightmap
+*/
+inline bool is_ground_material(u8 m)
+{
+	return(
+		m == MATERIAL_STONE ||
+		m == MATERIAL_GRASS ||
+		m == MATERIAL_GRASS_FOOTSTEPS ||
+		m == MATERIAL_MESE ||
+		m == MATERIAL_MUD
+	);
+}
+
 struct MapNode
 {
 	//TODO: block type to differ from material
 	//      (e.g. grass edges or something)
 	// block type
 	u8 d;
-
-	// Removed because light is now stored in param for air
-	// f32 light;
 
 	/*
 		Misc parameter. Initialized to 0.
@@ -153,6 +182,11 @@ struct MapNode
 	{
 		d = data;
 		param = a_param;
+	}
+
+	bool operator==(const MapNode &other)
+	{
+		return (d == other.d && param == other.param);
 	}
 
 	bool light_propagates()

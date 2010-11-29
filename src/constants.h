@@ -28,19 +28,20 @@
 // The absolute working limit is (2^15 - viewing_range).
 #define MAP_GENERATION_LIMIT (31000)
 
-#define MAX_SIMULTANEOUS_BLOCK_SENDS 2
+//#define MAX_SIMULTANEOUS_BLOCK_SENDS 2
 
 #define FULL_BLOCK_SEND_ENABLE_MIN_TIME_FROM_BUILDING 2.0
-#define LIMITED_MAX_SIMULTANEOUS_BLOCK_SENDS 1
+//#define LIMITED_MAX_SIMULTANEOUS_BLOCK_SENDS 1
+#define LIMITED_MAX_SIMULTANEOUS_BLOCK_SENDS 0
 
-#define MAX_SIMULTANEOUS_BLOCK_SENDS_SERVER_TOTAL 4
+// Override for the previous one when distance is low
+#define BLOCK_SEND_DISABLE_LIMITS_MAX_D 1
+
+//#define MAX_SIMULTANEOUS_BLOCK_SENDS_SERVER_TOTAL 4
 
 // Viewing range stuff
 
-#define FPS_DEFAULT_WANTED 30
-#define FPS_DEFAULT_MAX 60
-
-#define HEIGHTMAP_RANGE_NODES 300
+//#define HEIGHTMAP_RANGE_NODES 300
 
 //#define FREETIME_RATIO 0.2
 #define FREETIME_RATIO 0.15
@@ -56,7 +57,7 @@
 //#define ACTIVE_OBJECT_D_BLOCKS 2
 
 // Wether to catch all std::exceptions
-#define CATCH_UNJANDLED_EXCEPTIONS 1
+#define CATCH_UNHANDLED_EXCEPTIONS 0
 
 /*
 	Collecting active blocks is stopped after object data

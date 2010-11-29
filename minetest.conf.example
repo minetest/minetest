@@ -44,4 +44,8 @@ creative_mode = false
 # Player and object positions are sent at intervals specified by this
 objectdata_inverval = 0.2
 
+active_object_range = 2
+
+max_simultaneous_block_sends_per_client = 2
+max_simultaneous_block_sends_server_total = 4
 

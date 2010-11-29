@@ -81,6 +81,22 @@ public:
 	{}
 };
 
+class SettingNotFoundException : public BaseException
+{
+public:
+	SettingNotFoundException(const char *s):
+		BaseException(s)
+	{}
+};
+
+class InvalidFilenameException : public BaseException
+{
+public:
+	InvalidFilenameException(const char *s):
+		BaseException(s)
+	{}
+};
+
 /*
 	Some "old-style" interrupts:
 */

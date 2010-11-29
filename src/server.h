@@ -102,6 +102,23 @@ public:
 		JMutexAutoLock lock(m_mutex);
 		return m_queue.size();
 	}
+	
+	u32 peerItemCount(u16 peer_id)
+	{
+		JMutexAutoLock lock(m_mutex);
+
+		u32 count = 0;
+
+		core::list<QueuedBlockEmerge*>::Iterator i;
+		for(i=m_queue.begin(); i!=m_queue.end(); i++)
+		{
+			QueuedBlockEmerge *q = *i;
+			if(q->peer_ids.find(peer_id) != NULL)
+				count++;
+		}
+
+		return count;
+	}
 
 private:
 	core::list<QueuedBlockEmerge*> m_queue;
@@ -237,8 +254,8 @@ public:
 	u8 pending_serialization_version;
 
 	RemoteClient():
-		m_time_from_building(0.0),
-		m_num_blocks_in_emerge_queue(0)
+		m_time_from_building(0.0)
+		//m_num_blocks_in_emerge_queue(0)
 	{
 		peer_id = 0;
 		serialization_version = SER_FMT_VER_INVALID;
@@ -276,7 +293,7 @@ public:
 	void SetBlockNotSent(v3s16 p);
 	void SetBlocksNotSent(core::map<v3s16, MapBlock*> &blocks);
 
-	void BlockEmerged();
+	//void BlockEmerged();
 
 	/*bool IsSendingBlock(v3s16 p)
 	{
@@ -300,8 +317,8 @@ public:
 		JMutexAutoLock l2(m_blocks_sent_mutex);
 		JMutexAutoLock l3(m_blocks_sending_mutex);
 		o<<"RemoteClient "<<peer_id<<": "
-				<<"m_num_blocks_in_emerge_queue="
-				<<m_num_blocks_in_emerge_queue.get()
+				/*<<"m_num_blocks_in_emerge_queue="
+				<<m_num_blocks_in_emerge_queue.get()*/
 				<<", m_blocks_sent.size()="<<m_blocks_sent.size()
 				<<", m_blocks_sending.size()="<<m_blocks_sending.size()
 				<<", m_nearest_unsent_d="<<m_nearest_unsent_d
@@ -321,10 +338,11 @@ private:
 	*/
 	
 	//TODO: core::map<v3s16, MapBlock*> m_active_blocks
+	//NOTE: Not here, it should be server-wide!
 
 	// Number of blocks in the emerge queue that have this client as
 	// a receiver. Used for throttling network usage.
-	MutexedVariable<s16> m_num_blocks_in_emerge_queue;
+	//MutexedVariable<s16> m_num_blocks_in_emerge_queue;
 
 	/*
 		Blocks that have been sent to client.
@@ -367,17 +385,17 @@ public:
 		NOTE: Every public method should be thread-safe
 	*/
 	Server(
-			std::string mapsavedir,
-			bool creative_mode,
-			HMParams hm_params,
-			MapParams map_params,
-			float objectdata_inverval,
-			u16 active_object_range
-		);
+		std::string mapsavedir,
+		HMParams hm_params,
+		MapParams map_params
+	);
 	~Server();
 	void start(unsigned short port);
 	void stop();
+	// This is mainly a way to pass the time to the server.
+	// Actual processing is done in an another thread.
 	void step(float dtime);
+	// This is run by ServerThread and does the actual processing
 	void AsyncRunStep();
 	void Receive();
 	void ProcessData(u8 *data, u32 datasize, u16 peer_id);
@@ -387,7 +405,6 @@ public:
 
 	// Environment and Connection must be locked when called
 	void SendBlockNoLock(u16 peer_id, MapBlock *block, u8 ver);
-	//void SendBlock(u16 peer_id, MapBlock *block, u8 ver);
 	//TODO: Sending of many blocks in a single packet
 	
 	// Environment and Connection must be locked when called
@@ -431,11 +448,6 @@ private:
 
 	BlockEmergeQueue m_emerge_queue;
 	
-	// Settings
-	bool m_creative_mode;
-	float m_objectdata_interval;
-	u16 m_active_object_range;
-
 	friend class EmergeThread;
 	friend class RemoteClient;
 };

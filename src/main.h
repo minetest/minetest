@@ -16,6 +16,9 @@ extern s16 g_viewing_range_nodes;
 //extern s16 g_actual_viewing_range_nodes;
 extern bool g_viewing_range_all;
 
+// Settings
+extern Settings g_settings;
+
 #include <fstream>
 
 // Debug streams

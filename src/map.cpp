@@ -9,6 +9,7 @@
 #include "client.h"
 #include "filesys.h"
 #include "utility.h"
+#include "voxel.h"
 
 #ifdef _WIN32
 	#include <windows.h>
@@ -17,6 +18,47 @@
 	#include <unistd.h>
 	#define sleep_ms(x) usleep(x*1000)
 #endif
+
+MapBlockPointerCache::MapBlockPointerCache(Map *map)
+{
+	m_map = map;
+	m_map->m_blockcachelock.cacheCreated();
+
+	m_from_cache_count = 0;
+	m_from_map_count = 0;
+}
+
+MapBlockPointerCache::~MapBlockPointerCache()
+{
+	m_map->m_blockcachelock.cacheRemoved();
+
+	dstream<<"MapBlockPointerCache:"
+			<<" from_cache_count="<<m_from_cache_count
+			<<" from_map_count="<<m_from_map_count
+			<<std::endl;
+}
+
+MapBlock * MapBlockPointerCache::getBlockNoCreate(v3s16 p)
+{
+	core::map<v3s16, MapBlock*>::Node *n = NULL;
+	n = m_blocks.find(p);
+	if(n != NULL)
+	{
+		m_from_cache_count++;
+		return n->getValue();
+	}
+	
+	m_from_map_count++;
+	
+	// Throws InvalidPositionException if not found
+	MapBlock *b = m_map->getBlockNoCreate(p);
+	m_blocks[p] = b;
+	return b;
+}
+
+/*
+	Map
+*/
 
 Map::Map(std::ostream &dout):
 	m_dout(dout),
@@ -158,33 +200,11 @@ bool Map::isNodeUnderground(v3s16 p)
 	}
 }
 
-#ifdef LKJnb
-//TODO: Remove: Not used.
-/*
-	Goes recursively through the neighbours of the node.
-
-	Alters only transparent nodes.
-
-	If the lighting of the neighbour is lower than the lighting of
-	the node was (before changing it to 0 at the step before), the
-	lighting of the neighbour is set to 0 and then the same stuff
-	repeats for the neighbour.
-
-	Some things are made strangely to make it as fast as possible.
-
-	Usage: (for clearing all possible spreaded light of a lamp)
-	NOTE: This is outdated
-		core::list<v3s16> light_sources;
-		core::map<v3s16, MapBlock*> modified_blocks;
-		u8 oldlight = node_at_pos.light;
-		node_at_pos.setLight(0);
-		unLightNeighbors(pos, oldlight, light_sources, modified_blocks);
-*/
-void Map::unLightNeighbors(v3s16 pos, u8 oldlight,
-		core::map<v3s16, bool> & light_sources,
-		core::map<v3s16, MapBlock*>  & modified_blocks)
+#if 0
+void Map::interpolate(v3s16 block,
+		core::map<v3s16, MapBlock*> & modified_blocks)
 {
-	v3s16 dirs[6] = {
+	const v3s16 dirs[6] = {
 		v3s16(0,0,1), // back
 		v3s16(0,1,0), // top
 		v3s16(1,0,0), // right
@@ -192,7 +212,16 @@ void Map::unLightNeighbors(v3s16 pos, u8 oldlight,
 		v3s16(0,-1,0), // bottom
 		v3s16(-1,0,0), // left
 	};
+
+	if(from_nodes.size() == 0)
+		return;
 	
+	u32 blockchangecount = 0;
+
+	core::map<v3s16, bool> lighted_nodes;
+	core::map<v3s16, bool>::Iterator j;
+	j = from_nodes.getIterator();
+
 	/*
 		Initialize block cache
 	*/
@@ -201,23 +230,22 @@ void Map::unLightNeighbors(v3s16 pos, u8 oldlight,
 	// Cache this a bit, too
 	bool block_checked_in_modified = false;
 	
-	// Loop through 6 neighbors
-	for(u16 i=0; i<6; i++){
-		// Get the position of the neighbor node
-		v3s16 n2pos = pos + dirs[i];
+	for(; j.atEnd() == false; j++)
+	//for(; j != from_nodes.end(); j++)
+	{
+		v3s16 pos = j.getNode()->getKey();
+		//v3s16 pos = *j;
+		//dstream<<"pos=("<<pos.X<<","<<pos.Y<<","<<pos.Z<<")"<<std::endl;
+		v3s16 blockpos = getNodeBlockPos(pos);
 		
-		// Get the block where the node is located
-		v3s16 blockpos = getNodeBlockPos(n2pos);
-
 		// Only fetch a new block if the block position has changed
 		try{
-			if(block == NULL || blockpos != blockpos_last)
-			{
+			if(block == NULL || blockpos != blockpos_last){
 				block = getBlockNoCreate(blockpos);
 				blockpos_last = blockpos;
-				
+
 				block_checked_in_modified = false;
-				//blockchangecount++;
+				blockchangecount++;
 			}
 		}
 		catch(InvalidPositionException &e)
@@ -227,33 +255,75 @@ void Map::unLightNeighbors(v3s16 pos, u8 oldlight,
 
 		if(block->isDummy())
 			continue;
-		
+
 		// Calculate relative position in block
-		v3s16 relpos = n2pos - blockpos * MAP_BLOCKSIZE;
+		v3s16 relpos = pos - blockpos_last * MAP_BLOCKSIZE;
+
 		// Get node straight from the block
-		MapNode n2 = block->getNode(relpos);
-		
-		/*
-			If the neighbor is dimmer than what was specified
-			as oldlight (the light of the previous node)
-		*/
-		if(n2.getLight() < oldlight)
-		{
-			/*
-				And the neighbor is transparent and it has some light
-			*/
-			if(n2.light_propagates() && n2.getLight() != 0)
+		MapNode n = block->getNode(relpos);
+
+		u8 oldlight = n.getLight();
+		u8 newlight = diminish_light(oldlight);
+
+		// Loop through 6 neighbors
+		for(u16 i=0; i<6; i++){
+			// Get the position of the neighbor node
+			v3s16 n2pos = pos + dirs[i];
+			
+			// Get the block where the node is located
+			v3s16 blockpos = getNodeBlockPos(n2pos);
+
+			try
 			{
-				/*
-					Set light to 0 and recurse.
-				*/
-				u8 current_light = n2.getLight();
-				n2.setLight(0);
-				block->setNode(relpos, n2);
-				unLightNeighbors(n2pos, current_light,
-						light_sources, modified_blocks);
+				// Only fetch a new block if the block position has changed
+				try{
+					if(block == NULL || blockpos != blockpos_last){
+						block = getBlockNoCreate(blockpos);
+						blockpos_last = blockpos;
+
+						block_checked_in_modified = false;
+						blockchangecount++;
+					}
+				}
+				catch(InvalidPositionException &e)
+				{
+					continue;
+				}
 				
-				if(block_checked_in_modified == false)
+				// Calculate relative position in block
+				v3s16 relpos = n2pos - blockpos * MAP_BLOCKSIZE;
+				// Get node straight from the block
+				MapNode n2 = block->getNode(relpos);
+				
+				bool changed = false;
+				/*
+					If the neighbor is brighter than the current node,
+					add to list (it will light up this node on its turn)
+				*/
+				if(n2.getLight() > undiminish_light(oldlight))
+				{
+					lighted_nodes.insert(n2pos, true);
+					//lighted_nodes.push_back(n2pos);
+					changed = true;
+				}
+				/*
+					If the neighbor is dimmer than how much light this node
+					would spread on it, add to list
+				*/
+				if(n2.getLight() < newlight)
+				{
+					if(n2.light_propagates())
+					{
+						n2.setLight(newlight);
+						block->setNode(relpos, n2);
+						lighted_nodes.insert(n2pos, true);
+						//lighted_nodes.push_back(n2pos);
+						changed = true;
+					}
+				}
+
+				// Add to modified_blocks
+				if(changed == true && block_checked_in_modified == false)
 				{
 					// If the block is not found in modified_blocks, add.
 					if(modified_blocks.find(blockpos) == NULL)
@@ -263,12 +333,20 @@ void Map::unLightNeighbors(v3s16 pos, u8 oldlight,
 					block_checked_in_modified = true;
 				}
 			}
-		}
-		else{
-			//light_sources.push_back(n2pos);
-			light_sources.insert(n2pos, true);
+			catch(InvalidPositionException &e)
+			{
+				continue;
+			}
 		}
 	}
+
+	/*dstream<<"spreadLight(): Changed block "
+			<<blockchangecount<<" times"
+			<<" for "<<from_nodes.size()<<" nodes"
+			<<std::endl;*/
+	
+	if(lighted_nodes.size() > 0)
+		spreadLight(lighted_nodes, modified_blocks);
 }
 #endif
 
@@ -1090,6 +1168,13 @@ void Map::timerUpdate(float dtime)
 
 void Map::deleteSectors(core::list<v2s16> &list, bool only_blocks)
 {
+	/*
+		Wait for caches to be removed before continuing.
+		
+		This disables the existence of caches while locked
+	*/
+	SharedPtr<JMutexAutoLock> cachelock(m_blockcachelock.waitCaches());
+
 	core::list<v2s16>::Iterator j;
 	for(j=list.begin(); j!=list.end(); j++)
 	{
@@ -1215,13 +1300,13 @@ ServerMap::ServerMap(std::string savedir, HMParams hmp, MapParams mp):
 	
 	// Create master heightmap
 	ValueGenerator *maxgen =
-			ValueGenerator::deSerialize(hmp.height_randmax);
+			ValueGenerator::deSerialize(hmp.randmax);
 	ValueGenerator *factorgen =
-			ValueGenerator::deSerialize(hmp.height_randfactor);
+			ValueGenerator::deSerialize(hmp.randfactor);
 	ValueGenerator *basegen =
-			ValueGenerator::deSerialize(hmp.height_base);
+			ValueGenerator::deSerialize(hmp.base);
 	m_heightmap = new UnlimitedHeightmap
-			(hmp.heightmap_blocksize, maxgen, factorgen, basegen);
+			(hmp.blocksize, maxgen, factorgen, basegen);
 	
 	// Set map parameters
 	m_params = mp;
@@ -1409,6 +1494,9 @@ MapSector * ServerMap::emergeSector(v2s16 p2d)
 					SECTOR_OBJECT_TREE_1);
 		}
 	}
+	/*
+		Plant some bushes if sector is pit-like
+	*/
 	{
 		// Pitness usually goes at around -0.5...0.5
 		u32 bush_max = 0;
@@ -1427,6 +1515,22 @@ MapSector * ServerMap::emergeSector(v2s16 p2d)
 				continue;
 			objects->insert(v3s16(x, y, z),
 					SECTOR_OBJECT_BUSH_1);
+		}
+	}
+	/*
+		Add ravine (randomly)
+	*/
+	{
+		if(rand()%10 == 0)
+		{
+			s16 s = 6;
+			s16 x = rand()%(MAP_BLOCKSIZE-s*2-1)+s;
+			s16 z = rand()%(MAP_BLOCKSIZE-s*2-1)+s;
+			/*s16 x = 8;
+			s16 z = 8;*/
+			s16 y = sector->getGroundHeight(v2s16(x,z))+1;
+			objects->insert(v3s16(x, y, z),
+					SECTOR_OBJECT_RAVINE);
 		}
 	}
 
@@ -1533,9 +1637,16 @@ MapBlock * ServerMap::emergeBlock(
 	}
 
 	// Randomize a bit. This makes dungeons.
-	bool low_block_is_empty = false;
+	/*bool low_block_is_empty = false;
 	if(rand() % 4 == 0)
-		low_block_is_empty = true;
+		low_block_is_empty = true;*/
+	
+	s32 ued = 4;
+	bool underground_emptiness[ued*ued*ued];
+	for(s32 i=0; i<ued*ued*ued; i++)
+	{
+		underground_emptiness[i] = ((rand() % 4) == 0);
+	}
 	
 	// This is the basic material of what the visible flat ground
 	// will consist of
@@ -1551,9 +1662,7 @@ MapBlock * ServerMap::emergeBlock(
 	{
 		//dstream<<"emergeBlock: x0="<<x0<<", z0="<<z0<<std::endl;
 		float surface_y_f = sector->getGroundHeight(v2s16(x0,z0));
-
 		assert(surface_y_f > GROUNDHEIGHT_VALID_MINVALUE);
-		
 		s16 surface_y = surface_y_f;
 		//avg_ground_y += surface_y;
 		if(surface_y < lowest_ground_y)
@@ -1574,13 +1683,14 @@ MapBlock * ServerMap::emergeBlock(
 		else
 			surface_depth = (1.-(slope-min_slope)/max_slope) * min_slope_depth;
 
-		for(s16 y0=0; y0<MAP_BLOCKSIZE; y0++){
+		for(s16 y0=0; y0<MAP_BLOCKSIZE; y0++)
+		{
 			s16 real_y = block_y * MAP_BLOCKSIZE + y0;
 			MapNode n;
 			/*
 				Calculate lighting
 				
-				FIXME: If there are some man-made structures above the
+				NOTE: If there are some man-made structures above the
 				newly created block, they won't be taken into account.
 			*/
 			if(real_y > surface_y)
@@ -1589,12 +1699,17 @@ MapBlock * ServerMap::emergeBlock(
 				Calculate material
 			*/
 			// If node is very low
-			if(real_y <= surface_y - 10){
+			if(real_y <= surface_y - 7){
 				// Create dungeons
-				if(low_block_is_empty){
+				if(underground_emptiness[
+						ued*ued*(z0*ued/MAP_BLOCKSIZE)
+						+ued*(y0*ued/MAP_BLOCKSIZE)
+						+(x0*ued/MAP_BLOCKSIZE)])
+				{
 					n.d = MATERIAL_AIR;
 				}
-				else{
+				else
+				{
 					n.d = MATERIAL_STONE;
 				}
 			}
@@ -1603,7 +1718,14 @@ MapBlock * ServerMap::emergeBlock(
 				n.d = MATERIAL_STONE;
 			// If node is at or under heightmap y
 			else if(real_y <= surface_y)
-				n.d = material;
+			{
+				// If under water level, it's mud
+				if(real_y < WATER_LEVEL)
+					n.d = MATERIAL_MUD;
+				// Else it's the main material
+				else
+					n.d = material;
+			}
 			// If node is over heightmap y
 			else{
 				// If under water level, it's water
@@ -1629,10 +1751,20 @@ MapBlock * ServerMap::emergeBlock(
 	block->setIsUnderground(is_underground);
 
 	/*
+		Force lighting update if underground.
+		This is needed because of ravines.
+	*/
+
+	if(is_underground)
+	{
+		lighting_invalidated_blocks[block->getPos()] = block;
+	}
+	
+	/*
 		Add some minerals
 	*/
 
-	if(is_underground && low_block_is_empty == false)
+	if(is_underground)
 	{
 		s16 underground_level = lowest_ground_y/MAP_BLOCKSIZE - block_y;
 		for(s16 i=0; i<underground_level*3; i++)
@@ -1640,9 +1772,6 @@ MapBlock * ServerMap::emergeBlock(
 			if(rand()%2 == 0)
 			{
 				v3s16 cp(
-					/*(rand()%(MAP_BLOCKSIZE-4))+2,
-					(rand()%(MAP_BLOCKSIZE-4))+2,
-					(rand()%(MAP_BLOCKSIZE-4))+2*/
 					(rand()%(MAP_BLOCKSIZE-2))+1,
 					(rand()%(MAP_BLOCKSIZE-2))+1,
 					(rand()%(MAP_BLOCKSIZE-2))+1
@@ -1656,6 +1785,9 @@ MapBlock * ServerMap::emergeBlock(
 
 				for(u16 i=0; i<26; i++)
 				{
+					if(!is_ground_material(block->getNode(cp+g_26dirs[i]).d))
+						continue;
+
 					if(rand()%8 == 0)
 						block->setNode(cp+g_26dirs[i], n);
 				}
@@ -1666,7 +1798,7 @@ MapBlock * ServerMap::emergeBlock(
 	/*
 		Create a few rats in empty blocks underground
 	*/
-	if(is_underground && low_block_is_empty == true)
+	/*if(is_underground && low_block_is_empty == true)
 	{
 		//for(u16 i=0; i<2; i++)
 		{
@@ -1674,42 +1806,54 @@ MapBlock * ServerMap::emergeBlock(
 			RatObject *obj = new RatObject(NULL, -1, intToFloat(pos));
 			block->addObject(obj);
 		}
-	}
-	
-	/*
-		TODO: REMOVE
-		DEBUG
-		Add some objects to the block for testing.
-	*/
-	/*if(p == v3s16(0,0,0))
-	{
-		//TestObject *obj = new TestObject(NULL, -1, v3f(BS*8,BS*8,BS*8));
-		Test2Object *obj = new Test2Object(NULL, -1, v3f(BS*8,BS*15,BS*8));
-		block->addObject(obj);
 	}*/
 	
-	/*
-	{
-		v3s16 pos(8, 11, 8);
-		SignObject *obj = new SignObject(NULL, -1, intToFloat(pos));
-		obj->setText("Moicka");
-		obj->setYaw(45);
-		block->addObject(obj);
-	}
-
-	{
-		v3s16 pos(8, 11, 8);
-		RatObject *obj = new RatObject(NULL, -1, intToFloat(pos));
-		block->addObject(obj);
-	}
-	*/
-
 	/*
 		Add block to sector.
 	*/
 	sector->insertBlock(block);
 	
-	// An y-wise container if changed blocks
+	/*
+		Do some interpolation for dungeons
+	*/
+
+#if 0	
+	{
+	TimeTaker timer("interpolation", g_device);
+	
+	MapVoxelManipulator vmanip(this);
+	
+	v3s16 relpos = block->getPosRelative();
+
+	vmanip.interpolate(VoxelArea(relpos-v3s16(1,1,1),
+			relpos+v3s16(1,1,1)*(MAP_BLOCKSIZE+1)));
+	/*vmanip.interpolate(VoxelArea(relpos,
+			relpos+v3s16(1,1,1)*(MAP_BLOCKSIZE-1)));*/
+	
+	core::map<v3s16, MapBlock*> modified_blocks;
+	vmanip.blitBack(modified_blocks);
+	dstream<<"blitBack modified "<<modified_blocks.size()
+			<<" blocks"<<std::endl;
+
+	// Add modified blocks to changed_blocks and lighting_invalidated_blocks
+	for(core::map<v3s16, MapBlock*>::Iterator
+			i = modified_blocks.getIterator();
+			i.atEnd() == false; i++)
+	{
+		MapBlock *block = i.getNode()->getValue();
+
+		changed_blocks.insert(block->getPos(), block);
+		//lighting_invalidated_blocks.insert(block->getPos(), block);
+	}
+
+	}
+#endif
+
+	/*
+		Sector object stuff
+	*/
+		
+	// An y-wise container of changed blocks
 	core::map<s16, MapBlock*> changed_blocks_sector;
 
 	/*
@@ -1722,6 +1866,7 @@ MapBlock * ServerMap::emergeBlock(
 			i.atEnd() == false; i++)
 	{
 		v3s16 p = i.getNode()->getKey();
+		v2s16 p2d(p.X,p.Z);
 		u8 d = i.getNode()->getValue();
 
 		//v3s16 p = p_sector - v3s16(0, block_y*MAP_BLOCKSIZE, 0);
@@ -1795,6 +1940,66 @@ MapBlock * ServerMap::emergeBlock(
 				objects_to_remove.push_back(p);
 			}
 		}
+		else if(d == SECTOR_OBJECT_RAVINE)
+		{
+			s16 maxdepth = -20;
+			v3s16 p_min = p + v3s16(-6,maxdepth,-6);
+			v3s16 p_max = p + v3s16(6,6,6);
+			if(sector->isValidArea(p_min, p_max,
+					&changed_blocks_sector))
+			{
+				MapNode n;
+				n.d = MATERIAL_STONE;
+				MapNode n2;
+				n2.d = MATERIAL_AIR;
+				s16 depth = maxdepth + (rand()%10);
+				s16 z = 0;
+				s16 minz = -6 - (-2);
+				s16 maxz = 6 -1;
+				for(s16 x=-6; x<=6; x++)
+				{
+					z += -1 + (rand()%3);
+					if(z < minz)
+						z = minz;
+					if(z > maxz)
+						z = maxz;
+					for(s16 y=depth+(rand()%2); y<=6; y++)
+					{
+						/*std::cout<<"("<<p2.X<<","<<p2.Y<<","<<p2.Z<<")"
+								<<std::endl;*/
+						{
+							v3s16 p2 = p + v3s16(x,y,z-2);
+							if(is_ground_material(sector->getNode(p2).d))
+								sector->setNode(p2, n);
+						}
+						{
+							v3s16 p2 = p + v3s16(x,y,z-1);
+							if(is_ground_material(sector->getNode(p2).d))
+								sector->setNode(p2, n2);
+						}
+						{
+							v3s16 p2 = p + v3s16(x,y,z+0);
+							if(is_ground_material(sector->getNode(p2).d))
+								sector->setNode(p2, n2);
+						}
+						{
+							v3s16 p2 = p + v3s16(x,y,z+1);
+							if(is_ground_material(sector->getNode(p2).d))
+								sector->setNode(p2, n);
+						}
+
+						//if(sector->getNode(p+v3s16(x,y,z+1)).solidness()==2)
+						//if(p.Y+y <= sector->getGroundHeight(p2d+v2s16(x,z-2))+0.5)
+					}
+				}
+				
+				objects_to_remove.push_back(p);
+				
+				// Lighting has to be recalculated for this one.
+				sector->getBlocksInArea(p_min, p_max, 
+						lighting_invalidated_blocks);
+			}
+		}
 		else
 		{
 			dstream<<"ServerMap::emergeBlock(): "
@@ -1807,7 +2012,7 @@ MapBlock * ServerMap::emergeBlock(
 		{
 			dstream<<"WARNING: "<<__FUNCTION_NAME
 					<<": while inserting object "<<(int)d
-					<<" to ("<<p.X<<","<<p.Y<<","<<p.Z<<")"
+					<<" to ("<<p.X<<","<<p.Y<<","<<p.Z<<"):"
 					<<" InvalidPositionException.what()="
 					<<e.what()<<std::endl;
 			// This is not too fatal and seems to happen sometimes.

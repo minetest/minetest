@@ -31,7 +31,7 @@ void * ClientUpdateThread::Thread()
 			bool was = m_client->AsyncProcessData();
 
 			if(was == false)
-				sleep_ms(50);
+				sleep_ms(10);
 		}
 #if CATCH_UNHANDLED_EXCEPTIONS
 	}
@@ -159,13 +159,17 @@ void Client::step(float dtime)
 	{
 		/*
 			Delete unused sectors
+
+			NOTE: This jams the game for a while because deleting sectors
+			      clear caches
 		*/
 		
 		static float counter = -0.001;
 		counter -= dtime;
 		if(counter <= 0.0)
 		{
-			counter = 10.0;
+			// 3 minute interval
+			counter = 180.0;
 
 			JMutexAutoLock lock(m_env_mutex);
 
@@ -381,6 +385,8 @@ float Client::asyncStep()
 	/*float dtime;
 	{
 		JMutexAutoLock lock1(m_step_dtime_mutex);
+		if(m_step_dtime < 0.001)
+			return 0.0;
 		dtime = m_step_dtime;
 		m_step_dtime = 0.0;
 	}
@@ -1207,6 +1213,18 @@ bool Client::AsyncProcessPacket(LazyMeshUpdater &mesh_updater)
 
 bool Client::AsyncProcessData()
 {
+	for(;;)
+	{
+		// We want to update the meshes as soon as a single packet has
+		// been processed
+		LazyMeshUpdater mesh_updater(&m_env);
+		bool r = AsyncProcessPacket(mesh_updater);
+		if(r == false)
+			break;
+	}
+	return false;
+
+	/*
 	LazyMeshUpdater mesh_updater(&m_env);
 	for(;;)
 	{
@@ -1214,7 +1232,7 @@ bool Client::AsyncProcessData()
 		if(r == false)
 			break;
 	}
-	return false;
+	return false;*/
 }
 
 void Client::Send(u16 channelnum, SharedBuffer<u8> data, bool reliable)
