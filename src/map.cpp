@@ -1641,7 +1641,7 @@ MapBlock * ServerMap::emergeBlock(
 	if(rand() % 4 == 0)
 		low_block_is_empty = true;*/
 	
-	s32 ued = 4;
+	const s32 ued = 4;
 	bool underground_emptiness[ued*ued*ued];
 	for(s32 i=0; i<ued*ued*ued; i++)
 	{
