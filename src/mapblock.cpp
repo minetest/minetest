@@ -297,6 +297,8 @@ void MapBlock::updateMesh()
 
 	core::list<FastFace*> *fastfaces_new = new core::list<FastFace*>;
 	
+	//TimeTaker timer1("updateMesh1", g_device);
+
 	/*
 		We are including the faces of the trailing edges of the block.
 		This means that when something changes, the caller must
@@ -340,12 +342,26 @@ void MapBlock::updateMesh()
 		}
 	}
 
+	//timer1.stop();
+	//TimeTaker timer2("updateMesh2", g_device);
+
 	scene::SMesh *mesh_new = NULL;
+
+	//s32 appendtime = 0;
 	
 	if(fastfaces_new->getSize() > 0)
 	{
 		mesh_new = new scene::SMesh();
 		scene::IMeshBuffer *buf = NULL;
+		
+		/*
+			Buffer for lesser calls to
+			mesh_new->getMeshBuffer(g_materials[f->material]),
+			which is slow.
+
+			key = material id, value = meshbuffer of that material
+		*/
+		core::map<u8, scene::IMeshBuffer*> bufs;
 
 		core::list<FastFace*>::Iterator i = fastfaces_new->begin();
 
@@ -359,27 +375,43 @@ void MapBlock::updateMesh()
 			if(f->material != material_in_use || buf == NULL)
 			{
 				// Try to get a meshbuffer associated with the material
-				buf = mesh_new->getMeshBuffer(g_materials[f->material]);
-				// If not found, create one
-				if(buf == NULL)
+				core::map<u8, scene::IMeshBuffer*>::Node*
+						n = bufs.find(f->material);
+
+				if(n != NULL)
 				{
-					// This is a "Standard MeshBuffer",
-					// it's a typedeffed CMeshBuffer<video::S3DVertex>
-					buf = new scene::SMeshBuffer();
-					// Set material
-					((scene::SMeshBuffer*)buf)->Material = g_materials[f->material];
-					// Use VBO
-					//buf->setHardwareMappingHint(scene::EHM_STATIC);
-					// Add to mesh
-					mesh_new->addMeshBuffer(buf);
-					// Mesh grabbed it
-					buf->drop();
+					buf = n->getValue();
+				}
+				else
+				{
+					buf = mesh_new->getMeshBuffer(g_materials[f->material]);
+					// If not found, create one
+					if(buf == NULL)
+					{
+						// This is a "Standard MeshBuffer",
+						// it's a typedeffed CMeshBuffer<video::S3DVertex>
+						buf = new scene::SMeshBuffer();
+						bufs[f->material] = buf;
+						// Set material
+						((scene::SMeshBuffer*)buf)->Material = g_materials[f->material];
+						// Use VBO
+						//buf->setHardwareMappingHint(scene::EHM_STATIC);
+						// Add to mesh
+						mesh_new->addMeshBuffer(buf);
+						// Mesh grabbed it
+						buf->drop();
+					}
 				}
 				material_in_use = f->material;
 			}
 
 			u16 indices[] = {0,1,2,2,3,0};
+
+			//TimeTaker timer("", g_device);
+
 			buf->append(f->vertices, 4, indices, 6);
+			
+			//appendtime += timer.stop(true);
 		}
 
 		// Use VBO for mesh (this just would set this for ever buffer)
@@ -389,6 +421,8 @@ void MapBlock::updateMesh()
 				<<"and uses "<<mesh_new->getMeshBufferCount()
 				<<" materials"<<std::endl;*/
 	}
+
+	//dstream<<"appendtime="<<appendtime<<std::endl;
 
 	// TODO: Get rid of the FastFace stage
 	core::list<FastFace*>::Iterator i;
