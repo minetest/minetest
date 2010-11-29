@@ -283,6 +283,98 @@ void MapBlock::updateFastFaceRow(v3s16 startpos,
 	}
 }
 
+/*
+	This is used because CMeshBuffer::append() is very slow
+*/
+struct PreMeshBuffer
+{
+	video::SMaterial material;
+	core::array<u16> indices;
+	core::array<video::S3DVertex> vertices;
+};
+
+class MeshCollector
+{
+public:
+	void append(
+			video::SMaterial material,
+			const video::S3DVertex* const vertices,
+			u32 numVertices,
+			const u16* const indices,
+			u32 numIndices
+		)
+	{
+		PreMeshBuffer *p = NULL;
+		for(u32 i=0; i<m_prebuffers.size(); i++)
+		{
+			PreMeshBuffer &pp = m_prebuffers[i];
+			if(pp.material != material)
+				continue;
+
+			p = &pp;
+			break;
+		}
+
+		if(p == NULL)
+		{
+			PreMeshBuffer pp;
+			pp.material = material;
+			m_prebuffers.push_back(pp);
+			p = &m_prebuffers[m_prebuffers.size()-1];
+		}
+
+		u32 vertex_count = p->vertices.size();
+		for(u32 i=0; i<numIndices; i++)
+		{
+			u32 j = indices[i] + vertex_count;
+			if(j > 65535)
+			{
+				dstream<<"FIXME: Meshbuffer ran out of indices"<<std::endl;
+				// NOTE: Fix is to just add an another MeshBuffer
+			}
+			p->indices.push_back(j);
+		}
+		for(u32 i=0; i<numVertices; i++)
+		{
+			p->vertices.push_back(vertices[i]);
+		}
+	}
+
+	void fillMesh(scene::SMesh *mesh)
+	{
+		/*dstream<<"Filling mesh with "<<m_prebuffers.size()
+				<<" meshbuffers"<<std::endl;*/
+		for(u32 i=0; i<m_prebuffers.size(); i++)
+		{
+			PreMeshBuffer &p = m_prebuffers[i];
+
+			/*dstream<<"p.vertices.size()="<<p.vertices.size()
+					<<", p.indices.size()="<<p.indices.size()
+					<<std::endl;*/
+			
+			// Create meshbuffer
+			
+			// This is a "Standard MeshBuffer",
+			// it's a typedeffed CMeshBuffer<video::S3DVertex>
+			scene::IMeshBuffer *buf = new scene::SMeshBuffer();
+			// Set material
+			((scene::SMeshBuffer*)buf)->Material = p.material;
+			// Use VBO
+			//buf->setHardwareMappingHint(scene::EHM_STATIC);
+			// Add to mesh
+			mesh->addMeshBuffer(buf);
+			// Mesh grabbed it
+			buf->drop();
+
+			buf->append(p.vertices.pointer(), p.vertices.size(),
+					p.indices.pointer(), p.indices.size());
+		}
+	}
+
+private:
+	core::array<PreMeshBuffer> m_prebuffers;
+};
+
 void MapBlock::updateMesh()
 {
 	/*v3s16 p = getPosRelative();
@@ -344,7 +436,25 @@ void MapBlock::updateMesh()
 	
 	if(fastfaces_new->getSize() > 0)
 	{
+		MeshCollector collector;
+
+		core::list<FastFace*>::Iterator i = fastfaces_new->begin();
+
+		for(; i != fastfaces_new->end(); i++)
+		{
+			FastFace *f = *i;
+
+			const u16 indices[] = {0,1,2,2,3,0};
+
+			collector.append(g_materials[f->material], f->vertices, 4,
+					indices, 6);
+		}
+
 		mesh_new = new scene::SMesh();
+		
+		collector.fillMesh(mesh_new);
+
+#if 0
 		scene::IMeshBuffer *buf = NULL;
 
 		core::list<FastFace*>::Iterator i = fastfaces_new->begin();
@@ -377,17 +487,19 @@ void MapBlock::updateMesh()
 				}
 				material_in_use = f->material;
 			}
-
-			u16 indices[] = {0,1,2,2,3,0};
-			buf->append(f->vertices, 4, indices, 6);
+			
+			u16 new_indices[] = {0,1,2,2,3,0};
+			
+			//buf->append(f->vertices, 4, indices, 6);
 		}
+#endif
 
 		// Use VBO for mesh (this just would set this for ever buffer)
 		//mesh_new->setHardwareMappingHint(scene::EHM_STATIC);
 		
 		/*std::cout<<"MapBlock has "<<fastfaces_new->getSize()<<" faces "
 				<<"and uses "<<mesh_new->getMeshBufferCount()
-				<<" materials"<<std::endl;*/
+				<<" materials (meshbuffers)"<<std::endl;*/
 	}
 
 	// TODO: Get rid of the FastFace stage

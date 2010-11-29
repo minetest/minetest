@@ -197,6 +197,8 @@ Before release:
 
 TODO: Check what goes wrong with caching map to disk (Kray)
 
+TODO: Remove LazyMeshUpdater. It is not used as supposed.
+
 Doing now:
 ======================================================================
 
@@ -335,6 +337,7 @@ void set_default_settings()
 	g_settings.set("height_randfactor", "constant 0.6");
 	g_settings.set("height_base", "linear 0 35 0");
 	g_settings.set("plants_amount", "1.0");
+	g_settings.set("ravines_amount", "1.0");
 	g_settings.set("objectdata_interval", "0.2");
 	g_settings.set("active_object_range", "2");
 	g_settings.set("max_simultaneous_block_sends_per_client", "2");
@@ -1024,6 +1027,7 @@ int main(int argc, char *argv[])
 
 	MapParams map_params;
 	map_params.plants_amount = g_settings.getFloat("plants_amount");
+	map_params.ravines_amount = g_settings.getFloat("ravines_amount");
 
 	/*
 		Ask some stuff

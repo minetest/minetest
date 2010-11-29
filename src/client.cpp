@@ -1224,8 +1224,7 @@ bool Client::AsyncProcessData()
 	}
 	return false;
 
-	/*
-	LazyMeshUpdater mesh_updater(&m_env);
+	/*LazyMeshUpdater mesh_updater(&m_env);
 	for(;;)
 	{
 		bool r = AsyncProcessPacket(mesh_updater);
@@ -1233,6 +1232,7 @@ bool Client::AsyncProcessData()
 			break;
 	}
 	return false;*/
+
 }
 
 void Client::Send(u16 channelnum, SharedBuffer<u8> data, bool reliable)

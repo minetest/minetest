@@ -388,9 +388,11 @@ struct MapParams
 	MapParams()
 	{
 		plants_amount = 1.0;
+		ravines_amount = 1.0;
 		//max_objects_in_block = 30;
 	}
 	float plants_amount;
+	float ravines_amount;
 	//u16 max_objects_in_block;
 };
 

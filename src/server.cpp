@@ -380,7 +380,7 @@ void RemoteClient::GetNextBlocks(Server *server, float dtime,
 
 				Also, don't send blocks that are already flying.
 			*/
-			if(d >= BLOCK_SEND_DISABLE_LIMITS_MAX_D)
+			if(d > BLOCK_SEND_DISABLE_LIMITS_MAX_D)
 			{
 				JMutexAutoLock lock(m_blocks_sending_mutex);
 				

@@ -95,6 +95,7 @@ struct IncomingPacket
 	s32 *m_refcount;
 };
 
+// TODO: Remove this. It is not used as supposed.
 class LazyMeshUpdater
 {
 public:

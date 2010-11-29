@@ -1521,7 +1521,7 @@ MapSector * ServerMap::emergeSector(v2s16 p2d)
 		Add ravine (randomly)
 	*/
 	{
-		if(rand()%10 == 0)
+		if(rand()%(s32)(10.0 * m_params.ravines_amount) == 0)
 		{
 			s16 s = 6;
 			s16 x = rand()%(MAP_BLOCKSIZE-s*2-1)+s;
