@@ -1475,7 +1475,7 @@ MapSector * ServerMap::emergeSector(v2s16 p2d)
 	{
 		// Avgslope is the derivative of a hill
 		float t = avgslope * avgslope;
-		float a = MAP_BLOCKSIZE * 2 * m_params.plants_amount;
+		float a = MAP_BLOCKSIZE * m_params.plants_amount;
 		u32 tree_max;
 		if(t > 0.03)
 			tree_max = a / (t/0.03);
@@ -1520,8 +1520,9 @@ MapSector * ServerMap::emergeSector(v2s16 p2d)
 	/*
 		Add ravine (randomly)
 	*/
+	if(m_params.ravines_amount != 0)
 	{
-		if(rand()%(s32)(10.0 * m_params.ravines_amount) == 0)
+		if(rand()%(s32)(10.0 / m_params.ravines_amount) == 0)
 		{
 			s16 s = 6;
 			s16 x = rand()%(MAP_BLOCKSIZE-s*2-1)+s;

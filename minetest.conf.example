@@ -3,24 +3,27 @@
 # ../../minetest.conf
 # Any other path can be chosen by passing the path as a parameter
 # to the program, eg. "minetest.exe ../minetest.conf.example"
+#
+# By default, all the settings are commented and not functional.
+# Uncomment settings by removing the preceding #.
 
-dedicated_server =
+#dedicated_server =
 
 # Client side stuff
 
-wanted_fps = 30
-fps_max = 60
-viewing_range_nodes_max = 300
-viewing_range_nodes_min = 20
-screenW = 
-screenH = 
-host_game = 
-port = 30000
-address = celer.oni.biz
-name = 
+#wanted_fps = 30
+#fps_max = 60
+#viewing_range_nodes_max = 300
+#viewing_range_nodes_min = 20
+#screenW = 
+#screenH = 
+#host_game = 
+#port = 30000
+#address = kray.dy.fi
+#name = 
 
-random_input = false
-client_delete_unused_sectors_timeout = 1200
+#random_input = false
+#client_delete_unused_sectors_timeout = 1200
 
 # Server side stuff
 
@@ -33,19 +36,20 @@ client_delete_unused_sectors_timeout = 1200
 # H=slope.dot(pos^power):
 #     power <height> <slope.X> <slope.Y> <power>
 
-mapgen_heightmap_blocksize = 64
-mapgen_height_randmax = constant 70.0
-mapgen_height_randfactor = constant 0.6
-mapgen_height_base = linear 0 80 0
-mapgen_plants_amount = 1.0
+#mapgen_heightmap_blocksize = 64
+#height_randmax = constant 70.0
+#height_randfactor = constant 0.6
+#height_base = linear 0 35 0
+#plants_amount = 1.0
+#ravines_amount = 1.0
 
 # Set to true to enable creative mode (unlimited inventory)
-creative_mode = false
+#creative_mode = false
 # Player and object positions are sent at intervals specified by this
-objectdata_inverval = 0.2
+#objectdata_inverval = 0.2
 
-active_object_range = 2
+#active_object_range = 2
 
-max_simultaneous_block_sends_per_client = 2
-max_simultaneous_block_sends_server_total = 4
+#max_simultaneous_block_sends_per_client = 2
+#max_simultaneous_block_sends_server_total = 4
 
