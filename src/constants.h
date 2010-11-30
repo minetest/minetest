@@ -85,5 +85,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 */
 #define MAX_OBJECTDATA_SIZE 450
 
+//#define WATER_LEVEL (-5)
+#define WATER_LEVEL (0)
+
 #endif
 

@@ -101,11 +101,28 @@ void Environment::step(float dtime)
 		{
 			Player *player = *i;
 			
-			// Apply gravity to local player
+			// Apply physics to local player
 			if(player->isLocal())
 			{
+				// Apply gravity to local player
 				v3f speed = player->getSpeed();
 				speed.Y -= 9.81 * BS * dtime_part * 2;
+
+				/*
+					Apply water resistance
+				*/
+				if(player->in_water)
+				{
+					f32 max_down = 1.0*BS;
+					if(speed.Y < -max_down) speed.Y = -max_down;
+
+					f32 max = 2.0*BS;
+					if(speed.getLength() > max)
+					{
+						speed = speed / speed.getLength() * max;
+					}
+				}
+
 				player->setSpeed(speed);
 			}
 

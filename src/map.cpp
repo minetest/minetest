@@ -1046,7 +1046,67 @@ void Map::removeNodeAndUpdate(v3s16 p,
 	bool node_under_sunlight = true;
 	
 	v3s16 toppos = p + v3s16(0,1,0);
+
+	// Node will be replaced with this
+	u8 replace_material = MATERIAL_AIR;
 	
+	{
+		/*
+			Find out with what material the node will be replaced.
+			It will be replaced with the mostly seen buildable_to.
+		*/
+
+		v3s16 dirs[6] = {
+			v3s16(0,0,1), // back
+			v3s16(0,1,0), // top
+			v3s16(1,0,0), // right
+			v3s16(0,0,-1), // front
+			v3s16(0,-1,0), // bottom
+			v3s16(-1,0,0), // left
+		};
+
+		core::map<u8, u16> neighbor_rankings;
+		
+		for(u32 i=0; i<sizeof(dirs)/sizeof(dirs[0]); i++)
+		{
+			try{
+				MapNode n2 = getNode(p + dirs[i]);
+
+				if(material_buildable_to(n2.d))
+				{
+					if(neighbor_rankings.find(n2.d) == NULL)
+						neighbor_rankings[n2.d] = 1;
+					else
+						neighbor_rankings[n2.d]
+							= neighbor_rankings[n2.d] + 1;
+				}
+			}
+			catch(InvalidPositionException &e)
+			{
+			}
+		}
+
+		u16 highest_ranking = 0;
+		
+		for(core::map<u8, u16>::Iterator
+				i = neighbor_rankings.getIterator();
+				i.atEnd() == false; i++)
+		{
+			u8 m = i.getNode()->getKey();
+			u8 c = i.getNode()->getValue();
+			if(
+					c > highest_ranking ||
+					// Prefer something else than air
+					(c >= highest_ranking && m != MATERIAL_AIR)
+
+			)
+			{
+				replace_material = m;
+				highest_ranking = c;
+			}
+		}
+	}
+
 	/*
 		If there is a node at top and it doesn't have sunlight,
 		there will be no sunlight going down.
@@ -1073,7 +1133,7 @@ void Map::removeNodeAndUpdate(v3s16 p,
 		Remove the node
 	*/
 	MapNode n;
-	n.d = MATERIAL_AIR;
+	n.d = replace_material;
 	n.setLight(0);
 	setNode(p, n);
 	

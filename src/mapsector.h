@@ -34,8 +34,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 	This is an Y-wise stack of MapBlocks.
 */
 
-#define WATER_LEVEL (-5)
-
 #define SECTOR_OBJECT_TEST 0
 #define SECTOR_OBJECT_TREE_1 1
 #define SECTOR_OBJECT_BUSH_1 2

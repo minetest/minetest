@@ -133,6 +133,34 @@ inline u8 material_solidness(u8 m)
 	return 2;
 }
 
+// Objects collide with walkable materials
+inline bool material_walkable(u8 m)
+{
+	return (m != MATERIAL_AIR && m != MATERIAL_WATER);
+}
+
+// A liquid resists fast movement
+inline bool material_liquid(u8 m)
+{
+	return (m == MATERIAL_WATER);
+}
+
+// Pointable materials can be pointed to in the map
+inline bool material_pointable(u8 m)
+{
+	return (m != MATERIAL_AIR && m != MATERIAL_WATER);
+}
+
+inline bool material_diggable(u8 m)
+{
+	return (m != MATERIAL_AIR && m != MATERIAL_WATER);
+}
+
+inline bool material_buildable_to(u8 m)
+{
+	return (m == MATERIAL_AIR || m == MATERIAL_WATER);
+}
+
 /*
 	Nodes make a face if materials differ and solidness differs.
 	Return value:

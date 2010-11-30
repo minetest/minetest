@@ -167,6 +167,12 @@ TODO: Check what goes wrong with caching map to disk (Kray)
 
 TODO: Remove LazyMeshUpdater. It is not used as supposed.
 
+FIXME: Rats somehow go underground sometimes (you can see it in water)
+       - Does their position get saved to a border value or something?
+
+TODO: MovingObject::move and Player::move are basically the same.
+      combine them.
+
 Doing now:
 ======================================================================
 
@@ -1013,6 +1019,19 @@ int main(int argc, char *argv[])
 	*/
 
 	std::cout<<std::endl<<std::endl;
+	
+	std::cout
+	<<"        .__               __                   __   "<<std::endl
+	<<"  _____ |__| ____   _____/  |_  ____   _______/  |_ "<<std::endl
+	<<" /     \\|  |/    \\_/ __ \\   __\\/ __ \\ /  ___/\\   __\\"<<std::endl
+	<<"|  Y Y  \\  |   |  \\  ___/|  | \\  ___/ \\___ \\  |  |  "<<std::endl
+	<<"|__|_|  /__|___|  /\\___  >__|  \\___  >____  > |__|  "<<std::endl
+	<<"      \\/        \\/     \\/          \\/     \\/        "<<std::endl
+	<<std::endl
+	<<"Now with more waterish water!"
+	<<std::endl;
+
+	std::cout<<std::endl;
 	char templine[100];
 	
 	// Dedicated?
@@ -1830,9 +1849,8 @@ int main(int argc, char *argv[])
 		for(s16 x = xstart; x <= xend; x++)
 		{
 			try{
-				if(client.getNode(v3s16(x,y,z)).d == MATERIAL_AIR){
+				if(material_pointable(client.getNode(v3s16(x,y,z)).d) == false)
 					continue;
-				}
 			}catch(InvalidPositionException &e){
 				continue;
 			}

@@ -145,9 +145,9 @@ void MovingObject::move(float dtime, v3f acceleration)
 		for(s16 x = oldpos_i.X - 1; x <= oldpos_i.X + 1; x++)
 		{
 			try{
-				if(m_block->getNodeParent(v3s16(x,y,z)).d == MATERIAL_AIR){
+				if(material_walkable(m_block->getNodeParent(v3s16(x,y,z)).d)
+						== false)
 					continue;
-				}
 			}
 			catch(InvalidPositionException &e)
 			{

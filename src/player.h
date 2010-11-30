@@ -95,6 +95,7 @@ public:
 	virtual bool isLocal() const = 0;
 
 	bool touching_ground;
+	bool in_water;
 	
 	Inventory inventory;
 

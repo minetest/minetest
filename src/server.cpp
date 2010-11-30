@@ -1419,8 +1419,8 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 			{
 				// Get material at position
 				material = m_env.getMap().getNode(p_under).d;
-				// If it's air, do nothing
-				if(material == MATERIAL_AIR)
+				// If it's not diggable, do nothing
+				if(material_diggable(material) == false)
 				{
 					return;
 				}
@@ -1484,9 +1484,9 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 				n.d = mitem->getMaterial();
 
 				try{
-					// Don't add a node if there isn't air
+					// Don't add a node if this is not a free space
 					MapNode n2 = m_env.getMap().getNode(p_over);
-					if(n2.d != MATERIAL_AIR)
+					if(material_buildable_to(n2.d) == false)
 						return;
 				}
 				catch(InvalidPositionException &e)

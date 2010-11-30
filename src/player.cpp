@@ -28,6 +28,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 Player::Player():
 	touching_ground(false),
+	in_water(false),
 	inventory(PLAYER_INVENTORY_SIZE),
 	peer_id(PEER_ID_NEW),
 	m_speed(0,0,0),
@@ -64,6 +65,26 @@ void Player::move(f32 dtime, Map &map)
 
 	v3s16 pos_i = floatToInt(position);
 	
+	/*
+		Check if player is in water
+	*/
+	try{
+		if(in_water)
+		{
+			v3s16 pp = floatToInt(position + v3f(0,0,0));
+			in_water = material_liquid(map.getNode(pp).d);
+		}
+		else
+		{
+			v3s16 pp = floatToInt(position + v3f(0,BS/2,0));
+			in_water = material_liquid(map.getNode(pp).d);
+		}
+	}
+	catch(InvalidPositionException &e)
+	{
+		in_water = false;
+	}
+
 	// The frame length is limited to the player going 0.1*BS per call
 	f32 d = (float)BS * 0.15;
 
@@ -100,10 +121,8 @@ void Player::move(f32 dtime, Map &map)
 	for(s16 y = oldpos_i.Y - 1; y <= oldpos_i.Y + 2; y++){
 		for(s16 z = oldpos_i.Z - 1; z <= oldpos_i.Z + 1; z++){
 			for(s16 x = oldpos_i.X - 1; x <= oldpos_i.X + 1; x++){
-				//std::cout<<"with ("<<x<<","<<y<<","<<z<<"): ";
 				try{
-					if(map.getNode(v3s16(x,y,z)).d == MATERIAL_AIR){
-						//std::cout<<"air."<<std::endl;
+					if(material_walkable(map.getNode(v3s16(x,y,z)).d) == false){
 						continue;
 					}
 				}
@@ -355,9 +374,16 @@ void LocalPlayer::applyControl(float dtime)
 	}
 	if(control.jump)
 	{
-		if(touching_ground){
+		if(touching_ground)
+		{
 			v3f speed = getSpeed();
 			speed.Y = 6.5*BS;
+			setSpeed(speed);
+		}
+		else if(in_water)
+		{
+			v3f speed = getSpeed();
+			speed.Y = 2.0*BS;
 			setSpeed(speed);
 		}
 	}
