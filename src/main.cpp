@@ -81,6 +81,9 @@ SUGGESTION: Use same technique for sector heightmaps as what we're
             using for UnlimitedHeightmap? (getting all neighbors
 			when generating)
 
+TODO: Proper handling of spawning place (try to find something that
+      is not in the middle of an ocean (some land to stand on at
+	  least) and save it in map config.
 SUGG: Set server to automatically find a good spawning place in some
       place where there is water and land.
 	  - Map to have a getWalkableNear(p)
@@ -175,6 +178,197 @@ TODO: MovingObject::move and Player::move are basically the same.
 
 Doing now:
 ======================================================================
+
+Water dynamics pseudo-code (block = MapNode):
+SUGG: Create separate flag table in VoxelManipulator to allow fast
+clearing of "modified" flags
+
+neighborCausedPressure(pos):
+	pressure = 0
+	dirs = {down, left, right, back, front, up}
+	for d in dirs:
+		pos2 = pos + d
+		p = block_at(pos2).pressure
+		if d.Y == 1 and p > min:
+			p -= 1
+		if d.Y == -1 and p < max:
+			p += 1
+		if p > pressure:
+			pressure = p
+	return pressure
+
+# This should somehow update all changed pressure values
+# in an unknown body of water
+updateWaterPressure(pos):
+	TODO
+
+FIXME: This goes in an indefinite loop when there is an underwater
+chamber like this:
+
+#111######
+#222##22##
+#33333333x<- block removed from here
+##########
+
+#111######
+#222##22##
+#3333333x1
+##########
+
+#111######
+#222##22##
+#333333x11
+##########
+
+#111######
+#222##2x##
+#333333333
+##########
+
+#111######
+#222##x2##
+#333333333
+##########
+
+Now, consider moving to the last block not allowed.
+
+Consider it a 3D case with a depth of 2. We're now at this situation.
+Note the additional blocking ## in the second depth plane.
+
+z=1         z=2
+#111######  #111######
+#222##x2##  #222##22##
+#333333333  #33333##33
+##########  ##########
+
+#111######  #111######
+#222##22##  #222##x2##
+#333333333  #33333##33
+##########  ##########
+
+#111######  #111######
+#222##22##  #222##2x##
+#333333333  #33333##33  
+##########  ##########
+
+Now there is nowhere to go, without going to an already visited block,
+but the pressure calculated in here from neighboring blocks is >= 2,
+so it is not the final ending.
+
+We will back up to a state where there is somewhere to go to.
+It is this state:
+
+#111######  #111######
+#222##22##  #222##22##
+#333333x33  #33333##33
+##########  ##########
+
+Then just go on, avoiding already visited blocks:
+
+#111######  #111######
+#222##22##  #222##22##
+#33333x333  #33333##33
+##########  ##########
+
+#111######  #111######
+#222##22##  #222##22##
+#3333x3333  #33333##33
+##########  ##########
+
+#111######  #111######
+#222##22##  #222##22##
+#333x33333  #33333##33
+##########  ##########
+
+#111######  #111######
+#222##22##  #222##22##
+#33x333333  #33333##33
+##########  ##########
+
+#111######  #111######
+#22x##22##  #222##22##
+#333333333  #33333##33
+##########  ##########
+
+#11x######  #111######
+#222##22##  #222##22##
+#333333333  #33333##33
+##########  ##########
+
+"Blob". the air bubble finally got out of the water.
+Then return recursively to a state where there is air next to water,
+clear the visit flags and feed the neighbor of the water recursively
+to the algorithm.
+
+#11 ######  #111######
+#222##22##  #222##22##
+#333333333x #33333##33
+##########  ##########
+
+#11 ######  #111######
+#222##22##  #222##22##
+#33333333x3 #33333##33
+##########  ##########
+
+...and so on.
+
+
+# removed_pos: a position that has been changed from something to air
+flowWater(removed_pos):
+	dirs = {top, left, right, back, front, bottom}
+	selected_dir = None
+	for d in dirs:
+		b2 = removed_pos + d
+
+		# Ignore positions that don't have water
+		if block_at(b2) != water:
+			continue
+
+		# Ignore positions that have already been checked
+		if block_at(b2).checked:
+			continue
+
+		# If block is at top, select it always.
+		if d.Y == 1:
+			selected_dir = d
+			break
+
+		# If block is at bottom, select it if it has enough pressure.
+		# >= 3 needed for stability (and sanity)
+		if d.Y == -1:
+			if block_at(b2).pressure >= 3:
+				selected_dir = d
+				break
+			continue
+		
+		# Else block is at some side. select it if it has enough pressure.
+		if block_at(b2).pressure >= 2:
+			selected_dir = d
+			break
+	
+	# If there is nothing to do anymore, return.
+	if selected_dir == None
+		return
+	
+	b2 = removed_pos + selected_dir
+	
+	# Move block
+	set_block(removed_pos, block_at(b2))
+	set_block(b2, air_block)
+	
+	# Update pressure
+	updateWaterPressure(removed_pos)
+	
+	# Flow water to the newly created empty position
+	flowWater(b2)
+
+	# Check empty positions around and try flowing water to them
+	for d in dirs:
+		b3 = removed_pos + d
+		# Ignore positions that are not air
+		if block_at(b3) is not air:
+			continue
+		flowWater(b3)
 
 
 ======================================================================

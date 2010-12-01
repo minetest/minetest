@@ -21,35 +21,97 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "map.h"
 
 VoxelManipulator::VoxelManipulator():
-	m_data(NULL)
+	m_data(NULL),
+	m_flags(NULL)
 {
 }
 
 VoxelManipulator::~VoxelManipulator()
 {
+	clear();
 	if(m_data)
 		delete[] m_data;
+	if(m_flags)
+		delete[] m_flags;
+}
+
+void VoxelManipulator::clear()
+{
+	// Reset area to volume=0
+	m_area = VoxelArea();
+	if(m_data)
+		delete[] m_data;
+	m_data = NULL;
+	if(m_flags)
+		delete[] m_flags;
+	m_flags = NULL;
+}
+
+void VoxelManipulator::print(std::ostream &o)
+{
+	v3s16 em = m_area.getExtent();
+	v3s16 of = m_area.MinEdge;
+	o<<"size: "<<em.X<<"x"<<em.Y<<"x"<<em.Z
+	 <<" offset: ("<<of.X<<","<<of.Y<<","<<of.Z<<")"<<std::endl;
+	
+	for(s32 y=m_area.MaxEdge.Y; y>=m_area.MinEdge.Y; y--)
+	{
+		if(em.X >= 3 && em.Y >= 3)
+		{
+			if     (y==m_area.MinEdge.Y+2) o<<"^     ";
+			else if(y==m_area.MinEdge.Y+1) o<<"|     ";
+			else if(y==m_area.MinEdge.Y+0) o<<"y x-> ";
+			else                           o<<"      ";
+		}
+
+		for(s32 z=m_area.MinEdge.Z; z<=m_area.MaxEdge.Z; z++)
+		{
+			for(s32 x=m_area.MinEdge.X; x<=m_area.MaxEdge.X; x++)
+			{
+				u8 f = m_flags[m_area.index(x,y,z)];
+				char c;
+				if(f & VOXELFLAG_NOT_LOADED)
+					c = 'N';
+				else if(f & VOXELFLAG_INEXISTENT)
+					c = 'I';
+				else
+				{
+					c = 'X';
+					u8 m = m_data[m_area.index(x,y,z)].d;
+					if(m <= 9)
+						c = m + '0';
+				}
+				o<<c;
+			}
+			o<<' ';
+		}
+		o<<std::endl;
+	}
 }
 
 void VoxelManipulator::addArea(VoxelArea area)
 {
+	// Cancel if requested area has zero volume
 	if(area.getExtent() == v3s16(0,0,0))
+		return;
+	
+	// Cancel if m_area already contains the requested area
+	if(m_area.contains(area))
 		return;
 	
 	// Calculate new area
 	VoxelArea new_area;
+	// New area is the requested area if m_area has zero volume
 	if(m_area.getExtent() == v3s16(0,0,0))
 	{
 		new_area = area;
 	}
+	// Else add requested area to m_area
 	else
 	{
 		new_area = m_area;
 		new_area.addArea(area);
 	}
-
-	if(new_area == m_area)
-		return;
 
 	s32 new_size = new_area.getVolume();
 
@@ -63,11 +125,11 @@ void VoxelManipulator::addArea(VoxelArea area)
 	dstream<<std::endl;*/
 
 	// Allocate and clear new data
-	MapNode *new_data;
-	new_data = new MapNode[new_size];
+	MapNode *new_data = new MapNode[new_size];
+	u8 *new_flags = new u8[new_size];
 	for(s32 i=0; i<new_size; i++)
 	{
-		new_data[i].d = MATERIAL_IGNORE;
+		new_flags[i] = VOXELFLAG_NOT_LOADED;
 	}
 	
 	// Copy old data
@@ -76,48 +138,31 @@ void VoxelManipulator::addArea(VoxelArea area)
 	for(s32 y=m_area.MinEdge.Y; y<=m_area.MaxEdge.Y; y++)
 	for(s32 x=m_area.MinEdge.X; x<=m_area.MaxEdge.X; x++)
 	{
-		new_data[new_area.index(z,y,x)] = m_data[m_area.index(x,y,z)];
+		// If loaded, copy data and flags
+		if((m_flags[m_area.index(x,y,z)] & VOXELFLAG_NOT_LOADED) == false)
+		{
+			new_data[new_area.index(x,y,z)] = m_data[m_area.index(x,y,z)];
+			new_flags[new_area.index(x,y,z)] = m_flags[m_area.index(x,y,z)];
+		}
 	}
 
-	// Replace member
-	m_area = new_area;
-	MapNode *old_data = m_data;
-	m_data = new_data;
-	delete[] old_data;
-}
-
-void VoxelManipulator::print(std::ostream &o)
-{
-	v3s16 em = m_area.getExtent();
-	v3s16 of = m_area.MinEdge;
-	o<<"size: "<<em.X<<"x"<<em.Y<<"x"<<em.Z
-	 <<" offset: ("<<of.X<<","<<of.Y<<","<<of.Z<<")"<<std::endl;
+	// Replace area, data and flags
 	
-	for(s32 y=m_area.MinEdge.Y; y<=m_area.MaxEdge.Y; y++)
-	{
-		if(em.X >= 3 && em.Y >= 3)
-		{
-			if(y==m_area.MinEdge.Y+0) o<<"y x-> ";
-			if(y==m_area.MinEdge.Y+1) o<<"|     ";
-			if(y==m_area.MinEdge.Y+2) o<<"V     ";
-		}
+	m_area = new_area;
+	
+	MapNode *old_data = m_data;
+	u8 *old_flags = m_flags;
 
-		for(s32 z=m_area.MinEdge.Z; z<=m_area.MaxEdge.Z; z++)
-		{
-			for(s32 x=m_area.MinEdge.X; x<=m_area.MaxEdge.X; x++)
-			{
-				u8 m = m_data[m_area.index(x,y,z)].d;
-				char c = 'X';
-				if(m == MATERIAL_IGNORE)
-					c = 'I';
-				else if(m <= 9)
-					c = m + '0';
-				o<<c;
-			}
-			o<<' ';
-		}
-		o<<std::endl;
-	}
+	/*dstream<<"old_data="<<(int)old_data<<", new_data="<<(int)new_data
+	<<", old_flags="<<(int)m_flags<<", new_flags="<<(int)new_flags<<std::endl;*/
+
+	m_data = new_data;
+	m_flags = new_flags;
+	
+	if(old_data)
+		delete[] old_data;
+	if(old_flags)
+		delete[] old_flags;
 }
 
 void VoxelManipulator::interpolate(VoxelArea area)
@@ -156,9 +201,12 @@ void VoxelManipulator::interpolate(VoxelArea area)
 		{
 			v3s16 p2 = p + dirs[i];
 
-			MapNode &n = m_data[m_area.index(p2)];
-			if(n.d == MATERIAL_IGNORE)
+			u8 f = m_flags[m_area.index(p2)];
+			assert(!(f & VOXELFLAG_NOT_LOADED));
+			if(f & VOXELFLAG_INEXISTENT)
 				continue;
+
+			MapNode &n = m_data[m_area.index(p2)];
 
 			airness += (n.d == MATERIAL_AIR) ? 1 : -1;
 			total++;
@@ -182,57 +230,91 @@ void VoxelManipulator::interpolate(VoxelArea area)
 	}
 }
 
-#if 0
-void VoxelManipulator::blitFromNodeContainer
-		(v3s16 p_from, v3s16 p_to, v3s16 size, NodeContainer *c)
+void VoxelManipulator::flowWater(v3s16 removed_pos)
 {
-	VoxelArea a_to(p_to, p_to+size-v3s16(1,1,1));
-	addArea(a_to);
-	for(s16 z=0; z<size.Z; z++)
-	for(s16 y=0; y<size.Y; y++)
-	for(s16 x=0; x<size.X; x++)
-	{
-		v3s16 p(x,y,z);
-		try{
-			MapNode n = c->getNode(p_from + p);
-			m_data[m_area.index(p_to + p)] = n;
-		}
-		catch(InvalidPositionException &e)
-		{
-		}
-		
-		/*v3s16 p(x,y,z);
-		MapNode n(MATERIAL_IGNORE);
-		try{
-			n = c->getNode(p_from + p);
-		}
-		catch(InvalidPositionException &e)
-		{
-		}
-		m_data[m_area.index(p_to + p)] = n;*/
-	}
-}
+	v3s16 dirs[6] = {
+		v3s16(0,1,0), // top
+		v3s16(-1,0,0), // left
+		v3s16(1,0,0), // right
+		v3s16(0,0,-1), // front
+		v3s16(0,0,1), // back
+		v3s16(0,-1,0), // bottom
+	};
 
-void VoxelManipulator::blitToNodeContainer
-		(v3s16 p_from, v3s16 p_to, v3s16 size, NodeContainer *c)
-{
-	for(s16 z=0; z<size.Z; z++)
-	for(s16 y=0; y<size.Y; y++)
-	for(s16 x=0; x<size.X; x++)
+	v3s16 p;
+
+	// Load neighboring nodes
+	// TODO: A bigger area would be better
+	emerge(VoxelArea(removed_pos - v3s16(1,1,1), removed_pos + v3s16(1,1,1)));
+
+	s32 i;
+	for(i=0; i<6; i++)
 	{
-		v3s16 p(x,y,z);
-		try{
-			MapNode &n = m_data[m_area.index(p_from + p)];
-			if(n.d == MATERIAL_IGNORE)
-				continue;
-			c->setNode(p_to + p, n);
-		}
-		catch(InvalidPositionException &e)
+		p = removed_pos + dirs[i];
+		u8 f = m_flags[m_area.index(p)];
+		// Inexistent or checked nodes can't move
+		if(f & (VOXELFLAG_INEXISTENT | VOXELFLAG_CHECKED))
+			continue;
+		MapNode &n = m_data[m_area.index(p)];
+		// Only liquid nodes can move
+		if(material_liquid(n.d) == false)
+			continue;
+		// If block is at top, select it always
+		if(i == 0)
 		{
+			break;
+		}
+		// If block is at bottom, select it if it has enough pressure
+		if(i == 5)
+		{
+			if(n.pressure >= 3)
+				break;
+			continue;
+		}
+		// Else block is at some side. Select it if it has enough pressure
+		if(n.pressure >= 2)
+		{
+			break;
 		}
 	}
+
+	// If there is nothing to move, return
+	if(i==6)
+		return;
+	
+	// Switch nodes at p and removed_pos
+	MapNode n = m_data[m_area.index(p)];
+	u8 f = m_flags[m_area.index(p)];
+	m_data[m_area.index(p)] = m_data[m_area.index(removed_pos)];
+	m_flags[m_area.index(p)] = m_flags[m_area.index(removed_pos)];
+	m_data[m_area.index(removed_pos)] = n;
+	m_flags[m_area.index(removed_pos)] = f;
+
+	// Mark p checked
+	m_flags[m_area.index(p)] |= VOXELFLAG_CHECKED;
+	
+	// Update pressure
+	//TODO
+
+	// Flow water to the newly created empty position
+	flowWater(p);
+	
+	// Try flowing water to empty positions around removed_pos.
+	// They are checked in reverse order compared to the previous loop.
+	for(i=5; i>=0; i--)
+	{
+		p = removed_pos + dirs[i];
+		u8 f = m_flags[m_area.index(p)];
+		// Water can't move to inexistent nodes
+		if(f & VOXELFLAG_INEXISTENT)
+			continue;
+		MapNode &n = m_data[m_area.index(p)];
+		// Water can only move to air
+		if(n.d != MATERIAL_AIR)
+			continue;
+		flowWater(p);
+	}
 }
-#endif
 
 /*
 	MapVoxelManipulator
@@ -254,12 +336,18 @@ void MapVoxelManipulator::emerge(VoxelArea a)
 	for(s16 x=0; x<size.X; x++)
 	{
 		v3s16 p(x,y,z);
+		s32 i = m_area.index(a.MinEdge + p);
+		// Don't touch nodes that have already been loaded
+		if(!(m_flags[i] & VOXELFLAG_NOT_LOADED))
+			continue;
 		try{
 			MapNode n = m_map->getNode(a.MinEdge + p);
-			m_data[m_area.index(a.MinEdge + p)] = n;
+			m_data[i] = n;
+			m_flags[i] = 0;
 		}
 		catch(InvalidPositionException &e)
 		{
+			m_flags[i] = VOXELFLAG_INEXISTENT;
 		}
 	}
 }
@@ -280,9 +368,11 @@ void MapVoxelManipulator::blitBack
 	{
 		v3s16 p(x,y,z);
 
-		MapNode &n = m_data[m_area.index(p)];
-		if(n.d == MATERIAL_IGNORE)
+		u8 f = m_flags[m_area.index(p)];
+		if(f & (VOXELFLAG_NOT_LOADED|VOXELFLAG_INEXISTENT))
 			continue;
+
+		MapNode &n = m_data[m_area.index(p)];
 			
 		v3s16 blockpos = getNodeBlockPos(p);
 		

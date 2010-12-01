@@ -13,9 +13,9 @@ JTHREADPATH = ../jthread/jthread-1.2.1
 CPPFLAGS = -I$(IRRLICHTPATH)/include -I/usr/X11R6/include -I$(JTHREADPATH)/src
 
 #CXXFLAGS = -O2 -ffast-math -Wall -fomit-frame-pointer -pipe
-CXXFLAGS = -O2 -ffast-math -Wall -g -pipe
+#CXXFLAGS = -O2 -ffast-math -Wall -g -pipe
 #CXXFLAGS = -O1 -ffast-math -Wall -g
-#CXXFLAGS = -Wall -g -O0
+CXXFLAGS = -Wall -g -O0
 
 #CXXFLAGS = -O3 -ffast-math -Wall
 #CXXFLAGS = -O3 -ffast-math -Wall -g

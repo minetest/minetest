@@ -25,7 +25,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <iostream>
 
 /*
-	TODO: A fast voxel manipulator class
+	A fast voxel manipulator class
 
 	Not thread-safe.
 */
@@ -71,16 +71,24 @@ public:
 		if(p.Y > MaxEdge.Y) MaxEdge.Y = p.Y;
 		if(p.Z > MaxEdge.Z) MaxEdge.Z = p.Z;
 	}
-	v3s16 getExtent()
+	v3s16 getExtent() const
 	{
 		return MaxEdge - MinEdge + v3s16(1,1,1);
 	}
-	s32 getVolume()
+	s32 getVolume() const
 	{
 		v3s16 e = getExtent();
 		return (s32)e.X * (s32)e.Y * (s32)e.Z;
 	}
-	bool isInside(v3s16 p)
+	bool contains(VoxelArea &a) const
+	{
+		return(
+			a.MinEdge.X >= MinEdge.X && a.MaxEdge.X <= MaxEdge.X &&
+			a.MinEdge.Y >= MinEdge.Y && a.MaxEdge.Y <= MaxEdge.Y &&
+			a.MinEdge.Z >= MinEdge.Z && a.MaxEdge.Z <= MaxEdge.Z
+		);
+	}
+	bool contains(v3s16 p) const
 	{
 		return(
 			p.X >= MinEdge.X && p.X <= MaxEdge.X &&
@@ -88,7 +96,7 @@ public:
 			p.Z >= MinEdge.Z && p.Z <= MaxEdge.Z
 		);
 	}
-	bool operator==(const VoxelArea &other)
+	bool operator==(const VoxelArea &other) const
 	{
 		return (MinEdge == other.MinEdge
 				&& MaxEdge == other.MaxEdge);
@@ -97,7 +105,7 @@ public:
 	/*
 		Translates position from virtual coordinates to array index
 	*/
-	s32 index(s16 x, s16 y, s16 z)
+	s32 index(s16 x, s16 y, s16 z) const
 	{
 		v3s16 em = getExtent();
 		v3s16 off = MinEdge;
@@ -105,12 +113,12 @@ public:
 		//dstream<<" i("<<x<<","<<y<<","<<z<<")="<<i<<" ";
 		return i;
 	}
-	s32 index(v3s16 p)
+	s32 index(v3s16 p) const
 	{
 		return index(p.X, p.Y, p.Z);
 	}
 
-	void print(std::ostream &o)
+	void print(std::ostream &o) const
 	{
 		o<<"("<<MinEdge.X
 		 <<","<<MinEdge.Y
@@ -125,6 +133,13 @@ public:
 	v3s16 MinEdge;
 	v3s16 MaxEdge;
 };
+
+// Hasn't been copied from source (emerged)
+#define VOXELFLAG_NOT_LOADED (1<<0)
+// Checked as being inexistent in source
+#define VOXELFLAG_INEXISTENT (1<<1)
+// Algorithm-dependent
+#define VOXELFLAG_CHECKED (1<<2)
 
 class VoxelManipulator : public NodeContainer
 {
@@ -141,53 +156,77 @@ public:
 	}
 	bool isValidPosition(v3s16 p)
 	{
-		return m_area.isInside(p);
+		emerge(p);
+		return !(m_flags[m_area.index(p)] & VOXELFLAG_INEXISTENT);
 	}
 	// These are a bit slow and shouldn't be used internally
 	MapNode getNode(v3s16 p)
 	{
-		if(isValidPosition(p) == false)
-			emerge(VoxelArea(p));
+		emerge(p);
 
-		MapNode &n = m_data[m_area.index(p)];
-
-		//TODO: Is this the right behaviour?
-		if(n.d == MATERIAL_IGNORE)
+		if(m_flags[m_area.index(p)] & VOXELFLAG_INEXISTENT)
+		{
+			dstream<<"ERROR: VoxelManipulator::getNode(): "
+					<<"p=("<<p.X<<","<<p.Y<<","<<p.Z<<")"
+					<<", index="<<m_area.index(p)
+					<<", flags="<<(int)m_flags[m_area.index(p)]
+					<<" is inexistent"<<std::endl;
 			throw InvalidPositionException
-			("Not returning MATERIAL_IGNORE in VoxelManipulator");
+			("VoxelManipulator: getNode: inexistent");
+		}
 
-		return n;
+		return m_data[m_area.index(p)];
 	}
-	void setNode(v3s16 p, MapNode & n)
+	void setNode(v3s16 p, MapNode &n)
 	{
-		if(isValidPosition(p) == false)
-			emerge(VoxelArea(p));
+		emerge(p);
+		
 		m_data[m_area.index(p)] = n;
+		m_flags[m_area.index(p)] &= ~VOXELFLAG_INEXISTENT;
+		m_flags[m_area.index(p)] &= ~VOXELFLAG_NOT_LOADED;
 	}
-	
-	MapNode & operator[](v3s16 p)
+	void setNodeNoRef(v3s16 p, MapNode n)
+	{
+		setNode(p, n);
+	}
+
+	/*void setExists(VoxelArea a)
+	{
+		emerge(a);
+		for(s32 z=a.MinEdge.Z; z<=a.MaxEdge.Z; z++)
+		for(s32 y=a.MinEdge.Y; y<=a.MaxEdge.Y; y++)
+		for(s32 x=a.MinEdge.X; x<=a.MaxEdge.X; x++)
+		{
+			m_flags[m_area.index(x,y,z)] &= ~VOXELFLAG_INEXISTENT;
+		}
+	}*/
+
+	/*MapNode & operator[](v3s16 p)
 	{
 		//dstream<<"operator[] p=("<<p.X<<","<<p.Y<<","<<p.Z<<")"<<std::endl;
 		if(isValidPosition(p) == false)
 			emerge(VoxelArea(p));
+		
 		return m_data[m_area.index(p)];
-	}
+	}*/
 
 	/*
-		Manipulation of bigger chunks
+		Control
 	*/
+
+	void clear();
 	
 	void print(std::ostream &o);
 	
 	void addArea(VoxelArea area);
 
+	/*
+		Algorithms
+	*/
+
 	void interpolate(VoxelArea area);
 
-	/*void blitFromNodeContainer
-			(v3s16 p_from, v3s16 p_to, v3s16 size, NodeContainer *c);
-	
-	void blitToNodeContainer
-			(v3s16 p_from, v3s16 p_to, v3s16 size, NodeContainer *c);*/
+	void flowWater(v3s16 removed_pos);
 
 	/*
 		Virtual functions
@@ -195,13 +234,25 @@ public:
 	
 	/*
 		Get the contents of the requested area from somewhere.
+		Shall touch only nodes that have VOXELFLAG_NOT_LOADED
+		Shall reset VOXELFLAG_NOT_LOADED
 
-		If not found from source, add as MATERIAL_IGNORE.
+		If not found from source, add with VOXELFLAG_INEXISTENT
 	*/
 	virtual void emerge(VoxelArea a)
 	{
 		//dstream<<"emerge p=("<<p.X<<","<<p.Y<<","<<p.Z<<")"<<std::endl;
 		addArea(a);
+		for(s32 z=a.MinEdge.Z; z<=a.MaxEdge.Z; z++)
+		for(s32 y=a.MinEdge.Y; y<=a.MaxEdge.Y; y++)
+		for(s32 x=a.MinEdge.X; x<=a.MaxEdge.X; x++)
+		{
+			s32 i = m_area.index(x,y,z);
+			// Don't touch nodes that have already been loaded
+			if(!(m_flags[i] & VOXELFLAG_NOT_LOADED))
+				continue;
+			m_flags[i] = VOXELFLAG_INEXISTENT;
+		}
 	}
 
 	/*
@@ -215,12 +266,14 @@ public:
 	*/
 	VoxelArea m_area;
 	/*
-		NULL if data size is 0
+		NULL if data size is 0 (extent (0,0,0))
 		Data is stored as [z*h*w + y*h + x]
-		Special data values:
-			MATERIAL_IGNORE: Unspecified node
 	*/
 	MapNode *m_data;
+	/*
+		Flags of all nodes
+	*/
+	u8 *m_flags;
 private:
 };
 

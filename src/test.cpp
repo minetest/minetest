@@ -157,17 +157,16 @@ struct TestVoxelManipulator
 		v.print(dstream);
 
 		dstream<<"*** Setting (-1,0,-1)=2 ***"<<std::endl;
-
-		//v[v3s16(-1,0,-1)] = MapNode(2);
-		v[v3s16(-1,0,-1)].d = 2;
+		
+		v.setNodeNoRef(v3s16(-1,0,-1), MapNode(2));
 
 		v.print(dstream);
 
- 		assert(v[v3s16(-1,0,-1)].d == 2);
+ 		assert(v.getNode(v3s16(-1,0,-1)).d == 2);
 
 		dstream<<"*** Reading from inexistent (0,0,-1) ***"<<std::endl;
 
-		assert(v[v3s16(0,0,-1)].d == MATERIAL_IGNORE);
+		EXCEPTION_CHECK(InvalidPositionException, v.getNode(v3s16(0,0,-1)));
 
 		v.print(dstream);
 
@@ -177,9 +176,51 @@ struct TestVoxelManipulator
 		
 		v.print(dstream);
 
-		assert(v[v3s16(-1,0,-1)].d == 2);
-		assert(v[v3s16(0,1,1)].d == MATERIAL_IGNORE);
+		assert(v.getNode(v3s16(-1,0,-1)).d == 2);
+		EXCEPTION_CHECK(InvalidPositionException, v.getNode(v3s16(0,1,1)));
+
+		/*
+			Water stuff
+		*/
+
+		v.clear();
+
+		const char *content =
+			"#...######"
+			"#...##..##"
+			"#........ "
+			"##########"
+
+			"#...######"
+			"#...##..##"
+			"#........ "
+			"##########"
+		;
+
+		v3s16 size(10, 4, 2);
 		
+		const char *p = content;
+		for(s16 z=0; z<size.Z; z++)
+		for(s16 y=size.Y-1; y>=0; y--)
+		for(s16 x=0; x<size.X; x++)
+		{
+			MapNode n;
+			n.pressure = size.Y - y;
+			if(*p == '#')
+				n.d = MATERIAL_STONE;
+			else if(*p == '.')
+				n.d = MATERIAL_WATER;
+			else if(*p == ' ')
+				n.d = MATERIAL_AIR;
+			else
+				assert(0);
+			v.setNode(v3s16(x,y,z), n);
+			p++;
+		}
+
+		v.print(dstream);
+		
+		//assert(0);
 	}
 };
 

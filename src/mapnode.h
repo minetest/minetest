@@ -35,9 +35,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 /*
 	Ignored node.
 
-	param is used for custom information in special containers,
-	like VoxelManipulator.
-
 	Anything that stores MapNodes doesn't have to preserve parameters
 	associated with this material.
 	
@@ -67,27 +64,12 @@ enum Material
 
 	MATERIAL_GRASS,
 
-	/*
-		For water, the param is water pressure. 0...127.
-		TODO: No, at least the lowest nibble is used for lighting.
-		
-		- Water will be a bit like light, but with different flow
-		  behavior.
-		- Water blocks will fall down if there is empty space below.
-		- If there is water below, the pressure of the block below is
-		  the pressure of the current block + 1, or higher.
-		- If there is any pressure in a horizontally neighboring
-		  block, a water block will try to move away from it.
-		- If there is >=2 of pressure in a block below, water will
-		  try to move upwards.
-		- NOTE: To keep large operations fast, we have to keep a
-		        cache of the water-air-surfaces, just like with light
-	*/
 	MATERIAL_WATER,
 
 	MATERIAL_LIGHT,
 
 	MATERIAL_TREE,
+	
 	MATERIAL_LEAVES,
 
 	MATERIAL_GRASS_FOOTSTEPS,
@@ -215,6 +197,8 @@ struct MapNode
 		  Sunlight is LIGHT_SUN, which is LIGHT_MAX+1.
 	*/
 	s8 param;
+
+	u8 pressure;
 
 	MapNode(const MapNode & n)
 	{
