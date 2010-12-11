@@ -47,10 +47,10 @@ MapBlockPointerCache::~MapBlockPointerCache()
 {
 	m_map->m_blockcachelock.cacheRemoved();
 
-	dstream<<"MapBlockPointerCache:"
+	/*dstream<<"MapBlockPointerCache:"
 			<<" from_cache_count="<<m_from_cache_count
 			<<" from_map_count="<<m_from_map_count
-			<<std::endl;
+			<<std::endl;*/
 }
 
 MapBlock * MapBlockPointerCache::getBlockNoCreate(v3s16 p)
@@ -1050,6 +1050,8 @@ void Map::removeNodeAndUpdate(v3s16 p,
 	// Node will be replaced with this
 	u8 replace_material = MATERIAL_AIR;
 	
+	// NOTE: Water is now managed elsewhere
+#if 0
 	{
 		/*
 			Find out with what material the node will be replaced.
@@ -1106,6 +1108,8 @@ void Map::removeNodeAndUpdate(v3s16 p,
 			}
 		}
 	}
+
+#endif
 
 	/*
 		If there is a node at top and it doesn't have sunlight,
@@ -3143,3 +3147,144 @@ void ClientMap::PrintInfo(std::ostream &out)
 }
 
 
+/*
+	MapVoxelManipulator
+*/
+
+MapVoxelManipulator::MapVoxelManipulator(Map *map)
+{
+	m_map = map;
+}
+
+MapVoxelManipulator::~MapVoxelManipulator()
+{
+	dstream<<"MapVoxelManipulator: blocks: "<<m_loaded_blocks.size()
+			<<std::endl;
+}
+
+void MapVoxelManipulator::emerge(VoxelArea a)
+{
+	TimeTaker timer1("emerge", g_device, &emerge_time);
+
+	// Units of these are MapBlocks
+	v3s16 p_min = getNodeBlockPos(a.MinEdge);
+	v3s16 p_max = getNodeBlockPos(a.MaxEdge);
+
+	VoxelArea block_area_nodes
+			(p_min*MAP_BLOCKSIZE, (p_max+1)*MAP_BLOCKSIZE-v3s16(1,1,1));
+
+	addArea(block_area_nodes);
+
+	for(s32 z=p_min.Z; z<=p_max.Z; z++)
+	for(s32 y=p_min.Y; y<=p_max.Y; y++)
+	for(s32 x=p_min.X; x<=p_max.X; x++)
+	{
+		v3s16 p(x,y,z);
+		core::map<v3s16, bool>::Node *n;
+		n = m_loaded_blocks.find(p);
+		if(n != NULL)
+			continue;
+		
+		bool block_data_inexistent = false;
+		try
+		{
+			TimeTaker timer1("emerge load", g_device, &emerge_load_time);
+
+			dstream<<"Loading block ("<<p.X<<","<<p.Y<<","<<p.Z<<")"
+					<<std::endl;
+			
+			MapBlock *block = m_map->getBlockNoCreate(p);
+			if(block->isDummy())
+				block_data_inexistent = true;
+			else
+				block->copyTo(*this);
+		}
+		catch(InvalidPositionException &e)
+		{
+			block_data_inexistent = true;
+		}
+
+		if(block_data_inexistent)
+		{
+			VoxelArea a(p*MAP_BLOCKSIZE, (p+1)*MAP_BLOCKSIZE-v3s16(1,1,1));
+			// Fill with VOXELFLAG_INEXISTENT
+			for(s32 z=a.MinEdge.Z; z<=a.MaxEdge.Z; z++)
+			for(s32 y=a.MinEdge.Y; y<=a.MaxEdge.Y; y++)
+			{
+				s32 i = m_area.index(a.MinEdge.X,y,z);
+				memset(&m_flags[i], VOXELFLAG_INEXISTENT, MAP_BLOCKSIZE);
+			}
+		}
+
+		m_loaded_blocks.insert(p, true);
+	}
+
+	//dstream<<"emerge done"<<std::endl;
+}
+
+/*
+	TODO: Add an option to only update eg. water and air nodes.
+	      This will make it interfere less with important stuff if
+		  run on background.
+*/
+void MapVoxelManipulator::blitBack
+		(core::map<v3s16, MapBlock*> & modified_blocks)
+{
+	TimeTaker timer1("blitBack", g_device);
+	
+	/*
+		Initialize block cache
+	*/
+	v3s16 blockpos_last;
+	MapBlock *block = NULL;
+	bool block_checked_in_modified = false;
+
+	for(s32 z=m_area.MinEdge.Z; z<=m_area.MaxEdge.Z; z++)
+	for(s32 y=m_area.MinEdge.Y; y<=m_area.MaxEdge.Y; y++)
+	for(s32 x=m_area.MinEdge.X; x<=m_area.MaxEdge.X; x++)
+	{
+		v3s16 p(x,y,z);
+
+		u8 f = m_flags[m_area.index(p)];
+		if(f & (VOXELFLAG_NOT_LOADED|VOXELFLAG_INEXISTENT))
+			continue;
+
+		MapNode &n = m_data[m_area.index(p)];
+			
+		v3s16 blockpos = getNodeBlockPos(p);
+		
+		try
+		{
+			// Get block
+			if(block == NULL || blockpos != blockpos_last){
+				block = m_map->getBlockNoCreate(blockpos);
+				blockpos_last = blockpos;
+				block_checked_in_modified = false;
+			}
+			
+			// Calculate relative position in block
+			v3s16 relpos = p - blockpos * MAP_BLOCKSIZE;
+
+			// Don't continue if nothing has changed here
+			if(block->getNode(relpos) == n)
+				continue;
+
+			//m_map->setNode(m_area.MinEdge + p, n);
+			block->setNode(relpos, n);
+			
+			/*
+				Make sure block is in modified_blocks
+			*/
+			if(block_checked_in_modified == false)
+			{
+				modified_blocks[blockpos] = block;
+				block_checked_in_modified = true;
+			}
+		}
+		catch(InvalidPositionException &e)
+		{
+		}
+	}
+}
+
+//END

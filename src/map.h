@@ -40,6 +40,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "mapblock.h"
 #include "mapsector.h"
 #include "constants.h"
+#include "voxel.h"
 
 class Map;
 
@@ -49,6 +50,7 @@ class Map;
 	NOTE: This doesn't really make anything more efficient
 	NOTE: Use VoxelManipulator, if possible
 	TODO: Get rid of this?
+	NOTE: CONFIRMED: THIS CACHE DOESN'T MAKE ANYTHING ANY FASTER
 */
 class MapBlockPointerCache : public NodeContainer
 {
@@ -121,7 +123,7 @@ public:
 
 	void cacheCreated()
 	{
-		dstream<<"cacheCreated() begin"<<std::endl;
+		//dstream<<"cacheCreated() begin"<<std::endl;
 		JMutexAutoLock waitcachelock(m_waitcache_mutex);
 		JMutexAutoLock countlock(m_count_mutex);
 
@@ -131,12 +133,12 @@ public:
 			
 		m_count++;
 
-		dstream<<"cacheCreated() end"<<std::endl;
+		//dstream<<"cacheCreated() end"<<std::endl;
 	}
 
 	void cacheRemoved()
 	{
-		dstream<<"cacheRemoved() begin"<<std::endl;
+		//dstream<<"cacheRemoved() begin"<<std::endl;
 		JMutexAutoLock countlock(m_count_mutex);
 
 		assert(m_count > 0);
@@ -147,7 +149,7 @@ public:
 		if(m_count == 0)
 			m_cache_mutex.Unlock();
 
-		dstream<<"cacheRemoved() end"<<std::endl;
+		//dstream<<"cacheRemoved() end"<<std::endl;
 	}
 
 	/*
@@ -587,6 +589,30 @@ private:
 	// This is the master heightmap mesh
 	scene::SMesh *mesh;
 	JMutex mesh_mutex;
+};
+
+class MapVoxelManipulator : public VoxelManipulator
+{
+public:
+	MapVoxelManipulator(Map *map);
+	virtual ~MapVoxelManipulator();
+	
+	virtual void clear()
+	{
+		VoxelManipulator::clear();
+		m_loaded_blocks.clear();
+	}
+
+	virtual void emerge(VoxelArea a);
+
+	void blitBack(core::map<v3s16, MapBlock*> & modified_blocks);
+
+private:
+	Map *m_map;
+	// bool is dummy value
+	// SUGG: How 'bout an another VoxelManipulator for storing the
+	//       information about which block is loaded?
+	core::map<v3s16, bool> m_loaded_blocks;
 };
 
 #endif

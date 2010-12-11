@@ -394,12 +394,18 @@ private:
 class TimeTaker
 {
 public:
-	TimeTaker(const char *name, IrrlichtDevice *dev)
+	TimeTaker(const char *name, IrrlichtDevice *dev, u32 *result=NULL)
 	{
 		m_name = name;
 		m_dev = dev;
-		m_time1 = m_dev->getTimer()->getRealTime();
+		m_result = result;
 		m_running = true;
+		if(dev == NULL)
+		{
+			m_time1 = 0;
+			return;
+		}
+		m_time1 = m_dev->getTimer()->getRealTime();
 	}
 	~TimeTaker()
 	{
@@ -409,10 +415,24 @@ public:
 	{
 		if(m_running)
 		{
+			if(m_dev == NULL)
+			{
+				/*if(quiet == false)
+					std::cout<<"Couldn't measure time for "<<m_name
+							<<": dev==NULL"<<std::endl;*/
+				return 0;
+			}
 			u32 time2 = m_dev->getTimer()->getRealTime();
 			u32 dtime = time2 - m_time1;
-			if(quiet == false)
-				std::cout<<m_name<<" took "<<dtime<<"ms"<<std::endl;
+			if(m_result != NULL)
+			{
+				(*m_result) += dtime;
+			}
+			else
+			{
+				if(quiet == false)
+					std::cout<<m_name<<" took "<<dtime<<"ms"<<std::endl;
+			}
 			m_running = false;
 			return dtime;
 		}
@@ -423,6 +443,7 @@ private:
 	IrrlichtDevice *m_dev;
 	u32 m_time1;
 	bool m_running;
+	u32 *m_result;
 };
 
 // Calculates the borders of a "d-radius" cube

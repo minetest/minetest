@@ -469,6 +469,9 @@ private:
 
 	BlockEmergeQueue m_emerge_queue;
 	
+	// Nodes that are destinations of flowing liquid at the moment
+	core::map<v3s16, u8> m_flow_active_nodes;
+	
 	friend class EmergeThread;
 	friend class RemoteClient;
 };

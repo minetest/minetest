@@ -30,6 +30,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "serialization.h"
 #include "constants.h"
 #include "mapblockobject.h"
+#include "voxel.h"
 
 #define MAP_BLOCKSIZE 16
 
@@ -69,31 +70,6 @@ public:
 
 class MapBlock : public NodeContainer
 {
-private:
-
-	NodeContainer *m_parent;
-	// Position in blocks on parent
-	v3s16 m_pos;
-	/*
-		If NULL, block is a dummy block.
-		Dummy blocks are used for caching not-found-on-disk blocks.
-	*/
-	MapNode * data;
-	/*
-		- On the client, this is used for checking whether to
-		  recalculate the face cache. (Is it anymore?)
-		- On the server, this is used for telling whether the
-		  block has been changed from the one on disk.
-	*/
-	bool changed;
-	/*
-		Used for some initial lighting stuff.
-		At least /has been/ used. 8)
-	*/
-	bool is_underground;
-	
-	MapBlockObjectList m_objects;
-	
 public:
 
 	/*
@@ -333,10 +309,12 @@ public:
 
 	bool propagateSunlight(core::map<v3s16, bool> & light_sources);
 	
-	// Doesn't write version by itself
-	void serialize(std::ostream &os, u8 version);
+	// Copies data to VoxelManipulator to getPosRelative()
+	void copyTo(VoxelManipulator &dst);
 
-	void deSerialize(std::istream &is, u8 version);
+	/*
+		Object stuff
+	*/
 	
 	void serializeObjects(std::ostream &os, u8 version)
 	{
@@ -403,6 +381,15 @@ public:
 		return m_objects.getCount();
 	}
 
+	/*
+		Serialization
+	*/
+	
+	// Doesn't write version by itself
+	void serialize(std::ostream &os, u8 version);
+
+	void deSerialize(std::istream &is, u8 version);
+
 private:
 
 	/*
@@ -420,6 +407,31 @@ private:
 	{
 		return getNodeRef(p.X, p.Y, p.Z);
 	}
+
+	
+	NodeContainer *m_parent;
+	// Position in blocks on parent
+	v3s16 m_pos;
+	/*
+		If NULL, block is a dummy block.
+		Dummy blocks are used for caching not-found-on-disk blocks.
+	*/
+	MapNode * data;
+	/*
+		- On the client, this is used for checking whether to
+		  recalculate the face cache. (Is it anymore?)
+		- On the server, this is used for telling whether the
+		  block has been changed from the one on disk.
+	*/
+	bool changed;
+	/*
+		Used for some initial lighting stuff.
+		At least /has been/ used. 8)
+	*/
+	bool is_underground;
+	
+	MapBlockObjectList m_objects;
+	
 };
 
 inline bool blockpos_over_limit(v3s16 p)

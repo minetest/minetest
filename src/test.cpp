@@ -148,10 +148,45 @@ struct TestVoxelManipulator
 {
 	void Run()
 	{
+		/*
+			VoxelArea
+		*/
+
 		VoxelArea a(v3s16(-1,-1,-1), v3s16(1,1,1));
 		assert(a.index(0,0,0) == 1*3*3 + 1*3 + 1);
 		assert(a.index(-1,-1,-1) == 0);
+		
+		VoxelArea c(v3s16(-2,-2,-2), v3s16(2,2,2));
+		// An area that is 1 bigger in x+ and z-
+		VoxelArea d(v3s16(-2,-2,-3), v3s16(3,2,2));
+		
+		core::list<VoxelArea> aa;
+		d.diff(c, aa);
+		
+		// Correct results
+		core::array<VoxelArea> results;
+		results.push_back(VoxelArea(v3s16(-2,-2,-3),v3s16(3,2,-3)));
+		results.push_back(VoxelArea(v3s16(3,-2,-2),v3s16(3,2,2)));
 
+		assert(aa.size() == results.size());
+		
+		dstream<<"Result of diff:"<<std::endl;
+		for(core::list<VoxelArea>::Iterator
+				i = aa.begin(); i != aa.end(); i++)
+		{
+			i->print(dstream);
+			dstream<<std::endl;
+			
+			s32 j = results.linear_search(*i);
+			assert(j != -1);
+			results.erase(j, 1);
+		}
+
+
+		/*
+			VoxelManipulator
+		*/
+		
 		VoxelManipulator v;
 
 		v.print(dstream);
@@ -186,18 +221,19 @@ struct TestVoxelManipulator
 		v.clear();
 
 		const char *content =
-			"#...######"
-			"#...##..##"
-			"#........ "
-			"##########"
+			"#...######  "
+			"#...##..##  "
+			"#........ .."
+			"############"
 
-			"#...######"
-			"#...##..##"
-			"#........ "
-			"##########"
+			"#...######  "
+			"#...##..##  "
+			"#........#  "
+			"############"
 		;
 
-		v3s16 size(10, 4, 2);
+		v3s16 size(12, 4, 2);
+		VoxelArea area(v3s16(0,0,0), size-v3s16(1,1,1));
 		
 		const char *p = content;
 		for(s16 z=0; z<size.Z; z++)
@@ -205,7 +241,7 @@ struct TestVoxelManipulator
 		for(s16 x=0; x<size.X; x++)
 		{
 			MapNode n;
-			n.pressure = size.Y - y;
+			//n.pressure = size.Y - y;
 			if(*p == '#')
 				n.d = MATERIAL_STONE;
 			else if(*p == '.')
@@ -218,7 +254,24 @@ struct TestVoxelManipulator
 			p++;
 		}
 
-		v.print(dstream);
+		v.print(dstream, VOXELPRINT_WATERPRESSURE);
+		
+		core::map<v3s16, u8> active_nodes;
+		v.updateAreaWaterPressure(area, active_nodes);
+
+		v.print(dstream, VOXELPRINT_WATERPRESSURE);
+		
+		s16 highest_y = -32768;
+		assert(v.getWaterPressure(v3s16(7, 1, 1), highest_y, 0) == -1);
+		assert(highest_y == 3);
+		
+		active_nodes.clear();
+		active_nodes[v3s16(9,1,0)] = 1;
+		//v.flowWater(active_nodes, 0, false);
+		v.flowWater(active_nodes, 0, true);
+		
+		dstream<<"Final result of flowWater:"<<std::endl;
+		v.print(dstream, VOXELPRINT_WATERPRESSURE);
 		
 		//assert(0);
 	}

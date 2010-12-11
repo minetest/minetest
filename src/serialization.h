@@ -46,11 +46,12 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 	7: block compression switched on again
 	8: (dev) server-initiated block transfers and all kinds of stuff
 	9: (dev) block objects
+	10: (dev) water pressure
 */
 // This represents an uninitialized or invalid format
 #define SER_FMT_VER_INVALID 255
 // Highest supported serialization version
-#define SER_FMT_VER_HIGHEST 9
+#define SER_FMT_VER_HIGHEST 10
 // Lowest supported serialization version
 #define SER_FMT_VER_LOWEST 2
 

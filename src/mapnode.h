@@ -205,10 +205,11 @@ struct MapNode
 		*this = n;
 	}
 	
-	MapNode(u8 data=MATERIAL_AIR, u8 a_param=0)
+	MapNode(u8 data=MATERIAL_AIR, u8 a_param=0, u8 a_pressure=0)
 	{
 		d = data;
 		param = a_param;
+		pressure = a_pressure;
 	}
 
 	bool operator==(const MapNode &other)
@@ -261,6 +262,11 @@ struct MapNode
 		param = a_light;
 	}
 
+	/*
+		These serialization functions are used when informing client
+		of a single node add
+	*/
+
 	static u32 serializedLength(u8 version)
 	{
 		if(!ser_ver_supported(version))
@@ -268,8 +274,10 @@ struct MapNode
 			
 		if(version == 0)
 			return 1;
-		else
+		else if(version <= 9)
 			return 2;
+		else
+			return 3;
 	}
 	void serialize(u8 *dest, u8 version)
 	{
@@ -280,10 +288,16 @@ struct MapNode
 		{
 			dest[0] = d;
 		}
+		else if(version <= 9)
+		{
+			dest[0] = d;
+			dest[1] = param;
+		}
 		else
 		{
 			dest[0] = d;
 			dest[1] = param;
+			dest[2] = pressure;
 		}
 	}
 	void deSerialize(u8 *source, u8 version)
@@ -304,10 +318,16 @@ struct MapNode
 			else
 				param = source[1];
 		}
+		else if(version <= 9)
+		{
+			d = source[0];
+			param = source[1];
+		}
 		else
 		{
 			d = source[0];
 			param = source[1];
+			pressure = source[2];
 		}
 	}
 };

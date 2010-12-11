@@ -21,14 +21,21 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #define VOXEL_HEADER
 
 #include "common_irrlicht.h"
-#include "mapblock.h"
 #include <iostream>
+#include "debug.h"
+#include "mapnode.h"
 
 /*
 	A fast voxel manipulator class
 
 	Not thread-safe.
 */
+
+/*
+	Debug stuff
+*/
+extern u32 emerge_time;
+extern u32 emerge_load_time;
 
 /*
 	This class resembles aabbox3d<s16> a lot, but has inclusive
@@ -53,8 +60,18 @@ public:
 		MaxEdge(p)
 	{
 	}
+	
+	/*
+		Modifying methods
+	*/
+
 	void addArea(VoxelArea &a)
 	{
+		if(getExtent() == v3s16(0,0,0))
+		{
+			*this = a;
+			return;
+		}
 		if(a.MinEdge.X < MinEdge.X) MinEdge.X = a.MinEdge.X;
 		if(a.MinEdge.Y < MinEdge.Y) MinEdge.Y = a.MinEdge.Y;
 		if(a.MinEdge.Z < MinEdge.Z) MinEdge.Z = a.MinEdge.Z;
@@ -64,6 +81,12 @@ public:
 	}
 	void addPoint(v3s16 p)
 	{
+		if(getExtent() == v3s16(0,0,0))
+		{
+			MinEdge = p;
+			MaxEdge = p;
+			return;
+		}
 		if(p.X < MinEdge.X) MinEdge.X = p.X;
 		if(p.Y < MinEdge.Y) MinEdge.Y = p.Y;
 		if(p.Z < MinEdge.Z) MinEdge.Z = p.Z;
@@ -71,6 +94,30 @@ public:
 		if(p.Y > MaxEdge.Y) MaxEdge.Y = p.Y;
 		if(p.Z > MaxEdge.Z) MaxEdge.Z = p.Z;
 	}
+	
+	// Pad with d nodes
+	void pad(v3s16 d)
+	{
+		MinEdge -= d;
+		MaxEdge += d;
+	}
+	
+	/*void operator+=(v3s16 off)
+	{
+		MinEdge += off;
+		MaxEdge += off;
+	}
+
+	void operator-=(v3s16 off)
+	{
+		MinEdge -= off;
+		MaxEdge -= off;
+	}*/
+
+	/*
+		const methods
+	*/
+
 	v3s16 getExtent() const
 	{
 		return MaxEdge - MinEdge + v3s16(1,1,1);
@@ -80,8 +127,13 @@ public:
 		v3s16 e = getExtent();
 		return (s32)e.X * (s32)e.Y * (s32)e.Z;
 	}
-	bool contains(VoxelArea &a) const
+	bool contains(const VoxelArea &a) const
 	{
+		// No area contains an empty area
+		// NOTE: Algorithms depend on this, so do not change.
+		if(a.getExtent() == v3s16(0,0,0))
+			return false;
+
 		return(
 			a.MinEdge.X >= MinEdge.X && a.MaxEdge.X <= MaxEdge.X &&
 			a.MinEdge.Y >= MinEdge.Y && a.MaxEdge.Y <= MaxEdge.Y &&
@@ -100,6 +152,95 @@ public:
 	{
 		return (MinEdge == other.MinEdge
 				&& MaxEdge == other.MaxEdge);
+	}
+
+	VoxelArea operator+(v3s16 off) const
+	{
+		return VoxelArea(MinEdge+off, MaxEdge+off);
+	}
+
+	VoxelArea operator-(v3s16 off) const
+	{
+		return VoxelArea(MinEdge-off, MaxEdge-off);
+	}
+
+	/*
+		Returns 0-6 non-overlapping areas that can be added to
+		a to make up this area.
+
+		a: area inside *this
+	*/
+	void diff(const VoxelArea &a, core::list<VoxelArea> &result)
+	{
+		/*
+			This can result in a maximum of 6 areas
+		*/
+
+		// If a is an empty area, return the current area as a whole
+		if(a.getExtent() == v3s16(0,0,0))
+		{
+			VoxelArea b = *this;
+			if(b.getVolume() != 0)
+				result.push_back(b);
+			return;
+		}
+
+		assert(contains(a));
+		
+		// Take back area, XY inclusive
+		{
+			v3s16 min(MinEdge.X, MinEdge.Y, a.MaxEdge.Z+1);
+			v3s16 max(MaxEdge.X, MaxEdge.Y, MaxEdge.Z);
+			VoxelArea b(min, max);
+			if(b.getVolume() != 0)
+				result.push_back(b);
+		}
+
+		// Take front area, XY inclusive
+		{
+			v3s16 min(MinEdge.X, MinEdge.Y, MinEdge.Z);
+			v3s16 max(MaxEdge.X, MaxEdge.Y, a.MinEdge.Z-1);
+			VoxelArea b(min, max);
+			if(b.getVolume() != 0)
+				result.push_back(b);
+		}
+
+		// Take top area, X inclusive
+		{
+			v3s16 min(MinEdge.X, a.MaxEdge.Y+1, a.MinEdge.Z);
+			v3s16 max(MaxEdge.X, MaxEdge.Y, a.MaxEdge.Z);
+			VoxelArea b(min, max);
+			if(b.getVolume() != 0)
+				result.push_back(b);
+		}
+
+		// Take bottom area, X inclusive
+		{
+			v3s16 min(MinEdge.X, MinEdge.Y, a.MinEdge.Z);
+			v3s16 max(MaxEdge.X, a.MinEdge.Y-1, a.MaxEdge.Z);
+			VoxelArea b(min, max);
+			if(b.getVolume() != 0)
+				result.push_back(b);
+		}
+
+		// Take left area, non-inclusive
+		{
+			v3s16 min(MinEdge.X, a.MinEdge.Y, a.MinEdge.Z);
+			v3s16 max(a.MinEdge.X-1, a.MaxEdge.Y, a.MaxEdge.Z);
+			VoxelArea b(min, max);
+			if(b.getVolume() != 0)
+				result.push_back(b);
+		}
+
+		// Take right area, non-inclusive
+		{
+			v3s16 min(a.MaxEdge.X+1, a.MinEdge.Y, a.MinEdge.Z);
+			v3s16 max(MaxEdge.X, a.MaxEdge.Y, a.MaxEdge.Z);
+			VoxelArea b(min, max);
+			if(b.getVolume() != 0)
+				result.push_back(b);
+		}
+
 	}
 	
 	/*
@@ -120,13 +261,15 @@ public:
 
 	void print(std::ostream &o) const
 	{
+		v3s16 e = getExtent();
 		o<<"("<<MinEdge.X
 		 <<","<<MinEdge.Y
 		 <<","<<MinEdge.Z
 		 <<")("<<MaxEdge.X
 		 <<","<<MaxEdge.Y
 		 <<","<<MaxEdge.Z
-		 <<")";
+		 <<")"
+		 <<"="<<e.X<<"x"<<e.Y<<"x"<<e.Z<<"="<<getVolume();
 	}
 
 	// Edges are inclusive
@@ -139,18 +282,35 @@ public:
 // Checked as being inexistent in source
 #define VOXELFLAG_INEXISTENT (1<<1)
 // Algorithm-dependent
+// flowWater: "visited"
 #define VOXELFLAG_CHECKED (1<<2)
+// Algorithm-dependent
+// getWaterPressure: "visited"
+#define VOXELFLAG_CHECKED2 (1<<3)
+// Algorithm-dependent
+// spreadWaterPressure: "visited"
+#define VOXELFLAG_CHECKED3 (1<<4)
+// Algorithm-dependent
+// water: "pressure check route node"
+#define VOXELFLAG_CHECKED4 (1<<5)
 
-class VoxelManipulator : public NodeContainer
+enum VoxelPrintMode
+{
+	VOXELPRINT_NOTHING,
+	VOXELPRINT_MATERIAL,
+	VOXELPRINT_WATERPRESSURE,
+};
+
+class VoxelManipulator /*: public NodeContainer*/
 {
 public:
 	VoxelManipulator();
-	~VoxelManipulator();
+	virtual ~VoxelManipulator();
 	
 	/*
 		Virtuals from NodeContainer
 	*/
-	virtual u16 nodeContainerId() const
+	/*virtual u16 nodeContainerId() const
 	{
 		return NODECONTAINER_ID_VOXELMANIPULATOR;
 	}
@@ -158,7 +318,7 @@ public:
 	{
 		emerge(p);
 		return !(m_flags[m_area.index(p)] & VOXELFLAG_INEXISTENT);
-	}
+	}*/
 	// These are a bit slow and shouldn't be used internally
 	MapNode getNode(v3s16 p)
 	{
@@ -166,7 +326,7 @@ public:
 
 		if(m_flags[m_area.index(p)] & VOXELFLAG_INEXISTENT)
 		{
-			dstream<<"ERROR: VoxelManipulator::getNode(): "
+			dstream<<"EXCEPT: VoxelManipulator::getNode(): "
 					<<"p=("<<p.X<<","<<p.Y<<","<<p.Z<<")"
 					<<", index="<<m_area.index(p)
 					<<", flags="<<(int)m_flags[m_area.index(p)]
@@ -214,11 +374,18 @@ public:
 		Control
 	*/
 
-	void clear();
-	
-	void print(std::ostream &o);
+	virtual void clear();
+
+	void print(std::ostream &o, VoxelPrintMode mode=VOXELPRINT_MATERIAL);
 	
 	void addArea(VoxelArea area);
+
+	/*
+		Copy data and set flags to 0
+		dst_area.getExtent() <= src_area.getExtent()
+	*/
+	void copyFrom(MapNode *src, VoxelArea src_area,
+			v3s16 from_pos, v3s16 to_pos, v3s16 size);
 
 	/*
 		Algorithms
@@ -226,7 +393,61 @@ public:
 
 	void interpolate(VoxelArea area);
 
-	void flowWater(v3s16 removed_pos);
+	void clearFlag(u8 flag);
+	
+	// VOXELFLAG_CHECKED2s must usually be cleared before calling
+	// -1: dead end, 0-255: pressure
+	// highest_y: Highest found water y is stored here.
+	//            Must be initialized to -32768
+	int getWaterPressure(v3s16 p, s16 &highest_y, int recur_count);
+
+	/*
+		VOXELFLAG_CHECKED3s must usually be cleared before calling.
+
+		active_nodes: surface-touching air nodes with flow-causing
+		pressure. set-like dummy map container.
+
+		Spreads pressure pr at node p to request_area or as far as
+		there is invalid pressure.
+	*/
+	void spreadWaterPressure(v3s16 p, int pr,
+			VoxelArea request_area,
+			core::map<v3s16, u8> &active_nodes,
+			int recur_count);
+	
+	/*
+		VOXELFLAG_CHECKED3s must usually be cleared before calling.
+	*/
+	void updateAreaWaterPressure(VoxelArea a,
+			core::map<v3s16, u8> &active_nodes,
+			bool checked3_is_clear=false);
+	
+	/*
+		Returns true if moved something
+	*/
+	bool flowWater(v3s16 removed_pos,
+			core::map<v3s16, u8> &active_nodes,
+			int recursion_depth=0,
+			bool debugprint=false, int *counter=NULL,
+			int counterlimit=-1
+	);
+
+	/*
+		To flow some water, call this with the target node in
+		active_nodes
+		TODO: Make the active_nodes map to contain some vectors
+		      that are properly sorted according to water flow order.
+			  The current order makes water flow strangely if the
+			  first one is always taken.
+			  No, active_nodes should preserve the order stuff is
+			  added to it, in addition to adhering the water flow
+			  order.
+	*/
+	void flowWater(core::map<v3s16, u8> &active_nodes,
+			int recursion_depth=0,
+			bool debugprint=false,
+			int counterlimit=-1
+	);
 
 	/*
 		Virtual functions
@@ -265,31 +486,23 @@ public:
 		MaxEdge is 1 higher than maximum allowed position
 	*/
 	VoxelArea m_area;
+	
 	/*
 		NULL if data size is 0 (extent (0,0,0))
 		Data is stored as [z*h*w + y*h + x]
 	*/
 	MapNode *m_data;
+
 	/*
 		Flags of all nodes
 	*/
 	u8 *m_flags;
+	
+	//TODO: Use these or remove them
+	//TODO: Would these make any speed improvement?
+	//bool m_pressure_route_valid;
+	//v3s16 m_pressure_route_surface;
 private:
-};
-
-class Map;
-
-class MapVoxelManipulator : public VoxelManipulator
-{
-public:
-	MapVoxelManipulator(Map *map);
-
-	virtual void emerge(VoxelArea a);
-
-	void blitBack(core::map<v3s16, MapBlock*> & modified_blocks);
-
-private:
-	Map *m_map;
 };
 
 #endif

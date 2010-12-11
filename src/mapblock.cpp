@@ -696,6 +696,15 @@ bool MapBlock::propagateSunlight(core::map<v3s16, bool> & light_sources)
 	return block_below_is_valid;
 }
 
+void MapBlock::copyTo(VoxelManipulator &dst)
+{
+	v3s16 data_size(MAP_BLOCKSIZE, MAP_BLOCKSIZE, MAP_BLOCKSIZE);
+	VoxelArea data_area(v3s16(0,0,0), data_size - v3s16(1,1,1));
+	
+	dst.copyFrom(data, data_area, v3s16(0,0,0),
+			getPosRelative(), data_size);
+}
+
 /*
 	Serialization
 */
@@ -755,6 +764,17 @@ void MapBlock::serialize(std::ostream &os, u8 version)
 			paramdata[i] = data[i].param;
 		}
 		compress(paramdata, os, version);
+		
+		if(version >= 10)
+		{
+			// Get and compress pressure
+			SharedBuffer<u8> pressuredata(nodecount);
+			for(u32 i=0; i<nodecount; i++)
+			{
+				pressuredata[i] = data[i].pressure;
+			}
+			compress(pressuredata, os, version);
+		}
 	}
 }
 
@@ -817,6 +837,21 @@ void MapBlock::deSerialize(std::istream &is, u8 version)
 			for(u32 i=0; i<s.size(); i++)
 			{
 				data[i].param = s[i];
+			}
+		}
+	
+		if(version >= 10)
+		{
+			// Uncompress and set pressure data
+			std::ostringstream os(std::ios_base::binary);
+			decompress(is, os, version);
+			std::string s = os.str();
+			if(s.size() != nodecount)
+				throw SerializationError
+						("MapBlock::deSerialize: invalid format");
+			for(u32 i=0; i<s.size(); i++)
+			{
+				data[i].pressure = s[i];
 			}
 		}
 	}

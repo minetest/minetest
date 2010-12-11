@@ -29,6 +29,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "jmutexautolock.h"
 #include "main.h"
 #include "constants.h"
+#include "voxel.h"
 
 void * ServerThread::Thread()
 {
@@ -990,6 +991,76 @@ void Server::AsyncRunStep()
 	/*
 		Do background stuff
 	*/
+
+	/*
+		Flow water
+	*/
+	{
+		static float counter = 0.0;
+		counter += dtime;
+		if(counter >= 1.0)
+		{
+		
+		counter = 0.0;
+
+		core::map<v3s16, MapBlock*> modified_blocks;
+
+		{
+
+			JMutexAutoLock lock(m_env_mutex);
+			
+			MapVoxelManipulator v(&m_env.getMap());
+			
+			/*try{
+				v.flowWater(m_flow_active_nodes, 0, false, 20);
+				//v.flowWater(p_under, 0, true, 100);
+			}
+			catch(ProcessingLimitException &e)
+			{
+				dstream<<"Processing limit reached"<<std::endl;
+			}*/
+
+			v.flowWater(m_flow_active_nodes, 0, false, 20);
+
+			v.blitBack(modified_blocks);
+
+			ServerMap &map = ((ServerMap&)m_env.getMap());
+			
+			// Update lighting
+			core::map<v3s16, MapBlock*> lighting_modified_blocks;
+			map.updateLighting(modified_blocks, lighting_modified_blocks);
+			
+			// Add blocks modified by lighting to modified_blocks
+			for(core::map<v3s16, MapBlock*>::Iterator
+					i = lighting_modified_blocks.getIterator();
+					i.atEnd() == false; i++)
+			{
+				MapBlock *block = i.getNode()->getValue();
+				modified_blocks.insert(block->getPos(), block);
+			}
+		}
+
+		/*
+			Set the modified blocks unsent for all the clients
+		*/
+		
+		JMutexAutoLock lock2(m_con_mutex);
+
+		for(core::map<u16, RemoteClient*>::Iterator
+				i = m_clients.getIterator();
+				i.atEnd() == false; i++)
+		{
+			RemoteClient *client = i.getNode()->getValue();
+			
+			if(modified_blocks.size() > 0)
+			{
+				// Remove block from sent history
+				client->SetBlocksNotSent(modified_blocks);
+			}
+		}
+
+		}
+	}
 	
 	// Periodically print some info
 	{
@@ -1458,6 +1529,31 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 				(this takes some time so it is done after the quick stuff)
 			*/
 			m_env.getMap().removeNodeAndUpdate(p_under, modified_blocks);
+			
+			/*
+				Update water
+			*/
+			
+			// Update water pressure around modification
+			// This also adds it to m_flow_active_nodes if appropriate
+
+			MapVoxelManipulator v(&m_env.getMap());
+			
+			VoxelArea area(p_under-v3s16(1,1,1), p_under+v3s16(1,1,1));
+
+			try
+			{
+				v.updateAreaWaterPressure(area, m_flow_active_nodes);
+			}
+			catch(ProcessingLimitException &e)
+			{
+				dstream<<"Processing limit reached"<<std::endl;
+			}
+			
+			v.blitBack(modified_blocks);
+			
+			// Add the node to m_flow_active_nodes.
+			//m_flow_active_nodes[p_under] = 1;
 
 		} // button == 0
 		/*

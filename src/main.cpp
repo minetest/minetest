@@ -173,8 +173,11 @@ TODO: Remove LazyMeshUpdater. It is not used as supposed.
 FIXME: Rats somehow go underground sometimes (you can see it in water)
        - Does their position get saved to a border value or something?
 
-TODO: MovingObject::move and Player::move are basically the same.
+SUGG: MovingObject::move and Player::move are basically the same.
       combine them.
+
+TODO: Transfer sign texts as metadata of block and not as data of
+      object
 
 Doing now:
 ======================================================================

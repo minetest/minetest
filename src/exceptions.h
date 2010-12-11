@@ -116,6 +116,14 @@ public:
 	{}
 };
 
+class ProcessingLimitException : public BaseException
+{
+public:
+	ProcessingLimitException(const char *s):
+		BaseException(s)
+	{}
+};
+
 /*
 	Some "old-style" interrupts:
 */
