@@ -264,11 +264,13 @@ struct TestVoxelManipulator
 		s16 highest_y = -32768;
 		assert(v.getWaterPressure(v3s16(7, 1, 1), highest_y, 0) == -1);
 		assert(highest_y == 3);
+		/*assert(v.getWaterPressure(v3s16(7, 1, 1), highest_y, 0) == 3);
+		//assert(highest_y == 3);*/
 		
 		active_nodes.clear();
 		active_nodes[v3s16(9,1,0)] = 1;
 		//v.flowWater(active_nodes, 0, false);
-		v.flowWater(active_nodes, 0, true);
+		v.flowWater(active_nodes, 0, true, 1000);
 		
 		dstream<<"Final result of flowWater:"<<std::endl;
 		v.print(dstream, VOXELPRINT_WATERPRESSURE);

@@ -56,6 +56,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 	GRAVEL
 	  - Dynamics of gravel: if there is a drop of more than two
 	    blocks on any side, it will drop in there. Is this doable?
+	
+	TODO: These should be named to "content" or something like that
 */
 
 enum Material
@@ -77,6 +79,8 @@ enum Material
 	MATERIAL_MESE,
 
 	MATERIAL_MUD,
+
+	MATERIAL_OCEAN,
 	
 	// This is set to the number of the actual values in this enum
 	USEFUL_MATERIAL_COUNT
@@ -88,7 +92,7 @@ enum Material
 */
 inline bool light_propagates_material(u8 m)
 {
-	return (m == MATERIAL_AIR || m == MATERIAL_LIGHT || m == MATERIAL_WATER);
+	return (m == MATERIAL_AIR || m == MATERIAL_LIGHT || m == MATERIAL_WATER || m == MATERIAL_OCEAN);
 }
 
 /*
@@ -110,7 +114,7 @@ inline u8 material_solidness(u8 m)
 {
 	if(m == MATERIAL_AIR)
 		return 0;
-	if(m == MATERIAL_WATER)
+	if(m == MATERIAL_WATER || m == MATERIAL_OCEAN)
 		return 1;
 	return 2;
 }
@@ -118,29 +122,54 @@ inline u8 material_solidness(u8 m)
 // Objects collide with walkable materials
 inline bool material_walkable(u8 m)
 {
-	return (m != MATERIAL_AIR && m != MATERIAL_WATER);
+	return (m != MATERIAL_AIR && m != MATERIAL_WATER && m != MATERIAL_OCEAN && m != MATERIAL_LIGHT);
 }
 
 // A liquid resists fast movement
 inline bool material_liquid(u8 m)
 {
-	return (m == MATERIAL_WATER);
+	return (m == MATERIAL_WATER || m == MATERIAL_OCEAN);
 }
 
 // Pointable materials can be pointed to in the map
 inline bool material_pointable(u8 m)
 {
-	return (m != MATERIAL_AIR && m != MATERIAL_WATER);
+	return (m != MATERIAL_AIR && m != MATERIAL_WATER && m != MATERIAL_OCEAN);
 }
 
 inline bool material_diggable(u8 m)
 {
-	return (m != MATERIAL_AIR && m != MATERIAL_WATER);
+	return (m != MATERIAL_AIR && m != MATERIAL_WATER && m != MATERIAL_OCEAN);
 }
 
 inline bool material_buildable_to(u8 m)
 {
-	return (m == MATERIAL_AIR || m == MATERIAL_WATER);
+	return (m == MATERIAL_AIR || m == MATERIAL_WATER || m == MATERIAL_OCEAN);
+}
+
+/*
+	As of now, input is a "material" and the output is a "material"
+*/
+inline u8 content_cube_material(u8 c)
+{
+	if(c == MATERIAL_IGNORE || c == MATERIAL_LIGHT)
+		return MATERIAL_AIR;
+	return c;
+}
+
+/*
+	Returns true for materials that form the base ground that
+	follows the main heightmap
+*/
+inline bool is_ground_material(u8 m)
+{
+	return(
+		m == MATERIAL_STONE ||
+		m == MATERIAL_GRASS ||
+		m == MATERIAL_GRASS_FOOTSTEPS ||
+		m == MATERIAL_MESE ||
+		m == MATERIAL_MUD
+	);
 }
 
 /*
@@ -166,21 +195,6 @@ inline u8 face_materials(u8 m1, u8 m2)
 		return 1;
 	else
 		return 2;
-}
-
-/*
-	Returns true for materials that form the base ground that
-	follows the main heightmap
-*/
-inline bool is_ground_material(u8 m)
-{
-	return(
-		m == MATERIAL_STONE ||
-		m == MATERIAL_GRASS ||
-		m == MATERIAL_GRASS_FOOTSTEPS ||
-		m == MATERIAL_MESE ||
-		m == MATERIAL_MUD
-	);
 }
 
 struct MapNode
@@ -214,7 +228,9 @@ struct MapNode
 
 	bool operator==(const MapNode &other)
 	{
-		return (d == other.d && param == other.param);
+		return (d == other.d
+				&& param == other.param
+				&& pressure == other.pressure);
 	}
 
 	bool light_propagates()

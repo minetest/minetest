@@ -53,3 +53,6 @@
 #max_simultaneous_block_sends_per_client = 1
 #max_simultaneous_block_sends_server_total = 4
 
+#max_block_send_distance = 8
+#max_block_generate_distance = 5
+

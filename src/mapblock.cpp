@@ -111,7 +111,7 @@ FastFace * MapBlock::makeFastFace(u8 material, u8 light, v3f p,
 
 	u8 alpha = 255;
 
-	if(material == MATERIAL_WATER)
+	if(material == MATERIAL_WATER || material == MATERIAL_OCEAN)
 	{
 		alpha = 128;
 	}
@@ -173,13 +173,14 @@ u8 MapBlock::getFaceLight(v3s16 p, v3s16 face_dir)
 
 /*
 	Gets node material from any place relative to block.
-	Returns MATERIAL_AIR if doesn't exist.
+	Returns MATERIAL_IGNORE if doesn't exist or should not be drawn.
 */
 u8 MapBlock::getNodeMaterial(v3s16 p)
 {
 	try{
 		MapNode n = getNodeParent(p);
-		return n.d;
+		
+		return content_cube_material(n.d);
 	}
 	catch(InvalidPositionException &e)
 	{
@@ -470,46 +471,6 @@ void MapBlock::updateMesh()
 		
 		collector.fillMesh(mesh_new);
 
-#if 0
-		scene::IMeshBuffer *buf = NULL;
-
-		core::list<FastFace*>::Iterator i = fastfaces_new->begin();
-
-		// MATERIAL_AIR shouldn't be used by any face
-		u8 material_in_use = MATERIAL_AIR;
-
-		for(; i != fastfaces_new->end(); i++)
-		{
-			FastFace *f = *i;
-			
-			if(f->material != material_in_use || buf == NULL)
-			{
-				// Try to get a meshbuffer associated with the material
-				buf = mesh_new->getMeshBuffer(g_materials[f->material]);
-				// If not found, create one
-				if(buf == NULL)
-				{
-					// This is a "Standard MeshBuffer",
-					// it's a typedeffed CMeshBuffer<video::S3DVertex>
-					buf = new scene::SMeshBuffer();
-					// Set material
-					((scene::SMeshBuffer*)buf)->Material = g_materials[f->material];
-					// Use VBO
-					//buf->setHardwareMappingHint(scene::EHM_STATIC);
-					// Add to mesh
-					mesh_new->addMeshBuffer(buf);
-					// Mesh grabbed it
-					buf->drop();
-				}
-				material_in_use = f->material;
-			}
-			
-			u16 new_indices[] = {0,1,2,2,3,0};
-			
-			//buf->append(f->vertices, 4, indices, 6);
-		}
-#endif
-
 		// Use VBO for mesh (this just would set this for ever buffer)
 		//mesh_new->setHardwareMappingHint(scene::EHM_STATIC);
 		
@@ -517,8 +478,11 @@ void MapBlock::updateMesh()
 				<<"and uses "<<mesh_new->getMeshBufferCount()
 				<<" materials (meshbuffers)"<<std::endl;*/
 	}
+	
+	/*
+		Clear temporary FastFaces
+	*/
 
-	// TODO: Get rid of the FastFace stage
 	core::list<FastFace*>::Iterator i;
 	i = fastfaces_new->begin();
 	for(; i != fastfaces_new->end(); i++)
@@ -527,6 +491,18 @@ void MapBlock::updateMesh()
 	}
 	fastfaces_new->clear();
 	delete fastfaces_new;
+
+	/*
+		Add special graphics:
+		- torches
+	*/
+
+	for(s16 z=0; z<MAP_BLOCKSIZE; z++)
+	for(s16 y=0; y<MAP_BLOCKSIZE; y++)
+	for(s16 x=0; x<MAP_BLOCKSIZE; x++)
+	{
+		v3s16 p(x,y,z);
+	}
 
 	/*
 		Replace the mesh

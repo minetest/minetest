@@ -196,6 +196,28 @@ void * EmergeThread::Thread()
 			{
 				MapBlock *block = i.getNode()->getValue();
 				modified_blocks.insert(block->getPos(), block);
+
+				/*
+					Update water pressure.
+					This also adds suitable nodes to active_nodes.
+				*/
+
+				MapVoxelManipulator v(&map);
+				
+				VoxelArea area(block->getPosRelative(),
+						block->getPosRelative() + v3s16(1,1,1)*(MAP_BLOCKSIZE-1));
+
+				try
+				{
+					v.updateAreaWaterPressure(area, m_server->m_flow_active_nodes);
+				}
+				catch(ProcessingLimitException &e)
+				{
+					dstream<<"Processing limit reached (1)"<<std::endl;
+				}
+				
+				v.blitBack(modified_blocks);
+
 			}
 			
 			/*dstream<<"lighting "<<lighting_invalidated_blocks.size()
@@ -244,12 +266,6 @@ void * EmergeThread::Thread()
 				// Remove block from sent history
 				client->SetBlocksNotSent(modified_blocks);
 			}
-			
-			/*if(q->peer_ids.find(client->peer_id) != NULL)
-			{
-				// Decrement emerge queue count of client
-				client->BlockEmerged();
-			}*/
 		}
 		
 	}
@@ -348,14 +364,8 @@ void RemoteClient::GetNextBlocks(Server *server, float dtime,
 
 	//bool has_incomplete_blocks = false;
 	
-	/*
-		TODO: Get this from somewhere
-	*/
-	//s16 d_max = 7;
-	s16 d_max = 8;
-
-	//TODO: Get this from somewhere (probably a bigger value)
-	s16 d_max_gen = 5;
+	s16 d_max = g_settings.getS16("max_block_send_distance");
+	s16 d_max_gen = g_settings.getS16("max_block_generate_distance");
 	
 	//dstream<<"Starting from "<<d_start<<std::endl;
 
@@ -998,7 +1008,7 @@ void Server::AsyncRunStep()
 	{
 		static float counter = 0.0;
 		counter += dtime;
-		if(counter >= 1.0)
+		if(counter >= 0.25 && m_flow_active_nodes.size() > 0)
 		{
 		
 		counter = 0.0;
@@ -1011,16 +1021,7 @@ void Server::AsyncRunStep()
 			
 			MapVoxelManipulator v(&m_env.getMap());
 			
-			/*try{
-				v.flowWater(m_flow_active_nodes, 0, false, 20);
-				//v.flowWater(p_under, 0, true, 100);
-			}
-			catch(ProcessingLimitException &e)
-			{
-				dstream<<"Processing limit reached"<<std::endl;
-			}*/
-
-			v.flowWater(m_flow_active_nodes, 0, false, 20);
+			v.flowWater(m_flow_active_nodes, 0, false, 50);
 
 			v.blitBack(modified_blocks);
 
@@ -1059,7 +1060,7 @@ void Server::AsyncRunStep()
 			}
 		}
 
-		}
+		} // interval counter
 	}
 	
 	// Periodically print some info
@@ -1547,7 +1548,7 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 			}
 			catch(ProcessingLimitException &e)
 			{
-				dstream<<"Processing limit reached"<<std::endl;
+				dstream<<"Processing limit reached (1)"<<std::endl;
 			}
 			
 			v.blitBack(modified_blocks);
@@ -1624,6 +1625,28 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 				*/
 				core::map<v3s16, MapBlock*> modified_blocks;
 				m_env.getMap().addNodeAndUpdate(p_over, n, modified_blocks);
+				
+				/*
+					Update water
+				*/
+				
+				// Update water pressure around modification
+				// This also adds it to m_flow_active_nodes if appropriate
+
+				MapVoxelManipulator v(&m_env.getMap());
+				
+				VoxelArea area(p_over-v3s16(1,1,1), p_over+v3s16(1,1,1));
+
+				try
+				{
+					v.updateAreaWaterPressure(area, m_flow_active_nodes);
+				}
+				catch(ProcessingLimitException &e)
+				{
+					dstream<<"Processing limit reached (1)"<<std::endl;
+				}
+				
+				v.blitBack(modified_blocks);
 			}
 			/*
 				Handle block object items
@@ -2019,6 +2042,10 @@ void Server::peerAdded(con::Peer *peer)
 			assert(USEFUL_MATERIAL_COUNT <= PLAYER_INVENTORY_SIZE);
 			for(u16 i=0; i<USEFUL_MATERIAL_COUNT; i++)
 			{
+				// Skip some materials
+				if(i == MATERIAL_OCEAN)
+					continue;
+
 				InventoryItem *item = new MaterialItem(i, 1);
 				player->inventory.addItem(item);
 			}

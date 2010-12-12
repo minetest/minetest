@@ -428,8 +428,8 @@ public:
 	bool flowWater(v3s16 removed_pos,
 			core::map<v3s16, u8> &active_nodes,
 			int recursion_depth=0,
-			bool debugprint=false, int *counter=NULL,
-			int counterlimit=-1
+			bool debugprint=false,
+			u32 stoptime=0
 	);
 
 	/*
@@ -446,7 +446,7 @@ public:
 	void flowWater(core::map<v3s16, u8> &active_nodes,
 			int recursion_depth=0,
 			bool debugprint=false,
-			int counterlimit=-1
+			u32 timelimit=50
 	);
 
 	/*
@@ -460,7 +460,7 @@ public:
 
 		If not found from source, add with VOXELFLAG_INEXISTENT
 	*/
-	virtual void emerge(VoxelArea a)
+	virtual void emerge(VoxelArea a, s32 caller_id=-1)
 	{
 		//dstream<<"emerge p=("<<p.X<<","<<p.Y<<","<<p.Z<<")"<<std::endl;
 		addArea(a);

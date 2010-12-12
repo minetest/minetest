@@ -1819,7 +1819,8 @@ MapBlock * ServerMap::emergeBlock(
 				// If under water level, it's water
 				if(real_y < WATER_LEVEL)
 				{
-					n.d = MATERIAL_WATER;
+					//n.d = MATERIAL_WATER;
+					n.d = MATERIAL_OCEAN;
 					n.setLight(diminish_light(LIGHT_SUN, WATER_LEVEL-real_y+1));
 				}
 				// else air
@@ -2731,34 +2732,6 @@ void ClientMap::renderMap(video::IVideoDriver* driver,
 	DSTACK(__FUNCTION_NAME);
 
 	bool is_transparent_pass = pass == scene::ESNRP_TRANSPARENT;
-#if 0
-	/*
-		Draw master heightmap mesh
-	*/
-	
-	{
-		JMutexAutoLock lock(mesh_mutex);
-		if(mesh != NULL)
-		{
-			u32 c = mesh->getMeshBufferCount();
-
-			for(u32 i=0; i<c; i++)
-			{
-				scene::IMeshBuffer *buf = mesh->getMeshBuffer(i);
-				const video::SMaterial& material = buf->getMaterial();
-				video::IMaterialRenderer* rnd =
-						driver->getMaterialRenderer(material.MaterialType);
-				bool transparent = (rnd && rnd->isTransparent());
-				// Render transparent on transparent pass and likewise.
-				if(transparent == is_transparent_pass)
-				{
-					driver->setMaterial(buf->getMaterial());
-					driver->drawMeshBuffer(buf);
-				}
-			}
-		}
-	}
-#endif
 
 	/*
 		Get time for measuring timeout.
@@ -3162,7 +3135,8 @@ MapVoxelManipulator::~MapVoxelManipulator()
 			<<std::endl;
 }
 
-void MapVoxelManipulator::emerge(VoxelArea a)
+#if 1
+void MapVoxelManipulator::emerge(VoxelArea a, s32 caller_id)
 {
 	TimeTaker timer1("emerge", g_device, &emerge_time);
 
@@ -3190,8 +3164,11 @@ void MapVoxelManipulator::emerge(VoxelArea a)
 		{
 			TimeTaker timer1("emerge load", g_device, &emerge_load_time);
 
-			dstream<<"Loading block ("<<p.X<<","<<p.Y<<","<<p.Z<<")"
-					<<std::endl;
+			/*dstream<<"Loading block (caller_id="<<caller_id<<")"
+					<<" ("<<p.X<<","<<p.Y<<","<<p.Z<<")"
+					<<" wanted area: ";
+			a.print(dstream);
+			dstream<<std::endl;*/
 			
 			MapBlock *block = m_map->getBlockNoCreate(p);
 			if(block->isDummy())
@@ -3221,6 +3198,43 @@ void MapVoxelManipulator::emerge(VoxelArea a)
 
 	//dstream<<"emerge done"<<std::endl;
 }
+#endif
+
+#if 0
+void MapVoxelManipulator::emerge(VoxelArea a)
+{
+	TimeTaker timer1("emerge", g_device, &emerge_time);
+	
+	v3s16 size = a.getExtent();
+	
+	VoxelArea padded = a;
+	padded.pad(m_area.getExtent() / 4);
+	addArea(padded);
+
+	for(s16 z=0; z<size.Z; z++)
+	for(s16 y=0; y<size.Y; y++)
+	for(s16 x=0; x<size.X; x++)
+	{
+		v3s16 p(x,y,z);
+		s32 i = m_area.index(a.MinEdge + p);
+		// Don't touch nodes that have already been loaded
+		if(!(m_flags[i] & VOXELFLAG_NOT_LOADED))
+			continue;
+		try
+		{
+			TimeTaker timer1("emerge load", g_device, &emerge_load_time);
+			MapNode n = m_map->getNode(a.MinEdge + p);
+			m_data[i] = n;
+			m_flags[i] = 0;
+		}
+		catch(InvalidPositionException &e)
+		{
+			m_flags[i] = VOXELFLAG_INEXISTENT;
+		}
+	}
+}
+#endif
+
 
 /*
 	TODO: Add an option to only update eg. water and air nodes.
@@ -3230,6 +3244,9 @@ void MapVoxelManipulator::emerge(VoxelArea a)
 void MapVoxelManipulator::blitBack
 		(core::map<v3s16, MapBlock*> & modified_blocks)
 {
+	if(m_area.getExtent() == v3s16(0,0,0))
+		return;
+	
 	TimeTaker timer1("blitBack", g_device);
 	
 	/*

@@ -179,200 +179,19 @@ SUGG: MovingObject::move and Player::move are basically the same.
 TODO: Transfer sign texts as metadata of block and not as data of
       object
 
+SUGG: Implement a "Fast check queue" (a queue with a map for checking
+      if something is already in it)
+      - TODO: Use it in active block queue in water flowing
+
+TODO: Proper looking torches.
+      - Signs could be done in the same way?
+
 Doing now:
 ======================================================================
 
-Water dynamics pseudo-code (block = MapNode):
-SUGG: Create separate flag table in VoxelManipulator to allow fast
-clearing of "modified" flags
-
-neighborCausedPressure(pos):
-	pressure = 0
-	dirs = {down, left, right, back, front, up}
-	for d in dirs:
-		pos2 = pos + d
-		p = block_at(pos2).pressure
-		if d.Y == 1 and p > min:
-			p -= 1
-		if d.Y == -1 and p < max:
-			p += 1
-		if p > pressure:
-			pressure = p
-	return pressure
-
-# This should somehow update all changed pressure values
-# in an unknown body of water
-updateWaterPressure(pos):
-	TODO
-
-FIXME: This goes in an indefinite loop when there is an underwater
-chamber like this:
-
-#111######
-#222##22##
-#33333333x<- block removed from here
-##########
-
-#111######
-#222##22##
-#3333333x1
-##########
-
-#111######
-#222##22##
-#333333x11
-##########
-
-#111######
-#222##2x##
-#333333333
-##########
-
-#111######
-#222##x2##
-#333333333
-##########
-
-Now, consider moving to the last block not allowed.
-
-Consider it a 3D case with a depth of 2. We're now at this situation.
-Note the additional blocking ## in the second depth plane.
-
-z=1         z=2
-#111######  #111######
-#222##x2##  #222##22##
-#333333333  #33333##33
-##########  ##########
-
-#111######  #111######
-#222##22##  #222##x2##
-#333333333  #33333##33
-##########  ##########
-
-#111######  #111######
-#222##22##  #222##2x##
-#333333333  #33333##33  
-##########  ##########
-
-Now there is nowhere to go, without going to an already visited block,
-but the pressure calculated in here from neighboring blocks is >= 2,
-so it is not the final ending.
-
-We will back up to a state where there is somewhere to go to.
-It is this state:
-
-#111######  #111######
-#222##22##  #222##22##
-#333333x33  #33333##33
-##########  ##########
-
-Then just go on, avoiding already visited blocks:
-
-#111######  #111######
-#222##22##  #222##22##
-#33333x333  #33333##33
-##########  ##########
-
-#111######  #111######
-#222##22##  #222##22##
-#3333x3333  #33333##33
-##########  ##########
-
-#111######  #111######
-#222##22##  #222##22##
-#333x33333  #33333##33
-##########  ##########
-
-#111######  #111######
-#222##22##  #222##22##
-#33x333333  #33333##33
-##########  ##########
-
-#111######  #111######
-#22x##22##  #222##22##
-#333333333  #33333##33
-##########  ##########
-
-#11x######  #111######
-#222##22##  #222##22##
-#333333333  #33333##33
-##########  ##########
-
-"Blob". the air bubble finally got out of the water.
-Then return recursively to a state where there is air next to water,
-clear the visit flags and feed the neighbor of the water recursively
-to the algorithm.
-
-#11 ######  #111######
-#222##22##  #222##22##
-#333333333x #33333##33
-##########  ##########
-
-#11 ######  #111######
-#222##22##  #222##22##
-#33333333x3 #33333##33
-##########  ##########
-
-...and so on.
-
-
-# removed_pos: a position that has been changed from something to air
-flowWater(removed_pos):
-	dirs = {top, left, right, back, front, bottom}
-	selected_dir = None
-	for d in dirs:
-		b2 = removed_pos + d
-
-		# Ignore positions that don't have water
-		if block_at(b2) != water:
-			continue
-
-		# Ignore positions that have already been checked
-		if block_at(b2).checked:
-			continue
-
-		# If block is at top, select it always.
-		if d.Y == 1:
-			selected_dir = d
-			break
-
-		# If block is at bottom, select it if it has enough pressure.
-		# >= 3 needed for stability (and sanity)
-		if d.Y == -1:
-			if block_at(b2).pressure >= 3:
-				selected_dir = d
-				break
-			continue
-		
-		# Else block is at some side. select it if it has enough pressure.
-		if block_at(b2).pressure >= 2:
-			selected_dir = d
-			break
-	
-	# If there is nothing to do anymore, return.
-	if selected_dir == None
-		return
-	
-	b2 = removed_pos + selected_dir
-	
-	# Move block
-	set_block(removed_pos, block_at(b2))
-	set_block(b2, air_block)
-	
-	# Update pressure
-	updateWaterPressure(removed_pos)
-	
-	# Flow water to the newly created empty position
-	flowWater(b2)
-
-	# Check empty positions around and try flowing water to them
-	for d in dirs:
-		b3 = removed_pos + d
-		# Ignore positions that are not air
-		if block_at(b3) is not air:
-			continue
-		flowWater(b3)
-
+TODO: A system for showing some nodes in some other way than cubes
+      - Needed for torches
+	  - Also for signs, stairs, etc
 
 ======================================================================
 
@@ -448,7 +267,8 @@ const char *g_material_filenames[MATERIALS_COUNT] =
 	"../data/leaves.png",
 	"../data/grass_footsteps.png",
 	"../data/mese.png",
-	"../data/mud.png"
+	"../data/mud.png",
+	"../data/water.png", // ocean
 };
 
 video::SMaterial g_materials[MATERIALS_COUNT];
@@ -499,6 +319,8 @@ void set_default_settings()
 	g_settings.set("name", "");
 	g_settings.set("random_input", "false");
 	g_settings.set("client_delete_unused_sectors_timeout", "1200");
+	g_settings.set("max_block_send_distance", "8");
+	g_settings.set("max_block_generate_distance", "5");
 
 	// Server stuff
 	g_settings.set("creative_mode", "false");
@@ -1489,12 +1311,11 @@ int main(int argc, char *argv[])
 		g_materials[i].setFlag(video::EMF_BILINEAR_FILTER, false);
 		//g_materials[i].setFlag(video::EMF_ANISOTROPIC_FILTER, false);
 		//g_materials[i].setFlag(video::EMF_FOG_ENABLE, true);
-		if(i == MATERIAL_WATER)
-		{
-			g_materials[i].MaterialType = video::EMT_TRANSPARENT_VERTEX_ALPHA;
-			//g_materials[i].MaterialType = video::EMT_TRANSPARENT_ADD_COLOR;
-		}
 	}
+
+	g_materials[MATERIAL_WATER].MaterialType = video::EMT_TRANSPARENT_VERTEX_ALPHA;
+	//g_materials[MATERIAL_WATER].MaterialType = video::EMT_TRANSPARENT_ADD_COLOR;
+	g_materials[MATERIAL_OCEAN].MaterialType = video::EMT_TRANSPARENT_VERTEX_ALPHA;
 
 	/*g_mesh_materials[0].setTexture(0, driver->getTexture("../data/water.png"));
 	g_mesh_materials[1].setTexture(0, driver->getTexture("../data/grass.png"));

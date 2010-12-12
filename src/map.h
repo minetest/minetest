@@ -603,15 +603,18 @@ public:
 		m_loaded_blocks.clear();
 	}
 
-	virtual void emerge(VoxelArea a);
+	virtual void emerge(VoxelArea a, s32 caller_id=-1);
 
 	void blitBack(core::map<v3s16, MapBlock*> & modified_blocks);
 
 private:
 	Map *m_map;
-	// bool is dummy value
-	// SUGG: How 'bout an another VoxelManipulator for storing the
-	//       information about which block is loaded?
+	/*
+		NOTE: This might be used or not
+		bool is dummy value
+		SUGG: How 'bout an another VoxelManipulator for storing the
+		      information about which block is loaded?
+	*/
 	core::map<v3s16, bool> m_loaded_blocks;
 };
 

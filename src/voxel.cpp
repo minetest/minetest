@@ -335,23 +335,26 @@ int VoxelManipulator::getWaterPressure(v3s16 p, s16 &highest_y, int recur_count)
 	if(p.Y > highest_y)
 		highest_y = p.Y;
 	
-	recur_count++;
-	if(recur_count > 30)
+	/*if(recur_count > 1000)
 		throw ProcessingLimitException
-				("getWaterPressure recur_count limit reached");
+				("getWaterPressure recur_count limit reached");*/
+	
+	if(recur_count > 10000)
+		return -1;
+	
+	recur_count++;
 
 	v3s16 dirs[6] = {
 		v3s16(0,1,0), // top
-		v3s16(-1,0,0), // left
-		v3s16(1,0,0), // right
-		v3s16(0,0,-1), // front
 		v3s16(0,0,1), // back
+		v3s16(0,0,-1), // front
+		v3s16(1,0,0), // right
+		v3s16(-1,0,0), // left
 		v3s16(0,-1,0), // bottom
 	};
 
 	// Load neighboring nodes
-	// TODO: A bigger area would be better
-	emerge(VoxelArea(p - v3s16(1,1,1), p + v3s16(1,1,1)));
+	emerge(VoxelArea(p - v3s16(1,1,1), p + v3s16(1,1,1)), 1);
 
 	s32 i;
 	for(i=0; i<6; i++)
@@ -367,14 +370,14 @@ int VoxelManipulator::getWaterPressure(v3s16 p, s16 &highest_y, int recur_count)
 			continue;
 
 		int pr;
-		
-		// If at surface
-		/*if(n.pressure == 1)
+
+		// If at ocean surface
+		if(n.pressure == 1 && n.d == MATERIAL_OCEAN)
 		{
 			pr = 1;
 		}
 		// Otherwise recurse more
-		else*/
+		else
 		{
 			pr = getWaterPressure(p2, highest_y, recur_count);
 			if(pr == -1)
@@ -410,10 +413,21 @@ void VoxelManipulator::spreadWaterPressure(v3s16 p, int pr,
 		core::map<v3s16, u8> &active_nodes,
 		int recur_count)
 {
+	//if(recur_count > 10000)
+		/*throw ProcessingLimitException
+				("spreadWaterPressure recur_count limit reached");*/
+	if(recur_count > 10)
+		return;
 	recur_count++;
-	if(recur_count > 10000)
-		throw ProcessingLimitException
-				("spreadWaterPressure recur_count limit reached");
+	
+	/*dstream<<"spreadWaterPressure: p=("
+			<<p.X<<","<<p.Y<<","<<p.Z<<")"
+			<<", oldpr="<<(int)m_data[m_area.index(p)].pressure
+			<<", pr="<<pr
+			<<", recur_count="<<recur_count
+			<<", request_area=";
+	request_area.print(dstream);
+	dstream<<std::endl;*/
 
 	m_flags[m_area.index(p)] |= VOXELFLAG_CHECKED3;
 	m_data[m_area.index(p)].pressure = pr;
@@ -428,7 +442,7 @@ void VoxelManipulator::spreadWaterPressure(v3s16 p, int pr,
 	};
 
 	// Load neighboring nodes
-	emerge(VoxelArea(p - v3s16(1,1,1), p + v3s16(1,1,1)));
+	emerge(VoxelArea(p - v3s16(1,1,1), p + v3s16(1,1,1)), 2);
 
 	s32 i;
 	for(i=0; i<6; i++)
@@ -455,6 +469,7 @@ void VoxelManipulator::spreadWaterPressure(v3s16 p, int pr,
 			// If block is at top
 			if(i == 0)
 			{
+				//if(pr >= PRESERVE_WATER_VOLUME ? 3 : 2)
 				if(pr >= 3)
 					pressure_causes_flow = true;
 			}
@@ -466,6 +481,7 @@ void VoxelManipulator::spreadWaterPressure(v3s16 p, int pr,
 			// If block is at side
 			else
 			{
+				//if(pr >= PRESERVE_WATER_VOLUME ? 2 : 1)
 				if(pr >= 2)
 					pressure_causes_flow = true;
 			}
@@ -497,7 +513,10 @@ void VoxelManipulator::spreadWaterPressure(v3s16 p, int pr,
 		}
 		
 		// Ignore if correct pressure is already set and is not on
-		// request_area
+		// request_area.
+		// Thus, request_area can be used for updating as much
+		// pressure info in some area as possible to possibly
+		// make some calls to getWaterPressure unnecessary.
 		if(n.pressure == pr2 && request_area.contains(p2) == false)
 			continue;
 
@@ -512,7 +531,7 @@ void VoxelManipulator::updateAreaWaterPressure(VoxelArea a,
 	TimeTaker timer("updateAreaWaterPressure", g_device,
 			&updateareawaterpressure_time);
 
-	emerge(a);
+	emerge(a, 3);
 	
 	bool checked2_clear = false;
 	
@@ -596,20 +615,21 @@ void VoxelManipulator::updateAreaWaterPressure(VoxelArea a,
 bool VoxelManipulator::flowWater(v3s16 removed_pos,
 		core::map<v3s16, u8> &active_nodes,
 		int recursion_depth, bool debugprint,
-		int *counter, int counterlimit)
+		u32 stoptime)
 {
 	v3s16 dirs[6] = {
 		v3s16(0,1,0), // top
-		v3s16(-1,0,0), // left
-		v3s16(1,0,0), // right
 		v3s16(0,0,-1), // front
 		v3s16(0,0,1), // back
+		v3s16(-1,0,0), // left
+		v3s16(1,0,0), // right
 		v3s16(0,-1,0), // bottom
 	};
 
 	recursion_depth++;
 
 	v3s16 p;
+	bool from_ocean = false;
 	
 	// Randomize horizontal order
 	static s32 cs = 0;
@@ -625,7 +645,7 @@ bool VoxelManipulator::flowWater(v3s16 removed_pos,
 	TimeTaker timer1("flowWater pre", g_device, &flowwater_pre_time);
 	
 	// Load neighboring nodes
-	emerge(VoxelArea(removed_pos - v3s16(1,1,1), removed_pos + v3s16(1,1,1)));
+	emerge(VoxelArea(removed_pos - v3s16(1,1,1), removed_pos + v3s16(1,1,1)), 4);
 	
 	// Ignore incorrect removed_pos
 	{
@@ -660,11 +680,13 @@ bool VoxelManipulator::flowWater(v3s16 removed_pos,
 		// If block is at bottom, select it if it has enough pressure
 		if(i == 5)
 		{
+			//if(n.pressure >= PRESERVE_WATER_VOLUME ? 3 : 2)
 			if(n.pressure >= 3)
 				break;
 			continue;
 		}
 		// Else block is at some side. Select it if it has enough pressure
+		//if(n.pressure >= PRESERVE_WATER_VOLUME ? 2 : 1)
 		if(n.pressure >= 2)
 		{
 			break;
@@ -675,21 +697,46 @@ bool VoxelManipulator::flowWater(v3s16 removed_pos,
 	if(i==6)
 		return false;
 
-	// Switch nodes at p and removed_pos
+	/*
+		Move water and bubble
+	*/
+
 	u8 m = m_data[m_area.index(p)].d;
 	u8 f = m_flags[m_area.index(p)];
-	m_data[m_area.index(p)].d = m_data[m_area.index(removed_pos)].d;
-	m_flags[m_area.index(p)] = m_flags[m_area.index(removed_pos)];
+
+	if(m == MATERIAL_OCEAN)
+		from_ocean = true;
+
+	// Move air bubble if not taking water from ocean
+	if(from_ocean == false)
+	{
+		m_data[m_area.index(p)].d = m_data[m_area.index(removed_pos)].d;
+		m_flags[m_area.index(p)] = m_flags[m_area.index(removed_pos)];
+	}
+	
 	m_data[m_area.index(removed_pos)].d = m;
 	m_flags[m_area.index(removed_pos)] = f;
 
 	// Mark removed_pos checked
 	m_flags[m_area.index(removed_pos)] |= VOXELFLAG_CHECKED;
+
 	// If block was dropped from surface, increase pressure
 	if(i == 0 && m_data[m_area.index(removed_pos)].pressure == 1)
 	{
 		m_data[m_area.index(removed_pos)].pressure = 2;
 	}
+	
+	/*
+	NOTE: This does not work as-is
+	if(m == MATERIAL_OCEAN)
+	{
+		// If block was raised to surface, increase pressure of
+		// source node
+		if(i == 5 && m_data[m_area.index(p)].pressure == 1)
+		{
+			m_data[m_area.index(p)].pressure = 2;
+		}
+	}*/
 	
 	/*if(debugprint)
 	{
@@ -720,12 +767,30 @@ bool VoxelManipulator::flowWater(v3s16 removed_pos,
 	}
 	
 	}//timer1
-
-	// Flow water to the newly created empty position
-	flowWater(p, active_nodes, recursion_depth,
-			debugprint, counter, counterlimit);
+	
+	//if(PRESERVE_WATER_VOLUME)
+	if(from_ocean == false)
+	{
+		// Flow water to the newly created empty position
+		/*flowWater(p, active_nodes, recursion_depth,
+				debugprint, counter, counterlimit);*/
+		flowWater(p, active_nodes, recursion_depth,
+				debugprint, stoptime);
+	}
+	
+	if(stoptime != 0 && g_device != NULL)
+	{
+		u32 timenow = g_device->getTimer()->getRealTime();
+		if(timenow >= stoptime ||
+				(stoptime < 0x80000000 && timenow > 0x80000000))
+		{
+			dstream<<"flowWater: stoptime reached"<<std::endl;
+			throw ProcessingLimitException("flowWater stoptime reached");
+		}
+	}
 	
 find_again:
+	
 	// Try flowing water to empty positions around removed_pos.
 	// They are checked in reverse order compared to the previous loop.
 	for(s32 i=5; i>=0; i--)
@@ -745,7 +810,9 @@ find_again:
 		// Flow water to node
 		bool moved =
 		flowWater(p, active_nodes, recursion_depth,
-				debugprint, counter, counterlimit);
+				debugprint, stoptime);
+		/*flowWater(p, active_nodes, recursion_depth,
+				debugprint, counter, counterlimit);*/
 		
 		if(moved)
 		{
@@ -754,27 +821,13 @@ find_again:
 		}
 	}
 
-	if(counter != NULL)
-	{
-		(*counter)++;
-		if((*counter) % 10 == 0)
-			dstream<<"flowWater(): moved "<<(*counter)<<" nodes"
-					<<std::endl;
-
-		if(counterlimit != -1 && (*counter) > counterlimit)
-		{
-			dstream<<"Counter limit reached; returning"<<std::endl;
-			throw ProcessingLimitException("flowWater counterlimit reached");
-		}
-	}
-	
 	return true;
 }
 
 void VoxelManipulator::flowWater(
 		core::map<v3s16, u8> &active_nodes,
 		int recursion_depth, bool debugprint,
-		int counterlimit)
+		u32 timelimit)
 {
 	addarea_time = 0;
 	emerge_time = 0;
@@ -783,25 +836,53 @@ void VoxelManipulator::flowWater(
 	updateareawaterpressure_time = 0;
 	flowwater_pre_time = 0;
 
+	if(active_nodes.size() == 0)
+	{
+		dstream<<"flowWater: no active nodes"<<std::endl;
+		return;
+	}
+
 	TimeTaker timer1("flowWater (active_nodes)", g_device);
 
 	dstream<<"active_nodes.size() = "<<active_nodes.size()<<std::endl;
 
-	int counter = 0;
+	//int counter = 0;
+
+	u32 stoptime = 0;
+	if(g_device != NULL)
+	{
+		stoptime = g_device->getTimer()->getRealTime() + timelimit;
+	}
+
+	// Count of handled active nodes
+	u32 handled_count = 0;
 
 	try
 	{
 
+	/*
+		Take random one at first
+
+		This is randomized only at the first time so that all
+		subsequent nodes will be taken at roughly the same position
+	*/
+	s32 k = 0;
+	if(active_nodes.size() != 0)
+		k = (s32)rand() % (s32)active_nodes.size();
+
 	// Flow water to active nodes
 	for(;;)
+	//for(s32 h=0; h<1; h++)
 	{
-		// Clear check flags
-		clearFlag(VOXELFLAG_CHECKED);
-		
 		if(active_nodes.size() == 0)
 			break;
 
-		dstream<<"Selecting a new active_node"<<std::endl;
+		handled_count++;
+		
+		// Clear check flags
+		clearFlag(VOXELFLAG_CHECKED);
+		
+		//dstream<<"Selecting a new active_node"<<std::endl;
 
 #if 0
 		// Take first one
@@ -810,9 +891,7 @@ void VoxelManipulator::flowWater(
 #endif
 
 #if 1
-		// Take random one
-		s32 k = (s32)rand() % (s32)active_nodes.size();
-		//s32 k = 0;
+		
 		core::map<v3s16, u8>::Iterator
 				i = active_nodes.getIterator().getNode();
 		for(s32 j=0; j<k; j++)
@@ -820,12 +899,17 @@ void VoxelManipulator::flowWater(
 			i++;
 		}
 		core::map<v3s16, u8>::Node *n = i.getNode();
+
+		// Decrement index if less than 0.
+		// This keeps us in existing indices always.
+		if(k > 0)
+			k--;
 #endif
 
 		v3s16 p = n->getKey();
 		active_nodes.remove(p);
 		flowWater(p, active_nodes, recursion_depth,
-				debugprint, &counter, counterlimit);
+				debugprint, stoptime);
 	}
 
 	}
@@ -836,11 +920,14 @@ void VoxelManipulator::flowWater(
 	
 	v3s16 e = m_area.getExtent();
 	s32 v = m_area.getVolume();
-	dstream<<"flowWater (active): moved "<<counter<<" nodes, "
+	//dstream<<"flowWater (active): moved "<<counter<<" nodes, "
+	dstream<<"flowWater (active): "
 			<<"area ended up as "
 			<<e.X<<"x"<<e.Y<<"x"<<e.Z<<" = "<<v
+			<<", handled a_node count: "<<handled_count
+			<<", active_nodes.size() = "<<active_nodes.size()
 			<<std::endl;
-	
+			
 	dstream<<"addarea_time: "<<addarea_time
 			<<", emerge_time: "<<emerge_time
 			<<", emerge_load_time: "<<emerge_load_time
