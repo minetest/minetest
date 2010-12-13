@@ -46,7 +46,7 @@ enum{
 
 struct FastFace
 {
-	u8 material;
+	u16 tile;
 	video::S3DVertex vertices[4]; // Precalculated vertices
 };
 
@@ -283,7 +283,7 @@ public:
 					setNode(x0+x, y0+y, z0+z, node);
 	}
 
-	static FastFace * makeFastFace(u8 material, u8 light, v3f p,
+	static FastFace * makeFastFace(u16 tile, u8 light, v3f p,
 			v3f dir, v3f scale, v3f posRelative_f);
 	
 	u8 getFaceLight(v3s16 p, v3s16 face_dir);

@@ -68,7 +68,7 @@ void MapBlock::setNodeParent(v3s16 p, MapNode & n)
 	}
 }
 
-FastFace * MapBlock::makeFastFace(u8 material, u8 light, v3f p,
+FastFace * MapBlock::makeFastFace(u16 tile, u8 light, v3f p,
 		v3f dir, v3f scale, v3f posRelative_f)
 {
 	FastFace *f = new FastFace;
@@ -111,7 +111,9 @@ FastFace * MapBlock::makeFastFace(u8 material, u8 light, v3f p,
 
 	u8 alpha = 255;
 
-	if(material == CONTENT_WATER || material == CONTENT_OCEAN)
+	//if(material == CONTENT_WATER || material == CONTENT_OCEAN)
+	if(tile == CONTENT_WATER || tile == CONTENT_OCEAN)
+	//if(tile == TILE_WATER)
 	{
 		alpha = 128;
 	}
@@ -135,7 +137,7 @@ FastFace * MapBlock::makeFastFace(u8 material, u8 light, v3f p,
 	f->vertices[3] = video::S3DVertex(vertex_pos[3], zerovector, c,
 			core::vector2d<f32>(0,0));
 
-	f->material = material;
+	f->tile = tile;
 
 	return f;
 }
@@ -475,7 +477,9 @@ void MapBlock::updateMesh()
 
 			const u16 indices[] = {0,1,2,2,3,0};
 
-			collector.append(g_materials[f->material], f->vertices, 4,
+			/*collector.append(g_materials[f->material], f->vertices, 4,
+					indices, 6);*/
+			collector.append(g_materials[f->tile], f->vertices, 4,
 					indices, 6);
 		}
 
@@ -817,8 +821,7 @@ void MapBlock::serialize(std::ostream &os, u8 version)
 		
 		os.write((char*)*dest, dest.getSize());
 	}
-	// All otherversions
-	else
+	else if(version <= 10)
 	{
 		/*
 			With compression.
@@ -857,6 +860,44 @@ void MapBlock::serialize(std::ostream &os, u8 version)
 			compress(pressuredata, os, version);
 		}
 	}
+	// All other versions (newest)
+	else
+	{
+		// First byte
+		os.write((char*)&is_underground, 1);
+
+		u32 nodecount = MAP_BLOCKSIZE*MAP_BLOCKSIZE*MAP_BLOCKSIZE;
+
+		/*
+			Get data
+		*/
+
+		SharedBuffer<u8> databuf(nodecount*3);
+
+		// Get contents
+		for(u32 i=0; i<nodecount; i++)
+		{
+			databuf[i] = data[i].d;
+		}
+
+		// Get params
+		for(u32 i=0; i<nodecount; i++)
+		{
+			databuf[i+nodecount] = data[i].param;
+		}
+
+		// Get pressure
+		for(u32 i=0; i<nodecount; i++)
+		{
+			databuf[i+nodecount*2] = data[i].pressure;
+		}
+
+		/*
+			Compress data to output stream
+		*/
+
+		compress(databuf, os, version);
+	}
 }
 
 void MapBlock::deSerialize(std::istream &is, u8 version)
@@ -885,8 +926,7 @@ void MapBlock::deSerialize(std::istream &is, u8 version)
 			data[i].deSerialize(*d, version);
 		}
 	}
-	// All other versions
-	else
+	else if(version <= 10)
 	{
 		u32 nodecount = MAP_BLOCKSIZE*MAP_BLOCKSIZE*MAP_BLOCKSIZE;
 
@@ -934,6 +974,39 @@ void MapBlock::deSerialize(std::istream &is, u8 version)
 			{
 				data[i].pressure = s[i];
 			}
+		}
+	}
+	// All other versions (newest)
+	else
+	{
+		u32 nodecount = MAP_BLOCKSIZE*MAP_BLOCKSIZE*MAP_BLOCKSIZE;
+
+		u8 t8;
+		is.read((char*)&t8, 1);
+		is_underground = t8;
+
+		// Uncompress data
+		std::ostringstream os(std::ios_base::binary);
+		decompress(is, os, version);
+		std::string s = os.str();
+		if(s.size() != nodecount*3)
+			throw SerializationError
+					("MapBlock::deSerialize: invalid format");
+
+		// Set contents
+		for(u32 i=0; i<nodecount; i++)
+		{
+			data[i].d = s[i];
+		}
+		// Set params
+		for(u32 i=0; i<nodecount; i++)
+		{
+			data[i].param = s[i+nodecount];
+		}
+		// Set pressure
+		for(u32 i=0; i<nodecount; i++)
+		{
+			data[i].pressure = s[i+nodecount*2];
 		}
 	}
 }

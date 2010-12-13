@@ -72,6 +72,8 @@ struct TestCompress
 {
 	void Run()
 	{
+		{ // ver 0
+
 		SharedBuffer<u8> fromdata(4);
 		fromdata[0]=1;
 		fromdata[1]=5;
@@ -122,6 +124,64 @@ struct TestCompress
 		for(u32 i=0; i<str_out2.size(); i++)
 		{
 			assert(str_out2[i] == fromdata[i]);
+		}
+
+		}
+
+		{ // ver HIGHEST
+
+		SharedBuffer<u8> fromdata(4);
+		fromdata[0]=1;
+		fromdata[1]=5;
+		fromdata[2]=5;
+		fromdata[3]=1;
+		
+		std::ostringstream os(std::ios_base::binary);
+		compress(fromdata, os, SER_FMT_VER_HIGHEST);
+
+		std::string str_out = os.str();
+		
+		dstream<<"str_out.size()="<<str_out.size()<<std::endl;
+		dstream<<"TestCompress: 1,5,5,1 -> ";
+		for(u32 i=0; i<str_out.size(); i++)
+		{
+			dstream<<(u32)str_out[i]<<",";
+		}
+		dstream<<std::endl;
+
+		/*assert(str_out.size() == 10);
+
+		assert(str_out[0] == 0);
+		assert(str_out[1] == 0);
+		assert(str_out[2] == 0);
+		assert(str_out[3] == 4);
+		assert(str_out[4] == 0);
+		assert(str_out[5] == 1);
+		assert(str_out[6] == 1);
+		assert(str_out[7] == 5);
+		assert(str_out[8] == 0);
+		assert(str_out[9] == 1);*/
+
+		std::istringstream is(str_out, std::ios_base::binary);
+		std::ostringstream os2(std::ios_base::binary);
+
+		decompress(is, os2, SER_FMT_VER_HIGHEST);
+		std::string str_out2 = os2.str();
+
+		dstream<<"decompress: ";
+		for(u32 i=0; i<str_out2.size(); i++)
+		{
+			dstream<<(u32)str_out2[i]<<",";
+		}
+		dstream<<std::endl;
+
+		assert(str_out2.size() == fromdata.getSize());
+
+		for(u32 i=0; i<str_out2.size(); i++)
+		{
+			assert(str_out2[i] == fromdata[i]);
+		}
+
 		}
 	}
 };
@@ -273,8 +333,8 @@ struct TestVoxelManipulator
 		
 		active_nodes.clear();
 		active_nodes[v3s16(9,1,0)] = 1;
-		//v.flowWater(active_nodes, 0, false);
-		v.flowWater(active_nodes, 0, true, 1000);
+		//v.flowWater(active_nodes, 0, true, 1000);
+		v.flowWater(active_nodes, 0, false, 1000);
 		
 		dstream<<"Final result of flowWater:"<<std::endl;
 		v.print(dstream, VOXELPRINT_WATERPRESSURE);

@@ -412,8 +412,10 @@ void RemoteClient::GetNextBlocks(Server *server, float dtime,
 					maximum_simultaneous_block_sends;
 			
 			if(d <= BLOCK_SEND_DISABLE_LIMITS_MAX_D)
-					maximum_simultaneous_block_sends_now =
-							maximum_simultaneous_block_sends_setting;
+			{
+				maximum_simultaneous_block_sends_now =
+						maximum_simultaneous_block_sends_setting;
+			}
 
 			{
 				JMutexAutoLock lock(m_blocks_sending_mutex);
@@ -971,11 +973,19 @@ void Server::AsyncRunStep()
 	{
 		JMutexAutoLock lock1(m_step_dtime_mutex);
 		dtime = m_step_dtime;
-		if(dtime < 0.001)
-			return;
-		m_step_dtime = 0.0;
 	}
 	
+	// Send blocks to clients
+	SendBlocks(dtime);
+	
+	if(dtime < 0.001)
+		return;
+	
+	{
+		JMutexAutoLock lock1(m_step_dtime_mutex);
+		m_step_dtime = 0.0;
+	}
+
 	//dstream<<"Server steps "<<dtime<<std::endl;
 	
 	//dstream<<"Server::AsyncRunStep(): dtime="<<dtime<<std::endl;
@@ -1098,9 +1108,6 @@ void Server::AsyncRunStep()
 		}
 	}*/
 
-	// Send blocks to clients
-	SendBlocks(dtime);
-	
 	// Send object positions
 	{
 		static float counter = 0.0;
@@ -1876,7 +1883,8 @@ void Server::SendBlockNoLock(u16 peer_id, MapBlock *block, u8 ver)
 	writeS16(&reply[6], p.Z);
 	memcpy(&reply[8], *blockdata, blockdata.getSize());
 
-	//dstream<<"Sending block: packet size: "<<replysize<<std::endl;
+	dstream<<"Sending block ("<<p.X<<","<<p.Y<<","<<p.Z<<")"
+			<<":  \tpacket size: "<<replysize<<std::endl;
 	
 	/*
 		Send packet

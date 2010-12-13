@@ -461,12 +461,12 @@ inline void getFacePositions(core::list<v3s16> &list, u16 d)
 		/*
 			This is an optimized sequence of coordinates.
 		*/
+		list.push_back(v3s16( 0, 1, 0)); // top
 		list.push_back(v3s16( 0, 0, 1)); // back
 		list.push_back(v3s16(-1, 0, 0)); // left
 		list.push_back(v3s16( 1, 0, 0)); // right
 		list.push_back(v3s16( 0, 0,-1)); // front
 		list.push_back(v3s16( 0,-1, 0)); // bottom
-		list.push_back(v3s16( 0, 1, 0)); // top
 		// 6
 		list.push_back(v3s16(-1, 0, 1)); // back left
 		list.push_back(v3s16( 1, 0, 1)); // back right

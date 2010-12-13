@@ -25,6 +25,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "debug.h"
 #include "mapnode.h"
 
+// For VC++
 #undef min
 #undef max
 

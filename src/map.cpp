@@ -1504,7 +1504,8 @@ MapSector * ServerMap::emergeSector(v2s16 p2d)
 		sector->setHeightmap(p_in_sector, hm);
 
 		//TODO: Make these values configurable
-		hm->generateContinued(1.0, 0.2, corners);
+		hm->generateContinued(0.0, 0.0, corners);
+		//hm->generateContinued(1.0, 0.2, corners);
 		//hm->generateContinued(2.0, 0.2, corners);
 
 		//hm->print();
@@ -3242,8 +3243,8 @@ MapVoxelManipulator::MapVoxelManipulator(Map *map)
 
 MapVoxelManipulator::~MapVoxelManipulator()
 {
-	dstream<<"MapVoxelManipulator: blocks: "<<m_loaded_blocks.size()
-			<<std::endl;
+	/*dstream<<"MapVoxelManipulator: blocks: "<<m_loaded_blocks.size()
+			<<std::endl;*/
 }
 
 #if 1
@@ -3358,7 +3359,7 @@ void MapVoxelManipulator::blitBack
 	if(m_area.getExtent() == v3s16(0,0,0))
 		return;
 	
-	TimeTaker timer1("blitBack", g_device);
+	//TimeTaker timer1("blitBack", g_device);
 	
 	/*
 		Initialize block cache

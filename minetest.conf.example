@@ -57,5 +57,6 @@
 #max_block_generate_distance = 6
 
 #disable_water_climb = true
+# Note that this gets applied at map generation time
 #endless_water = true
 

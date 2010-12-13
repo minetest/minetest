@@ -34,8 +34,8 @@ cp -r data/sign_back.png $PACKAGEPATH/data/
 cp -r data/rat.png $PACKAGEPATH/data/
 cp -r data/mud.png $PACKAGEPATH/data/
 cp -r data/torch.png $PACKAGEPATH/data/
-cp -r data/torch_floor.png $PACKAGEPATH/data/
-cp -r data/torch_ceiling.png $PACKAGEPATH/data/
+cp -r data/torch_on_floor.png $PACKAGEPATH/data/
+cp -r data/torch_on_ceiling.png $PACKAGEPATH/data/
 cp -r data/skybox1.png $PACKAGEPATH/data/
 cp -r data/skybox2.png $PACKAGEPATH/data/
 cp -r data/skybox3.png $PACKAGEPATH/data/

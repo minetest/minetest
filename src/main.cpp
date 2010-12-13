@@ -172,24 +172,22 @@ TODO: Remove LazyMeshUpdater. It is not used as supposed.
 
 FIXME: Rats somehow go underground sometimes (you can see it in water)
        - Does their position get saved to a border value or something?
+	   - Does this happen anymore?
 
 SUGG: MovingObject::move and Player::move are basically the same.
       combine them.
 
-TODO: Transfer sign texts as metadata of block and not as data of
-      object
-
 SUGG: Implement a "Fast check queue" (a queue with a map for checking
       if something is already in it)
-      - TODO: Use it in active block queue in water flowing
+      - Use it in active block queue in water flowing
 
-TODO: Proper looking torches.
-      - Signs could be done in the same way?
-
-TODO: A mapper to map contents to tile names (for each side)
+SUGG: Signs could be done in the same way as torches. For this, blocks
+      need an additional metadata field for the texts
 
 Doing now:
 ======================================================================
+
+TODO: A mapper to map contents to tile names (for each side)
 
 ======================================================================
 
