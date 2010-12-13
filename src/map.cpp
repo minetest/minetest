@@ -1504,7 +1504,8 @@ MapSector * ServerMap::emergeSector(v2s16 p2d)
 		sector->setHeightmap(p_in_sector, hm);
 
 		//TODO: Make these values configurable
-		hm->generateContinued(0.0, 0.0, corners);
+		//hm->generateContinued(0.0, 0.0, corners);
+		hm->generateContinued(0.5, 0.2, corners);
 		//hm->generateContinued(1.0, 0.2, corners);
 		//hm->generateContinued(2.0, 0.2, corners);
 
@@ -2755,7 +2756,6 @@ void ServerMap::PrintInfo(std::ostream &out)
 
 ClientMap::ClientMap(
 		Client *client,
-		video::SMaterial *materials,
 		scene::ISceneNode* parent,
 		scene::ISceneManager* mgr,
 		s32 id
@@ -2763,7 +2763,6 @@ ClientMap::ClientMap(
 	Map(dout_client),
 	scene::ISceneNode(parent, mgr, id),
 	m_client(client),
-	m_materials(materials),
 	mesh(NULL)
 {
 	/*m_box = core::aabbox3d<f32>(0,0,0,
@@ -2837,8 +2836,7 @@ void ClientMap::deSerializeSector(v2s16 p2d, std::istream &is)
 	sector->deSerialize(is);
 }
 
-void ClientMap::renderMap(video::IVideoDriver* driver,
-	video::SMaterial *materials, s32 pass)
+void ClientMap::renderMap(video::IVideoDriver* driver, s32 pass)
 {
 	//m_dout<<DTIME<<"Rendering map..."<<std::endl;
 	DSTACK(__FUNCTION_NAME);
@@ -3037,193 +3035,7 @@ void ClientMap::renderMap(video::IVideoDriver* driver,
 
 void ClientMap::updateMesh()
 {
-#if 0
-	DSTACK(__FUNCTION_NAME);
-	//TODO
-	/*
-		Check what sectors don't draw anything useful at ground level
-		and create a mesh of the rough heightmap at those positions.
-	*/
-
-	m_camera_mutex.Lock();
-	v3f camera_position = m_camera_position;
-	v3f camera_direction = m_camera_direction;
-	m_camera_mutex.Unlock();
-
-	v3s16 cam_pos_nodes(
-			camera_position.X / BS,
-			camera_position.Y / BS,
-			camera_position.Z / BS);
-
-	v3s16 box_nodes_d = HEIGHTMAP_RANGE_NODES * v3s16(1,1,1);
-
-	v3s16 p_nodes_min = cam_pos_nodes - box_nodes_d;
-	v3s16 p_nodes_max = cam_pos_nodes + box_nodes_d;
-
-	// Take a fair amount as we will be dropping more out later
-	v3s16 p_blocks_min(
-			p_nodes_min.X / MAP_BLOCKSIZE - 1,
-			p_nodes_min.Y / MAP_BLOCKSIZE - 1,
-			p_nodes_min.Z / MAP_BLOCKSIZE - 1);
-	v3s16 p_blocks_max(
-			p_nodes_max.X / MAP_BLOCKSIZE + 1,
-			p_nodes_max.Y / MAP_BLOCKSIZE + 1,
-			p_nodes_max.Z / MAP_BLOCKSIZE + 1);
-	
-	/*
-		Initialize new mesh
-	*/
-	
-	scene::SMesh *mesh_new = new scene::SMesh();
-	//scene::IMeshBuffer *buf = NULL;
-	scene::SMeshBuffer *buf = NULL;
-
-	u8 material_in_use = 0;
-
-	/*
-		Loop through sectors
-	*/
-	
-	for(core::map<v2s16, MapSector*>::Iterator
-			si = m_sectors.getIterator();
-			si.atEnd() == false; si++)
-	{
-		MapSector *sector = si.getNode()->getValue();
-		
-		if(sector->getId() != MAPSECTOR_CLIENT)
-		{
-			dstream<<"WARNING: Client has a non-client sector"
-					<<std::endl;
-			continue;
-		}
-		
-		ClientMapSector *cs = (ClientMapSector*)sector;
-
-		v2s16 sp = sector->getPos();
-
-		if(sp.X < p_blocks_min.X
-		|| sp.X > p_blocks_max.X
-		|| sp.Y < p_blocks_min.Z
-		|| sp.Y > p_blocks_max.Z)
-			continue;
-		
-		/*
-			Get some ground level info
-		*/
-		
-		s16 a = -5;
-
-		s16 cn[4] = 
-		{
-			cs->getCorner(0)+a,
-			cs->getCorner(1)+a,
-			cs->getCorner(2)+a,
-			cs->getCorner(3)+a,
-		};
-		s16 cn_avg = (cn[0]+cn[1]+cn[2]+cn[3])/4;
-		s16 cn_min = 32767;
-		s16 cn_max = -32768;
-		for(s16 i=0; i<4; i++)
-		{
-			if(cn[i] < cn_min)
-				cn_min = cn[i];
-			if(cn[i] > cn_max)
-				cn_max = cn[i];
-		}
-		s16 cn_slope = cn_max - cn_min;
-		
-		/*
-			Generate this part of the heightmap mesh
-		*/
-
-		u8 material;
-		if(cn_avg + MAP_BLOCKSIZE/4 <= WATER_LEVEL)
-			material = 0;
-		else if(cn_slope <= MAP_BLOCKSIZE)
-			material = 1;
-		else
-			material = 2;
-
-		if(material != material_in_use || buf == NULL)
-		{
-			// Try to get a meshbuffer associated with the material
-			buf = (scene::SMeshBuffer*)mesh_new->getMeshBuffer
-					(g_mesh_materials[material]);
-			// If not found, create one
-			if(buf == NULL)
-			{
-				// This is a "Standard MeshBuffer",
-				// it's a typedeffed CMeshBuffer<video::S3DVertex>
-				buf = new scene::SMeshBuffer();
-
-				// Set material
-				buf->Material = g_mesh_materials[material];
-				// Use VBO
-				//buf->setHardwareMappingHint(scene::EHM_STATIC);
-				// Add to mesh
-				mesh_new->addMeshBuffer(buf);
-				// Mesh grabbed it
-				buf->drop();
-			}
-			material_in_use = material;
-		}
-
-		// Sector side width in floating-point units
-		f32 sd = BS * MAP_BLOCKSIZE;
-		// Sector position in global floating-point units
-		v3f spf = v3f((f32)sp.X, 0, (f32)sp.Y) * sd;
-
-		//video::SColor c(255,255,255,255);
-		u8 cc = 180;
-		video::SColor c(255,cc,cc,cc);
-		
-		video::S3DVertex vertices[4] =
-		{
-			video::S3DVertex(spf.X,   (f32)BS*cn[0],spf.Z,   0,0,0, c, 0,1),
-			video::S3DVertex(spf.X+sd,(f32)BS*cn[1],spf.Z,   0,0,0, c, 1,1),
-			video::S3DVertex(spf.X+sd,(f32)BS*cn[2],spf.Z+sd,0,0,0, c, 1,0),
-			video::S3DVertex(spf.X,   (f32)BS*cn[3],spf.Z+sd,0,0,0, c, 0,0),
-		};
-		u16 indices[] = {0,1,2,2,3,0};
-		
-		buf->append(vertices, 4, indices, 6);
-	}
-	
-	// Set VBO on
-	//mesh_new->setHardwareMappingHint(scene::EHM_STATIC);
-
-	/*
-		Replace the mesh
-	*/
-
-	mesh_mutex.Lock();
-
-	scene::SMesh *mesh_old = mesh;
-
-	//DEBUG
-	/*mesh = NULL;
-	mesh_new->drop();*/
-	mesh = mesh_new;
-	
-	mesh_mutex.Unlock();
-
-	if(mesh_old != NULL)
-	{
-		/*dstream<<"mesh_old refcount="<<mesh_old->getReferenceCount()
-				<<std::endl;
-		scene::IMeshBuffer *buf = mesh_new->getMeshBuffer
-				(g_materials[CONTENT_GRASS]);
-		if(buf != NULL)
-			dstream<<"grass buf refcount="<<buf->getReferenceCount()
-					<<std::endl;*/
-
-		mesh_old->drop();
-	}
-	else
-	{
-		dstream<<"WARNING: There was no old master heightmap mesh"<<std::endl;
-	}
-#endif
+	//TODO: Remove this
 }
 
 void ClientMap::PrintInfo(std::ostream &out)

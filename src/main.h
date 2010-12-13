@@ -53,8 +53,8 @@ extern std::ostream *derr_server_ptr;
 
 // TODO: Move somewhere else? materials.h?
 // This header is only for MATERIALS_COUNT
-#include "mapnode.h"
-extern video::SMaterial g_materials[MATERIALS_COUNT];
+//#include "mapnode.h"
+//extern video::SMaterial g_materials[MATERIALS_COUNT];
 
 #include "utility.h"
 extern TextureCache g_texturecache;

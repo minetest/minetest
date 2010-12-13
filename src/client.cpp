@@ -68,11 +68,10 @@ void * ClientUpdateThread::Thread()
 	return NULL;
 }
 
-Client::Client(IrrlichtDevice *device, video::SMaterial *materials,
-		float delete_unused_sectors_timeout,
+Client::Client(IrrlichtDevice *device,
 		const char *playername):
 	m_thread(this),
-	m_env(new ClientMap(this, materials,
+	m_env(new ClientMap(this,
 			device->getSceneManager()->getRootSceneNode(),
 			device->getSceneManager(), 666),
 			dout_client),
@@ -82,7 +81,6 @@ Client::Client(IrrlichtDevice *device, video::SMaterial *materials,
 	camera_direction(0,0,1),
 	m_server_ser_ver(SER_FMT_VER_INVALID),
 	m_step_dtime(0.0),
-	m_delete_unused_sectors_timeout(delete_unused_sectors_timeout),
 	m_inventory_updated(false)
 {
 	//m_fetchblock_mutex.Init();
@@ -193,15 +191,18 @@ void Client::step(float dtime)
 			JMutexAutoLock lock(m_env_mutex);
 
 			core::list<v3s16> deleted_blocks;
+
+			float delete_unused_sectors_timeout = 
+				g_settings.getFloat("client_delete_unused_sectors_timeout");
 	
 			// Delete sector blocks
 			/*u32 num = m_env.getMap().deleteUnusedSectors
-					(m_delete_unused_sectors_timeout,
+					(delete_unused_sectors_timeout,
 					true, &deleted_blocks);*/
 			
 			// Delete whole sectors
 			u32 num = m_env.getMap().deleteUnusedSectors
-					(m_delete_unused_sectors_timeout,
+					(delete_unused_sectors_timeout,
 					false, &deleted_blocks);
 
 			if(num > 0)

@@ -26,6 +26,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "utility.h"
 #include "exceptions.h"
 #include "serialization.h"
+#include "tile.h"
 
 // Size of node in rendering units
 #define BS 10
@@ -64,29 +65,22 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 enum Content
 {
-	CONTENT_STONE=0,
-
-	CONTENT_GRASS=1,
-
-	CONTENT_WATER=2,
-
-	CONTENT_LIGHT=3,
-
-	CONTENT_TREE=4,
-	
-	CONTENT_LEAVES=5,
-
-	CONTENT_GRASS_FOOTSTEPS=6,
-	
-	CONTENT_MESE=7,
-
-	CONTENT_MUD=8,
-
-	CONTENT_OCEAN=9,
+	CONTENT_STONE,
+	CONTENT_GRASS,
+	CONTENT_WATER,
+	CONTENT_LIGHT,
+	CONTENT_TREE,
+	CONTENT_LEAVES,
+	CONTENT_GRASS_FOOTSTEPS,
+	CONTENT_MESE,
+	CONTENT_MUD,
+	CONTENT_OCEAN,
 	
 	// This is set to the number of the actual values in this enum
 	USEFUL_CONTENT_COUNT
 };
+
+extern u16 g_content_tiles[USEFUL_CONTENT_COUNT][6];
 
 /*
 	If true, the material allows light propagation and brightness is stored
@@ -147,18 +141,6 @@ inline bool content_diggable(u8 m)
 inline bool content_buildable_to(u8 m)
 {
 	return (m == CONTENT_AIR || m == CONTENT_WATER || m == CONTENT_OCEAN);
-}
-
-/*
-	TODO: Make a mapper class for mapping every side of a content
-	      to some tile.
-	This dumbily maps all sides of content to the tile of the same id.
-*/
-inline u8 content_tile(u8 c)
-{
-	if(c == CONTENT_IGNORE || c == CONTENT_LIGHT)
-		return CONTENT_AIR;
-	return c;
 }
 
 /*
@@ -260,6 +242,34 @@ inline v3s16 unpackDir(u8 b)
 	return d;
 }
 
+inline u16 content_tile(u8 c, v3s16 dir)
+{
+	if(c == CONTENT_IGNORE || c == CONTENT_AIR
+			|| c >= USEFUL_CONTENT_COUNT)
+		return TILE_NONE;
+
+	s32 dir_i = -1;
+	
+	if(dir == v3s16(0,1,0))
+		dir_i = 0;
+	else if(dir == v3s16(0,-1,0))
+		dir_i = 1;
+	else if(dir == v3s16(1,0,0))
+		dir_i = 2;
+	else if(dir == v3s16(-1,0,0))
+		dir_i = 3;
+	else if(dir == v3s16(0,0,1))
+		dir_i = 4;
+	else if(dir == v3s16(0,0,-1))
+		dir_i = 5;
+	
+	/*if(dir_i == -1)
+		return TILE_NONE;*/
+	assert(dir_i != -1);
+
+	return g_content_tiles[c][dir_i];
+}
+
 struct MapNode
 {
 	// Content
@@ -349,6 +359,11 @@ struct MapNode
 		if(light_propagates() == false)
 			return;
 		param = a_light;
+	}
+
+	u16 getTile(v3s16 dir)
+	{
+		return content_tile(d, dir);
 	}
 
 	/*

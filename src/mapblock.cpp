@@ -138,6 +138,8 @@ FastFace * MapBlock::makeFastFace(u16 tile, u8 light, v3f p,
 			core::vector2d<f32>(0,0));
 
 	f->tile = tile;
+	//DEBUG
+	//f->tile = TILE_GRASS;
 
 	return f;
 }
@@ -184,15 +186,30 @@ u8 MapBlock::getFaceLight(v3s16 p, v3s16 face_dir)
 }
 
 /*
-	Gets node material from any place relative to block.
+	Gets node tile from any place relative to block.
 	Returns CONTENT_IGNORE if doesn't exist or should not be drawn.
 */
-u8 MapBlock::getNodeTile(v3s16 p)
+u16 MapBlock::getNodeTile(v3s16 p, v3s16 face_dir)
 {
 	try{
 		MapNode n = getNodeParent(p);
 		
-		return content_tile(n.d);
+		//return content_tile(n.d);
+		return n.getTile(face_dir);
+	}
+	catch(InvalidPositionException &e)
+	{
+		//return CONTENT_IGNORE;
+		return TILE_NONE;
+	}
+}
+
+u8 MapBlock::getNodeContent(v3s16 p)
+{
+	try{
+		MapNode n = getNodeParent(p);
+		
+		return n.d;
 	}
 	catch(InvalidPositionException &e)
 	{
@@ -223,15 +240,14 @@ void MapBlock::updateFastFaceRow(v3s16 startpos,
 
 	v3s16 p = startpos;
 	/*
-		The light in the air lights the surface is taken from
-		the node that is air.
+		Get face light at starting position
 	*/
 	u8 light = getFaceLight(p, face_dir);
 	
 	u16 continuous_tiles_count = 0;
 	
-	u8 tile0 = getNodeTile(p);
-	u8 tile1 = getNodeTile(p + face_dir);
+	u8 tile0 = getNodeTile(p, face_dir);
+	u8 tile1 = getNodeTile(p + face_dir, -face_dir);
 		
 	for(u16 j=0; j<length; j++)
 	{
@@ -244,8 +260,8 @@ void MapBlock::updateFastFaceRow(v3s16 startpos,
 
 		if(j != length - 1){
 			p_next = p + translate_dir;
-			tile0_next = getNodeTile(p_next);
-			tile1_next = getNodeTile(p_next + face_dir);
+			tile0_next = getNodeTile(p_next, face_dir);
+			tile1_next = getNodeTile(p_next + face_dir, -face_dir);
 			light_next = getFaceLight(p_next, face_dir);
 
 			if(tile0_next == tile0
@@ -263,7 +279,11 @@ void MapBlock::updateFastFaceRow(v3s16 startpos,
 			/*
 				Create a face if there should be one
 			*/
-			u8 mf = face_contents(tile0, tile1);
+			//u8 mf = face_contents(tile0, tile1);
+			// This is hackish
+			u8 content0 = getNodeContent(p);
+			u8 content1 = getNodeContent(p + face_dir);
+			u8 mf = face_contents(content0, content1);
 			
 			if(mf != 0)
 			{
@@ -479,7 +499,9 @@ void MapBlock::updateMesh()
 
 			/*collector.append(g_materials[f->material], f->vertices, 4,
 					indices, 6);*/
-			collector.append(g_materials[f->tile], f->vertices, 4,
+			/*collector.append(g_materials[f->tile], f->vertices, 4,
+					indices, 6);*/
+			collector.append(g_tile_materials[f->tile], f->vertices, 4,
 					indices, 6);
 		}
 

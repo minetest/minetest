@@ -253,7 +253,7 @@ TODO: A mapper to map contents to tile names (for each side)
 
 IrrlichtDevice *g_device = NULL;
 
-const char *g_content_filenames[MATERIALS_COUNT] =
+/*const char *g_content_filenames[MATERIALS_COUNT] =
 {
 	"../data/stone.png",
 	"../data/grass.png",
@@ -268,7 +268,7 @@ const char *g_content_filenames[MATERIALS_COUNT] =
 };
 
 // Material cache
-video::SMaterial g_materials[MATERIALS_COUNT];
+video::SMaterial g_materials[MATERIALS_COUNT];*/
 
 // Texture cache
 TextureCache g_texturecache;
@@ -1293,7 +1293,7 @@ int main(int argc, char *argv[])
 		Initialize material array
 	*/
 
-	//video::SMaterial g_materials[MATERIALS_COUNT];
+	/*//video::SMaterial g_materials[MATERIALS_COUNT];
 	for(u16 i=0; i<MATERIALS_COUNT; i++)
 	{
 		g_materials[i].Lighting = false;
@@ -1318,6 +1318,7 @@ int main(int argc, char *argv[])
 	g_materials[CONTENT_WATER].MaterialType = video::EMT_TRANSPARENT_VERTEX_ALPHA;
 	//g_materials[CONTENT_WATER].MaterialType = video::EMT_TRANSPARENT_ADD_COLOR;
 	g_materials[CONTENT_OCEAN].MaterialType = video::EMT_TRANSPARENT_VERTEX_ALPHA;
+	*/
 
 	/*g_mesh_materials[0].setTexture(0, driver->getTexture("../data/water.png"));
 	g_mesh_materials[1].setTexture(0, driver->getTexture("../data/grass.png"));
@@ -1337,6 +1338,23 @@ int main(int argc, char *argv[])
 	g_texturecache.set("torch", driver->getTexture("../data/torch.png"));
 	g_texturecache.set("torch_on_floor", driver->getTexture("../data/torch_on_floor.png"));
 	g_texturecache.set("torch_on_ceiling", driver->getTexture("../data/torch_on_ceiling.png"));
+	
+	/*
+		Load tile textures
+	*/
+	for(s32 i=0; i<TILES_COUNT; i++)
+	{
+		if(g_tile_texture_names[i] == NULL)
+			continue;
+		std::string name = g_tile_texture_names[i];
+		std::string filename;
+		filename += "../data/";
+		filename += name;
+		filename += ".png";
+		g_texturecache.set(name, driver->getTexture(filename.c_str()));
+	}
+
+	tile_materials_preload(g_texturecache);
 
 	/*
 		Make a scope here for the client so that it gets removed
@@ -1359,10 +1377,7 @@ int main(int argc, char *argv[])
 		Create client
 	*/
 
-	// TODO: Get rid of the g_materials parameter or it's globalness
-	Client client(device, g_materials,
-			g_settings.getFloat("client_delete_unused_sectors_timeout"),
-			playername);
+	Client client(device, playername);
 	
 	Address connect_address(0,0,0,0, port);
 	try{
@@ -1396,19 +1411,14 @@ int main(int argc, char *argv[])
 	/*
 		Create skybox
 	*/
-	scene::ISceneNode* skybox = smgr->addSkyBoxSceneNode(
+	scene::ISceneNode* skybox;
+	skybox = smgr->addSkyBoxSceneNode(
 		driver->getTexture("../data/skybox2.png"),
 		driver->getTexture("../data/skybox3.png"),
 		driver->getTexture("../data/skybox1.png"),
 		driver->getTexture("../data/skybox1.png"),
 		driver->getTexture("../data/skybox1.png"),
 		driver->getTexture("../data/skybox1.png"));
-	/*	driver->getTexture("../data/irrlicht2_up.jpg"),
-		driver->getTexture("../data/irrlicht2_dn.jpg"),
-		driver->getTexture("../data/irrlicht2_lf.jpg"),
-		driver->getTexture("../data/irrlicht2_rt.jpg"),
-		driver->getTexture("../data/irrlicht2_ft.jpg"),
-		driver->getTexture("../data/irrlicht2_bk.jpg"));*/
 	
 	/*
 		Create the camera node

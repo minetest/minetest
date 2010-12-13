@@ -152,9 +152,7 @@ public:
 	/*
 		NOTE: Every public method should be thread-safe
 	*/
-	Client(IrrlichtDevice *device, video::SMaterial *materials,
-			float delete_unused_sectors_timeout,
-			const char *playername);
+	Client(IrrlichtDevice *device, const char *playername);
 	~Client();
 	/*
 		The name of the local player should already be set when
@@ -280,8 +278,6 @@ private:
 	float m_step_dtime;
 	JMutex m_step_dtime_mutex;
 
-	float m_delete_unused_sectors_timeout;
-	
 	// This is behind m_env_mutex.
 	bool m_inventory_updated;
 

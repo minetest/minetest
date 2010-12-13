@@ -86,7 +86,8 @@ public:
 	}
 	video::ITexture * getImage()
 	{
-		return g_materials[m_material].getTexture(0);
+		u16 tile = content_tile(m_material, v3s16(1,0,0));
+		return g_tile_materials[tile].getTexture(0);
 	}
 	std::string getText()
 	{

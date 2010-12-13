@@ -288,7 +288,8 @@ public:
 	
 	u8 getFaceLight(v3s16 p, v3s16 face_dir);
 	
-	u8 getNodeTile(v3s16 p);
+	u16 getNodeTile(v3s16 p, v3s16 face_dir);
+	u8 getNodeContent(v3s16 p);
 
 	/*
 		startpos:

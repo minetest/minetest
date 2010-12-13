@@ -522,7 +522,6 @@ class ClientMap : public Map, public scene::ISceneNode
 public:
 	ClientMap(
 			Client *client,
-			video::SMaterial *materials,
 			scene::ISceneNode* parent,
 			scene::ISceneManager* mgr,
 			s32 id
@@ -562,7 +561,7 @@ public:
 	{
 		video::IVideoDriver* driver = SceneManager->getVideoDriver();
 		driver->setTransform(video::ETS_WORLD, AbsoluteTransformation);
-		renderMap(driver, m_materials, SceneManager->getSceneNodeRenderPass());
+		renderMap(driver, SceneManager->getSceneNodeRenderPass());
 	}
 	
 	virtual const core::aabbox3d<f32>& getBoundingBox() const
@@ -570,8 +569,7 @@ public:
 		return m_box;
 	}
 
-	void renderMap(video::IVideoDriver* driver,
-		video::SMaterial *materials, s32 pass);
+	void renderMap(video::IVideoDriver* driver, s32 pass);
 
 	// Update master heightmap mesh
 	void updateMesh();
@@ -582,8 +580,6 @@ public:
 private:
 	Client *m_client;
 	
-	video::SMaterial *m_materials;
-
 	core::aabbox3d<f32> m_box;
 	
 	// This is the master heightmap mesh
