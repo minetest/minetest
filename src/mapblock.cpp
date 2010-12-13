@@ -551,7 +551,7 @@ void MapBlock::updateMesh()
 
 		MapNode &n = getNodeRef(x,y,z);
 		
-		if(n.d == CONTENT_LIGHT)
+		if(n.d == CONTENT_TORCH)
 		{
 			//scene::IMeshBuffer *buf = new scene::SMeshBuffer();
 			scene::SMeshBuffer *buf = new scene::SMeshBuffer();

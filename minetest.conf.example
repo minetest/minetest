@@ -14,7 +14,7 @@
 #wanted_fps = 30
 #fps_max = 60
 #viewing_range_nodes_max = 300
-#viewing_range_nodes_min = 20
+#viewing_range_nodes_min = 50
 #screenW = 
 #screenH = 
 #host_game = 

@@ -117,7 +117,7 @@
 				FavorSizeOrSpeed="1"
 				OmitFramePointers="true"
 				WholeProgramOptimization="true"
-				AdditionalIncludeDirectories="&quot;C:\Program Files\Microsoft Platform SDK for Windows Server 2003 R2\Include&quot;;&quot;..\jthread\jthread-1.2.1\src&quot;;&quot;..\irrlicht\irrlicht-1.7.1\include&quot;"
+				AdditionalIncludeDirectories="&quot;C:\Program Files\Microsoft Platform SDK for Windows Server 2003 R2\Include&quot;;&quot;..\jthread\jthread-1.2.1\src&quot;;&quot;..\irrlicht\irrlicht-1.7.1\include&quot;;&quot;..\zlib\zlib-1.2.5&quot;"
 				PreprocessorDefinitions="WIN32;_HAS_ITERATOR_DEBUGGING=0,UNITTEST_DISABLE,_CRT_SECURE_NO_DEPRECATE"
 				BufferSecurityCheck="false"
 				EnableEnhancedInstructionSet="1"
@@ -135,7 +135,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalLibraryDirectories="&quot;C:\Program Files\Microsoft Platform SDK for Windows Server 2003 R2\Lib&quot;;&quot;..\jthread\jthread-1.2.1\Release&quot;;&quot;..\irrlicht\irrlicht-1.7.1\lib\Win32-visualstudio&quot;"
+				AdditionalLibraryDirectories="&quot;C:\Program Files\Microsoft Platform SDK for Windows Server 2003 R2\Lib&quot;;&quot;..\jthread\jthread-1.2.1\Release&quot;;&quot;..\irrlicht\irrlicht-1.7.1\lib\Win32-visualstudio&quot;;..\zlib125dll\dll32"
 				IgnoreDefaultLibraryNames="libcmtd.lib"
 				GenerateDebugInformation="false"
 				LinkTimeCodeGeneration="1"
@@ -223,6 +223,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\src\mapnode.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\src\mapsector.cpp"
 				>
 			</File>
@@ -244,6 +248,10 @@
 			</File>
 			<File
 				RelativePath=".\src\test.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\src\tile.cpp"
 				>
 			</File>
 			<File

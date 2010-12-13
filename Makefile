@@ -34,7 +34,7 @@ endif
 
 # Target specific settings
 
-all_linux fast_linux: LDFLAGS = -L/usr/X11R6/lib$(LIBSELECT) -L$(IRRLICHTPATH)/lib/Linux -L$(JTHREADPATH)/src/.libs -lIrrlicht -lGL -lXxf86vm -lXext -lX11 -ljthread
+all_linux fast_linux: LDFLAGS = -L/usr/X11R6/lib$(LIBSELECT) -L$(IRRLICHTPATH)/lib/Linux -L$(JTHREADPATH)/src/.libs -lIrrlicht -lGL -lXxf86vm -lXext -lX11 -ljthread -lz
 all_linux fast_linux clean_linux: SYSTEM=Linux
 
 all_win32: LDFLAGS = -L$(IRRLICHTPATH)/lib/Win32-gcc -L$(JTHREADPATH)/Debug -lIrrlicht -lopengl32 -lm -ljthread

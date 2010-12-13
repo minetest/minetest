@@ -19,6 +19,9 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "serialization.h"
 #include "utility.h"
+#ifdef _WIN32
+	#define ZLIB_WINAPI
+#endif
 #include "zlib.h"
 
 /* report a zlib or i/o error */

@@ -1011,6 +1011,13 @@ void Server::AsyncRunStep()
 		Flow water
 	*/
 	{
+		float interval;
+		
+		if(g_settings.getBool("endless_water") == false)
+			interval = 1.0;
+		else
+			interval = 0.25;
+
 		static float counter = 0.0;
 		counter += dtime;
 		if(counter >= 0.25 && m_flow_active_nodes.size() > 0)
@@ -1028,7 +1035,10 @@ void Server::AsyncRunStep()
 			v.m_disable_water_climb =
 					g_settings.getBool("disable_water_climb");
 			
-			v.flowWater(m_flow_active_nodes, 0, false, 50);
+			if(g_settings.getBool("endless_water") == false)
+				v.flowWater(m_flow_active_nodes, 0, false, 250);
+			else
+				v.flowWater(m_flow_active_nodes, 0, false, 50);
 
 			v.blitBack(modified_blocks);
 
@@ -1883,8 +1893,8 @@ void Server::SendBlockNoLock(u16 peer_id, MapBlock *block, u8 ver)
 	writeS16(&reply[6], p.Z);
 	memcpy(&reply[8], *blockdata, blockdata.getSize());
 
-	dstream<<"Sending block ("<<p.X<<","<<p.Y<<","<<p.Z<<")"
-			<<":  \tpacket size: "<<replysize<<std::endl;
+	/*dstream<<"Sending block ("<<p.X<<","<<p.Y<<","<<p.Z<<")"
+			<<":  \tpacket size: "<<replysize<<std::endl;*/
 	
 	/*
 		Send packet

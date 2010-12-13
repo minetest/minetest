@@ -53,10 +53,14 @@ Compiling on GNU/Linux:
 	http://downloads.sourceforge.net/irrlicht/irrlicht-1.7.2.zip
 * JThread:
 	http://research.edm.uhasselt.be/~jori/page/index.php?n=CS.Jthread
-- Neither of which can probably be found from your distro's repository.
+* zlib:
+	- Get the -dev package from your package manager.
+- Irrlicht and JThread are very likely not to be found from your distro's
+  repository.
 - Compiling each of them should be fairly unproblematic, though.
 
 Compiling on Windows:
+- You need Irrlicht, JThread and zlib, see above
 - Be sure to
   #define JMUTEX_CRITICALSECTION
   in jmutex.h before compiling it. Otherwise mutexes will be very slow.
@@ -80,7 +84,6 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License along
 with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
-
 
 Irrlicht
 ---------------

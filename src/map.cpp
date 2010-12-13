@@ -1846,10 +1846,9 @@ MapBlock * ServerMap::emergeBlock(
 		
 		//float min_slope = 0.45;
 		//float max_slope = 0.85;
-		float min_slope = 0.70;
+		float min_slope = 0.60;
 		float max_slope = 1.20;
-		float min_slope_depth = 4.0;
-		//float min_slope_depth = 5.0;
+		float min_slope_depth = 5.0;
 		float max_slope_depth = 0;
 		if(slope < min_slope)
 			surface_depth = min_slope_depth;
@@ -2091,7 +2090,7 @@ MapBlock * ServerMap::emergeBlock(
 					p + v3s16(0,0,0), &changed_blocks_sector))
 			{
 				MapNode n;
-				n.d = CONTENT_LIGHT;
+				n.d = CONTENT_TORCH;
 				sector->setNode(p, n);
 				objects_to_remove.push_back(p);
 			}

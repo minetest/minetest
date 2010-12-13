@@ -59,9 +59,9 @@ private:
 class MaterialItem : public InventoryItem
 {
 public:
-	MaterialItem(u8 material, u16 count)
+	MaterialItem(u8 content, u16 count)
 	{
-		m_material = material;
+		m_content = content;
 		m_count = count;
 	}
 	/*
@@ -76,18 +76,26 @@ public:
 		//os.imbue(std::locale("C"));
 		os<<getName();
 		os<<" ";
-		os<<(unsigned int)m_material;
+		os<<(unsigned int)m_content;
 		os<<" ";
 		os<<m_count;
 	}
 	virtual InventoryItem* clone()
 	{
-		return new MaterialItem(m_material, m_count);
+		return new MaterialItem(m_content, m_count);
 	}
 	video::ITexture * getImage()
 	{
-		u16 tile = content_tile(m_material, v3s16(1,0,0));
-		return g_tile_materials[tile].getTexture(0);
+		/*if(m_content == CONTENT_TORCH)
+			return g_texturecache.get("torch_on_floor");
+
+		u16 tile = content_tile(m_content, v3s16(1,0,0));
+		return g_tile_contents[tile].getTexture(0);*/
+		
+		if(m_content >= USEFUL_CONTENT_COUNT)
+			return NULL;
+			
+		return g_texturecache.get(g_content_inventory_textures[m_content]);
 	}
 	std::string getText()
 	{
@@ -100,7 +108,7 @@ public:
 	*/
 	u8 getMaterial()
 	{
-		return m_material;
+		return m_content;
 	}
 	u16 getCount()
 	{
@@ -123,7 +131,7 @@ public:
 		m_count -= count;
 	}
 private:
-	u8 m_material;
+	u8 m_content;
 	u16 m_count;
 };
 

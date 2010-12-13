@@ -68,7 +68,7 @@ enum Content
 	CONTENT_STONE,
 	CONTENT_GRASS,
 	CONTENT_WATER,
-	CONTENT_LIGHT,
+	CONTENT_TORCH,
 	CONTENT_TREE,
 	CONTENT_LEAVES,
 	CONTENT_GRASS_FOOTSTEPS,
@@ -81,6 +81,7 @@ enum Content
 };
 
 extern u16 g_content_tiles[USEFUL_CONTENT_COUNT][6];
+extern const char * g_content_inventory_textures[USEFUL_CONTENT_COUNT];
 
 /*
 	If true, the material allows light propagation and brightness is stored
@@ -88,7 +89,7 @@ extern u16 g_content_tiles[USEFUL_CONTENT_COUNT][6];
 */
 inline bool light_propagates_content(u8 m)
 {
-	return (m == CONTENT_AIR || m == CONTENT_LIGHT || m == CONTENT_WATER || m == CONTENT_OCEAN);
+	return (m == CONTENT_AIR || m == CONTENT_TORCH || m == CONTENT_WATER || m == CONTENT_OCEAN);
 }
 
 /*
@@ -96,7 +97,7 @@ inline bool light_propagates_content(u8 m)
 */
 inline bool sunlight_propagates_content(u8 m)
 {
-	return (m == CONTENT_AIR || m == CONTENT_LIGHT);
+	return (m == CONTENT_AIR || m == CONTENT_TORCH);
 }
 
 /*
@@ -108,7 +109,8 @@ inline bool sunlight_propagates_content(u8 m)
 */
 inline u8 content_solidness(u8 m)
 {
-	if(m == CONTENT_AIR)
+	// As of now, every pseudo node like torches are added to this
+	if(m == CONTENT_AIR || m == CONTENT_TORCH)
 		return 0;
 	if(m == CONTENT_WATER || m == CONTENT_OCEAN)
 		return 1;
@@ -118,7 +120,7 @@ inline u8 content_solidness(u8 m)
 // Objects collide with walkable contents
 inline bool content_walkable(u8 m)
 {
-	return (m != CONTENT_AIR && m != CONTENT_WATER && m != CONTENT_OCEAN && m != CONTENT_LIGHT);
+	return (m != CONTENT_AIR && m != CONTENT_WATER && m != CONTENT_OCEAN && m != CONTENT_TORCH);
 }
 
 // A liquid resists fast movement
@@ -158,6 +160,13 @@ inline bool is_ground_content(u8 m)
 	);
 }
 
+/*inline bool content_has_faces(u8 c)
+{
+	return (m != CONTENT_IGNORE
+	     && m != CONTENT_AIR
+		 && m != CONTENT_TORCH);
+}*/
+
 /*
 	Nodes make a face if contents differ and solidness differs.
 	Return value:
@@ -185,7 +194,7 @@ inline u8 face_contents(u8 m1, u8 m2)
 
 inline bool liquid_replaces_content(u8 c)
 {
-	return (c == CONTENT_AIR || c == CONTENT_LIGHT);
+	return (c == CONTENT_AIR || c == CONTENT_TORCH);
 }
 
 /*
@@ -193,7 +202,7 @@ inline bool liquid_replaces_content(u8 c)
 */
 inline bool content_directional(u8 c)
 {
-	return (c == CONTENT_LIGHT);
+	return (c == CONTENT_TORCH);
 }
 
 /*
@@ -336,7 +345,7 @@ struct MapNode
 		/*
 			Note that a block that isn't light_propagates() can be a light source.
 		*/
-		if(d == CONTENT_LIGHT)
+		if(d == CONTENT_TORCH)
 			return LIGHT_MAX;
 		
 		return 0;

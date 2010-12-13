@@ -219,6 +219,7 @@ TODO: A mapper to map contents to tile names (for each side)
 #ifdef _MSC_VER
 #pragma comment(lib, "Irrlicht.lib")
 #pragma comment(lib, "jthread.lib")
+#pragma comment(lib, "zlibwapi.lib")
 // This would get rid of the console window
 //#pragma comment(linker, "/subsystem:windows /ENTRY:mainCRTStartup")
 #endif
@@ -310,7 +311,7 @@ void set_default_settings()
 	g_settings.set("wanted_fps", "30");
 	g_settings.set("fps_max", "60");
 	g_settings.set("viewing_range_nodes_max", "300");
-	g_settings.set("viewing_range_nodes_min", "20");
+	g_settings.set("viewing_range_nodes_min", "50");
 	g_settings.set("screenW", "");
 	g_settings.set("screenH", "");
 	g_settings.set("host_game", "");
@@ -1934,7 +1935,7 @@ int main(int argc, char *argv[])
 			/*
 				Meta-objects
 			*/
-			if(n.d == CONTENT_LIGHT)
+			if(n.d == CONTENT_TORCH)
 			{
 				v3s16 dir = unpackDir(n.dir);
 				v3f dir_f = v3f(dir.X, dir.Y, dir.Z);
