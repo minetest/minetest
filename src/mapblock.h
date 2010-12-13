@@ -284,7 +284,7 @@ public:
 	}
 
 	static FastFace * makeFastFace(u16 tile, u8 light, v3f p,
-			v3f dir, v3f scale, v3f posRelative_f);
+			v3s16 dir, v3f scale, v3f posRelative_f);
 	
 	u8 getFaceLight(v3s16 p, v3s16 face_dir);
 	

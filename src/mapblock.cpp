@@ -69,7 +69,7 @@ void MapBlock::setNodeParent(v3s16 p, MapNode & n)
 }
 
 FastFace * MapBlock::makeFastFace(u16 tile, u8 light, v3f p,
-		v3f dir, v3f scale, v3f posRelative_f)
+		v3s16 dir, v3f scale, v3f posRelative_f)
 {
 	FastFace *f = new FastFace;
 	
@@ -85,14 +85,21 @@ FastFace * MapBlock::makeFastFace(u16 tile, u8 light, v3f p,
 	vertex_pos[2] = v3f(-BS/2, BS/2,BS/2);
 	vertex_pos[3] = v3f( BS/2, BS/2,BS/2);
 	
-	/*
-		TODO: Rotate it the right way (one side comes upside down)
-	*/
-	core::CMatrix4<f32> m;
-	m.buildRotateFromTo(v3f(0,0,1), dir);
-	
-	for(u16 i=0; i<4; i++){
-		m.rotateVect(vertex_pos[i]);
+	for(u16 i=0; i<4; i++)
+	{
+		if(dir == v3s16(0,0,1))
+			vertex_pos[i].rotateXZBy(0);
+		else if(dir == v3s16(0,0,-1))
+			vertex_pos[i].rotateXZBy(180);
+		else if(dir == v3s16(1,0,0))
+			vertex_pos[i].rotateXZBy(-90);
+		else if(dir == v3s16(-1,0,0))
+			vertex_pos[i].rotateXZBy(90);
+		else if(dir == v3s16(0,1,0))
+			vertex_pos[i].rotateYZBy(-90);
+		else if(dir == v3s16(0,-1,0))
+			vertex_pos[i].rotateYZBy(90);
+
 		vertex_pos[i].X *= scale.X;
 		vertex_pos[i].Y *= scale.Y;
 		vertex_pos[i].Z *= scale.Z;
@@ -112,22 +119,15 @@ FastFace * MapBlock::makeFastFace(u16 tile, u8 light, v3f p,
 	u8 alpha = 255;
 
 	//if(material == CONTENT_WATER || material == CONTENT_OCEAN)
-	if(tile == CONTENT_WATER || tile == CONTENT_OCEAN)
-	//if(tile == TILE_WATER)
+	//TODO: Umm?
+	//if(tile == CONTENT_WATER || tile == CONTENT_OCEAN)
+	if(tile == TILE_WATER)
 	{
 		alpha = 128;
 	}
 
 	video::SColor c = video::SColor(alpha,li,li,li);
 
-	/*f->vertices[0] = video::S3DVertex(vertex_pos[0], zerovector, c,
-			core::vector2d<f32>(0,1));
-	f->vertices[1] = video::S3DVertex(vertex_pos[1], zerovector, c,
-			core::vector2d<f32>(abs_scale,1));
-	f->vertices[2] = video::S3DVertex(vertex_pos[2], zerovector, c,
-			core::vector2d<f32>(abs_scale,0));
-	f->vertices[3] = video::S3DVertex(vertex_pos[3], zerovector, c,
-			core::vector2d<f32>(0,0));*/
 	f->vertices[0] = video::S3DVertex(vertex_pos[0], zerovector, c,
 			core::vector2d<f32>(0,1));
 	f->vertices[1] = video::S3DVertex(vertex_pos[1], zerovector, c,
@@ -308,14 +308,14 @@ void MapBlock::updateFastFaceRow(v3s16 startpos,
 				if(mf == 1)
 				{
 					f = makeFastFace(tile0, light,
-							sp, face_dir_f, scale,
+							sp, face_dir, scale,
 							posRelative_f);
 				}
 				// If node at sp is less solid (mf == 2)
 				else
 				{
 					f = makeFastFace(tile1, light,
-							sp+face_dir_f, -1*face_dir_f, scale,
+							sp+face_dir_f, -face_dir, scale,
 							posRelative_f);
 				}
 				dest.push_back(f);
