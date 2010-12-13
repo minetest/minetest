@@ -162,9 +162,15 @@ u8 MapBlock::getFaceLight(v3s16 p, v3s16 face_dir)
 			light = n2.getLight();
 
 		// Make some nice difference to different sides
-		if(face_dir.X == 1 || face_dir.Z == 1 || face_dir.Y == -1)
+
+		/*if(face_dir.X == 1 || face_dir.Z == 1 || face_dir.Y == -1)
 			light = diminish_light(diminish_light(light));
 		else if(face_dir.X == -1 || face_dir.Z == -1)
+			light = diminish_light(light);*/
+
+		if(face_dir.X == 1 || face_dir.X == -1 || face_dir.Y == -1)
+			light = diminish_light(diminish_light(light));
+		else if(face_dir.Z == 1 || face_dir.Z == -1)
 			light = diminish_light(light);
 
 		return light;
@@ -832,13 +838,13 @@ void MapBlock::serialize(std::ostream &os, u8 version)
 		}
 		compress(materialdata, os, version);
 
-		// Get and compress params
-		SharedBuffer<u8> paramdata(nodecount);
+		// Get and compress lights
+		SharedBuffer<u8> lightdata(nodecount);
 		for(u32 i=0; i<nodecount; i++)
 		{
-			paramdata[i] = data[i].param;
+			lightdata[i] = data[i].param;
 		}
-		compress(paramdata, os, version);
+		compress(lightdata, os, version);
 		
 		if(version >= 10)
 		{

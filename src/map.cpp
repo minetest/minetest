@@ -1961,9 +1961,10 @@ MapBlock * ServerMap::emergeBlock(
 		Add some minerals
 	*/
 
-	if(is_underground)
+	//if(is_underground)
+	if(some_part_underground)
 	{
-		s16 underground_level = lowest_ground_y/MAP_BLOCKSIZE - block_y;
+		s16 underground_level = (lowest_ground_y/MAP_BLOCKSIZE - block_y)+1;
 		for(s16 i=0; i<underground_level*3; i++)
 		{
 			if(rand()%2 == 0)
@@ -1977,13 +1978,15 @@ MapBlock * ServerMap::emergeBlock(
 				MapNode n;
 				n.d = CONTENT_MESE;
 				
-				if(is_ground_content(block->getNode(cp).d))
+				//if(is_ground_content(block->getNode(cp).d))
+				if(block->getNode(cp).d == CONTENT_STONE)
 					if(rand()%8 == 0)
 						block->setNode(cp, n);
 
 				for(u16 i=0; i<26; i++)
 				{
-					if(is_ground_content(block->getNode(cp+g_26dirs[i]).d))
+					//if(is_ground_content(block->getNode(cp+g_26dirs[i]).d))
+					if(block->getNode(cp+g_26dirs[i]).d == CONTENT_STONE)
 						if(rand()%8 == 0)
 							block->setNode(cp+g_26dirs[i], n);
 				}
