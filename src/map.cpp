@@ -510,6 +510,10 @@ void Map::unspreadLight(core::map<v3s16, u8> & from_nodes,
 							light_sources.remove(n2pos);
 						}*/
 					}
+					
+					/*// DEBUG
+					if(light_sources.find(n2pos) != NULL)
+						light_sources.remove(n2pos);*/
 				}
 				else{
 					light_sources.insert(n2pos, true);
@@ -850,8 +854,8 @@ void Map::updateLighting(core::map<v3s16, MapBlock*> & a_blocks,
 					
 					// Collect borders for unlighting
 					if(x==0 || x == MAP_BLOCKSIZE-1
-							|| y==0 || y == MAP_BLOCKSIZE-1
-							|| z==0 || z == MAP_BLOCKSIZE-1)
+					|| y==0 || y == MAP_BLOCKSIZE-1
+					|| z==0 || z == MAP_BLOCKSIZE-1)
 					{
 						v3s16 p_map = p + v3s16(
 								MAP_BLOCKSIZE*pos.X,
@@ -912,6 +916,8 @@ void Map::updateLighting(core::map<v3s16, MapBlock*> & a_blocks,
 	// Yes, add it to light_sources... somehow.
 	// It has to be added at somewhere above, in the loop.
 	// TODO
+	// NOTE: This actually works quite fine without it
+	//       - Find out why it works
 
 	{
 		//TimeTaker timer("spreadLight", g_device);
@@ -1048,7 +1054,7 @@ void Map::removeNodeAndUpdate(v3s16 p,
 	v3s16 toppos = p + v3s16(0,1,0);
 
 	// Node will be replaced with this
-	u8 replace_material = MATERIAL_AIR;
+	u8 replace_material = CONTENT_AIR;
 	
 	// NOTE: Water is now managed elsewhere
 #if 0
@@ -1099,7 +1105,7 @@ void Map::removeNodeAndUpdate(v3s16 p,
 			if(
 					c > highest_ranking ||
 					// Prefer something else than air
-					(c >= highest_ranking && m != MATERIAL_AIR)
+					(c >= highest_ranking && m != CONTENT_AIR)
 
 			)
 			{
@@ -1722,17 +1728,91 @@ MapBlock * ServerMap::emergeBlock(
 		low_block_is_empty = true;*/
 	
 	const s32 ued = 4;
+	//const s32 ued = 8;
 	bool underground_emptiness[ued*ued*ued];
 	for(s32 i=0; i<ued*ued*ued; i++)
 	{
-		underground_emptiness[i] = ((rand() % 4) == 0);
+		underground_emptiness[i] = ((rand() % 5) == 0);
 	}
+
+#if 0
+	/*
+		This is a messy hack to sort the emptiness a bit
+	*/
+	for(s32 j=0; j<2; j++)
+	for(s32 y0=0; y0<ued; y0++)
+	for(s32 z0=0; z0<ued; z0++)
+	for(s32 x0=0; x0<ued; x0++)
+	{
+		v3s16 p0(x0,y0,z0);
+		bool &e0 = underground_emptiness[
+				ued*ued*(z0*ued/MAP_BLOCKSIZE)
+				+ued*(y0*ued/MAP_BLOCKSIZE)
+				+(x0*ued/MAP_BLOCKSIZE)];
+				
+		v3s16 dirs[6] = {
+			v3s16(0,0,1), // back
+			v3s16(1,0,0), // right
+			v3s16(0,0,-1), // front
+			v3s16(-1,0,0), // left
+			/*v3s16(0,1,0), // top
+			v3s16(0,-1,0), // bottom*/
+		};
+		for(s32 i=0; i<4; i++)
+		{
+			v3s16 p1 = p0 + dirs[i];
+			if(isInArea(p1, ued) == false)
+				continue;
+			bool &e1 = underground_emptiness[
+					ued*ued*(p1.Z*ued/MAP_BLOCKSIZE)
+					+ued*(p1.Y*ued/MAP_BLOCKSIZE)
+					+(p1.X*ued/MAP_BLOCKSIZE)];
+			if(e0 == e1)
+				continue;
+				
+			v3s16 dirs[6] = {
+				v3s16(0,1,0), // top
+				v3s16(0,-1,0), // bottom
+				/*v3s16(0,0,1), // back
+				v3s16(1,0,0), // right
+				v3s16(0,0,-1), // front
+				v3s16(-1,0,0), // left*/
+			};
+			for(s32 i=0; i<2; i++)
+			{
+				v3s16 p2 = p1 + dirs[i];
+				if(p2 == p0)
+					continue;
+				if(isInArea(p2, ued) == false)
+					continue;
+				bool &e2 = underground_emptiness[
+						ued*ued*(p2.Z*ued/MAP_BLOCKSIZE)
+						+ued*(p2.Y*ued/MAP_BLOCKSIZE)
+						+(p2.X*ued/MAP_BLOCKSIZE)];
+				if(e2 != e0)
+					continue;
+				
+				bool t = e1;
+				e1 = e2;
+				e2 = t;
+
+				break;
+			}
+			//break;
+		}
+	}
+#endif
 	
 	// This is the basic material of what the visible flat ground
 	// will consist of
-	u8 material = MATERIAL_GRASS;
+	u8 material = CONTENT_GRASS;
+
+	u8 water_material = CONTENT_WATER;
+	if(g_settings.getBool("endless_water"))
+		water_material = CONTENT_OCEAN;
 	
 	s32 lowest_ground_y = 32767;
+	s32 highest_ground_y = -32768;
 	
 	// DEBUG
 	//sector->printHeightmaps();
@@ -1755,14 +1835,19 @@ MapBlock * ServerMap::emergeBlock(
 		//avg_ground_y += surface_y;
 		if(surface_y < lowest_ground_y)
 			lowest_ground_y = surface_y;
+		if(surface_y > highest_ground_y)
+			highest_ground_y = surface_y;
 
 		s32 surface_depth = 0;
 		
 		float slope = sector->getSlope(v2s16(x0,z0)).getLength();
 		
-		float min_slope = 0.45;
-		float max_slope = 0.85;
-		float min_slope_depth = 5.0;
+		//float min_slope = 0.45;
+		//float max_slope = 0.85;
+		float min_slope = 0.70;
+		float max_slope = 1.20;
+		float min_slope_depth = 4.0;
+		//float min_slope_depth = 5.0;
 		float max_slope_depth = 0;
 		if(slope < min_slope)
 			surface_depth = min_slope_depth;
@@ -1783,33 +1868,55 @@ MapBlock * ServerMap::emergeBlock(
 			*/
 			if(real_y > surface_y)
 				n.setLight(LIGHT_SUN);
+
 			/*
 				Calculate material
 			*/
+
 			// If node is very low
-			if(real_y <= surface_y - 7){
+			/*if(real_y <= surface_y - 7)
+			{
 				// Create dungeons
 				if(underground_emptiness[
 						ued*ued*(z0*ued/MAP_BLOCKSIZE)
 						+ued*(y0*ued/MAP_BLOCKSIZE)
 						+(x0*ued/MAP_BLOCKSIZE)])
 				{
-					n.d = MATERIAL_AIR;
+					n.d = CONTENT_AIR;
 				}
 				else
 				{
-					n.d = MATERIAL_STONE;
+					n.d = CONTENT_STONE;
 				}
 			}
 			// If node is under surface level
 			else if(real_y <= surface_y - surface_depth)
-				n.d = MATERIAL_STONE;
+				n.d = CONTENT_STONE;
+			*/
+			if(real_y <= surface_y - surface_depth)
+			{
+				// Create dungeons
+				if(underground_emptiness[
+						ued*ued*(z0*ued/MAP_BLOCKSIZE)
+						+ued*(y0*ued/MAP_BLOCKSIZE)
+						+(x0*ued/MAP_BLOCKSIZE)])
+				{
+					n.d = CONTENT_AIR;
+				}
+				else
+				{
+					n.d = CONTENT_STONE;
+				}
+			}
 			// If node is at or under heightmap y
 			else if(real_y <= surface_y)
 			{
 				// If under water level, it's mud
 				if(real_y < WATER_LEVEL)
-					n.d = MATERIAL_MUD;
+					n.d = CONTENT_MUD;
+				// Only the topmost node is grass
+				else if(real_y <= surface_y - 1)
+					n.d = CONTENT_MUD;
 				// Else it's the main material
 				else
 					n.d = material;
@@ -1819,13 +1926,12 @@ MapBlock * ServerMap::emergeBlock(
 				// If under water level, it's water
 				if(real_y < WATER_LEVEL)
 				{
-					//n.d = MATERIAL_WATER;
-					n.d = MATERIAL_OCEAN;
+					n.d = water_material;
 					n.setLight(diminish_light(LIGHT_SUN, WATER_LEVEL-real_y+1));
 				}
 				// else air
 				else
-					n.d = MATERIAL_AIR;
+					n.d = CONTENT_AIR;
 			}
 			block->setNode(v3s16(x0,y0,z0), n);
 		}
@@ -1836,15 +1942,17 @@ MapBlock * ServerMap::emergeBlock(
 	*/
 	// Probably underground if the highest part of block is under lowest
 	// ground height
-	bool is_underground = (block_y+1) * MAP_BLOCKSIZE < lowest_ground_y;
+	bool is_underground = (block_y+1) * MAP_BLOCKSIZE <= lowest_ground_y;
 	block->setIsUnderground(is_underground);
 
 	/*
-		Force lighting update if underground.
-		This is needed because of ravines.
+		Force lighting update if some part of block is underground
+		This is needed because of caves.
 	*/
-
-	if(is_underground)
+	
+	bool some_part_underground = (block_y+0) * MAP_BLOCKSIZE < highest_ground_y;
+	if(some_part_underground)
+	//if(is_underground)
 	{
 		lighting_invalidated_blocks[block->getPos()] = block;
 	}
@@ -1867,15 +1975,15 @@ MapBlock * ServerMap::emergeBlock(
 				);
 
 				MapNode n;
-				n.d = MATERIAL_MESE;
+				n.d = CONTENT_MESE;
 				
-				if(is_ground_material(block->getNode(cp).d))
+				if(is_ground_content(block->getNode(cp).d))
 					if(rand()%8 == 0)
 						block->setNode(cp, n);
 
 				for(u16 i=0; i<26; i++)
 				{
-					if(is_ground_material(block->getNode(cp+g_26dirs[i]).d))
+					if(is_ground_content(block->getNode(cp+g_26dirs[i]).d))
 						if(rand()%8 == 0)
 							block->setNode(cp+g_26dirs[i], n);
 				}
@@ -1897,7 +2005,7 @@ MapBlock * ServerMap::emergeBlock(
 			);
 
 			// Check that the place is empty
-			//if(!is_ground_material(block->getNode(cp).d))
+			//if(!is_ground_content(block->getNode(cp).d))
 			if(1)
 			{
 				RatObject *obj = new RatObject(NULL, -1, intToFloat(cp));
@@ -1978,7 +2086,7 @@ MapBlock * ServerMap::emergeBlock(
 					p + v3s16(0,0,0), &changed_blocks_sector))
 			{
 				MapNode n;
-				n.d = MATERIAL_LIGHT;
+				n.d = CONTENT_LIGHT;
 				sector->setNode(p, n);
 				objects_to_remove.push_back(p);
 			}
@@ -1991,13 +2099,13 @@ MapBlock * ServerMap::emergeBlock(
 					&changed_blocks_sector))
 			{
 				MapNode n;
-				n.d = MATERIAL_TREE;
+				n.d = CONTENT_TREE;
 				sector->setNode(p+v3s16(0,0,0), n);
 				sector->setNode(p+v3s16(0,1,0), n);
 				sector->setNode(p+v3s16(0,2,0), n);
 				sector->setNode(p+v3s16(0,3,0), n);
 
-				n.d = MATERIAL_LEAVES;
+				n.d = CONTENT_LEAVES;
 
 				sector->setNode(p+v3s16(0,4,0), n);
 				
@@ -2032,7 +2140,7 @@ MapBlock * ServerMap::emergeBlock(
 					p + v3s16(0,0,0), &changed_blocks_sector))
 			{
 				MapNode n;
-				n.d = MATERIAL_LEAVES;
+				n.d = CONTENT_LEAVES;
 				sector->setNode(p+v3s16(0,0,0), n);
 				
 				objects_to_remove.push_back(p);
@@ -2047,9 +2155,9 @@ MapBlock * ServerMap::emergeBlock(
 					&changed_blocks_sector))
 			{
 				MapNode n;
-				n.d = MATERIAL_STONE;
+				n.d = CONTENT_STONE;
 				MapNode n2;
-				n2.d = MATERIAL_AIR;
+				n2.d = CONTENT_AIR;
 				s16 depth = maxdepth + (rand()%10);
 				s16 z = 0;
 				s16 minz = -6 - (-2);
@@ -2067,22 +2175,22 @@ MapBlock * ServerMap::emergeBlock(
 								<<std::endl;*/
 						{
 							v3s16 p2 = p + v3s16(x,y,z-2);
-							if(is_ground_material(sector->getNode(p2).d))
+							if(is_ground_content(sector->getNode(p2).d))
 								sector->setNode(p2, n);
 						}
 						{
 							v3s16 p2 = p + v3s16(x,y,z-1);
-							if(is_ground_material(sector->getNode(p2).d))
+							if(is_ground_content(sector->getNode(p2).d))
 								sector->setNode(p2, n2);
 						}
 						{
 							v3s16 p2 = p + v3s16(x,y,z+0);
-							if(is_ground_material(sector->getNode(p2).d))
+							if(is_ground_content(sector->getNode(p2).d))
 								sector->setNode(p2, n2);
 						}
 						{
 							v3s16 p2 = p + v3s16(x,y,z+1);
-							if(is_ground_material(sector->getNode(p2).d))
+							if(is_ground_content(sector->getNode(p2).d))
 								sector->setNode(p2, n);
 						}
 
@@ -3100,7 +3208,7 @@ void ClientMap::updateMesh()
 		/*dstream<<"mesh_old refcount="<<mesh_old->getReferenceCount()
 				<<std::endl;
 		scene::IMeshBuffer *buf = mesh_new->getMeshBuffer
-				(g_materials[MATERIAL_GRASS]);
+				(g_materials[CONTENT_GRASS]);
 		if(buf != NULL)
 			dstream<<"grass buf refcount="<<buf->getReferenceCount()
 					<<std::endl;*/

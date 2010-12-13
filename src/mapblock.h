@@ -288,11 +288,7 @@ public:
 	
 	u8 getFaceLight(v3s16 p, v3s16 face_dir);
 	
-	/*
-		Gets node material from any place relative to block.
-		Returns MATERIAL_AIR if doesn't exist.
-	*/
-	u8 getNodeMaterial(v3s16 p);
+	u8 getNodeTile(v3s16 p);
 
 	/*
 		startpos:
@@ -375,6 +371,9 @@ public:
 	{
 		m_objects.getObjects(origin, max_d, dest);
 	}
+
+	/*void getPseudoObjects(v3f origin, f32 max_d,
+			core::array<DistanceSortedObject> &dest);*/
 
 	s32 getObjectCount()
 	{

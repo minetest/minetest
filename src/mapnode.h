@@ -41,66 +41,68 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 	Doesn't create faces with anything and is considered being
 	out-of-map in the game map.
 */
-#define MATERIAL_IGNORE 255
-#define MATERIAL_IGNORE_DEFAULT_PARAM 0
+#define CONTENT_IGNORE 255
+#define CONTENT_IGNORE_DEFAULT_PARAM 0
 
 /*
 	The common material through which the player can walk and which
 	is transparent to light
 */
-#define MATERIAL_AIR 254
+#define CONTENT_AIR 254
 
 /*
-	Materials-todo:
-
+	Suggested materials:
 	GRAVEL
 	  - Dynamics of gravel: if there is a drop of more than two
 	    blocks on any side, it will drop in there. Is this doable?
 	
-	TODO: These should be named to "content" or something like that
+	New naming scheme:
+	- Material = irrlicht's Material class
+	- Content = (u8) content of a node
+	- Tile = (u16) Material ID at some side of a node
 */
 
-enum Material
+enum Content
 {
-	MATERIAL_STONE=0,
+	CONTENT_STONE=0,
 
-	MATERIAL_GRASS,
+	CONTENT_GRASS,
 
-	MATERIAL_WATER,
+	CONTENT_WATER,
 
-	MATERIAL_LIGHT,
+	CONTENT_LIGHT,
 
-	MATERIAL_TREE,
+	CONTENT_TREE,
 	
-	MATERIAL_LEAVES,
+	CONTENT_LEAVES,
 
-	MATERIAL_GRASS_FOOTSTEPS,
+	CONTENT_GRASS_FOOTSTEPS,
 	
-	MATERIAL_MESE,
+	CONTENT_MESE,
 
-	MATERIAL_MUD,
+	CONTENT_MUD,
 
-	MATERIAL_OCEAN,
+	CONTENT_OCEAN,
 	
 	// This is set to the number of the actual values in this enum
-	USEFUL_MATERIAL_COUNT
+	USEFUL_CONTENT_COUNT
 };
 
 /*
 	If true, the material allows light propagation and brightness is stored
 	in param.
 */
-inline bool light_propagates_material(u8 m)
+inline bool light_propagates_content(u8 m)
 {
-	return (m == MATERIAL_AIR || m == MATERIAL_LIGHT || m == MATERIAL_WATER || m == MATERIAL_OCEAN);
+	return (m == CONTENT_AIR || m == CONTENT_LIGHT || m == CONTENT_WATER || m == CONTENT_OCEAN);
 }
 
 /*
 	If true, the material allows lossless sunlight propagation.
 */
-inline bool sunlight_propagates_material(u8 m)
+inline bool sunlight_propagates_content(u8 m)
 {
-	return (m == MATERIAL_AIR);
+	return (m == CONTENT_AIR || m == CONTENT_LIGHT);
 }
 
 /*
@@ -110,98 +112,157 @@ inline bool sunlight_propagates_material(u8 m)
 	1: Transparent
 	2: Opaque
 */
-inline u8 material_solidness(u8 m)
+inline u8 content_solidness(u8 m)
 {
-	if(m == MATERIAL_AIR)
+	if(m == CONTENT_AIR)
 		return 0;
-	if(m == MATERIAL_WATER || m == MATERIAL_OCEAN)
+	if(m == CONTENT_WATER || m == CONTENT_OCEAN)
 		return 1;
 	return 2;
 }
 
-// Objects collide with walkable materials
-inline bool material_walkable(u8 m)
+// Objects collide with walkable contents
+inline bool content_walkable(u8 m)
 {
-	return (m != MATERIAL_AIR && m != MATERIAL_WATER && m != MATERIAL_OCEAN && m != MATERIAL_LIGHT);
+	return (m != CONTENT_AIR && m != CONTENT_WATER && m != CONTENT_OCEAN && m != CONTENT_LIGHT);
 }
 
 // A liquid resists fast movement
-inline bool material_liquid(u8 m)
+inline bool content_liquid(u8 m)
 {
-	return (m == MATERIAL_WATER || m == MATERIAL_OCEAN);
+	return (m == CONTENT_WATER || m == CONTENT_OCEAN);
 }
 
-// Pointable materials can be pointed to in the map
-inline bool material_pointable(u8 m)
+// Pointable contents can be pointed to in the map
+inline bool content_pointable(u8 m)
 {
-	return (m != MATERIAL_AIR && m != MATERIAL_WATER && m != MATERIAL_OCEAN);
+	return (m != CONTENT_AIR && m != CONTENT_WATER && m != CONTENT_OCEAN);
 }
 
-inline bool material_diggable(u8 m)
+inline bool content_diggable(u8 m)
 {
-	return (m != MATERIAL_AIR && m != MATERIAL_WATER && m != MATERIAL_OCEAN);
+	return (m != CONTENT_AIR && m != CONTENT_WATER && m != CONTENT_OCEAN);
 }
 
-inline bool material_buildable_to(u8 m)
+inline bool content_buildable_to(u8 m)
 {
-	return (m == MATERIAL_AIR || m == MATERIAL_WATER || m == MATERIAL_OCEAN);
+	return (m == CONTENT_AIR || m == CONTENT_WATER || m == CONTENT_OCEAN);
 }
 
 /*
-	As of now, input is a "material" and the output is a "material"
+	TODO: Make a mapper class for mapping every side of a content
+	      to some tile.
+	This dumbily maps all sides of content to the tile of the same id.
 */
-inline u8 content_cube_material(u8 c)
+inline u8 content_tile(u8 c)
 {
-	if(c == MATERIAL_IGNORE || c == MATERIAL_LIGHT)
-		return MATERIAL_AIR;
+	if(c == CONTENT_IGNORE || c == CONTENT_LIGHT)
+		return CONTENT_AIR;
 	return c;
 }
 
 /*
-	Returns true for materials that form the base ground that
+	Returns true for contents that form the base ground that
 	follows the main heightmap
 */
-inline bool is_ground_material(u8 m)
+inline bool is_ground_content(u8 m)
 {
 	return(
-		m == MATERIAL_STONE ||
-		m == MATERIAL_GRASS ||
-		m == MATERIAL_GRASS_FOOTSTEPS ||
-		m == MATERIAL_MESE ||
-		m == MATERIAL_MUD
+		m == CONTENT_STONE ||
+		m == CONTENT_GRASS ||
+		m == CONTENT_GRASS_FOOTSTEPS ||
+		m == CONTENT_MESE ||
+		m == CONTENT_MUD
 	);
 }
 
 /*
-	Nodes make a face if materials differ and solidness differs.
+	Nodes make a face if contents differ and solidness differs.
 	Return value:
 		0: No face
-		1: Face uses m1's material
-		2: Face uses m2's material
+		1: Face uses m1's content
+		2: Face uses m2's content
 */
-inline u8 face_materials(u8 m1, u8 m2)
+inline u8 face_contents(u8 m1, u8 m2)
 {
-	if(m1 == MATERIAL_IGNORE || m2 == MATERIAL_IGNORE)
+	if(m1 == CONTENT_IGNORE || m2 == CONTENT_IGNORE)
 		return 0;
 	
-	bool materials_differ = (m1 != m2);
-	bool solidness_differs = (material_solidness(m1) != material_solidness(m2));
-	bool makes_face = materials_differ && solidness_differs;
+	bool contents_differ = (m1 != m2);
+	bool solidness_differs = (content_solidness(m1) != content_solidness(m2));
+	bool makes_face = contents_differ && solidness_differs;
 
 	if(makes_face == false)
 		return 0;
 
-	if(material_solidness(m1) > material_solidness(m2))
+	if(content_solidness(m1) > content_solidness(m2))
 		return 1;
 	else
 		return 2;
 }
 
+inline bool liquid_replaces_content(u8 c)
+{
+	return (c == CONTENT_AIR || c == CONTENT_LIGHT);
+}
+
+/*
+	When placing a node, drection info is added to it if this is true
+*/
+inline bool content_directional(u8 c)
+{
+	return (c == CONTENT_LIGHT);
+}
+
+/*
+	Packs directions like (1,0,0), (1,-1,0)
+*/
+inline u8 packDir(v3s16 dir)
+{
+	u8 b = 0;
+
+	if(dir.X > 0)
+		b |= (1<<0);
+	else if(dir.X < 0)
+		b |= (1<<1);
+
+	if(dir.Y > 0)
+		b |= (1<<2);
+	else if(dir.Y < 0)
+		b |= (1<<3);
+
+	if(dir.Z > 0)
+		b |= (1<<4);
+	else if(dir.Z < 0)
+		b |= (1<<5);
+	
+	return b;
+}
+inline v3s16 unpackDir(u8 b)
+{
+	v3s16 d(0,0,0);
+
+	if(b & (1<<0))
+		d.X = 1;
+	else if(b & (1<<1))
+		d.X = -1;
+
+	if(b & (1<<2))
+		d.Y = 1;
+	else if(b & (1<<3))
+		d.Y = -1;
+
+	if(b & (1<<4))
+		d.Z = 1;
+	else if(b & (1<<5))
+		d.Z = -1;
+	
+	return d;
+}
+
 struct MapNode
 {
-	//TODO: block type to differ from material
-	//      (e.g. grass edges or something)
-	// block type
+	// Content
 	u8 d;
 
 	/*
@@ -211,15 +272,27 @@ struct MapNode
 		  Sunlight is LIGHT_SUN, which is LIGHT_MAX+1.
 	*/
 	s8 param;
+	
+	union
+	{
+		/*
+			Pressure for liquids
+		*/
+		u8 pressure;
 
-	u8 pressure;
+		/*
+			Direction for torches and other stuff.
+			If possible, packed with packDir.
+		*/
+		u8 dir;
+	};
 
 	MapNode(const MapNode & n)
 	{
 		*this = n;
 	}
 	
-	MapNode(u8 data=MATERIAL_AIR, u8 a_param=0, u8 a_pressure=0)
+	MapNode(u8 data=CONTENT_AIR, u8 a_param=0, u8 a_pressure=0)
 	{
 		d = data;
 		param = a_param;
@@ -235,17 +308,17 @@ struct MapNode
 
 	bool light_propagates()
 	{
-		return light_propagates_material(d);
+		return light_propagates_content(d);
 	}
 	
 	bool sunlight_propagates()
 	{
-		return sunlight_propagates_material(d);
+		return sunlight_propagates_content(d);
 	}
 	
 	u8 solidness()
 	{
-		return material_solidness(d);
+		return content_solidness(d);
 	}
 
 	u8 light_source()
@@ -253,7 +326,7 @@ struct MapNode
 		/*
 			Note that a block that isn't light_propagates() can be a light source.
 		*/
-		if(d == MATERIAL_LIGHT)
+		if(d == CONTENT_LIGHT)
 			return LIGHT_MAX;
 		
 		return 0;
@@ -261,7 +334,7 @@ struct MapNode
 
 	u8 getLight()
 	{
-		// Select the brightest of [light_source, transparent_light]
+		// Select the brightest of [light source, propagated light]
 		u8 light = 0;
 		if(light_propagates())
 			light = param & 0x0f;

@@ -186,12 +186,10 @@ SUGG: Implement a "Fast check queue" (a queue with a map for checking
 TODO: Proper looking torches.
       - Signs could be done in the same way?
 
+TODO: A mapper to map contents to tile names (for each side)
+
 Doing now:
 ======================================================================
-
-TODO: A system for showing some nodes in some other way than cubes
-      - Needed for torches
-	  - Also for signs, stairs, etc
 
 ======================================================================
 
@@ -257,22 +255,26 @@ TODO: A system for showing some nodes in some other way than cubes
 
 IrrlichtDevice *g_device = NULL;
 
-const char *g_material_filenames[MATERIALS_COUNT] =
+const char *g_content_filenames[MATERIALS_COUNT] =
 {
 	"../data/stone.png",
 	"../data/grass.png",
 	"../data/water.png",
-	"../data/light.png",
+	"../data/torch_on_floor.png",
 	"../data/tree.png",
 	"../data/leaves.png",
 	"../data/grass_footsteps.png",
 	"../data/mese.png",
 	"../data/mud.png",
-	"../data/water.png", // ocean
+	"../data/water.png", // CONTENT_OCEAN
 };
 
+// Material cache
 video::SMaterial g_materials[MATERIALS_COUNT];
-//video::SMaterial g_mesh_materials[3];
+
+// Texture cache
+TextureCache g_texturecache;
+
 
 // All range-related stuff below is locked behind this
 JMutex g_range_mutex;
@@ -320,20 +322,22 @@ void set_default_settings()
 	g_settings.set("random_input", "false");
 	g_settings.set("client_delete_unused_sectors_timeout", "1200");
 	g_settings.set("max_block_send_distance", "8");
-	g_settings.set("max_block_generate_distance", "5");
+	g_settings.set("max_block_generate_distance", "6");
 
 	// Server stuff
 	g_settings.set("creative_mode", "false");
-	g_settings.set("heightmap_blocksize", "128");
-	g_settings.set("height_randmax", "constant 70.0");
+	g_settings.set("heightmap_blocksize", "32");
+	g_settings.set("height_randmax", "constant 50.0");
 	g_settings.set("height_randfactor", "constant 0.6");
-	g_settings.set("height_base", "linear 0 35 0");
+	g_settings.set("height_base", "linear 0 0 0");
 	g_settings.set("plants_amount", "1.0");
 	g_settings.set("ravines_amount", "1.0");
 	g_settings.set("objectdata_interval", "0.2");
 	g_settings.set("active_object_range", "2");
 	g_settings.set("max_simultaneous_block_sends_per_client", "1");
 	g_settings.set("max_simultaneous_block_sends_server_total", "4");
+	g_settings.set("disable_water_climb", "true");
+	g_settings.set("endless_water", "true");
 }
 
 /*
@@ -673,7 +677,7 @@ public:
 			if(counter1 < 0.0)
 			{
 				counter1 = 0.1*Rand(1,10);
-				/*if(g_selected_material < USEFUL_MATERIAL_COUNT-1)
+				/*if(g_selected_material < USEFUL_CONTENT_COUNT-1)
 					g_selected_material++;
 				else
 					g_selected_material = 0;*/
@@ -1297,7 +1301,7 @@ int main(int argc, char *argv[])
 		g_materials[i].Lighting = false;
 		g_materials[i].BackfaceCulling = false;
 
-		const char *filename = g_material_filenames[i];
+		const char *filename = g_content_filenames[i];
 		if(filename != NULL){
 			video::ITexture *t = driver->getTexture(filename);
 			if(t == NULL){
@@ -1313,9 +1317,9 @@ int main(int argc, char *argv[])
 		//g_materials[i].setFlag(video::EMF_FOG_ENABLE, true);
 	}
 
-	g_materials[MATERIAL_WATER].MaterialType = video::EMT_TRANSPARENT_VERTEX_ALPHA;
-	//g_materials[MATERIAL_WATER].MaterialType = video::EMT_TRANSPARENT_ADD_COLOR;
-	g_materials[MATERIAL_OCEAN].MaterialType = video::EMT_TRANSPARENT_VERTEX_ALPHA;
+	g_materials[CONTENT_WATER].MaterialType = video::EMT_TRANSPARENT_VERTEX_ALPHA;
+	//g_materials[CONTENT_WATER].MaterialType = video::EMT_TRANSPARENT_ADD_COLOR;
+	g_materials[CONTENT_OCEAN].MaterialType = video::EMT_TRANSPARENT_VERTEX_ALPHA;
 
 	/*g_mesh_materials[0].setTexture(0, driver->getTexture("../data/water.png"));
 	g_mesh_materials[1].setTexture(0, driver->getTexture("../data/grass.png"));
@@ -1328,8 +1332,18 @@ int main(int argc, char *argv[])
 		g_mesh_materials[i].setFlag(video::EMF_FOG_ENABLE, true);
 	}*/
 
-	// Make a scope here for the client so that it gets removed
-	// before the irrlicht device
+	/*
+		Preload some random textures that are used in threads
+	*/
+	
+	g_texturecache.set("torch", driver->getTexture("../data/torch.png"));
+	g_texturecache.set("torch_on_floor", driver->getTexture("../data/torch_on_floor.png"));
+	g_texturecache.set("torch_on_ceiling", driver->getTexture("../data/torch_on_ceiling.png"));
+
+	/*
+		Make a scope here for the client so that it gets removed
+		before the irrlicht device
+	*/
 	{
 
 	std::cout<<DTIME<<"Creating server and client"<<std::endl;
@@ -1380,6 +1394,23 @@ int main(int argc, char *argv[])
 		std::cout<<DTIME<<"Timed out."<<std::endl;
 		return 0;
 	}
+
+	/*
+		Create skybox
+	*/
+	scene::ISceneNode* skybox = smgr->addSkyBoxSceneNode(
+		driver->getTexture("../data/skybox2.png"),
+		driver->getTexture("../data/skybox3.png"),
+		driver->getTexture("../data/skybox1.png"),
+		driver->getTexture("../data/skybox1.png"),
+		driver->getTexture("../data/skybox1.png"),
+		driver->getTexture("../data/skybox1.png"));
+	/*	driver->getTexture("../data/irrlicht2_up.jpg"),
+		driver->getTexture("../data/irrlicht2_dn.jpg"),
+		driver->getTexture("../data/irrlicht2_lf.jpg"),
+		driver->getTexture("../data/irrlicht2_rt.jpg"),
+		driver->getTexture("../data/irrlicht2_ft.jpg"),
+		driver->getTexture("../data/irrlicht2_bk.jpg"));*/
 	
 	/*
 		Create the camera node
@@ -1862,14 +1893,19 @@ int main(int argc, char *argv[])
 		s16 zend = pos_i.Z + (camera_direction.Z>0 ? a : 1);
 		s16 xend = pos_i.X + (camera_direction.X>0 ? a : 1);
 		
-		for(s16 y = ystart; y <= yend; y++){
-		for(s16 z = zstart; z <= zend; z++){
+		for(s16 y = ystart; y <= yend; y++)
+		for(s16 z = zstart; z <= zend; z++)
 		for(s16 x = xstart; x <= xend; x++)
 		{
-			try{
-				if(material_pointable(client.getNode(v3s16(x,y,z)).d) == false)
+			MapNode n;
+			try
+			{
+				n = client.getNode(v3s16(x,y,z));
+				if(content_pointable(n.d) == false)
 					continue;
-			}catch(InvalidPositionException &e){
+			}
+			catch(InvalidPositionException &e)
+			{
 				continue;
 			}
 
@@ -1878,55 +1914,110 @@ int main(int argc, char *argv[])
 			
 			f32 d = 0.01;
 			
-			v3s16 directions[6] = {
+			v3s16 dirs[6] = {
 				v3s16(0,0,1), // back
 				v3s16(0,1,0), // top
 				v3s16(1,0,0), // right
-				v3s16(0,0,-1),
-				v3s16(0,-1,0),
-				v3s16(-1,0,0),
+				v3s16(0,0,-1), // front
+				v3s16(0,-1,0), // bottom
+				v3s16(-1,0,0), // left
 			};
+			
+			/*
+				Meta-objects
+			*/
+			if(n.d == CONTENT_LIGHT)
+			{
+				v3s16 dir = unpackDir(n.dir);
+				v3f dir_f = v3f(dir.X, dir.Y, dir.Z);
+				dir_f *= BS/2 - BS/6 - BS/20;
+				v3f cpf = npf + dir_f;
+				f32 distance = (cpf - camera_position).getLength();
 
-			for(u16 i=0; i<6; i++){
-			//{u16 i=3;
-				v3f dir_f = v3f(directions[i].X,
-						directions[i].Y, directions[i].Z);
-				v3f centerpoint = npf + dir_f * BS/2;
-				f32 distance =
-						(centerpoint - camera_position).getLength();
+				core::aabbox3d<f32> box;
 				
-				if(distance < mindistance){
-					//std::cout<<DTIME<<"for centerpoint=("<<centerpoint.X<<","<<centerpoint.Y<<","<<centerpoint.Z<<"): distance < mindistance"<<std::endl;
-					//std::cout<<DTIME<<"npf=("<<npf.X<<","<<npf.Y<<","<<npf.Z<<")"<<std::endl;
-					core::CMatrix4<f32> m;
-					m.buildRotateFromTo(v3f(0,0,1), dir_f);
+				// bottom
+				if(dir == v3s16(0,-1,0))
+				{
+					box = core::aabbox3d<f32>(
+						npf - v3f(BS/6, BS/2, BS/6),
+						npf + v3f(BS/6, -BS/2+BS/3*2, BS/6)
+					);
+				}
+				// top
+				else if(dir == v3s16(0,1,0))
+				{
+					box = core::aabbox3d<f32>(
+						npf - v3f(BS/6, -BS/2+BS/3*2, BS/6),
+						npf + v3f(BS/6, BS/2, BS/6)
+					);
+				}
+				// side
+				else
+				{
+					box = core::aabbox3d<f32>(
+						cpf - v3f(BS/6, BS/3, BS/6),
+						cpf + v3f(BS/6, BS/3, BS/6)
+					);
+				}
 
-					// This is the back face
-					v3f corners[2] = {
-						v3f(BS/2, BS/2, BS/2),
-						v3f(-BS/2, -BS/2, BS/2+d)
-					};
-					
-					for(u16 j=0; j<2; j++){
-						m.rotateVect(corners[j]);
-						corners[j] += npf;
-						//std::cout<<DTIME<<"box corners["<<j<<"]: ("<<corners[j].X<<","<<corners[j].Y<<","<<corners[j].Z<<")"<<std::endl;
-					}
-
-					//core::aabbox3d<f32> facebox(corners[0],corners[1]);
-					core::aabbox3d<f32> facebox(corners[0]);
-					facebox.addInternalPoint(corners[1]);
-
-					if(facebox.intersectsWithLine(shootline)){
+				if(distance < mindistance)
+				{
+					if(box.intersectsWithLine(shootline))
+					{
 						nodefound = true;
 						nodepos = np;
-						neighbourpos = np + directions[i];
+						neighbourpos = np;
 						mindistance = distance;
-						nodefacebox = facebox;
+						nodefacebox = box;
 					}
 				}
 			}
-		}}}
+			/*
+				Regular blocks
+			*/
+			else
+			{
+				for(u16 i=0; i<6; i++)
+				{
+					v3f dir_f = v3f(dirs[i].X,
+							dirs[i].Y, dirs[i].Z);
+					v3f centerpoint = npf + dir_f * BS/2;
+					f32 distance =
+							(centerpoint - camera_position).getLength();
+					
+					if(distance < mindistance)
+					{
+						core::CMatrix4<f32> m;
+						m.buildRotateFromTo(v3f(0,0,1), dir_f);
+
+						// This is the back face
+						v3f corners[2] = {
+							v3f(BS/2, BS/2, BS/2),
+							v3f(-BS/2, -BS/2, BS/2+d)
+						};
+						
+						for(u16 j=0; j<2; j++)
+						{
+							m.rotateVect(corners[j]);
+							corners[j] += npf;
+						}
+
+						core::aabbox3d<f32> facebox(corners[0]);
+						facebox.addInternalPoint(corners[1]);
+
+						if(facebox.intersectsWithLine(shootline))
+						{
+							nodefound = true;
+							nodepos = np;
+							neighbourpos = np + dirs[i];
+							mindistance = distance;
+							nodefacebox = facebox;
+						}
+					} // if distance < mindistance
+				} // for dirs
+			} // regular block
+		} // for coords
 
 		if(nodefound)
 		{

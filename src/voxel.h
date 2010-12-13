@@ -502,6 +502,12 @@ public:
 	//TODO: Would these make any speed improvement?
 	//bool m_pressure_route_valid;
 	//v3s16 m_pressure_route_surface;
+
+	/*
+		Some settings
+	*/
+	bool m_disable_water_climb;
+
 private:
 };
 

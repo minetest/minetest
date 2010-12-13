@@ -275,7 +275,7 @@ public:
 	u8 pending_serialization_version;
 
 	RemoteClient():
-		m_time_from_building(0.0)
+		m_time_from_building(9999)
 		//m_num_blocks_in_emerge_queue(0)
 	{
 		peer_id = 0;
@@ -450,10 +450,18 @@ private:
 	
 	// When called, connection mutex should be locked
 	RemoteClient* getClient(u16 peer_id);
+
+	/*
+		Update water pressure.
+		This also adds suitable nodes to active_nodes.
+
+		environment has to be locked when calling.
+	*/
+	void UpdateBlockWaterPressure(MapBlock *block,
+			core::map<v3s16, MapBlock*> &modified_blocks);
 	
 	// NOTE: If connection and environment are both to be locked,
 	// environment shall be locked first.
-
 	JMutex m_env_mutex;
 	Environment m_env;
 

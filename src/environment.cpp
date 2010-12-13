@@ -142,9 +142,9 @@ void Environment::step(float dtime)
 			v3s16 bottompos = floatToInt(playerpos + v3f(0,-BS/4,0));
 			try{
 				MapNode n = m_map->getNode(bottompos);
-				if(n.d == MATERIAL_GRASS)
+				if(n.d == CONTENT_GRASS)
 				{
-					n.d = MATERIAL_GRASS_FOOTSTEPS;
+					n.d = CONTENT_GRASS_FOOTSTEPS;
 					m_map->setNode(bottompos, n);
 
 					// Update mesh on client

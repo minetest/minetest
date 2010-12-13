@@ -28,13 +28,12 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "constants.h"
 #include "debug.h"
 
-enum
-{
-	MAPBLOCKOBJECT_TYPE_TEST=0,
-	MAPBLOCKOBJECT_TYPE_TEST2=1,
-	MAPBLOCKOBJECT_TYPE_SIGN=2,
-	MAPBLOCKOBJECT_TYPE_RAT=3,
-};
+#define MAPBLOCKOBJECT_TYPE_TEST 0
+#define MAPBLOCKOBJECT_TYPE_TEST2 1
+#define MAPBLOCKOBJECT_TYPE_SIGN 2
+#define MAPBLOCKOBJECT_TYPE_RAT 3
+// Used for handling selecting special stuff
+//#define MAPBLOCKOBJECT_TYPE_PSEUDO 4
 
 class MapBlock;
 
@@ -169,6 +168,57 @@ protected:
 
 	friend class MapBlockObjectList;
 };
+
+#if 0
+/*
+	Used for handling selections of special stuff
+*/
+class PseudoMBObject : public MapBlockObject
+{
+public:
+	// The constructor of every MapBlockObject should be like this
+	PseudoMBObject(MapBlock *block, s16 id, v3f pos):
+		MapBlockObject(block, id, pos)
+	{
+	}
+	virtual ~PseudoMBObject()
+	{
+		if(m_selection_box)
+			delete m_selection_box;
+	}
+	
+	/*
+		Implementation interface
+	*/
+	virtual u16 getTypeId() const
+	{
+		return MAPBLOCKOBJECT_TYPE_PSEUDO;
+	}
+	virtual void serialize(std::ostream &os, u8 version)
+	{
+		assert(0);
+	}
+	virtual void update(std::istream &is, u8 version)
+	{
+		assert(0);
+	}
+	virtual bool serverStep(float dtime)
+	{
+		assert(0);
+	}
+
+	/*
+		Special methods
+	*/
+	
+	void setSelectionBox(core::aabbox3d<f32> box)
+	{
+		m_selection_box = new core::aabbox3d<f32>(box);
+	}
+	
+protected:
+};
+#endif
 
 class TestObject : public MapBlockObject
 {

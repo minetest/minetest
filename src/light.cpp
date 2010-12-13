@@ -101,4 +101,47 @@ u8 light_decode_table[LIGHT_MAX+1] =
 255,
 };
 
+/*
+#!/usr/bin/python
+
+from math import *
+from sys import stdout
+
+# We want 0 at light=0 and 255 at light=LIGHT_MAX
+LIGHT_MAX = 14
+#FACTOR = 0.69
+FACTOR = 0.75
+
+maxlight = 255
+minlight = 8
+
+L = []
+for i in range(1,LIGHT_MAX+1):
+    L.append(minlight+int(round((maxlight-minlight) * FACTOR ** (i-1))))
+    #L.append(int(round(255.0 * FACTOR ** (i-1))))
+L.append(minlight)
+
+L.reverse()
+for i in L:
+    stdout.write(str(i)+",\n")
+*/
+/*u8 light_decode_table[LIGHT_MAX+1] = 
+{
+8,
+14,
+16,
+18,
+22,
+27,
+33,
+41,
+52,
+67,
+86,
+112,
+147,
+193,
+255,
+};*/
+
 

@@ -55,7 +55,9 @@ extern std::ostream *derr_server_ptr;
 // This header is only for MATERIALS_COUNT
 #include "mapnode.h"
 extern video::SMaterial g_materials[MATERIALS_COUNT];
-//extern video::SMaterial g_mesh_materials[3];
+
+#include "utility.h"
+extern TextureCache g_texturecache;
 
 extern IrrlichtDevice *g_device;
 

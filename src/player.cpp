@@ -72,12 +72,12 @@ void Player::move(f32 dtime, Map &map)
 		if(in_water)
 		{
 			v3s16 pp = floatToInt(position + v3f(0,0,0));
-			in_water = material_liquid(map.getNode(pp).d);
+			in_water = content_liquid(map.getNode(pp).d);
 		}
 		else
 		{
 			v3s16 pp = floatToInt(position + v3f(0,BS/2,0));
-			in_water = material_liquid(map.getNode(pp).d);
+			in_water = content_liquid(map.getNode(pp).d);
 		}
 	}
 	catch(InvalidPositionException &e)
@@ -122,7 +122,7 @@ void Player::move(f32 dtime, Map &map)
 		for(s16 z = oldpos_i.Z - 1; z <= oldpos_i.Z + 1; z++){
 			for(s16 x = oldpos_i.X - 1; x <= oldpos_i.X + 1; x++){
 				try{
-					if(material_walkable(map.getNode(v3s16(x,y,z)).d) == false){
+					if(content_walkable(map.getNode(v3s16(x,y,z)).d) == false){
 						continue;
 					}
 				}

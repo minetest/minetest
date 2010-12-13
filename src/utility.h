@@ -32,6 +32,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <fstream>
 #include <string>
 #include <sstream>
+#include <jmutex.h>
+#include <jmutexautolock.h>
 
 extern const v3s16 g_26dirs[26];
 
@@ -806,6 +808,46 @@ public:
 
 private:
 	core::map<std::string, std::string> m_settings;
+};
+
+/*
+	A thread-safe texture cache.
+
+	This is used so that irrlicht doesn't get called from many threads
+*/
+
+class TextureCache
+{
+public:
+	TextureCache()
+	{
+		m_mutex.Init();
+		assert(m_mutex.IsInitialized());
+	}
+	
+	void set(std::string name, video::ITexture *texture)
+	{
+		JMutexAutoLock lock(m_mutex);
+
+		m_textures[name] = texture;
+	}
+	
+	video::ITexture* get(std::string name)
+	{
+		JMutexAutoLock lock(m_mutex);
+
+		core::map<std::string, video::ITexture*>::Node *n;
+		n = m_textures.find(name);
+
+		if(n != NULL)
+			return n->getValue();
+
+		return NULL;
+	}
+
+private:
+	core::map<std::string, video::ITexture*> m_textures;
+	JMutex m_mutex;
 };
 
 #endif

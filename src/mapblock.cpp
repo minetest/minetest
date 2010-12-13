@@ -111,7 +111,7 @@ FastFace * MapBlock::makeFastFace(u8 material, u8 light, v3f p,
 
 	u8 alpha = 255;
 
-	if(material == MATERIAL_WATER || material == MATERIAL_OCEAN)
+	if(material == CONTENT_WATER || material == CONTENT_OCEAN)
 	{
 		alpha = 128;
 	}
@@ -152,7 +152,11 @@ u8 MapBlock::getFaceLight(v3s16 p, v3s16 face_dir)
 		MapNode n = getNodeParent(p);
 		MapNode n2 = getNodeParent(p + face_dir);
 		u8 light;
-		if(n.solidness() < n2.solidness())
+		/*if(n.solidness() < n2.solidness())
+			light = n.getLight();
+		else
+			light = n2.getLight();*/
+		if(n.getLight() > n2.getLight())
 			light = n.getLight();
 		else
 			light = n2.getLight();
@@ -173,18 +177,18 @@ u8 MapBlock::getFaceLight(v3s16 p, v3s16 face_dir)
 
 /*
 	Gets node material from any place relative to block.
-	Returns MATERIAL_IGNORE if doesn't exist or should not be drawn.
+	Returns CONTENT_IGNORE if doesn't exist or should not be drawn.
 */
-u8 MapBlock::getNodeMaterial(v3s16 p)
+u8 MapBlock::getNodeTile(v3s16 p)
 {
 	try{
 		MapNode n = getNodeParent(p);
 		
-		return content_cube_material(n.d);
+		return content_tile(n.d);
 	}
 	catch(InvalidPositionException &e)
 	{
-		return MATERIAL_IGNORE;
+		return CONTENT_IGNORE;
 	}
 }
 
@@ -216,82 +220,82 @@ void MapBlock::updateFastFaceRow(v3s16 startpos,
 	*/
 	u8 light = getFaceLight(p, face_dir);
 	
-	u16 continuous_materials_count = 0;
+	u16 continuous_tiles_count = 0;
 	
-	u8 material0 = getNodeMaterial(p);
-	u8 material1 = getNodeMaterial(p + face_dir);
+	u8 tile0 = getNodeTile(p);
+	u8 tile1 = getNodeTile(p + face_dir);
 		
 	for(u16 j=0; j<length; j++)
 	{
 		bool next_is_different = true;
 		
 		v3s16 p_next;
-		u8 material0_next = 0;
-		u8 material1_next = 0;
+		u8 tile0_next = 0;
+		u8 tile1_next = 0;
 		u8 light_next = 0;
 
 		if(j != length - 1){
 			p_next = p + translate_dir;
-			material0_next = getNodeMaterial(p_next);
-			material1_next = getNodeMaterial(p_next + face_dir);
+			tile0_next = getNodeTile(p_next);
+			tile1_next = getNodeTile(p_next + face_dir);
 			light_next = getFaceLight(p_next, face_dir);
 
-			if(material0_next == material0
-					&& material1_next == material1
+			if(tile0_next == tile0
+					&& tile1_next == tile1
 					&& light_next == light)
 			{
 				next_is_different = false;
 			}
 		}
 
-		continuous_materials_count++;
+		continuous_tiles_count++;
 		
 		if(next_is_different)
 		{
 			/*
 				Create a face if there should be one
 			*/
-			u8 mf = face_materials(material0, material1);
+			u8 mf = face_contents(tile0, tile1);
 			
 			if(mf != 0)
 			{
 				// Floating point conversion of the position vector
 				v3f pf(p.X, p.Y, p.Z);
 				// Center point of face (kind of)
-				v3f sp = pf - ((f32)continuous_materials_count / 2. - 0.5) * translate_dir_f;
+				v3f sp = pf - ((f32)continuous_tiles_count / 2. - 0.5) * translate_dir_f;
 				v3f scale(1,1,1);
 				if(translate_dir.X != 0){
-					scale.X = continuous_materials_count;
+					scale.X = continuous_tiles_count;
 				}
 				if(translate_dir.Y != 0){
-					scale.Y = continuous_materials_count;
+					scale.Y = continuous_tiles_count;
 				}
 				if(translate_dir.Z != 0){
-					scale.Z = continuous_materials_count;
+					scale.Z = continuous_tiles_count;
 				}
 				
 				FastFace *f;
 
-				// If node at sp (material0) is more solid
+				// If node at sp (tile0) is more solid
 				if(mf == 1)
 				{
-					f = makeFastFace(material0, light,
+					f = makeFastFace(tile0, light,
 							sp, face_dir_f, scale,
 							posRelative_f);
 				}
 				// If node at sp is less solid (mf == 2)
 				else
 				{
-					f = makeFastFace(material1, light,
+					f = makeFastFace(tile1, light,
 							sp+face_dir_f, -1*face_dir_f, scale,
 							posRelative_f);
 				}
 				dest.push_back(f);
 			}
 
-			continuous_materials_count = 0;
-			material0 = material0_next;
-			material1 = material1_next;
+			continuous_tiles_count = 0;
+			tile0 = tile0_next;
+			tile1 = tile1_next;
 			light = light_next;
 		}
 		
@@ -451,6 +455,8 @@ void MapBlock::updateMesh()
 
 	scene::SMesh *mesh_new = NULL;
 	
+	mesh_new = new scene::SMesh();
+	
 	if(fastfaces_new->getSize() > 0)
 	{
 		MeshCollector collector;
@@ -467,8 +473,6 @@ void MapBlock::updateMesh()
 					indices, 6);
 		}
 
-		mesh_new = new scene::SMesh();
-		
 		collector.fillMesh(mesh_new);
 
 		// Use VBO for mesh (this just would set this for ever buffer)
@@ -495,13 +499,103 @@ void MapBlock::updateMesh()
 	/*
 		Add special graphics:
 		- torches
+		
+		TODO: Optimize by using same meshbuffer for same textures
 	*/
 
+	/*scene::ISceneManager *smgr = NULL;
+	video::IVideoDriver* driver = NULL;
+	if(g_device)
+	{
+		smgr = g_device->getSceneManager();
+		driver = smgr->getVideoDriver();
+	}*/
+			
 	for(s16 z=0; z<MAP_BLOCKSIZE; z++)
 	for(s16 y=0; y<MAP_BLOCKSIZE; y++)
 	for(s16 x=0; x<MAP_BLOCKSIZE; x++)
 	{
 		v3s16 p(x,y,z);
+
+		MapNode &n = getNodeRef(x,y,z);
+		
+		if(n.d == CONTENT_LIGHT)
+		{
+			//scene::IMeshBuffer *buf = new scene::SMeshBuffer();
+			scene::SMeshBuffer *buf = new scene::SMeshBuffer();
+			video::SColor c(255,255,255,255);
+
+			video::S3DVertex vertices[4] =
+			{
+				video::S3DVertex(-BS/2,-BS/2,0, 0,0,0, c, 0,1),
+				video::S3DVertex(BS/2,-BS/2,0, 0,0,0, c, 1,1),
+				video::S3DVertex(BS/2,BS/2,0, 0,0,0, c, 1,0),
+				video::S3DVertex(-BS/2,BS/2,0, 0,0,0, c, 0,0),
+			};
+
+			v3s16 dir = unpackDir(n.dir);
+
+			for(s32 i=0; i<4; i++)
+			{
+				if(dir == v3s16(1,0,0))
+					vertices[i].Pos.rotateXZBy(0);
+				if(dir == v3s16(-1,0,0))
+					vertices[i].Pos.rotateXZBy(180);
+				if(dir == v3s16(0,0,1))
+					vertices[i].Pos.rotateXZBy(90);
+				if(dir == v3s16(0,0,-1))
+					vertices[i].Pos.rotateXZBy(-90);
+				if(dir == v3s16(0,-1,0))
+					vertices[i].Pos.rotateXZBy(45);
+				if(dir == v3s16(0,1,0))
+					vertices[i].Pos.rotateXZBy(-45);
+
+				vertices[i].Pos += intToFloat(p + getPosRelative());
+			}
+
+			u16 indices[] = {0,1,2,2,3,0};
+			buf->append(vertices, 4, indices, 6);
+
+			// Set material
+			buf->getMaterial().setFlag(video::EMF_LIGHTING, false);
+			buf->getMaterial().setFlag(video::EMF_BACK_FACE_CULLING, false);
+			buf->getMaterial().setFlag(video::EMF_BILINEAR_FILTER, false);
+			//buf->getMaterial().MaterialType = video::EMT_TRANSPARENT_ALPHA_CHANNEL;
+			buf->getMaterial().MaterialType
+					= video::EMT_TRANSPARENT_ALPHA_CHANNEL_REF;
+			if(dir == v3s16(0,-1,0))
+				buf->getMaterial().setTexture(0,
+						g_texturecache.get("torch_on_floor"));
+			else if(dir == v3s16(0,1,0))
+				buf->getMaterial().setTexture(0,
+						g_texturecache.get("torch_on_ceiling"));
+			// For backwards compatibility
+			else if(dir == v3s16(0,0,0))
+				buf->getMaterial().setTexture(0,
+						g_texturecache.get("torch_on_floor"));
+			else
+				buf->getMaterial().setTexture(0, g_texturecache.get("torch"));
+
+			// Add to mesh
+			mesh_new->addMeshBuffer(buf);
+			buf->drop();
+		}
+	}
+
+	/*
+		Do some stuff to the mesh
+	*/
+
+	mesh_new->recalculateBoundingBox();
+
+	/*
+		Delete new mesh if it is empty
+	*/
+
+	if(mesh_new->getMeshBufferCount() == 0)
+	{
+		mesh_new->drop();
+		mesh_new = NULL;
 	}
 
 	/*
@@ -680,6 +774,11 @@ void MapBlock::copyTo(VoxelManipulator &dst)
 	dst.copyFrom(data, data_area, v3s16(0,0,0),
 			getPosRelative(), data_size);
 }
+
+/*void getPseudoObjects(v3f origin, f32 max_d,
+		core::array<DistanceSortedObject> &dest)
+{
+}*/
 
 /*
 	Serialization

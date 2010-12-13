@@ -41,6 +41,7 @@ VoxelManipulator::VoxelManipulator():
 	m_data(NULL),
 	m_flags(NULL)
 {
+	m_disable_water_climb = false;
 }
 
 VoxelManipulator::~VoxelManipulator()
@@ -103,13 +104,13 @@ void VoxelManipulator::print(std::ostream &o, VoxelPrintMode mode)
 					}
 					else if(mode == VOXELPRINT_WATERPRESSURE)
 					{
-						if(m == MATERIAL_WATER)
+						if(m == CONTENT_WATER)
 						{
 							c = 'w';
 							if(pr <= 9)
 								c = pr + '0';
 						}
-						else if(m == MATERIAL_AIR)
+						else if(liquid_replaces_content(m))
 						{
 							c = ' ';
 						}
@@ -249,7 +250,7 @@ void VoxelManipulator::interpolate(VoxelArea area)
 		
 		s16 total = 0;
 		s16 airness = 0;
-		u8 m = MATERIAL_IGNORE;
+		u8 m = CONTENT_IGNORE;
 
 		for(s16 i=0; i<8; i++)
 		//for(s16 i=0; i<26; i++)
@@ -263,17 +264,17 @@ void VoxelManipulator::interpolate(VoxelArea area)
 
 			MapNode &n = m_data[m_area.index(p2)];
 
-			airness += (n.d == MATERIAL_AIR) ? 1 : -1;
+			airness += (n.d == CONTENT_AIR) ? 1 : -1;
 			total++;
 
-			if(m == MATERIAL_IGNORE && n.d != MATERIAL_AIR)
+			if(m == CONTENT_IGNORE && n.d != CONTENT_AIR)
 				m = n.d;
 		}
 
 		// 1 if air, 0 if not
-		buf[area.index(p)] = airness > -total/2 ? MATERIAL_AIR : m;
-		//buf[area.index(p)] = airness > -total ? MATERIAL_AIR : m;
-		//buf[area.index(p)] = airness >= -7 ? MATERIAL_AIR : m;
+		buf[area.index(p)] = airness > -total/2 ? CONTENT_AIR : m;
+		//buf[area.index(p)] = airness > -total ? CONTENT_AIR : m;
+		//buf[area.index(p)] = airness >= -7 ? CONTENT_AIR : m;
 	}
 
 	for(s32 z=area.MinEdge.Z; z<=area.MaxEdge.Z; z++)
@@ -366,13 +367,14 @@ int VoxelManipulator::getWaterPressure(v3s16 p, s16 &highest_y, int recur_count)
 			continue;
 		MapNode &n = m_data[m_area.index(p2)];
 		// Ignore non-liquid nodes
-		if(material_liquid(n.d) == false)
+		if(content_liquid(n.d) == false)
 			continue;
 
 		int pr;
 
 		// If at ocean surface
-		if(n.pressure == 1 && n.d == MATERIAL_OCEAN)
+		if(n.pressure == 1 && n.d == CONTENT_OCEAN)
+		//if(n.pressure == 1) // Causes glitches but is fast
 		{
 			pr = 1;
 		}
@@ -463,12 +465,15 @@ void VoxelManipulator::spreadWaterPressure(v3s16 p, int pr,
 			NOTE: Do not remove anything from there. We cannot know
 			      here if some other neighbor of it causes flow.
 		*/
-		if(n.d == MATERIAL_AIR)
+		if(liquid_replaces_content(n.d))
 		{
 			bool pressure_causes_flow = false;
-			// If block is at top
+			// If empty block is at top
 			if(i == 0)
 			{
+				if(m_disable_water_climb)
+					continue;
+				
 				//if(pr >= PRESERVE_WATER_VOLUME ? 3 : 2)
 				if(pr >= 3)
 					pressure_causes_flow = true;
@@ -495,7 +500,7 @@ void VoxelManipulator::spreadWaterPressure(v3s16 p, int pr,
 		}
 
 		// Ignore non-liquid nodes
-		if(material_liquid(n.d) == false)
+		if(content_liquid(n.d) == false)
 			continue;
 
 		int pr2 = pr;
@@ -511,6 +516,12 @@ void VoxelManipulator::spreadWaterPressure(v3s16 p, int pr,
 			if(pr2 < 255)
 				pr2++;
 		}
+
+		/*if(m_disable_water_climb)
+		{
+			if(pr2 > 3)
+				pr2 = 3;
+		}*/
 		
 		// Ignore if correct pressure is already set and is not on
 		// request_area.
@@ -556,7 +567,7 @@ void VoxelManipulator::updateAreaWaterPressure(VoxelArea a,
 			continue;
 		MapNode &n = m_data[m_area.index(p)];
 		// Ignore non-liquid nodes
-		if(material_liquid(n.d) == false)
+		if(content_liquid(n.d) == false)
 			continue;
 		
 		if(checked2_clear == false)
@@ -654,14 +665,18 @@ bool VoxelManipulator::flowWater(v3s16 removed_pos,
 		if(f & (VOXELFLAG_INEXISTENT | VOXELFLAG_CHECKED))
 			return false;
 		MapNode &n = m_data[m_area.index(removed_pos)];
-		// Water can move only to air
-		if(n.d != MATERIAL_AIR)
+		// Ignore nodes to which the water can't go
+		if(liquid_replaces_content(n.d) == false)
 			return false;
 	}
 	
 	s32 i;
 	for(i=0; i<6; i++)
 	{
+		// Don't raise water from bottom
+		if(m_disable_water_climb && i == 5)
+			continue;
+
 		p = removed_pos + v3s16(s1*dirs[i].X, dirs[i].Y, s2*dirs[i].Z);
 
 		u8 f = m_flags[m_area.index(p)];
@@ -670,7 +685,7 @@ bool VoxelManipulator::flowWater(v3s16 removed_pos,
 			continue;
 		MapNode &n = m_data[m_area.index(p)];
 		// Only liquid nodes can move
-		if(material_liquid(n.d) == false)
+		if(content_liquid(n.d) == false)
 			continue;
 		// If block is at top, select it always
 		if(i == 0)
@@ -704,7 +719,7 @@ bool VoxelManipulator::flowWater(v3s16 removed_pos,
 	u8 m = m_data[m_area.index(p)].d;
 	u8 f = m_flags[m_area.index(p)];
 
-	if(m == MATERIAL_OCEAN)
+	if(m == CONTENT_OCEAN)
 		from_ocean = true;
 
 	// Move air bubble if not taking water from ocean
@@ -714,8 +729,22 @@ bool VoxelManipulator::flowWater(v3s16 removed_pos,
 		m_flags[m_area.index(p)] = m_flags[m_area.index(removed_pos)];
 	}
 	
+	/*
+		This has to be done to copy the brightness of a light source
+		correctly. Otherwise unspreadLight will fuck up when water
+		has replaced a light source.
+	*/
+	u8 light = m_data[m_area.index(removed_pos)].getLight();
+
 	m_data[m_area.index(removed_pos)].d = m;
 	m_flags[m_area.index(removed_pos)] = f;
+
+	m_data[m_area.index(removed_pos)].setLight(light);
+	
+	/*// NOTE: HACK: This has to be set to LIGHT_MAX so that
+	// unspreadLight will clear all light that came from this node.
+	// Otherwise there will be weird bugs
+	m_data[m_area.index(removed_pos)].setLight(LIGHT_MAX);*/
 
 	// Mark removed_pos checked
 	m_flags[m_area.index(removed_pos)] |= VOXELFLAG_CHECKED;
@@ -728,7 +757,7 @@ bool VoxelManipulator::flowWater(v3s16 removed_pos,
 	
 	/*
 	NOTE: This does not work as-is
-	if(m == MATERIAL_OCEAN)
+	if(m == CONTENT_OCEAN)
 	{
 		// If block was raised to surface, increase pressure of
 		// source node
@@ -795,6 +824,10 @@ find_again:
 	// They are checked in reverse order compared to the previous loop.
 	for(s32 i=5; i>=0; i--)
 	{
+		// Don't try to flow to top
+		if(m_disable_water_climb && i == 0)
+			continue;
+
 		//v3s16 p = removed_pos + dirs[i];
 		p = removed_pos + v3s16(s1*dirs[i].X, dirs[i].Y, s2*dirs[i].Z);
 
@@ -804,7 +837,7 @@ find_again:
 			continue;
 		MapNode &n = m_data[m_area.index(p)];
 		// Water can only move to air
-		if(n.d != MATERIAL_AIR)
+		if(liquid_replaces_content(n.d) == false)
 			continue;
 			
 		// Flow water to node

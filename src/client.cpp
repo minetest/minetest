@@ -1651,6 +1651,7 @@ MapBlockObject * Client::getSelectedObject(
 		v3f from_pos_f_on_block = from_pos_f_on_map - block_pos_f_on_map;
 
 		block->getObjects(from_pos_f_on_block, max_d, objects);
+		//block->getPseudoObjects(from_pos_f_on_block, max_d, objects);
 	}
 
 	//dstream<<"Collected "<<objects.size()<<" nearby objects"<<std::endl;

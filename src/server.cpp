@@ -94,6 +94,8 @@ void * EmergeThread::Thread()
 		v3s16 &p = q->pos;
 		
 		//derr_server<<"EmergeThread::Thread(): running"<<std::endl;
+
+		//TimeTaker timer("block emerge", g_device);
 		
 		/*
 			Try to emerge it from somewhere.
@@ -186,38 +188,31 @@ void * EmergeThread::Thread()
 			}
 
 			/*
+				Update water pressure
+			*/
+
+			m_server->UpdateBlockWaterPressure(block, modified_blocks);
+
+			for(core::map<v3s16, MapBlock*>::Iterator i = changed_blocks.getIterator();
+					i.atEnd() == false; i++)
+			{
+				MapBlock *block = i.getNode()->getValue();
+				m_server->UpdateBlockWaterPressure(block, modified_blocks);
+				//v3s16 p = i.getNode()->getKey();
+				//m_server->UpdateBlockWaterPressure(p, modified_blocks);
+			}
+
+			/*
 				Collect a list of blocks that have been modified in
 				addition to the fetched one.
 			*/
 
-			// Add all the "changed blocks"
+			// Add all the "changed blocks" to modified_blocks
 			for(core::map<v3s16, MapBlock*>::Iterator i = changed_blocks.getIterator();
 					i.atEnd() == false; i++)
 			{
 				MapBlock *block = i.getNode()->getValue();
 				modified_blocks.insert(block->getPos(), block);
-
-				/*
-					Update water pressure.
-					This also adds suitable nodes to active_nodes.
-				*/
-
-				MapVoxelManipulator v(&map);
-				
-				VoxelArea area(block->getPosRelative(),
-						block->getPosRelative() + v3s16(1,1,1)*(MAP_BLOCKSIZE-1));
-
-				try
-				{
-					v.updateAreaWaterPressure(area, m_server->m_flow_active_nodes);
-				}
-				catch(ProcessingLimitException &e)
-				{
-					dstream<<"Processing limit reached (1)"<<std::endl;
-				}
-				
-				v.blitBack(modified_blocks);
-
 			}
 			
 			/*dstream<<"lighting "<<lighting_invalidated_blocks.size()
@@ -1017,9 +1012,11 @@ void Server::AsyncRunStep()
 
 		{
 
-			JMutexAutoLock lock(m_env_mutex);
+			JMutexAutoLock envlock(m_env_mutex);
 			
 			MapVoxelManipulator v(&m_env.getMap());
+			v.m_disable_water_climb =
+					g_settings.getBool("disable_water_climb");
 			
 			v.flowWater(m_flow_active_nodes, 0, false, 50);
 
@@ -1039,7 +1036,7 @@ void Server::AsyncRunStep()
 				MapBlock *block = i.getNode()->getValue();
 				modified_blocks.insert(block->getPos(), block);
 			}
-		}
+		} // envlock
 
 		/*
 			Set the modified blocks unsent for all the clients
@@ -1492,7 +1489,7 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 				// Get material at position
 				material = m_env.getMap().getNode(p_under).d;
 				// If it's not diggable, do nothing
-				if(material_diggable(material) == false)
+				if(content_diggable(material) == false)
 				{
 					return;
 				}
@@ -1539,6 +1536,8 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 			// This also adds it to m_flow_active_nodes if appropriate
 
 			MapVoxelManipulator v(&m_env.getMap());
+			v.m_disable_water_climb =
+					g_settings.getBool("disable_water_climb");
 			
 			VoxelArea area(p_under-v3s16(1,1,1), p_under+v3s16(1,1,1));
 
@@ -1575,15 +1574,10 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 			*/
 			if(std::string("MaterialItem") == item->getName())
 			{
-				MaterialItem *mitem = (MaterialItem*)item;
-				
-				MapNode n;
-				n.d = mitem->getMaterial();
-
 				try{
 					// Don't add a node if this is not a free space
 					MapNode n2 = m_env.getMap().getNode(p_over);
-					if(material_buildable_to(n2.d) == false)
+					if(content_buildable_to(n2.d) == false)
 						return;
 				}
 				catch(InvalidPositionException &e)
@@ -1596,17 +1590,14 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 				// Reset build time counter
 				getClient(peer->id)->m_time_from_building.set(0.0);
 				
-				if(g_settings.getBool("creative_mode") == false)
-				{
-					// Remove from inventory and send inventory
-					if(mitem->getCount() == 1)
-						player->inventory.deleteItem(item_i);
-					else
-						mitem->remove(1);
-					// Send inventory
-					SendInventory(peer_id);
-				}
-				
+				// Create node data
+				MaterialItem *mitem = (MaterialItem*)item;
+				MapNode n;
+				n.d = mitem->getMaterial();
+				if(content_directional(n.d))
+					n.dir = packDir(p_under - p_over);
+
+#if 1
 				// Create packet
 				u32 replysize = 8 + MapNode::serializedLength(peer_ser_ver);
 				SharedBuffer<u8> reply(replysize);
@@ -1619,12 +1610,69 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 				m_con.SendToAll(0, reply, true);
 				
 				/*
+					Handle inventory
+				*/
+				if(g_settings.getBool("creative_mode") == false)
+				{
+					// Remove from inventory and send inventory
+					if(mitem->getCount() == 1)
+						player->inventory.deleteItem(item_i);
+					else
+						mitem->remove(1);
+					// Send inventory
+					SendInventory(peer_id);
+				}
+				
+				/*
 					Add node.
 
 					This takes some time so it is done after the quick stuff
 				*/
 				core::map<v3s16, MapBlock*> modified_blocks;
 				m_env.getMap().addNodeAndUpdate(p_over, n, modified_blocks);
+#endif
+#if 0
+				/*
+					Handle inventory
+				*/
+				if(g_settings.getBool("creative_mode") == false)
+				{
+					// Remove from inventory and send inventory
+					if(mitem->getCount() == 1)
+						player->inventory.deleteItem(item_i);
+					else
+						mitem->remove(1);
+					// Send inventory
+					SendInventory(peer_id);
+				}
+
+				/*
+					Add node.
+
+					This takes some time so it is done after the quick stuff
+				*/
+				core::map<v3s16, MapBlock*> modified_blocks;
+				m_env.getMap().addNodeAndUpdate(p_over, n, modified_blocks);
+
+				/*
+					Set the modified blocks unsent for all the clients
+				*/
+				
+				//JMutexAutoLock lock2(m_con_mutex);
+
+				for(core::map<u16, RemoteClient*>::Iterator
+						i = m_clients.getIterator();
+						i.atEnd() == false; i++)
+				{
+					RemoteClient *client = i.getNode()->getValue();
+					
+					if(modified_blocks.size() > 0)
+					{
+						// Remove block from sent history
+						client->SetBlocksNotSent(modified_blocks);
+					}
+				}
+#endif
 				
 				/*
 					Update water
@@ -1634,6 +1682,8 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 				// This also adds it to m_flow_active_nodes if appropriate
 
 				MapVoxelManipulator v(&m_env.getMap());
+				v.m_disable_water_climb =
+						g_settings.getBool("disable_water_climb");
 				
 				VoxelArea area(p_over-v3s16(1,1,1), p_over+v3s16(1,1,1));
 
@@ -1825,113 +1875,14 @@ void Server::SendBlockNoLock(u16 peer_id, MapBlock *block, u8 ver)
 	writeS16(&reply[4], p.Y);
 	writeS16(&reply[6], p.Z);
 	memcpy(&reply[8], *blockdata, blockdata.getSize());
+
+	//dstream<<"Sending block: packet size: "<<replysize<<std::endl;
 	
 	/*
 		Send packet
 	*/
 	m_con.Send(peer_id, 1, reply, true);
 }
-
-/*void Server::SendBlock(u16 peer_id, MapBlock *block, u8 ver)
-{
-	JMutexAutoLock conlock(m_con_mutex);
-	
-	SendBlockNoLock(peer_id, block, ver);
-}*/
-
-#if 0
-void Server::SendSectorMeta(u16 peer_id, core::list<v2s16> ps, u8 ver)
-{
-	DSTACK(__FUNCTION_NAME);
-	dstream<<"Server sending sector meta of "
-			<<ps.getSize()<<" sectors"<<std::endl;
-
-	core::list<v2s16>::Iterator i = ps.begin();
-	core::list<v2s16> sendlist;
-	for(;;)
-	{
-		if(sendlist.size() == 255 || i == ps.end())
-		{
-			if(sendlist.size() == 0)
-				break;
-			/*
-				[0] u16 command
-				[2] u8 sector count
-				[3...] v2s16 pos + sector metadata
-			*/
-			std::ostringstream os(std::ios_base::binary);
-			u8 buf[4];
-
-			writeU16(buf, TOCLIENT_SECTORMETA);
-			os.write((char*)buf, 2);
-
-			writeU8(buf, sendlist.size());
-			os.write((char*)buf, 1);
-
-			for(core::list<v2s16>::Iterator
-					j = sendlist.begin();
-					j != sendlist.end(); j++)
-			{
-				// Write position
-				writeV2S16(buf, *j);
-				os.write((char*)buf, 4);
-				
-				/*
-					Write ClientMapSector metadata
-				*/
-
-				/*
-					[0] u8 serialization version
-					[1] s16 corners[0]
-					[3] s16 corners[1]
-					[5] s16 corners[2]
-					[7] s16 corners[3]
-					size = 9
-					
-					In which corners are in these positions
-					v2s16(0,0),
-					v2s16(1,0),
-					v2s16(1,1),
-					v2s16(0,1),
-				*/
-
-				// Write version
-				writeU8(buf, ver);
-				os.write((char*)buf, 1);
-
-				// Write corners
-				// TODO: Get real values
-				s16 corners[4];
-				((ServerMap&)m_env.getMap()).getSectorCorners(*j, corners);
-
-				writeS16(buf, corners[0]);
-				os.write((char*)buf, 2);
-				writeS16(buf, corners[1]);
-				os.write((char*)buf, 2);
-				writeS16(buf, corners[2]);
-				os.write((char*)buf, 2);
-				writeS16(buf, corners[3]);
-				os.write((char*)buf, 2);
-			}
-
-			SharedBuffer<u8> data((u8*)os.str().c_str(), os.str().size());
-
-			/*dstream<<"Server::SendSectorMeta(): sending packet"
-					" with "<<sendlist.size()<<" sectors"<<std::endl;*/
-
-			m_con.Send(peer_id, 1, data, true);
-
-			if(i == ps.end())
-				break;
-
-			sendlist.clear();
-		}
-
-		sendlist.push_back(*i);
-		i++;
-	}
-}
-#endif
 
 core::list<PlayerInfo> Server::getPlayerInfo()
 {
@@ -2039,11 +1990,11 @@ void Server::peerAdded(con::Peer *peer)
 		if(g_settings.getBool("creative_mode"))
 		{
 			// Give all materials
-			assert(USEFUL_MATERIAL_COUNT <= PLAYER_INVENTORY_SIZE);
-			for(u16 i=0; i<USEFUL_MATERIAL_COUNT; i++)
+			assert(USEFUL_CONTENT_COUNT <= PLAYER_INVENTORY_SIZE);
+			for(u16 i=0; i<USEFUL_CONTENT_COUNT; i++)
 			{
 				// Skip some materials
-				if(i == MATERIAL_OCEAN)
+				if(i == CONTENT_OCEAN)
 					continue;
 
 				InventoryItem *item = new MaterialItem(i, 1);
@@ -2271,5 +2222,28 @@ RemoteClient* Server::getClient(u16 peer_id)
 	assert(n != NULL);
 	return n->getValue();
 }
+
+void Server::UpdateBlockWaterPressure(MapBlock *block,
+			core::map<v3s16, MapBlock*> &modified_blocks)
+{
+	MapVoxelManipulator v(&m_env.getMap());
+	v.m_disable_water_climb =
+			g_settings.getBool("disable_water_climb");
+	
+	VoxelArea area(block->getPosRelative(),
+			block->getPosRelative() + v3s16(1,1,1)*(MAP_BLOCKSIZE-1));
+
+	try
+	{
+		v.updateAreaWaterPressure(area, m_flow_active_nodes);
+	}
+	catch(ProcessingLimitException &e)
+	{
+		dstream<<"Processing limit reached (1)"<<std::endl;
+	}
+	
+	v.blitBack(modified_blocks);
+}
+	
 
 
