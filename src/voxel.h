@@ -25,6 +25,9 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "debug.h"
 #include "mapnode.h"
 
+#undef min
+#undef max
+
 /*
 	A fast voxel manipulator class
 
