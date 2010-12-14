@@ -1401,11 +1401,11 @@ void Client::addNodeFromInventory(v3s16 nodepos, u16 i)
 }
 #endif
 
-void Client::clickGround(u8 button, v3s16 nodepos_undersurface,
+void Client::pressGround(u8 button, v3s16 nodepos_undersurface,
 		v3s16 nodepos_oversurface, u16 item)
 {
 	if(connectedAndInitialized() == false){
-		dout_client<<DTIME<<"Client::clickGround() "
+		dout_client<<DTIME<<"Client::pressGround() "
 				"cancelled (not connected)"
 				<<std::endl;
 		return;
@@ -1421,7 +1421,7 @@ void Client::clickGround(u8 button, v3s16 nodepos_undersurface,
 	*/
 	u8 datasize = 2 + 1 + 6 + 6 + 2;
 	SharedBuffer<u8> data(datasize);
-	writeU16(&data[0], TOSERVER_CLICK_GROUND);
+	writeU16(&data[0], TOSERVER_PRESS_GROUND);
 	writeU8(&data[2], button);
 	writeV3S16(&data[3], nodepos_undersurface);
 	writeV3S16(&data[9], nodepos_oversurface);

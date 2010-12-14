@@ -1466,7 +1466,7 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 			block->removeObject(id);
 		}
 	}
-	else if(command == TOSERVER_CLICK_GROUND)
+	else if(command == TOSERVER_PRESS_GROUND)
 	{
 		if(datasize < 17)
 			return;

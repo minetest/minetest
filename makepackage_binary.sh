@@ -40,6 +40,10 @@ cp -r data/torch_on_ceiling.png $PACKAGEPATH/data/
 cp -r data/skybox1.png $PACKAGEPATH/data/
 cp -r data/skybox2.png $PACKAGEPATH/data/
 cp -r data/skybox3.png $PACKAGEPATH/data/
+cp -r data/tree_top.png $PACKAGEPATH/data/
+cp -r data/mud_with_grass.png $PACKAGEPATH/data/
+
+cp -r data/pauseMenu.gui $PACKAGEPATH/data/
 
 cp -r doc/README.txt $PACKAGEPATH/doc/README.txt
 

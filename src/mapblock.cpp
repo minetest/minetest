@@ -118,9 +118,6 @@ FastFace * MapBlock::makeFastFace(u16 tile, u8 light, v3f p,
 
 	u8 alpha = 255;
 
-	//if(material == CONTENT_WATER || material == CONTENT_OCEAN)
-	//TODO: Umm?
-	//if(tile == CONTENT_WATER || tile == CONTENT_OCEAN)
 	if(tile == TILE_WATER)
 	{
 		alpha = 128;
@@ -139,7 +136,7 @@ FastFace * MapBlock::makeFastFace(u16 tile, u8 light, v3f p,
 
 	f->tile = tile;
 	//DEBUG
-	//f->tile = TILE_GRASS;
+	//f->tile = TILE_STONE;
 
 	return f;
 }

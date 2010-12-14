@@ -195,6 +195,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\src\guiPauseMenu.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\src\heightmap.cpp"
 				>
 			</File>

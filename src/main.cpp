@@ -280,6 +280,7 @@ JMutex g_range_mutex;
 
 // Blocks are viewed in this range from the player
 s16 g_viewing_range_nodes = 60;
+//s16 g_viewing_range_nodes = 0;
 
 // This is updated by the client's fetchBlocks routine
 //s16 g_actual_viewing_range_nodes = VIEWING_RANGE_NODES_DEFAULT;
@@ -311,7 +312,7 @@ void set_default_settings()
 	g_settings.set("wanted_fps", "30");
 	g_settings.set("fps_max", "60");
 	g_settings.set("viewing_range_nodes_max", "300");
-	g_settings.set("viewing_range_nodes_min", "50");
+	g_settings.set("viewing_range_nodes_min", "35");
 	g_settings.set("screenW", "");
 	g_settings.set("screenH", "");
 	g_settings.set("host_game", "");
@@ -796,7 +797,8 @@ void updateViewingRange(f32 frametime, Client *client)
 	static bool fraction_is_good = false;
 	
 	float fraction_good_threshold = 0.1;
-	float fraction_bad_threshold = 0.25;
+	//float fraction_bad_threshold = 0.25;
+	float fraction_bad_threshold = 0.1;
 	float fraction_limit;
 	// Use high limit if fraction is good AND the fraction would
 	// lower the range. We want to keep the range fairly high.
@@ -1295,48 +1297,6 @@ int main(int argc, char *argv[])
 	driver->endScene();
 
 	/*
-		Initialize material array
-	*/
-
-	/*//video::SMaterial g_materials[MATERIALS_COUNT];
-	for(u16 i=0; i<MATERIALS_COUNT; i++)
-	{
-		g_materials[i].Lighting = false;
-		g_materials[i].BackfaceCulling = false;
-
-		const char *filename = g_content_filenames[i];
-		if(filename != NULL){
-			video::ITexture *t = driver->getTexture(filename);
-			if(t == NULL){
-				std::cout<<DTIME<<"Texture could not be loaded: \""
-						<<filename<<"\""<<std::endl;
-				return 1;
-			}
-			g_materials[i].setTexture(0, driver->getTexture(filename));
-		}
-		//g_materials[i].setFlag(video::EMF_TEXTURE_WRAP, video::ETC_REPEAT);
-		g_materials[i].setFlag(video::EMF_BILINEAR_FILTER, false);
-		//g_materials[i].setFlag(video::EMF_ANISOTROPIC_FILTER, false);
-		//g_materials[i].setFlag(video::EMF_FOG_ENABLE, true);
-	}
-
-	g_materials[CONTENT_WATER].MaterialType = video::EMT_TRANSPARENT_VERTEX_ALPHA;
-	//g_materials[CONTENT_WATER].MaterialType = video::EMT_TRANSPARENT_ADD_COLOR;
-	g_materials[CONTENT_OCEAN].MaterialType = video::EMT_TRANSPARENT_VERTEX_ALPHA;
-	*/
-
-	/*g_mesh_materials[0].setTexture(0, driver->getTexture("../data/water.png"));
-	g_mesh_materials[1].setTexture(0, driver->getTexture("../data/grass.png"));
-	g_mesh_materials[2].setTexture(0, driver->getTexture("../data/stone.png"));
-	for(u32 i=0; i<3; i++)
-	{
-		g_mesh_materials[i].Lighting = false;
-		g_mesh_materials[i].BackfaceCulling = false;
-		g_mesh_materials[i].setFlag(video::EMF_BILINEAR_FILTER, false);
-		g_mesh_materials[i].setFlag(video::EMF_FOG_ENABLE, true);
-	}*/
-
-	/*
 		Preload some random textures that are used in threads
 	*/
 	
@@ -1463,8 +1423,14 @@ int main(int argc, char *argv[])
 	
 	f32 camera_yaw = 0; // "right/left"
 	f32 camera_pitch = 0; // "up/down"
+
+	/*
+		Move into game
+	*/
 	
 	gui_loadingtext->remove();
+
+	pauseMenu.setVisible(true);
 
 	/*
 		Add some gui stuff
@@ -1473,12 +1439,12 @@ int main(int argc, char *argv[])
 	// First line of debug text
 	gui::IGUIStaticText *guitext = guienv->addStaticText(
 			L"Minetest-c55",
-			core::rect<s32>(5, 5, 5+600, 5+textsize.Y),
+			core::rect<s32>(5, 5, 795, 5+textsize.Y),
 			false, false);
 	// Second line of debug text
 	gui::IGUIStaticText *guitext2 = guienv->addStaticText(
 			L"",
-			core::rect<s32>(5, 5+(textsize.Y+5)*1, 5+600, (5+textsize.Y)*2),
+			core::rect<s32>(5, 5+(textsize.Y+5)*1, 795, (5+textsize.Y)*2),
 			false, false);
 	
 	// At the middle of the screen
@@ -1498,6 +1464,7 @@ int main(int argc, char *argv[])
 		Some statistics are collected in these
 	*/
 	u32 drawtime = 0;
+	u32 beginscenetime = 0;
 	u32 scenetime = 0;
 	u32 endscenetime = 0;
 
@@ -2063,14 +2030,14 @@ int main(int argc, char *argv[])
 				//std::cout<<DTIME<<"Removing node"<<std::endl;
 				//client.removeNode(nodepos);
 				std::cout<<DTIME<<"Ground left-clicked"<<std::endl;
-				client.clickGround(0, nodepos, neighbourpos, g_selected_item);
+				client.pressGround(0, nodepos, neighbourpos, g_selected_item);
 			}
 			if(g_input->getRightClicked())
 			{
 				//std::cout<<DTIME<<"Placing node"<<std::endl;
 				//client.addNodeFromInventory(neighbourpos, g_selected_item);
 				std::cout<<DTIME<<"Ground right-clicked"<<std::endl;
-				client.clickGround(1, nodepos, neighbourpos, g_selected_item);
+				client.pressGround(1, nodepos, neighbourpos, g_selected_item);
 			}
 		}
 		else{
@@ -2089,6 +2056,21 @@ int main(int argc, char *argv[])
 
 		camera->setAspectRatio((f32)screensize.X / (f32)screensize.Y);
 
+		/*f32 range = g_viewing_range_nodes * BS;
+		if(g_viewing_range_all)
+			range = 100000*BS;
+
+		driver->setFog(
+			skycolor,
+			video::EFT_FOG_LINEAR,
+			range*0.6,
+			range,
+			0.01,
+			false, // pixel fog
+			false // range fog
+			);*/
+
+
 		/*
 			Update gui stuff (0ms)
 		*/
@@ -2096,23 +2078,26 @@ int main(int argc, char *argv[])
 		//TimeTaker guiupdatetimer("Gui updating", device);
 		
 		{
-			wchar_t temptext[100];
+			wchar_t temptext[150];
 
 			static float drawtime_avg = 0;
 			drawtime_avg = drawtime_avg * 0.98 + (float)drawtime*0.02;
+			static float beginscenetime_avg = 0;
+			beginscenetime_avg = beginscenetime_avg * 0.98 + (float)beginscenetime*0.02;
 			static float scenetime_avg = 0;
 			scenetime_avg = scenetime_avg * 0.98 + (float)scenetime*0.02;
 			static float endscenetime_avg = 0;
 			endscenetime_avg = endscenetime_avg * 0.98 + (float)endscenetime*0.02;
 			
-			swprintf(temptext, 100, L"Minetest-c55 ("
+			swprintf(temptext, 150, L"Minetest-c55 ("
 					L"F: item=%i"
 					L", R: range_all=%i"
 					L")"
-					L" drawtime=%.0f, scenetime=%.0f, endscenetime=%.0f",
+					L" drawtime=%.0f, beginscenetime=%.0f, scenetime=%.0f, endscenetime=%.0f",
 					g_selected_item,
 					g_viewing_range_all,
 					drawtime_avg,
+					beginscenetime_avg,
 					scenetime_avg,
 					endscenetime_avg
 					);
@@ -2121,19 +2106,8 @@ int main(int argc, char *argv[])
 		}
 		
 		{
-			wchar_t temptext[100];
-			/*swprintf(temptext, 100,
-					L"("
-					L"% .3f < btime_jitter < % .3f"
-					L", dtime_jitter = % .1f %%"
-					//L", ftime_ratio = % .3f"
-					L")",
-					busytime_jitter1_min_sample,
-					busytime_jitter1_max_sample,
-					dtime_jitter1_max_fraction * 100.0
-					//g_freetime_ratio
-					);*/
-			swprintf(temptext, 100,
+			wchar_t temptext[150];
+			swprintf(temptext, 150,
 					L"(% .1f, % .1f, % .1f)"
 					L" (% .3f < btime_jitter < % .3f"
 					L", dtime_jitter = % .1f %%)",
@@ -2232,8 +2206,11 @@ int main(int argc, char *argv[])
 		//video::SColor bgcolor = video::SColor(255,90,140,200);
 		video::SColor bgcolor = skycolor;
 		
-		// 0ms
+		{
+		TimeTaker timer("beginScene", device);
 		driver->beginScene(true, true, bgcolor);
+		beginscenetime = timer.stop(true);
+		}
 
 		//timer3.stop();
 		

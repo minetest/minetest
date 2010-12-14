@@ -159,7 +159,7 @@ enum ToServerCommand
 		[11] u16 item
 	*/
 
-	TOSERVER_CLICK_GROUND = 0x28,
+	TOSERVER_PRESS_GROUND = 0x28,
 	/*
 		length: 17
 		[0] u16 command

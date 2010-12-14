@@ -545,17 +545,7 @@ public:
 		ISceneNode methods
 	*/
 
-	virtual void OnRegisterSceneNode()
-	{
-		if(IsVisible)
-		{
-			//SceneManager->registerNodeForRendering(this, scene::ESNRP_SKY_BOX);
-			SceneManager->registerNodeForRendering(this, scene::ESNRP_SOLID);
-			SceneManager->registerNodeForRendering(this, scene::ESNRP_TRANSPARENT);
-		}
-
-		ISceneNode::OnRegisterSceneNode();
-	}
+	virtual void OnRegisterSceneNode();
 
 	virtual void render()
 	{

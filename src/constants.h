@@ -45,6 +45,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #define SERVER_MAP_SAVE_INTERVAL (10)*/
 
 #define FOV_ANGLE (PI/2.5)
+//#define FOV_ANGLE (PI/2.25)
 
 // The absolute working limit is (2^15 - viewing_range).
 #define MAP_GENERATION_LIMIT (31000)

@@ -2835,6 +2835,17 @@ void ClientMap::deSerializeSector(v2s16 p2d, std::istream &is)
 	sector->deSerialize(is);
 }
 
+void ClientMap::OnRegisterSceneNode()
+{
+	if(IsVisible)
+	{
+		SceneManager->registerNodeForRendering(this, scene::ESNRP_SOLID);
+		SceneManager->registerNodeForRendering(this, scene::ESNRP_TRANSPARENT);
+	}
+
+	ISceneNode::OnRegisterSceneNode();
+}
+
 void ClientMap::renderMap(video::IVideoDriver* driver, s32 pass)
 {
 	//m_dout<<DTIME<<"Rendering map..."<<std::endl;
@@ -2971,6 +2982,8 @@ void ClientMap::renderMap(video::IVideoDriver* driver, s32 pass)
 			{
 				// If block is far away, don't draw it
 				if(d > viewing_range_nodes * BS)
+				// This is nicer when fog is used
+				//if((dforward+d)/2 > viewing_range_nodes * BS)
 					continue;
 			}
 			

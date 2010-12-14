@@ -53,9 +53,17 @@ void tile_materials_preload(TextureCache &cache)
 		g_tile_materials[i].Lighting = false;
 		g_tile_materials[i].BackfaceCulling = false;
 		g_tile_materials[i].setFlag(video::EMF_BILINEAR_FILTER, false);
+		g_tile_materials[i].setFlag(video::EMF_ANTI_ALIASING, video::EAAM_OFF);
+		//if(i != TILE_WATER)
+		//g_tile_materials[i].setFlag(video::EMF_FOG_ENABLE, true);
+		
+		//g_tile_materials[i].setFlag(video::EMF_TEXTURE_WRAP, video::ETC_REPEAT);
+		//g_tile_materials[i].setFlag(video::EMF_ANISOTROPIC_FILTER, false);
+
 		g_tile_materials[i].setTexture(0, t);
 	}
 	
 	g_tile_materials[TILE_WATER].MaterialType = video::EMT_TRANSPARENT_VERTEX_ALPHA;
+	//g_tile_materials[TILE_WATER].MaterialType = video::EMT_TRANSPARENT_ADD_COLOR;
 }
 

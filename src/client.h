@@ -193,7 +193,7 @@ public:
 
 	/*void removeNode(v3s16 nodepos);
 	void addNodeFromInventory(v3s16 nodepos, u16 i);*/
-	void clickGround(u8 button, v3s16 nodepos_undersurface,
+	void pressGround(u8 button, v3s16 nodepos_undersurface,
 			v3s16 nodepos_oversurface, u16 item);
 	void clickObject(u8 button, v3s16 blockpos, s16 id, u16 item);
 	void release(u8 button);
