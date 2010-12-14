@@ -236,6 +236,7 @@ Doing now:
 #include <fstream>
 #include <time.h>
 #include <jmutexautolock.h>
+#include <locale.h>
 #include "common_irrlicht.h"
 #include "debug.h"
 #include "map.h"
@@ -249,7 +250,7 @@ Doing now:
 #include "constants.h"
 #include "strfnd.h"
 #include "porting.h"
-#include <locale.h>
+#include "guiPauseMenu.h"
 
 IrrlichtDevice *g_device = NULL;
 
@@ -431,6 +432,7 @@ public:
 				
 				if(event.KeyInput.Key == irr::KEY_ESCAPE)
 				{
+					//TODO: Not used anymore?
 					if(g_game_focused == true)
 					{
 						dstream<<DTIME<<"ESC pressed"<<std::endl;
@@ -1259,6 +1261,9 @@ int main(int argc, char *argv[])
 	//driver->setMinHardwareBufferVertexCount(1);
 
 	scene::ISceneManager* smgr = device->getSceneManager();
+	
+	// Pause menu
+	guiPauseMenu pauseMenu(device, &receiver);
 
 	gui::IGUIEnvironment* guienv = device->getGUIEnvironment();
 	gui::IGUISkin* skin = guienv->getSkin();
@@ -1543,6 +1548,12 @@ int main(int argc, char *argv[])
 
 	while(device->run())
 	{
+		/*
+			Random calculations
+		*/
+		v2u32 screensize = driver->getScreenSize();
+		core::vector2d<s32> displaycenter(screensize.X/2,screensize.Y/2);
+
 		// Hilight boxes collected during the loop and displayed
 		core::list< core::aabbox3d<f32> > hilightboxes;
 		
@@ -1695,10 +1706,10 @@ int main(int argc, char *argv[])
 		/*
 			Special keys
 		*/
-		if(g_esc_pressed)
+		/*if(g_esc_pressed)
 		{
 			break;
-		}
+		}*/
 
 		/*
 			Player speed control
@@ -1758,7 +1769,7 @@ int main(int argc, char *argv[])
 			Mouse and camera control
 		*/
 		
-		if(device->isWindowActive() && g_game_focused)
+		if(device->isWindowActive() && g_game_focused && !pauseMenu.isVisible())
 		{
 			device->getCursorControl()->setVisible(false);
 
@@ -1767,15 +1778,15 @@ int main(int argc, char *argv[])
 				first_loop_after_window_activation = false;
 			}
 			else{
-				s32 dx = g_input->getMousePos().X - 320;
-				s32 dy = g_input->getMousePos().Y - 240;
+				s32 dx = g_input->getMousePos().X - displaycenter.X;
+				s32 dy = g_input->getMousePos().Y - displaycenter.Y;
 				//std::cout<<"window active, pos difference "<<dx<<","<<dy<<std::endl;
 				camera_yaw -= dx*0.2;
 				camera_pitch += dy*0.2;
 				if(camera_pitch < -89.5) camera_pitch = -89.5;
 				if(camera_pitch > 89.5) camera_pitch = 89.5;
 			}
-			g_input->setMousePos(320, 240);
+			g_input->setMousePos(displaycenter.X, displaycenter.Y);
 		}
 		else{
 			device->getCursorControl()->setVisible(true);
@@ -2075,9 +2086,6 @@ int main(int argc, char *argv[])
 		/*
 			Calculate stuff for drawing
 		*/
-
-		v2u32 screensize = driver->getScreenSize();
-		core::vector2d<s32> displaycenter(screensize.X/2,screensize.Y/2);
 
 		camera->setAspectRatio((f32)screensize.X / (f32)screensize.Y);
 
