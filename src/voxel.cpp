@@ -875,11 +875,10 @@ void VoxelManipulator::flowWater(
 		return;
 	}
 
-	TimeTaker timer1("flowWater (active_nodes)", g_device);
+	//TimeTaker timer1("flowWater (active_nodes)", g_device);
 
-	dstream<<"active_nodes.size() = "<<active_nodes.size()<<std::endl;
+	//dstream<<"active_nodes.size() = "<<active_nodes.size()<<std::endl;
 
-	//int counter = 0;
 
 	u32 stoptime = 0;
 	if(g_device != NULL)
@@ -951,23 +950,21 @@ void VoxelManipulator::flowWater(
 		//dstream<<"getWaterPressure ProcessingLimitException"<<std::endl;
 	}
 	
-	v3s16 e = m_area.getExtent();
+	/*v3s16 e = m_area.getExtent();
 	s32 v = m_area.getVolume();
-	//dstream<<"flowWater (active): moved "<<counter<<" nodes, "
 	dstream<<"flowWater (active): "
 			<<"area ended up as "
 			<<e.X<<"x"<<e.Y<<"x"<<e.Z<<" = "<<v
 			<<", handled a_node count: "<<handled_count
 			<<", active_nodes.size() = "<<active_nodes.size()
 			<<std::endl;
-			
 	dstream<<"addarea_time: "<<addarea_time
 			<<", emerge_time: "<<emerge_time
 			<<", emerge_load_time: "<<emerge_load_time
 			<<", clearflag_time: "<<clearflag_time
 			<<", flowwater_pre_time: "<<flowwater_pre_time
 			<<", updateareawaterpressure_time: "<<updateareawaterpressure_time
-			<<std::endl;
+			<<std::endl;*/
 }
 
 

@@ -36,10 +36,10 @@
 # H=slope.dot(pos^power):
 #     power <height> <slope.X> <slope.Y> <power>
 
-#mapgen_heightmap_blocksize = 64
-#height_randmax = constant 70.0
+#mapgen_heightmap_blocksize = 32
+#height_randmax = constant 50.0
 #height_randfactor = constant 0.6
-#height_base = linear 0 35 0
+#height_base = linear 0 0 0
 #plants_amount = 1.0
 #ravines_amount = 1.0
 

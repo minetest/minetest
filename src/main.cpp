@@ -187,7 +187,6 @@ SUGG: Signs could be done in the same way as torches. For this, blocks
 Doing now:
 ======================================================================
 
-TODO: A mapper to map contents to tile names (for each side)
 
 ======================================================================
 

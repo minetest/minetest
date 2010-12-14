@@ -13,6 +13,7 @@ cp minetest.conf.example $PACKAGEPATH/
 
 cp bin/minetest.exe $PACKAGEPATH/bin/
 cp bin/Irrlicht.dll $PACKAGEPATH/bin/
+cp bin/zlibwapi.dll $PACKAGEPATH/bin/
 #cp bin/test $PACKAGEPATH/bin/
 cp bin/fasttest $PACKAGEPATH/bin/
 cp ../irrlicht/irrlicht-1.7.1/lib/Linux/libIrrlicht.a $PACKAGEPATH/bin/
