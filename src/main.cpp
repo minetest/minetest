@@ -306,38 +306,36 @@ Settings g_settings;
 // Sets default settings
 void set_default_settings()
 {
-	g_settings.set("dedicated_server", "");
-
 	// Client stuff
-	g_settings.set("wanted_fps", "30");
-	g_settings.set("fps_max", "60");
-	g_settings.set("viewing_range_nodes_max", "300");
-	g_settings.set("viewing_range_nodes_min", "35");
-	g_settings.set("screenW", "");
-	g_settings.set("screenH", "");
-	g_settings.set("host_game", "");
-	g_settings.set("port", "");
-	g_settings.set("address", "");
-	g_settings.set("name", "");
-	g_settings.set("random_input", "false");
-	g_settings.set("client_delete_unused_sectors_timeout", "1200");
-	g_settings.set("max_block_send_distance", "8");
-	g_settings.set("max_block_generate_distance", "6");
+	g_settings.setDefault("wanted_fps", "30");
+	g_settings.setDefault("fps_max", "60");
+	g_settings.setDefault("viewing_range_nodes_max", "300");
+	g_settings.setDefault("viewing_range_nodes_min", "35");
+	g_settings.setDefault("screenW", "");
+	g_settings.setDefault("screenH", "");
+	g_settings.setDefault("host_game", "");
+	g_settings.setDefault("port", "");
+	g_settings.setDefault("address", "");
+	g_settings.setDefault("name", "");
+	g_settings.setDefault("random_input", "false");
+	g_settings.setDefault("client_delete_unused_sectors_timeout", "1200");
+	g_settings.setDefault("max_block_send_distance", "8");
+	g_settings.setDefault("max_block_generate_distance", "6");
 
 	// Server stuff
-	g_settings.set("creative_mode", "false");
-	g_settings.set("heightmap_blocksize", "32");
-	g_settings.set("height_randmax", "constant 50.0");
-	g_settings.set("height_randfactor", "constant 0.6");
-	g_settings.set("height_base", "linear 0 0 0");
-	g_settings.set("plants_amount", "1.0");
-	g_settings.set("ravines_amount", "1.0");
-	g_settings.set("objectdata_interval", "0.2");
-	g_settings.set("active_object_range", "2");
-	g_settings.set("max_simultaneous_block_sends_per_client", "1");
-	g_settings.set("max_simultaneous_block_sends_server_total", "4");
-	g_settings.set("disable_water_climb", "true");
-	g_settings.set("endless_water", "true");
+	g_settings.setDefault("creative_mode", "false");
+	g_settings.setDefault("heightmap_blocksize", "32");
+	g_settings.setDefault("height_randmax", "constant 50.0");
+	g_settings.setDefault("height_randfactor", "constant 0.6");
+	g_settings.setDefault("height_base", "linear 0 0 0");
+	g_settings.setDefault("plants_amount", "1.0");
+	g_settings.setDefault("ravines_amount", "1.0");
+	g_settings.setDefault("objectdata_interval", "0.2");
+	g_settings.setDefault("active_object_range", "2");
+	g_settings.setDefault("max_simultaneous_block_sends_per_client", "1");
+	g_settings.setDefault("max_simultaneous_block_sends_server_total", "4");
+	g_settings.setDefault("disable_water_climb", "true");
+	g_settings.setDefault("endless_water", "true");
 }
 
 /*
@@ -963,6 +961,51 @@ int main(int argc, char *argv[])
 	{
 	
 	/*
+		Parse command line
+		TODO
+	*/
+	
+	core::map<std::string, ValueSpec> allowed_options;
+	allowed_options.insert("help", ValueSpec(VALUETYPE_FLAG));
+	allowed_options.insert("server", ValueSpec(VALUETYPE_FLAG,
+			"Run server directly"));
+	allowed_options.insert("config", ValueSpec(VALUETYPE_STRING,
+			"Load configuration from specified file"));
+	allowed_options.insert("port", ValueSpec(VALUETYPE_STRING));
+
+	Settings cmd_args;
+	
+	bool ret = cmd_args.parseCommandLine(argc, argv, allowed_options);
+
+	if(ret == false || cmd_args.getFlag("help"))
+	{
+		dstream<<"Allowed options:"<<std::endl;
+		for(core::map<std::string, ValueSpec>::Iterator
+				i = allowed_options.getIterator();
+				i.atEnd() == false; i++)
+		{
+			dstream<<"  --"<<i.getNode()->getKey();
+			if(i.getNode()->getValue().type == VALUETYPE_FLAG)
+			{
+			}
+			else
+			{
+				dstream<<" <value>";
+			}
+			dstream<<std::endl;
+
+			if(i.getNode()->getValue().help != NULL)
+			{
+				dstream<<"      "<<i.getNode()->getValue().help
+						<<std::endl;
+			}
+		}
+
+		return cmd_args.getFlag("help") ? 0 : 1;
+	}
+
+
+	/*
 		Basic initialization
 	*/
 
@@ -999,11 +1042,23 @@ int main(int argc, char *argv[])
 		Initialization
 	*/
 
-	// Read config file
+	/*
+		Read config file
+	*/
 	
-	if(argc >= 2)
+	// Path of configuration file in use
+	std::string configpath = "";
+	
+	if(cmd_args.exists("config"))
 	{
-		g_settings.readConfigFile(argv[1]);
+		bool r = g_settings.readConfigFile(cmd_args.get("config").c_str());
+		if(r == false)
+		{
+			dstream<<"Could not read configuration from \""
+					<<cmd_args.get("config")<<"\""<<std::endl;
+			return 1;
+		}
+		configpath = cmd_args.get("config");
 	}
 	else
 	{
@@ -1017,7 +1072,10 @@ int main(int argc, char *argv[])
 		{
 			bool r = g_settings.readConfigFile(filenames[i]);
 			if(r)
+			{
+				configpath = filenames[i];
 				break;
+			}
 		}
 	}
 
@@ -1059,16 +1117,19 @@ int main(int argc, char *argv[])
 	std::cout<<std::endl;
 	char templine[100];
 	
-	// Dedicated?
-	bool dedicated = g_settings.getBoolAsk
-			("dedicated_server", "Dedicated server?", false);
-	std::cout<<"dedicated = "<<dedicated<<std::endl;
-	
 	// Port?
-	u16 port = g_settings.getU16Ask("port", "Port", 30000);
-	std::cout<<"-> "<<port<<std::endl;
+	u16 port = 30000;
+	if(cmd_args.exists("port"))
+	{
+		port = cmd_args.getU16("port");
+	}
+	else
+	{
+		port = g_settings.getU16Ask("port", "Port", 30000);
+		std::cout<<"-> "<<port<<std::endl;
+	}
 	
-	if(dedicated)
+	if(cmd_args.getFlag("server"))
 	{
 		DSTACK("Dedicated server branch");
 		
@@ -2208,7 +2269,8 @@ int main(int argc, char *argv[])
 		
 		{
 		TimeTaker timer("beginScene", device);
-		driver->beginScene(true, true, bgcolor);
+		//driver->beginScene(true, true, bgcolor);
+		driver->beginScene(false, true, bgcolor);
 		beginscenetime = timer.stop(true);
 		}
 
@@ -2306,6 +2368,14 @@ int main(int argc, char *argv[])
 		In the end, delete the Irrlicht device.
 	*/
 	device->drop();
+	
+	/*
+		Update configuration file
+	*/
+	if(configpath != "")
+	{
+		g_settings.updateConfigFile(configpath.c_str());
+	}
 
 	} //try
 	catch(con::PeerNotFoundException &e)

@@ -7,8 +7,6 @@
 # By default, all the settings are commented and not functional.
 # Uncomment settings by removing the preceding #.
 
-#dedicated_server =
-
 # Client side stuff
 
 #wanted_fps = 30

@@ -668,6 +668,23 @@ inline s32 stoi(std::string s)
 	Config stuff
 */
 
+enum ValueType
+{
+	VALUETYPE_STRING,
+	VALUETYPE_FLAG // Doesn't take any arguments
+};
+
+struct ValueSpec
+{
+	ValueSpec(ValueType a_type, const char *a_help=NULL)
+	{
+		type = a_type;
+		help = a_help;
+	}
+	ValueType type;
+	const char *help;
+};
+
 class Settings
 {
 public:
@@ -710,22 +727,225 @@ public:
 		return true;
 	}
 
-	// Returns true on success
+	/*
+		Read configuration file
+
+		Returns true on success
+	*/
 	bool readConfigFile(const char *filename)
 	{
 		std::ifstream is(filename);
 		if(is.good() == false)
 		{
-			dstream<<"Error opening configuration file: "
-					<<filename<<std::endl;
+			dstream<<"Error opening configuration file \""
+					<<filename<<"\""<<std::endl;
 			return false;
 		}
 
-		dstream<<"Parsing configuration file: "
-				<<filename<<std::endl;
+		dstream<<"Parsing configuration file: \""
+				<<filename<<"\""<<std::endl;
 				
 		while(parseConfigObject(is));
 		
+		return true;
+	}
+
+	/*
+		Reads a configuration object from stream (usually a single line)
+		and adds it to dst.
+		
+		Preserves comments and empty lines.
+
+		Settings that were added to dst are also added to updated.
+		key of updated is setting name, value of updated is dummy.
+
+		Returns false on EOF
+	*/
+	bool getUpdatedConfigObject(std::istream &is,
+			core::list<std::string> &dst,
+			core::map<std::string, bool> &updated)
+	{
+		if(is.eof())
+			return false;
+		
+		// NOTE: This function will be expanded to allow multi-line settings
+		std::string line;
+		std::getline(is, line);
+
+		std::string trimmedline = trim(line);
+
+		std::string line_end = "";
+		if(is.eof() == false)
+			line_end = "\n";
+		
+		// Ignore comments
+		if(trimmedline[0] == '#')
+		{
+			dst.push_back(line+line_end);
+			return true;
+		}
+
+		Strfnd sf(trim(line));
+
+		std::string name = sf.next("=");
+		name = trim(name);
+
+		if(name == "")
+		{
+			dst.push_back(line+line_end);
+			return true;
+		}
+		
+		std::string value = sf.next("\n");
+		value = trim(value);
+		
+		if(m_settings.find(name))
+		{
+			std::string newvalue = m_settings[name];
+			
+			if(newvalue != value)
+			{
+				dstream<<"Changing value of \""<<name<<"\" = \""
+						<<value<<"\" -> \""<<newvalue<<"\""
+						<<std::endl;
+			}
+
+			dst.push_back(name + " = " + newvalue + line_end);
+
+			updated[name] = true;
+		}
+		
+		return true;
+	}
+
+	/*
+		Updates configuration file
+
+		Returns true on success
+	*/
+	bool updateConfigFile(const char *filename)
+	{
+		dstream<<"Updating configuration file: \""
+				<<filename<<"\""<<std::endl;
+		
+		core::list<std::string> objects;
+		core::map<std::string, bool> updated;
+		
+		// Read and modify stuff
+		{
+			std::ifstream is(filename);
+			if(is.good() == false)
+			{
+				dstream<<"Error opening configuration file"
+						" for reading: \""
+						<<filename<<"\""<<std::endl;
+				return false;
+			}
+
+			while(getUpdatedConfigObject(is, objects, updated));
+		}
+		
+		// Write stuff back
+		{
+			std::ofstream os(filename);
+			if(os.good() == false)
+			{
+				dstream<<"Error opening configuration file"
+						" for writing: \""
+						<<filename<<"\""<<std::endl;
+				return false;
+			}
+			
+			/*
+				Write updated stuff
+			*/
+			for(core::list<std::string>::Iterator
+					i = objects.begin();
+					i != objects.end(); i++)
+			{
+				os<<(*i);
+			}
+
+			/*
+				Write stuff that was not already in the file
+			*/
+			for(core::map<std::string, std::string>::Iterator
+					i = m_settings.getIterator();
+					i.atEnd() == false; i++)
+			{
+				if(updated.find(i.getNode()->getKey()))
+					continue;
+				std::string name = i.getNode()->getKey();
+				std::string value = i.getNode()->getValue();
+				dstream<<"Adding \""<<name<<"\" = \""<<value<<"\""
+						<<std::endl;
+				os<<name<<" = "<<value<<"\n";
+			}
+		}
+		
+		return true;
+	}
+
+	/*
+		NOTE: Types of allowed_options are ignored
+
+		returns true on success
+	*/
+	bool parseCommandLine(int argc, char *argv[],
+			core::map<std::string, ValueSpec> &allowed_options)
+	{
+		int i=1;
+		for(;;)
+		{
+			if(i >= argc)
+				break;
+			std::string argname = argv[i];
+			if(argname.substr(0, 2) != "--")
+			{
+				dstream<<"Invalid command-line parameter \""
+						<<argname<<"\": --<option> expected."<<std::endl;
+				return false;
+			}
+			i++;
+
+			std::string name = argname.substr(2);
+
+			core::map<std::string, ValueSpec>::Node *n;
+			n = allowed_options.find(name);
+			if(n == NULL)
+			{
+				dstream<<"Unknown command-line parameter \""
+						<<argname<<"\""<<std::endl;
+				return false;
+			}
+
+			ValueType type = n->getValue().type;
+
+			std::string value = "";
+			
+			if(type == VALUETYPE_FLAG)
+			{
+				value = "true";
+			}
+			else
+			{
+				if(i >= argc)
+				{
+					dstream<<"Invalid command-line parameter \""
+							<<name<<"\": missing value"<<std::endl;
+					return false;
+				}
+				value = argv[i];
+				i++;
+			}
+			
+
+			dstream<<"Valid command-line parameter: \""
+					<<name<<"\" = \""<<value<<"\""
+					<<std::endl;
+			set(name, value);
+		}
+
 		return true;
 	}
 
@@ -734,12 +954,28 @@ public:
 		m_settings[name] = value;
 	}
 
+	void setDefault(std::string name, std::string value)
+	{
+		m_defaults[name] = value;
+	}
+
+	bool exists(std::string name)
+	{
+		return (m_settings.find(name) || m_defaults.find(name));
+	}
+
 	std::string get(std::string name)
 	{
 		core::map<std::string, std::string>::Node *n;
 		n = m_settings.find(name);
 		if(n == NULL)
-			throw SettingNotFoundException("Setting not found");
+		{
+			n = m_defaults.find(name);
+			if(n == NULL)
+			{
+				throw SettingNotFoundException("Setting not found");
+			}
+		}
 
 		return n->getValue();
 	}
@@ -749,6 +985,18 @@ public:
 		return is_yes(get(name));
 	}
 	
+	bool getFlag(std::string name)
+	{
+		try
+		{
+			return getBool(name);
+		}
+		catch(SettingNotFoundException &e)
+		{
+			return false;
+		}
+	}
+
 	// Asks if empty
 	bool getBoolAsk(std::string name, std::string question, bool def)
 	{
@@ -809,6 +1057,7 @@ public:
 
 private:
 	core::map<std::string, std::string> m_settings;
+	core::map<std::string, std::string> m_defaults;
 };
 
 /*

@@ -124,6 +124,14 @@ public:
 	{}
 };
 
+class CommandLineError : public BaseException
+{
+public:
+	CommandLineError(const char *s):
+		BaseException(s)
+	{}
+};
+
 /*
 	Some "old-style" interrupts:
 */

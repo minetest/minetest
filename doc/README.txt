@@ -32,7 +32,8 @@ Controls:
 
 Configuration file:
 - An optional configuration file can be used. See minetest.conf.example.
-- Path to file can be passed as a parameter to the executable.
+- Path to file can be passed as a parameter to the executable:
+	--config <path-to-file>
 - If not given as a parameter, these are checked, in order:
 	../minetest.conf
 	../../minetest.conf

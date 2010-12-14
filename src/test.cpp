@@ -1070,8 +1070,8 @@ struct TestConnection
 
 			dstream<<"Sending data (size="<<1100<<"):";
 			for(int i=0; i<1100 && i<20; i++){
-				if(i%2==0) printf(" ");
-				printf("%.2X", ((int)((const char*)*data1)[i])&0xff);
+				if(i%2==0) DEBUGPRINT(" ");
+				DEBUGPRINT("%.2X", ((int)((const char*)*data1)[i])&0xff);
 			}
 			if(1100>20)
 				dstream<<"...";
@@ -1091,8 +1091,8 @@ struct TestConnection
 
 			dstream<<"Received data (size="<<size<<"):";
 			for(int i=0; i<size && i<20; i++){
-				if(i%2==0) printf(" ");
-				printf("%.2X", ((int)((const char*)recvdata)[i])&0xff);
+				if(i%2==0) DEBUGPRINT(" ");
+				DEBUGPRINT("%.2X", ((int)((const char*)recvdata)[i])&0xff);
 			}
 			if(size>20)
 				dstream<<"...";
