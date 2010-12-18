@@ -32,6 +32,7 @@ const char * g_tile_texture_names[TILES_COUNT] =
 	"mud",
 	"tree_top",
 	"mud_with_grass",
+	"cloud",
 };
 
 video::SMaterial g_tile_materials[TILES_COUNT];

@@ -68,7 +68,7 @@ void MapBlock::setNodeParent(v3s16 p, MapNode & n)
 	}
 }
 
-FastFace * MapBlock::makeFastFace(u16 tile, u8 light, v3f p,
+FastFace * MapBlock::makeFastFace(TileSpec tile, u8 light, v3f p,
 		v3s16 dir, v3f scale, v3f posRelative_f)
 {
 	FastFace *f = new FastFace;
@@ -118,7 +118,7 @@ FastFace * MapBlock::makeFastFace(u16 tile, u8 light, v3f p,
 
 	u8 alpha = 255;
 
-	if(tile == TILE_WATER)
+	if(tile.id == TILE_WATER)
 	{
 		alpha = 128;
 	}
@@ -184,25 +184,78 @@ u8 MapBlock::getFaceLight(v3s16 p, v3s16 face_dir)
 
 /*
 	Gets node tile from any place relative to block.
-	Returns CONTENT_IGNORE if doesn't exist or should not be drawn.
+	Returns TILE_NODE if doesn't exist or should not be drawn.
 */
-u16 MapBlock::getNodeTile(v3s16 p, v3s16 face_dir)
+TileSpec MapBlock::getNodeTile(v3s16 p, v3s16 face_dir)
 {
+	TileSpec spec;
+
+	spec.feature = TILEFEAT_NONE;
 	try{
 		MapNode n = getNodeParent(p);
 		
-		//return content_tile(n.d);
-		return n.getTile(face_dir);
+		spec.id = n.getTile(face_dir);
 	}
 	catch(InvalidPositionException &e)
 	{
-		//return CONTENT_IGNORE;
-		return TILE_NONE;
+		spec.id = TILE_NONE;
 	}
+	
+	/*
+		Check temporary modifications on this node
+	*/
+	core::map<v3s16, NodeMod>::Node *n;
+	n = m_temp_mods.find(p);
+
+	// If modified
+	if(n != NULL)
+	{
+		struct NodeMod mod = n->getValue();
+		if(mod.type == NODEMOD_CHANGECONTENT)
+		{
+			spec.id = content_tile(mod.param, face_dir);
+		}
+		if(mod.type == NODEMOD_CRACK)
+		{
+		}
+	}
+	
+	return spec;
 }
 
 u8 MapBlock::getNodeContent(v3s16 p)
 {
+	/*
+		Check temporary modifications on this node
+	*/
+	core::map<v3s16, NodeMod>::Node *n;
+	n = m_temp_mods.find(p);
+
+	// If modified
+	if(n != NULL)
+	{
+		struct NodeMod mod = n->getValue();
+		if(mod.type == NODEMOD_CHANGECONTENT)
+		{
+			// Overrides content
+			return mod.param;
+		}
+		if(mod.type == NODEMOD_CRACK)
+		{
+			/*
+				Content doesn't change.
+				
+				face_contents works just like it should, because
+				there should not be faces between differently cracked
+				nodes.
+
+				If a semi-transparent node is cracked in front an
+				another one, it really doesn't matter whether there
+				is a cracked face drawn in between or not.
+			*/
+		}
+	}
+	
 	try{
 		MapNode n = getNodeParent(p);
 		
@@ -243,16 +296,16 @@ void MapBlock::updateFastFaceRow(v3s16 startpos,
 	
 	u16 continuous_tiles_count = 0;
 	
-	u8 tile0 = getNodeTile(p, face_dir);
-	u8 tile1 = getNodeTile(p + face_dir, -face_dir);
+	TileSpec tile0 = getNodeTile(p, face_dir);
+	TileSpec tile1 = getNodeTile(p + face_dir, -face_dir);
 		
 	for(u16 j=0; j<length; j++)
 	{
 		bool next_is_different = true;
 		
 		v3s16 p_next;
-		u8 tile0_next = 0;
-		u8 tile1_next = 0;
+		TileSpec tile0_next;
+		TileSpec tile1_next;
 		u8 light_next = 0;
 
 		if(j != length - 1){
@@ -493,19 +546,23 @@ void MapBlock::updateMesh()
 			FastFace *f = *i;
 
 			const u16 indices[] = {0,1,2,2,3,0};
-
-			/*collector.append(g_materials[f->material], f->vertices, 4,
-					indices, 6);*/
-			/*collector.append(g_materials[f->tile], f->vertices, 4,
-					indices, 6);*/
-			collector.append(g_tile_materials[f->tile], f->vertices, 4,
-					indices, 6);
+			
+			if(f->tile.feature == TILEFEAT_NONE)
+			{
+				collector.append(g_tile_materials[f->tile.id], f->vertices, 4,
+						indices, 6);
+			}
+			else
+			{
+				// Not implemented
+				assert(0);
+			}
 		}
 
 		collector.fillMesh(mesh_new);
 
 		// Use VBO for mesh (this just would set this for ever buffer)
-		//mesh_new->setHardwareMappingHint(scene::EHM_STATIC);
+		mesh_new->setHardwareMappingHint(scene::EHM_STATIC);
 		
 		/*std::cout<<"MapBlock has "<<fastfaces_new->getSize()<<" faces "
 				<<"and uses "<<mesh_new->getMeshBufferCount()

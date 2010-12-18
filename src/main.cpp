@@ -27,50 +27,7 @@ NOTE: VBO cannot be turned on for fast-changing stuff because there
 NOTE: iostream.imbue(std::locale("C")) is very slow
 NOTE: Global locale is now set at initialization
 
-SUGGESTION: add a second lighting value to the MS nibble of param of
-	air to tell how bright the air node is when there is no sunlight.
-	When day changes to night, these two values can be interpolated.
-
-TODO: Fix address to be ipv6 compatible
-
-TODO: ESC Pause mode in which the cursor is not kept at the center of window.
-TODO: Stop player if focus of window is taken away (go to pause mode)
-TODO: Optimize and fix makeFastFace or whatever it's called
-      - Face calculation is the source of CPU usage on the client
-SUGGESTION: The client will calculate and send lighting changes and
-  the server will randomly check some of them and kick the client out
-  if it fails to calculate them right.
-  - Actually, it could just start ignoring them and calculate them
-    itself.
-SUGGESTION: Combine MapBlock's face caches to so big pieces that VBO
-            gets used
-            - That is >500 vertices
-
-TODO: Better dungeons
-TODO: There should be very slight natural caves also, starting from
-      only a straightened-up cliff
-
-TODO: Changing of block with mouse wheel or something
-TODO: Menus
-
-TODO: Mobs
-      - Server:
-        - One single map container with ids as keys
-      - Client:
-	    - ?
-TODO: - Keep track of the place of the mob in the last few hundreth's
-        of a second - then, if a player hits it, take the value that is
-		avg_rtt/2 before the moment the packet is received.
-TODO: - Scripting
-
-SUGGESTION: Modify client to calculate single changes asynchronously
-
-TODO: Moving players more smoothly. Calculate moving animation
-      in a way that doesn't make the player jump to the right place
-	  immediately when the server sends a new position
-
-TODO: There are some lighting-related todos and fixmes in
-      ServerMap::emergeBlock
+SUGG: Fix address to be ipv6 compatible
 
 FIXME: When a new sector is generated, it may change the ground level
        of it's and it's neighbors border that two blocks that are
@@ -81,15 +38,7 @@ SUGGESTION: Use same technique for sector heightmaps as what we're
             using for UnlimitedHeightmap? (getting all neighbors
 			when generating)
 
-TODO: Proper handling of spawning place (try to find something that
-      is not in the middle of an ocean (some land to stand on at
-	  least) and save it in map config.
-SUGG: Set server to automatically find a good spawning place in some
-      place where there is water and land.
-	  - Map to have a getWalkableNear(p)
-	  - Is this a good idea? It's part of the game to find a good place.
-
-TODO: Transfer more blocks in a single packet
+SUGG: Transfer more blocks in a single packet
 SUGG: A blockdata combiner class, to which blocks are added and at
       destruction it sends all the stuff in as few packets as possible.
 
@@ -100,52 +49,17 @@ SUGG: Expose Connection's seqnums and ACKs to server and client.
       - This enables saving many packets and making a faster connection
 	  - This also enables server to check if client has received the
 	    most recent block sent, for example.
-TODO: Add a sane bandwidth throttling system to Connection
+SUGG: Add a sane bandwidth throttling system to Connection
 
 SUGG: More fine-grained control of client's dumping of blocks from
       memory
 	  - ...What does this mean in the first place?
 
-TODO: Make the amount of blocks sending to client and the total
-	  amount of blocks dynamically limited. Transferring blocks is the
-	  main network eater of this system, so it is the one that has
-	  to be throttled so that RTTs stay low.
-
-TODO: Server to load starting inventory from disk
-
-TODO: PLayers to only be hidden when the client quits.
-TODO: - Players to be saved on disk, with inventory
-TODO: Players to be saved as text in map/players/<name>
-
 SUGG: A map editing mode (similar to dedicated server mode)
-
-TODO: Make fetching sector's blocks more efficient when rendering
-      sectors that have very large amounts of blocks (on client)
-
-TODO: Make the video backend selectable
-
-Block object server side:
-      - A "near blocks" buffer, in which some nearby blocks are stored.
-	  - For all blocks in the buffer, objects are stepped(). This
-	    means they are active.
-	  - TODO: A global active buffer is needed for the server
-      - TODO: All blocks going in and out of the buffer are recorded.
-	    - TODO: For outgoing blocks, a timestamp is written.
-	    - TODO: For incoming blocks, the time difference is calculated and
-	      objects are stepped according to it.
-TODO: A timestamp to blocks
 
 SUGG: Add a time value to the param of footstepped grass and check it
       against a global timer when a block is accessed, to make old
 	  steps fade away.
-
-TODO: Add config parameters for server's sending and generating distance
-
-TODO: Copy the text of the last picked sign to inventory in creative
-      mode
-
-TODO: Untie client network operations from framerate
-      - Needs some input queues or something
 
 SUGG: Make a copy of close-range environment on client for showing
       on screen, with minimal mutexes to slow down the main loop
@@ -161,14 +75,8 @@ SUGG: Split MapBlockObject serialization to to-client and to-disk
       - This will allow saving ages of rats on disk but not sending
 	    them to clients
 
-TODO: Get rid of GotSplitPacketException
-
 SUGG: Implement lighting using VoxelManipulator
       - Would it be significantly faster?
-
-TODO: Check what goes wrong with caching map to disk (Kray)
-
-TODO: Remove LazyMeshUpdater. It is not used as supposed.
 
 FIXME: Rats somehow go underground sometimes (you can see it in water)
        - Does their position get saved to a border value or something?
@@ -184,9 +92,97 @@ SUGG: Implement a "Fast check queue" (a queue with a map for checking
 SUGG: Signs could be done in the same way as torches. For this, blocks
       need an additional metadata field for the texts
 
+SUGG: Precalculate lighting translation table at runtime (at startup)
+
+SUGG: A version number to blocks, which increments when the block is
+      modified (node add/remove, water update, lighting update)
+	  - This can then be used to make sure the most recent version of
+	    a block has been sent to client
+
+TODO: Stop player if focus of window is taken away (go to pause mode)
+
+TODO: Combine MapBlock's face caches to so big pieces that VBO
+      gets used
+      - That is >500 vertices
+
+TODO: Better dungeons
+TODO: Cliffs, arcs
+
+TODO: Menus
+
+TODO: Mobs
+      - Server:
+        - One single map container with ids as keys
+      - Client:
+	    - ?
+TODO: - Keep track of the place of the mob in the last few hundreth's
+        of a second - then, if a player hits it, take the value that is
+		avg_rtt/2 before the moment the packet is received.
+TODO: - Scripting
+
+TODO: Moving players more smoothly. Calculate moving animation
+      in a way that doesn't make the player jump to the right place
+	  immediately when the server sends a new position
+
+TODO: There are some lighting-related todos and fixmes in
+      ServerMap::emergeBlock
+
+TODO: Proper handling of spawning place (try to find something that
+      is not in the middle of an ocean (some land to stand on at
+	  least) and save it in map config.
+
+TODO: Make the amount of blocks sending to client and the total
+	  amount of blocks dynamically limited. Transferring blocks is the
+	  main network eater of this system, so it is the one that has
+	  to be throttled so that RTTs stay low.
+
+TODO: Server to load starting inventory from disk
+
+TODO: Players to only be hidden when the client quits.
+TODO: - Players to be saved on disk, with inventory
+TODO: Players to be saved as text in map/players/<name>
+
+TODO: Make fetching sector's blocks more efficient when rendering
+      sectors that have very large amounts of blocks (on client)
+
+TODO: Make the video backend selectable
+
+Block object server side:
+      - A "near blocks" buffer, in which some nearby blocks are stored.
+	  - For all blocks in the buffer, objects are stepped(). This
+	    means they are active.
+	  - TODO: A global active buffer is needed for the server
+	  - TODO: A timestamp to blocks
+      - TODO: All blocks going in and out of the buffer are recorded.
+	    - TODO: For outgoing blocks, timestamp is written.
+	    - TODO: For incoming blocks, time difference is calculated and
+	      objects are stepped according to it.
+
+TODO: Add config parameters for server's sending and generating distance
+
+TODO: Copy the text of the last picked sign to inventory in creative
+      mode
+
+TODO: Untie client network operations from framerate
+      - Needs some input queues or something
+
+TODO: Get rid of GotSplitPacketException
+
+TODO: Check what goes wrong with caching map to disk (Kray)
+
+TODO: Remove LazyMeshUpdater. It is not used as supposed.
+
+TODO: Node cracking animation when digging
+      - TODO: A way to generate new textures by combining textures
+	  - TODO: Mesh update to fetch cracked faces from the former
+
 Doing now:
 ======================================================================
 
+TODO: Add a second lighting value to the MS nibble of param of
+      air to tell how bright the air node is when there is no sunlight.
+	  When day changes to night, these two values can be interpolated.
+	  - The biggest job is to add support to the lighting routines
 
 ======================================================================
 
@@ -486,6 +482,10 @@ public:
 
 		if(event.EventType == irr::EET_MOUSE_INPUT_EVENT)
 		{
+			left_active = event.MouseInput.isLeftPressed();
+			middle_active = event.MouseInput.isMiddlePressed();
+			right_active = event.MouseInput.isRightPressed();
+
 			if(event.MouseInput.Event == EMIE_LMOUSE_PRESSED_DOWN)
 			{
 				leftclicked = true;
@@ -493,6 +493,14 @@ public:
 			if(event.MouseInput.Event == EMIE_RMOUSE_PRESSED_DOWN)
 			{
 				rightclicked = true;
+			}
+			if(event.MouseInput.Event == EMIE_LMOUSE_LEFT_UP)
+			{
+				leftreleased = true;
+			}
+			if(event.MouseInput.Event == EMIE_RMOUSE_LEFT_UP)
+			{
+				rightreleased = true;
 			}
 			if(event.MouseInput.Event == EMIE_MOUSE_WHEEL)
 			{
@@ -530,10 +538,23 @@ public:
 				keyIsDown[i] = false;
 		leftclicked = false;
 		rightclicked = false;
+		leftreleased = false;
+		rightreleased = false;
+
+		left_active = false;
+		middle_active = false;
+		right_active = false;
 	}
 
 	bool leftclicked;
 	bool rightclicked;
+	bool leftreleased;
+	bool rightreleased;
+
+	bool left_active;
+	bool middle_active;
+	bool right_active;
+
 private:
 	// We use this array to store the current state of each key
 	bool keyIsDown[KEY_KEY_CODES_COUNT];
@@ -550,13 +571,24 @@ public:
 	virtual ~InputHandler()
 	{
 	}
+
 	virtual bool isKeyDown(EKEY_CODE keyCode) = 0;
+
 	virtual v2s32 getMousePos() = 0;
 	virtual void setMousePos(s32 x, s32 y) = 0;
+
+	virtual bool getLeftState() = 0;
+	virtual bool getRightState() = 0;
+
 	virtual bool getLeftClicked() = 0;
 	virtual bool getRightClicked() = 0;
 	virtual void resetLeftClicked() = 0;
 	virtual void resetRightClicked() = 0;
+
+	virtual bool getLeftReleased() = 0;
+	virtual bool getRightReleased() = 0;
+	virtual void resetLeftReleased() = 0;
+	virtual void resetRightReleased() = 0;
 	
 	virtual void step(float dtime) {};
 
@@ -597,6 +629,15 @@ public:
 		m_device->getCursorControl()->setPosition(x, y);
 	}
 
+	virtual bool getLeftState()
+	{
+		return m_receiver->left_active;
+	}
+	virtual bool getRightState()
+	{
+		return m_receiver->right_active;
+	}
+	
 	virtual bool getLeftClicked()
 	{
 		if(g_game_focused == false)
@@ -616,6 +657,27 @@ public:
 	virtual void resetRightClicked()
 	{
 		m_receiver->rightclicked = false;
+	}
+
+	virtual bool getLeftReleased()
+	{
+		if(g_game_focused == false)
+			return false;
+		return m_receiver->leftreleased;
+	}
+	virtual bool getRightReleased()
+	{
+		if(g_game_focused == false)
+			return false;
+		return m_receiver->rightreleased;
+	}
+	virtual void resetLeftReleased()
+	{
+		m_receiver->leftreleased = false;
+	}
+	virtual void resetRightReleased()
+	{
+		m_receiver->rightreleased = false;
 	}
 
 	void clear()
@@ -651,6 +713,15 @@ public:
 		mousepos = v2s32(x,y);
 	}
 
+	virtual bool getLeftState()
+	{
+		return false;
+	}
+	virtual bool getRightState()
+	{
+		return false;
+	}
+
 	virtual bool getLeftClicked()
 	{
 		return leftclicked;
@@ -666,6 +737,21 @@ public:
 	virtual void resetRightClicked()
 	{
 		rightclicked = false;
+	}
+
+	virtual bool getLeftReleased()
+	{
+		return false;
+	}
+	virtual bool getRightReleased()
+	{
+		return false;
+	}
+	virtual void resetLeftReleased()
+	{
+	}
+	virtual void resetRightReleased()
+	{
 	}
 
 	virtual void step(float dtime)
@@ -1564,6 +1650,11 @@ int main(int argc, char *argv[])
 	gui::IGUIStaticText* input_guitext = NULL;
 
 	/*
+		Digging animation
+	*/
+	//f32 
+
+	/*
 		Main loop
 	*/
 
@@ -1920,6 +2011,10 @@ int main(int argc, char *argv[])
 		}
 		else // selected_object == NULL
 		{
+
+		/*
+			Find out which node we are pointing at
+		*/
 		
 		bool nodefound = false;
 		v3s16 nodepos;
@@ -2066,6 +2161,9 @@ int main(int argc, char *argv[])
 			} // regular block
 		} // for coords
 
+		/*static v3s16 oldnodepos;
+		static bool oldnodefound = false;*/
+
 		if(nodefound)
 		{
 			//std::cout<<DTIME<<"nodefound == true"<<std::endl;
@@ -2076,40 +2174,53 @@ int main(int argc, char *argv[])
 			if(nodepos != nodepos_old){
 				std::cout<<DTIME<<"Pointing at ("<<nodepos.X<<","
 						<<nodepos.Y<<","<<nodepos.Z<<")"<<std::endl;
-				nodepos_old = nodepos;
-
-				/*wchar_t positiontext[20];
-				swprintf(positiontext, 20, L"(%i,%i,%i)",
-						nodepos.X, nodepos.Y, nodepos.Z);
-				positiontextgui->setText(positiontext);*/
 			}
 
 			hilightboxes.push_back(nodefacebox);
 			
-			if(g_input->getLeftClicked())
+			//if(g_input->getLeftClicked())
+			if(g_input->getLeftClicked() ||
+					(g_input->getLeftState() && nodepos != nodepos_old))
 			{
-				//std::cout<<DTIME<<"Removing node"<<std::endl;
-				//client.removeNode(nodepos);
 				std::cout<<DTIME<<"Ground left-clicked"<<std::endl;
 				client.pressGround(0, nodepos, neighbourpos, g_selected_item);
 			}
 			if(g_input->getRightClicked())
+			/*if(g_input->getRightClicked() ||
+					(g_input->getRightState() && nodepos != nodepos_old))*/
 			{
-				//std::cout<<DTIME<<"Placing node"<<std::endl;
-				//client.addNodeFromInventory(neighbourpos, g_selected_item);
 				std::cout<<DTIME<<"Ground right-clicked"<<std::endl;
 				client.pressGround(1, nodepos, neighbourpos, g_selected_item);
 			}
+			
+			nodepos_old = nodepos;
 		}
 		else{
 			//std::cout<<DTIME<<"nodefound == false"<<std::endl;
 			//positiontextgui->setText(L"");
 		}
 
+		/*oldnodefound = nodefound;
+		oldnodepos = nodepos;*/
+
 		} // selected_object == NULL
 		
 		g_input->resetLeftClicked();
 		g_input->resetRightClicked();
+		
+		if(g_input->getLeftReleased())
+		{
+			std::cout<<DTIME<<"Left released"<<std::endl;
+			client.stopDigging();
+		}
+		if(g_input->getRightReleased())
+		{
+			//std::cout<<DTIME<<"Right released"<<std::endl;
+			// Nothing here
+		}
+		
+		g_input->resetLeftReleased();
+		g_input->resetRightReleased();
 		
 		/*
 			Calculate stuff for drawing

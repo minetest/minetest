@@ -276,7 +276,6 @@ public:
 
 	RemoteClient():
 		m_time_from_building(9999)
-		//m_num_blocks_in_emerge_queue(0)
 	{
 		peer_id = 0;
 		serialization_version = SER_FMT_VER_INVALID;
@@ -285,6 +284,10 @@ public:
 
 		m_blocks_sent_mutex.Init();
 		m_blocks_sending_mutex.Init();
+		
+		m_dig_mutex.Init();
+		m_dig_time_remaining = 0;
+		m_dig_tool_item = -1;
 	}
 	~RemoteClient()
 	{
@@ -338,8 +341,6 @@ public:
 		JMutexAutoLock l2(m_blocks_sent_mutex);
 		JMutexAutoLock l3(m_blocks_sending_mutex);
 		o<<"RemoteClient "<<peer_id<<": "
-				/*<<"m_num_blocks_in_emerge_queue="
-				<<m_num_blocks_in_emerge_queue.get()*/
 				<<", m_blocks_sent.size()="<<m_blocks_sent.size()
 				<<", m_blocks_sending.size()="<<m_blocks_sending.size()
 				<<", m_nearest_unsent_d="<<m_nearest_unsent_d
@@ -349,6 +350,12 @@ public:
 	// Time from last placing or removing blocks
 	MutexedVariable<float> m_time_from_building;
 	
+	JMutex m_dig_mutex;
+	float m_dig_time_remaining;
+	// -1 = not digging
+	s16 m_dig_tool_item;
+	v3s16 m_dig_position;
+
 private:
 	/*
 		All members that are accessed by many threads should

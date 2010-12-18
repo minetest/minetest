@@ -1140,6 +1140,35 @@ bool Client::AsyncProcessPacket(LazyMeshUpdater &mesh_updater)
 				block->deSerialize(istr, ser_version);
 				sector->insertBlock(block);
 				//block->setChangedFlag();
+
+				//DEBUG
+				/*NodeMod mod;
+				mod.type = NODEMOD_CHANGECONTENT;
+				mod.param = CONTENT_MESE;
+				block->setTempMod(v3s16(8,10,8), mod);
+				block->setTempMod(v3s16(8,9,8), mod);
+				block->setTempMod(v3s16(8,8,8), mod);
+				block->setTempMod(v3s16(8,7,8), mod);
+				block->setTempMod(v3s16(8,6,8), mod);*/
+				
+				/*
+					Add some coulds
+					Well, this is a dumb way to do it, they should just
+					be drawn as separate objects.
+				*/
+				/*if(p.Y == 3)
+				{
+					NodeMod mod;
+					mod.type = NODEMOD_CHANGECONTENT;
+					mod.param = CONTENT_CLOUD;
+					v3s16 p2;
+					p2.Y = 8;
+					for(p2.X=3; p2.X<=13; p2.X++)
+					for(p2.Z=3; p2.Z<=13; p2.Z++)
+					{
+						block->setTempMod(p2, mod);
+					}
+				}*/
 			}
 		} //envlock
 		
@@ -1412,16 +1441,20 @@ void Client::pressGround(u8 button, v3s16 nodepos_undersurface,
 	}
 	
 	/*
-		length: 19
+		length: 17
 		[0] u16 command
-		[2] u8 button (0=left, 1=right)
+		[2] u8 action
 		[3] v3s16 nodepos_undersurface
 		[9] v3s16 nodepos_abovesurface
 		[15] u16 item
+		actions:
+		0: start digging
+		1: place block
+		2: stop digging (all parameters ignored)
 	*/
 	u8 datasize = 2 + 1 + 6 + 6 + 2;
 	SharedBuffer<u8> data(datasize);
-	writeU16(&data[0], TOSERVER_PRESS_GROUND);
+	writeU16(&data[0], TOSERVER_GROUND_ACTION);
 	writeU8(&data[2], button);
 	writeV3S16(&data[3], nodepos_undersurface);
 	writeV3S16(&data[9], nodepos_oversurface);
@@ -1455,9 +1488,35 @@ void Client::clickObject(u8 button, v3s16 blockpos, s16 id, u16 item)
 	Send(0, data, true);
 }
 
-void Client::release(u8 button)
+void Client::stopDigging()
 {
-	//TODO
+	if(connectedAndInitialized() == false){
+		dout_client<<DTIME<<"Client::release() "
+				"cancelled (not connected)"
+				<<std::endl;
+		return;
+	}
+	
+	/*
+		length: 17
+		[0] u16 command
+		[2] u8 action
+		[3] v3s16 nodepos_undersurface
+		[9] v3s16 nodepos_abovesurface
+		[15] u16 item
+		actions:
+		0: start digging
+		1: place block
+		2: stop digging (all parameters ignored)
+	*/
+	u8 datasize = 2 + 1 + 6 + 6 + 2;
+	SharedBuffer<u8> data(datasize);
+	writeU16(&data[0], TOSERVER_GROUND_ACTION);
+	writeU8(&data[2], 2);
+	writeV3S16(&data[3], v3s16(0,0,0));
+	writeV3S16(&data[9], v3s16(0,0,0));
+	writeU16(&data[15], 0);
+	Send(0, data, true);
 }
 
 void Client::sendSignText(v3s16 blockpos, s16 id, std::string text)

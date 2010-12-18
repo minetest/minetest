@@ -159,22 +159,21 @@ enum ToServerCommand
 		[11] u16 item
 	*/
 
-	TOSERVER_PRESS_GROUND = 0x28,
+	TOSERVER_GROUND_ACTION = 0x28,
 	/*
 		length: 17
 		[0] u16 command
-		[2] u8 button (0=left, 1=right)
+		[2] u8 action
 		[3] v3s16 nodepos_undersurface
 		[9] v3s16 nodepos_abovesurface
 		[15] u16 item
+		actions:
+		0: start digging (from undersurface)
+		1: place block (to abovesurface)
+		2: stop digging (all parameters ignored)
 	*/
 	
-	TOSERVER_RELEASE = 0x29,
-	/*
-		length: 3
-		[0] u16 command
-		[2] u8 button
-	*/
+	TOSERVER_RELEASE = 0x29, // Not used
 
 	TOSERVER_SIGNTEXT = 0x30,
 	/*

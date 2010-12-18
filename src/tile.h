@@ -38,9 +38,59 @@ enum TileID
 	TILE_MUD,
 	TILE_TREE_TOP,
 	TILE_MUD_WITH_GRASS,
+	TILE_CLOUD,
 	
 	// Count of tile ids
 	TILES_COUNT
+};
+
+enum TileSpecialFeature
+{
+	TILEFEAT_NONE,
+	TILEFEAT_CRACK,
+};
+
+struct TileCrackParam
+{
+	bool operator==(TileCrackParam &other)
+	{
+		return progression == other.progression;
+	}
+
+	u16 progression;
+};
+
+struct TileSpec
+{
+	TileSpec()
+	{
+		id = TILE_NONE;
+		feature = TILEFEAT_NONE;
+	}
+
+	bool operator==(TileSpec &other)
+	{
+		if(id != other.id)
+			return false;
+		if(feature != other.feature)
+			return false;
+		if(feature == TILEFEAT_NONE)
+			return true;
+		if(feature == TILEFEAT_CRACK)
+		{
+			return param.crack == other.param.crack;
+		}
+		// Invalid feature
+		assert(0);
+		return false;
+	}
+
+	u16 id; // Id in g_tile_materials, TILE_NONE=none
+	enum TileSpecialFeature feature;
+	union
+	{
+		TileCrackParam crack;
+	} param;
 };
 
 // A mapping from tiles to names of cached textures

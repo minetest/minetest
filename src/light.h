@@ -24,6 +24,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 // This directly sets the range of light
 #define LIGHT_MAX 14
+// Light is stored as 4 bits, thus 15 is the maximum.
 // This brightness is reserved for sunlight
 #define LIGHT_SUN 15
 

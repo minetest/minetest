@@ -75,6 +75,7 @@ enum Content
 	CONTENT_MESE,
 	CONTENT_MUD,
 	CONTENT_OCEAN,
+	CONTENT_CLOUD,
 	
 	// This is set to the number of the actual values in this enum
 	USEFUL_CONTENT_COUNT
@@ -367,7 +368,8 @@ struct MapNode
 		// If not transparent, can't set light
 		if(light_propagates() == false)
 			return;
-		param = a_light;
+		param &= 0xf0;
+		param |= a_light;
 	}
 
 	u16 getTile(v3s16 dir)

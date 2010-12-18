@@ -196,7 +196,7 @@ public:
 	void pressGround(u8 button, v3s16 nodepos_undersurface,
 			v3s16 nodepos_oversurface, u16 item);
 	void clickObject(u8 button, v3s16 blockpos, s16 id, u16 item);
-	void release(u8 button);
+	void stopDigging();
 
 	void sendSignText(v3s16 blockpos, s16 id, std::string text);
 	

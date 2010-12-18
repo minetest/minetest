@@ -41,6 +41,7 @@ u16 g_content_tiles[USEFUL_CONTENT_COUNT][6] =
 	{TILE_MESE,TILE_MESE,TILE_MESE,TILE_MESE,TILE_MESE,TILE_MESE},
 	{TILE_MUD,TILE_MUD,TILE_MUD,TILE_MUD,TILE_MUD,TILE_MUD},
 	{TILE_WATER,TILE_WATER,TILE_WATER,TILE_WATER,TILE_WATER,TILE_WATER},
+	{TILE_CLOUD,TILE_CLOUD,TILE_CLOUD,TILE_CLOUD,TILE_CLOUD,TILE_CLOUD},
 };
 
 const char * g_content_inventory_textures[USEFUL_CONTENT_COUNT] =
@@ -55,5 +56,6 @@ const char * g_content_inventory_textures[USEFUL_CONTENT_COUNT] =
 	"mese",
 	"mud",
 	"water",
+	"cloud",
 };
 

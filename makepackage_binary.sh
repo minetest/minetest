@@ -29,7 +29,7 @@ cp -r data/water.png $PACKAGEPATH/data/
 cp -r data/tree.png $PACKAGEPATH/data/
 cp -r data/leaves.png $PACKAGEPATH/data/
 cp -r data/mese.png $PACKAGEPATH/data/
-cp -r data/light.png $PACKAGEPATH/data/
+cp -r data/cloud.png $PACKAGEPATH/data/
 cp -r data/sign.png $PACKAGEPATH/data/
 cp -r data/sign_back.png $PACKAGEPATH/data/
 cp -r data/rat.png $PACKAGEPATH/data/

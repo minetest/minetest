@@ -46,8 +46,25 @@ enum{
 
 struct FastFace
 {
-	u16 tile;
+	TileSpec tile;
 	video::S3DVertex vertices[4]; // Precalculated vertices
+};
+
+enum NodeModType
+{
+	NODEMOD_NONE,
+	NODEMOD_CHANGECONTENT, //param is content id
+	NODEMOD_CRACK // param is crack progression
+};
+
+struct NodeMod
+{
+	NodeMod()
+	{
+		type = NODEMOD_NONE;
+	}
+	enum NodeModType type;
+	u16 param;
 };
 
 enum
@@ -283,12 +300,12 @@ public:
 					setNode(x0+x, y0+y, z0+z, node);
 	}
 
-	static FastFace * makeFastFace(u16 tile, u8 light, v3f p,
+	static FastFace * makeFastFace(TileSpec tile, u8 light, v3f p,
 			v3s16 dir, v3f scale, v3f posRelative_f);
 	
 	u8 getFaceLight(v3s16 p, v3s16 face_dir);
 	
-	u16 getNodeTile(v3s16 p, v3s16 face_dir);
+	TileSpec getNodeTile(v3s16 p, v3s16 face_dir);
 	u8 getNodeContent(v3s16 p);
 
 	/*
@@ -380,6 +397,24 @@ public:
 	{
 		return m_objects.getCount();
 	}
+	
+	/*
+		Methods for setting temporary modifications to nodes for
+		drawing
+	*/
+	void setTempMod(v3s16 p, NodeMod mod)
+	{
+		m_temp_mods[p] = mod;
+	}
+	void clearTempMod(v3s16 p)
+	{
+		if(m_temp_mods.find(p))
+			m_temp_mods.remove(p);
+	}
+	void clearTempMods()
+	{
+		m_temp_mods.clear();
+	}
 
 	/*
 		Serialization
@@ -432,6 +467,9 @@ private:
 	
 	MapBlockObjectList m_objects;
 	
+	// Temporary modifications to nodes
+	// These are only used when drawing
+	core::map<v3s16, NodeMod> m_temp_mods;
 };
 
 inline bool blockpos_over_limit(v3s16 p)

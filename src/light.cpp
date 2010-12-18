@@ -19,49 +19,45 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "light.h"
 
-/*
-
-#!/usr/bin/python
-
-from math import *
-from sys import stdout
-
-# We want 0 at light=0 and 255 at light=LIGHT_MAX
-LIGHT_MAX = 15
-
-L = []
-for i in range(1,LIGHT_MAX+1):
-    L.append(int(round(255.0 * 0.69 ** (i-1))))
-	L.append(0)
-
-L.reverse()
-for i in L:
-	stdout.write(str(i)+",\n")
-
-*/
-
-/*
-	The first value should be 0, the last value should be 255.
-*/
+// LIGHT_MAX is 15, 0-15 is 16 values
 /*u8 light_decode_table[LIGHT_MAX+1] = 
 {
 0,
-2,
-3,
-4,
-6,
 9,
-13,
-19,
-28,
-40,
-58,
-84,
-121,
-176,
+12,
+14,
+16,
+20,
+26,
+34,
+45,
+61,
+81,
+108,
+143,
+191,
 255,
 };*/
+u8 light_decode_table[LIGHT_MAX+1] = 
+{
+0,
+5,
+12,
+22,
+35,
+50,
+65,
+85,
+100,
+120,
+140,
+160,
+185,
+215,
+255,
+};
 
+#if 0
 /*
 #!/usr/bin/python
 
@@ -100,48 +96,6 @@ u8 light_decode_table[LIGHT_MAX+1] =
 191,
 255,
 };
-
-/*
-#!/usr/bin/python
-
-from math import *
-from sys import stdout
-
-# We want 0 at light=0 and 255 at light=LIGHT_MAX
-LIGHT_MAX = 14
-#FACTOR = 0.69
-FACTOR = 0.75
-
-maxlight = 255
-minlight = 8
-
-L = []
-for i in range(1,LIGHT_MAX+1):
-    L.append(minlight+int(round((maxlight-minlight) * FACTOR ** (i-1))))
-    #L.append(int(round(255.0 * FACTOR ** (i-1))))
-L.append(minlight)
-
-L.reverse()
-for i in L:
-    stdout.write(str(i)+",\n")
-*/
-/*u8 light_decode_table[LIGHT_MAX+1] = 
-{
-8,
-14,
-16,
-18,
-22,
-27,
-33,
-41,
-52,
-67,
-86,
-112,
-147,
-193,
-255,
-};*/
+#endif
 
 

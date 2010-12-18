@@ -1101,22 +1101,110 @@ void Server::AsyncRunStep()
 		}
 	}
 
-	// Run time- and client- related stuff
-	// NOTE: If you intend to add something here, check that it
-	// doesn't fit in RemoteClient::GetNextBlocks for example.
-	/*{
-		// Clients are behind connection lock
-		JMutexAutoLock lock(m_con_mutex);
+	/*
+		Update digging
+
+		NOTE: Some of this could be moved to RemoteClient
+	*/
+
+	{
+		JMutexAutoLock envlock(m_env_mutex);
+		JMutexAutoLock conlock(m_con_mutex);
 
 		for(core::map<u16, RemoteClient*>::Iterator
 			i = m_clients.getIterator();
 			i.atEnd() == false; i++)
 		{
 			RemoteClient *client = i.getNode()->getValue();
-			//con::Peer *peer = m_con.GetPeer(client->peer_id);
-			//client->RunSendingTimeouts(dtime, peer->resend_timeout);
+			Player *player = m_env.getPlayer(client->peer_id);
+
+			JMutexAutoLock digmutex(client->m_dig_mutex);
+
+			if(client->m_dig_tool_item == -1)
+				continue;
+
+			client->m_dig_time_remaining -= dtime;
+
+			if(client->m_dig_time_remaining > 0)
+				continue;
+
+			v3s16 p_under = client->m_dig_position;
+			
+			// Mandatory parameter; actually used for nothing
+			core::map<v3s16, MapBlock*> modified_blocks;
+
+			u8 material;
+
+			try
+			{
+				// Get material at position
+				material = m_env.getMap().getNode(p_under).d;
+				// If it's not diggable, do nothing
+				if(content_diggable(material) == false)
+				{
+					derr_server<<"Server: Not finishing digging: Node not diggable"
+							<<std::endl;
+					client->m_dig_tool_item = -1;
+					break;
+				}
+			}
+			catch(InvalidPositionException &e)
+			{
+				derr_server<<"Server: Not finishing digging: Node not found"
+						<<std::endl;
+				client->m_dig_tool_item = -1;
+				break;
+			}
+			
+			// Create packet
+			u32 replysize = 8;
+			SharedBuffer<u8> reply(replysize);
+			writeU16(&reply[0], TOCLIENT_REMOVENODE);
+			writeS16(&reply[2], p_under.X);
+			writeS16(&reply[4], p_under.Y);
+			writeS16(&reply[6], p_under.Z);
+			// Send as reliable
+			m_con.SendToAll(0, reply, true);
+			
+			if(g_settings.getBool("creative_mode") == false)
+			{
+				// Add to inventory and send inventory
+				InventoryItem *item = new MaterialItem(material, 1);
+				player->inventory.addItem(item);
+				SendInventory(player->peer_id);
+			}
+
+			/*
+				Remove the node
+				(this takes some time so it is done after the quick stuff)
+			*/
+			m_env.getMap().removeNodeAndUpdate(p_under, modified_blocks);
+			
+			/*
+				Update water
+			*/
+			
+			// Update water pressure around modification
+			// This also adds it to m_flow_active_nodes if appropriate
+
+			MapVoxelManipulator v(&m_env.getMap());
+			v.m_disable_water_climb =
+					g_settings.getBool("disable_water_climb");
+			
+			VoxelArea area(p_under-v3s16(1,1,1), p_under+v3s16(1,1,1));
+
+			try
+			{
+				v.updateAreaWaterPressure(area, m_flow_active_nodes);
+			}
+			catch(ProcessingLimitException &e)
+			{
+				dstream<<"Processing limit reached (1)"<<std::endl;
+			}
+			
+			v.blitBack(modified_blocks);
 		}
-	}*/
+	}
 
 	// Send object positions
 	{
@@ -1466,19 +1554,23 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 			block->removeObject(id);
 		}
 	}
-	else if(command == TOSERVER_PRESS_GROUND)
+	else if(command == TOSERVER_GROUND_ACTION)
 	{
 		if(datasize < 17)
 			return;
 		/*
 			length: 17
 			[0] u16 command
-			[2] u8 button (0=left, 1=right)
+			[2] u8 action
 			[3] v3s16 nodepos_undersurface
 			[9] v3s16 nodepos_abovesurface
 			[15] u16 item
+			actions:
+			0: start digging
+			1: place block
+			2: stop digging (all parameters ignored)
 		*/
-		u8 button = readU8(&data[2]);
+		u8 action = readU8(&data[2]);
 		v3s16 p_under;
 		p_under.X = readS16(&data[3]);
 		p_under.Y = readS16(&data[5]);
@@ -1492,12 +1584,10 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 		//TODO: Check that target is reasonably close
 		
 		/*
-			Left button digs ground
+			0: start digging
 		*/
-		if(button == 0)
+		if(action == 0)
 		{
-
-			core::map<v3s16, MapBlock*> modified_blocks;
 
 			u8 material;
 
@@ -1513,70 +1603,39 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 			}
 			catch(InvalidPositionException &e)
 			{
-				derr_server<<"Server: Ignoring REMOVENODE: Node not found"
+				derr_server<<"Server: Not starting digging: Node not found"
 						<<std::endl;
 				return;
 			}
 			
+			/*
+				Set stuff in RemoteClient
+			*/
+			RemoteClient *client = getClient(peer->id);
+			JMutexAutoLock(client->m_dig_mutex);
+			client->m_dig_tool_item = 0;
+			client->m_dig_position = p_under;
+			client->m_dig_time_remaining = 1.0;
+			
 			// Reset build time counter
 			getClient(peer->id)->m_time_from_building.set(0.0);
 			
-			// Create packet
-			u32 replysize = 8;
-			SharedBuffer<u8> reply(replysize);
-			writeU16(&reply[0], TOCLIENT_REMOVENODE);
-			writeS16(&reply[2], p_under.X);
-			writeS16(&reply[4], p_under.Y);
-			writeS16(&reply[6], p_under.Z);
-			// Send as reliable
-			m_con.SendToAll(0, reply, true);
-			
-			if(g_settings.getBool("creative_mode") == false)
-			{
-				// Add to inventory and send inventory
-				InventoryItem *item = new MaterialItem(material, 1);
-				player->inventory.addItem(item);
-				SendInventory(player->peer_id);
-			}
+		} // action == 0
 
-			/*
-				Remove the node
-				(this takes some time so it is done after the quick stuff)
-			*/
-			m_env.getMap().removeNodeAndUpdate(p_under, modified_blocks);
-			
-			/*
-				Update water
-			*/
-			
-			// Update water pressure around modification
-			// This also adds it to m_flow_active_nodes if appropriate
-
-			MapVoxelManipulator v(&m_env.getMap());
-			v.m_disable_water_climb =
-					g_settings.getBool("disable_water_climb");
-			
-			VoxelArea area(p_under-v3s16(1,1,1), p_under+v3s16(1,1,1));
-
-			try
-			{
-				v.updateAreaWaterPressure(area, m_flow_active_nodes);
-			}
-			catch(ProcessingLimitException &e)
-			{
-				dstream<<"Processing limit reached (1)"<<std::endl;
-			}
-			
-			v.blitBack(modified_blocks);
-			
-			// Add the node to m_flow_active_nodes.
-			//m_flow_active_nodes[p_under] = 1;
-
-		} // button == 0
 		/*
-			Right button places blocks and stuff
+			2: stop digging
 		*/
-		else if(button == 1)
+		else if(action == 2)
+		{
+			RemoteClient *client = getClient(peer->id);
+			JMutexAutoLock digmutex(client->m_dig_mutex);
+			client->m_dig_tool_item = -1;
+		}
+
+		/*
+			1: place block
+		*/
+		else if(action == 1)
 		{
 
 			// Get item
@@ -1772,16 +1831,17 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 				}
 			}
 
-		} // button == 1
+		} // action == 1
 		/*
-			Catch invalid buttons
+			Catch invalid actions
 		*/
 		else
 		{
-			derr_server<<"WARNING: Server: Invalid button "
-					<<button<<std::endl;
+			derr_server<<"WARNING: Server: Invalid action "
+					<<action<<std::endl;
 		}
 	}
+#if 0
 	else if(command == TOSERVER_RELEASE)
 	{
 		if(datasize < 3)
@@ -1791,8 +1851,9 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 			[0] u16 command
 			[2] u8 button
 		*/
-		//TODO
+		dstream<<"TOSERVER_RELEASE ignored"<<std::endl;
 	}
+#endif
 	else if(command == TOSERVER_SIGNTEXT)
 	{
 		/*
@@ -1978,21 +2039,26 @@ void Server::peerAdded(con::Peer *peer)
 		/*
 			Set player position
 		*/
-
+		
+		// We're going to throw the player to this position
+		//v2s16 nodepos(29990,29990);
+		//v2s16 nodepos(9990,9990);
+		v2s16 nodepos(0,0);
+		v2s16 sectorpos = getNodeSectorPos(nodepos);
 		// Get zero sector (it could have been unloaded to disk)
-		m_env.getMap().emergeSector(v2s16(0,0));
+		m_env.getMap().emergeSector(sectorpos);
 		// Get ground height at origin
-		f32 groundheight = m_env.getMap().getGroundHeight(v2s16(0,0), true);
-		// The zero sector should have been generated
+		f32 groundheight = m_env.getMap().getGroundHeight(nodepos, true);
+		// The sector should have been generated -> groundheight exists
 		assert(groundheight > GROUNDHEIGHT_VALID_MINVALUE);
 		// Don't go underwater
 		if(groundheight < WATER_LEVEL)
 			groundheight = WATER_LEVEL;
 
 		player->setPosition(intToFloat(v3s16(
-				0,
+				nodepos.X,
 				groundheight + 1,
-				0
+				nodepos.Y
 		)));
 
 		/*

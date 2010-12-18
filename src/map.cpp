@@ -18,7 +18,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 */
 
 #include "map.h"
-//#include "player.h"
 #include "main.h"
 #include "jmutexautolock.h"
 #include "client.h"
@@ -112,13 +111,6 @@ Map::~Map()
 	}
 }
 
-/*bool Map::sectorExists(v2s16 p)
-{
-	JMutexAutoLock lock(m_sector_mutex);
-	core::map<v2s16, MapSector*>::Node *n = m_sectors.find(p);
-	return (n != NULL);
-}*/
-
 MapSector * Map::getSectorNoGenerate(v2s16 p)
 {
 	JMutexAutoLock lock(m_sector_mutex);
@@ -160,20 +152,6 @@ MapBlock * Map::getBlockNoCreate(v3s16 p3d)
 	return block;
 }
 
-/*MapBlock * Map::getBlock(v3s16 p3d, bool generate)
-{
-	dstream<<"Map::getBlock() with generate=true called"
-			<<std::endl;
-	v2s16 p2d(p3d.X, p3d.Z);
-	//MapSector * sector = getSector(p2d, generate);
-	MapSector * sector = getSectorNoGenerate(p2d);
-
-	if(sector == NULL)
-		throw InvalidPositionException();
-
-	return sector->getBlockNoCreate(p3d.Y);
-}*/
-
 f32 Map::getGroundHeight(v2s16 p, bool generate)
 {
 	try{
@@ -214,156 +192,6 @@ bool Map::isNodeUnderground(v3s16 p)
 		return false;
 	}
 }
-
-#if 0
-void Map::interpolate(v3s16 block,
-		core::map<v3s16, MapBlock*> & modified_blocks)
-{
-	const v3s16 dirs[6] = {
-		v3s16(0,0,1), // back
-		v3s16(0,1,0), // top
-		v3s16(1,0,0), // right
-		v3s16(0,0,-1), // front
-		v3s16(0,-1,0), // bottom
-		v3s16(-1,0,0), // left
-	};
-
-	if(from_nodes.size() == 0)
-		return;
-	
-	u32 blockchangecount = 0;
-
-	core::map<v3s16, bool> lighted_nodes;
-	core::map<v3s16, bool>::Iterator j;
-	j = from_nodes.getIterator();
-
-	/*
-		Initialize block cache
-	*/
-	v3s16 blockpos_last;
-	MapBlock *block = NULL;
-	// Cache this a bit, too
-	bool block_checked_in_modified = false;
-	
-	for(; j.atEnd() == false; j++)
-	//for(; j != from_nodes.end(); j++)
-	{
-		v3s16 pos = j.getNode()->getKey();
-		//v3s16 pos = *j;
-		//dstream<<"pos=("<<pos.X<<","<<pos.Y<<","<<pos.Z<<")"<<std::endl;
-		v3s16 blockpos = getNodeBlockPos(pos);
-		
-		// Only fetch a new block if the block position has changed
-		try{
-			if(block == NULL || blockpos != blockpos_last){
-				block = getBlockNoCreate(blockpos);
-				blockpos_last = blockpos;
-
-				block_checked_in_modified = false;
-				blockchangecount++;
-			}
-		}
-		catch(InvalidPositionException &e)
-		{
-			continue;
-		}
-
-		if(block->isDummy())
-			continue;
-
-		// Calculate relative position in block
-		v3s16 relpos = pos - blockpos_last * MAP_BLOCKSIZE;
-
-		// Get node straight from the block
-		MapNode n = block->getNode(relpos);
-
-		u8 oldlight = n.getLight();
-		u8 newlight = diminish_light(oldlight);
-
-		// Loop through 6 neighbors
-		for(u16 i=0; i<6; i++){
-			// Get the position of the neighbor node
-			v3s16 n2pos = pos + dirs[i];
-			
-			// Get the block where the node is located
-			v3s16 blockpos = getNodeBlockPos(n2pos);
-
-			try
-			{
-				// Only fetch a new block if the block position has changed
-				try{
-					if(block == NULL || blockpos != blockpos_last){
-						block = getBlockNoCreate(blockpos);
-						blockpos_last = blockpos;
-
-						block_checked_in_modified = false;
-						blockchangecount++;
-					}
-				}
-				catch(InvalidPositionException &e)
-				{
-					continue;
-				}
-				
-				// Calculate relative position in block
-				v3s16 relpos = n2pos - blockpos * MAP_BLOCKSIZE;
-				// Get node straight from the block
-				MapNode n2 = block->getNode(relpos);
-				
-				bool changed = false;
-				/*
-					If the neighbor is brighter than the current node,
-					add to list (it will light up this node on its turn)
-				*/
-				if(n2.getLight() > undiminish_light(oldlight))
-				{
-					lighted_nodes.insert(n2pos, true);
-					//lighted_nodes.push_back(n2pos);
-					changed = true;
-				}
-				/*
-					If the neighbor is dimmer than how much light this node
-					would spread on it, add to list
-				*/
-				if(n2.getLight() < newlight)
-				{
-					if(n2.light_propagates())
-					{
-						n2.setLight(newlight);
-						block->setNode(relpos, n2);
-						lighted_nodes.insert(n2pos, true);
-						//lighted_nodes.push_back(n2pos);
-						changed = true;
-					}
-				}
-
-				// Add to modified_blocks
-				if(changed == true && block_checked_in_modified == false)
-				{
-					// If the block is not found in modified_blocks, add.
-					if(modified_blocks.find(blockpos) == NULL)
-					{
-						modified_blocks.insert(blockpos, block);
-					}
-					block_checked_in_modified = true;
-				}
-			}
-			catch(InvalidPositionException &e)
-			{
-				continue;
-			}
-		}
-	}
-
-	/*dstream<<"spreadLight(): Changed block "
-			<<blockchangecount<<" times"
-			<<" for "<<from_nodes.size()<<" nodes"
-			<<std::endl;*/
-	
-	if(lighted_nodes.size() > 0)
-		spreadLight(lighted_nodes, modified_blocks);
-}
-#endif
 
 /*
 	Goes recursively through the neighbours of the node.
@@ -812,11 +640,6 @@ void Map::updateLighting(core::map<v3s16, MapBlock*> & a_blocks,
 	// For debugging
 	bool debug=false;
 	u32 count_was = modified_blocks.size();
-
-	/*core::list<MapBlock *>::Iterator i = a_blocks.begin();
-	for(; i != a_blocks.end(); i++)
-	{
-		MapBlock *block = *i;*/
 
 	core::map<v3s16, bool> light_sources;
 	
@@ -2764,6 +2587,8 @@ ClientMap::ClientMap(
 	m_client(client),
 	mesh(NULL)
 {
+	mesh_mutex.Init();
+
 	/*m_box = core::aabbox3d<f32>(0,0,0,
 			map->getW()*BS, map->getH()*BS, map->getD()*BS);*/
 	/*m_box = core::aabbox3d<f32>(0,0,0,
@@ -2772,8 +2597,8 @@ ClientMap::ClientMap(
 			map->getSizeNodes().Z * BS);*/
 	m_box = core::aabbox3d<f32>(-BS*1000000,-BS*1000000,-BS*1000000,
 			BS*1000000,BS*1000000,BS*1000000);
-
-	mesh_mutex.Init();
+	
+	//setPosition(v3f(BS,BS,BS));
 }
 
 ClientMap::~ClientMap()

@@ -38,6 +38,9 @@ Configuration file:
 	../minetest.conf
 	../../minetest.conf
 
+Command-line options:
+- Use --help
+
 Running on Windows:
 - The working directory should be ./bin
 
