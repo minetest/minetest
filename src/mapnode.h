@@ -280,6 +280,12 @@ inline u16 content_tile(u8 c, v3s16 dir)
 	return g_content_tiles[c][dir_i];
 }
 
+enum LightBank
+{
+	LIGHTBANK_DAY,
+	LIGHTBANK_NIGHT
+};
+
 struct MapNode
 {
 	// Content
@@ -352,24 +358,77 @@ struct MapNode
 		return 0;
 	}
 
-	u8 getLight()
+	u8 getLightBanksWithSource()
+	{
+		// Select the brightest of [light source, propagated light]
+		u8 lightday = 0;
+		u8 lightnight = 0;
+		if(light_propagates())
+		{
+			lightday = param & 0x0f;
+			lightnight = (param>>4)&0x0f;
+		}
+		if(light_source() > lightday)
+			lightday = light_source();
+		if(light_source() > lightnight)
+			lightnight = light_source();
+		return (lightday&0x0f) | ((lightnight<<4)&0xf0);
+	}
+
+	void setLightBanks(u8 a_light)
+	{
+		param = a_light;
+	}
+
+	u8 getLight(enum LightBank bank)
 	{
 		// Select the brightest of [light source, propagated light]
 		u8 light = 0;
 		if(light_propagates())
-			light = param & 0x0f;
+		{
+			if(bank == LIGHTBANK_DAY)
+				light = param & 0x0f;
+			else if(bank == LIGHTBANK_NIGHT)
+				light = (param>>4)&0x0f;
+			else
+				assert(0);
+		}
 		if(light_source() > light)
 			light = light_source();
 		return light;
 	}
+	
+	// 0 <= daylight_factor <= 1000
+	u8 getLightBlend(u32 daylight_factor)
+	{
+		u8 l = ((daylight_factor * getLight(LIGHTBANK_DAY)
+			+ (1000-daylight_factor) * getLight(LIGHTBANK_NIGHT))
+			)/1000;
+		u8 max = LIGHT_MAX;
+		if(getLight(LIGHTBANK_DAY) == LIGHT_SUN)
+			max = LIGHT_SUN;
+		if(l > max)
+			l = max;
+		return l;
+	}
 
-	void setLight(u8 a_light)
+	void setLight(enum LightBank bank, u8 a_light)
 	{
 		// If not transparent, can't set light
 		if(light_propagates() == false)
 			return;
-		param &= 0xf0;
-		param |= a_light;
+		if(bank == LIGHTBANK_DAY)
+		{
+			param &= 0xf0;
+			param |= a_light & 0x0f;
+		}
+		else if(bank == LIGHTBANK_NIGHT)
+		{
+			param &= 0x0f;
+			param |= (a_light & 0x0f)<<4;
+		}
+		else
+			assert(0);
 	}
 
 	u16 getTile(v3s16 dir)

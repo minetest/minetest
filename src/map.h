@@ -333,25 +333,33 @@ public:
 		blockref->setNode(relpos, n);
 	}*/
 
-	void unspreadLight(core::map<v3s16, u8> & from_nodes,
+	void unspreadLight(enum LightBank bank,
+			core::map<v3s16, u8> & from_nodes,
 			core::map<v3s16, bool> & light_sources,
 			core::map<v3s16, MapBlock*> & modified_blocks);
 
-	void unLightNeighbors(v3s16 pos, u8 lightwas,
+	void unLightNeighbors(enum LightBank bank,
+			v3s16 pos, u8 lightwas,
 			core::map<v3s16, bool> & light_sources,
 			core::map<v3s16, MapBlock*> & modified_blocks);
 	
-	void spreadLight(core::map<v3s16, bool> & from_nodes,
+	void spreadLight(enum LightBank bank,
+			core::map<v3s16, bool> & from_nodes,
 			core::map<v3s16, MapBlock*> & modified_blocks);
 	
-	void lightNeighbors(v3s16 pos,
+	void lightNeighbors(enum LightBank bank,
+			v3s16 pos,
 			core::map<v3s16, MapBlock*> & modified_blocks);
 
-	v3s16 getBrightestNeighbour(v3s16 p);
+	v3s16 getBrightestNeighbour(enum LightBank bank, v3s16 p);
 
 	s16 propagateSunlight(v3s16 start,
 			core::map<v3s16, MapBlock*> & modified_blocks);
 	
+	void updateLighting(enum LightBank bank,
+			core::map<v3s16, MapBlock*>  & a_blocks,
+			core::map<v3s16, MapBlock*> & modified_blocks);
+			
 	void updateLighting(core::map<v3s16, MapBlock*>  & a_blocks,
 			core::map<v3s16, MapBlock*> & modified_blocks);
 			
@@ -367,7 +375,9 @@ public:
 		Updates the faces of the given block and blocks on the
 		leading edge.
 	*/
-	void updateMeshes(v3s16 blockpos);
+	void updateMeshes(v3s16 blockpos, u32 daylight_factor);
+
+	void expireMeshes();
 
 	//core::aabbox3d<s16> getDisplayedBlockArea();
 

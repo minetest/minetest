@@ -19,7 +19,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "light.h"
 
-// LIGHT_MAX is 15, 0-15 is 16 values
+// LIGHT_MAX is 14, 0-14 is 15 values
 /*u8 light_decode_table[LIGHT_MAX+1] = 
 {
 0,

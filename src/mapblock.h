@@ -108,6 +108,7 @@ public:
 			m_pos(pos),
 			changed(true),
 			is_underground(false),
+			m_mesh_expired(false),
 			m_objects(this)
 			//is_incomplete(false)
 	{
@@ -168,6 +169,16 @@ public:
 	void setChangedFlag()
 	{
 		changed = true;
+	}
+
+	void setMeshExpired(bool expired)
+	{
+		m_mesh_expired = expired;
+	}
+	
+	bool getMeshExpired()
+	{
+		return m_mesh_expired;
 	}
 
 	v3s16 getPos()
@@ -303,7 +314,7 @@ public:
 	static FastFace * makeFastFace(TileSpec tile, u8 light, v3f p,
 			v3s16 dir, v3f scale, v3f posRelative_f);
 	
-	u8 getFaceLight(v3s16 p, v3s16 face_dir);
+	u8 getFaceLight(u32 daylight_factor, v3s16 p, v3s16 face_dir);
 	
 	TileSpec getNodeTile(v3s16 p, v3s16 face_dir);
 	u8 getNodeContent(v3s16 p);
@@ -313,13 +324,15 @@ public:
 		translate_dir: unit vector with only one of x, y or z
 		face_dir: unit vector with only one of x, y or z
 	*/
-	void updateFastFaceRow(v3s16 startpos,
+	void updateFastFaceRow(
+			u32 daylight_factor,
+			v3s16 startpos,
 			u16 length,
 			v3s16 translate_dir,
 			v3s16 face_dir,
 			core::list<FastFace*> &dest);
 
-	void updateMesh();
+	void updateMesh(u32 daylight_factor);
 
 	bool propagateSunlight(core::map<v3s16, bool> & light_sources);
 	
@@ -464,6 +477,8 @@ private:
 		At least /has been/ used. 8)
 	*/
 	bool is_underground;
+
+	bool m_mesh_expired;
 	
 	MapBlockObjectList m_objects;
 	

@@ -24,6 +24,7 @@ Environment::Environment(Map *map, std::ostream &dout):
 		m_dout(dout)
 {
 	m_map = map;
+	m_daylight_ratio = 0.2;
 }
 
 Environment::~Environment()
@@ -152,7 +153,7 @@ void Environment::step(float dtime)
 					{
 						v3s16 p_blocks = getNodeBlockPos(bottompos);
 						MapBlock *b = m_map->getBlockNoCreate(p_blocks);
-						b->updateMesh();
+						b->updateMesh(m_daylight_ratio);
 					}
 				}
 			}
@@ -238,5 +239,25 @@ void Environment::printPlayers(std::ostream &o)
 		Player *player = *i;
 		o<<"Player peer_id="<<player->peer_id<<std::endl;
 	}
+}
+
+void Environment::updateMeshes(v3s16 blockpos)
+{
+	m_map->updateMeshes(blockpos, m_daylight_ratio);
+}
+
+void Environment::expireMeshes()
+{
+	m_map->expireMeshes();
+}
+
+void Environment::setDaylightRatio(u32 r)
+{
+	m_daylight_ratio = r;
+}
+
+u32 Environment::getDaylightRatio()
+{
+	return m_daylight_ratio;
 }
 

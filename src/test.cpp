@@ -194,7 +194,8 @@ struct TestMapNode
 
 		// Default values
 		assert(n.d == CONTENT_AIR);
-		assert(n.getLight() == 0);
+		assert(n.getLight(LIGHTBANK_DAY) == 0);
+		assert(n.getLight(LIGHTBANK_NIGHT) == 0);
 		
 		// Transparency
 		n.d = CONTENT_AIR;
@@ -431,11 +432,13 @@ struct TestMapBlock
 		// All nodes should have been set to
 		// .d=CONTENT_AIR and .getLight() = 0
 		for(u16 z=0; z<MAP_BLOCKSIZE; z++)
-			for(u16 y=0; y<MAP_BLOCKSIZE; y++)
-				for(u16 x=0; x<MAP_BLOCKSIZE; x++){
-					assert(b.getNode(v3s16(x,y,z)).d == CONTENT_AIR);
-					assert(b.getNode(v3s16(x,y,z)).getLight() == 0);
-				}
+		for(u16 y=0; y<MAP_BLOCKSIZE; y++)
+		for(u16 x=0; x<MAP_BLOCKSIZE; x++)
+		{
+			assert(b.getNode(v3s16(x,y,z)).d == CONTENT_AIR);
+			assert(b.getNode(v3s16(x,y,z)).getLight(LIGHTBANK_DAY) == 0);
+			assert(b.getNode(v3s16(x,y,z)).getLight(LIGHTBANK_NIGHT) == 0);
+		}
 		
 		/*
 			Parent fetch functions
@@ -496,7 +499,8 @@ struct TestMapBlock
 			for(u16 y=0; y<MAP_BLOCKSIZE; y++){
 				for(u16 x=0; x<MAP_BLOCKSIZE; x++){
 					MapNode n = b.getNode(v3s16(x,y,z));
-					n.setLight(0);
+					n.setLight(LIGHTBANK_DAY, 0);
+					n.setLight(LIGHTBANK_NIGHT, 0);
 					b.setNode(v3s16(x,y,z), n);
 				}
 			}
@@ -508,22 +512,25 @@ struct TestMapBlock
 			parent.position_valid = true;
 			b.setIsUnderground(false);
 			parent.node.d = CONTENT_AIR;
-			parent.node.setLight(LIGHT_SUN);
+			parent.node.setLight(LIGHTBANK_DAY, LIGHT_SUN);
+			parent.node.setLight(LIGHTBANK_NIGHT, 0);
 			core::map<v3s16, bool> light_sources;
 			// The bottom block is invalid, because we have a shadowing node
 			assert(b.propagateSunlight(light_sources) == false);
-			assert(b.getNode(v3s16(1,4,0)).getLight() == LIGHT_SUN);
-			assert(b.getNode(v3s16(1,3,0)).getLight() == LIGHT_SUN);
-			assert(b.getNode(v3s16(1,2,0)).getLight() == 0);
-			assert(b.getNode(v3s16(1,1,0)).getLight() == 0);
-			assert(b.getNode(v3s16(1,0,0)).getLight() == 0);
-			assert(b.getNode(v3s16(1,2,3)).getLight() == LIGHT_SUN);
-			assert(b.getFaceLight(p, v3s16(0,1,0)) == LIGHT_SUN);
-			assert(b.getFaceLight(p, v3s16(0,-1,0)) == 0);
+			assert(b.getNode(v3s16(1,4,0)).getLight(LIGHTBANK_DAY) == LIGHT_SUN);
+			assert(b.getNode(v3s16(1,3,0)).getLight(LIGHTBANK_DAY) == LIGHT_SUN);
+			assert(b.getNode(v3s16(1,2,0)).getLight(LIGHTBANK_DAY) == 0);
+			assert(b.getNode(v3s16(1,1,0)).getLight(LIGHTBANK_DAY) == 0);
+			assert(b.getNode(v3s16(1,0,0)).getLight(LIGHTBANK_DAY) == 0);
+			assert(b.getNode(v3s16(1,2,3)).getLight(LIGHTBANK_DAY) == LIGHT_SUN);
+			assert(b.getFaceLight(1000, p, v3s16(0,1,0)) == LIGHT_SUN);
+			assert(b.getFaceLight(1000, p, v3s16(0,-1,0)) == 0);
+			assert(b.getFaceLight(0, p, v3s16(0,-1,0)) == 0);
 			// According to MapBlock::getFaceLight,
 			// The face on the z+ side should have double-diminished light
 			//assert(b.getFaceLight(p, v3s16(0,0,1)) == diminish_light(diminish_light(LIGHT_MAX)));
-			assert(b.getFaceLight(p, v3s16(0,0,1)) == diminish_light(LIGHT_MAX));
+			// The face on the z+ side should have diminished light
+			assert(b.getFaceLight(1000, p, v3s16(0,0,1)) == diminish_light(LIGHT_MAX));
 		}
 		/*
 			Check how the block handles being in between blocks with some non-sunlight
@@ -533,7 +540,7 @@ struct TestMapBlock
 			// Make neighbours to exist and set some non-sunlight to them
 			parent.position_valid = true;
 			b.setIsUnderground(true);
-			parent.node.setLight(LIGHT_MAX/2);
+			parent.node.setLight(LIGHTBANK_DAY, LIGHT_MAX/2);
 			core::map<v3s16, bool> light_sources;
 			// The block below should be valid because there shouldn't be
 			// sunlight in there either
@@ -541,7 +548,7 @@ struct TestMapBlock
 			// Should not touch nodes that are not affected (that is, all of them)
 			//assert(b.getNode(v3s16(1,2,3)).getLight() == LIGHT_SUN);
 			// Should set light of non-sunlighted blocks to 0.
-			assert(b.getNode(v3s16(1,2,3)).getLight() == 0);
+			assert(b.getNode(v3s16(1,2,3)).getLight(LIGHTBANK_DAY) == 0);
 		}
 		/*
 			Set up a situation where:
@@ -560,7 +567,7 @@ struct TestMapBlock
 					for(u16 x=0; x<MAP_BLOCKSIZE; x++){
 						MapNode n;
 						n.d = CONTENT_AIR;
-						n.setLight(0);
+						n.setLight(LIGHTBANK_DAY, 0);
 						b.setNode(v3s16(x,y,z), n);
 					}
 				}
@@ -574,7 +581,7 @@ struct TestMapBlock
 				parent.validity_exceptions.push_back(v3s16(MAP_BLOCKSIZE+x, MAP_BLOCKSIZE-1, MAP_BLOCKSIZE+z));
 			}
 			// Lighting value for the valid nodes
-			parent.node.setLight(LIGHT_MAX/2);
+			parent.node.setLight(LIGHTBANK_DAY, LIGHT_MAX/2);
 			core::map<v3s16, bool> light_sources;
 			// Bottom block is not valid
 			assert(b.propagateSunlight(light_sources) == false);

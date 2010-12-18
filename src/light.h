@@ -22,6 +22,10 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "common_irrlicht.h"
 
+/*
+	Lower level lighting stuff
+*/
+
 // This directly sets the range of light
 #define LIGHT_MAX 14
 // Light is stored as 4 bits, thus 15 is the maximum.

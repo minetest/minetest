@@ -734,12 +734,12 @@ bool VoxelManipulator::flowWater(v3s16 removed_pos,
 		correctly. Otherwise unspreadLight will fuck up when water
 		has replaced a light source.
 	*/
-	u8 light = m_data[m_area.index(removed_pos)].getLight();
+	u8 light = m_data[m_area.index(removed_pos)].getLightBanksWithSource();
 
 	m_data[m_area.index(removed_pos)].d = m;
 	m_flags[m_area.index(removed_pos)] = f;
 
-	m_data[m_area.index(removed_pos)].setLight(light);
+	m_data[m_area.index(removed_pos)].setLightBanks(light);
 	
 	/*// NOTE: HACK: This has to be set to LIGHT_MAX so that
 	// unspreadLight will clear all light that came from this node.

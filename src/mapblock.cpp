@@ -147,20 +147,18 @@ FastFace * MapBlock::makeFastFace(TileSpec tile, u8 light, v3f p,
 
 	If either of the nodes doesn't exist, light is 0.
 */
-u8 MapBlock::getFaceLight(v3s16 p, v3s16 face_dir)
+u8 MapBlock::getFaceLight(u32 daylight_factor, v3s16 p, v3s16 face_dir)
 {
 	try{
 		MapNode n = getNodeParent(p);
 		MapNode n2 = getNodeParent(p + face_dir);
 		u8 light;
-		/*if(n.solidness() < n2.solidness())
-			light = n.getLight();
+		u8 l1 = n.getLightBlend(daylight_factor);
+		u8 l2 = n2.getLightBlend(daylight_factor);
+		if(l1 > l2)
+			light = l1;
 		else
-			light = n2.getLight();*/
-		if(n.getLight() > n2.getLight())
-			light = n.getLight();
-		else
-			light = n2.getLight();
+			light = l2;
 
 		// Make some nice difference to different sides
 
@@ -272,7 +270,9 @@ u8 MapBlock::getNodeContent(v3s16 p)
 	translate_dir: unit vector with only one of x, y or z
 	face_dir: unit vector with only one of x, y or z
 */
-void MapBlock::updateFastFaceRow(v3s16 startpos,
+void MapBlock::updateFastFaceRow(
+		u32 daylight_factor,
+		v3s16 startpos,
 		u16 length,
 		v3s16 translate_dir,
 		v3s16 face_dir,
@@ -292,7 +292,7 @@ void MapBlock::updateFastFaceRow(v3s16 startpos,
 	/*
 		Get face light at starting position
 	*/
-	u8 light = getFaceLight(p, face_dir);
+	u8 light = getFaceLight(daylight_factor, p, face_dir);
 	
 	u16 continuous_tiles_count = 0;
 	
@@ -312,7 +312,7 @@ void MapBlock::updateFastFaceRow(v3s16 startpos,
 			p_next = p + translate_dir;
 			tile0_next = getNodeTile(p_next, face_dir);
 			tile1_next = getNodeTile(p_next + face_dir, -face_dir);
-			light_next = getFaceLight(p_next, face_dir);
+			light_next = getFaceLight(daylight_factor, p_next, face_dir);
 
 			if(tile0_next == tile0
 					&& tile1_next == tile1
@@ -474,12 +474,13 @@ private:
 	core::array<PreMeshBuffer> m_prebuffers;
 };
 
-void MapBlock::updateMesh()
+void MapBlock::updateMesh(u32 daylight_factor)
 {
 	/*v3s16 p = getPosRelative();
 	std::cout<<"MapBlock("<<p.X<<","<<p.Y<<","<<p.Z<<")"
 			<<"::updateMesh(): ";*/
 			//<<"::updateMesh()"<<std::endl;
+	TimeTaker timer1("updateMesh()", g_device);
 	
 	/*
 		TODO: Change this to directly generate the mesh (and get rid
@@ -492,6 +493,9 @@ void MapBlock::updateMesh()
 		We are including the faces of the trailing edges of the block.
 		This means that when something changes, the caller must
 		also update the meshes of the blocks at the leading edges.
+
+		NOTE: This is the slowest part of this method. The other parts
+		      take around 0ms, this takes around 15-70ms.
 	*/
 
 	/*
@@ -500,7 +504,8 @@ void MapBlock::updateMesh()
 	for(s16 y=0; y<MAP_BLOCKSIZE; y++){
 	//for(s16 y=-1; y<MAP_BLOCKSIZE; y++){
 		for(s16 z=0; z<MAP_BLOCKSIZE; z++){
-			updateFastFaceRow(v3s16(0,y,z), MAP_BLOCKSIZE,
+			updateFastFaceRow(daylight_factor,
+					v3s16(0,y,z), MAP_BLOCKSIZE,
 					v3s16(1,0,0),
 					v3s16(0,1,0),
 					*fastfaces_new);
@@ -512,7 +517,8 @@ void MapBlock::updateMesh()
 	for(s16 x=0; x<MAP_BLOCKSIZE; x++){
 	//for(s16 x=-1; x<MAP_BLOCKSIZE; x++){
 		for(s16 y=0; y<MAP_BLOCKSIZE; y++){
-			updateFastFaceRow(v3s16(x,y,0), MAP_BLOCKSIZE,
+			updateFastFaceRow(daylight_factor,
+					v3s16(x,y,0), MAP_BLOCKSIZE,
 					v3s16(0,0,1),
 					v3s16(1,0,0),
 					*fastfaces_new);
@@ -524,7 +530,8 @@ void MapBlock::updateMesh()
 	for(s16 z=0; z<MAP_BLOCKSIZE; z++){
 	//for(s16 z=-1; z<MAP_BLOCKSIZE; z++){
 		for(s16 y=0; y<MAP_BLOCKSIZE; y++){
-			updateFastFaceRow(v3s16(0,y,z), MAP_BLOCKSIZE,
+			updateFastFaceRow(daylight_factor,
+					v3s16(0,y,z), MAP_BLOCKSIZE,
 					v3s16(1,0,0),
 					v3s16(0,0,1),
 					*fastfaces_new);
@@ -568,7 +575,7 @@ void MapBlock::updateMesh()
 				<<"and uses "<<mesh_new->getMeshBufferCount()
 				<<" materials (meshbuffers)"<<std::endl;*/
 	}
-	
+
 	/*
 		Clear temporary FastFaces
 	*/
@@ -667,7 +674,7 @@ void MapBlock::updateMesh()
 			buf->drop();
 		}
 	}
-
+	
 	/*
 		Do some stuff to the mesh
 	*/
@@ -693,6 +700,7 @@ void MapBlock::updateMesh()
 	scene::SMesh *mesh_old = mesh;
 
 	mesh = mesh_new;
+	setMeshExpired(false);
 	
 	if(mesh_old != NULL)
 	{
@@ -743,7 +751,7 @@ bool MapBlock::propagateSunlight(core::map<v3s16, bool> & light_sources)
 			// Check if node above block has sunlight
 			try{
 				MapNode n = getNodeParent(v3s16(x, MAP_BLOCKSIZE, z));
-				if(n.getLight() != LIGHT_SUN)
+				if(n.getLight(LIGHTBANK_DAY) != LIGHT_SUN)
 				{
 					/*if(is_underground)
 					{
@@ -789,7 +797,7 @@ bool MapBlock::propagateSunlight(core::map<v3s16, bool> & light_sources)
 
 					if(n.sunlight_propagates())
 					{
-						n.setLight(LIGHT_SUN);
+						n.setLight(LIGHTBANK_DAY, LIGHT_SUN);
 
 						light_sources.insert(pos_relative + pos, true);
 					}
@@ -809,7 +817,7 @@ bool MapBlock::propagateSunlight(core::map<v3s16, bool> & light_sources)
 
 				if(n.light_propagates())
 				{
-					n.setLight(0);
+					n.setLight(LIGHTBANK_DAY, 0);
 				}
 				else{
 					break;
@@ -831,10 +839,10 @@ bool MapBlock::propagateSunlight(core::map<v3s16, bool> & light_sources)
 				MapNode n = getNodeParent(v3s16(x, -1, z));
 				if(n.light_propagates())
 				{
-					if(n.getLight() == LIGHT_SUN
+					if(n.getLight(LIGHTBANK_DAY) == LIGHT_SUN
 							&& sunlight_should_go_down == false)
 						block_below_is_valid = false;
-					else if(n.getLight() != LIGHT_SUN
+					else if(n.getLight(LIGHTBANK_DAY) != LIGHT_SUN
 							&& sunlight_should_go_down == true)
 						block_below_is_valid = false;
 				}

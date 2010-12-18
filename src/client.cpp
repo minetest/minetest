@@ -81,7 +81,9 @@ Client::Client(IrrlichtDevice *device,
 	camera_direction(0,0,1),
 	m_server_ser_ver(SER_FMT_VER_INVALID),
 	m_step_dtime(0.0),
-	m_inventory_updated(false)
+	m_inventory_updated(false),
+	m_time(0),
+	m_time_counter(0.0)
 {
 	//m_fetchblock_mutex.Init();
 	m_incoming_queue_mutex.Init();
@@ -141,6 +143,29 @@ void Client::step(float dtime)
 	// Limit a bit
 	if(dtime > 2.0)
 		dtime = 2.0;
+	
+	/*
+		Day/night
+	*/
+	{
+		m_time_counter += dtime;
+		int seconds = (int)m_time_counter;
+		m_time_counter -= (float)seconds;
+		m_time += seconds;
+		if(seconds > 0)
+		{
+			dstream<<"m_time="<<m_time<<std::endl;
+			JMutexAutoLock envlock(m_env_mutex);
+			u32 dr = 500+500*sin((float)((m_time/10)%7)/7.*2.*PI);
+			if(dr != m_env.getDaylightRatio())
+			{
+				dstream<<"dr="<<dr<<std::endl;
+				m_env.setDaylightRatio(dr);
+				m_env.expireMeshes();
+			}
+		}
+	}
+
 	
 	//dstream<<"Client steps "<<dtime<<std::endl;
 
@@ -1755,4 +1780,9 @@ void Client::printDebugInfo(std::ostream &os)
 		<<std::endl;
 }
 	
+float Client::getDaylightRatio()
+{
+	JMutexAutoLock envlock(m_env_mutex);
+	return m_env.getDaylightRatio();
+}
 

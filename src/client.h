@@ -133,7 +133,7 @@ public:
 				i.atEnd() == false; i++)
 		{
 			v3s16 p = i.getNode()->getKey();
-			m_env->getMap().updateMeshes(p);
+			m_env->updateMeshes(p);
 		}
 		m_blocks.clear();
 	}
@@ -236,6 +236,8 @@ public:
 
 	// Prints a line or two of info
 	void printDebugInfo(std::ostream &os);
+
+	float getDaylightRatio();
 	
 private:
 	
@@ -284,6 +286,10 @@ private:
 	core::map<v3s16, bool> m_active_blocks;
 
 	PacketCounter m_packetcounter;
+	
+	// Access these only in main thread.
+	u32 m_time;
+	float m_time_counter;
 };
 
 #endif
