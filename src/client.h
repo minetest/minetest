@@ -20,6 +20,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #ifndef CLIENT_HEADER
 #define CLIENT_HEADER
 
+#ifndef SERVER
+
 #include "connection.h"
 #include "environment.h"
 #include "common_irrlicht.h"
@@ -137,7 +139,14 @@ public:
 	/*
 		NOTE: Every public method should be thread-safe
 	*/
-	Client(IrrlichtDevice *device, const char *playername);
+	Client(
+			IrrlichtDevice *device,
+			const char *playername,
+			JMutex &range_mutex,
+			s16 &viewing_range_nodes,
+			bool &viewing_range_all
+			);
+	
 	~Client();
 	/*
 		The name of the local player should already be set when
@@ -290,5 +299,7 @@ private:
 	//u32 m_daynight_ratio;
 };
 
-#endif
+#endif // !SERVER
+
+#endif // !CLIENT_HEADER
 

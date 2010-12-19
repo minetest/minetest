@@ -1062,6 +1062,7 @@ void Map::removeNodeAndUpdate(v3s16 p,
 	}
 }
 
+#ifndef SERVER
 void Map::expireMeshes(bool only_daynight_diffed)
 {
 	TimeTaker timer("expireMeshes()", g_device);
@@ -1127,6 +1128,8 @@ void Map::updateMeshes(v3s16 blockpos, u32 daynight_ratio)
 	}
 	catch(InvalidPositionException &e){}
 }
+
+#endif
 
 bool Map::dayNightDiffed(v3s16 blockpos)
 {
@@ -2678,12 +2681,17 @@ void ServerMap::PrintInfo(std::ostream &out)
 	out<<"ServerMap: ";
 }
 
+#ifndef SERVER
+
 /*
 	ClientMap
 */
 
 ClientMap::ClientMap(
 		Client *client,
+		JMutex &range_mutex,
+		s16 &viewing_range_nodes,
+		bool &viewing_range_all,
 		scene::ISceneNode* parent,
 		scene::ISceneManager* mgr,
 		s32 id
@@ -2691,7 +2699,10 @@ ClientMap::ClientMap(
 	Map(dout_client),
 	scene::ISceneNode(parent, mgr, id),
 	m_client(client),
-	mesh(NULL)
+	mesh(NULL),
+	m_range_mutex(range_mutex),
+	m_viewing_range_nodes(viewing_range_nodes),
+	m_viewing_range_all(viewing_range_all)
 {
 	mesh_mutex.Init();
 
@@ -2805,9 +2816,9 @@ void ClientMap::renderMap(video::IVideoDriver* driver, s32 pass)
 	s16 viewing_range_nodes;
 	bool viewing_range_all;
 	{
-		JMutexAutoLock lock(g_range_mutex);
-		viewing_range_nodes = g_viewing_range_nodes;
-		viewing_range_all = g_viewing_range_all;
+		JMutexAutoLock lock(m_range_mutex);
+		viewing_range_nodes = m_viewing_range_nodes;
+		viewing_range_all = m_viewing_range_all;
 	}
 
 	m_camera_mutex.Lock();
@@ -3042,6 +3053,7 @@ void ClientMap::PrintInfo(std::ostream &out)
 	out<<"ClientMap: ";
 }
 
+#endif // !SERVER
 
 /*
 	MapVoxelManipulator

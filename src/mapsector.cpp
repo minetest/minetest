@@ -607,6 +607,7 @@ ServerMapSector* ServerMapSector::deSerialize(
 	return sector;
 }
 
+#ifndef SERVER
 /*
 	ClientMapSector
 */
@@ -667,5 +668,6 @@ void ClientMapSector::deSerialize(std::istream &is)
 	m_corners[2] = c2;
 	m_corners[3] = c3;
 }
+#endif // !SERVER
 
 //END

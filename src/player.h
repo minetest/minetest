@@ -109,6 +109,26 @@ protected:
 	v3f m_position;
 };
 
+class ServerRemotePlayer : public Player
+{
+public:
+	ServerRemotePlayer()
+	{
+	}
+	virtual ~ServerRemotePlayer()
+	{
+	}
+
+	bool isLocal() const
+	{
+		return false;
+	}
+
+private:
+};
+
+#ifndef SERVER
+
 class RemotePlayer : public Player, public scene::ISceneNode
 {
 public:
@@ -165,6 +185,9 @@ private:
 	core::aabbox3d<f32> m_box;
 };
 
+#endif
+
+#ifndef SERVER
 struct PlayerControl
 {
 	PlayerControl()
@@ -225,6 +248,7 @@ public:
 
 private:
 };
+#endif // !SERVER
 
 #endif
 

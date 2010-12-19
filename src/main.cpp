@@ -1509,7 +1509,10 @@ int main(int argc, char *argv[])
 		Create client
 	*/
 
-	Client client(device, playername);
+	Client client(device, playername,
+			g_range_mutex,
+			g_viewing_range_nodes,
+			g_viewing_range_all);
 	
 	Address connect_address(0,0,0,0, port);
 	try{

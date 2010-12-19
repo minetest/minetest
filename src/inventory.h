@@ -84,6 +84,7 @@ public:
 	{
 		return new MaterialItem(m_content, m_count);
 	}
+#ifndef SERVER
 	video::ITexture * getImage()
 	{
 		/*if(m_content == CONTENT_TORCH)
@@ -97,6 +98,7 @@ public:
 			
 		return g_texturecache.get(g_content_inventory_textures[m_content]);
 	}
+#endif
 	std::string getText()
 	{
 		std::ostringstream os;

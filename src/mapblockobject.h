@@ -135,6 +135,12 @@ public:
 	// A return value of true requests deletion of the object by the caller.
 	// NOTE: Only server calls this.
 	virtual bool serverStep(float dtime) { return false; };
+
+#ifdef SERVER
+	void clientStep(float dtime) {};
+	void addToScene(void *smgr) {};
+	void removeFromScene() {};
+#else
 	// This should do slight animations only or so
 	virtual void clientStep(float dtime) {};
 
@@ -147,6 +153,7 @@ public:
 	// Should return silently if there is nothing to remove
 	// NOTE: This has to be called before calling destructor
 	virtual void removeFromScene() {};
+#endif
 
 	virtual std::string infoText() { return ""; }
 	
@@ -270,8 +277,8 @@ public:
 	virtual bool serverStep(float dtime) { return false; };
 	virtual void clientStep(float dtime) {};
 	
-	virtual void addToScene(scene::ISceneManager *smgr) = 0;
-	virtual void removeFromScene() = 0;
+	/*virtual void addToScene(scene::ISceneManager *smgr) = 0;
+	virtual void removeFromScene() = 0;*/
 
 	/*
 		Special methods
@@ -375,7 +382,7 @@ public:
 
 		return false;
 	}
-	
+#ifndef SERVER
 	virtual void clientStep(float dtime)
 	{
 		m_pos += m_speed * dtime;
@@ -424,6 +431,7 @@ public:
 			m_node = NULL;
 		}
 	}
+#endif
 
 	virtual std::string getInventoryString()
 	{
@@ -520,6 +528,7 @@ public:
 	{
 		return false;
 	}
+#ifndef SERVER
 	virtual void addToScene(scene::ISceneManager *smgr)
 	{
 		if(m_node != NULL)
@@ -587,6 +596,7 @@ public:
 			m_node = NULL;
 		}
 	}
+#endif
 
 	virtual std::string infoText()
 	{
@@ -601,14 +611,15 @@ public:
 	/*
 		Special methods
 	*/
-
 	void updateSceneNode()
 	{
+#ifndef SERVER
 		if(m_node != NULL)
 		{
 			m_node->setPosition(getAbsolutePos());
 			m_node->setRotation(v3f(0, m_yaw, 0));
 		}
+#endif
 	}
 
 	void setText(std::string text)

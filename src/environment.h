@@ -55,13 +55,17 @@ public:
 	*/
 	void addPlayer(Player *player);
 	void removePlayer(u16 peer_id);
+#ifndef SERVER
 	LocalPlayer * getLocalPlayer();
+#endif
 	Player * getPlayer(u16 peer_id);
 	core::list<Player*> getPlayers();
 	void printPlayers(std::ostream &o);
 
+#ifndef SERVER
 	void updateMeshes(v3s16 blockpos);
 	void expireMeshes(bool only_daynight_diffed);
+#endif
 	void setDayNightRatio(u32 r);
 	u32 getDayNightRatio();
 

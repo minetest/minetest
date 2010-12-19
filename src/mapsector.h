@@ -309,6 +309,7 @@ private:
 	core::map<v3s16, u8> *m_objects;
 };
 
+#ifndef SERVER
 class ClientMapSector : public MapSector
 {
 public:
@@ -331,6 +332,7 @@ private:
 	// The ground height of the corners is stored in here
 	s16 m_corners[4];
 };
+#endif
 	
 #endif
 

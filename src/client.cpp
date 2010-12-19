@@ -70,10 +70,17 @@ void * ClientUpdateThread::Thread()
 	return NULL;
 }
 
-Client::Client(IrrlichtDevice *device,
-		const char *playername):
+Client::Client(
+		IrrlichtDevice *device,
+		const char *playername,
+		JMutex &range_mutex,
+		s16 &viewing_range_nodes,
+		bool &viewing_range_all):
 	m_thread(this),
 	m_env(new ClientMap(this,
+			range_mutex,
+			viewing_range_nodes,
+			viewing_range_all,
 			device->getSceneManager()->getRootSceneNode(),
 			device->getSceneManager(), 666),
 			dout_client),

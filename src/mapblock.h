@@ -88,11 +88,6 @@ public:
 class MapBlock : public NodeContainer
 {
 public:
-
-	//scene::SMesh *mesh[DAYNIGHT_CACHE_COUNT];
-	scene::SMesh *mesh;
-	JMutex mesh_mutex;
-
 	MapBlock(NodeContainer *parent, v3s16 pos, bool dummy=false);
 	~MapBlock();
 	
@@ -131,7 +126,7 @@ public:
 	{
 		changed = true;
 	}
-
+#ifndef SERVER
 	void setMeshExpired(bool expired)
 	{
 		m_mesh_expired = expired;
@@ -141,7 +136,7 @@ public:
 	{
 		return m_mesh_expired;
 	}
-
+#endif
 	v3s16 getPos()
 	{
 		return m_pos;
@@ -273,10 +268,6 @@ public:
 					setNode(x0+x, y0+y, z0+z, node);
 	}
 
-	static void makeFastFace(TileSpec tile, u8 light, v3f p,
-			v3s16 dir, v3f scale, v3f posRelative_f,
-			core::array<FastFace> &dest);
-	
 	u8 getFaceLight(u32 daynight_ratio, MapNode n, MapNode n2,
 			v3s16 face_dir);
 	
@@ -287,6 +278,11 @@ public:
 				getNodeParentNoEx(p + face_dir),
 				face_dir);
 	}
+	
+#ifndef SERVER
+	static void makeFastFace(TileSpec tile, u8 light, v3f p,
+			v3s16 dir, v3f scale, v3f posRelative_f,
+			core::array<FastFace> &dest);
 	
 	TileSpec getNodeTile(MapNode mn, v3s16 p, v3s16 face_dir);
 	u8 getNodeContent(v3s16 p, MapNode mn);
@@ -311,6 +307,7 @@ public:
 	/*void updateMesh(s32 daynight_i);
 	// Updates all DAYNIGHT_CACHE_COUNT meshes
 	void updateMeshes(s32 first_i=0);*/
+#endif // !SERVER
 
 	bool propagateSunlight(core::map<v3s16, bool> & light_sources);
 	
@@ -388,7 +385,8 @@ public:
 	{
 		return m_objects.getCount();
 	}
-	
+
+#ifndef SERVER
 	/*
 		Methods for setting temporary modifications to nodes for
 		drawing
@@ -406,6 +404,7 @@ public:
 	{
 		m_temp_mods.clear();
 	}
+#endif
 
 	/*
 		Day-night lighting difference
@@ -430,6 +429,16 @@ public:
 	void serialize(std::ostream &os, u8 version);
 
 	void deSerialize(std::istream &is, u8 version);
+
+	/*
+		Public member variables
+	*/
+
+#ifndef SERVER
+	//scene::SMesh *mesh[DAYNIGHT_CACHE_COUNT];
+	scene::SMesh *mesh;
+	JMutex mesh_mutex;
+#endif
 
 private:
 
@@ -468,19 +477,22 @@ private:
 	/*
 		Used for some initial lighting stuff.
 		At least /has been/ used. 8)
+		It's probably useless now.
 	*/
 	bool is_underground;
-
-	bool m_mesh_expired;
 	
 	// Whether day and night lighting differs
 	bool m_day_night_differs;
 	
 	MapBlockObjectList m_objects;
 	
+#ifndef SERVER
+	bool m_mesh_expired;
+	
 	// Temporary modifications to nodes
 	// These are only used when drawing
 	core::map<v3s16, NodeMod> m_temp_mods;
+#endif
 };
 
 inline bool blockpos_over_limit(v3s16 p)

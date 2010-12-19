@@ -26,11 +26,6 @@ extern std::string getTimestamp();
 
 #include <jmutex.h>
 
-extern JMutex g_range_mutex;
-extern s16 g_viewing_range_nodes;
-//extern s16 g_actual_viewing_range_nodes;
-extern bool g_viewing_range_all;
-
 // Settings
 extern Settings g_settings;
 
@@ -51,13 +46,10 @@ extern std::ostream *derr_server_ptr;
 #define dout_server (*dout_server_ptr)
 #define derr_server (*derr_server_ptr)
 
-// TODO: Move somewhere else? materials.h?
-// This header is only for MATERIALS_COUNT
-//#include "mapnode.h"
-//extern video::SMaterial g_materials[MATERIALS_COUNT];
-
-#include "utility.h"
-extern TextureCache g_texturecache;
+#ifndef SERVER
+	#include "utility.h"
+	extern TextureCache g_texturecache;
+#endif
 
 extern IrrlichtDevice *g_device;
 

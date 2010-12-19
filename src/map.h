@@ -376,13 +376,15 @@ public:
 	void removeNodeAndUpdate(v3s16 p,
 			core::map<v3s16, MapBlock*> &modified_blocks);
 	
+#ifndef SERVER
+	void expireMeshes(bool only_daynight_diffed);
+	
 	/*
 		Updates the faces of the given block and blocks on the
 		leading edge.
 	*/
 	void updateMeshes(v3s16 blockpos, u32 daynight_ratio);
-
-	void expireMeshes(bool only_daynight_diffed);
+#endif
 
 	/*
 		Takes the blocks at the trailing edges into account
@@ -535,6 +537,8 @@ private:
 	bool m_map_saving_enabled;
 };
 
+#ifndef SERVER
+
 class Client;
 
 class ClientMap : public Map, public scene::ISceneNode
@@ -542,6 +546,9 @@ class ClientMap : public Map, public scene::ISceneNode
 public:
 	ClientMap(
 			Client *client,
+			JMutex &range_mutex,
+			s16 &viewing_range_nodes,
+			bool &viewing_range_all,
 			scene::ISceneNode* parent,
 			scene::ISceneManager* mgr,
 			s32 id
@@ -600,7 +607,13 @@ private:
 	// This is the master heightmap mesh
 	scene::SMesh *mesh;
 	JMutex mesh_mutex;
+
+	JMutex &m_range_mutex;
+	s16 &m_viewing_range_nodes;
+	bool &m_viewing_range_all;
 };
+
+#endif
 
 class MapVoxelManipulator : public VoxelManipulator
 {

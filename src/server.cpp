@@ -2082,7 +2082,7 @@ void Server::peerAdded(con::Peer *peer)
 		// The player shouldn't already exist
 		assert(player == NULL);
 
-		player = new RemotePlayer();
+		player = new ServerRemotePlayer();
 		player->peer_id = peer->id;
 
 		/*

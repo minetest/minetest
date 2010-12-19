@@ -149,7 +149,7 @@ void Environment::step(float dtime)
 				{
 					n.d = CONTENT_GRASS_FOOTSTEPS;
 					m_map->setNode(bottompos, n);
-
+#ifndef SERVER
 					// Update mesh on client
 					if(m_map->mapType() == MAPTYPE_CLIENT)
 					{
@@ -157,6 +157,7 @@ void Environment::step(float dtime)
 						MapBlock *b = m_map->getBlockNoCreate(p_blocks);
 						b->updateMesh(m_daynight_ratio);
 					}
+#endif
 				}
 			}
 			catch(InvalidPositionException &e)
@@ -179,7 +180,9 @@ void Environment::addPlayer(Player *player)
 {
 	DSTACK(__FUNCTION_NAME);
 	//Check that only one local player exists and peer_ids are unique
+#ifndef SERVER
 	assert(player->isLocal() == false || getLocalPlayer() == NULL);
+#endif
 	assert(getPlayer(player->peer_id) == NULL);
 	m_players.push_back(player);
 }
@@ -203,6 +206,7 @@ re_search:
 	}
 }
 
+#ifndef SERVER
 LocalPlayer * Environment::getLocalPlayer()
 {
 	for(core::list<Player*>::Iterator i = m_players.begin();
@@ -214,6 +218,7 @@ LocalPlayer * Environment::getLocalPlayer()
 	}
 	return NULL;
 }
+#endif
 
 Player * Environment::getPlayer(u16 peer_id)
 {
@@ -243,6 +248,7 @@ void Environment::printPlayers(std::ostream &o)
 	}
 }
 
+#ifndef SERVER
 void Environment::updateMeshes(v3s16 blockpos)
 {
 	m_map->updateMeshes(blockpos, m_daynight_ratio);
@@ -252,6 +258,7 @@ void Environment::expireMeshes(bool only_daynight_diffed)
 {
 	m_map->expireMeshes(only_daynight_diffed);
 }
+#endif
 
 void Environment::setDayNightRatio(u32 r)
 {

@@ -228,6 +228,8 @@ void Player::accelerate(v3f target_speed, f32 max_increase)
 	RemotePlayer
 */
 
+#ifndef SERVER
+
 RemotePlayer::RemotePlayer(
 		scene::ISceneNode* parent,
 		IrrlichtDevice *device,
@@ -236,7 +238,7 @@ RemotePlayer::RemotePlayer(
 	m_text(NULL)
 {
 	m_box = core::aabbox3d<f32>(-BS/2,0,-BS/2,BS/2,BS*2,BS/2);
-	
+
 	if(parent != NULL && device != NULL)
 	{
 		// ISceneNode stores a member called SceneManager
@@ -320,6 +322,9 @@ void RemotePlayer::updateName(const char *name)
 	}
 }
 
+#endif
+
+#ifndef SERVER
 /*
 	LocalPlayer
 */
@@ -399,5 +404,5 @@ void LocalPlayer::applyControl(float dtime)
 	// Accelerate to target speed with maximum increment
 	accelerate(speed, inc);
 }
-
+#endif
 
