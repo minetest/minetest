@@ -23,6 +23,8 @@
 #random_input = false
 #client_delete_unused_sectors_timeout = 1200
 
+#enable_fog = true
+
 # Server side stuff
 
 # - The possible generators are:
@@ -51,8 +53,8 @@
 #max_simultaneous_block_sends_per_client = 1
 #max_simultaneous_block_sends_server_total = 4
 
-#max_block_send_distance = 8
-#max_block_generate_distance = 6
+#max_block_send_distance = 5
+#max_block_generate_distance = 4
 
 #disable_water_climb = true
 # Note that this gets applied at map generation time

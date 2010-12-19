@@ -61,16 +61,16 @@ public:
 	void printPlayers(std::ostream &o);
 
 	void updateMeshes(v3s16 blockpos);
-	void expireMeshes();
-	void setDaylightRatio(u32 r);
-	u32 getDaylightRatio();
+	void expireMeshes(bool only_daynight_diffed);
+	void setDayNightRatio(u32 r);
+	u32 getDayNightRatio();
 
 private:
 	Map *m_map;
 	core::list<Player*> m_players;
 	// Debug output goes here
 	std::ostream &m_dout;
-	u32 m_daylight_ratio;
+	u32 m_daynight_ratio;
 };
 
 #endif

@@ -28,6 +28,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "environment.h"
 #include "common_irrlicht.h"
 #include <string>
+#include "utility.h"
 
 #ifdef _WIN32
 	#include <windows.h>
@@ -146,44 +147,6 @@ private:
 	JMutex m_mutex;
 };
 
-class SimpleThread : public JThread
-{
-	bool run;
-	JMutex run_mutex;
-
-public:
-
-	SimpleThread():
-		JThread(),
-		run(true)
-	{
-		run_mutex.Init();
-	}
-
-	virtual ~SimpleThread()
-	{}
-
-	virtual void * Thread() = 0;
-
-	bool getRun()
-	{
-		JMutexAutoLock lock(run_mutex);
-		return run;
-	}
-	void setRun(bool a_run)
-	{
-		JMutexAutoLock lock(run_mutex);
-		run = a_run;
-	}
-
-	void stop()
-	{
-		setRun(false);
-		while(IsRunning())
-			sleep_ms(100);
-	}
-};
-
 class Server;
 
 class ServerThread : public SimpleThread
@@ -281,6 +244,7 @@ public:
 		serialization_version = SER_FMT_VER_INVALID;
 		pending_serialization_version = SER_FMT_VER_INVALID;
 		m_nearest_unsent_d = 0;
+		m_nearest_unsent_reset_timer = 0.0;
 
 		m_blocks_sent_mutex.Init();
 		m_blocks_sending_mutex.Init();
@@ -384,6 +348,7 @@ private:
 	core::map<v3s16, bool> m_blocks_sent;
 	s16 m_nearest_unsent_d;
 	v3s16 m_last_center;
+	float m_nearest_unsent_reset_timer;
 	JMutex m_blocks_sent_mutex;
 	/*
 		Blocks that are currently on the line.
@@ -466,6 +431,12 @@ private:
 	*/
 	void UpdateBlockWaterPressure(MapBlock *block,
 			core::map<v3s16, MapBlock*> &modified_blocks);
+	
+	float m_flowwater_timer;
+	float m_print_info_timer;
+	float m_objectdata_timer;
+	float m_emergethread_trigger_timer;
+	float m_savemap_timer;
 	
 	// NOTE: If connection and environment are both to be locked,
 	// environment shall be locked first.

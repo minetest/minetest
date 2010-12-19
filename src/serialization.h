@@ -43,7 +43,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 	8: (dev) server-initiated block transfers and all kinds of stuff
 	9: (dev) block objects
 	10: (dev) water pressure
-	11: (dev) zlib'd blocks
+	11: (dev) zlib'd blocks, block flags
 */
 // This represents an uninitialized or invalid format
 #define SER_FMT_VER_INVALID 255

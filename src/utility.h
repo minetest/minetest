@@ -28,8 +28,17 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <fstream>
 #include <string>
 #include <sstream>
+#include <jthread.h>
 #include <jmutex.h>
 #include <jmutexautolock.h>
+
+#ifdef _WIN32
+	#include <windows.h>
+	#define sleep_ms(x) Sleep(x)
+#else
+	#include <unistd.h>
+	#define sleep_ms(x) usleep(x*1000)
+#endif
 
 #include "common_irrlicht.h"
 #include "debug.h"
@@ -1098,6 +1107,44 @@ public:
 private:
 	core::map<std::string, video::ITexture*> m_textures;
 	JMutex m_mutex;
+};
+
+class SimpleThread : public JThread
+{
+	bool run;
+	JMutex run_mutex;
+
+public:
+
+	SimpleThread():
+		JThread(),
+		run(true)
+	{
+		run_mutex.Init();
+	}
+
+	virtual ~SimpleThread()
+	{}
+
+	virtual void * Thread() = 0;
+
+	bool getRun()
+	{
+		JMutexAutoLock lock(run_mutex);
+		return run;
+	}
+	void setRun(bool a_run)
+	{
+		JMutexAutoLock lock(run_mutex);
+		run = a_run;
+	}
+
+	void stop()
+	{
+		setRun(false);
+		while(IsRunning())
+			sleep_ms(100);
+	}
 };
 
 #endif

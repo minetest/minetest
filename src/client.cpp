@@ -47,6 +47,8 @@ void * ClientUpdateThread::Thread()
 		{
 			m_client->asyncStep();
 
+			//m_client->updateSomeExpiredMeshes();
+
 			bool was = m_client->AsyncProcessData();
 
 			if(was == false)
@@ -84,7 +86,15 @@ Client::Client(IrrlichtDevice *device,
 	m_inventory_updated(false),
 	m_time(0),
 	m_time_counter(0.0)
+	//m_daynight_i(0)
+	//m_daynight_ratio(1000)
 {
+	m_packetcounter_timer = 0.0;
+	m_delete_unused_sectors_timer = 0.0;
+	m_connection_reinit_timer = 0.0;
+	m_avg_rtt_timer = 0.0;
+	m_playerpos_send_timer = 0.0;
+
 	//m_fetchblock_mutex.Init();
 	m_incoming_queue_mutex.Init();
 	m_env_mutex.Init();
@@ -154,14 +164,41 @@ void Client::step(float dtime)
 		m_time += seconds;
 		if(seconds > 0)
 		{
-			dstream<<"m_time="<<m_time<<std::endl;
-			JMutexAutoLock envlock(m_env_mutex);
+			//dstream<<"m_time="<<m_time<<std::endl;
+			/*JMutexAutoLock envlock(m_env_mutex);
 			u32 dr = 500+500*sin((float)((m_time/10)%7)/7.*2.*PI);
-			if(dr != m_env.getDaylightRatio())
+			if(dr != m_env.getDayNightRatio())
 			{
 				dstream<<"dr="<<dr<<std::endl;
-				m_env.setDaylightRatio(dr);
+				m_env.setDayNightRatio(dr);
 				m_env.expireMeshes();
+			}*/
+#if 1
+			s32 d = 4;
+			s32 t = (m_time/10)%d;
+			s32 dn = 0;
+			if(t == d/2-1 || t == d-1)
+				dn = 1;
+			else if(t < d/2-1)
+				dn = 0;
+			else
+				dn = 2;
+
+			u32 dr = 1000;
+			if(dn == 0)
+				dr = 1000;
+			if(dn == 1)
+				dr = 600;
+			if(dn == 2)
+				dr = 300;
+#else
+			u32 dr = 1000;
+#endif
+			if(dr != m_env.getDayNightRatio())
+			{
+				dstream<<"dr="<<dr<<std::endl;
+				m_env.setDayNightRatio(dr);
+				m_env.expireMeshes(true);
 			}
 		}
 	}
@@ -186,7 +223,7 @@ void Client::step(float dtime)
 		Packet counter
 	*/
 	{
-		static float counter = -0.001;
+		float &counter = m_packetcounter_timer;
 		counter -= dtime;
 		if(counter <= 0.0)
 		{
@@ -206,12 +243,13 @@ void Client::step(float dtime)
 			      clear caches
 		*/
 		
-		static float counter = -0.001;
+		float &counter = m_delete_unused_sectors_timer;
 		counter -= dtime;
 		if(counter <= 0.0)
 		{
 			// 3 minute interval
-			counter = 180.0;
+			//counter = 180.0;
+			counter = 60.0;
 
 			JMutexAutoLock lock(m_env_mutex);
 
@@ -290,7 +328,7 @@ void Client::step(float dtime)
 
 	if(connected == false)
 	{
-		static float counter = -0.001;
+		float &counter = m_connection_reinit_timer;
 		counter -= dtime;
 		if(counter <= 0.0)
 		{
@@ -354,12 +392,7 @@ void Client::step(float dtime)
 	}
 
 	{
-		// Fetch some nearby blocks
-		//fetchBlocks();
-	}
-
-	{
-		static float counter = 0.0;
+		float &counter = m_avg_rtt_timer;
 		counter += dtime;
 		if(counter >= 10)
 		{
@@ -371,8 +404,7 @@ void Client::step(float dtime)
 		}
 	}
 	{
-		// Update at reasonable intervals (0.2s)
-		static float counter = 0.0;
+		float &counter = m_playerpos_send_timer;
 		counter += dtime;
 		if(counter >= 0.2)
 		{
@@ -1121,7 +1153,7 @@ bool Client::AsyncProcessPacket(LazyMeshUpdater &mesh_updater)
 				<<p.X<<","<<p.Y<<","<<p.Z<<")"<<std::endl;*/
 
 		/*dstream<<DTIME<<"Client: Thread: BLOCKDATA for ("
-				<<p.X<<","<<p.Y<<","<<p.Z<<"): ";*/
+				<<p.X<<","<<p.Y<<","<<p.Z<<")"<<std::endl;*/
 		
 		std::string datastring((char*)&data[8], datasize-8);
 		std::istringstream istr(datastring, std::ios_base::binary);
@@ -1780,9 +1812,71 @@ void Client::printDebugInfo(std::ostream &os)
 		<<std::endl;
 }
 	
-float Client::getDaylightRatio()
+/*s32 Client::getDayNightIndex()
+{
+	assert(m_daynight_i >= 0 && m_daynight_i < DAYNIGHT_CACHE_COUNT);
+	return m_daynight_i;
+}*/
+
+u32 Client::getDayNightRatio()
 {
 	JMutexAutoLock envlock(m_env_mutex);
-	return m_env.getDaylightRatio();
+	return m_env.getDayNightRatio();
 }
+
+/*void Client::updateSomeExpiredMeshes()
+{
+	TimeTaker timer("updateSomeExpiredMeshes()", g_device);
+	
+	Player *player;
+	{
+		JMutexAutoLock envlock(m_env_mutex);
+		player = m_env.getLocalPlayer();
+	}
+
+	u32 daynight_ratio = getDayNightRatio();
+
+	v3f playerpos = player->getPosition();
+	v3f playerspeed = player->getSpeed();
+
+	v3s16 center_nodepos = floatToInt(playerpos);
+	v3s16 center = getNodeBlockPos(center_nodepos);
+
+	u32 counter = 0;
+
+	s16 d_max = 5;
+	
+	for(s16 d = 0; d <= d_max; d++)
+	{
+		core::list<v3s16> list;
+		getFacePositions(list, d);
+		
+		core::list<v3s16>::Iterator li;
+		for(li=list.begin(); li!=list.end(); li++)
+		{
+			v3s16 p = *li + center;
+			MapBlock *block = NULL;
+			try
+			{
+				//JMutexAutoLock envlock(m_env_mutex);
+				block = m_env.getMap().getBlockNoCreate(p);
+			}
+			catch(InvalidPositionException &e)
+			{
+			}
+
+			if(block == NULL)
+				continue;
+
+			if(block->getMeshExpired() == false)
+				continue;
+
+			block->updateMesh(daynight_ratio);
+
+			counter++;
+			if(counter >= 5)
+				return;
+		}
+	}
+}*/
 

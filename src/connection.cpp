@@ -445,6 +445,7 @@ Peer::Peer(u16 a_id, Address a_address)
 	address = a_address;
 	timeout_counter = 0.0;
 	//resend_timeout = RESEND_TIMEOUT_MINIMUM;
+	ping_timer = 0.0;
 	resend_timeout = 0.5;
 	avg_rtt = -1.0;
 	has_sent_with_id = false;

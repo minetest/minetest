@@ -19,6 +19,67 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "light.h"
 
+/*u32 daynight_cache_ratios[DAYNIGHT_CACHE_COUNT] =
+{
+	1000,
+	600,
+	300
+};*/
+
+u8 light_decode_table[LIGHT_MAX+1] = 
+{
+0,
+6,
+8,
+11,
+14,
+19,
+26,
+34,
+45,
+61,
+81,
+108,
+143,
+191,
+255,
+};
+/*u8 light_decode_table[LIGHT_MAX+1] = 
+{
+0,
+3,
+6,
+10,
+18,
+25,
+35,
+50,
+75,
+95,
+120,
+150,
+185,
+215,
+255,
+};*/
+/*u8 light_decode_table[LIGHT_MAX+1] = 
+{
+0,
+5,
+12,
+22,
+35,
+50,
+65,
+85,
+100,
+120,
+140,
+160,
+185,
+215,
+255,
+};*/
 // LIGHT_MAX is 14, 0-14 is 15 values
 /*u8 light_decode_table[LIGHT_MAX+1] = 
 {
@@ -38,24 +99,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 191,
 255,
 };*/
-u8 light_decode_table[LIGHT_MAX+1] = 
-{
-0,
-5,
-12,
-22,
-35,
-50,
-65,
-85,
-100,
-120,
-140,
-160,
-185,
-215,
-255,
-};
 
 #if 0
 /*

@@ -24,7 +24,7 @@ Environment::Environment(Map *map, std::ostream &dout):
 		m_dout(dout)
 {
 	m_map = map;
-	m_daylight_ratio = 0.2;
+	m_daynight_ratio = 0.2;
 }
 
 Environment::~Environment()
@@ -36,7 +36,9 @@ Environment::~Environment()
 		delete (*i);
 	}
 	
-	delete m_map;
+	// The map is removed by the SceneManager
+	m_map->drop();
+	//delete m_map;
 }
 
 void Environment::step(float dtime)
@@ -153,7 +155,7 @@ void Environment::step(float dtime)
 					{
 						v3s16 p_blocks = getNodeBlockPos(bottompos);
 						MapBlock *b = m_map->getBlockNoCreate(p_blocks);
-						b->updateMesh(m_daylight_ratio);
+						b->updateMesh(m_daynight_ratio);
 					}
 				}
 			}
@@ -243,21 +245,21 @@ void Environment::printPlayers(std::ostream &o)
 
 void Environment::updateMeshes(v3s16 blockpos)
 {
-	m_map->updateMeshes(blockpos, m_daylight_ratio);
+	m_map->updateMeshes(blockpos, m_daynight_ratio);
 }
 
-void Environment::expireMeshes()
+void Environment::expireMeshes(bool only_daynight_diffed)
 {
-	m_map->expireMeshes();
+	m_map->expireMeshes(only_daynight_diffed);
 }
 
-void Environment::setDaylightRatio(u32 r)
+void Environment::setDayNightRatio(u32 r)
 {
-	m_daylight_ratio = r;
+	m_daynight_ratio = r;
 }
 
-u32 Environment::getDaylightRatio()
+u32 Environment::getDayNightRatio()
 {
-	return m_daylight_ratio;
+	return m_daynight_ratio;
 }
 

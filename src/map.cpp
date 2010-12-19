@@ -755,7 +755,7 @@ void Map::updateLighting(enum LightBank bank,
 	// Yes, add it to light_sources... somehow.
 	// It has to be added at somewhere above, in the loop.
 	// TODO
-	// NOTE: This actually works quite fine without it
+	// NOTE: This actually works fine without doing so
 	//       - Find out why it works
 
 	{
@@ -778,6 +778,17 @@ void Map::updateLighting(core::map<v3s16, MapBlock*> & a_blocks,
 {
 	updateLighting(LIGHTBANK_DAY, a_blocks, modified_blocks);
 	updateLighting(LIGHTBANK_NIGHT, a_blocks, modified_blocks);
+	
+	/*
+		Update information about whether day and night light differ
+	*/
+	for(core::map<v3s16, MapBlock*>::Iterator
+			i = modified_blocks.getIterator();
+			i.atEnd() == false; i++)
+	{
+		MapBlock *block = i.getNode()->getValue();
+		block->updateDayNightDiff();
+	}
 }
 
 /*
@@ -900,6 +911,17 @@ void Map::addNodeAndUpdate(v3s16 p, MapNode n,
 			TODO: Convert to spreadLight
 		*/
 		spreadLight(bank, light_sources, modified_blocks);
+	}
+
+	/*
+		Update information about whether day and night light differ
+	*/
+	for(core::map<v3s16, MapBlock*>::Iterator
+			i = modified_blocks.getIterator();
+			i.atEnd() == false; i++)
+	{
+		MapBlock *block = i.getNode()->getValue();
+		block->updateDayNightDiff();
 	}
 }
 
@@ -1027,9 +1049,20 @@ void Map::removeNodeAndUpdate(v3s16 p,
 		{
 		}
 	}
+
+	/*
+		Update information about whether day and night light differ
+	*/
+	for(core::map<v3s16, MapBlock*>::Iterator
+			i = modified_blocks.getIterator();
+			i.atEnd() == false; i++)
+	{
+		MapBlock *block = i.getNode()->getValue();
+		block->updateDayNightDiff();
+	}
 }
 
-void Map::expireMeshes()
+void Map::expireMeshes(bool only_daynight_diffed)
 {
 	TimeTaker timer("expireMeshes()", g_device);
 
@@ -1046,12 +1079,18 @@ void Map::expireMeshes()
 		for(i=sectorblocks.begin(); i!=sectorblocks.end(); i++)
 		{
 			MapBlock *block = *i;
+
+			if(only_daynight_diffed && dayNightDiffed(block->getPos()) == false)
+			{
+				continue;
+			}
+			
 			{
 				JMutexAutoLock lock(block->mesh_mutex);
 				if(block->mesh != NULL)
 				{
-					//block->mesh->drop();
-					//block->mesh = NULL;
+					/*block->mesh->drop();
+					block->mesh = NULL;*/
 					block->setMeshExpired(true);
 				}
 			}
@@ -1059,34 +1098,68 @@ void Map::expireMeshes()
 	}
 }
 
-void Map::updateMeshes(v3s16 blockpos, u32 daylight_factor)
+void Map::updateMeshes(v3s16 blockpos, u32 daynight_ratio)
 {
 	assert(mapType() == MAPTYPE_CLIENT);
 
 	try{
 		v3s16 p = blockpos + v3s16(0,0,0);
 		MapBlock *b = getBlockNoCreate(p);
-		b->updateMesh(daylight_factor);
+		b->updateMesh(daynight_ratio);
 	}
 	catch(InvalidPositionException &e){}
 	try{
 		v3s16 p = blockpos + v3s16(-1,0,0);
 		MapBlock *b = getBlockNoCreate(p);
-		b->updateMesh(daylight_factor);
+		b->updateMesh(daynight_ratio);
 	}
 	catch(InvalidPositionException &e){}
 	try{
 		v3s16 p = blockpos + v3s16(0,-1,0);
 		MapBlock *b = getBlockNoCreate(p);
-		b->updateMesh(daylight_factor);
+		b->updateMesh(daynight_ratio);
 	}
 	catch(InvalidPositionException &e){}
 	try{
 		v3s16 p = blockpos + v3s16(0,0,-1);
 		MapBlock *b = getBlockNoCreate(p);
-		b->updateMesh(daylight_factor);
+		b->updateMesh(daynight_ratio);
 	}
 	catch(InvalidPositionException &e){}
+}
+
+bool Map::dayNightDiffed(v3s16 blockpos)
+{
+	try{
+		v3s16 p = blockpos + v3s16(0,0,0);
+		MapBlock *b = getBlockNoCreate(p);
+		if(b->dayNightDiffed())
+			return true;
+	}
+	catch(InvalidPositionException &e){}
+	try{
+		v3s16 p = blockpos + v3s16(1,0,0);
+		MapBlock *b = getBlockNoCreate(p);
+		if(b->dayNightDiffed())
+			return true;
+	}
+	catch(InvalidPositionException &e){}
+	try{
+		v3s16 p = blockpos + v3s16(0,1,0);
+		MapBlock *b = getBlockNoCreate(p);
+		if(b->dayNightDiffed())
+			return true;
+	}
+	catch(InvalidPositionException &e){}
+	try{
+		v3s16 p = blockpos + v3s16(0,0,1);
+		MapBlock *b = getBlockNoCreate(p);
+		if(b->dayNightDiffed())
+			return true;
+	}
+	catch(InvalidPositionException &e){}
+
+	return false;
 }
 
 /*
@@ -2216,8 +2289,8 @@ void ServerMap::save(bool only_changed)
 	}//sectorlock
 	
 	u32 deleted_count = 0;
-	deleted_count = deleteUnusedSectors
-			(SERVERMAP_DELETE_UNUSED_SECTORS_TIMEOUT);
+	deleted_count = deleteUnusedSectors(
+			SERVERMAP_DELETE_UNUSED_SECTORS_TIMEOUT);
 	
 	/*
 		Only print if something happened or saved whole map
@@ -2719,6 +2792,9 @@ void ClientMap::renderMap(video::IVideoDriver* driver, s32 pass)
 	*/
 	int time1 = time(0);
 
+	//s32 daynight_i = m_client->getDayNightIndex();
+	u32 daynight_ratio = m_client->getDayNightRatio();
+
 	/*
 		Collect all blocks that are in the view range
 
@@ -2771,12 +2847,13 @@ void ClientMap::renderMap(video::IVideoDriver* driver, s32 pass)
 	//NOTE: The sectors map should be locked but we're not doing it
 	// because it'd cause too much delays
 
+	int timecheck_counter = 0;
+
 	core::map<v2s16, MapSector*>::Iterator si;
 	si = m_sectors.getIterator();
 	for(; si.atEnd() == false; si++)
 	{
 		{
-			static int timecheck_counter = 0;
 			timecheck_counter++;
 			if(timecheck_counter > 50)
 			{
@@ -2872,7 +2949,7 @@ void ClientMap::renderMap(video::IVideoDriver* driver, s32 pass)
 			/*
 				Draw the faces of the block
 			*/
-
+#if 1
 			bool mesh_expired = false;
 			
 			{
@@ -2885,29 +2962,56 @@ void ClientMap::renderMap(video::IVideoDriver* driver, s32 pass)
 				if(block->mesh == NULL && mesh_expired == false)
 					continue;
 			}
+
+			f32 faraway = BS*50;
+			//f32 faraway = viewing_range_nodes * BS;
 			
 			/*
 				This has to be done with the mesh_mutex unlocked
 			*/
-			if(mesh_expired && mesh_update_count < 1)
+			if(mesh_expired && mesh_update_count < 6
+					&& (d < faraway || mesh_update_count < 3))
+			//if(mesh_expired && mesh_update_count < 4)
 			{
 				mesh_update_count++;
 
 				// Mesh has been expired: generate new mesh
-				block->updateMesh(m_client->getDaylightRatio());
-			}
+				//block->updateMeshes(daynight_i);
+				block->updateMesh(daynight_ratio);
 
+				mesh_expired = false;
+			}
+			
+			/*
+				Don't draw an expired mesh that is far away
+			*/
+			/*if(mesh_expired && d >= faraway)
+			//if(mesh_expired)
+			{
+				// Instead, delete it
+				JMutexAutoLock lock(block->mesh_mutex);
+				if(block->mesh)
+				{
+					block->mesh->drop();
+					block->mesh = NULL;
+				}
+				// And continue to next block
+				continue;
+			}*/
+#endif
 			{
 				JMutexAutoLock lock(block->mesh_mutex);
 
-				if(block->mesh == NULL)
+				scene::SMesh *mesh = block->mesh;
+
+				if(mesh == NULL)
 					continue;
 
-				u32 c = block->mesh->getMeshBufferCount();
+				u32 c = mesh->getMeshBufferCount();
 
 				for(u32 i=0; i<c; i++)
 				{
-					scene::IMeshBuffer *buf = block->mesh->getMeshBuffer(i);
+					scene::IMeshBuffer *buf = mesh->getMeshBuffer(i);
 					const video::SMaterial& material = buf->getMaterial();
 					video::IMaterialRenderer* rnd =
 							driver->getMaterialRenderer(material.MaterialType);

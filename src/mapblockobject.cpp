@@ -339,17 +339,7 @@ void MapBlockObjectList::update(std::istream &is, u8 version,
 					" id="<<id
 					<<std::endl;*/
 
-			if(type_id == MAPBLOCKOBJECT_TYPE_TEST)
-			{
-				// The constructors of objects shouldn't need
-				// any more parameters than this.
-				obj = new TestObject(m_block, id, pos);
-			}
-			else if(type_id == MAPBLOCKOBJECT_TYPE_TEST2)
-			{
-				obj = new Test2Object(m_block, id, pos);
-			}
-			else if(type_id == MAPBLOCKOBJECT_TYPE_SIGN)
+			if(type_id == MAPBLOCKOBJECT_TYPE_SIGN)
 			{
 				obj = new SignObject(m_block, id, pos);
 			}

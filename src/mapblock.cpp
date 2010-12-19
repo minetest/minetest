@@ -29,6 +29,52 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 	MapBlock
 */
 
+MapBlock::MapBlock(NodeContainer *parent, v3s16 pos, bool dummy):
+		m_parent(parent),
+		m_pos(pos),
+		changed(true),
+		is_underground(false),
+		m_mesh_expired(false),
+		m_day_night_differs(false),
+		m_objects(this)
+{
+	data = NULL;
+	if(dummy == false)
+		reallocate();
+
+	mesh_mutex.Init();
+
+	mesh = NULL;
+	/*for(s32 i=0; i<DAYNIGHT_CACHE_COUNT; i++)
+	{
+		mesh[i] = NULL;
+	}*/
+}
+
+MapBlock::~MapBlock()
+{
+	{
+		JMutexAutoLock lock(mesh_mutex);
+		
+		if(mesh)
+		{
+			mesh->drop();
+			mesh = NULL;
+		}
+		/*for(s32 i=0; i<DAYNIGHT_CACHE_COUNT; i++)
+		{
+			if(mesh[i] != NULL)
+			{
+				mesh[i]->drop();
+				mesh[i] = NULL;
+			}
+		}*/
+	}
+
+	if(data)
+		delete[] data;
+}
+
 bool MapBlock::isValidPositionParent(v3s16 p)
 {
 	if(isValidPosition(p))
@@ -68,10 +114,33 @@ void MapBlock::setNodeParent(v3s16 p, MapNode & n)
 	}
 }
 
-FastFace * MapBlock::makeFastFace(TileSpec tile, u8 light, v3f p,
-		v3s16 dir, v3f scale, v3f posRelative_f)
+MapNode MapBlock::getNodeParentNoEx(v3s16 p)
 {
-	FastFace *f = new FastFace;
+	if(isValidPosition(p) == false)
+	{
+		try{
+			return m_parent->getNode(getPosRelative() + p);
+		}
+		catch(InvalidPositionException &e)
+		{
+			return MapNode(CONTENT_IGNORE);
+		}
+	}
+	else
+	{
+		if(data == NULL)
+		{
+			return MapNode(CONTENT_IGNORE);
+		}
+		return data[p.Z*MAP_BLOCKSIZE*MAP_BLOCKSIZE + p.Y*MAP_BLOCKSIZE + p.X];
+	}
+}
+
+void MapBlock::makeFastFace(TileSpec tile, u8 light, v3f p,
+		v3s16 dir, v3f scale, v3f posRelative_f,
+		core::array<FastFace> &dest)
+{
+	FastFace face;
 	
 	// Position is at the center of the cube.
 	v3f pos = p * BS;
@@ -85,21 +154,39 @@ FastFace * MapBlock::makeFastFace(TileSpec tile, u8 light, v3f p,
 	vertex_pos[2] = v3f(-BS/2, BS/2,BS/2);
 	vertex_pos[3] = v3f( BS/2, BS/2,BS/2);
 	
+	if(dir == v3s16(0,0,1))
+	{
+		for(u16 i=0; i<4; i++)
+			vertex_pos[i].rotateXZBy(0);
+	}
+	else if(dir == v3s16(0,0,-1))
+	{
+		for(u16 i=0; i<4; i++)
+			vertex_pos[i].rotateXZBy(180);
+	}
+	else if(dir == v3s16(1,0,0))
+	{
+		for(u16 i=0; i<4; i++)
+			vertex_pos[i].rotateXZBy(-90);
+	}
+	else if(dir == v3s16(-1,0,0))
+	{
+		for(u16 i=0; i<4; i++)
+			vertex_pos[i].rotateXZBy(90);
+	}
+	else if(dir == v3s16(0,1,0))
+	{
+		for(u16 i=0; i<4; i++)
+			vertex_pos[i].rotateYZBy(-90);
+	}
+	else if(dir == v3s16(0,-1,0))
+	{
+		for(u16 i=0; i<4; i++)
+			vertex_pos[i].rotateYZBy(90);
+	}
+
 	for(u16 i=0; i<4; i++)
 	{
-		if(dir == v3s16(0,0,1))
-			vertex_pos[i].rotateXZBy(0);
-		else if(dir == v3s16(0,0,-1))
-			vertex_pos[i].rotateXZBy(180);
-		else if(dir == v3s16(1,0,0))
-			vertex_pos[i].rotateXZBy(-90);
-		else if(dir == v3s16(-1,0,0))
-			vertex_pos[i].rotateXZBy(90);
-		else if(dir == v3s16(0,1,0))
-			vertex_pos[i].rotateYZBy(-90);
-		else if(dir == v3s16(0,-1,0))
-			vertex_pos[i].rotateYZBy(90);
-
 		vertex_pos[i].X *= scale.X;
 		vertex_pos[i].Y *= scale.Y;
 		vertex_pos[i].Z *= scale.Z;
@@ -125,20 +212,21 @@ FastFace * MapBlock::makeFastFace(TileSpec tile, u8 light, v3f p,
 
 	video::SColor c = video::SColor(alpha,li,li,li);
 
-	f->vertices[0] = video::S3DVertex(vertex_pos[0], zerovector, c,
+	face.vertices[0] = video::S3DVertex(vertex_pos[0], zerovector, c,
 			core::vector2d<f32>(0,1));
-	f->vertices[1] = video::S3DVertex(vertex_pos[1], zerovector, c,
+	face.vertices[1] = video::S3DVertex(vertex_pos[1], zerovector, c,
 			core::vector2d<f32>(abs_scale,1));
-	f->vertices[2] = video::S3DVertex(vertex_pos[2], zerovector, c,
+	face.vertices[2] = video::S3DVertex(vertex_pos[2], zerovector, c,
 			core::vector2d<f32>(abs_scale,0));
-	f->vertices[3] = video::S3DVertex(vertex_pos[3], zerovector, c,
+	face.vertices[3] = video::S3DVertex(vertex_pos[3], zerovector, c,
 			core::vector2d<f32>(0,0));
 
-	f->tile = tile;
+	face.tile = tile;
 	//DEBUG
 	//f->tile = TILE_STONE;
-
-	return f;
+	
+	dest.push_back(face);
+	//return f;
 }
 	
 /*
@@ -146,15 +234,20 @@ FastFace * MapBlock::makeFastFace(TileSpec tile, u8 light, v3f p,
 	Order doesn't matter.
 
 	If either of the nodes doesn't exist, light is 0.
+	
+	parameters:
+		daynight_ratio: 0...1000
+		n: getNodeParent(p)
+		n2: getNodeParent(p + face_dir)
+		face_dir: axis oriented unit vector from p to p2
 */
-u8 MapBlock::getFaceLight(u32 daylight_factor, v3s16 p, v3s16 face_dir)
+u8 MapBlock::getFaceLight(u32 daynight_ratio, MapNode n, MapNode n2,
+		v3s16 face_dir)
 {
 	try{
-		MapNode n = getNodeParent(p);
-		MapNode n2 = getNodeParent(p + face_dir);
 		u8 light;
-		u8 l1 = n.getLightBlend(daylight_factor);
-		u8 l2 = n2.getLightBlend(daylight_factor);
+		u8 l1 = n.getLightBlend(daynight_ratio);
+		u8 l2 = n2.getLightBlend(daynight_ratio);
 		if(l1 > l2)
 			light = l1;
 		else
@@ -184,21 +277,20 @@ u8 MapBlock::getFaceLight(u32 daylight_factor, v3s16 p, v3s16 face_dir)
 	Gets node tile from any place relative to block.
 	Returns TILE_NODE if doesn't exist or should not be drawn.
 */
-TileSpec MapBlock::getNodeTile(v3s16 p, v3s16 face_dir)
+TileSpec MapBlock::getNodeTile(MapNode mn, v3s16 p, v3s16 face_dir)
 {
 	TileSpec spec;
 
-	spec.feature = TILEFEAT_NONE;
-	try{
-		MapNode n = getNodeParent(p);
-		
-		spec.id = n.getTile(face_dir);
-	}
-	catch(InvalidPositionException &e)
+	/*//DEBUG
 	{
-		spec.id = TILE_NONE;
-	}
-	
+		spec.id = TILE_STONE;
+		return spec;
+	}*/
+
+	spec.feature = TILEFEAT_NONE;
+	//spec.id = TILE_STONE;
+	spec.id = mn.getTile(face_dir);
+
 	/*
 		Check temporary modifications on this node
 	*/
@@ -221,7 +313,7 @@ TileSpec MapBlock::getNodeTile(v3s16 p, v3s16 face_dir)
 	return spec;
 }
 
-u8 MapBlock::getNodeContent(v3s16 p)
+u8 MapBlock::getNodeContent(v3s16 p, MapNode mn)
 {
 	/*
 		Check temporary modifications on this node
@@ -253,16 +345,8 @@ u8 MapBlock::getNodeContent(v3s16 p)
 			*/
 		}
 	}
-	
-	try{
-		MapNode n = getNodeParent(p);
-		
-		return n.d;
-	}
-	catch(InvalidPositionException &e)
-	{
-		return CONTENT_IGNORE;
-	}
+
+	return mn.d;
 }
 
 /*
@@ -271,48 +355,47 @@ u8 MapBlock::getNodeContent(v3s16 p)
 	face_dir: unit vector with only one of x, y or z
 */
 void MapBlock::updateFastFaceRow(
-		u32 daylight_factor,
+		u32 daynight_ratio,
+		v3f posRelative_f,
 		v3s16 startpos,
 		u16 length,
 		v3s16 translate_dir,
+		v3f translate_dir_f,
 		v3s16 face_dir,
-		core::list<FastFace*> &dest)
+		v3f face_dir_f,
+		core::array<FastFace> &dest)
 {
-	/*
-		Precalculate some variables
-	*/
-	v3f translate_dir_f(translate_dir.X, translate_dir.Y,
-			translate_dir.Z); // floating point conversion
-	v3f face_dir_f(face_dir.X, face_dir.Y,
-			face_dir.Z); // floating point conversion
-	v3f posRelative_f(getPosRelative().X, getPosRelative().Y,
-			getPosRelative().Z); // floating point conversion
-
 	v3s16 p = startpos;
-	/*
-		Get face light at starting position
-	*/
-	u8 light = getFaceLight(daylight_factor, p, face_dir);
 	
 	u16 continuous_tiles_count = 0;
 	
-	TileSpec tile0 = getNodeTile(p, face_dir);
-	TileSpec tile1 = getNodeTile(p + face_dir, -face_dir);
+	MapNode n0 = getNodeParentNoEx(p);
+	MapNode n1 = getNodeParentNoEx(p + face_dir);
+
+	u8 light = getFaceLight(daynight_ratio, n0, n1, face_dir);
 		
+	TileSpec tile0 = getNodeTile(n0, p, face_dir);
+	TileSpec tile1 = getNodeTile(n1, p + face_dir, -face_dir);
+
 	for(u16 j=0; j<length; j++)
 	{
 		bool next_is_different = true;
 		
 		v3s16 p_next;
+		MapNode n0_next;
+		MapNode n1_next;
 		TileSpec tile0_next;
 		TileSpec tile1_next;
 		u8 light_next = 0;
 
-		if(j != length - 1){
+		if(j != length - 1)
+		{
 			p_next = p + translate_dir;
-			tile0_next = getNodeTile(p_next, face_dir);
-			tile1_next = getNodeTile(p_next + face_dir, -face_dir);
-			light_next = getFaceLight(daylight_factor, p_next, face_dir);
+			n0_next = getNodeParentNoEx(p_next);
+			n1_next = getNodeParentNoEx(p_next + face_dir);
+			tile0_next = getNodeTile(n0_next, p_next, face_dir);
+			tile1_next = getNodeTile(n1_next, p_next + face_dir, -face_dir);
+			light_next = getFaceLight(daynight_ratio, n0_next, n1_next, face_dir);
 
 			if(tile0_next == tile0
 					&& tile1_next == tile1
@@ -331,8 +414,8 @@ void MapBlock::updateFastFaceRow(
 			*/
 			//u8 mf = face_contents(tile0, tile1);
 			// This is hackish
-			u8 content0 = getNodeContent(p);
-			u8 content1 = getNodeContent(p + face_dir);
+			u8 content0 = getNodeContent(p, n0);
+			u8 content1 = getNodeContent(p + face_dir, n1);
 			u8 mf = face_contents(content0, content1);
 			
 			if(mf != 0)
@@ -352,26 +435,28 @@ void MapBlock::updateFastFaceRow(
 					scale.Z = continuous_tiles_count;
 				}
 				
-				FastFace *f;
+				//FastFace *f;
 
 				// If node at sp (tile0) is more solid
 				if(mf == 1)
 				{
-					f = makeFastFace(tile0, light,
+					makeFastFace(tile0, light,
 							sp, face_dir, scale,
-							posRelative_f);
+							posRelative_f, dest);
 				}
 				// If node at sp is less solid (mf == 2)
 				else
 				{
-					f = makeFastFace(tile1, light,
+					makeFastFace(tile1, light,
 							sp+face_dir_f, -face_dir, scale,
-							posRelative_f);
+							posRelative_f, dest);
 				}
-				dest.push_back(f);
+				//dest.push_back(f);
 			}
 
 			continuous_tiles_count = 0;
+			n0 = n0_next;
+			n1 = n1_next;
 			tile0 = tile0_next;
 			tile1 = tile1_next;
 			light = light_next;
@@ -474,89 +559,101 @@ private:
 	core::array<PreMeshBuffer> m_prebuffers;
 };
 
-void MapBlock::updateMesh(u32 daylight_factor)
+void MapBlock::updateMesh(u32 daynight_ratio)
 {
-	/*v3s16 p = getPosRelative();
-	std::cout<<"MapBlock("<<p.X<<","<<p.Y<<","<<p.Z<<")"
-			<<"::updateMesh(): ";*/
-			//<<"::updateMesh()"<<std::endl;
-	TimeTaker timer1("updateMesh()", g_device);
-	
+#if 0
 	/*
-		TODO: Change this to directly generate the mesh (and get rid
-		      of FastFaces)
+		DEBUG: If mesh has been generated, don't generate it again
 	*/
+	{
+		JMutexAutoLock meshlock(mesh_mutex);
+		if(mesh != NULL)
+			return;
+	}
+#endif
+	
+	// 4-21ms
+	//TimeTaker timer1("updateMesh()", g_device);
 
-	core::list<FastFace*> *fastfaces_new = new core::list<FastFace*>;
+	core::array<FastFace> fastfaces_new;
+	
+	v3f posRelative_f(getPosRelative().X, getPosRelative().Y,
+			getPosRelative().Z); // floating point conversion
 	
 	/*
 		We are including the faces of the trailing edges of the block.
 		This means that when something changes, the caller must
 		also update the meshes of the blocks at the leading edges.
 
-		NOTE: This is the slowest part of this method. The other parts
-		      take around 0ms, this takes around 15-70ms.
+		NOTE: This is the slowest part of this method.
 	*/
 
 	/*
 		Go through every y,z and get top faces in rows of x+
 	*/
 	for(s16 y=0; y<MAP_BLOCKSIZE; y++){
-	//for(s16 y=-1; y<MAP_BLOCKSIZE; y++){
 		for(s16 z=0; z<MAP_BLOCKSIZE; z++){
-			updateFastFaceRow(daylight_factor,
+			updateFastFaceRow(daynight_ratio, posRelative_f,
 					v3s16(0,y,z), MAP_BLOCKSIZE,
-					v3s16(1,0,0),
-					v3s16(0,1,0),
-					*fastfaces_new);
+					v3s16(1,0,0), //dir
+					v3f  (1,0,0),
+					v3s16(0,1,0), //face dir
+					v3f  (0,1,0),
+					fastfaces_new);
 		}
 	}
 	/*
 		Go through every x,y and get right faces in rows of z+
 	*/
 	for(s16 x=0; x<MAP_BLOCKSIZE; x++){
-	//for(s16 x=-1; x<MAP_BLOCKSIZE; x++){
 		for(s16 y=0; y<MAP_BLOCKSIZE; y++){
-			updateFastFaceRow(daylight_factor,
+			updateFastFaceRow(daynight_ratio, posRelative_f,
 					v3s16(x,y,0), MAP_BLOCKSIZE,
 					v3s16(0,0,1),
+					v3f  (0,0,1),
 					v3s16(1,0,0),
-					*fastfaces_new);
+					v3f  (1,0,0),
+					fastfaces_new);
 		}
 	}
 	/*
 		Go through every y,z and get back faces in rows of x+
 	*/
 	for(s16 z=0; z<MAP_BLOCKSIZE; z++){
-	//for(s16 z=-1; z<MAP_BLOCKSIZE; z++){
 		for(s16 y=0; y<MAP_BLOCKSIZE; y++){
-			updateFastFaceRow(daylight_factor,
+			updateFastFaceRow(daynight_ratio, posRelative_f,
 					v3s16(0,y,z), MAP_BLOCKSIZE,
 					v3s16(1,0,0),
+					v3f  (1,0,0),
 					v3s16(0,0,1),
-					*fastfaces_new);
+					v3f  (0,0,1),
+					fastfaces_new);
 		}
 	}
+
+	// End of slow part
+
+	/*
+		Convert FastFaces to SMesh
+	*/
 
 	scene::SMesh *mesh_new = NULL;
 	
 	mesh_new = new scene::SMesh();
 	
-	if(fastfaces_new->getSize() > 0)
+	if(fastfaces_new.size() > 0)
 	{
 		MeshCollector collector;
 
-		core::list<FastFace*>::Iterator i = fastfaces_new->begin();
-
-		for(; i != fastfaces_new->end(); i++)
+		for(u32 i=0; i<fastfaces_new.size(); i++)
 		{
-			FastFace *f = *i;
+			FastFace &f = fastfaces_new[i];
 
 			const u16 indices[] = {0,1,2,2,3,0};
 			
-			if(f->tile.feature == TILEFEAT_NONE)
+			if(f.tile.feature == TILEFEAT_NONE)
 			{
-				collector.append(g_tile_materials[f->tile.id], f->vertices, 4,
+				collector.append(g_tile_materials[f.tile.id], f.vertices, 4,
 						indices, 6);
 			}
 			else
@@ -569,7 +666,7 @@ void MapBlock::updateMesh(u32 daylight_factor)
 		collector.fillMesh(mesh_new);
 
 		// Use VBO for mesh (this just would set this for ever buffer)
-		mesh_new->setHardwareMappingHint(scene::EHM_STATIC);
+		//mesh_new->setHardwareMappingHint(scene::EHM_STATIC);
 		
 		/*std::cout<<"MapBlock has "<<fastfaces_new->getSize()<<" faces "
 				<<"and uses "<<mesh_new->getMeshBufferCount()
@@ -580,14 +677,14 @@ void MapBlock::updateMesh(u32 daylight_factor)
 		Clear temporary FastFaces
 	*/
 
-	core::list<FastFace*>::Iterator i;
+	/*core::list<FastFace*>::Iterator i;
 	i = fastfaces_new->begin();
 	for(; i != fastfaces_new->end(); i++)
 	{
 		delete *i;
 	}
 	fastfaces_new->clear();
-	delete fastfaces_new;
+	delete fastfaces_new;*/
 
 	/*
 		Add special graphics:
@@ -697,8 +794,10 @@ void MapBlock::updateMesh(u32 daylight_factor)
 
 	mesh_mutex.Lock();
 
-	scene::SMesh *mesh_old = mesh;
+	//scene::SMesh *mesh_old = mesh[daynight_i];
+	//mesh[daynight_i] = mesh_new;
 
+	scene::SMesh *mesh_old = mesh;
 	mesh = mesh_new;
 	setMeshExpired(false);
 	
@@ -711,8 +810,20 @@ void MapBlock::updateMesh(u32 daylight_factor)
 		{
 			IMeshBuffer *buf = mesh_old->getMeshBuffer(i);
 		}*/
+		
+		/*dstream<<"mesh_old->getReferenceCount()="
+				<<mesh_old->getReferenceCount()<<std::endl;
+		u32 c = mesh_old->getMeshBufferCount();
+		for(u32 i=0; i<c; i++)
+		{
+			scene::IMeshBuffer *buf = mesh_old->getMeshBuffer(i);
+			dstream<<"buf->getReferenceCount()="
+					<<buf->getReferenceCount()<<std::endl;
+		}*/
+
 		// Drop the mesh
 		mesh_old->drop();
+
 		//delete mesh_old;
 	}
 
@@ -720,6 +831,18 @@ void MapBlock::updateMesh(u32 daylight_factor)
 	
 	//std::cout<<"added "<<fastfaces.getSize()<<" faces."<<std::endl;
 }
+
+/*void MapBlock::updateMeshes(s32 first_i)
+{
+	assert(first_i >= 0 && first_i <= DAYNIGHT_CACHE_COUNT);
+	updateMesh(first_i);
+	for(s32 i=0; i<DAYNIGHT_CACHE_COUNT; i++)
+	{
+		if(i == first_i)
+			continue;
+		updateMesh(i);
+	}
+}*/
 
 /*
 	Propagates sunlight down through the block.
@@ -874,6 +997,54 @@ void MapBlock::copyTo(VoxelManipulator &dst)
 {
 }*/
 
+
+void MapBlock::updateDayNightDiff()
+{
+	if(data == NULL)
+	{
+		m_day_night_differs = false;
+		return;
+	}
+
+	bool differs = false;
+
+	/*
+		Check if any lighting value differs
+	*/
+	for(u32 i=0; i<MAP_BLOCKSIZE*MAP_BLOCKSIZE*MAP_BLOCKSIZE; i++)
+	{
+		MapNode &n = data[i];
+		if(n.getLight(LIGHTBANK_DAY) != n.getLight(LIGHTBANK_NIGHT))
+		{
+			differs = true;
+			break;
+		}
+	}
+
+	/*
+		If some lighting values differ, check if the whole thing is
+		just air. If it is, differ = false
+	*/
+	if(differs)
+	{
+		bool only_air = true;
+		for(u32 i=0; i<MAP_BLOCKSIZE*MAP_BLOCKSIZE*MAP_BLOCKSIZE; i++)
+		{
+			MapNode &n = data[i];
+			if(n.d != CONTENT_AIR)
+			{
+				only_air = false;
+				break;
+			}
+		}
+		if(only_air)
+			differs = false;
+	}
+
+	// Set member variable
+	m_day_night_differs = differs;
+}
+
 /*
 	Serialization
 */
@@ -948,7 +1119,12 @@ void MapBlock::serialize(std::ostream &os, u8 version)
 	else
 	{
 		// First byte
-		os.write((char*)&is_underground, 1);
+		u8 flags = 0;
+		if(is_underground)
+			flags |= 1;
+		if(m_day_night_differs)
+			flags |= 2;
+		os.write((char*)&flags, 1);
 
 		u32 nodecount = MAP_BLOCKSIZE*MAP_BLOCKSIZE*MAP_BLOCKSIZE;
 
@@ -1065,9 +1241,10 @@ void MapBlock::deSerialize(std::istream &is, u8 version)
 	{
 		u32 nodecount = MAP_BLOCKSIZE*MAP_BLOCKSIZE*MAP_BLOCKSIZE;
 
-		u8 t8;
-		is.read((char*)&t8, 1);
-		is_underground = t8;
+		u8 flags;
+		is.read((char*)&flags, 1);
+		is_underground = (flags & 1) ? true : false;
+		m_day_night_differs = (flags & 2) ? true : false;
 
 		// Uncompress data
 		std::ostringstream os(std::ios_base::binary);

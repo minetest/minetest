@@ -224,6 +224,11 @@ public:
 		return MAPTYPE_BASE;
 	}
 
+	virtual void drop()
+	{
+		delete this;
+	}
+
 	void updateCamera(v3f pos, v3f dir)
 	{
 		JMutexAutoLock lock(m_camera_mutex);
@@ -375,9 +380,14 @@ public:
 		Updates the faces of the given block and blocks on the
 		leading edge.
 	*/
-	void updateMeshes(v3s16 blockpos, u32 daylight_factor);
+	void updateMeshes(v3s16 blockpos, u32 daynight_ratio);
 
-	void expireMeshes();
+	void expireMeshes(bool only_daynight_diffed);
+
+	/*
+		Takes the blocks at the trailing edges into account
+	*/
+	bool dayNightDiffed(v3s16 blockpos);
 
 	//core::aabbox3d<s16> getDisplayedBlockArea();
 
@@ -542,6 +552,11 @@ public:
 	s32 mapType() const
 	{
 		return MAPTYPE_CLIENT;
+	}
+
+	void drop()
+	{
+		ISceneNode::drop();
 	}
 
 	/*

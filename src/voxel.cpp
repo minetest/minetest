@@ -741,11 +741,6 @@ bool VoxelManipulator::flowWater(v3s16 removed_pos,
 
 	m_data[m_area.index(removed_pos)].setLightBanks(light);
 	
-	/*// NOTE: HACK: This has to be set to LIGHT_MAX so that
-	// unspreadLight will clear all light that came from this node.
-	// Otherwise there will be weird bugs
-	m_data[m_area.index(removed_pos)].setLight(LIGHT_MAX);*/
-
 	// Mark removed_pos checked
 	m_flags[m_area.index(removed_pos)] |= VOXELFLAG_CHECKED;
 

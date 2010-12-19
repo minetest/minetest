@@ -89,51 +89,12 @@ class MapBlock : public NodeContainer
 {
 public:
 
-	/*
-		This used by Server's block creation stuff for not sending
-		blocks that are waiting a lighting update.
-
-		If true, the block needs some work by the one who set this
-		to true.
-
-		While true, nobody else should touch the block.
-	*/
-	//bool is_incomplete;
-	
+	//scene::SMesh *mesh[DAYNIGHT_CACHE_COUNT];
 	scene::SMesh *mesh;
 	JMutex mesh_mutex;
 
-	MapBlock(NodeContainer *parent, v3s16 pos, bool dummy=false):
-			m_parent(parent),
-			m_pos(pos),
-			changed(true),
-			is_underground(false),
-			m_mesh_expired(false),
-			m_objects(this)
-			//is_incomplete(false)
-	{
-		data = NULL;
-		if(dummy == false)
-			reallocate();
-		mesh_mutex.Init();
-		mesh = NULL;
-	}
-
-	~MapBlock()
-	{
-		{
-			JMutexAutoLock lock(mesh_mutex);
-			
-			if(mesh != NULL)
-			{
-				mesh->drop();
-				mesh = NULL;
-			}
-		}
-
-		if(data)
-			delete[] data;
-	}
+	MapBlock(NodeContainer *parent, v3s16 pos, bool dummy=false);
+	~MapBlock();
 	
 	virtual u16 nodeContainerId() const
 	{
@@ -302,6 +263,7 @@ public:
 	bool isValidPositionParent(v3s16 p);
 	MapNode getNodeParent(v3s16 p);
 	void setNodeParent(v3s16 p, MapNode & n);
+	MapNode getNodeParentNoEx(v3s16 p);
 
 	void drawbox(s16 x0, s16 y0, s16 z0, s16 w, s16 h, s16 d, MapNode node)
 	{
@@ -311,13 +273,23 @@ public:
 					setNode(x0+x, y0+y, z0+z, node);
 	}
 
-	static FastFace * makeFastFace(TileSpec tile, u8 light, v3f p,
-			v3s16 dir, v3f scale, v3f posRelative_f);
+	static void makeFastFace(TileSpec tile, u8 light, v3f p,
+			v3s16 dir, v3f scale, v3f posRelative_f,
+			core::array<FastFace> &dest);
 	
-	u8 getFaceLight(u32 daylight_factor, v3s16 p, v3s16 face_dir);
+	u8 getFaceLight(u32 daynight_ratio, MapNode n, MapNode n2,
+			v3s16 face_dir);
 	
-	TileSpec getNodeTile(v3s16 p, v3s16 face_dir);
-	u8 getNodeContent(v3s16 p);
+	u8 getFaceLight(u32 daynight_ratio, v3s16 p, v3s16 face_dir)
+	{
+		return getFaceLight(daynight_ratio,
+				getNodeParentNoEx(p),
+				getNodeParentNoEx(p + face_dir),
+				face_dir);
+	}
+	
+	TileSpec getNodeTile(MapNode mn, v3s16 p, v3s16 face_dir);
+	u8 getNodeContent(v3s16 p, MapNode mn);
 
 	/*
 		startpos:
@@ -325,14 +297,20 @@ public:
 		face_dir: unit vector with only one of x, y or z
 	*/
 	void updateFastFaceRow(
-			u32 daylight_factor,
+			u32 daynight_ratio,
+			v3f posRelative_f,
 			v3s16 startpos,
 			u16 length,
 			v3s16 translate_dir,
+			v3f translate_dir_f,
 			v3s16 face_dir,
-			core::list<FastFace*> &dest);
+			v3f face_dir_f,
+			core::array<FastFace> &dest);
 
-	void updateMesh(u32 daylight_factor);
+	void updateMesh(u32 daynight_ratio);
+	/*void updateMesh(s32 daynight_i);
+	// Updates all DAYNIGHT_CACHE_COUNT meshes
+	void updateMeshes(s32 first_i=0);*/
 
 	bool propagateSunlight(core::map<v3s16, bool> & light_sources);
 	
@@ -430,6 +408,21 @@ public:
 	}
 
 	/*
+		Day-night lighting difference
+		
+		These methods don't care about neighboring blocks.
+		It means that to know if a block really doesn't need a mesh
+		update between day and night, the neighboring blocks have
+		to be taken into account.
+	*/
+	void updateDayNightDiff();
+
+	bool dayNightDiffed()
+	{
+		return m_day_night_differs;
+	}
+
+	/*
 		Serialization
 	*/
 	
@@ -479,6 +472,9 @@ private:
 	bool is_underground;
 
 	bool m_mesh_expired;
+	
+	// Whether day and night lighting differs
+	bool m_day_night_differs;
 	
 	MapBlockObjectList m_objects;
 	

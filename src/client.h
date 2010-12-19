@@ -36,35 +36,19 @@ public:
 
 class Client;
 
-class ClientUpdateThread : public JThread
+class ClientUpdateThread : public SimpleThread
 {
-	bool run;
-	JMutex run_mutex;
-
 	Client *m_client;
 
 public:
 
-	ClientUpdateThread(Client *client) : JThread(), run(true), m_client(client)
+	ClientUpdateThread(Client *client):
+			SimpleThread(),
+			m_client(client)
 	{
-		run_mutex.Init();
 	}
 
 	void * Thread();
-
-	bool getRun()
-	{
-		run_mutex.Lock();
-		bool run_cached = run;
-		run_mutex.Unlock();
-		return run_cached;
-	}
-	void setRun(bool a_run)
-	{
-		run_mutex.Lock();
-		run = a_run;
-		run_mutex.Unlock();
-	}
 };
 
 struct IncomingPacket
@@ -98,6 +82,7 @@ struct IncomingPacket
 			if(*m_refcount == 0){
 				if(m_data != NULL)
 					delete[] m_data;
+				delete m_refcount;
 			}
 		}
 	}
@@ -237,7 +222,10 @@ public:
 	// Prints a line or two of info
 	void printDebugInfo(std::ostream &os);
 
-	float getDaylightRatio();
+	//s32 getDayNightIndex();
+	u32 getDayNightRatio();
+
+	//void updateSomeExpiredMeshes();
 	
 private:
 	
@@ -251,6 +239,12 @@ private:
 	void sendPlayerPos();
 	// This sends the player's current name etc to the server
 	void sendPlayerInfo();
+
+	float m_packetcounter_timer;
+	float m_delete_unused_sectors_timer;
+	float m_connection_reinit_timer;
+	float m_avg_rtt_timer;
+	float m_playerpos_send_timer;
 
 	ClientUpdateThread m_thread;
 	
@@ -290,6 +284,10 @@ private:
 	// Access these only in main thread.
 	u32 m_time;
 	float m_time_counter;
+	
+	// 0 <= m_daynight_i < DAYNIGHT_CACHE_COUNT
+	//s32 m_daynight_i;
+	//u32 m_daynight_ratio;
 };
 
 #endif

@@ -285,6 +285,12 @@ void RemoteClient::GetNextBlocks(Server *server, float dtime,
 {
 	DSTACK(__FUNCTION_NAME);
 	
+	// Increment timers
+	{
+		JMutexAutoLock lock(m_blocks_sent_mutex);
+		m_nearest_unsent_reset_timer += dtime;
+	}
+
 	// Won't send anything if already sending
 	{
 		JMutexAutoLock lock(m_blocks_sending_mutex);
@@ -320,12 +326,13 @@ void RemoteClient::GetNextBlocks(Server *server, float dtime,
 			m_last_center = center;
 		}
 
-		static float reset_counter = 0;
-		reset_counter += dtime;
-		if(reset_counter > 5.0)
+		/*dstream<<"m_nearest_unsent_reset_timer="
+				<<m_nearest_unsent_reset_timer<<std::endl;*/
+		if(m_nearest_unsent_reset_timer > 5.0)
 		{
-			reset_counter = 0;
+			m_nearest_unsent_reset_timer = 0;
 			m_nearest_unsent_d = 0;
+			//dstream<<"Resetting m_nearest_unsent_d"<<std::endl;
 		}
 
 		last_nearest_unsent_d = m_nearest_unsent_d;
@@ -353,6 +360,21 @@ void RemoteClient::GetNextBlocks(Server *server, float dtime,
 				= LIMITED_MAX_SIMULTANEOUS_BLOCK_SENDS;
 		}
 	}
+	
+	u32 num_blocks_selected;
+	{
+		JMutexAutoLock lock(m_blocks_sending_mutex);
+		num_blocks_selected = m_blocks_sending.size();
+	}
+	
+	/*
+		next time d will be continued from the d from which the nearest
+		unsent block was found this time.
+
+		This is because not necessarily any of the blocks found this
+		time are actually sent.
+	*/
+	s32 new_nearest_unsent_d = -1;
 
 	// Serialization version used
 	//u8 ser_version = serialization_version;
@@ -380,12 +402,8 @@ void RemoteClient::GetNextBlocks(Server *server, float dtime,
 			if(m_nearest_unsent_d != last_nearest_unsent_d)
 			{
 				d = m_nearest_unsent_d;
+				last_nearest_unsent_d = m_nearest_unsent_d;
 			}
-			else
-			{
-				m_nearest_unsent_d = d;
-			}
-			last_nearest_unsent_d = m_nearest_unsent_d;
 		}
 
 		/*
@@ -421,13 +439,13 @@ void RemoteClient::GetNextBlocks(Server *server, float dtime,
 				JMutexAutoLock lock(m_blocks_sending_mutex);
 				
 				// Limit is dynamically lowered when building
-				if(m_blocks_sending.size()
+				if(num_blocks_selected
 						>= maximum_simultaneous_block_sends_now)
 				{
 					/*dstream<<"Not sending more blocks. Queue full. "
 							<<m_blocks_sending.size()
 							<<std::endl;*/
-					return;
+					goto queue_full;
 				}
 
 				if(m_blocks_sending.find(p) != NULL)
@@ -460,7 +478,7 @@ void RemoteClient::GetNextBlocks(Server *server, float dtime,
 				if(m_blocks_sent.find(p) != NULL)
 					continue;
 			}
-					
+
 			/*
 				Check if map has this block
 			*/
@@ -499,6 +517,15 @@ void RemoteClient::GetNextBlocks(Server *server, float dtime,
 			}
 
 			/*
+				Record the lowest d from which a a block has been
+				found being not sent and possibly to exist
+			*/
+			if(new_nearest_unsent_d == -1 || d < new_nearest_unsent_d)
+			{
+				new_nearest_unsent_d = d;
+			}
+					
+			/*
 				Add inexistent block to emerge queue.
 			*/
 			if(block == NULL || surely_not_found_on_disk)
@@ -531,10 +558,17 @@ void RemoteClient::GetNextBlocks(Server *server, float dtime,
 			PrioritySortedBlockTransfer q((float)d, p, peer_id);
 
 			dest.push_back(q);
+
+			num_blocks_selected += 1;
 		}
 	}
+queue_full:
 
-	// Don't add anything here. The loop breaks by returning.
+	if(new_nearest_unsent_d != -1)
+	{
+		JMutexAutoLock lock(m_blocks_sent_mutex);
+		m_nearest_unsent_d = new_nearest_unsent_d;
+	}
 }
 
 void RemoteClient::SendObjectData(
@@ -894,6 +928,12 @@ Server::Server(
 	m_thread(this),
 	m_emergethread(this)
 {
+	m_flowwater_timer = 0.0;
+	m_print_info_timer = 0.0;
+	m_objectdata_timer = 0.0;
+	m_emergethread_trigger_timer = 0.0;
+	m_savemap_timer = 0.0;
+	
 	m_env_mutex.Init();
 	m_con_mutex.Init();
 	m_step_dtime_mutex.Init();
@@ -983,7 +1023,7 @@ void Server::AsyncRunStep()
 	
 	{
 		JMutexAutoLock lock1(m_step_dtime_mutex);
-		m_step_dtime = 0.0;
+		m_step_dtime -= dtime;
 	}
 
 	//dstream<<"Server steps "<<dtime<<std::endl;
@@ -1018,7 +1058,7 @@ void Server::AsyncRunStep()
 		else
 			interval = 0.25;
 
-		static float counter = 0.0;
+		float &counter = m_flowwater_timer;
 		counter += dtime;
 		if(counter >= 0.25 && m_flow_active_nodes.size() > 0)
 		{
@@ -1082,7 +1122,7 @@ void Server::AsyncRunStep()
 	
 	// Periodically print some info
 	{
-		static float counter = 0.0;
+		float &counter = m_print_info_timer;
 		counter += dtime;
 		if(counter >= 30.0)
 		{
@@ -1208,7 +1248,7 @@ void Server::AsyncRunStep()
 
 	// Send object positions
 	{
-		static float counter = 0.0;
+		float &counter = m_objectdata_timer;
 		counter += dtime;
 		if(counter >= g_settings.getFloat("objectdata_interval"))
 		{
@@ -1223,7 +1263,7 @@ void Server::AsyncRunStep()
 	// Trigger emergethread (it gets somehow gets to a
 	// non-triggered but bysy state sometimes)
 	{
-		static float counter = 0.0;
+		float &counter = m_emergethread_trigger_timer;
 		counter += dtime;
 		if(counter >= 2.0)
 		{
@@ -1235,7 +1275,7 @@ void Server::AsyncRunStep()
 
 	// Save map
 	{
-		static float counter = 0.0;
+		float &counter = m_savemap_timer;
 		counter += dtime;
 		if(counter >= SERVER_MAP_SAVE_INTERVAL)
 		{
@@ -1589,14 +1629,14 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 		if(action == 0)
 		{
 
-			u8 material;
+			u8 content;
 
 			try
 			{
-				// Get material at position
-				material = m_env.getMap().getNode(p_under).d;
+				// Get content at position
+				content = m_env.getMap().getNode(p_under).d;
 				// If it's not diggable, do nothing
-				if(content_diggable(material) == false)
+				if(content_diggable(content) == false)
 				{
 					return;
 				}
@@ -1615,7 +1655,16 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 			JMutexAutoLock(client->m_dig_mutex);
 			client->m_dig_tool_item = 0;
 			client->m_dig_position = p_under;
-			client->m_dig_time_remaining = 1.0;
+			float dig_time = 0.5;
+			if(content == CONTENT_STONE)
+			{
+				dig_time = 1.5;
+			}
+			else if(content == CONTENT_TORCH)
+			{
+				dig_time = 0.0;
+			}
+			client->m_dig_time_remaining = dig_time;
 			
 			// Reset build time counter
 			getClient(peer->id)->m_time_from_building.set(0.0);

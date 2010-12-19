@@ -176,13 +176,12 @@ TODO: Node cracking animation when digging
       - TODO: A way to generate new textures by combining textures
 	  - TODO: Mesh update to fetch cracked faces from the former
 
+TODO: Add server unused sector deletion settings to settings
+
+TODO: TOSERVER_LEAVE
+
 Doing now:
 ======================================================================
-
-TODO: Add a second lighting value to the MS nibble of param of
-      air to tell how bright the air node is when there is no sunlight.
-	  When day changes to night, these two values can be interpolated.
-	  - The biggest job is to add support to the lighting routines
 
 ======================================================================
 
@@ -315,8 +314,7 @@ void set_default_settings()
 	g_settings.setDefault("name", "");
 	g_settings.setDefault("random_input", "false");
 	g_settings.setDefault("client_delete_unused_sectors_timeout", "1200");
-	g_settings.setDefault("max_block_send_distance", "8");
-	g_settings.setDefault("max_block_generate_distance", "6");
+	g_settings.setDefault("enable_fog", "true");
 
 	// Server stuff
 	g_settings.setDefault("creative_mode", "false");
@@ -332,6 +330,8 @@ void set_default_settings()
 	g_settings.setDefault("max_simultaneous_block_sends_server_total", "4");
 	g_settings.setDefault("disable_water_climb", "true");
 	g_settings.setDefault("endless_water", "true");
+	g_settings.setDefault("max_block_send_distance", "5");
+	g_settings.setDefault("max_block_generate_distance", "4");
 }
 
 /*
@@ -860,7 +860,8 @@ void updateViewingRange(f32 frametime, Client *client)
 	
 	// Initialize to the target value
 	static float frametime_avg = 1.0/wanted_fps;
-	frametime_avg = frametime_avg * 0.9 + frametime * 0.1;
+	//frametime_avg = frametime_avg * 0.9 + frametime * 0.1;
+	frametime_avg = frametime_avg * 0.7 + frametime * 0.3;
 
 	static f32 counter = 0;
 	if(counter > 0){
@@ -877,6 +878,11 @@ void updateViewingRange(f32 frametime, Client *client)
 	float frametime_wanted = (1.0/(wanted_fps/(1.0-freetime_ratio)));
 
 	float fraction = sqrt(frametime_avg / frametime_wanted);
+
+	/*float fraction = sqrt(frametime_avg / frametime_wanted) / 2.0
+			+ frametime_avg / frametime_wanted / 2.0;*/
+	
+	//float fraction = frametime_avg / frametime_wanted;
 
 	static bool fraction_is_good = false;
 	
@@ -1048,9 +1054,9 @@ int main(int argc, char *argv[])
 	
 	/*
 		Parse command line
-		TODO
 	*/
 	
+	// List all allowed options
 	core::map<std::string, ValueSpec> allowed_options;
 	allowed_options.insert("help", ValueSpec(VALUETYPE_FLAG));
 	allowed_options.insert("server", ValueSpec(VALUETYPE_FLAG,
@@ -1058,6 +1064,10 @@ int main(int argc, char *argv[])
 	allowed_options.insert("config", ValueSpec(VALUETYPE_STRING,
 			"Load configuration from specified file"));
 	allowed_options.insert("port", ValueSpec(VALUETYPE_STRING));
+	allowed_options.insert("address", ValueSpec(VALUETYPE_STRING));
+	allowed_options.insert("random-input", ValueSpec(VALUETYPE_FLAG));
+	allowed_options.insert("disable-unittests", ValueSpec(VALUETYPE_FLAG));
+	allowed_options.insert("enable-unittests", ValueSpec(VALUETYPE_FLAG));
 
 	Settings cmd_args;
 	
@@ -1117,14 +1127,6 @@ int main(int argc, char *argv[])
 	g_timestamp_mutex.Init();
 
 	/*
-		Run unit tests
-	*/
-	if(ENABLE_TESTS)
-	{
-		run_tests();
-	}
-	
-	/*
 		Initialization
 	*/
 
@@ -1168,6 +1170,18 @@ int main(int argc, char *argv[])
 	// Initialize random seed
 	srand(time(0));
 
+	/*
+		Run unit tests
+	*/
+	if((ENABLE_TESTS && cmd_args.getFlag("disable-unittests") == false)
+			|| cmd_args.getFlag("enable-unittests") == true)
+	{
+		run_tests();
+	}
+	
+	/*
+		Global range mutex
+	*/
 	g_range_mutex.Init();
 	assert(g_range_mutex.IsInitialized());
 
@@ -1263,14 +1277,18 @@ int main(int argc, char *argv[])
 	bool hosting = false;
 	char connect_name[100] = "";
 
-	std::cout<<"Address to connect to [empty = host a game]: ";
-	if(g_settings.get("address") != "" && is_yes(g_settings.get("host_game")) == false)
+	if(cmd_args.exists("address"))
+	{
+		snprintf(connect_name, 100, "%s", cmd_args.get("address").c_str());
+	}
+	else if(g_settings.get("address") != "" && is_yes(g_settings.get("host_game")) == false)
 	{
 		std::cout<<g_settings.get("address")<<std::endl;
 		snprintf(connect_name, 100, "%s", g_settings.get("address").c_str());
 	}
 	else
 	{
+		std::cout<<"Address to connect to [empty = host a game]: ";
 		std::cin.getline(connect_name, 100);
 	}
 	
@@ -1280,9 +1298,9 @@ int main(int argc, char *argv[])
 	}
 	
 	if(hosting)
-		std::cout<<"-> hosting"<<std::endl;
+		std::cout<<"> Hosting game"<<std::endl;
 	else
-		std::cout<<"-> "<<connect_name<<std::endl;
+		std::cout<<"> Connecting to "<<connect_name<<std::endl;
 	
 	char playername[PLAYERNAME_SIZE] = "";
 	if(g_settings.get("name") != "")
@@ -1393,7 +1411,9 @@ int main(int argc, char *argv[])
 	
 	device->setResizable(true);
 
-	if(g_settings.getBool("random_input"))
+	bool random_input = g_settings.getBool("random_input")
+			|| cmd_args.getFlag("random-input");
+	if(random_input)
 		g_input = new RandomInputHandler();
 	else
 		g_input = new RealInputHandler(device, &receiver);
@@ -1523,14 +1543,14 @@ int main(int argc, char *argv[])
 	/*
 		Create skybox
 	*/
-	scene::ISceneNode* skybox;
+	/*scene::ISceneNode* skybox;
 	skybox = smgr->addSkyBoxSceneNode(
 		driver->getTexture("../data/skybox2.png"),
 		driver->getTexture("../data/skybox3.png"),
 		driver->getTexture("../data/skybox1.png"),
 		driver->getTexture("../data/skybox1.png"),
 		driver->getTexture("../data/skybox1.png"),
-		driver->getTexture("../data/skybox1.png"));
+		driver->getTexture("../data/skybox1.png"));*/
 	
 	/*
 		Create the camera node
@@ -1553,21 +1573,6 @@ int main(int argc, char *argv[])
 	// Just so big a value that everything rendered is visible
 	camera->setFarValue(100000*BS);
 
-	/*//f32 range = BS*HEIGHTMAP_RANGE_NODES*0.9;
-	f32 range = BS*HEIGHTMAP_RANGE_NODES*0.9;
-	
-	camera->setFarValue(range);
-	
-	driver->setFog(
-		skycolor,
-		video::EFT_FOG_LINEAR,
-		range*0.8,
-		range,
-		0.01,
-		false,
-		false
-		);*/
-	
 	f32 camera_yaw = 0; // "right/left"
 	f32 camera_pitch = 0; // "up/down"
 
@@ -1888,9 +1893,11 @@ int main(int argc, char *argv[])
 			Mouse and camera control
 		*/
 		
-		if(device->isWindowActive() && g_game_focused && !pauseMenu.isVisible())
+		if((device->isWindowActive() && g_game_focused && !pauseMenu.isVisible())
+				|| random_input)
 		{
-			device->getCursorControl()->setVisible(false);
+			if(!random_input)
+				device->getCursorControl()->setVisible(false);
 
 			if(first_loop_after_window_activation){
 				//std::cout<<"window active, first loop"<<std::endl;
@@ -1981,7 +1988,7 @@ int main(int argc, char *argv[])
 				if(selected_object->getTypeId() == MAPBLOCKOBJECT_TYPE_SIGN)
 				{
 					dstream<<"Sign object right-clicked"<<std::endl;
-
+					
 					unFocusGame();
 
 					input_guitext = guienv->addStaticText(L"",
@@ -1992,8 +1999,17 @@ int main(int argc, char *argv[])
 
 					input_guitext->setDrawBackground(true);
 
-					g_text_buffer = L"";
-					g_text_buffer_accepted = false;
+					if(random_input)
+					{
+						g_text_buffer = L"ASD LOL 8)";
+						g_text_buffer_accepted = true;
+					}
+					else
+					{
+						g_text_buffer = L"";
+						g_text_buffer_accepted = false;
+					}
+
 					textbuf_dest = new TextDestSign(
 							selected_object->getBlock()->getPos(),
 							selected_object->getId(),
@@ -2227,20 +2243,54 @@ int main(int argc, char *argv[])
 		*/
 
 		camera->setAspectRatio((f32)screensize.X / (f32)screensize.Y);
+		
+		// Background color is choosen based on whether the player is
+		// much beyond the initial ground level
+		/*video::SColor bgcolor;
+		v3s16 p0 = Map::floatToInt(player_position);
+		// Does this make short random delays?
+		// NOTE: no need for this, sky doesn't show underground with
+		// enough range
+		bool is_underground = client.isNodeUnderground(p0);
+		//bool is_underground = false;
+		if(is_underground == false)
+			bgcolor = video::SColor(255,90,140,200);
+		else
+			bgcolor = video::SColor(255,0,0,0);*/
+			
+		//video::SColor bgcolor = video::SColor(255,90,140,200);
+		//video::SColor bgcolor = skycolor;
+		
+		//s32 daynight_i = client.getDayNightIndex();
+		//video::SColor bgcolor = skycolor[daynight_i];
 
-		/*f32 range = g_viewing_range_nodes * BS;
-		if(g_viewing_range_all)
-			range = 100000*BS;
+		u32 daynight_ratio = client.getDayNightRatio();
+		video::SColor bgcolor = video::SColor(
+				255,
+				skycolor.getRed() * daynight_ratio / 1000,
+				skycolor.getGreen() * daynight_ratio / 1000,
+				skycolor.getBlue() * daynight_ratio / 1000);
 
-		driver->setFog(
-			skycolor,
-			video::EFT_FOG_LINEAR,
-			range*0.6,
-			range,
-			0.01,
-			false, // pixel fog
-			false // range fog
-			);*/
+		/*
+			Fog
+		*/
+		
+		if(g_settings.getBool("enable_fog") == true)
+		{
+			f32 range = g_viewing_range_nodes * BS;
+			if(g_viewing_range_all)
+				range = 100000*BS;
+
+			driver->setFog(
+				bgcolor,
+				video::EFT_FOG_LINEAR,
+				range*0.6,
+				range,
+				0.01,
+				false, // pixel fog
+				false // range fog
+				);
+		}
 
 
 		/*
@@ -2359,29 +2409,11 @@ int main(int argc, char *argv[])
 
 		TimeTaker drawtimer("Drawing", device);
 
-		/*
-			Background color is choosen based on whether the player is
-			much beyond the initial ground level
-		*/
-		/*video::SColor bgcolor;
-		v3s16 p0 = Map::floatToInt(player_position);
-		// Does this make short random delays?
-		// NOTE: no need for this, sky doesn't show underground with
-		// enough range
-		bool is_underground = client.isNodeUnderground(p0);
-		//bool is_underground = false;
-		if(is_underground == false)
-			bgcolor = video::SColor(255,90,140,200);
-		else
-			bgcolor = video::SColor(255,0,0,0);*/
-			
-		//video::SColor bgcolor = video::SColor(255,90,140,200);
-		video::SColor bgcolor = skycolor;
 		
 		{
 		TimeTaker timer("beginScene", device);
-		//driver->beginScene(true, true, bgcolor);
-		driver->beginScene(false, true, bgcolor);
+		driver->beginScene(true, true, bgcolor);
+		//driver->beginScene(false, true, bgcolor);
 		beginscenetime = timer.stop(true);
 		}
 
@@ -2470,6 +2502,8 @@ int main(int argc, char *argv[])
 		else
 			device->yield();*/
 	}
+
+	delete quick_inventory;
 
 	} // client is deleted at this point
 	

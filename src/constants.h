@@ -39,31 +39,28 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #define PI 3.14159
 
-#define SERVERMAP_DELETE_UNUSED_SECTORS_TIMEOUT (60*10)
+//#define SERVERMAP_DELETE_UNUSED_SECTORS_TIMEOUT (60*10)
+#define SERVERMAP_DELETE_UNUSED_SECTORS_TIMEOUT (60)
 #define SERVER_MAP_SAVE_INTERVAL (60)
 /*#define SERVERMAP_DELETE_UNUSED_SECTORS_TIMEOUT (10)
 #define SERVER_MAP_SAVE_INTERVAL (10)*/
 
+// This is the same as in minecraft and everything else
 #define FOV_ANGLE (PI/2.5)
-//#define FOV_ANGLE (PI/2.25)
 
 // The absolute working limit is (2^15 - viewing_range).
 #define MAP_GENERATION_LIMIT (31000)
 
-//#define MAX_SIMULTANEOUS_BLOCK_SENDS 2
-
+// Time after building, during which the following limit
+// is in use
 #define FULL_BLOCK_SEND_ENABLE_MIN_TIME_FROM_BUILDING 2.0
-//#define LIMITED_MAX_SIMULTANEOUS_BLOCK_SENDS 1
+// This many blocks are sent when player is building
 #define LIMITED_MAX_SIMULTANEOUS_BLOCK_SENDS 0
-
-// Override for the previous one when distance is low
+// Override for the previous one when distance of block
+// is very low
 #define BLOCK_SEND_DISABLE_LIMITS_MAX_D 1
 
-//#define MAX_SIMULTANEOUS_BLOCK_SENDS_SERVER_TOTAL 4
-
 // Viewing range stuff
-
-//#define HEIGHTMAP_RANGE_NODES 300
 
 //#define FREETIME_RATIO 0.2
 #define FREETIME_RATIO 0.15
@@ -75,10 +72,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #define SIGN_TEXT_MAX_LENGTH 50
 
-// The distance of how far objects will be sent to client
-//#define ACTIVE_OBJECT_D_BLOCKS 2
-
-// Wether to catch all std::exceptions.
+// Whether to catch all std::exceptions.
 // Assert will be called on such an event.
 #define CATCH_UNHANDLED_EXCEPTIONS 1
 
@@ -88,7 +82,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 */
 #define MAX_OBJECTDATA_SIZE 450
 
-//#define WATER_LEVEL (-5)
 #define WATER_LEVEL (0)
 
 #endif
