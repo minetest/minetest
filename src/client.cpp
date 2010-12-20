@@ -91,10 +91,7 @@ Client::Client(
 	m_server_ser_ver(SER_FMT_VER_INVALID),
 	m_step_dtime(0.0),
 	m_inventory_updated(false),
-	m_time(0),
-	m_time_counter(0.0)
-	//m_daynight_i(0)
-	//m_daynight_ratio(1000)
+	m_time_of_day(0)
 {
 	m_packetcounter_timer = 0.0;
 	m_delete_unused_sectors_timer = 0.0;
@@ -165,48 +162,29 @@ void Client::step(float dtime)
 		Day/night
 	*/
 	{
-		m_time_counter += dtime;
-		int seconds = (int)m_time_counter;
-		m_time_counter -= (float)seconds;
-		m_time += seconds;
-		if(seconds > 0)
-		{
-			//dstream<<"m_time="<<m_time<<std::endl;
-			/*JMutexAutoLock envlock(m_env_mutex);
-			u32 dr = 500+500*sin((float)((m_time/10)%7)/7.*2.*PI);
-			if(dr != m_env.getDayNightRatio())
-			{
-				dstream<<"dr="<<dr<<std::endl;
-				m_env.setDayNightRatio(dr);
-				m_env.expireMeshes();
-			}*/
-#if 1
-			s32 d = 4;
-			s32 t = (m_time/10)%d;
-			s32 dn = 0;
-			if(t == d/2-1 || t == d-1)
-				dn = 1;
-			else if(t < d/2-1)
-				dn = 0;
-			else
-				dn = 2;
+		s32 d = 8;
+		s32 t = (((m_time_of_day.get() + 24000/d/2)%24000)/(24000/d));
+		s32 dn = 0;
+		if(t == d/4 || t == (d-d/4))
+			dn = 1;
+		else if(t < d/4 || t > (d-d/4))
+			dn = 2;
+		else
+			dn = 0;
 
-			u32 dr = 1000;
-			if(dn == 0)
-				dr = 1000;
-			if(dn == 1)
-				dr = 600;
-			if(dn == 2)
-				dr = 300;
-#else
-			u32 dr = 1000;
-#endif
-			if(dr != m_env.getDayNightRatio())
-			{
-				dstream<<"dr="<<dr<<std::endl;
-				m_env.setDayNightRatio(dr);
-				m_env.expireMeshes(true);
-			}
+		u32 dr = 1000;
+		if(dn == 0)
+			dr = 1000;
+		if(dn == 1)
+			dr = 600;
+		if(dn == 2)
+			dr = 300;
+		
+		if(dr != m_env.getDayNightRatio())
+		{
+			//dstream<<"dr="<<dr<<std::endl;
+			m_env.setDayNightRatio(dr);
+			m_env.expireMeshes(true);
 		}
 	}
 
@@ -1033,6 +1011,16 @@ void Client::ProcessData(u8 *data, u32 datasize, u16 sender_peer_id)
 		}
 
 		} //envlock
+	}
+	else if(command == TOCLIENT_TIME_OF_DAY)
+	{
+		if(datasize < 4)
+			return;
+		
+		u16 time = readU16(&data[2]);
+		time = time % 24000;
+		m_time_of_day.set(time);
+		//dstream<<"Client: time="<<time<<std::endl;
 	}
 	// Default to queueing it (for slow commands)
 	else

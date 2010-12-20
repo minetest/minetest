@@ -60,3 +60,10 @@
 # Note that this gets applied at map generation time
 #endless_water = true
 
+# 20 min/day
+#time_speed = 72
+# 1 min/day
+#time_speed = 1440
+
+#time_send_interval = 5
+

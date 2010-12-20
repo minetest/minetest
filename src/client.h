@@ -290,9 +290,8 @@ private:
 
 	PacketCounter m_packetcounter;
 	
-	// Access these only in main thread.
-	u32 m_time;
-	float m_time_counter;
+	// Received from the server. 0-23999
+	MutexedVariable<u32> m_time_of_day;
 	
 	// 0 <= m_daynight_i < DAYNIGHT_CACHE_COUNT
 	//s32 m_daynight_i;

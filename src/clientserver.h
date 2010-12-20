@@ -20,6 +20,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #ifndef CLIENTSERVER_HEADER
 #define CLIENTSERVER_HEADER
 
+#include "utility.h"
+
 #define PROTOCOL_ID 0x4f457403
 
 enum ToClientCommand
@@ -89,6 +91,12 @@ enum ToClientCommand
 		for each block:
 			v3s16 blockpos
 			block objects
+	*/
+
+	TOCLIENT_TIME_OF_DAY = 0x29,
+	/*
+		u16 command
+		u16 time (0-23999)
 	*/
 };
 
@@ -185,8 +193,13 @@ enum ToServerCommand
 	*/
 };
 
-// Flags for TOSERVER_GETBLOCK
-#define TOSERVER_GETBLOCK_FLAG_OPTIONAL (1<<0)
+inline SharedBuffer<u8> makePacket_TOCLIENT_TIME_OF_DAY(u16 time)
+{
+	SharedBuffer<u8> data(2+2);
+	writeU16(&data[0], TOCLIENT_TIME_OF_DAY);
+	writeU16(&data[2], time);
+	return data;
+}
 
 #endif
 

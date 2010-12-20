@@ -172,16 +172,16 @@ TODO: Check what goes wrong with caching map to disk (Kray)
 
 TODO: Remove LazyMeshUpdater. It is not used as supposed.
 
-TODO: Node cracking animation when digging
-      - TODO: A way to generate new textures by combining textures
-	  - TODO: Mesh update to fetch cracked faces from the former
-
 TODO: Add server unused sector deletion settings to settings
 
 TODO: TOSERVER_LEAVE
 
 Doing now:
 ======================================================================
+
+TODO: Node cracking animation when digging
+      - TODO: A way to generate new textures by combining textures
+	  - TODO: Mesh update to fetch cracked faces from the former
 
 ======================================================================
 
@@ -298,41 +298,7 @@ bool g_viewing_range_all = false;
 
 Settings g_settings;
 
-// Sets default settings
-void set_default_settings()
-{
-	// Client stuff
-	g_settings.setDefault("wanted_fps", "30");
-	g_settings.setDefault("fps_max", "60");
-	g_settings.setDefault("viewing_range_nodes_max", "300");
-	g_settings.setDefault("viewing_range_nodes_min", "35");
-	g_settings.setDefault("screenW", "");
-	g_settings.setDefault("screenH", "");
-	g_settings.setDefault("host_game", "");
-	g_settings.setDefault("port", "");
-	g_settings.setDefault("address", "");
-	g_settings.setDefault("name", "");
-	g_settings.setDefault("random_input", "false");
-	g_settings.setDefault("client_delete_unused_sectors_timeout", "1200");
-	g_settings.setDefault("enable_fog", "true");
-
-	// Server stuff
-	g_settings.setDefault("creative_mode", "false");
-	g_settings.setDefault("heightmap_blocksize", "32");
-	g_settings.setDefault("height_randmax", "constant 50.0");
-	g_settings.setDefault("height_randfactor", "constant 0.6");
-	g_settings.setDefault("height_base", "linear 0 0 0");
-	g_settings.setDefault("plants_amount", "1.0");
-	g_settings.setDefault("ravines_amount", "1.0");
-	g_settings.setDefault("objectdata_interval", "0.2");
-	g_settings.setDefault("active_object_range", "2");
-	g_settings.setDefault("max_simultaneous_block_sends_per_client", "1");
-	g_settings.setDefault("max_simultaneous_block_sends_server_total", "4");
-	g_settings.setDefault("disable_water_climb", "true");
-	g_settings.setDefault("endless_water", "true");
-	g_settings.setDefault("max_block_send_distance", "5");
-	g_settings.setDefault("max_block_generate_distance", "4");
-}
+extern void set_default_settings();
 
 /*
 	Random stuff

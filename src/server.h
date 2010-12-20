@@ -265,9 +265,11 @@ public:
 	void GetNextBlocks(Server *server, float dtime,
 			core::array<PrioritySortedBlockTransfer> &dest);
 
-	// Connection and environment should be locked when this is called
-	// steps() objects of blocks not found in active_blocks, then
-	// adds those blocks to active_blocks
+	/*
+		Connection and environment should be locked when this is called.
+		steps() objects of blocks not found in active_blocks, then
+		adds those blocks to active_blocks
+	*/
 	void SendObjectData(
 			Server *server,
 			float dtime,
@@ -280,14 +282,6 @@ public:
 
 	void SetBlockNotSent(v3s16 p);
 	void SetBlocksNotSent(core::map<v3s16, MapBlock*> &blocks);
-
-	//void BlockEmerged();
-
-	/*bool IsSendingBlock(v3s16 p)
-	{
-		JMutexAutoLock lock(m_blocks_sending_mutex);
-		return (m_blocks_sending.find(p) != NULL);
-	}*/
 
 	s32 SendingCount()
 	{
@@ -457,6 +451,12 @@ private:
 	
 	// Nodes that are destinations of flowing liquid at the moment
 	core::map<v3s16, u8> m_flow_active_nodes;
+
+	// 0-23999
+	MutexedVariable<u32> m_time_of_day;
+	// Used to buffer dtime for adding to m_time_of_day
+	float m_time_counter;
+	float m_time_of_day_send_timer;
 	
 	friend class EmergeThread;
 	friend class RemoteClient;

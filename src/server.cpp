@@ -31,6 +31,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "constants.h"
 #include "voxel.h"
 
+#define BLOCK_EMERGE_FLAG_FROMDISK (1<<0)
+
 void * ServerThread::Thread()
 {
 	ThreadStarted();
@@ -121,7 +123,7 @@ void * EmergeThread::Thread()
 
 				// Check flags
 				u8 flags = i.getNode()->getValue();
-				if((flags & TOSERVER_GETBLOCK_FLAG_OPTIONAL) == false)
+				if((flags & BLOCK_EMERGE_FLAG_FROMDISK) == false)
 					optional = false;
 				
 			}
@@ -541,7 +543,7 @@ void RemoteClient::GetNextBlocks(Server *server, float dtime,
 					
 					u8 flags = 0;
 					if(generate == false)
-						flags |= TOSERVER_GETBLOCK_FLAG_OPTIONAL;
+						flags |= BLOCK_EMERGE_FLAG_FROMDISK;
 					
 					server->m_emerge_queue.addBlock(peer_id, p, flags);
 					server->m_emergethread.trigger();
@@ -757,7 +759,7 @@ void RemoteClient::SendObjectData(
 				m_num_blocks_in_emerge_queue.m_value++;*/
 				
 				// Add to queue as an anonymous fetch from disk
-				u8 flags = TOSERVER_GETBLOCK_FLAG_OPTIONAL;
+				u8 flags = BLOCK_EMERGE_FLAG_FROMDISK;
 				server->m_emerge_queue.addBlock(0, p, flags);
 				server->m_emergethread.trigger();
 			}
@@ -926,7 +928,10 @@ Server::Server(
 	m_env(new ServerMap(mapsavedir, hm_params, map_params), dout_server),
 	m_con(PROTOCOL_ID, 512, CONNECTION_TIMEOUT, this),
 	m_thread(this),
-	m_emergethread(this)
+	m_emergethread(this),
+	m_time_of_day(12000),
+	m_time_counter(0),
+	m_time_of_day_send_timer(0)
 {
 	m_flowwater_timer = 0.0;
 	m_print_info_timer = 0.0;
@@ -1024,6 +1029,45 @@ void Server::AsyncRunStep()
 	{
 		JMutexAutoLock lock1(m_step_dtime_mutex);
 		m_step_dtime -= dtime;
+	}
+	
+	/*
+		Update m_time_of_day
+	*/
+	{
+		m_time_counter += dtime;
+		f32 speed = g_settings.getFloat("time_speed") * 24000./(24.*3600);
+		u32 units = (u32)(m_time_counter*speed);
+		m_time_counter -= (f32)units / speed;
+		m_time_of_day.set((m_time_of_day.get() + units) % 24000);
+		
+		//dstream<<"Server: m_time_of_day = "<<m_time_of_day.get()<<std::endl;
+
+		/*
+			Send to clients at constant intervals
+		*/
+
+		m_time_of_day_send_timer -= dtime;
+		if(m_time_of_day_send_timer < 0.0)
+		{
+			m_time_of_day_send_timer = g_settings.getFloat("time_send_interval");
+
+			//JMutexAutoLock envlock(m_env_mutex);
+			JMutexAutoLock conlock(m_con_mutex);
+
+			for(core::map<u16, RemoteClient*>::Iterator
+				i = m_clients.getIterator();
+				i.atEnd() == false; i++)
+			{
+				RemoteClient *client = i.getNode()->getValue();
+				//Player *player = m_env.getPlayer(client->peer_id);
+				
+				SharedBuffer<u8> data = makePacket_TOCLIENT_TIME_OF_DAY(
+						m_time_of_day.get());
+				// Send as reliable
+				m_con.Send(client->peer_id, 0, data, true);
+			}
+		}
 	}
 
 	//dstream<<"Server steps "<<dtime<<std::endl;
@@ -1434,6 +1478,13 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 
 		// Send inventory to player
 		SendInventory(peer->id);
+		
+		// Send time of day
+		{
+			SharedBuffer<u8> data = makePacket_TOCLIENT_TIME_OF_DAY(
+					m_time_of_day.get());
+			m_con.Send(peer->id, 0, data, true);
+		}
 
 		return;
 	}
