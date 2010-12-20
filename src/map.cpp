@@ -1141,21 +1141,21 @@ bool Map::dayNightDiffed(v3s16 blockpos)
 	}
 	catch(InvalidPositionException &e){}
 	try{
-		v3s16 p = blockpos + v3s16(1,0,0);
+		v3s16 p = blockpos + v3s16(-1,0,0);
 		MapBlock *b = getBlockNoCreate(p);
 		if(b->dayNightDiffed())
 			return true;
 	}
 	catch(InvalidPositionException &e){}
 	try{
-		v3s16 p = blockpos + v3s16(0,1,0);
+		v3s16 p = blockpos + v3s16(0,-1,0);
 		MapBlock *b = getBlockNoCreate(p);
 		if(b->dayNightDiffed())
 			return true;
 	}
 	catch(InvalidPositionException &e){}
 	try{
-		v3s16 p = blockpos + v3s16(0,0,1);
+		v3s16 p = blockpos + v3s16(0,0,-1);
 		MapBlock *b = getBlockNoCreate(p);
 		if(b->dayNightDiffed())
 			return true;
@@ -1805,26 +1805,6 @@ MapBlock * ServerMap::emergeBlock(
 				Calculate material
 			*/
 
-			// If node is very low
-			/*if(real_y <= surface_y - 7)
-			{
-				// Create dungeons
-				if(underground_emptiness[
-						ued*ued*(z0*ued/MAP_BLOCKSIZE)
-						+ued*(y0*ued/MAP_BLOCKSIZE)
-						+(x0*ued/MAP_BLOCKSIZE)])
-				{
-					n.d = CONTENT_AIR;
-				}
-				else
-				{
-					n.d = CONTENT_STONE;
-				}
-			}
-			// If node is under surface level
-			else if(real_y <= surface_y - surface_depth)
-				n.d = CONTENT_STONE;
-			*/
 			if(real_y <= surface_y - surface_depth)
 			{
 				// Create dungeons
@@ -1955,42 +1935,6 @@ MapBlock * ServerMap::emergeBlock(
 	*/
 	sector->insertBlock(block);
 	
-	/*
-		Do some interpolation for dungeons
-	*/
-
-#if 0	
-	{
-	TimeTaker timer("interpolation", g_device);
-	
-	MapVoxelManipulator vmanip(this);
-	
-	v3s16 relpos = block->getPosRelative();
-
-	vmanip.interpolate(VoxelArea(relpos-v3s16(1,1,1),
-			relpos+v3s16(1,1,1)*(MAP_BLOCKSIZE+1)));
-	/*vmanip.interpolate(VoxelArea(relpos,
-			relpos+v3s16(1,1,1)*(MAP_BLOCKSIZE-1)));*/
-	
-	core::map<v3s16, MapBlock*> modified_blocks;
-	vmanip.blitBack(modified_blocks);
-	dstream<<"blitBack modified "<<modified_blocks.size()
-			<<" blocks"<<std::endl;
-
-	// Add modified blocks to changed_blocks and lighting_invalidated_blocks
-	for(core::map<v3s16, MapBlock*>::Iterator
-			i = modified_blocks.getIterator();
-			i.atEnd() == false; i++)
-	{
-		MapBlock *block = i.getNode()->getValue();
-
-		changed_blocks.insert(block->getPos(), block);
-		//lighting_invalidated_blocks.insert(block->getPos(), block);
-	}
-
-	}
-#endif
-
 	/*
 		Sector object stuff
 	*/

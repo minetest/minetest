@@ -354,14 +354,6 @@ int main(int argc, char *argv[])
 		}
 	}
 
-	/*
-		Update configuration file
-	*/
-	if(configpath != "")
-	{
-		g_settings.updateConfigFile(configpath.c_str());
-	}
-
 	} //try
 	catch(con::PeerNotFoundException &e)
 	{

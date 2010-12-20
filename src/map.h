@@ -387,7 +387,7 @@ public:
 #endif
 
 	/*
-		Takes the blocks at the trailing edges into account
+		Takes the blocks at the leading edges into account
 	*/
 	bool dayNightDiffed(v3s16 blockpos);
 

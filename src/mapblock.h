@@ -412,7 +412,7 @@ public:
 		These methods don't care about neighboring blocks.
 		It means that to know if a block really doesn't need a mesh
 		update between day and night, the neighboring blocks have
-		to be taken into account.
+		to be taken into account. Use Map::dayNightDiffed().
 	*/
 	void updateDayNightDiff();
 

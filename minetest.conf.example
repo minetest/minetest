@@ -62,6 +62,8 @@
 
 # 20 min/day
 #time_speed = 72
+# 4 min/day
+#time_speed = 360
 # 1 min/day
 #time_speed = 1440
 
