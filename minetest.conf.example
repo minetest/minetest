@@ -13,8 +13,8 @@
 #fps_max = 60
 #viewing_range_nodes_max = 300
 #viewing_range_nodes_min = 50
-#screenW = 
-#screenH = 
+#screenW = 800
+#screenH = 600
 #host_game = 
 #port = 30000
 #address = kray.dy.fi

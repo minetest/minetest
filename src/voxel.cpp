@@ -138,7 +138,7 @@ void VoxelManipulator::addArea(VoxelArea area)
 	if(m_area.contains(area))
 		return;
 	
-	TimeTaker timer("addArea", g_device, &addarea_time);
+	TimeTaker timer("addArea", g_irrlicht, &addarea_time);
 
 	// Calculate new area
 	VoxelArea new_area;
@@ -290,7 +290,7 @@ void VoxelManipulator::interpolate(VoxelArea area)
 void VoxelManipulator::clearFlag(u8 flags)
 {
 	// 0-1ms on moderate area
-	TimeTaker timer("clearFlag", g_device, &clearflag_time);
+	TimeTaker timer("clearFlag", g_irrlicht, &clearflag_time);
 
 	v3s16 s = m_area.getExtent();
 
@@ -539,7 +539,7 @@ void VoxelManipulator::updateAreaWaterPressure(VoxelArea a,
 		core::map<v3s16, u8> &active_nodes,
 		bool checked3_is_clear)
 {
-	TimeTaker timer("updateAreaWaterPressure", g_device,
+	TimeTaker timer("updateAreaWaterPressure", g_irrlicht,
 			&updateareawaterpressure_time);
 
 	emerge(a, 3);
@@ -585,7 +585,7 @@ void VoxelManipulator::updateAreaWaterPressure(VoxelArea a,
 		try
 		{
 			// 0-1ms @ recur_count <= 100
-			//TimeTaker timer("getWaterPressure", g_device);
+			//TimeTaker timer("getWaterPressure", g_irrlicht);
 			pr = getWaterPressure(p, highest_y, recur_count);
 		}
 		catch(ProcessingLimitException &e)
@@ -613,7 +613,7 @@ void VoxelManipulator::updateAreaWaterPressure(VoxelArea a,
 		try
 		{
 			// 0ms
-			//TimeTaker timer("spreadWaterPressure", g_device);
+			//TimeTaker timer("spreadWaterPressure", g_irrlicht);
 			spreadWaterPressure(p, pr, a, active_nodes, 0);
 		}
 		catch(ProcessingLimitException &e)
@@ -653,7 +653,7 @@ bool VoxelManipulator::flowWater(v3s16 removed_pos,
 	//dstream<<"s1="<<s1<<", s2="<<s2<<std::endl;
 
 	{
-	TimeTaker timer1("flowWater pre", g_device, &flowwater_pre_time);
+	TimeTaker timer1("flowWater pre", g_irrlicht, &flowwater_pre_time);
 	
 	// Load neighboring nodes
 	emerge(VoxelArea(removed_pos - v3s16(1,1,1), removed_pos + v3s16(1,1,1)), 4);
@@ -802,9 +802,9 @@ bool VoxelManipulator::flowWater(v3s16 removed_pos,
 				debugprint, stoptime);
 	}
 	
-	if(stoptime != 0 && g_device != NULL)
+	if(stoptime != 0 && g_irrlicht != NULL)
 	{
-		u32 timenow = g_device->getTimer()->getRealTime();
+		u32 timenow = g_irrlicht->getTime();
 		if(timenow >= stoptime ||
 				(stoptime < 0x80000000 && timenow > 0x80000000))
 		{
@@ -870,15 +870,15 @@ void VoxelManipulator::flowWater(
 		return;
 	}
 
-	//TimeTaker timer1("flowWater (active_nodes)", g_device);
+	//TimeTaker timer1("flowWater (active_nodes)", g_irrlicht);
 
 	//dstream<<"active_nodes.size() = "<<active_nodes.size()<<std::endl;
 
 
 	u32 stoptime = 0;
-	if(g_device != NULL)
+	if(g_irrlicht != NULL)
 	{
-		stoptime = g_device->getTimer()->getRealTime() + timelimit;
+		stoptime = g_irrlicht->getTime() + timelimit;
 	}
 
 	// Count of handled active nodes

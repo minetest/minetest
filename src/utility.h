@@ -17,10 +17,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
-/*
-(c) 2010 Perttu Ahola <celeron55@gmail.com>
-*/
-
 #ifndef UTILITY_HEADER
 #define UTILITY_HEADER
 
@@ -403,56 +399,23 @@ private:
 	TimeTaker
 */
 
+class IrrlichtWrapper;
+
 class TimeTaker
 {
 public:
-	TimeTaker(const char *name, IrrlichtDevice *dev, u32 *result=NULL)
-	{
-		m_name = name;
-		m_dev = dev;
-		m_result = result;
-		m_running = true;
-		if(dev == NULL)
-		{
-			m_time1 = 0;
-			return;
-		}
-		m_time1 = m_dev->getTimer()->getRealTime();
-	}
+	TimeTaker(const char *name, IrrlichtWrapper *irrlicht, u32 *result=NULL);
+
 	~TimeTaker()
 	{
 		stop();
 	}
-	u32 stop(bool quiet=false)
-	{
-		if(m_running)
-		{
-			if(m_dev == NULL)
-			{
-				/*if(quiet == false)
-					std::cout<<"Couldn't measure time for "<<m_name
-							<<": dev==NULL"<<std::endl;*/
-				return 0;
-			}
-			u32 time2 = m_dev->getTimer()->getRealTime();
-			u32 dtime = time2 - m_time1;
-			if(m_result != NULL)
-			{
-				(*m_result) += dtime;
-			}
-			else
-			{
-				if(quiet == false)
-					std::cout<<m_name<<" took "<<dtime<<"ms"<<std::endl;
-			}
-			m_running = false;
-			return dtime;
-		}
-		return 0;
-	}
+
+	u32 stop(bool quiet=false);
+
 private:
 	const char *m_name;
-	IrrlichtDevice *m_dev;
+	IrrlichtWrapper *m_irrlicht;
 	u32 m_time1;
 	bool m_running;
 	u32 *m_result;
@@ -672,6 +635,48 @@ inline s32 stoi(std::string s)
 {
 	return atoi(s.c_str());
 }
+
+/*
+	A base class for simple background thread implementation
+*/
+
+class SimpleThread : public JThread
+{
+	bool run;
+	JMutex run_mutex;
+
+public:
+
+	SimpleThread():
+		JThread(),
+		run(true)
+	{
+		run_mutex.Init();
+	}
+
+	virtual ~SimpleThread()
+	{}
+
+	virtual void * Thread() = 0;
+
+	bool getRun()
+	{
+		JMutexAutoLock lock(run_mutex);
+		return run;
+	}
+	void setRun(bool a_run)
+	{
+		JMutexAutoLock lock(run_mutex);
+		run = a_run;
+	}
+
+	void stop()
+	{
+		setRun(false);
+		while(IsRunning())
+			sleep_ms(100);
+	}
+};
 
 /*
 	Config stuff
@@ -1070,81 +1075,205 @@ private:
 };
 
 /*
-	A thread-safe texture cache.
-
-	This is used so that irrlicht doesn't get called from many threads
+	A thread-safe queue
 */
 
-class TextureCache
+template<typename T>
+class MutexedQueue
 {
 public:
-	TextureCache()
+	MutexedQueue()
 	{
 		m_mutex.Init();
-		assert(m_mutex.IsInitialized());
+		m_is_empty_mutex.Init();
 	}
-	
-	void set(std::string name, video::ITexture *texture)
+	u32 size()
+	{
+		return m_list.size();
+	}
+	void push_back(T t)
 	{
 		JMutexAutoLock lock(m_mutex);
+		m_list.push_back(t);
+		
+		if(m_list.size() == 1)
+			m_is_empty_mutex.Unlock();
+	}
+	T pop_front(bool wait_if_empty=false)
+	{
+		for(;;)
+		{
+			{
+				JMutexAutoLock lock(m_mutex);
 
-		m_textures[name] = texture;
+				if(m_list.size() > 0)
+				{
+					if(m_list.size() == 1)
+						m_is_empty_mutex.Lock();
+					
+					typename core::list<T>::Iterator begin = m_list.begin();
+					T t = *begin;
+					m_list.erase(begin);
+					return t;
+				}
+
+				if(wait_if_empty == false)
+					throw ItemNotFoundException("MutexedQueue: item not found");
+			}
+			
+			// To wait for an empty list, we're gonna hang on this mutex
+			m_is_empty_mutex.Lock();
+			m_is_empty_mutex.Unlock();
+
+			// Then loop to the beginning and hopefully return something
+		}
+	}
+
+	JMutex & getMutex()
+	{
+		return m_mutex;
+	}
+
+	JMutex & getIsEmptyMutex()
+	{
+		return m_is_empty_mutex;
 	}
 	
-	video::ITexture* get(std::string name)
+	core::list<T> & getList()
 	{
-		JMutexAutoLock lock(m_mutex);
+		return m_list;
+	}
 
-		core::map<std::string, video::ITexture*>::Node *n;
-		n = m_textures.find(name);
+protected:
+	JMutex m_mutex;
+	// This is locked always when the list is empty
+	JMutex m_is_empty_mutex;
+	core::list<T> m_list;
+};
 
-		if(n != NULL)
-			return n->getValue();
+template<typename Caller, typename Data>
+class CallerInfo
+{
+public:
+	Caller caller;
+	Data data;
+};
 
-		return NULL;
+template<typename Key, typename T, typename Caller, typename CallerData>
+class GetResult
+{
+public:
+	Key key;
+	T item;
+	core::list<CallerInfo<Caller, CallerData> > callers;
+};
+
+template<typename Key, typename T, typename Caller, typename CallerData>
+class ResultQueue: public MutexedQueue< GetResult<Key, T, Caller, CallerData> >
+{
+};
+
+template<typename Key, typename T, typename Caller, typename CallerData>
+class GetRequest
+{
+public:
+	GetRequest()
+	{
+		dest = NULL;
+	}
+	GetRequest(ResultQueue<Key,T, Caller, CallerData> *a_dest)
+	{
+		dest = a_dest;
+	}
+	GetRequest(ResultQueue<Key,T, Caller, CallerData> *a_dest,
+			Key a_key)
+	{
+		dest = a_dest;
+		key = a_key;
+	}
+	~GetRequest()
+	{
+	}
+	
+	Key key;
+	ResultQueue<Key, T, Caller, CallerData> *dest;
+	core::list<CallerInfo<Caller, CallerData> > callers;
+};
+
+/*
+	Quickhands for typical request-result queues.
+	Used for distributing work between threads.
+*/
+
+template<typename Key, typename T, typename Caller, typename CallerData>
+class RequestQueue
+{
+public:
+	u32 size()
+	{
+		return m_queue.size();
+	}
+
+	void add(Key key, Caller caller, CallerData callerdata,
+			ResultQueue<Key, T, Caller, CallerData> *dest)
+	{
+		JMutexAutoLock lock(m_queue.getMutex());
+		
+		/*
+			If the caller is already on the list, only update CallerData
+		*/
+		for(typename core::list< GetRequest<Key, T, Caller, CallerData> >::Iterator
+				i = m_queue.getList().begin();
+				i != m_queue.getList().end(); i++)
+		{
+			GetRequest<Key, T, Caller, CallerData> &request = *i;
+
+			if(request.key == key)
+			{
+				for(typename core::list< CallerInfo<Caller, CallerData> >::Iterator
+						i = request.callers.begin();
+						i != request.callers.end(); i++)
+				{
+					CallerInfo<Caller, CallerData> &ca = *i;
+					if(ca.caller == caller)
+					{
+						ca.data = callerdata;
+						return;
+					}
+				}
+				CallerInfo<Caller, CallerData> ca;
+				ca.caller = caller;
+				ca.data = callerdata;
+				request.callers.push_back(ca);
+				return;
+			}
+		}
+
+		/*
+			Else add a new request to the queue
+		*/
+
+		GetRequest<Key, T, Caller, CallerData> request;
+		request.key = key;
+		CallerInfo<Caller, CallerData> ca;
+		ca.caller = caller;
+		ca.data = callerdata;
+		request.callers.push_back(ca);
+		request.dest = dest;
+		
+		m_queue.getList().push_back(request);
+		
+		if(m_queue.getList().size() == 1)
+			m_queue.getIsEmptyMutex().Unlock();
+	}
+
+	GetRequest<Key, T, Caller, CallerData> pop(bool wait_if_empty=false)
+	{
+		return m_queue.pop_front(wait_if_empty);
 	}
 
 private:
-	core::map<std::string, video::ITexture*> m_textures;
-	JMutex m_mutex;
-};
-
-class SimpleThread : public JThread
-{
-	bool run;
-	JMutex run_mutex;
-
-public:
-
-	SimpleThread():
-		JThread(),
-		run(true)
-	{
-		run_mutex.Init();
-	}
-
-	virtual ~SimpleThread()
-	{}
-
-	virtual void * Thread() = 0;
-
-	bool getRun()
-	{
-		JMutexAutoLock lock(run_mutex);
-		return run;
-	}
-	void setRun(bool a_run)
-	{
-		JMutexAutoLock lock(run_mutex);
-		run = a_run;
-	}
-
-	void stop()
-	{
-		setRun(false);
-		while(IsRunning())
-			sleep_ms(100);
-	}
+	MutexedQueue< GetRequest<Key, T, Caller, CallerData> > m_queue;
 };
 
 #endif

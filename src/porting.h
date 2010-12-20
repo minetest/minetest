@@ -18,7 +18,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 */
 
 /*
-(c) 2010 Perttu Ahola <celeron55@gmail.com>
+	Random portability stuff
 */
 
 #ifndef PORTING_HEADER

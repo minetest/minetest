@@ -18,36 +18,40 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 */
 
 #include "tile.h"
+#include "irrlichtwrapper.h"
 
-const char * g_tile_texture_names[TILES_COUNT] =
+// A mapping from tiles to paths of textures
+const char * g_tile_texture_paths[TILES_COUNT] =
 {
 	NULL,
-	"stone",
-	"water",
-	"grass",
-	"tree",
-	"leaves",
-	"grass_footsteps",
-	"mese",
-	"mud",
-	"tree_top",
-	"mud_with_grass",
-	"cloud",
+	"../data/stone.png",
+	"../data/water.png",
+	"../data/grass.png",
+	"../data/tree.png",
+	"../data/leaves.png",
+	"../data/grass_footsteps.png",
+	"../data/mese.png",
+	"../data/mud.png",
+	"../data/tree_top.png",
+	"../data/mud_with_grass.png",
+	"../data/cloud.png",
 };
 
+// A mapping from tiles to materials
+// Initialized at run-time.
 video::SMaterial g_tile_materials[TILES_COUNT];
 
-void tile_materials_preload(TextureCache &cache)
+void tile_materials_preload(IrrlichtWrapper *irrlicht)
 {
 	for(s32 i=0; i<TILES_COUNT; i++)
 	{
-		const char *name = g_tile_texture_names[i];
+		const char *path = g_tile_texture_paths[i];
 
 		video::ITexture *t = NULL;
 
-		if(name != NULL)
+		if(path != NULL)
 		{
-			t = cache.get(name);
+			t = irrlicht->getTexture(path);
 			assert(t != NULL);
 		}
 
@@ -66,5 +70,12 @@ void tile_materials_preload(TextureCache &cache)
 	
 	g_tile_materials[TILE_WATER].MaterialType = video::EMT_TRANSPARENT_VERTEX_ALPHA;
 	//g_tile_materials[TILE_WATER].MaterialType = video::EMT_TRANSPARENT_ADD_COLOR;
+}
+
+video::SMaterial & tile_material_get(u32 i)
+{
+	assert(i < TILES_COUNT);
+
+	return g_tile_materials[i];
 }
 

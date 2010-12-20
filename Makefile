@@ -2,9 +2,9 @@
 # It's usually sufficient to change just the target name and source file list
 # and be sure that CXX is set to a valid compiler
 TARGET = test
-SOURCE_FILES = guiPauseMenu.cpp defaultsettings.cpp mapnode.cpp tile.cpp voxel.cpp mapblockobject.cpp inventory.cpp debug.cpp serialization.cpp light.cpp filesys.cpp connection.cpp environment.cpp client.cpp server.cpp socket.cpp mapblock.cpp mapsector.cpp heightmap.cpp map.cpp player.cpp utility.cpp main.cpp test.cpp
+SOURCE_FILES = irrlichtwrapper.cpp guiPauseMenu.cpp defaultsettings.cpp mapnode.cpp tile.cpp voxel.cpp mapblockobject.cpp inventory.cpp debug.cpp serialization.cpp light.cpp filesys.cpp connection.cpp environment.cpp client.cpp server.cpp socket.cpp mapblock.cpp mapsector.cpp heightmap.cpp map.cpp player.cpp utility.cpp main.cpp test.cpp
 SOURCES = $(addprefix src/, $(SOURCE_FILES))
-BUILD_DIR = build/
+BUILD_DIR = build
 OBJECTS = $(addprefix $(BUILD_DIR)/, $(SOURCE_FILES:.cpp=.o))
 #OBJECTS = $(SOURCES:.cpp=.o)
 
@@ -13,7 +13,7 @@ FAST_TARGET = fasttest
 SERVER_TARGET = server
 SERVER_SOURCE_FILES = defaultsettings.cpp mapnode.cpp voxel.cpp mapblockobject.cpp inventory.cpp debug.cpp serialization.cpp light.cpp filesys.cpp connection.cpp environment.cpp server.cpp socket.cpp mapblock.cpp mapsector.cpp heightmap.cpp map.cpp player.cpp utility.cpp servermain.cpp test.cpp
 SERVER_SOURCES = $(addprefix src/, $(SERVER_SOURCE_FILES))
-SERVER_BUILD_DIR = serverbuild/
+SERVER_BUILD_DIR = serverbuild
 SERVER_OBJECTS = $(addprefix $(SERVER_BUILD_DIR)/, $(SERVER_SOURCE_FILES:.cpp=.o))
 #SERVER_OBJECTS = $(SERVER_SOURCES:.cpp=.o)
 

@@ -96,7 +96,7 @@ public:
 		if(m_content >= USEFUL_CONTENT_COUNT)
 			return NULL;
 			
-		return g_texturecache.get(g_content_inventory_textures[m_content]);
+		return g_irrlicht->getTexture(g_content_inventory_textures[m_content]);
 	}
 #endif
 	std::string getText()

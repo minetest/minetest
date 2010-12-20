@@ -46,12 +46,14 @@ extern std::ostream *derr_server_ptr;
 #define dout_server (*dout_server_ptr)
 #define derr_server (*derr_server_ptr)
 
-#ifndef SERVER
+/*#ifndef SERVER
 	#include "utility.h"
 	extern TextureCache g_texturecache;
-#endif
+#endif*/
 
-extern IrrlichtDevice *g_device;
+#include "irrlichtwrapper.h"
+//extern IrrlichtDevice *g_device;
+extern IrrlichtWrapper *g_irrlicht;
 
 #endif
 

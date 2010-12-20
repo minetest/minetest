@@ -46,16 +46,16 @@ u16 g_content_tiles[USEFUL_CONTENT_COUNT][6] =
 
 const char * g_content_inventory_textures[USEFUL_CONTENT_COUNT] =
 {
-	"stone",
-	"grass",
-	"water",
-	"torch_on_floor",
-	"tree_top",
-	"leaves",
-	"grass_footsteps",
-	"mese",
-	"mud",
-	"water",
-	"cloud",
+	"../data/stone.png",
+	"../data/grass.png",
+	"../data/water.png",
+	"../data/torch_on_floor.png",
+	"../data/tree_top.png",
+	"../data/leaves.png",
+	"../data/grass_footsteps.png",
+	"../data/mese.png",
+	"../data/mud.png",
+	"../data/water.png",
+	"../data/cloud.png",
 };
 

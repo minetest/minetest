@@ -740,7 +740,7 @@ void Map::updateLighting(enum LightBank bank,
 	}
 	
 	{
-		//TimeTaker timer("unspreadLight", g_device);
+		//TimeTaker timer("unspreadLight", g_irrlicht);
 		unspreadLight(bank, unlight_from, light_sources, modified_blocks);
 	}
 	
@@ -759,7 +759,7 @@ void Map::updateLighting(enum LightBank bank,
 	//       - Find out why it works
 
 	{
-		//TimeTaker timer("spreadLight", g_device);
+		//TimeTaker timer("spreadLight", g_irrlicht);
 		spreadLight(bank, light_sources, modified_blocks);
 	}
 	
@@ -1065,7 +1065,7 @@ void Map::removeNodeAndUpdate(v3s16 p,
 #ifndef SERVER
 void Map::expireMeshes(bool only_daynight_diffed)
 {
-	TimeTaker timer("expireMeshes()", g_device);
+	TimeTaker timer("expireMeshes()", g_irrlicht);
 
 	core::map<v2s16, MapSector*>::Iterator si;
 	si = m_sectors.getIterator();
@@ -3017,7 +3017,7 @@ MapVoxelManipulator::~MapVoxelManipulator()
 #if 1
 void MapVoxelManipulator::emerge(VoxelArea a, s32 caller_id)
 {
-	TimeTaker timer1("emerge", g_device, &emerge_time);
+	TimeTaker timer1("emerge", g_irrlicht, &emerge_time);
 
 	// Units of these are MapBlocks
 	v3s16 p_min = getNodeBlockPos(a.MinEdge);
@@ -3041,7 +3041,7 @@ void MapVoxelManipulator::emerge(VoxelArea a, s32 caller_id)
 		bool block_data_inexistent = false;
 		try
 		{
-			TimeTaker timer1("emerge load", g_device, &emerge_load_time);
+			TimeTaker timer1("emerge load", g_irrlicht, &emerge_load_time);
 
 			/*dstream<<"Loading block (caller_id="<<caller_id<<")"
 					<<" ("<<p.X<<","<<p.Y<<","<<p.Z<<")"
@@ -3082,7 +3082,7 @@ void MapVoxelManipulator::emerge(VoxelArea a, s32 caller_id)
 #if 0
 void MapVoxelManipulator::emerge(VoxelArea a)
 {
-	TimeTaker timer1("emerge", g_device, &emerge_time);
+	TimeTaker timer1("emerge", g_irrlicht, &emerge_time);
 	
 	v3s16 size = a.getExtent();
 	
@@ -3101,7 +3101,7 @@ void MapVoxelManipulator::emerge(VoxelArea a)
 			continue;
 		try
 		{
-			TimeTaker timer1("emerge load", g_device, &emerge_load_time);
+			TimeTaker timer1("emerge load", g_irrlicht, &emerge_load_time);
 			MapNode n = m_map->getNode(a.MinEdge + p);
 			m_data[i] = n;
 			m_flags[i] = 0;
@@ -3126,7 +3126,7 @@ void MapVoxelManipulator::blitBack
 	if(m_area.getExtent() == v3s16(0,0,0))
 		return;
 	
-	//TimeTaker timer1("blitBack", g_device);
+	//TimeTaker timer1("blitBack", g_irrlicht);
 	
 	/*
 		Initialize block cache

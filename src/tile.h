@@ -93,18 +93,16 @@ struct TileSpec
 	} param;
 };
 
-// A mapping from tiles to names of cached textures
-extern const char * g_tile_texture_names[TILES_COUNT];
-
-// A mapping from tiles to materials
-// Initialized at run-time.
-extern video::SMaterial g_tile_materials[TILES_COUNT];
+/*extern const char * g_tile_texture_paths[TILES_COUNT];
+extern video::SMaterial g_tile_materials[TILES_COUNT];*/
 
 /*
 	Functions
 */
 
 // Initializes g_tile_materials
-void tile_materials_preload(TextureCache &cache);
+void tile_materials_preload(IrrlichtWrapper *irrlicht);
+
+video::SMaterial & tile_material_get(u32 i);
 
 #endif

@@ -132,6 +132,14 @@ public:
 	{}
 };
 
+class ItemNotFoundException : public BaseException
+{
+public:
+	ItemNotFoundException(const char *s):
+		BaseException(s)
+	{}
+};
+
 /*
 	Some "old-style" interrupts:
 */

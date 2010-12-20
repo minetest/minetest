@@ -22,6 +22,49 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 */
 
 #include "utility.h"
+#include "irrlichtwrapper.h"
+
+TimeTaker::TimeTaker(const char *name, IrrlichtWrapper *irrlicht, u32 *result)
+{
+	m_name = name;
+	m_irrlicht = irrlicht;
+	m_result = result;
+	m_running = true;
+	if(irrlicht == NULL)
+	{
+		m_time1 = 0;
+		return;
+	}
+	m_time1 = m_irrlicht->getTime();
+}
+
+u32 TimeTaker::stop(bool quiet)
+{
+	if(m_running)
+	{
+		if(m_irrlicht == NULL)
+		{
+			/*if(quiet == false)
+				std::cout<<"Couldn't measure time for "<<m_name
+						<<": irrlicht==NULL"<<std::endl;*/
+			return 0;
+		}
+		u32 time2 = m_irrlicht->getTime();
+		u32 dtime = time2 - m_time1;
+		if(m_result != NULL)
+		{
+			(*m_result) += dtime;
+		}
+		else
+		{
+			if(quiet == false)
+				std::cout<<m_name<<" took "<<dtime<<"ms"<<std::endl;
+		}
+		m_running = false;
+		return dtime;
+	}
+	return 0;
+}
 
 const v3s16 g_26dirs[26] =
 {

@@ -183,6 +183,9 @@ TODO: Node cracking animation when digging
       - TODO: A way to generate new textures by combining textures
 	  - TODO: Mesh update to fetch cracked faces from the former
 
+TODO: A thread-safe wrapper for irrlicht for threads, to get rid of
+      g_device
+
 ======================================================================
 
 */
@@ -247,28 +250,7 @@ TODO: Node cracking animation when digging
 #include "porting.h"
 #include "guiPauseMenu.h"
 
-IrrlichtDevice *g_device = NULL;
-
-/*const char *g_content_filenames[MATERIALS_COUNT] =
-{
-	"../data/stone.png",
-	"../data/grass.png",
-	"../data/water.png",
-	"../data/torch_on_floor.png",
-	"../data/tree.png",
-	"../data/leaves.png",
-	"../data/grass_footsteps.png",
-	"../data/mese.png",
-	"../data/mud.png",
-	"../data/water.png", // CONTENT_OCEAN
-};
-
-// Material cache
-video::SMaterial g_materials[MATERIALS_COUNT];*/
-
-// Texture cache
-TextureCache g_texturecache;
-
+IrrlichtWrapper *g_irrlicht;
 
 // All range-related stuff below is locked behind this
 JMutex g_range_mutex;
@@ -852,9 +834,10 @@ void updateViewingRange(f32 frametime, Client *client)
 
 	static bool fraction_is_good = false;
 	
-	float fraction_good_threshold = 0.1;
+	//float fraction_good_threshold = 0.1;
 	//float fraction_bad_threshold = 0.25;
-	float fraction_bad_threshold = 0.1;
+	float fraction_good_threshold = 0.075;
+	float fraction_bad_threshold = 0.125;
 	float fraction_limit;
 	// Use high limit if fraction is good AND the fraction would
 	// lower the range. We want to keep the range fairly high.
@@ -1283,7 +1266,12 @@ int main(int argc, char *argv[])
 	/*
 		Resolution selection
 	*/
+	
+	bool fullscreen = false;
+	u16 screenW = atoi(g_settings.get("screenW").c_str());
+	u16 screenH = atoi(g_settings.get("screenH").c_str());
 
+#if 0
 	u16 screenW;
 	u16 screenH;
 	bool fullscreen = false;
@@ -1345,6 +1333,7 @@ int main(int argc, char *argv[])
 		screenH = resolutions[r0-1][1];
 		fullscreen = resolutions[r0-1][2];
 	}
+#endif
 
 	//
 
@@ -1372,8 +1361,10 @@ int main(int argc, char *argv[])
 
 	if (device == 0)
 		return 1; // could not create selected driver.
+	
+	g_irrlicht = new IrrlichtWrapper(device);
 
-	g_device = device;
+	//g_device = device;
 	
 	device->setResizable(true);
 
@@ -1432,10 +1423,11 @@ int main(int argc, char *argv[])
 	/*
 		Preload some random textures that are used in threads
 	*/
-	
+#if 0
 	g_texturecache.set("torch", driver->getTexture("../data/torch.png"));
 	g_texturecache.set("torch_on_floor", driver->getTexture("../data/torch_on_floor.png"));
 	g_texturecache.set("torch_on_ceiling", driver->getTexture("../data/torch_on_ceiling.png"));
+	g_texturecache.set("crack", driver->getTexture("../data/crack.png"));
 	
 	/*
 		Load tile textures
@@ -1452,7 +1444,11 @@ int main(int argc, char *argv[])
 		g_texturecache.set(name, driver->getTexture(filename.c_str()));
 	}
 
-	tile_materials_preload(g_texturecache);
+#endif
+
+	//tile_materials_preload(g_texturecache);
+	tile_materials_preload(g_irrlicht);
+	//tile_materials_init();
 
 	/*
 		Make a scope here for the client so that it gets removed
@@ -1642,6 +1638,11 @@ int main(int argc, char *argv[])
 	while(device->run())
 	{
 		/*
+			Run global IrrlichtWrapper's main thread processing stuff
+		*/
+		g_irrlicht->Run();
+
+		/*
 			Random calculations
 		*/
 		v2u32 screensize = driver->getScreenSize();
@@ -1653,7 +1654,7 @@ int main(int argc, char *argv[])
 		// Info text
 		std::wstring infotext;
 
-		//TimeTaker //timer1("//timer1", device);
+		//TimeTaker //timer1("//timer1", g_irrlicht);
 		
 		// Time of frame without fps limit
 		float busytime;
@@ -1843,20 +1844,20 @@ int main(int argc, char *argv[])
 		*/
 		
 		{
-			//TimeTaker timer("client.step(dtime)", device);
+			//TimeTaker timer("client.step(dtime)", g_irrlicht);
 			client.step(dtime);
 			//client.step(dtime_avg1);
 		}
 
 		if(server != NULL)
 		{
-			//TimeTaker timer("server->step(dtime)", device);
+			//TimeTaker timer("server->step(dtime)", g_irrlicht);
 			server->step(dtime);
 		}
 
 		v3f player_position = client.getPlayerPosition();
 		
-		//TimeTaker //timer2("//timer2", device);
+		//TimeTaker //timer2("//timer2", g_irrlicht);
 
 		/*
 			Mouse and camera control
@@ -1910,12 +1911,12 @@ int main(int argc, char *argv[])
 		}
 		else{
 			//client.m_env.getMap().updateCamera(camera_position, camera_direction);
-			//TimeTaker timer("client.updateCamera", device);
+			//TimeTaker timer("client.updateCamera", g_irrlicht);
 			client.updateCamera(camera_position, camera_direction);
 		}
 		
 		//timer2.stop();
-		//TimeTaker //timer3("//timer3", device);
+		//TimeTaker //timer3("//timer3", g_irrlicht);
 
 		/*
 			Calculate what block is the crosshair pointing to
@@ -2266,7 +2267,7 @@ int main(int argc, char *argv[])
 			Update gui stuff (0ms)
 		*/
 
-		//TimeTaker guiupdatetimer("Gui updating", device);
+		//TimeTaker guiupdatetimer("Gui updating", g_irrlicht);
 		
 		{
 			wchar_t temptext[150];
@@ -2376,14 +2377,14 @@ int main(int argc, char *argv[])
 			Drawing begins
 		*/
 
-		TimeTaker drawtimer("Drawing", device);
+		TimeTaker drawtimer("Drawing", g_irrlicht);
 
 		
 		{
-		TimeTaker timer("beginScene", device);
-		driver->beginScene(true, true, bgcolor);
-		//driver->beginScene(false, true, bgcolor);
-		beginscenetime = timer.stop(true);
+			TimeTaker timer("beginScene", g_irrlicht);
+			driver->beginScene(true, true, bgcolor);
+			//driver->beginScene(false, true, bgcolor);
+			beginscenetime = timer.stop(true);
 		}
 
 		//timer3.stop();
@@ -2391,13 +2392,13 @@ int main(int argc, char *argv[])
 		//std::cout<<DTIME<<"smgr->drawAll()"<<std::endl;
 		
 		{
-		TimeTaker timer("smgr", device);
-		smgr->drawAll();
-		scenetime = timer.stop(true);
+			TimeTaker timer("smgr", g_irrlicht);
+			smgr->drawAll();
+			scenetime = timer.stop(true);
 		}
 		
 		{
-		//TimeTaker timer9("auxiliary drawings", device);
+		//TimeTaker timer9("auxiliary drawings", g_irrlicht);
 		// 0ms
 
 		driver->draw2DLine(displaycenter - core::vector2d<s32>(10,0),
@@ -2408,7 +2409,7 @@ int main(int argc, char *argv[])
 				video::SColor(255,255,255,255));
 
 		//timer9.stop();
-		//TimeTaker //timer10("//timer10", device);
+		//TimeTaker //timer10("//timer10", g_irrlicht);
 		
 		video::SMaterial m;
 		m.Thickness = 10;
@@ -2431,7 +2432,7 @@ int main(int argc, char *argv[])
 		}
 
 		//timer10.stop();
-		//TimeTaker //timer11("//timer11", device);
+		//TimeTaker //timer11("//timer11", g_irrlicht);
 
 		/*
 			Draw gui
@@ -2441,9 +2442,9 @@ int main(int argc, char *argv[])
 		
 		// End drawing
 		{
-		TimeTaker timer("endScene", device);
-		driver->endScene();
-		endscenetime = timer.stop(true);
+			TimeTaker timer("endScene", g_irrlicht);
+			driver->endScene();
+			endscenetime = timer.stop(true);
 		}
 
 		drawtime = drawtimer.stop(true);

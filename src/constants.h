@@ -62,8 +62,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 // Viewing range stuff
 
-//#define FREETIME_RATIO 0.2
-#define FREETIME_RATIO 0.15
+//#define FREETIME_RATIO 0.15
+#define FREETIME_RATIO 0.0
 
 // Sectors are split to SECTOR_HEIGHTMAP_SPLIT^2 heightmaps
 #define SECTOR_HEIGHTMAP_SPLIT 2

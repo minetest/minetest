@@ -80,10 +80,12 @@ InventoryItem* InventoryItem::deSerialize(std::istream &is)
 video::ITexture * MapBlockObjectItem::getImage()
 {
 	if(m_inventorystring.substr(0,3) == "Rat")
-		return g_device->getVideoDriver()->getTexture("../data/rat.png");
+		//return g_device->getVideoDriver()->getTexture("../data/rat.png");
+		return g_irrlicht->getTexture("../data/rat.png");
 	
 	if(m_inventorystring.substr(0,4) == "Sign")
-		return g_device->getVideoDriver()->getTexture("../data/sign.png");
+		//return g_device->getVideoDriver()->getTexture("../data/sign.png");
+		return g_irrlicht->getTexture("../data/sign.png");
 
 	return NULL;
 }

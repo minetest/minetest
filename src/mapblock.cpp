@@ -646,7 +646,9 @@ void MapBlock::updateMesh(u32 daynight_ratio)
 			
 			if(f.tile.feature == TILEFEAT_NONE)
 			{
-				collector.append(g_tile_materials[f.tile.id], f.vertices, 4,
+				/*collector.append(g_tile_materials[f.tile.id], f.vertices, 4,
+						indices, 6);*/
+				collector.append(tile_material_get(f.tile.id), f.vertices, 4,
 						indices, 6);
 			}
 			else
@@ -748,16 +750,21 @@ void MapBlock::updateMesh(u32 daynight_ratio)
 					= video::EMT_TRANSPARENT_ALPHA_CHANNEL_REF;
 			if(dir == v3s16(0,-1,0))
 				buf->getMaterial().setTexture(0,
-						g_texturecache.get("torch_on_floor"));
+						g_irrlicht->getTexture("../data/torch_on_floor.png"));
+						//g_texturecache.get("torch_on_floor"));
 			else if(dir == v3s16(0,1,0))
 				buf->getMaterial().setTexture(0,
-						g_texturecache.get("torch_on_ceiling"));
+						g_irrlicht->getTexture("../data/torch_on_ceiling.png"));
+						//g_texturecache.get("torch_on_ceiling"));
 			// For backwards compatibility
 			else if(dir == v3s16(0,0,0))
 				buf->getMaterial().setTexture(0,
-						g_texturecache.get("torch_on_floor"));
+						g_irrlicht->getTexture("../data/torch_on_floor.png"));
+						//g_texturecache.get("torch_on_floor"));
 			else
-				buf->getMaterial().setTexture(0, g_texturecache.get("torch"));
+				buf->getMaterial().setTexture(0, 
+						g_irrlicht->getTexture("../data/torch.png"));
+				//buf->getMaterial().setTexture(0, g_texturecache.get("torch"));
 
 			// Add to mesh
 			mesh_new->addMeshBuffer(buf);
