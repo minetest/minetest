@@ -39,12 +39,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #define PI 3.14159
 
-//#define SERVERMAP_DELETE_UNUSED_SECTORS_TIMEOUT (60*10)
-#define SERVERMAP_DELETE_UNUSED_SECTORS_TIMEOUT (60)
-#define SERVER_MAP_SAVE_INTERVAL (60)
-/*#define SERVERMAP_DELETE_UNUSED_SECTORS_TIMEOUT (10)
-#define SERVER_MAP_SAVE_INTERVAL (10)*/
-
 // This is the same as in minecraft and everything else
 #define FOV_ANGLE (PI/2.5)
 

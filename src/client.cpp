@@ -398,45 +398,10 @@ void Client::step(float dtime)
 		}
 	}
 
-#if 0
-	/*
-		Clear old entries from fetchblock history
-	*/
-	{
-		JMutexAutoLock lock(m_fetchblock_mutex);
-		
-		core::list<v3s16> remove_queue;
-		core::map<v3s16, float>::Iterator i;
-		i = m_fetchblock_history.getIterator();
-		for(; i.atEnd() == false; i++)
-		{
-			float value = i.getNode()->getValue();
-			value += dtime;
-			i.getNode()->setValue(value);
-			if(value >= 60.0)
-				remove_queue.push_back(i.getNode()->getKey());
-		}
-		core::list<v3s16>::Iterator j;
-		j = remove_queue.begin();
-		for(; j != remove_queue.end(); j++)
-		{
-			m_fetchblock_history.remove(*j);
-		}
-	}
-#endif
-
 	/*{
 		JMutexAutoLock lock(m_step_dtime_mutex);
 		m_step_dtime += dtime;
 	}*/
-	
-	/*
-		BEGIN TEST CODE
-	*/
-
-	/*
-		END OF TEST CODE
-	*/
 }
 
 float Client::asyncStep()
@@ -975,7 +940,11 @@ void Client::ProcessData(u8 *data, u32 datasize, u16 sender_peer_id)
 			if(abs_to_delete.find(p) != NULL)
 				abs_to_delete.remove(p);
 
-			// Update objects of block
+			/*
+				Update objects of block
+				
+				NOTE: Be sure this is done in the main thread.
+			*/
 			block->updateObjects(is, m_server_ser_ver,
 					m_device->getSceneManager());
 		}
@@ -1482,11 +1451,11 @@ void Client::addNodeFromInventory(v3s16 nodepos, u16 i)
 }
 #endif
 
-void Client::pressGround(u8 button, v3s16 nodepos_undersurface,
+void Client::groundAction(u8 action, v3s16 nodepos_undersurface,
 		v3s16 nodepos_oversurface, u16 item)
 {
 	if(connectedAndInitialized() == false){
-		dout_client<<DTIME<<"Client::pressGround() "
+		dout_client<<DTIME<<"Client::groundAction() "
 				"cancelled (not connected)"
 				<<std::endl;
 		return;
@@ -1507,7 +1476,7 @@ void Client::pressGround(u8 button, v3s16 nodepos_undersurface,
 	u8 datasize = 2 + 1 + 6 + 6 + 2;
 	SharedBuffer<u8> data(datasize);
 	writeU16(&data[0], TOSERVER_GROUND_ACTION);
-	writeU8(&data[2], button);
+	writeU8(&data[2], action);
 	writeV3S16(&data[3], nodepos_undersurface);
 	writeV3S16(&data[9], nodepos_oversurface);
 	writeU16(&data[15], item);
@@ -1537,37 +1506,6 @@ void Client::clickObject(u8 button, v3s16 blockpos, s16 id, u16 item)
 	writeV3S16(&data[3], blockpos);
 	writeS16(&data[9], id);
 	writeU16(&data[11], item);
-	Send(0, data, true);
-}
-
-void Client::stopDigging()
-{
-	if(connectedAndInitialized() == false){
-		dout_client<<DTIME<<"Client::release() "
-				"cancelled (not connected)"
-				<<std::endl;
-		return;
-	}
-	
-	/*
-		length: 17
-		[0] u16 command
-		[2] u8 action
-		[3] v3s16 nodepos_undersurface
-		[9] v3s16 nodepos_abovesurface
-		[15] u16 item
-		actions:
-		0: start digging
-		1: place block
-		2: stop digging (all parameters ignored)
-	*/
-	u8 datasize = 2 + 1 + 6 + 6 + 2;
-	SharedBuffer<u8> data(datasize);
-	writeU16(&data[0], TOSERVER_GROUND_ACTION);
-	writeU8(&data[2], 2);
-	writeV3S16(&data[3], v3s16(0,0,0));
-	writeV3S16(&data[9], v3s16(0,0,0));
-	writeU16(&data[15], 0);
 	Send(0, data, true);
 }
 
@@ -1671,17 +1609,23 @@ MapNode Client::getNode(v3s16 p)
 	return m_env.getMap().getNode(p);
 }
 
+/*void Client::getNode(v3s16 p, MapNode n)
+{
+	JMutexAutoLock envlock(m_env_mutex);
+	m_env.getMap().setNode(p, n);
+}*/
+
 /*f32 Client::getGroundHeight(v2s16 p)
 {
 	JMutexAutoLock envlock(m_env_mutex);
 	return m_env.getMap().getGroundHeight(p);
 }*/
 
-bool Client::isNodeUnderground(v3s16 p)
+/*bool Client::isNodeUnderground(v3s16 p)
 {
 	JMutexAutoLock envlock(m_env_mutex);
 	return m_env.getMap().isNodeUnderground(p);
-}
+}*/
 
 /*Player * Client::getLocalPlayer()
 {

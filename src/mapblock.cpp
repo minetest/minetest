@@ -300,6 +300,8 @@ TileSpec MapBlock::getNodeTile(MapNode mn, v3s16 p, v3s16 face_dir)
 		}
 		if(mod.type == NODEMOD_CRACK)
 		{
+			spec.feature = TILEFEAT_CRACK;
+			spec.param.crack.progression = mod.param;
 		}
 	}
 	
@@ -646,14 +648,31 @@ void MapBlock::updateMesh(u32 daynight_ratio)
 			
 			if(f.tile.feature == TILEFEAT_NONE)
 			{
-				/*collector.append(g_tile_materials[f.tile.id], f.vertices, 4,
-						indices, 6);*/
 				collector.append(tile_material_get(f.tile.id), f.vertices, 4,
 						indices, 6);
 			}
+			else if(f.tile.feature == TILEFEAT_CRACK)
+			{
+				const char *path = tile_texture_path_get(f.tile.id);
+
+				u16 progression = f.tile.param.crack.progression;
+
+				std::string name = (std::string)path + "_cracked_"
+						+ (char)('0' + progression);
+
+				TextureMod *mod = new CrackTextureMod(progression);
+
+				video::ITexture *texture = g_irrlicht->getTexture(
+						TextureSpec(name, path, mod));
+
+				video::SMaterial material = tile_material_get(f.tile.id);
+				material.setTexture(0, texture);
+
+				collector.append(material, f.vertices, 4, indices, 6);
+			}
 			else
 			{
-				// Not implemented
+				// No such feature
 				assert(0);
 			}
 		}
@@ -669,33 +688,12 @@ void MapBlock::updateMesh(u32 daynight_ratio)
 	}
 
 	/*
-		Clear temporary FastFaces
-	*/
-
-	/*core::list<FastFace*>::Iterator i;
-	i = fastfaces_new->begin();
-	for(; i != fastfaces_new->end(); i++)
-	{
-		delete *i;
-	}
-	fastfaces_new->clear();
-	delete fastfaces_new;*/
-
-	/*
 		Add special graphics:
 		- torches
 		
 		TODO: Optimize by using same meshbuffer for same textures
 	*/
 
-	/*scene::ISceneManager *smgr = NULL;
-	video::IVideoDriver* driver = NULL;
-	if(g_device)
-	{
-		smgr = g_device->getSceneManager();
-		driver = smgr->getVideoDriver();
-	}*/
-			
 	for(s16 z=0; z<MAP_BLOCKSIZE; z++)
 	for(s16 y=0; y<MAP_BLOCKSIZE; y++)
 	for(s16 x=0; x<MAP_BLOCKSIZE; x++)
@@ -751,20 +749,16 @@ void MapBlock::updateMesh(u32 daynight_ratio)
 			if(dir == v3s16(0,-1,0))
 				buf->getMaterial().setTexture(0,
 						g_irrlicht->getTexture("../data/torch_on_floor.png"));
-						//g_texturecache.get("torch_on_floor"));
 			else if(dir == v3s16(0,1,0))
 				buf->getMaterial().setTexture(0,
 						g_irrlicht->getTexture("../data/torch_on_ceiling.png"));
-						//g_texturecache.get("torch_on_ceiling"));
 			// For backwards compatibility
 			else if(dir == v3s16(0,0,0))
 				buf->getMaterial().setTexture(0,
 						g_irrlicht->getTexture("../data/torch_on_floor.png"));
-						//g_texturecache.get("torch_on_floor"));
 			else
 				buf->getMaterial().setTexture(0, 
 						g_irrlicht->getTexture("../data/torch.png"));
-				//buf->getMaterial().setTexture(0, g_texturecache.get("torch"));
 
 			// Add to mesh
 			mesh_new->addMeshBuffer(buf);

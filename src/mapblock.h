@@ -59,9 +59,10 @@ enum NodeModType
 
 struct NodeMod
 {
-	NodeMod()
+	NodeMod(enum NodeModType a_type=NODEMOD_NONE, u16 a_param=0)
 	{
-		type = NODEMOD_NONE;
+		type = a_type;
+		param = a_param;
 	}
 	enum NodeModType type;
 	u16 param;
@@ -393,6 +394,11 @@ public:
 	*/
 	void setTempMod(v3s16 p, NodeMod mod)
 	{
+		/*dstream<<"setTempMod called on block"
+				<<" ("<<p.X<<","<<p.Y<<","<<p.Z<<")"
+				<<", mod.type="<<mod.type
+				<<", mod.param="<<mod.param
+				<<std::endl;*/
 		m_temp_mods[p] = mod;
 	}
 	void clearTempMod(v3s16 p)

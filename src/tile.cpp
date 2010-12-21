@@ -37,6 +37,13 @@ const char * g_tile_texture_paths[TILES_COUNT] =
 	"../data/cloud.png",
 };
 
+const char * tile_texture_path_get(u32 i)
+{
+	assert(i < TILES_COUNT);
+
+	return g_tile_texture_paths[i];
+}
+
 // A mapping from tiles to materials
 // Initialized at run-time.
 video::SMaterial g_tile_materials[TILES_COUNT];

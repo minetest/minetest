@@ -35,7 +35,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "common_irrlicht.h"
 #include "heightmap.h"
-#include "loadstatus.h"
 #include "mapnode.h"
 #include "mapblock.h"
 #include "mapsector.h"
@@ -593,8 +592,15 @@ public:
 
 	void renderMap(video::IVideoDriver* driver, s32 pass);
 
-	// Update master heightmap mesh
-	void updateMesh();
+	/*
+		Methods for setting temporary modifications to nodes for
+		drawing.
+		Return value is position of changed block.
+	*/
+	v3s16 setTempMod(v3s16 p, NodeMod mod);
+	v3s16 clearTempMod(v3s16 p);
+	// Efficient implementation needs a cache of TempMods
+	//void clearTempMods();
 
 	// For debug printing
 	virtual void PrintInfo(std::ostream &out);

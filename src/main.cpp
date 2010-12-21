@@ -179,12 +179,6 @@ TODO: TOSERVER_LEAVE
 Doing now:
 ======================================================================
 
-TODO: Node cracking animation when digging
-      - TODO: A way to generate new textures by combining textures
-	  - TODO: Mesh update to fetch cracked faces from the former
-
-TODO: A thread-safe wrapper for irrlicht for threads, to get rid of
-      g_device
 
 ======================================================================
 
@@ -1164,7 +1158,7 @@ int main(int argc, char *argv[])
 	<<std::endl;
 
 	std::cout<<std::endl;
-	char templine[100];
+	//char templine[100];
 	
 	// Port?
 	u16 port = 30000;
@@ -1271,70 +1265,6 @@ int main(int argc, char *argv[])
 	u16 screenW = atoi(g_settings.get("screenW").c_str());
 	u16 screenH = atoi(g_settings.get("screenH").c_str());
 
-#if 0
-	u16 screenW;
-	u16 screenH;
-	bool fullscreen = false;
-	
-	if(g_settings.get("screenW") != "" && g_settings.get("screenH") != "")
-	{
-		screenW = atoi(g_settings.get("screenW").c_str());
-		screenH = atoi(g_settings.get("screenH").c_str());
-	}
-	else
-	{
-		u16 resolutions[][3] = {
-			//W, H, fullscreen
-			{640,480, 0},
-			{800,600, 0},
-			{1024,768, 0},
-			{1280,1024, 0},
-			/*{640,480, 1},
-			{800,600, 1},
-			{1024,768, 1},
-			{1280,1024, 1},*/
-		};
-
-		u16 res_count = sizeof(resolutions)/sizeof(resolutions[0]);
-		
-		for(u16 i=0; i<res_count; i++)
-		{
-			std::cout<<(i+1)<<": "<<resolutions[i][0]<<"x"
-					<<resolutions[i][1];
-			if(resolutions[i][2])
-				std::cout<<" fullscreen"<<std::endl;
-			else
-				std::cout<<" windowed"<<std::endl;
-		}
-		std::cout<<"Select a window resolution number [empty = 2]: ";
-		std::cin.getline(templine, 100);
-
-		u16 r0;
-		if(templine[0] == 0)
-			r0 = 2;
-		else
-			r0 = atoi(templine);
-
-		if(r0 > res_count || r0 == 0)
-			r0 = 2;
-		
-		{
-			u16 i = r0-1;
-			std::cout<<"-> ";
-			std::cout<<(i+1)<<": "<<resolutions[i][0]<<"x"
-					<<resolutions[i][1];
-			if(resolutions[i][2])
-				std::cout<<" fullscreen"<<std::endl;
-			else
-				std::cout<<" windowed"<<std::endl;
-		}
-
-		screenW = resolutions[r0-1][0];
-		screenH = resolutions[r0-1][1];
-		fullscreen = resolutions[r0-1][2];
-	}
-#endif
-
 	//
 
 	MyEventReceiver receiver;
@@ -1354,10 +1284,6 @@ int main(int argc, char *argv[])
 	device = createDevice(driverType,
 			core::dimension2d<u32>(screenW, screenH),
 			16, fullscreen, false, false, &receiver);
-	// With vsync
-	/*device = createDevice(driverType,
-			core::dimension2d<u32>(screenW, screenH),
-			16, fullscreen, false, true, &receiver);*/
 
 	if (device == 0)
 		return 1; // could not create selected driver.
@@ -1380,10 +1306,10 @@ int main(int argc, char *argv[])
 	*/
 
 	video::IVideoDriver* driver = device->getVideoDriver();
-	// These make the textures not to show at all
-	//driver->setTextureCreationFlag(video::ETCF_ALWAYS_16_BIT);
-	//driver->setTextureCreationFlag(video::ETCF_OPTIMIZED_FOR_SPEED );
 
+	/*
+		This changes the minimum allowed number of vertices in a VBO
+	*/
 	//driver->setMinHardwareBufferVertexCount(1);
 
 	scene::ISceneManager* smgr = device->getSceneManager();
@@ -2147,47 +2073,68 @@ int main(int argc, char *argv[])
 			} // regular block
 		} // for coords
 
-		/*static v3s16 oldnodepos;
-		static bool oldnodefound = false;*/
-
 		if(nodefound)
 		{
-			//std::cout<<DTIME<<"nodefound == true"<<std::endl;
-			//std::cout<<DTIME<<"nodepos=("<<nodepos.X<<","<<nodepos.Y<<","<<nodepos.Z<<")"<<std::endl;
-			//std::cout<<DTIME<<"neighbourpos=("<<neighbourpos.X<<","<<neighbourpos.Y<<","<<neighbourpos.Z<<")"<<std::endl;
+			static v3s16 nodepos_old(-32768,-32768,-32768);
 
-			static v3s16 nodepos_old(-1,-1,-1);
-			if(nodepos != nodepos_old){
+			static float dig_time = 0.0;
+
+			if(nodepos != nodepos_old)
+			{
 				std::cout<<DTIME<<"Pointing at ("<<nodepos.X<<","
 						<<nodepos.Y<<","<<nodepos.Z<<")"<<std::endl;
+
+				if(nodepos_old != v3s16(-32768,-32768,-32768))
+				{
+					client.clearTempMod(nodepos_old);
+					dig_time = 0.0;
+				}
 			}
 
 			hilightboxes.push_back(nodefacebox);
 			
-			//if(g_input->getLeftClicked())
+			if(g_input->getLeftReleased())
+			{
+				client.clearTempMod(nodepos);
+				dig_time = 0.0;
+			}
 			if(g_input->getLeftClicked() ||
 					(g_input->getLeftState() && nodepos != nodepos_old))
 			{
 				std::cout<<DTIME<<"Ground left-clicked"<<std::endl;
-				client.pressGround(0, nodepos, neighbourpos, g_selected_item);
+				client.groundAction(0, nodepos, neighbourpos, g_selected_item);
 			}
+			if(g_input->getLeftClicked())
+			{
+				client.setTempMod(nodepos, NodeMod(NODEMOD_CRACK, 0));
+			}
+			if(g_input->getLeftState())
+			{
+				dig_time += dtime;
+				
+				float dig_time_complete = 0.5;
+				MapNode n = client.getNode(nodepos);
+				if(n.d == CONTENT_STONE)
+					dig_time_complete = 1.5;
+
+				u16 dig_index = (u16)(3.99*dig_time/dig_time_complete);
+				if(dig_time > 0.2)
+				{
+					//dstream<<"dig_index="<<dig_index<<std::endl;
+					client.setTempMod(nodepos, NodeMod(NODEMOD_CRACK, dig_index));
+				}
+			}
+			
 			if(g_input->getRightClicked())
-			/*if(g_input->getRightClicked() ||
-					(g_input->getRightState() && nodepos != nodepos_old))*/
 			{
 				std::cout<<DTIME<<"Ground right-clicked"<<std::endl;
-				client.pressGround(1, nodepos, neighbourpos, g_selected_item);
+				client.groundAction(1, nodepos, neighbourpos, g_selected_item);
 			}
 			
 			nodepos_old = nodepos;
 		}
 		else{
-			//std::cout<<DTIME<<"nodefound == false"<<std::endl;
-			//positiontextgui->setText(L"");
 		}
-
-		/*oldnodefound = nodefound;
-		oldnodepos = nodepos;*/
 
 		} // selected_object == NULL
 		
@@ -2197,7 +2144,7 @@ int main(int argc, char *argv[])
 		if(g_input->getLeftReleased())
 		{
 			std::cout<<DTIME<<"Left released"<<std::endl;
-			client.stopDigging();
+			client.groundAction(2, v3s16(0,0,0), v3s16(0,0,0), 0);
 		}
 		if(g_input->getRightReleased())
 		{
@@ -2214,26 +2161,6 @@ int main(int argc, char *argv[])
 
 		camera->setAspectRatio((f32)screensize.X / (f32)screensize.Y);
 		
-		// Background color is choosen based on whether the player is
-		// much beyond the initial ground level
-		/*video::SColor bgcolor;
-		v3s16 p0 = Map::floatToInt(player_position);
-		// Does this make short random delays?
-		// NOTE: no need for this, sky doesn't show underground with
-		// enough range
-		bool is_underground = client.isNodeUnderground(p0);
-		//bool is_underground = false;
-		if(is_underground == false)
-			bgcolor = video::SColor(255,90,140,200);
-		else
-			bgcolor = video::SColor(255,0,0,0);*/
-			
-		//video::SColor bgcolor = video::SColor(255,90,140,200);
-		//video::SColor bgcolor = skycolor;
-		
-		//s32 daynight_i = client.getDayNightIndex();
-		//video::SColor bgcolor = skycolor[daynight_i];
-
 		u32 daynight_ratio = client.getDayNightRatio();
 		video::SColor bgcolor = video::SColor(
 				255,

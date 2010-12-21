@@ -100,6 +100,8 @@ extern video::SMaterial g_tile_materials[TILES_COUNT];*/
 	Functions
 */
 
+const char * tile_texture_path_get(u32 i);
+
 // Initializes g_tile_materials
 void tile_materials_preload(IrrlichtWrapper *irrlicht);
 

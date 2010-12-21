@@ -185,12 +185,9 @@ public:
 	// Pops out a packet from the packet queue
 	IncomingPacket getPacket();
 
-	/*void removeNode(v3s16 nodepos);
-	void addNodeFromInventory(v3s16 nodepos, u16 i);*/
-	void pressGround(u8 button, v3s16 nodepos_undersurface,
+	void groundAction(u8 action, v3s16 nodepos_undersurface,
 			v3s16 nodepos_oversurface, u16 item);
 	void clickObject(u8 button, v3s16 blockpos, s16 id, u16 item);
-	void stopDigging();
 
 	void sendSignText(v3s16 blockpos, s16 id, std::string text);
 	
@@ -199,9 +196,12 @@ public:
 	// Returns InvalidPositionException if not found
 	MapNode getNode(v3s16 p);
 	// Returns InvalidPositionException if not found
+	//void setNode(v3s16 p, MapNode n);
+
+	// Returns InvalidPositionException if not found
 	//f32 getGroundHeight(v2s16 p);
 	// Returns InvalidPositionException if not found
-	bool isNodeUnderground(v3s16 p);
+	//bool isNodeUnderground(v3s16 p);
 
 	// Note: The players should not be exposed outside
 	// Return value is valid until client is destroyed
@@ -235,6 +235,21 @@ public:
 	u32 getDayNightRatio();
 
 	//void updateSomeExpiredMeshes();
+	
+	void setTempMod(v3s16 p, NodeMod mod)
+	{
+		JMutexAutoLock envlock(m_env_mutex);
+		assert(m_env.getMap().mapType() == MAPTYPE_CLIENT);
+		v3s16 blockpos = ((ClientMap&)m_env.getMap()).setTempMod(p, mod);
+		m_env.getMap().updateMeshes(blockpos, m_env.getDayNightRatio());
+	}
+	void clearTempMod(v3s16 p)
+	{
+		JMutexAutoLock envlock(m_env_mutex);
+		assert(m_env.getMap().mapType() == MAPTYPE_CLIENT);
+		v3s16 blockpos = ((ClientMap&)m_env.getMap()).clearTempMod(p);
+		m_env.getMap().updateMeshes(blockpos, m_env.getDayNightRatio());
+	}
 	
 private:
 	

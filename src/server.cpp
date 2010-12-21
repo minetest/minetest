@@ -1321,13 +1321,23 @@ void Server::AsyncRunStep()
 	{
 		float &counter = m_savemap_timer;
 		counter += dtime;
-		if(counter >= SERVER_MAP_SAVE_INTERVAL)
+		if(counter >= g_settings.getFloat("server_map_save_interval"))
 		{
 			counter = 0.0;
 
 			JMutexAutoLock lock(m_env_mutex);
+
 			// Save only changed parts
 			m_env.getMap().save(true);
+
+			// Delete unused sectors
+			u32 deleted_count = m_env.getMap().deleteUnusedSectors(
+					g_settings.getFloat("server_unload_unused_sectors_timeout"));
+			if(deleted_count > 0)
+			{
+				dout_server<<"Server: Unloaded "<<deleted_count
+						<<" sectors from memory"<<std::endl;
+			}
 		}
 	}
 }

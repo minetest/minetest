@@ -1085,7 +1085,6 @@ public:
 	MutexedQueue()
 	{
 		m_mutex.Init();
-		m_is_empty_mutex.Init();
 	}
 	u32 size()
 	{
@@ -1095,12 +1094,11 @@ public:
 	{
 		JMutexAutoLock lock(m_mutex);
 		m_list.push_back(t);
-		
-		if(m_list.size() == 1)
-			m_is_empty_mutex.Unlock();
 	}
-	T pop_front(bool wait_if_empty=false)
+	T pop_front(u32 wait_time_max_ms=0)
 	{
+		u32 wait_time_ms = 0;
+
 		for(;;)
 		{
 			{
@@ -1108,24 +1106,19 @@ public:
 
 				if(m_list.size() > 0)
 				{
-					if(m_list.size() == 1)
-						m_is_empty_mutex.Lock();
-					
 					typename core::list<T>::Iterator begin = m_list.begin();
 					T t = *begin;
 					m_list.erase(begin);
 					return t;
 				}
 
-				if(wait_if_empty == false)
-					throw ItemNotFoundException("MutexedQueue: item not found");
+				if(wait_time_ms >= wait_time_max_ms)
+					throw ItemNotFoundException("MutexedQueue: queue is empty");
 			}
-			
-			// To wait for an empty list, we're gonna hang on this mutex
-			m_is_empty_mutex.Lock();
-			m_is_empty_mutex.Unlock();
 
-			// Then loop to the beginning and hopefully return something
+			// Wait a while before trying again
+			sleep_ms(10);
+			wait_time_ms += 10;
 		}
 	}
 
@@ -1134,11 +1127,6 @@ public:
 		return m_mutex;
 	}
 
-	JMutex & getIsEmptyMutex()
-	{
-		return m_is_empty_mutex;
-	}
-	
 	core::list<T> & getList()
 	{
 		return m_list;
@@ -1146,8 +1134,6 @@ public:
 
 protected:
 	JMutex m_mutex;
-	// This is locked always when the list is empty
-	JMutex m_is_empty_mutex;
 	core::list<T> m_list;
 };
 
@@ -1262,9 +1248,6 @@ public:
 		request.dest = dest;
 		
 		m_queue.getList().push_back(request);
-		
-		if(m_queue.getList().size() == 1)
-			m_queue.getIsEmptyMutex().Unlock();
 	}
 
 	GetRequest<Key, T, Caller, CallerData> pop(bool wait_if_empty=false)

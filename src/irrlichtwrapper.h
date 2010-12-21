@@ -48,6 +48,9 @@ public:
 	
 	void set(std::string name, video::ITexture *texture)
 	{
+		if(texture == NULL)
+			return;
+		
 		JMutexAutoLock lock(m_mutex);
 
 		m_textures[name] = texture;
@@ -78,7 +81,7 @@ struct TextureMod
 		Shall not modify or delete the original texture.
 	*/
 	virtual video::ITexture * make(video::ITexture *original,
-			video::IVideoDriver* driver) = 0;
+			const char *newname, video::IVideoDriver* driver) = 0;
 };
 
 struct CrackTextureMod: public TextureMod
@@ -89,7 +92,7 @@ struct CrackTextureMod: public TextureMod
 	}
 	
 	virtual video::ITexture * make(video::ITexture *original,
-			video::IVideoDriver* driver);
+			const char *newname, video::IVideoDriver* driver);
 	
 	u16 progression;
 };
@@ -149,10 +152,11 @@ public:
 		These are called from other threads
 	*/
 
-	// Not exactly thread-safe but this needs to be fast
+	// Not exactly thread-safe but this needs to be fast.
+	// getTimer()->getRealTime() only reads one variable anyway.
 	u32 getTime()
 	{
-		return m_device->getTimer()->getTime();
+		return m_device->getTimer()->getRealTime();
 	}
 	
 	video::ITexture* getTexture(TextureSpec spec);

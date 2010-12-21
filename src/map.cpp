@@ -1622,6 +1622,7 @@ MapBlock * ServerMap::emergeBlock(
 	}
 
 	//dstream<<"Not found on disk, generating."<<std::endl;
+	//TimeTaker("emergeBlock()", g_irrlicht);
 
 	/*
 		Do not generate over-limit
@@ -1668,7 +1669,7 @@ MapBlock * ServerMap::emergeBlock(
 		underground_emptiness[i] = ((rand() % 5) == 0);
 	}
 
-#if 0
+#if 1
 	/*
 		This is a messy hack to sort the emptiness a bit
 	*/
@@ -2235,20 +2236,15 @@ void ServerMap::save(bool only_changed)
 
 	}//sectorlock
 	
-	u32 deleted_count = 0;
-	deleted_count = deleteUnusedSectors(
-			SERVERMAP_DELETE_UNUSED_SECTORS_TIMEOUT);
-	
 	/*
 		Only print if something happened or saved whole map
 	*/
 	if(only_changed == false || sector_meta_count != 0
-			|| block_count != 0 || deleted_count != 0)
+			|| block_count != 0)
 	{
 		dstream<<DTIME<<"ServerMap: Written: "
 				<<sector_meta_count<<" sector metadata files, "
-				<<block_count<<" block files, "
-				<<deleted_count<<" sectors unloaded from memory."
+				<<block_count<<" block files"
 				<<std::endl;
 	}
 }
@@ -2987,9 +2983,23 @@ void ClientMap::renderMap(video::IVideoDriver* driver, s32 pass)
 			<<", rendered "<<vertex_count<<" vertices."<<std::endl;*/
 }
 
-void ClientMap::updateMesh()
+v3s16 ClientMap::setTempMod(v3s16 p, NodeMod mod)
 {
-	//TODO: Remove this
+	v3s16 blockpos = getNodeBlockPos(p);
+	MapBlock * blockref = getBlockNoCreate(blockpos);
+	v3s16 relpos = p - blockpos*MAP_BLOCKSIZE;
+
+	blockref->setTempMod(relpos, mod);
+	return blockpos;
+}
+v3s16 ClientMap::clearTempMod(v3s16 p)
+{
+	v3s16 blockpos = getNodeBlockPos(p);
+	MapBlock * blockref = getBlockNoCreate(blockpos);
+	v3s16 relpos = p - blockpos*MAP_BLOCKSIZE;
+
+	blockref->clearTempMod(relpos);
+	return blockpos;
 }
 
 void ClientMap::PrintInfo(std::ostream &out)
