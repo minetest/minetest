@@ -663,8 +663,6 @@ void RemoteClient::SendObjectData(
 		- Add blocks to emerge queue if they are not found
 
 		SUGGESTION: These could be ignored from the backside of the player
-
-		TODO: Keep track of total size of packet and stop when it is too big
 	*/
 
 	Player *player = server->m_env.getPlayer(peer_id);
@@ -675,13 +673,11 @@ void RemoteClient::SendObjectData(
 	v3s16 center_nodepos = floatToInt(playerpos);
 	v3s16 center = getNodeBlockPos(center_nodepos);
 
-	//s16 d_max = ACTIVE_OBJECT_D_BLOCKS;
 	s16 d_max = g_settings.getS16("active_object_range");
 	
 	// Number of blocks whose objects were written to bos
 	u16 blockcount = 0;
 
-	//core::map<v3s16, MapBlock*> blocks;
 	std::ostringstream bos(std::ios_base::binary);
 
 	for(s16 d = 0; d <= d_max; d++)
@@ -710,18 +706,20 @@ void RemoteClient::SendObjectData(
 			// Get block
 			MapBlock *block = server->m_env.getMap().getBlockNoCreate(p);
 
-			// Skip block if there are no objects
-			if(block->getObjectCount() == 0)
-				continue;
-			
-			// Step block if not in stepped_blocks and add to stepped_blocks
+			/*
+				Step block if not in stepped_blocks and add to stepped_blocks.
+			*/
 			if(stepped_blocks.find(p) == NULL)
 			{
-				block->stepObjects(dtime, true);
+				block->stepObjects(dtime, true, server->getDayNightRatio());
 				stepped_blocks.insert(p, true);
 				block->setChangedFlag();
 			}
 
+			// Skip block if there are no objects
+			if(block->getObjectCount() == 0)
+				continue;
+			
 			/*
 				Write objects
 			*/

@@ -18,7 +18,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 */
 
 #include "tile.h"
-#include "irrlichtwrapper.h"
+#include "main.h"
 
 // A mapping from tiles to paths of textures
 const char * g_tile_texture_paths[TILES_COUNT] =

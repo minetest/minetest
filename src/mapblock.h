@@ -281,6 +281,7 @@ public:
 	}
 	
 #ifndef SERVER
+	// light = 0...255
 	static void makeFastFace(TileSpec tile, u8 light, v3f p,
 			v3s16 dir, v3f scale, v3f posRelative_f,
 			core::array<FastFace> &dest);
@@ -325,9 +326,9 @@ public:
 	}
 	// If smgr!=NULL, new objects are added to the scene
 	void updateObjects(std::istream &is, u8 version,
-			scene::ISceneManager *smgr)
+			scene::ISceneManager *smgr, u32 daynight_ratio)
 	{
-		m_objects.update(is, version, smgr);
+		m_objects.update(is, version, smgr, daynight_ratio);
 
 		setChangedFlag();
 	}
@@ -358,12 +359,11 @@ public:
 	{
 		return m_objects.getLock();
 	}
-	void stepObjects(float dtime, bool server)
-	{
-		m_objects.step(dtime, server);
 
-		setChangedFlag();
-	}
+	/*
+		Moves objects, deletes objects and spawns new objects
+	*/
+	void stepObjects(float dtime, bool server, u32 daynight_ratio);
 
 	/*void wrapObject(MapBlockObject *object)
 	{
@@ -428,6 +428,20 @@ public:
 	}
 
 	/*
+		Miscellaneous stuff
+	*/
+	
+	/*
+		Tries to measure ground level.
+		Return value:
+			-1 = only air
+			-2 = only ground
+			-3 = random fail
+			0...MAP_BLOCKSIZE-1 = ground level
+	*/
+	s16 getGroundLevel(v2s16 p2d);
+
+	/*
 		Serialization
 	*/
 	
@@ -454,6 +468,8 @@ private:
 
 	MapNode & getNodeRef(s16 x, s16 y, s16 z)
 	{
+		if(data == NULL)
+			throw InvalidPositionException();
 		if(x < 0 || x >= MAP_BLOCKSIZE) throw InvalidPositionException();
 		if(y < 0 || y >= MAP_BLOCKSIZE) throw InvalidPositionException();
 		if(z < 0 || z >= MAP_BLOCKSIZE) throw InvalidPositionException();
@@ -491,6 +507,9 @@ private:
 	bool m_day_night_differs;
 	
 	MapBlockObjectList m_objects;
+
+	// Object spawning stuff
+	float m_spawn_timer;
 	
 #ifndef SERVER
 	bool m_mesh_expired;

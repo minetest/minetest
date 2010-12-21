@@ -274,7 +274,8 @@ public:
 	
 	// Returns InvalidPositionException if not found
 	MapBlock * getBlockNoCreate(v3s16 p);
-	//virtual MapBlock * getBlock(v3s16 p, bool generate=true);
+	// Returns NULL if not found
+	MapBlock * getBlockNoCreateNoEx(v3s16 p);
 	
 	// Returns InvalidPositionException if not found
 	f32 getGroundHeight(v2s16 p, bool generate=false);
@@ -386,7 +387,7 @@ public:
 #endif
 
 	/*
-		Takes the blocks at the leading edges into account
+		Takes the blocks at the edges into account
 	*/
 	bool dayNightDiffed(v3s16 blockpos);
 

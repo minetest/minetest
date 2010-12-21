@@ -46,8 +46,10 @@ public:
 	virtual void serialize(std::ostream &os) = 0;
 	// Shall make an exact clone of the item
 	virtual InventoryItem* clone() = 0;
+#ifndef SERVER
 	// Shall return an image to show in the GUI (or NULL)
 	virtual video::ITexture * getImage() { return NULL; }
+#endif
 	// Shall return a text to show in the GUI
 	virtual std::string getText() { return ""; }
 
@@ -175,7 +177,9 @@ public:
 		return new MapBlockObjectItem(m_inventorystring);
 	}
 
+#ifndef SERVER
 	video::ITexture * getImage();
+#endif
 	std::string getText();
 
 	/*

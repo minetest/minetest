@@ -152,6 +152,21 @@ MapBlock * Map::getBlockNoCreate(v3s16 p3d)
 	return block;
 }
 
+MapBlock * Map::getBlockNoCreateNoEx(v3s16 p3d)
+{
+	try
+	{
+		v2s16 p2d(p3d.X, p3d.Z);
+		MapSector * sector = getSectorNoGenerate(p2d);
+		MapBlock *block = sector->getBlockNoCreate(p3d.Y);
+		return block;
+	}
+	catch(InvalidPositionException &e)
+	{
+		return NULL;
+	}
+}
+
 f32 Map::getGroundHeight(v2s16 p, bool generate)
 {
 	try{
@@ -740,7 +755,7 @@ void Map::updateLighting(enum LightBank bank,
 	}
 	
 	{
-		//TimeTaker timer("unspreadLight", g_irrlicht);
+		//TimeTaker timer("unspreadLight");
 		unspreadLight(bank, unlight_from, light_sources, modified_blocks);
 	}
 	
@@ -759,7 +774,7 @@ void Map::updateLighting(enum LightBank bank,
 	//       - Find out why it works
 
 	{
-		//TimeTaker timer("spreadLight", g_irrlicht);
+		//TimeTaker timer("spreadLight");
 		spreadLight(bank, light_sources, modified_blocks);
 	}
 	
@@ -813,6 +828,7 @@ void Map::addNodeAndUpdate(v3s16 p, MapNode n,
 	*/
 
 	v3s16 toppos = p + v3s16(0,1,0);
+	v3s16 bottompos = p + v3s16(0,-1,0);
 
 	bool node_under_sunlight = true;
 	core::map<v3s16, bool> light_sources;
@@ -831,6 +847,26 @@ void Map::addNodeAndUpdate(v3s16 p, MapNode n,
 	}
 	catch(InvalidPositionException &e)
 	{
+	}
+	
+	if(n.d != CONTENT_TORCH)
+	{
+		/*
+			If there is grass below, change it to mud
+		*/
+		try{
+			MapNode bottomnode = getNode(bottompos);
+			
+			if(bottomnode.d == CONTENT_GRASS
+					|| bottomnode.d == CONTENT_GRASS_FOOTSTEPS)
+			{
+				bottomnode.d = CONTENT_MUD;
+				setNode(bottompos, bottomnode);
+			}
+		}
+		catch(InvalidPositionException &e)
+		{
+		}
 	}
 
 	enum LightBank banks[] =
@@ -1065,7 +1101,7 @@ void Map::removeNodeAndUpdate(v3s16 p,
 #ifndef SERVER
 void Map::expireMeshes(bool only_daynight_diffed)
 {
-	TimeTaker timer("expireMeshes()", g_irrlicht);
+	TimeTaker timer("expireMeshes()");
 
 	core::map<v2s16, MapSector*>::Iterator si;
 	si = m_sectors.getIterator();
@@ -1109,6 +1145,7 @@ void Map::updateMeshes(v3s16 blockpos, u32 daynight_ratio)
 		b->updateMesh(daynight_ratio);
 	}
 	catch(InvalidPositionException &e){}
+	// Leading edge
 	try{
 		v3s16 p = blockpos + v3s16(-1,0,0);
 		MapBlock *b = getBlockNoCreate(p);
@@ -1127,6 +1164,25 @@ void Map::updateMeshes(v3s16 blockpos, u32 daynight_ratio)
 		b->updateMesh(daynight_ratio);
 	}
 	catch(InvalidPositionException &e){}
+	/*// Trailing edge
+	try{
+		v3s16 p = blockpos + v3s16(1,0,0);
+		MapBlock *b = getBlockNoCreate(p);
+		b->updateMesh(daynight_ratio);
+	}
+	catch(InvalidPositionException &e){}
+	try{
+		v3s16 p = blockpos + v3s16(0,1,0);
+		MapBlock *b = getBlockNoCreate(p);
+		b->updateMesh(daynight_ratio);
+	}
+	catch(InvalidPositionException &e){}
+	try{
+		v3s16 p = blockpos + v3s16(0,0,1);
+		MapBlock *b = getBlockNoCreate(p);
+		b->updateMesh(daynight_ratio);
+	}
+	catch(InvalidPositionException &e){}*/
 }
 
 #endif
@@ -1140,6 +1196,7 @@ bool Map::dayNightDiffed(v3s16 blockpos)
 			return true;
 	}
 	catch(InvalidPositionException &e){}
+	// Leading edges
 	try{
 		v3s16 p = blockpos + v3s16(-1,0,0);
 		MapBlock *b = getBlockNoCreate(p);
@@ -1156,6 +1213,28 @@ bool Map::dayNightDiffed(v3s16 blockpos)
 	catch(InvalidPositionException &e){}
 	try{
 		v3s16 p = blockpos + v3s16(0,0,-1);
+		MapBlock *b = getBlockNoCreate(p);
+		if(b->dayNightDiffed())
+			return true;
+	}
+	catch(InvalidPositionException &e){}
+	// Trailing edges
+	try{
+		v3s16 p = blockpos + v3s16(1,0,0);
+		MapBlock *b = getBlockNoCreate(p);
+		if(b->dayNightDiffed())
+			return true;
+	}
+	catch(InvalidPositionException &e){}
+	try{
+		v3s16 p = blockpos + v3s16(0,1,0);
+		MapBlock *b = getBlockNoCreate(p);
+		if(b->dayNightDiffed())
+			return true;
+	}
+	catch(InvalidPositionException &e){}
+	try{
+		v3s16 p = blockpos + v3s16(0,0,1);
 		MapBlock *b = getBlockNoCreate(p);
 		if(b->dayNightDiffed())
 			return true;
@@ -2567,7 +2646,7 @@ void ServerMap::loadBlock(std::string sectordir, std::string blockfile, MapSecto
 	*/
 	if(version >= 9)
 	{
-		block->updateObjects(is, version, NULL);
+		block->updateObjects(is, version, NULL, 0);
 	}
 
 	if(created_new)
@@ -2985,21 +3064,56 @@ void ClientMap::renderMap(video::IVideoDriver* driver, s32 pass)
 
 v3s16 ClientMap::setTempMod(v3s16 p, NodeMod mod)
 {
-	v3s16 blockpos = getNodeBlockPos(p);
-	MapBlock * blockref = getBlockNoCreate(blockpos);
-	v3s16 relpos = p - blockpos*MAP_BLOCKSIZE;
-
-	blockref->setTempMod(relpos, mod);
-	return blockpos;
+	/*
+		Add it to all blocks touching it
+	*/
+	v3s16 dirs[7] = {
+		v3s16(0,0,0), // this
+		v3s16(0,0,1), // back
+		v3s16(0,1,0), // top
+		v3s16(1,0,0), // right
+		v3s16(0,0,-1), // front
+		v3s16(0,-1,0), // bottom
+		v3s16(-1,0,0), // left
+	};
+	for(u16 i=0; i<7; i++)
+	{
+		v3s16 p2 = p + dirs[i];
+		// Block position of neighbor (or requested) node
+		v3s16 blockpos = getNodeBlockPos(p2);
+		MapBlock * blockref = getBlockNoCreateNoEx(blockpos);
+		if(blockref == NULL)
+			continue;
+		// Relative position of requested node
+		v3s16 relpos = p - blockpos*MAP_BLOCKSIZE;
+		blockref->setTempMod(relpos, mod);
+	}
+	return getNodeBlockPos(p);
 }
 v3s16 ClientMap::clearTempMod(v3s16 p)
 {
-	v3s16 blockpos = getNodeBlockPos(p);
-	MapBlock * blockref = getBlockNoCreate(blockpos);
-	v3s16 relpos = p - blockpos*MAP_BLOCKSIZE;
-
-	blockref->clearTempMod(relpos);
-	return blockpos;
+	v3s16 dirs[7] = {
+		v3s16(0,0,0), // this
+		v3s16(0,0,1), // back
+		v3s16(0,1,0), // top
+		v3s16(1,0,0), // right
+		v3s16(0,0,-1), // front
+		v3s16(0,-1,0), // bottom
+		v3s16(-1,0,0), // left
+	};
+	for(u16 i=0; i<7; i++)
+	{
+		v3s16 p2 = p + dirs[i];
+		// Block position of neighbor (or requested) node
+		v3s16 blockpos = getNodeBlockPos(p2);
+		MapBlock * blockref = getBlockNoCreateNoEx(blockpos);
+		if(blockref == NULL)
+			continue;
+		// Relative position of requested node
+		v3s16 relpos = p - blockpos*MAP_BLOCKSIZE;
+		blockref->clearTempMod(relpos);
+	}
+	return getNodeBlockPos(p);
 }
 
 void ClientMap::PrintInfo(std::ostream &out)
@@ -3027,7 +3141,7 @@ MapVoxelManipulator::~MapVoxelManipulator()
 #if 1
 void MapVoxelManipulator::emerge(VoxelArea a, s32 caller_id)
 {
-	TimeTaker timer1("emerge", g_irrlicht, &emerge_time);
+	TimeTaker timer1("emerge", &emerge_time);
 
 	// Units of these are MapBlocks
 	v3s16 p_min = getNodeBlockPos(a.MinEdge);
@@ -3051,7 +3165,7 @@ void MapVoxelManipulator::emerge(VoxelArea a, s32 caller_id)
 		bool block_data_inexistent = false;
 		try
 		{
-			TimeTaker timer1("emerge load", g_irrlicht, &emerge_load_time);
+			TimeTaker timer1("emerge load", &emerge_load_time);
 
 			/*dstream<<"Loading block (caller_id="<<caller_id<<")"
 					<<" ("<<p.X<<","<<p.Y<<","<<p.Z<<")"
@@ -3092,7 +3206,7 @@ void MapVoxelManipulator::emerge(VoxelArea a, s32 caller_id)
 #if 0
 void MapVoxelManipulator::emerge(VoxelArea a)
 {
-	TimeTaker timer1("emerge", g_irrlicht, &emerge_time);
+	TimeTaker timer1("emerge", &emerge_time);
 	
 	v3s16 size = a.getExtent();
 	
@@ -3111,7 +3225,7 @@ void MapVoxelManipulator::emerge(VoxelArea a)
 			continue;
 		try
 		{
-			TimeTaker timer1("emerge load", g_irrlicht, &emerge_load_time);
+			TimeTaker timer1("emerge load", &emerge_load_time);
 			MapNode n = m_map->getNode(a.MinEdge + p);
 			m_data[i] = n;
 			m_flags[i] = 0;
@@ -3136,7 +3250,7 @@ void MapVoxelManipulator::blitBack
 	if(m_area.getExtent() == v3s16(0,0,0))
 		return;
 	
-	//TimeTaker timer1("blitBack", g_irrlicht);
+	//TimeTaker timer1("blitBack");
 	
 	/*
 		Initialize block cache

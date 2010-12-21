@@ -20,7 +20,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 /*
 =============================== NOTES ==============================
 
-TODO: Move the default settings into some separate file
 
 */
 
@@ -49,15 +48,6 @@ TODO: Move the default settings into some separate file
 #pragma comment(lib, "zlibwapi.lib")
 #endif
 
-#ifdef _WIN32
-	#define WIN32_LEAN_AND_MEAN
-	#include <windows.h>
-	#define sleep_ms(x) Sleep(x)
-#else
-	#include <unistd.h>
-	#define sleep_ms(x) usleep(x*1000)
-#endif
-
 #include <iostream>
 #include <fstream>
 #include <time.h>
@@ -75,9 +65,7 @@ TODO: Move the default settings into some separate file
 #include "constants.h"
 #include "strfnd.h"
 #include "porting.h"
-
-// Dummy variable
-IrrlichtDevice *g_device = NULL;
+//#include "irrlichtwrapper.h"
 
 /*
 	Settings.
@@ -106,21 +94,15 @@ std::ostream *derr_client_ptr = &dstream;
 
 
 /*
-	Timestamp stuff
+	gettime.h implementation
 */
 
-JMutex g_timestamp_mutex;
-
-std::string getTimestamp()
+u32 getTimeMs()
 {
-	if(g_timestamp_mutex.IsInitialized()==false)
-		return "";
-	JMutexAutoLock lock(g_timestamp_mutex);
-	time_t t = time(NULL);
-	struct tm *tm = localtime(&t);
-	char cs[20];
-	strftime(cs, 20, "%H:%M:%S", tm);
-	return cs;
+	/*
+		Use imprecise system calls directly (from porting.h)
+	*/
+	return porting::getTimeMs();
 }
 
 int main(int argc, char *argv[])
@@ -211,9 +193,6 @@ int main(int argc, char *argv[])
 	sockets_init();
 	atexit(sockets_cleanup);
 	
-	// Initialize timestamp mutex
-	g_timestamp_mutex.Init();
-
 	/*
 		Initialization
 	*/

@@ -76,7 +76,7 @@ InventoryItem* InventoryItem::deSerialize(std::istream &is)
 /*
 	MapBlockObjectItem
 */
-
+#ifndef SERVER
 video::ITexture * MapBlockObjectItem::getImage()
 {
 	if(m_inventorystring.substr(0,3) == "Rat")
@@ -89,6 +89,7 @@ video::ITexture * MapBlockObjectItem::getImage()
 
 	return NULL;
 }
+#endif
 std::string MapBlockObjectItem::getText()
 {
 	if(m_inventorystring.substr(0,3) == "Rat")

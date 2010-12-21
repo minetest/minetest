@@ -398,6 +398,18 @@ public:
 	//void SendSectorMeta(u16 peer_id, core::list<v2s16> ps, u8 ver);
 
 	core::list<PlayerInfo> getPlayerInfo();
+
+	u32 getDayNightRatio()
+	{
+		s32 d = 8;
+		s32 t = (((m_time_of_day.get() + 24000/d/2)%24000)/(24000/d));
+		if(t == d/4 || t == (d-d/4))
+			return 600;
+		else if(t < d/4 || t > (d-d/4))
+			return 300;
+		else
+			return 1000;
+	}
 	
 private:
 

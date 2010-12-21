@@ -33,7 +33,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #define MAPBLOCKOBJECT_TYPE_SIGN 2
 #define MAPBLOCKOBJECT_TYPE_RAT 3
 // Used for handling selecting special stuff
-//#define MAPBLOCKOBJECT_TYPE_PSEUDO 4
+//#define MAPBLOCKOBJECT_TYPE_PSEUDO 1000
 
 class MapBlock;
 
@@ -81,6 +81,11 @@ public:
 		os.write((char*)buf, 2);
 	}
 	
+	// Position where the object is drawn relative to block
+	virtual v3f getRelativeShowPos()
+	{
+		return m_pos;
+	}
 	// Get floating point position on map
 	v3f getAbsolutePos();
 
@@ -134,12 +139,14 @@ public:
 	// Typical dtimes are 0.2 and 10000.
 	// A return value of true requests deletion of the object by the caller.
 	// NOTE: Only server calls this.
-	virtual bool serverStep(float dtime) { return false; };
+	virtual bool serverStep(float dtime, u32 daynight_ratio)
+	{ return false; };
 
 #ifdef SERVER
 	void clientStep(float dtime) {};
 	void addToScene(void *smgr) {};
 	void removeFromScene() {};
+	void updateLight(u8 light_at_pos) {};
 #else
 	// This should do slight animations only or so
 	virtual void clientStep(float dtime) {};
@@ -148,11 +155,14 @@ public:
 	//       same as the current state
 	// Shall add and remove relevant scene nodes for rendering the
 	// object in the game world
-	virtual void addToScene(scene::ISceneManager *smgr) {};
+	virtual void addToScene(scene::ISceneManager *smgr) = 0;
 	// Shall remove stuff from the scene
 	// Should return silently if there is nothing to remove
 	// NOTE: This has to be called before calling destructor
-	virtual void removeFromScene() {};
+	virtual void removeFromScene() = 0;
+	
+	// 0 <= light_at_pos <= LIGHT_SUN
+	virtual void updateLight(u8 light_at_pos) {};
 #endif
 
 	virtual std::string infoText() { return ""; }
@@ -209,7 +219,7 @@ public:
 	{
 		assert(0);
 	}
-	virtual bool serverStep(float dtime)
+	virtual bool serverStep(float dtime, u32 daynight_ratio)
 	{
 		assert(0);
 	}
@@ -233,7 +243,10 @@ public:
 	// The constructor of every MapBlockObject should be like this
 	MovingObject(MapBlock *block, s16 id, v3f pos):
 		MapBlockObject(block, id, pos),
-		m_speed(0,0,0)
+		m_speed(0,0,0),
+		m_oldpos(pos),
+		m_pos_animation_time(0),
+		m_showpos(pos)
 	{
 		m_touching_ground = false;
 	}
@@ -273,9 +286,34 @@ public:
 
 		m_speed = speed;
 	}
+	
+	// Reimplementation shall call this.
+	virtual void updatePos(v3f pos)
+	{
+		m_oldpos = m_showpos;
+		m_pos = pos;
+		
+		if(m_pos_animation_time < 0.001 || m_pos_animation_time > 1.0)
+			m_pos_animation_time = m_pos_animation_time_counter;
+		else
+			m_pos_animation_time = m_pos_animation_time * 0.9
+					+ m_pos_animation_time_counter * 0.1;
+		m_pos_animation_time_counter = 0;
+		m_pos_animation_counter = 0;
+	}
+	
+	// Position where the object is drawn relative to block
+	virtual v3f getRelativeShowPos()
+	{
+		return m_showpos;
+	}
+	// Returns m_showpos relative to whole map
+	v3f getAbsoluteShowPos();
 
-	virtual bool serverStep(float dtime) { return false; };
-	virtual void clientStep(float dtime) {};
+	virtual bool serverStep(float dtime, u32 daynight_ratio)
+	{ return false; };
+	virtual void clientStep(float dtime)
+	{};
 	
 	/*virtual void addToScene(scene::ISceneManager *smgr) = 0;
 	virtual void removeFromScene() = 0;*/
@@ -284,182 +322,21 @@ public:
 		Special methods
 	*/
 	
-	// Moves with collision detection
+	// Move with collision detection, server side
 	void move(float dtime, v3f acceleration);
+
+	// Move from old position to new position, client side
+	void simpleMove(float dtime);
 	
 protected:
 	v3f m_speed;
 	bool m_touching_ground;
-};
-
-class RatObject : public MovingObject
-{
-public:
-	RatObject(MapBlock *block, s16 id, v3f pos):
-		MovingObject(block, id, pos),
-		m_node(NULL)
-	{
-		m_collision_box = new core::aabbox3d<f32>
-				(-BS*0.3,0,-BS*0.3, BS*0.3,BS*0.5,BS*0.3);
-		m_selection_box = new core::aabbox3d<f32>
-				(-BS*0.3,0,-BS*0.3, BS*0.3,BS*0.5,BS*0.3);
-
-		m_counter1 = 0;
-		m_counter2 = 0;
-	}
-	virtual ~RatObject()
-	{
-		delete m_collision_box;
-		delete m_selection_box;
-	}
-	
-	/*
-		Implementation interface
-	*/
-	virtual u16 getTypeId() const
-	{
-		return MAPBLOCKOBJECT_TYPE_RAT;
-	}
-	virtual void serialize(std::ostream &os, u8 version)
-	{
-		MovingObject::serialize(os, version);
-		u8 buf[2];
-
-		// Write yaw * 10
-		writeS16(buf, m_yaw * 10);
-		os.write((char*)buf, 2);
-
-	}
-	virtual void update(std::istream &is, u8 version)
-	{
-		MovingObject::update(is, version);
-		u8 buf[2];
-		
-		// Read yaw * 10
-		is.read((char*)buf, 2);
-		s16 yaw_i = readS16(buf);
-		m_yaw = (f32)yaw_i / 10;
-
-		updateNodePos();
-	}
-
-	virtual bool serverStep(float dtime)
-	{
-		v3f dir(cos(m_yaw/180*PI),0,sin(m_yaw/180*PI));
-
-		f32 speed = 2*BS;
-
-		m_speed.X = speed * dir.X;
-		m_speed.Z = speed * dir.Z;
-
-		if(m_touching_ground && (m_oldpos - m_pos).getLength() < dtime*speed/2)
-		{
-			m_counter1 -= dtime;
-			if(m_counter1 < 0.0)
-			{
-				m_counter1 += 1.0;
-				m_speed.Y = 5.0*BS;
-			}
-		}
-
-		{
-			m_counter2 -= dtime;
-			if(m_counter2 < 0.0)
-			{
-				m_counter2 += (float)(rand()%100)/100*3.0;
-				m_yaw += ((float)(rand()%200)-100)/100*180;
-				m_yaw = wrapDegrees(m_yaw);
-			}
-		}
-
-		m_oldpos = m_pos;
-
-		//m_yaw += dtime*90;
-
-		move(dtime, v3f(0, -9.81*BS, 0));
-
-		updateNodePos();
-
-		return false;
-	}
-#ifndef SERVER
-	virtual void clientStep(float dtime)
-	{
-		m_pos += m_speed * dtime;
-
-		updateNodePos();
-	}
-	
-	virtual void addToScene(scene::ISceneManager *smgr)
-	{
-		if(m_node != NULL)
-			return;
-		
-		video::IVideoDriver* driver = smgr->getVideoDriver();
-		
-		scene::SMesh *mesh = new scene::SMesh();
-		scene::IMeshBuffer *buf = new scene::SMeshBuffer();
-		video::SColor c(255,255,255,255);
-		video::S3DVertex vertices[4] =
-		{
-			video::S3DVertex(-BS/2,0,0, 0,0,0, c, 0,1),
-			video::S3DVertex(BS/2,0,0, 0,0,0, c, 1,1),
-			video::S3DVertex(BS/2,BS/2,0, 0,0,0, c, 1,0),
-			video::S3DVertex(-BS/2,BS/2,0, 0,0,0, c, 0,0),
-		};
-		u16 indices[] = {0,1,2,2,3,0};
-		buf->append(vertices, 4, indices, 6);
-		// Set material
-		buf->getMaterial().setFlag(video::EMF_LIGHTING, false);
-		buf->getMaterial().setFlag(video::EMF_BACK_FACE_CULLING, false);
-		buf->getMaterial().setTexture
-				(0, driver->getTexture("../data/rat.png"));
-		buf->getMaterial().setFlag(video::EMF_BILINEAR_FILTER, false);
-		buf->getMaterial().MaterialType = video::EMT_TRANSPARENT_ALPHA_CHANNEL;
-		// Add to mesh
-		mesh->addMeshBuffer(buf);
-		buf->drop();
-		m_node = smgr->addMeshSceneNode(mesh, NULL);
-		mesh->drop();
-		m_node->setPosition(getAbsolutePos());
-	}
-	virtual void removeFromScene()
-	{
-		if(m_node != NULL)
-		{
-			m_node->remove();
-			m_node = NULL;
-		}
-	}
-#endif
-
-	virtual std::string getInventoryString()
-	{
-		// There must be a space after the name
-		// Or does there?
-		return std::string("Rat ");
-	}
-
-	/*
-		Special methods
-	*/
-	
-	void updateNodePos()
-	{
-		if(m_node != NULL)
-		{
-			m_node->setPosition(getAbsolutePos());
-			m_node->setRotation(v3f(0, -m_yaw+180, 0));
-		}
-	}
-	
-protected:
-	scene::IMeshSceneNode *m_node;
-	float m_yaw;
-
-	float m_counter1;
-	float m_counter2;
+	// Client-side moving
 	v3f m_oldpos;
+	f32 m_pos_animation_counter;
+	f32 m_pos_animation_time;
+	f32 m_pos_animation_time_counter;
+	v3f m_showpos;
 };
 
 class SignObject : public MapBlockObject
@@ -524,7 +401,7 @@ public:
 
 		updateSceneNode();
 	}
-	virtual bool serverStep(float dtime)
+	virtual bool serverStep(float dtime, u32 daynight_ratio)
 	{
 		return false;
 	}
@@ -596,6 +473,28 @@ public:
 			m_node = NULL;
 		}
 	}
+	virtual void updateLight(u8 light_at_pos)
+	{
+		if(m_node == NULL)
+			return;
+
+		u8 li = decode_light(light_at_pos);
+		video::SColor color(255,li,li,li);
+
+		scene::IMesh *mesh = m_node->getMesh();
+		
+		u16 mc = mesh->getMeshBufferCount();
+		for(u16 j=0; j<mc; j++)
+		{
+			scene::IMeshBuffer *buf = mesh->getMeshBuffer(j);
+			video::S3DVertex *vertices = (video::S3DVertex*)buf->getVertices();
+			u16 vc = buf->getVertexCount();
+			for(u16 i=0; i<vc; i++)
+			{
+				vertices[i].Color = color;
+			}
+		}
+	}
 #endif
 
 	virtual std::string infoText()
@@ -644,6 +543,177 @@ protected:
 	f32 m_yaw;
 };
 
+class RatObject : public MovingObject
+{
+public:
+	RatObject(MapBlock *block, s16 id, v3f pos):
+		MovingObject(block, id, pos),
+		m_node(NULL)
+	{
+		m_collision_box = new core::aabbox3d<f32>
+				(-BS*0.3,-BS*.25,-BS*0.3, BS*0.3,BS*0.25,BS*0.3);
+		m_selection_box = new core::aabbox3d<f32>
+				(-BS*0.3,-BS*.25,-BS*0.3, BS*0.3,BS*0.25,BS*0.3);
+
+		m_counter1 = 0;
+		m_counter2 = 0;
+		m_age = 0;
+	}
+	virtual ~RatObject()
+	{
+		delete m_collision_box;
+		delete m_selection_box;
+	}
+	
+	/*
+		Implementation interface
+	*/
+	virtual u16 getTypeId() const
+	{
+		return MAPBLOCKOBJECT_TYPE_RAT;
+	}
+	virtual void serialize(std::ostream &os, u8 version)
+	{
+		MovingObject::serialize(os, version);
+		u8 buf[2];
+
+		// Write yaw * 10
+		writeS16(buf, m_yaw * 10);
+		os.write((char*)buf, 2);
+
+	}
+	virtual void update(std::istream &is, u8 version)
+	{
+		MovingObject::update(is, version);
+		u8 buf[2];
+		
+		// Read yaw * 10
+		is.read((char*)buf, 2);
+		s16 yaw_i = readS16(buf);
+		m_yaw = (f32)yaw_i / 10;
+
+		updateNodePos();
+	}
+
+	virtual bool serverStep(float dtime, u32 daynight_ratio)
+	{
+		m_age += dtime;
+		if(m_age > 60)
+			// Die
+			return true;
+
+		v3f dir(cos(m_yaw/180*PI),0,sin(m_yaw/180*PI));
+
+		f32 speed = 2*BS;
+
+		m_speed.X = speed * dir.X;
+		m_speed.Z = speed * dir.Z;
+
+		if(m_touching_ground && (m_oldpos - m_pos).getLength() < dtime*speed/2)
+		{
+			m_counter1 -= dtime;
+			if(m_counter1 < 0.0)
+			{
+				m_counter1 += 1.0;
+				m_speed.Y = 5.0*BS;
+			}
+		}
+
+		{
+			m_counter2 -= dtime;
+			if(m_counter2 < 0.0)
+			{
+				m_counter2 += (float)(rand()%100)/100*3.0;
+				m_yaw += ((float)(rand()%200)-100)/100*180;
+				m_yaw = wrapDegrees(m_yaw);
+			}
+		}
+
+		m_oldpos = m_pos;
+
+		//m_yaw += dtime*90;
+
+		move(dtime, v3f(0, -9.81*BS, 0));
+
+		//updateNodePos();
+
+		return false;
+	}
+#ifndef SERVER
+	virtual void clientStep(float dtime)
+	{
+		//m_pos += m_speed * dtime;
+		MovingObject::simpleMove(dtime);
+
+		updateNodePos();
+	}
+	
+	virtual void addToScene(scene::ISceneManager *smgr);
+
+	virtual void removeFromScene()
+	{
+		if(m_node == NULL)
+			return;
+
+		m_node->remove();
+		m_node = NULL;
+	}
+
+	virtual void updateLight(u8 light_at_pos)
+	{
+		if(m_node == NULL)
+			return;
+
+		u8 li = decode_light(light_at_pos);
+		video::SColor color(255,li,li,li);
+
+		scene::IMesh *mesh = m_node->getMesh();
+		
+		u16 mc = mesh->getMeshBufferCount();
+		for(u16 j=0; j<mc; j++)
+		{
+			scene::IMeshBuffer *buf = mesh->getMeshBuffer(j);
+			video::S3DVertex *vertices = (video::S3DVertex*)buf->getVertices();
+			u16 vc = buf->getVertexCount();
+			for(u16 i=0; i<vc; i++)
+			{
+				vertices[i].Color = color;
+			}
+		}
+	}
+	
+#endif
+
+	virtual std::string getInventoryString()
+	{
+		// There must be a space after the name
+		// Or does there?
+		return std::string("Rat ");
+	}
+
+	/*
+		Special methods
+	*/
+	
+	void updateNodePos()
+	{
+		if(m_node == NULL)
+			return;
+
+		m_node->setPosition(getAbsoluteShowPos());
+		m_node->setRotation(v3f(0, -m_yaw+180, 0));
+	}
+	
+protected:
+	scene::IMeshSceneNode *m_node;
+	float m_yaw;
+
+	float m_counter1;
+	float m_counter2;
+	v3f m_oldpos;
+	float m_age;
+};
+
 struct DistanceSortedObject
 {
 	DistanceSortedObject(MapBlockObject *a_obj, f32 a_d)
@@ -666,12 +736,16 @@ class MapBlockObjectList
 public:
 	MapBlockObjectList(MapBlock *block);
 	~MapBlockObjectList();
+
 	// Writes the count, id, the type id and the parameters of all objects
 	void serialize(std::ostream &os, u8 version);
+
 	// Reads ids, type_ids and parameters.
 	// Creates, updates and deletes objects.
 	// If smgr!=NULL, new objects are added to the scene
-	void update(std::istream &is, u8 version, scene::ISceneManager *smgr);
+	void update(std::istream &is, u8 version, scene::ISceneManager *smgr,
+			u32 daynight_ratio);
+
 	// Finds a new unique id
 	s16 getFreeId() throw(ContainerFullException);
 	/*
@@ -706,7 +780,7 @@ public:
 
 	// Steps all objects and if server==true, removes those that
 	// want to be removed
-	void step(float dtime, bool server);
+	void step(float dtime, bool server, u32 daynight_ratio);
 
 	// Wraps an object that wants to move onto this block from an another
 	// Returns true if wrapping was impossible
@@ -727,6 +801,8 @@ private:
 	// Key is id
 	core::map<s16, MapBlockObject*> m_objects;
 	MapBlock *m_block;
+
+	u32 m_last_update_daynight_ratio;
 };
 
 

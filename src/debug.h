@@ -17,11 +17,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
-
-/*
-	Debug stuff
-*/
-
 #ifndef DEBUG_HEADER
 #define DEBUG_HEADER
 
@@ -31,10 +26,13 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <iostream>
 #include "common_irrlicht.h"
 #include "threads.h"
+#include "gettime.h"
 
 /*
 	Debug output
 */
+
+#define DTIME (getTimestamp()+": ")
 
 #define DEBUGSTREAM_COUNT 2
 

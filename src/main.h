@@ -20,18 +20,19 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #ifndef MAIN_HEADER
 #define MAIN_HEADER
 
-#include <string>
-extern std::string getTimestamp();
-#define DTIME (getTimestamp()+": ")
-
-#include <jmutex.h>
+#include "irrlichtwrapper.h"
 
 // Settings
 extern Settings g_settings;
 
-#include <fstream>
+// A thread safe wrapper to irrlicht
+// On a server build, this is always NULL.
+extern IrrlichtWrapper *g_irrlicht;
 
 // Debug streams
+
+#include <fstream>
+
 extern std::ostream *dout_con_ptr;
 extern std::ostream *derr_con_ptr;
 extern std::ostream *dout_client_ptr;
@@ -45,15 +46,6 @@ extern std::ostream *derr_server_ptr;
 #define derr_client (*derr_client_ptr)
 #define dout_server (*dout_server_ptr)
 #define derr_server (*derr_server_ptr)
-
-/*#ifndef SERVER
-	#include "utility.h"
-	extern TextureCache g_texturecache;
-#endif*/
-
-#include "irrlichtwrapper.h"
-//extern IrrlichtDevice *g_device;
-extern IrrlichtWrapper *g_irrlicht;
 
 #endif
 

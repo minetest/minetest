@@ -399,6 +399,7 @@ struct MapNode
 	}
 	
 	// 0 <= daylight_factor <= 1000
+	// 0 <= return value <= LIGHT_SUN
 	u8 getLightBlend(u32 daylight_factor)
 	{
 		u8 l = ((daylight_factor * getLight(LIGHTBANK_DAY)
@@ -411,6 +412,17 @@ struct MapNode
 			l = max;
 		return l;
 	}
+	/*// 0 <= daylight_factor <= 1000
+	// 0 <= return value <= 255
+	u8 getLightBlend(u32 daylight_factor)
+	{
+		u8 daylight = decode_light(getLight(LIGHTBANK_DAY));
+		u8 nightlight = decode_light(getLight(LIGHTBANK_NIGHT));
+		u8 mix = ((daylight_factor * daylight
+			+ (1000-daylight_factor) * nightlight)
+			)/1000;
+		return mix;
+	}*/
 
 	void setLight(enum LightBank bank, u8 a_light)
 	{

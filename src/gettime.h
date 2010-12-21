@@ -17,55 +17,39 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
-/*
-	Random portability stuff
-*/
+#ifndef GETTIME_HEADER
+#define GETTIME_HEADER
 
-#ifndef PORTING_HEADER
-#define PORTING_HEADER
-
-// Included for u64 and such
 #include "common_irrlicht.h"
 
-#ifdef _WIN32
-	#define SWPRINTF_CHARSTRING L"%S"
-#else
-	#define SWPRINTF_CHARSTRING L"%s"
-#endif
+/*
+	Get a millisecond counter value.
+	Precision depends on implementation.
+	Overflows at any value above 10000000.
 
-#ifdef _WIN32
-	#include <windows.h>
-	#define sleep_ms(x) Sleep(x)
-#else
-	#include <unistd.h>
-	#define sleep_ms(x) usleep(x*1000)
-#endif
-
-namespace porting
-{
+	Implementation of this is done in:
+		Normal build: main.cpp
+		Server build: servermain.cpp
+*/
+extern u32 getTimeMs();
 
 /*
-	Resolution is 10-20ms.
-	Remember to check for overflows.
-	Overflow can occur at any value higher than 10000000.
+	Timestamp stuff
 */
-#ifdef _WIN32 // Windows
-	#include <windows.h>
-	inline u32 getTimeMs()
-	{
-		return GetTickCount();
-	}
-#else // Posix
-	#include <sys/timeb.h>
-	inline u32 getTimeMs()
-	{
-		struct timeb tb;
-		ftime(&tb);
-		return tb.time * 1000 + tb.millitm;
-	}
-#endif
 
-} // namespace porting
+#include <time.h>
+#include <string>
+
+inline std::string getTimestamp()
+{
+	time_t t = time(NULL);
+	// This is not really thread-safe but it won't break anything
+	// except its own output, so just go with it.
+	struct tm *tm = localtime(&t);
+	char cs[20];
+	strftime(cs, 20, "%H:%M:%S", tm);
+	return cs;
+}
+
 
 #endif
-

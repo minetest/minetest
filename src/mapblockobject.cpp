@@ -46,6 +46,17 @@ void MapBlockObject::setBlockChanged()
 /*
 	MovingObject
 */
+
+v3f MovingObject::getAbsoluteShowPos()
+{
+	if(m_block == NULL)
+		return m_pos;
+	
+	// getPosRelative gets nodepos relative to map origin
+	v3f blockpos = intToFloat(m_block->getPosRelative());
+	return blockpos + m_showpos;
+}
+
 void MovingObject::move(float dtime, v3f acceleration)
 {
 	DSTACK("%s: typeid=%i, pos=(%f,%f,%f), speed=(%f,%f,%f)"
@@ -97,7 +108,7 @@ void MovingObject::move(float dtime, v3f acceleration)
 	float speedlength = m_speed.getLength();
 	f32 dtime_max_increment;
 	if(fabs(speedlength) > 0.001)
-		dtime_max_increment = 0.1*BS / speedlength;
+		dtime_max_increment = 0.05*BS / speedlength;
 	else
 		dtime_max_increment = 0.5;
 	
@@ -151,14 +162,14 @@ void MovingObject::move(float dtime, v3f acceleration)
 			}
 			catch(InvalidPositionException &e)
 			{
-				// Doing nothing here will block the player from
+				// Doing nothing here will block the object from
 				// walking over map borders
 			}
 
 			core::aabbox3d<f32> nodebox = Map::getNodeBox(
 					v3s16(x,y,z));
 			
-			// See if the player is touching ground
+			// See if the object is touching ground
 			if(
 					fabs(nodebox.MaxEdge.Y-objectbox.MinEdge.Y) < d
 					&& nodebox.MaxEdge.X-d > objectbox.MinEdge.X
@@ -227,6 +238,60 @@ void MovingObject::move(float dtime, v3f acceleration)
 	m_pos = position;
 }
 
+void MovingObject::simpleMove(float dtime)
+{
+	m_pos_animation_time_counter += dtime;
+	m_pos_animation_counter += dtime;
+	v3f movevector = m_pos - m_oldpos;
+	f32 moveratio;
+	if(m_pos_animation_time < 0.001)
+		moveratio = 1.0;
+	else
+		moveratio = m_pos_animation_counter / m_pos_animation_time;
+	if(moveratio > 1.5)
+		moveratio = 1.5;
+	m_showpos = m_oldpos + movevector * moveratio;
+}
+
+#ifndef SERVER
+/*
+	RatObject
+*/
+void RatObject::addToScene(scene::ISceneManager *smgr)
+{
+	if(m_node != NULL)
+		return;
+	
+	video::IVideoDriver* driver = smgr->getVideoDriver();
+	
+	scene::SMesh *mesh = new scene::SMesh();
+	scene::IMeshBuffer *buf = new scene::SMeshBuffer();
+	video::SColor c(255,255,255,255);
+	video::S3DVertex vertices[4] =
+	{
+		video::S3DVertex(-BS/2,-BS/4,0, 0,0,0, c, 0,1),
+		video::S3DVertex(BS/2,-BS/4,0, 0,0,0, c, 1,1),
+		video::S3DVertex(BS/2,BS/4,0, 0,0,0, c, 1,0),
+		video::S3DVertex(-BS/2,BS/4,0, 0,0,0, c, 0,0),
+	};
+	u16 indices[] = {0,1,2,2,3,0};
+	buf->append(vertices, 4, indices, 6);
+	// Set material
+	buf->getMaterial().setFlag(video::EMF_LIGHTING, false);
+	buf->getMaterial().setFlag(video::EMF_BACK_FACE_CULLING, false);
+	buf->getMaterial().setTexture
+			(0, driver->getTexture("../data/rat.png"));
+	buf->getMaterial().setFlag(video::EMF_BILINEAR_FILTER, false);
+	buf->getMaterial().MaterialType = video::EMT_TRANSPARENT_ALPHA_CHANNEL;
+	// Add to mesh
+	mesh->addMeshBuffer(buf);
+	buf->drop();
+	m_node = smgr->addMeshSceneNode(mesh, NULL);
+	mesh->drop();
+	updateNodePos();
+}
+#endif
+
 /*
 	MapBlockObjectList
 */
@@ -265,7 +330,7 @@ void MapBlockObjectList::serialize(std::ostream &os, u8 version)
 }
 
 void MapBlockObjectList::update(std::istream &is, u8 version,
-		scene::ISceneManager *smgr)
+		scene::ISceneManager *smgr, u32 daynight_ratio)
 {
 	JMutexAutoLock lock(m_mutex);
 
@@ -349,11 +414,14 @@ void MapBlockObjectList::update(std::istream &is, u8 version,
 			}
 			else
 			{
+				// This is fatal because we cannot know the length
+				// of the object's data
 				throw SerializationError
 				("MapBlockObjectList::update(): Unknown MapBlockObject type");
 			}
 
 			if(smgr != NULL)
+				//obj->addToScene(smgr, daynight_ratio);
 				obj->addToScene(smgr);
 
 			n->setValue(obj);
@@ -362,12 +430,32 @@ void MapBlockObjectList::update(std::istream &is, u8 version,
 		{
 			obj = n->getValue();
 			obj->updatePos(pos);
+			/*if(daynight_ratio != m_last_update_daynight_ratio)
+			{
+				obj->removeFromScene();
+				obj->addToScene(smgr, daynight_ratio);
+			}*/
 		}
 
 		// Now there is an object in obj.
 		// Update it.
 		
 		obj->update(is, version);
+		
+		/*
+			Update light on client
+		*/
+		if(smgr != NULL)
+		{
+			u8 light = LIGHT_MAX;
+			try{
+				v3s16 relpos_i = floatToInt(obj->m_pos);
+				MapNode n = m_block->getNodeParent(relpos_i);
+				light = n.getLightBlend(daynight_ratio);
+			}
+			catch(InvalidPositionException &e) {}
+			obj->updateLight(light);
+		}
 		
 		// Remove from deletion list
 		if(ids_to_delete.find(id) != NULL)
@@ -390,6 +478,8 @@ void MapBlockObjectList::update(std::istream &is, u8 version,
 		delete obj;
 		m_objects.remove(id);
 	}
+
+	m_last_update_daynight_ratio = daynight_ratio;
 }
 
 s16 MapBlockObjectList::getFreeId() throw(ContainerFullException)
@@ -492,7 +582,7 @@ MapBlockObject * MapBlockObjectList::get(s16 id)
 		return n->getValue();
 }
 
-void MapBlockObjectList::step(float dtime, bool server)
+void MapBlockObjectList::step(float dtime, bool server, u32 daynight_ratio)
 {
 	DSTACK(__FUNCTION_NAME);
 	
@@ -514,7 +604,17 @@ void MapBlockObjectList::step(float dtime, bool server)
 
 			if(server)
 			{
-				bool to_delete = obj->serverStep(dtime);
+				// Update light
+				u8 light = LIGHT_MAX;
+				try{
+					v3s16 relpos_i = floatToInt(obj->m_pos);
+					MapNode n = m_block->getNodeParent(relpos_i);
+					light = n.getLightBlend(daynight_ratio);
+				}
+				catch(InvalidPositionException &e) {}
+				obj->updateLight(light);
+				
+				bool to_delete = obj->serverStep(dtime, daynight_ratio);
 
 				if(to_delete)
 					ids_to_delete.insert(obj->m_id, true);
@@ -669,7 +769,7 @@ void MapBlockObjectList::getObjects(v3f origin, f32 max_d,
 	{
 		MapBlockObject *obj = i.getNode()->getValue();
 
-		f32 d = (obj->m_pos - origin).getLength();
+		f32 d = (obj->getRelativeShowPos() - origin).getLength();
 
 		if(d > max_d)
 			continue;

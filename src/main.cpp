@@ -99,8 +99,6 @@ SUGG: A version number to blocks, which increments when the block is
 	  - This can then be used to make sure the most recent version of
 	    a block has been sent to client
 
-TODO: Stop player if focus of window is taken away (go to pause mode)
-
 TODO: Combine MapBlock's face caches to so big pieces that VBO
       gets used
       - That is >500 vertices
@@ -109,16 +107,6 @@ TODO: Better dungeons
 TODO: Cliffs, arcs
 
 TODO: Menus
-
-TODO: Mobs
-      - Server:
-        - One single map container with ids as keys
-      - Client:
-	    - ?
-TODO: - Keep track of the place of the mob in the last few hundreth's
-        of a second - then, if a player hits it, take the value that is
-		avg_rtt/2 before the moment the packet is received.
-TODO: - Scripting
 
 TODO: Moving players more smoothly. Calculate moving animation
       in a way that doesn't make the player jump to the right place
@@ -158,8 +146,6 @@ Block object server side:
 	    - TODO: For incoming blocks, time difference is calculated and
 	      objects are stepped according to it.
 
-TODO: Add config parameters for server's sending and generating distance
-
 TODO: Copy the text of the last picked sign to inventory in creative
       mode
 
@@ -172,13 +158,20 @@ TODO: Check what goes wrong with caching map to disk (Kray)
 
 TODO: Remove LazyMeshUpdater. It is not used as supposed.
 
-TODO: Add server unused sector deletion settings to settings
-
 TODO: TOSERVER_LEAVE
+
+TODO: Better handling of objects and mobs
+      - Update brightness according to day-night blended light of node
+	    in position
+      - Scripting?
 
 Doing now:
 ======================================================================
 
+TODO: Get rid of g_irrlicht for server build
+
+TODO: Implement getGlobalTime for server build
+      - It is needed for controlling the time used for flowing water
 
 ======================================================================
 
@@ -226,7 +219,6 @@ Doing now:
 
 #include <iostream>
 #include <fstream>
-#include <time.h>
 #include <jmutexautolock.h>
 #include <locale.h>
 #include "common_irrlicht.h"
@@ -243,6 +235,8 @@ Doing now:
 #include "strfnd.h"
 #include "porting.h"
 #include "guiPauseMenu.h"
+#include "irrlichtwrapper.h"
+#include "gettime.h"
 
 IrrlichtWrapper *g_irrlicht;
 
@@ -265,7 +259,6 @@ bool g_viewing_range_all = false;
 // It is controlled by the main loop to the smallest value that
 // inhibits glitches (dtime jitter) in the main loop.
 //float g_freetime_ratio = FREETIME_RATIO_MAX;
-
 
 /*
 	Settings.
@@ -311,25 +304,19 @@ std::ostream *derr_server_ptr = &dstream;
 std::ostream *dout_client_ptr = &dstream;
 std::ostream *derr_client_ptr = &dstream;
 
-
 /*
-	Timestamp stuff
+	gettime.h implementation
 */
 
-JMutex g_timestamp_mutex;
-//std::string g_timestamp;
-
-std::string getTimestamp()
+u32 getTimeMs()
 {
-	if(g_timestamp_mutex.IsInitialized()==false)
-		return "";
-	JMutexAutoLock lock(g_timestamp_mutex);
-	//return g_timestamp;
-	time_t t = time(NULL);
-	struct tm *tm = localtime(&t);
-	char cs[20];
-	strftime(cs, 20, "%H:%M:%S", tm);
-	return cs;
+	/*
+		Use irrlicht because it is more precise than porting.h's
+		getTimeMs()
+	*/
+	if(g_irrlicht == NULL)
+		return 0;
+	return g_irrlicht->getTime();
 }
 
 class MyEventReceiver : public IEventReceiver
@@ -1066,9 +1053,6 @@ int main(int argc, char *argv[])
 	sockets_init();
 	atexit(sockets_cleanup);
 	
-	// Initialize timestamp mutex
-	g_timestamp_mutex.Init();
-
 	/*
 		Initialization
 	*/
@@ -1580,7 +1564,7 @@ int main(int argc, char *argv[])
 		// Info text
 		std::wstring infotext;
 
-		//TimeTaker //timer1("//timer1", g_irrlicht);
+		//TimeTaker //timer1("//timer1");
 		
 		// Time of frame without fps limit
 		float busytime;
@@ -1770,20 +1754,20 @@ int main(int argc, char *argv[])
 		*/
 		
 		{
-			//TimeTaker timer("client.step(dtime)", g_irrlicht);
+			//TimeTaker timer("client.step(dtime)");
 			client.step(dtime);
 			//client.step(dtime_avg1);
 		}
 
 		if(server != NULL)
 		{
-			//TimeTaker timer("server->step(dtime)", g_irrlicht);
+			//TimeTaker timer("server->step(dtime)");
 			server->step(dtime);
 		}
 
 		v3f player_position = client.getPlayerPosition();
 		
-		//TimeTaker //timer2("//timer2", g_irrlicht);
+		//TimeTaker //timer2("//timer2");
 
 		/*
 			Mouse and camera control
@@ -1837,12 +1821,12 @@ int main(int argc, char *argv[])
 		}
 		else{
 			//client.m_env.getMap().updateCamera(camera_position, camera_direction);
-			//TimeTaker timer("client.updateCamera", g_irrlicht);
+			//TimeTaker timer("client.updateCamera");
 			client.updateCamera(camera_position, camera_direction);
 		}
 		
 		//timer2.stop();
-		//TimeTaker //timer3("//timer3", g_irrlicht);
+		//TimeTaker //timer3("//timer3");
 
 		/*
 			Calculate what block is the crosshair pointing to
@@ -2118,7 +2102,7 @@ int main(int argc, char *argv[])
 					dig_time_complete = 1.5;
 
 				u16 dig_index = (u16)(3.99*dig_time/dig_time_complete);
-				if(dig_time > 0.2)
+				if(dig_time > 0.125)
 				{
 					//dstream<<"dig_index="<<dig_index<<std::endl;
 					client.setTempMod(nodepos, NodeMod(NODEMOD_CRACK, dig_index));
@@ -2194,7 +2178,7 @@ int main(int argc, char *argv[])
 			Update gui stuff (0ms)
 		*/
 
-		//TimeTaker guiupdatetimer("Gui updating", g_irrlicht);
+		//TimeTaker guiupdatetimer("Gui updating");
 		
 		{
 			wchar_t temptext[150];
@@ -2304,11 +2288,11 @@ int main(int argc, char *argv[])
 			Drawing begins
 		*/
 
-		TimeTaker drawtimer("Drawing", g_irrlicht);
+		TimeTaker drawtimer("Drawing");
 
 		
 		{
-			TimeTaker timer("beginScene", g_irrlicht);
+			TimeTaker timer("beginScene");
 			driver->beginScene(true, true, bgcolor);
 			//driver->beginScene(false, true, bgcolor);
 			beginscenetime = timer.stop(true);
@@ -2319,13 +2303,13 @@ int main(int argc, char *argv[])
 		//std::cout<<DTIME<<"smgr->drawAll()"<<std::endl;
 		
 		{
-			TimeTaker timer("smgr", g_irrlicht);
+			TimeTaker timer("smgr");
 			smgr->drawAll();
 			scenetime = timer.stop(true);
 		}
 		
 		{
-		//TimeTaker timer9("auxiliary drawings", g_irrlicht);
+		//TimeTaker timer9("auxiliary drawings");
 		// 0ms
 
 		driver->draw2DLine(displaycenter - core::vector2d<s32>(10,0),
@@ -2336,7 +2320,7 @@ int main(int argc, char *argv[])
 				video::SColor(255,255,255,255));
 
 		//timer9.stop();
-		//TimeTaker //timer10("//timer10", g_irrlicht);
+		//TimeTaker //timer10("//timer10");
 		
 		video::SMaterial m;
 		m.Thickness = 10;
@@ -2359,7 +2343,7 @@ int main(int argc, char *argv[])
 		}
 
 		//timer10.stop();
-		//TimeTaker //timer11("//timer11", g_irrlicht);
+		//TimeTaker //timer11("//timer11");
 
 		/*
 			Draw gui
@@ -2369,7 +2353,7 @@ int main(int argc, char *argv[])
 		
 		// End drawing
 		{
-			TimeTaker timer("endScene", g_irrlicht);
+			TimeTaker timer("endScene");
 			driver->endScene();
 			endscenetime = timer.stop(true);
 		}

@@ -40,6 +40,8 @@ MapBlock::MapBlock(NodeContainer *parent, v3s16 pos, bool dummy):
 	data = NULL;
 	if(dummy == false)
 		reallocate();
+	
+	m_spawn_timer = -10000;
 
 #ifndef SERVER
 	m_mesh_expired = false;
@@ -237,8 +239,8 @@ void MapBlock::makeFastFace(TileSpec tile, u8 light, v3f p,
 
 	v3f zerovector = v3f(0,0,0);
 	
-	u8 li = decode_light(light);
-	//u8 li = 150;
+	//u8 li = decode_light(light);
+	u8 li = light;
 
 	u8 alpha = 255;
 
@@ -435,14 +437,14 @@ void MapBlock::updateFastFaceRow(
 				// If node at sp (tile0) is more solid
 				if(mf == 1)
 				{
-					makeFastFace(tile0, light,
+					makeFastFace(tile0, decode_light(light),
 							sp, face_dir, scale,
 							posRelative_f, dest);
 				}
 				// If node at sp is less solid (mf == 2)
 				else
 				{
-					makeFastFace(tile1, light,
+					makeFastFace(tile1, decode_light(light),
 							sp+face_dir_f, -face_dir, scale,
 							posRelative_f, dest);
 				}
@@ -992,6 +994,52 @@ void MapBlock::copyTo(VoxelManipulator &dst)
 		core::array<DistanceSortedObject> &dest)
 {
 }*/
+void MapBlock::stepObjects(float dtime, bool server, u32 daynight_ratio)
+{
+	/*
+		Step objects
+	*/
+	m_objects.step(dtime, server, daynight_ratio);
+	
+	/*
+		Spawn some objects at random.
+
+		Use dayNightDiffed() to approximate being near ground level
+	*/
+	if(m_spawn_timer < -999)
+	{
+		m_spawn_timer = 60;
+	}
+	if(dayNightDiffed() == true && getObjectCount() == 0)
+	{
+		m_spawn_timer -= dtime;
+		if(m_spawn_timer <= 0.0)
+		{
+			m_spawn_timer += rand() % 300;
+			
+			v2s16 p2d(
+				(rand()%(MAP_BLOCKSIZE-1))+0,
+				(rand()%(MAP_BLOCKSIZE-1))+0
+			);
+
+			s16 y = getGroundLevel(p2d);
+			
+			if(y >= 0)
+			{
+				v3s16 p(p2d.X, y+1, p2d.Y);
+
+				if(getNode(p).d == CONTENT_AIR
+						&& getNode(p).getLightBlend(daynight_ratio) <= 11)
+				{
+					RatObject *obj = new RatObject(NULL, -1, intToFloat(p));
+					addObject(obj);
+				}
+			}
+		}
+	}
+
+	setChangedFlag();
+}
 
 
 void MapBlock::updateDayNightDiff()
@@ -1039,6 +1087,31 @@ void MapBlock::updateDayNightDiff()
 
 	// Set member variable
 	m_day_night_differs = differs;
+}
+
+s16 MapBlock::getGroundLevel(v2s16 p2d)
+{
+	if(isDummy())
+		return -3;
+	try
+	{
+		s16 y = MAP_BLOCKSIZE-1;
+		for(; y>=0; y--)
+		{
+			if(is_ground_content(getNodeRef(p2d.X, y, p2d.Y).d))
+			{
+				if(y == MAP_BLOCKSIZE-1)
+					return -2;
+				else
+					return y;
+			}
+		}
+		return -1;
+	}
+	catch(InvalidPositionException &e)
+	{
+		return -3;
+	}
 }
 
 /*

@@ -368,7 +368,7 @@ void Client::step(float dtime)
 			try
 			{
 				block = m_env.getMap().getBlockNoCreate(p);
-				block->stepObjects(dtime, false);
+				block->stepObjects(dtime, false, m_env.getDayNightRatio());
 			}
 			catch(InvalidPositionException &e)
 			{
@@ -946,7 +946,7 @@ void Client::ProcessData(u8 *data, u32 datasize, u16 sender_peer_id)
 				NOTE: Be sure this is done in the main thread.
 			*/
 			block->updateObjects(is, m_server_ser_ver,
-					m_device->getSceneManager());
+					m_device->getSceneManager(), m_env.getDayNightRatio());
 		}
 		
 		/*dstream<<"Final delete queue size: "<<abs_to_delete.size()

@@ -41,7 +41,7 @@ void set_default_settings()
 	// Server stuff
 	g_settings.setDefault("creative_mode", "false");
 	g_settings.setDefault("heightmap_blocksize", "32");
-	g_settings.setDefault("height_randmax", "constant 50.0");
+	g_settings.setDefault("height_randmax", "constant 45.0");
 	g_settings.setDefault("height_randfactor", "constant 0.6");
 	g_settings.setDefault("height_base", "linear 0 0 0");
 	g_settings.setDefault("plants_amount", "1.0");
