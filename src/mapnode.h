@@ -158,8 +158,15 @@ inline bool is_ground_content(u8 m)
 		m == CONTENT_GRASS ||
 		m == CONTENT_GRASS_FOOTSTEPS ||
 		m == CONTENT_MESE ||
-		m == CONTENT_MUD
+		m == CONTENT_MUD ||
+		m == CONTENT_COALSTONE
 	);
+}
+
+inline bool is_mineral(u8 c)
+{
+	return(c == CONTENT_MESE
+		|| c == CONTENT_COALSTONE);
 }
 
 /*inline bool content_has_faces(u8 c)

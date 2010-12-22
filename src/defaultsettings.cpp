@@ -46,6 +46,8 @@ void set_default_settings()
 	g_settings.setDefault("height_base", "linear 0 0 0");
 	g_settings.setDefault("plants_amount", "1.0");
 	g_settings.setDefault("ravines_amount", "1.0");
+	g_settings.setDefault("coal_amount", "1.0");
+
 	g_settings.setDefault("objectdata_interval", "0.2");
 	g_settings.setDefault("active_object_range", "2");
 	g_settings.setDefault("max_simultaneous_block_sends_per_client", "1");

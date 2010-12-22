@@ -1950,6 +1950,10 @@ MapBlock * ServerMap::emergeBlock(
 	if(some_part_underground)
 	{
 		s16 underground_level = (lowest_ground_y/MAP_BLOCKSIZE - block_y)+1;
+
+		/*
+			Add meseblocks
+		*/
 		for(s16 i=0; i<underground_level*1; i++)
 		{
 			if(rand()%2 == 0)
@@ -1978,9 +1982,16 @@ MapBlock * ServerMap::emergeBlock(
 			}
 		}
 
-		if(rand()%3 == 0)
+		/*
+			Add coal
+		*/
+		u16 coal_amount = 30.0 * g_settings.getFloat("coal_amount");
+		u16 coal_rareness = 60 / coal_amount;
+		if(coal_rareness == 0)
+			coal_rareness = 1;
+		if(rand()%coal_rareness == 0)
 		{
-			for(s16 i=0; i<20; i++)
+			for(s16 i=0; i<coal_amount; i++)
 			{
 				v3s16 cp(
 					(rand()%(MAP_BLOCKSIZE-2))+1,
@@ -2157,22 +2168,26 @@ MapBlock * ServerMap::emergeBlock(
 								<<std::endl;*/
 						{
 							v3s16 p2 = p + v3s16(x,y,z-2);
-							if(is_ground_content(sector->getNode(p2).d))
+							if(is_ground_content(sector->getNode(p2).d)
+									&& !is_mineral(sector->getNode(p2).d))
 								sector->setNode(p2, n);
 						}
 						{
 							v3s16 p2 = p + v3s16(x,y,z-1);
-							if(is_ground_content(sector->getNode(p2).d))
+							if(is_ground_content(sector->getNode(p2).d)
+									&& !is_mineral(sector->getNode(p2).d))
 								sector->setNode(p2, n2);
 						}
 						{
 							v3s16 p2 = p + v3s16(x,y,z+0);
-							if(is_ground_content(sector->getNode(p2).d))
+							if(is_ground_content(sector->getNode(p2).d)
+									&& !is_mineral(sector->getNode(p2).d))
 								sector->setNode(p2, n2);
 						}
 						{
 							v3s16 p2 = p + v3s16(x,y,z+1);
-							if(is_ground_content(sector->getNode(p2).d))
+							if(is_ground_content(sector->getNode(p2).d)
+									&& !is_mineral(sector->getNode(p2).d))
 								sector->setNode(p2, n);
 						}
 

@@ -42,6 +42,7 @@
 #height_base = linear 0 0 0
 #plants_amount = 1.0
 #ravines_amount = 1.0
+#coal_amount = 1.0
 
 # Set to true to enable creative mode (unlimited inventory)
 #creative_mode = false

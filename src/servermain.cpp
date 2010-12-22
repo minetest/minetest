@@ -277,11 +277,11 @@ int main(int argc, char *argv[])
 	
 	// Port?
 	u16 port = 30000;
-	if(cmd_args.exists("port"))
+	if(cmd_args.exists("port") && cmd_args.getU16("port") != 0)
 	{
 		port = cmd_args.getU16("port");
 	}
-	else if(g_settings.exists("port"))
+	else if(g_settings.exists("port") && g_settings.getU16("port") != 0)
 	{
 		port = g_settings.getU16("port");
 	}
