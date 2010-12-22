@@ -57,7 +57,7 @@ void set_default_settings()
 	g_settings.setDefault("max_block_send_distance", "5");
 	g_settings.setDefault("max_block_generate_distance", "4");
 	g_settings.setDefault("time_send_interval", "20");
-	g_settings.setDefault("time_speed", "360");
+	g_settings.setDefault("time_speed", "96");
 	g_settings.setDefault("server_unload_unused_sectors_timeout", "60");
 	g_settings.setDefault("server_map_save_interval", "60");
 }
