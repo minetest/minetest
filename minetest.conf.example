@@ -69,4 +69,6 @@
 #time_speed = 1440
 
 #time_send_interval = 5
+#server_unload_unused_sectors_timeout = 60
+#server_map_save_interval = 60
 
