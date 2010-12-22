@@ -61,6 +61,7 @@ public:
 	void resizeGui();
 
 	// Updates stuff from inventory to screen
+	// TODO: Remove, not used
 	void update();
 
 	void draw();
@@ -80,7 +81,6 @@ public:
 	
 private:
 	Inventory *m_inventory;
-	core::array<GUIInventorySlot*> m_slots;
 	v2u32 m_screensize_old;
 };
 

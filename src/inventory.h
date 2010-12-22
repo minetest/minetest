@@ -196,18 +196,21 @@ private:
 	std::string m_inventorystring;
 };
 
-class Inventory
+class InventoryList
 {
 public:
-	Inventory(u32 size);
-	~Inventory();
+	InventoryList(std::string name, u32 size);
+	~InventoryList();
 	void clearItems();
 	void serialize(std::ostream &os);
 	void deSerialize(std::istream &is);
 
-	Inventory & operator = (Inventory &other);
+	InventoryList(const InventoryList &other);
+	InventoryList & operator = (const InventoryList &other);
 
+	std::string getName();
 	u32 getSize();
+	// Count used slots
 	u32 getUsedSlots();
 	
 	InventoryItem * getItem(u32 i);
@@ -222,6 +225,40 @@ public:
 private:
 	core::array<InventoryItem*> m_items;
 	u32 m_size;
+	std::string m_name;
+};
+
+class Inventory
+{
+public:
+	~Inventory();
+
+	void clear();
+
+	Inventory();
+	Inventory(const Inventory &other);
+	Inventory & operator = (const Inventory &other);
+	
+	void serialize(std::ostream &os);
+	void deSerialize(std::istream &is);
+
+	InventoryList * addList(const std::string &name, u32 size);
+	InventoryList * getList(const std::string &name);
+	bool deleteList(const std::string &name);
+	// A shorthand for adding items
+	bool addItem(const std::string &listname, InventoryItem *newitem)
+	{
+		InventoryList *list = getList(listname);
+		if(list == NULL)
+			return false;
+		return list->addItem(newitem);
+	}
+	
+private:
+	// -1 if not found
+	s32 getListIndex(const std::string &name);
+
+	core::array<InventoryList*> m_lists;
 };
 
 #endif

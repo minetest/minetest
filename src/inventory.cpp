@@ -136,30 +136,39 @@ MapBlockObject * MapBlockObjectItem::createObject
 	Inventory
 */
 
-Inventory::Inventory(u32 size)
+InventoryList::InventoryList(std::string name, u32 size)
 {
+	m_name = name;
 	m_size = size;
 	clearItems();
 }
 
-Inventory::~Inventory()
+InventoryList::~InventoryList()
 {
 	for(u32 i=0; i<m_items.size(); i++)
 	{
-		delete m_items[i];
+		if(m_items[i])
+			delete m_items[i];
 	}
 }
 
-void Inventory::clearItems()
+void InventoryList::clearItems()
 {
+	for(u32 i=0; i<m_items.size(); i++)
+	{
+		if(m_items[i])
+			delete m_items[i];
+	}
+
 	m_items.clear();
+
 	for(u32 i=0; i<m_size; i++)
 	{
 		m_items.push_back(NULL);
 	}
 }
 
-void Inventory::serialize(std::ostream &os)
+void InventoryList::serialize(std::ostream &os)
 {
 	//os.imbue(std::locale("C"));
 	
@@ -181,7 +190,7 @@ void Inventory::serialize(std::ostream &os)
 	os<<"end\n";
 }
 
-void Inventory::deSerialize(std::istream &is)
+void InventoryList::deSerialize(std::istream &is)
 {
 	//is.imbue(std::locale("C"));
 
@@ -223,8 +232,18 @@ void Inventory::deSerialize(std::istream &is)
 	}
 }
 
-Inventory & Inventory::operator = (Inventory &other)
+InventoryList::InventoryList(const InventoryList &other)
 {
+	/*
+		Do this so that the items get cloned. Otherwise the pointers
+		in the array will just get copied.
+	*/
+	*this = other;
+}
+
+InventoryList & InventoryList::operator = (const InventoryList &other)
+{
+	m_name = other.m_name;
 	m_size = other.m_size;
 	clearItems();
 	for(u32 i=0; i<other.m_items.size(); i++)
@@ -239,12 +258,17 @@ Inventory & Inventory::operator = (Inventory &other)
 	return *this;
 }
 
-u32 Inventory::getSize()
+std::string InventoryList::getName()
+{
+	return m_name;
+}
+
+u32 InventoryList::getSize()
 {
 	return m_items.size();
 }
 
-u32 Inventory::getUsedSlots()
+u32 InventoryList::getUsedSlots()
 {
 	u32 num = 0;
 	for(u32 i=0; i<m_items.size(); i++)
@@ -256,14 +280,14 @@ u32 Inventory::getUsedSlots()
 	return num;
 }
 
-InventoryItem * Inventory::getItem(u32 i)
+InventoryItem * InventoryList::getItem(u32 i)
 {
 	if(i > m_items.size() - 1)
 		return NULL;
 	return m_items[i];
 }
 
-InventoryItem * Inventory::changeItem(u32 i, InventoryItem *newitem)
+InventoryItem * InventoryList::changeItem(u32 i, InventoryItem *newitem)
 {
 	assert(i < m_items.size());
 
@@ -272,7 +296,7 @@ InventoryItem * Inventory::changeItem(u32 i, InventoryItem *newitem)
 	return olditem;
 }
 
-void Inventory::deleteItem(u32 i)
+void InventoryList::deleteItem(u32 i)
 {
 	assert(i < m_items.size());
 	InventoryItem *item = changeItem(i, NULL);
@@ -280,7 +304,7 @@ void Inventory::deleteItem(u32 i)
 		delete item;
 }
 
-bool Inventory::addItem(InventoryItem *newitem)
+bool InventoryList::addItem(InventoryItem *newitem)
 {
 	// If it is a MaterialItem, try to find an already existing one
 	// and just increment the counter
@@ -324,9 +348,9 @@ bool Inventory::addItem(InventoryItem *newitem)
 	return false;
 }
 
-void Inventory::print(std::ostream &o)
+void InventoryList::print(std::ostream &o)
 {
-	o<<"Player inventory:"<<std::endl;
+	o<<"InventoryList:"<<std::endl;
 	for(u32 i=0; i<m_items.size(); i++)
 	{
 		InventoryItem *item = m_items[i];
@@ -338,5 +362,130 @@ void Inventory::print(std::ostream &o)
 		}
 	}
 }
+
+/*
+	Inventory
+*/
+
+Inventory::~Inventory()
+{
+	clear();
+}
+
+void Inventory::clear()
+{
+	for(u32 i=0; i<m_lists.size(); i++)
+	{
+		delete m_lists[i];
+	}
+	m_lists.clear();
+}
+
+Inventory::Inventory()
+{
+}
+
+Inventory::Inventory(const Inventory &other)
+{
+	*this = other;
+}
+
+Inventory & Inventory::operator = (const Inventory &other)
+{
+	clear();
+	for(u32 i=0; i<other.m_lists.size(); i++)
+	{
+		m_lists.push_back(new InventoryList(*other.m_lists[i]));
+	}
+	return *this;
+}
+
+void Inventory::serialize(std::ostream &os)
+{
+	for(u32 i=0; i<m_lists.size(); i++)
+	{
+		InventoryList *list = m_lists[i];
+		os<<"List "<<list->getName()<<" "<<list->getSize()<<"\n";
+		list->serialize(os);
+	}
+
+	os<<"end\n";
+}
+
+void Inventory::deSerialize(std::istream &is)
+{
+	clear();
+
+	for(;;)
+	{
+		std::string line;
+		std::getline(is, line, '\n');
+
+		std::istringstream iss(line);
+
+		std::string name;
+		std::getline(iss, name, ' ');
+
+		if(name == "end")
+		{
+			break;
+		}
+		else if(name == "List")
+		{
+			std::string listname;
+			u32 listsize;
+
+			std::getline(iss, listname, ' ');
+			iss>>listsize;
+
+			InventoryList *list = new InventoryList(listname, listsize);
+			list->deSerialize(is);
+
+			m_lists.push_back(list);
+		}
+		else
+		{
+			throw SerializationError("Unknown inventory identifier");
+		}
+	}
+}
+
+InventoryList * Inventory::addList(const std::string &name, u32 size)
+{
+	s32 i = getListIndex(name);
+	if(i != -1)
+	{
+		if(m_lists[i]->getSize() != size)
+		{
+			delete m_lists[i];
+			m_lists[i] = new InventoryList(name, size);
+		}
+		return m_lists[i];
+	}
+	else
+	{
+		m_lists.push_back(new InventoryList(name, size));
+		return m_lists.getLast();
+	}
+}
+
+InventoryList * Inventory::getList(const std::string &name)
+{
+	s32 i = getListIndex(name);
+	if(i == -1)
+		return NULL;
+	return m_lists[i];
+}
+
+s32 Inventory::getListIndex(const std::string &name)
+{
+	for(u32 i=0; i<m_lists.size(); i++)
+	{
+		if(m_lists[i]->getName() == name)
+			return i;
+	}
+	return -1;
+}
+
 	
 //END

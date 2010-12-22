@@ -172,6 +172,7 @@ SUGG: Split Inventory into ClientInventory and ServerInventory
 Doing now:
 ======================================================================
 
+TODO: Convert the text input system to use a modal menu
 
 ======================================================================
 
@@ -269,9 +270,21 @@ extern void set_default_settings();
 //u16 g_selected_material = 0;
 u16 g_selected_item = 0;
 
+/*
+	GUI Stuff
+*/
 gui::IGUIEnvironment* guienv = NULL;
 GUIPauseMenu *pauseMenu = NULL;
 GUIInventoryMenu *inventoryMenu = NULL;
+
+bool noMenuActive()
+{
+	if(pauseMenu && pauseMenu->isVisible())
+		return false;
+	if(inventoryMenu && inventoryMenu->isVisible())
+		return false;
+	return true;
+}
 
 std::wstring g_text_buffer;
 bool g_text_buffer_accepted = false;
@@ -353,9 +366,7 @@ public:
 				{
 					if(event.KeyInput.Key == irr::KEY_ESCAPE)
 					{
-						if(g_game_focused == true
-								&& !pauseMenu->isVisible()
-								&& !inventoryMenu->isVisible())
+						if(g_game_focused == true && noMenuActive())
 						{
 							dstream<<DTIME<<"MyEventReceiver: "
 									<<"Launching pause menu"<<std::endl;
@@ -369,9 +380,7 @@ public:
 				{
 					if(event.KeyInput.Key == irr::KEY_KEY_I)
 					{
-						if(g_game_focused == true
-								&& !inventoryMenu->isVisible()
-								&& !pauseMenu->isVisible())
+						if(g_game_focused == true && noMenuActive())
 						{
 							dstream<<DTIME<<"MyEventReceiver: "
 									<<"Launching inventory"<<std::endl;
@@ -428,44 +437,53 @@ public:
 
 		if(event.EventType == irr::EET_MOUSE_INPUT_EVENT)
 		{
-			//dstream<<"MyEventReceiver: mouse input"<<std::endl;
-			left_active = event.MouseInput.isLeftPressed();
-			middle_active = event.MouseInput.isMiddlePressed();
-			right_active = event.MouseInput.isRightPressed();
+			if(noMenuActive() == false)
+			{
+				left_active = false;
+				middle_active = false;
+				right_active = false;
+			}
+			else
+			{
+				//dstream<<"MyEventReceiver: mouse input"<<std::endl;
+				left_active = event.MouseInput.isLeftPressed();
+				middle_active = event.MouseInput.isMiddlePressed();
+				right_active = event.MouseInput.isRightPressed();
 
-			if(event.MouseInput.Event == EMIE_LMOUSE_PRESSED_DOWN)
-			{
-				leftclicked = true;
-			}
-			if(event.MouseInput.Event == EMIE_RMOUSE_PRESSED_DOWN)
-			{
-				rightclicked = true;
-			}
-			if(event.MouseInput.Event == EMIE_LMOUSE_LEFT_UP)
-			{
-				leftreleased = true;
-			}
-			if(event.MouseInput.Event == EMIE_RMOUSE_LEFT_UP)
-			{
-				rightreleased = true;
-			}
-			if(event.MouseInput.Event == EMIE_MOUSE_WHEEL)
-			{
-				/*dstream<<"event.MouseInput.Wheel="
-						<<event.MouseInput.Wheel<<std::endl;*/
-				if(event.MouseInput.Wheel < 0)
+				if(event.MouseInput.Event == EMIE_LMOUSE_PRESSED_DOWN)
 				{
-					if(g_selected_item < PLAYER_INVENTORY_SIZE-1)
-						g_selected_item++;
-					else
-						g_selected_item = 0;
+					leftclicked = true;
 				}
-				else if(event.MouseInput.Wheel > 0)
+				if(event.MouseInput.Event == EMIE_RMOUSE_PRESSED_DOWN)
 				{
-					if(g_selected_item > 0)
-						g_selected_item--;
-					else
-						g_selected_item = PLAYER_INVENTORY_SIZE-1;
+					rightclicked = true;
+				}
+				if(event.MouseInput.Event == EMIE_LMOUSE_LEFT_UP)
+				{
+					leftreleased = true;
+				}
+				if(event.MouseInput.Event == EMIE_RMOUSE_LEFT_UP)
+				{
+					rightreleased = true;
+				}
+				if(event.MouseInput.Event == EMIE_MOUSE_WHEEL)
+				{
+					/*dstream<<"event.MouseInput.Wheel="
+							<<event.MouseInput.Wheel<<std::endl;*/
+					if(event.MouseInput.Wheel < 0)
+					{
+						if(g_selected_item < PLAYER_INVENTORY_SIZE-1)
+							g_selected_item++;
+						else
+							g_selected_item = 0;
+					}
+					else if(event.MouseInput.Wheel > 0)
+					{
+						if(g_selected_item > 0)
+							g_selected_item--;
+						else
+							g_selected_item = PLAYER_INVENTORY_SIZE-1;
+					}
 				}
 			}
 		}
@@ -933,16 +951,18 @@ public:
 
 		start = m_selection - m_itemcount / 2;
 
+		InventoryList *mainlist = m_inventory->getList("main");
+
 		for(s32 i=0; i<m_itemcount; i++)
 		{
 			s32 j = i + start;
 
-			if(j > (s32)m_inventory->getSize() - 1)
-				j -= m_inventory->getSize();
+			if(j > (s32)mainlist->getSize() - 1)
+				j -= mainlist->getSize();
 			if(j < 0)
-				j += m_inventory->getSize();
+				j += mainlist->getSize();
 			
-			InventoryItem *item = m_inventory->getItem(j);
+			InventoryItem *item = mainlist->getItem(j);
 			// Null items
 			if(item == NULL)
 			{
@@ -1475,7 +1495,7 @@ int main(int argc, char *argv[])
 	*/
 	
 	// This is a copy of the inventory that the client's environment has
-	Inventory local_inventory(PLAYER_INVENTORY_SIZE);
+	Inventory local_inventory;
 	
 	GUIQuickInventory *quick_inventory = new GUIQuickInventory
 			(guienv, NULL, v2s32(10, 70), 5, &local_inventory);
@@ -1806,8 +1826,7 @@ int main(int argc, char *argv[])
 		
 		if((device->isWindowActive()
 				&& g_game_focused
-				&& !pauseMenu->isVisible()
-				&& !inventoryMenu->isVisible()
+				&& noMenuActive()
 				)
 				|| random_input)
 		{

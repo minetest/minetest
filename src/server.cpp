@@ -1252,7 +1252,7 @@ void Server::AsyncRunStep()
 			{
 				// Add to inventory and send inventory
 				InventoryItem *item = new MaterialItem(material, 1);
-				player->inventory.addItem(item);
+				player->inventory.addItem("main", item);
 				SendInventory(player->peer_id);
 			}
 
@@ -1632,11 +1632,12 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 		// Left click
 		if(button == 0)
 		{
-			if(g_settings.getBool("creative_mode") == false)
+			InventoryList *ilist = player->inventory.getList("main");
+			if(g_settings.getBool("creative_mode") == false && ilist != NULL)
 			{
 			
 				// Skip if inventory has no free space
-				if(player->inventory.getUsedSlots() == player->inventory.getSize())
+				if(ilist->getUsedSlots() == ilist->getSize())
 				{
 					dout_server<<"Player inventory has no free space"<<std::endl;
 					return;
@@ -1645,7 +1646,7 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 				// Add to inventory and send inventory
 				InventoryItem *item = new MapBlockObjectItem
 						(obj->getInventoryString());
-				player->inventory.addItem(item);
+				ilist->addItem(item);
 				SendInventory(player->peer_id);
 			}
 
@@ -1746,8 +1747,12 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 		else if(action == 1)
 		{
 
+			InventoryList *ilist = player->inventory.getList("main");
+			if(ilist == NULL)
+				return;
+
 			// Get item
-			InventoryItem *item = player->inventory.getItem(item_i);
+			InventoryItem *item = ilist->getItem(item_i);
 			
 			// If there is no item, it is not possible to add it anywhere
 			if(item == NULL)
@@ -1796,11 +1801,12 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 				/*
 					Handle inventory
 				*/
-				if(g_settings.getBool("creative_mode") == false)
+				InventoryList *ilist = player->inventory.getList("main");
+				if(g_settings.getBool("creative_mode") == false && ilist)
 				{
 					// Remove from inventory and send inventory
 					if(mitem->getCount() == 1)
-						player->inventory.deleteItem(item_i);
+						ilist->deleteItem(item_i);
 					else
 						mitem->remove(1);
 					// Send inventory
@@ -1819,11 +1825,12 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 				/*
 					Handle inventory
 				*/
-				if(g_settings.getBool("creative_mode") == false)
+				InventoryList *ilist = player->inventory.getList("main");
+				if(g_settings.getBool("creative_mode") == false && ilist)
 				{
 					// Remove from inventory and send inventory
 					if(mitem->getCount() == 1)
-						player->inventory.deleteItem(item_i);
+						ilist->deleteItem(item_i);
 					else
 						mitem->remove(1);
 					// Send inventory
@@ -1930,10 +1937,11 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 
 				//dout_server<<"Placed object"<<std::endl;
 
-				if(g_settings.getBool("creative_mode") == false)
+				InventoryList *ilist = player->inventory.getList("main");
+				if(g_settings.getBool("creative_mode") == false && ilist)
 				{
 					// Remove from inventory and send inventory
-					player->inventory.deleteItem(item_i);
+					ilist->deleteItem(item_i);
 					// Send inventory
 					SendInventory(peer_id);
 				}
@@ -2190,18 +2198,18 @@ void Server::peerAdded(con::Peer *peer)
 					continue;
 
 				InventoryItem *item = new MaterialItem(i, 1);
-				player->inventory.addItem(item);
+				player->inventory.addItem("main", item);
 			}
 			// Sign
 			{
 				InventoryItem *item = new MapBlockObjectItem("Sign Example text");
-				bool r = player->inventory.addItem(item);
+				bool r = player->inventory.addItem("main", item);
 				assert(r == true);
 			}
 			/*// Rat
 			{
 				InventoryItem *item = new MapBlockObjectItem("Rat");
-				bool r = player->inventory.addItem(item);
+				bool r = player->inventory.addItem("main", item);
 				assert(r == true);
 			}*/
 		}
@@ -2210,21 +2218,21 @@ void Server::peerAdded(con::Peer *peer)
 			// Give some lights
 			{
 				InventoryItem *item = new MaterialItem(3, 999);
-				bool r = player->inventory.addItem(item);
+				bool r = player->inventory.addItem("main", item);
 				assert(r == true);
 			}
 			// and some signs
 			for(u16 i=0; i<4; i++)
 			{
 				InventoryItem *item = new MapBlockObjectItem("Sign Example text");
-				bool r = player->inventory.addItem(item);
+				bool r = player->inventory.addItem("main", item);
 				assert(r == true);
 			}
 			/*// and some rats
 			for(u16 i=0; i<4; i++)
 			{
 				InventoryItem *item = new MapBlockObjectItem("Rat");
-				bool r = player->inventory.addItem(item);
+				bool r = player->inventory.addItem("main", item);
 				assert(r == true);
 			}*/
 		}

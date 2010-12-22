@@ -149,46 +149,19 @@ void GUIInventoryMenu::resizeGui()
 		return;
 	m_screensize_old = screensize;
 
-	for(u32 i=0; i<m_slots.size(); i++)
-	{
-		m_slots[i]->remove();
-	}
-	m_slots.clear();
-
 	core::rect<s32> rect(
 			screensize.X/2 - 560/2,
-			screensize.Y/2 - 300/2,
+			screensize.Y/2 - 480/2,
 			screensize.X/2 + 560/2,
-			screensize.Y/2 + 300/2
+			screensize.Y/2 + 480/2
 	);
 	
 	DesiredRect = rect;
 	recalculateAbsolutePosition(false);
-
-	//v2s32 size = rect.getSize();
-
-	core::rect<s32> imgsize(0,0,48,48);
-	v2s32 basepos(30, 30);
-	for(s32 i=0; i<PLAYER_INVENTORY_SIZE; i++)
-	{
-		s32 x = (i%8) * 64;
-		s32 y = (i/8) * 64;
-		v2s32 p(x,y);
-		core::rect<s32> rect = imgsize + basepos + p;
-		GUIInventorySlot *item =
-			new GUIInventorySlot(Environment, this, -1, rect);
-		m_slots.push_back(item);
-	}
-	
-	update();
 }
 
 void GUIInventoryMenu::update()
 {
-	for(s32 i=0; i<PLAYER_INVENTORY_SIZE; i++)
-	{
-		m_slots[i]->setItem(m_inventory->getItem(i));
-	}
 }
 
 void GUIInventoryMenu::draw()
@@ -204,6 +177,51 @@ void GUIInventoryMenu::draw()
 	video::SColor bgcolor(140,0,0,0);
 	driver->draw2DRectangle(bgcolor, AbsoluteRect, &AbsoluteClippingRect);
 
+	/*
+		Draw items
+	*/
+	
+	{
+		InventoryList *ilist = m_inventory->getList("main");
+		if(ilist != NULL)
+		{
+			core::rect<s32> imgsize(0,0,48,48);
+			v2s32 basepos(30, 210);
+			basepos += AbsoluteRect.UpperLeftCorner;
+			for(s32 i=0; i<PLAYER_INVENTORY_SIZE; i++)
+			{
+				s32 x = (i%8) * 64;
+				s32 y = (i/8) * 64;
+				v2s32 p(x,y);
+				core::rect<s32> rect = imgsize + basepos + p;
+				drawInventoryItem(Environment, ilist->getItem(i),
+						rect, &AbsoluteClippingRect);
+			}
+		}
+	}
+
+	{
+		InventoryList *ilist = m_inventory->getList("craft");
+		if(ilist != NULL)
+		{
+			core::rect<s32> imgsize(0,0,48,48);
+			v2s32 basepos(30, 30);
+			basepos += AbsoluteRect.UpperLeftCorner;
+			for(s32 i=0; i<9; i++)
+			{
+				s32 x = (i%3) * 64;
+				s32 y = (i/3) * 64;
+				v2s32 p(x,y);
+				core::rect<s32> rect = imgsize + basepos + p;
+				drawInventoryItem(Environment, ilist->getItem(i),
+						rect, &AbsoluteClippingRect);
+			}
+		}
+	}
+
+	/*
+		Call base class
+	*/
 	gui::IGUIElement::draw();
 }
 

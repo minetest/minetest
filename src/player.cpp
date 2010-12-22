@@ -29,12 +29,13 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 Player::Player():
 	touching_ground(false),
 	in_water(false),
-	inventory(PLAYER_INVENTORY_SIZE),
 	peer_id(PEER_ID_NEW),
 	m_speed(0,0,0),
 	m_position(0,0,0)
 {
 	updateName("<not set>");
+	inventory.addList("main", PLAYER_INVENTORY_SIZE);
+	inventory.addList("craft", 9);
 }
 
 Player::~Player()
