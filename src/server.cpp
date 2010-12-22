@@ -2413,7 +2413,7 @@ void Server::SendInventory(u16 peer_id)
 	InventoryList *rlist = player->inventory.getList("craftresult");
 	if(rlist)
 	{
-		//rlist->clearItems();
+		rlist->clearItems();
 	}
 	if(clist && rlist)
 	{
