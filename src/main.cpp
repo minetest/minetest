@@ -167,12 +167,13 @@ TODO: Better handling of objects and mobs
 	    - Client should not discriminate between blocks, server should
 	    - Make other players utilize the same framework
 
-SUGG: Split Inventory into ClientInventory and ServerInventory
+TODO: Draw big amounts of torches better (that is, throw them in the
+      same meshbuffer (can the meshcombiner class be used?))
 
 Doing now:
 ======================================================================
 
-TODO: Convert the text input system to use a modal menu
+TODO: Convert the text input system to use a modal menu... or something
 
 ======================================================================
 

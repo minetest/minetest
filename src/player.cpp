@@ -112,6 +112,7 @@ RemotePlayer::RemotePlayer(
 		//buf->getMaterial().setFlag(video::EMF_BACK_FACE_CULLING, false);
 		buf->getMaterial().setTexture(0, driver->getTexture("../data/player.png"));
 		buf->getMaterial().setFlag(video::EMF_BILINEAR_FILTER, false);
+		buf->getMaterial().setFlag(video::EMF_FOG_ENABLE, true);
 		//buf->getMaterial().MaterialType = video::EMT_TRANSPARENT_ALPHA_CHANNEL;
 		buf->getMaterial().MaterialType = video::EMT_TRANSPARENT_ALPHA_CHANNEL_REF;
 		// Add to mesh
@@ -135,6 +136,7 @@ RemotePlayer::RemotePlayer(
 		//buf->getMaterial().setFlag(video::EMF_BACK_FACE_CULLING, false);
 		buf->getMaterial().setTexture(0, driver->getTexture("../data/player_back.png"));
 		buf->getMaterial().setFlag(video::EMF_BILINEAR_FILTER, false);
+		buf->getMaterial().setFlag(video::EMF_FOG_ENABLE, true);
 		buf->getMaterial().MaterialType = video::EMT_TRANSPARENT_ALPHA_CHANNEL_REF;
 		// Add to mesh
 		mesh->addMeshBuffer(buf);
