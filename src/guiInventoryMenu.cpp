@@ -55,7 +55,8 @@ void drawInventoryItem(gui::IGUIEnvironment* env,
 	if(item != NULL)
 	{
 		gui::IGUIFont *font = skin->getFont();
-		if(font)
+		std::string text = item->getText();
+		if(font && text != "")
 		{
 			core::rect<s32> rect2(rect.UpperLeftCorner,
 					(core::dimension2d<u32>(rect.getWidth(), 15)));
@@ -63,60 +64,11 @@ void drawInventoryItem(gui::IGUIEnvironment* env,
 			video::SColor bgcolor(128,0,0,0);
 			driver->draw2DRectangle(bgcolor, rect2, clip);
 
-			font->draw(item->getText().c_str(), rect2,
+			font->draw(text.c_str(), rect2,
 					video::SColor(255,255,255,255), false, false,
 					clip);
 		}
 	}
-}
-
-/*
-	GUIInventorySlot
-*/
-
-GUIInventorySlot::GUIInventorySlot(gui::IGUIEnvironment* env,
-		gui::IGUIElement* parent, s32 id, core::rect<s32> rect):
-	IGUIElement(gui::EGUIET_ELEMENT, env, parent, id, rect)
-{
-	m_item = NULL;
-}
-
-void GUIInventorySlot::draw()
-{
-	if(!IsVisible)
-		return;
-	
-	drawInventoryItem(Environment, m_item, AbsoluteRect,
-			&AbsoluteClippingRect);
-
-	gui::IGUIElement::draw();
-}
-
-bool GUIInventorySlot::OnEvent(const SEvent& event)
-{
-	/*if (!IsEnabled)
-		return IGUIElement::OnEvent(event);*/
-
-	switch(event.EventType)
-	{
-	case EET_MOUSE_INPUT_EVENT:
-		if (event.MouseInput.Event == EMIE_LMOUSE_PRESSED_DOWN)
-		{
-			dstream<<"Slot pressed"<<std::endl;
-			//return true;
-		}
-		else
-		if (event.MouseInput.Event == EMIE_LMOUSE_LEFT_UP)
-		{
-			dstream<<"Slot released"<<std::endl;
-			//return true;
-		}
-		break;
-	default:
-		break;
-	}
-
-	return Parent ? Parent->OnEvent(event) : false;
 }
 
 /*
@@ -131,14 +83,21 @@ GUIInventoryMenu::GUIInventoryMenu(gui::IGUIEnvironment* env,
 {
 	m_inventory = inventory;
 	m_screensize_old = v2u32(0,0);
+	m_selected_item = NULL;
 
 	resizeGui();
 
 	setVisible(false);
+
+	/*m_selected_item = new ItemSpec;
+	m_selected_item->listname = "main";
+	m_selected_item->i = 3;*/
 }
 
 GUIInventoryMenu::~GUIInventoryMenu()
 {
+	if(m_selected_item)
+		delete m_selected_item;
 }
 
 void GUIInventoryMenu::resizeGui()
@@ -149,19 +108,90 @@ void GUIInventoryMenu::resizeGui()
 		return;
 	m_screensize_old = screensize;
 
+	padding = v2s32(24,24);
+	spacing = v2s32(60,56);
+	imgsize = v2s32(48,48);
+
+	v2s32 size(
+		padding.X*2+spacing.X*(8-1)+imgsize.X,
+		padding.Y*2+spacing.Y*(7-1)+imgsize.Y
+	);
+
 	core::rect<s32> rect(
-			screensize.X/2 - 560/2,
-			screensize.Y/2 - 480/2,
-			screensize.X/2 + 560/2,
-			screensize.Y/2 + 480/2
+			screensize.X/2 - size.X/2,
+			screensize.Y/2 - size.Y/2,
+			screensize.X/2 + size.X/2,
+			screensize.Y/2 + size.Y/2
 	);
 	
 	DesiredRect = rect;
 	recalculateAbsolutePosition(false);
+
+	v2s32 basepos = getBasePos();
+	
+	m_draw_positions.clear();
+	m_draw_positions.push_back(ListDrawSpec("main",
+			basepos + v2s32(spacing.X*0, spacing.Y*3), v2s32(8, 4)));
+	m_draw_positions.push_back(ListDrawSpec("craft",
+			basepos + v2s32(spacing.X*3, spacing.Y*0), v2s32(3, 3)));
+	m_draw_positions.push_back(ListDrawSpec("craftresult",
+			basepos + v2s32(spacing.X*7, spacing.Y*1), v2s32(1, 1)));
 }
 
-void GUIInventoryMenu::update()
+GUIInventoryMenu::ItemSpec GUIInventoryMenu::getItemAtPos(v2s32 p) const
 {
+	core::rect<s32> imgrect(0,0,imgsize.X,imgsize.Y);
+	
+	for(u32 i=0; i<m_draw_positions.size(); i++)
+	{
+		const ListDrawSpec &s = m_draw_positions[i];
+
+		for(s32 i=0; i<s.geom.X*s.geom.Y; i++)
+		{
+			s32 x = (i%s.geom.X) * spacing.X;
+			s32 y = (i/s.geom.X) * spacing.Y;
+			v2s32 p0(x,y);
+			core::rect<s32> rect = imgrect + s.pos + p0;
+			if(rect.isPointInside(p))
+			{
+				return ItemSpec(s.listname, i);
+			}
+		}
+	}
+
+	return ItemSpec("", -1);
+}
+
+//void GUIInventoryMenu::drawList(const std::string &name, v2s32 pos, v2s32 geom)
+void GUIInventoryMenu::drawList(const ListDrawSpec &s)
+{
+	video::IVideoDriver* driver = Environment->getVideoDriver();
+
+	InventoryList *ilist = m_inventory->getList(s.listname);
+	
+	core::rect<s32> imgrect(0,0,imgsize.X,imgsize.Y);
+
+	for(s32 i=0; i<s.geom.X*s.geom.Y; i++)
+	{
+		s32 x = (i%s.geom.X) * spacing.X;
+		s32 y = (i/s.geom.X) * spacing.Y;
+		v2s32 p(x,y);
+		core::rect<s32> rect = imgrect + s.pos + p;
+		InventoryItem *item = NULL;
+		if(ilist)
+			item = ilist->getItem(i);
+
+		if(m_selected_item != NULL && m_selected_item->listname == s.listname
+				&& m_selected_item->i == i)
+		{
+			driver->draw2DRectangle(video::SColor(255,255,0,0),
+					core::rect<s32>(rect.UpperLeftCorner - v2s32(2,2),
+							rect.LowerRightCorner + v2s32(2,2)),
+							&AbsoluteClippingRect);
+		}
+		drawInventoryItem(Environment, item,
+				rect, &AbsoluteClippingRect);
+	}
 }
 
 void GUIInventoryMenu::draw()
@@ -181,42 +211,10 @@ void GUIInventoryMenu::draw()
 		Draw items
 	*/
 	
+	for(u32 i=0; i<m_draw_positions.size(); i++)
 	{
-		InventoryList *ilist = m_inventory->getList("main");
-		if(ilist != NULL)
-		{
-			core::rect<s32> imgsize(0,0,48,48);
-			v2s32 basepos(30, 210);
-			basepos += AbsoluteRect.UpperLeftCorner;
-			for(s32 i=0; i<PLAYER_INVENTORY_SIZE; i++)
-			{
-				s32 x = (i%8) * 64;
-				s32 y = (i/8) * 64;
-				v2s32 p(x,y);
-				core::rect<s32> rect = imgsize + basepos + p;
-				drawInventoryItem(Environment, ilist->getItem(i),
-						rect, &AbsoluteClippingRect);
-			}
-		}
-	}
-
-	{
-		InventoryList *ilist = m_inventory->getList("craft");
-		if(ilist != NULL)
-		{
-			core::rect<s32> imgsize(0,0,48,48);
-			v2s32 basepos(30, 30);
-			basepos += AbsoluteRect.UpperLeftCorner;
-			for(s32 i=0; i<9; i++)
-			{
-				s32 x = (i%3) * 64;
-				s32 y = (i/3) * 64;
-				v2s32 p(x,y);
-				core::rect<s32> rect = imgsize + basepos + p;
-				drawInventoryItem(Environment, ilist->getItem(i),
-						rect, &AbsoluteClippingRect);
-			}
-		}
+		ListDrawSpec &s = m_draw_positions[i];
+		drawList(s);
 	}
 
 	/*
@@ -244,6 +242,54 @@ bool GUIInventoryMenu::OnEvent(const SEvent& event)
 	{
 		if(event.MouseInput.Event == EMIE_LMOUSE_PRESSED_DOWN)
 		{
+			v2s32 p(event.MouseInput.X, event.MouseInput.Y);
+			//dstream<<"Mouse down at p=("<<p.X<<","<<p.Y<<")"<<std::endl;
+			ItemSpec s = getItemAtPos(p);
+			if(s.isValid())
+			{
+				//dstream<<"Mouse down on "<<s.listname<<" "<<s.i<<std::endl;
+				if(m_selected_item)
+				{
+					InventoryList *list_from =
+							m_inventory->getList(m_selected_item->listname);
+					InventoryList *list_to =
+							m_inventory->getList(s.listname);
+					if(list_from && list_to
+							&& list_from->getItem(m_selected_item->i) != NULL)
+					{
+						dstream<<"Queueing IACTION_MOVE"<<std::endl;
+						IMoveAction *a =
+							new IMoveAction();
+						a->count = 1;
+						a->from_name = m_selected_item->listname;
+						a->from_i = m_selected_item->i;
+						a->to_name = s.listname;
+						a->to_i = s.i;
+						m_actions.push_back(a);
+					}
+					delete m_selected_item;
+					m_selected_item = NULL;
+				}
+				else
+				{
+					/*
+						Select if non-NULL
+					*/
+					InventoryList *list = m_inventory->getList(s.listname);
+					if(list->getItem(s.i) != NULL)
+					{
+						m_selected_item = new ItemSpec(s);
+					}
+				}
+			}
+			else
+			{
+				if(m_selected_item)
+				{
+					delete m_selected_item;
+					m_selected_item = NULL;
+				}
+			}
 		}
 	}
 	if(event.EventType==EET_GUI_EVENT)
@@ -274,6 +320,13 @@ bool GUIInventoryMenu::OnEvent(const SEvent& event)
 	}
 
 	return Parent ? Parent->OnEvent(event) : false;
+}
+
+InventoryAction* GUIInventoryMenu::getNextAction()
+{
+	if(m_actions.size() == 0)
+		return NULL;
+	return m_actions.pop_front();
 }
 
 

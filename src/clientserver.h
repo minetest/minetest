@@ -191,6 +191,11 @@ enum ToServerCommand
 		u16 textlen
 		textdata
 	*/
+
+	TOSERVER_INVENTORY_ACTION = 0x31,
+	/*
+		See InventoryAction in inventory.h
+	*/
 };
 
 inline SharedBuffer<u8> makePacket_TOCLIENT_TIME_OF_DAY(u16 time)

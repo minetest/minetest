@@ -199,6 +199,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\src\guiInventoryMenu.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\src\guiPauseMenu.cpp"
 				>
 			</File>

@@ -76,6 +76,7 @@ enum Content
 	CONTENT_MUD,
 	CONTENT_OCEAN,
 	CONTENT_CLOUD,
+	CONTENT_COALSTONE,
 	
 	// This is set to the number of the actual values in this enum
 	USEFUL_CONTENT_COUNT

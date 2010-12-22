@@ -22,7 +22,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include <string>
 
-std::string trim(std::string str);
+std::string trim(const std::string &str);
 
 class Strfnd{
     std::string tek;
@@ -74,8 +74,9 @@ public:
     }
 };
 
-inline std::string trim(std::string str)
+inline std::string trim(const std::string &s)
 {
+	std::string str = s;
     while( 
             str.length()>0
             &&

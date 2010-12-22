@@ -595,25 +595,28 @@ inline float wrapDegrees(float f)
 	return f;
 }
 
-inline std::string lowercase(std::string s)
+inline std::string lowercase(const std::string &s)
 {
+	std::string s2;
 	for(size_t i=0; i<s.size(); i++)
 	{
-		if(s[i] >= 'A' && s[i] <= 'Z')
-			s[i] -= 'A' - 'a';
+		char c = s[i];
+		if(c >= 'A' && c <= 'Z')
+			c -= 'A' - 'a';
+		s2 += c;
 	}
-	return s;
+	return s2;
 }
 
-inline bool is_yes(std::string s)
+inline bool is_yes(const std::string &s)
 {
-	s = lowercase(trim(s));
-	if(s == "y" || s == "yes" || s == "true")
+	std::string s2 = lowercase(trim(s));
+	if(s2 == "y" || s2 == "yes" || s2 == "true")
 		return true;
 	return false;
 }
 
-inline s32 stoi(std::string s, s32 min, s32 max)
+inline s32 stoi(const std::string &s, s32 min, s32 max)
 {
 	s32 i = atoi(s.c_str());
 	if(i < min)
@@ -1067,7 +1070,39 @@ private:
 };
 
 /*
-	A thread-safe queue
+	FIFO queue
+*/
+template<typename T>
+class Queue
+{
+public:
+	void push_back(T t)
+	{
+		m_list.push_back(t);
+	}
+	
+	T pop_front()
+	{
+		if(m_list.size() == 0)
+			throw ItemNotFoundException("MutexedQueue: queue is empty");
+
+		typename core::list<T>::Iterator begin = m_list.begin();
+		T t = *begin;
+		m_list.erase(begin);
+		return t;
+	}
+
+	u32 size()
+	{
+		return m_list.size();
+	}
+
+protected:
+	core::list<T> m_list;
+};
+
+/*
+	Thread-safe FIFO queue
 */
 
 template<typename T>

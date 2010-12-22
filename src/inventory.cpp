@@ -348,6 +348,71 @@ bool InventoryList::addItem(InventoryItem *newitem)
 	return false;
 }
 
+bool InventoryList::addItem(u32 i, InventoryItem *newitem)
+{
+	// If it is an empty position, it's an easy job.
+	InventoryItem *item = m_items[i];
+	if(item == NULL)
+	{
+		m_items[i] = newitem;
+		return true;
+	}
+
+	// If it is a material item, try to 
+	if(std::string("MaterialItem") == newitem->getName())
+	{
+		u8 material = ((MaterialItem*)newitem)->getMaterial();
+		u8 count = ((MaterialItem*)newitem)->getCount();
+		InventoryItem *item2 = m_items[i];
+
+		if(item2 != NULL
+			&& std::string("MaterialItem") == item2->getName())
+		{
+			// Check if it is of the right material and has free space
+			MaterialItem *mitem2 = (MaterialItem*)item2;
+			if(mitem2->getMaterial() == material
+					&& mitem2->freeSpace() >= count)
+			{
+				// Add to the counter
+				mitem2->add(count);
+				// Dump the parameter
+				delete newitem;
+				// Done
+				return true;
+			}
+		}
+	}
+	
+	return false;
+}
+
+void InventoryList::decrementMaterials(u16 count)
+{
+	for(u32 i=0; i<m_items.size(); i++)
+	{
+		InventoryItem *item = m_items[i];
+		if(item == NULL)
+			continue;
+		if(std::string("MaterialItem") == item->getName())
+		{
+			MaterialItem *mitem = (MaterialItem*)item;
+			if(mitem->getCount() < count)
+			{
+				dstream<<__FUNCTION_NAME<<": decrementMaterials():"
+						<<" too small material count"<<std::endl;
+			}
+			else if(mitem->getCount() == count)
+			{
+				deleteItem(i);
+			}
+			else
+			{
+				mitem->remove(1);
+			}
+		}
+	}
+}
+
 void InventoryList::print(std::ostream &o)
 {
 	o<<"InventoryList:"<<std::endl;
@@ -487,5 +552,60 @@ s32 Inventory::getListIndex(const std::string &name)
 	return -1;
 }
 
+/*
+	InventoryAction
+*/
+
+InventoryAction * InventoryAction::deSerialize(std::istream &is)
+{
+	std::string type;
+	std::getline(is, type, ' ');
+
+	InventoryAction *a = NULL;
+
+	if(type == "Move")
+	{
+		a = new IMoveAction(is);
+	}
+
+	return a;
+}
+
+void IMoveAction::apply(Inventory *inventory)
+{
+	/*dstream<<"from_name="<<from_name<<" to_name="<<to_name<<std::endl;
+	dstream<<"from_i="<<from_i<<" to_i="<<to_i<<std::endl;*/
+	InventoryList *list_from = inventory->getList(from_name);
+	InventoryList *list_to = inventory->getList(to_name);
+	/*dstream<<"list_from="<<list_from<<" list_to="<<list_to
+			<<std::endl;*/
+	/*if(list_from)
+		dstream<<" list_from->getItem(from_i)="<<list_from->getItem(from_i)
+				<<std::endl;
+	if(list_to)
+		dstream<<" list_to->getItem(to_i)="<<list_to->getItem(to_i)
+				<<std::endl;*/
+	
+	if(!list_from || !list_to || list_from->getItem(from_i) == NULL
+			|| (list_from == list_to && from_i == to_i))
+	{
+		dstream<<__FUNCTION_NAME<<": Operation not allowed"<<std::endl;
+		return;
+	}
+	
+	// Take item from source list
+	InventoryItem *item1 = list_from->changeItem(from_i, NULL);
+	// Try to add the item to destination list
+	if(list_to->addItem(to_i, item1))
+	{
+		// Done.
+		return;
+	}
+	// Adding was not possible, switch it.
+	// Switch it to the destination list
+	InventoryItem *item2 = list_to->changeItem(to_i, item1);
+	// Put item from destination list to the source list
+	list_from->changeItem(from_i, item2);
+}
 	
 //END

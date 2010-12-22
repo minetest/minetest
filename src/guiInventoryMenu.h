@@ -23,32 +23,51 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "common_irrlicht.h"
 #include "inventory.h"
+#include "utility.h"
 
 void drawInventoryItem(gui::IGUIEnvironment* env,
 		InventoryItem *item, core::rect<s32> rect,
 		const core::rect<s32> *clip=0);
 
-class GUIInventorySlot: public gui::IGUIElement
-{
-public:
-	GUIInventorySlot(gui::IGUIEnvironment* env,
-			gui::IGUIElement* parent, s32 id, core::rect<s32> rect);
-	
-	void setItem(InventoryItem *item)
-	{
-		m_item = item;
-	}
-
-	void draw();
-
-	bool OnEvent(const SEvent& event);
-
-private:
-	InventoryItem *m_item;
-};
-
 class GUIInventoryMenu : public gui::IGUIElement
 {
+	struct ItemSpec
+	{
+		ItemSpec()
+		{
+			i = -1;
+		}
+		ItemSpec(const std::string &a_name, s32 a_i)
+		{
+			listname = a_name;
+			i = a_i;
+		}
+		bool isValid() const
+		{
+			return i != -1;
+		}
+
+		std::string listname;
+		s32 i;
+	};
+
+	struct ListDrawSpec
+	{
+		ListDrawSpec()
+		{
+		}
+		ListDrawSpec(const std::string &a_name, v2s32 a_pos, v2s32 a_geom)
+		{
+			listname = a_name;
+			pos = a_pos;
+			geom = a_geom;
+		}
+
+		std::string listname;
+		v2s32 pos;
+		v2s32 geom;
+	};
+
 public:
 	GUIInventoryMenu(gui::IGUIEnvironment* env,
 			gui::IGUIElement* parent, s32 id,
@@ -59,11 +78,9 @@ public:
 		Remove and re-add (or reposition) stuff
 	*/
 	void resizeGui();
-
-	// Updates stuff from inventory to screen
-	// TODO: Remove, not used
-	void update();
-
+	
+	ItemSpec getItemAtPos(v2s32 p) const;
+	void drawList(const ListDrawSpec &s);
 	void draw();
 
 	void launch()
@@ -79,9 +96,28 @@ public:
 
 	bool OnEvent(const SEvent& event);
 	
+	// Actions returned by this are sent to the server.
+	// Server replies by updating the inventory.
+	InventoryAction* getNextAction();
+	
 private:
+	v2s32 getBasePos() const
+	{
+		return padding + AbsoluteRect.UpperLeftCorner;
+	}
+
+	v2s32 padding;
+	v2s32 spacing;
+	v2s32 imgsize;
+
+	core::array<ListDrawSpec> m_draw_positions;
+
 	Inventory *m_inventory;
 	v2u32 m_screensize_old;
+
+	ItemSpec *m_selected_item;
+	
+	Queue<InventoryAction*> m_actions;
 };
 
 #endif

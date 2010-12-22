@@ -2304,7 +2304,16 @@ int main(int argc, char *argv[])
 			client.getLocalInventory(local_inventory);
 			quick_inventory->setSelection(g_selected_item);
 			quick_inventory->update();
-			inventoryMenu->update();
+		}
+		
+		/*
+			Send actions returned by the inventory menu
+		*/
+		while(InventoryAction *a = inventoryMenu->getNextAction())
+		{
+			client.sendInventoryAction(a);
+			// Eat it
+			delete a;
 		}
 
 		if(input_guitext != NULL)

@@ -2027,6 +2027,79 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 
 		obj->getBlock()->setChangedFlag();
 	}
+	else if(command == TOSERVER_INVENTORY_ACTION)
+	{
+		// Ignore inventory changes if in creative mode
+		if(g_settings.getBool("creative_mode") == true)
+		{
+			dstream<<"TOSERVER_INVENTORY_ACTION: ignoring in creative mode"
+					<<std::endl;
+			return;
+		}
+		// Strip command and create a stream
+		std::string datastring((char*)&data[2], datasize-2);
+		dstream<<"TOSERVER_INVENTORY_ACTION: data="<<datastring<<std::endl;
+		std::istringstream is(datastring, std::ios_base::binary);
+		// Create an action
+		InventoryAction *a = InventoryAction::deSerialize(is);
+		if(a != NULL)
+		{
+			/*
+				Handle craftresult specially
+			*/
+			bool disable_action = false;
+			if(a->getType() == IACTION_MOVE)
+			{
+				IMoveAction *ma = (IMoveAction*)a;
+				// Don't allow moving anything to craftresult
+				if(ma->to_name == "craftresult")
+				{
+					// Do nothing
+					disable_action = true;
+				}
+				// When something is removed from craftresult
+				if(ma->from_name == "craftresult")
+				{
+					disable_action = true;
+					// Remove stuff from craft
+					InventoryList *clist = player->inventory.getList("craft");
+					if(clist)
+					{
+						clist->decrementMaterials(ma->count);
+					}
+					// Do action
+					// Feed action to player inventory
+					a->apply(&player->inventory);
+					// Eat it
+					delete a;
+					// If something appeared in craftresult, throw it
+					// in the main list
+					InventoryList *rlist = player->inventory.getList("craftresult");
+					InventoryList *mlist = player->inventory.getList("main");
+					if(rlist && mlist && rlist->getUsedSlots() == 1)
+					{
+						InventoryItem *item1 = rlist->changeItem(0, NULL);
+						mlist->addItem(item1);
+					}
+				}
+			}
+			if(disable_action == false)
+			{
+				// Feed action to player inventory
+				a->apply(&player->inventory);
+				// Eat it
+				delete a;
+			}
+			// Send inventory
+			SendInventory(player->peer_id);
+		}
+		else
+		{
+			dstream<<"TOSERVER_INVENTORY_ACTION: "
+					<<"InventoryAction::deSerialize() returned NULL"
+					<<std::endl;
+		}
+	}
 	else
 	{
 		derr_server<<"WARNING: Server::ProcessData(): Ignoring "
@@ -2215,9 +2288,9 @@ void Server::peerAdded(con::Peer *peer)
 		}
 		else
 		{
-			// Give some lights
+			/*// Give some lights
 			{
-				InventoryItem *item = new MaterialItem(3, 999);
+				InventoryItem *item = new MaterialItem(CONTENT_TORCH, 999);
 				bool r = player->inventory.addItem("main", item);
 				assert(r == true);
 			}
@@ -2227,11 +2300,10 @@ void Server::peerAdded(con::Peer *peer)
 				InventoryItem *item = new MapBlockObjectItem("Sign Example text");
 				bool r = player->inventory.addItem("main", item);
 				assert(r == true);
-			}
-			/*// and some rats
-			for(u16 i=0; i<4; i++)
+			}*/
+			/*// Give some other stuff
 			{
-				InventoryItem *item = new MapBlockObjectItem("Rat");
+				InventoryItem *item = new MaterialItem(CONTENT_TREE, 999);
 				bool r = player->inventory.addItem("main", item);
 				assert(r == true);
 			}*/
@@ -2332,6 +2404,54 @@ void Server::SendInventory(u16 peer_id)
 	//JMutexAutoLock envlock(m_env_mutex);
 	
 	Player* player = m_env.getPlayer(peer_id);
+
+	/*
+		Calculate crafting stuff
+	*/
+
+	InventoryList *clist = player->inventory.getList("craft");
+	InventoryList *rlist = player->inventory.getList("craftresult");
+	if(rlist)
+	{
+		//rlist->clearItems();
+	}
+	if(clist && rlist)
+	{
+		InventoryItem *items[9];
+		for(u16 i=0; i<9; i++)
+		{
+			items[i] = clist->getItem(i);
+		}
+		// Sign
+		if(clist->getUsedSlots() == 1 && items[0])
+		{
+			if((std::string)items[0]->getName() == "MaterialItem")
+			{
+				MaterialItem *mitem = (MaterialItem*)items[0];
+				if(mitem->getMaterial() == CONTENT_TREE)
+				{
+					rlist->addItem(new MapBlockObjectItem("Sign"));
+				}
+			}
+		}
+		// Torch
+		if(clist->getUsedSlots() == 2 && items[0] && items[3])
+		{
+			if(
+				   (std::string)items[0]->getName() == "MaterialItem"
+				&& ((MaterialItem*)items[0])->getMaterial() == CONTENT_COALSTONE
+				&& (std::string)items[3]->getName() == "MaterialItem"
+				&& ((MaterialItem*)items[3])->getMaterial() == CONTENT_TREE
+			)
+			{
+				rlist->addItem(new MaterialItem(CONTENT_TORCH, 4));
+			}
+		}
+	}
+
+	/*
+		Serialize it
+	*/
 
 	std::ostringstream os;
 	//os.imbue(std::locale("C"));

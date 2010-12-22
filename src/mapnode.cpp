@@ -42,6 +42,7 @@ u16 g_content_tiles[USEFUL_CONTENT_COUNT][6] =
 	{TILE_MUD,TILE_MUD,TILE_MUD,TILE_MUD,TILE_MUD,TILE_MUD},
 	{TILE_WATER,TILE_WATER,TILE_WATER,TILE_WATER,TILE_WATER,TILE_WATER},
 	{TILE_CLOUD,TILE_CLOUD,TILE_CLOUD,TILE_CLOUD,TILE_CLOUD,TILE_CLOUD},
+	{TILE_COALSTONE,TILE_COALSTONE,TILE_COALSTONE,TILE_COALSTONE,TILE_COALSTONE,TILE_COALSTONE},
 };
 
 const char * g_content_inventory_textures[USEFUL_CONTENT_COUNT] =
@@ -57,5 +58,6 @@ const char * g_content_inventory_textures[USEFUL_CONTENT_COUNT] =
 	"../data/mud.png",
 	"../data/water.png",
 	"../data/cloud.png",
+	"../data/coalstone.png",
 };
 

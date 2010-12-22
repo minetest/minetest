@@ -36,6 +36,7 @@ Player::Player():
 	updateName("<not set>");
 	inventory.addList("main", PLAYER_INVENTORY_SIZE);
 	inventory.addList("craft", 9);
+	inventory.addList("craftresult", 1);
 }
 
 Player::~Player()

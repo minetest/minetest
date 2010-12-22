@@ -213,12 +213,20 @@ public:
 	// Count used slots
 	u32 getUsedSlots();
 	
+	// Get pointer to item
 	InventoryItem * getItem(u32 i);
 	// Returns old item (or NULL). Parameter can be NULL.
 	InventoryItem * changeItem(u32 i, InventoryItem *newitem);
+	// Delete item
 	void deleteItem(u32 i);
 	// Adds an item to a suitable place. Returns false if failed.
 	bool addItem(InventoryItem *newitem);
+	// If possible, adds item to given slot. Returns true on success.
+	// Fails when slot is populated by a different kind of item.
+	bool addItem(u32 i, InventoryItem *newitem);
+
+	// Decrements amount of every material item
+	void decrementMaterials(u16 count);
 
 	void print(std::ostream &o);
 	
@@ -259,6 +267,67 @@ private:
 	s32 getListIndex(const std::string &name);
 
 	core::array<InventoryList*> m_lists;
+};
+
+#define IACTION_MOVE 0
+
+struct InventoryAction
+{
+	static InventoryAction * deSerialize(std::istream &is);
+	
+	virtual u16 getType() const = 0;
+	virtual void serialize(std::ostream &os) = 0;
+	virtual void apply(Inventory *inventory) = 0;
+};
+
+struct IMoveAction : public InventoryAction
+{
+	u16 count;
+	std::string from_name;
+	s16 from_i;
+	std::string to_name;
+	s16 to_i;
+	
+	IMoveAction()
+	{
+		count = 0;
+		from_i = -1;
+		to_i = -1;
+	}
+	IMoveAction(std::istream &is)
+	{
+		std::string ts;
+
+		std::getline(is, ts, ' ');
+		count = stoi(ts);
+
+		std::getline(is, from_name, ' ');
+
+		std::getline(is, ts, ' ');
+		from_i = stoi(ts);
+
+		std::getline(is, to_name, ' ');
+
+		std::getline(is, ts, ' ');
+		to_i = stoi(ts);
+	}
+
+	u16 getType() const
+	{
+		return IACTION_MOVE;
+	}
+
+	void serialize(std::ostream &os)
+	{
+		os<<"Move ";
+		os<<count<<" ";
+		os<<from_name<<" ";
+		os<<from_i<<" ";
+		os<<to_name<<" ";
+		os<<to_i;
+	}
+
+	void apply(Inventory *inventory);
 };
 
 #endif

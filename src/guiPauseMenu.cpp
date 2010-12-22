@@ -22,6 +22,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "guiPauseMenu.h"
 #include "debug.h"
+#include "serialization.h"
 
 GUIPauseMenu::GUIPauseMenu(gui::IGUIEnvironment* env,
 		gui::IGUIElement* parent, s32 id,
@@ -49,6 +50,9 @@ void GUIPauseMenu::resizeGui()
 		return;
 	m_screensize_old = screensize;
 
+	/*
+		Remove stuff
+	*/
 	{
 		gui::IGUIElement *e = getElementFromId(256);
 		if(e != NULL)
@@ -59,11 +63,21 @@ void GUIPauseMenu::resizeGui()
 		if(e != NULL)
 			e->remove();
 	}
+	{
+		gui::IGUIElement *e = getElementFromId(258);
+		if(e != NULL)
+			e->remove();
+	}
+	{
+		gui::IGUIElement *e = getElementFromId(259);
+		if(e != NULL)
+			e->remove();
+	}
 
 	core::rect<s32> rect(
-			screensize.X/2 - 560/2,
+			screensize.X/2 - 580/2,
 			screensize.Y/2 - 300/2,
-			screensize.X/2 + 560/2,
+			screensize.X/2 + 580/2,
 			screensize.Y/2 + 300/2
 	);
 	
@@ -72,6 +86,9 @@ void GUIPauseMenu::resizeGui()
 
 	v2s32 size = rect.getSize();
 
+	/*
+		Add stuff
+	*/
 	{
 		core::rect<s32> rect(0, 0, 140, 30);
 		rect = rect + v2s32(size.X/2-140/2, size.Y/2-30/2-25);
@@ -81,6 +98,34 @@ void GUIPauseMenu::resizeGui()
 		core::rect<s32> rect(0, 0, 140, 30);
 		rect = rect + v2s32(size.X/2-140/2, size.Y/2-30/2+25);
 		Environment->addButton(rect, this, 257, L"Exit");
+	}
+	{
+		core::rect<s32> rect(0, 0, 180, 220);
+		rect = rect + v2s32(size.X/2 + 90, size.Y/2-rect.getHeight()/2);
+		const wchar_t *text =
+		L"Keys:\n"
+		L"- WASD: Walk\n"
+		L"- Mouse left: dig blocks\n"
+		L"- Mouse right: place blocks\n"
+		L"- Mouse wheel: select item\n"
+		L"- R: Toggle viewing all loaded chunks\n"
+		L"- I: Inventory menu\n"
+		L"- ESC: This menu\n"
+		L"\n"
+		L"To generate a new map, remove the map directory.\n";
+		Environment->addStaticText(text, rect, false, true, this, 258);
+	}
+	{
+		core::rect<s32> rect(0, 0, 180, 220);
+		rect = rect + v2s32(size.X/2 - 90 - rect.getWidth(), size.Y/2-rect.getHeight()/2);
+		wchar_t text[200];
+		swprintf(text, 200,
+				L"Minetest-c55\n"
+				L"SER_FMT_VER_HIGHEST=%i",
+				(int)SER_FMT_VER_HIGHEST
+		);
+	
+		Environment->addStaticText(text, rect, false, true, this, 259);
 	}
 }
 

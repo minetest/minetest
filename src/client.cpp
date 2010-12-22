@@ -1540,6 +1540,24 @@ void Client::sendSignText(v3s16 blockpos, s16 id, std::string text)
 	// Send as reliable
 	Send(0, data, true);
 }
+	
+void Client::sendInventoryAction(InventoryAction *a)
+{
+	std::ostringstream os(std::ios_base::binary);
+	u8 buf[12];
+	
+	// Write command
+	writeU16(buf, TOSERVER_INVENTORY_ACTION);
+	os.write((char*)buf, 2);
+
+	a->serialize(os);
+	
+	// Make data buffer
+	std::string s = os.str();
+	SharedBuffer<u8> data((u8*)s.c_str(), s.size());
+	// Send as reliable
+	Send(0, data, true);
+}
 
 void Client::sendPlayerPos()
 {
