@@ -41,7 +41,159 @@ Player::~Player()
 {
 }
 
-void Player::move(f32 dtime, Map &map)
+// Y direction is ignored
+void Player::accelerate(v3f target_speed, f32 max_increase)
+{
+	if(m_speed.X < target_speed.X - max_increase)
+		m_speed.X += max_increase;
+	else if(m_speed.X > target_speed.X + max_increase)
+		m_speed.X -= max_increase;
+	else if(m_speed.X < target_speed.X)
+		m_speed.X = target_speed.X;
+	else if(m_speed.X > target_speed.X)
+		m_speed.X = target_speed.X;
+
+	if(m_speed.Z < target_speed.Z - max_increase)
+		m_speed.Z += max_increase;
+	else if(m_speed.Z > target_speed.Z + max_increase)
+		m_speed.Z -= max_increase;
+	else if(m_speed.Z < target_speed.Z)
+		m_speed.Z = target_speed.Z;
+	else if(m_speed.Z > target_speed.Z)
+		m_speed.Z = target_speed.Z;
+}
+
+/*
+	RemotePlayer
+*/
+
+#ifndef SERVER
+
+RemotePlayer::RemotePlayer(
+		scene::ISceneNode* parent,
+		IrrlichtDevice *device,
+		s32 id):
+	scene::ISceneNode(parent, (device==NULL)?NULL:device->getSceneManager(), id),
+	m_text(NULL)
+{
+	m_box = core::aabbox3d<f32>(-BS/2,0,-BS/2,BS/2,BS*2,BS/2);
+
+	if(parent != NULL && device != NULL)
+	{
+		// ISceneNode stores a member called SceneManager
+		scene::ISceneManager* mgr = SceneManager;
+		video::IVideoDriver* driver = mgr->getVideoDriver();
+		gui::IGUIEnvironment* gui = device->getGUIEnvironment();
+
+		// Add a text node for showing the name
+		wchar_t wname[1] = {0};
+		m_text = mgr->addTextSceneNode(gui->getBuiltInFont(),
+				wname, video::SColor(255,255,255,255), this);
+		m_text->setPosition(v3f(0, (f32)BS*2.1, 0));
+
+		// Attach a simple mesh to the player for showing an image
+		scene::SMesh *mesh = new scene::SMesh();
+		{ // Front
+		scene::IMeshBuffer *buf = new scene::SMeshBuffer();
+		video::SColor c(255,255,255,255);
+		video::S3DVertex vertices[4] =
+		{
+			video::S3DVertex(-BS/2,0,0, 0,0,0, c, 0,1),
+			video::S3DVertex(BS/2,0,0, 0,0,0, c, 1,1),
+			video::S3DVertex(BS/2,BS*2,0, 0,0,0, c, 1,0),
+			video::S3DVertex(-BS/2,BS*2,0, 0,0,0, c, 0,0),
+		};
+		u16 indices[] = {0,1,2,2,3,0};
+		buf->append(vertices, 4, indices, 6);
+		// Set material
+		buf->getMaterial().setFlag(video::EMF_LIGHTING, false);
+		//buf->getMaterial().setFlag(video::EMF_BACK_FACE_CULLING, false);
+		buf->getMaterial().setTexture(0, driver->getTexture("../data/player.png"));
+		buf->getMaterial().setFlag(video::EMF_BILINEAR_FILTER, false);
+		//buf->getMaterial().MaterialType = video::EMT_TRANSPARENT_ALPHA_CHANNEL;
+		buf->getMaterial().MaterialType = video::EMT_TRANSPARENT_ALPHA_CHANNEL_REF;
+		// Add to mesh
+		mesh->addMeshBuffer(buf);
+		buf->drop();
+		}
+		{ // Back
+		scene::IMeshBuffer *buf = new scene::SMeshBuffer();
+		video::SColor c(255,255,255,255);
+		video::S3DVertex vertices[4] =
+		{
+			video::S3DVertex(BS/2,0,0, 0,0,0, c, 1,1),
+			video::S3DVertex(-BS/2,0,0, 0,0,0, c, 0,1),
+			video::S3DVertex(-BS/2,BS*2,0, 0,0,0, c, 0,0),
+			video::S3DVertex(BS/2,BS*2,0, 0,0,0, c, 1,0),
+		};
+		u16 indices[] = {0,1,2,2,3,0};
+		buf->append(vertices, 4, indices, 6);
+		// Set material
+		buf->getMaterial().setFlag(video::EMF_LIGHTING, false);
+		//buf->getMaterial().setFlag(video::EMF_BACK_FACE_CULLING, false);
+		buf->getMaterial().setTexture(0, driver->getTexture("../data/player_back.png"));
+		buf->getMaterial().setFlag(video::EMF_BILINEAR_FILTER, false);
+		buf->getMaterial().MaterialType = video::EMT_TRANSPARENT_ALPHA_CHANNEL_REF;
+		// Add to mesh
+		mesh->addMeshBuffer(buf);
+		buf->drop();
+		}
+		m_node = mgr->addMeshSceneNode(mesh, this);
+		mesh->drop();
+		m_node->setPosition(v3f(0,0,0));
+	}
+}
+
+RemotePlayer::~RemotePlayer()
+{
+	if(SceneManager != NULL)
+		ISceneNode::remove();
+}
+
+void RemotePlayer::updateName(const char *name)
+{
+	Player::updateName(name);
+	if(m_text != NULL)
+	{
+		wchar_t wname[PLAYERNAME_SIZE];
+		mbstowcs(wname, m_name, strlen(m_name)+1);
+		m_text->setText(wname);
+	}
+}
+
+void RemotePlayer::move(f32 dtime, Map &map)
+{
+	m_pos_animation_time_counter += dtime;
+	m_pos_animation_counter += dtime;
+	v3f movevector = m_position - m_oldpos;
+	f32 moveratio;
+	if(m_pos_animation_time < 0.001)
+		moveratio = 1.0;
+	else
+		moveratio = m_pos_animation_counter / m_pos_animation_time;
+	if(moveratio > 1.5)
+		moveratio = 1.5;
+	m_showpos = m_oldpos + movevector * moveratio;
+	
+	ISceneNode::setPosition(m_showpos);
+}
+
+#endif
+
+#ifndef SERVER
+/*
+	LocalPlayer
+*/
+
+LocalPlayer::LocalPlayer()
+{
+}
+
+LocalPlayer::~LocalPlayer()
+{
+}
+
+void LocalPlayer::move(f32 dtime, Map &map)
 {
 	v3f position = getPosition();
 	v3f oldpos = position;
@@ -200,141 +352,6 @@ void Player::move(f32 dtime, Map &map)
 	} // for y
 
 	setPosition(position);
-}
-
-// Y direction is ignored
-void Player::accelerate(v3f target_speed, f32 max_increase)
-{
-	if(m_speed.X < target_speed.X - max_increase)
-		m_speed.X += max_increase;
-	else if(m_speed.X > target_speed.X + max_increase)
-		m_speed.X -= max_increase;
-	else if(m_speed.X < target_speed.X)
-		m_speed.X = target_speed.X;
-	else if(m_speed.X > target_speed.X)
-		m_speed.X = target_speed.X;
-
-	if(m_speed.Z < target_speed.Z - max_increase)
-		m_speed.Z += max_increase;
-	else if(m_speed.Z > target_speed.Z + max_increase)
-		m_speed.Z -= max_increase;
-	else if(m_speed.Z < target_speed.Z)
-		m_speed.Z = target_speed.Z;
-	else if(m_speed.Z > target_speed.Z)
-		m_speed.Z = target_speed.Z;
-}
-
-/*
-	RemotePlayer
-*/
-
-#ifndef SERVER
-
-RemotePlayer::RemotePlayer(
-		scene::ISceneNode* parent,
-		IrrlichtDevice *device,
-		s32 id):
-	scene::ISceneNode(parent, (device==NULL)?NULL:device->getSceneManager(), id),
-	m_text(NULL)
-{
-	m_box = core::aabbox3d<f32>(-BS/2,0,-BS/2,BS/2,BS*2,BS/2);
-
-	if(parent != NULL && device != NULL)
-	{
-		// ISceneNode stores a member called SceneManager
-		scene::ISceneManager* mgr = SceneManager;
-		video::IVideoDriver* driver = mgr->getVideoDriver();
-		gui::IGUIEnvironment* gui = device->getGUIEnvironment();
-
-		// Add a text node for showing the name
-		wchar_t wname[1] = {0};
-		m_text = mgr->addTextSceneNode(gui->getBuiltInFont(),
-				wname, video::SColor(255,255,255,255), this);
-		m_text->setPosition(v3f(0, (f32)BS*2.1, 0));
-
-		// Attach a simple mesh to the player for showing an image
-		scene::SMesh *mesh = new scene::SMesh();
-		{ // Front
-		scene::IMeshBuffer *buf = new scene::SMeshBuffer();
-		video::SColor c(255,255,255,255);
-		video::S3DVertex vertices[4] =
-		{
-			video::S3DVertex(-BS/2,0,0, 0,0,0, c, 0,1),
-			video::S3DVertex(BS/2,0,0, 0,0,0, c, 1,1),
-			video::S3DVertex(BS/2,BS*2,0, 0,0,0, c, 1,0),
-			video::S3DVertex(-BS/2,BS*2,0, 0,0,0, c, 0,0),
-		};
-		u16 indices[] = {0,1,2,2,3,0};
-		buf->append(vertices, 4, indices, 6);
-		// Set material
-		buf->getMaterial().setFlag(video::EMF_LIGHTING, false);
-		//buf->getMaterial().setFlag(video::EMF_BACK_FACE_CULLING, false);
-		buf->getMaterial().setTexture(0, driver->getTexture("../data/player.png"));
-		buf->getMaterial().setFlag(video::EMF_BILINEAR_FILTER, false);
-		//buf->getMaterial().MaterialType = video::EMT_TRANSPARENT_ALPHA_CHANNEL;
-		buf->getMaterial().MaterialType = video::EMT_TRANSPARENT_ALPHA_CHANNEL_REF;
-		// Add to mesh
-		mesh->addMeshBuffer(buf);
-		buf->drop();
-		}
-		{ // Back
-		scene::IMeshBuffer *buf = new scene::SMeshBuffer();
-		video::SColor c(255,255,255,255);
-		video::S3DVertex vertices[4] =
-		{
-			video::S3DVertex(BS/2,0,0, 0,0,0, c, 1,1),
-			video::S3DVertex(-BS/2,0,0, 0,0,0, c, 0,1),
-			video::S3DVertex(-BS/2,BS*2,0, 0,0,0, c, 0,0),
-			video::S3DVertex(BS/2,BS*2,0, 0,0,0, c, 1,0),
-		};
-		u16 indices[] = {0,1,2,2,3,0};
-		buf->append(vertices, 4, indices, 6);
-		// Set material
-		buf->getMaterial().setFlag(video::EMF_LIGHTING, false);
-		//buf->getMaterial().setFlag(video::EMF_BACK_FACE_CULLING, false);
-		buf->getMaterial().setTexture(0, driver->getTexture("../data/player_back.png"));
-		buf->getMaterial().setFlag(video::EMF_BILINEAR_FILTER, false);
-		buf->getMaterial().MaterialType = video::EMT_TRANSPARENT_ALPHA_CHANNEL_REF;
-		// Add to mesh
-		mesh->addMeshBuffer(buf);
-		buf->drop();
-		}
-		scene::IMeshSceneNode *node = mgr->addMeshSceneNode(mesh, this);
-		mesh->drop();
-		node->setPosition(v3f(0,0,0));
-	}
-}
-
-RemotePlayer::~RemotePlayer()
-{
-	if(SceneManager != NULL)
-		ISceneNode::remove();
-}
-
-void RemotePlayer::updateName(const char *name)
-{
-	Player::updateName(name);
-	if(m_text != NULL)
-	{
-		wchar_t wname[PLAYERNAME_SIZE];
-		mbstowcs(wname, m_name, strlen(m_name)+1);
-		m_text->setText(wname);
-	}
-}
-
-#endif
-
-#ifndef SERVER
-/*
-	LocalPlayer
-*/
-
-LocalPlayer::LocalPlayer()
-{
-}
-
-LocalPlayer::~LocalPlayer()
-{
 }
 
 void LocalPlayer::applyControl(float dtime)

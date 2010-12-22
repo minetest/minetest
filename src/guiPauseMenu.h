@@ -23,31 +23,64 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #ifndef GUIPAUSEMENU_HEADER
 #define GUIPAUSEMENU_HEADER
 
-#include <irrlicht.h>
-using namespace irr;
+#include "common_irrlicht.h"
 
-class guiPauseMenu : public IEventReceiver
+class GUIPauseMenu : public gui::IGUIElement
 {
-private:
-	IrrlichtDevice *dev;
-	gui::IGUIEnvironment *guienv;
-	IEventReceiver *oldRecv;
-
-	gui::IGUIStaticText *root;
-
-	bool loadMenu();
-	void scaleGui();
-	void scaleGui(gui::IGUIElement *node,float factorX,float factorY);
 public:
-	guiPauseMenu(IrrlichtDevice *device,IEventReceiver *recv);
+	GUIPauseMenu(gui::IGUIEnvironment* env,
+			gui::IGUIElement* parent, s32 id,
+			IrrlichtDevice *dev);
+	~GUIPauseMenu();
+	
+	/*
+		Remove and re-add (or reposition) stuff
+	*/
+	void resizeGui();
+
+	void draw();
+
+	void launch()
+	{
+		setVisible(true);
+		Environment->setFocus(this);
+	}
+
+	bool canTakeFocus(gui::IGUIElement *e)
+	{
+		return (e && (e == this || isMyChild(e)));
+	}
+
+	bool OnEvent(const SEvent& event);
+	
+private:
+	IrrlichtDevice *m_dev;
+	v2u32 m_screensize_old;
+};
+
+/*class GUIPauseMenu : public IEventReceiver
+{
+public:
+	void scaleGui();
+
+	GUIPauseMenu(IrrlichtDevice *device,IEventReceiver *recv);
+	~GUIPauseMenu(void);
 
 	void setVisible(bool visible){root->setVisible(visible);};
 	bool isVisible(){return root->isVisible();};
 
 	bool OnEvent(const SEvent& event);
 
-	~guiPauseMenu(void);
-};
+private:
+	bool loadMenu();
+	void scaleGui(gui::IGUIElement *node,float factorX,float factorY);
+
+	IrrlichtDevice *dev;
+	gui::IGUIEnvironment *guienv;
+	IEventReceiver *oldRecv;
+
+	gui::IGUIStaticText *root;
+};*/
 
 #endif
 

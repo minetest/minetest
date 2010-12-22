@@ -271,8 +271,6 @@ int main(int argc, char *argv[])
 	<<"|  Y Y  \\  |   |  \\  ___/|  | \\  ___/ \\___ \\  |  |  "<<std::endl
 	<<"|__|_|  /__|___|  /\\___  >__|  \\___  >____  > |__|  "<<std::endl
 	<<"      \\/        \\/     \\/          \\/     \\/        "<<std::endl
-	<<std::endl
-	<<"Now with more waterish water!"
 	<<std::endl;
 
 	std::cout<<std::endl;

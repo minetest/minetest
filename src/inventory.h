@@ -196,7 +196,6 @@ private:
 	std::string m_inventorystring;
 };
 
-//SUGGESTION: Split into ClientInventory and ServerInventory
 class Inventory
 {
 public:

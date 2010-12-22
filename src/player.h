@@ -37,7 +37,8 @@ public:
 	Player();
 	virtual ~Player();
 
-	void move(f32 dtime, Map &map);
+	//void move(f32 dtime, Map &map);
+	virtual void move(f32 dtime, Map &map) = 0;
 
 	v3f getSpeed()
 	{
@@ -94,6 +95,8 @@ public:
 
 	virtual bool isLocal() const = 0;
 
+	virtual void updateLight(u8 light_at_pos) {};
+
 	bool touching_ground;
 	bool in_water;
 	
@@ -122,6 +125,10 @@ public:
 	bool isLocal() const
 	{
 		return false;
+	}
+
+	void move(f32 dtime, Map &map)
+	{
 	}
 
 private:
@@ -163,8 +170,18 @@ public:
 
 	void setPosition(v3f position)
 	{
+		m_oldpos = m_showpos;
+		
+		if(m_pos_animation_time < 0.001 || m_pos_animation_time > 1.0)
+			m_pos_animation_time = m_pos_animation_time_counter;
+		else
+			m_pos_animation_time = m_pos_animation_time * 0.9
+					+ m_pos_animation_time_counter * 0.1;
+		m_pos_animation_time_counter = 0;
+		m_pos_animation_counter = 0;
+		
 		Player::setPosition(position);
-		ISceneNode::setPosition(position);
+		//ISceneNode::setPosition(position);
 	}
 
 	virtual void setYaw(f32 yaw)
@@ -180,9 +197,41 @@ public:
 
 	void updateName(const char *name);
 
+	virtual void updateLight(u8 light_at_pos)
+	{
+		if(m_node == NULL)
+			return;
+
+		u8 li = decode_light(light_at_pos);
+		video::SColor color(255,li,li,li);
+
+		scene::IMesh *mesh = m_node->getMesh();
+		
+		u16 mc = mesh->getMeshBufferCount();
+		for(u16 j=0; j<mc; j++)
+		{
+			scene::IMeshBuffer *buf = mesh->getMeshBuffer(j);
+			video::S3DVertex *vertices = (video::S3DVertex*)buf->getVertices();
+			u16 vc = buf->getVertexCount();
+			for(u16 i=0; i<vc; i++)
+			{
+				vertices[i].Color = color;
+			}
+		}
+	}
+	
+	void move(f32 dtime, Map &map);
+
 private:
+	scene::IMeshSceneNode *m_node;
 	scene::ITextSceneNode* m_text;
 	core::aabbox3d<f32> m_box;
+
+	v3f m_oldpos;
+	f32 m_pos_animation_counter;
+	f32 m_pos_animation_time;
+	f32 m_pos_animation_time_counter;
+	v3f m_showpos;
 };
 
 #endif
@@ -241,6 +290,8 @@ public:
 	{
 		return true;
 	}
+
+	void move(f32 dtime, Map &map);
 
 	void applyControl(float dtime);
 	

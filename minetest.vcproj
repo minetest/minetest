@@ -187,6 +187,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\src\defaultsettings.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\src\environment.cpp"
 				>
 			</File>
@@ -204,6 +208,10 @@
 			</File>
 			<File
 				RelativePath=".\src\inventory.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\src\irrlichtwrapper.cpp"
 				>
 			</File>
 			<File

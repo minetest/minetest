@@ -804,8 +804,10 @@ bool VoxelManipulator::flowWater(v3s16 removed_pos,
 	if(stoptime != 0)
 	{
 		u32 timenow = getTimeMs();
-		if(timenow >= stoptime ||
-				(stoptime < 0x80000000 && timenow > 0x80000000))
+		// Well, it is a bit hard to guess because we don't know the
+		// start time...
+		bool overflow = timenow < stoptime - 100000;
+		if(timenow >= stoptime || overflow)
 		{
 			dstream<<"flowWater: stoptime reached"<<std::endl;
 			throw ProcessingLimitException("flowWater stoptime reached");

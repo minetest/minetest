@@ -103,6 +103,8 @@ void Environment::step(float dtime)
 				i != m_players.end(); i++)
 		{
 			Player *player = *i;
+
+			v3f playerpos = player->getPosition();
 			
 			// Apply physics to local player
 			if(player->isLocal())
@@ -136,11 +138,21 @@ void Environment::step(float dtime)
 			player->move(dtime_part, *m_map);
 			
 			/*
+				Update lighting on remote players on client
+			*/
+			u8 light = LIGHT_MAX;
+			try{
+				// Get node at feet
+				v3s16 p = floatToInt(playerpos + v3f(0,BS/4,0));
+				MapNode n = m_map->getNode(p);
+				light = n.getLightBlend(m_daynight_ratio);
+			}
+			catch(InvalidPositionException &e) {}
+			player->updateLight(light);
+
+			/*
 				Add footsteps to grass
 			*/
-			//TimeTaker footsteptimer("footstep", g_device);
-			// 0ms
-			v3f playerpos = player->getPosition();
 			// Get node that is at BS/4 under player
 			v3s16 bottompos = floatToInt(playerpos + v3f(0,-BS/4,0));
 			try{
@@ -163,7 +175,6 @@ void Environment::step(float dtime)
 			catch(InvalidPositionException &e)
 			{
 			}
-			//footsteptimer.stop();
 		}
 	}
 	while(dtime > 0.001);

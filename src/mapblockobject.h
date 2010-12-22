@@ -28,8 +28,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "constants.h"
 #include "debug.h"
 
-#define MAPBLOCKOBJECT_TYPE_TEST 0
-#define MAPBLOCKOBJECT_TYPE_TEST2 1
+#define MAPBLOCKOBJECT_TYPE_PLAYER 0
 #define MAPBLOCKOBJECT_TYPE_SIGN 2
 #define MAPBLOCKOBJECT_TYPE_RAT 3
 // Used for handling selecting special stuff
@@ -432,6 +431,7 @@ public:
 		buf->getMaterial().setTexture
 				(0, driver->getTexture("../data/sign.png"));
 		buf->getMaterial().setFlag(video::EMF_BILINEAR_FILTER, false);
+		buf->getMaterial().setFlag(video::EMF_FOG_ENABLE, true);
 		buf->getMaterial().MaterialType = video::EMT_TRANSPARENT_ALPHA_CHANNEL_REF;
 		// Add to mesh
 		mesh->addMeshBuffer(buf);
@@ -455,6 +455,7 @@ public:
 		buf->getMaterial().setTexture
 				(0, driver->getTexture("../data/sign_back.png"));
 		buf->getMaterial().setFlag(video::EMF_BILINEAR_FILTER, false);
+		buf->getMaterial().setFlag(video::EMF_FOG_ENABLE, true);
 		buf->getMaterial().MaterialType = video::EMT_TRANSPARENT_ALPHA_CHANNEL_REF;
 		// Add to mesh
 		mesh->addMeshBuffer(buf);
@@ -710,8 +711,127 @@ protected:
 
 	float m_counter1;
 	float m_counter2;
-	v3f m_oldpos;
 	float m_age;
+};
+
+/*
+	NOTE: Not used.
+*/
+class PlayerObject : public MovingObject
+{
+public:
+	PlayerObject(MapBlock *block, s16 id, v3f pos):
+		MovingObject(block, id, pos),
+		m_node(NULL)
+	{
+		m_collision_box = new core::aabbox3d<f32>
+				(-BS*0.3,-BS*.25,-BS*0.3, BS*0.3,BS*0.25,BS*0.3);
+		/*m_selection_box = new core::aabbox3d<f32>
+				(-BS*0.3,-BS*.25,-BS*0.3, BS*0.3,BS*0.25,BS*0.3);*/
+	}
+	virtual ~PlayerObject()
+	{
+		if(m_collision_box)
+			delete m_collision_box;
+		if(m_selection_box)
+			delete m_selection_box;
+	}
+	
+	/*
+		Implementation interface
+	*/
+	virtual u16 getTypeId() const
+	{
+		return MAPBLOCKOBJECT_TYPE_PLAYER;
+	}
+	virtual void serialize(std::ostream &os, u8 version)
+	{
+		// Object data is generated from actual player
+	}
+	virtual void update(std::istream &is, u8 version)
+	{
+		MovingObject::update(is, version);
+		u8 buf[2];
+		
+		// Read yaw * 10
+		is.read((char*)buf, 2);
+		s16 yaw_i = readS16(buf);
+		m_yaw = (f32)yaw_i / 10;
+
+		updateNodePos();
+	}
+
+	virtual bool serverStep(float dtime, u32 daynight_ratio)
+	{
+		// Player is handled elsewhere.
+		// Die.
+		//return true;
+		// Actually, fail very loudly:
+		assert(0);
+	}
+
+#ifndef SERVER
+	virtual void clientStep(float dtime)
+	{
+		MovingObject::simpleMove(dtime);
+
+		updateNodePos();
+	}
+	
+	virtual void addToScene(scene::ISceneManager *smgr);
+
+	virtual void removeFromScene()
+	{
+		if(m_node == NULL)
+			return;
+
+		m_node->remove();
+		m_node = NULL;
+	}
+
+	virtual void updateLight(u8 light_at_pos)
+	{
+		if(m_node == NULL)
+			return;
+
+		u8 li = decode_light(light_at_pos);
+		video::SColor color(255,li,li,li);
+
+		scene::IMesh *mesh = m_node->getMesh();
+		
+		u16 mc = mesh->getMeshBufferCount();
+		for(u16 j=0; j<mc; j++)
+		{
+			scene::IMeshBuffer *buf = mesh->getMeshBuffer(j);
+			video::S3DVertex *vertices = (video::S3DVertex*)buf->getVertices();
+			u16 vc = buf->getVertexCount();
+			for(u16 i=0; i<vc; i++)
+			{
+				vertices[i].Color = color;
+			}
+		}
+	}
+	
+#endif
+
+	/*
+		Special methods
+	*/
+	
+	void updateNodePos()
+	{
+		if(m_node == NULL)
+			return;
+
+		m_node->setPosition(getAbsoluteShowPos());
+		m_node->setRotation(v3f(0, -m_yaw+180, 0));
+	}
+	
+protected:
+	scene::IMeshSceneNode *m_node;
+	float m_yaw;
+
+	v3f m_oldpos;
 };
 
 struct DistanceSortedObject

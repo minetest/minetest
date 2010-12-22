@@ -161,17 +161,17 @@ TODO: Remove LazyMeshUpdater. It is not used as supposed.
 TODO: TOSERVER_LEAVE
 
 TODO: Better handling of objects and mobs
-      - Update brightness according to day-night blended light of node
-	    in position
       - Scripting?
+      - There has to be some way to do it with less spaghetti code
+	  - Make separate classes for client and server
+	    - Client should not discriminate between blocks, server should
+	    - Make other players utilize the same framework
+
+SUGG: Split Inventory into ClientInventory and ServerInventory
 
 Doing now:
 ======================================================================
 
-TODO: Get rid of g_irrlicht for server build
-
-TODO: Implement getGlobalTime for server build
-      - It is needed for controlling the time used for flowing water
 
 ======================================================================
 
@@ -208,15 +208,6 @@ TODO: Implement getGlobalTime for server build
 //#pragma comment(linker, "/subsystem:windows /ENTRY:mainCRTStartup")
 #endif
 
-#ifdef _WIN32
-	#define WIN32_LEAN_AND_MEAN
-	#include <windows.h>
-	#define sleep_ms(x) Sleep(x)
-#else
-	#include <unistd.h>
-	#define sleep_ms(x) usleep(x*1000)
-#endif
-
 #include <iostream>
 #include <fstream>
 #include <jmutexautolock.h>
@@ -237,6 +228,8 @@ TODO: Implement getGlobalTime for server build
 #include "guiPauseMenu.h"
 #include "irrlichtwrapper.h"
 #include "gettime.h"
+#include "porting.h"
+#include "guiInventoryMenu.h"
 
 IrrlichtWrapper *g_irrlicht;
 
@@ -276,7 +269,9 @@ extern void set_default_settings();
 //u16 g_selected_material = 0;
 u16 g_selected_item = 0;
 
-bool g_esc_pressed = false;
+gui::IGUIEnvironment* guienv = NULL;
+GUIPauseMenu *pauseMenu = NULL;
+GUIInventoryMenu *inventoryMenu = NULL;
 
 std::wstring g_text_buffer;
 bool g_text_buffer_accepted = false;
@@ -354,13 +349,35 @@ public:
 					}
 				}
 				
-				if(event.KeyInput.Key == irr::KEY_ESCAPE)
+				if(pauseMenu != NULL)
 				{
-					//TODO: Not used anymore?
-					if(g_game_focused == true)
+					if(event.KeyInput.Key == irr::KEY_ESCAPE)
 					{
-						dstream<<DTIME<<"ESC pressed"<<std::endl;
-						g_esc_pressed = true;
+						if(g_game_focused == true
+								&& !pauseMenu->isVisible()
+								&& !inventoryMenu->isVisible())
+						{
+							dstream<<DTIME<<"MyEventReceiver: "
+									<<"Launching pause menu"<<std::endl;
+							pauseMenu->launch();
+							return true;
+						}
+					}
+				}
+
+				if(inventoryMenu != NULL)
+				{
+					if(event.KeyInput.Key == irr::KEY_KEY_I)
+					{
+						if(g_game_focused == true
+								&& !inventoryMenu->isVisible()
+								&& !pauseMenu->isVisible())
+						{
+							dstream<<DTIME<<"MyEventReceiver: "
+									<<"Launching inventory"<<std::endl;
+							inventoryMenu->launch();
+							return true;
+						}
 					}
 				}
 
@@ -411,6 +428,7 @@ public:
 
 		if(event.EventType == irr::EET_MOUSE_INPUT_EVENT)
 		{
+			//dstream<<"MyEventReceiver: mouse input"<<std::endl;
 			left_active = event.MouseInput.isLeftPressed();
 			middle_active = event.MouseInput.isMiddlePressed();
 			right_active = event.MouseInput.isRightPressed();
@@ -1137,8 +1155,6 @@ int main(int argc, char *argv[])
 	<<"|  Y Y  \\  |   |  \\  ___/|  | \\  ___/ \\___ \\  |  |  "<<std::endl
 	<<"|__|_|  /__|___|  /\\___  >__|  \\___  >____  > |__|  "<<std::endl
 	<<"      \\/        \\/     \\/          \\/     \\/        "<<std::endl
-	<<std::endl
-	<<"Now with more waterish water!"
 	<<std::endl;
 
 	std::cout<<std::endl;
@@ -1298,10 +1314,7 @@ int main(int argc, char *argv[])
 
 	scene::ISceneManager* smgr = device->getSceneManager();
 	
-	// Pause menu
-	guiPauseMenu pauseMenu(device, &receiver);
-
-	gui::IGUIEnvironment* guienv = device->getGUIEnvironment();
+	guienv = device->getGUIEnvironment();
 	gui::IGUISkin* skin = guienv->getSkin();
 	gui::IGUIFont* font = guienv->getFont("../data/fontlucida.png");
 	if(font)
@@ -1457,12 +1470,33 @@ int main(int argc, char *argv[])
 	
 	gui_loadingtext->remove();
 
-	pauseMenu.setVisible(true);
-
 	/*
 		Add some gui stuff
 	*/
 	
+	// This is a copy of the inventory that the client's environment has
+	Inventory local_inventory(PLAYER_INVENTORY_SIZE);
+	
+	GUIQuickInventory *quick_inventory = new GUIQuickInventory
+			(guienv, NULL, v2s32(10, 70), 5, &local_inventory);
+	
+	/*
+		We need some kind of a root node to be able to add
+		custom elements directly on the screen.
+		Otherwise they won't be automatically drawn.
+	*/
+	gui::IGUIStaticText *root = guienv->addStaticText(L"",
+			core::rect<s32>(0, 0, 10000, 10000));
+	
+	// Pause menu
+	pauseMenu = new GUIPauseMenu(guienv, root, -1, device);
+	
+	// Inventory menu
+	inventoryMenu = new GUIInventoryMenu(guienv, root, -1, &local_inventory);
+
+	pauseMenu->launch();
+	//inventoryMenu->launch();
+
 	// First line of debug text
 	gui::IGUIStaticText *guitext = guienv->addStaticText(
 			L"Minetest-c55",
@@ -1480,12 +1514,6 @@ int main(int argc, char *argv[])
 			L"test",
 			core::rect<s32>(100, 70, 100+400, 70+(textsize.Y+5)),
 			false, false);
-	
-	// This is a copy of the inventory that the client's environment has
-	Inventory local_inventory(PLAYER_INVENTORY_SIZE);
-	
-	GUIQuickInventory *quick_inventory = new GUIQuickInventory
-			(guienv, NULL, v2s32(10, 70), 5, &local_inventory);
 	
 	/*
 		Some statistics are collected in these
@@ -1530,11 +1558,6 @@ int main(int argc, char *argv[])
 	gui::IGUIStaticText* input_guitext = NULL;
 
 	/*
-		Digging animation
-	*/
-	//f32 
-
-	/*
 		Main loop
 	*/
 
@@ -1557,6 +1580,9 @@ int main(int argc, char *argv[])
 		*/
 		v2u32 screensize = driver->getScreenSize();
 		core::vector2d<s32> displaycenter(screensize.X/2,screensize.Y/2);
+		
+		pauseMenu->resizeGui();
+		inventoryMenu->resizeGui();
 
 		// Hilight boxes collected during the loop and displayed
 		core::list< core::aabbox3d<f32> > hilightboxes;
@@ -1714,6 +1740,11 @@ int main(int argc, char *argv[])
 		{
 			break;
 		}*/
+		/*if(g_i_pressed)
+		{
+			inventoryMenu->setVisible(true);
+			g_i_pressed = false;
+		}*/
 
 		/*
 			Player speed control
@@ -1773,7 +1804,11 @@ int main(int argc, char *argv[])
 			Mouse and camera control
 		*/
 		
-		if((device->isWindowActive() && g_game_focused && !pauseMenu.isVisible())
+		if((device->isWindowActive()
+				&& g_game_focused
+				&& !pauseMenu->isVisible()
+				&& !inventoryMenu->isVisible()
+				)
 				|| random_input)
 		{
 			if(!random_input)
@@ -2250,6 +2285,7 @@ int main(int argc, char *argv[])
 			client.getLocalInventory(local_inventory);
 			quick_inventory->setSelection(g_selected_item);
 			quick_inventory->update();
+			inventoryMenu->update();
 		}
 
 		if(input_guitext != NULL)

@@ -21,8 +21,145 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 
 #include "guiPauseMenu.h"
+#include "debug.h"
 
-void guiPauseMenu::scaleGui() // this function scales gui from the size stored in file to screen size
+GUIPauseMenu::GUIPauseMenu(gui::IGUIEnvironment* env,
+		gui::IGUIElement* parent, s32 id,
+		IrrlichtDevice *dev):
+	IGUIElement(gui::EGUIET_ELEMENT, env, parent, id,
+			core::rect<s32>(0,0,100,100))
+{
+	m_dev = dev;
+	m_screensize_old = v2u32(0,0);
+	
+	resizeGui();
+
+	setVisible(false);
+}
+
+GUIPauseMenu::~GUIPauseMenu()
+{
+}
+
+void GUIPauseMenu::resizeGui()
+{
+	video::IVideoDriver* driver = Environment->getVideoDriver();
+	v2u32 screensize = driver->getScreenSize();
+	if(screensize == m_screensize_old)
+		return;
+	m_screensize_old = screensize;
+
+	{
+		gui::IGUIElement *e = getElementFromId(256);
+		if(e != NULL)
+			e->remove();
+	}
+	{
+		gui::IGUIElement *e = getElementFromId(257);
+		if(e != NULL)
+			e->remove();
+	}
+
+	core::rect<s32> rect(
+			screensize.X/2 - 560/2,
+			screensize.Y/2 - 300/2,
+			screensize.X/2 + 560/2,
+			screensize.Y/2 + 300/2
+	);
+	
+	DesiredRect = rect;
+	recalculateAbsolutePosition(false);
+
+	v2s32 size = rect.getSize();
+
+	{
+		core::rect<s32> rect(0, 0, 140, 30);
+		rect = rect + v2s32(size.X/2-140/2, size.Y/2-30/2-25);
+		Environment->addButton(rect, this, 256, L"Continue");
+	}
+	{
+		core::rect<s32> rect(0, 0, 140, 30);
+		rect = rect + v2s32(size.X/2-140/2, size.Y/2-30/2+25);
+		Environment->addButton(rect, this, 257, L"Exit");
+	}
+}
+
+void GUIPauseMenu::draw()
+{
+	if(!IsVisible)
+		return;
+		
+	gui::IGUISkin* skin = Environment->getSkin();
+	if (!skin)
+		return;
+	video::IVideoDriver* driver = Environment->getVideoDriver();
+	
+	video::SColor bgcolor(140,0,0,0);
+	driver->draw2DRectangle(bgcolor, AbsoluteRect, &AbsoluteClippingRect);
+
+	gui::IGUIElement::draw();
+}
+
+bool GUIPauseMenu::OnEvent(const SEvent& event)
+{
+	if(event.EventType==EET_KEY_INPUT_EVENT)
+	{
+		if(event.KeyInput.Key==KEY_ESCAPE && event.KeyInput.PressedDown)
+		{
+			setVisible(false);
+			return true;
+		}
+	}
+	if(event.EventType==EET_GUI_EVENT)
+	{
+		if(event.GUIEvent.EventType==gui::EGET_ELEMENT_FOCUS_LOST
+				&& isVisible())
+		{
+			if(!canTakeFocus(event.GUIEvent.Element))
+			{
+				dstream<<"GUIPauseMenu: Not allowing focus change."
+						<<std::endl;
+				// Returning true disables focus change
+				return true;
+			}
+		}
+		if(event.GUIEvent.EventType==gui::EGET_BUTTON_CLICKED)
+		{
+			switch(event.GUIEvent.Caller->getID())
+			{
+			case 256: // continue
+				setVisible(false);
+				break;
+			case 257: // exit
+				m_dev->closeDevice();
+				break;
+			}
+		}
+	}
+
+	return Parent ? Parent->OnEvent(event) : false;
+}
+
+#if 0
+GUIPauseMenu::GUIPauseMenu(IrrlichtDevice *device, IEventReceiver *recv):
+	dev(device),
+	oldRecv(recv)
+{
+	if(!dev)
+		return;
+	guienv=dev->getGUIEnvironment();
+
+	if (!loadMenu())
+		return;
+
+	device->setEventReceiver(this); // now WE are the input receiver! ahhaha! 
+}
+
+GUIPauseMenu::~GUIPauseMenu(void)
+{
+}
+
+void GUIPauseMenu::scaleGui() // this function scales gui from the size stored in file to screen size
 {
 	core::dimension2du screen=dev->getVideoDriver()->getScreenSize();
 	core::vector2di real=root->getAbsolutePosition().LowerRightCorner; // determine gui size stored in file (which is size of my menu root node)
@@ -30,7 +167,7 @@ void guiPauseMenu::scaleGui() // this function scales gui from the size stored i
 	float factorY=(float)screen.Height/(float)real.Y;
 	scaleGui(guienv->getRootGUIElement(),factorX,factorY);
 }
-void guiPauseMenu::scaleGui(gui::IGUIElement *node,float factorX,float factorY) // recursive set scale
+void GUIPauseMenu::scaleGui(gui::IGUIElement *node,float factorX,float factorY) // recursive set scale
 {
 	if((node->getParent() && node->getParent()->getID()==255) || node->getID()==255) // modify only menu's elements
 	{
@@ -47,7 +184,7 @@ void guiPauseMenu::scaleGui(gui::IGUIElement *node,float factorX,float factorY) 
 		scaleGui((*it),factorX,factorY);
 }
 
-bool guiPauseMenu::loadMenu()
+bool GUIPauseMenu::loadMenu()
 {
 	guienv->loadGUI("../data/pauseMenu.gui");
 
@@ -65,19 +202,7 @@ bool guiPauseMenu::loadMenu()
 	return true;
 }
 
-guiPauseMenu::guiPauseMenu(IrrlichtDevice *device, IEventReceiver *recv) : dev(device), oldRecv(recv)
-{
-	if(!dev)
-		return;
-	guienv=dev->getGUIEnvironment();
-
-	if (!loadMenu())
-		return;
-
-	device->setEventReceiver(this); // now WE are the input receiver! ahhaha! 
-}
-
-bool guiPauseMenu::OnEvent(const SEvent& event)
+bool GUIPauseMenu::OnEvent(const SEvent& event)
 {
 	if(!dev->isWindowFocused())
 		setVisible(true);
@@ -114,7 +239,5 @@ bool guiPauseMenu::OnEvent(const SEvent& event)
 
 	return false;
 }
+#endif
 
-guiPauseMenu::~guiPauseMenu(void)
-{
-}

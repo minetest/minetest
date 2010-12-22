@@ -282,10 +282,78 @@ void RatObject::addToScene(scene::ISceneManager *smgr)
 	buf->getMaterial().setTexture
 			(0, driver->getTexture("../data/rat.png"));
 	buf->getMaterial().setFlag(video::EMF_BILINEAR_FILTER, false);
+	buf->getMaterial().setFlag(video::EMF_FOG_ENABLE, true);
 	buf->getMaterial().MaterialType = video::EMT_TRANSPARENT_ALPHA_CHANNEL;
 	// Add to mesh
 	mesh->addMeshBuffer(buf);
 	buf->drop();
+	m_node = smgr->addMeshSceneNode(mesh, NULL);
+	mesh->drop();
+	updateNodePos();
+}
+#endif
+
+#ifndef SERVER
+/*
+	PlayerObject
+*/
+void PlayerObject::addToScene(scene::ISceneManager *smgr)
+{
+	if(m_node != NULL)
+		return;
+	
+	video::IVideoDriver* driver = smgr->getVideoDriver();
+
+	// Attach a simple mesh to the player for showing an image
+	scene::SMesh *mesh = new scene::SMesh();
+	{ // Front
+	scene::IMeshBuffer *buf = new scene::SMeshBuffer();
+	video::SColor c(255,255,255,255);
+	video::S3DVertex vertices[4] =
+	{
+		video::S3DVertex(-BS/2,0,0, 0,0,0, c, 0,1),
+		video::S3DVertex(BS/2,0,0, 0,0,0, c, 1,1),
+		video::S3DVertex(BS/2,BS*2,0, 0,0,0, c, 1,0),
+		video::S3DVertex(-BS/2,BS*2,0, 0,0,0, c, 0,0),
+	};
+	u16 indices[] = {0,1,2,2,3,0};
+	buf->append(vertices, 4, indices, 6);
+	// Set material
+	buf->getMaterial().setFlag(video::EMF_LIGHTING, false);
+	//buf->getMaterial().setFlag(video::EMF_BACK_FACE_CULLING, false);
+	buf->getMaterial().setTexture(0, driver->getTexture("../data/player.png"));
+	buf->getMaterial().setFlag(video::EMF_BILINEAR_FILTER, false);
+	buf->getMaterial().setFlag(video::EMF_FOG_ENABLE, true);
+	//buf->getMaterial().MaterialType = video::EMT_TRANSPARENT_ALPHA_CHANNEL;
+	buf->getMaterial().MaterialType = video::EMT_TRANSPARENT_ALPHA_CHANNEL_REF;
+	// Add to mesh
+	mesh->addMeshBuffer(buf);
+	buf->drop();
+	}
+	{ // Back
+	scene::IMeshBuffer *buf = new scene::SMeshBuffer();
+	video::SColor c(255,255,255,255);
+	video::S3DVertex vertices[4] =
+	{
+		video::S3DVertex(BS/2,0,0, 0,0,0, c, 1,1),
+		video::S3DVertex(-BS/2,0,0, 0,0,0, c, 0,1),
+		video::S3DVertex(-BS/2,BS*2,0, 0,0,0, c, 0,0),
+		video::S3DVertex(BS/2,BS*2,0, 0,0,0, c, 1,0),
+	};
+	u16 indices[] = {0,1,2,2,3,0};
+	buf->append(vertices, 4, indices, 6);
+	// Set material
+	buf->getMaterial().setFlag(video::EMF_LIGHTING, false);
+	//buf->getMaterial().setFlag(video::EMF_BACK_FACE_CULLING, false);
+	buf->getMaterial().setTexture(0, driver->getTexture("../data/player_back.png"));
+	buf->getMaterial().setFlag(video::EMF_BILINEAR_FILTER, false);
+	buf->getMaterial().setFlag(video::EMF_FOG_ENABLE, true);
+	buf->getMaterial().MaterialType = video::EMT_TRANSPARENT_ALPHA_CHANNEL_REF;
+	// Add to mesh
+	mesh->addMeshBuffer(buf);
+	buf->drop();
+	}
+	
 	m_node = smgr->addMeshSceneNode(mesh, NULL);
 	mesh->drop();
 	updateNodePos();
