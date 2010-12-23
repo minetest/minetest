@@ -26,17 +26,11 @@ CXXFLAGS = -O2 -ffast-math -Wall -g -pipe
 #CXXFLAGS = -O1 -ffast-math -Wall -g
 #CXXFLAGS = -Wall -g -O0
 
-#FAST_CXXFLAGS = -O3 -ffast-math -Wall -fomit-frame-pointer -pipe -funroll-loops -mtune=i686
-
-#Default target
-
-all: all_linux
+all: fast_linux
 
 ifeq ($(HOSTTYPE), x86_64)
 LIBSELECT=64
 endif
-
-# Target specific settings
 
 all_linux fast_linux: LDFLAGS = -L/usr/X11R6/lib$(LIBSELECT) -L$(IRRLICHTPATH)/lib/Linux -L$(JTHREADPATH)/src/.libs -lIrrlicht -lGL -lXxf86vm -lXext -lX11 -ljthread -lz
 all_linux fast_linux: CPPFLAGS = -I$(IRRLICHTPATH)/include -I/usr/X11R6/include -I$(JTHREADPATH)/src
@@ -45,20 +39,13 @@ server_linux: LDFLAGS = -L$(JTHREADPATH)/src/.libs -ljthread -lz -lpthread
 server_linux: CPPFLAGS = -I$(IRRLICHTPATH)/include -I/usr/X11R6/include -I$(JTHREADPATH)/src -DSERVER
 all_linux fast_linux clean_linux: SYSTEM=Linux
 
-# These are out of date
-all_win32: LDFLAGS = -L$(IRRLICHTPATH)/lib/Win32-gcc -L$(JTHREADPATH)/Debug -lIrrlicht -lopengl32 -lm -ljthread
-all_win32 clean_win32: SYSTEM=Win32-gcc
-all_win32 clean_win32: SUF=.exe
-
-# Name of the binary - only valid for targets which set SYSTEM
-
-DESTPATH = bin/$(TARGET)$(SUF)
-FAST_DESTPATH = bin/$(FAST_TARGET)$(SUF)
-SERVER_DESTPATH = bin/$(SERVER_TARGET)$(SUF)
+DESTPATH = bin/$(TARGET)
+FAST_DESTPATH = bin/$(FAST_TARGET)
+SERVER_DESTPATH = bin/$(SERVER_TARGET)
 
 # Build commands
 
-all_linux all_win32: $(BUILD_DIR) $(DESTPATH)
+all_linux: $(BUILD_DIR) $(DESTPATH)
 fast_linux: $(FAST_BUILD_DIR) $(FAST_DESTPATH)
 server_linux: $(SERVER_BUILD_DIR) $(SERVER_DESTPATH)
 
@@ -87,13 +74,13 @@ $(FAST_BUILD_DIR)/%.o: src/%.cpp
 $(SERVER_BUILD_DIR)/%.o: src/%.cpp
 	$(CXX) -c -o $@ $< $(CPPFLAGS) $(CXXFLAGS)
 
-clean: clean_linux clean_win32 clean_fast_linux clean_server_linux
+clean: clean_linux clean_fast_linux clean_server_linux
 
-clean_linux clean_win32:
+clean_linux:
 	@$(RM) $(OBJECTS) $(DESTPATH)
 
 clean_fast_linux:
-	@$(RM) $(OBJECTS) $(FAST_DESTPATH)
+	@$(RM) $(FAST_OBJECTS) $(FAST_DESTPATH)
 
 clean_server_linux:
 	@$(RM) $(SERVER_OBJECTS) $(SERVER_DESTPATH)

@@ -47,6 +47,7 @@ MapBlock::MapBlock(NodeContainer *parent, v3s16 pos, bool dummy):
 	m_mesh_expired = false;
 	mesh_mutex.Init();
 	mesh = NULL;
+	m_temp_mods_mutex.Init();
 #endif
 }
 
@@ -584,47 +585,52 @@ void MapBlock::updateMesh(u32 daynight_ratio)
 
 		NOTE: This is the slowest part of this method.
 	*/
+	
+	{
+		// Lock this, as m_temp_mods will be used directly
+		JMutexAutoLock lock(m_temp_mods_mutex);
 
-	/*
-		Go through every y,z and get top faces in rows of x+
-	*/
-	for(s16 y=0; y<MAP_BLOCKSIZE; y++){
+		/*
+			Go through every y,z and get top faces in rows of x+
+		*/
+		for(s16 y=0; y<MAP_BLOCKSIZE; y++){
+			for(s16 z=0; z<MAP_BLOCKSIZE; z++){
+				updateFastFaceRow(daynight_ratio, posRelative_f,
+						v3s16(0,y,z), MAP_BLOCKSIZE,
+						v3s16(1,0,0), //dir
+						v3f  (1,0,0),
+						v3s16(0,1,0), //face dir
+						v3f  (0,1,0),
+						fastfaces_new);
+			}
+		}
+		/*
+			Go through every x,y and get right faces in rows of z+
+		*/
+		for(s16 x=0; x<MAP_BLOCKSIZE; x++){
+			for(s16 y=0; y<MAP_BLOCKSIZE; y++){
+				updateFastFaceRow(daynight_ratio, posRelative_f,
+						v3s16(x,y,0), MAP_BLOCKSIZE,
+						v3s16(0,0,1),
+						v3f  (0,0,1),
+						v3s16(1,0,0),
+						v3f  (1,0,0),
+						fastfaces_new);
+			}
+		}
+		/*
+			Go through every y,z and get back faces in rows of x+
+		*/
 		for(s16 z=0; z<MAP_BLOCKSIZE; z++){
-			updateFastFaceRow(daynight_ratio, posRelative_f,
-					v3s16(0,y,z), MAP_BLOCKSIZE,
-					v3s16(1,0,0), //dir
-					v3f  (1,0,0),
-					v3s16(0,1,0), //face dir
-					v3f  (0,1,0),
-					fastfaces_new);
-		}
-	}
-	/*
-		Go through every x,y and get right faces in rows of z+
-	*/
-	for(s16 x=0; x<MAP_BLOCKSIZE; x++){
-		for(s16 y=0; y<MAP_BLOCKSIZE; y++){
-			updateFastFaceRow(daynight_ratio, posRelative_f,
-					v3s16(x,y,0), MAP_BLOCKSIZE,
-					v3s16(0,0,1),
-					v3f  (0,0,1),
-					v3s16(1,0,0),
-					v3f  (1,0,0),
-					fastfaces_new);
-		}
-	}
-	/*
-		Go through every y,z and get back faces in rows of x+
-	*/
-	for(s16 z=0; z<MAP_BLOCKSIZE; z++){
-		for(s16 y=0; y<MAP_BLOCKSIZE; y++){
-			updateFastFaceRow(daynight_ratio, posRelative_f,
-					v3s16(0,y,z), MAP_BLOCKSIZE,
-					v3s16(1,0,0),
-					v3f  (1,0,0),
-					v3s16(0,0,1),
-					v3f  (0,0,1),
-					fastfaces_new);
+			for(s16 y=0; y<MAP_BLOCKSIZE; y++){
+				updateFastFaceRow(daynight_ratio, posRelative_f,
+						v3s16(0,y,z), MAP_BLOCKSIZE,
+						v3s16(1,0,0),
+						v3f  (1,0,0),
+						v3s16(0,0,1),
+						v3f  (0,0,1),
+						fastfaces_new);
+			}
 		}
 	}
 

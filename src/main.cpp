@@ -91,6 +91,7 @@ SUGG: Implement a "Fast check queue" (a queue with a map for checking
 
 SUGG: Signs could be done in the same way as torches. For this, blocks
       need an additional metadata field for the texts
+	  - This is also needed for item container chests
 
 SUGG: Precalculate lighting translation table at runtime (at startup)
 
@@ -99,6 +100,15 @@ SUGG: A version number to blocks, which increments when the block is
 	  - This can then be used to make sure the most recent version of
 	    a block has been sent to client
 
+SUGG: Make the amount of blocks sending to client and the total
+	  amount of blocks dynamically limited. Transferring blocks is the
+	  main network eater of this system, so it is the one that has
+	  to be throttled so that RTTs stay low.
+
+TODO: Untie client network operations from framerate
+      - Needs some input queues or something
+	  - Not really necessary?
+
 TODO: Combine MapBlock's face caches to so big pieces that VBO
       gets used
       - That is >500 vertices
@@ -106,11 +116,7 @@ TODO: Combine MapBlock's face caches to so big pieces that VBO
 TODO: Better dungeons
 TODO: Cliffs, arcs
 
-TODO: Menus
-
-TODO: Moving players more smoothly. Calculate moving animation
-      in a way that doesn't make the player jump to the right place
-	  immediately when the server sends a new position
+TODO: Startup and configuration menu
 
 TODO: There are some lighting-related todos and fixmes in
       ServerMap::emergeBlock
@@ -119,16 +125,10 @@ TODO: Proper handling of spawning place (try to find something that
       is not in the middle of an ocean (some land to stand on at
 	  least) and save it in map config.
 
-TODO: Make the amount of blocks sending to client and the total
-	  amount of blocks dynamically limited. Transferring blocks is the
-	  main network eater of this system, so it is the one that has
-	  to be throttled so that RTTs stay low.
-
-TODO: Server to load starting inventory from disk
-
 TODO: Players to only be hidden when the client quits.
 TODO: - Players to be saved on disk, with inventory
 TODO: Players to be saved as text in map/players/<name>
+TODO: Player inventory to be saved on disk
 
 TODO: Make fetching sector's blocks more efficient when rendering
       sectors that have very large amounts of blocks (on client)
@@ -149,9 +149,6 @@ Block object server side:
 TODO: Copy the text of the last picked sign to inventory in creative
       mode
 
-TODO: Untie client network operations from framerate
-      - Needs some input queues or something
-
 TODO: Get rid of GotSplitPacketException
 
 TODO: Check what goes wrong with caching map to disk (Kray)
@@ -168,7 +165,7 @@ TODO: Better handling of objects and mobs
 	    - Make other players utilize the same framework
 
 TODO: Draw big amounts of torches better (that is, throw them in the
-      same meshbuffer (can the meshcombiner class be used?))
+      same meshbuffer (can the meshcollector class be used?))
 
 Doing now:
 ======================================================================

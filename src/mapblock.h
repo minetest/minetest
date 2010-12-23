@@ -399,15 +399,30 @@ public:
 				<<", mod.type="<<mod.type
 				<<", mod.param="<<mod.param
 				<<std::endl;*/
+		JMutexAutoLock lock(m_temp_mods_mutex);
 		m_temp_mods[p] = mod;
+	}
+	// Returns true if there was one
+	bool getTempMod(v3s16 p, struct NodeMod *mod)
+	{
+		JMutexAutoLock lock(m_temp_mods_mutex);
+		core::map<v3s16, NodeMod>::Node *n;
+		n = m_temp_mods.find(p);
+		if(n == NULL)
+			return false;
+		if(mod)
+			*mod = n->getValue();
+		return true;
 	}
 	void clearTempMod(v3s16 p)
 	{
+		JMutexAutoLock lock(m_temp_mods_mutex);
 		if(m_temp_mods.find(p))
 			m_temp_mods.remove(p);
 	}
 	void clearTempMods()
 	{
+		JMutexAutoLock lock(m_temp_mods_mutex);
 		m_temp_mods.clear();
 	}
 #endif
@@ -517,6 +532,7 @@ private:
 	// Temporary modifications to nodes
 	// These are only used when drawing
 	core::map<v3s16, NodeMod> m_temp_mods;
+	JMutex m_temp_mods_mutex;
 #endif
 };
 
