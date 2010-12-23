@@ -77,17 +77,14 @@ void drawInventoryItem(gui::IGUIEnvironment* env,
 
 GUIInventoryMenu::GUIInventoryMenu(gui::IGUIEnvironment* env,
 		gui::IGUIElement* parent, s32 id,
-		Inventory *inventory):
-	IGUIElement(gui::EGUIET_ELEMENT, env, parent, id,
-			core::rect<s32>(0,0,100,100))
+		Inventory *inventory,
+		Queue<InventoryAction*> *actions,
+		int *active_menu_count):
+	GUIModalMenu(env, parent, id, active_menu_count)
 {
 	m_inventory = inventory;
-	m_screensize_old = v2u32(0,0);
 	m_selected_item = NULL;
-
-	resizeGui();
-
-	setVisible(false);
+	m_actions = actions;
 
 	/*m_selected_item = new ItemSpec;
 	m_selected_item->listname = "main";
@@ -100,14 +97,8 @@ GUIInventoryMenu::~GUIInventoryMenu()
 		delete m_selected_item;
 }
 
-void GUIInventoryMenu::resizeGui()
+void GUIInventoryMenu::regenerateGui(v2u32 screensize)
 {
-	video::IVideoDriver* driver = Environment->getVideoDriver();
-	v2u32 screensize = driver->getScreenSize();
-	if(screensize == m_screensize_old)
-		return;
-	m_screensize_old = screensize;
-
 	padding = v2s32(24,24);
 	spacing = v2s32(60,56);
 	imgsize = v2s32(48,48);
@@ -194,11 +185,8 @@ void GUIInventoryMenu::drawList(const ListDrawSpec &s)
 	}
 }
 
-void GUIInventoryMenu::draw()
+void GUIInventoryMenu::drawMenu()
 {
-	if(!IsVisible)
-		return;
-		
 	gui::IGUISkin* skin = Environment->getSkin();
 	if (!skin)
 		return;
@@ -229,12 +217,12 @@ bool GUIInventoryMenu::OnEvent(const SEvent& event)
 	{
 		if(event.KeyInput.Key==KEY_ESCAPE && event.KeyInput.PressedDown)
 		{
-			setVisible(false);
+			quitMenu();
 			return true;
 		}
 		if(event.KeyInput.Key==KEY_KEY_I && event.KeyInput.PressedDown)
 		{
-			setVisible(false);
+			quitMenu();
 			return true;
 		}
 	}
@@ -265,7 +253,7 @@ bool GUIInventoryMenu::OnEvent(const SEvent& event)
 						a->from_i = m_selected_item->i;
 						a->to_name = s.listname;
 						a->to_i = s.i;
-						m_actions.push_back(a);
+						m_actions->push_back(a);
 					}
 					delete m_selected_item;
 					m_selected_item = NULL;
@@ -322,11 +310,5 @@ bool GUIInventoryMenu::OnEvent(const SEvent& event)
 	return Parent ? Parent->OnEvent(event) : false;
 }
 
-InventoryAction* GUIInventoryMenu::getNextAction()
-{
-	if(m_actions.size() == 0)
-		return NULL;
-	return m_actions.pop_front();
-}
 
 

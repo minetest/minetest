@@ -1,8 +1,6 @@
 /*
 Minetest-c55
 Copyright (C) 2010 celeron55, Perttu Ahola <celeron55@gmail.com>
-Original author Kabak Dmitry <userdima@gmail.com>, contributed under
-the minetest contributor agreement.
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -24,63 +22,30 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #define GUIPAUSEMENU_HEADER
 
 #include "common_irrlicht.h"
+#include "modalMenu.h"
 
-class GUIPauseMenu : public gui::IGUIElement
+class GUIPauseMenu : public GUIModalMenu
 {
 public:
 	GUIPauseMenu(gui::IGUIEnvironment* env,
 			gui::IGUIElement* parent, s32 id,
-			IrrlichtDevice *dev);
+			IrrlichtDevice *dev,
+			int *active_menu_count);
 	~GUIPauseMenu();
 	
+	void removeChildren();
 	/*
 		Remove and re-add (or reposition) stuff
 	*/
-	void resizeGui();
+	void regenerateGui(v2u32 screensize);
 
-	void draw();
-
-	void launch()
-	{
-		setVisible(true);
-		Environment->setFocus(this);
-	}
-
-	bool canTakeFocus(gui::IGUIElement *e)
-	{
-		return (e && (e == this || isMyChild(e)));
-	}
+	void drawMenu();
 
 	bool OnEvent(const SEvent& event);
 	
 private:
 	IrrlichtDevice *m_dev;
-	v2u32 m_screensize_old;
 };
-
-/*class GUIPauseMenu : public IEventReceiver
-{
-public:
-	void scaleGui();
-
-	GUIPauseMenu(IrrlichtDevice *device,IEventReceiver *recv);
-	~GUIPauseMenu(void);
-
-	void setVisible(bool visible){root->setVisible(visible);};
-	bool isVisible(){return root->isVisible();};
-
-	bool OnEvent(const SEvent& event);
-
-private:
-	bool loadMenu();
-	void scaleGui(gui::IGUIElement *node,float factorX,float factorY);
-
-	IrrlichtDevice *dev;
-	gui::IGUIEnvironment *guienv;
-	IEventReceiver *oldRecv;
-
-	gui::IGUIStaticText *root;
-};*/
 
 #endif
 

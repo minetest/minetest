@@ -268,21 +268,24 @@ extern void set_default_settings();
 //u16 g_selected_material = 0;
 u16 g_selected_item = 0;
 
+IrrlichtDevice *g_device = NULL;
+
 /*
 	GUI Stuff
 */
 gui::IGUIEnvironment* guienv = NULL;
-GUIPauseMenu *pauseMenu = NULL;
-GUIInventoryMenu *inventoryMenu = NULL;
+gui::IGUIStaticText *guiroot = NULL;
+int g_active_menu_count = 0;
 
 bool noMenuActive()
 {
-	if(pauseMenu && pauseMenu->isVisible())
-		return false;
-	if(inventoryMenu && inventoryMenu->isVisible())
-		return false;
-	return true;
+	return (g_active_menu_count == 0);
 }
+
+// Inventory actions from the menu are buffered here before sending
+Queue<InventoryAction*> inventory_action_queue;
+// This is a copy of the inventory that the client's environment has
+Inventory local_inventory;
 
 std::wstring g_text_buffer;
 bool g_text_buffer_accepted = false;
@@ -360,7 +363,8 @@ public:
 					}
 				}
 				
-				if(pauseMenu != NULL)
+				//if(pauseMenu != NULL)
+				if(guienv != NULL && guiroot != NULL && g_device != NULL)
 				{
 					if(event.KeyInput.Key == irr::KEY_ESCAPE)
 					{
@@ -368,13 +372,18 @@ public:
 						{
 							dstream<<DTIME<<"MyEventReceiver: "
 									<<"Launching pause menu"<<std::endl;
-							pauseMenu->launch();
+							// It will delete itself by itself
+							GUIPauseMenu *menu = new
+									GUIPauseMenu(guienv, guiroot, -1, g_device,
+									&g_active_menu_count);
+							menu->drop();
 							return true;
 						}
 					}
 				}
 
-				if(inventoryMenu != NULL)
+				//if(inventoryMenu != NULL)
+				if(guienv != NULL && guiroot != NULL && g_device != NULL)
 				{
 					if(event.KeyInput.Key == irr::KEY_KEY_I)
 					{
@@ -382,7 +391,11 @@ public:
 						{
 							dstream<<DTIME<<"MyEventReceiver: "
 									<<"Launching inventory"<<std::endl;
-							inventoryMenu->launch();
+							GUIInventoryMenu *inventoryMenu = new
+									GUIInventoryMenu(guienv, guiroot, -1,
+									&local_inventory, &inventory_action_queue,
+									&g_active_menu_count);
+							inventoryMenu->drop();
 							return true;
 						}
 					}
@@ -523,6 +536,7 @@ private:
 	bool keyIsDown[KEY_KEY_CODES_COUNT];
 	//s32 mouseX;
 	//s32 mouseY;
+	IrrlichtDevice *m_device;
 };
 
 class InputHandler
@@ -997,6 +1011,68 @@ private:
 	s32 m_selection;
 };
 
+/*
+	Text input system
+*/
+
+struct TextDest
+{
+	virtual void sendText(std::string text) = 0;
+};
+
+struct TextDestSign : public TextDest
+{
+	TextDestSign(v3s16 blockpos, s16 id, Client *client)
+	{
+		m_blockpos = blockpos;
+		m_id = id;
+		m_client = client;
+	}
+	void sendText(std::string text)
+	{
+		dstream<<"Changing text of a sign object: "
+				<<text<<std::endl;
+		m_client->sendSignText(m_blockpos, m_id, text);
+	}
+
+	v3s16 m_blockpos;
+	s16 m_id;
+	Client *m_client;
+};
+
+struct TextInput
+{
+	TextDest *dest;
+	gui::IGUIStaticText* guitext;
+	/*std::wstring buffer;
+	bool buffer_accepted;*/
+
+	TextInput()
+	{
+		dest = NULL;
+		guitext = NULL;
+		//buffer_accepted = false;
+	}
+
+	void start(TextDest *a_dest)
+	{
+		unFocusGame();
+
+		guitext = guienv->addStaticText(L"",
+				core::rect<s32>(150,100,550,120),
+				true, // border?
+				false, // wordwrap?
+				NULL);
+
+		guitext->setDrawBackground(true);
+
+		g_text_buffer = L"";
+		g_text_buffer_accepted = false;
+
+		dest = a_dest;
+	}
+};
+
 int main(int argc, char *argv[])
 {
 	/*
@@ -1306,6 +1382,7 @@ int main(int argc, char *argv[])
 	if (device == 0)
 		return 1; // could not create selected driver.
 	
+	g_device = device;
 	g_irrlicht = new IrrlichtWrapper(device);
 
 	//g_device = device;
@@ -1362,34 +1439,10 @@ int main(int argc, char *argv[])
 	driver->endScene();
 
 	/*
-		Preload some random textures that are used in threads
+		Preload some textures
 	*/
-#if 0
-	g_texturecache.set("torch", driver->getTexture("../data/torch.png"));
-	g_texturecache.set("torch_on_floor", driver->getTexture("../data/torch_on_floor.png"));
-	g_texturecache.set("torch_on_ceiling", driver->getTexture("../data/torch_on_ceiling.png"));
-	g_texturecache.set("crack", driver->getTexture("../data/crack.png"));
-	
-	/*
-		Load tile textures
-	*/
-	for(s32 i=0; i<TILES_COUNT; i++)
-	{
-		if(g_tile_texture_names[i] == NULL)
-			continue;
-		std::string name = g_tile_texture_names[i];
-		std::string filename;
-		filename += "../data/";
-		filename += name;
-		filename += ".png";
-		g_texturecache.set(name, driver->getTexture(filename.c_str()));
-	}
 
-#endif
-
-	//tile_materials_preload(g_texturecache);
 	tile_materials_preload(g_irrlicht);
-	//tile_materials_init();
 
 	/*
 		Make a scope here for the client so that it gets removed
@@ -1491,9 +1544,9 @@ int main(int argc, char *argv[])
 	/*
 		Add some gui stuff
 	*/
-	
-	// This is a copy of the inventory that the client's environment has
-	Inventory local_inventory;
+
+	// Text input system
+	TextInput text_input;
 	
 	GUIQuickInventory *quick_inventory = new GUIQuickInventory
 			(guienv, NULL, v2s32(10, 70), 5, &local_inventory);
@@ -1503,16 +1556,17 @@ int main(int argc, char *argv[])
 		custom elements directly on the screen.
 		Otherwise they won't be automatically drawn.
 	*/
-	gui::IGUIStaticText *root = guienv->addStaticText(L"",
+	guiroot = guienv->addStaticText(L"",
 			core::rect<s32>(0, 0, 10000, 10000));
 	
 	// Pause menu
-	pauseMenu = new GUIPauseMenu(guienv, root, -1, device);
+	//pauseMenu = new GUIPauseMenu(guienv, root, -1, device);
 	
 	// Inventory menu
-	inventoryMenu = new GUIInventoryMenu(guienv, root, -1, &local_inventory);
+	/*inventoryMenu = new GUIInventoryMenu(guienv, guiroot, -1, &local_inventory,
+			&inventory_action_queue);*/
 
-	pauseMenu->launch();
+	//pauseMenu->launch();
 	//inventoryMenu->launch();
 
 	// First line of debug text
@@ -1542,40 +1596,6 @@ int main(int argc, char *argv[])
 	u32 endscenetime = 0;
 
 	/*
-		Text input system
-	*/
-	
-	struct TextDest
-	{
-		virtual void sendText(std::string text) = 0;
-	};
-	
-	struct TextDestSign : public TextDest
-	{
-		TextDestSign(v3s16 blockpos, s16 id, Client *client)
-		{
-			m_blockpos = blockpos;
-			m_id = id;
-			m_client = client;
-		}
-		void sendText(std::string text)
-		{
-			dstream<<"Changing text of a sign object: "
-					<<text<<std::endl;
-			m_client->sendSignText(m_blockpos, m_id, text);
-		}
-
-		v3s16 m_blockpos;
-		s16 m_id;
-		Client *m_client;
-	};
-
-	TextDest *textbuf_dest = NULL;
-	
-	//gui::IGUIWindow* input_window = NULL;
-	gui::IGUIStaticText* input_guitext = NULL;
-
-	/*
 		Main loop
 	*/
 
@@ -1599,8 +1619,8 @@ int main(int argc, char *argv[])
 		v2u32 screensize = driver->getScreenSize();
 		core::vector2d<s32> displaycenter(screensize.X/2,screensize.Y/2);
 		
-		pauseMenu->resizeGui();
-		inventoryMenu->resizeGui();
+		/*pauseMenu->resizeGui();
+		inventoryMenu->resizeGui();*/
 
 		// Hilight boxes collected during the loop and displayed
 		core::list< core::aabbox3d<f32> > hilightboxes;
@@ -1920,32 +1940,17 @@ int main(int argc, char *argv[])
 				if(selected_object->getTypeId() == MAPBLOCKOBJECT_TYPE_SIGN)
 				{
 					dstream<<"Sign object right-clicked"<<std::endl;
-					
-					unFocusGame();
 
-					input_guitext = guienv->addStaticText(L"",
-							core::rect<s32>(150,100,350,120),
-							true, // border?
-							false, // wordwrap?
-							NULL);
-
-					input_guitext->setDrawBackground(true);
+					text_input.start(new TextDestSign(
+							selected_object->getBlock()->getPos(),
+							selected_object->getId(),
+							&client));
 
 					if(random_input)
 					{
 						g_text_buffer = L"ASD LOL 8)";
 						g_text_buffer_accepted = true;
 					}
-					else
-					{
-						g_text_buffer = L"";
-						g_text_buffer_accepted = false;
-					}
-
-					textbuf_dest = new TextDestSign(
-							selected_object->getBlock()->getPos(),
-							selected_object->getId(),
-							&client);
 				}
 				/*
 					Otherwise pass the event to the server as-is
@@ -2314,38 +2319,40 @@ int main(int argc, char *argv[])
 		/*
 			Send actions returned by the inventory menu
 		*/
-		while(InventoryAction *a = inventoryMenu->getNextAction())
+		while(inventory_action_queue.size() != 0)
 		{
+			InventoryAction *a = inventory_action_queue.pop_front();
+
 			client.sendInventoryAction(a);
 			// Eat it
 			delete a;
 		}
 
-		if(input_guitext != NULL)
+		if(text_input.guitext != NULL)
 		{
 			/*wchar_t temptext[100];
 			swprintf(temptext, 100,
 					SWPRINTF_CHARSTRING,
 					g_text_buffer.substr(0,99).c_str()
 					);*/
-			input_guitext->setText(g_text_buffer.c_str());
+			text_input.guitext->setText(g_text_buffer.c_str());
 		}
 
 		/*
 			Text input stuff
 		*/
-		if(input_guitext != NULL && g_text_buffer_accepted)
+		if(text_input.guitext != NULL && g_text_buffer_accepted)
 		{
-			input_guitext->remove();
-			input_guitext = NULL;
+			text_input.guitext->remove();
+			text_input.guitext = NULL;
 			
-			if(textbuf_dest != NULL)
+			if(text_input.dest != NULL)
 			{
 				std::string text = wide_to_narrow(g_text_buffer);
 				dstream<<"Sending text: "<<text<<std::endl;
-				textbuf_dest->sendText(text);
-				delete textbuf_dest;
-				textbuf_dest = NULL;
+				text_input.dest->sendText(text);
+				delete text_input.dest;
+				text_input.dest = NULL;
 			}
 
 			focusGame();

@@ -22,9 +22,9 @@ IRRLICHTPATH = ../irrlicht/irrlicht-1.7.1
 JTHREADPATH = ../jthread/jthread-1.2.1
 
 #CXXFLAGS = -O2 -ffast-math -Wall -fomit-frame-pointer -pipe
-CXXFLAGS = -O2 -ffast-math -Wall -g -pipe
+#CXXFLAGS = -O2 -ffast-math -Wall -g -pipe
 #CXXFLAGS = -O1 -ffast-math -Wall -g
-#CXXFLAGS = -Wall -g -O0
+CXXFLAGS = -Wall -g -O0
 
 all: fast_linux
 

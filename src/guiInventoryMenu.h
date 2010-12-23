@@ -24,12 +24,13 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "common_irrlicht.h"
 #include "inventory.h"
 #include "utility.h"
+#include "modalMenu.h"
 
 void drawInventoryItem(gui::IGUIEnvironment* env,
 		InventoryItem *item, core::rect<s32> rect,
 		const core::rect<s32> *clip=0);
 
-class GUIInventoryMenu : public gui::IGUIElement
+class GUIInventoryMenu : public GUIModalMenu
 {
 	struct ItemSpec
 	{
@@ -71,34 +72,21 @@ class GUIInventoryMenu : public gui::IGUIElement
 public:
 	GUIInventoryMenu(gui::IGUIEnvironment* env,
 			gui::IGUIElement* parent, s32 id,
-			Inventory *inventory);
+			Inventory *inventory,
+			Queue<InventoryAction*> *actions,
+			int *active_menu_count);
 	~GUIInventoryMenu();
 
 	/*
 		Remove and re-add (or reposition) stuff
 	*/
-	void resizeGui();
+	void regenerateGui(v2u32 screensize);
 	
 	ItemSpec getItemAtPos(v2s32 p) const;
 	void drawList(const ListDrawSpec &s);
-	void draw();
-
-	void launch()
-	{
-		setVisible(true);
-		Environment->setFocus(this);
-	}
-
-	bool canTakeFocus(gui::IGUIElement *e)
-	{
-		return (e && (e == this || isMyChild(e)));
-	}
+	void drawMenu();
 
 	bool OnEvent(const SEvent& event);
-	
-	// Actions returned by this are sent to the server.
-	// Server replies by updating the inventory.
-	InventoryAction* getNextAction();
 	
 private:
 	v2s32 getBasePos() const
@@ -113,11 +101,9 @@ private:
 	core::array<ListDrawSpec> m_draw_positions;
 
 	Inventory *m_inventory;
-	v2u32 m_screensize_old;
 
 	ItemSpec *m_selected_item;
-	
-	Queue<InventoryAction*> m_actions;
+	Queue<InventoryAction*> *m_actions;
 };
 
 #endif
