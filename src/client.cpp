@@ -176,6 +176,7 @@ void Client::step(float dtime)
 		if(dr != m_env.getDayNightRatio())
 		{
 			//dstream<<"dr="<<dr<<std::endl;
+			dout_client<<DTIME<<"Client: changing day-night ratio"<<std::endl;
 			m_env.setDayNightRatio(dr);
 			m_env.expireMeshes(true);
 		}
@@ -1037,6 +1038,9 @@ bool Client::AsyncProcessPacket(LazyMeshUpdater &mesh_updater)
 		p.Z = readS16(&data[6]);
 		
 		//TimeTaker t1("TOCLIENT_REMOVENODE", g_device);
+		
+		// This will clear the cracking animation after digging
+		((ClientMap&)m_env.getMap()).clearTempMod(p);
 
 		core::map<v3s16, MapBlock*> modified_blocks;
 

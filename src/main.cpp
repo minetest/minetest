@@ -2114,6 +2114,7 @@ int main(int argc, char *argv[])
 			static v3s16 nodepos_old(-32768,-32768,-32768);
 
 			static float dig_time = 0.0;
+			static u16 dig_index = 0;
 
 			if(nodepos != nodepos_old)
 			{
@@ -2146,19 +2147,25 @@ int main(int argc, char *argv[])
 			}
 			if(g_input->getLeftState())
 			{
-				dig_time += dtime;
-				
 				float dig_time_complete = 0.5;
 				MapNode n = client.getNode(nodepos);
 				if(n.d == CONTENT_STONE)
 					dig_time_complete = 1.5;
+				
+				float dig_time_complete0 = dig_time_complete+client.getAvgRtt()*2;
+				if(dig_time_complete0 < 0.0)
+					dig_time_complete0 = 0.0;
 
-				u16 dig_index = (u16)(3.99*dig_time/dig_time_complete);
-				if(dig_time > 0.125)
+				dig_index = (u16)((float)CRACK_ANIMATION_LENGTH
+						* dig_time/dig_time_complete0);
+
+				if(dig_time > 0.125 && dig_index < CRACK_ANIMATION_LENGTH)
 				{
 					//dstream<<"dig_index="<<dig_index<<std::endl;
 					client.setTempMod(nodepos, NodeMod(NODEMOD_CRACK, dig_index));
 				}
+
+				dig_time += dtime;
 			}
 			
 			if(g_input->getRightClicked())

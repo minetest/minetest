@@ -79,5 +79,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #define WATER_LEVEL (0)
 
+// Length of cracking animation in count of images
+#define CRACK_ANIMATION_LENGTH 4
+
 #endif
 

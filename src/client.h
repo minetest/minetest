@@ -251,6 +251,15 @@ public:
 		v3s16 blockpos = ((ClientMap&)m_env.getMap()).clearTempMod(p);
 		m_env.getMap().updateMeshes(blockpos, m_env.getDayNightRatio());
 	}
+
+	float getAvgRtt()
+	{
+		JMutexAutoLock lock(m_con_mutex);
+		con::Peer *peer = m_con.GetPeerNoEx(PEER_ID_SERVER);
+		if(peer == NULL)
+			return 0.0;
+		return peer->avg_rtt;
+	}
 	
 private:
 	
