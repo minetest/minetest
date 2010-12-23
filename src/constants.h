@@ -47,7 +47,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 // Time after building, during which the following limit
 // is in use
-#define FULL_BLOCK_SEND_ENABLE_MIN_TIME_FROM_BUILDING 2.0
+//#define FULL_BLOCK_SEND_ENABLE_MIN_TIME_FROM_BUILDING 2.0
 // This many blocks are sent when player is building
 #define LIMITED_MAX_SIMULTANEOUS_BLOCK_SENDS 0
 // Override for the previous one when distance of block
@@ -69,7 +69,11 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 // Whether to catch all std::exceptions.
 // Assert will be called on such an event.
-#define CATCH_UNHANDLED_EXCEPTIONS 1
+#ifdef DEBUG
+	#define CATCH_UNHANDLED_EXCEPTIONS 0
+#else
+	#define CATCH_UNHANDLED_EXCEPTIONS 1
+#endif
 
 /*
 	Collecting active blocks is stopped after object data
@@ -80,7 +84,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #define WATER_LEVEL (0)
 
 // Length of cracking animation in count of images
-#define CRACK_ANIMATION_LENGTH 4
+#define CRACK_ANIMATION_LENGTH 5
 
 #endif
 

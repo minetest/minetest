@@ -167,6 +167,9 @@ TODO: Better handling of objects and mobs
 TODO: Draw big amounts of torches better (that is, throw them in the
       same meshbuffer (can the meshcollector class be used?))
 
+TODO: Check if the usage of Client::isFetchingBlocks() in
+      updateViewingRange() actually does something
+
 Doing now:
 ======================================================================
 
@@ -270,6 +273,7 @@ extern void set_default_settings();
 u16 g_selected_item = 0;
 
 IrrlichtDevice *g_device = NULL;
+Client *g_client = NULL;
 
 /*
 	GUI Stuff
@@ -323,6 +327,46 @@ u32 getTimeMs()
 	return g_irrlicht->getTime();
 }
 
+/*
+	Text input system
+*/
+
+struct TextDestSign : public TextDest
+{
+	TextDestSign(v3s16 blockpos, s16 id, Client *client)
+	{
+		m_blockpos = blockpos;
+		m_id = id;
+		m_client = client;
+	}
+	void gotText(std::wstring text)
+	{
+		std::string ntext = wide_to_narrow(text);
+		dstream<<"Changing text of a sign object: "
+				<<ntext<<std::endl;
+		m_client->sendSignText(m_blockpos, m_id, ntext);
+	}
+
+	v3s16 m_blockpos;
+	s16 m_id;
+	Client *m_client;
+};
+
+struct TextDestChat : public TextDest
+{
+	TextDestChat(Client *client)
+	{
+		m_client = client;
+	}
+	void gotText(std::wstring text)
+	{
+		m_client->sendChatMessage(text);
+		m_client->addChatMessage(text);
+	}
+
+	Client *m_client;
+};
+
 class MyEventReceiver : public IEventReceiver
 {
 public:
@@ -370,6 +414,14 @@ public:
 								&local_inventory, &inventory_action_queue,
 								&g_active_menu_count))->drop();
 						return true;
+					}
+					if(event.KeyInput.Key == irr::KEY_KEY_T)
+					{
+						TextDest *dest = new TextDestChat(g_client);
+
+						(new GUITextInputMenu(guienv, guiroot, -1,
+								&g_active_menu_count, dest,
+								L""))->drop();
 					}
 				}
 
@@ -965,31 +1017,6 @@ private:
 	s32 m_selection;
 };
 
-/*
-	Text input system
-*/
-
-struct TextDestSign : public TextDest
-{
-	TextDestSign(v3s16 blockpos, s16 id, Client *client)
-	{
-		m_blockpos = blockpos;
-		m_id = id;
-		m_client = client;
-	}
-	void gotText(std::wstring text)
-	{
-		std::string ntext = wide_to_narrow(text);
-		dstream<<"Changing text of a sign object: "
-				<<ntext<<std::endl;
-		m_client->sendSignText(m_blockpos, m_id, ntext);
-	}
-
-	v3s16 m_blockpos;
-	s16 m_id;
-	Client *m_client;
-};
-
 int main(int argc, char *argv[])
 {
 	/*
@@ -1334,6 +1361,10 @@ int main(int argc, char *argv[])
 	gui::IGUIFont* font = guienv->getFont("../data/fontlucida.png");
 	if(font)
 		skin->setFont(font);
+	
+	u32 text_height = font->getDimension(L"Hello, world!").Height;
+	dstream<<"text_height="<<text_height<<std::endl;
+
 	//skin->setColor(gui::EGDC_BUTTON_TEXT, video::SColor(255,0,0,0));
 	skin->setColor(gui::EGDC_BUTTON_TEXT, video::SColor(255,255,255,255));
 	//skin->setColor(gui::EGDC_3D_HIGH_LIGHT, video::SColor(0,0,0,0));
@@ -1343,11 +1374,7 @@ int main(int argc, char *argv[])
 	
 	const wchar_t *text = L"Loading and connecting...";
 	core::vector2d<s32> center(screenW/2, screenH/2);
-	core::dimension2d<u32> textd = font->getDimension(text);
-	std::cout<<DTIME<<"Text w="<<textd.Width<<" h="<<textd.Height<<std::endl;
-	// Have to add a bit to disable the text from word wrapping
-	//core::vector2d<s32> textsize(textd.Width+4, textd.Height);
-	core::vector2d<s32> textsize(300, textd.Height);
+	core::vector2d<s32> textsize(300, text_height);
 	core::rect<s32> textrect(center - textsize/2, center + textsize/2);
 
 	gui::IGUIStaticText *gui_loadingtext = guienv->addStaticText(
@@ -1389,6 +1416,8 @@ int main(int argc, char *argv[])
 			g_range_mutex,
 			g_viewing_range_nodes,
 			g_viewing_range_all);
+			
+	g_client = &client;
 	
 	Address connect_address(0,0,0,0, port);
 	try{
@@ -1497,6 +1526,14 @@ int main(int argc, char *argv[])
 			L"test",
 			core::rect<s32>(100, 70, 100+400, 70+(textsize.Y+5)),
 			false, false);
+	
+	// Chat text
+	gui::IGUIStaticText *chat_guitext = guienv->addStaticText(
+			L"Chat here\nOther line\nOther line\nOther line\nOther line",
+			core::rect<s32>(70, 60, 795, 150),
+			false, true);
+	core::list<std::wstring> chat_lines;
+	//chat_lines.push_back(L"Minetest-c55 up and running!");
 	
 	/*
 		Some statistics are collected in these
@@ -2033,7 +2070,7 @@ int main(int argc, char *argv[])
 			if(g_input->getLeftClicked() ||
 					(g_input->getLeftState() && nodepos != nodepos_old))
 			{
-				std::cout<<DTIME<<"Ground left-clicked"<<std::endl;
+				dstream<<DTIME<<"Started digging"<<std::endl;
 				client.groundAction(0, nodepos, neighbourpos, g_selected_item);
 			}
 			if(g_input->getLeftClicked())
@@ -2042,22 +2079,27 @@ int main(int argc, char *argv[])
 			}
 			if(g_input->getLeftState())
 			{
-				float dig_time_complete = 0.5;
 				MapNode n = client.getNode(nodepos);
+
+				// TODO: Get this from some table that is sent by server
+				float dig_time_complete = 0.5;
 				if(n.d == CONTENT_STONE)
 					dig_time_complete = 1.5;
 				
-				float dig_time_complete0 = dig_time_complete+client.getAvgRtt()*2;
-				if(dig_time_complete0 < 0.0)
-					dig_time_complete0 = 0.0;
-
 				dig_index = (u16)((float)CRACK_ANIMATION_LENGTH
-						* dig_time/dig_time_complete0);
+						* dig_time/dig_time_complete);
 
-				if(dig_time > 0.125 && dig_index < CRACK_ANIMATION_LENGTH)
+				if(dig_index < CRACK_ANIMATION_LENGTH)
 				{
 					//dstream<<"dig_index="<<dig_index<<std::endl;
 					client.setTempMod(nodepos, NodeMod(NODEMOD_CRACK, dig_index));
+				}
+				else
+				{
+					dstream<<DTIME<<"Digging completed"<<std::endl;
+					client.groundAction(3, nodepos, neighbourpos, g_selected_item);
+					client.clearTempMod(nodepos);
+					client.removeNode(nodepos);
 				}
 
 				dig_time += dtime;
@@ -2081,7 +2123,8 @@ int main(int argc, char *argv[])
 		
 		if(g_input->getLeftReleased())
 		{
-			std::cout<<DTIME<<"Left released"<<std::endl;
+			std::cout<<DTIME<<"Left button released (stopped digging)"
+					<<std::endl;
 			client.groundAction(2, v3s16(0,0,0), v3s16(0,0,0), 0);
 		}
 		if(g_input->getRightReleased())
@@ -2180,15 +2223,43 @@ int main(int argc, char *argv[])
 		}
 		
 		{
-			/*wchar_t temptext[100];
-			swprintf(temptext, 100,
-					SWPRINTF_CHARSTRING,
-					infotext.substr(0,99).c_str()
-					);
-
-			guitext_info->setText(temptext);*/
-
 			guitext_info->setText(infotext.c_str());
+		}
+		
+		/*
+			Get chat messages from client
+		*/
+		{
+			// Get messages
+			std::wstring message;
+			while(client.getChatMessage(message))
+			{
+				chat_lines.push_back(message);
+				if(chat_lines.size() > 5)
+				{
+					core::list<std::wstring>::Iterator
+							i = chat_lines.begin();
+					chat_lines.erase(i);
+				}
+			}
+			// Append them to form the whole static text and throw
+			// it to the gui element
+			std::wstring whole;
+			for(core::list<std::wstring>::Iterator
+					i = chat_lines.begin();
+					i != chat_lines.end(); i++)
+			{
+				whole += (*i) + L'\n';
+			}
+			chat_guitext->setText(whole.c_str());
+			// Update gui element size and position
+			core::rect<s32> rect(
+					10,
+					screensize.Y - 10 - text_height*chat_lines.size(),
+					screensize.X - 10,
+					screensize.Y - 10
+			);
+			chat_guitext->setRelativePosition(rect);
 		}
 
 		/*

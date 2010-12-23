@@ -60,5 +60,6 @@ void set_default_settings()
 	g_settings.setDefault("time_speed", "96");
 	g_settings.setDefault("server_unload_unused_sectors_timeout", "60");
 	g_settings.setDefault("server_map_save_interval", "60");
+	g_settings.setDefault("full_block_send_enable_min_time_from_building", "2.0");
 }
 

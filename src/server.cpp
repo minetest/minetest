@@ -355,8 +355,10 @@ void RemoteClient::GetNextBlocks(Server *server, float dtime,
 	{
 		SharedPtr<JMutexAutoLock> lock(m_time_from_building.getLock());
 		m_time_from_building.m_value += dtime;
-		if(m_time_from_building.m_value
-				< FULL_BLOCK_SEND_ENABLE_MIN_TIME_FROM_BUILDING)
+		/*if(m_time_from_building.m_value
+				< FULL_BLOCK_SEND_ENABLE_MIN_TIME_FROM_BUILDING)*/
+		if(m_time_from_building.m_value < g_settings.getFloat(
+					"full_block_send_enable_min_time_from_building"))
 		{
 			maximum_simultaneous_block_sends
 				= LIMITED_MAX_SIMULTANEOUS_BLOCK_SENDS;
@@ -1188,7 +1190,7 @@ void Server::AsyncRunStep()
 
 		NOTE: Some of this could be moved to RemoteClient
 	*/
-
+#if 0
 	{
 		JMutexAutoLock envlock(m_env_mutex);
 		JMutexAutoLock conlock(m_con_mutex);
@@ -1208,7 +1210,10 @@ void Server::AsyncRunStep()
 			client->m_dig_time_remaining -= dtime;
 
 			if(client->m_dig_time_remaining > 0)
+			{
+				client->m_time_from_building.set(0.0);
 				continue;
+			}
 
 			v3s16 p_under = client->m_dig_position;
 			
@@ -1287,6 +1292,7 @@ void Server::AsyncRunStep()
 			v.blitBack(modified_blocks);
 		}
 	}
+#endif
 
 	// Send object positions
 	{
@@ -1493,6 +1499,20 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 					m_time_of_day.get());
 			m_con.Send(peer->id, 0, data, true);
 		}
+		
+		// Send information about joining in chat
+		{
+			std::wstring name = L"unknown";
+			Player *player = m_env.getPlayer(peer_id);
+			if(player != NULL)
+				name = narrow_to_wide(player->getName());
+			
+			std::wstring message;
+			message += L"*** ";
+			message += name;
+			message += L" joined game";
+			BroadcastChatMessage(message);
+		}
 
 		return;
 	}
@@ -1688,7 +1708,12 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 		*/
 		if(action == 0)
 		{
+		/*
+			NOTE: This can be used in the future to check if
+			somebody is cheating, by checking the timing.
+		*/
 
+#if 0
 			u8 content;
 
 			try
@@ -1728,7 +1753,7 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 			
 			// Reset build time counter
 			getClient(peer->id)->m_time_from_building.set(0.0);
-			
+#endif
 		} // action == 0
 
 		/*
@@ -1736,11 +1761,117 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 		*/
 		else if(action == 2)
 		{
+#if 0
 			RemoteClient *client = getClient(peer->id);
 			JMutexAutoLock digmutex(client->m_dig_mutex);
 			client->m_dig_tool_item = -1;
+#endif
 		}
 
+		/*
+			3: Digging completed
+		*/
+		if(action == 3)
+		{
+			// Mandatory parameter; actually used for nothing
+			core::map<v3s16, MapBlock*> modified_blocks;
+
+			u8 material;
+
+			try
+			{
+				// Get material at position
+				material = m_env.getMap().getNode(p_under).d;
+				// If it's not diggable, do nothing
+				if(content_diggable(material) == false)
+				{
+					derr_server<<"Server: Not finishing digging: Node not diggable"
+							<<std::endl;
+					return;
+				}
+			}
+			catch(InvalidPositionException &e)
+			{
+				derr_server<<"Server: Not finishing digging: Node not found"
+						<<std::endl;
+				return;
+			}
+			
+			//TODO: Send to only other clients
+			
+			/*
+				Send the removal to all other clients
+			*/
+
+			// Create packet
+			u32 replysize = 8;
+			SharedBuffer<u8> reply(replysize);
+			writeU16(&reply[0], TOCLIENT_REMOVENODE);
+			writeS16(&reply[2], p_under.X);
+			writeS16(&reply[4], p_under.Y);
+			writeS16(&reply[6], p_under.Z);
+
+			for(core::map<u16, RemoteClient*>::Iterator
+				i = m_clients.getIterator();
+				i.atEnd() == false; i++)
+			{
+				// Get client and check that it is valid
+				RemoteClient *client = i.getNode()->getValue();
+				assert(client->peer_id == i.getNode()->getKey());
+				if(client->serialization_version == SER_FMT_VER_INVALID)
+					continue;
+
+				// Don't send if it's the same one
+				if(peer_id == client->peer_id)
+					continue;
+
+				// Send as reliable
+				m_con.Send(client->peer_id, 0, reply, true);
+			}
+			
+			/*
+				Update and send inventory
+			*/
+
+			if(g_settings.getBool("creative_mode") == false)
+			{
+				// Add to inventory and send inventory
+				InventoryItem *item = new MaterialItem(material, 1);
+				player->inventory.addItem("main", item);
+				SendInventory(player->peer_id);
+			}
+
+			/*
+				Remove the node
+				(this takes some time so it is done after the quick stuff)
+			*/
+			m_env.getMap().removeNodeAndUpdate(p_under, modified_blocks);
+			
+			/*
+				Update water
+			*/
+			
+			// Update water pressure around modification
+			// This also adds it to m_flow_active_nodes if appropriate
+
+			MapVoxelManipulator v(&m_env.getMap());
+			v.m_disable_water_climb =
+					g_settings.getBool("disable_water_climb");
+			
+			VoxelArea area(p_under-v3s16(1,1,1), p_under+v3s16(1,1,1));
+
+			try
+			{
+				v.updateAreaWaterPressure(area, m_flow_active_nodes);
+			}
+			catch(ProcessingLimitException &e)
+			{
+				dstream<<"Processing limit reached (1)"<<std::endl;
+			}
+			
+			v.blitBack(modified_blocks);
+		}
+		
 		/*
 			1: place block
 		*/
@@ -1948,6 +2079,7 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 			}
 
 		} // action == 1
+
 		/*
 			Catch invalid actions
 		*/
@@ -2098,6 +2230,57 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 			dstream<<"TOSERVER_INVENTORY_ACTION: "
 					<<"InventoryAction::deSerialize() returned NULL"
 					<<std::endl;
+		}
+	}
+	else if(command == TOSERVER_CHAT_MESSAGE)
+	{
+		/*
+			u16 command
+			u16 length
+			wstring message
+		*/
+		u8 buf[6];
+		std::string datastring((char*)&data[2], datasize-2);
+		std::istringstream is(datastring, std::ios_base::binary);
+		
+		// Read stuff
+		is.read((char*)buf, 2);
+		u16 len = readU16(buf);
+		
+		std::wstring message;
+		for(u16 i=0; i<len; i++)
+		{
+			is.read((char*)buf, 2);
+			message += (wchar_t)readU16(buf);
+		}
+
+		dstream<<"CHAT: "<<wide_to_narrow(message)<<std::endl;
+
+		/*
+			Send the message to all other clients
+		*/
+		for(core::map<u16, RemoteClient*>::Iterator
+			i = m_clients.getIterator();
+			i.atEnd() == false; i++)
+		{
+			// Get client and check that it is valid
+			RemoteClient *client = i.getNode()->getValue();
+			assert(client->peer_id == i.getNode()->getKey());
+			if(client->serialization_version == SER_FMT_VER_INVALID)
+				continue;
+
+			// Don't send if it's the same one
+			if(peer_id == client->peer_id)
+				continue;
+
+			// Get player name of this client
+			std::wstring name = L"unknown";
+			Player *player = m_env.getPlayer(client->peer_id);
+			if(player != NULL)
+				name = narrow_to_wide(player->getName());
+			
+			SendChatMessage(client->peer_id,
+					std::wstring(L"<")+name+L"> "+message);
 		}
 	}
 	else
@@ -2401,8 +2584,6 @@ void Server::SendInventory(u16 peer_id)
 {
 	DSTACK(__FUNCTION_NAME);
 	
-	//JMutexAutoLock envlock(m_env_mutex);
-	
 	Player* player = m_env.getPlayer(peer_id);
 
 	/*
@@ -2464,10 +2645,54 @@ void Server::SendInventory(u16 peer_id)
 	writeU16(&data[0], TOCLIENT_INVENTORY);
 	memcpy(&data[2], s.c_str(), s.size());
 	
-	//JMutexAutoLock conlock(m_con_mutex);
-
 	// Send as reliable
 	m_con.Send(peer_id, 0, data, true);
+}
+
+void Server::SendChatMessage(u16 peer_id, const std::wstring &message)
+{
+	DSTACK(__FUNCTION_NAME);
+	
+	std::ostringstream os(std::ios_base::binary);
+	u8 buf[12];
+	
+	// Write command
+	writeU16(buf, TOCLIENT_CHAT_MESSAGE);
+	os.write((char*)buf, 2);
+	
+	// Write length
+	writeU16(buf, message.size());
+	os.write((char*)buf, 2);
+	
+	// Write string
+	for(u32 i=0; i<message.size(); i++)
+	{
+		u16 w = message[i];
+		writeU16(buf, w);
+		os.write((char*)buf, 2);
+	}
+	
+	// Make data buffer
+	std::string s = os.str();
+	SharedBuffer<u8> data((u8*)s.c_str(), s.size());
+	// Send as reliable
+	m_con.Send(peer_id, 0, data, true);
+}
+
+void Server::BroadcastChatMessage(const std::wstring &message)
+{
+	for(core::map<u16, RemoteClient*>::Iterator
+		i = m_clients.getIterator();
+		i.atEnd() == false; i++)
+	{
+		// Get client and check that it is valid
+		RemoteClient *client = i.getNode()->getValue();
+		assert(client->peer_id == i.getNode()->getKey());
+		if(client->serialization_version == SER_FMT_VER_INVALID)
+			continue;
+
+		SendChatMessage(client->peer_id, message);
+	}
 }
 
 void Server::SendBlocks(float dtime)

@@ -37,6 +37,8 @@ GUITextInputMenu::GUITextInputMenu(gui::IGUIEnvironment* env,
 GUITextInputMenu::~GUITextInputMenu()
 {
 	removeChildren();
+	if(m_dest)
+		delete m_dest;
 }
 
 void GUITextInputMenu::removeChildren()
@@ -168,6 +170,16 @@ bool GUITextInputMenu::OnEvent(const SEvent& event)
 			switch(event.GUIEvent.Caller->getID())
 			{
 			case 257:
+				acceptInput();
+				quitMenu();
+				break;
+			}
+		}
+		if(event.GUIEvent.EventType==gui::EGET_EDITBOX_ENTER)
+		{
+			switch(event.GUIEvent.Caller->getID())
+			{
+			case 256:
 				acceptInput();
 				quitMenu();
 				break;

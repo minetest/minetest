@@ -447,8 +447,6 @@ void Client::ReceiveAll()
 					"InvalidIncomingDataException: what()="
 					<<e.what()<<std::endl;
 		}
-		//TODO: Testing
-		//break;
 	}
 }
 
@@ -985,6 +983,33 @@ void Client::ProcessData(u8 *data, u32 datasize, u16 sender_peer_id)
 		m_time_of_day.set(time);
 		//dstream<<"Client: time="<<time<<std::endl;
 	}
+	else if(command == TOCLIENT_CHAT_MESSAGE)
+	{
+		/*
+			u16 command
+			u16 length
+			wstring message
+		*/
+		u8 buf[6];
+		std::string datastring((char*)&data[2], datasize-2);
+		std::istringstream is(datastring, std::ios_base::binary);
+		
+		// Read stuff
+		is.read((char*)buf, 2);
+		u16 len = readU16(buf);
+		
+		std::wstring message;
+		for(u16 i=0; i<len; i++)
+		{
+			is.read((char*)buf, 2);
+			message += (wchar_t)readU16(buf);
+		}
+
+		/*dstream<<"Client received chat message: "
+				<<wide_to_narrow(message)<<std::endl;*/
+		
+		m_chat_queue.push_back(message);
+	}
 	// Default to queueing it (for slow commands)
 	else
 	{
@@ -1042,26 +1067,7 @@ bool Client::AsyncProcessPacket(LazyMeshUpdater &mesh_updater)
 		// This will clear the cracking animation after digging
 		((ClientMap&)m_env.getMap()).clearTempMod(p);
 
-		core::map<v3s16, MapBlock*> modified_blocks;
-
-		try
-		{
-			JMutexAutoLock envlock(m_env_mutex);
-			//TimeTaker t("removeNodeAndUpdate", m_device);
-			m_env.getMap().removeNodeAndUpdate(p, modified_blocks);
-		}
-		catch(InvalidPositionException &e)
-		{
-		}
-		
-		for(core::map<v3s16, MapBlock * >::Iterator
-				i = modified_blocks.getIterator();
-				i.atEnd() == false; i++)
-		{
-			v3s16 p = i.getNode()->getKey();
-			//m_env.getMap().updateMeshes(p);
-			mesh_updater.add(p);
-		}
+		removeNode(p);
 	}
 	else if(command == TOCLIENT_ADDNODE)
 	{
@@ -1078,24 +1084,7 @@ bool Client::AsyncProcessPacket(LazyMeshUpdater &mesh_updater)
 		MapNode n;
 		n.deSerialize(&data[8], ser_version);
 		
-		core::map<v3s16, MapBlock*> modified_blocks;
-
-		try
-		{
-			JMutexAutoLock envlock(m_env_mutex);
-			m_env.getMap().addNodeAndUpdate(p, n, modified_blocks);
-		}
-		catch(InvalidPositionException &e)
-		{}
-		
-		for(core::map<v3s16, MapBlock * >::Iterator
-				i = modified_blocks.getIterator();
-				i.atEnd() == false; i++)
-		{
-			v3s16 p = i.getNode()->getKey();
-			//m_env.getMap().updateMeshes(p);
-			mesh_updater.add(p);
-		}
+		addNode(p, n);
 	}
 	else if(command == TOCLIENT_BLOCKDATA)
 	{
@@ -1190,25 +1179,6 @@ bool Client::AsyncProcessPacket(LazyMeshUpdater &mesh_updater)
 			}
 		} //envlock
 		
-		
-		// Old version has zero lighting, update it.
-		if(ser_version == 0 || ser_version == 1)
-		{
-			derr_client<<"Client: Block in old format: "
-					"Calculating lighting"<<std::endl;
-			core::map<v3s16, MapBlock*> blocks_changed;
-			blocks_changed.insert(block->getPos(), block);
-			core::map<v3s16, MapBlock*> modified_blocks;
-			m_env.getMap().updateLighting(blocks_changed, modified_blocks);
-		}
-
-		/*
-			Update Mesh of this block and blocks at x-, y- and z-
-		*/
-
-		//m_env.getMap().updateMeshes(block->getPos());
-		mesh_updater.add(block->getPos());
-		
 		/*
 			Acknowledge block.
 		*/
@@ -1227,39 +1197,13 @@ bool Client::AsyncProcessPacket(LazyMeshUpdater &mesh_updater)
 		// Send as reliable
 		m_con.Send(PEER_ID_SERVER, 1, reply, true);
 
-#if 0
 		/*
-			Remove from history
+			Update Mesh of this block and blocks at x-, y- and z-.
+			Environment should not be locked as it interlocks with the
+			main thread, from which is will want to retrieve textures.
 		*/
-		{
-			JMutexAutoLock lock(m_fetchblock_mutex);
-			
-			if(m_fetchblock_history.find(p) != NULL)
-			{
-				m_fetchblock_history.remove(p);
-			}
-			else
-			{
-				/*
-					Acknowledge block.
-				*/
-				/*
-					[0] u16 command
-					[2] u8 count
-					[3] v3s16 pos_0
-					[3+6] v3s16 pos_1
-					...
-				*/
-				u32 replysize = 2+1+6;
-				SharedBuffer<u8> reply(replysize);
-				writeU16(&reply[0], TOSERVER_GOTBLOCKS);
-				reply[2] = 1;
-				writeV3S16(&reply[3], p);
-				// Send as reliable
-				m_con.Send(PEER_ID_SERVER, 1, reply, true);
-			}
-		}
-#endif
+
+		m_env.getMap().updateMeshes(block->getPos(), getDayNightRatio());
 	}
 	else
 	{
@@ -1383,71 +1327,6 @@ IncomingPacket Client::getPacket()
 	return packet;
 }
 
-#if 0
-void Client::removeNode(v3s16 nodepos)
-{
-	if(connectedAndInitialized() == false){
-		dout_client<<DTIME<<"Client::removeNode() cancelled (not connected)"
-				<<std::endl;
-		return;
-	}
-	
-	// Test that the position exists
-	try{
-		JMutexAutoLock envlock(m_env_mutex);
-		m_env.getMap().getNode(nodepos);
-	}
-	catch(InvalidPositionException &e)
-	{
-		dout_client<<DTIME<<"Client::removeNode() cancelled (doesn't exist)"
-				<<std::endl;
-		return;
-	}
-
-	SharedBuffer<u8> data(8);
-	writeU16(&data[0], TOSERVER_REMOVENODE);
-	writeS16(&data[2], nodepos.X);
-	writeS16(&data[4], nodepos.Y);
-	writeS16(&data[6], nodepos.Z);
-	Send(0, data, true);
-}
-
-void Client::addNodeFromInventory(v3s16 nodepos, u16 i)
-{
-	if(connectedAndInitialized() == false){
-		dout_client<<DTIME<<"Client::addNodeFromInventory() "
-				"cancelled (not connected)"
-				<<std::endl;
-		return;
-	}
-	
-	// Test that the position exists
-	try{
-		JMutexAutoLock envlock(m_env_mutex);
-		m_env.getMap().getNode(nodepos);
-	}
-	catch(InvalidPositionException &e)
-	{
-		dout_client<<DTIME<<"Client::addNode() cancelled (doesn't exist)"
-				<<std::endl;
-		return;
-	}
-
-	//u8 ser_version = m_server_ser_ver;
-
-	// SUGGESTION: The validity of the operation could be checked here too
-
-	u8 datasize = 2 + 6 + 2;
-	SharedBuffer<u8> data(datasize);
-	writeU16(&data[0], TOSERVER_ADDNODE_FROM_INVENTORY);
-	writeS16(&data[2], nodepos.X);
-	writeS16(&data[4], nodepos.Y);
-	writeS16(&data[6], nodepos.Z);
-	writeU16(&data[8], i);
-	Send(0, data, true);
-}
-#endif
-
 void Client::groundAction(u8 action, v3s16 nodepos_undersurface,
 		v3s16 nodepos_oversurface, u16 item)
 {
@@ -1563,6 +1442,34 @@ void Client::sendInventoryAction(InventoryAction *a)
 	Send(0, data, true);
 }
 
+void Client::sendChatMessage(const std::wstring &message)
+{
+	std::ostringstream os(std::ios_base::binary);
+	u8 buf[12];
+	
+	// Write command
+	writeU16(buf, TOSERVER_CHAT_MESSAGE);
+	os.write((char*)buf, 2);
+	
+	// Write length
+	writeU16(buf, message.size());
+	os.write((char*)buf, 2);
+	
+	// Write string
+	for(u32 i=0; i<message.size(); i++)
+	{
+		u16 w = message[i];
+		writeU16(buf, w);
+		os.write((char*)buf, 2);
+	}
+	
+	// Make data buffer
+	std::string s = os.str();
+	SharedBuffer<u8> data((u8*)s.c_str(), s.size());
+	// Send as reliable
+	Send(0, data, true);
+}
+
 void Client::sendPlayerPos()
 {
 	JMutexAutoLock envlock(m_env_mutex);
@@ -1610,7 +1517,52 @@ void Client::sendPlayerPos()
 	Send(0, data, false);
 }
 
+void Client::removeNode(v3s16 p)
+{
+	JMutexAutoLock envlock(m_env_mutex);
+	
+	core::map<v3s16, MapBlock*> modified_blocks;
 
+	try
+	{
+		//TimeTaker t("removeNodeAndUpdate", m_device);
+		m_env.getMap().removeNodeAndUpdate(p, modified_blocks);
+	}
+	catch(InvalidPositionException &e)
+	{
+	}
+	
+	for(core::map<v3s16, MapBlock * >::Iterator
+			i = modified_blocks.getIterator();
+			i.atEnd() == false; i++)
+	{
+		v3s16 p = i.getNode()->getKey();
+		m_env.getMap().updateMeshes(p, m_env.getDayNightRatio());
+	}
+}
+
+void Client::addNode(v3s16 p, MapNode n)
+{
+	JMutexAutoLock envlock(m_env_mutex);
+
+	core::map<v3s16, MapBlock*> modified_blocks;
+
+	try
+	{
+		m_env.getMap().addNodeAndUpdate(p, n, modified_blocks);
+	}
+	catch(InvalidPositionException &e)
+	{}
+	
+	for(core::map<v3s16, MapBlock * >::Iterator
+			i = modified_blocks.getIterator();
+			i.atEnd() == false; i++)
+	{
+		v3s16 p = i.getNode()->getKey();
+		m_env.getMap().updateMeshes(p, m_env.getDayNightRatio());
+	}
+}
+	
 void Client::updateCamera(v3f pos, v3f dir)
 {
 	m_env.getMap().updateCamera(pos, dir);

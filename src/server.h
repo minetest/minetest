@@ -242,9 +242,9 @@ public:
 		m_blocks_sent_mutex.Init();
 		m_blocks_sending_mutex.Init();
 		
-		m_dig_mutex.Init();
+		/*m_dig_mutex.Init();
 		m_dig_time_remaining = 0;
-		m_dig_tool_item = -1;
+		m_dig_tool_item = -1;*/
 	}
 	~RemoteClient()
 	{
@@ -301,11 +301,11 @@ public:
 	// Time from last placing or removing blocks
 	MutexedVariable<float> m_time_from_building;
 	
-	JMutex m_dig_mutex;
+	/*JMutex m_dig_mutex;
 	float m_dig_time_remaining;
 	// -1 = not digging
 	s16 m_dig_tool_item;
-	v3s16 m_dig_position;
+	v3s16 m_dig_position;*/
 
 private:
 	/*
@@ -416,6 +416,9 @@ private:
 	void SendObjectData(float dtime);
 	void SendPlayerInfos();
 	void SendInventory(u16 peer_id);
+	void SendChatMessage(u16 peer_id, const std::wstring &message);
+	void BroadcastChatMessage(const std::wstring &message);
+	
 	// Sends blocks to clients
 	void SendBlocks(float dtime);
 	

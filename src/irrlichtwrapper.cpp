@@ -51,16 +51,25 @@ video::ITexture* IrrlichtWrapper::getTexture(TextureSpec spec)
 		// Throw a request in
 		m_get_texture_queue.add(spec, 0, 0, &result_queue);
 		
-		dstream<<"Waiting for texture "<<spec.name<<std::endl;
-
-		// Wait result
-		GetResult<TextureSpec, video::ITexture*, u8, u8>
-				result = result_queue.pop_front(1000);
+		dstream<<"Waiting for texture from main thread: "
+				<<spec.name<<std::endl;
 		
-		// Check that at least something worked OK
-		assert(result.key.name == spec.name);
+		try
+		{
+			// Wait result for a second
+			GetResult<TextureSpec, video::ITexture*, u8, u8>
+					result = result_queue.pop_front(1000);
+		
+			// Check that at least something worked OK
+			assert(result.key.name == spec.name);
 
-		t = result.item;
+			t = result.item;
+		}
+		catch(ItemNotFoundException &e)
+		{
+			dstream<<"Waiting for texture timed out."<<std::endl;
+			t = NULL;
+		}
 	}
 
 	// Add to cache and return

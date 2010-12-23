@@ -207,6 +207,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\src\guiTextInputMenu.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\src\heightmap.cpp"
 				>
 			</File>

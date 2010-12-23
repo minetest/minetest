@@ -98,6 +98,14 @@ enum ToClientCommand
 		u16 command
 		u16 time (0-23999)
 	*/
+
+	TOCLIENT_CHAT_MESSAGE = 0x30,
+	/*
+		u16 command
+		u16 length
+		wstring message
+	*/
+
 };
 
 enum ToServerCommand
@@ -179,6 +187,7 @@ enum ToServerCommand
 		0: start digging (from undersurface)
 		1: place block (to abovesurface)
 		2: stop digging (all parameters ignored)
+		3: digging completed
 	*/
 	
 	TOSERVER_RELEASE = 0x29, // Not used
@@ -196,6 +205,14 @@ enum ToServerCommand
 	/*
 		See InventoryAction in inventory.h
 	*/
+
+	TOSERVER_CHAT_MESSAGE = 0x32,
+	/*
+		u16 command
+		u16 length
+		wstring message
+	*/
+
 };
 
 inline SharedBuffer<u8> makePacket_TOCLIENT_TIME_OF_DAY(u16 time)

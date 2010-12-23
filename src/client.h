@@ -191,6 +191,12 @@ public:
 
 	void sendSignText(v3s16 blockpos, s16 id, std::string text);
 	void sendInventoryAction(InventoryAction *a);
+	void sendChatMessage(const std::wstring &message);
+	
+	// locks envlock
+	void removeNode(v3s16 p);
+	// locks envlock
+	void addNode(v3s16 p, MapNode n);
 	
 	void updateCamera(v3f pos, v3f dir);
 	
@@ -201,14 +207,7 @@ public:
 
 	// Returns InvalidPositionException if not found
 	//f32 getGroundHeight(v2s16 p);
-	// Returns InvalidPositionException if not found
-	//bool isNodeUnderground(v3s16 p);
 
-	// Note: The players should not be exposed outside
-	// Return value is valid until client is destroyed
-	//Player * getLocalPlayer();
-	// Return value is valid until step()
-	//core::list<Player*> getPlayers();
 	v3f getPlayerPosition();
 
 	void setPlayerControl(PlayerControl &control);
@@ -218,8 +217,6 @@ public:
 	bool getLocalInventoryUpdated();
 	// Copies the inventory of the local player to parameter
 	void getLocalInventory(Inventory &dst);
-	// TODO: Functions for sending inventory editing commands to
-	//       server
 	
 	// Gets closest object pointed by the shootline
 	// Returns NULL if not found
@@ -260,7 +257,25 @@ public:
 			return 0.0;
 		return peer->avg_rtt;
 	}
-	
+
+	bool getChatMessage(std::wstring &message)
+	{
+		if(m_chat_queue.size() == 0)
+			return false;
+		message = m_chat_queue.pop_front();
+		return true;
+	}
+
+	void addChatMessage(const std::wstring &message)
+	{
+		JMutexAutoLock envlock(m_env_mutex);
+		LocalPlayer *player = m_env.getLocalPlayer();
+		assert(player != NULL);
+		std::wstring name = narrow_to_wide(player->getName());
+		m_chat_queue.push_back(
+				(std::wstring)L"<"+name+L"> "+message);
+	}
+
 private:
 	
 	// Virtual methods from con::PeerHandler
@@ -273,7 +288,7 @@ private:
 	void sendPlayerPos();
 	// This sends the player's current name etc to the server
 	void sendPlayerInfo();
-
+	
 	float m_packetcounter_timer;
 	float m_delete_unused_sectors_timer;
 	float m_connection_reinit_timer;
@@ -321,6 +336,8 @@ private:
 	// 0 <= m_daynight_i < DAYNIGHT_CACHE_COUNT
 	//s32 m_daynight_i;
 	//u32 m_daynight_ratio;
+
+	Queue<std::wstring> m_chat_queue;
 };
 
 #endif // !SERVER
