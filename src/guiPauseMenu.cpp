@@ -17,7 +17,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
-
 #include "guiPauseMenu.h"
 #include "debug.h"
 #include "serialization.h"
@@ -174,7 +173,7 @@ bool GUIPauseMenu::OnEvent(const SEvent& event)
 			}
 		}
 	}
-
+	
 	return Parent ? Parent->OnEvent(event) : false;
 }
 

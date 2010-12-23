@@ -22,7 +22,11 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "common_irrlicht.h"
 
-//TODO: Change GUIElement private
+/*
+	Remember to drop() the menu after creating, so that it can
+	remove itself when it wants to.
+*/
+
 class GUIModalMenu : public gui::IGUIElement
 {
 public:
@@ -50,18 +54,6 @@ public:
 		return (e && (e == this || isMyChild(e))) || m_allow_focus_removal;
 	}
 
-	void quitMenu()
-	{
-		m_allow_focus_removal = true;
-		// This removes Environment's grab on us
-		Environment->removeFocus(this);
-		this->remove();
-	}
-
-	virtual void regenerateGui(v2u32 screensize) = 0;
-
-	virtual void drawMenu() = 0;
-
 	void draw()
 	{
 		if(!IsVisible)
@@ -78,10 +70,25 @@ public:
 		drawMenu();
 	}
 	
+	/*
+		This should be called when the menu wants to quit
+	*/
+	void quitMenu()
+	{
+		m_allow_focus_removal = true;
+		// This removes Environment's grab on us
+		Environment->removeFocus(this);
+		this->remove();
+	}
+
+	virtual void regenerateGui(v2u32 screensize) = 0;
+	virtual void drawMenu() = 0;
 	virtual bool OnEvent(const SEvent& event) { return false; };
 	
 private:
 	int *m_active_menu_count;
+	// This might be necessary to expose to the implementation if it
+	// wants to launch other menus
 	bool m_allow_focus_removal;
 	v2u32 m_screensize_old;
 };

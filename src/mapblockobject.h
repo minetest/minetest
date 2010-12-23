@@ -531,6 +531,11 @@ public:
 		setBlockChanged();
 	}
 
+	std::string getText()
+	{
+		return m_text;
+	}
+
 	void setYaw(f32 yaw)
 	{
 		m_yaw = yaw;

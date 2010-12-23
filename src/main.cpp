@@ -224,11 +224,12 @@ TODO: Convert the text input system to use a modal menu... or something
 #include "constants.h"
 #include "strfnd.h"
 #include "porting.h"
-#include "guiPauseMenu.h"
 #include "irrlichtwrapper.h"
 #include "gettime.h"
 #include "porting.h"
+#include "guiPauseMenu.h"
 #include "guiInventoryMenu.h"
+#include "guiTextInputMenu.h"
 
 IrrlichtWrapper *g_irrlicht;
 
@@ -287,12 +288,6 @@ Queue<InventoryAction*> inventory_action_queue;
 // This is a copy of the inventory that the client's environment has
 Inventory local_inventory;
 
-std::wstring g_text_buffer;
-bool g_text_buffer_accepted = false;
-
-// When true, the mouse and keyboard are grabbed
-bool g_game_focused = true;
-
 /*
 	Debug streams
 */
@@ -334,6 +329,15 @@ public:
 	// This is the one method that we have to implement
 	virtual bool OnEvent(const SEvent& event)
 	{
+		/*
+			React to nothing here if a menu is active
+		*/
+		if(noMenuActive() == false)
+		{
+			clearInput();
+			return false;
+		}
+
 		// Remember whether each key is down or up
 		if(event.EventType == irr::EET_KEY_INPUT_EVENT)
 		{
@@ -342,82 +346,46 @@ public:
 			if(event.KeyInput.PressedDown)
 			{
 				//dstream<<"Pressed key: "<<(char)event.KeyInput.Key<<std::endl;
-				if(g_game_focused == false)
-				{
-					s16 key = event.KeyInput.Key;
-					if(key == irr::KEY_RETURN || key == irr::KEY_ESCAPE)
-					{
-						g_text_buffer_accepted = true;
-					}
-					else if(key == irr::KEY_BACK)
-					{
-						if(g_text_buffer.size() > 0)
-							g_text_buffer = g_text_buffer.substr
-									(0, g_text_buffer.size()-1);
-					}
-					else
-					{
-						wchar_t wc = event.KeyInput.Char;
-						if(wc != 0)
-							g_text_buffer += wc;
-					}
-				}
 				
-				//if(pauseMenu != NULL)
+				/*
+					Launch menus
+				*/
+
 				if(guienv != NULL && guiroot != NULL && g_device != NULL)
 				{
 					if(event.KeyInput.Key == irr::KEY_ESCAPE)
 					{
-						if(g_game_focused == true && noMenuActive())
-						{
-							dstream<<DTIME<<"MyEventReceiver: "
-									<<"Launching pause menu"<<std::endl;
-							// It will delete itself by itself
-							GUIPauseMenu *menu = new
-									GUIPauseMenu(guienv, guiroot, -1, g_device,
-									&g_active_menu_count);
-							menu->drop();
-							return true;
-						}
+						dstream<<DTIME<<"MyEventReceiver: "
+								<<"Launching pause menu"<<std::endl;
+						// It will delete itself by itself
+						(new GUIPauseMenu(guienv, guiroot, -1, g_device,
+								&g_active_menu_count))->drop();
+						return true;
 					}
-				}
-
-				//if(inventoryMenu != NULL)
-				if(guienv != NULL && guiroot != NULL && g_device != NULL)
-				{
 					if(event.KeyInput.Key == irr::KEY_KEY_I)
 					{
-						if(g_game_focused == true && noMenuActive())
-						{
-							dstream<<DTIME<<"MyEventReceiver: "
-									<<"Launching inventory"<<std::endl;
-							GUIInventoryMenu *inventoryMenu = new
-									GUIInventoryMenu(guienv, guiroot, -1,
-									&local_inventory, &inventory_action_queue,
-									&g_active_menu_count);
-							inventoryMenu->drop();
-							return true;
-						}
+						dstream<<DTIME<<"MyEventReceiver: "
+								<<"Launching inventory"<<std::endl;
+						(new GUIInventoryMenu(guienv, guiroot, -1,
+								&local_inventory, &inventory_action_queue,
+								&g_active_menu_count))->drop();
+						return true;
 					}
 				}
 
 				// Material selection
 				if(event.KeyInput.Key == irr::KEY_KEY_F)
 				{
-					if(g_game_focused == true)
-					{
-						if(g_selected_item < PLAYER_INVENTORY_SIZE-1)
-							g_selected_item++;
-						else
-							g_selected_item = 0;
-						dstream<<DTIME<<"Selected item: "
-								<<g_selected_item<<std::endl;
-					}
+					if(g_selected_item < PLAYER_INVENTORY_SIZE-1)
+						g_selected_item++;
+					else
+						g_selected_item = 0;
+					dstream<<DTIME<<"Selected item: "
+							<<g_selected_item<<std::endl;
 				}
 
 				// Viewing range selection
-				if(event.KeyInput.Key == irr::KEY_KEY_R
-						&& g_game_focused)
+				if(event.KeyInput.Key == irr::KEY_KEY_R)
 				{
 					JMutexAutoLock lock(g_range_mutex);
 					if(g_viewing_range_all)
@@ -433,8 +401,7 @@ public:
 				}
 
 				// Print debug stacks
-				if(event.KeyInput.Key == irr::KEY_KEY_P
-						&& g_game_focused)
+				if(event.KeyInput.Key == irr::KEY_KEY_P)
 				{
 					dstream<<"-----------------------------------------"
 							<<std::endl;
@@ -508,10 +475,11 @@ public:
 		return keyIsDown[keyCode];
 	}
 
-	MyEventReceiver()
+	void clearInput()
 	{
 		for (u32 i=0; i<KEY_KEY_CODES_COUNT; ++i)
 				keyIsDown[i] = false;
+		
 		leftclicked = false;
 		rightclicked = false;
 		leftreleased = false;
@@ -520,6 +488,11 @@ public:
 		left_active = false;
 		middle_active = false;
 		right_active = false;
+	}
+
+	MyEventReceiver()
+	{
+		clearInput();
 	}
 
 	bool leftclicked;
@@ -574,17 +547,6 @@ public:
 
 InputHandler *g_input = NULL;
 
-void focusGame()
-{
-	g_input->clear();
-	g_game_focused = true;
-}
-
-void unFocusGame()
-{
-	g_game_focused = false;
-}
-
 class RealInputHandler : public InputHandler
 {
 public:
@@ -617,14 +579,10 @@ public:
 	
 	virtual bool getLeftClicked()
 	{
-		if(g_game_focused == false)
-			return false;
 		return m_receiver->leftclicked;
 	}
 	virtual bool getRightClicked()
 	{
-		if(g_game_focused == false)
-			return false;
 		return m_receiver->rightclicked;
 	}
 	virtual void resetLeftClicked()
@@ -638,14 +596,10 @@ public:
 
 	virtual bool getLeftReleased()
 	{
-		if(g_game_focused == false)
-			return false;
 		return m_receiver->leftreleased;
 	}
 	virtual bool getRightReleased()
 	{
-		if(g_game_focused == false)
-			return false;
 		return m_receiver->rightreleased;
 	}
 	virtual void resetLeftReleased()
@@ -1015,11 +969,6 @@ private:
 	Text input system
 */
 
-struct TextDest
-{
-	virtual void sendText(std::string text) = 0;
-};
-
 struct TextDestSign : public TextDest
 {
 	TextDestSign(v3s16 blockpos, s16 id, Client *client)
@@ -1028,49 +977,17 @@ struct TextDestSign : public TextDest
 		m_id = id;
 		m_client = client;
 	}
-	void sendText(std::string text)
+	void gotText(std::wstring text)
 	{
+		std::string ntext = wide_to_narrow(text);
 		dstream<<"Changing text of a sign object: "
-				<<text<<std::endl;
-		m_client->sendSignText(m_blockpos, m_id, text);
+				<<ntext<<std::endl;
+		m_client->sendSignText(m_blockpos, m_id, ntext);
 	}
 
 	v3s16 m_blockpos;
 	s16 m_id;
 	Client *m_client;
-};
-
-struct TextInput
-{
-	TextDest *dest;
-	gui::IGUIStaticText* guitext;
-	/*std::wstring buffer;
-	bool buffer_accepted;*/
-
-	TextInput()
-	{
-		dest = NULL;
-		guitext = NULL;
-		//buffer_accepted = false;
-	}
-
-	void start(TextDest *a_dest)
-	{
-		unFocusGame();
-
-		guitext = guienv->addStaticText(L"",
-				core::rect<s32>(150,100,550,120),
-				true, // border?
-				false, // wordwrap?
-				NULL);
-
-		guitext->setDrawBackground(true);
-
-		g_text_buffer = L"";
-		g_text_buffer_accepted = false;
-
-		dest = a_dest;
-	}
 };
 
 int main(int argc, char *argv[])
@@ -1318,15 +1235,18 @@ int main(int argc, char *argv[])
 	{
 		snprintf(connect_name, 100, "%s", cmd_args.get("address").c_str());
 	}
-	else if(g_settings.get("address") != "" && is_yes(g_settings.get("host_game")) == false)
+	else if(is_yes(g_settings.get("host_game")) == false)
 	{
-		std::cout<<g_settings.get("address")<<std::endl;
-		snprintf(connect_name, 100, "%s", g_settings.get("address").c_str());
-	}
-	else
-	{
-		std::cout<<"Address to connect to [empty = host a game]: ";
-		std::cin.getline(connect_name, 100);
+		if(g_settings.get("address") != "")
+		{
+			std::cout<<g_settings.get("address")<<std::endl;
+			snprintf(connect_name, 100, "%s", g_settings.get("address").c_str());
+		}
+		else
+		{
+			std::cout<<"Address to connect to [empty = host a game]: ";
+			std::cin.getline(connect_name, 100);
+		}
 	}
 	
 	if(connect_name[0] == 0){
@@ -1545,9 +1465,6 @@ int main(int argc, char *argv[])
 		Add some gui stuff
 	*/
 
-	// Text input system
-	TextInput text_input;
-	
 	GUIQuickInventory *quick_inventory = new GUIQuickInventory
 			(guienv, NULL, v2s32(10, 70), 5, &local_inventory);
 	
@@ -1559,15 +1476,9 @@ int main(int argc, char *argv[])
 	guiroot = guienv->addStaticText(L"",
 			core::rect<s32>(0, 0, 10000, 10000));
 	
-	// Pause menu
-	//pauseMenu = new GUIPauseMenu(guienv, root, -1, device);
-	
-	// Inventory menu
-	/*inventoryMenu = new GUIInventoryMenu(guienv, guiroot, -1, &local_inventory,
-			&inventory_action_queue);*/
-
-	//pauseMenu->launch();
-	//inventoryMenu->launch();
+	// Test the text input system
+	/*(new GUITextInputMenu(guienv, guiroot, -1, &g_active_menu_count,
+			NULL))->drop();*/
 
 	// First line of debug text
 	gui::IGUIStaticText *guitext = guienv->addStaticText(
@@ -1619,9 +1530,6 @@ int main(int argc, char *argv[])
 		v2u32 screensize = driver->getScreenSize();
 		core::vector2d<s32> displaycenter(screensize.X/2,screensize.Y/2);
 		
-		/*pauseMenu->resizeGui();
-		inventoryMenu->resizeGui();*/
-
 		// Hilight boxes collected during the loop and displayed
 		core::list< core::aabbox3d<f32> > hilightboxes;
 		
@@ -1652,7 +1560,6 @@ int main(int argc, char *argv[])
 			Viewing range
 		*/
 		
-		//updateViewingRange(dtime, &client);
 		updateViewingRange(busytime, &client);
 		
 		/*
@@ -1772,23 +1679,9 @@ int main(int argc, char *argv[])
 		g_input->step(dtime);
 
 		/*
-			Special keys
-		*/
-		/*if(g_esc_pressed)
-		{
-			break;
-		}*/
-		/*if(g_i_pressed)
-		{
-			inventoryMenu->setVisible(true);
-			g_i_pressed = false;
-		}*/
-
-		/*
 			Player speed control
 		*/
 		
-		if(g_game_focused)
 		{
 			/*bool a_up,
 			bool a_down,
@@ -1810,14 +1703,7 @@ int main(int argc, char *argv[])
 			);
 			client.setPlayerControl(control);
 		}
-		else
-		{
-			// Set every key to inactive
-			PlayerControl control;
-			client.setPlayerControl(control);
-		}
 
-		//timer1.stop();
 		/*
 			Process environment
 		*/
@@ -1842,11 +1728,7 @@ int main(int argc, char *argv[])
 			Mouse and camera control
 		*/
 		
-		if((device->isWindowActive()
-				&& g_game_focused
-				&& noMenuActive()
-				)
-				|| random_input)
+		if((device->isWindowActive() && noMenuActive()) || random_input)
 		{
 			if(!random_input)
 				device->getCursorControl()->setVisible(false);
@@ -1940,16 +1822,24 @@ int main(int argc, char *argv[])
 				if(selected_object->getTypeId() == MAPBLOCKOBJECT_TYPE_SIGN)
 				{
 					dstream<<"Sign object right-clicked"<<std::endl;
-
-					text_input.start(new TextDestSign(
-							selected_object->getBlock()->getPos(),
-							selected_object->getId(),
-							&client));
-
-					if(random_input)
+					
+					if(random_input == false)
 					{
-						g_text_buffer = L"ASD LOL 8)";
-						g_text_buffer_accepted = true;
+						// Get a new text for it
+
+						TextDest *dest = new TextDestSign(
+								selected_object->getBlock()->getPos(),
+								selected_object->getId(),
+								&client);
+
+						SignObject *sign_object = (SignObject*)selected_object;
+
+						std::wstring wtext =
+								narrow_to_wide(sign_object->getText());
+
+						(new GUITextInputMenu(guienv, guiroot, -1,
+								&g_active_menu_count, dest,
+								wtext))->drop();
 					}
 				}
 				/*
@@ -2327,38 +2217,6 @@ int main(int argc, char *argv[])
 			// Eat it
 			delete a;
 		}
-
-		if(text_input.guitext != NULL)
-		{
-			/*wchar_t temptext[100];
-			swprintf(temptext, 100,
-					SWPRINTF_CHARSTRING,
-					g_text_buffer.substr(0,99).c_str()
-					);*/
-			text_input.guitext->setText(g_text_buffer.c_str());
-		}
-
-		/*
-			Text input stuff
-		*/
-		if(text_input.guitext != NULL && g_text_buffer_accepted)
-		{
-			text_input.guitext->remove();
-			text_input.guitext = NULL;
-			
-			if(text_input.dest != NULL)
-			{
-				std::string text = wide_to_narrow(g_text_buffer);
-				dstream<<"Sending text: "<<text<<std::endl;
-				text_input.dest->sendText(text);
-				delete text_input.dest;
-				text_input.dest = NULL;
-			}
-
-			focusGame();
-		}
-
-		//guiupdatetimer.stop();
 
 		/*
 			Drawing begins

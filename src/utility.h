@@ -1009,10 +1009,11 @@ public:
 	// Asks if empty
 	bool getBoolAsk(std::string name, std::string question, bool def)
 	{
-		std::string s = get(name);
-		if(s != "")
-			return is_yes(s);
+		// If it is in settings
+		if(m_settings.find(name))
+			return getBool(name);
 		
+		std::string s;
 		char templine[10];
 		std::cout<<question<<" [y/N]: ";
 		std::cin.getline(templine, 10);
@@ -1039,10 +1040,11 @@ public:
 
 	u16 getU16Ask(std::string name, std::string question, u16 def)
 	{
-		std::string s = get(name);
-		if(s != "")
-			return stoi(s, 0, 65535);
+		// If it is in settings
+		if(m_settings.find(name))
+			return getU16(name);
 		
+		std::string s;
 		char templine[10];
 		std::cout<<question<<" ["<<def<<"]: ";
 		std::cin.getline(templine, 10);
