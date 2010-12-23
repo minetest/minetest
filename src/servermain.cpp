@@ -138,6 +138,7 @@ int main(int argc, char *argv[])
 	allowed_options.insert("port", ValueSpec(VALUETYPE_STRING));
 	allowed_options.insert("disable-unittests", ValueSpec(VALUETYPE_FLAG));
 	allowed_options.insert("enable-unittests", ValueSpec(VALUETYPE_FLAG));
+	allowed_options.insert("map-dir", ValueSpec(VALUETYPE_STRING));
 
 	Settings cmd_args;
 	
@@ -298,8 +299,13 @@ int main(int argc, char *argv[])
 	std::cout<<"Running dedicated server"<<std::endl;
 	std::cout<<"========================"<<std::endl;
 	std::cout<<std::endl;
-
-	Server server("../map", hm_params, map_params);
+	
+	// Figure out path to map
+	std::string map_dir = "../map";
+	if(cmd_args.exists("map-dir"))
+		map_dir = cmd_args.get("map-dir");
+	
+	Server server(map_dir.c_str(), hm_params, map_params);
 	server.start(port);
 
 	for(;;)

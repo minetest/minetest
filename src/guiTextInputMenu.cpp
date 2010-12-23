@@ -120,12 +120,32 @@ void GUITextInputMenu::drawMenu()
 	gui::IGUIElement::draw();
 }
 
+void GUITextInputMenu::acceptInput()
+{
+	if(m_dest)
+	{
+		gui::IGUIElement *e = getElementFromId(256);
+		if(e != NULL)
+		{
+			m_dest->gotText(e->getText());
+		}
+		delete m_dest;
+		m_dest = NULL;
+	}
+}
+
 bool GUITextInputMenu::OnEvent(const SEvent& event)
 {
 	if(event.EventType==EET_KEY_INPUT_EVENT)
 	{
 		if(event.KeyInput.Key==KEY_ESCAPE && event.KeyInput.PressedDown)
 		{
+			quitMenu();
+			return true;
+		}
+		if(event.KeyInput.Key==KEY_RETURN && event.KeyInput.PressedDown)
+		{
+			acceptInput();
 			quitMenu();
 			return true;
 		}
@@ -148,15 +168,7 @@ bool GUITextInputMenu::OnEvent(const SEvent& event)
 			switch(event.GUIEvent.Caller->getID())
 			{
 			case 257:
-				if(m_dest)
-				{
-					gui::IGUIElement *e = getElementFromId(256);
-					if(e != NULL)
-					{
-						m_dest->gotText(e->getText());
-					}
-					delete m_dest;
-				}
+				acceptInput();
 				quitMenu();
 				break;
 			}

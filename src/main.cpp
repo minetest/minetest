@@ -2245,14 +2245,7 @@ int main(int argc, char *argv[])
 		{
 		//TimeTaker timer9("auxiliary drawings");
 		// 0ms
-
-		driver->draw2DLine(displaycenter - core::vector2d<s32>(10,0),
-				displaycenter + core::vector2d<s32>(10,0),
-				video::SColor(255,255,255,255));
-		driver->draw2DLine(displaycenter - core::vector2d<s32>(0,10),
-				displaycenter + core::vector2d<s32>(0,10),
-				video::SColor(255,255,255,255));
-
+		
 		//timer9.stop();
 		//TimeTaker //timer10("//timer10");
 		
@@ -2273,6 +2266,16 @@ int main(int argc, char *argv[])
 					<<std::endl;*/
 			driver->draw3DBox(*i, video::SColor(255,0,0,0));
 		}
+
+		/*
+			Draw crosshair
+		*/
+		driver->draw2DLine(displaycenter - core::vector2d<s32>(10,0),
+				displaycenter + core::vector2d<s32>(10,0),
+				video::SColor(255,255,255,255));
+		driver->draw2DLine(displaycenter - core::vector2d<s32>(0,10),
+				displaycenter + core::vector2d<s32>(0,10),
+				video::SColor(255,255,255,255));
 
 		}
 

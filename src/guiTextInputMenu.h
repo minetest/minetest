@@ -48,6 +48,8 @@ public:
 
 	void drawMenu();
 
+	void acceptInput();
+
 	bool OnEvent(const SEvent& event);
 	
 private:
