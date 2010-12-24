@@ -66,6 +66,14 @@ InventoryItem* InventoryItem::deSerialize(std::istream &is)
 		std::getline(is, inventorystring, '|');
 		return new MapBlockObjectItem(inventorystring);
 	}
+	else if(name == "ToolItem")
+	{
+		std::string toolname;
+		std::getline(is, toolname, ' ');
+		u16 wear;
+		is>>wear;
+		return new ToolItem(toolname, wear);
+	}
 	else
 	{
 		dstream<<"Unknown InventoryItem name=\""<<name<<"\""<<std::endl;
@@ -125,6 +133,19 @@ MapBlockObject * MapBlockObjectItem::createObject
 	{
 		RatObject *obj = new RatObject(NULL, -1, pos);
 		return obj;
+	}
+	else if(name == "ItemObj")
+	{
+		/*
+			Now we are an inventory item containing the serialization
+			string of an object that contains the serialization
+			string of an inventory item. Fuck this.
+		*/
+		//assert(0);
+		dstream<<__FUNCTION_NAME<<": WARNING: Ignoring ItemObj "
+				<<"because an item-object should never be inside "
+				<<"an object-item."<<std::endl;
+		return NULL;
 	}
 	else
 	{

@@ -105,6 +105,10 @@ SUGG: Make the amount of blocks sending to client and the total
 	  main network eater of this system, so it is the one that has
 	  to be throttled so that RTTs stay low.
 
+SUGG: Meshes of blocks could be split into 6 meshes facing into
+      different directions and then only those drawn that need to be
+	  - Also an 1-dimensional tile map would be nice probably
+
 TODO: Untie client network operations from framerate
       - Needs some input queues or something
 	  - Not really necessary?
@@ -173,7 +177,9 @@ TODO: Check if the usage of Client::isFetchingBlocks() in
 Doing now:
 ======================================================================
 
-TODO: Convert the text input system to use a modal menu... or something
+TODO: Tool items
+
+- Actually, tool items should be just a little special MapBlockItems
 
 ======================================================================
 
@@ -269,9 +275,6 @@ extern void set_default_settings();
 	Random stuff
 */
 
-//u16 g_selected_material = 0;
-u16 g_selected_item = 0;
-
 IrrlichtDevice *g_device = NULL;
 Client *g_client = NULL;
 
@@ -291,6 +294,8 @@ bool noMenuActive()
 Queue<InventoryAction*> inventory_action_queue;
 // This is a copy of the inventory that the client's environment has
 Inventory local_inventory;
+
+u16 g_selected_item = 0;
 
 /*
 	Debug streams
@@ -1833,6 +1838,10 @@ int main(int argc, char *argv[])
 		MapBlockObject *selected_object = client.getSelectedObject
 				(d*BS, camera_position, shootline);
 
+		/*
+			If it's pointing to a MapBlockObject
+		*/
+
 		if(selected_object != NULL)
 		{
 			//dstream<<"Client returned selected_object != NULL"<<std::endl;
@@ -2041,24 +2050,14 @@ int main(int argc, char *argv[])
 			} // regular block
 		} // for coords
 
+		static float nodig_delay_counter = 0.0;
+
 		if(nodefound)
 		{
 			static v3s16 nodepos_old(-32768,-32768,-32768);
 
 			static float dig_time = 0.0;
 			static u16 dig_index = 0;
-
-			if(nodepos != nodepos_old)
-			{
-				std::cout<<DTIME<<"Pointing at ("<<nodepos.X<<","
-						<<nodepos.Y<<","<<nodepos.Z<<")"<<std::endl;
-
-				if(nodepos_old != v3s16(-32768,-32768,-32768))
-				{
-					client.clearTempMod(nodepos_old);
-					dig_time = 0.0;
-				}
-			}
 
 			hilightboxes.push_back(nodefacebox);
 			
@@ -2067,42 +2066,87 @@ int main(int argc, char *argv[])
 				client.clearTempMod(nodepos);
 				dig_time = 0.0;
 			}
-			if(g_input->getLeftClicked() ||
-					(g_input->getLeftState() && nodepos != nodepos_old))
+			
+			if(nodig_delay_counter > 0.0)
 			{
-				dstream<<DTIME<<"Started digging"<<std::endl;
-				client.groundAction(0, nodepos, neighbourpos, g_selected_item);
+				nodig_delay_counter -= dtime;
 			}
-			if(g_input->getLeftClicked())
+			else
 			{
-				client.setTempMod(nodepos, NodeMod(NODEMOD_CRACK, 0));
-			}
-			if(g_input->getLeftState())
-			{
-				MapNode n = client.getNode(nodepos);
-
-				// TODO: Get this from some table that is sent by server
-				float dig_time_complete = 0.5;
-				if(n.d == CONTENT_STONE)
-					dig_time_complete = 1.5;
-				
-				dig_index = (u16)((float)CRACK_ANIMATION_LENGTH
-						* dig_time/dig_time_complete);
-
-				if(dig_index < CRACK_ANIMATION_LENGTH)
+				if(nodepos != nodepos_old)
 				{
-					//dstream<<"dig_index="<<dig_index<<std::endl;
-					client.setTempMod(nodepos, NodeMod(NODEMOD_CRACK, dig_index));
-				}
-				else
-				{
-					dstream<<DTIME<<"Digging completed"<<std::endl;
-					client.groundAction(3, nodepos, neighbourpos, g_selected_item);
-					client.clearTempMod(nodepos);
-					client.removeNode(nodepos);
+					std::cout<<DTIME<<"Pointing at ("<<nodepos.X<<","
+							<<nodepos.Y<<","<<nodepos.Z<<")"<<std::endl;
+
+					if(nodepos_old != v3s16(-32768,-32768,-32768))
+					{
+						client.clearTempMod(nodepos_old);
+						dig_time = 0.0;
+					}
 				}
 
-				dig_time += dtime;
+				if(g_input->getLeftClicked() ||
+						(g_input->getLeftState() && nodepos != nodepos_old))
+				{
+					dstream<<DTIME<<"Started digging"<<std::endl;
+					client.groundAction(0, nodepos, neighbourpos, g_selected_item);
+				}
+				if(g_input->getLeftClicked())
+				{
+					client.setTempMod(nodepos, NodeMod(NODEMOD_CRACK, 0));
+				}
+				if(g_input->getLeftState())
+				{
+					MapNode n = client.getNode(nodepos);
+
+					// TODO: Get this from some table that is sent by server
+					float dig_time_complete = 0.5;
+					if(n.d == CONTENT_STONE || n.d == CONTENT_COALSTONE)
+					{
+						dig_time_complete = 10.0;
+
+						InventoryList *mlist = local_inventory.getList("main");
+						if(mlist != NULL)
+						{
+							InventoryItem *item = mlist->getItem(g_selected_item);
+							if((std::string)item->getName() == "ToolItem")
+							{
+								ToolItem *titem = (ToolItem*)item;
+								if(titem->getToolName() == "WPick")
+								{
+									dig_time_complete = 1.2;
+								}
+								else if(titem->getToolName() == "STPick")
+								{
+									dig_time_complete = 0.6;
+								}
+							}
+						}
+					}
+					
+					dig_index = (u16)((float)CRACK_ANIMATION_LENGTH
+							* dig_time/dig_time_complete);
+
+					if(dig_index < CRACK_ANIMATION_LENGTH)
+					{
+						//dstream<<"dig_index="<<dig_index<<std::endl;
+						client.setTempMod(nodepos, NodeMod(NODEMOD_CRACK, dig_index));
+					}
+					else
+					{
+						dstream<<DTIME<<"Digging completed"<<std::endl;
+						client.groundAction(3, nodepos, neighbourpos, g_selected_item);
+						client.clearTempMod(nodepos);
+						client.removeNode(nodepos);
+
+						dig_time = 0;
+
+						nodig_delay_counter = dig_time_complete
+								/ (float)CRACK_ANIMATION_LENGTH;
+					}
+
+					dig_time += dtime;
+				}
 			}
 			
 			if(g_input->getRightClicked())

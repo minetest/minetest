@@ -196,6 +196,78 @@ private:
 	std::string m_inventorystring;
 };
 
+class ToolItem : public InventoryItem
+{
+public:
+	ToolItem(std::string toolname, u16 wear)
+	{
+		m_toolname = toolname;
+		m_wear = wear;
+	}
+	/*
+		Implementation interface
+	*/
+	virtual const char* getName() const
+	{
+		return "ToolItem";
+	}
+	virtual void serialize(std::ostream &os)
+	{
+		os<<getName();
+		os<<" ";
+		os<<m_toolname;
+		os<<" ";
+		os<<m_wear;
+	}
+	virtual InventoryItem* clone()
+	{
+		return new ToolItem(m_toolname, m_wear);
+	}
+#ifndef SERVER
+	video::ITexture * getImage()
+	{
+		if(m_toolname == "WPick")
+			return g_irrlicht->getTexture("../data/tool_wpick.png");
+		if(m_toolname == "STPick")
+			return g_irrlicht->getTexture("../data/tool_stpick.png");
+		// Default to cloud texture
+		return g_irrlicht->getTexture(tile_texture_path_get(TILE_CLOUD));
+	}
+#endif
+	std::string getText()
+	{
+		std::ostringstream os;
+		u16 f = 4;
+		u16 d = 65535/f;
+		u16 i;
+		for(i=0; i<(65535-m_wear)/d; i++)
+			os<<'X';
+		for(; i<f; i++)
+			os<<'-';
+		return os.str();
+		
+		/*std::ostringstream os;
+		os<<m_toolname;
+		os<<" ";
+		os<<(m_wear/655);
+		return os.str();*/
+	}
+	/*
+		Special methods
+	*/
+	std::string getToolName()
+	{
+		return m_toolname;
+	}
+	u16 getWear()
+	{
+		return m_wear;
+	}
+private:
+	std::string m_toolname;
+	u16 m_wear;
+};
+
 class InventoryList
 {
 public:

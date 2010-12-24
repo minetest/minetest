@@ -568,6 +568,39 @@ void Client::ProcessData(u8 *data, u32 datasize, u16 sender_peer_id)
 	// making some copypasta
 	{}
 
+	if(command == TOCLIENT_REMOVENODE)
+	{
+		if(datasize < 8)
+			return;
+		v3s16 p;
+		p.X = readS16(&data[2]);
+		p.Y = readS16(&data[4]);
+		p.Z = readS16(&data[6]);
+		
+		//TimeTaker t1("TOCLIENT_REMOVENODE", g_device);
+		
+		// This will clear the cracking animation after digging
+		((ClientMap&)m_env.getMap()).clearTempMod(p);
+
+		removeNode(p);
+	}
+	else if(command == TOCLIENT_ADDNODE)
+	{
+		if(datasize < 8 + MapNode::serializedLength(ser_version))
+			return;
+
+		v3s16 p;
+		p.X = readS16(&data[2]);
+		p.Y = readS16(&data[4]);
+		p.Z = readS16(&data[6]);
+		
+		//TimeTaker t1("TOCLIENT_ADDNODE", g_device);
+
+		MapNode n;
+		n.deSerialize(&data[8], ser_version);
+		
+		addNode(p, n);
+	}
 	if(command == TOCLIENT_PLAYERPOS)
 	{
 		dstream<<"WARNING: Received deprecated TOCLIENT_PLAYERPOS"
@@ -1023,7 +1056,7 @@ void Client::ProcessData(u8 *data, u32 datasize, u16 sender_peer_id)
 /*
 	Returns true if there was something in queue
 */
-bool Client::AsyncProcessPacket(LazyMeshUpdater &mesh_updater)
+bool Client::AsyncProcessPacket()
 {
 	DSTACK(__FUNCTION_NAME);
 	
@@ -1053,40 +1086,7 @@ bool Client::AsyncProcessPacket(LazyMeshUpdater &mesh_updater)
 	
 	ToClientCommand command = (ToClientCommand)readU16(&data[0]);
 
-	if(command == TOCLIENT_REMOVENODE)
-	{
-		if(datasize < 8)
-			return true;
-		v3s16 p;
-		p.X = readS16(&data[2]);
-		p.Y = readS16(&data[4]);
-		p.Z = readS16(&data[6]);
-		
-		//TimeTaker t1("TOCLIENT_REMOVENODE", g_device);
-		
-		// This will clear the cracking animation after digging
-		((ClientMap&)m_env.getMap()).clearTempMod(p);
-
-		removeNode(p);
-	}
-	else if(command == TOCLIENT_ADDNODE)
-	{
-		if(datasize < 8 + MapNode::serializedLength(ser_version))
-			return true;
-
-		v3s16 p;
-		p.X = readS16(&data[2]);
-		p.Y = readS16(&data[4]);
-		p.Z = readS16(&data[6]);
-		
-		//TimeTaker t1("TOCLIENT_ADDNODE", g_device);
-
-		MapNode n;
-		n.deSerialize(&data[8], ser_version);
-		
-		addNode(p, n);
-	}
-	else if(command == TOCLIENT_BLOCKDATA)
+	if(command == TOCLIENT_BLOCKDATA)
 	{
 		// Ignore too small packet
 		if(datasize < 8)
@@ -1226,24 +1226,11 @@ bool Client::AsyncProcessData()
 {
 	for(;;)
 	{
-		// We want to update the meshes as soon as a single packet has
-		// been processed
-		LazyMeshUpdater mesh_updater(&m_env);
-		bool r = AsyncProcessPacket(mesh_updater);
+		bool r = AsyncProcessPacket();
 		if(r == false)
 			break;
 	}
 	return false;
-
-	/*LazyMeshUpdater mesh_updater(&m_env);
-	for(;;)
-	{
-		bool r = AsyncProcessPacket(mesh_updater);
-		if(r == false)
-			break;
-	}
-	return false;*/
-
 }
 
 void Client::Send(u16 channelnum, SharedBuffer<u8> data, bool reliable)
@@ -1251,42 +1238,6 @@ void Client::Send(u16 channelnum, SharedBuffer<u8> data, bool reliable)
 	JMutexAutoLock lock(m_con_mutex);
 	m_con.Send(PEER_ID_SERVER, channelnum, data, reliable);
 }
-
-#if 0
-void Client::fetchBlock(v3s16 p, u8 flags)
-{
-	if(connectedAndInitialized() == false)
-		throw ClientNotReadyException
-		("ClientNotReadyException: connectedAndInitialized() == false");
-
-	/*dstream<<"Client::fetchBlock(): Sending GETBLOCK for ("
-			<<p.X<<","<<p.Y<<","<<p.Z<<")"<<std::endl;*/
-
-	JMutexAutoLock conlock(m_con_mutex);
-
-	SharedBuffer<u8> data(9);
-	writeU16(&data[0], TOSERVER_GETBLOCK);
-	writeS16(&data[2], p.X);
-	writeS16(&data[4], p.Y);
-	writeS16(&data[6], p.Z);
-	writeU8(&data[8], flags);
-	m_con.Send(PEER_ID_SERVER, 1, data, true);
-}
-
-/*
-	Calls fetchBlock() on some nearby missing blocks.
-
-	Returns when any of various network load indicators go over limit.
-
-	Does nearly the same thing as the old updateChangedVisibleArea()
-*/
-void Client::fetchBlocks()
-{
-	if(connectedAndInitialized() == false)
-		throw ClientNotReadyException
-		("ClientNotReadyException: connectedAndInitialized() == false");
-}
-#endif
 
 bool Client::isFetchingBlocks()
 {
@@ -1369,7 +1320,7 @@ void Client::clickObject(u8 button, v3s16 blockpos, s16 id, u16 item)
 	}
 	
 	/*
-		[0] u16 command
+		[0] u16 command=TOSERVER_CLICK_OBJECT
 		[2] u8 button (0=left, 1=right)
 		[3] v3s16 block
 		[9] s16 id

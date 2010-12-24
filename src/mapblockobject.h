@@ -31,6 +31,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #define MAPBLOCKOBJECT_TYPE_PLAYER 0
 #define MAPBLOCKOBJECT_TYPE_SIGN 2
 #define MAPBLOCKOBJECT_TYPE_RAT 3
+#define MAPBLOCKOBJECT_TYPE_ITEM 4
 // Used for handling selecting special stuff
 //#define MAPBLOCKOBJECT_TYPE_PSEUDO 1000
 
@@ -717,6 +718,182 @@ protected:
 	float m_counter1;
 	float m_counter2;
 	float m_age;
+};
+
+/*
+	An object on the map that represents an inventory item
+*/
+
+class InventoryItem;
+
+class ItemObject : public MapBlockObject
+{
+public:
+	// The constructor of every MapBlockObject should be like this
+	ItemObject(MapBlock *block, s16 id, v3f pos):
+		MapBlockObject(block, id, pos),
+		m_node(NULL)
+	{
+		/*m_selection_box = new core::aabbox3d<f32>
+				(-BS*0.4,-BS*0.5,-BS*0.4, BS*0.4,BS*0.5,BS*0.4);*/
+		m_selection_box = new core::aabbox3d<f32>
+				(-BS/3,-BS/2,-BS/3, BS/3,-BS/2+BS*2/3,BS/3);
+		m_yaw = 0.0;
+	}
+	virtual ~ItemObject()
+	{
+		delete m_selection_box;
+	}
+	
+	/*
+		Implementation interface
+	*/
+	virtual u16 getTypeId() const
+	{
+		return MAPBLOCKOBJECT_TYPE_ITEM;
+	}
+	virtual void serialize(std::ostream &os, u8 version)
+	{
+		serializeBase(os, version);
+		u8 buf[2];
+
+		// Write text length
+		writeU16(buf, m_itemstring.size());
+		os.write((char*)buf, 2);
+		
+		// Write text
+		os.write(m_itemstring.c_str(), m_itemstring.size());
+	}
+	virtual void update(std::istream &is, u8 version)
+	{
+		u8 buf[2];
+
+		// Read text length
+		is.read((char*)buf, 2);
+		u16 size = readU16(buf);
+
+		// Read text
+		std::string old_itemstring = m_itemstring;
+		m_itemstring.clear();
+		for(u16 i=0; i<size; i++)
+		{
+			is.read((char*)buf, 1);
+			m_itemstring += buf[0];
+		}
+		
+#ifndef SERVER
+		if(m_itemstring != old_itemstring && m_node)
+		{
+			/*
+				Update texture
+			*/
+			video::ITexture *texture = getItemImage();
+			scene::IMesh *mesh = m_node->getMesh();
+			if(mesh->getMeshBufferCount() >= 1)
+			{
+				scene::IMeshBuffer *buf = mesh->getMeshBuffer(0);
+				//dstream<<"Setting texture "<<texture<<std::endl;
+				buf->getMaterial().setTexture(0, texture);
+			}
+		}
+		
+		updateSceneNode();
+#endif
+	}
+
+	virtual bool serverStep(float dtime, u32 daynight_ratio)
+	{
+		return false;
+	}
+
+#ifndef SERVER
+	virtual void clientStep(float dtime)
+	{
+		m_yaw += dtime * 90;
+		if(m_yaw >= 360.)
+			m_yaw -= 360.;
+
+		updateSceneNode();
+	}
+	
+	virtual void addToScene(scene::ISceneManager *smgr);
+	
+	virtual void removeFromScene()
+	{
+		if(m_node != NULL)
+		{
+			m_node->remove();
+			m_node = NULL;
+		}
+	}
+	virtual void updateLight(u8 light_at_pos)
+	{
+		if(m_node == NULL)
+			return;
+
+		u8 li = decode_light(light_at_pos);
+		video::SColor color(255,li,li,li);
+
+		scene::IMesh *mesh = m_node->getMesh();
+		
+		u16 mc = mesh->getMeshBufferCount();
+		for(u16 j=0; j<mc; j++)
+		{
+			scene::IMeshBuffer *buf = mesh->getMeshBuffer(j);
+			video::S3DVertex *vertices = (video::S3DVertex*)buf->getVertices();
+			u16 vc = buf->getVertexCount();
+			for(u16 i=0; i<vc; i++)
+			{
+				vertices[i].Color = color;
+			}
+		}
+	}
+#endif
+
+	virtual std::string infoText()
+	{
+		return std::string("\"") + m_itemstring + "\"";
+	}
+
+	virtual std::string getInventoryString()
+	{
+		return std::string("ItemObj ")+m_itemstring;
+	}
+
+	/*
+		Special methods
+	*/
+
+	InventoryItem * createInventoryItem();
+	
+#ifndef SERVER
+	video::ITexture * getItemImage();
+
+	void updateSceneNode()
+	{
+		if(m_node != NULL)
+		{
+			m_node->setPosition(getAbsolutePos());
+			m_node->setRotation(v3f(0, m_yaw, 0));
+		}
+	}
+#endif
+
+	void setItemString(std::string inventorystring)
+	{
+		m_itemstring = inventorystring;
+		setBlockChanged();
+	}
+
+	std::string getItemString()
+	{
+		return m_itemstring;
+	}
+
+protected:
+	scene::IMeshSceneNode *m_node;
+	std::string m_itemstring;
+	f32 m_yaw;
 };
 
 /*

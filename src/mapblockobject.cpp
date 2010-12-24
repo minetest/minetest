@@ -21,6 +21,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "mapblock.h"
 // Only for ::getNodeBox, TODO: Get rid of this
 #include "map.h"
+#include "inventory.h"
+#include "irrlichtwrapper.h"
 
 /*
 	MapBlockObject
@@ -293,10 +295,101 @@ void RatObject::addToScene(scene::ISceneManager *smgr)
 }
 #endif
 
+/*
+	ItemObject
+*/
 #ifndef SERVER
+void ItemObject::addToScene(scene::ISceneManager *smgr)
+{
+	if(m_node != NULL)
+		return;
+	
+	//video::IVideoDriver* driver = smgr->getVideoDriver();
+	
+	// Get image of item for showing
+	video::ITexture *texture = getItemImage();
+
+	/*
+		Create a mesh
+	*/
+
+	scene::SMesh *mesh = new scene::SMesh();
+	{
+	scene::IMeshBuffer *buf = new scene::SMeshBuffer();
+	video::SColor c(255,255,255,255);
+	video::S3DVertex vertices[4] =
+	{
+		/*video::S3DVertex(BS/2,-BS/2,0, 0,0,0, c, 0,1),
+		video::S3DVertex(-BS/2,-BS/2,0, 0,0,0, c, 1,1),
+		video::S3DVertex(-BS/2,BS/2,0, 0,0,0, c, 1,0),
+		video::S3DVertex(BS/2,BS/2,0, 0,0,0, c, 0,0),*/
+		video::S3DVertex(BS/3,-BS/2,0, 0,0,0, c, 0,1),
+		video::S3DVertex(-BS/3,-BS/2,0, 0,0,0, c, 1,1),
+		video::S3DVertex(-BS/3,-BS/2+BS*2/3,0, 0,0,0, c, 1,0),
+		video::S3DVertex(BS/3,-BS/2+BS*2/3,0, 0,0,0, c, 0,0),
+	};
+	u16 indices[] = {0,1,2,2,3,0};
+	buf->append(vertices, 4, indices, 6);
+	// Set material
+	buf->getMaterial().setFlag(video::EMF_LIGHTING, false);
+	buf->getMaterial().setFlag(video::EMF_BACK_FACE_CULLING, false);
+	buf->getMaterial().setTexture(0, texture);
+	buf->getMaterial().setFlag(video::EMF_BILINEAR_FILTER, false);
+	buf->getMaterial().setFlag(video::EMF_FOG_ENABLE, true);
+	buf->getMaterial().MaterialType = video::EMT_TRANSPARENT_ALPHA_CHANNEL_REF;
+	// Add to mesh
+	mesh->addMeshBuffer(buf);
+	buf->drop();
+	}
+	m_node = smgr->addMeshSceneNode(mesh, NULL);
+	// Set it to use the materials of the meshbuffers directly.
+	// This is needed for changing the texture in the future
+	((scene::IMeshSceneNode*)m_node)->setReadOnlyMaterials(true);
+	mesh->drop();
+
+	updateSceneNode();
+}
+
+video::ITexture * ItemObject::getItemImage()
+{
+	/*
+		Create an inventory item to see what is its image
+	*/
+	video::ITexture *texture = NULL;
+	InventoryItem *item = createInventoryItem();
+	if(item)
+		texture = item->getImage();
+	/*else
+		texture = g_irrlicht->getTexture("../data/cloud.png");*/
+	if(item)
+		delete item;
+	return texture;
+}
+
+#endif
+
+InventoryItem * ItemObject::createInventoryItem()
+{
+	try{
+		std::istringstream is(m_itemstring, std::ios_base::binary);
+		InventoryItem *item = InventoryItem::deSerialize(is);
+		dstream<<__FUNCTION_NAME<<": m_itemstring=\""
+				<<m_itemstring<<"\" -> item="<<item
+				<<std::endl;
+		return item;
+	}
+	catch(SerializationError &e)
+	{
+		dstream<<__FUNCTION_NAME<<": serialization error: "
+				<<"m_itemstring=\""<<m_itemstring<<"\""<<std::endl;
+		return NULL;
+	}
+}
+
 /*
 	PlayerObject
 */
+#ifndef SERVER
 void PlayerObject::addToScene(scene::ISceneManager *smgr)
 {
 	if(m_node != NULL)
@@ -479,6 +572,10 @@ void MapBlockObjectList::update(std::istream &is, u8 version,
 			else if(type_id == MAPBLOCKOBJECT_TYPE_RAT)
 			{
 				obj = new RatObject(m_block, id, pos);
+			}
+			else if(type_id == MAPBLOCKOBJECT_TYPE_ITEM)
+			{
+				obj = new ItemObject(m_block, id, pos);
 			}
 			else
 			{

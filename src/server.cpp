@@ -1635,7 +1635,7 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 		}
 		catch(InvalidPositionException &e)
 		{
-			derr_server<<"PICK_OBJECT block not found"<<std::endl;
+			derr_server<<"CLICK_OBJECT block not found"<<std::endl;
 			return;
 		}
 
@@ -1643,7 +1643,7 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 
 		if(obj == NULL)
 		{
-			derr_server<<"PICK_OBJECT object not found"<<std::endl;
+			derr_server<<"CLICK_OBJECT object not found"<<std::endl;
 			return;
 		}
 
@@ -1662,10 +1662,24 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 					dout_server<<"Player inventory has no free space"<<std::endl;
 					return;
 				}
-			
+				
+				/*
+					Create the inventory item
+				*/
+				InventoryItem *item = NULL;
+				// If it is an item-object, take the item from it
+				if(obj->getTypeId() == MAPBLOCKOBJECT_TYPE_ITEM)
+				{
+					item = ((ItemObject*)obj)->createInventoryItem();
+				}
+				// Else create an item of the object
+				else
+				{
+					item = new MapBlockObjectItem
+							(obj->getInventoryString());
+				}
+				
 				// Add to inventory and send inventory
-				InventoryItem *item = new MapBlockObjectItem
-						(obj->getInventoryString());
 				ilist->addItem(item);
 				SendInventory(player->peer_id);
 			}
@@ -2021,17 +2035,10 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 				v.blitBack(modified_blocks);
 			}
 			/*
-				Handle block object items
+				Handle other items
 			*/
-			else if(std::string("MBOItem") == item->getName())
+			else
 			{
-				MapBlockObjectItem *oitem = (MapBlockObjectItem*)item;
-
-				/*dout_server<<"Trying to place a MapBlockObjectItem: "
-						"inventorystring=\""
-						<<oitem->getInventoryString()
-						<<"\""<<std::endl;*/
-
 				v3s16 blockpos = getNodeBlockPos(p_over);
 
 				MapBlock *block = NULL;
@@ -2056,25 +2063,61 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 						<<"("<<pos.X<<","<<pos.Y<<","<<pos.Z<<")"
 						<<std::endl;*/
 
+				MapBlockObject *obj = NULL;
 
-				MapBlockObject *obj = oitem->createObject
-						(pos, player->getYaw(), player->getPitch());
+				/*
+					Handle block object items
+				*/
+				if(std::string("MBOItem") == item->getName())
+				{
+					MapBlockObjectItem *oitem = (MapBlockObjectItem*)item;
+
+					/*dout_server<<"Trying to place a MapBlockObjectItem: "
+							"inventorystring=\""
+							<<oitem->getInventoryString()
+							<<"\""<<std::endl;*/
+							
+					obj = oitem->createObject
+							(pos, player->getYaw(), player->getPitch());
+				}
+				/*
+					Handle other items
+				*/
+				else
+				{
+					dout_server<<"Placing a miscellaneous item on map"
+							<<std::endl;
+					/*
+						Create an ItemObject that contains the item.
+					*/
+					ItemObject *iobj = new ItemObject(NULL, -1, pos);
+					std::ostringstream os(std::ios_base::binary);
+					item->serialize(os);
+					dout_server<<"Item string is \""<<os.str()<<"\""<<std::endl;
+					iobj->setItemString(os.str());
+					obj = iobj;
+				}
 
 				if(obj == NULL)
-					derr_server<<"WARNING: oitem created NULL object"
-							<<std::endl;
-
-				block->addObject(obj);
-
-				//dout_server<<"Placed object"<<std::endl;
-
-				InventoryList *ilist = player->inventory.getList("main");
-				if(g_settings.getBool("creative_mode") == false && ilist)
 				{
-					// Remove from inventory and send inventory
-					ilist->deleteItem(item_i);
-					// Send inventory
-					SendInventory(peer_id);
+					derr_server<<"WARNING: item resulted in NULL object, "
+							<<"not placing onto map"
+							<<std::endl;
+				}
+				else
+				{
+					block->addObject(obj);
+
+					dout_server<<"Placed object"<<std::endl;
+
+					InventoryList *ilist = player->inventory.getList("main");
+					if(g_settings.getBool("creative_mode") == false && ilist)
+					{
+						// Remove from inventory and send inventory
+						ilist->deleteItem(item_i);
+						// Send inventory
+						SendInventory(peer_id);
+					}
 				}
 			}
 
@@ -2445,6 +2488,12 @@ void Server::peerAdded(con::Peer *peer)
 		
 		if(g_settings.getBool("creative_mode"))
 		{
+			// Give a good pick
+			{
+				InventoryItem *item = new ToolItem("STPick", 32000);
+				bool r = player->inventory.addItem("main", item);
+				assert(r == true);
+			}
 			// Give all materials
 			assert(USEFUL_CONTENT_COUNT <= PLAYER_INVENTORY_SIZE);
 			for(u16 i=0; i<USEFUL_CONTENT_COUNT; i++)
@@ -2471,6 +2520,16 @@ void Server::peerAdded(con::Peer *peer)
 		}
 		else
 		{
+			{
+				InventoryItem *item = new ToolItem("WPick", 32000);
+				bool r = player->inventory.addItem("main", item);
+				assert(r == true);
+			}
+			{
+				InventoryItem *item = new ToolItem("STPick", 32000);
+				bool r = player->inventory.addItem("main", item);
+				assert(r == true);
+			}
 			/*// Give some lights
 			{
 				InventoryItem *item = new MaterialItem(CONTENT_TORCH, 999);

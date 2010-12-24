@@ -101,38 +101,6 @@ struct IncomingPacket
 	s32 *m_refcount;
 };
 
-// TODO: Remove this. It is not used as supposed.
-class LazyMeshUpdater
-{
-public:
-	LazyMeshUpdater(Environment *env)
-	{
-		m_env = env;
-	}
-	~LazyMeshUpdater()
-	{
-		/*
-			TODO: This could be optimized. It will currently
-			double-update some blocks.
-		*/
-		for(core::map<v3s16, bool>::Iterator
-				i = m_blocks.getIterator();
-				i.atEnd() == false; i++)
-		{
-			v3s16 p = i.getNode()->getKey();
-			m_env->updateMeshes(p);
-		}
-		m_blocks.clear();
-	}
-	void add(v3s16 p)
-	{
-		m_blocks.insert(p, true);
-	}
-private:
-	Environment *m_env;
-	core::map<v3s16, bool> m_blocks;
-};
-
 class Client : public con::PeerHandler
 {
 public:
@@ -175,7 +143,7 @@ public:
 
 	void ProcessData(u8 *data, u32 datasize, u16 sender_peer_id);
 	// Returns true if something was received
-	bool AsyncProcessPacket(LazyMeshUpdater &mesh_updater);
+	bool AsyncProcessPacket();
 	bool AsyncProcessData();
 	void Send(u16 channelnum, SharedBuffer<u8> data, bool reliable);
 
