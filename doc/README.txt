@@ -11,16 +11,9 @@ This is a development version:
 	- debug.txt is very useful when the game crashes.
 
 Public servers:
-	kray.dy.fi :30000 (friend's server - usually in creative mode)
-	celer.oni.biz :30000 (main development server)
-- Both of these have very limited bandwidth and the game will become laggy
-  with 4-5 players.
+	kray.dy.fi :30000 (friend's server - recommended)
+	celeron.55.lt :30000 (my own server, kind of unused)
 - If you want to run a server, I can list you on my website and in here.
-
-Features, as of now:
-- Almost Infinite Map (limited to +-31000 blocks in any direction at the moment)
-    - Minecraft alpha has a height restriction of 128 blocks
-- Map Generator capable of taking advantage of the infinite map
 
 Controls:
 - WASD+mouse: Move
