@@ -123,6 +123,8 @@ int main(int argc, char *argv[])
 
 	DSTACK(__FUNCTION_NAME);
 
+	initializeMaterialProperties();
+
 	try
 	{
 	

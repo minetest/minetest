@@ -77,6 +77,7 @@ enum Content
 	CONTENT_OCEAN,
 	CONTENT_CLOUD,
 	CONTENT_COALSTONE,
+	CONTENT_WOOD,
 	
 	// This is set to the number of the actual values in this enum
 	USEFUL_CONTENT_COUNT
@@ -96,6 +97,7 @@ inline bool light_propagates_content(u8 m)
 
 /*
 	If true, the material allows lossless sunlight propagation.
+	NOTE: It doesn't seem to go through torches regardlessly of this
 */
 inline bool sunlight_propagates_content(u8 m)
 {
@@ -153,14 +155,12 @@ inline bool content_buildable_to(u8 m)
 */
 inline bool is_ground_content(u8 m)
 {
-	return(
-		m == CONTENT_STONE ||
-		m == CONTENT_GRASS ||
-		m == CONTENT_GRASS_FOOTSTEPS ||
-		m == CONTENT_MESE ||
-		m == CONTENT_MUD ||
-		m == CONTENT_COALSTONE
-	);
+	return (m != CONTENT_WATER
+		&& m != CONTENT_TORCH
+		&& m != CONTENT_TREE
+		&& m != CONTENT_LEAVES
+		&& m != CONTENT_OCEAN
+		&& m != CONTENT_CLOUD);
 }
 
 inline bool is_mineral(u8 c)
@@ -169,12 +169,18 @@ inline bool is_mineral(u8 c)
 		|| c == CONTENT_COALSTONE);
 }
 
-/*inline bool content_has_faces(u8 c)
+inline bool liquid_replaces_content(u8 c)
 {
-	return (m != CONTENT_IGNORE
-	     && m != CONTENT_AIR
-		 && m != CONTENT_TORCH);
-}*/
+	return (c == CONTENT_AIR || c == CONTENT_TORCH);
+}
+
+/*
+	When placing a node, drection info is added to it if this is true
+*/
+inline bool content_directional(u8 c)
+{
+	return (c == CONTENT_TORCH);
+}
 
 /*
 	Nodes make a face if contents differ and solidness differs.
@@ -199,19 +205,6 @@ inline u8 face_contents(u8 m1, u8 m2)
 		return 1;
 	else
 		return 2;
-}
-
-inline bool liquid_replaces_content(u8 c)
-{
-	return (c == CONTENT_AIR || c == CONTENT_TORCH);
-}
-
-/*
-	When placing a node, drection info is added to it if this is true
-*/
-inline bool content_directional(u8 c)
-{
-	return (c == CONTENT_TORCH);
 }
 
 /*

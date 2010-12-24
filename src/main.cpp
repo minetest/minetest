@@ -167,12 +167,17 @@ TODO: Better handling of objects and mobs
 	  - Make separate classes for client and server
 	    - Client should not discriminate between blocks, server should
 	    - Make other players utilize the same framework
+		- This is also needed for objects that don't get sent to client
+		  but are used for triggers etc
 
 TODO: Draw big amounts of torches better (that is, throw them in the
       same meshbuffer (can the meshcollector class be used?))
 
 TODO: Check if the usage of Client::isFetchingBlocks() in
       updateViewingRange() actually does something
+
+TODO: Make an option to the server to disable building and digging near
+      the starting position
 
 Doing now:
 ======================================================================
@@ -239,6 +244,7 @@ TODO: Transferring of the table from server to client
 #include "guiPauseMenu.h"
 #include "guiInventoryMenu.h"
 #include "guiTextInputMenu.h"
+#include "materials.h"
 
 IrrlichtWrapper *g_irrlicht;
 
@@ -1022,6 +1028,22 @@ private:
 	s32 m_selection;
 };
 
+// Chat data
+struct ChatLine
+{
+	ChatLine():
+		age(0.0)
+	{
+	}
+	ChatLine(const std::wstring &a_text):
+		age(0.0),
+		text(a_text)
+	{
+	}
+	float age;
+	std::wstring text;
+};
+
 int main(int argc, char *argv[])
 {
 	/*
@@ -1039,6 +1061,8 @@ int main(int argc, char *argv[])
 	debug_stacks_init();
 
 	DSTACK(__FUNCTION_NAME);
+	
+	initializeMaterialProperties();
 
 	try
 	{
@@ -1541,8 +1565,7 @@ int main(int argc, char *argv[])
 			L"Chat here\nOther line\nOther line\nOther line\nOther line",
 			core::rect<s32>(70, 60, 795, 150),
 			false, true);
-	core::list<std::wstring> chat_lines;
-	//chat_lines.push_back(L"Minetest-c55 up and running!");
+	core::list<ChatLine> chat_lines;
 	
 	/*
 		Some statistics are collected in these
@@ -2102,34 +2125,38 @@ int main(int argc, char *argv[])
 				if(g_input->getLeftState())
 				{
 					MapNode n = client.getNode(nodepos);
-
-					// TODO: Get this from some table that is sent by server
-					float dig_time_complete = 0.5;
-					if(n.d == CONTENT_STONE || n.d == CONTENT_COALSTONE)
+				
+					// Get tool name. Default is "" = bare hands
+					std::string toolname = "";
+					InventoryList *mlist = local_inventory.getList("main");
+					if(mlist != NULL)
 					{
-						dig_time_complete = 10.0;
-
-						InventoryList *mlist = local_inventory.getList("main");
-						if(mlist != NULL)
+						InventoryItem *item = mlist->getItem(g_selected_item);
+						if(item && (std::string)item->getName() == "ToolItem")
 						{
-							InventoryItem *item = mlist->getItem(g_selected_item);
-							if(item && (std::string)item->getName() == "ToolItem")
-							{
-								ToolItem *titem = (ToolItem*)item;
-								if(titem->getToolName() == "WPick")
-								{
-									dig_time_complete = 1.2;
-								}
-								else if(titem->getToolName() == "STPick")
-								{
-									dig_time_complete = 0.6;
-								}
-							}
+							ToolItem *titem = (ToolItem*)item;
+							toolname = titem->getToolName();
 						}
 					}
-					else if(n.d == CONTENT_TORCH)
+
+					// Get digging properties for material and tool
+					u8 material = n.d;
+					DiggingProperties prop =
+							getDiggingProperties(material, toolname);
+					
+					float dig_time_complete = 0.0;
+
+					if(prop.diggable == false)
 					{
-						dig_time_complete = 0.0;
+						/*dstream<<"Material "<<(int)material
+								<<" not diggable with \""
+								<<toolname<<"\""<<std::endl;*/
+						// I guess nobody will wait for this long
+						dig_time_complete = 10000000.0;
+					}
+					else
+					{
+						dig_time_complete = prop.time;
 					}
 					
 					if(dig_time_complete >= 0.001)
@@ -2305,14 +2332,14 @@ int main(int argc, char *argv[])
 			Get chat messages from client
 		*/
 		{
-			// Get messages
+			// Get new messages
 			std::wstring message;
 			while(client.getChatMessage(message))
 			{
-				chat_lines.push_back(message);
-				if(chat_lines.size() > 5)
+				chat_lines.push_back(ChatLine(message));
+				if(chat_lines.size() > 7)
 				{
-					core::list<std::wstring>::Iterator
+					core::list<ChatLine>::Iterator
 							i = chat_lines.begin();
 					chat_lines.erase(i);
 				}
@@ -2320,11 +2347,24 @@ int main(int argc, char *argv[])
 			// Append them to form the whole static text and throw
 			// it to the gui element
 			std::wstring whole;
-			for(core::list<std::wstring>::Iterator
+			u16 to_be_removed_count = 0;
+			for(core::list<ChatLine>::Iterator
 					i = chat_lines.begin();
 					i != chat_lines.end(); i++)
 			{
-				whole += (*i) + L'\n';
+				(*i).age += dtime;
+				if((*i).age > 30.0)
+				{
+					to_be_removed_count++;
+					continue;
+				}
+				whole += (*i).text + L'\n';
+			}
+			for(u16 i=0; i<to_be_removed_count; i++)
+			{
+				core::list<ChatLine>::Iterator
+						i = chat_lines.begin();
+				chat_lines.erase(i);
 			}
 			chat_guitext->setText(whole.c_str());
 			// Update gui element size and position

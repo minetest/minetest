@@ -30,6 +30,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "main.h"
 #include "constants.h"
 #include "voxel.h"
+#include "materials.h"
 
 #define BLOCK_EMERGE_FLAG_FROMDISK (1<<0)
 
@@ -1821,9 +1822,47 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 
 			if(g_settings.getBool("creative_mode") == false)
 			{
-				// Add to inventory and send inventory
+				/*
+					Wear out tool
+				*/
+				InventoryList *mlist = player->inventory.getList("main");
+				if(mlist != NULL)
+				{
+					InventoryItem *item = mlist->getItem(item_i);
+					if(item && (std::string)item->getName() == "ToolItem")
+					{
+						ToolItem *titem = (ToolItem*)item;
+						std::string toolname = titem->getToolName();
+
+						// Get digging properties for material and tool
+						DiggingProperties prop =
+								getDiggingProperties(material, toolname);
+
+						if(prop.diggable == false)
+						{
+							derr_server<<"Server: WARNING: Player digged"
+									<<" with impossible material + tool"
+									<<" combination"<<std::endl;
+						}
+						
+						bool weared_out = titem->addWear(prop.wear);
+
+						if(weared_out)
+						{
+							mlist->deleteItem(item_i);
+						}
+					}
+				}
+
+				/*
+					Add digged item to inventory
+				*/
 				InventoryItem *item = new MaterialItem(material, 1);
 				player->inventory.addItem("main", item);
+
+				/*
+					Send inventory
+				*/
 				SendInventory(player->peer_id);
 			}
 
@@ -2404,138 +2443,6 @@ void Server::peerAdded(con::Peer *peer)
 	c.peer_id = peer->id;
 	c.timeout = false;
 	m_peer_change_queue.push_back(c);
-
-#if 0
-	// NOTE: Connection is already locked when this is called.
-	// NOTE: Environment is already locked when this is called.
-	
-	// Error check
-	core::map<u16, RemoteClient*>::Node *n;
-	n = m_clients.find(peer->id);
-	// The client shouldn't already exist
-	assert(n == NULL);
-
-	// Create client
-	RemoteClient *client = new RemoteClient();
-	client->peer_id = peer->id;
-	m_clients.insert(client->peer_id, client);
-
-	// Create player
-	{
-		Player *player = m_env.getPlayer(peer->id);
-		
-		// The player shouldn't already exist
-		assert(player == NULL);
-
-		player = new ServerRemotePlayer();
-		player->peer_id = peer->id;
-
-		/*
-			Set player position
-		*/
-		
-		// We're going to throw the player to this position
-		//v2s16 nodepos(29990,29990);
-		//v2s16 nodepos(9990,9990);
-		v2s16 nodepos(0,0);
-		v2s16 sectorpos = getNodeSectorPos(nodepos);
-		// Get zero sector (it could have been unloaded to disk)
-		m_env.getMap().emergeSector(sectorpos);
-		// Get ground height at origin
-		f32 groundheight = m_env.getMap().getGroundHeight(nodepos, true);
-		// The sector should have been generated -> groundheight exists
-		assert(groundheight > GROUNDHEIGHT_VALID_MINVALUE);
-		// Don't go underwater
-		if(groundheight < WATER_LEVEL)
-			groundheight = WATER_LEVEL;
-
-		player->setPosition(intToFloat(v3s16(
-				nodepos.X,
-				groundheight + 1,
-				nodepos.Y
-		)));
-
-		/*
-			Add player to environment
-		*/
-
-		m_env.addPlayer(player);
-
-		/*
-			Add stuff to inventory
-		*/
-		
-		if(g_settings.getBool("creative_mode"))
-		{
-			// Give a good pick
-			{
-				InventoryItem *item = new ToolItem("STPick", 32000);
-				void* r = player->inventory.addItem("main", item);
-				assert(r == NULL);
-			}
-			// Give all materials
-			assert(USEFUL_CONTENT_COUNT <= PLAYER_INVENTORY_SIZE);
-			for(u16 i=0; i<USEFUL_CONTENT_COUNT; i++)
-			{
-				// Skip some materials
-				if(i == CONTENT_OCEAN)
-					continue;
-
-				InventoryItem *item = new MaterialItem(i, 1);
-				player->inventory.addItem("main", item);
-			}
-			// Sign
-			{
-				InventoryItem *item = new MapBlockObjectItem("Sign Example text");
-				void* r = player->inventory.addItem("main", item);
-				assert(r == NULL);
-			}
-			/*// Rat
-			{
-				InventoryItem *item = new MapBlockObjectItem("Rat");
-				bool r = player->inventory.addItem("main", item);
-				assert(r == true);
-			}*/
-		}
-		else
-		{
-			{
-				InventoryItem *item = new CraftItem("Stick", 4);
-				void* r = player->inventory.addItem("main", item);
-				assert(r == NULL);
-			}
-			{
-				InventoryItem *item = new ToolItem("WPick", 32000);
-				void* r = player->inventory.addItem("main", item);
-				assert(r == NULL);
-			}
-			{
-				InventoryItem *item = new ToolItem("STPick", 32000);
-				void* r = player->inventory.addItem("main", item);
-				assert(r == NULL);
-			}
-			/*// Give some lights
-			{
-				InventoryItem *item = new MaterialItem(CONTENT_TORCH, 999);
-				bool r = player->inventory.addItem("main", item);
-				assert(r == true);
-			}
-			// and some signs
-			for(u16 i=0; i<4; i++)
-			{
-				InventoryItem *item = new MapBlockObjectItem("Sign Example text");
-				bool r = player->inventory.addItem("main", item);
-				assert(r == true);
-			}*/
-			/*// Give some other stuff
-			{
-				InventoryItem *item = new MaterialItem(CONTENT_TREE, 999);
-				bool r = player->inventory.addItem("main", item);
-				assert(r == true);
-			}*/
-		}
-	}
-#endif
 }
 
 void Server::deletingPeer(con::Peer *peer, bool timeout)
@@ -2549,46 +2456,6 @@ void Server::deletingPeer(con::Peer *peer, bool timeout)
 	c.peer_id = peer->id;
 	c.timeout = timeout;
 	m_peer_change_queue.push_back(c);
-
-#if 0
-	// NOTE: Connection is already locked when this is called.
-
-	// NOTE: Environment is already locked when this is called.
-	// NOTE: Locking environment cannot be moved here because connection
-	//       is already locked and env has to be locked before
-
-	// Error check
-	core::map<u16, RemoteClient*>::Node *n;
-	n = m_clients.find(peer->id);
-	// The client should exist
-	assert(n != NULL);
-	
-	// Send information about leaving in chat
-	{
-		std::wstring name = L"unknown";
-		Player *player = m_env.getPlayer(peer->id);
-		if(player != NULL)
-			name = narrow_to_wide(player->getName());
-		
-		std::wstring message;
-		message += L"*** ";
-		message += name;
-		message += L" left game";
-		BroadcastChatMessage(message);
-	}
-
-	// Delete player
-	{
-		m_env.removePlayer(peer->id);
-	}
-	
-	// Delete client
-	delete m_clients[peer->id];
-	m_clients.remove(peer->id);
-
-	// Send player info to all clients
-	SendPlayerInfos();
-#endif
 }
 
 void Server::SendObjectData(float dtime)
@@ -2647,6 +2514,159 @@ void Server::SendPlayerInfos()
 	m_con.SendToAll(0, data, true);
 }
 
+enum ItemSpecType
+{
+	ITEM_NONE,
+	ITEM_MATERIAL,
+	ITEM_CRAFT,
+	ITEM_TOOL,
+	ITEM_MBO
+};
+
+struct ItemSpec
+{
+	ItemSpec():
+		type(ITEM_NONE)
+	{
+	}
+	ItemSpec(enum ItemSpecType a_type, std::string a_name):
+		type(a_type),
+		name(a_name),
+		num(65535)
+	{
+	}
+	ItemSpec(enum ItemSpecType a_type, u16 a_num):
+		type(a_type),
+		name(""),
+		num(a_num)
+	{
+	}
+	enum ItemSpecType type;
+	// Only other one of these is used
+	std::string name;
+	u16 num;
+};
+
+/*
+	items: a pointer to an array of 9 pointers to items
+	specs: a pointer to an array of 9 ItemSpecs
+*/
+bool checkItemCombination(InventoryItem **items, ItemSpec *specs)
+{
+	u16 items_min_x = 100;
+	u16 items_max_x = 100;
+	u16 items_min_y = 100;
+	u16 items_max_y = 100;
+	for(u16 y=0; y<3; y++)
+	for(u16 x=0; x<3; x++)
+	{
+		if(items[y*3 + x] == NULL)
+			continue;
+		if(items_min_x == 100 || x < items_min_x)
+			items_min_x = x;
+		if(items_min_y == 100 || y < items_min_y)
+			items_min_y = y;
+		if(items_max_x == 100 || x > items_max_x)
+			items_max_x = x;
+		if(items_max_y == 100 || y > items_max_y)
+			items_max_y = y;
+	}
+	// No items at all, just return false
+	if(items_min_x == 100)
+		return false;
+	
+	u16 items_w = items_max_x - items_min_x + 1;
+	u16 items_h = items_max_y - items_min_y + 1;
+
+	u16 specs_min_x = 100;
+	u16 specs_max_x = 100;
+	u16 specs_min_y = 100;
+	u16 specs_max_y = 100;
+	for(u16 y=0; y<3; y++)
+	for(u16 x=0; x<3; x++)
+	{
+		if(specs[y*3 + x].type == ITEM_NONE)
+			continue;
+		if(specs_min_x == 100 || x < specs_min_x)
+			specs_min_x = x;
+		if(specs_min_y == 100 || y < specs_min_y)
+			specs_min_y = y;
+		if(specs_max_x == 100 || x > specs_max_x)
+			specs_max_x = x;
+		if(specs_max_y == 100 || y > specs_max_y)
+			specs_max_y = y;
+	}
+	// No specs at all, just return false
+	if(specs_min_x == 100)
+		return false;
+
+	u16 specs_w = specs_max_x - specs_min_x + 1;
+	u16 specs_h = specs_max_y - specs_min_y + 1;
+
+	// Different sizes
+	if(items_w != specs_w || items_h != specs_h)
+		return false;
+
+	for(u16 y=0; y<specs_h; y++)
+	for(u16 x=0; x<specs_w; x++)
+	{
+		u16 items_x = items_min_x + x;
+		u16 items_y = items_min_y + y;
+		u16 specs_x = specs_min_x + x;
+		u16 specs_y = specs_min_y + y;
+		InventoryItem *item = items[items_y * 3 + items_x];
+		ItemSpec &spec = specs[specs_y * 3 + specs_x];
+		
+		if(spec.type == ITEM_NONE)
+		{
+			// Has to be no item
+			if(item != NULL)
+				return false;
+			continue;
+		}
+		
+		// There should be an item
+		if(item == NULL)
+			return false;
+
+		std::string itemname = item->getName();
+
+		if(spec.type == ITEM_MATERIAL)
+		{
+			if(itemname != "MaterialItem")
+				return false;
+			MaterialItem *mitem = (MaterialItem*)item;
+			if(mitem->getMaterial() != spec.num)
+				return false;
+		}
+		else if(spec.type == ITEM_CRAFT)
+		{
+			if(itemname != "CraftItem")
+				return false;
+			CraftItem *mitem = (CraftItem*)item;
+			if(mitem->getSubName() != spec.name)
+				return false;
+		}
+		else if(spec.type == ITEM_TOOL)
+		{
+			// Not supported yet
+			assert(0);
+		}
+		else if(spec.type == ITEM_MBO)
+		{
+			// Not supported yet
+			assert(0);
+		}
+		else
+		{
+			// Not supported yet
+			assert(0);
+		}
+	}
+
+	return true;
+}
+
 void Server::SendInventory(u16 peer_id)
 {
 	DSTACK(__FUNCTION_NAME);
@@ -2670,31 +2690,96 @@ void Server::SendInventory(u16 peer_id)
 		{
 			items[i] = clist->getItem(i);
 		}
-		// Sign
-		if(clist->getUsedSlots() == 1 && items[0])
+		
+		bool found = false;
+
+		// Wood
+		if(!found)
 		{
-			if((std::string)items[0]->getName() == "MaterialItem")
+			ItemSpec specs[9];
+			specs[0] = ItemSpec(ITEM_MATERIAL, CONTENT_TREE);
+			if(checkItemCombination(items, specs))
 			{
-				MaterialItem *mitem = (MaterialItem*)items[0];
-				if(mitem->getMaterial() == CONTENT_TREE)
-				{
-					rlist->addItem(new MapBlockObjectItem("Sign"));
-				}
+				rlist->addItem(new MaterialItem(CONTENT_WOOD, 4));
+				found = true;
 			}
 		}
-		// Torch
-		if(clist->getUsedSlots() == 2 && items[0] && items[3])
+
+		// Stick
+		if(!found)
 		{
-			if(
-				   (std::string)items[0]->getName() == "MaterialItem"
-				&& ((MaterialItem*)items[0])->getMaterial() == CONTENT_COALSTONE
-				&& (std::string)items[3]->getName() == "MaterialItem"
-				&& ((MaterialItem*)items[3])->getMaterial() == CONTENT_TREE
-			)
+			ItemSpec specs[9];
+			specs[0] = ItemSpec(ITEM_MATERIAL, CONTENT_WOOD);
+			if(checkItemCombination(items, specs))
+			{
+				rlist->addItem(new CraftItem("Stick", 4));
+				found = true;
+			}
+		}
+
+		// Sign
+		if(!found)
+		{
+			ItemSpec specs[9];
+			specs[0] = ItemSpec(ITEM_MATERIAL, CONTENT_WOOD);
+			specs[1] = ItemSpec(ITEM_MATERIAL, CONTENT_WOOD);
+			specs[2] = ItemSpec(ITEM_MATERIAL, CONTENT_WOOD);
+			specs[3] = ItemSpec(ITEM_MATERIAL, CONTENT_WOOD);
+			specs[4] = ItemSpec(ITEM_MATERIAL, CONTENT_WOOD);
+			specs[5] = ItemSpec(ITEM_MATERIAL, CONTENT_WOOD);
+			specs[7] = ItemSpec(ITEM_CRAFT, "Stick");
+			if(checkItemCombination(items, specs))
+			{
+				rlist->addItem(new MapBlockObjectItem("Sign"));
+				found = true;
+			}
+		}
+
+		// Torch
+		if(!found)
+		{
+			ItemSpec specs[9];
+			specs[0] = ItemSpec(ITEM_MATERIAL, CONTENT_COALSTONE);
+			specs[3] = ItemSpec(ITEM_CRAFT, "Stick");
+			if(checkItemCombination(items, specs))
 			{
 				rlist->addItem(new MaterialItem(CONTENT_TORCH, 4));
+				found = true;
 			}
 		}
+
+		// Wooden pick
+		if(!found)
+		{
+			ItemSpec specs[9];
+			specs[0] = ItemSpec(ITEM_MATERIAL, CONTENT_WOOD);
+			specs[1] = ItemSpec(ITEM_MATERIAL, CONTENT_WOOD);
+			specs[2] = ItemSpec(ITEM_MATERIAL, CONTENT_WOOD);
+			specs[4] = ItemSpec(ITEM_CRAFT, "Stick");
+			specs[7] = ItemSpec(ITEM_CRAFT, "Stick");
+			if(checkItemCombination(items, specs))
+			{
+				rlist->addItem(new ToolItem("WPick", 0));
+				found = true;
+			}
+		}
+
+		// Stone pick
+		if(!found)
+		{
+			ItemSpec specs[9];
+			specs[0] = ItemSpec(ITEM_MATERIAL, CONTENT_STONE);
+			specs[1] = ItemSpec(ITEM_MATERIAL, CONTENT_STONE);
+			specs[2] = ItemSpec(ITEM_MATERIAL, CONTENT_STONE);
+			specs[4] = ItemSpec(ITEM_CRAFT, "Stick");
+			specs[7] = ItemSpec(ITEM_CRAFT, "Stick");
+			if(checkItemCombination(items, specs))
+			{
+				rlist->addItem(new ToolItem("STPick", 0));
+				found = true;
+			}
+		}
+
 	}
 
 	/*
@@ -2958,6 +3043,16 @@ void Server::handlePeerChange(PeerChange &c)
 			}
 			else
 			{
+				{
+					InventoryItem *item = new MaterialItem(CONTENT_COALSTONE, 6);
+					void* r = player->inventory.addItem("main", item);
+					assert(r == NULL);
+				}
+				{
+					InventoryItem *item = new MaterialItem(CONTENT_WOOD, 6);
+					void* r = player->inventory.addItem("main", item);
+					assert(r == NULL);
+				}
 				{
 					InventoryItem *item = new CraftItem("Stick", 4);
 					void* r = player->inventory.addItem("main", item);

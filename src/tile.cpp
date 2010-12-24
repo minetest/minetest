@@ -36,6 +36,7 @@ const char * g_tile_texture_paths[TILES_COUNT] =
 	"../data/mud_with_grass.png",
 	"../data/cloud.png",
 	"../data/coalstone.png",
+	"../data/wood.png",
 };
 
 const char * tile_texture_path_get(u32 i)

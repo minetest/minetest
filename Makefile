@@ -1,7 +1,7 @@
 # Makefile for Irrlicht Examples
 # It's usually sufficient to change just the target name and source file list
 # and be sure that CXX is set to a valid compiler
-SOURCE_FILES = guiTextInputMenu.cpp guiInventoryMenu.cpp irrlichtwrapper.cpp guiPauseMenu.cpp defaultsettings.cpp mapnode.cpp tile.cpp voxel.cpp mapblockobject.cpp inventory.cpp debug.cpp serialization.cpp light.cpp filesys.cpp connection.cpp environment.cpp client.cpp server.cpp socket.cpp mapblock.cpp mapsector.cpp heightmap.cpp map.cpp player.cpp utility.cpp main.cpp test.cpp
+SOURCE_FILES = materials.cpp guiTextInputMenu.cpp guiInventoryMenu.cpp irrlichtwrapper.cpp guiPauseMenu.cpp defaultsettings.cpp mapnode.cpp tile.cpp voxel.cpp mapblockobject.cpp inventory.cpp debug.cpp serialization.cpp light.cpp filesys.cpp connection.cpp environment.cpp client.cpp server.cpp socket.cpp mapblock.cpp mapsector.cpp heightmap.cpp map.cpp player.cpp utility.cpp main.cpp test.cpp
 
 DEBUG_TARGET = debugtest
 DEBUG_SOURCES = $(addprefix src/, $(SOURCE_FILES))
@@ -14,7 +14,7 @@ FAST_BUILD_DIR = fastbuild
 FAST_OBJECTS = $(addprefix $(FAST_BUILD_DIR)/, $(SOURCE_FILES:.cpp=.o))
 
 SERVER_TARGET = server
-SERVER_SOURCE_FILES = defaultsettings.cpp mapnode.cpp voxel.cpp mapblockobject.cpp inventory.cpp debug.cpp serialization.cpp light.cpp filesys.cpp connection.cpp environment.cpp server.cpp socket.cpp mapblock.cpp mapsector.cpp heightmap.cpp map.cpp player.cpp utility.cpp servermain.cpp test.cpp
+SERVER_SOURCE_FILES = materials.cpp defaultsettings.cpp mapnode.cpp voxel.cpp mapblockobject.cpp inventory.cpp debug.cpp serialization.cpp light.cpp filesys.cpp connection.cpp environment.cpp server.cpp socket.cpp mapblock.cpp mapsector.cpp heightmap.cpp map.cpp player.cpp utility.cpp servermain.cpp test.cpp
 SERVER_SOURCES = $(addprefix src/, $(SERVER_SOURCE_FILES))
 SERVER_BUILD_DIR = serverbuild
 SERVER_OBJECTS = $(addprefix $(SERVER_BUILD_DIR)/, $(SERVER_SOURCE_FILES:.cpp=.o))

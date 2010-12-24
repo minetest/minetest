@@ -40,6 +40,7 @@ enum TileID
 	TILE_MUD_WITH_GRASS,
 	TILE_CLOUD,
 	TILE_COALSTONE,
+	TILE_WOOD,
 	
 	// Count of tile ids
 	TILES_COUNT

@@ -390,6 +390,20 @@ public:
 	{
 		return m_wear;
 	}
+	// Returns true if weared out
+	bool addWear(u16 add)
+	{
+		if(m_wear >= 65535 - add)
+		{
+			m_wear = 65535;
+			return true;
+		}
+		else
+		{
+			m_wear += add;
+			return false;
+		}
+	}
 private:
 	std::string m_toolname;
 	u16 m_wear;
