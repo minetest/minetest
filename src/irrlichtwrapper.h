@@ -97,6 +97,20 @@ struct CrackTextureMod: public TextureMod
 	u16 progression;
 };
 
+struct ProgressBarTextureMod: public TextureMod
+{
+	// value is from 0.0 to 1.0
+	ProgressBarTextureMod(float a_value)
+	{
+		value = a_value;
+	}
+	
+	virtual video::ITexture * make(video::ITexture *original,
+			const char *newname, video::IVideoDriver* driver);
+	
+	float value;
+};
+
 /*
 	A class for specifying a requested texture
 */

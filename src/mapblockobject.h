@@ -809,7 +809,7 @@ public:
 #ifndef SERVER
 	virtual void clientStep(float dtime)
 	{
-		m_yaw += dtime * 90;
+		m_yaw += dtime * 60;
 		if(m_yaw >= 360.)
 			m_yaw -= 360.;
 

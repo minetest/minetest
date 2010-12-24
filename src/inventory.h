@@ -226,17 +226,39 @@ public:
 #ifndef SERVER
 	video::ITexture * getImage()
 	{
+		std::string basename;
 		if(m_toolname == "WPick")
-			return g_irrlicht->getTexture("../data/tool_wpick.png");
-		if(m_toolname == "STPick")
-			return g_irrlicht->getTexture("../data/tool_stpick.png");
+			basename = "../data/tool_wpick.png";
+		else if(m_toolname == "STPick")
+			basename = "../data/tool_stpick.png";
 		// Default to cloud texture
-		return g_irrlicht->getTexture(tile_texture_path_get(TILE_CLOUD));
+		else
+			basename = tile_texture_path_get(TILE_CLOUD);
+		
+		/*
+			Calculate some progress value with sane amount of
+			maximum states
+		*/
+		u32 maxprogress = 30;
+		u32 toolprogress = (65535-m_wear)/(65535/maxprogress);
+		
+		// Make texture name for the new texture with a progress bar
+		std::ostringstream os;
+		os<<basename<<"-toolprogress-"<<toolprogress;
+		std::string finalname = os.str();
+
+		float value_f = (float)toolprogress / (float)maxprogress;
+		
+		// Get such a texture
+		TextureMod *mod = new ProgressBarTextureMod(value_f);
+		return g_irrlicht->getTexture(TextureSpec(finalname, basename, mod));
 	}
 #endif
 	std::string getText()
 	{
-		std::ostringstream os;
+		return "";
+		
+		/*std::ostringstream os;
 		u16 f = 4;
 		u16 d = 65535/f;
 		u16 i;
@@ -244,7 +266,7 @@ public:
 			os<<'X';
 		for(; i<f; i++)
 			os<<'-';
-		return os.str();
+		return os.str();*/
 		
 		/*std::ostringstream os;
 		os<<m_toolname;

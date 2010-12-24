@@ -1991,7 +1991,9 @@ MapBlock * ServerMap::emergeBlock(
 			coal_rareness = 1;
 		if(rand()%coal_rareness == 0)
 		{
-			for(s16 i=0; i<coal_amount; i++)
+			u16 a = rand() % 16;
+			u16 amount = coal_amount * a*a*a / 1000;
+			for(s16 i=0; i<amount; i++)
 			{
 				v3s16 cp(
 					(rand()%(MAP_BLOCKSIZE-2))+1,

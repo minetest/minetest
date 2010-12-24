@@ -1785,7 +1785,7 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 		/*
 			3: Digging completed
 		*/
-		if(action == 3)
+		else if(action == 3)
 		{
 			// Mandatory parameter; actually used for nothing
 			core::map<v3s16, MapBlock*> modified_blocks;

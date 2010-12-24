@@ -146,39 +146,45 @@ video::ITexture * CrackTextureMod::make(video::ITexture *original,
 	return newtexture;
 }
 
-#if 0
-video::ITexture * createAlphaBlitTexture(const char *name, video::ITexture *base,
-		video::ITexture *other, v2u32 size, v2s32 pos_base, v2s32 pos_other)
+video::ITexture * ProgressBarTextureMod::make(video::ITexture *original,
+		const char *newname, video::IVideoDriver* driver)
 {
-	if(g_device == NULL)
-		return NULL;
-	video::IVideoDriver* driver = g_device->getVideoDriver();
+	core::position2d<s32> pos_base(0, 0);
+	core::dimension2d<u32> dim = original->getOriginalSize();
 
-	core::dimension2d<u32> dim(size.X, size.Y);
-
-	video::IImage *baseimage = driver->createImage(
-			base,
-			core::position2d<s32>(pos_base.X, pos_base.Y),
-			dim);
+	video::IImage *baseimage = driver->createImage(original, pos_base, dim);
 	assert(baseimage);
-
-	video::IImage *otherimage = driver->createImage(
-			other,
-			core::position2d<s32>(pos_other.X, pos_other.Y),
-			dim);
-	assert(sourceimage);
 	
-	otherimage->copyToWithAlpha(baseimage, v2s32(0,0),
-			core::rect<s32>(v2s32(0,0), dim),
-			video::SColor(255,255,255,255),
-			core::rect<s32>(v2s32(0,0), dim));
-	otherimage->drop();
+	core::dimension2d<u32> size = baseimage->getDimension();
 
-	video::ITexture *newtexture = driver->addTexture(name, baseimage);
+	u32 barheight = 1;
+	u32 barpad_x = 1;
+	u32 barpad_y = 1;
+	u32 barwidth = size.Width - barpad_x*2;
+	v2u32 barpos(barpad_x, size.Height - barheight - barpad_y);
+
+	u32 barvalue_i = round((float)barwidth * value);
+
+	video::SColor active(255,255,0,0);
+	video::SColor inactive(255,0,0,0);
+	for(u32 x0=0; x0<barwidth; x0++)
+	{
+		video::SColor *c;
+		if(x0 < barvalue_i)
+			c = &active;
+		else
+			c = &inactive;
+		u32 x = x0 + barpos.X;
+		for(u32 y=barpos.Y; y<barpos.Y+barheight; y++)
+		{
+			baseimage->setPixel(x,y, *c);
+		}
+	}
+	
+	video::ITexture *newtexture = driver->addTexture(newname, baseimage);
 
 	baseimage->drop();
 
 	return newtexture;
 }
-#endif
 

@@ -177,7 +177,8 @@ TODO: Check if the usage of Client::isFetchingBlocks() in
 Doing now:
 ======================================================================
 
-TODO: Tool capability table
+TODO: Tool capability table: Which materials, at what speed, how much
+      wearing
 TODO: Transferring of the table from server to client
 
 ======================================================================
@@ -2122,9 +2123,21 @@ int main(int argc, char *argv[])
 							}
 						}
 					}
+					else if(n.d == CONTENT_TORCH)
+					{
+						dig_time_complete = 0.0;
+					}
 					
-					dig_index = (u16)((float)CRACK_ANIMATION_LENGTH
-							* dig_time/dig_time_complete);
+					if(dig_time_complete >= 0.001)
+					{
+						dig_index = (u16)((float)CRACK_ANIMATION_LENGTH
+								* dig_time/dig_time_complete);
+					}
+					// This is for torches
+					else
+					{
+						dig_index = CRACK_ANIMATION_LENGTH;
+					}
 
 					if(dig_index < CRACK_ANIMATION_LENGTH)
 					{
@@ -2142,6 +2155,19 @@ int main(int argc, char *argv[])
 
 						nodig_delay_counter = dig_time_complete
 								/ (float)CRACK_ANIMATION_LENGTH;
+
+						// We don't want a corresponding delay to
+						// very time consuming nodes
+						if(nodig_delay_counter > 0.5)
+						{
+							nodig_delay_counter = 0.5;
+						}
+						// We want a slight delay to very little
+						// time consuming nodes
+						if(nodig_delay_counter < 0.15)
+						{
+							nodig_delay_counter = 0.15;
+						}
 					}
 
 					dig_time += dtime;
