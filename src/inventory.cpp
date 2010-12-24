@@ -32,8 +32,9 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 	InventoryItem
 */
 
-InventoryItem::InventoryItem()
+InventoryItem::InventoryItem(u16 count)
 {
+	m_count = count;
 }
 
 InventoryItem::~InventoryItem()
@@ -65,6 +66,14 @@ InventoryItem* InventoryItem::deSerialize(std::istream &is)
 		std::string inventorystring;
 		std::getline(is, inventorystring, '|');
 		return new MapBlockObjectItem(inventorystring);
+	}
+	else if(name == "CraftItem")
+	{
+		std::string subname;
+		std::getline(is, subname, ' ');
+		u16 count;
+		is>>count;
+		return new CraftItem(subname, count);
 	}
 	else if(name == "ToolItem")
 	{
@@ -325,83 +334,93 @@ void InventoryList::deleteItem(u32 i)
 		delete item;
 }
 
-bool InventoryList::addItem(InventoryItem *newitem)
+InventoryItem * InventoryList::addItem(InventoryItem *newitem)
 {
-	// If it is a MaterialItem, try to find an already existing one
-	// and just increment the counter
-	if(std::string("MaterialItem") == newitem->getName())
-	{
-		u8 material = ((MaterialItem*)newitem)->getMaterial();
-		u8 count = ((MaterialItem*)newitem)->getCount();
-		for(u32 i=0; i<m_items.size(); i++)
-		{
-			InventoryItem *item2 = m_items[i];
-			if(item2 == NULL)
-				continue;
-			if(std::string("MaterialItem") != item2->getName())
-				continue;
-			// Found one. Check if it is of the right material and has
-			// free space
-			MaterialItem *mitem2 = (MaterialItem*)item2;
-			if(mitem2->getMaterial() != material)
-				continue;
-			//TODO: Add all that can be added and add remaining part
-			// to another place
-			if(mitem2->freeSpace() < count)
-				continue;
-			// Add to the counter
-			mitem2->add(count);
-			// Dump the parameter
-			delete newitem;
-			return true;
-		}
-	}
-	// Else find an empty position
+	/*
+		First try to find if it could be added to some existing items
+	*/
 	for(u32 i=0; i<m_items.size(); i++)
 	{
-		InventoryItem *item = m_items[i];
-		if(item != NULL)
+		// Ignore empty slots
+		if(m_items[i] == NULL)
 			continue;
-		m_items[i] = newitem;
-		return true;
+		// Try adding
+		newitem = addItem(i, newitem);
+		if(newitem == NULL)
+			return NULL; // All was eaten
 	}
-	// Failed
-	return false;
+
+	/*
+		Then try to add it to empty slots
+	*/
+	for(u32 i=0; i<m_items.size(); i++)
+	{
+		// Ignore unempty slots
+		if(m_items[i] != NULL)
+			continue;
+		// Try adding
+		newitem = addItem(i, newitem);
+		if(newitem == NULL)
+			return NULL; // All was eaten
+	}
+
+	// Return leftover
+	return newitem;
 }
 
-bool InventoryList::addItem(u32 i, InventoryItem *newitem)
+InventoryItem * InventoryList::addItem(u32 i, InventoryItem *newitem)
 {
 	// If it is an empty position, it's an easy job.
-	InventoryItem *item = m_items[i];
-	if(item == NULL)
+	InventoryItem *to_item = m_items[i];
+	if(to_item == NULL)
 	{
 		m_items[i] = newitem;
-		return true;
+		return NULL;
 	}
-
-	// If it is a material item, try to 
-	if(std::string("MaterialItem") == newitem->getName())
+	
+	// If not addable, return the item
+	if(newitem->addableTo(to_item) == false)
+		return newitem;
+	
+	// If the item fits fully in the slot, add counter and delete it
+	if(newitem->getCount() <= to_item->freeSpace())
 	{
-		u8 material = ((MaterialItem*)newitem)->getMaterial();
-		u8 count = ((MaterialItem*)newitem)->getCount();
-		InventoryItem *item2 = m_items[i];
+		to_item->add(newitem->getCount());
+		delete newitem;
+		return NULL;
+	}
+	// Else the item does not fit fully. Add all that fits and return
+	// the rest.
+	else
+	{
+		u16 freespace = to_item->freeSpace();
+		to_item->add(freespace);
+		newitem->remove(freespace);
+		return newitem;
+	}
+}
 
-		if(item2 != NULL
-			&& std::string("MaterialItem") == item2->getName())
-		{
-			// Check if it is of the right material and has free space
-			MaterialItem *mitem2 = (MaterialItem*)item2;
-			if(mitem2->getMaterial() == material
-					&& mitem2->freeSpace() >= count)
-			{
-				// Add to the counter
-				mitem2->add(count);
-				// Dump the parameter
-				delete newitem;
-				// Done
-				return true;
-			}
-		}
+InventoryItem * InventoryList::takeItem(u32 i, u32 count)
+{
+	if(count == 0)
+		return NULL;
+
+	InventoryItem *item = m_items[i];
+	// If it is an empty position, return NULL
+	if(item == NULL)
+		return NULL;
+	
+	if(count >= item->getCount())
+	{
+		// Get the item by swapping NULL to its place
+		return changeItem(i, NULL);
+	}
+	else
+	{
+		InventoryItem *item2 = item->clone();
+		item->remove(count);
+		item2->setCount(count);
+		return item2;
 	}
 	
 	return false;
@@ -411,26 +430,9 @@ void InventoryList::decrementMaterials(u16 count)
 {
 	for(u32 i=0; i<m_items.size(); i++)
 	{
-		InventoryItem *item = m_items[i];
-		if(item == NULL)
-			continue;
-		if(std::string("MaterialItem") == item->getName())
-		{
-			MaterialItem *mitem = (MaterialItem*)item;
-			if(mitem->getCount() < count)
-			{
-				dstream<<__FUNCTION_NAME<<": decrementMaterials():"
-						<<" too small material count"<<std::endl;
-			}
-			else if(mitem->getCount() == count)
-			{
-				deleteItem(i);
-			}
-			else
-			{
-				mitem->remove(1);
-			}
-		}
+		InventoryItem *item = takeItem(i, count);
+		if(item)
+			delete item;
 	}
 }
 
@@ -607,6 +609,10 @@ void IMoveAction::apply(Inventory *inventory)
 		dstream<<" list_to->getItem(to_i)="<<list_to->getItem(to_i)
 				<<std::endl;*/
 	
+	/*
+		If a list doesn't exist or the source item doesn't exist
+		or the source and the destination slots are the same
+	*/
 	if(!list_from || !list_to || list_from->getItem(from_i) == NULL
 			|| (list_from == list_to && from_i == to_i))
 	{
@@ -615,18 +621,39 @@ void IMoveAction::apply(Inventory *inventory)
 	}
 	
 	// Take item from source list
-	InventoryItem *item1 = list_from->changeItem(from_i, NULL);
+	InventoryItem *item1 = NULL;
+	if(count == 0)
+		item1 = list_from->changeItem(from_i, NULL);
+	else
+		item1 = list_from->takeItem(from_i, count);
+
 	// Try to add the item to destination list
-	if(list_to->addItem(to_i, item1))
+	InventoryItem *olditem = item1;
+	item1 = list_to->addItem(to_i, item1);
+
+	// If nothing is returned, the item was fully added
+	if(item1 == NULL)
+		return;
+	
+	// If olditem is returned, nothing was added.
+	bool nothing_added = (item1 == olditem);
+	
+	// If something else is returned, part of the item was left unadded.
+	// Add the other part back to the source item
+	list_from->addItem(from_i, item1);
+
+	// If olditem is returned, nothing was added.
+	// Swap the items
+	if(nothing_added)
 	{
-		// Done.
+		// Take item from source list
+		item1 = list_from->changeItem(from_i, NULL);
+		// Adding was not possible, swap the items.
+		InventoryItem *item2 = list_to->changeItem(to_i, item1);
+		// Put item from destination list to the source list
+		list_from->changeItem(from_i, item2);
 		return;
 	}
-	// Adding was not possible, switch it.
-	// Switch it to the destination list
-	InventoryItem *item2 = list_to->changeItem(to_i, item1);
-	// Put item from destination list to the source list
-	list_from->changeItem(from_i, item2);
 }
 	
 //END

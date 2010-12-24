@@ -1513,6 +1513,10 @@ int main(int argc, char *argv[])
 	// Test the text input system
 	/*(new GUITextInputMenu(guienv, guiroot, -1, &g_active_menu_count,
 			NULL))->drop();*/
+	
+	// Launch pause menu
+	(new GUIPauseMenu(guienv, guiroot, -1, g_device,
+			&g_active_menu_count))->drop();
 
 	// First line of debug text
 	gui::IGUIStaticText *guitext = guienv->addStaticText(
@@ -2164,9 +2168,11 @@ int main(int argc, char *argv[])
 						}
 						// We want a slight delay to very little
 						// time consuming nodes
-						if(nodig_delay_counter < 0.15)
+						//float mindelay = 0.15;
+						float mindelay = 0.20;
+						if(nodig_delay_counter < mindelay)
 						{
-							nodig_delay_counter = 0.15;
+							nodig_delay_counter = mindelay;
 						}
 					}
 

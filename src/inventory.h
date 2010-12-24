@@ -33,10 +33,12 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 // For g_materials
 #include "main.h"
 
+#define QUANTITY_ITEM_MAX_COUNT 99
+
 class InventoryItem
 {
 public:
-	InventoryItem();
+	InventoryItem(u16 count);
 	virtual ~InventoryItem();
 	
 	static InventoryItem* deSerialize(std::istream &is);
@@ -53,18 +55,49 @@ public:
 	// Shall return a text to show in the GUI
 	virtual std::string getText() { return ""; }
 
-private:
-};
+	// Shall return true if the item can be add()ed to the other
+	virtual bool addableTo(InventoryItem *other)
+	{
+		return false;
+	}
+	
+	/*
+		Quantity methods
+	*/
+	u16 getCount()
+	{
+		return m_count;
+	}
+	void setCount(u16 count)
+	{
+		m_count = count;
+	}
+	virtual u16 freeSpace()
+	{
+		return 0;
+	}
+	void add(u16 count)
+	{
+		assert(m_count + count <= QUANTITY_ITEM_MAX_COUNT);
+		m_count += count;
+	}
+	void remove(u16 count)
+	{
+		assert(m_count >= count);
+		m_count -= count;
+	}
 
-#define MATERIAL_ITEM_MAX_COUNT 99
+protected:
+	u16 m_count;
+};
 
 class MaterialItem : public InventoryItem
 {
 public:
-	MaterialItem(u8 content, u16 count)
+	MaterialItem(u8 content, u16 count):
+		InventoryItem(count)
 	{
 		m_content = content;
-		m_count = count;
 	}
 	/*
 		Implementation interface
@@ -107,6 +140,22 @@ public:
 		os<<m_count;
 		return os.str();
 	}
+
+	virtual bool addableTo(InventoryItem *other)
+	{
+		if(std::string(other->getName()) != "MaterialItem")
+			return false;
+		MaterialItem *m = (MaterialItem*)other;
+		if(m->getMaterial() != m_content)
+			return false;
+		return true;
+	}
+	u16 freeSpace()
+	{
+		if(m_count > QUANTITY_ITEM_MAX_COUNT)
+			return 0;
+		return QUANTITY_ITEM_MAX_COUNT - m_count;
+	}
 	/*
 		Special methods
 	*/
@@ -114,39 +163,15 @@ public:
 	{
 		return m_content;
 	}
-	u16 getCount()
-	{
-		return m_count;
-	}
-	u16 freeSpace()
-	{
-		if(m_count > MATERIAL_ITEM_MAX_COUNT)
-			return 0;
-		return MATERIAL_ITEM_MAX_COUNT - m_count;
-	}
-	void add(u16 count)
-	{
-		assert(m_count + count <= MATERIAL_ITEM_MAX_COUNT);
-		m_count += count;
-	}
-	void remove(u16 count)
-	{
-		assert(m_count >= count);
-		m_count -= count;
-	}
 private:
 	u8 m_content;
-	u16 m_count;
 };
 
 class MapBlockObjectItem : public InventoryItem
 {
 public:
-	/*MapBlockObjectItem(MapBlockObject *obj)
-	{
-		m_inventorystring = obj->getInventoryString();
-	}*/
-	MapBlockObjectItem(std::string inventorystring)
+	MapBlockObjectItem(std::string inventorystring):
+		InventoryItem(1)
 	{
 		m_inventorystring = inventorystring;
 	}
@@ -196,10 +221,90 @@ private:
 	std::string m_inventorystring;
 };
 
+/*
+	An item that is used as a mid-product when crafting.
+	Subnames:
+	- Stick
+*/
+class CraftItem : public InventoryItem
+{
+public:
+	CraftItem(std::string subname, u16 count):
+		InventoryItem(count)
+	{
+		m_subname = subname;
+	}
+	/*
+		Implementation interface
+	*/
+	virtual const char* getName() const
+	{
+		return "CraftItem";
+	}
+	virtual void serialize(std::ostream &os)
+	{
+		os<<getName();
+		os<<" ";
+		os<<m_subname;
+		os<<" ";
+		os<<m_count;
+	}
+	virtual InventoryItem* clone()
+	{
+		return new CraftItem(m_subname, m_count);
+	}
+#ifndef SERVER
+	video::ITexture * getImage()
+	{
+		std::string basename;
+		if(m_subname == "Stick")
+			basename = "../data/stick.png";
+		// Default to cloud texture
+		else
+			basename = tile_texture_path_get(TILE_CLOUD);
+		
+		// Get such a texture
+		return g_irrlicht->getTexture(basename);
+		//return g_irrlicht->getTexture(TextureSpec(finalname, basename, mod));
+	}
+#endif
+	std::string getText()
+	{
+		std::ostringstream os;
+		os<<m_count;
+		return os.str();
+	}
+	virtual bool addableTo(InventoryItem *other)
+	{
+		if(std::string(other->getName()) != "CraftItem")
+			return false;
+		CraftItem *m = (CraftItem*)other;
+		if(m->m_subname != m_subname)
+			return false;
+		return true;
+	}
+	u16 freeSpace()
+	{
+		if(m_count > QUANTITY_ITEM_MAX_COUNT)
+			return 0;
+		return QUANTITY_ITEM_MAX_COUNT - m_count;
+	}
+	/*
+		Special methods
+	*/
+	std::string getSubName()
+	{
+		return m_subname;
+	}
+private:
+	std::string m_subname;
+};
+
 class ToolItem : public InventoryItem
 {
 public:
-	ToolItem(std::string toolname, u16 wear)
+	ToolItem(std::string toolname, u16 wear):
+		InventoryItem(1)
 	{
 		m_toolname = toolname;
 		m_wear = wear;
@@ -313,11 +418,20 @@ public:
 	InventoryItem * changeItem(u32 i, InventoryItem *newitem);
 	// Delete item
 	void deleteItem(u32 i);
-	// Adds an item to a suitable place. Returns false if failed.
-	bool addItem(InventoryItem *newitem);
-	// If possible, adds item to given slot. Returns true on success.
-	// Fails when slot is populated by a different kind of item.
-	bool addItem(u32 i, InventoryItem *newitem);
+	// Adds an item to a suitable place. Returns leftover item.
+	// If all went into the list, returns NULL.
+	InventoryItem * addItem(InventoryItem *newitem);
+
+	// If possible, adds item to given slot.
+	// If cannot be added at all, returns the item back.
+	// If can be added partly, decremented item is returned back.
+	// If can be added fully, NULL is returned.
+	InventoryItem * addItem(u32 i, InventoryItem *newitem);
+
+	// Takes some items from a slot.
+	// If there are not enough, takes as many as it can.
+	// Returns NULL if couldn't take any.
+	InventoryItem * takeItem(u32 i, u32 count);
 
 	// Decrements amount of every material item
 	void decrementMaterials(u16 count);
@@ -347,12 +461,13 @@ public:
 	InventoryList * addList(const std::string &name, u32 size);
 	InventoryList * getList(const std::string &name);
 	bool deleteList(const std::string &name);
-	// A shorthand for adding items
-	bool addItem(const std::string &listname, InventoryItem *newitem)
+	// A shorthand for adding items.
+	// Returns NULL if the item was fully added, leftover otherwise.
+	InventoryItem * addItem(const std::string &listname, InventoryItem *newitem)
 	{
 		InventoryList *list = getList(listname);
 		if(list == NULL)
-			return false;
+			return newitem;
 		return list->addItem(newitem);
 	}
 	
@@ -376,6 +491,7 @@ struct InventoryAction
 
 struct IMoveAction : public InventoryAction
 {
+	// count=0 means "everything"
 	u16 count;
 	std::string from_name;
 	s16 from_i;

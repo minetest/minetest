@@ -434,6 +434,11 @@ private:
 	void UpdateBlockWaterPressure(MapBlock *block,
 			core::map<v3s16, MapBlock*> &modified_blocks);
 	
+	// Locks environment and connection by its own
+	struct PeerChange;
+	void handlePeerChange(PeerChange &c);
+	void handlePeerChanges();
+	
 	float m_flowwater_timer;
 	float m_print_info_timer;
 	float m_objectdata_timer;
@@ -466,6 +471,23 @@ private:
 	float m_time_counter;
 	float m_time_of_day_send_timer;
 	
+	MutexedVariable<float> m_uptime;
+
+	enum PeerChangeType
+	{
+		PEER_ADDED,
+		PEER_REMOVED
+	};
+
+	struct PeerChange
+	{
+		PeerChangeType type;
+		u16 peer_id;
+		bool timeout;
+	};
+	
+	Queue<PeerChange> m_peer_change_queue;
+
 	friend class EmergeThread;
 	friend class RemoteClient;
 };

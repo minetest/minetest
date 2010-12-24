@@ -117,6 +117,11 @@ Client::Client(
 
 Client::~Client()
 {
+	{
+		JMutexAutoLock conlock(m_con_mutex);
+		m_con.Disconnect();
+	}
+
 	m_thread.setRun(false);
 	while(m_thread.IsRunning())
 		sleep_ms(100);
@@ -601,7 +606,7 @@ void Client::ProcessData(u8 *data, u32 datasize, u16 sender_peer_id)
 		
 		addNode(p, n);
 	}
-	if(command == TOCLIENT_PLAYERPOS)
+	else if(command == TOCLIENT_PLAYERPOS)
 	{
 		dstream<<"WARNING: Received deprecated TOCLIENT_PLAYERPOS"
 				<<std::endl;

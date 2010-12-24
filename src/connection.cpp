@@ -542,6 +542,23 @@ void Connection::Connect(Address address)
 	//m_waiting_new_peer_id = true;
 }
 
+void Connection::Disconnect()
+{
+	// Create and send DISCO packet
+	SharedBuffer<u8> data(2);
+	writeU8(&data[0], TYPE_CONTROL);
+	writeU8(&data[1], CONTROLTYPE_DISCO);
+	
+	// Send to all
+	core::map<u16, Peer*>::Iterator j;
+	j = m_peers.getIterator();
+	for(; j.atEnd() == false; j++)
+	{
+		Peer *peer = j.getNode()->getValue();
+		SendAsPacket(peer->id, 0, data, false);
+	}
+}
+
 bool Connection::Connected()
 {
 	if(m_peers.size() != 1)
@@ -645,7 +662,22 @@ SharedBuffer<u8> Channel::ProcessPacket(
 			// the timeout counter
 			con->PrintInfo();
 			dout_con<<"PING"<<std::endl;
-			throw ProcessedSilentlyException("Got a SET_PEER_ID");
+			throw ProcessedSilentlyException("Got a PING");
+		}
+		else if(controltype == CONTROLTYPE_DISCO)
+		{
+			// Just ignore it, the incoming data already reset
+			// the timeout counter
+			con->PrintInfo();
+			dout_con<<"DISCO: Removing peer "<<(peer_id)<<std::endl;
+			
+			if(con->deletePeer(peer_id) == false)
+			{
+				con->PrintInfo(derr_con);
+				derr_con<<"DISCO: Peer not found"<<std::endl;
+			}
+
+			throw ProcessedSilentlyException("Got a DISCO");
 		}
 		else{
 			con->PrintInfo(derr_con);
@@ -1321,6 +1353,16 @@ core::list<Peer*> Connection::GetPeers()
 		list.push_back(peer);
 	}
 	return list;
+}
+
+bool Connection::deletePeer(u16 peer_id)
+{
+	if(m_peers.find(peer_id) == NULL)
+		return false;
+	m_peerhandler->deletingPeer(m_peers[peer_id], true);
+	delete m_peers[peer_id];
+	m_peers.remove(peer_id);
+	return true;
 }
 
 void Connection::PrintInfo(std::ostream &out)

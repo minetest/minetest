@@ -849,40 +849,6 @@ void RemoteClient::SetBlocksNotSent(core::map<v3s16, MapBlock*> &blocks)
 	}
 }
 
-/*void RemoteClient::BlockEmerged()
-{
-	SharedPtr<JMutexAutoLock> lock(m_num_blocks_in_emerge_queue.getLock());
-	assert(m_num_blocks_in_emerge_queue.m_value > 0);
-	m_num_blocks_in_emerge_queue.m_value--;
-}*/
-
-/*void RemoteClient::RunSendingTimeouts(float dtime, float timeout)
-{
-	JMutexAutoLock sendinglock(m_blocks_sending_mutex);
-	
-	core::list<v3s16> remove_queue;
-	for(core::map<v3s16, float>::Iterator
-			i = m_blocks_sending.getIterator();
-			i.atEnd()==false; i++)
-	{
-		v3s16 p = i.getNode()->getKey();
-		float t = i.getNode()->getValue();
-		t += dtime;
-		i.getNode()->setValue(t);
-
-		if(t > timeout)
-		{
-			remove_queue.push_back(p);
-		}
-	}
-	for(core::list<v3s16>::Iterator
-			i = remove_queue.begin();
-			i != remove_queue.end(); i++)
-	{
-		m_blocks_sending.remove(*i);
-	}
-}*/
-
 /*
 	PlayerInfo
 */
@@ -931,7 +897,8 @@ Server::Server(
 	m_emergethread(this),
 	m_time_of_day(8000),
 	m_time_counter(0),
-	m_time_of_day_send_timer(0)
+	m_time_of_day_send_timer(0),
+	m_uptime(0)
 {
 	m_flowwater_timer = 0.0;
 	m_print_info_timer = 0.0;
@@ -1026,9 +993,19 @@ void Server::AsyncRunStep()
 	if(dtime < 0.001)
 		return;
 	
+	//dstream<<"Server steps "<<dtime<<std::endl;
+	//dstream<<"Server::AsyncRunStep(): dtime="<<dtime<<std::endl;
+	
 	{
 		JMutexAutoLock lock1(m_step_dtime_mutex);
 		m_step_dtime -= dtime;
+	}
+
+	/*
+		Update uptime
+	*/
+	{
+		m_uptime.set(m_uptime.get() + dtime);
 	}
 	
 	/*
@@ -1070,16 +1047,18 @@ void Server::AsyncRunStep()
 		}
 	}
 
-	//dstream<<"Server steps "<<dtime<<std::endl;
-	
-	//dstream<<"Server::AsyncRunStep(): dtime="<<dtime<<std::endl;
 	{
-		// Has to be locked for peerAdded/Removed
-		JMutexAutoLock lock1(m_env_mutex);
 		// Process connection's timeouts
 		JMutexAutoLock lock2(m_con_mutex);
 		m_con.RunTimeouts(dtime);
 	}
+	
+	{
+		// This has to be called so that the client list gets synced
+		// with the peer list of the connection
+		handlePeerChanges();
+	}
+
 	{
 		// Step environment
 		// This also runs Map's timers
@@ -1355,9 +1334,14 @@ void Server::Receive()
 	u32 datasize;
 	try{
 		{
-			JMutexAutoLock lock(m_con_mutex);
+			JMutexAutoLock conlock(m_con_mutex);
 			datasize = m_con.Receive(peer_id, *data, data_maxsize);
 		}
+
+		// This has to be called so that the client list gets synced
+		// with the peer list of the connection
+		handlePeerChanges();
+
 		ProcessData(*data, datasize, peer_id);
 	}
 	catch(con::InvalidIncomingDataException &e)
@@ -1498,6 +1482,36 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 			SharedBuffer<u8> data = makePacket_TOCLIENT_TIME_OF_DAY(
 					m_time_of_day.get());
 			m_con.Send(peer->id, 0, data, true);
+		}
+
+		// Send information about server to player in chat
+		{
+			std::wostringstream os(std::ios_base::binary);
+			os<<L"# Server: ";
+			// Uptime
+			os<<L"uptime="<<m_uptime.get();
+			// Information about clients
+			os<<L", clients={";
+			for(core::map<u16, RemoteClient*>::Iterator
+				i = m_clients.getIterator();
+				i.atEnd() == false; i++)
+			{
+				// Get client and check that it is valid
+				RemoteClient *client = i.getNode()->getValue();
+				assert(client->peer_id == i.getNode()->getKey());
+				if(client->serialization_version == SER_FMT_VER_INVALID)
+					continue;
+				// Get name of player
+				std::wstring name = L"unknown";
+				Player *player = m_env.getPlayer(client->peer_id);
+				if(player != NULL)
+					name = narrow_to_wide(player->getName());
+				// Add name to information string
+				os<<name<<L",";
+			}
+			os<<L"}";
+			// Send message
+			SendChatMessage(peer_id, os.str());
 		}
 		
 		// Send information about joining in chat
@@ -1722,52 +1736,10 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 		*/
 		if(action == 0)
 		{
-		/*
-			NOTE: This can be used in the future to check if
-			somebody is cheating, by checking the timing.
-		*/
-
-#if 0
-			u8 content;
-
-			try
-			{
-				// Get content at position
-				content = m_env.getMap().getNode(p_under).d;
-				// If it's not diggable, do nothing
-				if(content_diggable(content) == false)
-				{
-					return;
-				}
-			}
-			catch(InvalidPositionException &e)
-			{
-				derr_server<<"Server: Not starting digging: Node not found"
-						<<std::endl;
-				return;
-			}
-			
 			/*
-				Set stuff in RemoteClient
+				NOTE: This can be used in the future to check if
+				somebody is cheating, by checking the timing.
 			*/
-			RemoteClient *client = getClient(peer->id);
-			JMutexAutoLock(client->m_dig_mutex);
-			client->m_dig_tool_item = 0;
-			client->m_dig_position = p_under;
-			float dig_time = 0.5;
-			if(content == CONTENT_STONE)
-			{
-				dig_time = 1.5;
-			}
-			else if(content == CONTENT_TORCH)
-			{
-				dig_time = 0.0;
-			}
-			client->m_dig_time_remaining = dig_time;
-			
-			// Reset build time counter
-			getClient(peer->id)->m_time_from_building.set(0.0);
-#endif
 		} // action == 0
 
 		/*
@@ -2240,7 +2212,10 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 					InventoryList *clist = player->inventory.getList("craft");
 					if(clist)
 					{
-						clist->decrementMaterials(ma->count);
+						u16 count = ma->count;
+						if(count == 0)
+							count = 1;
+						clist->decrementMaterials(count);
 					}
 					// Do action
 					// Feed action to player inventory
@@ -2424,8 +2399,15 @@ void Server::peerAdded(con::Peer *peer)
 	dout_server<<"Server::peerAdded(): peer->id="
 			<<peer->id<<std::endl;
 	
-	// Connection is already locked when this is called.
-	//JMutexAutoLock lock(m_con_mutex);
+	PeerChange c;
+	c.type = PEER_ADDED;
+	c.peer_id = peer->id;
+	c.timeout = false;
+	m_peer_change_queue.push_back(c);
+
+#if 0
+	// NOTE: Connection is already locked when this is called.
+	// NOTE: Environment is already locked when this is called.
 	
 	// Error check
 	core::map<u16, RemoteClient*>::Node *n;
@@ -2440,9 +2422,6 @@ void Server::peerAdded(con::Peer *peer)
 
 	// Create player
 	{
-		// Already locked when called
-		//JMutexAutoLock envlock(m_env_mutex);
-		
 		Player *player = m_env.getPlayer(peer->id);
 		
 		// The player shouldn't already exist
@@ -2491,8 +2470,8 @@ void Server::peerAdded(con::Peer *peer)
 			// Give a good pick
 			{
 				InventoryItem *item = new ToolItem("STPick", 32000);
-				bool r = player->inventory.addItem("main", item);
-				assert(r == true);
+				void* r = player->inventory.addItem("main", item);
+				assert(r == NULL);
 			}
 			// Give all materials
 			assert(USEFUL_CONTENT_COUNT <= PLAYER_INVENTORY_SIZE);
@@ -2508,8 +2487,8 @@ void Server::peerAdded(con::Peer *peer)
 			// Sign
 			{
 				InventoryItem *item = new MapBlockObjectItem("Sign Example text");
-				bool r = player->inventory.addItem("main", item);
-				assert(r == true);
+				void* r = player->inventory.addItem("main", item);
+				assert(r == NULL);
 			}
 			/*// Rat
 			{
@@ -2521,14 +2500,19 @@ void Server::peerAdded(con::Peer *peer)
 		else
 		{
 			{
+				InventoryItem *item = new CraftItem("Stick", 4);
+				void* r = player->inventory.addItem("main", item);
+				assert(r == NULL);
+			}
+			{
 				InventoryItem *item = new ToolItem("WPick", 32000);
-				bool r = player->inventory.addItem("main", item);
-				assert(r == true);
+				void* r = player->inventory.addItem("main", item);
+				assert(r == NULL);
 			}
 			{
 				InventoryItem *item = new ToolItem("STPick", 32000);
-				bool r = player->inventory.addItem("main", item);
-				assert(r == true);
+				void* r = player->inventory.addItem("main", item);
+				assert(r == NULL);
 			}
 			/*// Give some lights
 			{
@@ -2551,6 +2535,7 @@ void Server::peerAdded(con::Peer *peer)
 			}*/
 		}
 	}
+#endif
 }
 
 void Server::deletingPeer(con::Peer *peer, bool timeout)
@@ -2559,8 +2544,18 @@ void Server::deletingPeer(con::Peer *peer, bool timeout)
 	dout_server<<"Server::deletingPeer(): peer->id="
 			<<peer->id<<", timeout="<<timeout<<std::endl;
 	
-	// Connection is already locked when this is called.
-	//JMutexAutoLock lock(m_con_mutex);
+	PeerChange c;
+	c.type = PEER_REMOVED;
+	c.peer_id = peer->id;
+	c.timeout = timeout;
+	m_peer_change_queue.push_back(c);
+
+#if 0
+	// NOTE: Connection is already locked when this is called.
+
+	// NOTE: Environment is already locked when this is called.
+	// NOTE: Locking environment cannot be moved here because connection
+	//       is already locked and env has to be locked before
 
 	// Error check
 	core::map<u16, RemoteClient*>::Node *n;
@@ -2568,10 +2563,22 @@ void Server::deletingPeer(con::Peer *peer, bool timeout)
 	// The client should exist
 	assert(n != NULL);
 	
+	// Send information about leaving in chat
+	{
+		std::wstring name = L"unknown";
+		Player *player = m_env.getPlayer(peer->id);
+		if(player != NULL)
+			name = narrow_to_wide(player->getName());
+		
+		std::wstring message;
+		message += L"*** ";
+		message += name;
+		message += L" left game";
+		BroadcastChatMessage(message);
+	}
+
 	// Delete player
 	{
-		// Already locked when called
-		//JMutexAutoLock envlock(m_env_mutex);
 		m_env.removePlayer(peer->id);
 	}
 	
@@ -2581,6 +2588,7 @@ void Server::deletingPeer(con::Peer *peer, bool timeout)
 
 	// Send player info to all clients
 	SendPlayerInfos();
+#endif
 }
 
 void Server::SendObjectData(float dtime)
@@ -2848,6 +2856,205 @@ void Server::UpdateBlockWaterPressure(MapBlock *block,
 	
 	v.blitBack(modified_blocks);
 }
+
+void Server::handlePeerChange(PeerChange &c)
+{
+	JMutexAutoLock envlock(m_env_mutex);
+	JMutexAutoLock conlock(m_con_mutex);
 	
+	if(c.type == PEER_ADDED)
+	{
+		/*
+			Add
+		*/
+
+		// Error check
+		core::map<u16, RemoteClient*>::Node *n;
+		n = m_clients.find(c.peer_id);
+		// The client shouldn't already exist
+		assert(n == NULL);
+
+		// Create client
+		RemoteClient *client = new RemoteClient();
+		client->peer_id = c.peer_id;
+		m_clients.insert(client->peer_id, client);
+
+		// Create player
+		{
+			Player *player = m_env.getPlayer(c.peer_id);
+			
+			// The player shouldn't already exist
+			assert(player == NULL);
+
+			player = new ServerRemotePlayer();
+			player->peer_id = c.peer_id;
+
+			/*
+				Set player position
+			*/
+			
+			// We're going to throw the player to this position
+			//v2s16 nodepos(29990,29990);
+			//v2s16 nodepos(9990,9990);
+			v2s16 nodepos(0,0);
+			v2s16 sectorpos = getNodeSectorPos(nodepos);
+			// Get zero sector (it could have been unloaded to disk)
+			m_env.getMap().emergeSector(sectorpos);
+			// Get ground height at origin
+			f32 groundheight = m_env.getMap().getGroundHeight(nodepos, true);
+			// The sector should have been generated -> groundheight exists
+			assert(groundheight > GROUNDHEIGHT_VALID_MINVALUE);
+			// Don't go underwater
+			if(groundheight < WATER_LEVEL)
+				groundheight = WATER_LEVEL;
+
+			player->setPosition(intToFloat(v3s16(
+					nodepos.X,
+					groundheight + 1,
+					nodepos.Y
+			)));
+
+			/*
+				Add player to environment
+			*/
+
+			m_env.addPlayer(player);
+
+			/*
+				Add stuff to inventory
+			*/
+			
+			if(g_settings.getBool("creative_mode"))
+			{
+				// Give a good pick
+				{
+					InventoryItem *item = new ToolItem("STPick", 32000);
+					void* r = player->inventory.addItem("main", item);
+					assert(r == NULL);
+				}
+				// Give all materials
+				assert(USEFUL_CONTENT_COUNT <= PLAYER_INVENTORY_SIZE);
+				for(u16 i=0; i<USEFUL_CONTENT_COUNT; i++)
+				{
+					// Skip some materials
+					if(i == CONTENT_OCEAN)
+						continue;
+
+					InventoryItem *item = new MaterialItem(i, 1);
+					player->inventory.addItem("main", item);
+				}
+				// Sign
+				{
+					InventoryItem *item = new MapBlockObjectItem("Sign Example text");
+					void* r = player->inventory.addItem("main", item);
+					assert(r == NULL);
+				}
+				/*// Rat
+				{
+					InventoryItem *item = new MapBlockObjectItem("Rat");
+					bool r = player->inventory.addItem("main", item);
+					assert(r == true);
+				}*/
+			}
+			else
+			{
+				{
+					InventoryItem *item = new CraftItem("Stick", 4);
+					void* r = player->inventory.addItem("main", item);
+					assert(r == NULL);
+				}
+				{
+					InventoryItem *item = new ToolItem("WPick", 32000);
+					void* r = player->inventory.addItem("main", item);
+					assert(r == NULL);
+				}
+				{
+					InventoryItem *item = new ToolItem("STPick", 32000);
+					void* r = player->inventory.addItem("main", item);
+					assert(r == NULL);
+				}
+				/*// Give some lights
+				{
+					InventoryItem *item = new MaterialItem(CONTENT_TORCH, 999);
+					bool r = player->inventory.addItem("main", item);
+					assert(r == true);
+				}
+				// and some signs
+				for(u16 i=0; i<4; i++)
+				{
+					InventoryItem *item = new MapBlockObjectItem("Sign Example text");
+					bool r = player->inventory.addItem("main", item);
+					assert(r == true);
+				}*/
+				/*// Give some other stuff
+				{
+					InventoryItem *item = new MaterialItem(CONTENT_TREE, 999);
+					bool r = player->inventory.addItem("main", item);
+					assert(r == true);
+				}*/
+			}
+		}
+
+	} // PEER_ADDED
+	else if(c.type == PEER_REMOVED)
+	{
+		/*
+			Delete
+		*/
+
+		// Error check
+		core::map<u16, RemoteClient*>::Node *n;
+		n = m_clients.find(c.peer_id);
+		// The client should exist
+		assert(n != NULL);
+		
+		// Collect information about leaving in chat
+		std::wstring message;
+		{
+			std::wstring name = L"unknown";
+			Player *player = m_env.getPlayer(c.peer_id);
+			if(player != NULL)
+				name = narrow_to_wide(player->getName());
+			
+			message += L"*** ";
+			message += name;
+			message += L" left game";
+		}
+
+		// Delete player
+		{
+			m_env.removePlayer(c.peer_id);
+		}
+		
+		// Delete client
+		delete m_clients[c.peer_id];
+		m_clients.remove(c.peer_id);
+
+		// Send player info to all remaining clients
+		SendPlayerInfos();
+		
+		// Send leave chat message to all remaining clients
+		BroadcastChatMessage(message);
+		
+	} // PEER_REMOVED
+	else
+	{
+		assert(0);
+	}
+}
+
+void Server::handlePeerChanges()
+{
+	while(m_peer_change_queue.size() > 0)
+	{
+		PeerChange c = m_peer_change_queue.pop_front();
+
+		dout_server<<"Server: Handling peer change: "
+				<<"id="<<c.peer_id<<", timeout="<<c.timeout
+				<<std::endl;
+
+		handlePeerChange(c);
+	}
+}
 
 

@@ -228,8 +228,10 @@ bool GUIInventoryMenu::OnEvent(const SEvent& event)
 	}
 	if(event.EventType==EET_MOUSE_INPUT_EVENT)
 	{
-		if(event.MouseInput.Event == EMIE_LMOUSE_PRESSED_DOWN)
+		if(event.MouseInput.Event == EMIE_LMOUSE_PRESSED_DOWN
+				|| event.MouseInput.Event == EMIE_RMOUSE_PRESSED_DOWN)
 		{
+			bool right = (event.MouseInput.Event == EMIE_RMOUSE_PRESSED_DOWN);
 			v2s32 p(event.MouseInput.X, event.MouseInput.Y);
 			//dstream<<"Mouse down at p=("<<p.X<<","<<p.Y<<")"<<std::endl;
 			ItemSpec s = getItemAtPos(p);
@@ -248,15 +250,21 @@ bool GUIInventoryMenu::OnEvent(const SEvent& event)
 						dstream<<"Queueing IACTION_MOVE"<<std::endl;
 						IMoveAction *a =
 							new IMoveAction();
-						a->count = 1;
+						a->count = right ? 1 : 0;
 						a->from_name = m_selected_item->listname;
 						a->from_i = m_selected_item->i;
 						a->to_name = s.listname;
 						a->to_i = s.i;
 						m_actions->push_back(a);
 					}
-					delete m_selected_item;
-					m_selected_item = NULL;
+					bool source_empties = false;
+					if(list_from && list_from->getItem(m_selected_item->i)->getCount()==1)
+						source_empties = true;
+					if(right == false || source_empties)
+					{
+						delete m_selected_item;
+						m_selected_item = NULL;
+					}
 				}
 				else
 				{

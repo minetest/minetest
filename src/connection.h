@@ -226,12 +226,15 @@ controltype and data description:
 	CONTROLTYPE_SET_PEER_ID
 		[2] u16 peer_id_new
 	CONTROLTYPE_PING
-	- This can be sent in a reliable packet to get a reply
+	- There is no actual reply, but this can be sent in a reliable
+	  packet to get a reply
+	CONTROLTYPE_DISCO
 */
 #define TYPE_CONTROL 0
 #define CONTROLTYPE_ACK 0
 #define CONTROLTYPE_SET_PEER_ID 1
 #define CONTROLTYPE_PING 2
+#define CONTROLTYPE_DISCO 3
 /*
 ORIGINAL: This is a plain packet with no control and no error
 checking at all.
@@ -442,12 +445,15 @@ public:
 	void Connect(Address address);
 	bool Connected();
 
+	void Disconnect();
+
 	// Sets peer_id
 	SharedBuffer<u8> GetFromBuffers(u16 &peer_id);
 
 	// The peer_id of sender is stored in peer_id
 	// Return value: I guess this always throws an exception or
 	//               actually gets data
+	// May call PeerHandler methods
 	u32 Receive(u16 &peer_id, u8 *data, u32 datasize);
 	
 	// These will automatically package the data as an original or split
@@ -460,12 +466,18 @@ public:
 	// Sends a raw packet
 	void RawSend(const BufferedPacket &packet);
 	
+	// May call PeerHandler methods
 	void RunTimeouts(float dtime);
+
 	// Can throw a PeerNotFoundException
 	Peer* GetPeer(u16 peer_id);
 	// returns NULL if failed
 	Peer* GetPeerNoEx(u16 peer_id);
 	core::list<Peer*> GetPeers();
+	
+	// Calls PeerHandler::deletingPeer
+	// Returns false if peer was not found
+	bool deletePeer(u16 peer_id);
 
 	void SetPeerID(u16 id){ m_peer_id = id; }
 	u16 GetPeerID(){ return m_peer_id; }
