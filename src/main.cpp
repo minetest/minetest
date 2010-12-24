@@ -177,9 +177,8 @@ TODO: Check if the usage of Client::isFetchingBlocks() in
 Doing now:
 ======================================================================
 
-TODO: Tool items
-
-- Actually, tool items should be just a little special MapBlockItems
+TODO: Tool capability table
+TODO: Transferring of the table from server to client
 
 ======================================================================
 
@@ -2109,7 +2108,7 @@ int main(int argc, char *argv[])
 						if(mlist != NULL)
 						{
 							InventoryItem *item = mlist->getItem(g_selected_item);
-							if((std::string)item->getName() == "ToolItem")
+							if(item && (std::string)item->getName() == "ToolItem")
 							{
 								ToolItem *titem = (ToolItem*)item;
 								if(titem->getToolName() == "WPick")
