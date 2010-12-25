@@ -77,6 +77,7 @@ public:
 			int *active_menu_count);
 	~GUIInventoryMenu();
 
+	void removeChildren();
 	/*
 		Remove and re-add (or reposition) stuff
 	*/

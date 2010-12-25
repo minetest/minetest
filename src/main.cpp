@@ -184,9 +184,8 @@ TODO: There has to be some better way to handle static objects than to
 Doing now:
 ======================================================================
 
-TODO: Tool capability table: Which materials, at what speed, how much
-      wearing
-TODO: Transferring of the table from server to client
+TODO: When server sees that client is removing an inexistent block or
+      adding a block to an existent position, resend the MapBlock.
 
 ======================================================================
 
@@ -1545,10 +1544,10 @@ int main(int argc, char *argv[])
 				&g_active_menu_count,
 				L"Asd");
 	menu->drop();*/
-		
+	
 	// Launch pause menu
-	/*(new GUIPauseMenu(guienv, guiroot, -1, g_device,
-			&g_active_menu_count))->drop();*/
+	(new GUIPauseMenu(guienv, guiroot, -1, g_device,
+			&g_active_menu_count))->drop();
 
 	// First line of debug text
 	gui::IGUIStaticText *guitext = guienv->addStaticText(
@@ -2349,23 +2348,36 @@ int main(int argc, char *argv[])
 			while(client.getChatMessage(message))
 			{
 				chat_lines.push_back(ChatLine(message));
-				if(chat_lines.size() > 5)
+				/*if(chat_lines.size() > 6)
 				{
 					core::list<ChatLine>::Iterator
 							i = chat_lines.begin();
 					chat_lines.erase(i);
-				}
+				}*/
 			}
 			// Append them to form the whole static text and throw
 			// it to the gui element
 			std::wstring whole;
+			// This will correspond to the line number counted from
+			// top to bottom, from size-1 to 0
+			s16 line_number = chat_lines.size();
+			// Count of messages to be removed from the top
 			u16 to_be_removed_count = 0;
 			for(core::list<ChatLine>::Iterator
 					i = chat_lines.begin();
 					i != chat_lines.end(); i++)
 			{
+				// After this, line number is valid for this loop
+				line_number--;
+				// Increment age
 				(*i).age += dtime;
-				if((*i).age > 300.0)
+				/*
+					This results in a maximum age of 60*6 to the
+					lowermost line and a maximum of 6 lines
+				*/
+				float allowed_age = (6-line_number) * 60.0;
+
+				if((*i).age > allowed_age)
 				{
 					to_be_removed_count++;
 					continue;

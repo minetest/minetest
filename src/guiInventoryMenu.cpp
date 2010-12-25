@@ -93,19 +93,35 @@ GUIInventoryMenu::GUIInventoryMenu(gui::IGUIEnvironment* env,
 
 GUIInventoryMenu::~GUIInventoryMenu()
 {
+	removeChildren();
+
 	if(m_selected_item)
 		delete m_selected_item;
 }
 
+void GUIInventoryMenu::removeChildren()
+{
+	{
+		gui::IGUIElement *e = getElementFromId(256);
+		if(e != NULL)
+			e->remove();
+	}
+}
+
 void GUIInventoryMenu::regenerateGui(v2u32 screensize)
 {
+	// Remove children
+	removeChildren();
+	
 	padding = v2s32(24,24);
 	spacing = v2s32(60,56);
 	imgsize = v2s32(48,48);
 
+	s32 helptext_h = 15;
+
 	v2s32 size(
 		padding.X*2+spacing.X*(8-1)+imgsize.X,
-		padding.Y*2+spacing.Y*(7-1)+imgsize.Y
+		padding.Y*2+spacing.Y*(7-1)+imgsize.Y + helptext_h
 	);
 
 	core::rect<s32> rect(
@@ -127,6 +143,16 @@ void GUIInventoryMenu::regenerateGui(v2u32 screensize)
 			basepos + v2s32(spacing.X*3, spacing.Y*0), v2s32(3, 3)));
 	m_draw_positions.push_back(ListDrawSpec("craftresult",
 			basepos + v2s32(spacing.X*7, spacing.Y*1), v2s32(1, 1)));
+	
+	// Add children
+	{
+		core::rect<s32> rect(0, 0, size.X-padding.X*2, helptext_h);
+		rect = rect + v2s32(size.X/2 - rect.getWidth()/2,
+				size.Y-rect.getHeight()-15);
+		const wchar_t *text =
+		L"Left click: Move all items, Right click: Move single item";
+		Environment->addStaticText(text, rect, false, true, this, 256);
+	}
 }
 
 GUIInventoryMenu::ItemSpec GUIInventoryMenu::getItemAtPos(v2s32 p) const
@@ -244,22 +270,25 @@ bool GUIInventoryMenu::OnEvent(const SEvent& event)
 							m_inventory->getList(m_selected_item->listname);
 					InventoryList *list_to =
 							m_inventory->getList(s.listname);
+					// Indicates whether source slot completely empties
+					bool source_empties = false;
 					if(list_from && list_to
 							&& list_from->getItem(m_selected_item->i) != NULL)
 					{
 						dstream<<"Queueing IACTION_MOVE"<<std::endl;
-						IMoveAction *a =
-							new IMoveAction();
+						IMoveAction *a = new IMoveAction();
 						a->count = right ? 1 : 0;
 						a->from_name = m_selected_item->listname;
 						a->from_i = m_selected_item->i;
 						a->to_name = s.listname;
 						a->to_i = s.i;
 						m_actions->push_back(a);
+						
+						if(list_from->getItem(m_selected_item->i)->getCount()==1)
+							source_empties = true;
 					}
-					bool source_empties = false;
-					if(list_from && list_from->getItem(m_selected_item->i)->getCount()==1)
-						source_empties = true;
+					// Remove selection if target was left-clicked or source
+					// slot was emptied
 					if(right == false || source_empties)
 					{
 						delete m_selected_item;

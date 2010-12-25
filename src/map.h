@@ -43,6 +43,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 class Map;
 
+#if 0
 /*
 	A cache for short-term fast access to map data
 
@@ -108,6 +109,7 @@ private:
 	u32 m_from_cache_count;
 	u32 m_from_map_count;
 };
+#endif
 
 class CacheLock
 {
@@ -303,6 +305,7 @@ public:
 	}
 	
 	// virtual from NodeContainer
+	// throws InvalidPositionException if not found
 	MapNode getNode(v3s16 p)
 	{
 		v3s16 blockpos = getNodeBlockPos(p);
@@ -313,6 +316,7 @@ public:
 	}
 
 	// virtual from NodeContainer
+	// throws InvalidPositionException if not found
 	void setNode(v3s16 p, MapNode & n)
 	{
 		v3s16 blockpos = getNodeBlockPos(p);

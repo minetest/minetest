@@ -2215,13 +2215,13 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 	}
 	else if(command == TOSERVER_INVENTORY_ACTION)
 	{
-		// Ignore inventory changes if in creative mode
+		/*// Ignore inventory changes if in creative mode
 		if(g_settings.getBool("creative_mode") == true)
 		{
 			dstream<<"TOSERVER_INVENTORY_ACTION: ignoring in creative mode"
 					<<std::endl;
 			return;
-		}
+		}*/
 		// Strip command and create a stream
 		std::string datastring((char*)&data[2], datasize-2);
 		dstream<<"TOSERVER_INVENTORY_ACTION: data="<<datastring<<std::endl;
@@ -2231,10 +2231,11 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 		if(a != NULL)
 		{
 			/*
-				Handle craftresult specially
+				Handle craftresult specially if not in creative mode
 			*/
 			bool disable_action = false;
-			if(a->getType() == IACTION_MOVE)
+			if(a->getType() == IACTION_MOVE
+					&& g_settings.getBool("creative_mode") == false)
 			{
 				IMoveAction *ma = (IMoveAction*)a;
 				// Don't allow moving anything to craftresult
@@ -2311,13 +2312,13 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 			message += (wchar_t)readU16(buf);
 		}
 
-		dstream<<"CHAT: "<<wide_to_narrow(message)<<std::endl;
-
 		// Get player name of this client
 		std::wstring name = narrow_to_wide(player->getName());
 
 		std::wstring line = std::wstring(L"<")+name+L"> "+message;
 		
+		dstream<<"CHAT: "<<wide_to_narrow(line)<<std::endl;
+
 		/*
 			Send the message to all other clients
 		*/
@@ -2674,127 +2675,128 @@ void Server::SendInventory(u16 peer_id)
 	/*
 		Calculate crafting stuff
 	*/
-
-	InventoryList *clist = player->inventory.getList("craft");
-	InventoryList *rlist = player->inventory.getList("craftresult");
-	if(rlist)
+	if(g_settings.getBool("creative_mode") == false)
 	{
-		rlist->clearItems();
-	}
-	if(clist && rlist)
-	{
-		InventoryItem *items[9];
-		for(u16 i=0; i<9; i++)
+		InventoryList *clist = player->inventory.getList("craft");
+		InventoryList *rlist = player->inventory.getList("craftresult");
+		if(rlist)
 		{
-			items[i] = clist->getItem(i);
+			rlist->clearItems();
 		}
-		
-		bool found = false;
-
-		// Wood
-		if(!found)
+		if(clist && rlist)
 		{
-			ItemSpec specs[9];
-			specs[0] = ItemSpec(ITEM_MATERIAL, CONTENT_TREE);
-			if(checkItemCombination(items, specs))
+			InventoryItem *items[9];
+			for(u16 i=0; i<9; i++)
 			{
-				rlist->addItem(new MaterialItem(CONTENT_WOOD, 4));
-				found = true;
+				items[i] = clist->getItem(i);
+			}
+			
+			bool found = false;
+
+			// Wood
+			if(!found)
+			{
+				ItemSpec specs[9];
+				specs[0] = ItemSpec(ITEM_MATERIAL, CONTENT_TREE);
+				if(checkItemCombination(items, specs))
+				{
+					rlist->addItem(new MaterialItem(CONTENT_WOOD, 4));
+					found = true;
+				}
+			}
+
+			// Stick
+			if(!found)
+			{
+				ItemSpec specs[9];
+				specs[0] = ItemSpec(ITEM_MATERIAL, CONTENT_WOOD);
+				if(checkItemCombination(items, specs))
+				{
+					rlist->addItem(new CraftItem("Stick", 4));
+					found = true;
+				}
+			}
+
+			// Sign
+			if(!found)
+			{
+				ItemSpec specs[9];
+				specs[0] = ItemSpec(ITEM_MATERIAL, CONTENT_WOOD);
+				specs[1] = ItemSpec(ITEM_MATERIAL, CONTENT_WOOD);
+				specs[2] = ItemSpec(ITEM_MATERIAL, CONTENT_WOOD);
+				specs[3] = ItemSpec(ITEM_MATERIAL, CONTENT_WOOD);
+				specs[4] = ItemSpec(ITEM_MATERIAL, CONTENT_WOOD);
+				specs[5] = ItemSpec(ITEM_MATERIAL, CONTENT_WOOD);
+				specs[7] = ItemSpec(ITEM_CRAFT, "Stick");
+				if(checkItemCombination(items, specs))
+				{
+					rlist->addItem(new MapBlockObjectItem("Sign"));
+					found = true;
+				}
+			}
+
+			// Torch
+			if(!found)
+			{
+				ItemSpec specs[9];
+				specs[0] = ItemSpec(ITEM_MATERIAL, CONTENT_COALSTONE);
+				specs[3] = ItemSpec(ITEM_CRAFT, "Stick");
+				if(checkItemCombination(items, specs))
+				{
+					rlist->addItem(new MaterialItem(CONTENT_TORCH, 4));
+					found = true;
+				}
+			}
+
+			// Wooden pick
+			if(!found)
+			{
+				ItemSpec specs[9];
+				specs[0] = ItemSpec(ITEM_MATERIAL, CONTENT_WOOD);
+				specs[1] = ItemSpec(ITEM_MATERIAL, CONTENT_WOOD);
+				specs[2] = ItemSpec(ITEM_MATERIAL, CONTENT_WOOD);
+				specs[4] = ItemSpec(ITEM_CRAFT, "Stick");
+				specs[7] = ItemSpec(ITEM_CRAFT, "Stick");
+				if(checkItemCombination(items, specs))
+				{
+					rlist->addItem(new ToolItem("WPick", 0));
+					found = true;
+				}
+			}
+
+			// Stone pick
+			if(!found)
+			{
+				ItemSpec specs[9];
+				specs[0] = ItemSpec(ITEM_MATERIAL, CONTENT_STONE);
+				specs[1] = ItemSpec(ITEM_MATERIAL, CONTENT_STONE);
+				specs[2] = ItemSpec(ITEM_MATERIAL, CONTENT_STONE);
+				specs[4] = ItemSpec(ITEM_CRAFT, "Stick");
+				specs[7] = ItemSpec(ITEM_CRAFT, "Stick");
+				if(checkItemCombination(items, specs))
+				{
+					rlist->addItem(new ToolItem("STPick", 0));
+					found = true;
+				}
+			}
+
+			// Mese pick
+			if(!found)
+			{
+				ItemSpec specs[9];
+				specs[0] = ItemSpec(ITEM_MATERIAL, CONTENT_MESE);
+				specs[1] = ItemSpec(ITEM_MATERIAL, CONTENT_MESE);
+				specs[2] = ItemSpec(ITEM_MATERIAL, CONTENT_MESE);
+				specs[4] = ItemSpec(ITEM_CRAFT, "Stick");
+				specs[7] = ItemSpec(ITEM_CRAFT, "Stick");
+				if(checkItemCombination(items, specs))
+				{
+					rlist->addItem(new ToolItem("MesePick", 0));
+					found = true;
+				}
 			}
 		}
-
-		// Stick
-		if(!found)
-		{
-			ItemSpec specs[9];
-			specs[0] = ItemSpec(ITEM_MATERIAL, CONTENT_WOOD);
-			if(checkItemCombination(items, specs))
-			{
-				rlist->addItem(new CraftItem("Stick", 4));
-				found = true;
-			}
-		}
-
-		// Sign
-		if(!found)
-		{
-			ItemSpec specs[9];
-			specs[0] = ItemSpec(ITEM_MATERIAL, CONTENT_WOOD);
-			specs[1] = ItemSpec(ITEM_MATERIAL, CONTENT_WOOD);
-			specs[2] = ItemSpec(ITEM_MATERIAL, CONTENT_WOOD);
-			specs[3] = ItemSpec(ITEM_MATERIAL, CONTENT_WOOD);
-			specs[4] = ItemSpec(ITEM_MATERIAL, CONTENT_WOOD);
-			specs[5] = ItemSpec(ITEM_MATERIAL, CONTENT_WOOD);
-			specs[7] = ItemSpec(ITEM_CRAFT, "Stick");
-			if(checkItemCombination(items, specs))
-			{
-				rlist->addItem(new MapBlockObjectItem("Sign"));
-				found = true;
-			}
-		}
-
-		// Torch
-		if(!found)
-		{
-			ItemSpec specs[9];
-			specs[0] = ItemSpec(ITEM_MATERIAL, CONTENT_COALSTONE);
-			specs[3] = ItemSpec(ITEM_CRAFT, "Stick");
-			if(checkItemCombination(items, specs))
-			{
-				rlist->addItem(new MaterialItem(CONTENT_TORCH, 4));
-				found = true;
-			}
-		}
-
-		// Wooden pick
-		if(!found)
-		{
-			ItemSpec specs[9];
-			specs[0] = ItemSpec(ITEM_MATERIAL, CONTENT_WOOD);
-			specs[1] = ItemSpec(ITEM_MATERIAL, CONTENT_WOOD);
-			specs[2] = ItemSpec(ITEM_MATERIAL, CONTENT_WOOD);
-			specs[4] = ItemSpec(ITEM_CRAFT, "Stick");
-			specs[7] = ItemSpec(ITEM_CRAFT, "Stick");
-			if(checkItemCombination(items, specs))
-			{
-				rlist->addItem(new ToolItem("WPick", 0));
-				found = true;
-			}
-		}
-
-		// Stone pick
-		if(!found)
-		{
-			ItemSpec specs[9];
-			specs[0] = ItemSpec(ITEM_MATERIAL, CONTENT_STONE);
-			specs[1] = ItemSpec(ITEM_MATERIAL, CONTENT_STONE);
-			specs[2] = ItemSpec(ITEM_MATERIAL, CONTENT_STONE);
-			specs[4] = ItemSpec(ITEM_CRAFT, "Stick");
-			specs[7] = ItemSpec(ITEM_CRAFT, "Stick");
-			if(checkItemCombination(items, specs))
-			{
-				rlist->addItem(new ToolItem("STPick", 0));
-				found = true;
-			}
-		}
-
-		// Mese pick
-		if(!found)
-		{
-			ItemSpec specs[9];
-			specs[0] = ItemSpec(ITEM_MATERIAL, CONTENT_MESE);
-			specs[1] = ItemSpec(ITEM_MATERIAL, CONTENT_MESE);
-			specs[2] = ItemSpec(ITEM_MATERIAL, CONTENT_MESE);
-			specs[4] = ItemSpec(ITEM_CRAFT, "Stick");
-			specs[7] = ItemSpec(ITEM_CRAFT, "Stick");
-			if(checkItemCombination(items, specs))
-			{
-				rlist->addItem(new ToolItem("MesePick", 0));
-				found = true;
-			}
-		}
-
-	}
+	} // if creative_mode == false
 
 	/*
 		Serialize it
@@ -3025,18 +3027,32 @@ void Server::handlePeerChange(PeerChange &c)
 			
 			if(g_settings.getBool("creative_mode"))
 			{
-				// Give a good pick
+				// Give some good picks
 				{
-					InventoryItem *item = new ToolItem("STPick", 32000);
+					InventoryItem *item = new ToolItem("STPick", 0);
 					void* r = player->inventory.addItem("main", item);
 					assert(r == NULL);
 				}
-				// Give all materials
+				{
+					InventoryItem *item = new ToolItem("MesePick", 0);
+					void* r = player->inventory.addItem("main", item);
+					assert(r == NULL);
+				}
+
+				/*
+					Give materials
+				*/
 				assert(USEFUL_CONTENT_COUNT <= PLAYER_INVENTORY_SIZE);
+				
+				// add torch first
+				InventoryItem *item = new MaterialItem(CONTENT_TORCH, 1);
+				player->inventory.addItem("main", item);
+				
+				// Then others
 				for(u16 i=0; i<USEFUL_CONTENT_COUNT; i++)
 				{
 					// Skip some materials
-					if(i == CONTENT_OCEAN)
+					if(i == CONTENT_OCEAN || i == CONTENT_TORCH)
 						continue;
 
 					InventoryItem *item = new MaterialItem(i, 1);
@@ -3048,12 +3064,6 @@ void Server::handlePeerChange(PeerChange &c)
 					void* r = player->inventory.addItem("main", item);
 					assert(r == NULL);
 				}
-				/*// Rat
-				{
-					InventoryItem *item = new MapBlockObjectItem("Rat");
-					bool r = player->inventory.addItem("main", item);
-					assert(r == true);
-				}*/
 			}
 			else
 			{

@@ -1,4 +1,5 @@
 #include "irrlichtwrapper.h"
+#include "constants.h"
 
 IrrlichtWrapper::IrrlichtWrapper(IrrlichtDevice *device)
 {
@@ -119,10 +120,17 @@ video::ITexture * CrackTextureMod::make(video::ITexture *original,
 	assert(baseimage);
 	
 	video::ITexture *other = driver->getTexture("../data/crack.png");
+
 	// We have to get the whole texture because getting a smaller area
 	// messes the whole thing. It is probably a bug in Irrlicht.
+	// NOTE: This doesn't work probably because some systems scale
+	//       the image to fit a texture or something...
+	/*video::IImage *otherimage = driver->createImage(
+			other, core::position2d<s32>(0,0), other->getSize());*/
+	// This should work on more systems
 	video::IImage *otherimage = driver->createImage(
-			other, core::position2d<s32>(0,0), other->getSize());
+			other, core::position2d<s32>(0,0),
+			v2u32(16, CRACK_ANIMATION_LENGTH * 16));
 
 	assert(otherimage);
 	

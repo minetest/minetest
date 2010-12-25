@@ -26,6 +26,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "voxel.h"
 #include "porting.h"
 
+#if 0
 MapBlockPointerCache::MapBlockPointerCache(Map *map)
 {
 	m_map = map;
@@ -62,6 +63,7 @@ MapBlock * MapBlockPointerCache::getBlockNoCreate(v3s16 p)
 	m_blocks[p] = b;
 	return b;
 }
+#endif
 
 /*
 	Map
@@ -1727,24 +1729,25 @@ MapBlock * ServerMap::emergeBlock(
 		// Allocate the block to be a proper one.
 		block->unDummify();
 	}
-
-	// Randomize a bit. This makes dungeons.
-	/*bool low_block_is_empty = false;
-	if(rand() % 4 == 0)
-		low_block_is_empty = true;*/
 	
-	const s32 ued = 4;
-	//const s32 ued = 8;
-	bool underground_emptiness[ued*ued*ued];
+#if 0
+	/*
+		Initialize dungeon making by creating a random table
+	*/
+	const s32 ued_max = 5;
+	const s32 ued_min = 3;
+	bool underground_emptiness[ued_max*ued_max*ued_max];
+	s32 ued = (rand()%(ued_max-ued_min+1))+1;
+	//s32 ued = ued_max;
 	for(s32 i=0; i<ued*ued*ued; i++)
 	{
 		underground_emptiness[i] = ((rand() % 5) == 0);
 	}
 
-#if 1
 	/*
 		This is a messy hack to sort the emptiness a bit
 	*/
+	// Iterator through a few times
 	for(s32 j=0; j<2; j++)
 	for(s32 y0=0; y0<ued; y0++)
 	for(s32 z0=0; z0<ued; z0++)
@@ -1764,6 +1767,7 @@ MapBlock * ServerMap::emergeBlock(
 			/*v3s16(0,1,0), // top
 			v3s16(0,-1,0), // bottom*/
 		};
+
 		for(s32 i=0; i<4; i++)
 		{
 			v3s16 p1 = p0 + dirs[i];
@@ -1808,6 +1812,140 @@ MapBlock * ServerMap::emergeBlock(
 		}
 	}
 #endif
+
+	/*
+		Create dungeon making table
+	*/
+	const s32 ued = MAP_BLOCKSIZE;
+	bool underground_emptiness[ued*ued*ued];
+	for(s32 i=0; i<ued*ued*ued; i++)
+	{
+		underground_emptiness[i] = 0;
+	}
+	// Generate dungeons
+	{
+		/*
+			Initialize orp and ors. Try to find if some neighboring
+			MapBlock has a tunnel ended in its side
+		*/
+
+		v3f orp;
+		s16 ors;
+
+		// Check z-
+		try
+		{
+			s16 z = -1;
+			for(s16 y=0; y<ued; y++)
+			for(s16 x=0; x<ued; x++)
+			{
+				v3s16 ap = v3s16(x,y,z) + block->getPosRelative();
+				if(getNode(ap).d == CONTENT_AIR)
+				{
+					orp = v3f(x+1,y+1,0);
+					ors = 4;
+				}
+			}
+		}
+		catch(InvalidPositionException &e){}
+		
+		// Check z+
+		try
+		{
+			s16 z = ued;
+			for(s16 y=0; y<ued; y++)
+			for(s16 x=0; x<ued; x++)
+			{
+				v3s16 ap = v3s16(x,y,z) + block->getPosRelative();
+				if(getNode(ap).d == CONTENT_AIR)
+				{
+					orp = v3f(x+1,y+1,ued-1);
+					ors = 4;
+				}
+			}
+		}
+		catch(InvalidPositionException &e){}
+		
+		// Check x-
+		try
+		{
+			s16 x = -1;
+			for(s16 y=0; y<ued; y++)
+			for(s16 z=0; z<ued; z++)
+			{
+				v3s16 ap = v3s16(x,y,z) + block->getPosRelative();
+				if(getNode(ap).d == CONTENT_AIR)
+				{
+					orp = v3f(0,y+1,z+1);
+					ors = 4;
+				}
+			}
+		}
+		catch(InvalidPositionException &e){}
+		
+		// Check x+
+		try
+		{
+			s16 x = ued;
+			for(s16 y=0; y<ued; y++)
+			for(s16 z=0; z<ued; z++)
+			{
+				v3s16 ap = v3s16(x,y,z) + block->getPosRelative();
+				if(getNode(ap).d == CONTENT_AIR)
+				{
+					orp = v3f(ued-1,y+1,z+1);
+					ors = 4;
+				}
+			}
+		}
+		catch(InvalidPositionException &e){}
+		
+		/*
+			Generate some tunnel starting from orp and ors
+		*/
+		for(u16 i=0; i<3; i++)
+		{
+			v3f rp(
+				(float)(rand()%(ued-1))+0.5,
+				(float)(rand()%(ued-1))+0.5,
+				(float)(rand()%(ued-1))+0.5
+			);
+			s16 min_d = 0;
+			s16 max_d = 4;
+			s16 rs = (rand()%(max_d-min_d+1))+min_d;
+			
+			v3f vec = rp - orp;
+
+			for(float f=0; f<1.0; f+=0.04)
+			{
+				v3f fp = orp + vec * f;
+				v3s16 cp(fp.X, fp.Y, fp.Z);
+				s16 d0 = -rs/2;
+				s16 d1 = d0 + rs - 1;
+				for(s16 z0=d0; z0<=d1; z0++)
+				{
+					s16 si = rs - abs(z0);
+					for(s16 x0=-si; x0<=si-1; x0++)
+					{
+						s16 si2 = rs - abs(x0);
+						for(s16 y0=-si2+1; y0<=si2-1; y0++)
+						{
+							s16 z = cp.Z + z0;
+							s16 y = cp.Y + y0;
+							s16 x = cp.X + x0;
+							v3s16 p(x,y,z);
+							if(isInArea(p, ued) == false)
+								continue;
+							underground_emptiness[ued*ued*z + ued*y + x] = 1;
+						}
+					}
+				}
+			}
+
+			orp = rp;
+			ors = rs;
+		}
+	}
 	
 	// This is the basic material of what the visible flat ground
 	// will consist of

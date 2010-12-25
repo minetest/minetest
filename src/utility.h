@@ -550,6 +550,41 @@ inline bool isInArea(v2s16 p, s16 d)
 	);
 }
 
+inline s16 rangelim(s16 i, s16 min, s16 max)
+{
+	if(i < min)
+		return min;
+	if(i > max)
+		return max;
+	return i;
+}
+
+inline s16 rangelim(s16 i, s16 max)
+{
+	if(i < 0)
+		return 0;
+	if(i > max)
+		return max;
+	return i;
+}
+
+inline v3s16 arealim(v3s16 p, s16 d)
+{
+	if(p.X < 0)
+		p.X = 0;
+	if(p.Y < 0)
+		p.Y = 0;
+	if(p.Z < 0)
+		p.Z = 0;
+	if(p.X > d-1)
+		p.X = d-1;
+	if(p.Y > d-1)
+		p.Y = d-1;
+	if(p.Z > d-1)
+		p.Z = d-1;
+	return p;
+}
+
 inline std::wstring narrow_to_wide(const std::string& mbs)
 {
 	size_t wcl = mbs.size();

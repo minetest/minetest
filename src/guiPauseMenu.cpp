@@ -114,11 +114,21 @@ void GUIPauseMenu::regenerateGui(v2u32 screensize)
 	{
 		core::rect<s32> rect(0, 0, 180, 220);
 		rect = rect + v2s32(size.X/2 - 90 - rect.getWidth(), size.Y/2-rect.getHeight()/2);
+	
+		v2u32 max_texture_size;
+		{
+			video::IVideoDriver* driver = Environment->getVideoDriver();
+			max_texture_size = driver->getMaxTextureSize();
+		}
+
 		wchar_t text[200];
 		swprintf(text, 200,
 				L"Minetest-c55\n"
-				L"SER_FMT_VER_HIGHEST=%i",
-				(int)SER_FMT_VER_HIGHEST
+				L"SER_FMT_VER_HIGHEST=%i\n"
+				L"max_texture_size=\n(%i,%i)\n",
+				(int)SER_FMT_VER_HIGHEST,
+				max_texture_size.X,
+				max_texture_size.Y
 		);
 	
 		Environment->addStaticText(text, rect, false, true, this, 259);
