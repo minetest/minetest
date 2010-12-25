@@ -95,7 +95,7 @@ void GUIPauseMenu::regenerateGui(v2u32 screensize)
 		Environment->addButton(rect, this, 257, L"Exit");
 	}
 	{
-		core::rect<s32> rect(0, 0, 180, 220);
+		core::rect<s32> rect(0, 0, 180, 240);
 		rect = rect + v2s32(size.X/2 + 90, size.Y/2-rect.getHeight()/2);
 		const wchar_t *text =
 		L"Keys:\n"

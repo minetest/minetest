@@ -3133,6 +3133,8 @@ void Server::handlePeerChange(PeerChange &c)
 			message += L"*** ";
 			message += name;
 			message += L" left game";
+			if(c.timeout)
+				message += L" (timed out)";
 		}
 
 		// Delete player

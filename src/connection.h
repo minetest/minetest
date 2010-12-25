@@ -477,7 +477,7 @@ public:
 	
 	// Calls PeerHandler::deletingPeer
 	// Returns false if peer was not found
-	bool deletePeer(u16 peer_id);
+	bool deletePeer(u16 peer_id, bool timeout);
 
 	void SetPeerID(u16 id){ m_peer_id = id; }
 	u16 GetPeerID(){ return m_peer_id; }

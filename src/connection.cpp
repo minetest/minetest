@@ -671,7 +671,7 @@ SharedBuffer<u8> Channel::ProcessPacket(
 			con->PrintInfo();
 			dout_con<<"DISCO: Removing peer "<<(peer_id)<<std::endl;
 			
-			if(con->deletePeer(peer_id) == false)
+			if(con->deletePeer(peer_id, false) == false)
 			{
 				con->PrintInfo(derr_con);
 				derr_con<<"DISCO: Peer not found"<<std::endl;
@@ -1301,15 +1301,13 @@ nextpeer:
 		continue;
 	}
 
-	// Remove timeouted peers
+	// Remove timed out peers
 	core::list<u16>::Iterator i = timeouted_peers.begin();
 	for(; i != timeouted_peers.end(); i++)
 	{
 		PrintInfo(derr_con);
 		derr_con<<"RunTimeouts(): Removing peer "<<(*i)<<std::endl;
-		m_peerhandler->deletingPeer(m_peers[*i], true);
-		delete m_peers[*i];
-		m_peers.remove(*i);
+		deletePeer(*i, true);
 	}
 }
 
@@ -1355,11 +1353,11 @@ core::list<Peer*> Connection::GetPeers()
 	return list;
 }
 
-bool Connection::deletePeer(u16 peer_id)
+bool Connection::deletePeer(u16 peer_id, bool timeout)
 {
 	if(m_peers.find(peer_id) == NULL)
 		return false;
-	m_peerhandler->deletingPeer(m_peers[peer_id], true);
+	m_peerhandler->deletingPeer(m_peers[peer_id], timeout);
 	delete m_peers[peer_id];
 	m_peers.remove(peer_id);
 	return true;

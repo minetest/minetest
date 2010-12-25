@@ -89,10 +89,6 @@ SUGG: Implement a "Fast check queue" (a queue with a map for checking
       if something is already in it)
       - Use it in active block queue in water flowing
 
-SUGG: Signs could be done in the same way as torches. For this, blocks
-      need an additional metadata field for the texts
-	  - This is also needed for item container chests
-
 SUGG: Precalculate lighting translation table at runtime (at startup)
 
 SUGG: A version number to blocks, which increments when the block is
@@ -178,6 +174,12 @@ TODO: Check if the usage of Client::isFetchingBlocks() in
 
 TODO: Make an option to the server to disable building and digging near
       the starting position
+
+SUGG: Signs could be done in the same way as torches. For this, blocks
+      need an additional metadata field for the texts
+	  - This is also needed for item container chests
+TODO: There has to be some better way to handle static objects than to
+      send them all the time. This affects signs and item objects.
 
 Doing now:
 ======================================================================
@@ -2347,7 +2349,7 @@ int main(int argc, char *argv[])
 			while(client.getChatMessage(message))
 			{
 				chat_lines.push_back(ChatLine(message));
-				if(chat_lines.size() > 7)
+				if(chat_lines.size() > 5)
 				{
 					core::list<ChatLine>::Iterator
 							i = chat_lines.begin();
@@ -2385,6 +2387,11 @@ int main(int argc, char *argv[])
 					screensize.Y - 10
 			);
 			chat_guitext->setRelativePosition(rect);
+
+			if(chat_lines.size() == 0)
+				chat_guitext->setVisible(false);
+			else
+				chat_guitext->setVisible(true);
 		}
 
 		/*
