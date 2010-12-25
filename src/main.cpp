@@ -187,6 +187,9 @@ Doing now:
 TODO: When server sees that client is removing an inexistent block or
       adding a block to an existent position, resend the MapBlock.
 
+TODO: Fix viewing range updater's oscillation when there is large non-
+      linearity in range-speed relation
+
 ======================================================================
 
 */
