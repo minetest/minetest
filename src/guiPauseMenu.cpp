@@ -124,8 +124,11 @@ void GUIPauseMenu::regenerateGui(v2u32 screensize)
 		wchar_t text[200];
 		swprintf(text, 200,
 				L"Minetest-c55\n"
+				L"by Perttu Ahola\n"
+				L"celeron55@gmail.com\n\n"
 				L"SER_FMT_VER_HIGHEST=%i\n"
-				L"max_texture_size=\n(%i,%i)\n",
+				L"max_texture_size=\n(%i,%i)\n"
+				,
 				(int)SER_FMT_VER_HIGHEST,
 				max_texture_size.X,
 				max_texture_size.Y

@@ -120,17 +120,22 @@ video::ITexture * CrackTextureMod::make(video::ITexture *original,
 	assert(baseimage);
 	
 	video::ITexture *other = driver->getTexture("../data/crack.png");
+	
+	dstream<<__FUNCTION_NAME<<": crack texture size is "
+			<<other->getSize().Width<<"x"
+			<<other->getSize().Height<<std::endl;
 
 	// We have to get the whole texture because getting a smaller area
 	// messes the whole thing. It is probably a bug in Irrlicht.
 	// NOTE: This doesn't work probably because some systems scale
 	//       the image to fit a texture or something...
-	/*video::IImage *otherimage = driver->createImage(
-			other, core::position2d<s32>(0,0), other->getSize());*/
-	// This should work on more systems
 	video::IImage *otherimage = driver->createImage(
+			other, core::position2d<s32>(0,0), other->getSize());
+	// This should work on more systems
+	// - no, it doesn't, output is more random.
+	/*video::IImage *otherimage = driver->createImage(
 			other, core::position2d<s32>(0,0),
-			v2u32(16, CRACK_ANIMATION_LENGTH * 16));
+			v2u32(16, CRACK_ANIMATION_LENGTH * 16));*/
 
 	assert(otherimage);
 	

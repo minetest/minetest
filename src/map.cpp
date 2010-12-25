@@ -1829,8 +1829,11 @@ MapBlock * ServerMap::emergeBlock(
 			MapBlock has a tunnel ended in its side
 		*/
 
-		v3f orp;
-		s16 ors;
+		v3f orp(
+			(float)(rand()%ued)+0.5,
+			(float)(rand()%ued)+0.5,
+			(float)(rand()%ued)+0.5
+		);
 
 		// Check z-
 		try
@@ -1843,7 +1846,7 @@ MapBlock * ServerMap::emergeBlock(
 				if(getNode(ap).d == CONTENT_AIR)
 				{
 					orp = v3f(x+1,y+1,0);
-					ors = 4;
+					goto continue_generating;
 				}
 			}
 		}
@@ -1860,7 +1863,7 @@ MapBlock * ServerMap::emergeBlock(
 				if(getNode(ap).d == CONTENT_AIR)
 				{
 					orp = v3f(x+1,y+1,ued-1);
-					ors = 4;
+					goto continue_generating;
 				}
 			}
 		}
@@ -1877,7 +1880,7 @@ MapBlock * ServerMap::emergeBlock(
 				if(getNode(ap).d == CONTENT_AIR)
 				{
 					orp = v3f(0,y+1,z+1);
-					ors = 4;
+					goto continue_generating;
 				}
 			}
 		}
@@ -1894,11 +1897,13 @@ MapBlock * ServerMap::emergeBlock(
 				if(getNode(ap).d == CONTENT_AIR)
 				{
 					orp = v3f(ued-1,y+1,z+1);
-					ors = 4;
+					goto continue_generating;
 				}
 			}
 		}
 		catch(InvalidPositionException &e){}
+
+continue_generating:
 		
 		/*
 			Generate some tunnel starting from orp and ors
@@ -1906,9 +1911,9 @@ MapBlock * ServerMap::emergeBlock(
 		for(u16 i=0; i<3; i++)
 		{
 			v3f rp(
-				(float)(rand()%(ued-1))+0.5,
-				(float)(rand()%(ued-1))+0.5,
-				(float)(rand()%(ued-1))+0.5
+				(float)(rand()%ued)+0.5,
+				(float)(rand()%ued)+0.5,
+				(float)(rand()%ued)+0.5
 			);
 			s16 min_d = 0;
 			s16 max_d = 4;
@@ -1943,7 +1948,6 @@ MapBlock * ServerMap::emergeBlock(
 			}
 
 			orp = rp;
-			ors = rs;
 		}
 	}
 	
