@@ -245,7 +245,7 @@ TODO: Transferring of the table from server to client
 #include "guiInventoryMenu.h"
 #include "guiTextInputMenu.h"
 #include "materials.h"
-//#include "guiMessageMenu.h"
+#include "guiMessageMenu.h"
 
 IrrlichtWrapper *g_irrlicht;
 
