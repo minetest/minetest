@@ -163,7 +163,7 @@ video::ITexture * ProgressBarTextureMod::make(video::ITexture *original,
 	u32 barwidth = size.Width - barpad_x*2;
 	v2u32 barpos(barpad_x, size.Height - barheight - barpad_y);
 
-	u32 barvalue_i = round((float)barwidth * value);
+	u32 barvalue_i = (u32)(((float)barwidth * value) + 0.5);
 
 	video::SColor active(255,255,0,0);
 	video::SColor inactive(255,0,0,0);

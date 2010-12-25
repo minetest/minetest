@@ -11,10 +11,14 @@ void setStoneLikeDiggingProperties(u8 material, float toughness)
 {
 	g_material_properties[material].setDiggingProperties("",
 			DiggingProperties(true, 15.0*toughness, 0));
+	
 	g_material_properties[material].setDiggingProperties("WPick",
 			DiggingProperties(true, 2.0*toughness, 65535./20.*toughness));
 	g_material_properties[material].setDiggingProperties("STPick",
 			DiggingProperties(true, 1.0*toughness, 65535./50.*toughness));
+
+	/*g_material_properties[material].setDiggingProperties("MesePick",
+			DiggingProperties(true, 0.0*toughness, 65535./20.*toughness));*/
 }
 
 void initializeMaterialProperties()
@@ -52,7 +56,15 @@ void initializeMaterialProperties()
 
 	g_material_properties[CONTENT_WOOD].setDiggingProperties("",
 			DiggingProperties(true, 1.0, 0));
-
+	
+	/*
+		Add MesePick to everything
+	*/
+	for(u16 i=0; i<MATERIAL_PROPERTIES_COUNT; i++)
+	{
+		g_material_properties[i].setDiggingProperties("MesePick",
+				DiggingProperties(true, 0.0, 65535./20.));
+	}
 
 	g_material_properties_initialized = true;
 }

@@ -65,7 +65,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "constants.h"
 #include "strfnd.h"
 #include "porting.h"
-//#include "irrlichtwrapper.h"
+#include "materials.h"
 
 /*
 	Settings.

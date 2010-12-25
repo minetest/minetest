@@ -336,6 +336,8 @@ public:
 			basename = "../data/tool_wpick.png";
 		else if(m_toolname == "STPick")
 			basename = "../data/tool_stpick.png";
+		else if(m_toolname == "MesePick")
+			basename = "../data/tool_mesepick.png";
 		// Default to cloud texture
 		else
 			basename = tile_texture_path_get(TILE_CLOUD);

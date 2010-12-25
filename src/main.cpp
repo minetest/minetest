@@ -2363,8 +2363,8 @@ int main(int argc, char *argv[])
 			for(u16 i=0; i<to_be_removed_count; i++)
 			{
 				core::list<ChatLine>::Iterator
-						i = chat_lines.begin();
-				chat_lines.erase(i);
+						it = chat_lines.begin();
+				chat_lines.erase(it);
 			}
 			chat_guitext->setText(whole.c_str());
 			// Update gui element size and position

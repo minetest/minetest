@@ -251,6 +251,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\src\materials.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\src\player.cpp"
 				>
 			</File>

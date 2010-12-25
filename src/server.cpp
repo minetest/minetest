@@ -2780,6 +2780,22 @@ void Server::SendInventory(u16 peer_id)
 			}
 		}
 
+		// Mese pick
+		if(!found)
+		{
+			ItemSpec specs[9];
+			specs[0] = ItemSpec(ITEM_MATERIAL, CONTENT_MESE);
+			specs[1] = ItemSpec(ITEM_MATERIAL, CONTENT_MESE);
+			specs[2] = ItemSpec(ITEM_MATERIAL, CONTENT_MESE);
+			specs[4] = ItemSpec(ITEM_CRAFT, "Stick");
+			specs[7] = ItemSpec(ITEM_CRAFT, "Stick");
+			if(checkItemCombination(items, specs))
+			{
+				rlist->addItem(new ToolItem("MesePick", 0));
+				found = true;
+			}
+		}
+
 	}
 
 	/*
@@ -3043,6 +3059,11 @@ void Server::handlePeerChange(PeerChange &c)
 			}
 			else
 			{
+				/*{
+					InventoryItem *item = new MaterialItem(CONTENT_MESE, 6);
+					void* r = player->inventory.addItem("main", item);
+					assert(r == NULL);
+				}
 				{
 					InventoryItem *item = new MaterialItem(CONTENT_COALSTONE, 6);
 					void* r = player->inventory.addItem("main", item);
@@ -3067,7 +3088,7 @@ void Server::handlePeerChange(PeerChange &c)
 					InventoryItem *item = new ToolItem("STPick", 32000);
 					void* r = player->inventory.addItem("main", item);
 					assert(r == NULL);
-				}
+				}*/
 				/*// Give some lights
 				{
 					InventoryItem *item = new MaterialItem(CONTENT_TORCH, 999);
