@@ -203,6 +203,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\src\guiMessageMenu.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\src\guiPauseMenu.cpp"
 				>
 			</File>
