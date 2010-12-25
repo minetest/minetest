@@ -1,7 +1,7 @@
 # Makefile for Irrlicht Examples
 # It's usually sufficient to change just the target name and source file list
 # and be sure that CXX is set to a valid compiler
-SOURCE_FILES = materials.cpp guiTextInputMenu.cpp guiInventoryMenu.cpp irrlichtwrapper.cpp guiPauseMenu.cpp defaultsettings.cpp mapnode.cpp tile.cpp voxel.cpp mapblockobject.cpp inventory.cpp debug.cpp serialization.cpp light.cpp filesys.cpp connection.cpp environment.cpp client.cpp server.cpp socket.cpp mapblock.cpp mapsector.cpp heightmap.cpp map.cpp player.cpp utility.cpp main.cpp test.cpp
+SOURCE_FILES = guiMessageMenu.cpp materials.cpp guiTextInputMenu.cpp guiInventoryMenu.cpp irrlichtwrapper.cpp guiPauseMenu.cpp defaultsettings.cpp mapnode.cpp tile.cpp voxel.cpp mapblockobject.cpp inventory.cpp debug.cpp serialization.cpp light.cpp filesys.cpp connection.cpp environment.cpp client.cpp server.cpp socket.cpp mapblock.cpp mapsector.cpp heightmap.cpp map.cpp player.cpp utility.cpp main.cpp test.cpp
 
 DEBUG_TARGET = debugtest
 DEBUG_SOURCES = $(addprefix src/, $(SOURCE_FILES))

@@ -2313,6 +2313,11 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 
 		dstream<<"CHAT: "<<wide_to_narrow(message)<<std::endl;
 
+		// Get player name of this client
+		std::wstring name = narrow_to_wide(player->getName());
+
+		std::wstring line = std::wstring(L"<")+name+L"> "+message;
+		
 		/*
 			Send the message to all other clients
 		*/
@@ -2330,14 +2335,7 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 			if(peer_id == client->peer_id)
 				continue;
 
-			// Get player name of this client
-			std::wstring name = L"unknown";
-			Player *player = m_env.getPlayer(client->peer_id);
-			if(player != NULL)
-				name = narrow_to_wide(player->getName());
-			
-			SendChatMessage(client->peer_id,
-					std::wstring(L"<")+name+L"> "+message);
+			SendChatMessage(client->peer_id, line);
 		}
 	}
 	else

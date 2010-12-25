@@ -245,6 +245,7 @@ TODO: Transferring of the table from server to client
 #include "guiInventoryMenu.h"
 #include "guiTextInputMenu.h"
 #include "materials.h"
+//#include "guiMessageMenu.h"
 
 IrrlichtWrapper *g_irrlicht;
 
@@ -1537,10 +1538,15 @@ int main(int argc, char *argv[])
 	// Test the text input system
 	/*(new GUITextInputMenu(guienv, guiroot, -1, &g_active_menu_count,
 			NULL))->drop();*/
-	
+	/*GUIMessageMenu *menu =
+			new GUIMessageMenu(guienv, guiroot, -1, 
+				&g_active_menu_count,
+				L"Asd");
+	menu->drop();*/
+		
 	// Launch pause menu
-	(new GUIPauseMenu(guienv, guiroot, -1, g_device,
-			&g_active_menu_count))->drop();
+	/*(new GUIPauseMenu(guienv, guiroot, -1, g_device,
+			&g_active_menu_count))->drop();*/
 
 	// First line of debug text
 	gui::IGUIStaticText *guitext = guienv->addStaticText(
@@ -1565,6 +1571,7 @@ int main(int argc, char *argv[])
 			L"Chat here\nOther line\nOther line\nOther line\nOther line",
 			core::rect<s32>(70, 60, 795, 150),
 			false, true);
+	chat_guitext->setBackgroundColor(video::SColor(96,0,0,0));
 	core::list<ChatLine> chat_lines;
 	
 	/*
@@ -1574,6 +1581,9 @@ int main(int argc, char *argv[])
 	u32 beginscenetime = 0;
 	u32 scenetime = 0;
 	u32 endscenetime = 0;
+	
+	// A test
+	//throw con::PeerNotFoundException("lol");
 
 	/*
 		Main loop
@@ -2353,7 +2363,7 @@ int main(int argc, char *argv[])
 					i != chat_lines.end(); i++)
 			{
 				(*i).age += dtime;
-				if((*i).age > 60.0)
+				if((*i).age > 300.0)
 				{
 					to_be_removed_count++;
 					continue;
@@ -2530,6 +2540,29 @@ int main(int argc, char *argv[])
 	catch(con::PeerNotFoundException &e)
 	{
 		dstream<<DTIME<<"Connection timed out."<<std::endl;
+		
+		/*if(g_device)
+		{
+			GUIMessageMenu *menu =
+					new GUIMessageMenu(guienv, guiroot, -1, 
+						&g_active_menu_count,
+						L"Connection timed out");
+
+			video::IVideoDriver* driver = g_device->getVideoDriver();
+			
+			dstream<<"Created menu"<<std::endl;
+
+			while(g_device->run() && menu->getStatus() == false)
+			{
+				driver->beginScene(true, true, video::SColor(255,0,0,0));
+				guienv->drawAll();
+				driver->endScene();
+			}
+			
+			dstream<<"Dropping menu"<<std::endl;
+
+			menu->drop();
+		}*/
 	}
 #if CATCH_UNHANDLED_EXCEPTIONS
 	/*
