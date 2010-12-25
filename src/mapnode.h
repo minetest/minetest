@@ -155,12 +155,16 @@ inline bool content_buildable_to(u8 m)
 */
 inline bool is_ground_content(u8 m)
 {
-	return (m != CONTENT_WATER
+	return (
+		m != CONTENT_IGNORE
+		&& m != CONTENT_AIR
+		&& m != CONTENT_WATER
 		&& m != CONTENT_TORCH
 		&& m != CONTENT_TREE
 		&& m != CONTENT_LEAVES
 		&& m != CONTENT_OCEAN
-		&& m != CONTENT_CLOUD);
+		&& m != CONTENT_CLOUD
+	);
 }
 
 inline bool is_mineral(u8 c)

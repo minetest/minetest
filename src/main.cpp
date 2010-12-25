@@ -2353,7 +2353,7 @@ int main(int argc, char *argv[])
 					i != chat_lines.end(); i++)
 			{
 				(*i).age += dtime;
-				if((*i).age > 30.0)
+				if((*i).age > 60.0)
 				{
 					to_be_removed_count++;
 					continue;
