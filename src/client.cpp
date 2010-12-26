@@ -66,14 +66,9 @@ void * ClientUpdateThread::Thread()
 Client::Client(
 		IrrlichtDevice *device,
 		const char *playername,
-		JMutex &range_mutex,
-		float &viewing_range_nodes,
-		bool &viewing_range_all):
+		MapDrawControl &control):
 	m_thread(this),
-	m_env(new ClientMap(this,
-			range_mutex,
-			viewing_range_nodes,
-			viewing_range_all,
+	m_env(new ClientMap(this, control,
 			device->getSceneManager()->getRootSceneNode(),
 			device->getSceneManager(), 666),
 			dout_client),

@@ -253,25 +253,7 @@ TODO: Fix viewing range updater's oscillation when there is large non-
 
 IrrlichtWrapper *g_irrlicht;
 
-// All range-related stuff below is locked behind this
-JMutex g_range_mutex;
-
-// Blocks are viewed in this range from the player
-float g_viewing_range_nodes = 60;
-//s16 g_viewing_range_nodes = 0;
-
-// This is updated by the client's fetchBlocks routine
-//s16 g_actual_viewing_range_nodes = VIEWING_RANGE_NODES_DEFAULT;
-
-// If true, the preceding value has no meaning and all blocks
-// already existing in memory are drawn
-bool g_viewing_range_all = false;
-
-// This is the freetime ratio imposed by the dynamic viewing
-// range changing code.
-// It is controlled by the main loop to the smallest value that
-// inhibits glitches (dtime jitter) in the main loop.
-//float g_freetime_ratio = FREETIME_RATIO_MAX;
+MapDrawControl draw_control;
 
 /*
 	Settings.
@@ -455,15 +437,14 @@ public:
 				// Viewing range selection
 				if(event.KeyInput.Key == irr::KEY_KEY_R)
 				{
-					JMutexAutoLock lock(g_range_mutex);
-					if(g_viewing_range_all)
+					if(draw_control.range_all)
 					{
-						g_viewing_range_all = false;
+						draw_control.range_all = false;
 						dstream<<DTIME<<"Disabled full viewing range"<<std::endl;
 					}
 					else
 					{
-						g_viewing_range_all = true;
+						draw_control.range_all = true;
 						dstream<<DTIME<<"Enabled full viewing range"<<std::endl;
 					}
 				}
@@ -853,7 +834,7 @@ private:
 void updateViewingRange(f32 frametime, Client *client)
 {
 	// Range_all messes up frametime_avg
-	if(g_viewing_range_all == true)
+	if(draw_control.range_all == true)
 		return;
 
 	float wanted_fps = g_settings.getFloat("wanted_fps");
@@ -887,7 +868,7 @@ void updateViewingRange(f32 frametime, Client *client)
 
 	float fraction_unbiased = frametime_avg / frametime_wanted;
 
-	float fraction = pow(fraction_unbiased, 20./(float)g_viewing_range_nodes);
+	float fraction = pow(fraction_unbiased, 20./(float)draw_control.wanted_range);
 	
 	/*float fraction = 1.0;
 	// If frametime is too high
@@ -948,7 +929,7 @@ void updateViewingRange(f32 frametime, Client *client)
 	s16 viewing_range_nodes_min = g_settings.getS16("viewing_range_nodes_min");
 	s16 viewing_range_nodes_max = g_settings.getS16("viewing_range_nodes_max");
 
-	s16 n = (float)g_viewing_range_nodes / fraction;
+	s16 n = (float)draw_control.wanted_range / fraction;
 	if(n < viewing_range_nodes_min)
 		n = viewing_range_nodes_min;
 	if(n > viewing_range_nodes_max)
@@ -956,20 +937,20 @@ void updateViewingRange(f32 frametime, Client *client)
 
 	bool can_change = true;
 
-	if(client->isFetchingBlocks() == true && n > g_viewing_range_nodes)
+	if(client->isFetchingBlocks() == true && n > draw_control.wanted_range)
 		can_change = false;
 	
 	if(can_change)
-		g_viewing_range_nodes = n;
+		draw_control.wanted_range = n;
 
-	/*dstream<<"g_viewing_range_nodes = "
-			<<g_viewing_range_nodes<<std::endl;*/
+	/*dstream<<"draw_control.wanted_range = "
+			<<draw_control.wanted_range<<std::endl;*/
 }
 #endif
 
 void updateViewingRange(f32 frametime_in, Client *client)
 {
-	if(g_viewing_range_all == true)
+	if(draw_control.range_all == true)
 		return;
 	
 	static f32 added_frametime = 0;
@@ -990,7 +971,29 @@ void updateViewingRange(f32 frametime_in, Client *client)
 			<<": Collected "<<added_frames<<" frames, total of "
 			<<added_frametime<<"s."<<std::endl;
 	
-	f32 frametime = added_frametime / added_frames;
+	dstream<<"draw_control.blocks_drawn="
+			<<draw_control.blocks_drawn
+			<<", draw_control.blocks_would_have_drawn="
+			<<draw_control.blocks_would_have_drawn
+			<<std::endl;
+	
+	float range_min = g_settings.getS16("viewing_range_nodes_min");
+	float range_max = g_settings.getS16("viewing_range_nodes_max");
+	
+	draw_control.wanted_min_range = range_min;
+	draw_control.wanted_max_blocks = (1.2*draw_control.blocks_drawn)+1;
+	
+	float block_draw_ratio = 1.0;
+	if(draw_control.blocks_would_have_drawn != 0)
+	{
+		block_draw_ratio = (float)draw_control.blocks_drawn
+			/ (float)draw_control.blocks_would_have_drawn;
+	}
+
+	// Calculate the average frametime in the case that all wanted
+	// blocks had been drawn
+	f32 frametime = added_frametime / added_frames / block_draw_ratio;
+	
 	added_frametime = 0.0;
 	added_frames = 0;
 	
@@ -1007,7 +1010,7 @@ void updateViewingRange(f32 frametime_in, Client *client)
 		return;
 	}
 
-	float range = g_viewing_range_nodes;
+	float range = draw_control.wanted_range;
 	float new_range = range;
 
 	static s16 range_old = 0;
@@ -1029,16 +1032,24 @@ void updateViewingRange(f32 frametime_in, Client *client)
 	// A high value here results in slow changing range (0.0025)
 	// SUGG: This could be dynamically adjusted so that when
 	//       the camera is turning, this is lower
-	float min_time_per_range = 0.001;
+	//float min_time_per_range = 0.0015;
+	float min_time_per_range = 0.0010;
+	//float min_time_per_range = 0.05 / range;
 	if(time_per_range < min_time_per_range)
+	{
 		time_per_range = min_time_per_range;
-	
-	dstream<<"time_per_range="<<time_per_range<<std::endl;
+		dstream<<"time_per_range="<<time_per_range<<" (min)"<<std::endl;
+	}
+	else
+	{
+		dstream<<"time_per_range="<<time_per_range<<std::endl;
+	}
 
 	f32 wanted_range_change = wanted_frametime_change / time_per_range;
 	// Dampen the change a bit to kill oscillations
 	//wanted_range_change *= 0.9;
-	wanted_range_change *= 0.75;
+	//wanted_range_change *= 0.75;
+	wanted_range_change *= 0.5;
 	dstream<<"wanted_range_change="<<wanted_range_change<<std::endl;
 
 	// If needed range change is very small, just return
@@ -1051,9 +1062,6 @@ void updateViewingRange(f32 frametime_in, Client *client)
 	new_range += wanted_range_change;
 	dstream<<"new_range="<<new_range/*<<std::endl*/;
 	
-	float range_min = g_settings.getS16("viewing_range_nodes_min");
-	float range_max = g_settings.getS16("viewing_range_nodes_max");
-	
 	float new_range_unclamped = new_range;
 	if(new_range < range_min)
 		new_range = range_min;
@@ -1065,9 +1073,7 @@ void updateViewingRange(f32 frametime_in, Client *client)
 	else
 		dstream<<std::endl;
 
-	JMutexAutoLock lock(g_range_mutex);
-
-	g_viewing_range_nodes = new_range;
+	draw_control.wanted_range = new_range;
 
 	range_old = new_range;
 	frametime_old = frametime;
@@ -1324,6 +1330,7 @@ int main(int argc, char *argv[])
 
 	// Initialize random seed
 	srand(time(0));
+	mysrand(time(0));
 
 	/*
 		Run unit tests
@@ -1334,12 +1341,6 @@ int main(int argc, char *argv[])
 		run_tests();
 	}
 	
-	/*
-		Global range mutex
-	*/
-	g_range_mutex.Init();
-	assert(g_range_mutex.IsInitialized());
-
 	// Read map parameters from settings
 
 	HMParams hm_params;
@@ -1584,10 +1585,7 @@ int main(int argc, char *argv[])
 		Create client
 	*/
 
-	Client client(device, playername,
-			g_range_mutex,
-			g_viewing_range_nodes,
-			g_viewing_range_all);
+	Client client(device, playername, draw_control);
 			
 	g_client = &client;
 	
@@ -2409,8 +2407,8 @@ int main(int argc, char *argv[])
 		
 		if(g_settings.getBool("enable_fog") == true)
 		{
-			f32 range = g_viewing_range_nodes * BS;
-			if(g_viewing_range_all)
+			f32 range = draw_control.wanted_range * BS;
+			if(draw_control.range_all)
 				range = 100000*BS;
 
 			driver->setFog(
@@ -2435,13 +2433,13 @@ int main(int argc, char *argv[])
 			wchar_t temptext[150];
 
 			static float drawtime_avg = 0;
-			drawtime_avg = drawtime_avg * 0.98 + (float)drawtime*0.02;
+			drawtime_avg = drawtime_avg * 0.95 + (float)drawtime*0.05;
 			static float beginscenetime_avg = 0;
-			beginscenetime_avg = beginscenetime_avg * 0.98 + (float)beginscenetime*0.02;
+			beginscenetime_avg = beginscenetime_avg * 0.95 + (float)beginscenetime*0.05;
 			static float scenetime_avg = 0;
-			scenetime_avg = scenetime_avg * 0.98 + (float)scenetime*0.02;
+			scenetime_avg = scenetime_avg * 0.95 + (float)scenetime*0.05;
 			static float endscenetime_avg = 0;
-			endscenetime_avg = endscenetime_avg * 0.98 + (float)endscenetime*0.02;
+			endscenetime_avg = endscenetime_avg * 0.95 + (float)endscenetime*0.05;
 			
 			swprintf(temptext, 150, L"Minetest-c55 ("
 					L"F: item=%i"
@@ -2449,7 +2447,7 @@ int main(int argc, char *argv[])
 					L")"
 					L" drawtime=%.0f, beginscenetime=%.0f, scenetime=%.0f, endscenetime=%.0f",
 					g_selected_item,
-					g_viewing_range_all,
+					draw_control.range_all,
 					drawtime_avg,
 					beginscenetime_avg,
 					scenetime_avg,
@@ -2472,7 +2470,7 @@ int main(int argc, char *argv[])
 					busytime_jitter1_min_sample,
 					busytime_jitter1_max_sample,
 					dtime_jitter1_max_fraction * 100.0,
-					g_viewing_range_nodes
+					draw_control.wanted_range
 					);
 
 			guitext2->setText(temptext);

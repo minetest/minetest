@@ -110,9 +110,7 @@ public:
 	Client(
 			IrrlichtDevice *device,
 			const char *playername,
-			JMutex &range_mutex,
-			float &viewing_range_nodes,
-			bool &viewing_range_all
+			MapDrawControl &control
 			);
 	
 	~Client();

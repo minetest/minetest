@@ -543,6 +543,31 @@ private:
 
 #ifndef SERVER
 
+struct MapDrawControl
+{
+	MapDrawControl():
+		range_all(false),
+		wanted_range(50),
+		wanted_max_blocks(0),
+		wanted_min_range(0),
+		blocks_drawn(0),
+		blocks_would_have_drawn(0)
+	{
+	}
+	// Overrides limits by drawing everything
+	bool range_all;
+	// Wanted drawing range
+	float wanted_range;
+	// Maximum number of blocks to draw
+	u32 wanted_max_blocks;
+	// Blocks in this range are drawn regardless of number of blocks drawn
+	float wanted_min_range;
+	// Number of blocks rendered is written here by the renderer
+	u32 blocks_drawn;
+	// Number of blocks that would have been drawn in wanted_range
+	u32 blocks_would_have_drawn;
+};
+
 class Client;
 
 class ClientMap : public Map, public scene::ISceneNode
@@ -550,9 +575,7 @@ class ClientMap : public Map, public scene::ISceneNode
 public:
 	ClientMap(
 			Client *client,
-			JMutex &range_mutex,
-			float &viewing_range_nodes,
-			bool &viewing_range_all,
+			MapDrawControl &control,
 			scene::ISceneNode* parent,
 			scene::ISceneManager* mgr,
 			s32 id
@@ -618,10 +641,8 @@ private:
 	// This is the master heightmap mesh
 	scene::SMesh *mesh;
 	JMutex mesh_mutex;
-
-	JMutex &m_range_mutex;
-	float &m_viewing_range_nodes;
-	bool &m_viewing_range_all;
+	
+	MapDrawControl &m_control;
 };
 
 #endif

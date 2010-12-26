@@ -2889,9 +2889,7 @@ void ServerMap::PrintInfo(std::ostream &out)
 
 ClientMap::ClientMap(
 		Client *client,
-		JMutex &range_mutex,
-		float &viewing_range_nodes,
-		bool &viewing_range_all,
+		MapDrawControl &control,
 		scene::ISceneNode* parent,
 		scene::ISceneManager* mgr,
 		s32 id
@@ -2900,9 +2898,7 @@ ClientMap::ClientMap(
 	scene::ISceneNode(parent, mgr, id),
 	m_client(client),
 	mesh(NULL),
-	m_range_mutex(range_mutex),
-	m_viewing_range_nodes(viewing_range_nodes),
-	m_viewing_range_all(viewing_range_all)
+	m_control(control)
 {
 	mesh_mutex.Init();
 
@@ -3003,23 +2999,7 @@ void ClientMap::renderMap(video::IVideoDriver* driver, s32 pass)
 	*/
 	int time1 = time(0);
 
-	//s32 daynight_i = m_client->getDayNightIndex();
 	u32 daynight_ratio = m_client->getDayNightRatio();
-
-	/*
-		Collect all blocks that are in the view range
-
-		Should not optimize more here as we want to auto-update
-		all changed nodes in viewing range at the next step.
-	*/
-
-	float viewing_range_nodes;
-	bool viewing_range_all;
-	{
-		JMutexAutoLock lock(m_range_mutex);
-		viewing_range_nodes = m_viewing_range_nodes;
-		viewing_range_all = m_viewing_range_all;
-	}
 
 	m_camera_mutex.Lock();
 	v3f camera_position = m_camera_position;
@@ -3035,7 +3015,7 @@ void ClientMap::renderMap(video::IVideoDriver* driver, s32 pass)
 			camera_position.Y / BS,
 			camera_position.Z / BS);
 
-	v3s16 box_nodes_d = viewing_range_nodes * v3s16(1,1,1);
+	v3s16 box_nodes_d = m_control.wanted_range * v3s16(1,1,1);
 
 	v3s16 p_nodes_min = cam_pos_nodes - box_nodes_d;
 	v3s16 p_nodes_max = cam_pos_nodes + box_nodes_d;
@@ -3054,12 +3034,14 @@ void ClientMap::renderMap(video::IVideoDriver* driver, s32 pass)
 	
 	// For limiting number of mesh updates per frame
 	u32 mesh_update_count = 0;
+	
+	u32 blocks_would_have_drawn = 0;
+	u32 blocks_drawn = 0;
 
 	//NOTE: The sectors map should be locked but we're not doing it
 	// because it'd cause too much delays
 
 	int timecheck_counter = 0;
-
 	core::map<v2s16, MapSector*>::Iterator si;
 	si = m_sectors.getIterator();
 	for(; si.atEnd() == false; si++)
@@ -3082,7 +3064,7 @@ void ClientMap::renderMap(video::IVideoDriver* driver, s32 pass)
 		MapSector *sector = si.getNode()->getValue();
 		v2s16 sp = sector->getPos();
 		
-		if(viewing_range_all == false)
+		if(m_control.range_all == false)
 		{
 			if(sp.X < p_blocks_min.X
 			|| sp.X > p_blocks_max.X
@@ -3126,12 +3108,12 @@ void ClientMap::renderMap(video::IVideoDriver* driver, s32 pass)
 			// Total distance
 			f32 d = blockpos_relative.getLength();
 			
-			if(viewing_range_all == false)
+			if(m_control.range_all == false)
 			{
 				// If block is far away, don't draw it
-				if(d > viewing_range_nodes * BS)
+				if(d > m_control.wanted_range * BS)
 				// This is nicer when fog is used
-				//if((dforward+d)/2 > viewing_range_nodes * BS)
+				//if((dforward+d)/2 > m_control.wanted_range * BS)
 					continue;
 			}
 			
@@ -3175,7 +3157,7 @@ void ClientMap::renderMap(video::IVideoDriver* driver, s32 pass)
 			}
 
 			f32 faraway = BS*50;
-			//f32 faraway = viewing_range_nodes * BS;
+			//f32 faraway = m_control.wanted_range * BS;
 			
 			/*
 				This has to be done with the mesh_mutex unlocked
@@ -3217,6 +3199,13 @@ void ClientMap::renderMap(video::IVideoDriver* driver, s32 pass)
 
 				if(mesh == NULL)
 					continue;
+				
+				blocks_would_have_drawn++;
+				if(blocks_drawn >= m_control.wanted_max_blocks
+						&& m_control.range_all == false
+						&& d > m_control.wanted_min_range * BS)
+					continue;
+				blocks_drawn++;
 
 				u32 c = mesh->getMeshBufferCount();
 
@@ -3238,6 +3227,9 @@ void ClientMap::renderMap(video::IVideoDriver* driver, s32 pass)
 			}
 		} // foreach sectorblocks
 	}
+	
+	m_control.blocks_drawn = blocks_drawn;
+	m_control.blocks_would_have_drawn = blocks_would_have_drawn;
 
 	/*dstream<<"renderMap(): is_transparent_pass="<<is_transparent_pass
 			<<", rendered "<<vertex_count<<" vertices."<<std::endl;*/

@@ -239,6 +239,7 @@ int main(int argc, char *argv[])
 
 	// Initialize random seed
 	srand(time(0));
+	mysrand(time(0));
 
 	/*
 		Run unit tests
