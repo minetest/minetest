@@ -723,9 +723,9 @@ struct TestHeightmap
 	void Random()
 	{
 		dstream<<"Running random code (get a human to check this)"<<std::endl;
-		dstream<<"rand() values: ";
+		dstream<<"myrand() values: ";
 		for(u16 i=0; i<5; i++)
-			dstream<<(u16)rand()<<" ";
+			dstream<<(u16)myrand()<<" ";
 		dstream<<std::endl;
 
 		const s16 BS1 = 8;

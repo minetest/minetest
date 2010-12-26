@@ -143,7 +143,7 @@ void FixedHeightmap::makeDiamond(
 
 	f32 n = avgDiagNeighbours(center, a/2);
 	// Add (-1.0...1.0) * randmax
-	n += ((float)rand() / (float)(RAND_MAX/2) - 1.0)*randmax;
+	n += ((float)myrand() / (float)(MYRAND_MAX/2) - 1.0)*randmax;
 	bool worked = setGroundHeightParent(center, n);
 	
 	if(a >= 2 && worked)
@@ -176,7 +176,7 @@ void FixedHeightmap::makeSquare(
 
 	f32 n = avgNeighbours(center, a/2);
 	// Add (-1.0...1.0) * randmax
-	n += ((float)rand() / (float)(RAND_MAX/2) - 1.0)*randmax;
+	n += ((float)myrand() / (float)(MYRAND_MAX/2) - 1.0)*randmax;
 	bool worked = setGroundHeightParent(center, n);
 	
 	if(a >= 4 && worked)

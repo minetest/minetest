@@ -893,7 +893,7 @@ void VoxelManipulator::flowWater(
 	*/
 	s32 k = 0;
 	if(active_nodes.size() != 0)
-		k = (s32)rand() % (s32)active_nodes.size();
+		k = (s32)myrand() % (s32)active_nodes.size();
 
 	// Flow water to active nodes
 	for(;;)

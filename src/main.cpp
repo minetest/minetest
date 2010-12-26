@@ -820,7 +820,7 @@ public:
 
 	s32 Rand(s32 min, s32 max)
 	{
-		return (rand()%(max-min+1))+min;
+		return (myrand()%(max-min+1))+min;
 	}
 private:
 	bool keydown[KEY_KEY_CODES_COUNT];
@@ -829,124 +829,6 @@ private:
 	bool leftclicked;
 	bool rightclicked;
 };
-
-#if 0
-void updateViewingRange(f32 frametime, Client *client)
-{
-	// Range_all messes up frametime_avg
-	if(draw_control.range_all == true)
-		return;
-
-	float wanted_fps = g_settings.getFloat("wanted_fps");
-	
-	// Initialize to the target value
-	static float frametime_avg = 1.0/wanted_fps;
-	//frametime_avg = frametime_avg * 0.9 + frametime * 0.1;
-	//frametime_avg = frametime_avg * 0.7 + frametime * 0.3;
-	//frametime_avg = frametime_avg * 0.5 + frametime * 0.5;
-	//frametime_avg = frametime_avg * 0.0 + frametime * 1.0;
-	frametime_avg = frametime_avg * 0.7 + frametime * 0.3;
-
-	static f32 counter = 0;
-	if(counter > 0){
-		counter -= frametime;
-		return;
-	}
-	//counter = 1.0; //seconds
-	counter = 0.5; //seconds
-	//counter += 0.1; //seconds
-	//counter = 0.3; //seconds
-
-	//float freetime_ratio = 0.2;
-	//float freetime_ratio = 0.4;
-	float freetime_ratio = FREETIME_RATIO;
-
-	float frametime_wanted = (1.0/(wanted_fps/(1.0-freetime_ratio)));
-
-	//float fraction = sqrt(frametime_avg / frametime_wanted);
-	//float fraction = pow(frametime_avg / frametime_wanted, 1./3);
-
-	float fraction_unbiased = frametime_avg / frametime_wanted;
-
-	float fraction = pow(fraction_unbiased, 20./(float)draw_control.wanted_range);
-	
-	/*float fraction = 1.0;
-	// If frametime is too high
-	if(fraction_unbiased > 1.0)
-		fraction = pow(fraction_unbiased, 1./2);
-	// If frametime is too low
-	else
-		fraction = pow(fraction_unbiased, 1./5);*/
-
-	/*float fraction = sqrt(frametime_avg / frametime_wanted) / 2.0
-			+ frametime_avg / frametime_wanted / 2.0;*/
-	
-	//float fraction = frametime_avg / frametime_wanted;
-
-	static bool fraction_is_good = false;
-	
-	//float fraction_good_threshold = 0.1;
-	//float fraction_bad_threshold = 0.25;
-
-	/*float fraction_good_threshold = 0.075;
-	float fraction_bad_threshold = 0.125;*/
-	// If frametime is too low
-	/*if(fraction < 1.0)
-	{
-		fraction_good_threshold = pow(fraction_good_threshold, 4);
-		fraction_bad_threshold = pow(fraction_bad_threshold, 4);
-	}*/
-
-	float fraction_good_threshold = 0.23;
-	float fraction_bad_threshold = 0.33;
-	
-	float fraction_limit;
-	// Use high limit if fraction is good AND the fraction would
-	// lower the range. We want to keep the range fairly high.
-	if(fraction_is_good && fraction > 1.0)
-		fraction_limit = fraction_bad_threshold;
-	else
-		fraction_limit = fraction_good_threshold;
-
-	//if(fabs(fraction - 1.0) < fraction_limit)
-	if(fabs(fraction_unbiased - 1.0) < fraction_limit)
-	{
-		fraction_is_good = true;
-		return;
-	}
-	else
-	{
-		fraction_is_good = false;
-	}
-
-	//dstream<<"frametime_avg="<<frametime_avg<<std::endl;
-	//dstream<<"frametime_wanted="<<frametime_wanted<<std::endl;
-	/*dstream<<"fetching="<<client->isFetchingBlocks()
-			<<" faction = "<<fraction<<std::endl;*/
-
-	JMutexAutoLock lock(g_range_mutex);
-	
-	s16 viewing_range_nodes_min = g_settings.getS16("viewing_range_nodes_min");
-	s16 viewing_range_nodes_max = g_settings.getS16("viewing_range_nodes_max");
-
-	s16 n = (float)draw_control.wanted_range / fraction;
-	if(n < viewing_range_nodes_min)
-		n = viewing_range_nodes_min;
-	if(n > viewing_range_nodes_max)
-		n = viewing_range_nodes_max;
-
-	bool can_change = true;
-
-	if(client->isFetchingBlocks() == true && n > draw_control.wanted_range)
-		can_change = false;
-	
-	if(can_change)
-		draw_control.wanted_range = n;
-
-	/*dstream<<"draw_control.wanted_range = "
-			<<draw_control.wanted_range<<std::endl;*/
-}
-#endif
 
 void updateViewingRange(f32 frametime_in, Client *client)
 {
@@ -967,15 +849,15 @@ void updateViewingRange(f32 frametime_in, Client *client)
 	//counter = 0.1;
 	counter = 0.2;
 
-	dstream<<__FUNCTION_NAME
+	/*dstream<<__FUNCTION_NAME
 			<<": Collected "<<added_frames<<" frames, total of "
-			<<added_frametime<<"s."<<std::endl;
+			<<added_frametime<<"s."<<std::endl;*/
 	
-	dstream<<"draw_control.blocks_drawn="
+	/*dstream<<"draw_control.blocks_drawn="
 			<<draw_control.blocks_drawn
 			<<", draw_control.blocks_would_have_drawn="
 			<<draw_control.blocks_would_have_drawn
-			<<std::endl;
+			<<std::endl;*/
 	
 	float range_min = g_settings.getS16("viewing_range_nodes_min");
 	float range_max = g_settings.getS16("viewing_range_nodes_max");
@@ -1001,12 +883,12 @@ void updateViewingRange(f32 frametime_in, Client *client)
 	float wanted_frametime = 1.0 / wanted_fps;
 	
 	f32 wanted_frametime_change = wanted_frametime - frametime;
-	dstream<<"wanted_frametime_change="<<wanted_frametime_change<<std::endl;
+	//dstream<<"wanted_frametime_change="<<wanted_frametime_change<<std::endl;
 	
 	// If needed frametime change is very small, just return
 	if(fabs(wanted_frametime_change) < wanted_frametime*0.2)
 	{
-		dstream<<"ignoring small wanted_frametime_change"<<std::endl;
+		//dstream<<"ignoring small wanted_frametime_change"<<std::endl;
 		return;
 	}
 
@@ -1038,11 +920,11 @@ void updateViewingRange(f32 frametime_in, Client *client)
 	if(time_per_range < min_time_per_range)
 	{
 		time_per_range = min_time_per_range;
-		dstream<<"time_per_range="<<time_per_range<<" (min)"<<std::endl;
+		//dstream<<"time_per_range="<<time_per_range<<" (min)"<<std::endl;
 	}
 	else
 	{
-		dstream<<"time_per_range="<<time_per_range<<std::endl;
+		//dstream<<"time_per_range="<<time_per_range<<std::endl;
 	}
 
 	f32 wanted_range_change = wanted_frametime_change / time_per_range;
@@ -1050,28 +932,28 @@ void updateViewingRange(f32 frametime_in, Client *client)
 	//wanted_range_change *= 0.9;
 	//wanted_range_change *= 0.75;
 	wanted_range_change *= 0.5;
-	dstream<<"wanted_range_change="<<wanted_range_change<<std::endl;
+	//dstream<<"wanted_range_change="<<wanted_range_change<<std::endl;
 
 	// If needed range change is very small, just return
 	if(fabs(wanted_range_change) < 0.001)
 	{
-		dstream<<"ignoring small wanted_range_change"<<std::endl;
+		//dstream<<"ignoring small wanted_range_change"<<std::endl;
 		return;
 	}
 
 	new_range += wanted_range_change;
-	dstream<<"new_range="<<new_range/*<<std::endl*/;
+	//dstream<<"new_range="<<new_range/*<<std::endl*/;
 	
-	float new_range_unclamped = new_range;
+	//float new_range_unclamped = new_range;
 	if(new_range < range_min)
 		new_range = range_min;
 	if(new_range > range_max)
 		new_range = range_max;
 	
-	if(new_range != new_range_unclamped)
+	/*if(new_range != new_range_unclamped)
 		dstream<<", clamped to "<<new_range<<std::endl;
 	else
-		dstream<<std::endl;
+		dstream<<std::endl;*/
 
 	draw_control.wanted_range = new_range;
 

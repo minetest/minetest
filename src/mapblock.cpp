@@ -1021,11 +1021,11 @@ void MapBlock::stepObjects(float dtime, bool server, u32 daynight_ratio)
 		m_spawn_timer -= dtime;
 		if(m_spawn_timer <= 0.0)
 		{
-			m_spawn_timer += rand() % 300;
+			m_spawn_timer += myrand() % 300;
 			
 			v2s16 p2d(
-				(rand()%(MAP_BLOCKSIZE-1))+0,
-				(rand()%(MAP_BLOCKSIZE-1))+0
+				(myrand()%(MAP_BLOCKSIZE-1))+0,
+				(myrand()%(MAP_BLOCKSIZE-1))+0
 			);
 
 			s16 y = getGroundLevel(p2d);

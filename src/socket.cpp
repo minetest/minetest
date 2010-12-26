@@ -23,6 +23,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <iostream>
 #include <stdlib.h>
 #include <errno.h>
+#include "utility.h"
 
 // Debug printing options
 #define DP 0
@@ -194,8 +195,8 @@ void UDPSocket::Send(const Address & destination, const void * data, int size)
 {
 	bool dumping_packet = false;
 	if(INTERNET_SIMULATOR)
-		dumping_packet = (rand()%10==0); //easy
-		//dumping_packet = (rand()%4==0); // hard
+		dumping_packet = (myrand()%10==0); //easy
+		//dumping_packet = (myrand()%4==0); // hard
 
 	if(DP){
 		/*dstream<<DPS<<"UDPSocket("<<(int)m_handle

@@ -26,45 +26,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "voxel.h"
 #include "porting.h"
 
-#if 0
-MapBlockPointerCache::MapBlockPointerCache(Map *map)
-{
-	m_map = map;
-	m_map->m_blockcachelock.cacheCreated();
-
-	m_from_cache_count = 0;
-	m_from_map_count = 0;
-}
-
-MapBlockPointerCache::~MapBlockPointerCache()
-{
-	m_map->m_blockcachelock.cacheRemoved();
-
-	/*dstream<<"MapBlockPointerCache:"
-			<<" from_cache_count="<<m_from_cache_count
-			<<" from_map_count="<<m_from_map_count
-			<<std::endl;*/
-}
-
-MapBlock * MapBlockPointerCache::getBlockNoCreate(v3s16 p)
-{
-	core::map<v3s16, MapBlock*>::Node *n = NULL;
-	n = m_blocks.find(p);
-	if(n != NULL)
-	{
-		m_from_cache_count++;
-		return n->getValue();
-	}
-	
-	m_from_map_count++;
-	
-	// Throws InvalidPositionException if not found
-	MapBlock *b = m_map->getBlockNoCreate(p);
-	m_blocks[p] = b;
-	return b;
-}
-#endif
-
 /*
 	Map
 */
@@ -1573,12 +1534,12 @@ MapSector * ServerMap::emergeSector(v2s16 p2d)
 			tree_max = a / (t/0.03);
 		else
 			tree_max = a;
-		u32 count = (rand()%(tree_max+1));
+		u32 count = (myrand()%(tree_max+1));
 		//u32 count = tree_max;
 		for(u32 i=0; i<count; i++)
 		{
-			s16 x = (rand()%(MAP_BLOCKSIZE-2))+1;
-			s16 z = (rand()%(MAP_BLOCKSIZE-2))+1;
+			s16 x = (myrand()%(MAP_BLOCKSIZE-2))+1;
+			s16 z = (myrand()%(MAP_BLOCKSIZE-2))+1;
 			s16 y = sector->getGroundHeight(v2s16(x,z))+1;
 			if(y < WATER_LEVEL)
 				continue;
@@ -1597,11 +1558,11 @@ MapSector * ServerMap::emergeSector(v2s16 p2d)
 			bush_max = (pitness*a*4);
 		if(bush_max > a)
 			bush_max = a;
-		u32 count = (rand()%(bush_max+1));
+		u32 count = (myrand()%(bush_max+1));
 		for(u32 i=0; i<count; i++)
 		{
-			s16 x = rand()%(MAP_BLOCKSIZE-0)+0;
-			s16 z = rand()%(MAP_BLOCKSIZE-0)+0;
+			s16 x = myrand()%(MAP_BLOCKSIZE-0)+0;
+			s16 z = myrand()%(MAP_BLOCKSIZE-0)+0;
 			s16 y = sector->getGroundHeight(v2s16(x,z))+1;
 			if(y < WATER_LEVEL)
 				continue;
@@ -1614,11 +1575,11 @@ MapSector * ServerMap::emergeSector(v2s16 p2d)
 	*/
 	if(m_params.ravines_amount != 0)
 	{
-		if(rand()%(s32)(20.0 / m_params.ravines_amount) == 0)
+		if(myrand()%(s32)(20.0 / m_params.ravines_amount) == 0)
 		{
 			s16 s = 6;
-			s16 x = rand()%(MAP_BLOCKSIZE-s*2-1)+s;
-			s16 z = rand()%(MAP_BLOCKSIZE-s*2-1)+s;
+			s16 x = myrand()%(MAP_BLOCKSIZE-s*2-1)+s;
+			s16 z = myrand()%(MAP_BLOCKSIZE-s*2-1)+s;
 			/*s16 x = 8;
 			s16 z = 8;*/
 			s16 y = sector->getGroundHeight(v2s16(x,z))+1;
@@ -1737,11 +1698,11 @@ MapBlock * ServerMap::emergeBlock(
 	const s32 ued_max = 5;
 	const s32 ued_min = 3;
 	bool underground_emptiness[ued_max*ued_max*ued_max];
-	s32 ued = (rand()%(ued_max-ued_min+1))+1;
+	s32 ued = (myrand()%(ued_max-ued_min+1))+1;
 	//s32 ued = ued_max;
 	for(s32 i=0; i<ued*ued*ued; i++)
 	{
-		underground_emptiness[i] = ((rand() % 5) == 0);
+		underground_emptiness[i] = ((myrand() % 5) == 0);
 	}
 
 	/*
@@ -1830,9 +1791,9 @@ MapBlock * ServerMap::emergeBlock(
 		*/
 
 		v3f orp(
-			(float)(rand()%ued)+0.5,
-			(float)(rand()%ued)+0.5,
-			(float)(rand()%ued)+0.5
+			(float)(myrand()%ued)+0.5,
+			(float)(myrand()%ued)+0.5,
+			(float)(myrand()%ued)+0.5
 		);
 
 		// Check z-
@@ -1911,13 +1872,13 @@ continue_generating:
 		for(u16 i=0; i<3; i++)
 		{
 			v3f rp(
-				(float)(rand()%ued)+0.5,
-				(float)(rand()%ued)+0.5,
-				(float)(rand()%ued)+0.5
+				(float)(myrand()%ued)+0.5,
+				(float)(myrand()%ued)+0.5,
+				(float)(myrand()%ued)+0.5
 			);
 			s16 min_d = 0;
 			s16 max_d = 4;
-			s16 rs = (rand()%(max_d-min_d+1))+min_d;
+			s16 rs = (myrand()%(max_d-min_d+1))+min_d;
 			
 			v3f vec = rp - orp;
 
@@ -2098,12 +2059,12 @@ continue_generating:
 		*/
 		for(s16 i=0; i<underground_level*1; i++)
 		{
-			if(rand()%2 == 0)
+			if(myrand()%2 == 0)
 			{
 				v3s16 cp(
-					(rand()%(MAP_BLOCKSIZE-2))+1,
-					(rand()%(MAP_BLOCKSIZE-2))+1,
-					(rand()%(MAP_BLOCKSIZE-2))+1
+					(myrand()%(MAP_BLOCKSIZE-2))+1,
+					(myrand()%(MAP_BLOCKSIZE-2))+1,
+					(myrand()%(MAP_BLOCKSIZE-2))+1
 				);
 
 				MapNode n;
@@ -2111,14 +2072,14 @@ continue_generating:
 				
 				//if(is_ground_content(block->getNode(cp).d))
 				if(block->getNode(cp).d == CONTENT_STONE)
-					if(rand()%8 == 0)
+					if(myrand()%8 == 0)
 						block->setNode(cp, n);
 
 				for(u16 i=0; i<26; i++)
 				{
 					//if(is_ground_content(block->getNode(cp+g_26dirs[i]).d))
 					if(block->getNode(cp+g_26dirs[i]).d == CONTENT_STONE)
-						if(rand()%8 == 0)
+						if(myrand()%8 == 0)
 							block->setNode(cp+g_26dirs[i], n);
 				}
 			}
@@ -2131,16 +2092,16 @@ continue_generating:
 		u16 coal_rareness = 60 / coal_amount;
 		if(coal_rareness == 0)
 			coal_rareness = 1;
-		if(rand()%coal_rareness == 0)
+		if(myrand()%coal_rareness == 0)
 		{
-			u16 a = rand() % 16;
+			u16 a = myrand() % 16;
 			u16 amount = coal_amount * a*a*a / 1000;
 			for(s16 i=0; i<amount; i++)
 			{
 				v3s16 cp(
-					(rand()%(MAP_BLOCKSIZE-2))+1,
-					(rand()%(MAP_BLOCKSIZE-2))+1,
-					(rand()%(MAP_BLOCKSIZE-2))+1
+					(myrand()%(MAP_BLOCKSIZE-2))+1,
+					(myrand()%(MAP_BLOCKSIZE-2))+1,
+					(myrand()%(MAP_BLOCKSIZE-2))+1
 				);
 
 				MapNode n;
@@ -2150,14 +2111,14 @@ continue_generating:
 				
 				//if(is_ground_content(block->getNode(cp).d))
 				if(block->getNode(cp).d == CONTENT_STONE)
-					if(rand()%8 == 0)
+					if(myrand()%8 == 0)
 						block->setNode(cp, n);
 
 				for(u16 i=0; i<26; i++)
 				{
 					//if(is_ground_content(block->getNode(cp+g_26dirs[i]).d))
 					if(block->getNode(cp+g_26dirs[i]).d == CONTENT_STONE)
-						if(rand()%8 == 0)
+						if(myrand()%8 == 0)
 							block->setNode(cp+g_26dirs[i], n);
 				}
 			}
@@ -2172,9 +2133,9 @@ continue_generating:
 		//for(u16 i=0; i<2; i++)
 		{
 			v3s16 cp(
-				(rand()%(MAP_BLOCKSIZE-2))+1,
-				(rand()%(MAP_BLOCKSIZE-2))+1,
-				(rand()%(MAP_BLOCKSIZE-2))+1
+				(myrand()%(MAP_BLOCKSIZE-2))+1,
+				(myrand()%(MAP_BLOCKSIZE-2))+1,
+				(myrand()%(MAP_BLOCKSIZE-2))+1
 			);
 
 			// Check that the place is empty
@@ -2295,18 +2256,18 @@ continue_generating:
 				n.d = CONTENT_STONE;
 				MapNode n2;
 				n2.d = CONTENT_AIR;
-				s16 depth = maxdepth + (rand()%10);
+				s16 depth = maxdepth + (myrand()%10);
 				s16 z = 0;
 				s16 minz = -6 - (-2);
 				s16 maxz = 6 -1;
 				for(s16 x=-6; x<=6; x++)
 				{
-					z += -1 + (rand()%3);
+					z += -1 + (myrand()%3);
 					if(z < minz)
 						z = minz;
 					if(z > maxz)
 						z = maxz;
-					for(s16 y=depth+(rand()%2); y<=6; y++)
+					for(s16 y=depth+(myrand()%2); y<=6; y++)
 					{
 						/*std::cout<<"("<<p2.X<<","<<p2.Y<<","<<p2.Z<<")"
 								<<std::endl;*/

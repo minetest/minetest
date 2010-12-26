@@ -630,8 +630,8 @@ public:
 			m_counter2 -= dtime;
 			if(m_counter2 < 0.0)
 			{
-				m_counter2 += (float)(rand()%100)/100*3.0;
-				m_yaw += ((float)(rand()%200)-100)/100*180;
+				m_counter2 += (float)(myrand()%100)/100*3.0;
+				m_yaw += ((float)(myrand()%200)-100)/100*180;
 				m_yaw = wrapDegrees(m_yaw);
 			}
 		}
