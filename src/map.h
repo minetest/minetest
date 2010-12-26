@@ -551,7 +551,7 @@ public:
 	ClientMap(
 			Client *client,
 			JMutex &range_mutex,
-			s16 &viewing_range_nodes,
+			float &viewing_range_nodes,
 			bool &viewing_range_all,
 			scene::ISceneNode* parent,
 			scene::ISceneManager* mgr,
@@ -620,7 +620,7 @@ private:
 	JMutex mesh_mutex;
 
 	JMutex &m_range_mutex;
-	s16 &m_viewing_range_nodes;
+	float &m_viewing_range_nodes;
 	bool &m_viewing_range_all;
 };
 

@@ -67,7 +67,7 @@ Client::Client(
 		IrrlichtDevice *device,
 		const char *playername,
 		JMutex &range_mutex,
-		s16 &viewing_range_nodes,
+		float &viewing_range_nodes,
 		bool &viewing_range_all):
 	m_thread(this),
 	m_env(new ClientMap(this,

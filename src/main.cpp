@@ -257,7 +257,7 @@ IrrlichtWrapper *g_irrlicht;
 JMutex g_range_mutex;
 
 // Blocks are viewed in this range from the player
-s16 g_viewing_range_nodes = 60;
+float g_viewing_range_nodes = 60;
 //s16 g_viewing_range_nodes = 0;
 
 // This is updated by the client's fetchBlocks routine
@@ -849,6 +849,7 @@ private:
 	bool rightclicked;
 };
 
+#if 0
 void updateViewingRange(f32 frametime, Client *client)
 {
 	// Range_all messes up frametime_avg
@@ -860,6 +861,9 @@ void updateViewingRange(f32 frametime, Client *client)
 	// Initialize to the target value
 	static float frametime_avg = 1.0/wanted_fps;
 	//frametime_avg = frametime_avg * 0.9 + frametime * 0.1;
+	//frametime_avg = frametime_avg * 0.7 + frametime * 0.3;
+	//frametime_avg = frametime_avg * 0.5 + frametime * 0.5;
+	//frametime_avg = frametime_avg * 0.0 + frametime * 1.0;
 	frametime_avg = frametime_avg * 0.7 + frametime * 0.3;
 
 	static f32 counter = 0;
@@ -869,6 +873,8 @@ void updateViewingRange(f32 frametime, Client *client)
 	}
 	//counter = 1.0; //seconds
 	counter = 0.5; //seconds
+	//counter += 0.1; //seconds
+	//counter = 0.3; //seconds
 
 	//float freetime_ratio = 0.2;
 	//float freetime_ratio = 0.4;
@@ -876,7 +882,20 @@ void updateViewingRange(f32 frametime, Client *client)
 
 	float frametime_wanted = (1.0/(wanted_fps/(1.0-freetime_ratio)));
 
-	float fraction = sqrt(frametime_avg / frametime_wanted);
+	//float fraction = sqrt(frametime_avg / frametime_wanted);
+	//float fraction = pow(frametime_avg / frametime_wanted, 1./3);
+
+	float fraction_unbiased = frametime_avg / frametime_wanted;
+
+	float fraction = pow(fraction_unbiased, 20./(float)g_viewing_range_nodes);
+	
+	/*float fraction = 1.0;
+	// If frametime is too high
+	if(fraction_unbiased > 1.0)
+		fraction = pow(fraction_unbiased, 1./2);
+	// If frametime is too low
+	else
+		fraction = pow(fraction_unbiased, 1./5);*/
 
 	/*float fraction = sqrt(frametime_avg / frametime_wanted) / 2.0
 			+ frametime_avg / frametime_wanted / 2.0;*/
@@ -887,8 +906,19 @@ void updateViewingRange(f32 frametime, Client *client)
 	
 	//float fraction_good_threshold = 0.1;
 	//float fraction_bad_threshold = 0.25;
-	float fraction_good_threshold = 0.075;
-	float fraction_bad_threshold = 0.125;
+
+	/*float fraction_good_threshold = 0.075;
+	float fraction_bad_threshold = 0.125;*/
+	// If frametime is too low
+	/*if(fraction < 1.0)
+	{
+		fraction_good_threshold = pow(fraction_good_threshold, 4);
+		fraction_bad_threshold = pow(fraction_bad_threshold, 4);
+	}*/
+
+	float fraction_good_threshold = 0.23;
+	float fraction_bad_threshold = 0.33;
+	
 	float fraction_limit;
 	// Use high limit if fraction is good AND the fraction would
 	// lower the range. We want to keep the range fairly high.
@@ -897,7 +927,8 @@ void updateViewingRange(f32 frametime, Client *client)
 	else
 		fraction_limit = fraction_good_threshold;
 
-	if(fabs(fraction - 1.0) < fraction_limit)
+	//if(fabs(fraction - 1.0) < fraction_limit)
+	if(fabs(fraction_unbiased - 1.0) < fraction_limit)
 	{
 		fraction_is_good = true;
 		return;
@@ -933,6 +964,113 @@ void updateViewingRange(f32 frametime, Client *client)
 
 	/*dstream<<"g_viewing_range_nodes = "
 			<<g_viewing_range_nodes<<std::endl;*/
+}
+#endif
+
+void updateViewingRange(f32 frametime_in, Client *client)
+{
+	if(g_viewing_range_all == true)
+		return;
+	
+	static f32 added_frametime = 0;
+	static s16 added_frames = 0;
+
+	added_frametime += frametime_in;
+	added_frames += 1;
+
+	// Actually this counter kind of sucks because frametime is busytime
+	static f32 counter = 0;
+	counter -= frametime_in;
+	if(counter > 0)
+		return;
+	//counter = 0.1;
+	counter = 0.2;
+
+	dstream<<__FUNCTION_NAME
+			<<": Collected "<<added_frames<<" frames, total of "
+			<<added_frametime<<"s."<<std::endl;
+	
+	f32 frametime = added_frametime / added_frames;
+	added_frametime = 0.0;
+	added_frames = 0;
+	
+	float wanted_fps = g_settings.getFloat("wanted_fps");
+	float wanted_frametime = 1.0 / wanted_fps;
+	
+	f32 wanted_frametime_change = wanted_frametime - frametime;
+	dstream<<"wanted_frametime_change="<<wanted_frametime_change<<std::endl;
+	
+	// If needed frametime change is very small, just return
+	if(fabs(wanted_frametime_change) < wanted_frametime*0.2)
+	{
+		dstream<<"ignoring small wanted_frametime_change"<<std::endl;
+		return;
+	}
+
+	float range = g_viewing_range_nodes;
+	float new_range = range;
+
+	static s16 range_old = 0;
+	static f32 frametime_old = 0;
+	
+	float d_range = range - range_old;
+	f32 d_frametime = frametime - frametime_old;
+	// A sane default of 30ms per 50 nodes of range
+	static f32 time_per_range = 30. / 50;
+	if(d_range != 0)
+	{
+		time_per_range = d_frametime / d_range;
+	}
+	
+	// The minimum allowed calculated frametime-range derivative:
+	// Practically this sets the maximum speed of changing the range.
+	// The lower this value, the higher the maximum changing speed.
+	// A low value here results in wobbly range (0.001)
+	// A high value here results in slow changing range (0.0025)
+	// SUGG: This could be dynamically adjusted so that when
+	//       the camera is turning, this is lower
+	float min_time_per_range = 0.001;
+	if(time_per_range < min_time_per_range)
+		time_per_range = min_time_per_range;
+	
+	dstream<<"time_per_range="<<time_per_range<<std::endl;
+
+	f32 wanted_range_change = wanted_frametime_change / time_per_range;
+	// Dampen the change a bit to kill oscillations
+	//wanted_range_change *= 0.9;
+	wanted_range_change *= 0.75;
+	dstream<<"wanted_range_change="<<wanted_range_change<<std::endl;
+
+	// If needed range change is very small, just return
+	if(fabs(wanted_range_change) < 0.001)
+	{
+		dstream<<"ignoring small wanted_range_change"<<std::endl;
+		return;
+	}
+
+	new_range += wanted_range_change;
+	dstream<<"new_range="<<new_range/*<<std::endl*/;
+	
+	float range_min = g_settings.getS16("viewing_range_nodes_min");
+	float range_max = g_settings.getS16("viewing_range_nodes_max");
+	
+	float new_range_unclamped = new_range;
+	if(new_range < range_min)
+		new_range = range_min;
+	if(new_range > range_max)
+		new_range = range_max;
+	
+	if(new_range != new_range_unclamped)
+		dstream<<", clamped to "<<new_range<<std::endl;
+	else
+		dstream<<std::endl;
+
+	JMutexAutoLock lock(g_range_mutex);
+
+	g_viewing_range_nodes = new_range;
+
+	range_old = new_range;
+	frametime_old = frametime;
 }
 
 class GUIQuickInventory : public IEventReceiver
@@ -2326,13 +2464,15 @@ int main(int argc, char *argv[])
 			swprintf(temptext, 150,
 					L"(% .1f, % .1f, % .1f)"
 					L" (% .3f < btime_jitter < % .3f"
-					L", dtime_jitter = % .1f %%)",
+					L", dtime_jitter = % .1f %%"
+					L", v_range = %.1f)",
 					player_position.X/BS,
 					player_position.Y/BS,
 					player_position.Z/BS,
 					busytime_jitter1_min_sample,
 					busytime_jitter1_max_sample,
-					dtime_jitter1_max_fraction * 100.0
+					dtime_jitter1_max_fraction * 100.0,
+					g_viewing_range_nodes
 					);
 
 			guitext2->setText(temptext);

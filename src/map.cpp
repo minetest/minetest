@@ -2890,7 +2890,7 @@ void ServerMap::PrintInfo(std::ostream &out)
 ClientMap::ClientMap(
 		Client *client,
 		JMutex &range_mutex,
-		s16 &viewing_range_nodes,
+		float &viewing_range_nodes,
 		bool &viewing_range_all,
 		scene::ISceneNode* parent,
 		scene::ISceneManager* mgr,
@@ -3013,7 +3013,7 @@ void ClientMap::renderMap(video::IVideoDriver* driver, s32 pass)
 		all changed nodes in viewing range at the next step.
 	*/
 
-	s16 viewing_range_nodes;
+	float viewing_range_nodes;
 	bool viewing_range_all;
 	{
 		JMutexAutoLock lock(m_range_mutex);
