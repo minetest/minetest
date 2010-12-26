@@ -310,7 +310,8 @@ public:
 	// Updates all DAYNIGHT_CACHE_COUNT meshes
 	void updateMeshes(s32 first_i=0);*/
 #endif // !SERVER
-
+	
+	// See comments in mapblock.cpp
 	bool propagateSunlight(core::map<v3s16, bool> & light_sources);
 	
 	// Copies data to VoxelManipulator to getPosRelative()

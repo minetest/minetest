@@ -860,7 +860,9 @@ void MapBlock::updateMesh(u32 daynight_ratio)
 	is_underground is set.
 
 	At the moment, all sunlighted nodes are added to light_sources.
-	TODO: This could be optimized.
+	- SUGG: This could be optimized
+
+	Turns sunglighted mud into grass.
 */
 bool MapBlock::propagateSunlight(core::map<v3s16, bool> & light_sources)
 {
@@ -880,10 +882,6 @@ bool MapBlock::propagateSunlight(core::map<v3s16, bool> & light_sources)
 				MapNode n = getNodeParent(v3s16(x, MAP_BLOCKSIZE, z));
 				if(n.getLight(LIGHTBANK_DAY) != LIGHT_SUN)
 				{
-					/*if(is_underground)
-					{
-						no_sunlight = true;
-					}*/
 					no_sunlight = true;
 				}
 			}
@@ -891,15 +889,14 @@ bool MapBlock::propagateSunlight(core::map<v3s16, bool> & light_sources)
 			{
 				no_top_block = true;
 				
-				// TODO: This makes over-ground roofed places sunlighted
+				// NOTE: This makes over-ground roofed places sunlighted
 				// Assume sunlight, unless is_underground==true
 				if(is_underground)
 				{
 					no_sunlight = true;
 				}
 				
-				// TODO: There has to be some way to allow this behaviour
-				// As of now, it just makes everything dark.
+				// NOTE: As of now, it just would make everything dark.
 				// No sunlight here
 				//no_sunlight = true;
 			}
@@ -928,7 +925,15 @@ bool MapBlock::propagateSunlight(core::map<v3s16, bool> & light_sources)
 
 						light_sources.insert(pos_relative + pos, true);
 					}
-					else{
+					else
+					{
+						// Turn mud into grass
+						if(n.d == CONTENT_MUD)
+						{
+							n.d = CONTENT_GRASS;
+						}
+
+						// Sunlight goes no further
 						break;
 					}
 				}

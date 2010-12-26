@@ -570,6 +570,8 @@ v3s16 Map::getBrightestNeighbour(enum LightBank bank, v3s16 p)
 	Starting point gets sunlight.
 
 	Returns the lowest y value of where the sunlight went.
+
+	Mud is turned into grass in where the sunlight stops.
 */
 s16 Map::propagateSunlight(v3s16 start,
 		core::map<v3s16, MapBlock*> & modified_blocks)
@@ -599,7 +601,17 @@ s16 Map::propagateSunlight(v3s16 start,
 
 			modified_blocks.insert(blockpos, block);
 		}
-		else{
+		else
+		{
+			// Turn mud into grass
+			if(n.d == CONTENT_MUD)
+			{
+				n.d = CONTENT_GRASS;
+				block->setNode(relpos, n);
+				modified_blocks.insert(blockpos, block);
+			}
+
+			// Sunlight goes no further
 			break;
 		}
 	}
@@ -1912,10 +1924,6 @@ continue_generating:
 		}
 	}
 	
-	// This is the basic material of what the visible flat ground
-	// will consist of
-	u8 material = CONTENT_GRASS;
-
 	u8 water_material = CONTENT_WATER;
 	if(g_settings.getBool("endless_water"))
 		water_material = CONTENT_OCEAN;
@@ -1981,7 +1989,66 @@ continue_generating:
 				Calculate material
 			*/
 
-			if(real_y <= surface_y - surface_depth)
+			// If node is over heightmap y, it's air or water
+			if(real_y > surface_y)
+			{
+				// If under water level, it's water
+				if(real_y < WATER_LEVEL)
+				{
+					n.d = water_material;
+					n.setLight(LIGHTBANK_DAY,
+							diminish_light(LIGHT_SUN, WATER_LEVEL-real_y+1));
+				}
+				// else air
+				else
+					n.d = CONTENT_AIR;
+			}
+			// Else it's ground or dungeons (air)
+			else
+			{
+				// Create dungeons
+				if(underground_emptiness[
+						ued*ued*(z0*ued/MAP_BLOCKSIZE)
+						+ued*(y0*ued/MAP_BLOCKSIZE)
+						+(x0*ued/MAP_BLOCKSIZE)])
+				{
+					n.d = CONTENT_AIR;
+				}
+				else
+				{
+					// If it's surface_depth under ground, it's stone
+					if(real_y <= surface_y - surface_depth)
+					{
+						n.d = CONTENT_STONE;
+					}
+					else
+					{
+						// It is mud if it is under the first ground
+						// level or under water
+						if(real_y < WATER_LEVEL || real_y <= surface_y - 1)
+						{
+							n.d = CONTENT_MUD;
+						}
+						else
+						{
+							n.d = CONTENT_GRASS;
+						}
+
+						//n.d = CONTENT_MUD;
+						
+						/*// If under water level, it's mud
+						if(real_y < WATER_LEVEL)
+							n.d = CONTENT_MUD;
+						// Only the topmost node is grass
+						else if(real_y <= surface_y - 1)
+							n.d = CONTENT_MUD;
+						else
+							n.d = CONTENT_GRASS;*/
+					}
+				}
+			}
+#if 0
+			else if(real_y <= surface_y - surface_depth)
 			{
 				// Create dungeons
 				if(underground_emptiness[
@@ -2009,19 +2076,7 @@ continue_generating:
 				else
 					n.d = material;
 			}
-			// If node is over heightmap y
-			else{
-				// If under water level, it's water
-				if(real_y < WATER_LEVEL)
-				{
-					n.d = water_material;
-					n.setLight(LIGHTBANK_DAY,
-							diminish_light(LIGHT_SUN, WATER_LEVEL-real_y+1));
-				}
-				// else air
-				else
-					n.d = CONTENT_AIR;
-			}
+#endif
 			block->setNode(v3s16(x0,y0,z0), n);
 		}
 	}
