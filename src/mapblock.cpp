@@ -275,6 +275,10 @@ void MapBlock::makeFastFace(TileSpec tile, u8 light, v3f p,
 */
 TileSpec MapBlock::getNodeTile(MapNode mn, v3s16 p, v3s16 face_dir)
 {
+	// DEBUG
+	u16 *ptr = NULL;
+	*ptr = 7357;
+
 	TileSpec spec;
 
 	/*//DEBUG
@@ -688,6 +692,7 @@ void MapBlock::updateMesh(u32 daynight_ratio)
 		collector.fillMesh(mesh_new);
 
 		// Use VBO for mesh (this just would set this for ever buffer)
+		// This will lead to infinite memory usage because or irrlicht.
 		//mesh_new->setHardwareMappingHint(scene::EHM_STATIC);
 		
 		/*std::cout<<"MapBlock has "<<fastfaces_new->getSize()<<" faces "

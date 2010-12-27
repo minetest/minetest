@@ -27,6 +27,15 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "common_irrlicht.h"
 #include "threads.h"
 #include "gettime.h"
+#include "constants.h"
+#include "exceptions.h"
+
+#ifdef _WIN32
+	#define WIN32_LEAN_AND_MEAN
+	#include <windows.h>
+	#include <eh.h>
+#else
+#endif
 
 /*
 	Debug output
@@ -215,6 +224,60 @@ private:
 	core::map<u16, u16> m_packets;
 };
 
+/*
+	These should be put into every thread
+*/
+
+#if CATCH_UNHANDLED_EXCEPTIONS == 1
+	#define BEGIN_PORTABLE_DEBUG_EXCEPTION_HANDLER try{
+	#define END_PORTABLE_DEBUG_EXCEPTION_HANDLER\
+		}catch(std::exception &e){\
+			dstream<<std::endl<<DTIME\
+					<<"ERROR: An unhandled exception occurred: "\
+					<<e.what()<<std::endl;\
+			assert(0);\
+		}
+	#ifdef _WIN32 // Windows
+
+/*class SE_Exception : public std::exception
+{
+private:
+    unsigned int nSE;
+public:
+    SE_Exception() {}
+    SE_Exception( unsigned int n ) : nSE( n ) {}
+    ~SE_Exception() {}
+    unsigned int getSeNumber() { return nSE; }
+};*/
+
+void se_trans_func(unsigned int, EXCEPTION_POINTERS*);
+
+class FatalSystemException : public BaseException
+{
+public:
+	FatalSystemException(const char *s):
+		BaseException(s)
+	{}
+};
+
+		#define BEGIN_DEBUG_EXCEPTION_HANDLER \
+			BEGIN_PORTABLE_DEBUG_EXCEPTION_HANDLER\
+			_set_se_translator(se_trans_func);
+
+		#define END_DEBUG_EXCEPTION_HANDLER \
+			END_PORTABLE_DEBUG_EXCEPTION_HANDLER
+
+	#else // Posix
+		#define BEGIN_DEBUG_EXCEPTION_HANDLER\
+			BEGIN_PORTABLE_DEBUG_EXCEPTION_HANDLER
+		#define END_DEBUG_EXCEPTION_HANDLER\
+			END_PORTABLE_DEBUG_EXCEPTION_HANDLER
+	#endif
+#else
+	// Dummy ones
+	#define BEGIN_DEBUG_EXCEPTION_HANDLER
+	#define END_DEBUG_EXCEPTION_HANDLER
+#endif
 
 #endif // DEBUG_HEADER
 

@@ -54,7 +54,6 @@ class MaterialProperties
 public:
 	MaterialProperties()
 	{
-		dstream<<__FUNCTION_NAME<<std::endl;
 	}
 
 	void setDiggingProperties(const std::string toolname,

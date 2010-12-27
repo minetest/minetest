@@ -31,34 +31,22 @@ void * ClientUpdateThread::Thread()
 	ThreadStarted();
 
 	DSTACK(__FUNCTION_NAME);
-
-#if CATCH_UNHANDLED_EXCEPTIONS
-	try
+	
+	BEGIN_DEBUG_EXCEPTION_HANDLER
+	
+	while(getRun())
 	{
-#endif
-		while(getRun())
-		{
-			m_client->asyncStep();
+		m_client->asyncStep();
 
-			//m_client->updateSomeExpiredMeshes();
+		//m_client->updateSomeExpiredMeshes();
 
-			bool was = m_client->AsyncProcessData();
+		bool was = m_client->AsyncProcessData();
 
-			if(was == false)
-				sleep_ms(10);
-		}
-#if CATCH_UNHANDLED_EXCEPTIONS
+		if(was == false)
+			sleep_ms(10);
 	}
-	/*
-		This is what has to be done in threads to get suitable debug info
-	*/
-	catch(std::exception &e)
-	{
-		dstream<<std::endl<<DTIME<<"An unhandled exception occurred: "
-				<<e.what()<<std::endl;
-		assert(0);
-	}
-#endif
+
+	END_DEBUG_EXCEPTION_HANDLER
 
 	return NULL;
 }

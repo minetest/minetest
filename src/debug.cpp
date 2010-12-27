@@ -194,3 +194,33 @@ DebugStacker::~DebugStacker()
 	}
 }
 
+
+#ifdef _WIN32
+void se_trans_func(unsigned int u, EXCEPTION_POINTERS* pExp)
+{
+	dstream<<"In trans_func.\n";
+	if(u == EXCEPTION_ACCESS_VIOLATION)
+	{
+		PEXCEPTION_RECORD r = pExp->ExceptionRecord;
+		dstream<<"Access violation at "<<r->ExceptionAddress
+				<<" write?="<<r->ExceptionInformation[0]
+				<<" address="<<r->ExceptionInformation[1]
+				<<std::endl;
+		throw FatalSystemException
+		("Access violation");
+	}
+	if(u == EXCEPTION_STACK_OVERFLOW)
+	{
+		throw FatalSystemException
+		("Stack overflow");
+	}
+	if(u == EXCEPTION_ILLEGAL_INSTRUCTION)
+	{
+		throw FatalSystemException
+		("Illegal instruction");
+	}
+}
+#endif
+
+
+

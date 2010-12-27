@@ -135,6 +135,13 @@ TODO: Make fetching sector's blocks more efficient when rendering
 
 TODO: Make the video backend selectable
 
+TODO: Copy the text of the last picked sign to inventory in creative
+      mode
+
+TODO: Get rid of GotSplitPacketException
+
+TODO: Check what goes wrong with caching map to disk (Kray)
+
 Block object server side:
       - A "near blocks" buffer, in which some nearby blocks are stored.
 	  - For all blocks in the buffer, objects are stepped(). This
@@ -145,17 +152,6 @@ Block object server side:
 	    - TODO: For outgoing blocks, timestamp is written.
 	    - TODO: For incoming blocks, time difference is calculated and
 	      objects are stepped according to it.
-
-TODO: Copy the text of the last picked sign to inventory in creative
-      mode
-
-TODO: Get rid of GotSplitPacketException
-
-TODO: Check what goes wrong with caching map to disk (Kray)
-
-TODO: Remove LazyMeshUpdater. It is not used as supposed.
-
-TODO: TOSERVER_LEAVE
 
 TODO: Better handling of objects and mobs
       - Scripting?
@@ -171,6 +167,7 @@ TODO: Draw big amounts of torches better (that is, throw them in the
 
 TODO: Check if the usage of Client::isFetchingBlocks() in
       updateViewingRange() actually does something
+	  NOTE: It isn't used anymore after the rewrite.
 
 TODO: Make an option to the server to disable building and digging near
       the starting position
@@ -181,14 +178,13 @@ SUGG: Signs could be done in the same way as torches. For this, blocks
 TODO: There has to be some better way to handle static objects than to
       send them all the time. This affects signs and item objects.
 
-Doing now:
-======================================================================
-
 TODO: When server sees that client is removing an inexistent block or
       adding a block to an existent position, resend the MapBlock.
 
-TODO: Fix viewing range updater's oscillation when there is large non-
-      linearity in range-speed relation
+TODO: Map generator: add other materials underground (mud)
+
+Doing now:
+======================================================================
 
 ======================================================================
 
@@ -1095,6 +1091,8 @@ int main(int argc, char *argv[])
 	
 	initializeMaterialProperties();
 
+	BEGIN_DEBUG_EXCEPTION_HANDLER
+
 	try
 	{
 	
@@ -1407,7 +1405,7 @@ int main(int argc, char *argv[])
 	/*
 		This changes the minimum allowed number of vertices in a VBO
 	*/
-	//driver->setMinHardwareBufferVertexCount(1);
+	//driver->setMinHardwareBufferVertexCount(50);
 
 	scene::ISceneManager* smgr = device->getSceneManager();
 	
@@ -2606,18 +2604,9 @@ int main(int argc, char *argv[])
 			menu->drop();
 		}*/
 	}
-#if CATCH_UNHANDLED_EXCEPTIONS
-	/*
-		This is what has to be done in every thread to get suitable debug info
-	*/
-	catch(std::exception &e)
-	{
-		dstream<<std::endl<<DTIME<<"An unhandled exception occurred: "
-				<<e.what()<<std::endl;
-		assert(0);
-	}
-#endif
 
+	END_DEBUG_EXCEPTION_HANDLER
+	
 	debugstreams_deinit();
 	
 	return 0;

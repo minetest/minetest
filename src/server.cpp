@@ -40,6 +40,8 @@ void * ServerThread::Thread()
 
 	DSTACK(__FUNCTION_NAME);
 
+	BEGIN_DEBUG_EXCEPTION_HANDLER
+
 	while(getRun())
 	{
 		try{
@@ -51,19 +53,9 @@ void * ServerThread::Thread()
 		catch(con::NoIncomingDataException &e)
 		{
 		}
-#if CATCH_UNHANDLED_EXCEPTIONS
-		/*
-			This is what has to be done in threads to get suitable debug info
-		*/
-		catch(std::exception &e)
-		{
-			dstream<<std::endl<<DTIME<<"An unhandled exception occurred: "
-					<<e.what()<<std::endl;
-			assert(0);
-		}
-#endif
 	}
 	
+	END_DEBUG_EXCEPTION_HANDLER
 
 	return NULL;
 }
@@ -75,11 +67,9 @@ void * EmergeThread::Thread()
 	DSTACK(__FUNCTION_NAME);
 
 	bool debug=false;
-#if CATCH_UNHANDLED_EXCEPTIONS
-	try
-	{
-#endif
 	
+	BEGIN_DEBUG_EXCEPTION_HANDLER
+
 	/*
 		Get block info from queue, emerge them and send them
 		to clients.
@@ -267,18 +257,8 @@ void * EmergeThread::Thread()
 		}
 		
 	}
-#if CATCH_UNHANDLED_EXCEPTIONS
-	}//try
-	/*
-		This is what has to be done in threads to get suitable debug info
-	*/
-	catch(std::exception &e)
-	{
-		dstream<<std::endl<<DTIME<<"An unhandled exception occurred: "
-				<<e.what()<<std::endl;
-		assert(0);
-	}
-#endif
+
+	END_DEBUG_EXCEPTION_HANDLER
 
 	return NULL;
 }

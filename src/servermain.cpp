@@ -125,6 +125,8 @@ int main(int argc, char *argv[])
 
 	initializeMaterialProperties();
 
+	BEGIN_DEBUG_EXCEPTION_HANDLER
+
 	try
 	{
 	
@@ -345,17 +347,8 @@ int main(int argc, char *argv[])
 	{
 		dstream<<DTIME<<"Connection timed out."<<std::endl;
 	}
-#if CATCH_UNHANDLED_EXCEPTIONS
-	/*
-		This is what has to be done in every thread to get suitable debug info
-	*/
-	catch(std::exception &e)
-	{
-		dstream<<std::endl<<DTIME<<"An unhandled exception occurred: "
-				<<e.what()<<std::endl;
-		assert(0);
-	}
-#endif
+
+	END_DEBUG_EXCEPTION_HANDLER
 
 	debugstreams_deinit();
 	
