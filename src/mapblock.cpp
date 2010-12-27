@@ -275,10 +275,6 @@ void MapBlock::makeFastFace(TileSpec tile, u8 light, v3f p,
 */
 TileSpec MapBlock::getNodeTile(MapNode mn, v3s16 p, v3s16 face_dir)
 {
-	// DEBUG
-	u16 *ptr = NULL;
-	*ptr = 7357;
-
 	TileSpec spec;
 
 	/*//DEBUG
