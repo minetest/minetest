@@ -985,7 +985,7 @@ void Client::ProcessData(u8 *data, u32 datasize, u16 sender_peer_id)
 			const s32 nightlength = 2;
 			const s32 daytimelength = 4;
 			s32 d = daylength;
-			s32 t = (((m_time_of_day.get()/* + 24000/d/2*/)%24000)/(24000/d));
+			s32 t = (((m_time_of_day.get())%24000)/(24000/d));
 			u32 dr;
 			if(t < nightlength/2 || t >= d - nightlength/2)
 				dr = 350;

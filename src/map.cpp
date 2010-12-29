@@ -3179,9 +3179,14 @@ void ClientMap::renderMap(video::IVideoDriver* driver, s32 pass)
 				This has to be done with the mesh_mutex unlocked
 			*/
 			// Pretty random but this should work somewhat nicely
-			if(mesh_expired && mesh_update_count < 3
-					&& (d < faraway || mesh_update_count < 2
-					|| m_control.range_all))
+			if(mesh_expired && (
+					(mesh_update_count < 3
+						&& (d < faraway || mesh_update_count < 2)
+					)
+					|| 
+					(m_control.range_all && mesh_update_count < 20)
+				)
+			)
 			/*if(mesh_expired && mesh_update_count < 6
 					&& (d < faraway || mesh_update_count < 3))*/
 			{
