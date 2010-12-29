@@ -181,7 +181,9 @@ TODO: There has to be some better way to handle static objects than to
 TODO: When server sees that client is removing an inexistent block or
       adding a block to an existent position, resend the MapBlock.
 
-TODO: Map generator: add other materials underground (mud)
+TODO: When player dies, throw items on map
+
+TODO: Map generator version 2
 
 Doing now:
 ======================================================================
@@ -2275,11 +2277,18 @@ int main(int argc, char *argv[])
 		camera->setAspectRatio((f32)screensize.X / (f32)screensize.Y);
 		
 		u32 daynight_ratio = client.getDayNightRatio();
-		video::SColor bgcolor = video::SColor(
+		/*video::SColor bgcolor = video::SColor(
 				255,
 				skycolor.getRed() * daynight_ratio / 1000,
 				skycolor.getGreen() * daynight_ratio / 1000,
-				skycolor.getBlue() * daynight_ratio / 1000);
+				skycolor.getBlue() * daynight_ratio / 1000);*/
+
+		u8 l = decode_light((daynight_ratio * LIGHT_SUN) / 1000);
+		video::SColor bgcolor = video::SColor(
+				255,
+				skycolor.getRed() * l / 255,
+				skycolor.getGreen() * l / 255,
+				skycolor.getBlue() * l / 255);
 
 		/*
 			Fog

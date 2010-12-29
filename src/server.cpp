@@ -876,7 +876,7 @@ Server::Server(
 	m_con(PROTOCOL_ID, 512, CONNECTION_TIMEOUT, this),
 	m_thread(this),
 	m_emergethread(this),
-	m_time_of_day(8000),
+	m_time_of_day(9000),
 	m_time_counter(0),
 	m_time_of_day_send_timer(0),
 	m_uptime(0)

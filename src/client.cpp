@@ -139,37 +139,6 @@ void Client::step(float dtime)
 	if(dtime > 2.0)
 		dtime = 2.0;
 	
-	/*
-		Day/night
-	*/
-	{
-		s32 d = 8;
-		s32 t = (((m_time_of_day.get() + 24000/d/2)%24000)/(24000/d));
-		s32 dn = 0;
-		if(t == d/4 || t == (d-d/4))
-			dn = 1;
-		else if(t < d/4 || t > (d-d/4))
-			dn = 2;
-		else
-			dn = 0;
-
-		u32 dr = 1000;
-		if(dn == 0)
-			dr = 1000;
-		if(dn == 1)
-			dr = 600;
-		if(dn == 2)
-			dr = 300;
-		
-		if(dr != m_env.getDayNightRatio())
-		{
-			//dstream<<"dr="<<dr<<std::endl;
-			dout_client<<DTIME<<"Client: changing day-night ratio"<<std::endl;
-			m_env.setDayNightRatio(dr);
-			m_env.expireMeshes(true);
-		}
-	}
-
 	
 	//dstream<<"Client steps "<<dtime<<std::endl;
 
@@ -1003,6 +972,42 @@ void Client::ProcessData(u8 *data, u32 datasize, u16 sender_peer_id)
 		time = time % 24000;
 		m_time_of_day.set(time);
 		//dstream<<"Client: time="<<time<<std::endl;
+		
+		/*
+			Day/night
+
+			time_of_day:
+			0 = midnight
+			12000 = midday
+		*/
+		{
+			const s32 daylength = 8;
+			const s32 nightlength = 2;
+			const s32 daytimelength = 4;
+			s32 d = daylength;
+			s32 t = (((m_time_of_day.get()/* + 24000/d/2*/)%24000)/(24000/d));
+			u32 dr;
+			if(t < nightlength/2 || t >= d - nightlength/2)
+				dr = 350;
+			else if(t >= d/2 - daytimelength/2 && t < d/2 + daytimelength/2)
+				dr = 1000;
+			else
+				dr = 750;
+
+			dstream<<"time_of_day="<<m_time_of_day.get()
+					<<", t="<<t
+					<<", dr="<<dr
+					<<std::endl;
+			
+			if(dr != m_env.getDayNightRatio())
+			{
+				//dstream<<"dr="<<dr<<std::endl;
+				dout_client<<DTIME<<"Client: changing day-night ratio"<<std::endl;
+				m_env.setDayNightRatio(dr);
+				m_env.expireMeshes(true);
+			}
+		}
+
 	}
 	else if(command == TOCLIENT_CHAT_MESSAGE)
 	{
