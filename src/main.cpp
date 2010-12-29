@@ -183,6 +183,13 @@ TODO: When server sees that client is removing an inexistent block or
 
 TODO: When player dies, throw items on map
 
+TODO: Optimize day/night mesh updating somehow
+      - create copies of all textures for all lighting values and only
+	    change texture for material?
+	  - Umm... the collecting of the faces is the slow part
+	    -> what about just changing the color values of the existing
+		   meshbuffers? It should go quite fast.
+
 TODO: Map generator version 2
 
 Doing now:
@@ -1614,8 +1621,8 @@ int main(int argc, char *argv[])
 	bool first_loop_after_window_activation = true;
 
 	// Time is in milliseconds
-	// NOTE: getRealTime() without run()s causes strange problems in wine
-	// NOTE: Have to call run() between calls of this to update the timer
+	// NOTE: getRealTime() causes strange problems in wine (imprecision?)
+	// NOTE: So we have to use getTime() and call run()s between them
 	u32 lasttime = device->getTimer()->getTime();
 
 	while(device->run())
@@ -1862,9 +1869,13 @@ int main(int argc, char *argv[])
 		v3f camera_direction = v3f(0,0,1);
 		camera_direction.rotateYZBy(camera_pitch);
 		camera_direction.rotateXZBy(camera_yaw);
-
+		
+		// This is at the height of the eyes of the current figure
 		v3f camera_position =
 				player_position + v3f(0, BS+BS/2, 0);
+		// This is more like in minecraft
+		/*v3f camera_position =
+				player_position + v3f(0, BS+BS*0.65, 0);*/
 
 		camera->setPosition(camera_position);
 		// *100.0 helps in large map coordinates

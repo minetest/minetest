@@ -112,13 +112,22 @@ video::ITexture* IrrlichtWrapper::getTextureDirect(TextureSpec spec)
 video::ITexture * CrackTextureMod::make(video::ITexture *original,
 		const char *newname, video::IVideoDriver* driver)
 {
+	// Size of the base image
 	core::dimension2d<u32> dim(16, 16);
+	// Size of the crack image
+	//core::dimension2d<u32> dim_crack(16, 16 * CRACK_ANIMATION_LENGTH);
+	// Position to copy the crack to in the base image
 	core::position2d<s32> pos_base(0, 0);
+	// Position to copy the crack from in the crack image
 	core::position2d<s32> pos_other(0, 16 * progression);
 
 	video::IImage *baseimage = driver->createImage(original, pos_base, dim);
 	assert(baseimage);
+
+	video::IImage *crackimage = driver->createImageFromFile("../data/crack.png");
+	assert(crackimage);
 	
+#if 0
 	video::ITexture *other = driver->getTexture("../data/crack.png");
 	
 	dstream<<__FUNCTION_NAME<<": crack texture size is "
@@ -131,26 +140,33 @@ video::ITexture * CrackTextureMod::make(video::ITexture *original,
 	//       the image to fit a texture or something...
 	video::IImage *otherimage = driver->createImage(
 			other, core::position2d<s32>(0,0), other->getSize());
-	// This should work on more systems
-	// - no, it doesn't, output is more random.
-	/*video::IImage *otherimage = driver->createImage(
-			other, core::position2d<s32>(0,0),
-			v2u32(16, CRACK_ANIMATION_LENGTH * 16));*/
 
 	assert(otherimage);
+
+	// Now, the image might be 80 or 128 high depending on the computer
+	// Let's make an image of the right size and copy the possibly
+	// wrong sized one with scaling
+	// NOTE: This is an ugly hack.
+
+	video::IImage *crackimage = driver->createImage(
+			baseimage->getColorFormat(), dim_crack);
 	
-	/*core::rect<s32> clip_rect(v2s32(0,0), dim);
-	otherimage->copyToWithAlpha(baseimage, v2s32(0,0),
-			core::rect<s32>(pos_other, dim),
-			video::SColor(255,255,255,255),
-			&clip_rect);*/
+	assert(crackimage);
 	
-	otherimage->copyToWithAlpha(baseimage, v2s32(0,0),
+	otherimage->copyToScaling(crackimage);
+	otherimage->drop();
+#endif
+
+	// Then copy the right part of crackimage to baseimage
+	
+	crackimage->copyToWithAlpha(baseimage, v2s32(0,0),
 			core::rect<s32>(pos_other, dim),
 			video::SColor(255,255,255,255),
 			NULL);
 	
-	otherimage->drop();
+	crackimage->drop();
+
+	// Create texture from resulting image
 
 	video::ITexture *newtexture = driver->addTexture(newname, baseimage);
 
