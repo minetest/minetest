@@ -41,76 +41,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "constants.h"
 #include "voxel.h"
 
-class Map;
-
-#if 0
-/*
-	A cache for short-term fast access to map data
-
-	NOTE: This doesn't really make anything more efficient
-	NOTE: Use VoxelManipulator, if possible
-	TODO: Get rid of this?
-	NOTE: CONFIRMED: THIS CACHE DOESN'T MAKE ANYTHING ANY FASTER
-*/
-class MapBlockPointerCache : public NodeContainer
-{
-public:
-	MapBlockPointerCache(Map *map);
-	~MapBlockPointerCache();
-
-	virtual u16 nodeContainerId() const
-	{
-		return NODECONTAINER_ID_MAPBLOCKCACHE;
-	}
-
-	MapBlock * getBlockNoCreate(v3s16 p);
-
-	// virtual from NodeContainer
-	bool isValidPosition(v3s16 p)
-	{
-		v3s16 blockpos = getNodeBlockPos(p);
-		MapBlock *blockref;
-		try{
-			blockref = getBlockNoCreate(blockpos);
-		}
-		catch(InvalidPositionException &e)
-		{
-			return false;
-		}
-		return true;
-	}
-	
-	// virtual from NodeContainer
-	MapNode getNode(v3s16 p)
-	{
-		v3s16 blockpos = getNodeBlockPos(p);
-		MapBlock * blockref = getBlockNoCreate(blockpos);
-		v3s16 relpos = p - blockpos*MAP_BLOCKSIZE;
-
-		return blockref->getNodeNoCheck(relpos);
-	}
-
-	// virtual from NodeContainer
-	void setNode(v3s16 p, MapNode & n)
-	{
-		v3s16 blockpos = getNodeBlockPos(p);
-		MapBlock * block = getBlockNoCreate(blockpos);
-		v3s16 relpos = p - blockpos*MAP_BLOCKSIZE;
-		block->setNodeNoCheck(relpos, n);
-		m_modified_blocks[blockpos] = block;
-	}
-
-	core::map<v3s16, MapBlock*> m_modified_blocks;
-	
-private:
-	Map *m_map;
-	core::map<v3s16, MapBlock*> m_blocks;
-
-	u32 m_from_cache_count;
-	u32 m_from_map_count;
-};
-#endif
-
 class CacheLock
 {
 public:
@@ -209,6 +139,9 @@ public:
 		Used by MapBlockPointerCache.
 
 		waitCaches() can be called to remove all caches before continuing
+
+		TODO: Remove this, MapBlockPointerCache doesn't exist anymore,
+		      because it doesn't give any speed benefits
 	*/
 	CacheLock m_blockcachelock;
 
