@@ -113,9 +113,6 @@ TODO: Combine MapBlock's face caches to so big pieces that VBO
       gets used
       - That is >500 vertices
 
-TODO: Better dungeons
-TODO: Cliffs, arcs
-
 TODO: Startup and configuration menu
 
 TODO: There are some lighting-related todos and fixmes in
@@ -141,6 +138,7 @@ TODO: Copy the text of the last picked sign to inventory in creative
 TODO: Get rid of GotSplitPacketException
 
 TODO: Check what goes wrong with caching map to disk (Kray)
+      - Nothing?
 
 Block object server side:
       - A "near blocks" buffer, in which some nearby blocks are stored.
@@ -165,10 +163,6 @@ TODO: Better handling of objects and mobs
 TODO: Draw big amounts of torches better (that is, throw them in the
       same meshbuffer (can the meshcollector class be used?))
 
-TODO: Check if the usage of Client::isFetchingBlocks() in
-      updateViewingRange() actually does something
-	  NOTE: It isn't used anymore after the rewrite.
-
 TODO: Make an option to the server to disable building and digging near
       the starting position
 
@@ -191,6 +185,14 @@ TODO: Optimize day/night mesh updating somehow
 		   meshbuffers? It should go quite fast.
 
 TODO: Map generator version 2
+	- Create surface areas based on central points; a given point's
+	  area type is given by the nearest central point
+    - Cliffs, arcs
+
+TODO: A Constant for the "../data/" path (differs on Mac and on proper
+      linux installations)
+
+TODO: Add defined(__APPLE__) to filesys.cpp
 
 Doing now:
 ======================================================================
