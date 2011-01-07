@@ -123,7 +123,7 @@ int main(int argc, char *argv[])
 
 	DSTACK(__FUNCTION_NAME);
 
-	porting.initializePaths();
+	porting::initializePaths();
 
 	initializeMaterialProperties();
 

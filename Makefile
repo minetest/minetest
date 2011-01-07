@@ -14,7 +14,7 @@ FAST_BUILD_DIR = fastbuild
 FAST_OBJECTS = $(addprefix $(FAST_BUILD_DIR)/, $(SOURCE_FILES:.cpp=.o))
 
 SERVER_TARGET = server
-SERVER_SOURCE_FILES = materials.cpp defaultsettings.cpp mapnode.cpp voxel.cpp mapblockobject.cpp inventory.cpp debug.cpp serialization.cpp light.cpp filesys.cpp connection.cpp environment.cpp server.cpp socket.cpp mapblock.cpp mapsector.cpp heightmap.cpp map.cpp player.cpp utility.cpp servermain.cpp test.cpp
+SERVER_SOURCE_FILES = porting.cpp materials.cpp defaultsettings.cpp mapnode.cpp voxel.cpp mapblockobject.cpp inventory.cpp debug.cpp serialization.cpp light.cpp filesys.cpp connection.cpp environment.cpp server.cpp socket.cpp mapblock.cpp mapsector.cpp heightmap.cpp map.cpp player.cpp utility.cpp servermain.cpp test.cpp
 SERVER_SOURCES = $(addprefix src/, $(SERVER_SOURCE_FILES))
 SERVER_BUILD_DIR = serverbuild
 SERVER_OBJECTS = $(addprefix $(SERVER_BUILD_DIR)/, $(SERVER_SOURCE_FILES:.cpp=.o))
@@ -34,11 +34,11 @@ debug: CPPFLAGS = -I$(IRRLICHTPATH)/include -I/usr/X11R6/include -I$(JTHREADPATH
 debug: LDFLAGS = -L/usr/X11R6/lib$(LIBSELECT) -L$(IRRLICHTPATH)/lib/Linux -L$(JTHREADPATH)/src/.libs -lIrrlicht -lGL -lXxf86vm -lXext -lX11 -ljthread -lz
 
 fast: CXXFLAGS = -O3 -ffast-math -Wall -fomit-frame-pointer -pipe -funroll-loops -mtune=i686
-fast: CPPFLAGS = -I$(IRRLICHTPATH)/include -I/usr/X11R6/include -I$(JTHREADPATH)/src -DUNITTEST_DISABLE
+fast: CPPFLAGS = -I$(IRRLICHTPATH)/include -I/usr/X11R6/include -I$(JTHREADPATH)/src -DUNITTEST_DISABLE -DRUN_IN_PLACE
 fast: LDFLAGS = -L/usr/X11R6/lib$(LIBSELECT) -L$(IRRLICHTPATH)/lib/Linux -L$(JTHREADPATH)/src/.libs -lIrrlicht -lGL -lXxf86vm -lXext -lX11 -ljthread -lz
 
 server: CXXFLAGS = -O3 -ffast-math -Wall -fomit-frame-pointer -pipe -funroll-loops -mtune=i686
-server: CPPFLAGS = -I$(IRRLICHTPATH)/include -I/usr/X11R6/include -I$(JTHREADPATH)/src -DSERVER -DUNITTEST_DISABLE
+server: CPPFLAGS = -I$(IRRLICHTPATH)/include -I/usr/X11R6/include -I$(JTHREADPATH)/src -DSERVER -DUNITTEST_DISABLE -DRUN_IN_PLACE
 server: LDFLAGS = -L$(JTHREADPATH)/src/.libs -ljthread -lz -lpthread
 
 DEBUG_DESTPATH = bin/$(DEBUG_TARGET)
