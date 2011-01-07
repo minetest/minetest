@@ -145,9 +145,6 @@ public:
 	bool AsyncProcessData();
 	void Send(u16 channelnum, SharedBuffer<u8> data, bool reliable);
 
-	//TODO: Remove
-	bool isFetchingBlocks();
-
 	// Pops out a packet from the packet queue
 	IncomingPacket getPacket();
 

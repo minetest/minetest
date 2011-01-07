@@ -1232,25 +1232,6 @@ void Client::Send(u16 channelnum, SharedBuffer<u8> data, bool reliable)
 	m_con.Send(PEER_ID_SERVER, channelnum, data, reliable);
 }
 
-bool Client::isFetchingBlocks()
-{
-	JMutexAutoLock conlock(m_con_mutex);
-	con::Peer *peer = m_con.GetPeerNoEx(PEER_ID_SERVER);
-	// Not really fetching but can't fetch more.
-	if(peer == NULL) return true;
-
-	con::Channel *channel = &(peer->channels[1]);
-	/*
-		NOTE: Channel 0 should always be used for fetching blocks,
-		      and for nothing else.
-	*/
-	if(channel->incoming_reliables.size() > 0)
-		return true;
-	if(channel->outgoing_reliables.size() > 0)
-		return true;
-	return false;
-}
-
 IncomingPacket Client::getPacket()
 {
 	JMutexAutoLock lock(m_incoming_queue_mutex);
