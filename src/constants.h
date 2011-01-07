@@ -17,17 +17,22 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
-/*
-(c) 2010 Perttu Ahola <celeron55@gmail.com>
-*/
-
 #ifndef CONSTANTS_HEADER
 #define CONSTANTS_HEADER
 
+/*
+	All kinds of constants.
+
+	Cross-platform compatibility crap should go in porting.h.
+*/
+
+#define APPNAME "minetest"
+
 #define DEBUGFILE "debug.txt"
 
-// Define for simulating the quirks of sending through internet
-// WARNING: This disables unit testing of socket and connection
+// Define for simulating the quirks of sending through internet.
+// Causes the socket class to deliberately drop random packets.
+// This disables unit testing of socket and connection.
 #define INTERNET_SIMULATOR 0
 
 #define CONNECTION_TIMEOUT 30

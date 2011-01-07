@@ -19,6 +19,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "mapnode.h"
 #include "tile.h"
+#include "porting.h"
+#include <string>
 
 /*
 	Face directions:
@@ -46,20 +48,33 @@ u16 g_content_tiles[USEFUL_CONTENT_COUNT][6] =
 	{TILE_WOOD,TILE_WOOD,TILE_WOOD,TILE_WOOD,TILE_WOOD,TILE_WOOD},
 };
 
-const char * g_content_inventory_textures[USEFUL_CONTENT_COUNT] =
+std::string g_content_inventory_texture_strings[USEFUL_CONTENT_COUNT];
+// Pointers to c_str()s of the above
+const char * g_content_inventory_texture_paths[USEFUL_CONTENT_COUNT] = {0};
+
+const char * g_content_inventory_texture_paths_base[USEFUL_CONTENT_COUNT] =
 {
-	"../data/stone.png",
-	"../data/grass.png",
-	"../data/water.png",
-	"../data/torch_on_floor.png",
-	"../data/tree_top.png",
-	"../data/leaves.png",
-	"../data/grass_footsteps.png",
-	"../data/mese.png",
-	"../data/mud.png",
-	"../data/water.png",
-	"../data/cloud.png",
-	"../data/coalstone.png",
-	"../data/wood.png",
+	"stone.png",
+	"grass.png",
+	"water.png",
+	"torch_on_floor.png",
+	"tree_top.png",
+	"leaves.png",
+	"grass_footsteps.png",
+	"mese.png",
+	"mud.png",
+	"water.png",
+	"cloud.png",
+	"coalstone.png",
+	"wood.png",
 };
+
+void init_content_inventory_texture_paths()
+{
+	for(u16 i=0; i<USEFUL_CONTENT_COUNT; i++)
+	{
+		g_content_inventory_texture_strings[i] = porting::getDataPath(g_content_inventory_texture_paths_base[i]);
+		g_content_inventory_texture_paths[i] = g_content_inventory_texture_strings[i].c_str();
+	}
+}
 

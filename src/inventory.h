@@ -131,7 +131,7 @@ public:
 		if(m_content >= USEFUL_CONTENT_COUNT)
 			return NULL;
 			
-		return g_irrlicht->getTexture(g_content_inventory_textures[m_content]);
+		return g_irrlicht->getTexture(g_content_inventory_texture_paths[m_content]);
 	}
 #endif
 	std::string getText()
@@ -258,7 +258,7 @@ public:
 	{
 		std::string basename;
 		if(m_subname == "Stick")
-			basename = "../data/stick.png";
+			basename = porting::getDataPath("stick.png").c_str();
 		// Default to cloud texture
 		else
 			basename = tile_texture_path_get(TILE_CLOUD);
@@ -333,11 +333,11 @@ public:
 	{
 		std::string basename;
 		if(m_toolname == "WPick")
-			basename = "../data/tool_wpick.png";
+			basename = porting::getDataPath("tool_wpick.png").c_str();
 		else if(m_toolname == "STPick")
-			basename = "../data/tool_stpick.png";
+			basename = porting::getDataPath("tool_stpick.png").c_str();
 		else if(m_toolname == "MesePick")
-			basename = "../data/tool_mesepick.png";
+			basename = porting::getDataPath("tool_mesepick.png").c_str();
 		// Default to cloud texture
 		else
 			basename = tile_texture_path_get(TILE_CLOUD);

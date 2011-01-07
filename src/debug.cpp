@@ -21,7 +21,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "debug.h"
 #include <stdio.h>
 #include <stdlib.h>
-#include "porting.h"
 
 /*
 	Debug output
@@ -73,8 +72,6 @@ void assert_fail(const char *assertion, const char *file,
 
 	if(g_debugstreams[1])
 		fclose(g_debugstreams[1]);
-
-	//sleep_ms(3000);
 
 	abort();
 }

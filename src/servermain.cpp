@@ -123,6 +123,8 @@ int main(int argc, char *argv[])
 
 	DSTACK(__FUNCTION_NAME);
 
+	porting.initializePaths();
+
 	initializeMaterialProperties();
 
 	BEGIN_DEBUG_EXCEPTION_HANDLER
@@ -222,15 +224,12 @@ int main(int argc, char *argv[])
 	}
 	else
 	{
-		const char *filenames[2] =
-		{
-			"../minetest.conf",
-			"../../minetest.conf"
-		};
+		core::array<std::string> filenames;
+		filenames.push_back(porting::path_userdata + "/minetest.conf");
 
-		for(u32 i=0; i<2; i++)
+		for(u32 i=0; i<filenames.size(); i++)
 		{
-			bool r = g_settings.readConfigFile(filenames[i]);
+			bool r = g_settings.readConfigFile(filenames[i].c_str());
 			if(r)
 			{
 				configpath = filenames[i];
@@ -306,7 +305,7 @@ int main(int argc, char *argv[])
 	std::cout<<std::endl;
 	
 	// Figure out path to map
-	std::string map_dir = "../map";
+	std::string map_dir = porting::path_userdata+"/map";
 	if(cmd_args.exists("map-dir"))
 		map_dir = cmd_args.get("map-dir");
 	

@@ -471,7 +471,7 @@ private:
 	float m_time_counter;
 	float m_time_of_day_send_timer;
 	
-	MutexedVariable<float> m_uptime;
+	MutexedVariable<double> m_uptime;
 
 	enum PeerChangeType
 	{

@@ -1,7 +1,7 @@
 # Makefile for Irrlicht Examples
 # It's usually sufficient to change just the target name and source file list
 # and be sure that CXX is set to a valid compiler
-SOURCE_FILES = guiMessageMenu.cpp materials.cpp guiTextInputMenu.cpp guiInventoryMenu.cpp irrlichtwrapper.cpp guiPauseMenu.cpp defaultsettings.cpp mapnode.cpp tile.cpp voxel.cpp mapblockobject.cpp inventory.cpp debug.cpp serialization.cpp light.cpp filesys.cpp connection.cpp environment.cpp client.cpp server.cpp socket.cpp mapblock.cpp mapsector.cpp heightmap.cpp map.cpp player.cpp utility.cpp main.cpp test.cpp
+SOURCE_FILES = porting.cpp guiMessageMenu.cpp materials.cpp guiTextInputMenu.cpp guiInventoryMenu.cpp irrlichtwrapper.cpp guiPauseMenu.cpp defaultsettings.cpp mapnode.cpp tile.cpp voxel.cpp mapblockobject.cpp inventory.cpp debug.cpp serialization.cpp light.cpp filesys.cpp connection.cpp environment.cpp client.cpp server.cpp socket.cpp mapblock.cpp mapsector.cpp heightmap.cpp map.cpp player.cpp utility.cpp main.cpp test.cpp
 
 DEBUG_TARGET = debugtest
 DEBUG_SOURCES = $(addprefix src/, $(SOURCE_FILES))
@@ -22,10 +22,6 @@ SERVER_OBJECTS = $(addprefix $(SERVER_BUILD_DIR)/, $(SERVER_SOURCE_FILES:.cpp=.o
 IRRLICHTPATH = ../irrlicht/irrlicht-1.7.1
 JTHREADPATH = ../jthread/jthread-1.2.1
 
-#CXXFLAGS = -O2 -ffast-math -Wall -fomit-frame-pointer -pipe
-#CXXFLAGS = -O2 -ffast-math -Wall -g -pipe
-#CXXFLAGS = -O1 -ffast-math -Wall -g
-CXXFLAGS = -Wall -g -O1
 
 all: fast
 
@@ -33,13 +29,17 @@ ifeq ($(HOSTTYPE), x86_64)
 LIBSELECT=64
 endif
 
-debug fast: LDFLAGS = -L/usr/X11R6/lib$(LIBSELECT) -L$(IRRLICHTPATH)/lib/Linux -L$(JTHREADPATH)/src/.libs -lIrrlicht -lGL -lXxf86vm -lXext -lX11 -ljthread -lz
-debug: CPPFLAGS = -I$(IRRLICHTPATH)/include -I/usr/X11R6/include -I$(JTHREADPATH)/src -DDEBUG
+debug: CXXFLAGS = -Wall -g -O1
+debug: CPPFLAGS = -I$(IRRLICHTPATH)/include -I/usr/X11R6/include -I$(JTHREADPATH)/src -DDEBUG -DRUN_IN_PLACE
+debug: LDFLAGS = -L/usr/X11R6/lib$(LIBSELECT) -L$(IRRLICHTPATH)/lib/Linux -L$(JTHREADPATH)/src/.libs -lIrrlicht -lGL -lXxf86vm -lXext -lX11 -ljthread -lz
+
+fast: CXXFLAGS = -O3 -ffast-math -Wall -fomit-frame-pointer -pipe -funroll-loops -mtune=i686
 fast: CPPFLAGS = -I$(IRRLICHTPATH)/include -I/usr/X11R6/include -I$(JTHREADPATH)/src -DUNITTEST_DISABLE
-fast server: CXXFLAGS = -O3 -ffast-math -Wall -fomit-frame-pointer -pipe -funroll-loops -mtune=i686
-server: LDFLAGS = -L$(JTHREADPATH)/src/.libs -ljthread -lz -lpthread
+fast: LDFLAGS = -L/usr/X11R6/lib$(LIBSELECT) -L$(IRRLICHTPATH)/lib/Linux -L$(JTHREADPATH)/src/.libs -lIrrlicht -lGL -lXxf86vm -lXext -lX11 -ljthread -lz
+
+server: CXXFLAGS = -O3 -ffast-math -Wall -fomit-frame-pointer -pipe -funroll-loops -mtune=i686
 server: CPPFLAGS = -I$(IRRLICHTPATH)/include -I/usr/X11R6/include -I$(JTHREADPATH)/src -DSERVER -DUNITTEST_DISABLE
-debug fast clean_debug: SYSTEM=Linux
+server: LDFLAGS = -L$(JTHREADPATH)/src/.libs -ljthread -lz -lpthread
 
 DEBUG_DESTPATH = bin/$(DEBUG_TARGET)
 FAST_DESTPATH = bin/$(FAST_TARGET)

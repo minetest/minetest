@@ -177,6 +177,8 @@ TODO: When server sees that client is removing an inexistent block or
 
 TODO: When player dies, throw items on map
 
+TODO: Use porting::path_userdata for configuration file
+
 TODO: Optimize day/night mesh updating somehow
       - create copies of all textures for all lighting values and only
 	    change texture for material?
@@ -187,12 +189,11 @@ TODO: Optimize day/night mesh updating somehow
 TODO: Map generator version 2
 	- Create surface areas based on central points; a given point's
 	  area type is given by the nearest central point
+	  - Separate points for heightmap, caves, plants and minerals?
+	  - Flat land, mountains, forest, jungle
     - Cliffs, arcs
 
-TODO: A Constant for the "../data/" path (differs on Mac and on proper
-      linux installations)
-
-TODO: Add defined(__APPLE__) to filesys.cpp
+TODO: Add gui option to remove map
 
 Doing now:
 ======================================================================
@@ -257,6 +258,7 @@ Doing now:
 #include "guiTextInputMenu.h"
 #include "materials.h"
 #include "guiMessageMenu.h"
+#include "filesys.h"
 
 IrrlichtWrapper *g_irrlicht;
 
@@ -1099,7 +1101,11 @@ int main(int argc, char *argv[])
 	debug_stacks_init();
 
 	DSTACK(__FUNCTION_NAME);
-	
+
+	porting::initializePaths();
+	// Create user data directory
+	fs::CreateDir(porting::path_userdata);
+
 	initializeMaterialProperties();
 
 	BEGIN_DEBUG_EXCEPTION_HANDLER
@@ -1123,6 +1129,7 @@ int main(int argc, char *argv[])
 	allowed_options.insert("random-input", ValueSpec(VALUETYPE_FLAG));
 	allowed_options.insert("disable-unittests", ValueSpec(VALUETYPE_FLAG));
 	allowed_options.insert("enable-unittests", ValueSpec(VALUETYPE_FLAG));
+	allowed_options.insert("map-dir", ValueSpec(VALUETYPE_STRING));
 
 	Settings cmd_args;
 	
@@ -1202,15 +1209,12 @@ int main(int argc, char *argv[])
 	}
 	else
 	{
-		const char *filenames[2] =
-		{
-			"../minetest.conf",
-			"../../minetest.conf"
-		};
+		core::array<std::string> filenames;
+		filenames.push_back(porting::path_userdata + "/minetest.conf");
 
-		for(u32 i=0; i<2; i++)
+		for(u32 i=0; i<filenames.size(); i++)
 		{
-			bool r = g_settings.readConfigFile(filenames[i]);
+			bool r = g_settings.readConfigFile(filenames[i].c_str());
 			if(r)
 			{
 				configpath = filenames[i];
@@ -1274,6 +1278,11 @@ int main(int argc, char *argv[])
 		std::cout<<"-> "<<port<<std::endl;
 	}
 	
+	//Map directory
+	std::string map_dir = porting::path_userdata+"/map";
+	if(cmd_args.exists("map-dir"))
+		map_dir = cmd_args.get("map-dir");
+	
 	if(cmd_args.getFlag("server"))
 	{
 		DSTACK("Dedicated server branch");
@@ -1284,7 +1293,7 @@ int main(int argc, char *argv[])
 		std::cout<<"========================"<<std::endl;
 		std::cout<<std::endl;
 
-		Server server("../map", hm_params, map_params);
+		Server server(map_dir, hm_params, map_params);
 		server.start(port);
 	
 		for(;;)
@@ -1422,7 +1431,7 @@ int main(int argc, char *argv[])
 	
 	guienv = device->getGUIEnvironment();
 	gui::IGUISkin* skin = guienv->getSkin();
-	gui::IGUIFont* font = guienv->getFont("../data/fontlucida.png");
+	gui::IGUIFont* font = guienv->getFont(porting::getDataPath("fontlucida.png").c_str());
 	if(font)
 		skin->setFont(font);
 	
@@ -1453,6 +1462,8 @@ int main(int argc, char *argv[])
 		Preload some textures
 	*/
 
+	init_content_inventory_texture_paths();
+	init_tile_texture_paths();
 	tile_materials_preload(g_irrlicht);
 
 	/*
@@ -1468,7 +1479,7 @@ int main(int argc, char *argv[])
 	*/
 	SharedPtr<Server> server;
 	if(hosting){
-		server = new Server("../map", hm_params, map_params);
+		server = new Server(map_dir, hm_params, map_params);
 		server->start(port);
 	}
 	
@@ -1514,12 +1525,12 @@ int main(int argc, char *argv[])
 	*/
 	/*scene::ISceneNode* skybox;
 	skybox = smgr->addSkyBoxSceneNode(
-		driver->getTexture("../data/skybox2.png"),
-		driver->getTexture("../data/skybox3.png"),
-		driver->getTexture("../data/skybox1.png"),
-		driver->getTexture("../data/skybox1.png"),
-		driver->getTexture("../data/skybox1.png"),
-		driver->getTexture("../data/skybox1.png"));*/
+		driver->getTexture(porting::getDataPath("skybox2.png").c_str()),
+		driver->getTexture(porting::getDataPath("skybox3.png").c_str()),
+		driver->getTexture(porting::getDataPath("skybox1.png").c_str()),
+		driver->getTexture(porting::getDataPath("skybox1.png").c_str()),
+		driver->getTexture(porting::getDataPath("skybox1.png").c_str()),
+		driver->getTexture(porting::getDataPath("skybox1.png").c_str()));*/
 	
 	/*
 		Create the camera node

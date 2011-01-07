@@ -84,7 +84,9 @@ enum Content
 };
 
 extern u16 g_content_tiles[USEFUL_CONTENT_COUNT][6];
-extern const char * g_content_inventory_textures[USEFUL_CONTENT_COUNT];
+extern const char * g_content_inventory_texture_paths[USEFUL_CONTENT_COUNT];
+// Initializes g_content_inventory_texture_paths
+void init_content_inventory_texture_paths();
 
 /*
 	If true, the material allows light propagation and brightness is stored

@@ -20,6 +20,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "guiPauseMenu.h"
 #include "debug.h"
 #include "serialization.h"
+#include "porting.h"
 
 GUIPauseMenu::GUIPauseMenu(gui::IGUIEnvironment* env,
 		gui::IGUIElement* parent, s32 id,
@@ -127,11 +128,11 @@ void GUIPauseMenu::regenerateGui(v2u32 screensize)
 				L"by Perttu Ahola\n"
 				L"celeron55@gmail.com\n\n"
 				L"SER_FMT_VER_HIGHEST=%i\n"
-				L"max_texture_size=\n(%i,%i)\n"
+				L"userdata path = \n"
+				SWPRINTF_CHARSTRING
 				,
 				(int)SER_FMT_VER_HIGHEST,
-				max_texture_size.X,
-				max_texture_size.Y
+				porting::path_userdata.c_str()
 		);
 	
 		Environment->addStaticText(text, rect, false, true, this, 259);

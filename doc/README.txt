@@ -29,7 +29,6 @@ Configuration file:
 	--config <path-to-file>
 - If not given as a parameter, these are checked, in order:
 	../minetest.conf
-	../../minetest.conf
 
 Command-line options:
 - Use --help

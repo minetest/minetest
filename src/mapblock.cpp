@@ -757,17 +757,17 @@ void MapBlock::updateMesh(u32 daynight_ratio)
 					= video::EMT_TRANSPARENT_ALPHA_CHANNEL_REF;
 			if(dir == v3s16(0,-1,0))
 				buf->getMaterial().setTexture(0,
-						g_irrlicht->getTexture("../data/torch_on_floor.png"));
+						g_irrlicht->getTexture(porting::getDataPath("torch_on_floor.png").c_str()));
 			else if(dir == v3s16(0,1,0))
 				buf->getMaterial().setTexture(0,
-						g_irrlicht->getTexture("../data/torch_on_ceiling.png"));
+						g_irrlicht->getTexture(porting::getDataPath("torch_on_ceiling.png").c_str()));
 			// For backwards compatibility
 			else if(dir == v3s16(0,0,0))
 				buf->getMaterial().setTexture(0,
-						g_irrlicht->getTexture("../data/torch_on_floor.png"));
+						g_irrlicht->getTexture(porting::getDataPath("torch_on_floor.png").c_str()));
 			else
 				buf->getMaterial().setTexture(0, 
-						g_irrlicht->getTexture("../data/torch.png"));
+						g_irrlicht->getTexture(porting::getDataPath("torch.png").c_str()));
 
 			// Add to mesh
 			mesh_new->addMeshBuffer(buf);

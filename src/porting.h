@@ -24,8 +24,11 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #ifndef PORTING_HEADER
 #define PORTING_HEADER
 
+#include <string>
 // Included for u64 and such
 #include "common_irrlicht.h"
+#include "debug.h"
+#include "constants.h"
 
 #ifdef _WIN32
 	#define SWPRINTF_CHARSTRING L"%S"
@@ -43,6 +46,33 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 namespace porting
 {
+
+/*
+	Path of static data directory.
+*/
+extern std::string path_data;
+
+/*
+	Directory for storing user data. Examples:
+	Windows: "C:\Documents and Settings\user\Application Data\<APPNAME>"
+	Linux: "~/.<APPNAME>"
+	Mac: "~/Library/Application Support/<APPNAME>"
+*/
+extern std::string path_userdata;
+
+/*
+	Get full path of stuff in data directory.
+	Example: "stone.png" -> "../data/stone.png"
+*/
+inline std::string getDataPath(const char *subpath)
+{
+	return path_data + "/" + subpath;
+}
+
+/*
+	Initialize path_data and path_userdata.
+*/
+void initializePaths();
 
 /*
 	Resolution is 10-20ms.
@@ -67,5 +97,5 @@ namespace porting
 
 } // namespace porting
 
-#endif
+#endif // PORTING_HEADER
 

@@ -95,12 +95,11 @@ struct TileSpec
 	} param;
 };
 
-/*extern const char * g_tile_texture_paths[TILES_COUNT];
-extern video::SMaterial g_tile_materials[TILES_COUNT];*/
-
 /*
 	Functions
 */
+
+void init_tile_texture_paths();
 
 const char * tile_texture_path_get(u32 i);
 

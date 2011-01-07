@@ -18,26 +18,49 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 */
 
 #include "tile.h"
+#include "porting.h"
+// For IrrlichtWrapper
 #include "main.h"
+#include <string>
 
 // A mapping from tiles to paths of textures
-const char * g_tile_texture_paths[TILES_COUNT] =
+
+const char * g_tile_texture_filenames[TILES_COUNT] =
 {
 	NULL,
-	"../data/stone.png",
-	"../data/water.png",
-	"../data/grass.png",
-	"../data/tree.png",
-	"../data/leaves.png",
-	"../data/grass_footsteps.png",
-	"../data/mese.png",
-	"../data/mud.png",
-	"../data/tree_top.png",
-	"../data/mud_with_grass.png",
-	"../data/cloud.png",
-	"../data/coalstone.png",
-	"../data/wood.png",
+	"stone.png",
+	"water.png",
+	"grass.png",
+	"tree.png",
+	"leaves.png",
+	"grass_footsteps.png",
+	"mese.png",
+	"mud.png",
+	"tree_top.png",
+	"mud_with_grass.png",
+	"cloud.png",
+	"coalstone.png",
+	"wood.png",
 };
+
+std::string g_tile_texture_path_strings[TILES_COUNT];
+const char * g_tile_texture_paths[TILES_COUNT] = {0};
+
+void init_tile_texture_paths()
+{
+	for(s32 i=0; i<TILES_COUNT; i++)
+	{
+		const char *filename = g_tile_texture_filenames[i];
+
+		if(filename != NULL)
+		{
+			g_tile_texture_path_strings[i] =
+					porting::getDataPath(filename);
+			g_tile_texture_paths[i] =
+					g_tile_texture_path_strings[i].c_str();
+		}
+	}
+}
 
 const char * tile_texture_path_get(u32 i)
 {
@@ -54,7 +77,7 @@ void tile_materials_preload(IrrlichtWrapper *irrlicht)
 {
 	for(s32 i=0; i<TILES_COUNT; i++)
 	{
-		const char *path = g_tile_texture_paths[i];
+		const char *path = tile_texture_path_get(i);
 
 		video::ITexture *t = NULL;
 

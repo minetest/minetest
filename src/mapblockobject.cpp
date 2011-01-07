@@ -282,7 +282,7 @@ void RatObject::addToScene(scene::ISceneManager *smgr)
 	buf->getMaterial().setFlag(video::EMF_LIGHTING, false);
 	buf->getMaterial().setFlag(video::EMF_BACK_FACE_CULLING, false);
 	buf->getMaterial().setTexture
-			(0, driver->getTexture("../data/rat.png"));
+			(0, driver->getTexture(porting::getDataPath("rat.png").c_str()));
 	buf->getMaterial().setFlag(video::EMF_BILINEAR_FILTER, false);
 	buf->getMaterial().setFlag(video::EMF_FOG_ENABLE, true);
 	buf->getMaterial().MaterialType = video::EMT_TRANSPARENT_ALPHA_CHANNEL;
@@ -360,7 +360,7 @@ video::ITexture * ItemObject::getItemImage()
 	if(item)
 		texture = item->getImage();
 	/*else
-		texture = g_irrlicht->getTexture("../data/cloud.png");*/
+		texture = g_irrlicht->getTexture(porting::getDataPath("cloud.png").c_str());*/
 	if(item)
 		delete item;
 	return texture;
@@ -414,7 +414,7 @@ void PlayerObject::addToScene(scene::ISceneManager *smgr)
 	// Set material
 	buf->getMaterial().setFlag(video::EMF_LIGHTING, false);
 	//buf->getMaterial().setFlag(video::EMF_BACK_FACE_CULLING, false);
-	buf->getMaterial().setTexture(0, driver->getTexture("../data/player.png"));
+	buf->getMaterial().setTexture(0, driver->getTexture(porting::getDataPath("player.png").c_str()));
 	buf->getMaterial().setFlag(video::EMF_BILINEAR_FILTER, false);
 	buf->getMaterial().setFlag(video::EMF_FOG_ENABLE, true);
 	//buf->getMaterial().MaterialType = video::EMT_TRANSPARENT_ALPHA_CHANNEL;
@@ -438,7 +438,7 @@ void PlayerObject::addToScene(scene::ISceneManager *smgr)
 	// Set material
 	buf->getMaterial().setFlag(video::EMF_LIGHTING, false);
 	//buf->getMaterial().setFlag(video::EMF_BACK_FACE_CULLING, false);
-	buf->getMaterial().setTexture(0, driver->getTexture("../data/player_back.png"));
+	buf->getMaterial().setTexture(0, driver->getTexture(porting::getDataPath("player_back.png").c_str()));
 	buf->getMaterial().setFlag(video::EMF_BILINEAR_FILTER, false);
 	buf->getMaterial().setFlag(video::EMF_FOG_ENABLE, true);
 	buf->getMaterial().MaterialType = video::EMT_TRANSPARENT_ALPHA_CHANNEL_REF;

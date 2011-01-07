@@ -124,11 +124,11 @@ video::ITexture * CrackTextureMod::make(video::ITexture *original,
 	video::IImage *baseimage = driver->createImage(original, pos_base, dim);
 	assert(baseimage);
 
-	video::IImage *crackimage = driver->createImageFromFile("../data/crack.png");
+	video::IImage *crackimage = driver->createImageFromFile(porting::getDataPath("crack.png").c_str());
 	assert(crackimage);
 	
 #if 0
-	video::ITexture *other = driver->getTexture("../data/crack.png");
+	video::ITexture *other = driver->getTexture(porting::getDataPath("crack.png").c_str());
 	
 	dstream<<__FUNCTION_NAME<<": crack texture size is "
 			<<other->getSize().Width<<"x"
