@@ -23,7 +23,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 namespace fs
 {
 
-#ifdef _WIN32
+#ifdef _WIN32 // WINDOWS
 
 #define _WIN32_WINNT 0x0501
 #include <Windows.h>
@@ -130,9 +130,7 @@ bool PathExists(std::string path)
 	return (GetFileAttributes(path.c_str()) != INVALID_FILE_ATTRIBUTES);
 }
 
-#else
-
-#ifdef linux
+#else // POSIX
 
 #include <sys/types.h>
 #include <dirent.h>
@@ -186,39 +184,7 @@ bool PathExists(std::string path)
 	return (stat(path.c_str(),&st) == 0);
 }
 
-#else
-
-#include "boost/filesystem/operations.hpp"
-namespace bfsys = boost::filesystem;
-
-std::vector<DirListNode> GetDirListing(std::string pathstring)
-{
-	std::vector<DirListNode> listing;
-
-	bfsys::path path(pathstring);
-
-	if( !exists( path ) ) return listing;
-
-	bfsys::directory_iterator end_itr; // default construction yields past-the-end
-	for( bfsys::directory_iterator itr( path ); itr != end_itr; ++itr ){
-		DirListNode node;
-		node.name = itr->leaf();
-		node.dir = is_directory(*itr);
-		listing.push_back(node);
-	}
-
-	return listing;
-}
-
-bool CreateDir(std::string path)
-{
-	std::cout<<"CreateDir not implemented in boost"<<std::endl;
-	return false;
-}
-
 #endif
 
-#endif
-
-}
+} // namespace fs
 
