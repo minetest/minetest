@@ -1804,7 +1804,7 @@ continue_generating:
 		/*
 			Don't always generate dungeon
 		*/
-		if(found_existing || rand() % 3 == 0)
+		if(found_existing || rand() % 2 == 0)
 		{
 			/*
 				Generate some tunnel starting from orp and ors

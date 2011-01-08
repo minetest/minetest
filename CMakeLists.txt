@@ -7,6 +7,10 @@ endif(${CMAKE_VERSION} STREQUAL "2.8.2")
 # This can be read from ${PROJECT_NAME} after project() is called
 project(minetest)
 
+set(VERSION_MAJOR 0)
+set(VERSION_MINOR 0)
+set(VERSION_PATCH 1)
+
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake/Modules/")
 include(${CMAKE_SOURCE_DIR}/cmake/Modules/misc.cmake)
 
@@ -52,6 +56,7 @@ install(FILES "minetest.conf.example" DESTINATION "${DOCDIR}")
 
 #
 # Subdirectories
+# Be sure to add all relevant definitions above this
 #
 
 add_subdirectory(src)
@@ -59,11 +64,10 @@ add_subdirectory(src)
 # CPack
 
 set(CPACK_PACKAGE_DESCRIPTION_SUMMARY "An InfiniMiner/Minecraft inspired game")
-set(CPACK_PACKAGE_VERSION_MAJOR 0)
-set(CPACK_PACKAGE_VERSION_MINOR 0)
-set(CPACK_PACKAGE_VERSION_PATCH 0)
+set(CPACK_PACKAGE_VERSION_MAJOR ${VERSION_MAJOR})
+set(CPACK_PACKAGE_VERSION_MINOR ${VERSION_MINOR})
+set(CPACK_PACKAGE_VERSION_PATCH ${VERSION_PATCH})
 set(CPACK_PACKAGE_VENDOR "celeron55")
-set(CPACK_PACKAGE_FILE_NAME "minetest-${BUILD_DATE}")
 
 if(WIN32)
 	# For some reason these aren't copied otherwise
@@ -74,6 +78,8 @@ if(WIN32)
 		install(FILES bin/minetestserver.exe DESTINATION bin)
 	endif()
 
+	set(CPACK_PACKAGE_FILE_NAME "${PROJECT_NAME}-${BUILD_DATE}-win32")
+
 	set(CPACK_GENERATOR ZIP)
 
 	# This might be needed for some installer
@@ -81,7 +87,7 @@ if(WIN32)
 elseif(APPLE)
 	# TODO
 	# see http://cmake.org/Wiki/CMake:CPackPackageGenerators#Bundle_.28OSX_only.29
-	set(CPACK_PACKAGE_FILE_NAME ${PROJECT_NAME})
+	set(CPACK_PACKAGE_FILE_NAME "${PROJECT_NAME}-${BUILD_DATE}-osx")
 	set(CPACK_PACKAGE_ICON "")
 	set(CPACK_BUNDLE_NAME ${PROJECT_NAME})
 	set(CPACK_BUNDLE_ICON "")
@@ -89,6 +95,7 @@ elseif(APPLE)
 	set(CPACK_BUNDLE_STARTUP_COMMAND "Contents/MacOS/minetest")
 	set(CPACK_GENERATOR BUNDLE)
 else()
+	set(CPACK_PACKAGE_FILE_NAME "${PROJECT_NAME}-${BUILD_DATE}-linux")
 	set(CPACK_GENERATOR TGZ)
 	set(CPACK_SOURCE_GENERATOR TGZ)
 endif()

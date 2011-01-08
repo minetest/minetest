@@ -135,7 +135,9 @@ endif(BUILD_SERVER)
 if( UNIX )
 	# Unix
 	
-	set(UNIX_FLAGS "-Wall")
+	# NOTE: -Wall gets applied automatically to debug builds
+
+	#set(UNIX_FLAGS "")
 
 	if(BUILD_CLIENT)
 		set_target_properties(minetest PROPERTIES COMPILE_FLAGS

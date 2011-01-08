@@ -76,7 +76,7 @@ public:
 			if(g_debugstreams[i] == stderr && m_disable_stderr)
 				continue;
 			if(g_debugstreams[i] != NULL)
-				fwrite(&c, 1, 1, g_debugstreams[i]);
+				(void)fwrite(&c, 1, 1, g_debugstreams[i]);
 			//TODO: Is this slow?
 			fflush(g_debugstreams[i]);
 		}
@@ -90,7 +90,7 @@ public:
 			if(g_debugstreams[i] == stderr && m_disable_stderr)
 				continue;
 			if(g_debugstreams[i] != NULL)
-				fwrite(s, 1, n, g_debugstreams[i]);
+				(void)fwrite(s, 1, n, g_debugstreams[i]);
 			//TODO: Is this slow?
 			fflush(g_debugstreams[i]);
 		}
