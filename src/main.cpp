@@ -1440,6 +1440,8 @@ int main(int argc, char *argv[])
 	gui::IGUIFont* font = guienv->getFont(porting::getDataPath("fontlucida.png").c_str());
 	if(font)
 		skin->setFont(font);
+	// If font was not found, this will get us one
+	font = skin->getFont();
 	
 	u32 text_height = font->getDimension(L"Hello, world!").Height;
 	dstream<<"text_height="<<text_height<<std::endl;
