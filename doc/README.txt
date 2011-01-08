@@ -51,7 +51,8 @@ Compiling on GNU/Linux:
 	* CMake
 	* Irrlicht
 	* Zlib
-	- You can probably find these in your distro's package manager
+- You can probably find these in your distro's package repository.
+- Building has been tested to work flawlessly on many systems.
 
 - Check possible options:
 	$ cd whatever/minetest
@@ -81,7 +82,7 @@ Compiling on GNU/Linux:
 	$ ./bin/minetest
 
 Compiling on Windows:
-- You need CMake, Irrlicht, zlib and Visual Studio or MinGW
+- You need CMake, Irrlicht, Zlib and Visual Studio or MinGW
 - NOTE: Probably it will not work easily and you will need to fix some stuff.
 - Steps:
 	- Start up the CMake GUI

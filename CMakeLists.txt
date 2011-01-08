@@ -10,25 +10,25 @@ project(minetest)
 set(VERSION_MAJOR 0)
 set(VERSION_MINOR 0)
 set(VERSION_PATCH 1)
+set(VERSION_STRING "${VERSION_MAJOR}.${VERSION_MINOR}.${VERSION_PATCH}")
 
-set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake/Modules/")
-include(${CMAKE_SOURCE_DIR}/cmake/Modules/misc.cmake)
-
-# Default to Release
-if(NOT CMAKE_BUILD_TYPE)
-	set(CMAKE_BUILD_TYPE Release CACHE STRING "Build type: Debug or Release" FORCE)
-endif()
-
-# Configuration
+# Configuration options
 
 set(RUN_IN_PLACE 0 CACHE BOOL "Run directly in source directory structure")
 
 set(BUILD_CLIENT 1 CACHE BOOL "Build client")
 set(BUILD_SERVER 1 CACHE BOOL "Build server")
 
-# Get date and time
-GETDATETIME(BUILD_DATE)
-MESSAGE(STATUS "BUILD_DATE = ${BUILD_DATE}")
+set(WARN_ALL 1 CACHE BOOL "Enable -Wall for Release build")
+
+if(NOT CMAKE_BUILD_TYPE)
+	# Default to release
+	set(CMAKE_BUILD_TYPE Release CACHE STRING "Build type: Debug or Release" FORCE)
+endif()
+
+# Included stuff
+set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake/Modules/")
+include(${CMAKE_SOURCE_DIR}/cmake/Modules/misc.cmake)
 
 # This is done here so that relative search paths are more reasnable
 find_package(Irrlicht)
@@ -78,7 +78,7 @@ if(WIN32)
 		install(FILES bin/minetestserver.exe DESTINATION bin)
 	endif()
 
-	set(CPACK_PACKAGE_FILE_NAME "${PROJECT_NAME}-${BUILD_DATE}-win32")
+	set(CPACK_PACKAGE_FILE_NAME "${PROJECT_NAME}-${VERSION_STRING}-win32")
 
 	set(CPACK_GENERATOR ZIP)
 
@@ -87,7 +87,9 @@ if(WIN32)
 elseif(APPLE)
 	# TODO
 	# see http://cmake.org/Wiki/CMake:CPackPackageGenerators#Bundle_.28OSX_only.29
-	set(CPACK_PACKAGE_FILE_NAME "${PROJECT_NAME}-${BUILD_DATE}-osx")
+	# this too http://0xfe.blogspot.com/2006/03/how-os-x-executes-applications.html
+	#
+	set(CPACK_PACKAGE_FILE_NAME "${PROJECT_NAME}-${VERSION_STRING}-osx")
 	set(CPACK_PACKAGE_ICON "")
 	set(CPACK_BUNDLE_NAME ${PROJECT_NAME})
 	set(CPACK_BUNDLE_ICON "")
@@ -95,7 +97,7 @@ elseif(APPLE)
 	set(CPACK_BUNDLE_STARTUP_COMMAND "Contents/MacOS/minetest")
 	set(CPACK_GENERATOR BUNDLE)
 else()
-	set(CPACK_PACKAGE_FILE_NAME "${PROJECT_NAME}-${BUILD_DATE}-linux")
+	set(CPACK_PACKAGE_FILE_NAME "${PROJECT_NAME}-${VERSION_STRING}-linux")
 	set(CPACK_GENERATOR TGZ)
 	set(CPACK_SOURCE_GENERATOR TGZ)
 endif()

@@ -21,6 +21,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "debug.h"
 #include "serialization.h"
 #include "porting.h"
+#include "config.h"
 
 GUIPauseMenu::GUIPauseMenu(gui::IGUIEnvironment* env,
 		gui::IGUIElement* parent, s32 id,
@@ -127,11 +128,11 @@ void GUIPauseMenu::regenerateGui(v2u32 screensize)
 				L"Minetest-c55\n"
 				L"by Perttu Ahola\n"
 				L"celeron55@gmail.com\n\n"
-				L"SER_FMT_VER_HIGHEST=%i\n"
-				L"userdata path = \n"
+				SWPRINTF_CHARSTRING L"\n"
+				L"userdata path = "
 				SWPRINTF_CHARSTRING
 				,
-				(int)SER_FMT_VER_HIGHEST,
+				BUILD_INFO,
 				porting::path_userdata.c_str()
 		);
 	

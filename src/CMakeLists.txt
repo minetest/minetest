@@ -131,40 +131,43 @@ if(BUILD_SERVER)
 	)
 endif(BUILD_SERVER)
 
+#
 # Set some optimizations and tweaks
-if( UNIX )
-	# Unix
+#
+
+if(MSVC)
+	# Visual Studio
+
+	# EHa enables SEH exceptions (used for catching segfaults)
+	set(CMAKE_CXX_FLAGS_RELEASE "/EHa /MD /O2 /Ob2 /Oi /Ot /Oy /GL /FD /MT /GS- /arch:SSE /fp:fast")
+	set(CMAKE_CXX_FLAGS_DEBUG "/MDd /Zi /Ob0 /Od /RTC1")
 	
-	# NOTE: -Wall gets applied automatically to debug builds
-
-	#set(UNIX_FLAGS "")
-
-	if(BUILD_CLIENT)
-		set_target_properties(minetest PROPERTIES COMPILE_FLAGS
-				"${UNIX_FLAGS}")
-	endif(BUILD_CLIENT)
-
 	if(BUILD_SERVER)
-		set_target_properties(minetestserver PROPERTIES COMPILE_FLAGS
-				"${UNIX_FLAGS} -DSERVER")
+		set_target_properties(minetestserver PROPERTIES
+				COMPILE_FLAGS "/D SERVER")
 	endif(BUILD_SERVER)
 
-else( UNIX )
-	# Windows
+else()
+	# Probably GCC
 	
-	if(BUILD_CLIENT)
-		# EHa enables SEH exceptions (used for catching segfaults)
-		set_target_properties(minetest PROPERTIES COMPILE_FLAGS
-				"/O2 /Ob2 /Oi /Ot /Oy /GL /EHa")
-	endif(BUILD_CLIENT)
+	if(WARN_ALL)
+		set(WARNING_FLAGS "-Wall")
+	else()
+		set(WARNING_FLAGS "")
+	endif()
 
+	set(CMAKE_CXX_FLAGS_RELEASE "-DNDEBUG ${WARNING_FLAGS} -O3 -ffast-math -Wall -fomit-frame-pointer -pipe -funroll-loops")
+	set(CMAKE_CXX_FLAGS_DEBUG "-g -O1 -Wall")
+	
 	if(BUILD_SERVER)
-		# EHa enables SEH exceptions (used for catching segfaults)
-		set_target_properties(minetestserver PROPERTIES COMPILE_FLAGS
-				"/O2 /Ob2 /Oi /Ot /Oy /GL /EHa /D SERVER")
+		set_target_properties(minetestserver PROPERTIES
+				COMPILE_FLAGS "-DSERVER")
 	endif(BUILD_SERVER)
 
-endif( UNIX )
+endif()
+
+#MESSAGE(STATUS "CMAKE_CXX_FLAGS_RELEASE=${CMAKE_CXX_FLAGS_RELEASE}")
+#MESSAGE(STATUS "CMAKE_CXX_FLAGS_DEBUG=${CMAKE_CXX_FLAGS_DEBUG}")
 
 #
 # Installation

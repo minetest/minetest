@@ -1,3 +1,9 @@
+#
+# Random macros
+#
+
+# Not used ATM
+
 MACRO (GETDATETIME RESULT)
     IF (WIN32)
 		EXECUTE_PROCESS(COMMAND "cmd" /C echo %date% %time% OUTPUT_VARIABLE ${RESULT})
@@ -11,6 +17,5 @@ MACRO (GETDATETIME RESULT)
     ENDIF (WIN32)
 
 	string(REGEX REPLACE " " "_" ${RESULT} "${${RESULT}}")
-
 ENDMACRO (GETDATETIME)
 
