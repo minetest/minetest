@@ -24,6 +24,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 */
 
 #include "porting.h"
+#include "config.h"
 
 namespace porting
 {
@@ -103,7 +104,9 @@ void initializePaths()
 	path_userdata = std::string("../");
 
 	#endif
-#else
+
+#else // RUN_IN_PLACE
+
 	/*
 		Use platform-specific paths otherwise
 	*/
@@ -127,6 +130,7 @@ void initializePaths()
 	
 	// Use "./bin/../data"
 	path_data = std::string(buf) + "/../data";
+	//path_data = std::string(buf) + "/../share/" + APPNAME;
 		
 	// Use "C:\Documents and Settings\user\Application Data\<APPNAME>"
 	len = GetEnvironmentVariable("APPDATA", buf, buflen);
@@ -137,20 +141,23 @@ void initializePaths()
 		Linux
 	*/
 	#elif defined(linux)
+		#include <unistd.h>
 	
-	path_userdata = std::string("~/.") + APPNAME;
-	path_data = std::string("/usr/share/") + APPNAME;
+	path_userdata = std::string(getenv("HOME")) + "/." + APPNAME;
+	path_data = std::string(INSTALL_PREFIX) + "/share/" + APPNAME;
 	
 	/*
 		OS X
 	*/
 	#elif defined(__APPLE__)
+		#include <unistd.h>
 
-	path_userdata = std::string("~/Library/Application Support/") + APPNAME;
+	path_userdata = std::string(getenv("HOME")) + "/Library/Application Support/" + APPNAME;
 	path_data = std::string("minetest-mac.app/Contents/Resources/data/");
 
 	#endif
-#endif
+
+#endif // RUN_IN_PLACE
 
 	dstream<<"path_data = "<<path_data<<std::endl;
 	dstream<<"path_userdata = "<<path_userdata<<std::endl;

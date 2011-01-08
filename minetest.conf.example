@@ -27,6 +27,8 @@
 
 # Server side stuff
 
+#map-dir = /home/palle/custom_map
+
 # - The possible generators are:
 # (Indeed you can do all of them with only "power" 8))
 # H=value:

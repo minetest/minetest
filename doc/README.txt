@@ -5,67 +5,81 @@ Copyright (c) 2010 Perttu Ahola <celeron55@gmail.com>
 
 An InfiniMiner/Minecraft inspired game.
 
+NOTE: This file is somewhat outdated most of the time.
+
 This is a development version:
 - Don't expect it to work as well as a finished game will.
 - Please report any bugs to me. That way I can fix them to the next release.
-	- debug.txt is very useful when the game crashes.
+	- debug.txt is useful when the game crashes.
 
 Public servers:
-	kray.dy.fi :30000 (friend's server - recommended)
-	celeron.55.lt :30000 (my own server, kind of unused)
-- If you want to run a server, I can list you on my website and in here.
+	kray.dy.fi :30000 (friend's server)
+	celeron.55.lt :30000 (my own server)
 
 Controls:
-- WASD+mouse: Move
-- Mouse L: Dig
-- Mouse R: Place block
-- Mouse Wheel: Change item
-- F: Change item
-- R: Toggle full view range
+- See the in-game pause menu
 
 Configuration file:
 - An optional configuration file can be used. See minetest.conf.example.
 - Path to file can be passed as a parameter to the executable:
 	--config <path-to-file>
-- If not given as a parameter, these are checked, in order:
-	../minetest.conf
+- Defaults:
+	- If built with -DRUN_IN_PLACE:
+		../minetest.conf
+		../../minetest.conf
+	- Otherwise something like this:
+		Windows: C:\Documents and Settings\user\Application Data\minetest\minetest.conf
+		Linux: ~/.minetest/minetest.conf
+		OS X: ~/Library/Application Support/minetest.conf
 
 Command-line options:
 - Use --help
 
-Running on Windows:
-- The working directory should be ./bin
-
-Running on GNU/Linux:
-- fasttest is a linux binary compiled on a recent Arch Linux installation.
-  It should run on most recent GNU/Linux distributions.
-- Browse to the game ./bin directory and type:
-    LD_LIBRARY_PATH=. ./fasttest
-- If it doesn't work, use wine. I aim at 100% compatibility with wine.
-
 Compiling on GNU/Linux:
+
 - You need:
-* Irrlicht:
-	http://downloads.sourceforge.net/irrlicht/irrlicht-1.7.2.zip
-* JThread:
-	http://research.edm.uhasselt.be/~jori/page/index.php?n=CS.Jthread
-* zlib:
-	- Get the -dev package from your package manager.
-- Irrlicht and JThread are very likely not to be found from your distro's
-  repository.
-- Compiling each of them should be fairly unproblematic, though.
+	* CMake
+	* Irrlicht
+	* Zlib
+	- You can probably find these in your distro's package manager
+
+- Check possible options:
+	$ cd whatever/minetest
+	$ cmake . -LH
+
+- A system-wide install:
+	$ cd whatever/minetest
+	$ cmake . -DCMAKE_INSTALL_PREFIX=/usr/local
+	$ make -j2
+	$ sudo make install
+
+	$ minetest
+
+- For running in the source directory:
+	$ cd whatever/minetest
+	$ cmake . -DRUN_IN_PLACE
+	$ make -j2
+
+	$ ./bin/minetest
 
 Compiling on Windows:
-- You need Irrlicht, JThread and zlib, see above
-- Be sure to
-  #define JMUTEX_CRITICALSECTION
-  in jmutex.h before compiling it. Otherwise mutexes will be very slow.
+- You need CMake, Irrlicht, zlib and Visual Studio or MinGW
+- NOTE: Probably it will not work easily and you will need to fix some stuff.
+- Steps:
+	- Start up the CMake GUI
+	- Select your compiler
+	- Hit "Configure"
+	- Set up some options and paths
+	- Hit "Configure"
+	- Hit "Generate"
+	- VC: Open the generated .sln and build it
+	- MinGW: Browse to the build directory and run 'make'
 
 License of Minetest-c55
 -----------------------
 
 Minetest-c55
-Copyright (C) 2010 celeron55, Perttu Ahola <celeron55@gmail.com>
+Copyright (C) 2010-2011 celeron55, Perttu Ahola <celeron55@gmail.com>
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by

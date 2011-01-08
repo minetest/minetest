@@ -212,7 +212,7 @@ Doing now:
 */
 #define FIELD_OF_VIEW_TEST 0
 
-#ifdef UNITTEST_DISABLE
+#ifdef NDEBUG
 	#ifdef _WIN32
 		#pragma message ("Disabling unit tests")
 	#else
@@ -259,6 +259,7 @@ Doing now:
 #include "materials.h"
 #include "guiMessageMenu.h"
 #include "filesys.h"
+#include "config.h"
 
 IrrlichtWrapper *g_irrlicht;
 
@@ -1110,6 +1111,12 @@ int main(int argc, char *argv[])
 
 	BEGIN_DEBUG_EXCEPTION_HANDLER
 
+	// Print startup message
+	dstream<<DTIME<<"minetest-c55"
+			" with SER_FMT_VER_HIGHEST="<<(int)SER_FMT_VER_HIGHEST
+			<<", "<<BUILD_INFO
+			<<std::endl;
+	
 	try
 	{
 	
@@ -1170,12 +1177,6 @@ int main(int argc, char *argv[])
 	// Initialize default settings
 	set_default_settings();
 	
-	// Print startup message
-	dstream<<DTIME<<"minetest-c55"
-			" with SER_FMT_VER_HIGHEST="<<(int)SER_FMT_VER_HIGHEST
-			<<", ENABLE_TESTS="<<ENABLE_TESTS
-			<<std::endl;
-	
 	// Set locale. This is for forcing '.' as the decimal point.
 	std::locale::global(std::locale("C"));
 	// This enables printing all characters in bitmap font
@@ -1211,6 +1212,9 @@ int main(int argc, char *argv[])
 	{
 		core::array<std::string> filenames;
 		filenames.push_back(porting::path_userdata + "/minetest.conf");
+#ifdef RUN_IN_PLACE
+		filenames.push_back(porting::path_userdata + "/../minetest.conf");
+#endif
 
 		for(u32 i=0; i<filenames.size(); i++)
 		{
@@ -1282,6 +1286,8 @@ int main(int argc, char *argv[])
 	std::string map_dir = porting::path_userdata+"/map";
 	if(cmd_args.exists("map-dir"))
 		map_dir = cmd_args.get("map-dir");
+	else if(g_settings.exists("map-dir"))
+		map_dir = g_settings.get("map-dir");
 	
 	if(cmd_args.getFlag("server"))
 	{

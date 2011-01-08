@@ -1,27 +1,53 @@
-MESSAGE(STATUS "IRRDIR = $ENV{IRRDIR}")
+#FindIrrlicht.cmake
+
+set(IRRLICHT_SOURCE_DIR "" CACHE PATH "Path to irrlicht source directory (optional)")
+
+if( UNIX )
+	# Unix
+else( UNIX )
+	# Windows
+endif( UNIX )
+
+# Find include directory
 
 FIND_PATH(IRRLICHT_INCLUDE_DIR NAMES irrlicht.h
-   PATHS
-   $ENV{IRRDIR}/include
-   /usr/local/include/irrlicht
-   /usr/include/irrlicht
+	PATHS
+	/usr/local/include/irrlicht
+	/usr/include/irrlicht
+	"${IRRLICHT_SOURCE_DIR}/include"
+)
+
+# Find library directory
+
+FIND_LIBRARY(IRRLICHT_LIBRARY NAMES libIrrlicht.a Irrlicht
+	PATHS
+	/usr/local/lib
+	/usr/lib
+	#${IRRLICHT_PLATFORM_DIR}
+	"${IRRLICHT_SOURCE_DIR}/lib/Win32-visualstudio"
+	"${IRRLICHT_SOURCE_DIR}/lib/Win32-gcc"
 )
 
 MESSAGE(STATUS "IRRLICHT_INCLUDE_DIR = ${IRRLICHT_INCLUDE_DIR}")
-
-FIND_LIBRARY(IRRLICHT_LIBRARY NAMES libIrrlicht.a Irrlicht
-   PATHS
-   $ENV{IRRDIR}/lib
-   $ENV{IRRDIR}/lib/Linux
-   $ENV{IRRDIR}/lib/MacOSX
-   $ENV{IRRDIR}/lib/Win32-gcc
-   $ENV{IRRDIR}/lib/Win32-visualstudio
-   $ENV{IRRDIR}/lib/Win64-visualstudio
-   /usr/local/lib
-   /usr/lib
-)
-
 MESSAGE(STATUS "IRRLICHT_LIBRARY = ${IRRLICHT_LIBRARY}")
+
+# On windows, find the dll for installation
+if(WIN32)
+	if(MSVC)
+		FIND_FILE(IRRLICHT_DLL NAMES Irrlicht.dll
+			PATHS
+			"${IRRLICHT_SOURCE_DIR}/bin/Win32-VisualStudio"
+			DOC "Path of the Irrlicht dll (for installation)"
+		)
+	else()
+		FIND_FILE(IRRLICHT_DLL NAMES Irrlicht.dll
+			PATHS
+			"${IRRLICHT_SOURCE_DIR}/bin/Win32-gcc"
+			DOC "Path of the Irrlicht dll (for installation)"
+		)
+	endif()
+	MESSAGE(STATUS "IRRLICHT_DLL = ${IRRLICHT_DLL}")
+endif(WIN32)
 
 # handle the QUIETLY and REQUIRED arguments and set IRRLICHT_FOUND to TRUE if
 # all listed variables are TRUE
@@ -34,5 +60,5 @@ ELSE(IRRLICHT_FOUND)
   SET(IRRLICHT_LIBRARIES)
 ENDIF(IRRLICHT_FOUND)
 
-MARK_AS_ADVANCED(IRRLICHT_LIBRARY IRRLICHT_INCLUDE_DIR) 
+MARK_AS_ADVANCED(IRRLICHT_LIBRARY IRRLICHT_INCLUDE_DIR IRRLICHT_DLL) 
 
