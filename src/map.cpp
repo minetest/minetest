@@ -1703,89 +1703,6 @@ MapBlock * ServerMap::emergeBlock(
 		block->unDummify();
 	}
 	
-#if 0
-	/*
-		Initialize dungeon making by creating a random table
-	*/
-	const s32 ued_max = 5;
-	const s32 ued_min = 3;
-	bool underground_emptiness[ued_max*ued_max*ued_max];
-	s32 ued = (myrand()%(ued_max-ued_min+1))+1;
-	//s32 ued = ued_max;
-	for(s32 i=0; i<ued*ued*ued; i++)
-	{
-		underground_emptiness[i] = ((myrand() % 5) == 0);
-	}
-
-	/*
-		This is a messy hack to sort the emptiness a bit
-	*/
-	// Iterator through a few times
-	for(s32 j=0; j<2; j++)
-	for(s32 y0=0; y0<ued; y0++)
-	for(s32 z0=0; z0<ued; z0++)
-	for(s32 x0=0; x0<ued; x0++)
-	{
-		v3s16 p0(x0,y0,z0);
-		bool &e0 = underground_emptiness[
-				ued*ued*(z0*ued/MAP_BLOCKSIZE)
-				+ued*(y0*ued/MAP_BLOCKSIZE)
-				+(x0*ued/MAP_BLOCKSIZE)];
-				
-		v3s16 dirs[6] = {
-			v3s16(0,0,1), // back
-			v3s16(1,0,0), // right
-			v3s16(0,0,-1), // front
-			v3s16(-1,0,0), // left
-			/*v3s16(0,1,0), // top
-			v3s16(0,-1,0), // bottom*/
-		};
-
-		for(s32 i=0; i<4; i++)
-		{
-			v3s16 p1 = p0 + dirs[i];
-			if(isInArea(p1, ued) == false)
-				continue;
-			bool &e1 = underground_emptiness[
-					ued*ued*(p1.Z*ued/MAP_BLOCKSIZE)
-					+ued*(p1.Y*ued/MAP_BLOCKSIZE)
-					+(p1.X*ued/MAP_BLOCKSIZE)];
-			if(e0 == e1)
-				continue;
-				
-			v3s16 dirs[6] = {
-				v3s16(0,1,0), // top
-				v3s16(0,-1,0), // bottom
-				/*v3s16(0,0,1), // back
-				v3s16(1,0,0), // right
-				v3s16(0,0,-1), // front
-				v3s16(-1,0,0), // left*/
-			};
-			for(s32 i=0; i<2; i++)
-			{
-				v3s16 p2 = p1 + dirs[i];
-				if(p2 == p0)
-					continue;
-				if(isInArea(p2, ued) == false)
-					continue;
-				bool &e2 = underground_emptiness[
-						ued*ued*(p2.Z*ued/MAP_BLOCKSIZE)
-						+ued*(p2.Y*ued/MAP_BLOCKSIZE)
-						+(p2.X*ued/MAP_BLOCKSIZE)];
-				if(e2 != e0)
-					continue;
-				
-				bool t = e1;
-				e1 = e2;
-				e2 = t;
-
-				break;
-			}
-			//break;
-		}
-	}
-#endif
-
 	/*
 		Create dungeon making table
 	*/
@@ -1807,6 +1724,8 @@ MapBlock * ServerMap::emergeBlock(
 			(float)(myrand()%ued)+0.5,
 			(float)(myrand()%ued)+0.5
 		);
+		
+		bool found_existing = false;
 
 		// Check z-
 		try
@@ -1819,6 +1738,7 @@ MapBlock * ServerMap::emergeBlock(
 				if(getNode(ap).d == CONTENT_AIR)
 				{
 					orp = v3f(x+1,y+1,0);
+					found_existing = true;
 					goto continue_generating;
 				}
 			}
@@ -1836,6 +1756,7 @@ MapBlock * ServerMap::emergeBlock(
 				if(getNode(ap).d == CONTENT_AIR)
 				{
 					orp = v3f(x+1,y+1,ued-1);
+					found_existing = true;
 					goto continue_generating;
 				}
 			}
@@ -1853,6 +1774,7 @@ MapBlock * ServerMap::emergeBlock(
 				if(getNode(ap).d == CONTENT_AIR)
 				{
 					orp = v3f(0,y+1,z+1);
+					found_existing = true;
 					goto continue_generating;
 				}
 			}
@@ -1870,6 +1792,7 @@ MapBlock * ServerMap::emergeBlock(
 				if(getNode(ap).d == CONTENT_AIR)
 				{
 					orp = v3f(ued-1,y+1,z+1);
+					found_existing = true;
 					goto continue_generating;
 				}
 			}
@@ -1879,48 +1802,54 @@ MapBlock * ServerMap::emergeBlock(
 continue_generating:
 		
 		/*
-			Generate some tunnel starting from orp and ors
+			Don't always generate dungeon
 		*/
-		for(u16 i=0; i<3; i++)
+		if(found_existing || rand() % 3 == 0)
 		{
-			v3f rp(
-				(float)(myrand()%ued)+0.5,
-				(float)(myrand()%ued)+0.5,
-				(float)(myrand()%ued)+0.5
-			);
-			s16 min_d = 0;
-			s16 max_d = 4;
-			s16 rs = (myrand()%(max_d-min_d+1))+min_d;
-			
-			v3f vec = rp - orp;
-
-			for(float f=0; f<1.0; f+=0.04)
+			/*
+				Generate some tunnel starting from orp and ors
+			*/
+			for(u16 i=0; i<3; i++)
 			{
-				v3f fp = orp + vec * f;
-				v3s16 cp(fp.X, fp.Y, fp.Z);
-				s16 d0 = -rs/2;
-				s16 d1 = d0 + rs - 1;
-				for(s16 z0=d0; z0<=d1; z0++)
+				v3f rp(
+					(float)(myrand()%ued)+0.5,
+					(float)(myrand()%ued)+0.5,
+					(float)(myrand()%ued)+0.5
+				);
+				s16 min_d = 0;
+				s16 max_d = 4;
+				s16 rs = (myrand()%(max_d-min_d+1))+min_d;
+				
+				v3f vec = rp - orp;
+
+				for(float f=0; f<1.0; f+=0.04)
 				{
-					s16 si = rs - abs(z0);
-					for(s16 x0=-si; x0<=si-1; x0++)
+					v3f fp = orp + vec * f;
+					v3s16 cp(fp.X, fp.Y, fp.Z);
+					s16 d0 = -rs/2;
+					s16 d1 = d0 + rs - 1;
+					for(s16 z0=d0; z0<=d1; z0++)
 					{
-						s16 si2 = rs - abs(x0);
-						for(s16 y0=-si2+1; y0<=si2-1; y0++)
+						s16 si = rs - abs(z0);
+						for(s16 x0=-si; x0<=si-1; x0++)
 						{
-							s16 z = cp.Z + z0;
-							s16 y = cp.Y + y0;
-							s16 x = cp.X + x0;
-							v3s16 p(x,y,z);
-							if(isInArea(p, ued) == false)
-								continue;
-							underground_emptiness[ued*ued*z + ued*y + x] = 1;
+							s16 si2 = rs - abs(x0);
+							for(s16 y0=-si2+1; y0<=si2-1; y0++)
+							{
+								s16 z = cp.Z + z0;
+								s16 y = cp.Y + y0;
+								s16 x = cp.X + x0;
+								v3s16 p(x,y,z);
+								if(isInArea(p, ued) == false)
+									continue;
+								underground_emptiness[ued*ued*z + ued*y + x] = 1;
+							}
 						}
 					}
 				}
-			}
 
-			orp = rp;
+				orp = rp;
+			}
 		}
 	}
 	
