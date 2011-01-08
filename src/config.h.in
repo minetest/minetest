@@ -1,0 +1,10 @@
+// Filled in by the build system
+
+#ifndef CONFIG_H
+#define CONFIG_H
+
+#define INSTALL_PREFIX "@CMAKE_INSTALL_PREFIX@"
+#define BUILD_INFO "BUILD_DATE=@BUILD_DATE@ RUN_IN_PLACE=@RUN_IN_PLACE@ INSTALL_PREFIX=@CMAKE_INSTALL_PREFIX@"
+
+#endif
+
