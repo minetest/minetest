@@ -161,17 +161,6 @@ endif( UNIX )
 # Installation
 #
 
-if(WIN32)
-	set(DATADIR "data")
-	set(BINDIR "bin")
-elseif(APPLE)
-	set(DATADIR "share/minetest")
-	set(BINDIR "bin")
-elseif(UNIX)
-	set(DATADIR "share/minetest")
-	set(BINDIR "bin")
-endif()
-
 if(BUILD_CLIENT)
 	install(TARGETS minetest DESTINATION ${BINDIR})
 

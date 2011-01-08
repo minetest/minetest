@@ -19,6 +19,16 @@ Public servers:
 Controls:
 - See the in-game pause menu
 
+Map directory:
+- Map is stored in a directory, which can be removed to generate a new map.
+- There is na command-line option for it: --map-dir
+- As default, it is located in:
+		../map
+- Otherwise something like this:
+	Windows: C:\Documents and Settings\user\Application Data\minetest\map
+	Linux: ~/.minetest/map
+	OS X: ~/Library/Application Support/map
+
 Configuration file:
 - An optional configuration file can be used. See minetest.conf.example.
 - Path to file can be passed as a parameter to the executable:
@@ -54,6 +64,14 @@ Compiling on GNU/Linux:
 	$ sudo make install
 
 	$ minetest
+
+- Install to home directory:
+	$ cd whatever/minetest
+	$ cmake . -DCMAKE_INSTALL_PREFIX=~/minetest_install
+	$ make -j2
+	$ make install
+
+	$ ~/minetest_install/bin/minetest
 
 - For running in the source directory:
 	$ cd whatever/minetest

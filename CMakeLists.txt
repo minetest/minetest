@@ -29,10 +29,32 @@ MESSAGE(STATUS "BUILD_DATE = ${BUILD_DATE}")
 # This is done here so that relative search paths are more reasnable
 find_package(Irrlicht)
 
-# This way the CMakeLists.txt file in src/ is processed
-add_subdirectory(src)
+#
+# Installation
+#
 
-install(FILES "doc/README.txt" DESTINATION "share/minetest/doc")
+if(WIN32)
+	set(DATADIR "data")
+	set(BINDIR "bin")
+	set(DOCDIR "doc")
+elseif(APPLE)
+	set(DATADIR "share/minetest")
+	set(BINDIR "bin")
+	set(DOCDIR "share/doc/minetest")
+elseif(UNIX)
+	set(DATADIR "share/minetest")
+	set(BINDIR "bin")
+	set(DOCDIR "share/doc/minetest")
+endif()
+
+install(FILES "doc/README.txt" DESTINATION "${DOCDIR}")
+install(FILES "minetest.conf.example" DESTINATION "${DOCDIR}")
+
+#
+# Subdirectories
+#
+
+add_subdirectory(src)
 
 # CPack
 
