@@ -12,9 +12,10 @@ if(UNIX)
 		find_package(OpenGL REQUIRED)
 		find_package(JPEG REQUIRED)
 		find_package(BZip2 REQUIRED)
+		find_package(PNG REQUIRED)
 	endif(BUILD_CLIENT)
 	find_package(ZLIB REQUIRED)
-	set(SERVER_PLATFORM_LIBS -lpthread)
+	set(PLATFORM_LIBS -lpthread)
 elseif(WIN32)
 	# Windows
 	# Surpress some warnings
@@ -98,6 +99,7 @@ include_directories(
 	${ZLIB_INCLUDE_DIR}
 	${CMAKE_BUILD_TYPE}
 	"${PROJECT_SOURCE_DIR}/jthread"
+	${PNG_INCLUDE_DIR}
 )
 
 set(EXECUTABLE_OUTPUT_PATH ../bin)
@@ -111,7 +113,10 @@ if(BUILD_CLIENT)
 		${OPENGL_LIBRARIES}
 		${JPEG_LIBRARIES}
 		${BZIP2_LIBRARIES}
+		${PNG_LIBRARIES}
+		${X11_LIBRARIES}
 		jthread
+		${PLATFORM_LIBS}
 	)
 endif(BUILD_CLIENT)
 if(BUILD_SERVER)
@@ -120,7 +125,7 @@ if(BUILD_SERVER)
 		minetestserver
 		${ZLIB_LIBRARIES}
 		jthread
-		${SERVER_PLATFORM_LIBS}
+		${PLATFORM_LIBS}
 	)
 endif(BUILD_SERVER)
 
