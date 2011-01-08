@@ -16,6 +16,7 @@ if(UNIX)
 	endif(BUILD_CLIENT)
 	find_package(ZLIB REQUIRED)
 	set(PLATFORM_LIBS -lpthread)
+	set(CLIENT_PLATFORM_LIBS -lXxf86vm)
 elseif(WIN32)
 	# Windows
 	# Surpress some warnings
@@ -117,6 +118,7 @@ if(BUILD_CLIENT)
 		${X11_LIBRARIES}
 		jthread
 		${PLATFORM_LIBS}
+		${CLIENT_PLATFORM_LIBS}
 	)
 endif(BUILD_CLIENT)
 if(BUILD_SERVER)
