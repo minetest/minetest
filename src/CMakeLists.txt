@@ -5,19 +5,7 @@ if(RUN_IN_PLACE)
 	add_definitions ( -DRUN_IN_PLACE )
 endif(RUN_IN_PLACE)
 
-if(UNIX)
-	# Unix
-	if(BUILD_CLIENT)
-		find_package(X11 REQUIRED)
-		find_package(OpenGL REQUIRED)
-		find_package(JPEG REQUIRED)
-		find_package(BZip2 REQUIRED)
-		find_package(PNG REQUIRED)
-	endif(BUILD_CLIENT)
-	find_package(ZLIB REQUIRED)
-	set(PLATFORM_LIBS -lpthread)
-	set(CLIENT_PLATFORM_LIBS -lXxf86vm)
-elseif(WIN32)
+if(WIN32)
 	# Windows
 	# Surpress some warnings
 	add_definitions ( /D "_CRT_SECURE_NO_DEPRECATE" /W1 )
@@ -28,6 +16,18 @@ elseif(WIN32)
 			CACHE PATH "Path to zlibwapi.lib")
 	set(ZLIB_DLL "${PROJECT_SOURCE_DIR}/../../zlib125dll/dll32/zlibwapi.dll"
 			CACHE PATH "Path to zlibwapi.dll (for installation)")
+else()
+	# Unix probably
+	if(BUILD_CLIENT)
+		find_package(X11 REQUIRED)
+		find_package(OpenGL REQUIRED)
+		find_package(JPEG REQUIRED)
+		find_package(BZip2 REQUIRED)
+		find_package(PNG REQUIRED)
+	endif(BUILD_CLIENT)
+	find_package(ZLIB REQUIRED)
+	set(PLATFORM_LIBS -lpthread)
+	set(CLIENT_PLATFORM_LIBS -lXxf86vm)
 endif()
 
 configure_file(
@@ -121,6 +121,7 @@ if(BUILD_CLIENT)
 		${CLIENT_PLATFORM_LIBS}
 	)
 endif(BUILD_CLIENT)
+
 if(BUILD_SERVER)
 	add_executable(minetestserver ${minetestserver_SRCS})
 	target_link_libraries(

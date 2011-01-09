@@ -14,7 +14,11 @@ set(VERSION_STRING "${VERSION_MAJOR}.${VERSION_MINOR}.${VERSION_PATCH}")
 
 # Configuration options
 
-set(RUN_IN_PLACE 0 CACHE BOOL "Run directly in source directory structure")
+if(WIN32)
+	set(RUN_IN_PLACE 1 CACHE BOOL "Run directly in source directory structure")
+else()
+	set(RUN_IN_PLACE 0 CACHE BOOL "Run directly in source directory structure")
+endif()
 
 set(BUILD_CLIENT 1 CACHE BOOL "Build client")
 set(BUILD_SERVER 1 CACHE BOOL "Build server")
@@ -68,6 +72,7 @@ set(CPACK_PACKAGE_VERSION_MAJOR ${VERSION_MAJOR})
 set(CPACK_PACKAGE_VERSION_MINOR ${VERSION_MINOR})
 set(CPACK_PACKAGE_VERSION_PATCH ${VERSION_PATCH})
 set(CPACK_PACKAGE_VENDOR "celeron55")
+set(CPACK_PACKAGE_CONTACT "Perttu Ahola <celeron55@gmail.com>")
 
 if(WIN32)
 	# For some reason these aren't copied otherwise
@@ -87,7 +92,6 @@ if(WIN32)
 elseif(APPLE)
 	# TODO
 	# see http://cmake.org/Wiki/CMake:CPackPackageGenerators#Bundle_.28OSX_only.29
-	# this too http://0xfe.blogspot.com/2006/03/how-os-x-executes-applications.html
 	#
 	set(CPACK_PACKAGE_FILE_NAME "${PROJECT_NAME}-${VERSION_STRING}-osx")
 	set(CPACK_PACKAGE_ICON "")
