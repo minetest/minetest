@@ -143,9 +143,17 @@ void initializePaths()
 	#elif defined(linux)
 		#include <unistd.h>
 	
-	path_userdata = std::string(getenv("HOME")) + "/." + APPNAME;
-	path_data = std::string(INSTALL_PREFIX) + "/share/" + APPNAME;
+	char buf[BUFSIZ];
+	// Get path to executable
+	readlink("/proc/self/exe", buf, BUFSIZ);
 	
+	pathRemoveFile(buf, '/');
+
+	path_data = std::string(buf) + "/../share/" + APPNAME;
+	//path_data = std::string(INSTALL_PREFIX) + "/share/" + APPNAME;
+	
+	path_userdata = std::string(getenv("HOME")) + "/." + APPNAME;
+
 	/*
 		OS X
 	*/
