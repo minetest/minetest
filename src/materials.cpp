@@ -13,9 +13,9 @@ void setStoneLikeDiggingProperties(u8 material, float toughness)
 			DiggingProperties(true, 15.0*toughness, 0));
 	
 	g_material_properties[material].setDiggingProperties("WPick",
-			DiggingProperties(true, 2.0*toughness, 65535./20.*toughness));
+			DiggingProperties(true, 1.5*toughness, 65535./20.*toughness));
 	g_material_properties[material].setDiggingProperties("STPick",
-			DiggingProperties(true, 1.0*toughness, 65535./50.*toughness));
+			DiggingProperties(true, 0.7*toughness, 65535./60.*toughness));
 
 	/*g_material_properties[material].setDiggingProperties("MesePick",
 			DiggingProperties(true, 0.0*toughness, 65535./20.*toughness));*/
@@ -63,7 +63,7 @@ void initializeMaterialProperties()
 	for(u16 i=0; i<MATERIAL_PROPERTIES_COUNT; i++)
 	{
 		g_material_properties[i].setDiggingProperties("MesePick",
-				DiggingProperties(true, 0.0, 65535./20.));
+				DiggingProperties(true, 0.0, 65535./1337));
 	}
 
 	g_material_properties_initialized = true;

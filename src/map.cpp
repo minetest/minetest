@@ -1482,8 +1482,10 @@ MapSector * ServerMap::emergeSector(v2s16 p2d)
 		sector->setHeightmap(p_in_sector, hm);
 
 		//TODO: Make these values configurable
+		
 		//hm->generateContinued(0.0, 0.0, corners);
-		hm->generateContinued(0.5, 0.2, corners);
+		hm->generateContinued(0.25, 0.2, corners);
+		//hm->generateContinued(0.5, 0.2, corners);
 		//hm->generateContinued(1.0, 0.2, corners);
 		//hm->generateContinued(2.0, 0.2, corners);
 
@@ -1712,6 +1714,7 @@ MapBlock * ServerMap::emergeBlock(
 	{
 		underground_emptiness[i] = 0;
 	}
+	
 	// Generate dungeons
 	{
 		/*
@@ -1863,6 +1866,10 @@ continue_generating:
 	// DEBUG
 	//sector->printHeightmaps();
 
+	// Set to true if has caves.
+	// Set when some non-air is changed to air when making caves.
+	bool has_caves = false;
+
 	for(s16 z0=0; z0<MAP_BLOCKSIZE; z0++)
 	for(s16 x0=0; x0<MAP_BLOCKSIZE; x0++)
 	{
@@ -1894,6 +1901,7 @@ continue_generating:
 		float max_slope = 1.20;
 		float min_slope_depth = 5.0;
 		float max_slope_depth = 0;
+
 		if(slope < min_slope)
 			surface_depth = min_slope_depth;
 		else if(slope > max_slope)
@@ -1935,100 +1943,84 @@ continue_generating:
 			// Else it's ground or dungeons (air)
 			else
 			{
-				// Create dungeons
-				if(underground_emptiness[
-						ued*ued*(z0*ued/MAP_BLOCKSIZE)
-						+ued*(y0*ued/MAP_BLOCKSIZE)
-						+(x0*ued/MAP_BLOCKSIZE)])
-				{
-					n.d = CONTENT_AIR;
-				}
-				else
-				{
-					// If it's surface_depth under ground, it's stone
-					if(real_y <= surface_y - surface_depth)
-					{
-						n.d = CONTENT_STONE;
-					}
-					else
-					{
-						// It is mud if it is under the first ground
-						// level or under water
-						if(real_y < WATER_LEVEL || real_y <= surface_y - 1)
-						{
-							n.d = CONTENT_MUD;
-						}
-						else
-						{
-							n.d = CONTENT_GRASS;
-						}
-
-						//n.d = CONTENT_MUD;
-						
-						/*// If under water level, it's mud
-						if(real_y < WATER_LEVEL)
-							n.d = CONTENT_MUD;
-						// Only the topmost node is grass
-						else if(real_y <= surface_y - 1)
-							n.d = CONTENT_MUD;
-						else
-							n.d = CONTENT_GRASS;*/
-					}
-				}
-			}
-#if 0
-			else if(real_y <= surface_y - surface_depth)
-			{
-				// Create dungeons
-				if(underground_emptiness[
-						ued*ued*(z0*ued/MAP_BLOCKSIZE)
-						+ued*(y0*ued/MAP_BLOCKSIZE)
-						+(x0*ued/MAP_BLOCKSIZE)])
-				{
-					n.d = CONTENT_AIR;
-				}
-				else
+				// If it's surface_depth under ground, it's stone
+				if(real_y <= surface_y - surface_depth)
 				{
 					n.d = CONTENT_STONE;
 				}
-			}
-			// If node is at or under heightmap y
-			else if(real_y <= surface_y)
-			{
-				// If under water level, it's mud
-				if(real_y < WATER_LEVEL)
-					n.d = CONTENT_MUD;
-				// Only the topmost node is grass
-				else if(real_y <= surface_y - 1)
-					n.d = CONTENT_MUD;
-				// Else it's the main material
 				else
-					n.d = material;
+				{
+					// It is mud if it is under the first ground
+					// level or under water
+					if(real_y < WATER_LEVEL || real_y <= surface_y - 1)
+					{
+						n.d = CONTENT_MUD;
+					}
+					else
+					{
+						n.d = CONTENT_GRASS;
+					}
+
+					//n.d = CONTENT_MUD;
+					
+					/*// If under water level, it's mud
+					if(real_y < WATER_LEVEL)
+						n.d = CONTENT_MUD;
+					// Only the topmost node is grass
+					else if(real_y <= surface_y - 1)
+						n.d = CONTENT_MUD;
+					else
+						n.d = CONTENT_GRASS;*/
+				}
+
+				// Create dungeons
+				if(underground_emptiness[
+						ued*ued*(z0*ued/MAP_BLOCKSIZE)
+						+ued*(y0*ued/MAP_BLOCKSIZE)
+						+(x0*ued/MAP_BLOCKSIZE)])
+				{
+					// Has now caves if previous content is air
+					if(n.d != CONTENT_AIR)
+					{
+						has_caves = true;
+					}
+
+					n.d = CONTENT_AIR;
+				}
 			}
-#endif
+
 			block->setNode(v3s16(x0,y0,z0), n);
 		}
 	}
 
 	/*
-		Calculate is_underground
+		Calculate completely_underground
 	*/
-	// Probably underground if the highest part of block is under lowest
-	// ground height
-	bool is_underground = (block_y+1) * MAP_BLOCKSIZE <= lowest_ground_y;
-	block->setIsUnderground(is_underground);
+	// Completely underground if the highest part of block is under lowest
+	// ground height.
+	// This has to be very sure; it's probably one too strict now but
+	// that's just better.
+	bool completely_underground =
+			block_y * MAP_BLOCKSIZE + MAP_BLOCKSIZE < lowest_ground_y;
+
+	// This isn't used anymore (?) but set it anyway
+	block->setIsUnderground(completely_underground);
+
+	bool some_part_underground = block_y * MAP_BLOCKSIZE <= highest_ground_y;
 
 	/*
-		Force lighting update if some part of block is underground
-		This is needed because of caves.
+		Force lighting update if some part of block is partly
+		underground and has caves.
 	*/
 	
-	bool some_part_underground = (block_y+0) * MAP_BLOCKSIZE < highest_ground_y;
-	if(some_part_underground)
-	//if(is_underground)
+	if(some_part_underground && !completely_underground && has_caves)
 	{
+		//dstream<<"Half-ground caves"<<std::endl;
 		lighting_invalidated_blocks[block->getPos()] = block;
 	}
+	
+	// DEBUG: Always update lighting
+	//lighting_invalidated_blocks[block->getPos()] = block;
 	
 	/*
 		Add some minerals
@@ -2041,9 +2033,9 @@ continue_generating:
 		/*
 			Add meseblocks
 		*/
-		for(s16 i=0; i<underground_level*1; i++)
+		for(s16 i=0; i< underground_level/4 + 1; i++)
 		{
-			if(myrand()%2 == 0)
+			if(myrand()%10 == 0)
 			{
 				v3s16 cp(
 					(myrand()%(MAP_BLOCKSIZE-2))+1,
@@ -2112,7 +2104,7 @@ continue_generating:
 	/*
 		Create a few rats in empty blocks underground
 	*/
-	if(is_underground)
+	if(completely_underground)
 	{
 		//for(u16 i=0; i<2; i++)
 		{
@@ -2157,8 +2149,34 @@ continue_generating:
 		v2s16 p2d(p.X,p.Z);
 		u8 d = i.getNode()->getValue();
 
-		//v3s16 p = p_sector - v3s16(0, block_y*MAP_BLOCKSIZE, 0);
+		// Ground level point (user for stuff that is on ground)
+		v3s16 gp = p;
+		bool ground_found = true;
 		
+		// Search real ground level
+		try{
+			for(;;)
+			{
+				MapNode n = sector->getNode(gp);
+
+				// If not air, go one up and continue to placing the tree
+				if(n.d != CONTENT_AIR)
+				{
+					gp += v3s16(0,1,0);
+					break;
+				}
+
+				// If air, go one down
+				gp += v3s16(0,-1,0);
+			}
+		}catch(InvalidPositionException &e)
+		{
+			// Ground not found.
+			ground_found = false;
+			// This is most close to ground
+			gp += v3s16(0,1,0);
+		}
+
 		try
 		{
 
@@ -2175,40 +2193,64 @@ continue_generating:
 		}
 		else if(d == SECTOR_OBJECT_TREE_1)
 		{
-			v3s16 p_min = p + v3s16(-1,0,-1);
-			v3s16 p_max = p + v3s16(1,4,1);
+			if(ground_found == false)
+				continue;
+
+			v3s16 p_min = gp + v3s16(-1,0,-1);
+			v3s16 p_max = gp + v3s16(1,5,1);
 			if(sector->isValidArea(p_min, p_max,
 					&changed_blocks_sector))
 			{
 				MapNode n;
 				n.d = CONTENT_TREE;
-				sector->setNode(p+v3s16(0,0,0), n);
-				sector->setNode(p+v3s16(0,1,0), n);
-				sector->setNode(p+v3s16(0,2,0), n);
-				sector->setNode(p+v3s16(0,3,0), n);
+				sector->setNode(gp+v3s16(0,0,0), n);
+				sector->setNode(gp+v3s16(0,1,0), n);
+				sector->setNode(gp+v3s16(0,2,0), n);
+				sector->setNode(gp+v3s16(0,3,0), n);
 
 				n.d = CONTENT_LEAVES;
 
-				sector->setNode(p+v3s16(0,4,0), n);
-				
-				sector->setNode(p+v3s16(-1,4,0), n);
-				sector->setNode(p+v3s16(1,4,0), n);
-				sector->setNode(p+v3s16(0,4,-1), n);
-				sector->setNode(p+v3s16(0,4,1), n);
-				sector->setNode(p+v3s16(1,4,1), n);
-				sector->setNode(p+v3s16(-1,4,1), n);
-				sector->setNode(p+v3s16(-1,4,-1), n);
-				sector->setNode(p+v3s16(1,4,-1), n);
+				if(rand()%4!=0) sector->setNode(gp+v3s16(0,5,0), n);
 
-				sector->setNode(p+v3s16(-1,3,0), n);
-				sector->setNode(p+v3s16(1,3,0), n);
-				sector->setNode(p+v3s16(0,3,-1), n);
-				sector->setNode(p+v3s16(0,3,1), n);
-				sector->setNode(p+v3s16(1,3,1), n);
-				sector->setNode(p+v3s16(-1,3,1), n);
-				sector->setNode(p+v3s16(-1,3,-1), n);
-				sector->setNode(p+v3s16(1,3,-1), n);
+				if(rand()%3!=0) sector->setNode(gp+v3s16(-1,5,0), n);
+				if(rand()%3!=0) sector->setNode(gp+v3s16(1,5,0), n);
+				if(rand()%3!=0) sector->setNode(gp+v3s16(0,5,-1), n);
+				if(rand()%3!=0) sector->setNode(gp+v3s16(0,5,1), n);
+				/*if(rand()%3!=0) sector->setNode(gp+v3s16(1,5,1), n);
+				if(rand()%3!=0) sector->setNode(gp+v3s16(-1,5,1), n);
+				if(rand()%3!=0) sector->setNode(gp+v3s16(-1,5,-1), n);
+				if(rand()%3!=0) sector->setNode(gp+v3s16(1,5,-1), n);*/
+
+				sector->setNode(gp+v3s16(0,4,0), n);
 				
+				sector->setNode(gp+v3s16(-1,4,0), n);
+				sector->setNode(gp+v3s16(1,4,0), n);
+				sector->setNode(gp+v3s16(0,4,-1), n);
+				sector->setNode(gp+v3s16(0,4,1), n);
+				sector->setNode(gp+v3s16(1,4,1), n);
+				sector->setNode(gp+v3s16(-1,4,1), n);
+				sector->setNode(gp+v3s16(-1,4,-1), n);
+				sector->setNode(gp+v3s16(1,4,-1), n);
+
+				sector->setNode(gp+v3s16(-1,3,0), n);
+				sector->setNode(gp+v3s16(1,3,0), n);
+				sector->setNode(gp+v3s16(0,3,-1), n);
+				sector->setNode(gp+v3s16(0,3,1), n);
+				sector->setNode(gp+v3s16(1,3,1), n);
+				sector->setNode(gp+v3s16(-1,3,1), n);
+				sector->setNode(gp+v3s16(-1,3,-1), n);
+				sector->setNode(gp+v3s16(1,3,-1), n);
+				
+				if(rand()%3!=0) sector->setNode(gp+v3s16(-1,2,0), n);
+				if(rand()%3!=0) sector->setNode(gp+v3s16(1,2,0), n);
+				if(rand()%3!=0) sector->setNode(gp+v3s16(0,2,-1), n);
+				if(rand()%3!=0) sector->setNode(gp+v3s16(0,2,1), n);
+				/*if(rand()%3!=0) sector->setNode(gp+v3s16(1,2,1), n);
+				if(rand()%3!=0) sector->setNode(gp+v3s16(-1,2,1), n);
+				if(rand()%3!=0) sector->setNode(gp+v3s16(-1,2,-1), n);
+				if(rand()%3!=0) sector->setNode(gp+v3s16(1,2,-1), n);*/
+				
+				// Objects are identified by wanted position
 				objects_to_remove.push_back(p);
 				
 				// Lighting has to be recalculated for this one.
@@ -2218,13 +2260,17 @@ continue_generating:
 		}
 		else if(d == SECTOR_OBJECT_BUSH_1)
 		{
-			if(sector->isValidArea(p + v3s16(0,0,0),
-					p + v3s16(0,0,0), &changed_blocks_sector))
+			if(ground_found == false)
+				continue;
+			
+			if(sector->isValidArea(gp + v3s16(0,0,0),
+					gp + v3s16(0,0,0), &changed_blocks_sector))
 			{
 				MapNode n;
 				n.d = CONTENT_LEAVES;
-				sector->setNode(p+v3s16(0,0,0), n);
+				sector->setNode(gp+v3s16(0,0,0), n);
 				
+				// Objects are identified by wanted position
 				objects_to_remove.push_back(p);
 			}
 		}

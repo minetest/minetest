@@ -88,7 +88,7 @@ void * EmergeThread::Thread()
 		
 		//derr_server<<"EmergeThread::Thread(): running"<<std::endl;
 
-		//TimeTaker timer("block emerge", g_device);
+		//TimeTaker timer("block emerge");
 		
 		/*
 			Try to emerge it from somewhere.
@@ -135,9 +135,14 @@ void * EmergeThread::Thread()
 		
 		{//envlock
 
+		//TimeTaker envlockwaittimer("block emerge envlock wait time");
+		
+		// 0-50ms
 		JMutexAutoLock envlock(m_server->m_env_mutex);
 
-		//TimeTaker timer("block emerge envlock", g_device);
+		//envlockwaittimer.stop();
+
+		//TimeTaker timer("block emerge (while env locked)");
 			
 		try{
 			bool only_from_disk = false;
@@ -209,8 +214,9 @@ void * EmergeThread::Thread()
 			}
 			
 			/*dstream<<"lighting "<<lighting_invalidated_blocks.size()
-					<<" blocks"<<std::endl;
-			TimeTaker timer("** updateLighting", g_device);*/
+					<<" blocks"<<std::endl;*/
+			
+			//TimeTaker timer("** updateLighting", g_device);
 			
 			// Update lighting without locking the environment mutex,
 			// add modified blocks to changed blocks
@@ -450,8 +456,8 @@ void RemoteClient::GetNextBlocks(Server *server, float dtime,
 
 			bool generate = d <= d_max_gen;
 		
-			// Limit the generating area vertically to half
-			if(abs(p.Y - center.Y) > d_max_gen / 2)
+			// Limit the generating area vertically to 2/3
+			if(abs(p.Y - center.Y) > d_max_gen - d_max_gen / 3)
 				generate = false;
 			
 			/*
@@ -2967,7 +2973,7 @@ void Server::handlePeerChange(PeerChange &c)
 			// The player shouldn't already exist
 			assert(player == NULL);
 
-			player = new ServerRemotePlayer();
+			player = new ServerRemotePlayer(true);
 			player->peer_id = c.peer_id;
 
 			/*

@@ -121,7 +121,7 @@ void Environment::step(float dtime)
 					f32 max_down = 1.0*BS;
 					if(speed.Y < -max_down) speed.Y = -max_down;
 
-					f32 max = 2.0*BS;
+					f32 max = 2.5*BS;
 					if(speed.getLength() > max)
 					{
 						speed = speed / speed.getLength() * max;

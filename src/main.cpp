@@ -23,20 +23,21 @@ NOTE: Things starting with TODO are sometimes only suggestions.
 
 NOTE: VBO cannot be turned on for fast-changing stuff because there
       is an apparanet memory leak in irrlicht when using it (not sure)
+	  - It is not a memory leak but some kind of a buffer.
 
 NOTE: iostream.imbue(std::locale("C")) is very slow
 NOTE: Global locale is now set at initialization
 
 SUGG: Fix address to be ipv6 compatible
 
-FIXME: When a new sector is generated, it may change the ground level
-       of it's and it's neighbors border that two blocks that are
-	   above and below each other and that are generated before and
-	   after the sector heightmap generation (order doesn't matter),
-	   can have a small gap between each other at the border.
-SUGGESTION: Use same technique for sector heightmaps as what we're
-            using for UnlimitedHeightmap? (getting all neighbors
-			when generating)
+NOTE: When a new sector is generated, it may change the ground level
+      of it's and it's neighbors border that two blocks that are
+	  above and below each other and that are generated before and
+	  after the sector heightmap generation (order doesn't matter),
+	  can have a small gap between each other at the border.
+SUGG: Use same technique for sector heightmaps as what we're
+      using for UnlimitedHeightmap? (getting all neighbors
+	  when generating)
 
 SUGG: Transfer more blocks in a single packet
 SUGG: A blockdata combiner class, to which blocks are added and at
@@ -78,10 +79,6 @@ SUGG: Split MapBlockObject serialization to to-client and to-disk
 SUGG: Implement lighting using VoxelManipulator
       - Would it be significantly faster?
 
-FIXME: Rats somehow go underground sometimes (you can see it in water)
-       - Does their position get saved to a border value or something?
-	   - Does this happen anymore?
-
 SUGG: MovingObject::move and Player::move are basically the same.
       combine them.
 
@@ -90,6 +87,8 @@ SUGG: Implement a "Fast check queue" (a queue with a map for checking
       - Use it in active block queue in water flowing
 
 SUGG: Precalculate lighting translation table at runtime (at startup)
+      - This is not doable because it is currently hand-made and not
+	    based on some mathematical function.
 
 SUGG: A version number to blocks, which increments when the block is
       modified (node add/remove, water update, lighting update)
@@ -105,40 +104,86 @@ SUGG: Meshes of blocks could be split into 6 meshes facing into
       different directions and then only those drawn that need to be
 	  - Also an 1-dimensional tile map would be nice probably
 
-TODO: Untie client network operations from framerate
-      - Needs some input queues or something
-	  - Not really necessary?
+Networking:
+
+TODO: Get rid of GotSplitPacketException
+
+GUI:
+
+TODO: Add gui option to remove map
+
+TODO: Startup and configuration menu
+
+Graphics:
+
+TODO: Optimize day/night mesh updating somehow
+      - create copies of all textures for all lighting values and only
+	    change texture for material?
+	  - Umm... the collecting of the faces is the slow part
+	    -> what about just changing the color values of the existing
+		   meshbuffers? It should go quite fast.
+
+TODO: Draw big amounts of torches better (that is, throw them in the
+      same meshbuffer (can the meshcollector class be used?))
 
 TODO: Combine MapBlock's face caches to so big pieces that VBO
       gets used
       - That is >500 vertices
 
-TODO: Startup and configuration menu
+TODO: Make fetching sector's blocks more efficient when rendering
+      sectors that have very large amounts of blocks (on client)
 
-TODO: There are some lighting-related todos and fixmes in
-      ServerMap::emergeBlock
+Configuration:
 
-TODO: Proper handling of spawning place (try to find something that
-      is not in the middle of an ocean (some land to stand on at
-	  least) and save it in map config.
+TODO: Make the video backend selectable
+
+Client:
+
+TODO: Untie client network operations from framerate
+      - Needs some input queues or something
+	  - Not really necessary?
+
+Server:
+
+TODO: When player dies, throw items on map
+
+TODO: Make an option to the server to disable building and digging near
+      the starting position
 
 TODO: Players to only be hidden when the client quits.
 TODO: - Players to be saved on disk, with inventory
 TODO: Players to be saved as text in map/players/<name>
 TODO: Player inventory to be saved on disk
 
-TODO: Make fetching sector's blocks more efficient when rendering
-      sectors that have very large amounts of blocks (on client)
-
-TODO: Make the video backend selectable
+TODO: Proper handling of spawning place (try to find something that
+      is not in the middle of an ocean (some land to stand on at
+	  least) and save it in map config.
 
 TODO: Copy the text of the last picked sign to inventory in creative
       mode
 
-TODO: Get rid of GotSplitPacketException
-
 TODO: Check what goes wrong with caching map to disk (Kray)
       - Nothing?
+
+TODO: When server sees that client is removing an inexistent block or
+      adding a block to an existent position, resend the MapBlock.
+
+Objects:
+
+TODO: Better handling of objects and mobs
+      - Scripting?
+      - There has to be some way to do it with less spaghetti code
+	  - Make separate classes for client and server
+	    - Client should not discriminate between blocks, server should
+	    - Make other players utilize the same framework
+		- This is also needed for objects that don't get sent to client
+		  but are used for triggers etc
+
+SUGG: Signs could be done in the same way as torches. For this, blocks
+      need an additional metadata field for the texts
+	  - This is also needed for item container chests
+TODO: There has to be some better way to handle static objects than to
+      send them all the time. This affects signs and item objects.
 
 Block object server side:
       - A "near blocks" buffer, in which some nearby blocks are stored.
@@ -151,40 +196,14 @@ Block object server side:
 	    - TODO: For incoming blocks, time difference is calculated and
 	      objects are stepped according to it.
 
-TODO: Better handling of objects and mobs
-      - Scripting?
-      - There has to be some way to do it with less spaghetti code
-	  - Make separate classes for client and server
-	    - Client should not discriminate between blocks, server should
-	    - Make other players utilize the same framework
-		- This is also needed for objects that don't get sent to client
-		  but are used for triggers etc
+Map generator:
 
-TODO: Draw big amounts of torches better (that is, throw them in the
-      same meshbuffer (can the meshcollector class be used?))
+TODO: There are some lighting-related todos and fixmes in
+      ServerMap::emergeBlock
 
-TODO: Make an option to the server to disable building and digging near
-      the starting position
-
-SUGG: Signs could be done in the same way as torches. For this, blocks
-      need an additional metadata field for the texts
-	  - This is also needed for item container chests
-TODO: There has to be some better way to handle static objects than to
-      send them all the time. This affects signs and item objects.
-
-TODO: When server sees that client is removing an inexistent block or
-      adding a block to an existent position, resend the MapBlock.
-
-TODO: When player dies, throw items on map
-
-TODO: Use porting::path_userdata for configuration file
-
-TODO: Optimize day/night mesh updating somehow
-      - create copies of all textures for all lighting values and only
-	    change texture for material?
-	  - Umm... the collecting of the faces is the slow part
-	    -> what about just changing the color values of the existing
-		   meshbuffers? It should go quite fast.
+TODO: When generating a block, check that there is no sunlight
+      below the block if the bottom of the block doesn't have
+	  sunlight. If it has, add it to the invalid lighting list.
 
 TODO: Map generator version 2
 	- Create surface areas based on central points; a given point's
@@ -192,8 +211,6 @@ TODO: Map generator version 2
 	  - Separate points for heightmap, caves, plants and minerals?
 	  - Flat land, mountains, forest, jungle
     - Cliffs, arcs
-
-TODO: Add gui option to remove map
 
 Doing now:
 ======================================================================

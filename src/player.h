@@ -97,6 +97,9 @@ public:
 
 	virtual void updateLight(u8 light_at_pos) {};
 
+	virtual bool isClientConnected() { return false; }
+	virtual void setClientConnected(bool) {}
+
 	bool touching_ground;
 	bool in_water;
 	
@@ -115,21 +118,34 @@ protected:
 class ServerRemotePlayer : public Player
 {
 public:
-	ServerRemotePlayer()
+	ServerRemotePlayer(bool client_connected):
+		m_client_connected(client_connected)
 	{
 	}
 	virtual ~ServerRemotePlayer()
 	{
 	}
 
-	bool isLocal() const
+	virtual bool isLocal() const
 	{
 		return false;
 	}
 
-	void move(f32 dtime, Map &map)
+	virtual void move(f32 dtime, Map &map)
 	{
 	}
+
+	virtual bool isClientConnected()
+	{
+		return m_client_connected;
+	}
+	virtual void setClientConnected(bool client_connected)
+	{
+		m_client_connected = client_connected;
+	}
+
+	// This 
+	bool m_client_connected;
 
 private:
 };

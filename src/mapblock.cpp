@@ -876,6 +876,7 @@ bool MapBlock::propagateSunlight(core::map<v3s16, bool> & light_sources)
 	{
 		for(s16 z=0; z<MAP_BLOCKSIZE; z++)
 		{
+#if 1
 			bool no_sunlight = false;
 			bool no_top_block = false;
 			// Check if node above block has sunlight
@@ -901,6 +902,23 @@ bool MapBlock::propagateSunlight(core::map<v3s16, bool> & light_sources)
 				// No sunlight here
 				//no_sunlight = true;
 			}
+#endif
+#if 0 // Doesn't work; nothing gets light.
+			bool no_sunlight = true;
+			bool no_top_block = false;
+			// Check if node above block has sunlight
+			try{
+				MapNode n = getNodeParent(v3s16(x, MAP_BLOCKSIZE, z));
+				if(n.getLight(LIGHTBANK_DAY) == LIGHT_SUN)
+				{
+					no_sunlight = false;
+				}
+			}
+			catch(InvalidPositionException &e)
+			{
+				no_top_block = true;
+			}
+#endif
 
 			/*std::cout<<"("<<x<<","<<z<<"): "
 					<<"no_top_block="<<no_top_block
