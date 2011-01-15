@@ -864,8 +864,14 @@ void MapBlock::updateMesh(u32 daynight_ratio)
 	- SUGG: This could be optimized
 
 	Turns sunglighted mud into grass.
+
+	if remove_light==true, sets non-sunlighted nodes black.
+
+	if black_air_left!=NULL, it is set to true if non-sunlighted
+	air is left in block.
 */
-bool MapBlock::propagateSunlight(core::map<v3s16, bool> & light_sources)
+bool MapBlock::propagateSunlight(core::map<v3s16, bool> & light_sources,
+		bool remove_light, bool *black_air_left)
 {
 	// Whether the sunlight at the top of the bottom block is valid
 	bool block_below_is_valid = true;
@@ -959,19 +965,27 @@ bool MapBlock::propagateSunlight(core::map<v3s16, bool> & light_sources)
 			}
 
 			bool sunlight_should_go_down = (y==-1);
-
-			// Fill rest with black (only transparent ones)
-			for(; y >= 0; y--){
+			
+			/*
+				Check rest through to the bottom of the block
+			*/
+			for(; y >= 0; y--)
+			{
 				v3s16 pos(x, y, z);
-				
 				MapNode &n = getNodeRef(pos);
 
 				if(n.light_propagates())
 				{
-					n.setLight(LIGHTBANK_DAY, 0);
-				}
-				else{
-					break;
+					if(black_air_left)
+					{
+						*black_air_left = true;
+					}
+
+					if(remove_light)
+					{
+						// Fill transparent nodes with black
+						n.setLight(LIGHTBANK_DAY, 0);
+					}
 				}
 			}
 
