@@ -1323,10 +1323,17 @@ private:
 	MutexedQueue< GetRequest<Key, T, Caller, CallerData> > m_queue;
 };
 
-// Pseudo-random (VC++ rand() sucks)
+/*
+	Pseudo-random (VC++ rand() sucks)
+*/
 int myrand(void);
 void mysrand(unsigned seed);
 #define MYRAND_MAX 32767
+
+/*
+	TODO: Some kind of a thing that stores arbitary data related to
+	      2D coordinate points
+*/
 
 #endif
 

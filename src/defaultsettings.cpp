@@ -48,8 +48,8 @@ void set_default_settings()
 	g_settings.setDefault("ravines_amount", "1.0");
 	g_settings.setDefault("coal_amount", "1.0");*/
 	g_settings.setDefault("heightmap_blocksize", "16");
-	g_settings.setDefault("height_randmax", "linear 0 0 40");
-	g_settings.setDefault("height_randfactor", "linear 0.60 -0.10 0");
+	g_settings.setDefault("height_randmax", "linear 0 0 30");
+	g_settings.setDefault("height_randfactor", "linear 0.50 -0.10 0");
 	g_settings.setDefault("height_base", "linear 5 0 0");
 	g_settings.setDefault("plants_amount", "0.2");
 	g_settings.setDefault("ravines_amount", "0");

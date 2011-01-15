@@ -3003,7 +3003,7 @@ Player *Server::emergePlayer(const char *name, const char *password)
 		// Try to find a good place a few times
 		for(s32 i=0; i<100; i++)
 		{
-			s32 range = 1 + i*5;
+			s32 range = 1 + i*2;
 			// We're going to try to throw the player to this position
 			nodepos = v2s16(-range/2 + (myrand()%range),
 					-range/2 + (myrand()%range));
@@ -3036,6 +3036,10 @@ Player *Server::emergePlayer(const char *name, const char *password)
 			break;
 		}
 #endif
+		
+		// If no suitable place was not found, go above water at least.
+		if(groundheight < WATER_LEVEL)
+			groundheight = WATER_LEVEL;
 
 		player->setPosition(intToFloat(v3s16(
 				nodepos.X,

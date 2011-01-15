@@ -537,7 +537,7 @@ struct TestMapBlock
 			core::map<v3s16, bool> light_sources;
 			// The block below should be valid because there shouldn't be
 			// sunlight in there either
-			assert(b.propagateSunlight(light_sources) == true);
+			assert(b.propagateSunlight(light_sources, true) == true);
 			// Should not touch nodes that are not affected (that is, all of them)
 			//assert(b.getNode(v3s16(1,2,3)).getLight() == LIGHT_SUN);
 			// Should set light of non-sunlighted blocks to 0.

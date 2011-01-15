@@ -934,60 +934,67 @@ bool MapBlock::propagateSunlight(core::map<v3s16, bool> & light_sources,
 		
 			s16 y = MAP_BLOCKSIZE-1;
 			
-			if(no_sunlight == false)
-			{
-				// Continue spreading sunlight downwards through transparent
-				// nodes
-				for(; y >= 0; y--)
-				{
-					v3s16 pos(x, y, z);
-					
-					MapNode &n = getNodeRef(pos);
-
-					if(n.sunlight_propagates())
-					{
-						n.setLight(LIGHTBANK_DAY, LIGHT_SUN);
-
-						light_sources.insert(pos_relative + pos, true);
-					}
-					else
-					{
-						// Turn mud into grass
-						if(n.d == CONTENT_MUD)
-						{
-							n.d = CONTENT_GRASS;
-						}
-
-						// Sunlight goes no further
-						break;
-					}
-				}
-			}
-
-			bool sunlight_should_go_down = (y==-1);
+			// This makes difference to diminishing in water.
+			bool stopped_to_solid_object = false;
 			
-			/*
-				Check rest through to the bottom of the block
-			*/
+			u8 current_light = no_sunlight ? 0 : LIGHT_SUN;
+
 			for(; y >= 0; y--)
 			{
 				v3s16 pos(x, y, z);
 				MapNode &n = getNodeRef(pos);
+				
+				if(current_light == 0)
+				{
+					// Do nothing
+				}
+				else if(current_light == LIGHT_SUN && n.sunlight_propagates())
+				{
+					// Do nothing: Sunlight is continued
+				}
+				else if(n.light_propagates() == false)
+				{
+					// Turn mud into grass
+					if(n.d == CONTENT_MUD && current_light == LIGHT_SUN)
+					{
+						n.d = CONTENT_GRASS;
+					}
 
-				if(n.light_propagates())
+					// A solid object is on the way.
+					stopped_to_solid_object = true;
+					
+					// Light stops.
+					current_light = 0;
+				}
+				else
+				{
+					// Diminish light
+					current_light = diminish_light(current_light);
+				}
+
+				u8 old_light = n.getLight(LIGHTBANK_DAY);
+
+				if(current_light > old_light || remove_light)
+				{
+					n.setLight(LIGHTBANK_DAY, current_light);
+				}
+				
+				if(diminish_light(current_light) != 0)
+				{
+					light_sources.insert(pos_relative + pos, true);
+				}
+
+				if(current_light == 0 && stopped_to_solid_object)
 				{
 					if(black_air_left)
 					{
 						*black_air_left = true;
 					}
-
-					if(remove_light)
-					{
-						// Fill transparent nodes with black
-						n.setLight(LIGHTBANK_DAY, 0);
-					}
 				}
 			}
+
+			// Whether or not the block below should see LIGHT_SUN
+			bool sunlight_should_go_down = (current_light == LIGHT_SUN);
 
 			/*
 				If the block below hasn't already been marked invalid:

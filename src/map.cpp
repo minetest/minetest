@@ -1692,6 +1692,8 @@ MapBlock * ServerMap::emergeBlock(
 	/*
 		If block doesn't exist, create one.
 		If it exists, it is a dummy. In that case unDummify() it.
+
+		NOTE: This already sets the map as the parent of the block
 	*/
 	if(block == NULL)
 	{
@@ -1701,159 +1703,8 @@ MapBlock * ServerMap::emergeBlock(
 	{
 		// Remove the block so that nobody can get a half-generated one.
 		sector->removeBlock(block);
-		// Allocate the block to be a proper one.
+		// Allocate the block to contain the generated data
 		block->unDummify();
-	}
-	
-	/*
-		Create dungeon making table
-	*/
-	const s32 ued = MAP_BLOCKSIZE;
-	bool underground_emptiness[ued*ued*ued];
-	for(s32 i=0; i<ued*ued*ued; i++)
-	{
-		underground_emptiness[i] = 0;
-	}
-	
-	// Generate dungeons
-	{
-		/*
-			Initialize orp and ors. Try to find if some neighboring
-			MapBlock has a tunnel ended in its side
-		*/
-
-		v3f orp(
-			(float)(myrand()%ued)+0.5,
-			(float)(myrand()%ued)+0.5,
-			(float)(myrand()%ued)+0.5
-		);
-		
-		bool found_existing = false;
-
-		// Check z-
-		try
-		{
-			s16 z = -1;
-			for(s16 y=0; y<ued; y++)
-			for(s16 x=0; x<ued; x++)
-			{
-				v3s16 ap = v3s16(x,y,z) + block->getPosRelative();
-				if(getNode(ap).d == CONTENT_AIR)
-				{
-					orp = v3f(x+1,y+1,0);
-					found_existing = true;
-					goto continue_generating;
-				}
-			}
-		}
-		catch(InvalidPositionException &e){}
-		
-		// Check z+
-		try
-		{
-			s16 z = ued;
-			for(s16 y=0; y<ued; y++)
-			for(s16 x=0; x<ued; x++)
-			{
-				v3s16 ap = v3s16(x,y,z) + block->getPosRelative();
-				if(getNode(ap).d == CONTENT_AIR)
-				{
-					orp = v3f(x+1,y+1,ued-1);
-					found_existing = true;
-					goto continue_generating;
-				}
-			}
-		}
-		catch(InvalidPositionException &e){}
-		
-		// Check x-
-		try
-		{
-			s16 x = -1;
-			for(s16 y=0; y<ued; y++)
-			for(s16 z=0; z<ued; z++)
-			{
-				v3s16 ap = v3s16(x,y,z) + block->getPosRelative();
-				if(getNode(ap).d == CONTENT_AIR)
-				{
-					orp = v3f(0,y+1,z+1);
-					found_existing = true;
-					goto continue_generating;
-				}
-			}
-		}
-		catch(InvalidPositionException &e){}
-		
-		// Check x+
-		try
-		{
-			s16 x = ued;
-			for(s16 y=0; y<ued; y++)
-			for(s16 z=0; z<ued; z++)
-			{
-				v3s16 ap = v3s16(x,y,z) + block->getPosRelative();
-				if(getNode(ap).d == CONTENT_AIR)
-				{
-					orp = v3f(ued-1,y+1,z+1);
-					found_existing = true;
-					goto continue_generating;
-				}
-			}
-		}
-		catch(InvalidPositionException &e){}
-
-continue_generating:
-		
-		/*
-			Don't always generate dungeon
-		*/
-		if(found_existing || rand() % 2 == 0)
-		{
-			/*
-				Generate some tunnel starting from orp and ors
-			*/
-			for(u16 i=0; i<3; i++)
-			{
-				v3f rp(
-					(float)(myrand()%ued)+0.5,
-					(float)(myrand()%ued)+0.5,
-					(float)(myrand()%ued)+0.5
-				);
-				s16 min_d = 0;
-				s16 max_d = 4;
-				s16 rs = (myrand()%(max_d-min_d+1))+min_d;
-				
-				v3f vec = rp - orp;
-
-				for(float f=0; f<1.0; f+=0.04)
-				{
-					v3f fp = orp + vec * f;
-					v3s16 cp(fp.X, fp.Y, fp.Z);
-					s16 d0 = -rs/2;
-					s16 d1 = d0 + rs - 1;
-					for(s16 z0=d0; z0<=d1; z0++)
-					{
-						s16 si = rs - abs(z0);
-						for(s16 x0=-si; x0<=si-1; x0++)
-						{
-							s16 si2 = rs - abs(x0);
-							for(s16 y0=-si2+1; y0<=si2-1; y0++)
-							{
-								s16 z = cp.Z + z0;
-								s16 y = cp.Y + y0;
-								s16 x = cp.X + x0;
-								v3s16 p(x,y,z);
-								if(isInArea(p, ued) == false)
-									continue;
-								underground_emptiness[ued*ued*z + ued*y + x] = 1;
-							}
-						}
-					}
-				}
-
-				orp = rp;
-			}
-		}
 	}
 	
 	u8 water_material = CONTENT_WATER;
@@ -1865,10 +1716,6 @@ continue_generating:
 	
 	// DEBUG
 	//sector->printHeightmaps();
-
-	// Set to true if has caves.
-	// Set when some non-air is changed to air when making caves.
-	bool has_caves = false;
 
 	for(s16 z0=0; z0<MAP_BLOCKSIZE; z0++)
 	for(s16 x0=0; x0<MAP_BLOCKSIZE; x0++)
@@ -1972,30 +1819,16 @@ continue_generating:
 					else
 						n.d = CONTENT_GRASS;*/
 				}
-
-				// Create dungeons
-				if(underground_emptiness[
-						ued*ued*(z0*ued/MAP_BLOCKSIZE)
-						+ued*(y0*ued/MAP_BLOCKSIZE)
-						+(x0*ued/MAP_BLOCKSIZE)])
-				{
-					// Has now caves if previous content is air
-					if(n.d != CONTENT_AIR)
-					{
-						has_caves = true;
-					}
-
-					n.d = CONTENT_AIR;
-				}
 			}
 
 			block->setNode(v3s16(x0,y0,z0), n);
 		}
 	}
-
+	
 	/*
-		Calculate completely_underground
+		Calculate some helper variables
 	*/
+	
 	// Completely underground if the highest part of block is under lowest
 	// ground height.
 	// This has to be very sure; it's probably one too strict now but
@@ -2003,25 +1836,224 @@ continue_generating:
 	bool completely_underground =
 			block_y * MAP_BLOCKSIZE + MAP_BLOCKSIZE < lowest_ground_y;
 
-	// This isn't used anymore (?) but set it anyway
-	block->setIsUnderground(completely_underground);
-
 	bool some_part_underground = block_y * MAP_BLOCKSIZE <= highest_ground_y;
+
+	/*
+		Generate dungeons
+	*/
+
+	// Initialize temporary table
+	const s32 ued = MAP_BLOCKSIZE;
+	bool underground_emptiness[ued*ued*ued];
+	for(s32 i=0; i<ued*ued*ued; i++)
+	{
+		underground_emptiness[i] = 0;
+	}
+	
+	// Fill table
+	{
+		/*
+			Initialize orp and ors. Try to find if some neighboring
+			MapBlock has a tunnel ended in its side
+		*/
+
+		v3f orp(
+			(float)(myrand()%ued)+0.5,
+			(float)(myrand()%ued)+0.5,
+			(float)(myrand()%ued)+0.5
+		);
+		
+		bool found_existing = false;
+
+		// Check z-
+		try
+		{
+			s16 z = -1;
+			for(s16 y=0; y<ued; y++)
+			for(s16 x=0; x<ued; x++)
+			{
+				v3s16 ap = v3s16(x,y,z) + block->getPosRelative();
+				if(getNode(ap).d == CONTENT_AIR)
+				{
+					orp = v3f(x+1,y+1,0);
+					found_existing = true;
+					goto continue_generating;
+				}
+			}
+		}
+		catch(InvalidPositionException &e){}
+		
+		// Check z+
+		try
+		{
+			s16 z = ued;
+			for(s16 y=0; y<ued; y++)
+			for(s16 x=0; x<ued; x++)
+			{
+				v3s16 ap = v3s16(x,y,z) + block->getPosRelative();
+				if(getNode(ap).d == CONTENT_AIR)
+				{
+					orp = v3f(x+1,y+1,ued-1);
+					found_existing = true;
+					goto continue_generating;
+				}
+			}
+		}
+		catch(InvalidPositionException &e){}
+		
+		// Check x-
+		try
+		{
+			s16 x = -1;
+			for(s16 y=0; y<ued; y++)
+			for(s16 z=0; z<ued; z++)
+			{
+				v3s16 ap = v3s16(x,y,z) + block->getPosRelative();
+				if(getNode(ap).d == CONTENT_AIR)
+				{
+					orp = v3f(0,y+1,z+1);
+					found_existing = true;
+					goto continue_generating;
+				}
+			}
+		}
+		catch(InvalidPositionException &e){}
+		
+		// Check x+
+		try
+		{
+			s16 x = ued;
+			for(s16 y=0; y<ued; y++)
+			for(s16 z=0; z<ued; z++)
+			{
+				v3s16 ap = v3s16(x,y,z) + block->getPosRelative();
+				if(getNode(ap).d == CONTENT_AIR)
+				{
+					orp = v3f(ued-1,y+1,z+1);
+					found_existing = true;
+					goto continue_generating;
+				}
+			}
+		}
+		catch(InvalidPositionException &e){}
+
+continue_generating:
+		
+		/*
+			Don't always generate dungeon
+		*/
+		bool do_generate_dungeons = true;
+		if(!some_part_underground)
+			do_generate_dungeons = false;
+		else if(!completely_underground)
+			do_generate_dungeons = rand() % 5;
+		else if(found_existing)
+			do_generate_dungeons = true;
+		else
+			do_generate_dungeons = rand() % 2;
+
+		if(do_generate_dungeons)
+		{
+			/*
+				Generate some tunnel starting from orp and ors
+			*/
+			for(u16 i=0; i<3; i++)
+			{
+				v3f rp(
+					(float)(myrand()%ued)+0.5,
+					(float)(myrand()%ued)+0.5,
+					(float)(myrand()%ued)+0.5
+				);
+				s16 min_d = 0;
+				s16 max_d = 6;
+				s16 rs = (myrand()%(max_d-min_d+1))+min_d;
+				
+				v3f vec = rp - orp;
+
+				for(float f=0; f<1.0; f+=0.04)
+				{
+					v3f fp = orp + vec * f;
+					v3s16 cp(fp.X, fp.Y, fp.Z);
+					s16 d0 = -rs/2;
+					s16 d1 = d0 + rs - 1;
+					for(s16 z0=d0; z0<=d1; z0++)
+					{
+						s16 si = rs - abs(z0);
+						for(s16 x0=-si; x0<=si-1; x0++)
+						{
+							s16 si2 = rs - abs(x0);
+							for(s16 y0=-si2+1; y0<=si2-1; y0++)
+							{
+								s16 z = cp.Z + z0;
+								s16 y = cp.Y + y0;
+								s16 x = cp.X + x0;
+								v3s16 p(x,y,z);
+								if(isInArea(p, ued) == false)
+									continue;
+								underground_emptiness[ued*ued*z + ued*y + x] = 1;
+							}
+						}
+					}
+				}
+
+				orp = rp;
+			}
+		}
+	}
+
+	// Set to true if has caves.
+	// Set when some non-air is changed to air when making caves.
+	bool has_caves = false;
+
+	/*
+		Apply temporary cave data to block
+	*/
+
+	for(s16 z0=0; z0<MAP_BLOCKSIZE; z0++)
+	for(s16 x0=0; x0<MAP_BLOCKSIZE; x0++)
+	{
+		for(s16 y0=0; y0<MAP_BLOCKSIZE; y0++)
+		{
+			MapNode n = block->getNode(v3s16(x0,y0,z0));
+
+			// Create dungeons
+			if(underground_emptiness[
+					ued*ued*(z0*ued/MAP_BLOCKSIZE)
+					+ued*(y0*ued/MAP_BLOCKSIZE)
+					+(x0*ued/MAP_BLOCKSIZE)])
+			{
+				if(is_ground_content(n.d))
+				{
+					// Has now caves
+					has_caves = true;
+					// Set air to node
+					n.d = CONTENT_AIR;
+				}
+			}
+
+			block->setNode(v3s16(x0,y0,z0), n);
+		}
+	}
+	
+	/*
+		This is used for guessing whether or not the block should
+		receive sunlight from the top if the top block doesn't exist
+	*/
+	block->setIsUnderground(completely_underground);
 
 	/*
 		Force lighting update if some part of block is partly
 		underground and has caves.
 	*/
-	
-	if(some_part_underground && !completely_underground && has_caves)
+	/*if(some_part_underground && !completely_underground && has_caves)
 	{
 		//dstream<<"Half-ground caves"<<std::endl;
 		lighting_invalidated_blocks[block->getPos()] = block;
-	}
+	}*/
 	
 	// DEBUG: Always update lighting
 	//lighting_invalidated_blocks[block->getPos()] = block;
-	
+
 	/*
 		Add some minerals
 	*/
@@ -2364,6 +2396,28 @@ continue_generating:
 		objects->remove(*i);
 	}
 
+	/*
+		Initially update sunlight
+	*/
+	
+	{
+		core::map<v3s16, bool> light_sources;
+		bool black_air_left = false;
+		bool bottom_invalid =
+				block->propagateSunlight(light_sources, true, &black_air_left);
+
+		// If sunlight didn't reach everywhere and part of block is
+		// above ground, lighting has to be properly updated
+		if(black_air_left && some_part_underground)
+		{
+			lighting_invalidated_blocks[block->getPos()] = block;
+		}
+	}
+
+	/*
+		Translate sector's changed blocks to global changed blocks
+	*/
+	
 	for(core::map<s16, MapBlock*>::Iterator
 			i = changed_blocks_sector.getIterator();
 			i.atEnd() == false; i++)
