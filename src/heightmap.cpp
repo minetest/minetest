@@ -248,8 +248,7 @@ void FixedHeightmap::generateContinued(f32 randmax, f32 randfactor,
 	s16 a = m_blocksize;
 	
 	// Check that a is a power of two
-	if((a & (a-1)) != 0)
-		throw;
+	assert((a & (a-1)) == 0);
 	
 	// Overwrite with GROUNDHEIGHT_NOTFOUND_SETVALUE
 	for(s16 y=0; y<=a; y++){
@@ -263,7 +262,7 @@ void FixedHeightmap::generateContinued(f32 randmax, f32 randfactor,
 		Seed borders from master heightmap
 		NOTE: Does this actually have any effect on the output?
 	*/
-	struct SeedSpec
+	/*struct SeedSpec
 	{
 		v2s16 neighbour_start;
 		v2s16 heightmap_start;
@@ -307,7 +306,7 @@ void FixedHeightmap::generateContinued(f32 randmax, f32 randfactor,
 			hpos += seeds[i].dir;
 			npos += seeds[i].dir;
 		}
-	}
+	}*/
 	
 	/*dstream<<"borders seeded:"<<std::endl;
 	print();*/
@@ -548,13 +547,28 @@ FixedHeightmap * UnlimitedHeightmap::getHeightmap(v2s16 p_from, bool generate)
 			FixedHeightmap *heightmap = new FixedHeightmap(this, p, m_blocksize);
 
 			m_heightmaps.insert(p, heightmap);
+
+			f32 corners[4];
 			
-			f32 corners[4] = {
-				m_base_generator->getValue(p+v2s16(0,0)),
-				m_base_generator->getValue(p+v2s16(1,0)),
-				m_base_generator->getValue(p+v2s16(1,1)),
-				m_base_generator->getValue(p+v2s16(0,1)),
-			};
+			if(m_palist)
+			{
+				//TODO: palist must be taken into account in generateContinued.
+				// It is almost useless in here.
+				s32 div = 2 * 16;
+				Settings *attr = m_palist->getNearAttr(p / div);
+				assert(attr);
+				corners[0] = attr->getFloat("baseheight");
+				corners[1] = attr->getFloat("baseheight");
+				corners[2] = attr->getFloat("baseheight");
+				corners[3] = attr->getFloat("baseheight");
+			}
+			else
+			{
+				corners[0] = m_base_generator->getValue(p+v2s16(0,0));
+				corners[1] = m_base_generator->getValue(p+v2s16(1,0));
+				corners[2] = m_base_generator->getValue(p+v2s16(1,1));
+				corners[3] = m_base_generator->getValue(p+v2s16(0,1));
+			}
 
 			f32 randmax = m_randmax_generator->getValue(p);
 			f32 randfactor = m_randfactor_generator->getValue(p);
@@ -829,7 +843,7 @@ UnlimitedHeightmap * UnlimitedHeightmap::deSerialize(std::istream &is)
 		ValueGenerator *basegen = new ConstantGenerator(basevalue);
 
 		UnlimitedHeightmap *hm = new UnlimitedHeightmap
-				(blocksize, maxgen, factorgen, basegen);
+				(blocksize, maxgen, factorgen, basegen, NULL);
 
 		for(u32 i=0; i<heightmap_count; i++)
 		{
@@ -866,7 +880,7 @@ UnlimitedHeightmap * UnlimitedHeightmap::deSerialize(std::istream &is)
 				FixedHeightmap::serializedLength(version, blocksize);
 
 		UnlimitedHeightmap *hm = new UnlimitedHeightmap
-				(blocksize, maxgen, factorgen, basegen);
+				(blocksize, maxgen, factorgen, basegen, NULL);
 
 		for(u32 i=0; i<heightmap_count; i++)
 		{

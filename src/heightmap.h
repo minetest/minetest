@@ -502,9 +502,12 @@ private:
 	core::map<v2s16, FixedHeightmap*> m_heightmaps;
 	s16 m_blocksize;
 
+	// TODO: Remove ValueGenerators
 	ValueGenerator *m_randmax_generator;
 	ValueGenerator *m_randfactor_generator;
 	ValueGenerator *m_base_generator;
+
+	PointAttributeList *m_palist;
 
 public:
 
@@ -512,12 +515,14 @@ public:
 			s16 blocksize,
 			ValueGenerator *randmax_generator,
 			ValueGenerator *randfactor_generator,
-			ValueGenerator *base_generator
+			ValueGenerator *base_generator,
+			PointAttributeList *palist=NULL
 			):
 		m_blocksize(blocksize),
 		m_randmax_generator(randmax_generator),
 		m_randfactor_generator(randfactor_generator),
-		m_base_generator(base_generator)
+		m_base_generator(base_generator),
+		m_palist(palist)
 	{
 		assert(m_randmax_generator != NULL);
 		assert(m_randfactor_generator != NULL);
@@ -538,12 +543,6 @@ public:
 		delete m_base_generator;
 	}
 
-	/*void setParams(f32 randmax, f32 randfactor)
-	{
-		m_randmax = randmax;
-		m_randfactor = randfactor;
-	}*/
-	
 	void print();
 
 	v2s16 getNodeHeightmapPos(v2s16 p)
