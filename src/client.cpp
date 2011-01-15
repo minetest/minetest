@@ -568,7 +568,7 @@ void Client::ProcessData(u8 *data, u32 datasize, u16 sender_peer_id)
 			our_peer_id = m_con.GetPeerID();
 		}
 		// Cancel if we don't have a peer id
-		if(our_peer_id == PEER_ID_NEW){
+		if(our_peer_id == PEER_ID_INEXISTENT){
 			dout_client<<DTIME<<"TOCLIENT_PLAYERPOS cancelled: "
 					"we have no peer id"
 					<<std::endl;
@@ -634,7 +634,7 @@ void Client::ProcessData(u8 *data, u32 datasize, u16 sender_peer_id)
 			our_peer_id = m_con.GetPeerID();
 		}
 		// Cancel if we don't have a peer id
-		if(our_peer_id == PEER_ID_NEW){
+		if(our_peer_id == PEER_ID_INEXISTENT){
 			dout_client<<DTIME<<"TOCLIENT_PLAYERINFO cancelled: "
 					"we have no peer id"
 					<<std::endl;
@@ -1410,7 +1410,7 @@ void Client::sendPlayerPos()
 	}
 	
 	// Set peer id if not set already
-	if(myplayer->peer_id == PEER_ID_NEW)
+	if(myplayer->peer_id == PEER_ID_INEXISTENT)
 		myplayer->peer_id = our_peer_id;
 	// Check that an existing peer_id is the same as the connection's
 	assert(myplayer->peer_id == our_peer_id);

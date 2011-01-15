@@ -209,7 +209,7 @@ channel:
 	Only channels 0, 1 and 2 exist.
 */
 #define BASE_HEADER_SIZE 7
-#define PEER_ID_NEW 0
+#define PEER_ID_INEXISTENT 0
 #define PEER_ID_SERVER 1
 #define CHANNEL_COUNT 3
 /*

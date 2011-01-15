@@ -29,7 +29,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 Player::Player():
 	touching_ground(false),
 	in_water(false),
-	peer_id(PEER_ID_NEW),
+	peer_id(PEER_ID_INEXISTENT),
 	m_speed(0,0,0),
 	m_position(0,0,0)
 {

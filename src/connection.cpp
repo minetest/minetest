@@ -497,7 +497,7 @@ Connection::Connection(
 	m_protocol_id = protocol_id;
 	m_max_packet_size = max_packet_size;
 	m_timeout = timeout;
-	m_peer_id = PEER_ID_NEW;
+	m_peer_id = PEER_ID_INEXISTENT;
 	//m_waiting_new_peer_id = false;
 	m_indentation = 0;
 	m_peerhandler = peerhandler;
@@ -534,8 +534,8 @@ void Connection::Connect(Address address)
 	
 	m_socket.Bind(0);
 	
-	// Send a dummy packet to server with peer_id = PEER_ID_NEW
-	m_peer_id = PEER_ID_NEW;
+	// Send a dummy packet to server with peer_id = PEER_ID_INEXISTENT
+	m_peer_id = PEER_ID_INEXISTENT;
 	SharedBuffer<u8> data(0);
 	Send(PEER_ID_SERVER, 0, data, true);
 
@@ -568,7 +568,7 @@ bool Connection::Connected()
 	if(node == NULL)
 		return false;
 	
-	if(m_peer_id == PEER_ID_NEW)
+	if(m_peer_id == PEER_ID_INEXISTENT)
 		return false;
 	
 	return true;
@@ -643,7 +643,7 @@ SharedBuffer<u8> Channel::ProcessPacket(
 			con->PrintInfo();
 			dout_con<<"Got new peer id: "<<peer_id_new<<"... "<<std::endl;
 
-			if(con->GetPeerID() != PEER_ID_NEW)
+			if(con->GetPeerID() != PEER_ID_INEXISTENT)
 			{
 				con->PrintInfo(derr_con);
 				derr_con<<"WARNING: Not changing"
@@ -951,7 +951,7 @@ u32 Connection::Receive(u16 &peer_id, u8 *data, u32 datasize)
 			throw InvalidIncomingDataException("Channel doesn't exist");
 		}
 
-		if(peer_id == PEER_ID_NEW)
+		if(peer_id == PEER_ID_INEXISTENT)
 		{
 			/*
 				Somebody is trying to send stuff to us with no peer id.
@@ -994,7 +994,7 @@ u32 Connection::Receive(u16 &peer_id, u8 *data, u32 datasize)
 		/*
 			The peer was not found in our lists. Add it.
 		*/
-		if(peer_id == PEER_ID_NEW)
+		if(peer_id == PEER_ID_INEXISTENT)
 		{
 			// Somebody wants to make a new connection
 
@@ -1016,7 +1016,7 @@ u32 Connection::Receive(u16 &peer_id, u8 *data, u32 datasize)
 			}
 
 			PrintInfo();
-			dout_con<<"Receive(): Got a packet with peer_id=PEER_ID_NEW,"
+			dout_con<<"Receive(): Got a packet with peer_id=PEER_ID_INEXISTENT,"
 					" giving peer_id="<<peer_id_new<<std::endl;
 
 			// Create a peer
@@ -1042,7 +1042,7 @@ u32 Connection::Receive(u16 &peer_id, u8 *data, u32 datasize)
 		if(node == NULL)
 		{
 			// Peer not found
-			// This means that the peer id of the sender is not PEER_ID_NEW
+			// This means that the peer id of the sender is not PEER_ID_INEXISTENT
 			// and it is invalid.
 			PrintInfo(derr_con);
 			derr_con<<"Receive(): Peer not found"<<std::endl;

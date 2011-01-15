@@ -243,9 +243,42 @@ Player * Environment::getPlayer(u16 peer_id)
 	return NULL;
 }
 
+Player * Environment::getPlayer(const char *name)
+{
+	for(core::list<Player*>::Iterator i = m_players.begin();
+			i != m_players.end(); i++)
+	{
+		Player *player = *i;
+		if(strcmp(player->getName(), name) == 0)
+			return player;
+	}
+	return NULL;
+}
+
 core::list<Player*> Environment::getPlayers()
 {
 	return m_players;
+}
+
+core::list<Player*> Environment::getPlayers(bool ignore_disconnected)
+{
+	core::list<Player*> newlist;
+	for(core::list<Player*>::Iterator
+			i = m_players.begin();
+			i != m_players.end(); i++)
+	{
+		Player *player = *i;
+		
+		if(ignore_disconnected)
+		{
+			// Ignore disconnected players
+			if(player->peer_id == 0)
+				continue;
+		}
+
+		newlist.push_back(player);
+	}
+	return newlist;
 }
 
 void Environment::printPlayers(std::ostream &o)

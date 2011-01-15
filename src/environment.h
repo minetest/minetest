@@ -59,7 +59,9 @@ public:
 	LocalPlayer * getLocalPlayer();
 #endif
 	Player * getPlayer(u16 peer_id);
+	Player * getPlayer(const char *name);
 	core::list<Player*> getPlayers();
+	core::list<Player*> getPlayers(bool ignore_disconnected);
 	void printPlayers(std::ostream &o);
 
 #ifndef SERVER

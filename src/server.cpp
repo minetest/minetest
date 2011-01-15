@@ -294,6 +294,8 @@ void RemoteClient::GetNextBlocks(Server *server, float dtime,
 
 	Player *player = server->m_env.getPlayer(peer_id);
 
+	assert(player != NULL);
+
 	v3f playerpos = player->getPosition();
 	v3f playerspeed = player->getSpeed();
 
@@ -604,8 +606,9 @@ void RemoteClient::SendObjectData(
 	/*
 		Get and write player data
 	*/
-
-	core::list<Player*> players = server->m_env.getPlayers();
+	
+	// Get connected players
+	core::list<Player*> players = server->m_env.getPlayers(true);
 
 	// Write player count
 	u16 playercount = players.size();
@@ -655,6 +658,8 @@ void RemoteClient::SendObjectData(
 	*/
 
 	Player *player = server->m_env.getPlayer(peer_id);
+
+	assert(player);
 
 	v3f playerpos = player->getPosition();
 	v3f playerspeed = player->getSpeed();
@@ -847,7 +852,8 @@ PlayerInfo::PlayerInfo()
 
 void PlayerInfo::PrintLine(std::ostream *s)
 {
-	(*s)<<id<<": \""<<name<<"\" ("
+	(*s)<<id<<": ";
+	(*s)<<"\""<<name<<"\" ("
 			<<position.X<<","<<position.Y
 			<<","<<position.Z<<") ";
 	address.print(s);
@@ -910,13 +916,13 @@ Server::~Server()
 		i = m_clients.getIterator();
 		i.atEnd() == false; i++)
 	{
-		u16 peer_id = i.getNode()->getKey();
-
-		// Delete player
+		/*// Delete player
+		// NOTE: These are removed by env destructor
 		{
+			u16 peer_id = i.getNode()->getKey();
 			JMutexAutoLock envlock(m_env_mutex);
 			m_env.removePlayer(peer_id);
-		}
+		}*/
 		
 		// Delete client
 		delete i.getNode()->getValue();
@@ -1419,20 +1425,44 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 		/*
 			Set up player
 		*/
+		
+		// Get player name
+		const u32 playername_size = 20;
+		char playername[playername_size];
+		for(u32 i=0; i<playername_size-1; i++)
+		{
+			playername[i] = data[3+i];
+		}
+		playername[playername_size-1] = 0;
+		
+		// Get player
+		Player *player = emergePlayer(playername, "");
+		//Player *player = m_env.getPlayer(peer_id);
 
-		Player *player = m_env.getPlayer(peer_id);
+		// If a client is already connected to the player, cancel
+		if(player->peer_id != 0)
+		{
+			derr_server<<DTIME<<"Server: peer_id="<<peer_id
+					<<" tried to connect to "
+					"an already connected player (peer_id="
+					<<player->peer_id<<")"<<std::endl;
+			return;
+		}
+
+		// Set client of player
+		player->peer_id = peer_id;
 
 		// Check if player doesn't exist
 		if(player == NULL)
 			throw con::InvalidIncomingDataException
 				("Server::ProcessData(): INIT: Player doesn't exist");
 
-		// update name if it was supplied
+		/*// update name if it was supplied
 		if(datasize >= 20+3)
 		{
 			data[20+3-1] = 0;
 			player->updateName((const char*)&data[3]);
-		}
+		}*/
 
 		// Now answer with a TOCLIENT_INIT
 		
@@ -1488,9 +1518,10 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 				assert(client->peer_id == i.getNode()->getKey());
 				if(client->serialization_version == SER_FMT_VER_INVALID)
 					continue;
+				// Get player
+				Player *player = m_env.getPlayer(client->peer_id);
 				// Get name of player
 				std::wstring name = L"unknown";
-				Player *player = m_env.getPlayer(client->peer_id);
 				if(player != NULL)
 					name = narrow_to_wide(player->getName());
 				// Add name to information string
@@ -2394,15 +2425,17 @@ core::list<PlayerInfo> Server::getPlayerInfo()
 		PlayerInfo info;
 
 		Player *player = *i;
+
 		try{
 			con::Peer *peer = m_con.GetPeer(player->peer_id);
+			// Copy info from peer to info struct
 			info.id = peer->id;
 			info.address = peer->address;
 			info.avg_rtt = peer->avg_rtt;
 		}
 		catch(con::PeerNotFoundException &e)
 		{
-			// Outdated peer info
+			// Set dummy peer info
 			info.id = 0;
 			info.address = Address(0,0,0,0,0);
 			info.avg_rtt = 0.0;
@@ -2470,7 +2503,8 @@ void Server::SendPlayerInfos()
 
 	//JMutexAutoLock envlock(m_env_mutex);
 	
-	core::list<Player*> players = m_env.getPlayers();
+	// Get connected players
+	core::list<Player*> players = m_env.getPlayers(true);
 	
 	u32 player_count = players.getSize();
 	u32 datasize = 2+(2+PLAYERNAME_SIZE)*player_count;
@@ -2922,6 +2956,200 @@ RemoteClient* Server::getClient(u16 peer_id)
 	return n->getValue();
 }
 
+Player *Server::emergePlayer(const char *name, const char *password)
+{
+	/*
+		Try to get an existing player
+	*/
+	Player *player = m_env.getPlayer(name);
+	if(player != NULL)
+	{
+		// Got one.
+		return player;
+	}
+	
+	/*
+		Create a new player
+	*/
+	{
+		player = new ServerRemotePlayer();
+		//player->peer_id = c.peer_id;
+		player->peer_id = PEER_ID_INEXISTENT;
+		player->updateName(name);
+
+		/*
+			Set player position
+		*/
+#if 0
+		// We're going to throw the player to this position
+		//v2s16 nodepos(29990,29990);
+		//v2s16 nodepos(9990,9990);
+		v2s16 nodepos(0,0);
+		v2s16 sectorpos = getNodeSectorPos(nodepos);
+		// Get sector
+		m_env.getMap().emergeSector(sectorpos);
+		// Get ground height at point
+		f32 groundheight = m_env.getMap().getGroundHeight(nodepos, true);
+		// The sector should have been generated -> groundheight exists
+		assert(groundheight > GROUNDHEIGHT_VALID_MINVALUE);
+		// Don't go underwater
+		if(groundheight < WATER_LEVEL)
+			groundheight = WATER_LEVEL;
+#endif
+
+#if 1
+		v2s16 nodepos;
+		f32 groundheight = 0;
+		// Try to find a good place a few times
+		for(s32 i=0; i<100; i++)
+		{
+			s32 range = 1 + i*5;
+			// We're going to try to throw the player to this position
+			nodepos = v2s16(-range/2 + (myrand()%range),
+					-range/2 + (myrand()%range));
+			v2s16 sectorpos = getNodeSectorPos(nodepos);
+			// Get sector
+			m_env.getMap().emergeSector(sectorpos);
+			// Get ground height at point
+			groundheight = m_env.getMap().getGroundHeight(nodepos, true);
+			// The sector should have been generated -> groundheight exists
+			assert(groundheight > GROUNDHEIGHT_VALID_MINVALUE);
+			// Don't go underwater
+			if(groundheight < WATER_LEVEL)
+				continue;
+			// Don't go inside ground
+			try{
+				v3s16 footpos(nodepos.X, groundheight+1, nodepos.Y);
+				v3s16 headpos(nodepos.X, groundheight+2, nodepos.Y);
+				if(m_env.getMap().getNode(footpos).d != CONTENT_AIR
+					|| m_env.getMap().getNode(headpos).d != CONTENT_AIR)
+				{
+					// In ground
+					continue;
+				}
+			}catch(InvalidPositionException &e)
+			{
+				// Ignore invalid position
+				continue;
+			}
+			// Found a good place
+			break;
+		}
+#endif
+
+		player->setPosition(intToFloat(v3s16(
+				nodepos.X,
+				groundheight + 1,
+				nodepos.Y
+		)));
+
+		/*
+			Add player to environment
+		*/
+
+		m_env.addPlayer(player);
+
+		/*
+			Add stuff to inventory
+		*/
+		
+		if(g_settings.getBool("creative_mode"))
+		{
+			// Give some good picks
+			{
+				InventoryItem *item = new ToolItem("STPick", 0);
+				void* r = player->inventory.addItem("main", item);
+				assert(r == NULL);
+			}
+			{
+				InventoryItem *item = new ToolItem("MesePick", 0);
+				void* r = player->inventory.addItem("main", item);
+				assert(r == NULL);
+			}
+
+			/*
+				Give materials
+			*/
+			assert(USEFUL_CONTENT_COUNT <= PLAYER_INVENTORY_SIZE);
+			
+			// add torch first
+			InventoryItem *item = new MaterialItem(CONTENT_TORCH, 1);
+			player->inventory.addItem("main", item);
+			
+			// Then others
+			for(u16 i=0; i<USEFUL_CONTENT_COUNT; i++)
+			{
+				// Skip some materials
+				if(i == CONTENT_OCEAN || i == CONTENT_TORCH)
+					continue;
+
+				InventoryItem *item = new MaterialItem(i, 1);
+				player->inventory.addItem("main", item);
+			}
+			// Sign
+			{
+				InventoryItem *item = new MapBlockObjectItem("Sign Example text");
+				void* r = player->inventory.addItem("main", item);
+				assert(r == NULL);
+			}
+		}
+		else
+		{
+			/*{
+				InventoryItem *item = new MaterialItem(CONTENT_MESE, 6);
+				void* r = player->inventory.addItem("main", item);
+				assert(r == NULL);
+			}
+			{
+				InventoryItem *item = new MaterialItem(CONTENT_COALSTONE, 6);
+				void* r = player->inventory.addItem("main", item);
+				assert(r == NULL);
+			}
+			{
+				InventoryItem *item = new MaterialItem(CONTENT_WOOD, 6);
+				void* r = player->inventory.addItem("main", item);
+				assert(r == NULL);
+			}
+			{
+				InventoryItem *item = new CraftItem("Stick", 4);
+				void* r = player->inventory.addItem("main", item);
+				assert(r == NULL);
+			}
+			{
+				InventoryItem *item = new ToolItem("WPick", 32000);
+				void* r = player->inventory.addItem("main", item);
+				assert(r == NULL);
+			}
+			{
+				InventoryItem *item = new ToolItem("STPick", 32000);
+				void* r = player->inventory.addItem("main", item);
+				assert(r == NULL);
+			}*/
+			/*// Give some lights
+			{
+				InventoryItem *item = new MaterialItem(CONTENT_TORCH, 999);
+				bool r = player->inventory.addItem("main", item);
+				assert(r == true);
+			}
+			// and some signs
+			for(u16 i=0; i<4; i++)
+			{
+				InventoryItem *item = new MapBlockObjectItem("Sign Example text");
+				bool r = player->inventory.addItem("main", item);
+				assert(r == true);
+			}*/
+			/*// Give some other stuff
+			{
+				InventoryItem *item = new MaterialItem(CONTENT_TREE, 999);
+				bool r = player->inventory.addItem("main", item);
+				assert(r == true);
+			}*/
+		}
+
+		return player;
+	}
+}
+
 void Server::UpdateBlockWaterPressure(MapBlock *block,
 			core::map<v3s16, MapBlock*> &modified_blocks)
 {
@@ -2966,145 +3194,6 @@ void Server::handlePeerChange(PeerChange &c)
 		client->peer_id = c.peer_id;
 		m_clients.insert(client->peer_id, client);
 
-		// Create player
-		{
-			Player *player = m_env.getPlayer(c.peer_id);
-			
-			// The player shouldn't already exist
-			assert(player == NULL);
-
-			player = new ServerRemotePlayer(true);
-			player->peer_id = c.peer_id;
-
-			/*
-				Set player position
-			*/
-			
-			// We're going to throw the player to this position
-			//v2s16 nodepos(29990,29990);
-			//v2s16 nodepos(9990,9990);
-			v2s16 nodepos(0,0);
-			v2s16 sectorpos = getNodeSectorPos(nodepos);
-			// Get zero sector (it could have been unloaded to disk)
-			m_env.getMap().emergeSector(sectorpos);
-			// Get ground height at origin
-			f32 groundheight = m_env.getMap().getGroundHeight(nodepos, true);
-			// The sector should have been generated -> groundheight exists
-			assert(groundheight > GROUNDHEIGHT_VALID_MINVALUE);
-			// Don't go underwater
-			if(groundheight < WATER_LEVEL)
-				groundheight = WATER_LEVEL;
-
-			player->setPosition(intToFloat(v3s16(
-					nodepos.X,
-					groundheight + 1,
-					nodepos.Y
-			)));
-
-			/*
-				Add player to environment
-			*/
-
-			m_env.addPlayer(player);
-
-			/*
-				Add stuff to inventory
-			*/
-			
-			if(g_settings.getBool("creative_mode"))
-			{
-				// Give some good picks
-				{
-					InventoryItem *item = new ToolItem("STPick", 0);
-					void* r = player->inventory.addItem("main", item);
-					assert(r == NULL);
-				}
-				{
-					InventoryItem *item = new ToolItem("MesePick", 0);
-					void* r = player->inventory.addItem("main", item);
-					assert(r == NULL);
-				}
-
-				/*
-					Give materials
-				*/
-				assert(USEFUL_CONTENT_COUNT <= PLAYER_INVENTORY_SIZE);
-				
-				// add torch first
-				InventoryItem *item = new MaterialItem(CONTENT_TORCH, 1);
-				player->inventory.addItem("main", item);
-				
-				// Then others
-				for(u16 i=0; i<USEFUL_CONTENT_COUNT; i++)
-				{
-					// Skip some materials
-					if(i == CONTENT_OCEAN || i == CONTENT_TORCH)
-						continue;
-
-					InventoryItem *item = new MaterialItem(i, 1);
-					player->inventory.addItem("main", item);
-				}
-				// Sign
-				{
-					InventoryItem *item = new MapBlockObjectItem("Sign Example text");
-					void* r = player->inventory.addItem("main", item);
-					assert(r == NULL);
-				}
-			}
-			else
-			{
-				/*{
-					InventoryItem *item = new MaterialItem(CONTENT_MESE, 6);
-					void* r = player->inventory.addItem("main", item);
-					assert(r == NULL);
-				}
-				{
-					InventoryItem *item = new MaterialItem(CONTENT_COALSTONE, 6);
-					void* r = player->inventory.addItem("main", item);
-					assert(r == NULL);
-				}
-				{
-					InventoryItem *item = new MaterialItem(CONTENT_WOOD, 6);
-					void* r = player->inventory.addItem("main", item);
-					assert(r == NULL);
-				}
-				{
-					InventoryItem *item = new CraftItem("Stick", 4);
-					void* r = player->inventory.addItem("main", item);
-					assert(r == NULL);
-				}
-				{
-					InventoryItem *item = new ToolItem("WPick", 32000);
-					void* r = player->inventory.addItem("main", item);
-					assert(r == NULL);
-				}
-				{
-					InventoryItem *item = new ToolItem("STPick", 32000);
-					void* r = player->inventory.addItem("main", item);
-					assert(r == NULL);
-				}*/
-				/*// Give some lights
-				{
-					InventoryItem *item = new MaterialItem(CONTENT_TORCH, 999);
-					bool r = player->inventory.addItem("main", item);
-					assert(r == true);
-				}
-				// and some signs
-				for(u16 i=0; i<4; i++)
-				{
-					InventoryItem *item = new MapBlockObjectItem("Sign Example text");
-					bool r = player->inventory.addItem("main", item);
-					assert(r == true);
-				}*/
-				/*// Give some other stuff
-				{
-					InventoryItem *item = new MaterialItem(CONTENT_TREE, 999);
-					bool r = player->inventory.addItem("main", item);
-					assert(r == true);
-				}*/
-			}
-		}
-
 	} // PEER_ADDED
 	else if(c.type == PEER_REMOVED)
 	{
@@ -3133,9 +3222,15 @@ void Server::handlePeerChange(PeerChange &c)
 				message += L" (timed out)";
 		}
 
-		// Delete player
+		/*// Delete player
 		{
 			m_env.removePlayer(c.peer_id);
+		}*/
+
+		// Set player client disconnected
+		{
+			Player *player = m_env.getPlayer(c.peer_id);
+			player->peer_id = 0;
 		}
 		
 		// Delete client

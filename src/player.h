@@ -96,9 +96,10 @@ public:
 	virtual bool isLocal() const = 0;
 
 	virtual void updateLight(u8 light_at_pos) {};
-
-	virtual bool isClientConnected() { return false; }
-	virtual void setClientConnected(bool) {}
+	
+	// NOTE: Use peer_id == 0 for disconnected
+	/*virtual bool isClientConnected() { return false; }
+	virtual void setClientConnected(bool) {}*/
 
 	bool touching_ground;
 	bool in_water;
@@ -118,8 +119,9 @@ protected:
 class ServerRemotePlayer : public Player
 {
 public:
-	ServerRemotePlayer(bool client_connected):
-		m_client_connected(client_connected)
+	/*ServerRemotePlayer(bool client_connected):
+		m_client_connected(client_connected)*/
+	ServerRemotePlayer()
 	{
 	}
 	virtual ~ServerRemotePlayer()
@@ -135,7 +137,7 @@ public:
 	{
 	}
 
-	virtual bool isClientConnected()
+	/*virtual bool isClientConnected()
 	{
 		return m_client_connected;
 	}
@@ -145,7 +147,7 @@ public:
 	}
 
 	// This 
-	bool m_client_connected;
+	bool m_client_connected;*/
 
 private:
 };
