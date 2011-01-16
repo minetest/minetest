@@ -44,11 +44,12 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 	9: (dev) block objects
 	10: (dev) water pressure
 	11: (dev) zlib'd blocks, block flags
+	12: (dev) UnlimitedHeightmap now uses interpolated areas
 */
 // This represents an uninitialized or invalid format
 #define SER_FMT_VER_INVALID 255
 // Highest supported serialization version
-#define SER_FMT_VER_HIGHEST 11
+#define SER_FMT_VER_HIGHEST 12
 // Lowest supported serialization version
 #define SER_FMT_VER_LOWEST 2
 

@@ -503,30 +503,31 @@ private:
 	s16 m_blocksize;
 
 	// TODO: Remove ValueGenerators
-	ValueGenerator *m_randmax_generator;
+	/*ValueGenerator *m_randmax_generator;
 	ValueGenerator *m_randfactor_generator;
-	ValueGenerator *m_base_generator;
+	ValueGenerator *m_base_generator;*/
 
-	PointAttributeList *m_palist;
+	PointAttributeDatabase *m_padb;
 
 public:
 
 	UnlimitedHeightmap(
 			s16 blocksize,
-			ValueGenerator *randmax_generator,
+			/*ValueGenerator *randmax_generator,
 			ValueGenerator *randfactor_generator,
-			ValueGenerator *base_generator,
-			PointAttributeList *palist=NULL
+			ValueGenerator *base_generator,*/
+			PointAttributeDatabase *padb
 			):
 		m_blocksize(blocksize),
-		m_randmax_generator(randmax_generator),
+		/*m_randmax_generator(randmax_generator),
 		m_randfactor_generator(randfactor_generator),
-		m_base_generator(base_generator),
-		m_palist(palist)
+		m_base_generator(base_generator),*/
+		m_padb(padb)
 	{
-		assert(m_randmax_generator != NULL);
+		/*assert(m_randmax_generator != NULL);
 		assert(m_randfactor_generator != NULL);
-		assert(m_base_generator != NULL);
+		assert(m_base_generator != NULL);*/
+		assert(m_padb);
 	}
 
 	~UnlimitedHeightmap()
@@ -538,9 +539,9 @@ public:
 			delete i.getNode()->getValue();
 		}
 
-		delete m_randmax_generator;
+		/*delete m_randmax_generator;
 		delete m_randfactor_generator;
-		delete m_base_generator;
+		delete m_base_generator;*/
 	}
 
 	void print();
@@ -563,7 +564,8 @@ public:
 	
 	//SharedBuffer<u8> serialize(u8 version);
 	void serialize(std::ostream &os, u8 version);
-	static UnlimitedHeightmap * deSerialize(std::istream &istr);
+	static UnlimitedHeightmap * deSerialize(std::istream &istr,
+			PointAttributeDatabase *padb);
 };
 
 #endif

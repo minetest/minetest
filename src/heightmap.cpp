@@ -23,6 +23,9 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "heightmap.h"
 
+// For MAP_BLOCKSIZE
+#include "mapblock.h"
+
 /*
 	ValueGenerator
 */
@@ -257,59 +260,6 @@ void FixedHeightmap::generateContinued(f32 randmax, f32 randfactor,
 			setGroundHeight(p, GROUNDHEIGHT_NOTFOUND_SETVALUE);
 		}
 	}
-
-	/*
-		Seed borders from master heightmap
-		NOTE: Does this actually have any effect on the output?
-	*/
-	/*struct SeedSpec
-	{
-		v2s16 neighbour_start;
-		v2s16 heightmap_start;
-		v2s16 dir;
-	};
-
-	SeedSpec seeds[4] =
-	{
-		{ // Z- edge on X-axis
-			v2s16(0, -1), // neighbour_start
-			v2s16(0, 0), // heightmap_start
-			v2s16(1, 0) // dir
-		},
-		{ // Z+ edge on X-axis
-			v2s16(0, m_blocksize),
-			v2s16(0, m_blocksize),
-			v2s16(1, 0)
-		},
-		{ // X- edge on Z-axis
-			v2s16(-1, 0),
-			v2s16(0, 0),
-			v2s16(0, 1)
-		},
-		{ // X+ edge on Z-axis
-			v2s16(m_blocksize, 0),
-			v2s16(m_blocksize, 0),
-			v2s16(0, 1)
-		},
-	};
-
-	for(s16 i=0; i<4; i++){
-		v2s16 npos = seeds[i].neighbour_start + m_pos_on_master * m_blocksize;
-		v2s16 hpos = seeds[i].heightmap_start;
-		for(s16 s=0; s<m_blocksize+1; s++){
-			f32 h = m_master->getGroundHeight(npos, false);
-			//dstream<<"h="<<h<<std::endl;
-			if(h < GROUNDHEIGHT_VALID_MINVALUE)
-				continue;
-				//break;
-			setGroundHeight(hpos, h);
-			hpos += seeds[i].dir;
-			npos += seeds[i].dir;
-		}
-	}*/
-	
-	/*dstream<<"borders seeded:"<<std::endl;
-	print();*/
 
 	/*
 		Fill with corners[] (if not already set)
@@ -549,29 +499,51 @@ FixedHeightmap * UnlimitedHeightmap::getHeightmap(v2s16 p_from, bool generate)
 			m_heightmaps.insert(p, heightmap);
 
 			f32 corners[4];
-			
-			if(m_palist)
+
+			s32 div = SECTOR_HEIGHTMAP_SPLIT * MAP_BLOCKSIZE;
+
 			{
-				//TODO: palist must be taken into account in generateContinued.
-				// It is almost useless in here.
-				s32 div = 2 * 16;
-				Settings *attr = m_palist->getNearAttr(p / div);
-				assert(attr);
-				corners[0] = attr->getFloat("baseheight");
-				corners[1] = attr->getFloat("baseheight");
-				corners[2] = attr->getFloat("baseheight");
-				corners[3] = attr->getFloat("baseheight");
+				PointAttributeList *palist = m_padb->getList("hm_baseheight");
+				
+				if(palist->empty())
+				{
+					corners[0] = 0;
+					corners[1] = 0;
+					corners[2] = 0;
+					corners[3] = 0;
+				}
+				else
+				{
+#if 0
+				corners[0] = palist->getNearAttr((p+v2s16(0,0)) * div).getFloat();
+				corners[1] = palist->getNearAttr((p+v2s16(1,0)) * div).getFloat();
+				corners[2] = palist->getNearAttr((p+v2s16(1,1)) * div).getFloat();
+				corners[3] = palist->getNearAttr((p+v2s16(0,1)) * div).getFloat();
+#endif
+#if 1
+				corners[0] = palist->getInterpolatedFloat((p+v2s16(0,0))*div);
+				corners[1] = palist->getInterpolatedFloat((p+v2s16(1,0))*div);
+				corners[2] = palist->getInterpolatedFloat((p+v2s16(1,1))*div);
+				corners[3] = palist->getInterpolatedFloat((p+v2s16(0,1))*div);
+#endif
+				}
 			}
-			else
+			/*else
 			{
 				corners[0] = m_base_generator->getValue(p+v2s16(0,0));
 				corners[1] = m_base_generator->getValue(p+v2s16(1,0));
 				corners[2] = m_base_generator->getValue(p+v2s16(1,1));
 				corners[3] = m_base_generator->getValue(p+v2s16(0,1));
-			}
+			}*/
 
-			f32 randmax = m_randmax_generator->getValue(p);
-			f32 randfactor = m_randfactor_generator->getValue(p);
+			/*f32 randmax = m_randmax_generator->getValue(p);
+			f32 randfactor = m_randfactor_generator->getValue(p);*/
+
+			f32 randmax = m_padb->getList("hm_randmax")
+					->getInterpolatedFloat(p*div);
+			f32 randfactor = m_padb->getList("hm_randfactor")
+					->getInterpolatedFloat(p*div);
+			//dstream<<"randmax="<<randmax<<" randfactor="<<randfactor<<std::endl;
 
 			heightmap->generateContinued(randmax, randfactor, corners);
 		}
@@ -702,6 +674,148 @@ void UnlimitedHeightmap::serialize(std::ostream &os, u8 version)
 		/*if(m_base_generator->getId() != VALUE_GENERATOR_ID_CONSTANT
 		|| m_randmax_generator->getId() != VALUE_GENERATOR_ID_CONSTANT
 		|| m_randfactor_generator->getId() != VALUE_GENERATOR_ID_CONSTANT)*/
+		/*if(std::string(m_base_generator->getName()) != "constant"
+		|| std::string(m_randmax_generator->getName()) != "constant"
+		|| std::string(m_randfactor_generator->getName()) != "constant")
+		{
+			throw SerializationError
+			("Cannot write UnlimitedHeightmap in old version: "
+			"Generators are not ConstantGenerators.");
+		}*/
+
+		// Dummy values
+		f32 basevalue = 0.0;
+		f32 randmax = 0.0;
+		f32 randfactor = 0.0;
+
+		// Write version
+		os.write((char*)&version, 1);
+		
+		/*
+			[0] u16 blocksize
+			[2] s32 randmax*1000
+			[6] s32 randfactor*1000
+			[10] s32 basevalue*1000
+			[14] u32 heightmap_count
+			[18] X * (v2s16 pos + heightmap)
+		*/
+		u32 heightmap_size =
+				FixedHeightmap::serializedLength(version, m_blocksize);
+		u32 heightmap_count = m_heightmaps.size();
+
+		//dstream<<"heightmap_size="<<heightmap_size<<std::endl;
+
+		u32 datasize = 2+4+4+4+4+heightmap_count*(4+heightmap_size);
+		SharedBuffer<u8> data(datasize);
+		
+		writeU16(&data[0], m_blocksize);
+		writeU32(&data[2], (s32)(randmax*1000.0));
+		writeU32(&data[6], (s32)(randfactor*1000.0));
+		writeU32(&data[10], (s32)(basevalue*1000.0));
+		writeU32(&data[14], heightmap_count);
+
+		core::map<v2s16, FixedHeightmap*>::Iterator j;
+		j = m_heightmaps.getIterator();
+		u32 i=0;
+		for(; j.atEnd() == false; j++)
+		{
+			FixedHeightmap *hm = j.getNode()->getValue();
+			v2s16 pos = j.getNode()->getKey();
+			writeV2S16(&data[18+i*(4+heightmap_size)], pos);
+			hm->serialize(&data[18+i*(4+heightmap_size)+4], version);
+			i++;
+		}
+
+		os.write((char*)*data, data.getSize());
+	}
+	else if(version <= 11)
+	{
+		// Write version
+		os.write((char*)&version, 1);
+		
+		u8 buf[4];
+		
+		writeU16(buf, m_blocksize);
+		os.write((char*)buf, 2);
+		
+		/*m_randmax_generator->serialize(os);
+		m_randfactor_generator->serialize(os);
+		m_base_generator->serialize(os);*/
+		os<<"constant 0.0\n";
+		os<<"constant 0.0\n";
+		os<<"constant 0.0\n";
+
+		u32 heightmap_count = m_heightmaps.size();
+		writeU32(buf, heightmap_count);
+		os.write((char*)buf, 4);
+
+		u32 heightmap_size =
+				FixedHeightmap::serializedLength(version, m_blocksize);
+
+		SharedBuffer<u8> hmdata(heightmap_size);
+
+		core::map<v2s16, FixedHeightmap*>::Iterator j;
+		j = m_heightmaps.getIterator();
+		u32 i=0;
+		for(; j.atEnd() == false; j++)
+		{
+			v2s16 pos = j.getNode()->getKey();
+			writeV2S16(buf, pos);
+			os.write((char*)buf, 4);
+
+			FixedHeightmap *hm = j.getNode()->getValue();
+			hm->serialize(*hmdata, version);
+			os.write((char*)*hmdata, hmdata.getSize());
+
+			i++;
+		}
+	}
+	else
+	{
+		// Write version
+		os.write((char*)&version, 1);
+		
+		u8 buf[4];
+		
+		writeU16(buf, m_blocksize);
+		os.write((char*)buf, 2);
+		
+		/*m_randmax_generator->serialize(os);
+		m_randfactor_generator->serialize(os);
+		m_base_generator->serialize(os);*/
+
+		u32 heightmap_count = m_heightmaps.size();
+		writeU32(buf, heightmap_count);
+		os.write((char*)buf, 4);
+
+		u32 heightmap_size =
+				FixedHeightmap::serializedLength(version, m_blocksize);
+
+		SharedBuffer<u8> hmdata(heightmap_size);
+
+		core::map<v2s16, FixedHeightmap*>::Iterator j;
+		j = m_heightmaps.getIterator();
+		u32 i=0;
+		for(; j.atEnd() == false; j++)
+		{
+			v2s16 pos = j.getNode()->getKey();
+			writeV2S16(buf, pos);
+			os.write((char*)buf, 4);
+
+			FixedHeightmap *hm = j.getNode()->getValue();
+			hm->serialize(*hmdata, version);
+			os.write((char*)*hmdata, hmdata.getSize());
+
+			i++;
+		}
+	}
+
+#if 0
+	if(version <= 7)
+	{
+		/*if(m_base_generator->getId() != VALUE_GENERATOR_ID_CONSTANT
+		|| m_randmax_generator->getId() != VALUE_GENERATOR_ID_CONSTANT
+		|| m_randfactor_generator->getId() != VALUE_GENERATOR_ID_CONSTANT)*/
 		if(std::string(m_base_generator->getName()) != "constant"
 		|| std::string(m_randmax_generator->getName()) != "constant"
 		|| std::string(m_randfactor_generator->getName()) != "constant")
@@ -797,9 +911,11 @@ void UnlimitedHeightmap::serialize(std::ostream &os, u8 version)
 			i++;
 		}
 	}
+#endif
 }
 
-UnlimitedHeightmap * UnlimitedHeightmap::deSerialize(std::istream &is)
+UnlimitedHeightmap * UnlimitedHeightmap::deSerialize(std::istream &is,
+		PointAttributeDatabase *padb)
 {
 	u8 version;
 	is.read((char*)&version, 1);
@@ -823,9 +939,10 @@ UnlimitedHeightmap * UnlimitedHeightmap::deSerialize(std::istream &is)
 			throw SerializationError
 					("UnlimitedHeightmap::deSerialize: no enough input data");
 		s16 blocksize = readU16(&data[0]);
-		f32 randmax = (f32)readU32(&data[2]) / 1000.0;
-		f32 randfactor = (f32)readU32(&data[6]) / 1000.0;
-		f32 basevalue = (f32)readU32(&data[10]) / 1000.0;
+		// Dummy read randmax, randfactor, basevalue
+		/*f32 randmax = (f32)*/readU32(&data[2]) /*/ 1000.0*/;
+		/*f32 randfactor = (f32)*/readU32(&data[6]) /*/ 1000.0*/;
+		/*f32 basevalue = (f32)*/readU32(&data[10]) /*/ 1000.0*/;
 		u32 heightmap_count = readU32(&data[14]);
 
 		/*dstream<<"UnlimitedHeightmap::deSerialize():"
@@ -838,12 +955,12 @@ UnlimitedHeightmap * UnlimitedHeightmap::deSerialize(std::istream &is)
 
 		//dstream<<"heightmap_size="<<heightmap_size<<std::endl;
 
-		ValueGenerator *maxgen = new ConstantGenerator(randmax);
+		/*ValueGenerator *maxgen = new ConstantGenerator(randmax);
 		ValueGenerator *factorgen = new ConstantGenerator(randfactor);
-		ValueGenerator *basegen = new ConstantGenerator(basevalue);
-
+		ValueGenerator *basegen = new ConstantGenerator(basevalue);*/
+		
 		UnlimitedHeightmap *hm = new UnlimitedHeightmap
-				(blocksize, maxgen, factorgen, basegen, NULL);
+				(blocksize, padb);
 
 		for(u32 i=0; i<heightmap_count; i++)
 		{
@@ -862,16 +979,16 @@ UnlimitedHeightmap * UnlimitedHeightmap::deSerialize(std::istream &is)
 		}
 		return hm;
 	}
-	else
+	else if(version <= 11)
 	{
 		u8 buf[4];
 		
 		is.read((char*)buf, 2);
 		s16 blocksize = readU16(buf);
-
-		ValueGenerator *maxgen = ValueGenerator::deSerialize(is);
-		ValueGenerator *factorgen = ValueGenerator::deSerialize(is);
-		ValueGenerator *basegen = ValueGenerator::deSerialize(is);
+		
+		// Dummy-read three lines (generators)
+		std::string templine;
+		std::getline(is, templine, '\n');
 
 		is.read((char*)buf, 4);
 		u32 heightmap_count = readU32(buf);
@@ -880,7 +997,45 @@ UnlimitedHeightmap * UnlimitedHeightmap::deSerialize(std::istream &is)
 				FixedHeightmap::serializedLength(version, blocksize);
 
 		UnlimitedHeightmap *hm = new UnlimitedHeightmap
-				(blocksize, maxgen, factorgen, basegen, NULL);
+				(blocksize, padb);
+
+		for(u32 i=0; i<heightmap_count; i++)
+		{
+			is.read((char*)buf, 4);
+			v2s16 pos = readV2S16(buf);
+
+			SharedBuffer<u8> data(heightmap_size);
+			is.read((char*)*data, heightmap_size);
+			if(is.gcount() != (s32)(heightmap_size)){
+				delete hm;
+				throw SerializationError
+						("UnlimitedHeightmap::deSerialize: no enough input data");
+			}
+			FixedHeightmap *f = new FixedHeightmap(hm, pos, blocksize);
+			f->deSerialize(*data, version);
+			hm->m_heightmaps.insert(pos, f);
+		}
+		return hm;
+	}
+	else
+	{
+		u8 buf[4];
+		
+		is.read((char*)buf, 2);
+		s16 blocksize = readU16(buf);
+
+		/*ValueGenerator *maxgen = ValueGenerator::deSerialize(is);
+		ValueGenerator *factorgen = ValueGenerator::deSerialize(is);
+		ValueGenerator *basegen = ValueGenerator::deSerialize(is);*/
+
+		is.read((char*)buf, 4);
+		u32 heightmap_count = readU32(buf);
+
+		u32 heightmap_size =
+				FixedHeightmap::serializedLength(version, blocksize);
+
+		UnlimitedHeightmap *hm = new UnlimitedHeightmap
+				(blocksize, padb);
 
 		for(u32 i=0; i<heightmap_count; i++)
 		{

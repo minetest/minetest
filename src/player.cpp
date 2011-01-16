@@ -286,6 +286,10 @@ void LocalPlayer::move(f32 dtime, Map &map)
 				{
 					// Doing nothing here will block the player from
 					// walking over map borders
+
+					// Go over borders in debug mode
+					if(HAXMODE)
+						continue;
 				}
 
 				core::aabbox3d<f32> nodebox = Map::getNodeBox(
@@ -374,13 +378,32 @@ void LocalPlayer::applyControl(float dtime)
 	
 	v3f speed = v3f(0,0,0);
 
+	if(HAXMODE)
+	{
+		v3f speed = getSpeed();
+		speed.Y = 0;
+		setSpeed(speed);
+	}
+
 	// Superspeed mode
 	bool superspeed = false;
 	if(control.superspeed)
 	{
-		speed += move_direction;
-		superspeed = true;
+		if(HAXMODE)
+		{
+			v3f speed = getSpeed();
+			speed.Y = -20*BS;
+			setSpeed(speed);
+		}
+		else
+		{
+			speed += move_direction;
+			superspeed = true;
+		}
 	}
+
+	if(HAXMODE)
+		superspeed = true;
 
 	if(control.up)
 	{
@@ -400,7 +423,16 @@ void LocalPlayer::applyControl(float dtime)
 	}
 	if(control.jump)
 	{
-		if(touching_ground)
+		if(HAXMODE)
+		{
+			v3f speed = getSpeed();
+			/*speed.Y += 20.*BS * dtime * 2;
+			if(speed.Y < 0)
+				speed.Y = 0;*/
+			speed.Y = 20*BS;
+			setSpeed(speed);
+		}
+		else if(touching_ground)
 		{
 			v3f speed = getSpeed();
 			speed.Y = 6.5*BS;
@@ -421,7 +453,10 @@ void LocalPlayer::applyControl(float dtime)
 		speed = speed.normalize() * walkspeed_max;
 	
 	f32 inc = walk_acceleration * BS * dtime;
-	
+
+	if(HAXMODE)
+		inc = walk_acceleration * BS * dtime * 10;
+
 	// Accelerate to target speed with maximum increment
 	accelerate(speed, inc);
 }

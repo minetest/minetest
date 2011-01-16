@@ -26,6 +26,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 	Cross-platform compatibility crap should go in porting.h.
 */
 
+#define HAXMODE 0
+
 #define APPNAME "minetest"
 
 #define DEBUGFILE "debug.txt"

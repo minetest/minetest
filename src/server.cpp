@@ -149,13 +149,39 @@ void * EmergeThread::Thread()
 			
 			if(optional)
 				only_from_disk = true;
-
-			block = map.emergeBlock(
-					p,
-					only_from_disk,
-					changed_blocks,
-					lighting_invalidated_blocks);
 			
+			// First check if the block already exists
+			if(only_from_disk)
+			{
+				block = map.getBlockNoCreate(p);
+			}
+
+			if(block == NULL)
+			{
+				block = map.emergeBlock(
+						p,
+						only_from_disk,
+						changed_blocks,
+						lighting_invalidated_blocks);
+			
+				/*
+					EXPERIMENTAL: Create a few other blocks too
+				*/
+				
+				map.emergeBlock(
+						p + v3s16(0,1,0),
+						only_from_disk,
+						changed_blocks,
+						lighting_invalidated_blocks);
+
+				map.emergeBlock(
+						p + v3s16(0,-1,0),
+						only_from_disk,
+						changed_blocks,
+						lighting_invalidated_blocks);
+				
+			}
+
 			// If it is a dummy, block was not found on disk
 			if(block->isDummy())
 			{
@@ -457,10 +483,19 @@ void RemoteClient::GetNextBlocks(Server *server, float dtime,
 				continue;
 
 			bool generate = d <= d_max_gen;
-		
-			// Limit the generating area vertically to 2/3
-			if(abs(p.Y - center.Y) > d_max_gen - d_max_gen / 3)
-				generate = false;
+			
+			if(HAXMODE)
+			{
+				// Don't generate above player
+				if(p.Y > center.Y)
+					generate = false;
+			}
+			else
+			{
+				// Limit the generating area vertically to 2/3
+				if(abs(p.Y - center.Y) > d_max_gen - d_max_gen / 3)
+					generate = false;
+			}
 			
 			/*
 				Don't send already sent blocks
@@ -470,6 +505,23 @@ void RemoteClient::GetNextBlocks(Server *server, float dtime,
 				
 				if(m_blocks_sent.find(p) != NULL)
 					continue;
+			}
+
+			if(HAXMODE)
+			{
+				/*
+					Ignore block if it is not at ground surface
+				*/
+				v2s16 p2d(p.X*MAP_BLOCKSIZE + MAP_BLOCKSIZE/2,
+						p.Z*MAP_BLOCKSIZE + MAP_BLOCKSIZE/2);
+				f32 y = server->m_env.getMap().getGroundHeight(p2d);
+				// The sector might not exist yet, thus no heightmap
+				if(y > GROUNDHEIGHT_VALID_MINVALUE)
+				{
+					f32 by = p.Y*MAP_BLOCKSIZE + MAP_BLOCKSIZE/2;
+					if(fabs(by - y) > MAP_BLOCKSIZE + MAP_BLOCKSIZE/3)
+						continue;
+				}
 			}
 
 			/*
@@ -2980,22 +3032,9 @@ Player *Server::emergePlayer(const char *name, const char *password)
 		/*
 			Set player position
 		*/
-#if 0
-		// We're going to throw the player to this position
-		//v2s16 nodepos(29990,29990);
-		//v2s16 nodepos(9990,9990);
-		v2s16 nodepos(0,0);
-		v2s16 sectorpos = getNodeSectorPos(nodepos);
-		// Get sector
-		m_env.getMap().emergeSector(sectorpos);
-		// Get ground height at point
-		f32 groundheight = m_env.getMap().getGroundHeight(nodepos, true);
-		// The sector should have been generated -> groundheight exists
-		assert(groundheight > GROUNDHEIGHT_VALID_MINVALUE);
-		// Don't go underwater
-		if(groundheight < WATER_LEVEL)
-			groundheight = WATER_LEVEL;
-#endif
+		
+		dstream<<"Server: Finding spawn place for player \""
+				<<player->getName()<<"\""<<std::endl;
 
 #if 1
 		v2s16 nodepos;
@@ -3003,7 +3042,7 @@ Player *Server::emergePlayer(const char *name, const char *password)
 		// Try to find a good place a few times
 		for(s32 i=0; i<100; i++)
 		{
-			s32 range = 1 + i*2;
+			s32 range = 1 + i*4;
 			// We're going to try to throw the player to this position
 			nodepos = v2s16(-range/2 + (myrand()%range),
 					-range/2 + (myrand()%range));

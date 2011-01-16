@@ -666,6 +666,20 @@ inline s32 stoi(std::string s)
 	return atoi(s.c_str());
 }
 
+inline std::string itos(s32 i)
+{
+	std::ostringstream o;
+	o<<i;
+	return o.str();
+}
+
+inline std::string ftos(float f)
+{
+	std::ostringstream o;
+	o<<f;
+	return o.str();
+}
+
 /*
 	A base class for simple background thread implementation
 */
@@ -1101,6 +1115,46 @@ public:
 		return stoi(get(name));
 	}
 
+	void clear()
+	{
+		m_settings.clear();
+		m_defaults.clear();
+	}
+
+	Settings & operator+=(Settings &other)
+	{
+		if(&other == this)
+			return *this;
+
+		for(core::map<std::string, std::string>::Iterator
+				i = other.m_settings.getIterator();
+				i.atEnd() == false; i++)
+		{
+			m_settings.insert(i.getNode()->getKey(),
+					i.getNode()->getValue());
+		}
+		
+		for(core::map<std::string, std::string>::Iterator
+				i = other.m_defaults.getIterator();
+				i.atEnd() == false; i++)
+		{
+			m_defaults.insert(i.getNode()->getKey(),
+					i.getNode()->getValue());
+		}
+
+	}
+
+	Settings & operator=(Settings &other)
+	{
+		if(&other == this)
+			return *this;
+
+		clear();
+		(*this) += other;
+		
+		return *this;
+	}
+
 private:
 	core::map<std::string, std::string> m_settings;
 	core::map<std::string, std::string> m_defaults;
@@ -1331,9 +1385,194 @@ void mysrand(unsigned seed);
 #define MYRAND_MAX 32767
 
 /*
-	TODO: Some kind of a thing that stores arbitary data related to
-	      2D coordinate points
+	Some kind of a thing that stores attributes related to
+	coordinate points
 */
+
+struct Attribute
+{
+	Attribute()
+	{
+	}
+
+	Attribute(const std::string &value):
+		m_value(value)
+	{
+	}
+
+	Attribute(float value)
+	{
+		m_value = ftos(value);
+	}
+
+	void set(const std::string &value)
+	{
+		m_value = value;
+	}
+	
+	std::string get()
+	{
+		return m_value;
+	}
+	
+	bool getBool()
+	{
+		return is_yes(get());
+	}
+	
+	float getFloat()
+	{
+		float f;
+		std::istringstream vis(get());
+		vis>>f;
+		return f;
+	}
+
+	u16 getU16()
+	{
+		return stoi(get(), 0, 65535);
+	}
+
+	s16 getS16()
+	{
+		return stoi(get(), -32768, 32767);
+	}
+
+	s32 getS32()
+	{
+		return stoi(get());
+	}
+
+	std::string m_value;
+};
+
+class PointAttributeList
+{
+	struct PointWithAttr
+	{
+		v3s16 p;
+		Attribute attr;
+	};
+
+public:
+	~PointAttributeList()
+	{
+		/*for(core::list<PointWithAttr>::Iterator
+				i = m_points.begin();
+				i != m_points.end(); i++)
+		{
+			PointWithAttr &pwa = *i;
+			//delete pwa.attr;
+		}*/
+	}
+
+	Attribute getNearAttr(v3s16 p)
+	{
+		core::list<PointWithAttr>::Iterator
+				nearest_i = m_points.end();
+		s16 nearest_d = 32767;
+		for(core::list<PointWithAttr>::Iterator
+				i = m_points.begin();
+				i != m_points.end(); i++)
+		{
+			PointWithAttr &pwa = *i;
+			s16 d = pwa.p.getDistanceFrom(p);
+			if(d < nearest_d)
+			{
+				nearest_i = i;
+				nearest_d = d;
+			}
+		}
+
+		if(nearest_i == m_points.end())
+			Attribute();
+
+		return nearest_i->attr;
+	}
+	
+	Attribute getNearAttr(v2s16 p)
+	{
+		return getNearAttr(v3s16(p.X, 0, p.Y));
+	}
+
+	bool empty()
+	{
+		return (m_points.size() == 0);
+	}
+	
+	/*
+		Take all points in range, or at least the nearest point,
+		and interpolate the values as floats
+	*/
+	float getInterpolatedFloat(v3s16 p);
+	
+	float getInterpolatedFloat(v2s16 p)
+	{
+		return getInterpolatedFloat(v3s16(p.X, 0, p.Y));
+	}
+	
+	//float getInterpolatedFloat(v3s16 p, s32 range);
+	/*float getInterpolatedFloat(v2s16 p, s32 range)
+	{
+		return getInterpolatedFloat(v3s16(p.X, 0, p.Y), range);
+	}*/
+	
+	void addPoint(v3s16 p, const Attribute &attr)
+	{
+		PointWithAttr pattr;
+		pattr.p = p;
+		pattr.attr = attr;
+		m_points.push_back(pattr);
+	}
+
+	void addPoint(v2s16 p, const Attribute &attr)
+	{
+		addPoint(v3s16(p.X, 0, p.Y), attr);
+	}
+
+private:
+	core::list<PointWithAttr> m_points;
+};
+
+/*
+	Basically just a wrapper to core::map<PointAttributeList*>
+*/
+
+class PointAttributeDatabase
+{
+public:
+	~PointAttributeDatabase()
+	{
+		for(core::map<std::string, PointAttributeList*>::Iterator
+				i = m_lists.getIterator();
+				i.atEnd() == false; i++)
+		{
+			delete i.getNode()->getValue();
+		}
+	}
+
+	PointAttributeList *getList(const std::string &name)
+	{
+		PointAttributeList *list = NULL;
+
+		core::map<std::string, PointAttributeList*>::Node *n;
+		n = m_lists.find(name);
+		
+		if(n == NULL)
+		{
+			list = new PointAttributeList();
+			m_lists.insert(name, list);
+		}
+		else
+		{
+			list = n->getValue();
+		}
+
+		return list;
+	}
+private:
+	core::map<std::string, PointAttributeList*> m_lists;
+};
 
 #endif
 

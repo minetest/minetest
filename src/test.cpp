@@ -695,10 +695,12 @@ struct TestHeightmap
 	{
 		//g_heightmap_debugprint = true;
 		const s16 BS1 = 4;
-		UnlimitedHeightmap hm1(BS1,
+		/*UnlimitedHeightmap hm1(BS1,
 				new ConstantGenerator(0.0),
 				new ConstantGenerator(0.0),
-				new ConstantGenerator(5.0));
+				new ConstantGenerator(5.0));*/
+		PointAttributeDatabase padb;
+		UnlimitedHeightmap hm1(BS1, &padb);
 		// Go through it so it generates itself
 		for(s16 y=0; y<=BS1; y++){
 			for(s16 x=0; x<=BS1; x++){
@@ -729,10 +731,26 @@ struct TestHeightmap
 		dstream<<std::endl;
 
 		const s16 BS1 = 8;
-		UnlimitedHeightmap hm1(BS1,
+		/*UnlimitedHeightmap hm1(BS1,
 				new ConstantGenerator(10.0),
 				new ConstantGenerator(0.3),
-				new ConstantGenerator(0.0));
+				new ConstantGenerator(0.0));*/
+
+		PointAttributeDatabase padb;
+
+		padb.getList("hm_baseheight")->addPoint(v2s16(-BS1,0), Attribute(0));
+		padb.getList("hm_randmax")->addPoint(v2s16(-BS1,0), Attribute(0));
+		padb.getList("hm_randfactor")->addPoint(v2s16(-BS1,0), Attribute(0.0));
+
+		padb.getList("hm_baseheight")->addPoint(v2s16(0,0), Attribute(-20));
+		padb.getList("hm_randmax")->addPoint(v2s16(0,0), Attribute(0));
+		padb.getList("hm_randfactor")->addPoint(v2s16(0,0), Attribute(0.5));
+
+		padb.getList("hm_baseheight")->addPoint(v2s16(BS1*2,BS1), Attribute(0));
+		padb.getList("hm_randmax")->addPoint(v2s16(BS1*2,BS1), Attribute(30));
+		padb.getList("hm_randfactor")->addPoint(v2s16(BS1*2,BS1), Attribute(0.9));
+
+		UnlimitedHeightmap hm1(BS1, &padb);
 
 		// Force hm1 to generate a some heightmap
 		hm1.getGroundHeight(v2s16(0,0));

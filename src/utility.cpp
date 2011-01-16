@@ -102,4 +102,230 @@ void mysrand(unsigned seed)
    next = seed;
 }
 
+// Float with distance
+struct DFloat
+{
+	float v;
+	u32 d;
+};
+
+float PointAttributeList::getInterpolatedFloat(v3s16 p)
+{
+	const u32 near_wanted_count = 5;
+	// Last is nearest, first is farthest
+	core::list<DFloat> near;
+
+	for(core::list<PointWithAttr>::Iterator
+			i = m_points.begin();
+			i != m_points.end(); i++)
+	{
+		PointWithAttr &pwa = *i;
+		u32 d = pwa.p.getDistanceFrom(p);
+		
+		DFloat df;
+		df.v = pwa.attr.getFloat();
+		df.d = d;
+				
+		// If near list is empty, add directly and continue
+		if(near.size() == 0)
+		{
+			near.push_back(df);
+			continue;
+		}
+		
+		// Get distance of farthest in near list
+		u32 near_d = 100000;
+		if(near.size() > 0)
+		{
+			core::list<DFloat>::Iterator i = near.begin();
+			near_d = i->d;
+		}
+		
+		/*
+			If point is closer than the farthest in the near list or
+			there are not yet enough points on the list
+		*/
+		if(d < near_d || near.size() < near_wanted_count)
+		{
+			// Find the right place in the near list and put it there
+			
+			// Go from farthest to near in the near list
+			core::list<DFloat>::Iterator i = near.begin();
+			for(; i != near.end(); i++)
+			{
+				// Stop when i is at the first nearer node
+				if(i->d < d)
+					break;
+			}
+			// Add df to before i
+			if(i == near.end())
+				near.push_back(df);
+			else
+				near.insert_before(i, df);
+
+			// Keep near list at right size
+			if(near.size() > near_wanted_count)
+			{
+				core::list<DFloat>::Iterator j = near.begin();
+				near.erase(j);
+			}
+		}
+	}
+	
+	// Return if no values found
+	if(near.size() == 0)
+		return 0.0;
+	
+	/*
+20:58:29 < tejeez> joka pisteelle a += arvo / etäisyys^6; b += 1 / etäisyys^6; ja 
+lopuks sit otetaan a/b
+	*/
+	
+	float a = 0;
+	float b = 0;
+	for(core::list<DFloat>::Iterator i = near.begin();
+			i != near.end(); i++)
+	{
+		if(i->d == 0)
+			return i->v;
+		
+		//float dd = pow((float)i->d, 6);
+		float dd = pow((float)i->d, 5);
+		float v = i->v;
+		//dstream<<"dd="<<dd<<", v="<<v<<std::endl;
+		a += v / dd;
+		b += 1 / dd;
+	}
+
+	return a / b;
+}
+
+#if 0
+float PointAttributeList::getInterpolatedFloat(v3s16 p)
+{
+	const u32 near_wanted_count = 2;
+	const u32 nearest_wanted_count = 2;
+	// Last is near
+	core::list<DFloat> near;
+
+	for(core::list<PointWithAttr>::Iterator
+			i = m_points.begin();
+			i != m_points.end(); i++)
+	{
+		PointWithAttr &pwa = *i;
+		u32 d = pwa.p.getDistanceFrom(p);
+		
+		DFloat df;
+		df.v = pwa.attr.getFloat();
+		df.d = d;
+				
+		// If near list is empty, add directly and continue
+		if(near.size() == 0)
+		{
+			near.push_back(df);
+			continue;
+		}
+		
+		// Get distance of farthest in near list
+		u32 near_d = 100000;
+		if(near.size() > 0)
+		{
+			core::list<DFloat>::Iterator i = near.begin();
+			near_d = i->d;
+		}
+		
+		/*
+			If point is closer than the farthest in the near list or
+			there are not yet enough points on the list
+		*/
+		if(d < near_d || near.size() < near_wanted_count)
+		{
+			// Find the right place in the near list and put it there
+			
+			// Go from farthest to near in the near list
+			core::list<DFloat>::Iterator i = near.begin();
+			for(; i != near.end(); i++)
+			{
+				// Stop when i is at the first nearer node
+				if(i->d < d)
+					break;
+			}
+			// Add df to before i
+			if(i == near.end())
+				near.push_back(df);
+			else
+				near.insert_before(i, df);
+
+			// Keep near list at right size
+			if(near.size() > near_wanted_count)
+			{
+				core::list<DFloat>::Iterator j = near.begin();
+				near.erase(j);
+			}
+		}
+	}
+	
+	// Return if no values found
+	if(near.size() == 0)
+		return 0.0;
+	
+	/*
+		Get nearest ones
+	*/
+
+	u32 nearest_count = nearest_wanted_count;
+	if(nearest_count > near.size())
+		nearest_count = near.size();
+	core::list<DFloat> nearest;
+	{
+		core::list<DFloat>::Iterator i = near.getLast();
+		for(u32 j=0; j<nearest_count; j++)
+		{
+			nearest.push_front(*i);
+			i--;
+		}
+	}
+
+	/*
+		TODO: Try this:
+20:58:29 < tejeez> joka pisteelle a += arvo / etäisyys^6; b += 1 / etäisyys^6; ja 
+lopuks sit otetaan a/b
+	*/
+
+	/*
+		Get total distance to nearest points
+	*/
+	
+	float nearest_d_sum = 0;
+	for(core::list<DFloat>::Iterator i = nearest.begin();
+			i != nearest.end(); i++)
+	{
+		nearest_d_sum += (float)i->d;
+	}
+
+	/*
+		Interpolate a value between the first ones
+	*/
+
+	dstream<<"nearest.size()="<<nearest.size()<<std::endl;
+
+	float interpolated = 0;
+	
+	for(core::list<DFloat>::Iterator i = nearest.begin();
+			i != nearest.end(); i++)
+	{
+		float weight;
+		if(nearest_d_sum > 0.001)
+			weight = (float)i->d / nearest_d_sum;
+		else
+			weight = 1. / nearest.size();
+		/*dstream<<"i->d="<<i->d<<" nearest_d_sum="<<nearest_d_sum
+				<<" weight="<<weight<<std::endl;*/
+		interpolated += weight * i->v;
+	}
+
+	return interpolated;
+}
+#endif
+
 

@@ -381,6 +381,12 @@ struct MapParams
 	//u16 max_objects_in_block;
 };
 
+/*
+	ServerMap
+
+	This is the only map class that is able to generate map.
+*/
+
 class ServerMap : public Map
 {
 public:
@@ -467,8 +473,10 @@ public:
 	virtual void PrintInfo(std::ostream &out);
 
 private:
+	// Generator parameters
 	UnlimitedHeightmap *m_heightmap;
 	MapParams m_params;
+	PointAttributeDatabase m_padb;
 
 	std::string m_savedir;
 	bool m_map_saving_enabled;
@@ -502,6 +510,12 @@ struct MapDrawControl
 };
 
 class Client;
+
+/*
+	ClientMap
+	
+	This is the only map class that is able to render itself on screen.
+*/
 
 class ClientMap : public Map, public scene::ISceneNode
 {

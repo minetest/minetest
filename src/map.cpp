@@ -1312,6 +1312,197 @@ ServerMap::ServerMap(std::string savedir, HMParams hmp, MapParams mp):
 	Map(dout_server),
 	m_heightmap(NULL)
 {
+	/*
+		Experimental and debug stuff
+	*/
+	
+	{
+		PointAttributeList *list_baseheight = m_padb.getList("hm_baseheight");
+		PointAttributeList *list_randmax = m_padb.getList("hm_randmax");
+		PointAttributeList *list_randfactor = m_padb.getList("hm_randfactor");
+		PointAttributeList *list_plants_amount = m_padb.getList("plants_amount");
+		PointAttributeList *list_caves_amount = m_padb.getList("caves_amount");
+		
+		for(u32 i=0; i<3000; i++)
+		{
+			u32 lim = MAP_GENERATION_LIMIT;
+			if(i < 200)
+				lim = 1000;
+
+			v3s16 p(
+				-lim + myrand()%(lim*2),
+				0,
+				-lim + myrand()%(lim*2)
+			);
+			/*float plants_amount = (float)(myrand()%1050) / 1000.0;
+			plants_amount = pow(plants_amount, 5);
+			list_plants_amount->addPoint(p, Attribute(plants_amount));*/
+			
+			float plants_amount = 0;
+			if(myrand()%5 == 0)
+			{
+				plants_amount = 1.5;
+			}
+			else if(myrand()%4 == 0)
+			{
+				plants_amount = 0.5;
+			}
+			else if(myrand()%2 == 0)
+			{
+				plants_amount = 0.03;
+			}
+			else
+			{
+				plants_amount = 0.0;
+			}
+
+			float caves_amount = 0;
+			if(myrand()%5 == 0)
+			{
+				caves_amount = 1.0;
+			}
+			else if(myrand()%3 == 0)
+			{
+				caves_amount = 0.3;
+			}
+			else
+			{
+				caves_amount = 0.05;
+			}
+
+			list_plants_amount->addPoint(p, Attribute(plants_amount));
+			list_caves_amount->addPoint(p, Attribute(caves_amount));
+		}
+#if 1
+		for(u32 i=0; i<3000; i++)
+		{
+			u32 lim = MAP_GENERATION_LIMIT;
+			if(i < 100)
+				lim = 1000;
+
+			v3s16 p(
+				-lim + myrand()%(lim*2),
+				0,
+				-lim + myrand()%(lim*2)
+			);
+			
+			/*s32 bh_i = (myrand()%200) - 50;
+			float baseheight = (float)bh_i;
+			
+			float m = 100.;
+			float e = 3.;
+			float randmax = (float)(myrand()%(int)(10.*pow(m, 1./e)))/10.;
+			randmax = pow(randmax, e);
+
+			//float randmax = (float)(myrand()%60);
+			float randfactor = (float)(myrand()%450) / 1000.0 + 0.4;*/
+
+			float baseheight = 0;
+			float randmax = 0;
+			float randfactor = 0;
+
+			if(myrand()%4 == 0)
+			{
+				baseheight = 100;
+				randmax = 100;
+				randfactor = 0.63;
+			}
+			else if(myrand()%5 == 0)
+			{
+				baseheight = 200;
+				randmax = 200;
+				randfactor = 0.66;
+			}
+			else if(myrand()%4 == 0)
+			{
+				baseheight = -3;
+				randmax = 30;
+				randfactor = 0.7;
+			}
+			else if(myrand()%3 == 0)
+			{
+				baseheight = 0;
+				randmax = 30;
+				randfactor = 0.60;
+			}
+			else
+			{
+				baseheight = -3;
+				randmax = 20;
+				randfactor = 0.5;
+			}
+
+			list_baseheight->addPoint(p, Attribute(baseheight));
+			list_randmax->addPoint(p, Attribute(randmax));
+			list_randfactor->addPoint(p, Attribute(randfactor));
+		}
+#endif
+
+		/*list_baseheight->addPoint(v3s16(0,0,0), Attribute(5));
+		list_randmax->addPoint(v3s16(0,0,0), Attribute(20));
+		list_randfactor->addPoint(v3s16(0,0,0), Attribute(0.6));*/
+	}
+
+#if 0
+	{
+		PointAttributeList *palist = m_padb.getList("hm_baseheight");
+
+		{
+			v3s16 p(0,0,0);
+			Attribute attr;
+			attr.set("5");
+			palist->addPoint(p, attr);
+		}
+
+		/*{
+			v3s16 p(-50,-50,0);
+			Attribute attr;
+			attr.set("-10");
+			palist->addPoint(p, attr);
+		}
+		
+		{
+			v3s16 p(50,0,50);
+			Attribute attr;
+			attr.set("200");
+			palist->addPoint(p, attr);
+		}*/
+	}
+#endif
+#if 0
+	{
+		PointAttributeList *palist = m_padb.getList("plants_amount");
+	
+		// Back
+		{
+			v3s16 p(0,0,-100);
+			Attribute attr;
+			attr.set("0");
+			palist->addPoint(p, attr);
+		}
+		
+		// Front right
+		{
+			v3s16 p(100,0,100);
+			Attribute attr;
+			attr.set("2.0");
+			palist->addPoint(p, attr);
+		}
+		
+		// Front left
+		{
+			v3s16 p(-100,0,100);
+			Attribute attr;
+			attr.set("0.2");
+			palist->addPoint(p, attr);
+		}
+	}
+#endif
+
+	/*
+		Try to load map; if not found, create a new one.
+	*/
+
 	m_savedir = savedir;
 	m_map_saving_enabled = false;
 	
@@ -1362,14 +1553,20 @@ ServerMap::ServerMap(std::string savedir, HMParams hmp, MapParams mp):
 	dstream<<DTIME<<"Initializing new map."<<std::endl;
 	
 	// Create master heightmap
-	ValueGenerator *maxgen =
+	/*ValueGenerator *maxgen =
 			ValueGenerator::deSerialize(hmp.randmax);
 	ValueGenerator *factorgen =
 			ValueGenerator::deSerialize(hmp.randfactor);
 	ValueGenerator *basegen =
 			ValueGenerator::deSerialize(hmp.base);
 	m_heightmap = new UnlimitedHeightmap
-			(hmp.blocksize, maxgen, factorgen, basegen);
+			(hmp.blocksize, maxgen, factorgen, basegen, &m_padb);*/
+
+	/*m_heightmap = new UnlimitedHeightmap
+			(hmp.blocksize, &m_padb);*/
+
+	m_heightmap = new UnlimitedHeightmap
+			(32, &m_padb);
 	
 	// Set map parameters
 	m_params = mp;
@@ -1456,49 +1653,16 @@ MapSector * ServerMap::emergeSector(v2s16 p2d)
 	s16 hm_d = MAP_BLOCKSIZE / hm_split;
 
 	ServerMapSector *sector = new ServerMapSector(this, p2d, hm_split);
+	
+	// Sector position on map in nodes
+	v2s16 nodepos2d = p2d * MAP_BLOCKSIZE;
 
 	/*dstream<<"Generating sector ("<<p2d.X<<","<<p2d.Y<<")"
 			" heightmaps and objects"<<std::endl;*/
 	
-	// Loop through sub-heightmaps
-	for(s16 y=0; y<hm_split; y++)
-	for(s16 x=0; x<hm_split; x++)
-	{
-		v2s16 p_in_sector = v2s16(x,y);
-		v2s16 mhm_p = p2d * hm_split + p_in_sector;
-		f32 corners[4] = {
-			m_heightmap->getGroundHeight(mhm_p+v2s16(0,0)),
-			m_heightmap->getGroundHeight(mhm_p+v2s16(1,0)),
-			m_heightmap->getGroundHeight(mhm_p+v2s16(1,1)),
-			m_heightmap->getGroundHeight(mhm_p+v2s16(0,1)),
-		};
-
-		/*dstream<<"p_in_sector=("<<p_in_sector.X<<","<<p_in_sector.Y<<")"
-				<<" mhm_p=("<<mhm_p.X<<","<<mhm_p.Y<<")"
-				<<std::endl;*/
-
-		FixedHeightmap *hm = new FixedHeightmap(&m_hwrapper,
-				mhm_p, hm_d);
-		sector->setHeightmap(p_in_sector, hm);
-
-		//TODO: Make these values configurable
-		
-		//hm->generateContinued(0.0, 0.0, corners);
-		hm->generateContinued(0.25, 0.2, corners);
-		//hm->generateContinued(0.5, 0.2, corners);
-		//hm->generateContinued(1.0, 0.2, corners);
-		//hm->generateContinued(2.0, 0.2, corners);
-
-		//hm->print();
-		
-	}
-
 	/*
-		Generate objects
+		Calculate some information about local properties
 	*/
-	
-	core::map<v3s16, u8> *objects = new core::map<v3s16, u8>;
-	sector->setObjects(objects);
 	
 	v2s16 mhm_p = p2d * hm_split;
 	f32 corners[4] = {
@@ -1535,19 +1699,78 @@ MapSector * ServerMap::emergeSector(v2s16 p2d)
 	pitness /= 4.0;
 	pitness /= MAP_BLOCKSIZE;
 	//dstream<<"pitness="<<pitness<<std::endl;
+
+	/*
+		Get local attributes
+	*/
 	
+	// Get plant amount from attributes
+	PointAttributeList *palist = m_padb.getList("plants_amount");
+	assert(palist);
+	/*float local_plants_amount =
+			palist->getNearAttr(nodepos2d).getFloat();*/
+	float local_plants_amount =
+			palist->getInterpolatedFloat(nodepos2d);
+
+	/*
+		Generate sector heightmap
+	*/
+
+	// Loop through sub-heightmaps
+	for(s16 y=0; y<hm_split; y++)
+	for(s16 x=0; x<hm_split; x++)
+	{
+		v2s16 p_in_sector = v2s16(x,y);
+		v2s16 mhm_p = p2d * hm_split + p_in_sector;
+		f32 corners[4] = {
+			m_heightmap->getGroundHeight(mhm_p+v2s16(0,0)),
+			m_heightmap->getGroundHeight(mhm_p+v2s16(1,0)),
+			m_heightmap->getGroundHeight(mhm_p+v2s16(1,1)),
+			m_heightmap->getGroundHeight(mhm_p+v2s16(0,1)),
+		};
+
+		/*dstream<<"p_in_sector=("<<p_in_sector.X<<","<<p_in_sector.Y<<")"
+				<<" mhm_p=("<<mhm_p.X<<","<<mhm_p.Y<<")"
+				<<std::endl;*/
+
+		FixedHeightmap *hm = new FixedHeightmap(&m_hwrapper,
+				mhm_p, hm_d);
+		sector->setHeightmap(p_in_sector, hm);
+
+		//TODO: Make these values configurable
+		//hm->generateContinued(0.0, 0.0, corners);
+		//hm->generateContinued(0.25, 0.2, corners);
+		//hm->generateContinued(0.5, 0.2, corners);
+		//hm->generateContinued(1.0, 0.2, corners);
+		//hm->generateContinued(2.0, 0.2, corners);
+		hm->generateContinued(2.0 * avgslope, 0.5, corners);
+
+		//hm->print();
+	}
+
+	/*
+		Generate objects
+	*/
+	
+	core::map<v3s16, u8> *objects = new core::map<v3s16, u8>;
+	sector->setObjects(objects);
+
 	/*
 		Plant some trees if there is not much slope
 	*/
 	{
 		// Avgslope is the derivative of a hill
-		float t = avgslope * avgslope;
-		float a = MAP_BLOCKSIZE * m_params.plants_amount;
+		//float t = avgslope * avgslope;
+		float t = avgslope;
+		float a = MAP_BLOCKSIZE * m_params.plants_amount * local_plants_amount;
 		u32 tree_max;
-		if(t > 0.03)
-			tree_max = a / (t/0.03);
+		//float something = 0.17*0.17;
+		float something = 0.3;
+		if(t > something)
+			tree_max = a / (t/something);
 		else
 			tree_max = a;
+		
 		u32 count = (myrand()%(tree_max+1));
 		//u32 count = tree_max;
 		for(u32 i=0; i<count; i++)
@@ -1567,7 +1790,7 @@ MapSector * ServerMap::emergeSector(v2s16 p2d)
 	{
 		// Pitness usually goes at around -0.5...0.5
 		u32 bush_max = 0;
-		u32 a = MAP_BLOCKSIZE * 3.0 * m_params.plants_amount;
+		u32 a = MAP_BLOCKSIZE * 3.0 * m_params.plants_amount * local_plants_amount;
 		if(pitness > 0)
 			bush_max = (pitness*a*4);
 		if(bush_max > a)
@@ -1589,7 +1812,7 @@ MapSector * ServerMap::emergeSector(v2s16 p2d)
 	*/
 	if(m_params.ravines_amount != 0)
 	{
-		if(myrand()%(s32)(20.0 / m_params.ravines_amount) == 0)
+		if(myrand()%(s32)(200.0 / m_params.ravines_amount) == 0)
 		{
 			s16 s = 6;
 			s16 x = myrand()%(MAP_BLOCKSIZE-s*2-1)+s;
@@ -1839,6 +2062,14 @@ MapBlock * ServerMap::emergeBlock(
 	bool some_part_underground = block_y * MAP_BLOCKSIZE <= highest_ground_y;
 
 	/*
+		Get local attributes
+	*/
+	
+	v2s16 nodepos2d = p2d * MAP_BLOCKSIZE;
+	PointAttributeList *list_caves_amount = m_padb.getList("caves_amount");
+	float caves_amount = list_caves_amount->getInterpolatedFloat(nodepos2d);
+
+	/*
 		Generate dungeons
 	*/
 
@@ -1937,20 +2168,60 @@ MapBlock * ServerMap::emergeBlock(
 		}
 		catch(InvalidPositionException &e){}
 
+		// Check y-
+		try
+		{
+			s16 y = -1;
+			for(s16 x=0; x<ued; x++)
+			for(s16 z=0; z<ued; z++)
+			{
+				v3s16 ap = v3s16(x,y,z) + block->getPosRelative();
+				if(getNode(ap).d == CONTENT_AIR)
+				{
+					orp = v3f(x+1,0,z+1);
+					found_existing = true;
+					goto continue_generating;
+				}
+			}
+		}
+		catch(InvalidPositionException &e){}
+		
+		// Check y+
+		try
+		{
+			s16 y = ued;
+			for(s16 x=0; x<ued; x++)
+			for(s16 z=0; z<ued; z++)
+			{
+				v3s16 ap = v3s16(x,y,z) + block->getPosRelative();
+				if(getNode(ap).d == CONTENT_AIR)
+				{
+					orp = v3f(x+1,ued-1,z+1);
+					found_existing = true;
+					goto continue_generating;
+				}
+			}
+		}
+		catch(InvalidPositionException &e){}
+
 continue_generating:
 		
 		/*
 			Don't always generate dungeon
 		*/
 		bool do_generate_dungeons = true;
+		// Don't generate if no part is underground
 		if(!some_part_underground)
 			do_generate_dungeons = false;
+		// If block is partly underground, caves are generated.
 		else if(!completely_underground)
-			do_generate_dungeons = rand() % 5;
-		else if(found_existing)
+			do_generate_dungeons = (rand() % 100 <= (u32)(caves_amount*100));
+		// Always continue if found existing dungeons underground
+		else if(found_existing && completely_underground)
 			do_generate_dungeons = true;
+		// If underground and no dungeons found
 		else
-			do_generate_dungeons = rand() % 2;
+			do_generate_dungeons = (rand() % 2 == 0);
 
 		if(do_generate_dungeons)
 		{
@@ -2426,6 +2697,12 @@ continue_generating:
 
 		changed_blocks.insert(block->getPos(), block);
 	}
+	
+	if(HAXMODE)
+	{
+		// Don't calculate lighting at all
+		lighting_invalidated_blocks.clear();
+	}
 
 	return block;
 }
@@ -2659,7 +2936,7 @@ void ServerMap::loadMasterHeightmap()
 	if(m_heightmap != NULL)
 		delete m_heightmap;
 		
-	m_heightmap = UnlimitedHeightmap::deSerialize(is);
+	m_heightmap = UnlimitedHeightmap::deSerialize(is, &m_padb);
 }
 
 void ServerMap::saveSectorMeta(ServerMapSector *sector)
