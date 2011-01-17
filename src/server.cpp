@@ -3315,7 +3315,8 @@ Player *Server::emergePlayer(const char *name, const char *password,
 		}
 
 		return player;
-	}
+		
+	} // create new player
 }
 
 #if 0
