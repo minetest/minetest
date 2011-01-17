@@ -35,8 +35,7 @@ Map::Map(std::ostream &dout):
 	m_camera_position(0,0,0),
 	m_camera_direction(0,0,1),
 	m_sector_cache(NULL),
-	m_hwrapper(this),
-	drawoffset(0,0,0)
+	m_hwrapper(this)
 {
 	m_sector_mutex.Init();
 	m_camera_mutex.Init();
@@ -1236,7 +1235,7 @@ void Map::deleteSectors(core::list<v2s16> &list, bool only_blocks)
 		
 		This disables the existence of caches while locked
 	*/
-	SharedPtr<JMutexAutoLock> cachelock(m_blockcachelock.waitCaches());
+	//SharedPtr<JMutexAutoLock> cachelock(m_blockcachelock.waitCaches());
 
 	core::list<v2s16>::Iterator j;
 	for(j=list.begin(); j!=list.end(); j++)
@@ -1723,7 +1722,8 @@ MapSector * ServerMap::emergeSector(v2s16 p2d)
 		//hm->generateContinued(0.5, 0.2, corners);
 		//hm->generateContinued(1.0, 0.2, corners);
 		//hm->generateContinued(2.0, 0.2, corners);
-		hm->generateContinued(2.0 * avgslope, 0.5, corners);
+		//hm->generateContinued(2.0 * avgslope, 0.5, corners);
+		hm->generateContinued(avgslope * MAP_BLOCKSIZE/8, 0.5, corners);
 
 		//hm->print();
 	}
@@ -1735,6 +1735,8 @@ MapSector * ServerMap::emergeSector(v2s16 p2d)
 	core::map<v3s16, u8> *objects = new core::map<v3s16, u8>;
 	sector->setObjects(objects);
 
+	float area = MAP_BLOCKSIZE * MAP_BLOCKSIZE;
+
 	/*
 		Plant some trees if there is not much slope
 	*/
@@ -1742,7 +1744,7 @@ MapSector * ServerMap::emergeSector(v2s16 p2d)
 		// Avgslope is the derivative of a hill
 		//float t = avgslope * avgslope;
 		float t = avgslope;
-		float a = MAP_BLOCKSIZE * m_params.plants_amount * local_plants_amount;
+		float a = area/16 * m_params.plants_amount * local_plants_amount;
 		u32 tree_max;
 		//float something = 0.17*0.17;
 		float something = 0.3;
@@ -1770,7 +1772,7 @@ MapSector * ServerMap::emergeSector(v2s16 p2d)
 	{
 		// Pitness usually goes at around -0.5...0.5
 		u32 bush_max = 0;
-		u32 a = MAP_BLOCKSIZE * 3.0 * m_params.plants_amount * local_plants_amount;
+		u32 a = area/16 * 3.0 * m_params.plants_amount * local_plants_amount;
 		if(pitness > 0)
 			bush_max = (pitness*a*4);
 		if(bush_max > a)
@@ -1910,9 +1912,10 @@ MapBlock * ServerMap::emergeBlock(
 		block->unDummify();
 	}
 	
-	u8 water_material = CONTENT_WATER;
+	/*u8 water_material = CONTENT_WATER;
 	if(g_settings.getBool("endless_water"))
-		water_material = CONTENT_OCEAN;
+		water_material = CONTENT_WATERSOURCE;*/
+	u8 water_material = CONTENT_WATERSOURCE;
 	
 	s32 lowest_ground_y = 32767;
 	s32 highest_ground_y = -32768;
@@ -2732,7 +2735,8 @@ continue_generating:
 	/*
 		Debug mode operation
 	*/
-	if(HAXMODE)
+	bool haxmode = g_settings.getBool("haxmode");
+	if(haxmode)
 	{
 		// Don't calculate lighting at all
 		lighting_invalidated_blocks.clear();
@@ -3624,7 +3628,7 @@ void ClientMap::renderMap(video::IVideoDriver* driver, s32 pass)
 			<<", rendered "<<vertex_count<<" vertices."<<std::endl;*/
 }
 
-v3s16 ClientMap::setTempMod(v3s16 p, NodeMod mod)
+v3s16 ClientMap::setTempMod(v3s16 p, NodeMod mod, bool *changed)
 {
 	/*
 		Add it to all blocks touching it
@@ -3648,11 +3652,15 @@ v3s16 ClientMap::setTempMod(v3s16 p, NodeMod mod)
 			continue;
 		// Relative position of requested node
 		v3s16 relpos = p - blockpos*MAP_BLOCKSIZE;
-		blockref->setTempMod(relpos, mod);
+		if(blockref->setTempMod(relpos, mod))
+		{
+			if(changed != NULL)
+				*changed = true;
+		}
 	}
 	return getNodeBlockPos(p);
 }
-v3s16 ClientMap::clearTempMod(v3s16 p)
+v3s16 ClientMap::clearTempMod(v3s16 p, bool *changed)
 {
 	v3s16 dirs[7] = {
 		v3s16(0,0,0), // this
@@ -3673,7 +3681,11 @@ v3s16 ClientMap::clearTempMod(v3s16 p)
 			continue;
 		// Relative position of requested node
 		v3s16 relpos = p - blockpos*MAP_BLOCKSIZE;
-		blockref->clearTempMod(relpos);
+		if(blockref->clearTempMod(relpos))
+		{
+			if(changed != NULL)
+				*changed = true;
+		}
 	}
 	return getNodeBlockPos(p);
 }

@@ -221,71 +221,6 @@ void VoxelManipulator::copyFrom(MapNode *src, VoxelArea src_area,
 	}
 }
 
-void VoxelManipulator::interpolate(VoxelArea area)
-{
-	VoxelArea emerge_area = area;
-	emerge_area.MinEdge -= v3s16(1,1,1);
-	emerge_area.MaxEdge += v3s16(1,1,1);
-	emerge(emerge_area);
-
-	SharedBuffer<u8> buf(area.getVolume());
-
-	for(s32 z=area.MinEdge.Z; z<=area.MaxEdge.Z; z++)
-	for(s32 y=area.MinEdge.Y; y<=area.MaxEdge.Y; y++)
-	for(s32 x=area.MinEdge.X; x<=area.MaxEdge.X; x++)
-	{
-		v3s16 p(x,y,z);
-
-		v3s16 dirs[] = {
-			v3s16(1,1,0),
-			v3s16(1,0,1),
-			v3s16(1,-1,0),
-			v3s16(1,0,-1),
-			v3s16(-1,1,0),
-			v3s16(-1,0,1),
-			v3s16(-1,-1,0),
-			v3s16(-1,0,-1),
-		};
-		//const v3s16 *dirs = g_26dirs;
-		
-		s16 total = 0;
-		s16 airness = 0;
-		u8 m = CONTENT_IGNORE;
-
-		for(s16 i=0; i<8; i++)
-		//for(s16 i=0; i<26; i++)
-		{
-			v3s16 p2 = p + dirs[i];
-
-			u8 f = m_flags[m_area.index(p2)];
-			assert(!(f & VOXELFLAG_NOT_LOADED));
-			if(f & VOXELFLAG_INEXISTENT)
-				continue;
-
-			MapNode &n = m_data[m_area.index(p2)];
-
-			airness += (n.d == CONTENT_AIR) ? 1 : -1;
-			total++;
-
-			if(m == CONTENT_IGNORE && n.d != CONTENT_AIR)
-				m = n.d;
-		}
-
-		// 1 if air, 0 if not
-		buf[area.index(p)] = airness > -total/2 ? CONTENT_AIR : m;
-		//buf[area.index(p)] = airness > -total ? CONTENT_AIR : m;
-		//buf[area.index(p)] = airness >= -7 ? CONTENT_AIR : m;
-	}
-
-	for(s32 z=area.MinEdge.Z; z<=area.MaxEdge.Z; z++)
-	for(s32 y=area.MinEdge.Y; y<=area.MaxEdge.Y; y++)
-	for(s32 x=area.MinEdge.X; x<=area.MaxEdge.X; x++)
-	{
-		v3s16 p(x,y,z);
-		m_data[m_area.index(p)].d = buf[area.index(p)];
-	}
-}
-
 
 void VoxelManipulator::clearFlag(u8 flags)
 {
@@ -373,7 +308,7 @@ int VoxelManipulator::getWaterPressure(v3s16 p, s16 &highest_y, int recur_count)
 		int pr;
 
 		// If at ocean surface
-		if(n.pressure == 1 && n.d == CONTENT_OCEAN)
+		if(n.pressure == 1 && n.d == CONTENT_WATERSOURCE)
 		//if(n.pressure == 1) // Causes glitches but is fast
 		{
 			pr = 1;
@@ -718,7 +653,7 @@ bool VoxelManipulator::flowWater(v3s16 removed_pos,
 	u8 m = m_data[m_area.index(p)].d;
 	u8 f = m_flags[m_area.index(p)];
 
-	if(m == CONTENT_OCEAN)
+	if(m == CONTENT_WATERSOURCE)
 		from_ocean = true;
 
 	// Move air bubble if not taking water from ocean
@@ -751,7 +686,7 @@ bool VoxelManipulator::flowWater(v3s16 removed_pos,
 	
 	/*
 	NOTE: This does not work as-is
-	if(m == CONTENT_OCEAN)
+	if(m == CONTENT_WATERSOURCE)
 	{
 		// If block was raised to surface, increase pressure of
 		// source node

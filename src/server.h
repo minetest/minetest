@@ -449,8 +449,8 @@ private:
 
 		environment has to be locked when calling.
 	*/
-	void UpdateBlockWaterPressure(MapBlock *block,
-			core::map<v3s16, MapBlock*> &modified_blocks);
+	/*void UpdateBlockWaterPressure(MapBlock *block,
+			core::map<v3s16, MapBlock*> &modified_blocks);*/
 	
 	// Locks environment and connection by its own
 	struct PeerChange;
@@ -481,7 +481,7 @@ private:
 	BlockEmergeQueue m_emerge_queue;
 	
 	// Nodes that are destinations of flowing liquid at the moment
-	core::map<v3s16, u8> m_flow_active_nodes;
+	//core::map<v3s16, u8> m_flow_active_nodes;
 
 	// 0-23999
 	MutexedVariable<u32> m_time_of_day;

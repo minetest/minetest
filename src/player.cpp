@@ -223,8 +223,10 @@ void LocalPlayer::move(f32 dtime, Map &map)
 
 	position += m_speed * dtime;
 
+	bool haxmode = g_settings.getBool("haxmode");
+	
 	// Skip collision detection if player is non-local
-	if(isLocal() == false || HAXMODE)
+	if(isLocal() == false || haxmode)
 	{
 		setPosition(position);
 		return;
@@ -389,7 +391,9 @@ void LocalPlayer::applyControl(float dtime)
 	
 	v3f speed = v3f(0,0,0);
 
-	if(HAXMODE)
+	bool haxmode = g_settings.getBool("haxmode");
+	
+	if(haxmode)
 	{
 		v3f speed = getSpeed();
 		speed.Y = 0;
@@ -400,7 +404,7 @@ void LocalPlayer::applyControl(float dtime)
 	bool superspeed = false;
 	if(control.superspeed)
 	{
-		if(HAXMODE)
+		if(haxmode)
 		{
 			v3f speed = getSpeed();
 			speed.Y = -20*BS;
@@ -413,7 +417,7 @@ void LocalPlayer::applyControl(float dtime)
 		}
 	}
 
-	if(HAXMODE)
+	if(haxmode)
 		superspeed = true;
 
 	if(control.up)
@@ -434,7 +438,7 @@ void LocalPlayer::applyControl(float dtime)
 	}
 	if(control.jump)
 	{
-		if(HAXMODE)
+		if(haxmode)
 		{
 			v3f speed = getSpeed();
 			/*speed.Y += 20.*BS * dtime * 2;
@@ -465,7 +469,7 @@ void LocalPlayer::applyControl(float dtime)
 	
 	f32 inc = walk_acceleration * BS * dtime;
 
-	if(HAXMODE)
+	if(haxmode)
 		inc = walk_acceleration * BS * dtime * 10;
 
 	// Accelerate to target speed with maximum increment

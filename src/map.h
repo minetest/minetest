@@ -41,109 +41,13 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "constants.h"
 #include "voxel.h"
 
-class CacheLock
-{
-public:
-	CacheLock()
-	{
-		m_count = 0;
-		m_count_mutex.Init();
-		m_cache_mutex.Init();
-		m_waitcache_mutex.Init();
-	}
-
-	void cacheCreated()
-	{
-		//dstream<<"cacheCreated() begin"<<std::endl;
-		JMutexAutoLock waitcachelock(m_waitcache_mutex);
-		JMutexAutoLock countlock(m_count_mutex);
-
-		// If this is the first cache, grab the cache lock
-		if(m_count == 0)
-			m_cache_mutex.Lock();
-			
-		m_count++;
-
-		//dstream<<"cacheCreated() end"<<std::endl;
-	}
-
-	void cacheRemoved()
-	{
-		//dstream<<"cacheRemoved() begin"<<std::endl;
-		JMutexAutoLock countlock(m_count_mutex);
-
-		assert(m_count > 0);
-
-		m_count--;
-		
-		// If this is the last one, release the cache lock
-		if(m_count == 0)
-			m_cache_mutex.Unlock();
-
-		//dstream<<"cacheRemoved() end"<<std::endl;
-	}
-
-	/*
-		This lock should be taken when removing stuff that can be
-		pointed by the cache.
-
-		You'll want to grab this in a SharedPtr.
-	*/
-	JMutexAutoLock * waitCaches()
-	{
-		//dstream<<"waitCaches() begin"<<std::endl;
-		JMutexAutoLock waitcachelock(m_waitcache_mutex);
-		JMutexAutoLock *lock = new JMutexAutoLock(m_cache_mutex);
-		//dstream<<"waitCaches() end"<<std::endl;
-		return lock;
-	}
-
-private:
-	// Count of existing caches
-	u32 m_count;
-	JMutex m_count_mutex;
-	// This is locked always when there are some caches
-	JMutex m_cache_mutex;
-	// Locked so that when waitCaches() is called, no more caches are created
-	JMutex m_waitcache_mutex;
-};
-
 #define MAPTYPE_BASE 0
 #define MAPTYPE_SERVER 1
 #define MAPTYPE_CLIENT 2
 
 class Map : public NodeContainer, public Heightmappish
 {
-protected:
-
-	std::ostream &m_dout;
-
-	core::map<v2s16, MapSector*> m_sectors;
-	JMutex m_sector_mutex;
-
-	v3f m_camera_position;
-	v3f m_camera_direction;
-	JMutex m_camera_mutex;
-
-	// Be sure to set this to NULL when the cached sector is deleted 
-	MapSector *m_sector_cache;
-	v2s16 m_sector_cache_p;
-
-	WrapperHeightmap m_hwrapper;
-
 public:
-
-	v3s16 drawoffset; // for drawbox()
-	
-	/*
-		Used by MapBlockPointerCache.
-
-		waitCaches() can be called to remove all caches before continuing
-
-		TODO: Remove this, MapBlockPointerCache doesn't exist anymore,
-		      because it doesn't give any speed benefits
-	*/
-	CacheLock m_blockcachelock;
 
 	Map(std::ostream &dout);
 	virtual ~Map();
@@ -169,23 +73,6 @@ public:
 		m_camera_position = pos;
 		m_camera_direction = dir;
 	}
-
-	/*void StartUpdater()
-	{
-		updater.Start();
-	}
-
-	void StopUpdater()
-	{
-		updater.setRun(false);
-		while(updater.IsRunning())
-			sleep_s(1);
-	}
-
-	bool UpdaterIsRunning()
-	{
-		return updater.IsRunning();
-	}*/
 
 	static core::aabbox3d<f32> getNodeBox(v3s16 p)
 	{
@@ -349,6 +236,30 @@ public:
 
 	// For debug printing
 	virtual void PrintInfo(std::ostream &out);
+
+	/*
+		Variables
+	*/
+	
+protected:
+
+	std::ostream &m_dout;
+
+	core::map<v2s16, MapSector*> m_sectors;
+	JMutex m_sector_mutex;
+
+	v3f m_camera_position;
+	v3f m_camera_direction;
+	JMutex m_camera_mutex;
+
+	// Be sure to set this to NULL when the cached sector is deleted 
+	MapSector *m_sector_cache;
+	v2s16 m_sector_cache_p;
+
+	WrapperHeightmap m_hwrapper;
+	
+	// Queued transforming water nodes
+	UniqueQueue<v3s16> m_transforming_liquid;
 };
 
 // Master heightmap parameters
@@ -572,8 +483,8 @@ public:
 		drawing.
 		Return value is position of changed block.
 	*/
-	v3s16 setTempMod(v3s16 p, NodeMod mod);
-	v3s16 clearTempMod(v3s16 p);
+	v3s16 setTempMod(v3s16 p, NodeMod mod, bool *changed=NULL);
+	v3s16 clearTempMod(v3s16 p, bool *changed=NULL);
 	// Efficient implementation needs a cache of TempMods
 	//void clearTempMods();
 

@@ -24,7 +24,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "utility.h"
 #include "irrlichtwrapper.h"
 #include "gettime.h"
-#include "mapblock.h"
 
 TimeTaker::TimeTaker(const char *name, u32 *result)
 {

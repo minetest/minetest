@@ -207,6 +207,8 @@ TODO: Map generator version 2
 	  - Separate points for heightmap, caves, plants and minerals?
 	  - Flat land, mountains, forest, jungle
     - Cliffs, arcs
+	- There could be a certain height (to which mountains only reach)
+	  where some minerals are found
 
 Doing now:
 ======================================================================

@@ -163,7 +163,8 @@ void * EmergeThread::Thread()
 						only_from_disk,
 						changed_blocks,
 						lighting_invalidated_blocks);
-			
+
+#if 0
 				/*
 					EXPERIMENTAL: Create a few other blocks too
 				*/
@@ -179,7 +180,7 @@ void * EmergeThread::Thread()
 						only_from_disk,
 						changed_blocks,
 						lighting_invalidated_blocks);
-				
+#endif
 			}
 
 			// If it is a dummy, block was not found on disk
@@ -211,6 +212,7 @@ void * EmergeThread::Thread()
 				dout_server<<std::endl;
 			}
 
+#if 0
 			/*
 				Update water pressure
 			*/
@@ -225,6 +227,7 @@ void * EmergeThread::Thread()
 				//v3s16 p = i.getNode()->getKey();
 				//m_server->UpdateBlockWaterPressure(p, modified_blocks);
 			}
+#endif
 
 			/*
 				Collect a list of blocks that have been modified in
@@ -318,6 +321,8 @@ void RemoteClient::GetNextBlocks(Server *server, float dtime,
 		}
 	}
 
+	bool haxmode = g_settings.getBool("haxmode");
+	
 	Player *player = server->m_env.getPlayer(peer_id);
 
 	assert(player != NULL);
@@ -491,7 +496,7 @@ void RemoteClient::GetNextBlocks(Server *server, float dtime,
 
 			bool generate = d <= d_max_gen;
 			
-			if(HAXMODE)
+			if(haxmode)
 			{
 				// Don't generate above player
 				if(p.Y > center.Y)
@@ -523,7 +528,7 @@ void RemoteClient::GetNextBlocks(Server *server, float dtime,
 					continue;
 			}
 
-			if(HAXMODE)
+			if(haxmode)
 			{
 				/*
 					Ignore block if it is not at ground surface
@@ -868,12 +873,12 @@ void RemoteClient::GotBlock(v3s16 p)
 void RemoteClient::SentBlock(v3s16 p)
 {
 	JMutexAutoLock lock(m_blocks_sending_mutex);
-	if(m_blocks_sending.size() > 15)
+	/*if(m_blocks_sending.size() > 15)
 	{
 		dstream<<"RemoteClient::SentBlock(): "
 				<<"m_blocks_sending.size()="
 				<<m_blocks_sending.size()<<std::endl;
-	}
+	}*/
 	if(m_blocks_sending.find(p) == NULL)
 		m_blocks_sending.insert(p, 0.0);
 	else
@@ -1136,8 +1141,13 @@ void Server::AsyncRunStep()
 		Do background stuff
 	*/
 
+	{
+		//m_env.getMap().
+	}
+
+#if 0
 	/*
-		Flow water
+		Update water
 	*/
 	if(g_settings.getBool("water_moves") == true)
 	{
@@ -1209,6 +1219,7 @@ void Server::AsyncRunStep()
 
 		} // interval counter
 	}
+#endif
 	
 	// Periodically print some info
 	{
@@ -1962,7 +1973,8 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 				(this takes some time so it is done after the quick stuff)
 			*/
 			m_env.getMap().removeNodeAndUpdate(p_under, modified_blocks);
-			
+
+#if 0
 			/*
 				Update water
 			*/
@@ -1986,6 +1998,7 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 			}
 			
 			v.blitBack(modified_blocks);
+#endif
 		}
 		
 		/*
@@ -2111,7 +2124,8 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 					}
 				}
 #endif
-				
+
+#if 0
 				/*
 					Update water
 				*/
@@ -2135,6 +2149,7 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 				}
 				
 				v.blitBack(modified_blocks);
+#endif
 			}
 			/*
 				Handle other items
@@ -3160,7 +3175,7 @@ Player *Server::emergePlayer(const char *name, const char *password)
 			for(u16 i=0; i<USEFUL_CONTENT_COUNT; i++)
 			{
 				// Skip some materials
-				if(i == CONTENT_OCEAN || i == CONTENT_TORCH)
+				if(i == CONTENT_WATER || i == CONTENT_TORCH)
 					continue;
 
 				InventoryItem *item = new MaterialItem(i, 1);
@@ -3230,6 +3245,7 @@ Player *Server::emergePlayer(const char *name, const char *password)
 	}
 }
 
+#if 0
 void Server::UpdateBlockWaterPressure(MapBlock *block,
 			core::map<v3s16, MapBlock*> &modified_blocks)
 {
@@ -3251,6 +3267,7 @@ void Server::UpdateBlockWaterPressure(MapBlock *block,
 	
 	v.blitBack(modified_blocks);
 }
+#endif
 
 void Server::handlePeerChange(PeerChange &c)
 {

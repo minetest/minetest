@@ -570,8 +570,9 @@ void MapBlock::updateMesh(u32 daynight_ratio)
 	}
 #endif
 	
-	// 4-21ms
-	//TimeTaker timer1("updateMesh()", g_device);
+	// 4-21ms for MAP_BLOCKSIZE=16
+	// 24-155ms for MAP_BLOCKSIZE=32
+	//TimeTaker timer1("updateMesh()");
 
 	core::array<FastFace> fastfaces_new;
 	
@@ -691,7 +692,7 @@ void MapBlock::updateMesh(u32 daynight_ratio)
 		// This will lead to infinite memory usage because or irrlicht.
 		//mesh_new->setHardwareMappingHint(scene::EHM_STATIC);
 		
-		/*std::cout<<"MapBlock has "<<fastfaces_new->getSize()<<" faces "
+		/*std::cout<<"MapBlock has "<<fastfaces_new.size()<<" faces "
 				<<"and uses "<<mesh_new->getMeshBufferCount()
 				<<" materials (meshbuffers)"<<std::endl;*/
 	}
@@ -906,12 +907,12 @@ bool MapBlock::propagateSunlight(core::map<v3s16, bool> & light_sources,
 				else
 				{
 					MapNode n = getNode(v3s16(x, MAP_BLOCKSIZE-1, z));
-					if(n.d == CONTENT_WATER || n.d == CONTENT_OCEAN)
+					if(n.d == CONTENT_WATER || n.d == CONTENT_WATERSOURCE)
 					{
 						no_sunlight = true;
 					}
 				}
-				// NOTE: As of now, it just would make everything dark.
+				// NOTE: As of now, this just would make everything dark.
 				// No sunlight here
 				//no_sunlight = true;
 			}

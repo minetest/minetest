@@ -18,7 +18,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 */
 
 #include "environment.h"
-#include "main.h" // g_device for timing debug
 
 Environment::Environment(Map *map, std::ostream &dout):
 		m_dout(dout)
@@ -107,7 +106,8 @@ void Environment::step(float dtime)
 			v3f playerpos = player->getPosition();
 			
 			// Apply physics to local player
-			if(player->isLocal() && HAXMODE == false)
+			bool haxmode = g_settings.getBool("haxmode");
+			if(player->isLocal() && haxmode == false)
 			{
 				// Apply gravity to local player
 				v3f speed = player->getSpeed();

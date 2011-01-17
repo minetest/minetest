@@ -28,9 +28,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "serialization.h"
 #include "tile.h"
 
-// Size of node in rendering units
-#define BS 10
-
 #define MATERIALS_COUNT 256
 
 /*
@@ -53,9 +50,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 /*
 	Suggested materials:
-	GRAVEL
-	  - Dynamics of gravel: if there is a drop of more than two
-	    blocks on any side, it will drop in there. Is this doable?
+	- Gravel
+	- Sand
 	
 	New naming scheme:
 	- Material = irrlicht's Material class
@@ -63,25 +59,21 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 	- Tile = (u16) Material ID at some side of a node
 */
 
-enum Content
-{
-	CONTENT_STONE,
-	CONTENT_GRASS,
-	CONTENT_WATER,
-	CONTENT_TORCH,
-	CONTENT_TREE,
-	CONTENT_LEAVES,
-	CONTENT_GRASS_FOOTSTEPS,
-	CONTENT_MESE,
-	CONTENT_MUD,
-	CONTENT_OCEAN,
-	CONTENT_CLOUD,
-	CONTENT_COALSTONE,
-	CONTENT_WOOD,
+#define CONTENT_STONE 0
+#define CONTENT_GRASS 1
+#define CONTENT_WATER 2
+#define CONTENT_TORCH 3
+#define CONTENT_TREE 4
+#define CONTENT_LEAVES 5
+#define CONTENT_GRASS_FOOTSTEPS 6
+#define CONTENT_MESE 7
+#define CONTENT_MUD 8
+#define CONTENT_WATERSOURCE 9
+#define CONTENT_CLOUD 10
+#define CONTENT_COALSTONE 11
+#define CONTENT_WOOD 12
 	
-	// This is set to the number of the actual values in this enum
-	USEFUL_CONTENT_COUNT
-};
+#define USEFUL_CONTENT_COUNT 13
 
 extern u16 g_content_tiles[USEFUL_CONTENT_COUNT][6];
 extern const char * g_content_inventory_texture_paths[USEFUL_CONTENT_COUNT];
@@ -94,7 +86,7 @@ void init_content_inventory_texture_paths();
 */
 inline bool light_propagates_content(u8 m)
 {
-	return (m == CONTENT_AIR || m == CONTENT_TORCH || m == CONTENT_WATER || m == CONTENT_OCEAN);
+	return (m == CONTENT_AIR || m == CONTENT_TORCH || m == CONTENT_WATER || m == CONTENT_WATERSOURCE);
 }
 
 /*
@@ -118,7 +110,7 @@ inline u8 content_solidness(u8 m)
 	// As of now, every pseudo node like torches are added to this
 	if(m == CONTENT_AIR || m == CONTENT_TORCH)
 		return 0;
-	if(m == CONTENT_WATER || m == CONTENT_OCEAN)
+	if(m == CONTENT_WATER || m == CONTENT_WATERSOURCE)
 		return 1;
 	return 2;
 }
@@ -126,29 +118,29 @@ inline u8 content_solidness(u8 m)
 // Objects collide with walkable contents
 inline bool content_walkable(u8 m)
 {
-	return (m != CONTENT_AIR && m != CONTENT_WATER && m != CONTENT_OCEAN && m != CONTENT_TORCH);
+	return (m != CONTENT_AIR && m != CONTENT_WATER && m != CONTENT_WATERSOURCE && m != CONTENT_TORCH);
 }
 
 // A liquid resists fast movement
 inline bool content_liquid(u8 m)
 {
-	return (m == CONTENT_WATER || m == CONTENT_OCEAN);
+	return (m == CONTENT_WATER || m == CONTENT_WATERSOURCE);
 }
 
 // Pointable contents can be pointed to in the map
 inline bool content_pointable(u8 m)
 {
-	return (m != CONTENT_AIR && m != CONTENT_WATER && m != CONTENT_OCEAN);
+	return (m != CONTENT_AIR && m != CONTENT_WATER && m != CONTENT_WATERSOURCE);
 }
 
 inline bool content_diggable(u8 m)
 {
-	return (m != CONTENT_AIR && m != CONTENT_WATER && m != CONTENT_OCEAN);
+	return (m != CONTENT_AIR && m != CONTENT_WATER && m != CONTENT_WATERSOURCE);
 }
 
 inline bool content_buildable_to(u8 m)
 {
-	return (m == CONTENT_AIR || m == CONTENT_WATER || m == CONTENT_OCEAN);
+	return (m == CONTENT_AIR || m == CONTENT_WATER || m == CONTENT_WATERSOURCE);
 }
 
 /*
@@ -164,7 +156,7 @@ inline bool is_ground_content(u8 m)
 		&& m != CONTENT_TORCH
 		&& m != CONTENT_TREE
 		&& m != CONTENT_LEAVES
-		&& m != CONTENT_OCEAN
+		&& m != CONTENT_WATERSOURCE
 		&& m != CONTENT_CLOUD
 	);
 }
@@ -293,6 +285,54 @@ enum LightBank
 	LIGHTBANK_NIGHT
 };
 
+#if 0
+#define DIR_PX 1 //X+
+#define DIR_NX 2 //X-
+#define DIR_PZ 4 //Z+
+#define DIR_NZ 8 //Z-
+#define DIR_PY 16 //Y+
+#define DIR_NY 32 //Y-
+
+inline void decode_dirs(u8 b, core::list<v3s16> &dirs)
+{
+	if(b & DIR_PX)
+		dirs.push_back(v3s16(1,0,0));
+	if(b & DIR_NX)
+		dirs.push_back(v3s16(-1,0,0));
+	if(b & DIR_PZ)
+		dirs.push_back(v3s16(0,0,1));
+	if(b & DIR_NZ)
+		dirs.push_back(v3s16(0,0,-1));
+	if(b & DIR_PY)
+		dirs.push_back(v3s16(0,1,0));
+	if(b & DIR_NY)
+		dirs.push_back(v3s16(0,-1,0));
+}
+
+inline u8 encode_dirs(core::list<v3s16> &dirs)
+{
+	u8 b = 0;
+	for(core::list<v3s16>::Iterator
+			i = dirs.begin();
+			i != dirs.end(); i++)
+	{
+		if(*i == v3s16(1,0,0))
+			b += DIR_PX;
+		else if(*i == v3s16(-1,0,0))
+			b += DIR_NX;
+		else if(*i == v3s16(0,0,1))
+			b += DIR_PZ;
+		else if(*i == v3s16(0,0,-1))
+			b += DIR_NZ;
+		else if(*i == v3s16(0,1,0))
+			b += DIR_PY;
+		else if(*i == v3s16(0,-1,0))
+			b += DIR_NY;
+	}
+	return b;
+}
+#endif
+
 struct MapNode
 {
 	// Content
@@ -303,6 +343,7 @@ struct MapNode
 		- For light_propagates() blocks, this is light intensity,
 		  stored logarithmically from 0 to LIGHT_MAX.
 		  Sunlight is LIGHT_SUN, which is LIGHT_MAX+1.
+		- Contains 2 values, day- and night lighting. Each takes 4 bits.
 	*/
 	s8 param;
 	
@@ -315,7 +356,7 @@ struct MapNode
 
 		/*
 			Direction for torches and other stuff.
-			If possible, packed with packDir.
+			Format is freeform. e.g. packDir or encode_dirs can be used.
 		*/
 		u8 dir;
 	};

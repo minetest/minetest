@@ -26,7 +26,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 	Cross-platform compatibility crap should go in porting.h.
 */
 
-#define HAXMODE 0
+//#define HAXMODE 0
 
 #define APPNAME "minetest"
 
@@ -52,6 +52,19 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 // The absolute working limit is (2^15 - viewing_range).
 #define MAP_GENERATION_LIMIT (31000)
 
+// Size of node in rendering units
+#define BS 10
+
+#define MAP_BLOCKSIZE 16
+/*
+	This makes mesh updates too slow, as many meshes are updated during
+	the main loop (related to TempMods and day/night)
+*/
+//#define MAP_BLOCKSIZE 32
+
+// Sectors are split to SECTOR_HEIGHTMAP_SPLIT^2 heightmaps
+#define SECTOR_HEIGHTMAP_SPLIT (MAP_BLOCKSIZE/8)
+
 // Time after building, during which the following limit
 // is in use
 //#define FULL_BLOCK_SEND_ENABLE_MIN_TIME_FROM_BUILDING 2.0
@@ -61,14 +74,10 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 // is very low
 #define BLOCK_SEND_DISABLE_LIMITS_MAX_D 1
 
-// Viewing range stuff
-
+// The fps limiter will leave this much free time
 //#define FREETIME_RATIO 0.15
 //#define FREETIME_RATIO 0.0
 #define FREETIME_RATIO 0.05
-
-// Sectors are split to SECTOR_HEIGHTMAP_SPLIT^2 heightmaps
-#define SECTOR_HEIGHTMAP_SPLIT 2
 
 #define PLAYER_INVENTORY_SIZE (8*4)
 

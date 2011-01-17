@@ -395,8 +395,6 @@ public:
 		Algorithms
 	*/
 
-	void interpolate(VoxelArea area);
-
 	void clearFlag(u8 flag);
 	
 	// VOXELFLAG_CHECKED2s must usually be cleared before calling

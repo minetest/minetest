@@ -201,15 +201,19 @@ public:
 	{
 		JMutexAutoLock envlock(m_env_mutex);
 		assert(m_env.getMap().mapType() == MAPTYPE_CLIENT);
-		v3s16 blockpos = ((ClientMap&)m_env.getMap()).setTempMod(p, mod);
-		m_env.getMap().updateMeshes(blockpos, m_env.getDayNightRatio());
+		bool changed = false;
+		v3s16 blockpos = ((ClientMap&)m_env.getMap()).setTempMod(p, mod, &changed);
+		if(changed)
+			m_env.getMap().updateMeshes(blockpos, m_env.getDayNightRatio());
 	}
 	void clearTempMod(v3s16 p)
 	{
 		JMutexAutoLock envlock(m_env_mutex);
 		assert(m_env.getMap().mapType() == MAPTYPE_CLIENT);
-		v3s16 blockpos = ((ClientMap&)m_env.getMap()).clearTempMod(p);
-		m_env.getMap().updateMeshes(blockpos, m_env.getDayNightRatio());
+		bool changed = false;
+		v3s16 blockpos = ((ClientMap&)m_env.getMap()).clearTempMod(p, &changed);
+		if(changed)
+			m_env.getMap().updateMeshes(blockpos, m_env.getDayNightRatio());
 	}
 
 	float getAvgRtt()

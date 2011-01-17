@@ -32,8 +32,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "mapblockobject.h"
 #include "voxel.h"
 
-#define MAP_BLOCKSIZE 16
-
 // Named by looking towards z+
 enum{
 	FACE_BACK=0,
@@ -63,6 +61,10 @@ struct NodeMod
 	{
 		type = a_type;
 		param = a_param;
+	}
+	bool operator==(const NodeMod &other)
+	{
+		return (type == other.type && param == other.param);
 	}
 	enum NodeModType type;
 	u16 param;
@@ -393,8 +395,10 @@ public:
 	/*
 		Methods for setting temporary modifications to nodes for
 		drawing
+
+		returns true if the mod was different last time
 	*/
-	void setTempMod(v3s16 p, NodeMod mod)
+	bool setTempMod(v3s16 p, NodeMod mod)
 	{
 		/*dstream<<"setTempMod called on block"
 				<<" ("<<p.X<<","<<p.Y<<","<<p.Z<<")"
@@ -402,7 +406,18 @@ public:
 				<<", mod.param="<<mod.param
 				<<std::endl;*/
 		JMutexAutoLock lock(m_temp_mods_mutex);
+
+		// See if old is different, cancel if it is not different.
+		core::map<v3s16, NodeMod>::Node *n = m_temp_mods.find(p);
+		if(n)
+		{
+			NodeMod old = n->getValue();
+			if(old == mod)
+				return false;
+		}
+
 		m_temp_mods[p] = mod;
+		return true;
 	}
 	// Returns true if there was one
 	bool getTempMod(v3s16 p, struct NodeMod *mod)
@@ -416,16 +431,23 @@ public:
 			*mod = n->getValue();
 		return true;
 	}
-	void clearTempMod(v3s16 p)
+	bool clearTempMod(v3s16 p)
 	{
 		JMutexAutoLock lock(m_temp_mods_mutex);
 		if(m_temp_mods.find(p))
+		{
 			m_temp_mods.remove(p);
+			return true;
+		}
+		return false;
 	}
-	void clearTempMods()
+	bool clearTempMods()
 	{
 		JMutexAutoLock lock(m_temp_mods_mutex);
+		if(m_temp_mods.size() == 0)
+			return false;
 		m_temp_mods.clear();
+		return true;
 	}
 #endif
 

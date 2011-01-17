@@ -1580,6 +1580,47 @@ private:
 
 bool isBlockInSight(v3s16 blockpos_b, v3f camera_pos, v3f camera_dir, f32 range);
 
+/*
+	Queue with unique values with fast checking of value existence
+*/
+
+template<typename Value>
+class UniqueQueue
+{
+public:
+	
+	/*
+		Does nothing if value is already queued.
+		Return value:
+			true: value added
+			false: value already exists
+	*/
+	bool push_back(Value value)
+	{
+		// Check if already exists
+		if(m_map.find(value) != NULL)
+			return false;
+
+		// Add
+		m_map.insert(value, 0);
+		m_list.push_back(value);
+		
+		return true;
+	}
+
+	void pop_front()
+	{
+		typename core::list<Value>::Iterator i = m_list.begin();
+		Value value = *i;
+		m_map.remove(value);
+		m_list.erase(i);
+		return value;
+	}
+
+private:
+	core::map<Value, u8> m_map;
+	core::list<Value> m_list;
+};
 
 #endif
 
