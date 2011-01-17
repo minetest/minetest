@@ -3116,6 +3116,7 @@ Player *Server::emergePlayer(const char *name, const char *password,
 			return NULL;
 		}
 		// Got one.
+		player->peer_id = peer_id;
 		return player;
 	}
 
