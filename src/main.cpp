@@ -116,12 +116,16 @@ TODO: Startup and configuration menu
 
 Graphics:
 
+TODO: 
+
 TODO: Optimize day/night mesh updating somehow
       - create copies of all textures for all lighting values and only
 	    change texture for material?
 	  - Umm... the collecting of the faces is the slow part
 	    -> what about just changing the color values of the existing
 		   meshbuffers? It should go quite fast.
+		   - This is not easy; There'd need to be a buffer somewhere
+		     that would contain the night and day lighting values.
 
 TODO: Draw big amounts of torches better (that is, throw them in the
       same meshbuffer (can the meshcollector class be used?))
@@ -129,9 +133,13 @@ TODO: Draw big amounts of torches better (that is, throw them in the
 TODO: Combine MapBlock's face caches to so big pieces that VBO
       gets used
       - That is >500 vertices
+	  - This is not easy; all the MapBlocks close to the player would
+	    still need to be drawn separately and combining the blocks
+		would have to happen in a background thread
 
 TODO: Make fetching sector's blocks more efficient when rendering
       sectors that have very large amounts of blocks (on client)
+	  - Is this necessary at all?
 
 Configuration:
 
@@ -209,6 +217,9 @@ TODO: Map generator version 2
     - Cliffs, arcs
 	- There could be a certain height (to which mountains only reach)
 	  where some minerals are found
+
+FIXME: The new pre-sunlight-propagation code messes up with initial
+       water lighting
 
 Doing now:
 ======================================================================

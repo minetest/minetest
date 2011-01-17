@@ -926,6 +926,37 @@ void Map::addNodeAndUpdate(v3s16 p, MapNode n,
 		MapBlock *block = i.getNode()->getValue();
 		block->updateDayNightDiff();
 	}
+
+	/*
+		Add neighboring liquid nodes and the node itself if it is
+		liquid (=water node was added) to transform queue.
+	*/
+	v3s16 dirs[7] = {
+		v3s16(0,0,0), // self
+		v3s16(0,0,1), // back
+		v3s16(0,1,0), // top
+		v3s16(1,0,0), // right
+		v3s16(0,0,-1), // front
+		v3s16(0,-1,0), // bottom
+		v3s16(-1,0,0), // left
+	};
+	for(u16 i=0; i<7; i++)
+	{
+		try
+		{
+
+		v3s16 p2 = p + dirs[i];
+		
+		MapNode n2 = getNode(p2);
+		if(content_liquid(n2.d))
+		{
+			m_transforming_liquid.push_back(p2);
+		}
+		
+		}catch(InvalidPositionException &e)
+		{
+		}
+	}
 }
 
 /*
@@ -1062,6 +1093,35 @@ void Map::removeNodeAndUpdate(v3s16 p,
 	{
 		MapBlock *block = i.getNode()->getValue();
 		block->updateDayNightDiff();
+	}
+
+	/*
+		Add neighboring liquid nodes to transform queue.
+	*/
+	v3s16 dirs[6] = {
+		v3s16(0,0,1), // back
+		v3s16(0,1,0), // top
+		v3s16(1,0,0), // right
+		v3s16(0,0,-1), // front
+		v3s16(0,-1,0), // bottom
+		v3s16(-1,0,0), // left
+	};
+	for(u16 i=0; i<6; i++)
+	{
+		try
+		{
+
+		v3s16 p2 = p + dirs[i];
+		
+		MapNode n2 = getNode(p2);
+		if(content_liquid(n2.d))
+		{
+			m_transforming_liquid.push_back(p2);
+		}
+		
+		}catch(InvalidPositionException &e)
+		{
+		}
 	}
 }
 
@@ -1303,6 +1363,276 @@ void Map::PrintInfo(std::ostream &out)
 	out<<"Map: ";
 }
 
+#define WATER_DROP_BOOST 4
+
+void Map::transformLiquids(core::map<v3s16, MapBlock*> & modified_blocks)
+{
+	DSTACK(__FUNCTION_NAME);
+	TimeTaker timer("transformLiquids()");
+
+	u32 loopcount = 0;
+	u32 initial_size = m_transforming_liquid.size();
+	while(m_transforming_liquid.size() != 0)
+	{
+		v3s16 p0 = m_transforming_liquid.pop_front();
+
+		MapNode n0 = getNode(p0);
+		
+		// Don't deal with non-liquids
+		if(content_liquid(n0.d) == false)
+			continue;
+
+		bool is_source = !content_flowing_liquid(n0.d);
+		
+		u8 liquid_level = 8;
+		if(is_source == false)
+			liquid_level = n0.param2 & 0x0f;
+		
+		// Turn possible source into non-source
+		u8 nonsource_c = make_liquid_flowing(n0.d);
+
+		/*
+			If not source, check that some node flows into this one
+			and what is the level of liquid in this one
+		*/
+		if(is_source == false)
+		{
+			s8 new_liquid_level_max = -1;
+
+			v3s16 dirs_from[5] = {
+				v3s16(0,1,0), // top
+				v3s16(0,0,1), // back
+				v3s16(1,0,0), // right
+				v3s16(0,0,-1), // front
+				v3s16(-1,0,0), // left
+			};
+			for(u16 i=0; i<5; i++)
+			{
+				try
+				{
+
+				bool from_top = (i==0);
+
+				v3s16 p2 = p0 + dirs_from[i];
+				MapNode n2 = getNode(p2);
+
+				if(content_liquid(n2.d))
+				{
+					u8 n2_nonsource_c = make_liquid_flowing(n2.d);
+					// Check that the liquids are the same type
+					if(n2_nonsource_c != nonsource_c)
+					{
+						dstream<<"WARNING: Not handling: different liquids"
+								" collide"<<std::endl;
+						continue;
+					}
+					bool n2_is_source = !content_flowing_liquid(n2.d);
+					s8 n2_liquid_level = 8;
+					if(n2_is_source == false)
+						n2_liquid_level = n2.param2 & 0x07;
+					
+					s8 new_liquid_level = -1;
+					if(from_top)
+					{
+						//new_liquid_level = 7;
+						if(n2_liquid_level >= 7 - WATER_DROP_BOOST)
+							new_liquid_level = 7;
+						else
+							new_liquid_level = n2_liquid_level + WATER_DROP_BOOST;
+					}
+					else if(n2_liquid_level > 0)
+					{
+						new_liquid_level = n2_liquid_level - 1;
+					}
+
+					if(new_liquid_level > new_liquid_level_max)
+						new_liquid_level_max = new_liquid_level;
+				}
+
+				}catch(InvalidPositionException &e)
+				{
+				}
+			} //for
+			
+			/*
+				If liquid level should be something else, update it and
+				add all the neighboring water nodes to the transform queue.
+			*/
+			if(new_liquid_level_max != liquid_level)
+			{
+				if(new_liquid_level_max == -1)
+				{
+					// Remove water alltoghether
+					n0.d = CONTENT_AIR;
+					n0.param2 = 0;
+					setNode(p0, n0);
+				}
+				else
+				{
+					n0.param2 = new_liquid_level_max;
+					setNode(p0, n0);
+				}
+				
+				// Block has been modified
+				{
+					v3s16 blockpos = getNodeBlockPos(p0);
+					MapBlock *block = getBlockNoCreateNoEx(blockpos);
+					if(block != NULL)
+						modified_blocks.insert(blockpos, block);
+				}
+				
+				/*
+					Add neighboring non-source liquid nodes to transform queue.
+				*/
+				v3s16 dirs[6] = {
+					v3s16(0,0,1), // back
+					v3s16(0,1,0), // top
+					v3s16(1,0,0), // right
+					v3s16(0,0,-1), // front
+					v3s16(0,-1,0), // bottom
+					v3s16(-1,0,0), // left
+				};
+				for(u16 i=0; i<6; i++)
+				{
+					try
+					{
+
+					v3s16 p2 = p0 + dirs[i];
+					
+					MapNode n2 = getNode(p2);
+					if(content_flowing_liquid(n2.d))
+					{
+						m_transforming_liquid.push_back(p2);
+					}
+					
+					}catch(InvalidPositionException &e)
+					{
+					}
+				}
+			}
+		}
+		
+		// Get a new one from queue if the node has turned into non-water
+		if(content_liquid(n0.d) == false)
+			continue;
+
+		/*
+			Flow water from this node
+		*/
+		v3s16 dirs_to[5] = {
+			v3s16(0,-1,0), // bottom
+			v3s16(0,0,1), // back
+			v3s16(1,0,0), // right
+			v3s16(0,0,-1), // front
+			v3s16(-1,0,0), // left
+		};
+		for(u16 i=0; i<5; i++)
+		{
+			try
+			{
+
+			bool to_bottom = (i == 0);
+
+			// If liquid is at lowest possible height, it's not going
+			// anywhere except down
+			if(liquid_level == 0 && to_bottom == false)
+				continue;
+			
+			u8 liquid_next_level = 0;
+			// If going to bottom
+			if(to_bottom)
+			{
+				//liquid_next_level = 7;
+				if(liquid_level >= 7 - WATER_DROP_BOOST)
+					liquid_next_level = 7;
+				else
+					liquid_next_level = liquid_level + WATER_DROP_BOOST;
+			}
+			else
+				liquid_next_level = liquid_level - 1;
+
+			bool n2_changed = false;
+			bool flowed = false;
+			
+			v3s16 p2 = p0 + dirs_to[i];
+
+			MapNode n2 = getNode(p2);
+
+			if(content_liquid(n2.d))
+			{
+				u8 n2_nonsource_c = make_liquid_flowing(n2.d);
+				// Check that the liquids are the same type
+				if(n2_nonsource_c != nonsource_c)
+				{
+					dstream<<"WARNING: Not handling: different liquids"
+							" collide"<<std::endl;
+					continue;
+				}
+				bool n2_is_source = !content_flowing_liquid(n2.d);
+				u8 n2_liquid_level = 8;
+				if(n2_is_source == false)
+					n2_liquid_level = n2.param2 & 0x07;
+				
+				if(to_bottom)
+				{
+					flowed = true;
+				}
+
+				if(n2_is_source)
+				{
+					// Just flow into the source, nothing changes.
+					// n2_changed is not set because destination didn't change
+					flowed = true;
+				}
+				else
+				{
+					if(liquid_next_level > liquid_level)
+					{
+						n2.param2 = liquid_next_level;
+						setNode(p2, n2);
+
+						n2_changed = true;
+						flowed = true;
+					}
+				}
+			}
+			else if(n2.d == CONTENT_AIR)
+			{
+				n2.d = nonsource_c;
+				n2.param2 = liquid_next_level;
+				setNode(p2, n2);
+				
+				n2_changed = true;
+				flowed = true;
+			}
+
+			if(n2_changed)
+			{
+				m_transforming_liquid.push_back(p2);
+				
+				v3s16 blockpos = getNodeBlockPos(p2);
+				MapBlock *block = getBlockNoCreateNoEx(blockpos);
+				if(block != NULL)
+					modified_blocks.insert(blockpos, block);
+			}
+			
+			// If n2_changed to bottom, don't flow anywhere else
+			if(to_bottom && flowed)
+				break;
+				
+			}catch(InvalidPositionException &e)
+			{
+			}
+		}
+
+		loopcount++;
+		//if(loopcount >= 100000)
+		if(loopcount >= initial_size * 1)
+			break;
+	}
+	dstream<<"Map::transformLiquids(): loopcount="<<loopcount<<std::endl;
+}
+
 /*
 	ServerMap
 */
@@ -1327,15 +1657,20 @@ ServerMap::ServerMap(std::string savedir, HMParams hmp, MapParams mp):
 		/*
 			NOTE: BEWARE: Too big amount of these will make map generation
 			slow. Especially those that are read by every block emerge.
+			
+			Fetch times:
+			1000 points: 2-3ms
+			5000 points: 15ms
+			15000 points: 40ms
 		*/
 		
-		for(u32 i=0; i<15000; i++)
+		for(u32 i=0; i<5000; i++)
 		{
 			/*u32 lim = MAP_GENERATION_LIMIT;
 			if(i < 400)
 				lim = 2000;*/
 
-			u32 lim = 1000 + MAP_GENERATION_LIMIT * i / 15000;
+			u32 lim = 1000 + MAP_GENERATION_LIMIT * i / 5000;
 
 			v3s16 p(
 				-lim + myrand()%(lim*2),
@@ -1679,17 +2014,19 @@ MapSector * ServerMap::emergeSector(v2s16 p2d)
 		Get local attributes
 	*/
 	
-	//dstream<<"emergeSector(): Reading point attribute lists"<<std::endl;
-	
-	// Get plant amount from attributes
-	PointAttributeList *palist = m_padb.getList("plants_amount");
-	assert(palist);
-	/*float local_plants_amount =
-			palist->getNearAttr(nodepos2d).getFloat();*/
-	float local_plants_amount =
-			palist->getInterpolatedFloat(nodepos2d);
-
-	//dstream<<"emergeSector(): done."<<std::endl;
+	float local_plants_amount = 0.0;
+	{
+		//dstream<<"emergeSector(): Reading point attribute lists"<<std::endl;
+		//TimeTaker attrtimer("emergeSector() attribute fetch");
+		
+		// Get plant amount from attributes
+		PointAttributeList *palist = m_padb.getList("plants_amount");
+		assert(palist);
+		/*local_plants_amount =
+				palist->getNearAttr(nodepos2d).getFloat();*/
+		local_plants_amount =
+				palist->getInterpolatedFloat(nodepos2d);
+	}
 
 	/*
 		Generate sector heightmap
@@ -1988,6 +2325,12 @@ MapBlock * ServerMap::emergeBlock(
 					n.d = water_material;
 					n.setLight(LIGHTBANK_DAY,
 							diminish_light(LIGHT_SUN, WATER_LEVEL-real_y+1));
+					/*
+						Add to transforming liquid queue (in case it'd
+						start flowing)
+					*/
+					v3s16 real_pos = v3s16(x0,y0,z0) + p*MAP_BLOCKSIZE;
+					m_transforming_liquid.push_back(real_pos);
 				}
 				// else air
 				else
@@ -2692,11 +3035,17 @@ continue_generating:
 		core::map<v3s16, bool> light_sources;
 		bool black_air_left = false;
 		bool bottom_invalid =
-				block->propagateSunlight(light_sources, true, &black_air_left);
+				block->propagateSunlight(light_sources, true,
+				&black_air_left, true);
 
 		// If sunlight didn't reach everywhere and part of block is
 		// above ground, lighting has to be properly updated
 		if(black_air_left && some_part_underground)
+		{
+			lighting_invalidated_blocks[block->getPos()] = block;
+		}
+
+		if(bottom_invalid)
 		{
 			lighting_invalidated_blocks[block->getPos()] = block;
 		}
@@ -2739,7 +3088,7 @@ continue_generating:
 	if(haxmode)
 	{
 		// Don't calculate lighting at all
-		lighting_invalidated_blocks.clear();
+		//lighting_invalidated_blocks.clear();
 	}
 
 	return block;
@@ -3523,11 +3872,12 @@ void ClientMap::renderMap(video::IVideoDriver* driver, s32 pass)
 
 			// Total distance
 			f32 d = blockpos_relative.getLength();
-
-			/*
-				Draw the faces of the block
-			*/
+			
 #if 1
+			/*
+				Update expired mesh
+			*/
+
 			bool mesh_expired = false;
 			
 			{
@@ -3585,6 +3935,9 @@ void ClientMap::renderMap(video::IVideoDriver* driver, s32 pass)
 				continue;
 			}*/
 #endif
+			/*
+				Draw the faces of the block
+			*/
 			{
 				JMutexAutoLock lock(block->mesh_mutex);
 

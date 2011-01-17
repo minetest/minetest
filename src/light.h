@@ -21,6 +21,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #define LIGHT_HEADER
 
 #include "common_irrlicht.h"
+#include "debug.h"
 
 /*
 	Day/night cache:
@@ -78,7 +79,7 @@ inline u8 decode_light(u8 light)
 		return light_decode_table[LIGHT_MAX];
 	
 	if(light > LIGHT_MAX)
-		throw;
+		light = LIGHT_MAX;
 	
 	return light_decode_table[light];
 }

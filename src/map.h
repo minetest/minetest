@@ -236,6 +236,8 @@ public:
 
 	// For debug printing
 	virtual void PrintInfo(std::ostream &out);
+	
+	void transformLiquids(core::map<v3s16, MapBlock*> & modified_blocks);
 
 	/*
 		Variables

@@ -146,6 +146,25 @@ u8 MapBlock::getFaceLight(u32 daynight_ratio, MapNode n, MapNode n2,
 		v3s16 face_dir)
 {
 	try{
+		// DEBUG
+		/*{
+			if(n.d == CONTENT_WATER)
+			{
+				u8 l = n.param2*2;
+				if(l > LIGHT_MAX)
+					l = LIGHT_MAX;
+				return l;
+			}
+			if(n2.d == CONTENT_WATER)
+			{
+				u8 l = n2.param2*2;
+				if(l > LIGHT_MAX)
+					l = LIGHT_MAX;
+				return l;
+			}
+		}*/
+
+
 		u8 light;
 		u8 l1 = n.getLightBlend(daynight_ratio);
 		u8 l2 = n2.getLightBlend(daynight_ratio);
@@ -645,10 +664,10 @@ void MapBlock::updateMesh(u32 daynight_ratio)
 	
 	mesh_new = new scene::SMesh();
 	
+	MeshCollector collector;
+
 	if(fastfaces_new.size() > 0)
 	{
-		MeshCollector collector;
-
 		for(u32 i=0; i<fastfaces_new.size(); i++)
 		{
 			FastFace &f = fastfaces_new[i];
@@ -685,16 +704,6 @@ void MapBlock::updateMesh(u32 daynight_ratio)
 				assert(0);
 			}
 		}
-
-		collector.fillMesh(mesh_new);
-
-		// Use VBO for mesh (this just would set this for ever buffer)
-		// This will lead to infinite memory usage because or irrlicht.
-		//mesh_new->setHardwareMappingHint(scene::EHM_STATIC);
-		
-		/*std::cout<<"MapBlock has "<<fastfaces_new.size()<<" faces "
-				<<"and uses "<<mesh_new->getMeshBufferCount()
-				<<" materials (meshbuffers)"<<std::endl;*/
 	}
 
 	/*
@@ -714,8 +723,6 @@ void MapBlock::updateMesh(u32 daynight_ratio)
 		
 		if(n.d == CONTENT_TORCH)
 		{
-			//scene::IMeshBuffer *buf = new scene::SMeshBuffer();
-			scene::SMeshBuffer *buf = new scene::SMeshBuffer();
 			video::SColor c(255,255,255,255);
 
 			video::S3DVertex vertices[4] =
@@ -746,36 +753,266 @@ void MapBlock::updateMesh(u32 daynight_ratio)
 				vertices[i].Pos += intToFloat(p + getPosRelative());
 			}
 
-			u16 indices[] = {0,1,2,2,3,0};
-			buf->append(vertices, 4, indices, 6);
-
 			// Set material
-			buf->getMaterial().setFlag(video::EMF_LIGHTING, false);
-			buf->getMaterial().setFlag(video::EMF_BACK_FACE_CULLING, false);
-			buf->getMaterial().setFlag(video::EMF_BILINEAR_FILTER, false);
-			//buf->getMaterial().MaterialType = video::EMT_TRANSPARENT_ALPHA_CHANNEL;
-			buf->getMaterial().MaterialType
+			video::SMaterial material;
+			material.setFlag(video::EMF_LIGHTING, false);
+			material.setFlag(video::EMF_BACK_FACE_CULLING, false);
+			material.setFlag(video::EMF_BILINEAR_FILTER, false);
+			//material.MaterialType = video::EMT_TRANSPARENT_ALPHA_CHANNEL;
+			material.MaterialType
 					= video::EMT_TRANSPARENT_ALPHA_CHANNEL_REF;
 			if(dir == v3s16(0,-1,0))
-				buf->getMaterial().setTexture(0,
+				material.setTexture(0,
 						g_irrlicht->getTexture(porting::getDataPath("torch_on_floor.png").c_str()));
 			else if(dir == v3s16(0,1,0))
-				buf->getMaterial().setTexture(0,
+				material.setTexture(0,
 						g_irrlicht->getTexture(porting::getDataPath("torch_on_ceiling.png").c_str()));
 			// For backwards compatibility
 			else if(dir == v3s16(0,0,0))
-				buf->getMaterial().setTexture(0,
+				material.setTexture(0,
 						g_irrlicht->getTexture(porting::getDataPath("torch_on_floor.png").c_str()));
 			else
-				buf->getMaterial().setTexture(0, 
+				material.setTexture(0, 
 						g_irrlicht->getTexture(porting::getDataPath("torch.png").c_str()));
 
-			// Add to mesh
-			mesh_new->addMeshBuffer(buf);
-			buf->drop();
+			u16 indices[] = {0,1,2,2,3,0};
+			// Add to mesh collector
+			collector.append(material, vertices, 4, indices, 6);
+		}
+		else if(n.d == CONTENT_WATER)
+		{
+			bool top_is_water = false;
+			try{
+				MapNode n = getNodeParent(v3s16(x,y+1,z));
+				if(n.d == CONTENT_WATER || n.d == CONTENT_WATERSOURCE)
+					top_is_water = true;
+			}catch(InvalidPositionException &e){}
+
+			video::SColor c(128,255,255,255);
+			
+			// Neighbor water levels (key = relative position)
+			// Includes current node
+			core::map<v3s16, f32> neighbor_levels;
+			core::map<v3s16, u8> neighbor_contents;
+			v3s16 neighbor_dirs[9] = {
+				v3s16(0,0,0),
+				v3s16(0,0,1),
+				v3s16(0,0,-1),
+				v3s16(1,0,0),
+				v3s16(-1,0,0),
+				v3s16(1,0,1),
+				v3s16(-1,0,-1),
+				v3s16(1,0,-1),
+				v3s16(-1,0,1),
+			};
+			for(u32 i=0; i<9; i++)
+			{
+				u8 content = CONTENT_AIR;
+				float level = -0.5 * BS;
+				try{
+					v3s16 p2 = p + neighbor_dirs[i];
+					MapNode n2 = getNodeParent(p2);
+
+					content = n2.d;
+
+					if(n2.d == CONTENT_WATERSOURCE)
+						level = 0.5 * BS;
+					else if(n2.d == CONTENT_WATER)
+						level = (-0.5 + ((float)n2.param2 + 0.5) / 8.0) * BS;
+				}
+				catch(InvalidPositionException &e){}
+				
+				neighbor_levels.insert(neighbor_dirs[i], level);
+				neighbor_contents.insert(neighbor_dirs[i], content);
+			}
+
+			//float water_level = (-0.5 + ((float)n.param2 + 0.5) / 8.0) * BS;
+			//float water_level = neighbor_levels[v3s16(0,0,0)];
+
+			// Corner heights (average between four waters)
+			f32 corner_levels[4];
+			
+			v3s16 halfdirs[4] = {
+				v3s16(0,0,0),
+				v3s16(1,0,0),
+				v3s16(1,0,1),
+				v3s16(0,0,1),
+			};
+			for(u32 i=0; i<4; i++)
+			{
+				v3s16 cornerdir = halfdirs[i];
+				float cornerlevel = 0;
+				u32 valid_count = 0;
+				for(u32 j=0; j<4; j++)
+				{
+					v3s16 neighbordir = cornerdir - halfdirs[j];
+					u8 content = neighbor_contents[neighbordir];
+					// Special case for source nodes
+					if(content == CONTENT_WATERSOURCE)
+					{
+						cornerlevel = 0.5*BS;
+						valid_count = 1;
+						break;
+					}
+					else if(content == CONTENT_WATER)
+					{
+						cornerlevel += neighbor_levels[neighbordir];
+						valid_count++;
+					}
+					else if(content == CONTENT_AIR)
+					{
+						cornerlevel += -0.5*BS;
+						valid_count++;
+					}
+				}
+				if(valid_count > 0)
+					cornerlevel /= valid_count;
+				corner_levels[i] = cornerlevel;
+			}
+
+			/*
+				Generate sides
+			*/
+
+			v3s16 side_dirs[4] = {
+				v3s16(1,0,0),
+				v3s16(-1,0,0),
+				v3s16(0,0,1),
+				v3s16(0,0,-1),
+			};
+			s16 side_corners[4][2] = {
+				{1, 2},
+				{3, 0},
+				{2, 3},
+				{0, 1},
+			};
+			for(u32 i=0; i<4; i++)
+			{
+				v3s16 dir = side_dirs[i];
+
+				//float neighbor_level = neighbor_levels[dir];
+				/*if(neighbor_level > -0.5*BS + 0.001)
+					continue;*/
+				/*if(neighbor_level > water_level - 0.1*BS)
+					continue;*/
+
+				u8 neighbor_content = neighbor_contents[dir];
+
+				if(neighbor_content != CONTENT_AIR
+						&& neighbor_content != CONTENT_WATER)
+					continue;
+				
+				bool neighbor_is_water = (neighbor_content == CONTENT_WATER);
+
+				if(neighbor_is_water == true && top_is_water == false)
+					continue;
+				
+				video::S3DVertex vertices[4] =
+				{
+					/*video::S3DVertex(-BS/2,-BS/2,BS/2, 0,0,0, c, 0,1),
+					video::S3DVertex(BS/2,-BS/2,BS/2, 0,0,0, c, 1,1),
+					video::S3DVertex(BS/2,BS/2,BS/2, 0,0,0, c, 1,0),
+					video::S3DVertex(-BS/2,BS/2,BS/2, 0,0,0, c, 0,0),*/
+					video::S3DVertex(-BS/2,0,BS/2, 0,0,0, c, 0,1),
+					video::S3DVertex(BS/2,0,BS/2, 0,0,0, c, 1,1),
+					video::S3DVertex(BS/2,0,BS/2, 0,0,0, c, 1,0),
+					video::S3DVertex(-BS/2,0,BS/2, 0,0,0, c, 0,0),
+				};
+				
+				if(top_is_water)
+				{
+					vertices[2].Pos.Y = 0.5*BS;
+					vertices[3].Pos.Y = 0.5*BS;
+				}
+				else
+				{
+					vertices[2].Pos.Y = corner_levels[side_corners[i][0]];
+					vertices[3].Pos.Y = corner_levels[side_corners[i][1]];
+				}
+
+				if(neighbor_is_water)
+				{
+					vertices[0].Pos.Y = corner_levels[side_corners[i][1]];
+					vertices[1].Pos.Y = corner_levels[side_corners[i][0]];
+				}
+				else
+				{
+					vertices[0].Pos.Y = -0.5*BS;
+					vertices[1].Pos.Y = -0.5*BS;
+				}
+				
+				for(s32 j=0; j<4; j++)
+				{
+					if(dir == v3s16(0,0,1))
+						vertices[j].Pos.rotateXZBy(0);
+					if(dir == v3s16(0,0,-1))
+						vertices[j].Pos.rotateXZBy(180);
+					if(dir == v3s16(-1,0,0))
+						vertices[j].Pos.rotateXZBy(90);
+					if(dir == v3s16(1,0,-0))
+						vertices[j].Pos.rotateXZBy(-90);
+
+					vertices[j].Pos += intToFloat(p + getPosRelative());
+				}
+
+				// Set material
+				video::SMaterial material;
+				material.setFlag(video::EMF_LIGHTING, false);
+				material.setFlag(video::EMF_BACK_FACE_CULLING, false);
+				material.setFlag(video::EMF_BILINEAR_FILTER, false);
+				material.MaterialType = video::EMT_TRANSPARENT_VERTEX_ALPHA;
+				material.setTexture(0,
+						g_irrlicht->getTexture(porting::getDataPath("water.png").c_str()));
+
+				u16 indices[] = {0,1,2,2,3,0};
+				// Add to mesh collector
+				collector.append(material, vertices, 4, indices, 6);
+			}
+			
+			/*
+				Generate top side, if appropriate
+			*/
+			
+			if(top_is_water == false)
+			{
+				video::S3DVertex vertices[4] =
+				{
+					video::S3DVertex(-BS/2,0,-BS/2, 0,0,0, c, 0,1),
+					video::S3DVertex(BS/2,0,-BS/2, 0,0,0, c, 1,1),
+					video::S3DVertex(BS/2,0,BS/2, 0,0,0, c, 1,0),
+					video::S3DVertex(-BS/2,0,BS/2, 0,0,0, c, 0,0),
+				};
+
+				for(s32 i=0; i<4; i++)
+				{
+					//vertices[i].Pos.Y += water_level;
+					//vertices[i].Pos.Y += neighbor_levels[v3s16(0,0,0)];
+					vertices[i].Pos.Y += corner_levels[i];
+					vertices[i].Pos += intToFloat(p + getPosRelative());
+				}
+
+				// Set material
+				video::SMaterial material;
+				material.setFlag(video::EMF_LIGHTING, false);
+				material.setFlag(video::EMF_BACK_FACE_CULLING, false);
+				material.setFlag(video::EMF_BILINEAR_FILTER, false);
+				material.MaterialType = video::EMT_TRANSPARENT_VERTEX_ALPHA;
+				material.setTexture(0,
+						g_irrlicht->getTexture(porting::getDataPath("water.png").c_str()));
+
+				u16 indices[] = {0,1,2,2,3,0};
+				// Add to mesh collector
+				collector.append(material, vertices, 4, indices, 6);
+			}
 		}
 	}
+
+	/*
+		Add stuff from collector to mesh
+	*/
 	
+	collector.fillMesh(mesh_new);
+
 	/*
 		Do some stuff to the mesh
 	*/
@@ -792,6 +1029,14 @@ void MapBlock::updateMesh(u32 daynight_ratio)
 		mesh_new = NULL;
 	}
 
+	// Use VBO for mesh (this just would set this for ever buffer)
+	// This will lead to infinite memory usage because or irrlicht.
+	//mesh_new->setHardwareMappingHint(scene::EHM_STATIC);
+	
+	/*std::cout<<"MapBlock has "<<fastfaces_new.size()<<" faces "
+			<<"and uses "<<mesh_new->getMeshBufferCount()
+			<<" materials (meshbuffers)"<<std::endl;*/
+	
 	/*
 		Replace the mesh
 	*/
@@ -872,7 +1117,8 @@ void MapBlock::updateMesh(u32 daynight_ratio)
 	air is left in block.
 */
 bool MapBlock::propagateSunlight(core::map<v3s16, bool> & light_sources,
-		bool remove_light, bool *black_air_left)
+		bool remove_light, bool *black_air_left,
+		bool grow_grass)
 {
 	// Whether the sunlight at the top of the bottom block is valid
 	bool block_below_is_valid = true;
@@ -962,10 +1208,23 @@ bool MapBlock::propagateSunlight(core::map<v3s16, bool> & light_sources,
 				}
 				else if(n.light_propagates() == false)
 				{
-					// Turn mud into grass
-					if(n.d == CONTENT_MUD && current_light == LIGHT_SUN)
+					if(grow_grass)
 					{
-						n.d = CONTENT_GRASS;
+						bool upper_is_air = false;
+						try
+						{
+							if(getNodeParent(pos+v3s16(0,1,0)).d == CONTENT_AIR)
+								upper_is_air = true;
+						}
+						catch(InvalidPositionException &e)
+						{
+						}
+						// Turn mud into grass
+						if(upper_is_air && n.d == CONTENT_MUD
+								&& current_light == LIGHT_SUN)
+						{
+							n.d = CONTENT_GRASS;
+						}
 					}
 
 					// A solid object is on the way.

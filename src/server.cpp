@@ -971,7 +971,8 @@ Server::Server(
 	m_time_of_day_send_timer(0),
 	m_uptime(0)
 {
-	m_flowwater_timer = 0.0;
+	//m_flowwater_timer = 0.0;
+	m_liquid_transform_timer = 0.0;
 	m_print_info_timer = 0.0;
 	m_objectdata_timer = 0.0;
 	m_emergethread_trigger_timer = 0.0;
@@ -1140,9 +1141,54 @@ void Server::AsyncRunStep()
 	/*
 		Do background stuff
 	*/
-
+	
+	/*
+		Transform liquids
+	*/
+	m_liquid_transform_timer += dtime;
+	if(m_liquid_transform_timer >= 1.00)
 	{
-		//m_env.getMap().
+		m_liquid_transform_timer -= 1.00;
+		
+		JMutexAutoLock lock(m_env_mutex);
+		
+		core::map<v3s16, MapBlock*> modified_blocks;
+		m_env.getMap().transformLiquids(modified_blocks);
+#if 0		
+		/*
+			Update lighting
+		*/
+		core::map<v3s16, MapBlock*> lighting_modified_blocks;
+		ServerMap &map = ((ServerMap&)m_env.getMap());
+		map.updateLighting(modified_blocks, lighting_modified_blocks);
+		
+		// Add blocks modified by lighting to modified_blocks
+		for(core::map<v3s16, MapBlock*>::Iterator
+				i = lighting_modified_blocks.getIterator();
+				i.atEnd() == false; i++)
+		{
+			MapBlock *block = i.getNode()->getValue();
+			modified_blocks.insert(block->getPos(), block);
+		}
+#endif
+		/*
+			Set the modified blocks unsent for all the clients
+		*/
+		
+		JMutexAutoLock lock2(m_con_mutex);
+
+		for(core::map<u16, RemoteClient*>::Iterator
+				i = m_clients.getIterator();
+				i.atEnd() == false; i++)
+		{
+			RemoteClient *client = i.getNode()->getValue();
+			
+			if(modified_blocks.size() > 0)
+			{
+				// Remove block from sent history
+				client->SetBlocksNotSent(modified_blocks);
+			}
+		}
 	}
 
 #if 0

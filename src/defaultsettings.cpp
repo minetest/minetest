@@ -62,8 +62,8 @@ void set_default_settings()
 	g_settings.setDefault("active_object_range", "2");
 	g_settings.setDefault("max_simultaneous_block_sends_per_client", "1");
 	g_settings.setDefault("max_simultaneous_block_sends_server_total", "4");
-	g_settings.setDefault("water_moves", "true");
-	g_settings.setDefault("disable_water_climb", "true");
+	//g_settings.setDefault("water_moves", "true");
+	//g_settings.setDefault("disable_water_climb", "true");
 	//g_settings.setDefault("endless_water", "true");
 	g_settings.setDefault("max_block_send_distance", "6");
 	g_settings.setDefault("max_block_generate_distance", "6");

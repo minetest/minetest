@@ -108,7 +108,7 @@ inline bool sunlight_propagates_content(u8 m)
 inline u8 content_solidness(u8 m)
 {
 	// As of now, every pseudo node like torches are added to this
-	if(m == CONTENT_AIR || m == CONTENT_TORCH)
+	if(m == CONTENT_AIR || m == CONTENT_TORCH || m == CONTENT_WATER)
 		return 0;
 	if(m == CONTENT_WATER || m == CONTENT_WATERSOURCE)
 		return 1;
@@ -121,10 +121,28 @@ inline bool content_walkable(u8 m)
 	return (m != CONTENT_AIR && m != CONTENT_WATER && m != CONTENT_WATERSOURCE && m != CONTENT_TORCH);
 }
 
-// A liquid resists fast movement
 inline bool content_liquid(u8 m)
 {
 	return (m == CONTENT_WATER || m == CONTENT_WATERSOURCE);
+}
+
+inline bool content_flowing_liquid(u8 m)
+{
+	return (m == CONTENT_WATER);
+}
+
+inline bool content_liquid_source(u8 m)
+{
+	return (m == CONTENT_WATERSOURCE);
+}
+
+// CONTENT_WATER || CONTENT_WATERSOURCE -> CONTENT_WATER
+// CONTENT_LAVA || CONTENT_LAVASOURCE -> CONTENT_LAVA
+inline u8 make_liquid_flowing(u8 m)
+{
+	if(m == CONTENT_WATER || m == CONTENT_WATERSOURCE)
+		return CONTENT_WATER;
+	assert(0);
 }
 
 // Pointable contents can be pointed to in the map
@@ -349,6 +367,8 @@ struct MapNode
 	
 	union
 	{
+		u8 param2;
+		
 		/*
 			Pressure for liquids
 		*/

@@ -97,7 +97,11 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 */
 #define MAX_OBJECTDATA_SIZE 450
 
-#define WATER_LEVEL (0)
+/*
+	This is good to be a bit different than 0 so that water level
+	is not between to MapBlocks
+*/
+#define WATER_LEVEL 3
 
 // Length of cracking animation in count of images
 #define CRACK_ANIMATION_LENGTH 5

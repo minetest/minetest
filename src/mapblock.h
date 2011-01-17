@@ -315,7 +315,8 @@ public:
 	
 	// See comments in mapblock.cpp
 	bool propagateSunlight(core::map<v3s16, bool> & light_sources,
-			bool remove_light=false, bool *black_air_left=NULL);
+			bool remove_light=false, bool *black_air_left=NULL,
+			bool grow_grass=false);
 	
 	// Copies data to VoxelManipulator to getPosRelative()
 	void copyTo(VoxelManipulator &dst);

@@ -1608,13 +1608,19 @@ public:
 		return true;
 	}
 
-	void pop_front()
+	Value pop_front()
 	{
 		typename core::list<Value>::Iterator i = m_list.begin();
 		Value value = *i;
 		m_map.remove(value);
 		m_list.erase(i);
 		return value;
+	}
+
+	u32 size()
+	{
+		assert(m_list.size() == m_map.size());
+		return m_list.size();
 	}
 
 private:
