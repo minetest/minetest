@@ -1317,17 +1317,26 @@ ServerMap::ServerMap(std::string savedir, HMParams hmp, MapParams mp):
 	*/
 	
 	{
+		dstream<<"Generating map point attribute lists"<<std::endl;
+		
 		PointAttributeList *list_baseheight = m_padb.getList("hm_baseheight");
 		PointAttributeList *list_randmax = m_padb.getList("hm_randmax");
 		PointAttributeList *list_randfactor = m_padb.getList("hm_randfactor");
 		PointAttributeList *list_plants_amount = m_padb.getList("plants_amount");
 		PointAttributeList *list_caves_amount = m_padb.getList("caves_amount");
+
+		/*
+			NOTE: BEWARE: Too big amount of these will make map generation
+			slow. Especially those that are read by every block emerge.
+		*/
 		
-		for(u32 i=0; i<3000; i++)
+		for(u32 i=0; i<15000; i++)
 		{
-			u32 lim = MAP_GENERATION_LIMIT;
-			if(i < 200)
-				lim = 1000;
+			/*u32 lim = MAP_GENERATION_LIMIT;
+			if(i < 400)
+				lim = 2000;*/
+
+			u32 lim = 1000 + MAP_GENERATION_LIMIT * i / 15000;
 
 			v3s16 p(
 				-lim + myrand()%(lim*2),
@@ -1356,6 +1365,24 @@ ServerMap::ServerMap(std::string savedir, HMParams hmp, MapParams mp):
 				plants_amount = 0.0;
 			}
 
+
+			list_plants_amount->addPoint(p, Attribute(plants_amount));
+		}
+
+		for(u32 i=0; i<1000; i++)
+		{
+			/*u32 lim = MAP_GENERATION_LIMIT;
+			if(i < 400)
+				lim = 2000;*/
+
+			u32 lim = 500 + MAP_GENERATION_LIMIT * i / 1000;
+
+			v3s16 p(
+				-lim + myrand()%(lim*2),
+				0,
+				-lim + myrand()%(lim*2)
+			);
+
 			float caves_amount = 0;
 			if(myrand()%5 == 0)
 			{
@@ -1370,20 +1397,21 @@ ServerMap::ServerMap(std::string savedir, HMParams hmp, MapParams mp):
 				caves_amount = 0.05;
 			}
 
-			list_plants_amount->addPoint(p, Attribute(plants_amount));
 			list_caves_amount->addPoint(p, Attribute(caves_amount));
 		}
-#if 1
-		for(u32 i=0; i<3000; i++)
+		
+		for(u32 i=0; i<5000; i++)
 		{
-			u32 lim = MAP_GENERATION_LIMIT;
-			if(i < 100)
-				lim = 1000;
+			/*u32 lim = MAP_GENERATION_LIMIT;
+			if(i < 400)
+				lim = 2000;*/
+
+			u32 lim = 1000 + MAP_GENERATION_LIMIT * i / 5000;
 
 			v3s16 p(
-				-lim + myrand()%(lim*2),
+				-lim + (myrand()%(lim*2)),
 				0,
-				-lim + myrand()%(lim*2)
+				-lim + (myrand()%(lim*2))
 			);
 			
 			/*s32 bh_i = (myrand()%200) - 50;
@@ -1404,13 +1432,13 @@ ServerMap::ServerMap(std::string savedir, HMParams hmp, MapParams mp):
 			if(myrand()%4 == 0)
 			{
 				baseheight = 100;
-				randmax = 100;
+				randmax = 50;
 				randfactor = 0.63;
 			}
-			else if(myrand()%5 == 0)
+			else if(myrand()%6 == 0)
 			{
 				baseheight = 200;
-				randmax = 200;
+				randmax = 100;
 				randfactor = 0.66;
 			}
 			else if(myrand()%4 == 0)
@@ -1423,7 +1451,7 @@ ServerMap::ServerMap(std::string savedir, HMParams hmp, MapParams mp):
 			{
 				baseheight = 0;
 				randmax = 30;
-				randfactor = 0.60;
+				randfactor = 0.63;
 			}
 			else
 			{
@@ -1436,68 +1464,16 @@ ServerMap::ServerMap(std::string savedir, HMParams hmp, MapParams mp):
 			list_randmax->addPoint(p, Attribute(randmax));
 			list_randfactor->addPoint(p, Attribute(randfactor));
 		}
-#endif
 
 		/*list_baseheight->addPoint(v3s16(0,0,0), Attribute(5));
 		list_randmax->addPoint(v3s16(0,0,0), Attribute(20));
 		list_randfactor->addPoint(v3s16(0,0,0), Attribute(0.6));*/
-	}
 
-#if 0
-	{
-		PointAttributeList *palist = m_padb.getList("hm_baseheight");
-
-		{
-			v3s16 p(0,0,0);
-			Attribute attr;
-			attr.set("5");
-			palist->addPoint(p, attr);
-		}
-
-		/*{
-			v3s16 p(-50,-50,0);
-			Attribute attr;
-			attr.set("-10");
-			palist->addPoint(p, attr);
-		}
-		
-		{
-			v3s16 p(50,0,50);
-			Attribute attr;
-			attr.set("200");
-			palist->addPoint(p, attr);
-		}*/
+		// Easy spawn point
+		/*list_baseheight->addPoint(v3s16(0,0,0), Attribute(0));
+		list_randmax->addPoint(v3s16(0,0,0), Attribute(10));
+		list_randfactor->addPoint(v3s16(0,0,0), Attribute(0.65));*/
 	}
-#endif
-#if 0
-	{
-		PointAttributeList *palist = m_padb.getList("plants_amount");
-	
-		// Back
-		{
-			v3s16 p(0,0,-100);
-			Attribute attr;
-			attr.set("0");
-			palist->addPoint(p, attr);
-		}
-		
-		// Front right
-		{
-			v3s16 p(100,0,100);
-			Attribute attr;
-			attr.set("2.0");
-			palist->addPoint(p, attr);
-		}
-		
-		// Front left
-		{
-			v3s16 p(-100,0,100);
-			Attribute attr;
-			attr.set("0.2");
-			palist->addPoint(p, attr);
-		}
-	}
-#endif
 
 	/*
 		Try to load map; if not found, create a new one.
@@ -1704,6 +1680,8 @@ MapSector * ServerMap::emergeSector(v2s16 p2d)
 		Get local attributes
 	*/
 	
+	//dstream<<"emergeSector(): Reading point attribute lists"<<std::endl;
+	
 	// Get plant amount from attributes
 	PointAttributeList *palist = m_padb.getList("plants_amount");
 	assert(palist);
@@ -1711,6 +1689,8 @@ MapSector * ServerMap::emergeSector(v2s16 p2d)
 			palist->getNearAttr(nodepos2d).getFloat();*/
 	float local_plants_amount =
 			palist->getInterpolatedFloat(nodepos2d);
+
+	//dstream<<"emergeSector(): done."<<std::endl;
 
 	/*
 		Generate sector heightmap
@@ -1810,7 +1790,7 @@ MapSector * ServerMap::emergeSector(v2s16 p2d)
 	/*
 		Add ravine (randomly)
 	*/
-	if(m_params.ravines_amount != 0)
+	if(m_params.ravines_amount > 0.001)
 	{
 		if(myrand()%(s32)(200.0 / m_params.ravines_amount) == 0)
 		{
@@ -2061,13 +2041,32 @@ MapBlock * ServerMap::emergeBlock(
 
 	bool some_part_underground = block_y * MAP_BLOCKSIZE <= highest_ground_y;
 
+	bool mostly_underwater_surface = false;
+	if(highest_ground_y < WATER_LEVEL
+			&& some_part_underground && !completely_underground)
+		mostly_underwater_surface = true;
+
 	/*
 		Get local attributes
 	*/
+
+	//dstream<<"emergeBlock(): Getting local attributes"<<std::endl;
+
+	float caves_amount = 0;
 	
-	v2s16 nodepos2d = p2d * MAP_BLOCKSIZE;
-	PointAttributeList *list_caves_amount = m_padb.getList("caves_amount");
-	float caves_amount = list_caves_amount->getInterpolatedFloat(nodepos2d);
+	{
+		/*
+			NOTE: BEWARE: Too big amount of attribute points slows verything
+			down by a lot.
+			1 interpolation from 5000 points takes 2-3ms.
+		*/
+		//TimeTaker timer("emergeBlock() local attribute retrieval");
+		v2s16 nodepos2d = p2d * MAP_BLOCKSIZE;
+		PointAttributeList *list_caves_amount = m_padb.getList("caves_amount");
+		caves_amount = list_caves_amount->getInterpolatedFloat(nodepos2d);
+	}
+
+	//dstream<<"emergeBlock(): Done"<<std::endl;
 
 	/*
 		Generate dungeons
@@ -2082,6 +2081,7 @@ MapBlock * ServerMap::emergeBlock(
 	}
 	
 	// Fill table
+#if 1
 	{
 		/*
 			Initialize orp and ors. Try to find if some neighboring
@@ -2207,21 +2207,34 @@ MapBlock * ServerMap::emergeBlock(
 continue_generating:
 		
 		/*
-			Don't always generate dungeon
+			Choose whether to actually generate dungeon
 		*/
 		bool do_generate_dungeons = true;
 		// Don't generate if no part is underground
 		if(!some_part_underground)
+		{
 			do_generate_dungeons = false;
-		// If block is partly underground, caves are generated.
+		}
+		// Don't generate if mostly underwater surface
+		else if(mostly_underwater_surface)
+		{
+			do_generate_dungeons = false;
+		}
+		// Partly underground = cave
 		else if(!completely_underground)
-			do_generate_dungeons = (rand() % 100 <= (u32)(caves_amount*100));
-		// Always continue if found existing dungeons underground
+		{
+			do_generate_dungeons = (rand() % 100 <= (s32)(caves_amount*100));
+		}
+		// Found existing dungeon underground
 		else if(found_existing && completely_underground)
-			do_generate_dungeons = true;
-		// If underground and no dungeons found
+		{
+			do_generate_dungeons = (rand() % 100 <= (s32)(caves_amount*100));
+		}
+		// Underground and no dungeons found
 		else
-			do_generate_dungeons = (rand() % 2 == 0);
+		{
+			do_generate_dungeons = (rand() % 300 <= (s32)(caves_amount*100));
+		}
 
 		if(do_generate_dungeons)
 		{
@@ -2271,10 +2284,11 @@ continue_generating:
 			}
 		}
 	}
+#endif
 
 	// Set to true if has caves.
 	// Set when some non-air is changed to air when making caves.
-	bool has_caves = false;
+	bool has_dungeons = false;
 
 	/*
 		Apply temporary cave data to block
@@ -2296,7 +2310,7 @@ continue_generating:
 				if(is_ground_content(n.d))
 				{
 					// Has now caves
-					has_caves = true;
+					has_dungeons = true;
 					// Set air to node
 					n.d = CONTENT_AIR;
 				}
@@ -2316,7 +2330,7 @@ continue_generating:
 		Force lighting update if some part of block is partly
 		underground and has caves.
 	*/
-	/*if(some_part_underground && !completely_underground && has_caves)
+	/*if(some_part_underground && !completely_underground && has_dungeons)
 	{
 		//dstream<<"Half-ground caves"<<std::endl;
 		lighting_invalidated_blocks[block->getPos()] = block;
@@ -2336,9 +2350,9 @@ continue_generating:
 		/*
 			Add meseblocks
 		*/
-		for(s16 i=0; i< underground_level/4 + 1; i++)
+		for(s16 i=0; i<underground_level/4 + 1; i++)
 		{
-			if(myrand()%10 == 0)
+			if(myrand()%50 == 0)
 			{
 				v3s16 cp(
 					(myrand()%(MAP_BLOCKSIZE-2))+1,
@@ -2697,7 +2711,27 @@ continue_generating:
 
 		changed_blocks.insert(block->getPos(), block);
 	}
-	
+
+	/*
+		Debug information
+	*/
+	if(0)
+	{
+		dstream
+		<<"lighting_invalidated_blocks.size()"
+		<<", has_dungeons"
+		<<", completely_ug"
+		<<", some_part_ug"
+		<<"  "<<lighting_invalidated_blocks.size()
+		<<", "<<has_dungeons
+		<<", "<<completely_underground
+		<<", "<<some_part_underground
+		<<std::endl;
+	}
+
+	/*
+		Debug mode operation
+	*/
 	if(HAXMODE)
 	{
 		// Don't calculate lighting at all
@@ -3412,6 +3446,17 @@ void ClientMap::renderMap(video::IVideoDriver* driver, s32 pass)
 				if not seen on display
 			*/
 			
+			float range = 100000 * BS;
+			if(m_control.range_all == false)
+				range = m_control.wanted_range * BS;
+
+			if(isBlockInSight(block->getPos(), camera_position,
+					camera_direction, range) == false)
+			{
+				continue;
+			}
+
+#if 0			
 			v3s16 blockpos_nodes = block->getPosRelative();
 			
 			// Block center position
@@ -3434,8 +3479,6 @@ void ClientMap::renderMap(video::IVideoDriver* driver, s32 pass)
 			{
 				// If block is far away, don't draw it
 				if(d > m_control.wanted_range * BS)
-				// This is nicer when fog is used
-				//if((dforward+d)/2 > m_control.wanted_range * BS)
 					continue;
 			}
 			
@@ -3460,7 +3503,23 @@ void ClientMap::renderMap(video::IVideoDriver* driver, s32 pass)
 				if(cosangle < cos(FOV_ANGLE/2. * 4./3.))
 					continue;
 			}
+#endif			
+
+			v3s16 blockpos_nodes = block->getPosRelative();
 			
+			// Block center position
+			v3f blockpos(
+					((float)blockpos_nodes.X + MAP_BLOCKSIZE/2) * BS,
+					((float)blockpos_nodes.Y + MAP_BLOCKSIZE/2) * BS,
+					((float)blockpos_nodes.Z + MAP_BLOCKSIZE/2) * BS
+			);
+
+			// Block position relative to camera
+			v3f blockpos_relative = blockpos - camera_position;
+
+			// Total distance
+			f32 d = blockpos_relative.getLength();
+
 			/*
 				Draw the faces of the block
 			*/

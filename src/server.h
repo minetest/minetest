@@ -231,7 +231,8 @@ public:
 	u8 pending_serialization_version;
 
 	RemoteClient():
-		m_time_from_building(9999)
+		m_time_from_building(9999),
+		m_excess_gotblocks(0)
 	{
 		peer_id = 0;
 		serialization_version = SER_FMT_VER_INVALID;
@@ -295,7 +296,9 @@ public:
 				<<", m_blocks_sent.size()="<<m_blocks_sent.size()
 				<<", m_blocks_sending.size()="<<m_blocks_sending.size()
 				<<", m_nearest_unsent_d="<<m_nearest_unsent_d
+				<<", m_excess_gotblocks="<<m_excess_gotblocks
 				<<std::endl;
+		m_excess_gotblocks = 0;
 	}
 
 	// Time from last placing or removing blocks
@@ -347,6 +350,15 @@ private:
 	*/
 	core::map<v3s16, float> m_blocks_sending;
 	JMutex m_blocks_sending_mutex;
+
+	/*
+		Count of excess GotBlocks().
+		There is an excess amount because the client sometimes
+		gets a block so late that the server sends it again,
+		and the client then sends two GOTBLOCKs.
+		This is resetted by PrintInfo()
+	*/
+	u32 m_excess_gotblocks;
 };
 
 /*struct ServerSettings

@@ -748,7 +748,7 @@ struct TestHeightmap
 
 		padb.getList("hm_baseheight")->addPoint(v2s16(BS1*2,BS1), Attribute(0));
 		padb.getList("hm_randmax")->addPoint(v2s16(BS1*2,BS1), Attribute(30));
-		padb.getList("hm_randfactor")->addPoint(v2s16(BS1*2,BS1), Attribute(0.9));
+		padb.getList("hm_randfactor")->addPoint(v2s16(BS1*2,BS1), Attribute(0.63));
 
 		UnlimitedHeightmap hm1(BS1, &padb);
 

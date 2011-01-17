@@ -206,7 +206,7 @@ public:
 		their differing fetch methods.
 	*/
 	virtual MapSector * emergeSector(v2s16 p) = 0;
-	
+
 	// Returns InvalidPositionException if not found
 	MapBlock * getBlockNoCreate(v3s16 p);
 	// Returns NULL if not found

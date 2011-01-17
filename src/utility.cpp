@@ -24,6 +24,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "utility.h"
 #include "irrlichtwrapper.h"
 #include "gettime.h"
+#include "mapblock.h"
 
 TimeTaker::TimeTaker(const char *name, u32 *result)
 {
@@ -328,4 +329,58 @@ lopuks sit otetaan a/b
 }
 #endif
 
+/*
+	blockpos: position of block in block coordinates
+	camera_pos: position of camera in nodes
+	camera_dir: an unit vector pointing to camera direction
+	range: viewing range
+*/
+bool isBlockInSight(v3s16 blockpos_b, v3f camera_pos, v3f camera_dir, f32 range)
+{
+	v3s16 blockpos_nodes = blockpos_b * MAP_BLOCKSIZE;
+	
+	// Block center position
+	v3f blockpos(
+			((float)blockpos_nodes.X + MAP_BLOCKSIZE/2) * BS,
+			((float)blockpos_nodes.Y + MAP_BLOCKSIZE/2) * BS,
+			((float)blockpos_nodes.Z + MAP_BLOCKSIZE/2) * BS
+	);
+
+	// Block position relative to camera
+	v3f blockpos_relative = blockpos - camera_pos;
+
+	// Distance in camera direction (+=front, -=back)
+	f32 dforward = blockpos_relative.dotProduct(camera_dir);
+
+	// Total distance
+	f32 d = blockpos_relative.getLength();
+	
+	// If block is far away, it's not in sight
+	if(d > range * BS)
+		return false;
+
+	// Maximum radius of a block
+	f32 block_max_radius = 0.5*1.44*1.44*MAP_BLOCKSIZE*BS;
+	
+	// If block is (nearly) touching the camera, don't
+	// bother validating further (that is, render it anyway)
+	if(d > block_max_radius * 1.5)
+	{
+		// Cosine of the angle between the camera direction
+		// and the block direction (camera_dir is an unit vector)
+		f32 cosangle = dforward / d;
+		
+		// Compensate for the size of the block
+		// (as the block has to be shown even if it's a bit off FOV)
+		// This is an estimate.
+		cosangle += block_max_radius / dforward;
+
+		// If block is not in the field of view, skip it
+		//if(cosangle < cos(FOV_ANGLE/2))
+		if(cosangle < cos(FOV_ANGLE/2. * 4./3.))
+			return false;
+	}
+
+	return true;
+}
 

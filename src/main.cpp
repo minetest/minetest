@@ -168,6 +168,8 @@ TODO: Check what goes wrong with caching map to disk (Kray)
 TODO: When server sees that client is removing an inexistent block or
       adding a block to an existent position, resend the MapBlock.
 
+TODO: Generate map from the area the client is looking at
+
 Objects:
 
 TODO: Better handling of objects and mobs
@@ -1409,10 +1411,11 @@ int main(int argc, char *argv[])
 	video::E_DRIVER_TYPE driverType;
 
 #ifdef _WIN32
-	//driverType = video::EDT_DIRECT3D9; // Doesn't seem to work
+	//driverType = video::EDT_DIRECT3D9;
 	driverType = video::EDT_OPENGL;
 #else
 	driverType = video::EDT_OPENGL;
+	//driverType = video::EDT_BURNINGSVIDEO;
 #endif
 
 	// create device and exit if creation failed

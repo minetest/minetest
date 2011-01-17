@@ -1574,5 +1574,12 @@ private:
 	core::map<std::string, PointAttributeList*> m_lists;
 };
 
+/*
+	Miscellaneous functions
+*/
+
+bool isBlockInSight(v3s16 blockpos_b, v3f camera_pos, v3f camera_dir, f32 range);
+
+
 #endif
 

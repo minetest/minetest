@@ -328,6 +328,13 @@ void RemoteClient::GetNextBlocks(Server *server, float dtime,
 	v3s16 center_nodepos = floatToInt(playerpos);
 
 	v3s16 center = getNodeBlockPos(center_nodepos);
+	
+	// Camera position and direction
+	v3f camera_pos =
+			playerpos + v3f(0, BS+BS/2, 0);
+	v3f camera_dir = v3f(0,0,1);
+	camera_dir.rotateYZBy(player->getPitch());
+	camera_dir.rotateXZBy(player->getYaw());
 
 	/*
 		Get the starting value of the block finder radius.
@@ -496,6 +503,15 @@ void RemoteClient::GetNextBlocks(Server *server, float dtime,
 				if(abs(p.Y - center.Y) > d_max_gen - d_max_gen / 3)
 					generate = false;
 			}
+
+			/*
+				Don't draw if not in sight
+			*/
+
+			if(isBlockInSight(p, camera_pos, camera_dir, 10000*BS) == false)
+			{
+				continue;
+			}
 			
 			/*
 				Don't send already sent blocks
@@ -511,6 +527,7 @@ void RemoteClient::GetNextBlocks(Server *server, float dtime,
 			{
 				/*
 					Ignore block if it is not at ground surface
+					but don't ignore water surface blocks
 				*/
 				v2s16 p2d(p.X*MAP_BLOCKSIZE + MAP_BLOCKSIZE/2,
 						p.Z*MAP_BLOCKSIZE + MAP_BLOCKSIZE/2);
@@ -519,7 +536,8 @@ void RemoteClient::GetNextBlocks(Server *server, float dtime,
 				if(y > GROUNDHEIGHT_VALID_MINVALUE)
 				{
 					f32 by = p.Y*MAP_BLOCKSIZE + MAP_BLOCKSIZE/2;
-					if(fabs(by - y) > MAP_BLOCKSIZE + MAP_BLOCKSIZE/3)
+					if(fabs(by - y) > MAP_BLOCKSIZE + MAP_BLOCKSIZE/3
+							&& fabs(by - WATER_LEVEL) >= MAP_BLOCKSIZE)
 						continue;
 				}
 			}
@@ -839,8 +857,11 @@ void RemoteClient::GotBlock(v3s16 p)
 	if(m_blocks_sending.find(p) != NULL)
 		m_blocks_sending.remove(p);
 	else
-		dstream<<"RemoteClient::GotBlock(): Didn't find in"
-				" m_blocks_sending"<<std::endl;
+	{
+		/*dstream<<"RemoteClient::GotBlock(): Didn't find in"
+				" m_blocks_sending"<<std::endl;*/
+		m_excess_gotblocks++;
+	}
 	m_blocks_sent.insert(p, true);
 }
 
@@ -1118,6 +1139,7 @@ void Server::AsyncRunStep()
 	/*
 		Flow water
 	*/
+	if(g_settings.getBool("water_moves") == true)
 	{
 		float interval;
 		
@@ -3040,12 +3062,12 @@ Player *Server::emergePlayer(const char *name, const char *password)
 		v2s16 nodepos;
 		f32 groundheight = 0;
 		// Try to find a good place a few times
-		for(s32 i=0; i<100; i++)
+		for(s32 i=0; i<500; i++)
 		{
-			s32 range = 1 + i*4;
+			s32 range = 1 + i;
 			// We're going to try to throw the player to this position
-			nodepos = v2s16(-range/2 + (myrand()%range),
-					-range/2 + (myrand()%range));
+			nodepos = v2s16(-range + (myrand()%(range*2)),
+					-range + (myrand()%(range*2)));
 			v2s16 sectorpos = getNodeSectorPos(nodepos);
 			// Get sector
 			m_env.getMap().emergeSector(sectorpos);
@@ -3055,23 +3077,38 @@ Player *Server::emergePlayer(const char *name, const char *password)
 			assert(groundheight > GROUNDHEIGHT_VALID_MINVALUE);
 			// Don't go underwater
 			if(groundheight < WATER_LEVEL)
+			{
+				//dstream<<"-> Underwater"<<std::endl;
 				continue;
+			}
+#if 0 // Doesn't work, generating blocks is a bit too complicated for doing here
+			// Get block at point
+			v3s16 nodepos3d;
+			nodepos3d = v3s16(nodepos.X, groundheight+1, nodepos.Y);
+			v3s16 blockpos = getNodeBlockPos(nodepos3d);
+			((ServerMap*)(&m_env.getMap()))->emergeBlock(blockpos);
 			// Don't go inside ground
 			try{
-				v3s16 footpos(nodepos.X, groundheight+1, nodepos.Y);
-				v3s16 headpos(nodepos.X, groundheight+2, nodepos.Y);
+				/*v3s16 footpos(nodepos.X, groundheight+1, nodepos.Y);
+				v3s16 headpos(nodepos.X, groundheight+2, nodepos.Y);*/
+				v3s16 footpos = nodepos3d + v3s16(0,0,0);
+				v3s16 headpos = nodepos3d + v3s16(0,1,0);
 				if(m_env.getMap().getNode(footpos).d != CONTENT_AIR
 					|| m_env.getMap().getNode(headpos).d != CONTENT_AIR)
 				{
+					dstream<<"-> Inside ground"<<std::endl;
 					// In ground
 					continue;
 				}
 			}catch(InvalidPositionException &e)
 			{
+				dstream<<"-> Invalid position"<<std::endl;
 				// Ignore invalid position
 				continue;
 			}
+#endif
 			// Found a good place
+			dstream<<"Searched through "<<i<<" places."<<std::endl;
 			break;
 		}
 #endif
