@@ -1368,7 +1368,7 @@ void Map::PrintInfo(std::ostream &out)
 void Map::transformLiquids(core::map<v3s16, MapBlock*> & modified_blocks)
 {
 	DSTACK(__FUNCTION_NAME);
-	TimeTaker timer("transformLiquids()");
+	//TimeTaker timer("transformLiquids()");
 
 	u32 loopcount = 0;
 	u32 initial_size = m_transforming_liquid.size();
@@ -1630,7 +1630,7 @@ void Map::transformLiquids(core::map<v3s16, MapBlock*> & modified_blocks)
 		if(loopcount >= initial_size * 1)
 			break;
 	}
-	dstream<<"Map::transformLiquids(): loopcount="<<loopcount<<std::endl;
+	//dstream<<"Map::transformLiquids(): loopcount="<<loopcount<<std::endl;
 }
 
 /*
