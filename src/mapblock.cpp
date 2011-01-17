@@ -858,7 +858,7 @@ void MapBlock::updateMesh(u32 daynight_ratio)
 
 	If there is a block above, continues from it.
 	If there is no block above, assumes there is sunlight, unless
-	is_underground is set.
+	is_underground is set or highest node is water.
 
 	At the moment, all sunlighted nodes are added to light_sources.
 	- SUGG: This could be optimized
@@ -903,7 +903,14 @@ bool MapBlock::propagateSunlight(core::map<v3s16, bool> & light_sources,
 				{
 					no_sunlight = true;
 				}
-				
+				else
+				{
+					MapNode n = getNode(v3s16(x, MAP_BLOCKSIZE-1, z));
+					if(n.d == CONTENT_WATER || n.d == CONTENT_OCEAN)
+					{
+						no_sunlight = true;
+					}
+				}
 				// NOTE: As of now, it just would make everything dark.
 				// No sunlight here
 				//no_sunlight = true;

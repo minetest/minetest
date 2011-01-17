@@ -155,10 +155,6 @@ TODO: - Players to be saved on disk, with inventory
 TODO: Players to be saved as text in map/players/<name>
 TODO: Player inventory to be saved on disk
 
-TODO: Proper handling of spawning place (try to find something that
-      is not in the middle of an ocean (some land to stand on at
-	  least) and save it in map config.
-
 TODO: Copy the text of the last picked sign to inventory in creative
       mode
 
@@ -168,24 +164,26 @@ TODO: Check what goes wrong with caching map to disk (Kray)
 TODO: When server sees that client is removing an inexistent block or
       adding a block to an existent position, resend the MapBlock.
 
-TODO: Generate map from the area the client is looking at
+TODO: Save players with inventories to disk
+
+TODO: Make water more like in minecraft
 
 Objects:
 
 TODO: Better handling of objects and mobs
       - Scripting?
-      - There has to be some way to do it with less spaghetti code
+      - There has to be some way to do it with less messy code
 	  - Make separate classes for client and server
 	    - Client should not discriminate between blocks, server should
 	    - Make other players utilize the same framework
 		- This is also needed for objects that don't get sent to client
 		  but are used for triggers etc
 
+TODO: There has to be some better way to handle static objects than to
+      send them all the time. This affects signs and item objects.
 SUGG: Signs could be done in the same way as torches. For this, blocks
       need an additional metadata field for the texts
 	  - This is also needed for item container chests
-TODO: There has to be some better way to handle static objects than to
-      send them all the time. This affects signs and item objects.
 
 Block object server side:
       - A "near blocks" buffer, in which some nearby blocks are stored.
@@ -200,12 +198,8 @@ Block object server side:
 
 Map generator:
 
-TODO: There are some lighting-related todos and fixmes in
-      ServerMap::emergeBlock
-
-TODO: When generating a block, check that there is no sunlight
-      below the block if the bottom of the block doesn't have
-	  sunlight. If it has, add it to the invalid lighting list.
+NOTE: There are some lighting-related todos and fixmes in
+      ServerMap::emergeBlock. And there always will be. 8)
 
 TODO: Map generator version 2
 	- Create surface areas based on central points; a given point's
