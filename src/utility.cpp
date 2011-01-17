@@ -113,7 +113,7 @@ float PointAttributeList::getInterpolatedFloat(v3s16 p)
 {
 	const u32 near_wanted_count = 5;
 	// Last is nearest, first is farthest
-	core::list<DFloat> near;
+	core::list<DFloat> near_list;
 
 	for(core::list<PointWithAttr>::Iterator
 			i = m_points.begin();
@@ -127,17 +127,17 @@ float PointAttributeList::getInterpolatedFloat(v3s16 p)
 		df.d = d;
 				
 		// If near list is empty, add directly and continue
-		if(near.size() == 0)
+		if(near_list.size() == 0)
 		{
-			near.push_back(df);
+			near_list.push_back(df);
 			continue;
 		}
 		
 		// Get distance of farthest in near list
 		u32 near_d = 100000;
-		if(near.size() > 0)
+		if(near_list.size() > 0)
 		{
-			core::list<DFloat>::Iterator i = near.begin();
+			core::list<DFloat>::Iterator i = near_list.begin();
 			near_d = i->d;
 		}
 		
@@ -145,35 +145,35 @@ float PointAttributeList::getInterpolatedFloat(v3s16 p)
 			If point is closer than the farthest in the near list or
 			there are not yet enough points on the list
 		*/
-		if(d < near_d || near.size() < near_wanted_count)
+		if(d < near_d || near_list.size() < near_wanted_count)
 		{
 			// Find the right place in the near list and put it there
 			
 			// Go from farthest to near in the near list
-			core::list<DFloat>::Iterator i = near.begin();
-			for(; i != near.end(); i++)
+			core::list<DFloat>::Iterator i = near_list.begin();
+			for(; i != near_list.end(); i++)
 			{
 				// Stop when i is at the first nearer node
 				if(i->d < d)
 					break;
 			}
 			// Add df to before i
-			if(i == near.end())
-				near.push_back(df);
+			if(i == near_list.end())
+				near_list.push_back(df);
 			else
-				near.insert_before(i, df);
+				near_list.insert_before(i, df);
 
 			// Keep near list at right size
-			if(near.size() > near_wanted_count)
+			if(near_list.size() > near_wanted_count)
 			{
-				core::list<DFloat>::Iterator j = near.begin();
-				near.erase(j);
+				core::list<DFloat>::Iterator j = near_list.begin();
+				near_list.erase(j);
 			}
 		}
 	}
 	
 	// Return if no values found
-	if(near.size() == 0)
+	if(near_list.size() == 0)
 		return 0.0;
 	
 	/*
@@ -183,8 +183,8 @@ lopuks sit otetaan a/b
 	
 	float a = 0;
 	float b = 0;
-	for(core::list<DFloat>::Iterator i = near.begin();
-			i != near.end(); i++)
+	for(core::list<DFloat>::Iterator i = near_list.begin();
+			i != near_list.end(); i++)
 	{
 		if(i->d == 0)
 			return i->v;
@@ -220,17 +220,17 @@ float PointAttributeList::getInterpolatedFloat(v3s16 p)
 		df.d = d;
 				
 		// If near list is empty, add directly and continue
-		if(near.size() == 0)
+		if(near_list.size() == 0)
 		{
-			near.push_back(df);
+			near_list.push_back(df);
 			continue;
 		}
 		
 		// Get distance of farthest in near list
 		u32 near_d = 100000;
-		if(near.size() > 0)
+		if(near_list.size() > 0)
 		{
-			core::list<DFloat>::Iterator i = near.begin();
+			core::list<DFloat>::Iterator i = near_list.begin();
 			near_d = i->d;
 		}
 		
@@ -238,35 +238,35 @@ float PointAttributeList::getInterpolatedFloat(v3s16 p)
 			If point is closer than the farthest in the near list or
 			there are not yet enough points on the list
 		*/
-		if(d < near_d || near.size() < near_wanted_count)
+		if(d < near_d || near_list.size() < near_wanted_count)
 		{
 			// Find the right place in the near list and put it there
 			
 			// Go from farthest to near in the near list
-			core::list<DFloat>::Iterator i = near.begin();
-			for(; i != near.end(); i++)
+			core::list<DFloat>::Iterator i = near_list.begin();
+			for(; i != near_list.end(); i++)
 			{
 				// Stop when i is at the first nearer node
 				if(i->d < d)
 					break;
 			}
 			// Add df to before i
-			if(i == near.end())
-				near.push_back(df);
+			if(i == near_list.end())
+				near_list.push_back(df);
 			else
-				near.insert_before(i, df);
+				near_list.insert_before(i, df);
 
 			// Keep near list at right size
-			if(near.size() > near_wanted_count)
+			if(near_list.size() > near_wanted_count)
 			{
-				core::list<DFloat>::Iterator j = near.begin();
-				near.erase(j);
+				core::list<DFloat>::Iterator j = near_list.begin();
+				near_list.erase(j);
 			}
 		}
 	}
 	
 	// Return if no values found
-	if(near.size() == 0)
+	if(near_list.size() == 0)
 		return 0.0;
 	
 	/*
@@ -274,11 +274,11 @@ float PointAttributeList::getInterpolatedFloat(v3s16 p)
 	*/
 
 	u32 nearest_count = nearest_wanted_count;
-	if(nearest_count > near.size())
-		nearest_count = near.size();
+	if(nearest_count > near_list.size())
+		nearest_count = near_list.size();
 	core::list<DFloat> nearest;
 	{
-		core::list<DFloat>::Iterator i = near.getLast();
+		core::list<DFloat>::Iterator i = near_list.getLast();
 		for(u32 j=0; j<nearest_count; j++)
 		{
 			nearest.push_front(*i);

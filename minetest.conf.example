@@ -29,19 +29,6 @@
 
 #map-dir = /home/palle/custom_map
 
-# - The possible generators are:
-# (Indeed you can do all of them with only "power" 8))
-# H=value:
-#     constant <value>
-# H=slope.dot(pos):
-#     linear <height> <slope.X> <slope.Y>
-# H=slope.dot(pos^power):
-#     power <height> <slope.X> <slope.Y> <power>
-
-#mapgen_heightmap_blocksize = 32
-#height_randmax = constant 50.0
-#height_randfactor = constant 0.6
-#height_base = linear 0 0 0
 #plants_amount = 1.0
 #ravines_amount = 1.0
 #coal_amount = 1.0
@@ -58,10 +45,6 @@
 
 #max_block_send_distance = 5
 #max_block_generate_distance = 4
-
-#disable_water_climb = true
-# Note that this gets applied at map generation time
-#endless_water = true
 
 # 20 min/day
 #time_speed = 72

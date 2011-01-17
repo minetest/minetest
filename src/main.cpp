@@ -221,6 +221,8 @@ TODO: Map generator version 2
 FIXME: The new pre-sunlight-propagation code messes up with initial
        water lighting
 
+TODO: Remove HMParams
+
 Doing now:
 ======================================================================
 
@@ -1269,10 +1271,10 @@ int main(int argc, char *argv[])
 	// Read map parameters from settings
 
 	HMParams hm_params;
-	hm_params.blocksize = g_settings.getU16("heightmap_blocksize");
+	/*hm_params.blocksize = g_settings.getU16("heightmap_blocksize");
 	hm_params.randmax = g_settings.get("height_randmax");
 	hm_params.randfactor = g_settings.get("height_randfactor");
-	hm_params.base = g_settings.get("height_base");
+	hm_params.base = g_settings.get("height_base");*/
 
 	MapParams map_params;
 	map_params.plants_amount = g_settings.getFloat("plants_amount");
