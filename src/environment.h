@@ -73,6 +73,8 @@ public:
 
 private:
 	Map *m_map;
+	// peer_ids in here should be unique, except that there may be
+	// many 0s
 	core::list<Player*> m_players;
 	// Debug output goes here
 	std::ostream &m_dout;

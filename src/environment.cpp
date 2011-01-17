@@ -194,7 +194,8 @@ void Environment::addPlayer(Player *player)
 #ifndef SERVER
 	assert(player->isLocal() == false || getLocalPlayer() == NULL);
 #endif
-	assert(getPlayer(player->peer_id) == NULL);
+	if(player->peer_id != 0)
+		assert(getPlayer(player->peer_id) == NULL);
 	m_players.push_back(player);
 }
 
