@@ -1567,9 +1567,18 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 		playername[playername_size-1] = 0;
 		
 		// Get player
-		Player *player = emergePlayer(playername, "");
+		Player *player = emergePlayer(playername, "", peer_id);
 		//Player *player = m_env.getPlayer(peer_id);
 
+		// If failed, cancel
+		if(player == NULL)
+		{
+			derr_server<<DTIME<<"Server: peer_id="<<peer_id
+					<<": failed to emerge player"<<std::endl;
+			return;
+		}
+
+		/*
 		// If a client is already connected to the player, cancel
 		if(player->peer_id != 0)
 		{
@@ -1579,9 +1588,9 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 					<<player->peer_id<<")"<<std::endl;
 			return;
 		}
-
 		// Set client of player
 		player->peer_id = peer_id;
+		*/
 
 		// Check if player doesn't exist
 		if(player == NULL)
@@ -3091,7 +3100,8 @@ RemoteClient* Server::getClient(u16 peer_id)
 	return n->getValue();
 }
 
-Player *Server::emergePlayer(const char *name, const char *password)
+Player *Server::emergePlayer(const char *name, const char *password,
+		u16 peer_id)
 {
 	/*
 		Try to get an existing player
@@ -3099,8 +3109,24 @@ Player *Server::emergePlayer(const char *name, const char *password)
 	Player *player = m_env.getPlayer(name);
 	if(player != NULL)
 	{
+		// If player is already connected, cancel
+		if(player->peer_id != 0)
+		{
+			dstream<<"emergePlayer(): Player already connected"<<std::endl;
+			return NULL;
+		}
 		// Got one.
 		return player;
+	}
+
+	/*
+		If player with the wanted peer_id already exists, cancel.
+	*/
+	if(m_env.getPlayer(peer_id) != NULL)
+	{
+		dstream<<"emergePlayer(): Player with wrong name but same"
+				" peer_id already exists"<<std::endl;
+		return NULL;
 	}
 	
 	/*
@@ -3109,7 +3135,8 @@ Player *Server::emergePlayer(const char *name, const char *password)
 	{
 		player = new ServerRemotePlayer();
 		//player->peer_id = c.peer_id;
-		player->peer_id = PEER_ID_INEXISTENT;
+		//player->peer_id = PEER_ID_INEXISTENT;
+		player->peer_id = peer_id;
 		player->updateName(name);
 
 		/*

@@ -437,11 +437,14 @@ private:
 	// When called, connection mutex should be locked
 	RemoteClient* getClient(u16 peer_id);
 
-	// Gets a player from memory or creates one.
-	// Caller should check isClientConnected() and set it appropriately.
-	// 
-	// Call with env and con locked.
-	Player *emergePlayer(const char *name, const char *password);
+	/*
+		Get a player from memory or creates one.
+		If player is already connected, return NULL
+
+		Call with env and con locked.
+	*/
+	Player *emergePlayer(const char *name, const char *password,
+			u16 peer_id);
 
 	/*
 		Update water pressure.
