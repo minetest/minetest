@@ -151,6 +151,8 @@ TODO: Untie client network operations from framerate
       - Needs some input queues or something
 	  - Not really necessary?
 
+TODO: Make morning and evening shorter
+
 Server:
 
 TODO: When player dies, throw items on map

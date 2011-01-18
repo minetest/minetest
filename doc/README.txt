@@ -82,6 +82,9 @@ Compiling on GNU/Linux:
 	$ ./bin/minetest
 
 Compiling on Windows:
+- NOTE: Seems that the CMake build system produces executables that don't work
+  for many people. The old build system is still included, but it's not
+  documented in here.
 - You need CMake, Irrlicht, Zlib and Visual Studio or MinGW
 - NOTE: Probably it will not work easily and you will need to fix some stuff.
 - Steps:
