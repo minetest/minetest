@@ -104,19 +104,41 @@ SUGG: Meshes of blocks could be split into 6 meshes facing into
       different directions and then only those drawn that need to be
 	  - Also an 1-dimensional tile map would be nice probably
 
+Documentation:
+--------------
+
+TODO: Copy build instructions from website to README.txt
+
+Build system / running:
+-----------------------
+
+NOTE: The following fixme is not apparently valid, and it does work.
+FIXME: Graphical mode seems to segfault with Irrlicht 1.7.1 on 64-bit
+       systems. (Ubuntu)
+       - http://pastebin.no/32bo
+	   - Might be just a bad build, too
+	   - Doesn't affect Irrlicht 1.7.2 or 32-bit 1.7.1. (Arch/Debian)
+	   - A similar error occurs when getTexture is called from a thread
+	     when the texture has not been already loaded from disk:
+		 http://irrlicht.sourceforge.net/phpBB2/viewtopic.php?p=68830
+
+FIXME: Some network errors on Windows that cause local game to not work
+       - See siggjen's emails.
+
 Networking:
+-----------
 
 TODO: Get rid of GotSplitPacketException
 
 GUI:
+----
 
 TODO: Add gui option to remove map
 
 TODO: Startup and configuration menu
 
 Graphics:
-
-TODO: 
+---------
 
 TODO: Optimize day/night mesh updating somehow
       - create copies of all textures for all lighting values and only
@@ -142,10 +164,12 @@ TODO: Make fetching sector's blocks more efficient when rendering
 	  - Is this necessary at all?
 
 Configuration:
+--------------
 
 TODO: Make the video backend selectable
 
 Client:
+-------
 
 TODO: Untie client network operations from framerate
       - Needs some input queues or something
@@ -154,6 +178,7 @@ TODO: Untie client network operations from framerate
 TODO: Make morning and evening shorter
 
 Server:
+-------
 
 TODO: When player dies, throw items on map
 
@@ -179,6 +204,7 @@ TODO: Save players with inventories to disk
 TODO: Make water more like in minecraft
 
 Objects:
+--------
 
 TODO: Better handling of objects and mobs
       - Scripting?
@@ -207,6 +233,7 @@ Block object server side:
 	      objects are stepped according to it.
 
 Map generator:
+--------------
 
 NOTE: There are some lighting-related todos and fixmes in
       ServerMap::emergeBlock. And there always will be. 8)
@@ -225,8 +252,13 @@ FIXME: The new pre-sunlight-propagation code messes up with initial
 
 TODO: Remove HMParams
 
+TODO: Change AttributeList to split the area into smaller sections so
+      that searching won't be as heavy.
+TODO: Change AttributeList to be 2D, as it would be too slow to search
+      in 3D fields anyway.
+
 Doing now:
-======================================================================
+----------
 
 ======================================================================
 

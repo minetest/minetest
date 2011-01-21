@@ -1,25 +1,25 @@
 Minetest-c55
 ---------------
-
+An InfiniMiner/Minecraft inspired game.
 Copyright (c) 2010 Perttu Ahola <celeron55@gmail.com>
 
-An InfiniMiner/Minecraft inspired game.
-
-NOTE: This file is somewhat outdated most of the time.
-
 This is a development version:
+------------------------------
 - Don't expect it to work as well as a finished game will.
 - Please report any bugs to me. That way I can fix them to the next release.
 	- debug.txt is useful when the game crashes.
 
 Public servers:
+---------------
 	kray.dy.fi :30000 (friend's server)
 	celeron.55.lt :30000 (my own server)
 
 Controls:
+---------
 - See the in-game pause menu
 
 Map directory:
+--------------
 - Map is stored in a directory, which can be removed to generate a new map.
 - There is na command-line option for it: --map-dir
 - As default, it is located in:
@@ -30,6 +30,7 @@ Map directory:
 	OS X: ~/Library/Application Support/map
 
 Configuration file:
+-------------------
 - An optional configuration file can be used. See minetest.conf.example.
 - Path to file can be passed as a parameter to the executable:
 	--config <path-to-file>
@@ -43,48 +44,38 @@ Configuration file:
 		OS X: ~/Library/Application Support/minetest.conf
 
 Command-line options:
+---------------------
 - Use --help
 
 Compiling on GNU/Linux:
+-----------------------
 
-- You need:
-	* CMake
-	* Irrlicht
-	* Zlib
-- You can probably find these in your distro's package repository.
-- Building has been tested to work flawlessly on many systems.
+Install dependencies. Here's an example for Debian/Ubuntu:
+$ apt-get install libirrlicht-dev cmake libbz2-dev libpng12-dev libjpeg8-dev libxxf86vm-dev
 
-- Check possible options:
-	$ cd whatever/minetest
-	$ cmake . -LH
+Download source, extract (this is the URL to the latest of source repository, which might not work at all times):
+$ wget https://bitbucket.org/celeron55/minetest/get/tip.tar.gz
+$ tar xf tip.tar.gz
+$ cd minetest
 
-- A system-wide install:
-	$ cd whatever/minetest
-	$ cmake . -DCMAKE_INSTALL_PREFIX=/usr/local
-	$ make -j2
-	$ sudo make install
+Build a version that runs directly from the source directory:
+$ cmake . -DRUN_IN_PLACE=1
+$ make -j2
 
-	$ minetest
+Run it:
+$ cd bin
+$ ./minetest
 
-- Install to home directory:
-	$ cd whatever/minetest
-	$ cmake . -DCMAKE_INSTALL_PREFIX=~/minetest_install
-	$ make -j2
-	$ make install
-
-	$ ~/minetest_install/bin/minetest
-
-- For running in the source directory:
-	$ cd whatever/minetest
-	$ cmake . -DRUN_IN_PLACE
-	$ make -j2
-
-	$ ./bin/minetest
+- Use cmake . -LH to see all CMake options and their current state
+- If you want to install it system-wide (or are making a distribution package), you will want to use -DRUN_IN_PLACE=0
+- You can build a bare server or a bare client by specifying -DBUILD_CLIENT=0 or -DBUILD_SERVER=0
+- You can select between Release and Debug build by -DCMAKE_BUILD_TYPE=<Debug or Release>
+  - Note that the Debug build is considerably slower
 
 Compiling on Windows:
 - NOTE: Seems that the CMake build system produces executables that don't work
   for many people. The old build system is still included, but it's not
-  documented in here.
+  documented anywhere.
 - You need CMake, Irrlicht, Zlib and Visual Studio or MinGW
 - NOTE: Probably it will not work easily and you will need to fix some stuff.
 - Steps:
@@ -94,8 +85,8 @@ Compiling on Windows:
 	- Set up some options and paths
 	- Hit "Configure"
 	- Hit "Generate"
-	- VC: Open the generated .sln and build it
-	- MinGW: Browse to the build directory and run 'make'
+	- MSVC: Open the generated .sln and build it
+	  MinGW: Browse to the build directory and run 'make'
 
 License of Minetest-c55
 -----------------------
