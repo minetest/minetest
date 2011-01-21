@@ -21,13 +21,13 @@ Controls:
 Map directory:
 --------------
 - Map is stored in a directory, which can be removed to generate a new map.
-- There is na command-line option for it: --map-dir
+- There is a command-line option for it: --map-dir
 - As default, it is located in:
 		../map
 - Otherwise something like this:
 	Windows: C:\Documents and Settings\user\Application Data\minetest\map
 	Linux: ~/.minetest/map
-	OS X: ~/Library/Application Support/map
+	OS X: ~/Library/Application Support/minetest/map
 
 Configuration file:
 -------------------
