@@ -25,11 +25,11 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 GUIPauseMenu::GUIPauseMenu(gui::IGUIEnvironment* env,
 		gui::IGUIElement* parent, s32 id,
-		IrrlichtDevice *dev,
-		int *active_menu_count):
-	GUIModalMenu(env, parent, id, active_menu_count)
+		IGameCallback *gamecallback,
+		IMenuManager *menumgr):
+	GUIModalMenu(env, parent, id, menumgr)
 {
-	m_dev = dev;
+	m_gamecallback = gamecallback;
 }
 
 GUIPauseMenu::~GUIPauseMenu()
@@ -56,6 +56,11 @@ void GUIPauseMenu::removeChildren()
 	}
 	{
 		gui::IGUIElement *e = getElementFromId(259);
+		if(e != NULL)
+			e->remove();
+	}
+	{
+		gui::IGUIElement *e = getElementFromId(260);
 		if(e != NULL)
 			e->remove();
 	}
@@ -88,13 +93,18 @@ void GUIPauseMenu::regenerateGui(v2u32 screensize)
 	*/
 	{
 		core::rect<s32> rect(0, 0, 140, 30);
-		rect = rect + v2s32(size.X/2-140/2, size.Y/2-30/2-25);
+		rect = rect + v2s32(size.X/2-140/2, size.Y/2-30/2-50);
 		Environment->addButton(rect, this, 256, L"Continue");
 	}
 	{
 		core::rect<s32> rect(0, 0, 140, 30);
-		rect = rect + v2s32(size.X/2-140/2, size.Y/2-30/2+25);
-		Environment->addButton(rect, this, 257, L"Exit");
+		rect = rect + v2s32(size.X/2-140/2, size.Y/2-30/2+0);
+		Environment->addButton(rect, this, 260, L"Disconnect");
+	}
+	{
+		core::rect<s32> rect(0, 0, 140, 30);
+		rect = rect + v2s32(size.X/2-140/2, size.Y/2-30/2+50);
+		Environment->addButton(rect, this, 257, L"Exit to OS");
 	}
 	{
 		core::rect<s32> rect(0, 0, 180, 240);
@@ -183,8 +193,13 @@ bool GUIPauseMenu::OnEvent(const SEvent& event)
 			case 256: // continue
 				quitMenu();
 				break;
+			case 260: // disconnect
+				m_gamecallback->disconnect();
+				quitMenu();
+				break;
 			case 257: // exit
-				m_dev->closeDevice();
+				m_gamecallback->exitToOS();
+				quitMenu();
 				break;
 			}
 		}

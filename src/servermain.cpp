@@ -301,14 +301,6 @@ int main(int argc, char *argv[])
 				<<std::endl;
 	}
 	
-	DSTACK("Dedicated server branch");
-	
-	std::cout<<std::endl;
-	std::cout<<"========================"<<std::endl;
-	std::cout<<"Running dedicated server"<<std::endl;
-	std::cout<<"========================"<<std::endl;
-	std::cout<<std::endl;
-	
 	// Figure out path to map
 	std::string map_dir = porting::path_userdata+"/map";
 	if(cmd_args.exists("map-dir"))
@@ -316,38 +308,13 @@ int main(int argc, char *argv[])
 	else if(g_settings.exists("map-dir"))
 		map_dir = g_settings.get("map-dir");
 	
+	// Create server
 	Server server(map_dir.c_str(), hm_params, map_params);
 	server.start(port);
-
-	for(;;)
-	{
-		// This is kind of a hack but can be done like this
-		// because server.step() is very light
-		sleep_ms(30);
-		server.step(0.030);
-
-		static int counter = 0;
-		counter--;
-		if(counter <= 0)
-		{
-			counter = 10;
-
-			core::list<PlayerInfo> list = server.getPlayerInfo();
-			core::list<PlayerInfo>::Iterator i;
-			static u32 sum_old = 0;
-			u32 sum = PIChecksum(list);
-			if(sum != sum_old)
-			{
-				std::cout<<DTIME<<"Player info:"<<std::endl;
-				for(i=list.begin(); i!=list.end(); i++)
-				{
-					i->PrintLine(&std::cout);
-				}
-			}
-			sum_old = sum;
-		}
-	}
-
+	
+	// Run server
+	dedicated_server_loop(server);
+	
 	} //try
 	catch(con::PeerNotFoundException &e)
 	{

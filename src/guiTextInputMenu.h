@@ -35,7 +35,7 @@ class GUITextInputMenu : public GUIModalMenu
 public:
 	GUITextInputMenu(gui::IGUIEnvironment* env,
 			gui::IGUIElement* parent, s32 id,
-			int *active_menu_count,
+			IMenuManager *menumgr,
 			TextDest *dest,
 			std::wstring initial_text);
 	~GUITextInputMenu();

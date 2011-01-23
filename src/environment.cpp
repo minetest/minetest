@@ -190,9 +190,16 @@ Map & Environment::getMap()
 void Environment::addPlayer(Player *player)
 {
 	DSTACK(__FUNCTION_NAME);
-	//Check that only one local player exists and peer_ids are unique
+	/*
+		Check that only one local player exists and peer_ids are unique.
+		Exception: there can be multiple players with peer_id=0
+	*/
 #ifndef SERVER
-	assert(player->isLocal() == false || getLocalPlayer() == NULL);
+	/*
+		It is a failure if player is local and there already is a local
+		player
+	*/
+	assert(!(player->isLocal() == true && getLocalPlayer() != NULL));
 #endif
 	if(player->peer_id != 0)
 		assert(getPlayer(player->peer_id) == NULL);

@@ -397,7 +397,6 @@ public:
 
 	// Environment and Connection must be locked when called
 	void SendBlockNoLock(u16 peer_id, MapBlock *block, u8 ver);
-	//TODO: Sending of many blocks in a single packet
 	
 	// Environment and Connection must be locked when called
 	//void SendSectorMeta(u16 peer_id, core::list<v2s16> ps, u8 ver);
@@ -420,7 +419,6 @@ private:
 
 	// Virtual methods from con::PeerHandler.
 	// As of now, these create and remove clients and players.
-	// TODO: Make it possible to leave players on server.
 	void peerAdded(con::Peer *peer);
 	void deletingPeer(con::Peer *peer, bool timeout);
 	
@@ -513,6 +511,11 @@ private:
 	friend class EmergeThread;
 	friend class RemoteClient;
 };
+
+/*
+	Runs a simple dedicated server loop
+*/
+void dedicated_server_loop(Server &server);
 
 #endif
 

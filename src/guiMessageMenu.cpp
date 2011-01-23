@@ -24,10 +24,10 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 GUIMessageMenu::GUIMessageMenu(gui::IGUIEnvironment* env,
 		gui::IGUIElement* parent, s32 id,
-		int *active_menu_count,
+		IMenuManager *menumgr,
 		std::wstring message_text
 ):
-	GUIModalMenu(env, parent, id, active_menu_count),
+	GUIModalMenu(env, parent, id, menumgr),
 	m_message_text(message_text),
 	m_status(false)
 {

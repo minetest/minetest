@@ -53,6 +53,10 @@ void * ServerThread::Thread()
 		catch(con::NoIncomingDataException &e)
 		{
 		}
+		catch(con::PeerNotFoundException &e)
+		{
+			dout_server<<"Server: PeerNotFoundException"<<std::endl;
+		}
 	}
 	
 	END_DEBUG_EXCEPTION_HANDLER
@@ -3433,6 +3437,46 @@ void Server::handlePeerChanges()
 				<<std::endl;
 
 		handlePeerChange(c);
+	}
+}
+
+void dedicated_server_loop(Server &server)
+{
+	DSTACK(__FUNCTION_NAME);
+	
+	std::cout<<std::endl;
+	std::cout<<"========================"<<std::endl;
+	std::cout<<"Running dedicated server"<<std::endl;
+	std::cout<<"========================"<<std::endl;
+	std::cout<<std::endl;
+
+	for(;;)
+	{
+		// This is kind of a hack but can be done like this
+		// because server.step() is very light
+		sleep_ms(30);
+		server.step(0.030);
+
+		static int counter = 0;
+		counter--;
+		if(counter <= 0)
+		{
+			counter = 10;
+
+			core::list<PlayerInfo> list = server.getPlayerInfo();
+			core::list<PlayerInfo>::Iterator i;
+			static u32 sum_old = 0;
+			u32 sum = PIChecksum(list);
+			if(sum != sum_old)
+			{
+				std::cout<<DTIME<<"Player info:"<<std::endl;
+				for(i=list.begin(); i!=list.end(); i++)
+				{
+					i->PrintLine(&std::cout);
+				}
+			}
+			sum_old = sum;
+		}
 	}
 }
 

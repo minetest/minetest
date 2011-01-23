@@ -1372,8 +1372,12 @@ void Map::transformLiquids(core::map<v3s16, MapBlock*> & modified_blocks)
 
 	u32 loopcount = 0;
 	u32 initial_size = m_transforming_liquid.size();
+
 	while(m_transforming_liquid.size() != 0)
 	{
+		/*
+			Get a queued transforming liquid node
+		*/
 		v3s16 p0 = m_transforming_liquid.pop_front();
 
 		MapNode n0 = getNode(p0);
@@ -1557,6 +1561,7 @@ void Map::transformLiquids(core::map<v3s16, MapBlock*> & modified_blocks)
 			v3s16 p2 = p0 + dirs_to[i];
 
 			MapNode n2 = getNode(p2);
+			//dstream<<"[1] n2.param="<<(int)n2.param<<std::endl;
 
 			if(content_liquid(n2.d))
 			{
@@ -1605,6 +1610,8 @@ void Map::transformLiquids(core::map<v3s16, MapBlock*> & modified_blocks)
 				n2_changed = true;
 				flowed = true;
 			}
+			
+			//dstream<<"[2] n2.param="<<(int)n2.param<<std::endl;
 
 			if(n2_changed)
 			{

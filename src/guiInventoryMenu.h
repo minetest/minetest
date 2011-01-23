@@ -74,7 +74,7 @@ public:
 			gui::IGUIElement* parent, s32 id,
 			Inventory *inventory,
 			Queue<InventoryAction*> *actions,
-			int *active_menu_count);
+			IMenuManager *menumgr);
 	~GUIInventoryMenu();
 
 	void removeChildren();

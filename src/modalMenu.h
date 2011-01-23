@@ -22,6 +22,16 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "common_irrlicht.h"
 
+class GUIModalMenu;
+
+class IMenuManager
+{
+public:
+	// A GUIModalMenu calls these when this class is passed as a parameter
+	virtual void createdMenu(GUIModalMenu *menu) = 0;
+	virtual void deletingMenu(GUIModalMenu *menu) = 0;
+};
+
 /*
 	Remember to drop() the menu after creating, so that it can
 	remove itself when it wants to.
@@ -32,21 +42,26 @@ class GUIModalMenu : public gui::IGUIElement
 public:
 	GUIModalMenu(gui::IGUIEnvironment* env,
 			gui::IGUIElement* parent, s32 id,
-			int *active_menu_count):
+			IMenuManager *menumgr):
 		IGUIElement(gui::EGUIET_ELEMENT, env, parent, id,
 				core::rect<s32>(0,0,100,100))
 	{
-		m_active_menu_count = active_menu_count;
+		m_menumgr = menumgr;
 		m_allow_focus_removal = false;
 		m_screensize_old = v2u32(0,0);
 
 		setVisible(true);
 		Environment->setFocus(this);
-		(*m_active_menu_count)++;
+		m_menumgr->createdMenu(this);
 	}
 	virtual ~GUIModalMenu()
 	{
-		(*m_active_menu_count)--;
+		m_menumgr->deletingMenu(this);
+	}
+
+	void allowFocusRemoval(bool allow)
+	{
+		m_allow_focus_removal = allow;
 	}
 
 	bool canTakeFocus(gui::IGUIElement *e)
@@ -75,10 +90,27 @@ public:
 	*/
 	void quitMenu()
 	{
-		m_allow_focus_removal = true;
+		allowFocusRemoval(true);
 		// This removes Environment's grab on us
 		Environment->removeFocus(this);
 		this->remove();
+	}
+
+	void removeChildren()
+	{
+		const core::list<gui::IGUIElement*> &children = getChildren();
+		core::list<gui::IGUIElement*> children_copy;
+		for(core::list<gui::IGUIElement*>::ConstIterator
+				i = children.begin(); i != children.end(); i++)
+		{
+			children_copy.push_back(*i);
+		}
+		for(core::list<gui::IGUIElement*>::Iterator
+				i = children_copy.begin();
+				i != children_copy.end(); i++)
+		{
+			(*i)->remove();
+		}
 	}
 
 	virtual void regenerateGui(v2u32 screensize) = 0;
@@ -86,7 +118,7 @@ public:
 	virtual bool OnEvent(const SEvent& event) { return false; };
 	
 private:
-	int *m_active_menu_count;
+	IMenuManager *m_menumgr;
 	// This might be necessary to expose to the implementation if it
 	// wants to launch other menus
 	bool m_allow_focus_removal;

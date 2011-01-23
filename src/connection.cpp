@@ -1317,7 +1317,7 @@ Peer* Connection::GetPeer(u16 peer_id)
 
 	if(node == NULL){
 		// Peer not found
-		throw PeerNotFoundException("Peer not found (possible timeout)");
+		throw PeerNotFoundException("GetPeer: Peer not found (possible timeout)");
 	}
 
 	// Error checking

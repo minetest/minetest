@@ -104,6 +104,16 @@ SUGG: Meshes of blocks could be split into 6 meshes facing into
       different directions and then only those drawn that need to be
 	  - Also an 1-dimensional tile map would be nice probably
 
+Gaming ideas:
+-------------
+
+- How would some GTA-style ideas work?
+  - Cars? Stealing? Unlawful stuff and cops? Lots of guns?
+
+- RPG style?
+
+- Space racer style?
+
 Documentation:
 --------------
 
@@ -289,7 +299,7 @@ Doing now:
 
 #ifdef _MSC_VER
 #pragma comment(lib, "Irrlicht.lib")
-#pragma comment(lib, "jthread.lib")
+//#pragma comment(lib, "jthread.lib")
 #pragma comment(lib, "zlibwapi.lib")
 // This would get rid of the console window
 //#pragma comment(linker, "/subsystem:windows /ENTRY:mainCRTStartup")
@@ -322,6 +332,7 @@ Doing now:
 #include "guiMessageMenu.h"
 #include "filesys.h"
 #include "config.h"
+#include "guiMainMenu.h"
 
 IrrlichtWrapper *g_irrlicht;
 
@@ -346,14 +357,86 @@ Client *g_client = NULL;
 /*
 	GUI Stuff
 */
+
 gui::IGUIEnvironment* guienv = NULL;
 gui::IGUIStaticText *guiroot = NULL;
-int g_active_menu_count = 0;
+
+class MainMenuManager : public IMenuManager
+{
+public:
+	virtual void createdMenu(GUIModalMenu *menu)
+	{
+		for(core::list<GUIModalMenu*>::Iterator
+				i = m_stack.begin();
+				i != m_stack.end(); i++)
+		{
+			assert(*i != menu);
+		}
+
+		if(m_stack.size() != 0)
+			(*m_stack.getLast())->setVisible(false);
+		m_stack.push_back(menu);
+	}
+
+	virtual void deletingMenu(GUIModalMenu *menu)
+	{
+		// Remove all entries if there are duplicates
+		bool removed_entry;
+		do{
+			removed_entry = false;
+			for(core::list<GUIModalMenu*>::Iterator
+					i = m_stack.begin();
+					i != m_stack.end(); i++)
+			{
+				if(*i == menu)
+				{
+					m_stack.erase(i);
+					removed_entry = true;
+					break;
+				}
+			}
+		}while(removed_entry);
+
+		/*core::list<GUIModalMenu*>::Iterator i = m_stack.getLast();
+		assert(*i == menu);
+		m_stack.erase(i);*/
+		
+		if(m_stack.size() != 0)
+			(*m_stack.getLast())->setVisible(true);
+	}
+
+	u32 menuCount()
+	{
+		return m_stack.size();
+	}
+
+	core::list<GUIModalMenu*> m_stack;
+};
+
+MainMenuManager g_menumgr;
 
 bool noMenuActive()
 {
-	return (g_active_menu_count == 0);
+	return (g_menumgr.menuCount() == 0);
 }
+
+bool g_disconnect_requested = false;
+
+class MainGameCallback : public IGameCallback
+{
+public:
+	virtual void exitToOS()
+	{
+		g_device->closeDevice();
+	}
+
+	virtual void disconnect()
+	{
+		g_disconnect_requested = true;
+	}
+};
+
+MainGameCallback g_gamecallback;
 
 // Inventory actions from the menu are buffered here before sending
 Queue<InventoryAction*> inventory_action_queue;
@@ -472,8 +555,8 @@ public:
 						dstream<<DTIME<<"MyEventReceiver: "
 								<<"Launching pause menu"<<std::endl;
 						// It will delete itself by itself
-						(new GUIPauseMenu(guienv, guiroot, -1, g_device,
-								&g_active_menu_count))->drop();
+						(new GUIPauseMenu(guienv, guiroot, -1, &g_gamecallback,
+								&g_menumgr))->drop();
 						return true;
 					}
 					if(event.KeyInput.Key == irr::KEY_KEY_I)
@@ -482,7 +565,7 @@ public:
 								<<"Launching inventory"<<std::endl;
 						(new GUIInventoryMenu(guienv, guiroot, -1,
 								&local_inventory, &inventory_action_queue,
-								&g_active_menu_count))->drop();
+								&g_menumgr))->drop();
 						return true;
 					}
 					if(event.KeyInput.Key == irr::KEY_KEY_T)
@@ -490,7 +573,7 @@ public:
 						TextDest *dest = new TextDestChat(g_client);
 
 						(new GUITextInputMenu(guienv, guiroot, -1,
-								&g_active_menu_count, dest,
+								&g_menumgr, dest,
 								L""))->drop();
 					}
 				}
@@ -1067,6 +1150,18 @@ public:
 		}
 	}
 
+	~GUIQuickInventory()
+	{
+		for(u32 i=0; i<m_texts.size(); i++)
+		{
+			m_texts[i]->remove();
+		}
+		for(u32 i=0; i<m_images.size(); i++)
+		{
+			m_images[i]->remove();
+		}
+	}
+
 	virtual bool OnEvent(const SEvent& event)
 	{
 		return false;
@@ -1178,9 +1273,6 @@ int main(int argc, char *argv[])
 			" with SER_FMT_VER_HIGHEST="<<(int)SER_FMT_VER_HIGHEST
 			<<", "<<BUILD_INFO
 			<<std::endl;
-	
-	try
-	{
 	
 	/*
 		Parse command line
@@ -1315,137 +1407,63 @@ int main(int argc, char *argv[])
 	map_params.ravines_amount = g_settings.getFloat("ravines_amount");
 
 	/*
-		Ask some stuff
+		Some parameters
 	*/
 
-	std::cout<<std::endl<<std::endl;
-	
-	std::cout
-	<<"        .__               __                   __   "<<std::endl
-	<<"  _____ |__| ____   _____/  |_  ____   _______/  |_ "<<std::endl
-	<<" /     \\|  |/    \\_/ __ \\   __\\/ __ \\ /  ___/\\   __\\"<<std::endl
-	<<"|  Y Y  \\  |   |  \\  ___/|  | \\  ___/ \\___ \\  |  |  "<<std::endl
-	<<"|__|_|  /__|___|  /\\___  >__|  \\___  >____  > |__|  "<<std::endl
-	<<"      \\/        \\/     \\/          \\/     \\/        "<<std::endl
-	<<std::endl;
-
-	std::cout<<std::endl;
-	//char templine[100];
-	
-	// Port?
+	// Port
 	u16 port = 30000;
 	if(cmd_args.exists("port"))
-	{
 		port = cmd_args.getU16("port");
-	}
-	else
-	{
-		port = g_settings.getU16Ask("port", "Port", 30000);
-		std::cout<<"-> "<<port<<std::endl;
-	}
+	else if(cmd_args.exists("port"))
+		port = g_settings.getU16("port");
 	
-	//Map directory
+	// Map directory
 	std::string map_dir = porting::path_userdata+"/map";
 	if(cmd_args.exists("map-dir"))
 		map_dir = cmd_args.get("map-dir");
 	else if(g_settings.exists("map-dir"))
 		map_dir = g_settings.get("map-dir");
 	
+	// Run dedicated server if asked to
 	if(cmd_args.getFlag("server"))
 	{
 		DSTACK("Dedicated server branch");
-		
-		std::cout<<std::endl;
-		std::cout<<"========================"<<std::endl;
-		std::cout<<"Running dedicated server"<<std::endl;
-		std::cout<<"========================"<<std::endl;
-		std::cout<<std::endl;
 
-		Server server(map_dir, hm_params, map_params);
+		// Create server
+		Server server(map_dir.c_str(), hm_params, map_params);
 		server.start(port);
-	
-		for(;;)
-		{
-			// This is kind of a hack but can be done like this
-			// because server.step() is very light
-			sleep_ms(30);
-			server.step(0.030);
-
-			static int counter = 0;
-			counter--;
-			if(counter <= 0)
-			{
-				counter = 10;
-
-				core::list<PlayerInfo> list = server.getPlayerInfo();
-				core::list<PlayerInfo>::Iterator i;
-				static u32 sum_old = 0;
-				u32 sum = PIChecksum(list);
-				if(sum != sum_old)
-				{
-					std::cout<<DTIME<<"Player info:"<<std::endl;
-					for(i=list.begin(); i!=list.end(); i++)
-					{
-						i->PrintLine(&std::cout);
-					}
-				}
-				sum_old = sum;
-			}
-		}
+		
+		// Run server
+		dedicated_server_loop(server);
 
 		return 0;
 	}
 
-	bool hosting = false;
-	char connect_name[100] = "";
-
+	/*
+		More parameters
+	*/
+	
+	// Address to connect to
+	std::string address = "";
+	
 	if(cmd_args.exists("address"))
 	{
-		snprintf(connect_name, 100, "%s", cmd_args.get("address").c_str());
-	}
-	else if(is_yes(g_settings.get("host_game")) == false)
-	{
-		if(g_settings.get("address") != "")
-		{
-			std::cout<<g_settings.get("address")<<std::endl;
-			snprintf(connect_name, 100, "%s", g_settings.get("address").c_str());
-		}
-		else
-		{
-			std::cout<<"Address to connect to [empty = host a game]: ";
-			std::cin.getline(connect_name, 100);
-		}
-	}
-	
-	if(connect_name[0] == 0){
-		snprintf(connect_name, 100, "127.0.0.1");
-		hosting = true;
-	}
-	
-	if(hosting)
-		std::cout<<"> Hosting game"<<std::endl;
-	else
-		std::cout<<"> Connecting to "<<connect_name<<std::endl;
-	
-	char playername[PLAYERNAME_SIZE] = "";
-	if(g_settings.get("name") != "")
-	{
-		snprintf(playername, PLAYERNAME_SIZE, "%s", g_settings.get("name").c_str());
+		address = cmd_args.get("address");
 	}
 	else
 	{
-		std::cout<<"Name of player: ";
-		std::cin.getline(playername, PLAYERNAME_SIZE);
+		address = g_settings.get("address");
 	}
-	std::cout<<"-> \""<<playername<<"\""<<std::endl;
+	
+	std::string playername = g_settings.get("name");
 
 	/*
 		Resolution selection
 	*/
 	
 	bool fullscreen = false;
-	u16 screenW = atoi(g_settings.get("screenW").c_str());
-	u16 screenH = atoi(g_settings.get("screenH").c_str());
+	u16 screenW = g_settings.getU16("screenW");
+	u16 screenH = g_settings.getU16("screenH");
 
 	//
 
@@ -1520,6 +1538,172 @@ int main(int argc, char *argv[])
 	skin->setColor(gui::EGDC_3D_HIGH_LIGHT, video::SColor(255,0,0,0));
 	skin->setColor(gui::EGDC_3D_SHADOW, video::SColor(255,0,0,0));
 	
+	/*
+		Preload some textures
+	*/
+
+	init_content_inventory_texture_paths();
+	init_tile_texture_paths();
+	tile_materials_preload(g_irrlicht);
+
+	/*
+		GUI stuff
+	*/
+
+	/*
+		We need some kind of a root node to be able to add
+		custom gui elements directly on the screen.
+		Otherwise they won't be automatically drawn.
+	*/
+	guiroot = guienv->addStaticText(L"",
+			core::rect<s32>(0, 0, 10000, 10000));
+	
+	// First line of debug text
+	gui::IGUIStaticText *guitext = guienv->addStaticText(
+			L"",
+			core::rect<s32>(5, 5, 795, 5+text_height),
+			false, false);
+	// Second line of debug text
+	gui::IGUIStaticText *guitext2 = guienv->addStaticText(
+			L"",
+			core::rect<s32>(5, 5+(text_height+5)*1, 795, (5+text_height)*2),
+			false, false);
+	
+	// At the middle of the screen
+	// Object infos are shown in this
+	gui::IGUIStaticText *guitext_info = guienv->addStaticText(
+			L"",
+			core::rect<s32>(100, 70, 100+400, 70+(text_height+5)),
+			false, false);
+	
+	// Chat text
+	gui::IGUIStaticText *guitext_chat = guienv->addStaticText(
+			L"",
+			core::rect<s32>(0,0,0,0),
+			false, true);
+	guitext_chat->setBackgroundColor(video::SColor(96,0,0,0));
+	core::list<ChatLine> chat_lines;
+	
+	/*
+		If an error occurs, this is set to something and the
+		menu-game loop is restarted. It is then displayed before
+		the menu.
+	*/
+	std::wstring error_message = L"";
+	
+	/*
+		Menu-game loop
+	*/
+	while(g_device->run())
+	{
+	
+	// This is used for catching disconnects
+	try
+	{
+	
+	/*
+		Out-of-game menu loop
+	*/
+	
+	// Wait for proper parameters
+	for(;;)
+	{
+		// Cursor can be non-visible when coming from the game
+		device->getCursorControl()->setVisible(true);
+		// Some stuff are left to scene manager when coming from the game
+		// (map at least?)
+		smgr->clear();
+		// Reset or hide the debug gui texts
+		guitext->setText(L"Minetest-c55");
+		guitext2->setVisible(false);
+		guitext_info->setVisible(false);
+		guitext_chat->setVisible(false);
+		
+		// Initialize menu data
+		MainMenuData menudata;
+		menudata.address = narrow_to_wide(address);
+		menudata.name = narrow_to_wide(playername);
+		menudata.port = narrow_to_wide(itos(port));
+		menudata.creative_mode = g_settings.getBool("creative_mode");
+
+		GUIMainMenu *menu =
+				new GUIMainMenu(guienv, guiroot, -1, 
+					&g_menumgr, &menudata, &g_gamecallback);
+		menu->allowFocusRemoval(true);
+
+		if(error_message != L"")
+		{
+			GUIMessageMenu *menu2 =
+					new GUIMessageMenu(guienv, guiroot, -1, 
+						&g_menumgr, error_message.c_str());
+			menu2->drop();
+			error_message = L"";
+		}
+
+		video::IVideoDriver* driver = g_device->getVideoDriver();
+		
+		dstream<<"Created main menu"<<std::endl;
+
+		while(g_device->run())
+		{
+			// Run global IrrlichtWrapper's main thread processing stuff
+			g_irrlicht->Run();
+			
+			if(menu->getStatus() == true)
+				break;
+
+			//driver->beginScene(true, true, video::SColor(255,0,0,0));
+			driver->beginScene(true, true, video::SColor(255,128,128,128));
+			guienv->drawAll();
+			driver->endScene();
+		}
+		
+		// Break out of menu-game loop to shut down cleanly
+		if(g_device->run() == false)
+			break;
+		
+		dstream<<"Dropping main menu"<<std::endl;
+
+		menu->drop();
+
+		playername = wide_to_narrow(menudata.name);
+		address = wide_to_narrow(menudata.address);
+		port = stoi(wide_to_narrow(menudata.port));
+		g_settings.set("creative_mode", itos(menudata.creative_mode));
+		
+		// Check for valid parameters, restart menu if invalid.
+		if(playername == "")
+		{
+			error_message = L"Name required.";
+			continue;
+		}
+		
+		// Save settings
+		g_settings.set("name", playername);
+		g_settings.set("address", address);
+		g_settings.set("port", itos(port));
+		// Update configuration file
+		if(configpath != "")
+			g_settings.updateConfigFile(configpath.c_str());
+	
+		// Continue to game
+		break;
+	}
+	
+	// Break out of menu-game loop to shut down cleanly
+	if(g_device->run() == false)
+		break;
+
+	/*
+		Make a scope here so that the client and the server and other
+		stuff gets removed when disconnected or the irrlicht device
+		is removed.
+	*/
+	{
+
+	/*
+		Draw "Loading" screen
+	*/
 	const wchar_t *text = L"Loading and connecting...";
 	core::vector2d<s32> center(screenW/2, screenH/2);
 	core::vector2d<s32> textsize(300, text_height);
@@ -1533,27 +1717,14 @@ int main(int argc, char *argv[])
 	guienv->drawAll();
 	driver->endScene();
 
-	/*
-		Preload some textures
-	*/
-
-	init_content_inventory_texture_paths();
-	init_tile_texture_paths();
-	tile_materials_preload(g_irrlicht);
-
-	/*
-		Make a scope here for the client so that it gets removed
-		before the irrlicht device
-	*/
-	{
-
 	std::cout<<DTIME<<"Creating server and client"<<std::endl;
 	
 	/*
-		Create server
+		Create server.
+		SharedPtr will delete it when it goes out of scope.
 	*/
 	SharedPtr<Server> server;
-	if(hosting){
+	if(address == ""){
 		server = new Server(map_dir, hm_params, map_params);
 		server->start(port);
 	}
@@ -1562,18 +1733,24 @@ int main(int argc, char *argv[])
 		Create client
 	*/
 
-	Client client(device, playername, draw_control);
+	Client client(device, playername.c_str(), draw_control);
 			
 	g_client = &client;
 	
 	Address connect_address(0,0,0,0, port);
 	try{
-		connect_address.Resolve(connect_name);
+		if(address == "")
+			connect_address.Resolve("localhost");
+		else
+			connect_address.Resolve(address.c_str());
 	}
 	catch(ResolveError &e)
 	{
 		std::cout<<DTIME<<"Couldn't resolve address"<<std::endl;
-		return 0;
+		//return 0;
+		error_message = L"Couldn't resolve address";
+		gui_loadingtext->remove();
+		continue;
 	}
 	
 	std::cout<<DTIME<<"Connecting to server..."<<std::endl;
@@ -1582,17 +1759,29 @@ int main(int argc, char *argv[])
 	try{
 		while(client.connectedAndInitialized() == false)
 		{
+			// Update screen
+			driver->beginScene(true, true, video::SColor(255,0,0,0));
+			guienv->drawAll();
+			driver->endScene();
+
+			// Update client and server
+
 			client.step(0.1);
-			if(server != NULL){
+
+			if(server != NULL)
 				server->step(0.1);
-			}
+			
+			// Delay a bit
 			sleep_ms(100);
 		}
 	}
 	catch(con::PeerNotFoundException &e)
 	{
 		std::cout<<DTIME<<"Timed out."<<std::endl;
-		return 0;
+		//return 0;
+		error_message = L"Connection timed out.";
+		gui_loadingtext->remove();
+		continue;
 	}
 
 	/*
@@ -1644,52 +1833,23 @@ int main(int argc, char *argv[])
 	GUIQuickInventory *quick_inventory = new GUIQuickInventory
 			(guienv, NULL, v2s32(10, 70), 5, &local_inventory);
 	
-	/*
-		We need some kind of a root node to be able to add
-		custom elements directly on the screen.
-		Otherwise they won't be automatically drawn.
-	*/
-	guiroot = guienv->addStaticText(L"",
-			core::rect<s32>(0, 0, 10000, 10000));
-	
 	// Test the text input system
-	/*(new GUITextInputMenu(guienv, guiroot, -1, &g_active_menu_count,
+	/*(new GUITextInputMenu(guienv, guiroot, -1, &g_menumgr,
 			NULL))->drop();*/
 	/*GUIMessageMenu *menu =
 			new GUIMessageMenu(guienv, guiroot, -1, 
-				&g_active_menu_count,
+				&g_menumgr,
 				L"Asd");
 	menu->drop();*/
 	
 	// Launch pause menu
-	(new GUIPauseMenu(guienv, guiroot, -1, g_device,
-			&g_active_menu_count))->drop();
-
-	// First line of debug text
-	gui::IGUIStaticText *guitext = guienv->addStaticText(
-			L"Minetest-c55",
-			core::rect<s32>(5, 5, 795, 5+textsize.Y),
-			false, false);
-	// Second line of debug text
-	gui::IGUIStaticText *guitext2 = guienv->addStaticText(
-			L"",
-			core::rect<s32>(5, 5+(textsize.Y+5)*1, 795, (5+textsize.Y)*2),
-			false, false);
+	(new GUIPauseMenu(guienv, guiroot, -1, &g_gamecallback,
+			&g_menumgr))->drop();
 	
-	// At the middle of the screen
-	// Object infos are shown in this
-	gui::IGUIStaticText *guitext_info = guienv->addStaticText(
-			L"test",
-			core::rect<s32>(100, 70, 100+400, 70+(textsize.Y+5)),
-			false, false);
-	
-	// Chat text
-	gui::IGUIStaticText *chat_guitext = guienv->addStaticText(
-			L"Chat here\nOther line\nOther line\nOther line\nOther line",
-			core::rect<s32>(70, 60, 795, 150),
-			false, true);
-	chat_guitext->setBackgroundColor(video::SColor(96,0,0,0));
-	core::list<ChatLine> chat_lines;
+	// Enable texts
+	guitext2->setVisible(true);
+	guitext_info->setVisible(true);
+	guitext_chat->setVisible(true);
 	
 	/*
 		Some statistics are collected in these
@@ -1715,6 +1875,12 @@ int main(int argc, char *argv[])
 
 	while(device->run())
 	{
+		if(g_disconnect_requested)
+		{
+			g_disconnect_requested = false;
+			break;
+		}
+
 		/*
 			Run global IrrlichtWrapper's main thread processing stuff
 		*/
@@ -2042,7 +2208,7 @@ int main(int argc, char *argv[])
 								narrow_to_wide(sign_object->getText());
 
 						(new GUITextInputMenu(guienv, guiroot, -1,
-								&g_active_menu_count, dest,
+								&g_menumgr, dest,
 								wtext))->drop();
 					}
 				}
@@ -2519,7 +2685,7 @@ int main(int argc, char *argv[])
 						it = chat_lines.begin();
 				chat_lines.erase(it);
 			}
-			chat_guitext->setText(whole.c_str());
+			guitext_chat->setText(whole.c_str());
 			// Update gui element size and position
 			core::rect<s32> rect(
 					10,
@@ -2527,12 +2693,12 @@ int main(int argc, char *argv[])
 					screensize.X - 10,
 					screensize.Y - 10
 			);
-			chat_guitext->setRelativePosition(rect);
+			guitext_chat->setRelativePosition(rect);
 
 			if(chat_lines.size() == 0)
-				chat_guitext->setVisible(false);
+				guitext_chat->setVisible(false);
 			else
-				chat_guitext->setVisible(true);
+				guitext_chat->setVisible(true);
 		}
 
 		/*
@@ -2667,22 +2833,7 @@ int main(int argc, char *argv[])
 
 	delete quick_inventory;
 
-	} // client is deleted at this point
-	
-	delete g_input;
-
-	/*
-		In the end, delete the Irrlicht device.
-	*/
-	device->drop();
-	
-	/*
-		Update configuration file
-	*/
-	/*if(configpath != "")
-	{
-		g_settings.updateConfigFile(configpath.c_str());
-	}*/
+	} // client and server are deleted at this point
 
 	} //try
 	catch(con::PeerNotFoundException &e)
@@ -2693,7 +2844,7 @@ int main(int argc, char *argv[])
 		{
 			GUIMessageMenu *menu =
 					new GUIMessageMenu(guienv, guiroot, -1, 
-						&g_active_menu_count,
+						&g_menumgr,
 						L"Connection timed out");
 
 			video::IVideoDriver* driver = g_device->getVideoDriver();
@@ -2712,6 +2863,23 @@ int main(int argc, char *argv[])
 			menu->drop();
 		}*/
 	}
+
+	} // Menu-game loop
+	
+	delete g_input;
+
+	/*
+		In the end, delete the Irrlicht device.
+	*/
+	device->drop();
+	
+	/*
+		Update configuration file
+	*/
+	/*if(configpath != "")
+	{
+		g_settings.updateConfigFile(configpath.c_str());
+	}*/
 
 	END_DEBUG_EXCEPTION_HANDLER
 	

@@ -141,6 +141,8 @@ MapNode MapBlock::getNodeParentNoEx(v3s16 p)
 		n: getNodeParent(p)
 		n2: getNodeParent(p + face_dir)
 		face_dir: axis oriented unit vector from p to p2
+	
+	returns encoded light value.
 */
 u8 MapBlock::getFaceLight(u32 daynight_ratio, MapNode n, MapNode n2,
 		v3s16 face_dir)
@@ -721,6 +723,9 @@ void MapBlock::updateMesh(u32 daynight_ratio)
 
 		MapNode &n = getNodeRef(x,y,z);
 		
+		/*
+			Add torches to mesh
+		*/
 		if(n.d == CONTENT_TORCH)
 		{
 			video::SColor c(255,255,255,255);
@@ -779,6 +784,9 @@ void MapBlock::updateMesh(u32 daynight_ratio)
 			// Add to mesh collector
 			collector.append(material, vertices, 4, indices, 6);
 		}
+		/*
+			Add flowing water to mesh
+		*/
 		else if(n.d == CONTENT_WATER)
 		{
 			bool top_is_water = false;
@@ -787,8 +795,9 @@ void MapBlock::updateMesh(u32 daynight_ratio)
 				if(n.d == CONTENT_WATER || n.d == CONTENT_WATERSOURCE)
 					top_is_water = true;
 			}catch(InvalidPositionException &e){}
-
-			video::SColor c(128,255,255,255);
+			
+			u8 l = decode_light(n.getLightBlend(daynight_ratio));
+			video::SColor c(128,l,l,l);
 			
 			// Neighbor water levels (key = relative position)
 			// Includes current node

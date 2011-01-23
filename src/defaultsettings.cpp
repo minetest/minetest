@@ -30,7 +30,6 @@ void set_default_settings()
 	g_settings.setDefault("viewing_range_nodes_min", "35");
 	g_settings.setDefault("screenW", "800");
 	g_settings.setDefault("screenH", "600");
-	g_settings.setDefault("host_game", "");
 	g_settings.setDefault("port", "");
 	g_settings.setDefault("address", "");
 	g_settings.setDefault("name", "");

@@ -79,8 +79,8 @@ GUIInventoryMenu::GUIInventoryMenu(gui::IGUIEnvironment* env,
 		gui::IGUIElement* parent, s32 id,
 		Inventory *inventory,
 		Queue<InventoryAction*> *actions,
-		int *active_menu_count):
-	GUIModalMenu(env, parent, id, active_menu_count)
+		IMenuManager *menumgr):
+	GUIModalMenu(env, parent, id, menumgr)
 {
 	m_inventory = inventory;
 	m_selected_item = NULL;

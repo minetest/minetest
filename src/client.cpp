@@ -1209,8 +1209,8 @@ bool Client::AsyncProcessPacket()
 	} //try
 	catch(con::PeerNotFoundException &e)
 	{
-		dout_client<<DTIME<<"Client::AsyncProcessData(): Cancelling: The server"
-				" connection doesn't exist (a timeout or not yet connected?)"<<std::endl;
+		/*dout_client<<DTIME<<"Client::AsyncProcessData(): Cancelling: The server"
+				" connection doesn't exist (a timeout or not yet connected?)"<<std::endl;*/
 		return false;
 	}
 }

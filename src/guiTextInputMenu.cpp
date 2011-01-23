@@ -24,11 +24,11 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 GUITextInputMenu::GUITextInputMenu(gui::IGUIEnvironment* env,
 		gui::IGUIElement* parent, s32 id,
-		int *active_menu_count,
+		IMenuManager *menumgr,
 		TextDest *dest,
 		std::wstring initial_text
 ):
-	GUIModalMenu(env, parent, id, active_menu_count),
+	GUIModalMenu(env, parent, id, menumgr),
 	m_dest(dest),
 	m_initial_text(initial_text)
 {

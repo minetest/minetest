@@ -136,7 +136,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalLibraryDirectories="&quot;C:\Program Files\Microsoft Platform SDK for Windows Server 2003 R2\Lib&quot;;&quot;..\jthread\jthread-1.2.1\Release&quot;;&quot;..\irrlicht\irrlicht-1.7.1\lib\Win32-visualstudio&quot;;..\zlib125dll\dll32"
+				AdditionalLibraryDirectories="&quot;C:\Program Files\Microsoft Platform SDK for Windows Server 2003 R2\Lib&quot;;&quot;..\irrlicht\irrlicht-1.7.1\lib\Win32-visualstudio&quot;;..\zlib125dll\dll32"
 				IgnoreDefaultLibraryNames="libcmtd.lib"
 				GenerateDebugInformation="false"
 				LinkTimeCodeGeneration="1"
@@ -204,6 +204,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\src\guiMainMenu.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\src\guiMessageMenu.cpp"
 				>
 			</File>
@@ -225,6 +229,14 @@
 			</File>
 			<File
 				RelativePath=".\src\irrlichtwrapper.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\src\jthread\win32\jmutex.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\src\jthread\win32\jthread.cpp"
 				>
 			</File>
 			<File

@@ -23,13 +23,20 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "common_irrlicht.h"
 #include "modalMenu.h"
 
+class IGameCallback
+{
+public:
+	virtual void exitToOS() = 0;
+	virtual void disconnect() = 0;
+};
+
 class GUIPauseMenu : public GUIModalMenu
 {
 public:
 	GUIPauseMenu(gui::IGUIEnvironment* env,
 			gui::IGUIElement* parent, s32 id,
-			IrrlichtDevice *dev,
-			int *active_menu_count);
+			IGameCallback *gamecallback,
+			IMenuManager *menumgr);
 	~GUIPauseMenu();
 	
 	void removeChildren();
@@ -43,7 +50,7 @@ public:
 	bool OnEvent(const SEvent& event);
 	
 private:
-	IrrlichtDevice *m_dev;
+	IGameCallback *m_gamecallback;
 };
 
 #endif

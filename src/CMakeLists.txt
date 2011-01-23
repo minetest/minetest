@@ -10,7 +10,7 @@ add_definitions ( -DUSE_CMAKE_CONFIG_H )
 
 if(WIN32)
 	# Windows
-	# Surpress some warnings
+	# Surpress some useless warnings
 	add_definitions ( /D "_CRT_SECURE_NO_DEPRECATE" /W1 )
 	# Zlib stuff
 	set(ZLIB_INCLUDE_DIR "${PROJECT_SOURCE_DIR}/../../zlib/zlib-1.2.5"
@@ -39,6 +39,7 @@ configure_file(
 )
 
 set(minetest_SRCS
+	guiMainMenu.cpp
 	porting.cpp
 	guiMessageMenu.cpp
 	materials.cpp
@@ -108,8 +109,11 @@ include_directories(
 
 set(EXECUTABLE_OUTPUT_PATH ../bin)
 
+set(JTHREAD_LIBRARIES "jthread")
+set(JTHREAD_SRCS "")
+
 if(BUILD_CLIENT)
-	add_executable(minetest ${minetest_SRCS})
+	add_executable(minetest ${minetest_SRCS} ${JTHREAD_SRCS})
 	target_link_libraries(
 		minetest
 		${ZLIB_LIBRARIES}
@@ -119,18 +123,18 @@ if(BUILD_CLIENT)
 		${BZIP2_LIBRARIES}
 		${PNG_LIBRARIES}
 		${X11_LIBRARIES}
-		jthread
+		${JTHREAD_LIBRARIES}
 		${PLATFORM_LIBS}
 		${CLIENT_PLATFORM_LIBS}
 	)
 endif(BUILD_CLIENT)
 
 if(BUILD_SERVER)
-	add_executable(minetestserver ${minetestserver_SRCS})
+	add_executable(minetestserver ${minetestserver_SRCS} ${JTHREAD_SRCS})
 	target_link_libraries(
 		minetestserver
 		${ZLIB_LIBRARIES}
-		jthread
+		${JTHREAD_LIBRARIES}
 		${PLATFORM_LIBS}
 	)
 endif(BUILD_SERVER)
@@ -143,7 +147,11 @@ if(MSVC)
 	# Visual Studio
 
 	# EHa enables SEH exceptions (used for catching segfaults)
-	set(CMAKE_CXX_FLAGS_RELEASE "/EHa /MD /O2 /Ob2 /Oi /Ot /Oy /GL /FD /MT /GS- /arch:SSE /fp:fast /D NDEBUG")
+	set(CMAKE_CXX_FLAGS_RELEASE "/EHa /MD /O2 /Ob2 /Oi /Ot /Oy /GL /FD /MT /GS- /arch:SSE /fp:fast /D NDEBUG /D _HAS_ITERATOR_DEBUGGING=0 /TP")
+	set(CMAKE_EXE_LINKER_FLAGS_RELEASE "/LTCG /NODEFAULTLIB:\"libcmtd.lib\"")
+
+	# Debug build doesn't catch exceptions by itself
+	# Add some optimizations because otherwise it's VERY slow
 	set(CMAKE_CXX_FLAGS_DEBUG "/MDd /Zi /Ob0 /Od /RTC1")
 	
 	if(BUILD_SERVER)

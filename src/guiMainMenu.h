@@ -17,22 +17,34 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
-#ifndef GUIMESSAGEMENU_HEADER
-#define GUIMESSAGEMENU_HEADER
+#ifndef GUIMAINMENU_HEADER
+#define GUIMAINMENU_HEADER
 
 #include "common_irrlicht.h"
 #include "modalMenu.h"
 #include "utility.h"
 #include <string>
+// For IGameCallback
+#include "guiPauseMenu.h"
 
-class GUIMessageMenu : public GUIModalMenu
+struct MainMenuData
+{
+	// These are in the native format of the gui elements
+	std::wstring address;
+	std::wstring port;
+	std::wstring name;
+	bool creative_mode;
+};
+
+class GUIMainMenu : public GUIModalMenu
 {
 public:
-	GUIMessageMenu(gui::IGUIEnvironment* env,
+	GUIMainMenu(gui::IGUIEnvironment* env,
 			gui::IGUIElement* parent, s32 id,
 			IMenuManager *menumgr,
-			std::wstring message_text);
-	~GUIMessageMenu();
+			MainMenuData *data,
+			IGameCallback *gamecallback);
+	~GUIMainMenu();
 	
 	void removeChildren();
 	/*
@@ -42,19 +54,19 @@ public:
 
 	void drawMenu();
 
-	bool OnEvent(const SEvent& event);
+	void acceptInput();
 
-	/*
-		true = ok'd
-	*/
 	bool getStatus()
 	{
-		return m_status;
+		return m_accepted;
 	}
+
+	bool OnEvent(const SEvent& event);
 	
 private:
-	std::wstring m_message_text;
-	bool m_status;
+	MainMenuData *m_data;
+	bool m_accepted;
+	IGameCallback *m_gamecallback;
 };
 
 #endif
