@@ -3406,7 +3406,8 @@ void Server::handlePeerChange(PeerChange &c)
 		// Set player client disconnected
 		{
 			Player *player = m_env.getPlayer(c.peer_id);
-			player->peer_id = 0;
+			if(player != NULL)
+				player->peer_id = 0;
 		}
 		
 		// Delete client

@@ -211,6 +211,12 @@ inline u8 face_contents(u8 m1, u8 m2)
 		return 0;
 	
 	bool contents_differ = (m1 != m2);
+	
+	// Contents don't differ for different forms of same liquid
+	if(content_liquid(m1) && content_liquid(m2)
+			&& make_liquid_flowing(m1) == make_liquid_flowing(m2))
+		contents_differ = false;
+	
 	bool solidness_differs = (content_solidness(m1) != content_solidness(m2));
 	bool makes_face = contents_differ && solidness_differs;
 

@@ -2114,11 +2114,9 @@ int main(int argc, char *argv[])
 		camera_direction.rotateXZBy(camera_yaw);
 		
 		// This is at the height of the eyes of the current figure
-		v3f camera_position =
-				player_position + v3f(0, BS+BS/2, 0);
+		v3f camera_position = player_position + v3f(0, BS+BS/2, 0);
 		// This is more like in minecraft
-		/*v3f camera_position =
-				player_position + v3f(0, BS+BS*0.65, 0);*/
+		//v3f camera_position = player_position + v3f(0, BS+BS*0.625, 0);
 
 		camera->setPosition(camera_position);
 		// *100.0 helps in large map coordinates
@@ -2828,29 +2826,7 @@ int main(int argc, char *argv[])
 	catch(con::PeerNotFoundException &e)
 	{
 		dstream<<DTIME<<"Connection timed out."<<std::endl;
-		
-		/*if(g_device)
-		{
-			GUIMessageMenu *menu =
-					new GUIMessageMenu(guienv, guiroot, -1, 
-						&g_menumgr,
-						L"Connection timed out");
-
-			video::IVideoDriver* driver = g_device->getVideoDriver();
-			
-			dstream<<"Created menu"<<std::endl;
-
-			while(g_device->run() && menu->getStatus() == false)
-			{
-				driver->beginScene(true, true, video::SColor(255,0,0,0));
-				guienv->drawAll();
-				driver->endScene();
-			}
-			
-			dstream<<"Dropping menu"<<std::endl;
-
-			menu->drop();
-		}*/
+		error_message = L"Connection timed out.";
 	}
 
 	} // Menu-game loop

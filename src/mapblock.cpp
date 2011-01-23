@@ -969,6 +969,7 @@ void MapBlock::updateMesh(u32 daynight_ratio)
 				material.setFlag(video::EMF_LIGHTING, false);
 				material.setFlag(video::EMF_BACK_FACE_CULLING, false);
 				material.setFlag(video::EMF_BILINEAR_FILTER, false);
+				material.setFlag(video::EMF_FOG_ENABLE, true);
 				material.MaterialType = video::EMT_TRANSPARENT_VERTEX_ALPHA;
 				material.setTexture(0,
 						g_irrlicht->getTexture(porting::getDataPath("water.png").c_str()));
@@ -1005,6 +1006,7 @@ void MapBlock::updateMesh(u32 daynight_ratio)
 				material.setFlag(video::EMF_LIGHTING, false);
 				material.setFlag(video::EMF_BACK_FACE_CULLING, false);
 				material.setFlag(video::EMF_BILINEAR_FILTER, false);
+				material.setFlag(video::EMF_FOG_ENABLE, true);
 				material.MaterialType = video::EMT_TRANSPARENT_VERTEX_ALPHA;
 				material.setTexture(0,
 						g_irrlicht->getTexture(porting::getDataPath("water.png").c_str()));

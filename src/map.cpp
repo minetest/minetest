@@ -1689,7 +1689,7 @@ ServerMap::ServerMap(std::string savedir, HMParams hmp, MapParams mp):
 			list_plants_amount->addPoint(p, Attribute(plants_amount));*/
 			
 			float plants_amount = 0;
-			if(myrand()%5 == 0)
+			if(myrand()%4 == 0)
 			{
 				plants_amount = 1.5;
 			}
@@ -2880,16 +2880,16 @@ continue_generating:
 
 				n.d = CONTENT_LEAVES;
 
-				if(rand()%4!=0) sector->setNode(gp+v3s16(0,5,0), n);
+				if(myrand()%4!=0) sector->setNode(gp+v3s16(0,5,0), n);
 
-				if(rand()%3!=0) sector->setNode(gp+v3s16(-1,5,0), n);
-				if(rand()%3!=0) sector->setNode(gp+v3s16(1,5,0), n);
-				if(rand()%3!=0) sector->setNode(gp+v3s16(0,5,-1), n);
-				if(rand()%3!=0) sector->setNode(gp+v3s16(0,5,1), n);
-				/*if(rand()%3!=0) sector->setNode(gp+v3s16(1,5,1), n);
-				if(rand()%3!=0) sector->setNode(gp+v3s16(-1,5,1), n);
-				if(rand()%3!=0) sector->setNode(gp+v3s16(-1,5,-1), n);
-				if(rand()%3!=0) sector->setNode(gp+v3s16(1,5,-1), n);*/
+				if(myrand()%3!=0) sector->setNode(gp+v3s16(-1,5,0), n);
+				if(myrand()%3!=0) sector->setNode(gp+v3s16(1,5,0), n);
+				if(myrand()%3!=0) sector->setNode(gp+v3s16(0,5,-1), n);
+				if(myrand()%3!=0) sector->setNode(gp+v3s16(0,5,1), n);
+				/*if(myrand()%3!=0) sector->setNode(gp+v3s16(1,5,1), n);
+				if(myrand()%3!=0) sector->setNode(gp+v3s16(-1,5,1), n);
+				if(myrand()%3!=0) sector->setNode(gp+v3s16(-1,5,-1), n);
+				if(myrand()%3!=0) sector->setNode(gp+v3s16(1,5,-1), n);*/
 
 				sector->setNode(gp+v3s16(0,4,0), n);
 				
@@ -2911,14 +2911,14 @@ continue_generating:
 				sector->setNode(gp+v3s16(-1,3,-1), n);
 				sector->setNode(gp+v3s16(1,3,-1), n);
 				
-				if(rand()%3!=0) sector->setNode(gp+v3s16(-1,2,0), n);
-				if(rand()%3!=0) sector->setNode(gp+v3s16(1,2,0), n);
-				if(rand()%3!=0) sector->setNode(gp+v3s16(0,2,-1), n);
-				if(rand()%3!=0) sector->setNode(gp+v3s16(0,2,1), n);
-				/*if(rand()%3!=0) sector->setNode(gp+v3s16(1,2,1), n);
-				if(rand()%3!=0) sector->setNode(gp+v3s16(-1,2,1), n);
-				if(rand()%3!=0) sector->setNode(gp+v3s16(-1,2,-1), n);
-				if(rand()%3!=0) sector->setNode(gp+v3s16(1,2,-1), n);*/
+				if(myrand()%3!=0) sector->setNode(gp+v3s16(-1,2,0), n);
+				if(myrand()%3!=0) sector->setNode(gp+v3s16(1,2,0), n);
+				if(myrand()%3!=0) sector->setNode(gp+v3s16(0,2,-1), n);
+				if(myrand()%3!=0) sector->setNode(gp+v3s16(0,2,1), n);
+				/*if(myrand()%3!=0) sector->setNode(gp+v3s16(1,2,1), n);
+				if(myrand()%3!=0) sector->setNode(gp+v3s16(-1,2,1), n);
+				if(myrand()%3!=0) sector->setNode(gp+v3s16(-1,2,-1), n);
+				if(myrand()%3!=0) sector->setNode(gp+v3s16(1,2,-1), n);*/
 				
 				// Objects are identified by wanted position
 				objects_to_remove.push_back(p);
