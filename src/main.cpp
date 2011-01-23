@@ -117,8 +117,6 @@ Gaming ideas:
 Documentation:
 --------------
 
-TODO: Copy build instructions from website to README.txt
-
 Build system / running:
 -----------------------
 
@@ -135,8 +133,8 @@ FIXME: Graphical mode seems to segfault with Irrlicht 1.7.1 on 64-bit
 FIXME: Some network errors on Windows that cause local game to not work
        - See siggjen's emails.
 
-Networking:
------------
+Networking and serialization:
+-----------------------------
 
 TODO: Get rid of GotSplitPacketException
 
@@ -145,7 +143,7 @@ GUI:
 
 TODO: Add gui option to remove map
 
-TODO: Startup and configuration menu
+TODO: Configuration menu, at least for keys
 
 Graphics:
 ---------
@@ -158,9 +156,6 @@ TODO: Optimize day/night mesh updating somehow
 		   meshbuffers? It should go quite fast.
 		   - This is not easy; There'd need to be a buffer somewhere
 		     that would contain the night and day lighting values.
-
-TODO: Draw big amounts of torches better (that is, throw them in the
-      same meshbuffer (can the meshcollector class be used?))
 
 TODO: Combine MapBlock's face caches to so big pieces that VBO
       gets used
@@ -195,10 +190,8 @@ TODO: When player dies, throw items on map
 TODO: Make an option to the server to disable building and digging near
       the starting position
 
-TODO: Players to only be hidden when the client quits.
-TODO: - Players to be saved on disk, with inventory
+TODO: Save players with inventories to disk
 TODO: Players to be saved as text in map/players/<name>
-TODO: Player inventory to be saved on disk
 
 TODO: Copy the text of the last picked sign to inventory in creative
       mode
@@ -208,10 +201,6 @@ TODO: Check what goes wrong with caching map to disk (Kray)
 
 TODO: When server sees that client is removing an inexistent block or
       adding a block to an existent position, resend the MapBlock.
-
-TODO: Save players with inventories to disk
-
-TODO: Make water more like in minecraft
 
 Objects:
 --------
@@ -257,15 +246,15 @@ TODO: Map generator version 2
 	- There could be a certain height (to which mountains only reach)
 	  where some minerals are found
 
-FIXME: The new pre-sunlight-propagation code messes up with initial
-       water lighting
-
-TODO: Remove HMParams
-
 TODO: Change AttributeList to split the area into smaller sections so
       that searching won't be as heavy.
 TODO: Change AttributeList to be 2D, as it would be too slow to search
       in 3D fields anyway.
+
+FIXME: The new pre-sunlight-propagation code messes up with initial
+       water lighting. Does it any more?
+
+TODO: Remove HMParams
 
 Doing now:
 ----------
