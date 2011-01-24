@@ -268,6 +268,7 @@ struct TestVoxelManipulator
 		assert(v.getNode(v3s16(-1,0,-1)).d == 2);
 		EXCEPTION_CHECK(InvalidPositionException, v.getNode(v3s16(0,1,1)));
 
+#if 0
 		/*
 			Water stuff
 		*/
@@ -332,6 +333,7 @@ struct TestVoxelManipulator
 		
 		dstream<<"Final result of flowWater:"<<std::endl;
 		v.print(dstream, VOXELPRINT_WATERPRESSURE);
+#endif
 		
 		//assert(0);
 	}
