@@ -268,7 +268,7 @@ void MapBlock::makeFastFace(TileSpec tile, u8 light, v3f p,
 
 	if(tile.id == TILE_WATER)
 	{
-		alpha = 128;
+		alpha = WATER_ALPHA;
 	}
 
 	video::SColor c = video::SColor(alpha,li,li,li);
@@ -797,7 +797,7 @@ void MapBlock::updateMesh(u32 daynight_ratio)
 			}catch(InvalidPositionException &e){}
 			
 			u8 l = decode_light(n.getLightBlend(daynight_ratio));
-			video::SColor c(128,l,l,l);
+			video::SColor c(WATER_ALPHA,l,l,l);
 			
 			// Neighbor water levels (key = relative position)
 			// Includes current node

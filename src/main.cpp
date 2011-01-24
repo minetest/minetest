@@ -76,9 +76,6 @@ SUGG: Split MapBlockObject serialization to to-client and to-disk
       - This will allow saving ages of rats on disk but not sending
 	    them to clients
 
-SUGG: Implement lighting using VoxelManipulator
-      - Would it be significantly faster?
-
 SUGG: MovingObject::move and Player::move are basically the same.
       combine them.
 
@@ -168,6 +165,8 @@ TODO: Make fetching sector's blocks more efficient when rendering
       sectors that have very large amounts of blocks (on client)
 	  - Is this necessary at all?
 
+TODO: Flowing water animation
+
 Configuration:
 --------------
 
@@ -231,8 +230,8 @@ Block object server side:
 	    - TODO: For incoming blocks, time difference is calculated and
 	      objects are stepped according to it.
 
-Map generator:
---------------
+Map:
+----
 
 NOTE: There are some lighting-related todos and fixmes in
       ServerMap::emergeBlock. And there always will be. 8)
@@ -245,6 +244,8 @@ TODO: Map generator version 2
     - Cliffs, arcs
 	- There could be a certain height (to which mountains only reach)
 	  where some minerals are found
+	- Create a system that allows a huge amount of different "map
+	  generator modules/filters"
 
 TODO: Change AttributeList to split the area into smaller sections so
       that searching won't be as heavy.
@@ -255,6 +256,10 @@ FIXME: The new pre-sunlight-propagation code messes up with initial
        water lighting. Does it any more?
 
 TODO: Remove HMParams
+
+TODO: Flowing water to actually contain flow direction information
+
+TODO: Faster lighting using VoxelManipulator
 
 Doing now:
 ----------
@@ -1532,8 +1537,7 @@ int main(int argc, char *argv[])
 	*/
 
 	init_content_inventory_texture_paths();
-	init_tile_texture_paths();
-	tile_materials_preload(g_irrlicht);
+	init_tile_textures();
 
 	/*
 		GUI stuff

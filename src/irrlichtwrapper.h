@@ -97,6 +97,16 @@ struct CrackTextureMod: public TextureMod
 	u16 progression;
 };
 
+struct SideGrassTextureMod: public TextureMod
+{
+	SideGrassTextureMod()
+	{
+	}
+	
+	virtual video::ITexture * make(video::ITexture *original,
+			const char *newname, video::IVideoDriver* driver);
+};
+
 struct ProgressBarTextureMod: public TextureMod
 {
 	// value is from 0.0 to 1.0

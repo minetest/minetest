@@ -175,6 +175,40 @@ video::ITexture * CrackTextureMod::make(video::ITexture *original,
 	return newtexture;
 }
 
+video::ITexture * SideGrassTextureMod::make(video::ITexture *original,
+		const char *newname, video::IVideoDriver* driver)
+{
+	// Size of the base image
+	core::dimension2d<u32> dim(16, 16);
+	// Position to copy the grass to in the base image
+	core::position2d<s32> pos_base(0, 0);
+	// Position to copy the grass from in the grass image
+	core::position2d<s32> pos_other(0, 0);
+
+	video::IImage *baseimage = driver->createImage(original, pos_base, dim);
+	assert(baseimage);
+
+	video::IImage *grassimage = driver->createImageFromFile(porting::getDataPath("grass_side.png").c_str());
+	assert(grassimage);
+	
+	// Then copy the right part of grassimage to baseimage
+	
+	grassimage->copyToWithAlpha(baseimage, v2s32(0,0),
+			core::rect<s32>(pos_other, dim),
+			video::SColor(255,255,255,255),
+			NULL);
+	
+	grassimage->drop();
+
+	// Create texture from resulting image
+
+	video::ITexture *newtexture = driver->addTexture(newname, baseimage);
+
+	baseimage->drop();
+
+	return newtexture;
+}
+
 video::ITexture * ProgressBarTextureMod::make(video::ITexture *original,
 		const char *newname, video::IVideoDriver* driver)
 {

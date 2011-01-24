@@ -1624,7 +1624,7 @@ void Map::transformLiquids(core::map<v3s16, MapBlock*> & modified_blocks)
 			}
 			
 			// If n2_changed to bottom, don't flow anywhere else
-			if(to_bottom && flowed)
+			if(to_bottom && flowed && !is_source)
 				break;
 				
 			}catch(InvalidPositionException &e)
@@ -1770,7 +1770,7 @@ ServerMap::ServerMap(std::string savedir, HMParams hmp, MapParams mp):
 			float randmax = 0;
 			float randfactor = 0;
 
-			if(myrand()%4 == 0)
+			if(myrand()%5 == 0)
 			{
 				baseheight = 100;
 				randmax = 50;
@@ -2602,7 +2602,7 @@ continue_generating:
 					(float)(myrand()%ued)+0.5
 				);
 				s16 min_d = 0;
-				s16 max_d = 6;
+				s16 max_d = 4;
 				s16 rs = (myrand()%(max_d-min_d+1))+min_d;
 				
 				v3f vec = rp - orp;
