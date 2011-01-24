@@ -396,7 +396,8 @@ public:
 	*/
 
 	void clearFlag(u8 flag);
-	
+
+#if 0
 	// VOXELFLAG_CHECKED2s must usually be cleared before calling
 	// -1: dead end, 0-255: pressure
 	// highest_y: Highest found water y is stored here.
@@ -450,6 +451,7 @@ public:
 			bool debugprint=false,
 			u32 timelimit=50
 	);
+#endif
 
 	/*
 		Virtual functions

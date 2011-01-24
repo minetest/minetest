@@ -264,6 +264,7 @@ void VoxelManipulator::clearFlag(u8 flags)
 			<<volume<<" nodes"<<std::endl;*/
 }
 
+#if 0
 int VoxelManipulator::getWaterPressure(v3s16 p, s16 &highest_y, int recur_count)
 {
 	m_flags[m_area.index(p)] |= VOXELFLAG_CHECKED2;
@@ -894,6 +895,6 @@ void VoxelManipulator::flowWater(
 			<<", updateareawaterpressure_time: "<<updateareawaterpressure_time
 			<<std::endl;*/
 }
-
+#endif
 
 //END
