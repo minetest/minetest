@@ -323,7 +323,11 @@ public:
 		emerge(p);
 		return !(m_flags[m_area.index(p)] & VOXELFLAG_INEXISTENT);
 	}*/
-	// These are a bit slow and shouldn't be used internally
+
+	/*
+		These are a bit slow and shouldn't be used internally.
+		Use m_data[m_area.index(p)] instead.
+	*/
 	MapNode getNode(v3s16 p)
 	{
 		emerge(p);
@@ -396,7 +400,17 @@ public:
 	*/
 
 	void clearFlag(u8 flag);
-
+	
+	void unspreadLight(enum LightBank bank, v3s16 p, u8 oldlight,
+			core::map<v3s16, bool> & light_sources);
+	void unspreadLight(enum LightBank bank,
+			core::map<v3s16, u8> & from_nodes,
+			core::map<v3s16, bool> & light_sources);
+	
+	void spreadLight(enum LightBank bank, v3s16 p);
+	void spreadLight(enum LightBank bank,
+			core::map<v3s16, bool> & from_nodes);
+	
 #if 0
 	// VOXELFLAG_CHECKED2s must usually be cleared before calling
 	// -1: dead end, 0-255: pressure

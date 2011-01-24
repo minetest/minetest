@@ -622,10 +622,13 @@ void Map::updateLighting(enum LightBank bank,
 		core::map<v3s16, MapBlock*> & modified_blocks)
 {
 	/*m_dout<<DTIME<<"Map::updateLighting(): "
-			<<a_blocks.getSize()<<" blocks... ";*/
+			<<a_blocks.size()<<" blocks."<<std::endl;*/
+	
+	//TimeTaker timer("updateLighting");
 	
 	// For debugging
-	bool debug=false;
+	bool debug=true;
+
 	u32 count_was = modified_blocks.size();
 
 	core::map<v3s16, bool> light_sources;
@@ -720,9 +723,10 @@ void Map::updateLighting(enum LightBank bank,
 			
 		}
 	}
-	
+
+#if 0
 	{
-		//TimeTaker timer("unspreadLight");
+		TimeTaker timer("unspreadLight");
 		unspreadLight(bank, unlight_from, light_sources, modified_blocks);
 	}
 	
@@ -741,7 +745,7 @@ void Map::updateLighting(enum LightBank bank,
 	//       - Find out why it works
 
 	{
-		//TimeTaker timer("spreadLight");
+		TimeTaker timer("spreadLight");
 		spreadLight(bank, light_sources, modified_blocks);
 	}
 	
@@ -750,6 +754,36 @@ void Map::updateLighting(enum LightBank bank,
 		u32 diff = modified_blocks.size() - count_was;
 		count_was = modified_blocks.size();
 		dstream<<"spreadLight modified "<<diff<<std::endl;
+	}
+#endif
+	
+	{
+		//MapVoxelManipulator vmanip(this);
+
+		ManualMapVoxelManipulator vmanip(this);
+		
+		core::map<v3s16, MapBlock*>::Iterator i;
+		i = a_blocks.getIterator();
+		for(; i.atEnd() == false; i++)
+		{
+			MapBlock *block = i.getNode()->getValue();
+			v3s16 p = block->getPos();
+			vmanip.initialEmerge(p - v3s16(1,1,1), p + v3s16(1,1,1));
+		}
+		{
+			//TimeTaker timer("unSpreadLight");
+			vmanip.unspreadLight(bank, unlight_from, light_sources);
+		}
+		{
+			//TimeTaker timer("spreadLight");
+			vmanip.spreadLight(bank, light_sources);
+		}
+		{
+			//TimeTaker timer("blitBack");
+			vmanip.blitBack(modified_blocks);
+		}
+		/*dstream<<"emerge_time="<<emerge_time<<std::endl;
+		emerge_time = 0;*/
 	}
 
 	//m_dout<<"Done ("<<getTimestamp()<<")"<<std::endl;
@@ -2220,7 +2254,8 @@ MapBlock * ServerMap::emergeBlock(
 	}
 
 	//dstream<<"Not found on disk, generating."<<std::endl;
-	//TimeTaker("emergeBlock()", g_irrlicht);
+	// 0ms
+	//TimeTaker("emergeBlock() generate");
 
 	/*
 		Do not generate over-limit
@@ -4138,7 +4173,10 @@ void MapVoxelManipulator::emerge(VoxelArea a, s32 caller_id)
 #endif
 
 #if 0
-void MapVoxelManipulator::emerge(VoxelArea a)
+/*
+	NOTE: This is slow
+*/
+void MapVoxelManipulator::emerge(VoxelArea a, s32 caller_id)
 {
 	TimeTaker timer1("emerge", &emerge_time);
 	
@@ -4185,6 +4223,9 @@ void MapVoxelManipulator::blitBack
 		return;
 	
 	//TimeTaker timer1("blitBack");
+
+	/*dstream<<"blitBack(): m_loaded_blocks.size()="
+			<<m_loaded_blocks.size()<<std::endl;*/
 	
 	/*
 		Initialize block cache
@@ -4238,6 +4279,92 @@ void MapVoxelManipulator::blitBack
 		catch(InvalidPositionException &e)
 		{
 		}
+	}
+}
+
+ManualMapVoxelManipulator::ManualMapVoxelManipulator(Map *map):
+		MapVoxelManipulator(map)
+{
+}
+
+ManualMapVoxelManipulator::~ManualMapVoxelManipulator()
+{
+}
+
+void ManualMapVoxelManipulator::emerge(VoxelArea a, s32 caller_id)
+{
+	// Just create the area to avoid segfaults
+	VoxelManipulator::emerge(a, caller_id);
+
+	/*
+		Just create the area to avoid segfaults
+	*/
+	/*addArea(a);
+	for(s32 z=a.MinEdge.Z; z<=a.MaxEdge.Z; z++)
+	for(s32 y=a.MinEdge.Y; y<=a.MaxEdge.Y; y++)
+	for(s32 x=a.MinEdge.X; x<=a.MaxEdge.X; x++)
+	{
+		s32 i = m_area.index(x,y,z);
+		// Don't touch nodes that have already been loaded
+		if(!(m_flags[i] & VOXELFLAG_NOT_LOADED))
+			continue;
+		m_flags[i] = VOXELFLAG_INEXISTENT;
+	}*/
+}
+
+void ManualMapVoxelManipulator::initialEmerge(
+		v3s16 blockpos_min, v3s16 blockpos_max)
+{
+	TimeTaker timer1("emerge", &emerge_time);
+
+	// Units of these are MapBlocks
+	v3s16 p_min = blockpos_min;
+	v3s16 p_max = blockpos_max;
+
+	VoxelArea block_area_nodes
+			(p_min*MAP_BLOCKSIZE, (p_max+1)*MAP_BLOCKSIZE-v3s16(1,1,1));
+
+	addArea(block_area_nodes);
+
+	for(s32 z=p_min.Z; z<=p_max.Z; z++)
+	for(s32 y=p_min.Y; y<=p_max.Y; y++)
+	for(s32 x=p_min.X; x<=p_max.X; x++)
+	{
+		v3s16 p(x,y,z);
+		core::map<v3s16, bool>::Node *n;
+		n = m_loaded_blocks.find(p);
+		if(n != NULL)
+			continue;
+		
+		bool block_data_inexistent = false;
+		try
+		{
+			TimeTaker timer1("emerge load", &emerge_load_time);
+
+			MapBlock *block = m_map->getBlockNoCreate(p);
+			if(block->isDummy())
+				block_data_inexistent = true;
+			else
+				block->copyTo(*this);
+		}
+		catch(InvalidPositionException &e)
+		{
+			block_data_inexistent = true;
+		}
+
+		if(block_data_inexistent)
+		{
+			VoxelArea a(p*MAP_BLOCKSIZE, (p+1)*MAP_BLOCKSIZE-v3s16(1,1,1));
+			// Fill with VOXELFLAG_INEXISTENT
+			for(s32 z=a.MinEdge.Z; z<=a.MaxEdge.Z; z++)
+			for(s32 y=a.MinEdge.Y; y<=a.MaxEdge.Y; y++)
+			{
+				s32 i = m_area.index(a.MinEdge.X,y,z);
+				memset(&m_flags[i], VOXELFLAG_INEXISTENT, MAP_BLOCKSIZE);
+			}
+		}
+
+		m_loaded_blocks.insert(p, true);
 	}
 }
 

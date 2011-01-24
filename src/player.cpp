@@ -412,8 +412,9 @@ void LocalPlayer::applyControl(float dtime)
 		}
 		else
 		{
-			speed += move_direction;
-			superspeed = true;
+			// "Turbo button"
+			/*speed += move_direction;
+			superspeed = true;*/
 		}
 	}
 

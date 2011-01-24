@@ -259,7 +259,8 @@ TODO: Remove HMParams
 
 TODO: Flowing water to actually contain flow direction information
 
-TODO: Faster lighting using VoxelManipulator
+TODO: Remove duplicate lighting implementation from Map (leave
+      VoxelManipulator)
 
 Doing now:
 ----------

@@ -523,7 +523,7 @@ public:
 
 	void blitBack(core::map<v3s16, MapBlock*> & modified_blocks);
 
-private:
+protected:
 	Map *m_map;
 	/*
 		NOTE: This might be used or not
@@ -532,6 +532,19 @@ private:
 		      information about which block is loaded?
 	*/
 	core::map<v3s16, bool> m_loaded_blocks;
+};
+
+class ManualMapVoxelManipulator : public MapVoxelManipulator
+{
+public:
+	ManualMapVoxelManipulator(Map *map);
+	virtual ~ManualMapVoxelManipulator();
+	
+	virtual void emerge(VoxelArea a, s32 caller_id=-1);
+
+	void initialEmerge(v3s16 blockpos_min, v3s16 blockpos_max);
+
+protected:
 };
 
 #endif

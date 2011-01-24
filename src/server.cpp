@@ -168,7 +168,7 @@ void * EmergeThread::Thread()
 						changed_blocks,
 						lighting_invalidated_blocks);
 
-#if 0
+#if 1
 				/*
 					EXPERIMENTAL: Create a few other blocks too
 				*/
@@ -184,6 +184,19 @@ void * EmergeThread::Thread()
 						only_from_disk,
 						changed_blocks,
 						lighting_invalidated_blocks);
+#if 0
+				map.emergeBlock(
+						p + v3s16(0,2,0),
+						only_from_disk,
+						changed_blocks,
+						lighting_invalidated_blocks);
+
+				map.emergeBlock(
+						p + v3s16(0,-2,0),
+						only_from_disk,
+						changed_blocks,
+						lighting_invalidated_blocks);
+#endif
 #endif
 			}
 
@@ -216,23 +229,6 @@ void * EmergeThread::Thread()
 				dout_server<<std::endl;
 			}
 
-#if 0
-			/*
-				Update water pressure
-			*/
-
-			m_server->UpdateBlockWaterPressure(block, modified_blocks);
-
-			for(core::map<v3s16, MapBlock*>::Iterator i = changed_blocks.getIterator();
-					i.atEnd() == false; i++)
-			{
-				MapBlock *block = i.getNode()->getValue();
-				m_server->UpdateBlockWaterPressure(block, modified_blocks);
-				//v3s16 p = i.getNode()->getKey();
-				//m_server->UpdateBlockWaterPressure(p, modified_blocks);
-			}
-#endif
-
 			/*
 				Collect a list of blocks that have been modified in
 				addition to the fetched one.
@@ -249,7 +245,7 @@ void * EmergeThread::Thread()
 			/*dstream<<"lighting "<<lighting_invalidated_blocks.size()
 					<<" blocks"<<std::endl;*/
 			
-			//TimeTaker timer("** updateLighting", g_device);
+			//TimeTaker timer("** updateLighting");
 			
 			// Update lighting without locking the environment mutex,
 			// add modified blocks to changed blocks
@@ -497,7 +493,8 @@ void RemoteClient::GetNextBlocks(Server *server, float dtime,
 			|| p.Z < -MAP_GENERATION_LIMIT / MAP_BLOCKSIZE
 			|| p.Z > MAP_GENERATION_LIMIT / MAP_BLOCKSIZE)
 				continue;
-
+		
+			// If this is true, inexistent block will be made from scratch
 			bool generate = d <= d_max_gen;
 			
 			if(haxmode)
@@ -511,6 +508,35 @@ void RemoteClient::GetNextBlocks(Server *server, float dtime,
 				// Limit the generating area vertically to 2/3
 				if(abs(p.Y - center.Y) > d_max_gen - d_max_gen / 3)
 					generate = false;
+			}
+
+			/*
+				If block is far away, don't generate it unless it is
+				near ground level
+			*/
+			if(d > 4)
+			{
+				v2s16 p2d(p.X, p.Z);
+				MapSector *sector = NULL;
+				try
+				{
+					sector = server->m_env.getMap().getSectorNoGenerate(p2d);
+				}
+				catch(InvalidPositionException &e)
+				{
+				}
+
+				if(sector != NULL)
+				{
+					// Get center ground height in nodes
+					f32 gh = sector->getGroundHeight(
+							v2s16(MAP_BLOCKSIZE/2, MAP_BLOCKSIZE/2));
+					// Block center y in nodes
+					f32 y = (f32)(p.Y * MAP_BLOCKSIZE + MAP_BLOCKSIZE/2);
+					// If differs a lot, don't generate
+					if(fabs(gh - y) > MAP_BLOCKSIZE*2)
+						generate = false;
+				}
 			}
 
 			/*
