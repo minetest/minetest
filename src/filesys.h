@@ -41,6 +41,7 @@ bool CreateDir(std::string path);
 bool PathExists(std::string path);
 
 // Only pass full paths to this one. True on success.
+// NOTE: The WIN32 version returns always true.
 bool RecursiveDelete(std::string path);
 
 // Only pass full paths to this one. True on success.

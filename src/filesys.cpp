@@ -157,7 +157,11 @@ bool RecursiveDelete(std::string path)
 	
 	int r = SHFileOperation(&sfo);
 
-	return (r == 0);
+	if(r != 0)
+		std::cerr<<"SHFileOperation returned "<<r<<std::endl;
+
+	//return (r == 0);
+	return true;
 }
 
 #else // POSIX
