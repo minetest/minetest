@@ -374,11 +374,6 @@ struct MapNode
 	union
 	{
 		u8 param2;
-		
-		/*
-			Pressure for liquids
-		*/
-		u8 pressure;
 
 		/*
 			Direction for torches and other stuff.
@@ -392,18 +387,18 @@ struct MapNode
 		*this = n;
 	}
 	
-	MapNode(u8 data=CONTENT_AIR, u8 a_param=0, u8 a_pressure=0)
+	MapNode(u8 data=CONTENT_AIR, u8 a_param=0, u8 a_param2=0)
 	{
 		d = data;
 		param = a_param;
-		pressure = a_pressure;
+		param2 = a_param2;
 	}
 
 	bool operator==(const MapNode &other)
 	{
 		return (d == other.d
 				&& param == other.param
-				&& pressure == other.pressure);
+				&& param2 == other.param2);
 	}
 
 	bool light_propagates()
@@ -557,7 +552,7 @@ struct MapNode
 		{
 			dest[0] = d;
 			dest[1] = param;
-			dest[2] = pressure;
+			dest[2] = param2;
 		}
 	}
 	void deSerialize(u8 *source, u8 version)
@@ -587,7 +582,7 @@ struct MapNode
 		{
 			d = source[0];
 			param = source[1];
-			pressure = source[2];
+			param2 = source[2];
 		}
 	}
 };

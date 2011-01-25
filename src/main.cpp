@@ -236,7 +236,7 @@ Map:
 NOTE: There are some lighting-related todos and fixmes in
       ServerMap::emergeBlock. And there always will be. 8)
 
-TODO: Map generator version 2
+FEATURE: Map generator version 2
 	- Create surface areas based on central points; a given point's
 	  area type is given by the nearest central point
 	  - Separate points for heightmap, caves, plants and minerals?
@@ -246,18 +246,33 @@ TODO: Map generator version 2
 	  where some minerals are found
 	- Create a system that allows a huge amount of different "map
 	  generator modules/filters"
+	  
+FEATURE: The map could be generated procedually:
+      - This would need the map to be generated in larger pieces
+	    - How large? How do they connect to each other?
+      * Make the stone level with a heightmap
+	  * Carve out stuff in the stone
+	  * Dump dirt all around, and simulate it falling off steep
+	    places
+	  * Erosion simulation at map generation time
+		- Simulate water flows, which would carve out dirt fast and
+		  then turn stone into gravel and sand and relocate it.
+		- How about relocating minerals, too? Coal and gold in
+		  downstream sand and gravel would be kind of cool
+		  - This would need a better way of handling minerals, mainly
+		    to have mineral content as a separate field
+		- Simulate rock falling from cliffs when water has removed
+		  enough solid rock from the bottom
 
 TODO: Change AttributeList to split the area into smaller sections so
       that searching won't be as heavy.
-TODO: Change AttributeList to be 2D, as it would be too slow to search
-      in 3D fields anyway.
 
 TODO: Remove HMParams
 
 TODO: Flowing water to actually contain flow direction information
 
 TODO: Remove duplicate lighting implementation from Map (leave
-      VoxelManipulator)
+      VoxelManipulator, which is faster)
 
 Doing now:
 ----------

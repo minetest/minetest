@@ -1504,13 +1504,13 @@ void MapBlock::serialize(std::ostream &os, u8 version)
 		
 		if(version >= 10)
 		{
-			// Get and compress pressure
-			SharedBuffer<u8> pressuredata(nodecount);
+			// Get and compress param2
+			SharedBuffer<u8> param2data(nodecount);
 			for(u32 i=0; i<nodecount; i++)
 			{
-				pressuredata[i] = data[i].pressure;
+				param2data[i] = data[i].param2;
 			}
-			compress(pressuredata, os, version);
+			compress(param2data, os, version);
 		}
 	}
 	// All other versions (newest)
@@ -1544,10 +1544,10 @@ void MapBlock::serialize(std::ostream &os, u8 version)
 			databuf[i+nodecount] = data[i].param;
 		}
 
-		// Get pressure
+		// Get param2
 		for(u32 i=0; i<nodecount; i++)
 		{
-			databuf[i+nodecount*2] = data[i].pressure;
+			databuf[i+nodecount*2] = data[i].param2;
 		}
 
 		/*
@@ -1621,7 +1621,7 @@ void MapBlock::deSerialize(std::istream &is, u8 version)
 	
 		if(version >= 10)
 		{
-			// Uncompress and set pressure data
+			// Uncompress and set param2 data
 			std::ostringstream os(std::ios_base::binary);
 			decompress(is, os, version);
 			std::string s = os.str();
@@ -1630,7 +1630,7 @@ void MapBlock::deSerialize(std::istream &is, u8 version)
 						("MapBlock::deSerialize: invalid format");
 			for(u32 i=0; i<s.size(); i++)
 			{
-				data[i].pressure = s[i];
+				data[i].param2 = s[i];
 			}
 		}
 	}
@@ -1662,10 +1662,10 @@ void MapBlock::deSerialize(std::istream &is, u8 version)
 		{
 			data[i].param = s[i+nodecount];
 		}
-		// Set pressure
+		// Set param2
 		for(u32 i=0; i<nodecount; i++)
 		{
-			data[i].pressure = s[i+nodecount*2];
+			data[i].param2 = s[i+nodecount*2];
 		}
 	}
 }

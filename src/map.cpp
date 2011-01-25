@@ -1804,7 +1804,7 @@ ServerMap::ServerMap(std::string savedir, HMParams hmp, MapParams mp):
 			float randmax = 0;
 			float randfactor = 0;
 
-			if(myrand()%5 == 0)
+			/*if(myrand()%5 == 0)
 			{
 				baseheight = 100;
 				randmax = 50;
@@ -1833,7 +1833,11 @@ ServerMap::ServerMap(std::string savedir, HMParams hmp, MapParams mp):
 				baseheight = -3;
 				randmax = 20;
 				randfactor = 0.5;
-			}
+			}*/
+			
+			baseheight = 0;
+			randmax = 15;
+			randfactor = 0.63;
 
 			list_baseheight->addPoint(p, Attribute(baseheight));
 			list_randmax->addPoint(p, Attribute(randmax));
