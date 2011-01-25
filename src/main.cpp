@@ -252,9 +252,6 @@ TODO: Change AttributeList to split the area into smaller sections so
 TODO: Change AttributeList to be 2D, as it would be too slow to search
       in 3D fields anyway.
 
-FIXME: The new pre-sunlight-propagation code messes up with initial
-       water lighting. Does it any more?
-
 TODO: Remove HMParams
 
 TODO: Flowing water to actually contain flow direction information
@@ -2119,9 +2116,9 @@ int main(int argc, char *argv[])
 		camera_direction.rotateXZBy(camera_yaw);
 		
 		// This is at the height of the eyes of the current figure
-		v3f camera_position = player_position + v3f(0, BS+BS/2, 0);
+		//v3f camera_position = player_position + v3f(0, BS+BS/2, 0);
 		// This is more like in minecraft
-		//v3f camera_position = player_position + v3f(0, BS+BS*0.625, 0);
+		v3f camera_position = player_position + v3f(0, BS+BS*0.625, 0);
 
 		camera->setPosition(camera_position);
 		// *100.0 helps in large map coordinates
@@ -2752,7 +2749,8 @@ int main(int argc, char *argv[])
 		//TimeTaker //timer10("//timer10");
 		
 		video::SMaterial m;
-		m.Thickness = 10;
+		//m.Thickness = 10;
+		m.Thickness = 3;
 		m.Lighting = false;
 		driver->setMaterial(m);
 

@@ -102,6 +102,10 @@ void mysrand(unsigned seed)
    next = seed;
 }
 
+/*
+	PointAttributeList
+*/
+
 // Float with distance
 struct DFloat
 {
@@ -109,7 +113,7 @@ struct DFloat
 	u32 d;
 };
 
-float PointAttributeList::getInterpolatedFloat(v3s16 p)
+float PointAttributeList::getInterpolatedFloat(v2s16 p)
 {
 	const u32 near_wanted_count = 5;
 	// Last is nearest, first is farthest

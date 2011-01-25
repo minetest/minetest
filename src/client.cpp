@@ -981,14 +981,14 @@ void Client::ProcessData(u8 *data, u32 datasize, u16 sender_peer_id)
 			12000 = midday
 		*/
 		{
-			const s32 daylength = 8;
-			const s32 nightlength = 2;
-			const s32 daytimelength = 4;
+			const s32 daylength = 16;
+			const s32 nightlength = 6;
+			const s32 daytimelength = 8;
 			s32 d = daylength;
 			s32 t = (((m_time_of_day.get())%24000)/(24000/d));
 			u32 dr;
 			if(t < nightlength/2 || t >= d - nightlength/2)
-				dr = 350;
+				dr = 400;
 			else if(t >= d/2 - daytimelength/2 && t < d/2 + daytimelength/2)
 				dr = 1000;
 			else

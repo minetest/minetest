@@ -1450,23 +1450,16 @@ class PointAttributeList
 {
 	struct PointWithAttr
 	{
-		v3s16 p;
+		v2s16 p;
 		Attribute attr;
 	};
 
 public:
 	~PointAttributeList()
 	{
-		/*for(core::list<PointWithAttr>::Iterator
-				i = m_points.begin();
-				i != m_points.end(); i++)
-		{
-			PointWithAttr &pwa = *i;
-			//delete pwa.attr;
-		}*/
 	}
 
-	Attribute getNearAttr(v3s16 p)
+	Attribute getNearAttr(v2s16 p)
 	{
 		core::list<PointWithAttr>::Iterator
 				nearest_i = m_points.end();
@@ -1490,9 +1483,9 @@ public:
 		return nearest_i->attr;
 	}
 	
-	Attribute getNearAttr(v2s16 p)
+	Attribute getNearAttr(v3s16 p)
 	{
-		return getNearAttr(v3s16(p.X, 0, p.Y));
+		return getNearAttr(v2s16(p.X, p.Z));
 	}
 
 	bool empty()
@@ -1504,20 +1497,14 @@ public:
 		Take all points in range, or at least the nearest point,
 		and interpolate the values as floats
 	*/
-	float getInterpolatedFloat(v3s16 p);
+	float getInterpolatedFloat(v2s16 p);
 	
-	float getInterpolatedFloat(v2s16 p)
+	float getInterpolatedFloat(v3s16 p)
 	{
-		return getInterpolatedFloat(v3s16(p.X, 0, p.Y));
+		return getInterpolatedFloat(v2s16(p.X, p.Z));
 	}
 	
-	//float getInterpolatedFloat(v3s16 p, s32 range);
-	/*float getInterpolatedFloat(v2s16 p, s32 range)
-	{
-		return getInterpolatedFloat(v3s16(p.X, 0, p.Y), range);
-	}*/
-	
-	void addPoint(v3s16 p, const Attribute &attr)
+	void addPoint(v2s16 p, const Attribute &attr)
 	{
 		PointWithAttr pattr;
 		pattr.p = p;
@@ -1525,9 +1512,9 @@ public:
 		m_points.push_back(pattr);
 	}
 
-	void addPoint(v2s16 p, const Attribute &attr)
+	void addPoint(v3s16 p, const Attribute &attr)
 	{
-		addPoint(v3s16(p.X, 0, p.Y), attr);
+		addPoint(v2s16(p.X, p.Z), attr);
 	}
 
 private:
