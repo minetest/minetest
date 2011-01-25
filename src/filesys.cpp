@@ -19,6 +19,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "filesys.h"
 #include <iostream>
+#include <string.h>
 
 namespace fs
 {
@@ -130,12 +131,35 @@ bool PathExists(std::string path)
 	return (GetFileAttributes(path.c_str()) != INVALID_FILE_ATTRIBUTES);
 }
 
+bool RecursiveDelete(std::string path)
+{
+	std::cerr<<"Removing \""<<path<<"\""<<std::endl;
+
+	return false;
+	
+	// This silly function needs a double-null terminated string...
+	// Well, we'll just make sure it has at least two, then.
+	path += "\0\0";
+
+	SHFILEOPSTRUCT sfo;
+	sfo.hwnd = NULL;
+	sfo.wFunc = FO_DELETE;
+	sfo.pFrom = path.c_str();
+	sfo.pTo = NULL;
+	sfo.fFlags = FOF_SILENT | FOF_NOCONFIRMATION | FOF_NOCONFIRMMKDIR;
+	
+	int r = SHFileOperation(&sfo);
+
+	return (r == 0);
+}
+
 #else // POSIX
 
 #include <sys/types.h>
 #include <dirent.h>
 #include <errno.h>
 #include <sys/stat.h>
+#include <sys/wait.h>
 
 std::vector<DirListNode> GetDirListing(std::string pathstring)
 {
@@ -184,7 +208,70 @@ bool PathExists(std::string path)
 	return (stat(path.c_str(),&st) == 0);
 }
 
+bool RecursiveDelete(std::string path)
+{
+	/*
+		Execute the 'rm' command directly, by fork() and execve()
+	*/
+	
+	std::cerr<<"Removing \""<<path<<"\""<<std::endl;
+
+	//return false;
+	
+	pid_t child_pid = fork();
+
+	if(child_pid == 0)
+	{
+		// Child
+		char argv_data[3][10000];
+		strcpy(argv_data[0], "/bin/rm");
+		strcpy(argv_data[1], "-rf");
+		strncpy(argv_data[2], path.c_str(), 10000);
+		char *argv[4];
+		argv[0] = argv_data[0];
+		argv[1] = argv_data[1];
+		argv[2] = argv_data[2];
+		argv[3] = NULL;
+
+		std::cerr<<"Executing '"<<argv[0]<<"' '"<<argv[1]<<"' '"
+				<<argv[2]<<"'"<<std::endl;
+		
+		execv(argv[0], argv);
+		
+		// Execv shouldn't return. Failed.
+		return false;
+	}
+	else
+	{
+		// Parent
+		int child_status;
+		pid_t tpid;
+		do{
+			tpid = wait(&child_status);
+			//if(tpid != child_pid) process_terminated(tpid);
+		}while(tpid != child_pid);
+		return (child_status == 0);
+	}
+}
+
 #endif
+
+bool RecursiveDeleteContent(std::string path)
+{
+	std::cerr<<"Removing content of \""<<path<<"\""<<std::endl;
+	std::vector<DirListNode> list = GetDirListing(path);
+	for(unsigned int i=0; i<list.size(); i++)
+	{
+		std::string childpath = path+"/"+list[i].name;
+		bool r = RecursiveDelete(childpath);
+		if(r == false)
+		{
+			std::cerr<<"Removing \""<<childpath<<"\" failed"<<std::endl;
+			return false;
+		}
+	}
+	return true;
+}
 
 } // namespace fs
 

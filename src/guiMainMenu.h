@@ -29,11 +29,17 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 struct MainMenuData
 {
+	MainMenuData():
+		creative_mode(false),
+		delete_map(false)
+	{}
 	// These are in the native format of the gui elements
 	std::wstring address;
 	std::wstring port;
 	std::wstring name;
 	bool creative_mode;
+	// If map deletion is requested, this is set to true
+	bool delete_map;
 };
 
 class GUIMainMenu : public GUIModalMenu

@@ -40,6 +40,12 @@ bool CreateDir(std::string path);
 
 bool PathExists(std::string path);
 
+// Only pass full paths to this one. True on success.
+bool RecursiveDelete(std::string path);
+
+// Only pass full paths to this one. True on success.
+bool RecursiveDeleteContent(std::string path);
+
 }//fs
 
 #endif

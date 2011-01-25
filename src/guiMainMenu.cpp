@@ -177,6 +177,12 @@ void GUIMainMenu::regenerateGui(v2u32 screensize)
 		rect = rect + v2s32(size.X/2-180/2, size.Y/2-30/2 + 100);
 		Environment->addButton(rect, this, 257, L"Start Game / Connect");
 	}
+	// Map delete button
+	{
+		core::rect<s32> rect(0, 0, 130, 30);
+		rect = rect + v2s32(size.X/2-130/2+200, size.Y/2-30/2 + 100);
+		Environment->addButton(rect, this, 260, L"Delete map");
+	}
 }
 
 void GUIMainMenu::drawMenu()
@@ -252,8 +258,14 @@ bool GUIMainMenu::OnEvent(const SEvent& event)
 		{
 			switch(event.GUIEvent.Caller->getID())
 			{
-			case 257:
+			case 257: // Start game
 				acceptInput();
+				quitMenu();
+				break;
+			case 260: // Delete map
+				// Don't accept input data, just set deletion request
+				m_data->delete_map = true;
+				m_accepted = true;
 				quitMenu();
 				break;
 			}

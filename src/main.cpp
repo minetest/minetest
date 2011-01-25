@@ -153,8 +153,10 @@ TODO: Optimize day/night mesh updating somehow
 		   meshbuffers? It should go quite fast.
 		   - This is not easy; There'd need to be a buffer somewhere
 		     that would contain the night and day lighting values.
+			 - Actually if FastFaces would be stored, they could
+			   hold both values
 
-TODO: Combine MapBlock's face caches to so big pieces that VBO
+FEATURE: Combine MapBlock's face caches to so big pieces that VBO
       gets used
       - That is >500 vertices
 	  - This is not easy; all the MapBlocks close to the player would
@@ -180,6 +182,10 @@ TODO: Untie client network operations from framerate
 	  - Not really necessary?
 
 TODO: Make morning and evening shorter
+
+TODO: Don't update all meshes always on single node changes, but
+      check which ones should be updated
+	  - implement Map::updateNodeMeshes()
 
 Server:
 -------
@@ -260,9 +266,14 @@ FEATURE: The map could be generated procedually:
 		- How about relocating minerals, too? Coal and gold in
 		  downstream sand and gravel would be kind of cool
 		  - This would need a better way of handling minerals, mainly
-		    to have mineral content as a separate field
+		    to have mineral content as a separate field. the first
+			parameter field is free for this.
 		- Simulate rock falling from cliffs when water has removed
 		  enough solid rock from the bottom
+
+TODO: Mineral and ground material properties
+      - This way mineral ground toughness can be calculated with just
+	    some formula, as well as tool strengths
 
 TODO: Change AttributeList to split the area into smaller sections so
       that searching won't be as heavy.
@@ -308,6 +319,7 @@ Doing now:
 #pragma comment(lib, "Irrlicht.lib")
 //#pragma comment(lib, "jthread.lib")
 #pragma comment(lib, "zlibwapi.lib")
+#pragma comment(lib, "Shell32.lib")
 // This would get rid of the console window
 //#pragma comment(linker, "/subsystem:windows /ENTRY:mainCRTStartup")
 #endif
@@ -1270,9 +1282,12 @@ int main(int argc, char *argv[])
 	porting::initializePaths();
 	// Create user data directory
 	fs::CreateDir(porting::path_userdata);
-
+	
+	// C-style stuff initialization
 	initializeMaterialProperties();
+	init_mapnode();
 
+	// Debug handler
 	BEGIN_DEBUG_EXCEPTION_HANDLER
 
 	// Print startup message
@@ -1550,7 +1565,7 @@ int main(int argc, char *argv[])
 	*/
 
 	init_content_inventory_texture_paths();
-	init_tile_textures();
+	//init_tile_textures();
 
 	/*
 		GUI stuff
@@ -1608,10 +1623,10 @@ int main(int argc, char *argv[])
 	{
 	
 	/*
-		Out-of-game menu loop
+		Out-of-game menu loop.
+
+		Loop quits when menu returns proper parameters.
 	*/
-	
-	// Wait for proper parameters
 	for(;;)
 	{
 		// Cursor can be non-visible when coming from the game
@@ -1671,6 +1686,15 @@ int main(int argc, char *argv[])
 		dstream<<"Dropping main menu"<<std::endl;
 
 		menu->drop();
+		
+		// Delete map if requested
+		if(menudata.delete_map)
+		{
+			bool r = fs::RecursiveDeleteContent(map_dir);
+			if(r == false)
+				error_message = L"Delete failed";
+			continue;
+		}
 
 		playername = wide_to_narrow(menudata.name);
 		address = wide_to_narrow(menudata.address);
@@ -2386,8 +2410,20 @@ int main(int argc, char *argv[])
 
 			static float dig_time = 0.0;
 			static u16 dig_index = 0;
+			
+			// Visualize selection
 
-			hilightboxes.push_back(nodefacebox);
+			const float d = 0.502;
+			core::aabbox3d<f32> nodebox(-BS*d, -BS*d, -BS*d, BS*d, BS*d, BS*d);
+			v3f nodepos_f = intToFloat(nodepos);
+			//v3f nodepos_f(nodepos.X*BS, nodepos.Y*BS, nodepos.Z*BS);
+			nodebox.MinEdge += nodepos_f;
+			nodebox.MaxEdge += nodepos_f;
+			hilightboxes.push_back(nodebox);
+			
+			//hilightboxes.push_back(nodefacebox);
+
+			// Handle digging
 			
 			if(g_input->getLeftReleased())
 			{
@@ -2473,6 +2509,7 @@ int main(int argc, char *argv[])
 
 					if(dig_index < CRACK_ANIMATION_LENGTH)
 					{
+						//TimeTaker timer("client.setTempMod");
 						//dstream<<"dig_index="<<dig_index<<std::endl;
 						client.setTempMod(nodepos, NodeMod(NODEMOD_CRACK, dig_index));
 					}
