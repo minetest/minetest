@@ -122,12 +122,6 @@ public:
 #ifndef SERVER
 	video::ITexture * getImage()
 	{
-		/*if(m_content == CONTENT_TORCH)
-			return g_texturecache.get("torch_on_floor");
-
-		u16 tile = content_tile(m_content, v3s16(1,0,0));
-		return g_tile_contents[tile].getTexture(0);*/
-		
 		if(m_content >= USEFUL_CONTENT_COUNT)
 			return NULL;
 			
@@ -257,15 +251,18 @@ public:
 	video::ITexture * getImage()
 	{
 		std::string basename;
+
 		if(m_subname == "Stick")
-			basename = porting::getDataPath("stick.png").c_str();
-		// Default to cloud texture
+			basename = porting::getDataPath("stick.png");
+		else if(m_subname == "lump_of_coal")
+			basename = porting::getDataPath("lump_of_coal.png");
+		else if(m_subname == "lump_of_iron")
+			basename = porting::getDataPath("lump_of_iron.png");
 		else
-			basename = tile_texture_path_get(TILE_CLOUD);
+			basename = porting::getDataPath("cloud.png[[mod:crack3");
 		
 		// Get such a texture
 		return g_irrlicht->getTexture(basename);
-		//return g_irrlicht->getTexture(TextureSpec(finalname, basename, mod));
 	}
 #endif
 	std::string getText()
@@ -340,7 +337,8 @@ public:
 			basename = porting::getDataPath("tool_mesepick.png").c_str();
 		// Default to cloud texture
 		else
-			basename = tile_texture_path_get(TILE_CLOUD);
+			basename = porting::getDataPath("cloud.png").c_str();
+			//basename = tile_texture_path_get(TILE_CLOUD);
 		
 		/*
 			Calculate some progress value with sane amount of
@@ -350,6 +348,12 @@ public:
 		u32 toolprogress = (65535-m_wear)/(65535/maxprogress);
 		
 		// Make texture name for the new texture with a progress bar
+		float value_f = (float)toolprogress / (float)maxprogress;
+		std::ostringstream os;
+		os<<basename<<"[[mod:progressbar"<<value_f;
+		return g_irrlicht->getTexture(os.str());
+
+		/*// Make texture name for the new texture with a progress bar
 		std::ostringstream os;
 		os<<basename<<"-toolprogress-"<<toolprogress;
 		std::string finalname = os.str();
@@ -358,7 +362,7 @@ public:
 		
 		// Get such a texture
 		TextureMod *mod = new ProgressBarTextureMod(value_f);
-		return g_irrlicht->getTexture(TextureSpec(finalname, basename, mod));
+		return g_irrlicht->getTexture(TextureSpec(finalname, basename, mod));*/
 	}
 #endif
 	std::string getText()

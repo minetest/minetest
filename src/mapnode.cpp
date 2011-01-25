@@ -21,61 +21,197 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "tile.h"
 #include "porting.h"
 #include <string>
+#include "mineral.h"
 
-/*
-	Face directions:
-		0: up
-		1: down
-		2: right
-		3: left
-		4: back
-		5: front
-*/
-u16 g_content_tiles[USEFUL_CONTENT_COUNT][6] =
+ContentFeatures::~ContentFeatures()
 {
-	{TILE_STONE,TILE_STONE,TILE_STONE,TILE_STONE,TILE_STONE,TILE_STONE},
-	{TILE_GRASS,TILE_MUD,TILE_MUD_WITH_GRASS,TILE_MUD_WITH_GRASS,TILE_MUD_WITH_GRASS,TILE_MUD_WITH_GRASS},
-	//{TILE_WATER,TILE_WATER,TILE_WATER,TILE_WATER,TILE_WATER,TILE_WATER},
-	{TILE_NONE,TILE_NONE,TILE_NONE,TILE_NONE,TILE_NONE,TILE_NONE},
-	{TILE_NONE,TILE_NONE,TILE_NONE,TILE_NONE,TILE_NONE,TILE_NONE},
-	{TILE_TREE_TOP,TILE_TREE_TOP,TILE_TREE,TILE_TREE,TILE_TREE,TILE_TREE},
-	{TILE_LEAVES,TILE_LEAVES,TILE_LEAVES,TILE_LEAVES,TILE_LEAVES,TILE_LEAVES},
-	{TILE_GRASS_FOOTSTEPS,TILE_MUD,TILE_MUD_WITH_GRASS,TILE_MUD_WITH_GRASS,TILE_MUD_WITH_GRASS,TILE_MUD_WITH_GRASS},
-	{TILE_MESE,TILE_MESE,TILE_MESE,TILE_MESE,TILE_MESE,TILE_MESE},
-	{TILE_MUD,TILE_MUD,TILE_MUD,TILE_MUD,TILE_MUD,TILE_MUD},
-	{TILE_WATER,TILE_WATER,TILE_WATER,TILE_WATER,TILE_WATER,TILE_WATER}, // ocean
-	{TILE_CLOUD,TILE_CLOUD,TILE_CLOUD,TILE_CLOUD,TILE_CLOUD,TILE_CLOUD},
-	{TILE_COALSTONE,TILE_COALSTONE,TILE_COALSTONE,TILE_COALSTONE,TILE_COALSTONE,TILE_COALSTONE},
-	{TILE_WOOD,TILE_WOOD,TILE_WOOD,TILE_WOOD,TILE_WOOD,TILE_WOOD},
-};
+	if(translate_to)
+		delete translate_to;
+}
 
-std::string g_content_inventory_texture_strings[USEFUL_CONTENT_COUNT];
-// Pointers to c_str()s of the above
+struct ContentFeatures g_content_features[256];
+
+void init_mapnode()
+{
+	u8 i;
+	ContentFeatures *f = NULL;
+
+	i = CONTENT_STONE;
+	f = &g_content_features[i];
+	f->setAllTextures("stone.png");
+	f->param_type = CPT_MINERAL;
+	f->is_ground_content = true;
+	
+	i = CONTENT_GRASS;
+	f = &g_content_features[i];
+	//f->setAllTextures("mud.png[[mod:sidegrass");
+	f->setAllTextures("mud.png[[mod:blitname:grass_side.png");
+	f->setTexture(0, "grass.png");
+	f->setTexture(1, "mud.png");
+	f->setInventoryImage("grass.png");
+	f->param_type = CPT_MINERAL;
+	f->is_ground_content = true;
+	
+	i = CONTENT_GRASS_FOOTSTEPS;
+	f = &g_content_features[i];
+	//f->setAllTextures("mud.png[[mod:sidegrass");
+	f->setAllTextures("mud.png[[mod:blitname:grass_side.png");
+	f->setTexture(0, "grass_footsteps.png");
+	f->setTexture(1, "mud.png");
+	f->setInventoryImage("grass_footsteps.png");
+	f->param_type = CPT_MINERAL;
+	f->is_ground_content = true;
+	
+	i = CONTENT_MUD;
+	f = &g_content_features[i];
+	f->setAllTextures("mud.png");
+	f->param_type = CPT_MINERAL;
+	f->is_ground_content = true;
+	
+	i = CONTENT_SAND;
+	f = &g_content_features[i];
+	f->setAllTextures("mud.png");
+	f->param_type = CPT_MINERAL;
+	f->is_ground_content = true;
+	
+	i = CONTENT_TREE;
+	f = &g_content_features[i];
+	f->setAllTextures("tree.png");
+	f->param_type = CPT_MINERAL;
+	f->is_ground_content = true;
+	
+	i = CONTENT_LEAVES;
+	f = &g_content_features[i];
+	f->setAllTextures("leaves.png");
+	f->param_type = CPT_MINERAL;
+	f->is_ground_content = true;
+	
+	i = CONTENT_COALSTONE;
+	f = &g_content_features[i];
+	f->translate_to = new MapNode(CONTENT_STONE, MINERAL_COAL);
+	/*f->setAllTextures("coalstone.png");
+	f->is_ground_content = true;*/
+	
+	i = CONTENT_WOOD;
+	f = &g_content_features[i];
+	f->setAllTextures("wood.png");
+	f->is_ground_content = true;
+	
+	i = CONTENT_MESE;
+	f = &g_content_features[i];
+	f->setAllTextures("mese.png");
+	f->is_ground_content = true;
+	
+	i = CONTENT_CLOUD;
+	f = &g_content_features[i];
+	f->setAllTextures("cloud.png");
+	f->is_ground_content = true;
+	
+	i = CONTENT_AIR;
+	f = &g_content_features[i];
+	f->param_type = CPT_LIGHT;
+	f->light_propagates = true;
+	f->sunlight_propagates = true;
+	f->solidness = 0;
+	f->walkable = false;
+	f->pointable = false;
+	f->diggable = false;
+	f->buildable_to = true;
+	
+	i = CONTENT_WATER;
+	f = &g_content_features[i];
+	f->setInventoryImage("water.png");
+	f->param_type = CPT_LIGHT;
+	f->light_propagates = true;
+	f->solidness = 0; // Drawn separately, makes no faces
+	f->walkable = false;
+	f->pointable = false;
+	f->diggable = false;
+	f->buildable_to = true;
+	f->liquid_type = LIQUID_FLOWING;
+	
+	i = CONTENT_WATERSOURCE;
+	f = &g_content_features[i];
+	f->setTexture(0, "water.png", WATER_ALPHA);
+	f->setInventoryImage("water.png");
+	f->param_type = CPT_LIGHT;
+	f->light_propagates = true;
+	f->solidness = 1;
+	f->walkable = false;
+	f->pointable = false;
+	f->diggable = false;
+	f->buildable_to = true;
+	f->liquid_type = LIQUID_SOURCE;
+	
+	i = CONTENT_TORCH;
+	f = &g_content_features[i];
+	f->setInventoryImage("torch_on_floor.png");
+	f->param_type = CPT_LIGHT;
+	f->light_propagates = true;
+	f->solidness = 0; // drawn separately, makes no faces
+	f->walkable = false;
+	f->wall_mounted = true;
+	
+}
+
+TileSpec MapNode::getTile(v3s16 dir)
+{
+	TileSpec spec;
+	
+	s32 dir_i = -1;
+	
+	if(dir == v3s16(0,1,0))
+		dir_i = 0;
+	else if(dir == v3s16(0,-1,0))
+		dir_i = 1;
+	else if(dir == v3s16(1,0,0))
+		dir_i = 2;
+	else if(dir == v3s16(-1,0,0))
+		dir_i = 3;
+	else if(dir == v3s16(0,0,1))
+		dir_i = 4;
+	else if(dir == v3s16(0,0,-1))
+		dir_i = 5;
+	
+	if(dir_i == -1)
+		// Non-directional
+		spec = content_features(d).tiles[0];
+	else 
+		spec = content_features(d).tiles[dir_i];
+	
+	if(content_features(d).param_type == CPT_MINERAL)
+	{
+		u8 mineral = param & 0x1f;
+		const char *ts = mineral_block_texture(mineral);
+		if(ts[0] != 0)
+		{
+			spec.name += "[[mod:blitname:";
+			spec.name += ts;
+		}
+	}
+
+	return spec;
+}
+
+u8 MapNode::getMineral()
+{
+	if(content_features(d).param_type == CPT_MINERAL)
+	{
+		return param & 0x1f;
+	}
+
+	return MINERAL_NONE;
+}
+
+// Pointers to c_str()s g_content_features[i].inventory_image_path
 const char * g_content_inventory_texture_paths[USEFUL_CONTENT_COUNT] = {0};
-
-const char * g_content_inventory_texture_paths_base[USEFUL_CONTENT_COUNT] =
-{
-	"stone.png",
-	"grass.png",
-	"water.png",
-	"torch_on_floor.png",
-	"tree_top.png",
-	"leaves.png",
-	"grass_footsteps.png",
-	"mese.png",
-	"mud.png",
-	"water.png", //ocean
-	"cloud.png",
-	"coalstone.png",
-	"wood.png",
-};
 
 void init_content_inventory_texture_paths()
 {
 	for(u16 i=0; i<USEFUL_CONTENT_COUNT; i++)
 	{
-		g_content_inventory_texture_strings[i] = porting::getDataPath(g_content_inventory_texture_paths_base[i]);
-		g_content_inventory_texture_paths[i] = g_content_inventory_texture_strings[i].c_str();
+		g_content_inventory_texture_paths[i] =
+				g_content_features[i].inventory_image_path.c_str();
 	}
 }
 

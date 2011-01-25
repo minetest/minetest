@@ -264,12 +264,10 @@ void MapBlock::makeFastFace(TileSpec tile, u8 light, v3f p,
 	//u8 li = decode_light(light);
 	u8 li = light;
 
-	u8 alpha = 255;
-
+	u8 alpha = tile.alpha;
+	/*u8 alpha = 255;
 	if(tile.id == TILE_WATER)
-	{
-		alpha = WATER_ALPHA;
-	}
+		alpha = WATER_ALPHA;*/
 
 	video::SColor c = video::SColor(alpha,li,li,li);
 
@@ -297,17 +295,8 @@ void MapBlock::makeFastFace(TileSpec tile, u8 light, v3f p,
 TileSpec MapBlock::getNodeTile(MapNode mn, v3s16 p, v3s16 face_dir)
 {
 	TileSpec spec;
-
-	/*//DEBUG
-	{
-		spec.id = TILE_STONE;
-		return spec;
-	}*/
-
-	spec.feature = TILEFEAT_NONE;
-	//spec.id = TILE_STONE;
-	spec.id = mn.getTile(face_dir);
-
+	spec = mn.getTile(face_dir);
+	
 	/*
 		Check temporary modifications on this node
 	*/
@@ -320,12 +309,15 @@ TileSpec MapBlock::getNodeTile(MapNode mn, v3s16 p, v3s16 face_dir)
 		struct NodeMod mod = n->getValue();
 		if(mod.type == NODEMOD_CHANGECONTENT)
 		{
-			spec.id = content_tile(mod.param, face_dir);
+			//spec = content_tile(mod.param, face_dir);
+			MapNode mn2(mod.param);
+			spec = mn2.getTile(face_dir);
 		}
 		if(mod.type == NODEMOD_CRACK)
 		{
-			spec.feature = TILEFEAT_CRACK;
-			spec.param.crack.progression = mod.param;
+			std::ostringstream os;
+			os<<"[[mod:crack"<<mod.param;
+			spec.name += os.str();
 		}
 	}
 	
@@ -675,36 +667,19 @@ void MapBlock::updateMesh(u32 daynight_ratio)
 			FastFace &f = fastfaces_new[i];
 
 			const u16 indices[] = {0,1,2,2,3,0};
+
+			video::ITexture *texture = g_irrlicht->getTexture(f.tile.name);
+			video::SMaterial material;
+			material.Lighting = false;
+			material.BackfaceCulling = false;
+			material.setFlag(video::EMF_BILINEAR_FILTER, false);
+			material.setFlag(video::EMF_ANTI_ALIASING, video::EAAM_OFF);
+			material.setFlag(video::EMF_FOG_ENABLE, true);
+			material.setTexture(0, texture);
+			if(f.tile.alpha != 255)
+				material.MaterialType = video::EMT_TRANSPARENT_VERTEX_ALPHA;
 			
-			if(f.tile.feature == TILEFEAT_NONE)
-			{
-				collector.append(tile_material_get(f.tile.id), f.vertices, 4,
-						indices, 6);
-			}
-			else if(f.tile.feature == TILEFEAT_CRACK)
-			{
-				const char *path = tile_texture_path_get(f.tile.id);
-
-				u16 progression = f.tile.param.crack.progression;
-
-				std::string name = (std::string)path + "_cracked_"
-						+ (char)('0' + progression);
-
-				TextureMod *mod = new CrackTextureMod(progression);
-
-				video::ITexture *texture = g_irrlicht->getTexture(
-						TextureSpec(name, path, mod));
-
-				video::SMaterial material = tile_material_get(f.tile.id);
-				material.setTexture(0, texture);
-
-				collector.append(material, f.vertices, 4, indices, 6);
-			}
-			else
-			{
-				// No such feature
-				assert(0);
-			}
+			collector.append(material, f.vertices, 4, indices, 6);
 		}
 	}
 
@@ -1427,7 +1402,8 @@ s16 MapBlock::getGroundLevel(v2s16 p2d)
 		s16 y = MAP_BLOCKSIZE-1;
 		for(; y>=0; y--)
 		{
-			if(is_ground_content(getNodeRef(p2d.X, y, p2d.Y).d))
+			//if(is_ground_content(getNodeRef(p2d.X, y, p2d.Y).d))
+			if(content_features(getNodeRef(p2d.X, y, p2d.Y).d).walkable)
 			{
 				if(y == MAP_BLOCKSIZE-1)
 					return -2;

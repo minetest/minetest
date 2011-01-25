@@ -21,88 +21,36 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #define TILE_HEADER
 
 #include "common_irrlicht.h"
-#include "utility.h"
-
-// TileID is supposed to be stored in a u16
-
-enum TileID
-{
-	TILE_NONE, // Nothing shown
-	TILE_STONE,
-	TILE_WATER,
-	TILE_GRASS,
-	TILE_TREE,
-	TILE_LEAVES,
-	TILE_GRASS_FOOTSTEPS,
-	TILE_MESE,
-	TILE_MUD,
-	TILE_TREE_TOP,
-	TILE_MUD_WITH_GRASS,
-	TILE_CLOUD,
-	TILE_COALSTONE,
-	TILE_WOOD,
-	
-	// Count of tile ids
-	TILES_COUNT
-};
-
-enum TileSpecialFeature
-{
-	TILEFEAT_NONE,
-	TILEFEAT_CRACK,
-};
-
-struct TileCrackParam
-{
-	bool operator==(TileCrackParam &other)
-	{
-		return progression == other.progression;
-	}
-
-	u16 progression;
-};
+//#include "utility.h"
+#include <string>
 
 struct TileSpec
 {
-	TileSpec()
+	TileSpec():
+		alpha(255)
 	{
-		id = TILE_NONE;
-		feature = TILEFEAT_NONE;
+	}
+
+	TileSpec(const std::string &a_name):
+		name(a_name),
+		alpha(255)
+	{
+	}
+
+	TileSpec(const char *a_name):
+		name(a_name),
+		alpha(255)
+	{
 	}
 
 	bool operator==(TileSpec &other)
 	{
-		if(id != other.id)
-			return false;
-		if(feature != other.feature)
-			return false;
-		if(feature == TILEFEAT_NONE)
-			return true;
-		if(feature == TILEFEAT_CRACK)
-		{
-			return param.crack == other.param.crack;
-		}
-		// Invalid feature
-		assert(0);
-		return false;
+		return (name == other.name && alpha == other.alpha);
 	}
-
-	u16 id; // Id in g_tile_materials, TILE_NONE=none
-	enum TileSpecialFeature feature;
-	union
-	{
-		TileCrackParam crack;
-	} param;
+	
+	// path + mods
+	std::string name;
+	u8 alpha;
 };
-
-/*
-	Functions
-*/
-
-void init_tile_textures();
-
-const char * tile_texture_path_get(u32 i);
-
-video::SMaterial & tile_material_get(u32 i);
 
 #endif

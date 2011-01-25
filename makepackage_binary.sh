@@ -39,7 +39,6 @@ cp -r data/torch.png $PACKAGEPATH/data/
 cp -r data/torch_on_floor.png $PACKAGEPATH/data/
 cp -r data/torch_on_ceiling.png $PACKAGEPATH/data/
 cp -r data/tree_top.png $PACKAGEPATH/data/
-#cp -r data/mud_with_grass.png $PACKAGEPATH/data/
 cp -r data/coalstone.png $PACKAGEPATH/data/
 cp -r data/crack.png $PACKAGEPATH/data/
 cp -r data/wood.png $PACKAGEPATH/data/
@@ -48,6 +47,11 @@ cp -r data/tool_wpick.png $PACKAGEPATH/data/
 cp -r data/tool_stpick.png $PACKAGEPATH/data/
 cp -r data/tool_mesepick.png $PACKAGEPATH/data/
 cp -r data/grass_side.png $PACKAGEPATH/data/
+cp -r data/lump_of_coal.png $PACKAGEPATH/data/
+cp -r data/lump_of_iron.png $PACKAGEPATH/data/
+cp -r data/mineral_coal.png $PACKAGEPATH/data/
+cp -r data/mineral_iron.png $PACKAGEPATH/data/
+cp -r data/sand.png $PACKAGEPATH/data/
 
 #cp -r data/pauseMenu.gui $PACKAGEPATH/data/
 

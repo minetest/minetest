@@ -17,11 +17,44 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
-#include "tile.h"
-//#include "porting.h"
-// For IrrlichtWrapper
-//#include "main.h"
-//#include <string>
+#ifndef MINERAL_HEADER
+#define MINERAL_HEADER
 
-// Nothing here
+#include "inventory.h"
+
+/*
+	Minerals
+
+	Value is stored in the lowest 5 bits of a MapNode's CPT_MINERAL
+	type param.
+*/
+
+#define MINERAL_NONE 0
+#define MINERAL_COAL 1
+#define MINERAL_IRON 2
+
+inline const char * mineral_block_texture(u8 mineral)
+{
+	switch(mineral)
+	{
+	case MINERAL_COAL:
+		return "mineral_coal.png";
+	case MINERAL_IRON:
+		return "mineral_iron.png";
+	default:
+		return "";
+	}
+}
+
+inline CraftItem * getDiggedMineralItem(u8 mineral)
+{
+	if(mineral == MINERAL_COAL)
+		return new CraftItem("lump_of_coal", 1);
+	else if(mineral == MINERAL_IRON)
+		return new CraftItem("lump_of_iron", 1);
+
+	return NULL;
+}
+
+#endif
 

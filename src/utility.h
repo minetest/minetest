@@ -36,6 +36,9 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 extern const v3s16 g_26dirs[26];
 
+// 26th is (0,0,0)
+extern const v3s16 g_27dirs[27];
+
 inline void writeU32(u8 *data, u32 i)
 {
 	data[0] = ((i>>24)&0xff);
@@ -664,6 +667,14 @@ inline s32 stoi(const std::string &s, s32 min, s32 max)
 inline s32 stoi(std::string s)
 {
 	return atoi(s.c_str());
+}
+
+inline float stof(std::string s)
+{
+	float f;
+	std::istringstream ss(s);
+	ss>>f;
+	return f;
 }
 
 inline std::string itos(s32 i)

@@ -1273,6 +1273,7 @@ void Client::groundAction(u8 action, v3s16 nodepos_undersurface,
 		0: start digging
 		1: place block
 		2: stop digging (all parameters ignored)
+		3: digging completed
 	*/
 	u8 datasize = 2 + 1 + 6 + 6 + 2;
 	SharedBuffer<u8> data(datasize);

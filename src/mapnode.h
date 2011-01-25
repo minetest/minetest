@@ -28,6 +28,16 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "serialization.h"
 #include "tile.h"
 
+// Initializes all kind of stuff in here.
+// Doesn't depend on anything else.
+// Many things depend on this.
+void init_mapnode();
+
+// Initializes g_content_inventory_texture_paths
+void init_content_inventory_texture_paths();
+
+
+// NOTE: This is not used appropriately everywhere.
 #define MATERIALS_COUNT 256
 
 /*
@@ -69,33 +79,143 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #define CONTENT_MESE 7
 #define CONTENT_MUD 8
 #define CONTENT_WATERSOURCE 9
+// Pretty much useless, clouds won't be drawn this way
 #define CONTENT_CLOUD 10
 #define CONTENT_COALSTONE 11
 #define CONTENT_WOOD 12
-	
-#define USEFUL_CONTENT_COUNT 13
+#define CONTENT_SAND 13
 
-extern u16 g_content_tiles[USEFUL_CONTENT_COUNT][6];
+/*
+	This is used by all kinds of things to allocate memory for all
+	contents except CONTENT_AIR and CONTENT_IGNORE
+*/
+#define USEFUL_CONTENT_COUNT 14
+
+/*
+	Content feature list
+*/
+
+enum ContentParamType
+{
+	CPT_NONE,
+	CPT_LIGHT,
+	CPT_MINERAL
+};
+
+enum LiquidType
+{
+	LIQUID_NONE,
+	LIQUID_FLOWING,
+	LIQUID_SOURCE
+};
+
+class MapNode;
+
+struct ContentFeatures
+{
+	// If non-NULL, content is translated to this when deserialized
+	MapNode *translate_to;
+
+	// Type of MapNode::param
+	ContentParamType param_type;
+
+	/*
+		0: up
+		1: down
+		2: right
+		3: left
+		4: back
+		5: front
+	*/
+	TileSpec tiles[6];
+
+	std::string inventory_image_path;
+
+	bool is_ground_content; //TODO: Remove, use walkable instead
+	bool light_propagates;
+	bool sunlight_propagates;
+	u8 solidness; // Used when choosing which face is drawn
+	bool walkable;
+	bool pointable;
+	bool diggable;
+	bool buildable_to;
+	enum LiquidType liquid_type;
+	bool wall_mounted; // If true, param2 is set to direction when placed
+
+	//TODO: Move more properties here
+
+	ContentFeatures()
+	{
+		translate_to = NULL;
+		param_type = CPT_NONE;
+		is_ground_content = false;
+		light_propagates = false;
+		sunlight_propagates = false;
+		solidness = 2;
+		walkable = true;
+		pointable = true;
+		diggable = true;
+		buildable_to = false;
+		liquid_type = LIQUID_NONE;
+		wall_mounted = false;
+	}
+
+	~ContentFeatures();
+	
+	void setAllTextures(std::string imgname, u8 alpha=255)
+	{
+		for(u16 i=0; i<6; i++)
+		{
+			tiles[i].name = porting::getDataPath(imgname.c_str());
+			tiles[i].alpha = alpha;
+		}
+		
+		// Set this too so it can be left as is most times
+		if(inventory_image_path == "")
+			inventory_image_path = porting::getDataPath(imgname.c_str());
+	}
+	void setTexture(u16 i, std::string imgname, u8 alpha=255)
+	{
+		tiles[i].name = porting::getDataPath(imgname.c_str());
+		tiles[i].alpha = alpha;
+	}
+
+	void setInventoryImage(std::string imgname)
+	{
+		inventory_image_path = porting::getDataPath(imgname.c_str());
+	}
+};
+
+// Initialized by init_mapnode()
+extern struct ContentFeatures g_content_features[256];
+
+inline ContentFeatures & content_features(u8 i)
+{
+	return g_content_features[i];
+}
+
 extern const char * g_content_inventory_texture_paths[USEFUL_CONTENT_COUNT];
-// Initializes g_content_inventory_texture_paths
-void init_content_inventory_texture_paths();
 
 /*
 	If true, the material allows light propagation and brightness is stored
 	in param.
+	NOTE: Don't use, use "content_features(m).whatever" instead
 */
 inline bool light_propagates_content(u8 m)
 {
-	return (m == CONTENT_AIR || m == CONTENT_TORCH || m == CONTENT_WATER || m == CONTENT_WATERSOURCE);
+	return g_content_features[m].light_propagates;
+	//return (m == CONTENT_AIR || m == CONTENT_TORCH || m == CONTENT_WATER || m == CONTENT_WATERSOURCE);
 }
 
 /*
 	If true, the material allows lossless sunlight propagation.
 	NOTE: It doesn't seem to go through torches regardlessly of this
+	NOTE: Don't use, use "content_features(m).whatever" instead
 */
 inline bool sunlight_propagates_content(u8 m)
 {
-	return (m == CONTENT_AIR || m == CONTENT_TORCH);
+	return g_content_features[m].sunlight_propagates;
+	//return (m == CONTENT_AIR || m == CONTENT_TORCH);
 }
 
 /*
@@ -104,36 +224,46 @@ inline bool sunlight_propagates_content(u8 m)
 	0: Invisible
 	1: Transparent
 	2: Opaque
+	NOTE: Don't use, use "content_features(m).whatever" instead
 */
 inline u8 content_solidness(u8 m)
 {
-	// As of now, every pseudo node like torches are added to this
+	return g_content_features[m].solidness;
+	/*// As of now, every pseudo node like torches are added to this
 	if(m == CONTENT_AIR || m == CONTENT_TORCH || m == CONTENT_WATER)
 		return 0;
 	if(m == CONTENT_WATER || m == CONTENT_WATERSOURCE)
 		return 1;
-	return 2;
+	return 2;*/
 }
 
 // Objects collide with walkable contents
+// NOTE: Don't use, use "content_features(m).whatever" instead
 inline bool content_walkable(u8 m)
 {
-	return (m != CONTENT_AIR && m != CONTENT_WATER && m != CONTENT_WATERSOURCE && m != CONTENT_TORCH);
+	return g_content_features[m].walkable;
+	//return (m != CONTENT_AIR && m != CONTENT_WATER && m != CONTENT_WATERSOURCE && m != CONTENT_TORCH);
 }
 
+// NOTE: Don't use, use "content_features(m).whatever" instead
 inline bool content_liquid(u8 m)
 {
-	return (m == CONTENT_WATER || m == CONTENT_WATERSOURCE);
+	return g_content_features[m].liquid_type != LIQUID_NONE;
+	//return (m == CONTENT_WATER || m == CONTENT_WATERSOURCE);
 }
 
+// NOTE: Don't use, use "content_features(m).whatever" instead
 inline bool content_flowing_liquid(u8 m)
 {
-	return (m == CONTENT_WATER);
+	return g_content_features[m].liquid_type == LIQUID_FLOWING;
+	//return (m == CONTENT_WATER);
 }
 
+// NOTE: Don't use, use "content_features(m).whatever" instead
 inline bool content_liquid_source(u8 m)
 {
-	return (m == CONTENT_WATERSOURCE);
+	return g_content_features[m].liquid_type == LIQUID_SOURCE;
+	//return (m == CONTENT_WATERSOURCE);
 }
 
 // CONTENT_WATER || CONTENT_WATERSOURCE -> CONTENT_WATER
@@ -146,57 +276,35 @@ inline u8 make_liquid_flowing(u8 m)
 }
 
 // Pointable contents can be pointed to in the map
+// NOTE: Don't use, use "content_features(m).whatever" instead
 inline bool content_pointable(u8 m)
 {
-	return (m != CONTENT_AIR && m != CONTENT_WATER && m != CONTENT_WATERSOURCE);
+	return g_content_features[m].pointable;
+	//return (m != CONTENT_AIR && m != CONTENT_WATER && m != CONTENT_WATERSOURCE);
 }
 
+// NOTE: Don't use, use "content_features(m).whatever" instead
 inline bool content_diggable(u8 m)
 {
-	return (m != CONTENT_AIR && m != CONTENT_WATER && m != CONTENT_WATERSOURCE);
+	return g_content_features[m].diggable;
+	//return (m != CONTENT_AIR && m != CONTENT_WATER && m != CONTENT_WATERSOURCE);
 }
 
+// NOTE: Don't use, use "content_features(m).whatever" instead
 inline bool content_buildable_to(u8 m)
 {
-	return (m == CONTENT_AIR || m == CONTENT_WATER || m == CONTENT_WATERSOURCE);
+	return g_content_features[m].buildable_to;
+	//return (m == CONTENT_AIR || m == CONTENT_WATER || m == CONTENT_WATERSOURCE);
 }
 
 /*
 	Returns true for contents that form the base ground that
 	follows the main heightmap
 */
-inline bool is_ground_content(u8 m)
+/*inline bool is_ground_content(u8 m)
 {
-	return (
-		m != CONTENT_IGNORE
-		&& m != CONTENT_AIR
-		&& m != CONTENT_WATER
-		&& m != CONTENT_TORCH
-		&& m != CONTENT_TREE
-		&& m != CONTENT_LEAVES
-		&& m != CONTENT_WATERSOURCE
-		&& m != CONTENT_CLOUD
-	);
-}
-
-inline bool is_mineral(u8 c)
-{
-	return(c == CONTENT_MESE
-		|| c == CONTENT_COALSTONE);
-}
-
-inline bool liquid_replaces_content(u8 c)
-{
-	return (c == CONTENT_AIR || c == CONTENT_TORCH);
-}
-
-/*
-	When placing a node, drection info is added to it if this is true
-*/
-inline bool content_directional(u8 c)
-{
-	return (c == CONTENT_TORCH);
-}
+	return g_content_features[m].is_ground_content;
+}*/
 
 /*
 	Nodes make a face if contents differ and solidness differs.
@@ -275,87 +383,15 @@ inline v3s16 unpackDir(u8 b)
 	return d;
 }
 
-inline u16 content_tile(u8 c, v3s16 dir)
-{
-	if(c == CONTENT_IGNORE || c == CONTENT_AIR
-			|| c >= USEFUL_CONTENT_COUNT)
-		return TILE_NONE;
-
-	s32 dir_i = -1;
-	
-	if(dir == v3s16(0,1,0))
-		dir_i = 0;
-	else if(dir == v3s16(0,-1,0))
-		dir_i = 1;
-	else if(dir == v3s16(1,0,0))
-		dir_i = 2;
-	else if(dir == v3s16(-1,0,0))
-		dir_i = 3;
-	else if(dir == v3s16(0,0,1))
-		dir_i = 4;
-	else if(dir == v3s16(0,0,-1))
-		dir_i = 5;
-	
-	/*if(dir_i == -1)
-		return TILE_NONE;*/
-	assert(dir_i != -1);
-
-	return g_content_tiles[c][dir_i];
-}
-
 enum LightBank
 {
 	LIGHTBANK_DAY,
 	LIGHTBANK_NIGHT
 };
 
-#if 0
-#define DIR_PX 1 //X+
-#define DIR_NX 2 //X-
-#define DIR_PZ 4 //Z+
-#define DIR_NZ 8 //Z-
-#define DIR_PY 16 //Y+
-#define DIR_NY 32 //Y-
-
-inline void decode_dirs(u8 b, core::list<v3s16> &dirs)
-{
-	if(b & DIR_PX)
-		dirs.push_back(v3s16(1,0,0));
-	if(b & DIR_NX)
-		dirs.push_back(v3s16(-1,0,0));
-	if(b & DIR_PZ)
-		dirs.push_back(v3s16(0,0,1));
-	if(b & DIR_NZ)
-		dirs.push_back(v3s16(0,0,-1));
-	if(b & DIR_PY)
-		dirs.push_back(v3s16(0,1,0));
-	if(b & DIR_NY)
-		dirs.push_back(v3s16(0,-1,0));
-}
-
-inline u8 encode_dirs(core::list<v3s16> &dirs)
-{
-	u8 b = 0;
-	for(core::list<v3s16>::Iterator
-			i = dirs.begin();
-			i != dirs.end(); i++)
-	{
-		if(*i == v3s16(1,0,0))
-			b += DIR_PX;
-		else if(*i == v3s16(-1,0,0))
-			b += DIR_NX;
-		else if(*i == v3s16(0,0,1))
-			b += DIR_PZ;
-		else if(*i == v3s16(0,0,-1))
-			b += DIR_NZ;
-		else if(*i == v3s16(0,1,0))
-			b += DIR_PY;
-		else if(*i == v3s16(0,-1,0))
-			b += DIR_NY;
-	}
-	return b;
-}
-#endif
+/*
+	This is the stuff what the whole world consists of.
+*/
 
 struct MapNode
 {
@@ -511,11 +547,11 @@ struct MapNode
 		else
 			assert(0);
 	}
+	
+	// In mapnode.cpp
+	TileSpec getTile(v3s16 dir);
 
-	u16 getTile(v3s16 dir)
-	{
-		return content_tile(d, dir);
-	}
+	u8 getMineral();
 
 	/*
 		These serialization functions are used when informing client
@@ -584,6 +620,15 @@ struct MapNode
 			param = source[1];
 			param2 = source[2];
 		}
+
+		// Translate deprecated stuff
+		MapNode *translate_to = g_content_features[d].translate_to;
+		if(translate_to)
+		{
+			dstream<<"MapNode: WARNING: Translating "<<d<<" to "
+					<<translate_to->d<<std::endl;
+			*this = *translate_to;
+		}
 	}
 };
 
@@ -600,6 +645,9 @@ inline v3s16 floatToInt(v3f p)
 	return p2;
 }
 
+/*
+	The same thing backwards
+*/
 inline v3f intToFloat(v3s16 p)
 {
 	v3f p2(

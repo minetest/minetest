@@ -31,6 +31,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "constants.h"
 #include "voxel.h"
 #include "materials.h"
+#include "mineral.h"
 
 #define BLOCK_EMERGE_FLAG_FROMDISK (1<<0)
 
@@ -1951,11 +1952,13 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 			core::map<v3s16, MapBlock*> modified_blocks;
 
 			u8 material;
+			u8 mineral = MINERAL_NONE;
 
 			try
 			{
+				MapNode n = m_env.getMap().getNode(p_under);
 				// Get material at position
-				material = m_env.getMap().getNode(p_under).d;
+				material = n.d;
 				// If it's not diggable, do nothing
 				if(content_diggable(material) == false)
 				{
@@ -1963,6 +1966,8 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 							<<std::endl;
 					return;
 				}
+				// Get mineral
+				mineral = n.getMineral();
 			}
 			catch(InvalidPositionException &e)
 			{
@@ -1973,8 +1978,6 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 						getNodeBlockPos(p_over), BLOCK_EMERGE_FLAG_FROMDISK);
 				return;
 			}
-			
-			//TODO: Send to only other clients
 			
 			/*
 				Send the removal to all other clients
@@ -2047,7 +2050,15 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 				/*
 					Add digged item to inventory
 				*/
-				InventoryItem *item = new MaterialItem(material, 1);
+
+				InventoryItem *item = NULL;
+
+				if(mineral != MINERAL_NONE)
+					item = getDiggedMineralItem(mineral);
+
+				if(item == NULL)
+					item = new MaterialItem(material, 1);
+
 				player->inventory.addItem("main", item);
 
 				/*
@@ -2134,7 +2145,7 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 				MaterialItem *mitem = (MaterialItem*)item;
 				MapNode n;
 				n.d = mitem->getMaterial();
-				if(content_directional(n.d))
+				if(content_features(n.d).wall_mounted)
 					n.dir = packDir(p_under - p_over);
 
 #if 1
@@ -2939,7 +2950,7 @@ void Server::SendInventory(u16 peer_id)
 			if(!found)
 			{
 				ItemSpec specs[9];
-				specs[0] = ItemSpec(ITEM_MATERIAL, CONTENT_COALSTONE);
+				specs[0] = ItemSpec(ITEM_CRAFT, "Coal");
 				specs[3] = ItemSpec(ITEM_CRAFT, "Stick");
 				if(checkItemCombination(items, specs))
 				{
@@ -3300,6 +3311,11 @@ Player *Server::emergePlayer(const char *name, const char *password,
 		}
 		else
 		{
+			{
+				InventoryItem *item = new ToolItem("WPick", 32000);
+				void* r = player->inventory.addItem("main", item);
+				assert(r == NULL);
+			}
 			/*{
 				InventoryItem *item = new MaterialItem(CONTENT_MESE, 6);
 				void* r = player->inventory.addItem("main", item);

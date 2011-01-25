@@ -56,7 +56,7 @@ public:
 		m_textures[name] = texture;
 	}
 	
-	video::ITexture* get(std::string name)
+	video::ITexture* get(const std::string &name)
 	{
 		JMutexAutoLock lock(m_mutex);
 
@@ -72,86 +72,6 @@ public:
 private:
 	core::map<std::string, video::ITexture*> m_textures;
 	JMutex m_mutex;
-};
-
-struct TextureMod
-{
-	/*
-		Returns a new texture which can be based on the original.
-		Shall not modify or delete the original texture.
-	*/
-	virtual video::ITexture * make(video::ITexture *original,
-			const char *newname, video::IVideoDriver* driver) = 0;
-};
-
-struct CrackTextureMod: public TextureMod
-{
-	CrackTextureMod(u16 a_progression)
-	{
-		progression = a_progression;
-	}
-	
-	virtual video::ITexture * make(video::ITexture *original,
-			const char *newname, video::IVideoDriver* driver);
-	
-	u16 progression;
-};
-
-struct SideGrassTextureMod: public TextureMod
-{
-	SideGrassTextureMod()
-	{
-	}
-	
-	virtual video::ITexture * make(video::ITexture *original,
-			const char *newname, video::IVideoDriver* driver);
-};
-
-struct ProgressBarTextureMod: public TextureMod
-{
-	// value is from 0.0 to 1.0
-	ProgressBarTextureMod(float a_value)
-	{
-		value = a_value;
-	}
-	
-	virtual video::ITexture * make(video::ITexture *original,
-			const char *newname, video::IVideoDriver* driver);
-	
-	float value;
-};
-
-/*
-	A class for specifying a requested texture
-*/
-struct TextureSpec
-{
-	TextureSpec()
-	{
-		mod = NULL;
-	}
-	TextureSpec(const std::string &a_name, const std::string &a_path,
-			TextureMod *a_mod)
-	{
-		name = a_name;
-		path = a_path;
-		mod = a_mod;;
-	}
-	~TextureSpec()
-	{
-	}
-	bool operator==(const TextureSpec &other)
-	{
-		return name == other.name;
-	}
-	// An unique name for the texture. Usually the same as the path.
-	// Note that names and paths reside the same namespace.
-	std::string name;
-	// This is the path of the base texture
-	std::string path;
-	// Modification to do to the base texture
-	// NOTE: This is deleted by the one who processes the request
-	TextureMod *mod;
 };
 
 /*
@@ -183,14 +103,17 @@ public:
 		return m_device->getTimer()->getRealTime();
 	}
 	
-	video::ITexture* getTexture(TextureSpec spec);
-	video::ITexture* getTexture(const std::string &path);
-
+    /*
+		Path can contain stuff like
+		"/usr/share/minetest/stone.png[[mod:mineral0[[mod:crack3"
+	*/
+	video::ITexture* getTexture(const std::string &spec);
+	
 private:
 	/*
 		Non-thread-safe variants of stuff, for internal use
 	*/
-	video::ITexture* getTextureDirect(TextureSpec spec);
+	video::ITexture* getTextureDirect(const std::string &spec);
 	
 	/*
 		Members
@@ -203,7 +126,7 @@ private:
 
 	TextureCache m_texturecache;
 	
-	RequestQueue<TextureSpec, video::ITexture*, u8, u8> m_get_texture_queue;
+	RequestQueue<std::string, video::ITexture*, u8, u8> m_get_texture_queue;
 };
 
 #endif

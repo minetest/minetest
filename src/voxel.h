@@ -411,62 +411,6 @@ public:
 	void spreadLight(enum LightBank bank,
 			core::map<v3s16, bool> & from_nodes);
 	
-#if 0
-	// VOXELFLAG_CHECKED2s must usually be cleared before calling
-	// -1: dead end, 0-255: pressure
-	// highest_y: Highest found water y is stored here.
-	//            Must be initialized to -32768
-	int getWaterPressure(v3s16 p, s16 &highest_y, int recur_count);
-
-	/*
-		VOXELFLAG_CHECKED3s must usually be cleared before calling.
-
-		active_nodes: surface-touching air nodes with flow-causing
-		pressure. set-like dummy map container.
-
-		Spreads pressure pr at node p to request_area or as far as
-		there is invalid pressure.
-	*/
-	void spreadWaterPressure(v3s16 p, int pr,
-			VoxelArea request_area,
-			core::map<v3s16, u8> &active_nodes,
-			int recur_count);
-	
-	/*
-		VOXELFLAG_CHECKED3s must usually be cleared before calling.
-	*/
-	void updateAreaWaterPressure(VoxelArea a,
-			core::map<v3s16, u8> &active_nodes,
-			bool checked3_is_clear=false);
-	
-	/*
-		Returns true if moved something
-	*/
-	bool flowWater(v3s16 removed_pos,
-			core::map<v3s16, u8> &active_nodes,
-			int recursion_depth=0,
-			bool debugprint=false,
-			u32 stoptime=0
-	);
-
-	/*
-		To flow some water, call this with the target node in
-		active_nodes
-		TODO: Make the active_nodes map to contain some vectors
-		      that are properly sorted according to water flow order.
-			  The current order makes water flow strangely if the
-			  first one is always taken.
-			  No, active_nodes should preserve the order stuff is
-			  added to it, in addition to adhering the water flow
-			  order.
-	*/
-	void flowWater(core::map<v3s16, u8> &active_nodes,
-			int recursion_depth=0,
-			bool debugprint=false,
-			u32 timelimit=50
-	);
-#endif
-
 	/*
 		Virtual functions
 	*/

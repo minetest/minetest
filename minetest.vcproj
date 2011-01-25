@@ -137,7 +137,7 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalLibraryDirectories="&quot;C:\Program Files\Microsoft Platform SDK for Windows Server 2003 R2\Lib&quot;;&quot;..\irrlicht\irrlicht-1.7.1\lib\Win32-visualstudio&quot;;..\zlib125dll\dll32"
-				IgnoreDefaultLibraryNames="libcmtd.lib"
+				IgnoreDefaultLibraryNames="libcmtd.dll"
 				GenerateDebugInformation="false"
 				LinkTimeCodeGeneration="1"
 			/>

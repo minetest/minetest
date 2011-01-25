@@ -204,10 +204,13 @@ public:
 	void expireMeshes(bool only_daynight_diffed);
 	
 	/*
-		Updates the faces of the given block and blocks on the
+		Update the faces of the given block and blocks on the
 		leading edge.
 	*/
 	void updateMeshes(v3s16 blockpos, u32 daynight_ratio);
+	
+	// Update meshes that touch the node
+	//void updateNodeMeshes(v3s16 nodepos, u32 daynight_ratio);
 #endif
 
 	/*
@@ -483,10 +486,16 @@ public:
 	/*
 		Methods for setting temporary modifications to nodes for
 		drawing.
-		Return value is position of changed block.
+
+		Returns true if something changed.
+		
+		All blocks whose mesh could have been changed are inserted
+		to affected_blocks.
 	*/
-	v3s16 setTempMod(v3s16 p, NodeMod mod, bool *changed=NULL);
-	v3s16 clearTempMod(v3s16 p, bool *changed=NULL);
+	bool setTempMod(v3s16 p, NodeMod mod,
+			core::map<v3s16, MapBlock*> *affected_blocks=NULL);
+	bool clearTempMod(v3s16 p,
+			core::map<v3s16, MapBlock*> *affected_blocks=NULL);
 	// Efficient implementation needs a cache of TempMods
 	//void clearTempMods();
 

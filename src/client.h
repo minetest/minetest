@@ -201,6 +201,40 @@ public:
 	{
 		JMutexAutoLock envlock(m_env_mutex);
 		assert(m_env.getMap().mapType() == MAPTYPE_CLIENT);
+
+		core::map<v3s16, MapBlock*> affected_blocks;
+		((ClientMap&)m_env.getMap()).setTempMod(p, mod,
+				&affected_blocks);
+
+		for(core::map<v3s16, MapBlock*>::Iterator
+				i = affected_blocks.getIterator();
+				i.atEnd() == false; i++)
+		{
+			i.getNode()->getValue()->updateMesh(m_env.getDayNightRatio());
+		}
+	}
+	void clearTempMod(v3s16 p)
+	{
+		JMutexAutoLock envlock(m_env_mutex);
+		assert(m_env.getMap().mapType() == MAPTYPE_CLIENT);
+
+		core::map<v3s16, MapBlock*> affected_blocks;
+		((ClientMap&)m_env.getMap()).clearTempMod(p,
+				&affected_blocks);
+
+		for(core::map<v3s16, MapBlock*>::Iterator
+				i = affected_blocks.getIterator();
+				i.atEnd() == false; i++)
+		{
+			i.getNode()->getValue()->updateMesh(m_env.getDayNightRatio());
+		}
+	}
+
+#if 0
+	void setTempMod(v3s16 p, NodeMod mod)
+	{
+		JMutexAutoLock envlock(m_env_mutex);
+		assert(m_env.getMap().mapType() == MAPTYPE_CLIENT);
 		bool changed = false;
 		v3s16 blockpos = ((ClientMap&)m_env.getMap()).setTempMod(p, mod, &changed);
 		if(changed)
@@ -215,6 +249,7 @@ public:
 		if(changed)
 			m_env.getMap().updateMeshes(blockpos, m_env.getDayNightRatio());
 	}
+#endif
 
 	float getAvgRtt()
 	{

@@ -25,6 +25,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "utility.h"
 #include "voxel.h"
 #include "porting.h"
+#include "mineral.h"
 
 /*
 	Map
@@ -627,9 +628,8 @@ void Map::updateLighting(enum LightBank bank,
 	//TimeTaker timer("updateLighting");
 	
 	// For debugging
-	bool debug=true;
-
-	u32 count_was = modified_blocks.size();
+	//bool debug=true;
+	//u32 count_was = modified_blocks.size();
 
 	core::map<v3s16, bool> light_sources;
 	
@@ -1835,9 +1835,18 @@ ServerMap::ServerMap(std::string savedir, HMParams hmp, MapParams mp):
 				randfactor = 0.5;
 			}*/
 			
-			baseheight = 0;
-			randmax = 15;
-			randfactor = 0.63;
+			if(myrand()%3 < 2)
+			{
+				baseheight = 10;
+				randmax = 30;
+				randfactor = 0.7;
+			}
+			else
+			{
+				baseheight = 0;
+				randmax = 15;
+				randfactor = 0.63;
+			}
 
 			list_baseheight->addPoint(p, Attribute(baseheight));
 			list_randmax->addPoint(p, Attribute(randmax));
@@ -2699,7 +2708,7 @@ continue_generating:
 					+ued*(y0*ued/MAP_BLOCKSIZE)
 					+(x0*ued/MAP_BLOCKSIZE)])
 			{
-				if(is_ground_content(n.d))
+				if(content_features(n.d).walkable/*is_ground_content(n.d)*/)
 				{
 					// Has now caves
 					has_dungeons = true;
@@ -2755,17 +2764,11 @@ continue_generating:
 				MapNode n;
 				n.d = CONTENT_MESE;
 				
-				//if(is_ground_content(block->getNode(cp).d))
-				if(block->getNode(cp).d == CONTENT_STONE)
-					if(myrand()%8 == 0)
-						block->setNode(cp, n);
-
-				for(u16 i=0; i<26; i++)
+				for(u16 i=0; i<27; i++)
 				{
-					//if(is_ground_content(block->getNode(cp+g_26dirs[i]).d))
-					if(block->getNode(cp+g_26dirs[i]).d == CONTENT_STONE)
+					if(block->getNode(cp+g_27dirs[i]).d == CONTENT_STONE)
 						if(myrand()%8 == 0)
-							block->setNode(cp+g_26dirs[i], n);
+							block->setNode(cp+g_27dirs[i], n);
 				}
 			}
 		}
@@ -2790,21 +2793,47 @@ continue_generating:
 				);
 
 				MapNode n;
-				n.d = CONTENT_COALSTONE;
+				n.d = CONTENT_STONE;
+				n.param = MINERAL_COAL;
 
-				//dstream<<"Adding coalstone"<<std::endl;
-				
-				//if(is_ground_content(block->getNode(cp).d))
-				if(block->getNode(cp).d == CONTENT_STONE)
-					if(myrand()%8 == 0)
-						block->setNode(cp, n);
-
-				for(u16 i=0; i<26; i++)
+				for(u16 i=0; i<27; i++)
 				{
-					//if(is_ground_content(block->getNode(cp+g_26dirs[i]).d))
-					if(block->getNode(cp+g_26dirs[i]).d == CONTENT_STONE)
+					if(block->getNode(cp+g_27dirs[i]).d == CONTENT_STONE)
 						if(myrand()%8 == 0)
-							block->setNode(cp+g_26dirs[i], n);
+							block->setNode(cp+g_27dirs[i], n);
+				}
+			}
+		}
+
+		/*
+			Add iron
+		*/
+		//TODO: change to iron_amount or whatever
+		u16 iron_amount = 30.0 * g_settings.getFloat("coal_amount");
+		u16 iron_rareness = 60 / iron_amount;
+		if(iron_rareness == 0)
+			iron_rareness = 1;
+		if(myrand()%iron_rareness == 0)
+		{
+			u16 a = myrand() % 16;
+			u16 amount = iron_amount * a*a*a / 1000;
+			for(s16 i=0; i<amount; i++)
+			{
+				v3s16 cp(
+					(myrand()%(MAP_BLOCKSIZE-2))+1,
+					(myrand()%(MAP_BLOCKSIZE-2))+1,
+					(myrand()%(MAP_BLOCKSIZE-2))+1
+				);
+
+				MapNode n;
+				n.d = CONTENT_STONE;
+				n.param = MINERAL_IRON;
+
+				for(u16 i=0; i<27; i++)
+				{
+					if(block->getNode(cp+g_27dirs[i]).d == CONTENT_STONE)
+						if(myrand()%8 == 0)
+							block->setNode(cp+g_27dirs[i], n);
 				}
 			}
 		}
@@ -3012,26 +3041,23 @@ continue_generating:
 								<<std::endl;*/
 						{
 							v3s16 p2 = p + v3s16(x,y,z-2);
-							if(is_ground_content(sector->getNode(p2).d)
-									&& !is_mineral(sector->getNode(p2).d))
+							//if(is_ground_content(sector->getNode(p2).d))
+							if(content_features(sector->getNode(p2).d).walkable)
 								sector->setNode(p2, n);
 						}
 						{
 							v3s16 p2 = p + v3s16(x,y,z-1);
-							if(is_ground_content(sector->getNode(p2).d)
-									&& !is_mineral(sector->getNode(p2).d))
+							if(content_features(sector->getNode(p2).d).walkable)
 								sector->setNode(p2, n2);
 						}
 						{
 							v3s16 p2 = p + v3s16(x,y,z+0);
-							if(is_ground_content(sector->getNode(p2).d)
-									&& !is_mineral(sector->getNode(p2).d))
+							if(content_features(sector->getNode(p2).d).walkable)
 								sector->setNode(p2, n2);
 						}
 						{
 							v3s16 p2 = p + v3s16(x,y,z+1);
-							if(is_ground_content(sector->getNode(p2).d)
-									&& !is_mineral(sector->getNode(p2).d))
+							if(content_features(sector->getNode(p2).d).walkable)
 								sector->setNode(p2, n);
 						}
 
@@ -4027,8 +4053,10 @@ void ClientMap::renderMap(video::IVideoDriver* driver, s32 pass)
 			<<", rendered "<<vertex_count<<" vertices."<<std::endl;*/
 }
 
-v3s16 ClientMap::setTempMod(v3s16 p, NodeMod mod, bool *changed)
+bool ClientMap::setTempMod(v3s16 p, NodeMod mod,
+		core::map<v3s16, MapBlock*> *affected_blocks)
 {
+	bool changed = false;
 	/*
 		Add it to all blocks touching it
 	*/
@@ -4053,14 +4081,29 @@ v3s16 ClientMap::setTempMod(v3s16 p, NodeMod mod, bool *changed)
 		v3s16 relpos = p - blockpos*MAP_BLOCKSIZE;
 		if(blockref->setTempMod(relpos, mod))
 		{
-			if(changed != NULL)
-				*changed = true;
+			changed = true;
 		}
 	}
-	return getNodeBlockPos(p);
+	if(changed && affected_blocks!=NULL)
+	{
+		for(u16 i=0; i<7; i++)
+		{
+			v3s16 p2 = p + dirs[i];
+			// Block position of neighbor (or requested) node
+			v3s16 blockpos = getNodeBlockPos(p2);
+			MapBlock * blockref = getBlockNoCreateNoEx(blockpos);
+			if(blockref == NULL)
+				continue;
+			affected_blocks->insert(blockpos, blockref);
+		}
+	}
+	return changed;
 }
-v3s16 ClientMap::clearTempMod(v3s16 p, bool *changed)
+
+bool ClientMap::clearTempMod(v3s16 p,
+		core::map<v3s16, MapBlock*> *affected_blocks)
 {
+	bool changed = false;
 	v3s16 dirs[7] = {
 		v3s16(0,0,0), // this
 		v3s16(0,0,1), // back
@@ -4082,11 +4125,23 @@ v3s16 ClientMap::clearTempMod(v3s16 p, bool *changed)
 		v3s16 relpos = p - blockpos*MAP_BLOCKSIZE;
 		if(blockref->clearTempMod(relpos))
 		{
-			if(changed != NULL)
-				*changed = true;
+			changed = true;
 		}
 	}
-	return getNodeBlockPos(p);
+	if(changed && affected_blocks!=NULL)
+	{
+		for(u16 i=0; i<7; i++)
+		{
+			v3s16 p2 = p + dirs[i];
+			// Block position of neighbor (or requested) node
+			v3s16 blockpos = getNodeBlockPos(p2);
+			MapBlock * blockref = getBlockNoCreateNoEx(blockpos);
+			if(blockref == NULL)
+				continue;
+			affected_blocks->insert(blockpos, blockref);
+		}
+	}
+	return changed;
 }
 
 void ClientMap::PrintInfo(std::ostream &out)
@@ -4216,7 +4271,7 @@ void MapVoxelManipulator::emerge(VoxelArea a, s32 caller_id)
 
 
 /*
-	TODO: Add an option to only update eg. water and air nodes.
+	SUGG: Add an option to only update eg. water and air nodes.
 	      This will make it interfere less with important stuff if
 		  run on background.
 */
