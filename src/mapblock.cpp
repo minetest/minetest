@@ -601,6 +601,8 @@ void MapBlock::updateMesh(u32 daynight_ratio)
 	*/
 	
 	{
+		//TimeTaker timer2("updateMesh() collect");
+
 		// Lock this, as m_temp_mods will be used directly
 		JMutexAutoLock lock(m_temp_mods_mutex);
 
@@ -662,6 +664,9 @@ void MapBlock::updateMesh(u32 daynight_ratio)
 
 	if(fastfaces_new.size() > 0)
 	{
+		// avg 0ms (100ms spikes when loading textures the first time)
+		//TimeTaker timer2("updateMesh() mesh building");
+
 		for(u32 i=0; i<fastfaces_new.size(); i++)
 		{
 			FastFace &f = fastfaces_new[i];
@@ -689,6 +694,9 @@ void MapBlock::updateMesh(u32 daynight_ratio)
 		
 		TODO: Optimize by using same meshbuffer for same textures
 	*/
+
+	// 0ms
+	//TimeTaker timer2("updateMesh() adding special stuff");
 
 	for(s16 z=0; z<MAP_BLOCKSIZE; z++)
 	for(s16 y=0; y<MAP_BLOCKSIZE; y++)

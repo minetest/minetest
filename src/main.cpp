@@ -285,6 +285,11 @@ TODO: Flowing water to actually contain flow direction information
 TODO: Remove duplicate lighting implementation from Map (leave
       VoxelManipulator, which is faster)
 
+FIXME: The new texture stuff is slow on wine
+	- Actually it is not too slow; updating excess amount of meshes
+	  when making footprints is too slow. It has to be fixed.
+	  -> implement Map::updateNodeMeshes()
+
 Doing now:
 ----------
 
