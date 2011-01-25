@@ -1966,8 +1966,11 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 			}
 			catch(InvalidPositionException &e)
 			{
-				derr_server<<"Server: Not finishing digging: Node not found"
+				derr_server<<"Server: Not finishing digging: Node not found."
+						<<" Adding block to emerge queue."
 						<<std::endl;
+				m_emerge_queue.addBlock(peer_id,
+						getNodeBlockPos(p_over), BLOCK_EMERGE_FLAG_FROMDISK);
 				return;
 			}
 			
@@ -2117,7 +2120,10 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 				catch(InvalidPositionException &e)
 				{
 					derr_server<<"Server: Ignoring ADDNODE: Node not found"
+							<<" Adding block to emerge queue."
 							<<std::endl;
+					m_emerge_queue.addBlock(peer_id,
+							getNodeBlockPos(p_over), BLOCK_EMERGE_FLAG_FROMDISK);
 					return;
 				}
 
