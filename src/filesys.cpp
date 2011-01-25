@@ -18,6 +18,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 */
 
 #include "filesys.h"
+#include "strfnd.h"
 #include <iostream>
 #include <string.h>
 
@@ -78,10 +79,15 @@ std::vector<DirListNode> GetDirListing(std::string pathstring)
 	} 
 	else 
 	{
+		// NOTE:
+		// Be very sure to not include '..' in the results, it will
+		// result in an epic failure when deleting stuff.
+
 		DirListNode node;
 		node.name = FindFileData.cFileName;
 		node.dir = FindFileData.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY;
-		listing.push_back(node);
+		if(node.name != "." && node.name != "..")
+			listing.push_back(node);
 
 		// List all the other files in the directory.
 		while (FindNextFile(hFind, &FindFileData) != 0) 
@@ -89,7 +95,8 @@ std::vector<DirListNode> GetDirListing(std::string pathstring)
 			DirListNode node;
 			node.name = FindFileData.cFileName;
 			node.dir = FindFileData.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY;
-			listing.push_back(node);
+			if(node.name != "." && node.name != "..")
+				listing.push_back(node);
 		}
 
 		dwError = GetLastError();
@@ -135,7 +142,7 @@ bool RecursiveDelete(std::string path)
 {
 	std::cerr<<"Removing \""<<path<<"\""<<std::endl;
 
-	return false;
+	//return false;
 	
 	// This silly function needs a double-null terminated string...
 	// Well, we'll just make sure it has at least two, then.
@@ -173,12 +180,16 @@ std::vector<DirListNode> GetDirListing(std::string pathstring)
     }
 
     while ((dirp = readdir(dp)) != NULL) {
+		// NOTE:
+		// Be very sure to not include '..' in the results, it will
+		// result in an epic failure when deleting stuff.
 		if(dirp->d_name[0]!='.'){
 			DirListNode node;
 			node.name = dirp->d_name;
 			if(dirp->d_type == DT_DIR) node.dir = true;
 			else node.dir = false;
-			listing.push_back(node);
+			if(node.name != "." && node.name != "..")
+				listing.push_back(node);
 		}
     }
     closedir(dp);
@@ -262,7 +273,9 @@ bool RecursiveDeleteContent(std::string path)
 	std::vector<DirListNode> list = GetDirListing(path);
 	for(unsigned int i=0; i<list.size(); i++)
 	{
-		std::string childpath = path+"/"+list[i].name;
+		if(trim(list[i].name) == "." || trim(list[i].name) == "..")
+			continue;
+		std::string childpath = path + "/" + list[i].name;
 		bool r = RecursiveDelete(childpath);
 		if(r == false)
 		{
