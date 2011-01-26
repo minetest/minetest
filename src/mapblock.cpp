@@ -601,7 +601,7 @@ void MapBlock::updateMesh(u32 daynight_ratio)
 	*/
 	
 	{
-		//TimeTaker timer2("updateMesh() collect");
+		TimeTaker timer2("updateMesh() collect");
 
 		// Lock this, as m_temp_mods will be used directly
 		JMutexAutoLock lock(m_temp_mods_mutex);

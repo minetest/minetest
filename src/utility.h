@@ -409,6 +409,8 @@ public:
 
 	u32 stop(bool quiet=false);
 
+	u32 getTime();
+
 private:
 	const char *m_name;
 	u32 m_time1;

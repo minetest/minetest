@@ -104,12 +104,8 @@ SUGG: Meshes of blocks could be split into 6 meshes facing into
 Gaming ideas:
 -------------
 
-- How would some GTA-style ideas work?
-  - Cars? Stealing? Unlawful stuff and cops? Lots of guns?
+- Aim for something like controlling a single dwarf in Dwarf Fortress.
 
-- RPG style?
-
-- Space racer style?
 
 Documentation:
 --------------
@@ -286,9 +282,16 @@ TODO: Remove duplicate lighting implementation from Map (leave
       VoxelManipulator, which is faster)
 
 FIXME: The new texture stuff is slow on wine
-	- Actually it is not too slow; updating excess amount of meshes
-	  when making footprints is too slow. It has to be fixed.
+	- A basic grassy ground block takes 20-40ms
+	- A bit more complicated block can take 270ms
+	  - On linux, a similar one doesn't take long at all (14ms)
+	    - Is it a bad std::string implementation of MSVC?
+	- Can take up to 200ms? Is it when loading textures or always?
+	- Updating excess amount of meshes when making footprints is too
+	  slow. It has to be fixed.
 	  -> implement Map::updateNodeMeshes()
+	TODO: Optimize TileSpec to only contain a reference number that
+	      is fast to compare, which refers to a cached string
 
 Doing now:
 ----------
@@ -1266,41 +1269,106 @@ struct ChatLine
 	std::wstring text;
 };
 
+// These are defined global so that they're not optimized too much.
+// Can't change them to volatile.
+s16 temp16;
+f32 tempf;
+v3f tempv3f1;
+v3f tempv3f2;
+std::string tempstring;
+std::string tempstring2;
+
+void SpeedTests()
+{
+	{
+		dstream<<"The following test should take around 20ms."<<std::endl;
+		TimeTaker timer("Testing std::string speed");
+		const u32 jj = 10000;
+		for(u32 j=0; j<jj; j++)
+		{
+			tempstring = "";
+			tempstring2 = "";
+			const u32 ii = 10;
+			for(u32 i=0; i<ii; i++){
+				tempstring2 += "asd";
+			}
+			for(u32 i=0; i<ii+1; i++){
+				tempstring += "asd";
+				if(tempstring == tempstring2)
+					break;
+			}
+		}
+	}
+	
+	dstream<<"All of the following tests should take around 100ms each."
+			<<std::endl;
+
+	{
+		TimeTaker timer("Testing floating-point conversion speed");
+		tempf = 0.001;
+		for(u32 i=0; i<4000000; i++){
+			temp16 += tempf;
+			tempf += 0.001;
+		}
+	}
+	
+	{
+		TimeTaker timer("Testing floating-point vector speed");
+
+		tempv3f1 = v3f(1,2,3);
+		tempv3f2 = v3f(4,5,6);
+		for(u32 i=0; i<10000000; i++){
+			tempf += tempv3f1.dotProduct(tempv3f2);
+			tempv3f2 += v3f(7,8,9);
+		}
+	}
+
+	{
+		TimeTaker timer("Testing core::map speed");
+		
+		core::map<v2s16, f32> map1;
+		tempf = -324;
+		const s16 ii=300;
+		for(s16 y=0; y<ii; y++){
+			for(s16 x=0; x<ii; x++){
+				map1.insert(v2s16(x,y), tempf);
+				tempf += 1;
+			}
+		}
+		for(s16 y=ii-1; y>=0; y--){
+			for(s16 x=0; x<ii; x++){
+				tempf = map1[v2s16(x,y)];
+			}
+		}
+	}
+
+	{
+		dstream<<"Around 5000/ms should do well here."<<std::endl;
+		TimeTaker timer("Testing mutex speed");
+		
+		JMutex m;
+		m.Init();
+		u32 n = 0;
+		u32 i = 0;
+		do{
+			n += 10000;
+			for(; i<n; i++){
+				m.Lock();
+				m.Unlock();
+			}
+		}
+		// Do at least 10ms
+		while(timer.getTime() < 10);
+
+		u32 dtime = timer.stop();
+		u32 per_ms = n / dtime;
+		std::cout<<"Done. "<<dtime<<"ms, "
+				<<per_ms<<"/ms"<<std::endl;
+	}
+}
+
 int main(int argc, char *argv[])
 {
-	/*
-		Low-level initialization
-	*/
-
-	bool disable_stderr = false;
-#ifdef _WIN32
-	disable_stderr = true;
-#endif
-
-	// Initialize debug streams
-	debugstreams_init(disable_stderr, DEBUGFILE);
-	// Initialize debug stacks
-	debug_stacks_init();
-
-	DSTACK(__FUNCTION_NAME);
-
-	porting::initializePaths();
-	// Create user data directory
-	fs::CreateDir(porting::path_userdata);
-	
-	// C-style stuff initialization
-	initializeMaterialProperties();
-	init_mapnode();
-
-	// Debug handler
-	BEGIN_DEBUG_EXCEPTION_HANDLER
-
-	// Print startup message
-	dstream<<DTIME<<"minetest-c55"
-			" with SER_FMT_VER_HIGHEST="<<(int)SER_FMT_VER_HIGHEST
-			<<", "<<BUILD_INFO
-			<<std::endl;
-	
 	/*
 		Parse command line
 	*/
@@ -1318,6 +1386,10 @@ int main(int argc, char *argv[])
 	allowed_options.insert("disable-unittests", ValueSpec(VALUETYPE_FLAG));
 	allowed_options.insert("enable-unittests", ValueSpec(VALUETYPE_FLAG));
 	allowed_options.insert("map-dir", ValueSpec(VALUETYPE_STRING));
+#ifdef _WIN32
+	allowed_options.insert("dstream-on-stderr", ValueSpec(VALUETYPE_FLAG));
+#endif
+	allowed_options.insert("speedtests", ValueSpec(VALUETYPE_FLAG));
 
 	Settings cmd_args;
 	
@@ -1349,8 +1421,41 @@ int main(int argc, char *argv[])
 
 		return cmd_args.getFlag("help") ? 0 : 1;
 	}
+	
+	/*
+		Low-level initialization
+	*/
 
+	bool disable_stderr = false;
+#ifdef _WIN32
+	if(cmd_args.getFlag("dstream-on-stderr") == false)
+		disable_stderr = true;
+#endif
 
+	// Initialize debug streams
+	debugstreams_init(disable_stderr, DEBUGFILE);
+	// Initialize debug stacks
+	debug_stacks_init();
+
+	DSTACK(__FUNCTION_NAME);
+
+	porting::initializePaths();
+	// Create user data directory
+	fs::CreateDir(porting::path_userdata);
+	
+	// C-style stuff initialization
+	initializeMaterialProperties();
+	init_mapnode();
+
+	// Debug handler
+	BEGIN_DEBUG_EXCEPTION_HANDLER
+
+	// Print startup message
+	dstream<<DTIME<<"minetest-c55"
+			" with SER_FMT_VER_HIGHEST="<<(int)SER_FMT_VER_HIGHEST
+			<<", "<<BUILD_INFO
+			<<std::endl;
+	
 	/*
 		Basic initialization
 	*/
@@ -1519,7 +1624,15 @@ int main(int argc, char *argv[])
 	g_device = device;
 	g_irrlicht = new IrrlichtWrapper(device);
 
-	//g_device = device;
+	/*
+		Speed tests (done after irrlicht is loaded to get timer)
+	*/
+	if(cmd_args.getFlag("speedtests"))
+	{
+		dstream<<"Running speed tests"<<std::endl;
+		SpeedTests();
+		return 0;
+	}
 	
 	device->setResizable(true);
 

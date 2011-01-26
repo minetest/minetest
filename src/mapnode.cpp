@@ -160,7 +160,9 @@ TileSpec MapNode::getTile(v3s16 dir)
 	
 	s32 dir_i = -1;
 	
-	if(dir == v3s16(0,1,0))
+	if(dir == v3s16(0,0,0))
+		dir_i = -1;
+	else if(dir == v3s16(0,1,0))
 		dir_i = 0;
 	else if(dir == v3s16(0,-1,0))
 		dir_i = 1;

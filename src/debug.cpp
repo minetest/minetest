@@ -32,6 +32,8 @@ void debugstreams_init(bool disable_stderr, const char *filename)
 {
 	if(disable_stderr)
 		g_debugstreams[0] = NULL;
+	else
+		g_debugstreams[0] = stderr;
 
 	if(filename)
 		g_debugstreams[1] = fopen(filename, "a");
@@ -42,6 +44,9 @@ void debugstreams_init(bool disable_stderr, const char *filename)
 		fprintf(g_debugstreams[1],     "  Separator  \n");
 		fprintf(g_debugstreams[1],     "-------------\n\n");
 	}
+	
+	DEBUGPRINT("Debug streams initialized, disable_stderr=%d\n",
+			disable_stderr);
 }
 
 void debugstreams_deinit()
