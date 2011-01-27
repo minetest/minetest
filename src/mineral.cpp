@@ -19,6 +19,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "mineral.h"
 
+#ifndef SERVER
+
 const char *mineral_filenames[MINERAL_COUNT] =
 {
 	NULL,
@@ -45,5 +47,7 @@ textureid_t mineral_block_texture(u8 mineral)
 	
 	return mineral_textures[mineral];
 }
+
+#endif
 
 

@@ -31,8 +31,10 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 	type param.
 */
 
+#ifndef SERVER
 // Caches textures
 void init_mineral(IrrlichtWrapper *irrlicht);
+#endif
 
 #define MINERAL_NONE 0
 #define MINERAL_COAL 1
