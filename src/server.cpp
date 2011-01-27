@@ -1000,7 +1000,8 @@ Server::Server(
 	m_time_of_day(9000),
 	m_time_counter(0),
 	m_time_of_day_send_timer(0),
-	m_uptime(0)
+	m_uptime(0),
+	m_mapsavedir(mapsavedir)
 {
 	//m_flowwater_timer = 0.0;
 	m_liquid_transform_timer = 0.0;
@@ -1013,10 +1014,16 @@ Server::Server(
 	m_con_mutex.Init();
 	m_step_dtime_mutex.Init();
 	m_step_dtime = 0.0;
+
+	// Load players
+	m_env.deSerializePlayers(m_mapsavedir);
 }
 
 Server::~Server()
 {
+	// Save players
+	m_env.serializePlayers(m_mapsavedir);
+	
 	// Stop threads
 	stop();
 
@@ -1222,82 +1229,6 @@ void Server::AsyncRunStep()
 		}
 	}
 
-#if 0
-	/*
-		Update water
-	*/
-	if(g_settings.getBool("water_moves") == true)
-	{
-		float interval;
-		
-		if(g_settings.getBool("endless_water") == false)
-			interval = 1.0;
-		else
-			interval = 0.25;
-
-		float &counter = m_flowwater_timer;
-		counter += dtime;
-		if(counter >= 0.25 && m_flow_active_nodes.size() > 0)
-		{
-		
-		counter = 0.0;
-
-		core::map<v3s16, MapBlock*> modified_blocks;
-
-		{
-
-			JMutexAutoLock envlock(m_env_mutex);
-			
-			MapVoxelManipulator v(&m_env.getMap());
-			v.m_disable_water_climb =
-					g_settings.getBool("disable_water_climb");
-			
-			if(g_settings.getBool("endless_water") == false)
-				v.flowWater(m_flow_active_nodes, 0, false, 250);
-			else
-				v.flowWater(m_flow_active_nodes, 0, false, 50);
-
-			v.blitBack(modified_blocks);
-
-			ServerMap &map = ((ServerMap&)m_env.getMap());
-			
-			// Update lighting
-			core::map<v3s16, MapBlock*> lighting_modified_blocks;
-			map.updateLighting(modified_blocks, lighting_modified_blocks);
-			
-			// Add blocks modified by lighting to modified_blocks
-			for(core::map<v3s16, MapBlock*>::Iterator
-					i = lighting_modified_blocks.getIterator();
-					i.atEnd() == false; i++)
-			{
-				MapBlock *block = i.getNode()->getValue();
-				modified_blocks.insert(block->getPos(), block);
-			}
-		} // envlock
-
-		/*
-			Set the modified blocks unsent for all the clients
-		*/
-		
-		JMutexAutoLock lock2(m_con_mutex);
-
-		for(core::map<u16, RemoteClient*>::Iterator
-				i = m_clients.getIterator();
-				i.atEnd() == false; i++)
-		{
-			RemoteClient *client = i.getNode()->getValue();
-			
-			if(modified_blocks.size() > 0)
-			{
-				// Remove block from sent history
-				client->SetBlocksNotSent(modified_blocks);
-			}
-		}
-
-		} // interval counter
-	}
-#endif
-	
 	// Periodically print some info
 	{
 		float &counter = m_print_info_timer;
@@ -1476,6 +1407,9 @@ void Server::AsyncRunStep()
 				dout_server<<"Server: Unloaded "<<deleted_count
 						<<" sectors from memory"<<std::endl;
 			}
+
+			// Save players
+			m_env.serializePlayers(m_mapsavedir);
 		}
 	}
 }
@@ -1600,6 +1534,16 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 		// Get player
 		Player *player = emergePlayer(playername, "", peer_id);
 		//Player *player = m_env.getPlayer(peer_id);
+
+		/*{
+			// DEBUG: Test serialization
+			std::ostringstream test_os;
+			player->serialize(test_os);
+			dstream<<"Player serialization test: \""<<test_os.str()
+					<<"\""<<std::endl;
+			std::istringstream test_is(test_os.str());
+			player->deSerialize(test_is);
+		}*/
 
 		// If failed, cancel
 		if(player == NULL)
@@ -2950,7 +2894,7 @@ void Server::SendInventory(u16 peer_id)
 			if(!found)
 			{
 				ItemSpec specs[9];
-				specs[0] = ItemSpec(ITEM_CRAFT, "Coal");
+				specs[0] = ItemSpec(ITEM_CRAFT, "lump_of_coal");
 				specs[3] = ItemSpec(ITEM_CRAFT, "Stick");
 				if(checkItemCombination(items, specs))
 				{
@@ -3147,6 +3091,50 @@ RemoteClient* Server::getClient(u16 peer_id)
 	return n->getValue();
 }
 
+void setCreativeInventory(Player *player)
+{
+	player->resetInventory();
+	
+	// Give some good picks
+	{
+		InventoryItem *item = new ToolItem("STPick", 0);
+		void* r = player->inventory.addItem("main", item);
+		assert(r == NULL);
+	}
+	{
+		InventoryItem *item = new ToolItem("MesePick", 0);
+		void* r = player->inventory.addItem("main", item);
+		assert(r == NULL);
+	}
+
+	/*
+		Give materials
+	*/
+	assert(USEFUL_CONTENT_COUNT <= PLAYER_INVENTORY_SIZE);
+	
+	// add torch first
+	InventoryItem *item = new MaterialItem(CONTENT_TORCH, 1);
+	player->inventory.addItem("main", item);
+	
+	// Then others
+	for(u16 i=0; i<USEFUL_CONTENT_COUNT; i++)
+	{
+		// Skip some materials
+		if(i == CONTENT_WATER || i == CONTENT_TORCH
+			|| i == CONTENT_COALSTONE)
+			continue;
+
+		InventoryItem *item = new MaterialItem(i, 1);
+		player->inventory.addItem("main", item);
+	}
+	// Sign
+	{
+		InventoryItem *item = new MapBlockObjectItem("Sign Example text");
+		void* r = player->inventory.addItem("main", item);
+		assert(r == NULL);
+	}
+}
+
 Player *Server::emergePlayer(const char *name, const char *password,
 		u16 peer_id)
 {
@@ -3162,8 +3150,16 @@ Player *Server::emergePlayer(const char *name, const char *password,
 			dstream<<"emergePlayer(): Player already connected"<<std::endl;
 			return NULL;
 		}
+
 		// Got one.
 		player->peer_id = peer_id;
+		
+		// Reset inventory to creative if in creative mode
+		if(g_settings.getBool("creative_mode"))
+		{
+			setCreativeInventory(player);
+		}
+		
 		return player;
 	}
 
@@ -3271,51 +3267,15 @@ Player *Server::emergePlayer(const char *name, const char *password,
 		
 		if(g_settings.getBool("creative_mode"))
 		{
-			// Give some good picks
-			{
-				InventoryItem *item = new ToolItem("STPick", 0);
-				void* r = player->inventory.addItem("main", item);
-				assert(r == NULL);
-			}
-			{
-				InventoryItem *item = new ToolItem("MesePick", 0);
-				void* r = player->inventory.addItem("main", item);
-				assert(r == NULL);
-			}
-
-			/*
-				Give materials
-			*/
-			assert(USEFUL_CONTENT_COUNT <= PLAYER_INVENTORY_SIZE);
-			
-			// add torch first
-			InventoryItem *item = new MaterialItem(CONTENT_TORCH, 1);
-			player->inventory.addItem("main", item);
-			
-			// Then others
-			for(u16 i=0; i<USEFUL_CONTENT_COUNT; i++)
-			{
-				// Skip some materials
-				if(i == CONTENT_WATER || i == CONTENT_TORCH)
-					continue;
-
-				InventoryItem *item = new MaterialItem(i, 1);
-				player->inventory.addItem("main", item);
-			}
-			// Sign
-			{
-				InventoryItem *item = new MapBlockObjectItem("Sign Example text");
-				void* r = player->inventory.addItem("main", item);
-				assert(r == NULL);
-			}
+			setCreativeInventory(player);
 		}
 		else
 		{
-			{
+			/*{
 				InventoryItem *item = new ToolItem("WPick", 32000);
 				void* r = player->inventory.addItem("main", item);
 				assert(r == NULL);
-			}
+			}*/
 			/*{
 				InventoryItem *item = new MaterialItem(CONTENT_MESE, 6);
 				void* r = player->inventory.addItem("main", item);

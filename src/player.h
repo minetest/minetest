@@ -29,6 +29,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #define PLAYERNAME_SIZE 20
 
+#define PLAYERNAME_ALLOWED_CHARS "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-_.,"
+
 class Map;
 
 class Player
@@ -36,6 +38,8 @@ class Player
 public:
 	Player();
 	virtual ~Player();
+
+	void resetInventory();
 
 	//void move(f32 dtime, Map &map);
 	virtual void move(f32 dtime, Map &map) = 0;
@@ -100,6 +104,14 @@ public:
 	// NOTE: Use peer_id == 0 for disconnected
 	/*virtual bool isClientConnected() { return false; }
 	virtual void setClientConnected(bool) {}*/
+	
+	/*
+		serialize() writes a bunch of text that can contain
+		any characters except a '\0', and such an ending that
+		deSerialize stops reading exactly at the right point.
+	*/
+	void serialize(std::ostream &os);
+	void deSerialize(std::istream &is);
 
 	bool touching_ground;
 	bool in_water;
@@ -119,8 +131,6 @@ protected:
 class ServerRemotePlayer : public Player
 {
 public:
-	/*ServerRemotePlayer(bool client_connected):
-		m_client_connected(client_connected)*/
 	ServerRemotePlayer()
 	{
 	}
@@ -136,18 +146,6 @@ public:
 	virtual void move(f32 dtime, Map &map)
 	{
 	}
-
-	/*virtual bool isClientConnected()
-	{
-		return m_client_connected;
-	}
-	virtual void setClientConnected(bool client_connected)
-	{
-		m_client_connected = client_connected;
-	}
-
-	// This 
-	bool m_client_connected;*/
 
 private:
 };
@@ -252,7 +250,7 @@ private:
 	v3f m_showpos;
 };
 
-#endif
+#endif // !SERVER
 
 #ifndef SERVER
 struct PlayerControl

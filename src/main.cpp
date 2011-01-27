@@ -104,8 +104,11 @@ SUGG: Meshes of blocks could be split into 6 meshes facing into
 Gaming ideas:
 -------------
 
-- Aim for something like controlling a single dwarf in Dwarf Fortress.
+- Aim for something like controlling a single dwarf in Dwarf Fortress
 
+- The player could go faster by a crafting a boat, or riding an animal
+
+- Random NPC traders. what else?
 
 Documentation:
 --------------
@@ -164,6 +167,20 @@ TODO: Make fetching sector's blocks more efficient when rendering
 	  - Is this necessary at all?
 
 TODO: Flowing water animation
+
+FIXME: The new texture stuff is slow on wine
+	- A basic grassy ground block takes 20-40ms
+	- A bit more complicated block can take 270ms
+	  - On linux, a similar one doesn't take long at all (14ms)
+	    - It is NOT a bad std::string implementation of MSVC.
+	- Can take up to 200ms? Is it when loading textures or always?
+	- Updating excess amount of meshes when making footprints is too
+	  slow. It has to be fixed.
+	  -> implement Map::updateNodeMeshes()
+	The fix:
+    * Optimize TileSpec to only contain a reference number that
+	  is fast to compare, which refers to a cached string, or
+	* Make TextureSpec for using instead of strings
 
 Configuration:
 --------------
@@ -281,18 +298,6 @@ TODO: Flowing water to actually contain flow direction information
 TODO: Remove duplicate lighting implementation from Map (leave
       VoxelManipulator, which is faster)
 
-FIXME: The new texture stuff is slow on wine
-	- A basic grassy ground block takes 20-40ms
-	- A bit more complicated block can take 270ms
-	  - On linux, a similar one doesn't take long at all (14ms)
-	    - Is it a bad std::string implementation of MSVC?
-	- Can take up to 200ms? Is it when loading textures or always?
-	- Updating excess amount of meshes when making footprints is too
-	  slow. It has to be fixed.
-	  -> implement Map::updateNodeMeshes()
-	TODO: Optimize TileSpec to only contain a reference number that
-	      is fast to compare, which refers to a cached string
-
 Doing now:
 ----------
 
@@ -360,6 +365,7 @@ Doing now:
 #include "filesys.h"
 #include "config.h"
 #include "guiMainMenu.h"
+#include "mineral.h"
 
 IrrlichtWrapper *g_irrlicht;
 
@@ -1445,7 +1451,6 @@ int main(int argc, char *argv[])
 	
 	// C-style stuff initialization
 	initializeMaterialProperties();
-	init_mapnode();
 
 	// Debug handler
 	BEGIN_DEBUG_EXCEPTION_HANDLER
@@ -1683,7 +1688,8 @@ int main(int argc, char *argv[])
 	*/
 
 	init_content_inventory_texture_paths();
-	//init_tile_textures();
+	init_mapnode(g_irrlicht);
+	init_mineral(g_irrlicht);
 
 	/*
 		GUI stuff
@@ -2378,7 +2384,7 @@ int main(int argc, char *argv[])
 		bool nodefound = false;
 		v3s16 nodepos;
 		v3s16 neighbourpos;
-		core::aabbox3d<f32> nodefacebox;
+		core::aabbox3d<f32> nodehilightbox;
 		f32 mindistance = BS * 1001;
 		
 		v3s16 pos_i = floatToInt(player_position);
@@ -2470,7 +2476,7 @@ int main(int argc, char *argv[])
 						nodepos = np;
 						neighbourpos = np;
 						mindistance = distance;
-						nodefacebox = box;
+						nodehilightbox = box;
 					}
 				}
 			}
@@ -2513,7 +2519,16 @@ int main(int argc, char *argv[])
 							nodepos = np;
 							neighbourpos = np + dirs[i];
 							mindistance = distance;
-							nodefacebox = facebox;
+
+							//nodehilightbox = facebox;
+
+							const float d = 0.502;
+							core::aabbox3d<f32> nodebox
+									(-BS*d, -BS*d, -BS*d, BS*d, BS*d, BS*d);
+							v3f nodepos_f = intToFloat(nodepos);
+							nodebox.MinEdge += nodepos_f;
+							nodebox.MaxEdge += nodepos_f;
+							nodehilightbox = nodebox;
 						}
 					} // if distance < mindistance
 				} // for dirs
@@ -2531,15 +2546,7 @@ int main(int argc, char *argv[])
 			
 			// Visualize selection
 
-			const float d = 0.502;
-			core::aabbox3d<f32> nodebox(-BS*d, -BS*d, -BS*d, BS*d, BS*d, BS*d);
-			v3f nodepos_f = intToFloat(nodepos);
-			//v3f nodepos_f(nodepos.X*BS, nodepos.Y*BS, nodepos.Z*BS);
-			nodebox.MinEdge += nodepos_f;
-			nodebox.MaxEdge += nodepos_f;
-			hilightboxes.push_back(nodebox);
-			
-			//hilightboxes.push_back(nodefacebox);
+			hilightboxes.push_back(nodehilightbox);
 
 			// Handle digging
 			

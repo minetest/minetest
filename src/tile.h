@@ -22,8 +22,26 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "common_irrlicht.h"
 //#include "utility.h"
+#include "texture.h"
 #include <string>
 
+struct TileSpec
+{
+	TileSpec():
+		alpha(255)
+	{
+	}
+
+	bool operator==(TileSpec &other)
+	{
+		return (spec == other.spec && alpha == other.alpha);
+	}
+	
+	TextureSpec spec;
+	u8 alpha;
+};
+
+#if 0
 struct TileSpec
 {
 	TileSpec():
@@ -52,5 +70,6 @@ struct TileSpec
 	std::string name;
 	u8 alpha;
 };
+#endif
 
 #endif

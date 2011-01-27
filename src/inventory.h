@@ -122,10 +122,12 @@ public:
 #ifndef SERVER
 	video::ITexture * getImage()
 	{
-		if(m_content >= USEFUL_CONTENT_COUNT)
+		/*if(m_content >= USEFUL_CONTENT_COUNT)
 			return NULL;
 			
-		return g_irrlicht->getTexture(g_content_inventory_texture_paths[m_content]);
+		return g_irrlicht->getTexture(g_content_inventory_texture_paths[m_content]);*/
+
+		return g_irrlicht->getTexture(content_features(m_content).inventory_texture);
 	}
 #endif
 	std::string getText()
@@ -250,19 +252,19 @@ public:
 #ifndef SERVER
 	video::ITexture * getImage()
 	{
-		std::string basename;
+		std::string name;
 
 		if(m_subname == "Stick")
-			basename = porting::getDataPath("stick.png");
+			name = "stick.png";
 		else if(m_subname == "lump_of_coal")
-			basename = porting::getDataPath("lump_of_coal.png");
+			name = "lump_of_coal.png";
 		else if(m_subname == "lump_of_iron")
-			basename = porting::getDataPath("lump_of_iron.png");
+			name = "lump_of_iron.png";
 		else
-			basename = porting::getDataPath("cloud.png[[mod:crack3");
+			name = "cloud.png";
 		
 		// Get such a texture
-		return g_irrlicht->getTexture(basename);
+		return g_irrlicht->getTexture(name);
 	}
 #endif
 	std::string getText()
@@ -330,28 +332,35 @@ public:
 	{
 		std::string basename;
 		if(m_toolname == "WPick")
-			basename = porting::getDataPath("tool_wpick.png").c_str();
+			basename = "tool_wpick.png";
 		else if(m_toolname == "STPick")
-			basename = porting::getDataPath("tool_stpick.png").c_str();
+			basename = "tool_stpick.png";
 		else if(m_toolname == "MesePick")
-			basename = porting::getDataPath("tool_mesepick.png").c_str();
-		// Default to cloud texture
+			basename = "tool_mesepick.png";
 		else
-			basename = porting::getDataPath("cloud.png").c_str();
-			//basename = tile_texture_path_get(TILE_CLOUD);
+			basename = "cloud.png";
 		
 		/*
-			Calculate some progress value with sane amount of
+			Calculate a progress value with sane amount of
 			maximum states
 		*/
 		u32 maxprogress = 30;
 		u32 toolprogress = (65535-m_wear)/(65535/maxprogress);
 		
-		// Make texture name for the new texture with a progress bar
+		float value_f = (float)toolprogress / (float)maxprogress;
+		std::ostringstream os;
+		os<<"[progressbar"<<value_f;
+
+		TextureSpec spec;
+		spec.addTid(g_irrlicht->getTextureId(basename));
+		spec.addTid(g_irrlicht->getTextureId(os.str()));
+		return g_irrlicht->getTexture(spec);
+
+		/*// Make texture name for the new texture with a progress bar
 		float value_f = (float)toolprogress / (float)maxprogress;
 		std::ostringstream os;
 		os<<basename<<"[[mod:progressbar"<<value_f;
-		return g_irrlicht->getTexture(os.str());
+		return g_irrlicht->getTexture(os.str());*/
 
 		/*// Make texture name for the new texture with a progress bar
 		std::ostringstream os;

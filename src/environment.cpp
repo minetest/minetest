@@ -18,6 +18,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 */
 
 #include "environment.h"
+#include "filesys.h"
 
 Environment::Environment(Map *map, std::ostream &dout):
 		m_dout(dout)
@@ -192,6 +193,7 @@ void Environment::addPlayer(Player *player)
 	DSTACK(__FUNCTION_NAME);
 	/*
 		Check that only one local player exists and peer_ids are unique.
+		Also check that names are unique.
 		Exception: there can be multiple players with peer_id=0
 	*/
 #ifndef SERVER
@@ -201,8 +203,12 @@ void Environment::addPlayer(Player *player)
 	*/
 	assert(!(player->isLocal() == true && getLocalPlayer() != NULL));
 #endif
+	// If peer id is non-zero, it has to be unique.
 	if(player->peer_id != 0)
 		assert(getPlayer(player->peer_id) == NULL);
+	// Name has to be unique.
+	assert(getPlayer(player->getName()) == NULL);
+	// Add.
 	m_players.push_back(player);
 }
 
@@ -297,6 +303,181 @@ void Environment::printPlayers(std::ostream &o)
 	{
 		Player *player = *i;
 		o<<"Player peer_id="<<player->peer_id<<std::endl;
+	}
+}
+
+void Environment::serializePlayers(const std::string &savedir)
+{
+	std::string players_path = savedir + "/players";
+	fs::CreateDir(players_path);
+
+	core::map<Player*, bool> saved_players;
+
+	std::vector<fs::DirListNode> player_files = fs::GetDirListing(players_path);
+	for(u32 i=0; i<player_files.size(); i++)
+	{
+		if(player_files[i].dir)
+			continue;
+		
+		// Full path to this file
+		std::string path = players_path + "/" + player_files[i].name;
+
+		dstream<<"Checking player file "<<path<<std::endl;
+
+		// Load player to see what is its name
+		ServerRemotePlayer testplayer;
+		{
+			// Open file and deserialize
+			std::ifstream is(path.c_str(), std::ios_base::binary);
+			if(is.good() == false)
+			{
+				dstream<<"Failed to read "<<path<<std::endl;
+				continue;
+			}
+			testplayer.deSerialize(is);
+		}
+
+		dstream<<"Loaded test player with name "<<testplayer.getName()<<std::endl;
+		
+		// Search for the player
+		std::string playername = testplayer.getName();
+		Player *player = getPlayer(playername.c_str());
+		if(player == NULL)
+		{
+			dstream<<"Didn't find matching player, ignoring file."<<std::endl;
+			continue;
+		}
+
+		dstream<<"Found matching player, overwriting."<<std::endl;
+
+		// OK, found. Save player there.
+		{
+			// Open file and serialize
+			std::ofstream os(path.c_str(), std::ios_base::binary);
+			if(os.good() == false)
+			{
+				dstream<<"Failed to overwrite "<<path<<std::endl;
+				continue;
+			}
+			player->serialize(os);
+			saved_players.insert(player, true);
+		}
+	}
+
+	for(core::list<Player*>::Iterator i = m_players.begin();
+			i != m_players.end(); i++)
+	{
+		Player *player = *i;
+		if(saved_players.find(player) != NULL)
+		{
+			dstream<<"Player "<<player->getName()
+					<<" was already saved."<<std::endl;
+			continue;
+		}
+		std::string playername = player->getName();
+		// Don't save unnamed player
+		if(playername == "")
+		{
+			dstream<<"Not saving unnamed player."<<std::endl;
+			continue;
+		}
+		/*
+			Find a sane filename
+		*/
+		if(string_allowed(playername, PLAYERNAME_ALLOWED_CHARS) == false)
+			playername = "player";
+		std::string path = players_path + "/" + playername;
+		bool found = false;
+		for(u32 i=0; i<1000; i++)
+		{
+			if(fs::PathExists(path) == false)
+			{
+				found = true;
+				break;
+			}
+			path = players_path + "/" + playername + itos(i);
+		}
+		if(found == false)
+		{
+			dstream<<"Didn't find free file for player"<<std::endl;
+			continue;
+		}
+
+		{
+			dstream<<"Saving player "<<player->getName()<<" to "
+					<<path<<std::endl;
+			// Open file and serialize
+			std::ofstream os(path.c_str(), std::ios_base::binary);
+			if(os.good() == false)
+			{
+				dstream<<"Failed to overwrite "<<path<<std::endl;
+				continue;
+			}
+			player->serialize(os);
+			saved_players.insert(player, true);
+		}
+	}
+}
+
+void Environment::deSerializePlayers(const std::string &savedir)
+{
+	std::string players_path = savedir + "/players";
+
+	core::map<Player*, bool> saved_players;
+
+	std::vector<fs::DirListNode> player_files = fs::GetDirListing(players_path);
+	for(u32 i=0; i<player_files.size(); i++)
+	{
+		if(player_files[i].dir)
+			continue;
+		
+		// Full path to this file
+		std::string path = players_path + "/" + player_files[i].name;
+
+		dstream<<"Checking player file "<<path<<std::endl;
+
+		// Load player to see what is its name
+		ServerRemotePlayer testplayer;
+		{
+			// Open file and deserialize
+			std::ifstream is(path.c_str(), std::ios_base::binary);
+			if(is.good() == false)
+			{
+				dstream<<"Failed to read "<<path<<std::endl;
+				continue;
+			}
+			testplayer.deSerialize(is);
+		}
+
+		dstream<<"Loaded test player with name "<<testplayer.getName()<<std::endl;
+		
+		// Search for the player
+		std::string playername = testplayer.getName();
+		Player *player = getPlayer(playername.c_str());
+		bool newplayer = false;
+		if(player == NULL)
+		{
+			dstream<<"Is a new player"<<std::endl;
+			player = new ServerRemotePlayer();
+			newplayer = true;
+		}
+
+		// Load player
+		{
+			dstream<<"Reading player "<<testplayer.getName()<<" from "
+					<<path<<std::endl;
+			// Open file and deserialize
+			std::ifstream is(path.c_str(), std::ios_base::binary);
+			if(is.good() == false)
+			{
+				dstream<<"Failed to read "<<path<<std::endl;
+				continue;
+			}
+			player->deSerialize(is);
+		}
+
+		if(newplayer)
+			addPlayer(player);
 	}
 }
 

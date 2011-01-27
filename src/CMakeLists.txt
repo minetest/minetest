@@ -38,18 +38,12 @@ configure_file(
 	"${PROJECT_BINARY_DIR}/cmake_config.h"
 )
 
-set(minetest_SRCS
-	guiMainMenu.cpp
+set(common_SRCS
+	mineral.cpp
 	porting.cpp
-	guiMessageMenu.cpp
 	materials.cpp
-	guiTextInputMenu.cpp
-	guiInventoryMenu.cpp
-	irrlichtwrapper.cpp
-	guiPauseMenu.cpp
 	defaultsettings.cpp
 	mapnode.cpp
-	tile.cpp
 	voxel.cpp
 	mapblockobject.cpp
 	inventory.cpp
@@ -59,7 +53,6 @@ set(minetest_SRCS
 	filesys.cpp
 	connection.cpp
 	environment.cpp
-	client.cpp
 	server.cpp
 	socket.cpp
 	mapblock.cpp
@@ -68,34 +61,24 @@ set(minetest_SRCS
 	map.cpp
 	player.cpp
 	utility.cpp
-	main.cpp
 	test.cpp
 )
 
+set(minetest_SRCS
+	${common_SRCS}
+	guiMainMenu.cpp
+	guiMessageMenu.cpp
+	guiTextInputMenu.cpp
+	guiInventoryMenu.cpp
+	guiPauseMenu.cpp
+	irrlichtwrapper.cpp
+	client.cpp
+	main.cpp
+)
+
 set(minetestserver_SRCS
-	porting.cpp
-	materials.cpp
-	defaultsettings.cpp
-	mapnode.cpp
-	voxel.cpp
-	mapblockobject.cpp
-	inventory.cpp
-	debug.cpp
-	serialization.cpp
-	light.cpp
-	filesys.cpp
-	connection.cpp
-	environment.cpp
-	server.cpp
-	socket.cpp
-	mapblock.cpp
-	mapsector.cpp
-	heightmap.cpp
-	map.cpp
-	player.cpp
-	utility.cpp
+	${common_SRCS}
 	servermain.cpp
-	test.cpp
 )
 
 include_directories(

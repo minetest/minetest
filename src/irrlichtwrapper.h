@@ -24,6 +24,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "common_irrlicht.h"
 #include "debug.h"
 #include "utility.h"
+#include "texture.h"
 
 #include <jmutex.h>
 #include <jmutexautolock.h>
@@ -36,7 +37,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 	threads, because texture pointers have to be handled in
 	background threads.
 */
-
+#if 0
 class TextureCache
 {
 public:
@@ -73,12 +74,55 @@ private:
 	core::map<std::string, video::ITexture*> m_textures;
 	JMutex m_mutex;
 };
+#endif
+
+/*
+	A thread-safe texture pointer cache
+*/
+class TextureCache
+{
+public:
+	TextureCache()
+	{
+		m_mutex.Init();
+		assert(m_mutex.IsInitialized());
+	}
+	
+	void set(const TextureSpec &spec, video::ITexture *texture)
+	{
+		if(texture == NULL)
+			return;
+		
+		JMutexAutoLock lock(m_mutex);
+
+		m_textures[spec] = texture;
+	}
+	
+	video::ITexture* get(const TextureSpec &spec)
+	{
+		JMutexAutoLock lock(m_mutex);
+
+		core::map<TextureSpec, video::ITexture*>::Node *n;
+		n = m_textures.find(spec);
+
+		if(n != NULL)
+			return n->getValue();
+
+		return NULL;
+	}
+
+private:
+	core::map<TextureSpec, video::ITexture*> m_textures;
+	JMutex m_mutex;
+};
 
 /*
 	A thread-safe wrapper for irrlicht, to be accessed from
 	background worker threads.
 
 	Queues tasks to be done in the main thread.
+
+	Also caches texture specification strings to ids and textures.
 */
 
 class IrrlichtWrapper
@@ -103,30 +147,55 @@ public:
 		return m_device->getTimer()->getRealTime();
 	}
 	
-    /*
-		Path can contain stuff like
-		"/usr/share/minetest/stone.png[[mod:mineral0[[mod:crack3"
+	/*
+		Format of a texture name:
+			"stone.png" (filename in image data directory)
+			"[crack1" (a name starting with "[" is a special feature)
+			"[progress1.0" (a name starting with "[" is a special feature)
 	*/
-	video::ITexture* getTexture(const std::string &spec);
+	/*
+		Loads texture defined by "name" and assigns a texture id to it.
+		If texture has to be generated, generates it.
+		If the texture has already been loaded, returns existing id.
+	*/
+	textureid_t getTextureId(const std::string &name);
+	// The reverse of the above
+	std::string getTextureName(textureid_t id);
+	// Gets a texture based on a filename
+	video::ITexture* getTexture(const std::string &name);
+	// Gets a texture based on a TextureSpec (a textureid_t is fine too)
+	video::ITexture* getTexture(const TextureSpec &spec);
 	
 private:
 	/*
 		Non-thread-safe variants of stuff, for internal use
 	*/
-	video::ITexture* getTextureDirect(const std::string &spec);
+
+	// DEPRECATED NO-OP
+	//video::ITexture* getTextureDirect(const std::string &spec);
+	
+	// Constructs a texture according to spec
+	video::ITexture* getTextureDirect(const TextureSpec &spec);
 	
 	/*
 		Members
 	*/
 	
+	// The id of the thread that can (and has to) use irrlicht directly
 	threadid_t m_main_thread;
-
+	
+	// The irrlicht device
 	JMutex m_device_mutex;
 	IrrlichtDevice *m_device;
-
-	TextureCache m_texturecache;
 	
-	RequestQueue<std::string, video::ITexture*, u8, u8> m_get_texture_queue;
+	// Queued texture fetches (to be processed by the main thread)
+	RequestQueue<TextureSpec, video::ITexture*, u8, u8> m_get_texture_queue;
+
+	// Cache of textures by spec
+	TextureCache m_texturecache;
+
+	// A mapping from texture id to string spec
+	MutexedIdGenerator<std::string> m_namecache;
 };
 
 #endif

@@ -27,11 +27,15 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "exceptions.h"
 #include "serialization.h"
 #include "tile.h"
+#include "irrlichtwrapper.h"
 
-// Initializes all kind of stuff in here.
-// Doesn't depend on anything else.
-// Many things depend on this.
-void init_mapnode();
+/*
+	Initializes all kind of stuff in here.
+	Many things depend on this.
+
+	irrlicht: Used for getting texture ids.
+*/
+void init_mapnode(IrrlichtWrapper *irrlicht);
 
 // Initializes g_content_inventory_texture_paths
 void init_content_inventory_texture_paths();
@@ -129,7 +133,8 @@ struct ContentFeatures
 	*/
 	TileSpec tiles[6];
 
-	std::string inventory_image_path;
+	//std::string inventory_image_path;
+	TextureSpec inventory_texture;
 
 	bool is_ground_content; //TODO: Remove, use walkable instead
 	bool light_propagates;
@@ -162,39 +167,42 @@ struct ContentFeatures
 
 	~ContentFeatures();
 	
-	void setAllTextures(std::string imgname, u8 alpha=255)
+	void setAllTextures(const TextureSpec &spec, u8 alpha=255)
 	{
 		for(u16 i=0; i<6; i++)
 		{
-			tiles[i].name = porting::getDataPath(imgname.c_str());
+			tiles[i].spec = spec;
 			tiles[i].alpha = alpha;
 		}
 		
 		// Set this too so it can be left as is most times
-		if(inventory_image_path == "")
-			inventory_image_path = porting::getDataPath(imgname.c_str());
+		/*if(inventory_image_path == "")
+			inventory_image_path = porting::getDataPath(imgname.c_str());*/
+
+		if(inventory_texture.empty())
+			inventory_texture = spec;
 	}
-	void setTexture(u16 i, std::string imgname, u8 alpha=255)
+	void setTexture(u16 i, const TextureSpec &spec, u8 alpha=255)
 	{
-		tiles[i].name = porting::getDataPath(imgname.c_str());
+		tiles[i].spec = spec;
 		tiles[i].alpha = alpha;
 	}
 
-	void setInventoryImage(std::string imgname)
+	void setInventoryTexture(const TextureSpec &spec)
+	{
+		inventory_texture = spec;
+	}
+
+	/*void setInventoryImage(std::string imgname)
 	{
 		inventory_image_path = porting::getDataPath(imgname.c_str());
-	}
+	}*/
 };
 
-// Initialized by init_mapnode()
-extern struct ContentFeatures g_content_features[256];
-
-inline ContentFeatures & content_features(u8 i)
-{
-	return g_content_features[i];
-}
-
-extern const char * g_content_inventory_texture_paths[USEFUL_CONTENT_COUNT];
+/*
+	Call this to access the ContentFeature list
+*/
+ContentFeatures & content_features(u8 i);
 
 /*
 	If true, the material allows light propagation and brightness is stored
@@ -203,7 +211,7 @@ extern const char * g_content_inventory_texture_paths[USEFUL_CONTENT_COUNT];
 */
 inline bool light_propagates_content(u8 m)
 {
-	return g_content_features[m].light_propagates;
+	return content_features(m).light_propagates;
 	//return (m == CONTENT_AIR || m == CONTENT_TORCH || m == CONTENT_WATER || m == CONTENT_WATERSOURCE);
 }
 
@@ -214,7 +222,7 @@ inline bool light_propagates_content(u8 m)
 */
 inline bool sunlight_propagates_content(u8 m)
 {
-	return g_content_features[m].sunlight_propagates;
+	return content_features(m).sunlight_propagates;
 	//return (m == CONTENT_AIR || m == CONTENT_TORCH);
 }
 
@@ -228,7 +236,7 @@ inline bool sunlight_propagates_content(u8 m)
 */
 inline u8 content_solidness(u8 m)
 {
-	return g_content_features[m].solidness;
+	return content_features(m).solidness;
 	/*// As of now, every pseudo node like torches are added to this
 	if(m == CONTENT_AIR || m == CONTENT_TORCH || m == CONTENT_WATER)
 		return 0;
@@ -241,28 +249,28 @@ inline u8 content_solidness(u8 m)
 // NOTE: Don't use, use "content_features(m).whatever" instead
 inline bool content_walkable(u8 m)
 {
-	return g_content_features[m].walkable;
+	return content_features(m).walkable;
 	//return (m != CONTENT_AIR && m != CONTENT_WATER && m != CONTENT_WATERSOURCE && m != CONTENT_TORCH);
 }
 
 // NOTE: Don't use, use "content_features(m).whatever" instead
 inline bool content_liquid(u8 m)
 {
-	return g_content_features[m].liquid_type != LIQUID_NONE;
+	return content_features(m).liquid_type != LIQUID_NONE;
 	//return (m == CONTENT_WATER || m == CONTENT_WATERSOURCE);
 }
 
 // NOTE: Don't use, use "content_features(m).whatever" instead
 inline bool content_flowing_liquid(u8 m)
 {
-	return g_content_features[m].liquid_type == LIQUID_FLOWING;
+	return content_features(m).liquid_type == LIQUID_FLOWING;
 	//return (m == CONTENT_WATER);
 }
 
 // NOTE: Don't use, use "content_features(m).whatever" instead
 inline bool content_liquid_source(u8 m)
 {
-	return g_content_features[m].liquid_type == LIQUID_SOURCE;
+	return content_features(m).liquid_type == LIQUID_SOURCE;
 	//return (m == CONTENT_WATERSOURCE);
 }
 
@@ -279,21 +287,21 @@ inline u8 make_liquid_flowing(u8 m)
 // NOTE: Don't use, use "content_features(m).whatever" instead
 inline bool content_pointable(u8 m)
 {
-	return g_content_features[m].pointable;
+	return content_features(m).pointable;
 	//return (m != CONTENT_AIR && m != CONTENT_WATER && m != CONTENT_WATERSOURCE);
 }
 
 // NOTE: Don't use, use "content_features(m).whatever" instead
 inline bool content_diggable(u8 m)
 {
-	return g_content_features[m].diggable;
+	return content_features(m).diggable;
 	//return (m != CONTENT_AIR && m != CONTENT_WATER && m != CONTENT_WATERSOURCE);
 }
 
 // NOTE: Don't use, use "content_features(m).whatever" instead
 inline bool content_buildable_to(u8 m)
 {
-	return g_content_features[m].buildable_to;
+	return content_features(m).buildable_to;
 	//return (m == CONTENT_AIR || m == CONTENT_WATER || m == CONTENT_WATERSOURCE);
 }
 
@@ -303,7 +311,7 @@ inline bool content_buildable_to(u8 m)
 */
 /*inline bool is_ground_content(u8 m)
 {
-	return g_content_features[m].is_ground_content;
+	return content_features(m).is_ground_content;
 }*/
 
 /*
@@ -622,7 +630,7 @@ struct MapNode
 		}
 
 		// Translate deprecated stuff
-		MapNode *translate_to = g_content_features[d].translate_to;
+		MapNode *translate_to = content_features(d).translate_to;
 		if(translate_to)
 		{
 			dstream<<"MapNode: WARNING: Translating "<<d<<" to "

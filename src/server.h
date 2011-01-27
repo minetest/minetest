@@ -508,6 +508,8 @@ private:
 	
 	Queue<PeerChange> m_peer_change_queue;
 
+	std::string m_mapsavedir;
+
 	friend class EmergeThread;
 	friend class RemoteClient;
 };

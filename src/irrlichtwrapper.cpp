@@ -17,13 +17,15 @@ void IrrlichtWrapper::Run()
 	*/
 	if(m_get_texture_queue.size() > 0)
 	{
-		GetRequest<std::string, video::ITexture*, u8, u8>
+		GetRequest<TextureSpec, video::ITexture*, u8, u8>
 				request = m_get_texture_queue.pop();
 
-		dstream<<"got texture request with key="
-				<<request.key<<std::endl;
+		dstream<<"got texture request with"
+				<<" key.tids[0]="<<request.key.tids[0]
+				<<" [1]="<<request.key.tids[1]
+				<<std::endl;
 
-		GetResult<std::string, video::ITexture*, u8, u8>
+		GetResult<TextureSpec, video::ITexture*, u8, u8>
 				result;
 		result.key = request.key;
 		result.callers = request.callers;
@@ -33,9 +35,29 @@ void IrrlichtWrapper::Run()
 	}
 }
 
-video::ITexture* IrrlichtWrapper::getTexture(const std::string &spec)
+textureid_t IrrlichtWrapper::getTextureId(const std::string &name)
 {
-	if(spec == "")
+	u32 id = m_namecache.getId(name);
+	return id;
+}
+
+std::string IrrlichtWrapper::getTextureName(textureid_t id)
+{
+	std::string name("");
+	m_namecache.getValue(id, name);
+	// In case it was found, return the name; otherwise return an empty name.
+	return name;
+}
+
+video::ITexture* IrrlichtWrapper::getTexture(const std::string &name)
+{
+	TextureSpec spec(getTextureId(name));
+	return getTexture(spec);
+}
+
+video::ITexture* IrrlichtWrapper::getTexture(const TextureSpec &spec)
+{
+	if(spec.empty())
 		return NULL;
 	
 	video::ITexture *t = m_texturecache.get(spec);
@@ -44,26 +66,26 @@ video::ITexture* IrrlichtWrapper::getTexture(const std::string &spec)
 	
 	if(get_current_thread_id() == m_main_thread)
 	{
-		dstream<<"Getting texture directly: spec="
-				<<spec<<std::endl;
+		dstream<<"Getting texture directly: spec.tids[0]="
+				<<spec.tids[0]<<std::endl;
 				
 		t = getTextureDirect(spec);
 	}
 	else
 	{
 		// We're gonna ask the result to be put into here
-		ResultQueue<std::string, video::ITexture*, u8, u8> result_queue;
+		ResultQueue<TextureSpec, video::ITexture*, u8, u8> result_queue;
 		
 		// Throw a request in
 		m_get_texture_queue.add(spec, 0, 0, &result_queue);
 		
-		dstream<<"Waiting for texture from main thread: "
-				<<spec<<std::endl;
+		dstream<<"Waiting for texture from main thread: spec.tids[0]="
+				<<spec.tids[0]<<std::endl;
 		
 		try
 		{
 			// Wait result for a second
-			GetResult<std::string, video::ITexture*, u8, u8>
+			GetResult<TextureSpec, video::ITexture*, u8, u8>
 					result = result_queue.pop_front(1000);
 		
 			// Check that at least something worked OK
@@ -83,144 +105,177 @@ video::ITexture* IrrlichtWrapper::getTexture(const std::string &spec)
 	return t;
 }
 
-/*
-	Non-thread-safe functions
-*/
+// Draw a progress bar on the image
+void make_progressbar(float value, video::IImage *image);
 
 /*
-	Texture modifier functions
+	Texture fetcher/maker function, called always from the main thread
 */
 
-// blitted_name = eg. "mineral_coal.png"
-video::ITexture * make_blitname(const std::string &blitted_name,
-		video::ITexture *original,
-		const char *newname, video::IVideoDriver* driver)
+video::ITexture* IrrlichtWrapper::getTextureDirect(const TextureSpec &spec)
 {
-	if(original == NULL)
+	// This would result in NULL image
+	if(spec.empty())
 		return NULL;
 	
-	// Size of the base image
-	core::dimension2d<u32> dim(16, 16);
-	// Position to copy the blitted to in the base image
-	core::position2d<s32> pos_base(0, 0);
-	// Position to copy the blitted from in the blitted image
-	core::position2d<s32> pos_other(0, 0);
+	// Don't generate existing stuff
+	video::ITexture *t = m_texturecache.get(spec);
+	if(t != NULL)
+	{
+		dstream<<"WARNING: Existing stuff requested from "
+				"getTextureDirect()"<<std::endl;
+		return t;
+	}
+	
+	video::IVideoDriver* driver = m_device->getVideoDriver();
 
-	video::IImage *baseimage = driver->createImage(original, pos_base, dim);
-	assert(baseimage);
+	/*
+		An image will be built from files and then converted into a texture.
+	*/
+	video::IImage *baseimg = NULL;
 
-	video::IImage *blittedimage = driver->createImageFromFile(porting::getDataPath(blitted_name.c_str()).c_str());
-	assert(blittedimage);
+	/*
+		Irrlicht requires a name for every texture, with which it
+		will be stored internally in irrlicht.
+	*/
+	std::string texture_name;
+
+	for(u32 i=0; i<TEXTURE_SPEC_TEXTURE_COUNT; i++)
+	{
+		textureid_t tid = spec.tids[i];
+		if(tid == 0)
+			continue;
+
+		std::string name = getTextureName(tid);
+		
+		// Add something to the name so that it is a unique identifier.
+		texture_name += "[";
+		texture_name += name;
+		texture_name += "]";
+
+		if(name[0] != '[')
+		{
+			// A normal texture; load it from a file
+			std::string path = porting::getDataPath(name.c_str());
+			dstream<<"getTextureDirect(): Loading path \""<<path
+					<<"\""<<std::endl;
+			video::IImage *image = driver->createImageFromFile(path.c_str());
+
+			if(image == NULL)
+			{
+				dstream<<"WARNING: Could not load image \""<<name
+						<<"\" from path \""<<path<<"\""
+						<<" while building texture"<<std::endl;
+				continue;
+			}
+
+			// If base image is NULL, load as base.
+			if(baseimg == NULL)
+			{
+				dstream<<"Setting "<<name<<" as base"<<std::endl;
+				/*
+					Copy it this way to get an alpha channel.
+					Otherwise images with alpha cannot be blitted on 
+					images that don't have alpha in the original file.
+				*/
+				// This is a deprecated method
+				//baseimg = driver->createImage(video::ECF_A8R8G8B8, image);
+				core::dimension2d<u32> dim = image->getDimension();
+				baseimg = driver->createImage(video::ECF_A8R8G8B8, dim);
+				image->copyTo(baseimg);
+				image->drop();
+				//baseimg = image;
+			}
+			// Else blit on base.
+			else
+			{
+				dstream<<"Blitting "<<name<<" on base"<<std::endl;
+				// Size of the copied area
+				core::dimension2d<u32> dim = image->getDimension();
+				//core::dimension2d<u32> dim(16,16);
+				// Position to copy the blitted to in the base image
+				core::position2d<s32> pos_to(0,0);
+				// Position to copy the blitted from in the blitted image
+				core::position2d<s32> pos_from(0,0);
+				// Blit
+				image->copyToWithAlpha(baseimg, pos_to,
+						core::rect<s32>(pos_from, dim),
+						video::SColor(255,255,255,255),
+						NULL);
+				// Drop image
+				image->drop();
+			}
+		}
+		else
+		{
+			// A special texture modification
+			dstream<<"getTextureDirect(): generating \""<<name<<"\""
+					<<std::endl;
+			if(name.substr(0,6) == "[crack")
+			{
+				u16 progression = stoi(name.substr(6));
+				// Size of the base image
+				core::dimension2d<u32> dim(16, 16);
+				// Size of the crack image
+				//core::dimension2d<u32> dim_crack(16, 16 * CRACK_ANIMATION_LENGTH);
+				// Position to copy the crack to in the base image
+				core::position2d<s32> pos_base(0, 0);
+				// Position to copy the crack from in the crack image
+				core::position2d<s32> pos_other(0, 16 * progression);
+
+				video::IImage *crackimage = driver->createImageFromFile(
+						porting::getDataPath("crack.png").c_str());
+				crackimage->copyToWithAlpha(baseimg, v2s32(0,0),
+						core::rect<s32>(pos_other, dim),
+						video::SColor(255,255,255,255),
+						NULL);
+				crackimage->drop();
+			}
+			else if(name.substr(0,12) == "[progressbar")
+			{
+				float value = stof(name.substr(12));
+				make_progressbar(value, baseimg);
+			}
+			else
+			{
+				dstream<<"WARNING: getTextureDirect(): Invalid "
+						" texture: \""<<name<<"\""<<std::endl;
+			}
+		}
+	}
+
+	// If no resulting image, return NULL
+	if(baseimg == NULL)
+	{
+		dstream<<"getTextureDirect(): baseimg is NULL (attempted to"
+				" create texture \""<<texture_name<<"\""<<std::endl;
+		return NULL;
+	}
 	
-	// Then copy the right part of blittedimage to baseimage
-	
-	blittedimage->copyToWithAlpha(baseimage, v2s32(0,0),
-			core::rect<s32>(pos_other, dim),
-			video::SColor(255,255,255,255),
-			NULL);
-	
-	blittedimage->drop();
+	/*// DEBUG: Paint some pixels
+	video::SColor c(255,255,0,0);
+	baseimg->setPixel(1,1, c);
+	baseimg->setPixel(1,14, c);
+	baseimg->setPixel(14,1, c);
+	baseimg->setPixel(14,14, c);*/
 
 	// Create texture from resulting image
+	t = driver->addTexture(texture_name.c_str(), baseimg);
+	baseimg->drop();
 
-	video::ITexture *newtexture = driver->addTexture(newname, baseimage);
+	dstream<<"getTextureDirect(): created texture \""<<texture_name
+			<<"\""<<std::endl;
 
-	baseimage->drop();
+	return t;
 
-	return newtexture;
 }
 
-video::ITexture * make_crack(u16 progression, video::ITexture *original,
-		const char *newname, video::IVideoDriver* driver)
+void make_progressbar(float value, video::IImage *image)
 {
-	if(original == NULL)
-		return NULL;
+	if(image == NULL)
+		return;
 	
-	// Size of the base image
-	core::dimension2d<u32> dim(16, 16);
-	// Size of the crack image
-	//core::dimension2d<u32> dim_crack(16, 16 * CRACK_ANIMATION_LENGTH);
-	// Position to copy the crack to in the base image
-	core::position2d<s32> pos_base(0, 0);
-	// Position to copy the crack from in the crack image
-	core::position2d<s32> pos_other(0, 16 * progression);
-
-	video::IImage *baseimage = driver->createImage(original, pos_base, dim);
-	assert(baseimage);
-
-	video::IImage *crackimage = driver->createImageFromFile(porting::getDataPath("crack.png").c_str());
-	assert(crackimage);
-	
-	// Then copy the right part of crackimage to baseimage
-	
-	crackimage->copyToWithAlpha(baseimage, v2s32(0,0),
-			core::rect<s32>(pos_other, dim),
-			video::SColor(255,255,255,255),
-			NULL);
-	
-	crackimage->drop();
-
-	// Create texture from resulting image
-
-	video::ITexture *newtexture = driver->addTexture(newname, baseimage);
-
-	baseimage->drop();
-
-	return newtexture;
-}
-
-#if 0
-video::ITexture * make_sidegrass(video::ITexture *original,
-		const char *newname, video::IVideoDriver* driver)
-{
-	if(original == NULL)
-		return NULL;
-	
-	// Size of the base image
-	core::dimension2d<u32> dim(16, 16);
-	// Position to copy the grass to in the base image
-	core::position2d<s32> pos_base(0, 0);
-	// Position to copy the grass from in the grass image
-	core::position2d<s32> pos_other(0, 0);
-
-	video::IImage *baseimage = driver->createImage(original, pos_base, dim);
-	assert(baseimage);
-
-	video::IImage *grassimage = driver->createImageFromFile(porting::getDataPath("grass_side.png").c_str());
-	assert(grassimage);
-	
-	// Then copy the right part of grassimage to baseimage
-	
-	grassimage->copyToWithAlpha(baseimage, v2s32(0,0),
-			core::rect<s32>(pos_other, dim),
-			video::SColor(255,255,255,255),
-			NULL);
-	
-	grassimage->drop();
-
-	// Create texture from resulting image
-
-	video::ITexture *newtexture = driver->addTexture(newname, baseimage);
-
-	baseimage->drop();
-
-	return newtexture;
-}
-#endif
-
-video::ITexture * make_progressbar(float value, video::ITexture *original,
-		const char *newname, video::IVideoDriver* driver)
-{
-	if(original == NULL)
-		return NULL;
-	
-	core::position2d<s32> pos_base(0, 0);
-	core::dimension2d<u32> dim = original->getOriginalSize();
-
-	video::IImage *baseimage = driver->createImage(original, pos_base, dim);
-	assert(baseimage);
-	
-	core::dimension2d<u32> size = baseimage->getDimension();
+	core::dimension2d<u32> size = image->getDimension();
 
 	u32 barheight = 1;
 	u32 barpad_x = 1;
@@ -242,177 +297,9 @@ video::ITexture * make_progressbar(float value, video::ITexture *original,
 		u32 x = x0 + barpos.X;
 		for(u32 y=barpos.Y; y<barpos.Y+barheight; y++)
 		{
-			baseimage->setPixel(x,y, *c);
+			image->setPixel(x,y, *c);
 		}
 	}
-	
-	video::ITexture *newtexture = driver->addTexture(newname, baseimage);
-
-	baseimage->drop();
-
-	return newtexture;
-}
-
-/*
-	Texture fetcher/maker function, called always from the main thread
-*/
-
-video::ITexture* IrrlichtWrapper::getTextureDirect(const std::string &spec)
-{
-	if(spec == "")
-		return NULL;
-
-	video::IVideoDriver* driver = m_device->getVideoDriver();
-	
-	/*
-		Input (spec) is something like this:
-		"/usr/share/minetest/stone.png[[mod:mineral0[[mod:crack3"
-	*/
-	
-	video::ITexture* t = NULL;
-	std::string modmagic = "[[mod:";
-	Strfnd f(spec);
-	std::string path = f.next(modmagic);
-	t = driver->getTexture(path.c_str());
-	std::string texture_name = path;
-	while(f.atend() == false)
-	{
-		std::string mod = f.next(modmagic);
-		texture_name += modmagic + mod;
-		dstream<<"Making texture \""<<texture_name<<"\""<<std::endl;
-		/*if(mod == "sidegrass")
-		{
-			t = make_sidegrass(t, texture_name.c_str(), driver);
-		}
-		else*/
-		if(mod.substr(0, 9) == "blitname:")
-		{
-			//t = make_sidegrass(t, texture_name.c_str(), driver);
-			t = make_blitname(mod.substr(9), t, texture_name.c_str(), driver);
-		}
-		else if(mod.substr(0,5) == "crack")
-		{
-			u16 prog = stoi(mod.substr(5));
-			t = make_crack(prog, t, texture_name.c_str(), driver);
-		}
-		else if(mod.substr(0,11) == "progressbar")
-		{
-			float value = stof(mod.substr(11));
-			t = make_progressbar(value, t, texture_name.c_str(), driver);
-		}
-		else
-		{
-			dstream<<"Invalid texture mod: \""<<mod<<"\""<<std::endl;
-		}
-	}
-	return t;
-
-#if 0
-	video::ITexture* t = NULL;
-	const char *modmagic = "[[mod:";
-	const s32 modmagic_len = 6;
-	enum{
-		READMODE_PATH,
-		READMODE_MOD
-	} readmode = READMODE_PATH;
-	s32 specsize = spec.size()+1;
-	char *strcache = (char*)malloc(specsize);
-	assert(strcache);
-	char *path = NULL;
-	s32 length = 0;
-	// Next index of modmagic to be found
-	s32 modmagic_i = 0;
-	u32 i=0;
-	for(;;)
-	{
-		strcache[length++] = spec[i];
-		
-		bool got_modmagic = false;
-
-		/*
-			Check modmagic
-		*/
-		if(spec[i] == modmagic[modmagic_i])
-		{
-			modmagic_i++;
-			if(modmagic_i == modmagic_len)
-			{
-				got_modmagic = true;
-				modmagic_i = 0;
-				length -= modmagic_len;
-			}
-		}
-		else
-			modmagic_i = 0;
-		
-		// Set i to be the length of read string
-		i++;
-
-		if(got_modmagic || i >= spec.size())
-		{
-			strcache[length] = '\0';
-			// Now our string is in strcache, ending in \0
-			
-			if(readmode == READMODE_PATH)
-			{
-				// Get initial texture (strcache is path)
-				assert(t == NULL);
-				t = driver->getTexture(strcache);
-				readmode = READMODE_MOD;
-				path = strcache;
-				strcache = (char*)malloc(specsize);
-				assert(strcache);
-			}
-			else
-			{
-				dstream<<"Parsing mod \""<<strcache<<"\""<<std::endl;
-				// The name of the result of adding this mod.
-				// This doesn't have to be fast so std::string is used.
-				std::string name(path);
-				name += "[[mod:";
-				name += strcache;
-				dstream<<"Name of modded texture is \""<<name<<"\""
-						<<std::endl;
-				// Sidegrass
-				if(strcmp(strcache, "sidegrass") == 0)
-				{
-					t = make_sidegrass(t, name.c_str(), driver);
-				}
-				else
-				{
-					dstream<<"Invalid texture mod"<<std::endl;
-				}
-			}
-
-			length = 0;
-		}
-
-		if(i >= spec.size())
-			break;
-	}
-
-	/*if(spec.mod == NULL)
-	{
-		dstream<<"IrrlichtWrapper::getTextureDirect: Loading texture "
-				<<spec.path<<std::endl;
-		return driver->getTexture(spec.path.c_str());
-	}
-
-	dstream<<"IrrlichtWrapper::getTextureDirect: Loading and modifying "
-			"texture "<<spec.path<<" to make "<<spec.name<<std::endl;
-
-	video::ITexture *base = driver->getTexture(spec.path.c_str());
-	video::ITexture *result = spec.mod->make(base, spec.name.c_str(), driver);
-
-	delete spec.mod;*/
-	
-	if(strcache)
-		free(strcache);
-	if(path)
-		free(path);
-	
-	return t;
-#endif
 }
 
 

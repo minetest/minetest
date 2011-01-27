@@ -760,17 +760,20 @@ class Settings
 {
 public:
 
-	// Returns false on EOF
-	bool parseConfigObject(std::istream &is)
+	void writeLines(std::ostream &os)
 	{
-		if(is.eof())
-			return false;
-		
-		// NOTE: This function will be expanded to allow multi-line settings
-		std::string line;
-		std::getline(is, line);
-		//dstream<<"got line: \""<<line<<"\""<<std::endl;
+		for(core::map<std::string, std::string>::Iterator
+				i = m_settings.getIterator();
+				i.atEnd() == false; i++)
+		{
+			std::string name = i.getNode()->getKey();
+			std::string value = i.getNode()->getValue();
+			os<<name<<" = "<<value<<"\n";
+		}
+	}
 
+	bool parseConfigLine(const std::string &line)
+	{
 		std::string trimmedline = trim(line);
 		
 		// Ignore comments
@@ -796,6 +799,23 @@ public:
 		m_settings[name] = value;
 		
 		return true;
+	}
+
+	// Returns false on EOF
+	bool parseConfigObject(std::istream &is)
+	{
+		if(is.eof())
+			return false;
+		
+		/*
+			NOTE: This function might be expanded to allow multi-line
+			      settings.
+		*/
+		std::string line;
+		std::getline(is, line);
+		//dstream<<"got line: \""<<line<<"\""<<std::endl;
+
+		return parseConfigLine(line);
 	}
 
 	/*
@@ -1089,10 +1109,7 @@ public:
 
 	float getFloat(std::string name)
 	{
-		float f;
-		std::istringstream vis(get(name));
-		vis>>f;
-		return f;
+		return stof(get(name));
 	}
 
 	u16 getU16(std::string name)
@@ -1126,6 +1143,34 @@ public:
 	s32 getS32(std::string name)
 	{
 		return stoi(get(name));
+	}
+
+	v3f getV3F(std::string name)
+	{
+		v3f value;
+		Strfnd f(get(name));
+		f.next("(");
+		value.X = stof(f.next(","));
+		value.Y = stof(f.next(","));
+		value.Z = stof(f.next(")"));
+		return value;
+	}
+
+	void setS32(std::string name, s32 value)
+	{
+		set(name, itos(value));
+	}
+
+	void setFloat(std::string name, float value)
+	{
+		set(name, ftos(value));
+	}
+
+	void setV3F(std::string name, v3f value)
+	{
+		std::ostringstream os;
+		os<<"("<<value.X<<","<<value.Y<<","<<value.Z<<")";
+		set(name, os.str());
 	}
 
 	void clear()
@@ -1627,6 +1672,122 @@ private:
 	core::map<Value, u8> m_map;
 	core::list<Value> m_list;
 };
+
+#if 0
+template<typename Key, typename Value>
+class MutexedCache
+{
+public:
+	MutexedCache()
+	{
+		m_mutex.Init();
+		assert(m_mutex.IsInitialized());
+	}
+	
+	void set(const Key &name, const Value &value)
+	{
+		JMutexAutoLock lock(m_mutex);
+
+		m_values[name] = value;
+	}
+	
+	bool get(const Key &name, Value *result)
+	{
+		JMutexAutoLock lock(m_mutex);
+
+		typename core::map<Key, Value>::Node *n;
+		n = m_values.find(name);
+
+		if(n == NULL)
+			return false;
+
+		*result = n->getValue();
+		return true;
+	}
+
+private:
+	core::map<Key, Value> m_values;
+	JMutex m_mutex;
+};
+#endif
+
+/*
+	Generates ids for comparable values.
+	Id=0 is reserved for "no value".
+
+	Is fast at:
+	- Returning value by id (very fast)
+	- Returning id by value
+	- Generating a new id for a value
+
+	Is not able to:
+	- Remove an id/value pair (is possible to implement but slow)
+*/
+template<typename T>
+class MutexedIdGenerator
+{
+public:
+	MutexedIdGenerator()
+	{
+		m_mutex.Init();
+		assert(m_mutex.IsInitialized());
+	}
+	
+	// Returns true if found
+	bool getValue(u32 id, T &value)
+	{
+		if(id == 0)
+			return false;
+		JMutexAutoLock lock(m_mutex);
+		if(m_id_to_value.size() < id)
+			return false;
+		value = m_id_to_value[id-1];
+		return true;
+	}
+	
+	// If id exists for value, returns the id.
+	// Otherwise generates an id for the value.
+	u32 getId(const T &value)
+	{
+		JMutexAutoLock lock(m_mutex);
+		typename core::map<T, u32>::Node *n;
+		n = m_value_to_id.find(value);
+		if(n != NULL)
+			return n->getValue();
+		m_id_to_value.push_back(value);
+		u32 new_id = m_id_to_value.size();
+		m_value_to_id.insert(value, new_id);
+		return new_id;
+	}
+
+private:
+	JMutex m_mutex;
+	// Values are stored here at id-1 position (id 1 = [0])
+	core::array<T> m_id_to_value;
+	core::map<T, u32> m_value_to_id;
+};
+
+/*
+	Checks if a string contains only supplied characters
+*/
+inline bool string_allowed(const std::string &s, const std::string &allowed_chars)
+{
+	for(u32 i=0; i<s.size(); i++)
+	{
+		bool confirmed = false;
+		for(u32 j=0; j<allowed_chars.size(); j++)
+		{
+			if(s[i] == allowed_chars[j])
+			{
+				confirmed = true;
+				break;
+			}
+		}
+		if(confirmed == false)
+			return false;
+	}
+	return true;
+}
 
 #endif
 

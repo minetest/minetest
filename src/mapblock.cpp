@@ -263,6 +263,7 @@ void MapBlock::makeFastFace(TileSpec tile, u8 light, v3f p,
 	
 	//u8 li = decode_light(light);
 	u8 li = light;
+	//u8 li = 255; //DEBUG
 
 	u8 alpha = tile.alpha;
 	/*u8 alpha = 255;
@@ -309,15 +310,16 @@ TileSpec MapBlock::getNodeTile(MapNode mn, v3s16 p, v3s16 face_dir)
 		struct NodeMod mod = n->getValue();
 		if(mod.type == NODEMOD_CHANGECONTENT)
 		{
-			//spec = content_tile(mod.param, face_dir);
 			MapNode mn2(mod.param);
 			spec = mn2.getTile(face_dir);
 		}
 		if(mod.type == NODEMOD_CRACK)
 		{
 			std::ostringstream os;
-			os<<"[[mod:crack"<<mod.param;
-			spec.name += os.str();
+			os<<"[crack"<<mod.param;
+
+			textureid_t tid = g_irrlicht->getTextureId(os.str());
+			spec.spec.addTid(tid);
 		}
 	}
 	
@@ -601,7 +603,8 @@ void MapBlock::updateMesh(u32 daynight_ratio)
 	*/
 	
 	{
-		TimeTaker timer2("updateMesh() collect");
+		// 4-23ms for MAP_BLOCKSIZE=16
+		//TimeTaker timer2("updateMesh() collect");
 
 		// Lock this, as m_temp_mods will be used directly
 		JMutexAutoLock lock(m_temp_mods_mutex);
@@ -667,22 +670,25 @@ void MapBlock::updateMesh(u32 daynight_ratio)
 		// avg 0ms (100ms spikes when loading textures the first time)
 		//TimeTaker timer2("updateMesh() mesh building");
 
+		video::SMaterial material;
+		material.Lighting = false;
+		material.BackfaceCulling = false;
+		material.setFlag(video::EMF_BILINEAR_FILTER, false);
+		material.setFlag(video::EMF_ANTI_ALIASING, video::EAAM_OFF);
+		material.setFlag(video::EMF_FOG_ENABLE, true);
+
 		for(u32 i=0; i<fastfaces_new.size(); i++)
 		{
 			FastFace &f = fastfaces_new[i];
 
 			const u16 indices[] = {0,1,2,2,3,0};
 
-			video::ITexture *texture = g_irrlicht->getTexture(f.tile.name);
-			video::SMaterial material;
-			material.Lighting = false;
-			material.BackfaceCulling = false;
-			material.setFlag(video::EMF_BILINEAR_FILTER, false);
-			material.setFlag(video::EMF_ANTI_ALIASING, video::EAAM_OFF);
-			material.setFlag(video::EMF_FOG_ENABLE, true);
+			video::ITexture *texture = g_irrlicht->getTexture(f.tile.spec);
 			material.setTexture(0, texture);
 			if(f.tile.alpha != 255)
 				material.MaterialType = video::EMT_TRANSPARENT_VERTEX_ALPHA;
+			else
+				material.MaterialType = video::EMT_SOLID;
 			
 			collector.append(material, f.vertices, 4, indices, 6);
 		}
@@ -691,12 +697,21 @@ void MapBlock::updateMesh(u32 daynight_ratio)
 	/*
 		Add special graphics:
 		- torches
-		
-		TODO: Optimize by using same meshbuffer for same textures
+		- flowing water
 	*/
 
 	// 0ms
 	//TimeTaker timer2("updateMesh() adding special stuff");
+
+	// Flowing water material
+	video::SMaterial material_w1;
+	material_w1.setFlag(video::EMF_LIGHTING, false);
+	material_w1.setFlag(video::EMF_BACK_FACE_CULLING, false);
+	material_w1.setFlag(video::EMF_BILINEAR_FILTER, false);
+	material_w1.setFlag(video::EMF_FOG_ENABLE, true);
+	material_w1.MaterialType = video::EMT_TRANSPARENT_VERTEX_ALPHA;
+	material_w1.setTexture(0,
+			g_irrlicht->getTexture("water.png"));
 
 	for(s16 z=0; z<MAP_BLOCKSIZE; z++)
 	for(s16 y=0; y<MAP_BLOCKSIZE; y++)
@@ -751,17 +766,17 @@ void MapBlock::updateMesh(u32 daynight_ratio)
 					= video::EMT_TRANSPARENT_ALPHA_CHANNEL_REF;
 			if(dir == v3s16(0,-1,0))
 				material.setTexture(0,
-						g_irrlicht->getTexture(porting::getDataPath("torch_on_floor.png").c_str()));
+						g_irrlicht->getTexture("torch_on_floor.png"));
 			else if(dir == v3s16(0,1,0))
 				material.setTexture(0,
-						g_irrlicht->getTexture(porting::getDataPath("torch_on_ceiling.png").c_str()));
+						g_irrlicht->getTexture("torch_on_ceiling.png"));
 			// For backwards compatibility
 			else if(dir == v3s16(0,0,0))
 				material.setTexture(0,
-						g_irrlicht->getTexture(porting::getDataPath("torch_on_floor.png").c_str()));
+						g_irrlicht->getTexture("torch_on_floor.png"));
 			else
 				material.setTexture(0, 
-						g_irrlicht->getTexture(porting::getDataPath("torch.png").c_str()));
+						g_irrlicht->getTexture("torch.png"));
 
 			u16 indices[] = {0,1,2,2,3,0};
 			// Add to mesh collector
@@ -947,19 +962,9 @@ void MapBlock::updateMesh(u32 daynight_ratio)
 					vertices[j].Pos += intToFloat(p + getPosRelative());
 				}
 
-				// Set material
-				video::SMaterial material;
-				material.setFlag(video::EMF_LIGHTING, false);
-				material.setFlag(video::EMF_BACK_FACE_CULLING, false);
-				material.setFlag(video::EMF_BILINEAR_FILTER, false);
-				material.setFlag(video::EMF_FOG_ENABLE, true);
-				material.MaterialType = video::EMT_TRANSPARENT_VERTEX_ALPHA;
-				material.setTexture(0,
-						g_irrlicht->getTexture(porting::getDataPath("water.png").c_str()));
-
 				u16 indices[] = {0,1,2,2,3,0};
 				// Add to mesh collector
-				collector.append(material, vertices, 4, indices, 6);
+				collector.append(material_w1, vertices, 4, indices, 6);
 			}
 			
 			/*
@@ -984,19 +989,9 @@ void MapBlock::updateMesh(u32 daynight_ratio)
 					vertices[i].Pos += intToFloat(p + getPosRelative());
 				}
 
-				// Set material
-				video::SMaterial material;
-				material.setFlag(video::EMF_LIGHTING, false);
-				material.setFlag(video::EMF_BACK_FACE_CULLING, false);
-				material.setFlag(video::EMF_BILINEAR_FILTER, false);
-				material.setFlag(video::EMF_FOG_ENABLE, true);
-				material.MaterialType = video::EMT_TRANSPARENT_VERTEX_ALPHA;
-				material.setTexture(0,
-						g_irrlicht->getTexture(porting::getDataPath("water.png").c_str()));
-
 				u16 indices[] = {0,1,2,2,3,0};
 				// Add to mesh collector
-				collector.append(material, vertices, 4, indices, 6);
+				collector.append(material_w1, vertices, 4, indices, 6);
 			}
 		}
 	}

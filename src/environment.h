@@ -63,6 +63,10 @@ public:
 	core::list<Player*> getPlayers();
 	core::list<Player*> getPlayers(bool ignore_disconnected);
 	void printPlayers(std::ostream &o);
+	
+	void serializePlayers(const std::string &savedir);
+	// This loads players as ServerRemotePlayers
+	void deSerializePlayers(const std::string &savedir);
 
 #ifndef SERVER
 	void updateMeshes(v3s16 blockpos);

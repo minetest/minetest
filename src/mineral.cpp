@@ -17,40 +17,33 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
-#ifndef MINERAL_HEADER
-#define MINERAL_HEADER
+#include "mineral.h"
 
-#include "inventory.h"
-#include "texture.h"
-#include "irrlichtwrapper.h"
-
-/*
-	Minerals
-
-	Value is stored in the lowest 5 bits of a MapNode's CPT_MINERAL
-	type param.
-*/
-
-// Caches textures
-void init_mineral(IrrlichtWrapper *irrlicht);
-
-#define MINERAL_NONE 0
-#define MINERAL_COAL 1
-#define MINERAL_IRON 2
-
-#define MINERAL_COUNT 3
-
-textureid_t mineral_block_texture(u8 mineral);
-
-inline CraftItem * getDiggedMineralItem(u8 mineral)
+const char *mineral_filenames[MINERAL_COUNT] =
 {
-	if(mineral == MINERAL_COAL)
-		return new CraftItem("lump_of_coal", 1);
-	else if(mineral == MINERAL_IRON)
-		return new CraftItem("lump_of_iron", 1);
+	NULL,
+	"mineral_coal.png",
+	"mineral_iron.png"
+};
 
-	return NULL;
+textureid_t mineral_textures[MINERAL_COUNT] = {0};
+
+void init_mineral(IrrlichtWrapper *irrlicht)
+{
+	for(u32 i=0; i<MINERAL_COUNT; i++)
+	{
+		if(mineral_filenames[i] == NULL)
+			continue;
+		mineral_textures[i] = irrlicht->getTextureId(mineral_filenames[i]);
+	}
 }
 
-#endif
+textureid_t mineral_block_texture(u8 mineral)
+{
+	if(mineral >= MINERAL_COUNT)
+		return 0;
+	
+	return mineral_textures[mineral];
+}
+
 

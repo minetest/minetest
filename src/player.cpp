@@ -25,6 +25,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "map.h"
 #include "connection.h"
 #include "constants.h"
+#include "utility.h"
 
 Player::Player():
 	touching_ground(false),
@@ -34,13 +35,19 @@ Player::Player():
 	m_position(0,0,0)
 {
 	updateName("<not set>");
-	inventory.addList("main", PLAYER_INVENTORY_SIZE);
-	inventory.addList("craft", 9);
-	inventory.addList("craftresult", 1);
+	resetInventory();
 }
 
 Player::~Player()
 {
+}
+
+void Player::resetInventory()
+{
+	inventory.clear();
+	inventory.addList("main", PLAYER_INVENTORY_SIZE);
+	inventory.addList("craft", 9);
+	inventory.addList("craftresult", 1);
 }
 
 // Y direction is ignored
@@ -78,6 +85,50 @@ void Player::accelerate(v3f target_speed, f32 max_increase)
 	else if(m_speed.Z > target_speed.Z)
 		m_speed.Z = target_speed.Z;
 #endif
+}
+
+void Player::serialize(std::ostream &os)
+{
+	// Utilize a Settings object for storing values
+	Settings args;
+	args.setS32("version", 1);
+	args.set("name", m_name);
+	args.setFloat("pitch", m_pitch);
+	args.setFloat("yaw", m_yaw);
+	args.setV3F("position", m_position);
+
+	args.writeLines(os);
+
+	os<<"PlayerArgsEnd\n";
+
+	inventory.serialize(os);
+}
+
+void Player::deSerialize(std::istream &is)
+{
+	Settings args;
+	
+	for(;;)
+	{
+		if(is.eof())
+			throw SerializationError
+					("Player::deSerialize(): PlayerArgsEnd not found");
+		std::string line;
+		std::getline(is, line);
+		std::string trimmedline = trim(line);
+		if(trimmedline == "PlayerArgsEnd")
+			break;
+		args.parseConfigLine(line);
+	}
+
+	//args.getS32("version");
+	std::string name = args.get("name");
+	updateName(name.c_str());
+	m_pitch = args.getFloat("pitch");
+	m_yaw = args.getFloat("yaw");
+	m_position = args.getV3F("position");
+
+	inventory.deSerialize(is);
 }
 
 /*

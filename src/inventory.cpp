@@ -217,7 +217,7 @@ void InventoryList::serialize(std::ostream &os)
 		os<<"\n";
 	}
 
-	os<<"end\n";
+	os<<"EndInventoryList\n";
 }
 
 void InventoryList::deSerialize(std::istream &is)
@@ -238,7 +238,7 @@ void InventoryList::deSerialize(std::istream &is)
 		std::string name;
 		std::getline(iss, name, ' ');
 
-		if(name == "end")
+		if(name == "EndInventoryList")
 		{
 			break;
 		}
@@ -497,7 +497,7 @@ void Inventory::serialize(std::ostream &os)
 		list->serialize(os);
 	}
 
-	os<<"end\n";
+	os<<"EndInventory\n";
 }
 
 void Inventory::deSerialize(std::istream &is)
@@ -514,7 +514,7 @@ void Inventory::deSerialize(std::istream &is)
 		std::string name;
 		std::getline(iss, name, ' ');
 
-		if(name == "end")
+		if(name == "EndInventory")
 		{
 			break;
 		}
