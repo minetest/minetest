@@ -17,35 +17,39 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
-#include "mineral.h"
+#ifndef IIRRLICHTWRAPPER_HEADER
+#define IIRRLICHTWRAPPER_HEADER
 
+#include "common_irrlicht.h"
 
-const char *mineral_filenames[MINERAL_COUNT] =
+/*
+	IrrlichtWrapper prototype.
+
+	Server supplies this as a dummy wrapper.
+*/
+
+class IIrrlichtWrapper
 {
-	NULL,
-	"mineral_coal.png",
-	"mineral_iron.png"
+public:
+	IIrrlichtWrapper()
+	{
+	}
+	virtual ~IIrrlichtWrapper()
+	{
+	}
+	
+	virtual u32 getTime()
+	{
+		return 0;
+	}
+	
+	virtual textureid_t getTextureId(const std::string &name){ return 0; }
+	virtual std::string getTextureName(textureid_t id){ return ""; }
+	virtual video::ITexture* getTexture(const std::string &name){ return NULL; }
+	virtual video::ITexture* getTexture(const TextureSpec &spec){ return NULL; }
+	
+private:
 };
 
-textureid_t mineral_textures[MINERAL_COUNT] = {0};
-
-void init_mineral(IIrrlichtWrapper *irrlicht)
-{
-	for(u32 i=0; i<MINERAL_COUNT; i++)
-	{
-		if(mineral_filenames[i] == NULL)
-			continue;
-		mineral_textures[i] = irrlicht->getTextureId(mineral_filenames[i]);
-	}
-}
-
-textureid_t mineral_block_texture(u8 mineral)
-{
-	if(mineral >= MINERAL_COUNT)
-		return 0;
-	
-	return mineral_textures[mineral];
-}
-
-
+#endif
 

@@ -25,6 +25,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "debug.h"
 #include "utility.h"
 #include "texture.h"
+#include "iirrlichtwrapper.h"
 
 #include <jmutex.h>
 #include <jmutexautolock.h>
@@ -125,7 +126,7 @@ private:
 	Also caches texture specification strings to ids and textures.
 */
 
-class IrrlichtWrapper
+class IrrlichtWrapper : public IIrrlichtWrapper
 {
 public:
 	/*

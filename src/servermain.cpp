@@ -68,6 +68,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "porting.h"
 #include "materials.h"
 #include "config.h"
+#include "mineral.h"
 
 /*
 	Settings.
@@ -255,7 +256,13 @@ int main(int argc, char *argv[])
 	{
 		run_tests();
 	}
+
+	// Initialize stuff
 	
+	IIrrlichtWrapper irrlicht; // Dummy
+	init_mapnode(&irrlicht);
+	init_mineral(&irrlicht);
+
 	// Read map parameters from settings
 
 	HMParams hm_params;

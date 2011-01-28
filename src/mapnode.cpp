@@ -36,7 +36,7 @@ ContentFeatures & content_features(u8 i)
 	return g_content_features[i];
 }
 
-void init_mapnode(IrrlichtWrapper *irrlicht)
+void init_mapnode(IIrrlichtWrapper *irrlicht)
 {
 	u8 i;
 	ContentFeatures *f = NULL;

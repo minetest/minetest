@@ -27,7 +27,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "exceptions.h"
 #include "serialization.h"
 #include "tile.h"
-#include "irrlichtwrapper.h"
+#include "iirrlichtwrapper.h"
 
 /*
 	Initializes all kind of stuff in here.
@@ -35,7 +35,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 	irrlicht: Used for getting texture ids.
 */
-void init_mapnode(IrrlichtWrapper *irrlicht);
+void init_mapnode(IIrrlichtWrapper *irrlicht);
 
 // Initializes g_content_inventory_texture_paths
 void init_content_inventory_texture_paths();
