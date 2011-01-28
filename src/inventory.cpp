@@ -98,11 +98,11 @@ video::ITexture * MapBlockObjectItem::getImage()
 {
 	if(m_inventorystring.substr(0,3) == "Rat")
 		//return g_device->getVideoDriver()->getTexture(porting::getDataPath("rat.png").c_str());
-		return g_irrlicht->getTexture(porting::getDataPath("rat.png").c_str());
+		return g_irrlicht->getTexture("rat.png");
 	
 	if(m_inventorystring.substr(0,4) == "Sign")
 		//return g_device->getVideoDriver()->getTexture(porting::getDataPath("sign.png").c_str());
-		return g_irrlicht->getTexture(porting::getDataPath("sign.png").c_str());
+		return g_irrlicht->getTexture("sign.png");
 
 	return NULL;
 }
