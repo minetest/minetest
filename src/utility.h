@@ -793,8 +793,8 @@ public:
 		std::string value = sf.next("\n");
 		value = trim(value);
 
-		dstream<<"Config name=\""<<name<<"\" value=\""
-				<<value<<"\""<<std::endl;
+		/*dstream<<"Config name=\""<<name<<"\" value=\""
+				<<value<<"\""<<std::endl;*/
 		
 		m_settings[name] = value;
 		
