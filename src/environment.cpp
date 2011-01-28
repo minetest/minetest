@@ -322,7 +322,7 @@ void Environment::serializePlayers(const std::string &savedir)
 		// Full path to this file
 		std::string path = players_path + "/" + player_files[i].name;
 
-		dstream<<"Checking player file "<<path<<std::endl;
+		//dstream<<"Checking player file "<<path<<std::endl;
 
 		// Load player to see what is its name
 		ServerRemotePlayer testplayer;
@@ -337,18 +337,18 @@ void Environment::serializePlayers(const std::string &savedir)
 			testplayer.deSerialize(is);
 		}
 
-		dstream<<"Loaded test player with name "<<testplayer.getName()<<std::endl;
+		//dstream<<"Loaded test player with name "<<testplayer.getName()<<std::endl;
 		
 		// Search for the player
 		std::string playername = testplayer.getName();
 		Player *player = getPlayer(playername.c_str());
 		if(player == NULL)
 		{
-			dstream<<"Didn't find matching player, ignoring file."<<std::endl;
+			dstream<<"Didn't find matching player, ignoring file "<<path<<std::endl;
 			continue;
 		}
 
-		dstream<<"Found matching player, overwriting."<<std::endl;
+		//dstream<<"Found matching player, overwriting."<<std::endl;
 
 		// OK, found. Save player there.
 		{
@@ -370,15 +370,15 @@ void Environment::serializePlayers(const std::string &savedir)
 		Player *player = *i;
 		if(saved_players.find(player) != NULL)
 		{
-			dstream<<"Player "<<player->getName()
-					<<" was already saved."<<std::endl;
+			/*dstream<<"Player "<<player->getName()
+					<<" was already saved."<<std::endl;*/
 			continue;
 		}
 		std::string playername = player->getName();
 		// Don't save unnamed player
 		if(playername == "")
 		{
-			dstream<<"Not saving unnamed player."<<std::endl;
+			//dstream<<"Not saving unnamed player."<<std::endl;
 			continue;
 		}
 		/*
@@ -399,24 +399,26 @@ void Environment::serializePlayers(const std::string &savedir)
 		}
 		if(found == false)
 		{
-			dstream<<"Didn't find free file for player"<<std::endl;
+			dstream<<"WARNING: Didn't find free file for player"<<std::endl;
 			continue;
 		}
 
 		{
-			dstream<<"Saving player "<<player->getName()<<" to "
-					<<path<<std::endl;
+			/*dstream<<"Saving player "<<player->getName()<<" to "
+					<<path<<std::endl;*/
 			// Open file and serialize
 			std::ofstream os(path.c_str(), std::ios_base::binary);
 			if(os.good() == false)
 			{
-				dstream<<"Failed to overwrite "<<path<<std::endl;
+				dstream<<"WARNING: Failed to overwrite "<<path<<std::endl;
 				continue;
 			}
 			player->serialize(os);
 			saved_players.insert(player, true);
 		}
 	}
+
+	//dstream<<"Saved "<<saved_players.size()<<" players."<<std::endl;
 }
 
 void Environment::deSerializePlayers(const std::string &savedir)
