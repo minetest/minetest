@@ -40,6 +40,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "mapsector.h"
 #include "constants.h"
 #include "voxel.h"
+#include "mapchunk.h"
 
 #define MAPTYPE_BASE 0
 #define MAPTYPE_SERVER 1
@@ -85,9 +86,14 @@ public:
 			(float)p.Z * BS + 0.5*BS
 		);
 	}
-
-	//bool sectorExists(v2s16 p);
+	
+	// On failure returns NULL
+	MapSector * getSectorNoGenerateNoExNoLock(v2s16 p2d);
+	// On failure returns NULL
+	MapSector * getSectorNoGenerateNoEx(v2s16 p2d);
+	// On failure throws InvalidPositionException
 	MapSector * getSectorNoGenerate(v2s16 p2d);
+
 	/*
 		This is overloaded by ClientMap and ServerMap to allow
 		their differing fetch methods.
@@ -318,9 +324,90 @@ public:
 	}
 
 	/*
-		Forcefully get a sector from somewhere
+		Map generation
+	*/
+	
+	// Returns the position of the chunk where the sector is in
+	v2s16 sector_to_chunk(v2s16 sectorpos)
+	{
+		sectorpos.X += m_chunksize / 2;
+		sectorpos.Y += m_chunksize / 2;
+		v2s16 chunkpos = getContainerPos(sectorpos, m_chunksize);
+		return chunkpos;
+	}
+	
+	// Returns the position of the (0,0) sector of the chunk
+	v2s16 chunk_to_sector(v2s16 chunkpos)
+	{
+		v2s16 sectorpos(
+			chunkpos.X * m_chunksize,
+			chunkpos.Y * m_chunksize
+		);
+		sectorpos.X -= m_chunksize / 2;
+		sectorpos.Y -= m_chunksize / 2;
+		return sectorpos;
+	}
+
+	/*
+		Get a chunk.
+	*/
+	MapChunk *getChunk(v2s16 chunkpos)
+	{
+		core::map<v2s16, MapChunk*>::Node *n;
+		n = m_chunks.find(chunkpos);
+		if(n == NULL)
+			return NULL;
+		return n->getValue();
+	}
+
+	/*
+		Generate a chunk.
+
+		All chunks touching this one can be altered also.
+
+		Doesn't update lighting.
+	*/
+	MapChunk* generateChunkRaw(v2s16 chunkpos);
+	
+	/*
+		Generate a chunk and its neighbors so that it won't be touched
+		anymore.
+
+		Doesn't update lighting.
+	*/
+	MapChunk* generateChunk(v2s16 chunkpos);
+	
+	/*
+		Generate a sector.
+		
+		This is mainly called by generateChunkRaw.
+	*/
+	ServerMapSector * generateSector(v2s16 p);
+
+	/*
+		Get a sector from somewhere.
+		- Check memory
+		- Check disk
+		- Generate chunk
 	*/
 	MapSector * emergeSector(v2s16 p);
+
+	MapBlock * generateBlock(
+			v3s16 p,
+			MapBlock *original_dummy,
+			ServerMapSector *sector,
+			core::map<v3s16, MapBlock*> &changed_blocks,
+			core::map<v3s16, MapBlock*> &lighting_invalidated_blocks
+	);
+
+	MapBlock * emergeBlock(
+			v3s16 p,
+			bool only_from_disk,
+			core::map<v3s16, MapBlock*> &changed_blocks,
+			core::map<v3s16, MapBlock*> &lighting_invalidated_blocks
+	);
+
+#if 0
 	/*
 		Forcefully get a block from somewhere.
 
@@ -346,7 +433,12 @@ public:
 			core::map<v3s16, MapBlock*> &changed_blocks,
 			core::map<v3s16, MapBlock*> &lighting_invalidated_blocks
 	);
+#endif
 
+	/*
+		Misc. helper functions for fiddling with directory and file
+		names when saving
+	*/
 	void createDir(std::string path);
 	void createSaveDir();
 	// returns something like "xxxxxxxx"
@@ -396,7 +488,16 @@ private:
 
 	std::string m_savedir;
 	bool m_map_saving_enabled;
+
+	// Chunk size in MapSectors
+	s16 m_chunksize;
+	// Chunks
+	core::map<v2s16, MapChunk*> m_chunks;
 };
+
+/*
+	ClientMap stuff
+*/
 
 #ifndef SERVER
 

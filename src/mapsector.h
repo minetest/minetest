@@ -67,6 +67,7 @@ public:
 		return m_pos;
 	}
 
+	MapBlock * getBlockNoCreateNoEx(s16 y);
 	MapBlock * getBlockNoCreate(s16 y);
 	MapBlock * createBlankBlockNoInsert(s16 y);
 	MapBlock * createBlankBlock(s16 y);

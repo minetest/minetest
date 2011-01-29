@@ -67,10 +67,8 @@ Map::~Map()
 	}
 }
 
-MapSector * Map::getSectorNoGenerate(v2s16 p)
+MapSector * Map::getSectorNoGenerateNoExNoLock(v2s16 p)
 {
-	JMutexAutoLock lock(m_sector_mutex);
-
 	if(m_sector_cache != NULL && p == m_sector_cache_p){
 		MapSector * sector = m_sector_cache;
 		// Reset inactivity timer
@@ -79,11 +77,9 @@ MapSector * Map::getSectorNoGenerate(v2s16 p)
 	}
 	
 	core::map<v2s16, MapSector*>::Node *n = m_sectors.find(p);
-	// If sector doesn't exist, throw an exception
+	
 	if(n == NULL)
-	{
-		throw InvalidPositionException();
-	}
+		return NULL;
 	
 	MapSector *sector = n->getValue();
 	
@@ -91,10 +87,24 @@ MapSector * Map::getSectorNoGenerate(v2s16 p)
 	m_sector_cache_p = p;
 	m_sector_cache = sector;
 
-	//MapSector * ref(sector);
-	
 	// Reset inactivity timer
 	sector->usage_timer = 0.0;
+	return sector;
+}
+
+MapSector * Map::getSectorNoGenerateNoEx(v2s16 p)
+{
+	JMutexAutoLock lock(m_sector_mutex);
+
+	return getSectorNoGenerateNoExNoLock(p);
+}
+
+MapSector * Map::getSectorNoGenerate(v2s16 p)
+{
+	MapSector *sector = getSectorNoGenerateNoEx(p);
+	if(sector == NULL)
+		throw InvalidPositionException();
+	
 	return sector;
 }
 
@@ -630,6 +640,8 @@ void Map::updateLighting(enum LightBank bank,
 	// For debugging
 	//bool debug=true;
 	//u32 count_was = modified_blocks.size();
+	
+	core::map<v3s16, MapBlock*> blocks_to_update;
 
 	core::map<v3s16, bool> light_sources;
 	
@@ -649,6 +661,8 @@ void Map::updateLighting(enum LightBank bank,
 		
 			v3s16 pos = block->getPos();
 			modified_blocks.insert(pos, block);
+
+			blocks_to_update.insert(pos, block);
 
 			/*
 				Clear all light from block
@@ -699,10 +713,12 @@ void Map::updateLighting(enum LightBank bank,
 			}
 			else if(bank == LIGHTBANK_NIGHT)
 			{
+				// For night lighting, sunlight is not propagated
 				break;
 			}
 			else
 			{
+				// Invalid lighting bank
 				assert(0);
 			}
 				
@@ -710,7 +726,7 @@ void Map::updateLighting(enum LightBank bank,
 					<<pos.X<<","<<pos.Y<<","<<pos.Z<<") not valid"
 					<<std::endl;*/
 
-			// Else get the block below and loop to it
+			// Bottom sunlight is not valid; get the block and loop to it
 
 			pos.Y--;
 			try{
@@ -737,13 +753,6 @@ void Map::updateLighting(enum LightBank bank,
 		dstream<<"unspreadLight modified "<<diff<<std::endl;
 	}
 
-	// TODO: Spread light from propagated sunlight?
-	// Yes, add it to light_sources... somehow.
-	// It has to be added at somewhere above, in the loop.
-	// TODO
-	// NOTE: This actually works fine without doing so
-	//       - Find out why it works
-
 	{
 		TimeTaker timer("spreadLight");
 		spreadLight(bank, light_sources, modified_blocks);
@@ -759,17 +768,44 @@ void Map::updateLighting(enum LightBank bank,
 	
 	{
 		//MapVoxelManipulator vmanip(this);
-
-		ManualMapVoxelManipulator vmanip(this);
 		
+		// Make a manual voxel manipulator and load all the blocks
+		// that touch the requested blocks
+		ManualMapVoxelManipulator vmanip(this);
 		core::map<v3s16, MapBlock*>::Iterator i;
-		i = a_blocks.getIterator();
+		i = blocks_to_update.getIterator();
 		for(; i.atEnd() == false; i++)
 		{
 			MapBlock *block = i.getNode()->getValue();
 			v3s16 p = block->getPos();
+			
+			// Add all surrounding blocks
 			vmanip.initialEmerge(p - v3s16(1,1,1), p + v3s16(1,1,1));
+
+			/*
+				Add all surrounding blocks that have up-to-date lighting
+				NOTE: This doesn't quite do the job (not everything
+				      appropriate is lighted)
+			*/
+			/*for(s16 z=-1; z<=1; z++)
+			for(s16 y=-1; y<=1; y++)
+			for(s16 x=-1; x<=1; x++)
+			{
+				v3s16 p(x,y,z);
+				MapBlock *block = getBlockNoCreateNoEx(p);
+				if(block == NULL)
+					continue;
+				if(block->isDummy())
+					continue;
+				if(block->getLightingExpired())
+					continue;
+				vmanip.initialEmerge(p, p);
+			}*/
+			
+			// Lighting of block will be updated completely
+			block->setLightingExpired(false);
 		}
+
 		{
 			//TimeTaker timer("unSpreadLight");
 			vmanip.unspreadLight(bank, unlight_from, light_sources);
@@ -1407,6 +1443,8 @@ void Map::transformLiquids(core::map<v3s16, MapBlock*> & modified_blocks)
 	u32 loopcount = 0;
 	u32 initial_size = m_transforming_liquid.size();
 
+	//dstream<<"transformLiquids(): initial_size="<<initial_size<<std::endl;
+
 	while(m_transforming_liquid.size() != 0)
 	{
 		/*
@@ -1682,6 +1720,12 @@ ServerMap::ServerMap(std::string savedir, HMParams hmp, MapParams mp):
 	Map(dout_server),
 	m_heightmap(NULL)
 {
+	
+	//m_chunksize = 64;
+	//m_chunksize = 16;
+	//m_chunksize = 8;
+	m_chunksize = 2;
+
 	/*
 		Experimental and debug stuff
 	*/
@@ -1862,7 +1906,7 @@ ServerMap::ServerMap(std::string savedir, HMParams hmp, MapParams mp):
 		list_randmax->addPoint(v3s16(0,0,0), Attribute(10));
 		list_randfactor->addPoint(v3s16(0,0,0), Attribute(0.65));*/
 	}
-
+	
 	/*
 		Try to load map; if not found, create a new one.
 	*/
@@ -1917,18 +1961,6 @@ ServerMap::ServerMap(std::string savedir, HMParams hmp, MapParams mp):
 	dstream<<DTIME<<"Initializing new map."<<std::endl;
 	
 	// Create master heightmap
-	/*ValueGenerator *maxgen =
-			ValueGenerator::deSerialize(hmp.randmax);
-	ValueGenerator *factorgen =
-			ValueGenerator::deSerialize(hmp.randfactor);
-	ValueGenerator *basegen =
-			ValueGenerator::deSerialize(hmp.base);
-	m_heightmap = new UnlimitedHeightmap
-			(hmp.blocksize, maxgen, factorgen, basegen, &m_padb);*/
-
-	/*m_heightmap = new UnlimitedHeightmap
-			(hmp.blocksize, &m_padb);*/
-
 	m_heightmap = new UnlimitedHeightmap
 			(32, &m_padb);
 	
@@ -1966,29 +1998,134 @@ ServerMap::~ServerMap()
 	
 	if(m_heightmap != NULL)
 		delete m_heightmap;
+	
+	/*
+		Free all MapChunks
+	*/
+	core::map<v2s16, MapChunk*>::Iterator i = m_chunks.getIterator();
+	for(; i.atEnd() == false; i++)
+	{
+		MapChunk *chunk = i.getNode()->getValue();
+		delete chunk;
+	}
 }
 
-MapSector * ServerMap::emergeSector(v2s16 p2d)
+MapChunk* ServerMap::generateChunkRaw(v2s16 chunkpos)
+{
+	// Return if chunk already exists
+	MapChunk *chunk = getChunk(chunkpos);
+	if(chunk)
+		return chunk;
+	
+	/*
+		Add all sectors
+	*/
+
+	dstream<<"generateChunkRaw(): "
+			<<"("<<chunkpos.X<<","<<chunkpos.Y<<")"
+			<<std::endl;
+	
+	TimeTaker timer("generateChunkRaw()");
+
+	v2s16 sectorpos_base = chunk_to_sector(chunkpos);
+
+	core::map<v3s16, MapBlock*> changed_blocks;
+	core::map<v3s16, MapBlock*> lighting_invalidated_blocks;
+
+	u32 generated_block_count = 0;
+
+	for(s16 y=0; y<m_chunksize; y++)
+	{
+		/*dstream<<"Generating sectors "
+				<<"("<<sectorpos_base.X<<"..."
+				<<(sectorpos_base.X+m_chunksize-1)
+				<<", "<<y<<")"
+				<<std::endl;*/
+		
+		// With caves_amount attribute fetch: ~90ms (379ms peaks)
+		// Without: ~38ms (396ms peaks)
+		//TimeTaker timer("Chunk sector row");
+
+		for(s16 x=0; x<m_chunksize; x++)
+		{
+			v2s16 sectorpos = sectorpos_base + v2s16(x,y);
+
+			/*dstream<<"Generating sector "
+					<<"("<<sectorpos.X<<","<<sectorpos.Y<<")"
+					<<std::endl;*/
+
+			// Generate sector
+			ServerMapSector *sector = generateSector(sectorpos);
+
+			/*
+				Generate main blocks of sector
+			*/
+			s16 d = 8;
+			for(s16 y2=-d/2; y2<d/2; y2++)
+			{
+				v3s16 p(x,y2,y);
+				
+				// Check that the block doesn't exist already
+				if(sector->getBlockNoCreateNoEx(y2))
+					continue;
+				
+				generateBlock(p, NULL, sector, changed_blocks,
+						lighting_invalidated_blocks);
+
+				generated_block_count++;
+			}
+		}
+	}
+
+	dstream<<"generateChunkRaw generated "<<generated_block_count
+			<<" blocks"<<std::endl;
+
+	{
+		TimeTaker timer2("generateChunkRaw() lighting");
+		// Update lighting
+		core::map<v3s16, MapBlock*> lighting_modified_blocks;
+		updateLighting(lighting_invalidated_blocks, lighting_modified_blocks);
+	}
+	
+	// Add chunk meta information
+	chunk = new MapChunk();
+	m_chunks.insert(chunkpos, chunk);
+	return chunk;
+}
+
+MapChunk* ServerMap::generateChunk(v2s16 chunkpos)
+{
+	/*
+		Generate chunk and neighbors
+	*/
+	for(s16 x=-1; x<=1; x++)
+	for(s16 y=-1; y<=1; y++)
+	{
+		generateChunkRaw(chunkpos + v2s16(x,y));
+	}
+
+	/*
+		Get chunk
+	*/
+	MapChunk *chunk = getChunk(chunkpos);
+	assert(chunk);
+	// Set non-volatile
+	chunk->setIsVolatile(false);
+	// Return it
+	return chunk;
+}
+
+ServerMapSector * ServerMap::generateSector(v2s16 p2d)
 {
 	DSTACK("%s: p2d=(%d,%d)",
 			__FUNCTION_NAME,
 			p2d.X, p2d.Y);
-	// Check that it doesn't exist already
-	try{
-		return getSectorNoGenerate(p2d);
-	}
-	catch(InvalidPositionException &e)
-	{
-	}
 	
-	/*
-		Try to load the sector from disk.
-	*/
-	if(loadSectorFull(p2d) == true)
-	{
-		return getSectorNoGenerate(p2d);
-	}
-
+	// Check that it doesn't exist already
+	ServerMapSector *sector = (ServerMapSector*)getSectorNoGenerateNoEx(p2d);
+	if(sector != NULL)
+		return sector;
+	
 	/*
 		If there is no master heightmap, throw.
 	*/
@@ -2016,7 +2153,7 @@ MapSector * ServerMap::emergeSector(v2s16 p2d)
 	// Heightmap side width
 	s16 hm_d = MAP_BLOCKSIZE / hm_split;
 
-	ServerMapSector *sector = new ServerMapSector(this, p2d, hm_split);
+	sector = new ServerMapSector(this, p2d, hm_split);
 	
 	// Sector position on map in nodes
 	v2s16 nodepos2d = p2d * MAP_BLOCKSIZE;
@@ -2068,7 +2205,9 @@ MapSector * ServerMap::emergeSector(v2s16 p2d)
 		Get local attributes
 	*/
 	
-	float local_plants_amount = 0.0;
+	float local_plants_amount = 0.5;
+	
+#if 0
 	{
 		//dstream<<"emergeSector(): Reading point attribute lists"<<std::endl;
 		//TimeTaker attrtimer("emergeSector() attribute fetch");
@@ -2081,6 +2220,7 @@ MapSector * ServerMap::emergeSector(v2s16 p2d)
 		local_plants_amount =
 				palist->getInterpolatedFloat(nodepos2d);
 	}
+#endif
 
 	/*
 		Generate sector heightmap
@@ -2201,91 +2341,104 @@ MapSector * ServerMap::emergeSector(v2s16 p2d)
 	/*
 		Insert to container
 	*/
-	JMutexAutoLock lock(m_sector_mutex);
 	m_sectors.insert(p2d, sector);
 	
 	return sector;
 }
 
-MapBlock * ServerMap::emergeBlock(
+MapSector * ServerMap::emergeSector(v2s16 p2d)
+{
+	DSTACK("%s: p2d=(%d,%d)",
+			__FUNCTION_NAME,
+			p2d.X, p2d.Y);
+	
+	/*
+		Check if it exists already in memory
+	*/
+	MapSector *sector = getSectorNoGenerateNoEx(p2d);
+	if(sector != NULL)
+		return sector;
+	
+	/*
+		Try to load it from disk
+	*/
+	if(loadSectorFull(p2d) == true)
+	{
+		MapSector *sector = getSectorNoGenerateNoEx(p2d);
+		if(sector == NULL)
+		{
+			dstream<<"ServerMap::emergeSector(): loadSectorFull didn't make a sector"<<std::endl;
+			throw InvalidPositionException("");
+		}
+		return sector;
+	}
+
+	/*
+		Check chunk status
+	*/
+	v2s16 chunkpos = sector_to_chunk(p2d);
+	bool chunk_exists = false;
+	MapChunk *chunk = getChunk(chunkpos);
+	if(chunk && chunk->getIsVolatile() == false)
+		chunk_exists = true;
+
+	/*
+		If chunk is not generated, generate chunk
+	*/
+	if(chunk_exists == false)
+	{
+		// Generate chunk and neighbors
+		generateChunk(chunkpos);
+	}
+	
+	/*
+		Return sector if it exists now
+	*/
+	sector = getSectorNoGenerateNoEx(p2d);
+	if(sector != NULL)
+		return sector;
+	
+	/*
+		generateChunk should have generated the sector
+	*/
+	assert(0);
+
+	/*
+		Generate directly
+	*/
+	//return generateSector();
+}
+
+MapBlock * ServerMap::generateBlock(
 		v3s16 p,
-		bool only_from_disk,
+		MapBlock *original_dummy,
+		ServerMapSector *sector,
 		core::map<v3s16, MapBlock*> &changed_blocks,
 		core::map<v3s16, MapBlock*> &lighting_invalidated_blocks
 )
 {
-	DSTACK("%s: p=(%d,%d,%d), only_from_disk=%d",
+	DSTACK("%s: p=(%d,%d,%d)",
 			__FUNCTION_NAME,
-			p.X, p.Y, p.Z, only_from_disk);
-			
-	/*dstream<<"ServerMap::emergeBlock(): "
+			p.X, p.Y, p.Z);
+	
+	/*dstream<<"generateBlock(): "
 			<<"("<<p.X<<","<<p.Y<<","<<p.Z<<")"
-			<<", only_from_disk="<<only_from_disk<<std::endl;*/
+			<<std::endl;*/
+	
+	MapBlock *block = original_dummy;
+			
 	v2s16 p2d(p.X, p.Z);
 	s16 block_y = p.Y;
-	/*
-		This will create or load a sector if not found in memory.
-		If block exists on disk, it will be loaded.
-
-		NOTE: On old save formats, this will be slow, as it generates
-		      lighting on blocks for them.
-	*/
-	ServerMapSector *sector = (ServerMapSector*)emergeSector(p2d);
-	assert(sector->getId() == MAPSECTOR_SERVER);
-
-	// Try to get a block from the sector
-	MapBlock *block = NULL;
-	bool not_on_disk = false;
-	try{
-		block = sector->getBlockNoCreate(block_y);
-		if(block->isDummy() == true)
-			not_on_disk = true;
-		else
-			return block;
-	}
-	catch(InvalidPositionException &e)
-	{
-		not_on_disk = true;
-	}
 	
-	/*
-		If block was not found on disk and not going to generate a
-		new one, make sure there is a dummy block in place.
-	*/
-	if(not_on_disk && only_from_disk)
-	{
-		if(block == NULL)
-		{
-			// Create dummy block
-			block = new MapBlock(this, p, true);
-
-			// Add block to sector
-			sector->insertBlock(block);
-		}
-		// Done.
-		return block;
-	}
-
-	//dstream<<"Not found on disk, generating."<<std::endl;
-	// 0ms
-	//TimeTaker("emergeBlock() generate");
-
 	/*
 		Do not generate over-limit
 	*/
 	if(blockpos_over_limit(p))
-		throw InvalidPositionException("emergeBlock(): pos. over limit");
+	{
+		dstream<<__FUNCTION_NAME<<": Block position over limit"<<std::endl;
+		throw InvalidPositionException("generateBlock(): pos. over limit");
+	}
 
-	/*
-		OK; Not found.
-
-		Go on generating the block.
-
-		TODO: If a dungeon gets generated so that it's side gets
-		      revealed to the outside air, the lighting should be
-			  recalculated.
-	*/
-	
 	/*
 		If block doesn't exist, create one.
 		If it exists, it is a dummy. In that case unDummify() it.
@@ -2318,7 +2471,7 @@ MapBlock * ServerMap::emergeBlock(
 	for(s16 z0=0; z0<MAP_BLOCKSIZE; z0++)
 	for(s16 x0=0; x0<MAP_BLOCKSIZE; x0++)
 	{
-		//dstream<<"emergeBlock: x0="<<x0<<", z0="<<z0<<std::endl;
+		//dstream<<"generateBlock: x0="<<x0<<", z0="<<z0<<std::endl;
 
 		float surface_y_f = sector->getGroundHeight(v2s16(x0,z0));
 		//assert(surface_y_f > GROUNDHEIGHT_VALID_MINVALUE);
@@ -2451,23 +2604,25 @@ MapBlock * ServerMap::emergeBlock(
 		Get local attributes
 	*/
 
-	//dstream<<"emergeBlock(): Getting local attributes"<<std::endl;
+	//dstream<<"generateBlock(): Getting local attributes"<<std::endl;
 
-	float caves_amount = 0;
-	
+	float caves_amount = 0.5;
+
+#if 0
 	{
 		/*
 			NOTE: BEWARE: Too big amount of attribute points slows verything
 			down by a lot.
 			1 interpolation from 5000 points takes 2-3ms.
 		*/
-		//TimeTaker timer("emergeBlock() local attribute retrieval");
+		//TimeTaker timer("generateBlock() local attribute retrieval");
 		v2s16 nodepos2d = p2d * MAP_BLOCKSIZE;
 		PointAttributeList *list_caves_amount = m_padb.getList("caves_amount");
 		caves_amount = list_caves_amount->getInterpolatedFloat(nodepos2d);
 	}
+#endif
 
-	//dstream<<"emergeBlock(): Done"<<std::endl;
+	//dstream<<"generateBlock(): Done"<<std::endl;
 
 	/*
 		Generate dungeons
@@ -2617,10 +2772,10 @@ continue_generating:
 			do_generate_dungeons = false;
 		}
 		// Don't generate if mostly underwater surface
-		else if(mostly_underwater_surface)
+		/*else if(mostly_underwater_surface)
 		{
 			do_generate_dungeons = false;
-		}
+		}*/
 		// Partly underground = cave
 		else if(!completely_underground)
 		{
@@ -2723,7 +2878,7 @@ continue_generating:
 	
 	/*
 		This is used for guessing whether or not the block should
-		receive sunlight from the top if the top block doesn't exist
+		receive sunlight from the top if the block above doesn't exist
 	*/
 	block->setIsUnderground(completely_underground);
 
@@ -3075,7 +3230,7 @@ continue_generating:
 		}
 		else
 		{
-			dstream<<"ServerMap::emergeBlock(): "
+			dstream<<"ServerMap::generateBlock(): "
 					"Invalid heightmap object"
 					<<std::endl;
 		}
@@ -3098,6 +3253,148 @@ continue_generating:
 	{
 		objects->remove(*i);
 	}
+	
+	/*
+		Translate sector's changed blocks to global changed blocks
+	*/
+	
+	for(core::map<s16, MapBlock*>::Iterator
+			i = changed_blocks_sector.getIterator();
+			i.atEnd() == false; i++)
+	{
+		MapBlock *block = i.getNode()->getValue();
+
+		changed_blocks.insert(block->getPos(), block);
+	}
+
+	block->setLightingExpired(true);
+	
+#if 0
+	/*
+		Debug information
+	*/
+	dstream
+	<<"lighting_invalidated_blocks.size()"
+	<<", has_dungeons"
+	<<", completely_ug"
+	<<", some_part_ug"
+	<<"  "<<lighting_invalidated_blocks.size()
+	<<", "<<has_dungeons
+	<<", "<<completely_underground
+	<<", "<<some_part_underground
+	<<std::endl;
+#endif
+
+	return block;
+}
+
+MapBlock * ServerMap::emergeBlock(
+		v3s16 p,
+		bool only_from_disk,
+		core::map<v3s16, MapBlock*> &changed_blocks,
+		core::map<v3s16, MapBlock*> &lighting_invalidated_blocks
+)
+{
+	DSTACK("%s: p=(%d,%d,%d), only_from_disk=%d",
+			__FUNCTION_NAME,
+			p.X, p.Y, p.Z, only_from_disk);
+	
+	/*dstream<<"emergeBlock(): "
+			<<"("<<p.X<<","<<p.Y<<","<<p.Z<<")"
+			<<std::endl;*/
+			
+	v2s16 p2d(p.X, p.Z);
+	s16 block_y = p.Y;
+	/*
+		This will create or load a sector if not found in memory.
+		If block exists on disk, it will be loaded.
+
+		NOTE: On old save formats, this will be slow, as it generates
+		      lighting on blocks for them.
+	*/
+	ServerMapSector *sector;
+	try{
+		sector = (ServerMapSector*)emergeSector(p2d);
+		assert(sector->getId() == MAPSECTOR_SERVER);
+	}
+	/*catch(InvalidPositionException &e)
+	{
+		dstream<<"emergeBlock: emergeSector() failed"<<std::endl;
+		throw e;
+	}*/
+	catch(std::exception &e)
+	{
+		dstream<<"emergeBlock: emergeSector() failed: "
+				<<e.what()<<std::endl;
+		throw e;
+	}
+
+	/*
+		Try to get a block from the sector
+	*/
+
+	bool does_not_exist = false;
+	bool lighting_expired = false;
+	MapBlock *block = sector->getBlockNoCreateNoEx(block_y);
+
+	if(block == NULL)
+	{
+		does_not_exist = true;
+	}
+	else if(block->isDummy() == true)
+	{
+		does_not_exist = true;
+	}
+	else if(block->getLightingExpired())
+	{
+		lighting_expired = true;
+	}
+	else
+	{
+		// Valid block
+		//dstream<<"emergeBlock(): Returning already valid block"<<std::endl;
+		return block;
+	}
+	
+	/*
+		If block was not found on disk and not going to generate a
+		new one, make sure there is a dummy block in place.
+	*/
+	if(only_from_disk && (does_not_exist || lighting_expired))
+	{
+		//dstream<<"emergeBlock(): Was not on disk but not generating"<<std::endl;
+
+		if(block == NULL)
+		{
+			// Create dummy block
+			block = new MapBlock(this, p, true);
+
+			// Add block to sector
+			sector->insertBlock(block);
+		}
+		// Done.
+		return block;
+	}
+
+	//dstream<<"Not found on disk, generating."<<std::endl;
+	// 0ms
+	//TimeTaker("emergeBlock() generate");
+
+	//dstream<<"emergeBlock(): Didn't find valid block -> making one"<<std::endl;
+
+	/*
+		If the block doesn't exist, generate the block.
+	*/
+	if(does_not_exist)
+	{
+		block = generateBlock(p, block, sector, changed_blocks,
+				lighting_invalidated_blocks); 
+	}
+
+	if(lighting_expired)
+	{
+		lighting_invalidated_blocks.insert(p, block);
+	}
 
 	/*
 		Initially update sunlight
@@ -3112,7 +3409,8 @@ continue_generating:
 
 		// If sunlight didn't reach everywhere and part of block is
 		// above ground, lighting has to be properly updated
-		if(black_air_left && some_part_underground)
+		//if(black_air_left && some_part_underground)
+		if(black_air_left)
 		{
 			lighting_invalidated_blocks[block->getPos()] = block;
 		}
@@ -3122,37 +3420,7 @@ continue_generating:
 			lighting_invalidated_blocks[block->getPos()] = block;
 		}
 	}
-
-	/*
-		Translate sector's changed blocks to global changed blocks
-	*/
 	
-	for(core::map<s16, MapBlock*>::Iterator
-			i = changed_blocks_sector.getIterator();
-			i.atEnd() == false; i++)
-	{
-		MapBlock *block = i.getNode()->getValue();
-
-		changed_blocks.insert(block->getPos(), block);
-	}
-
-	/*
-		Debug information
-	*/
-	if(0)
-	{
-		dstream
-		<<"lighting_invalidated_blocks.size()"
-		<<", has_dungeons"
-		<<", completely_ug"
-		<<", some_part_ug"
-		<<"  "<<lighting_invalidated_blocks.size()
-		<<", "<<has_dungeons
-		<<", "<<completely_underground
-		<<", "<<some_part_underground
-		<<std::endl;
-	}
-
 	/*
 		Debug mode operation
 	*/

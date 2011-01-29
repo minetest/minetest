@@ -82,11 +82,16 @@ MapBlock * MapSector::getBlockBuffered(s16 y)
 	return block;
 }
 
-MapBlock * MapSector::getBlockNoCreate(s16 y)
+MapBlock * MapSector::getBlockNoCreateNoEx(s16 y)
 {
 	JMutexAutoLock lock(m_mutex);
 	
-	MapBlock *block = getBlockBuffered(y);
+	return getBlockBuffered(y);
+}
+
+MapBlock * MapSector::getBlockNoCreate(s16 y)
+{
+	MapBlock *block = getBlockNoCreateNoEx(y);
 
 	if(block == NULL)
 		throw InvalidPositionException();

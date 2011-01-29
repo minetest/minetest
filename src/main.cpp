@@ -168,7 +168,7 @@ TODO: Make fetching sector's blocks more efficient when rendering
 
 TODO: Flowing water animation
 
-FIXME: The new texture stuff is slow on wine
+FIXME(FIXED): The new texture stuff is slow on wine
 	- A basic grassy ground block takes 20-40ms
 	- A bit more complicated block can take 270ms
 	  - On linux, a similar one doesn't take long at all (14ms)
@@ -181,6 +181,15 @@ FIXME: The new texture stuff is slow on wine
     * Optimize TileSpec to only contain a reference number that
 	  is fast to compare, which refers to a cached string, or
 	* Make TextureSpec for using instead of strings
+
+FIXME(FIXED): A lock condition is possible:
+	1) MapBlock::updateMesh() is called from client asynchronously:
+	   - AsyncProcessData() -> Map::updateMeshes()
+	2) Asynchronous locks m_temp_mods_mutex
+	3) MapBlock::updateMesh() is called from client synchronously:
+	   - Client::step() -> Environment::step()
+	4) Synchronous starts waiting for m_temp_mods_mutex
+	5) Asynchronous calls getTexture, which starts waiting for main thread
 
 Configuration:
 --------------
@@ -255,6 +264,20 @@ Map:
 NOTE: There are some lighting-related todos and fixmes in
       ServerMap::emergeBlock. And there always will be. 8)
 
+TODO: Mineral and ground material properties
+      - This way mineral ground toughness can be calculated with just
+	    some formula, as well as tool strengths
+
+TODO: Change AttributeList to split the area into smaller sections so
+      that searching won't be as heavy.
+
+TODO: Remove HMParams
+
+TODO: Flowing water to actually contain flow direction information
+
+TODO: Remove duplicate lighting implementation from Map (leave
+      VoxelManipulator, which is faster)
+
 FEATURE: Map generator version 2
 	- Create surface areas based on central points; a given point's
 	  area type is given by the nearest central point
@@ -269,6 +292,11 @@ FEATURE: Map generator version 2
 FEATURE: The map could be generated procedually:
       - This would need the map to be generated in larger pieces
 	    - How large? How do they connect to each other?
+		- It has to be split vertically also
+		- Lighting would not have to be necessarily calculated until
+		  the blocks are actually needed - it would be quite fast
+		- Something like 64*64*16 MapBlocks?
+		- TODO: Separate lighting and block generation
       * Make the stone level with a heightmap
 	  * Carve out stuff in the stone
 	  * Dump dirt all around, and simulate it falling off steep
@@ -283,20 +311,13 @@ FEATURE: The map could be generated procedually:
 			parameter field is free for this.
 		- Simulate rock falling from cliffs when water has removed
 		  enough solid rock from the bottom
-
-TODO: Mineral and ground material properties
-      - This way mineral ground toughness can be calculated with just
-	    some formula, as well as tool strengths
-
-TODO: Change AttributeList to split the area into smaller sections so
-      that searching won't be as heavy.
-
-TODO: Remove HMParams
-
-TODO: Flowing water to actually contain flow direction information
-
-TODO: Remove duplicate lighting implementation from Map (leave
-      VoxelManipulator, which is faster)
+TODO: Lazy lighting updates:
+    - Set updateLighting to ignore MapBlocks with expired lighting,
+	  except the blocks specified to it
+	- When a MapBlock is generated, lighting expires in all blocks
+	  touching it (26 blocks + self)
+	- When a lighting-wise valid MapBlock is needed and lighting of it
+	  has expired, what to do?
 
 Doing now:
 ----------
@@ -1523,6 +1544,16 @@ int main(int argc, char *argv[])
 	mysrand(time(0));
 
 	/*
+		Pre-initialize some stuff with a dummy irrlicht wrapper.
+
+		These are needed for unit tests at least.
+	*/
+	
+	IIrrlichtWrapper irrlicht_dummy;
+
+	init_mapnode(&irrlicht_dummy);
+
+	/*
 		Run unit tests
 	*/
 	if((ENABLE_TESTS && cmd_args.getFlag("disable-unittests") == false)
@@ -1684,7 +1715,7 @@ int main(int argc, char *argv[])
 	skin->setColor(gui::EGDC_3D_SHADOW, video::SColor(255,0,0,0));
 	
 	/*
-		Preload some textures
+		Preload some textures and stuff
 	*/
 
 	init_content_inventory_texture_paths();
@@ -2131,20 +2162,6 @@ int main(int argc, char *argv[])
 				dtime_jitter1_max_fraction
 						= dtime_jitter1_max_sample / (dtime_avg1+0.001);
 				jitter1_max = 0.0;
-				
-				/*
-					Control freetime ratio
-				*/
-				/*if(dtime_jitter1_max_fraction > DTIME_JITTER_MAX_FRACTION)
-				{
-					if(g_freetime_ratio < FREETIME_RATIO_MAX)
-						g_freetime_ratio += 0.01;
-				}
-				else
-				{
-					if(g_freetime_ratio > FREETIME_RATIO_MIN)
-						g_freetime_ratio -= 0.01;
-				}*/
 			}
 		}
 		

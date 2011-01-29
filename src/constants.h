@@ -76,21 +76,17 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 // is very low
 #define BLOCK_SEND_DISABLE_LIMITS_MAX_D 1
 
-// The fps limiter will leave this much free time
-//#define FREETIME_RATIO 0.15
-//#define FREETIME_RATIO 0.0
-#define FREETIME_RATIO 0.05
-
 #define PLAYER_INVENTORY_SIZE (8*4)
 
 #define SIGN_TEXT_MAX_LENGTH 50
 
 // Whether to catch all std::exceptions.
 // Assert will be called on such an event.
-#ifdef DEBUG
-	#define CATCH_UNHANDLED_EXCEPTIONS 0
-#else
+// In debug mode, leave these for the debugger and don't catch them.
+#ifdef NDEBUG
 	#define CATCH_UNHANDLED_EXCEPTIONS 1
+#else
+	#define CATCH_UNHANDLED_EXCEPTIONS 0
 #endif
 
 /*

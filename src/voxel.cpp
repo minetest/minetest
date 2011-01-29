@@ -536,10 +536,13 @@ void VoxelManipulator::spreadLight(enum LightBank bank, v3s16 p)
 	}
 }
 
-#if 1
+#if 0
 /*
 	Lights neighbors of from_nodes, collects all them and then
 	goes on recursively.
+
+	NOTE: This is faster in small areas but will overflow the
+	      stack on large areas. Thus it is not used.
 */
 void VoxelManipulator::spreadLight(enum LightBank bank,
 		core::map<v3s16, bool> & from_nodes)
@@ -560,7 +563,7 @@ void VoxelManipulator::spreadLight(enum LightBank bank,
 }
 #endif
 
-#if 0
+#if 1
 /*
 	Lights neighbors of from_nodes, collects all them and then
 	goes on recursively.

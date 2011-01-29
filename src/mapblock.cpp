@@ -293,7 +293,8 @@ void MapBlock::makeFastFace(TileSpec tile, u8 light, v3f p,
 	Gets node tile from any place relative to block.
 	Returns TILE_NODE if doesn't exist or should not be drawn.
 */
-TileSpec MapBlock::getNodeTile(MapNode mn, v3s16 p, v3s16 face_dir)
+TileSpec MapBlock::getNodeTile(MapNode mn, v3s16 p, v3s16 face_dir,
+		NodeModMap &temp_mods)
 {
 	TileSpec spec;
 	spec = mn.getTile(face_dir);
@@ -301,13 +302,15 @@ TileSpec MapBlock::getNodeTile(MapNode mn, v3s16 p, v3s16 face_dir)
 	/*
 		Check temporary modifications on this node
 	*/
-	core::map<v3s16, NodeMod>::Node *n;
+	/*core::map<v3s16, NodeMod>::Node *n;
 	n = m_temp_mods.find(p);
-
 	// If modified
 	if(n != NULL)
 	{
-		struct NodeMod mod = n->getValue();
+		struct NodeMod mod = n->getValue();*/
+	NodeMod mod;
+	if(temp_mods.get(p, &mod))
+	{
 		if(mod.type == NODEMOD_CHANGECONTENT)
 		{
 			MapNode mn2(mod.param);
@@ -326,18 +329,20 @@ TileSpec MapBlock::getNodeTile(MapNode mn, v3s16 p, v3s16 face_dir)
 	return spec;
 }
 
-u8 MapBlock::getNodeContent(v3s16 p, MapNode mn)
+u8 MapBlock::getNodeContent(v3s16 p, MapNode mn, NodeModMap &temp_mods)
 {
 	/*
 		Check temporary modifications on this node
 	*/
-	core::map<v3s16, NodeMod>::Node *n;
+	/*core::map<v3s16, NodeMod>::Node *n;
 	n = m_temp_mods.find(p);
-
 	// If modified
 	if(n != NULL)
 	{
-		struct NodeMod mod = n->getValue();
+		struct NodeMod mod = n->getValue();*/
+	NodeMod mod;
+	if(temp_mods.get(p, &mod))
+	{
 		if(mod.type == NODEMOD_CHANGECONTENT)
 		{
 			// Overrides content
@@ -376,7 +381,8 @@ void MapBlock::updateFastFaceRow(
 		v3f translate_dir_f,
 		v3s16 face_dir,
 		v3f face_dir_f,
-		core::array<FastFace> &dest)
+		core::array<FastFace> &dest,
+		NodeModMap &temp_mods)
 {
 	v3s16 p = startpos;
 	
@@ -387,8 +393,8 @@ void MapBlock::updateFastFaceRow(
 
 	u8 light = getFaceLight(daynight_ratio, n0, n1, face_dir);
 		
-	TileSpec tile0 = getNodeTile(n0, p, face_dir);
-	TileSpec tile1 = getNodeTile(n1, p + face_dir, -face_dir);
+	TileSpec tile0 = getNodeTile(n0, p, face_dir, temp_mods);
+	TileSpec tile1 = getNodeTile(n1, p + face_dir, -face_dir, temp_mods);
 
 	for(u16 j=0; j<length; j++)
 	{
@@ -406,8 +412,8 @@ void MapBlock::updateFastFaceRow(
 			p_next = p + translate_dir;
 			n0_next = getNodeParentNoEx(p_next);
 			n1_next = getNodeParentNoEx(p_next + face_dir);
-			tile0_next = getNodeTile(n0_next, p_next, face_dir);
-			tile1_next = getNodeTile(n1_next, p_next + face_dir, -face_dir);
+			tile0_next = getNodeTile(n0_next, p_next, face_dir, temp_mods);
+			tile1_next = getNodeTile(n1_next,p_next+face_dir,-face_dir, temp_mods);
 			light_next = getFaceLight(daynight_ratio, n0_next, n1_next, face_dir);
 
 			if(tile0_next == tile0
@@ -427,8 +433,8 @@ void MapBlock::updateFastFaceRow(
 			*/
 			//u8 mf = face_contents(tile0, tile1);
 			// This is hackish
-			u8 content0 = getNodeContent(p, n0);
-			u8 content1 = getNodeContent(p + face_dir, n1);
+			u8 content0 = getNodeContent(p, n0, temp_mods);
+			u8 content1 = getNodeContent(p + face_dir, n1, temp_mods);
 			u8 mf = face_contents(content0, content1);
 			
 			if(mf != 0)
@@ -594,6 +600,16 @@ void MapBlock::updateMesh(u32 daynight_ratio)
 	v3f posRelative_f(getPosRelative().X, getPosRelative().Y,
 			getPosRelative().Z); // floating point conversion
 	
+	
+	/*
+		Avoid interlocks by copying m_temp_mods
+	*/
+	NodeModMap temp_mods;
+	{
+		JMutexAutoLock lock(m_temp_mods_mutex);
+		m_temp_mods.copy(temp_mods);
+	}
+
 	/*
 		We are including the faces of the trailing edges of the block.
 		This means that when something changes, the caller must
@@ -606,9 +622,6 @@ void MapBlock::updateMesh(u32 daynight_ratio)
 		// 4-23ms for MAP_BLOCKSIZE=16
 		//TimeTaker timer2("updateMesh() collect");
 
-		// Lock this, as m_temp_mods will be used directly
-		JMutexAutoLock lock(m_temp_mods_mutex);
-
 		/*
 			Go through every y,z and get top faces in rows of x+
 		*/
@@ -620,7 +633,8 @@ void MapBlock::updateMesh(u32 daynight_ratio)
 						v3f  (1,0,0),
 						v3s16(0,1,0), //face dir
 						v3f  (0,1,0),
-						fastfaces_new);
+						fastfaces_new,
+						temp_mods);
 			}
 		}
 		/*
@@ -634,7 +648,8 @@ void MapBlock::updateMesh(u32 daynight_ratio)
 						v3f  (0,0,1),
 						v3s16(1,0,0),
 						v3f  (1,0,0),
-						fastfaces_new);
+						fastfaces_new,
+						temp_mods);
 			}
 		}
 		/*
@@ -648,7 +663,8 @@ void MapBlock::updateMesh(u32 daynight_ratio)
 						v3f  (1,0,0),
 						v3s16(0,0,1),
 						v3f  (0,0,1),
-						fastfaces_new);
+						fastfaces_new,
+						temp_mods);
 			}
 		}
 	}
@@ -1297,10 +1313,6 @@ void MapBlock::copyTo(VoxelManipulator &dst)
 			getPosRelative(), data_size);
 }
 
-/*void getPseudoObjects(v3f origin, f32 max_d,
-		core::array<DistanceSortedObject> &dest)
-{
-}*/
 void MapBlock::stepObjects(float dtime, bool server, u32 daynight_ratio)
 {
 	/*
@@ -1501,6 +1513,8 @@ void MapBlock::serialize(std::ostream &os, u8 version)
 			flags |= 1;
 		if(m_day_night_differs)
 			flags |= 2;
+		if(m_lighting_expired)
+			flags |= 3;
 		os.write((char*)&flags, 1);
 
 		u32 nodecount = MAP_BLOCKSIZE*MAP_BLOCKSIZE*MAP_BLOCKSIZE;
@@ -1622,6 +1636,7 @@ void MapBlock::deSerialize(std::istream &is, u8 version)
 		is.read((char*)&flags, 1);
 		is_underground = (flags & 1) ? true : false;
 		m_day_night_differs = (flags & 2) ? true : false;
+		m_lighting_expired = (flags & 3) ? true : false;
 
 		// Uncompress data
 		std::ostringstream os(std::ios_base::binary);

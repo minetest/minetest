@@ -538,6 +538,23 @@ inline v3s16 getContainerPos(v3s16 p, s16 d)
 	);
 }
 
+inline v2s16 getContainerPos(v2s16 p, v2s16 d)
+{
+	return v2s16(
+		getContainerPos(p.X, d.X),
+		getContainerPos(p.Y, d.Y)
+	);
+}
+
+inline v3s16 getContainerPos(v3s16 p, v3s16 d)
+{
+	return v3s16(
+		getContainerPos(p.X, d.X),
+		getContainerPos(p.Y, d.Y),
+		getContainerPos(p.Z, d.Z)
+	);
+}
+
 inline bool isInArea(v3s16 p, s16 d)
 {
 	return (

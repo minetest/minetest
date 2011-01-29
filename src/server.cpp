@@ -156,20 +156,18 @@ void * EmergeThread::Thread()
 				only_from_disk = true;
 			
 			// First check if the block already exists
-			if(only_from_disk)
-			{
-				block = map.getBlockNoCreate(p);
-			}
+			//block = map.getBlockNoCreate(p);
 
 			if(block == NULL)
 			{
+				//dstream<<"Calling emergeBlock"<<std::endl;
 				block = map.emergeBlock(
 						p,
 						only_from_disk,
 						changed_blocks,
 						lighting_invalidated_blocks);
 
-#if 1
+#if 0
 				/*
 					EXPERIMENTAL: Create a few other blocks too
 				*/
@@ -206,6 +204,12 @@ void * EmergeThread::Thread()
 			{
 				//dstream<<"EmergeThread: Got a dummy block"<<std::endl;
 				got_block = false;
+
+				if(only_from_disk == false)
+				{
+					dstream<<"EmergeThread: wanted to generate a block but got a dummy"<<std::endl;
+					assert(0);
+				}
 			}
 		}
 		catch(InvalidPositionException &e)
@@ -581,16 +585,10 @@ void RemoteClient::GetNextBlocks(Server *server, float dtime,
 			/*
 				Check if map has this block
 			*/
-			MapBlock *block = NULL;
-			try
-			{
-				block = server->m_env.getMap().getBlockNoCreate(p);
-			}
-			catch(InvalidPositionException &e)
-			{
-			}
+			MapBlock *block = server->m_env.getMap().getBlockNoCreateNoEx(p);
 			
 			bool surely_not_found_on_disk = false;
+			bool block_is_invalid = false;
 			if(block != NULL)
 			{
 				/*if(block->isIncomplete())
@@ -602,6 +600,11 @@ void RemoteClient::GetNextBlocks(Server *server, float dtime,
 				if(block->isDummy())
 				{
 					surely_not_found_on_disk = true;
+				}
+
+				if(block->isValid() == false)
+				{
+					block_is_invalid = true;
 				}
 			}
 
@@ -627,8 +630,10 @@ void RemoteClient::GetNextBlocks(Server *server, float dtime,
 			/*
 				Add inexistent block to emerge queue.
 			*/
-			if(block == NULL || surely_not_found_on_disk)
+			if(block == NULL || surely_not_found_on_disk || block_is_invalid)
 			{
+				//dstream<<"asd"<<std::endl;
+				
 				/*SharedPtr<JMutexAutoLock> lock
 						(m_num_blocks_in_emerge_queue.getLock());*/
 				
@@ -636,6 +641,8 @@ void RemoteClient::GetNextBlocks(Server *server, float dtime,
 				// Allow only one block in emerge queue
 				if(server->m_emerge_queue.peerItemCount(peer_id) < 1)
 				{
+					//dstream<<"Adding block to emerge queue"<<std::endl;
+					
 					// Add it to the emerge queue and trigger the thread
 					
 					u8 flags = 0;
