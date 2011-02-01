@@ -1913,7 +1913,7 @@ ServerMap::ServerMap(std::string savedir, HMParams hmp, MapParams mp):
 #endif
 		
 		// Add only one entry
-		list_baseheight->addPoint(v3s16(0,0,0), Attribute(0));
+		list_baseheight->addPoint(v3s16(0,0,0), Attribute(-4));
 		list_randmax->addPoint(v3s16(0,0,0), Attribute(22));
 		//list_randmax->addPoint(v3s16(0,0,0), Attribute(0));
 		list_randfactor->addPoint(v3s16(0,0,0), Attribute(0.45));
@@ -2312,7 +2312,7 @@ MapChunk* ServerMap::generateChunkRaw(v2s16 chunkpos,
 	// 0-100
 	// Usually little, sometimes huge
 	//u32 stone_obstacle_amount = myrand_range(0, myrand_range(0, 100));
-	u32 stone_obstacle_amount = myrand_range(0, 100);
+	u32 stone_obstacle_amount = myrand_range(0, myrand_range(20, 100));
 
 	/*
 		Loop this part, it will make stuff look older and newer nicely
@@ -2374,16 +2374,24 @@ MapChunk* ServerMap::generateChunkRaw(v2s16 chunkpos,
 				// Go to ground level
 				for(y=y_nodes_max; y>=y_nodes_min; y--)
 				{
-					MapNode &n = vmanip.m_data[i];
+					MapNode *n = &vmanip.m_data[i];
 					/*if(content_walkable(n.d)
 							&& n.d != CONTENT_MUD
 							&& n.d != CONTENT_GRASS)
 						break;*/
-					if(n.d == CONTENT_STONE)
+					if(n->d == CONTENT_STONE)
 						break;
-
-					if(n.d == CONTENT_MUD || n.d == CONTENT_GRASS)
+					
+					if(n->d == CONTENT_MUD || n->d == CONTENT_GRASS)
+					{
 						mud_amount++;
+						/*
+							Change to mud because otherwise we might
+							be throwing mud on grass at the next
+							step
+						*/
+						n->d = CONTENT_MUD;
+					}
 						
 					vmanip.m_area.add_y(em, i, -1);
 				}
@@ -2443,24 +2451,21 @@ MapChunk* ServerMap::generateChunkRaw(v2s16 chunkpos,
 	/*
 		Make dungeons
 	*/
-	u32 dungeons_count = relative_volume/200000;
-	for(u32 jj=0; jj<dungeons_count; jj++)
+	u32 dungeons_count = relative_volume / 200000;
+	u32 bruises_count = relative_volume * stone_surface_max_y / 15000000;
+	for(u32 jj=0; jj<dungeons_count+bruises_count; jj++)
 	{
 		s16 min_tunnel_diameter = 1;
 		s16 max_tunnel_diameter = 5;
-		u16 tunnel_routepoints = 15;
+		u16 tunnel_routepoints = 10;
 		
-		u32 bruise_surface_maxindex =
-				dungeons_count / 10 * stone_surface_max_y / 10;
-		bruise_surface_maxindex =
-				rangelim(bruise_surface_maxindex, 0, dungeons_count/2);
-		bool bruise_surface = (jj < bruise_surface_maxindex);
+		bool bruise_surface = (jj < bruises_count);
 
 		if(bruise_surface)
 		{
 			min_tunnel_diameter = 5;
-			max_tunnel_diameter = 10;
-			tunnel_routepoints = 10;
+			max_tunnel_diameter = myrand_range(8, 20);
+			tunnel_routepoints = 7;
 		}
 
 		// Allowed route area size in nodes
@@ -2479,7 +2484,8 @@ MapChunk* ServerMap::generateChunkRaw(v2s16 chunkpos,
 
 		// Allow a bit more
 		//(this should be more than the maximum radius of the tunnel)
-		s16 insure = 5;
+		//s16 insure = 5; // Didn't work with max_d = 20
+		s16 insure = 10;
 		s16 more = max_spread_amount - max_tunnel_diameter/2 - insure;
 		ar += v3s16(1,0,1) * more * 2;
 		of -= v3s16(1,0,1) * more;
@@ -2490,8 +2496,10 @@ MapChunk* ServerMap::generateChunkRaw(v2s16 chunkpos,
 
 		if(bruise_surface)
 		{
-			// Minimum is at y=0
-			route_y_min = -of.Y - 0;
+			/*// Minimum is at y=0
+			route_y_min = -of.Y - 0;*/
+			// Minimum is at y=max_tunnel_diameter/4
+			route_y_min = -of.Y + max_tunnel_diameter/4;
 			route_y_min = rangelim(route_y_min, 0, route_y_max);
 		}
 
@@ -2557,7 +2565,9 @@ MapChunk* ServerMap::generateChunkRaw(v2s16 chunkpos,
 					s16 si = rs - abs(z0);
 					for(s16 x0=-si; x0<=si-1; x0++)
 					{
-						s16 si2 = rs - abs(x0);
+						s16 maxabsxz = abs(x0)>abs(z0)?abs(x0):abs(z0);
+						s16 si2 = rs - maxabsxz;
+						//s16 si2 = rs - abs(x0);
 						for(s16 y0=-si2+1; y0<=si2-1; y0++)
 						{
 							s16 z = cp.Z + z0;
@@ -2973,7 +2983,7 @@ MapChunk* ServerMap::generateChunkRaw(v2s16 chunkpos,
 		Plant some trees
 	*/
 	{
-		u32 tree_max = relative_area / 100;
+		u32 tree_max = relative_area / 60;
 		
 		u32 count = myrand_range(0, tree_max);
 		for(u32 i=0; i<count; i++)
