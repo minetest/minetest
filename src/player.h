@@ -115,6 +115,7 @@ public:
 
 	bool touching_ground;
 	bool in_water;
+	bool swimming_up;
 	
 	Inventory inventory;
 

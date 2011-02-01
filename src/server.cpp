@@ -515,9 +515,13 @@ void RemoteClient::GetNextBlocks(Server *server, float dtime,
 					generate = false;
 			}
 
+#if 0
 			/*
 				If block is far away, don't generate it unless it is
 				near ground level
+
+				NOTE: We can't know the ground level this way with the
+				new generator.
 			*/
 			if(d > 4)
 			{
@@ -543,6 +547,7 @@ void RemoteClient::GetNextBlocks(Server *server, float dtime,
 						generate = false;
 				}
 			}
+#endif
 
 			/*
 				Don't draw if not in sight
@@ -610,11 +615,13 @@ void RemoteClient::GetNextBlocks(Server *server, float dtime,
 				v2s16 p2d(p.X, p.Z);
 				ServerMap *map = (ServerMap*)(&server->m_env.getMap());
 				v2s16 chunkpos = map->sector_to_chunk(p2d);
-				MapChunk *chunk = map->getChunk(chunkpos);
+				if(map->chunkNonVolatile(chunkpos) == false)
+					block_is_invalid = true;
+				/*MapChunk *chunk = map->getChunk(chunkpos);
 				if(chunk == NULL)
 					block_is_invalid = true;
 				else if(chunk->getIsVolatile() == true)
-					block_is_invalid = true;
+					block_is_invalid = true;*/
 			}
 
 			/*
@@ -3175,6 +3182,16 @@ Player *Server::emergePlayer(const char *name, const char *password,
 		{
 			setCreativeInventory(player);
 		}
+
+		/*
+			With new map generator the map is regenerated anyway,
+			so start at somewhere where you probably don't get underground
+		*/
+		player->setPosition(intToFloat(v3s16(
+				0,
+				50,
+				0
+		)));
 		
 		return player;
 	}
@@ -3206,9 +3223,17 @@ Player *Server::emergePlayer(const char *name, const char *password,
 		dstream<<"Server: Finding spawn place for player \""
 				<<player->getName()<<"\""<<std::endl;
 
-#if 1
 		v2s16 nodepos;
 		f32 groundheight = 0;
+#if 1
+		player->setPosition(intToFloat(v3s16(
+				0,
+				50,
+				0
+		)));
+#endif
+#if 0
+#if 0
 		// Try to find a good place a few times
 		for(s32 i=0; i<500; i++)
 		{
@@ -3271,6 +3296,7 @@ Player *Server::emergePlayer(const char *name, const char *password,
 				groundheight + 15,
 				nodepos.Y
 		)));
+#endif
 
 		/*
 			Add player to environment

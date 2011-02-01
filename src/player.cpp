@@ -428,6 +428,9 @@ void LocalPlayer::move(f32 dtime, Map &map)
 
 void LocalPlayer::applyControl(float dtime)
 {
+	// Clear stuff
+	swimming_up = false;
+
 	// Random constants
 #define WALK_ACCELERATION (4.0 * BS)
 #define WALKSPEED_MAX (4.0 * BS)
@@ -510,6 +513,7 @@ void LocalPlayer::applyControl(float dtime)
 			v3f speed = getSpeed();
 			speed.Y = 2.0*BS;
 			setSpeed(speed);
+			swimming_up = true;
 		}
 	}
 

@@ -700,6 +700,9 @@ void MapBlock::updateMesh(u32 daynight_ratio)
 			const u16 indices[] = {0,1,2,2,3,0};
 
 			video::ITexture *texture = g_irrlicht->getTexture(f.tile.spec);
+			if(texture == NULL)
+				continue;
+
 			material.setTexture(0, texture);
 			if(f.tile.alpha != 255)
 				material.MaterialType = video::EMT_TRANSPARENT_VERTEX_ALPHA;

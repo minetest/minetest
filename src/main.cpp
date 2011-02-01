@@ -333,6 +333,19 @@ Doing now:
 * Make the generator to run in background and not blocking block
   placement and transfer
 * Fix the strange mineral occurences
+* When the map is generated and a place is found for the player, the
+  first chunk is actually still volatile and will have stuff still
+  changed after spawning, which creates a lot of glitches.
+  - This is partly fixed by now allowing only 2-sector deeep
+    modification of volatile chunks. But it should still be fixed?
+  - How about checking that the neighbors are fully generated too and
+    generate them when the middle piece is needed
+	- This is very slow
+  - How about just enabling changed_blocks properly
+    - This is probably a good idea
+    - The server has to make sure the spawn point is not at the
+	  changing borders of a chunk
+* Add some kind of erosion and other stuff that now is possible
 
 ======================================================================
 
@@ -2690,8 +2703,7 @@ int main(int argc, char *argv[])
 						}
 						// We want a slight delay to very little
 						// time consuming nodes
-						//float mindelay = 0.15;
-						float mindelay = 0.20;
+						float mindelay = 0.15;
 						if(nodig_delay_counter < mindelay)
 						{
 							nodig_delay_counter = mindelay;

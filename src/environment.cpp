@@ -112,7 +112,8 @@ void Environment::step(float dtime)
 			{
 				// Apply gravity to local player
 				v3f speed = player->getSpeed();
-				speed.Y -= 9.81 * BS * dtime_part * 2;
+				if(player->swimming_up == false)
+					speed.Y -= 9.81 * BS * dtime_part * 2;
 
 				/*
 					Apply water resistance

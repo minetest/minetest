@@ -82,6 +82,9 @@ void init_mapnode(IIrrlichtWrapper *irrlicht)
 	i = CONTENT_TREE;
 	f = &g_content_features[i];
 	f->setAllTextures(irrlicht->getTextureId("tree.png"));
+	f->setTexture(0, irrlicht->getTextureId("tree_top.png"));
+	f->setTexture(1, irrlicht->getTextureId("tree_top.png"));
+	f->setInventoryTexture(irrlicht->getTextureId("tree_top.png"));
 	f->param_type = CPT_MINERAL;
 	f->is_ground_content = true;
 	

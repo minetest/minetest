@@ -22,14 +22,21 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 /*
 	MapChunk contains map-generation-time metadata for an area of
-	some MapSectors. (something like 64x64)
+	some MapSectors. (something like 16x16)
 */
+
+enum{
+	GENERATED_FULLY = 0,
+	GENERATED_PARTLY = 10,
+	GENERATED_NOT = 20
+};
 
 class MapChunk
 {
 public:
 	MapChunk():
-		m_is_volatile(true)
+		//m_is_volatile(true)
+		m_generation_level(GENERATED_NOT)
 	{
 	}
 
@@ -40,11 +47,21 @@ public:
 		It is set to false when all the 8 neighboring chunks have
 		been generated.
 	*/
-	bool getIsVolatile(){ return m_is_volatile; }
-	void setIsVolatile(bool is){ m_is_volatile = is; }
+	/*bool getIsVolatile(){ return m_is_volatile; }
+	void setIsVolatile(bool is){ m_is_volatile = is; }*/
+	
+	/*
+		Generation level. Possible values:
+		GENERATED_FULLY = 0 = fully generated
+		GENERATED_PARTLY = partly generated
+		GENERATED_NOT = not generated
+	*/
+	u16 getGenLevel(){ return m_generation_level; }
+	void setGenLevel(u16 lev){ m_generation_level = lev; }
 
 private:
-	bool m_is_volatile;
+	//bool m_is_volatile;
+	u16 m_generation_level;
 };
 
 #endif

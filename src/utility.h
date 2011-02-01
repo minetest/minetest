@@ -1474,8 +1474,11 @@ void mysrand(unsigned seed);
 
 inline int myrand_range(int min, int max)
 {
-	if(min >= max)
+	if(min > max)
+	{
+		assert(0);
 		return max;
+	}
 	return (myrand()%(max-min+1))+min;
 }
 

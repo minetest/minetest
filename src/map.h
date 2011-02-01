@@ -100,7 +100,9 @@ public:
 		This is overloaded by ClientMap and ServerMap to allow
 		their differing fetch methods.
 	*/
-	virtual MapSector * emergeSector(v2s16 p) = 0;
+	virtual MapSector * emergeSector(v2s16 p){ return NULL; }
+	virtual MapSector * emergeSector(v2s16 p,
+			core::map<v3s16, MapBlock*> &changed_blocks){ return NULL; }
 
 	// Returns InvalidPositionException if not found
 	MapBlock * getBlockNoCreate(v3s16 p);
@@ -365,21 +367,41 @@ public:
 	}
 
 	/*
+		True if the chunk and its neighbors are fully generated.
+		It means the chunk will not be touched in the future by the
+		generator. If false, generateChunk will make it true.
+	*/
+	bool chunkNonVolatile(v2s16 chunkpos)
+	{
+		/*for(s16 x=-1; x<=1; x++)
+		for(s16 y=-1; y<=1; y++)*/
+		s16 x=0;
+		s16 y=0;
+		{
+			v2s16 chunkpos0 = chunkpos + v2s16(x,y);
+			MapChunk *chunk = getChunk(chunkpos);
+			if(chunk == NULL)
+				return false;
+			if(chunk->getGenLevel() != GENERATED_FULLY)
+				return false;
+		}
+		return true;
+	}
+
+	/*
 		Generate a chunk.
 
 		All chunks touching this one can be altered also.
-
-		Doesn't update lighting.
 	*/
-	MapChunk* generateChunkRaw(v2s16 chunkpos);
+	MapChunk* generateChunkRaw(v2s16 chunkpos,
+			core::map<v3s16, MapBlock*> &changed_blocks);
 	
 	/*
 		Generate a chunk and its neighbors so that it won't be touched
 		anymore.
-
-		Doesn't update lighting.
 	*/
-	MapChunk* generateChunk(v2s16 chunkpos);
+	MapChunk* generateChunk(v2s16 chunkpos,
+			core::map<v3s16, MapBlock*> &changed_blocks);
 	
 	/*
 		Generate a sector.
@@ -402,7 +424,14 @@ public:
 		- Check disk (loads blocks also)
 		- Generate chunk
 	*/
-	MapSector * emergeSector(v2s16 p);
+	MapSector * emergeSector(v2s16 p,
+			core::map<v3s16, MapBlock*> &changed_blocks);
+	
+	MapSector * emergeSector(v2s16 p)
+	{
+		core::map<v3s16, MapBlock*> changed_blocks;
+		return emergeSector(p, changed_blocks);
+	}
 
 	MapBlock * generateBlock(
 			v3s16 p,
@@ -418,7 +447,11 @@ public:
 		- Create blank
 	*/
 	MapBlock * createBlock(v3s16 p);
-
+	
+	/*
+		only_from_disk, changed_blocks and lighting_invalidated_blocks
+		are not properly used by the new map generator.
+	*/
 	MapBlock * emergeBlock(
 			v3s16 p,
 			bool only_from_disk,
