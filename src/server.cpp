@@ -568,6 +568,11 @@ void RemoteClient::GetNextBlocks(Server *server, float dtime,
 					continue;
 			}
 
+#if 0
+			/*
+				NOTE: We can't know the ground level this way with the
+				new generator.
+			*/
 			if(haxmode)
 			{
 				/*
@@ -586,6 +591,7 @@ void RemoteClient::GetNextBlocks(Server *server, float dtime,
 						continue;
 				}
 			}
+#endif
 
 			/*
 				Check if map has this block
@@ -2093,7 +2099,18 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 					// Don't add a node if this is not a free space
 					MapNode n2 = m_env.getMap().getNode(p_over);
 					if(content_buildable_to(n2.d) == false)
+					{
+						// Client probably has wrong data.
+						// Set block not sent, so that client will get
+						// a valid one.
+						dstream<<"Client "<<peer_id<<" tried to place"
+								<<" node in invalid position; setting"
+								<<" MapBlock not sent."<<std::endl;
+						RemoteClient *client = getClient(peer_id);
+						v3s16 blockpos = getNodeBlockPos(p_over);
+						client->SetBlockNotSent(blockpos);
 						return;
+					}
 				}
 				catch(InvalidPositionException &e)
 				{
@@ -3189,7 +3206,7 @@ Player *Server::emergePlayer(const char *name, const char *password,
 		*/
 		player->setPosition(intToFloat(v3s16(
 				0,
-				50,
+				64,
 				0
 		)));
 		
@@ -3227,7 +3244,7 @@ Player *Server::emergePlayer(const char *name, const char *password,
 #if 1
 		player->setPosition(intToFloat(v3s16(
 				0,
-				50,
+				64,
 				0
 		)));
 #endif

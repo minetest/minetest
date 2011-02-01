@@ -1914,7 +1914,8 @@ ServerMap::ServerMap(std::string savedir, HMParams hmp, MapParams mp):
 		
 		// Add only one entry
 		list_baseheight->addPoint(v3s16(0,0,0), Attribute(0));
-		list_randmax->addPoint(v3s16(0,0,0), Attribute(30));
+		list_randmax->addPoint(v3s16(0,0,0), Attribute(22));
+		//list_randmax->addPoint(v3s16(0,0,0), Attribute(0));
 		list_randfactor->addPoint(v3s16(0,0,0), Attribute(0.45));
 
 		// Easy spawn point
@@ -2304,6 +2305,22 @@ MapChunk* ServerMap::generateChunkRaw(v2s16 chunkpos,
 	
 	}//timer1
 
+	/*
+		Randomize some parameters
+	*/
+
+	// 0-100
+	// Usually little, sometimes huge
+	//u32 stone_obstacle_amount = myrand_range(0, myrand_range(0, 100));
+	u32 stone_obstacle_amount = myrand_range(0, 100);
+
+	/*
+		Loop this part, it will make stuff look older and newer nicely
+	*/
+
+	for(u32 i_age=0; i_age<2; i_age++)
+	{ // Aging loop
+
 	// This is set during the next operation.
 	// Maximum height of the stone surface and obstacles.
 	// This is used to disable dungeon generation from going too high.
@@ -2316,11 +2333,14 @@ MapChunk* ServerMap::generateChunkRaw(v2s16 chunkpos,
 	/*
 		Add some random stone obstacles
 	*/
-
-	for(u32 ri=0; ri<15; ri++)
+	
+	for(u32 ri=0; ri<stone_obstacle_amount/3; ri++)
+	//for(u32 ri=0; ri<7; ri++)
+	//if(0)
 	{
 		// Randomize max height so usually stuff will be quite low
-		s16 maxheight_randomized = myrand_range(0, 30);
+		//s16 maxheight_randomized = myrand_range(0, 25);
+		s16 maxheight_randomized = myrand_range(0, stone_obstacle_amount/3);
 
 		// The size of these could actually be m_chunksize*MAP_BLOCKSIZE*2
 		v3s16 ob_size(
@@ -2430,7 +2450,11 @@ MapChunk* ServerMap::generateChunkRaw(v2s16 chunkpos,
 		s16 max_tunnel_diameter = 5;
 		u16 tunnel_routepoints = 15;
 		
-		bool bruise_surface = (jj < dungeons_count / 3);
+		u32 bruise_surface_maxindex =
+				dungeons_count / 10 * stone_surface_max_y / 10;
+		bruise_surface_maxindex =
+				rangelim(bruise_surface_maxindex, 0, dungeons_count/2);
+		bool bruise_surface = (jj < bruise_surface_maxindex);
 
 		if(bruise_surface)
 		{
@@ -2719,6 +2743,18 @@ MapChunk* ServerMap::generateChunkRaw(v2s16 chunkpos,
 		s16 surface_y = find_ground_level(vmanip, p2d);
 
 		/*
+			If topmost node is grass, change it to mud.
+			It might be if it was flown to there from a neighboring
+			chunk and then converted.
+		*/
+		{
+			u32 i = vmanip.m_area.index(v3s16(p2d.X, surface_y, p2d.Y));
+			MapNode *n = &vmanip.m_data[i];
+			if(n->d == CONTENT_GRASS)
+				n->d = CONTENT_MUD;
+		}
+
+		/*
 			Add mud on ground
 		*/
 		{
@@ -2779,8 +2815,11 @@ MapChunk* ServerMap::generateChunkRaw(v2s16 chunkpos,
 
 		// If not mud, do nothing to it
 		MapNode *n = &vmanip.m_data[i];
-		if(n->d != CONTENT_MUD)
+		if(n->d != CONTENT_MUD && n->d != CONTENT_GRASS)
 			continue;
+
+		// Make it exactly mud
+		n->d = CONTENT_MUD;
 
 		v3s16 dirs4[4] = {
 			v3s16(0,0,1), // back
@@ -2923,6 +2962,9 @@ MapChunk* ServerMap::generateChunkRaw(v2s16 chunkpos,
 	}
 
 	}//timer1
+	
+	} // Aging loop
+
 	{
 	// 1ms @cs=8
 	//TimeTaker timer1("plant trees");
@@ -2951,6 +2993,7 @@ MapChunk* ServerMap::generateChunkRaw(v2s16 chunkpos,
 	}
 
 	}//timer1
+
 	{
 	// 19ms @cs=8
 	//TimeTaker timer1("grow grass");
