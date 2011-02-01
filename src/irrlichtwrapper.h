@@ -132,10 +132,14 @@ public:
 	/*
 		These are called from the main thread
 	*/
+
 	IrrlichtWrapper(IrrlichtDevice *device);
 	
 	// Run queued tasks
 	void Run();
+
+	// Shutdown wrapper; this disables queued texture fetching
+	void Shutdown(bool shutdown);
 
 	/*
 		These are called from other threads
@@ -181,6 +185,8 @@ private:
 	/*
 		Members
 	*/
+
+	bool m_running;
 	
 	// The id of the thread that can (and has to) use irrlicht directly
 	threadid_t m_main_thread;

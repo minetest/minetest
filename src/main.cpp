@@ -288,7 +288,7 @@ FEATURE: Map generator version 2
 	  where some minerals are found
 	- Create a system that allows a huge amount of different "map
 	  generator modules/filters"
-	  
+
 FEATURE: The map could be generated procedually:
       - This would need the map to be generated in larger pieces
 	    - How large? How do they connect to each other?
@@ -296,7 +296,10 @@ FEATURE: The map could be generated procedually:
 		- Lighting would not have to be necessarily calculated until
 		  the blocks are actually needed - it would be quite fast
 		- Something like 64*64*16 MapBlocks?
-		- TODO: Separate lighting and block generation
+		  - No, MapSectors. And as much as it is efficient to do,
+		    64x64 might be too much.
+        - FIXME: This is currently halfway done and the generator is
+		  fairly broken
       * Make the stone level with a heightmap
 	  * Carve out stuff in the stone
 	  * Dump dirt all around, and simulate it falling off steep
@@ -311,16 +314,25 @@ FEATURE: The map could be generated procedually:
 			parameter field is free for this.
 		- Simulate rock falling from cliffs when water has removed
 		  enough solid rock from the bottom
-TODO: Lazy lighting updates:
-    - Set updateLighting to ignore MapBlocks with expired lighting,
-	  except the blocks specified to it
-	- When a MapBlock is generated, lighting expires in all blocks
-	  touching it (26 blocks + self)
-	- When a lighting-wise valid MapBlock is needed and lighting of it
-	  has expired, what to do?
 
 Doing now:
 ----------
+# maybe done
+* not done
+
+* Remove all kinds of systems that are made redundant by the new map
+  generator
+  - Sector heightmaps? At least they should be made redundant.
+  - Sector objects
+* Do something about AttributeDatabase/List being too slow
+* Save chunk metadata on disk
+* Change water side textures so that buggy water doesn't look bad
+* Make server find the spawning place from the real map data, not from
+  the heightmap
+* only_from_disk doesn't work that well anymore
+* Make the generator to run in background and not blocking block
+  placement and transfer
+* Fix the strange mineral occurences
 
 ======================================================================
 
@@ -1886,6 +1898,9 @@ int main(int argc, char *argv[])
 	*/
 	{
 
+	// This is set to true at the end of the scope
+	g_irrlicht->Shutdown(false);
+
 	/*
 		Draw "Loading" screen
 	*/
@@ -3016,6 +3031,14 @@ int main(int argc, char *argv[])
 	}
 
 	delete quick_inventory;
+
+	/*
+		Disable texture fetches and other stuff that is queued
+		to be processed by the main loop.
+
+		This has to be done before client goes out of scope.
+	*/
+	g_irrlicht->Shutdown(true);
 
 	} // client and server are deleted at this point
 

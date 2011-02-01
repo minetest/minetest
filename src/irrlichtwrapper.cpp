@@ -5,6 +5,7 @@
 
 IrrlichtWrapper::IrrlichtWrapper(IrrlichtDevice *device)
 {
+	m_running = true;
 	m_main_thread = get_current_thread_id();
 	m_device_mutex.Init();
 	m_device = device;
@@ -33,6 +34,11 @@ void IrrlichtWrapper::Run()
 
 		request.dest->push_back(result);
 	}
+}
+
+void IrrlichtWrapper::Shutdown(bool shutdown)
+{
+	m_running = !shutdown;
 }
 
 textureid_t IrrlichtWrapper::getTextureId(const std::string &name)
@@ -73,6 +79,10 @@ video::ITexture* IrrlichtWrapper::getTexture(const TextureSpec &spec)
 	}
 	else
 	{
+		// If irrlicht has shut down, just return NULL
+		if(m_running == false)
+			return NULL;
+
 		// We're gonna ask the result to be put into here
 		ResultQueue<TextureSpec, video::ITexture*, u8, u8> result_queue;
 		

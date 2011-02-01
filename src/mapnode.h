@@ -438,6 +438,14 @@ struct MapNode
 		param2 = a_param2;
 	}
 
+	/*MapNode & operator=(const MapNode &other)
+	{
+		d = other.d;
+		param = other.param;
+		param2 = other.param2;
+		return *this;
+	}*/
+
 	bool operator==(const MapNode &other)
 	{
 		return (d == other.d

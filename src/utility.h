@@ -207,6 +207,10 @@ public:
 	{
 		return ptr == t;
 	}
+	T & operator[](unsigned int i)
+	{
+		return ptr[i];
+	}
 private:
 	void drop()
 	{
@@ -569,6 +573,15 @@ inline bool isInArea(v2s16 p, s16 d)
 	return (
 		p.X >= 0 && p.X < d &&
 		p.Y >= 0 && p.Y < d
+	);
+}
+
+inline bool isInArea(v3s16 p, v3s16 d)
+{
+	return (
+		p.X >= 0 && p.X < d.X &&
+		p.Y >= 0 && p.Y < d.Y &&
+		p.Z >= 0 && p.Z < d.Z
 	);
 }
 
@@ -1458,6 +1471,13 @@ private:
 int myrand(void);
 void mysrand(unsigned seed);
 #define MYRAND_MAX 32767
+
+inline int myrand_range(int min, int max)
+{
+	if(min >= max)
+		return max;
+	return (myrand()%(max-min+1))+min;
+}
 
 /*
 	Some kind of a thing that stores attributes related to

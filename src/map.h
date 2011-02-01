@@ -93,6 +93,8 @@ public:
 	MapSector * getSectorNoGenerateNoEx(v2s16 p2d);
 	// On failure throws InvalidPositionException
 	MapSector * getSectorNoGenerate(v2s16 p2d);
+	// Gets an existing sector or creates an empty one
+	//MapSector * getSectorCreate(v2s16 p2d);
 
 	/*
 		This is overloaded by ClientMap and ServerMap to allow
@@ -104,6 +106,8 @@ public:
 	MapBlock * getBlockNoCreate(v3s16 p);
 	// Returns NULL if not found
 	MapBlock * getBlockNoCreateNoEx(v3s16 p);
+	// Gets an existing block or creates an empty one
+	//MapBlock * getBlockCreate(v3s16 p);
 	
 	// Returns InvalidPositionException if not found
 	f32 getGroundHeight(v2s16 p, bool generate=false);
@@ -382,12 +386,20 @@ public:
 		
 		This is mainly called by generateChunkRaw.
 	*/
-	ServerMapSector * generateSector(v2s16 p);
+	//ServerMapSector * generateSector(v2s16 p);
+	
+	/*
+		Get a sector from somewhere.
+		- Check memory
+		- Check disk (loads blocks also)
+		- Create blank one
+	*/
+	ServerMapSector * createSector(v2s16 p);
 
 	/*
 		Get a sector from somewhere.
 		- Check memory
-		- Check disk
+		- Check disk (loads blocks also)
 		- Generate chunk
 	*/
 	MapSector * emergeSector(v2s16 p);
@@ -399,6 +411,13 @@ public:
 			core::map<v3s16, MapBlock*> &changed_blocks,
 			core::map<v3s16, MapBlock*> &lighting_invalidated_blocks
 	);
+	
+	/*
+		Get a block from somewhere.
+		- Memory
+		- Create blank
+	*/
+	MapBlock * createBlock(v3s16 p);
 
 	MapBlock * emergeBlock(
 			v3s16 p,
@@ -636,10 +655,8 @@ public:
 protected:
 	Map *m_map;
 	/*
-		NOTE: This might be used or not
-		bool is dummy value
-		SUGG: How 'bout an another VoxelManipulator for storing the
-		      information about which block is loaded?
+		key = blockpos
+		value = block existed when loaded
 	*/
 	core::map<v3s16, bool> m_loaded_blocks;
 };
@@ -653,8 +670,12 @@ public:
 	virtual void emerge(VoxelArea a, s32 caller_id=-1);
 
 	void initialEmerge(v3s16 blockpos_min, v3s16 blockpos_max);
+	
+	// This is much faster with big chunks of generated data
+	void blitBackAll(core::map<v3s16, MapBlock*> * modified_blocks);
 
 protected:
+	bool m_create_area;
 };
 
 #endif

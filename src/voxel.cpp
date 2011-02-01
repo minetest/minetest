@@ -41,7 +41,6 @@ VoxelManipulator::VoxelManipulator():
 	m_data(NULL),
 	m_flags(NULL)
 {
-	m_disable_water_climb = false;
 }
 
 VoxelManipulator::~VoxelManipulator()
@@ -221,6 +220,22 @@ void VoxelManipulator::copyFrom(MapNode *src, VoxelArea src_area,
 	}
 }
 
+void VoxelManipulator::copyTo(MapNode *dst, VoxelArea dst_area,
+		v3s16 dst_pos, v3s16 from_pos, v3s16 size)
+{
+	for(s16 z=0; z<size.Z; z++)
+	for(s16 y=0; y<size.Y; y++)
+	{
+		s32 i_dst = dst_area.index(dst_pos.X, dst_pos.Y+y, dst_pos.Z+z);
+		s32 i_local = m_area.index(from_pos.X, from_pos.Y+y, from_pos.Z+z);
+		memcpy(&dst[i_dst], &m_data[i_local], size.X*sizeof(MapNode));
+	}
+}
+
+/*
+	Algorithms
+	-----------------------------------------------------
+*/
 
 void VoxelManipulator::clearFlag(u8 flags)
 {
@@ -541,7 +556,7 @@ void VoxelManipulator::spreadLight(enum LightBank bank, v3s16 p)
 	Lights neighbors of from_nodes, collects all them and then
 	goes on recursively.
 
-	NOTE: This is faster in small areas but will overflow the
+	NOTE: This is faster on small areas but will overflow the
 	      stack on large areas. Thus it is not used.
 */
 void VoxelManipulator::spreadLight(enum LightBank bank,

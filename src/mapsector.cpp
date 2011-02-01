@@ -570,10 +570,15 @@ ServerMapSector* ServerMapSector::deSerialize(
 
 	if(n != NULL)
 	{
-		dstream<<"deSerializing existent sectors not supported "
+		dstream<<"WARNING: deSerializing existent sectors not supported "
 				"at the moment, because code hasn't been tested."
 				<<std::endl;
-		assert(0);
+
+		//assert(0);
+		MapSector *sector = n->getValue();
+		assert(sector->getId() == MAPSECTOR_SERVER);
+		return (ServerMapSector*)sector;
+
 		// NOTE: At least hm_split mismatch would have to be checked
 		
 		//sector = n->getValue();

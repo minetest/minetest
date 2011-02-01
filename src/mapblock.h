@@ -426,6 +426,8 @@ public:
 	
 	// Copies data to VoxelManipulator to getPosRelative()
 	void copyTo(VoxelManipulator &dst);
+	// Copies data from VoxelManipulator getPosRelative()
+	void copyFrom(VoxelManipulator &dst);
 
 	/*
 		MapBlockObject stuff

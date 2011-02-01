@@ -606,6 +606,15 @@ void RemoteClient::GetNextBlocks(Server *server, float dtime,
 				{
 					block_is_invalid = true;
 				}
+				
+				v2s16 p2d(p.X, p.Z);
+				ServerMap *map = (ServerMap*)(&server->m_env.getMap());
+				v2s16 chunkpos = map->sector_to_chunk(p2d);
+				MapChunk *chunk = map->getChunk(chunkpos);
+				if(chunk == NULL)
+					block_is_invalid = true;
+				else if(chunk->getIsVolatile() == true)
+					block_is_invalid = true;
 			}
 
 			/*
@@ -3258,7 +3267,8 @@ Player *Server::emergePlayer(const char *name, const char *password,
 
 		player->setPosition(intToFloat(v3s16(
 				nodepos.X,
-				groundheight + 1,
+				//groundheight + 1,
+				groundheight + 15,
 				nodepos.Y
 		)));
 
