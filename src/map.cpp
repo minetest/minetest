@@ -2317,12 +2317,15 @@ MapChunk* ServerMap::generateChunkRaw(v2s16 chunkpos,
 		Add some random stone obstacles
 	*/
 
-	for(u32 ri=0; ri<10; ri++)
+	for(u32 ri=0; ri<15; ri++)
 	{
+		// Randomize max height so usually stuff will be quite low
+		s16 maxheight_randomized = myrand_range(0, 30);
+
 		// The size of these could actually be m_chunksize*MAP_BLOCKSIZE*2
 		v3s16 ob_size(
 			myrand_range(5, stone_obstacle_max_size),
-			myrand_range(0, 23),
+			myrand_range(0, maxheight_randomized),
 			myrand_range(5, stone_obstacle_max_size)
 		);
 		v2s16 ob_place(
