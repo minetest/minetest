@@ -10,22 +10,30 @@ endif( UNIX )
 
 # Find include directory
 
+if(NOT IRRLICHT_SOURCE_DIR STREQUAL "")
+	set(IRRLICHT_SOURCE_DIR_INCLUDE
+		"${IRRLICHT_SOURCE_DIR}/include"
+	)
+	set(IRRLICHT_SOURCE_DIR_LIBS
+		"${IRRLICHT_SOURCE_DIR}/lib/Win32-visualstudio"
+		"${IRRLICHT_SOURCE_DIR}/lib/Win32-gcc"
+	)
+endif()
+
 FIND_PATH(IRRLICHT_INCLUDE_DIR NAMES irrlicht.h
 	PATHS
+	"${IRRLICHT_SOURCE_DIR_INCLUDE}"
 	/usr/local/include/irrlicht
 	/usr/include/irrlicht
-	"${IRRLICHT_SOURCE_DIR}/include"
 )
 
 # Find library directory
 
 FIND_LIBRARY(IRRLICHT_LIBRARY NAMES libIrrlicht.a Irrlicht
 	PATHS
+	"${IRRLICHT_SOURCE_DIR_LIBS}"
 	/usr/local/lib
 	/usr/lib
-	#${IRRLICHT_PLATFORM_DIR}
-	"${IRRLICHT_SOURCE_DIR}/lib/Win32-visualstudio"
-	"${IRRLICHT_SOURCE_DIR}/lib/Win32-gcc"
 )
 
 MESSAGE(STATUS "IRRLICHT_INCLUDE_DIR = ${IRRLICHT_INCLUDE_DIR}")
