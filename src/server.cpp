@@ -3224,7 +3224,6 @@ Player *Server::emergePlayer(const char *name, const char *password,
 				<<player->getName()<<"\""<<std::endl;
 
 		v2s16 nodepos;
-		f32 groundheight = 0;
 #if 1
 		player->setPosition(intToFloat(v3s16(
 				0,
@@ -3233,6 +3232,7 @@ Player *Server::emergePlayer(const char *name, const char *password,
 		)));
 #endif
 #if 0
+		f32 groundheight = 0;
 #if 0
 		// Try to find a good place a few times
 		for(s32 i=0; i<500; i++)
