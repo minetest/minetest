@@ -348,6 +348,8 @@ Doing now:
 * Add some kind of erosion and other stuff that now is possible
 * Make client to fetch stuff asynchronously
   - Needs method SyncProcessData
+* What is the problem with the server constantly saving one or a few
+  blocks? List the first saved block, maybe it explains.
 
 ======================================================================
 

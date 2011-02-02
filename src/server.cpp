@@ -510,9 +510,13 @@ void RemoteClient::GetNextBlocks(Server *server, float dtime,
 			}
 			else
 			{
-				// Limit the generating area vertically to 2/3
+				/*// Limit the generating area vertically to 2/3
 				if(abs(p.Y - center.Y) > d_max_gen - d_max_gen / 3)
-					generate = false;
+					generate = false;*/
+
+				// Limit the send area vertically to 2/3
+				if(abs(p.Y - center.Y) > d_max_gen - d_max_gen / 3)
+					continue;
 			}
 
 #if 0

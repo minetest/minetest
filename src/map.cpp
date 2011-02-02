@@ -2145,7 +2145,7 @@ MapChunk* ServerMap::generateChunkRaw(v2s16 chunkpos,
 	
 	TimeTaker timer("generateChunkRaw()");
 	
-	// The distance how far into the neighbors the generator is allowed to go
+	// The distance how far into the neighbors the generator is allowed to go.
 	s16 max_spread_amount_sectors = 2;
 	assert(max_spread_amount_sectors <= m_chunksize);
 	s16 max_spread_amount = max_spread_amount_sectors * MAP_BLOCKSIZE;
@@ -2191,6 +2191,12 @@ MapChunk* ServerMap::generateChunkRaw(v2s16 chunkpos,
 			*(u32)h_blocks*MAP_BLOCKSIZE;
 		
 	/*
+		The limiting edges of the lighting update, inclusive.
+	*/
+	s16 lighting_min_d = 0-max_spread_amount;
+	s16 lighting_max_d = sectorpos_base_size*MAP_BLOCKSIZE+max_spread_amount-1;
+
+	/*
 		Create the whole area of this and the neighboring chunks
 	*/
 	{
@@ -2226,6 +2232,12 @@ MapChunk* ServerMap::generateChunkRaw(v2s16 chunkpos,
 			}
 		}
 	}
+	
+	/*
+		Clear all light emitted 
+	*/
+
+	core::map<v3s16, u8> unlight_from;
 
 	/*
 		Now we have a big empty area.
@@ -2310,7 +2322,8 @@ MapChunk* ServerMap::generateChunkRaw(v2s16 chunkpos,
 	*/
 
 	u32 stone_obstacle_amount =
-			myrand_range(0, myrand_range(20, myrand_range(80,150)));
+			myrand_range(0, myrand_range(20, 150));
+			//myrand_range(0, myrand_range(20, myrand_range(80,150)));
 
 	/*
 		Loop this part, it will make stuff look older and newer nicely
@@ -2346,9 +2359,19 @@ MapChunk* ServerMap::generateChunkRaw(v2s16 chunkpos,
 			myrand_range(0, maxheight_randomized),
 			myrand_range(5, stone_obstacle_max_size)
 		);
-		v2s16 ob_place(
+		/*v2s16 ob_place(
 			myrand_range(0, sectorpos_base_size*MAP_BLOCKSIZE-1),
 			myrand_range(0, sectorpos_base_size*MAP_BLOCKSIZE-1)
+		);*/
+		/*
+			Limit by 1 to not obstruct sunlight at borders, because
+			it would fuck up lighting in some places because we're
+			leaving out removing light from the borders for optimization
+			and simplicity.
+		*/
+		v2s16 ob_place(
+			myrand_range(1, sectorpos_base_size*MAP_BLOCKSIZE-1-1),
+			myrand_range(1, sectorpos_base_size*MAP_BLOCKSIZE-1-1)
 		);
 		
 		// Minimum space left on top of the obstacle
@@ -2450,20 +2473,20 @@ MapChunk* ServerMap::generateChunkRaw(v2s16 chunkpos,
 		Make dungeons
 	*/
 	u32 dungeons_count = relative_volume / 200000;
-	u32 bruises_count = relative_volume * stone_surface_max_y / 15000000;
+	u32 bruises_count = relative_volume * stone_surface_max_y / 200000 / 50;
 	for(u32 jj=0; jj<dungeons_count+bruises_count; jj++)
 	{
-		s16 min_tunnel_diameter = 1;
-		s16 max_tunnel_diameter = 5;
-		u16 tunnel_routepoints = 10;
+		s16 min_tunnel_diameter = 3;
+		s16 max_tunnel_diameter = 6;
+		u16 tunnel_routepoints = 15;
 		
 		bool bruise_surface = (jj < bruises_count);
 
 		if(bruise_surface)
 		{
 			min_tunnel_diameter = 5;
-			max_tunnel_diameter = myrand_range(8, 20);
-			tunnel_routepoints = 7;
+			max_tunnel_diameter = myrand_range(10, 20);
+			tunnel_routepoints = 3;
 		}
 
 		// Allowed route area size in nodes
@@ -2801,11 +2824,25 @@ MapChunk* ServerMap::generateChunkRaw(v2s16 chunkpos,
 	for(s16 k=0; k<4; k++)
 	{
 
-	for(s16 x=0-max_spread_amount+1;
+	/*for(s16 x=0-max_spread_amount+1;
 			x<sectorpos_base_size*MAP_BLOCKSIZE+max_spread_amount-1;
 			x++)
 	for(s16 z=0-max_spread_amount+1;
 			z<sectorpos_base_size*MAP_BLOCKSIZE+max_spread_amount-1;
+			z++)*/
+	
+	/*
+		Firstly, limit area by 1 because mud is flown into neighbors.
+		Secondly, limit by 1 more to not obstruct sunlight at borders,
+		because it would fuck up lighting in some places because we're
+		leaving out removing light from the borders for optimization
+		and simplicity.
+	*/
+	for(s16 x=0-max_spread_amount+2;
+			x<sectorpos_base_size*MAP_BLOCKSIZE+max_spread_amount-2;
+			x++)
+	for(s16 z=0-max_spread_amount+2;
+			z<sectorpos_base_size*MAP_BLOCKSIZE+max_spread_amount-2;
 			z++)
 	{
 		// Node position in 2d
@@ -3070,13 +3107,76 @@ MapChunk* ServerMap::generateChunkRaw(v2s16 chunkpos,
 	// 750ms @cs=8, can't optimize more
 	//TimeTaker timer1("initial lighting");
 
+#if 0
+	/*
+		Go through the edges and add all nodes that have light to light_sources
+	*/
+	
+	// Four edges
+	for(s16 i=0; i<4; i++)
+	// Edge length
+	for(s16 j=lighting_min_d;
+			j<=lighting_max_d;
+			j++)
+	{
+		s16 x;
+		s16 z;
+		// +-X
+		if(i == 0 || i == 1)
+		{
+			x = (i==0) ? lighting_min_d : lighting_max_d;
+			if(i == 0)
+				z = lighting_min_d;
+			else
+				z = lighting_max_d;
+		}
+		// +-Z
+		else
+		{
+			z = (i==0) ? lighting_min_d : lighting_max_d;
+			if(i == 0)
+				x = lighting_min_d;
+			else
+				x = lighting_max_d;
+		}
+		
+		// Node position in 2d
+		v2s16 p2d = sectorpos_base*MAP_BLOCKSIZE + v2s16(x,z);
+
+		{
+			v3s16 em = vmanip.m_area.getExtent();
+			s16 y_start = y_nodes_max;
+			u32 i = vmanip.m_area.index(v3s16(p2d.X, y_start, p2d.Y));
+			for(s16 y=y_start; y>=y_nodes_min; y--)
+			{
+				MapNode *n = &vmanip.m_data[i];
+				if(n->getLight(LIGHTBANK_DAY) != 0)
+				{
+					light_sources.insert(v3s16(p2d.X, y, p2d.Y), true);
+				}
+			}
+		}
+	}
+#endif
+
 	/*for(s16 x=0; x<sectorpos_base_size*MAP_BLOCKSIZE; x++)
 	for(s16 z=0; z<sectorpos_base_size*MAP_BLOCKSIZE; z++)*/
-	for(s16 x=0-max_spread_amount+1;
+	/*for(s16 x=0-max_spread_amount+1;
 			x<sectorpos_base_size*MAP_BLOCKSIZE+max_spread_amount-1;
 			x++)
 	for(s16 z=0-max_spread_amount+1;
 			z<sectorpos_base_size*MAP_BLOCKSIZE+max_spread_amount-1;
+			z++)*/
+	
+	/*
+		This has to be 1 smaller than the actual area, because
+		neighboring nodes are checked.
+	*/
+	for(s16 x=lighting_min_d+1;
+			x<=lighting_max_d-1;
+			x++)
+	for(s16 z=lighting_min_d+1;
+			z<=lighting_max_d-1;
 			z++)
 	{
 		// Node position in 2d
@@ -3135,7 +3235,7 @@ MapChunk* ServerMap::generateChunkRaw(v2s16 chunkpos,
 						}
 					}
 				}
-
+				
 				n->setLight(LIGHTBANK_DAY, light);
 				n->setLight(LIGHTBANK_NIGHT, 0);
 				

@@ -140,7 +140,8 @@ void init_mapnode(IIrrlichtWrapper *irrlicht)
 	
 	i = CONTENT_WATERSOURCE;
 	f = &g_content_features[i];
-	f->setTexture(0, irrlicht->getTextureId("water.png"), WATER_ALPHA);
+	//f->setTexture(0, irrlicht->getTextureId("water.png"), WATER_ALPHA);
+	f->setAllTextures(irrlicht->getTextureId("water.png"), WATER_ALPHA);
 	f->setInventoryTexture(irrlicht->getTextureId("water.png"));
 	f->param_type = CPT_LIGHT;
 	f->light_propagates = true;

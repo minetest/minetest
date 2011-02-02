@@ -29,6 +29,24 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 u8 light_decode_table[LIGHT_MAX+1] = 
 {
 0,
+7,
+11,
+15,
+21,
+29,
+42,
+53,
+69,
+85,
+109,
+135,
+167,
+205,
+255,
+};
+/*u8 light_decode_table[LIGHT_MAX+1] = 
+{
+0,
 6,
 8,
 11,
@@ -43,7 +61,7 @@ u8 light_decode_table[LIGHT_MAX+1] =
 143,
 191,
 255,
-};
+};*/
 /*u8 light_decode_table[LIGHT_MAX+1] = 
 {
 0,
