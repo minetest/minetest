@@ -2309,10 +2309,8 @@ MapChunk* ServerMap::generateChunkRaw(v2s16 chunkpos,
 		Randomize some parameters
 	*/
 
-	// 0-100
-	// Usually little, sometimes huge
-	//u32 stone_obstacle_amount = myrand_range(0, myrand_range(0, 100));
-	u32 stone_obstacle_amount = myrand_range(0, myrand_range(20, 100));
+	u32 stone_obstacle_amount =
+			myrand_range(0, myrand_range(20, myrand_range(80,150)));
 
 	/*
 		Loop this part, it will make stuff look older and newer nicely
@@ -2492,14 +2490,18 @@ MapChunk* ServerMap::generateChunkRaw(v2s16 chunkpos,
 		
 		s16 route_y_min = 0;
 		//s16 route_y_max = ar.Y-1;
-		s16 route_y_max = stone_surface_max_y - of.Y;
+		s16 route_y_max = -of.Y + stone_surface_max_y + max_tunnel_diameter/2;
+		route_y_max = rangelim(route_y_max, 0, ar.Y-1);
 
 		if(bruise_surface)
 		{
 			/*// Minimum is at y=0
 			route_y_min = -of.Y - 0;*/
 			// Minimum is at y=max_tunnel_diameter/4
-			route_y_min = -of.Y + max_tunnel_diameter/4;
+			//route_y_min = -of.Y + max_tunnel_diameter/4;
+			//s16 min = -of.Y + max_tunnel_diameter/4;
+			s16 min = -of.Y + 0;
+			route_y_min = myrand_range(min, min + max_tunnel_diameter);
 			route_y_min = rangelim(route_y_min, 0, route_y_max);
 		}
 

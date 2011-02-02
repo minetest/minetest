@@ -346,6 +346,8 @@ Doing now:
     - The server has to make sure the spawn point is not at the
 	  changing borders of a chunk
 * Add some kind of erosion and other stuff that now is possible
+* Make client to fetch stuff asynchronously
+  - Needs method SyncProcessData
 
 ======================================================================
 
