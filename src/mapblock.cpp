@@ -820,6 +820,8 @@ void MapBlock::updateMesh(u32 daynight_ratio)
 			// Includes current node
 			core::map<v3s16, f32> neighbor_levels;
 			core::map<v3s16, u8> neighbor_contents;
+			core::map<v3s16, u8> neighbor_flags;
+			const u8 neighborflag_top_is_water = 0x01;
 			v3s16 neighbor_dirs[9] = {
 				v3s16(0,0,0),
 				v3s16(0,0,1),
@@ -835,7 +837,9 @@ void MapBlock::updateMesh(u32 daynight_ratio)
 			{
 				u8 content = CONTENT_AIR;
 				float level = -0.5 * BS;
+				u8 flags = 0;
 				try{
+					// Check neighbor
 					v3s16 p2 = p + neighbor_dirs[i];
 					MapNode n2 = getNodeParent(p2);
 
@@ -845,11 +849,20 @@ void MapBlock::updateMesh(u32 daynight_ratio)
 						level = 0.5 * BS;
 					else if(n2.d == CONTENT_WATER)
 						level = (-0.5 + ((float)n2.param2 + 0.5) / 8.0) * BS;
+
+					// Check node above neighbor.
+					// NOTE: This doesn't get executed if neighbor
+					//       doesn't exist
+					p2.Y += 1;
+					n2 = getNodeParent(p2);
+					if(n2.d == CONTENT_WATERSOURCE || n2.d == CONTENT_WATER)
+						flags |= neighborflag_top_is_water;
 				}
 				catch(InvalidPositionException &e){}
 				
 				neighbor_levels.insert(neighbor_dirs[i], level);
 				neighbor_contents.insert(neighbor_dirs[i], content);
+				neighbor_flags.insert(neighbor_dirs[i], flags);
 			}
 
 			//float water_level = (-0.5 + ((float)n.param2 + 0.5) / 8.0) * BS;
@@ -916,20 +929,24 @@ void MapBlock::updateMesh(u32 daynight_ratio)
 			{
 				v3s16 dir = side_dirs[i];
 
-				//float neighbor_level = neighbor_levels[dir];
-				/*if(neighbor_level > -0.5*BS + 0.001)
-					continue;*/
-				/*if(neighbor_level > water_level - 0.1*BS)
-					continue;*/
+				/*
+					If our topside is water and neighbor's topside
+					is water, don't draw side face
+				*/
+				if(top_is_water &&
+						neighbor_flags[dir] & neighborflag_top_is_water)
+					continue;
 
 				u8 neighbor_content = neighbor_contents[dir];
-
+				
+				// Don't draw face if neighbor is not air or water
 				if(neighbor_content != CONTENT_AIR
 						&& neighbor_content != CONTENT_WATER)
 					continue;
 				
 				bool neighbor_is_water = (neighbor_content == CONTENT_WATER);
-
+				
+				// Don't draw any faces if neighbor is water and top is water
 				if(neighbor_is_water == true && top_is_water == false)
 					continue;
 				
@@ -945,22 +962,37 @@ void MapBlock::updateMesh(u32 daynight_ratio)
 					video::S3DVertex(-BS/2,0,BS/2, 0,0,0, c, 0,0),
 				};
 				
+				/*
+					If our topside is water, set upper border of face
+					at upper border of node
+				*/
 				if(top_is_water)
 				{
 					vertices[2].Pos.Y = 0.5*BS;
 					vertices[3].Pos.Y = 0.5*BS;
 				}
+				/*
+					Otherwise upper position of face is corner levels
+				*/
 				else
 				{
 					vertices[2].Pos.Y = corner_levels[side_corners[i][0]];
 					vertices[3].Pos.Y = corner_levels[side_corners[i][1]];
 				}
-
+				
+				/*
+					If neighbor is water, lower border of face is corner
+					water levels
+				*/
 				if(neighbor_is_water)
 				{
 					vertices[0].Pos.Y = corner_levels[side_corners[i][1]];
 					vertices[1].Pos.Y = corner_levels[side_corners[i][0]];
 				}
+				/*
+					If neighbor is not water, lower border of face is
+					lower border of node
+				*/
 				else
 				{
 					vertices[0].Pos.Y = -0.5*BS;
