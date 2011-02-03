@@ -23,6 +23,7 @@
 #client_delete_unused_sectors_timeout = 1200
 
 #enable_fog = true
+#new_style_water = true
 
 # Server side stuff
 

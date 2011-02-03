@@ -36,6 +36,7 @@ void set_default_settings()
 	g_settings.setDefault("random_input", "false");
 	g_settings.setDefault("client_delete_unused_sectors_timeout", "1200");
 	g_settings.setDefault("enable_fog", "true");
+	g_settings.setDefault("new_style_water", "true");
 
 	// Server stuff
 	g_settings.setDefault("creative_mode", "false");

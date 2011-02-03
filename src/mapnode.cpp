@@ -22,6 +22,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "porting.h"
 #include <string>
 #include "mineral.h"
+// For g_settings
+#include "main.h"
 
 ContentFeatures::~ContentFeatures()
 {
@@ -139,10 +141,13 @@ void init_mapnode(IIrrlichtWrapper *irrlicht)
 	f->buildable_to = true;
 	f->liquid_type = LIQUID_FLOWING;
 	
+	bool new_style_water = g_settings.getBool("new_style_water");
+	
 	i = CONTENT_WATERSOURCE;
 	f = &g_content_features[i];
 	//f->setTexture(0, irrlicht->getTextureId("water.png"), WATER_ALPHA);
-	f->setAllTextures(irrlicht->getTextureId("water.png"), WATER_ALPHA);
+	if(new_style_water == false)
+		f->setAllTextures(irrlicht->getTextureId("water.png"), WATER_ALPHA);
 	f->setInventoryTexture(irrlicht->getTextureId("water.png"));
 	f->param_type = CPT_LIGHT;
 	f->light_propagates = true;

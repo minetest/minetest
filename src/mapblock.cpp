@@ -19,7 +19,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "mapblock.h"
 #include "map.h"
-// For g_materials
+// For g_settings and g_irrlicht
 #include "main.h"
 #include "light.h"
 #include <sstream>
@@ -600,7 +600,6 @@ void MapBlock::updateMesh(u32 daynight_ratio)
 	v3f posRelative_f(getPosRelative().X, getPosRelative().Y,
 			getPosRelative().Z); // floating point conversion
 	
-	
 	/*
 		Avoid interlocks by copying m_temp_mods
 	*/
@@ -610,6 +609,11 @@ void MapBlock::updateMesh(u32 daynight_ratio)
 		m_temp_mods.copy(temp_mods);
 	}
 
+	bool new_style_water = g_settings.getBool("new_style_water");
+	float node_water_level = 1.0;
+	if(new_style_water)
+		node_water_level = 0.8;
+	
 	/*
 		We are including the faces of the trailing edges of the block.
 		This means that when something changes, the caller must
@@ -846,9 +850,10 @@ void MapBlock::updateMesh(u32 daynight_ratio)
 					content = n2.d;
 
 					if(n2.d == CONTENT_WATERSOURCE)
-						level = 0.5 * BS;
+						level = (-0.5+node_water_level) * BS;
 					else if(n2.d == CONTENT_WATER)
-						level = (-0.5 + ((float)n2.param2 + 0.5) / 8.0) * BS;
+						level = (-0.5 + ((float)n2.param2 + 0.5) / 8.0
+								* node_water_level) * BS;
 
 					// Check node above neighbor.
 					// NOTE: This doesn't get executed if neighbor
@@ -889,7 +894,7 @@ void MapBlock::updateMesh(u32 daynight_ratio)
 					// Special case for source nodes
 					if(content == CONTENT_WATERSOURCE)
 					{
-						cornerlevel = 0.5*BS;
+						cornerlevel = (-0.5+node_water_level)*BS;
 						valid_count = 1;
 						break;
 					}
@@ -1044,6 +1049,47 @@ void MapBlock::updateMesh(u32 daynight_ratio)
 				// Add to mesh collector
 				collector.append(material_w1, vertices, 4, indices, 6);
 			}
+		}
+		/*
+			Add water sources to mesh
+		*/
+		else if(n.d == CONTENT_WATERSOURCE && new_style_water)
+		{
+			//bool top_is_water = false;
+			bool top_is_air = false;
+			try{
+				MapNode n = getNodeParent(v3s16(x,y+1,z));
+				/*if(n.d == CONTENT_WATER || n.d == CONTENT_WATERSOURCE)
+					top_is_water = true;*/
+				if(n.d == CONTENT_AIR)
+					top_is_air = true;
+			}catch(InvalidPositionException &e){}
+			
+			/*if(top_is_water == true)
+				continue;*/
+			if(top_is_air == false)
+				continue;
+
+			u8 l = decode_light(n.getLightBlend(daynight_ratio));
+			video::SColor c(WATER_ALPHA,l,l,l);
+			
+			video::S3DVertex vertices[4] =
+			{
+				video::S3DVertex(-BS/2,0,-BS/2, 0,0,0, c, 0,1),
+				video::S3DVertex(BS/2,0,-BS/2, 0,0,0, c, 1,1),
+				video::S3DVertex(BS/2,0,BS/2, 0,0,0, c, 1,0),
+				video::S3DVertex(-BS/2,0,BS/2, 0,0,0, c, 0,0),
+			};
+
+			for(s32 i=0; i<4; i++)
+			{
+				vertices[i].Pos.Y += (-0.5+node_water_level)*BS;
+				vertices[i].Pos += intToFloat(p + getPosRelative());
+			}
+
+			u16 indices[] = {0,1,2,2,3,0};
+			// Add to mesh collector
+			collector.append(material_w1, vertices, 4, indices, 6);
 		}
 	}
 

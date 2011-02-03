@@ -2058,7 +2058,7 @@ void make_tree(VoxelManipulator &vmanip, v3s16 p0)
 	MapNode treenode(CONTENT_TREE);
 	MapNode leavesnode(CONTENT_LEAVES);
 
-	s16 trunk_h = myrand_range(2, 6);
+	s16 trunk_h = myrand_range(3, 6);
 	v3s16 p1 = p0;
 	for(s16 ii=0; ii<trunk_h; ii++)
 	{
