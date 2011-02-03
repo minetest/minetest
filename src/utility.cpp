@@ -380,7 +380,8 @@ lopuks sit otetaan a/b
 	camera_dir: an unit vector pointing to camera direction
 	range: viewing range
 */
-bool isBlockInSight(v3s16 blockpos_b, v3f camera_pos, v3f camera_dir, f32 range)
+bool isBlockInSight(v3s16 blockpos_b, v3f camera_pos, v3f camera_dir, f32 range,
+		f32 *distance_ptr)
 {
 	v3s16 blockpos_nodes = blockpos_b * MAP_BLOCKSIZE;
 	
@@ -399,6 +400,9 @@ bool isBlockInSight(v3s16 blockpos_b, v3f camera_pos, v3f camera_dir, f32 range)
 
 	// Total distance
 	f32 d = blockpos_relative.getLength();
+
+	if(distance_ptr)
+		*distance_ptr = d;
 	
 	// If block is far away, it's not in sight
 	if(d > range * BS)

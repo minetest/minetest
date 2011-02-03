@@ -1675,7 +1675,7 @@ int main(int argc, char *argv[])
 	driverType = video::EDT_OPENGL;
 #else
 	driverType = video::EDT_OPENGL;
-	//driverType = video::EDT_BURNINGSVIDEO;
+	//driverType = video::EDT_BURNINGSVIDEO; // Best software renderer
 #endif
 
 	// create device and exit if creation failed

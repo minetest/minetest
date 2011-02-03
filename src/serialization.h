@@ -45,11 +45,12 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 	10: (dev) water pressure
 	11: (dev) zlib'd blocks, block flags
 	12: (dev) UnlimitedHeightmap now uses interpolated areas
+	13: (dev) Mapgen v2
 */
 // This represents an uninitialized or invalid format
 #define SER_FMT_VER_INVALID 255
 // Highest supported serialization version
-#define SER_FMT_VER_HIGHEST 12
+#define SER_FMT_VER_HIGHEST 13
 // Lowest supported serialization version
 #define SER_FMT_VER_LOWEST 2
 

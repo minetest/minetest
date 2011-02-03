@@ -19,14 +19,54 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "light.h"
 
-/*u32 daynight_cache_ratios[DAYNIGHT_CACHE_COUNT] =
+
+// a_n+1 = a_n * 0.786
+// Length of LIGHT_MAX+1 means LIGHT_MAX is the last value.
+// LIGHT_SUN is read as LIGHT_MAX from here.
+u8 light_decode_table[LIGHT_MAX+1] = 
 {
-	1000,
-	600,
-	300
+8,
+11,
+14,
+18,
+22,
+29,
+37,
+47,
+60,
+76,
+97,
+123,
+157,
+200,
+255,
+};
+
+// As in minecraft, a_n+1 = a_n * 0.8
+// NOTE: This doesn't really work that well because this defines
+//       LIGHT_MAX as dimmer than LIGHT_SUN
+// NOTE: Uh, this has had 34 left out; forget this.
+/*u8 light_decode_table[LIGHT_MAX+1] = 
+{
+8,
+11,
+14,
+17,
+21,
+27,
+42,
+53,
+66,
+83,
+104,
+130,
+163,
+204,
+255,
 };*/
 
-u8 light_decode_table[LIGHT_MAX+1] = 
+// This was a quick try of more light, manually quickly made
+/*u8 light_decode_table[LIGHT_MAX+1] = 
 {
 0,
 7,
@@ -43,7 +83,9 @@ u8 light_decode_table[LIGHT_MAX+1] =
 167,
 205,
 255,
-};
+};*/
+
+// This was used for a long time, manually made
 /*u8 light_decode_table[LIGHT_MAX+1] = 
 {
 0,
@@ -62,6 +104,7 @@ u8 light_decode_table[LIGHT_MAX+1] =
 191,
 255,
 };*/
+
 /*u8 light_decode_table[LIGHT_MAX+1] = 
 {
 0,

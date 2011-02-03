@@ -36,7 +36,9 @@ extern u32 daynight_cache_ratios[DAYNIGHT_CACHE_COUNT];*/
 	Lower level lighting stuff
 */
 
-// This directly sets the range of light
+// This directly sets the range of light.
+// Actually this is not the real maximum, and this is not the
+// brightest. The brightest is LIGHT_SUN.
 #define LIGHT_MAX 14
 // Light is stored as 4 bits, thus 15 is the maximum.
 // This brightness is reserved for sunlight

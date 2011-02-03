@@ -2903,48 +2903,58 @@ MapChunk* ServerMap::generateChunkRaw(v2s16 chunkpos,
 				v3s16(-1,0,0), // left
 			};
 
-			// Drop mud on side
-			
-			for(u32 di=0; di<4; di++)
+			// Theck that upper is air or doesn't exist.
+			// Only drop mud if upper doesn't contain anything that
+			// would keep the mud in place.
+			u32 i3 = i;
+			vmanip.m_area.add_y(em, i3, 1);
+			if(vmanip.m_area.contains(i3) == false
+					|| content_walkable(vmanip.m_data[i3].d) == false)
 			{
-				v3s16 dirp = dirs4[di];
-				u32 i2 = i;
-				// Move to side
-				vmanip.m_area.add_p(em, i2, dirp);
-				// Fail if out of area
-				if(vmanip.m_area.contains(i2) == false)
-					continue;
-				// Check that side is air
-				MapNode *n2 = &vmanip.m_data[i2];
-				if(content_walkable(n2->d))
-					continue;
-				// Check that under side is air
-				vmanip.m_area.add_y(em, i2, -1);
-				// Fail if out of area
-				if(vmanip.m_area.contains(i2) == false)
-					continue;
-				n2 = &vmanip.m_data[i2];
-				if(content_walkable(n2->d))
-					continue;
-				// Loop further down until not air
-				do{
+
+				// Drop mud on side
+				
+				for(u32 di=0; di<4; di++)
+				{
+					v3s16 dirp = dirs4[di];
+					u32 i2 = i;
+					// Move to side
+					vmanip.m_area.add_p(em, i2, dirp);
+					// Fail if out of area
+					if(vmanip.m_area.contains(i2) == false)
+						continue;
+					// Check that side is air
+					MapNode *n2 = &vmanip.m_data[i2];
+					if(content_walkable(n2->d))
+						continue;
+					// Check that under side is air
 					vmanip.m_area.add_y(em, i2, -1);
 					// Fail if out of area
 					if(vmanip.m_area.contains(i2) == false)
 						continue;
 					n2 = &vmanip.m_data[i2];
-				}while(content_walkable(n2->d) == false);
-				// Loop one up so that we're in air
-				vmanip.m_area.add_y(em, i2, 1);
-				n2 = &vmanip.m_data[i2];
+					if(content_walkable(n2->d))
+						continue;
+					// Loop further down until not air
+					do{
+						vmanip.m_area.add_y(em, i2, -1);
+						// Fail if out of area
+						if(vmanip.m_area.contains(i2) == false)
+							continue;
+						n2 = &vmanip.m_data[i2];
+					}while(content_walkable(n2->d) == false);
+					// Loop one up so that we're in air
+					vmanip.m_area.add_y(em, i2, 1);
+					n2 = &vmanip.m_data[i2];
 
-				// Move mud to new place
-				*n2 = *n;
-				// Set old place to be air
-				*n = MapNode(CONTENT_AIR);
+					// Move mud to new place
+					*n2 = *n;
+					// Set old place to be air
+					*n = MapNode(CONTENT_AIR);
 
-				// Done
-				break;
+					// Done
+					break;
+				}
 			}
 			
 			// Continue from next y
@@ -2990,18 +3000,19 @@ MapChunk* ServerMap::generateChunkRaw(v2s16 chunkpos,
 		*/
 		{
 			v3s16 em = vmanip.m_area.getExtent();
-			s16 y_start = WATER_LEVEL;
 			u8 light = LIGHT_MAX;
+			// Start at global water surface level
+			s16 y_start = WATER_LEVEL;
 			u32 i = vmanip.m_area.index(v3s16(p2d.X, y_start, p2d.Y));
 			MapNode *n = &vmanip.m_data[i];
-			/*
-				Add first one to transforming liquid queue
-			*/
+
+			/*// Add first one to transforming liquid queue, if water
 			if(n->d == CONTENT_WATER || n->d == CONTENT_WATERSOURCE)
 			{
 				v3s16 p = v3s16(p2d.X, y_start, p2d.Y);
 				m_transforming_liquid.push_back(p);
-			}
+			}*/
+
 			for(s16 y=y_start; y>=y_nodes_min; y--)
 			{
 				n = &vmanip.m_data[i];
@@ -3010,16 +3021,14 @@ MapChunk* ServerMap::generateChunkRaw(v2s16 chunkpos,
 				if(n->d != CONTENT_AIR && n->d != CONTENT_WATERSOURCE
 						&& n->d != CONTENT_WATER)
 				{
-					/*
-						Add bottom one to transforming liquid queue
-					*/
+					/*// Add bottom one to transforming liquid queue
 					vmanip.m_area.add_y(em, i, 1);
 					n = &vmanip.m_data[i];
 					if(n->d == CONTENT_WATER || n->d == CONTENT_WATERSOURCE)
 					{
 						v3s16 p = v3s16(p2d.X, y, p2d.Y);
 						m_transforming_liquid.push_back(p);
-					}
+					}*/
 
 					break;
 				}
@@ -3027,10 +3036,10 @@ MapChunk* ServerMap::generateChunkRaw(v2s16 chunkpos,
 				n->d = CONTENT_WATERSOURCE;
 				n->setLight(LIGHTBANK_DAY, light);
 
-				/*// Add to transforming liquid queue (in case it'd
+				// Add to transforming liquid queue (in case it'd
 				// start flowing)
 				v3s16 p = v3s16(p2d.X, y, p2d.Y);
-				m_transforming_liquid.push_back(p);*/
+				m_transforming_liquid.push_back(p);
 				
 				// Next one
 				vmanip.m_area.add_y(em, i, -1);
@@ -5324,9 +5333,10 @@ void ClientMap::renderMap(video::IVideoDriver* driver, s32 pass)
 			float range = 100000 * BS;
 			if(m_control.range_all == false)
 				range = m_control.wanted_range * BS;
-
+			
+			float d = 0.0;
 			if(isBlockInSight(block->getPos(), camera_position,
-					camera_direction, range) == false)
+					camera_direction, range, &d) == false)
 			{
 				continue;
 			}
@@ -5379,7 +5389,7 @@ void ClientMap::renderMap(video::IVideoDriver* driver, s32 pass)
 					continue;
 			}
 #endif			
-
+#if 0
 			v3s16 blockpos_nodes = block->getPosRelative();
 			
 			// Block center position
@@ -5394,6 +5404,7 @@ void ClientMap::renderMap(video::IVideoDriver* driver, s32 pass)
 
 			// Total distance
 			f32 d = blockpos_relative.getLength();
+#endif
 			
 #if 1
 			/*

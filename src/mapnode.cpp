@@ -75,7 +75,7 @@ void init_mapnode(IIrrlichtWrapper *irrlicht)
 	
 	i = CONTENT_SAND;
 	f = &g_content_features[i];
-	f->setAllTextures(irrlicht->getTextureId("mud.png"));
+	f->setAllTextures(irrlicht->getTextureId("sand.png"));
 	f->param_type = CPT_MINERAL;
 	f->is_ground_content = true;
 	

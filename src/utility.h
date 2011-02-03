@@ -1663,7 +1663,8 @@ private:
 	Miscellaneous functions
 */
 
-bool isBlockInSight(v3s16 blockpos_b, v3f camera_pos, v3f camera_dir, f32 range);
+bool isBlockInSight(v3s16 blockpos_b, v3f camera_pos, v3f camera_dir, f32 range,
+		f32 *distance_ptr=NULL);
 
 /*
 	Queue with unique values with fast checking of value existence
