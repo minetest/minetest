@@ -242,6 +242,11 @@ void InventoryList::deSerialize(std::istream &is)
 		{
 			break;
 		}
+		// This is a temporary backwards compatibility fix
+		else if(name == "end")
+		{
+			break;
+		}
 		else if(name == "Item")
 		{
 			if(item_i > getSize() - 1)
@@ -515,6 +520,11 @@ void Inventory::deSerialize(std::istream &is)
 		std::getline(iss, name, ' ');
 
 		if(name == "EndInventory")
+		{
+			break;
+		}
+		// This is a temporary backwards compatibility fix
+		else if(name == "end")
 		{
 			break;
 		}
