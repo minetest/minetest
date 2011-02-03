@@ -1454,8 +1454,9 @@ void Map::transformLiquids(core::map<v3s16, MapBlock*> & modified_blocks)
 
 	u32 loopcount = 0;
 	u32 initial_size = m_transforming_liquid.size();
-
-	//dstream<<"transformLiquids(): initial_size="<<initial_size<<std::endl;
+	
+	if(initial_size != 0)
+		dstream<<"transformLiquids(): initial_size="<<initial_size<<std::endl;
 
 	while(m_transforming_liquid.size() != 0)
 	{
@@ -2321,9 +2322,13 @@ MapChunk* ServerMap::generateChunkRaw(v2s16 chunkpos,
 		Randomize some parameters
 	*/
 
-	u32 stone_obstacle_amount =
-			myrand_range(0, myrand_range(20, 150));
-			//myrand_range(0, myrand_range(20, myrand_range(80,150)));
+	u32 stone_obstacle_amount = 0;
+	if(myrand() % 2 == 0)
+		stone_obstacle_amount = myrand_range(0, myrand_range(20, 150));
+	else
+		stone_obstacle_amount = myrand_range(0, myrand_range(20, 50));
+	//u32 stone_obstacle_amount =
+	//		myrand_range(0, myrand_range(20, myrand_range(80,150)));
 
 	/*
 		Loop this part, it will make stuff look older and newer nicely
@@ -2375,7 +2380,7 @@ MapChunk* ServerMap::generateChunkRaw(v2s16 chunkpos,
 		);
 		
 		// Minimum space left on top of the obstacle
-		s16 min_head_space = 10;
+		s16 min_head_space = 12;
 		
 		for(s16 x=-ob_size.X/2; x<ob_size.X/2; x++)
 		for(s16 z=-ob_size.Z/2; z<ob_size.Z/2; z++)
@@ -2449,7 +2454,7 @@ MapChunk* ServerMap::generateChunkRaw(v2s16 chunkpos,
 				}
 				// Add mud
 				count = 0;
-				for(; y<=y_nodes_max; y++)
+				for(; y<=y_nodes_max - min_head_space; y++)
 				{
 					MapNode &n = vmanip.m_data[i];
 					n.d = CONTENT_MUD;
@@ -2587,11 +2592,11 @@ MapChunk* ServerMap::generateChunkRaw(v2s16 chunkpos,
 				s16 d1 = d0 + rs - 1;
 				for(s16 z0=d0; z0<=d1; z0++)
 				{
-					s16 si = rs - abs(z0);
+					s16 si = rs - MYMAX(0, abs(z0)-rs/4);
 					for(s16 x0=-si; x0<=si-1; x0++)
 					{
-						s16 maxabsxz = abs(x0)>abs(z0)?abs(x0):abs(z0);
-						s16 si2 = rs - maxabsxz;
+						s16 maxabsxz = MYMAX(abs(x0), abs(z0));
+						s16 si2 = rs - MYMAX(0, maxabsxz-rs/4);
 						//s16 si2 = rs - abs(x0);
 						for(s16 y0=-si2+1; y0<=si2-1; y0++)
 						{
@@ -2638,7 +2643,7 @@ MapChunk* ServerMap::generateChunkRaw(v2s16 chunkpos,
 	/*
 		Make ore veins
 	*/
-	for(u32 jj=0; jj<relative_volume/524; jj++)
+	for(u32 jj=0; jj<relative_volume/2000; jj++)
 	{
 		s16 max_vein_diameter = 3;
 
@@ -2768,6 +2773,8 @@ MapChunk* ServerMap::generateChunkRaw(v2s16 chunkpos,
 		Add mud to the central chunk
 	*/
 	
+	s16 mud_add_amount = myrand_range(1, 5);
+	
 	for(s16 x=0; x<sectorpos_base_size*MAP_BLOCKSIZE; x++)
 	for(s16 z=0; z<sectorpos_base_size*MAP_BLOCKSIZE; z++)
 	{
@@ -2802,7 +2809,7 @@ MapChunk* ServerMap::generateChunkRaw(v2s16 chunkpos,
 				MapNode &n = vmanip.m_data[i];
 				n.d = CONTENT_MUD;
 				mudcount++;
-				if(mudcount >= 3)
+				if(mudcount >= mud_add_amount)
 					break;
 					
 				vmanip.m_area.add_y(em, i, 1);
@@ -2838,11 +2845,17 @@ MapChunk* ServerMap::generateChunkRaw(v2s16 chunkpos,
 		leaving out removing light from the borders for optimization
 		and simplicity.
 	*/
-	for(s16 x=0-max_spread_amount+2;
+	/*for(s16 x=0-max_spread_amount+2;
 			x<sectorpos_base_size*MAP_BLOCKSIZE+max_spread_amount-2;
 			x++)
 	for(s16 z=0-max_spread_amount+2;
 			z<sectorpos_base_size*MAP_BLOCKSIZE+max_spread_amount-2;
+			z++)*/
+	for(s16 x=0-max_spread_amount+1;
+			x<sectorpos_base_size*MAP_BLOCKSIZE+max_spread_amount-1;
+			x++)
+	for(s16 z=0-max_spread_amount+1;
+			z<sectorpos_base_size*MAP_BLOCKSIZE+max_spread_amount-1;
 			z++)
 	{
 		// Node position in 2d
@@ -2850,74 +2863,92 @@ MapChunk* ServerMap::generateChunkRaw(v2s16 chunkpos,
 		
 		v3s16 em = vmanip.m_area.getExtent();
 		u32 i = vmanip.m_area.index(v3s16(p2d.X, y_nodes_max, p2d.Y));
-		s16 y;
-		// Go to ground level
-		for(y=y_nodes_max; y>=y_nodes_min; y--)
+		s16 y=y_nodes_max;
+
+		for(;;)
 		{
-			MapNode &n = vmanip.m_data[i];
-			//if(n.d != CONTENT_AIR)
-			if(content_walkable(n.d))
+			MapNode *n = NULL;
+			// Find mud
+			for(; y>=y_nodes_min; y--)
+			{
+				n = &vmanip.m_data[i];
+				//if(content_walkable(n->d))
+				//	break;
+				if(n->d == CONTENT_MUD || n->d == CONTENT_GRASS)
+					break;
+					
+				vmanip.m_area.add_y(em, i, -1);
+			}
+
+			// Stop if out of area
+			//if(vmanip.m_area.contains(i) == false)
+			if(y < y_nodes_min)
 				break;
-				
-			vmanip.m_area.add_y(em, i, -1);
-		}
 
-		// If not mud, do nothing to it
-		MapNode *n = &vmanip.m_data[i];
-		if(n->d != CONTENT_MUD && n->d != CONTENT_GRASS)
-			continue;
+			/*// If not mud, do nothing to it
+			MapNode *n = &vmanip.m_data[i];
+			if(n->d != CONTENT_MUD && n->d != CONTENT_GRASS)
+				continue;*/
 
-		// Make it exactly mud
-		n->d = CONTENT_MUD;
+			// Make it exactly mud
+			n->d = CONTENT_MUD;
+			
+			/*s16 recurse_count = 0;
+	mudflow_recurse:*/
 
-		v3s16 dirs4[4] = {
-			v3s16(0,0,1), // back
-			v3s16(1,0,0), // right
-			v3s16(0,0,-1), // front
-			v3s16(-1,0,0), // left
-		};
+			v3s16 dirs4[4] = {
+				v3s16(0,0,1), // back
+				v3s16(1,0,0), // right
+				v3s16(0,0,-1), // front
+				v3s16(-1,0,0), // left
+			};
 
-		// Drop mud on side
-		
-		for(u32 di=0; di<4; di++)
-		{
-			v3s16 dirp = dirs4[di];
-			u32 i2 = i;
-			// Check that side is air
-			vmanip.m_area.add_p(em, i2, dirp);
-			MapNode *n2 = &vmanip.m_data[i2];
-			if(content_walkable(n2->d))
-				continue;
-			// Check that under side is air
-			vmanip.m_area.add_y(em, i2, -1);
-			n2 = &vmanip.m_data[i2];
-			if(content_walkable(n2->d))
-				continue;
-			// Loop further down until not air
-			do{
+			// Drop mud on side
+			
+			for(u32 di=0; di<4; di++)
+			{
+				v3s16 dirp = dirs4[di];
+				u32 i2 = i;
+				// Move to side
+				vmanip.m_area.add_p(em, i2, dirp);
+				// Fail if out of area
+				if(vmanip.m_area.contains(i2) == false)
+					continue;
+				// Check that side is air
+				MapNode *n2 = &vmanip.m_data[i2];
+				if(content_walkable(n2->d))
+					continue;
+				// Check that under side is air
 				vmanip.m_area.add_y(em, i2, -1);
+				// Fail if out of area
+				if(vmanip.m_area.contains(i2) == false)
+					continue;
 				n2 = &vmanip.m_data[i2];
-			}while(content_walkable(n2->d) == false);
-			// Loop one up so that we're in air
-			vmanip.m_area.add_y(em, i2, 1);
-			n2 = &vmanip.m_data[i2];
+				if(content_walkable(n2->d))
+					continue;
+				// Loop further down until not air
+				do{
+					vmanip.m_area.add_y(em, i2, -1);
+					// Fail if out of area
+					if(vmanip.m_area.contains(i2) == false)
+						continue;
+					n2 = &vmanip.m_data[i2];
+				}while(content_walkable(n2->d) == false);
+				// Loop one up so that we're in air
+				vmanip.m_area.add_y(em, i2, 1);
+				n2 = &vmanip.m_data[i2];
 
-			// Move mud to new place
-			*n2 = *n;
-			// Set old place to be air
-			*n = MapNode(CONTENT_AIR);
+				// Move mud to new place
+				*n2 = *n;
+				// Set old place to be air
+				*n = MapNode(CONTENT_AIR);
 
-			#if 0
-			// Switch mud and other and change mud source to air
-			//MapNode tempnode = *n2;
-			*n2 = *n;
-			//*n = tempnode;
-			// Force old mud position to be air
-			n->d = CONTENT_AIR;
-			#endif
-
-			// Done
-			break;
+				// Done
+				break;
+			}
+			
+			// Continue from next y
+			y--;
 		}
 	}
 	
@@ -4683,6 +4714,12 @@ void ServerMap::save(bool only_changed)
 				{
 					saveBlock(block);
 					block_count++;
+
+					/*dstream<<"ServerMap: Written block ("
+							<<block->getPos().X<<","
+							<<block->getPos().Y<<","
+							<<block->getPos().Z<<")"
+							<<std::endl;*/
 				}
 			}
 		}

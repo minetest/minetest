@@ -27,7 +27,7 @@ void set_default_settings()
 	g_settings.setDefault("wanted_fps", "30");
 	g_settings.setDefault("fps_max", "60");
 	g_settings.setDefault("viewing_range_nodes_max", "300");
-	g_settings.setDefault("viewing_range_nodes_min", "28");
+	g_settings.setDefault("viewing_range_nodes_min", "35");
 	g_settings.setDefault("screenW", "800");
 	g_settings.setDefault("screenH", "600");
 	g_settings.setDefault("port", "");

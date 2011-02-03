@@ -152,6 +152,10 @@ public:
 			p.Z >= MinEdge.Z && p.Z <= MaxEdge.Z
 		);
 	}
+	bool contains(s32 i) const
+	{
+		return (i >= 0 && i < getVolume());
+	}
 	bool operator==(const VoxelArea &other) const
 	{
 		return (MinEdge == other.MinEdge

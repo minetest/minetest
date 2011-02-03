@@ -350,6 +350,8 @@ Doing now:
   - Needs method SyncProcessData
 * What is the problem with the server constantly saving one or a few
   blocks? List the first saved block, maybe it explains.
+* Water doesn't start flowing after map generation like it should
+* Better water generation
 
 ======================================================================
 
@@ -2775,7 +2777,8 @@ int main(int argc, char *argv[])
 		
 		if(g_settings.getBool("enable_fog") == true)
 		{
-			f32 range = draw_control.wanted_range * BS;
+			//f32 range = draw_control.wanted_range * BS + MAP_BLOCKSIZE/2*BS;
+			f32 range = draw_control.wanted_range * BS + MAP_BLOCKSIZE/3*BS;
 			if(draw_control.range_all)
 				range = 100000*BS;
 

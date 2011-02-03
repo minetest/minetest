@@ -1829,5 +1829,11 @@ inline bool string_allowed(const std::string &s, const std::string &allowed_char
 	return true;
 }
 
+/*
+	Some helper stuff
+*/
+#define MYMIN(a,b) ((a)<(b)?(a):(b))
+#define MYMAX(a,b) ((a)>(b)?(a):(b))
+
 #endif
 
