@@ -638,6 +638,8 @@ struct MapNode
 		}
 
 		// Translate deprecated stuff
+		// NOTE: This doesn't get used because MapBlock handles node
+		// parameters directly
 		MapNode *translate_to = content_features(d).translate_to;
 		if(translate_to)
 		{

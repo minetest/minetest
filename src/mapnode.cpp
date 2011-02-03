@@ -96,9 +96,10 @@ void init_mapnode(IIrrlichtWrapper *irrlicht)
 	
 	i = CONTENT_COALSTONE;
 	f = &g_content_features[i];
-	f->translate_to = new MapNode(CONTENT_STONE, MINERAL_COAL);
-	/*f->setAllTextures(irrlicht->getTextureId("coalstone.png"));
-	f->is_ground_content = true;*/
+	//f->translate_to = new MapNode(CONTENT_STONE, MINERAL_COAL);
+	f->setAllTextures(TextureSpec(irrlicht->getTextureId("coal.png"),
+			irrlicht->getTextureId("mineral_coal.png")));
+	f->is_ground_content = true;
 	
 	i = CONTENT_WOOD;
 	f = &g_content_features[i];

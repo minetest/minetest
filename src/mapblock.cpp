@@ -1676,6 +1676,23 @@ void MapBlock::deSerialize(std::istream &is, u8 version)
 			data[i].param2 = s[i+nodecount*2];
 		}
 	}
+	
+	/*
+		Translate nodes as specified in the translate_to fields of
+		node features
+	*/
+	for(u32 i=0; i<MAP_BLOCKSIZE*MAP_BLOCKSIZE*MAP_BLOCKSIZE; i++)
+	{
+		MapNode &n = data[i];
+
+		MapNode *translate_to = content_features(n.d).translate_to;
+		if(translate_to)
+		{
+			dstream<<"MapBlock: WARNING: Translating node "<<n.d<<" to "
+					<<translate_to->d<<std::endl;
+			n = *translate_to;
+		}
+	}
 }
 
 
