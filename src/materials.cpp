@@ -57,6 +57,9 @@ void initializeMaterialProperties()
 	g_material_properties[CONTENT_WOOD].setDiggingProperties("",
 			DiggingProperties(true, 1.0, 0));
 	
+	g_material_properties[CONTENT_SAND].setDiggingProperties("",
+			DiggingProperties(true, 0.5, 0));
+	
 	/*
 		Add MesePick to everything
 	*/

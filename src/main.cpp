@@ -315,43 +315,45 @@ FEATURE: The map could be generated procedually:
 		- Simulate rock falling from cliffs when water has removed
 		  enough solid rock from the bottom
 
-Doing now:
-----------
+Doing now (most important at the top):
+--------------------------------------
 # maybe done
 * not done
 
+* Perlin noise stuff sucks in heightmap generation, fix it
+* Create perlin noise functions and use them to get natural randomness
+  in everything. No need for attributes or fractal terrain.
+* Do something about AttributeDatabase/List being too slow
+  - Remove it
+* Save chunk metadata on disk
 * Remove all kinds of systems that are made redundant by the new map
   generator
   - Sector heightmaps? At least they should be made redundant.
   - Sector objects
-* Do something about AttributeDatabase/List being too slow
-* Save chunk metadata on disk
-* Change water side textures so that buggy water doesn't look bad
+* Fix the strange mineral occurences
+  - Do they appear anymore?
 * Make server find the spawning place from the real map data, not from
   the heightmap
-* only_from_disk doesn't work that well anymore
+  - But the changing borders of chunk have to be avoided, because
+    there is time to generate only one chunk.
+* only_from_disk might not work anymore - check and fix it.
 * Make the generator to run in background and not blocking block
   placement and transfer
-* Fix the strange mineral occurences
-* When the map is generated and a place is found for the player, the
-  first chunk is actually still volatile and will have stuff still
-  changed after spawning, which creates a lot of glitches.
-  - This is partly fixed by now allowing only 2-sector deeep
-    modification of volatile chunks. But it should still be fixed?
-  - How about checking that the neighbors are fully generated too and
-    generate them when the middle piece is needed
-	- This is very slow
-  - How about just enabling changed_blocks properly
-    - This is probably a good idea
-    - The server has to make sure the spawn point is not at the
-	  changing borders of a chunk
 * Add some kind of erosion and other stuff that now is possible
 * Make client to fetch stuff asynchronously
   - Needs method SyncProcessData
 * What is the problem with the server constantly saving one or a few
   blocks? List the first saved block, maybe it explains.
+  - Does it still do this?
 * Water doesn't start flowing after map generation like it should
-* Better water generation
+  - Are there still problems?
+* Better water generation (spread it to underwater caverns)
+* When generating a chunk and the neighboring chunk doesn't have mud
+  and stuff yet and the ground is fairly flat, the mud will flow to
+  the other chunk making nasty straight walls when the other chunk
+  is generated. Fix it.
+* Save map seed to a metafile (with version information)
+  - Remove master heightmap
 
 ======================================================================
 

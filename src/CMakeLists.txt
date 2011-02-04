@@ -39,6 +39,7 @@ configure_file(
 )
 
 set(common_SRCS
+	noise.cpp
 	mineral.cpp
 	porting.cpp
 	materials.cpp

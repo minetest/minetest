@@ -537,6 +537,9 @@ private:
 	UnlimitedHeightmap *m_heightmap;
 	MapParams m_params;
 	PointAttributeDatabase m_padb;
+	
+	// Seed used for all kinds of randomness
+	u64 m_seed;
 
 	std::string m_savedir;
 	bool m_map_saving_enabled;

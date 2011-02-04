@@ -26,6 +26,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "voxel.h"
 #include "porting.h"
 #include "mineral.h"
+#include "noise.h"
 
 /*
 	Map
@@ -1731,7 +1732,8 @@ void Map::transformLiquids(core::map<v3s16, MapBlock*> & modified_blocks)
 
 ServerMap::ServerMap(std::string savedir, HMParams hmp, MapParams mp):
 	Map(dout_server),
-	m_heightmap(NULL)
+	m_heightmap(NULL),
+	m_seed(0)
 {
 	
 	//m_chunksize = 64;
@@ -1739,6 +1741,12 @@ ServerMap::ServerMap(std::string savedir, HMParams hmp, MapParams mp):
 	m_chunksize = 8;
 	//m_chunksize = 4;
 	//m_chunksize = 2;
+	
+	// TODO: Save to and load from a file
+	m_seed = (((u64)myrand()<<0)%0x7fff)
+			+ (((u64)myrand()<<16)%0x7fff)
+			+ (((u64)myrand()<<32)%0x7fff)
+			+ (((u64)myrand()<<48)%0x7fff);
 
 	/*
 		Experimental and debug stuff
@@ -1979,6 +1987,8 @@ ServerMap::ServerMap(std::string savedir, HMParams hmp, MapParams mp):
 	dstream<<DTIME<<"Initializing new map."<<std::endl;
 	
 	// Create master heightmap
+	// NOTE: Yes, that is a magic number down there. It specifies
+	// the size of the internal FixedHeightmaps.
 	m_heightmap = new UnlimitedHeightmap
 			(32, &m_padb);
 	
@@ -2029,7 +2039,7 @@ ServerMap::~ServerMap()
 }
 
 /*
-	Some helper functions
+	Some helper functions for the map generator
 */
 
 s16 find_ground_level(VoxelManipulator &vmanip, v2s16 p2d)
@@ -2043,6 +2053,29 @@ s16 find_ground_level(VoxelManipulator &vmanip, v2s16 p2d)
 	{
 		MapNode &n = vmanip.m_data[i];
 		if(content_walkable(n.d))
+			break;
+			
+		vmanip.m_area.add_y(em, i, -1);
+	}
+	if(y >= y_nodes_min)
+		return y;
+	else
+		return y_nodes_min;
+}
+
+s16 find_ground_level_clever(VoxelManipulator &vmanip, v2s16 p2d)
+{
+	v3s16 em = vmanip.m_area.getExtent();
+	s16 y_nodes_max = vmanip.m_area.MaxEdge.Y;
+	s16 y_nodes_min = vmanip.m_area.MinEdge.Y;
+	u32 i = vmanip.m_area.index(v3s16(p2d.X, y_nodes_max, p2d.Y));
+	s16 y;
+	for(y=y_nodes_max; y>=y_nodes_min; y--)
+	{
+		MapNode &n = vmanip.m_data[i];
+		if(content_walkable(n.d)
+				&& n.d != CONTENT_TREE
+				&& n.d != CONTENT_LEAVES)
 			break;
 			
 		vmanip.m_area.add_y(em, i, -1);
@@ -2123,6 +2156,49 @@ void make_tree(VoxelManipulator &vmanip, v3s16 p0)
 	}
 }
 
+/*
+	Noise functions. Make sure seed is mangled differently in each one.
+*/
+
+// Amount of trees per area in nodes
+double tree_amount_2d(u64 seed, v2s16 p)
+{
+	double noise = noise2d_perlin(
+			0.5+(float)p.X/500, 0.5+(float)p.Y/500,
+			seed+2, 4, 0.55);
+	double zeroval = -0.3;
+	if(noise < zeroval)
+		return 0;
+	else
+		return 0.05 * (noise-zeroval) / (0.5-zeroval);
+}
+
+double base_rock_level_2d(u64 seed, v2s16 p)
+{
+	return -4. + 25. * noise2d_perlin(
+			0.5+(float)p.X/500., 0.5+(float)p.Y/500.,
+			seed, 6, 0.6);
+}
+
+double highlands_level_2d(u64 seed, v2s16 p)
+{
+	double a = noise2d_perlin(
+			0.5+(float)p.X/1000., 0.5+(float)p.Y/1000.,
+			seed-359, 6, 0.55);
+	if(a > 0.2)
+	{
+		return 35. + 10. * noise2d_perlin(
+				0.5+(float)p.X/500., 0.5+(float)p.Y/500.,
+				seed+85039, 6, 0.55);
+	}
+	else
+		return -100000;
+}
+
+/*
+	This is the main map generation method
+*/
+
 MapChunk* ServerMap::generateChunkRaw(v2s16 chunkpos,
 		core::map<v3s16, MapBlock*> &changed_blocks)
 {
@@ -2185,8 +2261,8 @@ MapChunk* ServerMap::generateChunkRaw(v2s16 chunkpos,
 	);
 	
 	// Relative values to control amount of stuff in one chunk
-	u32 relative_area = (u32)sectorpos_base_size*MAP_BLOCKSIZE
-			*(u32)sectorpos_base_size*MAP_BLOCKSIZE;
+	/*u32 relative_area = (u32)sectorpos_base_size*MAP_BLOCKSIZE
+			*(u32)sectorpos_base_size*MAP_BLOCKSIZE;*/
 	u32 relative_volume = (u32)sectorpos_base_size*MAP_BLOCKSIZE
 			*(u32)sectorpos_base_size*MAP_BLOCKSIZE
 			*(u32)h_blocks*MAP_BLOCKSIZE;
@@ -2235,12 +2311,6 @@ MapChunk* ServerMap::generateChunkRaw(v2s16 chunkpos,
 	}
 	
 	/*
-		Clear all light emitted 
-	*/
-
-	core::map<v3s16, u8> unlight_from;
-
-	/*
 		Now we have a big empty area.
 
 		Make a ManualMapVoxelManipulator that contains this and the
@@ -2281,22 +2351,17 @@ MapChunk* ServerMap::generateChunkRaw(v2s16 chunkpos,
 
 		// Ground height at this point
 		float surface_y_f = 0.0;
-		/*
-			A hack to get the ground height from the sector.
-			Do this better.
-		*/
+
+		// Use perlin noise for ground height
+		surface_y_f = base_rock_level_2d(m_seed, p2d);
+		
+		// Experimental stuff
 		{
-			v2s16 sectorpos = getContainerPos(p2d, MAP_BLOCKSIZE);
-			v2s16 sector_relpos = p2d - sectorpos*MAP_BLOCKSIZE;
-			MapSector *sector = getSectorNoGenerate(sectorpos);
-			assert(sector);
-			float h = sector->getGroundHeight(sector_relpos);
-			if(h > GROUNDHEIGHT_VALID_MINVALUE)
-				surface_y_f = h;
-			else
-				dstream<<"WARNING: "<<__FUNCTION_NAME
-				<<": sector->getGroundHeight returned bad height"<<std::endl;
+			float a = highlands_level_2d(m_seed, p2d);
+			if(a > surface_y_f)
+				surface_y_f = a;
 		}
+
 		// Convert to integer
 		s16 surface_y = (s16)surface_y_f;
 
@@ -2327,6 +2392,7 @@ MapChunk* ServerMap::generateChunkRaw(v2s16 chunkpos,
 		stone_obstacle_amount = myrand_range(0, myrand_range(20, 150));
 	else
 		stone_obstacle_amount = myrand_range(0, myrand_range(20, 50));
+
 	//u32 stone_obstacle_amount =
 	//		myrand_range(0, myrand_range(20, myrand_range(80,150)));
 
@@ -2364,6 +2430,11 @@ MapChunk* ServerMap::generateChunkRaw(v2s16 chunkpos,
 			myrand_range(0, maxheight_randomized),
 			myrand_range(5, stone_obstacle_max_size)
 		);
+		
+		// Don't make stupid small rectable bumps
+		if(ob_size.Y < 5)
+			continue;
+
 		/*v2s16 ob_place(
 			myrand_range(0, sectorpos_base_size*MAP_BLOCKSIZE-1),
 			myrand_range(0, sectorpos_base_size*MAP_BLOCKSIZE-1)
@@ -2477,11 +2548,13 @@ MapChunk* ServerMap::generateChunkRaw(v2s16 chunkpos,
 	/*
 		Make dungeons
 	*/
-	u32 dungeons_count = relative_volume / 200000;
+	u32 dungeons_count = relative_volume / 400000;
 	u32 bruises_count = relative_volume * stone_surface_max_y / 200000 / 50;
+	/*u32 dungeons_count = 0;
+	u32 bruises_count = 0;*/
 	for(u32 jj=0; jj<dungeons_count+bruises_count; jj++)
 	{
-		s16 min_tunnel_diameter = 3;
+		s16 min_tunnel_diameter = 2;
 		s16 max_tunnel_diameter = 6;
 		u16 tunnel_routepoints = 15;
 		
@@ -2519,6 +2592,11 @@ MapChunk* ServerMap::generateChunkRaw(v2s16 chunkpos,
 		s16 route_y_min = 0;
 		//s16 route_y_max = ar.Y-1;
 		s16 route_y_max = -of.Y + stone_surface_max_y + max_tunnel_diameter/2;
+		if(bruise_surface == false)
+		{
+			// Don't go through surface too often
+			route_y_max -= myrand_range(0, max_tunnel_diameter);
+		}
 		route_y_max = rangelim(route_y_max, 0, ar.Y-1);
 
 		if(bruise_surface)
@@ -2773,7 +2851,8 @@ MapChunk* ServerMap::generateChunkRaw(v2s16 chunkpos,
 		Add mud to the central chunk
 	*/
 	
-	s16 mud_add_amount = myrand_range(1, 5);
+	//s16 mud_add_amount = myrand_range(2, 4);
+	//s16 mud_add_amount = 0;
 	
 	for(s16 x=0; x<sectorpos_base_size*MAP_BLOCKSIZE; x++)
 	for(s16 z=0; z<sectorpos_base_size*MAP_BLOCKSIZE; z++)
@@ -2781,6 +2860,11 @@ MapChunk* ServerMap::generateChunkRaw(v2s16 chunkpos,
 		// Node position in 2d
 		v2s16 p2d = sectorpos_base*MAP_BLOCKSIZE + v2s16(x,z);
 		
+		// Randomize mud amount
+		s16 mud_add_amount = (s16)(3.5 + 2. * noise2d_perlin(
+				0.5+(float)p2d.X/200, 0.5+(float)p2d.Y/200,
+				m_seed+1, 3, 0.55));
+
 		// Find ground level
 		s16 surface_y = find_ground_level(vmanip, p2d);
 
@@ -2806,12 +2890,13 @@ MapChunk* ServerMap::generateChunkRaw(v2s16 chunkpos,
 			u32 i = vmanip.m_area.index(v3s16(p2d.X, y_start, p2d.Y));
 			for(s16 y=y_start; y<=y_nodes_max; y++)
 			{
-				MapNode &n = vmanip.m_data[i];
-				n.d = CONTENT_MUD;
-				mudcount++;
 				if(mudcount >= mud_add_amount)
 					break;
 					
+				MapNode &n = vmanip.m_data[i];
+				n.d = CONTENT_MUD;
+				mudcount++;
+
 				vmanip.m_area.add_y(em, i, 1);
 			}
 		}
@@ -2828,7 +2913,7 @@ MapChunk* ServerMap::generateChunkRaw(v2s16 chunkpos,
 	*/
 
 	// Iterate a few times
-	for(s16 k=0; k<4; k++)
+	for(s16 k=0; k<3; k++)
 	{
 
 	/*for(s16 x=0-max_spread_amount+1;
@@ -2865,7 +2950,7 @@ MapChunk* ServerMap::generateChunkRaw(v2s16 chunkpos,
 		u32 i = vmanip.m_area.index(v3s16(p2d.X, y_nodes_max, p2d.Y));
 		s16 y=y_nodes_max;
 
-		for(;;)
+		for(;; y--)
 		{
 			MapNode *n = NULL;
 			// Find mud
@@ -2890,6 +2975,20 @@ MapChunk* ServerMap::generateChunkRaw(v2s16 chunkpos,
 			if(n->d != CONTENT_MUD && n->d != CONTENT_GRASS)
 				continue;*/
 
+			/*
+				Don't flow it if the stuff under it is not mud
+			*/
+			{
+				u32 i2 = i;
+				vmanip.m_area.add_y(em, i2, -1);
+				// Cancel if out of area
+				if(vmanip.m_area.contains(i2) == false)
+					continue;
+				MapNode *n2 = &vmanip.m_data[i2];
+				if(n2->d != CONTENT_MUD && n2->d != CONTENT_GRASS)
+					continue;
+			}
+
 			// Make it exactly mud
 			n->d = CONTENT_MUD;
 			
@@ -2904,61 +3003,58 @@ MapChunk* ServerMap::generateChunkRaw(v2s16 chunkpos,
 			};
 
 			// Theck that upper is air or doesn't exist.
-			// Only drop mud if upper doesn't contain anything that
-			// would keep the mud in place.
+			// Cancel dropping if upper keeps it in place
 			u32 i3 = i;
 			vmanip.m_area.add_y(em, i3, 1);
-			if(vmanip.m_area.contains(i3) == false
-					|| content_walkable(vmanip.m_data[i3].d) == false)
+			if(vmanip.m_area.contains(i3) == true
+					&& content_walkable(vmanip.m_data[i3].d) == true)
 			{
+				continue;
+			}
 
-				// Drop mud on side
-				
-				for(u32 di=0; di<4; di++)
-				{
-					v3s16 dirp = dirs4[di];
-					u32 i2 = i;
-					// Move to side
-					vmanip.m_area.add_p(em, i2, dirp);
-					// Fail if out of area
-					if(vmanip.m_area.contains(i2) == false)
-						continue;
-					// Check that side is air
-					MapNode *n2 = &vmanip.m_data[i2];
-					if(content_walkable(n2->d))
-						continue;
-					// Check that under side is air
+			// Drop mud on side
+			
+			for(u32 di=0; di<4; di++)
+			{
+				v3s16 dirp = dirs4[di];
+				u32 i2 = i;
+				// Move to side
+				vmanip.m_area.add_p(em, i2, dirp);
+				// Fail if out of area
+				if(vmanip.m_area.contains(i2) == false)
+					continue;
+				// Check that side is air
+				MapNode *n2 = &vmanip.m_data[i2];
+				if(content_walkable(n2->d))
+					continue;
+				// Check that under side is air
+				vmanip.m_area.add_y(em, i2, -1);
+				// Fail if out of area
+				if(vmanip.m_area.contains(i2) == false)
+					continue;
+				n2 = &vmanip.m_data[i2];
+				if(content_walkable(n2->d))
+					continue;
+				// Loop further down until not air
+				do{
 					vmanip.m_area.add_y(em, i2, -1);
 					// Fail if out of area
 					if(vmanip.m_area.contains(i2) == false)
 						continue;
 					n2 = &vmanip.m_data[i2];
-					if(content_walkable(n2->d))
-						continue;
-					// Loop further down until not air
-					do{
-						vmanip.m_area.add_y(em, i2, -1);
-						// Fail if out of area
-						if(vmanip.m_area.contains(i2) == false)
-							continue;
-						n2 = &vmanip.m_data[i2];
-					}while(content_walkable(n2->d) == false);
-					// Loop one up so that we're in air
-					vmanip.m_area.add_y(em, i2, 1);
-					n2 = &vmanip.m_data[i2];
+				}while(content_walkable(n2->d) == false);
+				// Loop one up so that we're in air
+				vmanip.m_area.add_y(em, i2, 1);
+				n2 = &vmanip.m_data[i2];
 
-					// Move mud to new place
-					*n2 = *n;
-					// Set old place to be air
-					*n = MapNode(CONTENT_AIR);
+				// Move mud to new place
+				*n2 = *n;
+				// Set old place to be air
+				*n = MapNode(CONTENT_AIR);
 
-					// Done
-					break;
-				}
+				// Done
+				break;
 			}
-			
-			// Continue from next y
-			y--;
 		}
 	}
 	
@@ -3054,6 +3150,67 @@ MapChunk* ServerMap::generateChunkRaw(v2s16 chunkpos,
 	
 	} // Aging loop
 
+	{//TimeTaker timer1("convert mud to sand");
+
+	/*
+		Convert mud to sand
+	*/
+	
+	//s16 mud_add_amount = myrand_range(2, 4);
+	//s16 mud_add_amount = 0;
+	
+	/*for(s16 x=0; x<sectorpos_base_size*MAP_BLOCKSIZE; x++)
+	for(s16 z=0; z<sectorpos_base_size*MAP_BLOCKSIZE; z++)*/
+	for(s16 x=0-max_spread_amount+1;
+			x<sectorpos_base_size*MAP_BLOCKSIZE+max_spread_amount-1;
+			x++)
+	for(s16 z=0-max_spread_amount+1;
+			z<sectorpos_base_size*MAP_BLOCKSIZE+max_spread_amount-1;
+			z++)
+	{
+		// Node position in 2d
+		v2s16 p2d = sectorpos_base*MAP_BLOCKSIZE + v2s16(x,z);
+		
+		// Determine whether to have sand here
+		double sandnoise = noise2d_perlin(
+				0.5+(float)p2d.X/500, 0.5+(float)p2d.Y/500,
+				m_seed+59420, 3, 0.50);
+
+		bool have_sand = (sandnoise > 0.0);
+
+		if(have_sand == false)
+			continue;
+
+		// Find ground level
+		s16 surface_y = find_ground_level_clever(vmanip, p2d);
+		
+		if(surface_y > WATER_LEVEL + 2)
+			continue;
+
+		{
+			v3s16 em = vmanip.m_area.getExtent();
+			s16 y_start = surface_y;
+			u32 i = vmanip.m_area.index(v3s16(p2d.X, y_start, p2d.Y));
+			u32 not_sand_counter = 0;
+			for(s16 y=y_start; y>=y_nodes_min; y--)
+			{
+				MapNode *n = &vmanip.m_data[i];
+				if(n->d == CONTENT_MUD || n->d == CONTENT_GRASS)
+					n->d = CONTENT_SAND;
+				else
+				{
+					not_sand_counter++;
+					if(not_sand_counter > 3)
+						break;
+				}
+
+				vmanip.m_area.add_y(em, i, -1);
+			}
+		}
+
+	}
+
+	}//timer1
 	{
 	// 1ms @cs=8
 	//TimeTaker timer1("plant trees");
@@ -3062,9 +3219,56 @@ MapChunk* ServerMap::generateChunkRaw(v2s16 chunkpos,
 		Plant some trees
 	*/
 	{
-		u32 tree_max = relative_area / 60;
-		
-		u32 count = myrand_range(0, tree_max);
+		// Divide area into parts
+		s16 div = 8;
+		s16 sidelen = sectorpos_base_size*MAP_BLOCKSIZE / div;
+		double area = sidelen * sidelen;
+		for(s16 x0=0; x0<div; x0++)
+		for(s16 z0=0; z0<div; z0++)
+		{
+			// Center position of part of division
+			v2s16 p2d_center(
+				sectorpos_base.X*MAP_BLOCKSIZE + sidelen/2 + sidelen*x0,
+				sectorpos_base.Y*MAP_BLOCKSIZE + sidelen/2 + sidelen*z0
+			);
+			// Minimum edge of part of division
+			v2s16 p2d_min(
+				sectorpos_base.X*MAP_BLOCKSIZE + sidelen*x0,
+				sectorpos_base.Y*MAP_BLOCKSIZE + sidelen*z0
+			);
+			// Maximum edge of part of division
+			v2s16 p2d_max(
+				sectorpos_base.X*MAP_BLOCKSIZE + sidelen + sidelen*x0 - 1,
+				sectorpos_base.Y*MAP_BLOCKSIZE + sidelen + sidelen*z0 - 1
+			);
+			// Amount of trees
+			u32 tree_count = area * tree_amount_2d(m_seed, p2d_center);
+			// Put trees in random places on part of division
+			for(u32 i=0; i<tree_count; i++)
+			{
+				s16 x = myrand_range(p2d_min.X, p2d_max.X);
+				s16 z = myrand_range(p2d_min.Y, p2d_max.Y);
+				s16 y = find_ground_level(vmanip, v2s16(x,z));
+				// Don't make a tree under water level
+				if(y < WATER_LEVEL)
+					continue;
+				v3s16 p(x,y,z);
+				/*
+					Trees grow only on mud and grass
+				*/
+				{
+					u32 i = vmanip.m_area.index(v3s16(p));
+					MapNode *n = &vmanip.m_data[i];
+					if(n->d != CONTENT_MUD && n->d != CONTENT_GRASS)
+						continue;
+				}
+				p.Y++;
+				// Make a tree
+				make_tree(vmanip, p);
+			}
+		}
+		/*u32 tree_max = relative_area / 60;
+		//u32 count = myrand_range(0, tree_max);
 		for(u32 i=0; i<count; i++)
 		{
 			s16 x = myrand_range(0, sectorpos_base_size*MAP_BLOCKSIZE-1);
@@ -3078,7 +3282,7 @@ MapChunk* ServerMap::generateChunkRaw(v2s16 chunkpos,
 			v3s16 p(x,y+1,z);
 			// Make a tree
 			make_tree(vmanip, p);
-		}
+		}*/
 	}
 
 	}//timer1
