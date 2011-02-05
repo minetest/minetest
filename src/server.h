@@ -377,9 +377,7 @@ public:
 		NOTE: Every public method should be thread-safe
 	*/
 	Server(
-		std::string mapsavedir,
-		HMParams hm_params,
-		MapParams map_params
+		std::string mapsavedir
 	);
 	~Server();
 	void start(unsigned short port);

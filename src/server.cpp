@@ -1022,11 +1022,9 @@ u32 PIChecksum(core::list<PlayerInfo> &l)
 */
 
 Server::Server(
-		std::string mapsavedir,
-		HMParams hm_params,
-		MapParams map_params
+		std::string mapsavedir
 	):
-	m_env(new ServerMap(mapsavedir, hm_params, map_params), dout_server),
+	m_env(new ServerMap(mapsavedir), dout_server),
 	m_con(PROTOCOL_ID, 512, CONNECTION_TIMEOUT, this),
 	m_thread(this),
 	m_emergethread(this),
@@ -1406,8 +1404,10 @@ void Server::AsyncRunStep()
 		}
 	}
 	
-	// Trigger emergethread (it gets somehow gets to a
-	// non-triggered but bysy state sometimes)
+	/*
+		Trigger emergethread (it somehow gets to a non-triggered but
+		bysy state sometimes)
+	*/
 	{
 		float &counter = m_emergethread_trigger_timer;
 		counter += dtime;

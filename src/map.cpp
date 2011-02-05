@@ -36,8 +36,7 @@ Map::Map(std::ostream &dout):
 	m_dout(dout),
 	m_camera_position(0,0,0),
 	m_camera_direction(0,0,1),
-	m_sector_cache(NULL),
-	m_hwrapper(this)
+	m_sector_cache(NULL)
 {
 	m_sector_mutex.Init();
 	m_camera_mutex.Init();
@@ -1730,15 +1729,14 @@ void Map::transformLiquids(core::map<v3s16, MapBlock*> & modified_blocks)
 	ServerMap
 */
 
-ServerMap::ServerMap(std::string savedir, HMParams hmp, MapParams mp):
+ServerMap::ServerMap(std::string savedir):
 	Map(dout_server),
-	m_heightmap(NULL),
 	m_seed(0)
 {
 	
 	//m_chunksize = 64;
-	//m_chunksize = 16;
-	m_chunksize = 8;
+	//m_chunksize = 16; // Too slow
+	m_chunksize = 8; // Fine. Takes a few seconds.
 	//m_chunksize = 4;
 	//m_chunksize = 2;
 	
@@ -1753,184 +1751,6 @@ ServerMap::ServerMap(std::string savedir, HMParams hmp, MapParams mp):
 	*/
 	
 	{
-		dstream<<"Generating map point attribute lists"<<std::endl;
-		
-		PointAttributeList *list_baseheight = m_padb.getList("hm_baseheight");
-		PointAttributeList *list_randmax = m_padb.getList("hm_randmax");
-		PointAttributeList *list_randfactor = m_padb.getList("hm_randfactor");
-		//PointAttributeList *list_plants_amount = m_padb.getList("plants_amount");
-		//PointAttributeList *list_caves_amount = m_padb.getList("caves_amount");
-
-#if 0
-		/*
-			NOTE: BEWARE: Too big amount of these will make map generation
-			slow. Especially those that are read by every block emerge.
-			
-			Fetch times:
-			1000 points: 2-3ms
-			5000 points: 15ms
-			15000 points: 40ms
-		*/
-		
-		for(u32 i=0; i<500; i++)
-		{
-			/*u32 lim = MAP_GENERATION_LIMIT;
-			if(i < 400)
-				lim = 2000;*/
-
-			u32 lim = 500 + MAP_GENERATION_LIMIT * i / 500;
-
-			v3s16 p(
-				-lim + myrand()%(lim*2),
-				0,
-				-lim + myrand()%(lim*2)
-			);
-			/*float plants_amount = (float)(myrand()%1050) / 1000.0;
-			plants_amount = pow(plants_amount, 5);
-			list_plants_amount->addPoint(p, Attribute(plants_amount));*/
-			
-			float plants_amount = 0;
-			if(myrand()%4 == 0)
-			{
-				plants_amount = 1.5;
-			}
-			else if(myrand()%4 == 0)
-			{
-				plants_amount = 0.5;
-			}
-			else if(myrand()%2 == 0)
-			{
-				plants_amount = 0.03;
-			}
-			else
-			{
-				plants_amount = 0.0;
-			}
-
-
-			list_plants_amount->addPoint(p, Attribute(plants_amount));
-		}
-
-		for(u32 i=0; i<500; i++)
-		{
-			/*u32 lim = MAP_GENERATION_LIMIT;
-			if(i < 400)
-				lim = 2000;*/
-
-			u32 lim = 500 + MAP_GENERATION_LIMIT * i / 500;
-
-			v3s16 p(
-				-lim + myrand()%(lim*2),
-				0,
-				-lim + myrand()%(lim*2)
-			);
-
-			float caves_amount = 0;
-			if(myrand()%5 == 0)
-			{
-				caves_amount = 1.0;
-			}
-			else if(myrand()%3 == 0)
-			{
-				caves_amount = 0.3;
-			}
-			else
-			{
-				caves_amount = 0.05;
-			}
-
-			list_caves_amount->addPoint(p, Attribute(caves_amount));
-		}
-		
-		for(u32 i=0; i<500; i++)
-		{
-			/*u32 lim = MAP_GENERATION_LIMIT;
-			if(i < 400)
-				lim = 2000;*/
-
-			u32 lim = 500 + MAP_GENERATION_LIMIT * i / 500;
-
-			v3s16 p(
-				-lim + (myrand()%(lim*2)),
-				0,
-				-lim + (myrand()%(lim*2))
-			);
-			
-			/*s32 bh_i = (myrand()%200) - 50;
-			float baseheight = (float)bh_i;
-			
-			float m = 100.;
-			float e = 3.;
-			float randmax = (float)(myrand()%(int)(10.*pow(m, 1./e)))/10.;
-			randmax = pow(randmax, e);
-
-			//float randmax = (float)(myrand()%60);
-			float randfactor = (float)(myrand()%450) / 1000.0 + 0.4;*/
-
-			float baseheight = 0;
-			float randmax = 0;
-			float randfactor = 0;
-
-			/*if(myrand()%5 == 0)
-			{
-				baseheight = 100;
-				randmax = 50;
-				randfactor = 0.63;
-			}
-			else if(myrand()%6 == 0)
-			{
-				baseheight = 200;
-				randmax = 100;
-				randfactor = 0.66;
-			}
-			else if(myrand()%4 == 0)
-			{
-				baseheight = -3;
-				randmax = 30;
-				randfactor = 0.7;
-			}
-			else if(myrand()%3 == 0)
-			{
-				baseheight = 0;
-				randmax = 30;
-				randfactor = 0.63;
-			}
-			else
-			{
-				baseheight = -3;
-				randmax = 20;
-				randfactor = 0.5;
-			}*/
-			
-			if(myrand()%3 < 2)
-			{
-				baseheight = 10;
-				randmax = 30;
-				randfactor = 0.7;
-			}
-			else
-			{
-				baseheight = 0;
-				randmax = 15;
-				randfactor = 0.63;
-			}
-
-			list_baseheight->addPoint(p, Attribute(baseheight));
-			list_randmax->addPoint(p, Attribute(randmax));
-			list_randfactor->addPoint(p, Attribute(randfactor));
-		}
-#endif
-		
-		// Add only one entry
-		list_baseheight->addPoint(v3s16(0,0,0), Attribute(-4));
-		list_randmax->addPoint(v3s16(0,0,0), Attribute(22));
-		//list_randmax->addPoint(v3s16(0,0,0), Attribute(0));
-		list_randfactor->addPoint(v3s16(0,0,0), Attribute(0.45));
-
-		// Easy spawn point
-		/*list_baseheight->addPoint(v3s16(0,0,0), Attribute(0));
-		list_randmax->addPoint(v3s16(0,0,0), Attribute(10));
-		list_randfactor->addPoint(v3s16(0,0,0), Attribute(0.65));*/
 	}
 	
 	/*
@@ -1986,15 +1806,6 @@ ServerMap::ServerMap(std::string savedir, HMParams hmp, MapParams mp):
 
 	dstream<<DTIME<<"Initializing new map."<<std::endl;
 	
-	// Create master heightmap
-	// NOTE: Yes, that is a magic number down there. It specifies
-	// the size of the internal FixedHeightmaps.
-	m_heightmap = new UnlimitedHeightmap
-			(32, &m_padb);
-	
-	// Set map parameters
-	m_params = mp;
-	
 	// Create zero sector
 	emergeSector(v2s16(0,0));
 
@@ -2023,9 +1834,6 @@ ServerMap::~ServerMap()
 		dstream<<DTIME<<"Server: Failed to save map to "<<m_savedir
 				<<", exception: "<<e.what()<<std::endl;
 	}
-	
-	if(m_heightmap != NULL)
-		delete m_heightmap;
 	
 	/*
 		Free all MapChunks
@@ -2164,18 +1972,18 @@ void make_tree(VoxelManipulator &vmanip, v3s16 p0)
 double tree_amount_2d(u64 seed, v2s16 p)
 {
 	double noise = noise2d_perlin(
-			0.5+(float)p.X/500, 0.5+(float)p.Y/500,
-			seed+2, 4, 0.55);
+			0.5+(float)p.X/250, 0.5+(float)p.Y/250,
+			seed+2, 4, 0.6);
 	double zeroval = -0.3;
 	if(noise < zeroval)
 		return 0;
 	else
-		return 0.05 * (noise-zeroval) / (0.5-zeroval);
+		return 0.04 * (noise-zeroval) / (1.0-zeroval);
 }
 
 double base_rock_level_2d(u64 seed, v2s16 p)
 {
-	return -4. + 25. * noise2d_perlin(
+	return WATER_LEVEL - 6.0 + 25. * noise2d_perlin(
 			0.5+(float)p.X/500., 0.5+(float)p.Y/500.,
 			seed, 6, 0.6);
 }
@@ -2184,12 +1992,13 @@ double highlands_level_2d(u64 seed, v2s16 p)
 {
 	double a = noise2d_perlin(
 			0.5+(float)p.X/1000., 0.5+(float)p.Y/1000.,
-			seed-359, 6, 0.55);
-	if(a > 0.2)
+			seed-359, 6, 0.65);
+	if(a > 0.0)
+	//if(1)
 	{
-		return 35. + 10. * noise2d_perlin(
+		return WATER_LEVEL + 55. * noise2d_perlin(
 				0.5+(float)p.X/500., 0.5+(float)p.Y/500.,
-				seed+85039, 6, 0.55);
+				seed+85039, 6, 0.69);
 	}
 	else
 		return -100000;
@@ -2202,6 +2011,8 @@ double highlands_level_2d(u64 seed, v2s16 p)
 MapChunk* ServerMap::generateChunkRaw(v2s16 chunkpos,
 		core::map<v3s16, MapBlock*> &changed_blocks)
 {
+	DSTACK(__FUNCTION_NAME);
+
 	/*
 		Don't generate if already fully generated
 	*/
@@ -2226,11 +2037,13 @@ MapChunk* ServerMap::generateChunkRaw(v2s16 chunkpos,
 	s16 max_spread_amount_sectors = 2;
 	assert(max_spread_amount_sectors <= m_chunksize);
 	s16 max_spread_amount = max_spread_amount_sectors * MAP_BLOCKSIZE;
+
 	// Minimum amount of space left on sides for mud to fall in
-	s16 min_mud_fall_space = 2;
+	//s16 min_mud_fall_space = 2;
+	
 	// Maximum diameter of stone obstacles in X and Z
-	s16 stone_obstacle_max_size = (max_spread_amount-min_mud_fall_space)*2;
-	assert(stone_obstacle_max_size/2 <= max_spread_amount-min_mud_fall_space);
+	/*s16 stone_obstacle_max_size = (max_spread_amount-min_mud_fall_space)*2;
+	assert(stone_obstacle_max_size/2 <= max_spread_amount-min_mud_fall_space);*/
 	
 	s16 y_blocks_min = -4;
 	s16 y_blocks_max = 3;
@@ -2326,6 +2139,10 @@ MapChunk* ServerMap::generateChunkRaw(v2s16 chunkpos,
 
 	TimeTaker timer_generate("generateChunkRaw() generate");
 
+	// Maximum height of the stone surface and obstacles.
+	// This is used to disable dungeon generation from going too high.
+	s16 stone_surface_max_y = 0;
+
 	/*
 		Generate general ground level to full area
 	*/
@@ -2364,6 +2181,10 @@ MapChunk* ServerMap::generateChunkRaw(v2s16 chunkpos,
 
 		// Convert to integer
 		s16 surface_y = (s16)surface_y_f;
+		
+		// Log it
+		if(surface_y > stone_surface_max_y)
+			stone_surface_max_y = surface_y;
 
 		/*
 			Fill ground with stone
@@ -2386,12 +2207,13 @@ MapChunk* ServerMap::generateChunkRaw(v2s16 chunkpos,
 	/*
 		Randomize some parameters
 	*/
-
-	u32 stone_obstacle_amount = 0;
-	if(myrand() % 2 == 0)
-		stone_obstacle_amount = myrand_range(0, myrand_range(20, 150));
-	else
-		stone_obstacle_amount = myrand_range(0, myrand_range(20, 50));
+	
+	//TODO
+	s32 stone_obstacle_count = 0;
+	/*s32 stone_obstacle_count = (1.0+noise2d(m_seed+90443, sectorpos_base.X,
+			sectorpos_base.Y))/2.0 * stone_obstacle_amount/3;*/
+	
+	s16 stone_obstacle_max_height = 0;
 
 	//u32 stone_obstacle_amount =
 	//		myrand_range(0, myrand_range(20, myrand_range(80,150)));
@@ -2403,11 +2225,6 @@ MapChunk* ServerMap::generateChunkRaw(v2s16 chunkpos,
 	for(u32 i_age=0; i_age<2; i_age++)
 	{ // Aging loop
 
-	// This is set during the next operation.
-	// Maximum height of the stone surface and obstacles.
-	// This is used to disable dungeon generation from going too high.
-	s16 stone_surface_max_y = 0;
-
 	{
 	// 8ms @cs=8
 	//TimeTaker timer1("stone obstacles");
@@ -2416,38 +2233,28 @@ MapChunk* ServerMap::generateChunkRaw(v2s16 chunkpos,
 		Add some random stone obstacles
 	*/
 	
-	for(u32 ri=0; ri<stone_obstacle_amount/3; ri++)
-	//for(u32 ri=0; ri<7; ri++)
-	//if(0)
+	for(s32 ri=0; ri<stone_obstacle_count; ri++)
 	{
 		// Randomize max height so usually stuff will be quite low
-		//s16 maxheight_randomized = myrand_range(0, 25);
-		s16 maxheight_randomized = myrand_range(0, stone_obstacle_amount/3);
+		s16 maxheight_randomized = myrand_range(0, stone_obstacle_max_height);
 
-		// The size of these could actually be m_chunksize*MAP_BLOCKSIZE*2
+		s16 stone_obstacle_max_size = sectorpos_base_size * MAP_BLOCKSIZE - 10;
+
 		v3s16 ob_size(
 			myrand_range(5, stone_obstacle_max_size),
 			myrand_range(0, maxheight_randomized),
 			myrand_range(5, stone_obstacle_max_size)
 		);
 		
-		// Don't make stupid small rectable bumps
+		// Don't make stupid small rectangle bumps
 		if(ob_size.Y < 5)
 			continue;
-
-		/*v2s16 ob_place(
-			myrand_range(0, sectorpos_base_size*MAP_BLOCKSIZE-1),
-			myrand_range(0, sectorpos_base_size*MAP_BLOCKSIZE-1)
-		);*/
-		/*
-			Limit by 1 to not obstruct sunlight at borders, because
-			it would fuck up lighting in some places because we're
-			leaving out removing light from the borders for optimization
-			and simplicity.
-		*/
+		
 		v2s16 ob_place(
-			myrand_range(1, sectorpos_base_size*MAP_BLOCKSIZE-1-1),
-			myrand_range(1, sectorpos_base_size*MAP_BLOCKSIZE-1-1)
+			myrand_range(1+ob_size.X/2+2,
+					sectorpos_base_size*MAP_BLOCKSIZE-1-1-ob_size.X/2-2),
+			myrand_range(1+ob_size.Z/2+2,
+					sectorpos_base_size*MAP_BLOCKSIZE-1-1-ob_size.Z/2-2)
 		);
 		
 		// Minimum space left on top of the obstacle
@@ -2548,10 +2355,12 @@ MapChunk* ServerMap::generateChunkRaw(v2s16 chunkpos,
 	/*
 		Make dungeons
 	*/
-	u32 dungeons_count = relative_volume / 400000;
-	u32 bruises_count = relative_volume * stone_surface_max_y / 200000 / 50;
-	/*u32 dungeons_count = 0;
-	u32 bruises_count = 0;*/
+	u32 dungeons_count = relative_volume / 600000;
+	u32 bruises_count = relative_volume * stone_surface_max_y / 40000000;
+	if(stone_surface_max_y < WATER_LEVEL)
+		bruises_count = 0;
+	//dungeons_count = 0;
+	//bruises_count = 0;
 	for(u32 jj=0; jj<dungeons_count+bruises_count; jj++)
 	{
 		s16 min_tunnel_diameter = 2;
@@ -2562,8 +2371,10 @@ MapChunk* ServerMap::generateChunkRaw(v2s16 chunkpos,
 
 		if(bruise_surface)
 		{
-			min_tunnel_diameter = 5;
-			max_tunnel_diameter = myrand_range(10, 20);
+			//min_tunnel_diameter = 5;
+			//max_tunnel_diameter = myrand_range(10, 20);
+			min_tunnel_diameter = MYMAX(0, stone_surface_max_y/6);
+			max_tunnel_diameter = myrand_range(MYMAX(0, stone_surface_max_y/6), MYMAX(0, stone_surface_max_y/4));
 			tunnel_routepoints = 3;
 		}
 
@@ -2592,10 +2403,11 @@ MapChunk* ServerMap::generateChunkRaw(v2s16 chunkpos,
 		s16 route_y_min = 0;
 		//s16 route_y_max = ar.Y-1;
 		s16 route_y_max = -of.Y + stone_surface_max_y + max_tunnel_diameter/2;
+		// If dungeons
 		if(bruise_surface == false)
 		{
 			// Don't go through surface too often
-			route_y_max -= myrand_range(0, max_tunnel_diameter);
+			route_y_max -= myrand_range(0, max_tunnel_diameter*2);
 		}
 		route_y_max = rangelim(route_y_max, 0, ar.Y-1);
 
@@ -2629,11 +2441,11 @@ MapChunk* ServerMap::generateChunkRaw(v2s16 chunkpos,
 		
 		for(u16 j=0; j<tunnel_routepoints; j++)
 		{
-			v3s16 maxlen(20, 10, 20);
+			v3s16 maxlen(15, 5, 15);
 
 			if(bruise_surface)
 			{
-				maxlen = v3s16(60,60,60);
+				maxlen = v3s16(30,25,30);
 			}
 
 			v3f vec(
@@ -2912,37 +2724,28 @@ MapChunk* ServerMap::generateChunkRaw(v2s16 chunkpos,
 		Flow mud away from steep edges
 	*/
 
+	// Limit area by 1 because mud is flown into neighbors.
+	s16 mudflow_minpos = 0-max_spread_amount+1;
+	s16 mudflow_maxpos = sectorpos_base_size*MAP_BLOCKSIZE+max_spread_amount-2;
+
 	// Iterate a few times
 	for(s16 k=0; k<3; k++)
 	{
 
-	/*for(s16 x=0-max_spread_amount+1;
-			x<sectorpos_base_size*MAP_BLOCKSIZE+max_spread_amount-1;
+	for(s16 x=mudflow_minpos;
+			x<=mudflow_maxpos;
 			x++)
-	for(s16 z=0-max_spread_amount+1;
-			z<sectorpos_base_size*MAP_BLOCKSIZE+max_spread_amount-1;
-			z++)*/
-	
-	/*
-		Firstly, limit area by 1 because mud is flown into neighbors.
-		Secondly, limit by 1 more to not obstruct sunlight at borders,
-		because it would fuck up lighting in some places because we're
-		leaving out removing light from the borders for optimization
-		and simplicity.
-	*/
-	/*for(s16 x=0-max_spread_amount+2;
-			x<sectorpos_base_size*MAP_BLOCKSIZE+max_spread_amount-2;
-			x++)
-	for(s16 z=0-max_spread_amount+2;
-			z<sectorpos_base_size*MAP_BLOCKSIZE+max_spread_amount-2;
-			z++)*/
-	for(s16 x=0-max_spread_amount+1;
-			x<sectorpos_base_size*MAP_BLOCKSIZE+max_spread_amount-1;
-			x++)
-	for(s16 z=0-max_spread_amount+1;
-			z<sectorpos_base_size*MAP_BLOCKSIZE+max_spread_amount-1;
+	for(s16 z=mudflow_minpos;
+			z<=mudflow_maxpos;
 			z++)
 	{
+		// Invert coordinates every 2nd iteration
+		if(k%2 == 0)
+		{
+			x = mudflow_maxpos - (x-mudflow_minpos);
+			z = mudflow_maxpos - (z-mudflow_minpos);
+		}
+
 		// Node position in 2d
 		v2s16 p2d = sectorpos_base*MAP_BLOCKSIZE + v2s16(x,z);
 		
@@ -3029,12 +2832,18 @@ MapChunk* ServerMap::generateChunkRaw(v2s16 chunkpos,
 					continue;
 				// Check that under side is air
 				vmanip.m_area.add_y(em, i2, -1);
-				// Fail if out of area
 				if(vmanip.m_area.contains(i2) == false)
 					continue;
 				n2 = &vmanip.m_data[i2];
 				if(content_walkable(n2->d))
 					continue;
+				/*// Check that under that is air (need a drop of 2)
+				vmanip.m_area.add_y(em, i2, -1);
+				if(vmanip.m_area.contains(i2) == false)
+					continue;
+				n2 = &vmanip.m_data[i2];
+				if(content_walkable(n2->d))
+					continue;*/
 				// Loop further down until not air
 				do{
 					vmanip.m_area.add_y(em, i2, -1);
@@ -3196,7 +3005,9 @@ MapChunk* ServerMap::generateChunkRaw(v2s16 chunkpos,
 			{
 				MapNode *n = &vmanip.m_data[i];
 				if(n->d == CONTENT_MUD || n->d == CONTENT_GRASS)
+				{
 					n->d = CONTENT_SAND;
+				}
 				else
 				{
 					not_sand_counter++;
@@ -3213,10 +3024,10 @@ MapChunk* ServerMap::generateChunkRaw(v2s16 chunkpos,
 	}//timer1
 	{
 	// 1ms @cs=8
-	//TimeTaker timer1("plant trees");
+	//TimeTaker timer1("generate trees");
 
 	/*
-		Plant some trees
+		Generate some trees
 	*/
 	{
 		// Divide area into parts
@@ -3617,14 +3428,6 @@ ServerMapSector * ServerMap::createSector(v2s16 p2d)
 	}
 
 	/*
-		If there is no master heightmap, throw.
-	*/
-	if(m_heightmap == NULL)
-	{
-		throw InvalidPositionException("createSector(): no heightmap");
-	}
-
-	/*
 		Do not create over-limit
 	*/
 	if(p2d.X < -MAP_GENERATION_LIMIT / MAP_BLOCKSIZE
@@ -3637,63 +3440,11 @@ ServerMapSector * ServerMap::createSector(v2s16 p2d)
 		Generate blank sector
 	*/
 	
-	// Number of heightmaps in sector in each direction
-	u16 hm_split = SECTOR_HEIGHTMAP_SPLIT;
-
-	// Heightmap side width
-	s16 hm_d = MAP_BLOCKSIZE / hm_split;
-
-	sector = new ServerMapSector(this, p2d, hm_split);
+	sector = new ServerMapSector(this, p2d);
 	
 	// Sector position on map in nodes
 	v2s16 nodepos2d = p2d * MAP_BLOCKSIZE;
 
-	/*dstream<<"Generating sector ("<<p2d.X<<","<<p2d.Y<<")"
-			" heightmaps and objects"<<std::endl;*/
-	
-	/*
-		Generate sector heightmap
-	*/
-
-	v2s16 mhm_p = p2d * hm_split;
-	/*f32 corners[4] = {
-		m_heightmap->getGroundHeight(mhm_p+v2s16(0,0)*hm_split),
-		m_heightmap->getGroundHeight(mhm_p+v2s16(1,0)*hm_split),
-		m_heightmap->getGroundHeight(mhm_p+v2s16(1,1)*hm_split),
-		m_heightmap->getGroundHeight(mhm_p+v2s16(0,1)*hm_split),
-	};*/
-	
-	// Loop through sub-heightmaps
-	for(s16 y=0; y<hm_split; y++)
-	for(s16 x=0; x<hm_split; x++)
-	{
-		v2s16 p_in_sector = v2s16(x,y);
-		v2s16 mhm_p = p2d * hm_split + p_in_sector;
-		f32 corners[4] = {
-			m_heightmap->getGroundHeight(mhm_p+v2s16(0,0)),
-			m_heightmap->getGroundHeight(mhm_p+v2s16(1,0)),
-			m_heightmap->getGroundHeight(mhm_p+v2s16(1,1)),
-			m_heightmap->getGroundHeight(mhm_p+v2s16(0,1)),
-		};
-
-		/*dstream<<"p_in_sector=("<<p_in_sector.X<<","<<p_in_sector.Y<<")"
-				<<" mhm_p=("<<mhm_p.X<<","<<mhm_p.Y<<")"
-				<<std::endl;*/
-
-		FixedHeightmap *hm = new FixedHeightmap(&m_hwrapper,
-				mhm_p, hm_d);
-		sector->setHeightmap(p_in_sector, hm);
-
-		//hm->generateContinued(1.0, 0.5, corners);
-		hm->generateContinued(0.5, 0.5, corners);
-
-		//hm->print();
-	}
-	
-	// Add dummy objects
-	core::map<v3s16, u8> *objects = new core::map<v3s16, u8>;
-	sector->setObjects(objects);
-	
 	/*
 		Insert to container
 	*/
@@ -3812,56 +3563,25 @@ MapBlock * ServerMap::generateBlock(
 		block->unDummify();
 	}
 	
-	/*u8 water_material = CONTENT_WATER;
-	if(g_settings.getBool("endless_water"))
-		water_material = CONTENT_WATERSOURCE;*/
 	u8 water_material = CONTENT_WATERSOURCE;
 	
 	s32 lowest_ground_y = 32767;
 	s32 highest_ground_y = -32768;
 	
-	// DEBUG
-	//sector->printHeightmaps();
-
 	for(s16 z0=0; z0<MAP_BLOCKSIZE; z0++)
 	for(s16 x0=0; x0<MAP_BLOCKSIZE; x0++)
 	{
 		//dstream<<"generateBlock: x0="<<x0<<", z0="<<z0<<std::endl;
 
-		float surface_y_f = sector->getGroundHeight(v2s16(x0,z0));
-		//assert(surface_y_f > GROUNDHEIGHT_VALID_MINVALUE);
-		if(surface_y_f < GROUNDHEIGHT_VALID_MINVALUE)
-		{
-			dstream<<"WARNING: Surface height not found in sector "
-					"for block that is being emerged"<<std::endl;
-			surface_y_f = 0.0;
-		}
+		s16 surface_y = 0;
 
-		s16 surface_y = surface_y_f;
-		//avg_ground_y += surface_y;
 		if(surface_y < lowest_ground_y)
 			lowest_ground_y = surface_y;
 		if(surface_y > highest_ground_y)
 			highest_ground_y = surface_y;
 
-		s32 surface_depth = 0;
+		s32 surface_depth = 2;
 		
-		float slope = sector->getSlope(v2s16(x0,z0)).getLength();
-		
-		//float min_slope = 0.45;
-		//float max_slope = 0.85;
-		float min_slope = 0.60;
-		float max_slope = 1.20;
-		float min_slope_depth = 5.0;
-		float max_slope_depth = 0;
-
-		if(slope < min_slope)
-			surface_depth = min_slope_depth;
-		else if(slope > max_slope)
-			surface_depth = max_slope_depth;
-		else
-			surface_depth = (1.-(slope-min_slope)/max_slope) * min_slope_depth;
-
 		for(s16 y0=0; y0<MAP_BLOCKSIZE; y0++)
 		{
 			s16 real_y = block_y * MAP_BLOCKSIZE + y0;
@@ -4377,251 +4097,7 @@ continue_generating:
 	*/
 	sector->insertBlock(block);
 	
-	/*
-		Sector object stuff
-	*/
-		
-	// An y-wise container of changed blocks
-	core::map<s16, MapBlock*> changed_blocks_sector;
-
-	/*
-		Check if any sector's objects can be placed now.
-		If so, place them.
-	*/
-	core::map<v3s16, u8> *objects = sector->getObjects();
-	core::list<v3s16> objects_to_remove;
-	for(core::map<v3s16, u8>::Iterator i = objects->getIterator();
-			i.atEnd() == false; i++)
-	{
-		v3s16 p = i.getNode()->getKey();
-		v2s16 p2d(p.X,p.Z);
-		u8 d = i.getNode()->getValue();
-
-		// Ground level point (user for stuff that is on ground)
-		v3s16 gp = p;
-		bool ground_found = true;
-		
-		// Search real ground level
-		try{
-			for(;;)
-			{
-				MapNode n = sector->getNode(gp);
-
-				// If not air, go one up and continue to placing the tree
-				if(n.d != CONTENT_AIR)
-				{
-					gp += v3s16(0,1,0);
-					break;
-				}
-
-				// If air, go one down
-				gp += v3s16(0,-1,0);
-			}
-		}catch(InvalidPositionException &e)
-		{
-			// Ground not found.
-			ground_found = false;
-			// This is most close to ground
-			gp += v3s16(0,1,0);
-		}
-
-		try
-		{
-
-		if(d == SECTOR_OBJECT_TEST)
-		{
-			if(sector->isValidArea(p + v3s16(0,0,0),
-					p + v3s16(0,0,0), &changed_blocks_sector))
-			{
-				MapNode n;
-				n.d = CONTENT_TORCH;
-				sector->setNode(p, n);
-				objects_to_remove.push_back(p);
-			}
-		}
-		else if(d == SECTOR_OBJECT_TREE_1)
-		{
-			if(ground_found == false)
-				continue;
-
-			v3s16 p_min = gp + v3s16(-1,0,-1);
-			v3s16 p_max = gp + v3s16(1,5,1);
-			if(sector->isValidArea(p_min, p_max,
-					&changed_blocks_sector))
-			{
-				MapNode n;
-				n.d = CONTENT_TREE;
-				sector->setNode(gp+v3s16(0,0,0), n);
-				sector->setNode(gp+v3s16(0,1,0), n);
-				sector->setNode(gp+v3s16(0,2,0), n);
-				sector->setNode(gp+v3s16(0,3,0), n);
-
-				n.d = CONTENT_LEAVES;
-
-				if(myrand()%4!=0) sector->setNode(gp+v3s16(0,5,0), n);
-
-				if(myrand()%3!=0) sector->setNode(gp+v3s16(-1,5,0), n);
-				if(myrand()%3!=0) sector->setNode(gp+v3s16(1,5,0), n);
-				if(myrand()%3!=0) sector->setNode(gp+v3s16(0,5,-1), n);
-				if(myrand()%3!=0) sector->setNode(gp+v3s16(0,5,1), n);
-				/*if(myrand()%3!=0) sector->setNode(gp+v3s16(1,5,1), n);
-				if(myrand()%3!=0) sector->setNode(gp+v3s16(-1,5,1), n);
-				if(myrand()%3!=0) sector->setNode(gp+v3s16(-1,5,-1), n);
-				if(myrand()%3!=0) sector->setNode(gp+v3s16(1,5,-1), n);*/
-
-				sector->setNode(gp+v3s16(0,4,0), n);
-				
-				sector->setNode(gp+v3s16(-1,4,0), n);
-				sector->setNode(gp+v3s16(1,4,0), n);
-				sector->setNode(gp+v3s16(0,4,-1), n);
-				sector->setNode(gp+v3s16(0,4,1), n);
-				sector->setNode(gp+v3s16(1,4,1), n);
-				sector->setNode(gp+v3s16(-1,4,1), n);
-				sector->setNode(gp+v3s16(-1,4,-1), n);
-				sector->setNode(gp+v3s16(1,4,-1), n);
-
-				sector->setNode(gp+v3s16(-1,3,0), n);
-				sector->setNode(gp+v3s16(1,3,0), n);
-				sector->setNode(gp+v3s16(0,3,-1), n);
-				sector->setNode(gp+v3s16(0,3,1), n);
-				sector->setNode(gp+v3s16(1,3,1), n);
-				sector->setNode(gp+v3s16(-1,3,1), n);
-				sector->setNode(gp+v3s16(-1,3,-1), n);
-				sector->setNode(gp+v3s16(1,3,-1), n);
-				
-				if(myrand()%3!=0) sector->setNode(gp+v3s16(-1,2,0), n);
-				if(myrand()%3!=0) sector->setNode(gp+v3s16(1,2,0), n);
-				if(myrand()%3!=0) sector->setNode(gp+v3s16(0,2,-1), n);
-				if(myrand()%3!=0) sector->setNode(gp+v3s16(0,2,1), n);
-				/*if(myrand()%3!=0) sector->setNode(gp+v3s16(1,2,1), n);
-				if(myrand()%3!=0) sector->setNode(gp+v3s16(-1,2,1), n);
-				if(myrand()%3!=0) sector->setNode(gp+v3s16(-1,2,-1), n);
-				if(myrand()%3!=0) sector->setNode(gp+v3s16(1,2,-1), n);*/
-				
-				// Objects are identified by wanted position
-				objects_to_remove.push_back(p);
-				
-				// Lighting has to be recalculated for this one.
-				sector->getBlocksInArea(p_min, p_max, 
-						lighting_invalidated_blocks);
-			}
-		}
-		else if(d == SECTOR_OBJECT_BUSH_1)
-		{
-			if(ground_found == false)
-				continue;
-			
-			if(sector->isValidArea(gp + v3s16(0,0,0),
-					gp + v3s16(0,0,0), &changed_blocks_sector))
-			{
-				MapNode n;
-				n.d = CONTENT_LEAVES;
-				sector->setNode(gp+v3s16(0,0,0), n);
-				
-				// Objects are identified by wanted position
-				objects_to_remove.push_back(p);
-			}
-		}
-		else if(d == SECTOR_OBJECT_RAVINE)
-		{
-			s16 maxdepth = -20;
-			v3s16 p_min = p + v3s16(-6,maxdepth,-6);
-			v3s16 p_max = p + v3s16(6,6,6);
-			if(sector->isValidArea(p_min, p_max,
-					&changed_blocks_sector))
-			{
-				MapNode n;
-				n.d = CONTENT_STONE;
-				MapNode n2;
-				n2.d = CONTENT_AIR;
-				s16 depth = maxdepth + (myrand()%10);
-				s16 z = 0;
-				s16 minz = -6 - (-2);
-				s16 maxz = 6 -1;
-				for(s16 x=-6; x<=6; x++)
-				{
-					z += -1 + (myrand()%3);
-					if(z < minz)
-						z = minz;
-					if(z > maxz)
-						z = maxz;
-					for(s16 y=depth+(myrand()%2); y<=6; y++)
-					{
-						/*std::cout<<"("<<p2.X<<","<<p2.Y<<","<<p2.Z<<")"
-								<<std::endl;*/
-						{
-							v3s16 p2 = p + v3s16(x,y,z-2);
-							//if(is_ground_content(sector->getNode(p2).d))
-							if(content_features(sector->getNode(p2).d).walkable)
-								sector->setNode(p2, n);
-						}
-						{
-							v3s16 p2 = p + v3s16(x,y,z-1);
-							if(content_features(sector->getNode(p2).d).walkable)
-								sector->setNode(p2, n2);
-						}
-						{
-							v3s16 p2 = p + v3s16(x,y,z+0);
-							if(content_features(sector->getNode(p2).d).walkable)
-								sector->setNode(p2, n2);
-						}
-						{
-							v3s16 p2 = p + v3s16(x,y,z+1);
-							if(content_features(sector->getNode(p2).d).walkable)
-								sector->setNode(p2, n);
-						}
-
-						//if(sector->getNode(p+v3s16(x,y,z+1)).solidness()==2)
-						//if(p.Y+y <= sector->getGroundHeight(p2d+v2s16(x,z-2))+0.5)
-					}
-				}
-				
-				objects_to_remove.push_back(p);
-				
-				// Lighting has to be recalculated for this one.
-				sector->getBlocksInArea(p_min, p_max, 
-						lighting_invalidated_blocks);
-			}
-		}
-		else
-		{
-			dstream<<"ServerMap::generateBlock(): "
-					"Invalid heightmap object"
-					<<std::endl;
-		}
-
-		}//try
-		catch(InvalidPositionException &e)
-		{
-			dstream<<"WARNING: "<<__FUNCTION_NAME
-					<<": while inserting object "<<(int)d
-					<<" to ("<<p.X<<","<<p.Y<<","<<p.Z<<"):"
-					<<" InvalidPositionException.what()="
-					<<e.what()<<std::endl;
-			// This is not too fatal and seems to happen sometimes.
-			assert(0);
-		}
-	}
-
-	for(core::list<v3s16>::Iterator i = objects_to_remove.begin();
-			i != objects_to_remove.end(); i++)
-	{
-		objects->remove(*i);
-	}
-	
-	/*
-		Translate sector's changed blocks to global changed blocks
-	*/
-	
-	for(core::map<s16, MapBlock*>::Iterator
-			i = changed_blocks_sector.getIterator();
-			i.atEnd() == false; i++)
-	{
-		MapBlock *block = i.getNode()->getValue();
-
-		changed_blocks.insert(block->getPos(), block);
-	}
-
+	// Lighting is invalid after generation.
 	block->setLightingExpired(true);
 	
 #if 0
@@ -4874,12 +4350,6 @@ v3s16 ServerMap::getBlockPos(std::string sectordir, std::string blockfile)
 	return v3s16(p2d.X, y, p2d.Y);
 }
 
-// Debug helpers
-#define ENABLE_SECTOR_SAVING 1
-#define ENABLE_SECTOR_LOADING 1
-#define ENABLE_BLOCK_SAVING 1
-#define ENABLE_BLOCK_LOADING 1
-
 void ServerMap::save(bool only_changed)
 {
 	DSTACK(__FUNCTION_NAME);
@@ -4906,34 +4376,28 @@ void ServerMap::save(bool only_changed)
 	{
 		ServerMapSector *sector = (ServerMapSector*)i.getNode()->getValue();
 		assert(sector->getId() == MAPSECTOR_SERVER);
-		
-		if(ENABLE_SECTOR_SAVING)
+	
+		if(sector->differs_from_disk || only_changed == false)
 		{
-			if(sector->differs_from_disk || only_changed == false)
-			{
-				saveSectorMeta(sector);
-				sector_meta_count++;
-			}
+			saveSectorMeta(sector);
+			sector_meta_count++;
 		}
-		if(ENABLE_BLOCK_SAVING)
+		core::list<MapBlock*> blocks;
+		sector->getBlocks(blocks);
+		core::list<MapBlock*>::Iterator j;
+		for(j=blocks.begin(); j!=blocks.end(); j++)
 		{
-			core::list<MapBlock*> blocks;
-			sector->getBlocks(blocks);
-			core::list<MapBlock*>::Iterator j;
-			for(j=blocks.begin(); j!=blocks.end(); j++)
+			MapBlock *block = *j;
+			if(block->getChangedFlag() || only_changed == false)
 			{
-				MapBlock *block = *j;
-				if(block->getChangedFlag() || only_changed == false)
-				{
-					saveBlock(block);
-					block_count++;
+				saveBlock(block);
+				block_count++;
 
-					/*dstream<<"ServerMap: Written block ("
-							<<block->getPos().X<<","
-							<<block->getPos().Y<<","
-							<<block->getPos().Z<<")"
-							<<std::endl;*/
-				}
+				/*dstream<<"ServerMap: Written block ("
+						<<block->getPos().X<<","
+						<<block->getPos().Y<<","
+						<<block->getPos().Z<<")"
+						<<std::endl;*/
 			}
 		}
 	}
@@ -4993,23 +4457,20 @@ void ServerMap::loadAll()
 			// This catches unknown crap in directory
 		}
 		
-		if(ENABLE_BLOCK_LOADING)
+		std::vector<fs::DirListNode> list2 = fs::GetDirListing
+				(m_savedir+"/sectors/"+i->name);
+		std::vector<fs::DirListNode>::iterator i2;
+		for(i2=list2.begin(); i2!=list2.end(); i2++)
 		{
-			std::vector<fs::DirListNode> list2 = fs::GetDirListing
-					(m_savedir+"/sectors/"+i->name);
-			std::vector<fs::DirListNode>::iterator i2;
-			for(i2=list2.begin(); i2!=list2.end(); i2++)
+			// We want files
+			if(i2->dir)
+				continue;
+			try{
+				loadBlock(i->name, i2->name, sector);
+			}
+			catch(InvalidFilenameException &e)
 			{
-				// We want files
-				if(i2->dir)
-					continue;
-				try{
-					loadBlock(i->name, i2->name, sector);
-				}
-				catch(InvalidFilenameException &e)
-				{
-					// This catches unknown crap in directory
-				}
+				// This catches unknown crap in directory
 			}
 		}
 	}
@@ -5019,46 +4480,30 @@ void ServerMap::loadAll()
 void ServerMap::saveMasterHeightmap()
 {
 	DSTACK(__FUNCTION_NAME);
+	
+	dstream<<"DEPRECATED: "<<__FUNCTION_NAME<<std::endl;
+
 	createDir(m_savedir);
 	
-	std::string fullpath = m_savedir + "/master_heightmap";
+	/*std::string fullpath = m_savedir + "/master_heightmap";
 	std::ofstream o(fullpath.c_str(), std::ios_base::binary);
 	if(o.good() == false)
-		throw FileNotGoodException("Cannot open master heightmap");
+		throw FileNotGoodException("Cannot open master heightmap");*/
 	
 	// Format used for writing
-	u8 version = SER_FMT_VER_HIGHEST;
-
-#if 0
-	SharedBuffer<u8> hmdata = m_heightmap->serialize(version);
-	/*
-		[0] u8 serialization version
-		[1] X master heightmap
-	*/
-	u32 fullsize = 1 + hmdata.getSize();
-	SharedBuffer<u8> data(fullsize);
-
-	data[0] = version;
-	memcpy(&data[1], *hmdata, hmdata.getSize());
-
-	o.write((const char*)*data, fullsize);
-#endif
-	
-	m_heightmap->serialize(o, version);
+	//u8 version = SER_FMT_VER_HIGHEST;
 }
 
 void ServerMap::loadMasterHeightmap()
 {
 	DSTACK(__FUNCTION_NAME);
-	std::string fullpath = m_savedir + "/master_heightmap";
+	
+	dstream<<"DEPRECATED: "<<__FUNCTION_NAME<<std::endl;
+
+	/*std::string fullpath = m_savedir + "/master_heightmap";
 	std::ifstream is(fullpath.c_str(), std::ios_base::binary);
 	if(is.good() == false)
-		throw FileNotGoodException("Cannot open master heightmap");
-	
-	if(m_heightmap != NULL)
-		delete m_heightmap;
-		
-	m_heightmap = UnlimitedHeightmap::deSerialize(is, &m_padb);
+		throw FileNotGoodException("Cannot open master heightmap");*/
 }
 
 void ServerMap::saveSectorMeta(ServerMapSector *sector)
@@ -5096,7 +4541,7 @@ MapSector* ServerMap::loadSectorMeta(std::string dirname)
 		throw FileNotGoodException("Cannot open sector heightmap");
 
 	ServerMapSector *sector = ServerMapSector::deSerialize
-			(is, this, p2d, &m_hwrapper, m_sectors);
+			(is, this, p2d, m_sectors);
 	
 	sector->differs_from_disk = false;
 
@@ -5128,23 +4573,20 @@ bool ServerMap::loadSectorFull(v2s16 p2d)
 		return false;
 	}
 
-	if(ENABLE_BLOCK_LOADING)
+	std::vector<fs::DirListNode> list2 = fs::GetDirListing
+			(m_savedir+"/sectors/"+sectorsubdir);
+	std::vector<fs::DirListNode>::iterator i2;
+	for(i2=list2.begin(); i2!=list2.end(); i2++)
 	{
-		std::vector<fs::DirListNode> list2 = fs::GetDirListing
-				(m_savedir+"/sectors/"+sectorsubdir);
-		std::vector<fs::DirListNode>::iterator i2;
-		for(i2=list2.begin(); i2!=list2.end(); i2++)
+		// We want files
+		if(i2->dir)
+			continue;
+		try{
+			loadBlock(sectorsubdir, i2->name, sector);
+		}
+		catch(InvalidFilenameException &e)
 		{
-			// We want files
-			if(i2->dir)
-				continue;
-			try{
-				loadBlock(sectorsubdir, i2->name, sector);
-			}
-			catch(InvalidFilenameException &e)
-			{
-				// This catches unknown crap in directory
-			}
+			// This catches unknown crap in directory
 		}
 	}
 	return true;
@@ -5302,7 +4744,8 @@ void ServerMap::loadBlock(std::string sectordir, std::string blockfile, MapSecto
 // Gets from master heightmap
 void ServerMap::getSectorCorners(v2s16 p2d, s16 *corners)
 {
-	assert(m_heightmap != NULL);
+	dstream<<"DEPRECATED: "<<__FUNCTION_NAME<<std::endl;
+	//assert(m_heightmap != NULL);
 	/*
 		Corner definition:
 		v2s16(0,0),
@@ -5310,14 +4753,14 @@ void ServerMap::getSectorCorners(v2s16 p2d, s16 *corners)
 		v2s16(1,1),
 		v2s16(0,1),
 	*/
-	corners[0] = m_heightmap->getGroundHeight
+	/*corners[0] = m_heightmap->getGroundHeight
 			((p2d+v2s16(0,0))*SECTOR_HEIGHTMAP_SPLIT);
 	corners[1] = m_heightmap->getGroundHeight
 			((p2d+v2s16(1,0))*SECTOR_HEIGHTMAP_SPLIT);
 	corners[2] = m_heightmap->getGroundHeight
 			((p2d+v2s16(1,1))*SECTOR_HEIGHTMAP_SPLIT);
 	corners[3] = m_heightmap->getGroundHeight
-			((p2d+v2s16(0,1))*SECTOR_HEIGHTMAP_SPLIT);
+			((p2d+v2s16(0,1))*SECTOR_HEIGHTMAP_SPLIT);*/
 }
 
 void ServerMap::PrintInfo(std::ostream &out)
@@ -5341,10 +4784,9 @@ ClientMap::ClientMap(
 	Map(dout_client),
 	scene::ISceneNode(parent, mgr, id),
 	m_client(client),
-	mesh(NULL),
 	m_control(control)
 {
-	mesh_mutex.Init();
+	//mesh_mutex.Init();
 
 	/*m_box = core::aabbox3d<f32>(0,0,0,
 			map->getW()*BS, map->getH()*BS, map->getD()*BS);*/
@@ -5360,13 +4802,13 @@ ClientMap::ClientMap(
 
 ClientMap::~ClientMap()
 {
-	JMutexAutoLock lock(mesh_mutex);
+	/*JMutexAutoLock lock(mesh_mutex);
 	
 	if(mesh != NULL)
 	{
 		mesh->drop();
 		mesh = NULL;
-	}
+	}*/
 }
 
 MapSector * ClientMap::emergeSector(v2s16 p2d)

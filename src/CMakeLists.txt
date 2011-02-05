@@ -58,7 +58,6 @@ set(common_SRCS
 	socket.cpp
 	mapblock.cpp
 	mapsector.cpp
-	heightmap.cpp
 	map.cpp
 	player.cpp
 	utility.cpp

@@ -612,7 +612,7 @@ void MapBlock::updateMesh(u32 daynight_ratio)
 	bool new_style_water = g_settings.getBool("new_style_water");
 	float node_water_level = 1.0;
 	if(new_style_water)
-		node_water_level = 0.8;
+		node_water_level = 0.9;
 	
 	/*
 		We are including the faces of the trailing edges of the block.

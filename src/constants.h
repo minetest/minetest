@@ -97,12 +97,16 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 /*
 	This is good to be a bit different than 0 so that water level
-	is not between to MapBlocks
+	is not between two MapBlocks
 */
-#define WATER_LEVEL 3
+#define WATER_LEVEL 1
 
 // Length of cracking animation in count of images
 #define CRACK_ANIMATION_LENGTH 5
+
+// Some stuff needed by old code moved to here from heightmap.h
+#define GROUNDHEIGHT_NOTFOUND_SETVALUE (-10e6)
+#define GROUNDHEIGHT_VALID_MINVALUE    ( -9e6)
 
 #endif
 

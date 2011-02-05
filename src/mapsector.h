@@ -27,26 +27,17 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <jmutex.h>
 #include "common_irrlicht.h"
 #include "mapblock.h"
-#include "heightmap.h"
+//#include "heightmap.h"
 #include "exceptions.h"
 
 /*
 	This is an Y-wise stack of MapBlocks.
 */
 
-#define SECTOR_OBJECT_TEST 0
-#define SECTOR_OBJECT_TREE_1 1
-#define SECTOR_OBJECT_BUSH_1 2
-#define SECTOR_OBJECT_RAVINE 3
-
-//#define MAPSECTOR_FIXEDHEIGHTMAPS_MAXCOUNT 4
-#define MAPSECTOR_FIXEDHEIGHTMAPS_MAXCOUNT \
-		(SECTOR_HEIGHTMAP_SPLIT * SECTOR_HEIGHTMAP_SPLIT)
-
 #define MAPSECTOR_SERVER 0
 #define MAPSECTOR_CLIENT 1
 
-class MapSector: public NodeContainer, public Heightmappish
+class MapSector: public NodeContainer
 {
 public:
 	
@@ -198,6 +189,7 @@ public:
 		blockref->setNode(relpos, n);
 	}
 
+	// DEPRECATED?
 	virtual f32 getGroundHeight(v2s16 p, bool generate=false)
 	{
 		return GROUNDHEIGHT_NOTFOUND_SETVALUE;
@@ -245,44 +237,15 @@ protected:
 class ServerMapSector : public MapSector
 {
 public:
-	ServerMapSector(NodeContainer *parent, v2s16 pos, u16 hm_split);
+	ServerMapSector(NodeContainer *parent, v2s16 pos);
 	~ServerMapSector();
 	
 	u32 getId() const
 	{
 		return MAPSECTOR_SERVER;
 	}
-
-	void setHeightmap(v2s16 hm_p, FixedHeightmap *hm);
-	FixedHeightmap * getHeightmap(v2s16 hm_p);
 	
-	void printHeightmaps()
-	{
-		for(s16 y=0; y<m_hm_split; y++)
-		for(s16 x=0; x<m_hm_split; x++)
-		{
-			std::cout<<"Sector "
-					<<"("<<m_pos.X<<","<<m_pos.Y<<")"
-					" heightmap "
-					"("<<x<<","<<y<<"):"
-					<<std::endl;
-			FixedHeightmap *hm = getHeightmap(v2s16(x,y));
-			hm->print();
-		}
-	}
-	
-	void setObjects(core::map<v3s16, u8> *objects)
-	{
-		m_objects = objects;
-		differs_from_disk = true;
-	}
-
-	core::map<v3s16, u8> * getObjects()
-	{
-		differs_from_disk = true;
-		return m_objects;
-	}
-
+	// DEPRECATED?
 	f32 getGroundHeight(v2s16 p, bool generate=false);
 	void setGroundHeight(v2s16 p, f32 y, bool generate=false);
 
@@ -296,20 +259,10 @@ public:
 			std::istream &is,
 			NodeContainer *parent,
 			v2s16 p2d,
-			Heightmap *master_hm,
 			core::map<v2s16, MapSector*> & sectors
 		);
 		
 private:
-	// Heightmap(s) for the sector
-	FixedHeightmap *m_heightmaps[MAPSECTOR_FIXEDHEIGHTMAPS_MAXCOUNT];
-	// Sector is split in m_hm_split^2 heightmaps.
-	// Value of 0 means there is no heightmap.
-	u16 m_hm_split;
-	// These are removed when they are drawn to blocks.
-	// - Each is drawn when generating blocks; When the last one of
-	//   the needed blocks is being generated.
-	core::map<v3s16, u8> *m_objects;
 };
 
 #ifndef SERVER
@@ -326,14 +279,14 @@ public:
 
 	void deSerialize(std::istream &is);
 
-	s16 getCorner(u16 i)
+	/*s16 getCorner(u16 i)
 	{
 		return m_corners[i];
-	}
+	}*/
 		
 private:
 	// The ground height of the corners is stored in here
-	s16 m_corners[4];
+	//s16 m_corners[4];
 };
 #endif
 	

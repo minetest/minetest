@@ -23,7 +23,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "map.h"
 #include "player.h"
 #include "main.h"
-#include "heightmap.h"
 #include "socket.h"
 #include "connection.h"
 #include "utility.h"
@@ -628,9 +627,7 @@ struct TestMapSector
 		parent.position_valid = false;
 		
 		// Create one with no heightmaps
-		ServerMapSector sector(&parent, v2s16(1,1), 0);
-		//ConstantGenerator *dummyheightmap = new ConstantGenerator();
-		//sector->setHeightmap(dummyheightmap);
+		ServerMapSector sector(&parent, v2s16(1,1));
 		
 		EXCEPTION_CHECK(InvalidPositionException, sector.getBlockNoCreate(0));
 		EXCEPTION_CHECK(InvalidPositionException, sector.getBlockNoCreate(1));
@@ -651,134 +648,6 @@ struct TestMapSector
 		}
 		assert(exception_thrown);*/
 
-	}
-};
-
-struct TestHeightmap
-{
-	void TestSingleFixed()
-	{
-		const s16 BS1 = 4;
-		OneChildHeightmap hm1(BS1);
-		
-		// Test that it is filled with < GROUNDHEIGHT_VALID_MINVALUE
-		for(s16 y=0; y<=BS1; y++){
-			for(s16 x=0; x<=BS1; x++){
-				v2s16 p(x,y);
-				assert(hm1.m_child.getGroundHeight(p)
-					< GROUNDHEIGHT_VALID_MINVALUE);
-			}
-		}
-
-		hm1.m_child.setGroundHeight(v2s16(1,0), 2.0);
-		//hm1.m_child.print();
-		assert(fabs(hm1.getGroundHeight(v2s16(1,0))-2.0)<0.001);
-		hm1.setGroundHeight(v2s16(0,1), 3.0);
-		assert(fabs(hm1.m_child.getGroundHeight(v2s16(0,1))-3.0)<0.001);
-		
-		// Fill with -1.0
-		for(s16 y=0; y<=BS1; y++){
-			for(s16 x=0; x<=BS1; x++){
-				v2s16 p(x,y);
-				hm1.m_child.setGroundHeight(p, -1.0);
-			}
-		}
-
-		f32 corners[] = {0.0, 0.0, 1.0, 1.0};
-		hm1.m_child.generateContinued(0.0, 0.0, corners);
-		
-		hm1.m_child.print();
-		assert(fabs(hm1.m_child.getGroundHeight(v2s16(1,0))-0.2)<0.05);
-		assert(fabs(hm1.m_child.getGroundHeight(v2s16(4,3))-0.7)<0.05);
-		assert(fabs(hm1.m_child.getGroundHeight(v2s16(4,4))-1.0)<0.05);
-	}
-
-	void TestUnlimited()
-	{
-		//g_heightmap_debugprint = true;
-		const s16 BS1 = 4;
-		/*UnlimitedHeightmap hm1(BS1,
-				new ConstantGenerator(0.0),
-				new ConstantGenerator(0.0),
-				new ConstantGenerator(5.0));*/
-		PointAttributeDatabase padb;
-		UnlimitedHeightmap hm1(BS1, &padb);
-		// Go through it so it generates itself
-		for(s16 y=0; y<=BS1; y++){
-			for(s16 x=0; x<=BS1; x++){
-				v2s16 p(x,y);
-				hm1.getGroundHeight(p);
-			}
-		}
-		// Print it
-		dstream<<"UnlimitedHeightmap hm1:"<<std::endl;
-		hm1.print();
-		
-		dstream<<"testing UnlimitedHeightmap set/get"<<std::endl;
-		v2s16 p1(0,3);
-		f32 v1(234.01);
-		// Get first heightmap and try setGroundHeight
-		FixedHeightmap * href = hm1.getHeightmap(v2s16(0,0));
-		href->setGroundHeight(p1, v1);
-		// Read from UnlimitedHeightmap
-		assert(fabs(hm1.getGroundHeight(p1)-v1)<0.001);
-	}
-	
-	void Random()
-	{
-		dstream<<"Running random code (get a human to check this)"<<std::endl;
-		dstream<<"myrand() values: ";
-		for(u16 i=0; i<5; i++)
-			dstream<<(u16)myrand()<<" ";
-		dstream<<std::endl;
-
-		const s16 BS1 = 8;
-		/*UnlimitedHeightmap hm1(BS1,
-				new ConstantGenerator(10.0),
-				new ConstantGenerator(0.3),
-				new ConstantGenerator(0.0));*/
-
-		PointAttributeDatabase padb;
-
-		padb.getList("hm_baseheight")->addPoint(v2s16(-BS1,0), Attribute(0));
-		padb.getList("hm_randmax")->addPoint(v2s16(-BS1,0), Attribute(0));
-		padb.getList("hm_randfactor")->addPoint(v2s16(-BS1,0), Attribute(0.0));
-
-		padb.getList("hm_baseheight")->addPoint(v2s16(0,0), Attribute(-20));
-		padb.getList("hm_randmax")->addPoint(v2s16(0,0), Attribute(0));
-		padb.getList("hm_randfactor")->addPoint(v2s16(0,0), Attribute(0.5));
-
-		padb.getList("hm_baseheight")->addPoint(v2s16(BS1*2,BS1), Attribute(0));
-		padb.getList("hm_randmax")->addPoint(v2s16(BS1*2,BS1), Attribute(30));
-		padb.getList("hm_randfactor")->addPoint(v2s16(BS1*2,BS1), Attribute(0.63));
-
-		UnlimitedHeightmap hm1(BS1, &padb);
-
-		// Force hm1 to generate a some heightmap
-		hm1.getGroundHeight(v2s16(0,0));
-		hm1.getGroundHeight(v2s16(0,BS1));
-		/*hm1.getGroundHeight(v2s16(BS1,-1));
-		hm1.getGroundHeight(v2s16(BS1-1,-1));*/
-		hm1.print();
-
-		// Get the (0,0) and (1,0) heightmaps
-		/*FixedHeightmap * hr00 = hm1.getHeightmap(v2s16(0,0));
-		FixedHeightmap * hr01 = hm1.getHeightmap(v2s16(1,0));
-		f32 corners[] = {1.0, 1.0, 1.0, 1.0};
-		hr00->generateContinued(0.0, 0.0, corners);
-		hm1.print();*/
-
-		//assert(0);
-	}
-
-	void Run()
-	{
-		//srand(7); // Get constant random
-		srand(time(0)); // Get better random
-
-		TestSingleFixed();
-		TestUnlimited();
-		Random();
 	}
 };
 
@@ -1149,7 +1018,6 @@ void run_tests()
 	TEST(TestVoxelManipulator);
 	TEST(TestMapBlock);
 	TEST(TestMapSector);
-	TEST(TestHeightmap);
 	if(INTERNET_SIMULATOR == false){
 		TEST(TestSocket);
 		dout_con<<"=== BEGIN RUNNING UNIT TESTS FOR CONNECTION ==="<<std::endl;

@@ -263,18 +263,6 @@ int main(int argc, char *argv[])
 	init_mapnode(&irrlicht);
 	init_mineral(&irrlicht);
 
-	// Read map parameters from settings
-
-	HMParams hm_params;
-	/*hm_params.blocksize = g_settings.getU16("heightmap_blocksize");
-	hm_params.randmax = g_settings.get("height_randmax");
-	hm_params.randfactor = g_settings.get("height_randfactor");
-	hm_params.base = g_settings.get("height_base");*/
-
-	MapParams map_params;
-	map_params.plants_amount = g_settings.getFloat("plants_amount");
-	map_params.ravines_amount = g_settings.getFloat("ravines_amount");
-
 	/*
 		Check parameters
 	*/
@@ -316,7 +304,7 @@ int main(int argc, char *argv[])
 		map_dir = g_settings.get("map-dir");
 	
 	// Create server
-	Server server(map_dir.c_str(), hm_params, map_params);
+	Server server(map_dir.c_str());
 	server.start(port);
 	
 	// Run server

@@ -34,7 +34,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #endif
 
 #include "common_irrlicht.h"
-#include "heightmap.h"
+//#include "heightmap.h"
 #include "mapnode.h"
 #include "mapblock.h"
 #include "mapsector.h"
@@ -46,7 +46,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #define MAPTYPE_SERVER 1
 #define MAPTYPE_CLIENT 2
 
-class Map : public NodeContainer, public Heightmappish
+class Map : public NodeContainer
 {
 public:
 
@@ -273,40 +273,10 @@ protected:
 	MapSector *m_sector_cache;
 	v2s16 m_sector_cache_p;
 
-	WrapperHeightmap m_hwrapper;
+	//WrapperHeightmap m_hwrapper;
 	
 	// Queued transforming water nodes
 	UniqueQueue<v3s16> m_transforming_liquid;
-};
-
-// Master heightmap parameters
-struct HMParams
-{
-	HMParams()
-	{
-		blocksize = 64;
-		randmax = "constant 70.0";
-		randfactor = "constant 0.6";
-		base = "linear 0 80 0";
-	}
-	s16 blocksize;
-	std::string randmax;
-	std::string randfactor;
-	std::string base;
-};
-
-// Map parameters
-struct MapParams
-{
-	MapParams()
-	{
-		plants_amount = 1.0;
-		ravines_amount = 1.0;
-		//max_objects_in_block = 30;
-	}
-	float plants_amount;
-	float ravines_amount;
-	//u16 max_objects_in_block;
 };
 
 /*
@@ -321,7 +291,7 @@ public:
 	/*
 		savedir: directory to which map data should be saved
 	*/
-	ServerMap(std::string savedir, HMParams hmp, MapParams mp);
+	ServerMap(std::string savedir);
 	~ServerMap();
 
 	s32 mapType() const
@@ -504,7 +474,16 @@ public:
 
 	void save(bool only_changed);
 	void loadAll();
-
+	
+	// TODO
+	void saveMapMeta();
+	void loadMapMeta();
+	
+	// TODO
+	void saveChunkMeta();
+	void loadChunkMeta();
+	
+	// DEPRECATED
 	void saveMasterHeightmap();
 	void loadMasterHeightmap();
 
@@ -512,6 +491,7 @@ public:
 	
 	// This only saves sector-specific data such as the heightmap
 	// (no MapBlocks)
+	// DEPRECATED? Sectors have no metadata anymore.
 	void saveSectorMeta(ServerMapSector *sector);
 	MapSector* loadSectorMeta(std::string dirname);
 	
@@ -527,17 +507,13 @@ public:
 	void loadBlock(std::string sectordir, std::string blockfile, MapSector *sector);
 
 	// Gets from master heightmap
+	// DEPRECATED?
 	void getSectorCorners(v2s16 p2d, s16 *corners);
 
 	// For debug printing
 	virtual void PrintInfo(std::ostream &out);
 
 private:
-	// Generator parameters
-	UnlimitedHeightmap *m_heightmap;
-	MapParams m_params;
-	PointAttributeDatabase m_padb;
-	
 	// Seed used for all kinds of randomness
 	u64 m_seed;
 
@@ -664,8 +640,8 @@ private:
 	core::aabbox3d<f32> m_box;
 	
 	// This is the master heightmap mesh
-	scene::SMesh *mesh;
-	JMutex mesh_mutex;
+	//scene::SMesh *mesh;
+	//JMutex mesh_mutex;
 	
 	MapDrawControl &m_control;
 };

@@ -320,40 +320,42 @@ Doing now (most important at the top):
 # maybe done
 * not done
 
-* Perlin noise stuff sucks in heightmap generation, fix it
-* Create perlin noise functions and use them to get natural randomness
-  in everything. No need for attributes or fractal terrain.
-* Do something about AttributeDatabase/List being too slow
-  - Remove it
+=== Stuff to do before release
+* Save map seed to a metafile (with version information)
+  - map/meta.txt, which should contain only plain text, something like this:
+      seed = O7+BZT9Vk/iVYiBlZ2dsb6zemp4xdGVysJqYmNt2X+MQ+Kg1
+      chunksize = 8
+  - map/chunks/
+    - 
+    - Compressed bunch of data... um, actually no.
+	- Make a directory for every chunk instead, which contains
+	  sectors and blocks
 * Save chunk metadata on disk
-* Remove all kinds of systems that are made redundant by the new map
-  generator
-  - Sector heightmaps? At least they should be made redundant.
-  - Sector objects
-* Fix the strange mineral occurences
-  - Do they appear anymore?
 * Make server find the spawning place from the real map data, not from
   the heightmap
   - But the changing borders of chunk have to be avoided, because
     there is time to generate only one chunk.
-* only_from_disk might not work anymore - check and fix it.
 * Make the generator to run in background and not blocking block
   placement and transfer
+* only_from_disk might not work anymore - check and fix it.
+
+=== Stuff to do after release
 * Add some kind of erosion and other stuff that now is possible
 * Make client to fetch stuff asynchronously
   - Needs method SyncProcessData
-* What is the problem with the server constantly saving one or a few
+* Fix the problem with the server constantly saving one or a few
   blocks? List the first saved block, maybe it explains.
-  - Does it still do this?
+  - It is probably caused by oscillating water
 * Water doesn't start flowing after map generation like it should
   - Are there still problems?
-* Better water generation (spread it to underwater caverns)
+* Better water generation (spread it to underwater caverns but don't
+  fill dungeons that don't touch outside air)
 * When generating a chunk and the neighboring chunk doesn't have mud
   and stuff yet and the ground is fairly flat, the mud will flow to
   the other chunk making nasty straight walls when the other chunk
   is generated. Fix it.
-* Save map seed to a metafile (with version information)
-  - Remove master heightmap
+* Make a small history check to transformLiquids to detect and log
+  continuous oscillations, in such detail that they can be fixed.
 
 ======================================================================
 
@@ -666,12 +668,24 @@ public:
 				}
 
 				// Material selection
-				if(event.KeyInput.Key == irr::KEY_KEY_F)
+				/*if(event.KeyInput.Key == irr::KEY_KEY_F)
 				{
 					if(g_selected_item < PLAYER_INVENTORY_SIZE-1)
 						g_selected_item++;
 					else
 						g_selected_item = 0;
+					dstream<<DTIME<<"Selected item: "
+							<<g_selected_item<<std::endl;
+				}*/
+
+				if(event.KeyInput.Key >= irr::KEY_KEY_0
+						&& event.KeyInput.Key <= irr::KEY_KEY_9)
+				{
+					u16 s1 = event.KeyInput.Key - irr::KEY_KEY_0;
+					if(event.KeyInput.Key == irr::KEY_KEY_0)
+						s1 = 10;
+					if(s1 < PLAYER_INVENTORY_SIZE)
+						g_selected_item = s1-1;
 					dstream<<DTIME<<"Selected item: "
 							<<g_selected_item<<std::endl;
 				}
@@ -1009,7 +1023,7 @@ public:
 			if(counter1 < 0.0)
 			{
 				counter1 = 0.1*Rand(1, 40);
-				keydown[irr::KEY_KEY_2] = !keydown[irr::KEY_KEY_2];
+				keydown[irr::KEY_KEY_E] = !keydown[irr::KEY_KEY_E];
 			}
 		}
 		{
@@ -1595,18 +1609,6 @@ int main(int argc, char *argv[])
 		run_tests();
 	}
 	
-	// Read map parameters from settings
-
-	HMParams hm_params;
-	/*hm_params.blocksize = g_settings.getU16("heightmap_blocksize");
-	hm_params.randmax = g_settings.get("height_randmax");
-	hm_params.randfactor = g_settings.get("height_randfactor");
-	hm_params.base = g_settings.get("height_base");*/
-
-	MapParams map_params;
-	map_params.plants_amount = g_settings.getFloat("plants_amount");
-	map_params.ravines_amount = g_settings.getFloat("ravines_amount");
-
 	/*
 		Some parameters
 	*/
@@ -1631,7 +1633,7 @@ int main(int argc, char *argv[])
 		DSTACK("Dedicated server branch");
 
 		// Create server
-		Server server(map_dir.c_str(), hm_params, map_params);
+		Server server(map_dir.c_str());
 		server.start(port);
 		
 		// Run server
@@ -1946,7 +1948,7 @@ int main(int argc, char *argv[])
 	*/
 	SharedPtr<Server> server;
 	if(address == ""){
-		server = new Server(map_dir, hm_params, map_params);
+		server = new Server(map_dir);
 		server->start(port);
 	}
 	
@@ -2266,7 +2268,7 @@ int main(int argc, char *argv[])
 				g_input->isKeyDown(irr::KEY_KEY_A),
 				g_input->isKeyDown(irr::KEY_KEY_D),
 				g_input->isKeyDown(irr::KEY_SPACE),
-				g_input->isKeyDown(irr::KEY_KEY_2),
+				g_input->isKeyDown(irr::KEY_KEY_E),
 				camera_pitch,
 				camera_yaw
 			);
