@@ -585,15 +585,6 @@ inline bool isInArea(v3s16 p, v3s16 d)
 	);
 }
 
-inline s16 rangelim(s16 i, s16 min, s16 max)
-{
-	if(i < min)
-		return min;
-	if(i > max)
-		return max;
-	return i;
-}
-
 inline s16 rangelim(s16 i, s16 max)
 {
 	if(i < 0)
@@ -602,6 +593,8 @@ inline s16 rangelim(s16 i, s16 max)
 		return max;
 	return i;
 }
+
+#define rangelim(d, min, max) ((d) < (min) ? (min) : ((d)>(max)?(max):(d)))
 
 inline v3s16 arealim(v3s16 p, s16 d)
 {

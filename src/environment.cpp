@@ -107,8 +107,8 @@ void Environment::step(float dtime)
 			v3f playerpos = player->getPosition();
 			
 			// Apply physics to local player
-			bool haxmode = g_settings.getBool("haxmode");
-			if(player->isLocal() && haxmode == false)
+			bool free_move = g_settings.getBool("free_move");
+			if(player->isLocal() && free_move == false)
 			{
 				// Apply gravity to local player
 				v3f speed = player->getSpeed();

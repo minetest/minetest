@@ -79,13 +79,9 @@ SUGG: Split MapBlockObject serialization to to-client and to-disk
 SUGG: MovingObject::move and Player::move are basically the same.
       combine them.
 
-SUGG: Implement a "Fast check queue" (a queue with a map for checking
-      if something is already in it)
-      - Use it in active block queue in water flowing
-
 SUGG: Precalculate lighting translation table at runtime (at startup)
       - This is not doable because it is currently hand-made and not
-	    based on some mathematical function.
+	    based on some mathematical function. Now it is not.
 
 SUGG: A version number to blocks, which increments when the block is
       modified (node add/remove, water update, lighting update)
@@ -128,6 +124,7 @@ FIXME: Graphical mode seems to segfault with Irrlicht 1.7.1 on 64-bit
 
 FIXME: Some network errors on Windows that cause local game to not work
        - See siggjen's emails.
+	   - Is this the famous "windows 7 problem"?
 
 Networking and serialization:
 -----------------------------
@@ -168,21 +165,7 @@ TODO: Make fetching sector's blocks more efficient when rendering
 
 TODO: Flowing water animation
 
-FIXME(FIXED): The new texture stuff is slow on wine
-	- A basic grassy ground block takes 20-40ms
-	- A bit more complicated block can take 270ms
-	  - On linux, a similar one doesn't take long at all (14ms)
-	    - It is NOT a bad std::string implementation of MSVC.
-	- Can take up to 200ms? Is it when loading textures or always?
-	- Updating excess amount of meshes when making footprints is too
-	  slow. It has to be fixed.
-	  -> implement Map::updateNodeMeshes()
-	The fix:
-    * Optimize TileSpec to only contain a reference number that
-	  is fast to compare, which refers to a cached string, or
-	* Make TextureSpec for using instead of strings
-
-FIXME(FIXED): A lock condition is possible:
+NOTE(FIXED): A lock condition is possible:
 	1) MapBlock::updateMesh() is called from client asynchronously:
 	   - AsyncProcessData() -> Map::updateMeshes()
 	2) Asynchronous locks m_temp_mods_mutex
@@ -201,9 +184,8 @@ Client:
 
 TODO: Untie client network operations from framerate
       - Needs some input queues or something
-	  - Not really necessary?
 
-TODO: Make morning and evening shorter
+TODO: Make morning and evening transition more smooth and maybe shorter
 
 TODO: Don't update all meshes always on single node changes, but
       check which ones should be updated
@@ -226,8 +208,10 @@ TODO: Copy the text of the last picked sign to inventory in creative
 TODO: Check what goes wrong with caching map to disk (Kray)
       - Nothing?
 
-TODO: When server sees that client is removing an inexistent block or
-      adding a block to an existent position, resend the MapBlock.
+TODO: When server sees that client is removing an inexistent block to
+      an existent position, resend the MapBlock.
+
+FIXME: Server went into some infinite PeerNotFoundException loop
 
 Objects:
 --------
@@ -261,17 +245,9 @@ Block object server side:
 Map:
 ----
 
-NOTE: There are some lighting-related todos and fixmes in
-      ServerMap::emergeBlock. And there always will be. 8)
-
 TODO: Mineral and ground material properties
       - This way mineral ground toughness can be calculated with just
 	    some formula, as well as tool strengths
-
-TODO: Change AttributeList to split the area into smaller sections so
-      that searching won't be as heavy.
-
-TODO: Remove HMParams
 
 TODO: Flowing water to actually contain flow direction information
 
@@ -279,13 +255,6 @@ TODO: Remove duplicate lighting implementation from Map (leave
       VoxelManipulator, which is faster)
 
 FEATURE: Map generator version 2
-	- Create surface areas based on central points; a given point's
-	  area type is given by the nearest central point
-	  - Separate points for heightmap, caves, plants and minerals?
-	  - Flat land, mountains, forest, jungle
-    - Cliffs, arcs
-	- There could be a certain height (to which mountains only reach)
-	  where some minerals are found
 	- Create a system that allows a huge amount of different "map
 	  generator modules/filters"
 
@@ -321,15 +290,11 @@ Doing now (most important at the top):
 * not done
 
 === Stuff to do before release
-* Save map seed to a metafile (with version information)
+* Save the new mapgen stuff
   - map/meta.txt, which should contain only plain text, something like this:
-      seed = O7+BZT9Vk/iVYiBlZ2dsb6zemp4xdGVysJqYmNt2X+MQ+Kg1
+      seed = 7ff1bafcd7118800
       chunksize = 8
-  - map/chunks/
-    - 
-    - Compressed bunch of data... um, actually no.
-	- Make a directory for every chunk instead, which contains
-	  sectors and blocks
+  - map/chunks.dat
 * Save chunk metadata on disk
 * Make server find the spawning place from the real map data, not from
   the heightmap
@@ -338,8 +303,10 @@ Doing now (most important at the top):
 * Make the generator to run in background and not blocking block
   placement and transfer
 * only_from_disk might not work anymore - check and fix it.
+* Check the fixmes in the list above
 
 === Stuff to do after release
+* Set backface culling on, especially for water
 * Add some kind of erosion and other stuff that now is possible
 * Make client to fetch stuff asynchronously
   - Needs method SyncProcessData

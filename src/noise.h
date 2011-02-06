@@ -20,6 +20,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #ifndef NOISE_HEADER
 #define NOISE_HEADER
 
+double easeCurve(double t);
+ 
 // Return value: -1 ... 1
 double noise2d(int x, int y, int seed);
 

@@ -263,7 +263,7 @@ struct PlayerControl
 		left = false;
 		right = false;
 		jump = false;
-		superspeed = false;
+		aux1 = false;
 		pitch = 0;
 		yaw = 0;
 	}
@@ -273,7 +273,7 @@ struct PlayerControl
 		bool a_left,
 		bool a_right,
 		bool a_jump,
-		bool a_superspeed,
+		bool a_aux1,
 		float a_pitch,
 		float a_yaw
 	)
@@ -283,7 +283,7 @@ struct PlayerControl
 		left = a_left;
 		right = a_right;
 		jump = a_jump;
-		superspeed = a_superspeed;
+		aux1 = a_aux1;
 		pitch = a_pitch;
 		yaw = a_yaw;
 	}
@@ -292,7 +292,7 @@ struct PlayerControl
 	bool left;
 	bool right;
 	bool jump;
-	bool superspeed;
+	bool aux1;
 	float pitch;
 	float yaw;
 };

@@ -326,8 +326,6 @@ void RemoteClient::GetNextBlocks(Server *server, float dtime,
 		}
 	}
 
-	bool haxmode = g_settings.getBool("haxmode");
-	
 	Player *player = server->m_env.getPlayer(peer_id);
 
 	assert(player != NULL);
@@ -502,13 +500,6 @@ void RemoteClient::GetNextBlocks(Server *server, float dtime,
 			// If this is true, inexistent block will be made from scratch
 			bool generate = d <= d_max_gen;
 			
-			if(haxmode)
-			{
-				// Don't generate above player
-				if(p.Y > center.Y)
-					generate = false;
-			}
-			else
 			{
 				/*// Limit the generating area vertically to 2/3
 				if(abs(p.Y - center.Y) > d_max_gen - d_max_gen / 3)
@@ -571,31 +562,6 @@ void RemoteClient::GetNextBlocks(Server *server, float dtime,
 				if(m_blocks_sent.find(p) != NULL)
 					continue;
 			}
-
-#if 0
-			/*
-				NOTE: We can't know the ground level this way with the
-				new generator.
-			*/
-			if(haxmode)
-			{
-				/*
-					Ignore block if it is not at ground surface
-					but don't ignore water surface blocks
-				*/
-				v2s16 p2d(p.X*MAP_BLOCKSIZE + MAP_BLOCKSIZE/2,
-						p.Z*MAP_BLOCKSIZE + MAP_BLOCKSIZE/2);
-				f32 y = server->m_env.getMap().getGroundHeight(p2d);
-				// The sector might not exist yet, thus no heightmap
-				if(y > GROUNDHEIGHT_VALID_MINVALUE)
-				{
-					f32 by = p.Y*MAP_BLOCKSIZE + MAP_BLOCKSIZE/2;
-					if(fabs(by - y) > MAP_BLOCKSIZE + MAP_BLOCKSIZE/3
-							&& fabs(by - WATER_LEVEL) >= MAP_BLOCKSIZE)
-						continue;
-				}
-			}
-#endif
 
 			/*
 				Check if map has this block
@@ -3204,16 +3170,6 @@ Player *Server::emergePlayer(const char *name, const char *password,
 			setCreativeInventory(player);
 		}
 
-		/*
-			With new map generator the map is regenerated anyway,
-			so start at somewhere where you probably don't get underground
-		*/
-		player->setPosition(intToFloat(v3s16(
-				0,
-				64,
-				0
-		)));
-		
 		return player;
 	}
 
@@ -3248,7 +3204,7 @@ Player *Server::emergePlayer(const char *name, const char *password,
 #if 1
 		player->setPosition(intToFloat(v3s16(
 				0,
-				64,
+				40, //64,
 				0
 		)));
 #endif

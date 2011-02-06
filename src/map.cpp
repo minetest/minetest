@@ -1736,7 +1736,7 @@ ServerMap::ServerMap(std::string savedir):
 	
 	//m_chunksize = 64;
 	//m_chunksize = 16; // Too slow
-	m_chunksize = 8; // Fine. Takes a few seconds.
+	m_chunksize = 8; // Takes a few seconds
 	//m_chunksize = 4;
 	//m_chunksize = 2;
 	
@@ -1973,22 +1973,22 @@ double tree_amount_2d(u64 seed, v2s16 p)
 {
 	double noise = noise2d_perlin(
 			0.5+(float)p.X/250, 0.5+(float)p.Y/250,
-			seed+2, 4, 0.6);
-	double zeroval = -0.3;
+			seed+2, 5, 0.6);
+	double zeroval = -0.4;
 	if(noise < zeroval)
 		return 0;
 	else
 		return 0.04 * (noise-zeroval) / (1.0-zeroval);
 }
 
-double base_rock_level_2d(u64 seed, v2s16 p)
+/*double base_rock_level_2d(u64 seed, v2s16 p)
 {
 	return WATER_LEVEL - 6.0 + 25. * noise2d_perlin(
 			0.5+(float)p.X/500., 0.5+(float)p.Y/500.,
 			seed, 6, 0.6);
-}
+}*/
 
-double highlands_level_2d(u64 seed, v2s16 p)
+/*double highlands_level_2d(u64 seed, v2s16 p)
 {
 	double a = noise2d_perlin(
 			0.5+(float)p.X/1000., 0.5+(float)p.Y/1000.,
@@ -1996,12 +1996,53 @@ double highlands_level_2d(u64 seed, v2s16 p)
 	if(a > 0.0)
 	//if(1)
 	{
+		return WATER_LEVEL + 25;
 		return WATER_LEVEL + 55. * noise2d_perlin(
 				0.5+(float)p.X/500., 0.5+(float)p.Y/500.,
 				seed+85039, 6, 0.69);
 	}
 	else
 		return -100000;
+}*/
+
+double base_rock_level_2d(u64 seed, v2s16 p)
+{
+	// The base ground level
+	double base = WATER_LEVEL - 4.0 + 25. * noise2d_perlin(
+			0.5+(float)p.X/500., 0.5+(float)p.Y/500.,
+			seed, 6, 0.6);
+
+	// Higher ground level
+	double higher = WATER_LEVEL + 23. + 30. * noise2d_perlin(
+			0.5+(float)p.X/500., 0.5+(float)p.Y/500.,
+			seed+85039, 6, 0.69);
+	//higher = 30; // For debugging
+
+	// Limit higher to at least base
+	if(higher < base)
+		higher = base;
+	
+	// Steepness factor of cliffs
+	double b = 1.0 + 1.0 * noise2d_perlin(
+			0.5+(float)p.X/250., 0.5+(float)p.Y/250.,
+			seed-932, 7, 0.7);
+	b = rangelim(b, 0.0, 1000.0);
+	// Make steep stuff very steep and non-steep stuff very non-steep
+	b = pow(b, 4);
+	b *= 10;
+	//double b = 20;
+
+	// High/low selector
+	double a = 0.5 + b * noise2d_perlin(
+			0.5+(float)p.X/500., 0.5+(float)p.Y/500.,
+			seed-359, 6, 0.7);
+	a = rangelim(a, 0.0, 1.0);
+
+	//dstream<<"a="<<a<<std::endl;
+	
+	double h = base*(1.0-a) + higher*a;
+
+	return h;
 }
 
 /*
@@ -2172,12 +2213,12 @@ MapChunk* ServerMap::generateChunkRaw(v2s16 chunkpos,
 		// Use perlin noise for ground height
 		surface_y_f = base_rock_level_2d(m_seed, p2d);
 		
-		// Experimental stuff
+		/*// Experimental stuff
 		{
 			float a = highlands_level_2d(m_seed, p2d);
 			if(a > surface_y_f)
 				surface_y_f = a;
-		}
+		}*/
 
 		// Convert to integer
 		s16 surface_y = (s16)surface_y_f;
@@ -2208,20 +2249,20 @@ MapChunk* ServerMap::generateChunkRaw(v2s16 chunkpos,
 		Randomize some parameters
 	*/
 	
-	//TODO
 	s32 stone_obstacle_count = 0;
-	/*s32 stone_obstacle_count = (1.0+noise2d(m_seed+90443, sectorpos_base.X,
-			sectorpos_base.Y))/2.0 * stone_obstacle_amount/3;*/
+	/*s32 stone_obstacle_count =
+			rangelim((1.0+noise2d(m_seed+897,
+			sectorpos_base.X, sectorpos_base.Y))/2.0 * 30, 0, 100000);*/
 	
 	s16 stone_obstacle_max_height = 0;
-
-	//u32 stone_obstacle_amount =
-	//		myrand_range(0, myrand_range(20, myrand_range(80,150)));
+	/*s16 stone_obstacle_max_height =
+			rangelim((1.0+noise2d(m_seed+5902,
+			sectorpos_base.X, sectorpos_base.Y))/2.0 * 30, 0, 100000);*/
 
 	/*
 		Loop this part, it will make stuff look older and newer nicely
 	*/
-
+	//for(u32 i_age=0; i_age<1; i_age++)
 	for(u32 i_age=0; i_age<2; i_age++)
 	{ // Aging loop
 
@@ -2238,7 +2279,8 @@ MapChunk* ServerMap::generateChunkRaw(v2s16 chunkpos,
 		// Randomize max height so usually stuff will be quite low
 		s16 maxheight_randomized = myrand_range(0, stone_obstacle_max_height);
 
-		s16 stone_obstacle_max_size = sectorpos_base_size * MAP_BLOCKSIZE - 10;
+		//s16 stone_obstacle_max_size = sectorpos_base_size * MAP_BLOCKSIZE - 10;
+		s16 stone_obstacle_max_size = MAP_BLOCKSIZE*4-4;
 
 		v3s16 ob_size(
 			myrand_range(5, stone_obstacle_max_size),
@@ -2371,11 +2413,15 @@ MapChunk* ServerMap::generateChunkRaw(v2s16 chunkpos,
 
 		if(bruise_surface)
 		{
-			//min_tunnel_diameter = 5;
-			//max_tunnel_diameter = myrand_range(10, 20);
-			min_tunnel_diameter = MYMAX(0, stone_surface_max_y/6);
-			max_tunnel_diameter = myrand_range(MYMAX(0, stone_surface_max_y/6), MYMAX(0, stone_surface_max_y/4));
-			tunnel_routepoints = 3;
+			min_tunnel_diameter = 5;
+			max_tunnel_diameter = myrand_range(10, 20);
+			/*min_tunnel_diameter = MYMAX(0, stone_surface_max_y/6);
+			max_tunnel_diameter = myrand_range(MYMAX(0, stone_surface_max_y/6), MYMAX(0, stone_surface_max_y/2));*/
+			
+			/*s16 tunnel_rou = rangelim(25*(0.5+1.0*noise2d(m_seed+42,
+					sectorpos_base.X, sectorpos_base.Y)), 0, 15);*/
+
+			tunnel_routepoints = 5;
 		}
 
 		// Allowed route area size in nodes
@@ -2441,11 +2487,16 @@ MapChunk* ServerMap::generateChunkRaw(v2s16 chunkpos,
 		
 		for(u16 j=0; j<tunnel_routepoints; j++)
 		{
+			// Randomize size
+			s16 min_d = min_tunnel_diameter;
+			s16 max_d = max_tunnel_diameter;
+			s16 rs = myrand_range(min_d, max_d);
+			
 			v3s16 maxlen(15, 5, 15);
 
 			if(bruise_surface)
 			{
-				maxlen = v3s16(30,25,30);
+				maxlen = v3s16(rs*7,rs*7,rs*7);
 			}
 
 			v3f vec(
@@ -2468,11 +2519,6 @@ MapChunk* ServerMap::generateChunkRaw(v2s16 chunkpos,
 				rp.Z = ar.Z-1;
 			vec = rp - orp;
 
-			// Randomize size
-			s16 min_d = min_tunnel_diameter;
-			s16 max_d = max_tunnel_diameter;
-			s16 rs = myrand_range(min_d, max_d);
-			
 			for(float f=0; f<1.0; f+=1.0/vec.getLength())
 			{
 				v3f fp = orp + vec * f;
@@ -2482,11 +2528,13 @@ MapChunk* ServerMap::generateChunkRaw(v2s16 chunkpos,
 				s16 d1 = d0 + rs - 1;
 				for(s16 z0=d0; z0<=d1; z0++)
 				{
-					s16 si = rs - MYMAX(0, abs(z0)-rs/4);
+					//s16 si = rs - MYMAX(0, abs(z0)-rs/4);
+					s16 si = rs - MYMAX(0, abs(z0)-rs/7);
 					for(s16 x0=-si; x0<=si-1; x0++)
 					{
 						s16 maxabsxz = MYMAX(abs(x0), abs(z0));
-						s16 si2 = rs - MYMAX(0, maxabsxz-rs/4);
+						//s16 si2 = rs - MYMAX(0, maxabsxz-rs/4);
+						s16 si2 = rs - MYMAX(0, maxabsxz-rs/7);
 						//s16 si2 = rs - abs(x0);
 						for(s16 y0=-si2+1; y0<=si2-1; y0++)
 						{
@@ -2663,9 +2711,6 @@ MapChunk* ServerMap::generateChunkRaw(v2s16 chunkpos,
 		Add mud to the central chunk
 	*/
 	
-	//s16 mud_add_amount = myrand_range(2, 4);
-	//s16 mud_add_amount = 0;
-	
 	for(s16 x=0; x<sectorpos_base_size*MAP_BLOCKSIZE; x++)
 	for(s16 z=0; z<sectorpos_base_size*MAP_BLOCKSIZE; z++)
 	{
@@ -2673,7 +2718,7 @@ MapChunk* ServerMap::generateChunkRaw(v2s16 chunkpos,
 		v2s16 p2d = sectorpos_base*MAP_BLOCKSIZE + v2s16(x,z);
 		
 		// Randomize mud amount
-		s16 mud_add_amount = (s16)(3.5 + 2. * noise2d_perlin(
+		s16 mud_add_amount = (s16)(2.5 + 2.0 * noise2d_perlin(
 				0.5+(float)p2d.X/200, 0.5+(float)p2d.Y/200,
 				m_seed+1, 3, 0.55));
 
@@ -2717,8 +2762,8 @@ MapChunk* ServerMap::generateChunkRaw(v2s16 chunkpos,
 
 	}//timer1
 	{
-	// 179ms @cs=8
-	//TimeTaker timer1("flow mud");
+	// 340ms @cs=8
+	TimeTaker timer1("flow mud");
 
 	/*
 		Flow mud away from steep edges
@@ -2959,7 +3004,8 @@ MapChunk* ServerMap::generateChunkRaw(v2s16 chunkpos,
 	
 	} // Aging loop
 
-	{//TimeTaker timer1("convert mud to sand");
+	{
+	//TimeTaker timer1("convert mud to sand");
 
 	/*
 		Convert mud to sand
@@ -3153,14 +3199,14 @@ MapChunk* ServerMap::generateChunkRaw(v2s16 chunkpos,
 	}//timer1
 
 	/*
-		Handle lighting
+		Initial lighting (sunlight)
 	*/
 
 	core::map<v3s16, bool> light_sources;
 
 	{
 	// 750ms @cs=8, can't optimize more
-	//TimeTaker timer1("initial lighting");
+	TimeTaker timer1("initial lighting");
 
 #if 0
 	/*
@@ -3209,6 +3255,81 @@ MapChunk* ServerMap::generateChunkRaw(v2s16 chunkpos,
 				{
 					light_sources.insert(v3s16(p2d.X, y, p2d.Y), true);
 				}
+				//NOTE: This is broken, at least the index has to
+				// be incremented
+			}
+		}
+	}
+#endif
+
+#if 1
+	/*
+		Go through the edges and apply sunlight to them, not caring
+		about neighbors
+	*/
+	
+	// Four edges
+	for(s16 i=0; i<4; i++)
+	// Edge length
+	for(s16 j=lighting_min_d;
+			j<=lighting_max_d;
+			j++)
+	{
+		s16 x;
+		s16 z;
+		// +-X
+		if(i == 0 || i == 1)
+		{
+			x = (i==0) ? lighting_min_d : lighting_max_d;
+			if(i == 0)
+				z = lighting_min_d;
+			else
+				z = lighting_max_d;
+		}
+		// +-Z
+		else
+		{
+			z = (i==0) ? lighting_min_d : lighting_max_d;
+			if(i == 0)
+				x = lighting_min_d;
+			else
+				x = lighting_max_d;
+		}
+		
+		// Node position in 2d
+		v2s16 p2d = sectorpos_base*MAP_BLOCKSIZE + v2s16(x,z);
+		
+		// Loop from top to down
+		{
+			u8 light = LIGHT_SUN;
+			v3s16 em = vmanip.m_area.getExtent();
+			s16 y_start = y_nodes_max;
+			u32 i = vmanip.m_area.index(v3s16(p2d.X, y_start, p2d.Y));
+			for(s16 y=y_start; y>=y_nodes_min; y--)
+			{
+				MapNode *n = &vmanip.m_data[i];
+				if(light_propagates_content(n->d) == false)
+				{
+					light = 0;
+				}
+				else if(light != LIGHT_SUN
+					|| sunlight_propagates_content(n->d) == false)
+				{
+					if(light > 0)
+						light--;
+				}
+				
+				n->setLight(LIGHTBANK_DAY, light);
+				n->setLight(LIGHTBANK_NIGHT, 0);
+				
+				if(light != 0)
+				{
+					// Insert light source
+					light_sources.insert(v3s16(p2d.X, y, p2d.Y), true);
+				}
+				
+				// Increment index by y
+				vmanip.m_area.add_y(em, i, -1);
 			}
 		}
 	}
@@ -3222,7 +3343,7 @@ MapChunk* ServerMap::generateChunkRaw(v2s16 chunkpos,
 	for(s16 z=0-max_spread_amount+1;
 			z<sectorpos_base_size*MAP_BLOCKSIZE+max_spread_amount-1;
 			z++)*/
-	
+#if 1
 	/*
 		This has to be 1 smaller than the actual area, because
 		neighboring nodes are checked.
@@ -3306,6 +3427,58 @@ MapChunk* ServerMap::generateChunkRaw(v2s16 chunkpos,
 			}
 		}
 	}
+#endif
+
+#if 0
+	for(s16 x=lighting_min_d+1;
+			x<=lighting_max_d-1;
+			x++)
+	for(s16 z=lighting_min_d+1;
+			z<=lighting_max_d-1;
+			z++)
+	{
+		// Node position in 2d
+		v2s16 p2d = sectorpos_base*MAP_BLOCKSIZE + v2s16(x,z);
+		
+		/*
+			Apply initial sunlight
+		*/
+		{
+			u8 light = LIGHT_SUN;
+			v3s16 em = vmanip.m_area.getExtent();
+			s16 y_start = y_nodes_max;
+			u32 i = vmanip.m_area.index(v3s16(p2d.X, y_start, p2d.Y));
+			for(s16 y=y_start; y>=y_nodes_min; y--)
+			{
+				MapNode *n = &vmanip.m_data[i];
+
+				if(light_propagates_content(n->d) == false)
+				{
+					light = 0;
+				}
+				else if(light != LIGHT_SUN
+					|| sunlight_propagates_content(n->d) == false)
+				{
+					if(light > 0)
+						light--;
+				}
+				
+				n->setLight(LIGHTBANK_DAY, light);
+				n->setLight(LIGHTBANK_NIGHT, 0);
+				
+				// This doesn't take much time
+				if(light != 0)
+				{
+					// Insert light source
+					light_sources.insert(v3s16(p2d.X, y, p2d.Y), true);
+				}
+				
+				// Increment index by y
+				vmanip.m_area.add_y(em, i, -1);
+			}
+		}
+	}
+#endif
 
 	}//timer1
 
@@ -4006,7 +4179,7 @@ continue_generating:
 		/*
 			Add coal
 		*/
-		u16 coal_amount = 30.0 * g_settings.getFloat("coal_amount");
+		u16 coal_amount = 30;
 		u16 coal_rareness = 60 / coal_amount;
 		if(coal_rareness == 0)
 			coal_rareness = 1;
@@ -4039,7 +4212,7 @@ continue_generating:
 			Add iron
 		*/
 		//TODO: change to iron_amount or whatever
-		u16 iron_amount = 30.0 * g_settings.getFloat("coal_amount");
+		u16 iron_amount = 15;
 		u16 iron_rareness = 60 / iron_amount;
 		if(iron_rareness == 0)
 			iron_rareness = 1;
@@ -4286,16 +4459,6 @@ MapBlock * ServerMap::emergeBlock(
 		}
 	}
 	
-	/*
-		Debug mode operation
-	*/
-	bool haxmode = g_settings.getBool("haxmode");
-	if(haxmode)
-	{
-		// Don't calculate lighting at all
-		//lighting_invalidated_blocks.clear();
-	}
-
 	return block;
 }
 

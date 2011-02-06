@@ -37,13 +37,14 @@ void set_default_settings()
 	g_settings.setDefault("client_delete_unused_sectors_timeout", "1200");
 	g_settings.setDefault("enable_fog", "true");
 	g_settings.setDefault("new_style_water", "true");
+	g_settings.setDefault("terrain_viewer", "false");
+	
+	g_settings.setDefault("free_move", "false");
+	g_settings.setDefault("continuous_forward", "false");
+	g_settings.setDefault("fast_move", "false");
 
 	// Server stuff
 	g_settings.setDefault("creative_mode", "false");
-	g_settings.setDefault("haxmode", "false");
-	g_settings.setDefault("plants_amount", "1.0");
-	g_settings.setDefault("ravines_amount", "0");
-	g_settings.setDefault("coal_amount", "1.0");
 
 	g_settings.setDefault("objectdata_interval", "0.2");
 	g_settings.setDefault("active_object_range", "2");

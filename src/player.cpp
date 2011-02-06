@@ -274,10 +274,12 @@ void LocalPlayer::move(f32 dtime, Map &map)
 
 	position += m_speed * dtime;
 
-	bool haxmode = g_settings.getBool("haxmode");
+	bool free_move = g_settings.getBool("free_move");
+	bool terrain_viewer = g_settings.getBool("terrain_viewer");
 	
-	// Skip collision detection if player is non-local
-	if(isLocal() == false || haxmode)
+	// Skip collision detection if player is non-local or
+	// a special movement mode is used
+	if(isLocal() == false || free_move || terrain_viewer)
 	{
 		setPosition(position);
 		return;
@@ -445,39 +447,55 @@ void LocalPlayer::applyControl(float dtime)
 	
 	v3f speed = v3f(0,0,0);
 
-	bool haxmode = g_settings.getBool("haxmode");
-	
-	if(haxmode)
+	bool free_move = g_settings.getBool("free_move");
+	bool fast_move = g_settings.getBool("fast_move");
+	bool continuous_forward = g_settings.getBool("continuous_forward");
+
+	if(free_move)
 	{
 		v3f speed = getSpeed();
 		speed.Y = 0;
 		setSpeed(speed);
 	}
 
-	// Superspeed mode
+	// Whether superspeed mode is used or not
 	bool superspeed = false;
-	if(control.superspeed)
+	
+	// If free movement and fast movement, always move fast
+	if(free_move && fast_move)
+		superspeed = true;
+	
+	// Auxiliary button 1 (E)
+	if(control.aux1)
 	{
-		if(haxmode)
+		if(free_move)
 		{
+			// In free movement mode, aux1 descends
 			v3f speed = getSpeed();
-			speed.Y = -20*BS;
+			if(fast_move)
+				speed.Y = -20*BS;
+			else
+				speed.Y = -walkspeed_max;
 			setSpeed(speed);
 		}
 		else
 		{
+			// If not free movement but fast is allowed, aux1 is
 			// "Turbo button"
-			/*speed += move_direction;
-			superspeed = true;*/
+			if(fast_move)
+				superspeed = true;
 		}
 	}
 
-	if(haxmode)
-		superspeed = true;
+	if(continuous_forward)
+		speed += move_direction;
 
 	if(control.up)
 	{
-		speed += move_direction;
+		if(continuous_forward)
+			superspeed = true;
+		else
+			speed += move_direction;
 	}
 	if(control.down)
 	{
@@ -493,13 +511,13 @@ void LocalPlayer::applyControl(float dtime)
 	}
 	if(control.jump)
 	{
-		if(haxmode)
+		if(free_move)
 		{
 			v3f speed = getSpeed();
-			/*speed.Y += 20.*BS * dtime * 2;
-			if(speed.Y < 0)
-				speed.Y = 0;*/
-			speed.Y = 20*BS;
+			if(fast_move)
+				speed.Y = 20*BS;
+			else
+				speed.Y = walkspeed_max;
 			setSpeed(speed);
 		}
 		else if(touching_ground)
@@ -524,10 +542,11 @@ void LocalPlayer::applyControl(float dtime)
 		speed = speed.normalize() * walkspeed_max;
 	
 	f32 inc = walk_acceleration * BS * dtime;
-
-	if(haxmode)
+	
+	// Faster acceleration if fast and free movement
+	if(free_move && fast_move)
 		inc = walk_acceleration * BS * dtime * 10;
-
+	
 	// Accelerate to target speed with maximum increment
 	accelerate(speed, inc);
 }
