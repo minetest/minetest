@@ -118,9 +118,9 @@ void Environment::step(float dtime)
 				/*
 					Apply water resistance
 				*/
-				if(player->in_water)
+				if(player->in_water_stable)
 				{
-					f32 max_down = 1.0*BS;
+					f32 max_down = 1.5*BS;
 					if(speed.Y < -max_down) speed.Y = -max_down;
 
 					f32 max = 2.5*BS;
@@ -155,27 +155,30 @@ void Environment::step(float dtime)
 			/*
 				Add footsteps to grass
 			*/
-			// Get node that is at BS/4 under player
-			v3s16 bottompos = floatToInt(playerpos + v3f(0,-BS/4,0));
-			try{
-				MapNode n = m_map->getNode(bottompos);
-				if(n.d == CONTENT_GRASS)
-				{
-					n.d = CONTENT_GRASS_FOOTSTEPS;
-					m_map->setNode(bottompos, n);
-#ifndef SERVER
-					// Update mesh on client
-					if(m_map->mapType() == MAPTYPE_CLIENT)
-					{
-						v3s16 p_blocks = getNodeBlockPos(bottompos);
-						MapBlock *b = m_map->getBlockNoCreate(p_blocks);
-						b->updateMesh(m_daynight_ratio);
-					}
-#endif
-				}
-			}
-			catch(InvalidPositionException &e)
+			if(g_settings.getBool("footprints"))
 			{
+				// Get node that is at BS/4 under player
+				v3s16 bottompos = floatToInt(playerpos + v3f(0,-BS/4,0));
+				try{
+					MapNode n = m_map->getNode(bottompos);
+					if(n.d == CONTENT_GRASS)
+					{
+						n.d = CONTENT_GRASS_FOOTSTEPS;
+						m_map->setNode(bottompos, n);
+#ifndef SERVER
+						// Update mesh on client
+						if(m_map->mapType() == MAPTYPE_CLIENT)
+						{
+							v3s16 p_blocks = getNodeBlockPos(bottompos);
+							MapBlock *b = m_map->getBlockNoCreate(p_blocks);
+							b->updateMesh(m_daynight_ratio);
+						}
+#endif
+					}
+				}
+				catch(InvalidPositionException &e)
+				{
+				}
 			}
 		}
 	}

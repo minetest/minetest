@@ -40,6 +40,9 @@ ContentFeatures & content_features(u8 i)
 
 void init_mapnode(IIrrlichtWrapper *irrlicht)
 {
+	bool new_style_water = g_settings.getBool("new_style_water");
+	bool new_style_leaves = g_settings.getBool("new_style_leaves");
+	
 	u8 i;
 	ContentFeatures *f = NULL;
 
@@ -92,9 +95,25 @@ void init_mapnode(IIrrlichtWrapper *irrlicht)
 	
 	i = CONTENT_LEAVES;
 	f = &g_content_features[i];
-	f->setAllTextures(irrlicht->getTextureId("leaves.png"));
-	f->param_type = CPT_MINERAL;
+	f->light_propagates = true;
+	//f->param_type = CPT_MINERAL;
+	f->param_type = CPT_LIGHT;
 	f->is_ground_content = true;
+	if(new_style_leaves)
+	{
+		f->solidness = 0; // drawn separately, makes no faces
+	}
+	else
+	{
+		f->setAllTextures(irrlicht->getTextureId("leaves.png"));
+	}
+	/*{
+		TileSpec t;
+		t.spec = TextureSpec(irrlicht->getTextureId("leaves.png"));
+		//t.material_type = MATERIAL_ALPHA_SIMPLE;
+		//t.material_flags |= MATERIAL_FLAG_BACKFACE_CULLING;
+		f->setAllTiles(t);
+	}*/
 	
 	i = CONTENT_COALSTONE;
 	f = &g_content_features[i];
@@ -141,17 +160,26 @@ void init_mapnode(IIrrlichtWrapper *irrlicht)
 	f->buildable_to = true;
 	f->liquid_type = LIQUID_FLOWING;
 	
-	bool new_style_water = g_settings.getBool("new_style_water");
-	
 	i = CONTENT_WATERSOURCE;
 	f = &g_content_features[i];
-	//f->setTexture(0, irrlicht->getTextureId("water.png"), WATER_ALPHA);
-	if(new_style_water == false)
-		f->setAllTextures(irrlicht->getTextureId("water.png"), WATER_ALPHA);
 	f->setInventoryTexture(irrlicht->getTextureId("water.png"));
+	if(new_style_water)
+	{
+		f->solidness = 0; // drawn separately, makes no faces
+	}
+	else // old style
+	{
+		f->setAllTextures(irrlicht->getTextureId("water.png"), WATER_ALPHA);
+		TileSpec t;
+		t.spec = TextureSpec(irrlicht->getTextureId("water.png"));
+		t.alpha = WATER_ALPHA;
+		t.material_type = MATERIAL_ALPHA_VERTEX;
+		t.material_flags &= ~MATERIAL_FLAG_BACKFACE_CULLING;
+		f->setAllTiles(t);
+		f->solidness = 1;
+	}
 	f->param_type = CPT_LIGHT;
 	f->light_propagates = true;
-	f->solidness = 1;
 	f->walkable = false;
 	f->pointable = false;
 	f->diggable = false;

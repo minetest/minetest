@@ -86,7 +86,10 @@ public:
 	}
 	
 	/*
-		This should be called when the menu wants to quit
+		This should be called when the menu wants to quit.
+
+		WARNING: THIS DEALLOCATES THE MENU FROM MEMORY. Return
+		immediately if you call this from the menu itself.
 	*/
 	void quitMenu()
 	{

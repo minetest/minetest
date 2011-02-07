@@ -114,7 +114,10 @@ public:
 	void deSerialize(std::istream &is);
 
 	bool touching_ground;
+	// This oscillates so that the player jumps a bit above the surface
 	bool in_water;
+	// This is more stable and defines the maximum speed of the player
+	bool in_water_stable;
 	bool swimming_up;
 	
 	Inventory inventory;

@@ -279,10 +279,11 @@ void Client::step(float dtime)
 			// [0] u16 TOSERVER_INIT
 			// [2] u8 SER_FMT_VER_HIGHEST
 			// [3] u8[20] player_name
-			SharedBuffer<u8> data(2+1+20);
+			SharedBuffer<u8> data(2+1+PLAYERNAME_SIZE);
 			writeU16(&data[0], TOSERVER_INIT);
 			writeU8(&data[2], SER_FMT_VER_HIGHEST);
-			memcpy(&data[3], myplayer->getName(), 20);
+			memset((char*)&data[3], 0, PLAYERNAME_SIZE);
+			snprintf((char*)&data[3], PLAYERNAME_SIZE, "%s", myplayer->getName());
 			// Send as unreliable
 			Send(0, data, false);
 		}

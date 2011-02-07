@@ -193,15 +193,16 @@ bool GUIPauseMenu::OnEvent(const SEvent& event)
 			{
 			case 256: // continue
 				quitMenu();
-				break;
+				// ALWAYS return immediately after quitMenu()
+				return true;
 			case 260: // disconnect
 				m_gamecallback->disconnect();
 				quitMenu();
-				break;
+				return true;
 			case 257: // exit
 				m_gamecallback->exitToOS();
 				quitMenu();
-				break;
+				return true;
 			}
 		}
 	}

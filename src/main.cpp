@@ -112,19 +112,12 @@ Documentation:
 Build system / running:
 -----------------------
 
-NOTE: The following fixme is not apparently valid, and it does work.
-FIXME: Graphical mode seems to segfault with Irrlicht 1.7.1 on 64-bit
-       systems. (Ubuntu)
-       - http://pastebin.no/32bo
-	   - Might be just a bad build, too
-	   - Doesn't affect Irrlicht 1.7.2 or 32-bit 1.7.1. (Arch/Debian)
-	   - A similar error occurs when getTexture is called from a thread
-	     when the texture has not been already loaded from disk:
-		 http://irrlicht.sourceforge.net/phpBB2/viewtopic.php?p=68830
-
 FIXME: Some network errors on Windows that cause local game to not work
        - See siggjen's emails.
 	   - Is this the famous "windows 7 problem"?
+       - Apparently there might be other errors too
+	   - There is some problem with the menu system, something like the
+	     .Parent of guiPauseMenu to end up being 0xfeeefeee
 
 Networking and serialization:
 -----------------------------
@@ -254,26 +247,10 @@ TODO: Flowing water to actually contain flow direction information
 TODO: Remove duplicate lighting implementation from Map (leave
       VoxelManipulator, which is faster)
 
-FEATURE: Map generator version 2
-	- Create a system that allows a huge amount of different "map
-	  generator modules/filters"
+FEATURE: Create a system that allows a huge amount of different "map
+	     generator modules/filters"
 
-FEATURE: The map could be generated procedually:
-      - This would need the map to be generated in larger pieces
-	    - How large? How do they connect to each other?
-		- It has to be split vertically also
-		- Lighting would not have to be necessarily calculated until
-		  the blocks are actually needed - it would be quite fast
-		- Something like 64*64*16 MapBlocks?
-		  - No, MapSectors. And as much as it is efficient to do,
-		    64x64 might be too much.
-        - FIXME: This is currently halfway done and the generator is
-		  fairly broken
-      * Make the stone level with a heightmap
-	  * Carve out stuff in the stone
-	  * Dump dirt all around, and simulate it falling off steep
-	    places
-	  * Erosion simulation at map generation time
+FEATURE: Erosion simulation at map generation time
 		- Simulate water flows, which would carve out dirt fast and
 		  then turn stone into gravel and sand and relocate it.
 		- How about relocating minerals, too? Coal and gold in
@@ -294,8 +271,7 @@ Doing now (most important at the top):
   - map/meta.txt, which should contain only plain text, something like this:
       seed = 7ff1bafcd7118800
       chunksize = 8
-  - map/chunks.dat
-* Save chunk metadata on disk
+  - map/chunks.dat: chunk positions and flags in binary format
 * Make server find the spawning place from the real map data, not from
   the heightmap
   - But the changing borders of chunk have to be avoided, because
@@ -306,7 +282,6 @@ Doing now (most important at the top):
 * Check the fixmes in the list above
 
 === Stuff to do after release
-* Set backface culling on, especially for water
 * Add some kind of erosion and other stuff that now is possible
 * Make client to fetch stuff asynchronously
   - Needs method SyncProcessData
@@ -316,7 +291,7 @@ Doing now (most important at the top):
 * Water doesn't start flowing after map generation like it should
   - Are there still problems?
 * Better water generation (spread it to underwater caverns but don't
-  fill dungeons that don't touch outside air)
+  fill dungeons that don't touch big water masses)
 * When generating a chunk and the neighboring chunk doesn't have mud
   and stuff yet and the ground is fairly flat, the mud will flow to
   the other chunk making nasty straight walls when the other chunk
@@ -1943,7 +1918,9 @@ int main(int argc, char *argv[])
 		continue;
 	}
 	
-	std::cout<<DTIME<<"Connecting to server..."<<std::endl;
+	dstream<<DTIME<<"Connecting to server at ";
+	connect_address.print(&dstream);
+	dstream<<std::endl;
 	client.connect(connect_address);
 	
 	try{

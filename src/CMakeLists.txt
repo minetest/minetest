@@ -30,7 +30,9 @@ else()
 	endif(BUILD_CLIENT)
 	find_package(ZLIB REQUIRED)
 	set(PLATFORM_LIBS -lpthread)
-	set(CLIENT_PLATFORM_LIBS -lXxf86vm)
+	#set(CLIENT_PLATFORM_LIBS -lXxf86vm)
+	find_library(XXF86VM_LIBRARY, Xxf86vm)
+	set(CLIENT_PLATFORM_LIBS ${XXF86VM_LIBRARY})
 endif()
 
 configure_file(

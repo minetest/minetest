@@ -210,10 +210,10 @@ void MapBlock::makeFastFace(TileSpec tile, u8 light, v3f p,
 	v3f vertex_pos[4];
 	// If looking towards z+, this is the face that is behind
 	// the center point, facing towards z+.
-	vertex_pos[0] = v3f( BS/2,-BS/2,BS/2);
-	vertex_pos[1] = v3f(-BS/2,-BS/2,BS/2);
-	vertex_pos[2] = v3f(-BS/2, BS/2,BS/2);
-	vertex_pos[3] = v3f( BS/2, BS/2,BS/2);
+	vertex_pos[0] = v3f(-BS/2,-BS/2,BS/2);
+	vertex_pos[1] = v3f( BS/2,-BS/2,BS/2);
+	vertex_pos[2] = v3f( BS/2, BS/2,BS/2);
+	vertex_pos[3] = v3f(-BS/2, BS/2,BS/2);
 	
 	if(dir == v3s16(0,0,1))
 	{
@@ -608,8 +608,13 @@ void MapBlock::updateMesh(u32 daynight_ratio)
 		JMutexAutoLock lock(m_temp_mods_mutex);
 		m_temp_mods.copy(temp_mods);
 	}
-
+	
+	/*
+		Some settings
+	*/
 	bool new_style_water = g_settings.getBool("new_style_water");
+	bool new_style_leaves = g_settings.getBool("new_style_leaves");
+	
 	float node_water_level = 1.0;
 	if(new_style_water)
 		node_water_level = 0.9;
@@ -695,6 +700,7 @@ void MapBlock::updateMesh(u32 daynight_ratio)
 		material.BackfaceCulling = false;
 		material.setFlag(video::EMF_BILINEAR_FILTER, false);
 		material.setFlag(video::EMF_ANTI_ALIASING, video::EAAM_OFF);
+		//material.setFlag(video::EMF_ANTI_ALIASING, video::EAAM_SIMPLE);
 		material.setFlag(video::EMF_FOG_ENABLE, true);
 
 		for(u32 i=0; i<fastfaces_new.size(); i++)
@@ -708,10 +714,13 @@ void MapBlock::updateMesh(u32 daynight_ratio)
 				continue;
 
 			material.setTexture(0, texture);
-			if(f.tile.alpha != 255)
+			
+			f.tile.applyMaterialOptions(material);
+			
+			/*if(f.tile.alpha != 255)
 				material.MaterialType = video::EMT_TRANSPARENT_VERTEX_ALPHA;
 			else
-				material.MaterialType = video::EMT_SOLID;
+				material.MaterialType = video::EMT_SOLID;*/
 			
 			collector.append(material, f.vertices, 4, indices, 6);
 		}
@@ -727,14 +736,22 @@ void MapBlock::updateMesh(u32 daynight_ratio)
 	//TimeTaker timer2("updateMesh() adding special stuff");
 
 	// Flowing water material
-	video::SMaterial material_w1;
-	material_w1.setFlag(video::EMF_LIGHTING, false);
-	material_w1.setFlag(video::EMF_BACK_FACE_CULLING, false);
-	material_w1.setFlag(video::EMF_BILINEAR_FILTER, false);
-	material_w1.setFlag(video::EMF_FOG_ENABLE, true);
-	material_w1.MaterialType = video::EMT_TRANSPARENT_VERTEX_ALPHA;
-	material_w1.setTexture(0,
-			g_irrlicht->getTexture("water.png"));
+	video::SMaterial material_water1;
+	material_water1.setFlag(video::EMF_LIGHTING, false);
+	material_water1.setFlag(video::EMF_BACK_FACE_CULLING, false);
+	material_water1.setFlag(video::EMF_BILINEAR_FILTER, false);
+	material_water1.setFlag(video::EMF_FOG_ENABLE, true);
+	material_water1.MaterialType = video::EMT_TRANSPARENT_VERTEX_ALPHA;
+	material_water1.setTexture(0, g_irrlicht->getTexture("water.png"));
+
+	// New-style leaves material
+	video::SMaterial material_leaves1;
+	material_leaves1.setFlag(video::EMF_LIGHTING, false);
+	//material_leaves1.setFlag(video::EMF_BACK_FACE_CULLING, false);
+	material_leaves1.setFlag(video::EMF_BILINEAR_FILTER, false);
+	material_leaves1.setFlag(video::EMF_FOG_ENABLE, true);
+	material_leaves1.MaterialType = video::EMT_TRANSPARENT_ALPHA_CHANNEL_REF;
+	material_leaves1.setTexture(0, g_irrlicht->getTexture("leaves.png"));
 
 	for(s16 z=0; z<MAP_BLOCKSIZE; z++)
 	for(s16 y=0; y<MAP_BLOCKSIZE; y++)
@@ -1020,7 +1037,7 @@ void MapBlock::updateMesh(u32 daynight_ratio)
 
 				u16 indices[] = {0,1,2,2,3,0};
 				// Add to mesh collector
-				collector.append(material_w1, vertices, 4, indices, 6);
+				collector.append(material_water1, vertices, 4, indices, 6);
 			}
 			
 			/*
@@ -1047,11 +1064,11 @@ void MapBlock::updateMesh(u32 daynight_ratio)
 
 				u16 indices[] = {0,1,2,2,3,0};
 				// Add to mesh collector
-				collector.append(material_w1, vertices, 4, indices, 6);
+				collector.append(material_water1, vertices, 4, indices, 6);
 			}
 		}
 		/*
-			Add water sources to mesh
+			Add water sources to mesh if using new style
 		*/
 		else if(n.d == CONTENT_WATERSOURCE && new_style_water)
 		{
@@ -1089,7 +1106,66 @@ void MapBlock::updateMesh(u32 daynight_ratio)
 
 			u16 indices[] = {0,1,2,2,3,0};
 			// Add to mesh collector
-			collector.append(material_w1, vertices, 4, indices, 6);
+			collector.append(material_water1, vertices, 4, indices, 6);
+		}
+		/*
+			Add leaves if using new style
+		*/
+		else if(n.d == CONTENT_LEAVES && new_style_leaves)
+		{
+			u8 l = decode_light(n.getLightBlend(daynight_ratio));
+			video::SColor c(255,l,l,l);
+
+			for(u32 j=0; j<6; j++)
+			{
+				video::S3DVertex vertices[4] =
+				{
+					video::S3DVertex(-BS/2,-BS/2,BS/2, 0,0,0, c, 0,1),
+					video::S3DVertex(BS/2,-BS/2,BS/2, 0,0,0, c, 1,1),
+					video::S3DVertex(BS/2,BS/2,BS/2, 0,0,0, c, 1,0),
+					video::S3DVertex(-BS/2,BS/2,BS/2, 0,0,0, c, 0,0),
+				};
+
+				if(j == 0)
+				{
+					for(u16 i=0; i<4; i++)
+						vertices[i].Pos.rotateXZBy(0);
+				}
+				else if(j == 1)
+				{
+					for(u16 i=0; i<4; i++)
+						vertices[i].Pos.rotateXZBy(180);
+				}
+				else if(j == 2)
+				{
+					for(u16 i=0; i<4; i++)
+						vertices[i].Pos.rotateXZBy(-90);
+				}
+				else if(j == 3)
+				{
+					for(u16 i=0; i<4; i++)
+						vertices[i].Pos.rotateXZBy(90);
+				}
+				else if(j == 4)
+				{
+					for(u16 i=0; i<4; i++)
+						vertices[i].Pos.rotateYZBy(-90);
+				}
+				else if(j == 5)
+				{
+					for(u16 i=0; i<4; i++)
+						vertices[i].Pos.rotateYZBy(90);
+				}
+
+				for(u16 i=0; i<4; i++)
+				{
+					vertices[i].Pos += intToFloat(p + getPosRelative());
+				}
+
+				u16 indices[] = {0,1,2,2,3,0};
+				// Add to mesh collector
+				collector.append(material_leaves1, vertices, 4, indices, 6);
+			}
 		}
 	}
 

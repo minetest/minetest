@@ -220,10 +220,6 @@
 				>
 			</File>
 			<File
-				RelativePath=".\src\heightmap.cpp"
-				>
-			</File>
-			<File
 				RelativePath=".\src\inventory.cpp"
 				>
 			</File>
@@ -273,6 +269,10 @@
 			</File>
 			<File
 				RelativePath=".\src\mineral.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\src\noise.cpp"
 				>
 			</File>
 			<File

@@ -1455,8 +1455,8 @@ void Map::transformLiquids(core::map<v3s16, MapBlock*> & modified_blocks)
 	u32 loopcount = 0;
 	u32 initial_size = m_transforming_liquid.size();
 	
-	if(initial_size != 0)
-		dstream<<"transformLiquids(): initial_size="<<initial_size<<std::endl;
+	/*if(initial_size != 0)
+		dstream<<"transformLiquids(): initial_size="<<initial_size<<std::endl;*/
 
 	while(m_transforming_liquid.size() != 0)
 	{
@@ -1912,7 +1912,8 @@ void make_tree(VoxelManipulator &vmanip, v3s16 p0)
 	p1.Y -= 1;
 
 	VoxelArea leaves_a(v3s16(-2,-2,-2), v3s16(2,2,2));
-	SharedPtr<u8> leaves_d(new u8[leaves_a.getVolume()]);
+	//SharedPtr<u8> leaves_d(new u8[leaves_a.getVolume()]);
+	Buffer<u8> leaves_d(leaves_a.getVolume());
 	for(s32 i=0; i<leaves_a.getVolume(); i++)
 		leaves_d[i] = 0;
 	
@@ -1974,7 +1975,7 @@ double tree_amount_2d(u64 seed, v2s16 p)
 	double noise = noise2d_perlin(
 			0.5+(float)p.X/250, 0.5+(float)p.Y/250,
 			seed+2, 5, 0.6);
-	double zeroval = -0.4;
+	double zeroval = -0.3;
 	if(noise < zeroval)
 		return 0;
 	else
@@ -2009,11 +2010,17 @@ double base_rock_level_2d(u64 seed, v2s16 p)
 {
 	// The base ground level
 	double base = WATER_LEVEL - 4.0 + 25. * noise2d_perlin(
-			0.5+(float)p.X/500., 0.5+(float)p.Y/500.,
-			seed, 6, 0.6);
-
+			0.5+(float)p.X/250., 0.5+(float)p.Y/250.,
+			(seed>>32)+654879876, 6, 0.6);
+	/*// A bit hillier one
+	double base2 = WATER_LEVEL - 4.0 + 40. * noise2d_perlin(
+			0.5+(float)p.X/250., 0.5+(float)p.Y/250.,
+			(seed>>27)+90340, 6, 0.69);
+	if(base2 > base)
+		base = base2;*/
+#if 1
 	// Higher ground level
-	double higher = WATER_LEVEL + 23. + 30. * noise2d_perlin(
+	double higher = WATER_LEVEL + 13. + 50. * noise2d_perlin(
 			0.5+(float)p.X/500., 0.5+(float)p.Y/500.,
 			seed+85039, 6, 0.69);
 	//higher = 30; // For debugging
@@ -2021,27 +2028,36 @@ double base_rock_level_2d(u64 seed, v2s16 p)
 	// Limit higher to at least base
 	if(higher < base)
 		higher = base;
-	
+		
 	// Steepness factor of cliffs
 	double b = 1.0 + 1.0 * noise2d_perlin(
 			0.5+(float)p.X/250., 0.5+(float)p.Y/250.,
 			seed-932, 7, 0.7);
 	b = rangelim(b, 0.0, 1000.0);
-	// Make steep stuff very steep and non-steep stuff very non-steep
-	b = pow(b, 4);
-	b *= 10;
+	b = pow(b, 5);
+	b *= 7;
+	b = rangelim(b, 3.0, 1000.0);
+	//dstream<<"b="<<b<<std::endl;
 	//double b = 20;
 
+	// Offset to more low
+	double a_off = -0.3;
 	// High/low selector
-	double a = 0.5 + b * noise2d_perlin(
+	/*double a = 0.5 + b * (a_off + noise2d_perlin(
 			0.5+(float)p.X/500., 0.5+(float)p.Y/500.,
-			seed-359, 6, 0.7);
+			seed-359, 6, 0.7));*/
+	double a = 0.5 + b * (a_off + noise2d_perlin(
+			0.5+(float)p.X/250., 0.5+(float)p.Y/250.,
+			seed-359, 5, 0.60));
+	// Limit
 	a = rangelim(a, 0.0, 1.0);
 
 	//dstream<<"a="<<a<<std::endl;
 	
 	double h = base*(1.0-a) + higher*a;
-
+#else
+	double h = base;
+#endif
 	return h;
 }
 
@@ -2397,12 +2413,12 @@ MapChunk* ServerMap::generateChunkRaw(v2s16 chunkpos,
 	/*
 		Make dungeons
 	*/
-	u32 dungeons_count = relative_volume / 600000;
-	u32 bruises_count = relative_volume * stone_surface_max_y / 40000000;
+	//u32 dungeons_count = relative_volume / 600000;
+	/*u32 bruises_count = relative_volume * stone_surface_max_y / 40000000;
 	if(stone_surface_max_y < WATER_LEVEL)
-		bruises_count = 0;
-	//dungeons_count = 0;
-	//bruises_count = 0;
+		bruises_count = 0;*/
+	u32 dungeons_count = 0;
+	u32 bruises_count = 0;
 	for(u32 jj=0; jj<dungeons_count+bruises_count; jj++)
 	{
 		s16 min_tunnel_diameter = 2;
@@ -2536,7 +2552,7 @@ MapChunk* ServerMap::generateChunkRaw(v2s16 chunkpos,
 						//s16 si2 = rs - MYMAX(0, maxabsxz-rs/4);
 						s16 si2 = rs - MYMAX(0, maxabsxz-rs/7);
 						//s16 si2 = rs - abs(x0);
-						for(s16 y0=-si2+1; y0<=si2-1; y0++)
+						for(s16 y0=-si2+1+1; y0<=si2-1; y0++)
 						{
 							s16 z = cp.Z + z0;
 							s16 y = cp.Y + y0;
@@ -2723,7 +2739,7 @@ MapChunk* ServerMap::generateChunkRaw(v2s16 chunkpos,
 				m_seed+1, 3, 0.55));
 
 		// Find ground level
-		s16 surface_y = find_ground_level(vmanip, p2d);
+		s16 surface_y = find_ground_level_clever(vmanip, p2d);
 
 		/*
 			If topmost node is grass, change it to mud.
@@ -3031,7 +3047,7 @@ MapChunk* ServerMap::generateChunkRaw(v2s16 chunkpos,
 				0.5+(float)p2d.X/500, 0.5+(float)p2d.Y/500,
 				m_seed+59420, 3, 0.50);
 
-		bool have_sand = (sandnoise > 0.0);
+		bool have_sand = (sandnoise > -0.15);
 
 		if(have_sand == false)
 			continue;

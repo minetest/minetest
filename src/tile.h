@@ -25,51 +25,69 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "texture.h"
 #include <string>
 
+enum MaterialType{
+	MATERIAL_ALPHA_NONE,
+	MATERIAL_ALPHA_VERTEX,
+	MATERIAL_ALPHA_SIMPLE, // >127 = opaque
+	MATERIAL_ALPHA_BLEND,
+};
+
+// Material flags
+#define MATERIAL_FLAG_BACKFACE_CULLING 0x01
+
+/*
+	This fully defines the looks of a tile.
+	The SMaterial of a tile is constructed according to this.
+*/
 struct TileSpec
 {
 	TileSpec():
-		alpha(255)
+		alpha(255),
+		material_type(MATERIAL_ALPHA_NONE),
+		material_flags(
+			MATERIAL_FLAG_BACKFACE_CULLING
+		)
 	{
 	}
 
 	bool operator==(TileSpec &other)
 	{
-		return (spec == other.spec && alpha == other.alpha);
+		return (
+			spec == other.spec &&
+			alpha == other.alpha &&
+			material_type == other.material_type &&
+			material_flags == other.material_flags
+		);
 	}
 	
+	// Sets everything else except the texture in the material
+	void applyMaterialOptions(video::SMaterial &material)
+	{
+		if(alpha != 255 && material_type != MATERIAL_ALPHA_VERTEX)
+			dstream<<"WARNING: TileSpec: alpha != 255 "
+					"but not MATERIAL_ALPHA_VERTEX"
+					<<std::endl;
+
+		if(material_type == MATERIAL_ALPHA_NONE)
+			material.MaterialType = video::EMT_SOLID;
+		else if(material_type == MATERIAL_ALPHA_VERTEX)
+			material.MaterialType = video::EMT_TRANSPARENT_VERTEX_ALPHA;
+		else if(material_type == MATERIAL_ALPHA_SIMPLE)
+			material.MaterialType = video::EMT_TRANSPARENT_ALPHA_CHANNEL_REF;
+		else if(material_type == MATERIAL_ALPHA_BLEND)
+			material.MaterialType = video::EMT_TRANSPARENT_ALPHA_CHANNEL;
+
+		material.BackfaceCulling = (material_flags & MATERIAL_FLAG_BACKFACE_CULLING) ? true : false;
+	}
+	
+	// Specification of texture
 	TextureSpec spec;
+	// Vertex alpha
 	u8 alpha;
+	// Material type
+	u8 material_type;
+	// Material flags
+	u8 material_flags;
 };
-
-#if 0
-struct TileSpec
-{
-	TileSpec():
-		alpha(255)
-	{
-	}
-
-	TileSpec(const std::string &a_name):
-		name(a_name),
-		alpha(255)
-	{
-	}
-
-	TileSpec(const char *a_name):
-		name(a_name),
-		alpha(255)
-	{
-	}
-
-	bool operator==(TileSpec &other)
-	{
-		return (name == other.name && alpha == other.alpha);
-	}
-	
-	// path + mods
-	std::string name;
-	u8 alpha;
-};
-#endif
 
 #endif

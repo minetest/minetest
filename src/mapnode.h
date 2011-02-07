@@ -167,25 +167,38 @@ struct ContentFeatures
 
 	~ContentFeatures();
 	
+	// Quickhands for simple materials
+	void setTexture(u16 i, const TextureSpec &spec, u8 alpha=255)
+	{
+		tiles[i].spec = spec;
+		if(alpha != 255)
+		{
+			tiles[i].alpha = alpha;
+			tiles[i].material_type = MATERIAL_ALPHA_VERTEX;
+		}
+	}
 	void setAllTextures(const TextureSpec &spec, u8 alpha=255)
 	{
 		for(u16 i=0; i<6; i++)
 		{
-			tiles[i].spec = spec;
-			tiles[i].alpha = alpha;
+			setTexture(i, spec, alpha);
 		}
 		
 		// Set this too so it can be left as is most times
-		/*if(inventory_image_path == "")
-			inventory_image_path = porting::getDataPath(imgname.c_str());*/
-
 		if(inventory_texture.empty())
 			inventory_texture = spec;
 	}
-	void setTexture(u16 i, const TextureSpec &spec, u8 alpha=255)
+
+	void setTile(u16 i, const TileSpec &tile)
 	{
-		tiles[i].spec = spec;
-		tiles[i].alpha = alpha;
+		tiles[i] = tile;
+	}
+	void setAllTiles(const TileSpec &tile)
+	{
+		for(u16 i=0; i<6; i++)
+		{
+			setTile(i, tile);
+		}
 	}
 
 	void setInventoryTexture(const TextureSpec &spec)
@@ -417,12 +430,11 @@ struct MapNode
 	
 	union
 	{
-		u8 param2;
-
 		/*
-			Direction for torches and other stuff.
-			Format is freeform. e.g. packDir or encode_dirs can be used.
+			The second parameter. Initialized to 0.
+			Direction for torches and flowing water.
 		*/
+		u8 param2;
 		u8 dir;
 	};
 

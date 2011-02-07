@@ -1087,6 +1087,8 @@ public:
 			n = m_defaults.find(name);
 			if(n == NULL)
 			{
+				dstream<<"INFO: Settings: Setting not found: \""
+						<<name<<"\""<<std::endl;
 				throw SettingNotFoundException("Setting not found");
 			}
 		}

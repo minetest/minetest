@@ -23,6 +23,9 @@ extern Settings g_settings;
 
 void set_default_settings()
 {
+	// Client and server
+	g_settings.setDefault("footprints", "false");
+
 	// Client stuff
 	g_settings.setDefault("wanted_fps", "30");
 	g_settings.setDefault("fps_max", "60");
@@ -37,7 +40,7 @@ void set_default_settings()
 	g_settings.setDefault("client_delete_unused_sectors_timeout", "1200");
 	g_settings.setDefault("enable_fog", "true");
 	g_settings.setDefault("new_style_water", "true");
-	g_settings.setDefault("terrain_viewer", "false");
+	g_settings.setDefault("new_style_leaves", "true");
 	
 	g_settings.setDefault("free_move", "false");
 	g_settings.setDefault("continuous_forward", "false");

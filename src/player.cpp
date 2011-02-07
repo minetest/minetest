@@ -30,7 +30,11 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 Player::Player():
 	touching_ground(false),
 	in_water(false),
+	in_water_stable(false),
+	swimming_up(false),
 	peer_id(PEER_ID_INEXISTENT),
+	m_pitch(0),
+	m_yaw(0),
 	m_speed(0,0,0),
 	m_position(0,0,0)
 {
@@ -275,11 +279,10 @@ void LocalPlayer::move(f32 dtime, Map &map)
 	position += m_speed * dtime;
 
 	bool free_move = g_settings.getBool("free_move");
-	bool terrain_viewer = g_settings.getBool("terrain_viewer");
 	
 	// Skip collision detection if player is non-local or
 	// a special movement mode is used
-	if(isLocal() == false || free_move || terrain_viewer)
+	if(isLocal() == false || free_move)
 	{
 		setPosition(position);
 		return;
@@ -292,7 +295,7 @@ void LocalPlayer::move(f32 dtime, Map &map)
 	v3s16 pos_i = floatToInt(position);
 	
 	/*
-		Check if player is in water
+		Check if player is in water (the oscillating value)
 	*/
 	try{
 		if(in_water)
@@ -309,6 +312,18 @@ void LocalPlayer::move(f32 dtime, Map &map)
 	catch(InvalidPositionException &e)
 	{
 		in_water = false;
+	}
+
+	/*
+		Check if player is in water (the stable value)
+	*/
+	try{
+		v3s16 pp = floatToInt(position + v3f(0,0,0));
+		in_water_stable = content_liquid(map.getNode(pp).d);
+	}
+	catch(InvalidPositionException &e)
+	{
+		in_water_stable = false;
 	}
 
 	// The frame length is limited to the player going 0.1*BS per call
@@ -526,10 +541,12 @@ void LocalPlayer::applyControl(float dtime)
 			speed.Y = 6.5*BS;
 			setSpeed(speed);
 		}
+		// Use the oscillating value for getting out of water
+		// (so that the player doesn't fly on the surface)
 		else if(in_water)
 		{
 			v3f speed = getSpeed();
-			speed.Y = 2.0*BS;
+			speed.Y = 1.5*BS;
 			setSpeed(speed);
 			swimming_up = true;
 		}

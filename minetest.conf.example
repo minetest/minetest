@@ -24,6 +24,7 @@
 
 #enable_fog = true
 #new_style_water = true
+#new_style_leaves = true
 
 # Server side stuff
 

@@ -142,7 +142,7 @@ bool GUIMessageMenu::OnEvent(const SEvent& event)
 			case 257:
 				m_status = true;
 				quitMenu();
-				break;
+				return true;
 			}
 		}
 	}

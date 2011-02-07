@@ -172,7 +172,8 @@ bool GUITextInputMenu::OnEvent(const SEvent& event)
 			case 257:
 				acceptInput();
 				quitMenu();
-				break;
+				// quitMenu deallocates menu
+				return true;
 			}
 		}
 		if(event.GUIEvent.EventType==gui::EGET_EDITBOX_ENTER)
@@ -182,7 +183,8 @@ bool GUITextInputMenu::OnEvent(const SEvent& event)
 			case 256:
 				acceptInput();
 				quitMenu();
-				break;
+				// quitMenu deallocates menu
+				return true;
 			}
 		}
 	}

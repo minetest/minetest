@@ -261,13 +261,13 @@ bool GUIMainMenu::OnEvent(const SEvent& event)
 			case 257: // Start game
 				acceptInput();
 				quitMenu();
-				break;
+				return true;
 			case 260: // Delete map
 				// Don't accept input data, just set deletion request
 				m_data->delete_map = true;
 				m_accepted = true;
 				quitMenu();
-				break;
+				return true;
 			}
 		}
 		if(event.GUIEvent.EventType==gui::EGET_EDITBOX_ENTER)
@@ -277,7 +277,7 @@ bool GUIMainMenu::OnEvent(const SEvent& event)
 			case 256: case 257: case 258:
 				acceptInput();
 				quitMenu();
-				break;
+				return true;
 			}
 		}
 	}

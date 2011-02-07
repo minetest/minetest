@@ -77,6 +77,7 @@ Compiling on Windows:
   for many people. The old build system is still included, but it's not
   documented anywhere.
 - You need CMake, Irrlicht, Zlib and Visual Studio or MinGW
+  - you can get zlibwapi.lib from a file called zlib125dll.zip
 - NOTE: Probably it will not work easily and you will need to fix some stuff.
 - Steps:
 	- Start up the CMake GUI

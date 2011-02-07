@@ -81,8 +81,9 @@ void initializePaths()
 		#include <unistd.h>
 	
 	char buf[BUFSIZ];
+	memset(buf, 0, BUFSIZ);
 	// Get path to executable
-	readlink("/proc/self/exe", buf, BUFSIZ);
+	readlink("/proc/self/exe", buf, BUFSIZ-1);
 	
 	pathRemoveFile(buf, '/');
 
@@ -144,8 +145,9 @@ void initializePaths()
 		#include <unistd.h>
 	
 	char buf[BUFSIZ];
+	memset(buf, 0, BUFSIZ);
 	// Get path to executable
-	readlink("/proc/self/exe", buf, BUFSIZ);
+	readlink("/proc/self/exe", buf, BUFSIZ-1);
 	
 	pathRemoveFile(buf, '/');
 

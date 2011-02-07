@@ -962,8 +962,8 @@ void PlayerInfo::PrintLine(std::ostream *s)
 {
 	(*s)<<id<<": ";
 	(*s)<<"\""<<name<<"\" ("
-			<<position.X<<","<<position.Y
-			<<","<<position.Z<<") ";
+			<<(position.X/10)<<","<<(position.Y/10)
+			<<","<<(position.Z/10)<<") ";
 	address.print(s);
 	(*s)<<" avg_rtt="<<avg_rtt;
 	(*s)<<std::endl;
@@ -2668,6 +2668,7 @@ void Server::SendPlayerInfos()
 				"peer_id="<<player->peer_id<<std::endl;*/
 		
 		writeU16(&data[start], player->peer_id);
+		memset((char*)&data[start+2], 0, PLAYERNAME_SIZE);
 		snprintf((char*)&data[start+2], PLAYERNAME_SIZE, "%s", player->getName());
 		start += 2+PLAYERNAME_SIZE;
 	}
@@ -3204,7 +3205,7 @@ Player *Server::emergePlayer(const char *name, const char *password,
 #if 1
 		player->setPosition(intToFloat(v3s16(
 				0,
-				40, //64,
+				45, //64,
 				0
 		)));
 #endif
