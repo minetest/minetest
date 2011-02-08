@@ -364,6 +364,7 @@ Doing now (most important at the top):
 #include "config.h"
 #include "guiMainMenu.h"
 #include "mineral.h"
+#include "noise.h"
 
 IrrlichtWrapper *g_irrlicht;
 
@@ -1545,11 +1546,19 @@ int main(int argc, char *argv[])
 	/*
 		Run unit tests
 	*/
+
 	if((ENABLE_TESTS && cmd_args.getFlag("disable-unittests") == false)
 			|| cmd_args.getFlag("enable-unittests") == true)
 	{
 		run_tests();
 	}
+	
+	/*for(s16 y=-100; y<100; y++)
+	for(s16 x=-100; x<100; x++)
+	{
+		std::cout<<noise2d_gradient((double)x/10,(double)y/10, 32415)<<std::endl;
+	}
+	return 0;*/
 	
 	/*
 		Some parameters

@@ -19,6 +19,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include <math.h>
 #include "noise.h"
+#include <iostream>
 
 #define NOISE_MAGIC_X 1619
 #define NOISE_MAGIC_Y 31337
@@ -62,16 +63,23 @@ double noise2d_gradient(double x, double y, int seed)
 {
 	int x0 = (x > 0.0 ? (int)x : (int)x - 1);
 	int y0 = (y > 0.0 ? (int)y : (int)y - 1);
-	double xl = x-x0;
-	double yl = y-y0;
+	double xl = x - (double)x0;
+	double yl = y - (double)y0;
 	int n00 = (int)((noise2d(x0, y0, seed)+1)*8);
 	int n10 = (int)((noise2d(x0+1, y0, seed)+1)*8);
 	int n01 = (int)((noise2d(x0, y0+1, seed)+1)*8);
 	int n11 = (int)((noise2d(x0+1, y0+1, seed)+1)*8);
+	/* In this format, these fail to work on MSVC8 if n00 < 4
 	double s = dotProduct(cos_lookup[n00], cos_lookup[(n00-4)%16], xl, yl);
 	double u = dotProduct(-cos_lookup[n10], cos_lookup[(n10-4)%16], 1.-xl, yl);
 	double v = dotProduct(cos_lookup[n01], -cos_lookup[(n01-4)%16], xl, 1.-yl);
-	double w = dotProduct(-cos_lookup[n11], -cos_lookup[(n11-4)%16], 1.-xl, 1.-yl);
+	double w = dotProduct(-cos_lookup[n11], -cos_lookup[(n11-4)%16], 1.-xl, 1.-yl);*/
+	double s = dotProduct(cos_lookup[n00], cos_lookup[(n00+12)%16], xl, yl);
+	double u = dotProduct(-cos_lookup[n10], cos_lookup[(n10+12)%16], 1.-xl, yl);
+	double v = dotProduct(cos_lookup[n01], -cos_lookup[(n01+12)%16], xl, 1.-yl);
+	double w = dotProduct(-cos_lookup[n11], -cos_lookup[(n11+12)%16], 1.-xl, 1.-yl);
+	/*std::cout<<"x="<<x<<" y="<<y<<" x0="<<x0<<" y0="<<y0<<" xl="<<xl<<" yl="<<yl<<" n00="<<n00<<" n10="<<n01<<" s="<<s<<std::endl;
+	std::cout<<"cos_lookup[n00]="<<(cos_lookup[n00])<<" cos_lookup[(n00-4)%16]="<<(cos_lookup[(n00-4)%16])<<std::endl;*/
 	return biLinearInterpolation(s,u,v,w,xl,yl);
 }
 

@@ -2009,9 +2009,10 @@ double tree_amount_2d(u64 seed, v2s16 p)
 double base_rock_level_2d(u64 seed, v2s16 p)
 {
 	// The base ground level
-	double base = WATER_LEVEL - 4.0 + 25. * noise2d_perlin(
+	double base = (double)WATER_LEVEL - 4.0 + 25. * noise2d_perlin(
 			0.5+(float)p.X/250., 0.5+(float)p.Y/250.,
 			(seed>>32)+654879876, 6, 0.6);
+	
 	/*// A bit hillier one
 	double base2 = WATER_LEVEL - 4.0 + 40. * noise2d_perlin(
 			0.5+(float)p.X/250., 0.5+(float)p.Y/250.,
@@ -2020,7 +2021,7 @@ double base_rock_level_2d(u64 seed, v2s16 p)
 		base = base2;*/
 #if 1
 	// Higher ground level
-	double higher = WATER_LEVEL + 13. + 50. * noise2d_perlin(
+	double higher = (double)WATER_LEVEL + 13. + 50. * noise2d_perlin(
 			0.5+(float)p.X/500., 0.5+(float)p.Y/500.,
 			seed+85039, 6, 0.69);
 	//higher = 30; // For debugging
@@ -2046,7 +2047,7 @@ double base_rock_level_2d(u64 seed, v2s16 p)
 	/*double a = 0.5 + b * (a_off + noise2d_perlin(
 			0.5+(float)p.X/500., 0.5+(float)p.Y/500.,
 			seed-359, 6, 0.7));*/
-	double a = 0.5 + b * (a_off + noise2d_perlin(
+	double a = (double)0.5 + b * (a_off + noise2d_perlin(
 			0.5+(float)p.X/250., 0.5+(float)p.Y/250.,
 			seed-359, 5, 0.60));
 	// Limit
