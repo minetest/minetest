@@ -1624,8 +1624,8 @@ int main(int argc, char *argv[])
 	video::E_DRIVER_TYPE driverType;
 
 #ifdef _WIN32
-	driverType = video::EDT_DIRECT3D9;
-	//driverType = video::EDT_OPENGL;
+	//driverType = video::EDT_DIRECT3D9;
+	driverType = video::EDT_OPENGL;
 #else
 	driverType = video::EDT_OPENGL;
 	//driverType = video::EDT_BURNINGSVIDEO; // Best software renderer
