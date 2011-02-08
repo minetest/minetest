@@ -169,6 +169,16 @@ video::ITexture* IrrlichtWrapper::getTextureDirect(const TextureSpec &spec)
 			std::string path = porting::getDataPath(name.c_str());
 			dstream<<"getTextureDirect(): Loading path \""<<path
 					<<"\""<<std::endl;
+			
+			// DEBUG
+			/*{
+				dstream<<"DEBUG CODE: Loading base image "
+						"directly to texture"<<std::endl;
+				t = driver->getTexture(path.c_str());
+				driver->renameTexture(t, texture_name.c_str());
+				return t;
+			}*/
+			
 			video::IImage *image = driver->createImageFromFile(path.c_str());
 
 			if(image == NULL)

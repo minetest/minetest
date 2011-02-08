@@ -39,8 +39,8 @@
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
-				AdditionalIncludeDirectories="&quot;C:\Program Files\Microsoft Platform SDK for Windows Server 2003 R2\Include&quot;;&quot;..\jthread\jthread-1.2.1\src&quot;;&quot;..\irrlicht\irrlicht-1.7.1\include&quot;"
-				PreprocessorDefinitions="WIN32"
+				AdditionalIncludeDirectories="&quot;C:\Program Files\Microsoft Platform SDK for Windows Server 2003 R2\Include&quot;;&quot;..\jthread\jthread-1.2.1\src&quot;;&quot;..\irrlicht\irrlicht-1.7.1\include&quot;;&quot;..\zlib\zlib-1.2.5&quot;"
+				PreprocessorDefinitions="WIN32;RUN_IN_PLACE"
 				BufferSecurityCheck="true"
 				EnableEnhancedInstructionSet="1"
 				FloatingPointModel="2"
@@ -57,7 +57,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalLibraryDirectories="&quot;C:\Program Files\Microsoft Platform SDK for Windows Server 2003 R2\Lib&quot;;&quot;..\jthread\jthread-1.2.1\Release&quot;;&quot;..\irrlicht\irrlicht-1.7.1\lib\Win32-visualstudio&quot;"
+				AdditionalLibraryDirectories="&quot;..\irrlicht\irrlicht-1.7.1\lib\Win32-visualstudio&quot;;..\zlib125dll\dll32"
 				IgnoreAllDefaultLibraries="false"
 				GenerateDebugInformation="true"
 			/>
@@ -136,7 +136,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalLibraryDirectories="&quot;C:\Program Files\Microsoft Platform SDK for Windows Server 2003 R2\Lib&quot;;&quot;..\irrlicht\irrlicht-1.7.1\lib\Win32-visualstudio&quot;;..\zlib125dll\dll32"
+				AdditionalLibraryDirectories="&quot;..\irrlicht\irrlicht-1.7.1\lib\Win32-visualstudio&quot;;..\zlib125dll\dll32"
 				IgnoreDefaultLibraryNames="libcmtd.dll"
 				GenerateDebugInformation="false"
 				LinkTimeCodeGeneration="1"

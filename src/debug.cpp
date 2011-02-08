@@ -198,6 +198,7 @@ DebugStacker::~DebugStacker()
 
 
 #ifdef _WIN32
+#if CATCH_UNHANDLED_EXCEPTIONS == 1
 void se_trans_func(unsigned int u, EXCEPTION_POINTERS* pExp)
 {
 	dstream<<"In trans_func.\n";
@@ -222,6 +223,7 @@ void se_trans_func(unsigned int u, EXCEPTION_POINTERS* pExp)
 		("Illegal instruction");
 	}
 }
+#endif
 #endif
 
 

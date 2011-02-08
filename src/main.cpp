@@ -116,8 +116,6 @@ FIXME: Some network errors on Windows that cause local game to not work
        - See siggjen's emails.
 	   - Is this the famous "windows 7 problem"?
        - Apparently there might be other errors too
-	   - There is some problem with the menu system, something like the
-	     .Parent of guiPauseMenu to end up being 0xfeeefeee
 
 Networking and serialization:
 -----------------------------
@@ -1626,8 +1624,8 @@ int main(int argc, char *argv[])
 	video::E_DRIVER_TYPE driverType;
 
 #ifdef _WIN32
-	//driverType = video::EDT_DIRECT3D9;
-	driverType = video::EDT_OPENGL;
+	driverType = video::EDT_DIRECT3D9;
+	//driverType = video::EDT_OPENGL;
 #else
 	driverType = video::EDT_OPENGL;
 	//driverType = video::EDT_BURNINGSVIDEO; // Best software renderer
@@ -1914,7 +1912,8 @@ int main(int argc, char *argv[])
 	Address connect_address(0,0,0,0, port);
 	try{
 		if(address == "")
-			connect_address.Resolve("localhost");
+			//connect_address.Resolve("localhost");
+			connect_address.setAddress(127,0,0,1);
 		else
 			connect_address.Resolve(address.c_str());
 	}

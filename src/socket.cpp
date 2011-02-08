@@ -26,7 +26,9 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "utility.h"
 
 // Debug printing options
+// Set to 1 for debug output
 #define DP 0
+// This is prepended to everything printed here
 #define DPS ""
 
 bool g_sockets_initialized = false;
@@ -106,6 +108,12 @@ unsigned short Address::getPort() const
 void Address::setAddress(unsigned int address)
 {
 	m_address = address;
+}
+
+void Address::setAddress(unsigned int a, unsigned int b,
+		unsigned int c, unsigned int d)
+{
+	m_address = (a<<24) | (b<<16) | ( c<<8) | d;
 }
 
 void Address::setPort(unsigned short port)

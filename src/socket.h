@@ -85,6 +85,8 @@ public:
 	unsigned int getAddress() const;
 	unsigned short getPort() const;
 	void setAddress(unsigned int address);
+	void setAddress(unsigned int a, unsigned int b,
+			unsigned int c, unsigned int d);
 	void setPort(unsigned short port);
 	void print(std::ostream *s) const;
 	void print() const;
