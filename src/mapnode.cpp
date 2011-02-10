@@ -103,6 +103,9 @@ void init_mapnode(IIrrlichtWrapper *irrlicht)
 	i = CONTENT_GRASS_FOOTSTEPS;
 	f = &g_content_features[i];
 	//f->setInventoryTexture(irrlicht->getTextureId("grass_footsteps.png"));
+	f->setAllTextures("mud.png^grass_side.png");
+	f->setTexture(0, "grass_footsteps.png");
+	f->setTexture(1, "mud.png");
 	f->param_type = CPT_MINERAL;
 	f->is_ground_content = true;
 	

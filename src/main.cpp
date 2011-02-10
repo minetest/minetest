@@ -267,6 +267,9 @@ Doing now (most important at the top):
 # maybe done
 * not done
 
+=== Stuff being done
+* Combine meshes to bigger ones in ClientMap and set them EHM_STATIC
+
 === Stuff to do before release
 * Save the new mapgen stuff
   - map/meta.txt, which should contain only plain text, something like this:
