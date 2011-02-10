@@ -387,10 +387,16 @@ void TextureSource::buildMainAtlas()
 	sourcelist.push_back("sand.png^mineral_coal.png");
 	sourcelist.push_back("sand.png^mineral_iron.png");
 	
+	// Padding to disallow texture bleeding
+	s32 padding = 8;
+
 	/*
 		First pass: generate almost everything
 	*/
 	core::position2d<s32> pos_in_atlas(0,0);
+	
+	pos_in_atlas.Y += padding;
+
 	for(u32 i=0; i<sourcelist.size(); i++)
 	{
 		std::string name = sourcelist[i];
@@ -423,6 +429,28 @@ void TextureSource::buildMainAtlas()
 					NULL);
 		}
 
+		// Copy the borders a few times to disallow texture bleeding
+		for(u32 side=0; side<2; side++) // top and bottom
+		for(s32 y0=0; y0<padding; y0++)
+		for(s32 x0=0; x0<(s32)xwise_tiling*(s32)dim.Width; x0++)
+		{
+			s32 dst_y;
+			s32 src_y;
+			if(side==0)
+			{
+				dst_y = y0 + pos_in_atlas.Y + dim.Height;
+				src_y = pos_in_atlas.Y + dim.Height - 1;
+			}
+			else
+			{
+				dst_y = -y0 + pos_in_atlas.Y-1;
+				src_y = pos_in_atlas.Y;
+			}
+			s32 x = x0 + pos_in_atlas.X * dim.Width;
+			video::SColor c = atlas_img->getPixel(x, src_y);
+			atlas_img->setPixel(x,dst_y,c);
+		}
+
 		img2->drop();
 
 		/*
@@ -447,7 +475,7 @@ void TextureSource::buildMainAtlas()
 		m_name_to_id.insert(name, id);
 			
 		// Increment position
-		pos_in_atlas.Y += dim.Height;
+		pos_in_atlas.Y += dim.Height + padding * 2;
 	}
 
 	/*

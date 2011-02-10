@@ -197,7 +197,7 @@ DebugStacker::~DebugStacker()
 }
 
 
-#ifdef _WIN32
+#ifdef _MSC_VER
 #if CATCH_UNHANDLED_EXCEPTIONS == 1
 void se_trans_func(unsigned int u, EXCEPTION_POINTERS* pExp)
 {

@@ -2050,6 +2050,8 @@ int main(int argc, char *argv[])
 	// A test
 	//throw con::PeerNotFoundException("lol");
 
+	core::list<float> frametime_log;
+
 	/*
 		Main loop
 	*/
@@ -2146,6 +2148,23 @@ int main(int argc, char *argv[])
 		else
 			dtime = 0;
 		lasttime = time;
+
+		/*
+			Log frametime for visualization
+		*/
+		frametime_log.push_back(dtime);
+		if(frametime_log.size() > 100)
+		{
+			core::list<float>::Iterator i = frametime_log.begin();
+			frametime_log.erase(i);
+		}
+
+		/*
+			Visualize frametime in terminal
+		*/
+		/*for(u32 i=0; i<dtime*400; i++)
+			std::cout<<"X";
+		std::cout<<std::endl;*/
 
 		/*
 			Time average and jitter calculation
@@ -2979,7 +2998,24 @@ int main(int argc, char *argv[])
 				displaycenter + core::vector2d<s32>(0,10),
 				video::SColor(255,255,255,255));
 
+		/*
+			Frametime log
+		*/
+		{
+			s32 x = 10;
+			for(core::list<float>::Iterator
+					i = frametime_log.begin();
+					i != frametime_log.end();
+					i++)
+			{
+				driver->draw2DLine(v2s32(x,50),
+						v2s32(x,50+(*i)*1000),
+						video::SColor(255,255,255,255));
+				x++;
+			}
 		}
+
+		} // timer
 
 		//timer10.stop();
 		//TimeTaker //timer11("//timer11");

@@ -755,7 +755,7 @@ void MapBlock::updateMesh(u32 daynight_ratio)
 		material.Lighting = false;
 		material.BackfaceCulling = false;
 		material.setFlag(video::EMF_BILINEAR_FILTER, false);
-		material.setFlag(video::EMF_ANTI_ALIASING, video::EAAM_OFF);
+		//material.setFlag(video::EMF_ANTI_ALIASING, video::EAAM_OFF);
 		//material.setFlag(video::EMF_ANTI_ALIASING, video::EAAM_SIMPLE);
 		material.setFlag(video::EMF_FOG_ENABLE, true);
 

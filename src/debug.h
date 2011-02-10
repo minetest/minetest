@@ -238,18 +238,7 @@ private:
 			assert(0);\
 		}
 	#ifdef _WIN32 // Windows
-
-/*class SE_Exception : public std::exception
-{
-private:
-    unsigned int nSE;
-public:
-    SE_Exception() {}
-    SE_Exception( unsigned int n ) : nSE( n ) {}
-    ~SE_Exception() {}
-    unsigned int getSeNumber() { return nSE; }
-};*/
-
+		#ifdef _MSC_VER // MSVC
 void se_trans_func(unsigned int, EXCEPTION_POINTERS*);
 
 class FatalSystemException : public BaseException
@@ -259,14 +248,18 @@ public:
 		BaseException(s)
 	{}
 };
+			#define BEGIN_DEBUG_EXCEPTION_HANDLER \
+				BEGIN_PORTABLE_DEBUG_EXCEPTION_HANDLER\
+				_set_se_translator(se_trans_func);
 
-		#define BEGIN_DEBUG_EXCEPTION_HANDLER \
-			BEGIN_PORTABLE_DEBUG_EXCEPTION_HANDLER\
-			_set_se_translator(se_trans_func);
-
-		#define END_DEBUG_EXCEPTION_HANDLER \
-			END_PORTABLE_DEBUG_EXCEPTION_HANDLER
-
+			#define END_DEBUG_EXCEPTION_HANDLER \
+				END_PORTABLE_DEBUG_EXCEPTION_HANDLER
+		#else // Probably mingw
+			#define BEGIN_DEBUG_EXCEPTION_HANDLER\
+				BEGIN_PORTABLE_DEBUG_EXCEPTION_HANDLER
+			#define END_DEBUG_EXCEPTION_HANDLER\
+				END_PORTABLE_DEBUG_EXCEPTION_HANDLER
+		#endif
 	#else // Posix
 		#define BEGIN_DEBUG_EXCEPTION_HANDLER\
 			BEGIN_PORTABLE_DEBUG_EXCEPTION_HANDLER

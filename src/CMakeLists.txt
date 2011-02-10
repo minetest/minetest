@@ -10,8 +10,10 @@ add_definitions ( -DUSE_CMAKE_CONFIG_H )
 
 if(WIN32)
 	# Windows
-	# Surpress some useless warnings
-	add_definitions ( /D "_CRT_SECURE_NO_DEPRECATE" /W1 )
+	if(MSVC)
+		# Surpress some useless warnings
+		add_definitions ( /D "_CRT_SECURE_NO_DEPRECATE" /W1 )
+	endif()
 	# Zlib stuff
 	set(ZLIB_INCLUDE_DIR "${PROJECT_SOURCE_DIR}/../../zlib/zlib-1.2.5"
 			CACHE PATH "Zlib include directory")
