@@ -40,7 +40,8 @@ void init_mineral(IIrrlichtWrapper *irrlicht);
 
 #define MINERAL_COUNT 3
 
-textureid_t mineral_block_texture(u8 mineral);
+//textureid_t mineral_block_texture(u8 mineral);
+std::string mineral_block_texture(u8 mineral);
 
 inline CraftItem * getDiggedMineralItem(u8 mineral)
 {

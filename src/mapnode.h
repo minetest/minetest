@@ -132,9 +132,11 @@ struct ContentFeatures
 		5: front
 	*/
 	TileSpec tiles[6];
-
+	
+	// TODO: Somehow specify inventory image
 	//std::string inventory_image_path;
-	TextureSpec inventory_texture;
+	//TextureSpec inventory_texture;
+	//u32 inventory_texture_id;
 
 	bool is_ground_content; //TODO: Remove, use walkable instead
 	bool light_propagates;
@@ -167,27 +169,36 @@ struct ContentFeatures
 
 	~ContentFeatures();
 	
-	// Quickhands for simple materials
-	void setTexture(u16 i, const TextureSpec &spec, u8 alpha=255)
+	/*
+		Quickhands for simple materials
+	*/
+	
+	void setTexture(u16 i, std::string name, u8 alpha=255);
+
+	void setAllTextures(std::string name, u8 alpha=255)
 	{
-		tiles[i].spec = spec;
+		for(u16 i=0; i<6; i++)
+		{
+			setTexture(i, name, alpha);
+		}
+	}
+
+	/*void setTexture(u16 i, AtlasPointer p, u8 alpha=255)
+	{
+		tiles[i].texture = p;
 		if(alpha != 255)
 		{
 			tiles[i].alpha = alpha;
 			tiles[i].material_type = MATERIAL_ALPHA_VERTEX;
 		}
 	}
-	void setAllTextures(const TextureSpec &spec, u8 alpha=255)
+	void setAllTextures(AtlasPointer p, u8 alpha=255)
 	{
 		for(u16 i=0; i<6; i++)
 		{
-			setTexture(i, spec, alpha);
+			setTexture(i, p, alpha);
 		}
-		
-		// Set this too so it can be left as is most times
-		if(inventory_texture.empty())
-			inventory_texture = spec;
-	}
+	}*/
 
 	void setTile(u16 i, const TileSpec &tile)
 	{
@@ -201,10 +212,10 @@ struct ContentFeatures
 		}
 	}
 
-	void setInventoryTexture(const TextureSpec &spec)
+	/*void setInventoryTexture(const TextureSpec &spec)
 	{
 		inventory_texture = spec;
-	}
+	}*/
 
 	/*void setInventoryImage(std::string imgname)
 	{

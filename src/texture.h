@@ -20,6 +20,14 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #ifndef TEXTURE_HEADER
 #define TEXTURE_HEADER
 
+// This file now contains all that was here
+#include "tile.h"
+
+// TODO: Remove this
+typedef u16 textureid_t;
+
+#if 0
+
 #include "common_irrlicht.h"
 //#include "utility.h"
 #include "debug.h"
@@ -120,5 +128,7 @@ struct TextureSpec
 	// Ids of textures. They are blit on each other.
 	textureid_t tids[TEXTURE_SPEC_TEXTURE_COUNT];
 };
+
+#endif
 
 #endif

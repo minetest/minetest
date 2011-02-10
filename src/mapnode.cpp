@@ -17,6 +17,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
+#include "common_irrlicht.h"
 #include "mapnode.h"
 #include "tile.h"
 #include "porting.h"
@@ -31,6 +32,20 @@ ContentFeatures::~ContentFeatures()
 		delete translate_to;
 }
 
+void ContentFeatures::setTexture(u16 i, std::string name, u8 alpha)
+{
+	if(g_texturesource)
+	{
+		tiles[i].texture = g_texturesource->getTexture(name);
+	}
+	
+	if(alpha != 255)
+	{
+		tiles[i].alpha = alpha;
+		tiles[i].material_type = MATERIAL_ALPHA_VERTEX;
+	}
+}
+
 struct ContentFeatures g_content_features[256];
 
 ContentFeatures & content_features(u8 i)
@@ -40,56 +55,75 @@ ContentFeatures & content_features(u8 i)
 
 void init_mapnode(IIrrlichtWrapper *irrlicht)
 {
+	// Read some settings
 	bool new_style_water = g_settings.getBool("new_style_water");
 	bool new_style_leaves = g_settings.getBool("new_style_leaves");
+
+	/*
+		Initialize content feature table
+	*/
+	
+	/*
+		Set initial material type to same in all tiles, so that the
+		same material can be used in more stuff.
+		This is set according to the leaves because they are the only
+		differing material to which all materials can be changed to
+		get this optimization.
+	*/
+	u8 initial_material_type = MATERIAL_ALPHA_SIMPLE;
+	/*if(new_style_leaves)
+		initial_material_type = MATERIAL_ALPHA_SIMPLE;
+	else
+		initial_material_type = MATERIAL_ALPHA_NONE;*/
+	for(u16 i=0; i<256; i++)
+	{
+		ContentFeatures *f = &g_content_features[i];
+		for(u16 j=0; j<6; j++)
+			f->tiles[j].material_type = initial_material_type;
+	}
 	
 	u8 i;
 	ContentFeatures *f = NULL;
 
 	i = CONTENT_STONE;
 	f = &g_content_features[i];
-	f->setAllTextures(irrlicht->getTextureId("stone.png"));
+	f->setAllTextures("stone.png");
 	f->param_type = CPT_MINERAL;
 	f->is_ground_content = true;
 	
 	i = CONTENT_GRASS;
 	f = &g_content_features[i];
-	f->setAllTextures(TextureSpec(irrlicht->getTextureId("mud.png"),
-			irrlicht->getTextureId("grass_side.png")));
-	f->setTexture(0, irrlicht->getTextureId("grass.png"));
-	f->setTexture(1, irrlicht->getTextureId("mud.png"));
-	f->setInventoryTexture(irrlicht->getTextureId("grass.png"));
+	f->setAllTextures("mud.png^grass_side.png");
+	f->setTexture(0, "grass.png");
+	f->setTexture(1, "mud.png");
+	//f->setInventoryTexture(irrlicht->getTextureId("grass.png"));
 	f->param_type = CPT_MINERAL;
 	f->is_ground_content = true;
 	
 	i = CONTENT_GRASS_FOOTSTEPS;
 	f = &g_content_features[i];
-	f->setAllTextures(TextureSpec(irrlicht->getTextureId("mud.png"),
-			irrlicht->getTextureId("grass_side.png")));
-	f->setTexture(0, irrlicht->getTextureId("grass_footsteps.png"));
-	f->setTexture(1, irrlicht->getTextureId("mud.png"));
-	f->setInventoryTexture(irrlicht->getTextureId("grass_footsteps.png"));
+	//f->setInventoryTexture(irrlicht->getTextureId("grass_footsteps.png"));
 	f->param_type = CPT_MINERAL;
 	f->is_ground_content = true;
 	
 	i = CONTENT_MUD;
 	f = &g_content_features[i];
-	f->setAllTextures(irrlicht->getTextureId("mud.png"));
+	f->setAllTextures("mud.png");
 	f->param_type = CPT_MINERAL;
 	f->is_ground_content = true;
 	
 	i = CONTENT_SAND;
 	f = &g_content_features[i];
-	f->setAllTextures(irrlicht->getTextureId("sand.png"));
+	f->setAllTextures("sand.png");
 	f->param_type = CPT_MINERAL;
 	f->is_ground_content = true;
 	
 	i = CONTENT_TREE;
 	f = &g_content_features[i];
-	f->setAllTextures(irrlicht->getTextureId("tree.png"));
-	f->setTexture(0, irrlicht->getTextureId("tree_top.png"));
-	f->setTexture(1, irrlicht->getTextureId("tree_top.png"));
-	f->setInventoryTexture(irrlicht->getTextureId("tree_top.png"));
+	f->setAllTextures("tree.png");
+	f->setTexture(0, "tree_top.png");
+	f->setTexture(1, "tree_top.png");
+	//f->setInventoryTexture(irrlicht->getTextureId("tree_top.png"));
 	f->param_type = CPT_MINERAL;
 	f->is_ground_content = true;
 	
@@ -105,36 +139,33 @@ void init_mapnode(IIrrlichtWrapper *irrlicht)
 	}
 	else
 	{
-		f->setAllTextures(irrlicht->getTextureId("leaves.png"));
+		f->setAllTextures("[noalpha:leaves.png");
 	}
-	/*{
-		TileSpec t;
-		t.spec = TextureSpec(irrlicht->getTextureId("leaves.png"));
-		//t.material_type = MATERIAL_ALPHA_SIMPLE;
-		//t.material_flags |= MATERIAL_FLAG_BACKFACE_CULLING;
-		f->setAllTiles(t);
-	}*/
 	
 	i = CONTENT_COALSTONE;
 	f = &g_content_features[i];
 	//f->translate_to = new MapNode(CONTENT_STONE, MINERAL_COAL);
-	f->setAllTextures(TextureSpec(irrlicht->getTextureId("coal.png"),
-			irrlicht->getTextureId("mineral_coal.png")));
+	/*f->setAllTextures(TextureSpec(irrlicht->getTextureId("coal.png"),
+			irrlicht->getTextureId("mineral_coal.png")));*/
+	f->setAllTextures("stone.png^mineral_coal.png");
 	f->is_ground_content = true;
 	
 	i = CONTENT_WOOD;
 	f = &g_content_features[i];
-	f->setAllTextures(irrlicht->getTextureId("wood.png"));
+	//f->setAllTextures(irrlicht->getTextureId("wood.png"));
+	f->setAllTextures("wood.png");
 	f->is_ground_content = true;
 	
 	i = CONTENT_MESE;
 	f = &g_content_features[i];
-	f->setAllTextures(irrlicht->getTextureId("mese.png"));
+	//f->setAllTextures(irrlicht->getTextureId("mese.png"));
+	f->setAllTextures("mese.png");
 	f->is_ground_content = true;
 	
 	i = CONTENT_CLOUD;
 	f = &g_content_features[i];
-	f->setAllTextures(irrlicht->getTextureId("cloud.png"));
+	//f->setAllTextures(irrlicht->getTextureId("cloud.png"));
+	f->setAllTextures("cloud.png");
 	f->is_ground_content = true;
 	
 	i = CONTENT_AIR;
@@ -150,7 +181,7 @@ void init_mapnode(IIrrlichtWrapper *irrlicht)
 	
 	i = CONTENT_WATER;
 	f = &g_content_features[i];
-	f->setInventoryTexture(irrlicht->getTextureId("water.png"));
+	//f->setInventoryTexture(irrlicht->getTextureId("water.png"));
 	f->param_type = CPT_LIGHT;
 	f->light_propagates = true;
 	f->solidness = 0; // Drawn separately, makes no faces
@@ -162,21 +193,23 @@ void init_mapnode(IIrrlichtWrapper *irrlicht)
 	
 	i = CONTENT_WATERSOURCE;
 	f = &g_content_features[i];
-	f->setInventoryTexture(irrlicht->getTextureId("water.png"));
+	//f->setInventoryTexture(irrlicht->getTextureId("water.png"));
 	if(new_style_water)
 	{
 		f->solidness = 0; // drawn separately, makes no faces
 	}
 	else // old style
 	{
-		f->setAllTextures(irrlicht->getTextureId("water.png"), WATER_ALPHA);
+		f->solidness = 1;
+
 		TileSpec t;
-		t.spec = TextureSpec(irrlicht->getTextureId("water.png"));
+		if(g_texturesource)
+			t.texture = g_texturesource->getTexture("water.png");
+		
 		t.alpha = WATER_ALPHA;
 		t.material_type = MATERIAL_ALPHA_VERTEX;
 		t.material_flags &= ~MATERIAL_FLAG_BACKFACE_CULLING;
 		f->setAllTiles(t);
-		f->solidness = 1;
 	}
 	f->param_type = CPT_LIGHT;
 	f->light_propagates = true;
@@ -188,7 +221,6 @@ void init_mapnode(IIrrlichtWrapper *irrlicht)
 	
 	i = CONTENT_TORCH;
 	f = &g_content_features[i];
-	f->setInventoryTexture(irrlicht->getTextureId("torch_on_floor.png"));
 	f->param_type = CPT_LIGHT;
 	f->light_propagates = true;
 	f->solidness = 0; // drawn separately, makes no faces
@@ -224,13 +256,23 @@ TileSpec MapNode::getTile(v3s16 dir)
 	else 
 		spec = content_features(d).tiles[dir_i];
 	
-	if(content_features(d).param_type == CPT_MINERAL)
+	/*
+		If it contains some mineral, change texture id
+	*/
+	if(content_features(d).param_type == CPT_MINERAL && g_texturesource)
 	{
 		u8 mineral = param & 0x1f;
-		// Add mineral block texture
-		textureid_t tid = mineral_block_texture(mineral);
-		if(tid != 0)
-			spec.spec.addTid(tid);
+		std::string mineral_texture_name = mineral_block_texture(mineral);
+		if(mineral_texture_name != "")
+		{
+			u32 orig_id = spec.texture.id;
+			std::string texture_name = g_texturesource->getTextureName(orig_id);
+			//texture_name += "^blit:";
+			texture_name += "^";
+			texture_name += mineral_texture_name;
+			u32 new_id = g_texturesource->getTextureId(texture_name);
+			spec.texture = g_texturesource->getTexture(new_id);
+		}
 	}
 
 	return spec;

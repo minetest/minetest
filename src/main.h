@@ -20,14 +20,19 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #ifndef MAIN_HEADER
 #define MAIN_HEADER
 
-#include "irrlichtwrapper.h"
-
 // Settings
+#include "utility.h"
 extern Settings g_settings;
 
 // A thread safe wrapper to irrlicht
 // On a server build, this is always NULL.
+// TODO: Remove this
+#include "irrlichtwrapper.h"
 extern IrrlichtWrapper *g_irrlicht;
+
+// This makes and maps textures
+#include "tile.h"
+extern TextureSource *g_texturesource;
 
 // Debug streams
 

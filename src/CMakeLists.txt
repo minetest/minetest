@@ -75,6 +75,7 @@ set(minetest_SRCS
 	guiPauseMenu.cpp
 	irrlichtwrapper.cpp
 	client.cpp
+	tile.cpp
 	main.cpp
 )
 

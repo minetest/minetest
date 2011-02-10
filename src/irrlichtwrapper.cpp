@@ -11,8 +11,22 @@ IrrlichtWrapper::IrrlichtWrapper(IrrlichtDevice *device)
 	m_device = device;
 }
 
+IrrlichtWrapper::~IrrlichtWrapper()
+{
+#if 0
+	// Clear image cache
+	for(core::map<std::string, video::IImage*>::Iterator
+			i = m_imagecache.getIterator();
+			i.atEnd() == false; i++)
+	{
+		i.getNode()->getValue()->drop();
+	}
+#endif
+}
+
 void IrrlichtWrapper::Run()
 {
+#if 0
 	/*
 		Fetch textures
 	*/
@@ -34,6 +48,7 @@ void IrrlichtWrapper::Run()
 
 		request.dest->push_back(result);
 	}
+#endif
 }
 
 void IrrlichtWrapper::Shutdown(bool shutdown)
@@ -41,6 +56,18 @@ void IrrlichtWrapper::Shutdown(bool shutdown)
 	m_running = !shutdown;
 }
 
+IrrlichtDevice* IrrlichtWrapper::getDevice()
+{
+	if(get_current_thread_id() != m_main_thread)
+	{
+		dstream<<"WARNING: IrrlichtWrapper::getDevice() called "
+				"not from main thread"<<std::endl;
+		return NULL;
+	}
+	return m_device;
+}
+
+#if 0
 textureid_t IrrlichtWrapper::getTextureId(const std::string &name)
 {
 	u32 id = m_namecache.getId(name);
@@ -55,9 +82,9 @@ std::string IrrlichtWrapper::getTextureName(textureid_t id)
 	return name;
 }
 
-video::ITexture* IrrlichtWrapper::getTexture(const std::string &name)
+video::ITexture* IrrlichtWrapper::getTexture(const std::string &filename)
 {
-	TextureSpec spec(getTextureId(name));
+	TextureSpec spec(getTextureId(filename));
 	return getTexture(spec);
 }
 
@@ -162,12 +189,36 @@ video::ITexture* IrrlichtWrapper::getTextureDirect(const TextureSpec &spec)
 		texture_name += "[";
 		texture_name += name;
 		texture_name += "]";
+		
+		/*
+			Try to get image from image cache
+		*/
+		{
+			core::map<std::string, video::IImage*>::Node *n;
+			n = m_imagecache.find(texture_name);
+			if(n != NULL)
+			{
+				video::IImage *image = n->getValue();
 
+				core::dimension2d<u32> dim = image->getDimension();
+				baseimg = driver->createImage(video::ECF_A8R8G8B8, dim);
+				image->copyTo(baseimg);
+
+				dstream<<"INFO: getTextureDirect(): Loaded \""
+						<<texture_name<<"\" from image cache"
+						<<std::endl;
+				
+				// Do not process any further.
+				continue;
+			}
+		}
+
+		// Stuff starting with [ are special commands
 		if(name[0] != '[')
 		{
 			// A normal texture; load it from a file
 			std::string path = porting::getDataPath(name.c_str());
-			dstream<<"getTextureDirect(): Loading path \""<<path
+			dstream<<"INFO: getTextureDirect(): Loading path \""<<path
 					<<"\""<<std::endl;
 			
 			// DEBUG
@@ -192,7 +243,7 @@ video::ITexture* IrrlichtWrapper::getTextureDirect(const TextureSpec &spec)
 			// If base image is NULL, load as base.
 			if(baseimg == NULL)
 			{
-				dstream<<"Setting "<<name<<" as base"<<std::endl;
+				dstream<<"INFO: Setting "<<name<<" as base"<<std::endl;
 				/*
 					Copy it this way to get an alpha channel.
 					Otherwise images with alpha cannot be blitted on 
@@ -209,7 +260,7 @@ video::ITexture* IrrlichtWrapper::getTextureDirect(const TextureSpec &spec)
 			// Else blit on base.
 			else
 			{
-				dstream<<"Blitting "<<name<<" on base"<<std::endl;
+				dstream<<"INFO: Blitting "<<name<<" on base"<<std::endl;
 				// Size of the copied area
 				core::dimension2d<u32> dim = image->getDimension();
 				//core::dimension2d<u32> dim(16,16);
@@ -229,27 +280,85 @@ video::ITexture* IrrlichtWrapper::getTextureDirect(const TextureSpec &spec)
 		else
 		{
 			// A special texture modification
-			dstream<<"getTextureDirect(): generating \""<<name<<"\""
+			dstream<<"INFO: getTextureDirect(): generating \""<<name<<"\""
 					<<std::endl;
 			if(name.substr(0,6) == "[crack")
 			{
 				u16 progression = stoi(name.substr(6));
 				// Size of the base image
-				core::dimension2d<u32> dim(16, 16);
+				core::dimension2d<u32> dim_base = baseimg->getDimension();
+				// Crack will be drawn at this size
+				u32 cracksize = 16;
 				// Size of the crack image
-				//core::dimension2d<u32> dim_crack(16, 16 * CRACK_ANIMATION_LENGTH);
-				// Position to copy the crack to in the base image
-				core::position2d<s32> pos_base(0, 0);
+				core::dimension2d<u32> dim_crack(cracksize,cracksize);
 				// Position to copy the crack from in the crack image
 				core::position2d<s32> pos_other(0, 16 * progression);
 
 				video::IImage *crackimage = driver->createImageFromFile(
 						porting::getDataPath("crack.png").c_str());
-				crackimage->copyToWithAlpha(baseimg, v2s32(0,0),
-						core::rect<s32>(pos_other, dim),
-						video::SColor(255,255,255,255),
-						NULL);
-				crackimage->drop();
+			
+				if(crackimage)
+				{
+					/*crackimage->copyToWithAlpha(baseimg, v2s32(0,0),
+							core::rect<s32>(pos_other, dim_base),
+							video::SColor(255,255,255,255),
+							NULL);*/
+
+					for(u32 y0=0; y0<dim_base.Height/dim_crack.Height; y0++)
+					for(u32 x0=0; x0<dim_base.Width/dim_crack.Width; x0++)
+					{
+						// Position to copy the crack to in the base image
+						core::position2d<s32> pos_base(x0*cracksize, y0*cracksize);
+						crackimage->copyToWithAlpha(baseimg, pos_base,
+								core::rect<s32>(pos_other, dim_crack),
+								video::SColor(255,255,255,255),
+								NULL);
+					}
+
+					crackimage->drop();
+				}
+			}
+			else if(name.substr(0,8) == "[combine")
+			{
+				// "[combine:16x128:0,0=stone.png:0,16=grass.png"
+				Strfnd sf(name);
+				sf.next(":");
+				u32 w0 = stoi(sf.next("x"));
+				u32 h0 = stoi(sf.next(":"));
+				dstream<<"INFO: combined w="<<w0<<" h="<<h0<<std::endl;
+				core::dimension2d<u32> dim(w0,h0);
+				baseimg = driver->createImage(video::ECF_A8R8G8B8, dim);
+				while(sf.atend() == false)
+				{
+					u32 x = stoi(sf.next(","));
+					u32 y = stoi(sf.next("="));
+					std::string filename = sf.next(":");
+					dstream<<"INFO: Adding \""<<filename
+							<<"\" to combined ("<<x<<","<<y<<")"
+							<<std::endl;
+					video::IImage *img = driver->createImageFromFile(
+							porting::getDataPath(filename.c_str()).c_str());
+					if(img)
+					{
+						core::dimension2d<u32> dim = img->getDimension();
+						dstream<<"INFO: Size "<<dim.Width
+								<<"x"<<dim.Height<<std::endl;
+						core::position2d<s32> pos_base(x, y);
+						video::IImage *img2 =
+								driver->createImage(video::ECF_A8R8G8B8, dim);
+						img->copyTo(img2);
+						img->drop();
+						img2->copyToWithAlpha(baseimg, pos_base,
+								core::rect<s32>(v2s32(0,0), dim),
+								video::SColor(255,255,255,255),
+								NULL);
+						img2->drop();
+					}
+					else
+					{
+						dstream<<"WARNING: img==NULL"<<std::endl;
+					}
+				}
 			}
 			else if(name.substr(0,12) == "[progressbar")
 			{
@@ -262,12 +371,31 @@ video::ITexture* IrrlichtWrapper::getTextureDirect(const TextureSpec &spec)
 						" texture: \""<<name<<"\""<<std::endl;
 			}
 		}
+		
+		/*
+			Add to image cache
+		*/
+		if(baseimg != NULL)
+		{
+			core::map<std::string, video::IImage*>::Node *n;
+			n = m_imagecache.find(texture_name);
+			if(n != NULL)
+			{
+				video::IImage *img = n->getValue();
+				if(img != baseimg)
+				{
+					img->drop();
+				}
+			}
+			
+			m_imagecache[texture_name] = baseimg;
+		}
 	}
 
 	// If no resulting image, return NULL
 	if(baseimg == NULL)
 	{
-		dstream<<"getTextureDirect(): baseimg is NULL (attempted to"
+		dstream<<"WARNING: getTextureDirect(): baseimg is NULL (attempted to"
 				" create texture \""<<texture_name<<"\""<<std::endl;
 		return NULL;
 	}
@@ -281,9 +409,8 @@ video::ITexture* IrrlichtWrapper::getTextureDirect(const TextureSpec &spec)
 
 	// Create texture from resulting image
 	t = driver->addTexture(texture_name.c_str(), baseimg);
-	baseimg->drop();
 
-	dstream<<"getTextureDirect(): created texture \""<<texture_name
+	dstream<<"INFO: getTextureDirect(): created texture \""<<texture_name
 			<<"\""<<std::endl;
 
 	return t;
@@ -321,5 +448,5 @@ void make_progressbar(float value, video::IImage *image)
 		}
 	}
 }
-
+#endif
 

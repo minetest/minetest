@@ -513,6 +513,8 @@ public:
 	// For debug printing
 	virtual void PrintInfo(std::ostream &out);
 
+	bool isSavingEnabled(){ return m_map_saving_enabled; }
+
 private:
 	// Seed used for all kinds of randomness
 	u64 m_seed;

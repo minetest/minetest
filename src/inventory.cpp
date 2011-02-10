@@ -96,13 +96,17 @@ InventoryItem* InventoryItem::deSerialize(std::istream &is)
 #ifndef SERVER
 video::ITexture * MapBlockObjectItem::getImage()
 {
+	//TODO
+	
 	if(m_inventorystring.substr(0,3) == "Rat")
 		//return g_device->getVideoDriver()->getTexture(porting::getDataPath("rat.png").c_str());
-		return g_irrlicht->getTexture("rat.png");
+		//return g_irrlicht->getTexture("rat.png");
+		return NULL;
 	
 	if(m_inventorystring.substr(0,4) == "Sign")
 		//return g_device->getVideoDriver()->getTexture(porting::getDataPath("sign.png").c_str());
-		return g_irrlicht->getTexture("sign.png");
+		//return g_irrlicht->getTexture("sign.png");
+		return NULL;
 
 	return NULL;
 }

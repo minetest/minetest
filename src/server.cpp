@@ -1642,6 +1642,8 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 				os<<name<<L",";
 			}
 			os<<L"}";
+			if(((ServerMap*)(&m_env.getMap()))->isSavingEnabled() == false)
+				os<<" WARNING: Map saving is disabled."<<std::endl;
 			// Send message
 			SendChatMessage(peer_id, os.str());
 		}

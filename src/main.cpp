@@ -97,6 +97,9 @@ SUGG: Meshes of blocks could be split into 6 meshes facing into
       different directions and then only those drawn that need to be
 	  - Also an 1-dimensional tile map would be nice probably
 
+SUGG: Calculate lighting per vertex to get a lighting effect like in
+      bartwe's game
+
 Gaming ideas:
 -------------
 
@@ -363,8 +366,13 @@ Doing now (most important at the top):
 #include "guiMainMenu.h"
 #include "mineral.h"
 #include "noise.h"
+#include "tile.h"
 
-IrrlichtWrapper *g_irrlicht;
+// TODO: Remove this
+IrrlichtWrapper *g_irrlicht = NULL;
+
+// This makes textures
+TextureSource *g_texturesource = NULL;
 
 MapDrawControl draw_control;
 
@@ -1643,6 +1651,7 @@ int main(int argc, char *argv[])
 	
 	g_device = device;
 	g_irrlicht = new IrrlichtWrapper(device);
+	g_texturesource = new TextureSource(device);
 
 	/*
 		Speed tests (done after irrlicht is loaded to get timer)
@@ -1670,7 +1679,8 @@ int main(int argc, char *argv[])
 	video::IVideoDriver* driver = device->getVideoDriver();
 
 	/*
-		This changes the minimum allowed number of vertices in a VBO
+		This changes the minimum allowed number of vertices in a VBO.
+		Default is 500.
 	*/
 	//driver->setMinHardwareBufferVertexCount(50);
 
@@ -2060,6 +2070,11 @@ int main(int argc, char *argv[])
 			Run global IrrlichtWrapper's main thread processing stuff
 		*/
 		g_irrlicht->Run();
+
+		/*
+			Process TextureSource's queue
+		*/
+		g_texturesource->processQueue();
 
 		/*
 			Random calculations

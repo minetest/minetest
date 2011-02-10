@@ -1974,7 +1974,7 @@ double tree_amount_2d(u64 seed, v2s16 p)
 {
 	double noise = noise2d_perlin(
 			0.5+(float)p.X/250, 0.5+(float)p.Y/250,
-			seed+2, 5, 0.6);
+			seed+2, 5, 0.66);
 	double zeroval = -0.3;
 	if(noise < zeroval)
 		return 0;
@@ -2021,9 +2021,9 @@ double base_rock_level_2d(u64 seed, v2s16 p)
 		base = base2;*/
 #if 1
 	// Higher ground level
-	double higher = (double)WATER_LEVEL + 13. + 50. * noise2d_perlin(
-			0.5+(float)p.X/500., 0.5+(float)p.Y/500.,
-			seed+85039, 6, 0.69);
+	double higher = (double)WATER_LEVEL + 25. + 45. * noise2d_perlin(
+			0.5+(float)p.X/250., 0.5+(float)p.Y/250.,
+			seed+85039, 5, 0.69);
 	//higher = 30; // For debugging
 
 	// Limit higher to at least base
@@ -2042,7 +2042,7 @@ double base_rock_level_2d(u64 seed, v2s16 p)
 	//double b = 20;
 
 	// Offset to more low
-	double a_off = -0.3;
+	double a_off = -0.15;
 	// High/low selector
 	/*double a = 0.5 + b * (a_off + noise2d_perlin(
 			0.5+(float)p.X/500., 0.5+(float)p.Y/500.,
@@ -2414,12 +2414,12 @@ MapChunk* ServerMap::generateChunkRaw(v2s16 chunkpos,
 	/*
 		Make dungeons
 	*/
-	//u32 dungeons_count = relative_volume / 600000;
-	/*u32 bruises_count = relative_volume * stone_surface_max_y / 40000000;
+	u32 dungeons_count = relative_volume / 600000;
+	u32 bruises_count = relative_volume * stone_surface_max_y / 40000000;
 	if(stone_surface_max_y < WATER_LEVEL)
-		bruises_count = 0;*/
-	u32 dungeons_count = 0;
-	u32 bruises_count = 0;
+		bruises_count = 0;
+	/*u32 dungeons_count = 0;
+	u32 bruises_count = 0;*/
 	for(u32 jj=0; jj<dungeons_count+bruises_count; jj++)
 	{
 		s16 min_tunnel_diameter = 2;
@@ -5116,6 +5116,7 @@ void ClientMap::renderMap(video::IVideoDriver* driver, s32 pass)
 			timecheck_counter++;
 			if(timecheck_counter > 50)
 			{
+				timecheck_counter = 0;
 				int time2 = time(0);
 				if(time2 > time1 + 4)
 				{
@@ -5167,71 +5168,6 @@ void ClientMap::renderMap(video::IVideoDriver* driver, s32 pass)
 				continue;
 			}
 
-#if 0			
-			v3s16 blockpos_nodes = block->getPosRelative();
-			
-			// Block center position
-			v3f blockpos(
-					((float)blockpos_nodes.X + MAP_BLOCKSIZE/2) * BS,
-					((float)blockpos_nodes.Y + MAP_BLOCKSIZE/2) * BS,
-					((float)blockpos_nodes.Z + MAP_BLOCKSIZE/2) * BS
-			);
-
-			// Block position relative to camera
-			v3f blockpos_relative = blockpos - camera_position;
-
-			// Distance in camera direction (+=front, -=back)
-			f32 dforward = blockpos_relative.dotProduct(camera_direction);
-
-			// Total distance
-			f32 d = blockpos_relative.getLength();
-			
-			if(m_control.range_all == false)
-			{
-				// If block is far away, don't draw it
-				if(d > m_control.wanted_range * BS)
-					continue;
-			}
-			
-			// Maximum radius of a block
-			f32 block_max_radius = 0.5*1.44*1.44*MAP_BLOCKSIZE*BS;
-			
-			// If block is (nearly) touching the camera, don't
-			// bother validating further (that is, render it anyway)
-			if(d > block_max_radius * 1.5)
-			{
-				// Cosine of the angle between the camera direction
-				// and the block direction (camera_direction is an unit vector)
-				f32 cosangle = dforward / d;
-				
-				// Compensate for the size of the block
-				// (as the block has to be shown even if it's a bit off FOV)
-				// This is an estimate.
-				cosangle += block_max_radius / dforward;
-
-				// If block is not in the field of view, skip it
-				//if(cosangle < cos(FOV_ANGLE/2))
-				if(cosangle < cos(FOV_ANGLE/2. * 4./3.))
-					continue;
-			}
-#endif			
-#if 0
-			v3s16 blockpos_nodes = block->getPosRelative();
-			
-			// Block center position
-			v3f blockpos(
-					((float)blockpos_nodes.X + MAP_BLOCKSIZE/2) * BS,
-					((float)blockpos_nodes.Y + MAP_BLOCKSIZE/2) * BS,
-					((float)blockpos_nodes.Z + MAP_BLOCKSIZE/2) * BS
-			);
-
-			// Block position relative to camera
-			v3f blockpos_relative = blockpos - camera_position;
-
-			// Total distance
-			f32 d = blockpos_relative.getLength();
-#endif
-			
 #if 1
 			/*
 				Update expired mesh
@@ -5324,6 +5260,11 @@ void ClientMap::renderMap(video::IVideoDriver* driver, s32 pass)
 					// Render transparent on transparent pass and likewise.
 					if(transparent == is_transparent_pass)
 					{
+						/*
+							This *shouldn't* hurt too much because Irrlicht
+							doesn't change opengl textures if the old
+							material is set again.
+						*/
 						driver->setMaterial(buf->getMaterial());
 						driver->drawMeshBuffer(buf);
 						vertex_count += buf->getVertexCount();

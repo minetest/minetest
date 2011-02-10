@@ -118,9 +118,9 @@ void Environment::step(float dtime)
 				/*
 					Apply water resistance
 				*/
-				if(player->in_water_stable)
+				if(player->in_water_stable || player->in_water)
 				{
-					f32 max_down = 1.5*BS;
+					f32 max_down = 2.0*BS;
 					if(speed.Y < -max_down) speed.Y = -max_down;
 
 					f32 max = 2.5*BS;

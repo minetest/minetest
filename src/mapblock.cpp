@@ -273,13 +273,32 @@ void MapBlock::makeFastFace(TileSpec tile, u8 light, v3f p,
 	video::SColor c = video::SColor(alpha,li,li,li);
 
 	face.vertices[0] = video::S3DVertex(vertex_pos[0], zerovector, c,
-			core::vector2d<f32>(0,1));
-	face.vertices[1] = video::S3DVertex(vertex_pos[1], zerovector, c,
 			core::vector2d<f32>(abs_scale,1));
+	face.vertices[1] = video::S3DVertex(vertex_pos[1], zerovector, c,
+			core::vector2d<f32>(0,1));
 	face.vertices[2] = video::S3DVertex(vertex_pos[2], zerovector, c,
-			core::vector2d<f32>(abs_scale,0));
-	face.vertices[3] = video::S3DVertex(vertex_pos[3], zerovector, c,
 			core::vector2d<f32>(0,0));
+	face.vertices[3] = video::S3DVertex(vertex_pos[3], zerovector, c,
+			core::vector2d<f32>(abs_scale,0));
+	
+	/*float x0 = (float)tile.tx/256.0;
+	float y0 = (float)tile.ty/256.0;
+	float w = ((float)tile.tw + 1.0)/256.0;
+	float h = ((float)tile.th + 1.0)/256.0;*/
+
+	float x0 = tile.texture.pos.X;
+	float y0 = tile.texture.pos.Y;
+	float w = tile.texture.size.X;
+	float h = tile.texture.size.Y;
+
+	face.vertices[0] = video::S3DVertex(vertex_pos[0], zerovector, c,
+			core::vector2d<f32>(x0+w*abs_scale, y0+h));
+	face.vertices[1] = video::S3DVertex(vertex_pos[1], zerovector, c,
+			core::vector2d<f32>(x0, y0+h));
+	face.vertices[2] = video::S3DVertex(vertex_pos[2], zerovector, c,
+			core::vector2d<f32>(x0, y0));
+	face.vertices[3] = video::S3DVertex(vertex_pos[3], zerovector, c,
+			core::vector2d<f32>(x0+w*abs_scale, y0));
 
 	face.tile = tile;
 	//DEBUG
@@ -318,11 +337,26 @@ TileSpec MapBlock::getNodeTile(MapNode mn, v3s16 p, v3s16 face_dir,
 		}
 		if(mod.type == NODEMOD_CRACK)
 		{
+			/*
+				Get texture id, translate it to name, append stuff to
+				name, get texture id
+			*/
+			// Get original texture name
+			u32 orig_id = spec.texture.id;
+			std::string orig_name = g_texturesource->getTextureName(orig_id);
+			// Create new texture name
 			std::ostringstream os;
-			os<<"[crack"<<mod.param;
-
-			textureid_t tid = g_irrlicht->getTextureId(os.str());
-			spec.spec.addTid(tid);
+			os<<orig_name<<"^[crack"<<mod.param;
+			//os<<orig_name<<"^[progressbar0.5";
+			//os<<"mese.png";
+			// Get new texture
+			u32 new_id = g_texturesource->getTextureId(os.str());
+			
+			dstream<<"MapBlock::getNodeTile(): Switching from "
+					<<orig_name<<" to "<<os.str()<<" ("
+					<<orig_id<<" to "<<new_id<<")"<<std::endl;
+			
+			spec.texture = g_texturesource->getTexture(new_id);
 		}
 	}
 	
@@ -406,7 +440,9 @@ void MapBlock::updateFastFaceRow(
 		TileSpec tile0_next;
 		TileSpec tile1_next;
 		u8 light_next = 0;
-
+		
+		// If at last position, there is nothing to compare to and
+		// the face must be drawn anyway
 		if(j != length - 1)
 		{
 			p_next = p + translate_dir;
@@ -426,7 +462,31 @@ void MapBlock::updateFastFaceRow(
 
 		continuous_tiles_count++;
 		
-		if(next_is_different)
+		// This is set to true if the texture doesn't allow more tiling
+		bool end_of_texture = false;
+		/*
+			If there is no texture, it can be tiled infinitely.
+			If tiled==0, it means the texture can be tiled infinitely.
+			Otherwise check tiled agains continuous_tiles_count.
+
+			This check has to be made for both tiles, because this is
+			a bit hackish and we know which one we're using only when
+			the decision to make the faces is made.
+		*/
+		if(tile0.texture.atlas != NULL && tile0.texture.tiled != 0)
+		{
+			if(tile0.texture.tiled <= continuous_tiles_count)
+				end_of_texture = true;
+		}
+		if(tile1.texture.atlas != NULL && tile1.texture.tiled != 0)
+		{
+			if(tile1.texture.tiled <= continuous_tiles_count)
+				end_of_texture = true;
+		}
+		
+		//end_of_texture = true; //DEBUG
+		
+		if(next_is_different || end_of_texture)
 		{
 			/*
 				Create a face if there should be one
@@ -684,10 +744,6 @@ void MapBlock::updateMesh(u32 daynight_ratio)
 		Convert FastFaces to SMesh
 	*/
 
-	scene::SMesh *mesh_new = NULL;
-	
-	mesh_new = new scene::SMesh();
-	
 	MeshCollector collector;
 
 	if(fastfaces_new.size() > 0)
@@ -708,19 +764,15 @@ void MapBlock::updateMesh(u32 daynight_ratio)
 			FastFace &f = fastfaces_new[i];
 
 			const u16 indices[] = {0,1,2,2,3,0};
-
-			video::ITexture *texture = g_irrlicht->getTexture(f.tile.spec);
+			
+			//video::ITexture *texture = g_irrlicht->getTexture(f.tile.spec);
+			video::ITexture *texture = f.tile.texture.atlas;
 			if(texture == NULL)
 				continue;
 
 			material.setTexture(0, texture);
 			
 			f.tile.applyMaterialOptions(material);
-			
-			/*if(f.tile.alpha != 255)
-				material.MaterialType = video::EMT_TRANSPARENT_VERTEX_ALPHA;
-			else
-				material.MaterialType = video::EMT_SOLID;*/
 			
 			collector.append(material, f.vertices, 4, indices, 6);
 		}
@@ -742,7 +794,11 @@ void MapBlock::updateMesh(u32 daynight_ratio)
 	material_water1.setFlag(video::EMF_BILINEAR_FILTER, false);
 	material_water1.setFlag(video::EMF_FOG_ENABLE, true);
 	material_water1.MaterialType = video::EMT_TRANSPARENT_VERTEX_ALPHA;
-	material_water1.setTexture(0, g_irrlicht->getTexture("water.png"));
+	//TODO
+	//material_water1.setTexture(0, g_irrlicht->getTexture("water.png"));
+	AtlasPointer pa_water1 = g_texturesource->getTexture(
+			g_texturesource->getTextureId("water.png"));
+	material_water1.setTexture(0, pa_water1.atlas);
 
 	// New-style leaves material
 	video::SMaterial material_leaves1;
@@ -751,7 +807,11 @@ void MapBlock::updateMesh(u32 daynight_ratio)
 	material_leaves1.setFlag(video::EMF_BILINEAR_FILTER, false);
 	material_leaves1.setFlag(video::EMF_FOG_ENABLE, true);
 	material_leaves1.MaterialType = video::EMT_TRANSPARENT_ALPHA_CHANNEL_REF;
-	material_leaves1.setTexture(0, g_irrlicht->getTexture("leaves.png"));
+	//TODO
+	//material_leaves1.setTexture(0, g_irrlicht->getTexture("leaves.png"));
+	AtlasPointer pa_leaves1 = g_texturesource->getTexture(
+			g_texturesource->getTextureId("leaves.png"));
+	material_leaves1.setTexture(0, pa_leaves1.atlas);
 
 	for(s16 z=0; z<MAP_BLOCKSIZE; z++)
 	for(s16 y=0; y<MAP_BLOCKSIZE; y++)
@@ -804,7 +864,8 @@ void MapBlock::updateMesh(u32 daynight_ratio)
 			//material.MaterialType = video::EMT_TRANSPARENT_ALPHA_CHANNEL;
 			material.MaterialType
 					= video::EMT_TRANSPARENT_ALPHA_CHANNEL_REF;
-			if(dir == v3s16(0,-1,0))
+			//TODO
+			/*if(dir == v3s16(0,-1,0))
 				material.setTexture(0,
 						g_irrlicht->getTexture("torch_on_floor.png"));
 			else if(dir == v3s16(0,1,0))
@@ -816,7 +877,7 @@ void MapBlock::updateMesh(u32 daynight_ratio)
 						g_irrlicht->getTexture("torch_on_floor.png"));
 			else
 				material.setTexture(0, 
-						g_irrlicht->getTexture("torch.png"));
+						g_irrlicht->getTexture("torch.png"));*/
 
 			u16 indices[] = {0,1,2,2,3,0};
 			// Add to mesh collector
@@ -974,14 +1035,18 @@ void MapBlock::updateMesh(u32 daynight_ratio)
 				
 				video::S3DVertex vertices[4] =
 				{
-					/*video::S3DVertex(-BS/2,-BS/2,BS/2, 0,0,0, c, 0,1),
-					video::S3DVertex(BS/2,-BS/2,BS/2, 0,0,0, c, 1,1),
-					video::S3DVertex(BS/2,BS/2,BS/2, 0,0,0, c, 1,0),
-					video::S3DVertex(-BS/2,BS/2,BS/2, 0,0,0, c, 0,0),*/
-					video::S3DVertex(-BS/2,0,BS/2, 0,0,0, c, 0,1),
+					/*video::S3DVertex(-BS/2,0,BS/2, 0,0,0, c, 0,1),
 					video::S3DVertex(BS/2,0,BS/2, 0,0,0, c, 1,1),
 					video::S3DVertex(BS/2,0,BS/2, 0,0,0, c, 1,0),
-					video::S3DVertex(-BS/2,0,BS/2, 0,0,0, c, 0,0),
+					video::S3DVertex(-BS/2,0,BS/2, 0,0,0, c, 0,0),*/
+					video::S3DVertex(-BS/2,0,-BS/2, 0,0,0, c,
+							pa_water1.x0(), pa_water1.y1()),
+					video::S3DVertex(BS/2,0,-BS/2, 0,0,0, c,
+							pa_water1.x1(), pa_water1.y1()),
+					video::S3DVertex(BS/2,0,BS/2, 0,0,0, c,
+							pa_water1.x1(), pa_water1.y0()),
+					video::S3DVertex(-BS/2,0,BS/2, 0,0,0, c,
+							pa_water1.x0(), pa_water1.y0()),
 				};
 				
 				/*
@@ -1048,10 +1113,18 @@ void MapBlock::updateMesh(u32 daynight_ratio)
 			{
 				video::S3DVertex vertices[4] =
 				{
-					video::S3DVertex(-BS/2,0,-BS/2, 0,0,0, c, 0,1),
+					/*video::S3DVertex(-BS/2,0,-BS/2, 0,0,0, c, 0,1),
 					video::S3DVertex(BS/2,0,-BS/2, 0,0,0, c, 1,1),
 					video::S3DVertex(BS/2,0,BS/2, 0,0,0, c, 1,0),
-					video::S3DVertex(-BS/2,0,BS/2, 0,0,0, c, 0,0),
+					video::S3DVertex(-BS/2,0,BS/2, 0,0,0, c, 0,0),*/
+					video::S3DVertex(-BS/2,0,-BS/2, 0,0,0, c,
+							pa_water1.x0(), pa_water1.y1()),
+					video::S3DVertex(BS/2,0,-BS/2, 0,0,0, c,
+							pa_water1.x1(), pa_water1.y1()),
+					video::S3DVertex(BS/2,0,BS/2, 0,0,0, c,
+							pa_water1.x1(), pa_water1.y0()),
+					video::S3DVertex(-BS/2,0,BS/2, 0,0,0, c,
+							pa_water1.x0(), pa_water1.y0()),
 				};
 
 				for(s32 i=0; i<4; i++)
@@ -1092,10 +1165,18 @@ void MapBlock::updateMesh(u32 daynight_ratio)
 			
 			video::S3DVertex vertices[4] =
 			{
-				video::S3DVertex(-BS/2,0,-BS/2, 0,0,0, c, 0,1),
+				/*video::S3DVertex(-BS/2,0,-BS/2, 0,0,0, c, 0,1),
 				video::S3DVertex(BS/2,0,-BS/2, 0,0,0, c, 1,1),
 				video::S3DVertex(BS/2,0,BS/2, 0,0,0, c, 1,0),
-				video::S3DVertex(-BS/2,0,BS/2, 0,0,0, c, 0,0),
+				video::S3DVertex(-BS/2,0,BS/2, 0,0,0, c, 0,0),*/
+				video::S3DVertex(-BS/2,0,-BS/2, 0,0,0, c,
+						pa_water1.x0(), pa_water1.y1()),
+				video::S3DVertex(BS/2,0,-BS/2, 0,0,0, c,
+						pa_water1.x1(), pa_water1.y1()),
+				video::S3DVertex(BS/2,0,BS/2, 0,0,0, c,
+						pa_water1.x1(), pa_water1.y0()),
+				video::S3DVertex(-BS/2,0,BS/2, 0,0,0, c,
+						pa_water1.x0(), pa_water1.y0()),
 			};
 
 			for(s32 i=0; i<4; i++)
@@ -1120,10 +1201,18 @@ void MapBlock::updateMesh(u32 daynight_ratio)
 			{
 				video::S3DVertex vertices[4] =
 				{
-					video::S3DVertex(-BS/2,-BS/2,BS/2, 0,0,0, c, 0,1),
+					/*video::S3DVertex(-BS/2,-BS/2,BS/2, 0,0,0, c, 0,1),
 					video::S3DVertex(BS/2,-BS/2,BS/2, 0,0,0, c, 1,1),
 					video::S3DVertex(BS/2,BS/2,BS/2, 0,0,0, c, 1,0),
-					video::S3DVertex(-BS/2,BS/2,BS/2, 0,0,0, c, 0,0),
+					video::S3DVertex(-BS/2,BS/2,BS/2, 0,0,0, c, 0,0),*/
+					video::S3DVertex(-BS/2,-BS/2,BS/2, 0,0,0, c,
+						pa_leaves1.x0(), pa_leaves1.y1()),
+					video::S3DVertex(BS/2,-BS/2,BS/2, 0,0,0, c,
+						pa_leaves1.x1(), pa_leaves1.y1()),
+					video::S3DVertex(BS/2,BS/2,BS/2, 0,0,0, c,
+						pa_leaves1.x1(), pa_leaves1.y0()),
+					video::S3DVertex(-BS/2,BS/2,BS/2, 0,0,0, c,
+						pa_leaves1.x0(), pa_leaves1.y0()),
 				};
 
 				if(j == 0)
@@ -1173,6 +1262,9 @@ void MapBlock::updateMesh(u32 daynight_ratio)
 		Add stuff from collector to mesh
 	*/
 	
+	scene::SMesh *mesh_new = NULL;
+	mesh_new = new scene::SMesh();
+	
 	collector.fillMesh(mesh_new);
 
 	/*
@@ -1191,13 +1283,25 @@ void MapBlock::updateMesh(u32 daynight_ratio)
 		mesh_new = NULL;
 	}
 
-	// Use VBO for mesh (this just would set this for ever buffer)
-	// This will lead to infinite memory usage because or irrlicht.
-	//mesh_new->setHardwareMappingHint(scene::EHM_STATIC);
-	
-	/*std::cout<<"MapBlock has "<<fastfaces_new.size()<<" faces "
-			<<"and uses "<<mesh_new->getMeshBufferCount()
-			<<" materials (meshbuffers)"<<std::endl;*/
+	if(mesh_new)
+	{
+#if 0
+		// Usually 1-700 faces and 1-7 materials
+		std::cout<<"Updated MapBlock has "<<fastfaces_new.size()<<" faces "
+				<<"and uses "<<mesh_new->getMeshBufferCount()
+				<<" materials (meshbuffers)"<<std::endl;
+#endif
+
+		// Use VBO for mesh (this just would set this for ever buffer)
+		// This will lead to infinite memory usage because or irrlicht.
+		//mesh_new->setHardwareMappingHint(scene::EHM_STATIC);
+
+		/*
+			NOTE: If that is enabled, some kind of a queue to the main
+			thread should be made which would call irrlicht to delete
+			the hardware buffer and then delete the mesh
+		*/
+	}
 	
 	/*
 		Replace the mesh

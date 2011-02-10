@@ -122,12 +122,9 @@ public:
 #ifndef SERVER
 	video::ITexture * getImage()
 	{
-		/*if(m_content >= USEFUL_CONTENT_COUNT)
-			return NULL;
-			
-		return g_irrlicht->getTexture(g_content_inventory_texture_paths[m_content]);*/
-
-		return g_irrlicht->getTexture(content_features(m_content).inventory_texture);
+		//TODO
+		//return g_irrlicht->getTexture(content_features(m_content).inventory_texture);
+		return NULL;
 	}
 #endif
 	std::string getText()
@@ -264,7 +261,9 @@ public:
 			name = "cloud.png";
 		
 		// Get such a texture
-		return g_irrlicht->getTexture(name);
+		//return g_irrlicht->getTexture(name);
+		//TODO
+		return NULL;
 	}
 #endif
 	std::string getText()
@@ -351,10 +350,12 @@ public:
 		std::ostringstream os;
 		os<<"[progressbar"<<value_f;
 
-		TextureSpec spec;
+		/*TextureSpec spec;
 		spec.addTid(g_irrlicht->getTextureId(basename));
 		spec.addTid(g_irrlicht->getTextureId(os.str()));
-		return g_irrlicht->getTexture(spec);
+		return g_irrlicht->getTexture(spec);*/
+		//TODO
+		return NULL;
 
 		/*// Make texture name for the new texture with a progress bar
 		float value_f = (float)toolprogress / (float)maxprogress;

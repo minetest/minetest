@@ -27,7 +27,8 @@ const char *mineral_filenames[MINERAL_COUNT] =
 	"mineral_iron.png"
 };
 
-textureid_t mineral_textures[MINERAL_COUNT] = {0};
+//textureid_t mineral_textures[MINERAL_COUNT] = {0};
+std::string mineral_textures[MINERAL_COUNT];
 
 void init_mineral(IIrrlichtWrapper *irrlicht)
 {
@@ -35,14 +36,17 @@ void init_mineral(IIrrlichtWrapper *irrlicht)
 	{
 		if(mineral_filenames[i] == NULL)
 			continue;
-		mineral_textures[i] = irrlicht->getTextureId(mineral_filenames[i]);
+		//mineral_textures[i] = irrlicht->getTextureId(mineral_filenames[i]);
+		//mineral_textures[i] = 0;
+		mineral_textures[i] = mineral_filenames[i];
 	}
 }
 
-textureid_t mineral_block_texture(u8 mineral)
+//textureid_t mineral_block_texture(u8 mineral)
+std::string mineral_block_texture(u8 mineral)
 {
 	if(mineral >= MINERAL_COUNT)
-		return 0;
+		return "";
 	
 	return mineral_textures[mineral];
 }

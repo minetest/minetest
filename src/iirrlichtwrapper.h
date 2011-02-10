@@ -21,6 +21,11 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #define IIRRLICHTWRAPPER_HEADER
 
 #include "common_irrlicht.h"
+#include "texture.h"
+
+/*
+	NOTE: This is deprecated and should be removed completely
+*/
 
 /*
 	IrrlichtWrapper prototype.
@@ -38,15 +43,18 @@ public:
 	{
 	}
 	
+	// Should be called only from the main thread
+	virtual IrrlichtDevice* getDevice(){ return NULL; }
+	
 	virtual u32 getTime()
 	{
 		return 0;
 	}
 	
-	virtual textureid_t getTextureId(const std::string &name){ return 0; }
+	/*virtual textureid_t getTextureId(const std::string &name){ return 0; }
 	virtual std::string getTextureName(textureid_t id){ return ""; }
 	virtual video::ITexture* getTexture(const std::string &name){ return NULL; }
-	virtual video::ITexture* getTexture(const TextureSpec &spec){ return NULL; }
+	virtual video::ITexture* getTexture(const TextureSpec &spec){ return NULL; }*/
 	
 private:
 };
