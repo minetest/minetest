@@ -716,6 +716,26 @@ inline std::string ftos(float f)
 	return o.str();
 }
 
+inline void str_replace(std::string & str, std::string const & pattern,
+		std::string const & replacement)
+{
+	std::string::size_type start = str.find(pattern, 0);
+	while(start != str.npos)
+	{
+		str.replace(start, pattern.size(), replacement);
+		start = str.find(pattern, start+replacement.size());
+	}
+}
+
+inline void str_replace_char(std::string & str, char from, char to)
+{
+	for(unsigned int i=0; i<str.size(); i++)
+	{
+		if(str[i] == from)
+			str[i] = to;
+	}
+}
+
 /*
 	A base class for simple background thread implementation
 */

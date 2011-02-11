@@ -267,8 +267,14 @@ Doing now (most important at the top):
 # maybe done
 * not done
 
-=== Stuff being done
+=== Immediate stuff
 * Combine meshes to bigger ones in ClientMap and set them EHM_STATIC
+
+=== Making it more portable
+* MinGW: Switch away from swprintf; mingw has a bad version of it.
+  Use snprintf + narrow_to_wide or (w)ostringstream
+* Some MSVC: std::sto* are defined without a namespace and collide
+  with the ones in utility.h
 
 === Stuff to do before release
 * Save the new mapgen stuff
@@ -331,12 +337,12 @@ Doing now (most important at the top):
 #endif
 
 #ifdef _MSC_VER
-#pragma comment(lib, "Irrlicht.lib")
-//#pragma comment(lib, "jthread.lib")
-#pragma comment(lib, "zlibwapi.lib")
-#pragma comment(lib, "Shell32.lib")
-// This would get rid of the console window
-//#pragma comment(linker, "/subsystem:windows /ENTRY:mainCRTStartup")
+	#pragma comment(lib, "Irrlicht.lib")
+	//#pragma comment(lib, "jthread.lib")
+	#pragma comment(lib, "zlibwapi.lib")
+	#pragma comment(lib, "Shell32.lib")
+	// This would get rid of the console window
+	//#pragma comment(linker, "/subsystem:windows /ENTRY:mainCRTStartup")
 #endif
 
 #include <iostream>
@@ -1548,9 +1554,8 @@ int main(int argc, char *argv[])
 		These are needed for unit tests at least.
 	*/
 	
-	IIrrlichtWrapper irrlicht_dummy;
-
-	init_mapnode(&irrlicht_dummy);
+	// Initial call with g_texturesource not set.
+	init_mapnode();
 
 	/*
 		Run unit tests
@@ -1716,7 +1721,7 @@ int main(int argc, char *argv[])
 	*/
 
 	init_content_inventory_texture_paths();
-	init_mapnode(g_irrlicht);
+	init_mapnode(); // Second call with g_texturesource set
 	init_mineral(g_irrlicht);
 
 	/*

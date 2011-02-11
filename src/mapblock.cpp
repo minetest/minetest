@@ -341,20 +341,21 @@ TileSpec MapBlock::getNodeTile(MapNode mn, v3s16 p, v3s16 face_dir,
 				Get texture id, translate it to name, append stuff to
 				name, get texture id
 			*/
+
 			// Get original texture name
 			u32 orig_id = spec.texture.id;
 			std::string orig_name = g_texturesource->getTextureName(orig_id);
+
 			// Create new texture name
 			std::ostringstream os;
 			os<<orig_name<<"^[crack"<<mod.param;
-			//os<<orig_name<<"^[progressbar0.5";
-			//os<<"mese.png";
+
 			// Get new texture
 			u32 new_id = g_texturesource->getTextureId(os.str());
 			
-			dstream<<"MapBlock::getNodeTile(): Switching from "
+			/*dstream<<"MapBlock::getNodeTile(): Switching from "
 					<<orig_name<<" to "<<os.str()<<" ("
-					<<orig_id<<" to "<<new_id<<")"<<std::endl;
+					<<orig_id<<" to "<<new_id<<")"<<std::endl;*/
 			
 			spec.texture = g_texturesource->getTexture(new_id);
 		}
@@ -864,20 +865,20 @@ void MapBlock::updateMesh(u32 daynight_ratio)
 			//material.MaterialType = video::EMT_TRANSPARENT_ALPHA_CHANNEL;
 			material.MaterialType
 					= video::EMT_TRANSPARENT_ALPHA_CHANNEL_REF;
-			//TODO
-			/*if(dir == v3s16(0,-1,0))
+
+			if(dir == v3s16(0,-1,0))
 				material.setTexture(0,
-						g_irrlicht->getTexture("torch_on_floor.png"));
+						g_texturesource->getTextureRaw("torch_on_floor.png"));
 			else if(dir == v3s16(0,1,0))
 				material.setTexture(0,
-						g_irrlicht->getTexture("torch_on_ceiling.png"));
+						g_texturesource->getTextureRaw("torch_on_ceiling.png"));
 			// For backwards compatibility
 			else if(dir == v3s16(0,0,0))
 				material.setTexture(0,
-						g_irrlicht->getTexture("torch_on_floor.png"));
+						g_texturesource->getTextureRaw("torch_on_floor.png"));
 			else
 				material.setTexture(0, 
-						g_irrlicht->getTexture("torch.png"));*/
+						g_texturesource->getTextureRaw("torch.png"));
 
 			u16 indices[] = {0,1,2,2,3,0};
 			// Add to mesh collector

@@ -33,7 +33,7 @@ void initializeMaterialProperties()
 	setStoneLikeDiggingProperties(CONTENT_STONE, 1.0);
 
 	g_material_properties[CONTENT_GRASS].setDiggingProperties("",
-			DiggingProperties(true, 0.5, 0));
+			DiggingProperties(true, 0.4, 0));
 
 	g_material_properties[CONTENT_TORCH].setDiggingProperties("",
 			DiggingProperties(true, 0.0, 0));
@@ -42,7 +42,7 @@ void initializeMaterialProperties()
 			DiggingProperties(true, 1.5, 0));
 
 	g_material_properties[CONTENT_LEAVES].setDiggingProperties("",
-			DiggingProperties(true, 0.5, 0));
+			DiggingProperties(true, 0.35, 0));
 
 	g_material_properties[CONTENT_GRASS_FOOTSTEPS].setDiggingProperties("",
 			DiggingProperties(true, 0.5, 0));
@@ -50,7 +50,7 @@ void initializeMaterialProperties()
 	setStoneLikeDiggingProperties(CONTENT_MESE, 0.5);
 
 	g_material_properties[CONTENT_MUD].setDiggingProperties("",
-			DiggingProperties(true, 0.5, 0));
+			DiggingProperties(true, 0.4, 0));
 
 	setStoneLikeDiggingProperties(CONTENT_COALSTONE, 1.5);
 

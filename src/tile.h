@@ -192,6 +192,13 @@ public:
 	{
 		return getTexture(getTextureId(name));
 	}
+	
+	// Gets a separate texture
+	video::ITexture* getTextureRaw(const std::string &name)
+	{
+		AtlasPointer ap = getTexture(name);
+		return ap.atlas;
+	}
 
 private:
 	/*

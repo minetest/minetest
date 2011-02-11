@@ -44,6 +44,39 @@ void ContentFeatures::setTexture(u16 i, std::string name, u8 alpha)
 		tiles[i].alpha = alpha;
 		tiles[i].material_type = MATERIAL_ALPHA_VERTEX;
 	}
+
+	if(inventory_texture == NULL)
+		setInventoryTexture(name);
+}
+
+void ContentFeatures::setInventoryTexture(std::string imgname)
+{
+	if(g_texturesource == NULL)
+		return;
+	
+	imgname += "^[forcesingle";
+	
+	inventory_texture = g_texturesource->getTextureRaw(imgname);
+}
+
+void ContentFeatures::setInventoryTextureCube(std::string top,
+		std::string left, std::string right)
+{
+	if(g_texturesource == NULL)
+		return;
+	
+	str_replace_char(top, '^', '&');
+	str_replace_char(left, '^', '&');
+	str_replace_char(right, '^', '&');
+
+	std::string imgname_full;
+	imgname_full += "[inventorycube{";
+	imgname_full += top;
+	imgname_full += "{";
+	imgname_full += left;
+	imgname_full += "{";
+	imgname_full += right;
+	inventory_texture = g_texturesource->getTextureRaw(imgname_full);
 }
 
 struct ContentFeatures g_content_features[256];
@@ -53,8 +86,24 @@ ContentFeatures & content_features(u8 i)
 	return g_content_features[i];
 }
 
-void init_mapnode(IIrrlichtWrapper *irrlicht)
+/*
+	See mapnode.h for description.
+*/
+void init_mapnode()
 {
+	if(g_texturesource == NULL)
+	{
+		dstream<<"INFO: Initial run of init_mapnode with "
+				"g_texturesource=NULL. If this segfaults, "
+				"there is a bug with something not checking for "
+				"the NULL value."<<std::endl;
+	}
+	else
+	{
+		dstream<<"INFO: Full run of init_mapnode with "
+				"g_texturesource!=NULL"<<std::endl;
+	}
+
 	// Read some settings
 	bool new_style_water = g_settings.getBool("new_style_water");
 	bool new_style_leaves = g_settings.getBool("new_style_leaves");
@@ -88,6 +137,7 @@ void init_mapnode(IIrrlichtWrapper *irrlicht)
 	i = CONTENT_STONE;
 	f = &g_content_features[i];
 	f->setAllTextures("stone.png");
+	f->setInventoryTextureCube("stone.png", "stone.png", "stone.png");
 	f->param_type = CPT_MINERAL;
 	f->is_ground_content = true;
 	
@@ -96,13 +146,11 @@ void init_mapnode(IIrrlichtWrapper *irrlicht)
 	f->setAllTextures("mud.png^grass_side.png");
 	f->setTexture(0, "grass.png");
 	f->setTexture(1, "mud.png");
-	//f->setInventoryTexture(irrlicht->getTextureId("grass.png"));
 	f->param_type = CPT_MINERAL;
 	f->is_ground_content = true;
 	
 	i = CONTENT_GRASS_FOOTSTEPS;
 	f = &g_content_features[i];
-	//f->setInventoryTexture(irrlicht->getTextureId("grass_footsteps.png"));
 	f->setAllTextures("mud.png^grass_side.png");
 	f->setTexture(0, "grass_footsteps.png");
 	f->setTexture(1, "mud.png");
@@ -126,7 +174,6 @@ void init_mapnode(IIrrlichtWrapper *irrlicht)
 	f->setAllTextures("tree.png");
 	f->setTexture(0, "tree_top.png");
 	f->setTexture(1, "tree_top.png");
-	//f->setInventoryTexture(irrlicht->getTextureId("tree_top.png"));
 	f->param_type = CPT_MINERAL;
 	f->is_ground_content = true;
 	
@@ -148,26 +195,21 @@ void init_mapnode(IIrrlichtWrapper *irrlicht)
 	i = CONTENT_COALSTONE;
 	f = &g_content_features[i];
 	//f->translate_to = new MapNode(CONTENT_STONE, MINERAL_COAL);
-	/*f->setAllTextures(TextureSpec(irrlicht->getTextureId("coal.png"),
-			irrlicht->getTextureId("mineral_coal.png")));*/
 	f->setAllTextures("stone.png^mineral_coal.png");
 	f->is_ground_content = true;
 	
 	i = CONTENT_WOOD;
 	f = &g_content_features[i];
-	//f->setAllTextures(irrlicht->getTextureId("wood.png"));
 	f->setAllTextures("wood.png");
 	f->is_ground_content = true;
 	
 	i = CONTENT_MESE;
 	f = &g_content_features[i];
-	//f->setAllTextures(irrlicht->getTextureId("mese.png"));
 	f->setAllTextures("mese.png");
 	f->is_ground_content = true;
 	
 	i = CONTENT_CLOUD;
 	f = &g_content_features[i];
-	//f->setAllTextures(irrlicht->getTextureId("cloud.png"));
 	f->setAllTextures("cloud.png");
 	f->is_ground_content = true;
 	
@@ -184,7 +226,7 @@ void init_mapnode(IIrrlichtWrapper *irrlicht)
 	
 	i = CONTENT_WATER;
 	f = &g_content_features[i];
-	//f->setInventoryTexture(irrlicht->getTextureId("water.png"));
+	f->setInventoryTextureCube("water.png", "water.png", "water.png");
 	f->param_type = CPT_LIGHT;
 	f->light_propagates = true;
 	f->solidness = 0; // Drawn separately, makes no faces
@@ -196,7 +238,7 @@ void init_mapnode(IIrrlichtWrapper *irrlicht)
 	
 	i = CONTENT_WATERSOURCE;
 	f = &g_content_features[i];
-	//f->setInventoryTexture(irrlicht->getTextureId("water.png"));
+	f->setInventoryTexture("water.png");
 	if(new_style_water)
 	{
 		f->solidness = 0; // drawn separately, makes no faces
@@ -224,6 +266,7 @@ void init_mapnode(IIrrlichtWrapper *irrlicht)
 	
 	i = CONTENT_TORCH;
 	f = &g_content_features[i];
+	f->setInventoryTexture("torch_on_floor.png");
 	f->param_type = CPT_LIGHT;
 	f->light_propagates = true;
 	f->solidness = 0; // drawn separately, makes no faces

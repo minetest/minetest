@@ -33,9 +33,15 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 	Initializes all kind of stuff in here.
 	Many things depend on this.
 
-	irrlicht: Used for getting texture ids.
+	This accesses g_texturesource; if it is non-NULL, textures are set.
+
+	Client first calls this with g_texturesource=NULL to run some
+	unit tests and stuff, then it runs this again with g_texturesource
+	defined to get the textures.
+
+	Server only calls this once with g_texturesource=NULL.
 */
-void init_mapnode(IIrrlichtWrapper *irrlicht);
+void init_mapnode();
 
 // Initializes g_content_inventory_texture_paths
 void init_content_inventory_texture_paths();
@@ -137,6 +143,7 @@ struct ContentFeatures
 	//std::string inventory_image_path;
 	//TextureSpec inventory_texture;
 	//u32 inventory_texture_id;
+	video::ITexture *inventory_texture;
 
 	bool is_ground_content; //TODO: Remove, use walkable instead
 	bool light_propagates;
@@ -155,6 +162,7 @@ struct ContentFeatures
 	{
 		translate_to = NULL;
 		param_type = CPT_NONE;
+		inventory_texture = NULL;
 		is_ground_content = false;
 		light_propagates = false;
 		sunlight_propagates = false;
@@ -212,15 +220,10 @@ struct ContentFeatures
 		}
 	}
 
-	/*void setInventoryTexture(const TextureSpec &spec)
-	{
-		inventory_texture = spec;
-	}*/
-
-	/*void setInventoryImage(std::string imgname)
-	{
-		inventory_image_path = porting::getDataPath(imgname.c_str());
-	}*/
+	void setInventoryTexture(std::string imgname);
+	
+	void setInventoryTextureCube(std::string top,
+			std::string left, std::string right);
 };
 
 /*

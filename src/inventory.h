@@ -122,8 +122,7 @@ public:
 #ifndef SERVER
 	video::ITexture * getImage()
 	{
-		//TODO
-		//return g_irrlicht->getTexture(content_features(m_content).inventory_texture);
+		return content_features(m_content).inventory_texture;
 		return NULL;
 	}
 #endif
@@ -249,6 +248,9 @@ public:
 #ifndef SERVER
 	video::ITexture * getImage()
 	{
+		if(g_texturesource == NULL)
+			return NULL;
+		
 		std::string name;
 
 		if(m_subname == "Stick")
@@ -262,8 +264,7 @@ public:
 		
 		// Get such a texture
 		//return g_irrlicht->getTexture(name);
-		//TODO
-		return NULL;
+		return g_texturesource->getTextureRaw(name);
 	}
 #endif
 	std::string getText()
@@ -329,6 +330,9 @@ public:
 #ifndef SERVER
 	video::ITexture * getImage()
 	{
+		if(g_texturesource == NULL)
+			return NULL;
+		
 		std::string basename;
 		if(m_toolname == "WPick")
 			basename = "tool_wpick.png";
@@ -348,31 +352,14 @@ public:
 		
 		float value_f = (float)toolprogress / (float)maxprogress;
 		std::ostringstream os;
-		os<<"[progressbar"<<value_f;
+		os<<basename<<"^[progressbar"<<value_f;
+
+		return g_texturesource->getTextureRaw(os.str());
 
 		/*TextureSpec spec;
 		spec.addTid(g_irrlicht->getTextureId(basename));
 		spec.addTid(g_irrlicht->getTextureId(os.str()));
 		return g_irrlicht->getTexture(spec);*/
-		//TODO
-		return NULL;
-
-		/*// Make texture name for the new texture with a progress bar
-		float value_f = (float)toolprogress / (float)maxprogress;
-		std::ostringstream os;
-		os<<basename<<"[[mod:progressbar"<<value_f;
-		return g_irrlicht->getTexture(os.str());*/
-
-		/*// Make texture name for the new texture with a progress bar
-		std::ostringstream os;
-		os<<basename<<"-toolprogress-"<<toolprogress;
-		std::string finalname = os.str();
-
-		float value_f = (float)toolprogress / (float)maxprogress;
-		
-		// Get such a texture
-		TextureMod *mod = new ProgressBarTextureMod(value_f);
-		return g_irrlicht->getTexture(TextureSpec(finalname, basename, mod));*/
 	}
 #endif
 	std::string getText()

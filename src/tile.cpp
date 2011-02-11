@@ -626,8 +626,23 @@ bool generate_image(std::string part_of_name, video::IImage *& baseimg,
 		dstream<<"INFO: getTextureIdDirect(): generating special "
 				<<"modification \""<<part_of_name<<"\""
 				<<std::endl;
+		
+		/*
+			This is the simplest of all; it just adds stuff to the
+			name so that a separate texture is created.
 
-		if(part_of_name.substr(0,6) == "[crack")
+			It is used to make textures for stuff that doesn't want
+			to implement getting the texture from a bigger texture
+			atlas.
+		*/
+		if(part_of_name == "[forcesingle")
+		{
+		}
+		/*
+			[crackN
+			Adds a cracking texture
+		*/
+		else if(part_of_name.substr(0,6) == "[crack")
 		{
 			if(baseimg == NULL)
 			{
@@ -671,9 +686,12 @@ bool generate_image(std::string part_of_name, video::IImage *& baseimg,
 				crackimage->drop();
 			}
 		}
+		/*
+			[combine:WxH:X,Y=filename:X,Y=filename2
+			Creates a bigger texture from an amount of smaller ones
+		*/
 		else if(part_of_name.substr(0,8) == "[combine")
 		{
-			// "[combine:16x128:0,0=stone.png:0,16=grass.png"
 			Strfnd sf(part_of_name);
 			sf.next(":");
 			u32 w0 = stoi(sf.next("x"));
@@ -713,6 +731,10 @@ bool generate_image(std::string part_of_name, video::IImage *& baseimg,
 				}
 			}
 		}
+		/*
+			[progressbarN
+			Adds a progress bar, 0.0 <= N <= 1.0
+		*/
 		else if(part_of_name.substr(0,12) == "[progressbar")
 		{
 			if(baseimg == NULL)
@@ -726,8 +748,13 @@ bool generate_image(std::string part_of_name, video::IImage *& baseimg,
 			float value = stof(part_of_name.substr(12));
 			make_progressbar(value, baseimg);
 		}
-		// "[noalpha:filename.png"
-		// Use an image without it's alpha channel
+		/*
+			"[noalpha:filename.png"
+			Use an image without it's alpha channel.
+			Used for the leaves texture when in old leaves mode, so
+			that the transparent parts don't look completely black 
+			when simple alpha channel is used for rendering.
+		*/
 		else if(part_of_name.substr(0,8) == "[noalpha")
 		{
 			if(baseimg != NULL)
@@ -770,6 +797,76 @@ bool generate_image(std::string part_of_name, video::IImage *& baseimg,
 
 				image->drop();
 			}
+		}
+		/*
+			[inventorycube{topimage{leftimage{rightimage
+			In every subimage, replace ^ with &.
+			Create an "inventory cube".
+			NOTE: This should be used only on its own.
+			Example (a grass block (not actually used in game):
+			"[inventorycube{grass.png{mud.png&grass_side.png{mud.png&grass_side.png"
+		*/
+		else if(part_of_name.substr(0,14) == "[inventorycube")
+		{
+			if(baseimg != NULL)
+			{
+				dstream<<"WARNING: getTextureIdDirect(): baseimg!=NULL "
+						<<"for part_of_name="<<part_of_name
+						<<", cancelling."<<std::endl;
+				return false;
+			}
+
+			// This is just a placeholder
+
+			str_replace_char(part_of_name, '&', '^');
+			Strfnd sf(part_of_name);
+			sf.next("{");
+			std::string imagename_top = sf.next("{");
+			std::string imagename_left = sf.next("{");
+			std::string imagename_right = sf.next("{");
+
+			baseimg = generate_image_from_scratch(
+					imagename_top, driver);
+
+			//TODO
+#if 0
+			if(driver->queryFeature(video::EVDF_RENDER_TO_TARGET) == false)
+			{
+				dstream<<"WARNING: getTextureIdDirect(): EVDF_RENDER_TO_TARGET"
+						" not supported"<<std::endl;
+				return false;
+			}
+			
+			u32 w0 = 16;
+			u32 h0 = 16;
+			dstream<<"INFO: inventorycube w="<<w0<<" h="<<h0<<std::endl;
+			core::dimension2d<u32> dim(w0,h0);
+
+			//baseimg = driver->createImage(video::ECF_A8R8G8B8, dim);
+
+			video::IImage *img_top = generate_image_from_scratch(
+					imagename_top, driver);
+			video::IImage *img_left = generate_image_from_scratch(
+					imagename_left, driver);
+			video::IImage *img_right = generate_image_from_scratch(
+					imagename_right, driver);
+			
+			// Render target texture
+			video::ITexture *rtt = NULL;
+			std::string rtt_name = part_of_name + "_RTT";
+			
+			rtt = driver->addRenderTargetTexture(dim, rtt_name.c_str());
+			assert(rtt);
+			
+			
+			
+			img_top->drop();
+			img_left->drop();
+			img_right->drop();
+			
+			//TODO
+			assert(0);
+#endif
 		}
 		else
 		{

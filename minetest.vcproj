@@ -57,6 +57,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
+				AdditionalDependencies="wsock32.lib"
 				AdditionalLibraryDirectories="&quot;..\irrlicht\irrlicht-1.7.1\lib\Win32-visualstudio&quot;;..\zlib125dll\dll32"
 				IgnoreAllDefaultLibraries="false"
 				GenerateDebugInformation="true"
@@ -136,6 +137,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
+				AdditionalDependencies="wsock32.lib"
 				AdditionalLibraryDirectories="&quot;..\irrlicht\irrlicht-1.7.1\lib\Win32-visualstudio&quot;;..\zlib125dll\dll32"
 				IgnoreDefaultLibraryNames="libcmtd.dll"
 				GenerateDebugInformation="false"

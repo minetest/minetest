@@ -30,7 +30,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "debug.h"
 #include "constants.h"
 
-#ifdef _WIN32
+#ifdef _MSC_VER
 	#define SWPRINTF_CHARSTRING L"%S"
 #else
 	#define SWPRINTF_CHARSTRING L"%s"

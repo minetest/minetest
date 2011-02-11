@@ -22,10 +22,16 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #ifdef _WIN32
 	#define WIN32_LEAN_AND_MEAN
+	// Without this some of the network functions are not found on mingw
+	#ifndef _WIN32_WINNT
+		#define _WIN32_WINNT 0x0501
+	#endif
 	#include <windows.h>
 	#include <winsock2.h>
 	#include <ws2tcpip.h>
-	#pragma comment(lib, "wsock32.lib")
+	#ifdef _MSC_VER
+		#pragma comment(lib, "wsock32.lib")
+	#endif
 typedef SOCKET socket_t;
 typedef int socklen_t;
 #else

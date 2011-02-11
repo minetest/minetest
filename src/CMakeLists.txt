@@ -10,9 +10,11 @@ add_definitions ( -DUSE_CMAKE_CONFIG_H )
 
 if(WIN32)
 	# Windows
-	if(MSVC)
+	if(MSVC) # MSVC Specifics
 		# Surpress some useless warnings
 		add_definitions ( /D "_CRT_SECURE_NO_DEPRECATE" /W1 )
+	else() # Probably MinGW = GCC
+		set(PLATFORM_LIBS ws2_32.lib)
 	endif()
 	# Zlib stuff
 	set(ZLIB_INCLUDE_DIR "${PROJECT_SOURCE_DIR}/../../zlib/zlib-1.2.5"
