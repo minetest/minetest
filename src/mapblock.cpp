@@ -661,7 +661,7 @@ void MapBlock::updateMesh(u32 daynight_ratio)
 	
 	float node_water_level = 1.0;
 	if(new_style_water)
-		node_water_level = 0.9;
+		node_water_level = 0.85;
 	
 	/*
 		We are including the faces of the trailing edges of the block.
@@ -1157,13 +1157,13 @@ void MapBlock::updateMesh(u32 daynight_ratio)
 				video::S3DVertex(BS/2,0,-BS/2, 0,0,0, c, 1,1),
 				video::S3DVertex(BS/2,0,BS/2, 0,0,0, c, 1,0),
 				video::S3DVertex(-BS/2,0,BS/2, 0,0,0, c, 0,0),*/
-				video::S3DVertex(-BS/2,0,-BS/2, 0,0,0, c,
-						pa_water1.x0(), pa_water1.y1()),
-				video::S3DVertex(BS/2,0,-BS/2, 0,0,0, c,
-						pa_water1.x1(), pa_water1.y1()),
-				video::S3DVertex(BS/2,0,BS/2, 0,0,0, c,
-						pa_water1.x1(), pa_water1.y0()),
 				video::S3DVertex(-BS/2,0,BS/2, 0,0,0, c,
+						pa_water1.x0(), pa_water1.y1()),
+				video::S3DVertex(BS/2,0,BS/2, 0,0,0, c,
+						pa_water1.x1(), pa_water1.y1()),
+				video::S3DVertex(BS/2,0,-BS/2, 0,0,0, c,
+						pa_water1.x1(), pa_water1.y0()),
+				video::S3DVertex(-BS/2,0,-BS/2, 0,0,0, c,
 						pa_water1.x0(), pa_water1.y0()),
 			};
 

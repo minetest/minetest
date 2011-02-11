@@ -989,7 +989,7 @@ void Client::ProcessData(u8 *data, u32 datasize, u16 sender_peer_id)
 			s32 t = (((m_time_of_day.get())%24000)/(24000/d));
 			u32 dr;
 			if(t < nightlength/2 || t >= d - nightlength/2)
-				dr = 400;
+				dr = 300;
 			else if(t >= d/2 - daytimelength/2 && t < d/2 + daytimelength/2)
 				dr = 1000;
 			else

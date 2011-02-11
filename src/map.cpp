@@ -2077,13 +2077,15 @@ double base_rock_level_2d(u64 seed, v2s16 p)
 */
 
 MapChunk* ServerMap::generateChunkRaw(v2s16 chunkpos,
-		core::map<v3s16, MapBlock*> &changed_blocks)
+		core::map<v3s16, MapBlock*> &changed_blocks,
+		bool force)
 {
 	DSTACK(__FUNCTION_NAME);
 
 	/*
 		Don't generate if already fully generated
 	*/
+	if(force == false)
 	{
 		MapChunk *chunk = getChunk(chunkpos);
 		if(chunk != NULL && chunk->getGenLevel() == GENERATED_FULLY)
@@ -2427,7 +2429,7 @@ MapChunk* ServerMap::generateChunkRaw(v2s16 chunkpos,
 	/*
 		Make dungeons
 	*/
-	u32 dungeons_count = relative_volume / 400000;
+	u32 dungeons_count = relative_volume / 600000;
 	u32 bruises_count = relative_volume * stone_surface_max_y / 40000000;
 	if(stone_surface_max_y < WATER_LEVEL)
 		bruises_count = 0;
@@ -2648,7 +2650,7 @@ MapChunk* ServerMap::generateChunkRaw(v2s16 chunkpos,
 	/*
 		Make ore veins
 	*/
-	for(u32 jj=0; jj<relative_volume/2000; jj++)
+	for(u32 jj=0; jj<relative_volume/1000; jj++)
 	{
 		s16 max_vein_diameter = 3;
 
@@ -2681,7 +2683,11 @@ MapChunk* ServerMap::generateChunkRaw(v2s16 chunkpos,
 		);
 
 		// Randomize mineral
-		u8 mineral = myrand_range(1, MINERAL_COUNT-1);
+		u8 mineral;
+		if(myrand()%3 != 0)
+			mineral = MINERAL_COAL;
+		else
+			mineral = MINERAL_IRON;
 
 		/*
 			Generate some vein starting from orp
@@ -2696,7 +2702,7 @@ MapChunk* ServerMap::generateChunkRaw(v2s16 chunkpos,
 			);
 			v3f vec = rp - orp;*/
 			
-			v3s16 maxlen(10, 10, 10);
+			v3s16 maxlen(5, 5, 5);
 			v3f vec(
 				(float)(myrand()%(maxlen.X*2))-(float)maxlen.X,
 				(float)(myrand()%(maxlen.Y*2))-(float)maxlen.Y,
@@ -3756,8 +3762,37 @@ MapSector * ServerMap::emergeSector(v2s16 p2d,
 	/*
 		generateChunk should have generated the sector
 	*/
-	assert(0);
+	//assert(0);
+	
+	dstream<<"WARNING: ServerMap::emergeSector: Cannot find sector ("
+			<<p2d.X<<","<<p2d.Y<<" and chunk is already generated. "
+			<<std::endl;
 
+#if 0
+	dstream<<"WARNING: Creating an empty sector."<<std::endl;
+
+	return createSector(p2d);
+	
+#endif
+	
+#if 1
+	dstream<<"WARNING: Forcing regeneration of chunk."<<std::endl;
+
+	// Generate chunk
+	generateChunkRaw(chunkpos, changed_blocks, true);
+
+	/*
+		Return sector if it exists now
+	*/
+	sector = getSectorNoGenerateNoEx(p2d);
+	if(sector != NULL)
+		return sector;
+	
+	dstream<<"ERROR: Could not get sector from anywhere."<<std::endl;
+	
+	assert(0);
+#endif
+	
 	/*
 		Generate directly
 	*/
@@ -4763,7 +4798,7 @@ void ServerMap::saveMapMeta()
 
 	createDir(m_savedir);
 	
-	std::string fullpath = m_savedir + "/meta.txt";
+	std::string fullpath = m_savedir + "/map_meta.txt";
 	std::ofstream os(fullpath.c_str(), std::ios_base::binary);
 	if(os.good() == false)
 	{
@@ -4789,7 +4824,7 @@ void ServerMap::loadMapMeta()
 	dstream<<"INFO: ServerMap::loadMapMeta(): Loading chunk metadata"
 			<<std::endl;
 
-	std::string fullpath = m_savedir + "/meta.txt";
+	std::string fullpath = m_savedir + "/map_meta.txt";
 	std::ifstream is(fullpath.c_str(), std::ios_base::binary);
 	if(is.good() == false)
 	{
@@ -4921,10 +4956,10 @@ void ServerMap::saveSectorMeta(ServerMapSector *sector)
 	std::string dir = getSectorDir(pos);
 	createDir(dir);
 	
-	std::string fullpath = dir + "/heightmap";
+	std::string fullpath = dir + "/meta";
 	std::ofstream o(fullpath.c_str(), std::ios_base::binary);
 	if(o.good() == false)
-		throw FileNotGoodException("Cannot open master heightmap");
+		throw FileNotGoodException("Cannot open sector metafile");
 
 	sector->serialize(o, version);
 	
@@ -4938,10 +4973,10 @@ MapSector* ServerMap::loadSectorMeta(std::string dirname)
 	v2s16 p2d = getSectorPos(dirname);
 	std::string dir = m_savedir + "/sectors/" + dirname;
 	
-	std::string fullpath = dir + "/heightmap";
+	std::string fullpath = dir + "/meta";
 	std::ifstream is(fullpath.c_str(), std::ios_base::binary);
 	if(is.good() == false)
-		throw FileNotGoodException("Cannot open sector heightmap");
+		throw FileNotGoodException("Cannot open sector metafile");
 
 	ServerMapSector *sector = ServerMapSector::deSerialize
 			(is, this, p2d, m_sectors);
@@ -4975,7 +5010,10 @@ bool ServerMap::loadSectorFull(v2s16 p2d)
 	{
 		return false;
 	}
-
+	
+	/*
+		Load blocks
+	*/
 	std::vector<fs::DirListNode> list2 = fs::GetDirListing
 			(m_savedir+"/sectors/"+sectorsubdir);
 	std::vector<fs::DirListNode>::iterator i2;

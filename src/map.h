@@ -364,7 +364,8 @@ public:
 		All chunks touching this one can be altered also.
 	*/
 	MapChunk* generateChunkRaw(v2s16 chunkpos,
-			core::map<v3s16, MapBlock*> &changed_blocks);
+			core::map<v3s16, MapBlock*> &changed_blocks,
+			bool force=false);
 	
 	/*
 		Generate a chunk and its neighbors so that it won't be touched
