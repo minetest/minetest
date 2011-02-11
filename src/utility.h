@@ -970,13 +970,15 @@ public:
 			std::ifstream is(filename);
 			if(is.good() == false)
 			{
-				dstream<<"Error opening configuration file"
+				dstream<<"INFO: updateConfigFile():"
+						" Error opening configuration file"
 						" for reading: \""
 						<<filename<<"\""<<std::endl;
-				return false;
 			}
-
-			while(getUpdatedConfigObject(is, objects, updated));
+			else
+			{
+				while(getUpdatedConfigObject(is, objects, updated));
+			}
 		}
 		
 		// Write stuff back

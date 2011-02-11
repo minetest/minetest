@@ -497,8 +497,8 @@ void TextureSource::buildMainAtlas()
 	/*
 		Write image to file so that it can be inspected
 	*/
-	driver->writeImageToFile(atlas_img, 
-			porting::getDataPath("main_atlas.png").c_str());
+	/*driver->writeImageToFile(atlas_img, 
+			porting::getDataPath("main_atlas.png").c_str());*/
 }
 
 video::IImage* generate_image_from_scratch(std::string name,

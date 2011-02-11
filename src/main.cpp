@@ -289,6 +289,7 @@ Doing now (most important at the top):
   with the ones in utility.h
 
 === Stuff to do after release
+* Make an "environment metafile" to store at least time of day
 * Move digging property stuff from material.{h,cpp} to mapnode.cpp...
   - Or maybe move content_features to material.{h,cpp}?
 * Add some kind of erosion and other stuff that now is possible
@@ -1542,6 +1543,10 @@ int main(int argc, char *argv[])
 				break;
 			}
 		}
+		
+		// If no path found, use the first one (menu creates the file)
+		if(configpath == "")
+			configpath = filenames[0];
 	}
 
 	// Initialize random seed
