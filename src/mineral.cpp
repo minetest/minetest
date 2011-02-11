@@ -30,14 +30,12 @@ const char *mineral_filenames[MINERAL_COUNT] =
 //textureid_t mineral_textures[MINERAL_COUNT] = {0};
 std::string mineral_textures[MINERAL_COUNT];
 
-void init_mineral(IIrrlichtWrapper *irrlicht)
+void init_mineral()
 {
 	for(u32 i=0; i<MINERAL_COUNT; i++)
 	{
 		if(mineral_filenames[i] == NULL)
 			continue;
-		//mineral_textures[i] = irrlicht->getTextureId(mineral_filenames[i]);
-		//mineral_textures[i] = 0;
 		mineral_textures[i] = mineral_filenames[i];
 	}
 }

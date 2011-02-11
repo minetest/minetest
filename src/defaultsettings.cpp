@@ -41,6 +41,7 @@ void set_default_settings()
 	g_settings.setDefault("enable_fog", "true");
 	g_settings.setDefault("new_style_water", "true");
 	g_settings.setDefault("new_style_leaves", "true");
+	g_settings.setDefault("frametime_graph", "false");
 	
 	g_settings.setDefault("free_move", "false");
 	g_settings.setDefault("continuous_forward", "false");

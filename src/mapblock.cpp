@@ -148,25 +148,6 @@ u8 MapBlock::getFaceLight(u32 daynight_ratio, MapNode n, MapNode n2,
 		v3s16 face_dir)
 {
 	try{
-		// DEBUG
-		/*{
-			if(n.d == CONTENT_WATER)
-			{
-				u8 l = n.param2*2;
-				if(l > LIGHT_MAX)
-					l = LIGHT_MAX;
-				return l;
-			}
-			if(n2.d == CONTENT_WATER)
-			{
-				u8 l = n2.param2*2;
-				if(l > LIGHT_MAX)
-					l = LIGHT_MAX;
-				return l;
-			}
-		}*/
-
-
 		u8 light;
 		u8 l1 = n.getLightBlend(daynight_ratio);
 		u8 l2 = n2.getLightBlend(daynight_ratio);
@@ -177,11 +158,13 @@ u8 MapBlock::getFaceLight(u32 daynight_ratio, MapNode n, MapNode n2,
 
 		// Make some nice difference to different sides
 
+		// This makes light come from a corner
 		/*if(face_dir.X == 1 || face_dir.Z == 1 || face_dir.Y == -1)
 			light = diminish_light(diminish_light(light));
 		else if(face_dir.X == -1 || face_dir.Z == -1)
 			light = diminish_light(light);*/
-
+		
+		// All neighboring faces have different shade (like in minecraft)
 		if(face_dir.X == 1 || face_dir.X == -1 || face_dir.Y == -1)
 			light = diminish_light(diminish_light(light));
 		else if(face_dir.Z == 1 || face_dir.Z == -1)
@@ -791,7 +774,7 @@ void MapBlock::updateMesh(u32 daynight_ratio)
 	// Flowing water material
 	video::SMaterial material_water1;
 	material_water1.setFlag(video::EMF_LIGHTING, false);
-	material_water1.setFlag(video::EMF_BACK_FACE_CULLING, false);
+	//material_water1.setFlag(video::EMF_BACK_FACE_CULLING, false);
 	material_water1.setFlag(video::EMF_BILINEAR_FILTER, false);
 	material_water1.setFlag(video::EMF_FOG_ENABLE, true);
 	material_water1.MaterialType = video::EMT_TRANSPARENT_VERTEX_ALPHA;
@@ -1040,9 +1023,9 @@ void MapBlock::updateMesh(u32 daynight_ratio)
 					video::S3DVertex(BS/2,0,BS/2, 0,0,0, c, 1,1),
 					video::S3DVertex(BS/2,0,BS/2, 0,0,0, c, 1,0),
 					video::S3DVertex(-BS/2,0,BS/2, 0,0,0, c, 0,0),*/
-					video::S3DVertex(-BS/2,0,-BS/2, 0,0,0, c,
+					video::S3DVertex(-BS/2,0,BS/2, 0,0,0, c,
 							pa_water1.x0(), pa_water1.y1()),
-					video::S3DVertex(BS/2,0,-BS/2, 0,0,0, c,
+					video::S3DVertex(BS/2,0,BS/2, 0,0,0, c,
 							pa_water1.x1(), pa_water1.y1()),
 					video::S3DVertex(BS/2,0,BS/2, 0,0,0, c,
 							pa_water1.x1(), pa_water1.y0()),
@@ -1118,21 +1101,25 @@ void MapBlock::updateMesh(u32 daynight_ratio)
 					video::S3DVertex(BS/2,0,-BS/2, 0,0,0, c, 1,1),
 					video::S3DVertex(BS/2,0,BS/2, 0,0,0, c, 1,0),
 					video::S3DVertex(-BS/2,0,BS/2, 0,0,0, c, 0,0),*/
-					video::S3DVertex(-BS/2,0,-BS/2, 0,0,0, c,
-							pa_water1.x0(), pa_water1.y1()),
-					video::S3DVertex(BS/2,0,-BS/2, 0,0,0, c,
-							pa_water1.x1(), pa_water1.y1()),
-					video::S3DVertex(BS/2,0,BS/2, 0,0,0, c,
-							pa_water1.x1(), pa_water1.y0()),
 					video::S3DVertex(-BS/2,0,BS/2, 0,0,0, c,
+							pa_water1.x0(), pa_water1.y1()),
+					video::S3DVertex(BS/2,0,BS/2, 0,0,0, c,
+							pa_water1.x1(), pa_water1.y1()),
+					video::S3DVertex(BS/2,0,-BS/2, 0,0,0, c,
+							pa_water1.x1(), pa_water1.y0()),
+					video::S3DVertex(-BS/2,0,-BS/2, 0,0,0, c,
 							pa_water1.x0(), pa_water1.y0()),
 				};
+				
+				// This fixes a strange bug
+				s32 corner_resolve[4] = {3,2,1,0};
 
 				for(s32 i=0; i<4; i++)
 				{
 					//vertices[i].Pos.Y += water_level;
 					//vertices[i].Pos.Y += neighbor_levels[v3s16(0,0,0)];
-					vertices[i].Pos.Y += corner_levels[i];
+					s32 j = corner_resolve[i];
+					vertices[i].Pos.Y += corner_levels[j];
 					vertices[i].Pos += intToFloat(p + getPosRelative());
 				}
 

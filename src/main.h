@@ -32,7 +32,7 @@ extern IrrlichtWrapper *g_irrlicht;
 
 // This makes and maps textures
 #include "tile.h"
-extern TextureSource *g_texturesource;
+extern ITextureSource *g_texturesource;
 
 // Debug streams
 

@@ -25,6 +25,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 	some MapSectors. (something like 16x16)
 */
 
+// These should fit in 8 bits, as they are saved as such.
 enum{
 	GENERATED_FULLY = 0,
 	GENERATED_PARTLY = 10,
@@ -35,21 +36,10 @@ class MapChunk
 {
 public:
 	MapChunk():
-		//m_is_volatile(true)
 		m_generation_level(GENERATED_NOT)
 	{
 	}
 
-	/*
-		If is_volatile is true, chunk can be modified when
-		neighboring chunks are generated.
-
-		It is set to false when all the 8 neighboring chunks have
-		been generated.
-	*/
-	/*bool getIsVolatile(){ return m_is_volatile; }
-	void setIsVolatile(bool is){ m_is_volatile = is; }*/
-	
 	/*
 		Generation level. Possible values:
 		GENERATED_FULLY = 0 = fully generated
@@ -59,9 +49,17 @@ public:
 	u16 getGenLevel(){ return m_generation_level; }
 	void setGenLevel(u16 lev){ m_generation_level = lev; }
 
+	void serialize(std::ostream &os, u8 version)
+	{
+		os.write((char*)&m_generation_level, 1);
+	}
+	void deSerialize(std::istream &is, u8 version)
+	{
+		is.read((char*)&m_generation_level, 1);
+	}
+
 private:
-	//bool m_is_volatile;
-	u16 m_generation_level;
+	u8 m_generation_level;
 };
 
 #endif

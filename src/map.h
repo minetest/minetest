@@ -475,18 +475,13 @@ public:
 	void save(bool only_changed);
 	void loadAll();
 	
-	// TODO
+	// Saves map seed and possibly other stuff
 	void saveMapMeta();
 	void loadMapMeta();
 	
-	// TODO
 	void saveChunkMeta();
 	void loadChunkMeta();
 	
-	// DEPRECATED
-	void saveMasterHeightmap();
-	void loadMasterHeightmap();
-
 	// The sector mutex should be locked when calling most of these
 	
 	// This only saves sector-specific data such as the heightmap

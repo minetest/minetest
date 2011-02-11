@@ -267,15 +267,6 @@ Doing now (most important at the top):
 # maybe done
 * not done
 
-=== Immediate stuff
-* Combine meshes to bigger ones in ClientMap and set them EHM_STATIC
-
-=== Making it more portable
-* MinGW: Switch away from swprintf; mingw has a bad version of it.
-  Use snprintf + narrow_to_wide or (w)ostringstream
-* Some MSVC: std::sto* are defined without a namespace and collide
-  with the ones in utility.h
-
 === Stuff to do before release
 * Save the new mapgen stuff
   - map/meta.txt, which should contain only plain text, something like this:
@@ -291,7 +282,15 @@ Doing now (most important at the top):
 * only_from_disk might not work anymore - check and fix it.
 * Check the fixmes in the list above
 
+=== Making it more portable
+* MinGW: Switch away from swprintf; mingw has a bad version of it.
+  Use snprintf + narrow_to_wide or (w)ostringstream
+* Some MSVC: std::sto* are defined without a namespace and collide
+  with the ones in utility.h
+
 === Stuff to do after release
+* Move digging property stuff from material.{h,cpp} to mapnode.cpp...
+  - Or maybe move content_features to material.{h,cpp}?
 * Add some kind of erosion and other stuff that now is possible
 * Make client to fetch stuff asynchronously
   - Needs method SyncProcessData
@@ -308,6 +307,7 @@ Doing now (most important at the top):
   is generated. Fix it.
 * Make a small history check to transformLiquids to detect and log
   continuous oscillations, in such detail that they can be fixed.
+* Combine meshes to bigger ones in ClientMap and set them EHM_STATIC
 
 ======================================================================
 
@@ -381,7 +381,7 @@ Doing now (most important at the top):
 IrrlichtWrapper *g_irrlicht = NULL;
 
 // This makes textures
-TextureSource *g_texturesource = NULL;
+ITextureSource *g_texturesource = NULL;
 
 MapDrawControl draw_control;
 
@@ -1659,7 +1659,8 @@ int main(int argc, char *argv[])
 	
 	g_device = device;
 	g_irrlicht = new IrrlichtWrapper(device);
-	g_texturesource = new TextureSource(device);
+	TextureSource *texturesource = new TextureSource(device);
+	g_texturesource = texturesource;
 
 	/*
 		Speed tests (done after irrlicht is loaded to get timer)
@@ -1722,7 +1723,7 @@ int main(int argc, char *argv[])
 
 	init_content_inventory_texture_paths();
 	init_mapnode(); // Second call with g_texturesource set
-	init_mineral(g_irrlicht);
+	init_mineral();
 
 	/*
 		GUI stuff
@@ -2084,7 +2085,7 @@ int main(int argc, char *argv[])
 		/*
 			Process TextureSource's queue
 		*/
-		g_texturesource->processQueue();
+		texturesource->processQueue();
 
 		/*
 			Random calculations
@@ -3006,6 +3007,7 @@ int main(int argc, char *argv[])
 		/*
 			Frametime log
 		*/
+		if(g_settings.getBool("frametime_graph") == true)
 		{
 			s32 x = 10;
 			for(core::list<float>::Iterator

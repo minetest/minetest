@@ -30,7 +30,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 	#include <winsock2.h>
 	#include <ws2tcpip.h>
 	#ifdef _MSC_VER
-		#pragma comment(lib, "wsock32.lib")
+		#pragma comment(lib, "ws2_32.lib")
 	#endif
 typedef SOCKET socket_t;
 typedef int socklen_t;

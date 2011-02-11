@@ -104,9 +104,27 @@ struct SourceAtlasPointer
 };
 
 /*
+	Implementation (to be used as a no-op on the server)
+*/
+class ITextureSource
+{
+public:
+	ITextureSource(){}
+	virtual ~ITextureSource(){}
+	virtual u32 getTextureId(const std::string &name){return 0;}
+	virtual u32 getTextureIdDirect(const std::string &name){return 0;}
+	virtual std::string getTextureName(u32 id){return "";}
+	virtual AtlasPointer getTexture(u32 id){return AtlasPointer(0);}
+	virtual AtlasPointer getTexture(const std::string &name)
+		{return AtlasPointer(0);}
+	virtual video::ITexture* getTextureRaw(const std::string &name)
+		{return NULL;}
+};
+
+/*
 	Creates and caches textures.
 */
-class TextureSource
+class TextureSource : public ITextureSource
 {
 public:
 	TextureSource(IrrlichtDevice *device);

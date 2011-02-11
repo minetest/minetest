@@ -22,7 +22,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "inventory.h"
 #include "texture.h"
-#include "iirrlichtwrapper.h"
 
 /*
 	Minerals
@@ -32,7 +31,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 */
 
 // Caches textures
-void init_mineral(IIrrlichtWrapper *irrlicht);
+void init_mineral();
 
 #define MINERAL_NONE 0
 #define MINERAL_COAL 1

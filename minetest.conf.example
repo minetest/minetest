@@ -25,6 +25,7 @@
 #enable_fog = true
 #new_style_water = true
 #new_style_leaves = true
+#frametime_graph = false
 
 # Server side stuff
 

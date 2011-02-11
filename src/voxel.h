@@ -314,16 +314,12 @@ public:
 // Checked as being inexistent in source
 #define VOXELFLAG_INEXISTENT (1<<1)
 // Algorithm-dependent
-// flowWater: "visited"
-#define VOXELFLAG_CHECKED (1<<2)
+#define VOXELFLAG_CHECKED1 (1<<2)
 // Algorithm-dependent
-// getWaterPressure: "visited"
 #define VOXELFLAG_CHECKED2 (1<<3)
 // Algorithm-dependent
-// spreadWaterPressure: "visited"
 #define VOXELFLAG_CHECKED3 (1<<4)
 // Algorithm-dependent
-// water: "pressure check route node"
 #define VOXELFLAG_CHECKED4 (1<<5)
 
 enum VoxelPrintMode

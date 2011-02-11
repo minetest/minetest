@@ -1201,6 +1201,15 @@ public:
 		return value;
 	}
 
+	u64 getU64(std::string name)
+	{
+		u64 value = 0;
+		std::string s = get(name);
+		std::istringstream ss(s);
+		ss>>value;
+		return value;
+	}
+
 	void setS32(std::string name, s32 value)
 	{
 		set(name, itos(value));
@@ -1215,6 +1224,13 @@ public:
 	{
 		std::ostringstream os;
 		os<<"("<<value.X<<","<<value.Y<<","<<value.Z<<")";
+		set(name, os.str());
+	}
+
+	void setU64(std::string name, u64 value)
+	{
+		std::ostringstream os;
+		os<<value;
 		set(name, os.str());
 	}
 

@@ -79,6 +79,9 @@ Settings g_settings;
 
 extern void set_default_settings();
 
+// A dummy thing
+ITextureSource *g_texturesource = NULL;
+
 /*
 	Debug streams
 */
@@ -259,9 +262,8 @@ int main(int argc, char *argv[])
 
 	// Initialize stuff
 	
-	IIrrlichtWrapper irrlicht; // Dummy
-	init_mapnode(&irrlicht);
-	init_mineral(&irrlicht);
+	init_mapnode();
+	init_mineral();
 
 	/*
 		Check parameters

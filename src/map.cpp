@@ -1741,10 +1741,10 @@ ServerMap::ServerMap(std::string savedir):
 	//m_chunksize = 2;
 	
 	// TODO: Save to and load from a file
-	m_seed = (((u64)myrand()<<0)%0x7fff)
-			+ (((u64)myrand()<<16)%0x7fff)
-			+ (((u64)myrand()<<32)%0x7fff)
-			+ (((u64)myrand()<<48)%0x7fff);
+	m_seed = (((u64)(myrand()%0xffff)<<0)
+			+ ((u64)(myrand()%0xffff)<<16)
+			+ ((u64)(myrand()%0xffff)<<32)
+			+ ((u64)(myrand()%0xffff)<<48));
 
 	/*
 		Experimental and debug stuff
@@ -1774,16 +1774,24 @@ ServerMap::ServerMap(std::string savedir):
 			}
 			else
 			{
-				// Load master heightmap
-				loadMasterHeightmap();
+				// Load map metadata (seed, chunksize)
+				loadMapMeta();
 				
-				// Load sector (0,0) and throw and exception on fail
+				// Load chunk metadata
+				loadChunkMeta();
+			
+				/*// Load sector (0,0) and throw and exception on fail
 				if(loadSectorFull(v2s16(0,0)) == false)
-					throw LoadError("Failed to load sector (0,0)");
+					throw LoadError("Failed to load sector (0,0)");*/
 
-				dstream<<DTIME<<"Server: Successfully loaded master "
-						"heightmap and sector (0,0) from "<<savedir<<
+				/*dstream<<DTIME<<"Server: Successfully loaded chunk "
+						"metadata and sector (0,0) from "<<savedir<<
 						", assuming valid save directory."
+						<<std::endl;*/
+
+				dstream<<DTIME<<"INFO: Server: Successfully loaded map "
+						<<"and chunk metadata from "<<savedir
+						<<", assuming valid save directory."
 						<<std::endl;
 
 				m_map_saving_enabled = true;
@@ -1798,13 +1806,13 @@ ServerMap::ServerMap(std::string savedir):
 	}
 	catch(std::exception &e)
 	{
-		dstream<<DTIME<<"Server: Failed to load map from "<<savedir
+		dstream<<DTIME<<"WARNING: Server: Failed to load map from "<<savedir
 				<<", exception: "<<e.what()<<std::endl;
-		dstream<<DTIME<<"Please remove the map or fix it."<<std::endl;
-		dstream<<DTIME<<"WARNING: Map saving will be disabled."<<std::endl;
+		dstream<<"Please remove the map or fix it."<<std::endl;
+		dstream<<"WARNING: Map saving will be disabled."<<std::endl;
 	}
 
-	dstream<<DTIME<<"Initializing new map."<<std::endl;
+	dstream<<DTIME<<"INFO: Initializing new map."<<std::endl;
 	
 	// Create zero sector
 	emergeSector(v2s16(0,0));
@@ -2062,6 +2070,8 @@ double base_rock_level_2d(u64 seed, v2s16 p)
 	return h;
 }
 
+#define VMANIP_FLAG_DUNGEON VOXELFLAG_CHECKED1
+
 /*
 	This is the main map generation method
 */
@@ -2194,6 +2204,9 @@ MapChunk* ServerMap::generateChunkRaw(v2s16 chunkpos,
 		TimeTaker timer("generateChunkRaw() initialEmerge");
 		vmanip.initialEmerge(bigarea_blocks_min, bigarea_blocks_max);
 	}
+
+	// Clear all flags
+	vmanip.clearFlag(0xff);
 
 	TimeTaker timer_generate("generateChunkRaw() generate");
 
@@ -2414,7 +2427,7 @@ MapChunk* ServerMap::generateChunkRaw(v2s16 chunkpos,
 	/*
 		Make dungeons
 	*/
-	u32 dungeons_count = relative_volume / 600000;
+	u32 dungeons_count = relative_volume / 400000;
 	u32 bruises_count = relative_volume * stone_surface_max_y / 40000000;
 	if(stone_surface_max_y < WATER_LEVEL)
 		bruises_count = 0;
@@ -2424,7 +2437,7 @@ MapChunk* ServerMap::generateChunkRaw(v2s16 chunkpos,
 	{
 		s16 min_tunnel_diameter = 2;
 		s16 max_tunnel_diameter = 6;
-		u16 tunnel_routepoints = 15;
+		u16 tunnel_routepoints = 25;
 		
 		bool bruise_surface = (jj < bruises_count);
 
@@ -2464,14 +2477,14 @@ MapChunk* ServerMap::generateChunkRaw(v2s16 chunkpos,
 		of -= v3s16(1,0,1) * more;
 		
 		s16 route_y_min = 0;
-		//s16 route_y_max = ar.Y-1;
-		s16 route_y_max = -of.Y + stone_surface_max_y + max_tunnel_diameter/2;
-		// If dungeons
+		// Allow half a diameter + 7 over stone surface
+		s16 route_y_max = -of.Y + stone_surface_max_y + max_tunnel_diameter/2 + 7;
+
+		/*// If dungeons, don't go through surface too often
 		if(bruise_surface == false)
-		{
-			// Don't go through surface too often
-			route_y_max -= myrand_range(0, max_tunnel_diameter*2);
-		}
+			route_y_max -= myrand_range(0, max_tunnel_diameter*2);*/
+
+		// Limit maximum to area
 		route_y_max = rangelim(route_y_max, 0, ar.Y-1);
 
 		if(bruise_surface)
@@ -2489,10 +2502,24 @@ MapChunk* ServerMap::generateChunkRaw(v2s16 chunkpos,
 		/*dstream<<"route_y_min = "<<route_y_min
 				<<", route_y_max = "<<route_y_max<<std::endl;*/
 
+		s16 route_start_y_min = route_y_min;
+		s16 route_start_y_max = route_y_max;
+
+		// Start every 2nd dungeon from surface
+		bool coming_from_surface = (jj % 2 == 0 && bruise_surface == false);
+
+		if(coming_from_surface)
+		{
+			route_start_y_min = -of.Y + stone_surface_max_y + 5;
+		}
+		
+		route_start_y_min = rangelim(route_start_y_min, 0, ar.Y-1);
+		route_start_y_max = rangelim(route_start_y_max, 0, ar.Y-1);
+
 		// Randomize starting position
 		v3f orp(
 			(float)(myrand()%ar.X)+0.5,
-			(float)(myrand_range(route_y_min, route_y_max))+0.5,
+			(float)(myrand_range(route_start_y_min, route_start_y_max))+0.5,
 			(float)(myrand()%ar.Z)+0.5
 		);
 
@@ -2509,18 +2536,35 @@ MapChunk* ServerMap::generateChunkRaw(v2s16 chunkpos,
 			s16 max_d = max_tunnel_diameter;
 			s16 rs = myrand_range(min_d, max_d);
 			
-			v3s16 maxlen(15, 5, 15);
-
+			v3s16 maxlen;
 			if(bruise_surface)
 			{
 				maxlen = v3s16(rs*7,rs*7,rs*7);
 			}
+			else
+			{
+				maxlen = v3s16(15, myrand_range(1, 20), 15);
+			}
 
-			v3f vec(
-				(float)(myrand()%(maxlen.X*2))-(float)maxlen.X,
-				(float)(myrand()%(maxlen.Y*2))-(float)maxlen.Y,
-				(float)(myrand()%(maxlen.Z*2))-(float)maxlen.Z
-			);
+			v3f vec;
+			
+			if(coming_from_surface && j < 3)
+			{
+				vec = v3f(
+					(float)(myrand()%(maxlen.X*2))-(float)maxlen.X,
+					(float)(myrand()%(maxlen.Y*1))-(float)maxlen.Y,
+					(float)(myrand()%(maxlen.Z*2))-(float)maxlen.Z
+				);
+			}
+			else
+			{
+				vec = v3f(
+					(float)(myrand()%(maxlen.X*2))-(float)maxlen.X,
+					(float)(myrand()%(maxlen.Y*2))-(float)maxlen.Y,
+					(float)(myrand()%(maxlen.Z*2))-(float)maxlen.Z
+				);
+			}
+
 			v3f rp = orp + vec;
 			if(rp.X < 0)
 				rp.X = 0;
@@ -2553,7 +2597,7 @@ MapChunk* ServerMap::generateChunkRaw(v2s16 chunkpos,
 						//s16 si2 = rs - MYMAX(0, maxabsxz-rs/4);
 						s16 si2 = rs - MYMAX(0, maxabsxz-rs/7);
 						//s16 si2 = rs - abs(x0);
-						for(s16 y0=-si2+1+1; y0<=si2-1; y0++)
+						for(s16 y0=-si2+1+2; y0<=si2-1; y0++)
 						{
 							s16 z = cp.Z + z0;
 							s16 y = cp.Y + y0;
@@ -2580,6 +2624,12 @@ MapChunk* ServerMap::generateChunkRaw(v2s16 chunkpos,
 							// water afterwards
 							u32 i = vmanip.m_area.index(p);
 							vmanip.m_data[i] = airnode;
+
+							if(bruise_surface == false)
+							{
+								// Set tunnel flag
+								vmanip.m_flags[i] |= VMANIP_FLAG_DUNGEON;
+							}
 						}
 					}
 				}
@@ -3000,13 +3050,17 @@ MapChunk* ServerMap::generateChunkRaw(v2s16 chunkpos,
 					break;
 				}
 				
-				n->d = CONTENT_WATERSOURCE;
-				n->setLight(LIGHTBANK_DAY, light);
+				// Make water only not in dungeons
+				if(!(vmanip.m_flags[i]&VMANIP_FLAG_DUNGEON))
+				{
+					n->d = CONTENT_WATERSOURCE;
+					//n->setLight(LIGHTBANK_DAY, light);
 
-				// Add to transforming liquid queue (in case it'd
-				// start flowing)
-				v3s16 p = v3s16(p2d.X, y, p2d.Y);
-				m_transforming_liquid.push_back(p);
+					// Add to transforming liquid queue (in case it'd
+					// start flowing)
+					v3s16 p = v3s16(p2d.X, y, p2d.Y);
+					m_transforming_liquid.push_back(p);
+				}
 				
 				// Next one
 				vmanip.m_area.add_y(em, i, -1);
@@ -3519,6 +3573,7 @@ MapChunk* ServerMap::generateChunkRaw(v2s16 chunkpos,
 		//TimeTaker timer("generateChunkRaw() blitBackAll");
 		vmanip.blitBackAll(&changed_blocks);
 	}
+
 	/*
 		Update day/night difference cache of the MapBlocks
 	*/
@@ -3553,14 +3608,22 @@ MapChunk* ServerMap::generateChunkRaw(v2s16 chunkpos,
 	}
 
 	/*
-		Set central chunk non-volatile and return it
+		Set central chunk non-volatile
 	*/
 	MapChunk *chunk = getChunk(chunkpos);
 	assert(chunk);
 	// Set non-volatile
 	//chunk->setIsVolatile(false);
 	chunk->setGenLevel(GENERATED_FULLY);
-	// Return it
+	
+	/*
+		Save changed parts of map
+	*/
+	save(true);
+
+	/*
+		Return central chunk (which was requested)
+	*/
 	return chunk;
 }
 
@@ -4543,7 +4606,8 @@ void ServerMap::save(bool only_changed)
 		dstream<<DTIME<<"ServerMap: Saving whole map, this can take time."
 				<<std::endl;
 	
-	saveMasterHeightmap();
+	saveMapMeta();
+	saveChunkMeta();
 	
 	u32 sector_meta_count = 0;
 	u32 block_count = 0;
@@ -4601,8 +4665,9 @@ void ServerMap::loadAll()
 {
 	DSTACK(__FUNCTION_NAME);
 	dstream<<DTIME<<"ServerMap: Loading map..."<<std::endl;
-
-	loadMasterHeightmap();
+	
+	loadMapMeta();
+	loadChunkMeta();
 
 	std::vector<fs::DirListNode> list = fs::GetDirListing(m_savedir+"/sectors/");
 
@@ -4657,6 +4722,7 @@ void ServerMap::loadAll()
 	dstream<<DTIME<<"ServerMap: Map loaded."<<std::endl;
 }
 
+#if 0
 void ServerMap::saveMasterHeightmap()
 {
 	DSTACK(__FUNCTION_NAME);
@@ -4684,6 +4750,163 @@ void ServerMap::loadMasterHeightmap()
 	std::ifstream is(fullpath.c_str(), std::ios_base::binary);
 	if(is.good() == false)
 		throw FileNotGoodException("Cannot open master heightmap");*/
+}
+#endif
+
+void ServerMap::saveMapMeta()
+{
+	DSTACK(__FUNCTION_NAME);
+	
+	dstream<<"INFO: ServerMap::saveMapMeta(): "
+			<<"seed="<<m_seed<<", chunksize="<<m_chunksize
+			<<std::endl;
+
+	createDir(m_savedir);
+	
+	std::string fullpath = m_savedir + "/meta.txt";
+	std::ofstream os(fullpath.c_str(), std::ios_base::binary);
+	if(os.good() == false)
+	{
+		dstream<<"ERROR: ServerMap::saveMapMeta(): "
+				<<"could not open"<<fullpath<<std::endl;
+		throw FileNotGoodException("Cannot open chunk metadata");
+	}
+	
+	Settings params;
+	params.setU64("seed", m_seed);
+	params.setS32("chunksize", m_chunksize);
+
+	params.writeLines(os);
+
+	os<<"[end_of_params]\n";
+	
+}
+
+void ServerMap::loadMapMeta()
+{
+	DSTACK(__FUNCTION_NAME);
+	
+	dstream<<"INFO: ServerMap::loadMapMeta(): Loading chunk metadata"
+			<<std::endl;
+
+	std::string fullpath = m_savedir + "/meta.txt";
+	std::ifstream is(fullpath.c_str(), std::ios_base::binary);
+	if(is.good() == false)
+	{
+		dstream<<"ERROR: ServerMap::loadMapMeta(): "
+				<<"could not open"<<fullpath<<std::endl;
+		throw FileNotGoodException("Cannot open chunk metadata");
+	}
+
+	Settings params;
+
+	for(;;)
+	{
+		if(is.eof())
+			throw SerializationError
+					("ServerMap::loadMapMeta(): [end_of_params] not found");
+		std::string line;
+		std::getline(is, line);
+		std::string trimmedline = trim(line);
+		if(trimmedline == "[end_of_params]")
+			break;
+		params.parseConfigLine(line);
+	}
+
+	m_seed = params.getU64("seed");
+	m_chunksize = params.getS32("chunksize");
+
+	dstream<<"INFO: ServerMap::loadMapMeta(): "
+			<<"seed="<<m_seed<<", chunksize="<<m_chunksize
+			<<std::endl;
+}
+
+void ServerMap::saveChunkMeta()
+{
+	DSTACK(__FUNCTION_NAME);
+	
+	u32 count = m_chunks.size();
+
+	dstream<<"INFO: ServerMap::saveChunkMeta(): Saving metadata of "
+			<<count<<" chunks"<<std::endl;
+
+	createDir(m_savedir);
+	
+	std::string fullpath = m_savedir + "/chunk_meta";
+	std::ofstream os(fullpath.c_str(), std::ios_base::binary);
+	if(os.good() == false)
+	{
+		dstream<<"ERROR: ServerMap::saveChunkMeta(): "
+				<<"could not open"<<fullpath<<std::endl;
+		throw FileNotGoodException("Cannot open chunk metadata");
+	}
+	
+	u8 version = 0;
+	
+	// Write version
+	os.write((char*)&version, 1);
+
+	u8 buf[4];
+	
+	// Write count
+	writeU32(buf, count);
+	os.write((char*)buf, 4);
+	
+	for(core::map<v2s16, MapChunk*>::Iterator
+			i = m_chunks.getIterator();
+			i.atEnd()==false; i++)
+	{
+		v2s16 p = i.getNode()->getKey();
+		MapChunk *chunk = i.getNode()->getValue();
+		// Write position
+		writeV2S16(buf, p);
+		os.write((char*)buf, 4);
+		// Write chunk data
+		chunk->serialize(os, version);
+	}
+}
+
+void ServerMap::loadChunkMeta()
+{
+	DSTACK(__FUNCTION_NAME);
+	
+	dstream<<"INFO: ServerMap::loadChunkMeta(): Loading chunk metadata"
+			<<std::endl;
+
+	std::string fullpath = m_savedir + "/chunk_meta";
+	std::ifstream is(fullpath.c_str(), std::ios_base::binary);
+	if(is.good() == false)
+	{
+		dstream<<"ERROR: ServerMap::loadChunkMeta(): "
+				<<"could not open"<<fullpath<<std::endl;
+		throw FileNotGoodException("Cannot open chunk metadata");
+	}
+
+	u8 version = 0;
+	
+	// Read version
+	is.read((char*)&version, 1);
+
+	u8 buf[4];
+	
+	// Read count
+	is.read((char*)buf, 4);
+	u32 count = readU32(buf);
+
+	dstream<<"INFO: ServerMap::loadChunkMeta(): Loading metadata of "
+			<<count<<" chunks"<<std::endl;
+	
+	for(u32 i=0; i<count; i++)
+	{
+		v2s16 p;
+		MapChunk *chunk = new MapChunk();
+		// Read position
+		is.read((char*)buf, 4);
+		p = readV2S16(buf);
+		// Read chunk data
+		chunk->deSerialize(is, version);
+		m_chunks.insert(p, chunk);
+	}
 }
 
 void ServerMap::saveSectorMeta(ServerMapSector *sector)
