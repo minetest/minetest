@@ -119,7 +119,7 @@ void GUIPauseMenu::regenerateGui(v2u32 screensize)
 		L"- R: Toggle viewing all loaded chunks\n"
 		L"- I: Inventory menu\n"
 		L"- ESC: This menu\n"
-		L"- T: Chat\n"
+		L"- T: Chat\n";
 		Environment->addStaticText(text, rect, false, true, this, 258);
 	}
 	{
