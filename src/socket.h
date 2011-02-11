@@ -35,6 +35,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 typedef SOCKET socket_t;
 typedef int socklen_t;
 #else
+	#include <sys/types.h>
 	#include <sys/socket.h>
 	#include <netinet/in.h>
 	#include <fcntl.h>

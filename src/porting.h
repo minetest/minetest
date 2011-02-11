@@ -86,13 +86,20 @@ void initializePaths();
 		return GetTickCount();
 	}
 #else // Posix
-	#include <sys/timeb.h>
+	#include <sys/time.h>
+	inline u32 getTimeMs()
+	{
+		struct timeval tv;
+		gettimeofday(&tv, NULL);
+		return tv.tv_sec * 1000 + tv.tv_usec / 1000;
+	}
+	/*#include <sys/timeb.h>
 	inline u32 getTimeMs()
 	{
 		struct timeb tb;
 		ftime(&tb);
 		return tb.time * 1000 + tb.millitm;
-	}
+	}*/
 #endif
 
 } // namespace porting

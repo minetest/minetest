@@ -23,7 +23,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <jmutex.h>
 #include <jthread.h>
 #include <iostream>
-#include <malloc.h>
 
 #ifdef _WIN32
 	#include <windows.h>
