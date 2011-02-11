@@ -120,8 +120,6 @@ void GUIPauseMenu::regenerateGui(v2u32 screensize)
 		L"- I: Inventory menu\n"
 		L"- ESC: This menu\n"
 		L"- T: Chat\n"
-		L"\n"
-		L"To generate a new map, remove the map directory.\n";
 		Environment->addStaticText(text, rect, false, true, this, 258);
 	}
 	{
