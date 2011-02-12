@@ -132,7 +132,7 @@ void GUIPauseMenu::regenerateGui(v2u32 screensize)
 			max_texture_size = driver->getMaxTextureSize();
 		}
 
-		wchar_t text[200];
+		/*wchar_t text[200];
 		swprintf(text, 200,
 				L"Minetest-c55\n"
 				L"by Perttu Ahola\n"
@@ -143,9 +143,16 @@ void GUIPauseMenu::regenerateGui(v2u32 screensize)
 				,
 				BUILD_INFO,
 				porting::path_userdata.c_str()
-		);
+		);*/
+
+		std::ostringstream os;
+		os<<"Minetest-c55\n";
+		os<<"by Perttu Ahola\n";
+		os<<"celeron55@gmail.com\n";
+		os<<BUILD_INFO<<"\n";
+		os<<"ud_path = "<<wrap_rows(porting::path_userdata, 20)<<"\n";
 	
-		Environment->addStaticText(text, rect, false, true, this, 259);
+		Environment->addStaticText(narrow_to_wide(os.str()).c_str(), rect, false, true, this, 259);
 	}
 }
 

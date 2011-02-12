@@ -81,7 +81,8 @@ SUGG: MovingObject::move and Player::move are basically the same.
 
 SUGG: Precalculate lighting translation table at runtime (at startup)
       - This is not doable because it is currently hand-made and not
-	    based on some mathematical function. Now it is not.
+	    based on some mathematical function.
+		- Note: This has been changing lately
 
 SUGG: A version number to blocks, which increments when the block is
       modified (node add/remove, water update, lighting update)
@@ -95,7 +96,6 @@ SUGG: Make the amount of blocks sending to client and the total
 
 SUGG: Meshes of blocks could be split into 6 meshes facing into
       different directions and then only those drawn that need to be
-	  - Also an 1-dimensional tile map would be nice probably
 
 SUGG: Calculate lighting per vertex to get a lighting effect like in
       bartwe's game
@@ -268,11 +268,6 @@ Doing now (most important at the top):
 * not done
 
 === Stuff to do before release
-* Save the new mapgen stuff
-  - map/meta.txt, which should contain only plain text, something like this:
-      seed = 7ff1bafcd7118800
-      chunksize = 8
-  - map/chunks.dat: chunk positions and flags in binary format
 * Make server find the spawning place from the real map data, not from
   the heightmap
   - But the changing borders of chunk have to be avoided, because
@@ -283,10 +278,10 @@ Doing now (most important at the top):
 * Check the fixmes in the list above
 
 === Making it more portable
-* MinGW: Switch away from swprintf; mingw has a bad version of it.
-  Use snprintf + narrow_to_wide or (w)ostringstream
 * Some MSVC: std::sto* are defined without a namespace and collide
   with the ones in utility.h
+* On Kray's machine, the new find_library(XXF86VM_LIBRARY, Xxf86vm)
+  line doesn't find the library.
 
 === Stuff to do after release
 * Make an "environment metafile" to store at least time of day
@@ -1255,12 +1250,10 @@ public:
 			{
 				m_images[i]->setImage(NULL);
 
-				wchar_t t[10];
 				if(m_selection == j)
-					swprintf(t, 10, L"<-");
+					m_texts[i]->setText(L"<-");
 				else
-					swprintf(t, 10, L"");
-				m_texts[i]->setText(t);
+					m_texts[i]->setText(L"");
 
 				// The next ifs will segfault with a NULL pointer
 				continue;
@@ -1269,12 +1262,18 @@ public:
 			
 			m_images[i]->setImage(item->getImage());
 			
-			wchar_t t[10];
+			std::ostringstream os;
+			os<<item->getText();
+			if(m_selection == j)
+				os<<" <-";
+			m_texts[i]->setText(narrow_to_wide(os.str()).c_str());
+
+			/*wchar_t t[10];
 			if(m_selection == j)
 				swprintf(t, 10, SWPRINTF_CHARSTRING L" <-", item->getText().c_str());
 			else
 				swprintf(t, 10, SWPRINTF_CHARSTRING, item->getText().c_str());
-			m_texts[i]->setText(t);
+			m_texts[i]->setText(t);*/
 		}
 	}
 
@@ -2806,8 +2805,6 @@ int main(int argc, char *argv[])
 		//TimeTaker guiupdatetimer("Gui updating");
 		
 		{
-			wchar_t temptext[150];
-
 			static float drawtime_avg = 0;
 			drawtime_avg = drawtime_avg * 0.95 + (float)drawtime*0.05;
 			static float beginscenetime_avg = 0;
@@ -2817,11 +2814,13 @@ int main(int argc, char *argv[])
 			static float endscenetime_avg = 0;
 			endscenetime_avg = endscenetime_avg * 0.95 + (float)endscenetime*0.05;
 			
-			swprintf(temptext, 150, L"Minetest-c55 ("
-					L"F: item=%i"
-					L", R: range_all=%i"
-					L")"
-					L" drawtime=%.0f, beginscenetime=%.0f, scenetime=%.0f, endscenetime=%.0f",
+			char temptext[300];
+			snprintf(temptext, 300, "Minetest-c55 ("
+					"F: item=%i"
+					", R: range_all=%i"
+					")"
+					" drawtime=%.0f, beginscenetime=%.0f"
+					", scenetime=%.0f, endscenetime=%.0f",
 					g_selected_item,
 					draw_control.range_all,
 					drawtime_avg,
@@ -2830,16 +2829,16 @@ int main(int argc, char *argv[])
 					endscenetime_avg
 					);
 			
-			guitext->setText(temptext);
+			guitext->setText(narrow_to_wide(temptext).c_str());
 		}
 		
 		{
-			wchar_t temptext[150];
-			swprintf(temptext, 150,
-					L"(% .1f, % .1f, % .1f)"
-					L" (% .3f < btime_jitter < % .3f"
-					L", dtime_jitter = % .1f %%"
-					L", v_range = %.1f)",
+			char temptext[300];
+			snprintf(temptext, 300,
+					"(% .1f, % .1f, % .1f)"
+					" (% .3f < btime_jitter < % .3f"
+					", dtime_jitter = % .1f %%"
+					", v_range = %.1f)",
 					player_position.X/BS,
 					player_position.Y/BS,
 					player_position.Z/BS,
@@ -2849,7 +2848,7 @@ int main(int argc, char *argv[])
 					draw_control.wanted_range
 					);
 
-			guitext2->setText(temptext);
+			guitext2->setText(narrow_to_wide(temptext).c_str());
 		}
 		
 		{

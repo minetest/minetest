@@ -1687,6 +1687,22 @@ inline bool string_allowed(const std::string &s, const std::string &allowed_char
 }
 
 /*
+	Forcefully wraps string into rows using \n
+	(no word wrap, used for showing paths in gui)
+*/
+inline std::string wrap_rows(const std::string &from, u32 rowlen)
+{
+	std::string to;
+	for(u32 i=0; i<from.size(); i++)
+	{
+		if(i != 0 && i%rowlen == 0)
+			to += '\n';
+		to += from[i];
+	}
+	return to;
+}
+
+/*
 	Some helper stuff
 */
 #define MYMIN(a,b) ((a)<(b)?(a):(b))
