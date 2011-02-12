@@ -247,23 +247,32 @@ u32 TextureSource::getTextureIdDirect(const std::string &name)
 		SourceAtlasPointer ap = m_atlaspointer_cache[base_image_id];
 
 		video::IImage *image = ap.atlas_img;
-
-		core::dimension2d<u32> dim = ap.intsize;
-
-		baseimg = driver->createImage(video::ECF_A8R8G8B8, dim);
-
-		core::position2d<s32> pos_to(0,0);
-		core::position2d<s32> pos_from = ap.intpos;
 		
-		image->copyTo(
-				baseimg, // target
-				v2s32(0,0), // position in target
-				core::rect<s32>(pos_from, dim) // from
-		);
+		if(image == NULL)
+		{
+			dstream<<"WARNING: getTextureIdDirect(): NULL image in "
+					<<"cache: \""<<base_image_name<<"\""
+					<<std::endl;
+		}
+		else
+		{
+			core::dimension2d<u32> dim = ap.intsize;
 
-		dstream<<"INFO: getTextureIdDirect(): Loaded \""
-				<<base_image_name<<"\" from image cache"
-				<<std::endl;
+			baseimg = driver->createImage(video::ECF_A8R8G8B8, dim);
+
+			core::position2d<s32> pos_to(0,0);
+			core::position2d<s32> pos_from = ap.intpos;
+			
+			image->copyTo(
+					baseimg, // target
+					v2s32(0,0), // position in target
+					core::rect<s32>(pos_from, dim) // from
+			);
+
+			dstream<<"INFO: getTextureIdDirect(): Loaded \""
+					<<base_image_name<<"\" from image cache"
+					<<std::endl;
+		}
 	}
 	
 	/*
@@ -273,33 +282,30 @@ u32 TextureSource::getTextureIdDirect(const std::string &name)
 
 	std::string last_part_of_name = name.substr(last_separator_position+1);
 	dstream<<"last_part_of_name="<<last_part_of_name<<std::endl;
-	
+
 	// Generate image according to part of name
 	if(generate_image(last_part_of_name, baseimg, driver) == false)
 	{
 		dstream<<"INFO: getTextureIdDirect(): "
 				"failed to generate \""<<last_part_of_name<<"\""
 				<<std::endl;
-		return 0;
 	}
 
-	// If no resulting image, return NULL
+	// If no resulting image, print a warning
 	if(baseimg == NULL)
 	{
 		dstream<<"WARNING: getTextureIdDirect(): baseimg is NULL (attempted to"
 				" create texture \""<<name<<"\""<<std::endl;
-		return 0;
 	}
-
-	// Create texture from resulting image
-	t = driver->addTexture(name.c_str(), baseimg);
 	
-	// If no texture
-	if(t == NULL)
-		return 0;
-
+	if(baseimg != NULL)
+	{
+		// Create texture from resulting image
+		t = driver->addTexture(name.c_str(), baseimg);
+	}
+	
 	/*
-		Add texture to caches
+		Add texture to caches (add NULL textures too)
 	*/
 
 	JMutexAutoLock lock(m_atlaspointer_cache_mutex);
@@ -310,7 +316,10 @@ u32 TextureSource::getTextureIdDirect(const std::string &name)
 	ap.pos = v2f(0,0);
 	ap.size = v2f(1,1);
 	ap.tiled = 0;
-	SourceAtlasPointer nap(name, ap, baseimg, v2s32(0,0), baseimg->getDimension());
+	core::dimension2d<u32> baseimg_dim(0,0);
+	if(baseimg)
+		baseimg_dim = baseimg->getDimension();
+	SourceAtlasPointer nap(name, ap, baseimg, v2s32(0,0), baseimg_dim);
 	m_atlaspointer_cache.push_back(nap);
 	m_name_to_id.insert(name, id);
 
@@ -361,6 +370,7 @@ void TextureSource::buildMainAtlas()
 	core::dimension2d<u32> atlas_dim(1024,1024);
 	video::IImage *atlas_img =
 			driver->createImage(video::ECF_A8R8G8B8, atlas_dim);
+	assert(atlas_img);
 
 	/*
 		A list of stuff to add. This should contain as much of the
@@ -415,6 +425,12 @@ void TextureSource::buildMainAtlas()
 		
 		// Generate image by name
 		video::IImage *img2 = generate_image_from_scratch(name, driver);
+		if(img2 == NULL)
+		{
+			dstream<<"WARNING: TextureSource::buildMainAtlas(): Couldn't generate texture atlas: Couldn't generate image \""<<name<<"\""<<std::endl;
+			continue;
+		}
+
 		core::dimension2d<u32> dim = img2->getDimension();
 		
 		// Tile it a few times in the X direction
@@ -490,7 +506,10 @@ void TextureSource::buildMainAtlas()
 	for(u32 i=0; i<sourcelist.size(); i++)
 	{
 		std::string name = sourcelist[i];
+		if(m_name_to_id.find(name) == NULL)
+			continue;
 		u32 id = m_name_to_id[name];
+		//dstream<<"id of name "<<name<<" is "<<id<<std::endl;
 		m_atlaspointer_cache[id].a.atlas = t;
 	}
 
@@ -582,7 +601,29 @@ bool generate_image(std::string part_of_name, video::IImage *& baseimg,
 			dstream<<"WARNING: Could not load image \""<<part_of_name
 					<<"\" from path \""<<path<<"\""
 					<<" while building texture"<<std::endl;
-			return false;
+
+			//return false;
+
+			dstream<<"WARNING: Creating a dummy"<<" image for \""
+					<<part_of_name<<"\""<<std::endl;
+
+			// Just create a dummy image
+			//core::dimension2d<u32> dim(2,2);
+			core::dimension2d<u32> dim(1,1);
+			image = driver->createImage(video::ECF_A8R8G8B8, dim);
+			assert(image);
+			/*image->setPixel(0,0, video::SColor(255,255,0,0));
+			image->setPixel(1,0, video::SColor(255,0,255,0));
+			image->setPixel(0,1, video::SColor(255,0,0,255));
+			image->setPixel(1,1, video::SColor(255,255,0,255));*/
+			image->setPixel(0,0, video::SColor(255,myrand()%256,
+					myrand()%256,myrand()%256));
+			/*image->setPixel(1,0, video::SColor(255,myrand()%256,
+					myrand()%256,myrand()%256));
+			image->setPixel(0,1, video::SColor(255,myrand()%256,
+					myrand()%256,myrand()%256));
+			image->setPixel(1,1, video::SColor(255,myrand()%256,
+					myrand()%256,myrand()%256));*/
 		}
 
 		// If base image is NULL, load as base.
