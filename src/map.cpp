@@ -2018,7 +2018,7 @@ double base_rock_level_2d(u64 seed, v2s16 p)
 {
 	// The base ground level
 	double base = (double)WATER_LEVEL - 4.0 + 25. * noise2d_perlin(
-			0.5+(float)p.X/250., 0.5+(float)p.Y/250.,
+			0.5+(float)p.X/500., 0.5+(float)p.Y/500.,
 			(seed>>32)+654879876, 6, 0.6);
 	
 	/*// A bit hillier one
@@ -2050,7 +2050,7 @@ double base_rock_level_2d(u64 seed, v2s16 p)
 	//double b = 20;
 
 	// Offset to more low
-	double a_off = -0.15;
+	double a_off = -0.2;
 	// High/low selector
 	/*double a = 0.5 + b * (a_off + noise2d_perlin(
 			0.5+(float)p.X/500., 0.5+(float)p.Y/500.,
