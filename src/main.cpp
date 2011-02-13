@@ -2009,7 +2009,8 @@ int main(int argc, char *argv[])
 	if(camera == NULL)
 		return 1;
 	
-	video::SColor skycolor = video::SColor(255,90,140,200);
+	//video::SColor skycolor = video::SColor(255,90,140,200);
+	video::SColor skycolor = video::SColor(255,166,202,244);
 
 	camera->setFOV(FOV_ANGLE);
 

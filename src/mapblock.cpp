@@ -1182,7 +1182,8 @@ void MapBlock::updateMesh(u32 daynight_ratio)
 		*/
 		else if(n.d == CONTENT_LEAVES && new_style_leaves)
 		{
-			u8 l = decode_light(n.getLightBlend(daynight_ratio));
+			/*u8 l = decode_light(n.getLightBlend(daynight_ratio));*/
+			u8 l = decode_light(undiminish_light(n.getLightBlend(daynight_ratio)));
 			video::SColor c(255,l,l,l);
 
 			for(u32 j=0; j<6; j++)
