@@ -2791,7 +2791,7 @@ int main(int argc, char *argv[])
 				bgcolor,
 				video::EFT_FOG_LINEAR,
 				range*0.6,
-				range,
+				range*1.1,
 				0.01,
 				false, // pixel fog
 				false // range fog
