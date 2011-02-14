@@ -277,6 +277,7 @@ Doing now (most important at the top):
   placement and transfer
 * only_from_disk might not work anymore - check and fix it.
 * Check the fixmes in the list above
+* FIXME: Sneaking doesn't switch sneak node when moving sideways
 
 === Making it more portable
 * Some MSVC: std::sto* are defined without a namespace and collide
@@ -397,6 +398,12 @@ extern void set_default_settings();
 
 IrrlichtDevice *g_device = NULL;
 Client *g_client = NULL;
+
+//const s16 quickinv_size = 48;
+//const s16 quickinv_spacing = 64;
+const s16 quickinv_size = 32;
+const s16 quickinv_spacing = 40;
+const s16 quickinv_itemcount = 8;
 
 /*
 	GUI Stuff
@@ -1172,7 +1179,7 @@ void updateViewingRange(f32 frametime_in, Client *client)
 	frametime_old = frametime;
 }
 
-class GUIQuickInventory : public IEventReceiver
+class GUIQuickInventory
 {
 public:
 	GUIQuickInventory(
@@ -1184,26 +1191,27 @@ public:
 		m_itemcount(itemcount),
 		m_inventory(inventory)
 	{
-		core::rect<s32> imgsize(0,0,48,48);
-		core::rect<s32> textsize(0,0,48,16);
-		v2s32 spacing(0, 64);
+		core::rect<s32> imgsize(0,0,quickinv_size,quickinv_size);
+		core::rect<s32> textsize(0,0,quickinv_size,quickinv_size);
 		for(s32 i=0; i<m_itemcount; i++)
 		{
 			m_images.push_back(env->addImage(
-				imgsize + pos + spacing*i
+				imgsize
 			));
 			m_images[i]->setScaleImage(true);
 			m_texts.push_back(env->addStaticText(
 				L"",
-				textsize + pos + spacing*i,
+				textsize,
 				false, false
 			));
-			m_texts[i]->setBackgroundColor(
-					video::SColor(128,0,0,0));
+			/*m_texts[i]->setBackgroundColor(
+					video::SColor(128,0,0,0));*/
 			m_texts[i]->setTextAlignment(
-					gui::EGUIA_CENTER,
-					gui::EGUIA_UPPERLEFT);
+					gui::EGUIA_LOWERRIGHT,
+					gui::EGUIA_LOWERRIGHT);
 		}
+
+		updatePosition(pos);
 	}
 
 	~GUIQuickInventory()
@@ -1218,9 +1226,14 @@ public:
 		}
 	}
 
-	virtual bool OnEvent(const SEvent& event)
+	void updatePosition(v2s32 pos)
 	{
-		return false;
+		v2s32 spacing(quickinv_spacing, 0);
+		for(s32 i=0; i<m_itemcount; i++)
+		{
+			m_images[i]->setRelativePosition(pos + spacing*i);
+			m_texts[i]->setRelativePosition(pos + spacing*i);
+		}
 	}
 
 	void setSelection(s32 i)
@@ -1232,7 +1245,7 @@ public:
 	{
 		s32 start = 0;
 
-		start = m_selection - m_itemcount / 2;
+		//start = m_selection - m_itemcount / 2;
 
 		InventoryList *mainlist = m_inventory->getList("main");
 
@@ -1766,7 +1779,7 @@ int main(int argc, char *argv[])
 			core::rect<s32>(0,0,0,0),
 			false, false); // Disable word wrap as of now
 			//false, true);
-	guitext_chat->setBackgroundColor(video::SColor(96,0,0,0));
+	//guitext_chat->setBackgroundColor(video::SColor(96,0,0,0));
 	core::list<ChatLine> chat_lines;
 	
 	/*
@@ -2011,7 +2024,8 @@ int main(int argc, char *argv[])
 		return 1;
 	
 	//video::SColor skycolor = video::SColor(255,90,140,200);
-	video::SColor skycolor = video::SColor(255,166,202,244);
+	//video::SColor skycolor = video::SColor(255,166,202,244);
+	video::SColor skycolor = video::SColor(255,120,185,244);
 
 	camera->setFOV(FOV_ANGLE);
 
@@ -2031,8 +2045,10 @@ int main(int argc, char *argv[])
 		Add some gui stuff
 	*/
 
+	/*GUIQuickInventory *quick_inventory = new GUIQuickInventory
+			(guienv, NULL, v2s32(10, 70), 5, &local_inventory);*/
 	GUIQuickInventory *quick_inventory = new GUIQuickInventory
-			(guienv, NULL, v2s32(10, 70), 5, &local_inventory);
+			(guienv, NULL, v2s32(0, 0), quickinv_itemcount, &local_inventory);
 	
 	// Test the text input system
 	/*(new GUITextInputMenu(guienv, guiroot, -1, &g_menumgr,
@@ -2051,6 +2067,11 @@ int main(int argc, char *argv[])
 	guitext2->setVisible(true);
 	guitext_info->setVisible(true);
 	guitext_chat->setVisible(true);
+
+	//s32 guitext_chat_pad_bottom = 70;
+
+	v2u32 screensize(0,0);
+	v2u32 last_screensize(0,0);
 	
 	/*
 		Some statistics are collected in these
@@ -2097,14 +2118,23 @@ int main(int argc, char *argv[])
 		/*
 			Random calculations
 		*/
-		v2u32 screensize = driver->getScreenSize();
-		core::vector2d<s32> displaycenter(screensize.X/2,screensize.Y/2);
+		last_screensize = screensize;
+		screensize = driver->getScreenSize();
+		v2s32 displaycenter(screensize.X/2,screensize.Y/2);
+		bool screensize_changed = screensize != last_screensize;
 		
 		// Hilight boxes collected during the loop and displayed
 		core::list< core::aabbox3d<f32> > hilightboxes;
 		
 		// Info text
 		std::wstring infotext;
+
+		// When screen size changes, update positions and sizes of stuff
+		if(screensize_changed)
+		{
+			v2s32 pos(displaycenter.X-((quickinv_itemcount-1)*quickinv_spacing+quickinv_size)/2, screensize.Y-quickinv_spacing);
+			quick_inventory->updatePosition(pos);
+		}
 
 		//TimeTaker //timer1("//timer1");
 		
@@ -2767,12 +2797,6 @@ int main(int argc, char *argv[])
 		camera->setAspectRatio((f32)screensize.X / (f32)screensize.Y);
 		
 		u32 daynight_ratio = client.getDayNightRatio();
-		/*video::SColor bgcolor = video::SColor(
-				255,
-				skycolor.getRed() * daynight_ratio / 1000,
-				skycolor.getGreen() * daynight_ratio / 1000,
-				skycolor.getBlue() * daynight_ratio / 1000);*/
-
 		u8 l = decode_light((daynight_ratio * LIGHT_SUN) / 1000);
 		video::SColor bgcolor = video::SColor(
 				255,
@@ -2787,7 +2811,8 @@ int main(int argc, char *argv[])
 		if(g_settings.getBool("enable_fog") == true)
 		{
 			//f32 range = draw_control.wanted_range * BS + MAP_BLOCKSIZE/2*BS;
-			f32 range = draw_control.wanted_range * BS + MAP_BLOCKSIZE/3*BS;
+			f32 range = draw_control.wanted_range * BS + 0.8*MAP_BLOCKSIZE*BS;
+			//f32 range = draw_control.wanted_range * BS + 0.0*MAP_BLOCKSIZE*BS;
 			if(draw_control.range_all)
 				range = 100000*BS;
 
@@ -2795,11 +2820,23 @@ int main(int argc, char *argv[])
 				bgcolor,
 				video::EFT_FOG_LINEAR,
 				range*0.6,
-				range*1.1,
+				range*1.0,
 				0.01,
 				false, // pixel fog
 				false // range fog
-				);
+			);
+		}
+		else
+		{
+			driver->setFog(
+				bgcolor,
+				video::EFT_FOG_LINEAR,
+				100000*BS,
+				110000*BS,
+				0.01,
+				false, // pixel fog
+				false // range fog
+			);
 		}
 
 
@@ -2912,13 +2949,23 @@ int main(int argc, char *argv[])
 				chat_lines.erase(it);
 			}
 			guitext_chat->setText(whole.c_str());
+
 			// Update gui element size and position
+
+			/*core::rect<s32> rect(
+					10,
+					screensize.Y - guitext_chat_pad_bottom
+							- text_height*chat_lines.size(),
+					screensize.X - 10,
+					screensize.Y - guitext_chat_pad_bottom
+			);*/
 			core::rect<s32> rect(
 					10,
-					screensize.Y - 10 - text_height*chat_lines.size(),
+					50,
 					screensize.X - 10,
-					screensize.Y - 10
+					50 + text_height*chat_lines.size()
 			);
+
 			guitext_chat->setRelativePosition(rect);
 
 			if(chat_lines.size() == 0)

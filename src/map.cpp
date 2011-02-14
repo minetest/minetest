@@ -5428,10 +5428,15 @@ void ClientMap::renderMap(video::IVideoDriver* driver, s32 pass)
 			{
 				continue;
 			}
+			
+			// This is ugly
+			/*if(m_control.range_all == false &&
+					d - 0.5*BS*MAP_BLOCKSIZE > range)
+				continue;*/
 
 #if 1
 			/*
-				Update expired mesh
+				Update expired mesh (used for day/night change)
 			*/
 
 			bool mesh_expired = false;

@@ -163,6 +163,7 @@ void init_mapnode()
 	i = CONTENT_MUD;
 	f = &g_content_features[i];
 	f->setAllTextures("mud.png");
+	f->setInventoryTextureCube("mud.png", "mud.png", "mud.png");
 	f->param_type = CPT_MINERAL;
 	f->is_ground_content = true;
 	f->dug_item = std::string("MaterialItem ")+itos(i)+" 1";
