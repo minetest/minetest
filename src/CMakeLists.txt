@@ -36,7 +36,7 @@ else()
 	set(PLATFORM_LIBS -lpthread)
 	#set(CLIENT_PLATFORM_LIBS -lXxf86vm)
 	# This way Xxf86vm is found on OpenBSD too
-	find_library(XXF86VM_LIBRARY, Xxf86vm)
+	find_library(XXF86VM_LIBRARY Xxf86vm)
 	set(CLIENT_PLATFORM_LIBS ${XXF86VM_LIBRARY})
 endif()
 
