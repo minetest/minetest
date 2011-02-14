@@ -261,8 +261,6 @@ enum MaterialType{
 /*
 	This fully defines the looks of a tile.
 	The SMaterial of a tile is constructed according to this.
-
-	TODO: Change this to use an AtlasPointer
 */
 struct TileSpec
 {

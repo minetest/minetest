@@ -136,7 +136,7 @@ void make_progressbar(float value, video::IImage *image);
 	if baseimg is NULL, it is created. Otherwise stuff is made on it.
 */
 bool generate_image(std::string part_of_name, video::IImage *& baseimg,
-		video::IVideoDriver* driver);
+		IrrlichtDevice *device);
 
 /*
 	Generates an image from a full string like
@@ -145,7 +145,7 @@ bool generate_image(std::string part_of_name, video::IImage *& baseimg,
 	This is used by buildMainAtlas().
 */
 video::IImage* generate_image_from_scratch(std::string name,
-		video::IVideoDriver* driver);
+		IrrlichtDevice *device);
 
 /*
 	This method generates all the textures
@@ -284,7 +284,7 @@ u32 TextureSource::getTextureIdDirect(const std::string &name)
 	dstream<<"last_part_of_name="<<last_part_of_name<<std::endl;
 
 	// Generate image according to part of name
-	if(generate_image(last_part_of_name, baseimg, driver) == false)
+	if(generate_image(last_part_of_name, baseimg, m_device) == false)
 	{
 		dstream<<"INFO: getTextureIdDirect(): "
 				"failed to generate \""<<last_part_of_name<<"\""
@@ -424,7 +424,7 @@ void TextureSource::buildMainAtlas()
 		img->drop();*/
 		
 		// Generate image by name
-		video::IImage *img2 = generate_image_from_scratch(name, driver);
+		video::IImage *img2 = generate_image_from_scratch(name, m_device);
 		if(img2 == NULL)
 		{
 			dstream<<"WARNING: TextureSource::buildMainAtlas(): Couldn't generate texture atlas: Couldn't generate image \""<<name<<"\""<<std::endl;
@@ -521,11 +521,14 @@ void TextureSource::buildMainAtlas()
 }
 
 video::IImage* generate_image_from_scratch(std::string name,
-		video::IVideoDriver* driver)
+		IrrlichtDevice *device)
 {
 	dstream<<"INFO: generate_image_from_scratch(): "
 			"name="<<name<<std::endl;
 	
+	video::IVideoDriver* driver = device->getVideoDriver();
+	assert(driver);
+
 	/*
 		Get the base image
 	*/
@@ -560,7 +563,7 @@ video::IImage* generate_image_from_scratch(std::string name,
 		base_image_name = name.substr(0, last_separator_position);
 		dstream<<"INFO: generate_image_from_scratch(): Calling itself recursively"
 				" to get base image, name="<<base_image_name<<std::endl;
-		baseimg = generate_image_from_scratch(base_image_name, driver);
+		baseimg = generate_image_from_scratch(base_image_name, device);
 	}
 	
 	/*
@@ -572,7 +575,7 @@ video::IImage* generate_image_from_scratch(std::string name,
 	dstream<<"last_part_of_name="<<last_part_of_name<<std::endl;
 	
 	// Generate image according to part of name
-	if(generate_image(last_part_of_name, baseimg, driver) == false)
+	if(generate_image(last_part_of_name, baseimg, device) == false)
 	{
 		dstream<<"INFO: generate_image_from_scratch(): "
 				"failed to generate \""<<last_part_of_name<<"\""
@@ -584,8 +587,11 @@ video::IImage* generate_image_from_scratch(std::string name,
 }
 
 bool generate_image(std::string part_of_name, video::IImage *& baseimg,
-		video::IVideoDriver* driver)
+		IrrlichtDevice *device)
 {
+	video::IVideoDriver* driver = device->getVideoDriver();
+	assert(driver);
+
 	// Stuff starting with [ are special commands
 	if(part_of_name[0] != '[')
 	{
@@ -857,8 +863,6 @@ bool generate_image(std::string part_of_name, video::IImage *& baseimg,
 				return false;
 			}
 
-			// This is just a placeholder
-
 			str_replace_char(part_of_name, '&', '^');
 			Strfnd sf(part_of_name);
 			sf.next("{");
@@ -866,47 +870,115 @@ bool generate_image(std::string part_of_name, video::IImage *& baseimg,
 			std::string imagename_left = sf.next("{");
 			std::string imagename_right = sf.next("{");
 
-			baseimg = generate_image_from_scratch(
-					imagename_top, driver);
-
+#if 1
 			//TODO
-#if 0
+
 			if(driver->queryFeature(video::EVDF_RENDER_TO_TARGET) == false)
 			{
 				dstream<<"WARNING: getTextureIdDirect(): EVDF_RENDER_TO_TARGET"
-						" not supported"<<std::endl;
-				return false;
+						" not supported. Creating fallback image"<<std::endl;
+				baseimg = generate_image_from_scratch(
+						imagename_top, device);
+				return true;
 			}
 			
-			u32 w0 = 16;
-			u32 h0 = 16;
+			u32 w0 = 64;
+			u32 h0 = 64;
 			dstream<<"INFO: inventorycube w="<<w0<<" h="<<h0<<std::endl;
 			core::dimension2d<u32> dim(w0,h0);
-
-			//baseimg = driver->createImage(video::ECF_A8R8G8B8, dim);
-
+			
+			// Generate images for the faces of the cube
 			video::IImage *img_top = generate_image_from_scratch(
-					imagename_top, driver);
+					imagename_top, device);
 			video::IImage *img_left = generate_image_from_scratch(
-					imagename_left, driver);
+					imagename_left, device);
 			video::IImage *img_right = generate_image_from_scratch(
-					imagename_right, driver);
+					imagename_right, device);
+			assert(img_top && img_left && img_right);
+
+			// TODO: Create textures from images
+			video::ITexture *texture_top = driver->addTexture(
+					(imagename_top + "__temp__").c_str(), img_top);
+			assert(texture_top);
 			
-			// Render target texture
-			video::ITexture *rtt = NULL;
-			std::string rtt_name = part_of_name + "_RTT";
-			
-			rtt = driver->addRenderTargetTexture(dim, rtt_name.c_str());
-			assert(rtt);
-			
-			
-			
+			// Drop images
 			img_top->drop();
 			img_left->drop();
 			img_right->drop();
 			
-			//TODO
-			assert(0);
+			// Create render target texture
+			video::ITexture *rtt = NULL;
+			std::string rtt_name = part_of_name + "_RTT";
+			rtt = driver->addRenderTargetTexture(dim, rtt_name.c_str(),
+					video::ECF_A8R8G8B8);
+			assert(rtt);
+			
+			// Set render target
+			driver->setRenderTarget(rtt, true, true,
+					video::SColor(0,0,0,0));
+			
+			// Get a scene manager
+			scene::ISceneManager *smgr_main = device->getSceneManager();
+			assert(smgr_main);
+			scene::ISceneManager *smgr = smgr_main->createNewSceneManager();
+			assert(smgr);
+			
+			/*
+				Create scene:
+				- An unit cube is centered at 0,0,0
+				- Camera looks at cube from Y+, Z- towards Y-, Z+
+				NOTE: Cube has to be changed to something else because
+				the textures cannot be set individually (or can they?)
+			*/
+
+			scene::ISceneNode* cube = smgr->addCubeSceneNode(1.0, NULL, -1,
+					v3f(0,0,0), v3f(0, 45, 0));
+			// Set texture of cube
+			cube->setMaterialTexture(0, texture_top);
+			//cube->setMaterialFlag(video::EMF_LIGHTING, false);
+			cube->setMaterialFlag(video::EMF_ANTI_ALIASING, false);
+			cube->setMaterialFlag(video::EMF_BILINEAR_FILTER, false);
+
+			scene::ICameraSceneNode* camera = smgr->addCameraSceneNode(0,
+					v3f(0, 1.0, -1.5), v3f(0, 0, 0));
+			// Set orthogonal projection
+			core::CMatrix4<f32> pm;
+			pm.buildProjectionMatrixOrthoLH(1.65, 1.65, 0, 100);
+			camera->setProjectionMatrix(pm, true);
+
+			scene::ILightSceneNode *light = smgr->addLightSceneNode(0,
+					v3f(-50, 100, 0), video::SColorf(0.5,0.5,0.5), 1000);
+
+			// Render scene
+			driver->beginScene(true, true, video::SColor(0,0,0,0));
+			smgr->drawAll();
+			driver->endScene();
+			
+			// Drop scene
+			cube->drop();
+			camera->drop();
+			light->drop();
+			// Drop scene manager FIXME: Segfaults
+			//smgr->drop();
+			
+			// Unset render target
+			driver->setRenderTarget(0, true, true, 0);
+
+			//TODO: Free textures of images
+			driver->removeTexture(texture_top);
+			
+			// Create image of render target
+			video::IImage *image = driver->createImage(rtt, v2s32(0,0), dim);
+
+			assert(image);
+			
+			baseimg = driver->createImage(video::ECF_A8R8G8B8, dim);
+
+			if(image)
+			{
+				image->copyTo(baseimg);
+				image->drop();
+			}
 #endif
 		}
 		else
