@@ -337,7 +337,7 @@ void LocalPlayer::move(f32 dtime, Map &map, f32 pos_max_d)
 		Make it a bit larger than the maximum distance of movement
 	*/
 	//f32 d = pos_max_d * 1.1;
-	// A fairly large value in here makes moving much smoother
+	// A fairly large value in here makes moving smoother
 	f32 d = 0.15*BS;
 
 	// This should always apply, otherwise there are glitches
@@ -418,9 +418,9 @@ void LocalPlayer::move(f32 dtime, Map &map, f32 pos_max_d)
 	for(s16 x = oldpos_i.X - 1; x <= oldpos_i.X + 1; x++)
 	{
 		try{
-			if(content_walkable(map.getNode(v3s16(x,y,z)).d) == false){
+			// Player collides into walkable nodes
+			if(content_walkable(map.getNode(v3s16(x,y,z)).d) == false)
 				continue;
-			}
 		}
 		catch(InvalidPositionException &e)
 		{
@@ -533,24 +533,24 @@ void LocalPlayer::move(f32 dtime, Map &map, f32 pos_max_d)
 	} // xyz
 
 	/*
-		//Check the neighbors of m_sneak_node that are closer to
-		//the player. If walkable, set m_sneak_node to such.
-		Check the nodes under the player to see if the player can
-		sneak.
+		Check the nodes under the player to see from which node the
+		player is sneaking from, if any.
 	*/
 	{
 		v3s16 pos_i_bottom = floatToInt(position - v3f(0,BS/2,0));
 		v2f player_p2df(position.X, position.Z);
 		f32 min_distance_f = 100000.0*BS;
-		if(m_sneak_node_exists)
+		// If already seeking from some node, compare to it.
+		/*if(m_sneak_node_exists)
 		{
 			v3f sneaknode_pf = intToFloat(m_sneak_node);
 			v2f sneaknode_p2df(sneaknode_pf.X, sneaknode_pf.Z);
 			f32 d_horiz_f = player_p2df.getDistanceFrom(sneaknode_p2df);
 			f32 d_vert_f = fabs(sneaknode_pf.Y + BS*0.5 - position.Y);
+			// Ignore if player is not on the same level (likely dropped)
 			if(d_vert_f < 0.15*BS)
 				min_distance_f = d_horiz_f;
-		}
+		}*/
 		v3s16 new_sneak_node = m_sneak_node;
 		for(s16 x=-1; x<=1; x++)
 		for(s16 z=-1; z<=1; z++)
@@ -564,11 +564,15 @@ void LocalPlayer::move(f32 dtime, Map &map, f32 pos_max_d)
 					fabs(player_p2df.Y-node_p2df.Y));
 					
 			if(distance_f > min_distance_f ||
-					max_axis_distance_f > sneak_max+0.1*BS)
+					max_axis_distance_f > 0.5*BS + sneak_max + 0.1*BS)
 				continue;
 
 			try{
+				// The node to be sneaked on has to be walkable
 				if(content_walkable(map.getNode(p).d) == false)
+					continue;
+				// And the node above it has to be nonwalkable
+				if(content_walkable(map.getNode(p+v3s16(0,1,0)).d) == true)
 					continue;
 			}
 			catch(InvalidPositionException &e)
@@ -580,18 +584,26 @@ void LocalPlayer::move(f32 dtime, Map &map, f32 pos_max_d)
 			new_sneak_node = p;
 		}
 		
-		m_sneak_node = new_sneak_node;
-		m_sneak_node_exists = (min_distance_f < 100000.0*BS*0.9);
+		bool sneak_node_found = (min_distance_f < 100000.0*BS*0.9);
+		
+		if(control.sneak && m_sneak_node_exists)
+		{
+			if(sneak_node_found)
+				m_sneak_node = new_sneak_node;
+		}
+		else
+		{
+			m_sneak_node = new_sneak_node;
+			m_sneak_node_exists = sneak_node_found;
+		}
+
+		/*
+			If sneaking, the player's collision box can be in air, so
+			this has to be set explicitly
+		*/
+		if(sneak_node_found && control.sneak)
+			touching_ground = true;
 	}
-	
-	/*
-		If sneaking, the player's collision box can be in air, so
-		this has to be set explicitly
-		NOTE: Not allowed, because jumping in the situation can drop
-		the player
-	*/
-	/*if(m_sneak_node_exists)
-		touching_ground = true;*/
 	
 	/*
 		Set new position
