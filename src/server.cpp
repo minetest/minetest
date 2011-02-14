@@ -166,37 +166,6 @@ void * EmergeThread::Thread()
 						only_from_disk,
 						changed_blocks,
 						lighting_invalidated_blocks);
-
-#if 0
-				/*
-					EXPERIMENTAL: Create a few other blocks too
-				*/
-				
-				map.emergeBlock(
-						p + v3s16(0,1,0),
-						only_from_disk,
-						changed_blocks,
-						lighting_invalidated_blocks);
-
-				map.emergeBlock(
-						p + v3s16(0,-1,0),
-						only_from_disk,
-						changed_blocks,
-						lighting_invalidated_blocks);
-#if 0
-				map.emergeBlock(
-						p + v3s16(0,2,0),
-						only_from_disk,
-						changed_blocks,
-						lighting_invalidated_blocks);
-
-				map.emergeBlock(
-						p + v3s16(0,-2,0),
-						only_from_disk,
-						changed_blocks,
-						lighting_invalidated_blocks);
-#endif
-#endif
 			}
 
 			// If it is a dummy, block was not found on disk

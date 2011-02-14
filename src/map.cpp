@@ -4412,6 +4412,17 @@ MapBlock * ServerMap::createBlock(v3s16 p)
 	DSTACK("%s: p=(%d,%d,%d)",
 			__FUNCTION_NAME, p.X, p.Y, p.Z);
 	
+	/*
+		Do not create over-limit
+	*/
+	if(p.X < -MAP_GENERATION_LIMIT / MAP_BLOCKSIZE
+	|| p.X > MAP_GENERATION_LIMIT / MAP_BLOCKSIZE
+	|| p.Y < -MAP_GENERATION_LIMIT / MAP_BLOCKSIZE
+	|| p.Y > MAP_GENERATION_LIMIT / MAP_BLOCKSIZE
+	|| p.Z < -MAP_GENERATION_LIMIT / MAP_BLOCKSIZE
+	|| p.Z > MAP_GENERATION_LIMIT / MAP_BLOCKSIZE)
+		throw InvalidPositionException("createBlock(): pos. over limit");
+	
 	v2s16 p2d(p.X, p.Z);
 	s16 block_y = p.Y;
 	/*
@@ -4426,17 +4437,22 @@ MapBlock * ServerMap::createBlock(v3s16 p)
 		sector = (ServerMapSector*)createSector(p2d);
 		assert(sector->getId() == MAPSECTOR_SERVER);
 	}
-	/*catch(InvalidPositionException &e)
+	catch(InvalidPositionException &e)
 	{
 		dstream<<"createBlock: createSector() failed"<<std::endl;
 		throw e;
-	}*/
-	catch(std::exception &e)
+	}
+	/*
+		NOTE: This should not be done, or at least the exception
+		should not be passed on as std::exception, because it
+		won't be catched at all.
+	*/
+	/*catch(std::exception &e)
 	{
 		dstream<<"createBlock: createSector() failed: "
 				<<e.what()<<std::endl;
 		throw e;
-	}
+	}*/
 
 	/*
 		Try to get a block from the sector
@@ -4461,6 +4477,17 @@ MapBlock * ServerMap::emergeBlock(
 			__FUNCTION_NAME,
 			p.X, p.Y, p.Z, only_from_disk);
 	
+	/*
+		Do not generate over-limit
+	*/
+	if(p.X < -MAP_GENERATION_LIMIT / MAP_BLOCKSIZE
+	|| p.X > MAP_GENERATION_LIMIT / MAP_BLOCKSIZE
+	|| p.Y < -MAP_GENERATION_LIMIT / MAP_BLOCKSIZE
+	|| p.Y > MAP_GENERATION_LIMIT / MAP_BLOCKSIZE
+	|| p.Z < -MAP_GENERATION_LIMIT / MAP_BLOCKSIZE
+	|| p.Z > MAP_GENERATION_LIMIT / MAP_BLOCKSIZE)
+		throw InvalidPositionException("generateBlock(): pos. over limit");
+	
 	v2s16 p2d(p.X, p.Z);
 	s16 block_y = p.Y;
 	/*
@@ -4472,7 +4499,7 @@ MapBlock * ServerMap::emergeBlock(
 		sector = (ServerMapSector*)emergeSector(p2d, changed_blocks);
 		assert(sector->getId() == MAPSECTOR_SERVER);
 	}
-	catch(std::exception &e)
+	catch(InvalidPositionException &e)
 	{
 		dstream<<"emergeBlock: emergeSector() failed: "
 				<<e.what()<<std::endl;
@@ -4481,6 +4508,20 @@ MapBlock * ServerMap::emergeBlock(
 				<<"You could try to delete it."<<std::endl;
 		throw e;
 	}
+	/*
+		NOTE: This should not be done, or at least the exception
+		should not be passed on as std::exception, because it
+		won't be catched at all.
+	*/
+	/*catch(std::exception &e)
+	{
+		dstream<<"emergeBlock: emergeSector() failed: "
+				<<e.what()<<std::endl;
+		dstream<<"Path to failed sector: "<<getSectorDir(p2d)
+				<<std::endl
+				<<"You could try to delete it."<<std::endl;
+		throw e;
+	}*/
 
 	/*
 		Try to get a block from the sector
@@ -5263,7 +5304,7 @@ MapSector * ClientMap::emergeSector(v2s16 p2d)
 	{
 	}
 	
-	// Create a sector with no heightmaps
+	// Create a sector
 	ClientMapSector *sector = new ClientMapSector(this, p2d);
 	
 	{
