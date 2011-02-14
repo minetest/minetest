@@ -587,9 +587,11 @@ void LocalPlayer::move(f32 dtime, Map &map, f32 pos_max_d)
 	/*
 		If sneaking, the player's collision box can be in air, so
 		this has to be set explicitly
+		NOTE: Not allowed, because jumping in the situation can drop
+		the player
 	*/
-	if(m_sneak_node_exists)
-		touching_ground = true;
+	/*if(m_sneak_node_exists)
+		touching_ground = true;*/
 	
 	/*
 		Set new position
