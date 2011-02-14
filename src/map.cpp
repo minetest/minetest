@@ -4466,9 +4466,6 @@ MapBlock * ServerMap::emergeBlock(
 	/*
 		This will create or load a sector if not found in memory.
 		If block exists on disk, it will be loaded.
-
-		NOTE: On old save formats, this will be slow, as it generates
-		      lighting on blocks for them.
 	*/
 	ServerMapSector *sector;
 	try{

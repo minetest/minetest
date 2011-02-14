@@ -323,7 +323,9 @@ public:
 
 private:
 	// This is used for determining the sneaking range
-	v3s16 m_last_walked_node;
+	v3s16 m_sneak_node;
+	// Whether the player is allowed to sneak
+	bool m_sneak_node_exists;
 };
 #endif // !SERVER
 

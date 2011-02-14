@@ -260,7 +260,8 @@ void RemotePlayer::move(f32 dtime, Map &map, f32 pos_max_d)
 */
 
 LocalPlayer::LocalPlayer():
-	m_last_walked_node(32767,32767,32767)
+	m_sneak_node(32767,32767,32767),
+	m_sneak_node_exists(false)
 {
 }
 
@@ -359,10 +360,10 @@ void LocalPlayer::move(f32 dtime, Map &map, f32 pos_max_d)
 		If sneaking, keep in range from the last walked node and don't
 		fall off from it
 	*/
-	if(control.sneak)
+	if(control.sneak && m_sneak_node_exists)
 	{
 		f32 maxd = 0.5*BS + sneak_max;
-		v3f lwn_f = intToFloat(m_last_walked_node);
+		v3f lwn_f = intToFloat(m_sneak_node);
 		position.X = rangelim(position.X, lwn_f.X-maxd, lwn_f.X+maxd);
 		position.Z = rangelim(position.Z, lwn_f.Z-maxd, lwn_f.Z+maxd);
 		
@@ -532,40 +533,40 @@ void LocalPlayer::move(f32 dtime, Map &map, f32 pos_max_d)
 	} // xyz
 
 	/*
-		If there is a walkable node directly under the player, save
-		the position of it.
-	*/
-	try{
-		v3s16 pos_i_bottom = floatToInt(position - v3f(0,BS/2,0));
-		if(content_walkable(map.getNode(pos_i_bottom).d))
-		{
-			m_last_walked_node = pos_i_bottom;
-		}
-	}
-	catch(InvalidPositionException &e)
-	{
-	}
-	
-	/*
-		Check the neighbors of m_last_walked_node that are closer to
-		the player. If walkable, set m_last_walked_node to such.
+		//Check the neighbors of m_sneak_node that are closer to
+		//the player. If walkable, set m_sneak_node to such.
+		Check the nodes under the player to see if the player can
+		sneak.
 	*/
 	{
 		v3s16 pos_i_bottom = floatToInt(position - v3f(0,BS/2,0));
-		v3f lastwalkednode_pf = intToFloat(m_last_walked_node);
-		v2f lastwalkednode_p2df(lastwalkednode_pf.X, lastwalkednode_pf.Z);
 		v2f player_p2df(position.X, position.Z);
-		f32 min_distance_f = player_p2df.getDistanceFrom(lastwalkednode_p2df);
-		v3s16 new_last_walked_node = m_last_walked_node;
+		f32 min_distance_f = 100000.0*BS;
+		if(m_sneak_node_exists)
+		{
+			v3f sneaknode_pf = intToFloat(m_sneak_node);
+			v2f sneaknode_p2df(sneaknode_pf.X, sneaknode_pf.Z);
+			f32 d_horiz_f = player_p2df.getDistanceFrom(sneaknode_p2df);
+			f32 d_vert_f = fabs(sneaknode_pf.Y + BS*0.5 - position.Y);
+			if(d_vert_f < 0.15*BS)
+				min_distance_f = d_horiz_f;
+		}
+		v3s16 new_sneak_node = m_sneak_node;
 		for(s16 x=-1; x<=1; x++)
 		for(s16 z=-1; z<=1; z++)
 		{
-			v3s16 p = m_last_walked_node + v3s16(x,0,z);
+			v3s16 p = pos_i_bottom + v3s16(x,0,z);
 			v3f pf = intToFloat(p);
 			v2f node_p2df(pf.X, pf.Z);
 			f32 distance_f = player_p2df.getDistanceFrom(node_p2df);
-			if(distance_f > min_distance_f)
+			f32 max_axis_distance_f = MYMAX(
+					fabs(player_p2df.X-node_p2df.X),
+					fabs(player_p2df.Y-node_p2df.Y));
+					
+			if(distance_f > min_distance_f ||
+					max_axis_distance_f > sneak_max+0.1*BS)
 				continue;
+
 			try{
 				if(content_walkable(map.getNode(p).d) == false)
 					continue;
@@ -576,11 +577,19 @@ void LocalPlayer::move(f32 dtime, Map &map, f32 pos_max_d)
 			}
 
 			min_distance_f = distance_f;
-			new_last_walked_node = p;
+			new_sneak_node = p;
 		}
 		
-		m_last_walked_node = new_last_walked_node;
+		m_sneak_node = new_sneak_node;
+		m_sneak_node_exists = (min_distance_f < 100000.0*BS*0.9);
 	}
+	
+	/*
+		If sneaking, the player's collision box can be in air, so
+		this has to be set explicitly
+	*/
+	if(m_sneak_node_exists)
+		touching_ground = true;
 	
 	/*
 		Set new position
