@@ -1854,6 +1854,7 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 			0: start digging
 			1: place block
 			2: stop digging (all parameters ignored)
+			3: digging completed
 		*/
 		u8 action = readU8(&data[2]);
 		v3s16 p_under;
@@ -1996,23 +1997,33 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 				}
 
 				/*
-					Add digged item to inventory
+					Add dug item to inventory
 				*/
 
 				InventoryItem *item = NULL;
 
 				if(mineral != MINERAL_NONE)
 					item = getDiggedMineralItem(mineral);
-
+				
+				// If not mineral
 				if(item == NULL)
-					item = new MaterialItem(material, 1);
+				{
+					std::string &dug_s = content_features(material).dug_item;
+					if(dug_s != "")
+					{
+						std::istringstream is(dug_s, std::ios::binary);
+						item = InventoryItem::deSerialize(is);
+					}
+				}
+				
+				if(item != NULL)
+				{
+					// Add a item to inventory
+					player->inventory.addItem("main", item);
 
-				player->inventory.addItem("main", item);
-
-				/*
-					Send inventory
-				*/
-				SendInventory(player->peer_id);
+					// Send inventory
+					SendInventory(player->peer_id);
+				}
 			}
 
 			/*

@@ -154,7 +154,13 @@ struct ContentFeatures
 	bool diggable;
 	bool buildable_to;
 	enum LiquidType liquid_type;
-	bool wall_mounted; // If true, param2 is set to direction when placed
+	// If true, param2 is set to direction when placed
+	// NOTE: the direction format is quite inefficient and should be changed
+	bool wall_mounted;
+	
+	// Inventory item string as which the node appears in inventory when dug.
+	// Mineral overrides this.
+	std::string dug_item;
 
 	//TODO: Move more properties here
 
@@ -173,6 +179,7 @@ struct ContentFeatures
 		buildable_to = false;
 		liquid_type = LIQUID_NONE;
 		wall_mounted = false;
+		dug_item = "";
 	}
 
 	~ContentFeatures();

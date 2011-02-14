@@ -140,6 +140,7 @@ void init_mapnode()
 	f->setInventoryTextureCube("stone.png", "stone.png", "stone.png");
 	f->param_type = CPT_MINERAL;
 	f->is_ground_content = true;
+	f->dug_item = std::string("MaterialItem ")+itos(i)+" 1";
 	
 	i = CONTENT_GRASS;
 	f = &g_content_features[i];
@@ -148,6 +149,7 @@ void init_mapnode()
 	f->setTexture(1, "mud.png");
 	f->param_type = CPT_MINERAL;
 	f->is_ground_content = true;
+	f->dug_item = std::string("MaterialItem ")+itos(CONTENT_MUD)+" 1";
 	
 	i = CONTENT_GRASS_FOOTSTEPS;
 	f = &g_content_features[i];
@@ -156,18 +158,21 @@ void init_mapnode()
 	f->setTexture(1, "mud.png");
 	f->param_type = CPT_MINERAL;
 	f->is_ground_content = true;
+	f->dug_item = std::string("MaterialItem ")+itos(CONTENT_MUD)+" 1";
 	
 	i = CONTENT_MUD;
 	f = &g_content_features[i];
 	f->setAllTextures("mud.png");
 	f->param_type = CPT_MINERAL;
 	f->is_ground_content = true;
+	f->dug_item = std::string("MaterialItem ")+itos(i)+" 1";
 	
 	i = CONTENT_SAND;
 	f = &g_content_features[i];
 	f->setAllTextures("sand.png");
 	f->param_type = CPT_MINERAL;
 	f->is_ground_content = true;
+	f->dug_item = std::string("MaterialItem ")+itos(i)+" 1";
 	
 	i = CONTENT_TREE;
 	f = &g_content_features[i];
@@ -176,6 +181,7 @@ void init_mapnode()
 	f->setTexture(1, "tree_top.png");
 	f->param_type = CPT_MINERAL;
 	f->is_ground_content = true;
+	f->dug_item = std::string("MaterialItem ")+itos(i)+" 1";
 	
 	i = CONTENT_LEAVES;
 	f = &g_content_features[i];
@@ -186,11 +192,13 @@ void init_mapnode()
 	if(new_style_leaves)
 	{
 		f->solidness = 0; // drawn separately, makes no faces
+		f->setInventoryTextureCube("leaves.png", "leaves.png", "leaves.png");
 	}
 	else
 	{
 		f->setAllTextures("[noalpha:leaves.png");
 	}
+	f->dug_item = std::string("MaterialItem ")+itos(i)+" 1";
 	
 	i = CONTENT_COALSTONE;
 	f = &g_content_features[i];
@@ -202,16 +210,19 @@ void init_mapnode()
 	f = &g_content_features[i];
 	f->setAllTextures("wood.png");
 	f->is_ground_content = true;
+	f->dug_item = std::string("MaterialItem ")+itos(i)+" 1";
 	
 	i = CONTENT_MESE;
 	f = &g_content_features[i];
 	f->setAllTextures("mese.png");
 	f->is_ground_content = true;
+	f->dug_item = std::string("MaterialItem ")+itos(i)+" 1";
 	
 	i = CONTENT_CLOUD;
 	f = &g_content_features[i];
 	f->setAllTextures("cloud.png");
 	f->is_ground_content = true;
+	f->dug_item = std::string("MaterialItem ")+itos(i)+" 1";
 	
 	i = CONTENT_AIR;
 	f = &g_content_features[i];
@@ -263,6 +274,7 @@ void init_mapnode()
 	f->diggable = false;
 	f->buildable_to = true;
 	f->liquid_type = LIQUID_SOURCE;
+	f->dug_item = std::string("MaterialItem ")+itos(i)+" 1";
 	
 	i = CONTENT_TORCH;
 	f = &g_content_features[i];
@@ -272,6 +284,7 @@ void init_mapnode()
 	f->solidness = 0; // drawn separately, makes no faces
 	f->walkable = false;
 	f->wall_mounted = true;
+	f->dug_item = std::string("MaterialItem ")+itos(i)+" 1";
 	
 }
 
