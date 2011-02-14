@@ -399,11 +399,14 @@ extern void set_default_settings();
 IrrlichtDevice *g_device = NULL;
 Client *g_client = NULL;
 
-//const s16 quickinv_size = 48;
-//const s16 quickinv_spacing = 64;
-const s16 quickinv_size = 32;
-const s16 quickinv_spacing = 40;
-const s16 quickinv_itemcount = 8;
+/*const s16 quickinv_size = 40;
+const s16 quickinv_padding = 8;
+const s16 quickinv_spacing = quickinv_size + quickinv_padding;
+const s16 quickinv_outer_padding = 4;
+const s16 quickinv_itemcount = 8;*/
+
+const s32 hotbar_itemcount = 8;
+const s32 hotbar_imagesize = 36;
 
 /*
 	GUI Stuff
@@ -629,24 +632,14 @@ public:
 					}
 				}
 
-				// Material selection
-				/*if(event.KeyInput.Key == irr::KEY_KEY_F)
-				{
-					if(g_selected_item < PLAYER_INVENTORY_SIZE-1)
-						g_selected_item++;
-					else
-						g_selected_item = 0;
-					dstream<<DTIME<<"Selected item: "
-							<<g_selected_item<<std::endl;
-				}*/
-
+				// Item selection
 				if(event.KeyInput.Key >= irr::KEY_KEY_0
 						&& event.KeyInput.Key <= irr::KEY_KEY_9)
 				{
 					u16 s1 = event.KeyInput.Key - irr::KEY_KEY_0;
 					if(event.KeyInput.Key == irr::KEY_KEY_0)
 						s1 = 10;
-					if(s1 < PLAYER_INVENTORY_SIZE)
+					if(s1 < PLAYER_INVENTORY_SIZE && s1 < hotbar_itemcount)
 						g_selected_item = s1-1;
 					dstream<<DTIME<<"Selected item: "
 							<<g_selected_item<<std::endl;
@@ -715,9 +708,12 @@ public:
 				{
 					/*dstream<<"event.MouseInput.Wheel="
 							<<event.MouseInput.Wheel<<std::endl;*/
+					
+					u16 max_item = MYMIN(PLAYER_INVENTORY_SIZE-1,
+							hotbar_itemcount-1);
 					if(event.MouseInput.Wheel < 0)
 					{
-						if(g_selected_item < PLAYER_INVENTORY_SIZE-1)
+						if(g_selected_item < max_item)
 							g_selected_item++;
 						else
 							g_selected_item = 0;
@@ -727,7 +723,7 @@ public:
 						if(g_selected_item > 0)
 							g_selected_item--;
 						else
-							g_selected_item = PLAYER_INVENTORY_SIZE-1;
+							g_selected_item = max_item;
 					}
 				}
 			}
@@ -1179,6 +1175,8 @@ void updateViewingRange(f32 frametime_in, Client *client)
 	frametime_old = frametime;
 }
 
+#if 0
+// TODO: Remove
 class GUIQuickInventory
 {
 public:
@@ -1193,6 +1191,9 @@ public:
 	{
 		core::rect<s32> imgsize(0,0,quickinv_size,quickinv_size);
 		core::rect<s32> textsize(0,0,quickinv_size,quickinv_size);
+		bgtext = env->addStaticText(L"", core::rect<s32>(0,0,1,1), false, false);
+		bgtext->setBackgroundColor(
+				video::SColor(128,0,0,0));
 		for(s32 i=0; i<m_itemcount; i++)
 		{
 			m_images.push_back(env->addImage(
@@ -1224,6 +1225,7 @@ public:
 		{
 			m_images[i]->remove();
 		}
+		bgtext->remove();
 	}
 
 	void updatePosition(v2s32 pos)
@@ -1234,6 +1236,10 @@ public:
 			m_images[i]->setRelativePosition(pos + spacing*i);
 			m_texts[i]->setRelativePosition(pos + spacing*i);
 		}
+		core::rect<s32> bgrect(-quickinv_outer_padding,-quickinv_outer_padding,
+				(quickinv_itemcount-1)*quickinv_spacing+quickinv_size+quickinv_outer_padding,
+				quickinv_size+quickinv_outer_padding);
+		bgtext->setRelativePosition(bgrect+pos);
 	}
 
 	void setSelection(s32 i)
@@ -1265,7 +1271,7 @@ public:
 				m_images[i]->setImage(NULL);
 
 				if(m_selection == j)
-					m_texts[i]->setText(L"<-");
+					m_texts[i]->setText(L"->");
 				else
 					m_texts[i]->setText(L"");
 
@@ -1277,9 +1283,9 @@ public:
 			m_images[i]->setImage(item->getImage());
 			
 			std::ostringstream os;
-			os<<item->getText();
 			if(m_selection == j)
-				os<<" <-";
+				os<<"-> ";
+			os<<item->getText();
 			m_texts[i]->setText(narrow_to_wide(os.str()).c_str());
 
 			/*wchar_t t[10];
@@ -1293,11 +1299,66 @@ public:
 
 private:
 	s32 m_itemcount;
+	gui::IGUIStaticText *bgtext;
 	core::array<gui::IGUIStaticText*> m_texts;
 	core::array<gui::IGUIImage*> m_images;
 	Inventory *m_inventory;
 	s32 m_selection;
 };
+#endif
+
+void draw_hotbar(video::IVideoDriver *driver, gui::IGUIFont *font,
+		v2s32 centerlowerpos, s32 imgsize, s32 itemcount,
+		Inventory *inventory)
+{
+	InventoryList *mainlist = inventory->getList("main");
+	if(mainlist == NULL)
+	{
+		dstream<<"WARNING: draw_hotbar(): mainlist == NULL"<<std::endl;
+		return;
+	}
+	
+	s32 padding = imgsize/12;
+	//s32 height = imgsize + padding*2;
+	s32 width = itemcount*(imgsize+padding*2);
+	
+	// Position of upper left corner of bar
+	v2s32 pos = centerlowerpos - v2s32(width/2, imgsize+padding*2);
+	
+	// Draw background color
+	/*core::rect<s32> barrect(0,0,width,height);
+	barrect += pos;
+	video::SColor bgcolor(255,128,128,128);
+	driver->draw2DRectangle(bgcolor, barrect, NULL);*/
+
+	core::rect<s32> imgrect(0,0,imgsize,imgsize);
+
+	for(s32 i=0; i<itemcount; i++)
+	{
+		InventoryItem *item = mainlist->getItem(i);
+		
+		core::rect<s32> rect = imgrect + pos
+				+ v2s32(padding+i*(imgsize+padding*2), padding);
+		
+		if(g_selected_item == i)
+		{
+			driver->draw2DRectangle(video::SColor(255,255,0,0),
+					core::rect<s32>(rect.UpperLeftCorner - v2s32(1,1)*padding,
+							rect.LowerRightCorner + v2s32(1,1)*padding),
+					NULL);
+		}
+		else
+		{
+			video::SColor bgcolor2(128,0,0,0);
+			driver->draw2DRectangle(bgcolor2, rect, NULL);
+		}
+
+		if(item != NULL)
+		{
+			drawInventoryItem(driver, font, item, rect, NULL);
+		}
+	}
+}
 
 // Chat data
 struct ChatLine
@@ -2047,8 +2108,8 @@ int main(int argc, char *argv[])
 
 	/*GUIQuickInventory *quick_inventory = new GUIQuickInventory
 			(guienv, NULL, v2s32(10, 70), 5, &local_inventory);*/
-	GUIQuickInventory *quick_inventory = new GUIQuickInventory
-			(guienv, NULL, v2s32(0, 0), quickinv_itemcount, &local_inventory);
+	/*GUIQuickInventory *quick_inventory = new GUIQuickInventory
+			(guienv, NULL, v2s32(0, 0), quickinv_itemcount, &local_inventory);*/
 	
 	// Test the text input system
 	/*(new GUITextInputMenu(guienv, guiroot, -1, &g_menumgr,
@@ -2121,7 +2182,7 @@ int main(int argc, char *argv[])
 		last_screensize = screensize;
 		screensize = driver->getScreenSize();
 		v2s32 displaycenter(screensize.X/2,screensize.Y/2);
-		bool screensize_changed = screensize != last_screensize;
+		//bool screensize_changed = screensize != last_screensize;
 		
 		// Hilight boxes collected during the loop and displayed
 		core::list< core::aabbox3d<f32> > hilightboxes;
@@ -2130,11 +2191,11 @@ int main(int argc, char *argv[])
 		std::wstring infotext;
 
 		// When screen size changes, update positions and sizes of stuff
-		if(screensize_changed)
+		/*if(screensize_changed)
 		{
 			v2s32 pos(displaycenter.X-((quickinv_itemcount-1)*quickinv_spacing+quickinv_size)/2, screensize.Y-quickinv_spacing);
 			quick_inventory->updatePosition(pos);
-		}
+		}*/
 
 		//TimeTaker //timer1("//timer1");
 		
@@ -2985,8 +3046,8 @@ int main(int argc, char *argv[])
 			old_selected_item = g_selected_item;
 			//std::cout<<"Updating local inventory"<<std::endl;
 			client.getLocalInventory(local_inventory);
-			quick_inventory->setSelection(g_selected_item);
-			quick_inventory->update();
+			/*quick_inventory->setSelection(g_selected_item);
+			quick_inventory->update();*/
 		}
 		
 		/*
@@ -3089,6 +3150,14 @@ int main(int argc, char *argv[])
 		*/
 		// 0-1ms
 		guienv->drawAll();
+
+		/*
+			Draw hotbar
+		*/
+		{
+			draw_hotbar(driver, font, v2s32(displaycenter.X, screensize.Y),
+					hotbar_imagesize, hotbar_itemcount, &local_inventory);
+		}
 		
 		// End drawing
 		{
@@ -3123,7 +3192,7 @@ int main(int argc, char *argv[])
 			device->yield();*/
 	}
 
-	delete quick_inventory;
+	//delete quick_inventory;
 
 	/*
 		Disable texture fetches and other stuff that is queued

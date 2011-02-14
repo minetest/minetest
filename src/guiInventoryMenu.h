@@ -26,9 +26,10 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "utility.h"
 #include "modalMenu.h"
 
-void drawInventoryItem(gui::IGUIEnvironment* env,
+void drawInventoryItem(video::IVideoDriver *driver,
+		gui::IGUIFont *font,
 		InventoryItem *item, core::rect<s32> rect,
-		const core::rect<s32> *clip=0);
+		const core::rect<s32> *clip);
 
 class GUIInventoryMenu : public GUIModalMenu
 {

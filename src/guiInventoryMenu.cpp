@@ -21,21 +21,16 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "guiInventoryMenu.h"
 #include "constants.h"
 
-void drawInventoryItem(gui::IGUIEnvironment* env,
+void drawInventoryItem(video::IVideoDriver *driver,
+		gui::IGUIFont *font,
 		InventoryItem *item, core::rect<s32> rect,
 		const core::rect<s32> *clip)
 {
-	gui::IGUISkin* skin = env->getSkin();
-	if (!skin)
+	if(item == NULL)
 		return;
-	video::IVideoDriver* driver = env->getVideoDriver();
 	
 	video::ITexture *texture = NULL;
-	
-	if(item != NULL)
-	{
-		texture = item->getImage();
-	}
+	texture = item->getImage();
 
 	if(texture != NULL)
 	{
@@ -48,22 +43,28 @@ void drawInventoryItem(gui::IGUIEnvironment* env,
 	}
 	else
 	{
-		video::SColor bgcolor(128,128,128,128);
+		video::SColor bgcolor(255,50,50,128);
 		driver->draw2DRectangle(bgcolor, rect, clip);
 	}
 
-	if(item != NULL)
+	if(font != NULL)
 	{
-		gui::IGUIFont *font = skin->getFont();
 		std::string text = item->getText();
 		if(font && text != "")
 		{
-			core::rect<s32> rect2(rect.UpperLeftCorner,
-					(core::dimension2d<u32>(rect.getWidth(), 15)));
+			v2u32 dim = font->getDimension(narrow_to_wide(text).c_str());
+			v2s32 sdim(dim.X,dim.Y);
+
+			core::rect<s32> rect2(
+				/*rect.UpperLeftCorner,
+				core::dimension2d<u32>(rect.getWidth(), 15)*/
+				rect.LowerRightCorner - sdim,
+				sdim
+			);
 
 			video::SColor bgcolor(128,0,0,0);
 			driver->draw2DRectangle(bgcolor, rect2, clip);
-
+			
 			font->draw(text.c_str(), rect2,
 					video::SColor(255,255,255,255), false, false,
 					clip);
@@ -184,10 +185,16 @@ void GUIInventoryMenu::drawList(const ListDrawSpec &s)
 {
 	video::IVideoDriver* driver = Environment->getVideoDriver();
 
+	// Get font
+	gui::IGUIFont *font = NULL;
+	gui::IGUISkin* skin = Environment->getSkin();
+	if (skin)
+		font = skin->getFont();
+	
 	InventoryList *ilist = m_inventory->getList(s.listname);
 	
 	core::rect<s32> imgrect(0,0,imgsize.X,imgsize.Y);
-
+	
 	for(s32 i=0; i<s.geom.X*s.geom.Y; i++)
 	{
 		s32 x = (i%s.geom.X) * spacing.X;
@@ -204,10 +211,19 @@ void GUIInventoryMenu::drawList(const ListDrawSpec &s)
 			driver->draw2DRectangle(video::SColor(255,255,0,0),
 					core::rect<s32>(rect.UpperLeftCorner - v2s32(2,2),
 							rect.LowerRightCorner + v2s32(2,2)),
-							&AbsoluteClippingRect);
+					&AbsoluteClippingRect);
 		}
-		drawInventoryItem(Environment, item,
-				rect, &AbsoluteClippingRect);
+
+		if(item)
+		{
+			drawInventoryItem(driver, font, item,
+					rect, &AbsoluteClippingRect);
+		}
+		else
+		{
+			video::SColor bgcolor(255,128,128,128);
+			driver->draw2DRectangle(bgcolor, rect, &AbsoluteClippingRect);
+		}
 	}
 }
 
