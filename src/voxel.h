@@ -30,7 +30,11 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #undef max
 
 /*
-	A fast voxel manipulator class
+	A fast voxel manipulator class.
+
+	In normal operation, it fetches more map when it is requested.
+	It can also be used so that all allowed area is fetched at the
+	start, using ManualMapVoxelManipulator.
 
 	Not thread-safe.
 */
@@ -400,6 +404,31 @@ public:
 			emerge(VoxelArea(p));
 		
 		return m_data[m_area.index(p)];
+	}*/
+	
+	/*
+		Set stuff if available without an emerge.
+		Return false if failed.
+		This is convenient but slower than playing around directly
+		with the m_data table with indices.
+	*/
+	bool setNodeNoEmerge(v3s16 p, MapNode n)
+	{
+		if(m_area.contains(p) == false)
+			return false;
+		m_data[m_area.index(p)] = n;
+	}
+	bool setNodeNoEmerge(s32 i, MapNode n)
+	{
+		if(m_area.contains(i) == false)
+			return false;
+		m_data[i] = n;
+	}
+	/*bool setContentNoEmerge(v3s16 p, u8 c)
+	{
+		if(isValidPosition(p) == false)
+			return false;
+		m_data[m_area.index(p)].d = c;
 	}*/
 
 	/*

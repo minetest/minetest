@@ -78,6 +78,7 @@ SUGG: Split MapBlockObject serialization to to-client and to-disk
 
 SUGG: MovingObject::move and Player::move are basically the same.
       combine them.
+	  - NOTE: Player::move is more up-to-date.
 
 SUGG: Precalculate lighting translation table at runtime (at startup)
       - This is not doable because it is currently hand-made and not
@@ -2261,6 +2262,7 @@ int main(int argc, char *argv[])
 			bool a_right,
 			bool a_jump,
 			bool a_superspeed,
+			bool a_sneak,
 			float a_pitch,
 			float a_yaw*/
 			PlayerControl control(
@@ -2270,6 +2272,8 @@ int main(int argc, char *argv[])
 				g_input->isKeyDown(irr::KEY_KEY_D),
 				g_input->isKeyDown(irr::KEY_SPACE),
 				g_input->isKeyDown(irr::KEY_KEY_E),
+				g_input->isKeyDown(irr::KEY_LSHIFT)
+						|| g_input->isKeyDown(irr::KEY_RSHIFT),
 				camera_pitch,
 				camera_yaw
 			);

@@ -1,0 +1,7 @@
+Minetest-c55 changelog
+----------------------
+
+2011-02-14:
+- Created changelog.txt
+- Added sneaking/crouching
+

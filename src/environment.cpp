@@ -67,10 +67,15 @@ void Environment::step(float dtime)
 	}
 	//playerspeed.stop();
 	
+	/*
+		Maximum position increment
+	*/
+	//f32 position_max_increment = 0.05*BS;
+	f32 position_max_increment = 0.1*BS;
+
 	// Maximum time increment (for collision detection etc)
-	// Allow 0.1 blocks per increment
 	// time = distance / speed
-	f32 dtime_max_increment = 0.1*BS / maximum_player_speed;
+	f32 dtime_max_increment = position_max_increment / maximum_player_speed;
 	// Maximum time increment is 10ms or lower
 	if(dtime_max_increment > 0.01)
 		dtime_max_increment = 0.01;
@@ -137,7 +142,7 @@ void Environment::step(float dtime)
 				Move the player.
 				For local player, this also calculates collision detection.
 			*/
-			player->move(dtime_part, *m_map);
+			player->move(dtime_part, *m_map, position_max_increment);
 			
 			/*
 				Update lighting on remote players on client

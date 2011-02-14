@@ -116,6 +116,7 @@ void GUIPauseMenu::regenerateGui(v2u32 screensize)
 		L"- Mouse right: place blocks\n"
 		L"- Mouse wheel: select item\n"
 		L"- 0...9: select item\n"
+		L"- Shift: sneak\n"
 		L"- R: Toggle viewing all loaded chunks\n"
 		L"- I: Inventory menu\n"
 		L"- ESC: This menu\n"

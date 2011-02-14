@@ -4479,6 +4479,9 @@ MapBlock * ServerMap::emergeBlock(
 	{
 		dstream<<"emergeBlock: emergeSector() failed: "
 				<<e.what()<<std::endl;
+		dstream<<"Path to failed sector: "<<getSectorDir(p2d)
+				<<std::endl
+				<<"You could try to delete it."<<std::endl;
 		throw e;
 	}
 

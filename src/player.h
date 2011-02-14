@@ -42,7 +42,7 @@ public:
 	void resetInventory();
 
 	//void move(f32 dtime, Map &map);
-	virtual void move(f32 dtime, Map &map) = 0;
+	virtual void move(f32 dtime, Map &map, f32 pos_max_d) = 0;
 
 	v3f getSpeed()
 	{
@@ -147,7 +147,7 @@ public:
 		return false;
 	}
 
-	virtual void move(f32 dtime, Map &map)
+	virtual void move(f32 dtime, Map &map, f32 pos_max_d)
 	{
 	}
 
@@ -240,7 +240,7 @@ public:
 		}
 	}
 	
-	void move(f32 dtime, Map &map);
+	void move(f32 dtime, Map &map, f32 pos_max_d);
 
 private:
 	scene::IMeshSceneNode *m_node;
@@ -267,6 +267,7 @@ struct PlayerControl
 		right = false;
 		jump = false;
 		aux1 = false;
+		sneak = false;
 		pitch = 0;
 		yaw = 0;
 	}
@@ -277,6 +278,7 @@ struct PlayerControl
 		bool a_right,
 		bool a_jump,
 		bool a_aux1,
+		bool a_sneak,
 		float a_pitch,
 		float a_yaw
 	)
@@ -287,6 +289,7 @@ struct PlayerControl
 		right = a_right;
 		jump = a_jump;
 		aux1 = a_aux1;
+		sneak = a_sneak;
 		pitch = a_pitch;
 		yaw = a_yaw;
 	}
@@ -296,6 +299,7 @@ struct PlayerControl
 	bool right;
 	bool jump;
 	bool aux1;
+	bool sneak;
 	float pitch;
 	float yaw;
 };
@@ -311,13 +315,15 @@ public:
 		return true;
 	}
 
-	void move(f32 dtime, Map &map);
+	void move(f32 dtime, Map &map, f32 pos_max_d);
 
 	void applyControl(float dtime);
 	
 	PlayerControl control;
 
 private:
+	// This is used for determining the sneaking range
+	v3s16 m_last_walked_node;
 };
 #endif // !SERVER
 
