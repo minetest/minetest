@@ -25,7 +25,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #define PORTING_HEADER
 
 #include <string>
-// Included for u64 and such
+// Included for u32 and such
 #include "common_irrlicht.h"
 #include "debug.h"
 #include "constants.h"
@@ -46,6 +46,15 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 namespace porting
 {
+
+/*
+	Signal handler (grabs Ctrl-C on POSIX systems)
+*/
+
+void signal_handler_init(void);
+// Returns a pointer to a bool.
+// When the bool is true, program should quit.
+bool * signal_handler_killstatus(void);
 
 /*
 	Path of static data directory.

@@ -802,9 +802,15 @@ struct ValueSpec
 class Settings
 {
 public:
+	Settings()
+	{
+		m_mutex.Init();
+	}
 
 	void writeLines(std::ostream &os)
 	{
+		JMutexAutoLock lock(m_mutex);
+		
 		for(core::map<std::string, std::string>::Iterator
 				i = m_settings.getIterator();
 				i.atEnd() == false; i++)
@@ -817,6 +823,8 @@ public:
 
 	bool parseConfigLine(const std::string &line)
 	{
+		JMutexAutoLock lock(m_mutex);
+		
 		std::string trimmedline = trim(line);
 		
 		// Ignore comments
@@ -899,6 +907,8 @@ public:
 			core::list<std::string> &dst,
 			core::map<std::string, bool> &updated)
 	{
+		JMutexAutoLock lock(m_mutex);
+		
 		if(is.eof())
 			return false;
 		
@@ -980,6 +990,8 @@ public:
 				while(getUpdatedConfigObject(is, objects, updated));
 			}
 		}
+		
+		JMutexAutoLock lock(m_mutex);
 		
 		// Write stuff back
 		{
@@ -1087,21 +1099,29 @@ public:
 
 	void set(std::string name, std::string value)
 	{
+		JMutexAutoLock lock(m_mutex);
+		
 		m_settings[name] = value;
 	}
 
 	void setDefault(std::string name, std::string value)
 	{
+		JMutexAutoLock lock(m_mutex);
+		
 		m_defaults[name] = value;
 	}
 
 	bool exists(std::string name)
 	{
+		JMutexAutoLock lock(m_mutex);
+		
 		return (m_settings.find(name) || m_defaults.find(name));
 	}
 
 	std::string get(std::string name)
 	{
+		JMutexAutoLock lock(m_mutex);
+		
 		core::map<std::string, std::string>::Node *n;
 		n = m_settings.find(name);
 		if(n == NULL)
@@ -1139,7 +1159,7 @@ public:
 	bool getBoolAsk(std::string name, std::string question, bool def)
 	{
 		// If it is in settings
-		if(m_settings.find(name))
+		if(exists(name))
 			return getBool(name);
 		
 		std::string s;
@@ -1167,7 +1187,7 @@ public:
 	u16 getU16Ask(std::string name, std::string question, u16 def)
 	{
 		// If it is in settings
-		if(m_settings.find(name))
+		if(exists(name))
 			return getU16(name);
 		
 		std::string s;
@@ -1238,12 +1258,17 @@ public:
 
 	void clear()
 	{
+		JMutexAutoLock lock(m_mutex);
+		
 		m_settings.clear();
 		m_defaults.clear();
 	}
 
 	Settings & operator+=(Settings &other)
 	{
+		JMutexAutoLock lock(m_mutex);
+		JMutexAutoLock lock2(other.m_mutex);
+		
 		if(&other == this)
 			return *this;
 
@@ -1267,6 +1292,9 @@ public:
 
 	Settings & operator=(Settings &other)
 	{
+		JMutexAutoLock lock(m_mutex);
+		JMutexAutoLock lock2(other.m_mutex);
+		
 		if(&other == this)
 			return *this;
 
@@ -1279,6 +1307,8 @@ public:
 private:
 	core::map<std::string, std::string> m_settings;
 	core::map<std::string, std::string> m_defaults;
+	// All methods that access m_settings/m_defaults directly should lock this.
+	JMutex m_mutex;
 };
 
 /*

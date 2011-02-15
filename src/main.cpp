@@ -268,7 +268,7 @@ Doing now (most important at the top):
 # maybe done
 * not done
 
-=== Stuff to do before release
+=== Fixmes
 * Make server find the spawning place from the real map data, not from
   the heightmap
   - But the changing borders of chunk have to be avoided, because
@@ -277,15 +277,15 @@ Doing now (most important at the top):
   placement and transfer
 * only_from_disk might not work anymore - check and fix it.
 * Check the fixmes in the list above
-* FIXME: Sneaking doesn't switch sneak node when moving sideways
+* When sending blocks to the client, the server takes way too much
+  CPU time (20-30% for single player), find out what it is doing.
+  - Make a simple profiler
 
 === Making it more portable
 * Some MSVC: std::sto* are defined without a namespace and collide
   with the ones in utility.h
-* On Kray's machine, the new find_library(XXF86VM_LIBRARY, Xxf86vm)
-  line doesn't find the library.
 
-=== Stuff to do after release
+=== Features
 * Make an "environment metafile" to store at least time of day
 * Move digging property stuff from material.{h,cpp} to mapnode.cpp...
   - Or maybe move content_features to material.{h,cpp}?
@@ -567,7 +567,25 @@ struct TextDestChat : public TextDest
 	}
 	void gotText(std::wstring text)
 	{
+		// Discard empty line
+		if(text == L"")
+			return;
+		
+		// Parse command (server command starts with "/#")
+		if(text[0] == L'/' && text[1] != L'#')
+		{
+			std::wstring reply = L"Local: ";
+
+			reply += L"Local commands not yet supported. "
+					"Server prefix is \"/#\".";
+			
+			m_client->addChatMessage(reply);
+			return;
+		}
+
+		// Send to others
 		m_client->sendChatMessage(text);
+		// Show locally
 		m_client->addChatMessage(text);
 	}
 
@@ -1546,6 +1564,9 @@ int main(int argc, char *argv[])
 
 	DSTACK(__FUNCTION_NAME);
 
+	porting::signal_handler_init();
+	bool &kill = *porting::signal_handler_killstatus();
+	
 	porting::initializePaths();
 	// Create user data directory
 	fs::CreateDir(porting::path_userdata);
@@ -1681,7 +1702,7 @@ int main(int argc, char *argv[])
 		server.start(port);
 		
 		// Run server
-		dedicated_server_loop(server);
+		dedicated_server_loop(server, kill);
 
 		return 0;
 	}

@@ -98,7 +98,6 @@ std::ostream *derr_server_ptr = &dstream;
 std::ostream *dout_client_ptr = &dstream;
 std::ostream *derr_client_ptr = &dstream;
 
-
 /*
 	gettime.h implementation
 */
@@ -129,6 +128,9 @@ int main(int argc, char *argv[])
 
 	DSTACK(__FUNCTION_NAME);
 
+	porting::signal_handler_init();
+	bool &kill = *porting::signal_handler_killstatus();
+	
 	porting::initializePaths();
 
 	initializeMaterialProperties();
@@ -251,6 +253,11 @@ int main(int argc, char *argv[])
 	srand(time(0));
 	mysrand(time(0));
 
+	// Initialize stuff
+	
+	init_mapnode();
+	init_mineral();
+
 	/*
 		Run unit tests
 	*/
@@ -259,11 +266,6 @@ int main(int argc, char *argv[])
 	{
 		run_tests();
 	}
-
-	// Initialize stuff
-	
-	init_mapnode();
-	init_mineral();
 
 	/*
 		Check parameters
@@ -308,9 +310,9 @@ int main(int argc, char *argv[])
 	// Create server
 	Server server(map_dir.c_str());
 	server.start(port);
-	
+
 	// Run server
-	dedicated_server_loop(server);
+	dedicated_server_loop(server, kill);
 	
 	} //try
 	catch(con::PeerNotFoundException &e)

@@ -174,10 +174,18 @@ bool GUIPauseMenu::OnEvent(const SEvent& event)
 {
 	if(event.EventType==EET_KEY_INPUT_EVENT)
 	{
-		if(event.KeyInput.Key==KEY_ESCAPE && event.KeyInput.PressedDown)
+		if(event.KeyInput.PressedDown)
 		{
-			quitMenu();
-			return true;
+			if(event.KeyInput.Key==KEY_ESCAPE)
+			{
+				quitMenu();
+				return true;
+			}
+			else if(event.KeyInput.Key==KEY_RETURN)
+			{
+				quitMenu();
+				return true;
+			}
 		}
 	}
 	if(event.EventType==EET_GUI_EVENT)

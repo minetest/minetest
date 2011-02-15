@@ -31,6 +31,8 @@
 
 #map-dir = /home/palle/custom_map
 
+#operator_name = 
+
 #plants_amount = 1.0
 #ravines_amount = 1.0
 #coal_amount = 1.0

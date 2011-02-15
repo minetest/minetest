@@ -29,6 +29,53 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 namespace porting
 {
 
+/*
+	Signal handler (grabs Ctrl-C on POSIX systems)
+*/
+
+#if !defined(_WIN32) // POSIX
+	#include <signal.h>
+
+bool g_killed = false;
+
+void sigint_handler(int sig)
+{
+	if(g_killed == false)
+	{
+		dstream<<DTIME<<"sigint_handler(): "
+				<<"Ctrl-C pressed, shutting down."<<std::endl;
+		g_killed = true;
+	}
+	else
+	{
+		(void)signal(SIGINT, SIG_DFL);
+	}
+}
+
+void signal_handler_init(void)
+{
+	dstream<<"signal_handler_init()"<<std::endl;
+	(void)signal(SIGINT, sigint_handler);
+}
+
+#else // _WIN32
+
+void signal_handler_init(void)
+{
+	// No-op
+}
+
+#endif
+
+bool * signal_handler_killstatus(void)
+{
+	return &g_killed;
+}
+
+/*
+	Path mangler
+*/
+
 std::string path_data = "../data";
 std::string path_userdata = "../";
 

@@ -5,6 +5,8 @@ if(RUN_IN_PLACE)
 	add_definitions ( -DRUN_IN_PLACE )
 endif(RUN_IN_PLACE)
 
+set(USE_GPROF 0 CACHE BOOL "Use -pg flag for g++")
+
 # Use cmake_config.h
 add_definitions ( -DUSE_CMAKE_CONFIG_H )
 
@@ -161,6 +163,10 @@ else()
 
 	set(CMAKE_CXX_FLAGS_RELEASE "-DNDEBUG ${WARNING_FLAGS} -O3 -ffast-math -Wall -fomit-frame-pointer -pipe -funroll-loops")
 	set(CMAKE_CXX_FLAGS_DEBUG "-g -O1 -Wall")
+
+	if(USE_GPROF)
+		set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -pg")
+	endif()
 	
 	if(BUILD_SERVER)
 		set_target_properties(minetestserver PROPERTIES

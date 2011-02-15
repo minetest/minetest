@@ -46,7 +46,12 @@ void * ServerThread::Thread()
 	while(getRun())
 	{
 		try{
-			m_server->AsyncRunStep();
+			//TimeTaker timer("AsyncRunStep() + Receive()");
+
+			{
+				//TimeTaker timer("AsyncRunStep()");
+				m_server->AsyncRunStep();
+			}
 		
 			//dout_server<<"Running m_server->Receive()"<<std::endl;
 			m_server->Receive();
@@ -967,7 +972,8 @@ Server::Server(
 	m_time_counter(0),
 	m_time_of_day_send_timer(0),
 	m_uptime(0),
-	m_mapsavedir(mapsavedir)
+	m_mapsavedir(mapsavedir),
+	m_shutdown_requested(false)
 {
 	//m_flowwater_timer = 0.0;
 	m_liquid_transform_timer = 0.0;
@@ -987,28 +993,62 @@ Server::Server(
 
 Server::~Server()
 {
-	// Save players
+	/*
+		Send shutdown message
+	*/
+	{
+		JMutexAutoLock conlock(m_con_mutex);
+		
+		std::wstring line = L"*** Server shutting down";
+
+		/*
+			Send the message to clients
+		*/
+		for(core::map<u16, RemoteClient*>::Iterator
+			i = m_clients.getIterator();
+			i.atEnd() == false; i++)
+		{
+			// Get client and check that it is valid
+			RemoteClient *client = i.getNode()->getValue();
+			assert(client->peer_id == i.getNode()->getKey());
+			if(client->serialization_version == SER_FMT_VER_INVALID)
+				continue;
+
+			SendChatMessage(client->peer_id, line);
+		}
+	}
+
+	/*
+		Save players
+	*/
 	m_env.serializePlayers(m_mapsavedir);
 	
-	// Stop threads
+	/*
+		Stop threads
+	*/
 	stop();
-
-	JMutexAutoLock clientslock(m_con_mutex);
-
-	for(core::map<u16, RemoteClient*>::Iterator
-		i = m_clients.getIterator();
-		i.atEnd() == false; i++)
+	
+	/*
+		Delete clients
+	*/
 	{
-		/*// Delete player
-		// NOTE: These are removed by env destructor
+		JMutexAutoLock clientslock(m_con_mutex);
+
+		for(core::map<u16, RemoteClient*>::Iterator
+			i = m_clients.getIterator();
+			i.atEnd() == false; i++)
 		{
-			u16 peer_id = i.getNode()->getKey();
-			JMutexAutoLock envlock(m_env_mutex);
-			m_env.removePlayer(peer_id);
-		}*/
-		
-		// Delete client
-		delete i.getNode()->getValue();
+			/*// Delete player
+			// NOTE: These are removed by env destructor
+			{
+				u16 peer_id = i.getNode()->getKey();
+				JMutexAutoLock envlock(m_env_mutex);
+				m_env.removePlayer(peer_id);
+			}*/
+			
+			// Delete client
+			delete i.getNode()->getValue();
+		}
 	}
 }
 
@@ -1586,39 +1626,9 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 					m_time_of_day.get());
 			m_con.Send(peer->id, 0, data, true);
 		}
-
+		
 		// Send information about server to player in chat
-		{
-			std::wostringstream os(std::ios_base::binary);
-			os<<L"# Server: ";
-			// Uptime
-			os<<L"uptime="<<m_uptime.get();
-			// Information about clients
-			os<<L", clients={";
-			for(core::map<u16, RemoteClient*>::Iterator
-				i = m_clients.getIterator();
-				i.atEnd() == false; i++)
-			{
-				// Get client and check that it is valid
-				RemoteClient *client = i.getNode()->getValue();
-				assert(client->peer_id == i.getNode()->getKey());
-				if(client->serialization_version == SER_FMT_VER_INVALID)
-					continue;
-				// Get player
-				Player *player = m_env.getPlayer(client->peer_id);
-				// Get name of player
-				std::wstring name = L"unknown";
-				if(player != NULL)
-					name = narrow_to_wide(player->getName());
-				// Add name to information string
-				os<<name<<L",";
-			}
-			os<<L"}";
-			if(((ServerMap*)(&m_env.getMap()))->isSavingEnabled() == false)
-				os<<" WARNING: Map saving is disabled."<<std::endl;
-			// Send message
-			SendChatMessage(peer_id, os.str());
-		}
+		SendChatMessage(peer_id, getStatusString());
 		
 		// Send information about joining in chat
 		{
@@ -2461,29 +2471,115 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 
 		// Get player name of this client
 		std::wstring name = narrow_to_wide(player->getName());
-
-		std::wstring line = std::wstring(L"<")+name+L"> "+message;
 		
-		dstream<<"CHAT: "<<wide_to_narrow(line)<<std::endl;
-
-		/*
-			Send the message to all other clients
-		*/
-		for(core::map<u16, RemoteClient*>::Iterator
-			i = m_clients.getIterator();
-			i.atEnd() == false; i++)
+		// Line to send to players
+		std::wstring line;
+		// Whether to send to the player that sent the line
+		bool send_to_sender = false;
+		// Whether to send to other players
+		bool send_to_others = false;
+		
+		// Parse commands
+		std::wstring commandprefix = L"/#";
+		if(message.substr(0, commandprefix.size()) == commandprefix)
 		{
-			// Get client and check that it is valid
-			RemoteClient *client = i.getNode()->getValue();
-			assert(client->peer_id == i.getNode()->getKey());
-			if(client->serialization_version == SER_FMT_VER_INVALID)
-				continue;
+			line += L"Server: ";
 
-			// Don't send if it's the same one
-			if(peer_id == client->peer_id)
-				continue;
+			message = message.substr(commandprefix.size());
+			// Get player name as narrow string
+			std::string name_s = player->getName();
+			// Convert message to narrow string
+			std::string message_s = wide_to_narrow(message);
+			// Operator is the single name defined in config.
+			std::string operator_name = g_settings.get("name");
+			bool is_operator = (operator_name != "" &&
+					wide_to_narrow(name) == operator_name);
+			bool valid_command = false;
+			if(message_s == "help")
+			{
+				line += L"-!- Available commands: ";
+				line += L"status ";
+				if(is_operator)
+				{
+					line += L"shutdown setting ";
+				}
+				else
+				{
+				}
+				send_to_sender = true;
+				valid_command = true;
+			}
+			else if(message_s == "status")
+			{
+				line = getStatusString();
+				send_to_sender = true;
+				valid_command = true;
+			}
+			else if(is_operator)
+			{
+				if(message_s == "shutdown")
+				{
+					dstream<<DTIME<<" Server: Operator requested shutdown."
+							<<std::endl;
+					m_shutdown_requested.set(true);
+					
+					line += L"*** Server shutting down (operator request)";
+					send_to_sender = true;
+					valid_command = true;
+				}
+				else if(message_s.substr(0,8) == "setting ")
+				{
+					std::string confline = message_s.substr(8);
+					g_settings.parseConfigLine(confline);
+					line += L"-!- Setting changed.";
+					send_to_sender = true;
+					valid_command = true;
+				}
+			}
+			
+			if(valid_command == false)
+			{
+				line += L"-!- Invalid command: " + message;
+				send_to_sender = true;
+			}
+		}
+		else
+		{
+			line += L"<";
+			/*if(is_operator)
+				line += L"@";*/
+			line += name;
+			line += L"> ";
+			line += message;
+			send_to_others = true;
+		}
+		
+		if(line != L"")
+		{
+			dstream<<"CHAT: "<<wide_to_narrow(line)<<std::endl;
 
-			SendChatMessage(client->peer_id, line);
+			/*
+				Send the message to clients
+			*/
+			for(core::map<u16, RemoteClient*>::Iterator
+				i = m_clients.getIterator();
+				i.atEnd() == false; i++)
+			{
+				// Get client and check that it is valid
+				RemoteClient *client = i.getNode()->getValue();
+				assert(client->peer_id == i.getNode()->getKey());
+				if(client->serialization_version == SER_FMT_VER_INVALID)
+					continue;
+
+				// Filter recipient
+				bool sender_selected = (peer_id == client->peer_id);
+				if(sender_selected == true && send_to_sender == false)
+					continue;
+				if(sender_selected == false && send_to_others == false)
+					continue;
+
+				SendChatMessage(client->peer_id, line);
+			}
 		}
 	}
 	else
@@ -2579,6 +2675,7 @@ core::list<PlayerInfo> Server::getPlayerInfo()
 
 	return list;
 }
+
 
 void Server::peerAdded(con::Peer *peer)
 {
@@ -3020,6 +3117,8 @@ void Server::SendBlocks(float dtime)
 
 	JMutexAutoLock envlock(m_env_mutex);
 
+	//TimeTaker timer("Server::SendBlocks");
+
 	core::array<PrioritySortedBlockTransfer> queue;
 
 	s32 total_sending = 0;
@@ -3086,6 +3185,39 @@ RemoteClient* Server::getClient(u16 peer_id)
 	assert(n != NULL);
 	return n->getValue();
 }
+
+std::wstring Server::getStatusString()
+{
+	std::wostringstream os(std::ios_base::binary);
+	os<<L"# Server: ";
+	// Uptime
+	os<<L"uptime="<<m_uptime.get();
+	// Information about clients
+	os<<L", clients={";
+	for(core::map<u16, RemoteClient*>::Iterator
+		i = m_clients.getIterator();
+		i.atEnd() == false; i++)
+	{
+		// Get client and check that it is valid
+		RemoteClient *client = i.getNode()->getValue();
+		assert(client->peer_id == i.getNode()->getKey());
+		if(client->serialization_version == SER_FMT_VER_INVALID)
+			continue;
+		// Get player
+		Player *player = m_env.getPlayer(client->peer_id);
+		// Get name of player
+		std::wstring name = L"unknown";
+		if(player != NULL)
+			name = narrow_to_wide(player->getName());
+		// Add name to information string
+		os<<name<<L",";
+	}
+	os<<L"}";
+	if(((ServerMap*)(&m_env.getMap()))->isSavingEnabled() == false)
+		os<<" WARNING: Map saving is disabled."<<std::endl;
+	return os.str();
+}
+
 
 void setCreativeInventory(Player *player)
 {
@@ -3455,11 +3587,11 @@ void Server::handlePeerChanges()
 	}
 }
 
-void dedicated_server_loop(Server &server)
+void dedicated_server_loop(Server &server, bool &kill)
 {
 	DSTACK(__FUNCTION_NAME);
 	
-	std::cout<<std::endl;
+	std::cout<<DTIME<<std::endl;
 	std::cout<<"========================"<<std::endl;
 	std::cout<<"Running dedicated server"<<std::endl;
 	std::cout<<"========================"<<std::endl;
@@ -3471,6 +3603,12 @@ void dedicated_server_loop(Server &server)
 		// because server.step() is very light
 		sleep_ms(30);
 		server.step(0.030);
+
+		if(server.getShutdownRequested() || kill)
+		{
+			std::cout<<DTIME<<" dedicated_server_loop(): Quitting."<<std::endl;
+			break;
+		}
 
 		static int counter = 0;
 		counter--;

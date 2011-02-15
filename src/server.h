@@ -390,15 +390,11 @@ public:
 	void Receive();
 	void ProcessData(u8 *data, u32 datasize, u16 peer_id);
 
-	/*void Send(u16 peer_id, u16 channelnum,
-			SharedBuffer<u8> data, bool reliable);*/
-
-	// Environment and Connection must be locked when called
+	// Environment and Connection must be locked when  called
 	void SendBlockNoLock(u16 peer_id, MapBlock *block, u8 ver);
 	
-	// Environment and Connection must be locked when called
-	//void SendSectorMeta(u16 peer_id, core::list<v2s16> ps, u8 ver);
-
+	//
+	
 	core::list<PlayerInfo> getPlayerInfo();
 
 	u32 getDayNightRatio()
@@ -412,7 +408,12 @@ public:
 		else
 			return 1000;
 	}
-	
+
+	bool getShutdownRequested()
+	{
+		return m_shutdown_requested.get();
+	}
+
 private:
 
 	// Virtual methods from con::PeerHandler.
@@ -432,7 +433,10 @@ private:
 	
 	// When called, connection mutex should be locked
 	RemoteClient* getClient(u16 peer_id);
-
+	
+	// Connection must be locked when called
+	std::wstring getStatusString();
+	
 	/*
 		Get a player from memory or creates one.
 		If player is already connected, return NULL
@@ -490,7 +494,7 @@ private:
 	float m_time_of_day_send_timer;
 	
 	MutexedVariable<double> m_uptime;
-
+	
 	enum PeerChangeType
 	{
 		PEER_ADDED,
@@ -508,14 +512,18 @@ private:
 
 	std::string m_mapsavedir;
 
+	MutexedVariable<bool> m_shutdown_requested;
+
 	friend class EmergeThread;
 	friend class RemoteClient;
 };
 
 /*
-	Runs a simple dedicated server loop
+	Runs a simple dedicated server loop.
+
+	Shuts down when run is set to false.
 */
-void dedicated_server_loop(Server &server);
+void dedicated_server_loop(Server &server, bool &run);
 
 #endif
 

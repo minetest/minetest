@@ -1771,11 +1771,11 @@ void MapBlock::serialize(std::ostream &os, u8 version)
 		// First byte
 		u8 flags = 0;
 		if(is_underground)
-			flags |= 1;
+			flags |= 0x01;
 		if(m_day_night_differs)
-			flags |= 2;
+			flags |= 0x02;
 		if(m_lighting_expired)
-			flags |= 3;
+			flags |= 0x04;
 		os.write((char*)&flags, 1);
 
 		u32 nodecount = MAP_BLOCKSIZE*MAP_BLOCKSIZE*MAP_BLOCKSIZE;
@@ -1895,9 +1895,9 @@ void MapBlock::deSerialize(std::istream &is, u8 version)
 
 		u8 flags;
 		is.read((char*)&flags, 1);
-		is_underground = (flags & 1) ? true : false;
-		m_day_night_differs = (flags & 2) ? true : false;
-		m_lighting_expired = (flags & 3) ? true : false;
+		is_underground = (flags & 0x01) ? true : false;
+		m_day_night_differs = (flags & 0x02) ? true : false;
+		m_lighting_expired = (flags & 0x04) ? true : false;
 
 		// Uncompress data
 		std::ostringstream os(std::ios_base::binary);

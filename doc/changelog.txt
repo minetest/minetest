@@ -1,5 +1,7 @@
 Minetest-c55 changelog
 ----------------------
+This should contain all the major changes.
+For minor stuff, refer to the commit log of the repository.
 
 2011-02-14:
 - Created changelog.txt

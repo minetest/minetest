@@ -192,7 +192,7 @@ struct TestMapNode
 		// Transparency
 		n.d = CONTENT_AIR;
 		assert(n.light_propagates() == true);
-		n.d = 0;
+		n.d = CONTENT_STONE;
 		assert(n.light_propagates() == false);
 	}
 };
