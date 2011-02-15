@@ -142,14 +142,18 @@ Compiling on Windows:
 	- Hit "Generate"
 	If using MSVC:
 		- Open the generated minetest.sln
+		- The project defaults to the "Debug" configuration. Make very sure to
+		  select "Release", unless you like to have a very glitchy gaming
+		  experience.
 		- Build the ALL_BUILD project
 		- Build the INSTALL project
-		- You should now have a working game executable in
+		- You should now have a working game with the executable in
 			DIR/minetest-install/bin/minetest.exe
-		- Additionally you may create a zip package by building the PACKAGE project.
+		- Additionally you may create a zip package by building the PACKAGE
+		  project.
 	If using MinGW:
-		- Using a command line, browse to the build directory and run 'make'
-		- You should now have a working game executable in
+		- Using the command line, browse to the build directory and run 'make'
+		- You should now have a working game with the executable in
 			DIR/minetest/bin/minetest.exe
 
 License of Minetest-c55
