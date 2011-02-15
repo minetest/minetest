@@ -860,13 +860,11 @@ void Map::updateLighting(core::map<v3s16, MapBlock*> & a_blocks,
 	The lighting value of the node should be left as-is after changing
 	other values. This sets the lighting value to 0.
 */
-/*void Map::nodeAddedUpdate(v3s16 p, u8 lightwas,
-		core::map<v3s16, MapBlock*> &modified_blocks)*/
 void Map::addNodeAndUpdate(v3s16 p, MapNode n,
 		core::map<v3s16, MapBlock*> &modified_blocks)
 {
 	/*PrintInfo(m_dout);
-	m_dout<<DTIME<<"Map::nodeAddedUpdate(): p=("
+	m_dout<<DTIME<<"Map::addNodeAndUpdate(): p=("
 			<<p.X<<","<<p.Y<<","<<p.Z<<")"<<std::endl;*/
 
 	/*
@@ -898,11 +896,12 @@ void Map::addNodeAndUpdate(v3s16 p, MapNode n,
 	{
 	}
 	
-	if(n.d != CONTENT_TORCH)
+	/*
+		If the new node doesn't propagate sunlight and there is
+		grass below, change it to mud
+	*/
+	if(content_features(n.d).sunlight_propagates == false)
 	{
-		/*
-			If there is grass below, change it to mud
-		*/
 		try{
 			MapNode bottomnode = getNode(bottompos);
 			
@@ -917,6 +916,19 @@ void Map::addNodeAndUpdate(v3s16 p, MapNode n,
 		{
 		}
 	}
+
+	/*
+		If the new node is mud and it is under sunlight, change it
+		to grass
+	*/
+	if(n.d == CONTENT_MUD && node_under_sunlight)
+	{
+		n.d = CONTENT_GRASS;
+	}
+
+	/*
+		Remove all light that has come out of this node
+	*/
 
 	enum LightBank banks[] =
 	{
@@ -947,6 +959,10 @@ void Map::addNodeAndUpdate(v3s16 p, MapNode n,
 
 		n.setLight(bank, 0);
 	}
+
+	/*
+		Set the node on the map
+	*/
 	
 	setNode(p, n);
 	
@@ -975,7 +991,6 @@ void Map::addNodeAndUpdate(v3s16 p, MapNode n,
 
 			if(n2.getLight(LIGHTBANK_DAY) == LIGHT_SUN)
 			{
-				//m_dout<<DTIME<<"doing"<<std::endl;
 				unLightNeighbors(LIGHTBANK_DAY,
 						n2pos, n2.getLight(LIGHTBANK_DAY),
 						light_sources, modified_blocks);
@@ -993,7 +1008,6 @@ void Map::addNodeAndUpdate(v3s16 p, MapNode n,
 		
 		/*
 			Spread light from all nodes that might be capable of doing so
-			TODO: Convert to spreadLight
 		*/
 		spreadLight(bank, light_sources, modified_blocks);
 	}
