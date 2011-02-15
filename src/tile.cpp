@@ -954,12 +954,13 @@ bool generate_image(std::string part_of_name, video::IImage *& baseimg,
 			smgr->drawAll();
 			driver->endScene();
 			
-			// Drop scene
-			cube->drop();
+			// NOTE: The scene nodes should not be dropped, otherwise
+			//       smgr->drop() segfaults
+			/*cube->drop();
 			camera->drop();
-			light->drop();
-			// Drop scene manager FIXME: Segfaults
-			//smgr->drop();
+			light->drop();*/
+			// Drop scene manager
+			smgr->drop();
 			
 			// Unset render target
 			driver->setRenderTarget(0, true, true, 0);
