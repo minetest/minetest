@@ -19,6 +19,16 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "tile.h"
 #include "debug.h"
+#include "main.h" // for g_settings
+
+inline std::string getTexturePath(std::string filename)
+{
+	std::string texture_path = g_settings.get("texture_path");
+	if(texture_path == "")
+		return porting::getDataPath(filename.c_str());
+	else
+		return texture_path + '/' + filename;
+}
 
 TextureSource::TextureSource(IrrlichtDevice *device):
 		m_device(device),
@@ -36,7 +46,10 @@ TextureSource::TextureSource(IrrlichtDevice *device):
 	m_name_to_id[""] = 0;
 
 	// Build main texture atlas
-	buildMainAtlas();
+	if(g_settings.getBool("enable_texture_atlas"))
+		buildMainAtlas();
+	else
+		dstream<<"INFO: Not building texture atlas."<<std::endl;
 }
 
 TextureSource::~TextureSource()
@@ -412,7 +425,7 @@ void TextureSource::buildMainAtlas()
 		std::string name = sourcelist[i];
 
 		/*video::IImage *img = driver->createImageFromFile(
-				porting::getDataPath(name.c_str()).c_str());
+				getTexturePath(name.c_str()).c_str());
 		if(img == NULL)
 			continue;
 		
@@ -517,7 +530,7 @@ void TextureSource::buildMainAtlas()
 		Write image to file so that it can be inspected
 	*/
 	/*driver->writeImageToFile(atlas_img, 
-			porting::getDataPath("main_atlas.png").c_str());*/
+			getTexturePath("main_atlas.png").c_str());*/
 }
 
 video::IImage* generate_image_from_scratch(std::string name,
@@ -596,7 +609,7 @@ bool generate_image(std::string part_of_name, video::IImage *& baseimg,
 	if(part_of_name[0] != '[')
 	{
 		// A normal texture; load it from a file
-		std::string path = porting::getDataPath(part_of_name.c_str());
+		std::string path = getTexturePath(part_of_name.c_str());
 		dstream<<"INFO: getTextureIdDirect(): Loading path \""<<path
 				<<"\""<<std::endl;
 		
@@ -710,7 +723,7 @@ bool generate_image(std::string part_of_name, video::IImage *& baseimg,
 			core::position2d<s32> pos_other(0, 16 * progression);
 
 			video::IImage *crackimage = driver->createImageFromFile(
-					porting::getDataPath("crack.png").c_str());
+					getTexturePath("crack.png").c_str());
 		
 			if(crackimage)
 			{
@@ -755,7 +768,7 @@ bool generate_image(std::string part_of_name, video::IImage *& baseimg,
 						<<"\" to combined ("<<x<<","<<y<<")"
 						<<std::endl;
 				video::IImage *img = driver->createImageFromFile(
-						porting::getDataPath(filename.c_str()).c_str());
+						getTexturePath(filename.c_str()).c_str());
 				if(img)
 				{
 					core::dimension2d<u32> dim = img->getDimension();
@@ -814,7 +827,7 @@ bool generate_image(std::string part_of_name, video::IImage *& baseimg,
 
 			std::string filename = part_of_name.substr(9);
 
-			std::string path = porting::getDataPath(filename.c_str());
+			std::string path = getTexturePath(filename.c_str());
 
 			dstream<<"INFO: getTextureIdDirect(): Loading path \""<<path
 					<<"\""<<std::endl;

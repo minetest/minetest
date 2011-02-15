@@ -22,7 +22,7 @@ endif()
 
 FIND_PATH(IRRLICHT_INCLUDE_DIR NAMES irrlicht.h
 	PATHS
-	"${IRRLICHT_SOURCE_DIR_INCLUDE}"
+	${IRRLICHT_SOURCE_DIR_INCLUDE}
 	/usr/local/include/irrlicht
 	/usr/include/irrlicht
 )
@@ -31,7 +31,7 @@ FIND_PATH(IRRLICHT_INCLUDE_DIR NAMES irrlicht.h
 
 FIND_LIBRARY(IRRLICHT_LIBRARY NAMES libIrrlicht.a Irrlicht
 	PATHS
-	"${IRRLICHT_SOURCE_DIR_LIBS}"
+	${IRRLICHT_SOURCE_DIR_LIBS}
 	/usr/local/lib
 	/usr/lib
 )

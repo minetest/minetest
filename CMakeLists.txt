@@ -77,12 +77,13 @@ set(CPACK_PACKAGE_CONTACT "Perttu Ahola <celeron55@gmail.com>")
 
 if(WIN32)
 	# For some reason these aren't copied otherwise
-	if(BUILD_CLIENT)
-		install(FILES bin/minetest.exe DESTINATION bin)
-	endif()
-	if(BUILD_SERVER)
-		install(FILES bin/minetestserver.exe DESTINATION bin)
-	endif()
+	# NOTE: For some reason now it seems to work without these
+	#if(BUILD_CLIENT)
+	#	install(FILES bin/minetest.exe DESTINATION bin)
+	#endif()
+	#if(BUILD_SERVER)
+	#	install(FILES bin/minetestserver.exe DESTINATION bin)
+	#endif()
 
 	set(CPACK_PACKAGE_FILE_NAME "${PROJECT_NAME}-${VERSION_STRING}-win32")
 

@@ -5,7 +5,9 @@ if(RUN_IN_PLACE)
 	add_definitions ( -DRUN_IN_PLACE )
 endif(RUN_IN_PLACE)
 
-set(USE_GPROF 0 CACHE BOOL "Use -pg flag for g++")
+if(NOT MSVC)
+	set(USE_GPROF 0 CACHE BOOL "Use -pg flag for g++")
+endif()
 
 # Use cmake_config.h
 add_definitions ( -DUSE_CMAKE_CONFIG_H )
@@ -22,9 +24,9 @@ if(WIN32)
 	set(ZLIB_INCLUDE_DIR "${PROJECT_SOURCE_DIR}/../../zlib/zlib-1.2.5"
 			CACHE PATH "Zlib include directory")
 	set(ZLIB_LIBRARIES "${PROJECT_SOURCE_DIR}/../../zlib125dll/dll32/zlibwapi.lib"
-			CACHE PATH "Path to zlibwapi.lib")
+			CACHE FILEPATH "Path to zlibwapi.lib")
 	set(ZLIB_DLL "${PROJECT_SOURCE_DIR}/../../zlib125dll/dll32/zlibwapi.dll"
-			CACHE PATH "Path to zlibwapi.dll (for installation)")
+			CACHE FILEPATH "Path to zlibwapi.dll (for installation)")
 else()
 	# Unix probably
 	if(BUILD_CLIENT)
@@ -149,7 +151,7 @@ if(MSVC)
 	
 	if(BUILD_SERVER)
 		set_target_properties(minetestserver PROPERTIES
-				COMPILE_FLAGS "/D SERVER")
+				COMPILE_DEFINITIONS "/D SERVER")
 	endif(BUILD_SERVER)
 
 else()
@@ -170,7 +172,7 @@ else()
 	
 	if(BUILD_SERVER)
 		set_target_properties(minetestserver PROPERTIES
-				COMPILE_FLAGS "-DSERVER")
+				COMPILE_DEFINITIONS "-DSERVER")
 	endif(BUILD_SERVER)
 
 endif()

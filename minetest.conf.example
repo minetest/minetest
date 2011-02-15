@@ -26,6 +26,8 @@
 #new_style_water = true
 #new_style_leaves = true
 #frametime_graph = false
+#enable_texture_atlas = true
+#texture_path =
 
 # Server side stuff
 

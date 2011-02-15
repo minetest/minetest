@@ -1,18 +1,13 @@
 Minetest-c55
 ---------------
 An InfiniMiner/Minecraft inspired game.
-Copyright (c) 2010 Perttu Ahola <celeron55@gmail.com>
+Copyright (c) 2010-2011 Perttu Ahola <celeron55@gmail.com>
 
 This is a development version:
 ------------------------------
 - Don't expect it to work as well as a finished game will.
 - Please report any bugs to me. That way I can fix them to the next release.
 	- debug.txt is useful when the game crashes.
-
-Public servers:
----------------
-	kray.dy.fi :30000 (friend's server)
-	celeron.55.lt :30000 (my own server)
 
 Controls:
 ---------
@@ -22,7 +17,7 @@ Map directory:
 --------------
 - Map is stored in a directory, which can be removed to generate a new map.
 - There is a command-line option for it: --map-dir
-- As default, it is located in:
+- For a RUN_IN_PLACE build, it is located in:
 		../map
 - Otherwise something like this:
 	Windows: C:\Documents and Settings\user\Application Data\minetest\map
@@ -35,7 +30,7 @@ Configuration file:
 - Path to file can be passed as a parameter to the executable:
 	--config <path-to-file>
 - Defaults:
-	- If built with -DRUN_IN_PLACE:
+	- If built with -DRUN_IN_PLACE=1:
 		../minetest.conf
 		../../minetest.conf
 	- Otherwise something like this:
@@ -73,21 +68,89 @@ $ ./minetest
   - Note that the Debug build is considerably slower
 
 Compiling on Windows:
-- NOTE: Seems that the CMake build system produces executables that don't work
-  for many people. The old build system is still included, but it's not
-  documented anywhere.
-- You need CMake, Irrlicht, Zlib and Visual Studio or MinGW
-  - you can get zlibwapi.lib from a file called zlib125dll.zip
-- NOTE: Probably it will not work easily and you will need to fix some stuff.
+---------------------
+
+- You need:
+	* CMake:
+		http://www.cmake.org/cmake/resources/software.html
+	* MinGW or Visual Studio
+		http://www.mingw.org/
+		http://msdn.microsoft.com/en-us/vstudio/default
+	* Irrlicht SDK 1.7:
+		http://irrlicht.sourceforge.net/downloads.html
+	* Zlib headers (zlib125.zip)
+		http://www.winimage.com/zLibDll/index.html
+	* Zlib library (zlibwapi.lib and zlibwapi.dll from zlib125dll.zip):
+		http://www.winimage.com/zLibDll/index.html
+	* And, of course, Minetest-c55:
+		http://celeron.55.lt/~celeron55/minetest/download
 - Steps:
+	- Select a directory called DIR hereafter in which you will operate.
+	- Make sure you have CMake and a compiler installed.
+	- Download all the other stuff to DIR and extract them into there. All those
+	  packages contain a nice base directory in them, which should end up being
+	  the direct subdirectories of DIR.
+	- You will end up with a directory structure like this (+=dir, -=file):
+	-----------------
+	+ DIR
+		- zlib-1.2.5.tar.gz
+		- zlib125dll.zip
+		- irrlicht-1.7.1.zip
+		- 110214175330.zip (or whatever, this is the minetest source)
+		+ zlib-1.2.5
+			- zlib.h
+			+ win32
+			...
+		+ zlib125dll
+			- readme.txt
+			+ dll32
+			...
+		+ irrlicht-1.7.1
+			+ lib
+			+ include
+			...
+		+ minetest
+			+ src
+			+ doc
+			- CMakeLists.txt
+			...
+	-----------------
 	- Start up the CMake GUI
+	- Select "Browse Source..." and select DIR/minetest
+	- Now, if using MSVC:
+		- Select "Browse Build..." and select DIR/minetest-build
+	- Else if using MinGW:
+		- Select "Browse Build..." and select DIR/minetest
+	- Select "Configure"
 	- Select your compiler
-	- Hit "Configure"
-	- Set up some options and paths
+	- It will warn about missing stuff, ignore that at this point. (later don't)
+	- Make sure the configuration is as follows
+	  (note that the versions may differ for you):
+	-----------------
+	BUILD_CLIENT             [X]
+	BUILD_SERVER             [ ]
+	CMAKE_BUILD_TYPE         Release
+	CMAKE_INSTALL_PREFIX     DIR/minetest-install
+	IRRLICHT_SOURCE_DIR      DIR/irrlicht-1.7.1
+	RUN_IN_PLACE             [X]
+	WARN_ALL                 [ ]
+	ZLIB_DLL                 DIR/zlib125dll/dll32/zlibwapi.dll
+	ZLIB_INCLUDE_DIR         DIR/zlib-1.2.5
+	ZLIB_LIBRARIES           DIR/zlib125dll/dll32/zlibwapi.lib
+	-----------------
 	- Hit "Configure"
 	- Hit "Generate"
-	- MSVC: Open the generated .sln and build it
-	  MinGW: Browse to the build directory and run 'make'
+	If using MSVC:
+		- Open the generated minetest.sln
+		- Build the ALL_BUILD project
+		- Build the INSTALL project
+		- You should now have a working game executable in
+			DIR/minetest-install/bin/minetest.exe
+		- Additionally you may create a zip package by building the PACKAGE project.
+	If using MinGW:
+		- Using a command line, browse to the build directory and run 'make'
+		- You should now have a working game executable in
+			DIR/minetest/bin/minetest.exe
 
 License of Minetest-c55
 -----------------------
