@@ -172,7 +172,7 @@ else()
 	
 	if(BUILD_SERVER)
 		set_target_properties(minetestserver PROPERTIES
-				COMPILE_DEFINITIONS "-DSERVER")
+				COMPILE_DEFINITIONS "SERVER")
 	endif(BUILD_SERVER)
 
 endif()

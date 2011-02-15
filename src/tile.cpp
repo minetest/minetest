@@ -20,14 +20,23 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "tile.h"
 #include "debug.h"
 #include "main.h" // for g_settings
+#include "filesys.h"
 
+/*
+	Gets the path to a texture by first checking if the texture exists
+	in texture_path and if not, using the data path.
+*/
 inline std::string getTexturePath(std::string filename)
 {
 	std::string texture_path = g_settings.get("texture_path");
-	if(texture_path == "")
-		return porting::getDataPath(filename.c_str());
-	else
-		return texture_path + '/' + filename;
+	if(texture_path != "")
+	{
+		std::string fullpath = texture_path + '/' + filename;
+		if(fs::PathExists(fullpath))
+			return fullpath;
+	}
+	
+	return porting::getDataPath(filename.c_str());
 }
 
 TextureSource::TextureSource(IrrlichtDevice *device):
