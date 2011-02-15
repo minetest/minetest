@@ -33,10 +33,15 @@ namespace porting
 	Signal handler (grabs Ctrl-C on POSIX systems)
 */
 
+bool g_killed = false;
+
+bool * signal_handler_killstatus(void)
+{
+	return &g_killed;
+}
+
 #if !defined(_WIN32) // POSIX
 	#include <signal.h>
-
-bool g_killed = false;
 
 void sigint_handler(int sig)
 {
@@ -66,11 +71,6 @@ void signal_handler_init(void)
 }
 
 #endif
-
-bool * signal_handler_killstatus(void)
-{
-	return &g_killed;
-}
 
 /*
 	Path mangler
