@@ -3,6 +3,12 @@ Minetest-c55 changelog
 This should contain all the major changes.
 For minor stuff, refer to the commit log of the repository.
 
+2011-02-15:
+- Fixed a problem of not saving and loading the "lighting expired" value of MapBlocks properly. This caused high server CPU usage.
+- Ctrl-C handling on POSIX systems
+- Added simple command support to server
+- Added settings enable_texture_atlas and texture_path
+
 2011-02-14:
 - Created changelog.txt
 - Added sneaking/crouching
