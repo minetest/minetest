@@ -577,7 +577,7 @@ struct TextDestChat : public TextDest
 			std::wstring reply = L"Local: ";
 
 			reply += L"Local commands not yet supported. "
-					"Server prefix is \"/#\".";
+					L"Server prefix is \"/#\".";
 			
 			m_client->addChatMessage(reply);
 			return;
