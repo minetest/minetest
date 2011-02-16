@@ -8,9 +8,6 @@ else( UNIX )
 	# Windows
 endif( UNIX )
 
-set(IRRLICHT_INCLUDE_DIR "" CACHE PATH "")
-set(IRRLICHT_LIBRARY "" CACHE FILEPATH "")
-
 # Find include directory
 
 if(NOT IRRLICHT_SOURCE_DIR STREQUAL "")
