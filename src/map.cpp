@@ -2004,34 +2004,13 @@ double tree_amount_2d(u64 seed, v2s16 p)
 		return 0.04 * (noise-zeroval) / (1.0-zeroval);
 }
 
-/*double base_rock_level_2d(u64 seed, v2s16 p)
-{
-	return WATER_LEVEL - 6.0 + 25. * noise2d_perlin(
-			0.5+(float)p.X/500., 0.5+(float)p.Y/500.,
-			seed, 6, 0.6);
-}*/
-
-/*double highlands_level_2d(u64 seed, v2s16 p)
-{
-	double a = noise2d_perlin(
-			0.5+(float)p.X/1000., 0.5+(float)p.Y/1000.,
-			seed-359, 6, 0.65);
-	if(a > 0.0)
-	//if(1)
-	{
-		return WATER_LEVEL + 25;
-		return WATER_LEVEL + 55. * noise2d_perlin(
-				0.5+(float)p.X/500., 0.5+(float)p.Y/500.,
-				seed+85039, 6, 0.69);
-	}
-	else
-		return -100000;
-}*/
+#define AVERAGE_MUD_AMOUNT 4
 
 double base_rock_level_2d(u64 seed, v2s16 p)
 {
 	// The base ground level
-	double base = (double)WATER_LEVEL - 4.0 + 25. * noise2d_perlin(
+	double base = (double)WATER_LEVEL - (double)AVERAGE_MUD_AMOUNT
+			+ 25. * noise2d_perlin(
 			0.5+(float)p.X/500., 0.5+(float)p.Y/500.,
 			(seed>>32)+654879876, 6, 0.6);
 	
@@ -3837,6 +3816,7 @@ MapBlock * ServerMap::generateBlock(
 			
 	v2s16 p2d(p.X, p.Z);
 	s16 block_y = p.Y;
+	v2s16 p2d_nodes = p2d * MAP_BLOCKSIZE;
 	
 	/*
 		Do not generate over-limit
@@ -3875,14 +3855,17 @@ MapBlock * ServerMap::generateBlock(
 	{
 		//dstream<<"generateBlock: x0="<<x0<<", z0="<<z0<<std::endl;
 
-		s16 surface_y = 0;
+		//s16 surface_y = 0;
+
+		s16 surface_y = base_rock_level_2d(m_seed, p2d_nodes+v2s16(x0,z0))
+				+ AVERAGE_MUD_AMOUNT;
 
 		if(surface_y < lowest_ground_y)
 			lowest_ground_y = surface_y;
 		if(surface_y > highest_ground_y)
 			highest_ground_y = surface_y;
 
-		s32 surface_depth = 2;
+		s32 surface_depth = AVERAGE_MUD_AMOUNT;
 		
 		for(s16 y0=0; y0<MAP_BLOCKSIZE; y0++)
 		{
@@ -4500,7 +4483,7 @@ MapBlock * ServerMap::emergeBlock(
 	|| p.Y > MAP_GENERATION_LIMIT / MAP_BLOCKSIZE
 	|| p.Z < -MAP_GENERATION_LIMIT / MAP_BLOCKSIZE
 	|| p.Z > MAP_GENERATION_LIMIT / MAP_BLOCKSIZE)
-		throw InvalidPositionException("generateBlock(): pos. over limit");
+		throw InvalidPositionException("emergeBlock(): pos. over limit");
 	
 	v2s16 p2d(p.X, p.Z);
 	s16 block_y = p.Y;
@@ -5155,70 +5138,75 @@ void ServerMap::loadBlock(std::string sectordir, std::string blockfile, MapSecto
 
 	try{
 
-	// Block file is map/sectors/xxxxxxxx/xxxx
-	std::string fullpath = m_savedir+"/sectors/"+sectordir+"/"+blockfile;
-	std::ifstream is(fullpath.c_str(), std::ios_base::binary);
-	if(is.good() == false)
-		throw FileNotGoodException("Cannot open block file");
+		// Block file is map/sectors/xxxxxxxx/xxxx
+		std::string fullpath = m_savedir+"/sectors/"+sectordir+"/"+blockfile;
+		std::ifstream is(fullpath.c_str(), std::ios_base::binary);
+		if(is.good() == false)
+			throw FileNotGoodException("Cannot open block file");
 
-	v3s16 p3d = getBlockPos(sectordir, blockfile);
-	v2s16 p2d(p3d.X, p3d.Z);
-	
-	assert(sector->getPos() == p2d);
-	
-	u8 version = SER_FMT_VER_INVALID;
-	is.read((char*)&version, 1);
+		v3s16 p3d = getBlockPos(sectordir, blockfile);
+		v2s16 p2d(p3d.X, p3d.Z);
+		
+		assert(sector->getPos() == p2d);
+		
+		u8 version = SER_FMT_VER_INVALID;
+		is.read((char*)&version, 1);
 
-	/*u32 block_size = MapBlock::serializedLength(version);
-	SharedBuffer<u8> data(block_size);
-	is.read((char*)*data, block_size);*/
+		if(is.fail())
+			throw SerializationError("ServerMap::loadBlock(): Failed"
+					" to read MapBlock version");
 
-	// This will always return a sector because we're the server
-	//MapSector *sector = emergeSector(p2d);
+		/*u32 block_size = MapBlock::serializedLength(version);
+		SharedBuffer<u8> data(block_size);
+		is.read((char*)*data, block_size);*/
 
-	MapBlock *block = NULL;
-	bool created_new = false;
-	try{
-		block = sector->getBlockNoCreate(p3d.Y);
-	}
-	catch(InvalidPositionException &e)
-	{
-		block = sector->createBlankBlockNoInsert(p3d.Y);
-		created_new = true;
-	}
-	
-	// deserialize block data
-	block->deSerialize(is, version);
-	
-	/*
-		Versions up from 9 have block objects.
-	*/
-	if(version >= 9)
-	{
-		block->updateObjects(is, version, NULL, 0);
-	}
+		// This will always return a sector because we're the server
+		//MapSector *sector = emergeSector(p2d);
 
-	if(created_new)
-		sector->insertBlock(block);
-	
-	/*
-		Convert old formats to new and save
-	*/
+		MapBlock *block = NULL;
+		bool created_new = false;
+		try{
+			block = sector->getBlockNoCreate(p3d.Y);
+		}
+		catch(InvalidPositionException &e)
+		{
+			block = sector->createBlankBlockNoInsert(p3d.Y);
+			created_new = true;
+		}
+		
+		// deserialize block data
+		block->deSerialize(is, version);
+		
+		/*
+			Versions up from 9 have block objects.
+		*/
+		if(version >= 9)
+		{
+			block->updateObjects(is, version, NULL, 0);
+		}
 
-	// Save old format blocks in new format
-	if(version < SER_FMT_VER_HIGHEST)
-	{
-		saveBlock(block);
-	}
-	
-	// We just loaded it from the disk, so it's up-to-date.
-	block->resetChangedFlag();
+		if(created_new)
+			sector->insertBlock(block);
+		
+		/*
+			Convert old formats to new and save
+		*/
+
+		// Save old format blocks in new format
+		if(version < SER_FMT_VER_HIGHEST)
+		{
+			saveBlock(block);
+		}
+		
+		// We just loaded it from the disk, so it's up-to-date.
+		block->resetChangedFlag();
 
 	}
 	catch(SerializationError &e)
 	{
 		dstream<<"WARNING: Invalid block data on disk "
-				"(SerializationError). Ignoring."
+				"(SerializationError). Ignoring. "
+				"A new one will be generated."
 				<<std::endl;
 	}
 }
