@@ -1874,7 +1874,7 @@ int main(int argc, char *argv[])
 	/*
 		Menu-game loop
 	*/
-	while(g_device->run())
+	while(g_device->run() && kill == false)
 	{
 	
 	// This is used for catching disconnects
@@ -1886,7 +1886,7 @@ int main(int argc, char *argv[])
 
 		Loop quits when menu returns proper parameters.
 	*/
-	for(;;)
+	while(kill == false)
 	{
 		// Cursor can be non-visible when coming from the game
 		device->getCursorControl()->setVisible(true);
@@ -2179,7 +2179,7 @@ int main(int argc, char *argv[])
 	// NOTE: So we have to use getTime() and call run()s between them
 	u32 lasttime = device->getTimer()->getTime();
 
-	while(device->run())
+	while(device->run() && kill == false)
 	{
 		if(g_disconnect_requested)
 		{

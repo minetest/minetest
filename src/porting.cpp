@@ -25,6 +25,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "porting.h"
 #include "config.h"
+#include "debug.h"
 
 namespace porting
 {
@@ -47,8 +48,13 @@ void sigint_handler(int sig)
 {
 	if(g_killed == false)
 	{
-		dstream<<DTIME<<"sigint_handler(): "
+		dstream<<DTIME<<"INFO: sigint_handler(): "
 				<<"Ctrl-C pressed, shutting down."<<std::endl;
+		
+		dstream<<DTIME<<"INFO: siging_handler(): "
+				<<"Printing debug stacks"<<std::endl;
+		debug_stacks_print();
+
 		g_killed = true;
 	}
 	else
