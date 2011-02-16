@@ -8,34 +8,59 @@ else( UNIX )
 	# Windows
 endif( UNIX )
 
+set(IRRLICHT_INCLUDE_DIR "" CACHE PATH "")
+set(IRRLICHT_LIBRARY "" CACHE FILEPATH "")
+
 # Find include directory
 
 if(NOT IRRLICHT_SOURCE_DIR STREQUAL "")
 	set(IRRLICHT_SOURCE_DIR_INCLUDE
 		"${IRRLICHT_SOURCE_DIR}/include"
 	)
-	set(IRRLICHT_SOURCE_DIR_LIBS
-		"${IRRLICHT_SOURCE_DIR}/lib/Win32-visualstudio"
-		"${IRRLICHT_SOURCE_DIR}/lib/Win32-gcc"
+
+	set(IRRLICHT_LIBRARY_NAMES libIrrlicht.a Irrlicht Irrlicht.lib)
+
+	if(WIN32)
+		if(MSVC)
+			set(IRRLICHT_SOURCE_DIR_LIBS "${IRRLICHT_SOURCE_DIR}/lib/Win32-visualstudio")
+			set(IRRLICHT_LIBRARY_NAMES Irrlicht.lib)
+		else()
+			set(IRRLICHT_SOURCE_DIR_LIBS "${IRRLICHT_SOURCE_DIR}/lib/Win32-gcc")
+			set(IRRLICHT_LIBRARY_NAMES libIrrlicht.a)
+		endif()
+	else()
+		set(IRRLICHT_SOURCE_DIR_LIBS "${IRRLICHT_SOURCE_DIR}/lib/Linux")
+		set(IRRLICHT_LIBRARY_NAMES libIrrlicht.a)
+	endif()
+
+	FIND_PATH(IRRLICHT_INCLUDE_DIR NAMES irrlicht.h
+		PATHS
+		${IRRLICHT_SOURCE_DIR_INCLUDE}
+		NO_DEFAULT_PATH
+	)
+
+	FIND_LIBRARY(IRRLICHT_LIBRARY NAMES ${IRRLICHT_LIBRARY_NAMES}
+		PATHS
+		${IRRLICHT_SOURCE_DIR_LIBS}
+		NO_DEFAULT_PATH
+	)
+
+else()
+
+	FIND_PATH(IRRLICHT_INCLUDE_DIR NAMES irrlicht.h
+		PATHS
+		/usr/local/include/irrlicht
+		/usr/include/irrlicht
+	)
+
+	FIND_LIBRARY(IRRLICHT_LIBRARY NAMES libIrrlicht.a Irrlicht
+		PATHS
+		/usr/local/lib
+		/usr/lib
 	)
 endif()
 
-FIND_PATH(IRRLICHT_INCLUDE_DIR NAMES irrlicht.h
-	PATHS
-	${IRRLICHT_SOURCE_DIR_INCLUDE}
-	/usr/local/include/irrlicht
-	/usr/include/irrlicht
-)
-
-# Find library directory
-
-FIND_LIBRARY(IRRLICHT_LIBRARY NAMES libIrrlicht.a Irrlicht
-	PATHS
-	${IRRLICHT_SOURCE_DIR_LIBS}
-	/usr/local/lib
-	/usr/lib
-)
-
+MESSAGE(STATUS "IRRLICHT_SOURCE_DIR = ${IRRLICHT_SOURCE_DIR}")
 MESSAGE(STATUS "IRRLICHT_INCLUDE_DIR = ${IRRLICHT_INCLUDE_DIR}")
 MESSAGE(STATUS "IRRLICHT_LIBRARY = ${IRRLICHT_LIBRARY}")
 
