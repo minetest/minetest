@@ -151,7 +151,7 @@ if(MSVC)
 	
 	if(BUILD_SERVER)
 		set_target_properties(minetestserver PROPERTIES
-				COMPILE_DEFINITIONS "/D SERVER")
+				COMPILE_DEFINITIONS "SERVER")
 	endif(BUILD_SERVER)
 
 else()
@@ -183,6 +183,9 @@ endif()
 #
 # Installation
 #
+
+# Example configuration file
+install(FILES "${CMAKE_CURRENT_SOURCE_DIR}/../minetest.conf.example" DESTINATION ${EXAMPLE_CONF_DIR})
 
 if(BUILD_CLIENT)
 	install(TARGETS minetest DESTINATION ${BINDIR})

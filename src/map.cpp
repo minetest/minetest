@@ -4522,6 +4522,15 @@ MapBlock * ServerMap::emergeBlock(
 				<<"You could try to delete it."<<std::endl;
 		throw e;
 	}
+	catch(VersionMismatchException &e)
+	{
+		dstream<<"emergeBlock: emergeSector() failed: "
+				<<e.what()<<std::endl;
+		dstream<<"Path to failed sector: "<<getSectorDir(p2d)
+				<<std::endl
+				<<"You could try to delete it."<<std::endl;
+		throw e;
+	}
 	/*
 		NOTE: This should not be done, or at least the exception
 		should not be passed on as std::exception, because it
@@ -5087,29 +5096,6 @@ bool ServerMap::loadSectorFull(v2s16 p2d)
 	}
 	return true;
 }
-
-#if 0
-bool ServerMap::deFlushSector(v2s16 p2d)
-{
-	DSTACK(__FUNCTION_NAME);
-	// See if it already exists in memory
-	try{
-		MapSector *sector = getSectorNoGenerate(p2d);
-		return true;
-	}
-	catch(InvalidPositionException &e)
-	{
-		/*
-			Try to load the sector from disk.
-		*/
-		if(loadSectorFull(p2d) == true)
-		{
-			return true;
-		}
-	}
-	return false;
-}
-#endif
 
 void ServerMap::saveBlock(MapBlock *block)
 {
