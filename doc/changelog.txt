@@ -3,6 +3,12 @@ Minetest-c55 changelog
 This should contain all the major changes.
 For minor stuff, refer to the commit log of the repository.
 
+2011-02-17:
+- Added better handling of textures. Now many file extensions are searched. Also too large textures are not put on the texture atlas, and the construction of the texture atlas is stopped when it is full.
+
+2011-02-16:
+- Better handling of Ctrl-C on POSIX systems
+
 2011-02-15:
 - Fixed a problem of not saving and loading the "lighting expired" value of MapBlocks properly. This caused high server CPU usage.
 - Ctrl-C handling on POSIX systems
