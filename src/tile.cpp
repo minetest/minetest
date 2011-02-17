@@ -23,6 +23,65 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "filesys.h"
 
 /*
+	Replaces the filename extension.
+	eg:
+		std::string image = "a/image.png"
+		replace_ext(image, "jpg")
+		-> image = "a/image.jpg"
+	Returns true on success.
+*/
+inline bool replace_ext(std::string &path, const char *ext)
+{
+	// Find place of last dot, fail if \ or / found.
+	s32 last_dot_i = -1;
+	for(s32 i=path.size()-1; i>=0; i--)
+	{
+		if(path[i] == '.')
+		{
+			last_dot_i = i;
+			break;
+		}
+		
+		if(path[i] == '\\' || path[i] == '/')
+			break;
+	}
+	// If not found, return an empty string
+	if(last_dot_i == -1)
+		return false;
+	// Else make the new path
+	path = path.substr(0, last_dot_i+1) + ext;
+	return true;
+}
+
+/*
+	Find out the full path of an image by trying different filename
+	extensions.
+
+	If failed, return "".
+*/
+inline std::string getImagePath(std::string path)
+{
+	// A NULL-ended list of possible image extensions
+	const char *extensions[] = {
+		"png", "jpg", "bmp", "tga", "bmp",
+		"pcx", "ppm", "psd", "wal", "rgb",
+		NULL
+	};
+
+	const char **ext = extensions;
+	do{
+		bool r = replace_ext(path, *ext);
+		if(r == false)
+			return "";
+		if(fs::PathExists(path))
+			return path;
+	}
+	while((++ext) != NULL);
+	
+	return "";
+}
+
+/*
 	Gets the path to a texture by first checking if the texture exists
 	in texture_path and if not, using the data path.
 */
@@ -32,11 +91,16 @@ inline std::string getTexturePath(std::string filename)
 	if(texture_path != "")
 	{
 		std::string fullpath = texture_path + '/' + filename;
-		if(fs::PathExists(fullpath))
+		// Check all filename extensions
+		fullpath = getImagePath(fullpath);
+		// If found, return it
+		if(fullpath != "")
 			return fullpath;
 	}
-	
-	return porting::getDataPath(filename.c_str());
+	std::string fullpath = porting::getDataPath(filename.c_str());
+	// Check all filename extensions
+	fullpath = getImagePath(fullpath);
+	return fullpath;
 }
 
 TextureSource::TextureSource(IrrlichtDevice *device):
@@ -454,6 +518,25 @@ void TextureSource::buildMainAtlas()
 		}
 
 		core::dimension2d<u32> dim = img2->getDimension();
+
+		// Don't add to atlas if image is large
+		core::dimension2d<u32> max_size_in_atlas(32,32);
+		if(dim.Width > max_size_in_atlas.Width
+		|| dim.Height > max_size_in_atlas.Height)
+		{
+			dstream<<"INFO: TextureSource::buildMainAtlas(): Not adding "
+					<<"\""<<name<<"\" because image is large"<<std::endl;
+			continue;
+		}
+
+		// Stop making atlas if atlas is full
+		if(pos_in_atlas.Y + dim.Height > atlas_dim.Height)
+		{
+			dstream<<"WARNING: TextureSource::buildMainAtlas(): "
+					<<"Atlas is full, not adding more textures."
+					<<std::endl;
+			break;
+		}
 		
 		// Tile it a few times in the X direction
 		u16 xwise_tiling = 16;
@@ -720,39 +803,83 @@ bool generate_image(std::string part_of_name, video::IImage *& baseimg,
 						<<", cancelling."<<std::endl;
 				return false;
 			}
-
+			
+			// Crack image number
 			u16 progression = stoi(part_of_name.substr(6));
+
 			// Size of the base image
 			core::dimension2d<u32> dim_base = baseimg->getDimension();
-			// Crack will be drawn at this size
-			u32 cracksize = 16;
-			// Size of the crack image
-			core::dimension2d<u32> dim_crack(cracksize,cracksize);
-			// Position to copy the crack from in the crack image
-			core::position2d<s32> pos_other(0, 16 * progression);
+			
+			/*
+				Load crack image.
 
-			video::IImage *crackimage = driver->createImageFromFile(
+				It is an image with a number of cracking stages
+				horizontally tiled.
+			*/
+			video::IImage *img_crack = driver->createImageFromFile(
 					getTexturePath("crack.png").c_str());
 		
-			if(crackimage)
+			if(img_crack)
 			{
-				/*crackimage->copyToWithAlpha(baseimg, v2s32(0,0),
-						core::rect<s32>(pos_other, dim_base),
-						video::SColor(255,255,255,255),
-						NULL);*/
-
-				for(u32 y0=0; y0<dim_base.Height/dim_crack.Height; y0++)
-				for(u32 x0=0; x0<dim_base.Width/dim_crack.Width; x0++)
+				// Dimension of original image
+				core::dimension2d<u32> dim_crack
+						= img_crack->getDimension();
+				// Count of crack stages
+				u32 crack_count = dim_crack.Height / dim_crack.Width;
+				// Limit progression
+				if(progression > crack_count-1)
+					progression = crack_count-1;
+				// Dimension of a single scaled crack stage
+				core::dimension2d<u32> dim_crack_scaled_single(
+					dim_base.Width,
+					dim_base.Height
+				);
+				// Dimension of scaled size
+				core::dimension2d<u32> dim_crack_scaled(
+					dim_crack_scaled_single.Width,
+					dim_crack_scaled_single.Height * crack_count
+				);
+				// Create scaled crack image
+				video::IImage *img_crack_scaled = driver->createImage(
+						video::ECF_A8R8G8B8, dim_crack_scaled);
+				if(img_crack_scaled)
 				{
-					// Position to copy the crack to in the base image
-					core::position2d<s32> pos_base(x0*cracksize, y0*cracksize);
-					crackimage->copyToWithAlpha(baseimg, pos_base,
-							core::rect<s32>(pos_other, dim_crack),
-							video::SColor(255,255,255,255),
-							NULL);
-				}
+					// Scale crack image by copying
+					img_crack->copyToScaling(img_crack_scaled);
+					
+					// Position to copy the crack from
+					core::position2d<s32> pos_crack_scaled(
+						0,
+						dim_crack_scaled_single.Height * progression
+					);
+					
+					// This tiling does nothing currently but is useful
+					for(u32 y0=0; y0<dim_base.Height
+							/ dim_crack_scaled_single.Height; y0++)
+					for(u32 x0=0; x0<dim_base.Width
+							/ dim_crack_scaled_single.Width; x0++)
+					{
+						// Position to copy the crack to in the base image
+						core::position2d<s32> pos_base(
+							x0*dim_crack_scaled_single.Width,
+							y0*dim_crack_scaled_single.Height
+						);
+						// Rectangle to copy the crack from on the scaled image
+						core::rect<s32> rect_crack_scaled(
+							pos_crack_scaled,
+							dim_crack_scaled_single
+						);
+						// Copy it
+						img_crack_scaled->copyToWithAlpha(baseimg, pos_base,
+								rect_crack_scaled,
+								video::SColor(255,255,255,255),
+								NULL);
+					}
 
-				crackimage->drop();
+					img_crack_scaled->drop();
+				}
+				
+				img_crack->drop();
 			}
 		}
 		/*
@@ -968,7 +1095,7 @@ bool generate_image(std::string part_of_name, video::IImage *& baseimg,
 			pm.buildProjectionMatrixOrthoLH(1.65, 1.65, 0, 100);
 			camera->setProjectionMatrix(pm, true);
 
-			scene::ILightSceneNode *light = smgr->addLightSceneNode(0,
+			/*scene::ILightSceneNode *light =*/ smgr->addLightSceneNode(0,
 					v3f(-50, 100, 0), video::SColorf(0.5,0.5,0.5), 1000);
 
 			// Render scene
@@ -1021,9 +1148,9 @@ void make_progressbar(float value, video::IImage *image)
 	
 	core::dimension2d<u32> size = image->getDimension();
 
-	u32 barheight = 1;
-	u32 barpad_x = 1;
-	u32 barpad_y = 1;
+	u32 barheight = size.Height/16;
+	u32 barpad_x = size.Width/16;
+	u32 barpad_y = size.Height/16;
 	u32 barwidth = size.Width - barpad_x*2;
 	v2u32 barpos(barpad_x, size.Height - barheight - barpad_y);
 
