@@ -19,7 +19,28 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "light.h"
 
+// This is reasonable with classic lighting with a light source
+/*u8 light_decode_table[LIGHT_MAX+1] = 
+{
+2,
+3,
+4,
+6,
+9,
+13,
+18,
+25,
+32,
+35,
+45,
+57,
+69,
+79,
+255
+};*/
 
+
+// This is good
 // a_n+1 = a_n * 0.786
 // Length of LIGHT_MAX+1 means LIGHT_MAX is the last value.
 // LIGHT_SUN is read as LIGHT_MAX from here.

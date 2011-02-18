@@ -2097,7 +2097,6 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 				if(content_features(n.d).wall_mounted)
 					n.dir = packDir(p_under - p_over);
 
-#if 1
 				// Create packet
 				u32 replysize = 8 + MapNode::serializedLength(peer_ser_ver);
 				SharedBuffer<u8> reply(replysize);
@@ -2131,76 +2130,21 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 				*/
 				core::map<v3s16, MapBlock*> modified_blocks;
 				m_env.getMap().addNodeAndUpdate(p_over, n, modified_blocks);
-#endif
-#if 0
+				
 				/*
-					Handle inventory
-				*/
-				InventoryList *ilist = player->inventory.getList("main");
-				if(g_settings.getBool("creative_mode") == false && ilist)
-				{
-					// Remove from inventory and send inventory
-					if(mitem->getCount() == 1)
-						ilist->deleteItem(item_i);
-					else
-						mitem->remove(1);
-					// Send inventory
-					SendInventory(peer_id);
-				}
-
-				/*
-					Add node.
-
-					This takes some time so it is done after the quick stuff
-				*/
-				core::map<v3s16, MapBlock*> modified_blocks;
-				m_env.getMap().addNodeAndUpdate(p_over, n, modified_blocks);
-
-				/*
-					Set the modified blocks unsent for all the clients
+					Calculate special events
 				*/
 				
-				//JMutexAutoLock lock2(m_con_mutex);
-
-				for(core::map<u16, RemoteClient*>::Iterator
-						i = m_clients.getIterator();
-						i.atEnd() == false; i++)
+				/*if(n.d == CONTENT_MESE)
 				{
-					RemoteClient *client = i.getNode()->getValue();
-					
-					if(modified_blocks.size() > 0)
+					u32 count = 0;
+					for(s16 z=-1; z<=1; z++)
+					for(s16 y=-1; y<=1; y++)
+					for(s16 x=-1; x<=1; x++)
 					{
-						// Remove block from sent history
-						client->SetBlocksNotSent(modified_blocks);
+						
 					}
-				}
-#endif
-
-#if 0
-				/*
-					Update water
-				*/
-				
-				// Update water pressure around modification
-				// This also adds it to m_flow_active_nodes if appropriate
-
-				MapVoxelManipulator v(&m_env.getMap());
-				v.m_disable_water_climb =
-						g_settings.getBool("disable_water_climb");
-				
-				VoxelArea area(p_over-v3s16(1,1,1), p_over+v3s16(1,1,1));
-
-				try
-				{
-					v.updateAreaWaterPressure(area, m_flow_active_nodes);
-				}
-				catch(ProcessingLimitException &e)
-				{
-					dstream<<"Processing limit reached (1)"<<std::endl;
-				}
-				
-				v.blitBack(modified_blocks);
-#endif
+				}*/
 			}
 			/*
 				Handle other items

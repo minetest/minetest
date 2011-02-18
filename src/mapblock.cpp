@@ -255,32 +255,18 @@ void MapBlock::makeFastFace(TileSpec tile, u8 light, v3f p,
 
 	video::SColor c = video::SColor(alpha,li,li,li);
 
-	face.vertices[0] = video::S3DVertex(vertex_pos[0], zerovector, c,
-			core::vector2d<f32>(abs_scale,1));
-	face.vertices[1] = video::S3DVertex(vertex_pos[1], zerovector, c,
-			core::vector2d<f32>(0,1));
-	face.vertices[2] = video::S3DVertex(vertex_pos[2], zerovector, c,
-			core::vector2d<f32>(0,0));
-	face.vertices[3] = video::S3DVertex(vertex_pos[3], zerovector, c,
-			core::vector2d<f32>(abs_scale,0));
-	
-	/*float x0 = (float)tile.tx/256.0;
-	float y0 = (float)tile.ty/256.0;
-	float w = ((float)tile.tw + 1.0)/256.0;
-	float h = ((float)tile.th + 1.0)/256.0;*/
-
 	float x0 = tile.texture.pos.X;
 	float y0 = tile.texture.pos.Y;
 	float w = tile.texture.size.X;
 	float h = tile.texture.size.Y;
 
-	face.vertices[0] = video::S3DVertex(vertex_pos[0], zerovector, c,
+	face.vertices[0] = video::S3DVertex(vertex_pos[0], v3f(0,1,0), c,
 			core::vector2d<f32>(x0+w*abs_scale, y0+h));
-	face.vertices[1] = video::S3DVertex(vertex_pos[1], zerovector, c,
+	face.vertices[1] = video::S3DVertex(vertex_pos[1], v3f(0,1,0), c,
 			core::vector2d<f32>(x0, y0+h));
-	face.vertices[2] = video::S3DVertex(vertex_pos[2], zerovector, c,
+	face.vertices[2] = video::S3DVertex(vertex_pos[2], v3f(0,1,0), c,
 			core::vector2d<f32>(x0, y0));
-	face.vertices[3] = video::S3DVertex(vertex_pos[3], zerovector, c,
+	face.vertices[3] = video::S3DVertex(vertex_pos[3], v3f(0,1,0), c,
 			core::vector2d<f32>(x0+w*abs_scale, y0));
 
 	face.tile = tile;
@@ -736,12 +722,11 @@ void MapBlock::updateMesh(u32 daynight_ratio)
 		//TimeTaker timer2("updateMesh() mesh building");
 
 		video::SMaterial material;
-		material.Lighting = false;
-		//material.BackfaceCulling = false;
+		material.setFlag(video::EMF_LIGHTING, false);
 		material.setFlag(video::EMF_BILINEAR_FILTER, false);
+		material.setFlag(video::EMF_FOG_ENABLE, true);
 		//material.setFlag(video::EMF_ANTI_ALIASING, video::EAAM_OFF);
 		//material.setFlag(video::EMF_ANTI_ALIASING, video::EAAM_SIMPLE);
-		material.setFlag(video::EMF_FOG_ENABLE, true);
 
 		for(u32 i=0; i<fastfaces_new.size(); i++)
 		{

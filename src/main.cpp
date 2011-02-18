@@ -277,15 +277,13 @@ Doing now (most important at the top):
   placement and transfer
 * only_from_disk might not work anymore - check and fix it.
 * Check the fixmes in the list above
-* When sending blocks to the client, the server takes way too much
-  CPU time (20-30% for single player), find out what it is doing.
-  - Make a simple profiler
 
 === Making it more portable
 * Some MSVC: std::sto* are defined without a namespace and collide
   with the ones in utility.h
 
 === Features
+* Add mud underground
 * Make an "environment metafile" to store at least time of day
 * Move digging property stuff from material.{h,cpp} to mapnode.cpp...
   - Or maybe move content_features to material.{h,cpp}?
@@ -1794,7 +1792,7 @@ int main(int argc, char *argv[])
 	//driver->setMinHardwareBufferVertexCount(50);
 
 	scene::ISceneManager* smgr = device->getSceneManager();
-	
+
 	guienv = device->getGUIEnvironment();
 	gui::IGUISkin* skin = guienv->getSkin();
 	gui::IGUIFont* font = guienv->getFont(porting::getDataPath("fontlucida.png").c_str());
@@ -2104,7 +2102,7 @@ int main(int argc, char *argv[])
 
 	if(camera == NULL)
 		return 1;
-	
+
 	//video::SColor skycolor = video::SColor(255,90,140,200);
 	//video::SColor skycolor = video::SColor(255,166,202,244);
 	video::SColor skycolor = video::SColor(255,120,185,244);
@@ -2113,6 +2111,23 @@ int main(int argc, char *argv[])
 
 	// Just so big a value that everything rendered is visible
 	camera->setFarValue(100000*BS);
+	
+	/*
+		Lighting test code. Doesn't quite work this way.
+		The CPU-computed lighting is good.
+	*/
+
+	/*
+	smgr->addLightSceneNode(NULL,
+		v3f(0, BS*1000000, 0),
+		video::SColorf(0.3,0.3,0.3),
+		BS*10000000);
+
+	smgr->setAmbientLight(video::SColorf(0.0, 0.0, 0.0));
+
+	scene::ILightSceneNode *light = smgr->addLightSceneNode(camera,
+			v3f(0, 0, 0), video::SColorf(0.5,0.5,0.5), BS*4);
+	*/
 
 	f32 camera_yaw = 0; // "right/left"
 	f32 camera_pitch = 0; // "up/down"
