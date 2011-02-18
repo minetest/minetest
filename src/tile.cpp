@@ -32,6 +32,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 */
 inline bool replace_ext(std::string &path, const char *ext)
 {
+	if(ext == NULL)
+		return false;
 	// Find place of last dot, fail if \ or / found.
 	s32 last_dot_i = -1;
 	for(s32 i=path.size()-1; i>=0; i--)
@@ -1097,6 +1099,8 @@ bool generate_image(std::string part_of_name, video::IImage *& baseimg,
 
 			/*scene::ILightSceneNode *light =*/ smgr->addLightSceneNode(0,
 					v3f(-50, 100, 0), video::SColorf(0.5,0.5,0.5), 1000);
+
+			smgr->setAmbientLight(video::SColorf(0.2,0.2,0.2));
 
 			// Render scene
 			driver->beginScene(true, true, video::SColor(0,0,0,0));
