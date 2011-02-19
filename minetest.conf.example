@@ -7,7 +7,9 @@
 # By default, all the settings are commented and not functional.
 # Uncomment settings by removing the preceding #.
 
+#
 # Client side stuff
+#
 
 #wanted_fps = 30
 #fps_max = 60
@@ -19,17 +21,28 @@
 #address = kray.dy.fi
 #name = 
 
+# Whether to try to fog out the border of the visible area
+#enable_fog = true
+# Enable a bit lower water surface; disable for speed
+#new_style_water = true
+# Enable nice leaves; disable for speed
+#new_style_leaves = true
+# Whether to draw a frametime graph
+#frametime_graph = false
+# Enable combining mainly used textures to a bigger one
+#enable_texture_atlas = true
+# Path to texture directory
+#texture_path =
+# Possible values: null, software, burningsvideo, direct3d8, direct3d9, opengl
+#video_driver = opengl
+
+# 
 #random_input = false
 #client_delete_unused_sectors_timeout = 1200
 
-#enable_fog = true
-#new_style_water = true
-#new_style_leaves = true
-#frametime_graph = false
-#enable_texture_atlas = true
-#texture_path =
-
+#
 # Server side stuff
+#
 
 #map-dir = /home/palle/custom_map
 

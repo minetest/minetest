@@ -1723,29 +1723,40 @@ int main(int argc, char *argv[])
 	
 	std::string playername = g_settings.get("name");
 
-	/*
-		Resolution selection
-	*/
+	// Resolution selection
 	
 	bool fullscreen = false;
 	u16 screenW = g_settings.getU16("screenW");
 	u16 screenH = g_settings.getU16("screenH");
 
-	//
-
-	MyEventReceiver receiver;
+	// Determine driver
 
 	video::E_DRIVER_TYPE driverType;
+	
+	std::string driverstring = g_settings.get("video_driver");
 
-#ifdef _WIN32
-	//driverType = video::EDT_DIRECT3D9;
-	driverType = video::EDT_OPENGL;
-#else
-	driverType = video::EDT_OPENGL;
-	//driverType = video::EDT_BURNINGSVIDEO; // Best software renderer
-#endif
+	if(driverstring == "null")
+		driverType = video::EDT_NULL;
+	else if(driverstring == "software")
+		driverType = video::EDT_SOFTWARE;
+	else if(driverstring == "burningsvideo")
+		driverType = video::EDT_BURNINGSVIDEO;
+	else if(driverstring == "direct3d8")
+		driverType = video::EDT_DIRECT3D8;
+	else if(driverstring == "direct3d9")
+		driverType = video::EDT_DIRECT3D9;
+	else if(driverstring == "opengl")
+		driverType = video::EDT_OPENGL;
+	else
+	{
+		dstream<<"WARNING: Invalid video_driver specified; defaulting "
+				"to opengl"<<std::endl;
+		driverType = video::EDT_OPENGL;
+	}
 
 	// create device and exit if creation failed
+
+	MyEventReceiver receiver;
 
 	IrrlichtDevice *device;
 	device = createDevice(driverType,
