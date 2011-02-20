@@ -26,7 +26,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 	- The map
 	- Players
 	- Other objects
-	- The current time in the game, etc.
+	- The current time in the game (actually it only contains the brightness)
+	- etc.
 */
 
 #include <list>
@@ -39,51 +40,175 @@ class Environment
 {
 public:
 	// Environment will delete the map passed to the constructor
-	Environment(Map *map, std::ostream &dout);
-	~Environment();
-	/*
-		This can do anything to the environment, such as removing
-		timed-out players.
-		Also updates Map's timers.
-	*/
-	void step(f32 dtime);
-
-	Map & getMap();
+	Environment();
+	virtual ~Environment();
 
 	/*
-		Environment deallocates players after use.
+		Step everything in environment.
+		- Move players
+		- Step mobs
+		- Run timers of map
 	*/
-	void addPlayer(Player *player);
+	virtual void step(f32 dtime) = 0;
+
+	virtual Map & getMap() = 0;
+
+	virtual void addPlayer(Player *player);
 	void removePlayer(u16 peer_id);
-#ifndef SERVER
-	LocalPlayer * getLocalPlayer();
-#endif
 	Player * getPlayer(u16 peer_id);
 	Player * getPlayer(const char *name);
 	core::list<Player*> getPlayers();
 	core::list<Player*> getPlayers(bool ignore_disconnected);
 	void printPlayers(std::ostream &o);
 	
-	void serializePlayers(const std::string &savedir);
-	// This loads players as ServerRemotePlayers
-	void deSerializePlayers(const std::string &savedir);
-
-#ifndef SERVER
-	void updateMeshes(v3s16 blockpos);
-	void expireMeshes(bool only_daynight_diffed);
-#endif
 	void setDayNightRatio(u32 r);
 	u32 getDayNightRatio();
 
-private:
-	Map *m_map;
-	// peer_ids in here should be unique, except that there may be
-	// many 0s
+protected:
+	// peer_ids in here should be unique, except that there may be many 0s
 	core::list<Player*> m_players;
-	// Debug output goes here
-	std::ostream &m_dout;
+	// Brightness
 	u32 m_daynight_ratio;
 };
+
+/*
+	The server-side environment.
+
+	This is not thread-safe. Server uses an environment mutex.
+*/
+
+#include "serverobject.h"
+
+class ServerEnvironment : public Environment
+{
+public:
+	ServerEnvironment(ServerMap *map);
+	~ServerEnvironment();
+
+	Map & getMap()
+	{
+		return *m_map;
+	}
+
+	ServerMap & getServerMap()
+	{
+		return *m_map;
+	}
+
+	void step(f32 dtime);
+
+	void serializePlayers(const std::string &savedir);
+	void deSerializePlayers(const std::string &savedir);
+
+	/*
+		ActiveObjects
+	*/
+
+	ServerActiveObject* getActiveObject(u16 id);
+
+	/*
+		Adds an active object to the environment.
+		Environment handles deletion of object.
+		Object may be deleted by environment immediately.
+		If id of object is 0, assigns a free id to it.
+		Returns the id of the object.
+		Returns 0 if not added and thus deleted.
+	*/
+	u16 addActiveObject(ServerActiveObject *object);
+	
+	/*
+		Finds out what new objects have been added to
+		inside a radius around a position
+	*/
+	void getAddedActiveObjects(v3s16 pos, s16 radius,
+			core::map<u16, bool> &current_objects,
+			core::map<u16, bool> &added_objects);
+
+	/*
+		Finds out what new objects have been removed from
+		inside a radius around a position
+	*/
+	void getRemovedActiveObjects(v3s16 pos, s16 radius,
+			core::map<u16, bool> &current_objects,
+			core::map<u16, bool> &removed_objects);
+	
+	/*
+		Gets the next message emitted by some active object.
+		Returns a message with id=0 if no messages are available.
+	*/
+	ActiveObjectMessage getActiveObjectMessage();
+	
+private:
+	ServerMap *m_map;
+	core::map<u16, ServerActiveObject*> m_active_objects;
+	Queue<ActiveObjectMessage> m_active_object_messages;
+	float m_random_spawn_timer;
+};
+
+#ifndef SERVER
+
+#include "clientobject.h"
+
+/*
+	The client-side environment.
+
+	This is not thread-safe.
+	Must be called from main (irrlicht) thread (uses the SceneManager)
+	Client uses an environment mutex.
+*/
+
+class ClientEnvironment : public Environment
+{
+public:
+	ClientEnvironment(ClientMap *map, scene::ISceneManager *smgr);
+	~ClientEnvironment();
+
+	Map & getMap()
+	{
+		return *m_map;
+	}
+
+	ClientMap & getClientMap()
+	{
+		return *m_map;
+	}
+
+	void step(f32 dtime);
+
+	virtual void addPlayer(Player *player);
+	LocalPlayer * getLocalPlayer();
+
+	void updateMeshes(v3s16 blockpos);
+	void expireMeshes(bool only_daynight_diffed);
+
+	/*
+		ActiveObjects
+	*/
+	
+	ClientActiveObject* getActiveObject(u16 id);
+
+	/*
+		Adds an active object to the environment.
+		Environment handles deletion of object.
+		Object may be deleted by environment immediately.
+		If id of object is 0, assigns a free id to it.
+		Returns the id of the object.
+		Returns 0 if not added and thus deleted.
+	*/
+	u16 addActiveObject(ClientActiveObject *object);
+
+	void addActiveObject(u16 id, u8 type);
+	void removeActiveObject(u16 id);
+
+	void processActiveObjectMessage(u16 id, const std::string &data);
+
+private:
+	ClientMap *m_map;
+	scene::ISceneManager *m_smgr;
+	core::map<u16, ClientActiveObject*> m_active_objects;
+};
+
+#endif
 
 #endif
 

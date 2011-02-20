@@ -1221,95 +1221,6 @@ void Map::removeNodeAndUpdate(v3s16 p,
 	}
 }
 
-#ifndef SERVER
-void Map::expireMeshes(bool only_daynight_diffed)
-{
-	TimeTaker timer("expireMeshes()");
-
-	core::map<v2s16, MapSector*>::Iterator si;
-	si = m_sectors.getIterator();
-	for(; si.atEnd() == false; si++)
-	{
-		MapSector *sector = si.getNode()->getValue();
-
-		core::list< MapBlock * > sectorblocks;
-		sector->getBlocks(sectorblocks);
-		
-		core::list< MapBlock * >::Iterator i;
-		for(i=sectorblocks.begin(); i!=sectorblocks.end(); i++)
-		{
-			MapBlock *block = *i;
-
-			if(only_daynight_diffed && dayNightDiffed(block->getPos()) == false)
-			{
-				continue;
-			}
-			
-			{
-				JMutexAutoLock lock(block->mesh_mutex);
-				if(block->mesh != NULL)
-				{
-					/*block->mesh->drop();
-					block->mesh = NULL;*/
-					block->setMeshExpired(true);
-				}
-			}
-		}
-	}
-}
-
-void Map::updateMeshes(v3s16 blockpos, u32 daynight_ratio)
-{
-	assert(mapType() == MAPTYPE_CLIENT);
-
-	try{
-		v3s16 p = blockpos + v3s16(0,0,0);
-		MapBlock *b = getBlockNoCreate(p);
-		b->updateMesh(daynight_ratio);
-	}
-	catch(InvalidPositionException &e){}
-	// Leading edge
-	try{
-		v3s16 p = blockpos + v3s16(-1,0,0);
-		MapBlock *b = getBlockNoCreate(p);
-		b->updateMesh(daynight_ratio);
-	}
-	catch(InvalidPositionException &e){}
-	try{
-		v3s16 p = blockpos + v3s16(0,-1,0);
-		MapBlock *b = getBlockNoCreate(p);
-		b->updateMesh(daynight_ratio);
-	}
-	catch(InvalidPositionException &e){}
-	try{
-		v3s16 p = blockpos + v3s16(0,0,-1);
-		MapBlock *b = getBlockNoCreate(p);
-		b->updateMesh(daynight_ratio);
-	}
-	catch(InvalidPositionException &e){}
-	/*// Trailing edge
-	try{
-		v3s16 p = blockpos + v3s16(1,0,0);
-		MapBlock *b = getBlockNoCreate(p);
-		b->updateMesh(daynight_ratio);
-	}
-	catch(InvalidPositionException &e){}
-	try{
-		v3s16 p = blockpos + v3s16(0,1,0);
-		MapBlock *b = getBlockNoCreate(p);
-		b->updateMesh(daynight_ratio);
-	}
-	catch(InvalidPositionException &e){}
-	try{
-		v3s16 p = blockpos + v3s16(0,0,1);
-		MapBlock *b = getBlockNoCreate(p);
-		b->updateMesh(daynight_ratio);
-	}
-	catch(InvalidPositionException &e){}*/
-}
-
-#endif
-
 bool Map::dayNightDiffed(v3s16 blockpos)
 {
 	try{
@@ -4371,7 +4282,7 @@ continue_generating:
 			//if(!is_ground_content(block->getNode(cp).d))
 			if(1)
 			{
-				RatObject *obj = new RatObject(NULL, -1, intToFloat(cp));
+				RatObject *obj = new RatObject(NULL, -1, intToFloat(cp, BS));
 				block->addObject(obj);
 			}
 		}
@@ -5665,6 +5576,92 @@ bool ClientMap::clearTempMod(v3s16 p,
 		}
 	}
 	return changed;
+}
+
+void ClientMap::expireMeshes(bool only_daynight_diffed)
+{
+	TimeTaker timer("expireMeshes()");
+
+	core::map<v2s16, MapSector*>::Iterator si;
+	si = m_sectors.getIterator();
+	for(; si.atEnd() == false; si++)
+	{
+		MapSector *sector = si.getNode()->getValue();
+
+		core::list< MapBlock * > sectorblocks;
+		sector->getBlocks(sectorblocks);
+		
+		core::list< MapBlock * >::Iterator i;
+		for(i=sectorblocks.begin(); i!=sectorblocks.end(); i++)
+		{
+			MapBlock *block = *i;
+
+			if(only_daynight_diffed && dayNightDiffed(block->getPos()) == false)
+			{
+				continue;
+			}
+			
+			{
+				JMutexAutoLock lock(block->mesh_mutex);
+				if(block->mesh != NULL)
+				{
+					/*block->mesh->drop();
+					block->mesh = NULL;*/
+					block->setMeshExpired(true);
+				}
+			}
+		}
+	}
+}
+
+void ClientMap::updateMeshes(v3s16 blockpos, u32 daynight_ratio)
+{
+	assert(mapType() == MAPTYPE_CLIENT);
+
+	try{
+		v3s16 p = blockpos + v3s16(0,0,0);
+		MapBlock *b = getBlockNoCreate(p);
+		b->updateMesh(daynight_ratio);
+	}
+	catch(InvalidPositionException &e){}
+	// Leading edge
+	try{
+		v3s16 p = blockpos + v3s16(-1,0,0);
+		MapBlock *b = getBlockNoCreate(p);
+		b->updateMesh(daynight_ratio);
+	}
+	catch(InvalidPositionException &e){}
+	try{
+		v3s16 p = blockpos + v3s16(0,-1,0);
+		MapBlock *b = getBlockNoCreate(p);
+		b->updateMesh(daynight_ratio);
+	}
+	catch(InvalidPositionException &e){}
+	try{
+		v3s16 p = blockpos + v3s16(0,0,-1);
+		MapBlock *b = getBlockNoCreate(p);
+		b->updateMesh(daynight_ratio);
+	}
+	catch(InvalidPositionException &e){}
+	/*// Trailing edge
+	try{
+		v3s16 p = blockpos + v3s16(1,0,0);
+		MapBlock *b = getBlockNoCreate(p);
+		b->updateMesh(daynight_ratio);
+	}
+	catch(InvalidPositionException &e){}
+	try{
+		v3s16 p = blockpos + v3s16(0,1,0);
+		MapBlock *b = getBlockNoCreate(p);
+		b->updateMesh(daynight_ratio);
+	}
+	catch(InvalidPositionException &e){}
+	try{
+		v3s16 p = blockpos + v3s16(0,0,1);
+		MapBlock *b = getBlockNoCreate(p);
+		b->updateMesh(daynight_ratio);
+	}
+	catch(InvalidPositionException &e){}*/
 }
 
 void ClientMap::PrintInfo(std::ostream &out)

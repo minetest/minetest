@@ -132,6 +132,10 @@ protected:
 	v3f m_position;
 };
 
+/*
+	Player on the server
+*/
+
 class ServerRemotePlayer : public Player
 {
 public:
@@ -150,11 +154,15 @@ public:
 	virtual void move(f32 dtime, Map &map, f32 pos_max_d)
 	{
 	}
-
+	
 private:
 };
 
 #ifndef SERVER
+
+/*
+	All the other players on the client are these
+*/
 
 class RemotePlayer : public Player, public scene::ISceneNode
 {

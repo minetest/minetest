@@ -35,7 +35,7 @@
 	#endif // _WIN32_WCE
 	#include <winsock2.h>
 	#include <windows.h>
-	
+	// CriticalSection is way faster than the alternative
 	#define JMUTEX_CRITICALSECTION
 #else // using pthread
 	#include <pthread.h>

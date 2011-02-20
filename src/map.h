@@ -33,7 +33,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #endif
 
 #include "common_irrlicht.h"
-//#include "heightmap.h"
 #include "mapnode.h"
 #include "mapblock.h"
 #include "mapsector.h"
@@ -61,7 +60,10 @@ public:
 	{
 		return MAPTYPE_BASE;
 	}
-
+	
+	/*
+		Drop (client) or delete (server) the map.
+	*/
 	virtual void drop()
 	{
 		delete this;
@@ -211,19 +213,6 @@ public:
 	void removeNodeAndUpdate(v3s16 p,
 			core::map<v3s16, MapBlock*> &modified_blocks);
 	
-#ifndef SERVER
-	void expireMeshes(bool only_daynight_diffed);
-	
-	/*
-		Update the faces of the given block and blocks on the
-		leading edge.
-	*/
-	void updateMeshes(v3s16 blockpos, u32 daynight_ratio);
-	
-	// Update meshes that touch the node
-	//void updateNodeMeshes(v3s16 nodepos, u32 daynight_ratio);
-#endif
-
 	/*
 		Takes the blocks at the edges into account
 	*/
@@ -627,6 +616,17 @@ public:
 			core::map<v3s16, MapBlock*> *affected_blocks=NULL);
 	// Efficient implementation needs a cache of TempMods
 	//void clearTempMods();
+
+	void expireMeshes(bool only_daynight_diffed);
+	
+	/*
+		Update the faces of the given block and blocks on the
+		leading edge.
+	*/
+	void updateMeshes(v3s16 blockpos, u32 daynight_ratio);
+	
+	// Update meshes that touch the node
+	//void updateNodeMeshes(v3s16 nodepos, u32 daynight_ratio);
 
 	// For debug printing
 	virtual void PrintInfo(std::ostream &out);

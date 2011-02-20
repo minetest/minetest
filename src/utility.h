@@ -1738,5 +1738,30 @@ inline std::string wrap_rows(const std::string &from, u32 rowlen)
 #define MYMIN(a,b) ((a)<(b)?(a):(b))
 #define MYMAX(a,b) ((a)>(b)?(a):(b))
 
+/*
+	Returns integer position of node in given floating point position
+*/
+inline v3s16 floatToInt(v3f p, f32 d)
+{
+	v3s16 p2(
+		(p.X + (p.X>0 ? BS/2 : -BS/2))/d,
+		(p.Y + (p.Y>0 ? BS/2 : -BS/2))/d,
+		(p.Z + (p.Z>0 ? BS/2 : -BS/2))/d);
+	return p2;
+}
+
+/*
+	Returns floating point position of node in given integer position
+*/
+inline v3f intToFloat(v3s16 p, f32 d)
+{
+	v3f p2(
+		(f32)p.X * d,
+		(f32)p.Y * d,
+		(f32)p.Z * d
+	);
+	return p2;
+}
+
 #endif
 

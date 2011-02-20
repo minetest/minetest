@@ -27,6 +27,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "common_irrlicht.h"
 #include "jmutex.h"
 #include <ostream>
+#include "clientobject.h"
 
 class ClientNotReadyException : public BaseException
 {
@@ -165,11 +166,6 @@ public:
 	
 	// Returns InvalidPositionException if not found
 	MapNode getNode(v3s16 p);
-	// Returns InvalidPositionException if not found
-	//void setNode(v3s16 p, MapNode n);
-
-	// Returns InvalidPositionException if not found
-	//f32 getGroundHeight(v2s16 p);
 
 	v3f getPlayerPosition();
 
@@ -192,7 +188,6 @@ public:
 	// Prints a line or two of info
 	void printDebugInfo(std::ostream &os);
 
-	//s32 getDayNightIndex();
 	u32 getDayNightRatio();
 
 	//void updateSomeExpiredMeshes();
@@ -229,27 +224,6 @@ public:
 			i.getNode()->getValue()->updateMesh(m_env.getDayNightRatio());
 		}
 	}
-
-#if 0
-	void setTempMod(v3s16 p, NodeMod mod)
-	{
-		JMutexAutoLock envlock(m_env_mutex);
-		assert(m_env.getMap().mapType() == MAPTYPE_CLIENT);
-		bool changed = false;
-		v3s16 blockpos = ((ClientMap&)m_env.getMap()).setTempMod(p, mod, &changed);
-		if(changed)
-			m_env.getMap().updateMeshes(blockpos, m_env.getDayNightRatio());
-	}
-	void clearTempMod(v3s16 p)
-	{
-		JMutexAutoLock envlock(m_env_mutex);
-		assert(m_env.getMap().mapType() == MAPTYPE_CLIENT);
-		bool changed = false;
-		v3s16 blockpos = ((ClientMap&)m_env.getMap()).clearTempMod(p, &changed);
-		if(changed)
-			m_env.getMap().updateMeshes(blockpos, m_env.getDayNightRatio());
-	}
-#endif
 
 	float getAvgRtt()
 	{
@@ -302,14 +276,11 @@ private:
 	// NOTE: If connection and environment are both to be locked,
 	// environment shall be locked first.
 
-	Environment m_env;
+	ClientEnvironment m_env;
 	JMutex m_env_mutex;
 	
 	con::Connection m_con;
 	JMutex m_con_mutex;
-
-	/*core::map<v3s16, float> m_fetchblock_history;
-	JMutex m_fetchblock_mutex;*/
 
 	core::list<IncomingPacket> m_incoming_queue;
 	JMutex m_incoming_queue_mutex;

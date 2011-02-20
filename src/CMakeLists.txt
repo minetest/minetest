@@ -50,6 +50,7 @@ configure_file(
 )
 
 set(common_SRCS
+	serverobject.cpp
 	noise.cpp
 	mineral.cpp
 	porting.cpp
@@ -75,8 +76,10 @@ set(common_SRCS
 	test.cpp
 )
 
+# Client sources
 set(minetest_SRCS
 	${common_SRCS}
+	clientobject.cpp
 	guiMainMenu.cpp
 	guiMessageMenu.cpp
 	guiTextInputMenu.cpp
@@ -88,6 +91,7 @@ set(minetest_SRCS
 	main.cpp
 )
 
+# Server sources
 set(minetestserver_SRCS
 	${common_SRCS}
 	servermain.cpp

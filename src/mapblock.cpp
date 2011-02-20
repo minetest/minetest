@@ -822,7 +822,7 @@ void MapBlock::updateMesh(u32 daynight_ratio)
 				if(dir == v3s16(0,1,0))
 					vertices[i].Pos.rotateXZBy(-45);
 
-				vertices[i].Pos += intToFloat(p + getPosRelative());
+				vertices[i].Pos += intToFloat(p + getPosRelative(), BS);
 			}
 
 			// Set material
@@ -1066,7 +1066,7 @@ void MapBlock::updateMesh(u32 daynight_ratio)
 					if(dir == v3s16(1,0,-0))
 						vertices[j].Pos.rotateXZBy(-90);
 
-					vertices[j].Pos += intToFloat(p + getPosRelative());
+					vertices[j].Pos += intToFloat(p + getPosRelative(), BS);
 				}
 
 				u16 indices[] = {0,1,2,2,3,0};
@@ -1105,7 +1105,7 @@ void MapBlock::updateMesh(u32 daynight_ratio)
 					//vertices[i].Pos.Y += neighbor_levels[v3s16(0,0,0)];
 					s32 j = corner_resolve[i];
 					vertices[i].Pos.Y += corner_levels[j];
-					vertices[i].Pos += intToFloat(p + getPosRelative());
+					vertices[i].Pos += intToFloat(p + getPosRelative(), BS);
 				}
 
 				u16 indices[] = {0,1,2,2,3,0};
@@ -1155,7 +1155,7 @@ void MapBlock::updateMesh(u32 daynight_ratio)
 			for(s32 i=0; i<4; i++)
 			{
 				vertices[i].Pos.Y += (-0.5+node_water_level)*BS;
-				vertices[i].Pos += intToFloat(p + getPosRelative());
+				vertices[i].Pos += intToFloat(p + getPosRelative(), BS);
 			}
 
 			u16 indices[] = {0,1,2,2,3,0};
@@ -1222,7 +1222,7 @@ void MapBlock::updateMesh(u32 daynight_ratio)
 
 				for(u16 i=0; i<4; i++)
 				{
-					vertices[i].Pos += intToFloat(p + getPosRelative());
+					vertices[i].Pos += intToFloat(p + getPosRelative(), BS);
 				}
 
 				u16 indices[] = {0,1,2,2,3,0};
@@ -1596,7 +1596,7 @@ void MapBlock::stepObjects(float dtime, bool server, u32 daynight_ratio)
 				if(getNode(p).d == CONTENT_AIR
 						&& getNode(p).getLightBlend(daynight_ratio) <= 11)
 				{
-					RatObject *obj = new RatObject(NULL, -1, intToFloat(p));
+					RatObject *obj = new RatObject(NULL, -1, intToFloat(p, BS));
 					addObject(obj);
 				}
 			}

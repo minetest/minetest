@@ -35,7 +35,7 @@ v3f MapBlockObject::getAbsolutePos()
 		return m_pos;
 	
 	// getPosRelative gets nodepos relative to map origin
-	v3f blockpos = intToFloat(m_block->getPosRelative());
+	v3f blockpos = intToFloat(m_block->getPosRelative(), BS);
 	return blockpos + m_pos;
 }
 
@@ -55,7 +55,7 @@ v3f MovingObject::getAbsoluteShowPos()
 		return m_pos;
 	
 	// getPosRelative gets nodepos relative to map origin
-	v3f blockpos = intToFloat(m_block->getPosRelative());
+	v3f blockpos = intToFloat(m_block->getPosRelative(), BS);
 	return blockpos + m_showpos;
 }
 
@@ -71,7 +71,7 @@ void MovingObject::move(float dtime, v3f acceleration)
 			acceleration.X, acceleration.Y, acceleration.Z
 			);
 	
-	v3s16 oldpos_i = floatToInt(m_pos);
+	v3s16 oldpos_i = floatToInt(m_pos, BS);
 	
 	if(m_block->isValidPosition(oldpos_i) == false)
 	{
@@ -137,7 +137,7 @@ void MovingObject::move(float dtime, v3f acceleration)
 			Collision detection
 		*/
 		
-		v3s16 pos_i = floatToInt(position);
+		v3s16 pos_i = floatToInt(position, BS);
 		
 		// The loop length is limited to the object moving a distance
 		f32 d = (float)BS * 0.15;
@@ -614,7 +614,7 @@ void MapBlockObjectList::update(std::istream &is, u8 version,
 		{
 			u8 light = LIGHT_MAX;
 			try{
-				v3s16 relpos_i = floatToInt(obj->m_pos);
+				v3s16 relpos_i = floatToInt(obj->m_pos, BS);
 				MapNode n = m_block->getNodeParent(relpos_i);
 				light = n.getLightBlend(daynight_ratio);
 			}
@@ -772,7 +772,7 @@ void MapBlockObjectList::step(float dtime, bool server, u32 daynight_ratio)
 				// Update light
 				u8 light = LIGHT_MAX;
 				try{
-					v3s16 relpos_i = floatToInt(obj->m_pos);
+					v3s16 relpos_i = floatToInt(obj->m_pos, BS);
 					MapNode n = m_block->getNodeParent(relpos_i);
 					light = n.getLightBlend(daynight_ratio);
 				}
@@ -824,7 +824,7 @@ void MapBlockObjectList::step(float dtime, bool server, u32 daynight_ratio)
 		{
 			MapBlockObject *obj = i.getNode()->getValue();
 
-			v3s16 pos_i = floatToInt(obj->m_pos);
+			v3s16 pos_i = floatToInt(obj->m_pos, BS);
 
 			if(m_block->isValidPosition(pos_i))
 			{
@@ -871,7 +871,7 @@ bool MapBlockObjectList::wrapObject(MapBlockObject *object)
 	// Calculate blockpos on map
 	v3s16 oldblock_pos_i_on_map = m_block->getPosRelative();
 	v3f pos_f_on_oldblock = object->m_pos;
-	v3s16 pos_i_on_oldblock = floatToInt(pos_f_on_oldblock);
+	v3s16 pos_i_on_oldblock = floatToInt(pos_f_on_oldblock, BS);
 	v3s16 pos_i_on_map = pos_i_on_oldblock + oldblock_pos_i_on_map;
 	v3s16 pos_blocks_on_map = getNodeBlockPos(pos_i_on_map);
 
@@ -905,9 +905,9 @@ bool MapBlockObjectList::wrapObject(MapBlockObject *object)
 	}
 	
 	// Calculate position on new block
-	v3f oldblock_pos_f_on_map = intToFloat(oldblock_pos_i_on_map);
+	v3f oldblock_pos_f_on_map = intToFloat(oldblock_pos_i_on_map, BS);
 	v3s16 newblock_pos_i_on_map = newblock->getPosRelative();
-	v3f newblock_pos_f_on_map = intToFloat(newblock_pos_i_on_map);
+	v3f newblock_pos_f_on_map = intToFloat(newblock_pos_i_on_map, BS);
 	v3f pos_f_on_newblock = pos_f_on_oldblock
 			- newblock_pos_f_on_map + oldblock_pos_f_on_map;
 

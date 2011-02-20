@@ -273,7 +273,7 @@ void LocalPlayer::move(f32 dtime, Map &map, f32 pos_max_d)
 {
 	v3f position = getPosition();
 	v3f oldpos = position;
-	v3s16 oldpos_i = floatToInt(oldpos);
+	v3s16 oldpos_i = floatToInt(oldpos, BS);
 
 	/*std::cout<<"oldpos_i=("<<oldpos_i.X<<","<<oldpos_i.Y<<","
 			<<oldpos_i.Z<<")"<<std::endl;*/
@@ -296,7 +296,7 @@ void LocalPlayer::move(f32 dtime, Map &map, f32 pos_max_d)
 	*/
 	
 	// Player position in nodes
-	v3s16 pos_i = floatToInt(position);
+	v3s16 pos_i = floatToInt(position, BS);
 	
 	/*
 		Check if player is in water (the oscillating value)
@@ -305,13 +305,13 @@ void LocalPlayer::move(f32 dtime, Map &map, f32 pos_max_d)
 		// If in water, the threshold of coming out is at higher y
 		if(in_water)
 		{
-			v3s16 pp = floatToInt(position + v3f(0,BS*0.1,0));
+			v3s16 pp = floatToInt(position + v3f(0,BS*0.1,0), BS);
 			in_water = content_liquid(map.getNode(pp).d);
 		}
 		// If not in water, the threshold of going in is at lower y
 		else
 		{
-			v3s16 pp = floatToInt(position + v3f(0,BS*0.5,0));
+			v3s16 pp = floatToInt(position + v3f(0,BS*0.5,0), BS);
 			in_water = content_liquid(map.getNode(pp).d);
 		}
 	}
@@ -324,7 +324,7 @@ void LocalPlayer::move(f32 dtime, Map &map, f32 pos_max_d)
 		Check if player is in water (the stable value)
 	*/
 	try{
-		v3s16 pp = floatToInt(position + v3f(0,0,0));
+		v3s16 pp = floatToInt(position + v3f(0,0,0), BS);
 		in_water_stable = content_liquid(map.getNode(pp).d);
 	}
 	catch(InvalidPositionException &e)
@@ -363,7 +363,7 @@ void LocalPlayer::move(f32 dtime, Map &map, f32 pos_max_d)
 	if(control.sneak && m_sneak_node_exists)
 	{
 		f32 maxd = 0.5*BS + sneak_max;
-		v3f lwn_f = intToFloat(m_sneak_node);
+		v3f lwn_f = intToFloat(m_sneak_node, BS);
 		position.X = rangelim(position.X, lwn_f.X-maxd, lwn_f.X+maxd);
 		position.Z = rangelim(position.Z, lwn_f.Z-maxd, lwn_f.Z+maxd);
 		
@@ -537,13 +537,13 @@ void LocalPlayer::move(f32 dtime, Map &map, f32 pos_max_d)
 		player is sneaking from, if any.
 	*/
 	{
-		v3s16 pos_i_bottom = floatToInt(position - v3f(0,BS/2,0));
+		v3s16 pos_i_bottom = floatToInt(position - v3f(0,BS/2,0), BS);
 		v2f player_p2df(position.X, position.Z);
 		f32 min_distance_f = 100000.0*BS;
 		// If already seeking from some node, compare to it.
 		/*if(m_sneak_node_exists)
 		{
-			v3f sneaknode_pf = intToFloat(m_sneak_node);
+			v3f sneaknode_pf = intToFloat(m_sneak_node, BS);
 			v2f sneaknode_p2df(sneaknode_pf.X, sneaknode_pf.Z);
 			f32 d_horiz_f = player_p2df.getDistanceFrom(sneaknode_p2df);
 			f32 d_vert_f = fabs(sneaknode_pf.Y + BS*0.5 - position.Y);
@@ -556,7 +556,7 @@ void LocalPlayer::move(f32 dtime, Map &map, f32 pos_max_d)
 		for(s16 z=-1; z<=1; z++)
 		{
 			v3s16 p = pos_i_bottom + v3s16(x,0,z);
-			v3f pf = intToFloat(p);
+			v3f pf = intToFloat(p, BS);
 			v2f node_p2df(pf.X, pf.Z);
 			f32 distance_f = player_p2df.getDistanceFrom(node_p2df);
 			f32 max_axis_distance_f = MYMAX(

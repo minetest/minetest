@@ -56,10 +56,12 @@ Client::Client(
 		const char *playername,
 		MapDrawControl &control):
 	m_thread(this),
-	m_env(new ClientMap(this, control,
+	m_env(
+		new ClientMap(this, control,
 			device->getSceneManager()->getRootSceneNode(),
 			device->getSceneManager(), 666),
-			dout_client),
+		device->getSceneManager()
+	),
 	m_con(PROTOCOL_ID, 512, CONNECTION_TIMEOUT, this),
 	m_device(device),
 	camera_position(0,0,0),
@@ -82,20 +84,25 @@ Client::Client(
 	m_step_dtime_mutex.Init();
 
 	m_thread.Start();
-	
+
+	/*
+		Add local player
+	*/
 	{
 		JMutexAutoLock envlock(m_env_mutex);
-		//m_env.getMap().StartUpdater();
 
 		Player *player = new LocalPlayer();
 
 		player->updateName(playername);
 
-		/*f32 y = BS*2 + BS*20;
-		player->setPosition(v3f(0, y, 0));*/
-		//player->setPosition(v3f(0, y, 30900*BS)); // DEBUG
 		m_env.addPlayer(player);
 	}
+
+	// Add some active objects for testing
+	/*{
+		ClientActiveObject *obj = new TestCAO(0, v3f(0, 10*BS, 0));
+		m_env.addActiveObject(obj);
+	}*/
 }
 
 Client::~Client()
@@ -493,7 +500,7 @@ void Client::ProcessData(u8 *data, u32 datasize, u16 sender_peer_id)
 		v3s16 playerpos_s16(0, BS*2+BS*20, 0);
 		if(datasize >= 2+1+6)
 			playerpos_s16 = readV3S16(&data[2+1]);
-		v3f playerpos_f = intToFloat(playerpos_s16) - v3f(0, BS/2, 0);
+		v3f playerpos_f = intToFloat(playerpos_s16, BS) - v3f(0, BS/2, 0);
 
 		{ //envlock
 			JMutexAutoLock envlock(m_env_mutex);
@@ -1037,6 +1044,99 @@ void Client::ProcessData(u8 *data, u32 datasize, u16 sender_peer_id)
 		
 		m_chat_queue.push_back(message);
 	}
+	else if(command == TOCLIENT_ACTIVE_OBJECT_REMOVE_ADD)
+	{
+		/*
+			u16 command
+			u16 count of removed objects
+			for all removed objects {
+				u16 id
+			}
+			u16 count of added objects
+			for all added objects {
+				u16 id
+				u8 type
+			}
+		*/
+
+		char buf[6];
+		// Get all data except the command number
+		std::string datastring((char*)&data[2], datasize-2);
+		// Throw them in an istringstream
+		std::istringstream is(datastring, std::ios_base::binary);
+
+		// Read stuff
+		
+		// Read removed objects
+		is.read(buf, 2);
+		u16 removed_count = readU16((u8*)buf);
+		for(u16 i=0; i<removed_count; i++)
+		{
+			is.read(buf, 2);
+			u16 id = readU16((u8*)buf);
+			// Remove it
+			{
+				JMutexAutoLock envlock(m_env_mutex);
+				m_env.removeActiveObject(id);
+			}
+		}
+		
+		// Read added objects
+		is.read(buf, 2);
+		u16 added_count = readU16((u8*)buf);
+		for(u16 i=0; i<added_count; i++)
+		{
+			is.read(buf, 2);
+			u16 id = readU16((u8*)buf);
+			is.read(buf, 1);
+			u8 type = readU8((u8*)buf);
+			// Add it
+			{
+				JMutexAutoLock envlock(m_env_mutex);
+				m_env.addActiveObject(id, type);
+			}
+		}
+	}
+	else if(command == TOCLIENT_ACTIVE_OBJECT_MESSAGES)
+	{
+		/*
+			u16 command
+			for all objects
+			{
+				u16 id
+				u16 message length
+				string message
+			}
+		*/
+		char buf[6];
+		// Get all data except the command number
+		std::string datastring((char*)&data[2], datasize-2);
+		// Throw them in an istringstream
+		std::istringstream is(datastring, std::ios_base::binary);
+		
+		while(is.eof() == false)
+		{
+			// Read stuff
+			is.read(buf, 2);
+			u16 id = readU16((u8*)buf);
+			if(is.eof())
+				break;
+			is.read(buf, 2);
+			u16 message_size = readU16((u8*)buf);
+			std::string message;
+			message.reserve(message_size);
+			for(u16 i=0; i<message_size; i++)
+			{
+				is.read(buf, 1);
+				message.append(buf, 1);
+			}
+			// Pass on to the environment
+			{
+				JMutexAutoLock envlock(m_env_mutex);
+				m_env.processActiveObjectMessage(id, message);
+			}
+		}
+	}
 	// Default to queueing it (for slow commands)
 	else
 	{
@@ -1197,7 +1297,7 @@ bool Client::AsyncProcessPacket()
 			main thread, from which is will want to retrieve textures.
 		*/
 
-		m_env.getMap().updateMeshes(block->getPos(), getDayNightRatio());
+		m_env.getClientMap().updateMeshes(block->getPos(), getDayNightRatio());
 	}
 	else
 	{
@@ -1464,7 +1564,7 @@ void Client::removeNode(v3s16 p)
 			i.atEnd() == false; i++)
 	{
 		v3s16 p = i.getNode()->getKey();
-		m_env.getMap().updateMeshes(p, m_env.getDayNightRatio());
+		m_env.getClientMap().updateMeshes(p, m_env.getDayNightRatio());
 	}
 }
 
@@ -1486,7 +1586,7 @@ void Client::addNode(v3s16 p, MapNode n)
 			i.atEnd() == false; i++)
 	{
 		v3s16 p = i.getNode()->getKey();
-		m_env.getMap().updateMeshes(p, m_env.getDayNightRatio());
+		m_env.getClientMap().updateMeshes(p, m_env.getDayNightRatio());
 	}
 }
 	
@@ -1502,36 +1602,6 @@ MapNode Client::getNode(v3s16 p)
 	JMutexAutoLock envlock(m_env_mutex);
 	return m_env.getMap().getNode(p);
 }
-
-/*void Client::getNode(v3s16 p, MapNode n)
-{
-	JMutexAutoLock envlock(m_env_mutex);
-	m_env.getMap().setNode(p, n);
-}*/
-
-/*f32 Client::getGroundHeight(v2s16 p)
-{
-	JMutexAutoLock envlock(m_env_mutex);
-	return m_env.getMap().getGroundHeight(p);
-}*/
-
-/*bool Client::isNodeUnderground(v3s16 p)
-{
-	JMutexAutoLock envlock(m_env_mutex);
-	return m_env.getMap().isNodeUnderground(p);
-}*/
-
-/*Player * Client::getLocalPlayer()
-{
-	JMutexAutoLock envlock(m_env_mutex);
-	return m_env.getLocalPlayer();
-}*/
-
-/*core::list<Player*> Client::getPlayers()
-{
-	JMutexAutoLock envlock(m_env_mutex);
-	return m_env.getPlayers();
-}*/
 
 v3f Client::getPlayerPosition()
 {
@@ -1597,7 +1667,7 @@ MapBlockObject * Client::getSelectedObject(
 
 		// Calculate from_pos relative to block
 		v3s16 block_pos_i_on_map = block->getPosRelative();
-		v3f block_pos_f_on_map = intToFloat(block_pos_i_on_map);
+		v3f block_pos_f_on_map = intToFloat(block_pos_i_on_map, BS);
 		v3f from_pos_f_on_block = from_pos_f_on_map - block_pos_f_on_map;
 
 		block->getObjects(from_pos_f_on_block, max_d, objects);
@@ -1617,7 +1687,7 @@ MapBlockObject * Client::getSelectedObject(
 
 		// Calculate shootline relative to block
 		v3s16 block_pos_i_on_map = block->getPosRelative();
-		v3f block_pos_f_on_map = intToFloat(block_pos_i_on_map);
+		v3f block_pos_f_on_map = intToFloat(block_pos_i_on_map, BS);
 		core::line3d<f32> shootline_on_block(
 				shootline_on_map.start - block_pos_f_on_map,
 				shootline_on_map.end - block_pos_f_on_map
@@ -1672,7 +1742,7 @@ u32 Client::getDayNightRatio()
 	v3f playerpos = player->getPosition();
 	v3f playerspeed = player->getSpeed();
 
-	v3s16 center_nodepos = floatToInt(playerpos);
+	v3s16 center_nodepos = floatToInt(playerpos, BS);
 	v3s16 center = getNodeBlockPos(center_nodepos);
 
 	u32 counter = 0;

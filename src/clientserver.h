@@ -106,6 +106,31 @@ enum ToClientCommand
 		wstring message
 	*/
 
+	TOCLIENT_ACTIVE_OBJECT_REMOVE_ADD = 0x31,
+	/*
+		u16 command
+		u16 count of removed objects
+		for all removed objects {
+			u16 id
+		}
+		u16 count of added objects
+		for all added objects {
+			u16 id
+			u8 type
+		}
+	*/
+	
+	TOCLIENT_ACTIVE_OBJECT_MESSAGES = 0x32,
+	/*
+		u16 command
+		for all objects
+		{
+			u16 id
+			u16 message length
+			string message
+		}
+	*/
+
 };
 
 enum ToServerCommand

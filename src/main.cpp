@@ -160,19 +160,8 @@ TODO: Make fetching sector's blocks more efficient when rendering
 
 TODO: Flowing water animation
 
-NOTE(FIXED): A lock condition is possible:
-	1) MapBlock::updateMesh() is called from client asynchronously:
-	   - AsyncProcessData() -> Map::updateMeshes()
-	2) Asynchronous locks m_temp_mods_mutex
-	3) MapBlock::updateMesh() is called from client synchronously:
-	   - Client::step() -> Environment::step()
-	4) Synchronous starts waiting for m_temp_mods_mutex
-	5) Asynchronous calls getTexture, which starts waiting for main thread
-
 Configuration:
 --------------
-
-TODO: Make the video backend selectable
 
 Client:
 -------
@@ -180,11 +169,13 @@ Client:
 TODO: Untie client network operations from framerate
       - Needs some input queues or something
 
-TODO: Make morning and evening transition more smooth and maybe shorter
+SUGG: Make morning and evening transition more smooth and maybe shorter
 
-TODO: Don't update all meshes always on single node changes, but
+SUGG: Don't update all meshes always on single node changes, but
       check which ones should be updated
 	  - implement Map::updateNodeMeshes()
+
+TODO: Remove IrrlichtWrapper
 
 Server:
 -------
@@ -194,16 +185,13 @@ TODO: When player dies, throw items on map
 TODO: Make an option to the server to disable building and digging near
       the starting position
 
-TODO: Save players with inventories to disk
-TODO: Players to be saved as text in map/players/<name>
-
 TODO: Copy the text of the last picked sign to inventory in creative
       mode
 
 TODO: Check what goes wrong with caching map to disk (Kray)
       - Nothing?
 
-TODO: When server sees that client is removing an inexistent block to
+TODO: When server sees that client is removing an inexistent block in
       an existent position, resend the MapBlock.
 
 FIXME: Server went into some infinite PeerNotFoundException loop
@@ -236,6 +224,11 @@ Block object server side:
 	    - TODO: For outgoing blocks, timestamp is written.
 	    - TODO: For incoming blocks, time difference is calculated and
 	      objects are stepped according to it.
+
+- When an active object goes far from a player, either delete
+  it or store it statically.
+- When a statically stored active object comes near a player,
+  recreate the active object
 
 Map:
 ----
@@ -345,18 +338,18 @@ Doing now (most important at the top):
 #include <fstream>
 #include <jmutexautolock.h>
 #include <locale.h>
+#include "main.h"
 #include "common_irrlicht.h"
 #include "debug.h"
 #include "map.h"
 #include "player.h"
-#include "main.h"
 #include "test.h"
-#include "environment.h"
+//#include "environment.h"
 #include "server.h"
 #include "client.h"
-#include "serialization.h"
+//#include "serialization.h"
 #include "constants.h"
-#include "strfnd.h"
+//#include "strfnd.h"
 #include "porting.h"
 #include "irrlichtwrapper.h"
 #include "gettime.h"
@@ -905,8 +898,12 @@ class RandomInputHandler : public InputHandler
 public:
 	RandomInputHandler()
 	{
+		leftdown = false;
+		rightdown = false;
 		leftclicked = false;
 		rightclicked = false;
+		leftreleased = false;
+		rightreleased = false;
 		for(u32 i=0; i<KEY_KEY_CODES_COUNT; ++i)
 			keydown[i] = false;
 	}
@@ -925,11 +922,11 @@ public:
 
 	virtual bool getLeftState()
 	{
-		return false;
+		return leftdown;
 	}
 	virtual bool getRightState()
 	{
-		return false;
+		return rightdown;
 	}
 
 	virtual bool getLeftClicked()
@@ -951,37 +948,23 @@ public:
 
 	virtual bool getLeftReleased()
 	{
-		return false;
+		return leftreleased;
 	}
 	virtual bool getRightReleased()
 	{
-		return false;
+		return rightreleased;
 	}
 	virtual void resetLeftReleased()
 	{
+		leftreleased = false;
 	}
 	virtual void resetRightReleased()
 	{
+		rightreleased = false;
 	}
 
 	virtual void step(float dtime)
 	{
-		{
-			static float counter1 = 0;
-			counter1 -= dtime;
-			if(counter1 < 0.0)
-			{
-				counter1 = 0.1*Rand(1,10);
-				/*if(g_selected_material < USEFUL_CONTENT_COUNT-1)
-					g_selected_material++;
-				else
-					g_selected_material = 0;*/
-				if(g_selected_item < PLAYER_INVENTORY_SIZE-1)
-					g_selected_item++;
-				else
-					g_selected_item = 0;
-			}
-		}
 		{
 			static float counter1 = 0;
 			counter1 -= dtime;
@@ -1033,7 +1016,11 @@ public:
 			if(counter1 < 0.0)
 			{
 				counter1 = 0.1*Rand(1, 30);
-				leftclicked = true;
+				leftdown = !leftdown;
+				if(leftdown)
+					leftclicked = true;
+				if(!leftdown)
+					leftreleased = true;
 			}
 		}
 		{
@@ -1041,8 +1028,12 @@ public:
 			counter1 -= dtime;
 			if(counter1 < 0.0)
 			{
-				counter1 = 0.1*Rand(1, 20);
-				rightclicked = true;
+				counter1 = 0.1*Rand(1, 15);
+				rightdown = !rightdown;
+				if(rightdown)
+					rightclicked = true;
+				if(!rightdown)
+					rightreleased = true;
 			}
 		}
 		mousepos += mousespeed;
@@ -1056,8 +1047,12 @@ private:
 	bool keydown[KEY_KEY_CODES_COUNT];
 	v2s32 mousepos;
 	v2s32 mousespeed;
+	bool leftdown;
+	bool rightdown;
 	bool leftclicked;
 	bool rightclicked;
+	bool leftreleased;
+	bool rightreleased;
 };
 
 void updateViewingRange(f32 frametime_in, Client *client)
@@ -2486,11 +2481,9 @@ int main(int argc, char *argv[])
 		camera->setTarget(camera_position + camera_direction * 100.0);
 
 		if(FIELD_OF_VIEW_TEST){
-			//client.m_env.getMap().updateCamera(v3f(0,0,0), v3f(0,0,1));
 			client.updateCamera(v3f(0,0,0), v3f(0,0,1));
 		}
 		else{
-			//client.m_env.getMap().updateCamera(camera_position, camera_direction);
 			//TimeTaker timer("client.updateCamera");
 			client.updateCamera(camera_position, camera_direction);
 		}
@@ -2585,7 +2578,7 @@ int main(int argc, char *argv[])
 		core::aabbox3d<f32> nodehilightbox;
 		f32 mindistance = BS * 1001;
 		
-		v3s16 pos_i = floatToInt(player_position);
+		v3s16 pos_i = floatToInt(player_position, BS);
 
 		/*std::cout<<"pos_i=("<<pos_i.X<<","<<pos_i.Y<<","<<pos_i.Z<<")"
 				<<std::endl;*/
@@ -2615,7 +2608,7 @@ int main(int argc, char *argv[])
 			}
 
 			v3s16 np(x,y,z);
-			v3f npf = intToFloat(np);
+			v3f npf = intToFloat(np, BS);
 			
 			f32 d = 0.01;
 			
@@ -2723,7 +2716,7 @@ int main(int argc, char *argv[])
 							const float d = 0.502;
 							core::aabbox3d<f32> nodebox
 									(-BS*d, -BS*d, -BS*d, BS*d, BS*d, BS*d);
-							v3f nodepos_f = intToFloat(nodepos);
+							v3f nodepos_f = intToFloat(nodepos, BS);
 							nodebox.MinEdge += nodepos_f;
 							nodebox.MaxEdge += nodepos_f;
 							nodehilightbox = nodebox;

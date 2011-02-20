@@ -239,13 +239,6 @@ public:
 		pending_serialization_version = SER_FMT_VER_INVALID;
 		m_nearest_unsent_d = 0;
 		m_nearest_unsent_reset_timer = 0.0;
-
-		m_blocks_sent_mutex.Init();
-		m_blocks_sending_mutex.Init();
-		
-		/*m_dig_mutex.Init();
-		m_dig_time_remaining = 0;
-		m_dig_tool_item = -1;*/
 	}
 	~RemoteClient()
 	{
@@ -279,7 +272,6 @@ public:
 
 	s32 SendingCount()
 	{
-		JMutexAutoLock lock(m_blocks_sending_mutex);
 		return m_blocks_sending.size();
 	}
 	
@@ -290,8 +282,6 @@ public:
 
 	void PrintInfo(std::ostream &o)
 	{
-		JMutexAutoLock l2(m_blocks_sent_mutex);
-		JMutexAutoLock l3(m_blocks_sending_mutex);
 		o<<"RemoteClient "<<peer_id<<": "
 				<<", m_blocks_sent.size()="<<m_blocks_sent.size()
 				<<", m_blocks_sending.size()="<<m_blocks_sending.size()
@@ -302,30 +292,21 @@ public:
 	}
 
 	// Time from last placing or removing blocks
-	MutexedVariable<float> m_time_from_building;
+	float m_time_from_building;
 	
 	/*JMutex m_dig_mutex;
 	float m_dig_time_remaining;
 	// -1 = not digging
 	s16 m_dig_tool_item;
 	v3s16 m_dig_position;*/
+	
+	/*
+		List of active objects that the client knows of.
+		Value is dummy.
+	*/
+	core::map<u16, bool> m_known_objects;
 
 private:
-	/*
-		All members that are accessed by many threads should
-		obviously be behind a mutex. The threads include:
-		- main thread (calls step())
-		- server thread (calls AsyncRunStep() and Receive())
-		- emerge thread 
-	*/
-	
-	//TODO: core::map<v3s16, MapBlock*> m_active_blocks
-	//NOTE: Not here, it should be server-wide!
-
-	// Number of blocks in the emerge queue that have this client as
-	// a receiver. Used for throttling network usage.
-	//MutexedVariable<s16> m_num_blocks_in_emerge_queue;
-
 	/*
 		Blocks that have been sent to client.
 		- These don't have to be sent again.
@@ -339,7 +320,7 @@ private:
 	s16 m_nearest_unsent_d;
 	v3s16 m_last_center;
 	float m_nearest_unsent_reset_timer;
-	JMutex m_blocks_sent_mutex;
+	
 	/*
 		Blocks that are currently on the line.
 		This is used for throttling the sending of blocks.
@@ -349,7 +330,6 @@ private:
 		Value is time from sending. (not used at the moment)
 	*/
 	core::map<v3s16, float> m_blocks_sending;
-	JMutex m_blocks_sending_mutex;
 
 	/*
 		Count of excess GotBlocks().
@@ -360,15 +340,6 @@ private:
 	*/
 	u32 m_excess_gotblocks;
 };
-
-/*struct ServerSettings
-{
-	ServerSettings()
-	{
-		creative_mode = false;
-	}
-	bool creative_mode;
-};*/
 
 class Server : public con::PeerHandler
 {
@@ -470,7 +441,7 @@ private:
 	// NOTE: If connection and environment are both to be locked,
 	// environment shall be locked first.
 	JMutex m_env_mutex;
-	Environment m_env;
+	ServerEnvironment m_env;
 
 	JMutex m_con_mutex;
 	con::Connection m_con;

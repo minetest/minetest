@@ -683,32 +683,6 @@ struct MapNode
 	}
 };
 
-/*
-	Returns integer position of the node in given
-	floating point position.
-*/
-inline v3s16 floatToInt(v3f p)
-{
-	v3s16 p2(
-		(p.X + (p.X>0 ? BS/2 : -BS/2))/BS,
-		(p.Y + (p.Y>0 ? BS/2 : -BS/2))/BS,
-		(p.Z + (p.Z>0 ? BS/2 : -BS/2))/BS);
-	return p2;
-}
-
-/*
-	The same thing backwards
-*/
-inline v3f intToFloat(v3s16 p)
-{
-	v3f p2(
-		p.X * BS,
-		p.Y * BS,
-		p.Z * BS
-	);
-	return p2;
-}
-
 
 
 #endif
