@@ -197,7 +197,7 @@ public:
 	*/
 	u16 addActiveObject(ClientActiveObject *object);
 
-	void addActiveObject(u16 id, u8 type);
+	void addActiveObject(u16 id, u8 type, const std::string &init_data);
 	void removeActiveObject(u16 id);
 
 	void processActiveObjectMessage(u16 id, const std::string &data);

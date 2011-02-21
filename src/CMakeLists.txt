@@ -102,17 +102,15 @@ include_directories(
 	${IRRLICHT_INCLUDE_DIR}
 	${ZLIB_INCLUDE_DIR}
 	${CMAKE_BUILD_TYPE}
-	"${PROJECT_SOURCE_DIR}/jthread"
 	${PNG_INCLUDE_DIR}
+	"${PROJECT_SOURCE_DIR}/jthread"
+	"${PROJECT_SOURCE_DIR}/lua/src"
 )
 
 set(EXECUTABLE_OUTPUT_PATH ../bin)
 
-set(JTHREAD_LIBRARIES "jthread")
-set(JTHREAD_SRCS "")
-
 if(BUILD_CLIENT)
-	add_executable(minetest ${minetest_SRCS} ${JTHREAD_SRCS})
+	add_executable(minetest ${minetest_SRCS})
 	target_link_libraries(
 		minetest
 		${ZLIB_LIBRARIES}
@@ -122,19 +120,22 @@ if(BUILD_CLIENT)
 		${BZIP2_LIBRARIES}
 		${PNG_LIBRARIES}
 		${X11_LIBRARIES}
-		${JTHREAD_LIBRARIES}
 		${PLATFORM_LIBS}
 		${CLIENT_PLATFORM_LIBS}
+		jthread
+		lua
 	)
+	#${CMAKE_CURRENT_SOURCE_DIR}/lua/build/liblua
 endif(BUILD_CLIENT)
 
 if(BUILD_SERVER)
-	add_executable(minetestserver ${minetestserver_SRCS} ${JTHREAD_SRCS})
+	add_executable(minetestserver ${minetestserver_SRCS})
 	target_link_libraries(
 		minetestserver
 		${ZLIB_LIBRARIES}
-		${JTHREAD_LIBRARIES}
 		${PLATFORM_LIBS}
+		jthread
+		lua
 	)
 endif(BUILD_SERVER)
 
@@ -191,6 +192,8 @@ endif()
 # Example configuration file
 install(FILES "${CMAKE_CURRENT_SOURCE_DIR}/../minetest.conf.example" DESTINATION ${EXAMPLE_CONF_DIR})
 
+install(DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/../data/luaobjects" DESTINATION ${DATADIR})
+
 if(BUILD_CLIENT)
 	install(TARGETS minetest DESTINATION ${BINDIR})
 
@@ -215,5 +218,6 @@ endif(BUILD_SERVER)
 # Subdirectories
 
 add_subdirectory(jthread)
+add_subdirectory(lua)
 
 #end

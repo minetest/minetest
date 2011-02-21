@@ -157,23 +157,22 @@ public:
 		v3s16 relpos = p - blockpos*MAP_BLOCKSIZE;
 		blockref->setNodeNoCheck(relpos, n);
 	}
-
-	/*MapNode getNodeGenerate(v3s16 p)
+	
+	// Returns a CONTENT_IGNORE node if not found
+	MapNode getNodeNoEx(v3s16 p)
 	{
-		v3s16 blockpos = getNodeBlockPos(p);
-		MapBlock * blockref = getBlock(blockpos);
-		v3s16 relpos = p - blockpos*MAP_BLOCKSIZE;
+		try{
+			v3s16 blockpos = getNodeBlockPos(p);
+			MapBlock * blockref = getBlockNoCreate(blockpos);
+			v3s16 relpos = p - blockpos*MAP_BLOCKSIZE;
 
-		return blockref->getNode(relpos);
-	}*/
-
-	/*void setNodeGenerate(v3s16 p, MapNode & n)
-	{
-		v3s16 blockpos = getNodeBlockPos(p);
-		MapBlock * blockref = getBlock(blockpos);
-		v3s16 relpos = p - blockpos*MAP_BLOCKSIZE;
-		blockref->setNode(relpos, n);
-	}*/
+			return blockref->getNodeNoCheck(relpos);
+		}
+		catch(InvalidPositionException &e)
+		{
+			return MapNode(CONTENT_IGNORE);
+		}
+	}
 
 	void unspreadLight(enum LightBank bank,
 			core::map<v3s16, u8> & from_nodes,

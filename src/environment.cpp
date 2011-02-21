@@ -19,6 +19,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "environment.h"
 #include "filesys.h"
+#include "porting.h"
 
 Environment::Environment()
 {
@@ -150,11 +151,6 @@ ServerEnvironment::ServerEnvironment(ServerMap *map):
 	m_map(map),
 	m_random_spawn_timer(0)
 {
-	/*
-		TEST CODE
-	*/
-	TestSAO *obj = new TestSAO(0, v3f(0, BS*5, 0));
-	addActiveObject(obj);
 }
 
 ServerEnvironment::~ServerEnvironment()
@@ -443,9 +439,39 @@ void ServerEnvironment::step(float dtime)
 	m_random_spawn_timer -= dtime;
 	if(m_random_spawn_timer < 0)
 	{
-		m_random_spawn_timer += 0.1;
-		TestSAO *obj = new TestSAO(0,
-				v3f(myrand_range(-2*BS,2*BS), BS*5, myrand_range(-2*BS,2*BS)));
+		m_random_spawn_timer += myrand_range(2.0, 20.0);
+
+		/*TestSAO *obj = new TestSAO(0,
+				v3f(myrand_range(-2*BS,2*BS), BS*5, myrand_range(-2*BS,2*BS)));*/
+
+		/*
+			Create a Lua ServerActiveObject somewhere near the origin
+		*/
+		LuaSAO *obj = new LuaSAO(this, 0,
+				v3f(myrand_range(-2*BS,2*BS),
+				myrand_range(2*BS,9*BS),
+				myrand_range(-2*BS,2*BS))
+		);
+		
+		/*
+			Select a random type for it
+		*/
+		std::string objectdir = porting::getDataPath("luaobjects");
+		std::vector<fs::DirListNode> dirlist = fs::GetDirListing(objectdir);
+		u32 selected_i = myrand_range(0, dirlist.size()-1);
+		std::string selected_name = "";
+		selected_name = dirlist[selected_i].name;
+		/*for(u32 i=0; i<dirlist.size(); i++)*/
+		
+		dstream<<"ServerEnvironment: Selected script name \""<<selected_name
+				<<"\" for new lua object"<<std::endl;
+
+		/*
+			Load the scripts for the type
+		*/
+		obj->loadScripts(selected_name.c_str());
+
+		// Add the object to the environment
 		addActiveObject(obj);
 	}
 }
@@ -721,7 +747,7 @@ void ClientEnvironment::step(float dtime)
 		if(dtime_downcount > dtime_max_increment)
 			dtime_part = dtime_max_increment;
 		else
-			dtime_part = dtime;
+			dtime_part = dtime_downcount;
 		dtime_downcount -= dtime_part;
 		
 		/*
@@ -918,7 +944,8 @@ u16 ClientEnvironment::addActiveObject(ClientActiveObject *object)
 	return object->getId();
 }
 
-void ClientEnvironment::addActiveObject(u16 id, u8 type)
+void ClientEnvironment::addActiveObject(u16 id, u8 type,
+		const std::string &init_data)
 {
 	ClientActiveObject* obj = ClientActiveObject::create(type);
 	if(obj == NULL)
@@ -932,6 +959,8 @@ void ClientEnvironment::addActiveObject(u16 id, u8 type)
 	obj->setId(id);
 
 	addActiveObject(obj);
+
+	obj->initialize(init_data);
 }
 
 void ClientEnvironment::removeActiveObject(u16 id)

@@ -53,6 +53,13 @@ public:
 	// Process a message sent by the server side object
 	virtual void processMessage(const std::string &data){}
 
+	/*
+		This takes the return value of getClientInitializationData
+		TODO: Usage of this
+	*/
+	virtual void initialize(const std::string &data){}
+	
+	// Create a certain type of ClientActiveObject
 	static ClientActiveObject* create(u8 type);
 
 protected:
@@ -82,6 +89,59 @@ public:
 private:
 	scene::IMeshSceneNode *m_node;
 	v3f m_position;
+};
+
+extern "C"{
+#include "lua.h"
+#include "lualib.h"
+#include "lauxlib.h"
+}
+
+class LuaCAO : public ClientActiveObject
+{
+public:
+	LuaCAO(u16 id);
+	virtual ~LuaCAO();
+	
+	u8 getType() const
+	{
+		return ACTIVEOBJECT_TYPE_LUA;
+	}
+	
+	void step(float dtime);
+
+	void processMessage(const std::string &data);
+
+	void initialize(const std::string &data);
+
+	void loadScript(const std::string script);
+
+	void addToScene(scene::ISceneManager *smgr);
+	void removeFromScene();
+	void updateLight(u8 light_at_pos);
+	v3s16 getLightPosition();
+	void updateNodePos();
+
+	void setPosition(v3f pos);
+	v3f getPosition();
+
+	void setRotation(v3f rot);
+	v3f getRotation();
+	
+	// image: eg. "rat.png"
+	// corners: v3f corners[4]
+	void addToMesh(const char *image, v3f *corners, bool backface_culling);
+	void clearMesh();
+
+private:
+	lua_State* L;
+	
+	scene::ISceneManager *m_smgr;
+	scene::IMeshSceneNode *m_node;
+	scene::SMesh *m_mesh;
+
+	v3f m_position;
+	v3f m_rotation;
 };
 
 #endif

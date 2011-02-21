@@ -17,10 +17,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
-/*
-(c) 2010 Perttu Ahola <celeron55@gmail.com>
-*/
-
 #include "server.h"
 #include "utility.h"
 #include <iostream>
@@ -999,19 +995,25 @@ void Server::start(unsigned short port)
 	m_thread.setRun(true);
 	m_thread.Start();
 	
-	dout_server<<"Server started on port "<<port<<std::endl;
+	dout_server<<"Server: Started on port "<<port<<std::endl;
 }
 
 void Server::stop()
 {
 	DSTACK(__FUNCTION_NAME);
+
 	// Stop threads (set run=false first so both start stopping)
 	m_thread.setRun(false);
 	m_emergethread.setRun(false);
 	m_thread.stop();
 	m_emergethread.stop();
 	
-	dout_server<<"Server threads stopped"<<std::endl;
+	dout_server<<"Server: Threads stopped"<<std::endl;
+
+	dout_server<<"Server: Saving players"<<std::endl;
+	// Save players
+	// FIXME: Apparently this does not do anything here
+	//m_env.serializePlayers(m_mapsavedir);
 }
 
 void Server::step(float dtime)
@@ -1267,6 +1269,9 @@ void Server::AsyncRunStep()
 				writeU8((u8*)buf, type);
 				data_buffer.append(buf, 1);
 
+				data_buffer.append(serializeLongString(
+						obj->getClientInitializationData()));
+
 				// Add to known objects
 				client->m_known_objects.insert(i.getNode()->getKey(), false);
 
@@ -1348,13 +1353,12 @@ void Server::AsyncRunStep()
 					// Compose the full new data with header
 					ActiveObjectMessage aom = *k;
 					std::string new_data;
-					// Add header (object id + length)
-					char header[4];
-					writeU16((u8*)&header[0], aom.id);
-					writeU16((u8*)&header[2], aom.datastring.size());
-					new_data.append(header, 4);
+					// Add object id
+					char buf[2];
+					writeU16((u8*)&buf[0], aom.id);
+					new_data.append(buf, 2);
 					// Add data
-					new_data += aom.datastring;
+					new_data += serializeString(aom.datastring);
 					// Add data to buffer
 					if(aom.reliable)
 						reliable_data += new_data;
@@ -1384,13 +1388,14 @@ void Server::AsyncRunStep()
 				// Send as unreliable
 				m_con.Send(client->peer_id, 0, reply, false);
 			}
-			if(reliable_data.size() > 0 || unreliable_data.size() > 0)
+
+			/*if(reliable_data.size() > 0 || unreliable_data.size() > 0)
 			{
 				dstream<<"INFO: Server: Size of object message data: "
 						<<"reliable: "<<reliable_data.size()
 						<<", unreliable: "<<unreliable_data.size()
 						<<std::endl;
-			}
+			}*/
 		}
 
 		// Clear buffered_messages

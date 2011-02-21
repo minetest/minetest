@@ -38,15 +38,27 @@ Some planning
 
 */
 
+class ServerEnvironment;
+
 class ServerActiveObject : public ActiveObject
 {
 public:
-	ServerActiveObject(u16 id, v3f pos=v3f(0,0,0));
+	ServerActiveObject(ServerEnvironment *env, u16 id, v3f pos=v3f(0,0,0));
 	virtual ~ServerActiveObject();
 
 	v3f getBasePosition()
 	{
 		return m_base_position;
+	}
+	
+	void setBasePosition(v3f pos)
+	{
+		m_base_position = pos;
+	}
+
+	ServerEnvironment* getEnv()
+	{
+		return m_env;
 	}
 	
 	/*
@@ -55,7 +67,24 @@ public:
 	*/
 	virtual void step(float dtime, Queue<ActiveObjectMessage> &messages){}
 	
-	// Number of players which know about this one
+	/*
+		The return value of this is passed to the client-side object
+		when it is created
+	*/
+	virtual std::string getClientInitializationData(){return "";}
+	
+	/*
+		The return value of this is passed to the server-side object
+		when it is loaded from disk or from a static object
+	*/
+	virtual std::string getServerInitializationData(){return "";}
+	
+	/*
+		This takes the return value of getServerInitializationData
+	*/
+	virtual void initialize(const std::string &data){}
+	
+	// Number of players which know about this object
 	u16 m_known_by_count;
 	/*
 		Whether this object is to be removed when nobody knows about
@@ -66,13 +95,14 @@ public:
 	bool m_removed;
 	
 protected:
+	ServerEnvironment *m_env;
 	v3f m_base_position;
 };
 
 class TestSAO : public ServerActiveObject
 {
 public:
-	TestSAO(u16 id, v3f pos);
+	TestSAO(ServerEnvironment *env, u16 id, v3f pos);
 	u8 getType() const
 	{
 		return ACTIVEOBJECT_TYPE_TEST;
@@ -81,6 +111,44 @@ public:
 private:
 	float m_timer1;
 	float m_age;
+};
+
+extern "C"{
+#include "lua.h"
+#include "lualib.h"
+#include "lauxlib.h"
+}
+
+class LuaSAO : public ServerActiveObject
+{
+public:
+	LuaSAO(ServerEnvironment *env, u16 id, v3f pos);
+	virtual ~LuaSAO();
+
+	u8 getType() const
+	{
+		return ACTIVEOBJECT_TYPE_LUA;
+	}
+
+	virtual std::string getClientInitializationData();
+	
+	virtual std::string getServerInitializationData();
+	
+	void initialize(const std::string &data);
+	
+	void loadScripts(const std::string &script_name);
+
+	void step(float dtime, Queue<ActiveObjectMessage> &messages);
+
+	/*
+		Stuff available for usage for the lua callbacks
+	*/
+	// This is moved onwards at the end of step()
+	Queue<ActiveObjectMessage> m_message_queue;
+
+private:
+	lua_State* L;
+	std::string m_script_name;
 };
 
 #endif

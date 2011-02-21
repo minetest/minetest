@@ -1056,6 +1056,8 @@ void Client::ProcessData(u8 *data, u32 datasize, u16 sender_peer_id)
 			for all added objects {
 				u16 id
 				u8 type
+				u16 initialization data length
+				string initialization data
 			}
 		*/
 
@@ -1090,10 +1092,11 @@ void Client::ProcessData(u8 *data, u32 datasize, u16 sender_peer_id)
 			u16 id = readU16((u8*)buf);
 			is.read(buf, 1);
 			u8 type = readU8((u8*)buf);
+			std::string data = deSerializeLongString(is);
 			// Add it
 			{
 				JMutexAutoLock envlock(m_env_mutex);
-				m_env.addActiveObject(id, type);
+				m_env.addActiveObject(id, type, data);
 			}
 		}
 	}

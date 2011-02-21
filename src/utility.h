@@ -1744,9 +1744,9 @@ inline std::string wrap_rows(const std::string &from, u32 rowlen)
 inline v3s16 floatToInt(v3f p, f32 d)
 {
 	v3s16 p2(
-		(p.X + (p.X>0 ? BS/2 : -BS/2))/d,
-		(p.Y + (p.Y>0 ? BS/2 : -BS/2))/d,
-		(p.Z + (p.Z>0 ? BS/2 : -BS/2))/d);
+		(p.X + (p.X>0 ? d/2 : -d/2))/d,
+		(p.Y + (p.Y>0 ? d/2 : -d/2))/d,
+		(p.Z + (p.Z>0 ? d/2 : -d/2))/d);
 	return p2;
 }
 
@@ -1761,6 +1761,81 @@ inline v3f intToFloat(v3s16 p, f32 d)
 		(f32)p.Z * d
 	);
 	return p2;
+}
+
+/*
+	More serialization stuff
+*/
+
+// Creates a string with the length as the first two bytes
+inline std::string serializeString(const std::string plain)
+{
+	assert(plain.size() <= 65535);
+	char buf[2];
+	writeU16((u8*)&buf[0], plain.size());
+	std::string s;
+	s.append(buf, 2);
+	s.append(plain);
+	return s;
+}
+
+// Reads a string with the length as the first two bytes
+inline std::string deSerializeString(const std::string encoded)
+{
+	u16 s_size = readU16((u8*)&encoded.c_str()[0]);
+	std::string s;
+	s.reserve(s_size);
+	s.append(&encoded.c_str()[2], s_size);
+	return s;
+}
+
+// Reads a string with the length as the first two bytes
+inline std::string deSerializeString(std::istream &is)
+{
+	char buf[2];
+	is.read(buf, 2);
+	u16 s_size = readU16((u8*)buf);
+	Buffer<char> buf2(s_size);
+	is.read(&buf2[0], s_size);
+	std::string s;
+	s.reserve(s_size);
+	s.append(&buf2[0], s_size);
+	return s;
+}
+
+// Creates a string with the length as the first four bytes
+inline std::string serializeLongString(const std::string plain)
+{
+	char buf[4];
+	writeU32((u8*)&buf[0], plain.size());
+	std::string s;
+	s.append(buf, 4);
+	s.append(plain);
+	return s;
+}
+
+// Reads a string with the length as the first four bytes
+inline std::string deSerializeLongString(const std::string encoded)
+{
+	u32 s_size = readU32((u8*)&encoded.c_str()[0]);
+	std::string s;
+	s.reserve(s_size);
+	s.append(&encoded.c_str()[2], s_size);
+	return s;
+}
+
+// Reads a string with the length as the first four bytes
+inline std::string deSerializeLongString(std::istream &is)
+{
+	char buf[4];
+	is.read(buf, 4);
+	u32 s_size = readU32((u8*)buf);
+	Buffer<char> buf2(s_size);
+	is.read(&buf2[0], s_size);
+	std::string s;
+	s.reserve(s_size);
+	s.append(&buf2[0], s_size);
+	return s;
 }
 
 #endif
