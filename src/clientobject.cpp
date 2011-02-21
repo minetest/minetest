@@ -175,6 +175,23 @@ extern "C"{
 }
 
 /*
+	Functions for calling from script:
+
+	object_set_position(self, x, y, z)
+	object_set_rotation(self, x, y, z)
+	object_add_to_mesh(self, image, corners, backface_culling)
+	object_clear_mesh(self)
+
+	Callbacks in script:
+
+	step(self, dtime)
+	process_message(self, data)
+	initialize(self, data)
+	TODO:
+	string status_text(self)
+*/
+
+/*
 	object_set_position(self, x, y, z)
 */
 static int lf_object_set_position(lua_State *L)

@@ -198,23 +198,6 @@ struct ContentFeatures
 		}
 	}
 
-	/*void setTexture(u16 i, AtlasPointer p, u8 alpha=255)
-	{
-		tiles[i].texture = p;
-		if(alpha != 255)
-		{
-			tiles[i].alpha = alpha;
-			tiles[i].material_type = MATERIAL_ALPHA_VERTEX;
-		}
-	}
-	void setAllTextures(AtlasPointer p, u8 alpha=255)
-	{
-		for(u16 i=0; i<6; i++)
-		{
-			setTexture(i, p, alpha);
-		}
-	}*/
-
 	void setTile(u16 i, const TileSpec &tile)
 	{
 		tiles[i] = tile;

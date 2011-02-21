@@ -88,10 +88,20 @@ extern "C"{
 }
 
 /*
+	Functions for calling from script:
+
 	object_set_base_position(self, x,y,z)
 	x,y,z = object_get_base_position(self)
 	object_add_message(self, data)
+	n = object_get_node(self, x,y,z)
 	object_remove(self)
+
+	Callbacks in script:
+	
+	step(self, dtime)
+	get_client_init_data(self)
+	get_server_init_data(self)
+	initialize(self, data)
 */
 
 /*
@@ -168,10 +178,80 @@ static int lf_object_add_message(lua_State *L)
 }
 
 /*
-	object_get_node(x,y,z)
+	object_get_node(self, x,y,z)
 */
 static int lf_object_get_node(lua_State *L)
 {
+	// 4: z
+	lua_Number z = lua_tonumber(L, -1);
+	lua_pop(L, 1);
+	// 3: y
+	lua_Number y = lua_tonumber(L, -1);
+	lua_pop(L, 1);
+	// 2: x
+	lua_Number x = lua_tonumber(L, -1);
+	lua_pop(L, 1);
+	// 1: self
+	LuaSAO *self = (LuaSAO*)lua_touserdata(L, -1);
+	lua_pop(L, 1);
+	
+	assert(self);
+
+	v3s16 pos = floatToInt(v3f(x,y,z), 1.0);
+
+	/*dstream<<"Checking node from pos=("<<pos.X<<","<<pos.Y<<","<<pos.Z
+			<<")"<<std::endl;*/
+	
+	// Get the node
+	MapNode n(CONTENT_IGNORE);
+	n = self->getEnv()->getMap().getNodeNoEx(pos);
+
+	// Create a table with some data about the node
+	lua_newtable(L);
+	lua_pushstring(L, "content");
+	lua_pushinteger(L, n.d);
+	lua_settable(L, -3);
+	lua_pushstring(L, "param1");
+	lua_pushinteger(L, n.param);
+	lua_settable(L, -3);
+	lua_pushstring(L, "param2");
+	lua_pushinteger(L, n.param2);
+	lua_settable(L, -3);
+	lua_pushstring(L, "walkable");
+	lua_pushboolean(L, content_features(n.d).walkable);
+	lua_settable(L, -3);
+	
+	// Return the table
+	return 1;
+}
+
+#if 0
+/*
+	object_set_node(self, x,y,z, n)
+*/
+static int lf_object_set_node(lua_State *L)
+{
+	MapNode n;
+
+	// 5: n
+	// Get fields of table
+
+	lua_pushinteger(L, "content");
+	lua_gettable(L, -2);
+	n.d = lua_tonumber(L, -1);
+	lua_pop(L, 1);
+
+	lua_pushinteger(L, "param1");
+	lua_gettable(L, -2);
+	n.param = lua_tonumber(L, -1);
+	lua_pop(L, 1);
+
+	lua_pushinteger(L, "param2");
+	lua_gettable(L, -2);
+	n.param2 = lua_tonumber(L, -1);
+	lua_pop(L, 1);
+
+	lua_pop(L, 1);
 	// 4: z
 	lua_Number z = lua_tonumber(L, -1);
 	lua_pop(L, 1);
@@ -208,6 +288,7 @@ static int lf_object_get_node(lua_State *L)
 	// Return the table
 	return 1;
 }
+#endif
 
 /*
 	object_remove(x,y,z)
