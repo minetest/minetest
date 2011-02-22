@@ -613,8 +613,6 @@ inline v3s16 arealim(v3s16 p, s16 d)
 	return p;
 }
 
-// NOTE: There seems to be some problem with this on some systems:
-// http://pastebin.com/vwJP2GZ6
 inline std::wstring narrow_to_wide(const std::string& mbs)
 {
 	size_t wcl = mbs.size();
