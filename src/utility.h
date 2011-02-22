@@ -613,11 +613,15 @@ inline v3s16 arealim(v3s16 p, s16 d)
 	return p;
 }
 
+// NOTE: There seems to be some problem with this on some systems:
+// http://pastebin.com/vwJP2GZ6
 inline std::wstring narrow_to_wide(const std::string& mbs)
 {
 	size_t wcl = mbs.size();
-	SharedBuffer<wchar_t> wcs(wcl+1);
+	Buffer<wchar_t> wcs(wcl+1);
 	size_t l = mbstowcs(*wcs, mbs.c_str(), wcl);
+	if(l == (size_t)(-1))
+		return L"<invalid multibyte string>";
 	wcs[l] = 0;
 	return *wcs;
 }
@@ -627,7 +631,7 @@ inline std::string wide_to_narrow(const std::wstring& wcs)
 	size_t mbl = wcs.size()*4;
 	SharedBuffer<char> mbs(mbl+1);
 	size_t l = wcstombs(*mbs, wcs.c_str(), mbl);
-	if((int)l == -1)
+	if(l == (size_t)(-1))
 		mbs[0] = 0;
 	else
 		mbs[l] = 0;
@@ -1312,7 +1316,7 @@ private:
 };
 
 /*
-	FIFO queue
+	FIFO queue (well, actually a FILO also)
 */
 template<typename T>
 class Queue
@@ -1326,11 +1330,21 @@ public:
 	T pop_front()
 	{
 		if(m_list.size() == 0)
-			throw ItemNotFoundException("MutexedQueue: queue is empty");
+			throw ItemNotFoundException("Queue: queue is empty");
 
 		typename core::list<T>::Iterator begin = m_list.begin();
 		T t = *begin;
 		m_list.erase(begin);
+		return t;
+	}
+	T pop_back()
+	{
+		if(m_list.size() == 0)
+			throw ItemNotFoundException("Queue: queue is empty");
+
+		typename core::list<T>::Iterator last = m_list.getLast();
+		T t = *last;
+		m_list.erase(last);
 		return t;
 	}
 
@@ -1344,7 +1358,7 @@ protected:
 };
 
 /*
-	Thread-safe FIFO queue
+	Thread-safe FIFO queue (well, actually a FILO also)
 */
 
 template<typename T>
@@ -1378,6 +1392,32 @@ public:
 					typename core::list<T>::Iterator begin = m_list.begin();
 					T t = *begin;
 					m_list.erase(begin);
+					return t;
+				}
+
+				if(wait_time_ms >= wait_time_max_ms)
+					throw ItemNotFoundException("MutexedQueue: queue is empty");
+			}
+
+			// Wait a while before trying again
+			sleep_ms(10);
+			wait_time_ms += 10;
+		}
+	}
+	T pop_back(u32 wait_time_max_ms=0)
+	{
+		u32 wait_time_ms = 0;
+
+		for(;;)
+		{
+			{
+				JMutexAutoLock lock(m_mutex);
+
+				if(m_list.size() > 0)
+				{
+					typename core::list<T>::Iterator last = m_list.getLast();
+					T t = *last;
+					m_list.erase(last);
 					return t;
 				}
 
@@ -1837,6 +1877,37 @@ inline std::string deSerializeLongString(std::istream &is)
 	s.append(&buf2[0], s_size);
 	return s;
 }
+
+//
+
+inline u32 time_to_daynight_ratio(u32 time_of_day)
+{
+	const s32 daylength = 16;
+	const s32 nightlength = 6;
+	const s32 daytimelength = 8;
+	s32 d = daylength;
+	s32 t = (((time_of_day)%24000)/(24000/d));
+	if(t < nightlength/2 || t >= d - nightlength/2)
+		return 300;
+	else if(t >= d/2 - daytimelength/2 && t < d/2 + daytimelength/2)
+		return 1000;
+	else
+		return 750;
+}
+
+// Random helper. Usually d=BS
+inline core::aabbox3d<f32> getNodeBox(v3s16 p, float d)
+{
+	return core::aabbox3d<f32>(
+		(float)p.X * d - 0.5*d,
+		(float)p.Y * d - 0.5*d,
+		(float)p.Z * d - 0.5*d,
+		(float)p.X * d + 0.5*d,
+		(float)p.Y * d + 0.5*d,
+		(float)p.Z * d + 0.5*d
+	);
+}
+	
 
 #endif
 
