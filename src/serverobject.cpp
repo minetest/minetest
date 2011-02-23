@@ -97,6 +97,37 @@ extern "C"{
 */
 
 /*
+	object_remove(x,y,z)
+*/
+static int lf_object_remove(lua_State *L)
+{
+	// 1: self
+	LuaSAO *self = (LuaSAO*)lua_touserdata(L, -1);
+	lua_pop(L, 1);
+	
+	assert(self);
+
+	self->m_removed = true;
+
+	return 0;
+}
+
+/*
+	ServerEnvironment object_get_environment(self)
+*/
+static int lf_object_get_environment(lua_State *L)
+{
+	// 1: self
+	LuaSAO *self = (LuaSAO*)lua_touserdata(L, -1);
+	lua_pop(L, 1);
+	
+	assert(self);
+	
+	lua_pushlightuserdata(L, self->getEnv());
+	return 1;
+}
+
+/*
 	object_set_base_position(self, {X=,Y=,Z=})
 */
 static int lf_object_set_base_position(lua_State *L)
@@ -187,9 +218,9 @@ static int lf_object_add_message(lua_State *L)
 }
 
 /*
-	object_get_node(self, {X=,Y=,Z=})
+	env_get_node(env, {X=,Y=,Z=})
 */
-static int lf_object_get_node(lua_State *L)
+static int lf_env_get_node(lua_State *L)
 {
 	// 2: position
 	assert(lua_istable(L, -1));
@@ -206,11 +237,11 @@ static int lf_object_get_node(lua_State *L)
 	lua_Number z = lua_tonumber(L, -1);
 	lua_pop(L, 1);
 	lua_pop(L, 1);
-	// 1: self
-	LuaSAO *self = (LuaSAO*)lua_touserdata(L, -1);
+	// 1: env
+	ServerEnvironment *env = (ServerEnvironment*)lua_touserdata(L, -1);
 	lua_pop(L, 1);
 	
-	assert(self);
+	assert(env);
 
 	v3s16 pos = floatToInt(v3f(x,y,z), 1.0);
 
@@ -219,7 +250,7 @@ static int lf_object_get_node(lua_State *L)
 	
 	// Get the node
 	MapNode n(CONTENT_IGNORE);
-	n = self->getEnv()->getMap().getNodeNoEx(pos);
+	n = env->getMap().getNodeNoEx(pos);
 
 	// Create a table with some data about the node
 	lua_newtable(L);
@@ -236,36 +267,6 @@ static int lf_object_get_node(lua_State *L)
 	// Return the table
 	return 1;
 }
-
-#if 0
-/*
-	get_node_features(node)
-	node = {content=,param1=,param2=}
-*/
-static int lf_get_node_features(lua_State *L)
-{
-	MapNode n;
-	
-	// 1: node
-	assert(lua_istable(L, -1));
-	lua_pushstring(L, "content");
-	lua_gettable(L, -2);
-	n.d = lua_tointeger(L, -1);
-	lua_pop(L, 1);
-	lua_pushstring(L, "param1");
-	lua_gettable(L, -2);
-	n.param = lua_tointeger(L, -1);
-	lua_pop(L, 1);
-	lua_pushstring(L, "param2");
-	lua_gettable(L, -2);
-	n.param2 = lua_tointeger(L, -1);
-	lua_pop(L, 1);
-	lua_pop(L, 1);
-
-	ContentFeatures &f = content_features(n.d);
-
-}
-#endif
 
 /*
 	get_content_features(content)
@@ -296,10 +297,10 @@ static int lf_get_content_features(lua_State *L)
 }
 
 /*
-	bool object_dig_node(self, {X=,Y=,Z=})
+	bool env_dig_node(env, {X=,Y=,Z=})
 	Return true on success
 */
-static int lf_object_dig_node(lua_State *L)
+static int lf_env_dig_node(lua_State *L)
 {
 	// 2: position
 	assert(lua_istable(L, -1));
@@ -316,11 +317,10 @@ static int lf_object_dig_node(lua_State *L)
 	lua_Number z = lua_tonumber(L, -1);
 	lua_pop(L, 1);
 	lua_pop(L, 1);
-	// 1: self
-	LuaSAO *self = (LuaSAO*)lua_touserdata(L, -1);
+	// 1: env
+	ServerEnvironment *env = (ServerEnvironment*)lua_touserdata(L, -1);
 	lua_pop(L, 1);
-	
-	assert(self);
+	assert(env);
 
 	v3s16 pos = floatToInt(v3f(x,y,z), 1.0);
 	
@@ -329,19 +329,19 @@ static int lf_object_dig_node(lua_State *L)
 		This gets sent to the server by the map through the edit
 		event system.
 	*/
-	bool succeeded = self->getEnv()->getMap().removeNodeWithEvent(pos);
+	bool succeeded = env->getMap().removeNodeWithEvent(pos);
 	
 	lua_pushboolean(L, succeeded);
 	return 1;
 }
 
 /*
-	bool object_place_node(self, {X=,Y=,Z=}, node)
+	bool env_place_node(env, {X=,Y=,Z=}, node)
 	node={content=,param1=,param2=}
 	param1 and param2 are optional
 	Return true on success
 */
-static int lf_object_place_node(lua_State *L)
+static int lf_env_place_node(lua_State *L)
 {
 	// 3: node
 	MapNode n(CONTENT_STONE);
@@ -379,11 +379,10 @@ static int lf_object_place_node(lua_State *L)
 	lua_Number z = lua_tonumber(L, -1);
 	lua_pop(L, 1);
 	lua_pop(L, 1);
-	// 1: self
-	LuaSAO *self = (LuaSAO*)lua_touserdata(L, -1);
+	// 1: env
+	ServerEnvironment *env = (ServerEnvironment*)lua_touserdata(L, -1);
 	lua_pop(L, 1);
-	
-	assert(self);
+	assert(env);
 
 	v3s16 pos = floatToInt(v3f(x,y,z), 1.0);
 	
@@ -392,59 +391,100 @@ static int lf_object_place_node(lua_State *L)
 		This gets sent to the server by the map through the edit
 		event system.
 	*/
-	bool succeeded = self->getEnv()->getMap().addNodeWithEvent(pos, n);
+	bool succeeded = env->getMap().addNodeWithEvent(pos, n);
 
 	lua_pushboolean(L, succeeded);
 	return 1;
 }
 
 /*
-	object_remove(x,y,z)
+	string env_get_nearest_player_name(env, {X=,Y=,Z=})
 */
-static int lf_object_remove(lua_State *L)
+static int lf_env_get_nearest_player_name(lua_State *L)
 {
-	// 1: self
-	LuaSAO *self = (LuaSAO*)lua_touserdata(L, -1);
+	// 2: position
+	assert(lua_istable(L, -1));
+	lua_pushstring(L, "X");
+	lua_gettable(L, -2);
+	lua_Number x = lua_tonumber(L, -1);
 	lua_pop(L, 1);
+	lua_pushstring(L, "Y");
+	lua_gettable(L, -2);
+	lua_Number y = lua_tonumber(L, -1);
+	lua_pop(L, 1);
+	lua_pushstring(L, "Z");
+	lua_gettable(L, -2);
+	lua_Number z = lua_tonumber(L, -1);
+	lua_pop(L, 1);
+	lua_pop(L, 1);
+	// 1: env
+	ServerEnvironment *env = (ServerEnvironment*)lua_touserdata(L, -1);
+	lua_pop(L, 1);
+	assert(env);
 	
-	assert(self);
-
-	self->m_removed = true;
-
-	return 0;
+	v3f pos_f = v3f(x,y,z)*BS;
+	
+	Player *player = env->getNearestConnectedPlayer(pos_f);
+	
+	if(player)
+		lua_pushstring(L, player->getName());
+	else
+		lua_pushstring(L, "");
+	
+	return 1; // Number of return values
 }
 
 /*
-	{X=,Y=,Z=} object_get_nearest_player_position(self)
+	{exists=, pos={X=,Y=,Z=}, connected=} env_get_player_info(env, name)
 */
-/*static int lf_object_get_nearest_player_position(lua_State *L)
+static int lf_env_get_player_info(lua_State *L)
 {
-	// 1: self
-	LuaSAO *self = (LuaSAO*)lua_touserdata(L, -1);
+	// 2: name
+	const char *name = lua_tostring(L, -1);
 	lua_pop(L, 1);
+	// 1: env
+	ServerEnvironment *env = (ServerEnvironment*)lua_touserdata(L, -1);
+	lua_pop(L, 1);
+	assert(env);
 	
-	assert(self);
-	
-	ServerEnvironment *env = self->getEnv();
-	env->
-	v3f pos = ;
+	Player *player = env->getPlayer(name);
+	v3f pos(0,0,0);
+	if(player)
+		pos = player->getPosition();
 
 	lua_newtable(L);
 
-	lua_pushstring(L, "X");
-	lua_pushnumber(L, pos.X/BS);
+	lua_pushstring(L, "exists");
+	lua_pushboolean(L, (player != NULL));
 	lua_settable(L, -3);
+	
+	if(player != NULL)
+	{
+		lua_pushstring(L, "pos");
+		{
+			lua_newtable(L);
+			
+			lua_pushstring(L, "X");
+			lua_pushnumber(L, pos.X/BS);
+			lua_settable(L, -3);
 
-	lua_pushstring(L, "Y");
-	lua_pushnumber(L, pos.Y/BS);
-	lua_settable(L, -3);
+			lua_pushstring(L, "Y");
+			lua_pushnumber(L, pos.Y/BS);
+			lua_settable(L, -3);
 
-	lua_pushstring(L, "Z");
-	lua_pushnumber(L, pos.Z/BS);
-	lua_settable(L, -3);
+			lua_pushstring(L, "Z");
+			lua_pushnumber(L, pos.Z/BS);
+			lua_settable(L, -3);
+		}
+		lua_settable(L, -3);
+
+		lua_pushstring(L, "connected");
+		lua_pushboolean(L, (player->peer_id != 0));
+		lua_settable(L, -3);
+	}
 
 	return 1; // Number of return values
-}*/
+}
 
 LuaSAO::LuaSAO(ServerEnvironment *env, u16 id, v3f pos):
 	ServerActiveObject(env, id, pos),
@@ -465,14 +505,18 @@ LuaSAO::LuaSAO(ServerEnvironment *env, u16 id, v3f pos):
 	//lua_setglobal(L, "self");
 	
 	// Register functions
-	lua_register(L, "object_set_base_position", lf_object_set_base_position);
-	lua_register(L, "object_get_base_position", lf_object_get_base_position);
-	lua_register(L, "object_add_message", lf_object_add_message);
-	lua_register(L, "object_get_node", lf_object_get_node);
-	lua_register(L, "get_content_features", lf_get_content_features);
-	lua_register(L, "object_dig_node", lf_object_dig_node);
-	lua_register(L, "object_place_node", lf_object_place_node);
-	lua_register(L, "object_remove", lf_object_remove);
+#define LUA_REGISTER_FUNC(L, x) lua_register(L, #x, lf_ ## x)
+	LUA_REGISTER_FUNC(L, object_remove);
+	LUA_REGISTER_FUNC(L, object_get_environment);
+	LUA_REGISTER_FUNC(L, object_set_base_position);
+	LUA_REGISTER_FUNC(L, object_get_base_position);
+	LUA_REGISTER_FUNC(L, object_add_message);
+	LUA_REGISTER_FUNC(L, env_get_node);
+	LUA_REGISTER_FUNC(L, get_content_features);
+	LUA_REGISTER_FUNC(L, env_dig_node);
+	LUA_REGISTER_FUNC(L, env_place_node);
+	LUA_REGISTER_FUNC(L, env_get_nearest_player_name);
+	LUA_REGISTER_FUNC(L, env_get_player_info);
 }
 
 LuaSAO::~LuaSAO()
@@ -487,7 +531,7 @@ std::string LuaSAO::getClientInitializationData()
 	*/
 	
 	std::string relative_path;
-	relative_path += "luaobjects/";
+	relative_path += "scripts/objects/";
 	relative_path += m_script_name;
 	relative_path += "/client.lua";
 	std::string full_path = porting::getDataPath(relative_path.c_str());
@@ -694,7 +738,7 @@ void LuaSAO::loadScripts(const std::string &script_name)
 	m_script_name = script_name;
 	
 	std::string relative_path;
-	relative_path += "luaobjects/";
+	relative_path += "scripts/objects/";
 	relative_path += script_name;
 	std::string server_file = relative_path + "/server.lua";
 	std::string server_path = porting::getDataPath(server_file.c_str());

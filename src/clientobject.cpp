@@ -649,7 +649,7 @@ void LuaCAO::updateNodePos()
 		return;
 
 	m_node->setPosition(m_position);
-	m_node->setRotation(-m_rotation);
+	m_node->setRotation(m_rotation);
 }
 
 void LuaCAO::setPosition(v3f pos)

@@ -3080,8 +3080,6 @@ void Server::BroadcastChatMessage(const std::wstring &message)
 
 void Server::sendRemoveNode(v3s16 p, u16 ignore_id)
 {
-	JMutexAutoLock conlock(m_con_mutex);
-	
 	// Create packet
 	u32 replysize = 8;
 	SharedBuffer<u8> reply(replysize);

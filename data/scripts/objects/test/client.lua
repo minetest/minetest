@@ -84,6 +84,8 @@ function SmoothTranslator:translate(dtime)
 	if self.anim_time > 0.001 then
 		moveratio = self.anim_time_counter / self.anim_time
 	end
+	-- Move a bit less than should, to avoid oscillation
+	moveratio = moveratio * 0.8
 	if moveratio > 1.5 then
 		moveratio = 1.5
 	end
@@ -124,10 +126,10 @@ function on_initialize(self, data)
 	print("client object got initialization: " .. data)
 
 	corners = {
-		{-1/2,-1/4, 0},
-		{ 1/2,-1/4, 0},
-		{ 1/2, 1/4, 0},
-		{-1/2, 1/4, 0},
+		{-1/2,-1/2, 0},
+		{ 1/2,-1/2, 0},
+		{ 1/2, 0, 0},
+		{-1/2, 0, 0},
 	}
 	object_add_to_mesh(self, "rat.png", corners, false)
 

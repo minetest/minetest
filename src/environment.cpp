@@ -115,6 +115,26 @@ Player * Environment::getRandomConnectedPlayer()
 	return NULL;
 }
 
+Player * Environment::getNearestConnectedPlayer(v3f pos)
+{
+	core::list<Player*> connected_players = getPlayers(true);
+	f32 nearest_d = 0;
+	Player *nearest_player = NULL;
+	for(core::list<Player*>::Iterator
+			i = connected_players.begin();
+			i != connected_players.end(); i++)
+	{
+		Player *player = *i;
+		f32 d = player->getPosition().getDistanceFrom(pos);
+		if(d < nearest_d || nearest_player == NULL)
+		{
+			nearest_d = d;
+			nearest_player = player;
+		}
+	}
+	return nearest_player;
+}
+
 core::list<Player*> Environment::getPlayers()
 {
 	return m_players;
@@ -480,9 +500,9 @@ void ServerEnvironment::step(float dtime)
 		if(player)
 			pos = player->getPosition();
 		pos += v3f(
-			myrand_range(-5,5)*BS,
+			myrand_range(-3,3)*BS,
 			0,
-			myrand_range(-5,5)*BS
+			myrand_range(-3,3)*BS
 		);
 
 		/*
@@ -494,7 +514,7 @@ void ServerEnvironment::step(float dtime)
 		/*
 			Select a random type for it
 		*/
-		std::string objectdir = porting::getDataPath("luaobjects");
+		std::string objectdir = porting::getDataPath("scripts/objects");
 		std::vector<fs::DirListNode> dirlist = fs::GetDirListing(objectdir);
 		if(dirlist.size() > 0)
 		{
