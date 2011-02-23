@@ -19,10 +19,11 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "mapblockobject.h"
 #include "mapblock.h"
-// Only for ::getNodeBox, TODO: Get rid of this
+// For object wrapping
 #include "map.h"
 #include "inventory.h"
 #include "irrlichtwrapper.h"
+#include "utility.h"
 
 /*
 	MapBlockObject
@@ -168,8 +169,7 @@ void MovingObject::move(float dtime, v3f acceleration)
 				// walking over map borders
 			}
 
-			core::aabbox3d<f32> nodebox = Map::getNodeBox(
-					v3s16(x,y,z));
+			core::aabbox3d<f32> nodebox = getNodeBox(v3s16(x,y,z), BS);
 			
 			// See if the object is touching ground
 			if(

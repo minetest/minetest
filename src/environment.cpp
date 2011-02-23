@@ -96,6 +96,25 @@ Player * Environment::getPlayer(const char *name)
 	return NULL;
 }
 
+Player * Environment::getRandomConnectedPlayer()
+{
+	core::list<Player*> connected_players = getPlayers(true);
+	u32 chosen_one = myrand() % connected_players.size();
+	u32 j = 0;
+	for(core::list<Player*>::Iterator
+			i = connected_players.begin();
+			i != connected_players.end(); i++)
+	{
+		if(j == chosen_one)
+		{
+			Player *player = *i;
+			return player;
+		}
+		j++;
+	}
+	return NULL;
+}
+
 core::list<Player*> Environment::getPlayers()
 {
 	return m_players;
@@ -147,8 +166,9 @@ u32 Environment::getDayNightRatio()
 	ServerEnvironment
 */
 
-ServerEnvironment::ServerEnvironment(ServerMap *map):
+ServerEnvironment::ServerEnvironment(ServerMap *map, Server *server):
 	m_map(map),
+	m_server(server),
 	m_random_spawn_timer(0)
 {
 }
@@ -382,6 +402,9 @@ void ServerEnvironment::step(float dtime)
 		}
 	}
 	
+	if(g_settings.getBool("enable_experimental"))
+	{
+
 	/*
 		Step active objects
 	*/
@@ -445,35 +468,55 @@ void ServerEnvironment::step(float dtime)
 				v3f(myrand_range(-2*BS,2*BS), BS*5, myrand_range(-2*BS,2*BS)));*/
 
 		/*
-			Create a Lua ServerActiveObject somewhere near the origin
+			Find some position
 		*/
-		LuaSAO *obj = new LuaSAO(this, 0,
-				v3f(myrand_range(-2*BS,2*BS),
-				myrand_range(2*BS,9*BS),
-				myrand_range(-2*BS,2*BS))
+
+		/*v2s16 p2d(myrand_range(-5,5), myrand_range(-5,5));
+		s16 y = 1 + getServerMap().findGroundLevel(p2d);
+		v3f pos(p2d.X*BS,y*BS,p2d.Y*BS);*/
+		
+		Player *player = getRandomConnectedPlayer();
+		v3f pos(0,0,0);
+		if(player)
+			pos = player->getPosition();
+		pos += v3f(
+			myrand_range(-5,5)*BS,
+			0,
+			myrand_range(-5,5)*BS
 		);
+
+		/*
+			Create a LuaSAO (ServerActiveObject)
+		*/
+
+		LuaSAO *obj = new LuaSAO(this, 0, pos);
 		
 		/*
 			Select a random type for it
 		*/
 		std::string objectdir = porting::getDataPath("luaobjects");
 		std::vector<fs::DirListNode> dirlist = fs::GetDirListing(objectdir);
-		u32 selected_i = myrand_range(0, dirlist.size()-1);
-		std::string selected_name = "";
-		selected_name = dirlist[selected_i].name;
-		/*for(u32 i=0; i<dirlist.size(); i++)*/
-		
-		dstream<<"ServerEnvironment: Selected script name \""<<selected_name
-				<<"\" for new lua object"<<std::endl;
+		if(dirlist.size() > 0)
+		{
+			u32 selected_i = myrand_range(0, dirlist.size()-1);
+			std::string selected_name = "";
+			selected_name = dirlist[selected_i].name;
+			/*for(u32 i=0; i<dirlist.size(); i++)*/
+			
+			dstream<<"ServerEnvironment: Selected script name \""<<selected_name
+					<<"\" for new lua object"<<std::endl;
 
-		/*
-			Load the scripts for the type
-		*/
-		obj->loadScripts(selected_name.c_str());
+			/*
+				Load the scripts for the type
+			*/
+			obj->initializeFromNothing(selected_name.c_str());
 
-		// Add the object to the environment
-		addActiveObject(obj);
+			// Add the object to the environment
+			addActiveObject(obj);
+		}
 	}
+
+	} // enable_experimental
 }
 
 ServerActiveObject* ServerEnvironment::getActiveObject(u16 id)

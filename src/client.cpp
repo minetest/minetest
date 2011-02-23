@@ -989,27 +989,14 @@ void Client::ProcessData(u8 *data, u32 datasize, u16 sender_peer_id)
 			12000 = midday
 		*/
 		{
-			const s32 daylength = 16;
-			const s32 nightlength = 6;
-			const s32 daytimelength = 8;
-			s32 d = daylength;
-			s32 t = (((m_time_of_day.get())%24000)/(24000/d));
-			u32 dr;
-			if(t < nightlength/2 || t >= d - nightlength/2)
-				dr = 300;
-			else if(t >= d/2 - daytimelength/2 && t < d/2 + daytimelength/2)
-				dr = 1000;
-			else
-				dr = 750;
+			u32 dr = time_to_daynight_ratio(m_time_of_day.get());
 
-			dstream<<"time_of_day="<<m_time_of_day.get()
-					<<", t="<<t
+			dstream<<"Client: time_of_day="<<m_time_of_day.get()
 					<<", dr="<<dr
 					<<std::endl;
 			
 			if(dr != m_env.getDayNightRatio())
 			{
-				//dstream<<"dr="<<dr<<std::endl;
 				dout_client<<DTIME<<"Client: changing day-night ratio"<<std::endl;
 				m_env.setDayNightRatio(dr);
 				m_env.expireMeshes(true);
@@ -1595,7 +1582,7 @@ void Client::addNode(v3s16 p, MapNode n)
 	
 void Client::updateCamera(v3f pos, v3f dir)
 {
-	m_env.getMap().updateCamera(pos, dir);
+	m_env.getClientMap().updateCamera(pos, dir);
 	camera_position = pos;
 	camera_direction = dir;
 }

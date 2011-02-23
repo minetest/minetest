@@ -428,8 +428,7 @@ void LocalPlayer::move(f32 dtime, Map &map, f32 pos_max_d)
 			// walking over map borders
 		}
 
-		core::aabbox3d<f32> nodebox = Map::getNodeBox(
-				v3s16(x,y,z));
+		core::aabbox3d<f32> nodebox = getNodeBox(v3s16(x,y,z), BS);
 		
 		/*
 			See if the player is touching ground.

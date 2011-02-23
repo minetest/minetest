@@ -893,7 +893,7 @@ u32 PIChecksum(core::list<PlayerInfo> &l)
 Server::Server(
 		std::string mapsavedir
 	):
-	m_env(new ServerMap(mapsavedir)),
+	m_env(new ServerMap(mapsavedir), this),
 	m_con(PROTOCOL_ID, 512, CONNECTION_TIMEOUT, this),
 	m_thread(this),
 	m_emergethread(this),
@@ -902,9 +902,10 @@ Server::Server(
 	m_time_of_day_send_timer(0),
 	m_uptime(0),
 	m_mapsavedir(mapsavedir),
-	m_shutdown_requested(false)
+	m_shutdown_requested(false),
+	m_ignore_map_edit_events(false),
+	m_ignore_map_edit_events_peer_id(0)
 {
-	//m_flowwater_timer = 0.0;
 	m_liquid_transform_timer = 0.0;
 	m_print_info_timer = 0.0;
 	m_objectdata_timer = 0.0;
@@ -915,6 +916,8 @@ Server::Server(
 	m_con_mutex.Init();
 	m_step_dtime_mutex.Init();
 	m_step_dtime = 0.0;
+
+	m_env.getMap().addEventReceiver(this);
 
 	// Load players
 	m_env.deSerializePlayers(m_mapsavedir);
@@ -1191,12 +1194,18 @@ void Server::AsyncRunStep()
 		}
 	}
 
+	if(g_settings.getBool("enable_experimental"))
+	{
+
 	/*
 		Check added and deleted active objects
 	*/
 	{
 		JMutexAutoLock envlock(m_env_mutex);
 		JMutexAutoLock conlock(m_con_mutex);
+		
+		// Radius inside which objects are active
+		s16 radius = 32;
 
 		for(core::map<u16, RemoteClient*>::Iterator
 			i = m_clients.getIterator();
@@ -1204,8 +1213,9 @@ void Server::AsyncRunStep()
 		{
 			RemoteClient *client = i.getNode()->getValue();
 			Player *player = m_env.getPlayer(client->peer_id);
+			if(player==NULL)
+				continue;
 			v3s16 pos = floatToInt(player->getPosition(), BS);
-			s16 radius = 32;
 
 			core::map<u16, bool> removed_objects;
 			core::map<u16, bool> added_objects;
@@ -1407,8 +1417,44 @@ void Server::AsyncRunStep()
 		}
 	}
 
+	} // enable_experimental
+
+	/*
+		Send queued-for-sending map edit events.
+	*/
+	{
+		while(m_unsent_map_edit_queue.size() != 0)
+		{
+			MapEditEvent* event = m_unsent_map_edit_queue.pop_front();
+
+			if(event->type == MEET_ADDNODE)
+			{
+				dstream<<"Server: MEET_ADDNODE"<<std::endl;
+				sendAddNode(event->p, event->n, event->already_known_by_peer);
+			}
+			else if(event->type == MEET_REMOVENODE)
+			{
+				dstream<<"Server: MEET_REMOVENODE"<<std::endl;
+				sendRemoveNode(event->p, event->already_known_by_peer);
+			}
+			else if(event->type == MEET_OTHER)
+			{
+				dstream<<"WARNING: Server: MEET_OTHER not implemented"
+						<<std::endl;
+			}
+			else
+			{
+				dstream<<"WARNING: Server: Unknown MapEditEvent "
+						<<((u32)event->type)<<std::endl;
+			}
+
+			delete event;
+		}
+	}
+
 	/*
 		Send object positions
+		TODO: Get rid of MapBlockObjects
 	*/
 	{
 		float &counter = m_objectdata_timer;
@@ -1964,32 +2010,7 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 			/*
 				Send the removal to all other clients
 			*/
-
-			// Create packet
-			u32 replysize = 8;
-			SharedBuffer<u8> reply(replysize);
-			writeU16(&reply[0], TOCLIENT_REMOVENODE);
-			writeS16(&reply[2], p_under.X);
-			writeS16(&reply[4], p_under.Y);
-			writeS16(&reply[6], p_under.Z);
-
-			for(core::map<u16, RemoteClient*>::Iterator
-				i = m_clients.getIterator();
-				i.atEnd() == false; i++)
-			{
-				// Get client and check that it is valid
-				RemoteClient *client = i.getNode()->getValue();
-				assert(client->peer_id == i.getNode()->getKey());
-				if(client->serialization_version == SER_FMT_VER_INVALID)
-					continue;
-
-				// Don't send if it's the same one
-				if(peer_id == client->peer_id)
-					continue;
-
-				// Send as reliable
-				m_con.Send(client->peer_id, 0, reply, true);
-			}
+			sendRemoveNode(p_over, peer_id);
 			
 			/*
 				Update and send inventory
@@ -2063,33 +2084,9 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 				Remove the node
 				(this takes some time so it is done after the quick stuff)
 			*/
+			m_ignore_map_edit_events = true;
 			m_env.getMap().removeNodeAndUpdate(p_under, modified_blocks);
-
-#if 0
-			/*
-				Update water
-			*/
-			
-			// Update water pressure around modification
-			// This also adds it to m_flow_active_nodes if appropriate
-
-			MapVoxelManipulator v(&m_env.getMap());
-			v.m_disable_water_climb =
-					g_settings.getBool("disable_water_climb");
-			
-			VoxelArea area(p_under-v3s16(1,1,1), p_under+v3s16(1,1,1));
-
-			try
-			{
-				v.updateAreaWaterPressure(area, m_flow_active_nodes);
-			}
-			catch(ProcessingLimitException &e)
-			{
-				dstream<<"Processing limit reached (1)"<<std::endl;
-			}
-			
-			v.blitBack(modified_blocks);
-#endif
+			m_ignore_map_edit_events = false;
 		}
 		
 		/*
@@ -2150,17 +2147,11 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 				n.d = mitem->getMaterial();
 				if(content_features(n.d).wall_mounted)
 					n.dir = packDir(p_under - p_over);
-
-				// Create packet
-				u32 replysize = 8 + MapNode::serializedLength(peer_ser_ver);
-				SharedBuffer<u8> reply(replysize);
-				writeU16(&reply[0], TOCLIENT_ADDNODE);
-				writeS16(&reply[2], p_over.X);
-				writeS16(&reply[4], p_over.Y);
-				writeS16(&reply[6], p_over.Z);
-				n.serialize(&reply[8], peer_ser_ver);
-				// Send as reliable
-				m_con.SendToAll(0, reply, true);
+				
+				/*
+					Send to all players
+				*/
+				sendAddNode(p_over, n, 0);
 				
 				/*
 					Handle inventory
@@ -2183,7 +2174,9 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 					This takes some time so it is done after the quick stuff
 				*/
 				core::map<v3s16, MapBlock*> modified_blocks;
+				m_ignore_map_edit_events = true;
 				m_env.getMap().addNodeAndUpdate(p_over, n, modified_blocks);
+				m_ignore_map_edit_events = false;
 				
 				/*
 					Calculate special events
@@ -2595,41 +2588,13 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 	}
 }
 
-/*void Server::Send(u16 peer_id, u16 channelnum,
-		SharedBuffer<u8> data, bool reliable)
+void Server::onMapEditEvent(MapEditEvent *event)
 {
-	JMutexAutoLock lock(m_con_mutex);
-	m_con.Send(peer_id, channelnum, data, reliable);
-}*/
-
-void Server::SendBlockNoLock(u16 peer_id, MapBlock *block, u8 ver)
-{
-	DSTACK(__FUNCTION_NAME);
-	/*
-		Create a packet with the block in the right format
-	*/
-	
-	std::ostringstream os(std::ios_base::binary);
-	block->serialize(os, ver);
-	std::string s = os.str();
-	SharedBuffer<u8> blockdata((u8*)s.c_str(), s.size());
-
-	u32 replysize = 8 + blockdata.getSize();
-	SharedBuffer<u8> reply(replysize);
-	v3s16 p = block->getPos();
-	writeU16(&reply[0], TOCLIENT_BLOCKDATA);
-	writeS16(&reply[2], p.X);
-	writeS16(&reply[4], p.Y);
-	writeS16(&reply[6], p.Z);
-	memcpy(&reply[8], *blockdata, blockdata.getSize());
-
-	/*dstream<<"Sending block ("<<p.X<<","<<p.Y<<","<<p.Z<<")"
-			<<":  \tpacket size: "<<replysize<<std::endl;*/
-	
-	/*
-		Send packet
-	*/
-	m_con.Send(peer_id, 1, reply, true);
+	dstream<<"Server::onMapEditEvent()"<<std::endl;
+	if(m_ignore_map_edit_events)
+		return;
+	MapEditEvent *e = event->clone();
+	m_unsent_map_edit_queue.push_back(e);
 }
 
 core::list<PlayerInfo> Server::getPlayerInfo()
@@ -2758,6 +2723,10 @@ void Server::SendPlayerInfos()
 	// Send as reliable
 	m_con.SendToAll(0, data, true);
 }
+
+/*
+	Craft checking system
+*/
 
 enum ItemSpecType
 {
@@ -3109,6 +3078,97 @@ void Server::BroadcastChatMessage(const std::wstring &message)
 	}
 }
 
+void Server::sendRemoveNode(v3s16 p, u16 ignore_id)
+{
+	JMutexAutoLock conlock(m_con_mutex);
+	
+	// Create packet
+	u32 replysize = 8;
+	SharedBuffer<u8> reply(replysize);
+	writeU16(&reply[0], TOCLIENT_REMOVENODE);
+	writeS16(&reply[2], p.X);
+	writeS16(&reply[4], p.Y);
+	writeS16(&reply[6], p.Z);
+
+	for(core::map<u16, RemoteClient*>::Iterator
+		i = m_clients.getIterator();
+		i.atEnd() == false; i++)
+	{
+		// Get client and check that it is valid
+		RemoteClient *client = i.getNode()->getValue();
+		assert(client->peer_id == i.getNode()->getKey());
+		if(client->serialization_version == SER_FMT_VER_INVALID)
+			continue;
+
+		// Don't send if it's the same one
+		if(client->peer_id == ignore_id)
+			continue;
+
+		// Send as reliable
+		m_con.Send(client->peer_id, 0, reply, true);
+	}
+}
+
+void Server::sendAddNode(v3s16 p, MapNode n, u16 ignore_id)
+{
+	for(core::map<u16, RemoteClient*>::Iterator
+		i = m_clients.getIterator();
+		i.atEnd() == false; i++)
+	{
+		// Get client and check that it is valid
+		RemoteClient *client = i.getNode()->getValue();
+		assert(client->peer_id == i.getNode()->getKey());
+		if(client->serialization_version == SER_FMT_VER_INVALID)
+			continue;
+
+		// Don't send if it's the same one
+		if(client->peer_id == ignore_id)
+			continue;
+
+		// Create packet
+		u32 replysize = 8 + MapNode::serializedLength(client->serialization_version);
+		SharedBuffer<u8> reply(replysize);
+		writeU16(&reply[0], TOCLIENT_ADDNODE);
+		writeS16(&reply[2], p.X);
+		writeS16(&reply[4], p.Y);
+		writeS16(&reply[6], p.Z);
+		n.serialize(&reply[8], client->serialization_version);
+
+		// Send as reliable
+		m_con.Send(client->peer_id, 0, reply, true);
+	}
+}
+
+void Server::SendBlockNoLock(u16 peer_id, MapBlock *block, u8 ver)
+{
+	DSTACK(__FUNCTION_NAME);
+	/*
+		Create a packet with the block in the right format
+	*/
+	
+	std::ostringstream os(std::ios_base::binary);
+	block->serialize(os, ver);
+	std::string s = os.str();
+	SharedBuffer<u8> blockdata((u8*)s.c_str(), s.size());
+
+	u32 replysize = 8 + blockdata.getSize();
+	SharedBuffer<u8> reply(replysize);
+	v3s16 p = block->getPos();
+	writeU16(&reply[0], TOCLIENT_BLOCKDATA);
+	writeS16(&reply[2], p.X);
+	writeS16(&reply[4], p.Y);
+	writeS16(&reply[6], p.Z);
+	memcpy(&reply[8], *blockdata, blockdata.getSize());
+
+	/*dstream<<"Sending block ("<<p.X<<","<<p.Y<<","<<p.Z<<")"
+			<<":  \tpacket size: "<<replysize<<std::endl;*/
+	
+	/*
+		Send packet
+	*/
+	m_con.Send(peer_id, 1, reply, true);
+}
+
 void Server::SendBlocks(float dtime)
 {
 	DSTACK(__FUNCTION_NAME);
@@ -3316,16 +3376,16 @@ Player *Server::emergePlayer(const char *name, const char *password,
 				<<player->getName()<<"\""<<std::endl;
 
 		v2s16 nodepos;
-#if 1
+#if 0
 		player->setPosition(intToFloat(v3s16(
 				0,
 				45, //64,
 				0
 		), BS));
 #endif
-#if 0
-		f32 groundheight = 0;
-#if 0
+#if 1
+		s16 groundheight = 0;
+#if 1
 		// Try to find a good place a few times
 		for(s32 i=0; i<500; i++)
 		{
@@ -3334,12 +3394,20 @@ Player *Server::emergePlayer(const char *name, const char *password,
 			nodepos = v2s16(-range + (myrand()%(range*2)),
 					-range + (myrand()%(range*2)));
 			v2s16 sectorpos = getNodeSectorPos(nodepos);
+			/*
+				Ignore position if it is near a chunk edge.
+				Otherwise it would cause excessive loading time at
+				initial generation
+			*/
+			{
+				if(m_env.getServerMap().sector_to_chunk(sectorpos+v2s16(1,1))
+				!= m_env.getServerMap().sector_to_chunk(sectorpos+v2s16(-1,-1)))
+					continue;
+			}
 			// Get sector
 			m_env.getMap().emergeSector(sectorpos);
 			// Get ground height at point
-			groundheight = m_env.getMap().getGroundHeight(nodepos, true);
-			// The sector should have been generated -> groundheight exists
-			assert(groundheight > GROUNDHEIGHT_VALID_MINVALUE);
+			groundheight = m_env.getServerMap().findGroundLevel(nodepos);
 			// Don't go underwater
 			if(groundheight < WATER_LEVEL)
 			{
@@ -3384,10 +3452,9 @@ Player *Server::emergePlayer(const char *name, const char *password,
 
 		player->setPosition(intToFloat(v3s16(
 				nodepos.X,
-				//groundheight + 1,
-				groundheight + 15,
+				groundheight + 1,
 				nodepos.Y
-		)));
+		), BS));
 #endif
 
 		/*

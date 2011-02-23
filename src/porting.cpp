@@ -51,7 +51,7 @@ void sigint_handler(int sig)
 		dstream<<DTIME<<"INFO: sigint_handler(): "
 				<<"Ctrl-C pressed, shutting down."<<std::endl;
 		
-		dstream<<DTIME<<"INFO: siging_handler(): "
+		dstream<<DTIME<<"INFO: sigint_handler(): "
 				<<"Printing debug stacks"<<std::endl;
 		debug_stacks_print();
 

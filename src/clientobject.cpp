@@ -175,35 +175,36 @@ extern "C"{
 }
 
 /*
-	Functions for calling from script:
-
-	object_set_position(self, x, y, z)
-	object_set_rotation(self, x, y, z)
-	object_add_to_mesh(self, image, corners, backface_culling)
-	object_clear_mesh(self)
-
 	Callbacks in script:
 
-	step(self, dtime)
-	process_message(self, data)
-	initialize(self, data)
+	on_step(self, dtime)
+	on_process_message(self, data)
+	on_initialize(self, data)
 	TODO:
-	string status_text(self)
+	string on_get_info_text(self)
+	on_block_removed_near({X=,Y=,Z=}, node)
+	on_block_placed_near({X=,Y=,Z=}, node)
 */
 
 /*
-	object_set_position(self, x, y, z)
+	object_set_position(self, p)
 */
 static int lf_object_set_position(lua_State *L)
 {
-	// 4: z
-	lua_Number z = lua_tonumber(L, -1);
+	// 2: position
+	assert(lua_istable(L, -1));
+	lua_pushstring(L, "X");
+	lua_gettable(L, -2);
+	lua_Number x = lua_tonumber(L, -1);
 	lua_pop(L, 1);
-	// 3: y
+	lua_pushstring(L, "Y");
+	lua_gettable(L, -2);
 	lua_Number y = lua_tonumber(L, -1);
 	lua_pop(L, 1);
-	// 2: x
-	lua_Number x = lua_tonumber(L, -1);
+	lua_pushstring(L, "Z");
+	lua_gettable(L, -2);
+	lua_Number z = lua_tonumber(L, -1);
+	lua_pop(L, 1);
 	lua_pop(L, 1);
 	// 1: self
 	LuaCAO *self = (LuaCAO*)lua_touserdata(L, -1);
@@ -217,18 +218,24 @@ static int lf_object_set_position(lua_State *L)
 }
 
 /*
-	object_set_rotation(self, x, y, z)
+	object_set_rotation(self, p)
 */
 static int lf_object_set_rotation(lua_State *L)
 {
-	// 4: z
-	lua_Number z = lua_tonumber(L, -1);
+	// 2: position
+	assert(lua_istable(L, -1));
+	lua_pushstring(L, "X");
+	lua_gettable(L, -2);
+	lua_Number x = lua_tonumber(L, -1);
 	lua_pop(L, 1);
-	// 3: y
+	lua_pushstring(L, "Y");
+	lua_gettable(L, -2);
 	lua_Number y = lua_tonumber(L, -1);
 	lua_pop(L, 1);
-	// 2: x
-	lua_Number x = lua_tonumber(L, -1);
+	lua_pushstring(L, "Z");
+	lua_gettable(L, -2);
+	lua_Number z = lua_tonumber(L, -1);
+	lua_pop(L, 1);
 	lua_pop(L, 1);
 	// 1: self
 	LuaCAO *self = (LuaCAO*)lua_touserdata(L, -1);
@@ -381,7 +388,7 @@ void LuaCAO::step(float dtime)
 		Call step(self, dtime) from lua
 	*/
 	
-	const char *funcname = "step";
+	const char *funcname = "on_step";
 	lua_getglobal(L, funcname);
 	if(!lua_isfunction(L,-1))
 	{
@@ -413,7 +420,7 @@ void LuaCAO::processMessage(const std::string &data)
 		Call process_message(self, data) from lua
 	*/
 	
-	const char *funcname = "process_message";
+	const char *funcname = "on_process_message";
 	lua_getglobal(L, funcname);
 	if(!lua_isfunction(L,-1))
 	{
@@ -462,7 +469,7 @@ void LuaCAO::initialize(const std::string &data)
 		Call initialize(self, data) in the script
 	*/
 	
-	const char *funcname = "initialize";
+	const char *funcname = "on_initialize";
 	lua_getglobal(L, funcname);
 	if(!lua_isfunction(L,-1))
 	{

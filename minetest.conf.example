@@ -18,7 +18,7 @@
 #screenW = 800
 #screenH = 600
 #port = 30000
-#address = kray.dy.fi
+#address = 
 #name = 
 
 # Whether to try to fog out the border of the visible area
@@ -44,14 +44,14 @@
 # Server side stuff
 #
 
-#map-dir = /home/palle/custom_map
+# Set to true to enable experimental features
+#enable_experimental = false
 
-#plants_amount = 1.0
-#ravines_amount = 1.0
-#coal_amount = 1.0
+#map-dir = /home/palle/custom_map
 
 # Set to true to enable creative mode (unlimited inventory)
 #creative_mode = false
+
 # Player and object positions are sent at intervals specified by this
 #objectdata_inverval = 0.2
 

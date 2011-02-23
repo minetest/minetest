@@ -88,35 +88,33 @@ extern "C"{
 }
 
 /*
-	Functions for calling from script:
-
-	object_set_base_position(self, x,y,z)
-	x,y,z = object_get_base_position(self)
-	object_add_message(self, data)
-	n = object_get_node(self, x,y,z)
-	object_remove(self)
-
 	Callbacks in script:
 	
-	step(self, dtime)
-	get_client_init_data(self)
-	get_server_init_data(self)
-	initialize(self, data)
+	on_step(self, dtime)
+	on_get_client_init_data(self)
+	on_get_server_init_data(self)
+	on_initialize(self, data)
 */
 
 /*
-	object_set_base_position(self, x, y, z)
+	object_set_base_position(self, {X=,Y=,Z=})
 */
 static int lf_object_set_base_position(lua_State *L)
 {
-	// 4: z
-	lua_Number z = lua_tonumber(L, -1);
+	// 2: position
+	assert(lua_istable(L, -1));
+	lua_pushstring(L, "X");
+	lua_gettable(L, -2);
+	lua_Number x = lua_tonumber(L, -1);
 	lua_pop(L, 1);
-	// 3: y
+	lua_pushstring(L, "Y");
+	lua_gettable(L, -2);
 	lua_Number y = lua_tonumber(L, -1);
 	lua_pop(L, 1);
-	// 2: x
-	lua_Number x = lua_tonumber(L, -1);
+	lua_pushstring(L, "Z");
+	lua_gettable(L, -2);
+	lua_Number z = lua_tonumber(L, -1);
+	lua_pop(L, 1);
 	lua_pop(L, 1);
 	// 1: self
 	LuaSAO *self = (LuaSAO*)lua_touserdata(L, -1);
@@ -130,7 +128,7 @@ static int lf_object_set_base_position(lua_State *L)
 }
 
 /*
-	object_get_base_position(self)
+	{X=,Y=,Z=} object_get_base_position(self)
 */
 static int lf_object_get_base_position(lua_State *L)
 {
@@ -142,10 +140,21 @@ static int lf_object_get_base_position(lua_State *L)
 	
 	v3f pos = self->getBasePosition();
 
+	lua_newtable(L);
+
+	lua_pushstring(L, "X");
 	lua_pushnumber(L, pos.X/BS);
+	lua_settable(L, -3);
+
+	lua_pushstring(L, "Y");
 	lua_pushnumber(L, pos.Y/BS);
+	lua_settable(L, -3);
+
+	lua_pushstring(L, "Z");
 	lua_pushnumber(L, pos.Z/BS);
-	return 3; // Number of return values
+	lua_settable(L, -3);
+
+	return 1; // Number of return values
 }
 
 /*
@@ -178,18 +187,24 @@ static int lf_object_add_message(lua_State *L)
 }
 
 /*
-	object_get_node(self, x,y,z)
+	object_get_node(self, {X=,Y=,Z=})
 */
 static int lf_object_get_node(lua_State *L)
 {
-	// 4: z
-	lua_Number z = lua_tonumber(L, -1);
+	// 2: position
+	assert(lua_istable(L, -1));
+	lua_pushstring(L, "X");
+	lua_gettable(L, -2);
+	lua_Number x = lua_tonumber(L, -1);
 	lua_pop(L, 1);
-	// 3: y
+	lua_pushstring(L, "Y");
+	lua_gettable(L, -2);
 	lua_Number y = lua_tonumber(L, -1);
 	lua_pop(L, 1);
-	// 2: x
-	lua_Number x = lua_tonumber(L, -1);
+	lua_pushstring(L, "Z");
+	lua_gettable(L, -2);
+	lua_Number z = lua_tonumber(L, -1);
+	lua_pop(L, 1);
 	lua_pop(L, 1);
 	// 1: self
 	LuaSAO *self = (LuaSAO*)lua_touserdata(L, -1);
@@ -217,9 +232,6 @@ static int lf_object_get_node(lua_State *L)
 	lua_pushstring(L, "param2");
 	lua_pushinteger(L, n.param2);
 	lua_settable(L, -3);
-	lua_pushstring(L, "walkable");
-	lua_pushboolean(L, content_features(n.d).walkable);
-	lua_settable(L, -3);
 	
 	// Return the table
 	return 1;
@@ -227,39 +239,82 @@ static int lf_object_get_node(lua_State *L)
 
 #if 0
 /*
-	object_set_node(self, x,y,z, n)
+	get_node_features(node)
+	node = {content=,param1=,param2=}
 */
-static int lf_object_set_node(lua_State *L)
+static int lf_get_node_features(lua_State *L)
 {
 	MapNode n;
-
-	// 5: n
-	// Get fields of table
-
-	lua_pushinteger(L, "content");
+	
+	// 1: node
+	assert(lua_istable(L, -1));
+	lua_pushstring(L, "content");
 	lua_gettable(L, -2);
-	n.d = lua_tonumber(L, -1);
+	n.d = lua_tointeger(L, -1);
 	lua_pop(L, 1);
-
-	lua_pushinteger(L, "param1");
+	lua_pushstring(L, "param1");
 	lua_gettable(L, -2);
-	n.param = lua_tonumber(L, -1);
+	n.param = lua_tointeger(L, -1);
 	lua_pop(L, 1);
-
-	lua_pushinteger(L, "param2");
+	lua_pushstring(L, "param2");
 	lua_gettable(L, -2);
-	n.param2 = lua_tonumber(L, -1);
+	n.param2 = lua_tointeger(L, -1);
+	lua_pop(L, 1);
 	lua_pop(L, 1);
 
+	ContentFeatures &f = content_features(n.d);
+
+}
+#endif
+
+/*
+	get_content_features(content)
+*/
+static int lf_get_content_features(lua_State *L)
+{
+	MapNode n;
+	
+	// 1: content
+	n.d = lua_tointeger(L, -1);
 	lua_pop(L, 1);
-	// 4: z
-	lua_Number z = lua_tonumber(L, -1);
+	
+	// Get and return information
+	ContentFeatures &f = content_features(n.d);
+	
+	lua_newtable(L);
+	lua_pushstring(L, "walkable");
+	lua_pushboolean(L, f.walkable);
+	lua_settable(L, -3);
+	lua_pushstring(L, "diggable");
+	lua_pushboolean(L, f.diggable);
+	lua_settable(L, -3);
+	lua_pushstring(L, "buildable_to");
+	lua_pushboolean(L, f.buildable_to);
+	lua_settable(L, -3);
+	
+	return 1;
+}
+
+/*
+	bool object_dig_node(self, {X=,Y=,Z=})
+	Return true on success
+*/
+static int lf_object_dig_node(lua_State *L)
+{
+	// 2: position
+	assert(lua_istable(L, -1));
+	lua_pushstring(L, "X");
+	lua_gettable(L, -2);
+	lua_Number x = lua_tonumber(L, -1);
 	lua_pop(L, 1);
-	// 3: y
+	lua_pushstring(L, "Y");
+	lua_gettable(L, -2);
 	lua_Number y = lua_tonumber(L, -1);
 	lua_pop(L, 1);
-	// 2: x
-	lua_Number x = lua_tonumber(L, -1);
+	lua_pushstring(L, "Z");
+	lua_gettable(L, -2);
+	lua_Number z = lua_tonumber(L, -1);
+	lua_pop(L, 1);
 	lua_pop(L, 1);
 	// 1: self
 	LuaSAO *self = (LuaSAO*)lua_touserdata(L, -1);
@@ -268,27 +323,80 @@ static int lf_object_set_node(lua_State *L)
 	assert(self);
 
 	v3s16 pos = floatToInt(v3f(x,y,z), 1.0);
-
-	/*dstream<<"Checking node from pos=("<<pos.X<<","<<pos.Y<<","<<pos.Z
-			<<")"<<std::endl;*/
 	
-	// Get the node
-	MapNode n(CONTENT_IGNORE);
-	n = self->getEnv()->getMap().getNodeNoEx(pos);
-
-	// Create a table with some data about the node
-	lua_newtable(L);
-	lua_pushstring(L, "content");
-	lua_pushinteger(L, n.d);
-	lua_settable(L, -3);
-	lua_pushstring(L, "walkable");
-	lua_pushboolean(L, content_features(n.d).walkable);
-	lua_settable(L, -3);
+	/*
+		Do stuff.
+		This gets sent to the server by the map through the edit
+		event system.
+	*/
+	bool succeeded = self->getEnv()->getMap().removeNodeWithEvent(pos);
 	
-	// Return the table
+	lua_pushboolean(L, succeeded);
 	return 1;
 }
-#endif
+
+/*
+	bool object_place_node(self, {X=,Y=,Z=}, node)
+	node={content=,param1=,param2=}
+	param1 and param2 are optional
+	Return true on success
+*/
+static int lf_object_place_node(lua_State *L)
+{
+	// 3: node
+	MapNode n(CONTENT_STONE);
+	assert(lua_istable(L, -1));
+	{
+		lua_pushstring(L, "content");
+		lua_gettable(L, -2);
+		if(lua_isnumber(L, -1))
+			n.d = lua_tonumber(L, -1);
+		lua_pop(L, 1);
+		lua_pushstring(L, "param1");
+		lua_gettable(L, -2);
+		if(lua_isnumber(L, -1))
+			n.param = lua_tonumber(L, -1);
+		lua_pop(L, 1);
+		lua_pushstring(L, "param2");
+		lua_gettable(L, -2);
+		if(lua_isnumber(L, -1))
+			n.param2 = lua_tonumber(L, -1);
+		lua_pop(L, 1);
+	}
+	lua_pop(L, 1);
+	// 2: position
+	assert(lua_istable(L, -1));
+	lua_pushstring(L, "X");
+	lua_gettable(L, -2);
+	lua_Number x = lua_tonumber(L, -1);
+	lua_pop(L, 1);
+	lua_pushstring(L, "Y");
+	lua_gettable(L, -2);
+	lua_Number y = lua_tonumber(L, -1);
+	lua_pop(L, 1);
+	lua_pushstring(L, "Z");
+	lua_gettable(L, -2);
+	lua_Number z = lua_tonumber(L, -1);
+	lua_pop(L, 1);
+	lua_pop(L, 1);
+	// 1: self
+	LuaSAO *self = (LuaSAO*)lua_touserdata(L, -1);
+	lua_pop(L, 1);
+	
+	assert(self);
+
+	v3s16 pos = floatToInt(v3f(x,y,z), 1.0);
+	
+	/*
+		Do stuff.
+		This gets sent to the server by the map through the edit
+		event system.
+	*/
+	bool succeeded = self->getEnv()->getMap().addNodeWithEvent(pos, n);
+
+	lua_pushboolean(L, succeeded);
+	return 1;
+}
 
 /*
 	object_remove(x,y,z)
@@ -305,6 +413,38 @@ static int lf_object_remove(lua_State *L)
 
 	return 0;
 }
+
+/*
+	{X=,Y=,Z=} object_get_nearest_player_position(self)
+*/
+/*static int lf_object_get_nearest_player_position(lua_State *L)
+{
+	// 1: self
+	LuaSAO *self = (LuaSAO*)lua_touserdata(L, -1);
+	lua_pop(L, 1);
+	
+	assert(self);
+	
+	ServerEnvironment *env = self->getEnv();
+	env->
+	v3f pos = ;
+
+	lua_newtable(L);
+
+	lua_pushstring(L, "X");
+	lua_pushnumber(L, pos.X/BS);
+	lua_settable(L, -3);
+
+	lua_pushstring(L, "Y");
+	lua_pushnumber(L, pos.Y/BS);
+	lua_settable(L, -3);
+
+	lua_pushstring(L, "Z");
+	lua_pushnumber(L, pos.Z/BS);
+	lua_settable(L, -3);
+
+	return 1; // Number of return values
+}*/
 
 LuaSAO::LuaSAO(ServerEnvironment *env, u16 id, v3f pos):
 	ServerActiveObject(env, id, pos),
@@ -329,6 +469,9 @@ LuaSAO::LuaSAO(ServerEnvironment *env, u16 id, v3f pos):
 	lua_register(L, "object_get_base_position", lf_object_get_base_position);
 	lua_register(L, "object_add_message", lf_object_add_message);
 	lua_register(L, "object_get_node", lf_object_get_node);
+	lua_register(L, "get_content_features", lf_get_content_features);
+	lua_register(L, "object_dig_node", lf_object_dig_node);
+	lua_register(L, "object_place_node", lf_object_place_node);
 	lua_register(L, "object_remove", lf_object_remove);
 }
 
@@ -372,7 +515,7 @@ std::string LuaSAO::getClientInitializationData()
 	
 	do{
 
-		const char *funcname = "get_client_init_data";
+		const char *funcname = "on_get_client_init_data";
 		lua_getglobal(L, funcname);
 		if(!lua_isfunction(L,-1))
 		{
@@ -430,7 +573,7 @@ std::string LuaSAO::getServerInitializationData()
 	
 	do{
 
-		const char *funcname = "get_server_init_data";
+		const char *funcname = "on_get_server_init_data";
 		lua_getglobal(L, funcname);
 		if(!lua_isfunction(L,-1))
 		{
@@ -474,7 +617,41 @@ std::string LuaSAO::getServerInitializationData()
 	return data;
 }
 
-void LuaSAO::initialize(const std::string &data)
+void LuaSAO::initializeFromNothing(const std::string &script_name)
+{
+	loadScripts(script_name);
+
+	/*
+		Call on_initialize(self, data) in the script
+	*/
+	
+	const char *funcname = "on_initialize";
+	lua_getglobal(L, funcname);
+	if(!lua_isfunction(L,-1))
+	{
+		lua_pop(L,1);
+		dstream<<"WARNING: LuaSAO: Function not found: "
+				<<funcname<<std::endl;
+		return;
+	}
+	
+	// Parameters:
+	// 1: self
+	lua_pushlightuserdata(L, this);
+	// 2: data (other)
+	lua_pushstring(L, "");
+	
+	// Call (2 parameters, 0 result)
+	if(lua_pcall(L, 2, 0, 0))
+	{
+		dstream<<"WARNING: LuaSAO: Error running function "
+				<<funcname<<": "
+				<<lua_tostring(L,-1)<<std::endl;
+		return;
+	}
+}
+
+void LuaSAO::initializeFromSave(const std::string &data)
 {
 	std::istringstream is(data, std::ios::binary);
 	std::string script_name = deSerializeString(is);
@@ -483,10 +660,10 @@ void LuaSAO::initialize(const std::string &data)
 	loadScripts(script_name);
 
 	/*
-		Call initialize(self, data) in the script
+		Call on_initialize(self, data) in the script
 	*/
 	
-	const char *funcname = "initialize";
+	const char *funcname = "on_initialize";
 	lua_getglobal(L, funcname);
 	if(!lua_isfunction(L,-1))
 	{
@@ -548,11 +725,13 @@ void LuaSAO::loadScripts(const std::string &script_name)
 
 void LuaSAO::step(float dtime, Queue<ActiveObjectMessage> &messages)
 {
-	lua_getglobal(L, "step");
+	const char *funcname = "on_step";
+	lua_getglobal(L, funcname);
 	if(!lua_isfunction(L,-1))
 	{
 		lua_pop(L,1);
-		dstream<<"WARNING: LuaSAO::step(): step function not found"<<std::endl;
+		dstream<<"WARNING: LuaSAO::step(): Function not found: "
+				<<funcname<<std::endl;
 		return;
 	}
 	
@@ -565,7 +744,8 @@ void LuaSAO::step(float dtime, Queue<ActiveObjectMessage> &messages)
 	// Call (2 parameters, 0 result)
 	if(lua_pcall(L, 2, 0, 0))
 	{
-		dstream<<"WARNING: LuaSAO::step(): Error running function step(): "
+		dstream<<"WARNING: LuaSAO::step(): Error running function "
+				<<funcname<<": "
 				<<lua_tostring(L,-1)<<std::endl;
 		return;
 	}

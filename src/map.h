@@ -44,6 +44,51 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #define MAPTYPE_SERVER 1
 #define MAPTYPE_CLIENT 2
 
+enum MapEditEventType{
+	MEET_ADDNODE,
+	MEET_REMOVENODE,
+	MEET_OTHER
+};
+
+struct MapEditEvent
+{
+	MapEditEventType type;
+	v3s16 p;
+	MapNode n;
+	core::map<v3s16, bool> modified_blocks;
+	u16 already_known_by_peer;
+
+	MapEditEvent():
+		type(MEET_OTHER),
+		already_known_by_peer(0)
+	{
+	}
+	
+	MapEditEvent * clone()
+	{
+		MapEditEvent *event = new MapEditEvent();
+		event->type = type;
+		event->p = p;
+		event->n = n;
+		for(core::map<v3s16, bool>::Iterator
+				i = modified_blocks.getIterator();
+				i.atEnd()==false; i++)
+		{
+			v3s16 p = i.getNode()->getKey();
+			bool v = i.getNode()->getValue();
+			event->modified_blocks.insert(p, v);
+		}
+		return event;
+	}
+};
+
+class MapEventReceiver
+{
+public:
+	// event shall be deleted by caller after the call.
+	virtual void onMapEditEvent(MapEditEvent *event) = 0;
+};
+
 class Map : public NodeContainer
 {
 public:
@@ -69,25 +114,11 @@ public:
 		delete this;
 	}
 
-	void updateCamera(v3f pos, v3f dir)
-	{
-		JMutexAutoLock lock(m_camera_mutex);
-		m_camera_position = pos;
-		m_camera_direction = dir;
-	}
+	void addEventReceiver(MapEventReceiver *event_receiver);
+	void removeEventReceiver(MapEventReceiver *event_receiver);
+	// event shall be deleted by caller after the call.
+	void dispatchEvent(MapEditEvent *event);
 
-	static core::aabbox3d<f32> getNodeBox(v3s16 p)
-	{
-		return core::aabbox3d<f32>(
-			(float)p.X * BS - 0.5*BS,
-			(float)p.Y * BS - 0.5*BS,
-			(float)p.Z * BS - 0.5*BS,
-			(float)p.X * BS + 0.5*BS,
-			(float)p.Y * BS + 0.5*BS,
-			(float)p.Z * BS + 0.5*BS
-		);
-	}
-	
 	// On failure returns NULL
 	MapSector * getSectorNoGenerateNoExNoLock(v2s16 p2d);
 	// On failure returns NULL
@@ -112,10 +143,6 @@ public:
 	// Gets an existing block or creates an empty one
 	//MapBlock * getBlockCreate(v3s16 p);
 	
-	// Returns InvalidPositionException if not found
-	f32 getGroundHeight(v2s16 p, bool generate=false);
-	void setGroundHeight(v2s16 p, f32 y, bool generate=false);
-
 	// Returns InvalidPositionException if not found
 	bool isNodeUnderground(v3s16 p);
 	
@@ -211,6 +238,14 @@ public:
 			core::map<v3s16, MapBlock*> &modified_blocks);
 	void removeNodeAndUpdate(v3s16 p,
 			core::map<v3s16, MapBlock*> &modified_blocks);
+
+	/*
+		Wrappers for the latter ones.
+		These emit events.
+		Return true if succeeded, false if not.
+	*/
+	bool addNodeWithEvent(v3s16 p, MapNode n);
+	bool removeNodeWithEvent(v3s16 p);
 	
 	/*
 		Takes the blocks at the edges into account
@@ -249,12 +284,11 @@ protected:
 
 	std::ostream &m_dout;
 
+	core::map<MapEventReceiver*, bool> m_event_receivers;
+	
+	// Mutex is important because on client map is accessed asynchronously
 	core::map<v2s16, MapSector*> m_sectors;
 	JMutex m_sector_mutex;
-
-	v3f m_camera_position;
-	v3f m_camera_direction;
-	JMutex m_camera_mutex;
 
 	// Be sure to set this to NULL when the cached sector is deleted 
 	MapSector *m_sector_cache;
@@ -444,6 +478,9 @@ public:
 			core::map<v3s16, MapBlock*> &lighting_invalidated_blocks
 	);
 #endif
+	
+	// Helper for placing objects on ground level
+	s16 findGroundLevel(v2s16 p2d);
 
 	/*
 		Misc. helper functions for fiddling with directory and file
@@ -488,10 +525,6 @@ public:
 	void saveBlock(MapBlock *block);
 	// This will generate a sector with getSector if not found.
 	void loadBlock(std::string sectordir, std::string blockfile, MapSector *sector);
-
-	// Gets from master heightmap
-	// DEPRECATED?
-	void getSectorCorners(v2s16 p2d, s16 *corners);
 
 	// For debug printing
 	virtual void PrintInfo(std::ostream &out);
@@ -573,6 +606,13 @@ public:
 		ISceneNode::drop();
 	}
 
+	void updateCamera(v3f pos, v3f dir)
+	{
+		JMutexAutoLock lock(m_camera_mutex);
+		m_camera_position = pos;
+		m_camera_direction = dir;
+	}
+
 	/*
 		Forcefully get a sector from somewhere
 	*/
@@ -640,6 +680,11 @@ private:
 	//JMutex mesh_mutex;
 	
 	MapDrawControl &m_control;
+
+	v3f m_camera_position;
+	v3f m_camera_direction;
+	JMutex m_camera_mutex;
+
 };
 
 #endif

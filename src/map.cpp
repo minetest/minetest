@@ -34,36 +34,45 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 Map::Map(std::ostream &dout):
 	m_dout(dout),
-	m_camera_position(0,0,0),
-	m_camera_direction(0,0,1),
 	m_sector_cache(NULL)
 {
 	m_sector_mutex.Init();
-	m_camera_mutex.Init();
 	assert(m_sector_mutex.IsInitialized());
-	assert(m_camera_mutex.IsInitialized());
-	
-	// Get this so that the player can stay on it at first
-	//getSector(v2s16(0,0));
 }
 
 Map::~Map()
 {
 	/*
-		Stop updater thread
-	*/
-	/*updater.setRun(false);
-	while(updater.IsRunning())
-		sleep_s(1);*/
-
-	/*
-		Free all MapSectors.
+		Free all MapSectors
 	*/
 	core::map<v2s16, MapSector*>::Iterator i = m_sectors.getIterator();
 	for(; i.atEnd() == false; i++)
 	{
 		MapSector *sector = i.getNode()->getValue();
 		delete sector;
+	}
+}
+
+void Map::addEventReceiver(MapEventReceiver *event_receiver)
+{
+	m_event_receivers.insert(event_receiver, false);
+}
+
+void Map::removeEventReceiver(MapEventReceiver *event_receiver)
+{
+	if(m_event_receivers.find(event_receiver) == NULL)
+		return;
+	m_event_receivers.remove(event_receiver);
+}
+
+void Map::dispatchEvent(MapEditEvent *event)
+{
+	for(core::map<MapEventReceiver*, bool>::Iterator
+			i = m_event_receivers.getIterator();
+			i.atEnd()==false; i++)
+	{
+		MapEventReceiver* event_receiver = i.getNode()->getKey();
+		event_receiver->onMapEditEvent(event);
 	}
 }
 
@@ -144,34 +153,6 @@ MapBlock * Map::getBlockNoCreateNoEx(v3s16 p3d)
 	block = sector->createBlankBlock(p3d.Y);
 	return block;
 }*/
-
-f32 Map::getGroundHeight(v2s16 p, bool generate)
-{
-	try{
-		v2s16 sectorpos = getNodeSectorPos(p);
-		MapSector * sref = getSectorNoGenerate(sectorpos);
-		v2s16 relpos = p - sectorpos * MAP_BLOCKSIZE;
-		f32 y = sref->getGroundHeight(relpos);
-		return y;
-	}
-	catch(InvalidPositionException &e)
-	{
-		return GROUNDHEIGHT_NOTFOUND_SETVALUE;
-	}
-}
-
-void Map::setGroundHeight(v2s16 p, f32 y, bool generate)
-{
-	/*m_dout<<DTIME<<"Map::setGroundHeight(("
-			<<p.X<<","<<p.Y
-			<<"), "<<y<<")"<<std::endl;*/
-	v2s16 sectorpos = getNodeSectorPos(p);
-	MapSector * sref = getSectorNoGenerate(sectorpos);
-	v2s16 relpos = p - sectorpos * MAP_BLOCKSIZE;
-	//sref->mutex.Lock();
-	sref->setGroundHeight(relpos, y);
-	//sref->mutex.Unlock();
-}
 
 bool Map::isNodeUnderground(v3s16 p)
 {
@@ -866,7 +847,7 @@ void Map::addNodeAndUpdate(v3s16 p, MapNode n,
 	/*PrintInfo(m_dout);
 	m_dout<<DTIME<<"Map::addNodeAndUpdate(): p=("
 			<<p.X<<","<<p.Y<<","<<p.Z<<")"<<std::endl;*/
-
+	
 	/*
 		From this node to nodes underneath:
 		If lighting is sunlight (1.0), unlight neighbours and
@@ -947,8 +928,7 @@ void Map::addNodeAndUpdate(v3s16 p, MapNode n,
 		assert(block != NULL);
 		modified_blocks.insert(blockpos, block);
 		
-		if(isValidPosition(p) == false)
-			throw;
+		assert(isValidPosition(p));
 			
 		// Unlight neighbours of node.
 		// This means setting light of all consequent dimmer nodes
@@ -1161,7 +1141,7 @@ void Map::removeNodeAndUpdate(v3s16 p,
 		}
 		catch(InvalidPositionException &e)
 		{
-			throw;
+			assert(0);
 		}
 	}
 
@@ -1219,6 +1199,63 @@ void Map::removeNodeAndUpdate(v3s16 p,
 		{
 		}
 	}
+}
+
+bool Map::addNodeWithEvent(v3s16 p, MapNode n)
+{
+	MapEditEvent event;
+	event.type = MEET_ADDNODE;
+	event.p = p;
+	event.n = n;
+
+	bool succeeded = true;
+	try{
+		core::map<v3s16, MapBlock*> modified_blocks;
+		addNodeAndUpdate(p, n, modified_blocks);
+
+		// Copy modified_blocks to event
+		for(core::map<v3s16, MapBlock*>::Iterator
+				i = modified_blocks.getIterator();
+				i.atEnd()==false; i++)
+		{
+			event.modified_blocks.insert(i.getNode()->getKey(), false);
+		}
+	}
+	catch(InvalidPositionException &e){
+		succeeded = false;
+	}
+
+	dispatchEvent(&event);
+
+	return succeeded;
+}
+
+bool Map::removeNodeWithEvent(v3s16 p)
+{
+	MapEditEvent event;
+	event.type = MEET_REMOVENODE;
+	event.p = p;
+
+	bool succeeded = true;
+	try{
+		core::map<v3s16, MapBlock*> modified_blocks;
+		removeNodeAndUpdate(p, modified_blocks);
+
+		// Copy modified_blocks to event
+		for(core::map<v3s16, MapBlock*>::Iterator
+				i = modified_blocks.getIterator();
+				i.atEnd()==false; i++)
+		{
+			event.modified_blocks.insert(i.getNode()->getKey(), false);
+		}
+	}
+	catch(InvalidPositionException &e){
+		succeeded = false;
+	}
+
+	dispatchEvent(&event);
+
+	return succeeded;
 }
 
 bool Map::dayNightDiffed(v3s16 blockpos)
@@ -4535,6 +4572,42 @@ MapBlock * ServerMap::emergeBlock(
 	return block;
 }
 
+s16 ServerMap::findGroundLevel(v2s16 p2d)
+{
+	/*
+		Uh, just do something random...
+	*/
+	// Find existing map from top to down
+	s16 max=63;
+	s16 min=-64;
+	v3s16 p(p2d.X, max, p2d.Y);
+	for(; p.Y>min; p.Y--)
+	{
+		MapNode n = getNodeNoEx(p);
+		if(n.d != CONTENT_IGNORE)
+			break;
+	}
+	if(p.Y == min)
+		goto plan_b;
+	// If this node is not air, go to plan b
+	if(getNodeNoEx(p).d != CONTENT_AIR)
+		goto plan_b;
+	// Search existing walkable and return it
+	for(; p.Y>min; p.Y--)
+	{
+		MapNode n = getNodeNoEx(p);
+		if(content_walkable(n.d) && n.d != CONTENT_IGNORE)
+			return p.Y;
+	}
+	// Move to plan b
+plan_b:
+	/*
+		Plan B: Get from map generator perlin noise function
+	*/
+	double level = base_rock_level_2d(m_seed, p2d);
+	return (s16)level;
+}
+
 void ServerMap::createDir(std::string path)
 {
 	if(fs::CreateDir(path) == false)
@@ -5122,28 +5195,6 @@ void ServerMap::loadBlock(std::string sectordir, std::string blockfile, MapSecto
 	}
 }
 
-// Gets from master heightmap
-void ServerMap::getSectorCorners(v2s16 p2d, s16 *corners)
-{
-	dstream<<"DEPRECATED: "<<__FUNCTION_NAME<<std::endl;
-	//assert(m_heightmap != NULL);
-	/*
-		Corner definition:
-		v2s16(0,0),
-		v2s16(1,0),
-		v2s16(1,1),
-		v2s16(0,1),
-	*/
-	/*corners[0] = m_heightmap->getGroundHeight
-			((p2d+v2s16(0,0))*SECTOR_HEIGHTMAP_SPLIT);
-	corners[1] = m_heightmap->getGroundHeight
-			((p2d+v2s16(1,0))*SECTOR_HEIGHTMAP_SPLIT);
-	corners[2] = m_heightmap->getGroundHeight
-			((p2d+v2s16(1,1))*SECTOR_HEIGHTMAP_SPLIT);
-	corners[3] = m_heightmap->getGroundHeight
-			((p2d+v2s16(0,1))*SECTOR_HEIGHTMAP_SPLIT);*/
-}
-
 void ServerMap::PrintInfo(std::ostream &out)
 {
 	out<<"ServerMap: ";
@@ -5165,20 +5216,15 @@ ClientMap::ClientMap(
 	Map(dout_client),
 	scene::ISceneNode(parent, mgr, id),
 	m_client(client),
-	m_control(control)
+	m_control(control),
+	m_camera_position(0,0,0),
+	m_camera_direction(0,0,1)
 {
-	//mesh_mutex.Init();
-
-	/*m_box = core::aabbox3d<f32>(0,0,0,
-			map->getW()*BS, map->getH()*BS, map->getD()*BS);*/
-	/*m_box = core::aabbox3d<f32>(0,0,0,
-			map->getSizeNodes().X * BS,
-			map->getSizeNodes().Y * BS,
-			map->getSizeNodes().Z * BS);*/
+	m_camera_mutex.Init();
+	assert(m_camera_mutex.IsInitialized());
+	
 	m_box = core::aabbox3d<f32>(-BS*1000000,-BS*1000000,-BS*1000000,
 			BS*1000000,BS*1000000,BS*1000000);
-	
-	//setPosition(v3f(BS,BS,BS));
 }
 
 ClientMap::~ClientMap()

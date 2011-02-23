@@ -30,6 +30,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <string>
 #include "utility.h"
 #include "porting.h"
+#include "map.h"
 
 struct QueuedBlockEmerge
 {
@@ -341,12 +342,13 @@ private:
 	u32 m_excess_gotblocks;
 };
 
-class Server : public con::PeerHandler
+class Server : public con::PeerHandler, public MapEventReceiver
 {
 public:
 	/*
 		NOTE: Every public method should be thread-safe
 	*/
+
 	Server(
 		std::string mapsavedir
 	);
@@ -361,29 +363,24 @@ public:
 	void Receive();
 	void ProcessData(u8 *data, u32 datasize, u16 peer_id);
 
-	// Environment and Connection must be locked when  called
-	void SendBlockNoLock(u16 peer_id, MapBlock *block, u8 ver);
-	
-	//
-	
 	core::list<PlayerInfo> getPlayerInfo();
 
 	u32 getDayNightRatio()
 	{
-		s32 d = 8;
-		s32 t = (((m_time_of_day.get() + 24000/d/2)%24000)/(24000/d));
-		if(t == d/4 || t == (d-d/4))
-			return 600;
-		else if(t < d/4 || t > (d-d/4))
-			return 300;
-		else
-			return 1000;
+		return time_to_daynight_ratio(m_time_of_day.get());
 	}
 
 	bool getShutdownRequested()
 	{
 		return m_shutdown_requested.get();
 	}
+	
+	/*
+		Shall be called with the environment locked.
+		This is accessed by the map, which is inside the environment,
+		so it shouldn't be a problem.
+	*/
+	void onMapEditEvent(MapEditEvent *event);
 
 private:
 
@@ -398,6 +395,11 @@ private:
 	void SendInventory(u16 peer_id);
 	void SendChatMessage(u16 peer_id, const std::wstring &message);
 	void BroadcastChatMessage(const std::wstring &message);
+	void sendRemoveNode(v3s16 p, u16 ignore_id=0);
+	void sendAddNode(v3s16 p, MapNode n, u16 ignore_id=0);
+	
+	// Environment and Connection must be locked when  called
+	void SendBlockNoLock(u16 peer_id, MapBlock *block, u8 ver);
 	
 	// Sends blocks to clients
 	void SendBlocks(float dtime);
@@ -484,6 +486,24 @@ private:
 	std::string m_mapsavedir;
 
 	MutexedVariable<bool> m_shutdown_requested;
+	
+	/*
+		Queue of map edits from the environment for sending to the clients
+		This is behind m_env_mutex
+	*/
+	Queue<MapEditEvent*> m_unsent_map_edit_queue;
+	/*
+		Set to true when the server itself is modifying the map and does
+		all sending of information by itself.
+		This is behind m_env_mutex
+	*/
+	bool m_ignore_map_edit_events;
+	/*
+		If set to !=0, the incoming MapEditEvents are modified to have
+		this peed id as the disabled recipient
+		This is behind m_env_mutex
+	*/
+	u16 m_ignore_map_edit_events_peer_id;
 
 	friend class EmergeThread;
 	friend class RemoteClient;

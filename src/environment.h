@@ -57,6 +57,7 @@ public:
 	void removePlayer(u16 peer_id);
 	Player * getPlayer(u16 peer_id);
 	Player * getPlayer(const char *name);
+	Player * getRandomConnectedPlayer();
 	core::list<Player*> getPlayers();
 	core::list<Player*> getPlayers(bool ignore_disconnected);
 	void printPlayers(std::ostream &o);
@@ -79,10 +80,12 @@ protected:
 
 #include "serverobject.h"
 
+class Server;
+
 class ServerEnvironment : public Environment
 {
 public:
-	ServerEnvironment(ServerMap *map);
+	ServerEnvironment(ServerMap *map, Server *server);
 	~ServerEnvironment();
 
 	Map & getMap()
@@ -93,6 +96,11 @@ public:
 	ServerMap & getServerMap()
 	{
 		return *m_map;
+	}
+
+	Server * getServer()
+	{
+		return m_server;
 	}
 
 	void step(f32 dtime);
@@ -140,6 +148,7 @@ public:
 	
 private:
 	ServerMap *m_map;
+	Server *m_server;
 	core::map<u16, ServerActiveObject*> m_active_objects;
 	Queue<ActiveObjectMessage> m_active_object_messages;
 	float m_random_spawn_timer;

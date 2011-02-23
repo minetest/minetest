@@ -131,10 +131,10 @@ public:
 	}
 
 	virtual std::string getClientInitializationData();
-	
 	virtual std::string getServerInitializationData();
 	
-	void initialize(const std::string &data);
+	void initializeFromNothing(const std::string &script_name);
+	void initializeFromSave(const std::string &data);
 	
 	void loadScripts(const std::string &script_name);
 

@@ -1832,7 +1832,11 @@ inline std::string deSerializeString(std::istream &is)
 {
 	char buf[2];
 	is.read(buf, 2);
+	if(is.gcount() != 2)
+		throw SerializationError("deSerializeString: size not read");
 	u16 s_size = readU16((u8*)buf);
+	if(s_size == 0)
+		return "";
 	Buffer<char> buf2(s_size);
 	is.read(&buf2[0], s_size);
 	std::string s;
@@ -1867,7 +1871,11 @@ inline std::string deSerializeLongString(std::istream &is)
 {
 	char buf[4];
 	is.read(buf, 4);
+	if(is.gcount() != 4)
+		throw SerializationError("deSerializeLongString: size not read");
 	u32 s_size = readU32((u8*)buf);
+	if(s_size == 0)
+		return "";
 	Buffer<char> buf2(s_size);
 	is.read(&buf2[0], s_size);
 	std::string s;

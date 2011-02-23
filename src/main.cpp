@@ -199,15 +199,6 @@ FIXME: Server went into some infinite PeerNotFoundException loop
 Objects:
 --------
 
-TODO: Better handling of objects and mobs
-      - Scripting?
-      - There has to be some way to do it with less messy code
-	  - Make separate classes for client and server
-	    - Client should not discriminate between blocks, server should
-	    - Make other players utilize the same framework
-		- This is also needed for objects that don't get sent to client
-		  but are used for triggers etc
-
 TODO: There has to be some better way to handle static objects than to
       send them all the time. This affects signs and item objects.
 SUGG: Signs could be done in the same way as torches. For this, blocks
@@ -262,6 +253,7 @@ Doing now (most important at the top):
 * not done
 
 === Fixmes
+* Check the fixmes in the list above
 * Make server find the spawning place from the real map data, not from
   the heightmap
   - But the changing borders of chunk have to be avoided, because
@@ -269,13 +261,16 @@ Doing now (most important at the top):
 * Make the generator to run in background and not blocking block
   placement and transfer
 * only_from_disk might not work anymore - check and fix it.
-* Check the fixmes in the list above
 
 === Making it more portable
 * Some MSVC: std::sto* are defined without a namespace and collide
   with the ones in utility.h
 
 === Features
+* Map should make the appropriate MapEditEvents
+* Add a global Lua spawn handler and such
+* Get rid of MapBlockObjects
+* Other players could be sent to clients as LuaCAOs
 * Add mud underground
 * Make an "environment metafile" to store at least time of day
 * Move digging property stuff from material.{h,cpp} to mapnode.cpp...
@@ -283,17 +278,15 @@ Doing now (most important at the top):
 * Add some kind of erosion and other stuff that now is possible
 * Make client to fetch stuff asynchronously
   - Needs method SyncProcessData
-* Fix the problem with the server constantly saving one or a few
-  blocks? List the first saved block, maybe it explains.
-  - It is probably caused by oscillating water
-* Water doesn't start flowing after map generation like it should
-  - Are there still problems?
 * Better water generation (spread it to underwater caverns but don't
   fill dungeons that don't touch big water masses)
 * When generating a chunk and the neighboring chunk doesn't have mud
   and stuff yet and the ground is fairly flat, the mud will flow to
   the other chunk making nasty straight walls when the other chunk
   is generated. Fix it.
+* Fix the problem with the server constantly saving one or a few
+  blocks? List the first saved block, maybe it explains.
+  - It is probably caused by oscillating water
 * Make a small history check to transformLiquids to detect and log
   continuous oscillations, in such detail that they can be fixed.
 * Combine meshes to bigger ones in ClientMap and set them EHM_STATIC
@@ -1796,7 +1789,7 @@ int main(int argc, char *argv[])
 		
 		dstream<<"Created main menu"<<std::endl;
 
-		while(g_device->run())
+		while(g_device->run() && kill == false)
 		{
 			// Run global IrrlichtWrapper's main thread processing stuff
 			g_irrlicht->Run();
@@ -1811,7 +1804,7 @@ int main(int argc, char *argv[])
 		}
 		
 		// Break out of menu-game loop to shut down cleanly
-		if(g_device->run() == false)
+		if(g_device->run() == false || kill == true)
 			break;
 		
 		dstream<<"Dropping main menu"<<std::endl;

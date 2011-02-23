@@ -1,7 +1,7 @@
 -- Client-side code of the test lua object
 
 --
--- Some helper functions
+-- Some helper functions and classes
 --
 
 function split(str, pat)
@@ -23,6 +23,7 @@ function split(str, pat)
    return t
 end
 
+-- For debugging
 function dump(o)
     if type(o) == 'table' then
         local s = '{ '
@@ -36,29 +37,90 @@ function dump(o)
     end
 end
 
+function vector_subtract(a, b)
+	return {X=a.X-b.X, Y=a.Y-b.Y, Z=a.Z-b.Z}
+end
+
+function vector_add(a, b)
+	return {X=a.X+b.X, Y=a.Y+b.Y, Z=a.Z+b.Z}
+end
+
+function vector_multiply(a, d)
+	return {X=a.X*d, Y=a.Y*d, Z=a.Z*d}
+end
+
+SmoothTranslator = {}
+SmoothTranslator.__index = SmoothTranslator
+
+function SmoothTranslator.create()
+	local obj = {}
+	setmetatable(obj, SmoothTranslator)
+	obj.vect_old = {X=0, Y=0, Z=0}
+	obj.anim_counter = 0
+	obj.anim_time = 0
+	obj.anim_time_counter = 0
+	obj.vect_show = {X=0, Y=0, Z=0}
+	obj.vect_aim = {X=0, Y=0, Z=0}
+	return obj
+end
+
+function SmoothTranslator:update(vect_new)
+	self.vect_old = self.vect_show
+	self.vect_aim = vect_new
+	if self.anim_time < 0.001 or self.anim_time > 1.0 then
+		self.anim_time = self.anim_time_counter
+	else
+		self.anim_time = self.anim_time * 0.9 + self.anim_time_counter * 0.1
+	end
+	self.anim_time_counter = 0
+	self.anim_counter = 0
+end
+
+function SmoothTranslator:translate(dtime)
+	self.anim_time_counter = self.anim_time_counter + dtime
+	self.anim_counter = self.anim_counter + dtime
+	vect_move = vector_subtract(self.vect_aim, self.vect_old)
+	moveratio = 1.0
+	if self.anim_time > 0.001 then
+		moveratio = self.anim_time_counter / self.anim_time
+	end
+	if moveratio > 1.5 then
+		moveratio = 1.5
+	end
+	self.vect_show = vector_add(self.vect_old, vector_multiply(vect_move, moveratio))
+end
+
 --
 -- Actual code
 --
 
-function step(self, dtime)
-	-- Some smoother animation could be done here
+pos_trans = SmoothTranslator.create()
+rot_trans = SmoothTranslator.create()
+
+-- Callback functions
+
+function on_step(self, dtime)
+	pos_trans:translate(dtime)
+	rot_trans:translate(dtime)
+	object_set_position(self, pos_trans.vect_show)
+	object_set_rotation(self, rot_trans.vect_show)
 end
 
-function process_message(self, data)
+function on_process_message(self, data)
 	--print("client got message: " .. data)
 
 	-- Receive our custom messages
 
 	sp = split(data, " ")
 	if sp[1] == "pos" then
-		object_set_position(self, sp[2], sp[3], sp[4])
+		pos_trans:update({X=sp[2], Y=sp[3], Z=sp[4]})
 	end
 	if sp[1] == "rot" then
-		object_set_rotation(self, sp[2], sp[3], sp[4])
+		rot_trans:update({X=sp[2], Y=sp[3], Z=sp[4]})
 	end
 end
 
-function initialize(self, data)
+function on_initialize(self, data)
 	print("client object got initialization: " .. data)
 
 	corners = {
