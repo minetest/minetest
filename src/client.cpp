@@ -1562,15 +1562,20 @@ void Client::addNode(v3s16 p, MapNode n)
 {
 	JMutexAutoLock envlock(m_env_mutex);
 
+	TimeTaker timer1("Client::addNode()");
+
 	core::map<v3s16, MapBlock*> modified_blocks;
 
 	try
 	{
+		TimeTaker timer3("Client::addNode(): addNodeAndUpdate");
 		m_env.getMap().addNodeAndUpdate(p, n, modified_blocks);
 	}
 	catch(InvalidPositionException &e)
 	{}
 	
+	TimeTaker timer2("Client::addNode(): updateMeshes");
+
 	for(core::map<v3s16, MapBlock * >::Iterator
 			i = modified_blocks.getIterator();
 			i.atEnd() == false; i++)

@@ -252,6 +252,14 @@ Doing now (most important at the top):
 # maybe done
 * not done
 
+=== Next
+* Continue making the scripting system:
+  * Rip up everything unnecessary from the lua build system
+  * Make updateNodeMesh for a less verbose mesh update on add/removenode
+  * Switch to using a safe way for the self and env pointers
+  * Make some global environment hooks, like node placed and general
+    on_step()
+
 === Fixmes
 * Check the fixmes in the list above
 * Make server find the spawning place from the real map data, not from
