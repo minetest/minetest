@@ -808,10 +808,20 @@ void ClientEnvironment::step(float dtime)
 
 		f32 dtime_part;
 		if(dtime_downcount > dtime_max_increment)
+		{
 			dtime_part = dtime_max_increment;
+			dtime_downcount -= dtime_part;
+		}
 		else
+		{
 			dtime_part = dtime_downcount;
-		dtime_downcount -= dtime_part;
+			/*
+				Setting this to 0 (no -=dtime_part) disables an infinite loop
+				when dtime_part is so small that dtime_downcount -= dtime_part
+				does nothing
+			*/
+			dtime_downcount = 0;
+		}
 		
 		/*
 			Handle local player

@@ -254,7 +254,6 @@ Doing now (most important at the top):
 
 === Next
 * Continue making the scripting system:
-  * Rip up everything unnecessary from the lua build system
   * Make updateNodeMesh for a less verbose mesh update on add/removenode
   * Switch to using a safe way for the self and env pointers
   * Make some global environment hooks, like node placed and general
