@@ -92,6 +92,8 @@ double noise3d(int x, int y, int z, int seed)
 	return 1.0 - (double)n/1073741824;
 }
 
+#if 0
+// This is too slow
 double noise2d_gradient(double x, double y, int seed)
 {
 	// Calculate the integer coordinates
@@ -114,6 +116,26 @@ double noise2d_gradient(double x, double y, int seed)
 	// Interpolate between the values
 	return biLinearInterpolation(s,u,v,w,xl,yl);
 }
+#endif
+
+#if 1
+double noise2d_gradient(double x, double y, int seed)
+{
+	// Calculate the integer coordinates
+	int x0 = (x > 0.0 ? (int)x : (int)x - 1);
+	int y0 = (y > 0.0 ? (int)y : (int)y - 1);
+	// Calculate the remaining part of the coordinates
+	double xl = x - (double)x0;
+	double yl = y - (double)y0;
+	// Get values for corners of cube
+	double v00 = noise2d(x0, y0, seed);
+	double v10 = noise2d(x0+1, y0, seed);
+	double v01 = noise2d(x0, y0+1, seed);
+	double v11 = noise2d(x0+1, y0+1, seed);
+	// Interpolate
+	return biLinearInterpolation(v00,v10,v01,v11,xl,yl);
+}
+#endif
 
 double noise3d_gradient(double x, double y, double z, int seed)
 {
@@ -124,7 +146,7 @@ double noise3d_gradient(double x, double y, double z, int seed)
 	// Calculate the remaining part of the coordinates
 	double xl = x - (double)x0;
 	double yl = y - (double)y0;
-	double zl = y - (double)z0;
+	double zl = z - (double)z0;
 	// Get values for corners of cube
 	double v000 = noise3d(x0, y0, z0, seed);
 	double v100 = noise3d(x0+1, y0, z0, seed);
