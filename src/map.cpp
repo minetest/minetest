@@ -2005,7 +2005,7 @@ double contour_flat_top(double v, double r)
 double base_rock_level_2d(u64 seed, v2f p)
 {
 	// The ground level (return value)
-	double h = WATER_LEVEL;
+	double h = WATER_LEVEL-1.5;
 	
 	// Raises from 0 when parameter is -1...1
 	/*double m2 = contour_flat_top(-0.8 + 2.0 * noise2d_perlin(
@@ -2028,12 +2028,65 @@ double base_rock_level_2d(u64 seed, v2f p)
 	h += 30 * tm2;*/
 
 #if 1
-	// Huge mountains
-	double m3 = 150.0 - 500.0 * noise2d_perlin_abs(
-			0.324+(float)p.X/2000., 0.423+(float)p.Y/2000.,
-			(seed>>32)+985251, 9, 0.55);
-	if(m3 > h)
-		h = m3;
+	{
+		// Large mountains
+		double m3 = 100.0 - 600.0 * noise2d_perlin_abs(
+				0.324+(float)p.X/2000., 0.423+(float)p.Y/2000.,
+				(seed>>32)+985251, 9, 0.55);
+		if(m3 > h)
+			h = m3;
+	}
+#endif
+
+#if 1
+	{
+		// Pretty neat looking mountains
+		double m4 = 100.0 - 400.0 * noise2d_perlin_abs(
+				0.324+(float)p.X/2000., 0.423+(float)p.Y/2000.,
+				(seed>>32)+65012102, 8, 0.6);
+		if(m4 > h)
+			h = m4;
+	}
+#endif
+
+#if 0
+	{
+		// More neat looking mountain ranges
+		double d = 100;
+		double a1 = d*2 - d*5 * noise2d_perlin_abs(
+				0.5+(float)p.X/500., 0.5+(float)p.Y/500.,
+				seed+850342, 6, 0.55);
+		/*if(a1 > d)
+			a1 = d + sqrt(a1-d);*/
+		a1 = (1.0 - exp(-a1/d))*d;
+		/*if(a1 > h)
+			h = a1;*/
+		if(a1 > 0)
+			h += a1;
+	}
+#endif
+
+#if 1
+	{
+		// Very steep mountain ranges
+		double d = 150;
+		double a1 = d*2 - d*7.5 * noise2d_perlin_abs(
+				0.5+(float)p.X/500., 0.5+(float)p.Y/500.,
+				seed+850342, 6, 0.6);
+		/*if(a1 > d)
+			a1 = d + sqrt(a1-d);*/
+		a1 = (1.0 - exp(-a1/d))*d;
+		/*if(a1 > h)
+			h = a1;*/
+		if(a1 > 0)
+			h += a1;
+		/*double a = noise2d_perlin_abs(
+				0.94+(float)p.X/2000., 0.26+(float)p.Y/2000.,
+				(seed>>32)+65012102, 8, 0.50);
+		double m4 = 100.0 - 400.0 * a;
+		if(m4 > h)
+			h = m4;*/
+	}
 #endif
 
 #if 1
@@ -2053,7 +2106,7 @@ double base_rock_level_2d(u64 seed, v2f p)
 #endif
 
 #if 1
-	double base = -5. + 25. * noise2d_perlin(
+	double base = -2. + 25. * noise2d_perlin(
 			0.5+(float)p.X/500., 0.5+(float)p.Y/500.,
 			(seed>>32)+653876, 7, 0.6);
 #else
@@ -4151,7 +4204,7 @@ MapBlock * ServerMap::generateBlock(
 			v3f p_map_f = p_nodes_f + checklist[i]*MAP_BLOCKSIZE;
 
 			double depth_guess;
-			bool is_ground = is_base_ground(m_seed, p_map_f, &depth_guess);
+			/*bool is_ground =*/ is_base_ground(m_seed, p_map_f, &depth_guess);
 			
 			// Estimate the surface height
 			float surface_y_f = p_map_f.Y + depth_guess;
@@ -4456,7 +4509,7 @@ MapBlock * ServerMap::generateBlock(
 
 	//dstream<<"generateBlock(): Getting local attributes"<<std::endl;
 
-	float caves_amount = 0.5;
+	//float caves_amount = 0.5;
 
 #if 0
 	{
@@ -4474,11 +4527,11 @@ MapBlock * ServerMap::generateBlock(
 
 	//dstream<<"generateBlock(): Done"<<std::endl;
 
+#if 0
 	// Set to true if has caves.
 	// Set when some non-air is changed to air when making caves.
 	bool has_dungeons = false;
 
-#if 0
 	/*
 		Generate dungeons
 	*/
