@@ -2036,7 +2036,7 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 			/*
 				Send the removal to all other clients
 			*/
-			sendRemoveNode(p_over, peer_id);
+			sendRemoveNode(p_under, peer_id);
 			
 			/*
 				Update and send inventory
