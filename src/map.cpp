@@ -1875,6 +1875,8 @@ void make_tree(VoxelManipulator &vmanip, v3s16 p0)
 	MapNode treenode(CONTENT_TREE);
 	MapNode leavesnode(CONTENT_LEAVES);
 
+	vmanip.emerge(VoxelArea(p0-v3s16(2,0,2),p0+v3s16(2,6,2)));
+
 	s16 trunk_h = myrand_range(3, 6);
 	v3s16 p1 = p0;
 	for(s16 ii=0; ii<trunk_h; ii++)
@@ -4421,6 +4423,11 @@ MapBlock * ServerMap::generateBlock(
 
 	//dstream<<"generateBlock(): Done"<<std::endl;
 
+	// Set to true if has caves.
+	// Set when some non-air is changed to air when making caves.
+	bool has_dungeons = false;
+
+#if 0
 	/*
 		Generate dungeons
 	*/
@@ -4640,10 +4647,6 @@ continue_generating:
 	}
 #endif
 
-	// Set to true if has caves.
-	// Set when some non-air is changed to air when making caves.
-	bool has_dungeons = false;
-
 	/*
 		Apply temporary cave data to block
 	*/
@@ -4673,6 +4676,7 @@ continue_generating:
 			block->setNode(v3s16(x0,y0,z0), n);
 		}
 	}
+#endif
 	
 	/*
 		This is used for guessing whether or not the block should
@@ -4815,7 +4819,7 @@ continue_generating:
 	}
 	
 	/*
-		Add block to sector.
+		Add block to sector
 	*/
 	sector->insertBlock(block);
 	
@@ -4829,6 +4833,34 @@ continue_generating:
 	else
 	{
 		block->setLightingExpired(false);
+	}
+
+	/*
+		Add trees
+	*/
+	if(some_part_underground && !completely_underground)
+	{
+		MapVoxelManipulator vm(this);
+		
+		double a = tree_amount_2d(m_seed, v2s16(p_nodes.X+8, p_nodes.Z+8));
+		u16 tree_count = (u16)(a*MAP_BLOCKSIZE*MAP_BLOCKSIZE);
+		for(u16 i=0; i<tree_count; i++)
+		{
+			v3s16 tree_p = p_nodes + v3s16(
+				myrand_range(0,MAP_BLOCKSIZE-1),
+				8,
+				myrand_range(0,MAP_BLOCKSIZE-1)
+			);
+			double depth_guess;
+			/*bool is_ground =*/ is_base_ground(m_seed,
+					intToFloat(tree_p, 1), &depth_guess);
+			tree_p.Y += depth_guess;
+			if(tree_p.Y <= WATER_LEVEL)
+				continue;
+			make_tree(vm, tree_p);
+		}
+
+		vm.blitBack(changed_blocks);
 	}
 	
 #if 0

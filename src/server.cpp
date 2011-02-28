@@ -167,7 +167,8 @@ void * EmergeThread::Thread()
 						only_from_disk,
 						changed_blocks,
 						lighting_invalidated_blocks);
-				
+
+#if 0
 				/*
 					While we're at it, generate some other blocks too
 				*/
@@ -187,6 +188,7 @@ void * EmergeThread::Thread()
 				catch(InvalidPositionException &e)
 				{
 				}
+#endif
 			}
 
 			// If it is a dummy, block was not found on disk
