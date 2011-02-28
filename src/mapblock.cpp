@@ -34,6 +34,7 @@ MapBlock::MapBlock(NodeContainer *parent, v3s16 pos, bool dummy):
 		m_pos(pos),
 		changed(true),
 		is_underground(false),
+		m_lighting_expired(true),
 		m_day_night_differs(false),
 		m_objects(this)
 {

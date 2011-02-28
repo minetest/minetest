@@ -486,7 +486,7 @@ void TextureSource::buildMainAtlas()
 	sourcelist.push_back("sand.png^mineral_iron.png");
 	
 	// Padding to disallow texture bleeding
-	s32 padding = 8;
+	s32 padding = 16;
 
 	/*
 		First pass: generate almost everything

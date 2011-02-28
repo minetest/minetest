@@ -92,8 +92,7 @@ double noise3d(int x, int y, int z, int seed)
 	return 1.0 - (double)n/1073741824;
 }
 
-#if 0
-// This is too slow
+#if 1
 double noise2d_gradient(double x, double y, int seed)
 {
 	// Calculate the integer coordinates
@@ -118,7 +117,7 @@ double noise2d_gradient(double x, double y, int seed)
 }
 #endif
 
-#if 1
+#if 0
 double noise2d_gradient(double x, double y, int seed)
 {
 	// Calculate the integer coordinates
@@ -175,6 +174,21 @@ double noise2d_perlin(double x, double y, int seed,
 	return a;
 }
 
+double noise2d_perlin_abs(double x, double y, int seed,
+		int octaves, double persistence)
+{
+	double a = 0;
+	double f = 1.0;
+	double g = 1.0;
+	for(int i=0; i<octaves; i++)
+	{
+		a += g * fabs(noise2d_gradient(x*f, y*f, seed+i));
+		f *= 2.0;
+		g *= persistence;
+	}
+	return a;
+}
+
 double noise3d_perlin(double x, double y, double z, int seed,
 		int octaves, double persistence)
 {
@@ -184,6 +198,21 @@ double noise3d_perlin(double x, double y, double z, int seed,
 	for(int i=0; i<octaves; i++)
 	{
 		a += g * noise3d_gradient(x*f, y*f, z*f, seed+i);
+		f *= 2.0;
+		g *= persistence;
+	}
+	return a;
+}
+
+double noise3d_perlin_abs(double x, double y, double z, int seed,
+		int octaves, double persistence)
+{
+	double a = 0;
+	double f = 1.0;
+	double g = 1.0;
+	for(int i=0; i<octaves; i++)
+	{
+		a += g * fabs(noise3d_gradient(x*f, y*f, z*f, seed+i));
 		f *= 2.0;
 		g *= persistence;
 	}

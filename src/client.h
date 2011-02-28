@@ -252,6 +252,8 @@ public:
 				(std::wstring)L"<"+name+L"> "+message);
 	}
 
+	u64 getMapSeed(){ return m_map_seed; }
+
 private:
 	
 	// Virtual methods from con::PeerHandler
@@ -311,6 +313,9 @@ private:
 	//u32 m_daynight_ratio;
 
 	Queue<std::wstring> m_chat_queue;
+	
+	// The seed returned by the server in TOCLIENT_INIT is stored here
+	u64 m_map_seed;
 };
 
 #endif // !SERVER

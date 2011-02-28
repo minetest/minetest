@@ -1422,6 +1422,9 @@ void Map::transformLiquids(core::map<v3s16, MapBlock*> & modified_blocks)
 
 	while(m_transforming_liquid.size() != 0)
 	{
+		try
+		{
+
 		/*
 			Get a queued transforming liquid node
 		*/
@@ -1680,9 +1683,12 @@ void Map::transformLiquids(core::map<v3s16, MapBlock*> & modified_blocks)
 		}
 
 		loopcount++;
-		//if(loopcount >= 100000)
-		if(loopcount >= initial_size * 1)
+		if(loopcount >= initial_size * 1 || loopcount >= 1000)
 			break;
+			
+		}catch(InvalidPositionException &e)
+		{
+		}
 	}
 	//dstream<<"Map::transformLiquids(): loopcount="<<loopcount<<std::endl;
 }
@@ -1698,8 +1704,8 @@ ServerMap::ServerMap(std::string savedir):
 	
 	//m_chunksize = 64;
 	//m_chunksize = 16; // Too slow
-	m_chunksize = 8; // Takes a few seconds
-	//m_chunksize = 4;
+	//m_chunksize = 8; // Takes a few seconds
+	m_chunksize = 4; // Too small?
 	//m_chunksize = 2;
 	
 	// TODO: Save to and load from a file
@@ -1954,61 +1960,288 @@ double tree_amount_2d(u64 seed, v2s16 p)
 
 #define AVERAGE_MUD_AMOUNT 4
 
+double get_mud_amount(u64 seed, v2f p)
+{
+	return ((float)AVERAGE_MUD_AMOUNT + 2.5 * noise2d_perlin(
+			0.5+p.X/200, 0.5+p.Y/200,
+			seed+1, 5, 0.65));
+}
+
+// -1->0, 0->1, 1->0
+double contour(double v)
+{
+	v = fabs(v);
+	if(v >= 1.0)
+		return 0.0;
+	return (1.0-v);
+}
+
+// -1->0, -r->1, 0->1, r->1, 1->0
+double contour_flat_top(double v, double r)
+{
+	v = fabs(v);
+	if(v >= 1.0)
+		return 0.0;
+	double rmax = 0.999;
+	if(r >= rmax)
+		r = rmax;
+	if(v <= r)
+		return 1.0;
+	v -= r;
+	return ((1.0-r)-v) / (1.0-r);
+	//return easeCurve(((1.0-r)-v) / (1.0-r));
+}
+
+double base_rock_level_2d(u64 seed, v2f p)
+{
+	// The ground level (return value)
+	double h = WATER_LEVEL;
+	
+	// Raises from 0 when parameter is -1...1
+	/*double m2 = contour_flat_top(-0.8 + 2.0 * noise2d_perlin(
+			0.0+(float)p.X/1500., 0.0+(float)p.Y/1500.,
+			(seed>>32)+34758, 5, 0.55), 0.10);*/
+	/*double m2 = 1.0;
+	if(m2 > 0.0001)
+	{
+		// HUGE mountains
+		double m1 = 200.0 + 300.0 * noise2d_perlin(
+				0.0+(float)p.X/1000., 0.0+(float)p.Y/1000.,
+				(seed>>32)+98525, 8, 0.5);
+		h += m1 * m2;
+		//h += 30 * m2;
+	}*/
+
+	// Huge mountains
+	double m3 = 150.0 - 800.0 * noise2d_perlin_abs(
+			0.5+(float)p.X/2000., 0.5+(float)p.Y/2000.,
+			(seed>>32)+985251, 9, 0.5);
+	if(m3 > h)
+		h = m3;
+
+	/*double tm2 = contour_flat_top(-1.0 + 3.0 * noise2d_perlin(
+			0.0+(float)p.X/300., 0.0+(float)p.Y/300.,
+			(seed>>32)+78593, 5, 0.55), 0.15);
+	h += 30 * tm2;*/
+
+#if 1
+	{
+		double a1 = 30 - 100. * noise2d_perlin_abs(
+				0.5+(float)p.X/250., 0.5+(float)p.Y/250.,
+				seed+850342, 5, 0.63);
+		double d = 15;
+		if(a1 > d)
+			a1 = d + sqrt(a1-d);
+		if(a1 > h)
+			h = a1;
+	}
+#endif
+
+#if 1
+	double base = 35. * noise2d_perlin(
+			0.5+(float)p.X/500., 0.5+(float)p.Y/500.,
+			(seed>>32)+653876, 7, 0.55);
+#else
+	double base = 0;
+#endif
+	
+#if 1
+	double higher = 50. * noise2d_perlin(
+			0.5+(float)p.X/250., 0.5+(float)p.Y/250.,
+			seed+39292, 6, 0.63);
+	/*double higher = 50. * noise2d_perlin_abs(
+			0.5+(float)p.X/250., 0.5+(float)p.Y/250.,
+			seed+85039, 5, 0.63);*/
+
+	if(higher > base)
+	{
+		// Steepness factor of cliffs
+		double b = 1.0 + 1.0 * noise2d_perlin(
+				0.5+(float)p.X/250., 0.5+(float)p.Y/250.,
+				seed-932, 7, 0.7);
+		b = rangelim(b, 0.0, 1000.0);
+		b = pow(b, 5);
+		b *= 7;
+		b = rangelim(b, 3.0, 1000.0);
+		//dstream<<"b="<<b<<std::endl;
+		//double b = 20;
+
+		// Offset to more low
+		//double a_off = -0.30;
+		double a_off = -0.00;
+		// High/low selector
+		double a = (double)0.5 + b * (a_off + noise2d_perlin(
+				0.5+(float)p.X/250., 0.5+(float)p.Y/250.,
+				seed-359, 5, 0.6));
+		// Limit
+		a = rangelim(a, 0.0, 1.0);
+		//a = easeCurve(a);
+
+		//dstream<<"a="<<a<<std::endl;
+		
+		h += base*(1.0-a) + higher*a;
+	}
+	else
+	{
+		h += base;
+	}
+#else
+	h += base;
+#endif
+
+	return h;
+}
+
 double base_rock_level_2d(u64 seed, v2s16 p)
 {
-	// The base ground level
-	double base = (double)WATER_LEVEL - (double)AVERAGE_MUD_AMOUNT
-			+ 25. * noise2d_perlin(
-			0.5+(float)p.X/500., 0.5+(float)p.Y/500.,
-			(seed>>32)+654879876, 6, 0.6);
+	return base_rock_level_2d(seed, v2f((float)p.X, (float)p.Y));
+}
+
+v2f base_ground_turbulence(u64 seed, v3f p)
+{
+	double f = 12;
+
+	double v1 = f * noise3d_perlin(
+			0.5+p.X/200,
+			0.5+p.Y/200,
+			0.5+p.Z/200,
+			seed+4045, 5, 0.7);
+
+	double v2 = f * noise3d_perlin(
+			0.5+p.X/200,
+			0.5+p.Y/200,
+			0.5+p.Z/200,
+			seed+9495, 5, 0.7);
 	
-	/*// A bit hillier one
-	double base2 = WATER_LEVEL - 4.0 + 40. * noise2d_perlin(
-			0.5+(float)p.X/250., 0.5+(float)p.Y/250.,
-			(seed>>27)+90340, 6, 0.69);
-	if(base2 > base)
-		base = base2;*/
+	return v2f(v1, v2);
+}
+
+bool is_carved(u64 seed, v3f p)
+{
 #if 1
-	// Higher ground level
-	double higher = (double)WATER_LEVEL + 25. + 45. * noise2d_perlin(
-			0.5+(float)p.X/250., 0.5+(float)p.Y/250.,
-			seed+85039, 5, 0.69);
-	//higher = 30; // For debugging
-
-	// Limit higher to at least base
-	if(higher < base)
-		higher = base;
-		
-	// Steepness factor of cliffs
-	double b = 1.0 + 1.0 * noise2d_perlin(
-			0.5+(float)p.X/250., 0.5+(float)p.Y/250.,
-			seed-932, 7, 0.7);
-	b = rangelim(b, 0.0, 1000.0);
-	b = pow(b, 5);
-	b *= 7;
-	b = rangelim(b, 3.0, 1000.0);
-	//dstream<<"b="<<b<<std::endl;
-	//double b = 20;
-
-	// Offset to more low
-	double a_off = -0.2;
-	// High/low selector
-	/*double a = 0.5 + b * (a_off + noise2d_perlin(
-			0.5+(float)p.X/500., 0.5+(float)p.Y/500.,
-			seed-359, 6, 0.7));*/
-	double a = (double)0.5 + b * (a_off + noise2d_perlin(
-			0.5+(float)p.X/250., 0.5+(float)p.Y/250.,
-			seed-359, 5, 0.60));
-	// Limit
-	a = rangelim(a, 0.0, 1.0);
-
-	//dstream<<"a="<<a<<std::endl;
+	double v1 = noise3d_perlin_abs(
+			0.5+p.X/200,
+			0.5+p.Y/200,
+			0.5+p.Z/200,
+			seed+657890854, 5, 0.7);
 	
-	double h = base*(1.0-a) + higher*a;
-#else
-	double h = base;
+	if(v1 > 1.5)
+		return true;
 #endif
-	return h;
+
+#if 0
+	double v2 = noise3d_perlin_abs(
+			0.5+p.X/200,
+			0.5+p.Y/200,
+			0.5+p.Z/200,
+			seed+657890854, 5, 0.7);
+#if 0
+	double v3 = noise3d_perlin_abs(
+			0.5+p.X/200,
+			0.5+p.Y/200,
+			0.5+p.Z/200,
+			seed+657890854, 5, 0.7);
+#else
+	double v3 = 1.0;
+#endif
+	double v23 = v2*v3;
+	if(v23 > 0.7)
+		return true;
+#endif
+	
+	double f = 10.0;
+	double y_div = 1.5;
+
+	double v4 = contour(f*noise3d_perlin(
+			0.5+p.X/200,
+			0.5+p.Y/200*y_div,
+			0.5+p.Z/200,
+			seed+87592, 5, 0.7));
+	// Tilted 90 degrees
+	double v5 = contour(f*noise3d_perlin(
+			0.5+p.X/200,
+			0.5+p.Z/200,
+			0.5+p.Y/200*y_div,
+			seed+98594, 5, 0.7));
+	
+	double v45 = v4*v5;
+	if(v45 > 2.5/f)
+		return true;
+	
+	return false;
+}
+
+/*
+	if depth_guess!=NULL, it is set to a guessed value of how deep
+	underground the position is.
+*/
+bool is_base_ground(u64 seed, v3f p, double *depth_guess=NULL)
+{
+#if 0
+	// This is used for testing the output of the cave function
+	{
+		if(depth_guess)
+			*depth_guess = 10;
+		if(p.Y > 50)
+			return false;
+		return is_carved(seed, p);
+	}
+#endif
+
+	v2f t = base_ground_turbulence(seed, p);
+
+	double surface_y_f = base_rock_level_2d(seed, v2f(p.X+t.X, p.Z+t.Y));
+
+	/*if(depth_guess)
+		*depth_guess = surface_y_f - p.Y;*/
+	
+	if(depth_guess)
+	{
+		// Find highest surface near current
+		v3f dirs[4] = {
+			v3f(1,-1,0),
+			v3f(-1,-1,0),
+			v3f(0,-1,1),
+			v3f(0,-1,-1)
+		};
+		double s2 = surface_y_f;
+		for(u32 i=0; i<4; i++)
+		{
+			v3f dir = dirs[i];
+			v2f l = v2f(p.X+t.X+dir.X, p.Z+t.Y+dir.Z);
+			double s = base_rock_level_2d(seed, l);
+			if(s > s2)
+				s2 = s;
+		}
+		*depth_guess = s2 - p.Y;
+	}
+	
+	/*if(depth_guess)
+	{
+		// Check a bit lower also, take highest surface
+		v2f t2 = base_ground_turbulence(seed, p + v3f(0,-2,0));
+		double s2 = base_rock_level_2d(seed, v2f(p.X+t2.X, p.Z+t2.Y));
+		if(s2 > surface_y_f)
+			*depth_guess = s2 - p.Y;
+		else
+			*depth_guess = surface_y_f - p.Y;
+	}*/
+	
+	/*if(depth_guess)
+	{
+		// Guess surface point
+		v3f p2(p.X, surface_y_f, p.Z);
+		v2f t2 = base_ground_turbulence
+		double u1 = 
+		double s1 = base_rock_level_2d(seed, v2f(p.X+v1,p.Z+v2));
+	}*/
+
+	bool is_ground = (p.Y <= surface_y_f);
+	
+	if(is_carved(seed, p))
+		is_ground = false;
+
+	return is_ground;
 }
 
 #define VMANIP_FLAG_DUNGEON VOXELFLAG_CHECKED1
@@ -2022,6 +2255,11 @@ MapChunk* ServerMap::generateChunkRaw(v2s16 chunkpos,
 		bool force)
 {
 	DSTACK(__FUNCTION_NAME);
+
+	// Shall be not used now
+	//assert(0);
+
+#if 0
 
 	/*
 		Don't generate if already fully generated
@@ -2163,7 +2401,8 @@ MapChunk* ServerMap::generateChunkRaw(v2s16 chunkpos,
 	
 	{
 	// 22ms @cs=8
-	//TimeTaker timer1("ground level");
+	TimeTaker timer1("ground level");
+	dstream<<"Generating base ground..."<<std::endl;
 
 	for(s16 x=0; x<sectorpos_bigbase_size*MAP_BLOCKSIZE; x++)
 	for(s16 z=0; z<sectorpos_bigbase_size*MAP_BLOCKSIZE; z++)
@@ -2172,7 +2411,79 @@ MapChunk* ServerMap::generateChunkRaw(v2s16 chunkpos,
 		v2s16 p2d = sectorpos_bigbase*MAP_BLOCKSIZE + v2s16(x,z);
 		
 		/*
-			Skip of already generated
+			Skip if already generated
+		*/
+		{
+			v3s16 p(p2d.X, y_nodes_min, p2d.Y);
+			if(vmanip.m_data[vmanip.m_area.index(p)].d != CONTENT_AIR)
+				continue;
+		}
+
+		v2f p2df(p2d.X, p2d.Y);
+
+		{
+			// Use fast index incrementing
+			v3s16 em = vmanip.m_area.getExtent();
+			s16 min = y_nodes_min;
+			s16 max = y_nodes_max;
+			/*s16 min = -10;
+			s16 max = 20;*/
+			//float surface_y_f = base_rock_level_2d(m_seed, p2df);
+			u32 i = vmanip.m_area.index(v3s16(p2d.X, min, p2d.Y));
+			for(s16 y=min; y<=max; y++)
+			{
+#if 1
+				bool is = is_base_ground(m_seed, v3f(p2df.X,y,p2df.Y));
+				if(is)
+					vmanip.m_data[i].d = CONTENT_STONE;
+				else
+					vmanip.m_data[i].d = CONTENT_AIR;
+#endif
+#if 0
+				double v = noise3d_perlin(
+						0.5+(float)p2d.X/200,
+						0.5+(float)y/200,
+						0.5+(float)p2d.Y/200,
+						m_seed+293, 6, 0.55);
+				if(v > 0.0)
+					vmanip.m_data[i].d = CONTENT_STONE;
+				else
+					vmanip.m_data[i].d = CONTENT_AIR;
+#endif
+#if 0
+				/*double v1 = 5 * noise3d_perlin(
+						0.5+(float)p2df.X/200,
+						0.5+(float)y/200,
+						0.5+(float)p2df.Y/200,
+						m_seed+293, 6, 0.55);
+
+				double v2 = 5 * noise3d_perlin(
+						0.5+(float)p2df.X/200,
+						0.5+(float)y/200,
+						0.5+(float)p2df.Y/200,
+						m_seed+293, 6, 0.55);*/
+
+				double v1 = 0;
+				double v2 = 0;
+
+				float surface_y_f = base_rock_level_2d(m_seed, p2df+v2f(v1,v2));
+
+				if(y <= surface_y_f)
+					vmanip.m_data[i].d = CONTENT_STONE;
+				else
+					vmanip.m_data[i].d = CONTENT_AIR;
+#endif
+
+				vmanip.m_area.add_y(em, i, 1);
+			}
+		}
+
+#if 0
+		// Node position
+		v2s16 p2d = sectorpos_bigbase*MAP_BLOCKSIZE + v2s16(x,z);
+
+		/*
+			Skip if already generated
 		*/
 		{
 			v3s16 p(p2d.X, y_nodes_min, p2d.Y);
@@ -2214,6 +2525,7 @@ MapChunk* ServerMap::generateChunkRaw(v2s16 chunkpos,
 				vmanip.m_area.add_y(em, i, 1);
 			}
 		}
+#endif
 	}
 	
 	}//timer1
@@ -2235,8 +2547,8 @@ MapChunk* ServerMap::generateChunkRaw(v2s16 chunkpos,
 	/*
 		Loop this part, it will make stuff look older and newer nicely
 	*/
-	//for(u32 i_age=0; i_age<1; i_age++)
-	for(u32 i_age=0; i_age<2; i_age++)
+	u32 age_count = 2;
+	for(u32 i_age=0; i_age<age_count; i_age++)
 	{ // Aging loop
 
 	{
@@ -2732,9 +3044,7 @@ MapChunk* ServerMap::generateChunkRaw(v2s16 chunkpos,
 		v2s16 p2d = sectorpos_base*MAP_BLOCKSIZE + v2s16(x,z);
 		
 		// Randomize mud amount
-		s16 mud_add_amount = (s16)(2.5 + 2.0 * noise2d_perlin(
-				0.5+(float)p2d.X/200, 0.5+(float)p2d.Y/200,
-				m_seed+1, 3, 0.55));
+		s16 mud_add_amount = get_mud_amount(m_seed, v2f(p2d.X,p2d.Y))/age_count;
 
 		// Find ground level
 		s16 surface_y = find_ground_level_clever(vmanip, p2d);
@@ -2777,7 +3087,7 @@ MapChunk* ServerMap::generateChunkRaw(v2s16 chunkpos,
 	}//timer1
 	{
 	// 340ms @cs=8
-	TimeTaker timer1("flow mud");
+	//TimeTaker timer1("flow mud");
 
 	/*
 		Flow mud away from steep edges
@@ -3447,57 +3757,6 @@ MapChunk* ServerMap::generateChunkRaw(v2s16 chunkpos,
 	}
 #endif
 
-#if 0
-	for(s16 x=lighting_min_d+1;
-			x<=lighting_max_d-1;
-			x++)
-	for(s16 z=lighting_min_d+1;
-			z<=lighting_max_d-1;
-			z++)
-	{
-		// Node position in 2d
-		v2s16 p2d = sectorpos_base*MAP_BLOCKSIZE + v2s16(x,z);
-		
-		/*
-			Apply initial sunlight
-		*/
-		{
-			u8 light = LIGHT_SUN;
-			v3s16 em = vmanip.m_area.getExtent();
-			s16 y_start = y_nodes_max;
-			u32 i = vmanip.m_area.index(v3s16(p2d.X, y_start, p2d.Y));
-			for(s16 y=y_start; y>=y_nodes_min; y--)
-			{
-				MapNode *n = &vmanip.m_data[i];
-
-				if(light_propagates_content(n->d) == false)
-				{
-					light = 0;
-				}
-				else if(light != LIGHT_SUN
-					|| sunlight_propagates_content(n->d) == false)
-				{
-					if(light > 0)
-						light--;
-				}
-				
-				n->setLight(LIGHTBANK_DAY, light);
-				n->setLight(LIGHTBANK_NIGHT, 0);
-				
-				// This doesn't take much time
-				if(light != 0)
-				{
-					// Insert light source
-					light_sources.insert(v3s16(p2d.X, y, p2d.Y), true);
-				}
-				
-				// Increment index by y
-				vmanip.m_area.add_y(em, i, -1);
-			}
-		}
-	}
-#endif
-
 	}//timer1
 
 	// Spread light around
@@ -3533,6 +3792,7 @@ MapChunk* ServerMap::generateChunkRaw(v2s16 chunkpos,
 		}
 	}
 
+#endif
 	
 	/*
 		Create chunk metadata
@@ -3580,6 +3840,9 @@ MapChunk* ServerMap::generateChunk(v2s16 chunkpos1,
 	dstream<<"generateChunk(): Generating chunk "
 			<<"("<<chunkpos1.X<<","<<chunkpos1.Y<<")"
 			<<std::endl;
+	
+	// Shall be not used now
+	//assert(0);
 	
 	/*for(s16 x=-1; x<=1; x++)
 	for(s16 y=-1; y<=1; y++)*/
@@ -3709,13 +3972,6 @@ MapSector * ServerMap::emergeSector(v2s16 p2d,
 			<<p2d.X<<","<<p2d.Y<<" and chunk is already generated. "
 			<<std::endl;
 
-#if 0
-	dstream<<"WARNING: Creating an empty sector."<<std::endl;
-
-	return createSector(p2d);
-	
-#endif
-	
 #if 1
 	dstream<<"WARNING: Forcing regeneration of chunk."<<std::endl;
 
@@ -3731,7 +3987,14 @@ MapSector * ServerMap::emergeSector(v2s16 p2d,
 	
 	dstream<<"ERROR: Could not get sector from anywhere."<<std::endl;
 	
-	assert(0);
+	//assert(0);
+#endif
+	
+#if 1
+	dstream<<"WARNING: Creating an empty sector."<<std::endl;
+
+	return createSector(p2d);
+	
 #endif
 	
 	/*
@@ -3765,6 +4028,7 @@ MapBlock * ServerMap::generateBlock(
 	v2s16 p2d(p.X, p.Z);
 	s16 block_y = p.Y;
 	v2s16 p2d_nodes = p2d * MAP_BLOCKSIZE;
+	v3s16 p_nodes = p * MAP_BLOCKSIZE;
 	
 	/*
 		Do not generate over-limit
@@ -3797,98 +4061,323 @@ MapBlock * ServerMap::generateBlock(
 	
 	s32 lowest_ground_y = 32767;
 	s32 highest_ground_y = -32768;
-	
-	for(s16 z0=0; z0<MAP_BLOCKSIZE; z0++)
-	for(s16 x0=0; x0<MAP_BLOCKSIZE; x0++)
+
+	enum{
+		BT_GROUND,
+		BT_SURFACE,
+		BT_SKY
+	} block_type = BT_SURFACE;
+
+	{// ground_timer (0ms or ~100ms)
+	//TimeTaker ground_timer("Ground generation");
+
+	/*
+		Approximate whether this block is a surface block, an air
+		block or a ground block.
+
+		This shall never mark a surface block as non-surface.
+	*/
+
 	{
-		//dstream<<"generateBlock: x0="<<x0<<", z0="<<z0<<std::endl;
-
-		//s16 surface_y = 0;
-
-		s16 surface_y = base_rock_level_2d(m_seed, p2d_nodes+v2s16(x0,z0))
-				+ AVERAGE_MUD_AMOUNT;
-
-		if(surface_y < lowest_ground_y)
-			lowest_ground_y = surface_y;
-		if(surface_y > highest_ground_y)
-			highest_ground_y = surface_y;
-
-		s32 surface_depth = AVERAGE_MUD_AMOUNT;
-		
-		for(s16 y0=0; y0<MAP_BLOCKSIZE; y0++)
+		/*
+			Estimate surface at different positions of the block, to
+			try to accomodate the effect of turbulence.
+		*/
+		v3f checklist[] = {
+			v3f(0,0,0),
+			v3f(0,1,0),
+			v3f(0,1,1),
+			v3f(0,0,1),
+			v3f(1,0,0),
+			v3f(1,1,0),
+			v3f(1,1,1),
+			v3f(1,0,1),
+			v3f(0.5,0.5,0.5),
+		};
+		v3f p_nodes_f = intToFloat(p_nodes, 1);
+		float surface_y_max = -1000000;
+		float surface_y_min = 1000000;
+		for(u32 i=0; i<sizeof(checklist)/sizeof(checklist[0]); i++)
 		{
-			s16 real_y = block_y * MAP_BLOCKSIZE + y0;
-			MapNode n;
-			/*
-				Calculate lighting
-				
-				NOTE: If there are some man-made structures above the
-				newly created block, they won't be taken into account.
-			*/
-			if(real_y > surface_y)
-				n.setLight(LIGHTBANK_DAY, LIGHT_SUN);
+			v3f p_map_f = p_nodes_f + checklist[i]*MAP_BLOCKSIZE;
 
-			/*
-				Calculate material
-			*/
+			double depth_guess;
+			bool is_ground = is_base_ground(m_seed, p_map_f, &depth_guess);
+			
+			// Estimate the surface height
+			float surface_y_f = p_map_f.Y + depth_guess;
 
-			// If node is over heightmap y, it's air or water
-			if(real_y > surface_y)
-			{
-				// If under water level, it's water
-				if(real_y < WATER_LEVEL)
-				{
-					n.d = water_material;
-					n.setLight(LIGHTBANK_DAY,
-							diminish_light(LIGHT_SUN, WATER_LEVEL-real_y+1));
-					/*
-						Add to transforming liquid queue (in case it'd
-						start flowing)
-					*/
-					v3s16 real_pos = v3s16(x0,y0,z0) + p*MAP_BLOCKSIZE;
-					m_transforming_liquid.push_back(real_pos);
-				}
-				// else air
-				else
-					n.d = CONTENT_AIR;
-			}
-			// Else it's ground or dungeons (air)
-			else
-			{
-				// If it's surface_depth under ground, it's stone
-				if(real_y <= surface_y - surface_depth)
-				{
-					n.d = CONTENT_STONE;
-				}
-				else
-				{
-					// It is mud if it is under the first ground
-					// level or under water
-					if(real_y < WATER_LEVEL || real_y <= surface_y - 1)
-					{
-						n.d = CONTENT_MUD;
-					}
-					else
-					{
-						n.d = CONTENT_GRASS;
-					}
+			if(surface_y_f > surface_y_max)
+				surface_y_max = surface_y_f;
+			if(surface_y_f < surface_y_min)
+				surface_y_min = surface_y_f;
+		}
 
-					//n.d = CONTENT_MUD;
-					
-					/*// If under water level, it's mud
-					if(real_y < WATER_LEVEL)
-						n.d = CONTENT_MUD;
-					// Only the topmost node is grass
-					else if(real_y <= surface_y - 1)
-						n.d = CONTENT_MUD;
-					else
-						n.d = CONTENT_GRASS;*/
-				}
-			}
+		float block_low_y_f = p_nodes_f.Y;
+		float block_high_y_f = p_nodes_f.Y + MAP_BLOCKSIZE;
 
-			block->setNode(v3s16(x0,y0,z0), n);
+		/*dstream<<"surface_y_max="<<surface_y_max
+				<<", surface_y_min="<<surface_y_min
+				<<", block_low_y_f="<<block_low_y_f
+				<<", block_high_y_f="<<block_high_y_f
+				<<std::endl;*/
+		
+		// A fuzzyness value
+		// Must accomodate mud and turbulence holes
+		float d_down = 16;
+		// Must accomodate a bit less
+		float d_up = 5;
+
+		if(block_high_y_f < surface_y_min - d_down)
+		{
+			//dstream<<"BT_GROUND"<<std::endl;
+			// A ground block
+			//block_type = BT_GROUND;
+			// Handled as surface because of caves
+			block_type = BT_SURFACE;
+		}
+		else if(block_low_y_f >= surface_y_max + d_up
+				&& block_low_y_f > WATER_LEVEL + d_up)
+		{
+			//dstream<<"BT_SKY"<<std::endl;
+			// A sky block
+			block_type = BT_SKY;
+		}
+		else
+		{
+			//dstream<<"BT_SURFACE"<<std::endl;
+			// A surface block
+			block_type = BT_SURFACE;
+		}
+
+		if(block_type == BT_GROUND || block_type == BT_SKY)
+		{
+			lowest_ground_y = surface_y_min;
+			highest_ground_y = surface_y_max;
 		}
 	}
+	
+	if(block_type == BT_SURFACE)
+	{
+		/*
+			Generate ground precisely
+		*/
+		
+		for(s16 z0=0; z0<MAP_BLOCKSIZE; z0++)
+		for(s16 x0=0; x0<MAP_BLOCKSIZE; x0++)
+		{
+			//dstream<<"generateBlock: x0="<<x0<<", z0="<<z0<<std::endl;
+
+			//s16 surface_y = 0;
+
+			/*s16 surface_y = base_rock_level_2d(m_seed, p2d_nodes+v2s16(x0,z0))
+					+ AVERAGE_MUD_AMOUNT;
+
+			if(surface_y < lowest_ground_y)
+				lowest_ground_y = surface_y;
+			if(surface_y > highest_ground_y)
+				highest_ground_y = surface_y;*/
+
+			v2s16 real_p2d = v2s16(x0,z0) + p2d*MAP_BLOCKSIZE;
+
+			//s32 surface_depth = AVERAGE_MUD_AMOUNT;
+			s16 surface_depth = get_mud_amount(m_seed, v2f(real_p2d.X,real_p2d.Y));
+			
+			for(s16 y0=0; y0<MAP_BLOCKSIZE; y0++)
+			{
+	#if 1
+				s16 real_y = block_y * MAP_BLOCKSIZE + y0;
+				v3s16 real_pos = v3s16(x0,y0,z0) + p_nodes;
+				MapNode n;
+				/*
+					Calculate lighting
+					
+					NOTE: If there are some man-made structures above the
+					newly created block, they won't be taken into account.
+				*/
+				/*if(real_y > surface_y)
+					n.setLight(LIGHTBANK_DAY, LIGHT_SUN);*/
+
+				/*
+					Calculate material
+				*/
+				
+				double depth_guess;
+				bool is_ground = is_base_ground(m_seed,
+						intToFloat(real_pos, 1), &depth_guess);
+				
+				// Estimate the surface height
+				float surface_y_f = (float)real_y + depth_guess;
+				s16 surface_y = real_y + depth_guess;
+				
+				// Get some statistics of surface height
+				if(surface_y < lowest_ground_y)
+					lowest_ground_y = surface_y;
+				if(surface_y > highest_ground_y)
+					highest_ground_y = surface_y;
+
+				// If node is not ground, it's air or water
+				if(is_ground == false)
+				{
+					// If under water level, it's water
+					if(real_y < WATER_LEVEL)
+					{
+						n.d = water_material;
+						n.setLight(LIGHTBANK_DAY,
+								diminish_light(LIGHT_SUN, WATER_LEVEL-real_y+1));
+						/*
+							Add to transforming liquid queue (in case it'd
+							start flowing)
+						*/
+						m_transforming_liquid.push_back(real_pos);
+					}
+					// else air
+					else
+						n.d = CONTENT_AIR;
+				}
+				// Else it's ground or dungeons (air)
+				else
+				{
+					// If it's surface_depth under ground, it's stone
+					if((float)real_y <= surface_y_f - surface_depth - 0.75)
+					{
+						n.d = CONTENT_STONE;
+					}
+					else if(surface_y_f <= WATER_LEVEL + 2.0)
+					{
+						n.d = CONTENT_SAND;
+					}
+					else
+					{
+						/*// It is mud if it is under the first ground
+						// level or under water
+						if(real_y < WATER_LEVEL || real_y <= surface_y - 1)
+						{
+							n.d = CONTENT_MUD;
+						}
+						else
+						{
+							n.d = CONTENT_GRASS;
+						}*/
+
+						n.d = CONTENT_MUD;
+						
+						/*// If under water level, it's mud
+						if(real_y < WATER_LEVEL)
+							n.d = CONTENT_MUD;
+						// Only the topmost node is grass
+						else if(real_y <= surface_y - 1)
+							n.d = CONTENT_MUD;
+						else
+							n.d = CONTENT_GRASS;*/
+					}
+				}
+
+				block->setNode(v3s16(x0,y0,z0), n);
+	#endif
+	#if 0
+				s16 real_y = block_y * MAP_BLOCKSIZE + y0;
+				MapNode n;
+				/*
+					Calculate lighting
+					
+					NOTE: If there are some man-made structures above the
+					newly created block, they won't be taken into account.
+				*/
+				if(real_y > surface_y)
+					n.setLight(LIGHTBANK_DAY, LIGHT_SUN);
+
+				/*
+					Calculate material
+				*/
+
+				// If node is over heightmap y, it's air or water
+				if(real_y > surface_y)
+				{
+					// If under water level, it's water
+					if(real_y < WATER_LEVEL)
+					{
+						n.d = water_material;
+						n.setLight(LIGHTBANK_DAY,
+								diminish_light(LIGHT_SUN, WATER_LEVEL-real_y+1));
+						/*
+							Add to transforming liquid queue (in case it'd
+							start flowing)
+						*/
+						v3s16 real_pos = v3s16(x0,y0,z0) + p*MAP_BLOCKSIZE;
+						m_transforming_liquid.push_back(real_pos);
+					}
+					// else air
+					else
+						n.d = CONTENT_AIR;
+				}
+				// Else it's ground or dungeons (air)
+				else
+				{
+					// If it's surface_depth under ground, it's stone
+					if(real_y <= surface_y - surface_depth)
+					{
+						n.d = CONTENT_STONE;
+					}
+					else
+					{
+						// It is mud if it is under the first ground
+						// level or under water
+						if(real_y < WATER_LEVEL || real_y <= surface_y - 1)
+						{
+							n.d = CONTENT_MUD;
+						}
+						else
+						{
+							n.d = CONTENT_GRASS;
+						}
+
+						//n.d = CONTENT_MUD;
+						
+						/*// If under water level, it's mud
+						if(real_y < WATER_LEVEL)
+							n.d = CONTENT_MUD;
+						// Only the topmost node is grass
+						else if(real_y <= surface_y - 1)
+							n.d = CONTENT_MUD;
+						else
+							n.d = CONTENT_GRASS;*/
+					}
+				}
+
+				block->setNode(v3s16(x0,y0,z0), n);
+	#endif
+			}
+		}
+	}// BT_SURFACE
+	else // BT_GROUND, BT_SKY or anything else
+	{
+		MapNode n_fill;
+		if(block_type == BT_GROUND)
+		{
+			n_fill.d = CONTENT_STONE;
+		}
+		else if(block_type == BT_SKY)
+		{
+			n_fill.d = CONTENT_AIR;
+			n_fill.setLight(LIGHTBANK_DAY, LIGHT_SUN);
+		}
+		else // fallback
+		{
+			n_fill.d = CONTENT_MESE;
+		}
+
+
+		for(s16 z0=0; z0<MAP_BLOCKSIZE; z0++)
+		for(s16 x0=0; x0<MAP_BLOCKSIZE; x0++)
+		for(s16 y0=0; y0<MAP_BLOCKSIZE; y0++)
+		{
+			//MapNode n = block->getNode(v3s16(x0,y0,z0));
+			block->setNode(v3s16(x0,y0,z0), n_fill);
+		}
+	}
+	
+	}// ground_timer
 	
 	/*
 		Calculate some helper variables
@@ -3945,7 +4434,7 @@ MapBlock * ServerMap::generateBlock(
 	}
 	
 	// Fill table
-#if 1
+#if 0
 	{
 		/*
 			Initialize orp and ors. Try to find if some neighboring
@@ -4087,7 +4576,8 @@ continue_generating:
 		// Partly underground = cave
 		else if(!completely_underground)
 		{
-			do_generate_dungeons = (rand() % 100 <= (s32)(caves_amount*100));
+			//do_generate_dungeons = (rand() % 100 <= (s32)(caves_amount*100));
+			do_generate_dungeons = false;
 		}
 		// Found existing dungeon underground
 		else if(found_existing && completely_underground)
@@ -4239,8 +4729,8 @@ continue_generating:
 		/*
 			Add coal
 		*/
-		u16 coal_amount = 30;
-		u16 coal_rareness = 60 / coal_amount;
+		u16 coal_amount = 60;
+		u16 coal_rareness = 120 / coal_amount;
 		if(coal_rareness == 0)
 			coal_rareness = 1;
 		if(myrand()%coal_rareness == 0)
@@ -4271,9 +4761,8 @@ continue_generating:
 		/*
 			Add iron
 		*/
-		//TODO: change to iron_amount or whatever
-		u16 iron_amount = 15;
-		u16 iron_rareness = 60 / iron_amount;
+		u16 iron_amount = 40;
+		u16 iron_rareness = 80 / iron_amount;
 		if(iron_rareness == 0)
 			iron_rareness = 1;
 		if(myrand()%iron_rareness == 0)
@@ -4330,8 +4819,17 @@ continue_generating:
 	*/
 	sector->insertBlock(block);
 	
-	// Lighting is invalid after generation.
-	block->setLightingExpired(true);
+	// Lighting is invalid after generation for surface blocks
+	if(block_type == BT_SURFACE)
+	{
+		block->setLightingExpired(true);
+		lighting_invalidated_blocks.insert(p, block);
+	}
+	// Lighting is not invalid for other blocks
+	else
+	{
+		block->setLightingExpired(false);
+	}
 	
 #if 0
 	/*
@@ -4536,7 +5034,9 @@ MapBlock * ServerMap::emergeBlock(
 	if(does_not_exist)
 	{
 		block = generateBlock(p, block, sector, changed_blocks,
-				lighting_invalidated_blocks); 
+				lighting_invalidated_blocks);
+
+		lighting_expired = block->getLightingExpired();
 	}
 
 	if(lighting_expired)
@@ -4548,6 +5048,7 @@ MapBlock * ServerMap::emergeBlock(
 		Initially update sunlight
 	*/
 	
+	if(lighting_expired)
 	{
 		core::map<v3s16, bool> light_sources;
 		bool black_air_left = false;

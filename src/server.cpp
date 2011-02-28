@@ -167,6 +167,26 @@ void * EmergeThread::Thread()
 						only_from_disk,
 						changed_blocks,
 						lighting_invalidated_blocks);
+				
+				/*
+					While we're at it, generate some other blocks too
+				*/
+				try
+				{
+					map.emergeBlock(
+							p+v3s16(0,1,0),
+							only_from_disk,
+							changed_blocks,
+							lighting_invalidated_blocks);
+					map.emergeBlock(
+							p+v3s16(0,-1,0),
+							only_from_disk,
+							changed_blocks,
+							lighting_invalidated_blocks);
+				}
+				catch(InvalidPositionException &e)
+				{
+				}
 			}
 
 			// If it is a dummy, block was not found on disk
@@ -208,23 +228,25 @@ void * EmergeThread::Thread()
 				Collect a list of blocks that have been modified in
 				addition to the fetched one.
 			*/
-
-			// Add all the "changed blocks" to modified_blocks
+			
+			if(lighting_invalidated_blocks.size() > 0)
+				dstream<<"lighting "<<lighting_invalidated_blocks.size()
+						<<" blocks"<<std::endl;
+			
+			// 50-100ms for single block generation
+			//TimeTaker timer("** EmergeThread updateLighting");
+			
+			// Update lighting without locking the environment mutex,
+			// add modified blocks to changed blocks
+			map.updateLighting(lighting_invalidated_blocks, modified_blocks);
+			
+			// Add all from changed_blocks to modified_blocks
 			for(core::map<v3s16, MapBlock*>::Iterator i = changed_blocks.getIterator();
 					i.atEnd() == false; i++)
 			{
 				MapBlock *block = i.getNode()->getValue();
 				modified_blocks.insert(block->getPos(), block);
 			}
-			
-			/*dstream<<"lighting "<<lighting_invalidated_blocks.size()
-					<<" blocks"<<std::endl;*/
-			
-			//TimeTaker timer("** updateLighting");
-			
-			// Update lighting without locking the environment mutex,
-			// add modified blocks to changed blocks
-			map.updateLighting(lighting_invalidated_blocks, modified_blocks);
 		}
 		// If we got no block, there should be no invalidated blocks
 		else
@@ -551,7 +573,8 @@ void RemoteClient::GetNextBlocks(Server *server, float dtime,
 			{
 				//TODO: Get value from somewhere
 				// Allow only one block in emerge queue
-				if(server->m_emerge_queue.peerItemCount(peer_id) < 1)
+				//if(server->m_emerge_queue.peerItemCount(peer_id) < 1)
+				if(server->m_emerge_queue.peerItemCount(peer_id) < 2)
 				{
 					//dstream<<"Adding block to emerge queue"<<std::endl;
 					
@@ -1681,10 +1704,11 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 
 		// Now answer with a TOCLIENT_INIT
 		
-		SharedBuffer<u8> reply(2+1+6);
+		SharedBuffer<u8> reply(2+1+6+8);
 		writeU16(&reply[0], TOCLIENT_INIT);
 		writeU8(&reply[2], deployed);
-		writeV3S16(&reply[3], floatToInt(player->getPosition()+v3f(0,BS/2,0), BS));
+		writeV3S16(&reply[2+1], floatToInt(player->getPosition()+v3f(0,BS/2,0), BS));
+		writeU64(&reply[2+1+6], m_env.getServerMap().getSeed());
 		// Send as reliable
 		m_con.Send(peer_id, 0, reply, true);
 

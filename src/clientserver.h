@@ -34,6 +34,7 @@ enum ToClientCommand
 		[0] u16 TOSERVER_INIT
 		[2] u8 deployed version
 		[3] v3s16 player's position + v3f(0,BS/2,0) floatToInt'd
+		[4] u64 map seed (new as of 2011-02-27)
 	*/
 
 	TOCLIENT_BLOCKDATA = 0x20, //TODO: Multiple blocks

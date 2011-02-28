@@ -253,11 +253,9 @@ Doing now (most important at the top):
 * not done
 
 === Next
-* Continue making the scripting system:
-  * Make updateNodeMesh for a less verbose mesh update on add/removenode
-  * Switch to using a safe way for the self and env pointers
-  * Make some global environment hooks, like node placed and general
-    on_step()
+* Make a system for pregenerating quick information for mapblocks, so
+  that the client can show them as cubes before they are actually sent
+  or even generated.
 
 === Fixmes
 * Check the fixmes in the list above
@@ -274,6 +272,11 @@ Doing now (most important at the top):
   with the ones in utility.h
 
 === Features
+* Continue making the scripting system:
+  * Make updateNodeMesh for a less verbose mesh update on add/removenode
+  * Switch to using a safe way for the self and env pointers
+  * Make some global environment hooks, like node placed and general
+    on_step()
 * Map should make the appropriate MapEditEvents
 * Add a global Lua spawn handler and such
 * Get rid of MapBlockObjects
@@ -490,6 +493,9 @@ Inventory local_inventory;
 
 u16 g_selected_item = 0;
 
+bool g_show_map_plot = false;
+bool g_refresh_map_plot = true;
+
 /*
 	Debug streams
 */
@@ -606,6 +612,15 @@ public:
 			if(event.KeyInput.PressedDown)
 			{
 				//dstream<<"Pressed key: "<<(char)event.KeyInput.Key<<std::endl;
+				if(g_show_map_plot)
+				{
+					if(event.KeyInput.Key == irr::KEY_ESCAPE
+						|| event.KeyInput.Key == irr::KEY_KEY_M)
+					{
+						g_show_map_plot = false;
+					}
+					return true;
+				}
 				
 				/*
 					Launch menus
@@ -679,6 +694,16 @@ public:
 							<<std::endl;
 					debug_stacks_print();
 				}
+
+				// Map plot
+				if(event.KeyInput.Key == irr::KEY_KEY_M)
+				{
+					dstream<<"Map plot requested"<<std::endl;
+					g_show_map_plot = !g_show_map_plot;
+					if(g_show_map_plot)
+						g_refresh_map_plot = true;
+				}
+				
 			}
 		}
 
@@ -1110,8 +1135,8 @@ void updateViewingRange(f32 frametime_in, Client *client)
 	f32 wanted_frametime_change = wanted_frametime - frametime;
 	//dstream<<"wanted_frametime_change="<<wanted_frametime_change<<std::endl;
 	
-	// If needed frametime change is very small, just return
-	if(fabs(wanted_frametime_change) < wanted_frametime*0.2)
+	// If needed frametime change is small, just return
+	if(fabs(wanted_frametime_change) < wanted_frametime*0.4)
 	{
 		//dstream<<"ignoring small wanted_frametime_change"<<std::endl;
 		return;
@@ -1237,6 +1262,93 @@ void draw_hotbar(video::IVideoDriver *driver, gui::IGUIFont *font,
 			drawInventoryItem(driver, font, item, rect, NULL);
 		}
 	}
+}
+
+video::ITexture *g_map_plot_texture = NULL;
+float g_map_plot_texture_scale = 2;
+
+void updateMapPlotTexture(v2f centerpos, video::IVideoDriver* driver,
+		Client *client)
+{
+	assert(driver);
+	assert(client);
+
+	core::dimension2d<u32> dim(640,480);
+	video::IImage *img = driver->createImage(video::ECF_A8R8G8B8, dim);
+	assert(img);
+	for(u32 y=0; y<dim.Height; y++)
+	for(u32 x=0; x<dim.Width; x++)
+	{
+		v2f pf = v2f(x, dim.Height-y) - v2f(dim.Width, dim.Height)/2;
+		pf *= g_map_plot_texture_scale;
+		pf += centerpos;
+		double h = base_rock_level_2d(client->getMapSeed(), pf);
+		video::SColor c;
+		//double d1 = 50;
+		/*s32 ux = x - centerpos.X / g_map_plot_texture_scale;
+		s32 uy = y - centerpos.Y / g_map_plot_texture_scale;*/
+			
+		// Screen coordinates that are based on multiples of
+		// 1000/g_map_plot_texture_scale and never negative
+		u32 ux = x + (u32)(1000/g_map_plot_texture_scale) * 10;
+		u32 uy = y + (u32)(1000/g_map_plot_texture_scale) * 10;
+		// Offset to center of image
+		ux -= dim.Width/2;
+		uy -= dim.Height/2;
+
+		if(uy % (u32)(1000/g_map_plot_texture_scale) == 0
+				|| ux % (u32)(1000/g_map_plot_texture_scale) == 0)
+			c.set(255, 255, 255, 255);
+		else if(uy % (u32)(100/g_map_plot_texture_scale) == 0
+				|| ux % (u32)(100/g_map_plot_texture_scale) == 0)
+			c.set(255, 160, 160, 160);
+		else if(h < WATER_LEVEL - 0.5) // Water
+			c.set(255, 50, 50, 255);
+		else if(h < WATER_LEVEL + 2) // Sand
+			c.set(255, 237, 201, 175);
+#if 1
+		else if(h < WATER_LEVEL + 10) // Green
+			c.set(255, 50, 150, 50);
+		else if(h < WATER_LEVEL + 20) // Greenish yellow
+			c.set(255, 110, 185, 50);
+		else if(h < WATER_LEVEL + 50) // Yellow
+			c.set(255, 220, 220, 50);
+		else if(h < WATER_LEVEL + 100) // White
+			c.set(255, 180, 180, 180);
+		else
+			c.set(255, 255, 255, 255);
+#endif
+		/*else if(h < WATER_LEVEL + d1)
+		{
+			h -= WATER_LEVEL;
+			u32 a = (u32)(h / d1 * 255);
+			if(a > 255)
+				a = 255;
+			c.set(255, 0, a, 0);
+		}*/
+#if 0
+		else
+		{
+			h -= WATER_LEVEL;
+			h /= 20.0;
+			h = 1.0 - exp(-h);
+
+			video::SColor c1(255,200,200,50);
+			video::SColor c2(255,0,150,0);
+			c = c1.getInterpolated(c2, h);
+
+			/*u32 a = (u32)(h*255);
+			if(a > 255)
+				a = 255;
+			a = 255-a;
+			c.set(255, a, a, a);*/
+		}
+#endif
+		img->setPixel(x, y, c);
+	}
+	g_map_plot_texture = driver->addTexture("map_plot", img);
+	img->drop();
+	assert(g_map_plot_texture);
 }
 
 // Chat data
@@ -2253,6 +2365,10 @@ int main(int argc, char *argv[])
 		g_input->step(dtime);
 
 		/*
+			Misc. stuff
+		*/
+
+		/*
 			Player speed control
 		*/
 		
@@ -3021,16 +3137,6 @@ int main(int argc, char *argv[])
 		}
 
 		/*
-			Draw crosshair
-		*/
-		driver->draw2DLine(displaycenter - core::vector2d<s32>(10,0),
-				displaycenter + core::vector2d<s32>(10,0),
-				video::SColor(255,255,255,255));
-		driver->draw2DLine(displaycenter - core::vector2d<s32>(0,10),
-				displaycenter + core::vector2d<s32>(0,10),
-				video::SColor(255,255,255,255));
-
-		/*
 			Frametime log
 		*/
 		if(g_settings.getBool("frametime_graph") == true)
@@ -3047,6 +3153,31 @@ int main(int argc, char *argv[])
 				x++;
 			}
 		}
+
+		/*
+			Draw map plot
+		*/
+		if(g_show_map_plot && g_map_plot_texture)
+		{
+			core::dimension2d<u32> drawdim(640,480);
+			core::rect<s32> dest(v2s32(0,0), drawdim);
+			dest += v2s32(
+				(screensize.X-drawdim.Width)/2,
+				(screensize.Y-drawdim.Height)/2
+			);
+			core::rect<s32> source(v2s32(0,0), g_map_plot_texture->getSize());
+			driver->draw2DImage(g_map_plot_texture, dest, source);
+		}
+
+		/*
+			Draw crosshair
+		*/
+		driver->draw2DLine(displaycenter - core::vector2d<s32>(10,0),
+				displaycenter + core::vector2d<s32>(10,0),
+				video::SColor(255,255,255,255));
+		driver->draw2DLine(displaycenter - core::vector2d<s32>(0,10),
+				displaycenter + core::vector2d<s32>(0,10),
+				video::SColor(255,255,255,255));
 
 		} // timer
 
@@ -3077,8 +3208,23 @@ int main(int argc, char *argv[])
 		drawtime = drawtimer.stop(true);
 
 		/*
-			Drawing ends
+			End of drawing
 		*/
+
+		/*
+			Refresh map plot if player has moved considerably
+		*/
+		if(g_refresh_map_plot)
+		{
+			static v3f old_player_pos = v3f(1,1,1) * 10000000;
+			v3f p = client.getPlayerPosition() / BS;
+			if(old_player_pos.getDistanceFrom(p) > 4 * g_map_plot_texture_scale)
+			{
+				updateMapPlotTexture(v2f(p.X,p.Z), driver, &client);
+				old_player_pos = p;
+			}
+			g_refresh_map_plot = false;
+		}
 		
 		static s16 lastFPS = 0;
 		//u16 fps = driver->getFPS();

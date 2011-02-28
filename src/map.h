@@ -40,6 +40,15 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "voxel.h"
 #include "mapchunk.h"
 
+/*
+	Some exposed functions
+*/
+
+double base_rock_level_2d(u64 seed, v2f p);
+
+/*
+*/
+
 #define MAPTYPE_BASE 0
 #define MAPTYPE_SERVER 1
 #define MAPTYPE_CLIENT 2
@@ -530,6 +539,8 @@ public:
 	virtual void PrintInfo(std::ostream &out);
 
 	bool isSavingEnabled(){ return m_map_saving_enabled; }
+
+	u64 getSeed(){ return m_seed; }
 
 private:
 	// Seed used for all kinds of randomness

@@ -32,7 +32,13 @@ double noise3d_gradient(double x, double y, double z, int seed);
 double noise2d_perlin(double x, double y, int seed,
 		int octaves, double persistence);
 
+double noise2d_perlin_abs(double x, double y, int seed,
+		int octaves, double persistence);
+
 double noise3d_perlin(double x, double y, double z, int seed,
+		int octaves, double persistence);
+
+double noise3d_perlin_abs(double x, double y, double z, int seed,
 		int octaves, double persistence);
 
 #endif
