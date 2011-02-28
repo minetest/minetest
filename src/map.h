@@ -45,6 +45,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 */
 
 double base_rock_level_2d(u64 seed, v2f p);
+bool get_have_sand(u64 seed, v2f p);
 
 /*
 */

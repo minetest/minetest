@@ -253,7 +253,8 @@ Doing now (most important at the top):
 * not done
 
 === Next
-* Somehow generate trees
+* Generate trees better
+  - Add a "trees_added" flag to sector, or something
 
 === Fixmes
 * Check the fixmes in the list above
@@ -275,7 +276,6 @@ Doing now (most important at the top):
   * Switch to using a safe way for the self and env pointers
   * Make some global environment hooks, like node placed and general
     on_step()
-* Map should make the appropriate MapEditEvents
 * Add a global Lua spawn handler and such
 * Get rid of MapBlockObjects
 * Other players could be sent to clients as LuaCAOs
@@ -1306,7 +1306,9 @@ void updateMapPlotTexture(v2f centerpos, video::IVideoDriver* driver,
 			c.set(255, 160, 160, 160);
 		else if(h < WATER_LEVEL - 0.5) // Water
 			c.set(255, 50, 50, 255);
-		else if(h < WATER_LEVEL + 2) // Sand
+		else if(h < WATER_LEVEL + 2
+				&& get_have_sand(client->getMapSeed(), pf))
+			// Sand
 			c.set(255, 237, 201, 175);
 #if 1
 		else if(h < WATER_LEVEL + 10) // Green

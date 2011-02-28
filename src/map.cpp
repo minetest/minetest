@@ -1875,9 +1875,9 @@ void make_tree(VoxelManipulator &vmanip, v3s16 p0)
 	MapNode treenode(CONTENT_TREE);
 	MapNode leavesnode(CONTENT_LEAVES);
 
-	vmanip.emerge(VoxelArea(p0-v3s16(2,0,2),p0+v3s16(2,6,2)));
+	vmanip.emerge(VoxelArea(p0-v3s16(2,0,2),p0+v3s16(2,7+2,2)));
 
-	s16 trunk_h = myrand_range(3, 6);
+	s16 trunk_h = myrand_range(4, 7);
 	v3s16 p1 = p0;
 	for(s16 ii=0; ii<trunk_h; ii++)
 	{
@@ -1960,13 +1960,21 @@ double tree_amount_2d(u64 seed, v2s16 p)
 		return 0.04 * (noise-zeroval) / (1.0-zeroval);
 }
 
-#define AVERAGE_MUD_AMOUNT 4
+#define AVERAGE_MUD_AMOUNT 4.0
 
 double get_mud_amount(u64 seed, v2f p)
 {
-	return ((float)AVERAGE_MUD_AMOUNT + 2.5 * noise2d_perlin(
+	return ((float)AVERAGE_MUD_AMOUNT + 3.0 * noise2d_perlin(
 			0.5+p.X/200, 0.5+p.Y/200,
 			seed+1, 5, 0.65));
+}
+
+bool get_have_sand(u64 seed, v2f p)
+{
+	double sandnoise = noise2d_perlin(
+			0.5+(float)p.X/500, 0.5+(float)p.Y/500,
+			seed+59420, 3, 0.50);
+	return (sandnoise > -0.15);
 }
 
 // -1->0, 0->1, 1->0
@@ -2014,46 +2022,52 @@ double base_rock_level_2d(u64 seed, v2f p)
 		//h += 30 * m2;
 	}*/
 
-	// Huge mountains
-	double m3 = 150.0 - 800.0 * noise2d_perlin_abs(
-			0.5+(float)p.X/2000., 0.5+(float)p.Y/2000.,
-			(seed>>32)+985251, 9, 0.5);
-	if(m3 > h)
-		h = m3;
-
 	/*double tm2 = contour_flat_top(-1.0 + 3.0 * noise2d_perlin(
 			0.0+(float)p.X/300., 0.0+(float)p.Y/300.,
 			(seed>>32)+78593, 5, 0.55), 0.15);
 	h += 30 * tm2;*/
 
 #if 1
+	// Huge mountains
+	double m3 = 150.0 - 500.0 * noise2d_perlin_abs(
+			0.324+(float)p.X/2000., 0.423+(float)p.Y/2000.,
+			(seed>>32)+985251, 9, 0.55);
+	if(m3 > h)
+		h = m3;
+#endif
+
+#if 1
+	// Some kind of hill chains or something
 	{
-		double a1 = 30 - 100. * noise2d_perlin_abs(
-				0.5+(float)p.X/250., 0.5+(float)p.Y/250.,
-				seed+850342, 5, 0.63);
+		double a1 = 30 - 130. * noise2d_perlin_abs(
+				0.5+(float)p.X/500., 0.5+(float)p.Y/500.,
+				seed+850342, 6, 0.63);
 		double d = 15;
 		if(a1 > d)
 			a1 = d + sqrt(a1-d);
-		if(a1 > h)
-			h = a1;
+		/*if(a1 > h)
+			h = a1;*/
+		if(a1 > 0)
+			h += a1;
 	}
 #endif
 
 #if 1
-	double base = 35. * noise2d_perlin(
+	double base = -5. + 25. * noise2d_perlin(
 			0.5+(float)p.X/500., 0.5+(float)p.Y/500.,
-			(seed>>32)+653876, 7, 0.55);
+			(seed>>32)+653876, 7, 0.6);
 #else
 	double base = 0;
 #endif
 	
 #if 1
-	double higher = 50. * noise2d_perlin(
+	double higher = 40. * noise2d_perlin(
 			0.5+(float)p.X/250., 0.5+(float)p.Y/250.,
-			seed+39292, 6, 0.63);
+			seed+39292, 7, 0.55);
 	/*double higher = 50. * noise2d_perlin_abs(
 			0.5+(float)p.X/250., 0.5+(float)p.Y/250.,
 			seed+85039, 5, 0.63);*/
+	//higher = 25;
 
 	if(higher > base)
 	{
@@ -2062,24 +2076,43 @@ double base_rock_level_2d(u64 seed, v2f p)
 				0.5+(float)p.X/250., 0.5+(float)p.Y/250.,
 				seed-932, 7, 0.7);
 		b = rangelim(b, 0.0, 1000.0);
+#if 1
 		b = pow(b, 5);
-		b *= 7;
+		b *= 16;
 		b = rangelim(b, 3.0, 1000.0);
 		//dstream<<"b="<<b<<std::endl;
 		//double b = 20;
-
 		// Offset to more low
 		//double a_off = -0.30;
 		double a_off = -0.00;
 		// High/low selector
 		double a = (double)0.5 + b * (a_off + noise2d_perlin(
 				0.5+(float)p.X/250., 0.5+(float)p.Y/250.,
-				seed-359, 5, 0.6));
+				seed-359, 6, 0.70));
+#endif
+#if 0
+		/*b = pow(b, 5);
+		b *= 2;
+		b = rangelim(b, 3.0, 20.0);*/
+		//b = 10.0;
+		double a = -1.5 + 5.0 * (noise2d_perlin_abs(
+				0.5+(float)p.X/500., 0.5+(float)p.Y/500.,
+				seed-359, 6, 0.6));
+		a *= 3.0;
+		/*double a = 5.0 * (noise2d_perlin(
+				0.5+(float)p.X/250., 0.5+(float)p.Y/250.,
+				seed-359, 5, 0.6));*/
+		//a = contour_flat_top(a, 0.2);
+#endif
 		// Limit
 		a = rangelim(a, 0.0, 1.0);
-		//a = easeCurve(a);
+		a = easeCurve(a);
 
 		//dstream<<"a="<<a<<std::endl;
+
+		/*double h2 = higher * a;
+		if(h2 > h)
+			h = h2;*/
 		
 		h += base*(1.0-a) + higher*a;
 	}
@@ -2101,21 +2134,34 @@ double base_rock_level_2d(u64 seed, v2s16 p)
 
 v2f base_ground_turbulence(u64 seed, v3f p)
 {
-	double f = 12;
+#if 1
+	double f = 20;
+
+	double vv = 1.0 - 1.0 * noise3d_perlin_abs(
+			0.5+p.X/500,
+			0.5+p.Y/500,
+			0.5+p.Z/500,
+			seed+1324031, 4, 0.5);
+	//double vve = 1.0 - exp(-MYMAX(0, vv*2.0));
+	double vve = MYMAX(0, vv);
+	//dstream<<"vve="<<vve<<std::endl;
 
 	double v1 = f * noise3d_perlin(
 			0.5+p.X/200,
 			0.5+p.Y/200,
 			0.5+p.Z/200,
-			seed+4045, 5, 0.7);
+			seed+4045, 6, 0.7);
 
 	double v2 = f * noise3d_perlin(
 			0.5+p.X/200,
 			0.5+p.Y/200,
 			0.5+p.Z/200,
-			seed+9495, 5, 0.7);
+			seed+9495, 6, 0.7);
 	
-	return v2f(v1, v2);
+	return v2f(v1*vve, v2*vve);
+#else
+	return v2f(0,0);
+#endif
 }
 
 bool is_carved(u64 seed, v3f p)
@@ -2127,30 +2173,10 @@ bool is_carved(u64 seed, v3f p)
 			0.5+p.Z/200,
 			seed+657890854, 5, 0.7);
 	
-	if(v1 > 1.5)
+	if(v1 > 1.45)
 		return true;
 #endif
 
-#if 0
-	double v2 = noise3d_perlin_abs(
-			0.5+p.X/200,
-			0.5+p.Y/200,
-			0.5+p.Z/200,
-			seed+657890854, 5, 0.7);
-#if 0
-	double v3 = noise3d_perlin_abs(
-			0.5+p.X/200,
-			0.5+p.Y/200,
-			0.5+p.Z/200,
-			seed+657890854, 5, 0.7);
-#else
-	double v3 = 1.0;
-#endif
-	double v23 = v2*v3;
-	if(v23 > 0.7)
-		return true;
-#endif
-	
 	double f = 10.0;
 	double y_div = 1.5;
 
@@ -2173,6 +2199,16 @@ bool is_carved(u64 seed, v3f p)
 	return false;
 }
 
+bool is_underground_mud(u64 seed, v3f p)
+{
+	double v1 = noise3d_perlin_abs(
+			0.5+p.X/50,
+			0.5+p.Y/50,
+			0.5+p.Z/50,
+			seed+83401, 5, 0.75);
+	return (v1 > 1.3);
+}
+	
 /*
 	if depth_guess!=NULL, it is set to a guessed value of how deep
 	underground the position is.
@@ -2189,6 +2225,16 @@ bool is_base_ground(u64 seed, v3f p, double *depth_guess=NULL)
 		return is_carved(seed, p);
 	}
 #endif
+#if 0
+	// This is used for testing the output of the underground mud function
+	{
+		if(depth_guess)
+			*depth_guess = 10;
+		if(p.Y > 50)
+			return false;
+		return is_underground_mud(seed, p);
+	}
+#endif
 
 	v2f t = base_ground_turbulence(seed, p);
 
@@ -2201,16 +2247,19 @@ bool is_base_ground(u64 seed, v3f p, double *depth_guess=NULL)
 	{
 		// Find highest surface near current
 		v3f dirs[4] = {
-			v3f(1,-1,0),
-			v3f(-1,-1,0),
-			v3f(0,-1,1),
-			v3f(0,-1,-1)
+			v3f(1,0,0),
+			v3f(-1,0,0),
+			v3f(0,0,1),
+			v3f(0,0,-1)
 		};
 		double s2 = surface_y_f;
 		for(u32 i=0; i<4; i++)
 		{
 			v3f dir = dirs[i];
-			v2f l = v2f(p.X+t.X+dir.X, p.Z+t.Y+dir.Z);
+			// Get turbulence at around there
+			v2f t2 = base_ground_turbulence(seed, p+dir);
+			// Get ground height
+			v2f l = v2f(p.X+t2.X+dir.X, p.Z+t2.Y+dir.Z);
 			double s = base_rock_level_2d(seed, l);
 			if(s > s2)
 				s2 = s;
@@ -2239,9 +2288,11 @@ bool is_base_ground(u64 seed, v3f p, double *depth_guess=NULL)
 	}*/
 
 	bool is_ground = (p.Y <= surface_y_f);
-	
+
+#if 1
 	if(is_carved(seed, p))
 		is_ground = false;
+#endif
 
 	return is_ground;
 }
@@ -3357,11 +3408,7 @@ MapChunk* ServerMap::generateChunkRaw(v2s16 chunkpos,
 		v2s16 p2d = sectorpos_base*MAP_BLOCKSIZE + v2s16(x,z);
 		
 		// Determine whether to have sand here
-		double sandnoise = noise2d_perlin(
-				0.5+(float)p2d.X/500, 0.5+(float)p2d.Y/500,
-				m_seed+59420, 3, 0.50);
-
-		bool have_sand = (sandnoise > -0.15);
+		bool have_sand = get_have_sand(p2d);
 
 		if(have_sand == false)
 			continue;
@@ -4134,9 +4181,7 @@ MapBlock * ServerMap::generateBlock(
 		{
 			//dstream<<"BT_GROUND"<<std::endl;
 			// A ground block
-			//block_type = BT_GROUND;
-			// Handled as surface because of caves
-			block_type = BT_SURFACE;
+			block_type = BT_GROUND;
 		}
 		else if(block_low_y_f >= surface_y_max + d_up
 				&& block_low_y_f > WATER_LEVEL + d_up)
@@ -4152,14 +4197,14 @@ MapBlock * ServerMap::generateBlock(
 			block_type = BT_SURFACE;
 		}
 
-		if(block_type == BT_GROUND || block_type == BT_SKY)
+		if(/*block_type == BT_GROUND ||*/ block_type == BT_SKY)
 		{
 			lowest_ground_y = surface_y_min;
 			highest_ground_y = surface_y_max;
 		}
 	}
 	
-	if(block_type == BT_SURFACE)
+	if(block_type == BT_SURFACE || block_type == BT_GROUND)
 	{
 		/*
 			Generate ground precisely
@@ -4204,9 +4249,11 @@ MapBlock * ServerMap::generateBlock(
 					Calculate material
 				*/
 				
+				v3f real_pos_f = intToFloat(real_pos, 1);
+				v2f real_pos_f_2d(real_pos_f.X, real_pos_f.Z);
 				double depth_guess;
 				bool is_ground = is_base_ground(m_seed,
-						intToFloat(real_pos, 1), &depth_guess);
+						real_pos_f, &depth_guess);
 				
 				// Estimate the surface height
 				float surface_y_f = (float)real_y + depth_guess;
@@ -4243,9 +4290,13 @@ MapBlock * ServerMap::generateBlock(
 					// If it's surface_depth under ground, it's stone
 					if((float)real_y <= surface_y_f - surface_depth - 0.75)
 					{
-						n.d = CONTENT_STONE;
+						if(is_underground_mud(m_seed, real_pos_f))
+							n.d = CONTENT_MUD;
+						else
+							n.d = CONTENT_STONE;
 					}
-					else if(surface_y_f <= WATER_LEVEL + 2.0)
+					else if(surface_y_f <= WATER_LEVEL + 2.1
+							&& get_have_sand(m_seed, real_pos_f_2d))
 					{
 						n.d = CONTENT_SAND;
 					}
@@ -4357,7 +4408,7 @@ MapBlock * ServerMap::generateBlock(
 		MapNode n_fill;
 		if(block_type == BT_GROUND)
 		{
-			n_fill.d = CONTENT_STONE;
+			//n_fill.d = CONTENT_STONE;
 		}
 		else if(block_type == BT_SKY)
 		{
@@ -4838,13 +4889,14 @@ continue_generating:
 	/*
 		Add trees
 	*/
+#if 1
 	if(some_part_underground && !completely_underground)
 	{
 		MapVoxelManipulator vm(this);
 		
 		double a = tree_amount_2d(m_seed, v2s16(p_nodes.X+8, p_nodes.Z+8));
 		u16 tree_count = (u16)(a*MAP_BLOCKSIZE*MAP_BLOCKSIZE);
-		for(u16 i=0; i<tree_count; i++)
+		for(u16 i=0; i<tree_count/2; i++)
 		{
 			v3s16 tree_p = p_nodes + v3s16(
 				myrand_range(0,MAP_BLOCKSIZE-1),
@@ -4854,7 +4906,7 @@ continue_generating:
 			double depth_guess;
 			/*bool is_ground =*/ is_base_ground(m_seed,
 					intToFloat(tree_p, 1), &depth_guess);
-			tree_p.Y += depth_guess;
+			tree_p.Y += (depth_guess - 0.5);
 			if(tree_p.Y <= WATER_LEVEL)
 				continue;
 			make_tree(vm, tree_p);
@@ -4862,6 +4914,7 @@ continue_generating:
 
 		vm.blitBack(changed_blocks);
 	}
+#endif
 	
 #if 0
 	/*
