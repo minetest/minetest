@@ -253,9 +253,7 @@ Doing now (most important at the top):
 * not done
 
 === Next
-* Make a system for pregenerating quick information for mapblocks, so
-  that the client can show them as cubes before they are actually sent
-  or even generated.
+* Somehow generate trees
 
 === Fixmes
 * Check the fixmes in the list above
@@ -300,6 +298,10 @@ Doing now (most important at the top):
 * Make a small history check to transformLiquids to detect and log
   continuous oscillations, in such detail that they can be fixed.
 * Combine meshes to bigger ones in ClientMap and set them EHM_STATIC
+* Maybe:
+  Make a system for pregenerating quick information for mapblocks, so
+  that the client can show them as cubes before they are actually sent
+  or even generated.
 
 ======================================================================
 
