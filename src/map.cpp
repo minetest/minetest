@@ -2027,7 +2027,7 @@ double base_rock_level_2d(u64 seed, v2f p)
 			(seed>>32)+78593, 5, 0.55), 0.15);
 	h += 30 * tm2;*/
 
-#if 1
+#if 0
 	{
 		// Large mountains
 		double m3 = 100.0 - 600.0 * noise2d_perlin_abs(
@@ -2038,24 +2038,13 @@ double base_rock_level_2d(u64 seed, v2f p)
 	}
 #endif
 
-#if 1
-	{
-		// Pretty neat looking mountains
-		double m4 = 100.0 - 400.0 * noise2d_perlin_abs(
-				0.324+(float)p.X/2000., 0.423+(float)p.Y/2000.,
-				(seed>>32)+65012102, 8, 0.6);
-		if(m4 > h)
-			h = m4;
-	}
-#endif
-
 #if 0
 	{
-		// More neat looking mountain ranges
+		// More mountain ranges
 		double d = 100;
-		double a1 = d*2 - d*5 * noise2d_perlin_abs(
-				0.5+(float)p.X/500., 0.5+(float)p.Y/500.,
-				seed+850342, 6, 0.55);
+		double a1 = d*2.0 - d*7 * noise2d_perlin_abs(
+				0.5+(float)p.X/1000., 0.5+(float)p.Y/1000.,
+				seed+850342, 7, 0.55);
 		/*if(a1 > d)
 			a1 = d + sqrt(a1-d);*/
 		a1 = (1.0 - exp(-a1/d))*d;
@@ -2066,11 +2055,28 @@ double base_rock_level_2d(u64 seed, v2f p)
 	}
 #endif
 
-#if 1
+#if 0
+	{
+		// More mountain ranges
+		double d = 60;
+		double a1 = d*2.0 - d*7 * noise2d_perlin_abs(
+				0.5+(float)p.X/1000., 0.5+(float)p.Y/1000.,
+				seed+850342, 7, 0.55);
+		/*if(a1 > d)
+			a1 = d + sqrt(a1-d);*/
+		a1 = (1.0 - exp(-a1/d))*d;
+		/*if(a1 > h)
+			h = a1;*/
+		if(a1 > 0)
+			h += a1;
+	}
+#endif
+
+#if 0
 	{
 		// Very steep mountain ranges
-		double d = 150;
-		double a1 = d*2 - d*7.5 * noise2d_perlin_abs(
+		double d = 120;
+		double a1 = d*2 - d*6.5 * noise2d_perlin_abs(
 				0.5+(float)p.X/500., 0.5+(float)p.Y/500.,
 				seed+850342, 6, 0.6);
 		/*if(a1 > d)
@@ -2086,6 +2092,22 @@ double base_rock_level_2d(u64 seed, v2f p)
 		double m4 = 100.0 - 400.0 * a;
 		if(m4 > h)
 			h = m4;*/
+	}
+#endif
+	
+	/*
+		The sutff before this comment is usually not used.
+		The stuff after this comment is usually used.
+	*/
+
+#if 1
+	{
+		// Pretty neat looking mountains
+		double m4 = 100.0 - 400.0 * noise2d_perlin_abs(
+				0.324+(float)p.X/2000., 0.423+(float)p.Y/2000.,
+				(seed>>32)+65012102, 7, 0.6);
+		if(m4 > h)
+			h = m4;
 	}
 #endif
 
@@ -2106,17 +2128,22 @@ double base_rock_level_2d(u64 seed, v2f p)
 #endif
 
 #if 1
-	double base = -2. + 25. * noise2d_perlin(
-			0.5+(float)p.X/500., 0.5+(float)p.Y/500.,
+	double base = -2. + 30. * noise2d_perlin(
+			0.5+(float)p.X/1000., 0.5+(float)p.Y/1000.,
 			(seed>>32)+653876, 7, 0.6);
 #else
 	double base = 0;
 #endif
 	
 #if 1
+	/*
+		Combined with turbulence, this thing here is able to make very
+		awesome terrain, albeit rarely.
+	*/
+
 	double higher = 40. * noise2d_perlin(
 			0.5+(float)p.X/250., 0.5+(float)p.Y/250.,
-			seed+39292, 7, 0.55);
+			seed+39292, 6, 0.50);
 	/*double higher = 50. * noise2d_perlin_abs(
 			0.5+(float)p.X/250., 0.5+(float)p.Y/250.,
 			seed+85039, 5, 0.63);*/
@@ -2127,7 +2154,7 @@ double base_rock_level_2d(u64 seed, v2f p)
 		// Steepness factor of cliffs
 		double b = 1.0 + 1.0 * noise2d_perlin(
 				0.5+(float)p.X/250., 0.5+(float)p.Y/250.,
-				seed-932, 7, 0.7);
+				seed-932, 6, 0.7);
 		b = rangelim(b, 0.0, 1000.0);
 #if 1
 		b = pow(b, 5);
@@ -2137,11 +2164,11 @@ double base_rock_level_2d(u64 seed, v2f p)
 		//double b = 20;
 		// Offset to more low
 		//double a_off = -0.30;
-		double a_off = -0.00;
+		double a_off = -0.20;
 		// High/low selector
 		double a = (double)0.5 + b * (a_off + noise2d_perlin(
-				0.5+(float)p.X/250., 0.5+(float)p.Y/250.,
-				seed-359, 6, 0.70));
+				0.5+(float)p.X/500., 0.5+(float)p.Y/500.,
+				seed-359, 7, 0.70));
 #endif
 #if 0
 		/*b = pow(b, 5);
@@ -2190,14 +2217,47 @@ v2f base_ground_turbulence(u64 seed, v3f p)
 #if 1
 	double f = 20;
 
-	double vv = 1.0 - 1.0 * noise3d_perlin_abs(
-			0.5+p.X/500,
-			0.5+p.Y/500,
-			0.5+p.Z/500,
+#if 1
+	// Cut off at a minimum height
+	{
+		double d = 5;
+		double min = WATER_LEVEL;
+		if(p.Y < min)
+			return v2f(0,0);
+		else if(p.Y < min + d)
+			f *= ((p.Y-min)/d);
+	}
+#endif
+
+#if 1
+	double vv = 0.75 + 1.0 * noise3d_perlin(
+			0.5+p.X/250,
+			0.5+p.Y/250,
+			0.5+p.Z/250,
+			seed+1324381, 4, 0.5);
+	double vve = rangelim(vv, 0.0, 1.0);
+	/*double vv = 1.0 - 2.0 * noise3d_perlin_abs(
+			0.5+p.X/250,
+			0.5+p.Y/250,
+			0.5+p.Z/250,
 			seed+1324031, 4, 0.5);
-	//double vve = 1.0 - exp(-MYMAX(0, vv*2.0));
-	double vve = MYMAX(0, vv);
+	double vve = 1.0 - exp(-MYMAX(0, vv*2.0));*/
+	//double vve = rangelim(vv, 0, 1.0);
 	//dstream<<"vve="<<vve<<std::endl;
+	
+	/*// Limit turbulence near water level
+	double a = contour((p.Y-WATER_LEVEL)/10.0);
+	vve = (1.-a) * vve;*/
+
+	// Increase turbulence in elevated heights
+	double ah = WATER_LEVEL + 40;
+	if(p.Y > ah)
+	{
+		vve *= p.Y/ah;
+	}
+#else
+	double vve = 1;
+#endif
 
 	double v1 = f * noise3d_perlin(
 			0.5+p.X/200,
@@ -2289,47 +2349,64 @@ bool is_base_ground(u64 seed, v3f p, double *depth_guess=NULL)
 	}
 #endif
 
-	v2f t = base_ground_turbulence(seed, p);
+	bool is_ground = true;
 
-	double surface_y_f = base_rock_level_2d(seed, v2f(p.X+t.X, p.Z+t.Y));
-
-	/*if(depth_guess)
-		*depth_guess = surface_y_f - p.Y;*/
+#if 1
+	if(is_carved(seed, p))
+		is_ground = false;
+#endif
 	
-	if(depth_guess)
+	if(depth_guess || is_ground == true)
 	{
-		// Find highest surface near current
-		v3f dirs[4] = {
-			v3f(1,0,0),
-			v3f(-1,0,0),
-			v3f(0,0,1),
-			v3f(0,0,-1)
-		};
-		double s2 = surface_y_f;
-		for(u32 i=0; i<4; i++)
+		v2f t = base_ground_turbulence(seed, p);
+
+		double surface_y_f = base_rock_level_2d(seed, v2f(p.X+t.X, p.Z+t.Y));
+
+#if 0
+		if(depth_guess)
 		{
-			v3f dir = dirs[i];
-			// Get turbulence at around there
-			v2f t2 = base_ground_turbulence(seed, p+dir);
-			// Get ground height
-			v2f l = v2f(p.X+t2.X+dir.X, p.Z+t2.Y+dir.Z);
-			double s = base_rock_level_2d(seed, l);
-			if(s > s2)
-				s2 = s;
-		}
-		*depth_guess = s2 - p.Y;
-	}
-	
-	/*if(depth_guess)
-	{
-		// Check a bit lower also, take highest surface
-		v2f t2 = base_ground_turbulence(seed, p + v3f(0,-2,0));
-		double s2 = base_rock_level_2d(seed, v2f(p.X+t2.X, p.Z+t2.Y));
-		if(s2 > surface_y_f)
+			// Find highest surface near current
+			v3f dirs[4] = {
+				v3f(1,0,0),
+				v3f(-1,0,0),
+				v3f(0,0,1),
+				v3f(0,0,-1)
+			};
+			double s2 = surface_y_f;
+			for(u32 i=0; i<4; i++)
+			{
+				v3f dir = dirs[i];
+				// Get turbulence at around there
+				v2f t2 = base_ground_turbulence(seed, p+dir);
+				// Get ground height
+				v2f l = v2f(p.X+t2.X+dir.X, p.Z+t2.Y+dir.Z);
+				double s = base_rock_level_2d(seed, l);
+				if(s > s2)
+					s2 = s;
+			}
 			*depth_guess = s2 - p.Y;
-		else
+		}
+#endif
+#if 1
+		if(depth_guess)
+		{
+			// Check a bit lower also, take highest surface
+			v2f t2 = base_ground_turbulence(seed, p + v3f(0,-2,0));
+			double s2 = base_rock_level_2d(seed, v2f(p.X+t2.X, p.Z+t2.Y));
+			if(s2 > surface_y_f)
+				*depth_guess = s2 - p.Y;
+			else
+				*depth_guess = surface_y_f - p.Y;
+		}
+#endif
+#if 0
+		if(depth_guess)
 			*depth_guess = surface_y_f - p.Y;
-	}*/
+#endif
+
+		if(p.Y > surface_y_f)
+			is_ground = false;
+	}
 	
 	/*if(depth_guess)
 	{
@@ -2339,13 +2416,6 @@ bool is_base_ground(u64 seed, v3f p, double *depth_guess=NULL)
 		double u1 = 
 		double s1 = base_rock_level_2d(seed, v2f(p.X+v1,p.Z+v2));
 	}*/
-
-	bool is_ground = (p.Y <= surface_y_f);
-
-#if 1
-	if(is_carved(seed, p))
-		is_ground = false;
-#endif
 
 	return is_ground;
 }
@@ -4171,7 +4241,7 @@ MapBlock * ServerMap::generateBlock(
 	} block_type = BT_SURFACE;
 
 	{// ground_timer (0ms or ~100ms)
-	//TimeTaker ground_timer("Ground generation");
+	TimeTaker ground_timer("Ground generation");
 
 	/*
 		Approximate whether this block is a surface block, an air
@@ -4930,8 +5000,12 @@ continue_generating:
 	// Lighting is invalid after generation for surface blocks
 	if(block_type == BT_SURFACE)
 	{
+#if 1
 		block->setLightingExpired(true);
 		lighting_invalidated_blocks.insert(p, block);
+#else
+		block->setLightingExpired(false);
+#endif
 	}
 	// Lighting is not invalid for other blocks
 	else

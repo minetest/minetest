@@ -496,7 +496,7 @@ Inventory local_inventory;
 u16 g_selected_item = 0;
 
 bool g_show_map_plot = false;
-bool g_refresh_map_plot = true;
+bool g_refresh_map_plot = false;
 
 /*
 	Debug streams
@@ -1267,7 +1267,7 @@ void draw_hotbar(video::IVideoDriver *driver, gui::IGUIFont *font,
 }
 
 video::ITexture *g_map_plot_texture = NULL;
-float g_map_plot_texture_scale = 2;
+float g_map_plot_texture_scale = 4;
 
 void updateMapPlotTexture(v2f centerpos, video::IVideoDriver* driver,
 		Client *client)
@@ -1306,21 +1306,24 @@ void updateMapPlotTexture(v2f centerpos, video::IVideoDriver* driver,
 			c.set(255, 160, 160, 160);
 		else if(h < WATER_LEVEL - 0.5) // Water
 			c.set(255, 50, 50, 255);
-		else if(h < WATER_LEVEL + 2
+		else if(h < WATER_LEVEL + 2 // Sand
 				&& get_have_sand(client->getMapSeed(), pf))
-			// Sand
 			c.set(255, 237, 201, 175);
 #if 1
-		else if(h < WATER_LEVEL + 10) // Green
-			c.set(255, 50, 150, 50);
-		else if(h < WATER_LEVEL + 20) // Greenish yellow
-			c.set(255, 110, 185, 50);
-		else if(h < WATER_LEVEL + 50) // Yellow
-			c.set(255, 220, 220, 50);
-		else if(h < WATER_LEVEL + 100) // White
-			c.set(255, 180, 180, 180);
+		else if(h < WATER_LEVEL + 10)
+			c.set(255, 50, 150, 50); // Green
+		else if(h < WATER_LEVEL + 20)
+			c.set(255, 110, 185, 50); // Yellowish green
+		else if(h < WATER_LEVEL + 40)
+			c.set(255, 180, 210, 50); // Greenish yellow
+		else if(h < WATER_LEVEL + 60)
+			c.set(255, 220, 220, 50); // Yellow
+		else if(h < WATER_LEVEL + 80)
+			c.set(255, 200, 200, 110); // Yellowish white
+		else if(h < WATER_LEVEL + 100)
+			c.set(255, 190, 190, 190); // Grey
 		else
-			c.set(255, 255, 255, 255);
+			c.set(255, 255, 255, 255); // White
 #endif
 		/*else if(h < WATER_LEVEL + d1)
 		{

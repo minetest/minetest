@@ -44,8 +44,10 @@ double linearInterpolation(double x0, double x1, double t){
 }
  
 double biLinearInterpolation(double x0y0, double x1y0, double x0y1, double x1y1, double x, double y){
-    double tx = easeCurve(x);
-    double ty = easeCurve(y);
+    /*double tx = easeCurve(x);
+    double ty = easeCurve(y);*/
+	double tx = x;
+	double ty = y;
     double u = linearInterpolation(x0y0,x1y0,tx);
     double v = linearInterpolation(x0y1,x1y1,tx);
     return linearInterpolation(u,v,ty);
@@ -92,7 +94,7 @@ double noise3d(int x, int y, int z, int seed)
 	return 1.0 - (double)n/1073741824;
 }
 
-#if 1
+#if 0
 double noise2d_gradient(double x, double y, int seed)
 {
 	// Calculate the integer coordinates
@@ -117,7 +119,7 @@ double noise2d_gradient(double x, double y, int seed)
 }
 #endif
 
-#if 0
+#if 1
 double noise2d_gradient(double x, double y, int seed)
 {
 	// Calculate the integer coordinates

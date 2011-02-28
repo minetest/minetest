@@ -232,16 +232,18 @@ void * EmergeThread::Thread()
 			*/
 			
 			if(lighting_invalidated_blocks.size() > 0)
+			{
 				dstream<<"lighting "<<lighting_invalidated_blocks.size()
 						<<" blocks"<<std::endl;
 			
-			// 50-100ms for single block generation
-			//TimeTaker timer("** EmergeThread updateLighting");
-			
-			// Update lighting without locking the environment mutex,
-			// add modified blocks to changed blocks
-			map.updateLighting(lighting_invalidated_blocks, modified_blocks);
-			
+				// 50-100ms for single block generation
+				TimeTaker timer("** EmergeThread updateLighting");
+				
+				// Update lighting without locking the environment mutex,
+				// add modified blocks to changed blocks
+				map.updateLighting(lighting_invalidated_blocks, modified_blocks);
+			}
+				
 			// Add all from changed_blocks to modified_blocks
 			for(core::map<v3s16, MapBlock*>::Iterator i = changed_blocks.getIterator();
 					i.atEnd() == false; i++)
@@ -3411,7 +3413,7 @@ Player *Server::emergePlayer(const char *name, const char *password,
 		s16 groundheight = 0;
 #if 1
 		// Try to find a good place a few times
-		for(s32 i=0; i<500; i++)
+		for(s32 i=0; i<1000; i++)
 		{
 			s32 range = 1 + i;
 			// We're going to try to throw the player to this position
