@@ -28,6 +28,9 @@ NOTE: VBO cannot be turned on for fast-changing stuff because there
 NOTE: iostream.imbue(std::locale("C")) is very slow
 NOTE: Global locale is now set at initialization
 
+Random suggeestions:
+--------------------
+
 SUGG: Fix address to be ipv6 compatible
 
 NOTE: When a new sector is generated, it may change the ground level
@@ -116,11 +119,6 @@ Documentation:
 Build system / running:
 -----------------------
 
-FIXME: Some network errors on Windows that cause local game to not work
-       - See siggjen's emails.
-	   - Is this the famous "windows 7 problem"?
-       - Apparently there might be other errors too
-
 Networking and serialization:
 -----------------------------
 
@@ -160,6 +158,8 @@ TODO: Make fetching sector's blocks more efficient when rendering
 
 TODO: Flowing water animation
 
+* Combine meshes to bigger ones in ClientMap and set them EHM_STATIC
+
 Configuration:
 --------------
 
@@ -182,7 +182,7 @@ Server:
 
 TODO: When player dies, throw items on map
 
-TODO: Make an option to the server to disable building and digging near
+SUGG: Make an option to the server to disable building and digging near
       the starting position
 
 TODO: Copy the text of the last picked sign to inventory in creative
@@ -191,10 +191,13 @@ TODO: Copy the text of the last picked sign to inventory in creative
 TODO: Check what goes wrong with caching map to disk (Kray)
       - Nothing?
 
-TODO: When server sees that client is removing an inexistent block in
-      an existent position, resend the MapBlock.
-
 FIXME: Server went into some infinite PeerNotFoundException loop
+
+* Fix the problem with the server constantly saving one or a few
+  blocks? List the first saved block, maybe it explains.
+  - It is probably caused by oscillating water
+* Make a small history check to transformLiquids to detect and log
+  continuous oscillations, in such detail that they can be fixed.
 
 Objects:
 --------
@@ -220,6 +223,15 @@ Block object server side:
   it or store it statically.
 - When a statically stored active object comes near a player,
   recreate the active object
+
+* Continue making the scripting system:
+  * Make updateNodeMesh for a less verbose mesh update on add/removenode
+  * Switch to using a safe way for the self and env pointers
+  * Make some global environment hooks, like node placed and general
+    on_step()
+* Add a global Lua spawn handler and such
+* Get rid of MapBlockObjects
+* Other players could be sent to clients as LuaCAOs
 
 Map:
 ----
@@ -247,42 +259,10 @@ FEATURE: Erosion simulation at map generation time
 		- Simulate rock falling from cliffs when water has removed
 		  enough solid rock from the bottom
 
-Doing now (most important at the top):
---------------------------------------
-# maybe done
-* not done
-
-=== Next
-* Generate trees better
-  - Add a "trees_added" flag to sector, or something
-
-=== Fixmes
-* Check the fixmes in the list above
-* Make server find the spawning place from the real map data, not from
-  the heightmap
-  - But the changing borders of chunk have to be avoided, because
-    there is time to generate only one chunk.
+Mapgen v2:
+* only_from_disk might not work anymore - check and fix it.
 * Make the generator to run in background and not blocking block
   placement and transfer
-* only_from_disk might not work anymore - check and fix it.
-
-=== Making it more portable
-* Some MSVC: std::sto* are defined without a namespace and collide
-  with the ones in utility.h
-
-=== Features
-* Continue making the scripting system:
-  * Make updateNodeMesh for a less verbose mesh update on add/removenode
-  * Switch to using a safe way for the self and env pointers
-  * Make some global environment hooks, like node placed and general
-    on_step()
-* Add a global Lua spawn handler and such
-* Get rid of MapBlockObjects
-* Other players could be sent to clients as LuaCAOs
-* Add mud underground
-* Make an "environment metafile" to store at least time of day
-* Move digging property stuff from material.{h,cpp} to mapnode.cpp...
-  - Or maybe move content_features to material.{h,cpp}?
 * Add some kind of erosion and other stuff that now is possible
 * Make client to fetch stuff asynchronously
   - Needs method SyncProcessData
@@ -292,16 +272,36 @@ Doing now (most important at the top):
   and stuff yet and the ground is fairly flat, the mud will flow to
   the other chunk making nasty straight walls when the other chunk
   is generated. Fix it.
-* Fix the problem with the server constantly saving one or a few
-  blocks? List the first saved block, maybe it explains.
-  - It is probably caused by oscillating water
-* Make a small history check to transformLiquids to detect and log
-  continuous oscillations, in such detail that they can be fixed.
-* Combine meshes to bigger ones in ClientMap and set them EHM_STATIC
+
+Mapgen v3:
+* Generate trees better
+  - Add a "trees_added" flag to sector, or something
+* How 'bout making turbulence controlled so that for a given 2d position
+  it can be completely turned off, and is usually so. This way generation
+  can be sped up a lot.
+
+Mapgen v4:
+* only_from_disk might not work anymore - check and fix it.
+* Make the generator to run in background and not blocking block
+  placement and transfer
+* Make chunks to be tiled vertically too
+
+Misc. stuff:
+------------
+* Make an "environment metafile" to store at least time of day
+* Move digging property stuff from material.{h,cpp} to mapnode.cpp...
+  - Or maybe move content_features to material.{h,cpp}?
 * Maybe:
   Make a system for pregenerating quick information for mapblocks, so
   that the client can show them as cubes before they are actually sent
   or even generated.
+* Optimize VoxelManipulator lighting implementation by using indices
+  in place of coordinates?
+
+Making it more portable:
+------------------------
+* Some MSVC: std::sto* are defined without a namespace and collide
+  with the ones in utility.h
 
 ======================================================================
 
@@ -1306,8 +1306,49 @@ void updateMapPlotTexture(v2f centerpos, video::IVideoDriver* driver,
 			c.set(255, 160, 160, 160);
 		else if(h < WATER_LEVEL - 0.5) // Water
 			c.set(255, 50, 50, 255);
-		else if(h < WATER_LEVEL + 2 // Sand
-				&& get_have_sand(client->getMapSeed(), pf))
+#if 0
+		else if(get_have_sand_ground(client->getMapSeed(), pf)
+				|| (h < WATER_LEVEL + 2
+				&& get_have_sand_coast(client->getMapSeed(), pf)))
+		{
+			h -= WATER_LEVEL;
+			h /= 50.0;
+			h = 1.0 - exp(-h);
+
+			video::SColor c1(255,237,201,175);
+			//video::SColor c2(255,20,20,20);
+			video::SColor c2(255,150,0,0);
+			c = c2.getInterpolated(c1, h);
+		}
+		else
+		{
+			h -= WATER_LEVEL;
+			h /= 50.0;
+			h = 1.0 - exp(-h);
+
+			video::SColor c1(255,110,185,90);
+			//video::SColor c2(255,20,20,20);
+			video::SColor c2(255,150,0,0);
+			c = c2.getInterpolated(c1, h);
+		}
+#endif
+#if 1
+#if 0
+		else if(get_have_sand_ground(client->getMapSeed(), pf))
+		{
+			h -= WATER_LEVEL;
+			h /= 20.0;
+			h = 1.0 - exp(-h);
+
+			video::SColor c1(255,237,201,175);
+			//video::SColor c2(255,20,20,20);
+			video::SColor c2(255,150,0,0);
+			c = c2.getInterpolated(c1, h);
+		}
+#endif
+		// Sand
+		else if(h < WATER_LEVEL + 2
+				&& get_have_sand_coast(client->getMapSeed(), pf))
 			c.set(255, 237, 201, 175);
 #if 1
 		else if(h < WATER_LEVEL + 10)
@@ -1325,14 +1366,7 @@ void updateMapPlotTexture(v2f centerpos, video::IVideoDriver* driver,
 		else
 			c.set(255, 255, 255, 255); // White
 #endif
-		/*else if(h < WATER_LEVEL + d1)
-		{
-			h -= WATER_LEVEL;
-			u32 a = (u32)(h / d1 * 255);
-			if(a > 255)
-				a = 255;
-			c.set(255, 0, a, 0);
-		}*/
+#endif
 #if 0
 		else
 		{
@@ -1349,6 +1383,22 @@ void updateMapPlotTexture(v2f centerpos, video::IVideoDriver* driver,
 				a = 255;
 			a = 255-a;
 			c.set(255, a, a, a);*/
+		}
+#endif
+#if 1
+		if(h >= WATER_LEVEL - 0.5
+			&& get_have_sand_ground(client->getMapSeed(), pf))
+		{
+			video::SColor c1(255,237,201,175);
+			c = c.getInterpolated(c1, 0.5);
+		}
+#endif
+#if 1
+		double tf = get_turbulence_factor_2d(client->getMapSeed(), pf);
+		if(tf > 0.001)
+		{
+			video::SColor c1(255,255,0,0);
+			c = c.getInterpolated(c1, 1.0-(0.5*tf));
 		}
 #endif
 		img->setPixel(x, y, c);
@@ -2911,7 +2961,7 @@ int main(int argc, char *argv[])
 			driver->setFog(
 				bgcolor,
 				video::EFT_FOG_LINEAR,
-				range*0.6,
+				range*0.4,
 				range*1.0,
 				0.01,
 				false, // pixel fog

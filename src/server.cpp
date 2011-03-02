@@ -3430,9 +3430,9 @@ Player *Server::emergePlayer(const char *name, const char *password,
 				!= m_env.getServerMap().sector_to_chunk(sectorpos+v2s16(-1,-1)))
 					continue;
 			}
-			// Get sector
-			m_env.getMap().emergeSector(sectorpos);
-			// Get ground height at point
+			// Get sector (NOTE: Don't get because it's slow)
+			//m_env.getMap().emergeSector(sectorpos);
+			// Get ground height at point (fallbacks to heightmap function)
 			groundheight = m_env.getServerMap().findGroundLevel(nodepos);
 			// Don't go underwater
 			if(groundheight < WATER_LEVEL)
@@ -3440,7 +3440,15 @@ Player *Server::emergePlayer(const char *name, const char *password,
 				//dstream<<"-> Underwater"<<std::endl;
 				continue;
 			}
-#if 0 // Doesn't work, generating blocks is a bit too complicated for doing here
+			// Don't go to high places
+			if(groundheight > WATER_LEVEL + 4)
+			{
+				//dstream<<"-> Underwater"<<std::endl;
+				continue;
+			}
+
+#if 0
+// Doesn't work, generating blocks is a bit too complicated for doing here
 			// Get block at point
 			v3s16 nodepos3d;
 			nodepos3d = v3s16(nodepos.X, groundheight+1, nodepos.Y);
@@ -3466,6 +3474,7 @@ Player *Server::emergePlayer(const char *name, const char *password,
 				continue;
 			}
 #endif
+
 			// Found a good place
 			dstream<<"Searched through "<<i<<" places."<<std::endl;
 			break;

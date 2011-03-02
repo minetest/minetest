@@ -45,7 +45,9 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 */
 
 double base_rock_level_2d(u64 seed, v2f p);
-bool get_have_sand(u64 seed, v2f p);
+bool get_have_sand_coast(u64 seed, v2f p);
+bool get_have_sand_ground(u64 seed, v2f p);
+double get_turbulence_factor_2d(u64 seed, v2f p);
 
 /*
 */

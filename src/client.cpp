@@ -510,10 +510,13 @@ void Client::ProcessData(u8 *data, u32 datasize, u16 sender_peer_id)
 			assert(player != NULL);
 			player->setPosition(playerpos_f);
 		}
-
-		// Get map seed
-		m_map_seed = readU64(&data[2+1+6]);
-		dstream<<"Client: received map seed: "<<m_map_seed<<std::endl;
+		
+		if(datasize >= 2+1+6+8)
+		{
+			// Get map seed
+			m_map_seed = readU64(&data[2+1+6]);
+			dstream<<"Client: received map seed: "<<m_map_seed<<std::endl;
+		}
 		
 		// Reply to server
 		u32 replysize = 2;
