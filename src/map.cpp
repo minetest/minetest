@@ -1710,13 +1710,6 @@ ServerMap::ServerMap(std::string savedir):
 	Map(dout_server),
 	m_seed(0)
 {
-	
-	//m_chunksize = 64;
-	//m_chunksize = 16; // Too slow
-	//m_chunksize = 8; // Takes a few seconds
-	m_chunksize = 4; // Too small?
-	//m_chunksize = 2;
-	
 	// TODO: Save to and load from a file
 	m_seed = (((u64)(myrand()%0xffff)<<0)
 			+ ((u64)(myrand()%0xffff)<<16)
@@ -1751,12 +1744,9 @@ ServerMap::ServerMap(std::string savedir):
 			}
 			else
 			{
-				// Load map metadata (seed, chunksize)
+				// Load map metadata (seed)
 				loadMapMeta();
 				
-				// Load chunk metadata
-				loadChunkMeta();
-			
 				/*// Load sector (0,0) and throw and exception on fail
 				if(loadSectorFull(v2s16(0,0)) == false)
 					throw LoadError("Failed to load sector (0,0)");*/
@@ -1819,16 +1809,6 @@ ServerMap::~ServerMap()
 		dstream<<DTIME<<"Server: Failed to save map to "<<m_savedir
 				<<", exception: "<<e.what()<<std::endl;
 	}
-	
-	/*
-		Free all MapChunks
-	*/
-	core::map<v2s16, MapChunk*>::Iterator i = m_chunks.getIterator();
-	for(; i.atEnd() == false; i++)
-	{
-		MapChunk *chunk = i.getNode()->getValue();
-		delete chunk;
-	}
 }
 
 /*
@@ -1883,6 +1863,7 @@ void make_tree(VoxelManipulator &vmanip, v3s16 p0)
 {
 	MapNode treenode(CONTENT_TREE);
 	MapNode leavesnode(CONTENT_LEAVES);
+	leavesnode.setLight(LIGHTBANK_DAY, LIGHT_MAX-1);
 
 	vmanip.emerge(VoxelArea(p0-v3s16(2,0,2),p0+v3s16(2,7+2,2)));
 
@@ -1962,18 +1943,18 @@ double tree_amount_2d(u64 seed, v2s16 p)
 	double noise = noise2d_perlin(
 			0.5+(float)p.X/250, 0.5+(float)p.Y/250,
 			seed+2, 5, 0.7);
-	double zeroval = -0.4;
+	double zeroval = -0.5;
 	if(noise < zeroval)
 		return 0;
 	else
-		return 0.025 * (noise-zeroval) / (1.0-zeroval);
+		return 0.03 * (noise-zeroval) / (1.0-zeroval);
 }
 
 #define AVERAGE_MUD_AMOUNT 4.0
 
 double get_mud_amount(u64 seed, v2f p)
 {
-	return ((float)AVERAGE_MUD_AMOUNT + 3.0 * noise2d_perlin(
+	return ((float)AVERAGE_MUD_AMOUNT + 2.5 * noise2d_perlin(
 			0.5+p.X/200, 0.5+p.Y/200,
 			seed+1, 5, 0.65));
 }
@@ -2121,8 +2102,8 @@ double base_rock_level_2d(u64 seed, v2f p)
 	{
 		// Mountains
 		double m4 = 1.0 - 3.0 * noise2d_perlin_abs(
-				0.324+(float)p.X/2000., 0.423+(float)p.Y/2000.,
-				(seed>>32)+65012102, 9, 0.57);
+				0.324+(float)p.X/1000., 0.423+(float)p.Y/1000.,
+				(seed>>32)+65012102, 8, 0.57);
 		m4 *= 120;
 		if(m4 > h)
 			h = m4;
@@ -2365,7 +2346,7 @@ bool is_carved(u64 seed, v3f p)
 #endif
 
 	double f = 10.0;
-	double y_div = 1.5;
+	double y_div = 1.0;
 
 	double v4 = contour(f*noise3d_perlin(
 			0.5+p.X/200,
@@ -4082,6 +4063,7 @@ MapChunk* ServerMap::generateChunkRaw(v2s16 chunkpos,
 }
 #endif
 
+#if 0
 MapChunk* ServerMap::generateChunkRaw(v2s16 chunkpos,
 		core::map<v3s16, MapBlock*> &changed_blocks,
 		bool force)
@@ -4813,6 +4795,7 @@ MapChunk* ServerMap::generateChunk(v2s16 chunkpos1,
 	MapChunk *chunk = getChunk(chunkpos1);
 	return chunk;
 }
+#endif
 
 ServerMapSector * ServerMap::createSector(v2s16 p2d)
 {
@@ -4873,7 +4856,8 @@ MapSector * ServerMap::emergeSector(v2s16 p2d,
 	DSTACK("%s: p2d=(%d,%d)",
 			__FUNCTION_NAME,
 			p2d.X, p2d.Y);
-	
+
+#if 0
 	/*
 		Check chunk status
 	*/
@@ -4892,7 +4876,8 @@ MapSector * ServerMap::emergeSector(v2s16 p2d,
 		// Generate chunk and neighbors
 		generateChunk(chunkpos, changed_blocks);
 	}
-	
+#endif
+
 	/*
 		Return sector if it exists now
 	*/
@@ -4923,7 +4908,7 @@ MapSector * ServerMap::emergeSector(v2s16 p2d,
 			<<p2d.X<<","<<p2d.Y<<" and chunk is already generated. "
 			<<std::endl;
 
-#if 1
+#if 0
 	dstream<<"WARNING: Forcing regeneration of chunk."<<std::endl;
 
 	// Generate chunk
@@ -4954,6 +4939,956 @@ MapSector * ServerMap::emergeSector(v2s16 p2d,
 	//return generateSector();
 }
 
+enum BlockType{
+	BT_GROUND,
+	BT_SURFACE,
+	BT_SKY
+};
+
+MapBlock* ServerMap::generateBlockRaw(v3s16 blockpos0,
+		core::map<v3s16, MapBlock*> &changed_blocks,
+		bool force)
+{
+	DSTACK(__FUNCTION_NAME);
+	
+	/*
+		Don't generate if already fully generated
+	*/
+	if(force == false)
+	{
+		MapBlock *block = getBlockNoCreateNoEx(blockpos0);
+		if(block != NULL && block->isFullyGenerated())
+		{
+			dstream<<"generateBlockRaw(): Block "
+					<<"("<<blockpos0.X<<","<<blockpos0.Y
+					<<","<<blockpos0.Z<<")"
+					<<" already generated (not forced)"<<std::endl;
+			return block;
+		}
+	}
+
+	/*dstream<<"generateBlockRaw(): Generating block "
+			<<"("<<blockpos0.X<<","<<blockpos0.Y
+			<<","<<blockpos0.Z<<")"
+			<<std::endl;*/
+	
+	//TimeTaker timer("generateBlockRaw()");
+
+	/*
+		Calculate some simple values
+	*/
+
+	v2s16 sectorpos0(blockpos0.X, blockpos0.Z);
+	
+	/*
+		Fill in some variables for the code that was copied from
+		generateChunkRaw
+	*/
+	s16 y_blocks_min = blockpos0.Y-1;
+	s16 y_blocks_max = blockpos0.Y+1;
+	s16 y_nodes_min = y_blocks_min * MAP_BLOCKSIZE;
+	s16 y_nodes_max = y_blocks_max * MAP_BLOCKSIZE + MAP_BLOCKSIZE - 1;
+	v2s16 sectorpos_bigbase = sectorpos0 - v2s16(1,1);
+	s16 sectorpos_bigbase_size = 3;
+	v2s16 sectorpos_base = sectorpos0;
+	s16 sectorpos_base_size = 1;
+	s16 max_spread_amount = MAP_BLOCKSIZE;
+	s16 lighting_min_d = 0-max_spread_amount;
+	s16 lighting_max_d = sectorpos_base_size*MAP_BLOCKSIZE+max_spread_amount-1;
+	
+	/*
+		Create the whole area of this and the neighboring blocks
+	*/
+	
+	core::list<v3s16> blocks_created;
+
+	{
+		//TimeTaker timer("generateBlockRaw() create area");
+		
+		for(s16 x=-1; x<=1; x++)
+		for(s16 z=-1; z<=1; z++)
+		{
+			v2s16 sectorpos = sectorpos0 + v2s16(x,z);
+			ServerMapSector *sector = createSector(sectorpos);
+			assert(sector);
+
+			for(s16 y=blockpos0.Y-1; y<=blockpos0.Y+1; y++)
+			{
+				v3s16 blockpos(sectorpos.X, y, sectorpos.Y);
+
+				MapBlock *block = getBlockNoCreateNoEx(blockpos);
+				if(block && block->isDummy() == false)
+					continue;
+					
+				block = createBlock(blockpos);
+				block->setFullyGenerated(false);
+
+				blocks_created.push_back(blockpos);
+
+				// Lighting won't be calculated
+				block->setLightingExpired(true);
+				// Lighting will be calculated
+				//block->setLightingExpired(false);
+
+				/*
+					Block gets sunlight if this is true.
+
+					This should be set to true when the top side of a block
+					is completely exposed to the sky.
+
+					This doesn't matter if the initial lighting is done
+					here.
+				*/
+				//block->setIsUnderground(y != y_blocks_max);
+				block->setIsUnderground(false);
+			}
+		}
+	}
+	
+	/*
+		Now we have a big empty area of (16x16x16)x27.
+
+		Make a ManualMapVoxelManipulator that contains the whole area.
+	*/
+
+	ManualMapVoxelManipulator vmanip(this);
+	// Add the area we just generated
+	{
+		//TimeTaker timer("generateBlockRaw() initialEmerge");
+		vmanip.initialEmerge(blockpos0-v3s16(1,1,1), blockpos0+v3s16(1,1,1));
+	}
+
+	// Clear all flags
+	vmanip.clearFlag(0xff);
+
+	// Block type of blockpos0
+	BlockType center_block_type = BT_SURFACE;
+
+	/*
+		Generate general ground level to newly created blocks.
+		Only stone is used and it is converted to other stuff later on.
+	*/
+	{
+	// 22ms @cs=8
+	//dstream<<"Generating base ground..."<<std::endl;
+	//TimeTaker timer1("ground level");
+	
+	// Loop through created blocks
+	for(core::list<v3s16>::Iterator i = blocks_created.begin();
+			i != blocks_created.end(); i++)
+	{
+		v3s16 blockpos = *i;
+		v2s16 sectorpos(blockpos.X, blockpos.Z);
+
+		/*
+			Approximate whether this block is a surface block, an air
+			block or a ground block.
+
+			This shall never mark a surface block as non-surface.
+		*/
+		
+		BlockType block_type = BT_SURFACE;
+		v3s16 p_nodes = blockpos * MAP_BLOCKSIZE;
+		s32 lowest_ground_y = 32767;
+		s32 highest_ground_y = -32768;
+		u8 water_material = CONTENT_WATERSOURCE;
+
+		{
+			/*
+				Estimate surface at different positions of the block, to
+				try to accomodate the effect of turbulence.
+			*/
+			v3f checklist[] = {
+				v3f(0,0,0),
+				v3f(0,1,0),
+				v3f(0,1,1),
+				v3f(0,0,1),
+				v3f(1,0,0),
+				v3f(1,1,0),
+				v3f(1,1,1),
+				v3f(1,0,1),
+				v3f(0.5,0.5,0.5),
+			};
+			v3f p_nodes_f = intToFloat(p_nodes, 1);
+			float surface_y_max = -1000000;
+			float surface_y_min = 1000000;
+			for(u32 i=0; i<sizeof(checklist)/sizeof(checklist[0]); i++)
+			{
+				v3f p_map_f = p_nodes_f + checklist[i]*MAP_BLOCKSIZE;
+
+				double depth_guess;
+				/*bool is_ground =*/ is_base_ground(m_seed, p_map_f, &depth_guess);
+				
+				// Estimate the surface height
+				float surface_y_f = p_map_f.Y + depth_guess;
+
+				if(surface_y_f > surface_y_max)
+					surface_y_max = surface_y_f;
+				if(surface_y_f < surface_y_min)
+					surface_y_min = surface_y_f;
+			}
+
+			float block_low_y_f = p_nodes_f.Y;
+			float block_high_y_f = p_nodes_f.Y + MAP_BLOCKSIZE;
+
+			/*dstream<<"surface_y_max="<<surface_y_max
+					<<", surface_y_min="<<surface_y_min
+					<<", block_low_y_f="<<block_low_y_f
+					<<", block_high_y_f="<<block_high_y_f
+					<<std::endl;*/
+			
+			// A fuzzyness value
+			// Must accomodate mud and turbulence holes
+			float d_down = 16;
+			// Must accomodate a bit less
+			float d_up = 5;
+
+			if(block_high_y_f < surface_y_min - d_down)
+			{
+				//dstream<<"BT_GROUND"<<std::endl;
+				// A ground block
+				block_type = BT_GROUND;
+			}
+			else if(block_low_y_f >= surface_y_max + d_up
+					&& block_low_y_f > WATER_LEVEL + d_up)
+			{
+				//dstream<<"BT_SKY"<<std::endl;
+				// A sky block
+				block_type = BT_SKY;
+			}
+			else
+			{
+				//dstream<<"BT_SURFACE"<<std::endl;
+				// A surface block
+				block_type = BT_SURFACE;
+			}
+
+			if(/*block_type == BT_GROUND ||*/ block_type == BT_SKY)
+			{
+				lowest_ground_y = surface_y_min;
+				highest_ground_y = surface_y_max;
+			}
+		}
+		
+		if(blockpos == blockpos0)
+			center_block_type = block_type;
+
+		if(block_type == BT_GROUND)
+		{
+			MapBlock *block = getBlockNoCreateNoEx(blockpos);
+			if(block)
+				block->setIsUnderground(true);
+		}
+
+		/*
+			If the block has ground, generate ground precisely.
+		*/
+		
+		if(block_type == BT_SURFACE || block_type == BT_GROUND)
+		{
+			for(s16 z0=0; z0<MAP_BLOCKSIZE; z0++)
+			for(s16 x0=0; x0<MAP_BLOCKSIZE; x0++)
+			{
+				v2s16 real_p2d = v2s16(x0,z0) + sectorpos*MAP_BLOCKSIZE;
+
+				v2f real_p2d_f(real_p2d.X,real_p2d.Y);
+
+				double tfxz = get_turbulence_factor_2d(m_seed, real_p2d_f);
+				bool turbulence_is_used = (tfxz > 0.001);
+
+				float surface_y_f = 0;
+				s16 surface_y = 0;
+				
+				float noturb_surface_y_f = base_rock_level_2d(m_seed, real_p2d_f);
+				s16 noturb_surface_y = noturb_surface_y_f;
+					
+				// Get some statistics of surface height
+				if(noturb_surface_y < lowest_ground_y)
+					lowest_ground_y = noturb_surface_y;
+				if(noturb_surface_y > highest_ground_y)
+					highest_ground_y = noturb_surface_y;
+
+				// Use fast index incrementing
+				v3s16 em = vmanip.m_area.getExtent();
+				u32 i = vmanip.m_area.index(v3s16(
+						real_p2d.X,
+						blockpos.Y*MAP_BLOCKSIZE,
+						real_p2d.Y));
+				for(s16 y0=0; y0<MAP_BLOCKSIZE; y0++)
+				{
+					s16 real_y = blockpos.Y * MAP_BLOCKSIZE + y0;
+					v3s16 real_pos = v3s16(x0,y0,z0) + p_nodes;
+					MapNode n;
+
+					/*
+						Calculate material
+					*/
+					
+					bool is_ground = false;
+					v3f real_pos_f = intToFloat(real_pos, 1);
+					
+					bool turb_for_node = (turbulence_is_used
+							&& real_y >= TURBULENCE_BOTTOM_CUTOFF_Y);
+
+					bool is_cavern = false;
+					
+					if(is_carved(m_seed, real_pos_f))
+					{
+						is_ground = false;
+						if(real_y < noturb_surface_y)
+							is_cavern = true;
+					}
+					else
+					{
+						if(turb_for_node)
+						{
+							double depth_guess;
+							is_ground = is_base_ground(m_seed,
+									real_pos_f, &depth_guess);
+							
+							// Estimate the surface height
+							surface_y_f = (float)real_y + depth_guess;
+							surface_y = real_y + depth_guess;
+							
+							// Save some statistics of surface height
+							if(surface_y < lowest_ground_y)
+								lowest_ground_y = surface_y;
+							if(surface_y > highest_ground_y)
+								highest_ground_y = surface_y;
+						}
+						else
+						{
+							surface_y = noturb_surface_y;
+						}
+						
+						is_ground = (real_y <= surface_y);
+					}
+
+					// If node is not ground, it's air or water
+					if(is_ground == false)
+					{
+						// If under water level, it's water
+						if(real_y < WATER_LEVEL && !is_cavern)
+						{
+							n.d = water_material;
+							u8 dist = 16;
+							if(real_y >= surface_y)
+								dist = WATER_LEVEL-real_y+1;
+							n.setLight(LIGHTBANK_DAY,
+									diminish_light(LIGHT_SUN, dist));
+							/*
+								Add to transforming liquid queue (in case it'd
+								start flowing)
+							*/
+							m_transforming_liquid.push_back(real_pos);
+						}
+						// else air
+						else
+						{
+							n.d = CONTENT_AIR;
+							
+							/*
+								Guess lighting
+							*/
+							if(real_y > surface_y + 4)
+								n.setLight(LIGHTBANK_DAY, LIGHT_SUN);
+						}
+					}
+					// Else it's ground
+					else
+					{
+						if(is_underground_mud(m_seed, real_pos_f))
+							n.d = CONTENT_MUD;
+						else
+							n.d = CONTENT_STONE;
+					}
+
+					vmanip.m_data[i] = n;
+					vmanip.m_area.add_y(em, i, 1);
+				}
+			}
+		}// BT_SURFACE
+		else // BT_SKY or anything else
+		{
+			MapNode n_fill;
+			if(block_type == BT_GROUND)
+			{
+				//n_fill.d = CONTENT_STONE;
+			}
+			else if(block_type == BT_SKY)
+			{
+				n_fill.d = CONTENT_AIR;
+				n_fill.setLight(LIGHTBANK_DAY, LIGHT_SUN);
+			}
+			else // fallback
+			{
+				n_fill.d = CONTENT_MESE;
+			}
+
+			for(s16 x=0; x<MAP_BLOCKSIZE; x++)
+			for(s16 z=0; z<MAP_BLOCKSIZE; z++)
+			{
+				// Node position
+				v2s16 p2d = sectorpos*MAP_BLOCKSIZE + v2s16(x,z);
+
+				{
+					// Use fast index incrementing
+					v3s16 em = vmanip.m_area.getExtent();
+					s16 min = blockpos.Y*MAP_BLOCKSIZE;
+					s16 max = min + MAP_BLOCKSIZE-1;
+					u32 i = vmanip.m_area.index(v3s16(p2d.X, min, p2d.Y));
+					for(s16 y=min; y<=max; y++)
+					{
+						vmanip.m_data[i] = n_fill;
+						vmanip.m_area.add_y(em, i, 1);
+					}
+				}
+			}
+		}
+	}
+
+	}//timer1
+
+	/*
+		Convert surface ground to mud
+	*/
+	
+	if(center_block_type == BT_SURFACE)
+	{
+#if 1
+		for(s16 x=0; x<MAP_BLOCKSIZE; x++)
+		for(s16 z=0; z<MAP_BLOCKSIZE; z++)
+		{
+			// Node position
+			v2s16 p2d = sectorpos0*MAP_BLOCKSIZE + v2s16(x,z);
+			v2f real_p2d_f(p2d.X,p2d.Y);
+			
+			{
+				// Use fast index incrementing
+				v3s16 em = vmanip.m_area.getExtent();
+				s16 min = blockpos0.Y*MAP_BLOCKSIZE;
+				// Start from one above the central block
+				s16 max = min + MAP_BLOCKSIZE-1+1;
+				u32 i = vmanip.m_area.index(v3s16(p2d.X, max, p2d.Y));
+				// If stone, there won't be mud
+				if(vmanip.m_data[i].d == CONTENT_STONE)
+					continue;
+				// Find top of ground
+				bool found = false;
+				s16 y;
+				for(y=max; y>=min; y--)
+				{
+					if(vmanip.m_data[i].d == CONTENT_STONE)
+					{
+						found = true;
+						break;
+					}
+					vmanip.m_area.add_y(em, i, -1);
+				}
+				if(found == false)
+					continue;
+				// Set mud
+				s16 mud_amount = get_mud_amount(m_seed, real_p2d_f);
+				for(s16 j=0; j<mud_amount; j++)
+				{
+					if(vmanip.m_data[i].d != CONTENT_STONE)
+					{
+						break;
+					}
+					if(j==0 && y >= WATER_LEVEL)
+						vmanip.m_data[i].d = CONTENT_GRASS;
+					else
+						vmanip.m_data[i].d = CONTENT_MUD;
+					vmanip.m_area.add_y(em, i, -1);
+				}
+			}
+		}
+#endif
+	}
+
+	/*
+		Convert mud to sand
+	*/
+	if(center_block_type == BT_SURFACE)
+	{
+		for(s16 x=0; x<sectorpos_base_size*MAP_BLOCKSIZE; x++)
+		for(s16 z=0; z<sectorpos_base_size*MAP_BLOCKSIZE; z++)
+		{
+			// Node position in 2d
+			v2s16 p2d = sectorpos_base*MAP_BLOCKSIZE + v2s16(x,z);
+			
+			// Determine whether to have sand here
+			bool have_sand = get_have_sand_coast(m_seed, v2f(p2d.X,p2d.Y));
+
+			if(have_sand == false)
+				continue;
+
+			// Find ground level
+			s16 surface_y = find_ground_level_clever(vmanip, p2d);
+			
+			if(surface_y >= WATER_LEVEL + 2)
+				continue;
+
+			{
+				v3s16 em = vmanip.m_area.getExtent();
+				s16 y_start = surface_y;
+				u32 i = vmanip.m_area.index(v3s16(p2d.X, y_start, p2d.Y));
+				u32 not_sand_counter = 0;
+				for(s16 y=y_start; y>=y_nodes_min; y--)
+				{
+					MapNode *n = &vmanip.m_data[i];
+					if(n->d == CONTENT_MUD || n->d == CONTENT_GRASS)
+					{
+						n->d = CONTENT_SAND;
+					}
+					else
+					{
+						not_sand_counter++;
+						if(not_sand_counter > 3)
+							break;
+					}
+
+					vmanip.m_area.add_y(em, i, -1);
+				}
+			}
+		}
+	}
+
+	/*
+		Add some minerals
+	*/
+
+	if(center_block_type == BT_SURFACE || center_block_type == BT_GROUND)
+	{
+		s16 underground_level = 1 - blockpos0.Y;
+
+		/*
+			Add meseblocks
+		*/
+		for(s16 i=0; i<underground_level/4 + 1; i++)
+		{
+			if(myrand()%25 == 0)
+			{
+				v3s16 cp(
+					(myrand()%(MAP_BLOCKSIZE-2))+1,
+					(myrand()%(MAP_BLOCKSIZE-2))+1,
+					(myrand()%(MAP_BLOCKSIZE-2))+1
+				);
+				cp += blockpos0*MAP_BLOCKSIZE;
+
+				MapNode n;
+				n.d = CONTENT_MESE;
+				
+				for(u16 i=0; i<27; i++)
+				{
+					if(vmanip.getNode(cp+g_27dirs[i]).d == CONTENT_STONE)
+						if(myrand()%8 == 0)
+							vmanip.setNode(cp+g_27dirs[i], n);
+				}
+			}
+		}
+
+		/*
+			Add coal
+		*/
+		u16 coal_amount = 60;
+		u16 coal_rareness = 120 / coal_amount;
+		if(coal_rareness == 0)
+			coal_rareness = 1;
+		if(myrand()%coal_rareness == 0)
+		{
+			u16 a = myrand() % 16;
+			u16 amount = coal_amount * a*a*a / 1000;
+			for(s16 i=0; i<amount; i++)
+			{
+				v3s16 cp(
+					(myrand()%(MAP_BLOCKSIZE-2))+1,
+					(myrand()%(MAP_BLOCKSIZE-2))+1,
+					(myrand()%(MAP_BLOCKSIZE-2))+1
+				);
+				cp += blockpos0*MAP_BLOCKSIZE;
+
+				MapNode n;
+				n.d = CONTENT_STONE;
+				n.param = MINERAL_COAL;
+
+				for(u16 i=0; i<27; i++)
+				{
+					if(vmanip.getNode(cp+g_27dirs[i]).d == CONTENT_STONE)
+						if(myrand()%8 == 0)
+							vmanip.setNode(cp+g_27dirs[i], n);
+				}
+			}
+		}
+
+		/*
+			Add iron
+		*/
+		u16 iron_amount = 40;
+		u16 iron_rareness = 80 / iron_amount;
+		if(iron_rareness == 0)
+			iron_rareness = 1;
+		if(myrand()%iron_rareness == 0)
+		{
+			u16 a = myrand() % 16;
+			u16 amount = iron_amount * a*a*a / 1000;
+			for(s16 i=0; i<amount; i++)
+			{
+				v3s16 cp(
+					(myrand()%(MAP_BLOCKSIZE-2))+1,
+					(myrand()%(MAP_BLOCKSIZE-2))+1,
+					(myrand()%(MAP_BLOCKSIZE-2))+1
+				);
+				cp += blockpos0*MAP_BLOCKSIZE;
+
+				MapNode n;
+				n.d = CONTENT_STONE;
+				n.param = MINERAL_IRON;
+
+				for(u16 i=0; i<27; i++)
+				{
+					if(vmanip.getNode(cp+g_27dirs[i]).d == CONTENT_STONE)
+						if(myrand()%8 == 0)
+							vmanip.setNode(cp+g_27dirs[i], n);
+				}
+			}
+		}
+	}
+	
+
+	/*
+		Generate some trees
+	*/
+	if(center_block_type == BT_SURFACE)
+	{
+		// Divide area into this amount of parts
+		s16 div = 1;
+		s16 sidelen = sectorpos_base_size*MAP_BLOCKSIZE / div;
+		double area = sidelen * sidelen;
+		for(s16 x0=0; x0<div; x0++)
+		for(s16 z0=0; z0<div; z0++)
+		{
+			// Center position of part of division
+			v2s16 p2d_center(
+				sectorpos_base.X*MAP_BLOCKSIZE + sidelen/2 + sidelen*x0,
+				sectorpos_base.Y*MAP_BLOCKSIZE + sidelen/2 + sidelen*z0
+			);
+			// Minimum edge of part of division
+			v2s16 p2d_min(
+				sectorpos_base.X*MAP_BLOCKSIZE + sidelen*x0,
+				sectorpos_base.Y*MAP_BLOCKSIZE + sidelen*z0
+			);
+			// Maximum edge of part of division
+			v2s16 p2d_max(
+				sectorpos_base.X*MAP_BLOCKSIZE + sidelen + sidelen*x0 - 1,
+				sectorpos_base.Y*MAP_BLOCKSIZE + sidelen + sidelen*z0 - 1
+			);
+			// Amount of trees
+			u32 tree_count = area * tree_amount_2d(m_seed, p2d_center);
+			// Put trees in random places on part of division
+			for(u32 i=0; i<tree_count; i++)
+			{
+				s16 x = myrand_range(p2d_min.X, p2d_max.X);
+				s16 z = myrand_range(p2d_min.Y, p2d_max.Y);
+				s16 y = find_ground_level(vmanip, v2s16(x,z));
+				// Don't make a tree under water level
+				if(y < WATER_LEVEL)
+					continue;
+				// Don't make a tree in other blocks
+				if(y < blockpos0.Y*MAP_BLOCKSIZE
+						|| y >= (blockpos0.Y+1)*MAP_BLOCKSIZE)
+					continue;
+				v3s16 p(x,y,z);
+				/*
+					Trees grow only on mud and grass
+				*/
+				{
+					u32 i = vmanip.m_area.index(v3s16(p));
+					MapNode *n = &vmanip.m_data[i];
+					if(n->d != CONTENT_MUD && n->d != CONTENT_GRASS)
+						continue;
+				}
+				p.Y++;
+				// Make a tree
+				make_tree(vmanip, p);
+			}
+		}
+	}
+
+#if 0
+	/*
+		Initial lighting (sunlight)
+		TODO: Do the lighting this way, with the VoxelManipulator
+	*/
+
+	core::map<v3s16, bool> light_sources;
+
+	{
+	// 750ms @cs=8, can't optimize more
+	TimeTaker timer1("initial lighting");
+	
+	/*
+		Go through the edges and apply sunlight to them, not caring
+		about neighbors
+	*/
+	
+	// Four edges
+	for(s16 i=0; i<4; i++)
+	// Edge length
+	for(s16 j=lighting_min_d;
+			j<=lighting_max_d;
+			j++)
+	{
+		s16 x;
+		s16 z;
+		// +-X
+		if(i == 0 || i == 1)
+		{
+			x = (i==0) ? lighting_min_d : lighting_max_d;
+			if(i == 0)
+				z = lighting_min_d;
+			else
+				z = lighting_max_d;
+		}
+		// +-Z
+		else
+		{
+			z = (i==0) ? lighting_min_d : lighting_max_d;
+			if(i == 0)
+				x = lighting_min_d;
+			else
+				x = lighting_max_d;
+		}
+		
+		// Node position in 2d
+		v2s16 p2d = sectorpos_base*MAP_BLOCKSIZE + v2s16(x,z);
+		
+		// Loop from top to down
+		{
+			u8 light = LIGHT_SUN;
+			v3s16 em = vmanip.m_area.getExtent();
+			s16 y_start = y_nodes_max;
+			u32 i = vmanip.m_area.index(v3s16(p2d.X, y_start, p2d.Y));
+			for(s16 y=y_start; y>=y_nodes_min; y--)
+			{
+				MapNode *n = &vmanip.m_data[i];
+				if(light_propagates_content(n->d) == false)
+				{
+					light = 0;
+				}
+				else if(light != LIGHT_SUN
+					|| sunlight_propagates_content(n->d) == false)
+				{
+					if(light > 0)
+						light--;
+				}
+				
+				n->setLight(LIGHTBANK_DAY, light);
+				n->setLight(LIGHTBANK_NIGHT, 0);
+				
+				if(light != 0)
+				{
+					// Insert light source
+					light_sources.insert(v3s16(p2d.X, y, p2d.Y), true);
+				}
+				
+				// Increment index by y
+				vmanip.m_area.add_y(em, i, -1);
+			}
+		}
+	}
+
+	/*
+		This has to be 1 smaller than the actual area, because
+		neighboring nodes are checked.
+	*/
+	for(s16 x=lighting_min_d+1;
+			x<=lighting_max_d-1;
+			x++)
+	for(s16 z=lighting_min_d+1;
+			z<=lighting_max_d-1;
+			z++)
+	{
+		// Node position in 2d
+		v2s16 p2d = sectorpos_base*MAP_BLOCKSIZE + v2s16(x,z);
+		
+		/*
+			Apply initial sunlight
+		*/
+		{
+			u8 light = LIGHT_SUN;
+			bool add_to_sources = false;
+			v3s16 em = vmanip.m_area.getExtent();
+			s16 y_start = y_nodes_max;
+			u32 i = vmanip.m_area.index(v3s16(p2d.X, y_start, p2d.Y));
+			for(s16 y=y_start; y>=y_nodes_min; y--)
+			{
+				MapNode *n = &vmanip.m_data[i];
+
+				if(light_propagates_content(n->d) == false)
+				{
+					light = 0;
+				}
+				else if(light != LIGHT_SUN
+					|| sunlight_propagates_content(n->d) == false)
+				{
+					if(light > 0)
+						light--;
+				}
+				
+				// This doesn't take much time
+				if(add_to_sources == false)
+				{
+					/*
+						Check sides. If side is not air or water, start
+						adding to light_sources.
+					*/
+					v3s16 dirs4[4] = {
+						v3s16(0,0,1), // back
+						v3s16(1,0,0), // right
+						v3s16(0,0,-1), // front
+						v3s16(-1,0,0), // left
+					};
+					for(u32 di=0; di<4; di++)
+					{
+						v3s16 dirp = dirs4[di];
+						u32 i2 = i;
+						vmanip.m_area.add_p(em, i2, dirp);
+						MapNode *n2 = &vmanip.m_data[i2];
+						if(
+							n2->d != CONTENT_AIR
+							&& n2->d != CONTENT_WATERSOURCE
+							&& n2->d != CONTENT_WATER
+						){
+							add_to_sources = true;
+							break;
+						}
+					}
+				}
+				
+				n->setLight(LIGHTBANK_DAY, light);
+				n->setLight(LIGHTBANK_NIGHT, 0);
+				
+				// This doesn't take much time
+				if(light != 0 && add_to_sources)
+				{
+					// Insert light source
+					light_sources.insert(v3s16(p2d.X, y, p2d.Y), true);
+				}
+				
+				// Increment index by y
+				vmanip.m_area.add_y(em, i, -1);
+			}
+		}
+	}
+
+	}//timer1
+
+	// Spread light around
+	{
+		TimeTaker timer("generateBlockRaw() spreadLight");
+		vmanip.spreadLight(LIGHTBANK_DAY, light_sources);
+	}
+#endif
+
+	/*
+		Blit generated stuff to map
+	*/
+	{
+		vmanip.blitBackAll(&changed_blocks);
+	}
+
+#if 0
+	/*
+		Update day/night difference cache of the MapBlocks
+	*/
+	{
+		for(core::map<v3s16, MapBlock*>::Iterator i = changed_blocks.getIterator();
+				i.atEnd() == false; i++)
+		{
+			MapBlock *block = i.getNode()->getValue();
+			block->updateDayNightDiff();
+		}
+	}
+#endif
+
+	/*for(core::map<v3s16, MapBlock*>::Iterator
+			i = changed_blocks*/
+	
+	// Done!
+	MapBlock *block = getBlockNoCreate(blockpos0);
+	block->setFullyGenerated(true);
+	
+	/*
+		TODO: Calculate lighting with the VoxelManipulator, not this way
+	*/
+	// emergeBlock reads this
+	block->setLightingExpired(true);
+	// Also set the above one, trees often will be there
+	{
+		MapBlock *block = getBlockNoCreate(blockpos0+v3s16(0,1,0));
+		if(block)
+			block->setLightingExpired(true);
+	}
+
+	return block;
+}
+
+
+/*MapBlock* ServerMap::generateBlock(v3s16 blockpos1,
+		core::map<v3s16, MapBlock*> &changed_blocks)*/
+MapBlock * ServerMap::generateBlock(
+		v3s16 blockpos1,
+		MapBlock *original_dummy,
+		ServerMapSector *sector,
+		core::map<v3s16, MapBlock*> &changed_blocks,
+		core::map<v3s16, MapBlock*> &lighting_invalidated_blocks
+)
+{
+	dstream<<"generateBlock(): Generating block "
+			<<"("<<blockpos1.X<<","<<blockpos1.Y<<","<<blockpos1.Z<<")"
+			<<std::endl;
+	
+	/*
+		The block at blockpos1 should be generated fully, so that it won't
+		change in the future anymore when more stuff is generated.
+
+		Now, a block can be generated with generateBlockRaw().
+		generateBlockRaw() accesses the block and all its neighbors.
+		Here is what generateBlockRaw() does:
+		- If the asked block has been marked fully generated, do nothing.
+		- Create the asked block and its neighbors and generate the base
+		  ground in them (if they don't exist)
+		- In places where the ground level is in the asked block, convert
+		  top layer of ground to mud or sand. Conversion is extended to
+		  the block below as needed.
+		- Add trees and other objects to the asked block. Parts of them
+		  can be located in the neighboring blocks.
+		- Mark the asked block as fully generated.
+		
+		This means the block and all its neighbors have to be generated to
+		obtain a block that won't change in the future.
+	*/
+	for(s16 x=-1; x<=1; x++)
+	for(s16 y=-1; y<=1; y++)
+	for(s16 z=-1; z<=1; z++)
+	{
+		v3s16 blockpos0 = blockpos1 + v3s16(x,y,z);
+		MapBlock *block = getBlockNoCreateNoEx(blockpos0);
+		// Skip if already generated
+		if(block != NULL && block->isFullyGenerated())
+			continue;
+		generateBlockRaw(blockpos0, changed_blocks);
+	}
+	
+	assert(blockNonVolatile(blockpos1));
+
+	MapBlock *block = getBlockNoCreate(blockpos1);
+	
+	return block;
+}
+
+#if 0
 /*
 	NOTE: This is not used for main map generation, only for blocks
 	that are very high or low.
@@ -5887,6 +6822,7 @@ continue_generating:
 
 	return block;
 }
+#endif
 
 MapBlock * ServerMap::createBlock(v3s16 p)
 {
@@ -6019,6 +6955,7 @@ MapBlock * ServerMap::emergeBlock(
 
 	bool does_not_exist = false;
 	bool lighting_expired = false;
+	bool half_generated = false;
 	MapBlock *block = sector->getBlockNoCreateNoEx(block_y);
 
 	if(block == NULL)
@@ -6033,6 +6970,10 @@ MapBlock * ServerMap::emergeBlock(
 	{
 		lighting_expired = true;
 	}
+	else if(block->isFullyGenerated() == false)
+	{
+		half_generated = true;
+	}
 	else
 	{
 		// Valid block
@@ -6040,24 +6981,27 @@ MapBlock * ServerMap::emergeBlock(
 		return block;
 	}
 	
-	/*
-		If block was not found on disk and not going to generate a
-		new one, make sure there is a dummy block in place.
-	*/
-	if(only_from_disk && (does_not_exist || lighting_expired))
+	if(half_generated == false)
 	{
-		//dstream<<"emergeBlock(): Was not on disk but not generating"<<std::endl;
-
-		if(block == NULL)
+		/*
+			If block was not found on disk and not going to generate a
+			new one, make sure there is a dummy block in place.
+		*/
+		if(only_from_disk && (does_not_exist || lighting_expired))
 		{
-			// Create dummy block
-			block = new MapBlock(this, p, true);
+			//dstream<<"emergeBlock(): Was not on disk but not generating"<<std::endl;
 
-			// Add block to sector
-			sector->insertBlock(block);
+			if(block == NULL)
+			{
+				// Create dummy block
+				block = new MapBlock(this, p, true);
+
+				// Add block to sector
+				sector->insertBlock(block);
+			}
+			// Done.
+			return block;
 		}
-		// Done.
-		return block;
 	}
 
 	//dstream<<"Not found on disk, generating."<<std::endl;
@@ -6069,7 +7013,7 @@ MapBlock * ServerMap::emergeBlock(
 	/*
 		If the block doesn't exist, generate the block.
 	*/
-	if(does_not_exist)
+	if(does_not_exist || half_generated)
 	{
 		block = generateBlock(p, block, sector, changed_blocks,
 				lighting_invalidated_blocks);
@@ -6212,7 +7156,7 @@ void ServerMap::save(bool only_changed)
 				<<std::endl;
 	
 	saveMapMeta();
-	saveChunkMeta();
+	//saveChunkMeta();
 	
 	u32 sector_meta_count = 0;
 	u32 block_count = 0;
@@ -6272,7 +7216,7 @@ void ServerMap::loadAll()
 	dstream<<DTIME<<"ServerMap: Loading map..."<<std::endl;
 	
 	loadMapMeta();
-	loadChunkMeta();
+	//loadChunkMeta();
 
 	std::vector<fs::DirListNode> list = fs::GetDirListing(m_savedir+"/sectors/");
 
@@ -6363,7 +7307,8 @@ void ServerMap::saveMapMeta()
 	DSTACK(__FUNCTION_NAME);
 	
 	dstream<<"INFO: ServerMap::saveMapMeta(): "
-			<<"seed="<<m_seed<<", chunksize="<<m_chunksize
+			<<"seed="<<m_seed
+			/*<<", chunksize="<<m_chunksize*/
 			<<std::endl;
 
 	createDir(m_savedir);
@@ -6379,7 +7324,7 @@ void ServerMap::saveMapMeta()
 	
 	Settings params;
 	params.setU64("seed", m_seed);
-	params.setS32("chunksize", m_chunksize);
+	//params.setS32("chunksize", m_chunksize);
 
 	params.writeLines(os);
 
@@ -6419,13 +7364,15 @@ void ServerMap::loadMapMeta()
 	}
 
 	m_seed = params.getU64("seed");
-	m_chunksize = params.getS32("chunksize");
+	//m_chunksize = params.getS32("chunksize");
 
 	dstream<<"INFO: ServerMap::loadMapMeta(): "
-			<<"seed="<<m_seed<<", chunksize="<<m_chunksize
+			<<"seed="<<m_seed
+			/*<<", chunksize="<<m_chunksize*/
 			<<std::endl;
 }
 
+#if 0
 void ServerMap::saveChunkMeta()
 {
 	DSTACK(__FUNCTION_NAME);
@@ -6513,6 +7460,7 @@ void ServerMap::loadChunkMeta()
 		m_chunks.insert(p, chunk);
 	}
 }
+#endif
 
 void ServerMap::saveSectorMeta(ServerMapSector *sector)
 {

@@ -544,11 +544,10 @@ void RemoteClient::GetNextBlocks(Server *server, float dtime,
 					block_is_invalid = true;
 				}
 				
-				v2s16 p2d(p.X, p.Z);
-				ServerMap *map = (ServerMap*)(&server->m_env.getMap());
-				v2s16 chunkpos = map->sector_to_chunk(p2d);
-				if(map->chunkNonVolatile(chunkpos) == false)
+				if(block->isFullyGenerated() == false)
+				{
 					block_is_invalid = true;
+				}
 			}
 
 			/*
@@ -3420,16 +3419,6 @@ Player *Server::emergePlayer(const char *name, const char *password,
 			nodepos = v2s16(-range + (myrand()%(range*2)),
 					-range + (myrand()%(range*2)));
 			v2s16 sectorpos = getNodeSectorPos(nodepos);
-			/*
-				Ignore position if it is near a chunk edge.
-				Otherwise it would cause excessive loading time at
-				initial generation
-			*/
-			{
-				if(m_env.getServerMap().sector_to_chunk(sectorpos+v2s16(1,1))
-				!= m_env.getServerMap().sector_to_chunk(sectorpos+v2s16(-1,-1)))
-					continue;
-			}
 			// Get sector (NOTE: Don't get because it's slow)
 			//m_env.getMap().emergeSector(sectorpos);
 			// Get ground height at point (fallbacks to heightmap function)

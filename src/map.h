@@ -38,7 +38,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "mapsector.h"
 #include "constants.h"
 #include "voxel.h"
-#include "mapchunk.h"
 
 /*
 	Some exposed functions
@@ -336,81 +335,29 @@ public:
 		Map generation
 	*/
 	
-	// Returns the position of the chunk where the sector is in
-	v2s16 sector_to_chunk(v2s16 sectorpos)
-	{
-		sectorpos.X += m_chunksize / 2;
-		sectorpos.Y += m_chunksize / 2;
-		v2s16 chunkpos = getContainerPos(sectorpos, m_chunksize);
-		return chunkpos;
-	}
-	
-	// Returns the position of the (0,0) sector of the chunk
-	v2s16 chunk_to_sector(v2s16 chunkpos)
-	{
-		v2s16 sectorpos(
-			chunkpos.X * m_chunksize,
-			chunkpos.Y * m_chunksize
-		);
-		sectorpos.X -= m_chunksize / 2;
-		sectorpos.Y -= m_chunksize / 2;
-		return sectorpos;
-	}
-
 	/*
-		Get a chunk.
+		True if the block and its neighbors are fully generated.
+		It means the block will not be touched in the future by the
+		generator. If false, generateBlock will make it true.
 	*/
-	MapChunk *getChunk(v2s16 chunkpos)
+	bool blockNonVolatile(v3s16 blockpos)
 	{
-		core::map<v2s16, MapChunk*>::Node *n;
-		n = m_chunks.find(chunkpos);
-		if(n == NULL)
-			return NULL;
-		return n->getValue();
-	}
-
-	/*
-		True if the chunk and its neighbors are fully generated.
-		It means the chunk will not be touched in the future by the
-		generator. If false, generateChunk will make it true.
-	*/
-	bool chunkNonVolatile(v2s16 chunkpos)
-	{
-		/*for(s16 x=-1; x<=1; x++)
-		for(s16 y=-1; y<=1; y++)*/
-		s16 x=0;
-		s16 y=0;
+		for(s16 x=-1; x<=1; x++)
+		for(s16 y=-1; y<=1; y++)
+		for(s16 z=-1; z<=1; z++)
 		{
-			v2s16 chunkpos0 = chunkpos + v2s16(x,y);
-			MapChunk *chunk = getChunk(chunkpos);
-			if(chunk == NULL)
+			v3s16 blockpos0 = blockpos + v3s16(x,y,z);
+			MapBlock *block = getBlockNoCreateNoEx(blockpos);
+			if(block == NULL)
 				return false;
-			if(chunk->getGenLevel() != GENERATED_FULLY)
+			if(block->isFullyGenerated() == false)
 				return false;
 		}
 		return true;
 	}
 
 	/*
-		Generate a chunk.
-
-		All chunks touching this one can be altered also.
-	*/
-	MapChunk* generateChunkRaw(v2s16 chunkpos,
-			core::map<v3s16, MapBlock*> &changed_blocks,
-			bool force=false);
-	
-	/*
-		Generate a chunk and its neighbors so that it won't be touched
-		anymore.
-	*/
-	MapChunk* generateChunk(v2s16 chunkpos,
-			core::map<v3s16, MapBlock*> &changed_blocks);
-	
-	/*
 		Generate a sector.
-		
-		This is mainly called by generateChunkRaw.
 	*/
 	//ServerMapSector * generateSector(v2s16 p);
 	
@@ -437,6 +384,27 @@ public:
 		return emergeSector(p, changed_blocks);
 	}
 
+	/*MapBlock * generateBlock(
+			v3s16 p,
+			MapBlock *original_dummy,
+			ServerMapSector *sector,
+			core::map<v3s16, MapBlock*> &changed_blocks,
+			core::map<v3s16, MapBlock*> &lighting_invalidated_blocks
+	);*/
+	
+	/*
+		Generate a block.
+
+		All blocks touching this one can be altered also.
+	*/
+	MapBlock* generateBlockRaw(v3s16 blockpos,
+			core::map<v3s16, MapBlock*> &changed_blocks,
+			bool force=false);
+	
+	/*
+		Generate a block and its neighbors so that it won't be touched
+		anymore.
+	*/
 	MapBlock * generateBlock(
 			v3s16 p,
 			MapBlock *original_dummy,
@@ -444,6 +412,8 @@ public:
 			core::map<v3s16, MapBlock*> &changed_blocks,
 			core::map<v3s16, MapBlock*> &lighting_invalidated_blocks
 	);
+	/*MapBlock* generateBlock(v3s16 blockpos,
+			core::map<v3s16, MapBlock*> &changed_blocks);*/
 	
 	/*
 		Get a block from somewhere.
@@ -516,9 +486,6 @@ public:
 	void saveMapMeta();
 	void loadMapMeta();
 	
-	void saveChunkMeta();
-	void loadChunkMeta();
-	
 	// The sector mutex should be locked when calling most of these
 	
 	// This only saves sector-specific data such as the heightmap
@@ -551,11 +518,6 @@ private:
 
 	std::string m_savedir;
 	bool m_map_saving_enabled;
-
-	// Chunk size in MapSectors
-	s16 m_chunksize;
-	// Chunks
-	core::map<v2s16, MapChunk*> m_chunks;
 };
 
 /*

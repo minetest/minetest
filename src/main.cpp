@@ -194,7 +194,7 @@ TODO: Copy the text of the last picked sign to inventory in creative
 TODO: Check what goes wrong with caching map to disk (Kray)
       - Nothing?
 
-FIXME: Server went into some infinite PeerNotFoundException loop
+FIXME: Server sometimes goes into some infinite PeerNotFoundException loop
 
 * Fix the problem with the server constantly saving one or a few
   blocks? List the first saved block, maybe it explains.
@@ -259,7 +259,7 @@ FEATURE: Erosion simulation at map generation time
 		- Simulate rock falling from cliffs when water has removed
 		  enough solid rock from the bottom
 
-Mapgen v2:
+Mapgen v2 (not doing):
 * only_from_disk might not work anymore - check and fix it.
 * Make the generator to run in background and not blocking block
   placement and transfer
@@ -280,7 +280,7 @@ Mapgen v4 (not doing):
 * Make chunks to be tiled vertically too
 * MAKE IT FASTER
 
-Mapgen v3:
+Mapgen v3 (not doing):
 * Generate trees better
   - Add a "trees_added" flag to sector, or something
 * How 'bout making turbulence controlled so that for a given 2d position
@@ -292,7 +292,7 @@ Mapgen v3:
 
 Mapgen v4:
 * This will be the final way.
-* Generate blocks in the same way as chunks, by copying a voxelmanipulator
+* Generate blocks in the same way as chunks, by copying a VoxelManipulator
   from the map that is one block larger in all directions.
 
 Misc. stuff:

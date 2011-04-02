@@ -244,6 +244,17 @@ public:
 		return m_lighting_expired;
 	}
 
+	bool isFullyGenerated()
+	{
+		return !m_not_fully_generated;
+	}
+
+	void setFullyGenerated(bool b)
+	{
+		setChangedFlag();
+		m_not_fully_generated = !b;
+	}
+
 	bool isValid()
 	{
 		if(m_lighting_expired)
@@ -655,12 +666,28 @@ private:
 	// Whether day and night lighting differs
 	bool m_day_night_differs;
 	
+	/*
+		Whether everything that is mainly located on this block has
+		been added to the world.
+
+		While this is false, a block can still be changed a bit when
+		stuff is added to the neighboring blocks that extends to this
+		one.
+
+		When this is false on every one of a 3x3x3 chunk of blocks, the
+		central one will not be changed by the map generator in the
+		future.
+
+		TODO: Save in file
+	*/
+	bool m_not_fully_generated;
+	
 	MapBlockObjectList m_objects;
 
 	// Object spawning stuff
 	float m_spawn_timer;
 	
-#ifndef SERVER
+#ifndef SERVER // Only on client
 	/*
 		Set to true if the mesh has been ordered to be updated
 		sometime in the background.
