@@ -183,6 +183,9 @@ bool Map::isNodeUnderground(v3s16 p)
 	light_sources to re-light the area without the removed light.
 
 	values of from_nodes are lighting values.
+
+	There is a duplicate implementation of this in VoxelManipulator,
+	which is faster for large volumes
 */
 void Map::unspreadLight(enum LightBank bank,
 		core::map<v3s16, u8> & from_nodes,
@@ -366,6 +369,9 @@ void Map::unLightNeighbors(enum LightBank bank,
 /*
 	Lights neighbors of from_nodes, collects all them and then
 	goes on recursively.
+
+	There is a duplicate implementation of this in VoxelManipulator,
+	which is faster for large volumes
 */
 void Map::spreadLight(enum LightBank bank,
 		core::map<v3s16, bool> & from_nodes,
@@ -840,6 +846,8 @@ void Map::updateLighting(core::map<v3s16, MapBlock*> & a_blocks,
 	This is called after changing a node from transparent to opaque.
 	The lighting value of the node should be left as-is after changing
 	other values. This sets the lighting value to 0.
+
+	NOTE: This takes almost no time, the slow one is updateMeshes.
 */
 void Map::addNodeAndUpdate(v3s16 p, MapNode n,
 		core::map<v3s16, MapBlock*> &modified_blocks)
@@ -1036,6 +1044,7 @@ void Map::addNodeAndUpdate(v3s16 p, MapNode n,
 }
 
 /*
+	NOTE: This takes almost no time, the slow one is updateMeshes.
 */
 void Map::removeNodeAndUpdate(v3s16 p,
 		core::map<v3s16, MapBlock*> &modified_blocks)
@@ -1982,7 +1991,7 @@ bool get_have_sand_ground(u64 seed, v2f p)
 	double sandnoise = noise2d_perlin(
 			0.5+(float)p.X/500, 0.5+(float)p.Y/500,
 			seed+54290232, 6, 0.65);
-	return (sandnoise > 0.8);
+	return (sandnoise > 1.0);
 }
 
 // -1->0, 0->1, 1->0
@@ -4079,7 +4088,6 @@ MapChunk* ServerMap::generateChunkRaw(v2s16 chunkpos,
 {
 	DSTACK(__FUNCTION_NAME);
 
-
 	/*
 		Don't generate if already fully generated
 	*/
@@ -4095,6 +4103,7 @@ MapChunk* ServerMap::generateChunkRaw(v2s16 chunkpos,
 		}
 	}
 
+#if 0
 	dstream<<"generateChunkRaw(): Generating chunk "
 			<<"("<<chunkpos.X<<","<<chunkpos.Y<<")"
 			<<std::endl;
@@ -4733,7 +4742,7 @@ MapChunk* ServerMap::generateChunkRaw(v2s16 chunkpos,
 			block->updateDayNightDiff();
 		}
 	}
-
+#endif
 	
 	/*
 		Create chunk metadata
@@ -4947,7 +4956,8 @@ MapSector * ServerMap::emergeSector(v2s16 p2d,
 
 /*
 	NOTE: This is not used for main map generation, only for blocks
-	that are very high or low
+	that are very high or low.
+	NOTE: Now it is used mainly. Might change in the future.
 */
 MapBlock * ServerMap::generateBlock(
 		v3s16 p,
@@ -5130,18 +5140,15 @@ MapBlock * ServerMap::generateBlock(
 			float surface_y_f = 0;
 			s16 surface_y = 0;
 			
-			if(turbulence_is_used == false)
-			{
-				surface_y_f = base_rock_level_2d(m_seed, real_p2d_f),
-				surface_y = surface_y_f;
+			float noturb_surface_y_f = base_rock_level_2d(m_seed, real_p2d_f);
+			s16 noturb_surface_y = noturb_surface_y_f;
 				
-				// Get some statistics of surface height
-				if(surface_y < lowest_ground_y)
-					lowest_ground_y = surface_y;
-				if(surface_y > highest_ground_y)
-					highest_ground_y = surface_y;
-			}
-			
+			// Get some statistics of surface height
+			if(noturb_surface_y < lowest_ground_y)
+				lowest_ground_y = noturb_surface_y;
+			if(noturb_surface_y > highest_ground_y)
+				highest_ground_y = noturb_surface_y;
+
 			for(s16 y0=0; y0<MAP_BLOCKSIZE; y0++)
 			{
 	#if 1
@@ -5164,35 +5171,48 @@ MapBlock * ServerMap::generateBlock(
 				bool is_ground = false;
 				v3f real_pos_f = intToFloat(real_pos, 1);
 				
-				if(turbulence_is_used)
+				bool turb_for_node = (turbulence_is_used
+						&& real_y >= TURBULENCE_BOTTOM_CUTOFF_Y);
+
+				bool is_cavern = false;
+				
+				if(is_carved(m_seed, real_pos_f))
 				{
-					double depth_guess;
-					is_ground = is_base_ground(m_seed,
-							real_pos_f, &depth_guess);
-					
-					// Estimate the surface height
-					surface_y_f = (float)real_y + depth_guess;
-					surface_y = real_y + depth_guess;
-					
-					// Get some statistics of surface height
-					if(surface_y < lowest_ground_y)
-						lowest_ground_y = surface_y;
-					if(surface_y > highest_ground_y)
-						highest_ground_y = surface_y;
+					is_ground = false;
+					if(real_y < noturb_surface_y)
+						is_cavern = true;
 				}
 				else
 				{
-					if(is_carved(m_seed, real_pos_f))
-						is_ground = false;
+					if(turb_for_node)
+					{
+						double depth_guess;
+						is_ground = is_base_ground(m_seed,
+								real_pos_f, &depth_guess);
+						
+						// Estimate the surface height
+						surface_y_f = (float)real_y + depth_guess;
+						surface_y = real_y + depth_guess;
+						
+						// Get some statistics of surface height
+						if(surface_y < lowest_ground_y)
+							lowest_ground_y = surface_y;
+						if(surface_y > highest_ground_y)
+							highest_ground_y = surface_y;
+					}
 					else
-						is_ground = (real_y <= surface_y);
+					{
+						surface_y = noturb_surface_y;
+					}
+					
+					is_ground = (real_y <= surface_y);
 				}
 
 				// If node is not ground, it's air or water
 				if(is_ground == false)
 				{
 					// If under water level, it's water
-					if(real_y < WATER_LEVEL)
+					if(real_y < WATER_LEVEL && !is_cavern)
 					{
 						n.d = water_material;
 						u8 dist = 16;
@@ -7181,8 +7201,6 @@ void ClientMap::expireMeshes(bool only_daynight_diffed)
 
 void ClientMap::updateMeshes(v3s16 blockpos, u32 daynight_ratio)
 {
-	assert(mapType() == MAPTYPE_CLIENT);
-
 	try{
 		v3s16 p = blockpos + v3s16(0,0,0);
 		MapBlock *b = getBlockNoCreate(p);
@@ -7208,25 +7226,41 @@ void ClientMap::updateMeshes(v3s16 blockpos, u32 daynight_ratio)
 		b->updateMesh(daynight_ratio);
 	}
 	catch(InvalidPositionException &e){}
-	/*// Trailing edge
-	try{
-		v3s16 p = blockpos + v3s16(1,0,0);
-		MapBlock *b = getBlockNoCreate(p);
+}
+
+/*
+	Update mesh of block in which the node is, and if the node is at the
+	leading edge, update the appropriate leading blocks too.
+*/
+void ClientMap::updateNodeMeshes(v3s16 nodepos, u32 daynight_ratio)
+{
+	v3s16 dirs[4] = {
+		v3s16(0,0,0),
+		v3s16(-1,0,0),
+		v3s16(0,-1,0),
+		v3s16(0,0,-1),
+	};
+	v3s16 blockposes[4];
+	for(u32 i=0; i<4; i++)
+	{
+		v3s16 np = nodepos + dirs[i];
+		blockposes[i] = getNodeBlockPos(np);
+		// Don't update mesh of block if it has been done already
+		bool already_updated = false;
+		for(u32 j=0; j<i; j++)
+		{
+			if(blockposes[j] == blockposes[i])
+			{
+				already_updated = true;
+				break;
+			}
+		}
+		if(already_updated)
+			continue;
+		// Update mesh
+		MapBlock *b = getBlockNoCreate(blockposes[i]);
 		b->updateMesh(daynight_ratio);
 	}
-	catch(InvalidPositionException &e){}
-	try{
-		v3s16 p = blockpos + v3s16(0,1,0);
-		MapBlock *b = getBlockNoCreate(p);
-		b->updateMesh(daynight_ratio);
-	}
-	catch(InvalidPositionException &e){}
-	try{
-		v3s16 p = blockpos + v3s16(0,0,1);
-		MapBlock *b = getBlockNoCreate(p);
-		b->updateMesh(daynight_ratio);
-	}
-	catch(InvalidPositionException &e){}*/
 }
 
 void ClientMap::PrintInfo(std::ostream &out)

@@ -1040,97 +1040,103 @@ void Client::ProcessData(u8 *data, u32 datasize, u16 sender_peer_id)
 	}
 	else if(command == TOCLIENT_ACTIVE_OBJECT_REMOVE_ADD)
 	{
-		/*
-			u16 command
-			u16 count of removed objects
-			for all removed objects {
-				u16 id
-			}
-			u16 count of added objects
-			for all added objects {
-				u16 id
-				u8 type
-				u16 initialization data length
-				string initialization data
-			}
-		*/
-
-		char buf[6];
-		// Get all data except the command number
-		std::string datastring((char*)&data[2], datasize-2);
-		// Throw them in an istringstream
-		std::istringstream is(datastring, std::ios_base::binary);
-
-		// Read stuff
-		
-		// Read removed objects
-		is.read(buf, 2);
-		u16 removed_count = readU16((u8*)buf);
-		for(u16 i=0; i<removed_count; i++)
+		if(g_settings.getBool("enable_experimental"))
 		{
+			/*
+				u16 command
+				u16 count of removed objects
+				for all removed objects {
+					u16 id
+				}
+				u16 count of added objects
+				for all added objects {
+					u16 id
+					u8 type
+					u16 initialization data length
+					string initialization data
+				}
+			*/
+
+			char buf[6];
+			// Get all data except the command number
+			std::string datastring((char*)&data[2], datasize-2);
+			// Throw them in an istringstream
+			std::istringstream is(datastring, std::ios_base::binary);
+
+			// Read stuff
+			
+			// Read removed objects
 			is.read(buf, 2);
-			u16 id = readU16((u8*)buf);
-			// Remove it
+			u16 removed_count = readU16((u8*)buf);
+			for(u16 i=0; i<removed_count; i++)
 			{
-				JMutexAutoLock envlock(m_env_mutex);
-				m_env.removeActiveObject(id);
+				is.read(buf, 2);
+				u16 id = readU16((u8*)buf);
+				// Remove it
+				{
+					JMutexAutoLock envlock(m_env_mutex);
+					m_env.removeActiveObject(id);
+				}
 			}
-		}
-		
-		// Read added objects
-		is.read(buf, 2);
-		u16 added_count = readU16((u8*)buf);
-		for(u16 i=0; i<added_count; i++)
-		{
+			
+			// Read added objects
 			is.read(buf, 2);
-			u16 id = readU16((u8*)buf);
-			is.read(buf, 1);
-			u8 type = readU8((u8*)buf);
-			std::string data = deSerializeLongString(is);
-			// Add it
+			u16 added_count = readU16((u8*)buf);
+			for(u16 i=0; i<added_count; i++)
 			{
-				JMutexAutoLock envlock(m_env_mutex);
-				m_env.addActiveObject(id, type, data);
+				is.read(buf, 2);
+				u16 id = readU16((u8*)buf);
+				is.read(buf, 1);
+				u8 type = readU8((u8*)buf);
+				std::string data = deSerializeLongString(is);
+				// Add it
+				{
+					JMutexAutoLock envlock(m_env_mutex);
+					m_env.addActiveObject(id, type, data);
+				}
 			}
 		}
 	}
 	else if(command == TOCLIENT_ACTIVE_OBJECT_MESSAGES)
 	{
-		/*
-			u16 command
-			for all objects
-			{
-				u16 id
-				u16 message length
-				string message
-			}
-		*/
-		char buf[6];
-		// Get all data except the command number
-		std::string datastring((char*)&data[2], datasize-2);
-		// Throw them in an istringstream
-		std::istringstream is(datastring, std::ios_base::binary);
-		
-		while(is.eof() == false)
+		if(g_settings.getBool("enable_experimental"))
 		{
-			// Read stuff
-			is.read(buf, 2);
-			u16 id = readU16((u8*)buf);
-			if(is.eof())
-				break;
-			is.read(buf, 2);
-			u16 message_size = readU16((u8*)buf);
-			std::string message;
-			message.reserve(message_size);
-			for(u16 i=0; i<message_size; i++)
+			/*
+				u16 command
+				for all objects
+				{
+					u16 id
+					u16 message length
+					string message
+				}
+			*/
+			char buf[6];
+			// Get all data except the command number
+			std::string datastring((char*)&data[2], datasize-2);
+			// Throw them in an istringstream
+			std::istringstream is(datastring, std::ios_base::binary);
+			
+			while(is.eof() == false)
 			{
-				is.read(buf, 1);
-				message.append(buf, 1);
-			}
-			// Pass on to the environment
-			{
-				JMutexAutoLock envlock(m_env_mutex);
-				m_env.processActiveObjectMessage(id, message);
+				// Read stuff
+				is.read(buf, 2);
+				u16 id = readU16((u8*)buf);
+				if(is.eof())
+					break;
+				is.read(buf, 2);
+				u16 message_size = readU16((u8*)buf);
+				std::string message;
+				message.reserve(message_size);
+				for(u16 i=0; i<message_size; i++)
+				{
+					is.read(buf, 1);
+					message.append(buf, 1);
+				}
+				// Pass on to the environment
+				{
+					JMutexAutoLock envlock(m_env_mutex);
+					m_env.processActiveObjectMessage(id, message);
+				}
 			}
 		}
 	}

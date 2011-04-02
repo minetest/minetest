@@ -1,5 +1,9 @@
 #!/usr/bin/python
 
+"
+This is an example script that generates some valid map data.
+"
+
 import struct
 import random
 

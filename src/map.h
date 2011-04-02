@@ -679,7 +679,7 @@ public:
 	void updateMeshes(v3s16 blockpos, u32 daynight_ratio);
 	
 	// Update meshes that touch the node
-	//void updateNodeMeshes(v3s16 nodepos, u32 daynight_ratio);
+	void updateNodeMeshes(v3s16 nodepos, u32 daynight_ratio);
 
 	// For debug printing
 	virtual void PrintInfo(std::ostream &out);

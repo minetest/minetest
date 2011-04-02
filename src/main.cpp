@@ -160,6 +160,9 @@ TODO: Flowing water animation
 
 * Combine meshes to bigger ones in ClientMap and set them EHM_STATIC
 
+SUGG: Draw cubes in inventory directly with 3D drawing commands, so that
+      animating them is easier.
+
 Configuration:
 --------------
 
@@ -242,9 +245,6 @@ TODO: Mineral and ground material properties
 
 TODO: Flowing water to actually contain flow direction information
 
-TODO: Remove duplicate lighting implementation from Map (leave
-      VoxelManipulator, which is faster)
-
 FEATURE: Create a system that allows a huge amount of different "map
 	     generator modules/filters"
 
@@ -273,18 +273,27 @@ Mapgen v2:
   the other chunk making nasty straight walls when the other chunk
   is generated. Fix it.
 
+Mapgen v4 (not doing):
+* only_from_disk might not work anymore - check and fix it.
+* Make the generator to run in background and not blocking block
+  placement and transfer
+* Make chunks to be tiled vertically too
+* MAKE IT FASTER
+
 Mapgen v3:
 * Generate trees better
   - Add a "trees_added" flag to sector, or something
 * How 'bout making turbulence controlled so that for a given 2d position
   it can be completely turned off, and is usually so. This way generation
   can be sped up a lot.
+* Add a way to generate a block partly, so that trees are not added, like
+  the chunks in v2
+* Add mud "discretely", not by guessing from the noise
 
 Mapgen v4:
-* only_from_disk might not work anymore - check and fix it.
-* Make the generator to run in background and not blocking block
-  placement and transfer
-* Make chunks to be tiled vertically too
+* This will be the final way.
+* Generate blocks in the same way as chunks, by copying a voxelmanipulator
+  from the map that is one block larger in all directions.
 
 Misc. stuff:
 ------------

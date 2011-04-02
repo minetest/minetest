@@ -61,6 +61,17 @@ u32 TimeTaker::getTime()
 	return dtime;
 }
 
+const v3s16 g_6dirs[6] =
+{
+	// +right, +top, +back
+	v3s16( 0, 0, 1), // back
+	v3s16( 0, 1, 0), // top
+	v3s16( 1, 0, 0), // right
+	v3s16( 0, 0,-1), // front
+	v3s16( 0,-1, 0), // bottom
+	v3s16(-1, 0, 0) // left
+};
+
 const v3s16 g_26dirs[26] =
 {
 	// +right, +top, +back
