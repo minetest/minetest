@@ -233,11 +233,11 @@ void * EmergeThread::Thread()
 			
 			if(lighting_invalidated_blocks.size() > 0)
 			{
-				dstream<<"lighting "<<lighting_invalidated_blocks.size()
-						<<" blocks"<<std::endl;
+				/*dstream<<"lighting "<<lighting_invalidated_blocks.size()
+						<<" blocks"<<std::endl;*/
 			
 				// 50-100ms for single block generation
-				TimeTaker timer("** EmergeThread updateLighting");
+				//TimeTaker timer("** EmergeThread updateLighting");
 				
 				// Update lighting without locking the environment mutex,
 				// add modified blocks to changed blocks
