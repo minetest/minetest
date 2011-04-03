@@ -36,7 +36,7 @@ MapBlock::MapBlock(NodeContainer *parent, v3s16 pos, bool dummy):
 		is_underground(false),
 		m_lighting_expired(true),
 		m_day_night_differs(false),
-		m_not_fully_generated(false),
+		//m_not_fully_generated(false),
 		m_objects(this)
 {
 	data = NULL;
@@ -1763,8 +1763,8 @@ void MapBlock::serialize(std::ostream &os, u8 version)
 			flags |= 0x02;
 		if(m_lighting_expired)
 			flags |= 0x04;
-		if(m_not_fully_generated)
-			flags |= 0x08;
+		/*if(m_not_fully_generated)
+			flags |= 0x08;*/
 		os.write((char*)&flags, 1);
 
 		u32 nodecount = MAP_BLOCKSIZE*MAP_BLOCKSIZE*MAP_BLOCKSIZE;
@@ -1887,7 +1887,7 @@ void MapBlock::deSerialize(std::istream &is, u8 version)
 		is_underground = (flags & 0x01) ? true : false;
 		m_day_night_differs = (flags & 0x02) ? true : false;
 		m_lighting_expired = (flags & 0x04) ? true : false;
-		m_not_fully_generated = (flags & 0x08) ? true : false;
+		//m_not_fully_generated = (flags & 0x08) ? true : false;
 
 		// Uncompress data
 		std::ostringstream os(std::ios_base::binary);

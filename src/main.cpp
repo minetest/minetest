@@ -259,11 +259,11 @@ FEATURE: Erosion simulation at map generation time
 		- Simulate rock falling from cliffs when water has removed
 		  enough solid rock from the bottom
 
-Mapgen v2 (not doing):
+Mapgen v2:
 * only_from_disk might not work anymore - check and fix it.
 * Make the generator to run in background and not blocking block
   placement and transfer
-* Add some kind of erosion and other stuff that now is possible
+* Possibly add some kind of erosion and other stuff
 * Make client to fetch stuff asynchronously
   - Needs method SyncProcessData
 * Better water generation (spread it to underwater caverns but don't
@@ -272,28 +272,6 @@ Mapgen v2 (not doing):
   and stuff yet and the ground is fairly flat, the mud will flow to
   the other chunk making nasty straight walls when the other chunk
   is generated. Fix it.
-
-Mapgen v4 (not doing):
-* only_from_disk might not work anymore - check and fix it.
-* Make the generator to run in background and not blocking block
-  placement and transfer
-* Make chunks to be tiled vertically too
-* MAKE IT FASTER
-
-Mapgen v3 (not doing):
-* Generate trees better
-  - Add a "trees_added" flag to sector, or something
-* How 'bout making turbulence controlled so that for a given 2d position
-  it can be completely turned off, and is usually so. This way generation
-  can be sped up a lot.
-* Add a way to generate a block partly, so that trees are not added, like
-  the chunks in v2
-* Add mud "discretely", not by guessing from the noise
-
-Mapgen v4:
-* This will be the final way.
-* Generate blocks in the same way as chunks, by copying a VoxelManipulator
-  from the map that is one block larger in all directions.
 
 Misc. stuff:
 ------------
@@ -1275,6 +1253,7 @@ void draw_hotbar(video::IVideoDriver *driver, gui::IGUIFont *font,
 	}
 }
 
+#if 0
 video::ITexture *g_map_plot_texture = NULL;
 float g_map_plot_texture_scale = 4;
 
@@ -1416,6 +1395,7 @@ void updateMapPlotTexture(v2f centerpos, video::IVideoDriver* driver,
 	img->drop();
 	assert(g_map_plot_texture);
 }
+#endif
 
 // Chat data
 struct ChatLine
@@ -3219,7 +3199,7 @@ int main(int argc, char *argv[])
 				x++;
 			}
 		}
-
+#if 0
 		/*
 			Draw map plot
 		*/
@@ -3234,7 +3214,7 @@ int main(int argc, char *argv[])
 			core::rect<s32> source(v2s32(0,0), g_map_plot_texture->getSize());
 			driver->draw2DImage(g_map_plot_texture, dest, source);
 		}
-
+#endif
 		/*
 			Draw crosshair
 		*/
@@ -3277,6 +3257,7 @@ int main(int argc, char *argv[])
 			End of drawing
 		*/
 
+#if 0
 		/*
 			Refresh map plot if player has moved considerably
 		*/
@@ -3291,6 +3272,7 @@ int main(int argc, char *argv[])
 			}
 			g_refresh_map_plot = false;
 		}
+#endif
 		
 		static s16 lastFPS = 0;
 		//u16 fps = driver->getFPS();

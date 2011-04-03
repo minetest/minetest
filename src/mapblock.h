@@ -244,16 +244,15 @@ public:
 		return m_lighting_expired;
 	}
 
-	bool isFullyGenerated()
+	/*bool isFullyGenerated()
 	{
 		return !m_not_fully_generated;
 	}
-
 	void setFullyGenerated(bool b)
 	{
 		setChangedFlag();
 		m_not_fully_generated = !b;
-	}
+	}*/
 
 	bool isValid()
 	{
@@ -680,7 +679,7 @@ private:
 
 		TODO: Save in file
 	*/
-	bool m_not_fully_generated;
+	//bool m_not_fully_generated;
 	
 	MapBlockObjectList m_objects;
 
