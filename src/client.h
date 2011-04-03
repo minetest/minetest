@@ -37,23 +37,144 @@ public:
 	{}
 };
 
-class Client;
-
-class ClientUpdateThread : public SimpleThread
+struct QueuedMeshUpdate
 {
-	Client *m_client;
+	v3s16 p;
+	MeshMakeData *data;
+	bool ack_block_to_server;
 
+	QueuedMeshUpdate():
+		p(-1337,-1337,-1337),
+		data(NULL),
+		ack_block_to_server(false)
+	{
+	}
+	
+	~QueuedMeshUpdate()
+	{
+		if(data)
+			delete data;
+	}
+};
+
+/*
+	A thread-safe queue of mesh update tasks
+*/
+class MeshUpdateQueue
+{
+public:
+	MeshUpdateQueue()
+	{
+		m_mutex.Init();
+	}
+
+	~MeshUpdateQueue()
+	{
+		JMutexAutoLock lock(m_mutex);
+
+		core::list<QueuedMeshUpdate*>::Iterator i;
+		for(i=m_queue.begin(); i!=m_queue.end(); i++)
+		{
+			QueuedMeshUpdate *q = *i;
+			delete q;
+		}
+	}
+	
+	/*
+		peer_id=0 adds with nobody to send to
+	*/
+	void addBlock(v3s16 p, MeshMakeData *data, bool ack_block_to_server)
+	{
+		DSTACK(__FUNCTION_NAME);
+
+		assert(data);
+	
+		JMutexAutoLock lock(m_mutex);
+
+		/*
+			Find if block is already in queue.
+			If it is, update the data and quit.
+		*/
+		core::list<QueuedMeshUpdate*>::Iterator i;
+		for(i=m_queue.begin(); i!=m_queue.end(); i++)
+		{
+			QueuedMeshUpdate *q = *i;
+			if(q->p == p)
+			{
+				if(q->data)
+					delete q->data;
+				q->data = data;
+				if(ack_block_to_server)
+					q->ack_block_to_server = true;
+				return;
+			}
+		}
+		
+		/*
+			Add the block
+		*/
+		QueuedMeshUpdate *q = new QueuedMeshUpdate;
+		q->p = p;
+		q->data = data;
+		q->ack_block_to_server = ack_block_to_server;
+		m_queue.push_back(q);
+	}
+
+	// Returned pointer must be deleted
+	// Returns NULL if queue is empty
+	QueuedMeshUpdate * pop()
+	{
+		JMutexAutoLock lock(m_mutex);
+
+		core::list<QueuedMeshUpdate*>::Iterator i = m_queue.begin();
+		if(i == m_queue.end())
+			return NULL;
+		QueuedMeshUpdate *q = *i;
+		m_queue.erase(i);
+		return q;
+	}
+
+	u32 size()
+	{
+		JMutexAutoLock lock(m_mutex);
+		return m_queue.size();
+	}
+	
+private:
+	core::list<QueuedMeshUpdate*> m_queue;
+	JMutex m_mutex;
+};
+
+struct MeshUpdateResult
+{
+	v3s16 p;
+	scene::SMesh *mesh;
+	bool ack_block_to_server;
+
+	MeshUpdateResult():
+		p(-1338,-1338,-1338),
+		mesh(NULL),
+		ack_block_to_server(false)
+	{
+	}
+};
+
+class MeshUpdateThread : public SimpleThread
+{
 public:
 
-	ClientUpdateThread(Client *client):
-			SimpleThread(),
-			m_client(client)
+	MeshUpdateThread()
 	{
 	}
 
 	void * Thread();
+
+	MeshUpdateQueue m_queue_in;
+
+	MutexedQueue<MeshUpdateResult> m_queue_out;
 };
 
+#if 0
 struct IncomingPacket
 {
 	IncomingPacket()
@@ -101,13 +222,15 @@ struct IncomingPacket
 	u32 m_datalen;
 	s32 *m_refcount;
 };
+#endif
 
 class Client : public con::PeerHandler
 {
 public:
 	/*
-		NOTE: Every public method should be thread-safe
+		NOTE: Nothing is thread-safe here.
 	*/
+
 	Client(
 			IrrlichtDevice *device,
 			const char *playername,
@@ -147,7 +270,7 @@ public:
 	void Send(u16 channelnum, SharedBuffer<u8> data, bool reliable);
 
 	// Pops out a packet from the packet queue
-	IncomingPacket getPacket();
+	//IncomingPacket getPacket();
 
 	void groundAction(u8 action, v3s16 nodepos_undersurface,
 			v3s16 nodepos_oversurface, u16 item);
@@ -196,7 +319,7 @@ public:
 	
 	void setTempMod(v3s16 p, NodeMod mod)
 	{
-		JMutexAutoLock envlock(m_env_mutex);
+		//JMutexAutoLock envlock(m_env_mutex); //bulk comment-out
 		assert(m_env.getMap().mapType() == MAPTYPE_CLIENT);
 
 		core::map<v3s16, MapBlock*> affected_blocks;
@@ -212,7 +335,7 @@ public:
 	}
 	void clearTempMod(v3s16 p)
 	{
-		JMutexAutoLock envlock(m_env_mutex);
+		//JMutexAutoLock envlock(m_env_mutex); //bulk comment-out
 		assert(m_env.getMap().mapType() == MAPTYPE_CLIENT);
 
 		core::map<v3s16, MapBlock*> affected_blocks;
@@ -229,7 +352,7 @@ public:
 
 	float getAvgRtt()
 	{
-		JMutexAutoLock lock(m_con_mutex);
+		//JMutexAutoLock lock(m_con_mutex); //bulk comment-out
 		con::Peer *peer = m_con.GetPeerNoEx(PEER_ID_SERVER);
 		if(peer == NULL)
 			return 0.0;
@@ -246,7 +369,7 @@ public:
 
 	void addChatMessage(const std::wstring &message)
 	{
-		JMutexAutoLock envlock(m_env_mutex);
+		//JMutexAutoLock envlock(m_env_mutex); //bulk comment-out
 		LocalPlayer *player = m_env.getLocalPlayer();
 		assert(player != NULL);
 		std::wstring name = narrow_to_wide(player->getName());
@@ -255,6 +378,13 @@ public:
 	}
 
 	u64 getMapSeed(){ return m_map_seed; }
+
+	/*
+		These are not thread-safe
+	*/
+	void addUpdateMeshTask(v3s16 blockpos, bool ack_to_server=false);
+	// Including blocks at appropriate edges
+	void addUpdateMeshTaskWithEdge(v3s16 blockpos, bool ack_to_server=false);
 
 private:
 	
@@ -275,19 +405,11 @@ private:
 	float m_avg_rtt_timer;
 	float m_playerpos_send_timer;
 
-	ClientUpdateThread m_thread;
+	MeshUpdateThread m_mesh_update_thread;
 	
-	// NOTE: If connection and environment are both to be locked,
-	// environment shall be locked first.
-
 	ClientEnvironment m_env;
-	JMutex m_env_mutex;
 	
 	con::Connection m_con;
-	JMutex m_con_mutex;
-
-	core::list<IncomingPacket> m_incoming_queue;
-	JMutex m_incoming_queue_mutex;
 
 	IrrlichtDevice *m_device;
 
@@ -297,9 +419,6 @@ private:
 	// Server serialization version
 	u8 m_server_ser_ver;
 
-	float m_step_dtime;
-	JMutex m_step_dtime_mutex;
-
 	// This is behind m_env_mutex.
 	bool m_inventory_updated;
 
@@ -308,7 +427,7 @@ private:
 	PacketCounter m_packetcounter;
 	
 	// Received from the server. 0-23999
-	MutexedVariable<u32> m_time_of_day;
+	u32 m_time_of_day;
 	
 	// 0 <= m_daynight_i < DAYNIGHT_CACHE_COUNT
 	//s32 m_daynight_i;

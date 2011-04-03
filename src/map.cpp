@@ -5335,7 +5335,7 @@ void ClientMap::renderMap(video::IVideoDriver* driver, s32 pass)
 	*/
 	int time1 = time(0);
 
-	u32 daynight_ratio = m_client->getDayNightRatio();
+	//u32 daynight_ratio = m_client->getDayNightRatio();
 
 	m_camera_mutex.Lock();
 	v3f camera_position = m_camera_position;
@@ -5438,7 +5438,7 @@ void ClientMap::renderMap(video::IVideoDriver* driver, s32 pass)
 				continue;
 			}
 			
-			// This is ugly
+			// This is ugly (spherical distance limit?)
 			/*if(m_control.range_all == false &&
 					d - 0.5*BS*MAP_BLOCKSIZE > range)
 				continue;*/
@@ -5446,6 +5446,9 @@ void ClientMap::renderMap(video::IVideoDriver* driver, s32 pass)
 #if 1
 			/*
 				Update expired mesh (used for day/night change)
+
+				It doesn't work exactly like it should now with the
+				tasked mesh update but whatever.
 			*/
 
 			bool mesh_expired = false;
@@ -5482,28 +5485,12 @@ void ClientMap::renderMap(video::IVideoDriver* driver, s32 pass)
 				mesh_update_count++;
 
 				// Mesh has been expired: generate new mesh
-				block->updateMesh(daynight_ratio);
-				//m_client->addUpdateMeshTask(block);
+				//block->updateMesh(daynight_ratio);
+				m_client->addUpdateMeshTask(block->getPos());
 
 				mesh_expired = false;
 			}
 			
-			/*
-				Don't draw an expired mesh that is far away
-			*/
-			/*if(mesh_expired && d >= faraway)
-			//if(mesh_expired)
-			{
-				// Instead, delete it
-				JMutexAutoLock lock(block->mesh_mutex);
-				if(block->mesh)
-				{
-					block->mesh->drop();
-					block->mesh = NULL;
-				}
-				// And continue to next block
-				continue;
-			}*/
 #endif
 			/*
 				Draw the faces of the block

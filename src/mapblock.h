@@ -156,20 +156,42 @@ public:
 	virtual MapNode getNode(v3s16 p) = 0;
 	virtual void setNode(v3s16 p, MapNode & n) = 0;
 	virtual u16 nodeContainerId() const = 0;
+
+	MapNode getNodeNoEx(v3s16 p)
+	{
+		try{
+			return getNode(p);
+		}
+		catch(InvalidPositionException &e){
+			return MapNode(CONTENT_IGNORE);
+		}
+	}
 };
 
 /*
-	Plain functions in mapblock.cpp
+	Mesh making stuff
 */
+
+class MapBlock;
+
+struct MeshMakeData
+{
+	u32 m_daynight_ratio;
+	NodeModMap m_temp_mods;
+	VoxelManipulator m_vmanip;
+	v3s16 m_blockpos;
+	
+	/*
+		Copy central data directly from block, and other data from
+		parent of block.
+	*/
+	void fill(u32 daynight_ratio, MapBlock *block);
+};
 
 u8 getFaceLight(u32 daynight_ratio, MapNode n, MapNode n2,
 		v3s16 face_dir);
 
-scene::SMesh* makeMapBlockMesh(
-		u32 daynight_ratio,
-		NodeModMap &temp_mods,
-		VoxelManipulator &vmanip,
-		v3s16 blockpos_nodes);
+scene::SMesh* makeMapBlockMesh(MeshMakeData *data);
 
 /*
 	MapBlock itself
@@ -185,7 +207,7 @@ public:
 	{
 		return NODECONTAINER_ID_MAPBLOCK;
 	}
-
+	
 	NodeContainer * getParent()
 	{
 		return m_parent;
@@ -661,8 +683,7 @@ private:
 		Private member variables
 	*/
 
-	// Parent container (practically the Map)
-	// Not a MapSector, it is just a structural element.
+	// NOTE: Lots of things rely on this being the Map
 	NodeContainer *m_parent;
 	// Position in blocks on parent
 	v3s16 m_pos;

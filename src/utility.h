@@ -1467,6 +1467,10 @@ protected:
 	core::list<T> m_list;
 };
 
+/*
+	A single worker thread - multiple client threads queue framework.
+*/
+
 template<typename Caller, typename Data>
 class CallerInfo
 {
@@ -1515,11 +1519,6 @@ public:
 	ResultQueue<Key, T, Caller, CallerData> *dest;
 	core::list<CallerInfo<Caller, CallerData> > callers;
 };
-
-/*
-	Quickhands for typical request-result queues.
-	Used for distributing work between threads.
-*/
 
 template<typename Key, typename T, typename Caller, typename CallerData>
 class RequestQueue

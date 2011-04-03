@@ -26,24 +26,38 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <sstream>
 #include "porting.h"
 
-void * ClientUpdateThread::Thread()
+void * MeshUpdateThread::Thread()
 {
 	ThreadStarted();
 
 	DSTACK(__FUNCTION_NAME);
 	
 	BEGIN_DEBUG_EXCEPTION_HANDLER
-	
+
 	while(getRun())
 	{
-		//m_client->asyncStep();
+		QueuedMeshUpdate *q = m_queue_in.pop();
+		if(q == NULL)
+		{
+			sleep_ms(50);
+			continue;
+		}
 
-		//m_client->updateSomeExpiredMeshes();
+		scene::SMesh *mesh_new = NULL;
+		mesh_new = makeMapBlockMesh(q->data);
 
-		bool was = m_client->AsyncProcessData();
+		MeshUpdateResult r;
+		r.p = q->p;
+		r.mesh = mesh_new;
+		r.ack_block_to_server = q->ack_block_to_server;
 
-		if(was == false)
-			sleep_ms(10);
+		/*dstream<<"MeshUpdateThread: Processed "
+				<<"("<<q->p.X<<","<<q->p.Y<<","<<q->p.Z<<")"
+				<<std::endl;*/
+
+		m_queue_out.push_back(r);
+
+		delete q;
 	}
 
 	END_DEBUG_EXCEPTION_HANDLER
@@ -55,7 +69,7 @@ Client::Client(
 		IrrlichtDevice *device,
 		const char *playername,
 		MapDrawControl &control):
-	m_thread(this),
+	m_mesh_update_thread(),
 	m_env(
 		new ClientMap(this, control,
 			device->getSceneManager()->getRootSceneNode(),
@@ -67,7 +81,6 @@ Client::Client(
 	camera_position(0,0,0),
 	camera_direction(0,0,1),
 	m_server_ser_ver(SER_FMT_VER_INVALID),
-	m_step_dtime(0.0),
 	m_inventory_updated(false),
 	m_time_of_day(0)
 {
@@ -77,19 +90,16 @@ Client::Client(
 	m_avg_rtt_timer = 0.0;
 	m_playerpos_send_timer = 0.0;
 
-	//m_fetchblock_mutex.Init();
-	m_incoming_queue_mutex.Init();
-	m_env_mutex.Init();
-	m_con_mutex.Init();
-	m_step_dtime_mutex.Init();
+	//m_env_mutex.Init();
+	//m_con_mutex.Init();
 
-	m_thread.Start();
+	m_mesh_update_thread.Start();
 
 	/*
 		Add local player
 	*/
 	{
-		JMutexAutoLock envlock(m_env_mutex);
+		//JMutexAutoLock envlock(m_env_mutex); //bulk comment-out
 
 		Player *player = new LocalPlayer();
 
@@ -102,26 +112,26 @@ Client::Client(
 Client::~Client()
 {
 	{
-		JMutexAutoLock conlock(m_con_mutex);
+		//JMutexAutoLock conlock(m_con_mutex); //bulk comment-out
 		m_con.Disconnect();
 	}
 
-	m_thread.setRun(false);
-	while(m_thread.IsRunning())
+	m_mesh_update_thread.setRun(false);
+	while(m_mesh_update_thread.IsRunning())
 		sleep_ms(100);
 }
 
 void Client::connect(Address address)
 {
 	DSTACK(__FUNCTION_NAME);
-	JMutexAutoLock lock(m_con_mutex);
+	//JMutexAutoLock lock(m_con_mutex); //bulk comment-out
 	m_con.setTimeoutMs(0);
 	m_con.Connect(address);
 }
 
 bool Client::connectedAndInitialized()
 {
-	JMutexAutoLock lock(m_con_mutex);
+	//JMutexAutoLock lock(m_con_mutex); //bulk comment-out
 
 	if(m_con.Connected() == false)
 		return false;
@@ -152,7 +162,7 @@ void Client::step(float dtime)
 	{
 		//TimeTaker timer("m_con_mutex + m_con.RunTimeouts()", m_device);
 		// 0ms
-		JMutexAutoLock lock(m_con_mutex);
+		//JMutexAutoLock lock(m_con_mutex); //bulk comment-out
 		m_con.RunTimeouts(dtime);
 	}
 
@@ -188,7 +198,7 @@ void Client::step(float dtime)
 			//counter = 180.0;
 			counter = 60.0;
 
-			JMutexAutoLock lock(m_env_mutex);
+			//JMutexAutoLock lock(m_env_mutex); //bulk comment-out
 
 			core::list<v3s16> deleted_blocks;
 
@@ -217,7 +227,7 @@ void Client::step(float dtime)
 				*/
 
 				// Env is locked so con can be locked.
-				JMutexAutoLock lock(m_con_mutex);
+				//JMutexAutoLock lock(m_con_mutex); //bulk comment-out
 				
 				core::list<v3s16>::Iterator i = deleted_blocks.begin();
 				core::list<v3s16> sendlist;
@@ -271,7 +281,7 @@ void Client::step(float dtime)
 		{
 			counter = 2.0;
 
-			JMutexAutoLock envlock(m_env_mutex);
+			//JMutexAutoLock envlock(m_env_mutex); //bulk comment-out
 			
 			Player *myplayer = m_env.getLocalPlayer();
 			assert(myplayer != NULL);
@@ -299,7 +309,7 @@ void Client::step(float dtime)
 	
 	{
 		// 0ms
-		JMutexAutoLock lock(m_env_mutex);
+		//JMutexAutoLock lock(m_env_mutex); //bulk comment-out
 
 		// Control local player (0ms)
 		LocalPlayer *player = m_env.getLocalPlayer();
@@ -335,7 +345,7 @@ void Client::step(float dtime)
 		if(counter >= 10)
 		{
 			counter = 0.0;
-			JMutexAutoLock lock(m_con_mutex);
+			//JMutexAutoLock lock(m_con_mutex); //bulk comment-out
 			// connectedAndInitialized() is true, peer exists.
 			con::Peer *peer = m_con.GetPeer(PEER_ID_SERVER);
 			dstream<<DTIME<<"Client: avg_rtt="<<peer->avg_rtt<<std::endl;
@@ -351,31 +361,50 @@ void Client::step(float dtime)
 		}
 	}
 
-	/*{
-		JMutexAutoLock lock(m_step_dtime_mutex);
-		m_step_dtime += dtime;
-	}*/
-}
-
-#if 0
-float Client::asyncStep()
-{
-	DSTACK(__FUNCTION_NAME);
-	//dstream<<"Client::asyncStep()"<<std::endl;
-	
-	/*float dtime;
+	/*
+		Replace updated meshes
+	*/
 	{
-		JMutexAutoLock lock1(m_step_dtime_mutex);
-		if(m_step_dtime < 0.001)
-			return 0.0;
-		dtime = m_step_dtime;
-		m_step_dtime = 0.0;
-	}
+		//JMutexAutoLock lock(m_env_mutex); //bulk comment-out
 
-	return dtime;*/
-	return 0.0;
+		//TimeTaker timer("** Processing mesh update result queue");
+		// 0ms
+		
+		/*dstream<<"Mesh update result queue size is "
+				<<m_mesh_update_thread.m_queue_out.size()
+				<<std::endl;*/
+
+		while(m_mesh_update_thread.m_queue_out.size() > 0)
+		{
+			MeshUpdateResult r = m_mesh_update_thread.m_queue_out.pop_front();
+			MapBlock *block = m_env.getMap().getBlockNoCreateNoEx(r.p);
+			if(block)
+			{
+				block->replaceMesh(r.mesh);
+			}
+			if(r.ack_block_to_server)
+			{
+				/*
+					Acknowledge block
+				*/
+				/*
+					[0] u16 command
+					[2] u8 count
+					[3] v3s16 pos_0
+					[3+6] v3s16 pos_1
+					...
+				*/
+				u32 replysize = 2+1+6;
+				SharedBuffer<u8> reply(replysize);
+				writeU16(&reply[0], TOSERVER_GOTBLOCKS);
+				reply[2] = 1;
+				writeV3S16(&reply[3], r.p);
+				// Send as reliable
+				m_con.Send(PEER_ID_SERVER, 1, reply, true);
+			}
+		}
+	}
 }
-#endif
 
 // Virtual methods from con::PeerHandler
 void Client::peerAdded(con::Peer *peer)
@@ -420,7 +449,7 @@ void Client::Receive()
 	u32 datasize;
 	{
 		//TimeTaker t1("con mutex and receive", m_device);
-		JMutexAutoLock lock(m_con_mutex);
+		//JMutexAutoLock lock(m_con_mutex); //bulk comment-out
 		datasize = m_con.Receive(sender_peer_id, *data, data_maxsize);
 	}
 	//TimeTaker t1("ProcessData", m_device);
@@ -460,7 +489,7 @@ void Client::ProcessData(u8 *data, u32 datasize, u16 sender_peer_id)
 
 	con::Peer *peer;
 	{
-		JMutexAutoLock lock(m_con_mutex);
+		//JMutexAutoLock lock(m_con_mutex); //bulk comment-out
 		// All data is coming from the server
 		// PeerNotFoundException is handled by caller.
 		peer = m_con.GetPeer(PEER_ID_SERVER);
@@ -499,7 +528,7 @@ void Client::ProcessData(u8 *data, u32 datasize, u16 sender_peer_id)
 		v3f playerpos_f = intToFloat(playerpos_s16, BS) - v3f(0, BS/2, 0);
 
 		{ //envlock
-			JMutexAutoLock envlock(m_env_mutex);
+			//JMutexAutoLock envlock(m_env_mutex); //bulk comment-out
 			
 			// Set player position
 			Player *player = m_env.getLocalPlayer();
@@ -569,13 +598,138 @@ void Client::ProcessData(u8 *data, u32 datasize, u16 sender_peer_id)
 		
 		addNode(p, n);
 	}
+	else if(command == TOCLIENT_BLOCKDATA)
+	{
+		// Ignore too small packet
+		if(datasize < 8)
+			return;
+			
+		v3s16 p;
+		p.X = readS16(&data[2]);
+		p.Y = readS16(&data[4]);
+		p.Z = readS16(&data[6]);
+		
+		/*dout_client<<DTIME<<"Client: Thread: BLOCKDATA for ("
+				<<p.X<<","<<p.Y<<","<<p.Z<<")"<<std::endl;*/
+		/*dstream<<DTIME<<"Client: Thread: BLOCKDATA for ("
+				<<p.X<<","<<p.Y<<","<<p.Z<<")"<<std::endl;*/
+		
+		std::string datastring((char*)&data[8], datasize-8);
+		std::istringstream istr(datastring, std::ios_base::binary);
+		
+		MapSector *sector;
+		MapBlock *block;
+		
+		{ //envlock
+			//JMutexAutoLock envlock(m_env_mutex); //bulk comment-out
+			
+			v2s16 p2d(p.X, p.Z);
+			sector = m_env.getMap().emergeSector(p2d);
+			
+			v2s16 sp = sector->getPos();
+			if(sp != p2d)
+			{
+				dstream<<"ERROR: Got sector with getPos()="
+						<<"("<<sp.X<<","<<sp.Y<<"), tried to get"
+						<<"("<<p2d.X<<","<<p2d.Y<<")"<<std::endl;
+			}
+
+			assert(sp == p2d);
+			//assert(sector->getPos() == p2d);
+
+			//TimeTaker timer("MapBlock deSerialize");
+			// 0ms
+			
+			try{
+				block = sector->getBlockNoCreate(p.Y);
+				/*
+					Update an existing block
+				*/
+				//dstream<<"Updating"<<std::endl;
+				block->deSerialize(istr, ser_version);
+				//block->setChangedFlag();
+			}
+			catch(InvalidPositionException &e)
+			{
+				/*
+					Create a new block
+				*/
+				//dstream<<"Creating new"<<std::endl;
+				block = new MapBlock(&m_env.getMap(), p);
+				block->deSerialize(istr, ser_version);
+				sector->insertBlock(block);
+				//block->setChangedFlag();
+
+				//DEBUG
+				/*NodeMod mod;
+				mod.type = NODEMOD_CHANGECONTENT;
+				mod.param = CONTENT_MESE;
+				block->setTempMod(v3s16(8,10,8), mod);
+				block->setTempMod(v3s16(8,9,8), mod);
+				block->setTempMod(v3s16(8,8,8), mod);
+				block->setTempMod(v3s16(8,7,8), mod);
+				block->setTempMod(v3s16(8,6,8), mod);*/
+#if 0
+				/*
+					Add some coulds
+					Well, this is a dumb way to do it, they should just
+					be drawn as separate objects. But the looks of them
+					can be tested this way.
+				*/
+				if(p.Y == 3)
+				{
+					NodeMod mod;
+					mod.type = NODEMOD_CHANGECONTENT;
+					mod.param = CONTENT_CLOUD;
+					v3s16 p2;
+					p2.Y = 8;
+					for(p2.X=3; p2.X<=13; p2.X++)
+					for(p2.Z=3; p2.Z<=13; p2.Z++)
+					{
+						block->setTempMod(p2, mod);
+					}
+				}
+#endif
+			}
+		} //envlock
+
+#if 0
+		/*
+			Acknowledge block
+		*/
+		/*
+			[0] u16 command
+			[2] u8 count
+			[3] v3s16 pos_0
+			[3+6] v3s16 pos_1
+			...
+		*/
+		u32 replysize = 2+1+6;
+		SharedBuffer<u8> reply(replysize);
+		writeU16(&reply[0], TOSERVER_GOTBLOCKS);
+		reply[2] = 1;
+		writeV3S16(&reply[3], p);
+		// Send as reliable
+		m_con.Send(PEER_ID_SERVER, 1, reply, true);
+#endif
+
+		/*
+			Update Mesh of this block and blocks at x-, y- and z-.
+			Environment should not be locked as it interlocks with the
+			main thread, from which is will want to retrieve textures.
+		*/
+
+		//m_env.getClientMap().updateMeshes(block->getPos(), getDayNightRatio());
+		
+		addUpdateMeshTaskWithEdge(p, true);
+	}
 	else if(command == TOCLIENT_PLAYERPOS)
 	{
 		dstream<<"WARNING: Received deprecated TOCLIENT_PLAYERPOS"
 				<<std::endl;
 		/*u16 our_peer_id;
 		{
-			JMutexAutoLock lock(m_con_mutex);
+			//JMutexAutoLock lock(m_con_mutex); //bulk comment-out
 			our_peer_id = m_con.GetPeerID();
 		}
 		// Cancel if we don't have a peer id
@@ -587,7 +741,7 @@ void Client::ProcessData(u8 *data, u32 datasize, u16 sender_peer_id)
 		}*/
 
 		{ //envlock
-			JMutexAutoLock envlock(m_env_mutex);
+			//JMutexAutoLock envlock(m_env_mutex); //bulk comment-out
 			
 			u32 player_size = 2+12+12+4+4;
 				
@@ -641,7 +795,7 @@ void Client::ProcessData(u8 *data, u32 datasize, u16 sender_peer_id)
 	{
 		u16 our_peer_id;
 		{
-			JMutexAutoLock lock(m_con_mutex);
+			//JMutexAutoLock lock(m_con_mutex); //bulk comment-out
 			our_peer_id = m_con.GetPeerID();
 		}
 		// Cancel if we don't have a peer id
@@ -655,7 +809,7 @@ void Client::ProcessData(u8 *data, u32 datasize, u16 sender_peer_id)
 		//dstream<<DTIME<<"Client: Server reports players:"<<std::endl;
 
 		{ //envlock
-			JMutexAutoLock envlock(m_env_mutex);
+			//JMutexAutoLock envlock(m_env_mutex); //bulk comment-out
 			
 			u32 item_size = 2+PLAYERNAME_SIZE;
 			u32 player_count = (datasize-2) / item_size;
@@ -754,7 +908,7 @@ void Client::ProcessData(u8 *data, u32 datasize, u16 sender_peer_id)
 		//dstream<<"Client received TOCLIENT_SECTORMETA"<<std::endl;
 
 		{ //envlock
-			JMutexAutoLock envlock(m_env_mutex);
+			//JMutexAutoLock envlock(m_env_mutex); //bulk comment-out
 			
 			std::string datastring((char*)&data[2], datasize-2);
 			std::istringstream is(datastring, std::ios_base::binary);
@@ -788,7 +942,7 @@ void Client::ProcessData(u8 *data, u32 datasize, u16 sender_peer_id)
 
 		{ //envlock
 			//TimeTaker t2("mutex locking", m_device);
-			JMutexAutoLock envlock(m_env_mutex);
+			//JMutexAutoLock envlock(m_env_mutex); //bulk comment-out
 			//t2.stop();
 			
 			//TimeTaker t3("istringstream init", m_device);
@@ -823,7 +977,7 @@ void Client::ProcessData(u8 *data, u32 datasize, u16 sender_peer_id)
 		
 		{ //envlock
 		
-		JMutexAutoLock envlock(m_env_mutex);
+		//JMutexAutoLock envlock(m_env_mutex); //bulk comment-out
 
 		u8 buf[12];
 
@@ -981,7 +1135,7 @@ void Client::ProcessData(u8 *data, u32 datasize, u16 sender_peer_id)
 		
 		u16 time = readU16(&data[2]);
 		time = time % 24000;
-		m_time_of_day.set(time);
+		m_time_of_day = time;
 		//dstream<<"Client: time="<<time<<std::endl;
 		
 		/*
@@ -992,9 +1146,9 @@ void Client::ProcessData(u8 *data, u32 datasize, u16 sender_peer_id)
 			12000 = midday
 		*/
 		{
-			u32 dr = time_to_daynight_ratio(m_time_of_day.get());
+			u32 dr = time_to_daynight_ratio(m_time_of_day);
 
-			dstream<<"Client: time_of_day="<<m_time_of_day.get()
+			dstream<<"Client: time_of_day="<<m_time_of_day
 					<<", dr="<<dr
 					<<std::endl;
 			
@@ -1070,7 +1224,7 @@ void Client::ProcessData(u8 *data, u32 datasize, u16 sender_peer_id)
 				u16 id = readU16((u8*)buf);
 				// Remove it
 				{
-					JMutexAutoLock envlock(m_env_mutex);
+					//JMutexAutoLock envlock(m_env_mutex); //bulk comment-out
 					m_env.removeActiveObject(id);
 				}
 			}
@@ -1087,7 +1241,7 @@ void Client::ProcessData(u8 *data, u32 datasize, u16 sender_peer_id)
 				std::string data = deSerializeLongString(is);
 				// Add it
 				{
-					JMutexAutoLock envlock(m_env_mutex);
+					//JMutexAutoLock envlock(m_env_mutex); //bulk comment-out
 					m_env.addActiveObject(id, type, data);
 				}
 			}
@@ -1130,12 +1284,18 @@ void Client::ProcessData(u8 *data, u32 datasize, u16 sender_peer_id)
 				}
 				// Pass on to the environment
 				{
-					JMutexAutoLock envlock(m_env_mutex);
+					//JMutexAutoLock envlock(m_env_mutex); //bulk comment-out
 					m_env.processActiveObjectMessage(id, message);
 				}
 			}
 		}
 	}
+	else
+	{
+		dout_client<<DTIME<<"WARNING: Client: Ignoring unknown command "
+				<<command<<std::endl;
+	}
+#if 0
 	// Default to queueing it (for slow commands)
 	else
 	{
@@ -1144,8 +1304,10 @@ void Client::ProcessData(u8 *data, u32 datasize, u16 sender_peer_id)
 		IncomingPacket packet(data, datasize);
 		m_incoming_queue.push_back(packet);
 	}
+#endif
 }
 
+#if 0
 /*
 	Returns true if there was something in queue
 */
@@ -1158,7 +1320,7 @@ bool Client::AsyncProcessPacket()
 
 	con::Peer *peer;
 	{
-		JMutexAutoLock lock(m_con_mutex);
+		//JMutexAutoLock lock(m_con_mutex); //bulk comment-out
 		// All data is coming from the server
 		peer = m_con.GetPeer(PEER_ID_SERVER);
 	}
@@ -1192,7 +1354,6 @@ bool Client::AsyncProcessPacket()
 		
 		/*dout_client<<DTIME<<"Client: Thread: BLOCKDATA for ("
 				<<p.X<<","<<p.Y<<","<<p.Z<<")"<<std::endl;*/
-
 		/*dstream<<DTIME<<"Client: Thread: BLOCKDATA for ("
 				<<p.X<<","<<p.Y<<","<<p.Z<<")"<<std::endl;*/
 		
@@ -1203,7 +1364,7 @@ bool Client::AsyncProcessPacket()
 		MapBlock *block;
 		
 		{ //envlock
-			JMutexAutoLock envlock(m_env_mutex);
+			//JMutexAutoLock envlock(m_env_mutex); //bulk comment-out
 			
 			v2s16 p2d(p.X, p.Z);
 			sector = m_env.getMap().emergeSector(p2d);
@@ -1218,6 +1379,9 @@ bool Client::AsyncProcessPacket()
 
 			assert(sp == p2d);
 			//assert(sector->getPos() == p2d);
+
+			//TimeTaker timer("MapBlock deSerialize");
+			// 0ms
 			
 			try{
 				block = sector->getBlockNoCreate(p.Y);
@@ -1248,13 +1412,14 @@ bool Client::AsyncProcessPacket()
 				block->setTempMod(v3s16(8,8,8), mod);
 				block->setTempMod(v3s16(8,7,8), mod);
 				block->setTempMod(v3s16(8,6,8), mod);*/
-				
+#if 0
 				/*
 					Add some coulds
 					Well, this is a dumb way to do it, they should just
-					be drawn as separate objects.
+					be drawn as separate objects. But the looks of them
+					can be tested this way.
 				*/
-				/*if(p.Y == 3)
+				if(p.Y == 3)
 				{
 					NodeMod mod;
 					mod.type = NODEMOD_CHANGECONTENT;
@@ -1266,7 +1431,8 @@ bool Client::AsyncProcessPacket()
 					{
 						block->setTempMod(p2, mod);
 					}
-				}*/
+				}
+#endif
 			}
 		} //envlock
 		
@@ -1294,7 +1460,20 @@ bool Client::AsyncProcessPacket()
 			main thread, from which is will want to retrieve textures.
 		*/
 
-		m_env.getClientMap().updateMeshes(block->getPos(), getDayNightRatio());
+		//m_env.getClientMap().updateMeshes(block->getPos(), getDayNightRatio());
+		
+		MeshMakeData data;
+		{
+			//TimeTaker timer("data fill");
+			// 0ms
+			data.fill(getDayNightRatio(), block);
+		}
+		{
+			TimeTaker timer("make mesh");
+			scene::SMesh *mesh_new = NULL;
+			mesh_new = makeMapBlockMesh(&data);
+			block->replaceMesh(mesh_new);
+		}
 	}
 	else
 	{
@@ -1323,13 +1502,15 @@ bool Client::AsyncProcessData()
 	}
 	return false;
 }
+#endif
 
 void Client::Send(u16 channelnum, SharedBuffer<u8> data, bool reliable)
 {
-	JMutexAutoLock lock(m_con_mutex);
+	//JMutexAutoLock lock(m_con_mutex); //bulk comment-out
 	m_con.Send(PEER_ID_SERVER, channelnum, data, reliable);
 }
 
+#if 0
 IncomingPacket Client::getPacket()
 {
 	JMutexAutoLock lock(m_incoming_queue_mutex);
@@ -1349,6 +1530,7 @@ IncomingPacket Client::getPacket()
 	m_incoming_queue.erase(i);
 	return packet;
 }
+#endif
 
 void Client::groundAction(u8 action, v3s16 nodepos_undersurface,
 		v3s16 nodepos_oversurface, u16 item)
@@ -1496,7 +1678,7 @@ void Client::sendChatMessage(const std::wstring &message)
 
 void Client::sendPlayerPos()
 {
-	JMutexAutoLock envlock(m_env_mutex);
+	//JMutexAutoLock envlock(m_env_mutex); //bulk comment-out
 	
 	Player *myplayer = m_env.getLocalPlayer();
 	if(myplayer == NULL)
@@ -1504,7 +1686,7 @@ void Client::sendPlayerPos()
 	
 	u16 our_peer_id;
 	{
-		JMutexAutoLock lock(m_con_mutex);
+		//JMutexAutoLock lock(m_con_mutex); //bulk comment-out
 		our_peer_id = m_con.GetPeerID();
 	}
 	
@@ -1543,7 +1725,7 @@ void Client::sendPlayerPos()
 
 void Client::removeNode(v3s16 p)
 {
-	JMutexAutoLock envlock(m_env_mutex);
+	//JMutexAutoLock envlock(m_env_mutex); //bulk comment-out
 	
 	core::map<v3s16, MapBlock*> modified_blocks;
 
@@ -1567,7 +1749,7 @@ void Client::removeNode(v3s16 p)
 
 void Client::addNode(v3s16 p, MapNode n)
 {
-	JMutexAutoLock envlock(m_env_mutex);
+	//JMutexAutoLock envlock(m_env_mutex); //bulk comment-out
 
 	TimeTaker timer1("Client::addNode()");
 
@@ -1601,19 +1783,19 @@ void Client::updateCamera(v3f pos, v3f dir)
 
 MapNode Client::getNode(v3s16 p)
 {
-	JMutexAutoLock envlock(m_env_mutex);
+	//JMutexAutoLock envlock(m_env_mutex); //bulk comment-out
 	return m_env.getMap().getNode(p);
 }
 
 NodeMetadata* Client::getNodeMetadataClone(v3s16 p)
 {
-	JMutexAutoLock envlock(m_env_mutex);
+	//JMutexAutoLock envlock(m_env_mutex); //bulk comment-out
 	return m_env.getMap().getNodeMetadataClone(p);
 }
 
 v3f Client::getPlayerPosition()
 {
-	JMutexAutoLock envlock(m_env_mutex);
+	//JMutexAutoLock envlock(m_env_mutex); //bulk comment-out
 	LocalPlayer *player = m_env.getLocalPlayer();
 	assert(player != NULL);
 	return player->getPosition();
@@ -1621,7 +1803,7 @@ v3f Client::getPlayerPosition()
 
 void Client::setPlayerControl(PlayerControl &control)
 {
-	JMutexAutoLock envlock(m_env_mutex);
+	//JMutexAutoLock envlock(m_env_mutex); //bulk comment-out
 	LocalPlayer *player = m_env.getLocalPlayer();
 	assert(player != NULL);
 	player->control = control;
@@ -1632,7 +1814,7 @@ void Client::setPlayerControl(PlayerControl &control)
 bool Client::getLocalInventoryUpdated()
 {
 	// m_inventory_updated is behind envlock
-	JMutexAutoLock envlock(m_env_mutex);
+	//JMutexAutoLock envlock(m_env_mutex); //bulk comment-out
 	bool updated = m_inventory_updated;
 	m_inventory_updated = false;
 	return updated;
@@ -1641,7 +1823,7 @@ bool Client::getLocalInventoryUpdated()
 // Copies the inventory of the local player to parameter
 void Client::getLocalInventory(Inventory &dst)
 {
-	JMutexAutoLock envlock(m_env_mutex);
+	//JMutexAutoLock envlock(m_env_mutex); //bulk comment-out
 	Player *player = m_env.getLocalPlayer();
 	assert(player != NULL);
 	dst = player->inventory;
@@ -1653,7 +1835,7 @@ MapBlockObject * Client::getSelectedObject(
 		core::line3d<f32> shootline_on_map
 	)
 {
-	JMutexAutoLock envlock(m_env_mutex);
+	//JMutexAutoLock envlock(m_env_mutex); //bulk comment-out
 
 	core::array<DistanceSortedObject> objects;
 
@@ -1715,12 +1897,12 @@ MapBlockObject * Client::getSelectedObject(
 void Client::printDebugInfo(std::ostream &os)
 {
 	//JMutexAutoLock lock1(m_fetchblock_mutex);
-	JMutexAutoLock lock2(m_incoming_queue_mutex);
+	/*JMutexAutoLock lock2(m_incoming_queue_mutex);
 
 	os<<"m_incoming_queue.getSize()="<<m_incoming_queue.getSize()
 		//<<", m_fetchblock_history.size()="<<m_fetchblock_history.size()
 		//<<", m_opt_not_found_history.size()="<<m_opt_not_found_history.size()
-		<<std::endl;
+		<<std::endl;*/
 }
 	
 /*s32 Client::getDayNightIndex()
@@ -1731,63 +1913,87 @@ void Client::printDebugInfo(std::ostream &os)
 
 u32 Client::getDayNightRatio()
 {
-	JMutexAutoLock envlock(m_env_mutex);
+	//JMutexAutoLock envlock(m_env_mutex); //bulk comment-out
 	return m_env.getDayNightRatio();
 }
 
-/*void Client::updateSomeExpiredMeshes()
+void Client::addUpdateMeshTask(v3s16 p, bool ack_to_server)
 {
-	TimeTaker timer("updateSomeExpiredMeshes()", g_device);
+	/*dstream<<"Client::addUpdateMeshTask(): "
+			<<"("<<p.X<<","<<p.Y<<","<<p.Z<<")"
+			<<std::endl;*/
+
+	MapBlock *b = m_env.getMap().getBlockNoCreateNoEx(p);
+	if(b == NULL)
+		return;
+
+	/*
+		Create a task to update the mesh of the block
+	*/
 	
-	Player *player;
+	MeshMakeData *data = new MeshMakeData;
+	
 	{
-		JMutexAutoLock envlock(m_env_mutex);
-		player = m_env.getLocalPlayer();
+		//TimeTaker timer("data fill");
+		// 0ms
+		data->fill(getDayNightRatio(), b);
 	}
 
-	u32 daynight_ratio = getDayNightRatio();
-
-	v3f playerpos = player->getPosition();
-	v3f playerspeed = player->getSpeed();
-
-	v3s16 center_nodepos = floatToInt(playerpos, BS);
-	v3s16 center = getNodeBlockPos(center_nodepos);
-
-	u32 counter = 0;
-
-	s16 d_max = 5;
+	// Debug wait
+	//while(m_mesh_update_thread.m_queue_in.size() > 0) sleep_ms(10);
 	
-	for(s16 d = 0; d <= d_max; d++)
+	// Add task to queue
+	m_mesh_update_thread.m_queue_in.addBlock(p, data, ack_to_server);
+
+	/*dstream<<"Mesh update input queue size is "
+			<<m_mesh_update_thread.m_queue_in.size()
+			<<std::endl;*/
+	
+#if 0
+	// Temporary test: make mesh directly in here
 	{
-		core::list<v3s16> list;
-		getFacePositions(list, d);
-		
-		core::list<v3s16>::Iterator li;
-		for(li=list.begin(); li!=list.end(); li++)
-		{
-			v3s16 p = *li + center;
-			MapBlock *block = NULL;
-			try
-			{
-				//JMutexAutoLock envlock(m_env_mutex);
-				block = m_env.getMap().getBlockNoCreate(p);
-			}
-			catch(InvalidPositionException &e)
-			{
-			}
-
-			if(block == NULL)
-				continue;
-
-			if(block->getMeshExpired() == false)
-				continue;
-
-			block->updateMesh(daynight_ratio);
-
-			counter++;
-			if(counter >= 5)
-				return;
-		}
+		//TimeTaker timer("make mesh");
+		// 10ms
+		scene::SMesh *mesh_new = NULL;
+		mesh_new = makeMapBlockMesh(data);
+		b->replaceMesh(mesh_new);
+		delete data;
 	}
-}*/
+#endif
+
+	b->setMeshExpired(false);
+}
+
+void Client::addUpdateMeshTaskWithEdge(v3s16 blockpos, bool ack_to_server)
+{
+	/*{
+		v3s16 p = blockpos;
+		dstream<<"Client::addUpdateMeshTaskWithEdge(): "
+				<<"("<<p.X<<","<<p.Y<<","<<p.Z<<")"
+				<<std::endl;
+	}*/
+
+	try{
+		v3s16 p = blockpos + v3s16(0,0,0);
+		//MapBlock *b = m_env.getMap().getBlockNoCreate(p);
+		addUpdateMeshTask(p, ack_to_server);
+	}
+	catch(InvalidPositionException &e){}
+	// Leading edge
+	try{
+		v3s16 p = blockpos + v3s16(-1,0,0);
+		addUpdateMeshTask(p);
+	}
+	catch(InvalidPositionException &e){}
+	try{
+		v3s16 p = blockpos + v3s16(0,-1,0);
+		addUpdateMeshTask(p);
+	}
+	catch(InvalidPositionException &e){}
+	try{
+		v3s16 p = blockpos + v3s16(0,0,-1);
+		addUpdateMeshTask(p);
+	}
+	catch(InvalidPositionException &e){}
+}
 

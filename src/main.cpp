@@ -482,8 +482,8 @@ Inventory local_inventory;
 
 u16 g_selected_item = 0;
 
-bool g_show_map_plot = false;
-bool g_refresh_map_plot = false;
+/*bool g_show_map_plot = false;
+bool g_refresh_map_plot = false;*/
 
 /*
 	Debug streams
@@ -601,7 +601,7 @@ public:
 			if(event.KeyInput.PressedDown)
 			{
 				//dstream<<"Pressed key: "<<(char)event.KeyInput.Key<<std::endl;
-				if(g_show_map_plot)
+				/*if(g_show_map_plot)
 				{
 					if(event.KeyInput.Key == irr::KEY_ESCAPE
 						|| event.KeyInput.Key == irr::KEY_KEY_M)
@@ -609,7 +609,7 @@ public:
 						g_show_map_plot = false;
 					}
 					return true;
-				}
+				}*/
 				
 				/*
 					Launch menus
@@ -685,13 +685,13 @@ public:
 				}
 
 				// Map plot
-				if(event.KeyInput.Key == irr::KEY_KEY_M)
+				/*if(event.KeyInput.Key == irr::KEY_KEY_M)
 				{
 					dstream<<"Map plot requested"<<std::endl;
 					g_show_map_plot = !g_show_map_plot;
 					if(g_show_map_plot)
 						g_refresh_map_plot = true;
-				}
+				}*/
 				
 			}
 		}
@@ -2282,7 +2282,7 @@ int main(int argc, char *argv[])
 
 		//std::cout<<"busytime_u32="<<busytime_u32<<std::endl;
 	
-		// Absolutelu necessary for wine!
+		// Necessary for device->getTimer()->getTime()
 		device->run();
 
 		/*
@@ -2306,7 +2306,7 @@ int main(int argc, char *argv[])
 			}
 		}
 
-		// Absolutelu necessary for wine!
+		// Necessary for device->getTimer()->getTime()
 		device->run();
 
 		/*
