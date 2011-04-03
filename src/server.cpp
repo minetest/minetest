@@ -3483,7 +3483,7 @@ Player *Server::emergePlayer(const char *name, const char *password,
 
 		player->setPosition(intToFloat(v3s16(
 				nodepos.X,
-				groundheight + 1,
+				groundheight + 5, // Accomodate mud
 				nodepos.Y
 		), BS));
 #endif

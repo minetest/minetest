@@ -484,9 +484,6 @@ void ServerEnvironment::step(float dtime)
 	{
 		m_random_spawn_timer += myrand_range(2.0, 20.0);
 
-		/*TestSAO *obj = new TestSAO(0,
-				v3f(myrand_range(-2*BS,2*BS), BS*5, myrand_range(-2*BS,2*BS)));*/
-
 		/*
 			Find some position
 		*/
@@ -506,34 +503,14 @@ void ServerEnvironment::step(float dtime)
 		);
 
 		/*
-			Create a LuaSAO (ServerActiveObject)
+			Create a TestSAO object
 		*/
 
-		LuaSAO *obj = new LuaSAO(this, 0, pos);
-		
-		/*
-			Select a random type for it
-		*/
-		std::string objectdir = porting::getDataPath("scripts/objects");
-		std::vector<fs::DirListNode> dirlist = fs::GetDirListing(objectdir);
-		if(dirlist.size() > 0)
-		{
-			u32 selected_i = myrand_range(0, dirlist.size()-1);
-			std::string selected_name = "";
-			selected_name = dirlist[selected_i].name;
-			/*for(u32 i=0; i<dirlist.size(); i++)*/
-			
-			dstream<<"ServerEnvironment: Selected script name \""<<selected_name
-					<<"\" for new lua object"<<std::endl;
+		TestSAO *obj = new TestSAO(this, 0,
+				v3f(myrand_range(-2*BS,2*BS), BS*5, myrand_range(-2*BS,2*BS)));
 
-			/*
-				Load the scripts for the type
-			*/
-			obj->initializeFromNothing(selected_name.c_str());
-
-			// Add the object to the environment
-			addActiveObject(obj);
-		}
+		// Add the object to the environment
+		addActiveObject(obj);
 	}
 
 	} // enable_experimental

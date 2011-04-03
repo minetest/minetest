@@ -97,12 +97,6 @@ Client::Client(
 
 		m_env.addPlayer(player);
 	}
-
-	// Add some active objects for testing
-	/*{
-		ClientActiveObject *obj = new TestCAO(0, v3f(0, 10*BS, 0));
-		m_env.addActiveObject(obj);
-	}*/
 }
 
 Client::~Client()

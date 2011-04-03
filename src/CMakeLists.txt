@@ -104,7 +104,6 @@ include_directories(
 	${CMAKE_BUILD_TYPE}
 	${PNG_INCLUDE_DIR}
 	"${PROJECT_SOURCE_DIR}/jthread"
-	"${PROJECT_SOURCE_DIR}/lua/src"
 )
 
 set(EXECUTABLE_OUTPUT_PATH ../bin)
@@ -123,9 +122,7 @@ if(BUILD_CLIENT)
 		${PLATFORM_LIBS}
 		${CLIENT_PLATFORM_LIBS}
 		jthread
-		lua
 	)
-	#${CMAKE_CURRENT_SOURCE_DIR}/lua/build/liblua
 endif(BUILD_CLIENT)
 
 if(BUILD_SERVER)
@@ -135,7 +132,6 @@ if(BUILD_SERVER)
 		${ZLIB_LIBRARIES}
 		${PLATFORM_LIBS}
 		jthread
-		lua
 	)
 endif(BUILD_SERVER)
 
@@ -218,6 +214,5 @@ endif(BUILD_SERVER)
 # Subdirectories
 
 add_subdirectory(jthread)
-add_subdirectory(lua)
 
 #end

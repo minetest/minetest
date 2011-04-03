@@ -113,43 +113,5 @@ private:
 	float m_age;
 };
 
-extern "C"{
-#include "lua.h"
-#include "lualib.h"
-#include "lauxlib.h"
-}
-
-class LuaSAO : public ServerActiveObject
-{
-public:
-	LuaSAO(ServerEnvironment *env, u16 id, v3f pos);
-	virtual ~LuaSAO();
-
-	u8 getType() const
-	{
-		return ACTIVEOBJECT_TYPE_LUA;
-	}
-
-	virtual std::string getClientInitializationData();
-	virtual std::string getServerInitializationData();
-	
-	void initializeFromNothing(const std::string &script_name);
-	void initializeFromSave(const std::string &data);
-	
-	void loadScripts(const std::string &script_name);
-
-	void step(float dtime, Queue<ActiveObjectMessage> &messages);
-
-	/*
-		Stuff available for usage for the lua callbacks
-	*/
-	// This is moved onwards at the end of step()
-	Queue<ActiveObjectMessage> m_message_queue;
-
-private:
-	lua_State* L;
-	std::string m_script_name;
-};
-
 #endif
 
