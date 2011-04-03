@@ -50,6 +50,7 @@ configure_file(
 )
 
 set(common_SRCS
+	nodemetadata.cpp
 	serverobject.cpp
 	noise.cpp
 	mineral.cpp

@@ -39,6 +39,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "constants.h"
 #include "voxel.h"
 #include "mapchunk.h"
+#include "nodemetadata.h"
 
 #define MAPTYPE_BASE 0
 #define MAPTYPE_SERVER 1
@@ -275,6 +276,13 @@ public:
 	virtual void PrintInfo(std::ostream &out);
 	
 	void transformLiquids(core::map<v3s16, MapBlock*> & modified_blocks);
+
+	/*
+		Node metadata
+		These are basically coordinate wrappers to MapBlock
+	*/
+	
+	NodeMetadata* getNodeMetadataClone(v3s16 p);
 
 	/*
 		Variables

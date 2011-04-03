@@ -94,12 +94,8 @@ void init_content_inventory_texture_paths();
 #define CONTENT_COALSTONE 11
 #define CONTENT_WOOD 12
 #define CONTENT_SAND 13
-
-/*
-	This is used by all kinds of things to allocate memory for all
-	contents except CONTENT_AIR and CONTENT_IGNORE
-*/
-#define USEFUL_CONTENT_COUNT 14
+#define CONTENT_FURNACE 14
+#define CONTENT_SIGN_WALL 15
 
 /*
 	Content feature list

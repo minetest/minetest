@@ -31,6 +31,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "constants.h"
 #include "mapblockobject.h"
 #include "voxel.h"
+#include "nodemetadata.h"
 
 // Named by looking towards z+
 enum{
@@ -619,6 +620,8 @@ public:
 	JMutex mesh_mutex;
 #endif
 	
+	NodeMetadataList m_node_metadata;
+	
 private:
 	/*
 		Private member variables
@@ -665,27 +668,11 @@ private:
 	// Whether day and night lighting differs
 	bool m_day_night_differs;
 	
-	/*
-		Whether everything that is mainly located on this block has
-		been added to the world.
-
-		While this is false, a block can still be changed a bit when
-		stuff is added to the neighboring blocks that extends to this
-		one.
-
-		When this is false on every one of a 3x3x3 chunk of blocks, the
-		central one will not be changed by the map generator in the
-		future.
-
-		TODO: Save in file
-	*/
-	//bool m_not_fully_generated;
-	
 	MapBlockObjectList m_objects;
 
 	// Object spawning stuff
 	float m_spawn_timer;
-	
+
 #ifndef SERVER // Only on client
 	/*
 		Set to true if the mesh has been ordered to be updated

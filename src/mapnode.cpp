@@ -201,6 +201,7 @@ void init_mapnode()
 	}
 	f->dug_item = std::string("MaterialItem ")+itos(i)+" 1";
 	
+	// Deprecated
 	i = CONTENT_COALSTONE;
 	f = &g_content_features[i];
 	//f->translate_to = new MapNode(CONTENT_STONE, MINERAL_COAL);
@@ -282,6 +283,25 @@ void init_mapnode()
 	f->setInventoryTexture("torch_on_floor.png");
 	f->param_type = CPT_LIGHT;
 	f->light_propagates = true;
+	f->solidness = 0; // drawn separately, makes no faces
+	f->walkable = false;
+	f->wall_mounted = true;
+	f->dug_item = std::string("MaterialItem ")+itos(i)+" 1";
+	
+	i = CONTENT_FURNACE;
+	f = &g_content_features[i];
+	f->setAllTextures("furnace_side.png");
+	f->setTexture(2, "furnace_front.png");
+	f->setInventoryTexture("furnace_front.png");
+	f->param_type = CPT_NONE;
+	f->dug_item = std::string("MaterialItem ")+itos(i)+" 1";
+	
+	i = CONTENT_SIGN_WALL;
+	f = &g_content_features[i];
+	f->setInventoryTexture("sign_wall.png");
+	f->param_type = CPT_LIGHT;
+	f->light_propagates = true;
+	f->sunlight_propagates = true;
 	f->solidness = 0; // drawn separately, makes no faces
 	f->walkable = false;
 	f->wall_mounted = true;

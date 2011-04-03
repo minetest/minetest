@@ -941,19 +941,28 @@ void Map::addNodeAndUpdate(v3s16 p, MapNode n,
 	}
 
 	/*
+		If node lets sunlight through and is under sunlight, it has
+		sunlight too.
+	*/
+	if(node_under_sunlight && content_features(n.d).sunlight_propagates)
+	{
+		n.setLight(LIGHTBANK_DAY, LIGHT_SUN);
+	}
+	
+	/*
 		Set the node on the map
 	*/
 	
 	setNode(p, n);
 	
 	/*
-		If node is under sunlight, take all sunlighted nodes under
-		it and clear light from them and from where the light has
-		been spread.
+		If node is under sunlight and doesn't let sunlight through,
+		take all sunlighted nodes under it and clear light from them
+		and from where the light has been spread.
 		TODO: This could be optimized by mass-unlighting instead
 		      of looping
 	*/
-	if(node_under_sunlight)
+	if(node_under_sunlight && !content_features(n.d).sunlight_propagates)
 	{
 		s16 y = p.Y - 1;
 		for(;; y--){
@@ -981,7 +990,7 @@ void Map::addNodeAndUpdate(v3s16 p, MapNode n,
 				break;
 		}
 	}
-	
+
 	for(s32 i=0; i<2; i++)
 	{
 		enum LightBank bank = banks[i];
@@ -1685,6 +1694,17 @@ void Map::transformLiquids(core::map<v3s16, MapBlock*> & modified_blocks)
 			break;
 	}
 	//dstream<<"Map::transformLiquids(): loopcount="<<loopcount<<std::endl;
+}
+
+NodeMetadata* Map::getNodeMetadataClone(v3s16 p)
+{
+	v3s16 blockpos = getNodeBlockPos(p);
+	v3s16 p_rel = p - blockpos*MAP_BLOCKSIZE;
+	MapBlock *block = getBlockNoCreateNoEx(blockpos);
+	if(block == NULL)
+		return NULL;
+	NodeMetadata *meta = block->m_node_metadata.getClone(p_rel);
+	return meta;
 }
 
 /*

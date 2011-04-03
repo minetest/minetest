@@ -3327,6 +3327,36 @@ void setCreativeInventory(Player *player)
 	/*
 		Give materials
 	*/
+	
+	// CONTENT_IGNORE-terminated list
+	u8 material_items[] = {
+		CONTENT_TORCH,
+		CONTENT_MUD,
+		CONTENT_STONE,
+		CONTENT_SAND,
+		CONTENT_TREE,
+		CONTENT_LEAVES,
+		CONTENT_MESE,
+		CONTENT_WATERSOURCE,
+		CONTENT_CLOUD,
+		CONTENT_FURNACE,
+		CONTENT_SIGN_WALL,
+		CONTENT_IGNORE
+	};
+	
+	u8 *mip = material_items;
+	for(u16 i=0; i<PLAYER_INVENTORY_SIZE; i++)
+	{
+		if(*mip == CONTENT_IGNORE)
+			break;
+
+		InventoryItem *item = new MaterialItem(*mip, 1);
+		player->inventory.addItem("main", item);
+
+		mip++;
+	}
+
+#if 0
 	assert(USEFUL_CONTENT_COUNT <= PLAYER_INVENTORY_SIZE);
 	
 	// add torch first
@@ -3344,6 +3374,8 @@ void setCreativeInventory(Player *player)
 		InventoryItem *item = new MaterialItem(i, 1);
 		player->inventory.addItem("main", item);
 	}
+#endif
+
 	// Sign
 	{
 		InventoryItem *item = new MapBlockObjectItem("Sign Example text");

@@ -799,6 +799,7 @@ void MapBlock::updateMesh(u32 daynight_ratio)
 		{
 			video::SColor c(255,255,255,255);
 
+			// Wall at X+ of node
 			video::S3DVertex vertices[4] =
 			{
 				video::S3DVertex(-BS/2,-BS/2,0, 0,0,0, c, 0,1),
@@ -849,6 +850,61 @@ void MapBlock::updateMesh(u32 daynight_ratio)
 			else
 				material.setTexture(0, 
 						g_texturesource->getTextureRaw("torch.png"));
+
+			u16 indices[] = {0,1,2,2,3,0};
+			// Add to mesh collector
+			collector.append(material, vertices, 4, indices, 6);
+		}
+		/*
+			Signs on walls
+		*/
+		if(n.d == CONTENT_SIGN_WALL)
+		{
+			u8 l = decode_light(n.getLightBlend(daynight_ratio));
+			video::SColor c(255,l,l,l);
+				
+			float d = (float)BS/16;
+			// Wall at X+ of node
+			video::S3DVertex vertices[4] =
+			{
+				video::S3DVertex(BS/2-d,-BS/2,-BS/2, 0,0,0, c, 0,1),
+				video::S3DVertex(BS/2-d,-BS/2,BS/2, 0,0,0, c, 1,1),
+				video::S3DVertex(BS/2-d,BS/2,BS/2, 0,0,0, c, 1,0),
+				video::S3DVertex(BS/2-d,BS/2,-BS/2, 0,0,0, c, 0,0),
+			};
+
+			v3s16 dir = unpackDir(n.dir);
+
+			for(s32 i=0; i<4; i++)
+			{
+				if(dir == v3s16(1,0,0))
+					vertices[i].Pos.rotateXZBy(0);
+				if(dir == v3s16(-1,0,0))
+					vertices[i].Pos.rotateXZBy(180);
+				if(dir == v3s16(0,0,1))
+					vertices[i].Pos.rotateXZBy(90);
+				if(dir == v3s16(0,0,-1))
+					vertices[i].Pos.rotateXZBy(-90);
+				if(dir == v3s16(0,-1,0))
+					vertices[i].Pos.rotateXYBy(-90);
+				if(dir == v3s16(0,1,0))
+					vertices[i].Pos.rotateXYBy(90);
+
+				vertices[i].Pos += intToFloat(p + getPosRelative(), BS);
+			}
+
+			// Set material
+			video::SMaterial material;
+			material.setFlag(video::EMF_LIGHTING, false);
+			material.setFlag(video::EMF_BACK_FACE_CULLING, false);
+			material.setFlag(video::EMF_BILINEAR_FILTER, false);
+			material.setFlag(video::EMF_FOG_ENABLE, true);
+			//material.MaterialType = video::EMT_TRANSPARENT_ALPHA_CHANNEL;
+			material.MaterialType
+					= video::EMT_TRANSPARENT_ALPHA_CHANNEL_REF;
+
+			material.setTexture(0, 
+					g_texturesource->getTextureRaw("sign_wall.png"));
 
 			u16 indices[] = {0,1,2,2,3,0};
 			// Add to mesh collector

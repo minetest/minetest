@@ -60,6 +60,8 @@ void initializeMaterialProperties()
 	g_material_properties[CONTENT_SAND].setDiggingProperties("",
 			DiggingProperties(true, 0.4, 0));
 	
+	setStoneLikeDiggingProperties(CONTENT_FURNACE, 1.0);
+	
 	/*
 		Add MesePick to everything
 	*/

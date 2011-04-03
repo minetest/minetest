@@ -138,7 +138,7 @@ public:
 
 	// Called from updater thread
 	// Returns dtime
-	float asyncStep();
+	//float asyncStep();
 
 	void ProcessData(u8 *data, u32 datasize, u16 sender_peer_id);
 	// Returns true if something was received
@@ -166,6 +166,8 @@ public:
 	
 	// Returns InvalidPositionException if not found
 	MapNode getNode(v3s16 p);
+	// Wrapper to Map
+	NodeMetadata* getNodeMetadataClone(v3s16 p);
 
 	v3f getPlayerPosition();
 

@@ -36,7 +36,7 @@ void * ClientUpdateThread::Thread()
 	
 	while(getRun())
 	{
-		m_client->asyncStep();
+		//m_client->asyncStep();
 
 		//m_client->updateSomeExpiredMeshes();
 
@@ -357,6 +357,7 @@ void Client::step(float dtime)
 	}*/
 }
 
+#if 0
 float Client::asyncStep()
 {
 	DSTACK(__FUNCTION_NAME);
@@ -374,6 +375,7 @@ float Client::asyncStep()
 	return dtime;*/
 	return 0.0;
 }
+#endif
 
 // Virtual methods from con::PeerHandler
 void Client::peerAdded(con::Peer *peer)
@@ -1182,8 +1184,6 @@ bool Client::AsyncProcessPacket()
 		// Ignore too small packet
 		if(datasize < 8)
 			return true;
-		/*if(datasize < 8 + MapBlock::serializedLength(ser_version))
-			goto getdata;*/
 			
 		v3s16 p;
 		p.X = readS16(&data[2]);
@@ -1238,35 +1238,6 @@ bool Client::AsyncProcessPacket()
 				block->deSerialize(istr, ser_version);
 				sector->insertBlock(block);
 				//block->setChangedFlag();
-
-				//DEBUG
-				/*NodeMod mod;
-				mod.type = NODEMOD_CHANGECONTENT;
-				mod.param = CONTENT_MESE;
-				block->setTempMod(v3s16(8,10,8), mod);
-				block->setTempMod(v3s16(8,9,8), mod);
-				block->setTempMod(v3s16(8,8,8), mod);
-				block->setTempMod(v3s16(8,7,8), mod);
-				block->setTempMod(v3s16(8,6,8), mod);*/
-				
-				/*
-					Add some coulds
-					Well, this is a dumb way to do it, they should just
-					be drawn as separate objects.
-				*/
-				/*if(p.Y == 3)
-				{
-					NodeMod mod;
-					mod.type = NODEMOD_CHANGECONTENT;
-					mod.param = CONTENT_CLOUD;
-					v3s16 p2;
-					p2.Y = 8;
-					for(p2.X=3; p2.X<=13; p2.X++)
-					for(p2.Z=3; p2.Z<=13; p2.Z++)
-					{
-						block->setTempMod(p2, mod);
-					}
-				}*/
 			}
 		} //envlock
 		
@@ -1603,6 +1574,12 @@ MapNode Client::getNode(v3s16 p)
 {
 	JMutexAutoLock envlock(m_env_mutex);
 	return m_env.getMap().getNode(p);
+}
+
+NodeMetadata* Client::getNodeMetadataClone(v3s16 p)
+{
+	JMutexAutoLock envlock(m_env_mutex);
+	return m_env.getMap().getNodeMetadataClone(p);
 }
 
 v3f Client::getPlayerPosition()
