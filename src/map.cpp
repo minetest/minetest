@@ -5692,26 +5692,44 @@ void ClientMap::updateMeshes(v3s16 blockpos, u32 daynight_ratio)
 		b->updateMesh(daynight_ratio);
 	}
 	catch(InvalidPositionException &e){}
-	/*// Trailing edge
-	try{
-		v3s16 p = blockpos + v3s16(1,0,0);
-		MapBlock *b = getBlockNoCreate(p);
-		b->updateMesh(daynight_ratio);
-	}
-	catch(InvalidPositionException &e){}
-	try{
-		v3s16 p = blockpos + v3s16(0,1,0);
-		MapBlock *b = getBlockNoCreate(p);
-		b->updateMesh(daynight_ratio);
-	}
-	catch(InvalidPositionException &e){}
-	try{
-		v3s16 p = blockpos + v3s16(0,0,1);
-		MapBlock *b = getBlockNoCreate(p);
-		b->updateMesh(daynight_ratio);
-	}
-	catch(InvalidPositionException &e){}*/
 }
+
+#if 0
+/*
+	Update mesh of block in which the node is, and if the node is at the
+	leading edge, update the appropriate leading blocks too.
+*/
+void ClientMap::updateNodeMeshes(v3s16 nodepos, u32 daynight_ratio)
+{
+	v3s16 dirs[4] = {
+		v3s16(0,0,0),
+		v3s16(-1,0,0),
+		v3s16(0,-1,0),
+		v3s16(0,0,-1),
+	};
+	v3s16 blockposes[4];
+	for(u32 i=0; i<4; i++)
+	{
+		v3s16 np = nodepos + dirs[i];
+		blockposes[i] = getNodeBlockPos(np);
+		// Don't update mesh of block if it has been done already
+		bool already_updated = false;
+		for(u32 j=0; j<i; j++)
+		{
+			if(blockposes[j] == blockposes[i])
+			{
+				already_updated = true;
+				break;
+			}
+		}
+		if(already_updated)
+			continue;
+		// Update mesh
+		MapBlock *b = getBlockNoCreate(blockposes[i]);
+		b->updateMesh(daynight_ratio);
+	}
+}
+#endif
 
 void ClientMap::PrintInfo(std::ostream &out)
 {

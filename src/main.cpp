@@ -183,8 +183,6 @@ TODO: Remove IrrlichtWrapper
 Server:
 -------
 
-TODO: When player dies, throw items on map
-
 SUGG: Make an option to the server to disable building and digging near
       the starting position
 
@@ -202,6 +200,8 @@ FIXME: Server sometimes goes into some infinite PeerNotFoundException loop
 * Make a small history check to transformLiquids to detect and log
   continuous oscillations, in such detail that they can be fixed.
 
+TODO: When player dies, throw items on map
+
 Objects:
 --------
 
@@ -215,11 +215,11 @@ Block object server side:
       - A "near blocks" buffer, in which some nearby blocks are stored.
 	  - For all blocks in the buffer, objects are stepped(). This
 	    means they are active.
-	  - TODO: A global active buffer is needed for the server
-	  - TODO: A timestamp to blocks
-      - TODO: All blocks going in and out of the buffer are recorded.
-	    - TODO: For outgoing blocks, timestamp is written.
-	    - TODO: For incoming blocks, time difference is calculated and
+	  - A global active buffer is needed for the server
+	  - A timestamp to blocks
+      - All blocks going in and out of the buffer are recorded.
+	    - For outgoing blocks, timestamp is written.
+	    - For incoming blocks, time difference is calculated and
 	      objects are stepped according to it.
 
 - When an active object goes far from a player, either delete
