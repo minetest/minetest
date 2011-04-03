@@ -5482,8 +5482,8 @@ void ClientMap::renderMap(video::IVideoDriver* driver, s32 pass)
 				mesh_update_count++;
 
 				// Mesh has been expired: generate new mesh
-				//block->updateMeshes(daynight_i);
 				block->updateMesh(daynight_ratio);
+				//m_client->addUpdateMeshTask(block);
 
 				mesh_expired = false;
 			}
@@ -5691,6 +5691,7 @@ void ClientMap::updateMeshes(v3s16 blockpos, u32 daynight_ratio)
 		v3s16 p = blockpos + v3s16(0,0,0);
 		MapBlock *b = getBlockNoCreate(p);
 		b->updateMesh(daynight_ratio);
+		//b->setMeshExpired(true);
 	}
 	catch(InvalidPositionException &e){}
 	// Leading edge
@@ -5698,18 +5699,21 @@ void ClientMap::updateMeshes(v3s16 blockpos, u32 daynight_ratio)
 		v3s16 p = blockpos + v3s16(-1,0,0);
 		MapBlock *b = getBlockNoCreate(p);
 		b->updateMesh(daynight_ratio);
+		//b->setMeshExpired(true);
 	}
 	catch(InvalidPositionException &e){}
 	try{
 		v3s16 p = blockpos + v3s16(0,-1,0);
 		MapBlock *b = getBlockNoCreate(p);
 		b->updateMesh(daynight_ratio);
+		//b->setMeshExpired(true);
 	}
 	catch(InvalidPositionException &e){}
 	try{
 		v3s16 p = blockpos + v3s16(0,0,-1);
 		MapBlock *b = getBlockNoCreate(p);
 		b->updateMesh(daynight_ratio);
+		//b->setMeshExpired(true);
 	}
 	catch(InvalidPositionException &e){}
 }

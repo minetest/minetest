@@ -146,7 +146,7 @@ MapNode MapBlock::getNodeParentNoEx(v3s16 p)
 	
 	returns encoded light value.
 */
-u8 MapBlock::getFaceLight(u32 daynight_ratio, MapNode n, MapNode n2,
+u8 getFaceLight(u32 daynight_ratio, MapNode n, MapNode n2,
 		v3s16 face_dir)
 {
 	try{
@@ -182,7 +182,7 @@ u8 MapBlock::getFaceLight(u32 daynight_ratio, MapNode n, MapNode n2,
 
 #ifndef SERVER
 
-void MapBlock::makeFastFace(TileSpec tile, u8 light, v3f p,
+void makeFastFace(TileSpec tile, u8 light, v3f p,
 		v3s16 dir, v3f scale, v3f posRelative_f,
 		core::array<FastFace> &dest)
 {
@@ -283,7 +283,7 @@ void MapBlock::makeFastFace(TileSpec tile, u8 light, v3f p,
 	Gets node tile from any place relative to block.
 	Returns TILE_NODE if doesn't exist or should not be drawn.
 */
-TileSpec MapBlock::getNodeTile(MapNode mn, v3s16 p, v3s16 face_dir,
+TileSpec getNodeTile(MapNode mn, v3s16 p, v3s16 face_dir,
 		NodeModMap &temp_mods)
 {
 	TileSpec spec;
@@ -335,7 +335,7 @@ TileSpec MapBlock::getNodeTile(MapNode mn, v3s16 p, v3s16 face_dir,
 	return spec;
 }
 
-u8 MapBlock::getNodeContent(v3s16 p, MapNode mn, NodeModMap &temp_mods)
+u8 getNodeContent(v3s16 p, MapNode mn, NodeModMap &temp_mods)
 {
 	/*
 		Check temporary modifications on this node
@@ -378,7 +378,7 @@ u8 MapBlock::getNodeContent(v3s16 p, MapNode mn, NodeModMap &temp_mods)
 	translate_dir: unit vector with only one of x, y or z
 	face_dir: unit vector with only one of x, y or z
 */
-void MapBlock::updateFastFaceRow(
+void updateFastFaceRow(
 		u32 daynight_ratio,
 		v3f posRelative_f,
 		v3s16 startpos,
@@ -388,19 +388,19 @@ void MapBlock::updateFastFaceRow(
 		v3s16 face_dir,
 		v3f face_dir_f,
 		core::array<FastFace> &dest,
-		NodeModMap &temp_mods)
+		NodeModMap &temp_mods,
+		VoxelManipulator &vmanip,
+		v3s16 blockpos_nodes)
 {
 	v3s16 p = startpos;
 	
 	u16 continuous_tiles_count = 0;
 	
-	MapNode n0 = getNodeParentNoEx(p);
-	MapNode n1 = getNodeParentNoEx(p + face_dir);
-
-	u8 light = getFaceLight(daynight_ratio, n0, n1, face_dir);
-		
+	MapNode n0 = vmanip.getNodeNoEx(blockpos_nodes + p);
+	MapNode n1 = vmanip.getNodeNoEx(blockpos_nodes + p + face_dir);
 	TileSpec tile0 = getNodeTile(n0, p, face_dir, temp_mods);
 	TileSpec tile1 = getNodeTile(n1, p + face_dir, -face_dir, temp_mods);
+	u8 light = getFaceLight(daynight_ratio, n0, n1, face_dir);
 
 	for(u16 j=0; j<length; j++)
 	{
@@ -418,8 +418,9 @@ void MapBlock::updateFastFaceRow(
 		if(j != length - 1)
 		{
 			p_next = p + translate_dir;
-			n0_next = getNodeParentNoEx(p_next);
-			n1_next = getNodeParentNoEx(p_next + face_dir);
+			
+			n0_next = vmanip.getNodeNoEx(blockpos_nodes + p_next);
+			n1_next = vmanip.getNodeNoEx(blockpos_nodes + p_next + face_dir);
 			tile0_next = getNodeTile(n0_next, p_next, face_dir, temp_mods);
 			tile1_next = getNodeTile(n1_next,p_next+face_dir,-face_dir, temp_mods);
 			light_next = getFaceLight(daynight_ratio, n0_next, n1_next, face_dir);
@@ -610,36 +611,20 @@ private:
 	core::array<PreMeshBuffer> m_prebuffers;
 };
 
-void MapBlock::updateMesh(u32 daynight_ratio)
+scene::SMesh* makeMapBlockMesh(
+		u32 daynight_ratio,
+		NodeModMap &temp_mods,
+		VoxelManipulator &vmanip,
+		v3s16 blockpos_nodes)
 {
-#if 0
-	/*
-		DEBUG: If mesh has been generated, don't generate it again
-	*/
-	{
-		JMutexAutoLock meshlock(mesh_mutex);
-		if(mesh != NULL)
-			return;
-	}
-#endif
-	
 	// 4-21ms for MAP_BLOCKSIZE=16
 	// 24-155ms for MAP_BLOCKSIZE=32
-	//TimeTaker timer1("updateMesh()");
+	//TimeTaker timer1("makeMapBlockMesh()");
 
 	core::array<FastFace> fastfaces_new;
 	
-	v3f posRelative_f(getPosRelative().X, getPosRelative().Y,
-			getPosRelative().Z); // floating point conversion
-	
-	/*
-		Avoid interlocks by copying m_temp_mods
-	*/
-	NodeModMap temp_mods;
-	{
-		JMutexAutoLock lock(m_temp_mods_mutex);
-		m_temp_mods.copy(temp_mods);
-	}
+	// floating point conversion
+	v3f posRelative_f(blockpos_nodes.X, blockpos_nodes.Y, blockpos_nodes.Z);
 	
 	/*
 		Some settings
@@ -675,7 +660,9 @@ void MapBlock::updateMesh(u32 daynight_ratio)
 						v3s16(0,1,0), //face dir
 						v3f  (0,1,0),
 						fastfaces_new,
-						temp_mods);
+						temp_mods,
+						vmanip,
+						blockpos_nodes);
 			}
 		}
 		/*
@@ -690,7 +677,9 @@ void MapBlock::updateMesh(u32 daynight_ratio)
 						v3s16(1,0,0),
 						v3f  (1,0,0),
 						fastfaces_new,
-						temp_mods);
+						temp_mods,
+						vmanip,
+						blockpos_nodes);
 			}
 		}
 		/*
@@ -705,7 +694,9 @@ void MapBlock::updateMesh(u32 daynight_ratio)
 						v3s16(0,0,1),
 						v3f  (0,0,1),
 						fastfaces_new,
-						temp_mods);
+						temp_mods,
+						vmanip,
+						blockpos_nodes);
 			}
 		}
 	}
@@ -790,7 +781,7 @@ void MapBlock::updateMesh(u32 daynight_ratio)
 	{
 		v3s16 p(x,y,z);
 
-		MapNode &n = getNodeRef(x,y,z);
+		MapNode &n = vmanip.getNodeRef(blockpos_nodes+p);
 		
 		/*
 			Add torches to mesh
@@ -825,7 +816,7 @@ void MapBlock::updateMesh(u32 daynight_ratio)
 				if(dir == v3s16(0,1,0))
 					vertices[i].Pos.rotateXZBy(-45);
 
-				vertices[i].Pos += intToFloat(p + getPosRelative(), BS);
+				vertices[i].Pos += intToFloat(p + blockpos_nodes, BS);
 			}
 
 			// Set material
@@ -890,7 +881,7 @@ void MapBlock::updateMesh(u32 daynight_ratio)
 				if(dir == v3s16(0,1,0))
 					vertices[i].Pos.rotateXYBy(90);
 
-				vertices[i].Pos += intToFloat(p + getPosRelative(), BS);
+				vertices[i].Pos += intToFloat(p + blockpos_nodes, BS);
 			}
 
 			// Set material
@@ -917,7 +908,7 @@ void MapBlock::updateMesh(u32 daynight_ratio)
 		{
 			bool top_is_water = false;
 			try{
-				MapNode n = getNodeParent(v3s16(x,y+1,z));
+				MapNode n = vmanip.getNode(blockpos_nodes + v3s16(x,y+1,z));
 				if(n.d == CONTENT_WATER || n.d == CONTENT_WATERSOURCE)
 					top_is_water = true;
 			}catch(InvalidPositionException &e){}
@@ -950,7 +941,7 @@ void MapBlock::updateMesh(u32 daynight_ratio)
 				try{
 					// Check neighbor
 					v3s16 p2 = p + neighbor_dirs[i];
-					MapNode n2 = getNodeParent(p2);
+					MapNode n2 = vmanip.getNode(blockpos_nodes + p2);
 
 					content = n2.d;
 
@@ -964,7 +955,7 @@ void MapBlock::updateMesh(u32 daynight_ratio)
 					// NOTE: This doesn't get executed if neighbor
 					//       doesn't exist
 					p2.Y += 1;
-					n2 = getNodeParent(p2);
+					n2 = vmanip.getNode(blockpos_nodes + p2);
 					if(n2.d == CONTENT_WATERSOURCE || n2.d == CONTENT_WATER)
 						flags |= neighborflag_top_is_water;
 				}
@@ -1124,7 +1115,7 @@ void MapBlock::updateMesh(u32 daynight_ratio)
 					if(dir == v3s16(1,0,-0))
 						vertices[j].Pos.rotateXZBy(-90);
 
-					vertices[j].Pos += intToFloat(p + getPosRelative(), BS);
+					vertices[j].Pos += intToFloat(p + blockpos_nodes, BS);
 				}
 
 				u16 indices[] = {0,1,2,2,3,0};
@@ -1163,7 +1154,7 @@ void MapBlock::updateMesh(u32 daynight_ratio)
 					//vertices[i].Pos.Y += neighbor_levels[v3s16(0,0,0)];
 					s32 j = corner_resolve[i];
 					vertices[i].Pos.Y += corner_levels[j];
-					vertices[i].Pos += intToFloat(p + getPosRelative(), BS);
+					vertices[i].Pos += intToFloat(p + blockpos_nodes, BS);
 				}
 
 				u16 indices[] = {0,1,2,2,3,0};
@@ -1179,7 +1170,7 @@ void MapBlock::updateMesh(u32 daynight_ratio)
 			//bool top_is_water = false;
 			bool top_is_air = false;
 			try{
-				MapNode n = getNodeParent(v3s16(x,y+1,z));
+				MapNode n = vmanip.getNode(blockpos_nodes + v3s16(x,y+1,z));
 				/*if(n.d == CONTENT_WATER || n.d == CONTENT_WATERSOURCE)
 					top_is_water = true;*/
 				if(n.d == CONTENT_AIR)
@@ -1213,7 +1204,7 @@ void MapBlock::updateMesh(u32 daynight_ratio)
 			for(s32 i=0; i<4; i++)
 			{
 				vertices[i].Pos.Y += (-0.5+node_water_level)*BS;
-				vertices[i].Pos += intToFloat(p + getPosRelative(), BS);
+				vertices[i].Pos += intToFloat(p + blockpos_nodes, BS);
 			}
 
 			u16 indices[] = {0,1,2,2,3,0};
@@ -1280,7 +1271,7 @@ void MapBlock::updateMesh(u32 daynight_ratio)
 
 				for(u16 i=0; i<4; i++)
 				{
-					vertices[i].Pos += intToFloat(p + getPosRelative(), BS);
+					vertices[i].Pos += intToFloat(p + blockpos_nodes, BS);
 				}
 
 				u16 indices[] = {0,1,2,2,3,0};
@@ -1334,11 +1325,92 @@ void MapBlock::updateMesh(u32 daynight_ratio)
 			the hardware buffer and then delete the mesh
 		*/
 	}
+
+	return mesh_new;
+	
+	//std::cout<<"added "<<fastfaces.getSize()<<" faces."<<std::endl;
+}
+
+/*scene::SMesh* makeMapBlockMesh(
+		u32 daynight_ratio,
+		NodeModMap &temp_mods,
+		VoxelManipulator &vmanip,
+		v3s16 blockpos_nodes)
+{
+}*/
+
+#if 1
+void MapBlock::updateMesh(u32 daynight_ratio)
+{
+#if 0
+	/*
+		DEBUG: If mesh has been generated, don't generate it again
+	*/
+	{
+		JMutexAutoLock meshlock(mesh_mutex);
+		if(mesh != NULL)
+			return;
+	}
+#endif
+
+	/*
+		Avoid interlocks by copying m_temp_mods
+	*/
+	NodeModMap temp_mods;
+	copyTempMods(temp_mods);
+	
+	v3s16 blockpos_nodes = getPosRelative();
+
+	VoxelManipulator vmanip;
+	// Allocate this block + borders
+	vmanip.addArea(VoxelArea(blockpos_nodes-v3s16(1,1,1),
+			blockpos_nodes+v3s16(1,1,1)*MAP_BLOCKSIZE));
+	// Copy our data
+	copyTo(vmanip);
+	// Copy borders from map
+	// +-Z
+	for(s16 x=-1; x<=MAP_BLOCKSIZE; x++)
+	for(s16 y=-1; y<=MAP_BLOCKSIZE; y++)
+	for(s16 z=-1; z<=MAP_BLOCKSIZE; z+=MAP_BLOCKSIZE+1)
+	{
+		v3s16 p(x,y,z);
+		vmanip.setNodeNoRef(blockpos_nodes+p, getNodeParentNoEx(p));
+	}
+	// +-Y
+	for(s16 x=-1; x<=MAP_BLOCKSIZE; x++)
+	for(s16 y=-1; y<=MAP_BLOCKSIZE; y+=MAP_BLOCKSIZE+1)
+	for(s16 z=-1; z<=MAP_BLOCKSIZE; z++)
+	{
+		v3s16 p(x,y,z);
+		vmanip.setNodeNoRef(blockpos_nodes+p, getNodeParentNoEx(p));
+	}
+	// +-Z
+	for(s16 x=-1; x<=MAP_BLOCKSIZE; x+=MAP_BLOCKSIZE+1)
+	for(s16 y=-1; y<=MAP_BLOCKSIZE; y++)
+	for(s16 z=-1; z<=MAP_BLOCKSIZE; z++)
+	{
+		v3s16 p(x,y,z);
+		vmanip.setNodeNoRef(blockpos_nodes+p, getNodeParentNoEx(p));
+	}
+	
+	scene::SMesh *mesh_new = makeMapBlockMesh(
+			daynight_ratio,
+			temp_mods,
+			vmanip,
+			getPosRelative()
+	);
 	
 	/*
 		Replace the mesh
 	*/
 
+	replaceMesh(mesh_new);
+
+}
+#endif
+
+void MapBlock::replaceMesh(scene::SMesh *mesh_new)
+{
 	mesh_mutex.Lock();
 
 	//scene::SMesh *mesh_old = mesh[daynight_i];
@@ -1375,22 +1447,8 @@ void MapBlock::updateMesh(u32 daynight_ratio)
 	}
 
 	mesh_mutex.Unlock();
-	
-	//std::cout<<"added "<<fastfaces.getSize()<<" faces."<<std::endl;
 }
-
-/*void MapBlock::updateMeshes(s32 first_i)
-{
-	assert(first_i >= 0 && first_i <= DAYNIGHT_CACHE_COUNT);
-	updateMesh(first_i);
-	for(s32 i=0; i<DAYNIGHT_CACHE_COUNT; i++)
-	{
-		if(i == first_i)
-			continue;
-		updateMesh(i);
-	}
-}*/
-
+	
 #endif // !SERVER
 
 /*
@@ -1596,6 +1654,7 @@ bool MapBlock::propagateSunlight(core::map<v3s16, bool> & light_sources,
 
 	return block_below_is_valid;
 }
+
 
 void MapBlock::copyTo(VoxelManipulator &dst)
 {

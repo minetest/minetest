@@ -891,7 +891,8 @@ void ClientEnvironment::step(float dtime)
 					{
 						v3s16 p_blocks = getNodeBlockPos(bottompos);
 						MapBlock *b = m_map->getBlockNoCreate(p_blocks);
-						b->updateMesh(m_daynight_ratio);
+						//b->updateMesh(m_daynight_ratio);
+						b->setMeshExpired(true);
 					}
 				}
 			}

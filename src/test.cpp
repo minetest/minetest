@@ -517,14 +517,14 @@ struct TestMapBlock
 			assert(b.getNode(v3s16(1,1,0)).getLight(LIGHTBANK_DAY) == 0);
 			assert(b.getNode(v3s16(1,0,0)).getLight(LIGHTBANK_DAY) == 0);
 			assert(b.getNode(v3s16(1,2,3)).getLight(LIGHTBANK_DAY) == LIGHT_SUN);
-			assert(b.getFaceLight(1000, p, v3s16(0,1,0)) == LIGHT_SUN);
-			assert(b.getFaceLight(1000, p, v3s16(0,-1,0)) == 0);
-			assert(b.getFaceLight(0, p, v3s16(0,-1,0)) == 0);
+			assert(b.getFaceLight2(1000, p, v3s16(0,1,0)) == LIGHT_SUN);
+			assert(b.getFaceLight2(1000, p, v3s16(0,-1,0)) == 0);
+			assert(b.getFaceLight2(0, p, v3s16(0,-1,0)) == 0);
 			// According to MapBlock::getFaceLight,
 			// The face on the z+ side should have double-diminished light
 			//assert(b.getFaceLight(p, v3s16(0,0,1)) == diminish_light(diminish_light(LIGHT_MAX)));
 			// The face on the z+ side should have diminished light
-			assert(b.getFaceLight(1000, p, v3s16(0,0,1)) == diminish_light(LIGHT_MAX));
+			assert(b.getFaceLight2(1000, p, v3s16(0,0,1)) == diminish_light(LIGHT_MAX));
 		}
 		/*
 			Check how the block handles being in between blocks with some non-sunlight

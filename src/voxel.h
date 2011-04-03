@@ -373,6 +373,34 @@ public:
 
 		return m_data[m_area.index(p)];
 	}
+	MapNode getNodeNoEx(v3s16 p)
+	{
+		emerge(p);
+
+		if(m_flags[m_area.index(p)] & VOXELFLAG_INEXISTENT)
+		{
+			return MapNode(CONTENT_IGNORE);
+		}
+
+		return m_data[m_area.index(p)];
+	}
+	MapNode & getNodeRef(v3s16 p)
+	{
+		emerge(p);
+
+		if(m_flags[m_area.index(p)] & VOXELFLAG_INEXISTENT)
+		{
+			dstream<<"EXCEPT: VoxelManipulator::getNode(): "
+					<<"p=("<<p.X<<","<<p.Y<<","<<p.Z<<")"
+					<<", index="<<m_area.index(p)
+					<<", flags="<<(int)m_flags[m_area.index(p)]
+					<<" is inexistent"<<std::endl;
+			throw InvalidPositionException
+			("VoxelManipulator: getNode: inexistent");
+		}
+
+		return m_data[m_area.index(p)];
+	}
 	void setNode(v3s16 p, MapNode &n)
 	{
 		emerge(p);

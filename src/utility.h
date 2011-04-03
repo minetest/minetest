@@ -1391,6 +1391,7 @@ public:
 	}
 	u32 size()
 	{
+		JMutexAutoLock lock(m_mutex);
 		return m_list.size();
 	}
 	void push_back(T t)
