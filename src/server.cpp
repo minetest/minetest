@@ -2741,9 +2741,19 @@ void Server::inventoryModified(InventoryContext *c, std::string id)
 		p.Y = stoi(fn.next(","));
 		p.Z = stoi(fn.next(","));
 		assert(c->current_player);
-		RemoteClient *client = getClient(c->current_player->peer_id);
 		v3s16 blockpos = getNodeBlockPos(p);
-		client->SetBlockNotSent(blockpos);
+
+		/*RemoteClient *client = getClient(c->current_player->peer_id);
+		client->SetBlockNotSent(blockpos);*/
+
+		for(core::map<u16, RemoteClient*>::Iterator
+			i = m_clients.getIterator();
+			i.atEnd()==false; i++)
+		{
+			RemoteClient *client = i.getNode()->getValue();
+			client->SetBlockNotSent(blockpos);
+		}
+
 		return;
 	}
 

@@ -203,6 +203,9 @@ FIXME: Server sometimes goes into some infinite PeerNotFoundException loop
 TODO: Player health points
 	- When player dies, throw items on map
 
+FIXME: If something is removed from craftresult with a right click,
+	it is only possible to get one item from it should give 4
+
 Objects:
 --------
 
