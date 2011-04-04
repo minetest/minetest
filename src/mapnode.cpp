@@ -288,14 +288,6 @@ void init_mapnode()
 	f->wall_mounted = true;
 	f->dug_item = std::string("MaterialItem ")+itos(i)+" 1";
 	
-	i = CONTENT_FURNACE;
-	f = &g_content_features[i];
-	f->setAllTextures("furnace_side.png");
-	f->setTexture(2, "furnace_front.png");
-	f->setInventoryTexture("furnace_front.png");
-	f->param_type = CPT_NONE;
-	f->dug_item = std::string("MaterialItem ")+itos(i)+" 1";
-	
 	i = CONTENT_SIGN_WALL;
 	f = &g_content_features[i];
 	f->setInventoryTexture("sign_wall.png");
@@ -309,10 +301,57 @@ void init_mapnode()
 	if(f->initial_metadata == NULL)
 		f->initial_metadata = new SignNodeMetadata("Some sign");
 	
+	i = CONTENT_CHEST;
+	f = &g_content_features[i];
+	f->param_type = CPT_FACEDIR_SIMPLE;
+	f->setAllTextures("chest_side.png");
+	f->setTexture(0, "chest_top.png");
+	f->setTexture(1, "chest_top.png");
+	f->setTexture(5, "chest_front.png"); // Z-
+	f->setInventoryTexture("chest_top.png");
+	//f->setInventoryTextureCube("chest_top.png", "chest_side.png", "chest_side.png");
+	f->dug_item = std::string("MaterialItem ")+itos(i)+" 1";
+	if(f->initial_metadata == NULL)
+		f->initial_metadata = new ChestNodeMetadata();
+	
+	i = CONTENT_FURNACE;
+	f = &g_content_features[i];
+	f->param_type = CPT_FACEDIR_SIMPLE;
+	f->setAllTextures("furnace_side.png");
+	f->setTexture(5, "furnace_front.png"); // Z-
+	f->setInventoryTexture("furnace_front.png");
+	f->dug_item = std::string("MaterialItem ")+itos(i)+" 1";
+	
+}
+
+v3s16 facedir_rotate(u8 facedir, v3s16 dir)
+{
+	/*
+		Face 2 (normally Z-) direction:
+		facedir=0: Z-
+		facedir=1: X-
+		facedir=2: Z+
+		facedir=3: X+
+	*/
+	v3s16 newdir;
+	if(facedir==0) // Same
+		newdir = v3s16(dir.X, dir.Y, dir.Z);
+	else if(facedir == 1) // Face is taken from rotXZccv(-90)
+		newdir = v3s16(-dir.Z, dir.Y, dir.X);
+	else if(facedir == 2) // Face is taken from rotXZccv(180)
+		newdir = v3s16(-dir.X, dir.Y, -dir.Z);
+	else if(facedir == 3) // Face is taken from rotXZccv(90)
+		newdir = v3s16(dir.Z, dir.Y, -dir.X);
+	else
+		newdir = dir;
+	return newdir;
 }
 
 TileSpec MapNode::getTile(v3s16 dir)
 {
+	if(content_features(d).param_type == CPT_FACEDIR_SIMPLE)
+		dir = facedir_rotate(param1, dir);
+	
 	TileSpec spec;
 	
 	s32 dir_i = -1;

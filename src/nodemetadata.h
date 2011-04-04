@@ -79,6 +79,20 @@ private:
 	std::string m_text;
 };
 
+class ChestNodeMetadata : public NodeMetadata
+{
+public:
+	ChestNodeMetadata();
+	
+	virtual u16 typeId() const;
+	static NodeMetadata* create(std::istream &is);
+	virtual NodeMetadata* clone();
+	virtual void serializeBody(std::ostream &os);
+	virtual std::string infoText();
+
+private:
+};
+
 class NodeMetadataList
 {
 public:

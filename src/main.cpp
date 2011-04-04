@@ -200,41 +200,13 @@ FIXME: Server sometimes goes into some infinite PeerNotFoundException loop
 * Make a small history check to transformLiquids to detect and log
   continuous oscillations, in such detail that they can be fixed.
 
-TODO: When player dies, throw items on map
+TODO: Player health points
+	- When player dies, throw items on map
 
 Objects:
 --------
 
-TODO: There has to be some better way to handle static objects than to
-      send them all the time. This affects signs and item objects.
-SUGG: Signs could be done in the same way as torches. For this, blocks
-      need an additional metadata field for the texts
-	  - This is also needed for item container chests
-
-Block object server side:
-      - A "near blocks" buffer, in which some nearby blocks are stored.
-	  - For all blocks in the buffer, objects are stepped(). This
-	    means they are active.
-	  - A global active buffer is needed for the server
-	  - A timestamp to blocks
-      - All blocks going in and out of the buffer are recorded.
-	    - For outgoing blocks, timestamp is written.
-	    - For incoming blocks, time difference is calculated and
-	      objects are stepped according to it.
-
-- When an active object goes far from a player, either delete
-  it or store it statically.
-- When a statically stored active object comes near a player,
-  recreate the active object
-
-* Continue making the scripting system:
-  * Make updateNodeMesh for a less verbose mesh update on add/removenode
-  * Switch to using a safe way for the self and env pointers
-  * Make some global environment hooks, like node placed and general
-    on_step()
-* Add a global Lua spawn handler and such
-* Get rid of MapBlockObjects
-* Other players could be sent to clients as LuaCAOs
+TODO: Get rid of MapBlockObjects
 
 Map:
 ----

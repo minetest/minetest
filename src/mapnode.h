@@ -95,8 +95,9 @@ void init_content_inventory_texture_paths();
 #define CONTENT_COALSTONE 11
 #define CONTENT_WOOD 12
 #define CONTENT_SAND 13
-#define CONTENT_FURNACE 14
-#define CONTENT_SIGN_WALL 15
+#define CONTENT_SIGN_WALL 14
+#define CONTENT_CHEST 15
+#define CONTENT_FURNACE 16
 
 /*
 	Content feature list
@@ -106,7 +107,9 @@ enum ContentParamType
 {
 	CPT_NONE,
 	CPT_LIGHT,
-	CPT_MINERAL
+	CPT_MINERAL,
+	// Direction for chests and furnaces and such
+	CPT_FACEDIR_SIMPLE
 };
 
 enum LiquidType
@@ -136,13 +139,9 @@ struct ContentFeatures
 	*/
 	TileSpec tiles[6];
 	
-	// TODO: Somehow specify inventory image
-	//std::string inventory_image_path;
-	//TextureSpec inventory_texture;
-	//u32 inventory_texture_id;
 	video::ITexture *inventory_texture;
 
-	bool is_ground_content; //TODO: Remove, use walkable instead
+	bool is_ground_content;
 	bool light_propagates;
 	bool sunlight_propagates;
 	u8 solidness; // Used when choosing which face is drawn
@@ -409,6 +408,13 @@ inline v3s16 unpackDir(u8 b)
 	return d;
 }
 
+/*
+	facedir: CPT_FACEDIR_SIMPLE param1 value
+	dir: The face for which stuff is wanted
+	return value: The face from which the stuff is actually found
+*/
+v3s16 facedir_rotate(u8 facedir, v3s16 dir);
+
 enum LightBank
 {
 	LIGHTBANK_DAY,
@@ -431,14 +437,18 @@ struct MapNode
 		  Sunlight is LIGHT_SUN, which is LIGHT_MAX+1.
 		- Contains 2 values, day- and night lighting. Each takes 4 bits.
 	*/
-	s8 param;
-	
 	union
 	{
-		/*
-			The second parameter. Initialized to 0.
-			Direction for torches and flowing water.
-		*/
+		s8 param;
+		u8 param1;
+	};
+	
+	/*
+		The second parameter. Initialized to 0.
+		E.g. direction for torches and flowing water.
+	*/
+	union
+	{
 		u8 param2;
 		u8 dir;
 	};

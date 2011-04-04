@@ -105,6 +105,34 @@ std::string SignNodeMetadata::infoText()
 }
 
 /*
+	ChestNodeMetadata
+*/
+
+ChestNodeMetadata::ChestNodeMetadata()
+{
+	NodeMetadata::registerType(typeId(), create);
+}
+u16 ChestNodeMetadata::typeId() const
+{
+	return CONTENT_CHEST;
+}
+NodeMetadata* ChestNodeMetadata::create(std::istream &is)
+{
+	return new ChestNodeMetadata();
+}
+NodeMetadata* ChestNodeMetadata::clone()
+{
+	return new ChestNodeMetadata();
+}
+void ChestNodeMetadata::serializeBody(std::ostream &os)
+{
+}
+std::string ChestNodeMetadata::infoText()
+{
+	return "Chest";
+}
+
+/*
 	NodeMetadatalist
 */
 
