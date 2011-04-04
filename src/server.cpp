@@ -1504,6 +1504,32 @@ void Server::AsyncRunStep()
 	}
 	
 	/*
+		Step node metadata
+	*/
+	{
+		JMutexAutoLock envlock(m_env_mutex);
+		JMutexAutoLock conlock(m_con_mutex);
+		
+		core::map<v3s16, MapBlock*> changed_blocks;
+		m_env.getMap().nodeMetadataStep(dtime, changed_blocks);
+
+		for(core::map<v3s16, MapBlock*>::Iterator
+				i = changed_blocks.getIterator();
+				i.atEnd() == false; i++)
+		{
+			MapBlock *block = i.getNode()->getValue();
+
+			for(core::map<u16, RemoteClient*>::Iterator
+				i = m_clients.getIterator();
+				i.atEnd()==false; i++)
+			{
+				RemoteClient *client = i.getNode()->getValue();
+				client->SetBlockNotSent(block->getPos());
+			}
+		}
+	}
+		
+	/*
 		Trigger emergethread (it somehow gets to a non-triggered but
 		bysy state sometimes)
 	*/
@@ -2740,7 +2766,6 @@ void Server::inventoryModified(InventoryContext *c, std::string id)
 		p.X = stoi(fn.next(","));
 		p.Y = stoi(fn.next(","));
 		p.Z = stoi(fn.next(","));
-		assert(c->current_player);
 		v3s16 blockpos = getNodeBlockPos(p);
 
 		NodeMetadata *meta = m_env.getMap().getNodeMetadata(p);
@@ -2886,163 +2911,6 @@ void Server::SendPlayerInfos()
 
 	// Send as reliable
 	m_con.SendToAll(0, data, true);
-}
-
-/*
-	Craft checking system
-*/
-
-enum ItemSpecType
-{
-	ITEM_NONE,
-	ITEM_MATERIAL,
-	ITEM_CRAFT,
-	ITEM_TOOL,
-	ITEM_MBO
-};
-
-struct ItemSpec
-{
-	ItemSpec():
-		type(ITEM_NONE)
-	{
-	}
-	ItemSpec(enum ItemSpecType a_type, std::string a_name):
-		type(a_type),
-		name(a_name),
-		num(65535)
-	{
-	}
-	ItemSpec(enum ItemSpecType a_type, u16 a_num):
-		type(a_type),
-		name(""),
-		num(a_num)
-	{
-	}
-	enum ItemSpecType type;
-	// Only other one of these is used
-	std::string name;
-	u16 num;
-};
-
-/*
-	items: a pointer to an array of 9 pointers to items
-	specs: a pointer to an array of 9 ItemSpecs
-*/
-bool checkItemCombination(InventoryItem **items, ItemSpec *specs)
-{
-	u16 items_min_x = 100;
-	u16 items_max_x = 100;
-	u16 items_min_y = 100;
-	u16 items_max_y = 100;
-	for(u16 y=0; y<3; y++)
-	for(u16 x=0; x<3; x++)
-	{
-		if(items[y*3 + x] == NULL)
-			continue;
-		if(items_min_x == 100 || x < items_min_x)
-			items_min_x = x;
-		if(items_min_y == 100 || y < items_min_y)
-			items_min_y = y;
-		if(items_max_x == 100 || x > items_max_x)
-			items_max_x = x;
-		if(items_max_y == 100 || y > items_max_y)
-			items_max_y = y;
-	}
-	// No items at all, just return false
-	if(items_min_x == 100)
-		return false;
-	
-	u16 items_w = items_max_x - items_min_x + 1;
-	u16 items_h = items_max_y - items_min_y + 1;
-
-	u16 specs_min_x = 100;
-	u16 specs_max_x = 100;
-	u16 specs_min_y = 100;
-	u16 specs_max_y = 100;
-	for(u16 y=0; y<3; y++)
-	for(u16 x=0; x<3; x++)
-	{
-		if(specs[y*3 + x].type == ITEM_NONE)
-			continue;
-		if(specs_min_x == 100 || x < specs_min_x)
-			specs_min_x = x;
-		if(specs_min_y == 100 || y < specs_min_y)
-			specs_min_y = y;
-		if(specs_max_x == 100 || x > specs_max_x)
-			specs_max_x = x;
-		if(specs_max_y == 100 || y > specs_max_y)
-			specs_max_y = y;
-	}
-	// No specs at all, just return false
-	if(specs_min_x == 100)
-		return false;
-
-	u16 specs_w = specs_max_x - specs_min_x + 1;
-	u16 specs_h = specs_max_y - specs_min_y + 1;
-
-	// Different sizes
-	if(items_w != specs_w || items_h != specs_h)
-		return false;
-
-	for(u16 y=0; y<specs_h; y++)
-	for(u16 x=0; x<specs_w; x++)
-	{
-		u16 items_x = items_min_x + x;
-		u16 items_y = items_min_y + y;
-		u16 specs_x = specs_min_x + x;
-		u16 specs_y = specs_min_y + y;
-		InventoryItem *item = items[items_y * 3 + items_x];
-		ItemSpec &spec = specs[specs_y * 3 + specs_x];
-		
-		if(spec.type == ITEM_NONE)
-		{
-			// Has to be no item
-			if(item != NULL)
-				return false;
-			continue;
-		}
-		
-		// There should be an item
-		if(item == NULL)
-			return false;
-
-		std::string itemname = item->getName();
-
-		if(spec.type == ITEM_MATERIAL)
-		{
-			if(itemname != "MaterialItem")
-				return false;
-			MaterialItem *mitem = (MaterialItem*)item;
-			if(mitem->getMaterial() != spec.num)
-				return false;
-		}
-		else if(spec.type == ITEM_CRAFT)
-		{
-			if(itemname != "CraftItem")
-				return false;
-			CraftItem *mitem = (CraftItem*)item;
-			if(mitem->getSubName() != spec.name)
-				return false;
-		}
-		else if(spec.type == ITEM_TOOL)
-		{
-			// Not supported yet
-			assert(0);
-		}
-		else if(spec.type == ITEM_MBO)
-		{
-			// Not supported yet
-			assert(0);
-		}
-		else
-		{
-			// Not supported yet
-			assert(0);
-		}
-	}
-
-	return true;
 }
 
 void Server::SendInventory(u16 peer_id)

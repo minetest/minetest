@@ -59,6 +59,8 @@ public:
 	// This is called always after the inventory is modified, before
 	// the changes are copied elsewhere
 	virtual void inventoryModified(){}
+	// A step in time. Returns true if metadata changed.
+	virtual bool step(float dtime) {return false;}
 
 protected:
 	static void registerType(u16 id, Factory f);
@@ -115,14 +117,22 @@ public:
 	virtual std::string infoText();
 	virtual Inventory* getInventory() {return m_inventory;}
 	virtual void inventoryModified();
+	virtual bool step(float dtime);
 
 private:
 	Inventory *m_inventory;
+	float m_step_accumulator;
+	float m_fuel_totaltime;
+	float m_fuel_time;
+	float m_src_totaltime;
+	float m_src_time;
 };
 
 /*
 	List of metadata of all the nodes of a block
 */
+
+class InventoryManager;
 
 class NodeMetadataList
 {
@@ -138,6 +148,10 @@ public:
 	void remove(v3s16 p);
 	// Deletes old data and sets a new one
 	void set(v3s16 p, NodeMetadata *d);
+	
+	// A step in time. Returns true if something changed.
+	bool step(float dtime);
+
 private:
 	core::map<v3s16, NodeMetadata*> m_data;
 };

@@ -25,6 +25,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "mineral.h"
 // For g_settings
 #include "main.h"
+#include "nodemetadata.h"
 
 ContentFeatures::~ContentFeatures()
 {

@@ -1756,6 +1756,35 @@ void Map::removeNodeMetadata(v3s16 p)
 	block->m_node_metadata.remove(p_rel);
 }
 
+void Map::nodeMetadataStep(float dtime,
+		core::map<v3s16, MapBlock*> &changed_blocks)
+{
+	/*
+		NOTE:
+		Currently there is no way to ensure that all the necessary
+		blocks are loaded when this is run. (They might get unloaded)
+		NOTE: ^- Actually, that might not be so. In a quick test it
+		reloaded a block with a furnace when I walked back to it from
+		a distance.
+	*/
+	core::map<v2s16, MapSector*>::Iterator si;
+	si = m_sectors.getIterator();
+	for(; si.atEnd() == false; si++)
+	{
+		MapSector *sector = si.getNode()->getValue();
+		core::list< MapBlock * > sectorblocks;
+		sector->getBlocks(sectorblocks);
+		core::list< MapBlock * >::Iterator i;
+		for(i=sectorblocks.begin(); i!=sectorblocks.end(); i++)
+		{
+			MapBlock *block = *i;
+			bool changed = block->m_node_metadata.step(dtime);
+			if(changed)
+				changed_blocks[block->getPos()] = block;
+		}
+	}
+}
+
 /*
 	ServerMap
 */

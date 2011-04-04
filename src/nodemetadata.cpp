@@ -178,6 +178,12 @@ FurnaceNodeMetadata::FurnaceNodeMetadata()
 	m_inventory->addList("fuel", 1);
 	m_inventory->addList("src", 1);
 	m_inventory->addList("dst", 1);
+
+	m_step_accumulator = 0;
+	m_fuel_totaltime = 0;
+	m_fuel_time = 0;
+	m_src_totaltime = 0;
+	m_src_time = 0;
 }
 FurnaceNodeMetadata::~FurnaceNodeMetadata()
 {
@@ -197,23 +203,133 @@ NodeMetadata* FurnaceNodeMetadata::create(std::istream &is)
 {
 	FurnaceNodeMetadata *d = new FurnaceNodeMetadata();
 	d->m_inventory->deSerialize(is);
-	/*std::string params;
-	std::getline(is, params, '\n');*/
+	int temp;
+	is>>temp;
+	d->m_fuel_totaltime = (float)temp/10;
+	is>>temp;
+	d->m_fuel_time = (float)temp/10;
 	return d;
 }
 void FurnaceNodeMetadata::serializeBody(std::ostream &os)
 {
 	m_inventory->serialize(os);
-	// This line will contain the other parameters
-	//os<<"\n";
+	os<<itos(m_fuel_totaltime*10)<<" ";
+	os<<itos(m_fuel_time*10)<<" ";
 }
 std::string FurnaceNodeMetadata::infoText()
 {
-	return "Furnace";
+	//return "Furnace";
+	if(m_fuel_time >= m_fuel_totaltime)
+	{
+		InventoryList *src_list = m_inventory->getList("src");
+		assert(src_list);
+		InventoryItem *src_item = src_list->getItem(0);
+
+		if(src_item)
+			return "Furnace is out of fuel";
+		else
+			return "Furnace is inactive";
+	}
+	else
+	{
+		std::string s = "Furnace is active (";
+		s += itos(m_fuel_time/m_fuel_totaltime*100);
+		s += "%)";
+		return s;
+	}
 }
 void FurnaceNodeMetadata::inventoryModified()
 {
 	dstream<<"Furnace inventory modification callback"<<std::endl;
+}
+bool FurnaceNodeMetadata::step(float dtime)
+{
+	// Update at a fixed frequency
+	const float interval = 0.5;
+	m_step_accumulator += dtime;
+	if(m_step_accumulator < interval)
+		return false;
+	m_step_accumulator -= interval;
+	dtime = interval;
+
+	//dstream<<"Furnace step dtime="<<dtime<<std::endl;
+	
+	InventoryList *dst_list = m_inventory->getList("dst");
+	assert(dst_list);
+
+	InventoryList *src_list = m_inventory->getList("src");
+	assert(src_list);
+	InventoryItem *src_item = src_list->getItem(0);
+
+	if(ItemSpec(ITEM_MATERIAL, CONTENT_TREE).checkItem(src_item)
+			&& dst_list->itemFits(0, new CraftItem("lump_of_coal", 1)))
+	{
+		m_src_totaltime = 3;
+	}
+	else
+	{
+		m_src_time = 0;
+		m_src_totaltime = 0;
+	}
+
+	if(m_fuel_time < m_fuel_totaltime)
+	{
+		//dstream<<"Furnace is active"<<std::endl;
+		m_fuel_time += dtime;
+		m_src_time += dtime;
+		if(m_src_time >= m_src_totaltime && m_src_totaltime > 0.001)
+		{
+			if(ItemSpec(ITEM_MATERIAL, CONTENT_TREE).checkItem(src_item))
+			{
+				src_list->decrementMaterials(1);
+				dst_list->addItem(0, new CraftItem("lump_of_coal", 1));
+				m_src_time = 0;
+				m_src_totaltime = 0;
+			}
+		}
+		return true;
+	}
+	
+	if(src_item == NULL || m_src_totaltime < 0.001)
+	{
+		return false;
+	}
+	
+	bool changed = false;
+
+	//dstream<<"Furnace is out of fuel"<<std::endl;
+
+	InventoryList *fuel_list = m_inventory->getList("fuel");
+	assert(fuel_list);
+	InventoryItem *fuel_item = fuel_list->getItem(0);
+
+	if(ItemSpec(ITEM_MATERIAL, CONTENT_TREE).checkItem(fuel_item))
+	{
+		m_fuel_totaltime = 10;
+		m_fuel_time = 0;
+		fuel_list->decrementMaterials(1);
+		changed = true;
+	}
+	else if(ItemSpec(ITEM_MATERIAL, CONTENT_WOOD).checkItem(fuel_item))
+	{
+		m_fuel_totaltime = 5;
+		m_fuel_time = 0;
+		fuel_list->decrementMaterials(1);
+		changed = true;
+	}
+	else if(ItemSpec(ITEM_CRAFT, "lump_of_coal").checkItem(fuel_item))
+	{
+		m_fuel_totaltime = 10;
+		m_fuel_time = 0;
+		fuel_list->decrementMaterials(1);
+		changed = true;
+	}
+	else
+	{
+		//dstream<<"No fuel found"<<std::endl;
+	}
+
+	return changed;
 }
 
 /*
@@ -316,5 +432,34 @@ void NodeMetadataList::set(v3s16 p, NodeMetadata *d)
 {
 	remove(p);
 	m_data.insert(p, d);
+}
+
+bool NodeMetadataList::step(float dtime)
+{
+	bool something_changed = false;
+	for(core::map<v3s16, NodeMetadata*>::Iterator
+			i = m_data.getIterator();
+			i.atEnd()==false; i++)
+	{
+		v3s16 p = i.getNode()->getKey();
+		NodeMetadata *meta = i.getNode()->getValue();
+		bool changed = meta->step(dtime);
+		if(changed)
+			something_changed = true;
+		/*if(res.inventory_changed)
+		{
+			std::string inv_id;
+			inv_id += "nodemeta:";
+			inv_id += itos(p.X);
+			inv_id += ",";
+			inv_id += itos(p.Y);
+			inv_id += ",";
+			inv_id += itos(p.Z);
+			InventoryContext c;
+			c.current_player = NULL;
+			inv_mgr->inventoryModified(&c, inv_id);
+		}*/
+	}
+	return something_changed;
 }
 

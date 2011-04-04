@@ -285,6 +285,8 @@ public:
 	NodeMetadata* getNodeMetadata(v3s16 p);
 	void setNodeMetadata(v3s16 p, NodeMetadata *meta);
 	void removeNodeMetadata(v3s16 p);
+	void nodeMetadataStep(float dtime,
+			core::map<v3s16, MapBlock*> &changed_blocks);
 
 	/*
 		Variables

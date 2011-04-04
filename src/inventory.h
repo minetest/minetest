@@ -435,6 +435,7 @@ public:
 	InventoryItem * changeItem(u32 i, InventoryItem *newitem);
 	// Delete item
 	void deleteItem(u32 i);
+
 	// Adds an item to a suitable place. Returns leftover item.
 	// If all went into the list, returns NULL.
 	InventoryItem * addItem(InventoryItem *newitem);
@@ -444,6 +445,9 @@ public:
 	// If can be added partly, decremented item is returned back.
 	// If can be added fully, NULL is returned.
 	InventoryItem * addItem(u32 i, InventoryItem *newitem);
+
+	// Checks whether the item could be added to the given slot
+	bool itemFits(u32 i, InventoryItem *newitem);
 
 	// Takes some items from a slot.
 	// If there are not enough, takes as many as it can.
@@ -522,7 +526,7 @@ public:
 	*/
 	virtual Inventory* getInventory(InventoryContext *c, std::string id)
 		{return NULL;}
-	// Used on the server by InventoryAction::apply
+	// Used on the server by InventoryAction::apply and other stuff
 	virtual void inventoryModified(InventoryContext *c, std::string id)
 		{}
 	// Used on the client
@@ -599,6 +603,52 @@ struct IMoveAction : public InventoryAction
 
 	void apply(InventoryContext *c, InventoryManager *mgr);
 };
+
+/*
+	Craft checking system
+*/
+
+enum ItemSpecType
+{
+	ITEM_NONE,
+	ITEM_MATERIAL,
+	ITEM_CRAFT,
+	ITEM_TOOL,
+	ITEM_MBO
+};
+
+struct ItemSpec
+{
+	enum ItemSpecType type;
+	// Only other one of these is used
+	std::string name;
+	u16 num;
+
+	ItemSpec():
+		type(ITEM_NONE)
+	{
+	}
+	ItemSpec(enum ItemSpecType a_type, std::string a_name):
+		type(a_type),
+		name(a_name),
+		num(65535)
+	{
+	}
+	ItemSpec(enum ItemSpecType a_type, u16 a_num):
+		type(a_type),
+		name(""),
+		num(a_num)
+	{
+	}
+
+	bool checkItem(InventoryItem *item);
+};
+
+/*
+	items: a pointer to an array of 9 pointers to items
+	specs: a pointer to an array of 9 ItemSpecs
+*/
+bool checkItemCombination(InventoryItem **items, ItemSpec *specs);
 
 #endif
 

@@ -403,6 +403,28 @@ InventoryItem * InventoryList::addItem(u32 i, InventoryItem *newitem)
 	}
 }
 
+bool InventoryList::itemFits(u32 i, InventoryItem *newitem)
+{
+	// If it is an empty position, it's an easy job.
+	InventoryItem *to_item = m_items[i];
+	if(to_item == NULL)
+	{
+		return true;
+	}
+	
+	// If not addable, return the item
+	if(newitem->addableTo(to_item) == false)
+		return false;
+	
+	// If the item fits fully in the slot, add counter and delete it
+	if(newitem->getCount() <= to_item->freeSpace())
+	{
+		return true;
+	}
+
+	return false;
+}
+
 InventoryItem * InventoryList::takeItem(u32 i, u32 count)
 {
 	if(count == 0)
@@ -697,6 +719,133 @@ void IMoveAction::apply(InventoryContext *c, InventoryManager *mgr)
 	if(from_inv != to_inv)
 		mgr->inventoryModified(c, to_inv);
 #endif
+}
+
+/*
+	Craft checking system
+*/
+
+bool ItemSpec::checkItem(InventoryItem *item)
+{
+	if(type == ITEM_NONE)
+	{
+		// Has to be no item
+		if(item != NULL)
+			return false;
+		return true;
+	}
+	
+	// There should be an item
+	if(item == NULL)
+		return false;
+
+	std::string itemname = item->getName();
+
+	if(type == ITEM_MATERIAL)
+	{
+		if(itemname != "MaterialItem")
+			return false;
+		MaterialItem *mitem = (MaterialItem*)item;
+		if(mitem->getMaterial() != num)
+			return false;
+	}
+	else if(type == ITEM_CRAFT)
+	{
+		if(itemname != "CraftItem")
+			return false;
+		CraftItem *mitem = (CraftItem*)item;
+		if(mitem->getSubName() != name)
+			return false;
+	}
+	else if(type == ITEM_TOOL)
+	{
+		// Not supported yet
+		assert(0);
+	}
+	else if(type == ITEM_MBO)
+	{
+		// Not supported yet
+		assert(0);
+	}
+	else
+	{
+		// Not supported yet
+		assert(0);
+	}
+	return true;
+}
+
+bool checkItemCombination(InventoryItem **items, ItemSpec *specs)
+{
+	u16 items_min_x = 100;
+	u16 items_max_x = 100;
+	u16 items_min_y = 100;
+	u16 items_max_y = 100;
+	for(u16 y=0; y<3; y++)
+	for(u16 x=0; x<3; x++)
+	{
+		if(items[y*3 + x] == NULL)
+			continue;
+		if(items_min_x == 100 || x < items_min_x)
+			items_min_x = x;
+		if(items_min_y == 100 || y < items_min_y)
+			items_min_y = y;
+		if(items_max_x == 100 || x > items_max_x)
+			items_max_x = x;
+		if(items_max_y == 100 || y > items_max_y)
+			items_max_y = y;
+	}
+	// No items at all, just return false
+	if(items_min_x == 100)
+		return false;
+	
+	u16 items_w = items_max_x - items_min_x + 1;
+	u16 items_h = items_max_y - items_min_y + 1;
+
+	u16 specs_min_x = 100;
+	u16 specs_max_x = 100;
+	u16 specs_min_y = 100;
+	u16 specs_max_y = 100;
+	for(u16 y=0; y<3; y++)
+	for(u16 x=0; x<3; x++)
+	{
+		if(specs[y*3 + x].type == ITEM_NONE)
+			continue;
+		if(specs_min_x == 100 || x < specs_min_x)
+			specs_min_x = x;
+		if(specs_min_y == 100 || y < specs_min_y)
+			specs_min_y = y;
+		if(specs_max_x == 100 || x > specs_max_x)
+			specs_max_x = x;
+		if(specs_max_y == 100 || y > specs_max_y)
+			specs_max_y = y;
+	}
+	// No specs at all, just return false
+	if(specs_min_x == 100)
+		return false;
+
+	u16 specs_w = specs_max_x - specs_min_x + 1;
+	u16 specs_h = specs_max_y - specs_min_y + 1;
+
+	// Different sizes
+	if(items_w != specs_w || items_h != specs_h)
+		return false;
+
+	for(u16 y=0; y<specs_h; y++)
+	for(u16 x=0; x<specs_w; x++)
+	{
+		u16 items_x = items_min_x + x;
+		u16 items_y = items_min_y + y;
+		u16 specs_x = specs_min_x + x;
+		u16 specs_y = specs_min_y + y;
+		InventoryItem *item = items[items_y * 3 + items_x];
+		ItemSpec &spec = specs[specs_y * 3 + specs_x];
+
+		if(spec.checkItem(item) == false)
+			return false;
+	}
+
+	return true;
 }
 	
 //END
