@@ -578,6 +578,25 @@ struct TextDestChat : public TextDest
 	Client *m_client;
 };
 
+struct TextDestSignNode : public TextDest
+{
+	TextDestSignNode(v3s16 p, Client *client)
+	{
+		m_p = p;
+		m_client = client;
+	}
+	void gotText(std::wstring text)
+	{
+		std::string ntext = wide_to_narrow(text);
+		dstream<<"Changing text of a sign node: "
+				<<ntext<<std::endl;
+		m_client->sendSignNodeText(m_p, ntext);
+	}
+
+	v3s16 m_p;
+	Client *m_client;
+};
+
 class MyEventReceiver : public IEventReceiver
 {
 public:
@@ -2829,6 +2848,8 @@ int main(int argc, char *argv[])
 			{
 				infotext = narrow_to_wide(meta->infoText());
 			}
+			
+			//MapNode node = client.getNode(nodepos);
 
 			/*
 				Handle digging
@@ -2956,7 +2977,31 @@ int main(int argc, char *argv[])
 			if(g_input->getRightClicked())
 			{
 				std::cout<<DTIME<<"Ground right-clicked"<<std::endl;
-				client.groundAction(1, nodepos, neighbourpos, g_selected_item);
+				
+				if(meta && meta->typeId() == CONTENT_SIGN_WALL)
+				{
+					dstream<<"Sign node right-clicked"<<std::endl;
+					
+					if(random_input == false)
+					{
+						// Get a new text for it
+
+						TextDest *dest = new TextDestSignNode(nodepos, &client);
+
+						SignNodeMetadata *signmeta = (SignNodeMetadata*)meta;
+						
+						std::wstring wtext =
+								narrow_to_wide(signmeta->getText());
+
+						(new GUITextInputMenu(guienv, guiroot, -1,
+								&g_menumgr, dest,
+								wtext))->drop();
+					}
+				}
+				else
+				{
+					client.groundAction(1, nodepos, neighbourpos, g_selected_item);
+				}
 			}
 			
 			nodepos_old = nodepos;

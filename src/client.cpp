@@ -1630,6 +1630,40 @@ void Client::sendSignText(v3s16 blockpos, s16 id, std::string text)
 	Send(0, data, true);
 }
 	
+void Client::sendSignNodeText(v3s16 p, std::string text)
+{
+	/*
+		u16 command
+		v3s16 p
+		u16 textlen
+		textdata
+	*/
+	std::ostringstream os(std::ios_base::binary);
+	u8 buf[12];
+	
+	// Write command
+	writeU16(buf, TOSERVER_SIGNNODETEXT);
+	os.write((char*)buf, 2);
+	
+	// Write p
+	writeV3S16(buf, p);
+	os.write((char*)buf, 6);
+
+	u16 textlen = text.size();
+	// Write text length
+	writeS16(buf, textlen);
+	os.write((char*)buf, 2);
+
+	// Write text
+	os.write((char*)text.c_str(), textlen);
+	
+	// Make data buffer
+	std::string s = os.str();
+	SharedBuffer<u8> data((u8*)s.c_str(), s.size());
+	// Send as reliable
+	Send(0, data, true);
+}
+	
 void Client::sendInventoryAction(InventoryAction *a)
 {
 	std::ostringstream os(std::ios_base::binary);

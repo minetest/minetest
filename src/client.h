@@ -277,6 +277,7 @@ public:
 	void clickObject(u8 button, v3s16 blockpos, s16 id, u16 item);
 
 	void sendSignText(v3s16 blockpos, s16 id, std::string text);
+	void sendSignNodeText(v3s16 p, std::string text);
 	void sendInventoryAction(InventoryAction *a);
 	void sendChatMessage(const std::wstring &message);
 	

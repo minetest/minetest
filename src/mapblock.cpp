@@ -1878,8 +1878,6 @@ void MapBlock::serialize(std::ostream &os, u8 version)
 			flags |= 0x02;
 		if(m_lighting_expired)
 			flags |= 0x04;
-		/*if(m_not_fully_generated)
-			flags |= 0x08;*/
 		os.write((char*)&flags, 1);
 
 		u32 nodecount = MAP_BLOCKSIZE*MAP_BLOCKSIZE*MAP_BLOCKSIZE;
@@ -1913,6 +1911,14 @@ void MapBlock::serialize(std::ostream &os, u8 version)
 		*/
 
 		compress(databuf, os, version);
+		
+		/*
+			NodeMetadata
+		*/
+		if(version >= 14)
+		{
+			m_node_metadata.serialize(os);
+		}
 	}
 }
 
@@ -2002,7 +2008,6 @@ void MapBlock::deSerialize(std::istream &is, u8 version)
 		is_underground = (flags & 0x01) ? true : false;
 		m_day_night_differs = (flags & 0x02) ? true : false;
 		m_lighting_expired = (flags & 0x04) ? true : false;
-		//m_not_fully_generated = (flags & 0x08) ? true : false;
 
 		// Uncompress data
 		std::ostringstream os(std::ios_base::binary);
@@ -2026,6 +2031,14 @@ void MapBlock::deSerialize(std::istream &is, u8 version)
 		for(u32 i=0; i<nodecount; i++)
 		{
 			data[i].param2 = s[i+nodecount*2];
+		}
+		
+		/*
+			NodeMetadata
+		*/
+		if(version >= 14)
+		{
+			m_node_metadata.deSerialize(is);
 		}
 	}
 	

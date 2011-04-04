@@ -1221,6 +1221,8 @@ void Server::AsyncRunStep()
 			{
 				//u16 peer_id = i.getNode()->getKey();
 				RemoteClient *client = i.getNode()->getValue();
+				Player *player = m_env.getPlayer(client->peer_id);
+				std::cout<<player->getName()<<" ";
 				client->PrintInfo(std::cout);
 			}
 		}
@@ -2395,6 +2397,52 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 
 		obj->getBlock()->setChangedFlag();
 	}
+	else if(command == TOSERVER_SIGNNODETEXT)
+	{
+		/*
+			u16 command
+			v3s16 p
+			u16 textlen
+			textdata
+		*/
+		std::string datastring((char*)&data[2], datasize-2);
+		std::istringstream is(datastring, std::ios_base::binary);
+		u8 buf[6];
+		// Read stuff
+		is.read((char*)buf, 6);
+		v3s16 p = readV3S16(buf);
+		is.read((char*)buf, 2);
+		u16 textlen = readU16(buf);
+		std::string text;
+		for(u16 i=0; i<textlen; i++)
+		{
+			is.read((char*)buf, 1);
+			text += (char)buf[0];
+		}
+
+		NodeMetadata *meta = m_env.getMap().getNodeMetadata(p);
+		if(!meta)
+			return;
+		if(meta->typeId() != CONTENT_SIGN_WALL)
+			return;
+		SignNodeMetadata *signmeta = (SignNodeMetadata*)meta;
+		signmeta->setText(text);
+		
+		v3s16 blockpos = getNodeBlockPos(p);
+		MapBlock *block = m_env.getMap().getBlockNoCreateNoEx(blockpos);
+		if(block)
+		{
+			block->setChangedFlag();
+		}
+
+		for(core::map<u16, RemoteClient*>::Iterator
+			i = m_clients.getIterator();
+			i.atEnd()==false; i++)
+		{
+			RemoteClient *client = i.getNode()->getValue();
+			client->SetBlockNotSent(blockpos);
+		}
+	}
 	else if(command == TOSERVER_INVENTORY_ACTION)
 	{
 		/*// Ignore inventory changes if in creative mode
@@ -3376,12 +3424,12 @@ void setCreativeInventory(Player *player)
 	}
 #endif
 
-	// Sign
+	/*// Sign
 	{
 		InventoryItem *item = new MapBlockObjectItem("Sign Example text");
 		void* r = player->inventory.addItem("main", item);
 		assert(r == NULL);
-	}
+	}*/
 }
 
 Player *Server::emergePlayer(const char *name, const char *password,
