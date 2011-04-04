@@ -2460,6 +2460,10 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 		InventoryAction *a = InventoryAction::deSerialize(is);
 		if(a != NULL)
 		{
+			// Create context
+			InventoryContext c;
+			c.current_player = player;
+
 			/*
 				Handle craftresult specially if not in creative mode
 			*/
@@ -2468,50 +2472,60 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 					&& g_settings.getBool("creative_mode") == false)
 			{
 				IMoveAction *ma = (IMoveAction*)a;
-				// Don't allow moving anything to craftresult
-				if(ma->to_name == "craftresult")
+				if(ma->to_inv == "current_player" &&
+						ma->from_inv == "current_player")
 				{
-					// Do nothing
-					disable_action = true;
-				}
-				// When something is removed from craftresult
-				if(ma->from_name == "craftresult")
-				{
-					disable_action = true;
-					// Remove stuff from craft
-					InventoryList *clist = player->inventory.getList("craft");
-					if(clist)
+					// Don't allow moving anything to craftresult
+					if(ma->to_list == "craftresult")
 					{
-						u16 count = ma->count;
-						if(count == 0)
-							count = 1;
-						clist->decrementMaterials(count);
+						// Do nothing
+						disable_action = true;
 					}
-					// Do action
-					// Feed action to player inventory
-					a->apply(&player->inventory);
-					// Eat it
-					delete a;
-					// If something appeared in craftresult, throw it
-					// in the main list
-					InventoryList *rlist = player->inventory.getList("craftresult");
-					InventoryList *mlist = player->inventory.getList("main");
-					if(rlist && mlist && rlist->getUsedSlots() == 1)
+					// When something is removed from craftresult
+					if(ma->from_list == "craftresult")
 					{
-						InventoryItem *item1 = rlist->changeItem(0, NULL);
-						mlist->addItem(item1);
+						disable_action = true;
+						// Remove stuff from craft
+						InventoryList *clist = player->inventory.getList("craft");
+						if(clist)
+						{
+							u16 count = ma->count;
+							if(count == 0)
+								count = 1;
+							clist->decrementMaterials(count);
+						}
+						// Do action
+						// Feed action to player inventory
+						//a->apply(&player->inventory);
+						a->apply(&c, this);
+						// Eat it
+						delete a;
+						// If something appeared in craftresult, throw it
+						// in the main list
+						InventoryList *rlist = player->inventory.getList("craftresult");
+						InventoryList *mlist = player->inventory.getList("main");
+						if(rlist && mlist && rlist->getUsedSlots() == 1)
+						{
+							InventoryItem *item1 = rlist->changeItem(0, NULL);
+							mlist->addItem(item1);
+						}
 					}
 				}
 			}
+			
 			if(disable_action == false)
 			{
 				// Feed action to player inventory
-				a->apply(&player->inventory);
-				// Eat it
+				//a->apply(&player->inventory);
+				a->apply(&c, this);
+				// Eat the action
 				delete a;
 			}
-			// Send inventory
-			SendInventory(player->peer_id);
+			else
+			{
+				// Send inventory
+				SendInventory(player->peer_id);
+			}
 		}
 		else
 		{
@@ -2677,6 +2691,63 @@ void Server::onMapEditEvent(MapEditEvent *event)
 		return;
 	MapEditEvent *e = event->clone();
 	m_unsent_map_edit_queue.push_back(e);
+}
+
+Inventory* Server::getInventory(InventoryContext *c, std::string id)
+{
+	if(id == "current_player")
+	{
+		assert(c->current_player);
+		return &(c->current_player->inventory);
+	}
+	
+	Strfnd fn(id);
+	std::string id0 = fn.next(":");
+
+	if(id0 == "nodemeta")
+	{
+		v3s16 p;
+		p.X = stoi(fn.next(","));
+		p.Y = stoi(fn.next(","));
+		p.Z = stoi(fn.next(","));
+		NodeMetadata *meta = m_env.getMap().getNodeMetadata(p);
+		if(meta)
+			return meta->getInventory();
+		dstream<<"nodemeta at ("<<p.X<<","<<p.Y<<","<<p.Z<<"): "
+				<<"no metadata found"<<std::endl;
+		return NULL;
+	}
+
+	dstream<<__FUNCTION_NAME<<": unknown id "<<id<<std::endl;
+	return NULL;
+}
+void Server::inventoryModified(InventoryContext *c, std::string id)
+{
+	if(id == "current_player")
+	{
+		assert(c->current_player);
+		// Send inventory
+		SendInventory(c->current_player->peer_id);
+		return;
+	}
+	
+	Strfnd fn(id);
+	std::string id0 = fn.next(":");
+
+	if(id0 == "nodemeta")
+	{
+		v3s16 p;
+		p.X = stoi(fn.next(","));
+		p.Y = stoi(fn.next(","));
+		p.Z = stoi(fn.next(","));
+		assert(c->current_player);
+		RemoteClient *client = getClient(c->current_player->peer_id);
+		v3s16 blockpos = getNodeBlockPos(p);
+		client->SetBlockNotSent(blockpos);
+		return;
+	}
+
+	dstream<<__FUNCTION_NAME<<": unknown id "<<id<<std::endl;
 }
 
 core::list<PlayerInfo> Server::getPlayerInfo()
@@ -3027,7 +3098,8 @@ void Server::SendInventory(u16 peer_id)
 				specs[7] = ItemSpec(ITEM_CRAFT, "Stick");
 				if(checkItemCombination(items, specs))
 				{
-					rlist->addItem(new MapBlockObjectItem("Sign"));
+					//rlist->addItem(new MapBlockObjectItem("Sign"));
+					rlist->addItem(new MaterialItem(CONTENT_SIGN_WALL, 1));
 					found = true;
 				}
 			}
@@ -3092,6 +3164,26 @@ void Server::SendInventory(u16 peer_id)
 					found = true;
 				}
 			}
+
+			// Chest1
+			if(!found)
+			{
+				ItemSpec specs[9];
+				specs[0] = ItemSpec(ITEM_MATERIAL, CONTENT_WOOD);
+				specs[1] = ItemSpec(ITEM_MATERIAL, CONTENT_WOOD);
+				specs[2] = ItemSpec(ITEM_MATERIAL, CONTENT_WOOD);
+				specs[3] = ItemSpec(ITEM_MATERIAL, CONTENT_WOOD);
+				specs[5] = ItemSpec(ITEM_MATERIAL, CONTENT_WOOD);
+				specs[6] = ItemSpec(ITEM_MATERIAL, CONTENT_WOOD);
+				specs[7] = ItemSpec(ITEM_MATERIAL, CONTENT_WOOD);
+				specs[8] = ItemSpec(ITEM_MATERIAL, CONTENT_WOOD);
+				if(checkItemCombination(items, specs))
+				{
+					rlist->addItem(new MaterialItem(CONTENT_CHEST, 1));
+					found = true;
+				}
+			}
+
 		}
 	} // if creative_mode == false
 

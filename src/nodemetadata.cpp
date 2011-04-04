@@ -21,6 +21,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "utility.h"
 #include "mapnode.h"
 #include "exceptions.h"
+#include "inventory.h"
 
 /*
 	NodeMetadata
@@ -111,6 +112,13 @@ std::string SignNodeMetadata::infoText()
 ChestNodeMetadata::ChestNodeMetadata()
 {
 	NodeMetadata::registerType(typeId(), create);
+	
+	m_inventory = new Inventory();
+	m_inventory->addList("0", 8*4);
+}
+ChestNodeMetadata::~ChestNodeMetadata()
+{
+	delete m_inventory;
 }
 u16 ChestNodeMetadata::typeId() const
 {
@@ -118,19 +126,28 @@ u16 ChestNodeMetadata::typeId() const
 }
 NodeMetadata* ChestNodeMetadata::create(std::istream &is)
 {
-	return new ChestNodeMetadata();
+	ChestNodeMetadata *d = new ChestNodeMetadata();
+	d->m_inventory->deSerialize(is);
+	return d;
 }
 NodeMetadata* ChestNodeMetadata::clone()
 {
-	return new ChestNodeMetadata();
+	ChestNodeMetadata *d = new ChestNodeMetadata();
+	*d->m_inventory = *m_inventory;
+	return d;
 }
 void ChestNodeMetadata::serializeBody(std::ostream &os)
 {
+	m_inventory->serialize(os);
 }
 std::string ChestNodeMetadata::infoText()
 {
 	return "Chest";
 }
+/*Inventory* ChestNodeMetadata::getInventory()
+{
+	return m_inventory;
+}*/
 
 /*
 	NodeMetadatalist

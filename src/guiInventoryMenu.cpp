@@ -78,18 +78,19 @@ void drawInventoryItem(video::IVideoDriver *driver,
 
 GUIInventoryMenu::GUIInventoryMenu(gui::IGUIEnvironment* env,
 		gui::IGUIElement* parent, s32 id,
-		Inventory *inventory,
-		Queue<InventoryAction*> *actions,
-		IMenuManager *menumgr):
-	GUIModalMenu(env, parent, id, menumgr)
+		IMenuManager *menumgr,
+		v2s16 menu_size,
+		core::array<DrawSpec> &init_draw_spec,
+		InventoryContext *c,
+		InventoryManager *invmgr
+		):
+	GUIModalMenu(env, parent, id, menumgr),
+	m_menu_size(menu_size),
+	m_c(c),
+	m_invmgr(invmgr),
+	m_init_draw_spec(init_draw_spec)
 {
-	m_inventory = inventory;
 	m_selected_item = NULL;
-	m_actions = actions;
-
-	/*m_selected_item = new ItemSpec;
-	m_selected_item->listname = "main";
-	m_selected_item->i = 3;*/
 }
 
 GUIInventoryMenu::~GUIInventoryMenu()
@@ -102,6 +103,19 @@ GUIInventoryMenu::~GUIInventoryMenu()
 
 void GUIInventoryMenu::removeChildren()
 {
+	/*const core::list<gui::IGUIElement*> &children = getChildren();
+	core::list<gui::IGUIElement*> children_copy;
+	for(core::list<gui::IGUIElement*>::ConstIterator
+			i = children.begin(); i != children.end(); i++)
+	{
+		children_copy.push_back(*i);
+	}
+	for(core::list<gui::IGUIElement*>::Iterator
+			i = children_copy.begin();
+			i != children_copy.end(); i++)
+	{
+		(*i)->remove();
+	}*/
 	{
 		gui::IGUIElement *e = getElementFromId(256);
 		if(e != NULL)
@@ -114,15 +128,19 @@ void GUIInventoryMenu::regenerateGui(v2u32 screensize)
 	// Remove children
 	removeChildren();
 	
-	padding = v2s32(24,24);
+	/*padding = v2s32(24,24);
 	spacing = v2s32(60,56);
-	imgsize = v2s32(48,48);
+	imgsize = v2s32(48,48);*/
+
+	padding = v2s32(screensize.X/48, screensize.X/48);
+	spacing = v2s32(screensize.X/16, screensize.X/17);
+	imgsize = v2s32(screensize.X/20, screensize.X/20);
 
 	s32 helptext_h = 15;
 
 	v2s32 size(
-		padding.X*2+spacing.X*(8-1)+imgsize.X,
-		padding.Y*2+spacing.Y*(7-1)+imgsize.Y + helptext_h
+		padding.X*2+spacing.X*(m_menu_size.X-1)+imgsize.X,
+		padding.Y*2+spacing.Y*(m_menu_size.Y-1)+imgsize.Y + helptext_h
 	);
 
 	core::rect<s32> rect(
@@ -137,13 +155,27 @@ void GUIInventoryMenu::regenerateGui(v2u32 screensize)
 
 	v2s32 basepos = getBasePos();
 	
-	m_draw_positions.clear();
-	m_draw_positions.push_back(ListDrawSpec("main",
+	m_draw_spec.clear();
+	for(u16 i=0; i<m_init_draw_spec.size(); i++)
+	{
+		DrawSpec &s = m_init_draw_spec[i];
+		if(s.type == "list")
+		{
+			m_draw_spec.push_back(ListDrawSpec(s.name, s.subname,
+					basepos + v2s32(spacing.X*s.pos.X, spacing.Y*s.pos.Y),
+					s.geom));
+		}
+	}
+
+	/*
+	m_draw_spec.clear();
+	m_draw_spec.push_back(ListDrawSpec("main",
 			basepos + v2s32(spacing.X*0, spacing.Y*3), v2s32(8, 4)));
-	m_draw_positions.push_back(ListDrawSpec("craft",
+	m_draw_spec.push_back(ListDrawSpec("craft",
 			basepos + v2s32(spacing.X*3, spacing.Y*0), v2s32(3, 3)));
-	m_draw_positions.push_back(ListDrawSpec("craftresult",
+	m_draw_spec.push_back(ListDrawSpec("craftresult",
 			basepos + v2s32(spacing.X*7, spacing.Y*1), v2s32(1, 1)));
+	*/
 	
 	// Add children
 	{
@@ -160,9 +192,9 @@ GUIInventoryMenu::ItemSpec GUIInventoryMenu::getItemAtPos(v2s32 p) const
 {
 	core::rect<s32> imgrect(0,0,imgsize.X,imgsize.Y);
 	
-	for(u32 i=0; i<m_draw_positions.size(); i++)
+	for(u32 i=0; i<m_draw_spec.size(); i++)
 	{
-		const ListDrawSpec &s = m_draw_positions[i];
+		const ListDrawSpec &s = m_draw_spec[i];
 
 		for(s32 i=0; i<s.geom.X*s.geom.Y; i++)
 		{
@@ -172,15 +204,14 @@ GUIInventoryMenu::ItemSpec GUIInventoryMenu::getItemAtPos(v2s32 p) const
 			core::rect<s32> rect = imgrect + s.pos + p0;
 			if(rect.isPointInside(p))
 			{
-				return ItemSpec(s.listname, i);
+				return ItemSpec(s.inventoryname, s.listname, i);
 			}
 		}
 	}
 
-	return ItemSpec("", -1);
+	return ItemSpec("", "", -1);
 }
 
-//void GUIInventoryMenu::drawList(const std::string &name, v2s32 pos, v2s32 geom)
 void GUIInventoryMenu::drawList(const ListDrawSpec &s)
 {
 	video::IVideoDriver* driver = Environment->getVideoDriver();
@@ -191,7 +222,9 @@ void GUIInventoryMenu::drawList(const ListDrawSpec &s)
 	if (skin)
 		font = skin->getFont();
 	
-	InventoryList *ilist = m_inventory->getList(s.listname);
+	Inventory *inv = m_invmgr->getInventory(m_c, s.inventoryname);
+	assert(inv);
+	InventoryList *ilist = inv->getList(s.listname);
 	
 	core::rect<s32> imgrect(0,0,imgsize.X,imgsize.Y);
 	
@@ -241,9 +274,9 @@ void GUIInventoryMenu::drawMenu()
 		Draw items
 	*/
 	
-	for(u32 i=0; i<m_draw_positions.size(); i++)
+	for(u32 i=0; i<m_draw_spec.size(); i++)
 	{
-		ListDrawSpec &s = m_draw_positions[i];
+		ListDrawSpec &s = m_draw_spec[i];
 		drawList(s);
 	}
 
@@ -279,26 +312,36 @@ bool GUIInventoryMenu::OnEvent(const SEvent& event)
 			ItemSpec s = getItemAtPos(p);
 			if(s.isValid())
 			{
-				//dstream<<"Mouse down on "<<s.listname<<" "<<s.i<<std::endl;
+				dstream<<"Mouse down on "<<s.inventoryname
+						<<"/"<<s.listname<<" "<<s.i<<std::endl;
 				if(m_selected_item)
 				{
+					Inventory *inv_from = m_invmgr->getInventory(m_c,
+							m_selected_item->inventoryname);
+					Inventory *inv_to = m_invmgr->getInventory(m_c,
+							s.inventoryname);
+					assert(inv_from);
+					assert(inv_to);
 					InventoryList *list_from =
-							m_inventory->getList(m_selected_item->listname);
+							inv_from->getList(m_selected_item->listname);
 					InventoryList *list_to =
-							m_inventory->getList(s.listname);
+							inv_to->getList(s.listname);
 					// Indicates whether source slot completely empties
 					bool source_empties = false;
 					if(list_from && list_to
 							&& list_from->getItem(m_selected_item->i) != NULL)
 					{
-						dstream<<"Queueing IACTION_MOVE"<<std::endl;
+						dstream<<"Handing IACTION_MOVE to manager"<<std::endl;
 						IMoveAction *a = new IMoveAction();
 						a->count = right ? 1 : 0;
-						a->from_name = m_selected_item->listname;
+						a->from_inv = m_selected_item->inventoryname;
+						a->from_list = m_selected_item->listname;
 						a->from_i = m_selected_item->i;
-						a->to_name = s.listname;
+						a->to_inv = s.inventoryname;
+						a->to_list = s.listname;
 						a->to_i = s.i;
-						m_actions->push_back(a);
+						//ispec.actions->push_back(a);
+						m_invmgr->inventoryAction(a);
 						
 						if(list_from->getItem(m_selected_item->i)->getCount()==1)
 							source_empties = true;
@@ -316,7 +359,10 @@ bool GUIInventoryMenu::OnEvent(const SEvent& event)
 					/*
 						Select if non-NULL
 					*/
-					InventoryList *list = m_inventory->getList(s.listname);
+					Inventory *inv = m_invmgr->getInventory(m_c,
+							s.inventoryname);
+					assert(inv);
+					InventoryList *list = inv->getList(s.listname);
 					if(list->getItem(s.i) != NULL)
 					{
 						m_selected_item = new ItemSpec(s);

@@ -96,17 +96,11 @@ InventoryItem* InventoryItem::deSerialize(std::istream &is)
 #ifndef SERVER
 video::ITexture * MapBlockObjectItem::getImage()
 {
-	//TODO
-	
 	if(m_inventorystring.substr(0,3) == "Rat")
-		//return g_device->getVideoDriver()->getTexture(porting::getDataPath("rat.png").c_str());
-		//return g_irrlicht->getTexture("rat.png");
-		return NULL;
+		return g_texturesource->getTextureRaw("rat.png");
 	
 	if(m_inventorystring.substr(0,4) == "Sign")
-		//return g_device->getVideoDriver()->getTexture(porting::getDataPath("sign.png").c_str());
-		//return g_irrlicht->getTexture("sign.png");
-		return NULL;
+		return g_texturesource->getTextureRaw("sign.png");
 
 	return NULL;
 }
@@ -608,12 +602,27 @@ InventoryAction * InventoryAction::deSerialize(std::istream &is)
 	return a;
 }
 
-void IMoveAction::apply(Inventory *inventory)
+void IMoveAction::apply(InventoryContext *c, InventoryManager *mgr)
 {
-	/*dstream<<"from_name="<<from_name<<" to_name="<<to_name<<std::endl;
+#if 1
+
+	/*dstream<<"from_inv="<<from_inv<<" to_inv="<<to_inv<<std::endl;
+	dstream<<"from_list="<<from_list<<" to_list="<<to_list<<std::endl;
 	dstream<<"from_i="<<from_i<<" to_i="<<to_i<<std::endl;*/
-	InventoryList *list_from = inventory->getList(from_name);
-	InventoryList *list_to = inventory->getList(to_name);
+
+	Inventory *inv_from = mgr->getInventory(c, from_inv);
+	Inventory *inv_to = mgr->getInventory(c, to_inv);
+
+	if(!inv_from || !inv_to)
+	{
+		dstream<<__FUNCTION_NAME<<": Operation not allowed "
+				<<"(inventories not found)"<<std::endl;
+		return;
+	}
+
+	InventoryList *list_from = inv_from->getList(from_list);
+	InventoryList *list_to = inv_to->getList(to_list);
+
 	/*dstream<<"list_from="<<list_from<<" list_to="<<list_to
 			<<std::endl;*/
 	/*if(list_from)
@@ -625,12 +634,28 @@ void IMoveAction::apply(Inventory *inventory)
 	
 	/*
 		If a list doesn't exist or the source item doesn't exist
-		or the source and the destination slots are the same
 	*/
-	if(!list_from || !list_to || list_from->getItem(from_i) == NULL
-			|| (list_from == list_to && from_i == to_i))
+	if(!list_from || !list_to)
 	{
-		dstream<<__FUNCTION_NAME<<": Operation not allowed"<<std::endl;
+		dstream<<__FUNCTION_NAME<<": Operation not allowed "
+				<<"(a list doesn't exist)"
+				<<std::endl;
+		return;
+	}
+	if(list_from->getItem(from_i) == NULL)
+	{
+		dstream<<__FUNCTION_NAME<<": Operation not allowed "
+				<<"(the source item doesn't exist)"
+				<<std::endl;
+		return;
+	}
+	/*
+		If the source and the destination slots are the same
+	*/
+	if(inv_from == inv_to && list_from == list_to && from_i == to_i)
+	{
+		dstream<<__FUNCTION_NAME<<": Operation not allowed "
+				<<"(source and the destination slots are the same)"<<std::endl;
 		return;
 	}
 	
@@ -645,29 +670,33 @@ void IMoveAction::apply(Inventory *inventory)
 	InventoryItem *olditem = item1;
 	item1 = list_to->addItem(to_i, item1);
 
-	// If nothing is returned, the item was fully added
-	if(item1 == NULL)
-		return;
-	
-	// If olditem is returned, nothing was added.
-	bool nothing_added = (item1 == olditem);
-	
-	// If something else is returned, part of the item was left unadded.
-	// Add the other part back to the source item
-	list_from->addItem(from_i, item1);
-
-	// If olditem is returned, nothing was added.
-	// Swap the items
-	if(nothing_added)
+	// If something is returned, the item was not fully added
+	if(item1 != NULL)
 	{
-		// Take item from source list
-		item1 = list_from->changeItem(from_i, NULL);
-		// Adding was not possible, swap the items.
-		InventoryItem *item2 = list_to->changeItem(to_i, item1);
-		// Put item from destination list to the source list
-		list_from->changeItem(from_i, item2);
-		return;
+		// If olditem is returned, nothing was added.
+		bool nothing_added = (item1 == olditem);
+		
+		// If something else is returned, part of the item was left unadded.
+		// Add the other part back to the source item
+		list_from->addItem(from_i, item1);
+
+		// If olditem is returned, nothing was added.
+		// Swap the items
+		if(nothing_added)
+		{
+			// Take item from source list
+			item1 = list_from->changeItem(from_i, NULL);
+			// Adding was not possible, swap the items.
+			InventoryItem *item2 = list_to->changeItem(to_i, item1);
+			// Put item from destination list to the source list
+			list_from->changeItem(from_i, item2);
+		}
 	}
+
+	mgr->inventoryModified(c, from_inv);
+	if(from_inv != to_inv)
+		mgr->inventoryModified(c, to_inv);
+#endif
 }
 	
 //END

@@ -37,6 +37,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 		- Text
 */
 
+class Inventory;
+
 class NodeMetadata
 {
 public:
@@ -52,7 +54,8 @@ public:
 	virtual u16 typeId() const = 0;
 	virtual NodeMetadata* clone() = 0;
 	virtual void serializeBody(std::ostream &os) = 0;
-	virtual std::string infoText() { return "<todo: remove this text>"; }
+	virtual std::string infoText() {return "<todo: remove this text>";}
+	virtual Inventory* getInventory() {return NULL;}
 
 protected:
 	static void registerType(u16 id, Factory f);
@@ -83,14 +86,17 @@ class ChestNodeMetadata : public NodeMetadata
 {
 public:
 	ChestNodeMetadata();
+	~ChestNodeMetadata();
 	
 	virtual u16 typeId() const;
 	static NodeMetadata* create(std::istream &is);
 	virtual NodeMetadata* clone();
 	virtual void serializeBody(std::ostream &os);
 	virtual std::string infoText();
+	virtual Inventory* getInventory() {return m_inventory;}
 
 private:
+	Inventory *m_inventory;
 };
 
 class NodeMetadataList

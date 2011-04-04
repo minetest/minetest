@@ -448,6 +448,7 @@ public:
 MainGameCallback g_gamecallback;
 
 // Inventory actions from the menu are buffered here before sending
+// TODO: Get rid of this
 Queue<InventoryAction*> inventory_action_queue;
 // This is a copy of the inventory that the client's environment has
 Inventory local_inventory;
@@ -621,9 +622,26 @@ public:
 					{
 						dstream<<DTIME<<"MyEventReceiver: "
 								<<"Launching inventory"<<std::endl;
-						(new GUIInventoryMenu(guienv, guiroot, -1,
-								&local_inventory, &inventory_action_queue,
-								&g_menumgr))->drop();
+						
+						core::array<GUIInventoryMenu::DrawSpec> draw_spec;
+						draw_spec.push_back(GUIInventoryMenu::DrawSpec(
+								"list", "current_player", "main",
+								v2s32(0, 3), v2s32(8, 4)));
+						draw_spec.push_back(GUIInventoryMenu::DrawSpec(
+								"list", "current_player", "craft",
+								v2s32(3, 0), v2s32(3, 3)));
+						draw_spec.push_back(GUIInventoryMenu::DrawSpec(
+								"list", "current_player", "craftresult",
+								v2s32(7, 1), v2s32(1, 1)));
+
+						GUIInventoryMenu *menu =
+							new GUIInventoryMenu(guienv, guiroot, -1,
+								&g_menumgr, v2s16(8,7), draw_spec,
+								g_client->getInventoryContext(),
+								g_client);
+
+						menu->drop();
+
 						return true;
 					}
 					if(event.KeyInput.Key == irr::KEY_KEY_T)
@@ -2950,25 +2968,54 @@ int main(int argc, char *argv[])
 			{
 				std::cout<<DTIME<<"Ground right-clicked"<<std::endl;
 				
-				if(meta && meta->typeId() == CONTENT_SIGN_WALL)
+				if(meta && meta->typeId() == CONTENT_SIGN_WALL && !random_input)
 				{
 					dstream<<"Sign node right-clicked"<<std::endl;
 					
-					if(random_input == false)
-					{
-						// Get a new text for it
+					SignNodeMetadata *signmeta = (SignNodeMetadata*)meta;
+					
+					// Get a new text for it
 
-						TextDest *dest = new TextDestSignNode(nodepos, &client);
+					TextDest *dest = new TextDestSignNode(nodepos, &client);
 
-						SignNodeMetadata *signmeta = (SignNodeMetadata*)meta;
-						
-						std::wstring wtext =
-								narrow_to_wide(signmeta->getText());
+					std::wstring wtext =
+							narrow_to_wide(signmeta->getText());
 
-						(new GUITextInputMenu(guienv, guiroot, -1,
-								&g_menumgr, dest,
-								wtext))->drop();
-					}
+					(new GUITextInputMenu(guienv, guiroot, -1,
+							&g_menumgr, dest,
+							wtext))->drop();
+				}
+				else if(meta && meta->typeId() == CONTENT_CHEST && !random_input)
+				{
+					dstream<<"Chest node right-clicked"<<std::endl;
+					
+					//ChestNodeMetadata *chestmeta = (ChestNodeMetadata*)meta;
+
+					core::array<GUIInventoryMenu::DrawSpec> draw_spec;
+					
+					std::string chest_inv_id;
+					chest_inv_id += "nodemeta:";
+					chest_inv_id += itos(nodepos.X);
+					chest_inv_id += ",";
+					chest_inv_id += itos(nodepos.Y);
+					chest_inv_id += ",";
+					chest_inv_id += itos(nodepos.Z);
+					
+					draw_spec.push_back(GUIInventoryMenu::DrawSpec(
+							"list", chest_inv_id, "0",
+							v2s32(0, 0), v2s32(8, 4)));
+					draw_spec.push_back(GUIInventoryMenu::DrawSpec(
+							"list", "current_player", "main",
+							v2s32(0, 5), v2s32(8, 4)));
+
+					GUIInventoryMenu *menu =
+						new GUIInventoryMenu(guienv, guiroot, -1,
+							&g_menumgr, v2s16(8,9), draw_spec,
+							g_client->getInventoryContext(),
+							g_client);
+
+					menu->drop();
+
 				}
 				else
 				{
@@ -3196,8 +3243,6 @@ int main(int argc, char *argv[])
 			old_selected_item = g_selected_item;
 			//std::cout<<"Updating local inventory"<<std::endl;
 			client.getLocalInventory(local_inventory);
-			/*quick_inventory->setSelection(g_selected_item);
-			quick_inventory->update();*/
 		}
 		
 		/*

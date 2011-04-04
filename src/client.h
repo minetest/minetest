@@ -224,7 +224,7 @@ struct IncomingPacket
 };
 #endif
 
-class Client : public con::PeerHandler
+class Client : public con::PeerHandler, public InventoryManager
 {
 public:
 	/*
@@ -303,6 +303,11 @@ public:
 	// Copies the inventory of the local player to parameter
 	void getLocalInventory(Inventory &dst);
 	
+	InventoryContext *getInventoryContext();
+
+	Inventory* getInventory(InventoryContext *c, std::string id);
+	void inventoryAction(InventoryAction *a);
+
 	// Gets closest object pointed by the shootline
 	// Returns NULL if not found
 	MapBlockObject * getSelectedObject(
@@ -438,6 +443,8 @@ private:
 	
 	// The seed returned by the server in TOCLIENT_INIT is stored here
 	u64 m_map_seed;
+	
+	InventoryContext m_inventory_context;
 };
 
 #endif // !SERVER

@@ -495,6 +495,41 @@ private:
 	core::array<InventoryList*> m_lists;
 };
 
+class Player;
+
+struct InventoryContext
+{
+	Player *current_player;
+	
+	InventoryContext():
+		current_player(NULL)
+	{}
+};
+
+class InventoryAction;
+
+class InventoryManager
+{
+public:
+	InventoryManager(){}
+	virtual ~InventoryManager(){}
+	
+	/*
+		Get a pointer to an inventory specified by id.
+		id can be:
+		- "current_player"
+		- "nodemeta:X,Y,Z"
+	*/
+	virtual Inventory* getInventory(InventoryContext *c, std::string id)
+		{return NULL;}
+	// Used on the server by InventoryAction::apply
+	virtual void inventoryModified(InventoryContext *c, std::string id)
+		{}
+	// Used on the client
+	virtual void inventoryAction(InventoryAction *a)
+		{}
+};
+
 #define IACTION_MOVE 0
 
 struct InventoryAction
@@ -503,16 +538,18 @@ struct InventoryAction
 	
 	virtual u16 getType() const = 0;
 	virtual void serialize(std::ostream &os) = 0;
-	virtual void apply(Inventory *inventory) = 0;
+	virtual void apply(InventoryContext *c, InventoryManager *mgr) = 0;
 };
 
 struct IMoveAction : public InventoryAction
 {
 	// count=0 means "everything"
 	u16 count;
-	std::string from_name;
+	std::string from_inv;
+	std::string from_list;
 	s16 from_i;
-	std::string to_name;
+	std::string to_inv;
+	std::string to_list;
 	s16 to_i;
 	
 	IMoveAction()
@@ -528,12 +565,16 @@ struct IMoveAction : public InventoryAction
 		std::getline(is, ts, ' ');
 		count = stoi(ts);
 
-		std::getline(is, from_name, ' ');
+		std::getline(is, from_inv, ' ');
+
+		std::getline(is, from_list, ' ');
 
 		std::getline(is, ts, ' ');
 		from_i = stoi(ts);
 
-		std::getline(is, to_name, ' ');
+		std::getline(is, to_inv, ' ');
+
+		std::getline(is, to_list, ' ');
 
 		std::getline(is, ts, ' ');
 		to_i = stoi(ts);
@@ -548,13 +589,15 @@ struct IMoveAction : public InventoryAction
 	{
 		os<<"Move ";
 		os<<count<<" ";
-		os<<from_name<<" ";
+		os<<from_inv<<" ";
+		os<<from_list<<" ";
 		os<<from_i<<" ";
-		os<<to_name<<" ";
+		os<<to_inv<<" ";
+		os<<to_list<<" ";
 		os<<to_i;
 	}
 
-	void apply(Inventory *inventory);
+	void apply(InventoryContext *c, InventoryManager *mgr);
 };
 
 #endif

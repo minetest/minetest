@@ -31,6 +31,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "utility.h"
 #include "porting.h"
 #include "map.h"
+#include "inventory.h"
 
 struct QueuedBlockEmerge
 {
@@ -342,7 +343,8 @@ private:
 	u32 m_excess_gotblocks;
 };
 
-class Server : public con::PeerHandler, public MapEventReceiver
+class Server : public con::PeerHandler, public MapEventReceiver,
+		public InventoryManager
 {
 public:
 	/*
@@ -381,6 +383,12 @@ public:
 		so it shouldn't be a problem.
 	*/
 	void onMapEditEvent(MapEditEvent *event);
+
+	/*
+		Shall be called with the environment and the connection locked.
+	*/
+	Inventory* getInventory(InventoryContext *c, std::string id);
+	void inventoryModified(InventoryContext *c, std::string id);
 
 private:
 

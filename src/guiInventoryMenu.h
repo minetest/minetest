@@ -39,9 +39,12 @@ class GUIInventoryMenu : public GUIModalMenu
 		{
 			i = -1;
 		}
-		ItemSpec(const std::string &a_name, s32 a_i)
+		ItemSpec(const std::string &a_inventoryname,
+				const std::string &a_listname,
+				s32 a_i)
 		{
-			listname = a_name;
+			inventoryname = a_inventoryname;
+			listname = a_listname;
 			i = a_i;
 		}
 		bool isValid() const
@@ -49,6 +52,7 @@ class GUIInventoryMenu : public GUIModalMenu
 			return i != -1;
 		}
 
+		std::string inventoryname;
 		std::string listname;
 		s32 i;
 	};
@@ -58,24 +62,55 @@ class GUIInventoryMenu : public GUIModalMenu
 		ListDrawSpec()
 		{
 		}
-		ListDrawSpec(const std::string &a_name, v2s32 a_pos, v2s32 a_geom)
+		ListDrawSpec(const std::string &a_inventoryname,
+				const std::string &a_listname,
+				v2s32 a_pos, v2s32 a_geom)
 		{
-			listname = a_name;
+			inventoryname = a_inventoryname;
+			listname = a_listname;
 			pos = a_pos;
 			geom = a_geom;
 		}
 
+		std::string inventoryname;
 		std::string listname;
 		v2s32 pos;
 		v2s32 geom;
 	};
-
 public:
+	struct DrawSpec
+	{
+		DrawSpec()
+		{
+		}
+		DrawSpec(const std::string &a_type,
+				const std::string &a_name,
+				const std::string &a_subname,
+				v2s32 a_pos,
+				v2s32 a_geom)
+		{
+			type = a_type;
+			name = a_name;
+			subname = a_subname;
+			pos = a_pos;
+			geom = a_geom;
+		}
+
+		std::string type;
+		std::string name;
+		std::string subname;
+		v2s32 pos;
+		v2s32 geom;
+	};
+
 	GUIInventoryMenu(gui::IGUIEnvironment* env,
 			gui::IGUIElement* parent, s32 id,
-			Inventory *inventory,
-			Queue<InventoryAction*> *actions,
-			IMenuManager *menumgr);
+			IMenuManager *menumgr,
+			v2s16 menu_size,
+			core::array<DrawSpec> &init_draw_spec,
+			InventoryContext *c,
+			InventoryManager *invmgr
+			);
 	~GUIInventoryMenu();
 
 	void removeChildren();
@@ -96,16 +131,19 @@ private:
 		return padding + AbsoluteRect.UpperLeftCorner;
 	}
 
+	v2s16 m_menu_size;
+
 	v2s32 padding;
 	v2s32 spacing;
 	v2s32 imgsize;
+	
+	InventoryContext *m_c;
+	InventoryManager *m_invmgr;
 
-	core::array<ListDrawSpec> m_draw_positions;
-
-	Inventory *m_inventory;
+	core::array<DrawSpec> m_init_draw_spec;
+	core::array<ListDrawSpec> m_draw_spec;
 
 	ItemSpec *m_selected_item;
-	Queue<InventoryAction*> *m_actions;
 };
 
 #endif
