@@ -282,7 +282,9 @@ public:
 		These are basically coordinate wrappers to MapBlock
 	*/
 	
-	NodeMetadata* getNodeMetadataClone(v3s16 p);
+	NodeMetadata* getNodeMetadata(v3s16 p);
+	void setNodeMetadata(v3s16 p, NodeMetadata *meta);
+	void removeNodeMetadata(v3s16 p);
 
 	/*
 		Variables

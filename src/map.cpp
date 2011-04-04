@@ -954,6 +954,17 @@ void Map::addNodeAndUpdate(v3s16 p, MapNode n,
 	*/
 	
 	setNode(p, n);
+
+	/*
+		Add intial metadata
+	*/
+
+	NodeMetadata *meta_proto = content_features(n.d).initial_metadata;
+	if(meta_proto)
+	{
+		NodeMetadata *meta = meta_proto->clone();
+		setNodeMetadata(p, meta);
+	}
 	
 	/*
 		If node is under sunlight and doesn't let sunlight through,
@@ -1092,6 +1103,12 @@ void Map::removeNodeAndUpdate(v3s16 p,
 				getNode(p).getLight(bank),
 				light_sources, modified_blocks);
 	}
+
+	/*
+		Remove node metadata
+	*/
+
+	removeNodeMetadata(p);
 
 	/*
 		Remove the node.
@@ -1696,15 +1713,47 @@ void Map::transformLiquids(core::map<v3s16, MapBlock*> & modified_blocks)
 	//dstream<<"Map::transformLiquids(): loopcount="<<loopcount<<std::endl;
 }
 
-NodeMetadata* Map::getNodeMetadataClone(v3s16 p)
+NodeMetadata* Map::getNodeMetadata(v3s16 p)
 {
 	v3s16 blockpos = getNodeBlockPos(p);
 	v3s16 p_rel = p - blockpos*MAP_BLOCKSIZE;
 	MapBlock *block = getBlockNoCreateNoEx(blockpos);
 	if(block == NULL)
+	{
+		dstream<<"WARNING: Map::setNodeMetadata(): Block not found"
+				<<std::endl;
 		return NULL;
-	NodeMetadata *meta = block->m_node_metadata.getClone(p_rel);
+	}
+	NodeMetadata *meta = block->m_node_metadata.get(p_rel);
 	return meta;
+}
+
+void Map::setNodeMetadata(v3s16 p, NodeMetadata *meta)
+{
+	v3s16 blockpos = getNodeBlockPos(p);
+	v3s16 p_rel = p - blockpos*MAP_BLOCKSIZE;
+	MapBlock *block = getBlockNoCreateNoEx(blockpos);
+	if(block == NULL)
+	{
+		dstream<<"WARNING: Map::setNodeMetadata(): Block not found"
+				<<std::endl;
+		return;
+	}
+	block->m_node_metadata.set(p_rel, meta);
+}
+
+void Map::removeNodeMetadata(v3s16 p)
+{
+	v3s16 blockpos = getNodeBlockPos(p);
+	v3s16 p_rel = p - blockpos*MAP_BLOCKSIZE;
+	MapBlock *block = getBlockNoCreateNoEx(blockpos);
+	if(block == NULL)
+	{
+		dstream<<"WARNING: Map::removeNodeMetadata(): Block not found"
+				<<std::endl;
+		return;
+	}
+	block->m_node_metadata.remove(p_rel);
 }
 
 /*

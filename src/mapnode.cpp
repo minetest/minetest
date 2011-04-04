@@ -306,6 +306,8 @@ void init_mapnode()
 	f->walkable = false;
 	f->wall_mounted = true;
 	f->dug_item = std::string("MaterialItem ")+itos(i)+" 1";
+	if(f->initial_metadata == NULL)
+		f->initial_metadata = new SignNodeMetadata();
 	
 }
 

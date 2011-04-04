@@ -28,6 +28,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "serialization.h"
 #include "tile.h"
 #include "iirrlichtwrapper.h"
+#include "nodemetadata.h"
 
 /*
 	Initializes all kind of stuff in here.
@@ -157,6 +158,9 @@ struct ContentFeatures
 	// Inventory item string as which the node appears in inventory when dug.
 	// Mineral overrides this.
 	std::string dug_item;
+	
+	// Initial metadata is cloned from this
+	NodeMetadata *initial_metadata;
 
 	//TODO: Move more properties here
 
@@ -176,6 +180,7 @@ struct ContentFeatures
 		liquid_type = LIQUID_NONE;
 		wall_mounted = false;
 		dug_item = "";
+		initial_metadata = NULL;
 	}
 
 	~ContentFeatures();

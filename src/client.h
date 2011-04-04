@@ -290,7 +290,7 @@ public:
 	// Returns InvalidPositionException if not found
 	MapNode getNode(v3s16 p);
 	// Wrapper to Map
-	NodeMetadata* getNodeMetadataClone(v3s16 p);
+	NodeMetadata* getNodeMetadata(v3s16 p);
 
 	v3f getPlayerPosition();
 

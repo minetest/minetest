@@ -1787,10 +1787,9 @@ MapNode Client::getNode(v3s16 p)
 	return m_env.getMap().getNode(p);
 }
 
-NodeMetadata* Client::getNodeMetadataClone(v3s16 p)
+NodeMetadata* Client::getNodeMetadata(v3s16 p)
 {
-	//JMutexAutoLock envlock(m_env_mutex); //bulk comment-out
-	return m_env.getMap().getNodeMetadataClone(p);
+	return m_env.getMap().getNodeMetadata(p);
 }
 
 v3f Client::getPlayerPosition()

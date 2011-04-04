@@ -2821,9 +2821,14 @@ int main(int argc, char *argv[])
 			hilightboxes.push_back(nodehilightbox);
 
 			/*
-				TODO:
 				Check information text of node
 			*/
+
+			NodeMetadata *meta = client.getNodeMetadata(nodepos);
+			if(meta)
+			{
+				infotext = narrow_to_wide(meta->infoText());
+			}
 
 			/*
 				Handle digging
