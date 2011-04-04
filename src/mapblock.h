@@ -174,6 +174,8 @@ public:
 
 class MapBlock;
 
+#ifndef SERVER
+
 struct MeshMakeData
 {
 	u32 m_daynight_ratio;
@@ -188,10 +190,12 @@ struct MeshMakeData
 	void fill(u32 daynight_ratio, MapBlock *block);
 };
 
+scene::SMesh* makeMapBlockMesh(MeshMakeData *data);
+
+#endif
+
 u8 getFaceLight(u32 daynight_ratio, MapNode n, MapNode n2,
 		v3s16 face_dir);
-
-scene::SMesh* makeMapBlockMesh(MeshMakeData *data);
 
 /*
 	MapBlock itself

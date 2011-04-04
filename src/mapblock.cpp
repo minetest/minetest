@@ -24,6 +24,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "light.h"
 #include <sstream>
 
+#ifndef SERVER
 void MeshMakeData::fill(u32 daynight_ratio, MapBlock *block)
 {
 	m_daynight_ratio = daynight_ratio;
@@ -80,6 +81,7 @@ void MeshMakeData::fill(u32 daynight_ratio, MapBlock *block)
 		}
 	}
 }
+#endif
 
 /*
 	Parameters must consist of air and !air.
@@ -1273,6 +1275,7 @@ scene::SMesh* makeMapBlockMesh(MeshMakeData *data)
 	//std::cout<<"added "<<fastfaces.getSize()<<" faces."<<std::endl;
 }
 
+#endif // !SERVER
 
 /*
 	MapBlock
@@ -1380,6 +1383,8 @@ MapNode MapBlock::getNodeParentNoEx(v3s16 p)
 		return data[p.Z*MAP_BLOCKSIZE*MAP_BLOCKSIZE + p.Y*MAP_BLOCKSIZE + p.X];
 	}
 }
+
+#ifndef SERVER
 
 #if 1
 void MapBlock::updateMesh(u32 daynight_ratio)
