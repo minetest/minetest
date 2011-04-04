@@ -189,8 +189,6 @@ endif()
 # Example configuration file
 install(FILES "${CMAKE_CURRENT_SOURCE_DIR}/../minetest.conf.example" DESTINATION ${EXAMPLE_CONF_DIR})
 
-install(DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/../data/scripts" DESTINATION ${DATADIR})
-
 if(BUILD_CLIENT)
 	install(TARGETS minetest DESTINATION ${BINDIR})
 
