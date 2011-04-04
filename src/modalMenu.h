@@ -46,6 +46,8 @@ public:
 		IGUIElement(gui::EGUIET_ELEMENT, env, parent, id,
 				core::rect<s32>(0,0,100,100))
 	{
+		//m_force_regenerate_gui = false;
+		
 		m_menumgr = menumgr;
 		m_allow_focus_removal = false;
 		m_screensize_old = v2u32(0,0);
@@ -76,10 +78,11 @@ public:
 			
 		video::IVideoDriver* driver = Environment->getVideoDriver();
 		v2u32 screensize = driver->getScreenSize();
-		if(screensize != m_screensize_old)
+		if(screensize != m_screensize_old /*|| m_force_regenerate_gui*/)
 		{
 			m_screensize_old = screensize;
 			regenerateGui(screensize);
+			//m_force_regenerate_gui = false;
 		}
 
 		drawMenu();
@@ -119,7 +122,9 @@ public:
 	virtual void regenerateGui(v2u32 screensize) = 0;
 	virtual void drawMenu() = 0;
 	virtual bool OnEvent(const SEvent& event) { return false; };
-	
+
+protected:
+	//bool m_force_regenerate_gui;
 private:
 	IMenuManager *m_menumgr;
 	// This might be necessary to expose to the implementation if it

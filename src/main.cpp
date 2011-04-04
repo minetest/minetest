@@ -180,6 +180,10 @@ SUGG: Don't update all meshes always on single node changes, but
 
 TODO: Remove IrrlichtWrapper
 
+SUGG: Add a "description" field to InventoryList and show it in
+      GUIInventoryMenu
+	  - If separate menus are made for everything, this is not needed
+
 Server:
 -------
 
@@ -332,6 +336,7 @@ Making it more portable:
 #include "mineral.h"
 #include "noise.h"
 #include "tile.h"
+#include "guiFurnaceMenu.h"
 
 // TODO: Remove this
 IrrlichtWrapper *g_irrlicht = NULL;
@@ -626,6 +631,12 @@ public:
 						dstream<<DTIME<<"MyEventReceiver: "
 								<<"Launching inventory"<<std::endl;
 						
+						GUIInventoryMenu *menu =
+							new GUIInventoryMenu(guienv, guiroot, -1,
+								&g_menumgr, v2s16(8,7),
+								g_client->getInventoryContext(),
+								g_client);
+
 						core::array<GUIInventoryMenu::DrawSpec> draw_spec;
 						draw_spec.push_back(GUIInventoryMenu::DrawSpec(
 								"list", "current_player", "main",
@@ -637,11 +648,7 @@ public:
 								"list", "current_player", "craftresult",
 								v2s32(7, 1), v2s32(1, 1)));
 
-						GUIInventoryMenu *menu =
-							new GUIInventoryMenu(guienv, guiroot, -1,
-								&g_menumgr, v2s16(8,7), draw_spec,
-								g_client->getInventoryContext(),
-								g_client);
+						menu->setDrawSpec(draw_spec);
 
 						menu->drop();
 
@@ -2994,8 +3001,6 @@ int main(int argc, char *argv[])
 					
 					//ChestNodeMetadata *chestmeta = (ChestNodeMetadata*)meta;
 
-					core::array<GUIInventoryMenu::DrawSpec> draw_spec;
-					
 					std::string chest_inv_id;
 					chest_inv_id += "nodemeta:";
 					chest_inv_id += itos(nodepos.X);
@@ -3004,6 +3009,14 @@ int main(int argc, char *argv[])
 					chest_inv_id += ",";
 					chest_inv_id += itos(nodepos.Z);
 					
+					GUIInventoryMenu *menu =
+						new GUIInventoryMenu(guienv, guiroot, -1,
+							&g_menumgr, v2s16(8,9),
+							g_client->getInventoryContext(),
+							g_client);
+
+					core::array<GUIInventoryMenu::DrawSpec> draw_spec;
+					
 					draw_spec.push_back(GUIInventoryMenu::DrawSpec(
 							"list", chest_inv_id, "0",
 							v2s32(0, 0), v2s32(8, 4)));
@@ -3011,11 +3024,18 @@ int main(int argc, char *argv[])
 							"list", "current_player", "main",
 							v2s32(0, 5), v2s32(8, 4)));
 
-					GUIInventoryMenu *menu =
-						new GUIInventoryMenu(guienv, guiroot, -1,
-							&g_menumgr, v2s16(8,9), draw_spec,
-							g_client->getInventoryContext(),
-							g_client);
+					menu->setDrawSpec(draw_spec);
+
+					menu->drop();
+
+				}
+				else if(meta && meta->typeId() == CONTENT_FURNACE && !random_input)
+				{
+					dstream<<"Furnace node right-clicked"<<std::endl;
+					
+					GUIFurnaceMenu *menu =
+						new GUIFurnaceMenu(guienv, guiroot, -1,
+							&g_menumgr, nodepos, g_client);
 
 					menu->drop();
 

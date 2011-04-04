@@ -5192,14 +5192,14 @@ void ServerMap::loadBlock(std::string sectordir, std::string blockfile, MapSecto
 {
 	DSTACK(__FUNCTION_NAME);
 
+	// Block file is map/sectors/xxxxxxxx/xxxx
+	std::string fullpath = m_savedir+"/sectors/"+sectordir+"/"+blockfile;
 	try{
 
-		// Block file is map/sectors/xxxxxxxx/xxxx
-		std::string fullpath = m_savedir+"/sectors/"+sectordir+"/"+blockfile;
 		std::ifstream is(fullpath.c_str(), std::ios_base::binary);
 		if(is.good() == false)
 			throw FileNotGoodException("Cannot open block file");
-
+		
 		v3s16 p3d = getBlockPos(sectordir, blockfile);
 		v2s16 p2d(p3d.X, p3d.Z);
 		
@@ -5264,6 +5264,8 @@ void ServerMap::loadBlock(std::string sectordir, std::string blockfile, MapSecto
 				"(SerializationError). Ignoring. "
 				"A new one will be generated."
 				<<std::endl;
+
+		// TODO: Backup file; name is in fullpath.
 	}
 }
 

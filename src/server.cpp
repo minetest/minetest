@@ -2743,8 +2743,9 @@ void Server::inventoryModified(InventoryContext *c, std::string id)
 		assert(c->current_player);
 		v3s16 blockpos = getNodeBlockPos(p);
 
-		/*RemoteClient *client = getClient(c->current_player->peer_id);
-		client->SetBlockNotSent(blockpos);*/
+		NodeMetadata *meta = m_env.getMap().getNodeMetadata(p);
+		if(meta)
+			meta->inventoryModified();
 
 		for(core::map<u16, RemoteClient*>::Iterator
 			i = m_clients.getIterator();

@@ -81,6 +81,7 @@ set(common_SRCS
 set(minetest_SRCS
 	${common_SRCS}
 	clientobject.cpp
+	guiFurnaceMenu.cpp
 	guiMainMenu.cpp
 	guiMessageMenu.cpp
 	guiTextInputMenu.cpp

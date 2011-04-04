@@ -107,11 +107,15 @@ public:
 			gui::IGUIElement* parent, s32 id,
 			IMenuManager *menumgr,
 			v2s16 menu_size,
-			core::array<DrawSpec> &init_draw_spec,
 			InventoryContext *c,
 			InventoryManager *invmgr
 			);
 	~GUIInventoryMenu();
+
+	void setDrawSpec(core::array<DrawSpec> &init_draw_spec)
+	{
+		m_init_draw_spec = init_draw_spec;
+	}
 
 	void removeChildren();
 	/*
@@ -125,7 +129,7 @@ public:
 
 	bool OnEvent(const SEvent& event);
 	
-private:
+protected:
 	v2s32 getBasePos() const
 	{
 		return padding + AbsoluteRect.UpperLeftCorner;

@@ -56,6 +56,9 @@ public:
 	virtual void serializeBody(std::ostream &os) = 0;
 	virtual std::string infoText() {return "<todo: remove this text>";}
 	virtual Inventory* getInventory() {return NULL;}
+	// This is called always after the inventory is modified, before
+	// the changes are copied elsewhere
+	virtual void inventoryModified(){}
 
 protected:
 	static void registerType(u16 id, Factory f);
@@ -98,6 +101,28 @@ public:
 private:
 	Inventory *m_inventory;
 };
+
+class FurnaceNodeMetadata : public NodeMetadata
+{
+public:
+	FurnaceNodeMetadata();
+	~FurnaceNodeMetadata();
+	
+	virtual u16 typeId() const;
+	virtual NodeMetadata* clone();
+	static NodeMetadata* create(std::istream &is);
+	virtual void serializeBody(std::ostream &os);
+	virtual std::string infoText();
+	virtual Inventory* getInventory() {return m_inventory;}
+	virtual void inventoryModified();
+
+private:
+	Inventory *m_inventory;
+};
+
+/*
+	List of metadata of all the nodes of a block
+*/
 
 class NodeMetadataList
 {

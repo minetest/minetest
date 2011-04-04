@@ -22,6 +22,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "mapnode.h"
 #include "exceptions.h"
 #include "inventory.h"
+#include <sstream>
 
 /*
 	NodeMetadata
@@ -39,21 +40,39 @@ NodeMetadata::~NodeMetadata()
 
 NodeMetadata* NodeMetadata::deSerialize(std::istream &is)
 {
+	// Read id
 	u8 buf[2];
 	is.read((char*)buf, 2);
 	s16 id = readS16(buf);
-
+	
+	// Read data
+	std::string data = deSerializeString(is);
+	
+	// Find factory function
 	core::map<u16, Factory>::Node *n;
 	n = m_types.find(id);
 	if(n == NULL)
 	{
-		dstream<<"NodeMetadata(): No factory for typeId="<<id<<std::endl;
-		throw SerializationError("Unknown metadata id");
+		// If factory is not found, just return.
+		dstream<<"WARNING: NodeMetadata: No factory for typeId="
+				<<id<<std::endl;
+		return NULL;
 	}
 	
-	Factory f = n->getValue();
-	NodeMetadata *meta = (*f)(is);
-	return meta;
+	// Try to load the metadata. If it fails, just return.
+	try
+	{
+		std::istringstream iss(data, std::ios_base::binary);
+		
+		Factory f = n->getValue();
+		NodeMetadata *meta = (*f)(iss);
+		return meta;
+	}
+	catch(SerializationError &e)
+	{
+		dstream<<"WARNING: NodeMetadata: ignoring SerializationError"<<std::endl;
+		return NULL;
+	}
 }
 
 void NodeMetadata::serialize(std::ostream &os)
@@ -61,8 +80,10 @@ void NodeMetadata::serialize(std::ostream &os)
 	u8 buf[2];
 	writeU16(buf, typeId());
 	os.write((char*)buf, 2);
-
-	serializeBody(os);
+	
+	std::ostringstream oss(std::ios_base::binary);
+	serializeBody(oss);
+	os<<serializeString(oss.str());
 }
 
 void NodeMetadata::registerType(u16 id, Factory f)
@@ -144,10 +165,56 @@ std::string ChestNodeMetadata::infoText()
 {
 	return "Chest";
 }
-/*Inventory* ChestNodeMetadata::getInventory()
+
+/*
+	FurnaceNodeMetadata
+*/
+
+FurnaceNodeMetadata::FurnaceNodeMetadata()
 {
-	return m_inventory;
-}*/
+	NodeMetadata::registerType(typeId(), create);
+	
+	m_inventory = new Inventory();
+	m_inventory->addList("fuel", 1);
+	m_inventory->addList("src", 1);
+	m_inventory->addList("dst", 1);
+}
+FurnaceNodeMetadata::~FurnaceNodeMetadata()
+{
+	delete m_inventory;
+}
+u16 FurnaceNodeMetadata::typeId() const
+{
+	return CONTENT_FURNACE;
+}
+NodeMetadata* FurnaceNodeMetadata::clone()
+{
+	FurnaceNodeMetadata *d = new FurnaceNodeMetadata();
+	*d->m_inventory = *m_inventory;
+	return d;
+}
+NodeMetadata* FurnaceNodeMetadata::create(std::istream &is)
+{
+	FurnaceNodeMetadata *d = new FurnaceNodeMetadata();
+	d->m_inventory->deSerialize(is);
+	/*std::string params;
+	std::getline(is, params, '\n');*/
+	return d;
+}
+void FurnaceNodeMetadata::serializeBody(std::ostream &os)
+{
+	m_inventory->serialize(os);
+	// This line will contain the other parameters
+	//os<<"\n";
+}
+std::string FurnaceNodeMetadata::infoText()
+{
+	return "Furnace";
+}
+void FurnaceNodeMetadata::inventoryModified()
+{
+	dstream<<"Furnace inventory modification callback"<<std::endl;
+}
 
 /*
 	NodeMetadatalist
@@ -197,17 +264,21 @@ void NodeMetadataList::deSerialize(std::istream &is)
 		p16 -= p.Y * MAP_BLOCKSIZE;
 		p.X += p16;
 		
+		NodeMetadata *data = NodeMetadata::deSerialize(is);
+
+		if(data == NULL)
+			continue;
+		
 		if(m_data.find(p))
 		{
-			dstream<<"ERROR: NodeMetadataList::deSerialize(): "
+			dstream<<"WARNING: NodeMetadataList::deSerialize(): "
 					<<"already set data at position"
-					<<"("<<p.X<<","<<p.Y<<","<<p.Z<<")"
+					<<"("<<p.X<<","<<p.Y<<","<<p.Z<<"): Ignoring."
 					<<std::endl;
-			throw SerializationError("NodeMetadataList::deSerialize()");
+			delete data;
+			continue;
 		}
 
-		NodeMetadata *data = NodeMetadata::deSerialize(is);
-		
 		m_data.insert(p, data);
 	}
 }

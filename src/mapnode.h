@@ -98,6 +98,7 @@ void init_content_inventory_texture_paths();
 #define CONTENT_SIGN_WALL 14
 #define CONTENT_CHEST 15
 #define CONTENT_FURNACE 16
+//#define CONTENT_WORKBENCH 17
 
 /*
 	Content feature list

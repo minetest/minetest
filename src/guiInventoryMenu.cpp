@@ -80,15 +80,13 @@ GUIInventoryMenu::GUIInventoryMenu(gui::IGUIEnvironment* env,
 		gui::IGUIElement* parent, s32 id,
 		IMenuManager *menumgr,
 		v2s16 menu_size,
-		core::array<DrawSpec> &init_draw_spec,
 		InventoryContext *c,
 		InventoryManager *invmgr
 		):
 	GUIModalMenu(env, parent, id, menumgr),
 	m_menu_size(menu_size),
 	m_c(c),
-	m_invmgr(invmgr),
-	m_init_draw_spec(init_draw_spec)
+	m_invmgr(invmgr)
 {
 	m_selected_item = NULL;
 }
@@ -103,7 +101,7 @@ GUIInventoryMenu::~GUIInventoryMenu()
 
 void GUIInventoryMenu::removeChildren()
 {
-	/*const core::list<gui::IGUIElement*> &children = getChildren();
+	const core::list<gui::IGUIElement*> &children = getChildren();
 	core::list<gui::IGUIElement*> children_copy;
 	for(core::list<gui::IGUIElement*>::ConstIterator
 			i = children.begin(); i != children.end(); i++)
@@ -115,12 +113,12 @@ void GUIInventoryMenu::removeChildren()
 			i != children_copy.end(); i++)
 	{
 		(*i)->remove();
-	}*/
-	{
+	}
+	/*{
 		gui::IGUIElement *e = getElementFromId(256);
 		if(e != NULL)
 			e->remove();
-	}
+	}*/
 }
 
 void GUIInventoryMenu::regenerateGui(v2u32 screensize)
@@ -326,6 +324,10 @@ bool GUIInventoryMenu::OnEvent(const SEvent& event)
 							inv_from->getList(m_selected_item->listname);
 					InventoryList *list_to =
 							inv_to->getList(s.listname);
+					if(list_from == NULL)
+						dstream<<"from list doesn't exist"<<std::endl;
+					if(list_to == NULL)
+						dstream<<"to list doesn't exist"<<std::endl;
 					// Indicates whether source slot completely empties
 					bool source_empties = false;
 					if(list_from && list_to

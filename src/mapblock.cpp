@@ -1922,7 +1922,9 @@ void MapBlock::serialize(std::ostream &os, u8 version)
 		*/
 		if(version >= 14)
 		{
-			m_node_metadata.serialize(os);
+			std::ostringstream oss(std::ios_base::binary);
+			m_node_metadata.serialize(oss);
+			os<<serializeString(oss.str());
 		}
 	}
 }
@@ -2043,7 +2045,17 @@ void MapBlock::deSerialize(std::istream &is, u8 version)
 		*/
 		if(version >= 14)
 		{
-			m_node_metadata.deSerialize(is);
+			// Ignore errors
+			try{
+				std::string data = deSerializeString(is);
+				std::istringstream iss(data, std::ios_base::binary);
+				m_node_metadata.deSerialize(iss);
+			}
+			catch(SerializationError &e)
+			{
+				dstream<<"WARNING: MapBlock::deSerialize(): Ignoring an error"
+						<<" while deserializing node metadata"<<std::endl;
+			}
 		}
 	}
 	
