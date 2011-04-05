@@ -3,6 +3,11 @@ Minetest-c55 changelog
 This should contain all the major changes.
 For minor stuff, refer to the commit log of the repository.
 
+2011-04-05:
+- Made furnace usable
+- Added wood, stone and steel tools: pickaxes, shovels and axes
+- Incremented to version 0.0.2
+
 2011-04-04:
 - Cleaned client to be completely synchronous, except for the mesh calculation, which is now done with queues in a separate thread.
 - Added node metadata support
