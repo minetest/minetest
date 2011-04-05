@@ -5,6 +5,7 @@ For minor stuff, refer to the commit log of the repository.
 
 2011-04-05:
 - Made furnace usable
+- Added cobblestone
 - Added wood, stone and steel tools: pickaxes, shovels and axes
 - Incremented to version 0.0.2
 
