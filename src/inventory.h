@@ -72,6 +72,7 @@ public:
 	{
 		m_count = count;
 	}
+	// This should return something else for stackable items
 	virtual u16 freeSpace()
 	{
 		return 0;
@@ -86,6 +87,14 @@ public:
 		assert(m_count >= count);
 		m_count -= count;
 	}
+
+	/*
+		Other properties
+	*/
+	// Time of cooking
+	virtual float getCookTime(){return 3.0;}
+	// Result of cooking
+	virtual InventoryItem *createCookResult(){return NULL;}
 
 protected:
 	u16 m_count;
@@ -148,6 +157,10 @@ public:
 			return 0;
 		return QUANTITY_ITEM_MAX_COUNT - m_count;
 	}
+	/*
+		Other properties
+	*/
+	InventoryItem *createCookResult();
 	/*
 		Special methods
 	*/
@@ -428,6 +441,7 @@ public:
 	u32 getSize();
 	// Count used slots
 	u32 getUsedSlots();
+	u32 getFreeSlots();
 	
 	// Get pointer to item
 	InventoryItem * getItem(u32 i);

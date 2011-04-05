@@ -177,7 +177,7 @@ FurnaceNodeMetadata::FurnaceNodeMetadata()
 	m_inventory = new Inventory();
 	m_inventory->addList("fuel", 1);
 	m_inventory->addList("src", 1);
-	m_inventory->addList("dst", 1);
+	m_inventory->addList("dst", 4);
 
 	m_step_accumulator = 0;
 	m_fuel_totaltime = 0;
@@ -202,12 +202,15 @@ NodeMetadata* FurnaceNodeMetadata::clone()
 NodeMetadata* FurnaceNodeMetadata::create(std::istream &is)
 {
 	FurnaceNodeMetadata *d = new FurnaceNodeMetadata();
+
 	d->m_inventory->deSerialize(is);
+
 	int temp;
 	is>>temp;
 	d->m_fuel_totaltime = (float)temp/10;
 	is>>temp;
 	d->m_fuel_time = (float)temp/10;
+
 	return d;
 }
 void FurnaceNodeMetadata::serializeBody(std::ostream &os)
@@ -260,9 +263,10 @@ bool FurnaceNodeMetadata::step(float dtime)
 	InventoryList *src_list = m_inventory->getList("src");
 	assert(src_list);
 	InventoryItem *src_item = src_list->getItem(0);
-
-	if(ItemSpec(ITEM_MATERIAL, CONTENT_TREE).checkItem(src_item)
-			&& dst_list->itemFits(0, new CraftItem("lump_of_coal", 1)))
+	
+	// Start only if there are free slots in dst, so that it can
+	// accomodate any result item
+	if(dst_list->getFreeSlots() > 0)
 	{
 		m_src_totaltime = 3;
 	}
@@ -279,13 +283,11 @@ bool FurnaceNodeMetadata::step(float dtime)
 		m_src_time += dtime;
 		if(m_src_time >= m_src_totaltime && m_src_totaltime > 0.001)
 		{
-			if(ItemSpec(ITEM_MATERIAL, CONTENT_TREE).checkItem(src_item))
-			{
-				src_list->decrementMaterials(1);
-				dst_list->addItem(0, new CraftItem("lump_of_coal", 1));
-				m_src_time = 0;
-				m_src_totaltime = 0;
-			}
+			src_list->decrementMaterials(1);
+			InventoryItem *cookresult = src_item->createCookResult();
+			dst_list->addItem(cookresult);
+			m_src_time = 0;
+			m_src_totaltime = 0;
 		}
 		return true;
 	}
@@ -340,6 +342,10 @@ void NodeMetadataList::serialize(std::ostream &os)
 {
 	u8 buf[6];
 	
+	u16 version = 1;
+	writeU16(buf, version);
+	os.write((char*)buf, 2);
+
 	u16 count = m_data.size();
 	writeU16(buf, count);
 	os.write((char*)buf, 2);
@@ -364,6 +370,16 @@ void NodeMetadataList::deSerialize(std::istream &is)
 	m_data.clear();
 
 	u8 buf[6];
+	
+	is.read((char*)buf, 2);
+	u16 version = readU16(buf);
+
+	if(version > 1)
+	{
+		dstream<<__FUNCTION_NAME<<": version "<<version<<" not supported"
+				<<std::endl;
+		throw SerializationError("NodeMetadataList::deSerialize");
+	}
 	
 	is.read((char*)buf, 2);
 	u16 count = readU16(buf);

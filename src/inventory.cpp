@@ -91,6 +91,19 @@ InventoryItem* InventoryItem::deSerialize(std::istream &is)
 }
 
 /*
+	MaterialItem
+*/
+
+InventoryItem *MaterialItem::createCookResult()
+{
+	if(m_content == CONTENT_TREE)
+	{
+		return new CraftItem("lump_of_coal", 1);
+	}
+	return NULL;
+}
+
+/*
 	MapBlockObjectItem
 */
 #ifndef SERVER
@@ -311,6 +324,11 @@ u32 InventoryList::getUsedSlots()
 			num++;
 	}
 	return num;
+}
+
+u32 InventoryList::getFreeSlots()
+{
+	return getSize() - getUsedSlots();
 }
 
 InventoryItem * InventoryList::getItem(u32 i)
