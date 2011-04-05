@@ -141,7 +141,7 @@ void init_mapnode()
 	f->setInventoryTextureCube("stone.png", "stone.png", "stone.png");
 	f->param_type = CPT_MINERAL;
 	f->is_ground_content = true;
-	f->dug_item = std::string("MaterialItem ")+itos(i)+" 1";
+	f->dug_item = std::string("MaterialItem ")+itos(CONTENT_COBBLE)+" 1";
 	
 	i = CONTENT_GRASS;
 	f = &g_content_features[i];
@@ -284,6 +284,7 @@ void init_mapnode()
 	f->setInventoryTexture("torch_on_floor.png");
 	f->param_type = CPT_LIGHT;
 	f->light_propagates = true;
+	f->sunlight_propagates = true;
 	f->solidness = 0; // drawn separately, makes no faces
 	f->walkable = false;
 	f->wall_mounted = true;
@@ -321,9 +322,27 @@ void init_mapnode()
 	f->setAllTextures("furnace_side.png");
 	f->setTexture(5, "furnace_front.png"); // Z-
 	f->setInventoryTexture("furnace_front.png");
-	f->dug_item = std::string("MaterialItem ")+itos(i)+" 1";
+	//f->dug_item = std::string("MaterialItem ")+itos(i)+" 1";
+	f->dug_item = std::string("MaterialItem ")+itos(CONTENT_COBBLE)+" 6";
 	if(f->initial_metadata == NULL)
 		f->initial_metadata = new FurnaceNodeMetadata();
+	
+	i = CONTENT_COBBLE;
+	f = &g_content_features[i];
+	f->setAllTextures("cobble.png");
+	f->setInventoryTextureCube("cobble.png", "cobble.png", "cobble.png");
+	f->param_type = CPT_NONE;
+	f->is_ground_content = true;
+	f->dug_item = std::string("MaterialItem ")+itos(i)+" 1";
+	
+	i = CONTENT_STEEL;
+	f = &g_content_features[i];
+	f->setAllTextures("steel_block.png");
+	f->setInventoryTextureCube("steel_block.png", "steel_block.png",
+			"steel_block.png");
+	f->param_type = CPT_NONE;
+	f->is_ground_content = true;
+	f->dug_item = std::string("MaterialItem ")+itos(i)+" 1";
 	
 }
 

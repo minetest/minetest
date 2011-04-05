@@ -2252,7 +2252,7 @@ MapChunk* ServerMap::generateChunkRaw(v2s16 chunkpos,
 	TimeTaker timer_generate("generateChunkRaw() generate");
 
 	// Maximum height of the stone surface and obstacles.
-	// This is used to disable dungeon generation from going too high.
+	// This is used to disable cave generation from going too high.
 	s16 stone_surface_max_y = 0;
 
 	/*
@@ -2320,12 +2320,12 @@ MapChunk* ServerMap::generateChunkRaw(v2s16 chunkpos,
 		Randomize some parameters
 	*/
 	
-	s32 stone_obstacle_count = 0;
+	//s32 stone_obstacle_count = 0;
 	/*s32 stone_obstacle_count =
 			rangelim((1.0+noise2d(m_seed+897,
 			sectorpos_base.X, sectorpos_base.Y))/2.0 * 30, 0, 100000);*/
 	
-	s16 stone_obstacle_max_height = 0;
+	//s16 stone_obstacle_max_height = 0;
 	/*s16 stone_obstacle_max_height =
 			rangelim((1.0+noise2d(m_seed+5902,
 			sectorpos_base.X, sectorpos_base.Y))/2.0 * 30, 0, 100000);*/
@@ -2336,7 +2336,11 @@ MapChunk* ServerMap::generateChunkRaw(v2s16 chunkpos,
 	//for(u32 i_age=0; i_age<1; i_age++)
 	for(u32 i_age=0; i_age<2; i_age++)
 	{ // Aging loop
+	/******************************
+		BEGINNING OF AGING LOOP
+	******************************/
 
+#if 0
 	{
 	// 8ms @cs=8
 	//TimeTaker timer1("stone obstacles");
@@ -2461,26 +2465,30 @@ MapChunk* ServerMap::generateChunkRaw(v2s16 chunkpos,
 	}
 
 	}//timer1
+#endif
+
 	{
 	// 24ms @cs=8
-	//TimeTaker timer1("dungeons");
+	//TimeTaker timer1("caves");
 
 	/*
-		Make dungeons
+		Make caves
 	*/
-	u32 dungeons_count = relative_volume / 600000;
+	u32 caves_count = relative_volume / 400000;
 	u32 bruises_count = relative_volume * stone_surface_max_y / 40000000;
 	if(stone_surface_max_y < WATER_LEVEL)
 		bruises_count = 0;
-	/*u32 dungeons_count = 0;
+	/*u32 caves_count = 0;
 	u32 bruises_count = 0;*/
-	for(u32 jj=0; jj<dungeons_count+bruises_count; jj++)
+	for(u32 jj=0; jj<caves_count+bruises_count; jj++)
 	{
-		s16 min_tunnel_diameter = 2;
-		s16 max_tunnel_diameter = 6;
-		u16 tunnel_routepoints = 25;
+		s16 min_tunnel_diameter = 3;
+		s16 max_tunnel_diameter = 5;
+		u16 tunnel_routepoints = 20;
 		
-		bool bruise_surface = (jj < bruises_count);
+		v3f main_direction(0,0,0);
+
+		bool bruise_surface = (jj > caves_count);
 
 		if(bruise_surface)
 		{
@@ -2493,6 +2501,9 @@ MapChunk* ServerMap::generateChunkRaw(v2s16 chunkpos,
 					sectorpos_base.X, sectorpos_base.Y)), 0, 15);*/
 
 			tunnel_routepoints = 5;
+		}
+		else
+		{
 		}
 
 		// Allowed route area size in nodes
@@ -2521,7 +2532,7 @@ MapChunk* ServerMap::generateChunkRaw(v2s16 chunkpos,
 		// Allow half a diameter + 7 over stone surface
 		s16 route_y_max = -of.Y + stone_surface_max_y + max_tunnel_diameter/2 + 7;
 
-		/*// If dungeons, don't go through surface too often
+		/*// If caves, don't go through surface too often
 		if(bruise_surface == false)
 			route_y_max -= myrand_range(0, max_tunnel_diameter*2);*/
 
@@ -2546,16 +2557,16 @@ MapChunk* ServerMap::generateChunkRaw(v2s16 chunkpos,
 		s16 route_start_y_min = route_y_min;
 		s16 route_start_y_max = route_y_max;
 
-		// Start every 2nd dungeon from surface
+		// Start every 2nd cave from surface
 		bool coming_from_surface = (jj % 2 == 0 && bruise_surface == false);
 
 		if(coming_from_surface)
 		{
-			route_start_y_min = -of.Y + stone_surface_max_y + 5;
+			route_start_y_min = -of.Y + stone_surface_max_y + 10;
 		}
 		
 		route_start_y_min = rangelim(route_start_y_min, 0, ar.Y-1);
-		route_start_y_max = rangelim(route_start_y_max, 0, ar.Y-1);
+		route_start_y_max = rangelim(route_start_y_max, route_start_y_min, ar.Y-1);
 
 		// Randomize starting position
 		v3f orp(
@@ -2572,6 +2583,16 @@ MapChunk* ServerMap::generateChunkRaw(v2s16 chunkpos,
 		
 		for(u16 j=0; j<tunnel_routepoints; j++)
 		{
+			if(j%7==0 && bruise_surface == false)
+			{
+				main_direction = v3f(
+					((float)(myrand()%20)-(float)10)/10,
+					((float)(myrand()%20)-(float)10)/30,
+					((float)(myrand()%20)-(float)10)/10
+				);
+				main_direction *= (float)myrand_range(1, 3);
+			}
+
 			// Randomize size
 			s16 min_d = min_tunnel_diameter;
 			s16 max_d = max_tunnel_diameter;
@@ -2584,7 +2605,7 @@ MapChunk* ServerMap::generateChunkRaw(v2s16 chunkpos,
 			}
 			else
 			{
-				maxlen = v3s16(15, myrand_range(1, 20), 15);
+				maxlen = v3s16(rs*4, myrand_range(1, rs*3), rs*4);
 			}
 
 			v3f vec;
@@ -2605,6 +2626,8 @@ MapChunk* ServerMap::generateChunkRaw(v2s16 chunkpos,
 					(float)(myrand()%(maxlen.Z*2))-(float)maxlen.Z
 				);
 			}
+			
+			vec += main_direction;
 
 			v3f rp = orp + vec;
 			if(rp.X < 0)
@@ -3095,7 +3118,7 @@ MapChunk* ServerMap::generateChunkRaw(v2s16 chunkpos,
 					break;
 				}
 				
-				// Make water only not in dungeons
+				// Make water only not in caves
 				if(!(vmanip.m_flags[i]&VMANIP_FLAG_DUNGEON))
 				{
 					n->d = CONTENT_WATERSOURCE;
@@ -3119,6 +3142,9 @@ MapChunk* ServerMap::generateChunkRaw(v2s16 chunkpos,
 	}//timer1
 	
 	} // Aging loop
+	/***********************
+		END OF AGING LOOP
+	************************/
 
 	{
 	//TimeTaker timer1("convert mud to sand");
@@ -3953,7 +3979,7 @@ MapBlock * ServerMap::generateBlock(
 				else
 					n.d = CONTENT_AIR;
 			}
-			// Else it's ground or dungeons (air)
+			// Else it's ground or caves (air)
 			else
 			{
 				// If it's surface_depth under ground, it's stone
@@ -4034,7 +4060,7 @@ MapBlock * ServerMap::generateBlock(
 	//dstream<<"generateBlock(): Done"<<std::endl;
 
 	/*
-		Generate dungeons
+		Generate caves
 	*/
 
 	// Initialize temporary table
@@ -4172,36 +4198,36 @@ MapBlock * ServerMap::generateBlock(
 continue_generating:
 		
 		/*
-			Choose whether to actually generate dungeon
+			Choose whether to actually generate cave
 		*/
-		bool do_generate_dungeons = true;
+		bool do_generate_caves = true;
 		// Don't generate if no part is underground
 		if(!some_part_underground)
 		{
-			do_generate_dungeons = false;
+			do_generate_caves = false;
 		}
 		// Don't generate if mostly underwater surface
 		/*else if(mostly_underwater_surface)
 		{
-			do_generate_dungeons = false;
+			do_generate_caves = false;
 		}*/
 		// Partly underground = cave
 		else if(!completely_underground)
 		{
-			do_generate_dungeons = (rand() % 100 <= (s32)(caves_amount*100));
+			do_generate_caves = (rand() % 100 <= (s32)(caves_amount*100));
 		}
-		// Found existing dungeon underground
+		// Found existing cave underground
 		else if(found_existing && completely_underground)
 		{
-			do_generate_dungeons = (rand() % 100 <= (s32)(caves_amount*100));
+			do_generate_caves = (rand() % 100 <= (s32)(caves_amount*100));
 		}
-		// Underground and no dungeons found
+		// Underground and no caves found
 		else
 		{
-			do_generate_dungeons = (rand() % 300 <= (s32)(caves_amount*100));
+			do_generate_caves = (rand() % 300 <= (s32)(caves_amount*100));
 		}
 
-		if(do_generate_dungeons)
+		if(do_generate_caves)
 		{
 			/*
 				Generate some tunnel starting from orp and ors
@@ -4253,7 +4279,7 @@ continue_generating:
 
 	// Set to true if has caves.
 	// Set when some non-air is changed to air when making caves.
-	bool has_dungeons = false;
+	bool has_caves = false;
 
 	/*
 		Apply temporary cave data to block
@@ -4266,7 +4292,7 @@ continue_generating:
 		{
 			MapNode n = block->getNode(v3s16(x0,y0,z0));
 
-			// Create dungeons
+			// Create caves
 			if(underground_emptiness[
 					ued*ued*(z0*ued/MAP_BLOCKSIZE)
 					+ued*(y0*ued/MAP_BLOCKSIZE)
@@ -4275,7 +4301,7 @@ continue_generating:
 				if(content_features(n.d).walkable/*is_ground_content(n.d)*/)
 				{
 					// Has now caves
-					has_dungeons = true;
+					has_caves = true;
 					// Set air to node
 					n.d = CONTENT_AIR;
 				}
@@ -4295,7 +4321,7 @@ continue_generating:
 		Force lighting update if some part of block is partly
 		underground and has caves.
 	*/
-	/*if(some_part_underground && !completely_underground && has_dungeons)
+	/*if(some_part_underground && !completely_underground && has_caves)
 	{
 		//dstream<<"Half-ground caves"<<std::endl;
 		lighting_invalidated_blocks[block->getPos()] = block;
@@ -4440,11 +4466,11 @@ continue_generating:
 	*/
 	dstream
 	<<"lighting_invalidated_blocks.size()"
-	<<", has_dungeons"
+	<<", has_caves"
 	<<", completely_ug"
 	<<", some_part_ug"
 	<<"  "<<lighting_invalidated_blocks.size()
-	<<", "<<has_dungeons
+	<<", "<<has_caves
 	<<", "<<completely_underground
 	<<", "<<some_part_underground
 	<<std::endl;

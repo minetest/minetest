@@ -61,6 +61,7 @@ public:
 	virtual void inventoryModified(){}
 	// A step in time. Returns true if metadata changed.
 	virtual bool step(float dtime) {return false;}
+	virtual bool nodeRemovalDisabled(){return false;}
 
 protected:
 	static void registerType(u16 id, Factory f);
@@ -100,6 +101,8 @@ public:
 	virtual std::string infoText();
 	virtual Inventory* getInventory() {return m_inventory;}
 
+	virtual bool nodeRemovalDisabled();
+	
 private:
 	Inventory *m_inventory;
 };

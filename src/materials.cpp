@@ -15,10 +15,38 @@ void setStoneLikeDiggingProperties(u8 material, float toughness)
 	g_material_properties[material].setDiggingProperties("WPick",
 			DiggingProperties(true, 1.3*toughness, 65535./30.*toughness));
 	g_material_properties[material].setDiggingProperties("STPick",
-			DiggingProperties(true, 0.65*toughness, 65535./100.*toughness));
+			DiggingProperties(true, 0.75*toughness, 65535./100.*toughness));
+	g_material_properties[material].setDiggingProperties("SteelPick",
+			DiggingProperties(true, 0.50*toughness, 65535./333.*toughness));
 
 	/*g_material_properties[material].setDiggingProperties("MesePick",
 			DiggingProperties(true, 0.0*toughness, 65535./20.*toughness));*/
+}
+
+void setDirtLikeDiggingProperties(u8 material, float toughness)
+{
+	g_material_properties[material].setDiggingProperties("",
+			DiggingProperties(true, 0.75*toughness, 0));
+	
+	g_material_properties[material].setDiggingProperties("WShovel",
+			DiggingProperties(true, 0.4*toughness, 65535./50.*toughness));
+	g_material_properties[material].setDiggingProperties("STShovel",
+			DiggingProperties(true, 0.2*toughness, 65535./150.*toughness));
+	g_material_properties[material].setDiggingProperties("SteelShovel",
+			DiggingProperties(true, 0.15*toughness, 65535./400.*toughness));
+}
+
+void setWoodLikeDiggingProperties(u8 material, float toughness)
+{
+	g_material_properties[material].setDiggingProperties("",
+			DiggingProperties(true, 3.0*toughness, 0));
+	
+	g_material_properties[material].setDiggingProperties("WAxe",
+			DiggingProperties(true, 1.5*toughness, 65535./30.*toughness));
+	g_material_properties[material].setDiggingProperties("STAxe",
+			DiggingProperties(true, 0.75*toughness, 65535./100.*toughness));
+	g_material_properties[material].setDiggingProperties("SteelAxe",
+			DiggingProperties(true, 0.5*toughness, 65535./333.*toughness));
 }
 
 void initializeMaterialProperties()
@@ -29,45 +57,29 @@ void initializeMaterialProperties()
 
 		Add some digging properties to them.
 	*/
-	
+
 	setStoneLikeDiggingProperties(CONTENT_STONE, 1.0);
+	setStoneLikeDiggingProperties(CONTENT_MESE, 0.5);
+	setStoneLikeDiggingProperties(CONTENT_COALSTONE, 1.5);
+	setStoneLikeDiggingProperties(CONTENT_FURNACE, 3.0);
+	setStoneLikeDiggingProperties(CONTENT_COBBLE, 1.0);
+	setStoneLikeDiggingProperties(CONTENT_STEEL, 5.0);
 
-	g_material_properties[CONTENT_GRASS].setDiggingProperties("",
-			DiggingProperties(true, 0.4, 0));
+	setDirtLikeDiggingProperties(CONTENT_MUD, 1.0);
+	setDirtLikeDiggingProperties(CONTENT_GRASS, 1.0);
+	setDirtLikeDiggingProperties(CONTENT_GRASS_FOOTSTEPS, 1.0);
+	setDirtLikeDiggingProperties(CONTENT_SAND, 1.0);
+	
+	setWoodLikeDiggingProperties(CONTENT_TREE, 1.0);
+	setWoodLikeDiggingProperties(CONTENT_LEAVES, 0.15);
+	setWoodLikeDiggingProperties(CONTENT_WOOD, 0.75);
+	setWoodLikeDiggingProperties(CONTENT_CHEST, 1.0);
 
+	g_material_properties[CONTENT_SIGN_WALL].setDiggingProperties("",
+			DiggingProperties(true, 0.5, 0));
 	g_material_properties[CONTENT_TORCH].setDiggingProperties("",
 			DiggingProperties(true, 0.0, 0));
-
-	g_material_properties[CONTENT_TREE].setDiggingProperties("",
-			DiggingProperties(true, 1.5, 0));
-
-	g_material_properties[CONTENT_LEAVES].setDiggingProperties("",
-			DiggingProperties(true, 0.35, 0));
-
-	g_material_properties[CONTENT_GRASS_FOOTSTEPS].setDiggingProperties("",
-			DiggingProperties(true, 0.5, 0));
-
-	setStoneLikeDiggingProperties(CONTENT_MESE, 0.5);
-
-	g_material_properties[CONTENT_MUD].setDiggingProperties("",
-			DiggingProperties(true, 0.4, 0));
-
-	setStoneLikeDiggingProperties(CONTENT_COALSTONE, 1.5);
-
-	g_material_properties[CONTENT_WOOD].setDiggingProperties("",
-			DiggingProperties(true, 1.0, 0));
 	
-	g_material_properties[CONTENT_SAND].setDiggingProperties("",
-			DiggingProperties(true, 0.4, 0));
-	
-	g_material_properties[CONTENT_CHEST].setDiggingProperties("",
-			DiggingProperties(true, 1.0, 0));
-	
-	setStoneLikeDiggingProperties(CONTENT_FURNACE, 1.0);
-	
-	g_material_properties[CONTENT_SIGN_WALL].setDiggingProperties("",
-			DiggingProperties(true, 0.0, 0));
-
 	/*
 		Add MesePick to everything
 	*/

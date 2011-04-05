@@ -91,6 +91,8 @@ public:
 	/*
 		Other properties
 	*/
+	// Whether it can be cooked
+	virtual bool isCookable(){return false;}
 	// Time of cooking
 	virtual float getCookTime(){return 3.0;}
 	// Result of cooking
@@ -160,6 +162,7 @@ public:
 	/*
 		Other properties
 	*/
+	bool isCookable();
 	InventoryItem *createCookResult();
 	/*
 		Special methods
@@ -272,6 +275,8 @@ public:
 			name = "lump_of_coal.png";
 		else if(m_subname == "lump_of_iron")
 			name = "lump_of_iron.png";
+		else if(m_subname == "steel_ingot")
+			name = "steel_ingot.png";
 		else
 			name = "cloud.png";
 		
@@ -301,6 +306,11 @@ public:
 			return 0;
 		return QUANTITY_ITEM_MAX_COUNT - m_count;
 	}
+	/*
+		Other properties
+	*/
+	bool isCookable();
+	InventoryItem *createCookResult();
 	/*
 		Special methods
 	*/
@@ -348,11 +358,25 @@ public:
 		
 		std::string basename;
 		if(m_toolname == "WPick")
-			basename = "tool_wpick.png";
+			basename = "tool_woodpick.png";
 		else if(m_toolname == "STPick")
-			basename = "tool_stpick.png";
+			basename = "tool_stonepick.png";
+		else if(m_toolname == "SteelPick")
+			basename = "tool_steelpick.png";
 		else if(m_toolname == "MesePick")
 			basename = "tool_mesepick.png";
+		else if(m_toolname == "WShovel")
+			basename = "tool_woodshovel.png";
+		else if(m_toolname == "STShovel")
+			basename = "tool_stoneshovel.png";
+		else if(m_toolname == "SteelShovel")
+			basename = "tool_steelshovel.png";
+		else if(m_toolname == "WAxe")
+			basename = "tool_woodaxe.png";
+		else if(m_toolname == "STAxe")
+			basename = "tool_stoneaxe.png";
+		else if(m_toolname == "SteelAxe")
+			basename = "tool_steelaxe.png";
 		else
 			basename = "cloud.png";
 		

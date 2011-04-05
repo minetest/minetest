@@ -94,11 +94,50 @@ InventoryItem* InventoryItem::deSerialize(std::istream &is)
 	MaterialItem
 */
 
+bool MaterialItem::isCookable()
+{
+	if(m_content == CONTENT_TREE)
+	{
+		return true;
+	}
+	else if(m_content == CONTENT_COBBLE)
+	{
+		return true;
+	}
+	return false;
+}
+
 InventoryItem *MaterialItem::createCookResult()
 {
 	if(m_content == CONTENT_TREE)
 	{
 		return new CraftItem("lump_of_coal", 1);
+	}
+	else if(m_content == CONTENT_COBBLE)
+	{
+		return new MaterialItem(CONTENT_STONE, 1);
+	}
+	return NULL;
+}
+
+/*
+	CraftItem
+*/
+
+bool CraftItem::isCookable()
+{
+	if(m_subname == "lump_of_iron")
+	{
+		return true;
+	}
+	return false;
+}
+
+InventoryItem *CraftItem::createCookResult()
+{
+	if(m_subname == "lump_of_iron")
+	{
+		return new CraftItem("steel_ingot", 1);
 	}
 	return NULL;
 }
@@ -357,6 +396,9 @@ void InventoryList::deleteItem(u32 i)
 
 InventoryItem * InventoryList::addItem(InventoryItem *newitem)
 {
+	if(newitem == NULL)
+		return NULL;
+	
 	/*
 		First try to find if it could be added to some existing items
 	*/
@@ -391,6 +433,9 @@ InventoryItem * InventoryList::addItem(InventoryItem *newitem)
 
 InventoryItem * InventoryList::addItem(u32 i, InventoryItem *newitem)
 {
+	if(newitem == NULL)
+		return NULL;
+	
 	// If it is an empty position, it's an easy job.
 	InventoryItem *to_item = m_items[i];
 	if(to_item == NULL)

@@ -2033,31 +2033,40 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 			u8 material;
 			u8 mineral = MINERAL_NONE;
 
+			bool cannot_remove_node = false;
+
 			try
 			{
 				MapNode n = m_env.getMap().getNode(p_under);
-				// Get material at position
-				material = n.d;
-				// If it's not diggable, do nothing
-				if(content_diggable(material) == false)
-				{
-					derr_server<<"Server: Not finishing digging: Node not diggable"
-							<<std::endl;
-
-					// Client probably has wrong data.
-					// Set block not sent, so that client will get
-					// a valid one.
-					dstream<<"Client "<<peer_id<<" tried to dig "
-							<<"node from invalid position; setting"
-							<<" MapBlock not sent."<<std::endl;
-					RemoteClient *client = getClient(peer_id);
-					v3s16 blockpos = getNodeBlockPos(p_under);
-					client->SetBlockNotSent(blockpos);
-						
-					return;
-				}
 				// Get mineral
 				mineral = n.getMineral();
+				// Get material at position
+				material = n.d;
+				// If not yet cancelled
+				if(cannot_remove_node == false)
+				{
+					// If it's not diggable, do nothing
+					if(content_diggable(material) == false)
+					{
+						derr_server<<"Server: Not finishing digging: "
+								<<"Node not diggable"
+								<<std::endl;
+						cannot_remove_node = true;
+					}
+				}
+				// If not yet cancelled
+				if(cannot_remove_node == false)
+				{
+					// Get node metadata
+					NodeMetadata *meta = m_env.getMap().getNodeMetadata(p_under);
+					if(meta && meta->nodeRemovalDisabled() == true)
+					{
+						derr_server<<"Server: Not finishing digging: "
+								<<"Node metadata disables removal"
+								<<std::endl;
+						cannot_remove_node = true;
+					}
+				}
 			}
 			catch(InvalidPositionException &e)
 			{
@@ -2066,6 +2075,27 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 						<<std::endl;
 				m_emerge_queue.addBlock(peer_id,
 						getNodeBlockPos(p_over), BLOCK_EMERGE_FLAG_FROMDISK);
+				cannot_remove_node = true;
+			}
+
+			/*
+				If node can't be removed, set block to be re-sent to
+				client and quit.
+			*/
+			if(cannot_remove_node)
+			{
+				derr_server<<"Server: Not finishing digging."<<std::endl;
+
+				// Client probably has wrong data.
+				// Set block not sent, so that client will get
+				// a valid one.
+				dstream<<"Client "<<peer_id<<" tried to dig "
+						<<"node; but node cannot be removed."
+						<<" setting MapBlock not sent."<<std::endl;
+				RemoteClient *client = getClient(peer_id);
+				v3s16 blockpos = getNodeBlockPos(p_under);
+				client->SetBlockNotSent(blockpos);
+					
 				return;
 			}
 			
@@ -3016,14 +3046,30 @@ void Server::SendInventory(u16 peer_id)
 			if(!found)
 			{
 				ItemSpec specs[9];
-				specs[0] = ItemSpec(ITEM_MATERIAL, CONTENT_STONE);
-				specs[1] = ItemSpec(ITEM_MATERIAL, CONTENT_STONE);
-				specs[2] = ItemSpec(ITEM_MATERIAL, CONTENT_STONE);
+				specs[0] = ItemSpec(ITEM_MATERIAL, CONTENT_COBBLE);
+				specs[1] = ItemSpec(ITEM_MATERIAL, CONTENT_COBBLE);
+				specs[2] = ItemSpec(ITEM_MATERIAL, CONTENT_COBBLE);
 				specs[4] = ItemSpec(ITEM_CRAFT, "Stick");
 				specs[7] = ItemSpec(ITEM_CRAFT, "Stick");
 				if(checkItemCombination(items, specs))
 				{
 					rlist->addItem(new ToolItem("STPick", 0));
+					found = true;
+				}
+			}
+
+			// Steel pick
+			if(!found)
+			{
+				ItemSpec specs[9];
+				specs[0] = ItemSpec(ITEM_CRAFT, "steel_ingot");
+				specs[1] = ItemSpec(ITEM_CRAFT, "steel_ingot");
+				specs[2] = ItemSpec(ITEM_CRAFT, "steel_ingot");
+				specs[4] = ItemSpec(ITEM_CRAFT, "Stick");
+				specs[7] = ItemSpec(ITEM_CRAFT, "Stick");
+				if(checkItemCombination(items, specs))
+				{
+					rlist->addItem(new ToolItem("SteelPick", 0));
 					found = true;
 				}
 			}
@@ -3044,7 +3090,97 @@ void Server::SendInventory(u16 peer_id)
 				}
 			}
 
-			// Chest1
+			// Wooden showel
+			if(!found)
+			{
+				ItemSpec specs[9];
+				specs[1] = ItemSpec(ITEM_MATERIAL, CONTENT_WOOD);
+				specs[4] = ItemSpec(ITEM_CRAFT, "Stick");
+				specs[7] = ItemSpec(ITEM_CRAFT, "Stick");
+				if(checkItemCombination(items, specs))
+				{
+					rlist->addItem(new ToolItem("WShovel", 0));
+					found = true;
+				}
+			}
+
+			// Stone showel
+			if(!found)
+			{
+				ItemSpec specs[9];
+				specs[1] = ItemSpec(ITEM_MATERIAL, CONTENT_STONE);
+				specs[4] = ItemSpec(ITEM_CRAFT, "Stick");
+				specs[7] = ItemSpec(ITEM_CRAFT, "Stick");
+				if(checkItemCombination(items, specs))
+				{
+					rlist->addItem(new ToolItem("STShovel", 0));
+					found = true;
+				}
+			}
+
+			// Steel showel
+			if(!found)
+			{
+				ItemSpec specs[9];
+				specs[1] = ItemSpec(ITEM_CRAFT, "steel_ingot");
+				specs[4] = ItemSpec(ITEM_CRAFT, "Stick");
+				specs[7] = ItemSpec(ITEM_CRAFT, "Stick");
+				if(checkItemCombination(items, specs))
+				{
+					rlist->addItem(new ToolItem("SteelShovel", 0));
+					found = true;
+				}
+			}
+
+			// Wooden axe
+			if(!found)
+			{
+				ItemSpec specs[9];
+				specs[0] = ItemSpec(ITEM_MATERIAL, CONTENT_WOOD);
+				specs[1] = ItemSpec(ITEM_MATERIAL, CONTENT_WOOD);
+				specs[3] = ItemSpec(ITEM_MATERIAL, CONTENT_WOOD);
+				specs[4] = ItemSpec(ITEM_CRAFT, "Stick");
+				specs[7] = ItemSpec(ITEM_CRAFT, "Stick");
+				if(checkItemCombination(items, specs))
+				{
+					rlist->addItem(new ToolItem("WAxe", 0));
+					found = true;
+				}
+			}
+
+			// Stone axe
+			if(!found)
+			{
+				ItemSpec specs[9];
+				specs[0] = ItemSpec(ITEM_MATERIAL, CONTENT_COBBLE);
+				specs[1] = ItemSpec(ITEM_MATERIAL, CONTENT_COBBLE);
+				specs[3] = ItemSpec(ITEM_MATERIAL, CONTENT_COBBLE);
+				specs[4] = ItemSpec(ITEM_CRAFT, "Stick");
+				specs[7] = ItemSpec(ITEM_CRAFT, "Stick");
+				if(checkItemCombination(items, specs))
+				{
+					rlist->addItem(new ToolItem("STAxe", 0));
+					found = true;
+				}
+			}
+
+			// Steel axe
+			if(!found)
+			{
+				ItemSpec specs[9];
+				specs[0] = ItemSpec(ITEM_CRAFT, "steel_ingot");
+				specs[1] = ItemSpec(ITEM_CRAFT, "steel_ingot");
+				specs[3] = ItemSpec(ITEM_CRAFT, "steel_ingot");
+				specs[4] = ItemSpec(ITEM_CRAFT, "Stick");
+				specs[7] = ItemSpec(ITEM_CRAFT, "Stick");
+				if(checkItemCombination(items, specs))
+				{
+					rlist->addItem(new ToolItem("SteelAxe", 0));
+					found = true;
+				}
+			}
+
+			// Chest
 			if(!found)
 			{
 				ItemSpec specs[9];
@@ -3059,6 +3195,45 @@ void Server::SendInventory(u16 peer_id)
 				if(checkItemCombination(items, specs))
 				{
 					rlist->addItem(new MaterialItem(CONTENT_CHEST, 1));
+					found = true;
+				}
+			}
+
+			// Furnace
+			if(!found)
+			{
+				ItemSpec specs[9];
+				specs[0] = ItemSpec(ITEM_MATERIAL, CONTENT_COBBLE);
+				specs[1] = ItemSpec(ITEM_MATERIAL, CONTENT_COBBLE);
+				specs[2] = ItemSpec(ITEM_MATERIAL, CONTENT_COBBLE);
+				specs[3] = ItemSpec(ITEM_MATERIAL, CONTENT_COBBLE);
+				specs[5] = ItemSpec(ITEM_MATERIAL, CONTENT_COBBLE);
+				specs[6] = ItemSpec(ITEM_MATERIAL, CONTENT_COBBLE);
+				specs[7] = ItemSpec(ITEM_MATERIAL, CONTENT_COBBLE);
+				specs[8] = ItemSpec(ITEM_MATERIAL, CONTENT_COBBLE);
+				if(checkItemCombination(items, specs))
+				{
+					rlist->addItem(new MaterialItem(CONTENT_FURNACE, 1));
+					found = true;
+				}
+			}
+
+			// Steel block
+			if(!found)
+			{
+				ItemSpec specs[9];
+				specs[0] = ItemSpec(ITEM_CRAFT, "steel_ingot");
+				specs[1] = ItemSpec(ITEM_CRAFT, "steel_ingot");
+				specs[2] = ItemSpec(ITEM_CRAFT, "steel_ingot");
+				specs[3] = ItemSpec(ITEM_CRAFT, "steel_ingot");
+				specs[4] = ItemSpec(ITEM_CRAFT, "steel_ingot");
+				specs[5] = ItemSpec(ITEM_CRAFT, "steel_ingot");
+				specs[6] = ItemSpec(ITEM_CRAFT, "steel_ingot");
+				specs[7] = ItemSpec(ITEM_CRAFT, "steel_ingot");
+				specs[8] = ItemSpec(ITEM_CRAFT, "steel_ingot");
+				if(checkItemCombination(items, specs))
+				{
+					rlist->addItem(new MaterialItem(CONTENT_STEEL, 1));
 					found = true;
 				}
 			}
@@ -3350,6 +3525,7 @@ void setCreativeInventory(Player *player)
 	// CONTENT_IGNORE-terminated list
 	u8 material_items[] = {
 		CONTENT_TORCH,
+		CONTENT_COBBLE,
 		CONTENT_MUD,
 		CONTENT_STONE,
 		CONTENT_SAND,

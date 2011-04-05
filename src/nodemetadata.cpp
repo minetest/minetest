@@ -165,6 +165,18 @@ std::string ChestNodeMetadata::infoText()
 {
 	return "Chest";
 }
+bool ChestNodeMetadata::nodeRemovalDisabled()
+{
+	/*
+		Disable removal if chest contains something
+	*/
+	InventoryList *list = m_inventory->getList("0");
+	if(list == NULL)
+		return true;
+	if(list->getUsedSlots() == 0)
+		return true;
+	return false;
+}
 
 /*
 	FurnaceNodeMetadata
@@ -266,7 +278,7 @@ bool FurnaceNodeMetadata::step(float dtime)
 	
 	// Start only if there are free slots in dst, so that it can
 	// accomodate any result item
-	if(dst_list->getFreeSlots() > 0)
+	if(dst_list->getFreeSlots() > 0 && src_item && src_item->isCookable())
 	{
 		m_src_totaltime = 3;
 	}
@@ -281,11 +293,12 @@ bool FurnaceNodeMetadata::step(float dtime)
 		//dstream<<"Furnace is active"<<std::endl;
 		m_fuel_time += dtime;
 		m_src_time += dtime;
-		if(m_src_time >= m_src_totaltime && m_src_totaltime > 0.001)
+		if(m_src_time >= m_src_totaltime && m_src_totaltime > 0.001
+				&& src_item)
 		{
-			src_list->decrementMaterials(1);
 			InventoryItem *cookresult = src_item->createCookResult();
 			dst_list->addItem(cookresult);
+			src_list->decrementMaterials(1);
 			m_src_time = 0;
 			m_src_totaltime = 0;
 		}
