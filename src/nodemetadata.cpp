@@ -172,10 +172,10 @@ bool ChestNodeMetadata::nodeRemovalDisabled()
 	*/
 	InventoryList *list = m_inventory->getList("0");
 	if(list == NULL)
-		return true;
+		return false;
 	if(list->getUsedSlots() == 0)
-		return true;
-	return false;
+		return false;
+	return true;
 }
 
 /*

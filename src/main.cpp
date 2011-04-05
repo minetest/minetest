@@ -113,6 +113,10 @@ Gaming ideas:
 
 - Random NPC traders. what else?
 
+Game content:
+-------------
+- Glass blocks
+
 Documentation:
 --------------
 
@@ -162,6 +166,8 @@ TODO: Flowing water animation
 
 SUGG: Draw cubes in inventory directly with 3D drawing commands, so that
       animating them is easier.
+
+SUGG: Option for enabling proper alpha channel for textures
 
 Configuration:
 --------------
