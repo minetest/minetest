@@ -116,6 +116,11 @@ Gaming ideas:
 Game content:
 -------------
 - Glass blocks
+- WHen furnace is destroyed, move items to player's inventory
+- Growing grass, decaying leaves
+  - This can be done in the active blocks I guess.
+  - Lots of stuff can be done in the active blocks.
+  - Uh, is there an active block list somewhere?
 
 Documentation:
 --------------
@@ -162,7 +167,7 @@ TODO: Make fetching sector's blocks more efficient when rendering
 
 TODO: Flowing water animation
 
-* Combine meshes to bigger ones in ClientMap and set them EHM_STATIC
+SUGG: Combine meshes to bigger ones in ClientMap and set them EHM_STATIC
 
 SUGG: Draw cubes in inventory directly with 3D drawing commands, so that
       animating them is easier.
@@ -189,6 +194,10 @@ TODO: Remove IrrlichtWrapper
 SUGG: Add a "description" field to InventoryList and show it in
       GUIInventoryMenu
 	  - If separate menus are made for everything, this is not needed
+
+TODO: See what is the main slowdown when a node is added or removed
+      and make it asynchronous at least for other players
+	  - It probably is updateMeshes. How 'bout making it asynchronous?
 
 Server:
 -------
