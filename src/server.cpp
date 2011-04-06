@@ -3140,7 +3140,7 @@ void Server::SendInventory(u16 peer_id)
 			if(!found)
 			{
 				ItemSpec specs[9];
-				specs[1] = ItemSpec(ITEM_MATERIAL, CONTENT_STONE);
+				specs[1] = ItemSpec(ITEM_MATERIAL, CONTENT_COBBLE);
 				specs[4] = ItemSpec(ITEM_CRAFT, "Stick");
 				specs[7] = ItemSpec(ITEM_CRAFT, "Stick");
 				if(checkItemCombination(items, specs))

@@ -117,6 +117,9 @@ Game content:
   - Uh, is there an active block list somewhere?
 - Player health points
 	- When player dies, throw items on map
+- Cobble to get mossy if near water
+- More slots in furnace source list, so that multiple ingredients
+  are possible.
 
 Documentation:
 --------------
