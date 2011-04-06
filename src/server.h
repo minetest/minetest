@@ -403,8 +403,15 @@ private:
 	void SendInventory(u16 peer_id);
 	void SendChatMessage(u16 peer_id, const std::wstring &message);
 	void BroadcastChatMessage(const std::wstring &message);
-	void sendRemoveNode(v3s16 p, u16 ignore_id=0);
-	void sendAddNode(v3s16 p, MapNode n, u16 ignore_id=0);
+	/*
+		Send a node removal/addition event to all clients except ignore_id.
+		Additionally, if far_players!=NULL, players further away than
+		far_d_nodes are ignored and their peer_ids are added to far_players
+	*/
+	void sendRemoveNode(v3s16 p, u16 ignore_id=0,
+			core::list<u16> *far_players=NULL, float far_d_nodes=100);
+	void sendAddNode(v3s16 p, MapNode n, u16 ignore_id=0,
+			core::list<u16> *far_players=NULL, float far_d_nodes=100);
 	
 	// Environment and Connection must be locked when  called
 	void SendBlockNoLock(u16 peer_id, MapBlock *block, u8 ver);

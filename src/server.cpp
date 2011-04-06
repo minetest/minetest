@@ -2100,9 +2100,12 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 			}
 			
 			/*
-				Send the removal to all other clients
+				Send the removal to all other clients.
+				- If other player is close, send REMOVENODE
+				- Otherwise set blocks not sent
 			*/
-			sendRemoveNode(p_under, peer_id);
+			core::list<u16> far_players;
+			sendRemoveNode(p_under, peer_id, &far_players, 100);
 			
 			/*
 				Update and send inventory
@@ -2179,6 +2182,20 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 			m_ignore_map_edit_events = true;
 			m_env.getMap().removeNodeAndUpdate(p_under, modified_blocks);
 			m_ignore_map_edit_events = false;
+			
+			/*
+				Set blocks not sent to far players
+			*/
+			for(core::list<u16>::Iterator
+					i = far_players.begin();
+					i != far_players.end(); i++)
+			{
+				u16 peer_id = *i;
+				RemoteClient *client = getClient(peer_id);
+				if(client==NULL)
+					continue;
+				client->SetBlocksNotSent(modified_blocks);
+			}
 		}
 		
 		/*
@@ -2243,7 +2260,8 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 				/*
 					Send to all players
 				*/
-				sendAddNode(p_over, n, 0);
+				core::list<u16> far_players;
+				sendAddNode(p_over, n, 0, &far_players, 100);
 				
 				/*
 					Handle inventory
@@ -2270,6 +2288,20 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 				m_env.getMap().addNodeAndUpdate(p_over, n, modified_blocks);
 				m_ignore_map_edit_events = false;
 				
+				/*
+					Set blocks not sent to far players
+				*/
+				for(core::list<u16>::Iterator
+						i = far_players.begin();
+						i != far_players.end(); i++)
+				{
+					u16 peer_id = *i;
+					RemoteClient *client = getClient(peer_id);
+					if(client==NULL)
+						continue;
+					client->SetBlocksNotSent(modified_blocks);
+				}
+
 				/*
 					Calculate special events
 				*/
@@ -3306,8 +3338,12 @@ void Server::BroadcastChatMessage(const std::wstring &message)
 	}
 }
 
-void Server::sendRemoveNode(v3s16 p, u16 ignore_id)
+void Server::sendRemoveNode(v3s16 p, u16 ignore_id,
+	core::list<u16> *far_players, float far_d_nodes)
 {
+	float maxd = far_d_nodes*BS;
+	v3f p_f = intToFloat(p, BS);
+
 	// Create packet
 	u32 replysize = 8;
 	SharedBuffer<u8> reply(replysize);
@@ -3329,14 +3365,34 @@ void Server::sendRemoveNode(v3s16 p, u16 ignore_id)
 		// Don't send if it's the same one
 		if(client->peer_id == ignore_id)
 			continue;
+		
+		if(far_players)
+		{
+			// Get player
+			Player *player = m_env.getPlayer(client->peer_id);
+			if(player)
+			{
+				// If player is far away, only set modified blocks not sent
+				v3f player_pos = player->getPosition();
+				if(player_pos.getDistanceFrom(p_f) > maxd)
+				{
+					far_players->push_back(client->peer_id);
+					continue;
+				}
+			}
+		}
 
 		// Send as reliable
 		m_con.Send(client->peer_id, 0, reply, true);
 	}
 }
 
-void Server::sendAddNode(v3s16 p, MapNode n, u16 ignore_id)
+void Server::sendAddNode(v3s16 p, MapNode n, u16 ignore_id,
+		core::list<u16> *far_players, float far_d_nodes)
 {
+	float maxd = far_d_nodes*BS;
+	v3f p_f = intToFloat(p, BS);
+
 	for(core::map<u16, RemoteClient*>::Iterator
 		i = m_clients.getIterator();
 		i.atEnd() == false; i++)
@@ -3350,6 +3406,22 @@ void Server::sendAddNode(v3s16 p, MapNode n, u16 ignore_id)
 		// Don't send if it's the same one
 		if(client->peer_id == ignore_id)
 			continue;
+
+		if(far_players)
+		{
+			// Get player
+			Player *player = m_env.getPlayer(client->peer_id);
+			if(player)
+			{
+				// If player is far away, only set modified blocks not sent
+				v3f player_pos = player->getPosition();
+				if(player_pos.getDistanceFrom(p_f) > maxd)
+				{
+					far_players->push_back(client->peer_id);
+					continue;
+				}
+			}
+		}
 
 		// Create packet
 		u32 replysize = 8 + MapNode::serializedLength(client->serialization_version);
