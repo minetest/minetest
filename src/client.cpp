@@ -1780,7 +1780,8 @@ void Client::removeNode(v3s16 p)
 			i.atEnd() == false; i++)
 	{
 		v3s16 p = i.getNode()->getKey();
-		m_env.getClientMap().updateMeshes(p, m_env.getDayNightRatio());
+		//m_env.getClientMap().updateMeshes(p, m_env.getDayNightRatio());
+		addUpdateMeshTaskWithEdge(p);
 	}
 }
 
