@@ -28,8 +28,8 @@ NOTE: VBO cannot be turned on for fast-changing stuff because there
 NOTE: iostream.imbue(std::locale("C")) is very slow
 NOTE: Global locale is now set at initialization
 
-Random suggeestions:
---------------------
+Random suggeestions (AKA very old suggestions that haven't been done):
+----------------------------------------------------------------------
 
 SUGG: Fix address to be ipv6 compatible
 
@@ -42,12 +42,7 @@ SUGG: Use same technique for sector heightmaps as what we're
       using for UnlimitedHeightmap? (getting all neighbors
 	  when generating)
 
-SUGG: Transfer more blocks in a single packet
-SUGG: A blockdata combiner class, to which blocks are added and at
-      destruction it sends all the stuff in as few packets as possible.
-
 SUGG: If player is on ground, mainly fetch ground-level blocks
-SUGG: Fetch stuff mainly from the viewing direction
 
 SUGG: Expose Connection's seqnums and ACKs to server and client.
       - This enables saving many packets and making a faster connection
@@ -61,23 +56,21 @@ SUGG: More fine-grained control of client's dumping of blocks from
 
 SUGG: A map editing mode (similar to dedicated server mode)
 
-SUGG: Add a time value to the param of footstepped grass and check it
-      against a global timer when a block is accessed, to make old
-	  steps fade away.
-
-SUGG: Make a copy of close-range environment on client for showing
-      on screen, with minimal mutexes to slow down the main loop
-
+SUGG: Transfer more blocks in a single packet
+SUGG: A blockdata combiner class, to which blocks are added and at
+      destruction it sends all the stuff in as few packets as possible.
 SUGG: Make a PACKET_COMBINED which contains many subpackets. Utilize
       it by sending more stuff in a single packet.
 	  - Add a packet queue to RemoteClient, from which packets will be
 	    combined with object data packets
 		- This is not exactly trivial: the object data packets are
 		  sometimes very big by themselves
+	  - This might not give much network performance gain though.
 
 SUGG: Split MapBlockObject serialization to to-client and to-disk
       - This will allow saving ages of rats on disk but not sending
 	    them to clients
+	  - Not applicable. MapBlockObjects will be removed in the future.
 
 SUGG: MovingObject::move and Player::move are basically the same.
       combine them.
@@ -91,7 +84,7 @@ SUGG: Precalculate lighting translation table at runtime (at startup)
 SUGG: A version number to blocks, which increments when the block is
       modified (node add/remove, water update, lighting update)
 	  - This can then be used to make sure the most recent version of
-	    a block has been sent to client
+	    a block has been sent to client, for example
 
 SUGG: Make the amount of blocks sending to client and the total
 	  amount of blocks dynamically limited. Transferring blocks is the
@@ -115,12 +108,15 @@ Gaming ideas:
 
 Game content:
 -------------
+- When furnace is destroyed, move items to player's inventory
+- Add lots of stuff, no matter if they have really no real purpose.
 - Glass blocks
-- WHen furnace is destroyed, move items to player's inventory
 - Growing grass, decaying leaves
   - This can be done in the active blocks I guess.
   - Lots of stuff can be done in the active blocks.
   - Uh, is there an active block list somewhere?
+- Player health points
+	- When player dies, throw items on map
 
 Documentation:
 --------------
@@ -136,32 +132,19 @@ TODO: Get rid of GotSplitPacketException
 GUI:
 ----
 
-TODO: Add gui option to remove map
-
 TODO: Configuration menu, at least for keys
 
 Graphics:
 ---------
 
-TODO: Optimize day/night mesh updating somehow
-      - create copies of all textures for all lighting values and only
-	    change texture for material?
-	  - Umm... the collecting of the faces is the slow part
-	    -> what about just changing the color values of the existing
-		   meshbuffers? It should go quite fast.
-		   - This is not easy; There'd need to be a buffer somewhere
-		     that would contain the night and day lighting values.
-			 - Actually if FastFaces would be stored, they could
-			   hold both values
-
-FEATURE: Combine MapBlock's face caches to so big pieces that VBO
+SUGG: Combine MapBlock's face caches to so big pieces that VBO
       gets used
       - That is >500 vertices
 	  - This is not easy; all the MapBlocks close to the player would
 	    still need to be drawn separately and combining the blocks
 		would have to happen in a background thread
 
-TODO: Make fetching sector's blocks more efficient when rendering
+SUGG: Make fetching sector's blocks more efficient when rendering
       sectors that have very large amounts of blocks (on client)
 	  - Is this necessary at all?
 
@@ -180,36 +163,25 @@ Configuration:
 Client:
 -------
 
+TODO: Remove IrrlichtWrapper
+
 TODO: Untie client network operations from framerate
       - Needs some input queues or something
+	  - This won't give much performance boost because calculating block
+	    meshes takes so long
 
 SUGG: Make morning and evening transition more smooth and maybe shorter
 
-SUGG: Don't update all meshes always on single node changes, but
+TODO: Don't update all meshes always on single node changes, but
       check which ones should be updated
-	  - implement Map::updateNodeMeshes()
-
-TODO: Remove IrrlichtWrapper
-
-SUGG: Add a "description" field to InventoryList and show it in
-      GUIInventoryMenu
-	  - If separate menus are made for everything, this is not needed
-
-TODO: See what is the main slowdown when a node is added or removed
-      and make it asynchronous at least for other players
-	  - It probably is updateMeshes. How 'bout making it asynchronous?
+	  - implement Map::updateNodeMeshes() and the usage of it
+	  - It will give almost always a 4x boost in mesh update performance.
 
 Server:
 -------
 
 SUGG: Make an option to the server to disable building and digging near
       the starting position
-
-TODO: Copy the text of the last picked sign to inventory in creative
-      mode
-
-TODO: Check what goes wrong with caching map to disk (Kray)
-      - Nothing?
 
 FIXME: Server sometimes goes into some infinite PeerNotFoundException loop
 
@@ -218,9 +190,6 @@ FIXME: Server sometimes goes into some infinite PeerNotFoundException loop
   - It is probably caused by oscillating water
 * Make a small history check to transformLiquids to detect and log
   continuous oscillations, in such detail that they can be fixed.
-
-TODO: Player health points
-	- When player dies, throw items on map
 
 FIXME: If something is removed from craftresult with a right click,
 	it is only possible to get one item from it should give 4
@@ -239,27 +208,22 @@ TODO: Mineral and ground material properties
 
 TODO: Flowing water to actually contain flow direction information
 
-FEATURE: Create a system that allows a huge amount of different "map
-	     generator modules/filters"
-
-FEATURE: Erosion simulation at map generation time
-		- Simulate water flows, which would carve out dirt fast and
-		  then turn stone into gravel and sand and relocate it.
-		- How about relocating minerals, too? Coal and gold in
-		  downstream sand and gravel would be kind of cool
-		  - This would need a better way of handling minerals, mainly
-		    to have mineral content as a separate field. the first
-			parameter field is free for this.
-		- Simulate rock falling from cliffs when water has removed
-		  enough solid rock from the bottom
+SUGG: Erosion simulation at map generation time
+	- Simulate water flows, which would carve out dirt fast and
+	  then turn stone into gravel and sand and relocate it.
+	- How about relocating minerals, too? Coal and gold in
+	  downstream sand and gravel would be kind of cool
+	  - This would need a better way of handling minerals, mainly
+		to have mineral content as a separate field. the first
+		parameter field is free for this.
+	- Simulate rock falling from cliffs when water has removed
+	  enough solid rock from the bottom
 
 Mapgen v2:
 * only_from_disk might not work anymore - check and fix it.
 * Make the generator to run in background and not blocking block
   placement and transfer
 * Possibly add some kind of erosion and other stuff
-* Make client to fetch stuff asynchronously
-  - Needs method SyncProcessData
 * Better water generation (spread it to underwater caverns but don't
   fill dungeons that don't touch big water masses)
 * When generating a chunk and the neighboring chunk doesn't have mud
@@ -276,8 +240,6 @@ Misc. stuff:
   Make a system for pregenerating quick information for mapblocks, so
   that the client can show them as cubes before they are actually sent
   or even generated.
-* Optimize VoxelManipulator lighting implementation by using indices
-  in place of coordinates?
 
 Making it more portable:
 ------------------------
