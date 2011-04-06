@@ -3,6 +3,10 @@ Minetest-c55 changelog
 This should contain all the major changes.
 For minor stuff, refer to the commit log of the repository.
 
+2011-04-06:
+- Mesh update of node addition/removal is now done asynchronously on client, removing frametime spike
+- Node addition/removal is sent directly only to clients that are closer than 100 nodes to the modification. For the others, the modified blocks are set unsent. (and are re-sent when applicable)
+
 2011-04-05:
 - Made furnace usable
 - Added cobblestone
