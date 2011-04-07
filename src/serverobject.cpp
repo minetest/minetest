@@ -80,4 +80,35 @@ void TestSAO::step(float dtime, Queue<ActiveObjectMessage> &messages)
 }
 
 
+/*
+	ItemSAO
+*/
+
+ItemSAO::ItemSAO(ServerEnvironment *env, u16 id, v3f pos,
+		const std::string inventorystring):
+	ServerActiveObject(env, id, pos),
+	m_inventorystring(inventorystring)
+{
+	dstream<<"Server: ItemSAO created with inventorystring=\""
+			<<m_inventorystring<<"\""<<std::endl;
+}
+
+void ItemSAO::step(float dtime, Queue<ActiveObjectMessage> &messages)
+{
+}
+
+std::string ItemSAO::getClientInitializationData()
+{
+	dstream<<__FUNCTION_NAME<<std::endl;
+	std::string data;
+	data += itos(m_base_position.X);
+	data += ",";
+	data += itos(m_base_position.Y);
+	data += ",";
+	data += itos(m_base_position.Z);
+	data += ":";
+	data += m_inventorystring;
+	return data;
+}
+
 

@@ -482,7 +482,8 @@ void ServerEnvironment::step(float dtime)
 	m_random_spawn_timer -= dtime;
 	if(m_random_spawn_timer < 0)
 	{
-		m_random_spawn_timer += myrand_range(2.0, 20.0);
+		//m_random_spawn_timer += myrand_range(2.0, 20.0);
+		m_random_spawn_timer += 2.0;
 
 		/*
 			Find some position
@@ -503,11 +504,11 @@ void ServerEnvironment::step(float dtime)
 		);
 
 		/*
-			Create a TestSAO object
+			Create a ServerActiveObject
 		*/
 
-		TestSAO *obj = new TestSAO(this, 0,
-				v3f(myrand_range(-2*BS,2*BS), BS*5, myrand_range(-2*BS,2*BS)));
+		//TestSAO *obj = new TestSAO(this, 0, pos);
+		ServerActiveObject *obj = new ItemSAO(this, 0, pos, "CraftItem Stick 1");
 
 		// Add the object to the environment
 		addActiveObject(obj);
@@ -1043,6 +1044,27 @@ void ClientEnvironment::processActiveObjectMessage(u16 id,
 	}
 	obj->processMessage(data);
 }
+
+void ClientEnvironment::getActiveObjects(v3f origin, f32 max_d,
+		core::array<DistanceSortedActiveObject> &dest)
+{
+	for(core::map<u16, ClientActiveObject*>::Iterator
+			i = m_active_objects.getIterator();
+			i.atEnd()==false; i++)
+	{
+		ClientActiveObject* obj = i.getNode()->getValue();
+
+		f32 d = (obj->getPosition() - origin).getLength();
+
+		if(d > max_d)
+			continue;
+
+		DistanceSortedActiveObject dso(obj, d);
+
+		dest.push_back(dso);
+	}
+}
+
 
 #endif // #ifndef SERVER
 

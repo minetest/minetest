@@ -1222,7 +1222,7 @@ void Server::AsyncRunStep()
 				//u16 peer_id = i.getNode()->getKey();
 				RemoteClient *client = i.getNode()->getValue();
 				Player *player = m_env.getPlayer(client->peer_id);
-				std::cout<<player->getName()<<" ";
+				std::cout<<player->getName()<<"\t";
 				client->PrintInfo(std::cout);
 			}
 		}
@@ -1235,6 +1235,8 @@ void Server::AsyncRunStep()
 		Check added and deleted active objects
 	*/
 	{
+		//dstream<<"Server: Checking added and deleted active objects"<<std::endl;
+
 		JMutexAutoLock envlock(m_env_mutex);
 		JMutexAutoLock conlock(m_con_mutex);
 		
@@ -1248,7 +1250,11 @@ void Server::AsyncRunStep()
 			RemoteClient *client = i.getNode()->getValue();
 			Player *player = m_env.getPlayer(client->peer_id);
 			if(player==NULL)
+			{
+				dstream<<"WARNING: "<<__FUNCTION_NAME<<": Client "<<client->peer_id
+						<<" has no associated player"<<std::endl;
 				continue;
+			}
 			v3s16 pos = floatToInt(player->getPosition(), BS);
 
 			core::map<u16, bool> removed_objects;
@@ -1260,7 +1266,10 @@ void Server::AsyncRunStep()
 			
 			// Ignore if nothing happened
 			if(removed_objects.size() == 0 && added_objects.size() == 0)
+			{
+				//dstream<<"INFO: active objects: none changed"<<std::endl;
 				continue;
+			}
 			
 			std::string data_buffer;
 

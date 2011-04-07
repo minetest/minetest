@@ -38,6 +38,7 @@ struct ActiveObjectMessage
 
 #define ACTIVEOBJECT_TYPE_INVALID 0
 #define ACTIVEOBJECT_TYPE_TEST 1
+#define ACTIVEOBJECT_TYPE_ITEM 2
 
 /*
 	Parent class for ServerActiveObject and ClientActiveObject

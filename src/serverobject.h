@@ -87,10 +87,12 @@ public:
 	// Number of players which know about this object
 	u16 m_known_by_count;
 	/*
-		Whether this object is to be removed when nobody knows about
-		it anymore.
-		Removal is delayed to preserve the id for the time during which
-		it could be confused to some other object by some client.
+		- Whether this object is to be removed when nobody knows about
+		  it anymore.
+		- Removal is delayed to preserve the id for the time during which
+		  it could be confused to some other object by some client.
+		- This is set to true by the step() method when the object wants
+		  to be deleted.
 	*/
 	bool m_removed;
 	
@@ -111,6 +113,21 @@ public:
 private:
 	float m_timer1;
 	float m_age;
+};
+
+class ItemSAO : public ServerActiveObject
+{
+public:
+	ItemSAO(ServerEnvironment *env, u16 id, v3f pos,
+			const std::string inventorystring);
+	u8 getType() const
+	{
+		return ACTIVEOBJECT_TYPE_ITEM;
+	}
+	void step(float dtime, Queue<ActiveObjectMessage> &messages);
+	std::string getClientInitializationData();
+private:
+	std::string m_inventorystring;
 };
 
 #endif

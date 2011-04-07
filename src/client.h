@@ -316,6 +316,14 @@ public:
 			core::line3d<f32> shootline_on_map
 	);
 
+	// Gets closest object pointed by the shootline
+	// Returns NULL if not found
+	ClientActiveObject * getSelectedActiveObject(
+			f32 max_d,
+			v3f from_pos_f_on_map,
+			core::line3d<f32> shootline_on_map
+	);
+
 	// Prints a line or two of info
 	void printDebugInfo(std::ostream &os);
 

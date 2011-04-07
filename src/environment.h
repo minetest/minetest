@@ -211,7 +211,11 @@ public:
 	void removeActiveObject(u16 id);
 
 	void processActiveObjectMessage(u16 id, const std::string &data);
-
+	
+	// Get all nearby objects
+	void getActiveObjects(v3f origin, f32 max_d,
+			core::array<DistanceSortedActiveObject> &dest);
+	
 private:
 	ClientMap *m_map;
 	scene::ISceneManager *m_smgr;

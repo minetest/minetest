@@ -99,6 +99,9 @@ void NodeMetadata::registerType(u16 id, Factory f)
 	SignNodeMetadata
 */
 
+// Prototype
+SignNodeMetadata proto_SignNodeMetadata("");
+
 SignNodeMetadata::SignNodeMetadata(std::string text):
 	m_text(text)
 {
@@ -129,6 +132,9 @@ std::string SignNodeMetadata::infoText()
 /*
 	ChestNodeMetadata
 */
+
+// Prototype
+ChestNodeMetadata proto_ChestNodeMetadata;
 
 ChestNodeMetadata::ChestNodeMetadata()
 {
@@ -181,6 +187,9 @@ bool ChestNodeMetadata::nodeRemovalDisabled()
 /*
 	FurnaceNodeMetadata
 */
+
+// Prototype
+FurnaceNodeMetadata proto_FurnaceNodeMetadata;
 
 FurnaceNodeMetadata::FurnaceNodeMetadata()
 {

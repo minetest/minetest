@@ -46,6 +46,9 @@ public:
 	// 0 <= light_at_pos <= LIGHT_SUN
 	virtual void updateLight(u8 light_at_pos){}
 	virtual v3s16 getLightPosition(){return v3s16(0,0,0);}
+	virtual core::aabbox3d<f32>* getSelectionBox(){return NULL;}
+	virtual core::aabbox3d<f32>* getCollisionBox(){return NULL;}
+	virtual v3f getPosition(){return v3f(0,0,0);}
 	
 	// Step object in time
 	virtual void step(float dtime){}
@@ -54,8 +57,8 @@ public:
 	virtual void processMessage(const std::string &data){}
 
 	/*
-		This takes the return value of getClientInitializationData
-		TODO: Usage of this
+		This takes the return value of
+		ServerActiveObject::getClientInitializationData
 	*/
 	virtual void initialize(const std::string &data){}
 	
@@ -63,12 +66,37 @@ public:
 	static ClientActiveObject* create(u8 type);
 
 protected:
+	typedef ClientActiveObject* (*Factory)();
+	static void registerType(u16 type, Factory f);
+private:
+	static core::map<u16, Factory> m_types;
 };
+
+struct DistanceSortedActiveObject
+{
+	ClientActiveObject *obj;
+	f32 d;
+
+	DistanceSortedActiveObject(ClientActiveObject *a_obj, f32 a_d)
+	{
+		obj = a_obj;
+		d = a_d;
+	}
+
+	bool operator < (DistanceSortedActiveObject &other)
+	{
+		return d < other.d;
+	}
+};
+
+/*
+	TestCAO
+*/
 
 class TestCAO : public ClientActiveObject
 {
 public:
-	TestCAO(u16 id);
+	TestCAO();
 	virtual ~TestCAO();
 	
 	u8 getType() const
@@ -76,6 +104,8 @@ public:
 		return ACTIVEOBJECT_TYPE_TEST;
 	}
 	
+	static ClientActiveObject* create();
+
 	void addToScene(scene::ISceneManager *smgr);
 	void removeFromScene();
 	void updateLight(u8 light_at_pos);
@@ -89,6 +119,47 @@ public:
 private:
 	scene::IMeshSceneNode *m_node;
 	v3f m_position;
+};
+
+/*
+	ItemCAO
+*/
+
+class ItemCAO : public ClientActiveObject
+{
+public:
+	ItemCAO();
+	virtual ~ItemCAO();
+	
+	u8 getType() const
+	{
+		return ACTIVEOBJECT_TYPE_ITEM;
+	}
+	
+	static ClientActiveObject* create();
+
+	void addToScene(scene::ISceneManager *smgr);
+	void removeFromScene();
+	void updateLight(u8 light_at_pos);
+	v3s16 getLightPosition();
+	void updateNodePos();
+
+	void step(float dtime);
+
+	void processMessage(const std::string &data);
+
+	void initialize(const std::string &data);
+	
+	core::aabbox3d<f32>* getSelectionBox()
+		{return &m_selection_box;}
+	v3f getPosition()
+		{return m_position;}
+
+private:
+	core::aabbox3d<f32> m_selection_box;
+	scene::IMeshSceneNode *m_node;
+	v3f m_position;
+	std::string m_inventorystring;
 };
 
 #endif

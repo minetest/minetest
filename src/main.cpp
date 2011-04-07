@@ -109,17 +109,19 @@ Gaming ideas:
 Game content:
 -------------
 - When furnace is destroyed, move items to player's inventory
-- Add lots of stuff, no matter if they have really no real purpose.
+- Add lots of stuff
 - Glass blocks
 - Growing grass, decaying leaves
-  - This can be done in the active blocks I guess.
-  - Lots of stuff can be done in the active blocks.
-  - Uh, is there an active block list somewhere?
+	- This can be done in the active blocks I guess.
+	- Lots of stuff can be done in the active blocks.
+	- Uh, is there an active block list somewhere? I think not. Add it.
 - Player health points
-	- When player dies, throw items on map
+	- When player dies, throw items on map (needs better item-on-map
+	  implementation)
 - Cobble to get mossy if near water
 - More slots in furnace source list, so that multiple ingredients
   are possible.
+- Keys to chests?
 
 Documentation:
 --------------
@@ -200,7 +202,7 @@ FIXME: If something is removed from craftresult with a right click,
 Objects:
 --------
 
-TODO: Get rid of MapBlockObjects
+TODO: Get rid of MapBlockObjects and use ActiveObjects
 
 Map:
 ----
@@ -2534,9 +2536,9 @@ int main(int argc, char *argv[])
 		MapBlockObject *selected_object = client.getSelectedObject
 				(d*BS, camera_position, shootline);
 
-		/*
-			If it's pointing to a MapBlockObject
-		*/
+		ClientActiveObject *selected_active_object
+				= client.getSelectedActiveObject
+					(d*BS, camera_position, shootline);
 
 		if(selected_object != NULL)
 		{
@@ -2592,6 +2594,76 @@ int main(int argc, char *argv[])
 					client.clickObject(1, selected_object->getBlock()->getPos(),
 							selected_object->getId(), g_selected_item);
 				}
+			}
+		}
+		else if(selected_active_object != NULL)
+		{
+			//dstream<<"Client returned selected_active_object != NULL"<<std::endl;
+			
+			core::aabbox3d<f32> *selection_box
+					= selected_active_object->getSelectionBox();
+			// Box should exist because it was returned in the first place
+			assert(selection_box);
+
+			v3f pos = selected_active_object->getPosition();
+
+			core::aabbox3d<f32> box_on_map(
+					selection_box->MinEdge + pos,
+					selection_box->MaxEdge + pos
+			);
+
+			hilightboxes.push_back(box_on_map);
+
+			infotext = narrow_to_wide("A ClientActiveObject");
+			//infotext = narrow_to_wide(selected_object->infoText());
+
+			if(g_input->getLeftClicked())
+			{
+				std::cout<<DTIME<<"Left-clicked object"<<std::endl;
+#if 0
+				client.clickObject(0, selected_object->getBlock()->getPos(),
+						selected_object->getId(), g_selected_item);
+#endif
+			}
+			else if(g_input->getRightClicked())
+			{
+				std::cout<<DTIME<<"Right-clicked object"<<std::endl;
+#if 0
+				/*
+					Check if we want to modify the object ourselves
+				*/
+				if(selected_object->getTypeId() == MAPBLOCKOBJECT_TYPE_SIGN)
+				{
+					dstream<<"Sign object right-clicked"<<std::endl;
+					
+					if(random_input == false)
+					{
+						// Get a new text for it
+
+						TextDest *dest = new TextDestSign(
+								selected_object->getBlock()->getPos(),
+								selected_object->getId(),
+								&client);
+
+						SignObject *sign_object = (SignObject*)selected_object;
+
+						std::wstring wtext =
+								narrow_to_wide(sign_object->getText());
+
+						(new GUITextInputMenu(guienv, guiroot, -1,
+								&g_menumgr, dest,
+								wtext))->drop();
+					}
+				}
+				/*
+					Otherwise pass the event to the server as-is
+				*/
+				else
+				{
+					client.clickObject(1, selected_object->getBlock()->getPos(),
+							selected_object->getId(), g_selected_item);
+				}
+#endif
 			}
 		}
 		else // selected_object == NULL

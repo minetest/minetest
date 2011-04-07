@@ -1970,6 +1970,48 @@ MapBlockObject * Client::getSelectedObject(
 	return NULL;
 }
 
+ClientActiveObject * Client::getSelectedActiveObject(
+		f32 max_d,
+		v3f from_pos_f_on_map,
+		core::line3d<f32> shootline_on_map
+	)
+{
+	core::array<DistanceSortedActiveObject> objects;
+
+	m_env.getActiveObjects(from_pos_f_on_map, max_d, objects);
+
+	//dstream<<"Collected "<<objects.size()<<" nearby objects"<<std::endl;
+	
+	// Sort them.
+	// After this, the closest object is the first in the array.
+	objects.sort();
+
+	for(u32 i=0; i<objects.size(); i++)
+	{
+		ClientActiveObject *obj = objects[i].obj;
+		
+		core::aabbox3d<f32> *selection_box = obj->getSelectionBox();
+		if(selection_box == NULL)
+			continue;
+
+		v3f pos = obj->getPosition();
+
+		core::aabbox3d<f32> offsetted_box(
+				selection_box->MinEdge + pos,
+				selection_box->MaxEdge + pos
+		);
+
+		if(offsetted_box.intersectsWithLine(shootline_on_map))
+		{
+			//dstream<<"Returning selected object"<<std::endl;
+			return obj;
+		}
+	}
+
+	//dstream<<"No object selected; returning NULL."<<std::endl;
+	return NULL;
+}
+
 void Client::printDebugInfo(std::ostream &os)
 {
 	//JMutexAutoLock lock1(m_fetchblock_mutex);
