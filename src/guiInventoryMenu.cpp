@@ -130,9 +130,9 @@ void GUIInventoryMenu::regenerateGui(v2u32 screensize)
 	spacing = v2s32(60,56);
 	imgsize = v2s32(48,48);*/
 
-	padding = v2s32(screensize.X/48, screensize.X/48);
-	spacing = v2s32(screensize.X/16, screensize.X/17);
-	imgsize = v2s32(screensize.X/20, screensize.X/20);
+	padding = v2s32(screensize.Y/40, screensize.Y/40);
+	spacing = v2s32(screensize.Y/12, screensize.Y/13);
+	imgsize = v2s32(screensize.Y/15, screensize.Y/15);
 
 	s32 helptext_h = 15;
 
