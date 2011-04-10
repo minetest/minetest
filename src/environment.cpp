@@ -397,6 +397,11 @@ void ServerEnvironment::step(float dtime)
 			i != m_players.end(); i++)
 	{
 		Player *player = *i;
+		
+		// Ignore disconnected players
+		if(player->peer_id == 0)
+			continue;
+
 		v3f playerpos = player->getPosition();
 		
 		// Move
@@ -504,6 +509,11 @@ void ServerEnvironment::step(float dtime)
 			i != m_players.end(); i++)
 	{
 		Player *player = *i;
+		
+		// Ignore disconnected players
+		if(player->peer_id == 0)
+			continue;
+
 		v3f playerpos = player->getPosition();
 		
 		v3s16 blockpos0 = getNodeBlockPos(floatToInt(playerpos, BS));
@@ -589,6 +599,11 @@ void ServerEnvironment::step(float dtime)
 					i != m_players.end(); i++)
 			{
 				Player *player = *i;
+				
+				// Ignore disconnected players
+				if(player->peer_id == 0)
+					continue;
+
 				v3f playerpos = player->getPosition();
 				f32 d = playerpos.getDistanceFrom(objectpos);
 				if(d < to_static_max_f)
