@@ -189,7 +189,8 @@ u32 Environment::getDayNightRatio()
 ServerEnvironment::ServerEnvironment(ServerMap *map, Server *server):
 	m_map(map),
 	m_server(server),
-	m_random_spawn_timer(3)
+	m_random_spawn_timer(3),
+	m_send_recommended_timer(0)
 {
 }
 
@@ -422,19 +423,25 @@ void ServerEnvironment::step(float dtime)
 		}
 	}
 	
-	//if(g_settings.getBool("enable_experimental"))
-	{
-
 	/*
 		Step active objects
 	*/
+
+	bool send_recommended = false;
+	m_send_recommended_timer += dtime;
+	if(m_send_recommended_timer > 0.2)
+	{
+		m_send_recommended_timer = 0;
+		send_recommended = true;
+	}
+
 	for(core::map<u16, ServerActiveObject*>::Iterator
 			i = m_active_objects.getIterator();
 			i.atEnd()==false; i++)
 	{
 		ServerActiveObject* obj = i.getNode()->getValue();
 		// Step object, putting messages directly to the queue
-		obj->step(dtime, m_active_object_messages);
+		obj->step(dtime, m_active_object_messages, send_recommended);
 	}
 
 	/*
@@ -459,6 +466,19 @@ void ServerEnvironment::step(float dtime)
 			}
 			// If not m_removed, don't remove.
 			if(obj->m_removed == false)
+				continue;
+			// Delete static data from block
+			if(obj->m_static_exists)
+			{
+				MapBlock *block = m_map->getBlockNoCreateNoEx(obj->m_static_block);
+				if(block)
+				{
+					block->m_static_objects.remove(id);
+					block->setChangedFlag();
+				}
+			}
+			// If m_known_by_count > 0, don't actually remove.
+			if(obj->m_known_by_count > 0)
 				continue;
 			// Delete
 			delete obj;
@@ -633,6 +653,9 @@ void ServerEnvironment::step(float dtime)
 		}
 	}
 
+	if(g_settings.getBool("enable_experimental"))
+	{
+
 	/*
 		TEST CODE
 	*/
@@ -668,7 +691,8 @@ void ServerEnvironment::step(float dtime)
 
 		//TestSAO *obj = new TestSAO(this, 0, pos);
 		//ServerActiveObject *obj = new ItemSAO(this, 0, pos, "CraftItem Stick 1");
-		//addActiveObject(obj);
+		ServerActiveObject *obj = new RatSAO(this, 0, pos);
+		addActiveObject(obj);
 	}
 #endif
 
@@ -1082,6 +1106,7 @@ void ClientEnvironment::step(float dtime)
 	/*
 		Step active objects
 	*/
+	
 	for(core::map<u16, ClientActiveObject*>::Iterator
 			i = m_active_objects.getIterator();
 			i.atEnd()==false; i++)

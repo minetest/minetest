@@ -1295,7 +1295,7 @@ MapBlock::MapBlock(NodeContainer *parent, v3s16 pos, bool dummy):
 	if(dummy == false)
 		reallocate();
 	
-	m_spawn_timer = -10000;
+	//m_spawn_timer = -10000;
 
 #ifndef SERVER
 	m_mesh_expired = false;
@@ -1687,7 +1687,8 @@ void MapBlock::stepObjects(float dtime, bool server, u32 daynight_ratio)
 		Step objects
 	*/
 	m_objects.step(dtime, server, daynight_ratio);
-	
+
+#if 0
 	/*
 		Spawn some objects at random.
 
@@ -1724,6 +1725,7 @@ void MapBlock::stepObjects(float dtime, bool server, u32 daynight_ratio)
 			}
 		}
 	}
+#endif
 
 	setChangedFlag();
 }

@@ -35,6 +35,9 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #define QUANTITY_ITEM_MAX_COUNT 99
 
+class ServerActiveObject;
+class ServerEnvironment;
+
 class InventoryItem
 {
 public:
@@ -54,6 +57,12 @@ public:
 #endif
 	// Shall return a text to show in the GUI
 	virtual std::string getText() { return ""; }
+	// Creates an object from the item, to be placed in the world.
+	virtual ServerActiveObject* createSAO(ServerEnvironment *env, u16 id, v3f pos);
+
+	/*
+		Quantity methods
+	*/
 
 	// Shall return true if the item can be add()ed to the other
 	virtual bool addableTo(InventoryItem *other)
@@ -61,9 +70,6 @@ public:
 		return false;
 	}
 	
-	/*
-		Quantity methods
-	*/
 	u16 getCount()
 	{
 		return m_count;
@@ -175,6 +181,7 @@ private:
 	u8 m_content;
 };
 
+//TODO: Remove
 class MapBlockObjectItem : public InventoryItem
 {
 public:
@@ -262,28 +269,7 @@ public:
 		return new CraftItem(m_subname, m_count);
 	}
 #ifndef SERVER
-	video::ITexture * getImage()
-	{
-		if(g_texturesource == NULL)
-			return NULL;
-		
-		std::string name;
-
-		if(m_subname == "Stick")
-			name = "stick.png";
-		else if(m_subname == "lump_of_coal")
-			name = "lump_of_coal.png";
-		else if(m_subname == "lump_of_iron")
-			name = "lump_of_iron.png";
-		else if(m_subname == "steel_ingot")
-			name = "steel_ingot.png";
-		else
-			name = "cloud.png";
-		
-		// Get such a texture
-		//return g_irrlicht->getTexture(name);
-		return g_texturesource->getTextureRaw(name);
-	}
+	video::ITexture * getImage();
 #endif
 	std::string getText()
 	{
@@ -291,6 +277,9 @@ public:
 		os<<m_count;
 		return os.str();
 	}
+
+	ServerActiveObject* createSAO(ServerEnvironment *env, u16 id, v3f pos);
+
 	virtual bool addableTo(InventoryItem *other)
 	{
 		if(std::string(other->getName()) != "CraftItem")

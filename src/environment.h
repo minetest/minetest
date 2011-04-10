@@ -153,6 +153,7 @@ private:
 	core::map<u16, ServerActiveObject*> m_active_objects;
 	Queue<ActiveObjectMessage> m_active_object_messages;
 	float m_random_spawn_timer;
+	float m_send_recommended_timer;
 };
 
 #ifndef SERVER

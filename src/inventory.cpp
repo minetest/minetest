@@ -27,6 +27,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "debug.h"
 #include <sstream>
 #include "main.h"
+#include "serverobject.h"
 
 /*
 	InventoryItem
@@ -90,6 +91,19 @@ InventoryItem* InventoryItem::deSerialize(std::istream &is)
 	}
 }
 
+ServerActiveObject* InventoryItem::createSAO(ServerEnvironment *env, u16 id, v3f pos)
+{
+	/*
+		Create an ItemSAO
+	*/
+	// Get item string
+	std::ostringstream os(std::ios_base::binary);
+	serialize(os);
+	// Create object
+	ServerActiveObject *obj = new ItemSAO(env, 0, pos, os.str());
+	return obj;
+}
+
 /*
 	MaterialItem
 */
@@ -124,6 +138,48 @@ InventoryItem *MaterialItem::createCookResult()
 	CraftItem
 */
 
+#ifndef SERVER
+video::ITexture * CraftItem::getImage()
+{
+	if(g_texturesource == NULL)
+		return NULL;
+	
+	std::string name;
+
+	if(m_subname == "Stick")
+		name = "stick.png";
+	else if(m_subname == "lump_of_coal")
+		name = "lump_of_coal.png";
+	else if(m_subname == "lump_of_iron")
+		name = "lump_of_iron.png";
+	else if(m_subname == "steel_ingot")
+		name = "steel_ingot.png";
+	else if(m_subname == "rat")
+		name = "rat.png";
+	else
+		name = "cloud.png";
+	
+	// Get such a texture
+	//return g_irrlicht->getTexture(name);
+	return g_texturesource->getTextureRaw(name);
+}
+#endif
+
+ServerActiveObject* CraftItem::createSAO(ServerEnvironment *env, u16 id, v3f pos)
+{
+	// Special cases
+	if(m_subname == "rat")
+	{
+		ServerActiveObject *obj = new RatSAO(env, id, pos);
+		return obj;
+	}
+	// Default
+	else
+	{
+		return InventoryItem::createSAO(env, id, pos);
+	}
+}
+
 bool CraftItem::isCookable()
 {
 	if(m_subname == "lump_of_iron")
@@ -144,6 +200,7 @@ InventoryItem *CraftItem::createCookResult()
 
 /*
 	MapBlockObjectItem
+	TODO: Remove
 */
 #ifndef SERVER
 video::ITexture * MapBlockObjectItem::getImage()

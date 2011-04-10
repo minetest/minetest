@@ -2045,28 +2045,26 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 					dout_server<<"Player inventory has no free space"<<std::endl;
 					return;
 				}
+
+				// Skip if object has been removed
+				if(obj->m_removed)
+					return;
 				
 				/*
 					Create the inventory item
 				*/
-				InventoryItem *item = NULL;
-				// If it is an item-object, take the item from it
-				if(obj->getType() == ACTIVEOBJECT_TYPE_ITEM
-						&& obj->m_removed == false)
-				{
-					item = ((ItemSAO*)obj)->createInventoryItem();
-				}
+				InventoryItem *item = obj->createPickedUpItem();
 				
 				if(item)
 				{
 					// Add to inventory and send inventory
 					ilist->addItem(item);
 					SendInventory(player->peer_id);
+
+					// Remove object from environment
+					obj->m_removed = true;
 				}
 			}
-
-			// Remove object from environment
-			obj->m_removed = true;
 		}
 	}
 	else if(command == TOSERVER_GROUND_ACTION)
@@ -2448,15 +2446,9 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 				pos.Z += BS*0.2*(float)myrand_range(-1000,1000)/1000.0;
 
 				/*
-					Create an ItemSAO
+					Create the object
 				*/
-				// Get item string
-				std::ostringstream os(std::ios_base::binary);
-				item->serialize(os);
-				dout_server<<"Item string is \""<<os.str()<<"\""<<std::endl;
-				// Create object
-				ServerActiveObject *obj = new ItemSAO
-						(&m_env, 0, pos, os.str());
+				ServerActiveObject *obj = item->createSAO(&m_env, 0, pos);
 
 				if(obj == NULL)
 				{
@@ -2471,11 +2463,22 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 					
 					dout_server<<"Placed object"<<std::endl;
 
-					InventoryList *ilist = player->inventory.getList("main");
-					if(g_settings.getBool("creative_mode") == false && ilist)
+					// If item has count<=1, delete it
+					if(item->getCount() <= 1)
 					{
-						// Remove from inventory and send inventory
-						ilist->deleteItem(item_i);
+						InventoryList *ilist = player->inventory.getList("main");
+						if(g_settings.getBool("creative_mode") == false && ilist)
+						{
+							// Remove from inventory and send inventory
+							ilist->deleteItem(item_i);
+							// Send inventory
+							SendInventory(peer_id);
+						}
+					}
+					// Else decrement it
+					else
+					{
+						item->remove(1);
 						// Send inventory
 						SendInventory(peer_id);
 					}

@@ -729,10 +729,11 @@ private:
 	// Whether day and night lighting differs
 	bool m_day_night_differs;
 	
+	// TODO: Remove this
 	MapBlockObjectList m_objects;
 
 	// Object spawning stuff
-	float m_spawn_timer;
+	//float m_spawn_timer;
 
 #ifndef SERVER // Only on client
 	/*

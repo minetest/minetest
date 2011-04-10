@@ -35,6 +35,63 @@ Some planning
 
 */
 
+/*
+	SmoothTranslator
+*/
+
+struct SmoothTranslator
+{
+	v3f vect_old;
+	f32 anim_counter;
+	f32 anim_time;
+	f32 anim_time_counter;
+	v3f vect_show;
+	v3f vect_aim;
+
+	SmoothTranslator():
+		vect_old(0,0,0),
+		anim_counter(0),
+		anim_time(0),
+		anim_time_counter(0),
+		vect_show(0,0,0),
+		vect_aim(0,0,0)
+	{}
+
+	void init(v3f vect)
+	{
+		vect_old = vect;
+		vect_show = vect;
+		vect_aim = vect;
+	}
+
+	void update(v3f vect_new)
+	{
+		vect_old = vect_show;
+		vect_aim = vect_new;
+		if(anim_time < 0.001 || anim_time > 1.0)
+			anim_time = anim_time_counter;
+		else
+			anim_time = anim_time * 0.9 + anim_time_counter * 0.1;
+		anim_time_counter = 0;
+		anim_counter = 0;
+	}
+
+	void translate(f32 dtime)
+	{
+		anim_time_counter = anim_time_counter + dtime;
+		anim_counter = anim_counter + dtime;
+		v3f vect_move = vect_aim - vect_old;
+		f32 moveratio = 1.0;
+		if(anim_time > 0.001)
+			moveratio = anim_time_counter / anim_time;
+		// Move a bit less than should, to avoid oscillation
+		moveratio = moveratio * 0.8;
+		if(moveratio > 1.5)
+			moveratio = 1.5;
+		vect_show = vect_old + vect_move * moveratio;
+	}
+};
+
 class ClientEnvironment;
 
 class ClientActiveObject : public ActiveObject
@@ -166,6 +223,48 @@ private:
 	scene::IMeshSceneNode *m_node;
 	v3f m_position;
 	std::string m_inventorystring;
+};
+
+/*
+	RatCAO
+*/
+
+class RatCAO : public ClientActiveObject
+{
+public:
+	RatCAO();
+	virtual ~RatCAO();
+	
+	u8 getType() const
+	{
+		return ACTIVEOBJECT_TYPE_RAT;
+	}
+	
+	static ClientActiveObject* create();
+
+	void addToScene(scene::ISceneManager *smgr);
+	void removeFromScene();
+	void updateLight(u8 light_at_pos);
+	v3s16 getLightPosition();
+	void updateNodePos();
+
+	void step(float dtime, ClientEnvironment *env);
+
+	void processMessage(const std::string &data);
+
+	void initialize(const std::string &data);
+	
+	core::aabbox3d<f32>* getSelectionBox()
+		{return &m_selection_box;}
+	v3f getPosition()
+		{return m_position;}
+
+private:
+	core::aabbox3d<f32> m_selection_box;
+	scene::IMeshSceneNode *m_node;
+	v3f m_position;
+	float m_yaw;
+	SmoothTranslator pos_translator;
 };
 
 #endif

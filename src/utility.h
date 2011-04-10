@@ -95,13 +95,18 @@ inline u8 readU8(u8 *data)
 	return (data[0]<<0);
 }
 
-// Signed variants of the above
-
 inline void writeS32(u8 *data, s32 i){
 	writeU32(data, (u32)i);
 }
 inline s32 readS32(u8 *data){
 	return (s32)readU32(data);
+}
+
+inline void writeF1000(u8 *data, f32 i){
+	writeS32(data, i*1000);
+}
+inline f32 readF1000(u8 *data){
+	return (f32)readS32(data)/1000.;
 }
 
 inline void writeS16(u8 *data, s16 i){
@@ -117,13 +122,27 @@ inline void writeV3S32(u8 *data, v3s32 p)
 	writeS32(&data[4], p.Y);
 	writeS32(&data[8], p.Z);
 }
-
 inline v3s32 readV3S32(u8 *data)
 {
 	v3s32 p;
 	p.X = readS32(&data[0]);
 	p.Y = readS32(&data[4]);
 	p.Z = readS32(&data[8]);
+	return p;
+}
+
+inline void writeV3F1000(u8 *data, v3f p)
+{
+	writeF1000(&data[0], p.X);
+	writeF1000(&data[4], p.Y);
+	writeF1000(&data[8], p.Z);
+}
+inline v3f readV3F1000(u8 *data)
+{
+	v3f p;
+	p.X = (float)readF1000(&data[0]);
+	p.Y = (float)readF1000(&data[4]);
+	p.Z = (float)readF1000(&data[8]);
 	return p;
 }
 
@@ -169,6 +188,62 @@ inline v3s16 readV3S16(u8 *data)
 	p.Y = readS16(&data[2]);
 	p.Z = readS16(&data[4]);
 	return p;
+}
+
+/*
+	The above stuff directly interfaced to iostream
+*/
+
+inline void writeU8(std::ostream &os, u8 p)
+{
+	char buf[1];
+	writeU8((u8*)buf, p);
+	os.write(buf, 1);
+}
+inline u8 readU8(std::istream &is)
+{
+	char buf[1];
+	is.read(buf, 1);
+	return readU8((u8*)buf);
+}
+
+inline void writeU16(std::ostream &os, u16 p)
+{
+	char buf[2];
+	writeU16((u8*)buf, p);
+	os.write(buf, 2);
+}
+inline u16 readU16(std::istream &is)
+{
+	char buf[12];
+	is.read(buf, 12);
+	return readU16((u8*)buf);
+}
+
+inline void writeF1000(std::ostream &os, f32 p)
+{
+	char buf[2];
+	writeF1000((u8*)buf, p);
+	os.write(buf, 2);
+}
+inline f32 readF1000(std::istream &is)
+{
+	char buf[12];
+	is.read(buf, 12);
+	return readF1000((u8*)buf);
+}
+
+inline void writeV3F1000(std::ostream &os, v3f p)
+{
+	char buf[12];
+	writeV3F1000((u8*)buf, p);
+	os.write(buf, 12);
+}
+inline v3f readV3F1000(std::istream &is)
+{
+	char buf[12];
+	is.read(buf, 12);
+	return readV3F1000((u8*)buf);
 }
 
 /*
