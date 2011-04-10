@@ -5121,14 +5121,31 @@ MapSector* ServerMap::loadSectorMeta(std::string dirname)
 	// Get destination
 	v2s16 p2d = getSectorPos(dirname);
 	std::string dir = m_savedir + "/sectors/" + dirname;
+
+	ServerMapSector *sector = NULL;
 	
 	std::string fullpath = dir + "/meta";
 	std::ifstream is(fullpath.c_str(), std::ios_base::binary);
 	if(is.good() == false)
-		throw FileNotGoodException("Cannot open sector metafile");
-
-	ServerMapSector *sector = ServerMapSector::deSerialize
-			(is, this, p2d, m_sectors);
+	{
+		// If the directory exists anyway, it probably is in some old
+		// format. Just go ahead and create the sector.
+		if(fs::PathExists(dir))
+		{
+			dstream<<"ServerMap::loadSectorMeta(): Sector metafile "
+					<<fullpath<<" doesn't exist but directory does."
+					<<" Continuing with a sector with no metadata."
+					<<std::endl;
+			sector = createSector(p2d);
+		}
+		else
+			throw FileNotGoodException("Cannot open sector metafile");
+	}
+	else
+	{
+		sector = ServerMapSector::deSerialize
+				(is, this, p2d, m_sectors);
+	}
 	
 	sector->differs_from_disk = false;
 
