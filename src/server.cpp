@@ -139,6 +139,22 @@ void * EmergeThread::Thread()
 		bool got_block = true;
 		core::map<v3s16, MapBlock*> modified_blocks;
 		
+		bool only_from_disk = false;
+		
+		if(optional)
+			only_from_disk = true;
+
+		/*
+			TODO: Map loading logic here, so that the chunk can be
+			generated asynchronously:
+
+			- Check limits
+			With the environment locked:
+			- Check if block already is loaded and not dummy
+				- If so, we're ready
+			- 
+		*/
+		
 		{//envlock
 
 		//TimeTaker envlockwaittimer("block emerge envlock wait time");
@@ -151,10 +167,6 @@ void * EmergeThread::Thread()
 		//TimeTaker timer("block emerge (while env locked)");
 			
 		try{
-			bool only_from_disk = false;
-			
-			if(optional)
-				only_from_disk = true;
 			
 			// First check if the block already exists
 			//block = map.getBlockNoCreate(p);
@@ -167,28 +179,6 @@ void * EmergeThread::Thread()
 						only_from_disk,
 						changed_blocks,
 						lighting_invalidated_blocks);
-
-#if 0
-				/*
-					While we're at it, generate some other blocks too
-				*/
-				try
-				{
-					map.emergeBlock(
-							p+v3s16(0,1,0),
-							only_from_disk,
-							changed_blocks,
-							lighting_invalidated_blocks);
-					map.emergeBlock(
-							p+v3s16(0,-1,0),
-							only_from_disk,
-							changed_blocks,
-							lighting_invalidated_blocks);
-				}
-				catch(InvalidPositionException &e)
-				{
-				}
-#endif
 			}
 
 			// If it is a dummy, block was not found on disk
@@ -3823,34 +3813,6 @@ Player *Server::emergePlayer(const char *name, const char *password,
 				//dstream<<"-> Underwater"<<std::endl;
 				continue;
 			}
-
-#if 0
-// Doesn't work, generating blocks is a bit too complicated for doing here
-			// Get block at point
-			v3s16 nodepos3d;
-			nodepos3d = v3s16(nodepos.X, groundheight+1, nodepos.Y);
-			v3s16 blockpos = getNodeBlockPos(nodepos3d);
-			((ServerMap*)(&m_env.getMap()))->emergeBlock(blockpos);
-			// Don't go inside ground
-			try{
-				/*v3s16 footpos(nodepos.X, groundheight+1, nodepos.Y);
-				v3s16 headpos(nodepos.X, groundheight+2, nodepos.Y);*/
-				v3s16 footpos = nodepos3d + v3s16(0,0,0);
-				v3s16 headpos = nodepos3d + v3s16(0,1,0);
-				if(m_env.getMap().getNode(footpos).d != CONTENT_AIR
-					|| m_env.getMap().getNode(headpos).d != CONTENT_AIR)
-				{
-					dstream<<"-> Inside ground"<<std::endl;
-					// In ground
-					continue;
-				}
-			}catch(InvalidPositionException &e)
-			{
-				dstream<<"-> Invalid position"<<std::endl;
-				// Ignore invalid position
-				continue;
-			}
-#endif
 
 			// Found a good place
 			dstream<<"Searched through "<<i<<" places."<<std::endl;

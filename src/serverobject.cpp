@@ -272,7 +272,7 @@ RatSAO::RatSAO(ServerEnvironment *env, u16 id, v3f pos):
 	ServerActiveObject(env, id, pos),
 	m_speed_f(0,0,0)
 {
-	dstream<<"Server: RatSAO created"<<std::endl;
+	//dstream<<"Server: RatSAO created"<<std::endl;
 	ServerActiveObject::registerType(getType(), create);
 
 	m_oldpos = v3f(0,0,0);
@@ -425,7 +425,7 @@ std::string RatSAO::getClientInitializationData()
 
 std::string RatSAO::getStaticData()
 {
-	dstream<<__FUNCTION_NAME<<std::endl;
+	//dstream<<__FUNCTION_NAME<<std::endl;
 	std::ostringstream os(std::ios::binary);
 	// version
 	writeU8(os, 0);

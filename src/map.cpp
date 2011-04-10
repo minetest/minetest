@@ -2170,141 +2170,49 @@ void addRandomObjects(MapBlock *block)
 	This is the main map generation method
 */
 
-MapChunk* ServerMap::generateChunkRaw(v2s16 chunkpos,
-		core::map<v3s16, MapBlock*> &changed_blocks,
-		bool force)
+struct ChunkMakeData
 {
-	DSTACK(__FUNCTION_NAME);
+	ManualMapVoxelManipulator vmanip;
+	u64 seed;
+	s16 y_blocks_min;
+	s16 y_blocks_max;
+	v2s16 sectorpos_base;
+	s16 sectorpos_base_size;
+	v2s16 sectorpos_bigbase;
+	s16 sectorpos_bigbase_size;
+	s16 max_spread_amount;
 
-	/*
-		Don't generate if already fully generated
-	*/
-	if(force == false)
-	{
-		MapChunk *chunk = getChunk(chunkpos);
-		if(chunk != NULL && chunk->getGenLevel() == GENERATED_FULLY)
-		{
-			dstream<<"generateChunkRaw(): Chunk "
-					<<"("<<chunkpos.X<<","<<chunkpos.Y<<")"
-					<<" already generated"<<std::endl;
-			return chunk;
-		}
-	}
+	ChunkMakeData():
+		vmanip(NULL)
+	{}
+};
 
-	dstream<<"generateChunkRaw(): Generating chunk "
-			<<"("<<chunkpos.X<<","<<chunkpos.Y<<")"
-			<<std::endl;
-	
-	TimeTaker timer("generateChunkRaw()");
-	
-	// The distance how far into the neighbors the generator is allowed to go.
-	s16 max_spread_amount_sectors = 2;
-	assert(max_spread_amount_sectors <= m_chunksize);
-	s16 max_spread_amount = max_spread_amount_sectors * MAP_BLOCKSIZE;
-
-	// Minimum amount of space left on sides for mud to fall in
-	//s16 min_mud_fall_space = 2;
-	
-	// Maximum diameter of stone obstacles in X and Z
-	/*s16 stone_obstacle_max_size = (max_spread_amount-min_mud_fall_space)*2;
-	assert(stone_obstacle_max_size/2 <= max_spread_amount-min_mud_fall_space);*/
-	
-	s16 y_blocks_min = -4;
-	s16 y_blocks_max = 3;
-	s16 h_blocks = y_blocks_max - y_blocks_min + 1;
-	s16 y_nodes_min = y_blocks_min * MAP_BLOCKSIZE;
-	s16 y_nodes_max = y_blocks_max * MAP_BLOCKSIZE + MAP_BLOCKSIZE - 1;
-
-	v2s16 sectorpos_base = chunk_to_sector(chunkpos);
-	s16 sectorpos_base_size = m_chunksize;
-
-	/*v2s16 sectorpos_bigbase = chunk_to_sector(chunkpos - v2s16(1,1));
-	s16 sectorpos_bigbase_size = m_chunksize * 3;*/
-	v2s16 sectorpos_bigbase =
-			sectorpos_base - v2s16(1,1) * max_spread_amount_sectors;
-	s16 sectorpos_bigbase_size =
-			sectorpos_base_size + 2 * max_spread_amount_sectors;
-
-	v3s16 bigarea_blocks_min(
-		sectorpos_bigbase.X,
-		y_blocks_min,
-		sectorpos_bigbase.Y
-	);
-
-	v3s16 bigarea_blocks_max(
-		sectorpos_bigbase.X + sectorpos_bigbase_size - 1,
-		y_blocks_max,
-		sectorpos_bigbase.Y + sectorpos_bigbase_size - 1
-	);
-	
-	// Relative values to control amount of stuff in one chunk
-	/*u32 relative_area = (u32)sectorpos_base_size*MAP_BLOCKSIZE
-			*(u32)sectorpos_base_size*MAP_BLOCKSIZE;*/
-	u32 relative_volume = (u32)sectorpos_base_size*MAP_BLOCKSIZE
-			*(u32)sectorpos_base_size*MAP_BLOCKSIZE
+void makeChunk(ChunkMakeData *data)
+{
+	s16 y_nodes_min = data->y_blocks_min * MAP_BLOCKSIZE;
+	s16 y_nodes_max = data->y_blocks_max * MAP_BLOCKSIZE + MAP_BLOCKSIZE - 1;
+	s16 h_blocks = data->y_blocks_max - data->y_blocks_min + 1;
+	u32 relative_volume = (u32)data->sectorpos_base_size*MAP_BLOCKSIZE
+			*(u32)data->sectorpos_base_size*MAP_BLOCKSIZE
 			*(u32)h_blocks*MAP_BLOCKSIZE;
-		
-	/*
-		The limiting edges of the lighting update, inclusive.
-	*/
-	s16 lighting_min_d = 0-max_spread_amount;
-	s16 lighting_max_d = sectorpos_base_size*MAP_BLOCKSIZE+max_spread_amount-1;
-
-	/*
-		Create the whole area of this and the neighboring chunks
-	*/
-	{
-		TimeTaker timer("generateChunkRaw() create area");
-		
-		for(s16 x=0; x<sectorpos_bigbase_size; x++)
-		for(s16 z=0; z<sectorpos_bigbase_size; z++)
-		{
-			v2s16 sectorpos = sectorpos_bigbase + v2s16(x,z);
-			ServerMapSector *sector = createSector(sectorpos);
-			assert(sector);
-
-			for(s16 y=y_blocks_min; y<=y_blocks_max; y++)
-			{
-				v3s16 blockpos(sectorpos.X, y, sectorpos.Y);
-				MapBlock *block = createBlock(blockpos);
-
-				// Lighting won't be calculated
-				//block->setLightingExpired(true);
-				// Lighting will be calculated
-				block->setLightingExpired(false);
-
-				/*
-					Block gets sunlight if this is true.
-
-					This should be set to true when the top side of a block
-					is completely exposed to the sky.
-
-					Actually this doesn't matter now because the
-					initial lighting is done here.
-				*/
-				block->setIsUnderground(y != y_blocks_max);
-			}
-		}
-	}
-	
-	/*
-		Now we have a big empty area.
-
-		Make a ManualMapVoxelManipulator that contains this and the
-		neighboring chunks
-	*/
-
-	ManualMapVoxelManipulator vmanip(this);
-	// Add the area we just generated
-	{
-		TimeTaker timer("generateChunkRaw() initialEmerge");
-		vmanip.initialEmerge(bigarea_blocks_min, bigarea_blocks_max);
-	}
+	v3s16 bigarea_blocks_min(
+		data->sectorpos_bigbase.X,
+		data->y_blocks_min,
+		data->sectorpos_bigbase.Y
+	);
+	v3s16 bigarea_blocks_max(
+		data->sectorpos_bigbase.X + data->sectorpos_bigbase_size - 1,
+		data->y_blocks_max,
+		data->sectorpos_bigbase.Y + data->sectorpos_bigbase_size - 1
+	);
+	s16 lighting_min_d = 0-data->max_spread_amount;
+	s16 lighting_max_d = data->sectorpos_base_size*MAP_BLOCKSIZE
+			+ data->max_spread_amount-1;
 
 	// Clear all flags
-	vmanip.clearFlag(0xff);
+	data->vmanip.clearFlag(0xff);
 
-	TimeTaker timer_generate("generateChunkRaw() generate");
+	TimeTaker timer_generate("makeChunk() generate");
 
 	// Maximum height of the stone surface and obstacles.
 	// This is used to disable cave generation from going too high.
@@ -2318,18 +2226,18 @@ MapChunk* ServerMap::generateChunkRaw(v2s16 chunkpos,
 	// 22ms @cs=8
 	//TimeTaker timer1("ground level");
 
-	for(s16 x=0; x<sectorpos_bigbase_size*MAP_BLOCKSIZE; x++)
-	for(s16 z=0; z<sectorpos_bigbase_size*MAP_BLOCKSIZE; z++)
+	for(s16 x=0; x<data->sectorpos_bigbase_size*MAP_BLOCKSIZE; x++)
+	for(s16 z=0; z<data->sectorpos_bigbase_size*MAP_BLOCKSIZE; z++)
 	{
 		// Node position
-		v2s16 p2d = sectorpos_bigbase*MAP_BLOCKSIZE + v2s16(x,z);
+		v2s16 p2d = data->sectorpos_bigbase*MAP_BLOCKSIZE + v2s16(x,z);
 		
 		/*
 			Skip of already generated
 		*/
 		{
 			v3s16 p(p2d.X, y_nodes_min, p2d.Y);
-			if(vmanip.m_data[vmanip.m_area.index(p)].d != CONTENT_AIR)
+			if(data->vmanip.m_data[data->vmanip.m_area.index(p)].d != CONTENT_AIR)
 				continue;
 		}
 
@@ -2337,11 +2245,11 @@ MapChunk* ServerMap::generateChunkRaw(v2s16 chunkpos,
 		float surface_y_f = 0.0;
 
 		// Use perlin noise for ground height
-		surface_y_f = base_rock_level_2d(m_seed, p2d);
+		surface_y_f = base_rock_level_2d(data->seed, p2d);
 		
 		/*// Experimental stuff
 		{
-			float a = highlands_level_2d(m_seed, p2d);
+			float a = highlands_level_2d(data->seed, p2d);
 			if(a > surface_y_f)
 				surface_y_f = a;
 		}*/
@@ -2358,13 +2266,13 @@ MapChunk* ServerMap::generateChunkRaw(v2s16 chunkpos,
 		*/
 		{
 			// Use fast index incrementing
-			v3s16 em = vmanip.m_area.getExtent();
-			u32 i = vmanip.m_area.index(v3s16(p2d.X, y_nodes_min, p2d.Y));
+			v3s16 em = data->vmanip.m_area.getExtent();
+			u32 i = data->vmanip.m_area.index(v3s16(p2d.X, y_nodes_min, p2d.Y));
 			for(s16 y=y_nodes_min; y<surface_y && y<=y_nodes_max; y++)
 			{
-				vmanip.m_data[i].d = CONTENT_STONE;
+				data->vmanip.m_data[i].d = CONTENT_STONE;
 
-				vmanip.m_area.add_y(em, i, 1);
+				data->vmanip.m_area.add_y(em, i, 1);
 			}
 		}
 	}
@@ -2377,13 +2285,13 @@ MapChunk* ServerMap::generateChunkRaw(v2s16 chunkpos,
 	
 	//s32 stone_obstacle_count = 0;
 	/*s32 stone_obstacle_count =
-			rangelim((1.0+noise2d(m_seed+897,
-			sectorpos_base.X, sectorpos_base.Y))/2.0 * 30, 0, 100000);*/
+			rangelim((1.0+noise2d(data->seed+897,
+			data->sectorpos_base.X, data->sectorpos_base.Y))/2.0 * 30, 0, 100000);*/
 	
 	//s16 stone_obstacle_max_height = 0;
 	/*s16 stone_obstacle_max_height =
-			rangelim((1.0+noise2d(m_seed+5902,
-			sectorpos_base.X, sectorpos_base.Y))/2.0 * 30, 0, 100000);*/
+			rangelim((1.0+noise2d(data->seed+5902,
+			data->sectorpos_base.X, data->sectorpos_base.Y))/2.0 * 30, 0, 100000);*/
 
 	/*
 		Loop this part, it will make stuff look older and newer nicely
@@ -2394,133 +2302,6 @@ MapChunk* ServerMap::generateChunkRaw(v2s16 chunkpos,
 	/******************************
 		BEGINNING OF AGING LOOP
 	******************************/
-
-#if 0
-	{
-	// 8ms @cs=8
-	//TimeTaker timer1("stone obstacles");
-
-	/*
-		Add some random stone obstacles
-	*/
-	
-	for(s32 ri=0; ri<stone_obstacle_count; ri++)
-	{
-		// Randomize max height so usually stuff will be quite low
-		s16 maxheight_randomized = myrand_range(0, stone_obstacle_max_height);
-
-		//s16 stone_obstacle_max_size = sectorpos_base_size * MAP_BLOCKSIZE - 10;
-		s16 stone_obstacle_max_size = MAP_BLOCKSIZE*4-4;
-
-		v3s16 ob_size(
-			myrand_range(5, stone_obstacle_max_size),
-			myrand_range(0, maxheight_randomized),
-			myrand_range(5, stone_obstacle_max_size)
-		);
-		
-		// Don't make stupid small rectangle bumps
-		if(ob_size.Y < 5)
-			continue;
-		
-		v2s16 ob_place(
-			myrand_range(1+ob_size.X/2+2,
-					sectorpos_base_size*MAP_BLOCKSIZE-1-1-ob_size.X/2-2),
-			myrand_range(1+ob_size.Z/2+2,
-					sectorpos_base_size*MAP_BLOCKSIZE-1-1-ob_size.Z/2-2)
-		);
-		
-		// Minimum space left on top of the obstacle
-		s16 min_head_space = 12;
-		
-		for(s16 x=-ob_size.X/2; x<ob_size.X/2; x++)
-		for(s16 z=-ob_size.Z/2; z<ob_size.Z/2; z++)
-		{
-			// Node position in 2d
-			v2s16 p2d = sectorpos_base*MAP_BLOCKSIZE + ob_place + v2s16(x,z);
-			
-			// Find stone ground level
-			// (ignore everything else than mud in already generated chunks)
-			// and mud amount over the stone level
-			s16 surface_y = 0;
-			s16 mud_amount = 0;
-			{
-				v3s16 em = vmanip.m_area.getExtent();
-				u32 i = vmanip.m_area.index(v3s16(p2d.X, y_nodes_max, p2d.Y));
-				s16 y;
-				// Go to ground level
-				for(y=y_nodes_max; y>=y_nodes_min; y--)
-				{
-					MapNode *n = &vmanip.m_data[i];
-					/*if(content_walkable(n.d)
-							&& n.d != CONTENT_MUD
-							&& n.d != CONTENT_GRASS)
-						break;*/
-					if(n->d == CONTENT_STONE)
-						break;
-					
-					if(n->d == CONTENT_MUD || n->d == CONTENT_GRASS)
-					{
-						mud_amount++;
-						/*
-							Change to mud because otherwise we might
-							be throwing mud on grass at the next
-							step
-						*/
-						n->d = CONTENT_MUD;
-					}
-						
-					vmanip.m_area.add_y(em, i, -1);
-				}
-				if(y >= y_nodes_min)
-					surface_y = y;
-				else
-					surface_y = y_nodes_min;
-			}
-
-
-			/*
-				Add stone on ground
-			*/
-			{
-				v3s16 em = vmanip.m_area.getExtent();
-				s16 y_start = surface_y+1;
-				u32 i = vmanip.m_area.index(v3s16(p2d.X, y_start, p2d.Y));
-				s16 y;
-				// Add stone
-				s16 count = 0;
-				for(y=y_start; y<=y_nodes_max - min_head_space; y++)
-				{
-					MapNode &n = vmanip.m_data[i];
-					n.d = CONTENT_STONE;
-
-					if(y > stone_surface_max_y)
-						stone_surface_max_y = y;
-
-					count++;
-					if(count >= ob_size.Y)
-						break;
-						
-					vmanip.m_area.add_y(em, i, 1);
-				}
-				// Add mud
-				count = 0;
-				for(; y<=y_nodes_max - min_head_space; y++)
-				{
-					MapNode &n = vmanip.m_data[i];
-					n.d = CONTENT_MUD;
-					count++;
-					if(count >= mud_amount)
-						break;
-						
-					vmanip.m_area.add_y(em, i, 1);
-				}
-			}
-
-		}
-	}
-
-	}//timer1
-#endif
 
 	{
 	// 24ms @cs=8
@@ -2552,8 +2333,8 @@ MapChunk* ServerMap::generateChunkRaw(v2s16 chunkpos,
 			/*min_tunnel_diameter = MYMAX(0, stone_surface_max_y/6);
 			max_tunnel_diameter = myrand_range(MYMAX(0, stone_surface_max_y/6), MYMAX(0, stone_surface_max_y/2));*/
 			
-			/*s16 tunnel_rou = rangelim(25*(0.5+1.0*noise2d(m_seed+42,
-					sectorpos_base.X, sectorpos_base.Y)), 0, 15);*/
+			/*s16 tunnel_rou = rangelim(25*(0.5+1.0*noise2d(data->seed+42,
+					data->sectorpos_base.X, data->sectorpos_base.Y)), 0, 15);*/
 
 			tunnel_routepoints = 5;
 		}
@@ -2563,23 +2344,23 @@ MapChunk* ServerMap::generateChunkRaw(v2s16 chunkpos,
 
 		// Allowed route area size in nodes
 		v3s16 ar(
-			sectorpos_base_size*MAP_BLOCKSIZE,
+			data->sectorpos_base_size*MAP_BLOCKSIZE,
 			h_blocks*MAP_BLOCKSIZE,
-			sectorpos_base_size*MAP_BLOCKSIZE
+			data->sectorpos_base_size*MAP_BLOCKSIZE
 		);
 
 		// Area starting point in nodes
 		v3s16 of(
-			sectorpos_base.X*MAP_BLOCKSIZE,
-			y_blocks_min*MAP_BLOCKSIZE,
-			sectorpos_base.Y*MAP_BLOCKSIZE
+			data->sectorpos_base.X*MAP_BLOCKSIZE,
+			data->y_blocks_min*MAP_BLOCKSIZE,
+			data->sectorpos_base.Y*MAP_BLOCKSIZE
 		);
 
 		// Allow a bit more
 		//(this should be more than the maximum radius of the tunnel)
 		//s16 insure = 5; // Didn't work with max_d = 20
 		s16 insure = 10;
-		s16 more = max_spread_amount - max_tunnel_diameter/2 - insure;
+		s16 more = data->max_spread_amount - max_tunnel_diameter/2 - insure;
 		ar += v3s16(1,0,1) * more * 2;
 		of -= v3s16(1,0,1) * more;
 		
@@ -2729,8 +2510,8 @@ MapChunk* ServerMap::generateChunkRaw(v2s16 chunkpos,
 								continue;
 							p += of;
 							
-							//assert(vmanip.m_area.contains(p));
-							if(vmanip.m_area.contains(p) == false)
+							//assert(data->vmanip.m_area.contains(p));
+							if(data->vmanip.m_area.contains(p) == false)
 							{
 								dstream<<"WARNING: "<<__FUNCTION_NAME
 										<<":"<<__LINE__<<": "
@@ -2741,13 +2522,13 @@ MapChunk* ServerMap::generateChunkRaw(v2s16 chunkpos,
 							
 							// Just set it to air, it will be changed to
 							// water afterwards
-							u32 i = vmanip.m_area.index(p);
-							vmanip.m_data[i] = airnode;
+							u32 i = data->vmanip.m_area.index(p);
+							data->vmanip.m_data[i] = airnode;
 
 							if(bruise_surface == false)
 							{
 								// Set tunnel flag
-								vmanip.m_flags[i] |= VMANIP_FLAG_DUNGEON;
+								data->vmanip.m_flags[i] |= VMANIP_FLAG_DUNGEON;
 							}
 						}
 					}
@@ -2773,22 +2554,22 @@ MapChunk* ServerMap::generateChunkRaw(v2s16 chunkpos,
 
 		// Allowed route area size in nodes
 		v3s16 ar(
-			sectorpos_base_size*MAP_BLOCKSIZE,
+			data->sectorpos_base_size*MAP_BLOCKSIZE,
 			h_blocks*MAP_BLOCKSIZE,
-			sectorpos_base_size*MAP_BLOCKSIZE
+			data->sectorpos_base_size*MAP_BLOCKSIZE
 		);
 
 		// Area starting point in nodes
 		v3s16 of(
-			sectorpos_base.X*MAP_BLOCKSIZE,
-			y_blocks_min*MAP_BLOCKSIZE,
-			sectorpos_base.Y*MAP_BLOCKSIZE
+			data->sectorpos_base.X*MAP_BLOCKSIZE,
+			data->y_blocks_min*MAP_BLOCKSIZE,
+			data->sectorpos_base.Y*MAP_BLOCKSIZE
 		);
 
 		// Allow a bit more
 		//(this should be more than the maximum radius of the tunnel)
 		s16 insure = 3;
-		s16 more = max_spread_amount - max_vein_diameter/2 - insure;
+		s16 more = data->max_spread_amount - max_vein_diameter/2 - insure;
 		ar += v3s16(1,0,1) * more * 2;
 		of -= v3s16(1,0,1) * more;
 		
@@ -2874,12 +2655,12 @@ MapChunk* ServerMap::generateChunkRaw(v2s16 chunkpos,
 								continue;
 							p += of;
 							
-							assert(vmanip.m_area.contains(p));
+							assert(data->vmanip.m_area.contains(p));
 							
 							// Just set it to air, it will be changed to
 							// water afterwards
-							u32 i = vmanip.m_area.index(p);
-							MapNode *n = &vmanip.m_data[i];
+							u32 i = data->vmanip.m_area.index(p);
+							MapNode *n = &data->vmanip.m_data[i];
 							if(n->d == CONTENT_STONE)
 								n->param = mineral;
 						}
@@ -2901,19 +2682,19 @@ MapChunk* ServerMap::generateChunkRaw(v2s16 chunkpos,
 		Add mud to the central chunk
 	*/
 	
-	for(s16 x=0; x<sectorpos_base_size*MAP_BLOCKSIZE; x++)
-	for(s16 z=0; z<sectorpos_base_size*MAP_BLOCKSIZE; z++)
+	for(s16 x=0; x<data->sectorpos_base_size*MAP_BLOCKSIZE; x++)
+	for(s16 z=0; z<data->sectorpos_base_size*MAP_BLOCKSIZE; z++)
 	{
 		// Node position in 2d
-		v2s16 p2d = sectorpos_base*MAP_BLOCKSIZE + v2s16(x,z);
+		v2s16 p2d = data->sectorpos_base*MAP_BLOCKSIZE + v2s16(x,z);
 		
 		// Randomize mud amount
 		s16 mud_add_amount = (s16)(2.5 + 2.0 * noise2d_perlin(
 				0.5+(float)p2d.X/200, 0.5+(float)p2d.Y/200,
-				m_seed+1, 3, 0.55));
+				data->seed+1, 3, 0.55));
 
 		// Find ground level
-		s16 surface_y = find_ground_level_clever(vmanip, p2d);
+		s16 surface_y = find_ground_level_clever(data->vmanip, p2d);
 
 		/*
 			If topmost node is grass, change it to mud.
@@ -2921,8 +2702,8 @@ MapChunk* ServerMap::generateChunkRaw(v2s16 chunkpos,
 			chunk and then converted.
 		*/
 		{
-			u32 i = vmanip.m_area.index(v3s16(p2d.X, surface_y, p2d.Y));
-			MapNode *n = &vmanip.m_data[i];
+			u32 i = data->vmanip.m_area.index(v3s16(p2d.X, surface_y, p2d.Y));
+			MapNode *n = &data->vmanip.m_data[i];
 			if(n->d == CONTENT_GRASS)
 				n->d = CONTENT_MUD;
 		}
@@ -2932,19 +2713,19 @@ MapChunk* ServerMap::generateChunkRaw(v2s16 chunkpos,
 		*/
 		{
 			s16 mudcount = 0;
-			v3s16 em = vmanip.m_area.getExtent();
+			v3s16 em = data->vmanip.m_area.getExtent();
 			s16 y_start = surface_y+1;
-			u32 i = vmanip.m_area.index(v3s16(p2d.X, y_start, p2d.Y));
+			u32 i = data->vmanip.m_area.index(v3s16(p2d.X, y_start, p2d.Y));
 			for(s16 y=y_start; y<=y_nodes_max; y++)
 			{
 				if(mudcount >= mud_add_amount)
 					break;
 					
-				MapNode &n = vmanip.m_data[i];
+				MapNode &n = data->vmanip.m_data[i];
 				n.d = CONTENT_MUD;
 				mudcount++;
 
-				vmanip.m_area.add_y(em, i, 1);
+				data->vmanip.m_area.add_y(em, i, 1);
 			}
 		}
 
@@ -2960,8 +2741,8 @@ MapChunk* ServerMap::generateChunkRaw(v2s16 chunkpos,
 	*/
 
 	// Limit area by 1 because mud is flown into neighbors.
-	s16 mudflow_minpos = 0-max_spread_amount+1;
-	s16 mudflow_maxpos = sectorpos_base_size*MAP_BLOCKSIZE+max_spread_amount-2;
+	s16 mudflow_minpos = 0-data->max_spread_amount+1;
+	s16 mudflow_maxpos = data->sectorpos_base_size*MAP_BLOCKSIZE+data->max_spread_amount-2;
 
 	// Iterate a few times
 	for(s16 k=0; k<3; k++)
@@ -2982,10 +2763,10 @@ MapChunk* ServerMap::generateChunkRaw(v2s16 chunkpos,
 		}
 
 		// Node position in 2d
-		v2s16 p2d = sectorpos_base*MAP_BLOCKSIZE + v2s16(x,z);
+		v2s16 p2d = data->sectorpos_base*MAP_BLOCKSIZE + v2s16(x,z);
 		
-		v3s16 em = vmanip.m_area.getExtent();
-		u32 i = vmanip.m_area.index(v3s16(p2d.X, y_nodes_max, p2d.Y));
+		v3s16 em = data->vmanip.m_area.getExtent();
+		u32 i = data->vmanip.m_area.index(v3s16(p2d.X, y_nodes_max, p2d.Y));
 		s16 y=y_nodes_max;
 
 		for(;; y--)
@@ -2994,22 +2775,22 @@ MapChunk* ServerMap::generateChunkRaw(v2s16 chunkpos,
 			// Find mud
 			for(; y>=y_nodes_min; y--)
 			{
-				n = &vmanip.m_data[i];
+				n = &data->vmanip.m_data[i];
 				//if(content_walkable(n->d))
 				//	break;
 				if(n->d == CONTENT_MUD || n->d == CONTENT_GRASS)
 					break;
 					
-				vmanip.m_area.add_y(em, i, -1);
+				data->vmanip.m_area.add_y(em, i, -1);
 			}
 
 			// Stop if out of area
-			//if(vmanip.m_area.contains(i) == false)
+			//if(data->vmanip.m_area.contains(i) == false)
 			if(y < y_nodes_min)
 				break;
 
 			/*// If not mud, do nothing to it
-			MapNode *n = &vmanip.m_data[i];
+			MapNode *n = &data->vmanip.m_data[i];
 			if(n->d != CONTENT_MUD && n->d != CONTENT_GRASS)
 				continue;*/
 
@@ -3018,11 +2799,11 @@ MapChunk* ServerMap::generateChunkRaw(v2s16 chunkpos,
 			*/
 			{
 				u32 i2 = i;
-				vmanip.m_area.add_y(em, i2, -1);
+				data->vmanip.m_area.add_y(em, i2, -1);
 				// Cancel if out of area
-				if(vmanip.m_area.contains(i2) == false)
+				if(data->vmanip.m_area.contains(i2) == false)
 					continue;
-				MapNode *n2 = &vmanip.m_data[i2];
+				MapNode *n2 = &data->vmanip.m_data[i2];
 				if(n2->d != CONTENT_MUD && n2->d != CONTENT_GRASS)
 					continue;
 			}
@@ -3043,9 +2824,9 @@ MapChunk* ServerMap::generateChunkRaw(v2s16 chunkpos,
 			// Theck that upper is air or doesn't exist.
 			// Cancel dropping if upper keeps it in place
 			u32 i3 = i;
-			vmanip.m_area.add_y(em, i3, 1);
-			if(vmanip.m_area.contains(i3) == true
-					&& content_walkable(vmanip.m_data[i3].d) == true)
+			data->vmanip.m_area.add_y(em, i3, 1);
+			if(data->vmanip.m_area.contains(i3) == true
+					&& content_walkable(data->vmanip.m_data[i3].d) == true)
 			{
 				continue;
 			}
@@ -3057,39 +2838,39 @@ MapChunk* ServerMap::generateChunkRaw(v2s16 chunkpos,
 				v3s16 dirp = dirs4[di];
 				u32 i2 = i;
 				// Move to side
-				vmanip.m_area.add_p(em, i2, dirp);
+				data->vmanip.m_area.add_p(em, i2, dirp);
 				// Fail if out of area
-				if(vmanip.m_area.contains(i2) == false)
+				if(data->vmanip.m_area.contains(i2) == false)
 					continue;
 				// Check that side is air
-				MapNode *n2 = &vmanip.m_data[i2];
+				MapNode *n2 = &data->vmanip.m_data[i2];
 				if(content_walkable(n2->d))
 					continue;
 				// Check that under side is air
-				vmanip.m_area.add_y(em, i2, -1);
-				if(vmanip.m_area.contains(i2) == false)
+				data->vmanip.m_area.add_y(em, i2, -1);
+				if(data->vmanip.m_area.contains(i2) == false)
 					continue;
-				n2 = &vmanip.m_data[i2];
+				n2 = &data->vmanip.m_data[i2];
 				if(content_walkable(n2->d))
 					continue;
 				/*// Check that under that is air (need a drop of 2)
-				vmanip.m_area.add_y(em, i2, -1);
-				if(vmanip.m_area.contains(i2) == false)
+				data->vmanip.m_area.add_y(em, i2, -1);
+				if(data->vmanip.m_area.contains(i2) == false)
 					continue;
-				n2 = &vmanip.m_data[i2];
+				n2 = &data->vmanip.m_data[i2];
 				if(content_walkable(n2->d))
 					continue;*/
 				// Loop further down until not air
 				do{
-					vmanip.m_area.add_y(em, i2, -1);
+					data->vmanip.m_area.add_y(em, i2, -1);
 					// Fail if out of area
-					if(vmanip.m_area.contains(i2) == false)
+					if(data->vmanip.m_area.contains(i2) == false)
 						continue;
-					n2 = &vmanip.m_data[i2];
+					n2 = &data->vmanip.m_data[i2];
 				}while(content_walkable(n2->d) == false);
 				// Loop one up so that we're in air
-				vmanip.m_area.add_y(em, i2, 1);
-				n2 = &vmanip.m_data[i2];
+				data->vmanip.m_area.add_y(em, i2, 1);
+				n2 = &data->vmanip.m_data[i2];
 
 				// Move mud to new place
 				*n2 = *n;
@@ -3113,18 +2894,18 @@ MapChunk* ServerMap::generateChunkRaw(v2s16 chunkpos,
 		Add water to the central chunk (and a bit more)
 	*/
 	
-	for(s16 x=0-max_spread_amount;
-			x<sectorpos_base_size*MAP_BLOCKSIZE+max_spread_amount;
+	for(s16 x=0-data->max_spread_amount;
+			x<data->sectorpos_base_size*MAP_BLOCKSIZE+data->max_spread_amount;
 			x++)
-	for(s16 z=0-max_spread_amount;
-			z<sectorpos_base_size*MAP_BLOCKSIZE+max_spread_amount;
+	for(s16 z=0-data->max_spread_amount;
+			z<data->sectorpos_base_size*MAP_BLOCKSIZE+data->max_spread_amount;
 			z++)
 	{
 		// Node position in 2d
-		v2s16 p2d = sectorpos_base*MAP_BLOCKSIZE + v2s16(x,z);
+		v2s16 p2d = data->sectorpos_base*MAP_BLOCKSIZE + v2s16(x,z);
 		
 		// Find ground level
-		//s16 surface_y = find_ground_level(vmanip, p2d);
+		//s16 surface_y = find_ground_level(data->vmanip, p2d);
 
 		/*
 			If ground level is over water level, skip.
@@ -3139,54 +2920,39 @@ MapChunk* ServerMap::generateChunkRaw(v2s16 chunkpos,
 			Add water on ground
 		*/
 		{
-			v3s16 em = vmanip.m_area.getExtent();
+			v3s16 em = data->vmanip.m_area.getExtent();
 			u8 light = LIGHT_MAX;
 			// Start at global water surface level
 			s16 y_start = WATER_LEVEL;
-			u32 i = vmanip.m_area.index(v3s16(p2d.X, y_start, p2d.Y));
-			MapNode *n = &vmanip.m_data[i];
-
-			/*// Add first one to transforming liquid queue, if water
-			if(n->d == CONTENT_WATER || n->d == CONTENT_WATERSOURCE)
-			{
-				v3s16 p = v3s16(p2d.X, y_start, p2d.Y);
-				m_transforming_liquid.push_back(p);
-			}*/
+			u32 i = data->vmanip.m_area.index(v3s16(p2d.X, y_start, p2d.Y));
+			MapNode *n = &data->vmanip.m_data[i];
 
 			for(s16 y=y_start; y>=y_nodes_min; y--)
 			{
-				n = &vmanip.m_data[i];
+				n = &data->vmanip.m_data[i];
 				
 				// Stop when there is no water and no air
 				if(n->d != CONTENT_AIR && n->d != CONTENT_WATERSOURCE
 						&& n->d != CONTENT_WATER)
 				{
-					/*// Add bottom one to transforming liquid queue
-					vmanip.m_area.add_y(em, i, 1);
-					n = &vmanip.m_data[i];
-					if(n->d == CONTENT_WATER || n->d == CONTENT_WATERSOURCE)
-					{
-						v3s16 p = v3s16(p2d.X, y, p2d.Y);
-						m_transforming_liquid.push_back(p);
-					}*/
 
 					break;
 				}
 				
 				// Make water only not in caves
-				if(!(vmanip.m_flags[i]&VMANIP_FLAG_DUNGEON))
+				if(!(data->vmanip.m_flags[i]&VMANIP_FLAG_DUNGEON))
 				{
 					n->d = CONTENT_WATERSOURCE;
 					//n->setLight(LIGHTBANK_DAY, light);
 
 					// Add to transforming liquid queue (in case it'd
 					// start flowing)
-					v3s16 p = v3s16(p2d.X, y, p2d.Y);
-					m_transforming_liquid.push_back(p);
+					/*v3s16 p = v3s16(p2d.X, y, p2d.Y);
+					m_transforming_liquid.push_back(p);*/
 				}
 				
 				// Next one
-				vmanip.m_area.add_y(em, i, -1);
+				data->vmanip.m_area.add_y(em, i, -1);
 				if(light > 0)
 					light--;
 			}
@@ -3211,22 +2977,22 @@ MapChunk* ServerMap::generateChunkRaw(v2s16 chunkpos,
 	//s16 mud_add_amount = myrand_range(2, 4);
 	//s16 mud_add_amount = 0;
 	
-	/*for(s16 x=0; x<sectorpos_base_size*MAP_BLOCKSIZE; x++)
-	for(s16 z=0; z<sectorpos_base_size*MAP_BLOCKSIZE; z++)*/
-	for(s16 x=0-max_spread_amount+1;
-			x<sectorpos_base_size*MAP_BLOCKSIZE+max_spread_amount-1;
+	/*for(s16 x=0; x<data->sectorpos_base_size*MAP_BLOCKSIZE; x++)
+	for(s16 z=0; z<data->sectorpos_base_size*MAP_BLOCKSIZE; z++)*/
+	for(s16 x=0-data->max_spread_amount+1;
+			x<data->sectorpos_base_size*MAP_BLOCKSIZE+data->max_spread_amount-1;
 			x++)
-	for(s16 z=0-max_spread_amount+1;
-			z<sectorpos_base_size*MAP_BLOCKSIZE+max_spread_amount-1;
+	for(s16 z=0-data->max_spread_amount+1;
+			z<data->sectorpos_base_size*MAP_BLOCKSIZE+data->max_spread_amount-1;
 			z++)
 	{
 		// Node position in 2d
-		v2s16 p2d = sectorpos_base*MAP_BLOCKSIZE + v2s16(x,z);
+		v2s16 p2d = data->sectorpos_base*MAP_BLOCKSIZE + v2s16(x,z);
 		
 		// Determine whether to have sand here
 		double sandnoise = noise2d_perlin(
 				0.5+(float)p2d.X/500, 0.5+(float)p2d.Y/500,
-				m_seed+59420, 3, 0.50);
+				data->seed+59420, 3, 0.50);
 
 		bool have_sand = (sandnoise > -0.15);
 
@@ -3234,19 +3000,19 @@ MapChunk* ServerMap::generateChunkRaw(v2s16 chunkpos,
 			continue;
 
 		// Find ground level
-		s16 surface_y = find_ground_level_clever(vmanip, p2d);
+		s16 surface_y = find_ground_level_clever(data->vmanip, p2d);
 		
 		if(surface_y > WATER_LEVEL + 2)
 			continue;
 
 		{
-			v3s16 em = vmanip.m_area.getExtent();
+			v3s16 em = data->vmanip.m_area.getExtent();
 			s16 y_start = surface_y;
-			u32 i = vmanip.m_area.index(v3s16(p2d.X, y_start, p2d.Y));
+			u32 i = data->vmanip.m_area.index(v3s16(p2d.X, y_start, p2d.Y));
 			u32 not_sand_counter = 0;
 			for(s16 y=y_start; y>=y_nodes_min; y--)
 			{
-				MapNode *n = &vmanip.m_data[i];
+				MapNode *n = &data->vmanip.m_data[i];
 				if(n->d == CONTENT_MUD || n->d == CONTENT_GRASS)
 				{
 					n->d = CONTENT_SAND;
@@ -3258,7 +3024,7 @@ MapChunk* ServerMap::generateChunkRaw(v2s16 chunkpos,
 						break;
 				}
 
-				vmanip.m_area.add_y(em, i, -1);
+				data->vmanip.m_area.add_y(em, i, -1);
 			}
 		}
 
@@ -3275,34 +3041,34 @@ MapChunk* ServerMap::generateChunkRaw(v2s16 chunkpos,
 	{
 		// Divide area into parts
 		s16 div = 8;
-		s16 sidelen = sectorpos_base_size*MAP_BLOCKSIZE / div;
+		s16 sidelen = data->sectorpos_base_size*MAP_BLOCKSIZE / div;
 		double area = sidelen * sidelen;
 		for(s16 x0=0; x0<div; x0++)
 		for(s16 z0=0; z0<div; z0++)
 		{
 			// Center position of part of division
 			v2s16 p2d_center(
-				sectorpos_base.X*MAP_BLOCKSIZE + sidelen/2 + sidelen*x0,
-				sectorpos_base.Y*MAP_BLOCKSIZE + sidelen/2 + sidelen*z0
+				data->sectorpos_base.X*MAP_BLOCKSIZE + sidelen/2 + sidelen*x0,
+				data->sectorpos_base.Y*MAP_BLOCKSIZE + sidelen/2 + sidelen*z0
 			);
 			// Minimum edge of part of division
 			v2s16 p2d_min(
-				sectorpos_base.X*MAP_BLOCKSIZE + sidelen*x0,
-				sectorpos_base.Y*MAP_BLOCKSIZE + sidelen*z0
+				data->sectorpos_base.X*MAP_BLOCKSIZE + sidelen*x0,
+				data->sectorpos_base.Y*MAP_BLOCKSIZE + sidelen*z0
 			);
 			// Maximum edge of part of division
 			v2s16 p2d_max(
-				sectorpos_base.X*MAP_BLOCKSIZE + sidelen + sidelen*x0 - 1,
-				sectorpos_base.Y*MAP_BLOCKSIZE + sidelen + sidelen*z0 - 1
+				data->sectorpos_base.X*MAP_BLOCKSIZE + sidelen + sidelen*x0 - 1,
+				data->sectorpos_base.Y*MAP_BLOCKSIZE + sidelen + sidelen*z0 - 1
 			);
 			// Amount of trees
-			u32 tree_count = area * tree_amount_2d(m_seed, p2d_center);
+			u32 tree_count = area * tree_amount_2d(data->seed, p2d_center);
 			// Put trees in random places on part of division
 			for(u32 i=0; i<tree_count; i++)
 			{
 				s16 x = myrand_range(p2d_min.X, p2d_max.X);
 				s16 z = myrand_range(p2d_min.Y, p2d_max.Y);
-				s16 y = find_ground_level(vmanip, v2s16(x,z));
+				s16 y = find_ground_level(data->vmanip, v2s16(x,z));
 				// Don't make a tree under water level
 				if(y < WATER_LEVEL)
 					continue;
@@ -3314,31 +3080,31 @@ MapChunk* ServerMap::generateChunkRaw(v2s16 chunkpos,
 					Trees grow only on mud and grass
 				*/
 				{
-					u32 i = vmanip.m_area.index(v3s16(p));
-					MapNode *n = &vmanip.m_data[i];
+					u32 i = data->vmanip.m_area.index(v3s16(p));
+					MapNode *n = &data->vmanip.m_data[i];
 					if(n->d != CONTENT_MUD && n->d != CONTENT_GRASS)
 						continue;
 				}
 				p.Y++;
 				// Make a tree
-				make_tree(vmanip, p);
+				make_tree(data->vmanip, p);
 			}
 		}
 		/*u32 tree_max = relative_area / 60;
 		//u32 count = myrand_range(0, tree_max);
 		for(u32 i=0; i<count; i++)
 		{
-			s16 x = myrand_range(0, sectorpos_base_size*MAP_BLOCKSIZE-1);
-			s16 z = myrand_range(0, sectorpos_base_size*MAP_BLOCKSIZE-1);
-			x += sectorpos_base.X*MAP_BLOCKSIZE;
-			z += sectorpos_base.Y*MAP_BLOCKSIZE;
-			s16 y = find_ground_level(vmanip, v2s16(x,z));
+			s16 x = myrand_range(0, data->sectorpos_base_size*MAP_BLOCKSIZE-1);
+			s16 z = myrand_range(0, data->sectorpos_base_size*MAP_BLOCKSIZE-1);
+			x += data->sectorpos_base.X*MAP_BLOCKSIZE;
+			z += data->sectorpos_base.Y*MAP_BLOCKSIZE;
+			s16 y = find_ground_level(data->vmanip, v2s16(x,z));
 			// Don't make a tree under water level
 			if(y < WATER_LEVEL)
 				continue;
 			v3s16 p(x,y+1,z);
 			// Make a tree
-			make_tree(vmanip, p);
+			make_tree(data->vmanip, p);
 		}*/
 	}
 
@@ -3352,17 +3118,17 @@ MapChunk* ServerMap::generateChunkRaw(v2s16 chunkpos,
 		Grow grass
 	*/
 
-	/*for(s16 x=0-4; x<sectorpos_base_size*MAP_BLOCKSIZE+4; x++)
-	for(s16 z=0-4; z<sectorpos_base_size*MAP_BLOCKSIZE+4; z++)*/
-	for(s16 x=0-max_spread_amount;
-			x<sectorpos_base_size*MAP_BLOCKSIZE+max_spread_amount;
+	/*for(s16 x=0-4; x<data->sectorpos_base_size*MAP_BLOCKSIZE+4; x++)
+	for(s16 z=0-4; z<data->sectorpos_base_size*MAP_BLOCKSIZE+4; z++)*/
+	for(s16 x=0-data->max_spread_amount;
+			x<data->sectorpos_base_size*MAP_BLOCKSIZE+data->max_spread_amount;
 			x++)
-	for(s16 z=0-max_spread_amount;
-			z<sectorpos_base_size*MAP_BLOCKSIZE+max_spread_amount;
+	for(s16 z=0-data->max_spread_amount;
+			z<data->sectorpos_base_size*MAP_BLOCKSIZE+data->max_spread_amount;
 			z++)
 	{
 		// Node position in 2d
-		v2s16 p2d = sectorpos_base*MAP_BLOCKSIZE + v2s16(x,z);
+		v2s16 p2d = data->sectorpos_base*MAP_BLOCKSIZE + v2s16(x,z);
 		
 		/*
 			Find the lowest surface to which enough light ends up
@@ -3372,17 +3138,17 @@ MapChunk* ServerMap::generateChunkRaw(v2s16 chunkpos,
 		*/
 		s16 surface_y = 0;
 		{
-			v3s16 em = vmanip.m_area.getExtent();
-			u32 i = vmanip.m_area.index(v3s16(p2d.X, y_nodes_max, p2d.Y));
+			v3s16 em = data->vmanip.m_area.getExtent();
+			u32 i = data->vmanip.m_area.index(v3s16(p2d.X, y_nodes_max, p2d.Y));
 			s16 y;
 			// Go to ground level
 			for(y=y_nodes_max; y>=y_nodes_min; y--)
 			{
-				MapNode &n = vmanip.m_data[i];
+				MapNode &n = data->vmanip.m_data[i];
 				if(n.d != CONTENT_AIR
 						&& n.d != CONTENT_LEAVES)
 					break;
-				vmanip.m_area.add_y(em, i, -1);
+				data->vmanip.m_area.add_y(em, i, -1);
 			}
 			if(y >= y_nodes_min)
 				surface_y = y;
@@ -3390,8 +3156,8 @@ MapChunk* ServerMap::generateChunkRaw(v2s16 chunkpos,
 				surface_y = y_nodes_min;
 		}
 		
-		u32 i = vmanip.m_area.index(p2d.X, surface_y, p2d.Y);
-		MapNode *n = &vmanip.m_data[i];
+		u32 i = data->vmanip.m_area.index(p2d.X, surface_y, p2d.Y);
+		MapNode *n = &data->vmanip.m_data[i];
 		if(n->d == CONTENT_MUD)
 			n->d = CONTENT_GRASS;
 	}
@@ -3442,15 +3208,15 @@ MapChunk* ServerMap::generateChunkRaw(v2s16 chunkpos,
 		}
 		
 		// Node position in 2d
-		v2s16 p2d = sectorpos_base*MAP_BLOCKSIZE + v2s16(x,z);
+		v2s16 p2d = data->sectorpos_base*MAP_BLOCKSIZE + v2s16(x,z);
 
 		{
-			v3s16 em = vmanip.m_area.getExtent();
+			v3s16 em = data->vmanip.m_area.getExtent();
 			s16 y_start = y_nodes_max;
-			u32 i = vmanip.m_area.index(v3s16(p2d.X, y_start, p2d.Y));
+			u32 i = data->vmanip.m_area.index(v3s16(p2d.X, y_start, p2d.Y));
 			for(s16 y=y_start; y>=y_nodes_min; y--)
 			{
-				MapNode *n = &vmanip.m_data[i];
+				MapNode *n = &data->vmanip.m_data[i];
 				if(n->getLight(LIGHTBANK_DAY) != 0)
 				{
 					light_sources.insert(v3s16(p2d.X, y, p2d.Y), true);
@@ -3497,17 +3263,17 @@ MapChunk* ServerMap::generateChunkRaw(v2s16 chunkpos,
 		}
 		
 		// Node position in 2d
-		v2s16 p2d = sectorpos_base*MAP_BLOCKSIZE + v2s16(x,z);
+		v2s16 p2d = data->sectorpos_base*MAP_BLOCKSIZE + v2s16(x,z);
 		
 		// Loop from top to down
 		{
 			u8 light = LIGHT_SUN;
-			v3s16 em = vmanip.m_area.getExtent();
+			v3s16 em = data->vmanip.m_area.getExtent();
 			s16 y_start = y_nodes_max;
-			u32 i = vmanip.m_area.index(v3s16(p2d.X, y_start, p2d.Y));
+			u32 i = data->vmanip.m_area.index(v3s16(p2d.X, y_start, p2d.Y));
 			for(s16 y=y_start; y>=y_nodes_min; y--)
 			{
-				MapNode *n = &vmanip.m_data[i];
+				MapNode *n = &data->vmanip.m_data[i];
 				if(light_propagates_content(n->d) == false)
 				{
 					light = 0;
@@ -3529,19 +3295,19 @@ MapChunk* ServerMap::generateChunkRaw(v2s16 chunkpos,
 				}
 				
 				// Increment index by y
-				vmanip.m_area.add_y(em, i, -1);
+				data->vmanip.m_area.add_y(em, i, -1);
 			}
 		}
 	}
 #endif
 
-	/*for(s16 x=0; x<sectorpos_base_size*MAP_BLOCKSIZE; x++)
-	for(s16 z=0; z<sectorpos_base_size*MAP_BLOCKSIZE; z++)*/
-	/*for(s16 x=0-max_spread_amount+1;
-			x<sectorpos_base_size*MAP_BLOCKSIZE+max_spread_amount-1;
+	/*for(s16 x=0; x<data->sectorpos_base_size*MAP_BLOCKSIZE; x++)
+	for(s16 z=0; z<data->sectorpos_base_size*MAP_BLOCKSIZE; z++)*/
+	/*for(s16 x=0-data->max_spread_amount+1;
+			x<data->sectorpos_base_size*MAP_BLOCKSIZE+data->max_spread_amount-1;
 			x++)
-	for(s16 z=0-max_spread_amount+1;
-			z<sectorpos_base_size*MAP_BLOCKSIZE+max_spread_amount-1;
+	for(s16 z=0-data->max_spread_amount+1;
+			z<data->sectorpos_base_size*MAP_BLOCKSIZE+data->max_spread_amount-1;
 			z++)*/
 #if 1
 	/*
@@ -3556,7 +3322,7 @@ MapChunk* ServerMap::generateChunkRaw(v2s16 chunkpos,
 			z++)
 	{
 		// Node position in 2d
-		v2s16 p2d = sectorpos_base*MAP_BLOCKSIZE + v2s16(x,z);
+		v2s16 p2d = data->sectorpos_base*MAP_BLOCKSIZE + v2s16(x,z);
 		
 		/*
 			Apply initial sunlight
@@ -3564,12 +3330,12 @@ MapChunk* ServerMap::generateChunkRaw(v2s16 chunkpos,
 		{
 			u8 light = LIGHT_SUN;
 			bool add_to_sources = false;
-			v3s16 em = vmanip.m_area.getExtent();
+			v3s16 em = data->vmanip.m_area.getExtent();
 			s16 y_start = y_nodes_max;
-			u32 i = vmanip.m_area.index(v3s16(p2d.X, y_start, p2d.Y));
+			u32 i = data->vmanip.m_area.index(v3s16(p2d.X, y_start, p2d.Y));
 			for(s16 y=y_start; y>=y_nodes_min; y--)
 			{
-				MapNode *n = &vmanip.m_data[i];
+				MapNode *n = &data->vmanip.m_data[i];
 
 				if(light_propagates_content(n->d) == false)
 				{
@@ -3599,8 +3365,8 @@ MapChunk* ServerMap::generateChunkRaw(v2s16 chunkpos,
 					{
 						v3s16 dirp = dirs4[di];
 						u32 i2 = i;
-						vmanip.m_area.add_p(em, i2, dirp);
-						MapNode *n2 = &vmanip.m_data[i2];
+						data->vmanip.m_area.add_p(em, i2, dirp);
+						MapNode *n2 = &data->vmanip.m_data[i2];
 						if(
 							n2->d != CONTENT_AIR
 							&& n2->d != CONTENT_WATERSOURCE
@@ -3623,58 +3389,7 @@ MapChunk* ServerMap::generateChunkRaw(v2s16 chunkpos,
 				}
 				
 				// Increment index by y
-				vmanip.m_area.add_y(em, i, -1);
-			}
-		}
-	}
-#endif
-
-#if 0
-	for(s16 x=lighting_min_d+1;
-			x<=lighting_max_d-1;
-			x++)
-	for(s16 z=lighting_min_d+1;
-			z<=lighting_max_d-1;
-			z++)
-	{
-		// Node position in 2d
-		v2s16 p2d = sectorpos_base*MAP_BLOCKSIZE + v2s16(x,z);
-		
-		/*
-			Apply initial sunlight
-		*/
-		{
-			u8 light = LIGHT_SUN;
-			v3s16 em = vmanip.m_area.getExtent();
-			s16 y_start = y_nodes_max;
-			u32 i = vmanip.m_area.index(v3s16(p2d.X, y_start, p2d.Y));
-			for(s16 y=y_start; y>=y_nodes_min; y--)
-			{
-				MapNode *n = &vmanip.m_data[i];
-
-				if(light_propagates_content(n->d) == false)
-				{
-					light = 0;
-				}
-				else if(light != LIGHT_SUN
-					|| sunlight_propagates_content(n->d) == false)
-				{
-					if(light > 0)
-						light--;
-				}
-				
-				n->setLight(LIGHTBANK_DAY, light);
-				n->setLight(LIGHTBANK_NIGHT, 0);
-				
-				// This doesn't take much time
-				if(light != 0)
-				{
-					// Insert light source
-					light_sources.insert(v3s16(p2d.X, y, p2d.Y), true);
-				}
-				
-				// Increment index by y
-				vmanip.m_area.add_y(em, i, -1);
+				data->vmanip.m_area.add_y(em, i, -1);
 			}
 		}
 	}
@@ -3684,8 +3399,8 @@ MapChunk* ServerMap::generateChunkRaw(v2s16 chunkpos,
 
 	// Spread light around
 	{
-		TimeTaker timer("generateChunkRaw() spreadLight");
-		vmanip.spreadLight(LIGHTBANK_DAY, light_sources);
+		TimeTaker timer("makeChunk() spreadLight");
+		data->vmanip.spreadLight(LIGHTBANK_DAY, light_sources);
 	}
 	
 	/*
@@ -3693,6 +3408,141 @@ MapChunk* ServerMap::generateChunkRaw(v2s16 chunkpos,
 	*/
 
 	timer_generate.stop();
+}
+
+//###################################################################
+//###################################################################
+//###################################################################
+//###################################################################
+//###################################################################
+//###################################################################
+//###################################################################
+//###################################################################
+//###################################################################
+//###################################################################
+//###################################################################
+//###################################################################
+//###################################################################
+//###################################################################
+//###################################################################
+
+MapChunk* ServerMap::generateChunkRaw(v2s16 chunkpos,
+		core::map<v3s16, MapBlock*> &changed_blocks,
+		bool force)
+{
+	DSTACK(__FUNCTION_NAME);
+
+	/*
+		Don't generate if already fully generated
+	*/
+	if(force == false)
+	{
+		MapChunk *chunk = getChunk(chunkpos);
+		if(chunk != NULL && chunk->getGenLevel() == GENERATED_FULLY)
+		{
+			dstream<<"generateChunkRaw(): Chunk "
+					<<"("<<chunkpos.X<<","<<chunkpos.Y<<")"
+					<<" already generated"<<std::endl;
+			return chunk;
+		}
+	}
+
+	dstream<<"generateChunkRaw(): Generating chunk "
+			<<"("<<chunkpos.X<<","<<chunkpos.Y<<")"
+			<<std::endl;
+	
+	TimeTaker timer("generateChunkRaw()");
+	
+	// The distance how far into the neighbors the generator is allowed to go.
+	s16 max_spread_amount_sectors = 2;
+	assert(max_spread_amount_sectors <= m_chunksize);
+	s16 max_spread_amount = max_spread_amount_sectors * MAP_BLOCKSIZE;
+
+	s16 y_blocks_min = -4;
+	s16 y_blocks_max = 3;
+
+	v2s16 sectorpos_base = chunk_to_sector(chunkpos);
+	s16 sectorpos_base_size = m_chunksize;
+
+	v2s16 sectorpos_bigbase =
+			sectorpos_base - v2s16(1,1) * max_spread_amount_sectors;
+	s16 sectorpos_bigbase_size =
+			sectorpos_base_size + 2 * max_spread_amount_sectors;
+			
+	ChunkMakeData data;
+	data.seed = m_seed;
+	data.y_blocks_min = y_blocks_min;
+	data.y_blocks_max = y_blocks_max;
+	data.sectorpos_base = sectorpos_base;
+	data.sectorpos_base_size = sectorpos_base_size;
+	data.sectorpos_bigbase = sectorpos_bigbase;
+	data.sectorpos_bigbase_size = sectorpos_bigbase_size;
+	data.max_spread_amount = max_spread_amount;
+
+	/*
+		Create the whole area of this and the neighboring chunks
+	*/
+	{
+		TimeTaker timer("generateChunkRaw() create area");
+		
+		for(s16 x=0; x<sectorpos_bigbase_size; x++)
+		for(s16 z=0; z<sectorpos_bigbase_size; z++)
+		{
+			v2s16 sectorpos = sectorpos_bigbase + v2s16(x,z);
+			ServerMapSector *sector = createSector(sectorpos);
+			assert(sector);
+
+			for(s16 y=y_blocks_min; y<=y_blocks_max; y++)
+			{
+				v3s16 blockpos(sectorpos.X, y, sectorpos.Y);
+				MapBlock *block = createBlock(blockpos);
+
+				// Lighting won't be calculated
+				//block->setLightingExpired(true);
+				// Lighting will be calculated
+				block->setLightingExpired(false);
+
+				/*
+					Block gets sunlight if this is true.
+
+					This should be set to true when the top side of a block
+					is completely exposed to the sky.
+
+					Actually this doesn't matter now because the
+					initial lighting is done here.
+				*/
+				block->setIsUnderground(y != y_blocks_max);
+			}
+		}
+	}
+	
+	/*
+		Now we have a big empty area.
+
+		Make a ManualMapVoxelManipulator that contains this and the
+		neighboring chunks
+	*/
+	
+	v3s16 bigarea_blocks_min(
+		sectorpos_bigbase.X,
+		y_blocks_min,
+		sectorpos_bigbase.Y
+	);
+	v3s16 bigarea_blocks_max(
+		sectorpos_bigbase.X + sectorpos_bigbase_size - 1,
+		y_blocks_max,
+		sectorpos_bigbase.Y + sectorpos_bigbase_size - 1
+	);
+	
+	data.vmanip.setMap(this);
+	// Add the area
+	{
+		TimeTaker timer("generateChunkRaw() initialEmerge");
+		data.vmanip.initialEmerge(bigarea_blocks_min, bigarea_blocks_max);
+	}
+	
+	// Generate stuff
+	makeChunk(&data);
 
 	/*
 		Blit generated stuff to map
@@ -3700,7 +3550,7 @@ MapChunk* ServerMap::generateChunkRaw(v2s16 chunkpos,
 	{
 		// 70ms @cs=8
 		//TimeTaker timer("generateChunkRaw() blitBackAll");
-		vmanip.blitBackAll(&changed_blocks);
+		data.vmanip.blitBackAll(&changed_blocks);
 	}
 
 	/*

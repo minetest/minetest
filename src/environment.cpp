@@ -528,8 +528,8 @@ void ServerEnvironment::step(float dtime)
 					i = block->m_static_objects.m_stored.begin();
 					i != block->m_static_objects.m_stored.end(); i++)
 			{
-				dstream<<"INFO: Server: Creating an active object from "
-						<<"static data"<<std::endl;
+				/*dstream<<"INFO: Server: Creating an active object from "
+						<<"static data"<<std::endl;*/
 				StaticObject &s_obj = *i;
 				// Create an active object from the data
 				ServerActiveObject *obj = ServerActiveObject::create
@@ -643,9 +643,9 @@ void ServerEnvironment::step(float dtime)
 				obj->m_static_exists = false;
 				continue;
 			}
+			/*dstream<<"INFO: Server: Stored static data. Deleting object."
+					<<std::endl;*/
 			// Delete active object
-			dstream<<"INFO: Server: Stored static data. Deleting object."
-					<<std::endl;
 			delete obj;
 			// Id to be removed from m_active_objects
 			objects_to_remove.push_back(id);
@@ -767,8 +767,8 @@ u16 ServerEnvironment::addActiveObject(ServerActiveObject *object)
 		delete object;
 		return 0;
 	}
-	dstream<<"INGO: ServerEnvironment::addActiveObject(): "
-			<<"added (id="<<object->getId()<<")"<<std::endl;
+	/*dstream<<"INGO: ServerEnvironment::addActiveObject(): "
+			<<"added (id="<<object->getId()<<")"<<std::endl;*/
 			
 	m_active_objects.insert(object->getId(), object);
 

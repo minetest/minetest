@@ -731,6 +731,9 @@ class ManualMapVoxelManipulator : public MapVoxelManipulator
 public:
 	ManualMapVoxelManipulator(Map *map);
 	virtual ~ManualMapVoxelManipulator();
+
+	void setMap(Map *map)
+	{m_map = map;}
 	
 	virtual void emerge(VoxelArea a, s32 caller_id=-1);
 
