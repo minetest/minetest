@@ -72,7 +72,7 @@ void * EmergeThread::Thread()
 
 	DSTACK(__FUNCTION_NAME);
 
-	bool debug=false;
+	//bool debug=false;
 	
 	BEGIN_DEBUG_EXCEPTION_HANDLER
 
@@ -91,7 +91,19 @@ void * EmergeThread::Thread()
 		SharedPtr<QueuedBlockEmerge> q(qptr);
 
 		v3s16 &p = q->pos;
-		
+		v2s16 p2d(p.X,p.Z);
+
+		/*
+			Do not generate over-limit
+		*/
+		if(p.X < -MAP_GENERATION_LIMIT / MAP_BLOCKSIZE
+		|| p.X > MAP_GENERATION_LIMIT / MAP_BLOCKSIZE
+		|| p.Y < -MAP_GENERATION_LIMIT / MAP_BLOCKSIZE
+		|| p.Y > MAP_GENERATION_LIMIT / MAP_BLOCKSIZE
+		|| p.Z < -MAP_GENERATION_LIMIT / MAP_BLOCKSIZE
+		|| p.Z > MAP_GENERATION_LIMIT / MAP_BLOCKSIZE)
+			continue;
+			
 		//derr_server<<"EmergeThread::Thread(): running"<<std::endl;
 
 		//TimeTaker timer("block emerge");
@@ -144,78 +156,67 @@ void * EmergeThread::Thread()
 		if(optional)
 			only_from_disk = true;
 
-		/*
-			TODO: Map loading logic here, so that the chunk can be
-			generated asynchronously:
+		v2s16 chunkpos = map.sector_to_chunk(p2d);
 
-			- Check limits
-			With the environment locked:
-			- Check if block already is loaded and not dummy
-				- If so, we're ready
-			- 
-		*/
-		
-		{//envlock
-
-		//TimeTaker envlockwaittimer("block emerge envlock wait time");
-		
-		// 0-50ms
-		JMutexAutoLock envlock(m_server->m_env_mutex);
-
-		//envlockwaittimer.stop();
-
-		//TimeTaker timer("block emerge (while env locked)");
+		bool generate_chunk = false;
+		if(only_from_disk == false)
+		{
+			JMutexAutoLock envlock(m_server->m_env_mutex);
+			if(map.chunkNonVolatile(chunkpos) == false)
+				generate_chunk = true;
+		}
+		if(generate_chunk)
+		{
+			ChunkMakeData data;
 			
-		try{
-			
-			// First check if the block already exists
-			//block = map.getBlockNoCreate(p);
-
-			if(block == NULL)
 			{
-				//dstream<<"Calling emergeBlock"<<std::endl;
-				block = map.emergeBlock(
-						p,
-						only_from_disk,
-						changed_blocks,
-						lighting_invalidated_blocks);
+				JMutexAutoLock envlock(m_server->m_env_mutex);
+				map.initChunkMake(data, chunkpos);
 			}
 
-			// If it is a dummy, block was not found on disk
-			if(block->isDummy())
-			{
-				//dstream<<"EmergeThread: Got a dummy block"<<std::endl;
-				got_block = false;
+			makeChunk(&data);
 
-				if(only_from_disk == false)
+			{
+				JMutexAutoLock envlock(m_server->m_env_mutex);
+				map.finishChunkMake(data, changed_blocks);
+			}
+		}
+	
+		/*
+			Fetch block from map or generate a single block
+		*/
+		{
+			JMutexAutoLock envlock(m_server->m_env_mutex);
+			
+			// Load sector if it isn't loaded
+			if(map.getSectorNoGenerateNoEx(p2d) == NULL)
+				map.loadSectorFull(p2d);
+
+			block = map.getBlockNoCreateNoEx(p);
+			if(!block || block->isDummy())
+			{
+				if(only_from_disk)
 				{
-					dstream<<"EmergeThread: wanted to generate a block but got a dummy"<<std::endl;
-					assert(0);
+					got_block = false;
+				}
+				else
+				{
+					ServerMapSector *sector =
+							(ServerMapSector*)map.getSectorNoGenerateNoEx(p2d);
+					block = map.generateBlock(p, block, sector, changed_blocks,
+							lighting_invalidated_blocks);
 				}
 			}
+
+			// TODO: Some additional checking and lighting updating,
+			// see emergeBlock
 		}
-		catch(InvalidPositionException &e)
-		{
-			// Block not found.
-			// This happens when position is over limit.
-			got_block = false;
-		}
+
+		{//envlock
+		JMutexAutoLock envlock(m_server->m_env_mutex);
 		
 		if(got_block)
 		{
-			if(debug && changed_blocks.size() > 0)
-			{
-				dout_server<<DTIME<<"Got changed_blocks: ";
-				for(core::map<v3s16, MapBlock*>::Iterator i = changed_blocks.getIterator();
-						i.atEnd() == false; i++)
-				{
-					MapBlock *block = i.getNode()->getValue();
-					v3s16 p = block->getPos();
-					dout_server<<"("<<p.X<<","<<p.Y<<","<<p.Z<<") ";
-				}
-				dout_server<<std::endl;
-			}
-
 			/*
 				Collect a list of blocks that have been modified in
 				addition to the fetched one.

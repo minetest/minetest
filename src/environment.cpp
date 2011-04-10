@@ -429,7 +429,7 @@ void ServerEnvironment::step(float dtime)
 
 	bool send_recommended = false;
 	m_send_recommended_timer += dtime;
-	if(m_send_recommended_timer > 0.1)
+	if(m_send_recommended_timer > 0.15)
 	{
 		m_send_recommended_timer = 0;
 		send_recommended = true;

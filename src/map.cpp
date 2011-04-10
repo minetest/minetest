@@ -2170,23 +2170,6 @@ void addRandomObjects(MapBlock *block)
 	This is the main map generation method
 */
 
-struct ChunkMakeData
-{
-	ManualMapVoxelManipulator vmanip;
-	u64 seed;
-	s16 y_blocks_min;
-	s16 y_blocks_max;
-	v2s16 sectorpos_base;
-	s16 sectorpos_base_size;
-	v2s16 sectorpos_bigbase;
-	s16 sectorpos_bigbase_size;
-	s16 max_spread_amount;
-
-	ChunkMakeData():
-		vmanip(NULL)
-	{}
-};
-
 void makeChunk(ChunkMakeData *data)
 {
 	s16 y_nodes_min = data->y_blocks_min * MAP_BLOCKSIZE;
@@ -2235,11 +2218,11 @@ void makeChunk(ChunkMakeData *data)
 		/*
 			Skip of already generated
 		*/
-		{
+		/*{
 			v3s16 p(p2d.X, y_nodes_min, p2d.Y);
 			if(data->vmanip.m_data[data->vmanip.m_area.index(p)].d != CONTENT_AIR)
 				continue;
-		}
+		}*/
 
 		// Ground height at this point
 		float surface_y_f = 0.0;
@@ -2270,6 +2253,13 @@ void makeChunk(ChunkMakeData *data)
 			u32 i = data->vmanip.m_area.index(v3s16(p2d.X, y_nodes_min, p2d.Y));
 			for(s16 y=y_nodes_min; y<surface_y && y<=y_nodes_max; y++)
 			{
+				// Skip if already generated.
+				// This is done here because there might be a cave at
+				// any point in ground, which could look like it
+				// wasn't generated.
+				if(data->vmanip.m_data[i].d != CONTENT_AIR)
+					break;
+
 				data->vmanip.m_data[i].d = CONTENT_STONE;
 
 				data->vmanip.m_area.add_y(em, i, 1);
@@ -3426,33 +3416,8 @@ void makeChunk(ChunkMakeData *data)
 //###################################################################
 //###################################################################
 
-MapChunk* ServerMap::generateChunkRaw(v2s16 chunkpos,
-		core::map<v3s16, MapBlock*> &changed_blocks,
-		bool force)
+void ServerMap::initChunkMake(ChunkMakeData &data, v2s16 chunkpos)
 {
-	DSTACK(__FUNCTION_NAME);
-
-	/*
-		Don't generate if already fully generated
-	*/
-	if(force == false)
-	{
-		MapChunk *chunk = getChunk(chunkpos);
-		if(chunk != NULL && chunk->getGenLevel() == GENERATED_FULLY)
-		{
-			dstream<<"generateChunkRaw(): Chunk "
-					<<"("<<chunkpos.X<<","<<chunkpos.Y<<")"
-					<<" already generated"<<std::endl;
-			return chunk;
-		}
-	}
-
-	dstream<<"generateChunkRaw(): Generating chunk "
-			<<"("<<chunkpos.X<<","<<chunkpos.Y<<")"
-			<<std::endl;
-	
-	TimeTaker timer("generateChunkRaw()");
-	
 	// The distance how far into the neighbors the generator is allowed to go.
 	s16 max_spread_amount_sectors = 2;
 	assert(max_spread_amount_sectors <= m_chunksize);
@@ -3469,8 +3434,8 @@ MapChunk* ServerMap::generateChunkRaw(v2s16 chunkpos,
 	s16 sectorpos_bigbase_size =
 			sectorpos_base_size + 2 * max_spread_amount_sectors;
 			
-	ChunkMakeData data;
 	data.seed = m_seed;
+	data.chunkpos = chunkpos;
 	data.y_blocks_min = y_blocks_min;
 	data.y_blocks_max = y_blocks_max;
 	data.sectorpos_base = sectorpos_base;
@@ -3541,9 +3506,11 @@ MapChunk* ServerMap::generateChunkRaw(v2s16 chunkpos,
 		data.vmanip.initialEmerge(bigarea_blocks_min, bigarea_blocks_max);
 	}
 	
-	// Generate stuff
-	makeChunk(&data);
+}
 
+MapChunk* ServerMap::finishChunkMake(ChunkMakeData &data,
+		core::map<v3s16, MapBlock*> &changed_blocks)
+{
 	/*
 		Blit generated stuff to map
 	*/
@@ -3569,14 +3536,14 @@ MapChunk* ServerMap::generateChunkRaw(v2s16 chunkpos,
 		Add random objects to blocks
 	*/
 	{
-		for(s16 x=0; x<sectorpos_base_size; x++)
-		for(s16 z=0; z<sectorpos_base_size; z++)
+		for(s16 x=0; x<data.sectorpos_base_size; x++)
+		for(s16 z=0; z<data.sectorpos_base_size; z++)
 		{
-			v2s16 sectorpos = sectorpos_base + v2s16(x,z);
+			v2s16 sectorpos = data.sectorpos_base + v2s16(x,z);
 			ServerMapSector *sector = createSector(sectorpos);
 			assert(sector);
 
-			for(s16 y=y_blocks_min; y<=y_blocks_max; y++)
+			for(s16 y=data.y_blocks_min; y<=data.y_blocks_max; y++)
 			{
 				v3s16 blockpos(sectorpos.X, y, sectorpos.Y);
 				MapBlock *block = createBlock(blockpos);
@@ -3592,7 +3559,7 @@ MapChunk* ServerMap::generateChunkRaw(v2s16 chunkpos,
 	for(s16 x=-1; x<=1; x++)
 	for(s16 y=-1; y<=1; y++)
 	{
-		v2s16 chunkpos0 = chunkpos + v2s16(x,y);
+		v2s16 chunkpos0 = data.chunkpos + v2s16(x,y);
 		// Add chunk meta information
 		MapChunk *chunk = getChunk(chunkpos0);
 		if(chunk == NULL)
@@ -3608,7 +3575,7 @@ MapChunk* ServerMap::generateChunkRaw(v2s16 chunkpos,
 	/*
 		Set central chunk non-volatile
 	*/
-	MapChunk *chunk = getChunk(chunkpos);
+	MapChunk *chunk = getChunk(data.chunkpos);
 	assert(chunk);
 	// Set non-volatile
 	//chunk->setIsVolatile(false);
@@ -3618,6 +3585,48 @@ MapChunk* ServerMap::generateChunkRaw(v2s16 chunkpos,
 		Save changed parts of map
 	*/
 	save(true);
+	
+	return chunk;
+}
+
+// NOTE: Deprecated
+MapChunk* ServerMap::generateChunkRaw(v2s16 chunkpos,
+		core::map<v3s16, MapBlock*> &changed_blocks,
+		bool force)
+{
+	DSTACK(__FUNCTION_NAME);
+
+	/*
+		Don't generate if already fully generated
+	*/
+	if(force == false)
+	{
+		MapChunk *chunk = getChunk(chunkpos);
+		if(chunk != NULL && chunk->getGenLevel() == GENERATED_FULLY)
+		{
+			dstream<<"generateChunkRaw(): Chunk "
+					<<"("<<chunkpos.X<<","<<chunkpos.Y<<")"
+					<<" already generated"<<std::endl;
+			return chunk;
+		}
+	}
+
+	dstream<<"generateChunkRaw(): Generating chunk "
+			<<"("<<chunkpos.X<<","<<chunkpos.Y<<")"
+			<<std::endl;
+	
+	TimeTaker timer("generateChunkRaw()");
+
+	ChunkMakeData data;
+	
+	// Initialize generation
+	initChunkMake(data, chunkpos);
+	
+	// Generate stuff
+	makeChunk(&data);
+
+	// Finalize generation
+	MapChunk *chunk = finishChunkMake(data, changed_blocks);
 
 	/*
 		Return central chunk (which was requested)
@@ -3625,6 +3634,7 @@ MapChunk* ServerMap::generateChunkRaw(v2s16 chunkpos,
 	return chunk;
 }
 
+// NOTE: Deprecated
 MapChunk* ServerMap::generateChunk(v2s16 chunkpos1,
 		core::map<v3s16, MapBlock*> &changed_blocks)
 {

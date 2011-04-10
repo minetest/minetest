@@ -318,6 +318,8 @@ protected:
 	This is the only map class that is able to generate map.
 */
 
+struct ChunkMakeData;
+
 class ServerMap : public Map
 {
 public:
@@ -390,6 +392,10 @@ public:
 		}
 		return true;
 	}
+
+	void initChunkMake(ChunkMakeData &data, v2s16 chunkpos);
+	MapChunk* finishChunkMake(ChunkMakeData &data,
+			core::map<v3s16, MapBlock*> &changed_blocks);
 
 	/*
 		Generate a chunk.
@@ -745,6 +751,26 @@ public:
 protected:
 	bool m_create_area;
 };
+
+struct ChunkMakeData
+{
+	ManualMapVoxelManipulator vmanip;
+	u64 seed;
+	v2s16 chunkpos;
+	s16 y_blocks_min;
+	s16 y_blocks_max;
+	v2s16 sectorpos_base;
+	s16 sectorpos_base_size;
+	v2s16 sectorpos_bigbase;
+	s16 sectorpos_bigbase_size;
+	s16 max_spread_amount;
+
+	ChunkMakeData():
+		vmanip(NULL)
+	{}
+};
+
+void makeChunk(ChunkMakeData *data);
 
 #endif
 
