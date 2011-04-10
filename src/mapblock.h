@@ -32,6 +32,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "mapblockobject.h"
 #include "voxel.h"
 #include "nodemetadata.h"
+#include "staticobject.h"
 
 
 // Named by looking towards z+
@@ -681,6 +682,7 @@ public:
 #endif
 	
 	NodeMetadataList m_node_metadata;
+	StaticObjectList m_static_objects;
 	
 private:
 	/*

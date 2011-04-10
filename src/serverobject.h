@@ -39,27 +39,28 @@ Some planning
 */
 
 class ServerEnvironment;
+class InventoryItem;
 
 class ServerActiveObject : public ActiveObject
 {
 public:
-	ServerActiveObject(ServerEnvironment *env, u16 id, v3f pos=v3f(0,0,0));
+	ServerActiveObject(ServerEnvironment *env, u16 id, v3f pos);
 	virtual ~ServerActiveObject();
 
-	v3f getBasePosition()
-	{
-		return m_base_position;
-	}
+	// Create a certain type of ServerActiveObject
+	static ServerActiveObject* create(u8 type,
+			ServerEnvironment *env, u16 id, v3f pos,
+			const std::string &data);
 	
+	/*
+		Some simple getters/setters
+	*/
+	v3f getBasePosition()
+		{return m_base_position;}
 	void setBasePosition(v3f pos)
-	{
-		m_base_position = pos;
-	}
-
+		{m_base_position = pos;}
 	ServerEnvironment* getEnv()
-	{
-		return m_env;
-	}
+		{return m_env;}
 	
 	/*
 		Step object in time.
@@ -75,14 +76,10 @@ public:
 	
 	/*
 		The return value of this is passed to the server-side object
-		when it is loaded from disk or from a static object
+		when it is created (converted from static to active - actually
+		the data is the static form)
 	*/
-	virtual std::string getServerInitializationData(){return "";}
-	
-	/*
-		This takes the return value of getServerInitializationData
-	*/
-	virtual void initialize(const std::string &data){}
+	virtual std::string getStaticData(){return "";}
 	
 	// Number of players which know about this object
 	u16 m_known_by_count;
@@ -93,12 +90,33 @@ public:
 		  it could be confused to some other object by some client.
 		- This is set to true by the step() method when the object wants
 		  to be deleted.
+		- This can be set to true by anything else too.
 	*/
 	bool m_removed;
 	
+	/*
+		Whether the object's static data has been stored to a block
+	*/
+	bool m_static_exists;
+	/*
+		The block from which the object was loaded from, and in which
+		a copy of the static data resides.
+	*/
+	v3s16 m_static_block;
+	
 protected:
+	// Used for creating objects based on type
+	typedef ServerActiveObject* (*Factory)
+			(ServerEnvironment *env, u16 id, v3f pos,
+			const std::string &data);
+	static void registerType(u16 type, Factory f);
+
 	ServerEnvironment *m_env;
 	v3f m_base_position;
+
+private:
+	// Used for creating objects based on type
+	static core::map<u16, Factory> m_types;
 };
 
 class TestSAO : public ServerActiveObject
@@ -106,9 +124,9 @@ class TestSAO : public ServerActiveObject
 public:
 	TestSAO(ServerEnvironment *env, u16 id, v3f pos);
 	u8 getType() const
-	{
-		return ACTIVEOBJECT_TYPE_TEST;
-	}
+		{return ACTIVEOBJECT_TYPE_TEST;}
+	static ServerActiveObject* create(ServerEnvironment *env, u16 id, v3f pos,
+			const std::string &data);
 	void step(float dtime, Queue<ActiveObjectMessage> &messages);
 private:
 	float m_timer1;
@@ -121,11 +139,13 @@ public:
 	ItemSAO(ServerEnvironment *env, u16 id, v3f pos,
 			const std::string inventorystring);
 	u8 getType() const
-	{
-		return ACTIVEOBJECT_TYPE_ITEM;
-	}
+		{return ACTIVEOBJECT_TYPE_ITEM;}
+	static ServerActiveObject* create(ServerEnvironment *env, u16 id, v3f pos,
+			const std::string &data);
 	void step(float dtime, Queue<ActiveObjectMessage> &messages);
 	std::string getClientInitializationData();
+	std::string getStaticData();
+	InventoryItem* createInventoryItem();
 private:
 	std::string m_inventorystring;
 };

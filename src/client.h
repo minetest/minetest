@@ -275,6 +275,7 @@ public:
 	void groundAction(u8 action, v3s16 nodepos_undersurface,
 			v3s16 nodepos_oversurface, u16 item);
 	void clickObject(u8 button, v3s16 blockpos, s16 id, u16 item);
+	void clickActiveObject(u8 button, u16 id, u16 item);
 
 	void sendSignText(v3s16 blockpos, s16 id, std::string text);
 	void sendSignNodeText(v3s16 p, std::string text);

@@ -22,6 +22,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "porting.h"
 #include "constants.h"
 #include "utility.h"
+#include "environment.h"
 
 core::map<u16, ClientActiveObject::Factory> ClientActiveObject::m_types;
 
@@ -148,7 +149,7 @@ void TestCAO::updateNodePos()
 	//m_node->setRotation(v3f(0, 45, 0));
 }
 
-void TestCAO::step(float dtime)
+void TestCAO::step(float dtime, ClientEnvironment *env)
 {
 	if(m_node)
 	{
@@ -187,7 +188,7 @@ ItemCAO proto_ItemCAO;
 
 ItemCAO::ItemCAO():
 	ClientActiveObject(0),
-	m_selection_box(-BS*0.4,0.0,-BS*0.4, BS*0.4,BS*0.8,BS*0.4),
+	m_selection_box(-BS/3.,0.0,-BS/3., BS/3.,BS*2./3.,BS/3.),
 	m_node(NULL),
 	m_position(v3f(0,10*BS,0))
 {
@@ -219,10 +220,10 @@ void ItemCAO::addToScene(scene::ISceneManager *smgr)
 		video::S3DVertex(BS/2,-BS/4,0, 0,0,0, c, 1,1),
 		video::S3DVertex(BS/2,BS/4,0, 0,0,0, c, 1,0),
 		video::S3DVertex(-BS/2,BS/4,0, 0,0,0, c, 0,0),*/
-		video::S3DVertex(BS/3,0,0, 0,0,0, c, 0,1),
-		video::S3DVertex(-BS/3,0,0, 0,0,0, c, 1,1),
-		video::S3DVertex(-BS/3,0+BS*2/3,0, 0,0,0, c, 1,0),
-		video::S3DVertex(BS/3,0+BS*2/3,0, 0,0,0, c, 0,0),
+		video::S3DVertex(BS/3.,0,0, 0,0,0, c, 0,1),
+		video::S3DVertex(-BS/3.,0,0, 0,0,0, c, 1,1),
+		video::S3DVertex(-BS/3.,0+BS*2./3.,0, 0,0,0, c, 1,0),
+		video::S3DVertex(BS/3.,0+BS*2./3.,0, 0,0,0, c, 0,0),
 	};
 	u16 indices[] = {0,1,2,2,3,0};
 	buf->append(vertices, 4, indices, 6);
@@ -272,12 +273,17 @@ void ItemCAO::updateNodePos()
 	m_node->setPosition(m_position);
 }
 
-void ItemCAO::step(float dtime)
+void ItemCAO::step(float dtime, ClientEnvironment *env)
 {
 	if(m_node)
 	{
-		v3f rot = m_node->getRotation();
+		/*v3f rot = m_node->getRotation();
 		rot.Y += dtime * 120;
+		m_node->setRotation(rot);*/
+		LocalPlayer *player = env->getLocalPlayer();
+		assert(player);
+		v3f rot = m_node->getRotation();
+		rot.Y = 180.0 - (player->getYaw());
 		m_node->setRotation(rot);
 	}
 }

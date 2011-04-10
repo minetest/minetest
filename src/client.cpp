@@ -1193,7 +1193,7 @@ void Client::ProcessData(u8 *data, u32 datasize, u16 sender_peer_id)
 	}
 	else if(command == TOCLIENT_ACTIVE_OBJECT_REMOVE_ADD)
 	{
-		if(g_settings.getBool("enable_experimental"))
+		//if(g_settings.getBool("enable_experimental"))
 		{
 			/*
 				u16 command
@@ -1252,7 +1252,7 @@ void Client::ProcessData(u8 *data, u32 datasize, u16 sender_peer_id)
 	}
 	else if(command == TOCLIENT_ACTIVE_OBJECT_MESSAGES)
 	{
-		if(g_settings.getBool("enable_experimental"))
+		//if(g_settings.getBool("enable_experimental"))
 		{
 			/*
 				u16 command
@@ -1591,6 +1591,31 @@ void Client::clickObject(u8 button, v3s16 blockpos, s16 id, u16 item)
 	writeV3S16(&data[3], blockpos);
 	writeS16(&data[9], id);
 	writeU16(&data[11], item);
+	Send(0, data, true);
+}
+
+void Client::clickActiveObject(u8 button, u16 id, u16 item)
+{
+	if(connectedAndInitialized() == false){
+		dout_client<<DTIME<<"Client::clickActiveObject() "
+				"cancelled (not connected)"
+				<<std::endl;
+		return;
+	}
+	
+	/*
+		length: 7
+		[0] u16 command
+		[2] u8 button (0=left, 1=right)
+		[3] u16 id
+		[5] u16 item
+	*/
+	u8 datasize = 2 + 1 + 6 + 2 + 2;
+	SharedBuffer<u8> data(datasize);
+	writeU16(&data[0], TOSERVER_CLICK_ACTIVEOBJECT);
+	writeU8(&data[2], button);
+	writeU16(&data[3], id);
+	writeU16(&data[5], item);
 	Send(0, data, true);
 }
 

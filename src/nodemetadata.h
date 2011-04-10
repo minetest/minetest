@@ -54,7 +54,7 @@ public:
 	virtual u16 typeId() const = 0;
 	virtual NodeMetadata* clone() = 0;
 	virtual void serializeBody(std::ostream &os) = 0;
-	virtual std::string infoText() {return "<todo: remove this text>";}
+	virtual std::string infoText() {return "";}
 	virtual Inventory* getInventory() {return NULL;}
 	// This is called always after the inventory is modified, before
 	// the changes are copied elsewhere

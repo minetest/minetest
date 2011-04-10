@@ -35,6 +35,8 @@ Some planning
 
 */
 
+class ClientEnvironment;
+
 class ClientActiveObject : public ActiveObject
 {
 public:
@@ -51,10 +53,12 @@ public:
 	virtual v3f getPosition(){return v3f(0,0,0);}
 	
 	// Step object in time
-	virtual void step(float dtime){}
+	virtual void step(float dtime, ClientEnvironment *env){}
 	
 	// Process a message sent by the server side object
 	virtual void processMessage(const std::string &data){}
+
+	virtual std::string infoText() {return "";}
 
 	/*
 		This takes the return value of
@@ -66,9 +70,11 @@ public:
 	static ClientActiveObject* create(u8 type);
 
 protected:
+	// Used for creating objects based on type
 	typedef ClientActiveObject* (*Factory)();
 	static void registerType(u16 type, Factory f);
 private:
+	// Used for creating objects based on type
 	static core::map<u16, Factory> m_types;
 };
 
@@ -112,7 +118,7 @@ public:
 	v3s16 getLightPosition();
 	void updateNodePos();
 
-	void step(float dtime);
+	void step(float dtime, ClientEnvironment *env);
 
 	void processMessage(const std::string &data);
 
@@ -144,7 +150,7 @@ public:
 	v3s16 getLightPosition();
 	void updateNodePos();
 
-	void step(float dtime);
+	void step(float dtime, ClientEnvironment *env);
 
 	void processMessage(const std::string &data);
 

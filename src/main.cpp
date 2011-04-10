@@ -2620,10 +2620,8 @@ int main(int argc, char *argv[])
 			if(g_input->getLeftClicked())
 			{
 				std::cout<<DTIME<<"Left-clicked object"<<std::endl;
-#if 0
-				client.clickObject(0, selected_object->getBlock()->getPos(),
-						selected_object->getId(), g_selected_item);
-#endif
+				client.clickActiveObject(0,
+						selected_active_object->getId(), g_selected_item);
 			}
 			else if(g_input->getRightClicked())
 			{
@@ -2634,26 +2632,6 @@ int main(int argc, char *argv[])
 				*/
 				if(selected_object->getTypeId() == MAPBLOCKOBJECT_TYPE_SIGN)
 				{
-					dstream<<"Sign object right-clicked"<<std::endl;
-					
-					if(random_input == false)
-					{
-						// Get a new text for it
-
-						TextDest *dest = new TextDestSign(
-								selected_object->getBlock()->getPos(),
-								selected_object->getId(),
-								&client);
-
-						SignObject *sign_object = (SignObject*)selected_object;
-
-						std::wstring wtext =
-								narrow_to_wide(sign_object->getText());
-
-						(new GUITextInputMenu(guienv, guiroot, -1,
-								&g_menumgr, dest,
-								wtext))->drop();
-					}
 				}
 				/*
 					Otherwise pass the event to the server as-is

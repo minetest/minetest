@@ -249,6 +249,15 @@ enum ToServerCommand
 		textdata
 	*/
 
+	TOSERVER_CLICK_ACTIVEOBJECT = 0x34,
+	/*
+		length: 7
+		[0] u16 command
+		[2] u8 button (0=left, 1=right)
+		[3] u16 id
+		[5] u16 item
+	*/
+
 };
 
 inline SharedBuffer<u8> makePacket_TOCLIENT_TIME_OF_DAY(u16 time)

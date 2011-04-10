@@ -1839,15 +1839,17 @@ inline std::string serializeString(const std::string plain)
 	return s;
 }
 
-// Reads a string with the length as the first two bytes
+/*// Reads a string with the length as the first two bytes
 inline std::string deSerializeString(const std::string encoded)
 {
 	u16 s_size = readU16((u8*)&encoded.c_str()[0]);
+	if(s_size > encoded.length() - 2)
+		return "";
 	std::string s;
 	s.reserve(s_size);
 	s.append(&encoded.c_str()[2], s_size);
 	return s;
-}
+}*/
 
 // Reads a string with the length as the first two bytes
 inline std::string deSerializeString(std::istream &is)
@@ -1878,15 +1880,17 @@ inline std::string serializeLongString(const std::string plain)
 	return s;
 }
 
-// Reads a string with the length as the first four bytes
+/*// Reads a string with the length as the first four bytes
 inline std::string deSerializeLongString(const std::string encoded)
 {
 	u32 s_size = readU32((u8*)&encoded.c_str()[0]);
+	if(s_size > encoded.length() - 4)
+		return "";
 	std::string s;
 	s.reserve(s_size);
-	s.append(&encoded.c_str()[2], s_size);
+	s.append(&encoded.c_str()[4], s_size);
 	return s;
-}
+}*/
 
 // Reads a string with the length as the first four bytes
 inline std::string deSerializeLongString(std::istream &is)

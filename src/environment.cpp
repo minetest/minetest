@@ -189,7 +189,7 @@ u32 Environment::getDayNightRatio()
 ServerEnvironment::ServerEnvironment(ServerMap *map, Server *server):
 	m_map(map),
 	m_server(server),
-	m_random_spawn_timer(0)
+	m_random_spawn_timer(3)
 {
 }
 
@@ -422,7 +422,7 @@ void ServerEnvironment::step(float dtime)
 		}
 	}
 	
-	if(g_settings.getBool("enable_experimental"))
+	//if(g_settings.getBool("enable_experimental"))
 	{
 
 	/*
@@ -438,7 +438,7 @@ void ServerEnvironment::step(float dtime)
 	}
 
 	/*
-		Remove (m_removed && m_known_by_count==0) objects
+		Remove objects that satisfy (m_removed && m_known_by_count==0)
 	*/
 	{
 		core::list<u16> objects_to_remove;
@@ -457,16 +457,173 @@ void ServerEnvironment::step(float dtime)
 				objects_to_remove.push_back(id);
 				continue;
 			}
-			else
+			// If not m_removed, don't remove.
+			if(obj->m_removed == false)
+				continue;
+			// Delete
+			delete obj;
+			// Id to be removed from m_active_objects
+			objects_to_remove.push_back(id);
+		}
+		// Remove references from m_active_objects
+		for(core::list<u16>::Iterator i = objects_to_remove.begin();
+				i != objects_to_remove.end(); i++)
+		{
+			m_active_objects.remove(*i);
+		}
+	}
+	
+
+	const s16 to_active_max_blocks = 3;
+	const f32 to_static_max_f = (to_active_max_blocks+1)*MAP_BLOCKSIZE*BS;
+
+	/*
+		Convert stored objects from blocks near the players to active.
+	*/
+	for(core::list<Player*>::Iterator i = m_players.begin();
+			i != m_players.end(); i++)
+	{
+		Player *player = *i;
+		v3f playerpos = player->getPosition();
+		
+		v3s16 blockpos0 = getNodeBlockPos(floatToInt(playerpos, BS));
+		v3s16 bpmin = blockpos0 - v3s16(1,1,1)*to_active_max_blocks;
+		v3s16 bpmax = blockpos0 + v3s16(1,1,1)*to_active_max_blocks;
+		// Loop through all nearby blocks
+		for(s16 x=bpmin.X; x<=bpmax.X; x++)
+		for(s16 y=bpmin.Y; y<=bpmax.Y; y++)
+		for(s16 z=bpmin.Z; z<=bpmax.Z; z++)
+		{
+			v3s16 blockpos(x,y,z);
+			MapBlock *block = m_map->getBlockNoCreateNoEx(blockpos);
+			if(block==NULL)
+				continue;
+			// Ignore if no stored objects (to not set changed flag)
+			if(block->m_static_objects.m_stored.size() == 0)
+				continue;
+			// This will contain the leftovers of the stored list
+			core::list<StaticObject> new_stored;
+			// Loop through stored static objects
+			for(core::list<StaticObject>::Iterator
+					i = block->m_static_objects.m_stored.begin();
+					i != block->m_static_objects.m_stored.end(); i++)
 			{
-				// If not m_removed, don't remove.
-				if(obj->m_removed == false)
+				dstream<<"INFO: Server: Creating an active object from "
+						<<"static data"<<std::endl;
+				StaticObject &s_obj = *i;
+				// Create an active object from the data
+				ServerActiveObject *obj = ServerActiveObject::create
+						(s_obj.type, this, 0, s_obj.pos, s_obj.data);
+				if(obj==NULL)
+				{
+					// This is necessary to preserve stuff during bugs
+					// and errors
+					new_stored.push_back(s_obj);
 					continue;
-				// Delete
-				delete obj;
-				// Id to be removed from m_active_objects
-				objects_to_remove.push_back(id);
+				}
+				// This will also add the object to the active static list
+				addActiveObject(obj);
+				//u16 id = addActiveObject(obj);
 			}
+			// Clear stored list
+			block->m_static_objects.m_stored.clear();
+			// Add leftover stuff to stored list
+			for(core::list<StaticObject>::Iterator
+					i = new_stored.begin();
+					i != new_stored.end(); i++)
+			{
+				StaticObject &s_obj = *i;
+				block->m_static_objects.m_stored.push_back(s_obj);
+			}
+			block->setChangedFlag();
+		}
+	}
+
+	/*
+		Convert objects that are far away from all the players to static.
+	*/
+	{
+		core::list<u16> objects_to_remove;
+		for(core::map<u16, ServerActiveObject*>::Iterator
+				i = m_active_objects.getIterator();
+				i.atEnd()==false; i++)
+		{
+			ServerActiveObject* obj = i.getNode()->getValue();
+			u16 id = i.getNode()->getKey();
+			v3f objectpos = obj->getBasePosition();
+
+			// This shouldn't happen but check it
+			if(obj == NULL)
+			{
+				dstream<<"WARNING: NULL object found in ServerEnvironment"
+						<<std::endl;
+				continue;
+			}
+			// If known by some client, don't convert to static.
+			if(obj->m_known_by_count > 0)
+				continue;
+
+			// If close to some player, don't convert to static.
+			bool close_to_player = false;
+			for(core::list<Player*>::Iterator i = m_players.begin();
+					i != m_players.end(); i++)
+			{
+				Player *player = *i;
+				v3f playerpos = player->getPosition();
+				f32 d = playerpos.getDistanceFrom(objectpos);
+				if(d < to_static_max_f)
+				{
+					close_to_player = true;
+					break;
+				}
+			}
+
+			if(close_to_player)
+				continue;
+
+			/*
+				Update the static data and remove the active object.
+			*/
+
+			// Delete old static object
+			MapBlock *oldblock = NULL;
+			if(obj->m_static_exists)
+			{
+				MapBlock *block = m_map->getBlockNoCreateNoEx(obj->m_static_block);
+				if(block)
+				{
+					block->m_static_objects.remove(id);
+					oldblock = block;
+				}
+			}
+			// Add new static object
+			std::string staticdata = obj->getStaticData();
+			StaticObject s_obj(obj->getType(), objectpos, staticdata);
+			// Add to the block where the object is located in
+			v3s16 blockpos = getNodeBlockPos(floatToInt(objectpos, BS));
+			MapBlock *block = m_map->getBlockNoCreateNoEx(blockpos);
+			if(block)
+			{
+				block->m_static_objects.insert(0, s_obj);
+				block->setChangedFlag();
+			}
+			// If not possible, add back to previous block
+			else if(oldblock)
+			{
+				oldblock->m_static_objects.insert(0, s_obj);
+				oldblock->setChangedFlag();
+			}
+			else{
+				dstream<<"WARNING: Server: Could not find a block for "
+						<<"storing static object"<<std::endl;
+				continue;
+			}
+			// Delete active object
+			dstream<<"INFO: Server: Stored static data. Deleting object."
+					<<std::endl;
+			delete obj;
+			// Id to be removed from m_active_objects
+			objects_to_remove.push_back(id);
 		}
 		// Remove references from m_active_objects
 		for(core::list<u16>::Iterator i = objects_to_remove.begin();
@@ -479,11 +636,13 @@ void ServerEnvironment::step(float dtime)
 	/*
 		TEST CODE
 	*/
+#if 1
 	m_random_spawn_timer -= dtime;
 	if(m_random_spawn_timer < 0)
 	{
 		//m_random_spawn_timer += myrand_range(2.0, 20.0);
-		m_random_spawn_timer += 2.0;
+		//m_random_spawn_timer += 2.0;
+		m_random_spawn_timer += 200.0;
 
 		/*
 			Find some position
@@ -508,11 +667,10 @@ void ServerEnvironment::step(float dtime)
 		*/
 
 		//TestSAO *obj = new TestSAO(this, 0, pos);
-		ServerActiveObject *obj = new ItemSAO(this, 0, pos, "CraftItem Stick 1");
-
-		// Add the object to the environment
-		addActiveObject(obj);
+		//ServerActiveObject *obj = new ItemSAO(this, 0, pos, "CraftItem Stick 1");
+		//addActiveObject(obj);
 	}
+#endif
 
 	} // enable_experimental
 }
@@ -582,7 +740,25 @@ u16 ServerEnvironment::addActiveObject(ServerActiveObject *object)
 	}
 	dstream<<"INGO: ServerEnvironment::addActiveObject(): "
 			<<"added (id="<<object->getId()<<")"<<std::endl;
+			
 	m_active_objects.insert(object->getId(), object);
+
+	// Add static object to active static list of the block
+	v3f objectpos = object->getBasePosition();
+	std::string staticdata = object->getStaticData();
+	StaticObject s_obj(object->getType(), objectpos, staticdata);
+	// Add to the block where the object is located in
+	v3s16 blockpos = getNodeBlockPos(floatToInt(objectpos, BS));
+	MapBlock *block = m_map->getBlockNoCreateNoEx(blockpos);
+	if(block)
+	{
+		block->m_static_objects.m_active.insert(object->getId(), s_obj);
+	}
+	else{
+		dstream<<"WARNING: Server: Could not find a block for "
+				<<"storing newly added static active object"<<std::endl;
+	}
+
 	return object->getId();
 }
 
@@ -912,7 +1088,7 @@ void ClientEnvironment::step(float dtime)
 	{
 		ClientActiveObject* obj = i.getNode()->getValue();
 		// Step object
-		obj->step(dtime);
+		obj->step(dtime, this);
 	}
 }
 

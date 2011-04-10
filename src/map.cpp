@@ -5239,6 +5239,14 @@ void ServerMap::saveBlock(MapBlock *block)
 		block->serializeObjects(o, version);
 	}
 	
+	/*
+		Versions up from 15 have static objects.
+	*/
+	if(version >= 15)
+	{
+		block->m_static_objects.serialize(o);
+	}
+	
 	// We just wrote it to the disk
 	block->resetChangedFlag();
 }
@@ -5296,6 +5304,14 @@ void ServerMap::loadBlock(std::string sectordir, std::string blockfile, MapSecto
 			block->updateObjects(is, version, NULL, 0);
 		}
 
+		/*
+			Versions up from 15 have static objects.
+		*/
+		if(version >= 15)
+		{
+			block->m_static_objects.deSerialize(is);
+		}
+		
 		if(created_new)
 			sector->insertBlock(block);
 		

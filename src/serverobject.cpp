@@ -20,11 +20,16 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "serverobject.h"
 #include <fstream>
 #include "environment.h"
+#include "inventory.h"
+
+core::map<u16, ServerActiveObject::Factory> ServerActiveObject::m_types;
 
 ServerActiveObject::ServerActiveObject(ServerEnvironment *env, u16 id, v3f pos):
 	ActiveObject(id),
 	m_known_by_count(0),
 	m_removed(false),
+	m_static_exists(false),
+	m_static_block(1337,1337,1337),
 	m_env(env),
 	m_base_position(pos)
 {
@@ -34,15 +39,55 @@ ServerActiveObject::~ServerActiveObject()
 {
 }
 
+ServerActiveObject* ServerActiveObject::create(u8 type,
+		ServerEnvironment *env, u16 id, v3f pos,
+		const std::string &data)
+{
+	// Find factory function
+	core::map<u16, Factory>::Node *n;
+	n = m_types.find(type);
+	if(n == NULL)
+	{
+		// If factory is not found, just return.
+		dstream<<"WARNING: ServerActiveObject: No factory for type="
+				<<type<<std::endl;
+		return NULL;
+	}
+
+	Factory f = n->getValue();
+	ServerActiveObject *object = (*f)(env, id, pos, data);
+	return object;
+}
+
+void ServerActiveObject::registerType(u16 type, Factory f)
+{
+	core::map<u16, Factory>::Node *n;
+	n = m_types.find(type);
+	if(n)
+		return;
+	m_types.insert(type, f);
+}
+
+
 /*
 	TestSAO
 */
+
+// Prototype
+TestSAO proto_TestSAO(NULL, 0, v3f(0,0,0));
 
 TestSAO::TestSAO(ServerEnvironment *env, u16 id, v3f pos):
 	ServerActiveObject(env, id, pos),
 	m_timer1(0),
 	m_age(0)
 {
+	ServerActiveObject::registerType(getType(), create);
+}
+
+ServerActiveObject* TestSAO::create(ServerEnvironment *env, u16 id, v3f pos,
+		const std::string &data)
+{
+	return new TestSAO(env, id, pos);
 }
 
 void TestSAO::step(float dtime, Queue<ActiveObjectMessage> &messages)
@@ -84,6 +129,9 @@ void TestSAO::step(float dtime, Queue<ActiveObjectMessage> &messages)
 	ItemSAO
 */
 
+// Prototype
+ItemSAO proto_ItemSAO(NULL, 0, v3f(0,0,0), "");
+
 ItemSAO::ItemSAO(ServerEnvironment *env, u16 id, v3f pos,
 		const std::string inventorystring):
 	ServerActiveObject(env, id, pos),
@@ -91,6 +139,19 @@ ItemSAO::ItemSAO(ServerEnvironment *env, u16 id, v3f pos,
 {
 	dstream<<"Server: ItemSAO created with inventorystring=\""
 			<<m_inventorystring<<"\""<<std::endl;
+	ServerActiveObject::registerType(getType(), create);
+}
+
+ServerActiveObject* ItemSAO::create(ServerEnvironment *env, u16 id, v3f pos,
+		const std::string &data)
+{
+	std::istringstream is(data, std::ios::binary);
+	char buf[1];
+	is.read(buf, 1); // read version
+	std::string inventorystring = deSerializeString(is);
+	dstream<<"ItemSAO::create(): Creating item \""
+			<<inventorystring<<"\""<<std::endl;
+	return new ItemSAO(env, id, pos, inventorystring);
 }
 
 void ItemSAO::step(float dtime, Queue<ActiveObjectMessage> &messages)
@@ -110,5 +171,35 @@ std::string ItemSAO::getClientInitializationData()
 	data += m_inventorystring;
 	return data;
 }
+
+std::string ItemSAO::getStaticData()
+{
+	dstream<<__FUNCTION_NAME<<std::endl;
+	std::ostringstream os(std::ios::binary);
+	char buf[1];
+	buf[0] = 0; //version
+	os.write(buf, 1);
+	os<<serializeString(m_inventorystring);
+	return os.str();
+}
+
+InventoryItem * ItemSAO::createInventoryItem()
+{
+	try{
+		std::istringstream is(m_inventorystring, std::ios_base::binary);
+		InventoryItem *item = InventoryItem::deSerialize(is);
+		dstream<<__FUNCTION_NAME<<": m_inventorystring=\""
+				<<m_inventorystring<<"\" -> item="<<item
+				<<std::endl;
+		return item;
+	}
+	catch(SerializationError &e)
+	{
+		dstream<<__FUNCTION_NAME<<": serialization error: "
+				<<"m_inventorystring=\""<<m_inventorystring<<"\""<<std::endl;
+		return NULL;
+	}
+}
+
 
 

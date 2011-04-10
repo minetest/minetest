@@ -1228,7 +1228,7 @@ void Server::AsyncRunStep()
 		}
 	}
 
-	if(g_settings.getBool("enable_experimental"))
+	//if(g_settings.getBool("enable_experimental"))
 	{
 
 	/*
@@ -1345,6 +1345,33 @@ void Server::AsyncRunStep()
 					<<added_objects.size()<<" added, "
 					<<"packet size is "<<reply.getSize()<<std::endl;
 		}
+
+#if 0
+		/*
+			Collect a list of all the objects known by the clients
+			and report it back to the environment.
+		*/
+
+		core::map<u16, bool> all_known_objects;
+
+		for(core::map<u16, RemoteClient*>::Iterator
+			i = m_clients.getIterator();
+			i.atEnd() == false; i++)
+		{
+			RemoteClient *client = i.getNode()->getValue();
+			// Go through all known objects of client
+			for(core::map<u16, bool>::Iterator
+					i = client->m_known_objects.getIterator();
+					i.atEnd()==false; i++)
+			{
+				u16 id = i.getNode()->getKey();
+				all_known_objects[id] = true;
+			}
+		}
+		
+		m_env.setKnownActiveObjects(whatever);
+#endif
+
 	}
 
 	/*
@@ -1978,6 +2005,70 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 			block->removeObject(id);
 		}
 	}
+	else if(command == TOSERVER_CLICK_ACTIVEOBJECT)
+	{
+		if(datasize < 7)
+			return;
+
+		/*
+			length: 7
+			[0] u16 command
+			[2] u8 button (0=left, 1=right)
+			[3] u16 id
+			[5] u16 item
+		*/
+		u8 button = readU8(&data[2]);
+		u16 id = readS16(&data[3]);
+		//u16 item_i = readU16(&data[11]);
+	
+		ServerActiveObject *obj = m_env.getActiveObject(id);
+
+		if(obj == NULL)
+		{
+			derr_server<<"Server: CLICK_ACTIVEOBJECT: object not found"
+					<<std::endl;
+			return;
+		}
+
+		//TODO: Check that object is reasonably close
+		
+		// Left click, pick object up (usually)
+		if(button == 0)
+		{
+			InventoryList *ilist = player->inventory.getList("main");
+			if(g_settings.getBool("creative_mode") == false && ilist != NULL)
+			{
+			
+				// Skip if inventory has no free space
+				if(ilist->getUsedSlots() == ilist->getSize())
+				{
+					dout_server<<"Player inventory has no free space"<<std::endl;
+					return;
+				}
+				
+				/*
+					Create the inventory item
+				*/
+				InventoryItem *item = NULL;
+				// If it is an item-object, take the item from it
+				if(obj->getType() == ACTIVEOBJECT_TYPE_ITEM
+						&& obj->m_removed == false)
+				{
+					item = ((ItemSAO*)obj)->createInventoryItem();
+				}
+				
+				if(item)
+				{
+					// Add to inventory and send inventory
+					ilist->addItem(item);
+					SendInventory(player->peer_id);
+				}
+			}
+
+			// Remove object from environment
+			obj->m_removed = true;
+		}
+	}
 	else if(command == TOSERVER_GROUND_ACTION)
 	{
 		if(datasize < 17)
@@ -2327,68 +2418,40 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 				}*/
 			}
 			/*
-				Handle other items
+				Place other item (not a block)
 			*/
 			else
 			{
 				v3s16 blockpos = getNodeBlockPos(p_over);
-
-				MapBlock *block = NULL;
-				try
-				{
-					block = m_env.getMap().getBlockNoCreate(blockpos);
-				}
-				catch(InvalidPositionException &e)
+				
+				/*
+					Check that the block is loaded so that the item
+					can properly be added to the static list too
+				*/
+				MapBlock *block = m_env.getMap().getBlockNoCreateNoEx(blockpos);
+				if(block==NULL)
 				{
 					derr_server<<"Error while placing object: "
 							"block not found"<<std::endl;
 					return;
 				}
 
-				v3s16 block_pos_i_on_map = block->getPosRelative();
-				v3f block_pos_f_on_map = intToFloat(block_pos_i_on_map, BS);
-
 				v3f pos = intToFloat(p_over, BS);
-				pos -= block_pos_f_on_map;
-				
-				/*dout_server<<"pos="
-						<<"("<<pos.X<<","<<pos.Y<<","<<pos.Z<<")"
-						<<std::endl;*/
+				pos.Y -= BS*0.45;
 
-				MapBlockObject *obj = NULL;
-
+				dout_server<<"Placing a miscellaneous item on map"
+						<<std::endl;
+						
 				/*
-					Handle block object items
+					Create an ItemSAO
 				*/
-				if(std::string("MBOItem") == item->getName())
-				{
-					MapBlockObjectItem *oitem = (MapBlockObjectItem*)item;
-
-					/*dout_server<<"Trying to place a MapBlockObjectItem: "
-							"inventorystring=\""
-							<<oitem->getInventoryString()
-							<<"\""<<std::endl;*/
-							
-					obj = oitem->createObject
-							(pos, player->getYaw(), player->getPitch());
-				}
-				/*
-					Handle other items
-				*/
-				else
-				{
-					dout_server<<"Placing a miscellaneous item on map"
-							<<std::endl;
-					/*
-						Create an ItemObject that contains the item.
-					*/
-					ItemObject *iobj = new ItemObject(NULL, -1, pos);
-					std::ostringstream os(std::ios_base::binary);
-					item->serialize(os);
-					dout_server<<"Item string is \""<<os.str()<<"\""<<std::endl;
-					iobj->setItemString(os.str());
-					obj = iobj;
-				}
+				// Get item string
+				std::ostringstream os(std::ios_base::binary);
+				item->serialize(os);
+				dout_server<<"Item string is \""<<os.str()<<"\""<<std::endl;
+				// Create object
+				ServerActiveObject *obj = new ItemSAO
+						(&m_env, 0, pos, os.str());
 
 				if(obj == NULL)
 				{
@@ -2398,8 +2461,9 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 				}
 				else
 				{
-					block->addObject(obj);
-
+					// Add the object to the environment
+					m_env.addActiveObject(obj);
+					
 					dout_server<<"Placed object"<<std::endl;
 
 					InventoryList *ilist = player->inventory.getList("main");
@@ -3873,30 +3937,6 @@ Player *Server::emergePlayer(const char *name, const char *password,
 		
 	} // create new player
 }
-
-#if 0
-void Server::UpdateBlockWaterPressure(MapBlock *block,
-			core::map<v3s16, MapBlock*> &modified_blocks)
-{
-	MapVoxelManipulator v(&m_env.getMap());
-	v.m_disable_water_climb =
-			g_settings.getBool("disable_water_climb");
-	
-	VoxelArea area(block->getPosRelative(),
-			block->getPosRelative() + v3s16(1,1,1)*(MAP_BLOCKSIZE-1));
-
-	try
-	{
-		v.updateAreaWaterPressure(area, m_flow_active_nodes);
-	}
-	catch(ProcessingLimitException &e)
-	{
-		dstream<<"Processing limit reached (1)"<<std::endl;
-	}
-	
-	v.blitBack(modified_blocks);
-}
-#endif
 
 void Server::handlePeerChange(PeerChange &c)
 {
