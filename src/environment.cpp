@@ -429,7 +429,7 @@ void ServerEnvironment::step(float dtime)
 
 	bool send_recommended = false;
 	m_send_recommended_timer += dtime;
-	if(m_send_recommended_timer > 0.2)
+	if(m_send_recommended_timer > 0.1)
 	{
 		m_send_recommended_timer = 0;
 		send_recommended = true;
@@ -1111,7 +1111,7 @@ void ClientEnvironment::step(float dtime)
 	}
 	
 	/*
-		Step active objects
+		Step active objects and update lighting of them
 	*/
 	
 	for(core::map<u16, ClientActiveObject*>::Iterator
@@ -1121,6 +1121,17 @@ void ClientEnvironment::step(float dtime)
 		ClientActiveObject* obj = i.getNode()->getValue();
 		// Step object
 		obj->step(dtime, this);
+		// Update lighting
+		//u8 light = LIGHT_MAX;
+		u8 light = 0;
+		try{
+			// Get node at head
+			v3s16 p = obj->getLightPosition();
+			MapNode n = m_map->getNode(p);
+			light = n.getLightBlend(m_daynight_ratio);
+		}
+		catch(InvalidPositionException &e) {}
+		obj->updateLight(light);
 	}
 }
 

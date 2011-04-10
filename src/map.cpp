@@ -2109,6 +2109,61 @@ double base_rock_level_2d(u64 seed, v2s16 p)
 	return h;
 }
 
+/*
+	Adds random objects to block, depending on the content of the block
+*/
+void addRandomObjects(MapBlock *block)
+{
+	for(s16 z0=0; z0<MAP_BLOCKSIZE; z0++)
+	for(s16 x0=0; x0<MAP_BLOCKSIZE; x0++)
+	{
+		bool last_node_walkable = false;
+		for(s16 y0=0; y0<MAP_BLOCKSIZE; y0++)
+		{
+			v3s16 p(x0,y0,z0);
+			MapNode n = block->getNodeNoEx(p);
+			if(n.d == CONTENT_IGNORE)
+				continue;
+			if(content_features(n.d).liquid_type != LIQUID_NONE)
+				continue;
+			if(content_features(n.d).walkable)
+			{
+				last_node_walkable = true;
+				continue;
+			}
+			if(last_node_walkable)
+			{
+				// If block contains light information
+				if(content_features(n.d).param_type == CPT_LIGHT)
+				{
+					if(n.getLight(LIGHTBANK_DAY) <= 3)
+					{
+						if(myrand() % 300 == 0)
+						{
+							v3f pos_f = intToFloat(p+block->getPosRelative(), BS);
+							pos_f.Y -= BS*0.4;
+							ServerActiveObject *obj = new RatSAO(NULL, 0, pos_f);
+							std::string data = obj->getStaticData();
+							StaticObject s_obj(obj->getType(),
+									obj->getBasePosition(), data);
+							// Add some
+							block->m_static_objects.insert(0, s_obj);
+							block->m_static_objects.insert(0, s_obj);
+							block->m_static_objects.insert(0, s_obj);
+							block->m_static_objects.insert(0, s_obj);
+							block->m_static_objects.insert(0, s_obj);
+							block->m_static_objects.insert(0, s_obj);
+							delete obj;
+						}
+					}
+				}
+			}
+			last_node_walkable = false;
+		}
+	}
+	block->setChangedFlag();
+}
+
 #define VMANIP_FLAG_DUNGEON VOXELFLAG_CHECKED1
 
 /*
@@ -3660,7 +3715,26 @@ MapChunk* ServerMap::generateChunkRaw(v2s16 chunkpos,
 		}
 	}
 
-	
+	/*
+		Add random objects to blocks
+	*/
+	{
+		for(s16 x=0; x<sectorpos_base_size; x++)
+		for(s16 z=0; z<sectorpos_base_size; z++)
+		{
+			v2s16 sectorpos = sectorpos_base + v2s16(x,z);
+			ServerMapSector *sector = createSector(sectorpos);
+			assert(sector);
+
+			for(s16 y=y_blocks_min; y<=y_blocks_max; y++)
+			{
+				v3s16 blockpos(sectorpos.X, y, sectorpos.Y);
+				MapBlock *block = createBlock(blockpos);
+				addRandomObjects(block);
+			}
+		}
+	}
+
 	/*
 		Create chunk metadata
 	*/

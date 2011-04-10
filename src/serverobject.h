@@ -78,6 +78,10 @@ class InventoryItem;
 class ServerActiveObject : public ActiveObject
 {
 public:
+	/*
+		NOTE: m_env can be NULL, but step() isn't called if it is.
+		Prototypes are used that way.
+	*/
 	ServerActiveObject(ServerEnvironment *env, u16 id, v3f pos);
 	virtual ~ServerActiveObject();
 
@@ -101,7 +105,7 @@ public:
 		Messages added to messages are sent to client over network.
 
 		send_recommended:
-			True at around 5 times a second, same for all objects.
+			True at around 5-10 times a second, same for all objects.
 			This is used to let objects send most of the data at the
 			same time so that the data can be combined in a single
 			packet.

@@ -169,6 +169,7 @@ ServerActiveObject* ItemSAO::create(ServerEnvironment *env, u16 id, v3f pos,
 void ItemSAO::step(float dtime, Queue<ActiveObjectMessage> &messages,
 		bool send_recommended)
 {
+	assert(m_env);
 	core::aabbox3d<f32> box(-BS/3.,0.0,-BS/3., BS/3.,BS*2./3.,BS/3.);
 	collisionMoveResult moveresult;
 	// Apply gravity
@@ -300,17 +301,19 @@ ServerActiveObject* RatSAO::create(ServerEnvironment *env, u16 id, v3f pos,
 void RatSAO::step(float dtime, Queue<ActiveObjectMessage> &messages,
 		bool send_recommended)
 {
+	assert(m_env);
+
 	/*
 		The AI
 	*/
 
-	m_age += dtime;
+	/*m_age += dtime;
 	if(m_age > 60)
 	{
 		// Die
 		m_removed = true;
 		return;
-	}
+	}*/
 
 	// Apply gravity
 	m_speed_f.Y -= dtime*9.81*BS;
