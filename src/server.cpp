@@ -2436,12 +2436,17 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 					return;
 				}
 
-				v3f pos = intToFloat(p_over, BS);
-				pos.Y -= BS*0.45;
-
 				dout_server<<"Placing a miscellaneous item on map"
 						<<std::endl;
-						
+				
+				// Calculate a position for it
+				v3f pos = intToFloat(p_over, BS);
+				//pos.Y -= BS*0.45;
+				pos.Y -= BS*0.25; // let it drop a bit
+				// Randomize a bit
+				pos.X += BS*0.2*(float)myrand_range(-1000,1000)/1000.0;
+				pos.Z += BS*0.2*(float)myrand_range(-1000,1000)/1000.0;
+
 				/*
 					Create an ItemSAO
 				*/

@@ -258,6 +258,27 @@ void ItemCAO::removeFromScene()
 
 void ItemCAO::updateLight(u8 light_at_pos)
 {
+	if(m_node == NULL)
+		return;
+
+	u8 li = decode_light(light_at_pos);
+	video::SColor color(255,li,li,li);
+
+	scene::IMesh *mesh = m_node->getMesh();
+	if(mesh == NULL)
+		return;
+	
+	u16 mc = mesh->getMeshBufferCount();
+	for(u16 j=0; j<mc; j++)
+	{
+		scene::IMeshBuffer *buf = mesh->getMeshBuffer(j);
+		video::S3DVertex *vertices = (video::S3DVertex*)buf->getVertices();
+		u16 vc = buf->getVertexCount();
+		for(u16 i=0; i<vc; i++)
+		{
+			vertices[i].Color = color;
+		}
+	}
 }
 
 v3s16 ItemCAO::getLightPosition()
@@ -290,35 +311,54 @@ void ItemCAO::step(float dtime, ClientEnvironment *env)
 
 void ItemCAO::processMessage(const std::string &data)
 {
-	dstream<<"ItemCAO: Got data: "<<data<<std::endl;
+	dstream<<"ItemCAO: Got message"<<std::endl;
 	std::istringstream is(data, std::ios::binary);
-	u16 cmd;
-	is>>cmd;
+	char buf[4];
+	// command
+	is.read(buf, 1);
+	u8 cmd = buf[0];
 	if(cmd == 0)
 	{
-		v3f newpos;
-		is>>newpos.X;
-		is>>newpos.Y;
-		is>>newpos.Z;
-		m_position = newpos;
+		// pos
+		is.read(buf, 4);
+		m_position.X = (float)readS32((u8*)buf)/1000.0;
+		is.read(buf, 4);
+		m_position.Y = (float)readS32((u8*)buf)/1000.0;
+		is.read(buf, 4);
+		m_position.Z = (float)readS32((u8*)buf)/1000.0;
 		updateNodePos();
 	}
 }
 
 void ItemCAO::initialize(const std::string &data)
 {
-	dstream<<"ItemCAO: Got init data: "<<data<<std::endl;
+	dstream<<"ItemCAO: Got init data"<<std::endl;
 	
-	Strfnd fn(data);
-
-	v3f newpos;
-	newpos.X = stoi(fn.next(","));
-	newpos.Y = stoi(fn.next(","));
-	newpos.Z = stoi(fn.next(":"));
-	m_position = newpos;
+	{
+		std::istringstream is(data, std::ios::binary);
+		char buf[4];
+		// version
+		is.read(buf, 1);
+		u8 version = buf[0];
+		// check version
+		if(version != 0)
+			return;
+		// pos
+		is.read(buf, 4);
+		m_position.X = (float)readS32((u8*)buf)/1000.0;
+		is.read(buf, 4);
+		m_position.Y = (float)readS32((u8*)buf)/1000.0;
+		is.read(buf, 4);
+		m_position.Z = (float)readS32((u8*)buf)/1000.0;
+		// inventorystring
+		m_inventorystring = deSerializeString(is);
+	}
+	
 	updateNodePos();
 
-	m_inventorystring = fn.next("");
+	/*
+		Update image of node
+	*/
 
 	if(m_node == NULL)
 		return;
@@ -333,9 +373,7 @@ void ItemCAO::initialize(const std::string &data)
 	if(buf == NULL)
 		return;
 
-	/*
-		Create an inventory item to see what is its image
-	*/
+	// Create an inventory item to see what is its image
 	std::istringstream is(m_inventorystring, std::ios_base::binary);
 	video::ITexture *texture = NULL;
 	try{

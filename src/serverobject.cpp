@@ -21,6 +21,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <fstream>
 #include "environment.h"
 #include "inventory.h"
+#include "collision.h"
 
 core::map<u16, ServerActiveObject::Factory> ServerActiveObject::m_types;
 
@@ -135,7 +136,8 @@ ItemSAO proto_ItemSAO(NULL, 0, v3f(0,0,0), "");
 ItemSAO::ItemSAO(ServerEnvironment *env, u16 id, v3f pos,
 		const std::string inventorystring):
 	ServerActiveObject(env, id, pos),
-	m_inventorystring(inventorystring)
+	m_inventorystring(inventorystring),
+	m_speed_f(0,0,0)
 {
 	dstream<<"Server: ItemSAO created with inventorystring=\""
 			<<m_inventorystring<<"\""<<std::endl;
@@ -147,7 +149,12 @@ ServerActiveObject* ItemSAO::create(ServerEnvironment *env, u16 id, v3f pos,
 {
 	std::istringstream is(data, std::ios::binary);
 	char buf[1];
-	is.read(buf, 1); // read version
+	// read version
+	is.read(buf, 1);
+	u8 version = buf[0];
+	// check if version is supported
+	if(version != 0)
+		return NULL;
 	std::string inventorystring = deSerializeString(is);
 	dstream<<"ItemSAO::create(): Creating item \""
 			<<inventorystring<<"\""<<std::endl;
@@ -156,20 +163,59 @@ ServerActiveObject* ItemSAO::create(ServerEnvironment *env, u16 id, v3f pos,
 
 void ItemSAO::step(float dtime, Queue<ActiveObjectMessage> &messages)
 {
+	core::aabbox3d<f32> box(-BS/3.,0.0,-BS/3., BS/3.,BS*2./3.,BS/3.);
+	collisionMoveResult moveresult;
+	// Apply gravity
+	m_speed_f += v3f(0, -dtime*9.81*BS, 0);
+	// Maximum movement without glitches
+	f32 pos_max_d = BS*0.25;
+	// Limit speed
+	if(m_speed_f.getLength()*dtime > pos_max_d)
+		m_speed_f *= pos_max_d / (m_speed_f.getLength()*dtime);
+	v3f pos_f = getBasePosition();
+	v3f pos_f_old = pos_f;
+	moveresult = collisionMoveSimple(&m_env->getMap(), pos_max_d,
+			box, dtime, pos_f, m_speed_f);
+	
+	if(pos_f.getDistanceFrom(pos_f_old) > 0.01*BS)
+	{
+		setBasePosition(pos_f);
+
+		std::ostringstream os(std::ios::binary);
+		char buf[6];
+		// command (0 = update position)
+		buf[0] = 0;
+		os.write(buf, 1);
+		// pos
+		writeS32((u8*)buf, m_base_position.X*1000);
+		os.write(buf, 4);
+		writeS32((u8*)buf, m_base_position.Y*1000);
+		os.write(buf, 4);
+		writeS32((u8*)buf, m_base_position.Z*1000);
+		os.write(buf, 4);
+		// create message and add to list
+		ActiveObjectMessage aom(getId(), false, os.str());
+		messages.push_back(aom);
+	}
 }
 
 std::string ItemSAO::getClientInitializationData()
 {
-	dstream<<__FUNCTION_NAME<<std::endl;
-	std::string data;
-	data += itos(m_base_position.X);
-	data += ",";
-	data += itos(m_base_position.Y);
-	data += ",";
-	data += itos(m_base_position.Z);
-	data += ":";
-	data += m_inventorystring;
-	return data;
+	std::ostringstream os(std::ios::binary);
+	char buf[6];
+	// version
+	buf[0] = 0;
+	os.write(buf, 1);
+	// pos
+	writeS32((u8*)buf, m_base_position.X*1000);
+	os.write(buf, 4);
+	writeS32((u8*)buf, m_base_position.Y*1000);
+	os.write(buf, 4);
+	writeS32((u8*)buf, m_base_position.Z*1000);
+	os.write(buf, 4);
+	// inventorystring
+	os<<serializeString(m_inventorystring);
+	return os.str();
 }
 
 std::string ItemSAO::getStaticData()
@@ -177,8 +223,10 @@ std::string ItemSAO::getStaticData()
 	dstream<<__FUNCTION_NAME<<std::endl;
 	std::ostringstream os(std::ios::binary);
 	char buf[1];
-	buf[0] = 0; //version
+	// version
+	buf[0] = 0;
 	os.write(buf, 1);
+	// inventorystring
 	os<<serializeString(m_inventorystring);
 	return os.str();
 }

@@ -72,10 +72,6 @@ SUGG: Split MapBlockObject serialization to to-client and to-disk
 	    them to clients
 	  - Not applicable. MapBlockObjects will be removed in the future.
 
-SUGG: MovingObject::move and Player::move are basically the same.
-      combine them.
-	  - NOTE: Player::move is more up-to-date.
-
 SUGG: Precalculate lighting translation table at runtime (at startup)
       - This is not doable because it is currently hand-made and not
 	    based on some mathematical function.
@@ -203,6 +199,10 @@ Objects:
 --------
 
 TODO: Get rid of MapBlockObjects and use ActiveObjects
+
+SUGG: MovingObject::move and Player::move are basically the same.
+      combine them.
+	  - NOTE: Player::move is more up-to-date.
 
 Map:
 ----
@@ -2602,7 +2602,8 @@ int main(int argc, char *argv[])
 			
 			core::aabbox3d<f32> *selection_box
 					= selected_active_object->getSelectionBox();
-			// Box should exist because it was returned in the first place
+			// Box should exist because object was returned in the
+			// first place
 			assert(selection_box);
 
 			v3f pos = selected_active_object->getPosition();
@@ -2614,8 +2615,8 @@ int main(int argc, char *argv[])
 
 			hilightboxes.push_back(box_on_map);
 
-			infotext = narrow_to_wide("A ClientActiveObject");
-			//infotext = narrow_to_wide(selected_object->infoText());
+			//infotext = narrow_to_wide("A ClientActiveObject");
+			infotext = narrow_to_wide(selected_active_object->infoText());
 
 			if(g_input->getLeftClicked())
 			{

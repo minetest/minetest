@@ -32,9 +32,11 @@ Some planning
 * Server environment adds an active object, which gets the id 1
 * The active object list is scanned for each client once in a while,
   and it finds out what objects have been added that are not known
-  by the client yet. This scan is initiated by the server and the
-  result ends up directly to the server.
+  by the client yet. This scan is initiated by the Server class and
+  the result ends up directly to the server.
 * A network packet is created with the info and sent to the client.
+* Environment converts objects to static data and static data to
+  objects, based on how close players are to them.
 
 */
 
@@ -148,6 +150,7 @@ public:
 	InventoryItem* createInventoryItem();
 private:
 	std::string m_inventorystring;
+	v3f m_speed_f;
 };
 
 #endif
