@@ -5136,7 +5136,8 @@ MapSector* ServerMap::loadSectorMeta(std::string dirname)
 					<<fullpath<<" doesn't exist but directory does."
 					<<" Continuing with a sector with no metadata."
 					<<std::endl;
-			sector = createSector(p2d);
+			sector = new ServerMapSector(this, p2d);
+			m_sectors.insert(p2d, sector);
 		}
 		else
 			throw FileNotGoodException("Cannot open sector metafile");
