@@ -626,16 +626,21 @@ void ServerEnvironment::step(float dtime)
 			{
 				block->m_static_objects.insert(0, s_obj);
 				block->setChangedFlag();
+				obj->m_static_exists = true;
+				obj->m_static_block = block->getPos();
 			}
 			// If not possible, add back to previous block
 			else if(oldblock)
 			{
 				oldblock->m_static_objects.insert(0, s_obj);
 				oldblock->setChangedFlag();
+				obj->m_static_exists = true;
+				obj->m_static_block = oldblock->getPos();
 			}
 			else{
 				dstream<<"WARNING: Server: Could not find a block for "
 						<<"storing static object"<<std::endl;
+				obj->m_static_exists = false;
 				continue;
 			}
 			// Delete active object
@@ -777,6 +782,8 @@ u16 ServerEnvironment::addActiveObject(ServerActiveObject *object)
 	if(block)
 	{
 		block->m_static_objects.m_active.insert(object->getId(), s_obj);
+		object->m_static_exists = true;
+		object->m_static_block = blockpos;
 	}
 	else{
 		dstream<<"WARNING: Server: Could not find a block for "
