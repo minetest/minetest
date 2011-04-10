@@ -380,6 +380,8 @@ void ServerEnvironment::deSerializePlayers(const std::string &savedir)
 void ServerEnvironment::step(float dtime)
 {
 	DSTACK(__FUNCTION_NAME);
+	
+	//TimeTaker timer("ServerEnv step");
 
 	// Get some settings
 	//bool free_move = g_settings.getBool("free_move");
@@ -451,6 +453,8 @@ void ServerEnvironment::step(float dtime)
 
 	if(m_object_management_interval.step(dtime, 0.5))
 	{
+		//TimeTaker timer("ServerEnv object management");
+
 		/*
 			Remove objects that satisfy (m_removed && m_known_by_count==0)
 		*/

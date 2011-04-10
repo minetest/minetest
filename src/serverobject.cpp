@@ -172,7 +172,7 @@ void ItemSAO::step(float dtime, Queue<ActiveObjectMessage> &messages,
 	assert(m_env);
 
 	const float interval = 0.2;
-	if(m_move_interval.step(dtime, interval))
+	if(m_move_interval.step(dtime, interval)==false)
 		return;
 	dtime = interval;
 	
@@ -312,7 +312,7 @@ void RatSAO::step(float dtime, Queue<ActiveObjectMessage> &messages,
 
 	if(m_is_active == false)
 	{
-		if(m_inactive_interval.step(dtime, 0.5))
+		if(m_inactive_interval.step(dtime, 0.5)==false)
 			return;
 	}
 

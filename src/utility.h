@@ -2033,12 +2033,9 @@ public:
 	{
 		m_accumulator += dtime;
 		if(m_accumulator < wanted_interval)
-		{
-			dtime = 0;
-			return true;
-		}
+			return false;
 		m_accumulator -= wanted_interval;
-		return false;
+		return true;
 	}
 protected:
 	float m_accumulator;
