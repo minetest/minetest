@@ -1834,16 +1834,16 @@ ServerMap::ServerMap(std::string savedir):
 			}
 			else
 			{
-				// Load map metadata (seed, chunksize)
-				loadMapMeta();
-				
 				try{
+					// Load map metadata (seed, chunksize)
+					loadMapMeta();
+
 					// Load chunk metadata
 					loadChunkMeta();
 				}
 				catch(FileNotGoodException &e){
 					dstream<<DTIME<<"WARNING: Server: Could not load "
-							<<"chunk metafile. Disabling chunk-based "
+							<<"metafile(s). Disabling chunk-based "
 							<<"generation."<<std::endl;
 					m_chunksize = 0;
 				}
@@ -4967,7 +4967,7 @@ void ServerMap::loadMapMeta()
 {
 	DSTACK(__FUNCTION_NAME);
 	
-	dstream<<"INFO: ServerMap::loadMapMeta(): Loading chunk metadata"
+	dstream<<"INFO: ServerMap::loadMapMeta(): Loading map metadata"
 			<<std::endl;
 
 	std::string fullpath = m_savedir + "/map_meta.txt";
@@ -4976,7 +4976,7 @@ void ServerMap::loadMapMeta()
 	{
 		dstream<<"ERROR: ServerMap::loadMapMeta(): "
 				<<"could not open"<<fullpath<<std::endl;
-		throw FileNotGoodException("Cannot open chunk metadata");
+		throw FileNotGoodException("Cannot open map metadata");
 	}
 
 	Settings params;
