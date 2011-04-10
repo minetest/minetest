@@ -35,6 +35,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "player.h"
 #include "map.h"
 #include <ostream>
+#include "utility.h"
 
 class Environment
 {
@@ -154,6 +155,7 @@ private:
 	Queue<ActiveObjectMessage> m_active_object_messages;
 	float m_random_spawn_timer;
 	float m_send_recommended_timer;
+	IntervalLimiter m_object_management_interval;
 };
 
 #ifndef SERVER
