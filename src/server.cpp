@@ -201,10 +201,20 @@ void * EmergeThread::Thread()
 				}
 				else
 				{
+					// Get, load or create sector
 					ServerMapSector *sector =
-							(ServerMapSector*)map.getSectorNoGenerateNoEx(p2d);
+							(ServerMapSector*)map.createSector(p2d);
+					// Generate block
 					block = map.generateBlock(p, block, sector, changed_blocks,
 							lighting_invalidated_blocks);
+					if(block == NULL)
+						got_block = false;
+				}
+			}
+			else
+			{
+				if(block->getLightingExpired()){
+					lighting_invalidated_blocks[block->getPos()] = block;
 				}
 			}
 

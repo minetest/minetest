@@ -40,38 +40,6 @@ Some planning
 
 */
 
-#if 0
-class IntervalLimiter
-{
-public:
-	IntervalLimiter():
-		m_accumulator(0)
-	{
-	}
-	/*
-		dtime: time from last call to this method
-		wanted_interval: interval wanted
-		return value:
-			true: action should be skipped
-			false: action should be done and dtime has been set
-	*/
-	bool step(float &dtime, float wanted_interval)
-	{
-		accumulator += dtime;
-		if(accumulator < wanted_interval)
-		{
-			dtime = 0;
-			return true;
-		}
-		accumulator -= wanted-interval;
-		dtime = wanted_interval;
-		return false;
-	}
-protected:
-	float m_accumulator;
-};
-#endif
-
 class ServerEnvironment;
 class InventoryItem;
 
@@ -204,6 +172,7 @@ private:
 	std::string m_inventorystring;
 	v3f m_speed_f;
 	v3f m_last_sent_position;
+	IntervalLimiter m_move_interval;
 };
 
 class RatSAO : public ServerActiveObject
@@ -220,6 +189,8 @@ public:
 	std::string getStaticData();
 	InventoryItem* createPickedUpItem();
 private:
+	bool m_is_active;
+	IntervalLimiter m_inactive_interval;
 	v3f m_speed_f;
 	v3f m_oldpos;
 	v3f m_last_sent_position;

@@ -2015,6 +2015,35 @@ inline core::aabbox3d<f32> getNodeBox(v3s16 p, float d)
 	);
 }
 	
+class IntervalLimiter
+{
+public:
+	IntervalLimiter():
+		m_accumulator(0)
+	{
+	}
+	/*
+		dtime: time from last call to this method
+		wanted_interval: interval wanted
+		return value:
+			true: action should be skipped
+			false: action should be done
+	*/
+	bool step(float dtime, float wanted_interval)
+	{
+		m_accumulator += dtime;
+		if(m_accumulator < wanted_interval)
+		{
+			dtime = 0;
+			return true;
+		}
+		m_accumulator -= wanted_interval;
+		return false;
+	}
+protected:
+	float m_accumulator;
+};
+
 
 #endif
 

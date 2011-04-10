@@ -1801,7 +1801,6 @@ ServerMap::ServerMap(std::string savedir):
 	//m_chunksize = 4;
 	//m_chunksize = 2;
 	
-	// TODO: Save to and load from a file
 	m_seed = (((u64)(myrand()%0xffff)<<0)
 			+ ((u64)(myrand()%0xffff)<<16)
 			+ ((u64)(myrand()%0xffff)<<32)
@@ -1838,8 +1837,16 @@ ServerMap::ServerMap(std::string savedir):
 				// Load map metadata (seed, chunksize)
 				loadMapMeta();
 				
-				// Load chunk metadata
-				loadChunkMeta();
+				try{
+					// Load chunk metadata
+					loadChunkMeta();
+				}
+				catch(FileNotGoodException &e){
+					dstream<<DTIME<<"WARNING: Server: Could not load "
+							<<"chunk metafile. Disabling chunk-based "
+							<<"generation."<<std::endl;
+					m_chunksize = 0;
+				}
 			
 				/*// Load sector (0,0) and throw and exception on fail
 				if(loadSectorFull(v2s16(0,0)) == false)
@@ -2173,6 +2180,9 @@ void addRandomObjects(MapBlock *block)
 
 void makeChunk(ChunkMakeData *data)
 {
+	if(data->no_op)
+		return;
+	
 	s16 y_nodes_min = data->y_blocks_min * MAP_BLOCKSIZE;
 	s16 y_nodes_max = data->y_blocks_max * MAP_BLOCKSIZE + MAP_BLOCKSIZE - 1;
 	s16 h_blocks = data->y_blocks_max - data->y_blocks_min + 1;
@@ -2938,8 +2948,8 @@ void makeChunk(ChunkMakeData *data)
 
 					// Add to transforming liquid queue (in case it'd
 					// start flowing)
-					/*v3s16 p = v3s16(p2d.X, y, p2d.Y);
-					m_transforming_liquid.push_back(p);*/
+					v3s16 p = v3s16(p2d.X, y, p2d.Y);
+					data->transforming_liquid.push_back(p);
 				}
 				
 				// Next one
@@ -3419,6 +3429,14 @@ void makeChunk(ChunkMakeData *data)
 
 void ServerMap::initChunkMake(ChunkMakeData &data, v2s16 chunkpos)
 {
+	if(m_chunksize == 0)
+	{
+		data.no_op = true;
+		return;
+	}
+
+	data.no_op = false;
+
 	// The distance how far into the neighbors the generator is allowed to go.
 	s16 max_spread_amount_sectors = 2;
 	assert(max_spread_amount_sectors <= m_chunksize);
@@ -3449,7 +3467,7 @@ void ServerMap::initChunkMake(ChunkMakeData &data, v2s16 chunkpos)
 		Create the whole area of this and the neighboring chunks
 	*/
 	{
-		TimeTaker timer("generateChunkRaw() create area");
+		TimeTaker timer("initChunkMake() create area");
 		
 		for(s16 x=0; x<sectorpos_bigbase_size; x++)
 		for(s16 z=0; z<sectorpos_bigbase_size; z++)
@@ -3503,7 +3521,7 @@ void ServerMap::initChunkMake(ChunkMakeData &data, v2s16 chunkpos)
 	data.vmanip.setMap(this);
 	// Add the area
 	{
-		TimeTaker timer("generateChunkRaw() initialEmerge");
+		TimeTaker timer("initChunkMake() initialEmerge");
 		data.vmanip.initialEmerge(bigarea_blocks_min, bigarea_blocks_max);
 	}
 	
@@ -3512,6 +3530,9 @@ void ServerMap::initChunkMake(ChunkMakeData &data, v2s16 chunkpos)
 MapChunk* ServerMap::finishChunkMake(ChunkMakeData &data,
 		core::map<v3s16, MapBlock*> &changed_blocks)
 {
+	if(data.no_op)
+		return NULL;
+	
 	/*
 		Blit generated stuff to map
 	*/
@@ -3531,6 +3552,15 @@ MapChunk* ServerMap::finishChunkMake(ChunkMakeData &data,
 			MapBlock *block = i.getNode()->getValue();
 			block->updateDayNightDiff();
 		}
+	}
+
+	/*
+		Copy transforming liquid information
+	*/
+	while(data.transforming_liquid.size() > 0)
+	{
+		v3s16 p = data.transforming_liquid.pop_front();
+		m_transforming_liquid.push_back(p);
 	}
 
 	/*
@@ -3590,6 +3620,7 @@ MapChunk* ServerMap::finishChunkMake(ChunkMakeData &data,
 	return chunk;
 }
 
+#if 0
 // NOTE: Deprecated
 MapChunk* ServerMap::generateChunkRaw(v2s16 chunkpos,
 		core::map<v3s16, MapBlock*> &changed_blocks,
@@ -3661,6 +3692,7 @@ MapChunk* ServerMap::generateChunk(v2s16 chunkpos1,
 	MapChunk *chunk = getChunk(chunkpos1);
 	return chunk;
 }
+#endif
 
 ServerMapSector * ServerMap::createSector(v2s16 p2d)
 {
@@ -3715,6 +3747,7 @@ ServerMapSector * ServerMap::createSector(v2s16 p2d)
 	return sector;
 }
 
+#if 0
 MapSector * ServerMap::emergeSector(v2s16 p2d,
 		core::map<v3s16, MapBlock*> &changed_blocks)
 {
@@ -3801,6 +3834,7 @@ MapSector * ServerMap::emergeSector(v2s16 p2d,
 	*/
 	//return generateSector();
 }
+#endif
 
 /*
 	NOTE: This is not used for main map generation, only for blocks
@@ -3817,6 +3851,14 @@ MapBlock * ServerMap::generateBlock(
 	DSTACK("%s: p=(%d,%d,%d)",
 			__FUNCTION_NAME,
 			p.X, p.Y, p.Z);
+
+	// If chunks are disabled
+	/*if(m_chunksize == 0)
+	{
+		dstream<<"ServerMap::generateBlock(): Chunks disabled -> "
+				<<"not generating."<<std::endl;
+		return NULL;
+	}*/
 	
 	/*dstream<<"generateBlock(): "
 			<<"("<<p.X<<","<<p.Y<<","<<p.Z<<")"
@@ -3869,6 +3911,9 @@ MapBlock * ServerMap::generateBlock(
 
 		s16 surface_y = base_rock_level_2d(m_seed, p2d_nodes+v2s16(x0,z0))
 				+ AVERAGE_MUD_AMOUNT;
+		// If chunks are disabled
+		if(m_chunksize == 0)
+			surface_y = WATER_LEVEL + 1;
 
 		if(surface_y < lowest_ground_y)
 			lowest_ground_y = surface_y;
@@ -4735,7 +4780,12 @@ void ServerMap::save(bool only_changed)
 				<<std::endl;
 	
 	saveMapMeta();
-	saveChunkMeta();
+
+	// Disable saving chunk metadata file if chunks are disabled
+	if(m_chunksize != 0)
+	{
+		saveChunkMeta();
+	}
 	
 	u32 sector_meta_count = 0;
 	u32 block_count = 0;
@@ -4789,6 +4839,8 @@ void ServerMap::save(bool only_changed)
 	}
 }
 
+#if 0
+// NOTE: Doing this is insane. Deprecated and probably broken.
 void ServerMap::loadAll()
 {
 	DSTACK(__FUNCTION_NAME);
@@ -4849,6 +4901,7 @@ void ServerMap::loadAll()
 	}
 	dstream<<DTIME<<"ServerMap: Map loaded."<<std::endl;
 }
+#endif
 
 #if 0
 void ServerMap::saveMasterHeightmap()
@@ -4952,6 +5005,9 @@ void ServerMap::loadMapMeta()
 void ServerMap::saveChunkMeta()
 {
 	DSTACK(__FUNCTION_NAME);
+
+	// This should not be called if chunks are disabled.
+	assert(m_chunksize != 0);
 	
 	u32 count = m_chunks.size();
 

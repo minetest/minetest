@@ -170,6 +170,12 @@ void ItemSAO::step(float dtime, Queue<ActiveObjectMessage> &messages,
 		bool send_recommended)
 {
 	assert(m_env);
+
+	const float interval = 0.2;
+	if(m_move_interval.step(dtime, interval))
+		return;
+	dtime = interval;
+	
 	core::aabbox3d<f32> box(-BS/3.,0.0,-BS/3., BS/3.,BS*2./3.,BS/3.);
 	collisionMoveResult moveresult;
 	// Apply gravity
@@ -270,6 +276,7 @@ RatSAO proto_RatSAO(NULL, 0, v3f(0,0,0));
 
 RatSAO::RatSAO(ServerEnvironment *env, u16 id, v3f pos):
 	ServerActiveObject(env, id, pos),
+	m_is_active(false),
 	m_speed_f(0,0,0)
 {
 	//dstream<<"Server: RatSAO created"<<std::endl;
@@ -302,6 +309,12 @@ void RatSAO::step(float dtime, Queue<ActiveObjectMessage> &messages,
 		bool send_recommended)
 {
 	assert(m_env);
+
+	if(m_is_active == false)
+	{
+		if(m_inactive_interval.step(dtime, 0.5))
+			return;
+	}
 
 	/*
 		The AI
@@ -336,6 +349,8 @@ void RatSAO::step(float dtime, Queue<ActiveObjectMessage> &messages,
 			break;
 		}
 	}
+
+	m_is_active = player_is_close;
 	
 	if(player_is_close == false)
 	{
