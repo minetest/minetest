@@ -1903,7 +1903,7 @@ inline v3f intToFloat(v3s16 p, f32 d)
 */
 
 // Creates a string with the length as the first two bytes
-inline std::string serializeString(const std::string plain)
+inline std::string serializeString(const std::string &plain)
 {
 	assert(plain.size() <= 65535);
 	char buf[2];
@@ -1945,7 +1945,7 @@ inline std::string deSerializeString(std::istream &is)
 }
 
 // Creates a string with the length as the first four bytes
-inline std::string serializeLongString(const std::string plain)
+inline std::string serializeLongString(const std::string &plain)
 {
 	char buf[4];
 	writeU32((u8*)&buf[0], plain.size());

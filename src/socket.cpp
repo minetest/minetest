@@ -53,6 +53,8 @@ void sockets_cleanup()
 
 Address::Address()
 {
+	m_address = 0;
+	m_port = 0;
 }
 
 Address::Address(unsigned int address, unsigned short port)

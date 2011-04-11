@@ -553,7 +553,7 @@ public:
 	/*
 		Some settings
 	*/
-	bool m_disable_water_climb;
+	//bool m_disable_water_climb;
 
 private:
 };

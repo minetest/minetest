@@ -90,6 +90,7 @@ DebugStack::DebugStack(threadid_t id)
 	threadid = id;
 	stack_i = 0;
 	stack_max_i = 0;
+	memset(stack, 0, DEBUG_STACK_SIZE*DEBUG_STACK_TEXT_SIZE);
 }
 
 void DebugStack::print(FILE *file, bool everything)

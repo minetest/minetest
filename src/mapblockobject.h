@@ -563,7 +563,8 @@ public:
 				(-BS*0.3,-BS*.25,-BS*0.3, BS*0.3,BS*0.25,BS*0.3);
 		m_selection_box = new core::aabbox3d<f32>
 				(-BS*0.3,-BS*.25,-BS*0.3, BS*0.3,BS*0.25,BS*0.3);
-
+		
+		m_yaw = 0;
 		m_counter1 = 0;
 		m_counter2 = 0;
 		m_age = 0;
@@ -906,7 +907,8 @@ class PlayerObject : public MovingObject
 public:
 	PlayerObject(MapBlock *block, s16 id, v3f pos):
 		MovingObject(block, id, pos),
-		m_node(NULL)
+		m_node(NULL),
+		m_yaw(0)
 	{
 		m_collision_box = new core::aabbox3d<f32>
 				(-BS*0.3,-BS*.25,-BS*0.3, BS*0.3,BS*0.25,BS*0.3);

@@ -82,7 +82,8 @@ Client::Client(
 	camera_direction(0,0,1),
 	m_server_ser_ver(SER_FMT_VER_INVALID),
 	m_inventory_updated(false),
-	m_time_of_day(0)
+	m_time_of_day(0),
+	m_map_seed(0)
 {
 	m_packetcounter_timer = 0.0;
 	m_delete_unused_sectors_timer = 0.0;

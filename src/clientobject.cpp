@@ -404,7 +404,8 @@ RatCAO::RatCAO():
 	ClientActiveObject(0),
 	m_selection_box(-BS/3.,0.0,-BS/3., BS/3.,BS/2.,BS/3.),
 	m_node(NULL),
-	m_position(v3f(0,10*BS,0))
+	m_position(v3f(0,10*BS,0)),
+	m_yaw(0)
 {
 	ClientActiveObject::registerType(getType(), create);
 }

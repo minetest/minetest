@@ -6030,7 +6030,8 @@ void MapVoxelManipulator::blitBack
 }
 
 ManualMapVoxelManipulator::ManualMapVoxelManipulator(Map *map):
-		MapVoxelManipulator(map)
+		MapVoxelManipulator(map),
+		m_create_area(false)
 {
 }
 

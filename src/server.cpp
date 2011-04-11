@@ -892,6 +892,7 @@ void RemoteClient::SetBlocksNotSent(core::map<v3s16, MapBlock*> &blocks)
 PlayerInfo::PlayerInfo()
 {
 	name[0] = 0;
+	avg_rtt = 0;
 }
 
 void PlayerInfo::PrintLine(std::ostream *s)

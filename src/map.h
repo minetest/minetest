@@ -780,7 +780,8 @@ struct ChunkMakeData
 
 	ChunkMakeData():
 		no_op(false),
-		vmanip(NULL)
+		vmanip(NULL),
+		seed(0)
 	{}
 };
 
