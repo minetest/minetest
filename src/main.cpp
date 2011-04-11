@@ -111,6 +111,8 @@ Game content:
 	- This can be done in the active blocks I guess.
 	- Lots of stuff can be done in the active blocks.
 	- Uh, is there an active block list somewhere? I think not. Add it.
+- Breaking weak structures
+	- This can probably be accomplished in the same way as grass
 - Player health points
 	- When player dies, throw items on map (needs better item-on-map
 	  implementation)
