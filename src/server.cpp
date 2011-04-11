@@ -1224,6 +1224,8 @@ void Server::AsyncRunStep()
 				//u16 peer_id = i.getNode()->getKey();
 				RemoteClient *client = i.getNode()->getValue();
 				Player *player = m_env.getPlayer(client->peer_id);
+				if(player==NULL)
+					continue;
 				std::cout<<player->getName()<<"\t";
 				client->PrintInfo(std::cout);
 			}

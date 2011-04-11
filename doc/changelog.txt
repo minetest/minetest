@@ -3,6 +3,9 @@ Minetest-c55 changelog
 This should contain all the major changes.
 For minor stuff, refer to the commit log of the repository.
 
+2011-04-11:
+- Fixed crafting a bit
+
 2011-04-10_0:
 - Asynchronous map generation
 - New object system
