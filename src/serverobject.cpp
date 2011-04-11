@@ -144,8 +144,6 @@ ItemSAO::ItemSAO(ServerEnvironment *env, u16 id, v3f pos,
 	m_speed_f(0,0,0),
 	m_last_sent_position(0,0,0)
 {
-	dstream<<"Server: ItemSAO created with inventorystring=\""
-			<<m_inventorystring<<"\""<<std::endl;
 	ServerActiveObject::registerType(getType(), create);
 }
 
@@ -279,7 +277,6 @@ RatSAO::RatSAO(ServerEnvironment *env, u16 id, v3f pos):
 	m_is_active(false),
 	m_speed_f(0,0,0)
 {
-	//dstream<<"Server: RatSAO created"<<std::endl;
 	ServerActiveObject::registerType(getType(), create);
 
 	m_oldpos = v3f(0,0,0);
