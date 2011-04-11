@@ -1322,9 +1322,12 @@ void Server::AsyncRunStep()
 				data_buffer.append(buf, 2);
 				writeU8((u8*)buf, type);
 				data_buffer.append(buf, 1);
-
-				data_buffer.append(serializeLongString(
-						obj->getClientInitializationData()));
+				
+				if(obj)
+					data_buffer.append(serializeLongString(
+							obj->getClientInitializationData()));
+				else
+					data_buffer.append(serializeLongString(""));
 
 				// Add to known objects
 				client->m_known_objects.insert(i.getNode()->getKey(), false);
