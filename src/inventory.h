@@ -455,6 +455,9 @@ public:
 	// Count used slots
 	u32 getUsedSlots();
 	u32 getFreeSlots();
+
+	/*bool getDirty(){ return m_dirty; }
+	void setDirty(bool dirty=true){ m_dirty = dirty; }*/
 	
 	// Get pointer to item
 	InventoryItem * getItem(u32 i);
@@ -490,6 +493,7 @@ private:
 	core::array<InventoryItem*> m_items;
 	u32 m_size;
 	std::string m_name;
+	//bool m_dirty;
 };
 
 class Inventory

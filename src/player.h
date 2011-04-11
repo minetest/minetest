@@ -122,6 +122,8 @@ public:
 	
 	Inventory inventory;
 
+	bool craftresult_is_preview;
+
 	u16 peer_id;
 
 protected:

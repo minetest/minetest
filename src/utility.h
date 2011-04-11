@@ -1331,6 +1331,14 @@ public:
 		return value;
 	}
 
+	void setBool(std::string name, bool value)
+	{
+		if(value)
+			set(name, "true");
+		else
+			set(name, "false");
+	}
+
 	void setS32(std::string name, s32 value)
 	{
 		set(name, itos(value));

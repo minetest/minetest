@@ -2649,40 +2649,47 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 				if(ma->to_inv == "current_player" &&
 						ma->from_inv == "current_player")
 				{
-					// Don't allow moving anything to craftresult
-					if(ma->to_list == "craftresult")
+					InventoryList *rlist = player->inventory.getList("craftresult");
+					assert(rlist);
+					InventoryList *clist = player->inventory.getList("craft");
+					assert(clist);
+					InventoryList *mlist = player->inventory.getList("main");
+					assert(mlist);
+					/*
+						Craftresult is no longer preview if something
+						is moved into it
+					*/
+					if(ma->to_list == "craftresult"
+							&& ma->from_list != "craftresult")
 					{
-						// Do nothing
-						disable_action = true;
+						// If it currently is a preview, remove
+						// its contents
+						if(player->craftresult_is_preview)
+						{
+							rlist->deleteItem(0);
+						}
+						player->craftresult_is_preview = false;
 					}
-					// When something is removed from craftresult
-					if(ma->from_list == "craftresult")
+					/*
+						Crafting takes place if this condition is true.
+					*/
+					if(player->craftresult_is_preview &&
+							ma->from_list == "craftresult")
+					{
+						player->craftresult_is_preview = false;
+						clist->decrementMaterials(1);
+					}
+					/*
+						If the craftresult is placed on itself, move it to
+						main inventory instead of doing the action
+					*/
+					if(ma->to_list == "craftresult"
+							&& ma->from_list == "craftresult")
 					{
 						disable_action = true;
-						// Remove stuff from craft
-						InventoryList *clist = player->inventory.getList("craft");
-						if(clist)
-						{
-							u16 count = ma->count;
-							if(count == 0)
-								count = 1;
-							clist->decrementMaterials(count);
-						}
-						// Do action
-						// Feed action to player inventory
-						//a->apply(&player->inventory);
-						a->apply(&c, this);
-						// Eat it
-						delete a;
-						// If something appeared in craftresult, throw it
-						// in the main list
-						InventoryList *rlist = player->inventory.getList("craftresult");
-						InventoryList *mlist = player->inventory.getList("main");
-						if(rlist && mlist && rlist->getUsedSlots() == 1)
-						{
-							InventoryItem *item1 = rlist->changeItem(0, NULL);
-							mlist->addItem(item1);
-						}
+						
+						InventoryItem *item1 = rlist->changeItem(0, NULL);
+						mlist->addItem(item1);
 					}
 				}
 			}
@@ -2690,7 +2697,6 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 			if(disable_action == false)
 			{
 				// Feed action to player inventory
-				//a->apply(&player->inventory);
 				a->apply(&c, this);
 				// Eat the action
 				delete a;
@@ -3066,6 +3072,7 @@ void Server::SendInventory(u16 peer_id)
 	DSTACK(__FUNCTION_NAME);
 	
 	Player* player = m_env.getPlayer(peer_id);
+	assert(player);
 
 	/*
 		Calculate crafting stuff
@@ -3074,11 +3081,15 @@ void Server::SendInventory(u16 peer_id)
 	{
 		InventoryList *clist = player->inventory.getList("craft");
 		InventoryList *rlist = player->inventory.getList("craftresult");
-		if(rlist)
+
+		if(rlist->getUsedSlots() == 0)
+			player->craftresult_is_preview = true;
+
+		if(rlist && player->craftresult_is_preview)
 		{
 			rlist->clearItems();
 		}
-		if(clist && rlist)
+		if(clist && rlist && player->craftresult_is_preview)
 		{
 			InventoryItem *items[9];
 			for(u16 i=0; i<9; i++)
@@ -3355,8 +3366,8 @@ void Server::SendInventory(u16 peer_id)
 					found = true;
 				}
 			}
-
 		}
+	
 	} // if creative_mode == false
 
 	/*

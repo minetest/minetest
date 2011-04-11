@@ -278,6 +278,7 @@ InventoryList::InventoryList(std::string name, u32 size)
 	m_name = name;
 	m_size = size;
 	clearItems();
+	//m_dirty = false;
 }
 
 InventoryList::~InventoryList()
@@ -303,6 +304,8 @@ void InventoryList::clearItems()
 	{
 		m_items.push_back(NULL);
 	}
+
+	//setDirty(true);
 }
 
 void InventoryList::serialize(std::ostream &os)
@@ -396,6 +399,7 @@ InventoryList & InventoryList::operator = (const InventoryList &other)
 			m_items[i] = item->clone();
 		}
 	}
+	//setDirty(true);
 
 	return *this;
 }
@@ -440,6 +444,7 @@ InventoryItem * InventoryList::changeItem(u32 i, InventoryItem *newitem)
 
 	InventoryItem *olditem = m_items[i];
 	m_items[i] = newitem;
+	//setDirty(true);
 	return olditem;
 }
 
@@ -492,6 +497,8 @@ InventoryItem * InventoryList::addItem(u32 i, InventoryItem *newitem)
 {
 	if(newitem == NULL)
 		return NULL;
+	
+	//setDirty(true);
 	
 	// If it is an empty position, it's an easy job.
 	InventoryItem *to_item = m_items[i];
@@ -549,6 +556,8 @@ InventoryItem * InventoryList::takeItem(u32 i, u32 count)
 {
 	if(count == 0)
 		return NULL;
+	
+	//setDirty(true);
 
 	InventoryItem *item = m_items[i];
 	// If it is an empty position, return NULL

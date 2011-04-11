@@ -32,6 +32,7 @@ Player::Player():
 	in_water(false),
 	in_water_stable(false),
 	swimming_up(false),
+	craftresult_is_preview(true),
 	peer_id(PEER_ID_INEXISTENT),
 	m_pitch(0),
 	m_yaw(0),
@@ -100,6 +101,7 @@ void Player::serialize(std::ostream &os)
 	args.setFloat("pitch", m_pitch);
 	args.setFloat("yaw", m_yaw);
 	args.setV3F("position", m_position);
+	args.setBool("craftresult_is_preview", craftresult_is_preview);
 
 	args.writeLines(os);
 
@@ -131,6 +133,11 @@ void Player::deSerialize(std::istream &is)
 	m_pitch = args.getFloat("pitch");
 	m_yaw = args.getFloat("yaw");
 	m_position = args.getV3F("position");
+	try{
+		craftresult_is_preview = args.getBool("craftresult_is_preview");
+	}catch(SettingNotFoundException &e){
+		craftresult_is_preview = true;
+	}
 
 	inventory.deSerialize(is);
 }
