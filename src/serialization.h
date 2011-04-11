@@ -29,7 +29,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 	NOTE: The goal is to increment this so that saved maps will be
 	      loadable by any version. Other compatibility is not
 		  maintained.
-	Serialization format versions:
+	Serialization format versions (for raw map data (blocks, nodes, sectors)):
 	== Unsupported ==
 	0: original networked test with 1-byte nodes
 	1: update with 2-byte nodes

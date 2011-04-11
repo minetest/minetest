@@ -4711,6 +4711,9 @@ plan_b:
 	/*
 		Plan B: Get from map generator perlin noise function
 	*/
+	// This won't work if proper generation is disabled
+	if(m_chunksize == 0)
+		return WATER_LEVEL+2;
 	double level = base_rock_level_2d(m_seed, p2d);
 	return (s16)level;
 }
