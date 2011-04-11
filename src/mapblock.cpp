@@ -1936,6 +1936,12 @@ void MapBlock::deSerialize(std::istream &is, u8 version)
 	if(!ser_ver_supported(version))
 		throw VersionMismatchException("ERROR: MapBlock format not supported");
 
+	// These have no lighting info
+	if(version <= 1)
+	{
+		setLightingExpired(true);
+	}
+
 	// These have no compression
 	if(version <= 3 || version == 5 || version == 6)
 	{

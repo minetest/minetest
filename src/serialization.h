@@ -54,7 +54,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 // Highest supported serialization version
 #define SER_FMT_VER_HIGHEST 15
 // Lowest supported serialization version
-#define SER_FMT_VER_LOWEST 2
+#define SER_FMT_VER_LOWEST 0
 
 #define ser_ver_supported(v) (v >= SER_FMT_VER_LOWEST && v <= SER_FMT_VER_HIGHEST)
 
