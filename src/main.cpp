@@ -1704,7 +1704,7 @@ int main(int argc, char *argv[])
 	u16 port = 30000;
 	if(cmd_args.exists("port"))
 		port = cmd_args.getU16("port");
-	else if(cmd_args.exists("port"))
+	else if(g_settings.exists("port"))
 		port = g_settings.getU16("port");
 	
 	// Map directory
