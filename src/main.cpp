@@ -121,6 +121,11 @@ Game content:
   are possible.
 - Keys to chests?
 
+- The Treasure Guard; a big monster with a hammer
+	- The hammer does great damage, shakes the ground and removes a block
+	- You can drop on top of it, and have some time to attack there
+	  before he shakes you off
+
 Documentation:
 --------------
 
@@ -1990,7 +1995,10 @@ int main(int argc, char *argv[])
 
 		playername = wide_to_narrow(menudata.name);
 		address = wide_to_narrow(menudata.address);
-		port = stoi(wide_to_narrow(menudata.port));
+		int newport = stoi(wide_to_narrow(menudata.port));
+		if(newport != 0)
+			port = newport;
+		//port = stoi(wide_to_narrow(menudata.port));
 		g_settings.set("creative_mode", itos(menudata.creative_mode));
 		
 		// Check for valid parameters, restart menu if invalid.
