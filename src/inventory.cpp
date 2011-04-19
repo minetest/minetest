@@ -180,6 +180,16 @@ ServerActiveObject* CraftItem::createSAO(ServerEnvironment *env, u16 id, v3f pos
 	}
 }
 
+u16 CraftItem::getDropCount()
+{
+	// Special cases
+	if(m_subname == "rat")
+		return 1;
+	// Default
+	else
+		return InventoryItem::getDropCount();
+}
+
 bool CraftItem::isCookable()
 {
 	if(m_subname == "lump_of_iron")

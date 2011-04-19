@@ -59,6 +59,8 @@ public:
 	virtual std::string getText() { return ""; }
 	// Creates an object from the item, to be placed in the world.
 	virtual ServerActiveObject* createSAO(ServerEnvironment *env, u16 id, v3f pos);
+	// Gets amount of items that dropping one SAO will decrement
+	virtual u16 getDropCount(){ return getCount(); }
 
 	/*
 		Quantity methods
@@ -279,6 +281,7 @@ public:
 	}
 
 	ServerActiveObject* createSAO(ServerEnvironment *env, u16 id, v3f pos);
+	u16 getDropCount();
 
 	virtual bool addableTo(InventoryItem *other)
 	{

@@ -2470,22 +2470,27 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 					
 					dout_server<<"Placed object"<<std::endl;
 
-					// If item has count<=1, delete it
-					if(item->getCount() <= 1)
+					if(g_settings.getBool("creative_mode") == false)
 					{
-						InventoryList *ilist = player->inventory.getList("main");
-						if(g_settings.getBool("creative_mode") == false && ilist)
+						// Delete the right amount of items from the slot
+						u16 dropcount = item->getDropCount();
+						
+						// Delete item if all gone
+						if(item->getCount() <= dropcount)
 						{
-							// Remove from inventory and send inventory
-							ilist->deleteItem(item_i);
-							// Send inventory
-							SendInventory(peer_id);
+							if(item->getCount() < dropcount)
+								dstream<<"WARNING: Server: dropped more items"
+										<<" than the slot contains"<<std::endl;
+							
+							InventoryList *ilist = player->inventory.getList("main");
+							if(ilist)
+								// Remove from inventory and send inventory
+								ilist->deleteItem(item_i);
 						}
-					}
-					// Else decrement it
-					else
-					{
-						item->remove(1);
+						// Else decrement it
+						else
+							item->remove(dropcount);
+						
 						// Send inventory
 						SendInventory(peer_id);
 					}
