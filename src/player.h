@@ -26,6 +26,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "common_irrlicht.h"
 #include "inventory.h"
+#include "collision.h"
 
 #define PLAYERNAME_SIZE 20
 
@@ -123,6 +124,8 @@ public:
 	Inventory inventory;
 
 	bool craftresult_is_preview;
+
+	u16 hp;
 
 	u16 peer_id;
 
@@ -325,6 +328,8 @@ public:
 		return true;
 	}
 
+	void move(f32 dtime, Map &map, f32 pos_max_d,
+			core::list<CollisionInfo> *collision_info);
 	void move(f32 dtime, Map &map, f32 pos_max_d);
 
 	void applyControl(float dtime);

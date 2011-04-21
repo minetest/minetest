@@ -105,6 +105,12 @@ void compressZlib(SharedBuffer<u8> data, std::ostream &os)
 
 }
 
+void compressZlib(const std::string &data, std::ostream &os)
+{
+	SharedBuffer<u8> databuf((u8*)data.c_str(), data.size());
+	compressZlib(databuf, os);
+}
+
 void decompressZlib(std::istream &is, std::ostream &os)
 {
 	z_stream z;

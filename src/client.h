@@ -174,55 +174,28 @@ public:
 	MutexedQueue<MeshUpdateResult> m_queue_out;
 };
 
-#if 0
-struct IncomingPacket
+enum ClientEventType
 {
-	IncomingPacket()
-	{
-		m_data = NULL;
-		m_datalen = 0;
-		m_refcount = NULL;
-	}
-	IncomingPacket(const IncomingPacket &a)
-	{
-		m_data = a.m_data;
-		m_datalen = a.m_datalen;
-		m_refcount = a.m_refcount;
-		if(m_refcount != NULL)
-			(*m_refcount)++;
-	}
-	IncomingPacket(u8 *data, u32 datalen)
-	{
-		m_data = new u8[datalen];
-		memcpy(m_data, data, datalen);
-		m_datalen = datalen;
-		m_refcount = new s32(1);
-	}
-	~IncomingPacket()
-	{
-		if(m_refcount != NULL){
-			assert(*m_refcount > 0);
-			(*m_refcount)--;
-			if(*m_refcount == 0){
-				if(m_data != NULL)
-					delete[] m_data;
-				delete m_refcount;
-			}
-		}
-	}
-	/*IncomingPacket & operator=(IncomingPacket a)
-	{
-		m_data = a.m_data;
-		m_datalen = a.m_datalen;
-		m_refcount = a.m_refcount;
-		(*m_refcount)++;
-		return *this;
-	}*/
-	u8 *m_data;
-	u32 m_datalen;
-	s32 *m_refcount;
+	CE_NONE,
+	CE_PLAYER_DAMAGE,
+	CE_PLAYER_FORCE_MOVE
 };
-#endif
+
+struct ClientEvent
+{
+	ClientEventType type;
+	union{
+		struct{
+		} none;
+		struct{
+			u8 amount;
+		} player_damage;
+		struct{
+			f32 pitch;
+			f32 yaw;
+		} player_force_move;
+	};
+};
 
 class Client : public con::PeerHandler, public InventoryManager
 {
@@ -281,6 +254,7 @@ public:
 	void sendSignNodeText(v3s16 p, std::string text);
 	void sendInventoryAction(InventoryAction *a);
 	void sendChatMessage(const std::wstring &message);
+	void sendDamage(u8 damage);
 	
 	// locks envlock
 	void removeNode(v3s16 p);
@@ -329,6 +303,8 @@ public:
 	void printDebugInfo(std::ostream &os);
 
 	u32 getDayNightRatio();
+
+	u16 getHP();
 
 	//void updateSomeExpiredMeshes();
 	
@@ -394,13 +370,13 @@ public:
 
 	u64 getMapSeed(){ return m_map_seed; }
 
-	/*
-		These are not thread-safe
-	*/
 	void addUpdateMeshTask(v3s16 blockpos, bool ack_to_server=false);
 	// Including blocks at appropriate edges
 	void addUpdateMeshTaskWithEdge(v3s16 blockpos, bool ack_to_server=false);
 
+	// Get event from queue. CE_NONE is returned if queue is empty.
+	ClientEvent getClientEvent();
+	
 private:
 	
 	// Virtual methods from con::PeerHandler
@@ -419,6 +395,7 @@ private:
 	float m_connection_reinit_timer;
 	float m_avg_rtt_timer;
 	float m_playerpos_send_timer;
+	float m_ignore_damage_timer; // Used after server moves player
 
 	MeshUpdateThread m_mesh_update_thread;
 	
@@ -454,6 +431,8 @@ private:
 	u64 m_map_seed;
 	
 	InventoryContext m_inventory_context;
+
+	Queue<ClientEvent> m_client_event_queue;
 };
 
 #endif // !SERVER

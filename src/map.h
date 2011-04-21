@@ -287,6 +287,11 @@ public:
 	void removeNodeMetadata(v3s16 p);
 	void nodeMetadataStep(float dtime,
 			core::map<v3s16, MapBlock*> &changed_blocks);
+	
+	/*
+		Misc.
+	*/
+	core::map<v2s16, MapSector*> *getSectorsPtr(){return &m_sectors;}
 
 	/*
 		Variables
@@ -298,16 +303,13 @@ protected:
 
 	core::map<MapEventReceiver*, bool> m_event_receivers;
 	
-	// Mutex is important because on client map is accessed asynchronously
 	core::map<v2s16, MapSector*> m_sectors;
-	JMutex m_sector_mutex;
+	//JMutex m_sector_mutex;
 
 	// Be sure to set this to NULL when the cached sector is deleted 
 	MapSector *m_sector_cache;
 	v2s16 m_sector_cache_p;
 
-	//WrapperHeightmap m_hwrapper;
-	
 	// Queued transforming water nodes
 	UniqueQueue<v3s16> m_transforming_liquid;
 };

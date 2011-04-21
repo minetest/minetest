@@ -951,18 +951,18 @@ struct TestConnection
 			assert(got_exception);
 		}
 		{
-			//u8 data1[1100];
-			SharedBuffer<u8> data1(1100);
-			for(u16 i=0; i<1100; i++){
+			const int datasize = 30000;
+			SharedBuffer<u8> data1(datasize);
+			for(u16 i=0; i<datasize; i++){
 				data1[i] = i/4;
 			}
 
-			dstream<<"Sending data (size="<<1100<<"):";
-			for(int i=0; i<1100 && i<20; i++){
+			dstream<<"Sending data (size="<<datasize<<"):";
+			for(int i=0; i<datasize && i<20; i++){
 				if(i%2==0) DEBUGPRINT(" ");
 				DEBUGPRINT("%.2X", ((int)((const char*)*data1)[i])&0xff);
 			}
-			if(1100>20)
+			if(datasize>20)
 				dstream<<"...";
 			dstream<<std::endl;
 			
@@ -970,10 +970,10 @@ struct TestConnection
 
 			sleep_ms(50);
 			
-			u8 recvdata[2000];
+			u8 recvdata[datasize + 1000];
 			dstream<<"** running client.Receive()"<<std::endl;
 			u16 peer_id = 132;
-			u16 size = client.Receive(peer_id, recvdata, 2000);
+			u16 size = client.Receive(peer_id, recvdata, datasize + 1000);
 			dstream<<"** Client received: peer_id="<<peer_id
 					<<", size="<<size
 					<<std::endl;

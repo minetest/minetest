@@ -52,6 +52,8 @@
 # Set to true to enable creative mode (unlimited inventory)
 #creative_mode = false
 
+#enable_damage = false
+
 # Player and object positions are sent at intervals specified by this
 #objectdata_inverval = 0.2
 

@@ -215,8 +215,8 @@ inline void writeU16(std::ostream &os, u16 p)
 }
 inline u16 readU16(std::istream &is)
 {
-	char buf[12];
-	is.read(buf, 12);
+	char buf[2];
+	is.read(buf, 2);
 	return readU16((u8*)buf);
 }
 
@@ -228,8 +228,8 @@ inline void writeF1000(std::ostream &os, f32 p)
 }
 inline f32 readF1000(std::istream &is)
 {
-	char buf[12];
-	is.read(buf, 12);
+	char buf[2];
+	is.read(buf, 2);
 	return readF1000((u8*)buf);
 }
 

@@ -100,6 +100,12 @@ public:
 	*/
 	virtual InventoryItem* createPickedUpItem(){return NULL;}
 	
+	/*
+		If the object doesn't return an item, this will be called.
+		Return value is tool wear.
+	*/
+	virtual u16 punch(const std::string &toolname){return 0;}
+	
 	// Number of players which know about this object
 	u16 m_known_by_count;
 	/*
@@ -199,6 +205,34 @@ private:
 	float m_counter2;
 	float m_age;
 	bool m_touching_ground;
+};
+
+class Oerkki1SAO : public ServerActiveObject
+{
+public:
+	Oerkki1SAO(ServerEnvironment *env, u16 id, v3f pos);
+	u8 getType() const
+		{return ACTIVEOBJECT_TYPE_OERKKI1;}
+	static ServerActiveObject* create(ServerEnvironment *env, u16 id, v3f pos,
+			const std::string &data);
+	void step(float dtime, Queue<ActiveObjectMessage> &messages,
+			bool send_recommended);
+	std::string getClientInitializationData();
+	std::string getStaticData();
+	InventoryItem* createPickedUpItem(){return NULL;}
+	u16 punch(const std::string &toolname);
+private:
+	bool m_is_active;
+	IntervalLimiter m_inactive_interval;
+	v3f m_speed_f;
+	v3f m_oldpos;
+	v3f m_last_sent_position;
+	float m_yaw;
+	float m_counter1;
+	float m_counter2;
+	float m_age;
+	bool m_touching_ground;
+	u8 m_hp;
 };
 
 #endif

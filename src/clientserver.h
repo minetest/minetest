@@ -33,15 +33,18 @@ enum ToClientCommand
 
 		[0] u16 TOSERVER_INIT
 		[2] u8 deployed version
-		[3] v3s16 player's position + v3f(0,BS/2,0) floatToInt'd
-		[4] u64 map seed (new as of 2011-02-27)
+		[3] v3s16 player's position + v3f(0,BS/2,0) floatToInt'd 
+		([4] u64 map seed (new as of 2011-02-27))
+
+		NOTE: The position in here is deprecated; position is
+		      explicitly sent afterwards
 	*/
 
 	TOCLIENT_BLOCKDATA = 0x20, //TODO: Multiple blocks
 	TOCLIENT_ADDNODE = 0x21,
 	TOCLIENT_REMOVENODE = 0x22,
 	
-	TOCLIENT_PLAYERPOS = 0x23,
+	TOCLIENT_PLAYERPOS = 0x23, // Obsolete
 	/*
 		[0] u16 command
 		// Followed by an arbitary number of these:
@@ -62,9 +65,9 @@ enum ToClientCommand
 		[N] char[20] name
 	*/
 	
-	TOCLIENT_OPT_BLOCK_NOT_FOUND = 0x25, // Not used
+	TOCLIENT_OPT_BLOCK_NOT_FOUND = 0x25, // Obsolete
 
-	TOCLIENT_SECTORMETA = 0x26, // Not used
+	TOCLIENT_SECTORMETA = 0x26, // Obsolete
 	/*
 		[0] u16 command
 		[2] u8 sector count
@@ -134,6 +137,19 @@ enum ToClientCommand
 		}
 	*/
 
+	TOCLIENT_HP = 0x33,
+	/*
+		u16 command
+		u8 hp
+	*/
+
+	TOCLIENT_MOVE_PLAYER = 0x34,
+	/*
+		u16 command
+		v3f1000 player position
+		f1000 player pitch
+		f1000 player yaw
+	*/
 };
 
 enum ToServerCommand
@@ -155,9 +171,9 @@ enum ToServerCommand
 		[0] u16 TOSERVER_INIT2
 	*/
 
-	TOSERVER_GETBLOCK=0x20, // Not used
-	TOSERVER_ADDNODE = 0x21, // Not used
-	TOSERVER_REMOVENODE = 0x22, // deprecated
+	TOSERVER_GETBLOCK=0x20, // Obsolete
+	TOSERVER_ADDNODE = 0x21, // Obsolete
+	TOSERVER_REMOVENODE = 0x22, // Obsolete
 
 	TOSERVER_PLAYERPOS = 0x23,
 	/*
@@ -186,7 +202,7 @@ enum ToServerCommand
 		...
 	*/
 
-	TOSERVER_ADDNODE_FROM_INVENTORY = 0x26, // deprecated
+	TOSERVER_ADDNODE_FROM_INVENTORY = 0x26, // Obsolete
 	/*
 		[0] u16 command
 		[2] v3s16 pos
@@ -218,9 +234,9 @@ enum ToServerCommand
 		3: digging completed
 	*/
 	
-	TOSERVER_RELEASE = 0x29, // Not used
+	TOSERVER_RELEASE = 0x29, // Obsolete
 
-	TOSERVER_SIGNTEXT = 0x30,
+	TOSERVER_SIGNTEXT = 0x30, // Old signs
 	/*
 		u16 command
 		v3s16 blockpos
@@ -257,7 +273,12 @@ enum ToServerCommand
 		[3] u16 id
 		[5] u16 item
 	*/
-
+	
+	TOSERVER_DAMAGE = 0x35,
+	/*
+		u16 command
+		u8 amount
+	*/
 };
 
 inline SharedBuffer<u8> makePacket_TOCLIENT_TIME_OF_DAY(u16 time)

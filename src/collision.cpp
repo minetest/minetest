@@ -70,6 +70,7 @@ collisionMoveResult collisionMoveSimple(Map *map, f32 pos_max_d,
 	
 	/*
 		Go through every node around the object
+		TODO: Calculate the range of nodes that need to be checked
 	*/
 	for(s16 y = oldpos_i.Y - 1; y <= oldpos_i.Y + 2; y++)
 	for(s16 z = oldpos_i.Z - 1; z <= oldpos_i.Z + 1; z++)

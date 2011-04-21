@@ -38,6 +38,16 @@ collisionMoveResult collisionMoveSimple(Map *map, f32 pos_max_d,
 		f32 dtime, v3f &pos_f, v3f &speed_f);
 //{return collisionMoveResult();}
 
+enum CollisionType
+{
+	COLLISION_FALL
+};
+
+struct CollisionInfo
+{
+	CollisionType t;
+	f32 speed;
+};
 
 #endif
 

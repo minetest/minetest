@@ -1924,9 +1924,19 @@ void MapBlock::serialize(std::ostream &os, u8 version)
 		*/
 		if(version >= 14)
 		{
-			std::ostringstream oss(std::ios_base::binary);
-			m_node_metadata.serialize(oss);
-			os<<serializeString(oss.str());
+			if(version <= 15)
+			{
+				std::ostringstream oss(std::ios_base::binary);
+				m_node_metadata.serialize(oss);
+				os<<serializeString(oss.str());
+			}
+			else
+			{
+				std::ostringstream oss(std::ios_base::binary);
+				m_node_metadata.serialize(oss);
+				compressZlib(oss.str(), os);
+				//os<<serializeLongString(oss.str());
+			}
 		}
 	}
 }
@@ -2055,9 +2065,20 @@ void MapBlock::deSerialize(std::istream &is, u8 version)
 		{
 			// Ignore errors
 			try{
-				std::string data = deSerializeString(is);
-				std::istringstream iss(data, std::ios_base::binary);
-				m_node_metadata.deSerialize(iss);
+				if(version <= 15)
+				{
+					std::string data = deSerializeString(is);
+					std::istringstream iss(data, std::ios_base::binary);
+					m_node_metadata.deSerialize(iss);
+				}
+				else
+				{
+					//std::string data = deSerializeLongString(is);
+					std::ostringstream oss(std::ios_base::binary);
+					decompressZlib(is, oss);
+					std::istringstream iss(oss.str(), std::ios_base::binary);
+					m_node_metadata.deSerialize(iss);
+				}
 			}
 			catch(SerializationError &e)
 			{

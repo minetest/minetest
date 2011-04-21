@@ -33,6 +33,15 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "map.h"
 #include "inventory.h"
 
+/*
+	Some random functions
+*/
+v3f findSpawnPos(ServerMap &map);
+
+/*
+	A structure containing the data needed for queueing the fetching
+	of blocks.
+*/
 struct QueuedBlockEmerge
 {
 	v3s16 pos;
@@ -397,12 +406,24 @@ private:
 	void peerAdded(con::Peer *peer);
 	void deletingPeer(con::Peer *peer, bool timeout);
 	
+	/*
+		Static send methods
+	*/
+	
+	static void SendHP(con::Connection &con, u16 peer_id, u8 hp);
+	
+	/*
+		Non-static send methods
+	*/
+
 	// Envlock and conlock should be locked when calling these
 	void SendObjectData(float dtime);
 	void SendPlayerInfos();
 	void SendInventory(u16 peer_id);
 	void SendChatMessage(u16 peer_id, const std::wstring &message);
 	void BroadcastChatMessage(const std::wstring &message);
+	void SendPlayerHP(Player *player);
+	void SendMovePlayer(Player *player);
 	/*
 		Send a node removal/addition event to all clients except ignore_id.
 		Additionally, if far_players!=NULL, players further away than
@@ -418,6 +439,12 @@ private:
 	
 	// Sends blocks to clients
 	void SendBlocks(float dtime);
+
+	/*
+		Something random
+	*/
+	
+	void UpdateCrafting(u16 peer_id);
 	
 	// When called, connection mutex should be locked
 	RemoteClient* getClient(u16 peer_id);

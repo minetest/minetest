@@ -170,6 +170,24 @@ private:
 	Client uses an environment mutex.
 */
 
+enum ClientEnvEventType
+{
+	CEE_NONE,
+	CEE_PLAYER_DAMAGE
+};
+
+struct ClientEnvEvent
+{
+	ClientEnvEventType type;
+	union {
+		struct{
+		} none;
+		struct{
+			u8 amount;
+		} player_damage;
+	};
+};
+
 class ClientEnvironment : public Environment
 {
 public:
@@ -214,15 +232,29 @@ public:
 	void removeActiveObject(u16 id);
 
 	void processActiveObjectMessage(u16 id, const std::string &data);
+
+	/*
+		Callbacks for activeobjects
+	*/
+
+	void damageLocalPlayer(u8 damage);
+
+	/*
+		Client likes to call these
+	*/
 	
 	// Get all nearby objects
 	void getActiveObjects(v3f origin, f32 max_d,
 			core::array<DistanceSortedActiveObject> &dest);
 	
+	// Get event from queue. CEE_NONE is returned if queue is empty.
+	ClientEnvEvent getClientEvent();
+	
 private:
 	ClientMap *m_map;
 	scene::ISceneManager *m_smgr;
 	core::map<u16, ClientActiveObject*> m_active_objects;
+	Queue<ClientEnvEvent> m_client_event_queue;
 };
 
 #endif

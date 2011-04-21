@@ -22,6 +22,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "common_irrlicht.h"
 #include "activeobject.h"
+#include "utility.h"
 
 /*
 
@@ -260,6 +261,50 @@ public:
 		{return m_position;}
 
 private:
+	core::aabbox3d<f32> m_selection_box;
+	scene::IMeshSceneNode *m_node;
+	v3f m_position;
+	float m_yaw;
+	SmoothTranslator pos_translator;
+};
+
+/*
+	Oerkki1CAO
+*/
+
+class Oerkki1CAO : public ClientActiveObject
+{
+public:
+	Oerkki1CAO();
+	virtual ~Oerkki1CAO();
+	
+	u8 getType() const
+	{
+		return ACTIVEOBJECT_TYPE_OERKKI1;
+	}
+	
+	static ClientActiveObject* create();
+
+	void addToScene(scene::ISceneManager *smgr);
+	void removeFromScene();
+	void updateLight(u8 light_at_pos);
+	v3s16 getLightPosition();
+	void updateNodePos();
+
+	void step(float dtime, ClientEnvironment *env);
+
+	void processMessage(const std::string &data);
+
+	void initialize(const std::string &data);
+	
+	core::aabbox3d<f32>* getSelectionBox()
+		{return &m_selection_box;}
+	v3f getPosition()
+		{return pos_translator.vect_show;}
+		//{return m_position;}
+
+private:
+	IntervalLimiter m_attack_interval;
 	core::aabbox3d<f32> m_selection_box;
 	scene::IMeshSceneNode *m_node;
 	v3f m_position;

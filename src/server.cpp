@@ -959,6 +959,8 @@ Server::Server(
 
 Server::~Server()
 {
+	dstream<<"Server::~Server()"<<std::endl;
+
 	/*
 		Send shutdown message
 	*/
@@ -980,13 +982,18 @@ Server::~Server()
 			if(client->serialization_version == SER_FMT_VER_INVALID)
 				continue;
 
-			SendChatMessage(client->peer_id, line);
+			try{
+				SendChatMessage(client->peer_id, line);
+			}
+			catch(con::PeerNotFoundException &e)
+			{}
 		}
 	}
 
 	/*
 		Save players
 	*/
+	dstream<<"Server: Saving players"<<std::endl;
 	m_env.serializePlayers(m_mapsavedir);
 	
 	/*
@@ -1046,11 +1053,6 @@ void Server::stop()
 	m_emergethread.stop();
 	
 	dout_server<<"Server: Threads stopped"<<std::endl;
-
-	dout_server<<"Server: Saving players"<<std::endl;
-	// Save players
-	// FIXME: Apparently this does not do anything here
-	//m_env.serializePlayers(m_mapsavedir);
 }
 
 void Server::step(float dtime)
@@ -1550,6 +1552,8 @@ void Server::AsyncRunStep()
 		Step node metadata
 	*/
 	{
+		//TimeTaker timer("Step node metadata");
+
 		JMutexAutoLock envlock(m_env_mutex);
 		JMutexAutoLock conlock(m_con_mutex);
 		
@@ -1781,20 +1785,30 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 			data[20+3-1] = 0;
 			player->updateName((const char*)&data[3]);
 		}*/
+		
+		/*
+			Answer with a TOCLIENT_INIT
+		*/
+		{
+			SharedBuffer<u8> reply(2+1+6+8);
+			writeU16(&reply[0], TOCLIENT_INIT);
+			writeU8(&reply[2], deployed);
+			writeV3S16(&reply[2+1], floatToInt(player->getPosition()+v3f(0,BS/2,0), BS));
+			//writeU64(&reply[2+1+6], m_env.getServerMap().getSeed());
+			writeU64(&reply[2+1+6], 0); // no seed
+			
+			// Send as reliable
+			m_con.Send(peer_id, 0, reply, true);
+		}
 
-		// Now answer with a TOCLIENT_INIT
-		
-		SharedBuffer<u8> reply(2+1+6+8);
-		writeU16(&reply[0], TOCLIENT_INIT);
-		writeU8(&reply[2], deployed);
-		writeV3S16(&reply[2+1], floatToInt(player->getPosition()+v3f(0,BS/2,0), BS));
-		//writeU64(&reply[2+1+6], m_env.getServerMap().getSeed());
-		
-		// Send as reliable
-		m_con.Send(peer_id, 0, reply, true);
+		/*
+			Send complete position information
+		*/
+		SendMovePlayer(player);
 
 		return;
 	}
+
 	if(command == TOSERVER_INIT2)
 	{
 		derr_server<<DTIME<<"Server: Got TOSERVER_INIT2 from "
@@ -1812,7 +1826,14 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 		SendPlayerInfos();
 
 		// Send inventory to player
+		UpdateCrafting(peer->id);
 		SendInventory(peer->id);
+
+		// Send HP
+		{
+			Player *player = m_env.getPlayer(peer_id);
+			SendPlayerHP(player);
+		}
 		
 		// Send time of day
 		{
@@ -2005,6 +2026,7 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 				
 				// Add to inventory and send inventory
 				ilist->addItem(item);
+				UpdateCrafting(player->peer_id);
 				SendInventory(player->peer_id);
 			}
 
@@ -2026,7 +2048,7 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 		*/
 		u8 button = readU8(&data[2]);
 		u16 id = readS16(&data[3]);
-		//u16 item_i = readU16(&data[11]);
+		u16 item_i = readU16(&data[11]);
 	
 		ServerActiveObject *obj = m_env.getActiveObject(id);
 
@@ -2066,10 +2088,41 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 				{
 					// Add to inventory and send inventory
 					ilist->addItem(item);
+					UpdateCrafting(player->peer_id);
 					SendInventory(player->peer_id);
 
 					// Remove object from environment
 					obj->m_removed = true;
+				}
+				else
+				{
+					/*
+						Item cannot be picked up. Punch it instead.
+					*/
+
+					ToolItem *titem = NULL;
+					std::string toolname = "";
+
+					InventoryList *mlist = player->inventory.getList("main");
+					if(mlist != NULL)
+					{
+						InventoryItem *item = mlist->getItem(item_i);
+						if(item && (std::string)item->getName() == "ToolItem")
+						{
+							titem = (ToolItem*)item;
+							toolname = titem->getToolName();
+						}
+					}
+					
+					u16 wear = obj->punch(toolname);
+					
+					if(titem)
+					{
+						bool weared_out = titem->addWear(wear);
+						if(weared_out)
+							mlist->deleteItem(item_i);
+						SendInventory(player->peer_id);
+					}
 				}
 			}
 		}
@@ -2276,6 +2329,7 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 					player->inventory.addItem("main", item);
 
 					// Send inventory
+					UpdateCrafting(player->peer_id);
 					SendInventory(player->peer_id);
 				}
 			}
@@ -2380,6 +2434,7 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 					else
 						mitem->remove(1);
 					// Send inventory
+					UpdateCrafting(peer_id);
 					SendInventory(peer_id);
 				}
 				
@@ -2492,6 +2547,7 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 							item->remove(dropcount);
 						
 						// Send inventory
+						UpdateCrafting(peer_id);
 						SendInventory(peer_id);
 					}
 				}
@@ -2711,6 +2767,7 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 			else
 			{
 				// Send inventory
+				UpdateCrafting(player->peer_id);
 				SendInventory(player->peer_id);
 			}
 		}
@@ -2856,6 +2913,36 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 			}
 		}
 	}
+	else if(command == TOSERVER_DAMAGE)
+	{
+		if(g_settings.getBool("enable_damage"))
+		{
+			std::string datastring((char*)&data[2], datasize-2);
+			std::istringstream is(datastring, std::ios_base::binary);
+			u8 damage = readU8(is);
+			if(player->hp > damage)
+			{
+				player->hp -= damage;
+			}
+			else
+			{
+				player->hp = 0;
+
+				dstream<<"TODO: Server: TOSERVER_HP_DECREMENT: Player dies"
+						<<std::endl;
+				
+				v3f pos = findSpawnPos(m_env.getServerMap());
+				player->setPosition(pos);
+				player->hp = 20;
+				SendMovePlayer(player);
+				SendPlayerHP(player);
+				
+				//TODO: Throw items around
+			}
+		}
+
+		SendPlayerHP(player);
+	}
 	else
 	{
 		derr_server<<"WARNING: Server::ProcessData(): Ignoring "
@@ -2914,6 +3001,7 @@ void Server::inventoryModified(InventoryContext *c, std::string id)
 	{
 		assert(c->current_player);
 		// Send inventory
+		UpdateCrafting(c->current_player->peer_id);
 		SendInventory(c->current_player->peer_id);
 		return;
 	}
@@ -3016,6 +3104,29 @@ void Server::deletingPeer(con::Peer *peer, bool timeout)
 	m_peer_change_queue.push_back(c);
 }
 
+/*
+	Static send methods
+*/
+
+void Server::SendHP(con::Connection &con, u16 peer_id, u8 hp)
+{
+	DSTACK(__FUNCTION_NAME);
+	std::ostringstream os(std::ios_base::binary);
+
+	writeU16(os, TOCLIENT_HP);
+	writeU8(os, hp);
+
+	// Make data buffer
+	std::string s = os.str();
+	SharedBuffer<u8> data((u8*)s.c_str(), s.size());
+	// Send as reliable
+	con.Send(peer_id, 0, data, true);
+}
+
+/*
+	Non-static send methods
+*/
+
 void Server::SendObjectData(float dtime)
 {
 	DSTACK(__FUNCTION_NAME);
@@ -3075,6 +3186,306 @@ void Server::SendPlayerInfos()
 }
 
 void Server::SendInventory(u16 peer_id)
+{
+	DSTACK(__FUNCTION_NAME);
+	
+	Player* player = m_env.getPlayer(peer_id);
+	assert(player);
+
+	/*
+		Serialize it
+	*/
+
+	std::ostringstream os;
+	//os.imbue(std::locale("C"));
+
+	player->inventory.serialize(os);
+
+	std::string s = os.str();
+	
+	SharedBuffer<u8> data(s.size()+2);
+	writeU16(&data[0], TOCLIENT_INVENTORY);
+	memcpy(&data[2], s.c_str(), s.size());
+	
+	// Send as reliable
+	m_con.Send(peer_id, 0, data, true);
+}
+
+void Server::SendChatMessage(u16 peer_id, const std::wstring &message)
+{
+	DSTACK(__FUNCTION_NAME);
+	
+	std::ostringstream os(std::ios_base::binary);
+	u8 buf[12];
+	
+	// Write command
+	writeU16(buf, TOCLIENT_CHAT_MESSAGE);
+	os.write((char*)buf, 2);
+	
+	// Write length
+	writeU16(buf, message.size());
+	os.write((char*)buf, 2);
+	
+	// Write string
+	for(u32 i=0; i<message.size(); i++)
+	{
+		u16 w = message[i];
+		writeU16(buf, w);
+		os.write((char*)buf, 2);
+	}
+	
+	// Make data buffer
+	std::string s = os.str();
+	SharedBuffer<u8> data((u8*)s.c_str(), s.size());
+	// Send as reliable
+	m_con.Send(peer_id, 0, data, true);
+}
+
+void Server::BroadcastChatMessage(const std::wstring &message)
+{
+	for(core::map<u16, RemoteClient*>::Iterator
+		i = m_clients.getIterator();
+		i.atEnd() == false; i++)
+	{
+		// Get client and check that it is valid
+		RemoteClient *client = i.getNode()->getValue();
+		assert(client->peer_id == i.getNode()->getKey());
+		if(client->serialization_version == SER_FMT_VER_INVALID)
+			continue;
+
+		SendChatMessage(client->peer_id, message);
+	}
+}
+
+void Server::SendPlayerHP(Player *player)
+{
+	SendHP(m_con, player->peer_id, player->hp);
+}
+
+void Server::SendMovePlayer(Player *player)
+{
+	DSTACK(__FUNCTION_NAME);
+	std::ostringstream os(std::ios_base::binary);
+
+	writeU16(os, TOCLIENT_MOVE_PLAYER);
+	writeV3F1000(os, player->getPosition());
+	writeF1000(os, player->getPitch());
+	writeF1000(os, player->getYaw());
+	
+	{
+		v3f pos = player->getPosition();
+		f32 pitch = player->getPitch();
+		f32 yaw = player->getYaw();
+		dstream<<"Server sending TOCLIENT_MOVE_PLAYER"
+				<<" pos=("<<pos.X<<","<<pos.Y<<","<<pos.Z<<")"
+				<<" pitch="<<pitch
+				<<" yaw="<<yaw
+				<<std::endl;
+	}
+
+	// Make data buffer
+	std::string s = os.str();
+	SharedBuffer<u8> data((u8*)s.c_str(), s.size());
+	// Send as reliable
+	m_con.Send(player->peer_id, 0, data, true);
+}
+
+void Server::sendRemoveNode(v3s16 p, u16 ignore_id,
+	core::list<u16> *far_players, float far_d_nodes)
+{
+	float maxd = far_d_nodes*BS;
+	v3f p_f = intToFloat(p, BS);
+
+	// Create packet
+	u32 replysize = 8;
+	SharedBuffer<u8> reply(replysize);
+	writeU16(&reply[0], TOCLIENT_REMOVENODE);
+	writeS16(&reply[2], p.X);
+	writeS16(&reply[4], p.Y);
+	writeS16(&reply[6], p.Z);
+
+	for(core::map<u16, RemoteClient*>::Iterator
+		i = m_clients.getIterator();
+		i.atEnd() == false; i++)
+	{
+		// Get client and check that it is valid
+		RemoteClient *client = i.getNode()->getValue();
+		assert(client->peer_id == i.getNode()->getKey());
+		if(client->serialization_version == SER_FMT_VER_INVALID)
+			continue;
+
+		// Don't send if it's the same one
+		if(client->peer_id == ignore_id)
+			continue;
+		
+		if(far_players)
+		{
+			// Get player
+			Player *player = m_env.getPlayer(client->peer_id);
+			if(player)
+			{
+				// If player is far away, only set modified blocks not sent
+				v3f player_pos = player->getPosition();
+				if(player_pos.getDistanceFrom(p_f) > maxd)
+				{
+					far_players->push_back(client->peer_id);
+					continue;
+				}
+			}
+		}
+
+		// Send as reliable
+		m_con.Send(client->peer_id, 0, reply, true);
+	}
+}
+
+void Server::sendAddNode(v3s16 p, MapNode n, u16 ignore_id,
+		core::list<u16> *far_players, float far_d_nodes)
+{
+	float maxd = far_d_nodes*BS;
+	v3f p_f = intToFloat(p, BS);
+
+	for(core::map<u16, RemoteClient*>::Iterator
+		i = m_clients.getIterator();
+		i.atEnd() == false; i++)
+	{
+		// Get client and check that it is valid
+		RemoteClient *client = i.getNode()->getValue();
+		assert(client->peer_id == i.getNode()->getKey());
+		if(client->serialization_version == SER_FMT_VER_INVALID)
+			continue;
+
+		// Don't send if it's the same one
+		if(client->peer_id == ignore_id)
+			continue;
+
+		if(far_players)
+		{
+			// Get player
+			Player *player = m_env.getPlayer(client->peer_id);
+			if(player)
+			{
+				// If player is far away, only set modified blocks not sent
+				v3f player_pos = player->getPosition();
+				if(player_pos.getDistanceFrom(p_f) > maxd)
+				{
+					far_players->push_back(client->peer_id);
+					continue;
+				}
+			}
+		}
+
+		// Create packet
+		u32 replysize = 8 + MapNode::serializedLength(client->serialization_version);
+		SharedBuffer<u8> reply(replysize);
+		writeU16(&reply[0], TOCLIENT_ADDNODE);
+		writeS16(&reply[2], p.X);
+		writeS16(&reply[4], p.Y);
+		writeS16(&reply[6], p.Z);
+		n.serialize(&reply[8], client->serialization_version);
+
+		// Send as reliable
+		m_con.Send(client->peer_id, 0, reply, true);
+	}
+}
+
+void Server::SendBlockNoLock(u16 peer_id, MapBlock *block, u8 ver)
+{
+	DSTACK(__FUNCTION_NAME);
+	/*
+		Create a packet with the block in the right format
+	*/
+	
+	std::ostringstream os(std::ios_base::binary);
+	block->serialize(os, ver);
+	std::string s = os.str();
+	SharedBuffer<u8> blockdata((u8*)s.c_str(), s.size());
+
+	u32 replysize = 8 + blockdata.getSize();
+	SharedBuffer<u8> reply(replysize);
+	v3s16 p = block->getPos();
+	writeU16(&reply[0], TOCLIENT_BLOCKDATA);
+	writeS16(&reply[2], p.X);
+	writeS16(&reply[4], p.Y);
+	writeS16(&reply[6], p.Z);
+	memcpy(&reply[8], *blockdata, blockdata.getSize());
+
+	/*dstream<<"Server: Sending block ("<<p.X<<","<<p.Y<<","<<p.Z<<")"
+			<<":  \tpacket size: "<<replysize<<std::endl;*/
+	
+	/*
+		Send packet
+	*/
+	m_con.Send(peer_id, 1, reply, true);
+}
+
+void Server::SendBlocks(float dtime)
+{
+	DSTACK(__FUNCTION_NAME);
+
+	JMutexAutoLock envlock(m_env_mutex);
+	JMutexAutoLock conlock(m_con_mutex);
+
+	//TimeTaker timer("Server::SendBlocks");
+
+	core::array<PrioritySortedBlockTransfer> queue;
+
+	s32 total_sending = 0;
+
+	for(core::map<u16, RemoteClient*>::Iterator
+		i = m_clients.getIterator();
+		i.atEnd() == false; i++)
+	{
+		RemoteClient *client = i.getNode()->getValue();
+		assert(client->peer_id == i.getNode()->getKey());
+
+		total_sending += client->SendingCount();
+		
+		if(client->serialization_version == SER_FMT_VER_INVALID)
+			continue;
+		
+		client->GetNextBlocks(this, dtime, queue);
+	}
+
+	// Sort.
+	// Lowest priority number comes first.
+	// Lowest is most important.
+	queue.sort();
+
+	for(u32 i=0; i<queue.size(); i++)
+	{
+		//TODO: Calculate limit dynamically
+		if(total_sending >= g_settings.getS32
+				("max_simultaneous_block_sends_server_total"))
+			break;
+		
+		PrioritySortedBlockTransfer q = queue[i];
+
+		MapBlock *block = NULL;
+		try
+		{
+			block = m_env.getMap().getBlockNoCreate(q.pos);
+		}
+		catch(InvalidPositionException &e)
+		{
+			continue;
+		}
+
+		RemoteClient *client = getClient(q.peer_id);
+
+		SendBlockNoLock(q.peer_id, block, client->serialization_version);
+
+		client->SentBlock(q.pos);
+
+		total_sending++;
+	}
+}
+
+/*
+	Something random
+*/
+
+void Server::UpdateCrafting(u16 peer_id)
 {
 	DSTACK(__FUNCTION_NAME);
 	
@@ -3226,7 +3637,7 @@ void Server::SendInventory(u16 peer_id)
 				}
 			}
 
-			// Wooden showel
+			// Wooden shovel
 			if(!found)
 			{
 				ItemSpec specs[9];
@@ -3240,7 +3651,7 @@ void Server::SendInventory(u16 peer_id)
 				}
 			}
 
-			// Stone showel
+			// Stone shovel
 			if(!found)
 			{
 				ItemSpec specs[9];
@@ -3254,7 +3665,7 @@ void Server::SendInventory(u16 peer_id)
 				}
 			}
 
-			// Steel showel
+			// Steel shovel
 			if(!found)
 			{
 				ItemSpec specs[9];
@@ -3312,6 +3723,48 @@ void Server::SendInventory(u16 peer_id)
 				if(checkItemCombination(items, specs))
 				{
 					rlist->addItem(new ToolItem("SteelAxe", 0));
+					found = true;
+				}
+			}
+
+			// Wooden sword
+			if(!found)
+			{
+				ItemSpec specs[9];
+				specs[1] = ItemSpec(ITEM_MATERIAL, CONTENT_WOOD);
+				specs[4] = ItemSpec(ITEM_MATERIAL, CONTENT_WOOD);
+				specs[7] = ItemSpec(ITEM_CRAFT, "Stick");
+				if(checkItemCombination(items, specs))
+				{
+					rlist->addItem(new ToolItem("WSword", 0));
+					found = true;
+				}
+			}
+
+			// Stone sword
+			if(!found)
+			{
+				ItemSpec specs[9];
+				specs[1] = ItemSpec(ITEM_MATERIAL, CONTENT_COBBLE);
+				specs[4] = ItemSpec(ITEM_MATERIAL, CONTENT_COBBLE);
+				specs[7] = ItemSpec(ITEM_CRAFT, "Stick");
+				if(checkItemCombination(items, specs))
+				{
+					rlist->addItem(new ToolItem("STSword", 0));
+					found = true;
+				}
+			}
+
+			// Steel sword
+			if(!found)
+			{
+				ItemSpec specs[9];
+				specs[1] = ItemSpec(ITEM_CRAFT, "steel_ingot");
+				specs[4] = ItemSpec(ITEM_CRAFT, "steel_ingot");
+				specs[7] = ItemSpec(ITEM_CRAFT, "Stick");
+				if(checkItemCombination(items, specs))
+				{
+					rlist->addItem(new ToolItem("SteelSword", 0));
 					found = true;
 				}
 			}
@@ -3376,263 +3829,7 @@ void Server::SendInventory(u16 peer_id)
 		}
 	
 	} // if creative_mode == false
-
-	/*
-		Serialize it
-	*/
-
-	std::ostringstream os;
-	//os.imbue(std::locale("C"));
-
-	player->inventory.serialize(os);
-
-	std::string s = os.str();
-	
-	SharedBuffer<u8> data(s.size()+2);
-	writeU16(&data[0], TOCLIENT_INVENTORY);
-	memcpy(&data[2], s.c_str(), s.size());
-	
-	// Send as reliable
-	m_con.Send(peer_id, 0, data, true);
 }
-
-void Server::SendChatMessage(u16 peer_id, const std::wstring &message)
-{
-	DSTACK(__FUNCTION_NAME);
-	
-	std::ostringstream os(std::ios_base::binary);
-	u8 buf[12];
-	
-	// Write command
-	writeU16(buf, TOCLIENT_CHAT_MESSAGE);
-	os.write((char*)buf, 2);
-	
-	// Write length
-	writeU16(buf, message.size());
-	os.write((char*)buf, 2);
-	
-	// Write string
-	for(u32 i=0; i<message.size(); i++)
-	{
-		u16 w = message[i];
-		writeU16(buf, w);
-		os.write((char*)buf, 2);
-	}
-	
-	// Make data buffer
-	std::string s = os.str();
-	SharedBuffer<u8> data((u8*)s.c_str(), s.size());
-	// Send as reliable
-	m_con.Send(peer_id, 0, data, true);
-}
-
-void Server::BroadcastChatMessage(const std::wstring &message)
-{
-	for(core::map<u16, RemoteClient*>::Iterator
-		i = m_clients.getIterator();
-		i.atEnd() == false; i++)
-	{
-		// Get client and check that it is valid
-		RemoteClient *client = i.getNode()->getValue();
-		assert(client->peer_id == i.getNode()->getKey());
-		if(client->serialization_version == SER_FMT_VER_INVALID)
-			continue;
-
-		SendChatMessage(client->peer_id, message);
-	}
-}
-
-void Server::sendRemoveNode(v3s16 p, u16 ignore_id,
-	core::list<u16> *far_players, float far_d_nodes)
-{
-	float maxd = far_d_nodes*BS;
-	v3f p_f = intToFloat(p, BS);
-
-	// Create packet
-	u32 replysize = 8;
-	SharedBuffer<u8> reply(replysize);
-	writeU16(&reply[0], TOCLIENT_REMOVENODE);
-	writeS16(&reply[2], p.X);
-	writeS16(&reply[4], p.Y);
-	writeS16(&reply[6], p.Z);
-
-	for(core::map<u16, RemoteClient*>::Iterator
-		i = m_clients.getIterator();
-		i.atEnd() == false; i++)
-	{
-		// Get client and check that it is valid
-		RemoteClient *client = i.getNode()->getValue();
-		assert(client->peer_id == i.getNode()->getKey());
-		if(client->serialization_version == SER_FMT_VER_INVALID)
-			continue;
-
-		// Don't send if it's the same one
-		if(client->peer_id == ignore_id)
-			continue;
-		
-		if(far_players)
-		{
-			// Get player
-			Player *player = m_env.getPlayer(client->peer_id);
-			if(player)
-			{
-				// If player is far away, only set modified blocks not sent
-				v3f player_pos = player->getPosition();
-				if(player_pos.getDistanceFrom(p_f) > maxd)
-				{
-					far_players->push_back(client->peer_id);
-					continue;
-				}
-			}
-		}
-
-		// Send as reliable
-		m_con.Send(client->peer_id, 0, reply, true);
-	}
-}
-
-void Server::sendAddNode(v3s16 p, MapNode n, u16 ignore_id,
-		core::list<u16> *far_players, float far_d_nodes)
-{
-	float maxd = far_d_nodes*BS;
-	v3f p_f = intToFloat(p, BS);
-
-	for(core::map<u16, RemoteClient*>::Iterator
-		i = m_clients.getIterator();
-		i.atEnd() == false; i++)
-	{
-		// Get client and check that it is valid
-		RemoteClient *client = i.getNode()->getValue();
-		assert(client->peer_id == i.getNode()->getKey());
-		if(client->serialization_version == SER_FMT_VER_INVALID)
-			continue;
-
-		// Don't send if it's the same one
-		if(client->peer_id == ignore_id)
-			continue;
-
-		if(far_players)
-		{
-			// Get player
-			Player *player = m_env.getPlayer(client->peer_id);
-			if(player)
-			{
-				// If player is far away, only set modified blocks not sent
-				v3f player_pos = player->getPosition();
-				if(player_pos.getDistanceFrom(p_f) > maxd)
-				{
-					far_players->push_back(client->peer_id);
-					continue;
-				}
-			}
-		}
-
-		// Create packet
-		u32 replysize = 8 + MapNode::serializedLength(client->serialization_version);
-		SharedBuffer<u8> reply(replysize);
-		writeU16(&reply[0], TOCLIENT_ADDNODE);
-		writeS16(&reply[2], p.X);
-		writeS16(&reply[4], p.Y);
-		writeS16(&reply[6], p.Z);
-		n.serialize(&reply[8], client->serialization_version);
-
-		// Send as reliable
-		m_con.Send(client->peer_id, 0, reply, true);
-	}
-}
-
-void Server::SendBlockNoLock(u16 peer_id, MapBlock *block, u8 ver)
-{
-	DSTACK(__FUNCTION_NAME);
-	/*
-		Create a packet with the block in the right format
-	*/
-	
-	std::ostringstream os(std::ios_base::binary);
-	block->serialize(os, ver);
-	std::string s = os.str();
-	SharedBuffer<u8> blockdata((u8*)s.c_str(), s.size());
-
-	u32 replysize = 8 + blockdata.getSize();
-	SharedBuffer<u8> reply(replysize);
-	v3s16 p = block->getPos();
-	writeU16(&reply[0], TOCLIENT_BLOCKDATA);
-	writeS16(&reply[2], p.X);
-	writeS16(&reply[4], p.Y);
-	writeS16(&reply[6], p.Z);
-	memcpy(&reply[8], *blockdata, blockdata.getSize());
-
-	/*dstream<<"Sending block ("<<p.X<<","<<p.Y<<","<<p.Z<<")"
-			<<":  \tpacket size: "<<replysize<<std::endl;*/
-	
-	/*
-		Send packet
-	*/
-	m_con.Send(peer_id, 1, reply, true);
-}
-
-void Server::SendBlocks(float dtime)
-{
-	DSTACK(__FUNCTION_NAME);
-
-	JMutexAutoLock envlock(m_env_mutex);
-	JMutexAutoLock conlock(m_con_mutex);
-
-	//TimeTaker timer("Server::SendBlocks");
-
-	core::array<PrioritySortedBlockTransfer> queue;
-
-	s32 total_sending = 0;
-
-	for(core::map<u16, RemoteClient*>::Iterator
-		i = m_clients.getIterator();
-		i.atEnd() == false; i++)
-	{
-		RemoteClient *client = i.getNode()->getValue();
-		assert(client->peer_id == i.getNode()->getKey());
-
-		total_sending += client->SendingCount();
-		
-		if(client->serialization_version == SER_FMT_VER_INVALID)
-			continue;
-		
-		client->GetNextBlocks(this, dtime, queue);
-	}
-
-	// Sort.
-	// Lowest priority number comes first.
-	// Lowest is most important.
-	queue.sort();
-
-	for(u32 i=0; i<queue.size(); i++)
-	{
-		//TODO: Calculate limit dynamically
-		if(total_sending >= g_settings.getS32
-				("max_simultaneous_block_sends_server_total"))
-			break;
-		
-		PrioritySortedBlockTransfer q = queue[i];
-
-		MapBlock *block = NULL;
-		try
-		{
-			block = m_env.getMap().getBlockNoCreate(q.pos);
-		}
-		catch(InvalidPositionException &e)
-		{
-			continue;
-		}
-
-		RemoteClient *client = getClient(q.peer_id);
-
-		SendBlockNoLock(q.peer_id, block, client->serialization_version);
-
-		client->SentBlock(q.pos);
-
-		total_sending++;
-	}
-}
-
 
 RemoteClient* Server::getClient(u16 peer_id)
 {
@@ -3682,14 +3879,24 @@ void setCreativeInventory(Player *player)
 {
 	player->resetInventory();
 	
-	// Give some good picks
+	// Give some good tools
 	{
-		InventoryItem *item = new ToolItem("STPick", 0);
+		InventoryItem *item = new ToolItem("MesePick", 0);
 		void* r = player->inventory.addItem("main", item);
 		assert(r == NULL);
 	}
 	{
-		InventoryItem *item = new ToolItem("MesePick", 0);
+		InventoryItem *item = new ToolItem("SteelPick", 0);
+		void* r = player->inventory.addItem("main", item);
+		assert(r == NULL);
+	}
+	{
+		InventoryItem *item = new ToolItem("SteelAxe", 0);
+		void* r = player->inventory.addItem("main", item);
+		assert(r == NULL);
+	}
+	{
+		InventoryItem *item = new ToolItem("SteelShovel", 0);
 		void* r = player->inventory.addItem("main", item);
 		assert(r == NULL);
 	}
@@ -3756,6 +3963,52 @@ void setCreativeInventory(Player *player)
 	}*/
 }
 
+v3f findSpawnPos(ServerMap &map)
+{
+	v2s16 nodepos;
+	s16 groundheight = 0;
+	
+	// Try to find a good place a few times
+	for(s32 i=0; i<1000; i++)
+	{
+		s32 range = 1 + i;
+		// We're going to try to throw the player to this position
+		nodepos = v2s16(-range + (myrand()%(range*2)),
+				-range + (myrand()%(range*2)));
+		v2s16 sectorpos = getNodeSectorPos(nodepos);
+		// Get sector (NOTE: Don't get because it's slow)
+		//m_env.getMap().emergeSector(sectorpos);
+		// Get ground height at point (fallbacks to heightmap function)
+		groundheight = map.findGroundLevel(nodepos);
+		// Don't go underwater
+		if(groundheight < WATER_LEVEL)
+		{
+			//dstream<<"-> Underwater"<<std::endl;
+			continue;
+		}
+		// Don't go to high places
+		if(groundheight > WATER_LEVEL + 4)
+		{
+			//dstream<<"-> Underwater"<<std::endl;
+			continue;
+		}
+
+		// Found a good place
+		//dstream<<"Searched through "<<i<<" places."<<std::endl;
+		break;
+	}
+	
+	// If no suitable place was not found, go above water at least.
+	if(groundheight < WATER_LEVEL)
+		groundheight = WATER_LEVEL;
+
+	return intToFloat(v3s16(
+			nodepos.X,
+			groundheight + 2,
+			nodepos.Y
+			), BS);
+}
+
 Player *Server::emergePlayer(const char *name, const char *password,
 		u16 peer_id)
 {
@@ -3811,58 +4064,9 @@ Player *Server::emergePlayer(const char *name, const char *password,
 		dstream<<"Server: Finding spawn place for player \""
 				<<player->getName()<<"\""<<std::endl;
 
-		v2s16 nodepos;
-#if 0
-		player->setPosition(intToFloat(v3s16(
-				0,
-				45, //64,
-				0
-		), BS));
-#endif
-#if 1
-		s16 groundheight = 0;
-#if 1
-		// Try to find a good place a few times
-		for(s32 i=0; i<1000; i++)
-		{
-			s32 range = 1 + i;
-			// We're going to try to throw the player to this position
-			nodepos = v2s16(-range + (myrand()%(range*2)),
-					-range + (myrand()%(range*2)));
-			v2s16 sectorpos = getNodeSectorPos(nodepos);
-			// Get sector (NOTE: Don't get because it's slow)
-			//m_env.getMap().emergeSector(sectorpos);
-			// Get ground height at point (fallbacks to heightmap function)
-			groundheight = m_env.getServerMap().findGroundLevel(nodepos);
-			// Don't go underwater
-			if(groundheight < WATER_LEVEL)
-			{
-				//dstream<<"-> Underwater"<<std::endl;
-				continue;
-			}
-			// Don't go to high places
-			if(groundheight > WATER_LEVEL + 4)
-			{
-				//dstream<<"-> Underwater"<<std::endl;
-				continue;
-			}
+		v3f pos = findSpawnPos(m_env.getServerMap());
 
-			// Found a good place
-			dstream<<"Searched through "<<i<<" places."<<std::endl;
-			break;
-		}
-#endif
-		
-		// If no suitable place was not found, go above water at least.
-		if(groundheight < WATER_LEVEL)
-			groundheight = WATER_LEVEL;
-
-		player->setPosition(intToFloat(v3s16(
-				nodepos.X,
-				groundheight + 5, // Accomodate mud
-				nodepos.Y
-		), BS));
-#endif
+		player->setPosition(pos);
 
 		/*
 			Add player to environment

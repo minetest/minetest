@@ -48,17 +48,23 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 	13: (dev) Mapgen v2
 	14: (dev) NodeMetadata
 	15: (dev) StaticObjects
+	16: (dev) larger maximum size of node metadata, and compression
 */
 // This represents an uninitialized or invalid format
 #define SER_FMT_VER_INVALID 255
 // Highest supported serialization version
-#define SER_FMT_VER_HIGHEST 15
+#define SER_FMT_VER_HIGHEST 16
 // Lowest supported serialization version
 #define SER_FMT_VER_LOWEST 0
 
 #define ser_ver_supported(v) (v >= SER_FMT_VER_LOWEST && v <= SER_FMT_VER_HIGHEST)
 
+void compressZlib(SharedBuffer<u8> data, std::ostream &os);
+void compressZlib(const std::string &data, std::ostream &os);
+void decompressZlib(std::istream &is, std::ostream &os);
+
 void compress(SharedBuffer<u8> data, std::ostream &os, u8 version);
+//void compress(const std::string &data, std::ostream &os, u8 version);
 void decompress(std::istream &is, std::ostream &os, u8 version);
 
 /*class Serializable

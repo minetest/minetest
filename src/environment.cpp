@@ -20,6 +20,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "environment.h"
 #include "filesys.h"
 #include "porting.h"
+#include "collision.h"
 
 Environment::Environment()
 {
@@ -377,6 +378,55 @@ void ServerEnvironment::deSerializePlayers(const std::string &savedir)
 	}
 }
 
+#if 0
+void spawnRandomObjects(MapBlock *block)
+{
+	for(s16 z0=0; z0<MAP_BLOCKSIZE; z0++)
+	for(s16 x0=0; x0<MAP_BLOCKSIZE; x0++)
+	{
+		bool last_node_walkable = false;
+		for(s16 y0=0; y0<MAP_BLOCKSIZE; y0++)
+		{
+			v3s16 p(x0,y0,z0);
+			MapNode n = block->getNodeNoEx(p);
+			if(n.d == CONTENT_IGNORE)
+				continue;
+			if(content_features(n.d).liquid_type != LIQUID_NONE)
+				continue;
+			if(content_features(n.d).walkable)
+			{
+				last_node_walkable = true;
+				continue;
+			}
+			if(last_node_walkable)
+			{
+				// If block contains light information
+				if(content_features(n.d).param_type == CPT_LIGHT)
+				{
+					if(n.getLight(LIGHTBANK_DAY) <= 5)
+					{
+						if(myrand() % 1000 == 0)
+						{
+							v3f pos_f = intToFloat(p+block->getPosRelative(), BS);
+							pos_f.Y -= BS*0.4;
+							ServerActiveObject *obj = new Oerkki1SAO(NULL,0,pos_f);
+							std::string data = obj->getStaticData();
+							StaticObject s_obj(obj->getType(),
+									obj->getBasePosition(), data);
+							// Add one
+							block->m_static_objects.insert(0, s_obj);
+							delete obj;
+							block->setChangedFlag();
+						}
+					}
+				}
+			}
+			last_node_walkable = false;
+		}
+	}
+}
+#endif
+
 void ServerEnvironment::step(float dtime)
 {
 	DSTACK(__FUNCTION_NAME);
@@ -429,26 +479,29 @@ void ServerEnvironment::step(float dtime)
 			}
 		}
 	}
-	
+
 	/*
 		Step active objects
 	*/
-
-	bool send_recommended = false;
-	m_send_recommended_timer += dtime;
-	if(m_send_recommended_timer > 0.15)
 	{
-		m_send_recommended_timer = 0;
-		send_recommended = true;
-	}
+		//TimeTaker timer("Step active objects");
 
-	for(core::map<u16, ServerActiveObject*>::Iterator
-			i = m_active_objects.getIterator();
-			i.atEnd()==false; i++)
-	{
-		ServerActiveObject* obj = i.getNode()->getValue();
-		// Step object, putting messages directly to the queue
-		obj->step(dtime, m_active_object_messages, send_recommended);
+		bool send_recommended = false;
+		m_send_recommended_timer += dtime;
+		if(m_send_recommended_timer > 0.15)
+		{
+			m_send_recommended_timer = 0;
+			send_recommended = true;
+		}
+
+		for(core::map<u16, ServerActiveObject*>::Iterator
+				i = m_active_objects.getIterator();
+				i.atEnd()==false; i++)
+		{
+			ServerActiveObject* obj = i.getNode()->getValue();
+			// Step object, putting messages directly to the queue
+			obj->step(dtime, m_active_object_messages, send_recommended);
+		}
 	}
 
 	if(m_object_management_interval.step(dtime, 0.5))
@@ -506,7 +559,7 @@ void ServerEnvironment::step(float dtime)
 		
 
 		const s16 to_active_max_blocks = 3;
-		const f32 to_static_max_f = (to_active_max_blocks+1)*MAP_BLOCKSIZE*BS;
+		const f32 to_static_max_f = (to_active_max_blocks+2)*MAP_BLOCKSIZE*BS;
 
 		/*
 			Convert stored objects from blocks near the players to active.
@@ -719,7 +772,8 @@ void ServerEnvironment::step(float dtime)
 
 		//TestSAO *obj = new TestSAO(this, 0, pos);
 		//ServerActiveObject *obj = new ItemSAO(this, 0, pos, "CraftItem Stick 1");
-		ServerActiveObject *obj = new RatSAO(this, 0, pos);
+		//ServerActiveObject *obj = new RatSAO(this, 0, pos);
+		ServerActiveObject *obj = new Oerkki1SAO(this, 0, pos);
 		addActiveObject(obj);
 	}
 #endif
@@ -976,14 +1030,18 @@ void ClientEnvironment::step(float dtime)
 		//TimeTaker timer("Client m_map->timerUpdate()", g_device);
 		m_map->timerUpdate(dtime);
 	}
-
+	
+	// Get local player
+	LocalPlayer *lplayer = getLocalPlayer();
+	assert(lplayer);
+	// collision info queue
+	core::list<CollisionInfo> player_collisions;
+	
 	/*
 		Get the speed the player is going
 	*/
 	f32 player_speed = 0.001; // just some small value
-	LocalPlayer *lplayer = getLocalPlayer();
-	if(lplayer)
-		player_speed = lplayer->getSpeed().getLength();
+	player_speed = lplayer->getSpeed().getLength();
 	
 	/*
 		Maximum position increment
@@ -1036,20 +1094,18 @@ void ClientEnvironment::step(float dtime)
 		*/
 		
 		{
-			Player *player = getLocalPlayer();
-
-			v3f playerpos = player->getPosition();
+			v3f lplayerpos = lplayer->getPosition();
 			
 			// Apply physics
 			if(free_move == false)
 			{
 				// Gravity
-				v3f speed = player->getSpeed();
-				if(player->swimming_up == false)
+				v3f speed = lplayer->getSpeed();
+				if(lplayer->swimming_up == false)
 					speed.Y -= 9.81 * BS * dtime_part * 2;
 
 				// Water resistance
-				if(player->in_water_stable || player->in_water)
+				if(lplayer->in_water_stable || lplayer->in_water)
 				{
 					f32 max_down = 2.0*BS;
 					if(speed.Y < -max_down) speed.Y = -max_down;
@@ -1061,19 +1117,47 @@ void ClientEnvironment::step(float dtime)
 					}
 				}
 
-				player->setSpeed(speed);
+				lplayer->setSpeed(speed);
 			}
 
 			/*
-				Move the player.
+				Move the lplayer.
 				This also does collision detection.
 			*/
-			player->move(dtime_part, *m_map, position_max_increment);
+			lplayer->move(dtime_part, *m_map, position_max_increment,
+					&player_collisions);
 		}
 	}
 	while(dtime_downcount > 0.001);
 		
 	//std::cout<<"Looped "<<loopcount<<" times."<<std::endl;
+
+	for(core::list<CollisionInfo>::Iterator
+			i = player_collisions.begin();
+			i != player_collisions.end(); i++)
+	{
+		CollisionInfo &info = *i;
+		if(info.t == COLLISION_FALL)
+		{
+			//f32 tolerance = BS*10; // 2 without damage
+			f32 tolerance = BS*12; // 3 without damage
+			f32 factor = 1;
+			if(info.speed > tolerance)
+			{
+				f32 damage_f = (info.speed - tolerance)/BS*factor;
+				u16 damage = (u16)(damage_f+0.5);
+				if(lplayer->hp > damage)
+					lplayer->hp -= damage;
+				else
+					lplayer->hp = 0;
+
+				ClientEnvEvent event;
+				event.type = CEE_PLAYER_DAMAGE;
+				event.player_damage.amount = damage;
+				m_client_event_queue.push_back(event);
+			}
+		}
+	}
 	
 	/*
 		Stuff that can be done in an arbitarily large dtime
@@ -1287,6 +1371,30 @@ void ClientEnvironment::processActiveObjectMessage(u16 id,
 	obj->processMessage(data);
 }
 
+/*
+	Callbacks for activeobjects
+*/
+
+void ClientEnvironment::damageLocalPlayer(u8 damage)
+{
+	LocalPlayer *lplayer = getLocalPlayer();
+	assert(lplayer);
+
+	if(lplayer->hp > damage)
+		lplayer->hp -= damage;
+	else
+		lplayer->hp = 0;
+
+	ClientEnvEvent event;
+	event.type = CEE_PLAYER_DAMAGE;
+	event.player_damage.amount = damage;
+	m_client_event_queue.push_back(event);
+}
+
+/*
+	Client likes to call these
+*/
+	
 void ClientEnvironment::getActiveObjects(v3f origin, f32 max_d,
 		core::array<DistanceSortedActiveObject> &dest)
 {
@@ -1307,6 +1415,16 @@ void ClientEnvironment::getActiveObjects(v3f origin, f32 max_d,
 	}
 }
 
+ClientEnvEvent ClientEnvironment::getClientEvent()
+{
+	if(m_client_event_queue.size() == 0)
+	{
+		ClientEnvEvent event;
+		event.type = CEE_NONE;
+		return event;
+	}
+	return m_client_event_queue.pop_front();
+}
 
 #endif // #ifndef SERVER
 

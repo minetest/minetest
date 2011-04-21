@@ -369,6 +369,12 @@ public:
 			basename = "tool_stoneaxe.png";
 		else if(m_toolname == "SteelAxe")
 			basename = "tool_steelaxe.png";
+		else if(m_toolname == "WSword")
+			basename = "tool_woodsword.png";
+		else if(m_toolname == "STSword")
+			basename = "tool_stonesword.png";
+		else if(m_toolname == "SteelSword")
+			basename = "tool_steelsword.png";
 		else
 			basename = "cloud.png";
 		

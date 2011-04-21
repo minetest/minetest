@@ -37,8 +37,8 @@ Map::Map(std::ostream &dout):
 	m_dout(dout),
 	m_sector_cache(NULL)
 {
-	m_sector_mutex.Init();
-	assert(m_sector_mutex.IsInitialized());
+	/*m_sector_mutex.Init();
+	assert(m_sector_mutex.IsInitialized());*/
 }
 
 Map::~Map()
@@ -104,7 +104,7 @@ MapSector * Map::getSectorNoGenerateNoExNoLock(v2s16 p)
 
 MapSector * Map::getSectorNoGenerateNoEx(v2s16 p)
 {
-	JMutexAutoLock lock(m_sector_mutex);
+	//JMutexAutoLock lock(m_sector_mutex); // Bulk comment-out
 
 	return getSectorNoGenerateNoExNoLock(p);
 }
@@ -1347,7 +1347,7 @@ bool Map::dayNightDiffed(v3s16 blockpos)
 */
 void Map::timerUpdate(float dtime)
 {
-	JMutexAutoLock lock(m_sector_mutex);
+	//JMutexAutoLock lock(m_sector_mutex); // Bulk comment-out
 
 	core::map<v2s16, MapSector*>::Iterator si;
 
@@ -1397,7 +1397,7 @@ void Map::deleteSectors(core::list<v2s16> &list, bool only_blocks)
 u32 Map::deleteUnusedSectors(float timeout, bool only_blocks,
 		core::list<v3s16> *deleted_blocks)
 {
-	JMutexAutoLock lock(m_sector_mutex);
+	//JMutexAutoLock lock(m_sector_mutex); // Bulk comment-out
 
 	core::list<v2s16> sector_deletion_queue;
 	core::map<v2s16, MapSector*>::Iterator i = m_sectors.getIterator();
@@ -2160,6 +2160,18 @@ void addRandomObjects(MapBlock *block)
 							block->m_static_objects.insert(0, s_obj);
 							block->m_static_objects.insert(0, s_obj);
 							block->m_static_objects.insert(0, s_obj);
+							block->m_static_objects.insert(0, s_obj);
+							delete obj;
+						}
+						if(myrand() % 300 == 0)
+						{
+							v3f pos_f = intToFloat(p+block->getPosRelative(), BS);
+							pos_f.Y -= BS*0.4;
+							ServerActiveObject *obj = new Oerkki1SAO(NULL,0,pos_f);
+							std::string data = obj->getStaticData();
+							StaticObject s_obj(obj->getType(),
+									obj->getBasePosition(), data);
+							// Add one
 							block->m_static_objects.insert(0, s_obj);
 							delete obj;
 						}
@@ -4714,7 +4726,7 @@ plan_b:
 	// This won't work if proper generation is disabled
 	if(m_chunksize == 0)
 		return WATER_LEVEL+2;
-	double level = base_rock_level_2d(m_seed, p2d);
+	double level = base_rock_level_2d(m_seed, p2d) + AVERAGE_MUD_AMOUNT;
 	return (s16)level;
 }
 
@@ -4794,7 +4806,7 @@ void ServerMap::save(bool only_changed)
 	u32 block_count = 0;
 	
 	{ //sectorlock
-	JMutexAutoLock lock(m_sector_mutex);
+	//JMutexAutoLock lock(m_sector_mutex); // Bulk comment-out
 	
 	core::map<v2s16, MapSector*>::Iterator i = m_sectors.getIterator();
 	for(; i.atEnd() == false; i++)
@@ -4856,7 +4868,7 @@ void ServerMap::loadAll()
 
 	dstream<<DTIME<<"There are "<<list.size()<<" sectors."<<std::endl;
 	
-	JMutexAutoLock lock(m_sector_mutex);
+	//JMutexAutoLock lock(m_sector_mutex); // Bulk comment-out
 	
 	s32 counter = 0;
 	s32 printed_counter = -100000;
@@ -5163,7 +5175,7 @@ bool ServerMap::loadSectorFull(v2s16 p2d)
 
 	MapSector *sector = NULL;
 
-	JMutexAutoLock lock(m_sector_mutex);
+	//JMutexAutoLock lock(m_sector_mutex); // Bulk comment-out
 
 	try{
 		sector = loadSectorMeta(sectorsubdir);
@@ -5410,7 +5422,7 @@ MapSector * ClientMap::emergeSector(v2s16 p2d)
 	ClientMapSector *sector = new ClientMapSector(this, p2d);
 	
 	{
-		JMutexAutoLock lock(m_sector_mutex);
+		//JMutexAutoLock lock(m_sector_mutex); // Bulk comment-out
 		m_sectors.insert(p2d, sector);
 	}
 	
@@ -5422,7 +5434,7 @@ void ClientMap::deSerializeSector(v2s16 p2d, std::istream &is)
 	DSTACK(__FUNCTION_NAME);
 	ClientMapSector *sector = NULL;
 
-	JMutexAutoLock lock(m_sector_mutex);
+	//JMutexAutoLock lock(m_sector_mutex); // Bulk comment-out
 	
 	core::map<v2s16, MapSector*>::Node *n = m_sectors.find(p2d);
 
@@ -5435,7 +5447,7 @@ void ClientMap::deSerializeSector(v2s16 p2d, std::istream &is)
 	{
 		sector = new ClientMapSector(this, p2d);
 		{
-			JMutexAutoLock lock(m_sector_mutex);
+			//JMutexAutoLock lock(m_sector_mutex); // Bulk comment-out
 			m_sectors.insert(p2d, sector);
 		}
 	}

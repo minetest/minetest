@@ -90,6 +90,7 @@ Client::Client(
 	m_connection_reinit_timer = 0.0;
 	m_avg_rtt_timer = 0.0;
 	m_playerpos_send_timer = 0.0;
+	m_ignore_damage_timer = 0.0;
 
 	//m_env_mutex.Init();
 	//m_con_mutex.Init();
@@ -154,6 +155,10 @@ void Client::step(float dtime)
 	if(dtime > 2.0)
 		dtime = 2.0;
 	
+	if(m_ignore_damage_timer > dtime)
+		m_ignore_damage_timer -= dtime;
+	else
+		m_ignore_damage_timer = 0.0;
 	
 	//dstream<<"Client steps "<<dtime<<std::endl;
 
@@ -311,6 +316,9 @@ void Client::step(float dtime)
 		Do stuff if connected
 	*/
 	
+	/*
+		Handle environment
+	*/
 	{
 		// 0ms
 		//JMutexAutoLock lock(m_env_mutex); //bulk comment-out
@@ -341,8 +349,37 @@ void Client::step(float dtime)
 			{
 			}
 		}
-	}
 
+		/*
+			Get events
+		*/
+		for(;;)
+		{
+			ClientEnvEvent event = m_env.getClientEvent();
+			if(event.type == CEE_NONE)
+			{
+				break;
+			}
+			else if(event.type == CEE_PLAYER_DAMAGE)
+			{
+				if(m_ignore_damage_timer <= 0)
+				{
+					u8 damage = event.player_damage.amount;
+					sendDamage(damage);
+
+					// Add to ClientEvent queue
+					ClientEvent event;
+					event.type = CE_PLAYER_DAMAGE;
+					event.player_damage.amount = damage;
+					m_client_event_queue.push_back(event);
+				}
+			}
+		}
+	}
+	
+	/*
+		Print some info
+	*/
 	{
 		float &counter = m_avg_rtt_timer;
 		counter += dtime;
@@ -355,6 +392,10 @@ void Client::step(float dtime)
 			dstream<<DTIME<<"Client: avg_rtt="<<peer->avg_rtt<<std::endl;
 		}
 	}
+
+	/*
+		Send player position to server
+	*/
 	{
 		float &counter = m_playerpos_send_timer;
 		counter += dtime;
@@ -388,6 +429,8 @@ void Client::step(float dtime)
 			}
 			if(r.ack_block_to_server)
 			{
+				/*dstream<<"Client: ACK block ("<<r.p.X<<","<<r.p.Y
+						<<","<<r.p.Z<<")"<<std::endl;*/
 				/*
 					Acknowledge block
 				*/
@@ -447,7 +490,7 @@ void Client::ReceiveAll()
 void Client::Receive()
 {
 	DSTACK(__FUNCTION_NAME);
-	u32 data_maxsize = 10000;
+	u32 data_maxsize = 200000;
 	Buffer<u8> data(data_maxsize);
 	u16 sender_peer_id;
 	u32 datasize;
@@ -1294,247 +1337,62 @@ void Client::ProcessData(u8 *data, u32 datasize, u16 sender_peer_id)
 			}
 		}
 	}
-	else
+	else if(command == TOCLIENT_HP)
 	{
-		dout_client<<DTIME<<"WARNING: Client: Ignoring unknown command "
-				<<command<<std::endl;
+		std::string datastring((char*)&data[2], datasize-2);
+		std::istringstream is(datastring, std::ios_base::binary);
+		Player *player = m_env.getLocalPlayer();
+		assert(player != NULL);
+		u8 hp = readU8(is);
+		player->hp = hp;
 	}
-#if 0
-	// Default to queueing it (for slow commands)
-	else
+	else if(command == TOCLIENT_MOVE_PLAYER)
 	{
-		JMutexAutoLock lock(m_incoming_queue_mutex);
-		
-		IncomingPacket packet(data, datasize);
-		m_incoming_queue.push_back(packet);
-	}
-#endif
-}
+		std::string datastring((char*)&data[2], datasize-2);
+		std::istringstream is(datastring, std::ios_base::binary);
+		Player *player = m_env.getLocalPlayer();
+		assert(player != NULL);
+		v3f pos = readV3F1000(is);
+		f32 pitch = readF1000(is);
+		f32 yaw = readF1000(is);
+		player->setPosition(pos);
+		/*player->setPitch(pitch);
+		player->setYaw(yaw);*/
 
-#if 0
-/*
-	Returns true if there was something in queue
-*/
-bool Client::AsyncProcessPacket()
-{
-	DSTACK(__FUNCTION_NAME);
-	
-	try //for catching con::PeerNotFoundException
-	{
-
-	con::Peer *peer;
-	{
-		//JMutexAutoLock lock(m_con_mutex); //bulk comment-out
-		// All data is coming from the server
-		peer = m_con.GetPeer(PEER_ID_SERVER);
-	}
-	
-	u8 ser_version = m_server_ser_ver;
-
-	IncomingPacket packet = getPacket();
-	u8 *data = packet.m_data;
-	u32 datasize = packet.m_datalen;
-	
-	// An empty packet means queue is empty
-	if(data == NULL){
-		return false;
-	}
-	
-	if(datasize < 2)
-		return true;
-	
-	ToClientCommand command = (ToClientCommand)readU16(&data[0]);
-
-	if(command == TOCLIENT_BLOCKDATA)
-	{
-		// Ignore too small packet
-		if(datasize < 8)
-			return true;
-			
-		v3s16 p;
-		p.X = readS16(&data[2]);
-		p.Y = readS16(&data[4]);
-		p.Z = readS16(&data[6]);
-		
-		/*dout_client<<DTIME<<"Client: Thread: BLOCKDATA for ("
-				<<p.X<<","<<p.Y<<","<<p.Z<<")"<<std::endl;*/
-		/*dstream<<DTIME<<"Client: Thread: BLOCKDATA for ("
-				<<p.X<<","<<p.Y<<","<<p.Z<<")"<<std::endl;*/
-		
-		std::string datastring((char*)&data[8], datasize-8);
-		std::istringstream istr(datastring, std::ios_base::binary);
-		
-		MapSector *sector;
-		MapBlock *block;
-		
-		{ //envlock
-			//JMutexAutoLock envlock(m_env_mutex); //bulk comment-out
-			
-			v2s16 p2d(p.X, p.Z);
-			sector = m_env.getMap().emergeSector(p2d);
-			
-			v2s16 sp = sector->getPos();
-			if(sp != p2d)
-			{
-				dstream<<"ERROR: Got sector with getPos()="
-						<<"("<<sp.X<<","<<sp.Y<<"), tried to get"
-						<<"("<<p2d.X<<","<<p2d.Y<<")"<<std::endl;
-			}
-
-			assert(sp == p2d);
-			//assert(sector->getPos() == p2d);
-
-			//TimeTaker timer("MapBlock deSerialize");
-			// 0ms
-			
-			try{
-				block = sector->getBlockNoCreate(p.Y);
-				/*
-					Update an existing block
-				*/
-				//dstream<<"Updating"<<std::endl;
-				block->deSerialize(istr, ser_version);
-				//block->setChangedFlag();
-			}
-			catch(InvalidPositionException &e)
-			{
-				/*
-					Create a new block
-				*/
-				//dstream<<"Creating new"<<std::endl;
-				block = new MapBlock(&m_env.getMap(), p);
-				block->deSerialize(istr, ser_version);
-				sector->insertBlock(block);
-				//block->setChangedFlag();
-
-				//DEBUG
-				/*NodeMod mod;
-				mod.type = NODEMOD_CHANGECONTENT;
-				mod.param = CONTENT_MESE;
-				block->setTempMod(v3s16(8,10,8), mod);
-				block->setTempMod(v3s16(8,9,8), mod);
-				block->setTempMod(v3s16(8,8,8), mod);
-				block->setTempMod(v3s16(8,7,8), mod);
-				block->setTempMod(v3s16(8,6,8), mod);*/
-#if 0
-				/*
-					Add some coulds
-					Well, this is a dumb way to do it, they should just
-					be drawn as separate objects. But the looks of them
-					can be tested this way.
-				*/
-				if(p.Y == 3)
-				{
-					NodeMod mod;
-					mod.type = NODEMOD_CHANGECONTENT;
-					mod.param = CONTENT_CLOUD;
-					v3s16 p2;
-					p2.Y = 8;
-					for(p2.X=3; p2.X<=13; p2.X++)
-					for(p2.Z=3; p2.Z<=13; p2.Z++)
-					{
-						block->setTempMod(p2, mod);
-					}
-				}
-#endif
-			}
-		} //envlock
-		
-		/*
-			Acknowledge block.
-		*/
-		/*
-			[0] u16 command
-			[2] u8 count
-			[3] v3s16 pos_0
-			[3+6] v3s16 pos_1
-			...
-		*/
-		u32 replysize = 2+1+6;
-		SharedBuffer<u8> reply(replysize);
-		writeU16(&reply[0], TOSERVER_GOTBLOCKS);
-		reply[2] = 1;
-		writeV3S16(&reply[3], p);
-		// Send as reliable
-		m_con.Send(PEER_ID_SERVER, 1, reply, true);
+		dstream<<"Client got TOCLIENT_MOVE_PLAYER"
+				<<" pos=("<<pos.X<<","<<pos.Y<<","<<pos.Z<<")"
+				<<" pitch="<<pitch
+				<<" yaw="<<yaw
+				<<std::endl;
 
 		/*
-			Update Mesh of this block and blocks at x-, y- and z-.
-			Environment should not be locked as it interlocks with the
-			main thread, from which is will want to retrieve textures.
+			Add to ClientEvent queue.
+			This has to be sent to the main program because otherwise
+			it would just force the pitch and yaw values to whatever
+			the camera points to.
 		*/
+		ClientEvent event;
+		event.type = CE_PLAYER_FORCE_MOVE;
+		event.player_force_move.pitch = pitch;
+		event.player_force_move.yaw = yaw;
+		m_client_event_queue.push_back(event);
 
-		//m_env.getClientMap().updateMeshes(block->getPos(), getDayNightRatio());
-		
-		MeshMakeData data;
-		{
-			//TimeTaker timer("data fill");
-			// 0ms
-			data.fill(getDayNightRatio(), block);
-		}
-		{
-			TimeTaker timer("make mesh");
-			scene::SMesh *mesh_new = NULL;
-			mesh_new = makeMapBlockMesh(&data);
-			block->replaceMesh(mesh_new);
-		}
+		// Ignore damage for a few seconds, so that the player doesn't
+		// get damage from falling on ground
+		m_ignore_damage_timer = 3.0;
 	}
 	else
 	{
 		dout_client<<DTIME<<"WARNING: Client: Ignoring unknown command "
 				<<command<<std::endl;
 	}
-
-	return true;
-
-	} //try
-	catch(con::PeerNotFoundException &e)
-	{
-		/*dout_client<<DTIME<<"Client::AsyncProcessData(): Cancelling: The server"
-				" connection doesn't exist (a timeout or not yet connected?)"<<std::endl;*/
-		return false;
-	}
 }
-
-bool Client::AsyncProcessData()
-{
-	for(;;)
-	{
-		bool r = AsyncProcessPacket();
-		if(r == false)
-			break;
-	}
-	return false;
-}
-#endif
 
 void Client::Send(u16 channelnum, SharedBuffer<u8> data, bool reliable)
 {
 	//JMutexAutoLock lock(m_con_mutex); //bulk comment-out
 	m_con.Send(PEER_ID_SERVER, channelnum, data, reliable);
 }
-
-#if 0
-IncomingPacket Client::getPacket()
-{
-	JMutexAutoLock lock(m_incoming_queue_mutex);
-	
-	core::list<IncomingPacket>::Iterator i;
-	// Refer to first one
-	i = m_incoming_queue.begin();
-
-	// If queue is empty, return empty packet
-	if(i == m_incoming_queue.end()){
-		IncomingPacket packet;
-		return packet;
-	}
-	
-	// Pop out first packet and return it
-	IncomingPacket packet = *i;
-	m_incoming_queue.erase(i);
-	return packet;
-}
-#endif
 
 void Client::groundAction(u8 action, v3s16 nodepos_undersurface,
 		v3s16 nodepos_oversurface, u16 item)
@@ -1732,6 +1590,21 @@ void Client::sendChatMessage(const std::wstring &message)
 		os.write((char*)buf, 2);
 	}
 	
+	// Make data buffer
+	std::string s = os.str();
+	SharedBuffer<u8> data((u8*)s.c_str(), s.size());
+	// Send as reliable
+	Send(0, data, true);
+}
+
+void Client::sendDamage(u8 damage)
+{
+	DSTACK(__FUNCTION_NAME);
+	std::ostringstream os(std::ios_base::binary);
+
+	writeU16(os, TOSERVER_DAMAGE);
+	writeU8(os, damage);
+
 	// Make data buffer
 	std::string s = os.str();
 	SharedBuffer<u8> data((u8*)s.c_str(), s.size());
@@ -2061,6 +1934,13 @@ u32 Client::getDayNightRatio()
 	return m_env.getDayNightRatio();
 }
 
+u16 Client::getHP()
+{
+	Player *player = m_env.getLocalPlayer();
+	assert(player != NULL);
+	return player->hp;
+}
+
 void Client::addUpdateMeshTask(v3s16 p, bool ack_to_server)
 {
 	/*dstream<<"Client::addUpdateMeshTask(): "
@@ -2140,4 +2020,16 @@ void Client::addUpdateMeshTaskWithEdge(v3s16 blockpos, bool ack_to_server)
 	}
 	catch(InvalidPositionException &e){}
 }
+
+ClientEvent Client::getClientEvent()
+{
+	if(m_client_event_queue.size() == 0)
+	{
+		ClientEvent event;
+		event.type = CE_NONE;
+		return event;
+	}
+	return m_client_event_queue.pop_front();
+}
+
 

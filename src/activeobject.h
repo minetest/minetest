@@ -40,6 +40,7 @@ struct ActiveObjectMessage
 #define ACTIVEOBJECT_TYPE_TEST 1
 #define ACTIVEOBJECT_TYPE_ITEM 2
 #define ACTIVEOBJECT_TYPE_RAT 3
+#define ACTIVEOBJECT_TYPE_OERKKI1 4
 
 /*
 	Parent class for ServerActiveObject and ClientActiveObject

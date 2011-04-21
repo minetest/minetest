@@ -93,6 +93,10 @@ SUGG: Meshes of blocks could be split into 6 meshes facing into
 SUGG: Calculate lighting per vertex to get a lighting effect like in
       bartwe's game
 
+SUGG: Background music based on cellular automata?
+      http://www.earslap.com/projectslab/otomata
+
+
 Gaming ideas:
 -------------
 
@@ -125,6 +129,12 @@ Game content:
 	- The hammer does great damage, shakes the ground and removes a block
 	- You can drop on top of it, and have some time to attack there
 	  before he shakes you off
+
+- Maybe the difficulty could come from monsters getting tougher in
+  far-away places, and the player starting to need something from
+  there when time goes by.
+  - The player would have some of that stuff at the beginning, and
+    would need new supplies of it when it runs out
 
 Documentation:
 --------------
@@ -1210,7 +1220,7 @@ void updateViewingRange(f32 frametime_in, Client *client)
 
 void draw_hotbar(video::IVideoDriver *driver, gui::IGUIFont *font,
 		v2s32 centerlowerpos, s32 imgsize, s32 itemcount,
-		Inventory *inventory)
+		Inventory *inventory, s32 halfheartcount)
 {
 	InventoryList *mainlist = inventory->getList("main");
 	if(mainlist == NULL)
@@ -1257,6 +1267,40 @@ void draw_hotbar(video::IVideoDriver *driver, gui::IGUIFont *font,
 		if(item != NULL)
 		{
 			drawInventoryItem(driver, font, item, rect, NULL);
+		}
+	}
+	
+	/*
+		Draw hearts
+	*/
+	{
+		video::ITexture *heart_texture =
+				driver->getTexture(porting::getDataPath("heart.png").c_str());
+		v2s32 p = pos + v2s32(0, -20);
+		for(s32 i=0; i<halfheartcount/2; i++)
+		{
+			const video::SColor color(255,255,255,255);
+			const video::SColor colors[] = {color,color,color,color};
+			core::rect<s32> rect(0,0,16,16);
+			rect += p;
+			driver->draw2DImage(heart_texture, rect,
+				core::rect<s32>(core::position2d<s32>(0,0),
+				core::dimension2di(heart_texture->getOriginalSize())),
+				NULL, colors, true);
+			p += v2s32(20,0);
+		}
+		if(halfheartcount % 2 == 1)
+		{
+			const video::SColor color(255,255,255,255);
+			const video::SColor colors[] = {color,color,color,color};
+			core::rect<s32> rect(0,0,16/2,16);
+			rect += p;
+			core::dimension2di srcd(heart_texture->getOriginalSize());
+			srcd.Width /= 2;
+			driver->draw2DImage(heart_texture, rect,
+				core::rect<s32>(core::position2d<s32>(0,0), srcd),
+				NULL, colors, true);
+			p += v2s32(20,0);
 		}
 	}
 }
@@ -1517,6 +1561,215 @@ void SpeedTests()
 		std::cout<<"Done. "<<dtime<<"ms, "
 				<<per_ms<<"/ms"<<std::endl;
 	}
+}
+
+void getPointedNode(v3f player_position,
+		v3f camera_direction, v3f camera_position,
+		bool &nodefound, core::line3d<f32> shootline,
+		v3s16 &nodepos, v3s16 &neighbourpos,
+		core::aabbox3d<f32> &nodehilightbox,
+		f32 d)
+{
+	assert(g_client);
+
+	f32 mindistance = BS * 1001;
+	
+	v3s16 pos_i = floatToInt(player_position, BS);
+
+	/*std::cout<<"pos_i=("<<pos_i.X<<","<<pos_i.Y<<","<<pos_i.Z<<")"
+			<<std::endl;*/
+
+	s16 a = d;
+	s16 ystart = pos_i.Y + 0 - (camera_direction.Y<0 ? a : 1);
+	s16 zstart = pos_i.Z - (camera_direction.Z<0 ? a : 1);
+	s16 xstart = pos_i.X - (camera_direction.X<0 ? a : 1);
+	s16 yend = pos_i.Y + 1 + (camera_direction.Y>0 ? a : 1);
+	s16 zend = pos_i.Z + (camera_direction.Z>0 ? a : 1);
+	s16 xend = pos_i.X + (camera_direction.X>0 ? a : 1);
+	
+	for(s16 y = ystart; y <= yend; y++)
+	for(s16 z = zstart; z <= zend; z++)
+	for(s16 x = xstart; x <= xend; x++)
+	{
+		MapNode n;
+		try
+		{
+			n = g_client->getNode(v3s16(x,y,z));
+			if(content_pointable(n.d) == false)
+				continue;
+		}
+		catch(InvalidPositionException &e)
+		{
+			continue;
+		}
+
+		v3s16 np(x,y,z);
+		v3f npf = intToFloat(np, BS);
+		
+		f32 d = 0.01;
+		
+		v3s16 dirs[6] = {
+			v3s16(0,0,1), // back
+			v3s16(0,1,0), // top
+			v3s16(1,0,0), // right
+			v3s16(0,0,-1), // front
+			v3s16(0,-1,0), // bottom
+			v3s16(-1,0,0), // left
+		};
+		
+		/*
+			Meta-objects
+		*/
+		if(n.d == CONTENT_TORCH)
+		{
+			v3s16 dir = unpackDir(n.dir);
+			v3f dir_f = v3f(dir.X, dir.Y, dir.Z);
+			dir_f *= BS/2 - BS/6 - BS/20;
+			v3f cpf = npf + dir_f;
+			f32 distance = (cpf - camera_position).getLength();
+
+			core::aabbox3d<f32> box;
+			
+			// bottom
+			if(dir == v3s16(0,-1,0))
+			{
+				box = core::aabbox3d<f32>(
+					npf - v3f(BS/6, BS/2, BS/6),
+					npf + v3f(BS/6, -BS/2+BS/3*2, BS/6)
+				);
+			}
+			// top
+			else if(dir == v3s16(0,1,0))
+			{
+				box = core::aabbox3d<f32>(
+					npf - v3f(BS/6, -BS/2+BS/3*2, BS/6),
+					npf + v3f(BS/6, BS/2, BS/6)
+				);
+			}
+			// side
+			else
+			{
+				box = core::aabbox3d<f32>(
+					cpf - v3f(BS/6, BS/3, BS/6),
+					cpf + v3f(BS/6, BS/3, BS/6)
+				);
+			}
+
+			if(distance < mindistance)
+			{
+				if(box.intersectsWithLine(shootline))
+				{
+					nodefound = true;
+					nodepos = np;
+					neighbourpos = np;
+					mindistance = distance;
+					nodehilightbox = box;
+				}
+			}
+		}
+		else if(n.d == CONTENT_SIGN_WALL)
+		{
+			v3s16 dir = unpackDir(n.dir);
+			v3f dir_f = v3f(dir.X, dir.Y, dir.Z);
+			dir_f *= BS/2 - BS/6 - BS/20;
+			v3f cpf = npf + dir_f;
+			f32 distance = (cpf - camera_position).getLength();
+
+			v3f vertices[4] =
+			{
+				v3f(BS*0.42,-BS*0.35,-BS*0.4),
+				v3f(BS*0.49, BS*0.35, BS*0.4),
+			};
+
+			for(s32 i=0; i<2; i++)
+			{
+				if(dir == v3s16(1,0,0))
+					vertices[i].rotateXZBy(0);
+				if(dir == v3s16(-1,0,0))
+					vertices[i].rotateXZBy(180);
+				if(dir == v3s16(0,0,1))
+					vertices[i].rotateXZBy(90);
+				if(dir == v3s16(0,0,-1))
+					vertices[i].rotateXZBy(-90);
+				if(dir == v3s16(0,-1,0))
+					vertices[i].rotateXYBy(-90);
+				if(dir == v3s16(0,1,0))
+					vertices[i].rotateXYBy(90);
+
+				vertices[i] += npf;
+			}
+
+			core::aabbox3d<f32> box;
+
+			box = core::aabbox3d<f32>(vertices[0]);
+			box.addInternalPoint(vertices[1]);
+
+			if(distance < mindistance)
+			{
+				if(box.intersectsWithLine(shootline))
+				{
+					nodefound = true;
+					nodepos = np;
+					neighbourpos = np;
+					mindistance = distance;
+					nodehilightbox = box;
+				}
+			}
+		}
+		/*
+			Regular blocks
+		*/
+		else
+		{
+			for(u16 i=0; i<6; i++)
+			{
+				v3f dir_f = v3f(dirs[i].X,
+						dirs[i].Y, dirs[i].Z);
+				v3f centerpoint = npf + dir_f * BS/2;
+				f32 distance =
+						(centerpoint - camera_position).getLength();
+				
+				if(distance < mindistance)
+				{
+					core::CMatrix4<f32> m;
+					m.buildRotateFromTo(v3f(0,0,1), dir_f);
+
+					// This is the back face
+					v3f corners[2] = {
+						v3f(BS/2, BS/2, BS/2),
+						v3f(-BS/2, -BS/2, BS/2+d)
+					};
+					
+					for(u16 j=0; j<2; j++)
+					{
+						m.rotateVect(corners[j]);
+						corners[j] += npf;
+					}
+
+					core::aabbox3d<f32> facebox(corners[0]);
+					facebox.addInternalPoint(corners[1]);
+
+					if(facebox.intersectsWithLine(shootline))
+					{
+						nodefound = true;
+						nodepos = np;
+						neighbourpos = np + dirs[i];
+						mindistance = distance;
+
+						//nodehilightbox = facebox;
+
+						const float d = 0.502;
+						core::aabbox3d<f32> nodebox
+								(-BS*d, -BS*d, -BS*d, BS*d, BS*d, BS*d);
+						v3f nodepos_f = intToFloat(nodepos, BS);
+						nodebox.MinEdge += nodepos_f;
+						nodebox.MaxEdge += nodepos_f;
+						nodehilightbox = nodebox;
+					}
+				} // if distance < mindistance
+			} // for dirs
+		} // regular block
+	} // for coords
 }
 
 int main(int argc, char *argv[])
@@ -2148,30 +2401,14 @@ int main(int argc, char *argv[])
 
 	//video::SColor skycolor = video::SColor(255,90,140,200);
 	//video::SColor skycolor = video::SColor(255,166,202,244);
-	video::SColor skycolor = video::SColor(255,120,185,244);
+	//video::SColor skycolor = video::SColor(255,120,185,244);
+	video::SColor skycolor = video::SColor(255,140,186,250);
 
 	camera->setFOV(FOV_ANGLE);
 
 	// Just so big a value that everything rendered is visible
 	camera->setFarValue(100000*BS);
 	
-	/*
-		Lighting test code. Doesn't quite work this way.
-		The CPU-computed lighting is good.
-	*/
-
-	/*
-	smgr->addLightSceneNode(NULL,
-		v3f(0, BS*1000000, 0),
-		video::SColorf(0.3,0.3,0.3),
-		BS*10000000);
-
-	smgr->setAmbientLight(video::SColorf(0.0, 0.0, 0.0));
-
-	scene::ILightSceneNode *light = smgr->addLightSceneNode(camera,
-			v3f(0, 0, 0), video::SColorf(0.5,0.5,0.5), BS*4);
-	*/
-
 	f32 camera_yaw = 0; // "right/left"
 	f32 camera_pitch = 0; // "up/down"
 
@@ -2225,6 +2462,8 @@ int main(int argc, char *argv[])
 	//throw con::PeerNotFoundException("lol");
 
 	core::list<float> frametime_log;
+
+	float damage_flash_timer = 0;
 
 	/*
 		Main loop
@@ -2453,6 +2692,16 @@ int main(int argc, char *argv[])
 			);
 			client.setPlayerControl(control);
 		}
+		
+		/*
+			Run server
+		*/
+
+		if(server != NULL)
+		{
+			//TimeTaker timer("server->step(dtime)");
+			server->step(dtime);
+		}
 
 		/*
 			Process environment
@@ -2464,12 +2713,28 @@ int main(int argc, char *argv[])
 			//client.step(dtime_avg1);
 		}
 
-		if(server != NULL)
+		// Read client events
+		for(;;)
 		{
-			//TimeTaker timer("server->step(dtime)");
-			server->step(dtime);
+			ClientEvent event = client.getClientEvent();
+			if(event.type == CE_NONE)
+			{
+				break;
+			}
+			else if(event.type == CE_PLAYER_DAMAGE)
+			{
+				//u16 damage = event.player_damage.amount;
+				//dstream<<"Player damage: "<<damage<<std::endl;
+				damage_flash_timer = 0.05;
+			}
+			else if(event.type == CE_PLAYER_FORCE_MOVE)
+			{
+				camera_yaw = event.player_force_move.yaw;
+				camera_pitch = event.player_force_move.pitch;
+			}
 		}
-
+		
+		// Get player position
 		v3f player_position = client.getPlayerPosition();
 		
 		//TimeTaker //timer2("//timer2");
@@ -2637,22 +2902,6 @@ int main(int argc, char *argv[])
 			else if(g_input->getRightClicked())
 			{
 				std::cout<<DTIME<<"Right-clicked object"<<std::endl;
-#if 0
-				/*
-					Check if we want to modify the object ourselves
-				*/
-				if(selected_object->getTypeId() == MAPBLOCKOBJECT_TYPE_SIGN)
-				{
-				}
-				/*
-					Otherwise pass the event to the server as-is
-				*/
-				else
-				{
-					client.clickObject(1, selected_object->getBlock()->getPos(),
-							selected_object->getId(), g_selected_item);
-				}
-#endif
 			}
 		}
 		else // selected_object == NULL
@@ -2666,205 +2915,13 @@ int main(int argc, char *argv[])
 		v3s16 nodepos;
 		v3s16 neighbourpos;
 		core::aabbox3d<f32> nodehilightbox;
-		f32 mindistance = BS * 1001;
-		
-		v3s16 pos_i = floatToInt(player_position, BS);
 
-		/*std::cout<<"pos_i=("<<pos_i.X<<","<<pos_i.Y<<","<<pos_i.Z<<")"
-				<<std::endl;*/
-
-		s16 a = d;
-		s16 ystart = pos_i.Y + 0 - (camera_direction.Y<0 ? a : 1);
-		s16 zstart = pos_i.Z - (camera_direction.Z<0 ? a : 1);
-		s16 xstart = pos_i.X - (camera_direction.X<0 ? a : 1);
-		s16 yend = pos_i.Y + 1 + (camera_direction.Y>0 ? a : 1);
-		s16 zend = pos_i.Z + (camera_direction.Z>0 ? a : 1);
-		s16 xend = pos_i.X + (camera_direction.X>0 ? a : 1);
-		
-		for(s16 y = ystart; y <= yend; y++)
-		for(s16 z = zstart; z <= zend; z++)
-		for(s16 x = xstart; x <= xend; x++)
-		{
-			MapNode n;
-			try
-			{
-				n = client.getNode(v3s16(x,y,z));
-				if(content_pointable(n.d) == false)
-					continue;
-			}
-			catch(InvalidPositionException &e)
-			{
-				continue;
-			}
-
-			v3s16 np(x,y,z);
-			v3f npf = intToFloat(np, BS);
-			
-			f32 d = 0.01;
-			
-			v3s16 dirs[6] = {
-				v3s16(0,0,1), // back
-				v3s16(0,1,0), // top
-				v3s16(1,0,0), // right
-				v3s16(0,0,-1), // front
-				v3s16(0,-1,0), // bottom
-				v3s16(-1,0,0), // left
-			};
-			
-			/*
-				Meta-objects
-			*/
-			if(n.d == CONTENT_TORCH)
-			{
-				v3s16 dir = unpackDir(n.dir);
-				v3f dir_f = v3f(dir.X, dir.Y, dir.Z);
-				dir_f *= BS/2 - BS/6 - BS/20;
-				v3f cpf = npf + dir_f;
-				f32 distance = (cpf - camera_position).getLength();
-
-				core::aabbox3d<f32> box;
-				
-				// bottom
-				if(dir == v3s16(0,-1,0))
-				{
-					box = core::aabbox3d<f32>(
-						npf - v3f(BS/6, BS/2, BS/6),
-						npf + v3f(BS/6, -BS/2+BS/3*2, BS/6)
-					);
-				}
-				// top
-				else if(dir == v3s16(0,1,0))
-				{
-					box = core::aabbox3d<f32>(
-						npf - v3f(BS/6, -BS/2+BS/3*2, BS/6),
-						npf + v3f(BS/6, BS/2, BS/6)
-					);
-				}
-				// side
-				else
-				{
-					box = core::aabbox3d<f32>(
-						cpf - v3f(BS/6, BS/3, BS/6),
-						cpf + v3f(BS/6, BS/3, BS/6)
-					);
-				}
-
-				if(distance < mindistance)
-				{
-					if(box.intersectsWithLine(shootline))
-					{
-						nodefound = true;
-						nodepos = np;
-						neighbourpos = np;
-						mindistance = distance;
-						nodehilightbox = box;
-					}
-				}
-			}
-			else if(n.d == CONTENT_SIGN_WALL)
-			{
-				v3s16 dir = unpackDir(n.dir);
-				v3f dir_f = v3f(dir.X, dir.Y, dir.Z);
-				dir_f *= BS/2 - BS/6 - BS/20;
-				v3f cpf = npf + dir_f;
-				f32 distance = (cpf - camera_position).getLength();
-
-				v3f vertices[4] =
-				{
-					v3f(BS*0.42,-BS*0.35,-BS*0.4),
-					v3f(BS*0.49, BS*0.35, BS*0.4),
-				};
-
-				for(s32 i=0; i<2; i++)
-				{
-					if(dir == v3s16(1,0,0))
-						vertices[i].rotateXZBy(0);
-					if(dir == v3s16(-1,0,0))
-						vertices[i].rotateXZBy(180);
-					if(dir == v3s16(0,0,1))
-						vertices[i].rotateXZBy(90);
-					if(dir == v3s16(0,0,-1))
-						vertices[i].rotateXZBy(-90);
-					if(dir == v3s16(0,-1,0))
-						vertices[i].rotateXYBy(-90);
-					if(dir == v3s16(0,1,0))
-						vertices[i].rotateXYBy(90);
-
-					vertices[i] += npf;
-				}
-
-				core::aabbox3d<f32> box;
-
-				box = core::aabbox3d<f32>(vertices[0]);
-				box.addInternalPoint(vertices[1]);
-
-				if(distance < mindistance)
-				{
-					if(box.intersectsWithLine(shootline))
-					{
-						nodefound = true;
-						nodepos = np;
-						neighbourpos = np;
-						mindistance = distance;
-						nodehilightbox = box;
-					}
-				}
-			}
-			/*
-				Regular blocks
-			*/
-			else
-			{
-				for(u16 i=0; i<6; i++)
-				{
-					v3f dir_f = v3f(dirs[i].X,
-							dirs[i].Y, dirs[i].Z);
-					v3f centerpoint = npf + dir_f * BS/2;
-					f32 distance =
-							(centerpoint - camera_position).getLength();
-					
-					if(distance < mindistance)
-					{
-						core::CMatrix4<f32> m;
-						m.buildRotateFromTo(v3f(0,0,1), dir_f);
-
-						// This is the back face
-						v3f corners[2] = {
-							v3f(BS/2, BS/2, BS/2),
-							v3f(-BS/2, -BS/2, BS/2+d)
-						};
-						
-						for(u16 j=0; j<2; j++)
-						{
-							m.rotateVect(corners[j]);
-							corners[j] += npf;
-						}
-
-						core::aabbox3d<f32> facebox(corners[0]);
-						facebox.addInternalPoint(corners[1]);
-
-						if(facebox.intersectsWithLine(shootline))
-						{
-							nodefound = true;
-							nodepos = np;
-							neighbourpos = np + dirs[i];
-							mindistance = distance;
-
-							//nodehilightbox = facebox;
-
-							const float d = 0.502;
-							core::aabbox3d<f32> nodebox
-									(-BS*d, -BS*d, -BS*d, BS*d, BS*d, BS*d);
-							v3f nodepos_f = intToFloat(nodepos, BS);
-							nodebox.MinEdge += nodepos_f;
-							nodebox.MaxEdge += nodepos_f;
-							nodehilightbox = nodebox;
-						}
-					} // if distance < mindistance
-				} // for dirs
-			} // regular block
-		} // for coords
-
+		getPointedNode(player_position,
+				camera_direction, camera_position,
+				nodefound, shootline,
+				nodepos, neighbourpos,
+				nodehilightbox, d);
+	
 		static float nodig_delay_counter = 0.0;
 
 		if(nodefound)
@@ -3430,10 +3487,26 @@ int main(int argc, char *argv[])
 		*/
 		{
 			draw_hotbar(driver, font, v2s32(displaycenter.X, screensize.Y),
-					hotbar_imagesize, hotbar_itemcount, &local_inventory);
+					hotbar_imagesize, hotbar_itemcount, &local_inventory,
+					client.getHP());
+		}
+
+		/*
+			Damage flash
+		*/
+		if(damage_flash_timer > 0.0)
+		{
+			damage_flash_timer -= dtime;
+			
+			video::SColor color(128,255,0,0);
+			driver->draw2DRectangle(color,
+					core::rect<s32>(0,0,screensize.X,screensize.Y),
+					NULL);
 		}
 		
-		// End drawing
+		/*
+			End scene
+		*/
 		{
 			TimeTaker timer("endScene");
 			driver->endScene();
