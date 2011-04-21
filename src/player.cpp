@@ -277,6 +277,9 @@ LocalPlayer::LocalPlayer():
 	m_sneak_node(32767,32767,32767),
 	m_sneak_node_exists(false)
 {
+	// Initialize hp to 0, so that no hearts will be shown if server
+	// doesn't support health points
+	hp = 0;
 }
 
 LocalPlayer::~LocalPlayer()
