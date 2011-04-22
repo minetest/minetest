@@ -496,8 +496,6 @@ private:
 	TimeTaker
 */
 
-class IrrlichtWrapper;
-
 class TimeTaker
 {
 public:

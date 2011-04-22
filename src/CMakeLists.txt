@@ -88,7 +88,6 @@ set(minetest_SRCS
 	guiTextInputMenu.cpp
 	guiInventoryMenu.cpp
 	guiPauseMenu.cpp
-	irrlichtwrapper.cpp
 	client.cpp
 	tile.cpp
 	main.cpp

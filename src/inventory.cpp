@@ -160,7 +160,6 @@ video::ITexture * CraftItem::getImage()
 		name = "cloud.png";
 	
 	// Get such a texture
-	//return g_irrlicht->getTexture(name);
 	return g_texturesource->getTextureRaw(name);
 }
 #endif

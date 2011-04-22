@@ -19,7 +19,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "mapblock.h"
 #include "map.h"
-// For g_settings and g_irrlicht
+// For g_settings
 #include "main.h"
 #include "light.h"
 #include <sstream>
@@ -676,7 +676,6 @@ scene::SMesh* makeMapBlockMesh(MeshMakeData *data)
 
 			const u16 indices[] = {0,1,2,2,3,0};
 			
-			//video::ITexture *texture = g_irrlicht->getTexture(f.tile.spec);
 			video::ITexture *texture = f.tile.texture.atlas;
 			if(texture == NULL)
 				continue;
@@ -701,12 +700,10 @@ scene::SMesh* makeMapBlockMesh(MeshMakeData *data)
 	// Flowing water material
 	video::SMaterial material_water1;
 	material_water1.setFlag(video::EMF_LIGHTING, false);
-	//material_water1.setFlag(video::EMF_BACK_FACE_CULLING, false);
+	material_water1.setFlag(video::EMF_BACK_FACE_CULLING, false);
 	material_water1.setFlag(video::EMF_BILINEAR_FILTER, false);
 	material_water1.setFlag(video::EMF_FOG_ENABLE, true);
 	material_water1.MaterialType = video::EMT_TRANSPARENT_VERTEX_ALPHA;
-	//TODO
-	//material_water1.setTexture(0, g_irrlicht->getTexture("water.png"));
 	AtlasPointer pa_water1 = g_texturesource->getTexture(
 			g_texturesource->getTextureId("water.png"));
 	material_water1.setTexture(0, pa_water1.atlas);
@@ -718,8 +715,6 @@ scene::SMesh* makeMapBlockMesh(MeshMakeData *data)
 	material_leaves1.setFlag(video::EMF_BILINEAR_FILTER, false);
 	material_leaves1.setFlag(video::EMF_FOG_ENABLE, true);
 	material_leaves1.MaterialType = video::EMT_TRANSPARENT_ALPHA_CHANNEL_REF;
-	//TODO
-	//material_leaves1.setTexture(0, g_irrlicht->getTexture("leaves.png"));
 	AtlasPointer pa_leaves1 = g_texturesource->getTexture(
 			g_texturesource->getTextureId("leaves.png"));
 	material_leaves1.setTexture(0, pa_leaves1.atlas);

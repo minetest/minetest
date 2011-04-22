@@ -390,11 +390,6 @@ public:
 		os<<basename<<"^[progressbar"<<value_f;
 
 		return g_texturesource->getTextureRaw(os.str());
-
-		/*TextureSpec spec;
-		spec.addTid(g_irrlicht->getTextureId(basename));
-		spec.addTid(g_irrlicht->getTextureId(os.str()));
-		return g_irrlicht->getTexture(spec);*/
 	}
 #endif
 	std::string getText()

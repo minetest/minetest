@@ -136,6 +136,9 @@ Game content:
   - The player would have some of that stuff at the beginning, and
     would need new supplies of it when it runs out
 
+- A bomb
+- A spread-items-on-map routine for the bomb, and for dying players
+
 Documentation:
 --------------
 
@@ -175,13 +178,13 @@ SUGG: Draw cubes in inventory directly with 3D drawing commands, so that
 
 SUGG: Option for enabling proper alpha channel for textures
 
+TODO: Make all water not backside culled
+
 Configuration:
 --------------
 
 Client:
 -------
-
-TODO: Remove IrrlichtWrapper
 
 TODO: Untie client network operations from framerate
       - Needs some input queues or something
@@ -194,6 +197,10 @@ TODO: Don't update all meshes always on single node changes, but
       check which ones should be updated
 	  - implement Map::updateNodeMeshes() and the usage of it
 	  - It will give almost always a 4x boost in mesh update performance.
+
+- A weapon engine
+
+- Tool/weapon visualization
 
 Server:
 -------
@@ -208,9 +215,6 @@ FIXME: Server sometimes goes into some infinite PeerNotFoundException loop
   - It is probably caused by oscillating water
 * Make a small history check to transformLiquids to detect and log
   continuous oscillations, in such detail that they can be fixed.
-
-FIXME: If something is removed from craftresult with a right click,
-	it is only possible to get one item from it should give 4
 
 Objects:
 --------
@@ -241,17 +245,18 @@ SUGG: Erosion simulation at map generation time
 	- Simulate rock falling from cliffs when water has removed
 	  enough solid rock from the bottom
 
+SUGG: Try out the notch way of generating maps, that is, make bunches
+      of low-res 3d noise and interpolate linearly.
+
 Mapgen v2:
-* only_from_disk might not work anymore - check and fix it.
-* Make the generator to run in background and not blocking block
-  placement and transfer
 * Possibly add some kind of erosion and other stuff
 * Better water generation (spread it to underwater caverns but don't
   fill dungeons that don't touch big water masses)
 * When generating a chunk and the neighboring chunk doesn't have mud
   and stuff yet and the ground is fairly flat, the mud will flow to
   the other chunk making nasty straight walls when the other chunk
-  is generated. Fix it.
+  is generated. Fix it. Maybe just a special case if the ground is
+  flat?
 
 Misc. stuff:
 ------------
@@ -321,7 +326,6 @@ Making it more portable:
 #include "constants.h"
 //#include "strfnd.h"
 #include "porting.h"
-#include "irrlichtwrapper.h"
 #include "gettime.h"
 #include "porting.h"
 #include "guiPauseMenu.h"
@@ -336,9 +340,6 @@ Making it more portable:
 #include "noise.h"
 #include "tile.h"
 #include "guiFurnaceMenu.h"
-
-// TODO: Remove this
-IrrlichtWrapper *g_irrlicht = NULL;
 
 // This makes textures
 ITextureSource *g_texturesource = NULL;
@@ -495,9 +496,9 @@ u32 getTimeMs()
 		Use irrlicht because it is more precise than porting.h's
 		getTimeMs()
 	*/
-	if(g_irrlicht == NULL)
+	if(g_device == NULL)
 		return 0;
-	return g_irrlicht->getTime();
+	return g_device->getTimer()->getRealTime();
 }
 
 /*
@@ -2049,7 +2050,6 @@ int main(int argc, char *argv[])
 		return 1; // could not create selected driver.
 	
 	g_device = device;
-	g_irrlicht = new IrrlichtWrapper(device);
 	TextureSource *texturesource = new TextureSource(device);
 	g_texturesource = texturesource;
 
@@ -2217,9 +2217,6 @@ int main(int argc, char *argv[])
 
 		while(g_device->run() && kill == false)
 		{
-			// Run global IrrlichtWrapper's main thread processing stuff
-			g_irrlicht->Run();
-			
 			if(menu->getStatus() == true)
 				break;
 
@@ -2283,9 +2280,6 @@ int main(int argc, char *argv[])
 		is removed.
 	*/
 	{
-
-	// This is set to true at the end of the scope
-	g_irrlicht->Shutdown(false);
 
 	/*
 		Draw "Loading" screen
@@ -2483,11 +2477,6 @@ int main(int argc, char *argv[])
 			g_disconnect_requested = false;
 			break;
 		}
-
-		/*
-			Run global IrrlichtWrapper's main thread processing stuff
-		*/
-		g_irrlicht->Run();
 
 		/*
 			Process TextureSource's queue
@@ -3550,21 +3539,7 @@ int main(int argc, char *argv[])
 			device->setWindowCaption(str.c_str());
 			lastFPS = fps;
 		}
-		
-		/*}
-		else
-			device->yield();*/
 	}
-
-	//delete quick_inventory;
-
-	/*
-		Disable texture fetches and other stuff that is queued
-		to be processed by the main loop.
-
-		This has to be done before client goes out of scope.
-	*/
-	g_irrlicht->Shutdown(true);
 
 	} // client and server are deleted at this point
 

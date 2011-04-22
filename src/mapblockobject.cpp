@@ -24,7 +24,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 // For object wrapping
 #include "map.h"
 #include "inventory.h"
-#include "irrlichtwrapper.h"
 #include "utility.h"
 
 /*
@@ -361,8 +360,6 @@ video::ITexture * ItemObject::getItemImage()
 	InventoryItem *item = createInventoryItem();
 	if(item)
 		texture = item->getImage();
-	/*else
-		texture = g_irrlicht->getTexture(porting::getDataPath("cloud.png").c_str());*/
 	if(item)
 		delete item;
 	return texture;

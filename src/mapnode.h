@@ -27,7 +27,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "exceptions.h"
 #include "serialization.h"
 #include "tile.h"
-#include "iirrlichtwrapper.h"
 
 /*
 	Initializes all kind of stuff in here.
