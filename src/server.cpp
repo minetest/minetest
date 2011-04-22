@@ -4082,13 +4082,33 @@ Player *Server::emergePlayer(const char *name, const char *password,
 		{
 			setCreativeInventory(player);
 		}
-		else
+		else if(g_settings.getBool("give_initial_stuff"))
 		{
-			/*{
-				InventoryItem *item = new ToolItem("WPick", 32000);
+			{
+				InventoryItem *item = new ToolItem("SteelPick", 0);
 				void* r = player->inventory.addItem("main", item);
 				assert(r == NULL);
-			}*/
+			}
+			{
+				InventoryItem *item = new MaterialItem(CONTENT_TORCH, 99);
+				void* r = player->inventory.addItem("main", item);
+				assert(r == NULL);
+			}
+			{
+				InventoryItem *item = new ToolItem("SteelAxe", 0);
+				void* r = player->inventory.addItem("main", item);
+				assert(r == NULL);
+			}
+			{
+				InventoryItem *item = new ToolItem("SteelShovel", 0);
+				void* r = player->inventory.addItem("main", item);
+				assert(r == NULL);
+			}
+			{
+				InventoryItem *item = new MaterialItem(CONTENT_COBBLE, 99);
+				void* r = player->inventory.addItem("main", item);
+				assert(r == NULL);
+			}
 			/*{
 				InventoryItem *item = new MaterialItem(CONTENT_MESE, 6);
 				void* r = player->inventory.addItem("main", item);
@@ -4119,13 +4139,7 @@ Player *Server::emergePlayer(const char *name, const char *password,
 				void* r = player->inventory.addItem("main", item);
 				assert(r == NULL);
 			}*/
-			/*// Give some lights
-			{
-				InventoryItem *item = new MaterialItem(CONTENT_TORCH, 999);
-				bool r = player->inventory.addItem("main", item);
-				assert(r == true);
-			}
-			// and some signs
+			/*// and some signs
 			for(u16 i=0; i<4; i++)
 			{
 				InventoryItem *item = new MapBlockObjectItem("Sign Example text");

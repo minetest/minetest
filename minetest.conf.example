@@ -54,6 +54,8 @@
 
 #enable_damage = false
 
+#give_initial_stuff = false
+
 # Player and object positions are sent at intervals specified by this
 #objectdata_inverval = 0.2
 

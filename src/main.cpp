@@ -21,26 +21,16 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 =============================== NOTES ==============================
 NOTE: Things starting with TODO are sometimes only suggestions.
 
-NOTE: VBO cannot be turned on for fast-changing stuff because there
-      is an apparanet memory leak in irrlicht when using it (not sure)
-	  - It is not a memory leak but some kind of a buffer.
-
 NOTE: iostream.imbue(std::locale("C")) is very slow
 NOTE: Global locale is now set at initialization
+
+NOTE: If VBO (EHM_STATIC) is used, remember to explicitly free the
+      hardware buffer (it is not freed automatically)
 
 Random suggeestions (AKA very old suggestions that haven't been done):
 ----------------------------------------------------------------------
 
 SUGG: Fix address to be ipv6 compatible
-
-NOTE: When a new sector is generated, it may change the ground level
-      of it's and it's neighbors border that two blocks that are
-	  above and below each other and that are generated before and
-	  after the sector heightmap generation (order doesn't matter),
-	  can have a small gap between each other at the border.
-SUGG: Use same technique for sector heightmaps as what we're
-      using for UnlimitedHeightmap? (getting all neighbors
-	  when generating)
 
 SUGG: If player is on ground, mainly fetch ground-level blocks
 
@@ -66,11 +56,6 @@ SUGG: Make a PACKET_COMBINED which contains many subpackets. Utilize
 		- This is not exactly trivial: the object data packets are
 		  sometimes very big by themselves
 	  - This might not give much network performance gain though.
-
-SUGG: Split MapBlockObject serialization to to-client and to-disk
-      - This will allow saving ages of rats on disk but not sending
-	    them to clients
-	  - Not applicable. MapBlockObjects will be removed in the future.
 
 SUGG: Precalculate lighting translation table at runtime (at startup)
       - This is not doable because it is currently hand-made and not
@@ -159,7 +144,7 @@ Graphics:
 ---------
 
 SUGG: Combine MapBlock's face caches to so big pieces that VBO
-      gets used
+      can be used
       - That is >500 vertices
 	  - This is not easy; all the MapBlocks close to the player would
 	    still need to be drawn separately and combining the blocks
@@ -171,14 +156,11 @@ SUGG: Make fetching sector's blocks more efficient when rendering
 
 TODO: Flowing water animation
 
-SUGG: Combine meshes to bigger ones in ClientMap and set them EHM_STATIC
-
 SUGG: Draw cubes in inventory directly with 3D drawing commands, so that
       animating them is easier.
 
 SUGG: Option for enabling proper alpha channel for textures
-
-TODO: Make all water not backside culled
+TODO: A setting for enabling bilinear filtering for textures
 
 Configuration:
 --------------
@@ -224,6 +206,7 @@ TODO: Get rid of MapBlockObjects and use ActiveObjects
 SUGG: MovingObject::move and Player::move are basically the same.
       combine them.
 	  - NOTE: Player::move is more up-to-date.
+	  - NOTE: There is a simple move implementation now in collision.{h,cpp}
 
 Map:
 ----
@@ -233,6 +216,7 @@ TODO: Mineral and ground material properties
 	    some formula, as well as tool strengths
 
 TODO: Flowing water to actually contain flow direction information
+      - There is a space for this - it just has to be implemented.
 
 SUGG: Erosion simulation at map generation time
 	- Simulate water flows, which would carve out dirt fast and

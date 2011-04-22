@@ -51,11 +51,10 @@ void set_default_settings()
 	g_settings.setDefault("fast_move", "false");
 
 	// Server stuff
-	g_settings.setDefault("fast_move", "false");
-
 	g_settings.setDefault("enable_experimental", "false");
 	g_settings.setDefault("creative_mode", "false");
 	g_settings.setDefault("enable_damage", "false"); //TODO: Set to true
+	g_settings.setDefault("give_initial_stuff", "false");
 
 	g_settings.setDefault("objectdata_interval", "0.2");
 	g_settings.setDefault("active_object_range", "2");
