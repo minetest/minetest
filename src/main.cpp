@@ -1249,17 +1249,17 @@ int main(int argc, char *argv[])
 	*/
 
 	/*
+		If an error occurs, this is set to something and the
+		menu-game loop is restarted. It is then displayed before
+		the menu.
+	*/
+	std::wstring error_message = L"";
+
+	/*
 		Menu-game loop
 	*/
 	while(device->run() && kill == false)
 	{
-		/*
-			If an error occurs, this is set to something and the
-			menu-game loop is restarted. It is then displayed before
-			the menu.
-		*/
-		std::wstring error_message = L"";
-
 		// This is used for catching disconnects
 		try
 		{
@@ -1404,6 +1404,21 @@ int main(int argc, char *argv[])
 			dstream<<DTIME<<"Connection error (timed out?)"<<std::endl;
 			error_message = L"Connection error (timed out?)";
 		}
+		catch(SocketException &e)
+		{
+			dstream<<DTIME<<"Socket error (port already in use?)"<<std::endl;
+			error_message = L"Socket error (port already in use?)";
+		}
+#ifdef NDEBUG
+		catch(std::exception &e)
+		{
+			narrow_message = "Some exception, what()=\"";
+			narrow_message += e.what();
+			narrow_message += "\"";
+			dstream<<DTIME<<narrow_message<<std::endl;
+			error_message = narrow_to_wide(narrow_message);
+		}
+#endif
 
 	} // Menu-game loop
 	
