@@ -162,6 +162,8 @@ SUGG: Draw cubes in inventory directly with 3D drawing commands, so that
 SUGG: Option for enabling proper alpha channel for textures
 TODO: A setting for enabling bilinear filtering for textures
 
+TODO: Better control of draw_control.wanted_max_blocks
+
 Configuration:
 --------------
 
@@ -1412,7 +1414,7 @@ int main(int argc, char *argv[])
 #ifdef NDEBUG
 		catch(std::exception &e)
 		{
-			narrow_message = "Some exception, what()=\"";
+			std::string narrow_message = "Some exception, what()=\"";
 			narrow_message += e.what();
 			narrow_message += "\"";
 			dstream<<DTIME<<narrow_message<<std::endl;
