@@ -851,11 +851,17 @@ scene::SMesh* makeMapBlockMesh(MeshMakeData *data)
 		else if(n.d == CONTENT_WATER)
 		{
 			bool top_is_water = false;
-			MapNode n = data->m_vmanip.getNodeNoEx(blockpos_nodes + v3s16(x,y+1,z));
-			if(n.d == CONTENT_WATER || n.d == CONTENT_WATERSOURCE)
+			MapNode ntop = data->m_vmanip.getNodeNoEx(blockpos_nodes + v3s16(x,y+1,z));
+			if(ntop.d == CONTENT_WATER || ntop.d == CONTENT_WATERSOURCE)
 				top_is_water = true;
 			
-			u8 l = decode_light(n.getLightBlend(data->m_daynight_ratio));
+			u8 l = 0;
+			// Use the light of the node on top if possible
+			if(content_features(ntop.d).param_type == CPT_LIGHT)
+				l = decode_light(ntop.getLightBlend(data->m_daynight_ratio));
+			// Otherwise use the light of this node (the water)
+			else
+				l = decode_light(n.getLightBlend(data->m_daynight_ratio));
 			video::SColor c(WATER_ALPHA,l,l,l);
 			
 			// Neighbor water levels (key = relative position)
