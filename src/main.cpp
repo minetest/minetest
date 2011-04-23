@@ -164,6 +164,9 @@ TODO: A setting for enabling bilinear filtering for textures
 
 TODO: Better control of draw_control.wanted_max_blocks
 
+TODO: Get player texture (and some others) from the specified texture
+      directory
+
 Configuration:
 --------------
 
@@ -886,6 +889,53 @@ void SpeedTests()
 	}
 }
 
+void drawMenuBackground(video::IVideoDriver* driver)
+{
+	core::dimension2d<u32> screensize = driver->getScreenSize();
+		
+	video::ITexture *bgtexture =
+			driver->getTexture(porting::getDataPath("mud.png").c_str());
+	if(bgtexture)
+	{
+		s32 texturesize = 128;
+		s32 tiled_y = screensize.Height / texturesize + 1;
+		s32 tiled_x = screensize.Width / texturesize + 1;
+		
+		for(s32 y=0; y<tiled_y; y++)
+		for(s32 x=0; x<tiled_x; x++)
+		{
+			core::rect<s32> rect(0,0,texturesize,texturesize);
+			rect += v2s32(x*texturesize, y*texturesize);
+			driver->draw2DImage(bgtexture, rect,
+				core::rect<s32>(core::position2d<s32>(0,0),
+				core::dimension2di(bgtexture->getSize())),
+				NULL, NULL, true);
+		}
+	}
+	
+	video::ITexture *logotexture =
+			driver->getTexture(porting::getDataPath("menulogo.png").c_str());
+	if(logotexture)
+	{
+		v2s32 logosize(logotexture->getOriginalSize().Width,
+				logotexture->getOriginalSize().Height);
+		logosize *= 4;
+
+		video::SColor bgcolor(255,50,50,50);
+		core::rect<s32> bgrect(0, screensize.Height-logosize.Y-20,
+				screensize.Width, screensize.Height);
+		driver->draw2DRectangle(bgcolor, bgrect, NULL);
+
+		core::rect<s32> rect(0,0,logosize.X,logosize.Y);
+		rect += v2s32(screensize.Width/2,screensize.Height-10-logosize.Y);
+		rect -= v2s32(logosize.X/2, 0);
+		driver->draw2DImage(logotexture, rect,
+			core::rect<s32>(core::position2d<s32>(0,0),
+			core::dimension2di(logotexture->getSize())),
+			NULL, NULL, true);
+	}
+}
+
 int main(int argc, char *argv[])
 {
 	/*
@@ -1303,6 +1353,7 @@ int main(int argc, char *argv[])
 				menudata.name = narrow_to_wide(playername);
 				menudata.port = narrow_to_wide(itos(port));
 				menudata.creative_mode = g_settings.getBool("creative_mode");
+				menudata.enable_damage = g_settings.getBool("enable_damage");
 
 				GUIMainMenu *menu =
 						new GUIMainMenu(guienv, guiroot, -1, 
@@ -1332,7 +1383,11 @@ int main(int argc, char *argv[])
 
 					//driver->beginScene(true, true, video::SColor(255,0,0,0));
 					driver->beginScene(true, true, video::SColor(255,128,128,128));
+
+					drawMenuBackground(driver);
+
 					guienv->drawAll();
+					
 					driver->endScene();
 				}
 				
@@ -1358,8 +1413,8 @@ int main(int argc, char *argv[])
 				int newport = stoi(wide_to_narrow(menudata.port));
 				if(newport != 0)
 					port = newport;
-				//port = stoi(wide_to_narrow(menudata.port));
 				g_settings.set("creative_mode", itos(menudata.creative_mode));
+				g_settings.set("enable_damage", itos(menudata.enable_damage));
 				
 				// Check for valid parameters, restart menu if invalid.
 				if(playername == "")

@@ -652,15 +652,33 @@ void the_game(
 		gui_loadingtext->remove();
 		return;
 	}
+
+	/*
+		Attempt to connect to the server
+	*/
 	
 	dstream<<DTIME<<"Connecting to server at ";
 	connect_address.print(&dstream);
 	dstream<<std::endl;
 	client.connect(connect_address);
+
+	bool could_connect = false;
 	
 	try{
-		while(client.connectedAndInitialized() == false)
+		float time_counter = 0.0;
+		for(;;)
 		{
+			if(client.connectedAndInitialized())
+			{
+				could_connect = true;
+				break;
+			}
+			// Wait for 10 seconds
+			if(time_counter >= 10.0)
+			{
+				break;
+			}
+
 			// Update screen
 			driver->beginScene(true, true, video::SColor(255,0,0,0));
 			guienv->drawAll();
@@ -675,12 +693,15 @@ void the_game(
 			
 			// Delay a bit
 			sleep_ms(100);
+			time_counter += 0.1;
 		}
 	}
 	catch(con::PeerNotFoundException &e)
+	{}
+
+	if(could_connect == false)
 	{
 		std::cout<<DTIME<<"Timed out."<<std::endl;
-		//return 0;
 		error_message = L"Connection timed out.";
 		gui_loadingtext->remove();
 		return;

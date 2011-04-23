@@ -31,6 +31,7 @@ struct MainMenuData
 {
 	MainMenuData():
 		creative_mode(false),
+		enable_damage(false),
 		delete_map(false)
 	{}
 	// These are in the native format of the gui elements
@@ -38,6 +39,7 @@ struct MainMenuData
 	std::wstring port;
 	std::wstring name;
 	bool creative_mode;
+	bool enable_damage;
 	// If map deletion is requested, this is set to true
 	bool delete_map;
 };

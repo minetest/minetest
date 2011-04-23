@@ -64,6 +64,7 @@ void GUIMainMenu::regenerateGui(v2u32 screensize)
 	std::wstring text_address;
 	std::wstring text_port;
 	bool creative_mode;
+	bool enable_damage;
 
 	{
 		gui::IGUIElement *e = getElementFromId(258);
@@ -93,6 +94,13 @@ void GUIMainMenu::regenerateGui(v2u32 screensize)
 		else
 			creative_mode = m_data->creative_mode;
 	}
+	{
+		gui::IGUIElement *e = getElementFromId(261);
+		if(e != NULL && e->getType() == gui::EGUIET_CHECK_BOX)
+			enable_damage = ((gui::IGUICheckBox*)e)->isChecked();
+		else
+			enable_damage = m_data->enable_damage;
+	}
 
 	/*
 		Remove stuff
@@ -102,32 +110,51 @@ void GUIMainMenu::regenerateGui(v2u32 screensize)
 	/*
 		Calculate new sizes and positions
 	*/
-	core::rect<s32> rect(
-			screensize.X/2 - 580/2,
-			screensize.Y/2 - 300/2,
-			screensize.X/2 + 580/2,
-			screensize.Y/2 + 300/2
-	);
 	
+	v2s32 size(620, 430);
+
+	core::rect<s32> rect(
+			screensize.X/2 - size.X/2,
+			screensize.Y/2 - size.Y/2,
+			screensize.X/2 + size.X/2,
+			screensize.Y/2 + size.Y/2
+	);
+
 	DesiredRect = rect;
 	recalculateAbsolutePosition(false);
 
-	v2s32 size = rect.getSize();
+	//v2s32 size = rect.getSize();
 
 	/*
 		Add stuff
 	*/
 
+	/*
+		Client section
+	*/
+
+	v2s32 topleft_client(40, 0);
+	v2s32 size_client = size - v2s32(40, 0);
+	
+	{
+		core::rect<s32> rect(0, 0, 20, 125);
+		rect += topleft_client + v2s32(-15, 60);
+		const wchar_t *text = L"C\nL\nI\nE\nN\nT";
+		//gui::IGUIStaticText *t =
+		Environment->addStaticText(text, rect, false, true, this, -1);
+		//t->setTextAlignment(gui::EGUIA_CENTER, gui::EGUIA_UPPERLEFT);
+	}
+
 	// Nickname
 	{
 		core::rect<s32> rect(0, 0, 100, 20);
-		rect = rect + v2s32(size.X/2 - 250, size.Y/2 - 100 + 6);
+		rect += topleft_client + v2s32(40, 50+6);
 		const wchar_t *text = L"Nickname";
 		Environment->addStaticText(text, rect, false, true, this, -1);
 	}
 	{
 		core::rect<s32> rect(0, 0, 250, 30);
-		rect = rect + v2s32(size.X/2 - 130, size.Y/2 - 100);
+		rect += topleft_client + v2s32(160, 50);
 		gui::IGUIElement *e = 
 		Environment->addEditBox(text_name.c_str(), rect, true, this, 258);
 		if(text_name == L"")
@@ -136,13 +163,13 @@ void GUIMainMenu::regenerateGui(v2u32 screensize)
 	// Address + port
 	{
 		core::rect<s32> rect(0, 0, 100, 20);
-		rect = rect + v2s32(size.X/2 - 250, size.Y/2 - 50 + 6);
+		rect += topleft_client + v2s32(40, 100+6);
 		const wchar_t *text = L"Address + Port";
 		Environment->addStaticText(text, rect, false, true, this, -1);
 	}
 	{
 		core::rect<s32> rect(0, 0, 250, 30);
-		rect = rect + v2s32(size.X/2 - 130, size.Y/2 - 50);
+		rect += topleft_client + v2s32(160, 100);
 		gui::IGUIElement *e = 
 		Environment->addEditBox(text_address.c_str(), rect, true, this, 256);
 		if(text_name != L"")
@@ -150,37 +177,56 @@ void GUIMainMenu::regenerateGui(v2u32 screensize)
 	}
 	{
 		core::rect<s32> rect(0, 0, 100, 30);
-		rect = rect + v2s32(size.X/2 - 130 + 250 + 20, size.Y/2 - 50);
+		//rect += topleft_client + v2s32(160+250+20, 125);
+		rect += topleft_client + v2s32(size_client.X-40-100, 100);
 		Environment->addEditBox(text_port.c_str(), rect, true, this, 257);
 	}
 	{
 		core::rect<s32> rect(0, 0, 400, 20);
-		rect = rect + v2s32(size.X/2 - 130, size.Y/2 - 50 + 35);
+		rect += topleft_client + v2s32(160, 100+35);
 		const wchar_t *text = L"Leave address blank to start a local server.";
 		Environment->addStaticText(text, rect, false, true, this, -1);
-	}
-	// Server parameters
-	{
-		core::rect<s32> rect(0, 0, 100, 20);
-		rect = rect + v2s32(size.X/2 - 250, size.Y/2 + 25 + 6);
-		const wchar_t *text = L"Server params";
-		Environment->addStaticText(text, rect, false, true, this, -1);
-	}
-	{
-		core::rect<s32> rect(0, 0, 250, 30);
-		rect = rect + v2s32(size.X/2 - 130, size.Y/2 + 25);
-		Environment->addCheckBox(creative_mode, rect, this, 259, L"Creative Mode");
 	}
 	// Start game button
 	{
 		core::rect<s32> rect(0, 0, 180, 30);
-		rect = rect + v2s32(size.X/2-180/2, size.Y/2-30/2 + 100);
+		//rect += topleft_client + v2s32(size_client.X/2-180/2, 225-30/2);
+		rect += topleft_client + v2s32(size_client.X-180-40, 150+25);
 		Environment->addButton(rect, this, 257, L"Start Game / Connect");
+	}
+
+	/*
+		Server section
+	*/
+
+	v2s32 topleft_server(40, 250);
+	v2s32 size_server = size - v2s32(40, 0);
+	
+	{
+		core::rect<s32> rect(0, 0, 20, 125);
+		rect += topleft_server + v2s32(-15, 40);
+		const wchar_t *text = L"S\nE\nR\nV\nE\nR";
+		//gui::IGUIStaticText *t =
+		Environment->addStaticText(text, rect, false, true, this, -1);
+		//t->setTextAlignment(gui::EGUIA_CENTER, gui::EGUIA_UPPERLEFT);
+	}
+
+	// Server parameters
+	{
+		core::rect<s32> rect(0, 0, 250, 30);
+		rect += topleft_server + v2s32(40, 30);
+		Environment->addCheckBox(creative_mode, rect, this, 259, L"Creative Mode");
+	}
+	{
+		core::rect<s32> rect(0, 0, 250, 30);
+		rect += topleft_server + v2s32(40, 60);
+		Environment->addCheckBox(enable_damage, rect, this, 261, L"Enable Damage");
 	}
 	// Map delete button
 	{
 		core::rect<s32> rect(0, 0, 130, 30);
-		rect = rect + v2s32(size.X/2-130/2+200, size.Y/2-30/2 + 100);
+		//rect += topleft_server + v2s32(size_server.X-40-130, 100+25);
+		rect += topleft_server + v2s32(40, 100+25);
 		Environment->addButton(rect, this, 260, L"Delete map");
 	}
 }
@@ -192,8 +238,22 @@ void GUIMainMenu::drawMenu()
 		return;
 	video::IVideoDriver* driver = Environment->getVideoDriver();
 	
+	/*video::SColor bgcolor(140,0,0,0);
+	driver->draw2DRectangle(bgcolor, AbsoluteRect, &AbsoluteClippingRect);*/
+
 	video::SColor bgcolor(140,0,0,0);
-	driver->draw2DRectangle(bgcolor, AbsoluteRect, &AbsoluteClippingRect);
+
+	{
+		core::rect<s32> rect(0, 0, 620, 230);
+		rect += AbsoluteRect.UpperLeftCorner;
+		driver->draw2DRectangle(bgcolor, rect, &AbsoluteClippingRect);
+	}
+
+	{
+		core::rect<s32> rect(0, 250, 620, 430);
+		rect += AbsoluteRect.UpperLeftCorner;
+		driver->draw2DRectangle(bgcolor, rect, &AbsoluteClippingRect);
+	}
 
 	gui::IGUIElement::draw();
 }
@@ -219,6 +279,11 @@ void GUIMainMenu::acceptInput()
 		gui::IGUIElement *e = getElementFromId(259);
 		if(e != NULL && e->getType() == gui::EGUIET_CHECK_BOX)
 			m_data->creative_mode = ((gui::IGUICheckBox*)e)->isChecked();
+	}
+	{
+		gui::IGUIElement *e = getElementFromId(261);
+		if(e != NULL && e->getType() == gui::EGUIET_CHECK_BOX)
+			m_data->enable_damage = ((gui::IGUICheckBox*)e)->isChecked();
 	}
 	
 	m_accepted = true;
