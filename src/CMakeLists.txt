@@ -90,6 +90,7 @@ set(minetest_SRCS
 	guiPauseMenu.cpp
 	client.cpp
 	tile.cpp
+	game.cpp
 	main.cpp
 )
 

@@ -438,7 +438,7 @@ void ServerEnvironment::step(float dtime)
 	bool footprints = g_settings.getBool("footprints");
 
 	{
-		//TimeTaker timer("Server m_map->timerUpdate()", g_device);
+		//TimeTaker timer("Server m_map->timerUpdate()");
 		m_map->timerUpdate(dtime);
 	}
 
@@ -1027,7 +1027,7 @@ void ClientEnvironment::step(float dtime)
 	bool footprints = g_settings.getBool("footprints");
 
 	{
-		//TimeTaker timer("Client m_map->timerUpdate()", g_device);
+		//TimeTaker timer("Client m_map->timerUpdate()");
 		m_map->timerUpdate(dtime);
 	}
 	

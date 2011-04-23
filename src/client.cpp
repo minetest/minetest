@@ -621,7 +621,7 @@ void Client::ProcessData(u8 *data, u32 datasize, u16 sender_peer_id)
 		p.Y = readS16(&data[4]);
 		p.Z = readS16(&data[6]);
 		
-		//TimeTaker t1("TOCLIENT_REMOVENODE", g_device);
+		//TimeTaker t1("TOCLIENT_REMOVENODE");
 		
 		// This will clear the cracking animation after digging
 		((ClientMap&)m_env.getMap()).clearTempMod(p);
@@ -638,7 +638,7 @@ void Client::ProcessData(u8 *data, u32 datasize, u16 sender_peer_id)
 		p.Y = readS16(&data[4]);
 		p.Z = readS16(&data[6]);
 		
-		//TimeTaker t1("TOCLIENT_ADDNODE", g_device);
+		//TimeTaker t1("TOCLIENT_ADDNODE");
 
 		MapNode n;
 		n.deSerialize(&data[8], ser_version);
