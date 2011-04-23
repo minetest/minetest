@@ -1076,6 +1076,8 @@ int main(int argc, char *argv[])
 		port = cmd_args.getU16("port");
 	else if(g_settings.exists("port"))
 		port = g_settings.getU16("port");
+	if(port == 0)
+		port = 30000;
 	
 	// Map directory
 	std::string map_dir = porting::path_userdata+"/map";
