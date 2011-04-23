@@ -336,7 +336,7 @@ MapDrawControl draw_control;
 */
 
 Settings g_settings;
-
+// This is located in defaultsettings.cpp
 extern void set_default_settings();
 
 /*
@@ -345,12 +345,6 @@ extern void set_default_settings();
 
 IrrlichtDevice *g_device = NULL;
 Client *g_client = NULL;
-
-/*const s16 quickinv_size = 40;
-const s16 quickinv_padding = 8;
-const s16 quickinv_spacing = quickinv_size + quickinv_padding;
-const s16 quickinv_outer_padding = 4;
-const s16 quickinv_itemcount = 8;*/
 
 const s32 hotbar_itemcount = 8;
 const s32 hotbar_imagesize = 36;
@@ -361,6 +355,8 @@ const s32 hotbar_imagesize = 36;
 
 gui::IGUIEnvironment* guienv = NULL;
 gui::IGUIStaticText *guiroot = NULL;
+
+// Handler for the modal menus
 
 class MainMenuManager : public IMenuManager
 {
@@ -421,11 +417,16 @@ bool noMenuActive()
 	return (g_menumgr.menuCount() == 0);
 }
 
-bool g_disconnect_requested = false;
+// Passed to menus to allow disconnecting and exiting
 
 class MainGameCallback : public IGameCallback
 {
 public:
+	MainGameCallback():
+		disconnect_requested(false)
+	{
+	}
+
 	virtual void exitToOS()
 	{
 		g_device->closeDevice();
@@ -433,22 +434,24 @@ public:
 
 	virtual void disconnect()
 	{
-		g_disconnect_requested = true;
+		disconnect_requested = true;
 	}
+
+	bool disconnect_requested;
 };
 
 MainGameCallback g_gamecallback;
 
+/*
+	Inventory stuff
+*/
+
 // Inventory actions from the menu are buffered here before sending
-// TODO: Get rid of this
 Queue<InventoryAction*> inventory_action_queue;
 // This is a copy of the inventory that the client's environment has
 Inventory local_inventory;
 
 u16 g_selected_item = 0;
-
-/*bool g_show_map_plot = false;
-bool g_refresh_map_plot = false;*/
 
 /*
 	Debug streams
@@ -561,6 +564,10 @@ struct TextDestSignNode : public TextDest
 	v3s16 m_p;
 	Client *m_client;
 };
+
+/*
+	Event handler for Irrlicht
+*/
 
 class MyEventReceiver : public IEventReceiver
 {
@@ -800,6 +807,10 @@ private:
 	//s32 mouseY;
 	IrrlichtDevice *m_device;
 };
+
+/*
+	Separated input handler
+*/
 
 class InputHandler
 {
@@ -1072,6 +1083,10 @@ private:
 	bool rightreleased;
 };
 
+/*
+	Render distance feedback loop
+*/
+
 void updateViewingRange(f32 frametime_in, Client *client)
 {
 	if(draw_control.range_all == true)
@@ -1203,6 +1218,10 @@ void updateViewingRange(f32 frametime_in, Client *client)
 	frametime_old = frametime;
 }
 
+/*
+	Hotbar draw routine
+*/
+
 void draw_hotbar(video::IVideoDriver *driver, gui::IGUIFont *font,
 		v2s32 centerlowerpos, s32 imgsize, s32 itemcount,
 		Inventory *inventory, s32 halfheartcount)
@@ -1289,150 +1308,6 @@ void draw_hotbar(video::IVideoDriver *driver, gui::IGUIFont *font,
 		}
 	}
 }
-
-#if 0
-video::ITexture *g_map_plot_texture = NULL;
-float g_map_plot_texture_scale = 4;
-
-void updateMapPlotTexture(v2f centerpos, video::IVideoDriver* driver,
-		Client *client)
-{
-	assert(driver);
-	assert(client);
-
-	core::dimension2d<u32> dim(640,480);
-	video::IImage *img = driver->createImage(video::ECF_A8R8G8B8, dim);
-	assert(img);
-	for(u32 y=0; y<dim.Height; y++)
-	for(u32 x=0; x<dim.Width; x++)
-	{
-		v2f pf = v2f(x, dim.Height-y) - v2f(dim.Width, dim.Height)/2;
-		pf *= g_map_plot_texture_scale;
-		pf += centerpos;
-		double h = base_rock_level_2d(client->getMapSeed(), pf);
-		video::SColor c;
-		//double d1 = 50;
-		/*s32 ux = x - centerpos.X / g_map_plot_texture_scale;
-		s32 uy = y - centerpos.Y / g_map_plot_texture_scale;*/
-			
-		// Screen coordinates that are based on multiples of
-		// 1000/g_map_plot_texture_scale and never negative
-		u32 ux = x + (u32)(1000/g_map_plot_texture_scale) * 10;
-		u32 uy = y + (u32)(1000/g_map_plot_texture_scale) * 10;
-		// Offset to center of image
-		ux -= dim.Width/2;
-		uy -= dim.Height/2;
-
-		if(uy % (u32)(1000/g_map_plot_texture_scale) == 0
-				|| ux % (u32)(1000/g_map_plot_texture_scale) == 0)
-			c.set(255, 255, 255, 255);
-		else if(uy % (u32)(100/g_map_plot_texture_scale) == 0
-				|| ux % (u32)(100/g_map_plot_texture_scale) == 0)
-			c.set(255, 160, 160, 160);
-		else if(h < WATER_LEVEL - 0.5) // Water
-			c.set(255, 50, 50, 255);
-#if 0
-		else if(get_have_sand_ground(client->getMapSeed(), pf)
-				|| (h < WATER_LEVEL + 2
-				&& get_have_sand_coast(client->getMapSeed(), pf)))
-		{
-			h -= WATER_LEVEL;
-			h /= 50.0;
-			h = 1.0 - exp(-h);
-
-			video::SColor c1(255,237,201,175);
-			//video::SColor c2(255,20,20,20);
-			video::SColor c2(255,150,0,0);
-			c = c2.getInterpolated(c1, h);
-		}
-		else
-		{
-			h -= WATER_LEVEL;
-			h /= 50.0;
-			h = 1.0 - exp(-h);
-
-			video::SColor c1(255,110,185,90);
-			//video::SColor c2(255,20,20,20);
-			video::SColor c2(255,150,0,0);
-			c = c2.getInterpolated(c1, h);
-		}
-#endif
-#if 1
-#if 0
-		else if(get_have_sand_ground(client->getMapSeed(), pf))
-		{
-			h -= WATER_LEVEL;
-			h /= 20.0;
-			h = 1.0 - exp(-h);
-
-			video::SColor c1(255,237,201,175);
-			//video::SColor c2(255,20,20,20);
-			video::SColor c2(255,150,0,0);
-			c = c2.getInterpolated(c1, h);
-		}
-#endif
-		// Sand
-		else if(h < WATER_LEVEL + 2
-				&& get_have_sand_coast(client->getMapSeed(), pf))
-			c.set(255, 237, 201, 175);
-#if 1
-		else if(h < WATER_LEVEL + 10)
-			c.set(255, 50, 150, 50); // Green
-		else if(h < WATER_LEVEL + 20)
-			c.set(255, 110, 185, 50); // Yellowish green
-		else if(h < WATER_LEVEL + 40)
-			c.set(255, 180, 210, 50); // Greenish yellow
-		else if(h < WATER_LEVEL + 60)
-			c.set(255, 220, 220, 50); // Yellow
-		else if(h < WATER_LEVEL + 80)
-			c.set(255, 200, 200, 110); // Yellowish white
-		else if(h < WATER_LEVEL + 100)
-			c.set(255, 190, 190, 190); // Grey
-		else
-			c.set(255, 255, 255, 255); // White
-#endif
-#endif
-#if 0
-		else
-		{
-			h -= WATER_LEVEL;
-			h /= 20.0;
-			h = 1.0 - exp(-h);
-
-			video::SColor c1(255,200,200,50);
-			video::SColor c2(255,0,150,0);
-			c = c1.getInterpolated(c2, h);
-
-			/*u32 a = (u32)(h*255);
-			if(a > 255)
-				a = 255;
-			a = 255-a;
-			c.set(255, a, a, a);*/
-		}
-#endif
-#if 1
-		if(h >= WATER_LEVEL - 0.5
-			&& get_have_sand_ground(client->getMapSeed(), pf))
-		{
-			video::SColor c1(255,237,201,175);
-			c = c.getInterpolated(c1, 0.5);
-		}
-#endif
-#if 1
-		double tf = get_turbulence_factor_2d(client->getMapSeed(), pf);
-		if(tf > 0.001)
-		{
-			video::SColor c1(255,255,0,0);
-			c = c.getInterpolated(c1, 1.0-(0.5*tf));
-		}
-#endif
-		img->setPixel(x, y, c);
-	}
-	g_map_plot_texture = driver->addTexture("map_plot", img);
-	img->drop();
-	assert(g_map_plot_texture);
-}
-#endif
 
 // Chat data
 struct ChatLine
@@ -2456,9 +2331,9 @@ int main(int argc, char *argv[])
 
 	while(device->run() && kill == false)
 	{
-		if(g_disconnect_requested)
+		if(g_gamecallback.disconnect_requested)
 		{
-			g_disconnect_requested = false;
+			g_gamecallback.disconnect_requested = false;
 			break;
 		}
 
