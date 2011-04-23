@@ -3,6 +3,13 @@ Minetest-c55 changelog
 This should contain all the major changes.
 For minor stuff, refer to the commit log of the repository.
 
+2011-04-23_0_test:
+- Small bug fixes
+- Item drop multiplication fixed
+- HP added
+- Added A simple monster which spawns to dark places at map generation time
+- Some code refactoring and cleaning (possibly new bugs)
+
 2011-04-11:
 - Fixed crafting a bit
 
