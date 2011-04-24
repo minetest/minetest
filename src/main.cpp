@@ -167,6 +167,10 @@ TODO: Better control of draw_control.wanted_max_blocks
 TODO: Get player texture (and some others) from the specified texture
       directory
 
+SUGG: Simple light color information to air
+
+TODO: Block mesh generator to tile properly on smooth lighting
+
 Configuration:
 --------------
 
@@ -188,6 +192,8 @@ TODO: Don't update all meshes always on single node changes, but
 - A weapon engine
 
 - Tool/weapon visualization
+
+FIXME: When disconnected to the menu, memory is not freed properly
 
 Server:
 -------

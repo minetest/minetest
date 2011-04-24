@@ -1229,6 +1229,17 @@ void the_game(
 				s32 dx = input->getMousePos().X - displaycenter.X;
 				s32 dy = input->getMousePos().Y - displaycenter.Y;
 				//std::cout<<"window active, pos difference "<<dx<<","<<dy<<std::endl;
+				
+				const float keyspeed = 500;
+				if(input->isKeyDown(irr::KEY_UP))
+					dy -= dtime * keyspeed;
+				if(input->isKeyDown(irr::KEY_DOWN))
+					dy += dtime * keyspeed;
+				if(input->isKeyDown(irr::KEY_LEFT))
+					dx -= dtime * keyspeed;
+				if(input->isKeyDown(irr::KEY_RIGHT))
+					dx += dtime * keyspeed;
+
 				camera_yaw -= dx*0.2;
 				camera_pitch += dy*0.2;
 				if(camera_pitch < -89.5) camera_pitch = -89.5;

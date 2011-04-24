@@ -223,45 +223,6 @@ void makeFastFace(TileSpec tile, u8 li0, u8 li1, u8 li2, u8 li3, v3f p,
 		);
 	}
 
-	/*v3f vertex_pos[4];
-	// If looking towards z+, this is the face that is behind
-	// the center point, facing towards z+.
-	vertex_pos[0] = v3f(-BS/2,-BS/2,BS/2);
-	vertex_pos[1] = v3f( BS/2,-BS/2,BS/2);
-	vertex_pos[2] = v3f( BS/2, BS/2,BS/2);
-	vertex_pos[3] = v3f(-BS/2, BS/2,BS/2);
-	
-	if(dir == v3s16(0,0,1))
-	{
-		for(u16 i=0; i<4; i++)
-			vertex_pos[i].rotateXZBy(0);
-	}
-	else if(dir == v3s16(0,0,-1))
-	{
-		for(u16 i=0; i<4; i++)
-			vertex_pos[i].rotateXZBy(180);
-	}
-	else if(dir == v3s16(1,0,0))
-	{
-		for(u16 i=0; i<4; i++)
-			vertex_pos[i].rotateXZBy(-90);
-	}
-	else if(dir == v3s16(-1,0,0))
-	{
-		for(u16 i=0; i<4; i++)
-			vertex_pos[i].rotateXZBy(90);
-	}
-	else if(dir == v3s16(0,1,0))
-	{
-		for(u16 i=0; i<4; i++)
-			vertex_pos[i].rotateYZBy(-90);
-	}
-	else if(dir == v3s16(0,-1,0))
-	{
-		for(u16 i=0; i<4; i++)
-			vertex_pos[i].rotateYZBy(90);
-	}*/
-
 	for(u16 i=0; i<4; i++)
 	{
 		vertex_pos[i].X *= scale.X;
@@ -472,6 +433,73 @@ u8 getSmoothLight(v3s16 p, v3s16 corner,
 	return getSmoothLight(p, vmanip, daynight_ratio);
 }
 
+void getTileInfo(
+		// Input:
+		v3s16 blockpos_nodes,
+		v3s16 p,
+		v3s16 face_dir,
+		u32 daynight_ratio,
+		VoxelManipulator &vmanip,
+		NodeModMap &temp_mods,
+		bool smooth_lighting,
+		// Output:
+		bool &makes_face,
+		v3s16 &p_corrected,
+		v3s16 &face_dir_corrected,
+		u8 *lights,
+		TileSpec &tile
+	)
+{
+	MapNode n0 = vmanip.getNodeNoEx(blockpos_nodes + p);
+	MapNode n1 = vmanip.getNodeNoEx(blockpos_nodes + p + face_dir);
+	TileSpec tile0 = getNodeTile(n0, p, face_dir, temp_mods);
+	TileSpec tile1 = getNodeTile(n1, p + face_dir, -face_dir, temp_mods);
+	
+	// This is hackish
+	u8 content0 = getNodeContent(p, n0, temp_mods);
+	u8 content1 = getNodeContent(p + face_dir, n1, temp_mods);
+	u8 mf = face_contents(content0, content1);
+
+	if(mf == 0)
+	{
+		makes_face = false;
+		return;
+	}
+
+	makes_face = true;
+	
+	if(mf == 1)
+	{
+		tile = tile0;
+		p_corrected = p;
+		face_dir_corrected = face_dir;
+	}
+	else
+	{
+		tile = tile1;
+		p_corrected = p + face_dir;
+		face_dir_corrected = -face_dir;
+	}
+	
+	if(smooth_lighting == false)
+	{
+		lights[0] = lights[1] = lights[2] = lights[3] =
+				decode_light(getFaceLight(daynight_ratio, n0, n1, face_dir));
+	}
+	else
+	{
+		v3s16 vertex_dirs[4];
+		getNodeVertexDirs(face_dir_corrected, vertex_dirs);
+		for(u16 i=0; i<4; i++)
+		{
+			lights[i] = getSmoothLight(blockpos_nodes + p_corrected,
+					vertex_dirs[i], vmanip, daynight_ratio);
+		}
+	}
+	
+	return;
+}
+
 /*
 	startpos:
 	translate_dir: unit vector with only one of x, y or z
@@ -496,11 +524,14 @@ void updateFastFaceRow(
 	
 	u16 continuous_tiles_count = 0;
 	
-	MapNode n0 = vmanip.getNodeNoEx(blockpos_nodes + p);
-	MapNode n1 = vmanip.getNodeNoEx(blockpos_nodes + p + face_dir);
-	TileSpec tile0 = getNodeTile(n0, p, face_dir, temp_mods);
-	TileSpec tile1 = getNodeTile(n1, p + face_dir, -face_dir, temp_mods);
-	u8 light = getFaceLight(daynight_ratio, n0, n1, face_dir);
+	bool makes_face;
+	v3s16 p_corrected;
+	v3s16 face_dir_corrected;
+	u8 lights[4];
+	TileSpec tile;
+	getTileInfo(blockpos_nodes, p, face_dir, daynight_ratio,
+			vmanip, temp_mods, smooth_lighting,
+			makes_face, p_corrected, face_dir_corrected, lights, tile);
 
 	for(u16 j=0; j<length; j++)
 	{
@@ -508,11 +539,12 @@ void updateFastFaceRow(
 		bool next_is_different = true;
 		
 		v3s16 p_next;
-		MapNode n0_next;
-		MapNode n1_next;
-		TileSpec tile0_next;
-		TileSpec tile1_next;
-		u8 light_next = 0;
+		
+		bool next_makes_face;
+		v3s16 next_p_corrected;
+		v3s16 next_face_dir_corrected;
+		u8 next_lights[4];
+		TileSpec next_tile;
 		
 		// If at last position, there is nothing to compare to and
 		// the face must be drawn anyway
@@ -520,15 +552,20 @@ void updateFastFaceRow(
 		{
 			p_next = p + translate_dir;
 			
-			n0_next = vmanip.getNodeNoEx(blockpos_nodes + p_next);
-			n1_next = vmanip.getNodeNoEx(blockpos_nodes + p_next + face_dir);
-			tile0_next = getNodeTile(n0_next, p_next, face_dir, temp_mods);
-			tile1_next = getNodeTile(n1_next,p_next+face_dir,-face_dir, temp_mods);
-			light_next = getFaceLight(daynight_ratio, n0_next, n1_next, face_dir);
-
-			if(tile0_next == tile0
-					&& tile1_next == tile1
-					&& light_next == light)
+			getTileInfo(blockpos_nodes, p_next, face_dir, daynight_ratio,
+					vmanip, temp_mods, smooth_lighting,
+					next_makes_face, next_p_corrected,
+					next_face_dir_corrected, next_lights,
+					next_tile);
+			
+			if(next_makes_face == makes_face
+					&& next_p_corrected == p_corrected
+					&& next_face_dir_corrected == face_dir_corrected
+					&& next_lights[0] == lights[0]
+					&& next_lights[1] == lights[1]
+					&& next_lights[2] == lights[2]
+					&& next_lights[3] == lights[3]
+					&& next_tile == tile)
 			{
 				next_is_different = false;
 			}
@@ -542,24 +579,15 @@ void updateFastFaceRow(
 			If there is no texture, it can be tiled infinitely.
 			If tiled==0, it means the texture can be tiled infinitely.
 			Otherwise check tiled agains continuous_tiles_count.
-
-			This check has to be made for both tiles, because this is
-			a bit hackish and we know which one we're using only when
-			the decision to make the faces is made.
 		*/
-		if(tile0.texture.atlas != NULL && tile0.texture.tiled != 0)
+		if(tile.texture.atlas != NULL && tile.texture.tiled != 0)
 		{
-			if(tile0.texture.tiled <= continuous_tiles_count)
-				end_of_texture = true;
-		}
-		if(tile1.texture.atlas != NULL && tile1.texture.tiled != 0)
-		{
-			if(tile1.texture.tiled <= continuous_tiles_count)
+			if(tile.texture.tiled <= continuous_tiles_count)
 				end_of_texture = true;
 		}
 		
 		// Do this to disable tiling textures
-		//end_of_texture = true; //DEBUG
+		end_of_texture = true; //DEBUG
 		
 		// Disable tiling of textures if smooth lighting is used
 		if(smooth_lighting)
@@ -570,22 +598,13 @@ void updateFastFaceRow(
 			/*
 				Create a face if there should be one
 			*/
-			// This is hackish
-			u8 content0 = getNodeContent(p, n0, temp_mods);
-			u8 content1 = getNodeContent(p + face_dir, n1, temp_mods);
-			u8 mf = face_contents(content0, content1);
-			
-			if(mf != 0)
+			if(makes_face)
 			{
 				// Floating point conversion of the position vector
-				v3f pf(p.X, p.Y, p.Z);
+				v3f pf(p_corrected.X, p_corrected.Y, p_corrected.Z);
 				// Center point of face (kind of)
 				v3f sp = pf - ((f32)continuous_tiles_count / 2. - 0.5) * translate_dir_f;
 				v3f scale(1,1,1);
-				u8 li0=255, li1=255, li2=255, li3=255;
-
-				// First node
-				v3s16 p_first = p - (continuous_tiles_count-1) * translate_dir;
 
 				if(translate_dir.X != 0)
 				{
@@ -600,35 +619,30 @@ void updateFastFaceRow(
 					scale.Z = continuous_tiles_count;
 				}
 				
-#if 1
+				makeFastFace(tile, lights[0], lights[1], lights[2], lights[3],
+						sp, face_dir_corrected, scale,
+						posRelative_f, dest);
+
+			#if 0
+				// First node
+				v3s16 p_first = p_corrected - (continuous_tiles_count-1)
+						* translate_dir;
+
 				v3s16 p_map_leftmost;
 				v3s16 p_map_rightmost;
-				v3s16 face_dir_corrected;
-				TileSpec tile;
-
-				if(mf == 1)
+				p_map_leftmost = p_corrected + blockpos_nodes;
+				p_map_rightmost = p_first + blockpos_nodes;
+				
+				/*if(p != p_corrected)
 				{
-					tile = tile0;
-					face_dir_corrected = face_dir;
-					p_map_leftmost = p + blockpos_nodes;
-					p_map_rightmost = p_first + blockpos_nodes;
-				}
-				else
-				{
-					// Offset to the actual solid block
-					p_map_leftmost = p + blockpos_nodes + face_dir;
-					p_map_rightmost = p_first + blockpos_nodes + face_dir;
-					/*if(face_dir == v3s16(0,0,1))
+					if(face_dir == v3s16(0,0,1))
 					{
 						v3s16 orig_leftmost = p_map_leftmost;
 						v3s16 orig_rightmost = p_map_leftmost;
 						p_map_leftmost = orig_rightmost;
 						p_map_rightmost = orig_leftmost;
-					}*/
-					sp += face_dir_f;
-					face_dir_corrected = -face_dir;
-					tile = tile1;
-				}
+					}
+				}*/
 
 				if(smooth_lighting == false)
 				{
@@ -648,123 +662,22 @@ void updateFastFaceRow(
 					li3 = getSmoothLight(p_map_rightmost, vertex_dirs[3],
 							vmanip, daynight_ratio);
 				}
-
 				makeFastFace(tile, li0, li1, li2, li3,
 						sp, face_dir_corrected, scale,
 						posRelative_f, dest);
-#else
-				v3s16 p_map = p + blockpos_nodes;
-				v3s16 p_map_first = p_first + blockpos_nodes;
-
-				// If node at sp (tile0) is more solid
-				if(mf == 1)
-				{
-					if(smooth_lighting)
-					{
-						if(face_dir == v3s16(0,0,1))
-						{
-							// Going along X+, faces in Z+
-							li0 = getSmoothLight(p_map_first, v3s16(-1,-1,1),
-									vmanip, daynight_ratio);
-							li1 = getSmoothLight(p_map, v3s16(1,-1,1),
-									vmanip, daynight_ratio);
-							li2 = getSmoothLight(p_map, v3s16(1,1,1),
-									vmanip, daynight_ratio);
-							li3 = getSmoothLight(p_map_first, v3s16(-1,1,1),
-									vmanip, daynight_ratio);
-						}
-						else if(face_dir == v3s16(0,1,0))
-						{
-							// Going along X+, faces in Y+
-							li0 = getSmoothLight(p_map_first, v3s16( 1,1,-1),
-									vmanip, daynight_ratio);
-							li1 = getSmoothLight(p_map, v3s16(-1,1,-1),
-									vmanip, daynight_ratio);
-							li2 = getSmoothLight(p_map, v3s16(-1,1,1),
-									vmanip, daynight_ratio);
-							li3 = getSmoothLight(p_map_first, v3s16( 1,1,1),
-									vmanip, daynight_ratio);
-						}
-						else if(face_dir == v3s16(1,0,0))
-						{
-							// Going along Z+, faces in X+
-							li0 = getSmoothLight(p_map_first, v3s16(1,-1,1),
-									vmanip, daynight_ratio);
-							li1 = getSmoothLight(p_map, v3s16(1,-1,-1),
-									vmanip, daynight_ratio);
-							li2 = getSmoothLight(p_map, v3s16(1,1,-1),
-									vmanip, daynight_ratio);
-							li3 = getSmoothLight(p_map_first, v3s16(1,1,1),
-									vmanip, daynight_ratio);
-						}
-						else assert(0);
-					}
-
-					makeFastFace(tile0, li0, li1, li2, li3,
-							sp, face_dir, scale,
-							posRelative_f, dest);
-				}
-				// If node at sp is less solid (mf == 2)
-				else
-				{
-					if(smooth_lighting)
-					{
-						// Offset to the actual solid block
-						p_map += face_dir;
-						p_map_first += face_dir;
-						
-						if(face_dir == v3s16(0,0,1))
-						{
-							// Going along X+, faces in Z-
-							li0 = getSmoothLight(p_map, v3s16(1,-1,-1),
-									vmanip, daynight_ratio);
-							li1 = getSmoothLight(p_map_first, v3s16(-1,-1,-1),
-									vmanip, daynight_ratio);
-							li2 = getSmoothLight(p_map_first, v3s16(-1,1,-1),
-									vmanip, daynight_ratio);
-							li3 = getSmoothLight(p_map, v3s16(1,1,-1),
-									vmanip, daynight_ratio);
-						}
-						else if(face_dir == v3s16(0,1,0))
-						{
-							// Going along X+, faces in Y-
-							li0 = getSmoothLight(p_map_first, v3s16(-1,-1,1),
-									vmanip, daynight_ratio);
-							li1 = getSmoothLight(p_map, v3s16(1,-1,1),
-									vmanip, daynight_ratio);
-							li2 = getSmoothLight(p_map, v3s16(1,-1,-1),
-									vmanip, daynight_ratio);
-							li3 = getSmoothLight(p_map_first, v3s16(-1,-1,-1),
-									vmanip, daynight_ratio);
-						}
-						else if(face_dir == v3s16(1,0,0))
-						{
-							// Going along Z+, faces in X-
-							li0 = getSmoothLight(p_map_first, v3s16(-1,-1,-1),
-									vmanip, daynight_ratio);
-							li1 = getSmoothLight(p_map, v3s16(-1,-1,1),
-									vmanip, daynight_ratio);
-							li2 = getSmoothLight(p_map, v3s16(-1,1,1),
-									vmanip, daynight_ratio);
-							li3 = getSmoothLight(p_map_first, v3s16(-1,1,-1),
-									vmanip, daynight_ratio);
-						}
-						else assert(0);
-					}
-
-					makeFastFace(tile1, li0, li1, li2, li3,
-							sp+face_dir_f, -face_dir, scale,
-							posRelative_f, dest);
-				}
-#endif
+			#endif
 			}
 
 			continuous_tiles_count = 0;
-			n0 = n0_next;
-			n1 = n1_next;
-			tile0 = tile0_next;
-			tile1 = tile1_next;
-			light = light_next;
+			
+			makes_face = next_makes_face;
+			p_corrected = next_p_corrected;
+			face_dir_corrected = next_face_dir_corrected;
+			lights[0] = next_lights[0];
+			lights[1] = next_lights[1];
+			lights[2] = next_lights[2];
+			lights[3] = next_lights[3];
+			tile = next_tile;
 		}
 		
 		p = p_next;
