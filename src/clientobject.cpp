@@ -683,7 +683,7 @@ void Oerkki1CAO::step(float dtime, ClientEnvironment *env)
 	v2f playerpos_2d(playerpos.X,playerpos.Z);
 	v2f objectpos_2d(m_position.X,m_position.Z);
 
-	if(fabs(objectpos_2d.Y - playerpos_2d.Y) < 2.0*BS &&
+	if(fabs(m_position.Y - playerpos.Y) < 3.0*BS &&
 			objectpos_2d.getDistanceFrom(playerpos_2d) < 1.0*BS)
 	{
 		if(m_attack_interval.step(dtime, 0.5))

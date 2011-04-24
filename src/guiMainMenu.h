@@ -30,14 +30,25 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 struct MainMenuData
 {
 	MainMenuData():
+		// Client opts
+		fancy_trees(false),
+		smooth_lighting(false),
+		// Server opts
 		creative_mode(false),
 		enable_damage(false),
+		// Actions
 		delete_map(false)
 	{}
+
 	// These are in the native format of the gui elements
+	
+	// Client options
 	std::wstring address;
 	std::wstring port;
 	std::wstring name;
+	bool fancy_trees;
+	bool smooth_lighting;
+	// Server options
 	bool creative_mode;
 	bool enable_damage;
 	// If map deletion is requested, this is set to true

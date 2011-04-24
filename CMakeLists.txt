@@ -9,7 +9,7 @@ project(minetest)
 
 set(VERSION_MAJOR 0)
 set(VERSION_MINOR 2)
-set(VERSION_PATCH 20110423_0_test)
+set(VERSION_PATCH 20110424_0)
 set(VERSION_STRING "${VERSION_MAJOR}.${VERSION_MINOR}.${VERSION_PATCH}")
 
 # Configuration options

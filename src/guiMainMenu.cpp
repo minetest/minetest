@@ -65,7 +65,10 @@ void GUIMainMenu::regenerateGui(v2u32 screensize)
 	std::wstring text_port;
 	bool creative_mode;
 	bool enable_damage;
-
+	bool fancy_trees;
+	bool smooth_lighting;
+	
+	// Client options
 	{
 		gui::IGUIElement *e = getElementFromId(258);
 		if(e != NULL)
@@ -87,6 +90,22 @@ void GUIMainMenu::regenerateGui(v2u32 screensize)
 		else
 			text_port = m_data->port;
 	}
+	{
+		gui::IGUIElement *e = getElementFromId(263);
+		if(e != NULL && e->getType() == gui::EGUIET_CHECK_BOX)
+			fancy_trees = ((gui::IGUICheckBox*)e)->isChecked();
+		else
+			fancy_trees = m_data->fancy_trees;
+	}
+	{
+		gui::IGUIElement *e = getElementFromId(262);
+		if(e != NULL && e->getType() == gui::EGUIET_CHECK_BOX)
+			smooth_lighting = ((gui::IGUICheckBox*)e)->isChecked();
+		else
+			smooth_lighting = m_data->smooth_lighting;
+	}
+	
+	// Server options
 	{
 		gui::IGUIElement *e = getElementFromId(259);
 		if(e != NULL && e->getType() == gui::EGUIET_CHECK_BOX)
@@ -187,6 +206,18 @@ void GUIMainMenu::regenerateGui(v2u32 screensize)
 		const wchar_t *text = L"Leave address blank to start a local server.";
 		Environment->addStaticText(text, rect, false, true, this, -1);
 	}
+	{
+		core::rect<s32> rect(0, 0, 250, 30);
+		rect += topleft_client + v2s32(40, 150);
+		Environment->addCheckBox(fancy_trees, rect, this, 263,
+				L"Fancy trees");
+	}
+	{
+		core::rect<s32> rect(0, 0, 250, 30);
+		rect += topleft_client + v2s32(40, 150+30);
+		Environment->addCheckBox(smooth_lighting, rect, this, 262,
+				L"Smooth Lighting");
+	}
 	// Start game button
 	{
 		core::rect<s32> rect(0, 0, 180, 30);
@@ -284,6 +315,16 @@ void GUIMainMenu::acceptInput()
 		gui::IGUIElement *e = getElementFromId(261);
 		if(e != NULL && e->getType() == gui::EGUIET_CHECK_BOX)
 			m_data->enable_damage = ((gui::IGUICheckBox*)e)->isChecked();
+	}
+	{
+		gui::IGUIElement *e = getElementFromId(262);
+		if(e != NULL && e->getType() == gui::EGUIET_CHECK_BOX)
+			m_data->smooth_lighting = ((gui::IGUICheckBox*)e)->isChecked();
+	}
+	{
+		gui::IGUIElement *e = getElementFromId(263);
+		if(e != NULL && e->getType() == gui::EGUIET_CHECK_BOX)
+			m_data->fancy_trees = ((gui::IGUICheckBox*)e)->isChecked();
 	}
 	
 	m_accepted = true;

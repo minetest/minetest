@@ -1794,6 +1794,7 @@ ServerMap::ServerMap(std::string savedir):
 	Map(dout_server),
 	m_seed(0)
 {
+	dstream<<__FUNCTION_NAME<<std::endl;
 	
 	//m_chunksize = 64;
 	//m_chunksize = 16; // Too slow
@@ -1891,6 +1892,8 @@ ServerMap::ServerMap(std::string savedir):
 
 ServerMap::~ServerMap()
 {
+	dstream<<__FUNCTION_NAME<<std::endl;
+	
 	try
 	{
 		if(m_map_saving_enabled)

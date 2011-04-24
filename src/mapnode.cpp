@@ -128,6 +128,9 @@ void init_mapnode()
 	for(u16 i=0; i<256; i++)
 	{
 		ContentFeatures *f = &g_content_features[i];
+		// Re-initialize
+		*f = ContentFeatures();
+
 		for(u16 j=0; j<6; j++)
 			f->tiles[j].material_type = initial_material_type;
 	}

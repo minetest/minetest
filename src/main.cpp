@@ -1352,6 +1352,8 @@ int main(int argc, char *argv[])
 				menudata.address = narrow_to_wide(address);
 				menudata.name = narrow_to_wide(playername);
 				menudata.port = narrow_to_wide(itos(port));
+				menudata.fancy_trees = g_settings.getBool("new_style_leaves");
+				menudata.smooth_lighting = g_settings.getBool("smooth_lighting");
 				menudata.creative_mode = g_settings.getBool("creative_mode");
 				menudata.enable_damage = g_settings.getBool("enable_damage");
 
@@ -1413,6 +1415,8 @@ int main(int argc, char *argv[])
 				int newport = stoi(wide_to_narrow(menudata.port));
 				if(newport != 0)
 					port = newport;
+				g_settings.set("new_style_leaves", itos(menudata.fancy_trees));
+				g_settings.set("smooth_lighting", itos(menudata.smooth_lighting));
 				g_settings.set("creative_mode", itos(menudata.creative_mode));
 				g_settings.set("enable_damage", itos(menudata.enable_damage));
 				
@@ -1439,6 +1443,9 @@ int main(int argc, char *argv[])
 			if(device->run() == false)
 				break;
 			
+			// Initialize mapnode again to enable changed graphics settings
+			init_mapnode();
+
 			/*
 				Run game
 			*/

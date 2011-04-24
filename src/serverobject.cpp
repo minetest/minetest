@@ -507,7 +507,7 @@ void Oerkki1SAO::step(float dtime, Queue<ActiveObjectMessage> &messages,
 	*/
 
 	m_age += dtime;
-	if(m_age > 60)
+	if(m_age > 120)
 	{
 		// Die
 		m_removed = true;

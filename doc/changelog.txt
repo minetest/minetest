@@ -3,8 +3,9 @@ Minetest-c55 changelog
 This should contain all the major changes.
 For minor stuff, refer to the commit log of the repository.
 
-X:
+2011-04-24:
 - Smooth lighting with simple ambient occlusion
+- Updated main menu
 
 2011-04-23_0_test:
 - Small bug fixes
