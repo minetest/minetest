@@ -587,11 +587,7 @@ void updateFastFaceRow(
 		}
 		
 		// Do this to disable tiling textures
-		end_of_texture = true; //DEBUG
-		
-		// Disable tiling of textures if smooth lighting is used
-		if(smooth_lighting)
-			end_of_texture = true;
+		//end_of_texture = true; //DEBUG
 		
 		if(next_is_different || end_of_texture)
 		{
