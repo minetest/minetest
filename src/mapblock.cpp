@@ -133,6 +133,69 @@ u8 getFaceLight(u32 daynight_ratio, MapNode n, MapNode n2,
 
 #ifndef SERVER
 
+/*
+	vertex_dirs: v3s16[4]
+*/
+void getNodeVertexDirs(v3s16 dir, v3s16 *vertex_dirs)
+{
+	/*
+		If looked from outside the node towards the face, the corners are:
+		0: bottom-right
+		1: bottom-left
+		2: top-left
+		3: top-right
+	*/
+	if(dir == v3s16(0,0,1))
+	{
+		// If looking towards z+, this is the face that is behind
+		// the center point, facing towards z+.
+		vertex_dirs[0] = v3s16(-1,-1, 1);
+		vertex_dirs[1] = v3s16( 1,-1, 1);
+		vertex_dirs[2] = v3s16( 1, 1, 1);
+		vertex_dirs[3] = v3s16(-1, 1, 1);
+	}
+	else if(dir == v3s16(0,0,-1))
+	{
+		// faces towards Z-
+		vertex_dirs[0] = v3s16( 1,-1,-1);
+		vertex_dirs[1] = v3s16(-1,-1,-1);
+		vertex_dirs[2] = v3s16(-1, 1,-1);
+		vertex_dirs[3] = v3s16( 1, 1,-1);
+	}
+	else if(dir == v3s16(1,0,0))
+	{
+		// faces towards X+
+		vertex_dirs[0] = v3s16( 1,-1, 1);
+		vertex_dirs[1] = v3s16( 1,-1,-1);
+		vertex_dirs[2] = v3s16( 1, 1,-1);
+		vertex_dirs[3] = v3s16( 1, 1, 1);
+	}
+	else if(dir == v3s16(-1,0,0))
+	{
+		// faces towards X-
+		vertex_dirs[0] = v3s16(-1,-1,-1);
+		vertex_dirs[1] = v3s16(-1,-1, 1);
+		vertex_dirs[2] = v3s16(-1, 1, 1);
+		vertex_dirs[3] = v3s16(-1, 1,-1);
+	}
+	else if(dir == v3s16(0,1,0))
+	{
+		// faces towards Y+ (assume Z- as "down" in texture)
+		vertex_dirs[0] = v3s16( 1, 1,-1);
+		vertex_dirs[1] = v3s16(-1, 1,-1);
+		vertex_dirs[2] = v3s16(-1, 1, 1);
+		vertex_dirs[3] = v3s16( 1, 1, 1);
+	}
+	else if(dir == v3s16(0,-1,0))
+	{
+		// faces towards Y- (assume Z+ as "down" in texture)
+		vertex_dirs[0] = v3s16( 1,-1, 1);
+		vertex_dirs[1] = v3s16(-1,-1, 1);
+		vertex_dirs[2] = v3s16(-1,-1,-1);
+		vertex_dirs[3] = v3s16( 1,-1,-1);
+	}
+}
+
 inline video::SColor lightColor(u8 alpha, u8 light)
 {
 	return video::SColor(alpha,light,light,light);
@@ -149,6 +212,18 @@ void makeFastFace(TileSpec tile, u8 li0, u8 li1, u8 li2, u8 li3, v3f p,
 	posRelative_f *= BS;
 
 	v3f vertex_pos[4];
+	v3s16 vertex_dirs[4];
+	getNodeVertexDirs(dir, vertex_dirs);
+	for(u16 i=0; i<4; i++)
+	{
+		vertex_pos[i] = v3f(
+				BS/2*vertex_dirs[i].X,
+				BS/2*vertex_dirs[i].Y,
+				BS/2*vertex_dirs[i].Z
+		);
+	}
+
+	/*v3f vertex_pos[4];
 	// If looking towards z+, this is the face that is behind
 	// the center point, facing towards z+.
 	vertex_pos[0] = v3f(-BS/2,-BS/2,BS/2);
@@ -185,7 +260,7 @@ void makeFastFace(TileSpec tile, u8 li0, u8 li1, u8 li2, u8 li3, v3f p,
 	{
 		for(u16 i=0; i<4; i++)
 			vertex_pos[i].rotateYZBy(90);
-	}
+	}*/
 
 	for(u16 i=0; i<4; i++)
 	{
@@ -383,6 +458,20 @@ u8 getSmoothLight(v3s16 p, VoxelManipulator &vmanip, u32 daynight_ratio)
 	return light;
 }
 
+// Calculate lighting at the given corner of p
+u8 getSmoothLight(v3s16 p, v3s16 corner,
+		VoxelManipulator &vmanip, u32 daynight_ratio)
+{
+	if(corner.X == 1) p.X += 1;
+	else              assert(corner.X == -1);
+	if(corner.Y == 1) p.Y += 1;
+	else              assert(corner.Y == -1);
+	if(corner.Z == 1) p.Z += 1;
+	else              assert(corner.Z == -1);
+	
+	return getSmoothLight(p, vmanip, daynight_ratio);
+}
+
 /*
 	startpos:
 	translate_dir: unit vector with only one of x, y or z
@@ -415,6 +504,7 @@ void updateFastFaceRow(
 
 	for(u16 j=0; j<length; j++)
 	{
+		// If tiling can be done, this is set to false in the next step
 		bool next_is_different = true;
 		
 		v3s16 p_next;
@@ -480,7 +570,6 @@ void updateFastFaceRow(
 			/*
 				Create a face if there should be one
 			*/
-			//u8 mf = face_contents(tile0, tile1);
 			// This is hackish
 			u8 content0 = getNodeContent(p, n0, temp_mods);
 			u8 content1 = getNodeContent(p + face_dir, n1, temp_mods);
@@ -498,9 +587,6 @@ void updateFastFaceRow(
 				// First node
 				v3s16 p_first = p - (continuous_tiles_count-1) * translate_dir;
 
-				v3s16 p_map = blockpos_nodes + p;
-				v3s16 p_map_first = p_first + blockpos_nodes;
-
 				if(translate_dir.X != 0)
 				{
 					scale.X = continuous_tiles_count;
@@ -514,8 +600,61 @@ void updateFastFaceRow(
 					scale.Z = continuous_tiles_count;
 				}
 				
+#if 1
+				v3s16 p_map_leftmost;
+				v3s16 p_map_rightmost;
+				v3s16 face_dir_corrected;
+				TileSpec tile;
+
+				if(mf == 1)
+				{
+					tile = tile0;
+					face_dir_corrected = face_dir;
+					p_map_leftmost = p + blockpos_nodes;
+					p_map_rightmost = p_first + blockpos_nodes;
+				}
+				else
+				{
+					// Offset to the actual solid block
+					p_map_leftmost = p + blockpos_nodes + face_dir;
+					p_map_rightmost = p_first + blockpos_nodes + face_dir;
+					/*if(face_dir == v3s16(0,0,1))
+					{
+						v3s16 orig_leftmost = p_map_leftmost;
+						v3s16 orig_rightmost = p_map_leftmost;
+						p_map_leftmost = orig_rightmost;
+						p_map_rightmost = orig_leftmost;
+					}*/
+					sp += face_dir_f;
+					face_dir_corrected = -face_dir;
+					tile = tile1;
+				}
+
 				if(smooth_lighting == false)
+				{
 					li0 = li1 = li2 = li3 = decode_light(light);
+				}
+				else
+				{
+					v3s16 vertex_dirs[4];
+					getNodeVertexDirs(face_dir_corrected, vertex_dirs);
+					
+					li0 = getSmoothLight(p_map_rightmost, vertex_dirs[0],
+							vmanip, daynight_ratio);
+					li1 = getSmoothLight(p_map_leftmost, vertex_dirs[1],
+							vmanip, daynight_ratio);
+					li2 = getSmoothLight(p_map_leftmost, vertex_dirs[2],
+							vmanip, daynight_ratio);
+					li3 = getSmoothLight(p_map_rightmost, vertex_dirs[3],
+							vmanip, daynight_ratio);
+				}
+
+				makeFastFace(tile, li0, li1, li2, li3,
+						sp, face_dir_corrected, scale,
+						posRelative_f, dest);
+#else
+				v3s16 p_map = p + blockpos_nodes;
+				v3s16 p_map_first = p_first + blockpos_nodes;
 
 				// If node at sp (tile0) is more solid
 				if(mf == 1)
@@ -525,37 +664,37 @@ void updateFastFaceRow(
 						if(face_dir == v3s16(0,0,1))
 						{
 							// Going along X+, faces in Z+
-							li0 = getSmoothLight(p_map_first+v3s16(0,0,1),
+							li0 = getSmoothLight(p_map_first, v3s16(-1,-1,1),
 									vmanip, daynight_ratio);
-							li1 = getSmoothLight(p_map+v3s16(1,0,1),
+							li1 = getSmoothLight(p_map, v3s16(1,-1,1),
 									vmanip, daynight_ratio);
-							li2 = getSmoothLight(p_map+v3s16(1,1,1),
+							li2 = getSmoothLight(p_map, v3s16(1,1,1),
 									vmanip, daynight_ratio);
-							li3 = getSmoothLight(p_map_first+v3s16(0,1,1),
+							li3 = getSmoothLight(p_map_first, v3s16(-1,1,1),
 									vmanip, daynight_ratio);
 						}
 						else if(face_dir == v3s16(0,1,0))
 						{
 							// Going along X+, faces in Y+
-							li0 = getSmoothLight(p_map_first+v3s16(0,1,1),
+							li0 = getSmoothLight(p_map_first, v3s16( 1,1,-1),
 									vmanip, daynight_ratio);
-							li1 = getSmoothLight(p_map+v3s16(1,1,1),
+							li1 = getSmoothLight(p_map, v3s16(-1,1,-1),
 									vmanip, daynight_ratio);
-							li2 = getSmoothLight(p_map+v3s16(1,1,0),
+							li2 = getSmoothLight(p_map, v3s16(-1,1,1),
 									vmanip, daynight_ratio);
-							li3 = getSmoothLight(p_map_first+v3s16(0,1,0),
+							li3 = getSmoothLight(p_map_first, v3s16( 1,1,1),
 									vmanip, daynight_ratio);
 						}
 						else if(face_dir == v3s16(1,0,0))
 						{
 							// Going along Z+, faces in X+
-							li0 = getSmoothLight(p_map_first+v3s16(1,0,1),
+							li0 = getSmoothLight(p_map_first, v3s16(1,-1,1),
 									vmanip, daynight_ratio);
-							li1 = getSmoothLight(p_map+v3s16(1,0,0),
+							li1 = getSmoothLight(p_map, v3s16(1,-1,-1),
 									vmanip, daynight_ratio);
-							li2 = getSmoothLight(p_map+v3s16(1,1,0),
+							li2 = getSmoothLight(p_map, v3s16(1,1,-1),
 									vmanip, daynight_ratio);
-							li3 = getSmoothLight(p_map_first+v3s16(1,1,1),
+							li3 = getSmoothLight(p_map_first, v3s16(1,1,1),
 									vmanip, daynight_ratio);
 						}
 						else assert(0);
@@ -577,37 +716,37 @@ void updateFastFaceRow(
 						if(face_dir == v3s16(0,0,1))
 						{
 							// Going along X+, faces in Z-
-							li0 = getSmoothLight(p_map+v3s16(1,0,0),
+							li0 = getSmoothLight(p_map, v3s16(1,-1,-1),
 									vmanip, daynight_ratio);
-							li1 = getSmoothLight(p_map_first+v3s16(0,0,0),
+							li1 = getSmoothLight(p_map_first, v3s16(-1,-1,-1),
 									vmanip, daynight_ratio);
-							li2 = getSmoothLight(p_map_first+v3s16(0,1,0),
+							li2 = getSmoothLight(p_map_first, v3s16(-1,1,-1),
 									vmanip, daynight_ratio);
-							li3 = getSmoothLight(p_map+v3s16(1,1,0),
+							li3 = getSmoothLight(p_map, v3s16(1,1,-1),
 									vmanip, daynight_ratio);
 						}
 						else if(face_dir == v3s16(0,1,0))
 						{
 							// Going along X+, faces in Y-
-							li0 = getSmoothLight(p_map_first+v3s16(0,0,0),
+							li0 = getSmoothLight(p_map_first, v3s16(-1,-1,1),
 									vmanip, daynight_ratio);
-							li1 = getSmoothLight(p_map+v3s16(1,0,0),
+							li1 = getSmoothLight(p_map, v3s16(1,-1,1),
 									vmanip, daynight_ratio);
-							li2 = getSmoothLight(p_map+v3s16(1,0,1),
+							li2 = getSmoothLight(p_map, v3s16(1,-1,-1),
 									vmanip, daynight_ratio);
-							li3 = getSmoothLight(p_map_first+v3s16(0,0,1),
+							li3 = getSmoothLight(p_map_first, v3s16(-1,-1,-1),
 									vmanip, daynight_ratio);
 						}
 						else if(face_dir == v3s16(1,0,0))
 						{
 							// Going along Z+, faces in X-
-							li0 = getSmoothLight(p_map_first+v3s16(0,0,0),
+							li0 = getSmoothLight(p_map_first, v3s16(-1,-1,-1),
 									vmanip, daynight_ratio);
-							li1 = getSmoothLight(p_map+v3s16(0,0,1),
+							li1 = getSmoothLight(p_map, v3s16(-1,-1,1),
 									vmanip, daynight_ratio);
-							li2 = getSmoothLight(p_map+v3s16(0,1,1),
+							li2 = getSmoothLight(p_map, v3s16(-1,1,1),
 									vmanip, daynight_ratio);
-							li3 = getSmoothLight(p_map_first+v3s16(0,1,0),
+							li3 = getSmoothLight(p_map_first, v3s16(-1,1,-1),
 									vmanip, daynight_ratio);
 						}
 						else assert(0);
@@ -617,6 +756,7 @@ void updateFastFaceRow(
 							sp+face_dir_f, -face_dir, scale,
 							posRelative_f, dest);
 				}
+#endif
 			}
 
 			continuous_tiles_count = 0;
