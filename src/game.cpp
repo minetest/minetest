@@ -26,6 +26,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "guiTextInputMenu.h"
 #include "guiFurnaceMenu.h"
 #include "materials.h"
+#include "config.h"
 
 /*
 	Setting this to 1 enables a special camera mode that forces
@@ -1708,13 +1709,12 @@ void the_game(
 			endscenetime_avg = endscenetime_avg * 0.95 + (float)endscenetime*0.05;
 			
 			char temptext[300];
-			snprintf(temptext, 300, "Minetest-c55 ("
-					"F: item=%i"
-					", R: range_all=%i"
+			snprintf(temptext, 300, "Minetest-c55 %s ("
+					"R: range_all=%i"
 					")"
 					" drawtime=%.0f, beginscenetime=%.0f"
 					", scenetime=%.0f, endscenetime=%.0f",
-					g_selected_item,
+					VERSION_STRING,
 					draw_control.range_all,
 					drawtime_avg,
 					beginscenetime_avg,

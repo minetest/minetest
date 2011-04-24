@@ -133,7 +133,12 @@ u8 getFaceLight(u32 daynight_ratio, MapNode n, MapNode n2,
 
 #ifndef SERVER
 
-void makeFastFace(TileSpec tile, u8 light, v3f p,
+inline video::SColor lightColor(u8 alpha, u8 light)
+{
+	return video::SColor(alpha,light,light,light);
+}
+
+void makeFastFace(TileSpec tile, u8 li0, u8 li1, u8 li2, u8 li3, v3f p,
 		v3s16 dir, v3f scale, v3f posRelative_f,
 		core::array<FastFace> &dest)
 {
@@ -197,21 +202,17 @@ void makeFastFace(TileSpec tile, u8 light, v3f p,
 
 	v3f zerovector = v3f(0,0,0);
 	
-	//u8 li = decode_light(light);
-	u8 li = light;
-	//u8 li = 255; //DEBUG
-
 	u8 alpha = tile.alpha;
 	/*u8 alpha = 255;
 	if(tile.id == TILE_WATER)
 		alpha = WATER_ALPHA;*/
 
-	video::SColor c = video::SColor(alpha,li,li,li);
-
 	float x0 = tile.texture.pos.X;
 	float y0 = tile.texture.pos.Y;
 	float w = tile.texture.size.X;
 	float h = tile.texture.size.Y;
+
+	/*video::SColor c = lightColor(alpha, li);
 
 	face.vertices[0] = video::S3DVertex(vertex_pos[0], v3f(0,1,0), c,
 			core::vector2d<f32>(x0+w*abs_scale, y0+h));
@@ -220,6 +221,19 @@ void makeFastFace(TileSpec tile, u8 light, v3f p,
 	face.vertices[2] = video::S3DVertex(vertex_pos[2], v3f(0,1,0), c,
 			core::vector2d<f32>(x0, y0));
 	face.vertices[3] = video::S3DVertex(vertex_pos[3], v3f(0,1,0), c,
+			core::vector2d<f32>(x0+w*abs_scale, y0));*/
+
+	face.vertices[0] = video::S3DVertex(vertex_pos[0], v3f(0,1,0),
+			lightColor(alpha, li0),
+			core::vector2d<f32>(x0+w*abs_scale, y0+h));
+	face.vertices[1] = video::S3DVertex(vertex_pos[1], v3f(0,1,0),
+			lightColor(alpha, li1),
+			core::vector2d<f32>(x0, y0+h));
+	face.vertices[2] = video::S3DVertex(vertex_pos[2], v3f(0,1,0),
+			lightColor(alpha, li2),
+			core::vector2d<f32>(x0, y0));
+	face.vertices[3] = video::S3DVertex(vertex_pos[3], v3f(0,1,0),
+			lightColor(alpha, li3),
 			core::vector2d<f32>(x0+w*abs_scale, y0));
 
 	face.tile = tile;
@@ -227,7 +241,6 @@ void makeFastFace(TileSpec tile, u8 light, v3f p,
 	//f->tile = TILE_STONE;
 	
 	dest.push_back(face);
-	//return f;
 }
 	
 /*
@@ -324,6 +337,52 @@ u8 getNodeContent(v3s16 p, MapNode mn, NodeModMap &temp_mods)
 	return mn.d;
 }
 
+v3s16 dirs8[8] = {
+	v3s16(0,0,0),
+	v3s16(0,0,1),
+	v3s16(0,1,0),
+	v3s16(0,1,1),
+	v3s16(1,0,0),
+	v3s16(1,1,0),
+	v3s16(1,0,1),
+	v3s16(1,1,1),
+};
+
+// Calculate lighting at the XYZ- corner of p
+u8 getSmoothLight(v3s16 p, VoxelManipulator &vmanip, u32 daynight_ratio)
+{
+	u16 ambient_occlusion = 0;
+	u16 light = 0;
+	u16 light_count = 0;
+	for(u32 i=0; i<8; i++)
+	{
+		MapNode n = vmanip.getNodeNoEx(p - dirs8[i]);
+		if(content_features(n.d).param_type == CPT_LIGHT)
+		{
+			light += decode_light(n.getLightBlend(daynight_ratio));
+			light_count++;
+		}
+		else
+		{
+			if(n.d != CONTENT_IGNORE)
+				ambient_occlusion++;
+		}
+	}
+
+	if(light_count == 0)
+		return 255;
+	
+	light /= light_count;
+
+	if(ambient_occlusion > 4)
+	{
+		ambient_occlusion -= 4;
+		light = (float)light / ((float)ambient_occlusion * 0.5 + 1.0);
+	}
+
+	return light;
+}
+
 /*
 	startpos:
 	translate_dir: unit vector with only one of x, y or z
@@ -408,7 +467,7 @@ void updateFastFaceRow(
 				end_of_texture = true;
 		}
 		
-		//end_of_texture = true; //DEBUG
+		end_of_texture = true; //DEBUG
 		
 		if(next_is_different || end_of_texture)
 		{
@@ -428,33 +487,125 @@ void updateFastFaceRow(
 				// Center point of face (kind of)
 				v3f sp = pf - ((f32)continuous_tiles_count / 2. - 0.5) * translate_dir_f;
 				v3f scale(1,1,1);
-				if(translate_dir.X != 0){
+				u8 li0=255, li1=255, li2=255, li3=255;
+
+				// First node
+				v3s16 p_first = p - (continuous_tiles_count-1) * translate_dir;
+
+				v3s16 p_map = blockpos_nodes + p;
+				v3s16 p_map_first = p_first + blockpos_nodes;
+
+				if(translate_dir.X != 0)
+				{
 					scale.X = continuous_tiles_count;
 				}
-				if(translate_dir.Y != 0){
+				if(translate_dir.Y != 0)
+				{
 					scale.Y = continuous_tiles_count;
 				}
-				if(translate_dir.Z != 0){
+				if(translate_dir.Z != 0)
+				{
 					scale.Z = continuous_tiles_count;
 				}
 				
-				//FastFace *f;
+				//u8 li = decode_light(light);
 
 				// If node at sp (tile0) is more solid
 				if(mf == 1)
 				{
-					makeFastFace(tile0, decode_light(light),
+					if(face_dir == v3s16(0,0,1))
+					{
+						// Going along X+, faces in Z+
+						li0 = getSmoothLight(p_map_first+v3s16(0,0,1),
+								vmanip, daynight_ratio);
+						li1 = getSmoothLight(p_map+v3s16(1,0,1),
+								vmanip, daynight_ratio);
+						li2 = getSmoothLight(p_map+v3s16(1,1,1),
+								vmanip, daynight_ratio);
+						li3 = getSmoothLight(p_map_first+v3s16(0,1,1),
+								vmanip, daynight_ratio);
+					}
+					else if(face_dir == v3s16(0,1,0))
+					{
+						// Going along X+, faces in Y+
+						li0 = getSmoothLight(p_map_first+v3s16(0,1,1),
+								vmanip, daynight_ratio);
+						li1 = getSmoothLight(p_map+v3s16(1,1,1),
+								vmanip, daynight_ratio);
+						li2 = getSmoothLight(p_map+v3s16(1,1,0),
+								vmanip, daynight_ratio);
+						li3 = getSmoothLight(p_map_first+v3s16(0,1,0),
+								vmanip, daynight_ratio);
+					}
+					else if(face_dir == v3s16(1,0,0))
+					{
+						// Going along Z+, faces in X+
+						li0 = getSmoothLight(p_map_first+v3s16(1,0,1),
+								vmanip, daynight_ratio);
+						li1 = getSmoothLight(p_map+v3s16(1,0,0),
+								vmanip, daynight_ratio);
+						li2 = getSmoothLight(p_map+v3s16(1,1,0),
+								vmanip, daynight_ratio);
+						li3 = getSmoothLight(p_map_first+v3s16(1,1,1),
+								vmanip, daynight_ratio);
+					}
+					else assert(0);
+
+					//makeFastFace(tile0, li, li, li, li,
+					makeFastFace(tile0, li0, li1, li2, li3,
 							sp, face_dir, scale,
 							posRelative_f, dest);
 				}
 				// If node at sp is less solid (mf == 2)
 				else
 				{
-					makeFastFace(tile1, decode_light(light),
+					// Offset to the actual solid block
+					p_map += face_dir;
+					p_map_first += face_dir;
+					
+					if(face_dir == v3s16(0,0,1))
+					{
+						// Going along X+, faces in Z-
+						li0 = getSmoothLight(p_map+v3s16(1,0,0),
+								vmanip, daynight_ratio);
+						li1 = getSmoothLight(p_map_first+v3s16(0,0,0),
+								vmanip, daynight_ratio);
+						li2 = getSmoothLight(p_map_first+v3s16(0,1,0),
+								vmanip, daynight_ratio);
+						li3 = getSmoothLight(p_map+v3s16(1,1,0),
+								vmanip, daynight_ratio);
+					}
+					else if(face_dir == v3s16(0,1,0))
+					{
+						// Going along X+, faces in Y-
+						li0 = getSmoothLight(p_map_first+v3s16(0,0,0),
+								vmanip, daynight_ratio);
+						li1 = getSmoothLight(p_map+v3s16(1,0,0),
+								vmanip, daynight_ratio);
+						li2 = getSmoothLight(p_map+v3s16(1,0,1),
+								vmanip, daynight_ratio);
+						li3 = getSmoothLight(p_map_first+v3s16(0,0,1),
+								vmanip, daynight_ratio);
+					}
+					else if(face_dir == v3s16(1,0,0))
+					{
+						// Going along Z+, faces in X-
+						li0 = getSmoothLight(p_map_first+v3s16(0,0,0),
+								vmanip, daynight_ratio);
+						li1 = getSmoothLight(p_map+v3s16(0,0,1),
+								vmanip, daynight_ratio);
+						li2 = getSmoothLight(p_map+v3s16(0,1,1),
+								vmanip, daynight_ratio);
+						li3 = getSmoothLight(p_map_first+v3s16(0,1,0),
+								vmanip, daynight_ratio);
+					}
+					else assert(0);
+
+					//makeFastFace(tile1, li, li, li, li,
+					makeFastFace(tile1, li0, li1, li2, li3,
 							sp+face_dir_f, -face_dir, scale,
 							posRelative_f, dest);
 				}
-				//dest.push_back(f);
 			}
 
 			continuous_tiles_count = 0;
@@ -598,7 +749,7 @@ scene::SMesh* makeMapBlockMesh(MeshMakeData *data)
 		//TimeTaker timer2("updateMesh() collect");
 
 		/*
-			Go through every y,z and get top faces in rows of x+
+			Go through every y,z and get top(y+) faces in rows of x+
 		*/
 		for(s16 y=0; y<MAP_BLOCKSIZE; y++){
 			for(s16 z=0; z<MAP_BLOCKSIZE; z++){
@@ -615,7 +766,7 @@ scene::SMesh* makeMapBlockMesh(MeshMakeData *data)
 			}
 		}
 		/*
-			Go through every x,y and get right faces in rows of z+
+			Go through every x,y and get right(x+) faces in rows of z+
 		*/
 		for(s16 x=0; x<MAP_BLOCKSIZE; x++){
 			for(s16 y=0; y<MAP_BLOCKSIZE; y++){
@@ -632,7 +783,7 @@ scene::SMesh* makeMapBlockMesh(MeshMakeData *data)
 			}
 		}
 		/*
-			Go through every y,z and get back faces in rows of x+
+			Go through every y,z and get back(z+) faces in rows of x+
 		*/
 		for(s16 z=0; z<MAP_BLOCKSIZE; z++){
 			for(s16 y=0; y<MAP_BLOCKSIZE; y++){
