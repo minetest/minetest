@@ -3,6 +3,9 @@ Minetest-c55 changelog
 This should contain all the major changes.
 For minor stuff, refer to the commit log of the repository.
 
+X:
+- Smooth lighting with simple ambient occlusion
+
 2011-04-23_0_test:
 - Small bug fixes
 - Item drop multiplication fixed

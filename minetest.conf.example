@@ -27,6 +27,8 @@
 #new_style_water = true
 # Enable nice leaves; disable for speed
 #new_style_leaves = true
+# Enable smooth lighting with simple ambient occlusion; disable for speed
+#smooth_lighting = true
 # Whether to draw a frametime graph
 #frametime_graph = false
 # Enable combining mainly used textures to a bigger one

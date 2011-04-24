@@ -400,7 +400,8 @@ void updateFastFaceRow(
 		core::array<FastFace> &dest,
 		NodeModMap &temp_mods,
 		VoxelManipulator &vmanip,
-		v3s16 blockpos_nodes)
+		v3s16 blockpos_nodes,
+		bool smooth_lighting)
 {
 	v3s16 p = startpos;
 	
@@ -508,50 +509,53 @@ void updateFastFaceRow(
 					scale.Z = continuous_tiles_count;
 				}
 				
-				//u8 li = decode_light(light);
+				if(smooth_lighting == false)
+					li0 = li1 = li2 = li3 = decode_light(light);
 
 				// If node at sp (tile0) is more solid
 				if(mf == 1)
 				{
-					if(face_dir == v3s16(0,0,1))
+					if(smooth_lighting)
 					{
-						// Going along X+, faces in Z+
-						li0 = getSmoothLight(p_map_first+v3s16(0,0,1),
-								vmanip, daynight_ratio);
-						li1 = getSmoothLight(p_map+v3s16(1,0,1),
-								vmanip, daynight_ratio);
-						li2 = getSmoothLight(p_map+v3s16(1,1,1),
-								vmanip, daynight_ratio);
-						li3 = getSmoothLight(p_map_first+v3s16(0,1,1),
-								vmanip, daynight_ratio);
+						if(face_dir == v3s16(0,0,1))
+						{
+							// Going along X+, faces in Z+
+							li0 = getSmoothLight(p_map_first+v3s16(0,0,1),
+									vmanip, daynight_ratio);
+							li1 = getSmoothLight(p_map+v3s16(1,0,1),
+									vmanip, daynight_ratio);
+							li2 = getSmoothLight(p_map+v3s16(1,1,1),
+									vmanip, daynight_ratio);
+							li3 = getSmoothLight(p_map_first+v3s16(0,1,1),
+									vmanip, daynight_ratio);
+						}
+						else if(face_dir == v3s16(0,1,0))
+						{
+							// Going along X+, faces in Y+
+							li0 = getSmoothLight(p_map_first+v3s16(0,1,1),
+									vmanip, daynight_ratio);
+							li1 = getSmoothLight(p_map+v3s16(1,1,1),
+									vmanip, daynight_ratio);
+							li2 = getSmoothLight(p_map+v3s16(1,1,0),
+									vmanip, daynight_ratio);
+							li3 = getSmoothLight(p_map_first+v3s16(0,1,0),
+									vmanip, daynight_ratio);
+						}
+						else if(face_dir == v3s16(1,0,0))
+						{
+							// Going along Z+, faces in X+
+							li0 = getSmoothLight(p_map_first+v3s16(1,0,1),
+									vmanip, daynight_ratio);
+							li1 = getSmoothLight(p_map+v3s16(1,0,0),
+									vmanip, daynight_ratio);
+							li2 = getSmoothLight(p_map+v3s16(1,1,0),
+									vmanip, daynight_ratio);
+							li3 = getSmoothLight(p_map_first+v3s16(1,1,1),
+									vmanip, daynight_ratio);
+						}
+						else assert(0);
 					}
-					else if(face_dir == v3s16(0,1,0))
-					{
-						// Going along X+, faces in Y+
-						li0 = getSmoothLight(p_map_first+v3s16(0,1,1),
-								vmanip, daynight_ratio);
-						li1 = getSmoothLight(p_map+v3s16(1,1,1),
-								vmanip, daynight_ratio);
-						li2 = getSmoothLight(p_map+v3s16(1,1,0),
-								vmanip, daynight_ratio);
-						li3 = getSmoothLight(p_map_first+v3s16(0,1,0),
-								vmanip, daynight_ratio);
-					}
-					else if(face_dir == v3s16(1,0,0))
-					{
-						// Going along Z+, faces in X+
-						li0 = getSmoothLight(p_map_first+v3s16(1,0,1),
-								vmanip, daynight_ratio);
-						li1 = getSmoothLight(p_map+v3s16(1,0,0),
-								vmanip, daynight_ratio);
-						li2 = getSmoothLight(p_map+v3s16(1,1,0),
-								vmanip, daynight_ratio);
-						li3 = getSmoothLight(p_map_first+v3s16(1,1,1),
-								vmanip, daynight_ratio);
-					}
-					else assert(0);
 
-					//makeFastFace(tile0, li, li, li, li,
 					makeFastFace(tile0, li0, li1, li2, li3,
 							sp, face_dir, scale,
 							posRelative_f, dest);
@@ -559,49 +563,51 @@ void updateFastFaceRow(
 				// If node at sp is less solid (mf == 2)
 				else
 				{
-					// Offset to the actual solid block
-					p_map += face_dir;
-					p_map_first += face_dir;
-					
-					if(face_dir == v3s16(0,0,1))
+					if(smooth_lighting)
 					{
-						// Going along X+, faces in Z-
-						li0 = getSmoothLight(p_map+v3s16(1,0,0),
-								vmanip, daynight_ratio);
-						li1 = getSmoothLight(p_map_first+v3s16(0,0,0),
-								vmanip, daynight_ratio);
-						li2 = getSmoothLight(p_map_first+v3s16(0,1,0),
-								vmanip, daynight_ratio);
-						li3 = getSmoothLight(p_map+v3s16(1,1,0),
-								vmanip, daynight_ratio);
+						// Offset to the actual solid block
+						p_map += face_dir;
+						p_map_first += face_dir;
+						
+						if(face_dir == v3s16(0,0,1))
+						{
+							// Going along X+, faces in Z-
+							li0 = getSmoothLight(p_map+v3s16(1,0,0),
+									vmanip, daynight_ratio);
+							li1 = getSmoothLight(p_map_first+v3s16(0,0,0),
+									vmanip, daynight_ratio);
+							li2 = getSmoothLight(p_map_first+v3s16(0,1,0),
+									vmanip, daynight_ratio);
+							li3 = getSmoothLight(p_map+v3s16(1,1,0),
+									vmanip, daynight_ratio);
+						}
+						else if(face_dir == v3s16(0,1,0))
+						{
+							// Going along X+, faces in Y-
+							li0 = getSmoothLight(p_map_first+v3s16(0,0,0),
+									vmanip, daynight_ratio);
+							li1 = getSmoothLight(p_map+v3s16(1,0,0),
+									vmanip, daynight_ratio);
+							li2 = getSmoothLight(p_map+v3s16(1,0,1),
+									vmanip, daynight_ratio);
+							li3 = getSmoothLight(p_map_first+v3s16(0,0,1),
+									vmanip, daynight_ratio);
+						}
+						else if(face_dir == v3s16(1,0,0))
+						{
+							// Going along Z+, faces in X-
+							li0 = getSmoothLight(p_map_first+v3s16(0,0,0),
+									vmanip, daynight_ratio);
+							li1 = getSmoothLight(p_map+v3s16(0,0,1),
+									vmanip, daynight_ratio);
+							li2 = getSmoothLight(p_map+v3s16(0,1,1),
+									vmanip, daynight_ratio);
+							li3 = getSmoothLight(p_map_first+v3s16(0,1,0),
+									vmanip, daynight_ratio);
+						}
+						else assert(0);
 					}
-					else if(face_dir == v3s16(0,1,0))
-					{
-						// Going along X+, faces in Y-
-						li0 = getSmoothLight(p_map_first+v3s16(0,0,0),
-								vmanip, daynight_ratio);
-						li1 = getSmoothLight(p_map+v3s16(1,0,0),
-								vmanip, daynight_ratio);
-						li2 = getSmoothLight(p_map+v3s16(1,0,1),
-								vmanip, daynight_ratio);
-						li3 = getSmoothLight(p_map_first+v3s16(0,0,1),
-								vmanip, daynight_ratio);
-					}
-					else if(face_dir == v3s16(1,0,0))
-					{
-						// Going along Z+, faces in X-
-						li0 = getSmoothLight(p_map_first+v3s16(0,0,0),
-								vmanip, daynight_ratio);
-						li1 = getSmoothLight(p_map+v3s16(0,0,1),
-								vmanip, daynight_ratio);
-						li2 = getSmoothLight(p_map+v3s16(0,1,1),
-								vmanip, daynight_ratio);
-						li3 = getSmoothLight(p_map_first+v3s16(0,1,0),
-								vmanip, daynight_ratio);
-					}
-					else assert(0);
 
-					//makeFastFace(tile1, li, li, li, li,
 					makeFastFace(tile1, li0, li1, li2, li3,
 							sp+face_dir_f, -face_dir, scale,
 							posRelative_f, dest);
@@ -731,6 +737,7 @@ scene::SMesh* makeMapBlockMesh(MeshMakeData *data)
 	*/
 	bool new_style_water = g_settings.getBool("new_style_water");
 	bool new_style_leaves = g_settings.getBool("new_style_leaves");
+	bool smooth_lighting = g_settings.getBool("smooth_lighting");
 	
 	float node_water_level = 1.0;
 	if(new_style_water)
@@ -762,7 +769,8 @@ scene::SMesh* makeMapBlockMesh(MeshMakeData *data)
 						fastfaces_new,
 						data->m_temp_mods,
 						data->m_vmanip,
-						blockpos_nodes);
+						blockpos_nodes,
+						smooth_lighting);
 			}
 		}
 		/*
@@ -779,7 +787,8 @@ scene::SMesh* makeMapBlockMesh(MeshMakeData *data)
 						fastfaces_new,
 						data->m_temp_mods,
 						data->m_vmanip,
-						blockpos_nodes);
+						blockpos_nodes,
+						smooth_lighting);
 			}
 		}
 		/*
@@ -796,7 +805,8 @@ scene::SMesh* makeMapBlockMesh(MeshMakeData *data)
 						fastfaces_new,
 						data->m_temp_mods,
 						data->m_vmanip,
-						blockpos_nodes);
+						blockpos_nodes,
+						smooth_lighting);
 			}
 		}
 	}
