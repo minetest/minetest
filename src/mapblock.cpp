@@ -618,50 +618,6 @@ void updateFastFaceRow(
 				makeFastFace(tile, lights[0], lights[1], lights[2], lights[3],
 						sp, face_dir_corrected, scale,
 						posRelative_f, dest);
-
-			#if 0
-				// First node
-				v3s16 p_first = p_corrected - (continuous_tiles_count-1)
-						* translate_dir;
-
-				v3s16 p_map_leftmost;
-				v3s16 p_map_rightmost;
-				p_map_leftmost = p_corrected + blockpos_nodes;
-				p_map_rightmost = p_first + blockpos_nodes;
-				
-				/*if(p != p_corrected)
-				{
-					if(face_dir == v3s16(0,0,1))
-					{
-						v3s16 orig_leftmost = p_map_leftmost;
-						v3s16 orig_rightmost = p_map_leftmost;
-						p_map_leftmost = orig_rightmost;
-						p_map_rightmost = orig_leftmost;
-					}
-				}*/
-
-				if(smooth_lighting == false)
-				{
-					li0 = li1 = li2 = li3 = decode_light(light);
-				}
-				else
-				{
-					v3s16 vertex_dirs[4];
-					getNodeVertexDirs(face_dir_corrected, vertex_dirs);
-					
-					li0 = getSmoothLight(p_map_rightmost, vertex_dirs[0],
-							vmanip, daynight_ratio);
-					li1 = getSmoothLight(p_map_leftmost, vertex_dirs[1],
-							vmanip, daynight_ratio);
-					li2 = getSmoothLight(p_map_leftmost, vertex_dirs[2],
-							vmanip, daynight_ratio);
-					li3 = getSmoothLight(p_map_rightmost, vertex_dirs[3],
-							vmanip, daynight_ratio);
-				}
-				makeFastFace(tile, li0, li1, li2, li3,
-						sp, face_dir_corrected, scale,
-						posRelative_f, dest);
-			#endif
 			}
 
 			continuous_tiles_count = 0;
@@ -890,6 +846,7 @@ scene::SMesh* makeMapBlockMesh(MeshMakeData *data)
 			FastFace &f = fastfaces_new[i];
 
 			const u16 indices[] = {0,1,2,2,3,0};
+			const u16 indices_alternate[] = {0,1,3,2,3,1};
 			
 			video::ITexture *texture = f.tile.texture.atlas;
 			if(texture == NULL)
@@ -898,8 +855,18 @@ scene::SMesh* makeMapBlockMesh(MeshMakeData *data)
 			material.setTexture(0, texture);
 			
 			f.tile.applyMaterialOptions(material);
+
+			const u16 *indices_p = indices;
 			
-			collector.append(material, f.vertices, 4, indices, 6);
+			/*
+				Revert triangles for nicer looking gradient if vertices
+				1 and 3 have same color or 0 and 2 have different color.
+			*/
+			if(f.vertices[0].Color != f.vertices[2].Color
+					|| f.vertices[1].Color == f.vertices[3].Color)
+				indices_p = indices_alternate;
+			
+			collector.append(material, f.vertices, 4, indices_p, 6);
 		}
 	}
 
