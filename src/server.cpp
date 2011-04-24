@@ -3846,8 +3846,10 @@ std::wstring Server::getStatusString()
 {
 	std::wostringstream os(std::ios_base::binary);
 	os<<L"# Server: ";
+	// Version
+	os<<L"version="<<narrow_to_wide(VERSION_STRING);
 	// Uptime
-	os<<L"uptime="<<m_uptime.get();
+	os<<L", uptime="<<m_uptime.get();
 	// Information about clients
 	os<<L", clients={";
 	for(core::map<u16, RemoteClient*>::Iterator
