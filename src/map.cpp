@@ -4801,7 +4801,6 @@ void ServerMap::save(bool only_changed)
 	if(only_changed == false || m_map_metadata_changed)
 	{
 		saveMapMeta();
-		m_map_metadata_changed = false;
 	}
 
 	// Disable saving chunk metadata if chunks are disabled
@@ -4985,6 +4984,7 @@ void ServerMap::saveMapMeta()
 
 	os<<"[end_of_params]\n";
 	
+	m_map_metadata_changed = false;
 }
 
 void ServerMap::loadMapMeta()
@@ -5072,6 +5072,8 @@ void ServerMap::saveChunkMeta()
 		// Write chunk data
 		chunk->serialize(os, version);
 	}
+
+	setChunksNonModified();
 }
 
 void ServerMap::loadChunkMeta()
