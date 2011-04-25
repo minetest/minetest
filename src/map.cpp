@@ -1792,7 +1792,8 @@ void Map::nodeMetadataStep(float dtime,
 
 ServerMap::ServerMap(std::string savedir):
 	Map(dout_server),
-	m_seed(0)
+	m_seed(0),
+	m_map_metadata_changed(true)
 {
 	dstream<<__FUNCTION_NAME<<std::endl;
 	
@@ -4797,12 +4798,17 @@ void ServerMap::save(bool only_changed)
 		dstream<<DTIME<<"ServerMap: Saving whole map, this can take time."
 				<<std::endl;
 	
-	saveMapMeta();
+	if(only_changed == false || m_map_metadata_changed)
+	{
+		saveMapMeta();
+		m_map_metadata_changed = false;
+	}
 
-	// Disable saving chunk metadata file if chunks are disabled
+	// Disable saving chunk metadata if chunks are disabled
 	if(m_chunksize != 0)
 	{
-		saveChunkMeta();
+		if(only_changed == false || anyChunkModified())
+			saveChunkMeta();
 	}
 	
 	u32 sector_meta_count = 0;

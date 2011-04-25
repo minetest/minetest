@@ -219,6 +219,9 @@ SUGG: MovingObject::move and Player::move are basically the same.
 	  - NOTE: Player::move is more up-to-date.
 	  - NOTE: There is a simple move implementation now in collision.{h,cpp}
 
+SUGG: Server-side objects could be moved based on nodes to enable very
+      lightweight operation and simple AI
+
 Map:
 ----
 

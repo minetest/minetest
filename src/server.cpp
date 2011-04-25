@@ -306,8 +306,15 @@ void RemoteClient::GetNextBlocks(Server *server, float dtime,
 {
 	DSTACK(__FUNCTION_NAME);
 	
+	/*u32 timer_result;
+	TimeTaker timer("RemoteClient::GetNextBlocks", &timer_result);*/
+	
 	// Increment timers
 	m_nearest_unsent_reset_timer += dtime;
+	m_nothing_to_send_pause_timer -= dtime;
+	
+	if(m_nothing_to_send_pause_timer >= 0)
+		return;
 
 	// Won't send anything if already sending
 	if(m_blocks_sending.size() >= g_settings.getU16
@@ -338,8 +345,6 @@ void RemoteClient::GetNextBlocks(Server *server, float dtime,
 	/*
 		Get the starting value of the block finder radius.
 	*/
-	s16 last_nearest_unsent_d;
-	s16 d_start;
 		
 	if(m_last_center != center)
 	{
@@ -356,14 +361,14 @@ void RemoteClient::GetNextBlocks(Server *server, float dtime,
 		//dstream<<"Resetting m_nearest_unsent_d"<<std::endl;
 	}
 
-	last_nearest_unsent_d = m_nearest_unsent_d;
-	
-	d_start = m_nearest_unsent_d;
+	//s16 last_nearest_unsent_d = m_nearest_unsent_d;
+	s16 d_start = m_nearest_unsent_d;
 
-	u16 maximum_simultaneous_block_sends_setting = g_settings.getU16
+	//dstream<<"d_start="<<d_start<<std::endl;
+
+	u16 max_simul_sends_setting = g_settings.getU16
 			("max_simultaneous_block_sends_per_client");
-	u16 maximum_simultaneous_block_sends = 
-			maximum_simultaneous_block_sends_setting;
+	u16 max_simul_sends_usually = max_simul_sends_setting;
 
 	/*
 		Check the time from last addNode/removeNode.
@@ -374,10 +379,13 @@ void RemoteClient::GetNextBlocks(Server *server, float dtime,
 	if(m_time_from_building < g_settings.getFloat(
 				"full_block_send_enable_min_time_from_building"))
 	{
-		maximum_simultaneous_block_sends
+		max_simul_sends_usually
 			= LIMITED_MAX_SIMULTANEOUS_BLOCK_SENDS;
 	}
 	
+	/*
+		Number of blocks sending + number of blocks selected for sending
+	*/
 	u32 num_blocks_selected = m_blocks_sending.size();
 	
 	/*
@@ -394,6 +402,8 @@ void RemoteClient::GetNextBlocks(Server *server, float dtime,
 	
 	//dstream<<"Starting from "<<d_start<<std::endl;
 
+	bool sending_something = false;
+
 	for(s16 d = d_start; d <= d_max; d++)
 	{
 		//dstream<<"RemoteClient::SendBlocks(): d="<<d<<std::endl;
@@ -404,11 +414,11 @@ void RemoteClient::GetNextBlocks(Server *server, float dtime,
 			update our d to it.
 			Else update m_nearest_unsent_d
 		*/
-		if(m_nearest_unsent_d != last_nearest_unsent_d)
+		/*if(m_nearest_unsent_d != last_nearest_unsent_d)
 		{
 			d = m_nearest_unsent_d;
 			last_nearest_unsent_d = m_nearest_unsent_d;
-		}
+		}*/
 
 		/*
 			Get the border/face dot coordinates of a "d-radiused"
@@ -430,25 +440,18 @@ void RemoteClient::GetNextBlocks(Server *server, float dtime,
 				Also, don't send blocks that are already flying.
 			*/
 			
-			u16 maximum_simultaneous_block_sends_now =
-					maximum_simultaneous_block_sends;
+			// Start with the usual maximum
+			u16 max_simul_dynamic = max_simul_sends_usually;
 			
+			// If block is very close, allow full maximum
 			if(d <= BLOCK_SEND_DISABLE_LIMITS_MAX_D)
-			{
-				maximum_simultaneous_block_sends_now =
-						maximum_simultaneous_block_sends_setting;
-			}
+				max_simul_dynamic = max_simul_sends_setting;
 
-			// Limit is dynamically lowered when building
-			if(num_blocks_selected
-					>= maximum_simultaneous_block_sends_now)
-			{
-				/*dstream<<"Not sending more blocks. Queue full. "
-						<<m_blocks_sending.size()
-						<<std::endl;*/
+			// Don't select too many blocks for sending
+			if(num_blocks_selected >= max_simul_dynamic)
 				goto queue_full;
-			}
-
+			
+			// Don't send blocks that are currently being transferred
 			if(m_blocks_sending.find(p) != NULL)
 				continue;
 		
@@ -476,37 +479,35 @@ void RemoteClient::GetNextBlocks(Server *server, float dtime,
 					continue;
 			}
 
-#if 0
+#if 1
 			/*
 				If block is far away, don't generate it unless it is
-				near ground level
-
-				NOTE: We can't know the ground level this way with the
-				new generator.
+				near ground level.
 			*/
-			if(d > 4)
+			if(d >= 4)
 			{
-				v2s16 p2d(p.X, p.Z);
-				MapSector *sector = NULL;
-				try
-				{
-					sector = server->m_env.getMap().getSectorNoGenerate(p2d);
-				}
-				catch(InvalidPositionException &e)
-				{
-				}
+	#if 1
+				// Block center y in nodes
+				f32 y = (f32)(p.Y * MAP_BLOCKSIZE + MAP_BLOCKSIZE/2);
+				// Don't generate if it's very high or very low
+				if(y < -64 || y > 64)
+					generate = false;
+	#endif
+	#if 0
+				v2s16 p2d_nodes_center(
+					MAP_BLOCKSIZE*p.X,
+					MAP_BLOCKSIZE*p.Z);
+				
+				// Get ground height in nodes
+				s16 gh = server->m_env.getServerMap().findGroundLevel(
+						p2d_nodes_center);
 
-				if(sector != NULL)
-				{
-					// Get center ground height in nodes
-					f32 gh = sector->getGroundHeight(
-							v2s16(MAP_BLOCKSIZE/2, MAP_BLOCKSIZE/2));
-					// Block center y in nodes
-					f32 y = (f32)(p.Y * MAP_BLOCKSIZE + MAP_BLOCKSIZE/2);
-					// If differs a lot, don't generate
-					if(fabs(gh - y) > MAP_BLOCKSIZE*2)
-						generate = false;
-				}
+				// If differs a lot, don't generate
+				if(fabs(gh - y) > MAP_BLOCKSIZE*2)
+					generate = false;
+					// Actually, don't even send it
+					//continue;
+	#endif
 			}
 #endif
 
@@ -556,6 +557,20 @@ void RemoteClient::GetNextBlocks(Server *server, float dtime,
 				v2s16 chunkpos = map->sector_to_chunk(p2d);
 				if(map->chunkNonVolatile(chunkpos) == false)
 					block_is_invalid = true;
+#if 1
+				/*
+					If block is not close, don't send it unless it is near
+					ground level.
+
+					Block is not near ground level if night-time mesh
+					doesn't differ from day-time mesh.
+				*/
+				if(d >= 3)
+				{
+					if(block->dayNightDiffed() == false)
+						continue;
+				}
+#endif
 			}
 
 			/*
@@ -574,7 +589,8 @@ void RemoteClient::GetNextBlocks(Server *server, float dtime,
 			*/
 			if(new_nearest_unsent_d == -1 || d < new_nearest_unsent_d)
 			{
-				new_nearest_unsent_d = d;
+				if(generate == true)
+					new_nearest_unsent_d = d;
 			}
 					
 			/*
@@ -612,6 +628,7 @@ void RemoteClient::GetNextBlocks(Server *server, float dtime,
 			dest.push_back(q);
 
 			num_blocks_selected += 1;
+			sending_something = true;
 		}
 	}
 queue_full:
@@ -620,6 +637,24 @@ queue_full:
 	{
 		m_nearest_unsent_d = new_nearest_unsent_d;
 	}
+
+	if(sending_something == false)
+	{
+		m_nothing_to_send_counter++;
+		if(m_nothing_to_send_counter >= 3)
+		{
+			// Pause time in seconds
+			m_nothing_to_send_pause_timer = 2.0;
+		}
+	}
+	else
+	{
+		m_nothing_to_send_counter = 0;
+	}
+
+	/*timer_result = timer.stop(true);
+	if(timer_result != 0)
+		dstream<<"GetNextBlocks duration: "<<timer_result<<" (!=0)"<<std::endl;*/
 }
 
 void RemoteClient::SendObjectData(
@@ -3402,6 +3437,30 @@ void Server::sendAddNode(v3s16 p, MapNode n, u16 ignore_id,
 void Server::SendBlockNoLock(u16 peer_id, MapBlock *block, u8 ver)
 {
 	DSTACK(__FUNCTION_NAME);
+
+	v3s16 p = block->getPos();
+	
+#if 0
+	// Analyze it a bit
+	bool completely_air = true;
+	for(s16 z0=0; z0<MAP_BLOCKSIZE; z0++)
+	for(s16 x0=0; x0<MAP_BLOCKSIZE; x0++)
+	for(s16 y0=0; y0<MAP_BLOCKSIZE; y0++)
+	{
+		if(block->getNodeNoEx(v3s16(x0,y0,z0)).d != CONTENT_AIR)
+		{
+			completely_air = false;
+			x0 = y0 = z0 = MAP_BLOCKSIZE; // Break out
+		}
+	}
+
+	// Print result
+	dstream<<"Server: Sending block ("<<p.X<<","<<p.Y<<","<<p.Z<<"): ";
+	if(completely_air)
+		dstream<<"[completely air] ";
+	dstream<<std::endl;
+#endif
+
 	/*
 		Create a packet with the block in the right format
 	*/
@@ -3413,7 +3472,6 @@ void Server::SendBlockNoLock(u16 peer_id, MapBlock *block, u8 ver)
 
 	u32 replysize = 8 + blockdata.getSize();
 	SharedBuffer<u8> reply(replysize);
-	v3s16 p = block->getPos();
 	writeU16(&reply[0], TOCLIENT_BLOCKDATA);
 	writeS16(&reply[2], p.X);
 	writeS16(&reply[4], p.Y);

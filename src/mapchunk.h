@@ -36,7 +36,8 @@ class MapChunk
 {
 public:
 	MapChunk():
-		m_generation_level(GENERATED_NOT)
+		m_generation_level(GENERATED_NOT),
+		m_modified(true)
 	{
 	}
 
@@ -58,8 +59,12 @@ public:
 		is.read((char*)&m_generation_level, 1);
 	}
 
+	bool isModified(){ return m_modified; }
+	void setModified(bool modified){ m_modified = modified; }
+
 private:
 	u8 m_generation_level;
+	bool m_modified;
 };
 
 #endif

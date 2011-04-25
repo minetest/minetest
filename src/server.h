@@ -250,6 +250,8 @@ public:
 		pending_serialization_version = SER_FMT_VER_INVALID;
 		m_nearest_unsent_d = 0;
 		m_nearest_unsent_reset_timer = 0.0;
+		m_nothing_to_send_counter = 0;
+		m_nothing_to_send_pause_timer = 0;
 	}
 	~RemoteClient()
 	{
@@ -350,6 +352,10 @@ private:
 		This is resetted by PrintInfo()
 	*/
 	u32 m_excess_gotblocks;
+	
+	// CPU usage optimization
+	u32 m_nothing_to_send_counter;
+	float m_nothing_to_send_pause_timer;
 };
 
 class Server : public con::PeerHandler, public MapEventReceiver,
