@@ -2833,7 +2833,7 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 				line += L"status ";
 				if(is_operator)
 				{
-					line += L"shutdown setting ";
+					line += L"shutdown setting time ";
 				}
 				else
 				{
@@ -2864,6 +2864,15 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 					std::string confline = message_s.substr(8);
 					g_settings.parseConfigLine(confline);
 					line += L"-!- Setting changed.";
+					send_to_sender = true;
+					valid_command = true;
+				}
+				else if(message_s.substr(0,5) == "time ")
+				{
+					u32 time = stoi(message_s.substr(5));
+					m_time_of_day.set(time);
+					m_time_of_day_send_timer = 0;
+					line += L"-!- time_of_day changed.";
 					send_to_sender = true;
 					valid_command = true;
 				}
