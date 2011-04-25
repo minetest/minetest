@@ -632,6 +632,14 @@ void Oerkki1CAO::updateLight(u8 light_at_pos)
 {
 	if(m_node == NULL)
 		return;
+	
+	if(light_at_pos <= 2)
+	{
+		m_node->setVisible(false);
+		return;
+	}
+
+	m_node->setVisible(true);
 
 	u8 li = decode_light(light_at_pos);
 	video::SColor color(255,li,li,li);
