@@ -2121,6 +2121,13 @@ double base_rock_level_2d(u64 seed, v2s16 p)
 	return h;
 }
 
+double get_mud_add_amount(u64 seed, v2s16 p)
+{
+	return ((float)AVERAGE_MUD_AMOUNT + 3.0 * noise2d_perlin(
+			0.5+(float)p.X/200, 0.5+(float)p.Y/200,
+			seed+91013, 3, 0.55));
+}
+
 /*
 	Adds random objects to block, depending on the content of the block
 */
@@ -2402,8 +2409,8 @@ void makeChunk(ChunkMakeData *data)
 	/*
 		Loop this part, it will make stuff look older and newer nicely
 	*/
-	//for(u32 i_age=0; i_age<1; i_age++)
-	for(u32 i_age=0; i_age<2; i_age++)
+	const u32 age_loops = 2;
+	for(u32 i_age=0; i_age<age_loops; i_age++)
 	{ // Aging loop
 	/******************************
 		BEGINNING OF AGING LOOP
@@ -2802,9 +2809,7 @@ void makeChunk(ChunkMakeData *data)
 		v2s16 p2d = data->sectorpos_base*MAP_BLOCKSIZE + v2s16(x,z);
 		
 		// Randomize mud amount
-		s16 mud_add_amount = (s16)(2.5 + 1.5 * noise2d_perlin(
-				0.5+(float)p2d.X/200, 0.5+(float)p2d.Y/200,
-				data->seed+1, 3, 0.55));
+		s16 mud_add_amount = get_mud_add_amount(data->seed, p2d) / 2.0;
 
 		// Find ground level
 		s16 surface_y = find_ground_level_clever(data->vmanip, p2d);
@@ -4024,7 +4029,7 @@ MapBlock * ServerMap::generateBlock(
 		block->unDummify();
 	}
 	
-#if 1
+#if 0
 	/*
 		Generate a completely empty block
 	*/
@@ -4055,8 +4060,10 @@ MapBlock * ServerMap::generateBlock(
 
 		//s16 surface_y = 0;
 
+		s16 mud_add_amount = get_mud_add_amount(m_seed, p2d_nodes+v2s16(x0,z0));
+
 		s16 surface_y = base_rock_level_2d(m_seed, p2d_nodes+v2s16(x0,z0))
-				+ AVERAGE_MUD_AMOUNT;
+				+ mud_add_amount;
 		// If chunks are disabled
 		if(m_chunksize == 0)
 			surface_y = WATER_LEVEL + 1;
