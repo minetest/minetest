@@ -2244,7 +2244,7 @@ void makeChunk(ChunkMakeData *data)
 
 #if 0
 	NoiseBuffer noisebuf1;
-	NoiseBuffer noisebuf2;
+	//NoiseBuffer noisebuf2;
 	{
 		v3f minpos_f(
 			data->sectorpos_bigbase.X*MAP_BLOCKSIZE,
@@ -2260,18 +2260,18 @@ void makeChunk(ChunkMakeData *data)
 
 		TimeTaker timer("noisebuf.create");
 		
-		/*noisebuf.create(data->seed+25104, 6, 0.60, 200.0,
+		noisebuf1.create(data->seed+25104, 6, 0.60, 200.0,
 				minpos_f.X, minpos_f.Y, minpos_f.Z,
 				maxpos_f.X, maxpos_f.Y, maxpos_f.Z,
-				samplelength_f.X, samplelength_f.Y, samplelength_f.Z);*/
-		noisebuf1.create(data->seed+25104, 3, 0.60, 25.0,
+				samplelength_f.X, samplelength_f.Y, samplelength_f.Z);
+		/*noisebuf1.create(data->seed+25104, 3, 0.60, 25.0,
 				minpos_f.X, minpos_f.Y, minpos_f.Z,
 				maxpos_f.X, maxpos_f.Y, maxpos_f.Z,
 				samplelength_f.X, samplelength_f.Y, samplelength_f.Z);
 		noisebuf2.create(data->seed+25105, 4, 0.50, 200.0,
 				minpos_f.X, minpos_f.Y, minpos_f.Z,
 				maxpos_f.X, maxpos_f.Y, maxpos_f.Z,
-				samplelength_f.X, samplelength_f.Y, samplelength_f.Z);
+				samplelength_f.X, samplelength_f.Y, samplelength_f.Z);*/
 	}
 
 	for(s16 x=0; x<data->sectorpos_bigbase_size*MAP_BLOCKSIZE; x++)
@@ -2315,12 +2315,12 @@ void makeChunk(ChunkMakeData *data)
 						0.5+(float)y/100.0,
 						0.5+(float)p2d.Y/100.0,
 						data->seed+123, 5, 0.5);*/
-				//double noiseval = 64.0 * noisebuf1.get(p2d.X, y, p2d.Y);
-				double noiseval = 30.0 * noisebuf1.get(p2d.X, y, p2d.Y);
-				noiseval *= MYMAX(0, -0.2 + noisebuf2.get(p2d.X, y, p2d.Y));
+				double noiseval = 64.0 * noisebuf1.get(p2d.X, y, p2d.Y);
+				/*double noiseval = 30.0 * noisebuf1.get(p2d.X, y, p2d.Y);
+				noiseval *= MYMAX(0, -0.2 + noisebuf2.get(p2d.X, y, p2d.Y));*/
 				
-				if(y < surface_y + noiseval)
-				//if(noiseval > 0)
+				//if(y < surface_y + noiseval)
+				if(noiseval > 0)
 				//if(noiseval > y)
 					data->vmanip.m_data[i].d = CONTENT_STONE;
 

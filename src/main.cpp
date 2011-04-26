@@ -124,6 +124,10 @@ Game content:
 - A bomb
 - A spread-items-on-map routine for the bomb, and for dying players
 
+- Fighting:
+  - Proper sword swing simulation
+  - Player should get damage from colliding to a wall at high speed
+
 Documentation:
 --------------
 
