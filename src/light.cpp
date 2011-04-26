@@ -19,27 +19,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "light.h"
 
-// This is reasonable with classic lighting with a light source
-/*u8 light_decode_table[LIGHT_MAX+1] = 
-{
-2,
-3,
-4,
-6,
-9,
-13,
-18,
-25,
-32,
-35,
-45,
-57,
-69,
-79,
-255
-};*/
-
-
+#if 1
 // This is good
 // a_n+1 = a_n * 0.786
 // Length of LIGHT_MAX+1 means LIGHT_MAX is the last value.
@@ -62,6 +42,48 @@ u8 light_decode_table[LIGHT_MAX+1] =
 200,
 255,
 };
+#else
+// Use for debugging in dark
+u8 light_decode_table[LIGHT_MAX+1] = 
+{
+58,
+64,
+72,
+80,
+88,
+98,
+109,
+121,
+135,
+150,
+167,
+185,
+206,
+229,
+255,
+};
+#endif
+
+// This is reasonable with classic lighting with a light source
+/*u8 light_decode_table[LIGHT_MAX+1] = 
+{
+2,
+3,
+4,
+6,
+9,
+13,
+18,
+25,
+32,
+35,
+45,
+57,
+69,
+79,
+255
+};*/
+
 
 // As in minecraft, a_n+1 = a_n * 0.8
 // NOTE: This doesn't really work that well because this defines

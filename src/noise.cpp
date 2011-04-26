@@ -20,6 +20,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <math.h>
 #include "noise.h"
 #include <iostream>
+#include "debug.h"
 
 #define NOISE_MAGIC_X 1619
 #define NOISE_MAGIC_Y 31337
@@ -219,5 +220,109 @@ double noise3d_perlin_abs(double x, double y, double z, int seed,
 		g *= persistence;
 	}
 	return a;
+}
+
+/*
+	NoiseBuffer
+*/
+
+NoiseBuffer::NoiseBuffer():
+	m_data(NULL)
+{
+}
+
+NoiseBuffer::~NoiseBuffer()
+{
+	clear();
+}
+
+void NoiseBuffer::clear()
+{
+	if(m_data)
+		delete[] m_data;
+	m_data = NULL;
+	m_size_x = 0;
+	m_size_y = 0;
+	m_size_z = 0;
+}
+
+void NoiseBuffer::create(int seed, int octaves, double persistence,
+		double pos_scale,
+		double first_x, double first_y, double first_z,
+		double last_x, double last_y, double last_z,
+		double samplelength_x, double samplelength_y, double samplelength_z)
+{
+	clear();
+	
+	m_start_x = first_x - samplelength_x;
+	m_start_y = first_y - samplelength_y;
+	m_start_z = first_z - samplelength_z;
+	m_samplelength_x = samplelength_x;
+	m_samplelength_y = samplelength_y;
+	m_samplelength_z = samplelength_z;
+
+	m_size_x = (last_x - m_start_x)/samplelength_x + 2;
+	m_size_y = (last_y - m_start_y)/samplelength_y + 2;
+	m_size_z = (last_z - m_start_z)/samplelength_z + 2;
+
+	/*dstream<<"m_size_x="<<m_size_x<<", m_size_y="<<m_size_y
+			<<", m_size_z="<<m_size_z<<std::endl;*/
+	
+	m_data = new double[m_size_x*m_size_y*m_size_z];
+
+	for(int x=0; x<m_size_x; x++)
+	for(int y=0; y<m_size_y; y++)
+	for(int z=0; z<m_size_z; z++)
+	{
+		double xd = (m_start_x + (double)x*m_samplelength_x)/pos_scale;
+		double yd = (m_start_y + (double)y*m_samplelength_y)/pos_scale;
+		double zd = (m_start_z + (double)z*m_samplelength_z)/pos_scale;
+		intSet(x,y,z, noise3d_perlin(xd,yd,zd,seed,octaves,persistence));
+	}
+}
+
+void NoiseBuffer::intSet(int x, int y, int z, double d)
+{
+	int i = m_size_x*m_size_y*z + m_size_x*y + x;
+	assert(i >= 0);
+	assert(i < m_size_x*m_size_y*m_size_z);
+	m_data[i] = d;
+}
+
+double NoiseBuffer::intGet(int x, int y, int z)
+{
+	int i = m_size_x*m_size_y*z + m_size_x*y + x;
+	assert(i >= 0);
+	assert(i < m_size_x*m_size_y*m_size_z);
+	return m_data[i];
+}
+
+double NoiseBuffer::get(double x, double y, double z)
+{
+	x -= m_start_x;
+	y -= m_start_y;
+	z -= m_start_z;
+	x /= m_samplelength_x;
+	y /= m_samplelength_y;
+	z /= m_samplelength_z;
+	// Calculate the integer coordinates
+	int x0 = (x > 0.0 ? (int)x : (int)x - 1);
+	int y0 = (y > 0.0 ? (int)y : (int)y - 1);
+	int z0 = (z > 0.0 ? (int)z : (int)z - 1);
+	// Calculate the remaining part of the coordinates
+	double xl = x - (double)x0;
+	double yl = y - (double)y0;
+	double zl = z - (double)z0;
+	// Get values for corners of cube
+	double v000 = intGet(x0,   y0,   z0);
+	double v100 = intGet(x0+1, y0,   z0);
+	double v010 = intGet(x0,   y0+1, z0);
+	double v110 = intGet(x0+1, y0+1, z0);
+	double v001 = intGet(x0,   y0,   z0+1);
+	double v101 = intGet(x0+1, y0,   z0+1);
+	double v011 = intGet(x0,   y0+1, z0+1);
+	double v111 = intGet(x0+1, y0+1, z0+1);
+	// Interpolate
+	return triLinearInterpolation(v000,v100,v010,v110,v001,v101,v011,v111,xl,yl,zl);
 }
 

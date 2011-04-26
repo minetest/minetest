@@ -41,5 +41,29 @@ double noise3d_perlin(double x, double y, double z, int seed,
 double noise3d_perlin_abs(double x, double y, double z, int seed,
 		int octaves, double persistence);
 
+class NoiseBuffer
+{
+public:
+	NoiseBuffer();
+	~NoiseBuffer();
+	
+	void clear();
+	void create(int seed, int octaves, double persistence,
+			double pos_scale,
+			double first_x, double first_y, double first_z,
+			double last_x, double last_y, double last_z,
+			double samplelength_x, double samplelength_y, double samplelength_z);
+
+	void intSet(int x, int y, int z, double d);
+	double intGet(int x, int y, int z);
+	double get(double x, double y, double z);
+
+private:
+	double *m_data;
+	double m_start_x, m_start_y, m_start_z;
+	double m_samplelength_x, m_samplelength_y, m_samplelength_z;
+	int m_size_x, m_size_y, m_size_z;
+};
+
 #endif
 

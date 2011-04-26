@@ -565,7 +565,7 @@ void RemoteClient::GetNextBlocks(Server *server, float dtime,
 					Block is not near ground level if night-time mesh
 					doesn't differ from day-time mesh.
 				*/
-				if(d >= 3)
+				if(d > 3)
 				{
 					if(block->dayNightDiffed() == false)
 						continue;
@@ -4035,6 +4035,8 @@ void setCreativeInventory(Player *player)
 
 v3f findSpawnPos(ServerMap &map)
 {
+	//return v3f(50,50,50)*BS;
+	
 	v2s16 nodepos;
 	s16 groundheight = 0;
 	

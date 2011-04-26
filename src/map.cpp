@@ -2068,7 +2068,7 @@ double base_rock_level_2d(u64 seed, v2s16 p)
 {
 	// The base ground level
 	double base = (double)WATER_LEVEL - (double)AVERAGE_MUD_AMOUNT
-			+ 25. * noise2d_perlin(
+			+ 20. * noise2d_perlin(
 			0.5+(float)p.X/500., 0.5+(float)p.Y/500.,
 			(seed>>32)+654879876, 6, 0.6);
 	
@@ -2080,7 +2080,7 @@ double base_rock_level_2d(u64 seed, v2s16 p)
 		base = base2;*/
 #if 1
 	// Higher ground level
-	double higher = (double)WATER_LEVEL + 25. + 45. * noise2d_perlin(
+	double higher = (double)WATER_LEVEL + 25. + 35. * noise2d_perlin(
 			0.5+(float)p.X/250., 0.5+(float)p.Y/250.,
 			seed+85039, 5, 0.69);
 	//higher = 30; // For debugging
@@ -2231,11 +2231,99 @@ void makeChunk(ChunkMakeData *data)
 	/*
 		Generate general ground level to full area
 	*/
-	
 	{
 	// 22ms @cs=8
-	//TimeTaker timer1("ground level");
+	TimeTaker timer1("Generating ground level");
 
+#if 0
+	NoiseBuffer noisebuf1;
+	NoiseBuffer noisebuf2;
+	{
+		v3f minpos_f(
+			data->sectorpos_bigbase.X*MAP_BLOCKSIZE,
+			y_nodes_min,
+			data->sectorpos_bigbase.Y*MAP_BLOCKSIZE
+		);
+		v3f maxpos_f = minpos_f + v3f(
+			data->sectorpos_bigbase_size*MAP_BLOCKSIZE,
+			y_nodes_max-y_nodes_min,
+			data->sectorpos_bigbase_size*MAP_BLOCKSIZE
+		);
+		v3f samplelength_f = v3f(4.0, 4.0, 4.0);
+
+		TimeTaker timer("noisebuf.create");
+		
+		/*noisebuf.create(data->seed+25104, 6, 0.60, 200.0,
+				minpos_f.X, minpos_f.Y, minpos_f.Z,
+				maxpos_f.X, maxpos_f.Y, maxpos_f.Z,
+				samplelength_f.X, samplelength_f.Y, samplelength_f.Z);*/
+		noisebuf1.create(data->seed+25104, 3, 0.60, 25.0,
+				minpos_f.X, minpos_f.Y, minpos_f.Z,
+				maxpos_f.X, maxpos_f.Y, maxpos_f.Z,
+				samplelength_f.X, samplelength_f.Y, samplelength_f.Z);
+		noisebuf2.create(data->seed+25105, 4, 0.50, 200.0,
+				minpos_f.X, minpos_f.Y, minpos_f.Z,
+				maxpos_f.X, maxpos_f.Y, maxpos_f.Z,
+				samplelength_f.X, samplelength_f.Y, samplelength_f.Z);
+	}
+
+	for(s16 x=0; x<data->sectorpos_bigbase_size*MAP_BLOCKSIZE; x++)
+	for(s16 z=0; z<data->sectorpos_bigbase_size*MAP_BLOCKSIZE; z++)
+	{
+		// Node position
+		v2s16 p2d = data->sectorpos_bigbase*MAP_BLOCKSIZE + v2s16(x,z);
+		
+		// Ground height at this point
+		float surface_y_f = 0.0;
+
+		// Use perlin noise for ground height
+		surface_y_f = base_rock_level_2d(data->seed, p2d);
+		//surface_y_f = base_rock_level_2d(data->seed, p2d);
+		
+		// Convert to integer
+		s16 surface_y = (s16)surface_y_f;
+		
+		// Log it
+		if(surface_y > stone_surface_max_y)
+			stone_surface_max_y = surface_y;
+
+		/*
+			Fill ground with stone
+		*/
+		{
+			// Use fast index incrementing
+			v3s16 em = data->vmanip.m_area.getExtent();
+			u32 i = data->vmanip.m_area.index(v3s16(p2d.X, y_nodes_min, p2d.Y));
+			for(s16 y=y_nodes_min; y<=y_nodes_max; y++)
+			{
+				// Skip if already generated.
+				// This is done here because there might be a cave at
+				// any point in ground, which could look like it
+				// wasn't generated.
+				if(data->vmanip.m_data[i].d != CONTENT_AIR)
+					break;
+
+				/*s16 noiseval = 50.0 * noise3d_perlin(
+						0.5+(float)p2d.X/100.0,
+						0.5+(float)y/100.0,
+						0.5+(float)p2d.Y/100.0,
+						data->seed+123, 5, 0.5);*/
+				//double noiseval = 64.0 * noisebuf1.get(p2d.X, y, p2d.Y);
+				double noiseval = 30.0 * noisebuf1.get(p2d.X, y, p2d.Y);
+				noiseval *= MYMAX(0, -0.2 + noisebuf2.get(p2d.X, y, p2d.Y));
+				
+				if(y < surface_y + noiseval)
+				//if(noiseval > 0)
+				//if(noiseval > y)
+					data->vmanip.m_data[i].d = CONTENT_STONE;
+
+				data->vmanip.m_area.add_y(em, i, 1);
+			}
+		}
+	}
+#endif
+	
+#if 1
 	for(s16 x=0; x<data->sectorpos_bigbase_size*MAP_BLOCKSIZE; x++)
 	for(s16 z=0; z<data->sectorpos_bigbase_size*MAP_BLOCKSIZE; z++)
 	{
@@ -2293,6 +2381,7 @@ void makeChunk(ChunkMakeData *data)
 			}
 		}
 	}
+#endif
 	
 	}//timer1
 
@@ -2320,6 +2409,7 @@ void makeChunk(ChunkMakeData *data)
 		BEGINNING OF AGING LOOP
 	******************************/
 
+#if 1
 	{
 	// 24ms @cs=8
 	//TimeTaker timer1("caves");
@@ -2558,6 +2648,9 @@ void makeChunk(ChunkMakeData *data)
 	}
 
 	}//timer1
+#endif
+
+#if 1
 	{
 	// 46ms @cs=8
 	//TimeTaker timer1("ore veins");
@@ -2691,9 +2784,12 @@ void makeChunk(ChunkMakeData *data)
 	}
 
 	}//timer1
+#endif
+
+#if 1
 	{
 	// 15ms @cs=8
-	//TimeTaker timer1("add mud");
+	TimeTaker timer1("add mud");
 
 	/*
 		Add mud to the central chunk
@@ -2706,7 +2802,7 @@ void makeChunk(ChunkMakeData *data)
 		v2s16 p2d = data->sectorpos_base*MAP_BLOCKSIZE + v2s16(x,z);
 		
 		// Randomize mud amount
-		s16 mud_add_amount = (s16)(2.5 + 2.0 * noise2d_perlin(
+		s16 mud_add_amount = (s16)(2.5 + 1.5 * noise2d_perlin(
 				0.5+(float)p2d.X/200, 0.5+(float)p2d.Y/200,
 				data->seed+1, 3, 0.55));
 
@@ -2749,6 +2845,9 @@ void makeChunk(ChunkMakeData *data)
 	}
 
 	}//timer1
+#endif
+
+#if 1
 	{
 	// 340ms @cs=8
 	TimeTaker timer1("flow mud");
@@ -2903,9 +3002,12 @@ void makeChunk(ChunkMakeData *data)
 	}
 
 	}//timer1
+#endif
+
+#if 1
 	{
 	// 50ms @cs=8
-	//TimeTaker timer1("add water");
+	TimeTaker timer1("add water");
 
 	/*
 		Add water to the central chunk (and a bit more)
@@ -2978,12 +3080,14 @@ void makeChunk(ChunkMakeData *data)
 	}
 
 	}//timer1
+#endif
 	
 	} // Aging loop
 	/***********************
 		END OF AGING LOOP
 	************************/
 
+#if 1
 	{
 	//TimeTaker timer1("convert mud to sand");
 
@@ -3048,6 +3152,9 @@ void makeChunk(ChunkMakeData *data)
 	}
 
 	}//timer1
+#endif
+
+#if 1
 	{
 	// 1ms @cs=8
 	//TimeTaker timer1("generate trees");
@@ -3126,7 +3233,9 @@ void makeChunk(ChunkMakeData *data)
 	}
 
 	}//timer1
+#endif
 
+#if 1
 	{
 	// 19ms @cs=8
 	//TimeTaker timer1("grow grass");
@@ -3180,6 +3289,7 @@ void makeChunk(ChunkMakeData *data)
 	}
 
 	}//timer1
+#endif
 
 	/*
 		Initial lighting (sunlight)
@@ -3191,6 +3301,7 @@ void makeChunk(ChunkMakeData *data)
 	// 750ms @cs=8, can't optimize more
 	TimeTaker timer1("initial lighting");
 
+	// NOTE: This is no used... umm... for some reason!
 #if 0
 	/*
 		Go through the edges and add all nodes that have light to light_sources
@@ -3913,6 +4024,25 @@ MapBlock * ServerMap::generateBlock(
 		block->unDummify();
 	}
 	
+#if 1
+	/*
+		Generate a completely empty block
+	*/
+	for(s16 z0=0; z0<MAP_BLOCKSIZE; z0++)
+	for(s16 x0=0; x0<MAP_BLOCKSIZE; x0++)
+	{
+		for(s16 y0=0; y0<MAP_BLOCKSIZE; y0++)
+		{
+			MapNode n;
+			n.d = CONTENT_AIR;
+			block->setNode(v3s16(x0,y0,z0), n);
+		}
+	}
+#else
+	/*
+		Generate a proper block
+	*/
+	
 	u8 water_material = CONTENT_WATERSOURCE;
 	
 	s32 lowest_ground_y = 32767;
@@ -4447,6 +4577,8 @@ continue_generating:
 			}
 		}
 	}
+
+#endif // end of proper block generation
 	
 	/*
 		Add block to sector.
