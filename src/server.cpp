@@ -4266,6 +4266,23 @@ void Server::handlePeerChange(PeerChange &c)
 		// The client should exist
 		assert(n != NULL);
 		
+		/*
+			Mark objects to be not known by the client
+		*/
+		RemoteClient *client = n->getValue();
+		// Handle objects
+		for(core::map<u16, bool>::Iterator
+				i = client->m_known_objects.getIterator();
+				i.atEnd()==false; i++)
+		{
+			// Get object
+			u16 id = i.getNode()->getKey();
+			ServerActiveObject* obj = m_env.getActiveObject(id);
+			
+			if(obj && obj->m_known_by_count > 0)
+				obj->m_known_by_count--;
+		}
+
 		// Collect information about leaving in chat
 		std::wstring message;
 		{

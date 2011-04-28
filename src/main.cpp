@@ -81,18 +81,75 @@ SUGG: Calculate lighting per vertex to get a lighting effect like in
 SUGG: Background music based on cellular automata?
       http://www.earslap.com/projectslab/otomata
 
+Storyline:
+----------
+NOTE: If you read the text below, PLEASE DON'T TELL ANYTHING ABOUT IT TO
+ANYONE, EVEN OF THE EXISTENCE OF IT. I WILL BE VERY DISAPPOINTED IF I SEE
+PEOPLE ON THE INTERNET TALKING ABOUT THIS AND IT WILL TAKE AT LEAST HALF
+OF MY MOTIVATION AWAY.
+
+At the beginning, there is a sky city (like in CT), in wich is a library
+(The Important Library), a part of which explodes. Unfortunately the
+magical Important Book in the library gets thrown out in the wind and flies
+far away to the dangerous Low Lands. The book is shown to glow in blue when
+flying in the wind in some animation, when the wind flies it to the
+horizon. It is early morning and quicky sunrise takes the place of the blue
+glow. This marks the direction where the book is.
+
+The rulers of the sky city choose to let some brave young men go and start
+a mission to get the book back. The rulers still have some magic so they
+can let them fall onto the ground without damage, but not further. When a
+new player spawns, he will just be an another missioner.
+
+The Low Lands are a very dangerous and a tough place to be in, but
+immediately underneath the sky city there is fairly peaceful, but sometimes
+dangerous creatures come there too, especially at night.
+
+The far ancestors of the highlanders lived in the lowlands, but then they
+learned magic and went to live in the sky. They have really no idea and no
+tools to survive in the lowlands. One guy is known to have dropped down to
+the lowlands a long time ago, but it is not known if he survived.
+
+The missioners will have to find out how to survive in the lowlands by
+finding materials and crafting tools and weapons and armor and interesting
+items. As they build up their capabilities, they can go and explore the
+lowlands further.
+
+The main flying direction of the book is known from the beginning. The book
+will have ended up in anywhere, but quite far in any case. A few or ten
+kilometers probably.
+
+The book might just lie on the ground but usually some evil castle lord
+will have hidden it in his castle. There are fairly many peaceful people
+in the lowlands, and the missioners can talk to them. They will sometimes
+tell some rumours of the book. "The Important Book? One guy going by told
+me it was seen falling from the highlands, probably towards the town of
+Clystaleon." (eh, just a random name I just made up)
+
+The map would of course be generated randomly, with some small towns and
+roads. Roads will occasionally have some road signs.
+
+But of course there will be monsters, especially at night. At the location
+of the book, there will usually be very little chance to survive without
+diamond armor and weapons, at least when the book has been stored by the
+evil castle lord. Useful rare minerals and items will be found only in
+areas of dangerous monsters.
+
+There is a blue glow coming from the book, which is a blue circle with a
+radius of 30m, and which is seen at a distance of 50 to 100m.
+
+When found, the book has to be transported back to beneath the sky city.
 
 Gaming ideas:
 -------------
 
 - Aim for something like controlling a single dwarf in Dwarf Fortress
-
 - The player could go faster by a crafting a boat, or riding an animal
-
 - Random NPC traders. what else?
 
 Game content:
 -------------
+
 - When furnace is destroyed, move items to player's inventory
 - Add lots of stuff
 - Glass blocks
