@@ -1,6 +1,6 @@
 /*
 Minetest-c55
-Copyright (C) 2010 celeron55, Perttu Ahola <celeron55@gmail.com>
+Copyright (C) 2010-2011 celeron55, Perttu Ahola <celeron55@gmail.com>
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -19,6 +19,9 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #ifndef COMMON_IRRLICHT_HEADER
 #define COMMON_IRRLICHT_HEADER
+
+#define endSceneX(d){d->draw2DLine(v2s32(0,0),v2s32(1,0),\
+video::SColor(255,30,30,30));d->endScene();}
 
 #include <irrlicht.h>
 using namespace irr;

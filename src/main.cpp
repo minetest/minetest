@@ -1,6 +1,6 @@
 /*
 Minetest-c55
-Copyright (C) 2010 celeron55, Perttu Ahola <celeron55@gmail.com>
+Copyright (C) 2010-2011 celeron55, Perttu Ahola <celeron55@gmail.com>
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -269,6 +269,9 @@ FIXME: Server sometimes goes into some infinite PeerNotFoundException loop
   - It is probably caused by oscillating water
 * Make a small history check to transformLiquids to detect and log
   continuous oscillations, in such detail that they can be fixed.
+
+FIXME: The new optimized map sending doesn't sometimes send enough blocks
+       from big caves and such
 
 Objects:
 --------
