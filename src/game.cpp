@@ -605,10 +605,9 @@ void the_game(
 	
 	// The color of the sky
 
-	//video::SColor skycolor = video::SColor(255,90,140,200);
-	//video::SColor skycolor = video::SColor(255,166,202,244);
-	//video::SColor skycolor = video::SColor(255,120,185,244);
-	video::SColor skycolor = video::SColor(255,140,186,250);
+	//video::SColor skycolor = video::SColor(255,140,186,250);
+
+	video::SColor bgcolor_bright = video::SColor(255,170,200,230);
 
 	/*
 		Draw "Loading" screen
@@ -719,14 +718,14 @@ void the_game(
 	/*
 		Create skybox
 	*/
-	/*scene::ISceneNode* skybox;
+	scene::ISceneNode* skybox;
 	skybox = smgr->addSkyBoxSceneNode(
 		driver->getTexture(porting::getDataPath("skybox2.png").c_str()),
 		driver->getTexture(porting::getDataPath("skybox3.png").c_str()),
 		driver->getTexture(porting::getDataPath("skybox1.png").c_str()),
 		driver->getTexture(porting::getDataPath("skybox1.png").c_str()),
 		driver->getTexture(porting::getDataPath("skybox1.png").c_str()),
-		driver->getTexture(porting::getDataPath("skybox1.png").c_str()));*/
+		driver->getTexture(porting::getDataPath("skybox1.png").c_str()));
 	
 	/*
 		Create the camera node
@@ -1676,9 +1675,12 @@ void the_game(
 		u8 l = decode_light((daynight_ratio * LIGHT_SUN) / 1000);
 		video::SColor bgcolor = video::SColor(
 				255,
-				skycolor.getRed() * l / 255,
+				bgcolor_bright.getRed() * l / 255,
+				bgcolor_bright.getGreen() * l / 255,
+				bgcolor_bright.getBlue() * l / 255);
+				/*skycolor.getRed() * l / 255,
 				skycolor.getGreen() * l / 255,
-				skycolor.getBlue() * l / 255);
+				skycolor.getBlue() * l / 255);*/
 
 		/*
 			Update coulds
