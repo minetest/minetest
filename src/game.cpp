@@ -760,7 +760,7 @@ void the_game(
 	//float cloud_height = BS*55;
 	//float cloud_height = BS*20;
 	Clouds *clouds = new Clouds(smgr->getRootSceneNode(), smgr, -1,
-			cloud_height, 0);
+			cloud_height, time(0));
 
 	/*
 		Move into game

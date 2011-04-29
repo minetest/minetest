@@ -119,11 +119,11 @@ void Clouds::render()
 
 		v2f p0 = v2f(xi,zi)*cloud_size + world_center_of_drawing_in_noise_f;
 		
-		double noise = noise2d_perlin(
-				(float)p_in_noise_i.X*cloud_size/BS/100,
-				(float)p_in_noise_i.Y*cloud_size/BS/100,
-				m_seed, 3, 0.5);
-		if(noise < 0)
+		double noise = noise2d_perlin_abs(
+				(float)p_in_noise_i.X*cloud_size/BS/200,
+				(float)p_in_noise_i.Y*cloud_size/BS/200,
+				m_seed, 3, 0.4);
+		if(noise < 0.8)
 			continue;
 		
 		v2f p1 = p0 + v2f(1,1)*cloud_size;
