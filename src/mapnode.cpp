@@ -347,6 +347,7 @@ void init_mapnode()
 	f->is_ground_content = true;
 	f->dug_item = std::string("MaterialItem ")+itos(i)+" 1";
 	
+	// NOTE: Remember to add frequently used stuff to the texture atlas in tile.cpp
 }
 
 v3s16 facedir_rotate(u8 facedir, v3s16 dir)
