@@ -580,6 +580,47 @@ void getPointedNode(Client *client, v3f player_position,
 	} // for coords
 }
 
+void update_skybox(video::IVideoDriver* driver,
+		scene::ISceneManager* smgr, scene::ISceneNode* &skybox,
+		float brightness)
+{
+	if(skybox)
+	{
+		skybox->remove();
+	}
+	
+	if(brightness >= 0.5)
+	{
+		skybox = smgr->addSkyBoxSceneNode(
+			driver->getTexture(porting::getDataPath("skybox2.png").c_str()),
+			driver->getTexture(porting::getDataPath("skybox3.png").c_str()),
+			driver->getTexture(porting::getDataPath("skybox1.png").c_str()),
+			driver->getTexture(porting::getDataPath("skybox1.png").c_str()),
+			driver->getTexture(porting::getDataPath("skybox1.png").c_str()),
+			driver->getTexture(porting::getDataPath("skybox1.png").c_str()));
+	}
+	else if(brightness >= 0.2)
+	{
+		skybox = smgr->addSkyBoxSceneNode(
+			driver->getTexture(porting::getDataPath("skybox2_dawn.png").c_str()),
+			driver->getTexture(porting::getDataPath("skybox3_dawn.png").c_str()),
+			driver->getTexture(porting::getDataPath("skybox1_dawn.png").c_str()),
+			driver->getTexture(porting::getDataPath("skybox1_dawn.png").c_str()),
+			driver->getTexture(porting::getDataPath("skybox1_dawn.png").c_str()),
+			driver->getTexture(porting::getDataPath("skybox1_dawn.png").c_str()));
+	}
+	else
+	{
+		skybox = smgr->addSkyBoxSceneNode(
+			driver->getTexture(porting::getDataPath("skybox2_night.png").c_str()),
+			driver->getTexture(porting::getDataPath("skybox3_night.png").c_str()),
+			driver->getTexture(porting::getDataPath("skybox1_night.png").c_str()),
+			driver->getTexture(porting::getDataPath("skybox1_night.png").c_str()),
+			driver->getTexture(porting::getDataPath("skybox1_night.png").c_str()),
+			driver->getTexture(porting::getDataPath("skybox1_night.png").c_str()));
+	}
+}
+
 void the_game(
 	bool &kill,
 	bool random_input,
@@ -718,14 +759,9 @@ void the_game(
 	/*
 		Create skybox
 	*/
-	scene::ISceneNode* skybox;
-	skybox = smgr->addSkyBoxSceneNode(
-		driver->getTexture(porting::getDataPath("skybox2.png").c_str()),
-		driver->getTexture(porting::getDataPath("skybox3.png").c_str()),
-		driver->getTexture(porting::getDataPath("skybox1.png").c_str()),
-		driver->getTexture(porting::getDataPath("skybox1.png").c_str()),
-		driver->getTexture(porting::getDataPath("skybox1.png").c_str()),
-		driver->getTexture(porting::getDataPath("skybox1.png").c_str()));
+	float old_brightness = 1.0;
+	scene::ISceneNode* skybox = NULL;
+	update_skybox(driver, smgr, skybox, 1.0);
 	
 	/*
 		Create the camera node
@@ -1682,12 +1718,24 @@ void the_game(
 				skycolor.getGreen() * l / 255,
 				skycolor.getBlue() * l / 255);*/
 
+		float brightness = (float)l/255.0;
+
+		/*
+			Update skybox
+		*/
+		if(fabs(brightness - old_brightness) > 0.01)
+			update_skybox(driver, smgr, skybox, brightness);
+
 		/*
 			Update coulds
 		*/
 		clouds->step(dtime);
-		clouds->update(v2f(player_position.X, player_position.Z), (float)l/255.0);
+		clouds->update(v2f(player_position.X, player_position.Z),
+				0.05+brightness*0.95);
 		
+		// Store brightness value
+		old_brightness = brightness;
+
 		/*
 			Fog
 		*/

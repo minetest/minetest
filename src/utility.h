@@ -2001,7 +2001,8 @@ inline u32 time_to_daynight_ratio(u32 time_of_day)
 	s32 d = daylength;
 	s32 t = (((time_of_day)%24000)/(24000/d));
 	if(t < nightlength/2 || t >= d - nightlength/2)
-		return 300;
+		//return 300;
+		return 350;
 	else if(t >= d/2 - daytimelength/2 && t < d/2 + daytimelength/2)
 		return 1000;
 	else
