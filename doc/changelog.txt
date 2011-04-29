@@ -6,7 +6,7 @@ For minor stuff, refer to the commit log of the repository.
 X:
 - Optimized smooth lighting
 - A number of small fixes
-- Added clouds
+- Added clouds and simple skyboxes
 
 2011-04-24:
 - Smooth lighting with simple ambient occlusion
