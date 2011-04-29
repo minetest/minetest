@@ -27,6 +27,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "guiFurnaceMenu.h"
 #include "materials.h"
 #include "config.h"
+#include "clouds.h"
 
 /*
 	Setting this to 1 enables a special camera mode that forces
@@ -602,6 +603,13 @@ void the_game(
 	const s32 hotbar_itemcount = 8;
 	const s32 hotbar_imagesize = 36;
 	
+	// The color of the sky
+
+	//video::SColor skycolor = video::SColor(255,90,140,200);
+	//video::SColor skycolor = video::SColor(255,166,202,244);
+	//video::SColor skycolor = video::SColor(255,120,185,244);
+	video::SColor skycolor = video::SColor(255,140,186,250);
+
 	/*
 		Draw "Loading" screen
 	*/
@@ -737,11 +745,6 @@ void the_game(
 		return;
 	}
 
-	//video::SColor skycolor = video::SColor(255,90,140,200);
-	//video::SColor skycolor = video::SColor(255,166,202,244);
-	//video::SColor skycolor = video::SColor(255,120,185,244);
-	video::SColor skycolor = video::SColor(255,140,186,250);
-
 	camera->setFOV(FOV_ANGLE);
 
 	// Just so big a value that everything rendered is visible
@@ -749,6 +752,16 @@ void the_game(
 	
 	f32 camera_yaw = 0; // "right/left"
 	f32 camera_pitch = 0; // "up/down"
+
+	/*
+		Clouds
+	*/
+	
+	float cloud_height = BS*100;
+	//float cloud_height = BS*55;
+	//float cloud_height = BS*20;
+	Clouds *clouds = new Clouds(smgr->getRootSceneNode(), smgr, -1,
+			cloud_height, 0);
 
 	/*
 		Move into game
@@ -1209,7 +1222,7 @@ void the_game(
 		
 		// Get player position
 		v3f player_position = client.getPlayerPosition();
-		
+
 		//TimeTaker //timer2("//timer2");
 
 		/*
@@ -1668,14 +1681,18 @@ void the_game(
 				skycolor.getBlue() * l / 255);
 
 		/*
+			Update coulds
+		*/
+		clouds->step(dtime);
+		clouds->update(v2f(player_position.X, player_position.Z), (float)l/255.0);
+		
+		/*
 			Fog
 		*/
 		
 		if(g_settings.getBool("enable_fog") == true)
 		{
-			//f32 range = draw_control.wanted_range * BS + MAP_BLOCKSIZE/2*BS;
-			f32 range = draw_control.wanted_range * BS + 0.8*MAP_BLOCKSIZE*BS;
-			//f32 range = draw_control.wanted_range * BS + 0.0*MAP_BLOCKSIZE*BS;
+			f32 range = draw_control.wanted_range*BS + MAP_BLOCKSIZE*BS*1.5;
 			if(draw_control.range_all)
 				range = 100000*BS;
 
