@@ -2823,7 +2823,8 @@ void makeChunk(ChunkMakeData *data)
 			u32 i = data->vmanip.m_area.index(v3s16(p2d.X, surface_y, p2d.Y));
 			MapNode *n = &data->vmanip.m_data[i];
 			if(n->d == CONTENT_GRASS)
-				n->d = CONTENT_MUD;
+				*n = MapNode(CONTENT_MUD);
+				//n->d = CONTENT_MUD;
 		}
 
 		/*
@@ -2840,7 +2841,8 @@ void makeChunk(ChunkMakeData *data)
 					break;
 					
 				MapNode &n = data->vmanip.m_data[i];
-				n.d = CONTENT_MUD;
+				n = MapNode(CONTENT_MUD);
+				//n.d = CONTENT_MUD;
 				mudcount++;
 
 				data->vmanip.m_area.add_y(em, i, 1);

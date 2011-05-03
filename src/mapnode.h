@@ -513,7 +513,7 @@ struct MapNode
 		// Select the brightest of [light source, propagated light]
 		u8 lightday = 0;
 		u8 lightnight = 0;
-		if(light_propagates())
+		if(content_features(d).param_type == CPT_LIGHT)
 		{
 			lightday = param & 0x0f;
 			lightnight = (param>>4)&0x0f;
@@ -534,7 +534,7 @@ struct MapNode
 	{
 		// Select the brightest of [light source, propagated light]
 		u8 light = 0;
-		if(light_propagates())
+		if(content_features(d).param_type == CPT_LIGHT)
 		{
 			if(bank == LIGHTBANK_DAY)
 				light = param & 0x0f;
@@ -576,8 +576,8 @@ struct MapNode
 
 	void setLight(enum LightBank bank, u8 a_light)
 	{
-		// If not transparent, can't set light
-		if(light_propagates() == false)
+		// If node doesn't contain light data, ignore this
+		if(content_features(d).param_type != CPT_LIGHT)
 			return;
 		if(bank == LIGHTBANK_DAY)
 		{
