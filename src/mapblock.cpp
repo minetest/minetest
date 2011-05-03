@@ -2109,9 +2109,17 @@ void MapBlock::serialize(std::ostream &os, u8 version)
 		{
 			if(version <= 15)
 			{
-				std::ostringstream oss(std::ios_base::binary);
-				m_node_metadata.serialize(oss);
-				os<<serializeString(oss.str());
+				try{
+					std::ostringstream oss(std::ios_base::binary);
+					m_node_metadata.serialize(oss);
+					os<<serializeString(oss.str());
+				}
+				// This will happen if the string is longer than 65535
+				catch(SerializationError &e)
+				{
+					// Use an empty string
+					os<<serializeString("");
+				}
 			}
 			else
 			{

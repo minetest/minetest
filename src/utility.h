@@ -1911,7 +1911,9 @@ inline v3f intToFloat(v3s16 p, f32 d)
 // Creates a string with the length as the first two bytes
 inline std::string serializeString(const std::string &plain)
 {
-	assert(plain.size() <= 65535);
+	//assert(plain.size() <= 65535);
+	if(plain.size() > 65535)
+		throw SerializationError("String too long for serializeString");
 	char buf[2];
 	writeU16((u8*)&buf[0], plain.size());
 	std::string s;
