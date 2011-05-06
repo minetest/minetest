@@ -184,6 +184,10 @@ bool isBlockInSight(v3s16 blockpos_b, v3f camera_pos, v3f camera_dir, f32 range,
 	if(distance_ptr)
 		*distance_ptr = d;
 	
+	// If block is very close, it is always in sight
+	if(d < 1.44*1.44*MAP_BLOCKSIZE*BS/2)
+		return true;
+
 	// If block is far away, it's not in sight
 	if(d > range * BS)
 		return false;

@@ -181,8 +181,15 @@ void updateViewingRange(f32 frametime_in, Client *client)
 	float range_min = g_settings.getS16("viewing_range_nodes_min");
 	float range_max = g_settings.getS16("viewing_range_nodes_max");
 	
+	// Limit minimum to keep the feedback loop stable
+	if(range_min < 5)
+		range_min = 5;
+	
 	draw_control.wanted_min_range = range_min;
-	draw_control.wanted_max_blocks = (1.2*draw_control.blocks_drawn)+1;
+	//draw_control.wanted_max_blocks = (1.5*draw_control.blocks_drawn)+1;
+	draw_control.wanted_max_blocks = (1.5*draw_control.blocks_would_have_drawn)+1;
+	if(draw_control.wanted_max_blocks < 10)
+		draw_control.wanted_max_blocks = 10;
 	
 	float block_draw_ratio = 1.0;
 	if(draw_control.blocks_would_have_drawn != 0)
@@ -261,18 +268,15 @@ void updateViewingRange(f32 frametime_in, Client *client)
 	}
 
 	new_range += wanted_range_change;
-	//dstream<<"new_range="<<new_range/*<<std::endl*/;
 	
-	//float new_range_unclamped = new_range;
+	float new_range_unclamped = new_range;
 	if(new_range < range_min)
 		new_range = range_min;
 	if(new_range > range_max)
 		new_range = range_max;
 	
-	/*if(new_range != new_range_unclamped)
-		dstream<<", clamped to "<<new_range<<std::endl;
-	else
-		dstream<<std::endl;*/
+	dstream<<"new_range="<<new_range_unclamped
+			<<", clamped to "<<new_range<<std::endl;
 
 	draw_control.wanted_range = new_range;
 
@@ -653,14 +657,14 @@ void the_game(
 	/*
 		Draw "Loading" screen
 	*/
-	const wchar_t *text = L"Loading and connecting...";
-	u32 text_height = font->getDimension(text).Height;
+	const wchar_t *loadingtext = L"Loading and connecting...";
+	u32 text_height = font->getDimension(loadingtext).Height;
 	core::vector2d<s32> center(screensize.X/2, screensize.Y/2);
 	core::vector2d<s32> textsize(300, text_height);
 	core::rect<s32> textrect(center - textsize/2, center + textsize/2);
 
 	gui::IGUIStaticText *gui_loadingtext = guienv->addStaticText(
-			text, textrect, false, false);
+			loadingtext, textrect, false, false);
 	gui_loadingtext->setTextAlignment(gui::EGUIA_CENTER, gui::EGUIA_UPPERLEFT);
 
 	driver->beginScene(true, true, video::SColor(255,0,0,0));
@@ -793,9 +797,8 @@ void the_game(
 	*/
 	
 	float cloud_height = BS*100;
-	//float cloud_height = BS*55;
-	//float cloud_height = BS*20;
-	Clouds *clouds = new Clouds(smgr->getRootSceneNode(), smgr, -1,
+	Clouds *clouds = NULL;
+	clouds = new Clouds(smgr->getRootSceneNode(), smgr, -1,
 			cloud_height, time(0));
 
 	/*
@@ -1729,9 +1732,12 @@ void the_game(
 		/*
 			Update coulds
 		*/
-		clouds->step(dtime);
-		clouds->update(v2f(player_position.X, player_position.Z),
-				0.05+brightness*0.95);
+		if(clouds)
+		{
+			clouds->step(dtime);
+			clouds->update(v2f(player_position.X, player_position.Z),
+					0.05+brightness*0.95);
+		}
 		
 		// Store brightness value
 		old_brightness = brightness;
@@ -1745,6 +1751,8 @@ void the_game(
 			f32 range = draw_control.wanted_range*BS + MAP_BLOCKSIZE*BS*1.5;
 			if(draw_control.range_all)
 				range = 100000*BS;
+			if(range < 50*BS)
+				range = range * 0.5 + 25*BS;
 
 			driver->setFog(
 				bgcolor,
@@ -2068,6 +2076,22 @@ void the_game(
 			device->setWindowCaption(str.c_str());
 			lastFPS = fps;
 		}
+	}
+	
+	/*
+		Draw a "shutting down" screen, which will be shown while the map
+		generator and other stuff quits
+	*/
+	{
+		const wchar_t *shuttingdowntext = L"Shutting down stuff...";
+		gui::IGUIStaticText *gui_shuttingdowntext = guienv->addStaticText(
+				shuttingdowntext, textrect, false, false);
+		gui_shuttingdowntext->setTextAlignment(gui::EGUIA_CENTER,
+				gui::EGUIA_UPPERLEFT);
+		driver->beginScene(true, true, video::SColor(255,0,0,0));
+		guienv->drawAll();
+		driver->endScene();
+		gui_shuttingdowntext->remove();
 	}
 }
 
