@@ -546,8 +546,6 @@ void Client::ProcessData(u8 *data, u32 datasize, u16 sender_peer_id)
 
 	//dstream<<"Client received command="<<(int)command<<std::endl;
 
-	// Execute fast commands straight away
-
 	if(command == TOCLIENT_INIT)
 	{
 		if(datasize < 3)
