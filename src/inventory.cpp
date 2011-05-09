@@ -118,6 +118,10 @@ bool MaterialItem::isCookable()
 	{
 		return true;
 	}
+	else if(m_content == CONTENT_SAND)
+	{
+		return true;
+	}
 	return false;
 }
 
@@ -130,6 +134,10 @@ InventoryItem *MaterialItem::createCookResult()
 	else if(m_content == CONTENT_COBBLE)
 	{
 		return new MaterialItem(CONTENT_STONE, 1);
+	}
+	else if(m_content == CONTENT_SAND)
+	{
+		return new MaterialItem(CONTENT_GLASS, 1);
 	}
 	return NULL;
 }

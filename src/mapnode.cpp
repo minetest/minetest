@@ -204,7 +204,17 @@ void init_mapnode()
 		f->setAllTextures("[noalpha:leaves.png");
 	}
 	f->dug_item = std::string("MaterialItem ")+itos(i)+" 1";
-	
+
+	i = CONTENT_GLASS;
+	f = &g_content_features[i];
+	f->light_propagates = true;
+	f->param_type = CPT_LIGHT;
+	f->is_ground_content = true;
+	f->dug_item = std::string("MaterialItem ")+itos(i)+" 1";
+	f->solidness = 0; // drawn separately, makes no faces
+	f->setInventoryTextureCube("glass.png", "glass.png", "glass.png");
+
+
 	// Deprecated
 	i = CONTENT_COALSTONE;
 	f = &g_content_features[i];
