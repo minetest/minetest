@@ -901,6 +901,17 @@ scene::SMesh* makeMapBlockMesh(MeshMakeData *data)
 			g_texturesource->getTextureId("leaves.png"));
 	material_leaves1.setTexture(0, pa_leaves1.atlas);
 
+	// Glass material
+	video::SMaterial material_glass;
+	material_glass.setFlag(video::EMF_LIGHTING, false);
+	material_glass.setFlag(video::EMF_BILINEAR_FILTER, false);
+	material_glass.setFlag(video::EMF_FOG_ENABLE, true);
+	material_glass.MaterialType = video::EMT_TRANSPARENT_ALPHA_CHANNEL_REF;
+	AtlasPointer pa_glass = g_texturesource->getTexture(
+			g_texturesource->getTextureId("glass.png"));
+	material_glass.setTexture(0, pa_glass.atlas);
+
+
 	for(s16 z=0; z<MAP_BLOCKSIZE; z++)
 	for(s16 y=0; y<MAP_BLOCKSIZE; y++)
 	for(s16 x=0; x<MAP_BLOCKSIZE; x++)
@@ -1406,6 +1417,72 @@ scene::SMesh* makeMapBlockMesh(MeshMakeData *data)
 				collector.append(material_leaves1, vertices, 4, indices, 6);
 			}
 		}
+		/*
+			Add glass
+		*/
+		else if(n.d == CONTENT_GLASS)
+		{
+			u8 l = decode_light(undiminish_light(n.getLightBlend(data->m_daynight_ratio)));
+			video::SColor c(255,l,l,l);
+
+			for(u32 j=0; j<6; j++)
+			{
+				video::S3DVertex vertices[4] =
+				{
+					video::S3DVertex(-BS/2,-BS/2,BS/2, 0,0,0, c,
+						pa_glass.x0(), pa_glass.y1()),
+					video::S3DVertex(BS/2,-BS/2,BS/2, 0,0,0, c,
+						pa_glass.x1(), pa_glass.y1()),
+					video::S3DVertex(BS/2,BS/2,BS/2, 0,0,0, c,
+						pa_glass.x1(), pa_glass.y0()),
+					video::S3DVertex(-BS/2,BS/2,BS/2, 0,0,0, c,
+						pa_glass.x0(), pa_glass.y0()),
+				};
+
+				if(j == 0)
+				{
+					for(u16 i=0; i<4; i++)
+						vertices[i].Pos.rotateXZBy(0);
+				}
+				else if(j == 1)
+				{
+					for(u16 i=0; i<4; i++)
+						vertices[i].Pos.rotateXZBy(180);
+				}
+				else if(j == 2)
+				{
+					for(u16 i=0; i<4; i++)
+						vertices[i].Pos.rotateXZBy(-90);
+				}
+				else if(j == 3)
+				{
+					for(u16 i=0; i<4; i++)
+						vertices[i].Pos.rotateXZBy(90);
+				}
+				else if(j == 4)
+				{
+					for(u16 i=0; i<4; i++)
+						vertices[i].Pos.rotateYZBy(-90);
+				}
+				else if(j == 5)
+				{
+					for(u16 i=0; i<4; i++)
+						vertices[i].Pos.rotateYZBy(90);
+				}
+
+				for(u16 i=0; i<4; i++)
+				{
+					vertices[i].Pos += intToFloat(p + blockpos_nodes, BS);
+				}
+
+				u16 indices[] = {0,1,2,2,3,0};
+				// Add to mesh collector
+				collector.append(material_glass, vertices, 4, indices, 6);
+			}
+		}
+
+
+
 	}
 
 	/*

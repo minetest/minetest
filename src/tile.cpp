@@ -476,6 +476,7 @@ void TextureSource::buildMainAtlas()
 	sourcelist.push_back("tree_top.png");
 	sourcelist.push_back("water.png");
 	sourcelist.push_back("leaves.png");
+	sourcelist.push_back("glass.png");
 	sourcelist.push_back("mud.png^grass_side.png");
 	sourcelist.push_back("cobble.png");
 	
