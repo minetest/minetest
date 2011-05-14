@@ -276,8 +276,8 @@ void updateViewingRange(f32 frametime_in, Client *client)
 	if(new_range > range_max)
 		new_range = range_max;
 	
-	dstream<<"new_range="<<new_range_unclamped
-			<<", clamped to "<<new_range<<std::endl;
+	/*dstream<<"new_range="<<new_range_unclamped
+			<<", clamped to "<<new_range<<std::endl;*/
 
 	draw_control.wanted_range = new_range;
 
