@@ -20,6 +20,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "guiInventoryMenu.h"
 #include "constants.h"
+#include "keycode.h"
 
 void drawInventoryItem(video::IVideoDriver *driver,
 		gui::IGUIFont *font,
@@ -293,7 +294,7 @@ bool GUIInventoryMenu::OnEvent(const SEvent& event)
 			quitMenu();
 			return true;
 		}
-		if(event.KeyInput.Key==KEY_KEY_I && event.KeyInput.PressedDown)
+		if(event.KeyInput.Key==getKeySetting("keymap_inventory") && event.KeyInput.PressedDown)
 		{
 			quitMenu();
 			return true;

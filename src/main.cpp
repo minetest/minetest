@@ -137,10 +137,10 @@ Networking and serialization:
 
 TODO: Get rid of GotSplitPacketException
 
-GUI:
-----
+User Interface:
+---------------
 
-TODO: Configuration menu, at least for keys
+TODO: Use getKeySetting everywhere for ESC key and stuff
 
 Graphics:
 ---------
@@ -326,6 +326,7 @@ Making it more portable:
 //#include "tile.h"
 #include "materials.h"
 #include "game.h"
+#include "keycode.h"
 
 // This makes textures
 ITextureSource *g_texturesource = NULL;
@@ -721,7 +722,8 @@ public:
 			if(counter1 < 0.0)
 			{
 				counter1 = 0.1*Rand(1, 40);
-				keydown[irr::KEY_SPACE] = !keydown[irr::KEY_SPACE];
+				keydown[getKeySetting("keymap_jump")] =
+						!keydown[getKeySetting("keymap_jump")];
 			}
 		}
 		{
@@ -730,7 +732,8 @@ public:
 			if(counter1 < 0.0)
 			{
 				counter1 = 0.1*Rand(1, 40);
-				keydown[irr::KEY_KEY_E] = !keydown[irr::KEY_KEY_E];
+				keydown[getKeySetting("keymap_special1")] =
+						!keydown[getKeySetting("keymap_special1")];
 			}
 		}
 		{
@@ -739,7 +742,8 @@ public:
 			if(counter1 < 0.0)
 			{
 				counter1 = 0.1*Rand(1, 40);
-				keydown[irr::KEY_KEY_W] = !keydown[irr::KEY_KEY_W];
+				keydown[getKeySetting("keymap_forward")] =
+						!keydown[getKeySetting("keymap_forward")];
 			}
 		}
 		{
@@ -748,7 +752,8 @@ public:
 			if(counter1 < 0.0)
 			{
 				counter1 = 0.1*Rand(1, 40);
-				keydown[irr::KEY_KEY_A] = !keydown[irr::KEY_KEY_A];
+				keydown[getKeySetting("keymap_left")] =
+						!keydown[getKeySetting("keymap_left")];
 			}
 		}
 		{

@@ -28,6 +28,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "materials.h"
 #include "config.h"
 #include "clouds.h"
+#include "keycode.h"
 
 /*
 	Setting this to 1 enables a special camera mode that forces
@@ -1079,7 +1080,7 @@ void the_game(
 		/*
 			Launch menus according to keys
 		*/
-		if(input->wasKeyDown(irr::KEY_KEY_I))
+		if(input->wasKeyDown(getKeySetting("keymap_inventory")))
 		{
 			dstream<<DTIME<<"the_game: "
 					<<"Launching inventory"<<std::endl;
@@ -1105,7 +1106,7 @@ void the_game(
 
 			menu->drop();
 		}
-		else if(input->wasKeyDown(irr::KEY_ESCAPE))
+		else if(input->wasKeyDown(KEY_ESCAPE))
 		{
 			dstream<<DTIME<<"the_game: "
 					<<"Launching pause menu"<<std::endl;
@@ -1113,7 +1114,7 @@ void the_game(
 			(new GUIPauseMenu(guienv, guiroot, -1, g_gamecallback,
 					&g_menumgr))->drop();
 		}
-		else if(input->wasKeyDown(irr::KEY_KEY_T))
+		else if(input->wasKeyDown(getKeySetting("keymap_chat")))
 		{
 			TextDest *dest = new TextDestChat(&client);
 
@@ -1163,7 +1164,7 @@ void the_game(
 		}
 
 		// Viewing range selection
-		if(input->wasKeyDown(irr::KEY_KEY_R))
+		if(input->wasKeyDown(getKeySetting("keymap_rangeselect")))
 		{
 			if(draw_control.range_all)
 			{
@@ -1178,7 +1179,7 @@ void the_game(
 		}
 
 		// Print debug stacks
-		if(input->wasKeyDown(irr::KEY_KEY_P))
+		if(input->wasKeyDown(getKeySetting("keymap_print_debug_stacks")))
 		{
 			dstream<<"-----------------------------------------"
 					<<std::endl;
@@ -1190,6 +1191,7 @@ void the_game(
 
 		/*
 			Player speed control
+			TODO: Cache the keycodes from getKeySetting
 		*/
 		
 		{
@@ -1203,14 +1205,13 @@ void the_game(
 			float a_pitch,
 			float a_yaw*/
 			PlayerControl control(
-				input->isKeyDown(irr::KEY_KEY_W),
-				input->isKeyDown(irr::KEY_KEY_S),
-				input->isKeyDown(irr::KEY_KEY_A),
-				input->isKeyDown(irr::KEY_KEY_D),
-				input->isKeyDown(irr::KEY_SPACE),
-				input->isKeyDown(irr::KEY_KEY_E),
-				input->isKeyDown(irr::KEY_LSHIFT)
-						|| input->isKeyDown(irr::KEY_RSHIFT),
+				input->isKeyDown(getKeySetting("keymap_forward")),
+				input->isKeyDown(getKeySetting("keymap_backward")),
+				input->isKeyDown(getKeySetting("keymap_left")),
+				input->isKeyDown(getKeySetting("keymap_right")),
+				input->isKeyDown(getKeySetting("keymap_jump")),
+				input->isKeyDown(getKeySetting("keymap_special1")),
+				input->isKeyDown(getKeySetting("keymap_sneak")),
 				camera_pitch,
 				camera_yaw
 			);
@@ -1281,7 +1282,7 @@ void the_game(
 				s32 dy = input->getMousePos().Y - displaycenter.Y;
 				//std::cout<<"window active, pos difference "<<dx<<","<<dy<<std::endl;
 				
-				const float keyspeed = 500;
+				/*const float keyspeed = 500;
 				if(input->isKeyDown(irr::KEY_UP))
 					dy -= dtime * keyspeed;
 				if(input->isKeyDown(irr::KEY_DOWN))
@@ -1289,7 +1290,7 @@ void the_game(
 				if(input->isKeyDown(irr::KEY_LEFT))
 					dx -= dtime * keyspeed;
 				if(input->isKeyDown(irr::KEY_RIGHT))
-					dx += dtime * keyspeed;
+					dx += dtime * keyspeed;*/
 
 				camera_yaw -= dx*0.2;
 				camera_pitch += dy*0.2;

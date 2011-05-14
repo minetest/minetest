@@ -81,6 +81,7 @@ set(common_SRCS
 # Client sources
 set(minetest_SRCS
 	${common_SRCS}
+	keycode.cpp
 	clouds.cpp
 	clientobject.cpp
 	guiFurnaceMenu.cpp

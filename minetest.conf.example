@@ -11,6 +11,19 @@
 # Client side stuff
 #
 
+#keymap_forward = KEY_KEY_W
+#keymap_backward = KEY_KEY_S
+#keymap_left = KEY_KEY_A
+#keymap_right = KEY_KEY_D
+#keymap_jump = KEY_SPACE
+#keymap_sneak = KEY_RSHIFT
+#keymap_inventory = KEY_KEY_I
+#keymap_chat = KEY_KEY_T
+#keymap_rangeselect = KEY_KEY_R
+# Some (temporary) keys for debugging
+#keymap_special1 = KEY_KEY_E
+#keymap_print_debug_stacks = KEY_KEY_P
+
 #wanted_fps = 30
 #fps_max = 60
 #viewing_range_nodes_max = 300

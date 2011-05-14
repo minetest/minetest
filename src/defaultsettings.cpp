@@ -24,18 +24,33 @@ extern Settings g_settings;
 void set_default_settings()
 {
 	// Client and server
+
+	g_settings.setDefault("port", "");
+	g_settings.setDefault("name", "");
 	g_settings.setDefault("footprints", "false");
 
 	// Client stuff
+
+	g_settings.setDefault("keymap_forward", "KEY_KEY_W");
+	g_settings.setDefault("keymap_backward", "KEY_KEY_S");
+	g_settings.setDefault("keymap_left", "KEY_KEY_A");
+	g_settings.setDefault("keymap_right", "KEY_KEY_D");
+	g_settings.setDefault("keymap_jump", "KEY_SPACE");
+	g_settings.setDefault("keymap_sneak", "KEY_RSHIFT");
+	g_settings.setDefault("keymap_inventory", "KEY_KEY_I");
+	g_settings.setDefault("keymap_chat", "KEY_KEY_T");
+	g_settings.setDefault("keymap_rangeselect", "KEY_KEY_R");
+	// Some (temporary) keys for debugging
+	g_settings.setDefault("keymap_special1", "KEY_KEY_E");
+	g_settings.setDefault("keymap_print_debug_stacks", "KEY_KEY_P");
+
 	g_settings.setDefault("wanted_fps", "30");
 	g_settings.setDefault("fps_max", "60");
 	g_settings.setDefault("viewing_range_nodes_max", "300");
 	g_settings.setDefault("viewing_range_nodes_min", "35");
 	g_settings.setDefault("screenW", "800");
 	g_settings.setDefault("screenH", "600");
-	g_settings.setDefault("port", "");
 	g_settings.setDefault("address", "");
-	g_settings.setDefault("name", "");
 	g_settings.setDefault("random_input", "false");
 	g_settings.setDefault("client_delete_unused_sectors_timeout", "1200");
 	g_settings.setDefault("enable_fog", "true");
