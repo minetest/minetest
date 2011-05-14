@@ -140,8 +140,6 @@ TODO: Get rid of GotSplitPacketException
 User Interface:
 ---------------
 
-TODO: Use getKeySetting everywhere for ESC key and stuff
-
 Graphics:
 ---------
 
