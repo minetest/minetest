@@ -270,7 +270,7 @@ void updateViewingRange(f32 frametime_in, Client *client)
 
 	new_range += wanted_range_change;
 	
-	float new_range_unclamped = new_range;
+	//float new_range_unclamped = new_range;
 	if(new_range < range_min)
 		new_range = range_min;
 	if(new_range > range_max)
