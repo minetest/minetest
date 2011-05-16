@@ -47,29 +47,11 @@ struct ServerCommandContext
 
 };
 
-class ServerCommand
-{
-public:
-
-	static std::wstring processCommand(ServerCommandContext *ctx);
-
-private:
-
-	static void cmd_status(std::wostringstream &os,
-			ServerCommandContext *ctx);
-	static void cmd_privs(std::wostringstream &os,
-			ServerCommandContext *ctx);
-	static void cmd_grantrevoke(std::wostringstream &os,
-			ServerCommandContext *ctx);
-	static void cmd_time(std::wostringstream &os,
-			ServerCommandContext *ctx);
-	static void cmd_shutdown(std::wostringstream &os,
-			ServerCommandContext *ctx);
-	static void cmd_setting(std::wostringstream &os,
-			ServerCommandContext *ctx);
-	static void cmd_teleport(std::wostringstream &os,
-			ServerCommandContext *ctx);
-};
+// Process a command sent from a client. The environment and connection
+// should be locked when this is called.
+// Returns a response message, to be dealt with according to the flags set
+// in the context.
+std::wstring processServerCommand(ServerCommandContext *ctx);
 
 #endif
 

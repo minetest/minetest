@@ -2877,7 +2877,7 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 				player
 				);
 
-			line += ServerCommand::processCommand(ctx);
+			line += processServerCommand(ctx);
 			send_to_sender = ctx->flags & 1;
 			send_to_others = ctx->flags & 2;
 			delete ctx;
