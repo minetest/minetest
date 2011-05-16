@@ -171,6 +171,8 @@ else()
 		set(WARNING_FLAGS "")
 	endif()
 
+	set(WARNING_FLAGS "${WARNING_FLAGS} -Wno-unused-but-set-variable")
+
 	set(CMAKE_CXX_FLAGS_RELEASE "-DNDEBUG ${WARNING_FLAGS} -O3 -ffast-math -Wall -fomit-frame-pointer -pipe -funroll-loops")
 	set(CMAKE_CXX_FLAGS_DEBUG "-g -O1 -Wall")
 
