@@ -3830,7 +3830,7 @@ MapChunk* ServerMap::generateChunk(v2s16 chunkpos1,
 
 ServerMapSector * ServerMap::createSector(v2s16 p2d)
 {
-	DSTACK("%s: p2d=(%d,%d)",
+	DSTACKF("%s: p2d=(%d,%d)",
 			__FUNCTION_NAME,
 			p2d.X, p2d.Y);
 	
@@ -3982,7 +3982,7 @@ MapBlock * ServerMap::generateBlock(
 		core::map<v3s16, MapBlock*> &lighting_invalidated_blocks
 )
 {
-	DSTACK("%s: p=(%d,%d,%d)",
+	DSTACKF("%s: p=(%d,%d,%d)",
 			__FUNCTION_NAME,
 			p.X, p.Y, p.Z);
 
@@ -4618,7 +4618,7 @@ continue_generating:
 
 MapBlock * ServerMap::createBlock(v3s16 p)
 {
-	DSTACK("%s: p=(%d,%d,%d)",
+	DSTACKF("%s: p=(%d,%d,%d)",
 			__FUNCTION_NAME, p.X, p.Y, p.Z);
 	
 	/*
@@ -4682,7 +4682,7 @@ MapBlock * ServerMap::emergeBlock(
 		core::map<v3s16, MapBlock*> &lighting_invalidated_blocks
 )
 {
-	DSTACK("%s: p=(%d,%d,%d), only_from_disk=%d",
+	DSTACKF("%s: p=(%d,%d,%d), only_from_disk=%d",
 			__FUNCTION_NAME,
 			p.X, p.Y, p.Z, only_from_disk);
 	
