@@ -2231,7 +2231,7 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 			// Mandatory parameter; actually used for nothing
 			core::map<v3s16, MapBlock*> modified_blocks;
 
-			u8 material;
+			u8 material = CONTENT_IGNORE;
 			u8 mineral = MINERAL_NONE;
 
 			bool cannot_remove_node = false;

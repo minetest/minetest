@@ -79,12 +79,12 @@ Player::Player():
 	swimming_up(false),
 	craftresult_is_preview(true),
 	hp(20),
+	privs(PRIV_DEFAULT),
 	peer_id(PEER_ID_INEXISTENT),
 	m_pitch(0),
 	m_yaw(0),
 	m_speed(0,0,0),
-	m_position(0,0,0),
-	privs(PRIV_DEFAULT)
+	m_position(0,0,0)
 {
 	updateName("<not set>");
 	resetInventory();
