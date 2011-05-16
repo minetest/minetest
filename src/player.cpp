@@ -144,7 +144,16 @@ void Player::deSerialize(std::istream &is)
 		hp = 20;
 	}
 	try{
-		privs = args.getU64("privs");
+		std::string sprivs = args.get("privs");
+		if(sprivs == "all")
+		{
+			privs = PRIV_ALL;
+		}
+		else
+		{
+			std::istringstream ss(sprivs);
+			ss>>privs;
+		}
 	}catch(SettingNotFoundException &e){
 		privs = PRIV_DEFAULT;
 	}
