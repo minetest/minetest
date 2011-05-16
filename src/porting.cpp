@@ -136,7 +136,7 @@ void initializePaths()
 	char buf[BUFSIZ];
 	memset(buf, 0, BUFSIZ);
 	// Get path to executable
-	readlink("/proc/self/exe", buf, BUFSIZ-1);
+	assert(readlink("/proc/self/exe", buf, BUFSIZ-1) != -1);
 	
 	pathRemoveFile(buf, '/');
 
@@ -200,7 +200,7 @@ void initializePaths()
 	char buf[BUFSIZ];
 	memset(buf, 0, BUFSIZ);
 	// Get path to executable
-	readlink("/proc/self/exe", buf, BUFSIZ-1);
+	assert(readlink("/proc/self/exe", buf, BUFSIZ-1) != -1);
 	
 	pathRemoveFile(buf, '/');
 
