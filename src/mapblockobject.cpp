@@ -63,7 +63,7 @@ v3f MovingObject::getAbsoluteShowPos()
 
 void MovingObject::move(float dtime, v3f acceleration)
 {
-	DSTACK("%s: typeid=%i, pos=(%f,%f,%f), speed=(%f,%f,%f)"
+	DSTACKF("%s: typeid=%i, pos=(%f,%f,%f), speed=(%f,%f,%f)"
 			", dtime=%f, acc=(%f,%f,%f)",
 			__FUNCTION_NAME,
 			getTypeId(),
@@ -755,7 +755,7 @@ void MapBlockObjectList::step(float dtime, bool server, u32 daynight_ratio)
 	core::map<s16, bool> ids_to_delete;
 
 	{
-		DSTACK("%s: stepping objects", __FUNCTION_NAME);
+		DSTACKF("%s: stepping objects", __FUNCTION_NAME);
 
 		for(core::map<s16, MapBlockObject*>::Iterator
 				i = m_objects.getIterator();
@@ -763,7 +763,7 @@ void MapBlockObjectList::step(float dtime, bool server, u32 daynight_ratio)
 		{
 			MapBlockObject *obj = i.getNode()->getValue();
 			
-			DSTACK("%s: stepping object type %i", __FUNCTION_NAME,
+			DSTACKF("%s: stepping object type %i", __FUNCTION_NAME,
 					obj->getTypeId());
 
 			if(server)
@@ -791,7 +791,7 @@ void MapBlockObjectList::step(float dtime, bool server, u32 daynight_ratio)
 	}
 
 	{
-		DSTACK("%s: deleting objects", __FUNCTION_NAME);
+		DSTACKF("%s: deleting objects", __FUNCTION_NAME);
 
 		// Delete objects in delete queue
 		for(core::map<s16, bool>::Iterator
@@ -815,7 +815,7 @@ void MapBlockObjectList::step(float dtime, bool server, u32 daynight_ratio)
 		return;
 	
 	{
-		DSTACK("%s: object wrap loop", __FUNCTION_NAME);
+		DSTACKF("%s: object wrap loop", __FUNCTION_NAME);
 
 		for(core::map<s16, MapBlockObject*>::Iterator
 				i = m_objects.getIterator();

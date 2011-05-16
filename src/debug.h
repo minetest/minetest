@@ -169,7 +169,10 @@ private:
 	bool m_overflowed;
 };
 
-#define DSTACK(...)\
+#define DSTACK(msg)\
+	DebugStacker __debug_stacker(msg);
+
+#define DSTACKF(...)\
 	char __buf[DEBUG_STACK_TEXT_SIZE];\
 	snprintf(__buf,\
 			DEBUG_STACK_TEXT_SIZE, __VA_ARGS__);\

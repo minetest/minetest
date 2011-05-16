@@ -2870,12 +2870,18 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 
 			message = message.substr(commandprefix.size());
 
+			// Local player gets all privileges regardless of
+			// what's set on their account.
+			u64 privs = player->privs;
+			if(g_settings.get("name") == player->getName())
+				privs = PRIV_ALL;
+
 			ServerCommandContext *ctx = new ServerCommandContext(
 				str_split(message, L' '),
 				this,
 				&m_env,
-				player
-				);
+				player,
+				privs);
 
 			line += processServerCommand(ctx);
 			send_to_sender = ctx->flags & 1;

@@ -33,11 +33,13 @@ void cmd_privs(std::wostringstream &os,
 {
 	if(ctx->parms.size() == 1)
 	{
+		// Show our own real privs, without any adjustments
+		// made for admin status
 		os<<L"-!- " + privsToString(ctx->player->privs);
 		return;
 	}
 
-	if((ctx->player->privs & PRIV_PRIVS) == 0)
+	if((ctx->privs & PRIV_PRIVS) == 0)
 	{
 		os<<L"-!- You don't have permission to do that";
 		return;
@@ -62,7 +64,7 @@ void cmd_grantrevoke(std::wostringstream &os,
 		return;
 	}
 
-	if((ctx->player->privs & PRIV_PRIVS) == 0)
+	if((ctx->privs & PRIV_PRIVS) == 0)
 	{
 		os<<L"-!- You don't have permission to do that";
 		return;
@@ -100,7 +102,7 @@ void cmd_time(std::wostringstream &os,
 		return;
 	}
 
-	if((ctx->player->privs & PRIV_SETTIME) ==0)
+	if((ctx->privs & PRIV_SETTIME) ==0)
 	{
 		os<<L"-!- You don't have permission to do that";
 		return;
@@ -114,7 +116,7 @@ void cmd_time(std::wostringstream &os,
 void cmd_shutdown(std::wostringstream &os,
 	ServerCommandContext *ctx)
 {
-	if((ctx->player->privs & PRIV_SERVER) ==0)
+	if((ctx->privs & PRIV_SERVER) ==0)
 	{
 		os<<L"-!- You don't have permission to do that";
 		return;
@@ -131,7 +133,7 @@ void cmd_shutdown(std::wostringstream &os,
 void cmd_setting(std::wostringstream &os,
 	ServerCommandContext *ctx)
 {
-	if((ctx->player->privs & PRIV_SERVER) ==0)
+	if((ctx->privs & PRIV_SERVER) ==0)
 	{
 		os<<L"-!- You don't have permission to do that";
 		return;
@@ -145,7 +147,7 @@ void cmd_setting(std::wostringstream &os,
 void cmd_teleport(std::wostringstream &os,
 	ServerCommandContext *ctx)
 {
-	if((ctx->player->privs & PRIV_TELEPORT) ==0)
+	if((ctx->privs & PRIV_TELEPORT) ==0)
 	{
 		os<<L"-!- You don't have permission to do that";
 		return;
@@ -178,7 +180,7 @@ std::wstring processServerCommand(ServerCommandContext *ctx)
 	std::wostringstream os(std::ios_base::binary);
 	ctx->flags = 1;	// Default, unless we change it.
 
-	u64 privs = ctx->player->privs;
+	u64 privs = ctx->privs;
 
 	if(ctx->parms.size() == 0 || ctx->parms[0] == L"help")
 	{
