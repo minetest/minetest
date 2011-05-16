@@ -93,7 +93,7 @@ void ServerCommand::cmd_privs(std::wostringstream &os,
 {
 	if(ctx->parms.size() == 1)
 	{
-		os<<L"-!- " + Player::privsToString(ctx->player->privs);
+		os<<L"-!- " + privsToString(ctx->player->privs);
 		return;
 	}
 
@@ -110,7 +110,7 @@ void ServerCommand::cmd_privs(std::wostringstream &os,
 		return;
 	}
 	
-	os<<L"-!- " + Player::privsToString(tp->privs);
+	os<<L"-!- " + privsToString(tp->privs);
 }
 
 void ServerCommand::cmd_grantrevoke(std::wostringstream &os,
@@ -128,7 +128,7 @@ void ServerCommand::cmd_grantrevoke(std::wostringstream &os,
 		return;
 	}
 
-	u64 newprivs = Player::stringToPrivs(ctx->parms[2]);
+	u64 newprivs = stringToPrivs(ctx->parms[2]);
 	if(newprivs == PRIV_INVALID)
 	{
 		os<<L"-!- Invalid privileges specified";
@@ -148,7 +148,7 @@ void ServerCommand::cmd_grantrevoke(std::wostringstream &os,
 		tp->privs &= ~newprivs;
 	
 	os<<L"-!- Privileges change to ";
-	os<<Player::privsToString(tp->privs);
+	os<<privsToString(tp->privs);
 }
 
 void ServerCommand::cmd_time(std::wostringstream &os,
