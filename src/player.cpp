@@ -23,6 +23,55 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "constants.h"
 #include "utility.h"
 
+// Convert a privileges value into a human-readable string,
+// with each component separated by a comma.
+std::wstring privsToString(u64 privs)
+{
+	std::wostringstream os(std::ios_base::binary);
+	if(privs & PRIV_BUILD)
+		os<<L"build,";
+	if(privs & PRIV_TELEPORT)
+		os<<L"teleport,";
+	if(privs & PRIV_SETTIME)
+		os<<L"settime,";
+	if(privs & PRIV_PRIVS)
+		os<<L"privs,";
+	if(os.tellp())
+	{
+		// Drop the trailing comma. (Why on earth can't
+		// you truncate a C++ stream anyway???)
+		std::wstring tmp = os.str();
+		return tmp.substr(0, tmp.length() -1);
+	}
+	return os.str();
+}
+
+// Converts a comma-seperated list of privilege values into a
+// privileges value. The reverse of privsToString(). Returns
+// PRIV_INVALID if there is anything wrong with the input.
+u64 stringToPrivs(std::wstring str)
+{
+	u64 privs=0;
+	std::vector<std::wstring> pr;
+	pr=str_split(str, ',');
+	for(std::vector<std::wstring>::iterator i = pr.begin();
+		i != pr.end(); ++i)
+	{
+		if(*i == L"build")
+			privs |= PRIV_BUILD;
+		else if(*i == L"teleport")
+			privs |= PRIV_TELEPORT;
+		else if(*i == L"settime")
+			privs |= PRIV_SETTIME;
+		else if(*i == L"privs")
+			privs |= PRIV_PRIVS;
+		else
+			return PRIV_INVALID;
+	}
+	return privs;
+}
+
+
 Player::Player():
 	touching_ground(false),
 	in_water(false),
@@ -34,7 +83,8 @@ Player::Player():
 	m_pitch(0),
 	m_yaw(0),
 	m_speed(0,0,0),
-	m_position(0,0,0)
+	m_position(0,0,0),
+	privs(PRIV_DEFAULT)
 {
 	updateName("<not set>");
 	resetInventory();
@@ -100,6 +150,7 @@ void Player::serialize(std::ostream &os)
 	args.setV3F("position", m_position);
 	args.setBool("craftresult_is_preview", craftresult_is_preview);
 	args.setS32("hp", hp);
+	args.setU64("privs", privs);
 
 	args.writeLines(os);
 
@@ -140,6 +191,20 @@ void Player::deSerialize(std::istream &is)
 		hp = args.getS32("hp");
 	}catch(SettingNotFoundException &e){
 		hp = 20;
+	}
+	try{
+		std::string sprivs = args.get("privs");
+		if(sprivs == "all")
+		{
+			privs = PRIV_ALL;
+		}
+		else
+		{
+			std::istringstream ss(sprivs);
+			ss>>privs;
+		}
+	}catch(SettingNotFoundException &e){
+		privs = PRIV_DEFAULT;
 	}
 
 	inventory.deSerialize(is);

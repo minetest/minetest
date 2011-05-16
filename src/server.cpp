@@ -29,6 +29,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "materials.h"
 #include "mineral.h"
 #include "config.h"
+#include "servercommand.h"
 
 #define BLOCK_EMERGE_FLAG_FROMDISK (1<<0)
 
@@ -1994,6 +1995,9 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 		if(datasize < 13)
 			return;
 
+		if((player->privs & PRIV_BUILD) == 0)
+			return;
+
 		/*
 			[0] u16 command
 			[2] u8 button (0=left, 1=right)
@@ -2073,6 +2077,9 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 	else if(command == TOSERVER_CLICK_ACTIVEOBJECT)
 	{
 		if(datasize < 7)
+			return;
+
+		if((player->privs & PRIV_BUILD) == 0)
 			return;
 
 		/*
@@ -2272,6 +2279,10 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 				cannot_remove_node = true;
 			}
 
+			// Make sure the player is allowed to do it
+			if((player->privs & PRIV_BUILD) == 0)
+				cannot_remove_node = true;
+
 			/*
 				If node can't be removed, set block to be re-sent to
 				client and quit.
@@ -2418,7 +2429,8 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 				try{
 					// Don't add a node if this is not a free space
 					MapNode n2 = m_env.getMap().getNode(p_over);
-					if(content_buildable_to(n2.d) == false)
+					if(content_buildable_to(n2.d) == false
+						|| (player->privs & PRIV_BUILD) ==0)
 					{
 						// Client probably has wrong data.
 						// Set block not sent, so that client will get
@@ -2615,6 +2627,8 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 #endif
 	else if(command == TOSERVER_SIGNTEXT)
 	{
+		if((player->privs & PRIV_BUILD) == 0)
+			return;
 		/*
 			u16 command
 			v3s16 blockpos
@@ -2672,6 +2686,8 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 	}
 	else if(command == TOSERVER_SIGNNODETEXT)
 	{
+		if((player->privs & PRIV_BUILD) == 0)
+			return;
 		/*
 			u16 command
 			v3s16 p
@@ -2853,71 +2869,19 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 			line += L"Server: ";
 
 			message = message.substr(commandprefix.size());
-			// Get player name as narrow string
-			std::string name_s = player->getName();
-			// Convert message to narrow string
-			std::string message_s = wide_to_narrow(message);
-			// Operator is the single name defined in config.
-			std::string operator_name = g_settings.get("name");
-			bool is_operator = (operator_name != "" &&
-					wide_to_narrow(name) == operator_name);
-			bool valid_command = false;
-			if(message_s == "help")
-			{
-				line += L"-!- Available commands: ";
-				line += L"status ";
-				if(is_operator)
-				{
-					line += L"shutdown setting time ";
-				}
-				else
-				{
-				}
-				send_to_sender = true;
-				valid_command = true;
-			}
-			else if(message_s == "status")
-			{
-				line = getStatusString();
-				send_to_sender = true;
-				valid_command = true;
-			}
-			else if(is_operator)
-			{
-				if(message_s == "shutdown")
-				{
-					dstream<<DTIME<<" Server: Operator requested shutdown."
-							<<std::endl;
-					m_shutdown_requested.set(true);
-					
-					line += L"*** Server shutting down (operator request)";
-					send_to_sender = true;
-					valid_command = true;
-				}
-				else if(message_s.substr(0,8) == "setting ")
-				{
-					std::string confline = message_s.substr(8);
-					g_settings.parseConfigLine(confline);
-					line += L"-!- Setting changed.";
-					send_to_sender = true;
-					valid_command = true;
-				}
-				else if(message_s.substr(0,5) == "time ")
-				{
-					u32 time = stoi(message_s.substr(5));
-					m_time_of_day.set(time);
-					m_time_of_day_send_timer = 0;
-					line += L"-!- time_of_day changed.";
-					send_to_sender = true;
-					valid_command = true;
-				}
-			}
-			
-			if(valid_command == false)
-			{
-				line += L"-!- Invalid command: " + message;
-				send_to_sender = true;
-			}
+
+			ServerCommandContext *ctx = new ServerCommandContext(
+				str_split(message, L' '),
+				this,
+				&m_env,
+				player
+				);
+
+			line += processServerCommand(ctx);
+			send_to_sender = ctx->flags & 1;
+			send_to_others = ctx->flags & 2;
+			delete ctx;
+
 		}
 		else
 		{

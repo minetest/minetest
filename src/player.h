@@ -28,11 +28,38 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #define PLAYERNAME_ALLOWED_CHARS "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-_.,"
 
+// Player privileges. These form a bitmask stored in the privs field
+// of the player, and define things they're allowed to do. See also
+// the static methods Player::privsToString and stringToPrivs that
+// convert these to human-readable form.
+const u64 PRIV_BUILD = 1;	// Can build - i.e. modify the world
+				//  (not enforced yet)
+const u64 PRIV_TELEPORT = 2;	// Can teleport
+const u64 PRIV_SETTIME = 4;	// Can set the time
+const u64 PRIV_PRIVS = 8;	// Can grant and revoke privileges
+const u64 PRIV_SERVER = 16;	// Can manage the server (e.g. shutodwn ,settings)
+
+const u64 PRIV_DEFAULT = PRIV_BUILD;
+const u64 PRIV_ALL = 0x7FFFFFFFFFFFFFFFULL;
+const u64 PRIV_INVALID = 0x8000000000000000ULL;
+
+// Convert a privileges value into a human-readable string,
+// with each component separated by a comma.
+std::wstring privsToString(u64 privs);
+
+// Converts a comma-seperated list of privilege values into a
+// privileges value. The reverse of privsToString(). Returns
+// PRIV_INVALID if there is anything wrong with the input.
+u64 stringToPrivs(std::wstring str);
+
+
 class Map;
 
 class Player
 {
 public:
+
+
 	Player();
 	virtual ~Player();
 
@@ -123,6 +150,9 @@ public:
 
 	u16 hp;
 
+	// Player's privileges - a bitmaps of PRIV_xxxx.
+	u64 privs;
+
 	u16 peer_id;
 
 protected:
@@ -131,6 +161,9 @@ protected:
 	f32 m_yaw;
 	v3f m_speed;
 	v3f m_position;
+
+public:
+
 };
 
 /*
