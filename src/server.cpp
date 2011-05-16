@@ -2174,8 +2174,6 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 	{
 		if(datasize < 17)
 			return;
-		if((player->privs & PRIV_BUILD) == 0)
-			return;
 		/*
 			length: 17
 			[0] u16 command
@@ -2280,6 +2278,10 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 						getNodeBlockPos(p_over), BLOCK_EMERGE_FLAG_FROMDISK);
 				cannot_remove_node = true;
 			}
+
+			// Make sure the player is allowed to do it
+			if((player->privs & PRIV_BUILD) == 0)
+				cannot_remove_node = true;
 
 			/*
 				If node can't be removed, set block to be re-sent to
@@ -2427,7 +2429,8 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 				try{
 					// Don't add a node if this is not a free space
 					MapNode n2 = m_env.getMap().getNode(p_over);
-					if(content_buildable_to(n2.d) == false)
+					if(content_buildable_to(n2.d) == false
+						|| (player->privs & PRIV_BUILD) ==0)
 					{
 						// Client probably has wrong data.
 						// Set block not sent, so that client will get
