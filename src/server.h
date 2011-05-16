@@ -387,6 +387,12 @@ public:
 		return time_to_daynight_ratio(m_time_of_day.get());
 	}
 
+	void setTimeOfDay(u32 time)
+	{
+		m_time_of_day.set(time);
+		m_time_of_day_send_timer = 0;
+	}
+
 	bool getShutdownRequested()
 	{
 		return m_shutdown_requested.get();
@@ -404,6 +410,19 @@ public:
 	*/
 	Inventory* getInventory(InventoryContext *c, std::string id);
 	void inventoryModified(InventoryContext *c, std::string id);
+
+	// Connection must be locked when called
+	std::wstring getStatusString();
+
+	void requestShutdown(void)
+	{
+		m_shutdown_requested.set(true);
+	}
+
+
+	// Envlock and conlock should be locked when calling this
+	void SendMovePlayer(Player *player);
+
 
 private:
 
@@ -429,7 +448,6 @@ private:
 	void SendChatMessage(u16 peer_id, const std::wstring &message);
 	void BroadcastChatMessage(const std::wstring &message);
 	void SendPlayerHP(Player *player);
-	void SendMovePlayer(Player *player);
 	/*
 		Send a node removal/addition event to all clients except ignore_id.
 		Additionally, if far_players!=NULL, players further away than
@@ -454,9 +472,6 @@ private:
 	
 	// When called, connection mutex should be locked
 	RemoteClient* getClient(u16 peer_id);
-	
-	// Connection must be locked when called
-	std::wstring getStatusString();
 	
 	/*
 		Get a player from memory or creates one.

@@ -69,6 +69,7 @@ set(common_SRCS
 	connection.cpp
 	environment.cpp
 	server.cpp
+	servercommand.cpp
 	socket.cpp
 	mapblock.cpp
 	mapsector.cpp

@@ -34,7 +34,8 @@ Player::Player():
 	m_pitch(0),
 	m_yaw(0),
 	m_speed(0,0,0),
-	m_position(0,0,0)
+	m_position(0,0,0),
+	privs(PRIV_DEFAULT)
 {
 	updateName("<not set>");
 	resetInventory();
@@ -100,6 +101,7 @@ void Player::serialize(std::ostream &os)
 	args.setV3F("position", m_position);
 	args.setBool("craftresult_is_preview", craftresult_is_preview);
 	args.setS32("hp", hp);
+	args.setU64("privs", privs);
 
 	args.writeLines(os);
 
@@ -140,6 +142,11 @@ void Player::deSerialize(std::istream &is)
 		hp = args.getS32("hp");
 	}catch(SettingNotFoundException &e){
 		hp = 20;
+	}
+	try{
+		privs = args.getU64("privs");
+	}catch(SettingNotFoundException &e){
+		privs = PRIV_DEFAULT;
 	}
 
 	inventory.deSerialize(is);

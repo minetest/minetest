@@ -24,6 +24,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <fstream>
 #include <string>
 #include <sstream>
+#include <vector>
 #include <jthread.h>
 #include <jmutex.h>
 #include <jmutexautolock.h>
@@ -731,6 +732,19 @@ inline std::string wide_to_narrow(const std::wstring& wcs)
 	return *mbs;
 }
 
+// Split a string using the given delimiter. Returns a vector containing
+// the component parts.
+inline std::vector<std::wstring> str_split(const std::wstring &str, wchar_t delimiter)
+{
+	std::vector<std::wstring> parts;
+	std::wstringstream sstr(str);
+	std::wstring part;
+	while(std::getline(sstr, part, delimiter))
+		parts.push_back(part);
+	return parts;
+}
+
+
 /*
 	See test.cpp for example cases.
 	wraps degrees to the range of -360...360
@@ -789,6 +803,11 @@ inline s32 stoi(const std::string &s, s32 min, s32 max)
 inline s32 stoi(std::string s)
 {
 	return atoi(s.c_str());
+}
+
+inline s32 stoi(std::wstring s)
+{
+	return atoi(wide_to_narrow(s).c_str());
 }
 
 inline float stof(std::string s)
