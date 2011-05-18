@@ -800,14 +800,13 @@ inline s32 stoi(const std::string &s, s32 min, s32 max)
 	return i;
 }
 
+
+// MSVC2010 includes it's own versions of these
+#if !defined(_MSC_VER) || _MSC_VER < 1600
+
 inline s32 stoi(std::string s)
 {
 	return atoi(s.c_str());
-}
-
-inline s32 stoi(std::wstring s)
-{
-	return atoi(wide_to_narrow(s).c_str());
 }
 
 inline float stof(std::string s)
@@ -816,6 +815,13 @@ inline float stof(std::string s)
 	std::istringstream ss(s);
 	ss>>f;
 	return f;
+}
+
+#endif
+
+inline s32 stoi(std::wstring s)
+{
+	return atoi(wide_to_narrow(s).c_str());
 }
 
 inline std::string itos(s32 i)
