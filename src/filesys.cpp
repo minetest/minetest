@@ -290,5 +290,24 @@ bool RecursiveDeleteContent(std::string path)
 	return true;
 }
 
+bool CreateAllDirs(std::string path)
+{
+
+	size_t pos;
+	std::vector<std::string> tocreate;
+	std::string basepath = path;
+	while(!PathExists(basepath))
+	{
+		tocreate.push_back(basepath);
+		pos = basepath.rfind('/');
+		if(pos == std::string::npos)
+			return false;
+		basepath = basepath.substr(0,pos);
+	}
+	for(int i=tocreate.size()-1;i>=0;i--)
+		CreateDir(tocreate[i]);
+	return true;
+}
+
 } // namespace fs
 

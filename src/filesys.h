@@ -38,6 +38,9 @@ std::vector<DirListNode> GetDirListing(std::string path);
 // Returns true if already exists
 bool CreateDir(std::string path);
 
+// Create all directories on the given path that don't already exist.
+bool CreateAllDirs(std::string path);
+
 bool PathExists(std::string path);
 
 // Only pass full paths to this one. True on success.

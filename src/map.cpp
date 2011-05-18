@@ -4875,9 +4875,9 @@ plan_b:
 	return (s16)level;
 }
 
-void ServerMap::createDir(std::string path)
+void ServerMap::createDirs(std::string path)
 {
-	if(fs::CreateDir(path) == false)
+	if(fs::CreateAllDirs(path) == false)
 	{
 		m_dout<<DTIME<<"ServerMap: Failed to create directory "
 				<<"\""<<path<<"\""<<std::endl;
@@ -4885,29 +4885,52 @@ void ServerMap::createDir(std::string path)
 	}
 }
 
-std::string ServerMap::getSectorSubDir(v2s16 pos)
+std::string ServerMap::getSectorDir(v2s16 pos, int layout)
 {
 	char cc[9];
-	snprintf(cc, 9, "%.4x%.4x",
-			(unsigned int)pos.X&0xffff,
-			(unsigned int)pos.Y&0xffff);
+	switch(layout)
+	{
+		case 1:
+			snprintf(cc, 9, "%.4x%.4x",
+				(unsigned int)pos.X&0xffff,
+				(unsigned int)pos.Y&0xffff);
 
-	return std::string(cc);
-}
+			return m_savedir + "/sectors/" + cc;
+		case 2:
+			snprintf(cc, 9, "%.3x/%.3x",
+				(unsigned int)pos.X&0xfff,
+				(unsigned int)pos.Y&0xfff);
 
-std::string ServerMap::getSectorDir(v2s16 pos)
-{
-	return m_savedir + "/sectors/" + getSectorSubDir(pos);
+			return m_savedir + "/sectors2/" + cc;
+		default:
+			assert(false);
+	}
 }
 
 v2s16 ServerMap::getSectorPos(std::string dirname)
 {
-	if(dirname.size() != 8)
-		throw InvalidFilenameException("Invalid sector directory name");
 	unsigned int x, y;
-	int r = sscanf(dirname.c_str(), "%4x%4x", &x, &y);
-	if(r != 2)
-		throw InvalidFilenameException("Invalid sector directory name");
+	int r;
+	size_t spos = dirname.rfind('/') + 1;
+	assert(spos != std::string::npos);
+	if(dirname.size() - spos == 8)
+	{
+		// Old layout
+		r = sscanf(dirname.substr(spos).c_str(), "%4x%4x", &x, &y);
+	}
+	else if(dirname.size() - spos == 3)
+	{
+		// New layout
+		r = sscanf(dirname.substr(spos-4).c_str(), "%3x/%3x", &x, &y);
+		// Sign-extend the 12 bit values up to 16 bits...
+		if(x&0x800) x|=0xF000;
+		if(y&0x800) y|=0xF000;
+	}
+	else
+	{
+		assert(false);
+	}
+	assert(r == 2);
 	v2s16 pos((s16)x, (s16)y);
 	return pos;
 }
@@ -5106,7 +5129,7 @@ void ServerMap::saveMapMeta()
 			<<"seed="<<m_seed<<", chunksize="<<m_chunksize
 			<<std::endl;
 
-	createDir(m_savedir);
+	createDirs(m_savedir);
 	
 	std::string fullpath = m_savedir + "/map_meta.txt";
 	std::ofstream os(fullpath.c_str(), std::ios_base::binary);
@@ -5179,7 +5202,7 @@ void ServerMap::saveChunkMeta()
 	dstream<<"INFO: ServerMap::saveChunkMeta(): Saving metadata of "
 			<<count<<" chunks"<<std::endl;
 
-	createDir(m_savedir);
+	createDirs(m_savedir);
 	
 	std::string fullpath = m_savedir + "/chunk_meta";
 	std::ofstream os(fullpath.c_str(), std::ios_base::binary);
@@ -5267,10 +5290,8 @@ void ServerMap::saveSectorMeta(ServerMapSector *sector)
 	u8 version = SER_FMT_VER_HIGHEST;
 	// Get destination
 	v2s16 pos = sector->getPos();
-	createDir(m_savedir);
-	createDir(m_savedir+"/sectors");
 	std::string dir = getSectorDir(pos);
-	createDir(dir);
+	createDirs(dir);
 	
 	std::string fullpath = dir + "/meta";
 	std::ofstream o(fullpath.c_str(), std::ios_base::binary);
@@ -5282,22 +5303,21 @@ void ServerMap::saveSectorMeta(ServerMapSector *sector)
 	sector->differs_from_disk = false;
 }
 
-MapSector* ServerMap::loadSectorMeta(std::string dirname)
+MapSector* ServerMap::loadSectorMeta(std::string sectordir, bool save_after_load)
 {
 	DSTACK(__FUNCTION_NAME);
 	// Get destination
-	v2s16 p2d = getSectorPos(dirname);
-	std::string dir = m_savedir + "/sectors/" + dirname;
+	v2s16 p2d = getSectorPos(sectordir);
 
 	ServerMapSector *sector = NULL;
-	
-	std::string fullpath = dir + "/meta";
+
+	std::string fullpath = sectordir + "/meta";
 	std::ifstream is(fullpath.c_str(), std::ios_base::binary);
 	if(is.good() == false)
 	{
 		// If the directory exists anyway, it probably is in some old
 		// format. Just go ahead and create the sector.
-		if(fs::PathExists(dir))
+		if(fs::PathExists(sectordir))
 		{
 			dstream<<"ServerMap::loadSectorMeta(): Sector metafile "
 					<<fullpath<<" doesn't exist but directory does."
@@ -5307,12 +5327,16 @@ MapSector* ServerMap::loadSectorMeta(std::string dirname)
 			m_sectors.insert(p2d, sector);
 		}
 		else
+		{
 			throw FileNotGoodException("Cannot open sector metafile");
+		}
 	}
 	else
 	{
 		sector = ServerMapSector::deSerialize
 				(is, this, p2d, m_sectors);
+		if(save_after_load)
+			saveSectorMeta(sector);
 	}
 	
 	sector->differs_from_disk = false;
@@ -5323,14 +5347,31 @@ MapSector* ServerMap::loadSectorMeta(std::string dirname)
 bool ServerMap::loadSectorFull(v2s16 p2d)
 {
 	DSTACK(__FUNCTION_NAME);
-	std::string sectorsubdir = getSectorSubDir(p2d);
 
 	MapSector *sector = NULL;
+
+	// The directory layout we're going to load from.
+	//  1 - original sectors/xxxxzzzz/
+	//  2 - new sectors2/xxx/zzz/
+	//  If we load from anything but the latest structure, we will
+	//  immediately save to the new one, and remove the old.
+	int loadlayout = 1;
+	std::string sectordir1 = getSectorDir(p2d, 1);
+	std::string sectordir;
+	if(fs::PathExists(sectordir1))
+	{
+		sectordir = sectordir1;
+	}
+	else
+	{
+		loadlayout = 2;
+		sectordir = getSectorDir(p2d, 2);
+	}
 
 	//JMutexAutoLock lock(m_sector_mutex); // Bulk comment-out
 
 	try{
-		sector = loadSectorMeta(sectorsubdir);
+		sector = loadSectorMeta(sectordir, loadlayout != 2);
 	}
 	catch(InvalidFilenameException &e)
 	{
@@ -5349,7 +5390,7 @@ bool ServerMap::loadSectorFull(v2s16 p2d)
 		Load blocks
 	*/
 	std::vector<fs::DirListNode> list2 = fs::GetDirListing
-			(m_savedir+"/sectors/"+sectorsubdir);
+			(sectordir);
 	std::vector<fs::DirListNode>::iterator i2;
 	for(i2=list2.begin(); i2!=list2.end(); i2++)
 	{
@@ -5357,15 +5398,24 @@ bool ServerMap::loadSectorFull(v2s16 p2d)
 		if(i2->dir)
 			continue;
 		try{
-			loadBlock(sectorsubdir, i2->name, sector);
+			loadBlock(sectordir, i2->name, sector, loadlayout != 2);
 		}
 		catch(InvalidFilenameException &e)
 		{
 			// This catches unknown crap in directory
 		}
 	}
+
+	if(loadlayout != 2)
+	{
+		dstream<<"Sector converted to new layout - deleting "<<
+			sectordir1<<std::endl;
+		fs::RecursiveDelete(sectordir1);
+	}
+
 	return true;
 }
+
 
 void ServerMap::saveBlock(MapBlock *block)
 {
@@ -5386,12 +5436,9 @@ void ServerMap::saveBlock(MapBlock *block)
 	// Get destination
 	v3s16 p3d = block->getPos();
 	v2s16 p2d(p3d.X, p3d.Z);
-	createDir(m_savedir);
-	createDir(m_savedir+"/sectors");
 	std::string dir = getSectorDir(p2d);
-	createDir(dir);
+	createDirs(dir);
 	
-	// Block file is map/sectors/xxxxxxxx/xxxx
 	char cc[5];
 	snprintf(cc, 5, "%.4x", (unsigned int)p3d.Y&0xffff);
 	std::string fullpath = dir + "/" + cc;
@@ -5427,12 +5474,11 @@ void ServerMap::saveBlock(MapBlock *block)
 	block->resetChangedFlag();
 }
 
-void ServerMap::loadBlock(std::string sectordir, std::string blockfile, MapSector *sector)
+void ServerMap::loadBlock(std::string sectordir, std::string blockfile, MapSector *sector, bool save_after_load)
 {
 	DSTACK(__FUNCTION_NAME);
 
-	// Block file is map/sectors/xxxxxxxx/xxxx
-	std::string fullpath = m_savedir+"/sectors/"+sectordir+"/"+blockfile;
+	std::string fullpath = sectordir+"/"+blockfile;
 	try{
 
 		std::ifstream is(fullpath.c_str(), std::ios_base::binary);
@@ -5496,7 +5542,7 @@ void ServerMap::loadBlock(std::string sectordir, std::string blockfile, MapSecto
 		*/
 
 		// Save old format blocks in new format
-		if(version < SER_FMT_VER_HIGHEST)
+		if(version < SER_FMT_VER_HIGHEST || save_after_load)
 		{
 			saveBlock(block);
 		}

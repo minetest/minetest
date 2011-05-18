@@ -545,13 +545,9 @@ public:
 		Misc. helper functions for fiddling with directory and file
 		names when saving
 	*/
-	void createDir(std::string path);
-	void createSaveDir();
-	// returns something like "xxxxxxxx"
-	std::string getSectorSubDir(v2s16 pos);
+	void createDirs(std::string path);
 	// returns something like "map/sectors/xxxxxxxx"
-	std::string getSectorDir(v2s16 pos);
-	std::string createSectorDir(v2s16 pos);
+	std::string getSectorDir(v2s16 pos, int layout = 2);
 	// dirname: final directory name
 	v2s16 getSectorPos(std::string dirname);
 	v3s16 getBlockPos(std::string sectordir, std::string blockfile);
@@ -572,7 +568,7 @@ public:
 	// (no MapBlocks)
 	// DEPRECATED? Sectors have no metadata anymore.
 	void saveSectorMeta(ServerMapSector *sector);
-	MapSector* loadSectorMeta(std::string dirname);
+	MapSector* loadSectorMeta(std::string dirname, bool save_after_load);
 	
 	// Full load of a sector including all blocks.
 	// returns true on success, false on failure.
@@ -583,7 +579,7 @@ public:
 	
 	void saveBlock(MapBlock *block);
 	// This will generate a sector with getSector if not found.
-	void loadBlock(std::string sectordir, std::string blockfile, MapSector *sector);
+	void loadBlock(std::string sectordir, std::string blockfile, MapSector *sector, bool save_after_load=false);
 
 	// For debug printing
 	virtual void PrintInfo(std::ostream &out);
