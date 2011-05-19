@@ -672,7 +672,6 @@ void the_game(
 	guienv->drawAll();
 	driver->endScene();
 
-	std::cout<<DTIME<<"Creating server and client"<<std::endl;
 	
 	/*
 		Create server.
@@ -680,6 +679,7 @@ void the_game(
 	*/
 	SharedPtr<Server> server;
 	if(address == ""){
+		std::cout<<DTIME<<"Creating server"<<std::endl;
 		server = new Server(map_dir);
 		server->start(port);
 	}
@@ -688,6 +688,7 @@ void the_game(
 		Create client
 	*/
 
+	std::cout<<DTIME<<"Creating client"<<std::endl;
 	Client client(device, playername.c_str(), draw_control);
 			
 	Address connect_address(0,0,0,0, port);
