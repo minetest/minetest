@@ -16,7 +16,7 @@
 #keymap_left = KEY_KEY_A
 #keymap_right = KEY_KEY_D
 #keymap_jump = KEY_SPACE
-#keymap_sneak = KEY_RSHIFT
+#keymap_sneak = KEY_LSHIFT
 #keymap_inventory = KEY_KEY_I
 #keymap_chat = KEY_KEY_T
 #keymap_rangeselect = KEY_KEY_R

@@ -36,7 +36,7 @@ void set_default_settings()
 	g_settings.setDefault("keymap_left", "KEY_KEY_A");
 	g_settings.setDefault("keymap_right", "KEY_KEY_D");
 	g_settings.setDefault("keymap_jump", "KEY_SPACE");
-	g_settings.setDefault("keymap_sneak", "KEY_RSHIFT");
+	g_settings.setDefault("keymap_sneak", "KEY_LSHIFT");
 	g_settings.setDefault("keymap_inventory", "KEY_KEY_I");
 	g_settings.setDefault("keymap_chat", "KEY_KEY_T");
 	g_settings.setDefault("keymap_rangeselect", "KEY_KEY_R");
