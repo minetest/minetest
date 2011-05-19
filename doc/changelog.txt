@@ -7,6 +7,9 @@ X:
 - Optimized smooth lighting
 - A number of small fixes
 - Added clouds and simple skyboxes
+- The glass block added
+- Added key configuration to config file
+- Player privileges on server
 
 2011-04-24:
 - Smooth lighting with simple ambient occlusion
