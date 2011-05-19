@@ -809,6 +809,11 @@ inline s32 stoi(std::string s)
 	return atoi(s.c_str());
 }
 
+inline s32 stoi(std::wstring s)
+{
+	return atoi(wide_to_narrow(s).c_str());
+}
+
 inline float stof(std::string s)
 {
 	float f;
@@ -818,11 +823,6 @@ inline float stof(std::string s)
 }
 
 #endif
-
-inline s32 stoi(std::wstring s)
-{
-	return atoi(wide_to_narrow(s).c_str());
-}
 
 inline std::string itos(s32 i)
 {
