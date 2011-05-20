@@ -25,6 +25,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "collision.h"
 
 #define PLAYERNAME_SIZE 20
+#define PASSWORD_SIZE 28       // Maximum password length. Allows for
+                               // base64-encoded SHA-1.
 
 #define PLAYERNAME_ALLOWED_CHARS "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-_.,"
 
@@ -121,6 +123,16 @@ public:
 		return m_name;
 	}
 
+	virtual void updatePassword(const char *password)
+	{
+		snprintf(m_password, PASSWORD_SIZE, "%s", password);
+	}
+
+	const char * getPassword()
+	{
+		return m_password;
+	}
+
 	virtual bool isLocal() const = 0;
 
 	virtual void updateLight(u8 light_at_pos) {};
@@ -157,6 +169,7 @@ public:
 
 protected:
 	char m_name[PLAYERNAME_SIZE];
+	char m_password[PASSWORD_SIZE];
 	f32 m_pitch;
 	f32 m_yaw;
 	v3f m_speed;

@@ -68,6 +68,7 @@ void * MeshUpdateThread::Thread()
 Client::Client(
 		IrrlichtDevice *device,
 		const char *playername,
+		std::string password,
 		MapDrawControl &control):
 	m_mesh_update_thread(),
 	m_env(
@@ -83,7 +84,9 @@ Client::Client(
 	m_server_ser_ver(SER_FMT_VER_INVALID),
 	m_inventory_updated(false),
 	m_time_of_day(0),
-	m_map_seed(0)
+	m_map_seed(0),
+	m_password(password),
+	m_access_denied(false)
 {
 	m_packetcounter_timer = 0.0;
 	m_delete_unused_sectors_timer = 0.0;
@@ -299,11 +302,14 @@ void Client::step(float dtime)
 			// [0] u16 TOSERVER_INIT
 			// [2] u8 SER_FMT_VER_HIGHEST
 			// [3] u8[20] player_name
-			SharedBuffer<u8> data(2+1+PLAYERNAME_SIZE);
+			// [23] u8[28] password
+			SharedBuffer<u8> data(2+1+PLAYERNAME_SIZE+PASSWORD_SIZE);
 			writeU16(&data[0], TOSERVER_INIT);
 			writeU8(&data[2], SER_FMT_VER_HIGHEST);
 			memset((char*)&data[3], 0, PLAYERNAME_SIZE);
 			snprintf((char*)&data[3], PLAYERNAME_SIZE, "%s", myplayer->getName());
+			snprintf((char*)&data[23], PASSWORD_SIZE, "%s", m_password.c_str());
+
 			// Send as unreliable
 			Send(0, data, false);
 		}
@@ -597,7 +603,16 @@ void Client::ProcessData(u8 *data, u32 datasize, u16 sender_peer_id)
 
 		return;
 	}
-	
+
+	if(command == TOCLIENT_ACCESS_DENIED)
+	{
+		// The server didn't like our password. Note, this needs
+		// to be processed even if the serialisation format has
+		// not been agreed yet, the same as TOCLIENT_INIT.
+		m_access_denied = true;
+		return;
+	}
+
 	if(ser_version == SER_FMT_VER_INVALID)
 	{
 		dout_client<<DTIME<<"WARNING: Client: Server serialization"

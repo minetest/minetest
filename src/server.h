@@ -436,6 +436,7 @@ private:
 	*/
 	
 	static void SendHP(con::Connection &con, u16 peer_id, u8 hp);
+	static void SendAccessDenied(con::Connection &con, u16 peer_id);
 	
 	/*
 		Non-static send methods
@@ -476,11 +477,12 @@ private:
 	/*
 		Get a player from memory or creates one.
 		If player is already connected, return NULL
+		The password is not checked here - it is only used to
+		set the password if a new player is created.
 
 		Call with env and con locked.
 	*/
-	Player *emergePlayer(const char *name, const char *password,
-			u16 peer_id);
+	Player *emergePlayer(const char *name, const char *password, u16 peer_id);
 
 	/*
 		Update water pressure.

@@ -207,6 +207,7 @@ public:
 	Client(
 			IrrlichtDevice *device,
 			const char *playername,
+			std::string password,
 			MapDrawControl &control
 			);
 	
@@ -377,6 +378,11 @@ public:
 	// Get event from queue. CE_NONE is returned if queue is empty.
 	ClientEvent getClientEvent();
 	
+	inline bool accessDenied()
+	{
+		return m_access_denied;
+	}
+
 private:
 	
 	// Virtual methods from con::PeerHandler
@@ -430,6 +436,9 @@ private:
 	// The seed returned by the server in TOCLIENT_INIT is stored here
 	u64 m_map_seed;
 	
+	std::string m_password;
+	bool m_access_denied;
+
 	InventoryContext m_inventory_context;
 
 	Queue<ClientEvent> m_client_event_queue;
