@@ -164,30 +164,38 @@ void GUIMainMenu::regenerateGui(v2u32 screensize)
 		//t->setTextAlignment(gui::EGUIA_CENTER, gui::EGUIA_UPPERLEFT);
 	}
 
-	// Nickname
+	// Nickname + password
 	{
-		core::rect<s32> rect(0, 0, 100, 20);
-		rect += topleft_client + v2s32(40, 50+6);
-		const wchar_t *text = L"Nickname";
+		core::rect<s32> rect(0, 0, 110, 20);
+		rect += topleft_client + v2s32(35, 50+6);
+		const wchar_t *text = L"Name/Password";
 		Environment->addStaticText(text, rect, false, true, this, -1);
 	}
 	{
-		core::rect<s32> rect(0, 0, 250, 30);
+		core::rect<s32> rect(0, 0, 230, 30);
 		rect += topleft_client + v2s32(160, 50);
 		gui::IGUIElement *e = 
 		Environment->addEditBox(text_name.c_str(), rect, true, this, 258);
 		if(text_name == L"")
 			Environment->setFocus(e);
 	}
+	{
+		core::rect<s32> rect(0, 0, 120, 30);
+		rect += topleft_client + v2s32(size_client.X-60-100, 50);
+		gui::IGUIEditBox *e =
+		Environment->addEditBox(L"", rect, true, this, 264);
+		e->setPasswordBox(true);
+
+	}
 	// Address + port
 	{
-		core::rect<s32> rect(0, 0, 100, 20);
-		rect += topleft_client + v2s32(40, 100+6);
-		const wchar_t *text = L"Address + Port";
+		core::rect<s32> rect(0, 0, 110, 20);
+		rect += topleft_client + v2s32(35, 100+6);
+		const wchar_t *text = L"Address/Port";
 		Environment->addStaticText(text, rect, false, true, this, -1);
 	}
 	{
-		core::rect<s32> rect(0, 0, 250, 30);
+		core::rect<s32> rect(0, 0, 230, 30);
 		rect += topleft_client + v2s32(160, 100);
 		gui::IGUIElement *e = 
 		Environment->addEditBox(text_address.c_str(), rect, true, this, 256);
@@ -195,9 +203,9 @@ void GUIMainMenu::regenerateGui(v2u32 screensize)
 			Environment->setFocus(e);
 	}
 	{
-		core::rect<s32> rect(0, 0, 100, 30);
+		core::rect<s32> rect(0, 0, 120, 30);
 		//rect += topleft_client + v2s32(160+250+20, 125);
-		rect += topleft_client + v2s32(size_client.X-40-100, 100);
+		rect += topleft_client + v2s32(size_client.X-60-100, 100);
 		Environment->addEditBox(text_port.c_str(), rect, true, this, 257);
 	}
 	{
@@ -208,13 +216,13 @@ void GUIMainMenu::regenerateGui(v2u32 screensize)
 	}
 	{
 		core::rect<s32> rect(0, 0, 250, 30);
-		rect += topleft_client + v2s32(40, 150);
+		rect += topleft_client + v2s32(35, 150);
 		Environment->addCheckBox(fancy_trees, rect, this, 263,
 				L"Fancy trees");
 	}
 	{
 		core::rect<s32> rect(0, 0, 250, 30);
-		rect += topleft_client + v2s32(40, 150+30);
+		rect += topleft_client + v2s32(35, 150+30);
 		Environment->addCheckBox(smooth_lighting, rect, this, 262,
 				L"Smooth Lighting");
 	}
@@ -245,12 +253,12 @@ void GUIMainMenu::regenerateGui(v2u32 screensize)
 	// Server parameters
 	{
 		core::rect<s32> rect(0, 0, 250, 30);
-		rect += topleft_server + v2s32(40, 30);
+		rect += topleft_server + v2s32(35, 30);
 		Environment->addCheckBox(creative_mode, rect, this, 259, L"Creative Mode");
 	}
 	{
 		core::rect<s32> rect(0, 0, 250, 30);
-		rect += topleft_server + v2s32(40, 60);
+		rect += topleft_server + v2s32(35, 60);
 		Environment->addCheckBox(enable_damage, rect, this, 261, L"Enable Damage");
 	}
 	// Map delete button
@@ -295,6 +303,11 @@ void GUIMainMenu::acceptInput()
 		gui::IGUIElement *e = getElementFromId(258);
 		if(e != NULL)
 			m_data->name = e->getText();
+	}
+	{
+		gui::IGUIElement *e = getElementFromId(264);
+		if(e != NULL)
+			m_data->password = e->getText();
 	}
 	{
 		gui::IGUIElement *e = getElementFromId(256);
@@ -380,7 +393,7 @@ bool GUIMainMenu::OnEvent(const SEvent& event)
 		{
 			switch(event.GUIEvent.Caller->getID())
 			{
-			case 256: case 257: case 258:
+				case 256: case 257: case 258: case 264:
 				acceptInput();
 				quitMenu();
 				return true;

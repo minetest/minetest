@@ -67,6 +67,7 @@ void the_game(
 	gui::IGUIFont* font,
 	std::string map_dir,
 	std::string playername,
+	std::string password,
 	std::string address,
 	u16 port,
 	std::wstring &error_message

@@ -46,6 +46,7 @@ struct MainMenuData
 	std::wstring address;
 	std::wstring port;
 	std::wstring name;
+	std::wstring password;
 	bool fancy_trees;
 	bool smooth_lighting;
 	// Server options

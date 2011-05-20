@@ -634,6 +634,7 @@ void the_game(
 	gui::IGUIFont* font,
 	std::string map_dir,
 	std::string playername,
+	std::string password,
 	std::string address,
 	u16 port,
 	std::wstring &error_message
@@ -689,7 +690,7 @@ void the_game(
 	*/
 
 	std::cout<<DTIME<<"Creating client"<<std::endl;
-	Client client(device, playername.c_str(), draw_control);
+	Client client(device, playername.c_str(), password, draw_control);
 			
 	Address connect_address(0,0,0,0, port);
 	try{
@@ -728,6 +729,10 @@ void the_game(
 				could_connect = true;
 				break;
 			}
+			if(client.accessDenied())
+			{
+				break;
+			}
 			// Wait for 10 seconds
 			if(time_counter >= 10.0)
 			{
@@ -756,8 +761,16 @@ void the_game(
 
 	if(could_connect == false)
 	{
-		std::cout<<DTIME<<"Timed out."<<std::endl;
-		error_message = L"Connection timed out.";
+		if(client.accessDenied())
+		{
+			error_message = L"Access denied. Check your password and try again.";
+			std::cout<<DTIME<<"Access denied."<<std::endl;
+		}
+		else
+		{
+			error_message = L"Connection timed out.";
+			std::cout<<DTIME<<"Timed out."<<std::endl;
+		}
 		gui_loadingtext->remove();
 		return;
 	}

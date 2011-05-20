@@ -150,6 +150,11 @@ enum ToClientCommand
 		f1000 player pitch
 		f1000 player yaw
 	*/
+
+	TOCLIENT_ACCESS_DENIED = 0x35,
+	/*
+		u16 command
+	*/
 };
 
 enum ToServerCommand
@@ -161,6 +166,7 @@ enum ToServerCommand
 		[0] u16 TOSERVER_INIT
 		[2] u8 SER_FMT_VER_HIGHEST
 		[3] u8[20] player_name
+		[23] u8[28] password
 	*/
 
 	TOSERVER_INIT2 = 0x11,

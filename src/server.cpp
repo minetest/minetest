@@ -1734,8 +1734,9 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 		// [0] u16 TOSERVER_INIT
 		// [2] u8 SER_FMT_VER_HIGHEST
 		// [3] u8[20] player_name
+		// [23] u8[28] password <--- can be sent without this, from old versions
 
-		if(datasize < 3)
+		if(datasize < 2+1+PLAYERNAME_SIZE)
 			return;
 
 		derr_server<<DTIME<<"Server: Got TOSERVER_INIT from "
@@ -1767,17 +1768,41 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 		*/
 		
 		// Get player name
-		const u32 playername_size = 20;
-		char playername[playername_size];
-		for(u32 i=0; i<playername_size-1; i++)
+		char playername[PLAYERNAME_SIZE];
+		for(u32 i=0; i<PLAYERNAME_SIZE-1; i++)
 		{
 			playername[i] = data[3+i];
 		}
-		playername[playername_size-1] = 0;
-		
+		playername[PLAYERNAME_SIZE-1] = 0;
+	
+		// Get password
+		char password[PASSWORD_SIZE];
+		if(datasize == 2+1+PLAYERNAME_SIZE)
+		{
+			// old version - assume blank password
+			*password = 0;
+		}
+		else
+		{
+				for(u32 i=0; i<PASSWORD_SIZE-1; i++)
+				{
+					password[i] = data[23+i];
+				}
+				password[PASSWORD_SIZE-1] = 0;
+		}
+		Player *checkplayer = m_env.getPlayer(playername);
+		if(checkplayer != NULL && strcmp(checkplayer->getPassword(),password))
+		{
+			derr_server<<DTIME<<"Server: peer_id="<<peer_id
+					<<": supplied invalid password for "
+					<<playername<<std::endl;
+			SendAccessDenied(m_con, peer_id);
+			return;
+		}
+
 		// Get player
-		Player *player = emergePlayer(playername, "", peer_id);
-		//Player *player = m_env.getPlayer(peer_id);
+		Player *player = emergePlayer(playername, password, peer_id);
+
 
 		/*{
 			// DEBUG: Test serialization
@@ -3138,6 +3163,20 @@ void Server::SendHP(con::Connection &con, u16 peer_id, u8 hp)
 	con.Send(peer_id, 0, data, true);
 }
 
+void Server::SendAccessDenied(con::Connection &con, u16 peer_id)
+{
+	DSTACK(__FUNCTION_NAME);
+	std::ostringstream os(std::ios_base::binary);
+
+	writeU16(os, TOCLIENT_ACCESS_DENIED);
+
+	// Make data buffer
+	std::string s = os.str();
+	SharedBuffer<u8> data((u8*)s.c_str(), s.size());
+	// Send as reliable
+	con.Send(peer_id, 0, data, true);
+}
+
 /*
 	Non-static send methods
 */
@@ -4052,8 +4091,7 @@ v3f findSpawnPos(ServerMap &map)
 			), BS);
 }
 
-Player *Server::emergePlayer(const char *name, const char *password,
-		u16 peer_id)
+Player *Server::emergePlayer(const char *name, const char *password, u16 peer_id)
 {
 	/*
 		Try to get an existing player
@@ -4099,6 +4137,7 @@ Player *Server::emergePlayer(const char *name, const char *password,
 		//player->peer_id = PEER_ID_INEXISTENT;
 		player->peer_id = peer_id;
 		player->updateName(name);
+		player->updatePassword(password);
 
 		/*
 			Set player position

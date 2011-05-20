@@ -95,6 +95,8 @@ set(minetest_SRCS
 	tile.cpp
 	game.cpp
 	main.cpp
+	sha1.cpp
+	base64.cpp
 )
 
 # Server sources

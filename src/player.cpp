@@ -87,6 +87,7 @@ Player::Player():
 	m_position(0,0,0)
 {
 	updateName("<not set>");
+	updatePassword("");
 	resetInventory();
 }
 
@@ -145,6 +146,7 @@ void Player::serialize(std::ostream &os)
 	Settings args;
 	args.setS32("version", 1);
 	args.set("name", m_name);
+	args.set("password", m_password);
 	args.setFloat("pitch", m_pitch);
 	args.setFloat("yaw", m_yaw);
 	args.setV3F("position", m_position);
@@ -179,6 +181,10 @@ void Player::deSerialize(std::istream &is)
 	//args.getS32("version");
 	std::string name = args.get("name");
 	updateName(name.c_str());
+	std::string password = "";
+	if(args.exists("password"))
+		password = args.get("password");
+	updatePassword(password.c_str());
 	m_pitch = args.getFloat("pitch");
 	m_yaw = args.getFloat("yaw");
 	m_position = args.getV3F("position");
