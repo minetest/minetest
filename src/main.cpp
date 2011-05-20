@@ -1448,6 +1448,7 @@ int main(int argc, char *argv[])
 						sha1->addBytes(slt.c_str(), slt.length());
 						unsigned char *digest = sha1->getDigest();
 						password = base64_encode(digest, 20);
+						free(digest);
 				}
 				else
 				{

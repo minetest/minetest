@@ -1780,7 +1780,7 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 		if(datasize == 2+1+PLAYERNAME_SIZE)
 		{
 			// old version - assume blank password
-			*password = 0;
+			password[0] = 0;
 		}
 		else
 		{
