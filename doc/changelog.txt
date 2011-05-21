@@ -10,6 +10,8 @@ X:
 - The glass block added
 - Added key configuration to config file
 - Player privileges on server
+- Slightly updated map format
+- Player passwords
 
 2011-04-24:
 - Smooth lighting with simple ambient occlusion
