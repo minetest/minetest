@@ -2092,6 +2092,11 @@ void the_game(
 			lastFPS = fps;
 		}
 	}
+
+	/*
+		Drop stuff
+	*/
+	clouds->drop();
 	
 	/*
 		Draw a "shutting down" screen, which will be shown while the map
