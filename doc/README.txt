@@ -150,8 +150,7 @@ Compiling on Windows:
 	If using MSVC:
 		- Open the generated minetest.sln
 		- The project defaults to the "Debug" configuration. Make very sure to
-		  select "Release", unless you like to have a very glitchy gaming
-		  experience.
+		  select "Release", unless you want to debug some stuff (it's slower)
 		- Build the ALL_BUILD project
 		- Build the INSTALL project
 		- You should now have a working game with the executable in
@@ -160,6 +159,7 @@ Compiling on Windows:
 		  project.
 	If using MinGW:
 		- Using the command line, browse to the build directory and run 'make'
+		  (or mingw32-make or whatever it happens to be)
 		- You should now have a working game with the executable in
 			DIR/minetest/bin/minetest.exe
 
