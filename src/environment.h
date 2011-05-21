@@ -117,7 +117,7 @@ public:
 	ServerActiveObject* getActiveObject(u16 id);
 
 	/*
-		Adds an active object to the environment.
+		Add an active object to the environment.
 		Environment handles deletion of object.
 		Object may be deleted by environment immediately.
 		If id of object is 0, assigns a free id to it.
@@ -127,7 +127,7 @@ public:
 	u16 addActiveObject(ServerActiveObject *object);
 	
 	/*
-		Finds out what new objects have been added to
+		Find out what new objects have been added to
 		inside a radius around a position
 	*/
 	void getAddedActiveObjects(v3s16 pos, s16 radius,
@@ -135,7 +135,7 @@ public:
 			core::map<u16, bool> &added_objects);
 
 	/*
-		Finds out what new objects have been removed from
+		Find out what new objects have been removed from
 		inside a radius around a position
 	*/
 	void getRemovedActiveObjects(v3s16 pos, s16 radius,
@@ -143,12 +143,28 @@ public:
 			core::map<u16, bool> &removed_objects);
 	
 	/*
-		Gets the next message emitted by some active object.
+		Get the next message emitted by some active object.
 		Returns a message with id=0 if no messages are available.
 	*/
 	ActiveObjectMessage getActiveObjectMessage();
-	
+
 private:
+	/*
+		Remove all objects that satisfy (m_removed && m_known_by_count==0)
+	*/
+	void removeRemovedObjects();
+	/*
+		Convert stored objects from blocks near the players to active.
+	*/
+	void activateNearObjects(s16 range_blocks);
+	/*
+		Convert objects that are far away from all the players to static.
+
+		If range_blocks == -1, convert everything to static even if known
+		by a player.
+	*/
+	void deactivateFarObjects(s16 range_blocks);
+	
 	ServerMap *m_map;
 	Server *m_server;
 	core::map<u16, ServerActiveObject*> m_active_objects;
