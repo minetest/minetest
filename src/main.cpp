@@ -1410,6 +1410,10 @@ int main(int argc, char *argv[])
 					guienv->drawAll();
 					
 					driver->endScene();
+					
+					// On some computers framerate doesn't seem to be
+					// automatically limited
+					sleep_ms(25);
 				}
 				
 				// Break out of menu-game loop to shut down cleanly
