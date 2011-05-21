@@ -31,6 +31,8 @@ ContentFeatures::~ContentFeatures()
 {
 	if(translate_to)
 		delete translate_to;
+	if(initial_metadata)
+		delete initial_metadata;
 }
 
 void ContentFeatures::setTexture(u16 i, std::string name, u8 alpha)
