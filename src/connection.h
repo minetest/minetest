@@ -99,19 +99,6 @@ public:
 	{}
 };
 
-class GotSplitPacketException
-{
-	SharedBuffer<u8> m_data;
-public:
-	GotSplitPacketException(SharedBuffer<u8> data):
-		m_data(data)
-	{}
-	SharedBuffer<u8> getData()
-	{
-		return m_data;
-	}
-};
-
 inline u16 readPeerId(u8 *packetdata)
 {
 	return readU16(&packetdata[4]);
@@ -314,10 +301,10 @@ class IncomingSplitBuffer
 public:
 	~IncomingSplitBuffer();
 	/*
-		This will throw a GotSplitPacketException when a full
-		split packet is constructed.
+		Returns a reference counted buffer of length != 0 when a full split
+		packet is constructed. If not, returns one of length 0.
 	*/
-	void insert(BufferedPacket &p, bool reliable);
+	SharedBuffer<u8> insert(BufferedPacket &p, bool reliable);
 	
 	void removeUnreliableTimedOuts(float dtime, float timeout);
 	

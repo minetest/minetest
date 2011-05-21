@@ -371,10 +371,20 @@ template <typename T>
 class SharedBuffer
 {
 public:
+	SharedBuffer()
+	{
+		m_size = 0;
+		data = NULL;
+		refcount = new unsigned int;
+		(*refcount) = 1;
+	}
 	SharedBuffer(unsigned int size)
 	{
 		m_size = size;
-		data = new T[size];
+		if(m_size != 0)
+			data = new T[m_size];
+		else
+			data = NULL;
 		refcount = new unsigned int;
 		(*refcount) = 1;
 	}
@@ -404,8 +414,13 @@ public:
 	SharedBuffer(T *t, unsigned int size)
 	{
 		m_size = size;
-		data = new T[size];
-		memcpy(data, t, size);
+		if(m_size != 0)
+		{
+			data = new T[m_size];
+			memcpy(data, t, m_size);
+		}
+		else
+			data = NULL;
 		refcount = new unsigned int;
 		(*refcount) = 1;
 	}
@@ -414,9 +429,14 @@ public:
 	*/
 	SharedBuffer(const Buffer<T> &buffer)
 	{
-		m_size = buffer.m_size;
-		data = new T[buffer.getSize()];
-		memcpy(data, *buffer, buffer.getSize());
+		m_size = buffer.getSize();
+		if(m_size != 0)
+		{
+			data = new T[m_size];
+			memcpy(data, *buffer, buffer.getSize());
+		}
+		else
+			data = NULL;
 		refcount = new unsigned int;
 		(*refcount) = 1;
 	}
@@ -426,6 +446,7 @@ public:
 	}
 	T & operator[](unsigned int i) const
 	{
+		//assert(i < m_size)
 		return data[i];
 	}
 	T * operator*() const
@@ -443,7 +464,8 @@ private:
 		(*refcount)--;
 		if(*refcount == 0)
 		{
-			delete[] data;
+			if(data)
+				delete[] data;
 			delete refcount;
 		}
 	}

@@ -81,6 +81,8 @@ SUGG: Calculate lighting per vertex to get a lighting effect like in
 SUGG: Background music based on cellular automata?
       http://www.earslap.com/projectslab/otomata
 
+SUGG: Simple light color information to air
+
 Gaming ideas:
 -------------
 
@@ -135,8 +137,6 @@ Build system / running:
 Networking and serialization:
 -----------------------------
 
-TODO: Get rid of GotSplitPacketException
-
 User Interface:
 ---------------
 
@@ -163,11 +163,6 @@ SUGG: Option for enabling proper alpha channel for textures
 TODO: A setting for enabling bilinear filtering for textures
 
 TODO: Better control of draw_control.wanted_max_blocks
-
-TODO: Get player texture (and some others) from the specified texture
-      directory
-
-SUGG: Simple light color information to air
 
 TODO: Block mesh generator to tile properly on smooth lighting
 

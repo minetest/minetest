@@ -320,7 +320,7 @@ IncomingSplitBuffer::~IncomingSplitBuffer()
 	This will throw a GotSplitPacketException when a full
 	split packet is constructed.
 */
-void IncomingSplitBuffer::insert(BufferedPacket &p, bool reliable)
+SharedBuffer<u8> IncomingSplitBuffer::insert(BufferedPacket &p, bool reliable)
 {
 	u32 headersize = BASE_HEADER_SIZE + 7;
 	assert(p.data.getSize() >= headersize);
@@ -363,9 +363,9 @@ void IncomingSplitBuffer::insert(BufferedPacket &p, bool reliable)
 	// Set chunk data in buffer
 	sp->chunks[chunk_num] = chunkdata;
 	
-	// If not all chunks are received, return
+	// If not all chunks are received, return empty buffer
 	if(sp->allReceived() == false)
-		return;
+		return SharedBuffer<u8>();
 
 	// Calculate total size
 	u32 totalsize = 0;
@@ -392,8 +392,8 @@ void IncomingSplitBuffer::insert(BufferedPacket &p, bool reliable)
 	// Remove sp from buffer
 	m_buf.remove(seqnum);
 	delete sp;
-	
-	throw GotSplitPacketException(fulldata);
+
+	return fulldata;
 }
 void IncomingSplitBuffer::removeUnreliableTimedOuts(float dtime, float timeout)
 {
@@ -709,21 +709,17 @@ SharedBuffer<u8> Channel::ProcessPacket(
 				con->GetProtocolID(),
 				peer_id,
 				channelnum);
-		try{
-			// Buffer the packet
-			incoming_splits.insert(packet, reliable);
-		}
-		// This exception happens when all the pieces of a packet
-		// are collected.
-		catch(GotSplitPacketException &e)
+		// Buffer the packet
+		SharedBuffer<u8> data = incoming_splits.insert(packet, reliable);
+		if(data.getSize() != 0)
 		{
 			con->PrintInfo();
 			dout_con<<"RETURNING TYPE_SPLIT: Constructed full data, "
-					<<"size="<<e.getData().getSize()<<std::endl;
-			return e.getData();
+					<<"size="<<data.getSize()<<std::endl;
+			return data;
 		}
 		con->PrintInfo();
-		dout_con<<"BUFFERING TYPE_SPLIT"<<std::endl;
+		dout_con<<"BUFFERED TYPE_SPLIT"<<std::endl;
 		throw ProcessedSilentlyException("Buffered a split packet chunk");
 	}
 	else if(type == TYPE_RELIABLE)
