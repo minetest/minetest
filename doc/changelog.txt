@@ -12,6 +12,7 @@ X:
 - Player privileges on server
 - Slightly updated map format
 - Player passwords
+- All textures first searched from texture_path
 
 2011-04-24:
 - Smooth lighting with simple ambient occlusion
