@@ -2,7 +2,7 @@
 # ../minetest.conf
 # ../../minetest.conf
 # Any other path can be chosen by passing the path as a parameter
-# to the program, eg. "minetest.exe ../minetest.conf.example"
+# to the program, eg. "minetest.exe --config ../minetest.conf.example"
 #
 # By default, all the settings are commented and not functional.
 # Uncomment settings by removing the preceding #.
