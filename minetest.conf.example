@@ -6,11 +6,29 @@
 #
 # By default, all the settings are commented and not functional.
 # Uncomment settings by removing the preceding #.
+#
+# Further documentation:
+# http://celeron.55.lt/~celeron55/minetest/wiki/doku.php
 
 #
 # Client side stuff
 #
 
+# Initial window size
+#screenW = 800
+#screenH = 600
+
+# Port to connect to and to bind a server at
+#port = 30000
+
+# Address to connect to (blank = start local server)
+#address = 
+
+# Name of player. On server, this is the default admin.
+#name = 
+
+# Key configuration.
+# See http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3
 #keymap_forward = KEY_KEY_W
 #keymap_backward = KEY_KEY_S
 #keymap_left = KEY_KEY_A
@@ -20,39 +38,52 @@
 #keymap_inventory = KEY_KEY_I
 #keymap_chat = KEY_KEY_T
 #keymap_rangeselect = KEY_KEY_R
-# Some (temporary) keys for debugging
+# Some (temporary) keys for debugging features
 #keymap_special1 = KEY_KEY_E
 #keymap_print_debug_stacks = KEY_KEY_P
 
+# The desired FPS
 #wanted_fps = 30
+
+# If FPS would go higher than this, limit it by sleeping
+# (to not waste CPU power for no benefit)
 #fps_max = 60
+
+# The allowed adjustment range for the automatic rendering range adjustment
 #viewing_range_nodes_max = 300
 #viewing_range_nodes_min = 35
-#screenW = 800
-#screenH = 600
-#port = 30000
-#address = 
-#name = 
 
-# Whether to try to fog out the border of the visible area
+# Whether to fog out the end of the visible area
 #enable_fog = true
+
 # Enable a bit lower water surface; disable for speed
 #new_style_water = true
+
 # Enable nice leaves; disable for speed
 #new_style_leaves = true
-# Enable smooth lighting with simple ambient occlusion; disable for speed
+
+# Enable smooth lighting with simple ambient occlusion;
+# disable for speed or for different looks.
 #smooth_lighting = true
-# Whether to draw a frametime graph
+
+# Whether to draw a frametime graph (for debugging frametime)
 #frametime_graph = false
-# Enable combining mainly used textures to a bigger one
+
+# Enable combining mainly used textures to a bigger one for improved speed
+# disable if it causes graphics glitches.
 #enable_texture_atlas = true
-# Path to texture directory
+
+# Path to texture directory. All textures are first searched from here.
 #texture_path =
+
+# Video back-end.
 # Possible values: null, software, burningsvideo, direct3d8, direct3d9, opengl
 #video_driver = opengl
 
-# 
+# Enable random user input, for testing
 #random_input = false
+
+# Timeout for client to remove unused map data from memory
 #client_delete_unused_sectors_timeout = 1200
 
 #
@@ -60,8 +91,10 @@
 #
 
 # Set to true to enable experimental features
+# (varies from version to version, see wiki)
 #enable_experimental = false
 
+# Map directory (everything in the world is stored here)
 #map-dir = /home/palle/custom_map
 
 # Set to true to enable creative mode (unlimited inventory)
@@ -69,6 +102,7 @@
 
 #enable_damage = false
 
+# Gives some stuff to players at the beginning
 #give_initial_stuff = false
 
 # Player and object positions are sent at intervals specified by this

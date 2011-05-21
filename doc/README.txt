@@ -3,6 +3,12 @@ Minetest-c55
 An InfiniMiner/Minecraft inspired game.
 Copyright (c) 2010-2011 Perttu Ahola <celeron55@gmail.com>
 
+Further documentation:
+----------------------
+- Website: http://celeron.55.lt/~celeron55/minetest/
+- Wiki: http://celeron.55.lt/~celeron55/minetest/wiki/
+- Forum: http://celeron.55.lt/~celeron55/minetest/forum/
+
 This is a development version:
 ------------------------------
 - Don't expect it to work as well as a finished game will.
@@ -12,6 +18,7 @@ This is a development version:
 Controls:
 ---------
 - See the in-game pause menu
+- Settable in the configuration file, see the section below.
 
 Map directory:
 --------------
