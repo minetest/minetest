@@ -23,6 +23,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "constants.h"
 #include "utility.h"
 #include "environment.h"
+#include "tile.h"
 
 /*
 	ClientActiveObject
@@ -114,7 +115,7 @@ void TestCAO::addToScene(scene::ISceneManager *smgr)
 	buf->getMaterial().setFlag(video::EMF_LIGHTING, false);
 	buf->getMaterial().setFlag(video::EMF_BACK_FACE_CULLING, false);
 	buf->getMaterial().setTexture
-			(0, driver->getTexture(porting::getDataPath("rat.png").c_str()));
+			(0, driver->getTexture(getTexturePath("rat.png").c_str()));
 	buf->getMaterial().setFlag(video::EMF_BILINEAR_FILTER, false);
 	buf->getMaterial().setFlag(video::EMF_FOG_ENABLE, true);
 	buf->getMaterial().MaterialType = video::EMT_TRANSPARENT_ALPHA_CHANNEL;
@@ -237,7 +238,7 @@ void ItemCAO::addToScene(scene::ISceneManager *smgr)
 	//buf->getMaterial().setTexture(0, NULL);
 	// Initialize with the stick texture
 	buf->getMaterial().setTexture
-			(0, driver->getTexture(porting::getDataPath("stick.png").c_str()));
+			(0, driver->getTexture(getTexturePath("stick.png").c_str()));
 	buf->getMaterial().setFlag(video::EMF_BILINEAR_FILTER, false);
 	buf->getMaterial().setFlag(video::EMF_FOG_ENABLE, true);
 	buf->getMaterial().MaterialType = video::EMT_TRANSPARENT_ALPHA_CHANNEL;
@@ -443,7 +444,7 @@ void RatCAO::addToScene(scene::ISceneManager *smgr)
 	buf->getMaterial().setFlag(video::EMF_BACK_FACE_CULLING, false);
 	//buf->getMaterial().setTexture(0, NULL);
 	buf->getMaterial().setTexture
-			(0, driver->getTexture(porting::getDataPath("rat.png").c_str()));
+			(0, driver->getTexture(getTexturePath("rat.png").c_str()));
 	buf->getMaterial().setFlag(video::EMF_BILINEAR_FILTER, false);
 	buf->getMaterial().setFlag(video::EMF_FOG_ENABLE, true);
 	buf->getMaterial().MaterialType = video::EMT_TRANSPARENT_ALPHA_CHANNEL;
@@ -604,7 +605,7 @@ void Oerkki1CAO::addToScene(scene::ISceneManager *smgr)
 	buf->getMaterial().setFlag(video::EMF_BACK_FACE_CULLING, false);
 	//buf->getMaterial().setTexture(0, NULL);
 	buf->getMaterial().setTexture
-			(0, driver->getTexture(porting::getDataPath("oerkki1.png").c_str()));
+			(0, driver->getTexture(getTexturePath("oerkki1.png").c_str()));
 	buf->getMaterial().setFlag(video::EMF_BILINEAR_FILTER, false);
 	buf->getMaterial().setFlag(video::EMF_FOG_ENABLE, true);
 	buf->getMaterial().MaterialType = video::EMT_TRANSPARENT_ALPHA_CHANNEL;

@@ -345,7 +345,7 @@ void draw_hotbar(video::IVideoDriver *driver, gui::IGUIFont *font,
 	*/
 	{
 		video::ITexture *heart_texture =
-				driver->getTexture(porting::getDataPath("heart.png").c_str());
+				driver->getTexture(getTexturePath("heart.png").c_str());
 		v2s32 p = pos + v2s32(0, -20);
 		for(s32 i=0; i<halfheartcount/2; i++)
 		{
@@ -597,32 +597,32 @@ void update_skybox(video::IVideoDriver* driver,
 	if(brightness >= 0.5)
 	{
 		skybox = smgr->addSkyBoxSceneNode(
-			driver->getTexture(porting::getDataPath("skybox2.png").c_str()),
-			driver->getTexture(porting::getDataPath("skybox3.png").c_str()),
-			driver->getTexture(porting::getDataPath("skybox1.png").c_str()),
-			driver->getTexture(porting::getDataPath("skybox1.png").c_str()),
-			driver->getTexture(porting::getDataPath("skybox1.png").c_str()),
-			driver->getTexture(porting::getDataPath("skybox1.png").c_str()));
+			driver->getTexture(getTexturePath("skybox2.png").c_str()),
+			driver->getTexture(getTexturePath("skybox3.png").c_str()),
+			driver->getTexture(getTexturePath("skybox1.png").c_str()),
+			driver->getTexture(getTexturePath("skybox1.png").c_str()),
+			driver->getTexture(getTexturePath("skybox1.png").c_str()),
+			driver->getTexture(getTexturePath("skybox1.png").c_str()));
 	}
 	else if(brightness >= 0.2)
 	{
 		skybox = smgr->addSkyBoxSceneNode(
-			driver->getTexture(porting::getDataPath("skybox2_dawn.png").c_str()),
-			driver->getTexture(porting::getDataPath("skybox3_dawn.png").c_str()),
-			driver->getTexture(porting::getDataPath("skybox1_dawn.png").c_str()),
-			driver->getTexture(porting::getDataPath("skybox1_dawn.png").c_str()),
-			driver->getTexture(porting::getDataPath("skybox1_dawn.png").c_str()),
-			driver->getTexture(porting::getDataPath("skybox1_dawn.png").c_str()));
+			driver->getTexture(getTexturePath("skybox2_dawn.png").c_str()),
+			driver->getTexture(getTexturePath("skybox3_dawn.png").c_str()),
+			driver->getTexture(getTexturePath("skybox1_dawn.png").c_str()),
+			driver->getTexture(getTexturePath("skybox1_dawn.png").c_str()),
+			driver->getTexture(getTexturePath("skybox1_dawn.png").c_str()),
+			driver->getTexture(getTexturePath("skybox1_dawn.png").c_str()));
 	}
 	else
 	{
 		skybox = smgr->addSkyBoxSceneNode(
-			driver->getTexture(porting::getDataPath("skybox2_night.png").c_str()),
-			driver->getTexture(porting::getDataPath("skybox3_night.png").c_str()),
-			driver->getTexture(porting::getDataPath("skybox1_night.png").c_str()),
-			driver->getTexture(porting::getDataPath("skybox1_night.png").c_str()),
-			driver->getTexture(porting::getDataPath("skybox1_night.png").c_str()),
-			driver->getTexture(porting::getDataPath("skybox1_night.png").c_str()));
+			driver->getTexture(getTexturePath("skybox2_night.png").c_str()),
+			driver->getTexture(getTexturePath("skybox3_night.png").c_str()),
+			driver->getTexture(getTexturePath("skybox1_night.png").c_str()),
+			driver->getTexture(getTexturePath("skybox1_night.png").c_str()),
+			driver->getTexture(getTexturePath("skybox1_night.png").c_str()),
+			driver->getTexture(getTexturePath("skybox1_night.png").c_str()));
 	}
 }
 

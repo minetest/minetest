@@ -1,6 +1,6 @@
 /*
 Minetest-c55
-Copyright (C) 2010 celeron55, Perttu Ahola <celeron55@gmail.com>
+Copyright (C) 2010-2011 celeron55, Perttu Ahola <celeron55@gmail.com>
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -24,6 +24,22 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "threads.h"
 #include "utility.h"
 #include <string>
+
+/*
+	tile.{h,cpp}: Texture handling stuff.
+*/
+
+/*
+	Gets the path to a texture by first checking if the texture exists
+	in texture_path and if not, using the data path.
+
+	Checks all supported extensions by replacing the original extension.
+
+	If not found, returns "".
+
+	Utilizes a thread-safe cache.
+*/
+std::string getTexturePath(const std::string &filename);
 
 /*
 	Specifies a texture in an atlas.

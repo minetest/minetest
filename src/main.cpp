@@ -913,7 +913,7 @@ void drawMenuBackground(video::IVideoDriver* driver)
 	core::dimension2d<u32> screensize = driver->getScreenSize();
 		
 	video::ITexture *bgtexture =
-			driver->getTexture(porting::getDataPath("mud.png").c_str());
+			driver->getTexture(getTexturePath("mud.png").c_str());
 	if(bgtexture)
 	{
 		s32 texturesize = 128;
@@ -933,7 +933,7 @@ void drawMenuBackground(video::IVideoDriver* driver)
 	}
 	
 	video::ITexture *logotexture =
-			driver->getTexture(porting::getDataPath("menulogo.png").c_str());
+			driver->getTexture(getTexturePath("menulogo.png").c_str());
 	if(logotexture)
 	{
 		v2s32 logosize(logotexture->getOriginalSize().Width,
@@ -1288,7 +1288,7 @@ int main(int argc, char *argv[])
 
 	guienv = device->getGUIEnvironment();
 	gui::IGUISkin* skin = guienv->getSkin();
-	gui::IGUIFont* font = guienv->getFont(porting::getDataPath("fontlucida.png").c_str());
+	gui::IGUIFont* font = guienv->getFont(getTexturePath("fontlucida.png").c_str());
 	if(font)
 		skin->setFont(font);
 	else

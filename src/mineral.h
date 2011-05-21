@@ -21,7 +21,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #define MINERAL_HEADER
 
 #include "inventory.h"
-#include "texture.h"
+#include "tile.h"
 
 /*
 	Minerals
@@ -39,7 +39,6 @@ void init_mineral();
 
 #define MINERAL_COUNT 3
 
-//textureid_t mineral_block_texture(u8 mineral);
 std::string mineral_block_texture(u8 mineral);
 
 inline CraftItem * getDiggedMineralItem(u8 mineral)

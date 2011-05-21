@@ -261,7 +261,7 @@ RemotePlayer::RemotePlayer(
 		// Set material
 		buf->getMaterial().setFlag(video::EMF_LIGHTING, false);
 		//buf->getMaterial().setFlag(video::EMF_BACK_FACE_CULLING, false);
-		buf->getMaterial().setTexture(0, driver->getTexture(porting::getDataPath("player.png").c_str()));
+		buf->getMaterial().setTexture(0, driver->getTexture(getTexturePath("player.png").c_str()));
 		buf->getMaterial().setFlag(video::EMF_BILINEAR_FILTER, false);
 		buf->getMaterial().setFlag(video::EMF_FOG_ENABLE, true);
 		//buf->getMaterial().MaterialType = video::EMT_TRANSPARENT_ALPHA_CHANNEL;
@@ -285,7 +285,7 @@ RemotePlayer::RemotePlayer(
 		// Set material
 		buf->getMaterial().setFlag(video::EMF_LIGHTING, false);
 		//buf->getMaterial().setFlag(video::EMF_BACK_FACE_CULLING, false);
-		buf->getMaterial().setTexture(0, driver->getTexture(porting::getDataPath("player_back.png").c_str()));
+		buf->getMaterial().setTexture(0, driver->getTexture(getTexturePath("player_back.png").c_str()));
 		buf->getMaterial().setFlag(video::EMF_BILINEAR_FILTER, false);
 		buf->getMaterial().setFlag(video::EMF_FOG_ENABLE, true);
 		buf->getMaterial().MaterialType = video::EMT_TRANSPARENT_ALPHA_CHANNEL_REF;

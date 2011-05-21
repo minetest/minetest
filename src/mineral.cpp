@@ -27,7 +27,6 @@ const char *mineral_filenames[MINERAL_COUNT] =
 	"mineral_iron.png"
 };
 
-//textureid_t mineral_textures[MINERAL_COUNT] = {0};
 std::string mineral_textures[MINERAL_COUNT];
 
 void init_mineral()
@@ -40,7 +39,6 @@ void init_mineral()
 	}
 }
 
-//textureid_t mineral_block_texture(u8 mineral)
 std::string mineral_block_texture(u8 mineral)
 {
 	if(mineral >= MINERAL_COUNT)

@@ -1766,12 +1766,12 @@ private:
 	core::list<Value> m_list;
 };
 
-#if 0
+#if 1
 template<typename Key, typename Value>
-class MutexedCache
+class MutexedMap
 {
 public:
-	MutexedCache()
+	MutexedMap()
 	{
 		m_mutex.Init();
 		assert(m_mutex.IsInitialized());
@@ -1793,8 +1793,10 @@ public:
 
 		if(n == NULL)
 			return false;
-
-		*result = n->getValue();
+		
+		if(result != NULL)
+			*result = n->getValue();
+			
 		return true;
 	}
 

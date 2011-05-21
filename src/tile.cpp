@@ -1,6 +1,6 @@
 /*
 Minetest-c55
-Copyright (C) 2010 celeron55, Perttu Ahola <celeron55@gmail.com>
+Copyright (C) 2010-2011 celeron55, Perttu Ahola <celeron55@gmail.com>
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -21,6 +21,12 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "debug.h"
 #include "main.h" // for g_settings
 #include "filesys.h"
+#include "utility.h"
+
+/*
+	A cache from texture name to texture path
+*/
+MutexedMap<std::string, std::string> g_texturename_to_path_cache;
 
 /*
 	Replaces the filename extension.
@@ -30,7 +36,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 		-> image = "a/image.jpg"
 	Returns true on success.
 */
-inline bool replace_ext(std::string &path, const char *ext)
+static bool replace_ext(std::string &path, const char *ext)
 {
 	if(ext == NULL)
 		return false;
@@ -61,7 +67,7 @@ inline bool replace_ext(std::string &path, const char *ext)
 
 	If failed, return "".
 */
-inline std::string getImagePath(std::string path)
+static std::string getImagePath(std::string path)
 {
 	// A NULL-ended list of possible image extensions
 	const char *extensions[] = {
@@ -86,24 +92,54 @@ inline std::string getImagePath(std::string path)
 /*
 	Gets the path to a texture by first checking if the texture exists
 	in texture_path and if not, using the data path.
+
+	Checks all supported extensions by replacing the original extension.
+
+	If not found, returns "".
+
+	Utilizes a thread-safe cache.
 */
-inline std::string getTexturePath(std::string filename)
+std::string getTexturePath(const std::string &filename)
 {
+	std::string fullpath = "";
+	/*
+		Check from cache
+	*/
+	bool incache = g_texturename_to_path_cache.get(filename, &fullpath);
+	if(incache)
+		return fullpath;
+	
+	/*
+		Check from texture_path
+	*/
 	std::string texture_path = g_settings.get("texture_path");
 	if(texture_path != "")
 	{
-		std::string fullpath = texture_path + '/' + filename;
-		// Check all filename extensions
-		fullpath = getImagePath(fullpath);
-		// If found, return it
-		if(fullpath != "")
-			return fullpath;
+		std::string testpath = texture_path + '/' + filename;
+		// Check all filename extensions. Returns "" if not found.
+		fullpath = getImagePath(testpath);
 	}
-	std::string fullpath = porting::getDataPath(filename.c_str());
-	// Check all filename extensions
-	fullpath = getImagePath(fullpath);
+	
+	/*
+		Check from default data directory
+	*/
+	if(fullpath == "")
+	{
+		std::string testpath = porting::getDataPath(filename.c_str());
+		// Check all filename extensions. Returns "" if not found.
+		fullpath = getImagePath(testpath);
+	}
+	
+	// Add to cache (also an empty result is cached)
+	g_texturename_to_path_cache.set(filename, fullpath);
+	
+	// Finally return it
 	return fullpath;
 }
+
+/*
+	TextureSource
+*/
 
 TextureSource::TextureSource(IrrlichtDevice *device):
 		m_device(device),
