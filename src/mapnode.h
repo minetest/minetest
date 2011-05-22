@@ -148,6 +148,8 @@ struct ContentFeatures
 	bool light_propagates;
 	bool sunlight_propagates;
 	u8 solidness; // Used when choosing which face is drawn
+	// This is used for collision detection.
+	// Also for general solidness queries.
 	bool walkable;
 	bool pointable;
 	bool diggable;

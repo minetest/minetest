@@ -106,8 +106,13 @@ public:
 	*/
 	virtual u16 punch(const std::string &toolname){return 0;}
 	
-	// Number of players which know about this object
+	/*
+		Number of players which know about this object. Object won't be
+		deleted until this is 0 to keep the id preserved for the right
+		object.
+	*/
 	u16 m_known_by_count;
+
 	/*
 		- Whether this object is to be removed when nobody knows about
 		  it anymore.
@@ -118,6 +123,16 @@ public:
 		- This can be set to true by anything else too.
 	*/
 	bool m_removed;
+	
+	/*
+		This is set to true when a block should be removed from the active
+		object list but couldn't be removed because the id has to be
+		reserved for some client.
+
+		The environment checks this periodically. If this is true and also
+		m_known_by_count is true, 
+	*/
+	bool m_pending_deactivation;
 	
 	/*
 		Whether the object's static data has been stored to a block

@@ -607,13 +607,13 @@ s16 Map::propagateSunlight(v3s16 start,
 		}
 		else
 		{
-			// Turn mud into grass
+			/*// Turn mud into grass
 			if(n.d == CONTENT_MUD)
 			{
 				n.d = CONTENT_GRASS;
 				block->setNode(relpos, n);
 				modified_blocks.insert(blockpos, block);
-			}
+			}*/
 
 			// Sunlight goes no further
 			break;
@@ -838,9 +838,6 @@ void Map::updateLighting(core::map<v3s16, MapBlock*> & a_blocks,
 }
 
 /*
-	This is called after changing a node from transparent to opaque.
-	The lighting value of the node should be left as-is after changing
-	other values. This sets the lighting value to 0.
 */
 void Map::addNodeAndUpdate(v3s16 p, MapNode n,
 		core::map<v3s16, MapBlock*> &modified_blocks)
@@ -877,12 +874,12 @@ void Map::addNodeAndUpdate(v3s16 p, MapNode n,
 	catch(InvalidPositionException &e)
 	{
 	}
-	
+
+#if 1
 	/*
-		If the new node doesn't propagate sunlight and there is
-		grass below, change it to mud
+		If the new node is solid and there is grass below, change it to mud
 	*/
-	if(content_features(n.d).sunlight_propagates == false)
+	if(content_features(n.d).walkable == true)
 	{
 		try{
 			MapNode bottomnode = getNode(bottompos);
@@ -898,6 +895,7 @@ void Map::addNodeAndUpdate(v3s16 p, MapNode n,
 		{
 		}
 	}
+#endif
 
 	/*
 		If the new node is mud and it is under sunlight, change it
@@ -5452,25 +5450,13 @@ void ServerMap::saveBlock(MapBlock *block)
 	*/
 	o.write((char*)&version, 1);
 	
+	// Write basic data
 	block->serialize(o, version);
+	
+	// Write extra data stored on disk
+	block->serializeDiskExtra(o, version);
 
-	/*
-		Versions up from 9 have block objects.
-	*/
-	if(version >= 9)
-	{
-		block->serializeObjects(o, version);
-	}
-	
-	/*
-		Versions up from 15 have static objects.
-	*/
-	if(version >= 15)
-	{
-		block->m_static_objects.serialize(o);
-	}
-	
-	// We just wrote it to the disk
+	// We just wrote it to the disk so clear modified flag
 	block->resetChangedFlag();
 }
 
@@ -5515,33 +5501,20 @@ void ServerMap::loadBlock(std::string sectordir, std::string blockfile, MapSecto
 			created_new = true;
 		}
 		
-		// deserialize block data
+		// Read basic data
 		block->deSerialize(is, version);
-		
-		/*
-			Versions up from 9 have block objects.
-		*/
-		if(version >= 9)
-		{
-			block->updateObjects(is, version, NULL, 0);
-		}
 
-		/*
-			Versions up from 15 have static objects.
-		*/
-		if(version >= 15)
-		{
-			block->m_static_objects.deSerialize(is);
-		}
+		// Read extra data stored on disk
+		block->deSerializeDiskExtra(is, version);
 		
+		// If it's a new block, insert it to the map
 		if(created_new)
 			sector->insertBlock(block);
 		
 		/*
-			Convert old formats to new and save
+			Save blocks loaded in old format in new format
 		*/
 
-		// Save old format blocks in new format
 		if(version < SER_FMT_VER_HIGHEST || save_after_load)
 		{
 			saveBlock(block);

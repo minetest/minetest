@@ -27,10 +27,8 @@ NOTE: Global locale is now set at initialization
 NOTE: If VBO (EHM_STATIC) is used, remember to explicitly free the
       hardware buffer (it is not freed automatically)
 
-Random suggeestions (AKA very old suggestions that haven't been done):
-----------------------------------------------------------------------
-
-SUGG: Fix address to be ipv6 compatible
+Old, wild and random suggestions that probably won't be done:
+-------------------------------------------------------------
 
 SUGG: If player is on ground, mainly fetch ground-level blocks
 
@@ -82,6 +80,10 @@ SUGG: Background music based on cellular automata?
       http://www.earslap.com/projectslab/otomata
 
 SUGG: Simple light color information to air
+
+SUGG: Server-side objects could be moved based on nodes to enable very
+      lightweight operation and simple AI
+	- Not practical; client would still need to show smooth movement.
 
 Gaming ideas:
 -------------
@@ -136,6 +138,8 @@ Build system / running:
 
 Networking and serialization:
 -----------------------------
+
+SUGG: Fix address to be ipv6 compatible
 
 User Interface:
 ---------------
@@ -207,18 +211,47 @@ FIXME: Server sometimes goes into some infinite PeerNotFoundException loop
 FIXME: The new optimized map sending doesn't sometimes send enough blocks
        from big caves and such
 
+TODO: A list of "active blocks" in which stuff happens.
+	+ Add a never-resetted game timer to the server
+	+ Add a timestamp value to blocks
+	+ The simple rule: All blocks near some player are "active"
+	- Do stuff in real time in active blocks
+		+ Handle objects
+		TODO: Make proper hooks in here
+		- Grow grass, delete leaves without a tree
+		- Spawn some mobs based on some rules
+		- Transform cobble to mossy cobble near water
+		- Run a custom script
+		- ...And all kinds of other dynamic stuff
+	+ Keep track of when a block becomes active and becomes inactive
+	+ When a block goes inactive:
+		+ Store objects statically to block
+		+ Store timer value as the timestamp
+	+ When a block goes active:
+		+ Create active objects out of static objects
+		TODO: Make proper hooks in here
+		- Simulate the results of what would have happened if it would have
+		  been active for all the time
+		  	- Grow a lot of grass and so on
+	+ Initially it is fine to send information about every active object
+	  to every player. Eventually it should be modified to only send info
+	  about the nearest ones.
+	  	+ This was left to be done by the old system and it sends only the
+		  nearest ones.
+
 Objects:
 --------
 
-TODO: Get rid of MapBlockObjects and use ActiveObjects
+TODO: Get rid of MapBlockObjects and use only ActiveObjects
+	- Skipping the MapBlockObject data is nasty - there is no "total
+	  length" stored; have to make a SkipMBOs function which contains
+	  enough of the current code to skip them properly.
 
 SUGG: MovingObject::move and Player::move are basically the same.
       combine them.
-	  - NOTE: Player::move is more up-to-date.
-	  - NOTE: There is a simple move implementation now in collision.{h,cpp}
-
-SUGG: Server-side objects could be moved based on nodes to enable very
-      lightweight operation and simple AI
+	- NOTE: Player::move is more up-to-date.
+	- NOTE: There is a simple move implementation now in collision.{h,cpp}
+	- NOTE: MovingObject will be deleted (MapBlockObject)
 
 Map:
 ----

@@ -26,53 +26,55 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "utility.h"
 
 /*
+	Map format serialization version
+	--------------------------------
+
+	For map data (blocks, nodes, sectors).
+	
 	NOTE: The goal is to increment this so that saved maps will be
 	      loadable by any version. Other compatibility is not
 		  maintained.
-	Serialization format versions (for raw map data (blocks, nodes, sectors)):
-	== Unsupported ==
+		  
 	0: original networked test with 1-byte nodes
 	1: update with 2-byte nodes
-	== Supported ==
 	2: lighting is transmitted in param
 	3: optional fetching of far blocks
 	4: block compression
 	5: sector objects NOTE: block compression was left accidentally out
 	6: failed attempt at switching block compression on again
 	7: block compression switched on again
-	8: (dev) server-initiated block transfers and all kinds of stuff
-	9: (dev) block objects
-	10: (dev) water pressure
-	11: (dev) zlib'd blocks, block flags
-	12: (dev) UnlimitedHeightmap now uses interpolated areas
-	13: (dev) Mapgen v2
-	14: (dev) NodeMetadata
-	15: (dev) StaticObjects
-	16: (dev) larger maximum size of node metadata, and compression
+	8: server-initiated block transfers and all kinds of stuff
+	9: block objects
+	10: water pressure
+	11: zlib'd blocks, block flags
+	12: UnlimitedHeightmap now uses interpolated areas
+	13: Mapgen v2
+	14: NodeMetadata
+	15: StaticObjects
+	16: larger maximum size of node metadata, and compression
+	17: MapBlocks contain timestamp
 */
 // This represents an uninitialized or invalid format
 #define SER_FMT_VER_INVALID 255
 // Highest supported serialization version
-#define SER_FMT_VER_HIGHEST 16
+#define SER_FMT_VER_HIGHEST 17
 // Lowest supported serialization version
 #define SER_FMT_VER_LOWEST 0
 
 #define ser_ver_supported(v) (v >= SER_FMT_VER_LOWEST && v <= SER_FMT_VER_HIGHEST)
 
+/*
+	Misc. serialization functions
+*/
+
 void compressZlib(SharedBuffer<u8> data, std::ostream &os);
 void compressZlib(const std::string &data, std::ostream &os);
 void decompressZlib(std::istream &is, std::ostream &os);
 
+// These choose between zlib and a self-made one according to version
 void compress(SharedBuffer<u8> data, std::ostream &os, u8 version);
 //void compress(const std::string &data, std::ostream &os, u8 version);
 void decompress(std::istream &is, std::ostream &os, u8 version);
-
-/*class Serializable
-{
-public:
-	void serialize(std::ostream &os, u8 version) = 0;
-	void deSerialize(std::istream &istr);
-};*/
 
 #endif
 

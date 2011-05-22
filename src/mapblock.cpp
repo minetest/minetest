@@ -1549,7 +1549,8 @@ MapBlock::MapBlock(NodeContainer *parent, v3s16 pos, bool dummy):
 		m_lighting_expired(true),
 		m_day_night_differs(false),
 		//m_not_fully_generated(false),
-		m_objects(this)
+		m_objects(this),
+		m_timestamp(BLOCK_TIMESTAMP_UNDEFINED)
 {
 	data = NULL;
 	if(dummy == false)
@@ -1720,17 +1721,17 @@ void MapBlock::replaceMesh(scene::SMesh *mesh_new)
 	Propagates sunlight down through the block.
 	Doesn't modify nodes that are not affected by sunlight.
 	
-	Returns false if sunlight at bottom block is invalid
+	Returns false if sunlight at bottom block is invalid.
+	Returns true if sunlight at bottom block is valid.
 	Returns true if bottom block doesn't exist.
 
 	If there is a block above, continues from it.
 	If there is no block above, assumes there is sunlight, unless
 	is_underground is set or highest node is water.
 
-	At the moment, all sunlighted nodes are added to light_sources.
-	- SUGG: This could be optimized
+	All sunlighted nodes are added to light_sources.
 
-	Turns sunglighted mud into grass.
+	If grow_grass==true, turns sunglighted mud into grass.
 
 	if remove_light==true, sets non-sunlighted nodes black.
 
@@ -1947,45 +1948,6 @@ void MapBlock::stepObjects(float dtime, bool server, u32 daynight_ratio)
 		Step objects
 	*/
 	m_objects.step(dtime, server, daynight_ratio);
-
-#if 0
-	/*
-		Spawn some objects at random.
-
-		Use dayNightDiffed() to approximate being near ground level
-	*/
-	if(m_spawn_timer < -999)
-	{
-		m_spawn_timer = 60;
-	}
-	if(dayNightDiffed() == true && getObjectCount() == 0)
-	{
-		m_spawn_timer -= dtime;
-		if(m_spawn_timer <= 0.0)
-		{
-			m_spawn_timer += myrand() % 300;
-			
-			v2s16 p2d(
-				(myrand()%(MAP_BLOCKSIZE-1))+0,
-				(myrand()%(MAP_BLOCKSIZE-1))+0
-			);
-
-			s16 y = getGroundLevel(p2d);
-			
-			if(y >= 0)
-			{
-				v3s16 p(p2d.X, y+1, p2d.Y);
-
-				if(getNode(p).d == CONTENT_AIR
-						&& getNode(p).getLightBlend(daynight_ratio) <= 11)
-				{
-					RatObject *obj = new RatObject(NULL, -1, intToFloat(p, BS));
-					addObject(obj);
-				}
-			}
-		}
-	}
-#endif
 
 	setChangedFlag();
 }
@@ -2359,6 +2321,8 @@ void MapBlock::deSerialize(std::istream &is, u8 version)
 	/*
 		Translate nodes as specified in the translate_to fields of
 		node features
+
+		NOTE: This isn't really used. Should it be removed?
 	*/
 	for(u32 i=0; i<MAP_BLOCKSIZE*MAP_BLOCKSIZE*MAP_BLOCKSIZE; i++)
 	{
@@ -2371,6 +2335,56 @@ void MapBlock::deSerialize(std::istream &is, u8 version)
 					<<translate_to->d<<std::endl;
 			n = *translate_to;
 		}
+	}
+}
+
+void MapBlock::serializeDiskExtra(std::ostream &os, u8 version)
+{
+	// Versions up from 9 have block objects.
+	if(version >= 9)
+	{
+		serializeObjects(os, version);
+	}
+	
+	// Versions up from 15 have static objects.
+	if(version >= 15)
+	{
+		m_static_objects.serialize(os);
+	}
+
+	// Timestamp
+	if(version >= 17)
+	{
+		writeU32(os, getTimestamp());
+	}
+}
+
+void MapBlock::deSerializeDiskExtra(std::istream &is, u8 version)
+{
+	/*
+		Versions up from 9 have block objects.
+	*/
+	if(version >= 9)
+	{
+		updateObjects(is, version, NULL, 0);
+	}
+
+	/*
+		Versions up from 15 have static objects.
+	*/
+	if(version >= 15)
+	{
+		m_static_objects.deSerialize(is);
+	}
+		
+	// Timestamp
+	if(version >= 17)
+	{
+		setTimestamp(readU32(is));
+	}
+	else
+	{
+		setTimestamp(BLOCK_TIMESTAMP_UNDEFINED);
 	}
 }
 

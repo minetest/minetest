@@ -382,20 +382,21 @@ public:
 
 	core::list<PlayerInfo> getPlayerInfo();
 
-	u32 getDayNightRatio()
+	/*u32 getDayNightRatio()
 	{
 		return time_to_daynight_ratio(m_time_of_day.get());
-	}
-
+	}*/
+	
+	// Environment must be locked when called
 	void setTimeOfDay(u32 time)
 	{
-		m_time_of_day.set(time);
+		m_env.setTimeOfDay(time);
 		m_time_of_day_send_timer = 0;
 	}
 
 	bool getShutdownRequested()
 	{
-		return m_shutdown_requested.get();
+		return m_shutdown_requested;
 	}
 	
 	/*
@@ -416,7 +417,7 @@ public:
 
 	void requestShutdown(void)
 	{
-		m_shutdown_requested.set(true);
+		m_shutdown_requested = true;
 	}
 
 
@@ -426,7 +427,8 @@ public:
 
 private:
 
-	// Virtual methods from con::PeerHandler.
+	// con::PeerHandler implementation.
+	// These queue stuff to be processed by handlePeerChanges().
 	// As of now, these create and remove clients and players.
 	void peerAdded(con::Peer *peer);
 	void deletingPeer(con::Peer *peer, bool timeout);
@@ -459,7 +461,7 @@ private:
 	void sendAddNode(v3s16 p, MapNode n, u16 ignore_id=0,
 			core::list<u16> *far_players=NULL, float far_d_nodes=100);
 	
-	// Environment and Connection must be locked when  called
+	// Environment and Connection must be locked when called
 	void SendBlockNoLock(u16 peer_id, MapBlock *block, u8 ver);
 	
 	// Sends blocks to clients
@@ -483,22 +485,17 @@ private:
 		Call with env and con locked.
 	*/
 	Player *emergePlayer(const char *name, const char *password, u16 peer_id);
-
-	/*
-		Update water pressure.
-		This also adds suitable nodes to active_nodes.
-
-		environment has to be locked when calling.
-	*/
-	/*void UpdateBlockWaterPressure(MapBlock *block,
-			core::map<v3s16, MapBlock*> &modified_blocks);*/
 	
 	// Locks environment and connection by its own
 	struct PeerChange;
 	void handlePeerChange(PeerChange &c);
 	void handlePeerChanges();
+
+	/*
+		Variables
+	*/
 	
-	//float m_flowwater_timer;
+	// Some timers
 	float m_liquid_transform_timer;
 	float m_print_info_timer;
 	float m_objectdata_timer;
@@ -507,51 +504,82 @@ private:
 	
 	// NOTE: If connection and environment are both to be locked,
 	// environment shall be locked first.
-	JMutex m_env_mutex;
+
+	// Environment
 	ServerEnvironment m_env;
-
-	JMutex m_con_mutex;
+	JMutex m_env_mutex;
+	
+	// Connection
 	con::Connection m_con;
-	core::map<u16, RemoteClient*> m_clients; // Behind the con mutex
-
+	JMutex m_con_mutex;
+	// Connected clients (behind the con mutex)
+	core::map<u16, RemoteClient*> m_clients;
+	
+	/*
+		Threads
+	*/
+	
+	// A buffer for time steps
+	// step() increments and AsyncRunStep() run by m_thread reads it.
 	float m_step_dtime;
 	JMutex m_step_dtime_mutex;
 
+	// The server mainly operates in this thread
 	ServerThread m_thread;
+	// This thread fetches and generates map
 	EmergeThread m_emergethread;
-
+	// Queue of block coordinates to be processed by the emerge thread
 	BlockEmergeQueue m_emerge_queue;
 	
-	// Nodes that are destinations of flowing liquid at the moment
-	//core::map<v3s16, u8> m_flow_active_nodes;
+	/*
+		Time related stuff
+	*/
 
 	// 0-23999
-	MutexedVariable<u32> m_time_of_day;
+	//MutexedVariable<u32> m_time_of_day;
 	// Used to buffer dtime for adding to m_time_of_day
 	float m_time_counter;
+	// Timer for sending time of day over network
 	float m_time_of_day_send_timer;
-	
+	// Uptime of server in seconds
 	MutexedVariable<double> m_uptime;
 	
+	/*
+		Peer change queue.
+		Queues stuff from peerAdded() and deletingPeer() to
+		handlePeerChanges()
+	*/
 	enum PeerChangeType
 	{
 		PEER_ADDED,
 		PEER_REMOVED
 	};
-
 	struct PeerChange
 	{
 		PeerChangeType type;
 		u16 peer_id;
 		bool timeout;
 	};
-	
 	Queue<PeerChange> m_peer_change_queue;
 
+	/*
+		Random stuff
+	*/
+
+	// Map directory
 	std::string m_mapsavedir;
 
-	MutexedVariable<bool> m_shutdown_requested;
+	bool m_shutdown_requested;
 	
+	/*
+		Map edit event queue. Automatically receives all map edits.
+		The constructor of this class registers us to receive them through
+		onMapEditEvent
+
+		NOTE: Should these be moved to actually be members of
+		ServerEnvironment?
+	*/
+
 	/*
 		Queue of map edits from the environment for sending to the clients
 		This is behind m_env_mutex

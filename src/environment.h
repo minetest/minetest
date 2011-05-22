@@ -64,14 +64,52 @@ public:
 	core::list<Player*> getPlayers(bool ignore_disconnected);
 	void printPlayers(std::ostream &o);
 	
-	void setDayNightRatio(u32 r);
+	//void setDayNightRatio(u32 r);
 	u32 getDayNightRatio();
+	
+	// 0-23999
+	virtual void setTimeOfDay(u32 time)
+	{
+		m_time_of_day = time;
+	}
+
+	u32 getTimeOfDay()
+	{
+		return m_time_of_day;
+	}
 
 protected:
 	// peer_ids in here should be unique, except that there may be many 0s
 	core::list<Player*> m_players;
 	// Brightness
-	u32 m_daynight_ratio;
+	//u32 m_daynight_ratio;
+	// Time of day in milli-hours (0-23999); determines day and night
+	u32 m_time_of_day;
+};
+
+/*
+	List of active blocks, used by ServerEnvironment
+*/
+
+class ActiveBlockList
+{
+public:
+	void update(core::list<v3s16> &active_positions,
+			s16 radius,
+			core::map<v3s16, bool> &blocks_removed,
+			core::map<v3s16, bool> &blocks_added);
+
+	bool contains(v3s16 p){
+		return (m_list.find(p) != NULL);
+	}
+
+	void clear(){
+		m_list.clear();
+	}
+
+	core::map<v3s16, bool> m_list;
+
+private:
 };
 
 /*
@@ -106,9 +144,18 @@ public:
 	}
 
 	void step(f32 dtime);
-
+	
+	/*
+		Save players
+	*/
 	void serializePlayers(const std::string &savedir);
 	void deSerializePlayers(const std::string &savedir);
+
+	/*
+		Save and load time of day and game timer
+	*/
+	void saveMeta(const std::string &savedir);
+	void loadMeta(const std::string &savedir);
 
 	/*
 		ActiveObjects
@@ -153,25 +200,48 @@ private:
 		Remove all objects that satisfy (m_removed && m_known_by_count==0)
 	*/
 	void removeRemovedObjects();
-	/*
-		Convert stored objects from blocks near the players to active.
-	*/
-	void activateNearObjects(s16 range_blocks);
-	/*
-		Convert objects that are far away from all the players to static.
-
-		If range_blocks == -1, convert everything to static even if known
-		by a player.
-	*/
-	void deactivateFarObjects(s16 range_blocks);
 	
+	/*
+		Convert stored objects from block to active
+	*/
+	void activateObjects(MapBlock *block);
+	
+	/*
+		Convert objects that are not in active blocks to static.
+
+		If m_known_by_count != 0, active object is not deleted, but static
+		data is still updated.
+
+		If force_delete is set, active object is deleted nevertheless. It
+		shall only be set so in the destructor of the environment.
+	*/
+	void deactivateFarObjects(bool force_delete);
+
+	/*
+		Member variables
+	*/
+	
+	// The map
 	ServerMap *m_map;
+	// Pointer to server (which is handling this environment)
 	Server *m_server;
+	// Active object list
 	core::map<u16, ServerActiveObject*> m_active_objects;
+	// Outgoing network message buffer for active objects
 	Queue<ActiveObjectMessage> m_active_object_messages;
-	float m_random_spawn_timer;
+	// Some timers
+	float m_random_spawn_timer; // used for experimental code
 	float m_send_recommended_timer;
 	IntervalLimiter m_object_management_interval;
+	// List of active blocks
+	ActiveBlockList m_active_blocks;
+	IntervalLimiter m_active_blocks_management_interval;
+	IntervalLimiter m_active_blocks_test_interval;
+	// Time from the beginning of the game in seconds.
+	// Incremented in step().
+	u32 m_game_time;
+	// A helper variable for incrementing the latter
+	float m_game_time_fraction_counter;
 };
 
 #ifndef SERVER
@@ -227,6 +297,20 @@ public:
 
 	void updateMeshes(v3s16 blockpos);
 	void expireMeshes(bool only_daynight_diffed);
+
+	void setTimeOfDay(u32 time)
+	{
+		u32 old_dr = getDayNightRatio();
+
+		Environment::setTimeOfDay(time);
+
+		if(getDayNightRatio() != old_dr)
+		{
+			dout_client<<DTIME<<"ClientEnvironment: DayNightRatio changed"
+					<<" -> expiring meshes"<<std::endl;
+			expireMeshes(true);
+		}
+	}
 
 	/*
 		ActiveObjects

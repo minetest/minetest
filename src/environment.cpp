@@ -23,9 +23,9 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "collision.h"
 
 
-Environment::Environment()
+Environment::Environment():
+	m_time_of_day(9000)
 {
-	m_daynight_ratio = 0.5;
 }
 
 Environment::~Environment()
@@ -174,14 +174,84 @@ void Environment::printPlayers(std::ostream &o)
 	}
 }
 
-void Environment::setDayNightRatio(u32 r)
+/*void Environment::setDayNightRatio(u32 r)
 {
-	m_daynight_ratio = r;
-}
+	getDayNightRatio() = r;
+}*/
 
 u32 Environment::getDayNightRatio()
 {
-	return m_daynight_ratio;
+	//return getDayNightRatio();
+	return time_to_daynight_ratio(m_time_of_day);
+}
+
+/*
+	ActiveBlockList
+*/
+
+void fillRadiusBlock(v3s16 p0, s16 r, core::map<v3s16, bool> &list)
+{
+	v3s16 p;
+	for(p.X=p0.X-r; p.X<=p0.X+r; p.X++)
+	for(p.Y=p0.Y-r; p.Y<=p0.Y+r; p.Y++)
+	for(p.Z=p0.Z-r; p.Z<=p0.Z+r; p.Z++)
+	{
+		// Set in list
+		list[p] = true;
+	}
+}
+
+void ActiveBlockList::update(core::list<v3s16> &active_positions,
+		s16 radius,
+		core::map<v3s16, bool> &blocks_removed,
+		core::map<v3s16, bool> &blocks_added)
+{
+	/*
+		Create the new list
+	*/
+	core::map<v3s16, bool> newlist;
+	for(core::list<v3s16>::Iterator i = active_positions.begin();
+			i != active_positions.end(); i++)
+	{
+		fillRadiusBlock(*i, radius, newlist);
+	}
+
+	/*
+		Find out which blocks on the old list are not on the new list
+	*/
+	// Go through old list
+	for(core::map<v3s16, bool>::Iterator i = m_list.getIterator();
+			i.atEnd()==false; i++)
+	{
+		v3s16 p = i.getNode()->getKey();
+		// If not on new list, it's been removed
+		if(newlist.find(p) == NULL)
+			blocks_removed.insert(p, true);
+	}
+
+	/*
+		Find out which blocks on the new list are not on the old list
+	*/
+	// Go through new list
+	for(core::map<v3s16, bool>::Iterator i = newlist.getIterator();
+			i.atEnd()==false; i++)
+	{
+		v3s16 p = i.getNode()->getKey();
+		// If not on old list, it's been added
+		if(m_list.find(p) == NULL)
+			blocks_added.insert(p, true);
+	}
+
+	/*
+		Update m_list
+	*/
+	m_list.clear();
+	for(core::map<v3s16, bool>::Iterator i = newlist.getIterator();
+			i.atEnd()==false; i++)
+	{
+		v3s16 p = i.getNode()->getKey();
+		m_list.insert(p, true);
+	}
 }
 
 /*
@@ -192,16 +262,20 @@ ServerEnvironment::ServerEnvironment(ServerMap *map, Server *server):
 	m_map(map),
 	m_server(server),
 	m_random_spawn_timer(3),
-	m_send_recommended_timer(0)
+	m_send_recommended_timer(0),
+	m_game_time(0),
+	m_game_time_fraction_counter(0)
 {
 }
 
 ServerEnvironment::~ServerEnvironment()
 {
-	/*
-		Convert all objects to static (thus delete the active objects)
-	*/
-	deactivateFarObjects(-1);
+	// Clear active block list.
+	// This makes the next one delete all active objects.
+	m_active_blocks.clear();
+
+	// Convert all objects to static and delete the active objects
+	deactivateFarObjects(true);
 
 	// Drop/delete map
 	m_map->drop();
@@ -384,7 +458,71 @@ void ServerEnvironment::deSerializePlayers(const std::string &savedir)
 	}
 }
 
+void ServerEnvironment::saveMeta(const std::string &savedir)
+{
+	std::string path = savedir + "/env_meta.txt";
+
+	// Open file and serialize
+	std::ofstream os(path.c_str(), std::ios_base::binary);
+	if(os.good() == false)
+	{
+		dstream<<"WARNING: ServerEnvironment::saveMeta(): Failed to open "
+				<<path<<std::endl;
+		throw SerializationError("Couldn't save env meta");
+	}
+
+	Settings args;
+	args.setU64("game_time", m_game_time);
+	args.setU64("time_of_day", getTimeOfDay());
+	args.writeLines(os);
+	os<<"EnvArgsEnd\n";
+}
+
+void ServerEnvironment::loadMeta(const std::string &savedir)
+{
+	std::string path = savedir + "/env_meta.txt";
+
+	// Open file and deserialize
+	std::ifstream is(path.c_str(), std::ios_base::binary);
+	if(is.good() == false)
+	{
+		dstream<<"WARNING: ServerEnvironment::loadMeta(): Failed to open "
+				<<path<<std::endl;
+		throw SerializationError("Couldn't load env meta");
+	}
+
+	Settings args;
+	
+	for(;;)
+	{
+		if(is.eof())
+			throw SerializationError
+					("ServerEnvironment::loadMeta(): EnvArgsEnd not found");
+		std::string line;
+		std::getline(is, line);
+		std::string trimmedline = trim(line);
+		if(trimmedline == "EnvArgsEnd")
+			break;
+		args.parseConfigLine(line);
+	}
+	
+	try{
+		m_game_time = args.getU64("game_time");
+	}catch(SettingNotFoundException &e){
+		// Getting this is crucial, otherwise timestamps are useless
+		throw SerializationError("Couldn't load env meta game_time");
+	}
+
+	try{
+		m_time_of_day = args.getU64("time_of_day");
+	}catch(SettingNotFoundException &e){
+		// This is not as important
+		m_time_of_day = 9000;
+	}
+}
+
 #if 0
+// This is probably very useless
 void spawnRandomObjects(MapBlock *block)
 {
 	for(s16 z0=0; z0<MAP_BLOCKSIZE; z0++)
@@ -440,9 +578,21 @@ void ServerEnvironment::step(float dtime)
 	//TimeTaker timer("ServerEnv step");
 
 	// Get some settings
-	//bool free_move = g_settings.getBool("free_move");
 	bool footprints = g_settings.getBool("footprints");
 
+	/*
+		Increment game time
+	*/
+	{
+		m_game_time_fraction_counter += dtime;
+		u32 inc_i = (u32)m_game_time_fraction_counter;
+		m_game_time += inc_i;
+		m_game_time_fraction_counter -= (float)inc_i;
+	}
+	
+	/*
+		Let map update it's timers
+	*/
 	{
 		//TimeTaker timer("Server m_map->timerUpdate()");
 		m_map->timerUpdate(dtime);
@@ -487,11 +637,187 @@ void ServerEnvironment::step(float dtime)
 	}
 
 	/*
+		Manage active block list
+	*/
+	if(m_active_blocks_management_interval.step(dtime, 2.0))
+	{
+		/*
+			Get player block positions
+		*/
+		core::list<v3s16> players_blockpos;
+		for(core::list<Player*>::Iterator
+				i = m_players.begin();
+				i != m_players.end(); i++)
+		{
+			Player *player = *i;
+			// Ignore disconnected players
+			if(player->peer_id == 0)
+				continue;
+			v3s16 blockpos = getNodeBlockPos(
+					floatToInt(player->getPosition(), BS));
+			players_blockpos.push_back(blockpos);
+		}
+		
+		/*
+			Update list of active blocks, collecting changes
+		*/
+		const s16 active_block_range = 5;
+		core::map<v3s16, bool> blocks_removed;
+		core::map<v3s16, bool> blocks_added;
+		m_active_blocks.update(players_blockpos, active_block_range,
+				blocks_removed, blocks_added);
+
+		/*
+			Handle removed blocks
+		*/
+
+		// Convert active objects that are no more in active blocks to static
+		deactivateFarObjects(false);
+		
+		for(core::map<v3s16, bool>::Iterator
+				i = blocks_removed.getIterator();
+				i.atEnd()==false; i++)
+		{
+			v3s16 p = i.getNode()->getKey();
+
+			/*dstream<<"Server: Block ("<<p.X<<","<<p.Y<<","<<p.Z
+					<<") became inactive"<<std::endl;*/
+			
+			MapBlock *block = m_map->getBlockNoCreateNoEx(p);
+			if(block==NULL)
+				continue;
+			
+			// Set current time as timestamp
+			block->setTimestamp(m_game_time);
+		}
+
+		/*
+			Handle added blocks
+		*/
+
+		for(core::map<v3s16, bool>::Iterator
+				i = blocks_added.getIterator();
+				i.atEnd()==false; i++)
+		{
+			v3s16 p = i.getNode()->getKey();
+			
+			/*dstream<<"Server: Block ("<<p.X<<","<<p.Y<<","<<p.Z
+					<<") became active"<<std::endl;*/
+
+			MapBlock *block = m_map->getBlockNoCreateNoEx(p);
+			if(block==NULL)
+				continue;
+			
+			// Get time difference
+			u32 dtime_s = 0;
+			u32 stamp = block->getTimestamp();
+			if(m_game_time > stamp && stamp != BLOCK_TIMESTAMP_UNDEFINED)
+				dtime_s = m_game_time - block->getTimestamp();
+
+			// Set current time as timestamp
+			block->setTimestamp(m_game_time);
+
+			//dstream<<"Block is "<<dtime_s<<" seconds old."<<std::endl;
+			
+			// Activate stored objects
+			activateObjects(block);
+
+			// TODO: Do something
+			
+			// Here's a quick demonstration
+			v3s16 p0;
+			for(p0.X=0; p0.X<MAP_BLOCKSIZE; p0.X++)
+			for(p0.Y=0; p0.Y<MAP_BLOCKSIZE; p0.Y++)
+			for(p0.Z=0; p0.Z<MAP_BLOCKSIZE; p0.Z++)
+			{
+				v3s16 p = p0 + block->getPosRelative();
+				MapNode n = block->getNodeNoEx(p0);
+				// Test something:
+				// Convert all mud under proper day lighting to grass
+				if(n.d == CONTENT_MUD)
+				{
+					if(1)
+					{
+						MapNode n_top = block->getNodeNoEx(p0+v3s16(0,1,0));
+						if(content_features(n_top.d).walkable == false &&
+								n_top.getLight(LIGHTBANK_DAY) >= 13)
+						{
+							n.d = CONTENT_GRASS;
+							m_map->addNodeWithEvent(p, n);
+						}
+					}
+				}
+			}
+		}
+	}
+
+	/*
+		Mess around in active blocks
+	*/
+	if(m_active_blocks_test_interval.step(dtime, 5.0))
+	{
+		for(core::map<v3s16, bool>::Iterator
+				i = m_active_blocks.m_list.getIterator();
+				i.atEnd()==false; i++)
+		{
+			v3s16 p = i.getNode()->getKey();
+			
+			/*dstream<<"Server: Block ("<<p.X<<","<<p.Y<<","<<p.Z
+					<<") being handled"<<std::endl;*/
+
+			MapBlock *block = m_map->getBlockNoCreateNoEx(p);
+			if(block==NULL)
+				continue;
+			
+			// Set current time as timestamp
+			block->setTimestamp(m_game_time);
+			
+			/*
+				Do stuff!
+
+				Note that map modifications should be done using the event-
+				making map methods so that the server gets information
+				about them.
+
+				Reading can be done quickly directly from the block.
+
+				Everything should bind to inside this single content
+				searching loop to keep things fast.
+			*/
+
+			v3s16 p0;
+			for(p0.X=0; p0.X<MAP_BLOCKSIZE; p0.X++)
+			for(p0.Y=0; p0.Y<MAP_BLOCKSIZE; p0.Y++)
+			for(p0.Z=0; p0.Z<MAP_BLOCKSIZE; p0.Z++)
+			{
+				v3s16 p = p0 + block->getPosRelative();
+				MapNode n = block->getNodeNoEx(p0);
+				// Test something:
+				// Convert mud under proper lighting to grass
+				if(n.d == CONTENT_MUD)
+				{
+					if(myrand()%4 == 0)
+					{
+						MapNode n_top = block->getNodeNoEx(p0+v3s16(0,1,0));
+						if(content_features(n_top.d).walkable == false &&
+								n_top.getLightBlend(getDayNightRatio()) >= 13)
+						{
+							n.d = CONTENT_GRASS;
+							m_map->addNodeWithEvent(p, n);
+						}
+					}
+				}
+			}
+		}
+	}
+	
+	/*
 		Step active objects
 	*/
 	{
 		//TimeTaker timer("Step active objects");
-
+		
+		// This helps the objects to send data at the same time
 		bool send_recommended = false;
 		m_send_recommended_timer += dtime;
 		if(m_send_recommended_timer > 0.15)
@@ -505,33 +831,23 @@ void ServerEnvironment::step(float dtime)
 				i.atEnd()==false; i++)
 		{
 			ServerActiveObject* obj = i.getNode()->getValue();
+			// Don't step if is to be removed or stored statically
+			if(obj->m_removed || obj->m_pending_deactivation)
+				continue;
 			// Step object, putting messages directly to the queue
 			obj->step(dtime, m_active_object_messages, send_recommended);
 		}
 	}
-
+	
+	/*
+		Manage active objects
+	*/
 	if(m_object_management_interval.step(dtime, 0.5))
 	{
-		//TimeTaker timer("ServerEnv object management");
-
-		const s16 to_active_range_blocks = 3;
-		const s16 to_static_range_blocks = 4;
-		//const f32 to_static_max_f = (to_active_max_blocks+2)*MAP_BLOCKSIZE*BS;
-
 		/*
 			Remove objects that satisfy (m_removed && m_known_by_count==0)
 		*/
 		removeRemovedObjects();
-		
-		/*
-			Convert stored objects from blocks near the players to active.
-		*/
-		activateNearObjects(to_active_range_blocks);
-
-		/*
-			Convert objects that are far away from all the players to static.
-		*/
-		deactivateFarObjects(to_static_range_blocks);
 	}
 
 	if(g_settings.getBool("enable_experimental"))
@@ -791,11 +1107,18 @@ void ServerEnvironment::removeRemovedObjects()
 			objects_to_remove.push_back(id);
 			continue;
 		}
-		// If not m_removed, don't remove.
-		if(obj->m_removed == false)
+
+		/*
+			We will delete objects that are marked as removed or thatare
+			waiting for deletion after deactivation
+		*/
+		if(obj->m_removed == false && obj->m_pending_deactivation == false)
 			continue;
-		// Delete static data from block
-		if(obj->m_static_exists)
+
+		/*
+			Delete static data from block if is marked as removed
+		*/
+		if(obj->m_static_exists && obj->m_removed)
 		{
 			MapBlock *block = m_map->getBlockNoCreateNoEx(obj->m_static_block);
 			if(block)
@@ -804,9 +1127,11 @@ void ServerEnvironment::removeRemovedObjects()
 				block->setChangedFlag();
 			}
 		}
+
 		// If m_known_by_count > 0, don't actually remove.
 		if(obj->m_known_by_count > 0)
 			continue;
+		
 		// Delete
 		delete obj;
 		// Id to be removed from m_active_objects
@@ -823,82 +1148,62 @@ void ServerEnvironment::removeRemovedObjects()
 /*
 	Convert stored objects from blocks near the players to active.
 */
-void ServerEnvironment::activateNearObjects(s16 range_blocks)
+void ServerEnvironment::activateObjects(MapBlock *block)
 {
-	for(core::list<Player*>::Iterator i = m_players.begin();
-			i != m_players.end(); i++)
+	if(block==NULL)
+		return;
+	// Ignore if no stored objects (to not set changed flag)
+	if(block->m_static_objects.m_stored.size() == 0)
+		return;
+	// A list for objects that couldn't be converted to static for some
+	// reason. They will be stored back.
+	core::list<StaticObject> new_stored;
+	// Loop through stored static objects
+	for(core::list<StaticObject>::Iterator
+			i = block->m_static_objects.m_stored.begin();
+			i != block->m_static_objects.m_stored.end(); i++)
 	{
-		Player *player = *i;
-		
-		// Ignore disconnected players
-		if(player->peer_id == 0)
-			continue;
-
-		v3f playerpos = player->getPosition();
-		
-		v3s16 blockpos0 = getNodeBlockPos(floatToInt(playerpos, BS));
-		v3s16 bpmin = blockpos0 - v3s16(1,1,1)*range_blocks;
-		v3s16 bpmax = blockpos0 + v3s16(1,1,1)*range_blocks;
-		// Loop through all nearby blocks
-		for(s16 x=bpmin.X; x<=bpmax.X; x++)
-		for(s16 y=bpmin.Y; y<=bpmax.Y; y++)
-		for(s16 z=bpmin.Z; z<=bpmax.Z; z++)
+		/*dstream<<"INFO: Server: Creating an active object from "
+				<<"static data"<<std::endl;*/
+		StaticObject &s_obj = *i;
+		// Create an active object from the data
+		ServerActiveObject *obj = ServerActiveObject::create
+				(s_obj.type, this, 0, s_obj.pos, s_obj.data);
+		// If couldn't create object, store static data back.
+		if(obj==NULL)
 		{
-			v3s16 blockpos(x,y,z);
-			MapBlock *block = m_map->getBlockNoCreateNoEx(blockpos);
-			if(block==NULL)
-				continue;
-			// Ignore if no stored objects (to not set changed flag)
-			if(block->m_static_objects.m_stored.size() == 0)
-				continue;
-			// This will contain the leftovers of the stored list
-			core::list<StaticObject> new_stored;
-			// Loop through stored static objects
-			for(core::list<StaticObject>::Iterator
-					i = block->m_static_objects.m_stored.begin();
-					i != block->m_static_objects.m_stored.end(); i++)
-			{
-				/*dstream<<"INFO: Server: Creating an active object from "
-						<<"static data"<<std::endl;*/
-				StaticObject &s_obj = *i;
-				// Create an active object from the data
-				ServerActiveObject *obj = ServerActiveObject::create
-						(s_obj.type, this, 0, s_obj.pos, s_obj.data);
-				if(obj==NULL)
-				{
-					// This is necessary to preserve stuff during bugs
-					// and errors
-					new_stored.push_back(s_obj);
-					continue;
-				}
-				// This will also add the object to the active static list
-				addActiveObject(obj);
-				//u16 id = addActiveObject(obj);
-			}
-			// Clear stored list
-			block->m_static_objects.m_stored.clear();
-			// Add leftover stuff to stored list
-			for(core::list<StaticObject>::Iterator
-					i = new_stored.begin();
-					i != new_stored.end(); i++)
-			{
-				StaticObject &s_obj = *i;
-				block->m_static_objects.m_stored.push_back(s_obj);
-			}
-			block->setChangedFlag();
+			new_stored.push_back(s_obj);
+			continue;
 		}
+		// This will also add the object to the active static list
+		addActiveObject(obj);
+		//u16 id = addActiveObject(obj);
 	}
+	// Clear stored list
+	block->m_static_objects.m_stored.clear();
+	// Add leftover failed stuff to stored list
+	for(core::list<StaticObject>::Iterator
+			i = new_stored.begin();
+			i != new_stored.end(); i++)
+	{
+		StaticObject &s_obj = *i;
+		block->m_static_objects.m_stored.push_back(s_obj);
+	}
+	// Block has been modified
+	block->setChangedFlag();
 }
 
 /*
-	Convert objects that are far away from all the players to static.
+	Convert objects that are not in active blocks to static.
 
-	If range_blocks == -1, convert everything to static even if known
-	by a player.
+	If m_known_by_count != 0, active object is not deleted, but static
+	data is still updated.
+
+	If force_delete is set, active object is deleted nevertheless. It
+	shall only be set so in the destructor of the environment.
 */
-void ServerEnvironment::deactivateFarObjects(s16 range_blocks)
+void ServerEnvironment::deactivateFarObjects(bool force_delete)
 {
-	bool force_everything = (range_blocks == -1);
 	core::list<u16> objects_to_remove;
 	for(core::map<u16, ServerActiveObject*>::Iterator
 			i = m_active_objects.getIterator();
@@ -917,46 +1222,15 @@ void ServerEnvironment::deactivateFarObjects(s16 range_blocks)
 			continue;
 		}
 
-		if(force_everything == false)
-		{
-			// If known by some client, don't convert to static.
-			if(obj->m_known_by_count > 0)
-				continue;
-			
-			// If close to some player, don't convert to static.
-			bool close_to_player = false;
-			for(core::list<Player*>::Iterator i = m_players.begin();
-					i != m_players.end(); i++)
-			{
-				Player *player = *i;
-				
-				// Ignore disconnected players
-				if(player->peer_id == 0)
-					continue;
-
-				v3f playerpos = player->getPosition();
-
-				v3s16 blockpos_p = getNodeBlockPos(floatToInt(playerpos, BS));
-				v3s16 blockpos_o = getNodeBlockPos(floatToInt(objectpos, BS));
-
-				if(blockpos_p.X >= blockpos_o.X - range_blocks
-					&& blockpos_p.Y >= blockpos_o.Y - range_blocks
-					&& blockpos_p.Z >= blockpos_o.Z - range_blocks
-					&& blockpos_p.X <= blockpos_o.X + range_blocks
-					&& blockpos_p.Y <= blockpos_o.Y + range_blocks
-					&& blockpos_p.Z <= blockpos_o.Z + range_blocks)
-				{
-					close_to_player = true;
-					break;
-				}
-			}
-
-			if(close_to_player)
-				continue;
-		}
+		// The block in which the object resides in
+		v3s16 blockpos_o = getNodeBlockPos(floatToInt(objectpos, BS));
+		
+		// If block is active, don't remove
+		if(m_active_blocks.contains(blockpos_o))
+			continue;
 
 		/*
-			Update the static data and remove the active object.
+			Update the static data
 		*/
 
 		// Delete old static object
@@ -971,7 +1245,7 @@ void ServerEnvironment::deactivateFarObjects(s16 range_blocks)
 				oldblock = block;
 			}
 		}
-		// Add new static object
+		// Create new static object
 		std::string staticdata = obj->getStaticData();
 		StaticObject s_obj(obj->getType(), objectpos, staticdata);
 		// Add to the block where the object is located in
@@ -998,6 +1272,19 @@ void ServerEnvironment::deactivateFarObjects(s16 range_blocks)
 			obj->m_static_exists = false;
 			continue;
 		}
+
+		/*
+			Delete active object if not known by some client,
+			else set pending deactivation
+		*/
+
+		// If known by some client, don't delete.
+		if(obj->m_known_by_count > 0 && force_delete == false)
+		{
+			obj->m_pending_deactivation = true;
+			continue;
+		}
+		
 		/*dstream<<"INFO: Server: Stored static data. Deleting object."
 				<<std::endl;*/
 		// Delete active object
@@ -1005,6 +1292,7 @@ void ServerEnvironment::deactivateFarObjects(s16 range_blocks)
 		// Id to be removed from m_active_objects
 		objects_to_remove.push_back(id);
 	}
+
 	// Remove references from m_active_objects
 	for(core::list<u16>::Iterator i = objects_to_remove.begin();
 			i != objects_to_remove.end(); i++)
@@ -1230,7 +1518,7 @@ void ClientEnvironment::step(float dtime)
 				// Get node at head
 				v3s16 p = floatToInt(playerpos + v3f(0,BS+BS/2,0), BS);
 				MapNode n = m_map->getNode(p);
-				light = n.getLightBlend(m_daynight_ratio);
+				light = n.getLightBlend(getDayNightRatio());
 			}
 			catch(InvalidPositionException &e) {}
 			player->updateLight(light);
@@ -1254,7 +1542,7 @@ void ClientEnvironment::step(float dtime)
 					{
 						v3s16 p_blocks = getNodeBlockPos(bottompos);
 						MapBlock *b = m_map->getBlockNoCreate(p_blocks);
-						//b->updateMesh(m_daynight_ratio);
+						//b->updateMesh(getDayNightRatio());
 						b->setMeshExpired(true);
 					}
 				}
@@ -1283,7 +1571,7 @@ void ClientEnvironment::step(float dtime)
 			// Get node at head
 			v3s16 p = obj->getLightPosition();
 			MapNode n = m_map->getNode(p);
-			light = n.getLightBlend(m_daynight_ratio);
+			light = n.getLightBlend(getDayNightRatio());
 		}
 		catch(InvalidPositionException &e) {}
 		obj->updateLight(light);
@@ -1292,7 +1580,7 @@ void ClientEnvironment::step(float dtime)
 
 void ClientEnvironment::updateMeshes(v3s16 blockpos)
 {
-	m_map->updateMeshes(blockpos, m_daynight_ratio);
+	m_map->updateMeshes(blockpos, getDayNightRatio());
 }
 
 void ClientEnvironment::expireMeshes(bool only_daynight_diffed)

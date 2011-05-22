@@ -30,6 +30,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "mineral.h"
 #include "config.h"
 #include "servercommand.h"
+#include "filesys.h"
 
 #define BLOCK_EMERGE_FLAG_FROMDISK (1<<0)
 
@@ -798,7 +799,7 @@ void RemoteClient::SendObjectData(
 			*/
 			if(stepped_blocks.find(p) == NULL)
 			{
-				block->stepObjects(dtime, true, server->getDayNightRatio());
+				block->stepObjects(dtime, true, server->m_env.getDayNightRatio());
 				stepped_blocks.insert(p, true);
 				block->setChangedFlag();
 			}
@@ -968,7 +969,6 @@ Server::Server(
 	m_con(PROTOCOL_ID, 512, CONNECTION_TIMEOUT, this),
 	m_thread(this),
 	m_emergethread(this),
-	m_time_of_day(9000),
 	m_time_counter(0),
 	m_time_of_day_send_timer(0),
 	m_uptime(0),
@@ -987,10 +987,19 @@ Server::Server(
 	m_con_mutex.Init();
 	m_step_dtime_mutex.Init();
 	m_step_dtime = 0.0;
-
+	
+	// Register us to receive map edit events
 	m_env.getMap().addEventReceiver(this);
 
+	// If file exists, load environment metadata
+	if(fs::PathExists(m_mapsavedir+"/env_meta.txt"))
+	{
+		dstream<<"Server: Loading environment metadata"<<std::endl;
+		m_env.loadMeta(m_mapsavedir);
+	}
+
 	// Load players
+	dstream<<"Server: Loading players"<<std::endl;
 	m_env.deSerializePlayers(m_mapsavedir);
 }
 
@@ -1032,6 +1041,12 @@ Server::~Server()
 	*/
 	dstream<<"Server: Saving players"<<std::endl;
 	m_env.serializePlayers(m_mapsavedir);
+
+	/*
+		Save environment metadata
+	*/
+	dstream<<"Server: Saving environment metadata"<<std::endl;
+	m_env.saveMeta(m_mapsavedir);
 	
 	/*
 		Stop threads
@@ -1136,14 +1151,17 @@ void Server::AsyncRunStep()
 	}
 	
 	/*
-		Update m_time_of_day
+		Update m_time_of_day and overall game time
 	*/
 	{
+		JMutexAutoLock envlock(m_env_mutex);
+
 		m_time_counter += dtime;
 		f32 speed = g_settings.getFloat("time_speed") * 24000./(24.*3600);
 		u32 units = (u32)(m_time_counter*speed);
 		m_time_counter -= (f32)units / speed;
-		m_time_of_day.set((m_time_of_day.get() + units) % 24000);
+		
+		m_env.setTimeOfDay((m_env.getTimeOfDay() + units) % 24000);
 		
 		//dstream<<"Server: m_time_of_day = "<<m_time_of_day.get()<<std::endl;
 
@@ -1167,7 +1185,7 @@ void Server::AsyncRunStep()
 				//Player *player = m_env.getPlayer(client->peer_id);
 				
 				SharedBuffer<u8> data = makePacket_TOCLIENT_TIME_OF_DAY(
-						m_time_of_day.get());
+						m_env.getTimeOfDay());
 				// Send as reliable
 				m_con.Send(client->peer_id, 0, data, true);
 			}
@@ -1654,6 +1672,9 @@ void Server::AsyncRunStep()
 
 				// Save players
 				m_env.serializePlayers(m_mapsavedir);
+				
+				// Save environment metadata
+				m_env.saveMeta(m_mapsavedir);
 			}
 		}
 	}
@@ -1900,7 +1921,7 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 		// Send time of day
 		{
 			SharedBuffer<u8> data = makePacket_TOCLIENT_TIME_OF_DAY(
-					m_time_of_day.get());
+					m_env.getTimeOfDay());
 			m_con.Send(peer->id, 0, data, true);
 		}
 		

@@ -1193,31 +1193,23 @@ void Client::ProcessData(u8 *data, u32 datasize, u16 sender_peer_id)
 		if(datasize < 4)
 			return;
 		
-		u16 time = readU16(&data[2]);
-		time = time % 24000;
-		m_time_of_day = time;
-		//dstream<<"Client: time="<<time<<std::endl;
+		u16 time_of_day = readU16(&data[2]);
+		time_of_day = time_of_day % 24000;
+		//dstream<<"Client: time_of_day="<<time_of_day<<std::endl;
 		
 		/*
-			Day/night
-
 			time_of_day:
 			0 = midnight
 			12000 = midday
 		*/
 		{
-			u32 dr = time_to_daynight_ratio(m_time_of_day);
+			m_env.setTimeOfDay(time_of_day);
 
-			dstream<<"Client: time_of_day="<<m_time_of_day
+			u32 dr = m_env.getDayNightRatio();
+
+			dstream<<"Client: time_of_day="<<time_of_day
 					<<", dr="<<dr
 					<<std::endl;
-			
-			if(dr != m_env.getDayNightRatio())
-			{
-				dout_client<<DTIME<<"Client: changing day-night ratio"<<std::endl;
-				m_env.setDayNightRatio(dr);
-				m_env.expireMeshes(true);
-			}
 		}
 
 	}
