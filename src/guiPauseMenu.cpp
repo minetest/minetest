@@ -22,6 +22,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "serialization.h"
 #include "porting.h"
 #include "config.h"
+#include "main.h"
 
 GUIPauseMenu::GUIPauseMenu(gui::IGUIEnvironment* env,
 		gui::IGUIElement* parent, s32 id,
@@ -64,6 +65,11 @@ void GUIPauseMenu::removeChildren()
 		if(e != NULL)
 			e->remove();
 	}
+	{
+		gui::IGUIElement *e = getElementFromId(261);
+		if(e != NULL)
+			e->remove();
+	}
 }
 
 void GUIPauseMenu::regenerateGui(v2u32 screensize)
@@ -91,21 +97,34 @@ void GUIPauseMenu::regenerateGui(v2u32 screensize)
 	/*
 		Add stuff
 	*/
+	const s32 btn_height = 30;
+	const s32 btn_gap = 20;
+	const s32 btn_num = 4;
+	s32 btn_y = size.Y/2-((btn_num*btn_height+(btn_num-1)*btn_gap))/2;
 	{
-		core::rect<s32> rect(0, 0, 140, 30);
-		rect = rect + v2s32(size.X/2-140/2, size.Y/2-30/2-50);
+		core::rect<s32> rect(0, 0, 140, btn_height);
+		rect = rect + v2s32(size.X/2-140/2, btn_y);
 		Environment->addButton(rect, this, 256, L"Continue");
 	}
+	btn_y += btn_height + btn_gap;
 	{
-		core::rect<s32> rect(0, 0, 140, 30);
-		rect = rect + v2s32(size.X/2-140/2, size.Y/2-30/2+0);
+		core::rect<s32> rect(0, 0, 140, btn_height);
+		rect = rect + v2s32(size.X/2-140/2, btn_y);
+		Environment->addButton(rect, this, 261, L"Change Password");
+	}
+	btn_y += btn_height + btn_gap;
+	{
+		core::rect<s32> rect(0, 0, 140, btn_height);
+		rect = rect + v2s32(size.X/2-140/2, btn_y);
 		Environment->addButton(rect, this, 260, L"Disconnect");
 	}
+	btn_y += btn_height + btn_gap;
 	{
-		core::rect<s32> rect(0, 0, 140, 30);
-		rect = rect + v2s32(size.X/2-140/2, size.Y/2-30/2+50);
+		core::rect<s32> rect(0, 0, 140, btn_height);
+		rect = rect + v2s32(size.X/2-140/2, btn_y);
 		Environment->addButton(rect, this, 257, L"Exit to OS");
 	}
+
 	{
 		core::rect<s32> rect(0, 0, 180, 240);
 		rect = rect + v2s32(size.X/2 + 90, size.Y/2-rect.getHeight()/2);
@@ -172,6 +191,7 @@ void GUIPauseMenu::drawMenu()
 
 bool GUIPauseMenu::OnEvent(const SEvent& event)
 {
+
 	if(event.EventType==EET_KEY_INPUT_EVENT)
 	{
 		if(event.KeyInput.PressedDown)
@@ -208,6 +228,10 @@ bool GUIPauseMenu::OnEvent(const SEvent& event)
 			case 256: // continue
 				quitMenu();
 				// ALWAYS return immediately after quitMenu()
+				return true;
+			case 261:
+				quitMenu();
+				m_gamecallback->changePassword();
 				return true;
 			case 260: // disconnect
 				m_gamecallback->disconnect();

@@ -2112,6 +2112,7 @@ protected:
 	float m_accumulator;
 };
 
+std::string translatePassword(std::string playername, std::wstring password);
 
 #endif
 

@@ -22,6 +22,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "client.h"
 #include "server.h"
 #include "guiPauseMenu.h"
+#include "guiPasswordChange.h"
 #include "guiInventoryMenu.h"
 #include "guiTextInputMenu.h"
 #include "guiFurnaceMenu.h"
@@ -910,6 +911,13 @@ void the_game(
 		{
 			g_gamecallback->disconnect_requested = false;
 			break;
+		}
+
+		if(g_gamecallback->changepassword_requested)
+		{
+			(new GUIPasswordChange(guienv, guiroot, -1,
+				&g_menumgr, &client))->drop();
+			g_gamecallback->changepassword_requested = false;
 		}
 
 		/*

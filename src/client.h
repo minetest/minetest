@@ -255,6 +255,8 @@ public:
 	void sendSignNodeText(v3s16 p, std::string text);
 	void sendInventoryAction(InventoryAction *a);
 	void sendChatMessage(const std::wstring &message);
+	void sendChangePassword(const std::wstring oldpassword,
+		const std::wstring newpassword);
 	void sendDamage(u8 damage);
 	
 	// locks envlock

@@ -285,6 +285,16 @@ enum ToServerCommand
 		u16 command
 		u8 amount
 	*/
+
+	TOSERVER_PASSWORD=0x36,
+	/*
+		Sent to change password.
+
+		[0] u16 TOSERVER_PASSWORD
+		[2] u8[28] old password
+		[30] u8[28] new password
+	*/
+
 };
 
 inline SharedBuffer<u8> makePacket_TOCLIENT_TIME_OF_DAY(u16 time)

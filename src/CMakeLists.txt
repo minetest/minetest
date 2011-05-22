@@ -77,6 +77,8 @@ set(common_SRCS
 	player.cpp
 	utility.cpp
 	test.cpp
+	sha1.cpp
+	base64.cpp
 )
 
 # Client sources
@@ -91,12 +93,11 @@ set(minetest_SRCS
 	guiTextInputMenu.cpp
 	guiInventoryMenu.cpp
 	guiPauseMenu.cpp
+	guiPasswordChange.cpp
 	client.cpp
 	tile.cpp
 	game.cpp
 	main.cpp
-	sha1.cpp
-	base64.cpp
 )
 
 # Server sources
