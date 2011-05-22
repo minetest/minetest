@@ -151,13 +151,20 @@ struct ContentFeatures
 	// This is used for collision detection.
 	// Also for general solidness queries.
 	bool walkable;
+	// Player can point to these
 	bool pointable;
+	// Player can dig these
 	bool diggable;
+	// Player can build on these
 	bool buildable_to;
+	// Whether the node has no liquid, source liquid or flowing liquid
 	enum LiquidType liquid_type;
-	// If true, param2 is set to direction when placed
+	// If true, param2 is set to direction when placed. Used for torches.
 	// NOTE: the direction format is quite inefficient and should be changed
 	bool wall_mounted;
+	// If true, node is equivalent to air. Torches are, air is. Water is not.
+	// Is used for example to check whether a mud block can have grass on.
+	bool air_equivalent;
 	
 	// Inventory item string as which the node appears in inventory when dug.
 	// Mineral overrides this.
@@ -183,6 +190,7 @@ struct ContentFeatures
 		buildable_to = false;
 		liquid_type = LIQUID_NONE;
 		wall_mounted = false;
+		air_equivalent = false;
 		dug_item = "";
 		initial_metadata = NULL;
 	}

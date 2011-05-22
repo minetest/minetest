@@ -252,6 +252,7 @@ void init_mapnode()
 	f->pointable = false;
 	f->diggable = false;
 	f->buildable_to = true;
+	f->air_equivalent = true;
 	
 	i = CONTENT_WATER;
 	f = &g_content_features[i];
@@ -303,6 +304,7 @@ void init_mapnode()
 	f->solidness = 0; // drawn separately, makes no faces
 	f->walkable = false;
 	f->wall_mounted = true;
+	f->air_equivalent = true;
 	f->dug_item = std::string("MaterialItem ")+itos(i)+" 1";
 	
 	i = CONTENT_SIGN_WALL;
@@ -314,6 +316,7 @@ void init_mapnode()
 	f->solidness = 0; // drawn separately, makes no faces
 	f->walkable = false;
 	f->wall_mounted = true;
+	f->air_equivalent = true;
 	f->dug_item = std::string("MaterialItem ")+itos(i)+" 1";
 	if(f->initial_metadata == NULL)
 		f->initial_metadata = new SignNodeMetadata("Some sign");

@@ -739,7 +739,7 @@ void ServerEnvironment::step(float dtime)
 					if(1)
 					{
 						MapNode n_top = block->getNodeNoEx(p0+v3s16(0,1,0));
-						if(content_features(n_top.d).walkable == false &&
+						if(content_features(n_top.d).air_equivalent &&
 								n_top.getLight(LIGHTBANK_DAY) >= 13)
 						{
 							n.d = CONTENT_GRASS;
@@ -796,10 +796,10 @@ void ServerEnvironment::step(float dtime)
 				// Convert mud under proper lighting to grass
 				if(n.d == CONTENT_MUD)
 				{
-					if(myrand()%4 == 0)
+					if(myrand()%10 == 0)
 					{
 						MapNode n_top = block->getNodeNoEx(p0+v3s16(0,1,0));
-						if(content_features(n_top.d).walkable == false &&
+						if(content_features(n_top.d).air_equivalent &&
 								n_top.getLightBlend(getDayNightRatio()) >= 13)
 						{
 							n.d = CONTENT_GRASS;

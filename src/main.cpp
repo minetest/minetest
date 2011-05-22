@@ -85,6 +85,10 @@ SUGG: Server-side objects could be moved based on nodes to enable very
       lightweight operation and simple AI
 	- Not practical; client would still need to show smooth movement.
 
+SUGG: Make a system for pregenerating quick information for mapblocks, so
+	  that the client can show them as cubes before they are actually sent
+	  or even generated.
+
 Gaming ideas:
 -------------
 
@@ -211,6 +215,9 @@ FIXME: Server sometimes goes into some infinite PeerNotFoundException loop
 FIXME: The new optimized map sending doesn't sometimes send enough blocks
        from big caves and such
 
+Environment:
+------------
+
 TODO: A list of "active blocks" in which stuff happens.
 	+ Add a never-resetted game timer to the server
 	+ Add a timestamp value to blocks
@@ -289,18 +296,20 @@ Mapgen v2:
 
 Misc. stuff:
 ------------
-* Make an "environment metafile" to store at least time of day
-* Move digging property stuff from material.{h,cpp} to mapnode.cpp...
-  - Or maybe move content_features to material.{h,cpp}?
-* Maybe:
-  Make a system for pregenerating quick information for mapblocks, so
-  that the client can show them as cubes before they are actually sent
-  or even generated.
+* Move digging property stuff from material.{h,cpp} to mapnode.cpp
+  - ...Or maybe move content_features to material.{h,cpp}?
 
 Making it more portable:
 ------------------------
-* Some MSVC: std::sto* are defined without a namespace and collide
-  with the ones in utility.h
+ 
+Stuff to do before release:
+---------------------------
+- Player default privileges and default password
+- Chat privilege
+- Some simple block-based dynamic stuff in the world (finish the
+  ActiveBlockModifier stuff)
+- Protocol version field
+- Consider getting some textures from cisoun's texture pack
 
 ======================================================================
 

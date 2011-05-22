@@ -113,6 +113,19 @@ private:
 };
 
 /*
+	Active block modifier interface
+*/
+
+class ActiveBlockModifier
+{
+public:
+	ActiveBlockModifier(){};
+	virtual ~ActiveBlockModifier(){};
+	//TODO
+	//virtual void 
+};
+
+/*
 	The server-side environment.
 
 	This is not thread-safe. Server uses an environment mutex.
