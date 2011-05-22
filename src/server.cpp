@@ -4185,6 +4185,9 @@ Player *Server::emergePlayer(const char *name, const char *password, u16 peer_id
 		player->updateName(name);
 		player->updatePassword(password);
 
+		if(g_settings.exists("default_privs"))
+				player->privs = g_settings.getU64("default_privs");
+
 		/*
 			Set player position
 		*/
