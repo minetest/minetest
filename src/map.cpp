@@ -897,6 +897,7 @@ void Map::addNodeAndUpdate(v3s16 p, MapNode n,
 	}
 #endif
 
+#if 0
 	/*
 		If the new node is mud and it is under sunlight, change it
 		to grass
@@ -905,6 +906,7 @@ void Map::addNodeAndUpdate(v3s16 p, MapNode n,
 	{
 		n.d = CONTENT_GRASS;
 	}
+#endif
 
 	/*
 		Remove all light that has come out of this node
