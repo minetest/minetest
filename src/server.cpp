@@ -3004,6 +3004,31 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 
 		SendPlayerHP(player);
 	}
+	else if(command == TOSERVER_PASSWORD)
+	{
+		/*
+			[0] u16 TOSERVER_PASSWORD
+			[2] u8[28] old password
+			[30] u8[28] new password
+		*/
+
+		if(datasize != 2+PASSWORD_SIZE*2)
+			return;
+		char password[PASSWORD_SIZE];
+		for(u32 i=0; i<PASSWORD_SIZE-1; i++)
+			password[i] = data[2+i];
+		password[PASSWORD_SIZE-1] = 0;
+		if(strcmp(player->getPassword(),password))
+		{
+			// Wrong old password supplied!!
+			SendChatMessage(peer_id, L"Invalid old password supplied. Password NOT changed.");
+			return;
+		}
+		for(u32 i=0; i<PASSWORD_SIZE-1; i++)
+			password[i] = data[30+i];
+		player->updatePassword(password);
+		SendChatMessage(peer_id, L"Password change successful");
+	}
 	else
 	{
 		derr_server<<"WARNING: Server::ProcessData(): Ignoring "

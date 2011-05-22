@@ -23,6 +23,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "utility.h"
 #include "gettime.h"
+#include "sha1.h"
+#include "base64.h"
 
 TimeTaker::TimeTaker(const char *name, u32 *result)
 {
@@ -216,4 +218,25 @@ bool isBlockInSight(v3s16 blockpos_b, v3f camera_pos, v3f camera_dir, f32 range,
 
 	return true;
 }
+
+// Get an sha-1 hash of the player's name combined with
+// the password entered. That's what the server uses as
+// their password. (Exception : if the password field is
+// blank, we send a blank password - this is for backwards
+// compatibility with password-less players).
+std::string translatePassword(std::string playername, std::wstring password)
+{
+	if(password.length() == 0)
+		return "";
+
+	std::string slt=playername + wide_to_narrow(password);
+	SHA1 *sha1 = new SHA1();
+	sha1->addBytes(slt.c_str(), slt.length());
+	unsigned char *digest = sha1->getDigest();
+	std::string pwd = base64_encode(digest, 20);
+	free(digest);
+	return pwd;
+}
+
+
 

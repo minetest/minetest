@@ -353,8 +353,6 @@ Making it more portable:
 #include "materials.h"
 #include "game.h"
 #include "keycode.h"
-#include "sha1.h"
-#include "base64.h"
 
 // This makes textures
 ITextureSource *g_texturesource = NULL;
@@ -1468,24 +1466,7 @@ int main(int argc, char *argv[])
 
 				playername = wide_to_narrow(menudata.name);
 
-				// Get an sha-1 hash of the player's name combined with
-				// the password entered. That's what the server uses as
-				// their password. (Exception : if the password field is
-				// blank, we send a blank password - this is for backwards
-				// compatibility with password-less players).
-				if(menudata.password.length() > 0)
-				{
-						std::string slt=playername + wide_to_narrow(menudata.password);
-						SHA1 *sha1 = new SHA1();
-						sha1->addBytes(slt.c_str(), slt.length());
-						unsigned char *digest = sha1->getDigest();
-						password = base64_encode(digest, 20);
-						free(digest);
-				}
-				else
-				{
-						password = "";
-				}
+				password = translatePassword(playername, menudata.password);
 
 				address = wide_to_narrow(menudata.address);
 				int newport = stoi(wide_to_narrow(menudata.port));

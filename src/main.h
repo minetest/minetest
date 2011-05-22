@@ -119,6 +119,7 @@ class MainGameCallback : public IGameCallback
 public:
 	MainGameCallback(IrrlichtDevice *a_device):
 		disconnect_requested(false),
+		changepassword_requested(false),
 		device(a_device)
 	{
 	}
@@ -133,7 +134,13 @@ public:
 		disconnect_requested = true;
 	}
 
+	virtual void changePassword()
+	{
+		changepassword_requested = true;
+	}
+
 	bool disconnect_requested;
+	bool changepassword_requested;
 	IrrlichtDevice *device;
 };
 
