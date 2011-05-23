@@ -2908,6 +2908,12 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 		// Whether to send to other players
 		bool send_to_others = false;
 		
+		// Local player gets all privileges regardless of
+		// what's set on their account.
+		u64 privs = player->privs;
+		if(g_settings.get("name") == player->getName())
+			privs = PRIV_ALL;
+
 		// Parse commands
 		std::wstring commandprefix = L"/#";
 		if(message.substr(0, commandprefix.size()) == commandprefix)
@@ -2915,12 +2921,6 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 			line += L"Server: ";
 
 			message = message.substr(commandprefix.size());
-
-			// Local player gets all privileges regardless of
-			// what's set on their account.
-			u64 privs = player->privs;
-			if(g_settings.get("name") == player->getName())
-				privs = PRIV_ALL;
 
 			ServerCommandContext *ctx = new ServerCommandContext(
 				str_split(message, L' '),
@@ -2937,13 +2937,19 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 		}
 		else
 		{
-			line += L"<";
-			/*if(is_operator)
-				line += L"@";*/
-			line += name;
-			line += L"> ";
-			line += message;
-			send_to_others = true;
+			if(privs & PRIV_SHOUT)
+			{
+				line += L"<";
+				line += name;
+				line += L"> ";
+				line += message;
+				send_to_others = true;
+			}
+			else
+			{
+				line += L"Server: You are not allowed to shout";
+				send_to_sender = true;
+			}
 		}
 		
 		if(line != L"")

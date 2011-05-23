@@ -34,14 +34,19 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 // of the player, and define things they're allowed to do. See also
 // the static methods Player::privsToString and stringToPrivs that
 // convert these to human-readable form.
-const u64 PRIV_BUILD = 1;	// Can build - i.e. modify the world
-				//  (not enforced yet)
-const u64 PRIV_TELEPORT = 2;	// Can teleport
-const u64 PRIV_SETTIME = 4;	// Can set the time
-const u64 PRIV_PRIVS = 8;	// Can grant and revoke privileges
-const u64 PRIV_SERVER = 16;	// Can manage the server (e.g. shutodwn ,settings)
+const u64 PRIV_BUILD = 1;            // Can build - i.e. modify the world
+const u64 PRIV_TELEPORT = 2;         // Can teleport
+const u64 PRIV_SETTIME = 4;          // Can set the time
+const u64 PRIV_PRIVS = 8;            // Can grant and revoke privileges
+const u64 PRIV_SERVER = 16;          // Can manage the server (e.g. shutodwn
+                                     // ,settings)
+const u64 PRIV_SHOUT = 32;           // Can broadcast chat messages to all
+                                     // players
 
-const u64 PRIV_DEFAULT = PRIV_BUILD;
+// Default privileges - these can be overriden for new players using the
+// config option "default_privs" - however, this value still applies for
+// players that existed before the privileges system was added.
+const u64 PRIV_DEFAULT = PRIV_BUILD|PRIV_SHOUT;
 const u64 PRIV_ALL = 0x7FFFFFFFFFFFFFFFULL;
 const u64 PRIV_INVALID = 0x8000000000000000ULL;
 

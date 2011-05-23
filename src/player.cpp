@@ -36,6 +36,8 @@ std::wstring privsToString(u64 privs)
 		os<<L"settime,";
 	if(privs & PRIV_PRIVS)
 		os<<L"privs,";
+	if(privs & PRIV_SHOUT)
+		os<<L"shout,";
 	if(os.tellp())
 	{
 		// Drop the trailing comma. (Why on earth can't
@@ -65,6 +67,8 @@ u64 stringToPrivs(std::wstring str)
 			privs |= PRIV_SETTIME;
 		else if(*i == L"privs")
 			privs |= PRIV_PRIVS;
+		else if(*i == L"shout")
+			privs |= PRIV_SHOUT;
 		else
 			return PRIV_INVALID;
 	}
