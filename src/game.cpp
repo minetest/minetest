@@ -1135,6 +1135,9 @@ void the_game(
 			// It will delete itself by itself
 			(new GUIPauseMenu(guienv, guiroot, -1, g_gamecallback,
 					&g_menumgr))->drop();
+
+			// Move mouse cursor on top of the disconnect button
+			input->setMousePos(displaycenter.X, displaycenter.Y+25);
 		}
 		else if(input->wasKeyDown(getKeySetting("keymap_chat")))
 		{
