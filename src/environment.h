@@ -116,13 +116,19 @@ private:
 	Active block modifier interface
 */
 
+class ServerEnvironment;
+
 class ActiveBlockModifier
 {
 public:
 	ActiveBlockModifier(){};
 	virtual ~ActiveBlockModifier(){};
-	//TODO
-	//virtual void 
+	
+	virtual u32 getTriggerContentCount(){ return 1;}
+	virtual u8 getTriggerContent(u32 i) = 0;
+	virtual float getActiveInterval() = 0;
+	virtual u32 getActiveChance() = 0;
+	virtual void triggerEvent(ServerEnvironment *env, v3s16 p) = 0;
 };
 
 /*

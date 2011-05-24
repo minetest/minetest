@@ -310,6 +310,8 @@ Stuff to do before release:
   ActiveBlockModifier stuff)
 - Protocol version field
 - Consider getting some textures from cisoun's texture pack
+- Add a long step function to objects that is called with the time
+  difference when block activates
 
 ======================================================================
 
