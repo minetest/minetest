@@ -729,6 +729,72 @@ private:
 	core::array<PreMeshBuffer> m_prebuffers;
 };
 
+void makeCuboid(video::SMaterial &material, MeshCollector *collector,
+	AtlasPointer* pa, video::SColor &c,
+	v3f &pos, f32 rx, f32 ry, f32 rz)
+{
+	video::S3DVertex v[4] =
+	{
+		video::S3DVertex(0,0,0, 0,0,0, c,
+			pa->x0(), pa->y1()),
+		video::S3DVertex(0,0,0, 0,0,0, c,
+			pa->x1(), pa->y1()),
+		video::S3DVertex(0,0,0, 0,0,0, c,
+			pa->x1(), pa->y0()),
+		video::S3DVertex(0,0,0, 0,0,0, c,
+			pa->x0(), pa->y0())
+	};
+
+	for(int i=0;i<6;i++)
+	{
+		switch(i)
+		{
+			case 0:
+				v[0].Pos.X=-rx; v[0].Pos.Y= ry; v[0].Pos.Z=-rz;
+				v[1].Pos.X=-rx; v[1].Pos.Y= ry; v[1].Pos.Z= rz;
+				v[2].Pos.X= rx; v[2].Pos.Y= ry; v[2].Pos.Z= rz;
+				v[3].Pos.X= rx; v[3].Pos.Y= ry, v[3].Pos.Z=-rz;
+				break;
+			case 1:
+				v[0].Pos.X=-rx; v[0].Pos.Y= ry; v[0].Pos.Z=-rz;
+				v[1].Pos.X= rx; v[1].Pos.Y= ry; v[1].Pos.Z=-rz;
+				v[2].Pos.X= rx; v[2].Pos.Y=-ry; v[2].Pos.Z=-rz;
+				v[3].Pos.X=-rx; v[3].Pos.Y=-ry, v[3].Pos.Z=-rz;
+				break;
+			case 2:
+				v[0].Pos.X= rx; v[0].Pos.Y= ry; v[0].Pos.Z=-rz;
+				v[1].Pos.X= rx; v[1].Pos.Y= ry; v[1].Pos.Z= rz;
+				v[2].Pos.X= rx; v[2].Pos.Y=-ry; v[2].Pos.Z= rz;
+				v[3].Pos.X= rx; v[3].Pos.Y=-ry, v[3].Pos.Z=-rz;
+				break;
+			case 3:
+				v[0].Pos.X= rx; v[0].Pos.Y= ry; v[0].Pos.Z= rz;
+				v[1].Pos.X=-rx; v[1].Pos.Y= ry; v[1].Pos.Z= rz;
+				v[2].Pos.X=-rx; v[2].Pos.Y=-ry; v[2].Pos.Z= rz;
+				v[3].Pos.X= rx; v[3].Pos.Y=-ry, v[3].Pos.Z= rz;
+				break;
+			case 4:
+				v[0].Pos.X=-rx; v[0].Pos.Y= ry; v[0].Pos.Z= rz;
+				v[1].Pos.X=-rx; v[1].Pos.Y= ry; v[1].Pos.Z=-rz;
+				v[2].Pos.X=-rx; v[2].Pos.Y=-ry; v[2].Pos.Z=-rz;
+				v[3].Pos.X=-rx; v[3].Pos.Y=-ry, v[3].Pos.Z= rz;
+				break;
+			case 5:
+				v[0].Pos.X= rx; v[0].Pos.Y=-ry; v[0].Pos.Z= rz;
+				v[1].Pos.X=-rx; v[1].Pos.Y=-ry; v[1].Pos.Z= rz;
+				v[2].Pos.X=-rx; v[2].Pos.Y=-ry; v[2].Pos.Z=-rz;
+				v[3].Pos.X= rx; v[3].Pos.Y=-ry, v[3].Pos.Z=-rz;
+				break;
+		}
+		for(u16 i=0; i<4; i++)
+			v[i].Pos += pos;
+		u16 indices[] = {0,1,2,2,3,0};
+		collector->append(material, v, 4, indices, 6);
+
+	}
+
+}
+
 scene::SMesh* makeMapBlockMesh(MeshMakeData *data)
 {
 	// 4-21ms for MAP_BLOCKSIZE=16
@@ -911,6 +977,15 @@ scene::SMesh* makeMapBlockMesh(MeshMakeData *data)
 			g_texturesource->getTextureId("glass.png"));
 	material_glass.setTexture(0, pa_glass.atlas);
 
+	// Wood material
+	video::SMaterial material_wood;
+	material_wood.setFlag(video::EMF_LIGHTING, false);
+	material_wood.setFlag(video::EMF_BILINEAR_FILTER, false);
+	material_wood.setFlag(video::EMF_FOG_ENABLE, true);
+	material_wood.MaterialType = video::EMT_TRANSPARENT_ALPHA_CHANNEL_REF;
+	AtlasPointer pa_wood = g_texturesource->getTexture(
+			g_texturesource->getTextureId("wood.png"));
+	material_wood.setTexture(0, pa_wood.atlas);
 
 	for(s16 z=0; z<MAP_BLOCKSIZE; z++)
 	for(s16 y=0; y<MAP_BLOCKSIZE; y++)
@@ -1479,6 +1554,63 @@ scene::SMesh* makeMapBlockMesh(MeshMakeData *data)
 				// Add to mesh collector
 				collector.append(material_glass, vertices, 4, indices, 6);
 			}
+		}
+		/*
+			Add fence
+		*/
+		else if(n.d == CONTENT_FENCE)
+		{
+			u8 l = decode_light(undiminish_light(n.getLightBlend(data->m_daynight_ratio)));
+			video::SColor c(255,l,l,l);
+
+			const f32 post_rad=(f32)BS/10;
+			const f32 bar_rad=(f32)BS/20;
+			const f32 bar_len=(f32)(BS/2)-post_rad;
+
+			// The post - always present
+			v3f pos = intToFloat(p+blockpos_nodes, BS);
+			makeCuboid(material_wood, &collector,
+				&pa_wood, c, pos,
+				post_rad,BS/2,post_rad);
+
+			// Now a section of fence, +X, if there's a post there
+			v3s16 p2 = p;
+			p2.X++;
+			MapNode n2 = data->m_vmanip.getNodeNoEx(blockpos_nodes + p2);
+			if(n2.d == CONTENT_FENCE)
+			{
+				pos = intToFloat(p+blockpos_nodes, BS);
+				pos.X += BS/2;
+				pos.Y += BS/4;
+				makeCuboid(material_wood, &collector,
+					&pa_wood, c, pos,
+					bar_len,bar_rad,bar_rad);
+
+				pos.Y -= BS/2;
+				makeCuboid(material_wood, &collector,
+					&pa_wood, c, pos,
+					bar_len,bar_rad,bar_rad);
+			}
+
+			// Now a section of fence, +Z, if there's a post there
+			p2 = p;
+			p2.Z++;
+			n2 = data->m_vmanip.getNodeNoEx(blockpos_nodes + p2);
+			if(n2.d == CONTENT_FENCE)
+			{
+				pos = intToFloat(p+blockpos_nodes, BS);
+				pos.Z += BS/2;
+				pos.Y += BS/4;
+				makeCuboid(material_wood, &collector,
+					&pa_wood, c, pos,
+					bar_rad,bar_rad,bar_len);
+				pos.Y -= BS/2;
+				makeCuboid(material_wood, &collector,
+					&pa_wood, c, pos,
+					bar_rad,bar_rad,bar_len);
+
+			}
+
 		}
 
 

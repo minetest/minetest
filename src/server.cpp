@@ -3670,6 +3670,23 @@ void Server::UpdateCrafting(u16 peer_id)
 				}
 			}
 
+			// Fence
+			if(!found)
+			{
+				ItemSpec specs[9];
+				specs[4] = ItemSpec(ITEM_CRAFT, "Stick");
+				specs[5] = ItemSpec(ITEM_CRAFT, "Stick");
+				specs[6] = ItemSpec(ITEM_CRAFT, "Stick");
+				specs[7] = ItemSpec(ITEM_CRAFT, "Stick");
+				specs[8] = ItemSpec(ITEM_CRAFT, "Stick");
+				specs[9] = ItemSpec(ITEM_CRAFT, "Stick");
+				if(checkItemCombination(items, specs))
+				{
+					rlist->addItem(new MaterialItem(CONTENT_FENCE, 2));
+					found = true;
+				}
+			}
+
 			// Sign
 			if(!found)
 			{
@@ -4046,6 +4063,7 @@ void setCreativeInventory(Player *player)
 		CONTENT_TREE,
 		CONTENT_LEAVES,
 		CONTENT_GLASS,
+		CONTENT_FENCE,
 		CONTENT_MESE,
 		CONTENT_WATERSOURCE,
 		CONTENT_CLOUD,
