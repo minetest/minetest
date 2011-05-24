@@ -100,6 +100,7 @@ void init_content_inventory_texture_paths();
 #define CONTENT_COBBLE 18
 #define CONTENT_STEEL 19
 #define CONTENT_GLASS 20
+#define CONTENT_FENCE 21
 
 /*
 	Content feature list

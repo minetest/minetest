@@ -216,6 +216,14 @@ void init_mapnode()
 	f->solidness = 0; // drawn separately, makes no faces
 	f->setInventoryTextureCube("glass.png", "glass.png", "glass.png");
 
+	i = CONTENT_FENCE;
+	f = &g_content_features[i];
+	f->light_propagates = true;
+	f->param_type = CPT_LIGHT;
+	f->is_ground_content = true;
+	f->dug_item = std::string("MaterialItem ")+itos(i)+" 1";
+	f->solidness = 0; // drawn separately, makes no faces
+	f->air_equivalent = true; // grass grows underneath
 
 	// Deprecated
 	i = CONTENT_COALSTONE;

@@ -2908,6 +2908,12 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 		// Whether to send to other players
 		bool send_to_others = false;
 		
+		// Local player gets all privileges regardless of
+		// what's set on their account.
+		u64 privs = player->privs;
+		if(g_settings.get("name") == player->getName())
+			privs = PRIV_ALL;
+
 		// Parse commands
 		std::wstring commandprefix = L"/#";
 		if(message.substr(0, commandprefix.size()) == commandprefix)
@@ -2915,12 +2921,6 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 			line += L"Server: ";
 
 			message = message.substr(commandprefix.size());
-
-			// Local player gets all privileges regardless of
-			// what's set on their account.
-			u64 privs = player->privs;
-			if(g_settings.get("name") == player->getName())
-				privs = PRIV_ALL;
 
 			ServerCommandContext *ctx = new ServerCommandContext(
 				str_split(message, L' '),
@@ -2937,13 +2937,19 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 		}
 		else
 		{
-			line += L"<";
-			/*if(is_operator)
-				line += L"@";*/
-			line += name;
-			line += L"> ";
-			line += message;
-			send_to_others = true;
+			if(privs & PRIV_SHOUT)
+			{
+				line += L"<";
+				line += name;
+				line += L"> ";
+				line += message;
+				send_to_others = true;
+			}
+			else
+			{
+				line += L"Server: You are not allowed to shout";
+				send_to_sender = true;
+			}
 		}
 		
 		if(line != L"")
@@ -3664,6 +3670,23 @@ void Server::UpdateCrafting(u16 peer_id)
 				}
 			}
 
+			// Fence
+			if(!found)
+			{
+				ItemSpec specs[9];
+				specs[3] = ItemSpec(ITEM_CRAFT, "Stick");
+				specs[4] = ItemSpec(ITEM_CRAFT, "Stick");
+				specs[5] = ItemSpec(ITEM_CRAFT, "Stick");
+				specs[6] = ItemSpec(ITEM_CRAFT, "Stick");
+				specs[7] = ItemSpec(ITEM_CRAFT, "Stick");
+				specs[8] = ItemSpec(ITEM_CRAFT, "Stick");
+				if(checkItemCombination(items, specs))
+				{
+					rlist->addItem(new MaterialItem(CONTENT_FENCE, 2));
+					found = true;
+				}
+			}
+
 			// Sign
 			if(!found)
 			{
@@ -4040,6 +4063,7 @@ void setCreativeInventory(Player *player)
 		CONTENT_TREE,
 		CONTENT_LEAVES,
 		CONTENT_GLASS,
+		CONTENT_FENCE,
 		CONTENT_MESE,
 		CONTENT_WATERSOURCE,
 		CONTENT_CLOUD,
@@ -4184,6 +4208,9 @@ Player *Server::emergePlayer(const char *name, const char *password, u16 peer_id
 		player->peer_id = peer_id;
 		player->updateName(name);
 		player->updatePassword(password);
+
+		if(g_settings.exists("default_privs"))
+				player->privs = g_settings.getU64("default_privs");
 
 		/*
 			Set player position
