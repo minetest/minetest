@@ -3586,7 +3586,18 @@ void ServerMap::initChunkMake(ChunkMakeData &data, v2s16 chunkpos)
 			sectorpos_base - v2s16(1,1) * max_spread_amount_sectors;
 	s16 sectorpos_bigbase_size =
 			sectorpos_base_size + 2 * max_spread_amount_sectors;
-			
+	
+	// Check limits
+	const s16 limit = MAP_GENERATION_LIMIT / MAP_BLOCKSIZE;
+	if(sectorpos_bigbase.X < -limit
+	|| sectorpos_bigbase.X + sectorpos_bigbase_size >= limit
+	|| sectorpos_bigbase.Y < -limit
+	|| sectorpos_bigbase.Y + sectorpos_bigbase_size >= limit)
+	{
+		data.no_op = true;
+		return;
+	}
+
 	data.seed = m_seed;
 	data.chunkpos = chunkpos;
 	data.y_blocks_min = y_blocks_min;
