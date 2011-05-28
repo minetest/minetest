@@ -181,6 +181,14 @@ void init_mapnode()
 	f->is_ground_content = true;
 	f->dug_item = std::string("MaterialItem ")+itos(i)+" 1";
 	
+	i = CONTENT_SANDSTONE;
+	f = &g_content_features[i];
+	f->setAllTextures("sandstone.png");
+	f->setInventoryTextureCube("sandstone.png", "sandstone.png", "sandstone.png");
+	f->param_type = CPT_MINERAL;
+	f->is_ground_content = true;
+	f->dug_item = std::string("MaterialItem ")+itos(CONTENT_SAND)+" 1";
+	
 	i = CONTENT_TREE;
 	f = &g_content_features[i];
 	f->setAllTextures("tree.png");
