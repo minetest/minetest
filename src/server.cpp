@@ -3972,6 +3972,21 @@ void Server::UpdateCrafting(u16 peer_id)
 					found = true;
 				}
 			}
+
+			// Sandstone
+			if(!found)
+			{
+				ItemSpec specs[9];
+				specs[3] = ItemSpec(ITEM_MATERIAL, CONTENT_SAND);
+				specs[4] = ItemSpec(ITEM_MATERIAL, CONTENT_SAND);
+				specs[6] = ItemSpec(ITEM_MATERIAL, CONTENT_SAND);
+				specs[7] = ItemSpec(ITEM_MATERIAL, CONTENT_SAND);
+				if(checkItemCombination(items, specs))
+				{
+					rlist->addItem(new MaterialItem(CONTENT_SANDSTONE, 1));
+					found = true;
+				}
+			}
 		}
 	
 	} // if creative_mode == false
@@ -4060,6 +4075,7 @@ void setCreativeInventory(Player *player)
 		CONTENT_MUD,
 		CONTENT_STONE,
 		CONTENT_SAND,
+		CONTENT_SANDSTONE,
 		CONTENT_TREE,
 		CONTENT_LEAVES,
 		CONTENT_GLASS,
