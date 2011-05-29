@@ -308,21 +308,20 @@ Making it more portable:
 Stuff to do before release:
 ---------------------------
 - Make grass grow slower; utilize timestamp difference
+
+Stuff to do after release:
+---------------------------
+- Make sure server handles removing grass when a block is placed (etc)
+    - The client should not do it by itself
+- Block cube placement around player's head
 - Protocol version field
 - Consider getting some textures from cisoun's texture pack
 	- Ask from Cisoun
 - Make sure the fence implementation and data format is good
 	- Think about using same bits for material for fences and doors, for
 	example
-- Make sure server handles removing grass when a block is placed (etc)
-    - The client should not do it by itself
-- Add mouse inversion in config
-- Block cube placement around player's head
-- Move mineral to param2, increment map serialization version, add conversion
-
-Stuff to do after release:
----------------------------
 - Finish the ActiveBlockModifier stuff and use it for something
+- Move mineral to param2, increment map serialization version, add conversion
 
 ======================================================================
 

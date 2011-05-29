@@ -744,7 +744,7 @@ void ServerEnvironment::step(float dtime)
 				// Convert all mud under proper day lighting to grass
 				if(n.d == CONTENT_MUD)
 				{
-					if(1)
+					if(dtime_s > 300)
 					{
 						MapNode n_top = block->getNodeNoEx(p0+v3s16(0,1,0));
 						if(content_features(n_top.d).air_equivalent &&
@@ -762,7 +762,7 @@ void ServerEnvironment::step(float dtime)
 	/*
 		Mess around in active blocks
 	*/
-	if(m_active_blocks_test_interval.step(dtime, 5.0))
+	if(m_active_blocks_test_interval.step(dtime, 10.0))
 	{
 		for(core::map<v3s16, bool>::Iterator
 				i = m_active_blocks.m_list.getIterator();
@@ -805,7 +805,7 @@ void ServerEnvironment::step(float dtime)
 				// Convert mud under proper lighting to grass
 				if(n.d == CONTENT_MUD)
 				{
-					if(myrand()%10 == 0)
+					if(myrand()%20 == 0)
 					{
 						MapNode n_top = block->getNodeNoEx(p0+v3s16(0,1,0));
 						if(content_features(n_top.d).air_equivalent &&
