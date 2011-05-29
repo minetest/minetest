@@ -14,6 +14,7 @@ X:
 - Player passwords
 - All textures first searched from texture_path
 - Map directory ("map") has been renamed to "world" (just rename it to load an old world)
+- Mouse inversion (invert_mouse)
 
 2011-04-24:
 - Smooth lighting with simple ambient occlusion

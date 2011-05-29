@@ -894,6 +894,8 @@ void the_game(
 	core::list<float> frametime_log;
 
 	float damage_flash_timer = 0;
+	
+	bool invert_mouse = g_settings.getBool("invert_mouse");
 
 	/*
 		Main loop
@@ -1306,6 +1308,8 @@ void the_game(
 			else{
 				s32 dx = input->getMousePos().X - displaycenter.X;
 				s32 dy = input->getMousePos().Y - displaycenter.Y;
+				if(invert_mouse)
+					dy = -dy;
 				//std::cout<<"window active, pos difference "<<dx<<","<<dy<<std::endl;
 				
 				/*const float keyspeed = 500;

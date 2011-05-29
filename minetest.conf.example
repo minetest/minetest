@@ -42,6 +42,8 @@
 #keymap_special1 = KEY_KEY_E
 #keymap_print_debug_stacks = KEY_KEY_P
 
+#invert_mouse = false
+
 # The desired FPS
 #wanted_fps = 30
 

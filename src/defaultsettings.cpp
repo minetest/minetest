@@ -65,6 +65,7 @@ void set_default_settings()
 	g_settings.setDefault("free_move", "false");
 	g_settings.setDefault("continuous_forward", "false");
 	g_settings.setDefault("fast_move", "false");
+	g_settings.setDefault("invert_mouse", "false");
 
 	// Server stuff
 	g_settings.setDefault("enable_experimental", "false");
