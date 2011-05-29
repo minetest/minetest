@@ -307,7 +307,6 @@ Making it more portable:
  
 Stuff to do before release:
 ---------------------------
-- Make grass grow slower; utilize timestamp difference
 
 Stuff to do after release:
 ---------------------------
