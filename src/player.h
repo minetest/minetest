@@ -126,9 +126,6 @@ public:
 
 	u16 hp;
 
-	// Player's privileges - a bitmaps of PRIV_xxxx.
-	u64 privs;
-
 	u16 peer_id;
 
 protected:

@@ -102,7 +102,6 @@ void Player::serialize(std::ostream &os)
 	args.setV3F("position", m_position);
 	args.setBool("craftresult_is_preview", craftresult_is_preview);
 	args.setS32("hp", hp);
-	args.setU64("privs", privs);
 
 	args.writeLines(os);
 

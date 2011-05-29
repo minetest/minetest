@@ -2083,7 +2083,7 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 		if(datasize < 13)
 			return;
 
-		if((player->privs & PRIV_BUILD) == 0)
+		if((getPlayerPrivs(player) & PRIV_BUILD) == 0)
 			return;
 
 		/*
@@ -2167,7 +2167,7 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 		if(datasize < 7)
 			return;
 
-		if((player->privs & PRIV_BUILD) == 0)
+		if((getPlayerPrivs(player) & PRIV_BUILD) == 0)
 			return;
 
 		/*
@@ -2368,8 +2368,13 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 			}
 
 			// Make sure the player is allowed to do it
-			if((player->privs & PRIV_BUILD) == 0)
+			if((getPlayerPrivs(player) & PRIV_BUILD) == 0)
+			{
+				dstream<<"Player "<<player->getName()<<" cannot remove node"
+						<<" because privileges are "<<getPlayerPrivs(player)
+						<<std::endl;
 				cannot_remove_node = true;
+			}
 
 			/*
 				If node can't be removed, set block to be re-sent to
@@ -2517,8 +2522,15 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 				try{
 					// Don't add a node if this is not a free space
 					MapNode n2 = m_env.getMap().getNode(p_over);
+					bool no_enough_privs =
+							((getPlayerPrivs(player) & PRIV_BUILD)==0);
+					if(no_enough_privs)
+						dstream<<"Player "<<player->getName()<<" cannot add node"
+							<<" because privileges are "<<getPlayerPrivs(player)
+							<<std::endl;
+
 					if(content_buildable_to(n2.d) == false
-						|| (player->privs & PRIV_BUILD) ==0)
+						|| no_enough_privs)
 					{
 						// Client probably has wrong data.
 						// Set block not sent, so that client will get
@@ -2715,7 +2727,7 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 #endif
 	else if(command == TOSERVER_SIGNTEXT)
 	{
-		if((player->privs & PRIV_BUILD) == 0)
+		if((getPlayerPrivs(player) & PRIV_BUILD) == 0)
 			return;
 		/*
 			u16 command
@@ -2774,7 +2786,7 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 	}
 	else if(command == TOSERVER_SIGNNODETEXT)
 	{
-		if((player->privs & PRIV_BUILD) == 0)
+		if((getPlayerPrivs(player) & PRIV_BUILD) == 0)
 			return;
 		/*
 			u16 command
@@ -2952,9 +2964,7 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 		
 		// Local player gets all privileges regardless of
 		// what's set on their account.
-		u64 privs = player->privs;
-		if(g_settings.get("name") == player->getName())
-			privs = PRIV_ALL;
+		u64 privs = getPlayerPrivs(player);
 
 		// Parse commands
 		std::wstring commandprefix = L"/#";
@@ -4288,9 +4298,6 @@ Player *Server::emergePlayer(const char *name, const char *password, u16 peer_id
 		m_authmanager.setPrivs(name,
 				stringToPrivs(g_settings.get("default_privs")));
 
-		if(g_settings.exists("default_privs"))
-				player->privs = g_settings.getU64("default_privs");
-
 		/*
 			Set player position
 		*/
@@ -4500,6 +4507,23 @@ void Server::handlePeerChanges()
 				<<std::endl;
 
 		handlePeerChange(c);
+	}
+}
+
+u64 Server::getPlayerPrivs(Player *player)
+{
+	if(player==NULL)
+		return 0;
+	std::string playername = player->getName();
+	// Local player gets all privileges regardless of
+	// what's set on their account.
+	if(g_settings.get("name") == playername)
+	{
+		return PRIV_ALL;
+	}
+	else
+	{
+		return getPlayerAuthPrivs(playername);
 	}
 }
 

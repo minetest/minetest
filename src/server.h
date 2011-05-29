@@ -424,7 +424,29 @@ public:
 
 	// Envlock and conlock should be locked when calling this
 	void SendMovePlayer(Player *player);
+	
+	u64 getPlayerAuthPrivs(const std::string &name)
+	{
+		try{
+			return m_authmanager.getPrivs(name);
+		}
+		catch(AuthNotFoundException &e)
+		{
+			dstream<<"WARNING: Auth not found for "<<name<<std::endl;
+			return 0;
+		}
+	}
 
+	void setPlayerAuthPrivs(const std::string &name, u64 privs)
+	{
+		try{
+			return m_authmanager.setPrivs(name, privs);
+		}
+		catch(AuthNotFoundException &e)
+		{
+			dstream<<"WARNING: Auth not found for "<<name<<std::endl;
+		}
+	}
 
 private:
 
@@ -492,6 +514,8 @@ private:
 	struct PeerChange;
 	void handlePeerChange(PeerChange &c);
 	void handlePeerChanges();
+
+	u64 getPlayerPrivs(Player *player);
 
 	/*
 		Variables

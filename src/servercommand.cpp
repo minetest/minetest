@@ -35,7 +35,8 @@ void cmd_privs(std::wostringstream &os,
 	{
 		// Show our own real privs, without any adjustments
 		// made for admin status
-		os<<L"-!- " + narrow_to_wide(privsToString(ctx->player->privs));
+		os<<L"-!- " + narrow_to_wide(privsToString(
+				ctx->server->getPlayerAuthPrivs(ctx->player->getName())));
 		return;
 	}
 
@@ -52,7 +53,7 @@ void cmd_privs(std::wostringstream &os,
 		return;
 	}
 	
-	os<<L"-!- " + narrow_to_wide(privsToString(tp->privs));
+	os<<L"-!- " + narrow_to_wide(privsToString(ctx->server->getPlayerAuthPrivs(tp->getName())));
 }
 
 void cmd_grantrevoke(std::wostringstream &os,
@@ -83,14 +84,19 @@ void cmd_grantrevoke(std::wostringstream &os,
 		os<<L"-!- No such player";
 		return;
 	}
+	
+	std::string playername = wide_to_narrow(ctx->parms[1]);
+	u64 privs = ctx->server->getPlayerAuthPrivs(playername);
 
 	if(ctx->parms[0] == L"grant")
-		tp->privs |= newprivs;
+		privs |= newprivs;
 	else
-		tp->privs &= ~newprivs;
+		privs &= ~newprivs;
+	
+	ctx->server->setPlayerAuthPrivs(playername, privs);
 	
 	os<<L"-!- Privileges change to ";
-	os<<narrow_to_wide(privsToString(tp->privs));
+	os<<narrow_to_wide(privsToString(privs));
 }
 
 void cmd_time(std::wostringstream &os,

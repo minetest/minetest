@@ -3,7 +3,7 @@ Minetest-c55 changelog
 This should contain all the major changes.
 For minor stuff, refer to the commit log of the repository.
 
-X:
+2011-05-29:
 - Optimized smooth lighting
 - A number of small fixes
 - Added clouds and simple skyboxes
