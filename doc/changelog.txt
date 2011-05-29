@@ -15,6 +15,8 @@ X:
 - All textures first searched from texture_path
 - Map directory ("map") has been renamed to "world" (just rename it to load an old world)
 - Mouse inversion (invert_mouse)
+- Grass doesn't grow immediately anymore
+- Fence added
 
 2011-04-24:
 - Smooth lighting with simple ambient occlusion
