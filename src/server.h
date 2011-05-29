@@ -32,6 +32,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "porting.h"
 #include "map.h"
 #include "inventory.h"
+#include "auth.h"
 
 /*
 	Some random functions
@@ -438,7 +439,8 @@ private:
 	*/
 	
 	static void SendHP(con::Connection &con, u16 peer_id, u8 hp);
-	static void SendAccessDenied(con::Connection &con, u16 peer_id);
+	static void SendAccessDenied(con::Connection &con, u16 peer_id,
+			const std::wstring &reason);
 	
 	/*
 		Non-static send methods
@@ -514,6 +516,9 @@ private:
 	JMutex m_con_mutex;
 	// Connected clients (behind the con mutex)
 	core::map<u16, RemoteClient*> m_clients;
+
+	// User authentication
+	AuthManager m_authmanager;
 	
 	/*
 		Threads

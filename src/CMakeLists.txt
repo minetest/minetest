@@ -50,6 +50,7 @@ configure_file(
 )
 
 set(common_SRCS
+	auth.cpp
 	collision.cpp
 	nodemetadata.cpp
 	serverobject.cpp

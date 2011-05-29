@@ -260,6 +260,9 @@ SUGG: MovingObject::move and Player::move are basically the same.
 	- NOTE: There is a simple move implementation now in collision.{h,cpp}
 	- NOTE: MovingObject will be deleted (MapBlockObject)
 
+TODO: Add a long step function to objects that is called with the time
+      difference when block activates
+
 Map:
 ----
 
@@ -304,14 +307,22 @@ Making it more portable:
  
 Stuff to do before release:
 ---------------------------
-- Player default privileges and default password
-- Chat privilege
-- Some simple block-based dynamic stuff in the world (finish the
-  ActiveBlockModifier stuff)
+- Make grass grow slower; utilize timestamp difference
 - Protocol version field
 - Consider getting some textures from cisoun's texture pack
-- Add a long step function to objects that is called with the time
-  difference when block activates
+	- Ask from Cisoun
+- Make sure the fence implementation and data format is good
+	- Think about using same bits for material for fences and doors, for
+	example
+- Make sure server handles removing grass when a block is placed (etc)
+    - The client should not do it by itself
+- Add mouse inversion in config
+- Block cube placement around player's head
+- Move mineral to param2, increment map serialization version, add conversion
+
+Stuff to do after release:
+---------------------------
+- Finish the ActiveBlockModifier stuff and use it for something
 
 ======================================================================
 
@@ -1188,7 +1199,7 @@ int main(int argc, char *argv[])
 		port = 30000;
 	
 	// Map directory
-	std::string map_dir = porting::path_userdata+"/map";
+	std::string map_dir = porting::path_userdata+"/world";
 	if(cmd_args.exists("map-dir"))
 		map_dir = cmd_args.get("map-dir");
 	else if(g_settings.exists("map-dir"))
@@ -1488,13 +1499,20 @@ int main(int argc, char *argv[])
 				g_settings.set("creative_mode", itos(menudata.creative_mode));
 				g_settings.set("enable_damage", itos(menudata.enable_damage));
 				
-				// Check for valid parameters, restart menu if invalid.
+				/*// Check for valid parameters, restart menu if invalid.
 				if(playername == "")
 				{
 					error_message = L"Name required.";
 					continue;
 				}
-				
+				// Check that name has only valid chars
+				if(string_allowed(playername, PLAYERNAME_ALLOWED_CHARS)==false)
+				{
+					error_message = L"Characters allowed: "
+							+narrow_to_wide(PLAYERNAME_ALLOWED_CHARS);
+					continue;
+				}*/
+
 				// Save settings
 				g_settings.set("name", playername);
 				g_settings.set("address", address);

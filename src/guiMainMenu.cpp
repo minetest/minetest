@@ -266,7 +266,7 @@ void GUIMainMenu::regenerateGui(v2u32 screensize)
 		core::rect<s32> rect(0, 0, 130, 30);
 		//rect += topleft_server + v2s32(size_server.X-40-130, 100+25);
 		rect += topleft_server + v2s32(40, 100+25);
-		Environment->addButton(rect, this, 260, L"Delete map");
+		Environment->addButton(rect, this, 260, L"Delete world");
 	}
 }
 

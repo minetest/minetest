@@ -113,25 +113,6 @@ private:
 };
 
 /*
-	Active block modifier interface
-*/
-
-class ServerEnvironment;
-
-class ActiveBlockModifier
-{
-public:
-	ActiveBlockModifier(){};
-	virtual ~ActiveBlockModifier(){};
-	
-	virtual u32 getTriggerContentCount(){ return 1;}
-	virtual u8 getTriggerContent(u32 i) = 0;
-	virtual float getActiveInterval() = 0;
-	virtual u32 getActiveChance() = 0;
-	virtual void triggerEvent(ServerEnvironment *env, v3s16 p) = 0;
-};
-
-/*
 	The server-side environment.
 
 	This is not thread-safe. Server uses an environment mutex.
@@ -140,6 +121,7 @@ public:
 #include "serverobject.h"
 
 class Server;
+class ActiveBlockModifier;
 
 class ServerEnvironment : public Environment
 {
@@ -178,6 +160,7 @@ public:
 
 	/*
 		ActiveObjects
+		-------------------------------------------
 	*/
 
 	ServerActiveObject* getActiveObject(u16 id);
@@ -213,6 +196,13 @@ public:
 		Returns a message with id=0 if no messages are available.
 	*/
 	ActiveObjectMessage getActiveObjectMessage();
+
+	/*
+		ActiveBlockModifiers
+		-------------------------------------------
+	*/
+
+	void addActiveBlockModifier(ActiveBlockModifier *abm);
 
 private:
 	/*
@@ -261,6 +251,29 @@ private:
 	u32 m_game_time;
 	// A helper variable for incrementing the latter
 	float m_game_time_fraction_counter;
+};
+
+/*
+	Active block modifier interface.
+
+	These are fed into ServerEnvironment at initialization time;
+	ServerEnvironment handles deleting them.
+*/
+
+class ActiveBlockModifier
+{
+public:
+	ActiveBlockModifier(){};
+	virtual ~ActiveBlockModifier(){};
+
+	//virtual core::list<u8> update(ServerEnvironment *env) = 0;
+	virtual u32 getTriggerContentCount(){ return 1;}
+	virtual u8 getTriggerContent(u32 i) = 0;
+	virtual float getActiveInterval() = 0;
+	// chance of (1 / return value), 0 is disallowed
+	virtual u32 getActiveChance() = 0;
+	// This is called usually at interval for 1/chance of the nodes
+	virtual void triggerEvent(ServerEnvironment *env, v3s16 p) = 0;
 };
 
 #ifndef SERVER

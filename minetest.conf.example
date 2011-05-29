@@ -102,6 +102,11 @@
 
 #enable_damage = false
 
+#default_password = 
+
+# Available privileges: build, teleport, settime, privs, shout
+#default_privs = build, shout
+
 # Gives some stuff to players at the beginning
 #give_initial_stuff = false
 

@@ -426,7 +426,14 @@ void ServerEnvironment::deSerializePlayers(const std::string &savedir)
 			testplayer.deSerialize(is);
 		}
 
-		dstream<<"Loaded test player with name "<<testplayer.getName()<<std::endl;
+		if(!string_allowed(testplayer.getName(), PLAYERNAME_ALLOWED_CHARS))
+		{
+			dstream<<"Not loading player with invalid name: "
+					<<testplayer.getName()<<std::endl;
+		}
+
+		dstream<<"Loaded test player with name "<<testplayer.getName()
+				<<std::endl;
 		
 		// Search for the player
 		std::string playername = testplayer.getName();
@@ -723,6 +730,7 @@ void ServerEnvironment::step(float dtime)
 			activateObjects(block);
 
 			// TODO: Do something
+			// TODO: Implement usage of ActiveBlockModifier
 			
 			// Here's a quick demonstration
 			v3s16 p0;
@@ -784,6 +792,7 @@ void ServerEnvironment::step(float dtime)
 				Everything should bind to inside this single content
 				searching loop to keep things fast.
 			*/
+			// TODO: Implement usage of ActiveBlockModifier
 
 			v3s16 p0;
 			for(p0.X=0; p0.X<MAP_BLOCKSIZE; p0.X++)

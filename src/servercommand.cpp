@@ -35,7 +35,7 @@ void cmd_privs(std::wostringstream &os,
 	{
 		// Show our own real privs, without any adjustments
 		// made for admin status
-		os<<L"-!- " + privsToString(ctx->player->privs);
+		os<<L"-!- " + narrow_to_wide(privsToString(ctx->player->privs));
 		return;
 	}
 
@@ -52,7 +52,7 @@ void cmd_privs(std::wostringstream &os,
 		return;
 	}
 	
-	os<<L"-!- " + privsToString(tp->privs);
+	os<<L"-!- " + narrow_to_wide(privsToString(tp->privs));
 }
 
 void cmd_grantrevoke(std::wostringstream &os,
@@ -70,7 +70,7 @@ void cmd_grantrevoke(std::wostringstream &os,
 		return;
 	}
 
-	u64 newprivs = stringToPrivs(ctx->parms[2]);
+	u64 newprivs = stringToPrivs(wide_to_narrow(ctx->parms[2]));
 	if(newprivs == PRIV_INVALID)
 	{
 		os<<L"-!- Invalid privileges specified";
@@ -90,7 +90,7 @@ void cmd_grantrevoke(std::wostringstream &os,
 		tp->privs &= ~newprivs;
 	
 	os<<L"-!- Privileges change to ";
-	os<<privsToString(tp->privs);
+	os<<narrow_to_wide(privsToString(tp->privs));
 }
 
 void cmd_time(std::wostringstream &os,

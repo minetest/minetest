@@ -764,8 +764,9 @@ void the_game(
 	{
 		if(client.accessDenied())
 		{
-			error_message = L"Access denied. Check your password and try again.";
-			std::cout<<DTIME<<"Access denied."<<std::endl;
+			error_message = L"Access denied. Reason: "
+					+client.accessDeniedReason();
+			std::cout<<DTIME<<wide_to_narrow(error_message)<<std::endl;
 		}
 		else
 		{

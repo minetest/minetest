@@ -967,6 +967,7 @@ Server::Server(
 	):
 	m_env(new ServerMap(mapsavedir), this),
 	m_con(PROTOCOL_ID, 512, CONNECTION_TIMEOUT, this),
+	m_authmanager(mapsavedir+"/auth.txt"),
 	m_thread(this),
 	m_emergethread(this),
 	m_time_counter(0),
@@ -1646,7 +1647,7 @@ void Server::AsyncRunStep()
 		}
 	}
 
-	// Save map
+	// Save map, players and auth stuff
 	{
 		float &counter = m_savemap_timer;
 		counter += dtime;
@@ -1654,8 +1655,11 @@ void Server::AsyncRunStep()
 		{
 			counter = 0.0;
 
+			// Auth stuff
+			m_authmanager.save();
+			
+			// Map
 			JMutexAutoLock lock(m_env_mutex);
-
 			if(((ServerMap*)(&m_env.getMap()))->isSavingEnabled() == true)
 			{
 				// Save only changed parts
@@ -1795,7 +1799,23 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 			playername[i] = data[3+i];
 		}
 		playername[PLAYERNAME_SIZE-1] = 0;
-	
+		
+		if(playername[0]=='\0')
+		{
+			derr_server<<DTIME<<"Server: Player has empty name"<<std::endl;
+			SendAccessDenied(m_con, peer_id,
+					L"Empty name");
+			return;
+		}
+
+		if(string_allowed(playername, PLAYERNAME_ALLOWED_CHARS)==false)
+		{
+			derr_server<<DTIME<<"Server: Player has invalid name"<<std::endl;
+			SendAccessDenied(m_con, peer_id,
+					L"Name contains unallowed characters");
+			return;
+		}
+
 		// Get password
 		char password[PASSWORD_SIZE];
 		if(datasize == 2+1+PLAYERNAME_SIZE)
@@ -1811,14 +1831,36 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 				}
 				password[PASSWORD_SIZE-1] = 0;
 		}
-		Player *checkplayer = m_env.getPlayer(playername);
-		if(checkplayer != NULL && strcmp(checkplayer->getPassword(),password))
+		
+		std::string checkpwd;
+		if(m_authmanager.exists(playername))
+		{
+			checkpwd = m_authmanager.getPassword(playername);
+		}
+		else
+		{
+			checkpwd = g_settings.get("default_password");
+		}
+		
+		if(password != checkpwd)
 		{
 			derr_server<<DTIME<<"Server: peer_id="<<peer_id
 					<<": supplied invalid password for "
 					<<playername<<std::endl;
-			SendAccessDenied(m_con, peer_id);
+			SendAccessDenied(m_con, peer_id, L"Invalid password");
 			return;
+		}
+		
+		// Add player to auth manager
+		if(m_authmanager.exists(playername) == false)
+		{
+			derr_server<<DTIME<<"Server: adding player "<<playername
+					<<" to auth manager"<<std::endl;
+			m_authmanager.add(playername);
+			m_authmanager.setPassword(playername, checkpwd);
+			m_authmanager.setPrivs(playername,
+					stringToPrivs(g_settings.get("default_privs")));
+			m_authmanager.save();
 		}
 
 		// Get player
@@ -3020,19 +3062,51 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 
 		if(datasize != 2+PASSWORD_SIZE*2)
 			return;
-		char password[PASSWORD_SIZE];
+		/*char password[PASSWORD_SIZE];
 		for(u32 i=0; i<PASSWORD_SIZE-1; i++)
 			password[i] = data[2+i];
-		password[PASSWORD_SIZE-1] = 0;
-		if(strcmp(player->getPassword(),password))
+		password[PASSWORD_SIZE-1] = 0;*/
+		std::string oldpwd;
+		for(u32 i=0; i<PASSWORD_SIZE-1; i++)
 		{
+			char c = data[2+i];
+			if(c == 0)
+				break;
+			oldpwd += c;
+		}
+		std::string newpwd;
+		for(u32 i=0; i<PASSWORD_SIZE-1; i++)
+		{
+			char c = data[2+PASSWORD_SIZE+i];
+			if(c == 0)
+				break;
+			newpwd += c;
+		}
+
+		std::string playername = player->getName();
+
+		if(m_authmanager.exists(playername) == false)
+		{
+			dstream<<"Server: playername not found in authmanager"<<std::endl;
+			// Wrong old password supplied!!
+			SendChatMessage(peer_id, L"playername not found in authmanager");
+			return;
+		}
+
+		std::string checkpwd = m_authmanager.getPassword(playername);
+		
+		if(oldpwd != checkpwd)
+		{
+			dstream<<"Server: invalid old password"<<std::endl;
 			// Wrong old password supplied!!
 			SendChatMessage(peer_id, L"Invalid old password supplied. Password NOT changed.");
 			return;
 		}
-		for(u32 i=0; i<PASSWORD_SIZE-1; i++)
-			password[i] = data[30+i];
-		player->updatePassword(password);
+
+		m_authmanager.setPassword(playername, newpwd);
+		
+		dstream<<"Server: password change successful for "<<playername
+				<<std::endl;
 		SendChatMessage(peer_id, L"Password change successful");
 	}
 	else
@@ -3215,12 +3289,14 @@ void Server::SendHP(con::Connection &con, u16 peer_id, u8 hp)
 	con.Send(peer_id, 0, data, true);
 }
 
-void Server::SendAccessDenied(con::Connection &con, u16 peer_id)
+void Server::SendAccessDenied(con::Connection &con, u16 peer_id,
+		const std::wstring &reason)
 {
 	DSTACK(__FUNCTION_NAME);
 	std::ostringstream os(std::ios_base::binary);
 
 	writeU16(os, TOCLIENT_ACCESS_DENIED);
+	os<<serializeWideString(reason);
 
 	// Make data buffer
 	std::string s = os.str();
@@ -4207,7 +4283,10 @@ Player *Server::emergePlayer(const char *name, const char *password, u16 peer_id
 		//player->peer_id = PEER_ID_INEXISTENT;
 		player->peer_id = peer_id;
 		player->updateName(name);
-		player->updatePassword(password);
+		m_authmanager.add(name);
+		m_authmanager.setPassword(name, password);
+		m_authmanager.setPrivs(name,
+				stringToPrivs(g_settings.get("default_privs")));
 
 		if(g_settings.exists("default_privs"))
 				player->privs = g_settings.getU64("default_privs");

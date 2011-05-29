@@ -24,6 +24,9 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #define PROTOCOL_ID 0x4f457403
 
+#define PASSWORD_SIZE 28       // Maximum password length. Allows for
+                               // base64-encoded SHA-1 (27+\0).
+
 enum ToClientCommand
 {
 	TOCLIENT_INIT = 0x10,
@@ -154,6 +157,8 @@ enum ToClientCommand
 	TOCLIENT_ACCESS_DENIED = 0x35,
 	/*
 		u16 command
+		u16 reason_length
+		wstring reason
 	*/
 };
 

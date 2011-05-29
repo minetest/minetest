@@ -1984,17 +1984,23 @@ inline std::string serializeString(const std::string &plain)
 	return s;
 }
 
-/*// Reads a string with the length as the first two bytes
-inline std::string deSerializeString(const std::string encoded)
+// Creates a string with the length as the first two bytes from wide string
+inline std::string serializeWideString(const std::wstring &plain)
 {
-	u16 s_size = readU16((u8*)&encoded.c_str()[0]);
-	if(s_size > encoded.length() - 2)
-		return "";
+	//assert(plain.size() <= 65535);
+	if(plain.size() > 65535)
+		throw SerializationError("String too long for serializeString");
+	char buf[2];
+	writeU16((u8*)buf, plain.size());
 	std::string s;
-	s.reserve(s_size);
-	s.append(&encoded.c_str()[2], s_size);
+	s.append(buf, 2);
+	for(u32 i=0; i<plain.size(); i++)
+	{
+		writeU16((u8*)buf, plain[i]);
+		s.append(buf, 2);
+	}
 	return s;
-}*/
+}
 
 // Reads a string with the length as the first two bytes
 inline std::string deSerializeString(std::istream &is)
@@ -2014,6 +2020,27 @@ inline std::string deSerializeString(std::istream &is)
 	return s;
 }
 
+// Reads a wide string with the length as the first two bytes
+inline std::wstring deSerializeWideString(std::istream &is)
+{
+	char buf[2];
+	is.read(buf, 2);
+	if(is.gcount() != 2)
+		throw SerializationError("deSerializeString: size not read");
+	u16 s_size = readU16((u8*)buf);
+	if(s_size == 0)
+		return L"";
+	std::wstring s;
+	s.reserve(s_size);
+	for(u32 i=0; i<s_size; i++)
+	{
+		is.read(&buf[0], 2);
+		wchar_t c16 = readU16((u8*)buf);
+		s.append(&c16, 1);
+	}
+	return s;
+}
+
 // Creates a string with the length as the first four bytes
 inline std::string serializeLongString(const std::string &plain)
 {
@@ -2024,18 +2051,6 @@ inline std::string serializeLongString(const std::string &plain)
 	s.append(plain);
 	return s;
 }
-
-/*// Reads a string with the length as the first four bytes
-inline std::string deSerializeLongString(const std::string encoded)
-{
-	u32 s_size = readU32((u8*)&encoded.c_str()[0]);
-	if(s_size > encoded.length() - 4)
-		return "";
-	std::string s;
-	s.reserve(s_size);
-	s.append(&encoded.c_str()[4], s_size);
-	return s;
-}*/
 
 // Reads a string with the length as the first four bytes
 inline std::string deSerializeLongString(std::istream &is)

@@ -23,58 +23,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "constants.h"
 #include "utility.h"
 
-// Convert a privileges value into a human-readable string,
-// with each component separated by a comma.
-std::wstring privsToString(u64 privs)
-{
-	std::wostringstream os(std::ios_base::binary);
-	if(privs & PRIV_BUILD)
-		os<<L"build,";
-	if(privs & PRIV_TELEPORT)
-		os<<L"teleport,";
-	if(privs & PRIV_SETTIME)
-		os<<L"settime,";
-	if(privs & PRIV_PRIVS)
-		os<<L"privs,";
-	if(privs & PRIV_SHOUT)
-		os<<L"shout,";
-	if(os.tellp())
-	{
-		// Drop the trailing comma. (Why on earth can't
-		// you truncate a C++ stream anyway???)
-		std::wstring tmp = os.str();
-		return tmp.substr(0, tmp.length() -1);
-	}
-	return os.str();
-}
-
-// Converts a comma-seperated list of privilege values into a
-// privileges value. The reverse of privsToString(). Returns
-// PRIV_INVALID if there is anything wrong with the input.
-u64 stringToPrivs(std::wstring str)
-{
-	u64 privs=0;
-	std::vector<std::wstring> pr;
-	pr=str_split(str, ',');
-	for(std::vector<std::wstring>::iterator i = pr.begin();
-		i != pr.end(); ++i)
-	{
-		if(*i == L"build")
-			privs |= PRIV_BUILD;
-		else if(*i == L"teleport")
-			privs |= PRIV_TELEPORT;
-		else if(*i == L"settime")
-			privs |= PRIV_SETTIME;
-		else if(*i == L"privs")
-			privs |= PRIV_PRIVS;
-		else if(*i == L"shout")
-			privs |= PRIV_SHOUT;
-		else
-			return PRIV_INVALID;
-	}
-	return privs;
-}
-
 
 Player::Player():
 	touching_ground(false),
@@ -83,7 +31,6 @@ Player::Player():
 	swimming_up(false),
 	craftresult_is_preview(true),
 	hp(20),
-	privs(PRIV_DEFAULT),
 	peer_id(PEER_ID_INEXISTENT),
 	m_pitch(0),
 	m_yaw(0),
@@ -91,7 +38,6 @@ Player::Player():
 	m_position(0,0,0)
 {
 	updateName("<not set>");
-	updatePassword("");
 	resetInventory();
 }
 
@@ -150,7 +96,7 @@ void Player::serialize(std::ostream &os)
 	Settings args;
 	args.setS32("version", 1);
 	args.set("name", m_name);
-	args.set("password", m_password);
+	//args.set("password", m_password);
 	args.setFloat("pitch", m_pitch);
 	args.setFloat("yaw", m_yaw);
 	args.setV3F("position", m_position);
@@ -185,10 +131,10 @@ void Player::deSerialize(std::istream &is)
 	//args.getS32("version");
 	std::string name = args.get("name");
 	updateName(name.c_str());
-	std::string password = "";
+	/*std::string password = "";
 	if(args.exists("password"))
 		password = args.get("password");
-	updatePassword(password.c_str());
+	updatePassword(password.c_str());*/
 	m_pitch = args.getFloat("pitch");
 	m_yaw = args.getFloat("yaw");
 	m_position = args.getV3F("position");
@@ -202,7 +148,7 @@ void Player::deSerialize(std::istream &is)
 	}catch(SettingNotFoundException &e){
 		hp = 20;
 	}
-	try{
+	/*try{
 		std::string sprivs = args.get("privs");
 		if(sprivs == "all")
 		{
@@ -215,7 +161,7 @@ void Player::deSerialize(std::istream &is)
 		}
 	}catch(SettingNotFoundException &e){
 		privs = PRIV_DEFAULT;
-	}
+	}*/
 
 	inventory.deSerialize(is);
 }
