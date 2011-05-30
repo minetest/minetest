@@ -215,6 +215,16 @@ void init_mapnode()
 	}
 	f->dug_item = std::string("MaterialItem ")+itos(i)+" 1";
 
+	i = CONTENT_CACTUS;
+	f = &g_content_features[i];
+	f->setAllTextures("cactus_side.png");
+	f->setTexture(0, "cactus_top.png");
+	f->setTexture(1, "cactus_top.png");
+	f->setInventoryTextureCube("cactus_top.png", "cactus_side.png", "cactus_side.png");
+	f->param_type = CPT_MINERAL;
+	f->is_ground_content = true;
+	f->dug_item = std::string("MaterialItem ")+itos(i)+" 1";
+
 	i = CONTENT_GLASS;
 	f = &g_content_features[i];
 	f->light_propagates = true;

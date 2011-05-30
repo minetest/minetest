@@ -73,6 +73,7 @@ void initializeMaterialProperties()
 	
 	setWoodLikeDiggingProperties(CONTENT_TREE, 1.0);
 	setWoodLikeDiggingProperties(CONTENT_LEAVES, 0.15);
+	setWoodLikeDiggingProperties(CONTENT_CACTUS, 0.75);
 	setWoodLikeDiggingProperties(CONTENT_GLASS, 0.15);
 	setWoodLikeDiggingProperties(CONTENT_FENCE, 0.75);
 	setWoodLikeDiggingProperties(CONTENT_WOOD, 0.75);
