@@ -379,8 +379,8 @@ void RemoteClient::GetNextBlocks(Server *server, float dtime,
 	{
 		m_nearest_unsent_reset_timer = 0;
 		m_nearest_unsent_d = 0;
-		dstream<<"Resetting m_nearest_unsent_d for "
-				<<server->getPlayerName(peer_id)<<std::endl;
+		/*dstream<<"Resetting m_nearest_unsent_d for "
+				<<server->getPlayerName(peer_id)<<std::endl;*/
 	}
 
 	//s16 last_nearest_unsent_d = m_nearest_unsent_d;
@@ -697,9 +697,9 @@ queue_full_break:
 		{
 			// Pause time in seconds
 			m_nothing_to_send_pause_timer = 1.0;
-			dstream<<"nothing to send to "
+			/*dstream<<"nothing to send to "
 					<<server->getPlayerName(peer_id)
-					<<" (d="<<d<<")"<<std::endl;
+					<<" (d="<<d<<")"<<std::endl;*/
 		}
 	}
 	else
