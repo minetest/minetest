@@ -79,6 +79,9 @@ Settings g_settings;
 
 extern void set_default_settings();
 
+// Global profiler
+Profiler g_profiler;
+
 // A dummy thing
 ITextureSource *g_texturesource = NULL;
 
