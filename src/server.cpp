@@ -1728,7 +1728,8 @@ void Server::AsyncRunStep()
 			ScopeProfiler sp(&g_profiler, "Server: saving stuff");
 
 			// Auth stuff
-			m_authmanager.save();
+			if(m_authmanager.isModified())
+				m_authmanager.save();
 			
 			// Map
 			JMutexAutoLock lock(m_env_mutex);

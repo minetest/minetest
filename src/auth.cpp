@@ -77,7 +77,8 @@ u64 stringToPrivs(std::string str)
 }
 
 AuthManager::AuthManager(const std::string &authfilepath):
-		m_authfilepath(authfilepath)
+		m_authfilepath(authfilepath),
+		m_modified(false)
 {
 	m_mutex.Init();
 	
@@ -138,6 +139,8 @@ void AuthManager::load()
 		ad.privs = privs;
 		m_authdata[name] = ad;
 	}
+
+	m_modified = false;
 }
 
 void AuthManager::save()
@@ -162,6 +165,8 @@ void AuthManager::save()
 		AuthData ad = i.getNode()->getValue();
 		os<<name<<":"<<ad.pwd<<":"<<privsToString(ad.privs)<<"\n";
 	}
+
+	m_modified = false;
 }
 
 bool AuthManager::exists(const std::string &username)
@@ -180,6 +185,8 @@ void AuthManager::set(const std::string &username, AuthData ad)
 	JMutexAutoLock lock(m_mutex);
 	
 	m_authdata[username] = ad;
+
+	m_modified = true;
 }
 
 void AuthManager::add(const std::string &username)
@@ -187,6 +194,8 @@ void AuthManager::add(const std::string &username)
 	JMutexAutoLock lock(m_mutex);
 	
 	m_authdata[username] = AuthData();
+
+	m_modified = true;
 }
 
 std::string AuthManager::getPassword(const std::string &username)
@@ -214,6 +223,8 @@ void AuthManager::setPassword(const std::string &username,
 	AuthData ad = n->getValue();
 	ad.pwd = password;
 	n->setValue(ad);
+
+	m_modified = true;
 }
 
 u64 AuthManager::getPrivs(const std::string &username)
@@ -240,5 +251,14 @@ void AuthManager::setPrivs(const std::string &username, u64 privs)
 	AuthData ad = n->getValue();
 	ad.privs = privs;
 	n->setValue(ad);
+
+	m_modified = true;
 }
+
+bool AuthManager::isModified()
+{
+	JMutexAutoLock lock(m_mutex);
+	return m_modified;
+}
+
 

@@ -89,10 +89,12 @@ public:
 			const std::string &password);
 	u64 getPrivs(const std::string &username);
 	void setPrivs(const std::string &username, u64 privs);
+	bool isModified();
 private:
 	JMutex m_mutex;
 	std::string m_authfilepath;
 	core::map<std::string, AuthData> m_authdata;
+	bool m_modified;
 };
 
 #endif
