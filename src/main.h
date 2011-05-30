@@ -28,6 +28,10 @@ extern Settings g_settings;
 #include "tile.h"
 extern ITextureSource *g_texturesource;
 
+// Global profiler
+#include "profiler.h"
+extern Profiler g_profiler;
+
 // Debug streams
 
 #include <fstream>

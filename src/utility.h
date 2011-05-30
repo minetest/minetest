@@ -244,6 +244,9 @@ inline f32 readF1000(std::istream &is)
 {
 	char buf[2];
 	is.read(buf, 2);
+	// TODO: verify if this gets rid of the valgrind warning
+	//if(is.gcount() != 2)
+	//	return 0;
 	return readF1000((u8*)buf);
 }
 

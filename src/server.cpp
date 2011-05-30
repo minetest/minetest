@@ -312,11 +312,14 @@ void RemoteClient::GetNextBlocks(Server *server, float dtime,
 	TimeTaker timer("RemoteClient::GetNextBlocks", &timer_result);*/
 	
 	// Increment timers
-	m_nearest_unsent_reset_timer += dtime;
 	m_nothing_to_send_pause_timer -= dtime;
 	
 	if(m_nothing_to_send_pause_timer >= 0)
+	{
+		// Keep this reset
+		m_nearest_unsent_reset_timer = 0;
 		return;
+	}
 
 	// Won't send anything if already sending
 	if(m_blocks_sending.size() >= g_settings.getU16
@@ -326,14 +329,21 @@ void RemoteClient::GetNextBlocks(Server *server, float dtime,
 		return;
 	}
 
+	//TimeTaker timer("RemoteClient::GetNextBlocks");
+	
 	Player *player = server->m_env.getPlayer(peer_id);
 
 	assert(player != NULL);
 
 	v3f playerpos = player->getPosition();
 	v3f playerspeed = player->getSpeed();
+	v3f playerspeeddir(0,0,0);
+	if(playerspeed.getLength() > 1.0*BS)
+		playerspeeddir = playerspeed / playerspeed.getLength();
+	// Predict to next block
+	v3f playerpos_predicted = playerpos + playerspeeddir*MAP_BLOCKSIZE*BS;
 
-	v3s16 center_nodepos = floatToInt(playerpos, BS);
+	v3s16 center_nodepos = floatToInt(playerpos_predicted, BS);
 
 	v3s16 center = getNodeBlockPos(center_nodepos);
 	
@@ -343,6 +353,9 @@ void RemoteClient::GetNextBlocks(Server *server, float dtime,
 	v3f camera_dir = v3f(0,0,1);
 	camera_dir.rotateYZBy(player->getPitch());
 	camera_dir.rotateXZBy(player->getYaw());
+
+	/*dstream<<"camera_dir=("<<camera_dir.X<<","<<camera_dir.Y<<","
+			<<camera_dir.Z<<")"<<std::endl;*/
 
 	/*
 		Get the starting value of the block finder radius.
@@ -356,11 +369,18 @@ void RemoteClient::GetNextBlocks(Server *server, float dtime,
 
 	/*dstream<<"m_nearest_unsent_reset_timer="
 			<<m_nearest_unsent_reset_timer<<std::endl;*/
-	if(m_nearest_unsent_reset_timer > 5.0)
+			
+	// This has to be incremented only when the nothing to send pause
+	// is not active
+	m_nearest_unsent_reset_timer += dtime;
+	
+	// Reset periodically to avoid possible bugs or other mishaps
+	if(m_nearest_unsent_reset_timer > 10.0)
 	{
 		m_nearest_unsent_reset_timer = 0;
 		m_nearest_unsent_d = 0;
-		//dstream<<"Resetting m_nearest_unsent_d"<<std::endl;
+		dstream<<"Resetting m_nearest_unsent_d for "
+				<<server->getPlayerName(peer_id)<<std::endl;
 	}
 
 	//s16 last_nearest_unsent_d = m_nearest_unsent_d;
@@ -402,11 +422,22 @@ void RemoteClient::GetNextBlocks(Server *server, float dtime,
 	s16 d_max = g_settings.getS16("max_block_send_distance");
 	s16 d_max_gen = g_settings.getS16("max_block_generate_distance");
 	
+	// Don't loop very much at a time
+	if(d_max > d_start+1)
+		d_max = d_start+1;
+	/*if(d_max_gen > d_start+2)
+		d_max_gen = d_start+2;*/
+	
 	//dstream<<"Starting from "<<d_start<<std::endl;
 
 	bool sending_something = false;
 
-	for(s16 d = d_start; d <= d_max; d++)
+	bool no_blocks_found_for_sending = true;
+
+	bool queue_is_full = false;
+	
+	s16 d;
+	for(d = d_start; d <= d_max; d++)
 	{
 		//dstream<<"RemoteClient::SendBlocks(): d="<<d<<std::endl;
 		
@@ -451,7 +482,10 @@ void RemoteClient::GetNextBlocks(Server *server, float dtime,
 
 			// Don't select too many blocks for sending
 			if(num_blocks_selected >= max_simul_dynamic)
-				goto queue_full;
+			{
+				queue_is_full = true;
+				goto queue_full_break;
+			}
 			
 			// Don't send blocks that are currently being transferred
 			if(m_blocks_sending.find(p) != NULL)
@@ -513,6 +547,8 @@ void RemoteClient::GetNextBlocks(Server *server, float dtime,
 			}
 #endif
 
+			//dstream<<"d="<<d<<std::endl;
+			
 			/*
 				Don't generate or send if not in sight
 			*/
@@ -527,7 +563,9 @@ void RemoteClient::GetNextBlocks(Server *server, float dtime,
 			*/
 			{
 				if(m_blocks_sent.find(p) != NULL)
+				{
 					continue;
+				}
 			}
 
 			/*
@@ -539,11 +577,14 @@ void RemoteClient::GetNextBlocks(Server *server, float dtime,
 			bool block_is_invalid = false;
 			if(block != NULL)
 			{
+				// Block is dummy if data doesn't exist.
+				// It means it has been not found from disk and not generated
 				if(block->isDummy())
 				{
 					surely_not_found_on_disk = true;
 				}
-
+				
+				// Block is valid if lighting is up-to-date and data exists
 				if(block->isValid() == false)
 				{
 					block_is_invalid = true;
@@ -564,8 +605,8 @@ void RemoteClient::GetNextBlocks(Server *server, float dtime,
 					If block is not close, don't send it unless it is near
 					ground level.
 
-					Block is not near ground level if night-time mesh
-					doesn't differ from day-time mesh.
+					Block is near ground level if night-time mesh
+					differs from day-time mesh.
 				*/
 				if(d > 3)
 				{
@@ -586,14 +627,16 @@ void RemoteClient::GetNextBlocks(Server *server, float dtime,
 			}
 
 			/*
-				Record the lowest d from which a a block has been
+				Record the lowest d from which a block has been
 				found being not sent and possibly to exist
 			*/
-			if(new_nearest_unsent_d == -1 || d < new_nearest_unsent_d)
+			if(no_blocks_found_for_sending)
 			{
 				if(generate == true)
 					new_nearest_unsent_d = d;
 			}
+
+			no_blocks_found_for_sending = false;
 					
 			/*
 				Add inexistent block to emerge queue.
@@ -633,20 +676,30 @@ void RemoteClient::GetNextBlocks(Server *server, float dtime,
 			sending_something = true;
 		}
 	}
-queue_full:
+queue_full_break:
+
+	//dstream<<"Stopped at "<<d<<std::endl;
+	
+	if(no_blocks_found_for_sending)
+	{
+		if(queue_is_full == false)
+			new_nearest_unsent_d = d;
+	}
 
 	if(new_nearest_unsent_d != -1)
-	{
 		m_nearest_unsent_d = new_nearest_unsent_d;
-	}
 
 	if(sending_something == false)
 	{
 		m_nothing_to_send_counter++;
-		if(m_nothing_to_send_counter >= 3)
+		if((s16)m_nothing_to_send_counter >=
+				g_settings.getS16("max_block_send_distance"))
 		{
 			// Pause time in seconds
-			m_nothing_to_send_pause_timer = 2.0;
+			m_nothing_to_send_pause_timer = 1.0;
+			dstream<<"nothing to send to "
+					<<server->getPlayerName(peer_id)
+					<<" (d="<<d<<")"<<std::endl;
 		}
 	}
 	else
@@ -1130,8 +1183,12 @@ void Server::AsyncRunStep()
 		dtime = m_step_dtime;
 	}
 	
-	// Send blocks to clients
-	SendBlocks(dtime);
+	{
+		ScopeProfiler sp(&g_profiler, "Server: selecting and sending "
+				"blocks to clients");
+		// Send blocks to clients
+		SendBlocks(dtime);
+	}
 	
 	if(dtime < 0.001)
 		return;
@@ -1196,12 +1253,14 @@ void Server::AsyncRunStep()
 	{
 		// Process connection's timeouts
 		JMutexAutoLock lock2(m_con_mutex);
+		ScopeProfiler sp(&g_profiler, "Server: connection timeout processing");
 		m_con.RunTimeouts(dtime);
 	}
 	
 	{
 		// This has to be called so that the client list gets synced
 		// with the peer list of the connection
+		ScopeProfiler sp(&g_profiler, "Server: peer change handling");
 		handlePeerChanges();
 	}
 
@@ -1209,6 +1268,7 @@ void Server::AsyncRunStep()
 		// Step environment
 		// This also runs Map's timers
 		JMutexAutoLock lock(m_env_mutex);
+		ScopeProfiler sp(&g_profiler, "Server: environment step");
 		m_env.step(dtime);
 	}
 	
@@ -1225,7 +1285,9 @@ void Server::AsyncRunStep()
 		m_liquid_transform_timer -= 1.00;
 		
 		JMutexAutoLock lock(m_env_mutex);
-		
+
+		ScopeProfiler sp(&g_profiler, "Server: liquid transform");
+
 		core::map<v3s16, MapBlock*> modified_blocks;
 		m_env.getMap().transformLiquids(modified_blocks);
 #if 0		
@@ -1298,10 +1360,11 @@ void Server::AsyncRunStep()
 	*/
 	{
 		//dstream<<"Server: Checking added and deleted active objects"<<std::endl;
-
 		JMutexAutoLock envlock(m_env_mutex);
 		JMutexAutoLock conlock(m_con_mutex);
-		
+
+		ScopeProfiler sp(&g_profiler, "Server: checking added and deleted objects");
+
 		// Radius inside which objects are active
 		s16 radius = 32;
 
@@ -1445,6 +1508,8 @@ void Server::AsyncRunStep()
 	{
 		JMutexAutoLock envlock(m_env_mutex);
 		JMutexAutoLock conlock(m_con_mutex);
+
+		ScopeProfiler sp(&g_profiler, "Server: sending object messages");
 
 		// Key = object id
 		// Value = data sent by object
@@ -1598,6 +1663,9 @@ void Server::AsyncRunStep()
 		{
 			JMutexAutoLock lock1(m_env_mutex);
 			JMutexAutoLock lock2(m_con_mutex);
+
+			ScopeProfiler sp(&g_profiler, "Server: sending mbo positions");
+
 			SendObjectData(counter);
 
 			counter = 0.0;
@@ -1612,7 +1680,9 @@ void Server::AsyncRunStep()
 
 		JMutexAutoLock envlock(m_env_mutex);
 		JMutexAutoLock conlock(m_con_mutex);
-		
+
+		ScopeProfiler sp(&g_profiler, "Server: stepping node metadata");
+
 		core::map<v3s16, MapBlock*> changed_blocks;
 		m_env.getMap().nodeMetadataStep(dtime, changed_blocks);
 
@@ -1654,6 +1724,8 @@ void Server::AsyncRunStep()
 		if(counter >= g_settings.getFloat("server_map_save_interval"))
 		{
 			counter = 0.0;
+
+			ScopeProfiler sp(&g_profiler, "Server: saving stuff");
 
 			// Auth stuff
 			m_authmanager.save();
@@ -3646,20 +3718,24 @@ void Server::SendBlocks(float dtime)
 	core::array<PrioritySortedBlockTransfer> queue;
 
 	s32 total_sending = 0;
-
-	for(core::map<u16, RemoteClient*>::Iterator
-		i = m_clients.getIterator();
-		i.atEnd() == false; i++)
+	
 	{
-		RemoteClient *client = i.getNode()->getValue();
-		assert(client->peer_id == i.getNode()->getKey());
+		ScopeProfiler sp(&g_profiler, "Server: selecting blocks for sending");
 
-		total_sending += client->SendingCount();
-		
-		if(client->serialization_version == SER_FMT_VER_INVALID)
-			continue;
-		
-		client->GetNextBlocks(this, dtime, queue);
+		for(core::map<u16, RemoteClient*>::Iterator
+			i = m_clients.getIterator();
+			i.atEnd() == false; i++)
+		{
+			RemoteClient *client = i.getNode()->getValue();
+			assert(client->peer_id == i.getNode()->getKey());
+
+			total_sending += client->SendingCount();
+			
+			if(client->serialization_version == SER_FMT_VER_INVALID)
+				continue;
+			
+			client->GetNextBlocks(this, dtime, queue);
+		}
 	}
 
 	// Sort.
@@ -4531,25 +4607,48 @@ void dedicated_server_loop(Server &server, bool &kill)
 {
 	DSTACK(__FUNCTION_NAME);
 	
-	std::cout<<DTIME<<std::endl;
-	std::cout<<"========================"<<std::endl;
-	std::cout<<"Running dedicated server"<<std::endl;
-	std::cout<<"========================"<<std::endl;
-	std::cout<<std::endl;
+	dstream<<DTIME<<std::endl;
+	dstream<<"========================"<<std::endl;
+	dstream<<"Running dedicated server"<<std::endl;
+	dstream<<"========================"<<std::endl;
+	dstream<<std::endl;
+
+	IntervalLimiter m_profiler_interval;
 
 	for(;;)
 	{
 		// This is kind of a hack but can be done like this
 		// because server.step() is very light
-		sleep_ms(30);
+		{
+			ScopeProfiler sp(&g_profiler, "dedicated server sleep");
+			sleep_ms(30);
+		}
 		server.step(0.030);
 
 		if(server.getShutdownRequested() || kill)
 		{
-			std::cout<<DTIME<<" dedicated_server_loop(): Quitting."<<std::endl;
+			dstream<<DTIME<<" dedicated_server_loop(): Quitting."<<std::endl;
 			break;
 		}
 
+		/*
+			Profiler
+		*/
+		float profiler_print_interval =
+				g_settings.getFloat("profiler_print_interval");
+		if(profiler_print_interval != 0)
+		{
+			if(m_profiler_interval.step(0.030, profiler_print_interval))
+			{
+				dstream<<"Profiler:"<<std::endl;
+				g_profiler.print(dstream);
+				g_profiler.clear();
+			}
+		}
+		
+		/*
+			Player info
+		*/
 		static int counter = 0;
 		counter--;
 		if(counter <= 0)
@@ -4562,10 +4661,10 @@ void dedicated_server_loop(Server &server, bool &kill)
 			u32 sum = PIChecksum(list);
 			if(sum != sum_old)
 			{
-				std::cout<<DTIME<<"Player info:"<<std::endl;
+				dstream<<DTIME<<"Player info:"<<std::endl;
 				for(i=list.begin(); i!=list.end(); i++)
 				{
-					i->PrintLine(&std::cout);
+					i->PrintLine(&dstream);
 				}
 			}
 			sum_old = sum;

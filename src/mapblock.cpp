@@ -540,10 +540,10 @@ void updateFastFaceRow(
 		
 		v3s16 p_next;
 		
-		bool next_makes_face;
+		bool next_makes_face = false;
 		v3s16 next_p_corrected;
 		v3s16 next_face_dir_corrected;
-		u8 next_lights[4];
+		u8 next_lights[4] = {0,0,0,0};
 		TileSpec next_tile;
 		
 		// If at last position, there is nothing to compare to and

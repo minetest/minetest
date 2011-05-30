@@ -74,12 +74,13 @@ void set_default_settings()
 	g_settings.setDefault("give_initial_stuff", "false");
 	g_settings.setDefault("default_password", "");
 	g_settings.setDefault("default_privs", "build, shout");
+	g_settings.setDefault("profiler_print_interval", "0");
 
 	g_settings.setDefault("objectdata_interval", "0.2");
 	g_settings.setDefault("active_object_range", "2");
 	g_settings.setDefault("max_simultaneous_block_sends_per_client", "1");
 	//g_settings.setDefault("max_simultaneous_block_sends_per_client", "2");
-	g_settings.setDefault("max_simultaneous_block_sends_server_total", "4");
+	g_settings.setDefault("max_simultaneous_block_sends_server_total", "8");
 	g_settings.setDefault("max_block_send_distance", "8");
 	g_settings.setDefault("max_block_generate_distance", "8");
 	g_settings.setDefault("time_send_interval", "20");

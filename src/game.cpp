@@ -903,6 +903,10 @@ void the_game(
 
 	bool first_loop_after_window_activation = true;
 
+	// TODO: Convert the static interval timers to these
+	// Interval limiter for profiler
+	IntervalLimiter m_profiler_interval;
+
 	// Time is in milliseconds
 	// NOTE: getRealTime() causes strange problems in wine (imprecision?)
 	// NOTE: So we have to use getTime() and call run()s between them
@@ -1086,6 +1090,21 @@ void the_game(
 			{
 				counter = 30.0;
 				client.printDebugInfo(std::cout);
+			}
+		}
+
+		/*
+			Profiler
+		*/
+		float profiler_print_interval =
+				g_settings.getFloat("profiler_print_interval");
+		if(profiler_print_interval != 0)
+		{
+			if(m_profiler_interval.step(0.030, profiler_print_interval))
+			{
+				dstream<<"Profiler:"<<std::endl;
+				g_profiler.print(dstream);
+				g_profiler.clear();
 			}
 		}
 

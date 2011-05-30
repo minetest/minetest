@@ -500,6 +500,15 @@ private:
 	// When called, connection mutex should be locked
 	RemoteClient* getClient(u16 peer_id);
 	
+	// When called, environment mutex should be locked
+	std::string getPlayerName(u16 peer_id)
+	{
+		Player *player = m_env.getPlayer(peer_id);
+		if(player == NULL)
+			return "[id="+itos(peer_id);
+		return player->getName();
+	}
+
 	/*
 		Get a player from memory or creates one.
 		If player is already connected, return NULL
@@ -626,6 +635,8 @@ private:
 		This is behind m_env_mutex
 	*/
 	u16 m_ignore_map_edit_events_peer_id;
+
+	Profiler *m_profiler;
 
 	friend class EmergeThread;
 	friend class RemoteClient;
