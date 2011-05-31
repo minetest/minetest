@@ -312,7 +312,8 @@ Stuff to do before release:
 
 Fixes to the current release:
 -----------------------------
-- Make AuthManager to save only when data has changed
+- Fix client password crash
+- Remember to release the fixes (some are already done)
 
 Stuff to do after release:
 ---------------------------

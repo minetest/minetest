@@ -46,8 +46,14 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #define MAPTYPE_CLIENT 2
 
 enum MapEditEventType{
+	// Node added (changed from air or something else to something)
 	MEET_ADDNODE,
+	// Node removed (changed to air)
 	MEET_REMOVENODE,
+	// Node metadata of block changed (not knowing which node exactly)
+	// p stores block coordinate
+	MEET_BLOCK_NODE_METADATA_CHANGED,
+	// Anything else
 	MEET_OTHER
 };
 

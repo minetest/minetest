@@ -246,6 +246,7 @@ private:
 	ActiveBlockList m_active_blocks;
 	IntervalLimiter m_active_blocks_management_interval;
 	IntervalLimiter m_active_blocks_test_interval;
+	IntervalLimiter m_active_blocks_nodemetadata_interval;
 	// Time from the beginning of the game in seconds.
 	// Incremented in step().
 	u32 m_game_time;

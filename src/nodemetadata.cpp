@@ -268,91 +268,100 @@ void FurnaceNodeMetadata::inventoryModified()
 }
 bool FurnaceNodeMetadata::step(float dtime)
 {
+	if(dtime > 60.0)
+		dstream<<"Furnace stepping a long time ("<<dtime<<")"<<std::endl;
 	// Update at a fixed frequency
-	const float interval = 0.5;
+	const float interval = 2.0;
 	m_step_accumulator += dtime;
-	if(m_step_accumulator < interval)
-		return false;
-	m_step_accumulator -= interval;
-	dtime = interval;
-
-	//dstream<<"Furnace step dtime="<<dtime<<std::endl;
-	
-	InventoryList *dst_list = m_inventory->getList("dst");
-	assert(dst_list);
-
-	InventoryList *src_list = m_inventory->getList("src");
-	assert(src_list);
-	InventoryItem *src_item = src_list->getItem(0);
-	
-	// Start only if there are free slots in dst, so that it can
-	// accomodate any result item
-	if(dst_list->getFreeSlots() > 0 && src_item && src_item->isCookable())
+	bool changed = false;
+	while(m_step_accumulator > interval)
 	{
-		m_src_totaltime = 3;
-	}
-	else
-	{
-		m_src_time = 0;
-		m_src_totaltime = 0;
-	}
+		m_step_accumulator -= interval;
+		dtime = interval;
 
-	if(m_fuel_time < m_fuel_totaltime)
-	{
-		//dstream<<"Furnace is active"<<std::endl;
-		m_fuel_time += dtime;
-		m_src_time += dtime;
-		if(m_src_time >= m_src_totaltime && m_src_totaltime > 0.001
-				&& src_item)
+		//dstream<<"Furnace step dtime="<<dtime<<std::endl;
+		
+		InventoryList *dst_list = m_inventory->getList("dst");
+		assert(dst_list);
+
+		InventoryList *src_list = m_inventory->getList("src");
+		assert(src_list);
+		InventoryItem *src_item = src_list->getItem(0);
+		
+		// Start only if there are free slots in dst, so that it can
+		// accomodate any result item
+		if(dst_list->getFreeSlots() > 0 && src_item && src_item->isCookable())
 		{
-			InventoryItem *cookresult = src_item->createCookResult();
-			dst_list->addItem(cookresult);
-			src_list->decrementMaterials(1);
+			m_src_totaltime = 3;
+		}
+		else
+		{
 			m_src_time = 0;
 			m_src_totaltime = 0;
 		}
-		return true;
-	}
-	
-	if(src_item == NULL || m_src_totaltime < 0.001)
-	{
-		return false;
-	}
-	
-	bool changed = false;
 
-	//dstream<<"Furnace is out of fuel"<<std::endl;
+		if(m_fuel_time < m_fuel_totaltime)
+		{
+			//dstream<<"Furnace is active"<<std::endl;
+			m_fuel_time += dtime;
+			m_src_time += dtime;
+			if(m_src_time >= m_src_totaltime && m_src_totaltime > 0.001
+					&& src_item)
+			{
+				InventoryItem *cookresult = src_item->createCookResult();
+				dst_list->addItem(cookresult);
+				src_list->decrementMaterials(1);
+				m_src_time = 0;
+				m_src_totaltime = 0;
+			}
+			changed = true;
+			continue;
+		}
+		
+		if(src_item == NULL || m_src_totaltime < 0.001)
+		{
+			continue;
+		}
+		
+		//dstream<<"Furnace is out of fuel"<<std::endl;
 
-	InventoryList *fuel_list = m_inventory->getList("fuel");
-	assert(fuel_list);
-	InventoryItem *fuel_item = fuel_list->getItem(0);
+		InventoryList *fuel_list = m_inventory->getList("fuel");
+		assert(fuel_list);
+		InventoryItem *fuel_item = fuel_list->getItem(0);
 
-	if(ItemSpec(ITEM_MATERIAL, CONTENT_TREE).checkItem(fuel_item))
-	{
-		m_fuel_totaltime = 10;
-		m_fuel_time = 0;
-		fuel_list->decrementMaterials(1);
-		changed = true;
+		if(ItemSpec(ITEM_MATERIAL, CONTENT_TREE).checkItem(fuel_item))
+		{
+			m_fuel_totaltime = 30;
+			m_fuel_time = 0;
+			fuel_list->decrementMaterials(1);
+			changed = true;
+		}
+		else if(ItemSpec(ITEM_MATERIAL, CONTENT_WOOD).checkItem(fuel_item))
+		{
+			m_fuel_totaltime = 30/4;
+			m_fuel_time = 0;
+			fuel_list->decrementMaterials(1);
+			changed = true;
+		}
+		else if(ItemSpec(ITEM_CRAFT, "Stick").checkItem(fuel_item))
+		{
+			m_fuel_totaltime = 30/4/4;
+			m_fuel_time = 0;
+			fuel_list->decrementMaterials(1);
+			changed = true;
+		}
+		else if(ItemSpec(ITEM_CRAFT, "lump_of_coal").checkItem(fuel_item))
+		{
+			m_fuel_totaltime = 40;
+			m_fuel_time = 0;
+			fuel_list->decrementMaterials(1);
+			changed = true;
+		}
+		else
+		{
+			//dstream<<"No fuel found"<<std::endl;
+		}
 	}
-	else if(ItemSpec(ITEM_MATERIAL, CONTENT_WOOD).checkItem(fuel_item))
-	{
-		m_fuel_totaltime = 5;
-		m_fuel_time = 0;
-		fuel_list->decrementMaterials(1);
-		changed = true;
-	}
-	else if(ItemSpec(ITEM_CRAFT, "lump_of_coal").checkItem(fuel_item))
-	{
-		m_fuel_totaltime = 10;
-		m_fuel_time = 0;
-		fuel_list->decrementMaterials(1);
-		changed = true;
-	}
-	else
-	{
-		//dstream<<"No fuel found"<<std::endl;
-	}
-
 	return changed;
 }
 

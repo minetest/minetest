@@ -729,6 +729,16 @@ void ServerEnvironment::step(float dtime)
 			// Activate stored objects
 			activateObjects(block);
 
+			// Run node metadata
+			bool changed = block->m_node_metadata.step((float)dtime_s);
+			if(changed)
+			{
+				MapEditEvent event;
+				event.type = MEET_BLOCK_NODE_METADATA_CHANGED;
+				event.p = p;
+				m_map->dispatchEvent(&event);
+			}
+
 			// TODO: Do something
 			// TODO: Implement usage of ActiveBlockModifier
 			
@@ -762,8 +772,10 @@ void ServerEnvironment::step(float dtime)
 	/*
 		Mess around in active blocks
 	*/
-	if(m_active_blocks_test_interval.step(dtime, 10.0))
+	if(m_active_blocks_nodemetadata_interval.step(dtime, 1.0))
 	{
+		float dtime = 1.0;
+
 		for(core::map<v3s16, bool>::Iterator
 				i = m_active_blocks.m_list.getIterator();
 				i.atEnd()==false; i++)
@@ -779,7 +791,38 @@ void ServerEnvironment::step(float dtime)
 			
 			// Set current time as timestamp
 			block->setTimestamp(m_game_time);
+
+			// Run node metadata
+			bool changed = block->m_node_metadata.step(dtime);
+			if(changed)
+			{
+				MapEditEvent event;
+				event.type = MEET_BLOCK_NODE_METADATA_CHANGED;
+				event.p = p;
+				m_map->dispatchEvent(&event);
+			}
+		}
+	}
+	if(m_active_blocks_test_interval.step(dtime, 10.0))
+	{
+		//float dtime = 10.0;
+
+		for(core::map<v3s16, bool>::Iterator
+				i = m_active_blocks.m_list.getIterator();
+				i.atEnd()==false; i++)
+		{
+			v3s16 p = i.getNode()->getKey();
 			
+			/*dstream<<"Server: Block ("<<p.X<<","<<p.Y<<","<<p.Z
+					<<") being handled"<<std::endl;*/
+
+			MapBlock *block = m_map->getBlockNoCreateNoEx(p);
+			if(block==NULL)
+				continue;
+			
+			// Set current time as timestamp
+			block->setTimestamp(m_game_time);
+
 			/*
 				Do stuff!
 
@@ -801,8 +844,11 @@ void ServerEnvironment::step(float dtime)
 			{
 				v3s16 p = p0 + block->getPosRelative();
 				MapNode n = block->getNodeNoEx(p0);
-				// Test something:
-				// Convert mud under proper lighting to grass
+
+				/*
+					Test something:
+					Convert mud under proper lighting to grass
+				*/
 				if(n.d == CONTENT_MUD)
 				{
 					if(myrand()%20 == 0)

@@ -1637,6 +1637,11 @@ void Server::AsyncRunStep()
 				dstream<<"Server: MEET_REMOVENODE"<<std::endl;
 				sendRemoveNode(event->p, event->already_known_by_peer);
 			}
+			else if(event->type == MEET_BLOCK_NODE_METADATA_CHANGED)
+			{
+				dstream<<"Server: MEET_BLOCK_NODE_METADATA_CHANGED"<<std::endl;
+				setBlockNotSent(event->p);
+			}
 			else if(event->type == MEET_OTHER)
 			{
 				dstream<<"WARNING: Server: MEET_OTHER not implemented"
@@ -1676,7 +1681,7 @@ void Server::AsyncRunStep()
 		Step node metadata
 		TODO: Move to ServerEnvironment and utilize active block stuff
 	*/
-	{
+	/*{
 		//TimeTaker timer("Step node metadata");
 
 		JMutexAutoLock envlock(m_env_mutex);
@@ -1686,6 +1691,8 @@ void Server::AsyncRunStep()
 
 		core::map<v3s16, MapBlock*> changed_blocks;
 		m_env.getMap().nodeMetadataStep(dtime, changed_blocks);
+		
+		// Use setBlockNotSent
 
 		for(core::map<v3s16, MapBlock*>::Iterator
 				i = changed_blocks.getIterator();
@@ -1701,7 +1708,7 @@ void Server::AsyncRunStep()
 				client->SetBlockNotSent(block->getPos());
 			}
 		}
-	}
+	}*/
 		
 	/*
 		Trigger emergethread (it somehow gets to a non-triggered but
@@ -3652,6 +3659,17 @@ void Server::sendAddNode(v3s16 p, MapNode n, u16 ignore_id,
 
 		// Send as reliable
 		m_con.Send(client->peer_id, 0, reply, true);
+	}
+}
+
+void Server::setBlockNotSent(v3s16 p)
+{
+	for(core::map<u16, RemoteClient*>::Iterator
+		i = m_clients.getIterator();
+		i.atEnd()==false; i++)
+	{
+		RemoteClient *client = i.getNode()->getValue();
+		client->SetBlockNotSent(p);
 	}
 }
 

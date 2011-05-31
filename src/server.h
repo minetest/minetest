@@ -480,15 +480,17 @@ private:
 		Additionally, if far_players!=NULL, players further away than
 		far_d_nodes are ignored and their peer_ids are added to far_players
 	*/
+	// Envlock and conlock should be locked when calling these
 	void sendRemoveNode(v3s16 p, u16 ignore_id=0,
 			core::list<u16> *far_players=NULL, float far_d_nodes=100);
 	void sendAddNode(v3s16 p, MapNode n, u16 ignore_id=0,
 			core::list<u16> *far_players=NULL, float far_d_nodes=100);
+	void setBlockNotSent(v3s16 p);
 	
 	// Environment and Connection must be locked when called
 	void SendBlockNoLock(u16 peer_id, MapBlock *block, u8 ver);
 	
-	// Sends blocks to clients
+	// Sends blocks to clients (locks env and con on its own)
 	void SendBlocks(float dtime);
 
 	/*
