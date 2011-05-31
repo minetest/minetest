@@ -1597,12 +1597,12 @@ scene::SMesh* makeMapBlockMesh(MeshMakeData *data)
 			// The post - always present
 			v3f pos = intToFloat(p+blockpos_nodes, BS);
 			f32 postuv[24]={
-					0,0,1,1,
-					0,0,1,1,
-					0,0,1,1,
-					0,0,1,1,
-					0,0,1,1,
-					0,0,1,1};
+					0.4,0.4,0.6,0.6,
+					0.35,0,0.65,1,
+					0.35,0,0.65,1,
+					0.35,0,0.65,1,
+					0.35,0,0.65,1,
+					0.4,0.4,0.6,0.6};
 			makeCuboid(material_wood, &collector,
 				&pa_wood, c, pos,
 				post_rad,BS/2,post_rad, postuv);
@@ -1616,14 +1616,21 @@ scene::SMesh* makeMapBlockMesh(MeshMakeData *data)
 				pos = intToFloat(p+blockpos_nodes, BS);
 				pos.X += BS/2;
 				pos.Y += BS/4;
+				f32 xrailuv[24]={
+					0,0.4,1,0.6,
+					0,0.4,1,0.6,
+					0,0.4,1,0.6,
+					0,0.4,1,0.6,
+					0,0.4,1,0.6,
+					0,0.4,1,0.6};
 				makeCuboid(material_wood, &collector,
 					&pa_wood, c, pos,
-					bar_len,bar_rad,bar_rad, NULL);
+					bar_len,bar_rad,bar_rad, xrailuv);
 
 				pos.Y -= BS/2;
 				makeCuboid(material_wood, &collector,
 					&pa_wood, c, pos,
-					bar_len,bar_rad,bar_rad, NULL);
+					bar_len,bar_rad,bar_rad, xrailuv);
 			}
 
 			// Now a section of fence, +Z, if there's a post there
@@ -1635,13 +1642,20 @@ scene::SMesh* makeMapBlockMesh(MeshMakeData *data)
 				pos = intToFloat(p+blockpos_nodes, BS);
 				pos.Z += BS/2;
 				pos.Y += BS/4;
+				f32 zrailuv[24]={
+					0,0.4,1,0.6,
+					0,0.4,1,0.6,
+					0,0.4,1,0.6,
+					0,0.4,1,0.6,
+					0,0.4,1,0.6,
+					0,0.4,1,0.6};
 				makeCuboid(material_wood, &collector,
 					&pa_wood, c, pos,
-					bar_rad,bar_rad,bar_len, NULL);
+					bar_rad,bar_rad,bar_len, zrailuv);
 				pos.Y -= BS/2;
 				makeCuboid(material_wood, &collector,
 					&pa_wood, c, pos,
-					bar_rad,bar_rad,bar_len, NULL);
+					bar_rad,bar_rad,bar_len, zrailuv);
 
 			}
 
