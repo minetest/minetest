@@ -60,6 +60,7 @@ void initializeMaterialProperties()
 
 	setStoneLikeDiggingProperties(CONTENT_STONE, 1.0);
 	setStoneLikeDiggingProperties(CONTENT_SANDSTONE, 1.0);
+	setStoneLikeDiggingProperties(CONTENT_BRICK, 3.0);
 	setStoneLikeDiggingProperties(CONTENT_MESE, 0.5);
 	setStoneLikeDiggingProperties(CONTENT_COALSTONE, 1.5);
 	setStoneLikeDiggingProperties(CONTENT_FURNACE, 3.0);
