@@ -1192,7 +1192,7 @@ void Server::AsyncRunStep()
 	
 	if(dtime < 0.001)
 		return;
-	
+
 	//dstream<<"Server steps "<<dtime<<std::endl;
 	//dstream<<"Server::AsyncRunStep(): dtime="<<dtime<<std::endl;
 	
@@ -1674,6 +1674,7 @@ void Server::AsyncRunStep()
 	
 	/*
 		Step node metadata
+		TODO: Move to ServerEnvironment and utilize active block stuff
 	*/
 	{
 		//TimeTaker timer("Step node metadata");
