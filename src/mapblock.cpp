@@ -1563,8 +1563,8 @@ scene::SMesh* makeMapBlockMesh(MeshMakeData *data)
 			u8 l = decode_light(undiminish_light(n.getLightBlend(data->m_daynight_ratio)));
 			video::SColor c(255,l,l,l);
 
-			const f32 post_rad=(f32)BS/10;
-			const f32 bar_rad=(f32)BS/20;
+			const f32 post_rad=(f32)BS/(32.0/4.0);
+			const f32 bar_rad=(f32)BS/(32.0/2.0);
 			const f32 bar_len=(f32)(BS/2)-post_rad;
 
 			// The post - always present
@@ -1581,12 +1581,12 @@ scene::SMesh* makeMapBlockMesh(MeshMakeData *data)
 			{
 				pos = intToFloat(p+blockpos_nodes, BS);
 				pos.X += BS/2;
-				pos.Y += BS/4;
+				pos.Y += 3*bar_rad;
 				makeCuboid(material_wood, &collector,
 					&pa_wood, c, pos,
 					bar_len,bar_rad,bar_rad);
 
-				pos.Y -= BS/2;
+				pos.Y -= 6*bar_rad;
 				makeCuboid(material_wood, &collector,
 					&pa_wood, c, pos,
 					bar_len,bar_rad,bar_rad);
@@ -1600,11 +1600,11 @@ scene::SMesh* makeMapBlockMesh(MeshMakeData *data)
 			{
 				pos = intToFloat(p+blockpos_nodes, BS);
 				pos.Z += BS/2;
-				pos.Y += BS/4;
+				pos.Y += 3*bar_rad;
 				makeCuboid(material_wood, &collector,
 					&pa_wood, c, pos,
 					bar_rad,bar_rad,bar_len);
-				pos.Y -= BS/2;
+				pos.Y -= 6*bar_rad;
 				makeCuboid(material_wood, &collector,
 					&pa_wood, c, pos,
 					bar_rad,bar_rad,bar_len);
