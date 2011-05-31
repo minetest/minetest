@@ -236,6 +236,7 @@ void init_mapnode()
 
 	i = CONTENT_FENCE;
 	f = &g_content_features[i];
+	f->setInventoryTexture("fence.png");
 	f->light_propagates = true;
 	f->param_type = CPT_LIGHT;
 	f->is_ground_content = true;
