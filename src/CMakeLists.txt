@@ -100,6 +100,7 @@ set(minetest_SRCS
 	clientobject.cpp
 	guiFurnaceMenu.cpp
 	guiMainMenu.cpp
+	guiKeyChangeMenu.cpp
 	guiMessageMenu.cpp
 	guiTextInputMenu.cpp
 	guiInventoryMenu.cpp
