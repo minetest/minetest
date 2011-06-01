@@ -729,63 +729,90 @@ private:
 	core::array<PreMeshBuffer> m_prebuffers;
 };
 
+// Create a cuboid.
+//  material  - the material to use (for all 6 faces)
+//  collector - the MeshCollector for the resulting polygons
+//  pa        - texture atlas pointer for the material
+//  c         - vertex colour - used for all
+//  pos       - the position of the centre of the cuboid
+//  rz,ry,rz  - the radius of the cuboid in each dimension
+//  txc       - texture coordinates - this is a list of texture coordinates
+//              for the opposite corners of each face - therefore, there
+//              should be (2+2)*6=24 values in the list. Alternatively, pass
+//              NULL to use the entire texture for each face. The order of
+//              the faces in the list is top-backi-right-front-left-bottom
+//              If you specified 0,0,1,1 for each face, that would be the
+//              same as passing NULL.
 void makeCuboid(video::SMaterial &material, MeshCollector *collector,
 	AtlasPointer* pa, video::SColor &c,
-	v3f &pos, f32 rx, f32 ry, f32 rz)
+	v3f &pos, f32 rx, f32 ry, f32 rz, f32* txc)
 {
+	f32 tu0=pa->x0();
+	f32 tu1=pa->x1();
+	f32 tv0=pa->y0();
+	f32 tv1=pa->y1();
+	f32 txus=tu1-tu0;
+	f32 txvs=tv1-tv0;
+
 	video::S3DVertex v[4] =
 	{
-		video::S3DVertex(0,0,0, 0,0,0, c,
-			pa->x0(), pa->y1()),
-		video::S3DVertex(0,0,0, 0,0,0, c,
-			pa->x1(), pa->y1()),
-		video::S3DVertex(0,0,0, 0,0,0, c,
-			pa->x1(), pa->y0()),
-		video::S3DVertex(0,0,0, 0,0,0, c,
-			pa->x0(), pa->y0())
+		video::S3DVertex(0,0,0, 0,0,0, c, tu0, tv1),
+		video::S3DVertex(0,0,0, 0,0,0, c, tu1, tv1),
+		video::S3DVertex(0,0,0, 0,0,0, c, tu1, tv0),
+		video::S3DVertex(0,0,0, 0,0,0, c, tu0, tv0)
 	};
 
 	for(int i=0;i<6;i++)
 	{
 		switch(i)
 		{
-			case 0:
+			case 0:	// top
 				v[0].Pos.X=-rx; v[0].Pos.Y= ry; v[0].Pos.Z=-rz;
 				v[1].Pos.X=-rx; v[1].Pos.Y= ry; v[1].Pos.Z= rz;
 				v[2].Pos.X= rx; v[2].Pos.Y= ry; v[2].Pos.Z= rz;
 				v[3].Pos.X= rx; v[3].Pos.Y= ry, v[3].Pos.Z=-rz;
 				break;
-			case 1:
+			case 1: // back
 				v[0].Pos.X=-rx; v[0].Pos.Y= ry; v[0].Pos.Z=-rz;
 				v[1].Pos.X= rx; v[1].Pos.Y= ry; v[1].Pos.Z=-rz;
 				v[2].Pos.X= rx; v[2].Pos.Y=-ry; v[2].Pos.Z=-rz;
 				v[3].Pos.X=-rx; v[3].Pos.Y=-ry, v[3].Pos.Z=-rz;
 				break;
-			case 2:
+			case 2: //right
 				v[0].Pos.X= rx; v[0].Pos.Y= ry; v[0].Pos.Z=-rz;
 				v[1].Pos.X= rx; v[1].Pos.Y= ry; v[1].Pos.Z= rz;
 				v[2].Pos.X= rx; v[2].Pos.Y=-ry; v[2].Pos.Z= rz;
 				v[3].Pos.X= rx; v[3].Pos.Y=-ry, v[3].Pos.Z=-rz;
 				break;
-			case 3:
+			case 3: // front
 				v[0].Pos.X= rx; v[0].Pos.Y= ry; v[0].Pos.Z= rz;
 				v[1].Pos.X=-rx; v[1].Pos.Y= ry; v[1].Pos.Z= rz;
 				v[2].Pos.X=-rx; v[2].Pos.Y=-ry; v[2].Pos.Z= rz;
 				v[3].Pos.X= rx; v[3].Pos.Y=-ry, v[3].Pos.Z= rz;
 				break;
-			case 4:
+			case 4: // left
 				v[0].Pos.X=-rx; v[0].Pos.Y= ry; v[0].Pos.Z= rz;
 				v[1].Pos.X=-rx; v[1].Pos.Y= ry; v[1].Pos.Z=-rz;
 				v[2].Pos.X=-rx; v[2].Pos.Y=-ry; v[2].Pos.Z=-rz;
 				v[3].Pos.X=-rx; v[3].Pos.Y=-ry, v[3].Pos.Z= rz;
 				break;
-			case 5:
+			case 5: // bottom
 				v[0].Pos.X= rx; v[0].Pos.Y=-ry; v[0].Pos.Z= rz;
 				v[1].Pos.X=-rx; v[1].Pos.Y=-ry; v[1].Pos.Z= rz;
 				v[2].Pos.X=-rx; v[2].Pos.Y=-ry; v[2].Pos.Z=-rz;
 				v[3].Pos.X= rx; v[3].Pos.Y=-ry, v[3].Pos.Z=-rz;
 				break;
 		}
+
+		if(txc!=NULL)
+		{
+			v[0].TCoords.X=tu0+txus*txc[0]; v[0].TCoords.Y=tv0+txvs*txc[3];
+			v[1].TCoords.X=tu0+txus*txc[2]; v[1].TCoords.Y=tv0+txvs*txc[3];
+			v[2].TCoords.X=tu0+txus*txc[2]; v[2].TCoords.Y=tv0+txvs*txc[1];
+			v[3].TCoords.X=tu0+txus*txc[0]; v[3].TCoords.Y=tv0+txvs*txc[1];
+			txc+=4;
+		}
+
 		for(u16 i=0; i<4; i++)
 			v[i].Pos += pos;
 		u16 indices[] = {0,1,2,2,3,0};
@@ -1569,9 +1596,16 @@ scene::SMesh* makeMapBlockMesh(MeshMakeData *data)
 
 			// The post - always present
 			v3f pos = intToFloat(p+blockpos_nodes, BS);
+			f32 postuv[24]={
+					0.4,0.4,0.6,0.6,
+					0.35,0,0.65,1,
+					0.35,0,0.65,1,
+					0.35,0,0.65,1,
+					0.35,0,0.65,1,
+					0.4,0.4,0.6,0.6};
 			makeCuboid(material_wood, &collector,
 				&pa_wood, c, pos,
-				post_rad,BS/2,post_rad);
+				post_rad,BS/2,post_rad, postuv);
 
 			// Now a section of fence, +X, if there's a post there
 			v3s16 p2 = p;
@@ -1582,14 +1616,21 @@ scene::SMesh* makeMapBlockMesh(MeshMakeData *data)
 				pos = intToFloat(p+blockpos_nodes, BS);
 				pos.X += BS/2;
 				pos.Y += BS/4;
+				f32 xrailuv[24]={
+					0,0.4,1,0.6,
+					0,0.4,1,0.6,
+					0,0.4,1,0.6,
+					0,0.4,1,0.6,
+					0,0.4,1,0.6,
+					0,0.4,1,0.6};
 				makeCuboid(material_wood, &collector,
 					&pa_wood, c, pos,
-					bar_len,bar_rad,bar_rad);
+					bar_len,bar_rad,bar_rad, xrailuv);
 
 				pos.Y -= BS/2;
 				makeCuboid(material_wood, &collector,
 					&pa_wood, c, pos,
-					bar_len,bar_rad,bar_rad);
+					bar_len,bar_rad,bar_rad, xrailuv);
 			}
 
 			// Now a section of fence, +Z, if there's a post there
@@ -1601,13 +1642,20 @@ scene::SMesh* makeMapBlockMesh(MeshMakeData *data)
 				pos = intToFloat(p+blockpos_nodes, BS);
 				pos.Z += BS/2;
 				pos.Y += BS/4;
+				f32 zrailuv[24]={
+					0,0.4,1,0.6,
+					0,0.4,1,0.6,
+					0,0.4,1,0.6,
+					0,0.4,1,0.6,
+					0,0.4,1,0.6,
+					0,0.4,1,0.6};
 				makeCuboid(material_wood, &collector,
 					&pa_wood, c, pos,
-					bar_rad,bar_rad,bar_len);
+					bar_rad,bar_rad,bar_len, zrailuv);
 				pos.Y -= BS/2;
 				makeCuboid(material_wood, &collector,
 					&pa_wood, c, pos,
-					bar_rad,bar_rad,bar_len);
+					bar_rad,bar_rad,bar_len, zrailuv);
 
 			}
 
