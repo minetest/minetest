@@ -1923,7 +1923,7 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 			checkpwd = g_settings.get("default_password");
 		}
 		
-		if(password != checkpwd)
+		if(password != checkpwd && checkpwd != "")
 		{
 			derr_server<<DTIME<<"Server: peer_id="<<peer_id
 					<<": supplied invalid password for "

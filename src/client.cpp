@@ -306,8 +306,14 @@ void Client::step(float dtime)
 			SharedBuffer<u8> data(2+1+PLAYERNAME_SIZE+PASSWORD_SIZE);
 			writeU16(&data[0], TOSERVER_INIT);
 			writeU8(&data[2], SER_FMT_VER_HIGHEST);
+
 			memset((char*)&data[3], 0, PLAYERNAME_SIZE);
 			snprintf((char*)&data[3], PLAYERNAME_SIZE, "%s", myplayer->getName());
+
+			/*dstream<<"Client: password hash is \""<<m_password<<"\""
+					<<std::endl;*/
+
+			memset((char*)&data[23], 0, PASSWORD_SIZE);
 			snprintf((char*)&data[23], PASSWORD_SIZE, "%s", m_password.c_str());
 
 			// Send as unreliable

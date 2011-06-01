@@ -229,10 +229,10 @@ std::string translatePassword(std::string playername, std::wstring password)
 	if(password.length() == 0)
 		return "";
 
-	std::string slt=playername + wide_to_narrow(password);
-	SHA1 *sha1 = new SHA1();
-	sha1->addBytes(slt.c_str(), slt.length());
-	unsigned char *digest = sha1->getDigest();
+	std::string slt = playername + wide_to_narrow(password);
+	SHA1 sha1;
+	sha1.addBytes(slt.c_str(), slt.length());
+	unsigned char *digest = sha1.getDigest();
 	std::string pwd = base64_encode(digest, 20);
 	free(digest);
 	return pwd;

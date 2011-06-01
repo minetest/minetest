@@ -314,6 +314,7 @@ Fixes to the current release:
 -----------------------------
 - Fix client password crash
 - Remember to release the fixes (some are already done)
+- A command to set one's password when the server is running
 
 Stuff to do after release:
 ---------------------------
@@ -1527,6 +1528,8 @@ int main(int argc, char *argv[])
 				g_settings.set("creative_mode", itos(menudata.creative_mode));
 				g_settings.set("enable_damage", itos(menudata.enable_damage));
 				
+				// NOTE: These are now checked server side; no need to do it
+				//       here, so let's not do it here.
 				/*// Check for valid parameters, restart menu if invalid.
 				if(playername == "")
 				{
