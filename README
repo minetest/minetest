@@ -16,6 +16,6 @@ Alternate graphics:
 * Rat
 * Glass
 
-Building on GNU/Linux:
+Building on GNU/Linux or OS X:
     cmake . -DRUN_IN_PLACE=1
     make -j2
