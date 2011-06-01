@@ -102,6 +102,9 @@ void init_content_inventory_texture_paths();
 #define CONTENT_GLASS 20
 #define CONTENT_FENCE 21
 #define CONTENT_SANDSTONE 22
+#define CONTENT_CACTUS 23
+#define CONTENT_BRICK 24
+#define CONTENT_CLAY 25
 
 /*
 	Content feature list
