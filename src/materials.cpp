@@ -60,6 +60,7 @@ void initializeMaterialProperties()
 
 	setStoneLikeDiggingProperties(CONTENT_STONE, 1.0);
 	setStoneLikeDiggingProperties(CONTENT_SANDSTONE, 1.0);
+	setStoneLikeDiggingProperties(CONTENT_BRICK, 3.0);
 	setStoneLikeDiggingProperties(CONTENT_MESE, 0.5);
 	setStoneLikeDiggingProperties(CONTENT_COALSTONE, 1.5);
 	setStoneLikeDiggingProperties(CONTENT_FURNACE, 3.0);
@@ -70,9 +71,11 @@ void initializeMaterialProperties()
 	setDirtLikeDiggingProperties(CONTENT_GRASS, 1.0);
 	setDirtLikeDiggingProperties(CONTENT_GRASS_FOOTSTEPS, 1.0);
 	setDirtLikeDiggingProperties(CONTENT_SAND, 1.0);
+	setDirtLikeDiggingProperties(CONTENT_CLAY, 1.0);
 	
 	setWoodLikeDiggingProperties(CONTENT_TREE, 1.0);
 	setWoodLikeDiggingProperties(CONTENT_LEAVES, 0.15);
+	setWoodLikeDiggingProperties(CONTENT_CACTUS, 0.75);
 	setWoodLikeDiggingProperties(CONTENT_GLASS, 0.15);
 	setWoodLikeDiggingProperties(CONTENT_FENCE, 0.75);
 	setWoodLikeDiggingProperties(CONTENT_WOOD, 0.75);

@@ -189,6 +189,22 @@ void init_mapnode()
 	f->is_ground_content = true;
 	f->dug_item = std::string("MaterialItem ")+itos(CONTENT_SAND)+" 1";
 	
+	i = CONTENT_CLAY;
+	f = &g_content_features[i];
+	f->setAllTextures("clay.png");
+	f->setInventoryTextureCube("clay.png", "clay.png", "clay.png");
+	f->param_type = CPT_MINERAL;
+	f->is_ground_content = true;
+	f->dug_item = std::string("CraftItem lump_of_clay 4");
+	
+	i = CONTENT_BRICK;
+	f = &g_content_features[i];
+	f->setAllTextures("brick.png");
+	f->setInventoryTextureCube("brick.png", "brick.png", "brick.png");
+	f->param_type = CPT_MINERAL;
+	f->is_ground_content = true;
+	f->dug_item = std::string("CraftItem clay_brick 4");
+	
 	i = CONTENT_TREE;
 	f = &g_content_features[i];
 	f->setAllTextures("tree.png");
@@ -215,6 +231,16 @@ void init_mapnode()
 	}
 	f->dug_item = std::string("MaterialItem ")+itos(i)+" 1";
 
+	i = CONTENT_CACTUS;
+	f = &g_content_features[i];
+	f->setAllTextures("cactus_side.png");
+	f->setTexture(0, "cactus_top.png");
+	f->setTexture(1, "cactus_top.png");
+	f->setInventoryTextureCube("cactus_top.png", "cactus_side.png", "cactus_side.png");
+	f->param_type = CPT_MINERAL;
+	f->is_ground_content = true;
+	f->dug_item = std::string("MaterialItem ")+itos(i)+" 1";
+
 	i = CONTENT_GLASS;
 	f = &g_content_features[i];
 	f->light_propagates = true;
@@ -226,6 +252,7 @@ void init_mapnode()
 
 	i = CONTENT_FENCE;
 	f = &g_content_features[i];
+	f->setInventoryTexture("fence.png");
 	f->light_propagates = true;
 	f->param_type = CPT_LIGHT;
 	f->is_ground_content = true;

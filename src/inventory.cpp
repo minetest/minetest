@@ -160,8 +160,12 @@ video::ITexture * CraftItem::getImage()
 		name = "lump_of_coal.png";
 	else if(m_subname == "lump_of_iron")
 		name = "lump_of_iron.png";
+	else if(m_subname == "lump_of_clay")
+		name = "lump_of_clay.png";
 	else if(m_subname == "steel_ingot")
 		name = "steel_ingot.png";
+	else if(m_subname == "clay_brick")
+		name = "clay_brick.png";
 	else if(m_subname == "rat")
 		name = "rat.png";
 	else
@@ -199,7 +203,7 @@ u16 CraftItem::getDropCount()
 
 bool CraftItem::isCookable()
 {
-	if(m_subname == "lump_of_iron")
+	if(m_subname == "lump_of_iron" || m_subname == "lump_of_clay")
 	{
 		return true;
 	}
@@ -212,6 +216,8 @@ InventoryItem *CraftItem::createCookResult()
 	{
 		return new CraftItem("steel_ingot", 1);
 	}
+	else if(m_subname == "lump_of_clay")
+		return new CraftItem("clay_brick", 1);
 	return NULL;
 }
 
