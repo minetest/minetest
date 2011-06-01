@@ -170,15 +170,13 @@ else()
 	# Probably GCC
 	
 	if(WARN_ALL)
-		set(WARNING_FLAGS "-Wall")
+		set(RELEASE_WARNING_FLAGS "-Wall")
 	else()
-		set(WARNING_FLAGS "")
+		set(RELEASE_WARNING_FLAGS "")
 	endif()
 
-	set(WARNING_FLAGS "${WARNING_FLAGS} -Wno-unused-but-set-variable")
-
-	set(CMAKE_CXX_FLAGS_RELEASE "-DNDEBUG ${WARNING_FLAGS} -O3 -ffast-math -Wall -fomit-frame-pointer -pipe -funroll-loops")
-	set(CMAKE_CXX_FLAGS_DEBUG "-g -O1 -Wall")
+	set(CMAKE_CXX_FLAGS_RELEASE "-DNDEBUG ${RELEASE_WARNING_FLAGS} -Wno-unused-but-set-variable -O3 -ffast-math -Wall -fomit-frame-pointer -pipe -funroll-loops")
+	set(CMAKE_CXX_FLAGS_DEBUG "-g -O1 -Wall -Wno-unused-but-set-variable")
 
 	if(USE_GPROF)
 		set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -pg")
