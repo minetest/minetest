@@ -1,25 +1,24 @@
 /*
-Minetest-c55
-Copyright (C) 2010-2011 celeron55, Perttu Ahola <celeron55@gmail.com>
+ Minetest-c55
+ Copyright (C) 2010-2011 celeron55, Perttu Ahola <celeron55@gmail.com>
 
-This program is free software; you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation; either version 2 of the License, or
-(at your option) any later version.
+ This program is free software; you can redistribute it and/or modify
+ it under the terms of the GNU General Public License as published by
+ the Free Software Foundation; either version 2 of the License, or
+ (at your option) any later version.
 
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
+ This program is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ GNU General Public License for more details.
 
-You should have received a copy of the GNU General Public License along
-with this program; if not, write to the Free Software Foundation, Inc.,
-51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
-*/
+ You should have received a copy of the GNU General Public License along
+ with this program; if not, write to the Free Software Foundation, Inc.,
+ 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+ */
 
 #include "keycode.h"
 #include "main.h" // For g_settings
-
 #define CHECKKEY(x){if(strcmp(name, #x)==0) return irr::x;}
 
 irr::EKEY_CODE keyname_to_keycode(const char *name)
@@ -171,9 +170,48 @@ irr::EKEY_CODE keyname_to_keycode(const char *name)
 	return irr::KEY_KEY_CODES_COUNT;
 }
 
+static const char *KeyNames[] =
+{ "-", "KEY_LBUTTON", "KEY_RBUTTON", "Cancel", "Middle Button", "X Button 1",
+		"X Button 2", "-", "Back", "Tab", "-", "-", "Clear", "Return", "-",
+		"-", "KEY_SHIFT", "Control", "Menu", "Pause", "Capital", "Kana", "-",
+		"Junja", "Final", "Kanji", "-", "Escape", "Convert", "Nonconvert",
+		"Accept", "Mode Change", "KEY_SPACE", "Priot", "Next", "KEY_END",
+		"KEY_HOME", "Left", "Up", "Right", "Down", "Select", "KEY_PRINT",
+		"Execute", "Snapshot", "Insert", "Delete", "Help", "KEY_KEY_0",
+		"KEY_KEY_1", "KEY_KEY_2", "KEY_KEY_3", "KEY_KEY_4", "KEY_KEY_5",
+		"KEY_KEY_6", "KEY_KEY_7", "KEY_KEY_8", "KEY_KEY_9", "-", "-", "-", "-",
+		"-", "-", "-", "KEY_KEY_A", "KEY_KEY_B", "KEY_KEY_C", "KEY_KEY_D",
+		"KEY_KEY_E", "KEY_KEY_F", "KEY_KEY_G", "KEY_KEY_H", "KEY_KEY_I",
+		"KEY_KEY_J", "KEY_KEY_K", "KEY_KEY_L", "KEY_KEY_M", "KEY_KEY_N",
+		"KEY_KEY_O", "KEY_KEY_P", "KEY_KEY_Q", "KEY_KEY_R", "KEY_KEY_S",
+		"KEY_KEY_T", "KEY_KEY_U", "KEY_KEY_V", "KEY_KEY_W", "KEY_KEY_X",
+		"KEY_KEY_Y", "KEY_KEY_Z", "Left Windows", "Right Windows", "Apps", "-",
+		"Sleep", "KEY_NUMPAD0", "KEY_NUMPAD1", "KEY_NUMPAD2", "KEY_NUMPAD3",
+		"KEY_NUMPAD4", "KEY_NUMPAD5", "KEY_NUMPAD6", "KEY_NUMPAD7",
+		"KEY_NUMPAD8", "KEY_NUMPAD9", "Numpad *", "Numpad +", "Numpad /",
+		"Numpad -", "Numpad .", "Numpad /", "KEY_F1", "KEY_F2", "KEY_F3",
+		"KEY_F4", "KEY_F5", "KEY_F6", "KEY_F7", "KEY_F8", "KEY_F9", "KEY_F10",
+		"KEY_F11", "KEY_F12", "KEY_F13", "KEY_F14", "KEY_F15", "KEY_F16",
+		"KEY_F17", "KEY_F18", "KEY_F19", "KEY_F20", "KEY_F21", "KEY_F22",
+		"KEY_F23", "KEY_F24", "-", "-", "-", "-", "-", "-", "-", "-",
+		"Num Lock", "Scroll Lock", "-", "-", "-", "-", "-", "-", "-", "-", "-",
+		"-", "-", "-", "-", "-", "KEY_LSHIFT", "KEY_RSHIFT", "Left Control",
+		"Right Control", "Left Menu", "Right Menu", "-", "-", "-", "-", "-",
+		"-", "-", "-", "-", "-", "-", "-", "-", "-", "-", "-", "-", "-", "-",
+		"-", "-", "Plus", "Comma", "Minus", "Period", "-", "-", "-", "-", "-",
+		"-", "-", "-", "-", "-", "-", "-", "-", "-", "-", "-", "-", "-", "-",
+		"-", "-", "-", "-", "-", "-", "-", "-", "-", "-", "-", "-", "-", "-",
+		"-", "-", "-", "-", "-", "-", "-", "-", "-", "-", "-", "-", "-", "-",
+		"-", "-", "-", "-", "-", "-", "-", "-", "Attn", "CrSel", "ExSel",
+		"Erase OEF", "Play", "Zoom", "PA1", "OEM Clear", "-" };
+
+std::string keycode_to_keyname(s32 keycode)
+{
+	return KeyNames[keycode];
+}
 /*
-	Key config
-*/
+ Key config
+ */
 
 // A simple cache for quicker lookup
 core::map<std::string, irr::EKEY_CODE> g_key_setting_cache;
@@ -182,11 +220,15 @@ irr::EKEY_CODE getKeySetting(const char *settingname)
 {
 	core::map<std::string, irr::EKEY_CODE>::Node *n;
 	n = g_key_setting_cache.find(settingname);
-	if(n)
+	if (n)
 		return n->getValue();
 	irr::EKEY_CODE c = keyname_to_keycode(g_settings.get(settingname).c_str());
 	g_key_setting_cache.insert(settingname, c);
 	return c;
 }
 
+void clearKeyCache()
+{
+	g_key_setting_cache.clear();
+}
 
