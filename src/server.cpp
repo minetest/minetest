@@ -3987,6 +3987,36 @@ void Server::UpdateCrafting(u16 peer_id)
 					found = true;
 				}
 			}
+
+			// Clay
+			if(!found)
+			{
+				ItemSpec specs[9];
+				specs[3] = ItemSpec(ITEM_CRAFT, "lump_of_clay");
+				specs[4] = ItemSpec(ITEM_CRAFT, "lump_of_clay");
+				specs[6] = ItemSpec(ITEM_CRAFT, "lump_of_clay");
+				specs[7] = ItemSpec(ITEM_CRAFT, "lump_of_clay");
+				if(checkItemCombination(items, specs))
+				{
+					rlist->addItem(new MaterialItem(CONTENT_CLAY, 1));
+					found = true;
+				}
+			}
+
+			// Brick
+			if(!found)
+			{
+				ItemSpec specs[9];
+				specs[3] = ItemSpec(ITEM_CRAFT, "clay_brick");
+				specs[4] = ItemSpec(ITEM_CRAFT, "clay_brick");
+				specs[6] = ItemSpec(ITEM_CRAFT, "clay_brick");
+				specs[7] = ItemSpec(ITEM_CRAFT, "clay_brick");
+				if(checkItemCombination(items, specs))
+				{
+					rlist->addItem(new MaterialItem(CONTENT_BRICK, 1));
+					found = true;
+				}
+			}
 		}
 	
 	} // if creative_mode == false
@@ -4076,6 +4106,7 @@ void setCreativeInventory(Player *player)
 		CONTENT_STONE,
 		CONTENT_SAND,
 		CONTENT_SANDSTONE,
+		CONTENT_CLAY,
 		CONTENT_BRICK,
 		CONTENT_TREE,
 		CONTENT_LEAVES,

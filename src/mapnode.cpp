@@ -189,13 +189,21 @@ void init_mapnode()
 	f->is_ground_content = true;
 	f->dug_item = std::string("MaterialItem ")+itos(CONTENT_SAND)+" 1";
 	
+	i = CONTENT_CLAY;
+	f = &g_content_features[i];
+	f->setAllTextures("clay.png");
+	f->setInventoryTextureCube("clay.png", "clay.png", "clay.png");
+	f->param_type = CPT_MINERAL;
+	f->is_ground_content = true;
+	f->dug_item = std::string("CraftItem lump_of_clay 4");
+	
 	i = CONTENT_BRICK;
 	f = &g_content_features[i];
 	f->setAllTextures("brick.png");
 	f->setInventoryTextureCube("brick.png", "brick.png", "brick.png");
 	f->param_type = CPT_MINERAL;
 	f->is_ground_content = true;
-	f->dug_item = std::string("MaterialItem ")+itos(i)+" 1";
+	f->dug_item = std::string("CraftItem clay_brick 4");
 	
 	i = CONTENT_TREE;
 	f = &g_content_features[i];

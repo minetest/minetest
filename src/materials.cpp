@@ -71,6 +71,7 @@ void initializeMaterialProperties()
 	setDirtLikeDiggingProperties(CONTENT_GRASS, 1.0);
 	setDirtLikeDiggingProperties(CONTENT_GRASS_FOOTSTEPS, 1.0);
 	setDirtLikeDiggingProperties(CONTENT_SAND, 1.0);
+	setDirtLikeDiggingProperties(CONTENT_CLAY, 1.0);
 	
 	setWoodLikeDiggingProperties(CONTENT_TREE, 1.0);
 	setWoodLikeDiggingProperties(CONTENT_LEAVES, 0.15);
