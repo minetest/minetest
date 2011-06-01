@@ -3144,9 +3144,9 @@ void makeChunk(ChunkMakeData *data)
 		// Determine whether to have clay in the sand here
 		double claynoise = noise2d_perlin(
 				0.5+(float)p2d.X/500, 0.5+(float)p2d.Y/500,
-				data->seed+4321, 8, 0.95);
+				data->seed+4321, 6, 0.95);
 
-		bool have_clay = have_sand && (claynoise > 0.95);
+		bool have_clay = have_sand && (claynoise > 1.25);
 
 		// Find ground level
 		s16 surface_y = find_ground_level_clever(data->vmanip, p2d);
