@@ -3,6 +3,11 @@ Minetest-c55 changelog
 This should contain all the major changes.
 For minor stuff, refer to the commit log of the repository.
 
+2011-06-02:
+- Password crash on windows fixed
+- Optimized server CPU usage a lot
+- Furnaces now work also while players are not near to them
+
 2011-05-29:
 - Optimized smooth lighting
 - A number of small fixes

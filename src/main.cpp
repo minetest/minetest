@@ -312,9 +312,6 @@ Stuff to do before release:
 
 Fixes to the current release:
 -----------------------------
-- Fix client password crash
-- Remember to release the fixes (some are already done)
-- A command to set one's password when the server is running
 
 Stuff to do after release:
 ---------------------------
