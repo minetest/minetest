@@ -1,7 +1,14 @@
 Minetest Δ (“Minetest Delta”) is a fork of Minetest-c55 <http://celeron.55.lt/~celeron55/minetest/>, incorporating experimental features that are not (yet) included in Minetest-c55.
 
 New bricks:
-* Sandstone (crafted from 4 sand)
+* Sandstone (crafted from 4 sand, yields sand)
+* Cactus (plant that grows on sand)
+* Clay (found in sand at sea level, yields 4 lumps of clay)
+* Brick (made from 4 clay bricks, yields 4 clay bricks)
+
+New materials:
+* Lump of clay
+* Clay brick (made from lumps of clay in the furnace)
 
 Alternate graphics:
 * Player
