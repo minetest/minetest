@@ -1376,8 +1376,10 @@ void Server::AsyncRunStep()
 			Player *player = m_env.getPlayer(client->peer_id);
 			if(player==NULL)
 			{
-				dstream<<"WARNING: "<<__FUNCTION_NAME<<": Client "<<client->peer_id
-						<<" has no associated player"<<std::endl;
+				// This can happen if the client timeouts somehow
+				/*dstream<<"WARNING: "<<__FUNCTION_NAME<<": Client "
+						<<client->peer_id
+						<<" has no associated player"<<std::endl;*/
 				continue;
 			}
 			v3s16 pos = floatToInt(player->getPosition(), BS);
