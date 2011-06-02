@@ -2045,6 +2045,20 @@ void make_tree(VoxelManipulator &vmanip, v3s16 p0)
 	}
 }
 
+void make_papyrus(VoxelManipulator &vmanip, v3s16 p0)
+{
+	MapNode papyrusnode(CONTENT_PAPYRUS);
+
+	s16 trunk_h = myrand_range(2, 3);
+	v3s16 p1 = p0;
+	for(s16 ii=0; ii<trunk_h; ii++)
+	{
+		if(vmanip.m_area.contains(p1))
+			vmanip.m_data[vmanip.m_area.index(p1)] = papyrusnode;
+		p1.Y++;
+	}
+}
+
 void make_cactus(VoxelManipulator &vmanip, v3s16 p0)
 {
 	MapNode cactusnode(CONTENT_CACTUS);
@@ -3225,7 +3239,7 @@ void makeChunk(ChunkMakeData *data)
 				s16 z = myrand_range(p2d_min.Y, p2d_max.Y);
 				s16 y = find_ground_level(data->vmanip, v2s16(x,z));
 				// Don't make a tree under water level
-				if(y < WATER_LEVEL)
+				if(y < WATER_LEVEL - 1)
 					continue;
 				// Don't make a tree so high that it doesn't fit
 				if(y > y_nodes_max - 6)
@@ -3236,6 +3250,15 @@ void makeChunk(ChunkMakeData *data)
 					MapNode *n = &data->vmanip.m_data[i];
 					if(n->d != CONTENT_MUD && n->d != CONTENT_GRASS && n->d != CONTENT_SAND)
 						continue;
+					// Papyrus grows only on mud and in water
+					if(n->d == CONTENT_MUD && y == WATER_LEVEL - 1)
+					{
+						p.Y++;
+						make_papyrus(data->vmanip, p);
+					}
+					// Don't make a tree under water level
+					if(y < WATER_LEVEL)
+						continue;
 					// Trees grow only on mud and grass
 					if(n->d == CONTENT_MUD || n->d == CONTENT_GRASS)
 					{
@@ -3243,7 +3266,7 @@ void makeChunk(ChunkMakeData *data)
 						make_tree(data->vmanip, p);
 					}
 					// Cactii grow only on sand
-					if(n->d == CONTENT_SAND)
+					else if(n->d == CONTENT_SAND)
 					{
 						p.Y++;
 						make_cactus(data->vmanip, p);

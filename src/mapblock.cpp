@@ -987,6 +987,16 @@ scene::SMesh* makeMapBlockMesh(MeshMakeData *data)
 			g_texturesource->getTextureId("wood.png"));
 	material_wood.setTexture(0, pa_wood.atlas);
 
+	// Papyrus material
+	video::SMaterial material_papyrus;
+	material_papyrus.setFlag(video::EMF_LIGHTING, false);
+	material_papyrus.setFlag(video::EMF_BILINEAR_FILTER, false);
+	material_papyrus.setFlag(video::EMF_FOG_ENABLE, true);
+	material_papyrus.MaterialType = video::EMT_TRANSPARENT_ALPHA_CHANNEL_REF;
+	AtlasPointer pa_papyrus = g_texturesource->getTexture(
+			g_texturesource->getTextureId("papyrus.png"));
+	material_papyrus.setTexture(0, pa_papyrus.atlas);
+
 	for(s16 z=0; z<MAP_BLOCKSIZE; z++)
 	for(s16 y=0; y<MAP_BLOCKSIZE; y++)
 	for(s16 x=0; x<MAP_BLOCKSIZE; x++)
@@ -1612,8 +1622,56 @@ scene::SMesh* makeMapBlockMesh(MeshMakeData *data)
 			}
 
 		}
+		else if(n.d == CONTENT_PAPYRUS)
+		{
+			u8 l = decode_light(undiminish_light(n.getLightBlend(data->m_daynight_ratio)));
+			video::SColor c(255,l,l,l);
 
+			for(u32 j=0; j<4; j++)
+			{
+				video::S3DVertex vertices[4] =
+				{
+					video::S3DVertex(-BS/2,-BS/2,0, 0,0,0, c,
+						pa_papyrus.x0(), pa_papyrus.y1()),
+					video::S3DVertex(BS/2,-BS/2,0, 0,0,0, c,
+						pa_papyrus.x1(), pa_papyrus.y1()),
+					video::S3DVertex(BS/2,BS/2,0, 0,0,0, c,
+						pa_papyrus.x1(), pa_papyrus.y0()),
+					video::S3DVertex(-BS/2,BS/2,0, 0,0,0, c,
+						pa_papyrus.x0(), pa_papyrus.y0()),
+				};
 
+				if(j == 0)
+				{
+					for(u16 i=0; i<4; i++)
+						vertices[i].Pos.rotateXZBy(45);
+				}
+				else if(j == 1)
+				{
+					for(u16 i=0; i<4; i++)
+						vertices[i].Pos.rotateXZBy(-45);
+				}
+				else if(j == 2)
+				{
+					for(u16 i=0; i<4; i++)
+						vertices[i].Pos.rotateXZBy(135);
+				}
+				else if(j == 3)
+				{
+					for(u16 i=0; i<4; i++)
+						vertices[i].Pos.rotateXZBy(-135);
+				}
+
+				for(u16 i=0; i<4; i++)
+				{
+					vertices[i].Pos += intToFloat(p + blockpos_nodes, BS);
+				}
+
+				u16 indices[] = {0,1,2,2,3,0};
+				// Add to mesh collector
+				collector.append(material_papyrus, vertices, 4, indices, 6);
+			}
+		}
 
 	}
 
