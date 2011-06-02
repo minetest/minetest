@@ -1029,6 +1029,15 @@ void drawMenuBackground(video::IVideoDriver* driver)
 int main(int argc, char *argv[])
 {
 	/*
+		Initialization
+	*/
+
+	// Set locale. This is for forcing '.' as the decimal point.
+	std::locale::global(std::locale("C"));
+	// This enables printing all characters in bitmap font
+	setlocale(LC_CTYPE, "en_US");
+
+	/*
 		Parse command line
 	*/
 	
@@ -1091,21 +1100,28 @@ int main(int argc, char *argv[])
 		disable_stderr = true;
 #endif
 
+	porting::signal_handler_init();
+	bool &kill = *porting::signal_handler_killstatus();
+	
+	// Initialize porting::path_data and porting::path_userdata
+	porting::initializePaths();
+
 	// Initialize debug streams
-	debugstreams_init(disable_stderr, DEBUGFILE);
+#ifdef RUN_IN_PLACE
+	std::string debugfile = DEBUGFILE;
+#else
+	std::string debugfile = porting::path_userdata+"/"+DEBUGFILE;
+#endif
+	debugstreams_init(disable_stderr, debugfile.c_str());
 	// Initialize debug stacks
 	debug_stacks_init();
 
 	DSTACK(__FUNCTION_NAME);
 
-	porting::signal_handler_init();
-	bool &kill = *porting::signal_handler_killstatus();
-	
-	porting::initializePaths();
 	// Create user data directory
 	fs::CreateDir(porting::path_userdata);
 	
-	// C-style stuff initialization
+	// Init material properties table
 	initializeMaterialProperties();
 
 	// Debug handler
@@ -1124,19 +1140,10 @@ int main(int argc, char *argv[])
 	// Initialize default settings
 	set_default_settings();
 	
-	// Set locale. This is for forcing '.' as the decimal point.
-	std::locale::global(std::locale("C"));
-	// This enables printing all characters in bitmap font
-	setlocale(LC_CTYPE, "en_US");
-
 	// Initialize sockets
 	sockets_init();
 	atexit(sockets_cleanup);
 	
-	/*
-		Initialization
-	*/
-
 	/*
 		Read config file
 	*/
