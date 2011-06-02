@@ -241,6 +241,16 @@ void init_mapnode()
 	f->is_ground_content = true;
 	f->dug_item = std::string("MaterialItem ")+itos(i)+" 1";
 
+	i = CONTENT_PAPYRUS;
+	f = &g_content_features[i];
+	f->setInventoryTexture("papyrus.png");
+	f->light_propagates = true;
+	f->param_type = CPT_LIGHT;
+	f->is_ground_content = true;
+	f->dug_item = std::string("MaterialItem ")+itos(i)+" 1";
+	f->solidness = 0; // drawn separately, makes no faces
+	f->walkable = false;
+
 	i = CONTENT_GLASS;
 	f = &g_content_features[i];
 	f->light_propagates = true;
