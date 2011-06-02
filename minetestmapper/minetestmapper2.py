@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-# -*- coding: windows-1252 -*-
+# -*- coding: utf-8 -*-
 
 # Made by j0gge, modified by celeron55
 
