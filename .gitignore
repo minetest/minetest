@@ -17,3 +17,4 @@ Makefile
 cmake_install.cmake
 src/jthread/libjthread.a
 debug.txt
+minetestmapper/map.png
