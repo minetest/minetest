@@ -73,25 +73,28 @@ xlist = []
 zlist = []
 
 # List all sectors to memory and calculate the width and heigth of the resulting picture.
-for filename in os.listdir(path + "sectors2"):
-    for filename2 in os.listdir(path + "sectors2/" + filename):
-        x = hex_to_int(filename)
-        z = hex_to_int(filename2)
+if os.path.exists(path + "sectors2"):
+    for filename in os.listdir(path + "sectors2"):
+        for filename2 in os.listdir(path + "sectors2/" + filename):
+            x = hex_to_int(filename)
+            z = hex_to_int(filename2)
+            if x < sector_xmin or x > sector_xmax:
+                continue
+            if z < sector_zmin or z > sector_zmax:
+                continue
+            xlist.append(x)
+            zlist.append(z)
+
+if os.path.exists(path + "sectors"):
+    for filename in os.listdir(path + "sectors"):
+        x = hex4_to_int(filename[:4])
+        z = hex4_to_int(filename[-4:])
         if x < sector_xmin or x > sector_xmax:
             continue
         if z < sector_zmin or z > sector_zmax:
             continue
         xlist.append(x)
         zlist.append(z)
-for filename in os.listdir(path + "sectors"):
-    x = hex4_to_int(filename[:4])
-    z = hex4_to_int(filename[-4:])
-    if x < sector_xmin or x > sector_xmax:
-        continue
-    if z < sector_zmin or z > sector_zmax:
-        continue
-    xlist.append(x)
-    zlist.append(z)
 
 w = (max(xlist) - min(xlist)) * 16 + 16
 h = (max(zlist) - min(zlist)) * 16 + 16
