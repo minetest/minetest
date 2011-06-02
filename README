@@ -1,5 +1,8 @@
 Minetest Δ (“Minetest Delta”) is a fork of Minetest-c55 <http://celeron.55.lt/~celeron55/minetest/>, incorporating experimental features that are not (yet) included in Minetest-c55.
 
+New features:
+* Submenu for key assignment (changes apply after restart)
+
 New bricks:
 * Sandstone (crafted from 4 sand, yields sand)
 * Cactus (plant that grows on sand)
