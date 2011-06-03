@@ -156,6 +156,10 @@ video::ITexture * CraftItem::getImage()
 
 	if(m_subname == "Stick")
 		name = "stick.png";
+	else if(m_subname == "paper")
+		name = "paper.png";
+	else if(m_subname == "book")
+		name = "book.png";
 	else if(m_subname == "lump_of_coal")
 		name = "lump_of_coal.png";
 	else if(m_subname == "lump_of_iron")

@@ -106,6 +106,7 @@ void init_content_inventory_texture_paths();
 #define CONTENT_BRICK 24
 #define CONTENT_CLAY 25
 #define CONTENT_PAPYRUS 26
+#define CONTENT_BOOKSHELF 27
 
 /*
 	Content feature list
