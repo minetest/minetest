@@ -1092,7 +1092,7 @@ bool generate_image(std::string part_of_name, video::IImage *& baseimg,
 					imagename_right, device);
 			assert(img_top && img_left && img_right);
 
-			// TODO: Create textures from images
+			// FIXME: Create textures from left and right images
 			video::ITexture *texture_top = driver->addTexture(
 					(imagename_top + "__temp__").c_str(), img_top);
 			assert(texture_top);
