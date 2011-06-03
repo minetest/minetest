@@ -4017,6 +4017,54 @@ void Server::UpdateCrafting(u16 peer_id)
 					found = true;
 				}
 			}
+
+			// Paper
+			if(!found)
+			{
+				ItemSpec specs[9];
+				specs[3] = ItemSpec(ITEM_MATERIAL, CONTENT_PAPYRUS);
+				specs[4] = ItemSpec(ITEM_MATERIAL, CONTENT_PAPYRUS);
+				specs[5] = ItemSpec(ITEM_MATERIAL, CONTENT_PAPYRUS);
+				if(checkItemCombination(items, specs))
+				{
+					rlist->addItem(new CraftItem("paper", 1));
+					found = true;
+				}
+			}
+
+			// Book
+			if(!found)
+			{
+				ItemSpec specs[9];
+				specs[1] = ItemSpec(ITEM_CRAFT, "paper");
+				specs[4] = ItemSpec(ITEM_CRAFT, "paper");
+				specs[7] = ItemSpec(ITEM_CRAFT, "paper");
+				if(checkItemCombination(items, specs))
+				{
+					rlist->addItem(new CraftItem("book", 1));
+					found = true;
+				}
+			}
+
+			// Book shelf
+			if(!found)
+			{
+				ItemSpec specs[9];
+				specs[0] = ItemSpec(ITEM_MATERIAL, CONTENT_WOOD);
+				specs[1] = ItemSpec(ITEM_MATERIAL, CONTENT_WOOD);
+				specs[2] = ItemSpec(ITEM_MATERIAL, CONTENT_WOOD);
+				specs[3] = ItemSpec(ITEM_CRAFT, "book");
+				specs[4] = ItemSpec(ITEM_CRAFT, "book");
+				specs[5] = ItemSpec(ITEM_CRAFT, "book");
+				specs[6] = ItemSpec(ITEM_MATERIAL, CONTENT_WOOD);
+				specs[7] = ItemSpec(ITEM_MATERIAL, CONTENT_WOOD);
+				specs[8] = ItemSpec(ITEM_MATERIAL, CONTENT_WOOD);
+				if(checkItemCombination(items, specs))
+				{
+					rlist->addItem(new MaterialItem(CONTENT_BOOKSHELF, 1));
+					found = true;
+				}
+			}
 		}
 	
 	} // if creative_mode == false
@@ -4112,6 +4160,7 @@ void setCreativeInventory(Player *player)
 		CONTENT_LEAVES,
 		CONTENT_CACTUS,
 		CONTENT_PAPYRUS,
+		CONTENT_BOOKSHELF,
 		CONTENT_GLASS,
 		CONTENT_FENCE,
 		CONTENT_MESE,

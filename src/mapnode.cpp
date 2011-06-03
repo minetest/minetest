@@ -251,6 +251,17 @@ void init_mapnode()
 	f->solidness = 0; // drawn separately, makes no faces
 	f->walkable = false;
 
+ 	i = CONTENT_BOOKSHELF;
+ 	f = &g_content_features[i];
+ 	f->setAllTextures("bookshelf.png");
+	f->setTexture(0, "wood.png");
+	f->setTexture(1, "wood.png");
+	// FIXME: setInventoryTextureCube() only cares for the first texture
+	f->setInventoryTextureCube("bookshelf.png", "bookshelf.png", "bookshelf.png");
+	//f->setInventoryTextureCube("wood.png", "bookshelf.png", "bookshelf.png");
+	f->param_type = CPT_MINERAL;
+	f->is_ground_content = true;
+
 	i = CONTENT_GLASS;
 	f = &g_content_features[i];
 	f->light_propagates = true;
