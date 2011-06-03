@@ -8,11 +8,14 @@ New bricks:
 * Cactus (plant that grows on sand)
 * Clay (found in sand at sea level, yields 4 lumps of clay)
 * Brick (made from 4 clay bricks, yields 4 clay bricks)
-* Papyrus (plant that grows in shallow water)
+* Papyrus (plant that grows in shallow water, yields paper)
+* Book shelf (made from 6 wood and 3 books, sandwhiched)
 
 New materials:
 * Lump of clay
 * Clay brick (made from lumps of clay in the furnace)
+* Paper
+* Book (made from 3 paper)
 
 Alternate graphics:
 * Player
