@@ -8,6 +8,7 @@ generator. If they are not found or invalid, the generator will currently
 behave quite strangely.
 
 The MapBlock file format (sectors2/XXX/ZZZ/YYYY):
+-------------------------------------------------
 
 NOTE: Byte order is MSB first.
 
@@ -70,6 +71,19 @@ u32 timestamp
 - Timestamp when last saved, as seconds from starting the game.
 - 0xffffffff = invalid/unknown timestamp, nothing will be done with the time
                difference when loaded (recommended)
+
+Node metadata format:
+---------------------
+
+Sign metadata:
+  u16 string_len
+  u8[string_len] string
+
+Furnace metadata:
+  TBD
+
+Chest metadata:
+  TBD
 
 // END
 
