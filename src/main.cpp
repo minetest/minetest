@@ -174,6 +174,12 @@ TODO: Better control of draw_control.wanted_max_blocks
 
 TODO: Block mesh generator to tile properly on smooth lighting
 
+TODO: Further investigate the use of GPU lighting in addition to the
+      current one
+
+TODO: Quick drawing of huge distances according to heightmap has to be
+      tested once again.
+
 Configuration:
 --------------
 
