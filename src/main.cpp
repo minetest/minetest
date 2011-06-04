@@ -223,6 +223,8 @@ FIXME: The new optimized map sending doesn't sometimes send enough blocks
 
 * Take player's walking direction into account in GetNextBlocks
 
+TODO: Map saving should be done by EmergeThread
+
 Environment:
 ------------
 

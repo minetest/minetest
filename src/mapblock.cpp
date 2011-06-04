@@ -2450,7 +2450,8 @@ void MapBlock::deSerialize(std::istream &is, u8 version)
 		std::string s = os.str();
 		if(s.size() != nodecount*3)
 			throw SerializationError
-					("MapBlock::deSerialize: invalid format");
+					("MapBlock::deSerialize: decompress resulted in size"
+					" other than nodecount*3");
 
 		// Set contents
 		for(u32 i=0; i<nodecount; i++)
