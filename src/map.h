@@ -41,6 +41,17 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "mapchunk.h"
 #include "nodemetadata.h"
 
+/*
+	Temporarily exposed map generator stuff
+	Should only be used for testing
+*/
+
+double base_rock_level_2d(u64 seed, v2s16 p);
+
+/*
+	MapEditEvent
+*/
+
 #define MAPTYPE_BASE 0
 #define MAPTYPE_SERVER 1
 #define MAPTYPE_CLIENT 2
@@ -591,6 +602,8 @@ public:
 	virtual void PrintInfo(std::ostream &out);
 
 	bool isSavingEnabled(){ return m_map_saving_enabled; }
+
+	u64 getSeed(){ return m_seed; }
 
 private:
 	// Seed used for all kinds of randomness
