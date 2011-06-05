@@ -225,6 +225,9 @@ FIXME: The new optimized map sending doesn't sometimes send enough blocks
 
 TODO: Map saving should be done by EmergeThread
 
+SUGG: Map unloading based on sector reference is not very good, it keeps
+	unnecessary stuff in memory. I guess. Investigate this.
+
 Environment:
 ------------
 
