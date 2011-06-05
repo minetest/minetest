@@ -694,7 +694,7 @@ void ServerEnvironment::step(float dtime)
 			if(block==NULL)
 				continue;
 			
-			// Set current time as timestamp
+			// Set current time as timestamp (and let it set ChangedFlag)
 			block->setTimestamp(m_game_time);
 		}
 
@@ -721,7 +721,7 @@ void ServerEnvironment::step(float dtime)
 			if(m_game_time > stamp && stamp != BLOCK_TIMESTAMP_UNDEFINED)
 				dtime_s = m_game_time - block->getTimestamp();
 
-			// Set current time as timestamp
+			// Set current time as timestamp (and let it set ChangedFlag)
 			block->setTimestamp(m_game_time);
 
 			//dstream<<"Block is "<<dtime_s<<" seconds old."<<std::endl;
@@ -737,6 +737,8 @@ void ServerEnvironment::step(float dtime)
 				event.type = MEET_BLOCK_NODE_METADATA_CHANGED;
 				event.p = p;
 				m_map->dispatchEvent(&event);
+
+				block->setChangedFlag();
 			}
 
 			// TODO: Do something
@@ -790,7 +792,7 @@ void ServerEnvironment::step(float dtime)
 				continue;
 			
 			// Set current time as timestamp
-			block->setTimestamp(m_game_time);
+			block->setTimestampNoChangedFlag(m_game_time);
 
 			// Run node metadata
 			bool changed = block->m_node_metadata.step(dtime);
@@ -800,6 +802,8 @@ void ServerEnvironment::step(float dtime)
 				event.type = MEET_BLOCK_NODE_METADATA_CHANGED;
 				event.p = p;
 				m_map->dispatchEvent(&event);
+
+				block->setChangedFlag();
 			}
 		}
 	}
@@ -821,7 +825,7 @@ void ServerEnvironment::step(float dtime)
 				continue;
 			
 			// Set current time as timestamp
-			block->setTimestamp(m_game_time);
+			block->setTimestampNoChangedFlag(m_game_time);
 
 			/*
 				Do stuff!
@@ -996,49 +1000,8 @@ u16 getFreeServerActiveObjectId(
 u16 ServerEnvironment::addActiveObject(ServerActiveObject *object)
 {
 	assert(object);
-	if(object->getId() == 0)
-	{
-		u16 new_id = getFreeServerActiveObjectId(m_active_objects);
-		if(new_id == 0)
-		{
-			dstream<<"WARNING: ServerEnvironment::addActiveObject(): "
-					<<"no free ids available"<<std::endl;
-			delete object;
-			return 0;
-		}
-		object->setId(new_id);
-	}
-	if(isFreeServerActiveObjectId(object->getId(), m_active_objects) == false)
-	{
-		dstream<<"WARNING: ServerEnvironment::addActiveObject(): "
-				<<"id is not free ("<<object->getId()<<")"<<std::endl;
-		delete object;
-		return 0;
-	}
-	/*dstream<<"INGO: ServerEnvironment::addActiveObject(): "
-			<<"added (id="<<object->getId()<<")"<<std::endl;*/
-			
-	m_active_objects.insert(object->getId(), object);
-
-	// Add static object to active static list of the block
-	v3f objectpos = object->getBasePosition();
-	std::string staticdata = object->getStaticData();
-	StaticObject s_obj(object->getType(), objectpos, staticdata);
-	// Add to the block where the object is located in
-	v3s16 blockpos = getNodeBlockPos(floatToInt(objectpos, BS));
-	MapBlock *block = m_map->getBlockNoCreateNoEx(blockpos);
-	if(block)
-	{
-		block->m_static_objects.m_active.insert(object->getId(), s_obj);
-		object->m_static_exists = true;
-		object->m_static_block = blockpos;
-	}
-	else{
-		dstream<<"WARNING: Server: Could not find a block for "
-				<<"storing newly added static active object"<<std::endl;
-	}
-
-	return object->getId();
+	u16 id = addActiveObjectRaw(object, true);
+	return id;
 }
 
 /*
@@ -1141,6 +1104,58 @@ ActiveObjectMessage ServerEnvironment::getActiveObjectMessage()
 	************ Private methods *************
 */
 
+u16 ServerEnvironment::addActiveObjectRaw(ServerActiveObject *object,
+		bool set_changed)
+{
+	assert(object);
+	if(object->getId() == 0)
+	{
+		u16 new_id = getFreeServerActiveObjectId(m_active_objects);
+		if(new_id == 0)
+		{
+			dstream<<"WARNING: ServerEnvironment::addActiveObjectRaw(): "
+					<<"no free ids available"<<std::endl;
+			delete object;
+			return 0;
+		}
+		object->setId(new_id);
+	}
+	if(isFreeServerActiveObjectId(object->getId(), m_active_objects) == false)
+	{
+		dstream<<"WARNING: ServerEnvironment::addActiveObjectRaw(): "
+				<<"id is not free ("<<object->getId()<<")"<<std::endl;
+		delete object;
+		return 0;
+	}
+	/*dstream<<"INGO: ServerEnvironment::addActiveObjectRaw(): "
+			<<"added (id="<<object->getId()<<")"<<std::endl;*/
+			
+	m_active_objects.insert(object->getId(), object);
+
+	// Add static object to active static list of the block
+	v3f objectpos = object->getBasePosition();
+	std::string staticdata = object->getStaticData();
+	StaticObject s_obj(object->getType(), objectpos, staticdata);
+	// Add to the block where the object is located in
+	v3s16 blockpos = getNodeBlockPos(floatToInt(objectpos, BS));
+	MapBlock *block = m_map->getBlockNoCreateNoEx(blockpos);
+	if(block)
+	{
+		block->m_static_objects.m_active.insert(object->getId(), s_obj);
+		object->m_static_exists = true;
+		object->m_static_block = blockpos;
+
+		if(set_changed)
+			block->setChangedFlag();
+	}
+	else{
+		dstream<<"WARNING: Server: Could not find a block for "
+				<<"storing newly added static active object"<<std::endl;
+	}
+
+	return object->getId();
+}
+
 /*
 	Remove objects that satisfy (m_removed && m_known_by_count==0)
 */
@@ -1231,8 +1246,8 @@ void ServerEnvironment::activateObjects(MapBlock *block)
 			continue;
 		}
 		// This will also add the object to the active static list
-		addActiveObject(obj);
-		//u16 id = addActiveObject(obj);
+		addActiveObjectRaw(obj, false);
+		//u16 id = addActiveObjectRaw(obj, false);
 	}
 	// Clear stored list
 	block->m_static_objects.m_stored.clear();
@@ -1245,7 +1260,8 @@ void ServerEnvironment::activateObjects(MapBlock *block)
 		block->m_static_objects.m_stored.push_back(s_obj);
 	}
 	// Block has been modified
-	block->setChangedFlag();
+	// NOTE: No it has not really. Save I/O here.
+	//block->setChangedFlag();
 }
 
 /*

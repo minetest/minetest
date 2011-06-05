@@ -159,7 +159,7 @@ public:
 	void loadMeta(const std::string &savedir);
 
 	/*
-		ActiveObjects
+		External ActiveObject interface
 		-------------------------------------------
 	*/
 
@@ -198,13 +198,31 @@ public:
 	ActiveObjectMessage getActiveObjectMessage();
 
 	/*
-		ActiveBlockModifiers
+		ActiveBlockModifiers (TODO)
 		-------------------------------------------
 	*/
 
 	void addActiveBlockModifier(ActiveBlockModifier *abm);
 
 private:
+
+	/*
+		Internal ActiveObject interface
+		-------------------------------------------
+	*/
+
+	/*
+		Add an active object to the environment.
+
+		Called by addActiveObject.
+
+		Object may be deleted by environment immediately.
+		If id of object is 0, assigns a free id to it.
+		Returns the id of the object.
+		Returns 0 if not added and thus deleted.
+	*/
+	u16 addActiveObjectRaw(ServerActiveObject *object, bool set_changed);
+	
 	/*
 		Remove all objects that satisfy (m_removed && m_known_by_count==0)
 	*/

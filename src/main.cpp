@@ -297,7 +297,7 @@ SUGG: Erosion simulation at map generation time
 SUGG: Try out the notch way of generating maps, that is, make bunches
       of low-res 3d noise and interpolate linearly.
 
-Mapgen v2:
+Mapgen v2 (the current one):
 * Possibly add some kind of erosion and other stuff
 * Better water generation (spread it to underwater caverns but don't
   fill dungeons that don't touch big water masses)
@@ -306,6 +306,16 @@ Mapgen v2:
   the other chunk making nasty straight walls when the other chunk
   is generated. Fix it. Maybe just a special case if the ground is
   flat?
+* Consider not updating this one and make a good mainly block-based
+  generator
+
+SUGG: Make two "modified states", one that forces the block to be saved at
+	the next save event, and one that makes the block to be saved at exit
+	time.
+
+TODO: Add a not_fully_generated flag to MapBlock, which would be set for
+	blocks that contain eg. trees from neighboring generations but haven't
+	been generated itself. This is required for the future generator.
 
 Misc. stuff:
 ------------

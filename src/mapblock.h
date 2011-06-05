@@ -628,6 +628,10 @@ public:
 		m_timestamp = time;
 		setChangedFlag();
 	}
+	void setTimestampNoChangedFlag(u32 time)
+	{
+		m_timestamp = time;
+	}
 	u32 getTimestamp()
 	{
 		return m_timestamp;

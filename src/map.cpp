@@ -4987,9 +4987,7 @@ void ServerMap::save(bool only_changed)
 	
 	u32 sector_meta_count = 0;
 	u32 block_count = 0;
-	
-	{ //sectorlock
-	//JMutexAutoLock lock(m_sector_mutex); // Bulk comment-out
+	u32 block_count_all = 0; // Number of blocks in memory
 	
 	core::map<v2s16, MapSector*>::Iterator i = m_sectors.getIterator();
 	for(; i.atEnd() == false; i++)
@@ -5008,6 +5006,9 @@ void ServerMap::save(bool only_changed)
 		for(j=blocks.begin(); j!=blocks.end(); j++)
 		{
 			MapBlock *block = *j;
+			
+			block_count_all++;
+
 			if(block->getChangedFlag() || only_changed == false)
 			{
 				saveBlock(block);
@@ -5022,8 +5023,6 @@ void ServerMap::save(bool only_changed)
 		}
 	}
 
-	}//sectorlock
-	
 	/*
 		Only print if something happened or saved whole map
 	*/
@@ -5033,6 +5032,7 @@ void ServerMap::save(bool only_changed)
 		dstream<<DTIME<<"ServerMap: Written: "
 				<<sector_meta_count<<" sector metadata files, "
 				<<block_count<<" block files"
+				<<", "<<block_count_all<<" blocks in memory."
 				<<std::endl;
 	}
 }
