@@ -281,6 +281,17 @@ void init_mapnode()
 	f->solidness = 0; // drawn separately, makes no faces
 	f->air_equivalent = true; // grass grows underneath
 
+	i = CONTENT_RAIL;
+	f = &g_content_features[i];
+	f->setInventoryTexture("rail.png");
+	f->light_propagates = true;
+	f->param_type = CPT_LIGHT;
+	f->is_ground_content = true;
+	f->dug_item = std::string("MaterialItem ")+itos(i)+" 1";
+	f->solidness = 0; // drawn separately, makes no faces
+	f->air_equivalent = true; // grass grows underneath
+	f->walkable = false;
+
 	// Deprecated
 	i = CONTENT_COALSTONE;
 	f = &g_content_features[i];

@@ -3915,6 +3915,26 @@ void Server::UpdateCrafting(u16 peer_id)
 				}
 			}
 
+			// Rail
+			if(!found)
+			{
+				ItemSpec specs[9];
+				specs[0] = ItemSpec(ITEM_CRAFT, "steel_ingot");
+				specs[1] = ItemSpec(ITEM_CRAFT, "Stick");
+				specs[2] = ItemSpec(ITEM_CRAFT, "steel_ingot");
+				specs[3] = ItemSpec(ITEM_CRAFT, "steel_ingot");
+				specs[4] = ItemSpec(ITEM_CRAFT, "Stick");
+				specs[5] = ItemSpec(ITEM_CRAFT, "steel_ingot");
+				specs[6] = ItemSpec(ITEM_CRAFT, "steel_ingot");
+				specs[7] = ItemSpec(ITEM_CRAFT, "Stick");
+				specs[8] = ItemSpec(ITEM_CRAFT, "steel_ingot");
+				if(checkItemCombination(items, specs))
+				{
+					rlist->addItem(new MaterialItem(CONTENT_RAIL, 15));
+					found = true;
+				}
+			}
+
 			// Chest
 			if(!found)
 			{
@@ -4163,6 +4183,7 @@ void setCreativeInventory(Player *player)
 		CONTENT_BOOKSHELF,
 		CONTENT_GLASS,
 		CONTENT_FENCE,
+		CONTENT_RAIL,
 		CONTENT_MESE,
 		CONTENT_WATERSOURCE,
 		CONTENT_CLOUD,

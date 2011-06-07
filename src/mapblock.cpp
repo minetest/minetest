@@ -1672,6 +1672,110 @@ scene::SMesh* makeMapBlockMesh(MeshMakeData *data)
 				collector.append(material_papyrus, vertices, 4, indices, 6);
 			}
 		}
+		else if(n.d == CONTENT_RAIL)
+		{
+			u8 l = decode_light(n.getLightBlend(data->m_daynight_ratio));
+			video::SColor c(255,l,l,l);
+
+			bool is_rail_x [] = { false, false };  /* x-1, x+1 */
+			bool is_rail_z [] = { false, false };  /* z-1, z+1 */
+
+			MapNode n_minus_x = data->m_vmanip.getNodeNoEx(blockpos_nodes + v3s16(x-1,y,z));
+			MapNode n_plus_x = data->m_vmanip.getNodeNoEx(blockpos_nodes + v3s16(x+1,y,z));
+			MapNode n_minus_z = data->m_vmanip.getNodeNoEx(blockpos_nodes + v3s16(x,y,z-1));
+			MapNode n_plus_z = data->m_vmanip.getNodeNoEx(blockpos_nodes + v3s16(x,y,z+1));
+
+			if(n_minus_x.d == CONTENT_RAIL)
+				is_rail_x[0] = true;
+			if(n_plus_x.d == CONTENT_RAIL)
+				is_rail_x[1] = true;
+			if(n_minus_z.d == CONTENT_RAIL)
+				is_rail_z[0] = true;
+			if(n_plus_z.d == CONTENT_RAIL)
+				is_rail_z[1] = true;
+
+			float d = (float)BS/16;
+			video::S3DVertex vertices[4] =
+			{
+				video::S3DVertex(-BS/2,-BS/2+d,-BS/2, 0,0,0, c,
+					0, 1),
+				video::S3DVertex(BS/2,-BS/2+d,-BS/2, 0,0,0, c,
+					1, 1),
+				video::S3DVertex(BS/2,-BS/2+d,BS/2, 0,0,0, c,
+					1, 0),
+				video::S3DVertex(-BS/2,-BS/2+d,BS/2, 0,0,0, c,
+					0, 0),
+			};
+
+			video::SMaterial material_rail;
+			material_rail.setFlag(video::EMF_LIGHTING, false);
+			material_rail.setFlag(video::EMF_BACK_FACE_CULLING, false);
+			material_rail.setFlag(video::EMF_BILINEAR_FILTER, false);
+			material_rail.setFlag(video::EMF_FOG_ENABLE, true);
+			material_rail.MaterialType
+					= video::EMT_TRANSPARENT_ALPHA_CHANNEL_REF;
+
+			int adjacencies = is_rail_x[0] + is_rail_x[1] + is_rail_z[0] + is_rail_z[1];
+
+			// Assign textures
+			if(adjacencies < 2)
+				material_rail.setTexture(0, g_texturesource->getTextureRaw("rail.png"));
+			else if(adjacencies == 2)
+			{
+				if((is_rail_x[0] && is_rail_x[1]) || (is_rail_z[0] && is_rail_z[1]))
+					material_rail.setTexture(0, g_texturesource->getTextureRaw("rail.png"));
+				else
+					material_rail.setTexture(0, g_texturesource->getTextureRaw("rail_curved.png"));
+			}
+			else if(adjacencies == 3)
+				material_rail.setTexture(0, g_texturesource->getTextureRaw("rail_t_junction.png"));
+			else if(adjacencies == 4)
+				material_rail.setTexture(0, g_texturesource->getTextureRaw("rail_crossing.png"));
+
+			// Rotate textures
+			int angle = 0;
+
+			if(adjacencies == 1)
+			{
+				if(is_rail_x[0] || is_rail_x[1])
+					angle = 90;
+			}
+			else if(adjacencies == 2)
+			{
+				if(is_rail_x[0] && is_rail_x[1])
+					angle = 90;
+				else if(is_rail_x[0] && is_rail_z[0])
+					angle = 270;
+				else if(is_rail_x[0] && is_rail_z[1])
+					angle = 180;
+				else if(is_rail_x[1] && is_rail_z[1])
+					angle = 90;
+			}
+			else if(adjacencies == 3)
+			{
+				if(!is_rail_x[0])
+					angle=0;
+				if(!is_rail_x[1])
+					angle=180;
+				if(!is_rail_z[0])
+					angle=90;
+				if(!is_rail_z[1])
+					angle=270;
+			}
+
+			if(angle != 0) {
+				for(u16 i=0; i<4; i++)
+					vertices[i].Pos.rotateXZBy(angle);
+			}
+
+			for(s32 i=0; i<4; i++)
+			{
+				vertices[i].Pos += intToFloat(p + blockpos_nodes, BS);
+			}
+
+			u16 indices[] = {0,1,2,2,3,0};
+			collector.append(material_rail, vertices, 4, indices, 6);
+		}
 
 	}
 
