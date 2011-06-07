@@ -30,6 +30,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "config.h"
 #include "clouds.h"
 #include "keycode.h"
+#include "farmesh.h"
 
 /*
 	Setting this to 1 enables a special camera mode that forces
@@ -595,6 +596,10 @@ void update_skybox(video::IVideoDriver* driver,
 		skybox->remove();
 	}
 	
+	// Disable skybox if FarMesh is enabled
+	if(g_settings.getBool("enable_farmesh"))
+		return;
+	
 	if(brightness >= 0.5)
 	{
 		skybox = smgr->addSkyBoxSceneNode(
@@ -815,8 +820,21 @@ void the_game(
 	
 	float cloud_height = BS*100;
 	Clouds *clouds = NULL;
-	clouds = new Clouds(smgr->getRootSceneNode(), smgr, -1,
-			cloud_height, time(0));
+	if(g_settings.getBool("enable_clouds"))
+	{
+		clouds = new Clouds(smgr->getRootSceneNode(), smgr, -1,
+				cloud_height, time(0));
+	}
+	
+	/*
+		FarMesh
+	*/
+
+	FarMesh *farmesh = NULL;
+	if(g_settings.getBool("enable_farmesh"))
+	{
+		farmesh = new FarMesh(smgr->getRootSceneNode(), smgr, -1, client.getMapSeed());
+	}
 
 	/*
 		Move into game
@@ -1789,6 +1807,16 @@ void the_game(
 					0.05+brightness*0.95);
 		}
 		
+		/*
+			Update farmesh (TODO: Remove from here)
+		*/
+		if(farmesh)
+		{
+			farmesh->step(dtime);
+			farmesh->update(v2f(player_position.X, player_position.Z),
+					0.05+brightness*0.95);
+		}
+		
 		// Store brightness value
 		old_brightness = brightness;
 
@@ -1999,6 +2027,13 @@ void the_game(
 			//driver->beginScene(false, true, bgcolor);
 			beginscenetime = timer.stop(true);
 		}
+		
+		/*
+			Draw farmesh before everything else
+		*/
+		{
+			//farmesh->render();
+		}
 
 		//timer3.stop();
 		
@@ -2131,7 +2166,8 @@ void the_game(
 	/*
 		Drop stuff
 	*/
-	clouds->drop();
+	if(clouds)
+		clouds->drop();
 	
 	/*
 		Draw a "shutting down" screen, which will be shown while the map

@@ -58,6 +58,12 @@
 # Whether to fog out the end of the visible area
 #enable_fog = true
 
+# Enable/disable clouds
+#enable_clouds = true
+
+# Experimental
+#enable_farmesh = false
+
 # Enable a bit lower water surface; disable for speed
 #new_style_water = true
 

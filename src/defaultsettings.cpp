@@ -61,11 +61,12 @@ void set_default_settings()
 	g_settings.setDefault("enable_texture_atlas", "true");
 	g_settings.setDefault("texture_path", "");
 	g_settings.setDefault("video_driver", "opengl");
-	
 	g_settings.setDefault("free_move", "false");
 	g_settings.setDefault("continuous_forward", "false");
 	g_settings.setDefault("fast_move", "false");
 	g_settings.setDefault("invert_mouse", "false");
+	g_settings.setDefault("enable_farmesh", "false");
+	g_settings.setDefault("enable_clouds", "true");
 
 	// Server stuff
 	g_settings.setDefault("enable_experimental", "false");
