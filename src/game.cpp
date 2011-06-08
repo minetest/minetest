@@ -530,6 +530,43 @@ void getPointedNode(Client *client, v3f player_position,
 				}
 			}
 		}
+		else if(n.d == CONTENT_RAIL)
+		{
+			v3s16 dir = unpackDir(n.dir);
+			v3f dir_f = v3f(dir.X, dir.Y, dir.Z);
+			dir_f *= BS/2 - BS/6 - BS/20;
+			v3f cpf = npf + dir_f;
+			f32 distance = (cpf - camera_position).getLength();
+
+			float d = (float)BS/16;
+			v3f vertices[4] =
+			{
+				v3f(BS/2, -BS/2+d, -BS/2),
+				v3f(-BS/2, -BS/2, BS/2),
+			};
+
+			for(s32 i=0; i<2; i++)
+			{
+				vertices[i] += npf;
+			}
+
+			core::aabbox3d<f32> box;
+
+			box = core::aabbox3d<f32>(vertices[0]);
+			box.addInternalPoint(vertices[1]);
+
+			if(distance < mindistance)
+			{
+				if(box.intersectsWithLine(shootline))
+				{
+					nodefound = true;
+					nodepos = np;
+					neighbourpos = np;
+					mindistance = distance;
+					nodehilightbox = box;
+				}
+			}
+		}
 		/*
 			Regular blocks
 		*/
