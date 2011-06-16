@@ -4109,7 +4109,7 @@ MapBlock * ServerMap::generateBlock(
 			if(real_y > surface_y)
 			{
 				// If under water level, it's water
-				if(real_y < WATER_LEVEL)
+				if(real_y <= WATER_LEVEL)
 				{
 					n.d = water_material;
 					n.setLight(LIGHTBANK_DAY,
