@@ -299,7 +299,11 @@ bool FurnaceNodeMetadata::step(float dtime)
 			m_src_time = 0;
 			m_src_totaltime = 0;
 		}
-
+		
+		/*
+			If fuel is burning, increment the burn counters.
+			If item finishes cooking, move it to result.
+		*/
 		if(m_fuel_time < m_fuel_totaltime)
 		{
 			//dstream<<"Furnace is active"<<std::endl;
@@ -318,9 +322,13 @@ bool FurnaceNodeMetadata::step(float dtime)
 			continue;
 		}
 		
+		/*
+			If there is no source item or source item is not cookable, stop loop.
+		*/
 		if(src_item == NULL || m_src_totaltime < 0.001)
 		{
-			continue;
+			m_step_accumulator = 0;
+			break;
 		}
 		
 		//dstream<<"Furnace is out of fuel"<<std::endl;
@@ -360,6 +368,9 @@ bool FurnaceNodeMetadata::step(float dtime)
 		else
 		{
 			//dstream<<"No fuel found"<<std::endl;
+			// No fuel, stop loop.
+			m_step_accumulator = 0;
+			break;
 		}
 	}
 	return changed;
