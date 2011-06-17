@@ -95,7 +95,6 @@ set(minetest_SRCS
 	keycode.cpp
 	clouds.cpp
 	clientobject.cpp
-	guiFurnaceMenu.cpp
 	guiMainMenu.cpp
 	guiMessageMenu.cpp
 	guiTextInputMenu.cpp

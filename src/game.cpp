@@ -25,7 +25,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "guiPasswordChange.h"
 #include "guiInventoryMenu.h"
 #include "guiTextInputMenu.h"
-#include "guiFurnaceMenu.h"
 #include "materials.h"
 #include "config.h"
 #include "clouds.h"
