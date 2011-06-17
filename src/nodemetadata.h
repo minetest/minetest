@@ -69,73 +69,9 @@ private:
 	static core::map<u16, Factory> m_types;
 };
 
-class SignNodeMetadata : public NodeMetadata
-{
-public:
-	SignNodeMetadata(std::string text);
-	//~SignNodeMetadata();
-	
-	virtual u16 typeId() const;
-	static NodeMetadata* create(std::istream &is);
-	virtual NodeMetadata* clone();
-	virtual void serializeBody(std::ostream &os);
-	virtual std::string infoText();
-
-	std::string getText(){ return m_text; }
-	void setText(std::string t){ m_text = t; }
-
-private:
-	std::string m_text;
-};
-
-class ChestNodeMetadata : public NodeMetadata
-{
-public:
-	ChestNodeMetadata();
-	~ChestNodeMetadata();
-	
-	virtual u16 typeId() const;
-	static NodeMetadata* create(std::istream &is);
-	virtual NodeMetadata* clone();
-	virtual void serializeBody(std::ostream &os);
-	virtual std::string infoText();
-	virtual Inventory* getInventory() {return m_inventory;}
-
-	virtual bool nodeRemovalDisabled();
-	
-private:
-	Inventory *m_inventory;
-};
-
-class FurnaceNodeMetadata : public NodeMetadata
-{
-public:
-	FurnaceNodeMetadata();
-	~FurnaceNodeMetadata();
-	
-	virtual u16 typeId() const;
-	virtual NodeMetadata* clone();
-	static NodeMetadata* create(std::istream &is);
-	virtual void serializeBody(std::ostream &os);
-	virtual std::string infoText();
-	virtual Inventory* getInventory() {return m_inventory;}
-	virtual void inventoryModified();
-	virtual bool step(float dtime);
-
-private:
-	Inventory *m_inventory;
-	float m_step_accumulator;
-	float m_fuel_totaltime;
-	float m_fuel_time;
-	float m_src_totaltime;
-	float m_src_time;
-};
-
 /*
 	List of metadata of all the nodes of a block
 */
-
-class InventoryManager;
 
 class NodeMetadataList
 {

@@ -22,7 +22,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "content_mapnode.h"
 #include "mapnode.h"
-#include "nodemetadata.h"
+#include "content_nodemeta.h"
 
 // TODO: Get rid of these and set up some attributes like toughness,
 //       fluffyness, and a funciton to calculate time and durability loss

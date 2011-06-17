@@ -50,6 +50,8 @@ configure_file(
 )
 
 set(common_SRCS
+	content_nodemeta.cpp
+	content_craft.cpp
 	content_mapblock.cpp
 	content_mapnode.cpp
 	auth.cpp

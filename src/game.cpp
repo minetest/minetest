@@ -34,6 +34,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 // TODO: Move content-aware stuff to separate file
 #include "content_mapnode.h"
+#include "content_nodemeta.h"
 
 /*
 	Setting this to 1 enables a special camera mode that forces
@@ -1730,7 +1731,11 @@ void the_game(
 					dstream<<"Chest node right-clicked"<<std::endl;
 					
 					//ChestNodeMetadata *chestmeta = (ChestNodeMetadata*)meta;
-
+					
+					/*
+						Construct the unique identification string of this
+						chest's inventory
+					*/
 					std::string chest_inv_id;
 					chest_inv_id += "nodemeta:";
 					chest_inv_id += itos(nodepos.X);
@@ -1738,7 +1743,11 @@ void the_game(
 					chest_inv_id += itos(nodepos.Y);
 					chest_inv_id += ",";
 					chest_inv_id += itos(nodepos.Z);
-					
+
+					/*
+						Create a menu with the player's inventory and the
+						chest's inventory
+					*/
 					GUIInventoryMenu *menu =
 						new GUIInventoryMenu(guienv, guiroot, -1,
 							&g_menumgr, v2s16(8,9),
