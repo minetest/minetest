@@ -33,10 +33,15 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "voxel.h"
 #include "nodemetadata.h"
 #include "staticobject.h"
+#include "mapblock_nodemod.h"
+#ifndef SERVER
+	#include "mapblock_mesh.h"
+#endif
+
 
 #define BLOCK_TIMESTAMP_UNDEFINED 0xffffffff
 
-// Named by looking towards z+
+/*// Named by looking towards z+
 enum{
 	FACE_BACK=0,
 	FACE_TOP,
@@ -44,103 +49,7 @@ enum{
 	FACE_FRONT,
 	FACE_BOTTOM,
 	FACE_LEFT
-};
-
-struct FastFace
-{
-	TileSpec tile;
-	video::S3DVertex vertices[4]; // Precalculated vertices
-};
-
-enum NodeModType
-{
-	NODEMOD_NONE,
-	NODEMOD_CHANGECONTENT, //param is content id
-	NODEMOD_CRACK // param is crack progression
-};
-
-struct NodeMod
-{
-	NodeMod(enum NodeModType a_type=NODEMOD_NONE, u16 a_param=0)
-	{
-		type = a_type;
-		param = a_param;
-	}
-	bool operator==(const NodeMod &other)
-	{
-		return (type == other.type && param == other.param);
-	}
-	enum NodeModType type;
-	u16 param;
-};
-
-class NodeModMap
-{
-public:
-	/*
-		returns true if the mod was different last time
-	*/
-	bool set(v3s16 p, const NodeMod &mod)
-	{
-		// See if old is different, cancel if it is not different.
-		core::map<v3s16, NodeMod>::Node *n = m_mods.find(p);
-		if(n)
-		{
-			NodeMod old = n->getValue();
-			if(old == mod)
-				return false;
-
-			n->setValue(mod);
-		}
-		else
-		{
-			m_mods.insert(p, mod);
-		}
-		
-		return true;
-	}
-	// Returns true if there was one
-	bool get(v3s16 p, NodeMod *mod)
-	{
-		core::map<v3s16, NodeMod>::Node *n;
-		n = m_mods.find(p);
-		if(n == NULL)
-			return false;
-		if(mod)
-			*mod = n->getValue();
-		return true;
-	}
-	bool clear(v3s16 p)
-	{
-		if(m_mods.find(p))
-		{
-			m_mods.remove(p);
-			return true;
-		}
-		return false;
-	}
-	bool clear()
-	{
-		if(m_mods.size() == 0)
-			return false;
-		m_mods.clear();
-		return true;
-	}
-	void copy(NodeModMap &dest)
-	{
-		dest.m_mods.clear();
-
-		for(core::map<v3s16, NodeMod>::Iterator
-				i = m_mods.getIterator();
-				i.atEnd() == false; i++)
-		{
-			dest.m_mods.insert(i.getNode()->getKey(), i.getNode()->getValue());
-		}
-	}
-
-private:
-	core::map<v3s16, NodeMod> m_mods;
-};
+};*/
 
 enum
 {
@@ -169,35 +78,6 @@ public:
 		}
 	}
 };
-
-/*
-	Mesh making stuff
-*/
-
-class MapBlock;
-
-#ifndef SERVER
-
-struct MeshMakeData
-{
-	u32 m_daynight_ratio;
-	NodeModMap m_temp_mods;
-	VoxelManipulator m_vmanip;
-	v3s16 m_blockpos;
-	
-	/*
-		Copy central data directly from block, and other data from
-		parent of block.
-	*/
-	void fill(u32 daynight_ratio, MapBlock *block);
-};
-
-scene::SMesh* makeMapBlockMesh(MeshMakeData *data);
-
-#endif
-
-u8 getFaceLight(u32 daynight_ratio, MapNode n, MapNode n2,
-		v3s16 face_dir);
 
 /*
 	MapBlock itself
@@ -474,8 +354,7 @@ public:
 	
 	// See comments in mapblock.cpp
 	bool propagateSunlight(core::map<v3s16, bool> & light_sources,
-			bool remove_light=false, bool *black_air_left=NULL,
-			bool grow_grass=false);
+			bool remove_light=false, bool *black_air_left=NULL);
 	
 	// Copies data to VoxelManipulator to getPosRelative()
 	void copyTo(VoxelManipulator &dst);

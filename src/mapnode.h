@@ -648,7 +648,24 @@ struct MapNode
 	}
 };
 
+/*
+	Gets lighting value at face of node
+	
+	Parameters must consist of air and !air.
+	Order doesn't matter.
 
+	If either of the nodes doesn't exist, light is 0.
+	
+	parameters:
+		daynight_ratio: 0...1000
+		n: getNodeParent(p)
+		n2: getNodeParent(p + face_dir)
+		face_dir: axis oriented unit vector from p to p2
+	
+	returns encoded light value.
+*/
+u8 getFaceLight(u32 daynight_ratio, MapNode n, MapNode n2,
+		v3s16 face_dir);
 
 #endif
 

@@ -4829,7 +4829,7 @@ MapBlock * ServerMap::emergeBlock(
 		bool black_air_left = false;
 		bool bottom_invalid =
 				block->propagateSunlight(light_sources, true,
-				&black_air_left, true);
+				&black_air_left);
 
 		// If sunlight didn't reach everywhere and part of block is
 		// above ground, lighting has to be properly updated

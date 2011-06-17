@@ -50,6 +50,7 @@ configure_file(
 )
 
 set(common_SRCS
+	content_mapblock.cpp
 	content_mapnode.cpp
 	auth.cpp
 	collision.cpp
@@ -86,6 +87,7 @@ set(common_SRCS
 # Client sources
 set(minetest_SRCS
 	${common_SRCS}
+	mapblock_mesh.cpp
 	farmesh.cpp
 	keycode.cpp
 	clouds.cpp

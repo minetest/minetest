@@ -230,4 +230,54 @@ u8 MapNode::getMineral()
 	return MINERAL_NONE;
 }
 
+/*
+	Gets lighting value at face of node
+	
+	Parameters must consist of air and !air.
+	Order doesn't matter.
+
+	If either of the nodes doesn't exist, light is 0.
+	
+	parameters:
+		daynight_ratio: 0...1000
+		n: getNodeParent(p)
+		n2: getNodeParent(p + face_dir)
+		face_dir: axis oriented unit vector from p to p2
+	
+	returns encoded light value.
+*/
+u8 getFaceLight(u32 daynight_ratio, MapNode n, MapNode n2,
+		v3s16 face_dir)
+{
+	try{
+		u8 light;
+		u8 l1 = n.getLightBlend(daynight_ratio);
+		u8 l2 = n2.getLightBlend(daynight_ratio);
+		if(l1 > l2)
+			light = l1;
+		else
+			light = l2;
+
+		// Make some nice difference to different sides
+
+		// This makes light come from a corner
+		/*if(face_dir.X == 1 || face_dir.Z == 1 || face_dir.Y == -1)
+			light = diminish_light(diminish_light(light));
+		else if(face_dir.X == -1 || face_dir.Z == -1)
+			light = diminish_light(light);*/
+		
+		// All neighboring faces have different shade (like in minecraft)
+		if(face_dir.X == 1 || face_dir.X == -1 || face_dir.Y == -1)
+			light = diminish_light(diminish_light(light));
+		else if(face_dir.Z == 1 || face_dir.Z == -1)
+			light = diminish_light(light);
+
+		return light;
+	}
+	catch(InvalidPositionException &e)
+	{
+		return 0;
+	}
+}
+
 
