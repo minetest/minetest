@@ -50,6 +50,7 @@ configure_file(
 )
 
 set(common_SRCS
+	content_inventory.cpp
 	content_nodemeta.cpp
 	content_craft.cpp
 	content_mapblock.cpp
