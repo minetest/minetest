@@ -109,6 +109,13 @@ bool ChestNodeMetadata::nodeRemovalDisabled()
 		return false;
 	return true;
 }
+std::string ChestNodeMetadata::getInventoryDrawSpecString()
+{
+	return
+		"invsize[8,9;]"
+		"list[current_name;0;0,0;8,4;]"
+		"list[current_player;main;0,5;8,4;]";
+}
 
 /*
 	FurnaceNodeMetadata
@@ -300,6 +307,15 @@ bool FurnaceNodeMetadata::step(float dtime)
 		}
 	}
 	return changed;
+}
+std::string FurnaceNodeMetadata::getInventoryDrawSpecString()
+{
+	return
+		"invsize[8,9;]"
+		"list[current_name;fuel;2,4;1,1;]"
+		"list[current_name;src;2,1;1,1;]"
+		"list[current_name;dst;5,1;2,2;]"
+		"list[current_player;main;0,5;8,4;]";
 }
 
 

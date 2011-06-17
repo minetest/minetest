@@ -1709,7 +1709,41 @@ void the_game(
 			{
 				std::cout<<DTIME<<"Ground right-clicked"<<std::endl;
 				
-				if(meta && meta->typeId() == CONTENT_SIGN_WALL && !random_input)
+				// If metadata provides an inventory view, activate it
+				if(meta && meta->getInventoryDrawSpecString() != "" && !random_input)
+				{
+					dstream<<DTIME<<"Launching custom inventory view"<<std::endl;
+					/*
+						Construct the unique identification string of the node
+					*/
+					std::string current_name;
+					current_name += "nodemeta:";
+					current_name += itos(nodepos.X);
+					current_name += ",";
+					current_name += itos(nodepos.Y);
+					current_name += ",";
+					current_name += itos(nodepos.Z);
+					
+					/*
+						Create menu
+					*/
+
+					core::array<GUIInventoryMenu::DrawSpec> draw_spec;
+					v2s16 invsize =
+						GUIInventoryMenu::makeDrawSpecArrayFromString(
+							draw_spec,
+							meta->getInventoryDrawSpecString(),
+							current_name);
+
+					GUIInventoryMenu *menu =
+						new GUIInventoryMenu(guienv, guiroot, -1,
+							&g_menumgr, invsize,
+							client.getInventoryContext(),
+							&client);
+					menu->setDrawSpec(draw_spec);
+					menu->drop();
+				}
+				else if(meta && meta->typeId() == CONTENT_SIGN_WALL && !random_input)
 				{
 					dstream<<"Sign node right-clicked"<<std::endl;
 					
@@ -1725,59 +1759,6 @@ void the_game(
 					(new GUITextInputMenu(guienv, guiroot, -1,
 							&g_menumgr, dest,
 							wtext))->drop();
-				}
-				else if(meta && meta->typeId() == CONTENT_CHEST && !random_input)
-				{
-					dstream<<"Chest node right-clicked"<<std::endl;
-					
-					//ChestNodeMetadata *chestmeta = (ChestNodeMetadata*)meta;
-					
-					/*
-						Construct the unique identification string of this
-						chest's inventory
-					*/
-					std::string chest_inv_id;
-					chest_inv_id += "nodemeta:";
-					chest_inv_id += itos(nodepos.X);
-					chest_inv_id += ",";
-					chest_inv_id += itos(nodepos.Y);
-					chest_inv_id += ",";
-					chest_inv_id += itos(nodepos.Z);
-
-					/*
-						Create a menu with the player's inventory and the
-						chest's inventory
-					*/
-					GUIInventoryMenu *menu =
-						new GUIInventoryMenu(guienv, guiroot, -1,
-							&g_menumgr, v2s16(8,9),
-							client.getInventoryContext(),
-							&client);
-
-					core::array<GUIInventoryMenu::DrawSpec> draw_spec;
-					
-					draw_spec.push_back(GUIInventoryMenu::DrawSpec(
-							"list", chest_inv_id, "0",
-							v2s32(0, 0), v2s32(8, 4)));
-					draw_spec.push_back(GUIInventoryMenu::DrawSpec(
-							"list", "current_player", "main",
-							v2s32(0, 5), v2s32(8, 4)));
-
-					menu->setDrawSpec(draw_spec);
-
-					menu->drop();
-
-				}
-				else if(meta && meta->typeId() == CONTENT_FURNACE && !random_input)
-				{
-					dstream<<"Furnace node right-clicked"<<std::endl;
-					
-					GUIFurnaceMenu *menu =
-						new GUIFurnaceMenu(guienv, guiroot, -1,
-							&g_menumgr, nodepos, &client);
-
-					menu->drop();
-
 				}
 				else
 				{

@@ -55,8 +55,8 @@ public:
 	virtual void serializeBody(std::ostream &os);
 	virtual std::string infoText();
 	virtual Inventory* getInventory() {return m_inventory;}
-
 	virtual bool nodeRemovalDisabled();
+	virtual std::string getInventoryDrawSpecString();
 	
 private:
 	Inventory *m_inventory;
@@ -76,6 +76,7 @@ public:
 	virtual Inventory* getInventory() {return m_inventory;}
 	virtual void inventoryModified();
 	virtual bool step(float dtime);
+	virtual std::string getInventoryDrawSpecString();
 
 private:
 	Inventory *m_inventory;

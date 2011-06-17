@@ -62,6 +62,9 @@ public:
 	// A step in time. Returns true if metadata changed.
 	virtual bool step(float dtime) {return false;}
 	virtual bool nodeRemovalDisabled(){return false;}
+	// Used to make custom inventory menus.
+	// See format in guiInventoryMenu.cpp.
+	virtual std::string getInventoryDrawSpecString(){return "";}
 
 protected:
 	static void registerType(u16 id, Factory f);

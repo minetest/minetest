@@ -335,6 +335,9 @@ Misc. stuff:
 - Finish the ActiveBlockModifier stuff and use it for something
 - Move mineral to param2, increment map serialization version, add conversion
 
+TODO: Create a common interface-whatever-thing to implement custom
+      special blocks with an inventory menu
+
 Making it more portable:
 ------------------------
  
