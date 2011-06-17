@@ -152,7 +152,7 @@ int main(int argc, char *argv[])
 	DSTACK(__FUNCTION_NAME);
 
 	// Init material properties table
-	initializeMaterialProperties();
+	//initializeMaterialProperties();
 
 	// Debug handler
 	BEGIN_DEBUG_EXCEPTION_HANDLER

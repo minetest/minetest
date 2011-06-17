@@ -19,10 +19,9 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "voxel.h"
 #include "map.h"
-
-// For TimeTaker
-#include "utility.h"
+#include "utility.h" // For TimeTaker
 #include "gettime.h"
+#include "content_mapnode.h"
 
 /*
 	Debug stuff

@@ -30,6 +30,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "voxel.h"
 #include <sstream>
 #include "porting.h"
+#include "content_mapnode.h"
 
 /*
 	Asserts that the exception occurs

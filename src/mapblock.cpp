@@ -24,6 +24,9 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "light.h"
 #include <sstream>
 
+// TODO: Move content-aware mesh generation to a separate file
+#include "content_mapnode.h"
+
 #ifndef SERVER
 void MeshMakeData::fill(u32 daynight_ratio, MapBlock *block)
 {

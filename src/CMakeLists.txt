@@ -50,6 +50,7 @@ configure_file(
 )
 
 set(common_SRCS
+	content_mapnode.cpp
 	auth.cpp
 	collision.cpp
 	nodemetadata.cpp

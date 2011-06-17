@@ -32,6 +32,9 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "keycode.h"
 #include "farmesh.h"
 
+// TODO: Move content-aware stuff to separate file
+#include "content_mapnode.h"
+
 /*
 	Setting this to 1 enables a special camera mode that forces
 	the renderers to think that the camera statically points from

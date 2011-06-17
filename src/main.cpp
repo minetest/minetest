@@ -228,6 +228,12 @@ TODO: Map saving should be done by EmergeThread
 SUGG: Map unloading based on sector reference is not very good, it keeps
 	unnecessary stuff in memory. I guess. Investigate this.
 
+TODO: FIXME: Make furnaces handle long step() times better; now a 10-day
+	dtime for a bunch of furnaces will take ages
+
+TODO: When block is placed and it has param_type==CPT_FACEDIR_SIMPLE, set
+      the direction accordingly.
+
 Environment:
 ------------
 
@@ -1143,7 +1149,7 @@ int main(int argc, char *argv[])
 	fs::CreateDir(porting::path_userdata);
 	
 	// Init material properties table
-	initializeMaterialProperties();
+	//initializeMaterialProperties();
 
 	// Debug handler
 	BEGIN_DEBUG_EXCEPTION_HANDLER
@@ -1414,7 +1420,6 @@ int main(int argc, char *argv[])
 		Preload some textures and stuff
 	*/
 
-	init_content_inventory_texture_paths();
 	init_mapnode(); // Second call with g_texturesource set
 	init_mineral();
 

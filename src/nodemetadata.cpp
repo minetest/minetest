@@ -23,6 +23,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "exceptions.h"
 #include "inventory.h"
 #include <sstream>
+#include "content_mapnode.h"
 
 /*
 	NodeMetadata

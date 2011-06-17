@@ -25,7 +25,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 */
 
 #include "common_irrlicht.h"
-#include "inventory.h"
 #include <string>
 
 struct DiggingProperties
@@ -49,20 +48,26 @@ struct DiggingProperties
 	u16 wear;
 };
 
-class MaterialProperties
+/*
+	This is a DEPRECATED way of determining mining characteristics.
+	TODO: Get rid of this and set up some attributes like toughness,
+	      fluffyness, and a funciton to calculate time and durability loss
+	      (and sound? and whatever else) from them
+*/
+class DiggingPropertiesList
 {
 public:
-	MaterialProperties()
+	DiggingPropertiesList()
 	{
 	}
 
-	void setDiggingProperties(const std::string toolname,
+	void set(const std::string toolname,
 			const DiggingProperties &prop)
 	{
 		m_digging_properties[toolname] = prop;
 	}
 
-	DiggingProperties getDiggingProperties(const std::string toolname)
+	DiggingProperties get(const std::string toolname)
 	{
 		core::map<std::string, DiggingProperties>::Node *n;
 		n = m_digging_properties.find(toolname);
@@ -80,16 +85,17 @@ public:
 		return n->getValue();
 	}
 
+	void clear()
+	{
+		m_digging_properties.clear();
+	}
+
 private:
 	// toolname="": default properties (digging by hand)
 	// Key is toolname
 	core::map<std::string, DiggingProperties> m_digging_properties;
 };
 
-void initializeMaterialProperties();
-
-// Material correspond to the CONTENT_* constants
-MaterialProperties * getMaterialProperties(u8 material);
 // For getting the default properties, set tool=""
 DiggingProperties getDiggingProperties(u8 material, const std::string &tool);
 

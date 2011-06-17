@@ -31,6 +31,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "config.h"
 #include "servercommand.h"
 #include "filesys.h"
+#include "content_mapnode.h"
 
 #define BLOCK_EMERGE_FLAG_FROMDISK (1<<0)
 

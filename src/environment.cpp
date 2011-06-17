@@ -21,6 +21,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "filesys.h"
 #include "porting.h"
 #include "collision.h"
+#include "content_mapnode.h"
 
 
 Environment::Environment():
