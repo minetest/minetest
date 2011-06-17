@@ -40,6 +40,8 @@ void set_default_settings()
 	g_settings.setDefault("keymap_inventory", "KEY_KEY_I");
 	g_settings.setDefault("keymap_chat", "KEY_KEY_T");
 	g_settings.setDefault("keymap_rangeselect", "KEY_KEY_R");
+	g_settings.setDefault("keymap_freemove", "KEY_KEY_K");
+	g_settings.setDefault("keymap_fastmove", "KEY_KEY_J");
 	// Some (temporary) keys for debugging
 	g_settings.setDefault("keymap_special1", "KEY_KEY_E");
 	g_settings.setDefault("keymap_print_debug_stacks", "KEY_KEY_P");

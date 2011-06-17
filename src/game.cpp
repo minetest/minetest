@@ -1190,6 +1190,32 @@ void the_game(
 					&g_menumgr, dest,
 					L""))->drop();
 		}
+		else if(input->wasKeyDown(getKeySetting("keymap_freemove")))
+		{
+			if(g_settings.getBool("free_move"))
+			{
+				g_settings.set("free_move","false");
+				chat_lines.push_back(ChatLine(L"free_move disabled"));
+			}
+			else
+			{
+				g_settings.set("free_move","true");
+				chat_lines.push_back(ChatLine(L"free_move enabled"));
+			}
+		}
+		else if(input->wasKeyDown(getKeySetting("keymap_fastmove")))
+		{
+			if(g_settings.getBool("fast_move"))
+			{
+				g_settings.set("fast_move","false");
+				chat_lines.push_back(ChatLine(L"fast_move disabled"));
+			}
+			else
+			{
+				g_settings.set("fast_move","true");
+				chat_lines.push_back(ChatLine(L"fast_move enabled"));
+			}
+		}
 
 		// Item selection with mouse wheel
 		{
