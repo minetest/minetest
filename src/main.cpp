@@ -89,6 +89,17 @@ SUGG: Make a system for pregenerating quick information for mapblocks, so
 	  that the client can show them as cubes before they are actually sent
 	  or even generated.
 
+SUGG: Erosion simulation at map generation time
+	- Simulate water flows, which would carve out dirt fast and
+	  then turn stone into gravel and sand and relocate it.
+	- How about relocating minerals, too? Coal and gold in
+	  downstream sand and gravel would be kind of cool
+	  - This would need a better way of handling minerals, mainly
+		to have mineral content as a separate field. the first
+		parameter field is free for this.
+	- Simulate rock falling from cliffs when water has removed
+	  enough solid rock from the bottom
+
 Gaming ideas:
 -------------
 
@@ -172,13 +183,8 @@ TODO: A setting for enabling bilinear filtering for textures
 
 TODO: Better control of draw_control.wanted_max_blocks
 
-TODO: Block mesh generator to tile properly on smooth lighting
-
 TODO: Further investigate the use of GPU lighting in addition to the
       current one
-
-TODO: Quick drawing of huge distances according to heightmap has to be
-      tested once again.
 
 Configuration:
 --------------
@@ -204,6 +210,9 @@ TODO: Don't update all meshes always on single node changes, but
 
 FIXME: When disconnected to the menu, memory is not freed properly
 
+TODO: Investigate how much the mesh generator thread gets used when
+      transferring map data
+
 Server:
 -------
 
@@ -220,16 +229,12 @@ FIXME: Server sometimes goes into some infinite PeerNotFoundException loop
 
 FIXME: The new optimized map sending doesn't sometimes send enough blocks
        from big caves and such
-
-* Take player's walking direction into account in GetNextBlocks
+FIXME: Block send distance configuration does not take effect for some reason
 
 TODO: Map saving should be done by EmergeThread
 
 SUGG: Map unloading based on sector reference is not very good, it keeps
 	unnecessary stuff in memory. I guess. Investigate this.
-
-TODO: FIXME: Make furnaces handle long step() times better; now a 10-day
-	dtime for a bunch of furnaces will take ages
 
 TODO: When block is placed and it has param_type==CPT_FACEDIR_SIMPLE, set
       the direction accordingly.
@@ -237,7 +242,7 @@ TODO: When block is placed and it has param_type==CPT_FACEDIR_SIMPLE, set
 Environment:
 ------------
 
-TODO: A list of "active blocks" in which stuff happens.
+TODO: A list of "active blocks" in which stuff happens. (+=done)
 	+ Add a never-resetted game timer to the server
 	+ Add a timestamp value to blocks
 	+ The simple rule: All blocks near some player are "active"
@@ -288,20 +293,10 @@ Map:
 TODO: Mineral and ground material properties
       - This way mineral ground toughness can be calculated with just
 	    some formula, as well as tool strengths
+	  - There are TODOs in appropriate files: material.h, content_mapnode.h
 
 TODO: Flowing water to actually contain flow direction information
       - There is a space for this - it just has to be implemented.
-
-SUGG: Erosion simulation at map generation time
-	- Simulate water flows, which would carve out dirt fast and
-	  then turn stone into gravel and sand and relocate it.
-	- How about relocating minerals, too? Coal and gold in
-	  downstream sand and gravel would be kind of cool
-	  - This would need a better way of handling minerals, mainly
-		to have mineral content as a separate field. the first
-		parameter field is free for this.
-	- Simulate rock falling from cliffs when water has removed
-	  enough solid rock from the bottom
 
 SUGG: Try out the notch way of generating maps, that is, make bunches
       of low-res 3d noise and interpolate linearly.
@@ -328,8 +323,17 @@ TODO: Add a not_fully_generated flag to MapBlock, which would be set for
 
 Misc. stuff:
 ------------
-* Move digging property stuff from material.{h,cpp} to mapnode.cpp
-  - ...Or maybe move content_features to material.{h,cpp}?
+- Make sure server handles removing grass when a block is placed (etc)
+    - The client should not do it by itself
+- Block cube placement around player's head
+- Protocol version field
+- Consider getting some textures from cisoun's texture pack
+	- Ask from Cisoun
+- Make sure the fence implementation and data format is good
+	- Think about using same bits for material for fences and doors, for
+	example
+- Finish the ActiveBlockModifier stuff and use it for something
+- Move mineral to param2, increment map serialization version, add conversion
 
 Making it more portable:
 ------------------------
@@ -342,17 +346,6 @@ Fixes to the current release:
 
 Stuff to do after release:
 ---------------------------
-- Make sure server handles removing grass when a block is placed (etc)
-    - The client should not do it by itself
-- Block cube placement around player's head
-- Protocol version field
-- Consider getting some textures from cisoun's texture pack
-	- Ask from Cisoun
-- Make sure the fence implementation and data format is good
-	- Think about using same bits for material for fences and doors, for
-	example
-- Finish the ActiveBlockModifier stuff and use it for something
-- Move mineral to param2, increment map serialization version, add conversion
 
 ======================================================================
 

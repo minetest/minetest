@@ -49,7 +49,7 @@ struct DiggingProperties
 };
 
 /*
-	This is a DEPRECATED way of determining mining characteristics.
+	This is a bad way of determining mining characteristics.
 	TODO: Get rid of this and set up some attributes like toughness,
 	      fluffyness, and a funciton to calculate time and durability loss
 	      (and sound? and whatever else) from them
