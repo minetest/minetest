@@ -2700,7 +2700,7 @@ void makeChunk(ChunkMakeData *data)
 
 		// Randomize mineral
 		u8 mineral;
-		if(myrand()%3 != 0)
+		if(myrand()%4 != 0 || (orp.Y + of.Y) > 10)
 			mineral = MINERAL_COAL;
 		else
 			mineral = MINERAL_IRON;
@@ -4545,8 +4545,7 @@ continue_generating:
 		/*
 			Add iron
 		*/
-		//TODO: change to iron_amount or whatever
-		u16 iron_amount = 15;
+		u16 iron_amount = 8;
 		u16 iron_rareness = 60 / iron_amount;
 		if(iron_rareness == 0)
 			iron_rareness = 1;
