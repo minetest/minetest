@@ -39,9 +39,11 @@ void * MeshUpdateThread::Thread()
 		QueuedMeshUpdate *q = m_queue_in.pop();
 		if(q == NULL)
 		{
-			sleep_ms(50);
+			sleep_ms(3);
 			continue;
 		}
+
+		ScopeProfiler sp(&g_profiler, "mesh make");
 
 		scene::SMesh *mesh_new = NULL;
 		mesh_new = makeMapBlockMesh(q->data);
