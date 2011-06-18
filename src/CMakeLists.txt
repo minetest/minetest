@@ -35,13 +35,24 @@ else()
 		find_package(JPEG REQUIRED)
 		find_package(BZip2 REQUIRED)
 		find_package(PNG REQUIRED)
+		if(APPLE)
+			FIND_LIBRARY(CARBON_LIB Carbon)
+			FIND_LIBRARY(COCOA_LIB Cocoa)
+			FIND_LIBRARY(IOKIT_LIB IOKit)
+			mark_as_advanced(
+				CARBON_LIB
+				COCOA_LIB
+				IOKIT_LIB
+			)
+			SET(CLIENT_PLATFORM_LIBS ${CLIENT_PLATFORM_LIBS} ${CARBON_LIB} ${COCOA_LIB} ${IOKIT_LIB})
+		endif(APPLE)
 	endif(BUILD_CLIENT)
 	find_package(ZLIB REQUIRED)
 	set(PLATFORM_LIBS -lpthread)
 	#set(CLIENT_PLATFORM_LIBS -lXxf86vm)
 	# This way Xxf86vm is found on OpenBSD too
 	find_library(XXF86VM_LIBRARY Xxf86vm)
-	set(CLIENT_PLATFORM_LIBS ${XXF86VM_LIBRARY})
+	set(CLIENT_PLATFORM_LIBS ${CLIENT_PLATFORM_LIBS} ${XXF86VM_LIBRARY})
 endif()
 
 configure_file(
@@ -180,9 +191,18 @@ else()
 	else()
 		set(RELEASE_WARNING_FLAGS "")
 	endif()
+	
+	if(NOT APPLE)
+		set(WARNING_FLAGS "${WARNING_FLAGS} -Wno-unused-but-set-variable")
+	endif()
+	
+	if(APPLE)
+		set(CMAKE_OSX_ARCHITECTURES i386 CACHE STRING "do not build for 64-bit" FORCE)
+		set(ARCH i386)
+	endif()
 
-	set(CMAKE_CXX_FLAGS_RELEASE "-DNDEBUG ${RELEASE_WARNING_FLAGS} -Wno-unused-but-set-variable -O3 -ffast-math -Wall -fomit-frame-pointer -pipe -funroll-loops")
-	set(CMAKE_CXX_FLAGS_DEBUG "-g -O1 -Wall -Wno-unused-but-set-variable")
+	set(CMAKE_CXX_FLAGS_RELEASE "-DNDEBUG ${RELEASE_WARNING_FLAGS} ${WARNING_FLAGS} -O3 -ffast-math -Wall -fomit-frame-pointer -pipe -funroll-loops")
+	set(CMAKE_CXX_FLAGS_DEBUG "-g -O1 -Wall ${WARNING_FLAGS}")
 
 	if(USE_GPROF)
 		set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -pg")
