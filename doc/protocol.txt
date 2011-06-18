@@ -25,8 +25,20 @@ Initialization:
 		u32 protocol_id = PROTOCOL_ID = 0x4f457403
 		u16 sender_peer_id = PEER_ID_INEXISTENT = 0
 		u8 channel = 0
+		# Reliable packet header
+		u8 type = TYPE_RELIABLE = 3
+		u16 seqnum = SEQNUM_INITIAL = 6550
 		# Control packet header
 		u8 type = TYPE_CONTROL = 0
 		u8 controltype = CONTROLTYPE_SET_PEER_ID = 1
 		u16 peer_id_new = assigned peer id to client (other than 0 or 1)
+- Then the connection can be disconnected by sending:
+	- Packet content:
+		# Basic header
+		u32 protocol_id = PROTOCOL_ID = 0x4f457403
+		u16 sender_peer_id = whatever was gotten in CONTROLTYPE_SET_PEER_ID
+		u8 channel = 0
+		# Control packet header
+		u8 type = TYPE_CONTROL = 0
+		u8 controltype = CONTROLTYPE_DISCO = 2
 
