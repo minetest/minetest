@@ -362,7 +362,7 @@ void draw_hotbar(video::IVideoDriver *driver, gui::IGUIFont *font,
 				core::rect<s32>(core::position2d<s32>(0,0),
 				core::dimension2di(heart_texture->getOriginalSize())),
 				NULL, colors, true);
-			p += v2s32(20,0);
+			p += v2s32(16,0);
 		}
 		if(halfheartcount % 2 == 1)
 		{
@@ -375,7 +375,7 @@ void draw_hotbar(video::IVideoDriver *driver, gui::IGUIFont *font,
 			driver->draw2DImage(heart_texture, rect,
 				core::rect<s32>(core::position2d<s32>(0,0), srcd),
 				NULL, colors, true);
-			p += v2s32(20,0);
+			p += v2s32(16,0);
 		}
 	}
 }
