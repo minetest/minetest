@@ -450,6 +450,8 @@ private:
 	InventoryContext m_inventory_context;
 
 	Queue<ClientEvent> m_client_event_queue;
+
+	friend class FarMesh;
 };
 
 #endif // !SERVER

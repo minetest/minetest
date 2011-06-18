@@ -27,6 +27,10 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "common_irrlicht.h"
 
+#define FARMESH_MATERIAL_COUNT 2
+
+class Client;
+
 class FarMesh : public scene::ISceneNode
 {
 public:
@@ -34,7 +38,8 @@ public:
 			scene::ISceneNode* parent,
 			scene::ISceneManager* mgr,
 			s32 id,
-			u64 seed
+			u64 seed,
+			Client *client
 	);
 
 	~FarMesh();
@@ -52,15 +57,9 @@ public:
 		return m_box;
 	}
 
-	virtual u32 getMaterialCount() const
-	{
-		return 1;
-	}
+	virtual u32 getMaterialCount() const;
 
-	virtual video::SMaterial& getMaterial(u32 i)
-	{
-		return m_material;
-	}
+	virtual video::SMaterial& getMaterial(u32 i);
 	
 	/*
 		Other stuff
@@ -71,13 +70,14 @@ public:
 	void update(v2f camera_p, float brightness);
 
 private:
-	video::SMaterial m_material;
+	video::SMaterial m_materials[FARMESH_MATERIAL_COUNT];
 	core::aabbox3d<f32> m_box;
 	float m_cloud_y;
 	float m_brightness;
-	u32 m_seed;
+	u64 m_seed;
 	v2f m_camera_pos;
 	float m_time;
+	Client *m_client;
 };
 
 #endif

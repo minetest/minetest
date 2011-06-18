@@ -2129,6 +2129,16 @@ double get_mud_add_amount(u64 seed, v2s16 p)
 			seed+91013, 3, 0.55));
 }
 
+bool get_have_sand(u64 seed, v2s16 p2d)
+{
+	// Determine whether to have sand here
+	double sandnoise = noise2d_perlin(
+			0.5+(float)p2d.X/500, 0.5+(float)p2d.Y/500,
+			seed+59420, 3, 0.50);
+
+	return (sandnoise > -0.15);
+}
+
 /*
 	Adds random objects to block, depending on the content of the block
 */
@@ -3118,12 +3128,7 @@ void makeChunk(ChunkMakeData *data)
 		// Node position in 2d
 		v2s16 p2d = data->sectorpos_base*MAP_BLOCKSIZE + v2s16(x,z);
 		
-		// Determine whether to have sand here
-		double sandnoise = noise2d_perlin(
-				0.5+(float)p2d.X/500, 0.5+(float)p2d.Y/500,
-				data->seed+59420, 3, 0.50);
-
-		bool have_sand = (sandnoise > -0.15);
+		bool have_sand = get_have_sand(data->seed, p2d);
 
 		if(have_sand == false)
 			continue;
@@ -5658,6 +5663,14 @@ void ClientMap::renderMap(video::IVideoDriver* driver, s32 pass)
 	DSTACK(__FUNCTION_NAME);
 
 	bool is_transparent_pass = pass == scene::ESNRP_TRANSPARENT;
+	
+	/*
+		This is called two times per frame, reset on the non-transparent one
+	*/
+	if(pass == scene::ESNRP_SOLID)
+	{
+		m_last_drawn_sectors.clear();
+	}
 
 	/*
 		Get time for measuring timeout.
@@ -5706,9 +5719,6 @@ void ClientMap::renderMap(video::IVideoDriver* driver, s32 pass)
 	u32 blocks_would_have_drawn = 0;
 	u32 blocks_drawn = 0;
 
-	//NOTE: The sectors map should be locked but we're not doing it
-	// because it'd cause too much delays
-
 	int timecheck_counter = 0;
 	core::map<v2s16, MapSector*>::Iterator si;
 	si = m_sectors.getIterator();
@@ -5748,6 +5758,8 @@ void ClientMap::renderMap(video::IVideoDriver* driver, s32 pass)
 		/*
 			Draw blocks
 		*/
+		
+		u32 sector_blocks_drawn = 0;
 
 		core::list< MapBlock * >::Iterator i;
 		for(i=sectorblocks.begin(); i!=sectorblocks.end(); i++)
@@ -5840,7 +5852,9 @@ void ClientMap::renderMap(video::IVideoDriver* driver, s32 pass)
 						&& m_control.range_all == false
 						&& d > m_control.wanted_min_range * BS)
 					continue;
+
 				blocks_drawn++;
+				sector_blocks_drawn++;
 
 				u32 c = mesh->getMeshBufferCount();
 
@@ -5866,6 +5880,11 @@ void ClientMap::renderMap(video::IVideoDriver* driver, s32 pass)
 				}
 			}
 		} // foreach sectorblocks
+
+		if(sector_blocks_drawn != 0)
+		{
+			m_last_drawn_sectors[sp] = true;
+		}
 	}
 	
 	m_control.blocks_drawn = blocks_drawn;

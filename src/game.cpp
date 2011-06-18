@@ -599,9 +599,9 @@ void update_skybox(video::IVideoDriver* driver,
 		skybox->remove();
 	}
 	
-	// Disable skybox if FarMesh is enabled
+	/*// Disable skybox if FarMesh is enabled
 	if(g_settings.getBool("enable_farmesh"))
-		return;
+		return;*/
 	
 	if(brightness >= 0.5)
 	{
@@ -836,7 +836,7 @@ void the_game(
 	FarMesh *farmesh = NULL;
 	if(g_settings.getBool("enable_farmesh"))
 	{
-		farmesh = new FarMesh(smgr->getRootSceneNode(), smgr, -1, client.getMapSeed());
+		farmesh = new FarMesh(smgr->getRootSceneNode(), smgr, -1, client.getMapSeed(), &client);
 	}
 
 	/*
@@ -1844,11 +1844,19 @@ void the_game(
 		
 		if(g_settings.getBool("enable_fog") == true)
 		{
-			f32 range = draw_control.wanted_range*BS + MAP_BLOCKSIZE*BS*1.5;
-			if(draw_control.range_all)
-				range = 100000*BS;
-			if(range < 50*BS)
-				range = range * 0.5 + 25*BS;
+			f32 range;
+			if(farmesh)
+			{
+				range = BS*MAP_BLOCKSIZE*20;
+			}
+			else
+			{
+				range = draw_control.wanted_range*BS + MAP_BLOCKSIZE*BS*1.5;
+				if(draw_control.range_all)
+					range = 100000*BS;
+				if(range < 50*BS)
+					range = range * 0.5 + 25*BS;
+			}
 
 			driver->setFog(
 				bgcolor,

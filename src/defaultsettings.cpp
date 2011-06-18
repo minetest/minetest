@@ -49,7 +49,7 @@ void set_default_settings()
 	g_settings.setDefault("wanted_fps", "30");
 	g_settings.setDefault("fps_max", "60");
 	g_settings.setDefault("viewing_range_nodes_max", "300");
-	g_settings.setDefault("viewing_range_nodes_min", "35");
+	g_settings.setDefault("viewing_range_nodes_min", "28");
 	g_settings.setDefault("screenW", "800");
 	g_settings.setDefault("screenH", "600");
 	g_settings.setDefault("address", "");
@@ -67,7 +67,7 @@ void set_default_settings()
 	g_settings.setDefault("continuous_forward", "false");
 	g_settings.setDefault("fast_move", "false");
 	g_settings.setDefault("invert_mouse", "false");
-	g_settings.setDefault("enable_farmesh", "false");
+	g_settings.setDefault("enable_farmesh", "true");
 	g_settings.setDefault("enable_clouds", "true");
 
 	// Server stuff

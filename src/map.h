@@ -42,13 +42,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "nodemetadata.h"
 
 /*
-	Temporarily exposed map generator stuff
-	Should only be used for testing
-*/
-
-double base_rock_level_2d(u64 seed, v2s16 p);
-
-/*
 	MapEditEvent
 */
 
@@ -751,6 +744,12 @@ public:
 	// For debug printing
 	virtual void PrintInfo(std::ostream &out);
 	
+	// Check if sector was drawn on last render()
+	bool sectorWasDrawn(v2s16 p)
+	{
+		return (m_last_drawn_sectors.find(p) != NULL);
+	}
+	
 private:
 	Client *m_client;
 	
@@ -765,7 +764,8 @@ private:
 	v3f m_camera_position;
 	v3f m_camera_direction;
 	JMutex m_camera_mutex;
-
+	
+	core::map<v2s16, bool> m_last_drawn_sectors;
 };
 
 #endif
