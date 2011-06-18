@@ -15,7 +15,7 @@ Initialization:
 		u8 channel = 0
 		# Reliable packet header
 		u8 type = TYPE_RELIABLE = 3
-		u16 seqnum = SEQNUM_INITIAL = 6550
+		u16 seqnum = SEQNUM_INITIAL = 65500
 		# Original packet header
 		u8 type = TYPE_ORIGINAL = 1
 		# And no actual payload.
@@ -27,7 +27,7 @@ Initialization:
 		u8 channel = 0
 		# Reliable packet header
 		u8 type = TYPE_RELIABLE = 3
-		u16 seqnum = SEQNUM_INITIAL = 6550
+		u16 seqnum = SEQNUM_INITIAL = 65500
 		# Control packet header
 		u8 type = TYPE_CONTROL = 0
 		u8 controltype = CONTROLTYPE_SET_PEER_ID = 1
