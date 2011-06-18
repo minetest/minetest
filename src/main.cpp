@@ -346,6 +346,9 @@ TODO: Add a per-sector database to store surface stuff as simple flags/values
 	  - Surface ground type
 	  - Trees?
 
+TODO: Restart irrlicht completely when coming back to main menu from game.
+	- This gets rid of everything that is stored in irrlicht's caches.
+
 Making it more portable:
 ------------------------
  
