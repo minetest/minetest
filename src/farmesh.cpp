@@ -126,16 +126,16 @@ HeightPoint ground_height(u64 seed, v2s16 p2d)
 		return n->getValue();
 	HeightPoint hp;
 	hp.gh = BS*base_rock_level_2d(seed, p2d);
-	hp.gh -= BS*2; // Lower a bit so that it is not that much in the way
 	hp.ma = BS*get_mud_add_amount(seed, p2d);
 	hp.have_sand = get_have_sand(seed, p2d);
 	if(hp.gh > BS*WATER_LEVEL)
 		hp.tree_amount = tree_amount_2d(seed, p2d);
 	else
 		hp.tree_amount = 0;
-	// No mud has been added if mud amount is less than 2
-	if(hp.ma < 2.0*BS)
+	// No mud has been added if mud amount is less than 1
+	if(hp.ma < 1.0*BS)
 		hp.ma = 0.0;
+	hp.gh -= BS*3; // Lower a bit so that it is not that much in the way
 	g_heights[p2d] = hp;
 	return hp;
 }
@@ -274,7 +274,10 @@ void FarMesh::render()
 		//light_f /= 2.0;
 		
 		v2f p1 = p0 + v2f(1,1)*grid_size;
-
+		
+		bool ground_is_sand = false;
+		bool ground_is_rock = false;
+		bool ground_is_mud = false;
 		video::SColor c;
 		// Detect water
 		if(h_avg < WATER_LEVEL*BS && h_max < (WATER_LEVEL+5)*BS)
@@ -294,6 +297,7 @@ void FarMesh::render()
 		else if(steepness > 2.0)
 		{
 			c = video::SColor(255,128,128,128);
+			ground_is_rock = true;
 		}
 		// Basic ground
 		else
@@ -301,11 +305,15 @@ void FarMesh::render()
 			if(ma_avg < 2.0*BS)
 			{
 				c = video::SColor(255,128,128,128);
+				ground_is_rock = true;
 			}
 			else
 			{
 				if(h_avg <= 2.5*BS && have_sand_count >= 2)
+				{
 					c = video::SColor(255,210,194,156);
+					ground_is_sand = true;
+				}
 				else
 				{
 					/*// Trees if there are over 0.01 trees per MapNode
@@ -314,6 +322,7 @@ void FarMesh::render()
 					else
 						c = video::SColor(255,107,134,51);*/
 					c = video::SColor(255,107,134,51);
+					ground_is_mud = true;
 				}
 			}
 		}
@@ -345,8 +354,8 @@ void FarMesh::render()
 				video::EVT_STANDARD, scene::EPT_TRIANGLES, video::EIT_16BIT);
 
 		// Add some trees if appropriate
-		if(tree_amount_avg > 0.006 && steepness < 1.0
-				&& ma_avg >= 2.0*BS && have_sand_count <= 2)
+		if(tree_amount_avg >= 0.005 && steepness < 1.0
+				&& ground_is_mud == true)
 		{
 			driver->setMaterial(m_materials[1]);
 			
