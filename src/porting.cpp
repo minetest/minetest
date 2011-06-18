@@ -214,10 +214,28 @@ void initializePaths()
 	*/
 	#elif defined(__APPLE__)
 		#include <unistd.h>
+		#include "CoreFoundation/CoreFoundation.h"
 
+    // Code based on
+    // http://stackoverflow.com/questions/516200/relative-paths-not-working-in-xcode-c
+    CFBundleRef main_bundle = CFBundleGetMainBundle();
+    CFURLRef resources_url = CFBundleCopyResourcesDirectoryURL(main_bundle);
+    char path[PATH_MAX];
+    if(CFURLGetFileSystemRepresentation(resources_url, TRUE, (UInt8 *)path, PATH_MAX))
+	{
+		dstream<<"Bundle resource path: "<<path<<std::endl;
+		//chdir(path);
+		path_data = std::string(path) + "/data";
+	}
+	else
+    {
+        // error!
+		dstream<<"WARNING: Could not determine bundle resource path"<<std::endl;
+    }
+    CFRelease(resources_url);
+	
 	path_userdata = std::string(getenv("HOME")) + "/Library/Application Support/" + APPNAME;
-	path_data = std::string("minetest-mac.app/Contents/Resources/data/");
-
+    
 	#endif
 
 #endif // RUN_IN_PLACE

@@ -1366,7 +1366,11 @@ void the_game(
 		if((device->isWindowActive() && noMenuActive()) || random_input)
 		{
 			if(!random_input)
-				device->getCursorControl()->setVisible(false);
+			{
+				// Mac OSX gets upset if this is set every frame
+				if(device->getCursorControl()->isVisible())
+					device->getCursorControl()->setVisible(false);
+			}
 
 			if(first_loop_after_window_activation){
 				//std::cout<<"window active, first loop"<<std::endl;
@@ -1397,7 +1401,9 @@ void the_game(
 			input->setMousePos(displaycenter.X, displaycenter.Y);
 		}
 		else{
-			device->getCursorControl()->setVisible(true);
+			// Mac OSX gets upset if this is set every frame
+			if(device->getCursorControl()->isVisible() == false)
+				device->getCursorControl()->setVisible(true);
 
 			//std::cout<<"window inactive"<<std::endl;
 			first_loop_after_window_activation = true;
