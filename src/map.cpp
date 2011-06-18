@@ -5545,8 +5545,9 @@ void ServerMap::loadBlock(std::string sectordir, std::string blockfile, MapSecto
 	catch(SerializationError &e)
 	{
 		dstream<<"WARNING: Invalid block data on disk "
-				"(SerializationError). "
-				"what()="<<e.what()
+				<<"fullpath="<<fullpath
+				<<" (SerializationError). "
+				<<"what()="<<e.what()
 				<<std::endl;
 				//" Ignoring. A new one will be generated.
 		assert(0);

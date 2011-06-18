@@ -873,7 +873,9 @@ void RemoteClient::SendObjectData(
 			bos.write((char*)buf, 6);
 
 			// Write objects
-			block->serializeObjects(bos, serialization_version);
+			//block->serializeObjects(bos, serialization_version); // DEPRECATED
+			// count=0
+			writeU16(bos, 0);
 
 			blockcount++;
 

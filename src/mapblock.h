@@ -366,10 +366,10 @@ public:
 		DEPRECATED
 	*/
 	
-	void serializeObjects(std::ostream &os, u8 version)
+	/*void serializeObjects(std::ostream &os, u8 version)
 	{
 		m_objects.serialize(os, version);
-	}
+	}*/
 	// If smgr!=NULL, new objects are added to the scene
 	void updateObjects(std::istream &is, u8 version,
 			scene::ISceneManager *smgr, u32 daynight_ratio)

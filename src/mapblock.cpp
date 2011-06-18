@@ -830,7 +830,9 @@ void MapBlock::serializeDiskExtra(std::ostream &os, u8 version)
 	// Versions up from 9 have block objects.
 	if(version >= 9)
 	{
-		serializeObjects(os, version);
+		//serializeObjects(os, version); // DEPRECATED
+		// count=0
+		writeU16(os, 0);
 	}
 	
 	// Versions up from 15 have static objects.
