@@ -50,7 +50,8 @@ FarMesh::FarMesh(
 	m_seed(seed),
 	m_camera_pos(0,0),
 	m_time(0),
-	m_client(client)
+	m_client(client),
+	m_render_range(20*MAP_BLOCKSIZE)
 {
 	dstream<<__FUNCTION_NAME<<std::endl;
 	
@@ -155,7 +156,7 @@ void FarMesh::render()
 	
 	//const s16 grid_radius_i = 12;
 	//const float grid_size = BS*50;
-	const s16 grid_radius_i = 20;
+	const s16 grid_radius_i = m_render_range/MAP_BLOCKSIZE;
 	const float grid_size = BS*MAP_BLOCKSIZE;
 	const v2f grid_speed(-BS*0, 0);
 	
@@ -354,7 +355,7 @@ void FarMesh::render()
 				video::EVT_STANDARD, scene::EPT_TRIANGLES, video::EIT_16BIT);
 
 		// Add some trees if appropriate
-		if(tree_amount_avg >= 0.005 && steepness < 1.0
+		if(tree_amount_avg >= 0.0065 && steepness < 1.4
 				&& ground_is_mud == true)
 		{
 			driver->setMaterial(m_materials[1]);
@@ -367,11 +368,11 @@ void FarMesh::render()
 				{
 					video::S3DVertex(p0.X,noise[0],p0.Y,
 							0,0,0, c, 0,1),
-					video::S3DVertex(p0.X,noise[1]+BS*MAP_BLOCKSIZE,p0.Y,
+					video::S3DVertex(p0.X,noise[0]+BS*MAP_BLOCKSIZE,p0.Y,
 							0,0,0, c, 0,0),
 					video::S3DVertex(p1.X,noise[2]+BS*MAP_BLOCKSIZE,p1.Y,
 							0,0,0, c, 1,0),
-					video::S3DVertex(p1.X,noise[3],p1.Y,
+					video::S3DVertex(p1.X,noise[2],p1.Y,
 							0,0,0, c, 1,1),
 				};
 				u16 indices[] = {0,1,2,2,3,0};
@@ -382,13 +383,13 @@ void FarMesh::render()
 			{
 				video::S3DVertex vertices[4] =
 				{
-					video::S3DVertex(p1.X,noise[0],p0.Y,
+					video::S3DVertex(p1.X,noise[3],p0.Y,
 							0,0,0, c, 0,1),
-					video::S3DVertex(p1.X,noise[1]+BS*MAP_BLOCKSIZE,p0.Y,
+					video::S3DVertex(p1.X,noise[3]+BS*MAP_BLOCKSIZE,p0.Y,
 							0,0,0, c, 0,0),
-					video::S3DVertex(p0.X,noise[2]+BS*MAP_BLOCKSIZE,p1.Y,
+					video::S3DVertex(p0.X,noise[1]+BS*MAP_BLOCKSIZE,p1.Y,
 							0,0,0, c, 1,0),
-					video::S3DVertex(p0.X,noise[3],p1.Y,
+					video::S3DVertex(p0.X,noise[1],p1.Y,
 							0,0,0, c, 1,1),
 				};
 				u16 indices[] = {0,1,2,2,3,0};
@@ -407,10 +408,11 @@ void FarMesh::step(float dtime)
 	m_time += dtime;
 }
 
-void FarMesh::update(v2f camera_p, float brightness)
+void FarMesh::update(v2f camera_p, float brightness, s16 render_range)
 {
 	m_camera_pos = camera_p;
 	m_brightness = brightness;
+	m_render_range = render_range;
 }
 
 

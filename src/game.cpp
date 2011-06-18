@@ -915,6 +915,7 @@ void the_game(
 	core::list<float> frametime_log;
 
 	float damage_flash_timer = 0;
+	s16 farmesh_range = 20*MAP_BLOCKSIZE;
 	
 	bool invert_mouse = g_settings.getBool("invert_mouse");
 
@@ -1826,13 +1827,19 @@ void the_game(
 		}
 		
 		/*
-			Update farmesh (TODO: Remove from here)
+			Update farmesh
 		*/
 		if(farmesh)
 		{
+			farmesh_range = draw_control.wanted_range * 10;
+			if(draw_control.range_all && farmesh_range < 500)
+				farmesh_range = 500;
+			if(farmesh_range > 1000)
+				farmesh_range = 1000;
+
 			farmesh->step(dtime);
 			farmesh->update(v2f(player_position.X, player_position.Z),
-					0.05+brightness*0.95);
+					0.05+brightness*0.95, farmesh_range);
 		}
 		
 		// Store brightness value
@@ -1847,7 +1854,7 @@ void the_game(
 			f32 range;
 			if(farmesh)
 			{
-				range = BS*MAP_BLOCKSIZE*20;
+				range = BS*farmesh_range;
 			}
 			else
 			{
@@ -2054,13 +2061,6 @@ void the_game(
 			beginscenetime = timer.stop(true);
 		}
 		
-		/*
-			Draw farmesh before everything else
-		*/
-		{
-			//farmesh->render();
-		}
-
 		//timer3.stop();
 		
 		//std::cout<<DTIME<<"smgr->drawAll()"<<std::endl;

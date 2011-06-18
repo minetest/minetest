@@ -67,7 +67,7 @@ public:
 
 	void step(float dtime);
 
-	void update(v2f camera_p, float brightness);
+	void update(v2f camera_p, float brightness, s16 render_range);
 
 private:
 	video::SMaterial m_materials[FARMESH_MATERIAL_COUNT];
@@ -78,6 +78,7 @@ private:
 	v2f m_camera_pos;
 	float m_time;
 	Client *m_client;
+	s16 m_render_range;
 };
 
 #endif
