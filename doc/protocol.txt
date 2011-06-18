@@ -48,6 +48,7 @@ Initialization:
 # host: ip of server (use gethostbyname(hostname) to get from a dns name)
 # port: port of server
 function check_if_minetestserver_up($host, $port)
+{
 	$socket = socket_create(AF_INET, SOCK_DGRAM, SOL_UDP);
 	$timeout = array("sec" => 1, "usec" => 0);
 	socket_set_option($socket, SOL_SOCKET, SO_RCVTIMEO, $timeout);
@@ -67,4 +68,5 @@ function check_if_minetestserver_up($host, $port)
 		return true;
 	}
 	return false;
+}
 
