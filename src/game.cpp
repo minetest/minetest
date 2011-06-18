@@ -871,8 +871,8 @@ void the_game(
 	gui::IGUIStaticText *guitext_chat = guienv->addStaticText(
 			L"",
 			core::rect<s32>(0,0,0,0),
-			false, false); // Disable word wrap as of now
-			//false, true);
+			//false, false); // Disable word wrap as of now
+			false, true);
 	//guitext_chat->setBackgroundColor(video::SColor(96,0,0,0));
 	core::list<ChatLine> chat_lines;
 	
@@ -1996,7 +1996,7 @@ void the_game(
 					10,
 					50,
 					screensize.X - 10,
-					50 + text_height*chat_lines.size()
+					50 + guitext_chat->getTextHeight()
 			);
 
 			guitext_chat->setRelativePosition(rect);
