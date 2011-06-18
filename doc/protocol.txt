@@ -2,6 +2,8 @@ Minetest-c55 protocol (incomplete, early draft):
 Updated 2011-06-18
 
 A custom protocol over UDP.
+Integers are big endian.
+Refer to connection.{h,cpp} for further reference.
 
 Initialization:
 - A dummy reliable packet with peer_id=PEER_ID_INEXISTENT=0 is sent to the server:
