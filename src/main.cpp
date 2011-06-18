@@ -186,6 +186,8 @@ TODO: Better control of draw_control.wanted_max_blocks
 TODO: Further investigate the use of GPU lighting in addition to the
       current one
 
+SUGG: Somehow make the night less colorful
+
 Configuration:
 --------------
 
@@ -334,6 +336,15 @@ Misc. stuff:
 	example
 - Finish the ActiveBlockModifier stuff and use it for something
 - Move mineral to param2, increment map serialization version, add conversion
+
+TODO: Add a per-sector database to store surface stuff as simple flags/values
+      - Light?
+	  - A building?
+	  And at some point make the server send this data to the client too,
+	  instead of referring to the noise functions
+	  - Ground height
+	  - Surface ground type
+	  - Trees?
 
 Making it more portable:
 ------------------------
