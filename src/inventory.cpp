@@ -470,7 +470,7 @@ InventoryItem * InventoryList::addItem(u32 i, InventoryItem *newitem)
 	//setDirty(true);
 	
 	// If it is an empty position, it's an easy job.
-	InventoryItem *to_item = m_items[i];
+	InventoryItem *to_item = getItem(i);
 	if(to_item == NULL)
 	{
 		m_items[i] = newitem;
@@ -502,7 +502,7 @@ InventoryItem * InventoryList::addItem(u32 i, InventoryItem *newitem)
 bool InventoryList::itemFits(u32 i, InventoryItem *newitem)
 {
 	// If it is an empty position, it's an easy job.
-	InventoryItem *to_item = m_items[i];
+	InventoryItem *to_item = getItem(i);
 	if(to_item == NULL)
 	{
 		return true;
@@ -528,7 +528,7 @@ InventoryItem * InventoryList::takeItem(u32 i, u32 count)
 	
 	//setDirty(true);
 
-	InventoryItem *item = m_items[i];
+	InventoryItem *item = getItem(i);
 	// If it is an empty position, return NULL
 	if(item == NULL)
 		return NULL;
