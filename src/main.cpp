@@ -1140,6 +1140,9 @@ int main(int argc, char *argv[])
 	// Initialize porting::path_data and porting::path_userdata
 	porting::initializePaths();
 
+	// Create user data directory
+	fs::CreateDir(porting::path_userdata);
+	
 	// Initialize debug streams
 #ifdef RUN_IN_PLACE
 	std::string debugfile = DEBUGFILE;
@@ -1152,9 +1155,6 @@ int main(int argc, char *argv[])
 
 	DSTACK(__FUNCTION_NAME);
 
-	// Create user data directory
-	fs::CreateDir(porting::path_userdata);
-	
 	// Init material properties table
 	//initializeMaterialProperties();
 
