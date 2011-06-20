@@ -27,6 +27,10 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "config.h"
 #include "debug.h"
 
+#ifdef __APPLE__
+	#include "CoreFoundation/CoreFoundation.h"
+#endif
+
 namespace porting
 {
 
@@ -214,7 +218,6 @@ void initializePaths()
 	*/
 	#elif defined(__APPLE__)
 		#include <unistd.h>
-		#include "CoreFoundation/CoreFoundation.h"
 
     // Code based on
     // http://stackoverflow.com/questions/516200/relative-paths-not-working-in-xcode-c
