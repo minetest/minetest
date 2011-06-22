@@ -69,6 +69,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "materials.h"
 #include "config.h"
 #include "mineral.h"
+#include "filesys.h"
 
 /*
 	Settings.
