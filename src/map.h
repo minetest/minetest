@@ -110,17 +110,17 @@ public:
 	virtual void onMapEditEvent(MapEditEvent *event) = 0;
 };
 
-class Map : public NodeContainer
+class Map /*: public NodeContainer*/
 {
 public:
 
 	Map(std::ostream &dout);
 	virtual ~Map();
 
-	virtual u16 nodeContainerId() const
+	/*virtual u16 nodeContainerId() const
 	{
 		return NODECONTAINER_ID_MAP;
-	}
+	}*/
 
 	virtual s32 mapType() const
 	{

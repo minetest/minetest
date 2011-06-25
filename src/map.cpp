@@ -126,7 +126,9 @@ MapSector * Map::getSectorNoGenerate(v2s16 p)
 MapBlock * Map::getBlockNoCreateNoEx(v3s16 p3d)
 {
 	v2s16 p2d(p3d.X, p3d.Z);
-	MapSector * sector = getSectorNoGenerate(p2d);
+	MapSector * sector = getSectorNoGenerateNoEx(p2d);
+	if(sector == NULL)
+		return NULL;
 	MapBlock *block = sector->getBlockNoCreateNoEx(p3d.Y);
 	return block;
 }

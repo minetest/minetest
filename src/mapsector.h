@@ -30,7 +30,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <ostream>
 
 class MapBlock;
-class NodeContainer;
+class Map;
 
 /*
 	This is an Y-wise stack of MapBlocks.
@@ -43,7 +43,7 @@ class MapSector
 {
 public:
 	
-	MapSector(NodeContainer *parent, v2s16 pos);
+	MapSector(Map *parent, v2s16 pos);
 	virtual ~MapSector();
 
 	virtual u32 getId() const = 0;
@@ -73,7 +73,7 @@ protected:
 	// The pile of MapBlocks
 	core::map<s16, MapBlock*> m_blocks;
 
-	NodeContainer *m_parent;
+	Map *m_parent;
 	// Position on parent (in MapBlock widths)
 	v2s16 m_pos;
 	
@@ -92,7 +92,7 @@ protected:
 class ServerMapSector : public MapSector
 {
 public:
-	ServerMapSector(NodeContainer *parent, v2s16 pos);
+	ServerMapSector(Map *parent, v2s16 pos);
 	~ServerMapSector();
 	
 	u32 getId() const
@@ -109,7 +109,7 @@ public:
 	
 	static ServerMapSector* deSerialize(
 			std::istream &is,
-			NodeContainer *parent,
+			Map *parent,
 			v2s16 p2d,
 			core::map<v2s16, MapSector*> & sectors
 		);
@@ -121,7 +121,7 @@ private:
 class ClientMapSector : public MapSector
 {
 public:
-	ClientMapSector(NodeContainer *parent, v2s16 pos);
+	ClientMapSector(Map *parent, v2s16 pos);
 	~ClientMapSector();
 	
 	u32 getId() const

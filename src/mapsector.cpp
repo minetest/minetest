@@ -23,7 +23,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "exceptions.h"
 #include "mapblock.h"
 
-MapSector::MapSector(NodeContainer *parent, v2s16 pos):
+MapSector::MapSector(Map *parent, v2s16 pos):
 		differs_from_disk(false),
 		m_parent(parent),
 		m_pos(pos),
@@ -151,7 +151,7 @@ void MapSector::getBlocks(core::list<MapBlock*> &dest)
 	ServerMapSector
 */
 
-ServerMapSector::ServerMapSector(NodeContainer *parent, v2s16 pos):
+ServerMapSector::ServerMapSector(Map *parent, v2s16 pos):
 		MapSector(parent, pos)
 {
 }
@@ -184,7 +184,7 @@ void ServerMapSector::serialize(std::ostream &os, u8 version)
 
 ServerMapSector* ServerMapSector::deSerialize(
 		std::istream &is,
-		NodeContainer *parent,
+		Map *parent,
 		v2s16 p2d,
 		core::map<v2s16, MapSector*> & sectors
 	)
@@ -247,7 +247,7 @@ ServerMapSector* ServerMapSector::deSerialize(
 	ClientMapSector
 */
 
-ClientMapSector::ClientMapSector(NodeContainer *parent, v2s16 pos):
+ClientMapSector::ClientMapSector(Map *parent, v2s16 pos):
 		MapSector(parent, pos)
 {
 }

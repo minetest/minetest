@@ -28,7 +28,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 	MapBlock
 */
 
-MapBlock::MapBlock(NodeContainer *parent, v3s16 pos, bool dummy):
+MapBlock::MapBlock(Map *parent, v3s16 pos, bool dummy):
 		m_parent(parent),
 		m_pos(pos),
 		m_modified(MOD_STATE_WRITE_NEEDED),
