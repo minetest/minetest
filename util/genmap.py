@@ -41,7 +41,7 @@ SEED = 0
 # 0=old, 1=new
 SECTOR_DIR_FORMAT = 1
 
-mapdir = "world"
+mapdir = "../world"
 
 def to4h(i):
 	s = "";

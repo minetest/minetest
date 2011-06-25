@@ -2,18 +2,19 @@ Minetest-c55
 ---------------
 An InfiniMiner/Minecraft inspired game.
 Copyright (c) 2010-2011 Perttu Ahola <celeron55@gmail.com>
+(see source files for other contributors)
 
 Further documentation:
 ----------------------
 - Website: http://celeron.55.lt/~celeron55/minetest/
 - Wiki: http://celeron.55.lt/~celeron55/minetest/wiki/
 - Forum: http://celeron.55.lt/~celeron55/minetest/forum/
+- doc/ directory of source distribution
 
-This is a development version:
-------------------------------
+This game is not finished:
+--------------------------
 - Don't expect it to work as well as a finished game will.
-- Please report any bugs to me. That way I can fix them to the next release.
-	- debug.txt is useful when the game crashes.
+- Please report any bugs to me. debug.txt is useful.
 
 Controls:
 ---------
