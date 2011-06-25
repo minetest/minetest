@@ -354,6 +354,12 @@ TODO: Add a per-sector database to store surface stuff as simple flags/values
 TODO: Restart irrlicht completely when coming back to main menu from game.
 	- This gets rid of everything that is stored in irrlicht's caches.
 
+TODO: Merge bahamada's audio stuff (clean patch available)
+
+TODO: Merge spongie's chest/furnace direction (by hand)
+
+TODO: Merge key configuration menu (no clean patch available)
+
 Making it more portable:
 ------------------------
  
