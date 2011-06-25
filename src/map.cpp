@@ -1969,7 +1969,7 @@ ServerMap::~ServerMap()
 #endif
 }
 
-void ServerMap::initBlockMake(BlockMakeData *data, v3s16 blockpos)
+void ServerMap::initBlockMake(mapgen::BlockMakeData *data, v3s16 blockpos)
 {
 	/*dstream<<"initBlockMake(): ("<<blockpos.X<<","<<blockpos.Y<<","
 			<<blockpos.Z<<")"<<std::endl;*/
@@ -2022,18 +2022,19 @@ void ServerMap::initBlockMake(BlockMakeData *data, v3s16 blockpos)
 	v3s16 bigarea_blocks_min = blockpos - v3s16(1,1,1);
 	v3s16 bigarea_blocks_max = blockpos + v3s16(1,1,1);
 	
-	data->vmanip.setMap(this);
+	data->vmanip = new ManualMapVoxelManipulator(this);
+	//data->vmanip->setMap(this);
 
 	// Add the area
 	{
 		//TimeTaker timer("initBlockMake() initialEmerge");
-		data->vmanip.initialEmerge(bigarea_blocks_min, bigarea_blocks_max);
+		data->vmanip->initialEmerge(bigarea_blocks_min, bigarea_blocks_max);
 	}
 
 	// Data is ready now.
 }
 
-MapBlock* ServerMap::finishBlockMake(BlockMakeData *data,
+MapBlock* ServerMap::finishBlockMake(mapgen::BlockMakeData *data,
 		core::map<v3s16, MapBlock*> &changed_blocks)
 {
 	v3s16 blockpos = data->blockpos;
@@ -2056,7 +2057,7 @@ MapBlock* ServerMap::finishBlockMake(BlockMakeData *data,
 	{
 		// 70ms @cs=8
 		//TimeTaker timer("finishBlockMake() blitBackAll");
-		data->vmanip.blitBackAll(&changed_blocks);
+		data->vmanip->blitBackAll(&changed_blocks);
 	}
 #if 1
 	dstream<<"finishBlockMake: changed_blocks.size()="
@@ -2248,7 +2249,7 @@ MapBlock * ServerMap::generateBlock(
 	/*
 		Create block make data
 	*/
-	BlockMakeData data;
+	mapgen::BlockMakeData data;
 	initBlockMake(&data, p);
 
 	/*

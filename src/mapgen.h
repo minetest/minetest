@@ -21,9 +21,11 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #define MAPGEN_HEADER
 
 #include "common_irrlicht.h"
+#include "utility.h" // UniqueQueue
 
 struct BlockMakeData;
 class MapBlock;
+class ManualMapVoxelManipulator;
 
 namespace mapgen
 {
@@ -44,6 +46,19 @@ namespace mapgen
 	*/
 	bool get_have_sand(u64 seed, v2s16 p2d);
 	double tree_amount_2d(u64 seed, v2s16 p);
+	
+
+	struct BlockMakeData
+	{
+		bool no_op;
+		ManualMapVoxelManipulator *vmanip;
+		u64 seed;
+		v3s16 blockpos;
+		UniqueQueue<v3s16> transforming_liquid;
+
+		BlockMakeData();
+		~BlockMakeData();
+	};
 
 }; // namespace mapgen
 

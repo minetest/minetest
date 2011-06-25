@@ -903,6 +903,7 @@ bool is_cave(u64 seed, v3s16 p)
 
 	TODO: No perlin noises here, they should be outsourced
 	      and buffered
+		  NOTE: The speed of these actually isn't terrible
 */
 bool val_is_ground(double ground_noise1_val, v3s16 p, u64 seed)
 {
@@ -918,6 +919,8 @@ bool val_is_ground(double ground_noise1_val, v3s16 p, u64 seed)
 	double h = WATER_LEVEL + 10 * noise2d_perlin(
 			0.5+(float)p.X/250, 0.5+(float)p.Z/250,
 			seed+84174, 4, 0.5);
+	/*double f = 1;
+	double h = 0;*/
 	return ((double)p.Y - h < ground_noise1_val * f);
 }
 
@@ -1253,7 +1256,7 @@ void make_block(BlockMakeData *data)
 	/*dstream<<"makeBlock(): ("<<blockpos.X<<","<<blockpos.Y<<","
 			<<blockpos.Z<<")"<<std::endl;*/
 
-	ManualMapVoxelManipulator &vmanip = data->vmanip;
+	ManualMapVoxelManipulator &vmanip = *(data->vmanip);
 	v3s16 blockpos_min = blockpos - v3s16(1,1,1);
 	v3s16 blockpos_max = blockpos + v3s16(1,1,1);
 	// Area of center block
@@ -1312,7 +1315,7 @@ void make_block(BlockMakeData *data)
 							vmanip.m_data[i] = MapNode(CONTENT_AIR);
 					}
 				
-					data->vmanip.m_area.add_y(em, i, 1);
+					data->vmanip->m_area.add_y(em, i, 1);
 				}
 			}
 		}
@@ -1428,7 +1431,7 @@ void make_block(BlockMakeData *data)
 						vmanip.m_data[i] = MapNode(CONTENT_STONE);
 				}
 			
-				data->vmanip.m_area.add_y(em, i, 1);
+				data->vmanip->m_area.add_y(em, i, 1);
 			}
 		}
 	}
@@ -1597,7 +1600,7 @@ void make_block(BlockMakeData *data)
 					}
 				}
 
-				data->vmanip.m_area.add_y(em, i, -1);
+				data->vmanip->m_area.add_y(em, i, -1);
 			}
 		}
 	}
@@ -1617,7 +1620,7 @@ void make_block(BlockMakeData *data)
 			&& node_min.Y < approx_groundlevel)
 	{
 		// Dungeon generator doesn't modify places which have this set
-		data->vmanip.clearFlag(VMANIP_FLAG_DUNGEON_INSIDE
+		data->vmanip->clearFlag(VMANIP_FLAG_DUNGEON_INSIDE
 				| VMANIP_FLAG_DUNGEON_PRESERVE);
 		
 		// Set all air and water to be untouchable to make dungeons open
@@ -1637,7 +1640,7 @@ void make_block(BlockMakeData *data)
 						vmanip.m_flags[i] |= VMANIP_FLAG_DUNGEON_PRESERVE;
 					else if(vmanip.m_data[i].d == CONTENT_WATERSOURCE)
 						vmanip.m_flags[i] |= VMANIP_FLAG_DUNGEON_PRESERVE;
-					data->vmanip.m_area.add_y(em, i, -1);
+					data->vmanip->m_area.add_y(em, i, -1);
 				}
 			}
 		}
@@ -1645,7 +1648,7 @@ void make_block(BlockMakeData *data)
 		PseudoRandom random(blockseed+2);
 
 		// Add it
-		make_dungeon1(data->vmanip, random);
+		make_dungeon1(vmanip, random);
 		
 		// Convert some cobble to mossy cobble
 		for(s16 x=full_node_min.X; x<=full_node_max.X; x++)
@@ -1678,7 +1681,7 @@ void make_block(BlockMakeData *data)
 						if(wetness > 1.2)
 							vmanip.m_data[i].d = CONTENT_MUD;
 					}*/
-					data->vmanip.m_area.add_y(em, i, -1);
+					data->vmanip->m_area.add_y(em, i, -1);
 				}
 			}
 		}
@@ -1722,7 +1725,7 @@ void make_block(BlockMakeData *data)
 					}
 				}
 
-				data->vmanip.m_area.add_y(em, i, -1);
+				data->vmanip->m_area.add_y(em, i, -1);
 			}
 		}
 	}
@@ -1800,7 +1803,7 @@ void make_block(BlockMakeData *data)
 					else if(current_depth != 0)
 						break;
 
-					data->vmanip.m_area.add_y(em, i, -1);
+					data->vmanip->m_area.add_y(em, i, -1);
 				}
 			}
 		}
@@ -1833,8 +1836,8 @@ void make_block(BlockMakeData *data)
 			bool found = false;
 			for(; p.Y >= y-6; p.Y--)
 			{
-				u32 i = data->vmanip.m_area.index(p);
-				MapNode *n = &data->vmanip.m_data[i];
+				u32 i = data->vmanip->m_area.index(p);
+				MapNode *n = &data->vmanip->m_data[i];
 				if(n->d != CONTENT_AIR && n->d != CONTENT_IGNORE)
 				{
 					found = true;
@@ -1848,15 +1851,15 @@ void make_block(BlockMakeData *data)
 				Trees grow only on mud and grass
 			*/
 			{
-				u32 i = data->vmanip.m_area.index(p);
-				MapNode *n = &data->vmanip.m_data[i];
+				u32 i = data->vmanip->m_area.index(p);
+				MapNode *n = &data->vmanip->m_data[i];
 				if(n->d != CONTENT_MUD && n->d != CONTENT_GRASS)
 					continue;
 			}
 			// Tree will be placed one higher
 			p.Y++;
 			// Make a tree
-			make_tree(data->vmanip, p);
+			make_tree(vmanip, p);
 		}
 
 #if 0
@@ -1881,8 +1884,8 @@ void make_block(BlockMakeData *data)
 			v3s16 p(x,y,z);
 			// Filter placement
 			/*{
-				u32 i = data->vmanip.m_area.index(v3s16(p));
-				MapNode *n = &data->vmanip.m_data[i];
+				u32 i = data->vmanip->m_area.index(v3s16(p));
+				MapNode *n = &data->vmanip->m_data[i];
 				if(n->d != CONTENT_MUD && n->d != CONTENT_GRASS)
 					continue;
 			}*/
@@ -1916,8 +1919,8 @@ void make_block(BlockMakeData *data)
 			v3s16 p(x,y,z);
 			// Filter placement
 			/*{
-				u32 i = data->vmanip.m_area.index(v3s16(p));
-				MapNode *n = &data->vmanip.m_data[i];
+				u32 i = data->vmanip->m_area.index(v3s16(p));
+				MapNode *n = &data->vmanip->m_data[i];
 				if(n->d != CONTENT_MUD && n->d != CONTENT_GRASS)
 					continue;
 			}*/
@@ -1929,6 +1932,17 @@ void make_block(BlockMakeData *data)
 #endif
 	}
 
+}
+
+BlockMakeData::BlockMakeData():
+	no_op(false),
+	vmanip(NULL),
+	seed(0)
+{}
+
+BlockMakeData::~BlockMakeData()
+{
+	delete vmanip;
 }
 
 }; // namespace mapgen
