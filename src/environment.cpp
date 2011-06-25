@@ -619,6 +619,7 @@ void ServerEnvironment::activateBlock(MapBlock *block, u32 additional_dtime)
 	{
 		v3s16 p = p0 + block->getPosRelative();
 		MapNode n = block->getNodeNoEx(p0);
+#if 1
 		// Test something:
 		// Convert all mud under proper day lighting to grass
 		if(n.d == CONTENT_MUD)
@@ -634,6 +635,7 @@ void ServerEnvironment::activateBlock(MapBlock *block, u32 additional_dtime)
 				}
 			}
 		}
+#endif
 	}
 }
 

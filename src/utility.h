@@ -1741,6 +1741,11 @@ void mysrand(unsigned seed);
 
 inline int myrand_range(int min, int max)
 {
+	if(max-min > MYRAND_MAX)
+	{
+		dstream<<"WARNING: myrand_range: max-min > MYRAND_MAX"<<std::endl;
+		assert(0);
+	}
 	if(min > max)
 	{
 		assert(0);

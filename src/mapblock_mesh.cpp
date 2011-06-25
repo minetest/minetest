@@ -347,7 +347,9 @@ u8 getSmoothLight(v3s16 p, VoxelManipulator &vmanip, u32 daynight_ratio)
 	for(u32 i=0; i<8; i++)
 	{
 		MapNode n = vmanip.getNodeNoEx(p - dirs8[i]);
-		if(content_features(n.d).param_type == CPT_LIGHT)
+		if(content_features(n.d).param_type == CPT_LIGHT
+				// Fast-style leaves look better this way
+				&& content_features(n.d).solidness != 2)
 		{
 			light += decode_light(n.getLightBlend(daynight_ratio));
 			light_count++;

@@ -1720,7 +1720,7 @@ void Server::AsyncRunStep()
 
 			// Don't send too many at a time
 			count++;
-			if(count >= 2 && m_unsent_map_edit_queue.size() < 50)
+			if(count >= 1 && m_unsent_map_edit_queue.size() < 100)
 				break;
 		}
 	}

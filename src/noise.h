@@ -20,6 +20,45 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #ifndef NOISE_HEADER
 #define NOISE_HEADER
 
+#include "debug.h"
+
+class PseudoRandom
+{
+public:
+	PseudoRandom(): m_next(0)
+	{
+	}
+	PseudoRandom(int seed): m_next(seed)
+	{
+	}
+	void seed(int seed)
+	{
+		m_next = seed;
+	}
+	// Returns 0...32767
+	int next()
+	{
+		m_next = m_next * 1103515245 + 12345;
+		return((unsigned)(m_next/65536) % 32768);
+	}
+	int range(int min, int max)
+	{
+		if(max-min > 32768/10)
+		{
+			//dstream<<"WARNING: PseudoRandom::range: max > 32767"<<std::endl;
+			assert(0);
+		}
+		if(min > max)
+		{
+			assert(0);
+			return max;
+		}
+		return (next()%(max-min+1))+min;
+	}
+private:
+	int m_next;
+};
+
 double easeCurve(double t);
  
 // Return value: -1 ... 1
