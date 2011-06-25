@@ -25,6 +25,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "main.h"
 #include <sstream>
 #include "porting.h"
+#include "mapsector.h"
 
 void * MeshUpdateThread::Thread()
 {
@@ -715,15 +716,16 @@ void Client::ProcessData(u8 *data, u32 datasize, u16 sender_peer_id)
 			//TimeTaker timer("MapBlock deSerialize");
 			// 0ms
 			
-			try{
-				block = sector->getBlockNoCreate(p.Y);
+			block = sector->getBlockNoCreateNoEx(p.Y);
+			if(block)
+			{
 				/*
 					Update an existing block
 				*/
 				//dstream<<"Updating"<<std::endl;
 				block->deSerialize(istr, ser_version);
 			}
-			catch(InvalidPositionException &e)
+			else
 			{
 				/*
 					Create a new block
@@ -952,6 +954,8 @@ void Client::ProcessData(u8 *data, u32 datasize, u16 sender_peer_id)
 	}
 	else if(command == TOCLIENT_SECTORMETA)
 	{
+		dstream<<"Client received DEPRECATED TOCLIENT_SECTORMETA"<<std::endl;
+#if 0
 		/*
 			[0] u16 command
 			[2] u8 sector count
@@ -987,6 +991,7 @@ void Client::ProcessData(u8 *data, u32 datasize, u16 sender_peer_id)
 				((ClientMap&)m_env.getMap()).deSerializeSector(pos, is);
 			}
 		} //envlock
+#endif
 	}
 	else if(command == TOCLIENT_INVENTORY)
 	{

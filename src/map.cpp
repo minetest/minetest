@@ -18,8 +18,9 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 */
 
 #include "map.h"
+#include "mapsector.h"
+#include "mapblock.h"
 #include "main.h"
-#include "jmutexautolock.h"
 #include "client.h"
 #include "filesys.h"
 #include "utility.h"
@@ -122,30 +123,22 @@ MapSector * Map::getSectorNoGenerate(v2s16 p)
 	return sector;
 }
 
-MapBlock * Map::getBlockNoCreate(v3s16 p3d)
-{	
+MapBlock * Map::getBlockNoCreateNoEx(v3s16 p3d)
+{
 	v2s16 p2d(p3d.X, p3d.Z);
 	MapSector * sector = getSectorNoGenerate(p2d);
-
-	MapBlock *block = sector->getBlockNoCreate(p3d.Y);
-
+	MapBlock *block = sector->getBlockNoCreateNoEx(p3d.Y);
 	return block;
 }
 
-MapBlock * Map::getBlockNoCreateNoEx(v3s16 p3d)
-{
-	try
-	{
-		v2s16 p2d(p3d.X, p3d.Z);
-		MapSector * sector = getSectorNoGenerate(p2d);
-		MapBlock *block = sector->getBlockNoCreate(p3d.Y);
-		return block;
-	}
-	catch(InvalidPositionException &e)
-	{
-		return NULL;
-	}
+MapBlock * Map::getBlockNoCreate(v3s16 p3d)
+{	
+	MapBlock *block = getBlockNoCreateNoEx(p3d);
+	if(block == NULL)
+		throw InvalidPositionException();
+	return block;
 }
+
 
 /*MapBlock * Map::getBlockCreate(v3s16 p3d)
 {
@@ -1422,9 +1415,8 @@ u32 Map::unloadUnusedData(float timeout, bool only_blocks,
 				// Save if modified
 				if(block->getModified() != MOD_STATE_CLEAN)
 					saveBlock(block);
-				// Unload
-				sector->removeBlock(block);
-				delete block;
+				// Delete from memory
+				sector->deleteBlock(block);
 			}
 			else
 			{
@@ -3062,10 +3054,8 @@ void ServerMap::loadBlock(std::string sectordir, std::string blockfile, MapSecto
 
 		MapBlock *block = NULL;
 		bool created_new = false;
-		try{
-			block = sector->getBlockNoCreate(p3d.Y);
-		}
-		catch(InvalidPositionException &e)
+		block = sector->getBlockNoCreateNoEx(p3d.Y);
+		if(block == NULL)
 		{
 			block = sector->createBlankBlockNoInsert(p3d.Y);
 			created_new = true;
@@ -3235,6 +3225,7 @@ MapSector * ClientMap::emergeSector(v2s16 p2d)
 	return sector;
 }
 
+#if 0
 void ClientMap::deSerializeSector(v2s16 p2d, std::istream &is)
 {
 	DSTACK(__FUNCTION_NAME);
@@ -3260,6 +3251,7 @@ void ClientMap::deSerializeSector(v2s16 p2d, std::istream &is)
 
 	sector->deSerialize(is);
 }
+#endif
 
 void ClientMap::OnRegisterSceneNode()
 {

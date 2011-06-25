@@ -31,6 +31,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <sstream>
 #include "porting.h"
 #include "content_mapnode.h"
+#include "mapsector.h"
 
 /*
 	Asserts that the exception occurs
@@ -641,13 +642,13 @@ struct TestMapSector
 		// Create one with no heightmaps
 		ServerMapSector sector(&parent, v2s16(1,1));
 		
-		EXCEPTION_CHECK(InvalidPositionException, sector.getBlockNoCreate(0));
-		EXCEPTION_CHECK(InvalidPositionException, sector.getBlockNoCreate(1));
+		assert(sector.getBlockNoCreateNoEx(0) == 0);
+		assert(sector.getBlockNoCreateNoEx(1) == 0);
 
 		MapBlock * bref = sector.createBlankBlock(-2);
 		
-		EXCEPTION_CHECK(InvalidPositionException, sector.getBlockNoCreate(0));
-		assert(sector.getBlockNoCreate(-2) == bref);
+		assert(sector.getBlockNoCreateNoEx(0) == 0);
+		assert(sector.getBlockNoCreateNoEx(-2) == bref);
 		
 		//TODO: Check for AlreadyExistsException
 

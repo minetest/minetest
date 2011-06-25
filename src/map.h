@@ -21,6 +21,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #define MAP_HEADER
 
 #include <jmutex.h>
+#include <jmutexautolock.h>
 #include <jthread.h>
 #include <iostream>
 
@@ -35,11 +36,16 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "common_irrlicht.h"
 #include "mapnode.h"
 #include "mapblock.h"
-#include "mapsector.h"
 #include "constants.h"
 #include "voxel.h"
 #include "mapchunk.h"
 #include "nodemetadata.h"
+
+class MapSector;
+class ServerMapSector;
+class ClientMapSector;
+
+class MapBlock;
 
 namespace mapgen{
 	struct BlockMakeData;
@@ -321,7 +327,6 @@ protected:
 	core::map<MapEventReceiver*, bool> m_event_receivers;
 	
 	core::map<v2s16, MapSector*> m_sectors;
-	//JMutex m_sector_mutex;
 
 	// Be sure to set this to NULL when the cached sector is deleted 
 	MapSector *m_sector_cache;
@@ -547,7 +552,7 @@ public:
 	*/
 	MapSector * emergeSector(v2s16 p);
 
-	void deSerializeSector(v2s16 p2d, std::istream &is);
+	//void deSerializeSector(v2s16 p2d, std::istream &is);
 
 	/*
 		ISceneNode methods
