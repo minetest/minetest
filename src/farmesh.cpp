@@ -29,16 +29,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "map.h"
 #include "client.h"
 
-/*
-	Temporarily exposed map generator stuff
-	Should only be used for testing
-*/
-//extern double base_rock_level_2d(u64 seed, v2s16 p);
-//extern double get_mud_add_amount(u64 seed, v2s16 p);
-extern s16 find_ground_level_from_noise(u64 seed, v2s16 p2d, s16 precision);
-extern bool get_have_sand(u64 seed, v2s16 p2d);
-extern double tree_amount_2d(u64 seed, v2s16 p);
-
+#include "mapgen.h"
 
 FarMesh::FarMesh(
 		scene::ISceneNode* parent,
@@ -127,14 +118,14 @@ HeightPoint ground_height(u64 seed, v2s16 p2d)
 	if(n)
 		return n->getValue();
 	HeightPoint hp;
-	s16 level = find_ground_level_from_noise(seed, p2d, 3);
+	s16 level = mapgen::find_ground_level_from_noise(seed, p2d, 3);
 	hp.gh = (level-4)*BS;
 	hp.ma = (4)*BS;
 	/*hp.gh = BS*base_rock_level_2d(seed, p2d);
 	hp.ma = BS*get_mud_add_amount(seed, p2d);*/
-	hp.have_sand = get_have_sand(seed, p2d);
+	hp.have_sand = mapgen::get_have_sand(seed, p2d);
 	if(hp.gh > BS*WATER_LEVEL)
-		hp.tree_amount = tree_amount_2d(seed, p2d);
+		hp.tree_amount = mapgen::tree_amount_2d(seed, p2d);
 	else
 		hp.tree_amount = 0;
 	// No mud has been added if mud amount is less than 1

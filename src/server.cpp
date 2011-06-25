@@ -2546,12 +2546,12 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 			}
 			
 			/*
-				Send the removal to all other clients.
+				Send the removal to all close-by players.
 				- If other player is close, send REMOVENODE
 				- Otherwise set blocks not sent
 			*/
 			core::list<u16> far_players;
-			sendRemoveNode(p_under, peer_id, &far_players, 100);
+			sendRemoveNode(p_under, peer_id, &far_players, 30);
 			
 			/*
 				Update and send inventory
@@ -2714,10 +2714,10 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 					n.dir = packDir(p_under - p_over);
 				
 				/*
-					Send to all players
+					Send to all close-by players
 				*/
 				core::list<u16> far_players;
-				sendAddNode(p_over, n, 0, &far_players, 100);
+				sendAddNode(p_over, n, 0, &far_players, 30);
 				
 				/*
 					Handle inventory

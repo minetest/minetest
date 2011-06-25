@@ -61,6 +61,7 @@ configure_file(
 )
 
 set(common_SRCS
+	mapgen.cpp
 	content_inventory.cpp
 	content_nodemeta.cpp
 	content_craft.cpp
