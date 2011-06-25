@@ -186,6 +186,11 @@ TODO: Better control of draw_control.wanted_max_blocks
 TODO: Further investigate the use of GPU lighting in addition to the
       current one
 
+TODO: Artificial (night) light could be more yellow colored than sunlight.
+      - This is technically doable.
+	  - Also the actual colors of the textures could be made less colorful
+	    in the dark but it's a bit more difficult.
+
 SUGG: Somehow make the night less colorful
 
 Configuration:
@@ -360,6 +365,12 @@ Fixes to the current release:
 
 Stuff to do after release:
 ---------------------------
+
+Doing currently:
+----------------
+
+TODO: Use MapBlock::resetUsageTimer() in appropriate places
+      (on client and server)
 
 ======================================================================
 

@@ -51,6 +51,36 @@ enum{
 	FACE_LEFT
 };*/
 
+enum ModifiedState
+{
+	// Has not been modified.
+	MOD_STATE_CLEAN = 0,
+	MOD_RESERVED1 = 1,
+	// Has been modified, and will be saved when being unloaded.
+	MOD_STATE_WRITE_AT_UNLOAD = 2,
+	MOD_RESERVED3 = 3,
+	// Has been modified, and will be saved as soon as possible.
+	MOD_STATE_WRITE_NEEDED = 4,
+	MOD_RESERVED5 = 5,
+};
+
+// NOTE: If this is enabled, set MapBlock to be initialized with
+//       CONTENT_IGNORE.
+/*enum BlockGenerationStatus
+{
+	// Completely non-generated (filled with CONTENT_IGNORE).
+	BLOCKGEN_UNTOUCHED=0,
+	// Trees or similar might have been blitted from other blocks to here.
+	// Otherwise, the block contains CONTENT_IGNORE
+	BLOCKGEN_FROM_NEIGHBORS=2,
+	// Has been generated, but some neighbors might put some stuff in here
+	// when they are generated.
+	// Does not contain any CONTENT_IGNORE
+	BLOCKGEN_SELF_GENERATED=4,
+	// The block and all its neighbors have been generated
+	BLOCKGEN_FULLY_GENERATED=6
+};*/
+
 enum
 {
 	NODECONTAINER_ID_MAPBLOCK,
@@ -106,9 +136,10 @@ public:
 		u32 l = MAP_BLOCKSIZE * MAP_BLOCKSIZE * MAP_BLOCKSIZE;
 		data = new MapNode[l];
 		for(u32 i=0; i<l; i++){
-			data[i] = MapNode();
+			//data[i] = MapNode();
+			data[i] = MapNode(CONTENT_IGNORE);
 		}
-		setChangedFlag();
+		raiseModified(MOD_STATE_WRITE_NEEDED);
 	}
 
 	/*
@@ -130,19 +161,43 @@ public:
 		modified, so that the block is saved and possibly not deleted from
 		memory.
 	*/
+	// DEPRECATED, use *Modified()
 	void setChangedFlag()
 	{
-		changed = true;
+		//dstream<<"Deprecated setChangedFlag() called"<<std::endl;
+		raiseModified(MOD_STATE_WRITE_NEEDED);
 	}
+	// DEPRECATED, use *Modified()
 	void resetChangedFlag()
 	{
-		changed = false;
+		//dstream<<"Deprecated resetChangedFlag() called"<<std::endl;
+		resetModified();
 	}
+	// DEPRECATED, use *Modified()
 	bool getChangedFlag()
 	{
-		return changed;
+		//dstream<<"Deprecated getChangedFlag() called"<<std::endl;
+		if(getModified() == MOD_STATE_CLEAN)
+			return false;
+		else
+			return true;
 	}
-
+	
+	// m_modified methods
+	void raiseModified(u32 mod)
+	{
+		m_modified = MYMAX(m_modified, mod);
+	}
+	u32 getModified()
+	{
+		return m_modified;
+	}
+	void resetModified()
+	{
+		m_modified = MOD_STATE_CLEAN;
+	}
+	
+	// is_underground getter/setter
 	bool getIsUnderground()
 	{
 		return is_underground;
@@ -150,7 +205,7 @@ public:
 	void setIsUnderground(bool a_is_underground)
 	{
 		is_underground = a_is_underground;
-		setChangedFlag();
+		raiseModified(MOD_STATE_WRITE_NEEDED);
 	}
 
 #ifndef SERVER
@@ -168,22 +223,22 @@ public:
 	void setLightingExpired(bool expired)
 	{
 		m_lighting_expired = expired;
-		setChangedFlag();
+		raiseModified(MOD_STATE_WRITE_NEEDED);
 	}
 	bool getLightingExpired()
 	{
 		return m_lighting_expired;
 	}
 
-	/*bool isFullyGenerated()
+	bool isGenerated()
 	{
-		return !m_not_fully_generated;
+		return m_generated;
 	}
-	void setFullyGenerated(bool b)
+	void setGenerated(bool b)
 	{
-		setChangedFlag();
-		m_not_fully_generated = !b;
-	}*/
+		raiseModified(MOD_STATE_WRITE_NEEDED);
+		m_generated = b;
+	}
 
 	bool isValid()
 	{
@@ -261,7 +316,7 @@ public:
 		if(y < 0 || y >= MAP_BLOCKSIZE) throw InvalidPositionException();
 		if(z < 0 || z >= MAP_BLOCKSIZE) throw InvalidPositionException();
 		data[z*MAP_BLOCKSIZE*MAP_BLOCKSIZE + y*MAP_BLOCKSIZE + x] = n;
-		setChangedFlag();
+		raiseModified(MOD_STATE_WRITE_NEEDED);
 	}
 	
 	void setNode(v3s16 p, MapNode & n)
@@ -290,7 +345,7 @@ public:
 		if(data == NULL)
 			throw InvalidPositionException();
 		data[z*MAP_BLOCKSIZE*MAP_BLOCKSIZE + y*MAP_BLOCKSIZE + x] = n;
-		setChangedFlag();
+		raiseModified(MOD_STATE_WRITE_NEEDED);
 	}
 	
 	void setNodeNoCheck(v3s16 p, MapNode & n)
@@ -376,26 +431,26 @@ public:
 	{
 		m_objects.update(is, version, smgr, daynight_ratio);
 
-		setChangedFlag();
+		raiseModified(MOD_STATE_WRITE_NEEDED);
 	}
 	void clearObjects()
 	{
 		m_objects.clear();
 
-		setChangedFlag();
+		raiseModified(MOD_STATE_WRITE_NEEDED);
 	}
 	void addObject(MapBlockObject *object)
 			throw(ContainerFullException, AlreadyExistsException)
 	{
 		m_objects.add(object);
 
-		setChangedFlag();
+		raiseModified(MOD_STATE_WRITE_NEEDED);
 	}
 	void removeObject(s16 id)
 	{
 		m_objects.remove(id);
 
-		setChangedFlag();
+		raiseModified(MOD_STATE_WRITE_NEEDED);
 	}
 	MapBlockObject * getObject(s16 id)
 	{
@@ -505,7 +560,7 @@ public:
 	void setTimestamp(u32 time)
 	{
 		m_timestamp = time;
-		setChangedFlag();
+		raiseModified(MOD_STATE_WRITE_AT_UNLOAD);
 	}
 	void setTimestampNoChangedFlag(u32 time)
 	{
@@ -514,6 +569,22 @@ public:
 	u32 getTimestamp()
 	{
 		return m_timestamp;
+	}
+	
+	/*
+		See m_usage_timer
+	*/
+	void resetUsageTimer()
+	{
+		m_usage_timer = 0;
+	}
+	void incrementUsageTimer(float dtime)
+	{
+		m_usage_timer += dtime;
+	}
+	u32 getUsageTimer()
+	{
+		return m_usage_timer;
 	}
 
 	/*
@@ -581,10 +652,10 @@ private:
 
 	/*
 		- On the server, this is used for telling whether the
-		  block has been changed from the one on disk.
+		  block has been modified from the one on disk.
 		- On the client, this is used for nothing.
 	*/
-	bool changed;
+	u32 m_modified;
 
 	/*
 		When propagating sunlight and the above block doesn't exist,
@@ -607,6 +678,8 @@ private:
 	
 	// Whether day and night lighting differs
 	bool m_day_night_differs;
+
+	bool m_generated;
 	
 	// DEPRECATED
 	MapBlockObjectList m_objects;
@@ -630,6 +703,12 @@ private:
 		Value BLOCK_TIMESTAMP_UNDEFINED=0xffffffff means there is no timestamp.
 	*/
 	u32 m_timestamp;
+
+	/*
+		When the block is accessed, this is set to 0.
+		Map will unload the block when this reaches a timeout.
+	*/
+	float m_usage_timer;
 };
 
 inline bool blockpos_over_limit(v3s16 p)

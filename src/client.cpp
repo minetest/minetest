@@ -220,12 +220,12 @@ void Client::step(float dtime)
 				g_settings.getFloat("client_delete_unused_sectors_timeout");
 	
 			// Delete sector blocks
-			/*u32 num = m_env.getMap().deleteUnusedSectors
+			/*u32 num = m_env.getMap().unloadUnusedData
 					(delete_unused_sectors_timeout,
 					true, &deleted_blocks);*/
 			
 			// Delete whole sectors
-			u32 num = m_env.getMap().deleteUnusedSectors
+			u32 num = m_env.getMap().unloadUnusedData
 					(delete_unused_sectors_timeout,
 					false, &deleted_blocks);
 
@@ -722,7 +722,6 @@ void Client::ProcessData(u8 *data, u32 datasize, u16 sender_peer_id)
 				*/
 				//dstream<<"Updating"<<std::endl;
 				block->deSerialize(istr, ser_version);
-				//block->setChangedFlag();
 			}
 			catch(InvalidPositionException &e)
 			{
@@ -733,7 +732,6 @@ void Client::ProcessData(u8 *data, u32 datasize, u16 sender_peer_id)
 				block = new MapBlock(&m_env.getMap(), p);
 				block->deSerialize(istr, ser_version);
 				sector->insertBlock(block);
-				//block->setChangedFlag();
 
 				//DEBUG
 				/*NodeMod mod;
@@ -744,27 +742,6 @@ void Client::ProcessData(u8 *data, u32 datasize, u16 sender_peer_id)
 				block->setTempMod(v3s16(8,8,8), mod);
 				block->setTempMod(v3s16(8,7,8), mod);
 				block->setTempMod(v3s16(8,6,8), mod);*/
-#if 0
-				/*
-					Add some coulds
-					Well, this is a dumb way to do it, they should just
-					be drawn as separate objects. But the looks of them
-					can be tested this way.
-				*/
-				if(p.Y == 3)
-				{
-					NodeMod mod;
-					mod.type = NODEMOD_CHANGECONTENT;
-					mod.param = CONTENT_CLOUD;
-					v3s16 p2;
-					p2.Y = 8;
-					for(p2.X=3; p2.X<=13; p2.X++)
-					for(p2.Z=3; p2.Z<=13; p2.Z++)
-					{
-						block->setTempMod(p2, mod);
-					}
-				}
-#endif
 			}
 		} //envlock
 
@@ -796,6 +773,9 @@ void Client::ProcessData(u8 *data, u32 datasize, u16 sender_peer_id)
 
 		//m_env.getClientMap().updateMeshes(block->getPos(), getDayNightRatio());
 		
+		/*
+			Add it to mesh update queue and set it to be acknowledged after update.
+		*/
 		addUpdateMeshTaskWithEdge(p, true);
 	}
 	else if(command == TOCLIENT_PLAYERPOS)

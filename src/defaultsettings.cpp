@@ -69,6 +69,7 @@ void set_default_settings()
 	g_settings.setDefault("invert_mouse", "false");
 	g_settings.setDefault("enable_farmesh", "false");
 	g_settings.setDefault("enable_clouds", "true");
+	g_settings.setDefault("invisible_stone", "false");
 
 	// Server stuff
 	g_settings.setDefault("enable_experimental", "false");
@@ -81,8 +82,8 @@ void set_default_settings()
 
 	g_settings.setDefault("objectdata_interval", "0.2");
 	g_settings.setDefault("active_object_range", "2");
-	g_settings.setDefault("max_simultaneous_block_sends_per_client", "1");
-	//g_settings.setDefault("max_simultaneous_block_sends_per_client", "2");
+	//g_settings.setDefault("max_simultaneous_block_sends_per_client", "1");
+	g_settings.setDefault("max_simultaneous_block_sends_per_client", "2");
 	g_settings.setDefault("max_simultaneous_block_sends_server_total", "8");
 	g_settings.setDefault("max_block_send_distance", "8");
 	g_settings.setDefault("max_block_generate_distance", "8");

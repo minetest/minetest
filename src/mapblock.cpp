@@ -31,13 +31,14 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 MapBlock::MapBlock(NodeContainer *parent, v3s16 pos, bool dummy):
 		m_parent(parent),
 		m_pos(pos),
-		changed(true),
+		m_modified(MOD_STATE_WRITE_NEEDED),
 		is_underground(false),
 		m_lighting_expired(true),
 		m_day_night_differs(false),
-		//m_not_fully_generated(false),
+		m_generated(false),
 		m_objects(this),
-		m_timestamp(BLOCK_TIMESTAMP_UNDEFINED)
+		m_timestamp(BLOCK_TIMESTAMP_UNDEFINED),
+		m_usage_timer(BLOCK_TIMESTAMP_UNDEFINED)
 {
 	data = NULL;
 	if(dummy == false)
@@ -241,7 +242,7 @@ bool MapBlock::propagateSunlight(core::map<v3s16, bool> & light_sources,
 			// Check if node above block has sunlight
 			try{
 				MapNode n = getNodeParent(v3s16(x, MAP_BLOCKSIZE, z));
-				if(n.getLight(LIGHTBANK_DAY) != LIGHT_SUN)
+				if(n.d == CONTENT_IGNORE || n.getLight(LIGHTBANK_DAY) != LIGHT_SUN)
 				{
 					no_sunlight = true;
 				}
@@ -593,6 +594,11 @@ void MapBlock::serialize(std::ostream &os, u8 version)
 			flags |= 0x02;
 		if(m_lighting_expired)
 			flags |= 0x04;
+		if(version >= 18)
+		{
+			if(m_generated == false)
+				flags |= 0x08;
+		}
 		os.write((char*)&flags, 1);
 
 		u32 nodecount = MAP_BLOCKSIZE*MAP_BLOCKSIZE*MAP_BLOCKSIZE;
@@ -666,6 +672,12 @@ void MapBlock::deSerialize(std::istream &is, u8 version)
 	if(version <= 1)
 	{
 		setLightingExpired(true);
+	}
+
+	// These have no "generated" field
+	if(version < 18)
+	{
+		m_generated = true;
 	}
 
 	// These have no compression
@@ -749,6 +761,8 @@ void MapBlock::deSerialize(std::istream &is, u8 version)
 		is_underground = (flags & 0x01) ? true : false;
 		m_day_night_differs = (flags & 0x02) ? true : false;
 		m_lighting_expired = (flags & 0x04) ? true : false;
+		if(version >= 18)
+			m_generated = (flags & 0x08) ? false : true;
 
 		// Uncompress data
 		std::ostringstream os(std::ios_base::binary);

@@ -384,6 +384,14 @@ public:
 
 		return m_data[m_area.index(p)];
 	}
+	MapNode getNodeNoExNoEmerge(v3s16 p)
+	{
+		if(m_area.contains(p) == false)
+			return MapNode(CONTENT_IGNORE);
+		if(m_flags[m_area.index(p)] & VOXELFLAG_INEXISTENT)
+			return MapNode(CONTENT_IGNORE);
+		return m_data[m_area.index(p)];
+	}
 	MapNode & getNodeRef(v3s16 p)
 	{
 		emerge(p);

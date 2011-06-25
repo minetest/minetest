@@ -20,6 +20,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "content_mapblock.h"
 #include "content_mapnode.h"
 #include "main.h" // For g_settings and g_texturesource
+#include "mineral.h"
 
 #ifndef SERVER
 // Create a cuboid.
@@ -129,6 +130,7 @@ void mapblock_mesh_generate_special(MeshMakeData *data,
 	bool new_style_water = g_settings.getBool("new_style_water");
 	bool new_style_leaves = g_settings.getBool("new_style_leaves");
 	//bool smooth_lighting = g_settings.getBool("smooth_lighting");
+	bool invisible_stone = g_settings.getBool("invisible_stone");
 	
 	float node_water_level = 1.0;
 	if(new_style_water)
@@ -177,6 +179,14 @@ void mapblock_mesh_generate_special(MeshMakeData *data,
 	AtlasPointer pa_wood = g_texturesource->getTexture(
 			g_texturesource->getTextureId("wood.png"));
 	material_wood.setTexture(0, pa_wood.atlas);
+
+	// General ground material for special output
+	// Texture is modified just before usage
+	video::SMaterial material_general;
+	material_general.setFlag(video::EMF_LIGHTING, false);
+	material_general.setFlag(video::EMF_BILINEAR_FILTER, false);
+	material_general.setFlag(video::EMF_FOG_ENABLE, true);
+	material_general.MaterialType = video::EMT_TRANSPARENT_ALPHA_CHANNEL_REF;
 
 	for(s16 z=0; z<MAP_BLOCKSIZE; z++)
 	for(s16 y=0; y<MAP_BLOCKSIZE; y++)
@@ -824,6 +834,88 @@ void mapblock_mesh_generate_special(MeshMakeData *data,
 			}
 
 		}
+#if 1
+		/*
+			Add stones with minerals if stone is invisible
+		*/
+		else if(n.d == CONTENT_STONE && invisible_stone && n.getMineral() != MINERAL_NONE)
+		{
+			for(u32 j=0; j<6; j++)
+			{
+				// NOTE: Hopefully g_6dirs[j] is the right direction...
+				v3s16 dir = g_6dirs[j];
+				/*u8 l = 0;
+				MapNode n2 = data->m_vmanip.getNodeNoEx(blockpos_nodes + dir);
+				if(content_features(n2.d).param_type == CPT_LIGHT)
+					l = decode_light(n2.getLightBlend(data->m_daynight_ratio));
+				else
+					l = 255;*/
+				u8 l = 255;
+				video::SColor c(255,l,l,l);
+				
+				// Get the right texture
+				TileSpec ts = n.getTile(dir);
+				AtlasPointer ap = ts.texture;
+				material_general.setTexture(0, ap.atlas);
+
+				video::S3DVertex vertices[4] =
+				{
+					/*video::S3DVertex(-BS/2,-BS/2,BS/2, 0,0,0, c, 0,1),
+					video::S3DVertex(BS/2,-BS/2,BS/2, 0,0,0, c, 1,1),
+					video::S3DVertex(BS/2,BS/2,BS/2, 0,0,0, c, 1,0),
+					video::S3DVertex(-BS/2,BS/2,BS/2, 0,0,0, c, 0,0),*/
+					video::S3DVertex(-BS/2,-BS/2,BS/2, 0,0,0, c,
+						ap.x0(), ap.y1()),
+					video::S3DVertex(BS/2,-BS/2,BS/2, 0,0,0, c,
+						ap.x1(), ap.y1()),
+					video::S3DVertex(BS/2,BS/2,BS/2, 0,0,0, c,
+						ap.x1(), ap.y0()),
+					video::S3DVertex(-BS/2,BS/2,BS/2, 0,0,0, c,
+						ap.x0(), ap.y0()),
+				};
+
+				if(j == 0)
+				{
+					for(u16 i=0; i<4; i++)
+						vertices[i].Pos.rotateXZBy(0);
+				}
+				else if(j == 1)
+				{
+					for(u16 i=0; i<4; i++)
+						vertices[i].Pos.rotateXZBy(180);
+				}
+				else if(j == 2)
+				{
+					for(u16 i=0; i<4; i++)
+						vertices[i].Pos.rotateXZBy(-90);
+				}
+				else if(j == 3)
+				{
+					for(u16 i=0; i<4; i++)
+						vertices[i].Pos.rotateXZBy(90);
+				}
+				else if(j == 4)
+				{
+					for(u16 i=0; i<4; i++)
+						vertices[i].Pos.rotateYZBy(-90);
+				}
+				else if(j == 5)
+				{
+					for(u16 i=0; i<4; i++)
+						vertices[i].Pos.rotateYZBy(90);
+				}
+
+				for(u16 i=0; i<4; i++)
+				{
+					vertices[i].Pos += intToFloat(p + blockpos_nodes, BS);
+				}
+
+				u16 indices[] = {0,1,2,2,3,0};
+				// Add to mesh collector
+				collector.append(material_general, vertices, 4, indices, 6);
+			}
+		}
+#endif
 
 	}
 }

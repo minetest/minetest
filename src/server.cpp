@@ -37,6 +37,31 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #define BLOCK_EMERGE_FLAG_FROMDISK (1<<0)
 
+class MapEditEventIgnorer
+{
+public:
+	MapEditEventIgnorer(bool *flag):
+		m_flag(flag)
+	{
+		if(*m_flag == false)
+			*m_flag = true;
+		else
+			m_flag = NULL;
+	}
+
+	~MapEditEventIgnorer()
+	{
+		if(m_flag)
+		{
+			assert(*m_flag);
+			*m_flag = false;
+		}
+	}
+	
+private:
+	bool *m_flag;
+};
+
 void * ServerThread::Thread()
 {
 	ThreadStarted();
@@ -150,8 +175,8 @@ void * EmergeThread::Thread()
 		
 		ServerMap &map = ((ServerMap&)m_server->m_env.getMap());
 			
-		core::map<v3s16, MapBlock*> changed_blocks;
-		core::map<v3s16, MapBlock*> lighting_invalidated_blocks;
+		//core::map<v3s16, MapBlock*> changed_blocks;
+		//core::map<v3s16, MapBlock*> lighting_invalidated_blocks;
 
 		MapBlock *block = NULL;
 		bool got_block = true;
@@ -162,32 +187,6 @@ void * EmergeThread::Thread()
 		if(optional)
 			only_from_disk = true;
 
-		v2s16 chunkpos = map.sector_to_chunk(p2d);
-
-		bool generate_chunk = false;
-		if(only_from_disk == false)
-		{
-			JMutexAutoLock envlock(m_server->m_env_mutex);
-			if(map.chunkNonVolatile(chunkpos) == false)
-				generate_chunk = true;
-		}
-		if(generate_chunk)
-		{
-			ChunkMakeData data;
-			
-			{
-				JMutexAutoLock envlock(m_server->m_env_mutex);
-				map.initChunkMake(data, chunkpos);
-			}
-
-			makeChunk(&data);
-
-			{
-				JMutexAutoLock envlock(m_server->m_env_mutex);
-				map.finishChunkMake(data, changed_blocks);
-			}
-		}
-	
 		/*
 			Fetch block from map or generate a single block
 		*/
@@ -196,36 +195,55 @@ void * EmergeThread::Thread()
 			
 			// Load sector if it isn't loaded
 			if(map.getSectorNoGenerateNoEx(p2d) == NULL)
-				map.loadSectorFull(p2d);
+				//map.loadSectorFull(p2d);
+				map.loadSectorMeta(p2d);
 
 			block = map.getBlockNoCreateNoEx(p);
-			if(!block || block->isDummy())
+			if(!block || block->isDummy() || !block->isGenerated())
 			{
-				if(only_from_disk)
+				// Get, load or create sector
+				/*ServerMapSector *sector =
+						(ServerMapSector*)map.createSector(p2d);*/
+
+				// Load/generate block
+
+				/*block = map.emergeBlock(p, sector, changed_blocks,
+						lighting_invalidated_blocks);*/
+
+				block = map.loadBlock(p);
+
+				if(block == NULL && only_from_disk == false)
+					block = map.generateBlock(p, modified_blocks);
+					//block = map.generateBlock(p, changed_blocks);
+					/*block = map.generateBlock(p, block, sector, changed_blocks,
+							lighting_invalidated_blocks);*/
+
+				if(block == NULL)
 				{
 					got_block = false;
 				}
 				else
 				{
-					// Get, load or create sector
-					ServerMapSector *sector =
-							(ServerMapSector*)map.createSector(p2d);
-					// Generate block
-					block = map.generateBlock(p, block, sector, changed_blocks,
-							lighting_invalidated_blocks);
-					if(block == NULL)
-						got_block = false;
+					/*
+						Ignore map edit events, they will not need to be
+						sent to anybody because the block hasn't been sent
+						to anybody
+					*/
+					MapEditEventIgnorer ign(&m_server->m_ignore_map_edit_events);
+					
+					// Activate objects and stuff
+					m_server->m_env.activateBlock(block, 3600);
 				}
 			}
 			else
 			{
-				if(block->getLightingExpired()){
+				/*if(block->getLightingExpired()){
 					lighting_invalidated_blocks[block->getPos()] = block;
-				}
+				}*/
 			}
 
 			// TODO: Some additional checking and lighting updating,
-			// see emergeBlock
+			//       see emergeBlock
 		}
 
 		{//envlock
@@ -237,7 +255,8 @@ void * EmergeThread::Thread()
 				Collect a list of blocks that have been modified in
 				addition to the fetched one.
 			*/
-			
+
+#if 0
 			if(lighting_invalidated_blocks.size() > 0)
 			{
 				/*dstream<<"lighting "<<lighting_invalidated_blocks.size()
@@ -258,11 +277,12 @@ void * EmergeThread::Thread()
 				MapBlock *block = i.getNode()->getValue();
 				modified_blocks.insert(block->getPos(), block);
 			}
+#endif
 		}
 		// If we got no block, there should be no invalidated blocks
 		else
 		{
-			assert(lighting_invalidated_blocks.size() == 0);
+			//assert(lighting_invalidated_blocks.size() == 0);
 		}
 
 		}//envlock
@@ -597,11 +617,15 @@ void RemoteClient::GetNextBlocks(Server *server, float dtime,
 				{
 					block_is_invalid = true;
 				}*/
-				
+
+#if 0
 				v2s16 p2d(p.X, p.Z);
 				ServerMap *map = (ServerMap*)(&server->m_env.getMap());
 				v2s16 chunkpos = map->sector_to_chunk(p2d);
 				if(map->chunkNonVolatile(chunkpos) == false)
+					block_is_invalid = true;
+#endif
+				if(block->isGenerated() == false)
 					block_is_invalid = true;
 #if 1
 				/*
@@ -649,6 +673,7 @@ void RemoteClient::GetNextBlocks(Server *server, float dtime,
 				//TODO: Get value from somewhere
 				// Allow only one block in emerge queue
 				//if(server->m_emerge_queue.peerItemCount(peer_id) < 1)
+				// Allow two blocks in queue per client
 				if(server->m_emerge_queue.peerItemCount(peer_id) < 2)
 				{
 					//dstream<<"Adding block to emerge queue"<<std::endl;
@@ -1630,19 +1655,28 @@ void Server::AsyncRunStep()
 		Send queued-for-sending map edit events.
 	*/
 	{
+		// Don't send too many at a time
+		u32 count = 0;
 		while(m_unsent_map_edit_queue.size() != 0)
 		{
 			MapEditEvent* event = m_unsent_map_edit_queue.pop_front();
+			
+			// Players far away from the change are stored here.
+			// Instead of sending the changes, MapBlocks are set not sent
+			// for them.
+			core::list<u16> far_players;
 
 			if(event->type == MEET_ADDNODE)
 			{
 				dstream<<"Server: MEET_ADDNODE"<<std::endl;
-				sendAddNode(event->p, event->n, event->already_known_by_peer);
+				sendAddNode(event->p, event->n, event->already_known_by_peer,
+						&far_players, 30);
 			}
 			else if(event->type == MEET_REMOVENODE)
 			{
 				dstream<<"Server: MEET_REMOVENODE"<<std::endl;
-				sendRemoveNode(event->p, event->already_known_by_peer);
+				sendRemoveNode(event->p, event->already_known_by_peer,
+						&far_players, 30);
 			}
 			else if(event->type == MEET_BLOCK_NODE_METADATA_CHANGED)
 			{
@@ -1659,8 +1693,35 @@ void Server::AsyncRunStep()
 				dstream<<"WARNING: Server: Unknown MapEditEvent "
 						<<((u32)event->type)<<std::endl;
 			}
+			
+			/*
+				Set blocks not sent to far players
+			*/
+			core::map<v3s16, MapBlock*> modified_blocks2;
+			for(core::map<v3s16, bool>::Iterator
+					i = event->modified_blocks.getIterator();
+					i.atEnd()==false; i++)
+			{
+				v3s16 p = i.getNode()->getKey();
+				modified_blocks2.insert(p, m_env.getMap().getBlockNoCreateNoEx(p));
+			}
+			for(core::list<u16>::Iterator
+					i = far_players.begin();
+					i != far_players.end(); i++)
+			{
+				u16 peer_id = *i;
+				RemoteClient *client = getClient(peer_id);
+				if(client==NULL)
+					continue;
+				client->SetBlocksNotSent(modified_blocks2);
+			}
 
 			delete event;
+
+			// Don't send too many at a time
+			count++;
+			if(count >= 2 && m_unsent_map_edit_queue.size() < 50)
+				break;
 		}
 	}
 
@@ -1754,7 +1815,7 @@ void Server::AsyncRunStep()
 				m_env.getMap().save(true);
 
 				// Delete unused sectors
-				u32 deleted_count = m_env.getMap().deleteUnusedSectors(
+				u32 deleted_count = m_env.getMap().unloadUnusedData(
 						g_settings.getFloat("server_unload_unused_sectors_timeout"));
 				if(deleted_count > 0)
 				{
@@ -2565,10 +2626,11 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 				Remove the node
 				(this takes some time so it is done after the quick stuff)
 			*/
-			m_ignore_map_edit_events = true;
-			m_env.getMap().removeNodeAndUpdate(p_under, modified_blocks);
-			m_ignore_map_edit_events = false;
-			
+			{
+				MapEditEventIgnorer ign(&m_ignore_map_edit_events);
+
+				m_env.getMap().removeNodeAndUpdate(p_under, modified_blocks);
+			}
 			/*
 				Set blocks not sent to far players
 			*/
@@ -2679,10 +2741,11 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 					This takes some time so it is done after the quick stuff
 				*/
 				core::map<v3s16, MapBlock*> modified_blocks;
-				m_ignore_map_edit_events = true;
-				m_env.getMap().addNodeAndUpdate(p_over, n, modified_blocks);
-				m_ignore_map_edit_events = false;
-				
+				{
+					MapEditEventIgnorer ign(&m_ignore_map_edit_events);
+
+					m_env.getMap().addNodeAndUpdate(p_over, n, modified_blocks);
+				}
 				/*
 					Set blocks not sent to far players
 				*/
@@ -3889,10 +3952,16 @@ std::wstring Server::getStatusString()
 v3f findSpawnPos(ServerMap &map)
 {
 	//return v3f(50,50,50)*BS;
-	
+
 	v2s16 nodepos;
 	s16 groundheight = 0;
 	
+#if 0
+	nodepos = v2s16(0,0);
+	groundheight = 20;
+#endif
+
+#if 1
 	// Try to find a good place a few times
 	for(s32 i=0; i<1000; i++)
 	{
@@ -3922,6 +3991,7 @@ v3f findSpawnPos(ServerMap &map)
 		//dstream<<"Searched through "<<i<<" places."<<std::endl;
 		break;
 	}
+#endif
 	
 	// If no suitable place was not found, go above water at least.
 	if(groundheight < WATER_LEVEL)
@@ -3929,7 +3999,7 @@ v3f findSpawnPos(ServerMap &map)
 
 	return intToFloat(v3s16(
 			nodepos.X,
-			groundheight + 2,
+			groundheight + 3,
 			nodepos.Y
 			), BS);
 }

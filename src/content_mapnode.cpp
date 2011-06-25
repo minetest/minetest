@@ -36,6 +36,7 @@ void content_mapnode_init()
 	// Read some settings
 	bool new_style_water = g_settings.getBool("new_style_water");
 	bool new_style_leaves = g_settings.getBool("new_style_leaves");
+	bool invisible_stone = g_settings.getBool("invisible_stone");
 
 	u8 i;
 	ContentFeatures *f = NULL;
@@ -48,6 +49,8 @@ void content_mapnode_init()
 	f->is_ground_content = true;
 	f->dug_item = std::string("MaterialItem ")+itos(CONTENT_COBBLE)+" 1";
 	setStoneLikeDiggingProperties(f->digging_properties, 1.0);
+	if(invisible_stone)
+		f->solidness = 0; // For debugging, hides regular stone
 	
 	i = CONTENT_GRASS;
 	f = &content_features(i);
@@ -81,10 +84,20 @@ void content_mapnode_init()
 	i = CONTENT_SAND;
 	f = &content_features(i);
 	f->setAllTextures("sand.png");
+	f->setInventoryTextureCube("sand.png", "sand.png", "sand.png");
 	f->param_type = CPT_MINERAL;
 	f->is_ground_content = true;
 	f->dug_item = std::string("MaterialItem ")+itos(i)+" 1";
 	setDirtLikeDiggingProperties(f->digging_properties, 1.0);
+	
+	i = CONTENT_GRAVEL;
+	f = &content_features(i);
+	f->setAllTextures("gravel.png");
+	f->setInventoryTextureCube("gravel.png", "gravel.png", "gravel.png");
+	f->param_type = CPT_MINERAL;
+	f->is_ground_content = true;
+	f->dug_item = std::string("MaterialItem ")+itos(i)+" 1";
+	setDirtLikeDiggingProperties(f->digging_properties, 1.75);
 	
 	i = CONTENT_TREE;
 	f = &content_features(i);
@@ -146,6 +159,7 @@ void content_mapnode_init()
 	i = CONTENT_WOOD;
 	f = &content_features(i);
 	f->setAllTextures("wood.png");
+	f->setInventoryTextureCube("wood.png", "wood.png", "wood.png");
 	f->is_ground_content = true;
 	f->dug_item = std::string("MaterialItem ")+itos(i)+" 1";
 	setWoodLikeDiggingProperties(f->digging_properties, 0.75);
@@ -153,6 +167,7 @@ void content_mapnode_init()
 	i = CONTENT_MESE;
 	f = &content_features(i);
 	f->setAllTextures("mese.png");
+	f->setInventoryTextureCube("mese.png", "mese.png", "mese.png");
 	f->is_ground_content = true;
 	f->dug_item = std::string("MaterialItem ")+itos(i)+" 1";
 	setStoneLikeDiggingProperties(f->digging_properties, 0.5);
@@ -160,6 +175,7 @@ void content_mapnode_init()
 	i = CONTENT_CLOUD;
 	f = &content_features(i);
 	f->setAllTextures("cloud.png");
+	f->setInventoryTextureCube("cloud.png", "cloud.png", "cloud.png");
 	f->is_ground_content = true;
 	f->dug_item = std::string("MaterialItem ")+itos(i)+" 1";
 	
@@ -190,7 +206,8 @@ void content_mapnode_init()
 	
 	i = CONTENT_WATERSOURCE;
 	f = &content_features(i);
-	f->setInventoryTexture("water.png");
+	//f->setInventoryTexture("water.png");
+	f->setInventoryTextureCube("water.png", "water.png", "water.png");
 	if(new_style_water)
 	{
 		f->solidness = 0; // drawn separately, makes no faces
@@ -229,7 +246,7 @@ void content_mapnode_init()
 	f->wall_mounted = true;
 	f->air_equivalent = true;
 	f->dug_item = std::string("MaterialItem ")+itos(i)+" 1";
-	f->light_source = LIGHT_MAX;
+	f->light_source = LIGHT_MAX-1;
 	f->digging_properties.set("", DiggingProperties(true, 0.0, 0));
 	
 	i = CONTENT_SIGN_WALL;
@@ -280,7 +297,16 @@ void content_mapnode_init()
 	f->param_type = CPT_NONE;
 	f->is_ground_content = true;
 	f->dug_item = std::string("MaterialItem ")+itos(i)+" 1";
-	setStoneLikeDiggingProperties(f->digging_properties, 1.0);
+	setStoneLikeDiggingProperties(f->digging_properties, 0.9);
+
+	i = CONTENT_MOSSYCOBBLE;
+	f = &content_features(i);
+	f->setAllTextures("mossycobble.png");
+	f->setInventoryTextureCube("mossycobble.png", "mossycobble.png", "mossycobble.png");
+	f->param_type = CPT_NONE;
+	f->is_ground_content = true;
+	f->dug_item = std::string("MaterialItem ")+itos(i)+" 1";
+	setStoneLikeDiggingProperties(f->digging_properties, 0.8);
 	
 	i = CONTENT_STEEL;
 	f = &content_features(i);

@@ -131,6 +131,7 @@ include_directories(
 	${CMAKE_BUILD_TYPE}
 	${PNG_INCLUDE_DIR}
 	"${PROJECT_SOURCE_DIR}/jthread"
+	"${PROJECT_SOURCE_DIR}/sqlite"
 )
 
 set(EXECUTABLE_OUTPUT_PATH ../bin)
@@ -149,6 +150,7 @@ if(BUILD_CLIENT)
 		${PLATFORM_LIBS}
 		${CLIENT_PLATFORM_LIBS}
 		jthread
+		sqlite3
 	)
 endif(BUILD_CLIENT)
 
@@ -159,6 +161,7 @@ if(BUILD_SERVER)
 		${ZLIB_LIBRARIES}
 		${PLATFORM_LIBS}
 		jthread
+		sqlite3
 	)
 endif(BUILD_SERVER)
 
@@ -249,5 +252,6 @@ endif(BUILD_SERVER)
 # Subdirectories
 
 add_subdirectory(jthread)
+add_subdirectory(sqlite)
 
 #end

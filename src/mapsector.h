@@ -203,13 +203,6 @@ public:
 	// Basically, this should be changed to true in every setter method
 	bool differs_from_disk;
 
-	// Counts seconds from last usage.
-	// Sector can be deleted from memory after some time of inactivity.
-	// NOTE: It has to be made very sure no other thread is accessing
-	//       the sector and it doesn't remain in any cache when
-	//       deleting it.
-	float usage_timer;
-
 protected:
 	
 	// The pile of MapBlocks

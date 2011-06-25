@@ -198,6 +198,12 @@ public:
 	ActiveObjectMessage getActiveObjectMessage();
 
 	/*
+		Activate objects and dynamically modify for the dtime determined
+		from timestamp and additional_dtime
+	*/
+	void activateBlock(MapBlock *block, u32 additional_dtime=0);
+
+	/*
 		ActiveBlockModifiers (TODO)
 		-------------------------------------------
 	*/

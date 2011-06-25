@@ -33,8 +33,9 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 	Temporarily exposed map generator stuff
 	Should only be used for testing
 */
-extern double base_rock_level_2d(u64 seed, v2s16 p);
-extern double get_mud_add_amount(u64 seed, v2s16 p);
+//extern double base_rock_level_2d(u64 seed, v2s16 p);
+//extern double get_mud_add_amount(u64 seed, v2s16 p);
+extern s16 find_ground_level_from_noise(u64 seed, v2s16 p2d, s16 precision);
 extern bool get_have_sand(u64 seed, v2s16 p2d);
 extern double tree_amount_2d(u64 seed, v2s16 p);
 
@@ -126,8 +127,11 @@ HeightPoint ground_height(u64 seed, v2s16 p2d)
 	if(n)
 		return n->getValue();
 	HeightPoint hp;
-	hp.gh = BS*base_rock_level_2d(seed, p2d);
-	hp.ma = BS*get_mud_add_amount(seed, p2d);
+	s16 level = find_ground_level_from_noise(seed, p2d, 3);
+	hp.gh = (level-4)*BS;
+	hp.ma = (4)*BS;
+	/*hp.gh = BS*base_rock_level_2d(seed, p2d);
+	hp.ma = BS*get_mud_add_amount(seed, p2d);*/
 	hp.have_sand = get_have_sand(seed, p2d);
 	if(hp.gh > BS*WATER_LEVEL)
 		hp.tree_amount = tree_amount_2d(seed, p2d);
@@ -136,7 +140,7 @@ HeightPoint ground_height(u64 seed, v2s16 p2d)
 	// No mud has been added if mud amount is less than 1
 	if(hp.ma < 1.0*BS)
 		hp.ma = 0.0;
-	hp.gh -= BS*3; // Lower a bit so that it is not that much in the way
+	//hp.gh -= BS*3; // Lower a bit so that it is not that much in the way
 	g_heights[p2d] = hp;
 	return hp;
 }
