@@ -30,8 +30,12 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "clouds.h"
 #include "keycode.h"
 #include "farmesh.h"
+#include "mapblock.h"
 
-// TODO: Move content-aware stuff to separate file
+/*
+	TODO: Move content-aware stuff to separate file by adding properties
+	      and virtual interfaces
+*/
 #include "content_mapnode.h"
 #include "content_nodemeta.h"
 

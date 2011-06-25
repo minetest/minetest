@@ -238,8 +238,6 @@ FIXME: The new optimized map sending doesn't sometimes send enough blocks
        from big caves and such
 FIXME: Block send distance configuration does not take effect for some reason
 
-TODO: Map saving should be done by EmergeThread
-
 SUGG: Map unloading based on sector reference is not very good, it keeps
 	unnecessary stuff in memory. I guess. Investigate this.
 

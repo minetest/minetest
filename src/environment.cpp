@@ -22,7 +22,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "porting.h"
 #include "collision.h"
 #include "content_mapnode.h"
-
+#include "mapblock.h"
 
 Environment::Environment():
 	m_time_of_day(9000)

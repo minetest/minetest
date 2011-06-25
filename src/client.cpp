@@ -5,7 +5,7 @@ Copyright (C) 2010 celeron55, Perttu Ahola <celeron55@gmail.com>
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
 the Free Software Foundation; either version 2 of the License, or
-(at your option) any later version.
+MeshUpdateQueue::(at your option) any later version.
 
 This program is distributed in the hope that it will be useful,
 but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -26,6 +26,104 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <sstream>
 #include "porting.h"
 #include "mapsector.h"
+#include "mapblock_mesh.h"
+#include "mapblock.h"
+
+/*
+	QueuedMeshUpdate
+*/
+
+QueuedMeshUpdate::QueuedMeshUpdate():
+	p(-1337,-1337,-1337),
+	data(NULL),
+	ack_block_to_server(false)
+{
+}
+
+QueuedMeshUpdate::~QueuedMeshUpdate()
+{
+	if(data)
+		delete data;
+}
+
+/*
+	MeshUpdateQueue
+*/
+	
+MeshUpdateQueue::MeshUpdateQueue()
+{
+	m_mutex.Init();
+}
+
+MeshUpdateQueue::~MeshUpdateQueue()
+{
+	JMutexAutoLock lock(m_mutex);
+
+	core::list<QueuedMeshUpdate*>::Iterator i;
+	for(i=m_queue.begin(); i!=m_queue.end(); i++)
+	{
+		QueuedMeshUpdate *q = *i;
+		delete q;
+	}
+}
+
+/*
+	peer_id=0 adds with nobody to send to
+*/
+void MeshUpdateQueue::addBlock(v3s16 p, MeshMakeData *data, bool ack_block_to_server)
+{
+	DSTACK(__FUNCTION_NAME);
+
+	assert(data);
+
+	JMutexAutoLock lock(m_mutex);
+
+	/*
+		Find if block is already in queue.
+		If it is, update the data and quit.
+	*/
+	core::list<QueuedMeshUpdate*>::Iterator i;
+	for(i=m_queue.begin(); i!=m_queue.end(); i++)
+	{
+		QueuedMeshUpdate *q = *i;
+		if(q->p == p)
+		{
+			if(q->data)
+				delete q->data;
+			q->data = data;
+			if(ack_block_to_server)
+				q->ack_block_to_server = true;
+			return;
+		}
+	}
+	
+	/*
+		Add the block
+	*/
+	QueuedMeshUpdate *q = new QueuedMeshUpdate;
+	q->p = p;
+	q->data = data;
+	q->ack_block_to_server = ack_block_to_server;
+	m_queue.push_back(q);
+}
+
+// Returned pointer must be deleted
+// Returns NULL if queue is empty
+QueuedMeshUpdate * MeshUpdateQueue::pop()
+{
+	JMutexAutoLock lock(m_mutex);
+
+	core::list<QueuedMeshUpdate*>::Iterator i = m_queue.begin();
+	if(i == m_queue.end())
+		return NULL;
+	QueuedMeshUpdate *q = *i;
+	m_queue.erase(i);
+	return q;
+}
+
+/*
+	MeshUpdateThread
+*/
 
 void * MeshUpdateThread::Thread()
 {
@@ -1736,7 +1834,7 @@ void Client::addNode(v3s16 p, MapNode n)
 
 	try
 	{
-		TimeTaker timer3("Client::addNode(): addNodeAndUpdate");
+		//TimeTaker timer3("Client::addNode(): addNodeAndUpdate");
 		m_env.getMap().addNodeAndUpdate(p, n, modified_blocks);
 	}
 	catch(InvalidPositionException &e)
@@ -1964,12 +2062,6 @@ void Client::printDebugInfo(std::ostream &os)
 		<<std::endl;*/
 }
 	
-/*s32 Client::getDayNightIndex()
-{
-	assert(m_daynight_i >= 0 && m_daynight_i < DAYNIGHT_CACHE_COUNT);
-	return m_daynight_i;
-}*/
-
 u32 Client::getDayNightRatio()
 {
 	//JMutexAutoLock envlock(m_env_mutex); //bulk comment-out
@@ -1981,6 +2073,40 @@ u16 Client::getHP()
 	Player *player = m_env.getLocalPlayer();
 	assert(player != NULL);
 	return player->hp;
+}
+
+void Client::setTempMod(v3s16 p, NodeMod mod)
+{
+	//JMutexAutoLock envlock(m_env_mutex); //bulk comment-out
+	assert(m_env.getMap().mapType() == MAPTYPE_CLIENT);
+
+	core::map<v3s16, MapBlock*> affected_blocks;
+	((ClientMap&)m_env.getMap()).setTempMod(p, mod,
+			&affected_blocks);
+
+	for(core::map<v3s16, MapBlock*>::Iterator
+			i = affected_blocks.getIterator();
+			i.atEnd() == false; i++)
+	{
+		i.getNode()->getValue()->updateMesh(m_env.getDayNightRatio());
+	}
+}
+
+void Client::clearTempMod(v3s16 p)
+{
+	//JMutexAutoLock envlock(m_env_mutex); //bulk comment-out
+	assert(m_env.getMap().mapType() == MAPTYPE_CLIENT);
+
+	core::map<v3s16, MapBlock*> affected_blocks;
+	((ClientMap&)m_env.getMap()).clearTempMod(p,
+			&affected_blocks);
+
+	for(core::map<v3s16, MapBlock*>::Iterator
+			i = affected_blocks.getIterator();
+			i.atEnd() == false; i++)
+	{
+		i.getNode()->getValue()->updateMesh(m_env.getDayNightRatio());
+	}
 }
 
 void Client::addUpdateMeshTask(v3s16 p, bool ack_to_server)

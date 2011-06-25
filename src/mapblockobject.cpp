@@ -25,6 +25,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "map.h"
 #include "inventory.h"
 #include "utility.h"
+#include "mapblock.h"
 
 /*
 	MapBlockObject

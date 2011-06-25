@@ -25,27 +25,17 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <jthread.h>
 #include <iostream>
 
-#ifdef _WIN32
-	#include <windows.h>
-	#define sleep_s(x) Sleep((x*1000))
-#else
-	#include <unistd.h>
-	#define sleep_s(x) sleep(x)
-#endif
-
 #include "common_irrlicht.h"
 #include "mapnode.h"
-#include "mapblock.h"
+#include "mapblock_nodemod.h"
 #include "constants.h"
 #include "voxel.h"
-#include "mapchunk.h"
-#include "nodemetadata.h"
 
 class MapSector;
 class ServerMapSector;
 class ClientMapSector;
-
 class MapBlock;
+class NodeMetadata;
 
 namespace mapgen{
 	struct BlockMakeData;
@@ -161,66 +151,20 @@ public:
 	MapBlock * getBlockNoCreate(v3s16 p);
 	// Returns NULL if not found
 	MapBlock * getBlockNoCreateNoEx(v3s16 p);
-	// Gets an existing block or creates an empty one
-	//MapBlock * getBlockCreate(v3s16 p);
 	
 	// Returns InvalidPositionException if not found
 	bool isNodeUnderground(v3s16 p);
 	
-	// virtual from NodeContainer
-	bool isValidPosition(v3s16 p)
-	{
-		v3s16 blockpos = getNodeBlockPos(p);
-		MapBlock *blockref;
-		try{
-			blockref = getBlockNoCreate(blockpos);
-		}
-		catch(InvalidPositionException &e)
-		{
-			return false;
-		}
-		return true;
-		/*v3s16 relpos = p - blockpos*MAP_BLOCKSIZE;
-		bool is_valid = blockref->isValidPosition(relpos);
-		return is_valid;*/
-	}
+	bool isValidPosition(v3s16 p);
 	
-	// virtual from NodeContainer
 	// throws InvalidPositionException if not found
-	MapNode getNode(v3s16 p)
-	{
-		v3s16 blockpos = getNodeBlockPos(p);
-		MapBlock * blockref = getBlockNoCreate(blockpos);
-		v3s16 relpos = p - blockpos*MAP_BLOCKSIZE;
+	MapNode getNode(v3s16 p);
 
-		return blockref->getNodeNoCheck(relpos);
-	}
-
-	// virtual from NodeContainer
 	// throws InvalidPositionException if not found
-	void setNode(v3s16 p, MapNode & n)
-	{
-		v3s16 blockpos = getNodeBlockPos(p);
-		MapBlock * blockref = getBlockNoCreate(blockpos);
-		v3s16 relpos = p - blockpos*MAP_BLOCKSIZE;
-		blockref->setNodeNoCheck(relpos, n);
-	}
+	void setNode(v3s16 p, MapNode & n);
 	
 	// Returns a CONTENT_IGNORE node if not found
-	MapNode getNodeNoEx(v3s16 p)
-	{
-		try{
-			v3s16 blockpos = getNodeBlockPos(p);
-			MapBlock * blockref = getBlockNoCreate(blockpos);
-			v3s16 relpos = p - blockpos*MAP_BLOCKSIZE;
-
-			return blockref->getNodeNoCheck(relpos);
-		}
-		catch(InvalidPositionException &e)
-		{
-			return MapNode(CONTENT_IGNORE);
-		}
-	}
+	MapNode getNodeNoEx(v3s16 p);
 
 	void unspreadLight(enum LightBank bank,
 			core::map<v3s16, u8> & from_nodes,

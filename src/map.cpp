@@ -31,6 +31,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "serverobject.h"
 #include "content_mapnode.h"
 #include "mapgen.h"
+#include "nodemetadata.h"
 
 extern "C" {
 	#include "sqlite3.h"
@@ -141,19 +142,6 @@ MapBlock * Map::getBlockNoCreate(v3s16 p3d)
 	return block;
 }
 
-
-/*MapBlock * Map::getBlockCreate(v3s16 p3d)
-{
-	v2s16 p2d(p3d.X, p3d.Z);
-	MapSector * sector = getSectorCreate(p2d);
-	assert(sector);
-	MapBlock *block = sector->getBlockNoCreate(p3d.Y);
-	if(block)
-		return block;
-	block = sector->createBlankBlock(p3d.Y);
-	return block;
-}*/
-
 bool Map::isNodeUnderground(v3s16 p)
 {
 	v3s16 blockpos = getNodeBlockPos(p);
@@ -166,6 +154,45 @@ bool Map::isNodeUnderground(v3s16 p)
 		return false;
 	}
 }
+
+bool Map::isValidPosition(v3s16 p)
+{
+	v3s16 blockpos = getNodeBlockPos(p);
+	MapBlock *block = getBlockNoCreate(blockpos);
+	return (block != NULL);
+}
+
+// Returns a CONTENT_IGNORE node if not found
+MapNode Map::getNodeNoEx(v3s16 p)
+{
+	v3s16 blockpos = getNodeBlockPos(p);
+	MapBlock *block = getBlockNoCreateNoEx(blockpos);
+	if(block == NULL)
+		return MapNode(CONTENT_IGNORE);
+	v3s16 relpos = p - blockpos*MAP_BLOCKSIZE;
+	return block->getNodeNoCheck(relpos);
+}
+
+// throws InvalidPositionException if not found
+MapNode Map::getNode(v3s16 p)
+{
+	v3s16 blockpos = getNodeBlockPos(p);
+	MapBlock *block = getBlockNoCreateNoEx(blockpos);
+	if(block == NULL)
+		throw InvalidPositionException();
+	v3s16 relpos = p - blockpos*MAP_BLOCKSIZE;
+	return block->getNodeNoCheck(relpos);
+}
+
+// throws InvalidPositionException if not found
+void Map::setNode(v3s16 p, MapNode & n)
+{
+	v3s16 blockpos = getNodeBlockPos(p);
+	MapBlock *block = getBlockNoCreate(blockpos);
+	v3s16 relpos = p - blockpos*MAP_BLOCKSIZE;
+	block->setNodeNoCheck(relpos, n);
+}
+
 
 /*
 	Goes recursively through the neighbours of the node.
@@ -2096,22 +2123,25 @@ MapBlock* ServerMap::finishBlockMake(mapgen::BlockMakeData *data,
 	/*
 		Update lighting
 	*/
-
-	core::map<v3s16, MapBlock*> lighting_update_blocks;
-	// Center block
-	lighting_update_blocks.insert(block->getPos(), block);
-#if 0
-	// All modified blocks
-	for(core::map<v3s16, MapBlock*>::Iterator
-			i = changed_blocks.getIterator();
-			i.atEnd() == false; i++)
 	{
-		lighting_update_blocks.insert(i.getNode()->getKey(),
-				i.getNode()->getValue());
+		TimeTaker t("finishBlockMake lighting update");
+
+		core::map<v3s16, MapBlock*> lighting_update_blocks;
+		// Center block
+		lighting_update_blocks.insert(block->getPos(), block);
+	#if 0
+		// All modified blocks
+		for(core::map<v3s16, MapBlock*>::Iterator
+				i = changed_blocks.getIterator();
+				i.atEnd() == false; i++)
+		{
+			lighting_update_blocks.insert(i.getNode()->getKey(),
+					i.getNode()->getValue());
+		}
+	#endif
+		updateLighting(lighting_update_blocks, changed_blocks);
 	}
-#endif
-	updateLighting(lighting_update_blocks, changed_blocks);
-	
+
 	/*
 		Add random objects to block
 	*/

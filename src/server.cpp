@@ -34,6 +34,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "content_mapnode.h"
 #include "content_craft.h"
 #include "content_nodemeta.h"
+#include "mapblock.h"
 
 #define BLOCK_EMERGE_FLAG_FROMDISK (1<<0)
 
