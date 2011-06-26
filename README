@@ -1,0 +1,29 @@
+Minetest Δ (“Minetest Delta”) is a fork of Minetest-c55 <http://celeron.55.lt/~celeron55/minetest/>, incorporating experimental features that are not (yet) included in Minetest-c55.
+
+New features:
+* Submenu for key assignment (changes apply after restart)
+
+New bricks:
+* Sandstone (crafted from 4 sand, yields sand)
+* Cactus (plant that grows on sand)
+* Clay (found in sand at sea level, yields 4 lumps of clay)
+* Brick (made from 4 clay bricks, yields 4 clay bricks)
+* Papyrus (plant that grows in shallow water, yields paper)
+* Book shelf (made from 6 wood and 3 books, sandwhiched)
+* Rail (made from 6 iron ingots and 3 sticks, vertically sandwhiched)
+
+New materials:
+* Lump of clay
+* Clay brick (made from lumps of clay in the furnace)
+* Paper
+* Book (made from 3 paper)
+
+Alternate graphics:
+* Player
+* Omsk birds (instead of Oerkki ghosts)
+* Rat
+* Glass
+
+Building on GNU/Linux or OS X:
+    cmake . -DRUN_IN_PLACE=1
+    make -j2

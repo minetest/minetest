@@ -48,12 +48,20 @@ std::string item_craft_get_image_name(const std::string &subname)
 {
 	if(subname == "Stick")
 		return "stick.png";
+	else if(subname == "paper")
+		return "paper.png";
+	else if(subname == "book")
+		return "book.png";
 	else if(subname == "lump_of_coal")
 		return "lump_of_coal.png";
 	else if(subname == "lump_of_iron")
 		return "lump_of_iron.png";
+	else if(subname == "lump_of_clay")
+		return "lump_of_clay.png";
 	else if(subname == "steel_ingot")
 		return "steel_ingot.png";
+	else if(subname == "clay_brick")
+		return "clay_brick.png";
 	else if(subname == "rat")
 		return "rat.png";
 	else
@@ -82,7 +90,7 @@ s16 item_craft_get_drop_count(const std::string &subname)
 
 bool item_craft_is_cookable(const std::string &subname)
 {
-	if(subname == "lump_of_iron")
+	if(subname == "lump_of_iron" || subname == "lump_of_clay")
 		return true;
 		
 	return false;
@@ -92,6 +100,8 @@ InventoryItem* item_craft_create_cook_result(const std::string &subname)
 {
 	if(subname == "lump_of_iron")
 		return new CraftItem("steel_ingot", 1);
+	else if(subname == "lump_of_clay")
+		return new CraftItem("clay_brick", 1);
 
 	return NULL;
 }

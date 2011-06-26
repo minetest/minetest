@@ -188,6 +188,16 @@ void mapblock_mesh_generate_special(MeshMakeData *data,
 	material_general.setFlag(video::EMF_FOG_ENABLE, true);
 	material_general.MaterialType = video::EMT_TRANSPARENT_ALPHA_CHANNEL_REF;
 
+
+	// Papyrus material
+	video::SMaterial material_papyrus;
+	material_papyrus.setFlag(video::EMF_LIGHTING, false);
+	material_papyrus.setFlag(video::EMF_BILINEAR_FILTER, false);
+	material_papyrus.setFlag(video::EMF_FOG_ENABLE, true);
+	material_papyrus.MaterialType = video::EMT_TRANSPARENT_ALPHA_CHANNEL_REF;
+	AtlasPointer pa_papyrus = g_texturesource->getTexture(
+			g_texturesource->getTextureId("papyrus.png"));
+	material_papyrus.setTexture(0, pa_papyrus.atlas);
 	for(s16 z=0; z<MAP_BLOCKSIZE; z++)
 	for(s16 y=0; y<MAP_BLOCKSIZE; y++)
 	for(s16 x=0; x<MAP_BLOCKSIZE; x++)
@@ -857,9 +867,8 @@ void mapblock_mesh_generate_special(MeshMakeData *data,
 				TileSpec ts = n.getTile(dir);
 				AtlasPointer ap = ts.texture;
 				material_general.setTexture(0, ap.atlas);
-
 				video::S3DVertex vertices[4] =
-				{
+ 				{
 					/*video::S3DVertex(-BS/2,-BS/2,BS/2, 0,0,0, c, 0,1),
 					video::S3DVertex(BS/2,-BS/2,BS/2, 0,0,0, c, 1,1),
 					video::S3DVertex(BS/2,BS/2,BS/2, 0,0,0, c, 1,0),
@@ -895,15 +904,6 @@ void mapblock_mesh_generate_special(MeshMakeData *data,
 						vertices[i].Pos.rotateXZBy(90);
 				}
 				else if(j == 4)
-				{
-					for(u16 i=0; i<4; i++)
-						vertices[i].Pos.rotateYZBy(-90);
-				}
-				else if(j == 5)
-				{
-					for(u16 i=0; i<4; i++)
-						vertices[i].Pos.rotateYZBy(90);
-				}
 
 				for(u16 i=0; i<4; i++)
 				{
@@ -916,7 +916,160 @@ void mapblock_mesh_generate_special(MeshMakeData *data,
 			}
 		}
 #endif
+		else if(n.d == CONTENT_PAPYRUS)
+		{
+			u8 l = decode_light(undiminish_light(n.getLightBlend(data->m_daynight_ratio)));
+			video::SColor c(255,l,l,l);
 
+			for(u32 j=0; j<4; j++)
+			{
+				video::S3DVertex vertices[4] =
+				{
+					video::S3DVertex(-BS/2,-BS/2,0, 0,0,0, c,
+						pa_papyrus.x0(), pa_papyrus.y1()),
+					video::S3DVertex(BS/2,-BS/2,0, 0,0,0, c,
+						pa_papyrus.x1(), pa_papyrus.y1()),
+					video::S3DVertex(BS/2,BS/2,0, 0,0,0, c,
+						pa_papyrus.x1(), pa_papyrus.y0()),
+					video::S3DVertex(-BS/2,BS/2,0, 0,0,0, c,
+						pa_papyrus.x0(), pa_papyrus.y0()),
+				};
+
+				if(j == 0)
+				{
+					for(u16 i=0; i<4; i++)
+						vertices[i].Pos.rotateXZBy(45);
+				}
+				else if(j == 1)
+				{
+					for(u16 i=0; i<4; i++)
+						vertices[i].Pos.rotateXZBy(-45);
+				}
+				else if(j == 2)
+				{
+					for(u16 i=0; i<4; i++)
+						vertices[i].Pos.rotateXZBy(135);
+				}
+				else if(j == 3)
+				{
+					for(u16 i=0; i<4; i++)
+						vertices[i].Pos.rotateXZBy(-135);
+				}
+
+				for(u16 i=0; i<4; i++)
+				{
+					vertices[i].Pos += intToFloat(p + blockpos_nodes, BS);
+				}
+
+				u16 indices[] = {0,1,2,2,3,0};
+				// Add to mesh collector
+				collector.append(material_papyrus, vertices, 4, indices, 6);
+			}
+		}
+		else if(n.d == CONTENT_RAIL)
+		{
+			u8 l = decode_light(n.getLightBlend(data->m_daynight_ratio));
+			video::SColor c(255,l,l,l);
+
+			bool is_rail_x [] = { false, false };  /* x-1, x+1 */
+			bool is_rail_z [] = { false, false };  /* z-1, z+1 */
+
+			MapNode n_minus_x = data->m_vmanip.getNodeNoEx(blockpos_nodes + v3s16(x-1,y,z));
+			MapNode n_plus_x = data->m_vmanip.getNodeNoEx(blockpos_nodes + v3s16(x+1,y,z));
+			MapNode n_minus_z = data->m_vmanip.getNodeNoEx(blockpos_nodes + v3s16(x,y,z-1));
+			MapNode n_plus_z = data->m_vmanip.getNodeNoEx(blockpos_nodes + v3s16(x,y,z+1));
+
+			if(n_minus_x.d == CONTENT_RAIL)
+				is_rail_x[0] = true;
+			if(n_plus_x.d == CONTENT_RAIL)
+				is_rail_x[1] = true;
+			if(n_minus_z.d == CONTENT_RAIL)
+				is_rail_z[0] = true;
+			if(n_plus_z.d == CONTENT_RAIL)
+				is_rail_z[1] = true;
+
+			float d = (float)BS/16;
+			video::S3DVertex vertices[4] =
+			{
+				video::S3DVertex(-BS/2,-BS/2+d,-BS/2, 0,0,0, c,
+					0, 1),
+				video::S3DVertex(BS/2,-BS/2+d,-BS/2, 0,0,0, c,
+					1, 1),
+				video::S3DVertex(BS/2,-BS/2+d,BS/2, 0,0,0, c,
+					1, 0),
+				video::S3DVertex(-BS/2,-BS/2+d,BS/2, 0,0,0, c,
+					0, 0),
+			};
+
+			video::SMaterial material_rail;
+			material_rail.setFlag(video::EMF_LIGHTING, false);
+			material_rail.setFlag(video::EMF_BACK_FACE_CULLING, false);
+			material_rail.setFlag(video::EMF_BILINEAR_FILTER, false);
+			material_rail.setFlag(video::EMF_FOG_ENABLE, true);
+			material_rail.MaterialType
+					= video::EMT_TRANSPARENT_ALPHA_CHANNEL_REF;
+
+			int adjacencies = is_rail_x[0] + is_rail_x[1] + is_rail_z[0] + is_rail_z[1];
+
+			// Assign textures
+			if(adjacencies < 2)
+				material_rail.setTexture(0, g_texturesource->getTextureRaw("rail.png"));
+			else if(adjacencies == 2)
+			{
+				if((is_rail_x[0] && is_rail_x[1]) || (is_rail_z[0] && is_rail_z[1]))
+					material_rail.setTexture(0, g_texturesource->getTextureRaw("rail.png"));
+				else
+					material_rail.setTexture(0, g_texturesource->getTextureRaw("rail_curved.png"));
+			}
+			else if(adjacencies == 3)
+				material_rail.setTexture(0, g_texturesource->getTextureRaw("rail_t_junction.png"));
+			else if(adjacencies == 4)
+				material_rail.setTexture(0, g_texturesource->getTextureRaw("rail_crossing.png"));
+
+			// Rotate textures
+			int angle = 0;
+
+			if(adjacencies == 1)
+			{
+				if(is_rail_x[0] || is_rail_x[1])
+					angle = 90;
+			}
+			else if(adjacencies == 2)
+			{
+				if(is_rail_x[0] && is_rail_x[1])
+					angle = 90;
+				else if(is_rail_x[0] && is_rail_z[0])
+					angle = 270;
+				else if(is_rail_x[0] && is_rail_z[1])
+					angle = 180;
+				else if(is_rail_x[1] && is_rail_z[1])
+					angle = 90;
+			}
+			else if(adjacencies == 3)
+			{
+				if(!is_rail_x[0])
+					angle=0;
+				if(!is_rail_x[1])
+					angle=180;
+				if(!is_rail_z[0])
+					angle=90;
+				if(!is_rail_z[1])
+					angle=270;
+			}
+
+			if(angle != 0) {
+				for(u16 i=0; i<4; i++)
+					vertices[i].Pos.rotateXZBy(angle);
+			}
+
+			for(s32 i=0; i<4; i++)
+			{
+				vertices[i].Pos += intToFloat(p + blockpos_nodes, BS);
+			}
+
+			u16 indices[] = {0,1,2,2,3,0};
+			collector.append(material_rail, vertices, 4, indices, 6);
+		}
 	}
 }
 #endif
