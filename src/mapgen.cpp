@@ -673,52 +673,19 @@ public:
 				continue;
 			v3s16 roomplace;
 			// X east, Z north, Y up
-#if 0
-			if(doordir == v3s16(1,0,0)) // X+
-				roomplace = doorplace + v3s16(0,-1,-roomsize.Z/2+
-						m_random.range(-roomsize.Z/2+1,roomsize.Z/2-1));
-			if(doordir == v3s16(-1,0,0)) // X-
-				roomplace = doorplace + v3s16(-roomsize.X+1,-1,-roomsize.Z/2
-						+m_random.range(-roomsize.Z/2+1,roomsize.Z/2-1));
-			if(doordir == v3s16(0,0,1)) // Z+
-				roomplace = doorplace + v3s16(-roomsize.X/2
-						+m_random.range(-roomsize.X/2+1,roomsize.X/2-1),-1,0);
-			if(doordir == v3s16(0,0,-1)) // Z-
-				roomplace = doorplace + v3s16(-roomsize.X/2
-						+m_random.range(-roomsize.X/2+1,roomsize.X/2-1),-1,
-								-roomsize.Z+1);
-#endif
-#if 0
-			if(doordir == v3s16(1,0,0)) // X+
-				roomplace = doorplace + v3s16(0,-1,-roomsize.Z/2+
-						m_random.range(-roomsize.Z/2+(roomsize.Z%2==0?2:1),
-								roomsize.Z/2-1));
-			if(doordir == v3s16(-1,0,0)) // X-
-				roomplace = doorplace + v3s16(-roomsize.X+1,-1,-roomsize.Z/2
-						+m_random.range(-roomsize.Z/2+(roomsize.Z%2==0?2:1),
-								roomsize.Z/2-1));
-			if(doordir == v3s16(0,0,1)) // Z+
-				roomplace = doorplace + v3s16(-roomsize.X/2
-						+m_random.range(-roomsize.X/2+(roomsize.X%2==0?2:1),
-								roomsize.X/2-1),-1,0);
-			if(doordir == v3s16(0,0,-1)) // Z-
-				roomplace = doorplace + v3s16(-roomsize.X/2
-						+m_random.range(-roomsize.X/2+(roomsize.X%2==0?2:1),
-								roomsize.X/2-1),-1, -roomsize.Z+1);
-#endif
 #if 1
 			if(doordir == v3s16(1,0,0)) // X+
 				roomplace = doorplace +
-						v3s16(0,-1,m_random.range(-roomsize.Z+1,-2));
+						v3s16(0,-1,m_random.range(-roomsize.Z+2,-2));
 			if(doordir == v3s16(-1,0,0)) // X-
 				roomplace = doorplace +
-						v3s16(-roomsize.X+1,-1,m_random.range(-roomsize.Z+1,-2));
+						v3s16(-roomsize.X+1,-1,m_random.range(-roomsize.Z+2,-2));
 			if(doordir == v3s16(0,0,1)) // Z+
 				roomplace = doorplace +
-						v3s16(m_random.range(-roomsize.X+1,-2),-1,0);
+						v3s16(m_random.range(-roomsize.X+2,-2),-1,0);
 			if(doordir == v3s16(0,0,-1)) // Z-
 				roomplace = doorplace +
-						v3s16(m_random.range(-roomsize.X+1,-2),-1,-roomsize.Z+1);
+						v3s16(m_random.range(-roomsize.X+2,-2),-1,-roomsize.Z+1);
 #endif
 #if 0
 			if(doordir == v3s16(1,0,0)) // X+
@@ -899,10 +866,18 @@ static void make_dungeon1(VoxelManipulator &vmanip, PseudoRandom &random)
 	Noise functions. Make sure seed is mangled differently in each one.
 */
 
-// This affects the shape of the contour
+/*
+	Scaling the output of the noise function affects the overdrive of the
+	contour function, which affects the shape of the output considerably.
+*/
+#define CAVE_NOISE_SCALE 12.0
 //#define CAVE_NOISE_SCALE 10.0
 //#define CAVE_NOISE_SCALE 7.5
-#define CAVE_NOISE_SCALE 5.0
+//#define CAVE_NOISE_SCALE 5.0
+//#define CAVE_NOISE_SCALE 1.0
+
+//#define CAVE_NOISE_THRESHOLD (2.5/CAVE_NOISE_SCALE)
+#define CAVE_NOISE_THRESHOLD (1.5/CAVE_NOISE_SCALE)
 
 NoiseParams get_cave_noise1_params(u64 seed)
 {
@@ -910,8 +885,13 @@ NoiseParams get_cave_noise1_params(u64 seed)
 			200, CAVE_NOISE_SCALE);*/
 	/*return NoiseParams(NOISE_PERLIN_CONTOUR, seed+52534, 4, 0.7,
 			100, CAVE_NOISE_SCALE);*/
-	return NoiseParams(NOISE_PERLIN_CONTOUR, seed+52534, 5, 0.6,
-			100, CAVE_NOISE_SCALE);
+	/*return NoiseParams(NOISE_PERLIN_CONTOUR, seed+52534, 5, 0.6,
+			100, CAVE_NOISE_SCALE);*/
+	/*return NoiseParams(NOISE_PERLIN_CONTOUR, seed+52534, 5, 0.3,
+			100, CAVE_NOISE_SCALE);*/
+	return NoiseParams(NOISE_PERLIN_CONTOUR, seed+52534, 4, 0.5,
+			50, CAVE_NOISE_SCALE);
+	//return NoiseParams(NOISE_CONSTANT_ONE);
 }
 
 NoiseParams get_cave_noise2_params(u64 seed)
@@ -920,12 +900,12 @@ NoiseParams get_cave_noise2_params(u64 seed)
 			200, CAVE_NOISE_SCALE);*/
 	/*return NoiseParams(NOISE_PERLIN_CONTOUR_FLIP_YZ, seed+10325, 4, 0.7,
 			100, CAVE_NOISE_SCALE);*/
-	return NoiseParams(NOISE_PERLIN_CONTOUR_FLIP_YZ, seed+10325, 5, 0.6,
-			100, CAVE_NOISE_SCALE);
+	/*return NoiseParams(NOISE_PERLIN_CONTOUR_FLIP_YZ, seed+10325, 5, 0.3,
+			100, CAVE_NOISE_SCALE);*/
+	return NoiseParams(NOISE_PERLIN_CONTOUR_FLIP_YZ, seed+10325, 4, 0.5,
+			50, CAVE_NOISE_SCALE);
+	//return NoiseParams(NOISE_CONSTANT_ONE);
 }
-
-//#define CAVE_NOISE_THRESHOLD (2.5/CAVE_NOISE_SCALE)
-#define CAVE_NOISE_THRESHOLD (2.0/CAVE_NOISE_SCALE)
 
 NoiseParams get_ground_noise1_params(u64 seed)
 {
@@ -963,13 +943,13 @@ bool val_is_ground(double ground_noise1_val, v3s16 p, u64 seed)
 {
 	//return ((double)p.Y < ground_noise1_val);
 
-	double f = 0.8 + noise2d_perlin(
+	double f = 0.55 + noise2d_perlin(
 			0.5+(float)p.X/250, 0.5+(float)p.Z/250,
 			seed+920381, 3, 0.5);
 	if(f < 0.01)
 		f = 0.01;
 	else if(f >= 1.0)
-		f *= 2.0;
+		f *= 1.6;
 	double h = WATER_LEVEL + 10 * noise2d_perlin(
 			0.5+(float)p.X/250, 0.5+(float)p.Z/250,
 			seed+84174, 4, 0.5);
@@ -1431,13 +1411,13 @@ void make_block(BlockMakeData *data)
 		/*
 			Cave noise
 		*/
-
+#if 1
 		noisebuf_cave.create(get_cave_noise1_params(data->seed),
 				minpos_f.X, minpos_f.Y, minpos_f.Z,
 				maxpos_f.X, maxpos_f.Y, maxpos_f.Z,
-				4, 3, 4);
-		
+				2, 2, 2);
 		noisebuf_cave.multiply(get_cave_noise2_params(data->seed));
+#endif
 
 		/*
 			Ground noise
