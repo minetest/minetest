@@ -1246,6 +1246,25 @@ void the_game(
 				chat_lines.push_back(ChatLine(L"frametime_graph enabled"));
 			}
 		}
+		else if(input->wasKeyDown(getKeySetting("keymap_screenshot")))
+		{
+			irr::video::IImage* const image = driver->createScreenShot(); 
+			if (image) { 
+				irr::c8 filename[256]; 
+				snprintf(filename, 256, "%s/screenshot_%u.png", 
+						 g_settings.get("screenshot_path").c_str(),
+						 device->getTimer()->getRealTime()); 
+				if (driver->writeImageToFile(image, filename)) {
+					std::wstringstream sstr;
+					sstr<<"Saved screenshot to '"<<filename<<"'";
+					dstream<<"Saved screenshot to '"<<filename<<"'"<<std::endl;
+					chat_lines.push_back(ChatLine(sstr.str()));
+				} else{
+					dstream<<"Failed to save screenshot '"<<filename<<"'"<<std::endl;
+				}
+				image->drop(); 
+			}			 
+		}
 
 		// Item selection with mouse wheel
 		{

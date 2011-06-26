@@ -43,6 +43,7 @@ void set_default_settings()
 	g_settings.setDefault("keymap_freemove", "KEY_KEY_K");
 	g_settings.setDefault("keymap_fastmove", "KEY_KEY_J");
 	g_settings.setDefault("keymap_frametime_graph", "KEY_F1");
+	g_settings.setDefault("keymap_screenshot", "KEY_F12");
 	// Some (temporary) keys for debugging
 	g_settings.setDefault("keymap_special1", "KEY_KEY_E");
 	g_settings.setDefault("keymap_print_debug_stacks", "KEY_KEY_P");
@@ -71,6 +72,7 @@ void set_default_settings()
 	g_settings.setDefault("enable_farmesh", "false");
 	g_settings.setDefault("enable_clouds", "true");
 	g_settings.setDefault("invisible_stone", "false");
+	g_settings.setDefault("screenshot_path", ".");
 
 	// Server stuff
 	g_settings.setDefault("enable_experimental", "false");
