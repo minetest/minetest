@@ -602,6 +602,9 @@ void RemoteClient::GetNextBlocks(Server *server, float dtime,
 			bool block_is_invalid = false;
 			if(block != NULL)
 			{
+				// Reset usage timer, this block will be of use in the future.
+				block->resetUsageTimer();
+
 				// Block is dummy if data doesn't exist.
 				// It means it has been not found from disk and not generated
 				if(block->isDummy())
@@ -1297,11 +1300,20 @@ void Server::AsyncRunStep()
 	}
 
 	{
-		// Step environment
-		// This also runs Map's timers
 		JMutexAutoLock lock(m_env_mutex);
+		// Step environment
 		ScopeProfiler sp(&g_profiler, "Server: environment step");
 		m_env.step(dtime);
+	}
+		
+	const float map_timer_and_unload_dtime = 5.15;
+	if(m_map_timer_and_unload_interval.step(dtime, map_timer_and_unload_dtime))
+	{
+		JMutexAutoLock lock(m_env_mutex);
+		// Run Map's timers and unload unused data
+		ScopeProfiler sp(&g_profiler, "Server: map timer and unload");
+		m_env.getMap().timerUpdate(map_timer_and_unload_dtime,
+				g_settings.getFloat("server_unload_unused_data_timeout"));
 	}
 	
 	/*
@@ -1665,8 +1677,15 @@ void Server::AsyncRunStep()
 		if(m_unsent_map_edit_queue.size() >= 4)
 			disable_single_change_sending = true;
 
+		bool got_any_events = false;
+
+		// We'll log the amount of each
+		Profiler prof;
+
 		while(m_unsent_map_edit_queue.size() != 0)
 		{
+			got_any_events = true;
+
 			MapEditEvent* event = m_unsent_map_edit_queue.pop_front();
 			
 			// Players far away from the change are stored here.
@@ -1676,7 +1695,8 @@ void Server::AsyncRunStep()
 
 			if(event->type == MEET_ADDNODE)
 			{
-				dstream<<"Server: MEET_ADDNODE"<<std::endl;
+				//dstream<<"Server: MEET_ADDNODE"<<std::endl;
+				prof.add("MEET_ADDNODE", 1);
 				if(disable_single_change_sending)
 					sendAddNode(event->p, event->n, event->already_known_by_peer,
 							&far_players, 5);
@@ -1686,7 +1706,8 @@ void Server::AsyncRunStep()
 			}
 			else if(event->type == MEET_REMOVENODE)
 			{
-				dstream<<"Server: MEET_REMOVENODE"<<std::endl;
+				//dstream<<"Server: MEET_REMOVENODE"<<std::endl;
+				prof.add("MEET_REMOVENODE", 1);
 				if(disable_single_change_sending)
 					sendRemoveNode(event->p, event->already_known_by_peer,
 							&far_players, 5);
@@ -1697,15 +1718,18 @@ void Server::AsyncRunStep()
 			else if(event->type == MEET_BLOCK_NODE_METADATA_CHANGED)
 			{
 				dstream<<"Server: MEET_BLOCK_NODE_METADATA_CHANGED"<<std::endl;
+				prof.add("MEET_BLOCK_NODE_METADATA_CHANGED", 1);
 				setBlockNotSent(event->p);
 			}
 			else if(event->type == MEET_OTHER)
 			{
+				prof.add("MEET_OTHER", 1);
 				dstream<<"WARNING: Server: MEET_OTHER not implemented"
 						<<std::endl;
 			}
 			else
 			{
+				prof.add("unknown", 1);
 				dstream<<"WARNING: Server: Unknown MapEditEvent "
 						<<((u32)event->type)<<std::endl;
 			}
@@ -1743,6 +1767,13 @@ void Server::AsyncRunStep()
 			if(count >= 1 && m_unsent_map_edit_queue.size() < 100)
 				break;*/
 		}
+
+		if(got_any_events)
+		{
+			dstream<<"Server: MapEditEvents:"<<std::endl;
+			prof.print(dstream);
+		}
+		
 	}
 
 	/*
@@ -1765,39 +1796,6 @@ void Server::AsyncRunStep()
 		}
 	}
 	
-	/*
-		Step node metadata
-		TODO: Move to ServerEnvironment and utilize active block stuff
-	*/
-	/*{
-		//TimeTaker timer("Step node metadata");
-
-		JMutexAutoLock envlock(m_env_mutex);
-		JMutexAutoLock conlock(m_con_mutex);
-
-		ScopeProfiler sp(&g_profiler, "Server: stepping node metadata");
-
-		core::map<v3s16, MapBlock*> changed_blocks;
-		m_env.getMap().nodeMetadataStep(dtime, changed_blocks);
-		
-		// Use setBlockNotSent
-
-		for(core::map<v3s16, MapBlock*>::Iterator
-				i = changed_blocks.getIterator();
-				i.atEnd() == false; i++)
-		{
-			MapBlock *block = i.getNode()->getValue();
-
-			for(core::map<u16, RemoteClient*>::Iterator
-				i = m_clients.getIterator();
-				i.atEnd()==false; i++)
-			{
-				RemoteClient *client = i.getNode()->getValue();
-				client->SetBlockNotSent(block->getPos());
-			}
-		}
-	}*/
-		
 	/*
 		Trigger emergethread (it somehow gets to a non-triggered but
 		bysy state sometimes)
@@ -1829,30 +1827,29 @@ void Server::AsyncRunStep()
 			
 			// Map
 			JMutexAutoLock lock(m_env_mutex);
-			if(((ServerMap*)(&m_env.getMap()))->isSavingEnabled() == true)
+
+			/*// Unload unused data (delete from memory)
+			m_env.getMap().unloadUnusedData(
+					g_settings.getFloat("server_unload_unused_sectors_timeout"));
+					*/
+			/*u32 deleted_count = m_env.getMap().unloadUnusedData(
+					g_settings.getFloat("server_unload_unused_sectors_timeout"));
+					*/
+
+			// Save only changed parts
+			m_env.getMap().save(true);
+
+			/*if(deleted_count > 0)
 			{
-				// Unload unused data (delete from memory)
-				m_env.getMap().unloadUnusedData(
-						g_settings.getFloat("server_unload_unused_sectors_timeout"));
-				/*u32 deleted_count = m_env.getMap().unloadUnusedData(
-						g_settings.getFloat("server_unload_unused_sectors_timeout"));
-						*/
+				dout_server<<"Server: Unloaded "<<deleted_count
+						<<" blocks from memory"<<std::endl;
+			}*/
 
-				// Save only changed parts
-				m_env.getMap().save(true);
-
-				/*if(deleted_count > 0)
-				{
-					dout_server<<"Server: Unloaded "<<deleted_count
-							<<" blocks from memory"<<std::endl;
-				}*/
-
-				// Save players
-				m_env.serializePlayers(m_mapsavedir);
-				
-				// Save environment metadata
-				m_env.saveMeta(m_mapsavedir);
-			}
+			// Save players
+			m_env.serializePlayers(m_mapsavedir);
+			
+			// Save environment metadata
+			m_env.saveMeta(m_mapsavedir);
 		}
 	}
 }
@@ -3336,7 +3333,7 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 
 void Server::onMapEditEvent(MapEditEvent *event)
 {
-	dstream<<"Server::onMapEditEvent()"<<std::endl;
+	//dstream<<"Server::onMapEditEvent()"<<std::endl;
 	if(m_ignore_map_edit_events)
 		return;
 	MapEditEvent *e = event->clone();

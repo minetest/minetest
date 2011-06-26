@@ -223,19 +223,23 @@ public:
 	
 	virtual void save(bool only_changed){assert(0);};
 	
-	// Server implements this
+	// Server implements this.
+	// Client leaves it as no-op.
 	virtual void saveBlock(MapBlock *block){};
 
 	/*
-		Updates usage timers
+		Updates usage timers and unloads unused blocks and sectors.
+		Saves modified blocks before unloading on MAPTYPE_SERVER.
 	*/
-	void timerUpdate(float dtime);
+	void timerUpdate(float dtime, float unload_timeout,
+			core::list<v3s16> *unloaded_blocks=NULL);
 		
 	// Deletes sectors and their blocks from memory
 	// Takes cache into account
 	// If deleted sector is in sector cache, clears cache
 	void deleteSectors(core::list<v2s16> &list);
-	
+
+#if 0
 	/*
 		Unload unused data
 		= flush changed to disk and delete from memory, if usage timer of
@@ -243,8 +247,9 @@ public:
 	*/
 	void unloadUnusedData(float timeout,
 			core::list<v3s16> *deleted_blocks=NULL);
+#endif
 
-	// For debug printing
+	// For debug printing. Prints "Map: ", "ServerMap: " or "ClientMap: "
 	virtual void PrintInfo(std::ostream &out);
 	
 	void transformLiquids(core::map<v3s16, MapBlock*> & modified_blocks);

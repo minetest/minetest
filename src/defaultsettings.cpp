@@ -56,7 +56,7 @@ void set_default_settings()
 	g_settings.setDefault("screenH", "600");
 	g_settings.setDefault("address", "");
 	g_settings.setDefault("random_input", "false");
-	g_settings.setDefault("client_delete_unused_sectors_timeout", "1200");
+	g_settings.setDefault("client_unload_unused_data_timeout", "1200");
 	g_settings.setDefault("enable_fog", "true");
 	g_settings.setDefault("new_style_water", "false");
 	g_settings.setDefault("new_style_leaves", "true");
@@ -94,7 +94,7 @@ void set_default_settings()
 	g_settings.setDefault("max_block_generate_distance", "8");
 	g_settings.setDefault("time_send_interval", "20");
 	g_settings.setDefault("time_speed", "96");
-	g_settings.setDefault("server_unload_unused_sectors_timeout", "60");
+	g_settings.setDefault("server_unload_unused_data_timeout", "60");
 	g_settings.setDefault("server_map_save_interval", "60");
 	g_settings.setDefault("full_block_send_enable_min_time_from_building", "2.0");
 	//g_settings.setDefault("dungeon_rarity", "0.025");

@@ -661,14 +661,6 @@ void ServerEnvironment::step(float dtime)
 	}
 	
 	/*
-		Let map update it's timers
-	*/
-	{
-		//TimeTaker timer("Server m_map->timerUpdate()");
-		m_map->timerUpdate(dtime);
-	}
-
-	/*
 		Handle players
 	*/
 	for(core::list<Player*>::Iterator i = m_players.begin();
@@ -1469,11 +1461,6 @@ void ClientEnvironment::step(float dtime)
 	bool free_move = g_settings.getBool("free_move");
 	bool footprints = g_settings.getBool("footprints");
 
-	{
-		//TimeTaker timer("Client m_map->timerUpdate()");
-		m_map->timerUpdate(dtime);
-	}
-	
 	// Get local player
 	LocalPlayer *lplayer = getLocalPlayer();
 	assert(lplayer);
@@ -1672,7 +1659,7 @@ void ClientEnvironment::step(float dtime)
 		// Step object
 		obj->step(dtime, this);
 
-		if(m_active_object_light_update_interval.step(dtime, 0.5))
+		if(m_active_object_light_update_interval.step(dtime, 0.21))
 		{
 			// Update lighting
 			//u8 light = LIGHT_MAX;

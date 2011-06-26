@@ -199,7 +199,7 @@ Client::Client(
 	m_access_denied(false)
 {
 	m_packetcounter_timer = 0.0;
-	m_delete_unused_sectors_timer = 0.0;
+	//m_delete_unused_sectors_timer = 0.0;
 	m_connection_reinit_timer = 0.0;
 	m_avg_rtt_timer = 0.0;
 	m_playerpos_send_timer = 0.0;
@@ -303,7 +303,11 @@ void Client::step(float dtime)
 			m_packetcounter.clear();
 		}
 	}
+	
+	// Get connection status
+	bool connected = connectedAndInitialized();
 
+#if 0
 	{
 		/*
 			Delete unused sectors
@@ -324,8 +328,7 @@ void Client::step(float dtime)
 
 			core::list<v3s16> deleted_blocks;
 
-			float delete_unused_sectors_timeout = 
-				g_settings.getFloat("client_delete_unused_sectors_timeout");
+				g_settings.getFloat("client_unload_unused_data_timeout");
 	
 			// Delete sector blocks
 			/*u32 num = m_env.getMap().unloadUnusedData
@@ -392,8 +395,7 @@ void Client::step(float dtime)
 			}
 		}
 	}
-
-	bool connected = connectedAndInitialized();
+#endif
 
 	if(connected == false)
 	{
@@ -439,6 +441,67 @@ void Client::step(float dtime)
 	*/
 	
 	/*
+		Run Map's timers and unload unused data
+	*/
+	const float map_timer_and_unload_dtime = 5.25;
+	if(m_map_timer_and_unload_interval.step(dtime, map_timer_and_unload_dtime))
+	{
+		ScopeProfiler sp(&g_profiler, "Client: map timer and unload");
+		core::list<v3s16> deleted_blocks;
+		m_env.getMap().timerUpdate(map_timer_and_unload_dtime,
+				g_settings.getFloat("client_unload_unused_data_timeout"),
+				&deleted_blocks);
+				
+		/*if(deleted_blocks.size() > 0)
+			dstream<<"Client: Unloaded "<<deleted_blocks.size()
+					<<" unused blocks"<<std::endl;*/
+			
+		/*
+			Send info to server
+			NOTE: This loop is intentionally iterated the way it is.
+		*/
+
+		core::list<v3s16>::Iterator i = deleted_blocks.begin();
+		core::list<v3s16> sendlist;
+		for(;;)
+		{
+			if(sendlist.size() == 255 || i == deleted_blocks.end())
+			{
+				if(sendlist.size() == 0)
+					break;
+				/*
+					[0] u16 command
+					[2] u8 count
+					[3] v3s16 pos_0
+					[3+6] v3s16 pos_1
+					...
+				*/
+				u32 replysize = 2+1+6*sendlist.size();
+				SharedBuffer<u8> reply(replysize);
+				writeU16(&reply[0], TOSERVER_DELETEDBLOCKS);
+				reply[2] = sendlist.size();
+				u32 k = 0;
+				for(core::list<v3s16>::Iterator
+						j = sendlist.begin();
+						j != sendlist.end(); j++)
+				{
+					writeV3S16(&reply[2+1+6*k], *j);
+					k++;
+				}
+				m_con.Send(PEER_ID_SERVER, 1, reply, true);
+
+				if(i == deleted_blocks.end())
+					break;
+
+				sendlist.clear();
+			}
+
+			sendlist.push_back(*i);
+			i++;
+		}
+	}
+
+	/*
 		Handle environment
 	*/
 	{
@@ -453,23 +516,23 @@ void Client::step(float dtime)
 		//TimeTaker envtimer("env step", m_device);
 		// Step environment
 		m_env.step(dtime);
-
-		// Step active blocks
+		
+		/*
+			Handle active blocks
+			NOTE: These old objects are DEPRECATED. TODO: Remove
+		*/
 		for(core::map<v3s16, bool>::Iterator
 				i = m_active_blocks.getIterator();
 				i.atEnd() == false; i++)
 		{
 			v3s16 p = i.getNode()->getKey();
 
-			MapBlock *block = NULL;
-			try
-			{
-				block = m_env.getMap().getBlockNoCreate(p);
-				block->stepObjects(dtime, false, m_env.getDayNightRatio());
-			}
-			catch(InvalidPositionException &e)
-			{
-			}
+			MapBlock *block = m_env.getMap().getBlockNoCreateNoEx(p);
+			if(block == NULL)
+				continue;
+			
+			// Step MapBlockObjects
+			block->stepObjects(dtime, false, m_env.getDayNightRatio());
 		}
 
 		/*
@@ -1183,6 +1246,7 @@ void Client::ProcessData(u8 *data, u32 datasize, u16 sender_peer_id)
 
 		/*
 			Read block objects
+			NOTE: Deprecated stuff here, TODO: Remove
 		*/
 
 		// Read active block count

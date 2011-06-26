@@ -1386,8 +1386,15 @@ bool Map::dayNightDiffed(v3s16 blockpos)
 /*
 	Updates usage timers
 */
-void Map::timerUpdate(float dtime)
+void Map::timerUpdate(float dtime, float unload_timeout,
+		core::list<v3s16> *unloaded_blocks)
 {
+	bool save_before_unloading = (mapType() == MAPTYPE_SERVER);
+	
+	core::list<v2s16> sector_deletion_queue;
+	u32 deleted_blocks_count = 0;
+	u32 saved_blocks_count = 0;
+
 	core::map<v2s16, MapSector*>::Iterator si;
 
 	si = m_sectors.getIterator();
@@ -1395,13 +1402,60 @@ void Map::timerUpdate(float dtime)
 	{
 		MapSector *sector = si.getNode()->getValue();
 
+		bool all_blocks_deleted = true;
+
 		core::list<MapBlock*> blocks;
 		sector->getBlocks(blocks);
 		for(core::list<MapBlock*>::Iterator i = blocks.begin();
 				i != blocks.end(); i++)
 		{
-			(*i)->incrementUsageTimer(dtime);
+			MapBlock *block = (*i);
+			
+			block->incrementUsageTimer(dtime);
+			
+			if(block->getUsageTimer() > unload_timeout)
+			{
+				v3s16 p = block->getPos();
+
+				// Save if modified
+				if(block->getModified() != MOD_STATE_CLEAN
+						&& save_before_unloading)
+				{
+					saveBlock(block);
+					saved_blocks_count++;
+				}
+
+				// Delete from memory
+				sector->deleteBlock(block);
+
+				if(unloaded_blocks)
+					unloaded_blocks->push_back(p);
+
+				deleted_blocks_count++;
+			}
+			else
+			{
+				all_blocks_deleted = false;
+			}
 		}
+
+		if(all_blocks_deleted)
+		{
+			sector_deletion_queue.push_back(si.getNode()->getKey());
+		}
+	}
+	
+	// Finally delete the empty sectors
+	deleteSectors(sector_deletion_queue);
+	
+	if(deleted_blocks_count != 0)
+	{
+		PrintInfo(dstream); // ServerMap/ClientMap:
+		dstream<<"Unloaded "<<deleted_blocks_count
+				<<" blocks from memory";
+		if(save_before_unloading)
+			dstream<<", of which "<<saved_blocks_count<<" were written";
+		dstream<<"."<<std::endl;
 	}
 }
 
@@ -1420,6 +1474,7 @@ void Map::deleteSectors(core::list<v2s16> &list)
 	}
 }
 
+#if 0
 void Map::unloadUnusedData(float timeout,
 		core::list<v3s16> *deleted_blocks)
 {
@@ -1474,6 +1529,7 @@ void Map::unloadUnusedData(float timeout,
 	//return sector_deletion_queue.getSize();
 	//return deleted_blocks_count;
 }
+#endif
 
 void Map::PrintInfo(std::ostream &out)
 {
@@ -1500,7 +1556,7 @@ void Map::transformLiquids(core::map<v3s16, MapBlock*> & modified_blocks)
 		*/
 		v3s16 p0 = m_transforming_liquid.pop_front();
 
-		MapNode n0 = getNode(p0);
+		MapNode n0 = getNodeNoEx(p0);
 
 		// Don't deal with non-liquids
 		if(content_liquid(n0.d) == false)
@@ -1532,13 +1588,10 @@ void Map::transformLiquids(core::map<v3s16, MapBlock*> & modified_blocks)
 			};
 			for(u16 i=0; i<5; i++)
 			{
-				try
-				{
-
 				bool from_top = (i==0);
 
 				v3s16 p2 = p0 + dirs_from[i];
-				MapNode n2 = getNode(p2);
+				MapNode n2 = getNodeNoEx(p2);
 
 				if(content_liquid(n2.d))
 				{
@@ -1571,10 +1624,6 @@ void Map::transformLiquids(core::map<v3s16, MapBlock*> & modified_blocks)
 
 					if(new_liquid_level > new_liquid_level_max)
 						new_liquid_level_max = new_liquid_level;
-				}
-
-				}catch(InvalidPositionException &e)
-				{
 				}
 			} //for
 
@@ -1618,19 +1667,12 @@ void Map::transformLiquids(core::map<v3s16, MapBlock*> & modified_blocks)
 				};
 				for(u16 i=0; i<6; i++)
 				{
-					try
-					{
-
 					v3s16 p2 = p0 + dirs[i];
 
-					MapNode n2 = getNode(p2);
+					MapNode n2 = getNodeNoEx(p2);
 					if(content_flowing_liquid(n2.d))
 					{
 						m_transforming_liquid.push_back(p2);
-					}
-
-					}catch(InvalidPositionException &e)
-					{
 					}
 				}
 			}
@@ -1652,9 +1694,6 @@ void Map::transformLiquids(core::map<v3s16, MapBlock*> & modified_blocks)
 		};
 		for(u16 i=0; i<5; i++)
 		{
-			try
-			{
-
 			bool to_bottom = (i == 0);
 
 			// If liquid is at lowest possible height, it's not going
@@ -1680,7 +1719,7 @@ void Map::transformLiquids(core::map<v3s16, MapBlock*> & modified_blocks)
 
 			v3s16 p2 = p0 + dirs_to[i];
 
-			MapNode n2 = getNode(p2);
+			MapNode n2 = getNodeNoEx(p2);
 			//dstream<<"[1] n2.param="<<(int)n2.param<<std::endl;
 
 			if(content_liquid(n2.d))
@@ -1746,10 +1785,6 @@ void Map::transformLiquids(core::map<v3s16, MapBlock*> & modified_blocks)
 			// If n2_changed to bottom, don't flow anywhere else
 			if(to_bottom && flowed && !is_source)
 				break;
-
-			}catch(InvalidPositionException &e)
-			{
-			}
 		}
 
 		loopcount++;
@@ -1945,7 +1980,6 @@ ServerMap::~ServerMap()
 	{
 		if(m_map_saving_enabled)
 		{
-			//save(false);
 			// Save only changed parts
 			save(true);
 			dstream<<DTIME<<"Server: saved map to "<<m_savedir<<std::endl;
@@ -2104,11 +2138,15 @@ MapBlock* ServerMap::finishBlockMake(mapgen::BlockMakeData *data,
 	/*
 		NOTE: Lighting and object adding shouldn't really be here, but
 		lighting is a bit tricky to move properly to makeBlock.
-		TODO: Do this the right way anyway.
+		TODO: Do this the right way anyway, that is, move it to makeBlock.
+		      - There needs to be some way for makeBlock to report back if
+			    the lighting update is going further down because of the
+				new block blocking light
 	*/
 
 	/*
 		Update lighting
+		NOTE: This takes ~60ms, TODO: Investigate why
 	*/
 	{
 		TimeTaker t("finishBlockMake lighting update");
@@ -3418,6 +3456,9 @@ void ClientMap::renderMap(video::IVideoDriver* driver, s32 pass)
 			{
 				continue;
 			}
+
+			// Okay, this block will be drawn. Reset usage timer.
+			block->resetUsageTimer();
 			
 			// This is ugly (spherical distance limit?)
 			/*if(m_control.range_all == false &&

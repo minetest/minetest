@@ -9,6 +9,10 @@
 #
 # Further documentation:
 # http://celeron.55.lt/~celeron55/minetest/wiki/doku.php
+#
+# NOTE: This file might not be up-to-date, refer to the
+#       defaultsettings.cpp file for an up-to-date list:
+# https://bitbucket.org/celeron55/minetest/src/tip/src/defaultsettings.cpp
 
 #
 # Client side stuff
@@ -92,7 +96,7 @@
 #random_input = false
 
 # Timeout for client to remove unused map data from memory
-#client_delete_unused_sectors_timeout = 1200
+#client_unload_unused_data_timeout = 1200
 
 #
 # Server side stuff
@@ -140,6 +144,6 @@
 #time_speed = 1440
 
 #time_send_interval = 5
-#server_unload_unused_sectors_timeout = 60
+#server_unload_unused_data_timeout = 60
 #server_map_save_interval = 60
 
