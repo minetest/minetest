@@ -82,6 +82,7 @@ void set_default_settings()
 	g_settings.setDefault("default_password", "");
 	g_settings.setDefault("default_privs", "build, shout");
 	g_settings.setDefault("profiler_print_interval", "0");
+	g_settings.setDefault("enable_mapgen_debug_info", "false");
 
 	g_settings.setDefault("objectdata_interval", "0.2");
 	g_settings.setDefault("active_object_range", "2");

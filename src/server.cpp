@@ -1831,17 +1831,21 @@ void Server::AsyncRunStep()
 			JMutexAutoLock lock(m_env_mutex);
 			if(((ServerMap*)(&m_env.getMap()))->isSavingEnabled() == true)
 			{
+				// Unload unused data (delete from memory)
+				m_env.getMap().unloadUnusedData(
+						g_settings.getFloat("server_unload_unused_sectors_timeout"));
+				/*u32 deleted_count = m_env.getMap().unloadUnusedData(
+						g_settings.getFloat("server_unload_unused_sectors_timeout"));
+						*/
+
 				// Save only changed parts
 				m_env.getMap().save(true);
 
-				// Delete unused sectors
-				u32 deleted_count = m_env.getMap().unloadUnusedData(
-						g_settings.getFloat("server_unload_unused_sectors_timeout"));
-				if(deleted_count > 0)
+				/*if(deleted_count > 0)
 				{
 					dout_server<<"Server: Unloaded "<<deleted_count
-							<<" sectors from memory"<<std::endl;
-				}
+							<<" blocks from memory"<<std::endl;
+				}*/
 
 				// Save players
 				m_env.serializePlayers(m_mapsavedir);

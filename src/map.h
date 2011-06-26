@@ -230,13 +230,18 @@ public:
 		Updates usage timers
 	*/
 	void timerUpdate(float dtime);
-	
+		
+	// Deletes sectors and their blocks from memory
 	// Takes cache into account
-	// sector mutex should be locked when calling
-	void deleteSectors(core::list<v2s16> &list, bool only_blocks);
+	// If deleted sector is in sector cache, clears cache
+	void deleteSectors(core::list<v2s16> &list);
 	
-	// Returns count of deleted sectors
-	u32 unloadUnusedData(float timeout, bool only_blocks=false,
+	/*
+		Unload unused data
+		= flush changed to disk and delete from memory, if usage timer of
+		  block is more than timeout
+	*/
+	void unloadUnusedData(float timeout,
 			core::list<v3s16> *deleted_blocks=NULL);
 
 	// For debug printing

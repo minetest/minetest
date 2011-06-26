@@ -1389,7 +1389,7 @@ void make_block(BlockMakeData *data)
 	/*
 		Create a block-specific seed
 	*/
-	u32 blockseed = (data->seed%0x100000000) + full_node_min.Z*38134234
+	u32 blockseed = (u32)(data->seed%0x100000000) + full_node_min.Z*38134234
 			+ full_node_min.Y*42123 + full_node_min.X*23;
 	
 	/*

@@ -38,7 +38,7 @@ MapBlock::MapBlock(Map *parent, v3s16 pos, bool dummy):
 		m_generated(false),
 		m_objects(this),
 		m_timestamp(BLOCK_TIMESTAMP_UNDEFINED),
-		m_usage_timer(BLOCK_TIMESTAMP_UNDEFINED)
+		m_usage_timer(0)
 {
 	data = NULL;
 	if(dummy == false)

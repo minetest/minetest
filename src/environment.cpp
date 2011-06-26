@@ -801,6 +801,9 @@ void ServerEnvironment::step(float dtime)
 			MapBlock *block = m_map->getBlockNoCreateNoEx(p);
 			if(block==NULL)
 				continue;
+
+			// Reset block usage timer
+			block->resetUsageTimer();
 			
 			// Set current time as timestamp
 			block->setTimestampNoChangedFlag(m_game_time);

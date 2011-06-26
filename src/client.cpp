@@ -333,16 +333,16 @@ void Client::step(float dtime)
 					true, &deleted_blocks);*/
 			
 			// Delete whole sectors
-			u32 num = m_env.getMap().unloadUnusedData
+			m_env.getMap().unloadUnusedData
 					(delete_unused_sectors_timeout,
-					false, &deleted_blocks);
+					&deleted_blocks);
 
-			if(num > 0)
+			if(deleted_blocks.size() > 0)
 			{
 				/*dstream<<DTIME<<"Client: Deleted blocks of "<<num
 						<<" unused sectors"<<std::endl;*/
-				dstream<<DTIME<<"Client: Deleted "<<num
-						<<" unused sectors"<<std::endl;
+				/*dstream<<DTIME<<"Client: Deleted "<<num
+						<<" unused sectors"<<std::endl;*/
 				
 				/*
 					Send info to server

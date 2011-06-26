@@ -1388,8 +1388,6 @@ bool Map::dayNightDiffed(v3s16 blockpos)
 */
 void Map::timerUpdate(float dtime)
 {
-	//JMutexAutoLock lock(m_sector_mutex); // Bulk comment-out
-
 	core::map<v2s16, MapSector*>::Iterator si;
 
 	si = m_sectors.getIterator();
@@ -1407,38 +1405,27 @@ void Map::timerUpdate(float dtime)
 	}
 }
 
-void Map::deleteSectors(core::list<v2s16> &list, bool only_blocks)
+void Map::deleteSectors(core::list<v2s16> &list)
 {
 	core::list<v2s16>::Iterator j;
 	for(j=list.begin(); j!=list.end(); j++)
 	{
 		MapSector *sector = m_sectors[*j];
-		if(only_blocks)
-		{
-			sector->deleteBlocks();
-		}
-		else
-		{
-			/*
-				If sector is in sector cache, remove it from there
-			*/
-			if(m_sector_cache == sector)
-			{
-				m_sector_cache = NULL;
-			}
-			/*
-				Remove from map and delete
-			*/
-			m_sectors.remove(*j);
-			delete sector;
-		}
+		// If sector is in sector cache, remove it from there
+		if(m_sector_cache == sector)
+			m_sector_cache = NULL;
+		// Remove from map and delete
+		m_sectors.remove(*j);
+		delete sector;
 	}
 }
 
-u32 Map::unloadUnusedData(float timeout, bool only_blocks,
+void Map::unloadUnusedData(float timeout,
 		core::list<v3s16> *deleted_blocks)
 {
 	core::list<v2s16> sector_deletion_queue;
+	u32 deleted_blocks_count = 0;
+	u32 saved_blocks_count = 0;
 
 	core::map<v2s16, MapSector*>::Iterator si = m_sectors.getIterator();
 	for(; si.atEnd() == false; si++)
@@ -1453,14 +1440,18 @@ u32 Map::unloadUnusedData(float timeout, bool only_blocks,
 				i != blocks.end(); i++)
 		{
 			MapBlock *block = (*i);
-
+			
 			if(block->getUsageTimer() > timeout)
 			{
 				// Save if modified
 				if(block->getModified() != MOD_STATE_CLEAN)
+				{
 					saveBlock(block);
+					saved_blocks_count++;
+				}
 				// Delete from memory
 				sector->deleteBlock(block);
+				deleted_blocks_count++;
 			}
 			else
 			{
@@ -1474,36 +1465,14 @@ u32 Map::unloadUnusedData(float timeout, bool only_blocks,
 		}
 	}
 
-#if 0
-	core::map<v2s16, MapSector*>::Iterator i = m_sectors.getIterator();
-	for(; i.atEnd() == false; i++)
-	{
-		MapSector *sector = i.getNode()->getValue();
-		/*
-			Delete sector from memory if it hasn't been used in a long time
-		*/
-		if(sector->usage_timer > timeout)
-		{
-			sector_deletion_queue.push_back(i.getNode()->getKey());
+	deleteSectors(sector_deletion_queue);
 
-			if(deleted_blocks != NULL)
-			{
-				// Collect positions of blocks of sector
-				MapSector *sector = i.getNode()->getValue();
-				core::list<MapBlock*> blocks;
-				sector->getBlocks(blocks);
-				for(core::list<MapBlock*>::Iterator i = blocks.begin();
-						i != blocks.end(); i++)
-				{
-					deleted_blocks->push_back((*i)->getPos());
-				}
-			}
-		}
-	}
-#endif
+	dstream<<"Map: Unloaded "<<deleted_blocks_count<<" blocks from memory"
+			<<", of which "<<saved_blocks_count<<" were wr."
+			<<std::endl;
 
-	deleteSectors(sector_deletion_queue, only_blocks);
-	return sector_deletion_queue.getSize();
+	//return sector_deletion_queue.getSize();
+	//return deleted_blocks_count;
 }
 
 void Map::PrintInfo(std::ostream &out)
@@ -2083,6 +2052,8 @@ MapBlock* ServerMap::finishBlockMake(mapgen::BlockMakeData *data,
 		return NULL;
 	}
 
+	bool enable_mapgen_debug_info = g_settings.getBool("enable_mapgen_debug_info");
+
 	/*dstream<<"Resulting vmanip:"<<std::endl;
 	data->vmanip.print(dstream);*/
 	
@@ -2095,10 +2066,11 @@ MapBlock* ServerMap::finishBlockMake(mapgen::BlockMakeData *data,
 		//TimeTaker timer("finishBlockMake() blitBackAll");
 		data->vmanip->blitBackAll(&changed_blocks);
 	}
-#if 1
-	dstream<<"finishBlockMake: changed_blocks.size()="
-			<<changed_blocks.size()<<std::endl;
-#endif
+
+	if(enable_mapgen_debug_info)
+		dstream<<"finishBlockMake: changed_blocks.size()="
+				<<changed_blocks.size()<<std::endl;
+
 	/*
 		Copy transforming liquid information
 	*/
@@ -2155,6 +2127,9 @@ MapBlock* ServerMap::finishBlockMake(mapgen::BlockMakeData *data,
 		}
 	#endif
 		updateLighting(lighting_update_blocks, changed_blocks);
+
+		if(enable_mapgen_debug_info == false)
+			t.stop(true); // Hide output
 	}
 
 	/*
@@ -2269,6 +2244,8 @@ MapBlock * ServerMap::generateBlock(
 			<<"("<<p.X<<","<<p.Y<<","<<p.Z<<")"
 			<<std::endl;*/
 	
+	bool enable_mapgen_debug_info = g_settings.getBool("enable_mapgen_debug_info");
+
 	TimeTaker timer("generateBlock");
 	
 	//MapBlock *block = original_dummy;
@@ -2297,6 +2274,9 @@ MapBlock * ServerMap::generateBlock(
 	{
 		TimeTaker t("mapgen::make_block()");
 		mapgen::make_block(&data);
+
+		if(enable_mapgen_debug_info == false)
+			t.stop(true); // Hide output
 	}
 
 	/*
@@ -2354,6 +2334,9 @@ MapBlock * ServerMap::generateBlock(
 		}
 	}
 #endif
+
+	if(enable_mapgen_debug_info == false)
+		timer.stop(true); // Hide output
 
 	return block;
 }
