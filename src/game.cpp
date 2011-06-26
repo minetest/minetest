@@ -639,6 +639,34 @@ void update_skybox(video::IVideoDriver* driver,
 	}
 }
 
+/*
+	Draws a screen with a single text on it.
+	Text will be removed when the screen is drawn the next time.
+*/
+/*gui::IGUIStaticText **/
+void draw_load_screen(const std::wstring &text,
+		video::IVideoDriver* driver, gui::IGUIFont* font)
+{
+	v2u32 screensize = driver->getScreenSize();
+	const wchar_t *loadingtext = text.c_str();
+	core::vector2d<u32> textsize_u = font->getDimension(loadingtext);
+	core::vector2d<s32> textsize(textsize_u.X,textsize_u.Y);
+	core::vector2d<s32> center(screensize.X/2, screensize.Y/2);
+	core::rect<s32> textrect(center - textsize/2, center + textsize/2);
+
+	gui::IGUIStaticText *guitext = guienv->addStaticText(
+			loadingtext, textrect, false, false);
+	guitext->setTextAlignment(gui::EGUIA_CENTER, gui::EGUIA_UPPERLEFT);
+
+	driver->beginScene(true, true, video::SColor(255,0,0,0));
+	guienv->drawAll();
+	driver->endScene();
+	
+	guitext->remove();
+	
+	//return guitext;
+}
+
 void the_game(
 	bool &kill,
 	bool random_input,
@@ -655,6 +683,9 @@ void the_game(
 {
 	video::IVideoDriver* driver = device->getVideoDriver();
 	scene::ISceneManager* smgr = device->getSceneManager();
+	
+	// Calculate text height using the font
+	u32 text_height = font->getDimension(L"Random test string").Height;
 
 	v2u32 screensize(0,0);
 	v2u32 last_screensize(0,0);
@@ -674,20 +705,10 @@ void the_game(
 	/*
 		Draw "Loading" screen
 	*/
-	const wchar_t *loadingtext = L"Loading and connecting...";
-	u32 text_height = font->getDimension(loadingtext).Height;
-	core::vector2d<s32> center(screensize.X/2, screensize.Y/2);
-	core::vector2d<s32> textsize(300, text_height);
-	core::rect<s32> textrect(center - textsize/2, center + textsize/2);
+	/*gui::IGUIStaticText *gui_loadingtext = */
+	//draw_load_screen(L"Loading and connecting...", driver, font);
 
-	gui::IGUIStaticText *gui_loadingtext = guienv->addStaticText(
-			loadingtext, textrect, false, false);
-	gui_loadingtext->setTextAlignment(gui::EGUIA_CENTER, gui::EGUIA_UPPERLEFT);
-
-	driver->beginScene(true, true, video::SColor(255,0,0,0));
-	guienv->drawAll();
-	driver->endScene();
-
+	draw_load_screen(L"Loading...", driver, font);
 	
 	/*
 		Create server.
@@ -695,6 +716,7 @@ void the_game(
 	*/
 	SharedPtr<Server> server;
 	if(address == ""){
+		draw_load_screen(L"Creating server...", driver, font);
 		std::cout<<DTIME<<"Creating server"<<std::endl;
 		server = new Server(map_dir);
 		server->start(port);
@@ -704,9 +726,11 @@ void the_game(
 		Create client
 	*/
 
+	draw_load_screen(L"Creating client...", driver, font);
 	std::cout<<DTIME<<"Creating client"<<std::endl;
 	Client client(device, playername.c_str(), password, draw_control);
 			
+	draw_load_screen(L"Resolving address...", driver, font);
 	Address connect_address(0,0,0,0, port);
 	try{
 		if(address == "")
@@ -720,7 +744,7 @@ void the_game(
 		std::cout<<DTIME<<"Couldn't resolve address"<<std::endl;
 		//return 0;
 		error_message = L"Couldn't resolve address";
-		gui_loadingtext->remove();
+		//gui_loadingtext->remove();
 		return;
 	}
 
@@ -753,11 +777,17 @@ void the_game(
 			{
 				break;
 			}
+			
+			std::wostringstream ss;
+			ss<<L"Connecting to server... (timeout in ";
+			ss<<(int)(10.0 - time_counter + 1.0);
+			ss<<L" seconds)";
+			draw_load_screen(ss.str(), driver, font);
 
-			// Update screen
+			/*// Update screen
 			driver->beginScene(true, true, video::SColor(255,0,0,0));
 			guienv->drawAll();
-			driver->endScene();
+			driver->endScene();*/
 
 			// Update client and server
 
@@ -787,7 +817,7 @@ void the_game(
 			error_message = L"Connection timed out.";
 			std::cout<<DTIME<<"Timed out."<<std::endl;
 		}
-		gui_loadingtext->remove();
+		//gui_loadingtext->remove();
 		return;
 	}
 
@@ -849,7 +879,7 @@ void the_game(
 		Move into game
 	*/
 	
-	gui_loadingtext->remove();
+	//gui_loadingtext->remove();
 
 	/*
 		Add some gui stuff
@@ -2254,15 +2284,12 @@ void the_game(
 		generator and other stuff quits
 	*/
 	{
-		const wchar_t *shuttingdowntext = L"Shutting down stuff...";
-		gui::IGUIStaticText *gui_shuttingdowntext = guienv->addStaticText(
-				shuttingdowntext, textrect, false, false);
-		gui_shuttingdowntext->setTextAlignment(gui::EGUIA_CENTER,
-				gui::EGUIA_UPPERLEFT);
-		driver->beginScene(true, true, video::SColor(255,0,0,0));
+		/*gui::IGUIStaticText *gui_shuttingdowntext = */
+		draw_load_screen(L"Shutting down stuff...", driver, font);
+		/*driver->beginScene(true, true, video::SColor(255,0,0,0));
 		guienv->drawAll();
 		driver->endScene();
-		gui_shuttingdowntext->remove();
+		gui_shuttingdowntext->remove();*/
 	}
 }
 
