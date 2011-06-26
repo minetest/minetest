@@ -427,6 +427,7 @@ TODO: Use MapBlock::resetUsageTimer() in appropriate places
 #include "materials.h"
 #include "game.h"
 #include "keycode.h"
+#include "tile.h"
 
 // This makes textures
 ITextureSource *g_texturesource = NULL;

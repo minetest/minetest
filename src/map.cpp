@@ -755,6 +755,25 @@ void Map::updateLighting(enum LightBank bank,
 
 		}
 	}
+	
+	/*
+		Enable this to disable proper lighting for speeding up map
+		generation for testing or whatever
+	*/
+#if 0
+	//if(g_settings.get(""))
+	{
+		core::map<v3s16, MapBlock*>::Iterator i;
+		i = blocks_to_update.getIterator();
+		for(; i.atEnd() == false; i++)
+		{
+			MapBlock *block = i.getNode()->getValue();
+			v3s16 p = block->getPos();
+			block->setLightingExpired(false);
+		}
+		return;
+	}
+#endif
 
 #if 0
 	{
