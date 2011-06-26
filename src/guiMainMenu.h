@@ -27,6 +27,21 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 // For IGameCallback
 #include "guiPauseMenu.h"
 
+enum
+{
+	GUI_ID_QUIT_BUTTON = 101,
+	GUI_ID_NAME_INPUT,
+	GUI_ID_ADDRESS_INPUT,
+	GUI_ID_PORT_INPUT,
+	GUI_ID_FANCYTREE_CB,
+	GUI_ID_SMOOTH_LIGHTING_CB,
+	GUI_ID_DAMAGE_CB,
+	GUI_ID_CREATIVE_CB,
+	GUI_ID_JOIN_GAME_BUTTON,
+	GUI_ID_CHANGE_KEYS_BUTTON,
+	GUI_ID_DELETE_MAP_BUTTON
+};
+
 struct MainMenuData
 {
 	MainMenuData():
@@ -87,6 +102,11 @@ private:
 	MainMenuData *m_data;
 	bool m_accepted;
 	IGameCallback *m_gamecallback;
+
+	gui::IGUIEnvironment* env;
+	gui::IGUIElement* parent;
+	s32 id;
+	IMenuManager *menumgr;
 };
 
 #endif

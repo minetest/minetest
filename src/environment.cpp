@@ -592,7 +592,7 @@ void ServerEnvironment::activateBlock(MapBlock *block, u32 additional_dtime)
 	block->setTimestamp(m_game_time);
 
 	//dstream<<"Block is "<<dtime_s<<" seconds old."<<std::endl;
-	
+
 	// Activate stored objects
 	activateObjects(block);
 
@@ -610,7 +610,7 @@ void ServerEnvironment::activateBlock(MapBlock *block, u32 additional_dtime)
 
 	// TODO: Do something
 	// TODO: Implement usage of ActiveBlockModifier
-	
+
 	// Here's a quick demonstration
 	v3s16 p0;
 	for(p0.X=0; p0.X<MAP_BLOCKSIZE; p0.X++)
@@ -754,8 +754,8 @@ void ServerEnvironment::step(float dtime)
 			MapBlock *block = m_map->getBlockNoCreateNoEx(p);
 			if(block==NULL)
 				continue;
-			
 			// Set current time as timestamp (and let it set ChangedFlag)
+
 			block->setTimestamp(m_game_time);
 		}
 
@@ -776,7 +776,75 @@ void ServerEnvironment::step(float dtime)
 			if(block==NULL)
 				continue;
 
-			activateBlock(block);
+			// Get time difference
+			u32 dtime_s = 0;
+			u32 stamp = block->getTimestamp();
+			if(m_game_time > stamp && stamp != BLOCK_TIMESTAMP_UNDEFINED)
+				dtime_s = m_game_time - block->getTimestamp();
+
+			// Set current time as timestamp (and let it set ChangedFlag)
+			block->setTimestamp(m_game_time);
+
+			//dstream<<"Block is "<<dtime_s<<" seconds old."<<std::endl;
+
+			// Activate stored objects
+			activateObjects(block);
+
+			// Run node metadata
+			bool changed = block->m_node_metadata.step((float)dtime_s);
+			if(changed)
+			{
+				MapEditEvent event;
+				event.type = MEET_BLOCK_NODE_METADATA_CHANGED;
+				event.p = p;
+				m_map->dispatchEvent(&event);
+
+				block->setChangedFlag();
+			}
+
+			// TODO: Do something
+			// TODO: Implement usage of ActiveBlockModifier
+
+			// Here's a quick demonstration
+			v3s16 p0;
+			for(p0.X=0; p0.X<MAP_BLOCKSIZE; p0.X++)
+			for(p0.Y=0; p0.Y<MAP_BLOCKSIZE; p0.Y++)
+			for(p0.Z=0; p0.Z<MAP_BLOCKSIZE; p0.Z++)
+			{
+				v3s16 p = p0 + block->getPosRelative();
+				MapNode n = block->getNodeNoEx(p0);
+				// Test something:
+				// Convert all mud under proper day lighting to grass
+				if(n.d == CONTENT_MUD)
+				{
+					if(dtime_s > 300)
+					{
+						MapNode n_top = block->getNodeNoEx(p0+v3s16(0,1,0));
+						if(content_features(n_top.d).air_equivalent &&
+								n_top.getLight(LIGHTBANK_DAY) >= 13)
+						{
+							n.d = CONTENT_GRASS;
+							m_map->addNodeWithEvent(p, n);
+						}
+					}
+				}
+				/*
+					Convert grass into mud if under something else than air
+				*/
+				else if(n.d == CONTENT_GRASS)
+				{
+					//if(myrand()%20 == 0)
+					{
+						MapNode n_top = block->getNodeNoEx(p0+v3s16(0,1,0));
+						if(n_top.d != CONTENT_AIR
+								&& n_top.d != CONTENT_IGNORE)
+						{
+							n.d = CONTENT_MUD;
+							m_map->addNodeWithEvent(p, n);
+						}
+					}
+				}
+			}
 		}
 	}
 
@@ -889,8 +957,8 @@ void ServerEnvironment::step(float dtime)
 							n.d = CONTENT_MUD;
 							m_map->addNodeWithEvent(p, n);
 						}
+						}
 					}
-				}
 			}
 		}
 	}

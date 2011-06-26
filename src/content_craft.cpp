@@ -261,6 +261,24 @@ InventoryItem *craft_get_result(InventoryItem **items)
 		}
 	}
 
+	// Rail
+	{
+		ItemSpec specs[9];
+		specs[0] = ItemSpec(ITEM_CRAFT, "steel_ingot");
+		specs[1] = ItemSpec(ITEM_CRAFT, "Stick");
+		specs[2] = ItemSpec(ITEM_CRAFT, "steel_ingot");
+		specs[3] = ItemSpec(ITEM_CRAFT, "steel_ingot");
+		specs[4] = ItemSpec(ITEM_CRAFT, "Stick");
+		specs[5] = ItemSpec(ITEM_CRAFT, "steel_ingot");
+		specs[6] = ItemSpec(ITEM_CRAFT, "steel_ingot");
+		specs[7] = ItemSpec(ITEM_CRAFT, "Stick");
+		specs[8] = ItemSpec(ITEM_CRAFT, "steel_ingot");
+		if(checkItemCombination(items, specs))
+		{
+			return new MaterialItem(CONTENT_RAIL, 15);
+		}
+	}
+
 	// Chest
 	{
 		ItemSpec specs[9];
@@ -313,6 +331,87 @@ InventoryItem *craft_get_result(InventoryItem **items)
 		}
 	}
 
+	// Sandstone
+	{
+		ItemSpec specs[9];
+		specs[3] = ItemSpec(ITEM_MATERIAL, CONTENT_SAND);
+		specs[4] = ItemSpec(ITEM_MATERIAL, CONTENT_SAND);
+		specs[6] = ItemSpec(ITEM_MATERIAL, CONTENT_SAND);
+		specs[7] = ItemSpec(ITEM_MATERIAL, CONTENT_SAND);
+		if(checkItemCombination(items, specs))
+		{
+			return new MaterialItem(CONTENT_SANDSTONE, 1);
+		}
+	}
+
+	// Clay
+	{
+		ItemSpec specs[9];
+		specs[3] = ItemSpec(ITEM_CRAFT, "lump_of_clay");
+		specs[4] = ItemSpec(ITEM_CRAFT, "lump_of_clay");
+		specs[6] = ItemSpec(ITEM_CRAFT, "lump_of_clay");
+		specs[7] = ItemSpec(ITEM_CRAFT, "lump_of_clay");
+		if(checkItemCombination(items, specs))
+		{
+			return new MaterialItem(CONTENT_CLAY, 1);
+		}
+	}
+
+	// Brick
+	{
+		ItemSpec specs[9];
+		specs[3] = ItemSpec(ITEM_CRAFT, "clay_brick");
+		specs[4] = ItemSpec(ITEM_CRAFT, "clay_brick");
+		specs[6] = ItemSpec(ITEM_CRAFT, "clay_brick");
+		specs[7] = ItemSpec(ITEM_CRAFT, "clay_brick");
+		if(checkItemCombination(items, specs))
+		{
+			return new MaterialItem(CONTENT_BRICK, 1);
+		}
+	}
+
+	// Paper
+	{
+		ItemSpec specs[9];
+		specs[3] = ItemSpec(ITEM_MATERIAL, CONTENT_PAPYRUS);
+		specs[4] = ItemSpec(ITEM_MATERIAL, CONTENT_PAPYRUS);
+		specs[5] = ItemSpec(ITEM_MATERIAL, CONTENT_PAPYRUS);
+		if(checkItemCombination(items, specs))
+		{
+			return new CraftItem("paper", 1);
+		}
+	}
+
+	// Book
+	{
+		ItemSpec specs[9];
+		specs[1] = ItemSpec(ITEM_CRAFT, "paper");
+		specs[4] = ItemSpec(ITEM_CRAFT, "paper");
+		specs[7] = ItemSpec(ITEM_CRAFT, "paper");
+		if(checkItemCombination(items, specs))
+		{
+			return new CraftItem("book", 1);
+		}
+	}
+
+	// Book shelf
+	{
+		ItemSpec specs[9];
+		specs[0] = ItemSpec(ITEM_MATERIAL, CONTENT_WOOD);
+		specs[1] = ItemSpec(ITEM_MATERIAL, CONTENT_WOOD);
+		specs[2] = ItemSpec(ITEM_MATERIAL, CONTENT_WOOD);
+		specs[3] = ItemSpec(ITEM_CRAFT, "book");
+		specs[4] = ItemSpec(ITEM_CRAFT, "book");
+		specs[5] = ItemSpec(ITEM_CRAFT, "book");
+		specs[6] = ItemSpec(ITEM_MATERIAL, CONTENT_WOOD);
+		specs[7] = ItemSpec(ITEM_MATERIAL, CONTENT_WOOD);
+		specs[8] = ItemSpec(ITEM_MATERIAL, CONTENT_WOOD);
+		if(checkItemCombination(items, specs))
+		{
+			return new MaterialItem(CONTENT_BOOKSHELF, 1);
+		}
+	}
+
 	return NULL;
 }
 
@@ -353,10 +452,17 @@ void craft_set_creative_inventory(Player *player)
 		CONTENT_MUD,
 		CONTENT_STONE,
 		CONTENT_SAND,
+		CONTENT_SANDSTONE,
+		CONTENT_CLAY,
+		CONTENT_BRICK,
 		CONTENT_TREE,
 		CONTENT_LEAVES,
+		CONTENT_CACTUS,
+		CONTENT_PAPYRUS,
+		CONTENT_BOOKSHELF,
 		CONTENT_GLASS,
 		CONTENT_FENCE,
+		CONTENT_RAIL,
 		CONTENT_MESE,
 		CONTENT_WATERSOURCE,
 		CONTENT_CLOUD,

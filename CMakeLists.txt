@@ -59,7 +59,7 @@ elseif(UNIX) # Linux, BSD etc
 	set(EXAMPLE_CONF_DIR "share/doc/minetest")
 endif()
 
-install(FILES "README.txt" DESTINATION "${DOCDIR}")
+install(FILES "doc/README.txt" DESTINATION "${DOCDIR}")
 install(FILES "minetest.conf.example" DESTINATION "${DOCDIR}")
 
 #
@@ -104,7 +104,7 @@ elseif(APPLE)
 	set(CPACK_BUNDLE_ICON "")
 	set(CPACK_BUNDLE_PLIST "")
 	set(CPACK_BUNDLE_STARTUP_COMMAND "Contents/MacOS/minetest")
-	set(CPACK_GENERATOR Bundle)
+	set(CPACK_GENERATOR "Bundle")
 else()
 	set(CPACK_PACKAGE_FILE_NAME "${PROJECT_NAME}-${VERSION_STRING}-linux")
 	set(CPACK_GENERATOR TGZ)
