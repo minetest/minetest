@@ -2734,9 +2734,31 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 				MaterialItem *mitem = (MaterialItem*)item;
 				MapNode n;
 				n.d = mitem->getMaterial();
+
+				// Calculate direction for wall mounted stuff
 				if(content_features(n.d).wall_mounted)
 					n.dir = packDir(p_under - p_over);
-				
+
+				// Calculate the direction for furnaces and chests and stuff
+				if(content_features(n.d).param_type == CPT_FACEDIR_SIMPLE)
+				{
+					v3f playerpos = player->getPosition();
+					v3f blockpos = intToFloat(p_over, BS) - playerpos;
+					blockpos = blockpos.normalize();
+					n.param1 = 0;
+					if (fabs(blockpos.X) > fabs(blockpos.Z)) {
+						if (blockpos.X < 0)
+							n.param1 = 3;
+						else
+							n.param1 = 1;
+					} else {
+						if (blockpos.Z < 0)
+							n.param1 = 2;
+						else
+							n.param1 = 0;
+					}
+				}
+
 				/*
 					Send to all close-by players
 				*/
