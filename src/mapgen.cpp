@@ -151,6 +151,34 @@ static void make_tree(VoxelManipulator &vmanip, v3s16 p0)
 	}
 }
 
+void make_papyrus(VoxelManipulator &vmanip, v3s16 p0)
+{
+	MapNode papyrusnode(CONTENT_PAPYRUS);
+
+	s16 trunk_h = myrand_range(2, 3);
+	v3s16 p1 = p0;
+	for(s16 ii=0; ii<trunk_h; ii++)
+	{
+		if(vmanip.m_area.contains(p1))
+			vmanip.m_data[vmanip.m_area.index(p1)] = papyrusnode;
+		p1.Y++;
+	}
+}
+
+void make_cactus(VoxelManipulator &vmanip, v3s16 p0)
+{
+	MapNode cactusnode(CONTENT_CACTUS);
+
+	s16 trunk_h = 3;
+	v3s16 p1 = p0;
+	for(s16 ii=0; ii<trunk_h; ii++)
+	{
+		if(vmanip.m_area.contains(p1))
+			vmanip.m_data[vmanip.m_area.index(p1)] = cactusnode;
+		p1.Y++;
+	}
+}
+
 #if 0
 static void make_randomstone(VoxelManipulator &vmanip, v3s16 p0)
 {
@@ -1752,6 +1780,15 @@ void make_block(BlockMakeData *data)
 				u32 current_depth = 0;
 				bool air_detected = false;
 				bool water_detected = false;
+				bool have_clay = false;
+
+				// Determine whether to have clay in the sand here
+				double claynoise = noise2d_perlin(
+						0.5+(float)p2d.X/500, 0.5+(float)p2d.Y/500,
+						data->seed+4321, 6, 0.95);
+
+				have_clay = have_sand && (claynoise > 1.25);
+
 				// Use fast index incrementing
 				s16 start_y = node_max.Y+2;
 				v3s16 em = vmanip.m_area.getExtent();
@@ -1778,7 +1815,10 @@ void make_block(BlockMakeData *data)
 						{
 							if(have_sand)
 							{
-								vmanip.m_data[i] = MapNode(CONTENT_SAND);
+								if (have_clay)
+									vmanip.m_data[i] = MapNode(CONTENT_CLAY);
+								else
+									vmanip.m_data[i] = MapNode(CONTENT_SAND);
 							}
 							#if 1
 							else if(current_depth==0 && !water_detected
@@ -1823,7 +1863,7 @@ void make_block(BlockMakeData *data)
 			//s16 y = find_ground_level(data->vmanip, v2s16(x,z));
 			s16 y = find_ground_level_from_noise(data->seed, v2s16(x,z), 4);
 			// Don't make a tree under water level
-			if(y < WATER_LEVEL)
+			if(y < WATER_LEVEL - 1)
 				continue;
 			// Make sure tree fits (only trees whose starting point is
 			// at this block are added)
@@ -1847,19 +1887,36 @@ void make_block(BlockMakeData *data)
 			// If not found, handle next one
 			if(found == false)
 				continue;
-			/*
-				Trees grow only on mud and grass
-			*/
+
 			{
 				u32 i = data->vmanip->m_area.index(p);
 				MapNode *n = &data->vmanip->m_data[i];
-				if(n->d != CONTENT_MUD && n->d != CONTENT_GRASS)
+
+				if(n->d != CONTENT_MUD && n->d != CONTENT_GRASS && n->d != CONTENT_SAND)
+						continue;
+
+				// Papyrus grows only on mud and in water
+				if(n->d == CONTENT_MUD && y == WATER_LEVEL - 1)
+				{
+					p.Y++;
+					make_papyrus(vmanip, p);
+				}
+				// Don't make a tree under water level
+				if(y < WATER_LEVEL)
 					continue;
+				// Trees grow only on mud and grass
+				if(n->d == CONTENT_MUD || n->d == CONTENT_GRASS)
+				{
+					p.Y++;
+					make_tree(vmanip, p);
+				}
+				// Cactii grow only on sand
+				else if(n->d == CONTENT_SAND)
+				{
+					p.Y++;
+					make_cactus(vmanip, p);
+				}
 			}
-			// Tree will be placed one higher
-			p.Y++;
-			// Make a tree
-			make_tree(vmanip, p);
 		}
 
 #if 0
