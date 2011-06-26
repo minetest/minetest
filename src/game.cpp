@@ -1099,7 +1099,7 @@ void the_game(
 		*/
 
 		static f32 dtime_avg1 = 0.0;
-		dtime_avg1 = dtime_avg1 * 0.98 + dtime * 0.02;
+		dtime_avg1 = dtime_avg1 * 0.96 + dtime * 0.04;
 		f32 dtime_jitter1 = dtime - dtime_avg1;
 
 		static f32 dtime_jitter1_max_sample = 0.0;
