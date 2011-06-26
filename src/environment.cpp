@@ -23,6 +23,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "collision.h"
 #include "content_mapnode.h"
 #include "mapblock.h"
+#include "serverobject.h"
+#include "content_sao.h"
 
 Environment::Environment():
 	m_time_of_day(9000)
@@ -918,8 +920,14 @@ void ServerEnvironment::step(float dtime)
 			// Don't step if is to be removed or stored statically
 			if(obj->m_removed || obj->m_pending_deactivation)
 				continue;
-			// Step object, putting messages directly to the queue
-			obj->step(dtime, m_active_object_messages, send_recommended);
+			// Step object
+			obj->step(dtime, send_recommended);
+			// Read messages from object
+			while(obj->m_messages_out.size() > 0)
+			{
+				m_active_object_messages.push_back(
+						obj->m_messages_out.pop_front());
+			}
 		}
 	}
 	
@@ -1660,17 +1668,21 @@ void ClientEnvironment::step(float dtime)
 		ClientActiveObject* obj = i.getNode()->getValue();
 		// Step object
 		obj->step(dtime, this);
-		// Update lighting
-		//u8 light = LIGHT_MAX;
-		u8 light = 0;
-		try{
-			// Get node at head
-			v3s16 p = obj->getLightPosition();
-			MapNode n = m_map->getNode(p);
-			light = n.getLightBlend(getDayNightRatio());
+
+		if(m_active_object_light_update_interval.step(dtime, 0.5))
+		{
+			// Update lighting
+			//u8 light = LIGHT_MAX;
+			u8 light = 0;
+			try{
+				// Get node at head
+				v3s16 p = obj->getLightPosition();
+				MapNode n = m_map->getNode(p);
+				light = n.getLightBlend(getDayNightRatio());
+			}
+			catch(InvalidPositionException &e) {}
+			obj->updateLight(light);
 		}
-		catch(InvalidPositionException &e) {}
-		obj->updateLight(light);
 	}
 }
 

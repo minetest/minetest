@@ -19,8 +19,9 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "content_inventory.h"
 #include "inventory.h"
-#include "serverobject.h"
 #include "content_mapnode.h"
+//#include "serverobject.h"
+#include "content_sao.h"
 
 bool item_material_is_cookable(u8 content)
 {

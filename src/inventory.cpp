@@ -30,6 +30,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "serverobject.h"
 #include "content_mapnode.h"
 #include "content_inventory.h"
+#include "content_sao.h"
 
 /*
 	InventoryItem

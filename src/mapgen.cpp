@@ -23,8 +23,9 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "noise.h"
 #include "mapblock.h"
 #include "map.h"
-#include "serverobject.h"
 #include "mineral.h"
+//#include "serverobject.h"
+#include "content_sao.h"
 
 namespace mapgen
 {
@@ -503,7 +504,7 @@ static void make_corridor(VoxelManipulator &vmanip, v3s16 doorplace,
 	else
 		length = random.range(1,6);
 	length = random.range(1,13);
-	u32 partlength = random.range(1,length);
+	u32 partlength = random.range(1,13);
 	u32 partcount = 0;
 	s16 make_stairs = 0;
 	if(random.next()%2 == 0 && partlength >= 3)
@@ -672,14 +673,63 @@ public:
 				continue;
 			v3s16 roomplace;
 			// X east, Z north, Y up
+#if 0
 			if(doordir == v3s16(1,0,0)) // X+
-				roomplace = doorplace + v3s16(0,-1,-roomsize.Z/2+m_random.range(-roomsize.Z/2+1,roomsize.Z/2-1));
+				roomplace = doorplace + v3s16(0,-1,-roomsize.Z/2+
+						m_random.range(-roomsize.Z/2+1,roomsize.Z/2-1));
 			if(doordir == v3s16(-1,0,0)) // X-
-				roomplace = doorplace + v3s16(-roomsize.X+1,-1,-roomsize.Z/2+m_random.range(-roomsize.Z/2+1,roomsize.Z/2-1));
+				roomplace = doorplace + v3s16(-roomsize.X+1,-1,-roomsize.Z/2
+						+m_random.range(-roomsize.Z/2+1,roomsize.Z/2-1));
 			if(doordir == v3s16(0,0,1)) // Z+
-				roomplace = doorplace + v3s16(-roomsize.X/2+m_random.range(-roomsize.X/2+1,roomsize.X/2-1),-1,0);
+				roomplace = doorplace + v3s16(-roomsize.X/2
+						+m_random.range(-roomsize.X/2+1,roomsize.X/2-1),-1,0);
 			if(doordir == v3s16(0,0,-1)) // Z-
-				roomplace = doorplace + v3s16(-roomsize.X/2+m_random.range(-roomsize.X/2+1,roomsize.X/2-1),-1,-roomsize.Z+1);
+				roomplace = doorplace + v3s16(-roomsize.X/2
+						+m_random.range(-roomsize.X/2+1,roomsize.X/2-1),-1,
+								-roomsize.Z+1);
+#endif
+#if 0
+			if(doordir == v3s16(1,0,0)) // X+
+				roomplace = doorplace + v3s16(0,-1,-roomsize.Z/2+
+						m_random.range(-roomsize.Z/2+(roomsize.Z%2==0?2:1),
+								roomsize.Z/2-1));
+			if(doordir == v3s16(-1,0,0)) // X-
+				roomplace = doorplace + v3s16(-roomsize.X+1,-1,-roomsize.Z/2
+						+m_random.range(-roomsize.Z/2+(roomsize.Z%2==0?2:1),
+								roomsize.Z/2-1));
+			if(doordir == v3s16(0,0,1)) // Z+
+				roomplace = doorplace + v3s16(-roomsize.X/2
+						+m_random.range(-roomsize.X/2+(roomsize.X%2==0?2:1),
+								roomsize.X/2-1),-1,0);
+			if(doordir == v3s16(0,0,-1)) // Z-
+				roomplace = doorplace + v3s16(-roomsize.X/2
+						+m_random.range(-roomsize.X/2+(roomsize.X%2==0?2:1),
+								roomsize.X/2-1),-1, -roomsize.Z+1);
+#endif
+#if 1
+			if(doordir == v3s16(1,0,0)) // X+
+				roomplace = doorplace +
+						v3s16(0,-1,m_random.range(-roomsize.Z+1,-2));
+			if(doordir == v3s16(-1,0,0)) // X-
+				roomplace = doorplace +
+						v3s16(-roomsize.X+1,-1,m_random.range(-roomsize.Z+1,-2));
+			if(doordir == v3s16(0,0,1)) // Z+
+				roomplace = doorplace +
+						v3s16(m_random.range(-roomsize.X+1,-2),-1,0);
+			if(doordir == v3s16(0,0,-1)) // Z-
+				roomplace = doorplace +
+						v3s16(m_random.range(-roomsize.X+1,-2),-1,-roomsize.Z+1);
+#endif
+#if 0
+			if(doordir == v3s16(1,0,0)) // X+
+				roomplace = doorplace + v3s16(0,-1,-roomsize.Z/2);
+			if(doordir == v3s16(-1,0,0)) // X-
+				roomplace = doorplace + v3s16(-roomsize.X+1,-1,-roomsize.Z/2);
+			if(doordir == v3s16(0,0,1)) // Z+
+				roomplace = doorplace + v3s16(-roomsize.X/2,-1,0);
+			if(doordir == v3s16(0,0,-1)) // Z-
+				roomplace = doorplace + v3s16(-roomsize.X/2,-1,-roomsize.Z+1);
+#endif
 			
 			// Check fit
 			bool fits = true;
@@ -790,7 +840,7 @@ static void make_dungeon1(VoxelManipulator &vmanip, PseudoRandom &random)
 		
 		// Determine walker start position
 
-		bool start_in_last_room = (random.range(0,1)==0);
+		bool start_in_last_room = (random.range(0,2)!=0);
 		//bool start_in_last_room = true;
 
 		v3s16 walker_start_place;
@@ -858,7 +908,9 @@ NoiseParams get_cave_noise1_params(u64 seed)
 {
 	/*return NoiseParams(NOISE_PERLIN_CONTOUR, seed+52534, 5, 0.7,
 			200, CAVE_NOISE_SCALE);*/
-	return NoiseParams(NOISE_PERLIN_CONTOUR, seed+52534, 4, 0.7,
+	/*return NoiseParams(NOISE_PERLIN_CONTOUR, seed+52534, 4, 0.7,
+			100, CAVE_NOISE_SCALE);*/
+	return NoiseParams(NOISE_PERLIN_CONTOUR, seed+52534, 5, 0.6,
 			100, CAVE_NOISE_SCALE);
 }
 
@@ -866,7 +918,9 @@ NoiseParams get_cave_noise2_params(u64 seed)
 {
 	/*return NoiseParams(NOISE_PERLIN_CONTOUR_FLIP_YZ, seed+10325, 5, 0.7,
 			200, CAVE_NOISE_SCALE);*/
-	return NoiseParams(NOISE_PERLIN_CONTOUR_FLIP_YZ, seed+10325, 4, 0.7,
+	/*return NoiseParams(NOISE_PERLIN_CONTOUR_FLIP_YZ, seed+10325, 4, 0.7,
+			100, CAVE_NOISE_SCALE);*/
+	return NoiseParams(NOISE_PERLIN_CONTOUR_FLIP_YZ, seed+10325, 5, 0.6,
 			100, CAVE_NOISE_SCALE);
 }
 
@@ -1054,6 +1108,7 @@ double get_sector_maximum_ground_level(u64 seed, v2s16 sectorpos, double p)
 	v2s16 node_min = sectorpos*MAP_BLOCKSIZE;
 	v2s16 node_max = (sectorpos+v2s16(1,1))*MAP_BLOCKSIZE-v2s16(1,1);
 	double a = -31000;
+	// Corners
 	a = MYMAX(a, find_ground_level_from_noise(seed,
 			v2s16(node_min.X, node_min.Y), p));
 	a = MYMAX(a, find_ground_level_from_noise(seed,
@@ -1062,8 +1117,18 @@ double get_sector_maximum_ground_level(u64 seed, v2s16 sectorpos, double p)
 			v2s16(node_max.X, node_max.Y), p));
 	a = MYMAX(a, find_ground_level_from_noise(seed,
 			v2s16(node_min.X, node_min.Y), p));
+	// Center
 	a = MYMAX(a, find_ground_level_from_noise(seed,
 			v2s16(node_min.X+MAP_BLOCKSIZE/2, node_min.Y+MAP_BLOCKSIZE/2), p));
+	// Side middle points
+	a = MYMAX(a, find_ground_level_from_noise(seed,
+			v2s16(node_min.X+MAP_BLOCKSIZE/2, node_min.Y), p));
+	a = MYMAX(a, find_ground_level_from_noise(seed,
+			v2s16(node_min.X+MAP_BLOCKSIZE/2, node_max.Y), p));
+	a = MYMAX(a, find_ground_level_from_noise(seed,
+			v2s16(node_min.X, node_min.Y+MAP_BLOCKSIZE/2), p));
+	a = MYMAX(a, find_ground_level_from_noise(seed,
+			v2s16(node_max.X, node_min.Y+MAP_BLOCKSIZE/2), p));
 	return a;
 }
 
@@ -1074,6 +1139,7 @@ double get_sector_minimum_ground_level(u64 seed, v2s16 sectorpos, double p)
 	v2s16 node_min = sectorpos*MAP_BLOCKSIZE;
 	v2s16 node_max = (sectorpos+v2s16(1,1))*MAP_BLOCKSIZE-v2s16(1,1);
 	double a = 31000;
+	// Corners
 	a = MYMIN(a, find_ground_level_from_noise(seed,
 			v2s16(node_min.X, node_min.Y), p));
 	a = MYMIN(a, find_ground_level_from_noise(seed,
@@ -1082,8 +1148,18 @@ double get_sector_minimum_ground_level(u64 seed, v2s16 sectorpos, double p)
 			v2s16(node_max.X, node_max.Y), p));
 	a = MYMIN(a, find_ground_level_from_noise(seed,
 			v2s16(node_min.X, node_min.Y), p));
+	// Center
 	a = MYMIN(a, find_ground_level_from_noise(seed,
 			v2s16(node_min.X+MAP_BLOCKSIZE/2, node_min.Y+MAP_BLOCKSIZE/2), p));
+	// Side middle points
+	a = MYMIN(a, find_ground_level_from_noise(seed,
+			v2s16(node_min.X+MAP_BLOCKSIZE/2, node_min.Y), p));
+	a = MYMIN(a, find_ground_level_from_noise(seed,
+			v2s16(node_min.X+MAP_BLOCKSIZE/2, node_max.Y), p));
+	a = MYMIN(a, find_ground_level_from_noise(seed,
+			v2s16(node_min.X, node_min.Y+MAP_BLOCKSIZE/2), p));
+	a = MYMIN(a, find_ground_level_from_noise(seed,
+			v2s16(node_max.X, node_min.Y+MAP_BLOCKSIZE/2), p));
 	return a;
 }
 
@@ -1328,7 +1404,7 @@ void make_block(BlockMakeData *data)
 		If block is deep underground, this is set to true and ground
 		density noise is not generated, for speed optimization.
 	*/
-	bool all_is_ground_except_caves = (minimum_ground_depth > 16);
+	bool all_is_ground_except_caves = (minimum_ground_depth > 40);
 	
 	/*
 		Create a block-specific seed

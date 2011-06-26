@@ -26,10 +26,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "utility.h"
 #include "voxel.h"
 #include "porting.h"
-#include "mineral.h"
-#include "noise.h"
-#include "serverobject.h"
-#include "content_mapnode.h"
 #include "mapgen.h"
 #include "nodemetadata.h"
 
@@ -901,7 +897,7 @@ void Map::addNodeAndUpdate(v3s16 p, MapNode n,
 	{
 	}
 
-#if 1
+#if 0
 	/*
 		If the new node is solid and there is grass below, change it to mud
 	*/
@@ -2869,10 +2865,10 @@ MapSector* ServerMap::loadSectorMeta(std::string sectordir, bool save_after_load
 		// format. Just go ahead and create the sector.
 		if(fs::PathExists(sectordir))
 		{
-			dstream<<"ServerMap::loadSectorMeta(): Sector metafile "
+			/*dstream<<"ServerMap::loadSectorMeta(): Sector metafile "
 					<<fullpath<<" doesn't exist but directory does."
 					<<" Continuing with a sector with no metadata."
-					<<std::endl;
+					<<std::endl;*/
 			sector = new ServerMapSector(this, p2d);
 			m_sectors.insert(p2d, sector);
 		}

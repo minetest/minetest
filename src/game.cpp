@@ -661,7 +661,9 @@ void the_game(
 	screensize = driver->getScreenSize();
 
 	const s32 hotbar_itemcount = 8;
-	const s32 hotbar_imagesize = 36;
+	//const s32 hotbar_imagesize = 36;
+	//const s32 hotbar_imagesize = 64;
+	s32 hotbar_imagesize = 48;
 	
 	// The color of the sky
 
@@ -967,6 +969,14 @@ void the_game(
 		screensize = driver->getScreenSize();
 		v2s32 displaycenter(screensize.X/2,screensize.Y/2);
 		//bool screensize_changed = screensize != last_screensize;
+
+		// Resize hotbar
+		if(screensize.Y <= 600)
+			hotbar_imagesize = 32;
+		else if(screensize.Y <= 1024)
+			hotbar_imagesize = 48;
+		else
+			hotbar_imagesize = 64;
 		
 		// Hilight boxes collected during the loop and displayed
 		core::list< core::aabbox3d<f32> > hilightboxes;

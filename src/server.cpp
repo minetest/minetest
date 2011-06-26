@@ -35,6 +35,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "content_craft.h"
 #include "content_nodemeta.h"
 #include "mapblock.h"
+#include "serverobject.h"
 
 #define BLOCK_EMERGE_FLAG_FROMDISK (1<<0)
 
@@ -2411,8 +2412,12 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 							toolname = titem->getToolName();
 						}
 					}
+
+					v3f playerpos = player->getPosition();
+					v3f objpos = obj->getBasePosition();
+					v3f dir = (objpos - playerpos).normalize();
 					
-					u16 wear = obj->punch(toolname);
+					u16 wear = obj->punch(toolname, dir);
 					
 					if(titem)
 					{
