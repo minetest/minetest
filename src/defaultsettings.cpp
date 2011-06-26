@@ -42,6 +42,7 @@ void set_default_settings()
 	g_settings.setDefault("keymap_rangeselect", "KEY_KEY_R");
 	g_settings.setDefault("keymap_freemove", "KEY_KEY_K");
 	g_settings.setDefault("keymap_fastmove", "KEY_KEY_J");
+	g_settings.setDefault("keymap_frametime_graph", "KEY_F1");
 	// Some (temporary) keys for debugging
 	g_settings.setDefault("keymap_special1", "KEY_KEY_E");
 	g_settings.setDefault("keymap_print_debug_stacks", "KEY_KEY_P");
@@ -83,6 +84,7 @@ void set_default_settings()
 	g_settings.setDefault("objectdata_interval", "0.2");
 	g_settings.setDefault("active_object_range", "2");
 	//g_settings.setDefault("max_simultaneous_block_sends_per_client", "1");
+	// This causes frametime jitter on client side, or does it?
 	g_settings.setDefault("max_simultaneous_block_sends_per_client", "2");
 	g_settings.setDefault("max_simultaneous_block_sends_server_total", "8");
 	g_settings.setDefault("max_block_send_distance", "8");

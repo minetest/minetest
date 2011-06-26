@@ -1657,7 +1657,13 @@ void Server::AsyncRunStep()
 	*/
 	{
 		// Don't send too many at a time
-		u32 count = 0;
+		//u32 count = 0;
+
+		// Single change sending is disabled if queue size is not small
+		bool disable_single_change_sending = false;
+		if(m_unsent_map_edit_queue.size() >= 4)
+			disable_single_change_sending = true;
+
 		while(m_unsent_map_edit_queue.size() != 0)
 		{
 			MapEditEvent* event = m_unsent_map_edit_queue.pop_front();
@@ -1670,14 +1676,22 @@ void Server::AsyncRunStep()
 			if(event->type == MEET_ADDNODE)
 			{
 				dstream<<"Server: MEET_ADDNODE"<<std::endl;
-				sendAddNode(event->p, event->n, event->already_known_by_peer,
-						&far_players, 30);
+				if(disable_single_change_sending)
+					sendAddNode(event->p, event->n, event->already_known_by_peer,
+							&far_players, 5);
+				else
+					sendAddNode(event->p, event->n, event->already_known_by_peer,
+							&far_players, 30);
 			}
 			else if(event->type == MEET_REMOVENODE)
 			{
 				dstream<<"Server: MEET_REMOVENODE"<<std::endl;
-				sendRemoveNode(event->p, event->already_known_by_peer,
-						&far_players, 30);
+				if(disable_single_change_sending)
+					sendRemoveNode(event->p, event->already_known_by_peer,
+							&far_players, 5);
+				else
+					sendRemoveNode(event->p, event->already_known_by_peer,
+							&far_players, 30);
 			}
 			else if(event->type == MEET_BLOCK_NODE_METADATA_CHANGED)
 			{
@@ -1698,31 +1712,35 @@ void Server::AsyncRunStep()
 			/*
 				Set blocks not sent to far players
 			*/
-			core::map<v3s16, MapBlock*> modified_blocks2;
-			for(core::map<v3s16, bool>::Iterator
-					i = event->modified_blocks.getIterator();
-					i.atEnd()==false; i++)
+			if(far_players.size() > 0)
 			{
-				v3s16 p = i.getNode()->getKey();
-				modified_blocks2.insert(p, m_env.getMap().getBlockNoCreateNoEx(p));
-			}
-			for(core::list<u16>::Iterator
-					i = far_players.begin();
-					i != far_players.end(); i++)
-			{
-				u16 peer_id = *i;
-				RemoteClient *client = getClient(peer_id);
-				if(client==NULL)
-					continue;
-				client->SetBlocksNotSent(modified_blocks2);
+				core::map<v3s16, MapBlock*> modified_blocks2;
+				for(core::map<v3s16, bool>::Iterator
+						i = event->modified_blocks.getIterator();
+						i.atEnd()==false; i++)
+				{
+					v3s16 p = i.getNode()->getKey();
+					modified_blocks2.insert(p,
+							m_env.getMap().getBlockNoCreateNoEx(p));
+				}
+				for(core::list<u16>::Iterator
+						i = far_players.begin();
+						i != far_players.end(); i++)
+				{
+					u16 peer_id = *i;
+					RemoteClient *client = getClient(peer_id);
+					if(client==NULL)
+						continue;
+					client->SetBlocksNotSent(modified_blocks2);
+				}
 			}
 
 			delete event;
 
-			// Don't send too many at a time
+			/*// Don't send too many at a time
 			count++;
 			if(count >= 1 && m_unsent_map_edit_queue.size() < 100)
-				break;
+				break;*/
 		}
 	}
 

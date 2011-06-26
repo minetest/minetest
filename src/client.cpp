@@ -135,6 +135,15 @@ void * MeshUpdateThread::Thread()
 
 	while(getRun())
 	{
+		/*// Wait for output queue to flush.
+		// Allow 2 in queue, this makes less frametime jitter.
+		// Umm actually, there is no much difference
+		if(m_queue_out.size() >= 2)
+		{
+			sleep_ms(3);
+			continue;
+		}*/
+
 		QueuedMeshUpdate *q = m_queue_in.pop();
 		if(q == NULL)
 		{
@@ -794,56 +803,43 @@ void Client::ProcessData(u8 *data, u32 datasize, u16 sender_peer_id)
 		MapSector *sector;
 		MapBlock *block;
 		
-		{ //envlock
-			//JMutexAutoLock envlock(m_env_mutex); //bulk comment-out
-			
-			v2s16 p2d(p.X, p.Z);
-			sector = m_env.getMap().emergeSector(p2d);
-			
-			v2s16 sp = sector->getPos();
-			if(sp != p2d)
-			{
-				dstream<<"ERROR: Got sector with getPos()="
-						<<"("<<sp.X<<","<<sp.Y<<"), tried to get"
-						<<"("<<p2d.X<<","<<p2d.Y<<")"<<std::endl;
-			}
+		v2s16 p2d(p.X, p.Z);
+		sector = m_env.getMap().emergeSector(p2d);
+		
+		assert(sector->getPos() == p2d);
 
-			assert(sp == p2d);
-			//assert(sector->getPos() == p2d);
+		//TimeTaker timer("MapBlock deSerialize");
+		// 0ms
+		
+		block = sector->getBlockNoCreateNoEx(p.Y);
+		if(block)
+		{
+			/*
+				Update an existing block
+			*/
+			//dstream<<"Updating"<<std::endl;
+			block->deSerialize(istr, ser_version);
+		}
+		else
+		{
+			/*
+				Create a new block
+			*/
+			//dstream<<"Creating new"<<std::endl;
+			block = new MapBlock(&m_env.getMap(), p);
+			block->deSerialize(istr, ser_version);
+			sector->insertBlock(block);
 
-			//TimeTaker timer("MapBlock deSerialize");
-			// 0ms
-			
-			block = sector->getBlockNoCreateNoEx(p.Y);
-			if(block)
-			{
-				/*
-					Update an existing block
-				*/
-				//dstream<<"Updating"<<std::endl;
-				block->deSerialize(istr, ser_version);
-			}
-			else
-			{
-				/*
-					Create a new block
-				*/
-				//dstream<<"Creating new"<<std::endl;
-				block = new MapBlock(&m_env.getMap(), p);
-				block->deSerialize(istr, ser_version);
-				sector->insertBlock(block);
-
-				//DEBUG
-				/*NodeMod mod;
-				mod.type = NODEMOD_CHANGECONTENT;
-				mod.param = CONTENT_MESE;
-				block->setTempMod(v3s16(8,10,8), mod);
-				block->setTempMod(v3s16(8,9,8), mod);
-				block->setTempMod(v3s16(8,8,8), mod);
-				block->setTempMod(v3s16(8,7,8), mod);
-				block->setTempMod(v3s16(8,6,8), mod);*/
-			}
-		} //envlock
+			//DEBUG
+			/*NodeMod mod;
+			mod.type = NODEMOD_CHANGECONTENT;
+			mod.param = CONTENT_MESE;
+			block->setTempMod(v3s16(8,10,8), mod);
+			block->setTempMod(v3s16(8,9,8), mod);
+			block->setTempMod(v3s16(8,8,8), mod);
+			block->setTempMod(v3s16(8,7,8), mod);
+			block->setTempMod(v3s16(8,6,8), mod);*/
+		}
 
 #if 0
 		/*
@@ -876,6 +872,7 @@ void Client::ProcessData(u8 *data, u32 datasize, u16 sender_peer_id)
 		/*
 			Add it to mesh update queue and set it to be acknowledged after update.
 		*/
+		//std::cerr<<"Adding mesh update task for received block"<<std::endl;
 		addUpdateMeshTaskWithEdge(p, true);
 	}
 	else if(command == TOCLIENT_PLAYERPOS)
@@ -2118,7 +2115,7 @@ void Client::addUpdateMeshTask(v3s16 p, bool ack_to_server)
 	MapBlock *b = m_env.getMap().getBlockNoCreateNoEx(p);
 	if(b == NULL)
 		return;
-
+	
 	/*
 		Create a task to update the mesh of the block
 	*/
@@ -2127,7 +2124,8 @@ void Client::addUpdateMeshTask(v3s16 p, bool ack_to_server)
 	
 	{
 		//TimeTaker timer("data fill");
-		// 0ms
+		// Release: ~0ms
+		// Debug: 1-6ms, avg=2ms
 		data->fill(getDayNightRatio(), b);
 	}
 
@@ -2153,6 +2151,10 @@ void Client::addUpdateMeshTask(v3s16 p, bool ack_to_server)
 	}
 #endif
 
+	/*
+		Mark mesh as non-expired at this point so that it can already
+		be marked as expired again if the data changes
+	*/
 	b->setMeshExpired(false);
 }
 

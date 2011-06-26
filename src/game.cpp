@@ -940,6 +940,8 @@ void the_game(
 
 	while(device->run() && kill == false)
 	{
+		//std::cerr<<"frame"<<std::endl;
+
 		if(g_gamecallback->disconnect_requested)
 		{
 			g_gamecallback->disconnect_requested = false;
@@ -1219,6 +1221,19 @@ void the_game(
 			{
 				g_settings.set("fast_move","true");
 				chat_lines.push_back(ChatLine(L"fast_move enabled"));
+			}
+		}
+		else if(input->wasKeyDown(getKeySetting("keymap_frametime_graph")))
+		{
+			if(g_settings.getBool("frametime_graph"))
+			{
+				g_settings.set("frametime_graph","false");
+				chat_lines.push_back(ChatLine(L"frametime_graph disabled"));
+			}
+			else
+			{
+				g_settings.set("frametime_graph","true");
+				chat_lines.push_back(ChatLine(L"frametime_graph enabled"));
 			}
 		}
 
