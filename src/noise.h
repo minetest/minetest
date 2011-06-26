@@ -82,10 +82,11 @@ double noise3d_perlin_abs(double x, double y, double z, int seed,
 
 enum NoiseType
 {
+	NOISE_CONSTANT_ONE,
 	NOISE_PERLIN,
 	NOISE_PERLIN_ABS,
 	NOISE_PERLIN_CONTOUR,
-	NOISE_PERLIN_CONTOUR_FLIP_YZ
+	NOISE_PERLIN_CONTOUR_FLIP_YZ,
 };
 
 struct NoiseParams
