@@ -219,6 +219,12 @@ TODO: Artificial (night) light could be more yellow colored than sunlight.
 
 SUGG: Somehow make the night less colorful
 
+TODO: Occlusion culling
+      - At the same time, move some of the renderMap() block choosing code
+        to the same place as where the new culling happens.
+      - Shoot some rays per frame and when ready, make a new list of
+	    blocks for usage of renderMap and give it a new pointer to it.
+
 Configuration:
 --------------
 
@@ -300,6 +306,8 @@ TODO: Mineral and ground material properties
 
 TODO: Flowing water to actually contain flow direction information
       - There is a space for this - it just has to be implemented.
+
+TODO: Consider smoothening cave floors after generating them
 
 Misc. stuff:
 ------------
