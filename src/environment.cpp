@@ -21,6 +21,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "filesys.h"
 #include "porting.h"
 #include "collision.h"
+#include "content_mapnode.h"
 
 
 Environment::Environment():
@@ -426,7 +427,14 @@ void ServerEnvironment::deSerializePlayers(const std::string &savedir)
 			testplayer.deSerialize(is);
 		}
 
-		dstream<<"Loaded test player with name "<<testplayer.getName()<<std::endl;
+		if(!string_allowed(testplayer.getName(), PLAYERNAME_ALLOWED_CHARS))
+		{
+			dstream<<"Not loading player with invalid name: "
+					<<testplayer.getName()<<std::endl;
+		}
+
+		dstream<<"Loaded test player with name "<<testplayer.getName()
+				<<std::endl;
 		
 		// Search for the player
 		std::string playername = testplayer.getName();
@@ -571,6 +579,66 @@ void spawnRandomObjects(MapBlock *block)
 }
 #endif
 
+void ServerEnvironment::activateBlock(MapBlock *block, u32 additional_dtime)
+{
+	// Get time difference
+	u32 dtime_s = 0;
+	u32 stamp = block->getTimestamp();
+	if(m_game_time > stamp && stamp != BLOCK_TIMESTAMP_UNDEFINED)
+		dtime_s = m_game_time - block->getTimestamp();
+	dtime_s += additional_dtime;
+
+	// Set current time as timestamp (and let it set ChangedFlag)
+	block->setTimestamp(m_game_time);
+
+	//dstream<<"Block is "<<dtime_s<<" seconds old."<<std::endl;
+
+	// Activate stored objects
+	activateObjects(block);
+
+	// Run node metadata
+	bool changed = block->m_node_metadata.step((float)dtime_s);
+	if(changed)
+	{
+		MapEditEvent event;
+		event.type = MEET_BLOCK_NODE_METADATA_CHANGED;
+		event.p = block->getPos();
+		m_map->dispatchEvent(&event);
+
+		block->setChangedFlag();
+	}
+
+	// TODO: Do something
+	// TODO: Implement usage of ActiveBlockModifier
+
+	// Here's a quick demonstration
+	v3s16 p0;
+	for(p0.X=0; p0.X<MAP_BLOCKSIZE; p0.X++)
+	for(p0.Y=0; p0.Y<MAP_BLOCKSIZE; p0.Y++)
+	for(p0.Z=0; p0.Z<MAP_BLOCKSIZE; p0.Z++)
+	{
+		v3s16 p = p0 + block->getPosRelative();
+		MapNode n = block->getNodeNoEx(p0);
+#if 1
+		// Test something:
+		// Convert all mud under proper day lighting to grass
+		if(n.d == CONTENT_MUD)
+		{
+			if(dtime_s > 300)
+			{
+				MapNode n_top = block->getNodeNoEx(p0+v3s16(0,1,0));
+				if(content_features(n_top.d).air_equivalent &&
+						n_top.getLight(LIGHTBANK_DAY) >= 13)
+				{
+					n.d = CONTENT_GRASS;
+					m_map->addNodeWithEvent(p, n);
+				}
+			}
+		}
+#endif
+	}
+}
+
 void ServerEnvironment::step(float dtime)
 {
 	DSTACK(__FUNCTION_NAME);
@@ -686,8 +754,8 @@ void ServerEnvironment::step(float dtime)
 			MapBlock *block = m_map->getBlockNoCreateNoEx(p);
 			if(block==NULL)
 				continue;
-			
-			// Set current time as timestamp
+			// Set current time as timestamp (and let it set ChangedFlag)
+
 			block->setTimestamp(m_game_time);
 		}
 
@@ -707,23 +775,36 @@ void ServerEnvironment::step(float dtime)
 			MapBlock *block = m_map->getBlockNoCreateNoEx(p);
 			if(block==NULL)
 				continue;
-			
+
 			// Get time difference
 			u32 dtime_s = 0;
 			u32 stamp = block->getTimestamp();
 			if(m_game_time > stamp && stamp != BLOCK_TIMESTAMP_UNDEFINED)
 				dtime_s = m_game_time - block->getTimestamp();
 
-			// Set current time as timestamp
+			// Set current time as timestamp (and let it set ChangedFlag)
 			block->setTimestamp(m_game_time);
 
 			//dstream<<"Block is "<<dtime_s<<" seconds old."<<std::endl;
-			
+
 			// Activate stored objects
 			activateObjects(block);
 
+			// Run node metadata
+			bool changed = block->m_node_metadata.step((float)dtime_s);
+			if(changed)
+			{
+				MapEditEvent event;
+				event.type = MEET_BLOCK_NODE_METADATA_CHANGED;
+				event.p = p;
+				m_map->dispatchEvent(&event);
+
+				block->setChangedFlag();
+			}
+
 			// TODO: Do something
-			
+			// TODO: Implement usage of ActiveBlockModifier
+
 			// Here's a quick demonstration
 			v3s16 p0;
 			for(p0.X=0; p0.X<MAP_BLOCKSIZE; p0.X++)
@@ -736,13 +817,29 @@ void ServerEnvironment::step(float dtime)
 				// Convert all mud under proper day lighting to grass
 				if(n.d == CONTENT_MUD)
 				{
-					if(1)
+					if(dtime_s > 300)
 					{
 						MapNode n_top = block->getNodeNoEx(p0+v3s16(0,1,0));
 						if(content_features(n_top.d).air_equivalent &&
 								n_top.getLight(LIGHTBANK_DAY) >= 13)
 						{
 							n.d = CONTENT_GRASS;
+							m_map->addNodeWithEvent(p, n);
+						}
+					}
+				}
+				/*
+					Convert grass into mud if under something else than air
+				*/
+				else if(n.d == CONTENT_GRASS)
+				{
+					//if(myrand()%20 == 0)
+					{
+						MapNode n_top = block->getNodeNoEx(p0+v3s16(0,1,0));
+						if(n_top.d != CONTENT_AIR
+								&& n_top.d != CONTENT_IGNORE)
+						{
+							n.d = CONTENT_MUD;
 							m_map->addNodeWithEvent(p, n);
 						}
 					}
@@ -754,8 +851,10 @@ void ServerEnvironment::step(float dtime)
 	/*
 		Mess around in active blocks
 	*/
-	if(m_active_blocks_test_interval.step(dtime, 5.0))
+	if(m_active_blocks_nodemetadata_interval.step(dtime, 1.0))
 	{
+		float dtime = 1.0;
+
 		for(core::map<v3s16, bool>::Iterator
 				i = m_active_blocks.m_list.getIterator();
 				i.atEnd()==false; i++)
@@ -770,8 +869,41 @@ void ServerEnvironment::step(float dtime)
 				continue;
 			
 			// Set current time as timestamp
-			block->setTimestamp(m_game_time);
+			block->setTimestampNoChangedFlag(m_game_time);
+
+			// Run node metadata
+			bool changed = block->m_node_metadata.step(dtime);
+			if(changed)
+			{
+				MapEditEvent event;
+				event.type = MEET_BLOCK_NODE_METADATA_CHANGED;
+				event.p = p;
+				m_map->dispatchEvent(&event);
+
+				block->setChangedFlag();
+			}
+		}
+	}
+	if(m_active_blocks_test_interval.step(dtime, 10.0))
+	{
+		//float dtime = 10.0;
+
+		for(core::map<v3s16, bool>::Iterator
+				i = m_active_blocks.m_list.getIterator();
+				i.atEnd()==false; i++)
+		{
+			v3s16 p = i.getNode()->getKey();
 			
+			/*dstream<<"Server: Block ("<<p.X<<","<<p.Y<<","<<p.Z
+					<<") being handled"<<std::endl;*/
+
+			MapBlock *block = m_map->getBlockNoCreateNoEx(p);
+			if(block==NULL)
+				continue;
+			
+			// Set current time as timestamp
+			block->setTimestampNoChangedFlag(m_game_time);
+
 			/*
 				Do stuff!
 
@@ -784,6 +916,7 @@ void ServerEnvironment::step(float dtime)
 				Everything should bind to inside this single content
 				searching loop to keep things fast.
 			*/
+			// TODO: Implement usage of ActiveBlockModifier
 
 			v3s16 p0;
 			for(p0.X=0; p0.X<MAP_BLOCKSIZE; p0.X++)
@@ -792,11 +925,14 @@ void ServerEnvironment::step(float dtime)
 			{
 				v3s16 p = p0 + block->getPosRelative();
 				MapNode n = block->getNodeNoEx(p0);
-				// Test something:
-				// Convert mud under proper lighting to grass
+
+				/*
+					Test something:
+					Convert mud under proper lighting to grass
+				*/
 				if(n.d == CONTENT_MUD)
 				{
-					if(myrand()%10 == 0)
+					if(myrand()%20 == 0)
 					{
 						MapNode n_top = block->getNodeNoEx(p0+v3s16(0,1,0));
 						if(content_features(n_top.d).air_equivalent &&
@@ -807,6 +943,22 @@ void ServerEnvironment::step(float dtime)
 						}
 					}
 				}
+				/*
+					Convert grass into mud if under something else than air
+				*/
+				else if(n.d == CONTENT_GRASS)
+				{
+					//if(myrand()%20 == 0)
+					{
+						MapNode n_top = block->getNodeNoEx(p0+v3s16(0,1,0));
+						if(n_top.d != CONTENT_AIR
+								&& n_top.d != CONTENT_IGNORE)
+						{
+							n.d = CONTENT_MUD;
+							m_map->addNodeWithEvent(p, n);
+						}
+						}
+					}
 			}
 		}
 	}
@@ -941,49 +1093,8 @@ u16 getFreeServerActiveObjectId(
 u16 ServerEnvironment::addActiveObject(ServerActiveObject *object)
 {
 	assert(object);
-	if(object->getId() == 0)
-	{
-		u16 new_id = getFreeServerActiveObjectId(m_active_objects);
-		if(new_id == 0)
-		{
-			dstream<<"WARNING: ServerEnvironment::addActiveObject(): "
-					<<"no free ids available"<<std::endl;
-			delete object;
-			return 0;
-		}
-		object->setId(new_id);
-	}
-	if(isFreeServerActiveObjectId(object->getId(), m_active_objects) == false)
-	{
-		dstream<<"WARNING: ServerEnvironment::addActiveObject(): "
-				<<"id is not free ("<<object->getId()<<")"<<std::endl;
-		delete object;
-		return 0;
-	}
-	/*dstream<<"INGO: ServerEnvironment::addActiveObject(): "
-			<<"added (id="<<object->getId()<<")"<<std::endl;*/
-			
-	m_active_objects.insert(object->getId(), object);
-
-	// Add static object to active static list of the block
-	v3f objectpos = object->getBasePosition();
-	std::string staticdata = object->getStaticData();
-	StaticObject s_obj(object->getType(), objectpos, staticdata);
-	// Add to the block where the object is located in
-	v3s16 blockpos = getNodeBlockPos(floatToInt(objectpos, BS));
-	MapBlock *block = m_map->getBlockNoCreateNoEx(blockpos);
-	if(block)
-	{
-		block->m_static_objects.m_active.insert(object->getId(), s_obj);
-		object->m_static_exists = true;
-		object->m_static_block = blockpos;
-	}
-	else{
-		dstream<<"WARNING: Server: Could not find a block for "
-				<<"storing newly added static active object"<<std::endl;
-	}
-
-	return object->getId();
+	u16 id = addActiveObjectRaw(object, true);
+	return id;
 }
 
 /*
@@ -1086,6 +1197,58 @@ ActiveObjectMessage ServerEnvironment::getActiveObjectMessage()
 	************ Private methods *************
 */
 
+u16 ServerEnvironment::addActiveObjectRaw(ServerActiveObject *object,
+		bool set_changed)
+{
+	assert(object);
+	if(object->getId() == 0)
+	{
+		u16 new_id = getFreeServerActiveObjectId(m_active_objects);
+		if(new_id == 0)
+		{
+			dstream<<"WARNING: ServerEnvironment::addActiveObjectRaw(): "
+					<<"no free ids available"<<std::endl;
+			delete object;
+			return 0;
+		}
+		object->setId(new_id);
+	}
+	if(isFreeServerActiveObjectId(object->getId(), m_active_objects) == false)
+	{
+		dstream<<"WARNING: ServerEnvironment::addActiveObjectRaw(): "
+				<<"id is not free ("<<object->getId()<<")"<<std::endl;
+		delete object;
+		return 0;
+	}
+	/*dstream<<"INGO: ServerEnvironment::addActiveObjectRaw(): "
+			<<"added (id="<<object->getId()<<")"<<std::endl;*/
+			
+	m_active_objects.insert(object->getId(), object);
+
+	// Add static object to active static list of the block
+	v3f objectpos = object->getBasePosition();
+	std::string staticdata = object->getStaticData();
+	StaticObject s_obj(object->getType(), objectpos, staticdata);
+	// Add to the block where the object is located in
+	v3s16 blockpos = getNodeBlockPos(floatToInt(objectpos, BS));
+	MapBlock *block = m_map->getBlockNoCreateNoEx(blockpos);
+	if(block)
+	{
+		block->m_static_objects.m_active.insert(object->getId(), s_obj);
+		object->m_static_exists = true;
+		object->m_static_block = blockpos;
+
+		if(set_changed)
+			block->setChangedFlag();
+	}
+	else{
+		dstream<<"WARNING: Server: Could not find a block for "
+				<<"storing newly added static active object"<<std::endl;
+	}
+
+	return object->getId();
+}
+
 /*
 	Remove objects that satisfy (m_removed && m_known_by_count==0)
 */
@@ -1176,8 +1339,8 @@ void ServerEnvironment::activateObjects(MapBlock *block)
 			continue;
 		}
 		// This will also add the object to the active static list
-		addActiveObject(obj);
-		//u16 id = addActiveObject(obj);
+		addActiveObjectRaw(obj, false);
+		//u16 id = addActiveObjectRaw(obj, false);
 	}
 	// Clear stored list
 	block->m_static_objects.m_stored.clear();
@@ -1190,7 +1353,8 @@ void ServerEnvironment::activateObjects(MapBlock *block)
 		block->m_static_objects.m_stored.push_back(s_obj);
 	}
 	// Block has been modified
-	block->setChangedFlag();
+	// NOTE: No it has not really. Save I/O here.
+	//block->setChangedFlag();
 }
 
 /*

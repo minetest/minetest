@@ -42,6 +42,8 @@
 #keymap_special1 = KEY_KEY_E
 #keymap_print_debug_stacks = KEY_KEY_P
 
+#invert_mouse = false
+
 # The desired FPS
 #wanted_fps = 30
 
@@ -55,6 +57,12 @@
 
 # Whether to fog out the end of the visible area
 #enable_fog = true
+
+# Enable/disable clouds
+#enable_clouds = true
+
+# Experimental
+#enable_farmesh = false
 
 # Enable a bit lower water surface; disable for speed
 #new_style_water = true
@@ -90,10 +98,6 @@
 # Server side stuff
 #
 
-# Set to true to enable experimental features
-# (varies from version to version, see wiki)
-#enable_experimental = false
-
 # Map directory (everything in the world is stored here)
 #map-dir = /home/palle/custom_map
 
@@ -102,8 +106,20 @@
 
 #enable_damage = false
 
+#default_password = 
+
+# Available privileges: build, teleport, settime, privs, shout
+#default_privs = build, shout
+
 # Gives some stuff to players at the beginning
 #give_initial_stuff = false
+
+# Set to true to enable experimental features
+# (varies from version to version, see wiki)
+#enable_experimental = false
+
+# Profiler data print interval. 0 = disable.
+#profiler_print_interval = 10
 
 # Player and object positions are sent at intervals specified by this
 #objectdata_inverval = 0.2

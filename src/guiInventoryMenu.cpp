@@ -21,6 +21,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "guiInventoryMenu.h"
 #include "constants.h"
 #include "keycode.h"
+#include "strfnd.h"
 
 void drawInventoryItem(video::IVideoDriver *driver,
 		gui::IGUIFont *font,
@@ -412,5 +413,85 @@ bool GUIInventoryMenu::OnEvent(const SEvent& event)
 	return Parent ? Parent->OnEvent(event) : false;
 }
 
+/*
+	Here is an example traditional set-up sequence for a DrawSpec list:
 
+	std::string furnace_inv_id = "nodemetadata:0,1,2";
+	core::array<GUIInventoryMenu::DrawSpec> draw_spec;
+	draw_spec.push_back(GUIInventoryMenu::DrawSpec(
+			"list", furnace_inv_id, "fuel",
+			v2s32(2, 3), v2s32(1, 1)));
+	draw_spec.push_back(GUIInventoryMenu::DrawSpec(
+			"list", furnace_inv_id, "src",
+			v2s32(2, 1), v2s32(1, 1)));
+	draw_spec.push_back(GUIInventoryMenu::DrawSpec(
+			"list", furnace_inv_id, "dst",
+			v2s32(5, 1), v2s32(2, 2)));
+	draw_spec.push_back(GUIInventoryMenu::DrawSpec(
+			"list", "current_player", "main",
+			v2s32(0, 5), v2s32(8, 4)));
+	setDrawSpec(draw_spec);
+
+	Here is the string for creating the same DrawSpec list (a single line,
+	spread to multiple lines here):
+	
+	GUIInventoryMenu::makeDrawSpecArrayFromString(
+			draw_spec,
+			"nodemetadata:0,1,2",
+			"invsize[8,9;]"
+			"list[current_name;fuel;2,3;1,1;]"
+			"list[current_name;src;2,1;1,1;]"
+			"list[current_name;dst;5,1;2,2;]"
+			"list[current_player;main;0,5;8,4;]");
+	
+	Returns inventory menu size defined by invsize[].
+*/
+v2s16 GUIInventoryMenu::makeDrawSpecArrayFromString(
+		core::array<GUIInventoryMenu::DrawSpec> &draw_spec,
+		const std::string &data,
+		const std::string &current_name)
+{
+	v2s16 invsize(8,9);
+	Strfnd f(data);
+	while(f.atend() == false)
+	{
+		std::string type = trim(f.next("["));
+		//dstream<<"type="<<type<<std::endl;
+		if(type == "list")
+		{
+			std::string name = f.next(";");
+			if(name == "current_name")
+				name = current_name;
+			std::string subname = f.next(";");
+			s32 pos_x = stoi(f.next(","));
+			s32 pos_y = stoi(f.next(";"));
+			s32 geom_x = stoi(f.next(","));
+			s32 geom_y = stoi(f.next(";"));
+			dstream<<"list name="<<name<<", subname="<<subname
+					<<", pos=("<<pos_x<<","<<pos_y<<")"
+					<<", geom=("<<geom_x<<","<<geom_y<<")"
+					<<std::endl;
+			draw_spec.push_back(GUIInventoryMenu::DrawSpec(
+					type, name, subname,
+					v2s32(pos_x,pos_y),v2s32(geom_x,geom_y)));
+			f.next("]");
+		}
+		else if(type == "invsize")
+		{
+			invsize.X = stoi(f.next(","));
+			invsize.Y = stoi(f.next(";"));
+			dstream<<"invsize ("<<invsize.X<<","<<invsize.Y<<")"<<std::endl;
+			f.next("]");
+		}
+		else
+		{
+			// Ignore others
+			std::string ts = f.next("]");
+			dstream<<"Unknown DrawSpec: type="<<type<<", data=\""<<ts<<"\""
+					<<std::endl;
+		}
+	}
+
+	return invsize;
+}
 

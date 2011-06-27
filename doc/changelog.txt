@@ -3,7 +3,12 @@ Minetest-c55 changelog
 This should contain all the major changes.
 For minor stuff, refer to the commit log of the repository.
 
-X:
+2011-06-02:
+- Password crash on windows fixed
+- Optimized server CPU usage a lot
+- Furnaces now work also while players are not near to them
+
+2011-05-29:
 - Optimized smooth lighting
 - A number of small fixes
 - Added clouds and simple skyboxes
@@ -13,6 +18,10 @@ X:
 - Slightly updated map format
 - Player passwords
 - All textures first searched from texture_path
+- Map directory ("map") has been renamed to "world" (just rename it to load an old world)
+- Mouse inversion (invert_mouse)
+- Grass doesn't grow immediately anymore
+- Fence added
 
 2011-04-24:
 - Smooth lighting with simple ambient occlusion

@@ -222,6 +222,49 @@ double noise3d_perlin_abs(double x, double y, double z, int seed,
 	return a;
 }
 
+// -1->0, 0->1, 1->0
+double contour(double v)
+{
+	v = fabs(v);
+	if(v >= 1.0)
+		return 0.0;
+	return (1.0-v);
+}
+
+double noise3d_param(const NoiseParams &param, double x, double y, double z)
+{
+	double s = param.pos_scale;
+	x /= s;
+	y /= s;
+	z /= s;
+
+	if(param.type == NOISE_PERLIN)
+	{
+		return param.noise_scale*noise3d_perlin(x,y,z, param.seed,
+				param.octaves,
+				param.persistence);
+	}
+	else if(param.type == NOISE_PERLIN_ABS)
+	{
+		return param.noise_scale*noise3d_perlin_abs(x,y,z, param.seed,
+				param.octaves,
+				param.persistence);
+	}
+	else if(param.type == NOISE_PERLIN_CONTOUR)
+	{
+		return contour(param.noise_scale*noise3d_perlin(x,y,z,
+				param.seed, param.octaves,
+				param.persistence));
+	}
+	else if(param.type == NOISE_PERLIN_CONTOUR_FLIP_YZ)
+	{
+		return contour(param.noise_scale*noise3d_perlin(x,z,y,
+				param.seed, param.octaves,
+				param.persistence));
+	}
+	else assert(0);
+}
+
 /*
 	NoiseBuffer
 */
@@ -246,8 +289,7 @@ void NoiseBuffer::clear()
 	m_size_z = 0;
 }
 
-void NoiseBuffer::create(int seed, int octaves, double persistence,
-		double pos_scale,
+void NoiseBuffer::create(const NoiseParams &param,
 		double first_x, double first_y, double first_z,
 		double last_x, double last_y, double last_z,
 		double samplelength_x, double samplelength_y, double samplelength_z)
@@ -265,20 +307,52 @@ void NoiseBuffer::create(int seed, int octaves, double persistence,
 	m_size_y = (last_y - m_start_y)/samplelength_y + 2;
 	m_size_z = (last_z - m_start_z)/samplelength_z + 2;
 
-	/*dstream<<"m_size_x="<<m_size_x<<", m_size_y="<<m_size_y
-			<<", m_size_z="<<m_size_z<<std::endl;*/
-	
 	m_data = new double[m_size_x*m_size_y*m_size_z];
 
 	for(int x=0; x<m_size_x; x++)
 	for(int y=0; y<m_size_y; y++)
 	for(int z=0; z<m_size_z; z++)
 	{
-		double xd = (m_start_x + (double)x*m_samplelength_x)/pos_scale;
-		double yd = (m_start_y + (double)y*m_samplelength_y)/pos_scale;
-		double zd = (m_start_z + (double)z*m_samplelength_z)/pos_scale;
-		intSet(x,y,z, noise3d_perlin(xd,yd,zd,seed,octaves,persistence));
+		double xd = (m_start_x + (double)x*m_samplelength_x);
+		double yd = (m_start_y + (double)y*m_samplelength_y);
+		double zd = (m_start_z + (double)z*m_samplelength_z);
+		double a = noise3d_param(param, xd,yd,zd);
+		intSet(x,y,z, a);
 	}
+}
+
+void NoiseBuffer::multiply(const NoiseParams &param)
+{
+	assert(m_data != NULL);
+
+	for(int x=0; x<m_size_x; x++)
+	for(int y=0; y<m_size_y; y++)
+	for(int z=0; z<m_size_z; z++)
+	{
+		double xd = (m_start_x + (double)x*m_samplelength_x);
+		double yd = (m_start_y + (double)y*m_samplelength_y);
+		double zd = (m_start_z + (double)z*m_samplelength_z);
+		double a = noise3d_param(param, xd,yd,zd);
+		intMultiply(x,y,z, a);
+	}
+}
+
+// Deprecated
+void NoiseBuffer::create(int seed, int octaves, double persistence,
+		bool abs,
+		double first_x, double first_y, double first_z,
+		double last_x, double last_y, double last_z,
+		double samplelength_x, double samplelength_y, double samplelength_z)
+{
+	NoiseParams param;
+	param.type = abs ? NOISE_PERLIN_ABS : NOISE_PERLIN;
+	param.seed = seed;
+	param.octaves = octaves;
+	param.persistence = persistence;
+
+	create(param, first_x, first_y, first_z,
+			last_x, last_y, last_z,
+			samplelength_x, samplelength_y, samplelength_z);
 }
 
 void NoiseBuffer::intSet(int x, int y, int z, double d)
@@ -287,6 +361,14 @@ void NoiseBuffer::intSet(int x, int y, int z, double d)
 	assert(i >= 0);
 	assert(i < m_size_x*m_size_y*m_size_z);
 	m_data[i] = d;
+}
+
+void NoiseBuffer::intMultiply(int x, int y, int z, double d)
+{
+	int i = m_size_x*m_size_y*z + m_size_x*y + x;
+	assert(i >= 0);
+	assert(i < m_size_x*m_size_y*m_size_z);
+	m_data[i] = m_data[i] * d;
 }
 
 double NoiseBuffer::intGet(int x, int y, int z)
@@ -325,4 +407,15 @@ double NoiseBuffer::get(double x, double y, double z)
 	// Interpolate
 	return triLinearInterpolation(v000,v100,v010,v110,v001,v101,v011,v111,xl,yl,zl);
 }
+
+/*bool NoiseBuffer::contains(double x, double y, double z)
+{
+	x -= m_start_x;
+	y -= m_start_y;
+	z -= m_start_z;
+	x /= m_samplelength_x;
+	y /= m_samplelength_y;
+	z /= m_samplelength_z;
+	if(x <= 0.0 || x >= m_size_x)
+}*/
 

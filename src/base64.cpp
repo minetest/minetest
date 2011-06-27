@@ -71,9 +71,10 @@ std::string base64_encode(unsigned char const* bytes_to_encode, unsigned int in_
 
     for (j = 0; (j < i + 1); j++)
       ret += base64_chars[char_array_4[j]];
-
-    while((i++ < 3))
-      ret += '=';
+	
+	// Don't pad it with =
+    /*while((i++ < 3))
+      ret += '=';*/
 
   }
 

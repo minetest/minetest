@@ -28,6 +28,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <sstream>
 #include "main.h"
 #include "serverobject.h"
+#include "content_mapnode.h"
+#include "content_inventory.h"
 
 /*
 	InventoryItem
@@ -110,36 +112,12 @@ ServerActiveObject* InventoryItem::createSAO(ServerEnvironment *env, u16 id, v3f
 
 bool MaterialItem::isCookable()
 {
-	if(m_content == CONTENT_TREE)
-	{
-		return true;
-	}
-	else if(m_content == CONTENT_COBBLE)
-	{
-		return true;
-	}
-	else if(m_content == CONTENT_SAND)
-	{
-		return true;
-	}
-	return false;
+	return item_material_is_cookable(m_content);
 }
 
 InventoryItem *MaterialItem::createCookResult()
 {
-	if(m_content == CONTENT_TREE)
-	{
-		return new CraftItem("lump_of_coal", 1);
-	}
-	else if(m_content == CONTENT_COBBLE)
-	{
-		return new MaterialItem(CONTENT_STONE, 1);
-	}
-	else if(m_content == CONTENT_SAND)
-	{
-		return new MaterialItem(CONTENT_GLASS, 1);
-	}
-	return NULL;
+	return item_material_create_cook_result(m_content);
 }
 
 /*
@@ -152,29 +130,8 @@ video::ITexture * CraftItem::getImage()
 	if(g_texturesource == NULL)
 		return NULL;
 	
-	std::string name;
+	std::string name = item_craft_get_image_name(m_subname);
 
-	if(m_subname == "Stick")
-		name = "stick.png";
-	else if(m_subname == "paper")
-		name = "paper.png";
-	else if(m_subname == "book")
-		name = "book.png";
-	else if(m_subname == "lump_of_coal")
-		name = "lump_of_coal.png";
-	else if(m_subname == "lump_of_iron")
-		name = "lump_of_iron.png";
-	else if(m_subname == "lump_of_clay")
-		name = "lump_of_clay.png";
-	else if(m_subname == "steel_ingot")
-		name = "steel_ingot.png";
-	else if(m_subname == "clay_brick")
-		name = "clay_brick.png";
-	else if(m_subname == "rat")
-		name = "rat.png";
-	else
-		name = "cloud.png";
-	
 	// Get such a texture
 	return g_texturesource->getTextureRaw(name);
 }
@@ -183,50 +140,35 @@ video::ITexture * CraftItem::getImage()
 ServerActiveObject* CraftItem::createSAO(ServerEnvironment *env, u16 id, v3f pos)
 {
 	// Special cases
-	if(m_subname == "rat")
-	{
-		ServerActiveObject *obj = new RatSAO(env, id, pos);
+	ServerActiveObject *obj = item_craft_create_object(m_subname, env, id, pos);
+	if(obj)
 		return obj;
-	}
 	// Default
-	else
-	{
-		return InventoryItem::createSAO(env, id, pos);
-	}
+	return InventoryItem::createSAO(env, id, pos);
 }
 
 u16 CraftItem::getDropCount()
 {
 	// Special cases
-	if(m_subname == "rat")
-		return 1;
+	s16 dc = item_craft_get_drop_count(m_subname);
+	if(dc != -1)
+		return dc;
 	// Default
-	else
-		return InventoryItem::getDropCount();
+	return InventoryItem::getDropCount();
 }
 
 bool CraftItem::isCookable()
 {
-	if(m_subname == "lump_of_iron" || m_subname == "lump_of_clay")
-	{
-		return true;
-	}
-	return false;
+	return item_craft_is_cookable(m_subname);
 }
 
 InventoryItem *CraftItem::createCookResult()
 {
-	if(m_subname == "lump_of_iron")
-	{
-		return new CraftItem("steel_ingot", 1);
-	}
-	else if(m_subname == "lump_of_clay")
-		return new CraftItem("clay_brick", 1);
-	return NULL;
+	return item_craft_create_cook_result(m_subname);
 }
 
 /*
-	MapBlockObjectItem
+	MapBlockObjectItem DEPRECATED
 	TODO: Remove
 */
 #ifndef SERVER
@@ -528,7 +470,7 @@ InventoryItem * InventoryList::addItem(u32 i, InventoryItem *newitem)
 	//setDirty(true);
 	
 	// If it is an empty position, it's an easy job.
-	InventoryItem *to_item = m_items[i];
+	InventoryItem *to_item = getItem(i);
 	if(to_item == NULL)
 	{
 		m_items[i] = newitem;
@@ -560,7 +502,7 @@ InventoryItem * InventoryList::addItem(u32 i, InventoryItem *newitem)
 bool InventoryList::itemFits(u32 i, InventoryItem *newitem)
 {
 	// If it is an empty position, it's an easy job.
-	InventoryItem *to_item = m_items[i];
+	InventoryItem *to_item = getItem(i);
 	if(to_item == NULL)
 	{
 		return true;
@@ -586,7 +528,7 @@ InventoryItem * InventoryList::takeItem(u32 i, u32 count)
 	
 	//setDirty(true);
 
-	InventoryItem *item = m_items[i];
+	InventoryItem *item = getItem(i);
 	// If it is an empty position, return NULL
 	if(item == NULL)
 		return NULL;

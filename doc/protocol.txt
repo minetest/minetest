@@ -1,0 +1,72 @@
+Minetest-c55 protocol (incomplete, early draft):
+Updated 2011-06-18
+
+A custom protocol over UDP.
+Integers are big endian.
+Refer to connection.{h,cpp} for further reference.
+
+Initialization:
+- A dummy reliable packet with peer_id=PEER_ID_INEXISTENT=0 is sent to the server:
+	- Actually this can be sent without the reliable packet header, too, i guess,
+	  but the sequence number in the header allows the sender to re-send the
+	  packet without accidentally getting a double initialization.
+	- Packet content:
+		# Basic header
+		u32 protocol_id = PROTOCOL_ID = 0x4f457403
+		u16 sender_peer_id = PEER_ID_INEXISTENT = 0
+		u8 channel = 0
+		# Reliable packet header
+		u8 type = TYPE_RELIABLE = 3
+		u16 seqnum = SEQNUM_INITIAL = 65500
+		# Original packet header
+		u8 type = TYPE_ORIGINAL = 1
+		# And no actual payload.
+- Server responds with something like this:
+	- Packet content:
+		# Basic header
+		u32 protocol_id = PROTOCOL_ID = 0x4f457403
+		u16 sender_peer_id = PEER_ID_INEXISTENT = 0
+		u8 channel = 0
+		# Reliable packet header
+		u8 type = TYPE_RELIABLE = 3
+		u16 seqnum = SEQNUM_INITIAL = 65500
+		# Control packet header
+		u8 type = TYPE_CONTROL = 0
+		u8 controltype = CONTROLTYPE_SET_PEER_ID = 1
+		u16 peer_id_new = assigned peer id to client (other than 0 or 1)
+- Then the connection can be disconnected by sending:
+	- Packet content:
+		# Basic header
+		u32 protocol_id = PROTOCOL_ID = 0x4f457403
+		u16 sender_peer_id = whatever was gotten in CONTROLTYPE_SET_PEER_ID
+		u8 channel = 0
+		# Control packet header
+		u8 type = TYPE_CONTROL = 0
+		u8 controltype = CONTROLTYPE_DISCO = 2
+
+- Here's a quick untested connect-disconnect done in PHP:
+# host: ip of server (use gethostbyname(hostname) to get from a dns name)
+# port: port of server
+function check_if_minetestserver_up($host, $port)
+{
+	$socket = socket_create(AF_INET, SOCK_DGRAM, SOL_UDP);
+	$timeout = array("sec" => 1, "usec" => 0);
+	socket_set_option($socket, SOL_SOCKET, SO_RCVTIMEO, $timeout);
+	$buf = "\x4f\x45\x74\x03\x00\x00\x00\x03\xff\xdc\x01";
+	socket_sendto($socket, $buf, strlen($buf), 0, $host, $port);
+	$buf = socket_read($socket, 1000);
+	if($buf != "")
+	{
+		# We got a reply! read the peer id from it.
+		$peer_id = substr($buf, 9, 2);
+		
+		# Disconnect
+		$buf = "\x4f\x45\x74\x03".$peer_id."\x00\x00\x02";
+		socket_sendto($socket, $buf, strlen($buf), 0, $host, $port);
+		socket_close($socket);
+		
+		return true;
+	}
+	return false;
+}
+

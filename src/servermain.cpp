@@ -69,6 +69,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "materials.h"
 #include "config.h"
 #include "mineral.h"
+#include "filesys.h"
 
 /*
 	Settings.
@@ -78,6 +79,9 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 Settings g_settings;
 
 extern void set_default_settings();
+
+// Global profiler
+Profiler g_profiler;
 
 // A dummy thing
 ITextureSource *g_texturesource = NULL;
@@ -113,6 +117,15 @@ u32 getTimeMs()
 int main(int argc, char *argv[])
 {
 	/*
+		Initialization
+	*/
+
+	// Set locale. This is for forcing '.' as the decimal point.
+	std::locale::global(std::locale("C"));
+	// This enables printing all characters in bitmap font
+	setlocale(LC_CTYPE, "en_US");
+
+	/*
 		Low-level initialization
 	*/
 
@@ -121,20 +134,31 @@ int main(int argc, char *argv[])
 	disable_stderr = true;
 #endif
 
+	porting::signal_handler_init();
+	bool &kill = *porting::signal_handler_killstatus();
+	
+	// Initialize porting::path_data and porting::path_userdata
+	porting::initializePaths();
+
+	// Create user data directory
+	fs::CreateDir(porting::path_userdata);
+	
 	// Initialize debug streams
-	debugstreams_init(disable_stderr, DEBUGFILE);
+#ifdef RUN_IN_PLACE
+	std::string debugfile = DEBUGFILE;
+#else
+	std::string debugfile = porting::path_userdata+"/"+DEBUGFILE;
+#endif
+	debugstreams_init(disable_stderr, debugfile.c_str());
 	// Initialize debug stacks
 	debug_stacks_init();
 
 	DSTACK(__FUNCTION_NAME);
 
-	porting::signal_handler_init();
-	bool &kill = *porting::signal_handler_killstatus();
-	
-	porting::initializePaths();
+	// Init material properties table
+	//initializeMaterialProperties();
 
-	initializeMaterialProperties();
-
+	// Debug handler
 	BEGIN_DEBUG_EXCEPTION_HANDLER
 
 	// Print startup message
@@ -199,19 +223,10 @@ int main(int argc, char *argv[])
 	// Initialize default settings
 	set_default_settings();
 	
-	// Set locale. This is for forcing '.' as the decimal point.
-	std::locale::global(std::locale("C"));
-	// This enables printing all characters in bitmap font
-	setlocale(LC_CTYPE, "en_US");
-
 	// Initialize sockets
 	sockets_init();
 	atexit(sockets_cleanup);
 	
-	/*
-		Initialization
-	*/
-
 	/*
 		Read config file
 	*/
@@ -301,7 +316,7 @@ int main(int argc, char *argv[])
 	}
 	
 	// Figure out path to map
-	std::string map_dir = porting::path_userdata+"/map";
+	std::string map_dir = porting::path_userdata+"/world";
 	if(cmd_args.exists("map-dir"))
 		map_dir = cmd_args.get("map-dir");
 	else if(g_settings.exists("map-dir"))

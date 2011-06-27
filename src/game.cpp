@@ -25,11 +25,15 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "guiPasswordChange.h"
 #include "guiInventoryMenu.h"
 #include "guiTextInputMenu.h"
-#include "guiFurnaceMenu.h"
 #include "materials.h"
 #include "config.h"
 #include "clouds.h"
 #include "keycode.h"
+#include "farmesh.h"
+
+// TODO: Move content-aware stuff to separate file
+#include "content_mapnode.h"
+#include "content_nodemeta.h"
 
 /*
 	Setting this to 1 enables a special camera mode that forces
@@ -358,7 +362,7 @@ void draw_hotbar(video::IVideoDriver *driver, gui::IGUIFont *font,
 				core::rect<s32>(core::position2d<s32>(0,0),
 				core::dimension2di(heart_texture->getOriginalSize())),
 				NULL, colors, true);
-			p += v2s32(20,0);
+			p += v2s32(16,0);
 		}
 		if(halfheartcount % 2 == 1)
 		{
@@ -371,7 +375,7 @@ void draw_hotbar(video::IVideoDriver *driver, gui::IGUIFont *font,
 			driver->draw2DImage(heart_texture, rect,
 				core::rect<s32>(core::position2d<s32>(0,0), srcd),
 				NULL, colors, true);
-			p += v2s32(20,0);
+			p += v2s32(16,0);
 		}
 	}
 }
@@ -632,6 +636,10 @@ void update_skybox(video::IVideoDriver* driver,
 		skybox->remove();
 	}
 	
+	/*// Disable skybox if FarMesh is enabled
+	if(g_settings.getBool("enable_farmesh"))
+		return;*/
+	
 	if(brightness >= 0.5)
 	{
 		skybox = smgr->addSkyBoxSceneNode(
@@ -801,8 +809,9 @@ void the_game(
 	{
 		if(client.accessDenied())
 		{
-			error_message = L"Access denied. Check your password and try again.";
-			std::cout<<DTIME<<"Access denied."<<std::endl;
+			error_message = L"Access denied. Reason: "
+					+client.accessDeniedReason();
+			std::cout<<DTIME<<wide_to_narrow(error_message)<<std::endl;
 		}
 		else
 		{
@@ -851,8 +860,21 @@ void the_game(
 	
 	float cloud_height = BS*100;
 	Clouds *clouds = NULL;
-	clouds = new Clouds(smgr->getRootSceneNode(), smgr, -1,
-			cloud_height, time(0));
+	if(g_settings.getBool("enable_clouds"))
+	{
+		clouds = new Clouds(smgr->getRootSceneNode(), smgr, -1,
+				cloud_height, time(0));
+	}
+	
+	/*
+		FarMesh
+	*/
+
+	FarMesh *farmesh = NULL;
+	if(g_settings.getBool("enable_farmesh"))
+	{
+		farmesh = new FarMesh(smgr->getRootSceneNode(), smgr, -1, client.getMapSeed(), &client);
+	}
 
 	/*
 		Move into game
@@ -886,8 +908,8 @@ void the_game(
 	gui::IGUIStaticText *guitext_chat = guienv->addStaticText(
 			L"",
 			core::rect<s32>(0,0,0,0),
-			false, false); // Disable word wrap as of now
-			//false, true);
+			//false, false); // Disable word wrap as of now
+			false, true);
 	//guitext_chat->setBackgroundColor(video::SColor(96,0,0,0));
 	core::list<ChatLine> chat_lines;
 	
@@ -930,12 +952,19 @@ void the_game(
 	core::list<float> frametime_log;
 
 	float damage_flash_timer = 0;
+	s16 farmesh_range = 20*MAP_BLOCKSIZE;
+	
+	bool invert_mouse = g_settings.getBool("invert_mouse");
 
 	/*
 		Main loop
 	*/
 
 	bool first_loop_after_window_activation = true;
+
+	// TODO: Convert the static interval timers to these
+	// Interval limiter for profiler
+	IntervalLimiter m_profiler_interval;
 
 	// Time is in milliseconds
 	// NOTE: getRealTime() causes strange problems in wine (imprecision?)
@@ -1124,6 +1153,21 @@ void the_game(
 		}
 
 		/*
+			Profiler
+		*/
+		float profiler_print_interval =
+				g_settings.getFloat("profiler_print_interval");
+		if(profiler_print_interval != 0)
+		{
+			if(m_profiler_interval.step(0.030, profiler_print_interval))
+			{
+				dstream<<"Profiler:"<<std::endl;
+				g_profiler.print(dstream);
+				g_profiler.clear();
+			}
+		}
+
+		/*
 			Direct handling of user input
 		*/
 		
@@ -1189,10 +1233,12 @@ void the_game(
 			if(g_settings.getBool("free_move"))
 			{
 				g_settings.set("free_move","false");
+				chat_lines.push_back(ChatLine(L"free_move disabled"));
 			}
 			else
 			{
 				g_settings.set("free_move","true");
+				chat_lines.push_back(ChatLine(L"free_move enabled"));
 			}
 		}
 		else if(input->wasKeyDown(getKeySetting("keymap_fastmove")))
@@ -1200,10 +1246,12 @@ void the_game(
 			if(g_settings.getBool("fast_move"))
 			{
 				g_settings.set("fast_move","false");
+				chat_lines.push_back(ChatLine(L"fast_move disabled"));
 			}
 			else
 			{
 				g_settings.set("fast_move","true");
+				chat_lines.push_back(ChatLine(L"fast_move enabled"));
 			}
 		}
 
@@ -1355,7 +1403,11 @@ void the_game(
 		if((device->isWindowActive() && noMenuActive()) || random_input)
 		{
 			if(!random_input)
-				device->getCursorControl()->setVisible(false);
+			{
+				// Mac OSX gets upset if this is set every frame
+				if(device->getCursorControl()->isVisible())
+					device->getCursorControl()->setVisible(false);
+			}
 
 			if(first_loop_after_window_activation){
 				//std::cout<<"window active, first loop"<<std::endl;
@@ -1364,6 +1416,8 @@ void the_game(
 			else{
 				s32 dx = input->getMousePos().X - displaycenter.X;
 				s32 dy = input->getMousePos().Y - displaycenter.Y;
+				if(invert_mouse)
+					dy = -dy;
 				//std::cout<<"window active, pos difference "<<dx<<","<<dy<<std::endl;
 				
 				/*const float keyspeed = 500;
@@ -1384,7 +1438,9 @@ void the_game(
 			input->setMousePos(displaycenter.X, displaycenter.Y);
 		}
 		else{
-			device->getCursorControl()->setVisible(true);
+			// Mac OSX gets upset if this is set every frame
+			if(device->getCursorControl()->isVisible() == false)
+				device->getCursorControl()->setVisible(true);
 
 			//std::cout<<"window inactive"<<std::endl;
 			first_loop_after_window_activation = true;
@@ -1696,7 +1752,41 @@ void the_game(
 			{
 				std::cout<<DTIME<<"Ground right-clicked"<<std::endl;
 				
-				if(meta && meta->typeId() == CONTENT_SIGN_WALL && !random_input)
+				// If metadata provides an inventory view, activate it
+				if(meta && meta->getInventoryDrawSpecString() != "" && !random_input)
+				{
+					dstream<<DTIME<<"Launching custom inventory view"<<std::endl;
+					/*
+						Construct the unique identification string of the node
+					*/
+					std::string current_name;
+					current_name += "nodemeta:";
+					current_name += itos(nodepos.X);
+					current_name += ",";
+					current_name += itos(nodepos.Y);
+					current_name += ",";
+					current_name += itos(nodepos.Z);
+					
+					/*
+						Create menu
+					*/
+
+					core::array<GUIInventoryMenu::DrawSpec> draw_spec;
+					v2s16 invsize =
+						GUIInventoryMenu::makeDrawSpecArrayFromString(
+							draw_spec,
+							meta->getInventoryDrawSpecString(),
+							current_name);
+
+					GUIInventoryMenu *menu =
+						new GUIInventoryMenu(guienv, guiroot, -1,
+							&g_menumgr, invsize,
+							client.getInventoryContext(),
+							&client);
+					menu->setDrawSpec(draw_spec);
+					menu->drop();
+				}
+				else if(meta && meta->typeId() == CONTENT_SIGN_WALL && !random_input)
 				{
 					dstream<<"Sign node right-clicked"<<std::endl;
 					
@@ -1712,51 +1802,6 @@ void the_game(
 					(new GUITextInputMenu(guienv, guiroot, -1,
 							&g_menumgr, dest,
 							wtext))->drop();
-				}
-				else if(meta && meta->typeId() == CONTENT_CHEST && !random_input)
-				{
-					dstream<<"Chest node right-clicked"<<std::endl;
-					
-					//ChestNodeMetadata *chestmeta = (ChestNodeMetadata*)meta;
-
-					std::string chest_inv_id;
-					chest_inv_id += "nodemeta:";
-					chest_inv_id += itos(nodepos.X);
-					chest_inv_id += ",";
-					chest_inv_id += itos(nodepos.Y);
-					chest_inv_id += ",";
-					chest_inv_id += itos(nodepos.Z);
-					
-					GUIInventoryMenu *menu =
-						new GUIInventoryMenu(guienv, guiroot, -1,
-							&g_menumgr, v2s16(8,9),
-							client.getInventoryContext(),
-							&client);
-
-					core::array<GUIInventoryMenu::DrawSpec> draw_spec;
-					
-					draw_spec.push_back(GUIInventoryMenu::DrawSpec(
-							"list", chest_inv_id, "0",
-							v2s32(0, 0), v2s32(8, 4)));
-					draw_spec.push_back(GUIInventoryMenu::DrawSpec(
-							"list", "current_player", "main",
-							v2s32(0, 5), v2s32(8, 4)));
-
-					menu->setDrawSpec(draw_spec);
-
-					menu->drop();
-
-				}
-				else if(meta && meta->typeId() == CONTENT_FURNACE && !random_input)
-				{
-					dstream<<"Furnace node right-clicked"<<std::endl;
-					
-					GUIFurnaceMenu *menu =
-						new GUIFurnaceMenu(guienv, guiroot, -1,
-							&g_menumgr, nodepos, &client);
-
-					menu->drop();
-
 				}
 				else
 				{
@@ -1824,6 +1869,22 @@ void the_game(
 					0.05+brightness*0.95);
 		}
 		
+		/*
+			Update farmesh
+		*/
+		if(farmesh)
+		{
+			farmesh_range = draw_control.wanted_range * 10;
+			if(draw_control.range_all && farmesh_range < 500)
+				farmesh_range = 500;
+			if(farmesh_range > 1000)
+				farmesh_range = 1000;
+
+			farmesh->step(dtime);
+			farmesh->update(v2f(player_position.X, player_position.Z),
+					0.05+brightness*0.95, farmesh_range);
+		}
+		
 		// Store brightness value
 		old_brightness = brightness;
 
@@ -1833,11 +1894,19 @@ void the_game(
 		
 		if(g_settings.getBool("enable_fog") == true)
 		{
-			f32 range = draw_control.wanted_range*BS + MAP_BLOCKSIZE*BS*1.5;
-			if(draw_control.range_all)
-				range = 100000*BS;
-			if(range < 50*BS)
-				range = range * 0.5 + 25*BS;
+			f32 range;
+			if(farmesh)
+			{
+				range = BS*farmesh_range;
+			}
+			else
+			{
+				range = draw_control.wanted_range*BS + MAP_BLOCKSIZE*BS*1.5;
+				if(draw_control.range_all)
+					range = 100000*BS;
+				if(range < 50*BS)
+					range = range * 0.5 + 25*BS;
+			}
 
 			driver->setFog(
 				bgcolor,
@@ -1985,7 +2054,7 @@ void the_game(
 					10,
 					50,
 					screensize.X - 10,
-					50 + text_height*chat_lines.size()
+					50 + guitext_chat->getTextHeight()
 			);
 
 			guitext_chat->setRelativePosition(rect);
@@ -2034,7 +2103,7 @@ void the_game(
 			//driver->beginScene(false, true, bgcolor);
 			beginscenetime = timer.stop(true);
 		}
-
+		
 		//timer3.stop();
 		
 		//std::cout<<DTIME<<"smgr->drawAll()"<<std::endl;
@@ -2166,7 +2235,8 @@ void the_game(
 	/*
 		Drop stuff
 	*/
-	clouds->drop();
+	if(clouds)
+		clouds->drop();
 	
 	/*
 		Draw a "shutting down" screen, which will be shown while the map

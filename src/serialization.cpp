@@ -128,7 +128,7 @@ void decompressZlib(std::istream &is, std::ostream &os)
 
 	ret = inflateInit(&z);
 	if(ret != Z_OK)
-		throw SerializationError("compressZlib: inflateInit failed");
+		throw SerializationError("dcompressZlib: inflateInit failed");
 	
 	z.avail_in = 0;
 	
@@ -162,7 +162,7 @@ void decompressZlib(std::istream &is, std::ostream &os)
 				|| status == Z_MEM_ERROR)
 		{
 			zerr(status);
-			throw SerializationError("compressZlib: inflate failed");
+			throw SerializationError("decompressZlib: inflate failed");
 		}
 		int count = bufsize - z.avail_out;
 		//dstream<<"count="<<count<<std::endl;
@@ -182,7 +182,7 @@ void decompressZlib(std::istream &is, std::ostream &os)
 				{
 					dstream<<"unget #"<<i<<" failed"<<std::endl;
 					dstream<<"fail="<<is.fail()<<" bad="<<is.bad()<<std::endl;
-					throw SerializationError("compressZlib: unget failed");
+					throw SerializationError("decompressZlib: unget failed");
 				}
 			}
 			

@@ -17,10 +17,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
-/*
-(c) 2010 Perttu Ahola <celeron55@gmail.com>
-*/
-
 #ifndef SERVER_HEADER
 #define SERVER_HEADER
 
@@ -32,6 +28,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "porting.h"
 #include "map.h"
 #include "inventory.h"
+#include "auth.h"
 
 /*
 	Some random functions
@@ -423,7 +420,29 @@ public:
 
 	// Envlock and conlock should be locked when calling this
 	void SendMovePlayer(Player *player);
+	
+	u64 getPlayerAuthPrivs(const std::string &name)
+	{
+		try{
+			return m_authmanager.getPrivs(name);
+		}
+		catch(AuthNotFoundException &e)
+		{
+			dstream<<"WARNING: Auth not found for "<<name<<std::endl;
+			return 0;
+		}
+	}
 
+	void setPlayerAuthPrivs(const std::string &name, u64 privs)
+	{
+		try{
+			return m_authmanager.setPrivs(name, privs);
+		}
+		catch(AuthNotFoundException &e)
+		{
+			dstream<<"WARNING: Auth not found for "<<name<<std::endl;
+		}
+	}
 
 private:
 
@@ -438,7 +457,8 @@ private:
 	*/
 	
 	static void SendHP(con::Connection &con, u16 peer_id, u8 hp);
-	static void SendAccessDenied(con::Connection &con, u16 peer_id);
+	static void SendAccessDenied(con::Connection &con, u16 peer_id,
+			const std::wstring &reason);
 	
 	/*
 		Non-static send methods
@@ -456,15 +476,17 @@ private:
 		Additionally, if far_players!=NULL, players further away than
 		far_d_nodes are ignored and their peer_ids are added to far_players
 	*/
+	// Envlock and conlock should be locked when calling these
 	void sendRemoveNode(v3s16 p, u16 ignore_id=0,
 			core::list<u16> *far_players=NULL, float far_d_nodes=100);
 	void sendAddNode(v3s16 p, MapNode n, u16 ignore_id=0,
 			core::list<u16> *far_players=NULL, float far_d_nodes=100);
+	void setBlockNotSent(v3s16 p);
 	
 	// Environment and Connection must be locked when called
 	void SendBlockNoLock(u16 peer_id, MapBlock *block, u8 ver);
 	
-	// Sends blocks to clients
+	// Sends blocks to clients (locks env and con on its own)
 	void SendBlocks(float dtime);
 
 	/*
@@ -476,6 +498,15 @@ private:
 	// When called, connection mutex should be locked
 	RemoteClient* getClient(u16 peer_id);
 	
+	// When called, environment mutex should be locked
+	std::string getPlayerName(u16 peer_id)
+	{
+		Player *player = m_env.getPlayer(peer_id);
+		if(player == NULL)
+			return "[id="+itos(peer_id);
+		return player->getName();
+	}
+
 	/*
 		Get a player from memory or creates one.
 		If player is already connected, return NULL
@@ -490,6 +521,8 @@ private:
 	struct PeerChange;
 	void handlePeerChange(PeerChange &c);
 	void handlePeerChanges();
+
+	u64 getPlayerPrivs(Player *player);
 
 	/*
 		Variables
@@ -514,6 +547,9 @@ private:
 	JMutex m_con_mutex;
 	// Connected clients (behind the con mutex)
 	core::map<u16, RemoteClient*> m_clients;
+
+	// User authentication
+	AuthManager m_authmanager;
 	
 	/*
 		Threads
@@ -597,6 +633,8 @@ private:
 		This is behind m_env_mutex
 	*/
 	u16 m_ignore_map_edit_events_peer_id;
+
+	Profiler *m_profiler;
 
 	friend class EmergeThread;
 	friend class RemoteClient;

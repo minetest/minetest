@@ -113,25 +113,6 @@ private:
 };
 
 /*
-	Active block modifier interface
-*/
-
-class ServerEnvironment;
-
-class ActiveBlockModifier
-{
-public:
-	ActiveBlockModifier(){};
-	virtual ~ActiveBlockModifier(){};
-	
-	virtual u32 getTriggerContentCount(){ return 1;}
-	virtual u8 getTriggerContent(u32 i) = 0;
-	virtual float getActiveInterval() = 0;
-	virtual u32 getActiveChance() = 0;
-	virtual void triggerEvent(ServerEnvironment *env, v3s16 p) = 0;
-};
-
-/*
 	The server-side environment.
 
 	This is not thread-safe. Server uses an environment mutex.
@@ -140,6 +121,7 @@ public:
 #include "serverobject.h"
 
 class Server;
+class ActiveBlockModifier;
 
 class ServerEnvironment : public Environment
 {
@@ -177,7 +159,8 @@ public:
 	void loadMeta(const std::string &savedir);
 
 	/*
-		ActiveObjects
+		External ActiveObject interface
+		-------------------------------------------
 	*/
 
 	ServerActiveObject* getActiveObject(u16 id);
@@ -214,7 +197,38 @@ public:
 	*/
 	ActiveObjectMessage getActiveObjectMessage();
 
+	/*
+		Activate objects and dynamically modify for the dtime determined
+		from timestamp and additional_dtime
+	*/
+	void activateBlock(MapBlock *block, u32 additional_dtime=0);
+
+	/*
+		ActiveBlockModifiers (TODO)
+		-------------------------------------------
+	*/
+
+	void addActiveBlockModifier(ActiveBlockModifier *abm);
+
 private:
+
+	/*
+		Internal ActiveObject interface
+		-------------------------------------------
+	*/
+
+	/*
+		Add an active object to the environment.
+
+		Called by addActiveObject.
+
+		Object may be deleted by environment immediately.
+		If id of object is 0, assigns a free id to it.
+		Returns the id of the object.
+		Returns 0 if not added and thus deleted.
+	*/
+	u16 addActiveObjectRaw(ServerActiveObject *object, bool set_changed);
+	
 	/*
 		Remove all objects that satisfy (m_removed && m_known_by_count==0)
 	*/
@@ -256,11 +270,35 @@ private:
 	ActiveBlockList m_active_blocks;
 	IntervalLimiter m_active_blocks_management_interval;
 	IntervalLimiter m_active_blocks_test_interval;
+	IntervalLimiter m_active_blocks_nodemetadata_interval;
 	// Time from the beginning of the game in seconds.
 	// Incremented in step().
 	u32 m_game_time;
 	// A helper variable for incrementing the latter
 	float m_game_time_fraction_counter;
+};
+
+/*
+	Active block modifier interface.
+
+	These are fed into ServerEnvironment at initialization time;
+	ServerEnvironment handles deleting them.
+*/
+
+class ActiveBlockModifier
+{
+public:
+	ActiveBlockModifier(){};
+	virtual ~ActiveBlockModifier(){};
+
+	//virtual core::list<u8> update(ServerEnvironment *env) = 0;
+	virtual u32 getTriggerContentCount(){ return 1;}
+	virtual u8 getTriggerContent(u32 i) = 0;
+	virtual float getActiveInterval() = 0;
+	// chance of (1 / return value), 0 is disallowed
+	virtual u32 getActiveChance() = 0;
+	// This is called usually at interval for 1/chance of the nodes
+	virtual void triggerEvent(ServerEnvironment *env, v3s16 p) = 0;
 };
 
 #ifndef SERVER
