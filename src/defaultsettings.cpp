@@ -56,7 +56,7 @@ void set_default_settings()
 	g_settings.setDefault("screenH", "600");
 	g_settings.setDefault("address", "");
 	g_settings.setDefault("random_input", "false");
-	g_settings.setDefault("client_unload_unused_data_timeout", "1200");
+	g_settings.setDefault("client_unload_unused_data_timeout", "600");
 	g_settings.setDefault("enable_fog", "true");
 	g_settings.setDefault("new_style_water", "false");
 	g_settings.setDefault("new_style_leaves", "true");
