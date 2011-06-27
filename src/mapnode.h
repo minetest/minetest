@@ -194,6 +194,8 @@ struct ContentFeatures
 		{
 			setTexture(i, name, alpha);
 		}
+		// Force inventory texture too
+		setInventoryTexture(name);
 	}
 
 	void setTile(u16 i, const TileSpec &tile)

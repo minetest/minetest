@@ -146,7 +146,6 @@ void init_mapnode()
 	{
 		ContentFeatures *f = &g_content_features[i];
 		f->setAllTextures("unknown_block.png");
-		f->setInventoryTextureCube("unknown_block.png", "unknown_block.png", "unknown_block.png");
 		f->dug_item = std::string("MaterialItem ")+itos(i)+" 1";
 	}
 
