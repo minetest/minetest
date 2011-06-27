@@ -3378,13 +3378,13 @@ void ClientMap::renderMap(video::IVideoDriver* driver, s32 pass)
 
 	// Take a fair amount as we will be dropping more out later
 	v3s16 p_blocks_min(
-			p_nodes_min.X / MAP_BLOCKSIZE - 1,
-			p_nodes_min.Y / MAP_BLOCKSIZE - 1,
-			p_nodes_min.Z / MAP_BLOCKSIZE - 1);
+			p_nodes_min.X / MAP_BLOCKSIZE - 2,
+			p_nodes_min.Y / MAP_BLOCKSIZE - 2,
+			p_nodes_min.Z / MAP_BLOCKSIZE - 2);
 	v3s16 p_blocks_max(
-			p_nodes_max.X / MAP_BLOCKSIZE,
-			p_nodes_max.Y / MAP_BLOCKSIZE,
-			p_nodes_max.Z / MAP_BLOCKSIZE);
+			p_nodes_max.X / MAP_BLOCKSIZE + 1,
+			p_nodes_max.Y / MAP_BLOCKSIZE + 1,
+			p_nodes_max.Z / MAP_BLOCKSIZE + 1);
 	
 	u32 vertex_count = 0;
 	
