@@ -20,6 +20,45 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #ifndef NOISE_HEADER
 #define NOISE_HEADER
 
+#include "debug.h"
+
+class PseudoRandom
+{
+public:
+	PseudoRandom(): m_next(0)
+	{
+	}
+	PseudoRandom(int seed): m_next(seed)
+	{
+	}
+	void seed(int seed)
+	{
+		m_next = seed;
+	}
+	// Returns 0...32767
+	int next()
+	{
+		m_next = m_next * 1103515245 + 12345;
+		return((unsigned)(m_next/65536) % 32768);
+	}
+	int range(int min, int max)
+	{
+		if(max-min > 32768/10)
+		{
+			//dstream<<"WARNING: PseudoRandom::range: max > 32767"<<std::endl;
+			assert(0);
+		}
+		if(min > max)
+		{
+			assert(0);
+			return max;
+		}
+		return (next()%(max-min+1))+min;
+	}
+private:
+	int m_next;
+};
+
 double easeCurve(double t);
  
 // Return value: -1 ... 1
@@ -41,6 +80,38 @@ double noise3d_perlin(double x, double y, double z, int seed,
 double noise3d_perlin_abs(double x, double y, double z, int seed,
 		int octaves, double persistence);
 
+enum NoiseType
+{
+	NOISE_PERLIN,
+	NOISE_PERLIN_ABS,
+	NOISE_PERLIN_CONTOUR,
+	NOISE_PERLIN_CONTOUR_FLIP_YZ
+};
+
+struct NoiseParams
+{
+	NoiseType type;
+	int seed;
+	int octaves;
+	double persistence;
+	double pos_scale;
+	double noise_scale; // Useful for contour noises
+	
+	NoiseParams(NoiseType type_=NOISE_PERLIN, int seed_=0,
+			int octaves_=3, double persistence_=0.5,
+			double pos_scale_=100.0, double noise_scale_=1.0):
+		type(type_),
+		seed(seed_),
+		octaves(octaves_),
+		persistence(persistence_),
+		pos_scale(pos_scale_),
+		noise_scale(noise_scale_)
+	{
+	}
+};
+
+double noise3d_param(const NoiseParams &param, double x, double y, double z);
+
 class NoiseBuffer
 {
 public:
@@ -48,15 +119,23 @@ public:
 	~NoiseBuffer();
 	
 	void clear();
+	void create(const NoiseParams &param,
+			double first_x, double first_y, double first_z,
+			double last_x, double last_y, double last_z,
+			double samplelength_x, double samplelength_y, double samplelength_z);
+	void multiply(const NoiseParams &param);
+	// Deprecated
 	void create(int seed, int octaves, double persistence,
-			double pos_scale,
+			bool abs,
 			double first_x, double first_y, double first_z,
 			double last_x, double last_y, double last_z,
 			double samplelength_x, double samplelength_y, double samplelength_z);
 
 	void intSet(int x, int y, int z, double d);
+	void intMultiply(int x, int y, int z, double d);
 	double intGet(int x, int y, int z);
 	double get(double x, double y, double z);
+	//bool contains(double x, double y, double z);
 
 private:
 	double *m_data;

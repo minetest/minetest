@@ -102,6 +102,12 @@ public:
 		v2s32 pos;
 		v2s32 geom;
 	};
+	
+	// See .cpp for format
+	static v2s16 makeDrawSpecArrayFromString(
+			core::array<GUIInventoryMenu::DrawSpec> &draw_spec,
+			const std::string &data,
+			const std::string &current_name);
 
 	GUIInventoryMenu(gui::IGUIEnvironment* env,
 			gui::IGUIElement* parent, s32 id,

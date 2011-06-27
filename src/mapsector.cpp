@@ -24,7 +24,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 MapSector::MapSector(NodeContainer *parent, v2s16 pos):
 		differs_from_disk(true),
-		usage_timer(0.0),
 		m_parent(parent),
 		m_pos(pos),
 		m_block_cache(NULL)

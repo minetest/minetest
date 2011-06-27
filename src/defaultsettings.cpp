@@ -49,7 +49,7 @@ void set_default_settings()
 	g_settings.setDefault("wanted_fps", "30");
 	g_settings.setDefault("fps_max", "60");
 	g_settings.setDefault("viewing_range_nodes_max", "300");
-	g_settings.setDefault("viewing_range_nodes_min", "35");
+	g_settings.setDefault("viewing_range_nodes_min", "25");
 	g_settings.setDefault("screenW", "800");
 	g_settings.setDefault("screenH", "600");
 	g_settings.setDefault("address", "");
@@ -63,22 +63,28 @@ void set_default_settings()
 	g_settings.setDefault("enable_texture_atlas", "true");
 	g_settings.setDefault("texture_path", "");
 	g_settings.setDefault("video_driver", "opengl");
-	
 	g_settings.setDefault("free_move", "false");
 	g_settings.setDefault("continuous_forward", "false");
 	g_settings.setDefault("fast_move", "false");
+	g_settings.setDefault("invert_mouse", "false");
+	g_settings.setDefault("enable_farmesh", "false");
+	g_settings.setDefault("enable_clouds", "true");
+	g_settings.setDefault("invisible_stone", "false");
 
 	// Server stuff
 	g_settings.setDefault("enable_experimental", "false");
 	g_settings.setDefault("creative_mode", "false");
-	g_settings.setDefault("enable_damage", "false"); //TODO: Set to true
+	g_settings.setDefault("enable_damage", "false"); //TODO: Set to true when healing is possible
 	g_settings.setDefault("give_initial_stuff", "false");
+	g_settings.setDefault("default_password", "");
+	g_settings.setDefault("default_privs", "build, shout");
+	g_settings.setDefault("profiler_print_interval", "0");
 
 	g_settings.setDefault("objectdata_interval", "0.2");
 	g_settings.setDefault("active_object_range", "2");
-	g_settings.setDefault("max_simultaneous_block_sends_per_client", "1");
-	//g_settings.setDefault("max_simultaneous_block_sends_per_client", "2");
-	g_settings.setDefault("max_simultaneous_block_sends_server_total", "4");
+	//g_settings.setDefault("max_simultaneous_block_sends_per_client", "1");
+	g_settings.setDefault("max_simultaneous_block_sends_per_client", "2");
+	g_settings.setDefault("max_simultaneous_block_sends_server_total", "8");
 	g_settings.setDefault("max_block_send_distance", "8");
 	g_settings.setDefault("max_block_generate_distance", "8");
 	g_settings.setDefault("time_send_interval", "20");
@@ -86,5 +92,6 @@ void set_default_settings()
 	g_settings.setDefault("server_unload_unused_sectors_timeout", "60");
 	g_settings.setDefault("server_map_save_interval", "60");
 	g_settings.setDefault("full_block_send_enable_min_time_from_building", "2.0");
+	//g_settings.setDefault("dungeon_rarity", "0.025");
 }
 

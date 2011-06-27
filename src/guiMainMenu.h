@@ -1,21 +1,21 @@
 /*
- Minetest-c55
- Copyright (C) 2010 celeron55, Perttu Ahola <celeron55@gmail.com>
+Minetest-c55
+Copyright (C) 2010 celeron55, Perttu Ahola <celeron55@gmail.com>
 
- This program is free software; you can redistribute it and/or modify
- it under the terms of the GNU General Public License as published by
- the Free Software Foundation; either version 2 of the License, or
- (at your option) any later version.
+This program is free software; you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation; either version 2 of the License, or
+(at your option) any later version.
 
- This program is distributed in the hope that it will be useful,
- but WITHOUT ANY WARRANTY; without even the implied warranty of
- MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- GNU General Public License for more details.
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
 
- You should have received a copy of the GNU General Public License along
- with this program; if not, write to the Free Software Foundation, Inc.,
- 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
- */
+You should have received a copy of the GNU General Public License along
+with this program; if not, write to the Free Software Foundation, Inc.,
+51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+*/
 
 #ifndef GUIMAINMENU_HEADER
 #define GUIMAINMENU_HEADER
@@ -44,18 +44,19 @@ enum
 
 struct MainMenuData
 {
-	MainMenuData() :
+	MainMenuData():
 		// Client opts
-				fancy_trees(false), smooth_lighting(false),
-				// Server opts
-				creative_mode(false), enable_damage(false),
-				// Actions
-				delete_map(false)
-	{
-	}
+		fancy_trees(false),
+		smooth_lighting(false),
+		// Server opts
+		creative_mode(false),
+		enable_damage(false),
+		// Actions
+		delete_map(false)
+	{}
 
 	// These are in the native format of the gui elements
-
+	
 	// Client options
 	std::wstring address;
 	std::wstring port;
@@ -70,23 +71,20 @@ struct MainMenuData
 	bool delete_map;
 };
 
-class GUIMainMenu: public GUIModalMenu
+class GUIMainMenu : public GUIModalMenu
 {
 public:
-	GUIMainMenu(gui::IGUIEnvironment* env, gui::IGUIElement* parent, s32 id,
-			IMenuManager *menumgr, MainMenuData *data,
+	GUIMainMenu(gui::IGUIEnvironment* env,
+			gui::IGUIElement* parent, s32 id,
+			IMenuManager *menumgr,
+			MainMenuData *data,
 			IGameCallback *gamecallback);
 	~GUIMainMenu();
-
-	gui::IGUIEnvironment* env;
-	gui::IGUIElement* parent;
-	s32 id;
-	IMenuManager *menumgr;
-
+	
 	void removeChildren();
 	/*
-	 Remove and re-add (or reposition) stuff
-	 */
+		Remove and re-add (or reposition) stuff
+	*/
 	void regenerateGui(v2u32 screensize);
 
 	void drawMenu();
@@ -99,11 +97,16 @@ public:
 	}
 
 	bool OnEvent(const SEvent& event);
-
+	
 private:
 	MainMenuData *m_data;
 	bool m_accepted;
 	IGameCallback *m_gamecallback;
+
+	gui::IGUIEnvironment* env;
+	gui::IGUIElement* parent;
+	s32 id;
+	IMenuManager *menumgr;
 };
 
 #endif

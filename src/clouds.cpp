@@ -58,8 +58,8 @@ void Clouds::OnRegisterSceneNode()
 {
 	if(IsVisible)
 	{
-		SceneManager->registerNodeForRendering(this, scene::ESNRP_SOLID);
 		//SceneManager->registerNodeForRendering(this, scene::ESNRP_TRANSPARENT);
+		SceneManager->registerNodeForRendering(this, scene::ESNRP_SOLID);
 	}
 
 	ISceneNode::OnRegisterSceneNode();

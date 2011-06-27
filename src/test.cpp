@@ -30,6 +30,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "voxel.h"
 #include <sstream>
 #include "porting.h"
+#include "content_mapnode.h"
 
 /*
 	Asserts that the exception occurs
@@ -424,16 +425,27 @@ struct TestMapBlock
 		assert(b.getChangedFlag() == false);
 
 		// All nodes should have been set to
-		// .d=CONTENT_AIR and .getLight() = 0
+		// .d=CONTENT_IGNORE and .getLight() = 0
 		for(u16 z=0; z<MAP_BLOCKSIZE; z++)
 		for(u16 y=0; y<MAP_BLOCKSIZE; y++)
 		for(u16 x=0; x<MAP_BLOCKSIZE; x++)
 		{
-			assert(b.getNode(v3s16(x,y,z)).d == CONTENT_AIR);
+			//assert(b.getNode(v3s16(x,y,z)).d == CONTENT_AIR);
+			assert(b.getNode(v3s16(x,y,z)).d == CONTENT_IGNORE);
 			assert(b.getNode(v3s16(x,y,z)).getLight(LIGHTBANK_DAY) == 0);
 			assert(b.getNode(v3s16(x,y,z)).getLight(LIGHTBANK_NIGHT) == 0);
 		}
 		
+		{
+			MapNode n(CONTENT_AIR);
+			for(u16 z=0; z<MAP_BLOCKSIZE; z++)
+			for(u16 y=0; y<MAP_BLOCKSIZE; y++)
+			for(u16 x=0; x<MAP_BLOCKSIZE; x++)
+			{
+				b.setNode(v3s16(x,y,z), n);
+			}
+		}
+			
 		/*
 			Parent fetch functions
 		*/

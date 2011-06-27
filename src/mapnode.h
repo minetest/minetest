@@ -27,6 +27,14 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "exceptions.h"
 #include "serialization.h"
 #include "tile.h"
+#include "materials.h"
+
+/*
+	Naming scheme:
+	- Material = irrlicht's Material class
+	- Content = (u8) content of a node
+	- Tile = TileSpec at some side of a node of some content type
+*/
 
 /*
 	Initializes all kind of stuff in here.
@@ -41,13 +49,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 	Server only calls this once with g_texturesource=NULL.
 */
 void init_mapnode();
-
-// Initializes g_content_inventory_texture_paths
-void init_content_inventory_texture_paths();
-
-
-// NOTE: This is not used appropriately everywhere.
-#define MATERIALS_COUNT 256
 
 /*
 	Ignored node.
@@ -66,48 +67,6 @@ void init_content_inventory_texture_paths();
 	is transparent to light
 */
 #define CONTENT_AIR 254
-
-/*
-	Suggested materials:
-	- Gravel
-	- Sand
-	
-	New naming scheme:
-	- Material = irrlicht's Material class
-	- Content = (u8) content of a node
-	- Tile = (u16) Material ID at some side of a node
-*/
-
-#define CONTENT_STONE 0
-#define CONTENT_GRASS 1
-#define CONTENT_WATER 2
-#define CONTENT_TORCH 3
-#define CONTENT_TREE 4
-#define CONTENT_LEAVES 5
-#define CONTENT_GRASS_FOOTSTEPS 6
-#define CONTENT_MESE 7
-#define CONTENT_MUD 8
-#define CONTENT_WATERSOURCE 9
-// Pretty much useless, clouds won't be drawn this way
-#define CONTENT_CLOUD 10
-#define CONTENT_COALSTONE 11
-#define CONTENT_WOOD 12
-#define CONTENT_SAND 13
-#define CONTENT_SIGN_WALL 14
-#define CONTENT_CHEST 15
-#define CONTENT_FURNACE 16
-//#define CONTENT_WORKBENCH 17
-#define CONTENT_COBBLE 18
-#define CONTENT_STEEL 19
-#define CONTENT_GLASS 20
-#define CONTENT_FENCE 21
-#define CONTENT_SANDSTONE 22
-#define CONTENT_CACTUS 23
-#define CONTENT_BRICK 24
-#define CONTENT_CLAY 25
-#define CONTENT_PAPYRUS 26
-#define CONTENT_BOOKSHELF 27
-#define CONTENT_RAIL 28
 
 /*
 	Content feature list
@@ -180,10 +139,20 @@ struct ContentFeatures
 	
 	// Initial metadata is cloned from this
 	NodeMetadata *initial_metadata;
+	
+	// If the content is liquid, this is the flowing version of the liquid.
+	// If content is liquid, this is the same content.
+	u8 liquid_alternative_flowing;
+	
+	// Amount of light the node emits
+	u8 light_source;
+	
+	// Digging properties for different tools
+	DiggingPropertiesList digging_properties;
+	
+	// NOTE: Move relevant properties to here from elsewhere
 
-	//TODO: Move more properties here
-
-	ContentFeatures()
+	void reset()
 	{
 		translate_to = NULL;
 		param_type = CPT_NONE;
@@ -201,6 +170,14 @@ struct ContentFeatures
 		air_equivalent = false;
 		dug_item = "";
 		initial_metadata = NULL;
+		liquid_alternative_flowing = CONTENT_IGNORE;
+		light_source = 0;
+		digging_properties.clear();
+	}
+
+	ContentFeatures()
+	{
+		reset();
 	}
 
 	~ContentFeatures();
@@ -242,6 +219,11 @@ struct ContentFeatures
 */
 ContentFeatures & content_features(u8 i);
 
+
+/*
+	Here is a bunch of DEPRECATED functions.
+*/
+
 /*
 	If true, the material allows light propagation and brightness is stored
 	in param.
@@ -250,9 +232,7 @@ ContentFeatures & content_features(u8 i);
 inline bool light_propagates_content(u8 m)
 {
 	return content_features(m).light_propagates;
-	//return (m == CONTENT_AIR || m == CONTENT_TORCH || m == CONTENT_WATER || m == CONTENT_WATERSOURCE);
 }
-
 /*
 	If true, the material allows lossless sunlight propagation.
 	NOTE: It doesn't seem to go through torches regardlessly of this
@@ -261,9 +241,7 @@ inline bool light_propagates_content(u8 m)
 inline bool sunlight_propagates_content(u8 m)
 {
 	return content_features(m).sunlight_propagates;
-	//return (m == CONTENT_AIR || m == CONTENT_TORCH);
 }
-
 /*
 	On a node-node surface, the material of the node with higher solidness
 	is used for drawing.
@@ -275,82 +253,53 @@ inline bool sunlight_propagates_content(u8 m)
 inline u8 content_solidness(u8 m)
 {
 	return content_features(m).solidness;
-	/*// As of now, every pseudo node like torches are added to this
-	if(m == CONTENT_AIR || m == CONTENT_TORCH || m == CONTENT_WATER)
-		return 0;
-	if(m == CONTENT_WATER || m == CONTENT_WATERSOURCE)
-		return 1;
-	return 2;*/
 }
-
 // Objects collide with walkable contents
 // NOTE: Don't use, use "content_features(m).whatever" instead
 inline bool content_walkable(u8 m)
 {
 	return content_features(m).walkable;
-	//return (m != CONTENT_AIR && m != CONTENT_WATER && m != CONTENT_WATERSOURCE && m != CONTENT_TORCH);
 }
-
 // NOTE: Don't use, use "content_features(m).whatever" instead
 inline bool content_liquid(u8 m)
 {
 	return content_features(m).liquid_type != LIQUID_NONE;
-	//return (m == CONTENT_WATER || m == CONTENT_WATERSOURCE);
 }
-
 // NOTE: Don't use, use "content_features(m).whatever" instead
 inline bool content_flowing_liquid(u8 m)
 {
 	return content_features(m).liquid_type == LIQUID_FLOWING;
-	//return (m == CONTENT_WATER);
 }
-
 // NOTE: Don't use, use "content_features(m).whatever" instead
 inline bool content_liquid_source(u8 m)
 {
 	return content_features(m).liquid_type == LIQUID_SOURCE;
-	//return (m == CONTENT_WATERSOURCE);
 }
-
 // CONTENT_WATER || CONTENT_WATERSOURCE -> CONTENT_WATER
 // CONTENT_LAVA || CONTENT_LAVASOURCE -> CONTENT_LAVA
+// NOTE: Don't use, use "content_features(m).whatever" instead
 inline u8 make_liquid_flowing(u8 m)
 {
-	if(m == CONTENT_WATER || m == CONTENT_WATERSOURCE)
-		return CONTENT_WATER;
-	assert(0);
+	u8 c = content_features(m).liquid_alternative_flowing;
+	assert(c != CONTENT_IGNORE);
+	return c;
 }
-
 // Pointable contents can be pointed to in the map
 // NOTE: Don't use, use "content_features(m).whatever" instead
 inline bool content_pointable(u8 m)
 {
 	return content_features(m).pointable;
-	//return (m != CONTENT_AIR && m != CONTENT_WATER && m != CONTENT_WATERSOURCE);
 }
-
 // NOTE: Don't use, use "content_features(m).whatever" instead
 inline bool content_diggable(u8 m)
 {
 	return content_features(m).diggable;
-	//return (m != CONTENT_AIR && m != CONTENT_WATER && m != CONTENT_WATERSOURCE);
 }
-
 // NOTE: Don't use, use "content_features(m).whatever" instead
 inline bool content_buildable_to(u8 m)
 {
 	return content_features(m).buildable_to;
-	//return (m == CONTENT_AIR || m == CONTENT_WATER || m == CONTENT_WATERSOURCE);
 }
-
-/*
-	Returns true for contents that form the base ground that
-	follows the main heightmap
-*/
-/*inline bool is_ground_content(u8 m)
-{
-	return content_features(m).is_ground_content;
-}*/
 
 /*
 	Nodes make a face if contents differ and solidness differs.
@@ -500,31 +449,25 @@ struct MapNode
 				&& param == other.param
 				&& param2 == other.param2);
 	}
-
+	
+	/*
+		These four are DEPRECATED I guess. -c55
+	*/
 	bool light_propagates()
 	{
 		return light_propagates_content(d);
 	}
-	
 	bool sunlight_propagates()
 	{
 		return sunlight_propagates_content(d);
 	}
-	
 	u8 solidness()
 	{
 		return content_solidness(d);
 	}
-
 	u8 light_source()
 	{
-		/*
-			Note that a block that isn't light_propagates() can be a light source.
-		*/
-		if(d == CONTENT_TORCH)
-			return LIGHT_MAX;
-		
-		return 0;
+		return content_features(d).light_source;
 	}
 
 	u8 getLightBanksWithSource()
@@ -542,11 +485,6 @@ struct MapNode
 		if(light_source() > lightnight)
 			lightnight = light_source();
 		return (lightday&0x0f) | ((lightnight<<4)&0xf0);
-	}
-
-	void setLightBanks(u8 a_light)
-	{
-		param = a_light;
 	}
 
 	u8 getLight(enum LightBank bank)
@@ -613,13 +551,25 @@ struct MapNode
 	}
 	
 	// In mapnode.cpp
+	/*
+		Get tile of a face of the node.
+		dir: direction of face
+		Returns: TileSpec. Can contain miscellaneous texture coordinates,
+		         which must be obeyed so that the texture atlas can be used.
+	*/
 	TileSpec getTile(v3s16 dir);
-
+	
+	/*
+		Gets mineral content of node, if there is any.
+		MINERAL_NONE if doesn't contain or isn't able to contain mineral.
+	*/
 	u8 getMineral();
 
 	/*
 		These serialization functions are used when informing client
-		of a single node add
+		of a single node add.
+
+		NOTE: When loading a MapBlock, these are not used. Should they?
 	*/
 
 	static u32 serializedLength(u8 version)
@@ -698,7 +648,24 @@ struct MapNode
 	}
 };
 
+/*
+	Gets lighting value at face of node
+	
+	Parameters must consist of air and !air.
+	Order doesn't matter.
 
+	If either of the nodes doesn't exist, light is 0.
+	
+	parameters:
+		daynight_ratio: 0...1000
+		n: getNodeParent(p)
+		n2: getNodeParent(p + face_dir)
+		face_dir: axis oriented unit vector from p to p2
+	
+	returns encoded light value.
+*/
+u8 getFaceLight(u32 daynight_ratio, MapNode n, MapNode n2,
+		v3s16 face_dir);
 
 #endif
 

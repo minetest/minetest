@@ -385,6 +385,11 @@ public:
 		return m_access_denied;
 	}
 
+	inline std::wstring accessDeniedReason()
+	{
+		return m_access_denied_reason;
+	}
+
 private:
 	
 	// Virtual methods from con::PeerHandler
@@ -440,10 +445,13 @@ private:
 	
 	std::string m_password;
 	bool m_access_denied;
+	std::wstring m_access_denied_reason;
 
 	InventoryContext m_inventory_context;
 
 	Queue<ClientEvent> m_client_event_queue;
+
+	friend class FarMesh;
 };
 
 #endif // !SERVER

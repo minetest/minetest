@@ -25,6 +25,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "mineral.h"
 // For g_settings
 #include "main.h"
+#include "content_mapnode.h"
 #include "nodemetadata.h"
 
 ContentFeatures::~ContentFeatures()
@@ -107,9 +108,9 @@ void init_mapnode()
 				"g_texturesource!=NULL"<<std::endl;
 	}
 
-	// Read some settings
+	/*// Read some settings
 	bool new_style_water = g_settings.getBool("new_style_water");
-	bool new_style_leaves = g_settings.getBool("new_style_leaves");
+	bool new_style_leaves = g_settings.getBool("new_style_leaves");*/
 
 	/*
 		Initialize content feature table
@@ -131,313 +132,17 @@ void init_mapnode()
 	{
 		ContentFeatures *f = &g_content_features[i];
 		// Re-initialize
-		*f = ContentFeatures();
+		f->reset();
 
 		for(u16 j=0; j<6; j++)
 			f->tiles[j].material_type = initial_material_type;
 	}
-	
-	u8 i;
-	ContentFeatures *f = NULL;
 
-	i = CONTENT_STONE;
-	f = &g_content_features[i];
-	f->setAllTextures("stone.png");
-	f->setInventoryTextureCube("stone.png", "stone.png", "stone.png");
-	f->param_type = CPT_MINERAL;
-	f->is_ground_content = true;
-	f->dug_item = std::string("MaterialItem ")+itos(CONTENT_COBBLE)+" 1";
+	/*
+		Initialize mapnode content
+	*/
+	content_mapnode_init();
 	
-	i = CONTENT_GRASS;
-	f = &g_content_features[i];
-	f->setAllTextures("mud.png^grass_side.png");
-	f->setTexture(0, "grass.png");
-	f->setTexture(1, "mud.png");
-	f->param_type = CPT_MINERAL;
-	f->is_ground_content = true;
-	f->dug_item = std::string("MaterialItem ")+itos(CONTENT_MUD)+" 1";
-	
-	i = CONTENT_GRASS_FOOTSTEPS;
-	f = &g_content_features[i];
-	f->setAllTextures("mud.png^grass_side.png");
-	f->setTexture(0, "grass_footsteps.png");
-	f->setTexture(1, "mud.png");
-	f->param_type = CPT_MINERAL;
-	f->is_ground_content = true;
-	f->dug_item = std::string("MaterialItem ")+itos(CONTENT_MUD)+" 1";
-	
-	i = CONTENT_MUD;
-	f = &g_content_features[i];
-	f->setAllTextures("mud.png");
-	f->setInventoryTextureCube("mud.png", "mud.png", "mud.png");
-	f->param_type = CPT_MINERAL;
-	f->is_ground_content = true;
-	f->dug_item = std::string("MaterialItem ")+itos(i)+" 1";
-	
-	i = CONTENT_SAND;
-	f = &g_content_features[i];
-	f->setAllTextures("sand.png");
-	f->param_type = CPT_MINERAL;
-	f->is_ground_content = true;
-	f->dug_item = std::string("MaterialItem ")+itos(i)+" 1";
-	
-	i = CONTENT_SANDSTONE;
-	f = &g_content_features[i];
-	f->setAllTextures("sandstone.png");
-	f->setInventoryTextureCube("sandstone.png", "sandstone.png", "sandstone.png");
-	f->param_type = CPT_MINERAL;
-	f->is_ground_content = true;
-	f->dug_item = std::string("MaterialItem ")+itos(CONTENT_SAND)+" 1";
-	
-	i = CONTENT_CLAY;
-	f = &g_content_features[i];
-	f->setAllTextures("clay.png");
-	f->setInventoryTextureCube("clay.png", "clay.png", "clay.png");
-	f->param_type = CPT_MINERAL;
-	f->is_ground_content = true;
-	f->dug_item = std::string("CraftItem lump_of_clay 4");
-	
-	i = CONTENT_BRICK;
-	f = &g_content_features[i];
-	f->setAllTextures("brick.png");
-	f->setInventoryTextureCube("brick.png", "brick.png", "brick.png");
-	f->param_type = CPT_MINERAL;
-	f->is_ground_content = true;
-	f->dug_item = std::string("CraftItem clay_brick 4");
-	
-	i = CONTENT_TREE;
-	f = &g_content_features[i];
-	f->setAllTextures("tree.png");
-	f->setTexture(0, "tree_top.png");
-	f->setTexture(1, "tree_top.png");
-	f->param_type = CPT_MINERAL;
-	f->is_ground_content = true;
-	f->dug_item = std::string("MaterialItem ")+itos(i)+" 1";
-	
-	i = CONTENT_LEAVES;
-	f = &g_content_features[i];
-	f->light_propagates = true;
-	//f->param_type = CPT_MINERAL;
-	f->param_type = CPT_LIGHT;
-	f->is_ground_content = true;
-	if(new_style_leaves)
-	{
-		f->solidness = 0; // drawn separately, makes no faces
-		f->setInventoryTextureCube("leaves.png", "leaves.png", "leaves.png");
-	}
-	else
-	{
-		f->setAllTextures("[noalpha:leaves.png");
-	}
-	f->dug_item = std::string("MaterialItem ")+itos(i)+" 1";
-
-	i = CONTENT_CACTUS;
-	f = &g_content_features[i];
-	f->setAllTextures("cactus_side.png");
-	f->setTexture(0, "cactus_top.png");
-	f->setTexture(1, "cactus_top.png");
-	f->setInventoryTextureCube("cactus_top.png", "cactus_side.png", "cactus_side.png");
-	f->param_type = CPT_MINERAL;
-	f->is_ground_content = true;
-	f->dug_item = std::string("MaterialItem ")+itos(i)+" 1";
-
-	i = CONTENT_PAPYRUS;
-	f = &g_content_features[i];
-	f->setInventoryTexture("papyrus.png");
-	f->light_propagates = true;
-	f->param_type = CPT_LIGHT;
-	f->is_ground_content = true;
-	f->dug_item = std::string("MaterialItem ")+itos(i)+" 1";
-	f->solidness = 0; // drawn separately, makes no faces
-	f->walkable = false;
-
- 	i = CONTENT_BOOKSHELF;
- 	f = &g_content_features[i];
- 	f->setAllTextures("bookshelf.png");
-	f->setTexture(0, "wood.png");
-	f->setTexture(1, "wood.png");
-	// FIXME: setInventoryTextureCube() only cares for the first texture
-	f->setInventoryTextureCube("bookshelf.png", "bookshelf.png", "bookshelf.png");
-	//f->setInventoryTextureCube("wood.png", "bookshelf.png", "bookshelf.png");
-	f->param_type = CPT_MINERAL;
-	f->is_ground_content = true;
-
-	i = CONTENT_GLASS;
-	f = &g_content_features[i];
-	f->light_propagates = true;
-	f->param_type = CPT_LIGHT;
-	f->is_ground_content = true;
-	f->dug_item = std::string("MaterialItem ")+itos(i)+" 1";
-	f->solidness = 0; // drawn separately, makes no faces
-	f->setInventoryTextureCube("glass.png", "glass.png", "glass.png");
-
-	i = CONTENT_FENCE;
-	f = &g_content_features[i];
-	f->setInventoryTexture("fence.png");
-	f->light_propagates = true;
-	f->param_type = CPT_LIGHT;
-	f->is_ground_content = true;
-	f->dug_item = std::string("MaterialItem ")+itos(i)+" 1";
-	f->solidness = 0; // drawn separately, makes no faces
-	f->air_equivalent = true; // grass grows underneath
-
-	i = CONTENT_RAIL;
-	f = &g_content_features[i];
-	f->setInventoryTexture("rail.png");
-	f->light_propagates = true;
-	f->param_type = CPT_LIGHT;
-	f->is_ground_content = true;
-	f->dug_item = std::string("MaterialItem ")+itos(i)+" 1";
-	f->solidness = 0; // drawn separately, makes no faces
-	f->air_equivalent = true; // grass grows underneath
-	f->walkable = false;
-
-	// Deprecated
-	i = CONTENT_COALSTONE;
-	f = &g_content_features[i];
-	//f->translate_to = new MapNode(CONTENT_STONE, MINERAL_COAL);
-	f->setAllTextures("stone.png^mineral_coal.png");
-	f->is_ground_content = true;
-	
-	i = CONTENT_WOOD;
-	f = &g_content_features[i];
-	f->setAllTextures("wood.png");
-	f->is_ground_content = true;
-	f->dug_item = std::string("MaterialItem ")+itos(i)+" 1";
-	
-	i = CONTENT_MESE;
-	f = &g_content_features[i];
-	f->setAllTextures("mese.png");
-	f->is_ground_content = true;
-	f->dug_item = std::string("MaterialItem ")+itos(i)+" 1";
-	
-	i = CONTENT_CLOUD;
-	f = &g_content_features[i];
-	f->setAllTextures("cloud.png");
-	f->is_ground_content = true;
-	f->dug_item = std::string("MaterialItem ")+itos(i)+" 1";
-	
-	i = CONTENT_AIR;
-	f = &g_content_features[i];
-	f->param_type = CPT_LIGHT;
-	f->light_propagates = true;
-	f->sunlight_propagates = true;
-	f->solidness = 0;
-	f->walkable = false;
-	f->pointable = false;
-	f->diggable = false;
-	f->buildable_to = true;
-	f->air_equivalent = true;
-	
-	i = CONTENT_WATER;
-	f = &g_content_features[i];
-	f->setInventoryTextureCube("water.png", "water.png", "water.png");
-	f->param_type = CPT_LIGHT;
-	f->light_propagates = true;
-	f->solidness = 0; // Drawn separately, makes no faces
-	f->walkable = false;
-	f->pointable = false;
-	f->diggable = false;
-	f->buildable_to = true;
-	f->liquid_type = LIQUID_FLOWING;
-	
-	i = CONTENT_WATERSOURCE;
-	f = &g_content_features[i];
-	f->setInventoryTexture("water.png");
-	if(new_style_water)
-	{
-		f->solidness = 0; // drawn separately, makes no faces
-	}
-	else // old style
-	{
-		f->solidness = 1;
-
-		TileSpec t;
-		if(g_texturesource)
-			t.texture = g_texturesource->getTexture("water.png");
-		
-		t.alpha = WATER_ALPHA;
-		t.material_type = MATERIAL_ALPHA_VERTEX;
-		t.material_flags &= ~MATERIAL_FLAG_BACKFACE_CULLING;
-		f->setAllTiles(t);
-	}
-	f->param_type = CPT_LIGHT;
-	f->light_propagates = true;
-	f->walkable = false;
-	f->pointable = false;
-	f->diggable = false;
-	f->buildable_to = true;
-	f->liquid_type = LIQUID_SOURCE;
-	f->dug_item = std::string("MaterialItem ")+itos(i)+" 1";
-	
-	i = CONTENT_TORCH;
-	f = &g_content_features[i];
-	f->setInventoryTexture("torch_on_floor.png");
-	f->param_type = CPT_LIGHT;
-	f->light_propagates = true;
-	f->sunlight_propagates = true;
-	f->solidness = 0; // drawn separately, makes no faces
-	f->walkable = false;
-	f->wall_mounted = true;
-	f->air_equivalent = true;
-	f->dug_item = std::string("MaterialItem ")+itos(i)+" 1";
-	
-	i = CONTENT_SIGN_WALL;
-	f = &g_content_features[i];
-	f->setInventoryTexture("sign_wall.png");
-	f->param_type = CPT_LIGHT;
-	f->light_propagates = true;
-	f->sunlight_propagates = true;
-	f->solidness = 0; // drawn separately, makes no faces
-	f->walkable = false;
-	f->wall_mounted = true;
-	f->air_equivalent = true;
-	f->dug_item = std::string("MaterialItem ")+itos(i)+" 1";
-	if(f->initial_metadata == NULL)
-		f->initial_metadata = new SignNodeMetadata("Some sign");
-	
-	i = CONTENT_CHEST;
-	f = &g_content_features[i];
-	f->param_type = CPT_FACEDIR_SIMPLE;
-	f->setAllTextures("chest_side.png");
-	f->setTexture(0, "chest_top.png");
-	f->setTexture(1, "chest_top.png");
-	f->setTexture(5, "chest_front.png"); // Z-
-	f->setInventoryTexture("chest_top.png");
-	//f->setInventoryTextureCube("chest_top.png", "chest_side.png", "chest_side.png");
-	f->dug_item = std::string("MaterialItem ")+itos(i)+" 1";
-	if(f->initial_metadata == NULL)
-		f->initial_metadata = new ChestNodeMetadata();
-	
-	i = CONTENT_FURNACE;
-	f = &g_content_features[i];
-	f->param_type = CPT_FACEDIR_SIMPLE;
-	f->setAllTextures("furnace_side.png");
-	f->setTexture(5, "furnace_front.png"); // Z-
-	f->setInventoryTexture("furnace_front.png");
-	//f->dug_item = std::string("MaterialItem ")+itos(i)+" 1";
-	f->dug_item = std::string("MaterialItem ")+itos(CONTENT_COBBLE)+" 6";
-	if(f->initial_metadata == NULL)
-		f->initial_metadata = new FurnaceNodeMetadata();
-	
-	i = CONTENT_COBBLE;
-	f = &g_content_features[i];
-	f->setAllTextures("cobble.png");
-	f->setInventoryTextureCube("cobble.png", "cobble.png", "cobble.png");
-	f->param_type = CPT_NONE;
-	f->is_ground_content = true;
-	f->dug_item = std::string("MaterialItem ")+itos(i)+" 1";
-	
-	i = CONTENT_STEEL;
-	f = &g_content_features[i];
-	f->setAllTextures("steel_block.png");
-	f->setInventoryTextureCube("steel_block.png", "steel_block.png",
-			"steel_block.png");
-	f->param_type = CPT_NONE;
-	f->is_ground_content = true;
-	f->dug_item = std::string("MaterialItem ")+itos(i)+" 1";
-	
-	// NOTE: Remember to add frequently used stuff to the texture atlas in tile.cpp
 }
 
 v3s16 facedir_rotate(u8 facedir, v3s16 dir)
@@ -525,16 +230,54 @@ u8 MapNode::getMineral()
 	return MINERAL_NONE;
 }
 
-// Pointers to c_str()s g_content_features[i].inventory_image_path
-//const char * g_content_inventory_texture_paths[USEFUL_CONTENT_COUNT] = {0};
+/*
+	Gets lighting value at face of node
+	
+	Parameters must consist of air and !air.
+	Order doesn't matter.
 
-void init_content_inventory_texture_paths()
+	If either of the nodes doesn't exist, light is 0.
+	
+	parameters:
+		daynight_ratio: 0...1000
+		n: getNodeParent(p)
+		n2: getNodeParent(p + face_dir)
+		face_dir: axis oriented unit vector from p to p2
+	
+	returns encoded light value.
+*/
+u8 getFaceLight(u32 daynight_ratio, MapNode n, MapNode n2,
+		v3s16 face_dir)
 {
-	dstream<<"DEPRECATED "<<__FUNCTION_NAME<<std::endl;
-	/*for(u16 i=0; i<USEFUL_CONTENT_COUNT; i++)
+	try{
+		u8 light;
+		u8 l1 = n.getLightBlend(daynight_ratio);
+		u8 l2 = n2.getLightBlend(daynight_ratio);
+		if(l1 > l2)
+			light = l1;
+		else
+			light = l2;
+
+		// Make some nice difference to different sides
+
+		// This makes light come from a corner
+		/*if(face_dir.X == 1 || face_dir.Z == 1 || face_dir.Y == -1)
+			light = diminish_light(diminish_light(light));
+		else if(face_dir.X == -1 || face_dir.Z == -1)
+			light = diminish_light(light);*/
+		
+		// All neighboring faces have different shade (like in minecraft)
+		if(face_dir.X == 1 || face_dir.X == -1 || face_dir.Y == -1)
+			light = diminish_light(diminish_light(light));
+		else if(face_dir.Z == 1 || face_dir.Z == -1)
+			light = diminish_light(light);
+
+		return light;
+	}
+	catch(InvalidPositionException &e)
 	{
-		g_content_inventory_texture_paths[i] =
-				g_content_features[i].inventory_image_path.c_str();
-	}*/
+		return 0;
+	}
 }
+
 

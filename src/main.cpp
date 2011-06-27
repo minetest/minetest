@@ -89,6 +89,17 @@ SUGG: Make a system for pregenerating quick information for mapblocks, so
 	  that the client can show them as cubes before they are actually sent
 	  or even generated.
 
+SUGG: Erosion simulation at map generation time
+	- Simulate water flows, which would carve out dirt fast and
+	  then turn stone into gravel and sand and relocate it.
+	- How about relocating minerals, too? Coal and gold in
+	  downstream sand and gravel would be kind of cool
+	  - This would need a better way of handling minerals, mainly
+		to have mineral content as a separate field. the first
+		parameter field is free for this.
+	- Simulate rock falling from cliffs when water has removed
+	  enough solid rock from the bottom
+
 Gaming ideas:
 -------------
 
@@ -172,7 +183,15 @@ TODO: A setting for enabling bilinear filtering for textures
 
 TODO: Better control of draw_control.wanted_max_blocks
 
-TODO: Block mesh generator to tile properly on smooth lighting
+TODO: Further investigate the use of GPU lighting in addition to the
+      current one
+
+TODO: Artificial (night) light could be more yellow colored than sunlight.
+      - This is technically doable.
+	  - Also the actual colors of the textures could be made less colorful
+	    in the dark but it's a bit more difficult.
+
+SUGG: Somehow make the night less colorful
 
 Configuration:
 --------------
@@ -198,6 +217,9 @@ TODO: Don't update all meshes always on single node changes, but
 
 FIXME: When disconnected to the menu, memory is not freed properly
 
+TODO: Investigate how much the mesh generator thread gets used when
+      transferring map data
+
 Server:
 -------
 
@@ -214,11 +236,20 @@ FIXME: Server sometimes goes into some infinite PeerNotFoundException loop
 
 FIXME: The new optimized map sending doesn't sometimes send enough blocks
        from big caves and such
+FIXME: Block send distance configuration does not take effect for some reason
+
+TODO: Map saving should be done by EmergeThread
+
+SUGG: Map unloading based on sector reference is not very good, it keeps
+	unnecessary stuff in memory. I guess. Investigate this.
+
+TODO: When block is placed and it has param_type==CPT_FACEDIR_SIMPLE, set
+      the direction accordingly.
 
 Environment:
 ------------
 
-TODO: A list of "active blocks" in which stuff happens.
+TODO: A list of "active blocks" in which stuff happens. (+=done)
 	+ Add a never-resetted game timer to the server
 	+ Add a timestamp value to blocks
 	+ The simple rule: All blocks near some player are "active"
@@ -260,31 +291,24 @@ SUGG: MovingObject::move and Player::move are basically the same.
 	- NOTE: There is a simple move implementation now in collision.{h,cpp}
 	- NOTE: MovingObject will be deleted (MapBlockObject)
 
+TODO: Add a long step function to objects that is called with the time
+      difference when block activates
+
 Map:
 ----
 
 TODO: Mineral and ground material properties
       - This way mineral ground toughness can be calculated with just
 	    some formula, as well as tool strengths
+	  - There are TODOs in appropriate files: material.h, content_mapnode.h
 
 TODO: Flowing water to actually contain flow direction information
       - There is a space for this - it just has to be implemented.
 
-SUGG: Erosion simulation at map generation time
-	- Simulate water flows, which would carve out dirt fast and
-	  then turn stone into gravel and sand and relocate it.
-	- How about relocating minerals, too? Coal and gold in
-	  downstream sand and gravel would be kind of cool
-	  - This would need a better way of handling minerals, mainly
-		to have mineral content as a separate field. the first
-		parameter field is free for this.
-	- Simulate rock falling from cliffs when water has removed
-	  enough solid rock from the bottom
-
 SUGG: Try out the notch way of generating maps, that is, make bunches
       of low-res 3d noise and interpolate linearly.
 
-Mapgen v2:
+Mapgen v2 (the current one):
 * Possibly add some kind of erosion and other stuff
 * Better water generation (spread it to underwater caverns but don't
   fill dungeons that don't touch big water masses)
@@ -293,25 +317,66 @@ Mapgen v2:
   the other chunk making nasty straight walls when the other chunk
   is generated. Fix it. Maybe just a special case if the ground is
   flat?
+* Consider not updating this one and make a good mainly block-based
+  generator
+
+SUGG: Make two "modified states", one that forces the block to be saved at
+	the next save event, and one that makes the block to be saved at exit
+	time.
+
+TODO: Add a not_fully_generated flag to MapBlock, which would be set for
+	blocks that contain eg. trees from neighboring generations but haven't
+	been generated itself. This is required for the future generator.
 
 Misc. stuff:
 ------------
-* Move digging property stuff from material.{h,cpp} to mapnode.cpp
-  - ...Or maybe move content_features to material.{h,cpp}?
+- Make sure server handles removing grass when a block is placed (etc)
+    - The client should not do it by itself
+- Block cube placement around player's head
+- Protocol version field
+- Consider getting some textures from cisoun's texture pack
+	- Ask from Cisoun
+- Make sure the fence implementation and data format is good
+	- Think about using same bits for material for fences and doors, for
+	example
+- Finish the ActiveBlockModifier stuff and use it for something
+- Move mineral to param2, increment map serialization version, add conversion
+
+TODO: Add a per-sector database to store surface stuff as simple flags/values
+      - Light?
+	  - A building?
+	  And at some point make the server send this data to the client too,
+	  instead of referring to the noise functions
+	  - Ground height
+	  - Surface ground type
+	  - Trees?
+
+TODO: Restart irrlicht completely when coming back to main menu from game.
+	- This gets rid of everything that is stored in irrlicht's caches.
+
+TODO: Merge bahamada's audio stuff (clean patch available)
+
+TODO: Merge spongie's chest/furnace direction (by hand)
+
+TODO: Merge key configuration menu (no clean patch available)
 
 Making it more portable:
 ------------------------
  
 Stuff to do before release:
 ---------------------------
-- Player default privileges and default password
-- Chat privilege
-- Some simple block-based dynamic stuff in the world (finish the
-  ActiveBlockModifier stuff)
-- Protocol version field
-- Consider getting some textures from cisoun's texture pack
-- Add a long step function to objects that is called with the time
-  difference when block activates
+
+Fixes to the current release:
+-----------------------------
+
+Stuff to do after release:
+---------------------------
+
+Doing currently:
+----------------
+
+TODO: Use MapBlock::resetUsageTimer() in appropriate places
+      (on client and server)
 
 ======================================================================
 
@@ -377,6 +442,9 @@ Settings g_settings;
 // This is located in defaultsettings.cpp
 extern void set_default_settings();
 
+// Global profiler
+Profiler g_profiler;
+
 /*
 	Random stuff
 */
@@ -427,7 +495,14 @@ std::ostream *derr_client_ptr = &dstream;
 class TimeGetter
 {
 public:
-	TimeGetter(IrrlichtDevice *device):
+	virtual u32 getTime() = 0;
+};
+
+// A precise irrlicht one
+class IrrlichtTimeGetter: public TimeGetter
+{
+public:
+	IrrlichtTimeGetter(IrrlichtDevice *device):
 		m_device(device)
 	{}
 	u32 getTime()
@@ -439,8 +514,18 @@ public:
 private:
 	IrrlichtDevice *m_device;
 };
+// Not so precise one which works without irrlicht
+class SimpleTimeGetter: public TimeGetter
+{
+public:
+	u32 getTime()
+	{
+		return porting::getTimeMs();
+	}
+};
 
 // A pointer to a global instance of the time getter
+// TODO: why?
 TimeGetter *g_timegetter = NULL;
 
 u32 getTimeMs()
@@ -995,6 +1080,15 @@ void drawMenuBackground(video::IVideoDriver* driver)
 int main(int argc, char *argv[])
 {
 	/*
+		Initialization
+	*/
+
+	// Set locale. This is for forcing '.' as the decimal point.
+	std::locale::global(std::locale("C"));
+	// This enables printing all characters in bitmap font
+	setlocale(LC_CTYPE, "en_US");
+
+	/*
 		Parse command line
 	*/
 	
@@ -1057,22 +1151,29 @@ int main(int argc, char *argv[])
 		disable_stderr = true;
 #endif
 
+	porting::signal_handler_init();
+	bool &kill = *porting::signal_handler_killstatus();
+	
+	// Initialize porting::path_data and porting::path_userdata
+	porting::initializePaths();
+
+	// Create user data directory
+	fs::CreateDir(porting::path_userdata);
+	
 	// Initialize debug streams
-	debugstreams_init(disable_stderr, DEBUGFILE);
+#ifdef RUN_IN_PLACE
+	std::string debugfile = DEBUGFILE;
+#else
+	std::string debugfile = porting::path_userdata+"/"+DEBUGFILE;
+#endif
+	debugstreams_init(disable_stderr, debugfile.c_str());
 	// Initialize debug stacks
 	debug_stacks_init();
 
 	DSTACK(__FUNCTION_NAME);
 
-	porting::signal_handler_init();
-	bool &kill = *porting::signal_handler_killstatus();
-	
-	porting::initializePaths();
-	// Create user data directory
-	fs::CreateDir(porting::path_userdata);
-	
-	// C-style stuff initialization
-	initializeMaterialProperties();
+	// Init material properties table
+	//initializeMaterialProperties();
 
 	// Debug handler
 	BEGIN_DEBUG_EXCEPTION_HANDLER
@@ -1090,19 +1191,10 @@ int main(int argc, char *argv[])
 	// Initialize default settings
 	set_default_settings();
 	
-	// Set locale. This is for forcing '.' as the decimal point.
-	std::locale::global(std::locale("C"));
-	// This enables printing all characters in bitmap font
-	setlocale(LC_CTYPE, "en_US");
-
 	// Initialize sockets
 	sockets_init();
 	atexit(sockets_cleanup);
 	
-	/*
-		Initialization
-	*/
-
 	/*
 		Read config file
 	*/
@@ -1188,7 +1280,7 @@ int main(int argc, char *argv[])
 		port = 30000;
 	
 	// Map directory
-	std::string map_dir = porting::path_userdata+"/map";
+	std::string map_dir = porting::path_userdata+"/world";
 	if(cmd_args.exists("map-dir"))
 		map_dir = cmd_args.get("map-dir");
 	else if(g_settings.exists("map-dir"))
@@ -1199,6 +1291,9 @@ int main(int argc, char *argv[])
 	{
 		DSTACK("Dedicated server branch");
 
+		// Create time getter
+		g_timegetter = new SimpleTimeGetter();
+		
 		// Create server
 		Server server(map_dir.c_str());
 		server.start(port);
@@ -1281,7 +1376,7 @@ int main(int argc, char *argv[])
 	device = device;
 	
 	// Create time getter
-	g_timegetter = new TimeGetter(device);
+	g_timegetter = new IrrlichtTimeGetter(device);
 	
 	// Create game callback for menus
 	g_gamecallback = new MainGameCallback(device);
@@ -1349,7 +1444,6 @@ int main(int argc, char *argv[])
 		Preload some textures and stuff
 	*/
 
-	init_content_inventory_texture_paths();
 	init_mapnode(); // Second call with g_texturesource set
 	init_mineral();
 
@@ -1488,13 +1582,22 @@ int main(int argc, char *argv[])
 				g_settings.set("creative_mode", itos(menudata.creative_mode));
 				g_settings.set("enable_damage", itos(menudata.enable_damage));
 				
-				// Check for valid parameters, restart menu if invalid.
+				// NOTE: These are now checked server side; no need to do it
+				//       here, so let's not do it here.
+				/*// Check for valid parameters, restart menu if invalid.
 				if(playername == "")
 				{
 					error_message = L"Name required.";
 					continue;
 				}
-				
+				// Check that name has only valid chars
+				if(string_allowed(playername, PLAYERNAME_ALLOWED_CHARS)==false)
+				{
+					error_message = L"Characters allowed: "
+							+narrow_to_wide(PLAYERNAME_ALLOWED_CHARS);
+					continue;
+				}*/
+
 				// Save settings
 				g_settings.set("name", playername);
 				g_settings.set("address", address);

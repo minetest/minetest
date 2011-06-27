@@ -31,8 +31,36 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "config.h"
 #include "servercommand.h"
 #include "filesys.h"
+#include "content_mapnode.h"
+#include "content_craft.h"
+#include "content_nodemeta.h"
 
 #define BLOCK_EMERGE_FLAG_FROMDISK (1<<0)
+
+class MapEditEventIgnorer
+{
+public:
+	MapEditEventIgnorer(bool *flag):
+		m_flag(flag)
+	{
+		if(*m_flag == false)
+			*m_flag = true;
+		else
+			m_flag = NULL;
+	}
+
+	~MapEditEventIgnorer()
+	{
+		if(m_flag)
+		{
+			assert(*m_flag);
+			*m_flag = false;
+		}
+	}
+	
+private:
+	bool *m_flag;
+};
 
 void * ServerThread::Thread()
 {
@@ -147,8 +175,8 @@ void * EmergeThread::Thread()
 		
 		ServerMap &map = ((ServerMap&)m_server->m_env.getMap());
 			
-		core::map<v3s16, MapBlock*> changed_blocks;
-		core::map<v3s16, MapBlock*> lighting_invalidated_blocks;
+		//core::map<v3s16, MapBlock*> changed_blocks;
+		//core::map<v3s16, MapBlock*> lighting_invalidated_blocks;
 
 		MapBlock *block = NULL;
 		bool got_block = true;
@@ -159,32 +187,6 @@ void * EmergeThread::Thread()
 		if(optional)
 			only_from_disk = true;
 
-		v2s16 chunkpos = map.sector_to_chunk(p2d);
-
-		bool generate_chunk = false;
-		if(only_from_disk == false)
-		{
-			JMutexAutoLock envlock(m_server->m_env_mutex);
-			if(map.chunkNonVolatile(chunkpos) == false)
-				generate_chunk = true;
-		}
-		if(generate_chunk)
-		{
-			ChunkMakeData data;
-			
-			{
-				JMutexAutoLock envlock(m_server->m_env_mutex);
-				map.initChunkMake(data, chunkpos);
-			}
-
-			makeChunk(&data);
-
-			{
-				JMutexAutoLock envlock(m_server->m_env_mutex);
-				map.finishChunkMake(data, changed_blocks);
-			}
-		}
-	
 		/*
 			Fetch block from map or generate a single block
 		*/
@@ -193,36 +195,55 @@ void * EmergeThread::Thread()
 			
 			// Load sector if it isn't loaded
 			if(map.getSectorNoGenerateNoEx(p2d) == NULL)
-				map.loadSectorFull(p2d);
+				//map.loadSectorFull(p2d);
+				map.loadSectorMeta(p2d);
 
 			block = map.getBlockNoCreateNoEx(p);
-			if(!block || block->isDummy())
+			if(!block || block->isDummy() || !block->isGenerated())
 			{
-				if(only_from_disk)
+				// Get, load or create sector
+				/*ServerMapSector *sector =
+						(ServerMapSector*)map.createSector(p2d);*/
+
+				// Load/generate block
+
+				/*block = map.emergeBlock(p, sector, changed_blocks,
+						lighting_invalidated_blocks);*/
+
+				block = map.loadBlock(p);
+
+				if(block == NULL && only_from_disk == false)
+					block = map.generateBlock(p, modified_blocks);
+					//block = map.generateBlock(p, changed_blocks);
+					/*block = map.generateBlock(p, block, sector, changed_blocks,
+							lighting_invalidated_blocks);*/
+
+				if(block == NULL)
 				{
 					got_block = false;
 				}
 				else
 				{
-					// Get, load or create sector
-					ServerMapSector *sector =
-							(ServerMapSector*)map.createSector(p2d);
-					// Generate block
-					block = map.generateBlock(p, block, sector, changed_blocks,
-							lighting_invalidated_blocks);
-					if(block == NULL)
-						got_block = false;
+					/*
+						Ignore map edit events, they will not need to be
+						sent to anybody because the block hasn't been sent
+						to anybody
+					*/
+					MapEditEventIgnorer ign(&m_server->m_ignore_map_edit_events);
+					
+					// Activate objects and stuff
+					m_server->m_env.activateBlock(block, 3600);
 				}
 			}
 			else
 			{
-				if(block->getLightingExpired()){
+				/*if(block->getLightingExpired()){
 					lighting_invalidated_blocks[block->getPos()] = block;
-				}
+				}*/
 			}
 
 			// TODO: Some additional checking and lighting updating,
-			// see emergeBlock
+			//       see emergeBlock
 		}
 
 		{//envlock
@@ -234,7 +255,8 @@ void * EmergeThread::Thread()
 				Collect a list of blocks that have been modified in
 				addition to the fetched one.
 			*/
-			
+
+#if 0
 			if(lighting_invalidated_blocks.size() > 0)
 			{
 				/*dstream<<"lighting "<<lighting_invalidated_blocks.size()
@@ -255,11 +277,12 @@ void * EmergeThread::Thread()
 				MapBlock *block = i.getNode()->getValue();
 				modified_blocks.insert(block->getPos(), block);
 			}
+#endif
 		}
 		// If we got no block, there should be no invalidated blocks
 		else
 		{
-			assert(lighting_invalidated_blocks.size() == 0);
+			//assert(lighting_invalidated_blocks.size() == 0);
 		}
 
 		}//envlock
@@ -312,11 +335,14 @@ void RemoteClient::GetNextBlocks(Server *server, float dtime,
 	TimeTaker timer("RemoteClient::GetNextBlocks", &timer_result);*/
 	
 	// Increment timers
-	m_nearest_unsent_reset_timer += dtime;
 	m_nothing_to_send_pause_timer -= dtime;
 	
 	if(m_nothing_to_send_pause_timer >= 0)
+	{
+		// Keep this reset
+		m_nearest_unsent_reset_timer = 0;
 		return;
+	}
 
 	// Won't send anything if already sending
 	if(m_blocks_sending.size() >= g_settings.getU16
@@ -326,14 +352,21 @@ void RemoteClient::GetNextBlocks(Server *server, float dtime,
 		return;
 	}
 
+	//TimeTaker timer("RemoteClient::GetNextBlocks");
+	
 	Player *player = server->m_env.getPlayer(peer_id);
 
 	assert(player != NULL);
 
 	v3f playerpos = player->getPosition();
 	v3f playerspeed = player->getSpeed();
+	v3f playerspeeddir(0,0,0);
+	if(playerspeed.getLength() > 1.0*BS)
+		playerspeeddir = playerspeed / playerspeed.getLength();
+	// Predict to next block
+	v3f playerpos_predicted = playerpos + playerspeeddir*MAP_BLOCKSIZE*BS;
 
-	v3s16 center_nodepos = floatToInt(playerpos, BS);
+	v3s16 center_nodepos = floatToInt(playerpos_predicted, BS);
 
 	v3s16 center = getNodeBlockPos(center_nodepos);
 	
@@ -343,6 +376,9 @@ void RemoteClient::GetNextBlocks(Server *server, float dtime,
 	v3f camera_dir = v3f(0,0,1);
 	camera_dir.rotateYZBy(player->getPitch());
 	camera_dir.rotateXZBy(player->getYaw());
+
+	/*dstream<<"camera_dir=("<<camera_dir.X<<","<<camera_dir.Y<<","
+			<<camera_dir.Z<<")"<<std::endl;*/
 
 	/*
 		Get the starting value of the block finder radius.
@@ -356,11 +392,18 @@ void RemoteClient::GetNextBlocks(Server *server, float dtime,
 
 	/*dstream<<"m_nearest_unsent_reset_timer="
 			<<m_nearest_unsent_reset_timer<<std::endl;*/
-	if(m_nearest_unsent_reset_timer > 5.0)
+			
+	// This has to be incremented only when the nothing to send pause
+	// is not active
+	m_nearest_unsent_reset_timer += dtime;
+	
+	// Reset periodically to avoid possible bugs or other mishaps
+	if(m_nearest_unsent_reset_timer > 10.0)
 	{
 		m_nearest_unsent_reset_timer = 0;
 		m_nearest_unsent_d = 0;
-		//dstream<<"Resetting m_nearest_unsent_d"<<std::endl;
+		/*dstream<<"Resetting m_nearest_unsent_d for "
+				<<server->getPlayerName(peer_id)<<std::endl;*/
 	}
 
 	//s16 last_nearest_unsent_d = m_nearest_unsent_d;
@@ -402,11 +445,22 @@ void RemoteClient::GetNextBlocks(Server *server, float dtime,
 	s16 d_max = g_settings.getS16("max_block_send_distance");
 	s16 d_max_gen = g_settings.getS16("max_block_generate_distance");
 	
+	// Don't loop very much at a time
+	if(d_max > d_start+1)
+		d_max = d_start+1;
+	/*if(d_max_gen > d_start+2)
+		d_max_gen = d_start+2;*/
+	
 	//dstream<<"Starting from "<<d_start<<std::endl;
 
 	bool sending_something = false;
 
-	for(s16 d = d_start; d <= d_max; d++)
+	bool no_blocks_found_for_sending = true;
+
+	bool queue_is_full = false;
+	
+	s16 d;
+	for(d = d_start; d <= d_max; d++)
 	{
 		//dstream<<"RemoteClient::SendBlocks(): d="<<d<<std::endl;
 		
@@ -451,7 +505,10 @@ void RemoteClient::GetNextBlocks(Server *server, float dtime,
 
 			// Don't select too many blocks for sending
 			if(num_blocks_selected >= max_simul_dynamic)
-				goto queue_full;
+			{
+				queue_is_full = true;
+				goto queue_full_break;
+			}
 			
 			// Don't send blocks that are currently being transferred
 			if(m_blocks_sending.find(p) != NULL)
@@ -513,6 +570,8 @@ void RemoteClient::GetNextBlocks(Server *server, float dtime,
 			}
 #endif
 
+			//dstream<<"d="<<d<<std::endl;
+			
 			/*
 				Don't generate or send if not in sight
 			*/
@@ -527,7 +586,9 @@ void RemoteClient::GetNextBlocks(Server *server, float dtime,
 			*/
 			{
 				if(m_blocks_sent.find(p) != NULL)
+				{
 					continue;
+				}
 			}
 
 			/*
@@ -539,11 +600,14 @@ void RemoteClient::GetNextBlocks(Server *server, float dtime,
 			bool block_is_invalid = false;
 			if(block != NULL)
 			{
+				// Block is dummy if data doesn't exist.
+				// It means it has been not found from disk and not generated
 				if(block->isDummy())
 				{
 					surely_not_found_on_disk = true;
 				}
-
+				
+				// Block is valid if lighting is up-to-date and data exists
 				if(block->isValid() == false)
 				{
 					block_is_invalid = true;
@@ -553,19 +617,23 @@ void RemoteClient::GetNextBlocks(Server *server, float dtime,
 				{
 					block_is_invalid = true;
 				}*/
-				
+
+#if 0
 				v2s16 p2d(p.X, p.Z);
 				ServerMap *map = (ServerMap*)(&server->m_env.getMap());
 				v2s16 chunkpos = map->sector_to_chunk(p2d);
 				if(map->chunkNonVolatile(chunkpos) == false)
+					block_is_invalid = true;
+#endif
+				if(block->isGenerated() == false)
 					block_is_invalid = true;
 #if 1
 				/*
 					If block is not close, don't send it unless it is near
 					ground level.
 
-					Block is not near ground level if night-time mesh
-					doesn't differ from day-time mesh.
+					Block is near ground level if night-time mesh
+					differs from day-time mesh.
 				*/
 				if(d > 3)
 				{
@@ -586,14 +654,16 @@ void RemoteClient::GetNextBlocks(Server *server, float dtime,
 			}
 
 			/*
-				Record the lowest d from which a a block has been
+				Record the lowest d from which a block has been
 				found being not sent and possibly to exist
 			*/
-			if(new_nearest_unsent_d == -1 || d < new_nearest_unsent_d)
+			if(no_blocks_found_for_sending)
 			{
 				if(generate == true)
 					new_nearest_unsent_d = d;
 			}
+
+			no_blocks_found_for_sending = false;
 					
 			/*
 				Add inexistent block to emerge queue.
@@ -603,6 +673,7 @@ void RemoteClient::GetNextBlocks(Server *server, float dtime,
 				//TODO: Get value from somewhere
 				// Allow only one block in emerge queue
 				//if(server->m_emerge_queue.peerItemCount(peer_id) < 1)
+				// Allow two blocks in queue per client
 				if(server->m_emerge_queue.peerItemCount(peer_id) < 2)
 				{
 					//dstream<<"Adding block to emerge queue"<<std::endl;
@@ -633,20 +704,30 @@ void RemoteClient::GetNextBlocks(Server *server, float dtime,
 			sending_something = true;
 		}
 	}
-queue_full:
+queue_full_break:
+
+	//dstream<<"Stopped at "<<d<<std::endl;
+	
+	if(no_blocks_found_for_sending)
+	{
+		if(queue_is_full == false)
+			new_nearest_unsent_d = d;
+	}
 
 	if(new_nearest_unsent_d != -1)
-	{
 		m_nearest_unsent_d = new_nearest_unsent_d;
-	}
 
 	if(sending_something == false)
 	{
 		m_nothing_to_send_counter++;
-		if(m_nothing_to_send_counter >= 3)
+		if((s16)m_nothing_to_send_counter >=
+				g_settings.getS16("max_block_send_distance"))
 		{
 			// Pause time in seconds
-			m_nothing_to_send_pause_timer = 2.0;
+			m_nothing_to_send_pause_timer = 1.0;
+			/*dstream<<"nothing to send to "
+					<<server->getPlayerName(peer_id)
+					<<" (d="<<d<<")"<<std::endl;*/
 		}
 	}
 	else
@@ -817,7 +898,9 @@ void RemoteClient::SendObjectData(
 			bos.write((char*)buf, 6);
 
 			// Write objects
-			block->serializeObjects(bos, serialization_version);
+			//block->serializeObjects(bos, serialization_version); // DEPRECATED
+			// count=0
+			writeU16(bos, 0);
 
 			blockcount++;
 
@@ -967,6 +1050,7 @@ Server::Server(
 	):
 	m_env(new ServerMap(mapsavedir), this),
 	m_con(PROTOCOL_ID, 512, CONNECTION_TIMEOUT, this),
+	m_authmanager(mapsavedir+"/auth.txt"),
 	m_thread(this),
 	m_emergethread(this),
 	m_time_counter(0),
@@ -1129,12 +1213,16 @@ void Server::AsyncRunStep()
 		dtime = m_step_dtime;
 	}
 	
-	// Send blocks to clients
-	SendBlocks(dtime);
+	{
+		ScopeProfiler sp(&g_profiler, "Server: selecting and sending "
+				"blocks to clients");
+		// Send blocks to clients
+		SendBlocks(dtime);
+	}
 	
 	if(dtime < 0.001)
 		return;
-	
+
 	//dstream<<"Server steps "<<dtime<<std::endl;
 	//dstream<<"Server::AsyncRunStep(): dtime="<<dtime<<std::endl;
 	
@@ -1195,12 +1283,14 @@ void Server::AsyncRunStep()
 	{
 		// Process connection's timeouts
 		JMutexAutoLock lock2(m_con_mutex);
+		ScopeProfiler sp(&g_profiler, "Server: connection timeout processing");
 		m_con.RunTimeouts(dtime);
 	}
 	
 	{
 		// This has to be called so that the client list gets synced
 		// with the peer list of the connection
+		ScopeProfiler sp(&g_profiler, "Server: peer change handling");
 		handlePeerChanges();
 	}
 
@@ -1208,6 +1298,7 @@ void Server::AsyncRunStep()
 		// Step environment
 		// This also runs Map's timers
 		JMutexAutoLock lock(m_env_mutex);
+		ScopeProfiler sp(&g_profiler, "Server: environment step");
 		m_env.step(dtime);
 	}
 	
@@ -1224,7 +1315,9 @@ void Server::AsyncRunStep()
 		m_liquid_transform_timer -= 1.00;
 		
 		JMutexAutoLock lock(m_env_mutex);
-		
+
+		ScopeProfiler sp(&g_profiler, "Server: liquid transform");
+
 		core::map<v3s16, MapBlock*> modified_blocks;
 		m_env.getMap().transformLiquids(modified_blocks);
 #if 0		
@@ -1297,10 +1390,11 @@ void Server::AsyncRunStep()
 	*/
 	{
 		//dstream<<"Server: Checking added and deleted active objects"<<std::endl;
-
 		JMutexAutoLock envlock(m_env_mutex);
 		JMutexAutoLock conlock(m_con_mutex);
-		
+
+		ScopeProfiler sp(&g_profiler, "Server: checking added and deleted objects");
+
 		// Radius inside which objects are active
 		s16 radius = 32;
 
@@ -1312,8 +1406,10 @@ void Server::AsyncRunStep()
 			Player *player = m_env.getPlayer(client->peer_id);
 			if(player==NULL)
 			{
-				dstream<<"WARNING: "<<__FUNCTION_NAME<<": Client "<<client->peer_id
-						<<" has no associated player"<<std::endl;
+				// This can happen if the client timeouts somehow
+				/*dstream<<"WARNING: "<<__FUNCTION_NAME<<": Client "
+						<<client->peer_id
+						<<" has no associated player"<<std::endl;*/
 				continue;
 			}
 			v3s16 pos = floatToInt(player->getPosition(), BS);
@@ -1445,6 +1541,8 @@ void Server::AsyncRunStep()
 		JMutexAutoLock envlock(m_env_mutex);
 		JMutexAutoLock conlock(m_con_mutex);
 
+		ScopeProfiler sp(&g_profiler, "Server: sending object messages");
+
 		// Key = object id
 		// Value = data sent by object
 		core::map<u16, core::list<ActiveObjectMessage>* > buffered_messages;
@@ -1557,19 +1655,33 @@ void Server::AsyncRunStep()
 		Send queued-for-sending map edit events.
 	*/
 	{
+		// Don't send too many at a time
+		u32 count = 0;
 		while(m_unsent_map_edit_queue.size() != 0)
 		{
 			MapEditEvent* event = m_unsent_map_edit_queue.pop_front();
+			
+			// Players far away from the change are stored here.
+			// Instead of sending the changes, MapBlocks are set not sent
+			// for them.
+			core::list<u16> far_players;
 
 			if(event->type == MEET_ADDNODE)
 			{
 				dstream<<"Server: MEET_ADDNODE"<<std::endl;
-				sendAddNode(event->p, event->n, event->already_known_by_peer);
+				sendAddNode(event->p, event->n, event->already_known_by_peer,
+						&far_players, 30);
 			}
 			else if(event->type == MEET_REMOVENODE)
 			{
 				dstream<<"Server: MEET_REMOVENODE"<<std::endl;
-				sendRemoveNode(event->p, event->already_known_by_peer);
+				sendRemoveNode(event->p, event->already_known_by_peer,
+						&far_players, 30);
+			}
+			else if(event->type == MEET_BLOCK_NODE_METADATA_CHANGED)
+			{
+				dstream<<"Server: MEET_BLOCK_NODE_METADATA_CHANGED"<<std::endl;
+				setBlockNotSent(event->p);
 			}
 			else if(event->type == MEET_OTHER)
 			{
@@ -1581,8 +1693,35 @@ void Server::AsyncRunStep()
 				dstream<<"WARNING: Server: Unknown MapEditEvent "
 						<<((u32)event->type)<<std::endl;
 			}
+			
+			/*
+				Set blocks not sent to far players
+			*/
+			core::map<v3s16, MapBlock*> modified_blocks2;
+			for(core::map<v3s16, bool>::Iterator
+					i = event->modified_blocks.getIterator();
+					i.atEnd()==false; i++)
+			{
+				v3s16 p = i.getNode()->getKey();
+				modified_blocks2.insert(p, m_env.getMap().getBlockNoCreateNoEx(p));
+			}
+			for(core::list<u16>::Iterator
+					i = far_players.begin();
+					i != far_players.end(); i++)
+			{
+				u16 peer_id = *i;
+				RemoteClient *client = getClient(peer_id);
+				if(client==NULL)
+					continue;
+				client->SetBlocksNotSent(modified_blocks2);
+			}
 
 			delete event;
+
+			// Don't send too many at a time
+			count++;
+			if(count >= 1 && m_unsent_map_edit_queue.size() < 100)
+				break;
 		}
 	}
 
@@ -1597,6 +1736,9 @@ void Server::AsyncRunStep()
 		{
 			JMutexAutoLock lock1(m_env_mutex);
 			JMutexAutoLock lock2(m_con_mutex);
+
+			ScopeProfiler sp(&g_profiler, "Server: sending mbo positions");
+
 			SendObjectData(counter);
 
 			counter = 0.0;
@@ -1605,15 +1747,20 @@ void Server::AsyncRunStep()
 	
 	/*
 		Step node metadata
+		TODO: Move to ServerEnvironment and utilize active block stuff
 	*/
-	{
+	/*{
 		//TimeTaker timer("Step node metadata");
 
 		JMutexAutoLock envlock(m_env_mutex);
 		JMutexAutoLock conlock(m_con_mutex);
-		
+
+		ScopeProfiler sp(&g_profiler, "Server: stepping node metadata");
+
 		core::map<v3s16, MapBlock*> changed_blocks;
 		m_env.getMap().nodeMetadataStep(dtime, changed_blocks);
+		
+		// Use setBlockNotSent
 
 		for(core::map<v3s16, MapBlock*>::Iterator
 				i = changed_blocks.getIterator();
@@ -1629,7 +1776,7 @@ void Server::AsyncRunStep()
 				client->SetBlockNotSent(block->getPos());
 			}
 		}
-	}
+	}*/
 		
 	/*
 		Trigger emergethread (it somehow gets to a non-triggered but
@@ -1646,7 +1793,7 @@ void Server::AsyncRunStep()
 		}
 	}
 
-	// Save map
+	// Save map, players and auth stuff
 	{
 		float &counter = m_savemap_timer;
 		counter += dtime;
@@ -1654,15 +1801,21 @@ void Server::AsyncRunStep()
 		{
 			counter = 0.0;
 
-			JMutexAutoLock lock(m_env_mutex);
+			ScopeProfiler sp(&g_profiler, "Server: saving stuff");
 
+			// Auth stuff
+			if(m_authmanager.isModified())
+				m_authmanager.save();
+			
+			// Map
+			JMutexAutoLock lock(m_env_mutex);
 			if(((ServerMap*)(&m_env.getMap()))->isSavingEnabled() == true)
 			{
 				// Save only changed parts
 				m_env.getMap().save(true);
 
 				// Delete unused sectors
-				u32 deleted_count = m_env.getMap().deleteUnusedSectors(
+				u32 deleted_count = m_env.getMap().unloadUnusedData(
 						g_settings.getFloat("server_unload_unused_sectors_timeout"));
 				if(deleted_count > 0)
 				{
@@ -1795,7 +1948,23 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 			playername[i] = data[3+i];
 		}
 		playername[PLAYERNAME_SIZE-1] = 0;
-	
+		
+		if(playername[0]=='\0')
+		{
+			derr_server<<DTIME<<"Server: Player has empty name"<<std::endl;
+			SendAccessDenied(m_con, peer_id,
+					L"Empty name");
+			return;
+		}
+
+		if(string_allowed(playername, PLAYERNAME_ALLOWED_CHARS)==false)
+		{
+			derr_server<<DTIME<<"Server: Player has invalid name"<<std::endl;
+			SendAccessDenied(m_con, peer_id,
+					L"Name contains unallowed characters");
+			return;
+		}
+
 		// Get password
 		char password[PASSWORD_SIZE];
 		if(datasize == 2+1+PLAYERNAME_SIZE)
@@ -1811,14 +1980,36 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 				}
 				password[PASSWORD_SIZE-1] = 0;
 		}
-		Player *checkplayer = m_env.getPlayer(playername);
-		if(checkplayer != NULL && strcmp(checkplayer->getPassword(),password))
+		
+		std::string checkpwd;
+		if(m_authmanager.exists(playername))
+		{
+			checkpwd = m_authmanager.getPassword(playername);
+		}
+		else
+		{
+			checkpwd = g_settings.get("default_password");
+		}
+		
+		if(password != checkpwd && checkpwd != "")
 		{
 			derr_server<<DTIME<<"Server: peer_id="<<peer_id
 					<<": supplied invalid password for "
 					<<playername<<std::endl;
-			SendAccessDenied(m_con, peer_id);
+			SendAccessDenied(m_con, peer_id, L"Invalid password");
 			return;
+		}
+		
+		// Add player to auth manager
+		if(m_authmanager.exists(playername) == false)
+		{
+			derr_server<<DTIME<<"Server: adding player "<<playername
+					<<" to auth manager"<<std::endl;
+			m_authmanager.add(playername);
+			m_authmanager.setPassword(playername, checkpwd);
+			m_authmanager.setPrivs(playername,
+					stringToPrivs(g_settings.get("default_privs")));
+			m_authmanager.save();
 		}
 
 		// Get player
@@ -1877,8 +2068,7 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 			writeU16(&reply[0], TOCLIENT_INIT);
 			writeU8(&reply[2], deployed);
 			writeV3S16(&reply[2+1], floatToInt(player->getPosition()+v3f(0,BS/2,0), BS));
-			//writeU64(&reply[2+1+6], m_env.getServerMap().getSeed());
-			writeU64(&reply[2+1+6], 0); // no seed
+			writeU64(&reply[2+1+6], m_env.getServerMap().getSeed());
 			
 			// Send as reliable
 			m_con.Send(peer_id, 0, reply, true);
@@ -2041,7 +2231,7 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 		if(datasize < 13)
 			return;
 
-		if((player->privs & PRIV_BUILD) == 0)
+		if((getPlayerPrivs(player) & PRIV_BUILD) == 0)
 			return;
 
 		/*
@@ -2125,7 +2315,7 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 		if(datasize < 7)
 			return;
 
-		if((player->privs & PRIV_BUILD) == 0)
+		if((getPlayerPrivs(player) & PRIV_BUILD) == 0)
 			return;
 
 		/*
@@ -2326,8 +2516,13 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 			}
 
 			// Make sure the player is allowed to do it
-			if((player->privs & PRIV_BUILD) == 0)
+			if((getPlayerPrivs(player) & PRIV_BUILD) == 0)
+			{
+				dstream<<"Player "<<player->getName()<<" cannot remove node"
+						<<" because privileges are "<<getPlayerPrivs(player)
+						<<std::endl;
 				cannot_remove_node = true;
+			}
 
 			/*
 				If node can't be removed, set block to be re-sent to
@@ -2351,12 +2546,12 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 			}
 			
 			/*
-				Send the removal to all other clients.
+				Send the removal to all close-by players.
 				- If other player is close, send REMOVENODE
 				- Otherwise set blocks not sent
 			*/
 			core::list<u16> far_players;
-			sendRemoveNode(p_under, peer_id, &far_players, 100);
+			sendRemoveNode(p_under, peer_id, &far_players, 30);
 			
 			/*
 				Update and send inventory
@@ -2431,10 +2626,11 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 				Remove the node
 				(this takes some time so it is done after the quick stuff)
 			*/
-			m_ignore_map_edit_events = true;
-			m_env.getMap().removeNodeAndUpdate(p_under, modified_blocks);
-			m_ignore_map_edit_events = false;
-			
+			{
+				MapEditEventIgnorer ign(&m_ignore_map_edit_events);
+
+				m_env.getMap().removeNodeAndUpdate(p_under, modified_blocks);
+			}
 			/*
 				Set blocks not sent to far players
 			*/
@@ -2475,8 +2671,15 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 				try{
 					// Don't add a node if this is not a free space
 					MapNode n2 = m_env.getMap().getNode(p_over);
+					bool no_enough_privs =
+							((getPlayerPrivs(player) & PRIV_BUILD)==0);
+					if(no_enough_privs)
+						dstream<<"Player "<<player->getName()<<" cannot add node"
+							<<" because privileges are "<<getPlayerPrivs(player)
+							<<std::endl;
+
 					if(content_buildable_to(n2.d) == false
-						|| (player->privs & PRIV_BUILD) ==0)
+						|| no_enough_privs)
 					{
 						// Client probably has wrong data.
 						// Set block not sent, so that client will get
@@ -2511,10 +2714,10 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 					n.dir = packDir(p_under - p_over);
 				
 				/*
-					Send to all players
+					Send to all close-by players
 				*/
 				core::list<u16> far_players;
-				sendAddNode(p_over, n, 0, &far_players, 100);
+				sendAddNode(p_over, n, 0, &far_players, 30);
 				
 				/*
 					Handle inventory
@@ -2538,10 +2741,11 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 					This takes some time so it is done after the quick stuff
 				*/
 				core::map<v3s16, MapBlock*> modified_blocks;
-				m_ignore_map_edit_events = true;
-				m_env.getMap().addNodeAndUpdate(p_over, n, modified_blocks);
-				m_ignore_map_edit_events = false;
-				
+				{
+					MapEditEventIgnorer ign(&m_ignore_map_edit_events);
+
+					m_env.getMap().addNodeAndUpdate(p_over, n, modified_blocks);
+				}
 				/*
 					Set blocks not sent to far players
 				*/
@@ -2673,7 +2877,7 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 #endif
 	else if(command == TOSERVER_SIGNTEXT)
 	{
-		if((player->privs & PRIV_BUILD) == 0)
+		if((getPlayerPrivs(player) & PRIV_BUILD) == 0)
 			return;
 		/*
 			u16 command
@@ -2732,7 +2936,7 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 	}
 	else if(command == TOSERVER_SIGNNODETEXT)
 	{
-		if((player->privs & PRIV_BUILD) == 0)
+		if((getPlayerPrivs(player) & PRIV_BUILD) == 0)
 			return;
 		/*
 			u16 command
@@ -2910,9 +3114,7 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 		
 		// Local player gets all privileges regardless of
 		// what's set on their account.
-		u64 privs = player->privs;
-		if(g_settings.get("name") == player->getName())
-			privs = PRIV_ALL;
+		u64 privs = getPlayerPrivs(player);
 
 		// Parse commands
 		std::wstring commandprefix = L"/#";
@@ -3020,19 +3222,51 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 
 		if(datasize != 2+PASSWORD_SIZE*2)
 			return;
-		char password[PASSWORD_SIZE];
+		/*char password[PASSWORD_SIZE];
 		for(u32 i=0; i<PASSWORD_SIZE-1; i++)
 			password[i] = data[2+i];
-		password[PASSWORD_SIZE-1] = 0;
-		if(strcmp(player->getPassword(),password))
+		password[PASSWORD_SIZE-1] = 0;*/
+		std::string oldpwd;
+		for(u32 i=0; i<PASSWORD_SIZE-1; i++)
 		{
+			char c = data[2+i];
+			if(c == 0)
+				break;
+			oldpwd += c;
+		}
+		std::string newpwd;
+		for(u32 i=0; i<PASSWORD_SIZE-1; i++)
+		{
+			char c = data[2+PASSWORD_SIZE+i];
+			if(c == 0)
+				break;
+			newpwd += c;
+		}
+
+		std::string playername = player->getName();
+
+		if(m_authmanager.exists(playername) == false)
+		{
+			dstream<<"Server: playername not found in authmanager"<<std::endl;
+			// Wrong old password supplied!!
+			SendChatMessage(peer_id, L"playername not found in authmanager");
+			return;
+		}
+
+		std::string checkpwd = m_authmanager.getPassword(playername);
+		
+		if(oldpwd != checkpwd)
+		{
+			dstream<<"Server: invalid old password"<<std::endl;
 			// Wrong old password supplied!!
 			SendChatMessage(peer_id, L"Invalid old password supplied. Password NOT changed.");
 			return;
 		}
-		for(u32 i=0; i<PASSWORD_SIZE-1; i++)
-			password[i] = data[30+i];
-		player->updatePassword(password);
+
+		m_authmanager.setPassword(playername, newpwd);
+		
+		dstream<<"Server: password change successful for "<<playername
+				<<std::endl;
 		SendChatMessage(peer_id, L"Password change successful");
 	}
 	else
@@ -3215,12 +3449,14 @@ void Server::SendHP(con::Connection &con, u16 peer_id, u8 hp)
 	con.Send(peer_id, 0, data, true);
 }
 
-void Server::SendAccessDenied(con::Connection &con, u16 peer_id)
+void Server::SendAccessDenied(con::Connection &con, u16 peer_id,
+		const std::wstring &reason)
 {
 	DSTACK(__FUNCTION_NAME);
 	std::ostringstream os(std::ios_base::binary);
 
 	writeU16(os, TOCLIENT_ACCESS_DENIED);
+	os<<serializeWideString(reason);
 
 	// Make data buffer
 	std::string s = os.str();
@@ -3495,6 +3731,17 @@ void Server::sendAddNode(v3s16 p, MapNode n, u16 ignore_id,
 	}
 }
 
+void Server::setBlockNotSent(v3s16 p)
+{
+	for(core::map<u16, RemoteClient*>::Iterator
+		i = m_clients.getIterator();
+		i.atEnd()==false; i++)
+	{
+		RemoteClient *client = i.getNode()->getValue();
+		client->SetBlockNotSent(p);
+	}
+}
+
 void Server::SendBlockNoLock(u16 peer_id, MapBlock *block, u8 ver)
 {
 	DSTACK(__FUNCTION_NAME);
@@ -3560,20 +3807,24 @@ void Server::SendBlocks(float dtime)
 	core::array<PrioritySortedBlockTransfer> queue;
 
 	s32 total_sending = 0;
-
-	for(core::map<u16, RemoteClient*>::Iterator
-		i = m_clients.getIterator();
-		i.atEnd() == false; i++)
+	
 	{
-		RemoteClient *client = i.getNode()->getValue();
-		assert(client->peer_id == i.getNode()->getKey());
+		ScopeProfiler sp(&g_profiler, "Server: selecting blocks for sending");
 
-		total_sending += client->SendingCount();
-		
-		if(client->serialization_version == SER_FMT_VER_INVALID)
-			continue;
-		
-		client->GetNextBlocks(this, dtime, queue);
+		for(core::map<u16, RemoteClient*>::Iterator
+			i = m_clients.getIterator();
+			i.atEnd() == false; i++)
+		{
+			RemoteClient *client = i.getNode()->getValue();
+			assert(client->peer_id == i.getNode()->getKey());
+
+			total_sending += client->SendingCount();
+			
+			if(client->serialization_version == SER_FMT_VER_INVALID)
+				continue;
+			
+			client->GetNextBlocks(this, dtime, queue);
+		}
 	}
 
 	// Sort.
@@ -3644,447 +3895,10 @@ void Server::UpdateCrafting(u16 peer_id)
 				items[i] = clist->getItem(i);
 			}
 			
-			bool found = false;
-
-			// Wood
-			if(!found)
-			{
-				ItemSpec specs[9];
-				specs[0] = ItemSpec(ITEM_MATERIAL, CONTENT_TREE);
-				if(checkItemCombination(items, specs))
-				{
-					rlist->addItem(new MaterialItem(CONTENT_WOOD, 4));
-					found = true;
-				}
-			}
-
-			// Stick
-			if(!found)
-			{
-				ItemSpec specs[9];
-				specs[0] = ItemSpec(ITEM_MATERIAL, CONTENT_WOOD);
-				if(checkItemCombination(items, specs))
-				{
-					rlist->addItem(new CraftItem("Stick", 4));
-					found = true;
-				}
-			}
-
-			// Fence
-			if(!found)
-			{
-				ItemSpec specs[9];
-				specs[3] = ItemSpec(ITEM_CRAFT, "Stick");
-				specs[4] = ItemSpec(ITEM_CRAFT, "Stick");
-				specs[5] = ItemSpec(ITEM_CRAFT, "Stick");
-				specs[6] = ItemSpec(ITEM_CRAFT, "Stick");
-				specs[7] = ItemSpec(ITEM_CRAFT, "Stick");
-				specs[8] = ItemSpec(ITEM_CRAFT, "Stick");
-				if(checkItemCombination(items, specs))
-				{
-					rlist->addItem(new MaterialItem(CONTENT_FENCE, 2));
-					found = true;
-				}
-			}
-
-			// Sign
-			if(!found)
-			{
-				ItemSpec specs[9];
-				specs[0] = ItemSpec(ITEM_MATERIAL, CONTENT_WOOD);
-				specs[1] = ItemSpec(ITEM_MATERIAL, CONTENT_WOOD);
-				specs[2] = ItemSpec(ITEM_MATERIAL, CONTENT_WOOD);
-				specs[3] = ItemSpec(ITEM_MATERIAL, CONTENT_WOOD);
-				specs[4] = ItemSpec(ITEM_MATERIAL, CONTENT_WOOD);
-				specs[5] = ItemSpec(ITEM_MATERIAL, CONTENT_WOOD);
-				specs[7] = ItemSpec(ITEM_CRAFT, "Stick");
-				if(checkItemCombination(items, specs))
-				{
-					//rlist->addItem(new MapBlockObjectItem("Sign"));
-					rlist->addItem(new MaterialItem(CONTENT_SIGN_WALL, 1));
-					found = true;
-				}
-			}
-
-			// Torch
-			if(!found)
-			{
-				ItemSpec specs[9];
-				specs[0] = ItemSpec(ITEM_CRAFT, "lump_of_coal");
-				specs[3] = ItemSpec(ITEM_CRAFT, "Stick");
-				if(checkItemCombination(items, specs))
-				{
-					rlist->addItem(new MaterialItem(CONTENT_TORCH, 4));
-					found = true;
-				}
-			}
-
-			// Wooden pick
-			if(!found)
-			{
-				ItemSpec specs[9];
-				specs[0] = ItemSpec(ITEM_MATERIAL, CONTENT_WOOD);
-				specs[1] = ItemSpec(ITEM_MATERIAL, CONTENT_WOOD);
-				specs[2] = ItemSpec(ITEM_MATERIAL, CONTENT_WOOD);
-				specs[4] = ItemSpec(ITEM_CRAFT, "Stick");
-				specs[7] = ItemSpec(ITEM_CRAFT, "Stick");
-				if(checkItemCombination(items, specs))
-				{
-					rlist->addItem(new ToolItem("WPick", 0));
-					found = true;
-				}
-			}
-
-			// Stone pick
-			if(!found)
-			{
-				ItemSpec specs[9];
-				specs[0] = ItemSpec(ITEM_MATERIAL, CONTENT_COBBLE);
-				specs[1] = ItemSpec(ITEM_MATERIAL, CONTENT_COBBLE);
-				specs[2] = ItemSpec(ITEM_MATERIAL, CONTENT_COBBLE);
-				specs[4] = ItemSpec(ITEM_CRAFT, "Stick");
-				specs[7] = ItemSpec(ITEM_CRAFT, "Stick");
-				if(checkItemCombination(items, specs))
-				{
-					rlist->addItem(new ToolItem("STPick", 0));
-					found = true;
-				}
-			}
-
-			// Steel pick
-			if(!found)
-			{
-				ItemSpec specs[9];
-				specs[0] = ItemSpec(ITEM_CRAFT, "steel_ingot");
-				specs[1] = ItemSpec(ITEM_CRAFT, "steel_ingot");
-				specs[2] = ItemSpec(ITEM_CRAFT, "steel_ingot");
-				specs[4] = ItemSpec(ITEM_CRAFT, "Stick");
-				specs[7] = ItemSpec(ITEM_CRAFT, "Stick");
-				if(checkItemCombination(items, specs))
-				{
-					rlist->addItem(new ToolItem("SteelPick", 0));
-					found = true;
-				}
-			}
-
-			// Mese pick
-			if(!found)
-			{
-				ItemSpec specs[9];
-				specs[0] = ItemSpec(ITEM_MATERIAL, CONTENT_MESE);
-				specs[1] = ItemSpec(ITEM_MATERIAL, CONTENT_MESE);
-				specs[2] = ItemSpec(ITEM_MATERIAL, CONTENT_MESE);
-				specs[4] = ItemSpec(ITEM_CRAFT, "Stick");
-				specs[7] = ItemSpec(ITEM_CRAFT, "Stick");
-				if(checkItemCombination(items, specs))
-				{
-					rlist->addItem(new ToolItem("MesePick", 0));
-					found = true;
-				}
-			}
-
-			// Wooden shovel
-			if(!found)
-			{
-				ItemSpec specs[9];
-				specs[1] = ItemSpec(ITEM_MATERIAL, CONTENT_WOOD);
-				specs[4] = ItemSpec(ITEM_CRAFT, "Stick");
-				specs[7] = ItemSpec(ITEM_CRAFT, "Stick");
-				if(checkItemCombination(items, specs))
-				{
-					rlist->addItem(new ToolItem("WShovel", 0));
-					found = true;
-				}
-			}
-
-			// Stone shovel
-			if(!found)
-			{
-				ItemSpec specs[9];
-				specs[1] = ItemSpec(ITEM_MATERIAL, CONTENT_COBBLE);
-				specs[4] = ItemSpec(ITEM_CRAFT, "Stick");
-				specs[7] = ItemSpec(ITEM_CRAFT, "Stick");
-				if(checkItemCombination(items, specs))
-				{
-					rlist->addItem(new ToolItem("STShovel", 0));
-					found = true;
-				}
-			}
-
-			// Steel shovel
-			if(!found)
-			{
-				ItemSpec specs[9];
-				specs[1] = ItemSpec(ITEM_CRAFT, "steel_ingot");
-				specs[4] = ItemSpec(ITEM_CRAFT, "Stick");
-				specs[7] = ItemSpec(ITEM_CRAFT, "Stick");
-				if(checkItemCombination(items, specs))
-				{
-					rlist->addItem(new ToolItem("SteelShovel", 0));
-					found = true;
-				}
-			}
-
-			// Wooden axe
-			if(!found)
-			{
-				ItemSpec specs[9];
-				specs[0] = ItemSpec(ITEM_MATERIAL, CONTENT_WOOD);
-				specs[1] = ItemSpec(ITEM_MATERIAL, CONTENT_WOOD);
-				specs[3] = ItemSpec(ITEM_MATERIAL, CONTENT_WOOD);
-				specs[4] = ItemSpec(ITEM_CRAFT, "Stick");
-				specs[7] = ItemSpec(ITEM_CRAFT, "Stick");
-				if(checkItemCombination(items, specs))
-				{
-					rlist->addItem(new ToolItem("WAxe", 0));
-					found = true;
-				}
-			}
-
-			// Stone axe
-			if(!found)
-			{
-				ItemSpec specs[9];
-				specs[0] = ItemSpec(ITEM_MATERIAL, CONTENT_COBBLE);
-				specs[1] = ItemSpec(ITEM_MATERIAL, CONTENT_COBBLE);
-				specs[3] = ItemSpec(ITEM_MATERIAL, CONTENT_COBBLE);
-				specs[4] = ItemSpec(ITEM_CRAFT, "Stick");
-				specs[7] = ItemSpec(ITEM_CRAFT, "Stick");
-				if(checkItemCombination(items, specs))
-				{
-					rlist->addItem(new ToolItem("STAxe", 0));
-					found = true;
-				}
-			}
-
-			// Steel axe
-			if(!found)
-			{
-				ItemSpec specs[9];
-				specs[0] = ItemSpec(ITEM_CRAFT, "steel_ingot");
-				specs[1] = ItemSpec(ITEM_CRAFT, "steel_ingot");
-				specs[3] = ItemSpec(ITEM_CRAFT, "steel_ingot");
-				specs[4] = ItemSpec(ITEM_CRAFT, "Stick");
-				specs[7] = ItemSpec(ITEM_CRAFT, "Stick");
-				if(checkItemCombination(items, specs))
-				{
-					rlist->addItem(new ToolItem("SteelAxe", 0));
-					found = true;
-				}
-			}
-
-			// Wooden sword
-			if(!found)
-			{
-				ItemSpec specs[9];
-				specs[1] = ItemSpec(ITEM_MATERIAL, CONTENT_WOOD);
-				specs[4] = ItemSpec(ITEM_MATERIAL, CONTENT_WOOD);
-				specs[7] = ItemSpec(ITEM_CRAFT, "Stick");
-				if(checkItemCombination(items, specs))
-				{
-					rlist->addItem(new ToolItem("WSword", 0));
-					found = true;
-				}
-			}
-
-			// Stone sword
-			if(!found)
-			{
-				ItemSpec specs[9];
-				specs[1] = ItemSpec(ITEM_MATERIAL, CONTENT_COBBLE);
-				specs[4] = ItemSpec(ITEM_MATERIAL, CONTENT_COBBLE);
-				specs[7] = ItemSpec(ITEM_CRAFT, "Stick");
-				if(checkItemCombination(items, specs))
-				{
-					rlist->addItem(new ToolItem("STSword", 0));
-					found = true;
-				}
-			}
-
-			// Steel sword
-			if(!found)
-			{
-				ItemSpec specs[9];
-				specs[1] = ItemSpec(ITEM_CRAFT, "steel_ingot");
-				specs[4] = ItemSpec(ITEM_CRAFT, "steel_ingot");
-				specs[7] = ItemSpec(ITEM_CRAFT, "Stick");
-				if(checkItemCombination(items, specs))
-				{
-					rlist->addItem(new ToolItem("SteelSword", 0));
-					found = true;
-				}
-			}
-
-			// Rail
-			if(!found)
-			{
-				ItemSpec specs[9];
-				specs[0] = ItemSpec(ITEM_CRAFT, "steel_ingot");
-				specs[1] = ItemSpec(ITEM_CRAFT, "Stick");
-				specs[2] = ItemSpec(ITEM_CRAFT, "steel_ingot");
-				specs[3] = ItemSpec(ITEM_CRAFT, "steel_ingot");
-				specs[4] = ItemSpec(ITEM_CRAFT, "Stick");
-				specs[5] = ItemSpec(ITEM_CRAFT, "steel_ingot");
-				specs[6] = ItemSpec(ITEM_CRAFT, "steel_ingot");
-				specs[7] = ItemSpec(ITEM_CRAFT, "Stick");
-				specs[8] = ItemSpec(ITEM_CRAFT, "steel_ingot");
-				if(checkItemCombination(items, specs))
-				{
-					rlist->addItem(new MaterialItem(CONTENT_RAIL, 15));
-					found = true;
-				}
-			}
-
-			// Chest
-			if(!found)
-			{
-				ItemSpec specs[9];
-				specs[0] = ItemSpec(ITEM_MATERIAL, CONTENT_WOOD);
-				specs[1] = ItemSpec(ITEM_MATERIAL, CONTENT_WOOD);
-				specs[2] = ItemSpec(ITEM_MATERIAL, CONTENT_WOOD);
-				specs[3] = ItemSpec(ITEM_MATERIAL, CONTENT_WOOD);
-				specs[5] = ItemSpec(ITEM_MATERIAL, CONTENT_WOOD);
-				specs[6] = ItemSpec(ITEM_MATERIAL, CONTENT_WOOD);
-				specs[7] = ItemSpec(ITEM_MATERIAL, CONTENT_WOOD);
-				specs[8] = ItemSpec(ITEM_MATERIAL, CONTENT_WOOD);
-				if(checkItemCombination(items, specs))
-				{
-					rlist->addItem(new MaterialItem(CONTENT_CHEST, 1));
-					found = true;
-				}
-			}
-
-			// Furnace
-			if(!found)
-			{
-				ItemSpec specs[9];
-				specs[0] = ItemSpec(ITEM_MATERIAL, CONTENT_COBBLE);
-				specs[1] = ItemSpec(ITEM_MATERIAL, CONTENT_COBBLE);
-				specs[2] = ItemSpec(ITEM_MATERIAL, CONTENT_COBBLE);
-				specs[3] = ItemSpec(ITEM_MATERIAL, CONTENT_COBBLE);
-				specs[5] = ItemSpec(ITEM_MATERIAL, CONTENT_COBBLE);
-				specs[6] = ItemSpec(ITEM_MATERIAL, CONTENT_COBBLE);
-				specs[7] = ItemSpec(ITEM_MATERIAL, CONTENT_COBBLE);
-				specs[8] = ItemSpec(ITEM_MATERIAL, CONTENT_COBBLE);
-				if(checkItemCombination(items, specs))
-				{
-					rlist->addItem(new MaterialItem(CONTENT_FURNACE, 1));
-					found = true;
-				}
-			}
-
-			// Steel block
-			if(!found)
-			{
-				ItemSpec specs[9];
-				specs[0] = ItemSpec(ITEM_CRAFT, "steel_ingot");
-				specs[1] = ItemSpec(ITEM_CRAFT, "steel_ingot");
-				specs[2] = ItemSpec(ITEM_CRAFT, "steel_ingot");
-				specs[3] = ItemSpec(ITEM_CRAFT, "steel_ingot");
-				specs[4] = ItemSpec(ITEM_CRAFT, "steel_ingot");
-				specs[5] = ItemSpec(ITEM_CRAFT, "steel_ingot");
-				specs[6] = ItemSpec(ITEM_CRAFT, "steel_ingot");
-				specs[7] = ItemSpec(ITEM_CRAFT, "steel_ingot");
-				specs[8] = ItemSpec(ITEM_CRAFT, "steel_ingot");
-				if(checkItemCombination(items, specs))
-				{
-					rlist->addItem(new MaterialItem(CONTENT_STEEL, 1));
-					found = true;
-				}
-			}
-
-			// Sandstone
-			if(!found)
-			{
-				ItemSpec specs[9];
-				specs[3] = ItemSpec(ITEM_MATERIAL, CONTENT_SAND);
-				specs[4] = ItemSpec(ITEM_MATERIAL, CONTENT_SAND);
-				specs[6] = ItemSpec(ITEM_MATERIAL, CONTENT_SAND);
-				specs[7] = ItemSpec(ITEM_MATERIAL, CONTENT_SAND);
-				if(checkItemCombination(items, specs))
-				{
-					rlist->addItem(new MaterialItem(CONTENT_SANDSTONE, 1));
-					found = true;
-				}
-			}
-
-			// Clay
-			if(!found)
-			{
-				ItemSpec specs[9];
-				specs[3] = ItemSpec(ITEM_CRAFT, "lump_of_clay");
-				specs[4] = ItemSpec(ITEM_CRAFT, "lump_of_clay");
-				specs[6] = ItemSpec(ITEM_CRAFT, "lump_of_clay");
-				specs[7] = ItemSpec(ITEM_CRAFT, "lump_of_clay");
-				if(checkItemCombination(items, specs))
-				{
-					rlist->addItem(new MaterialItem(CONTENT_CLAY, 1));
-					found = true;
-				}
-			}
-
-			// Brick
-			if(!found)
-			{
-				ItemSpec specs[9];
-				specs[3] = ItemSpec(ITEM_CRAFT, "clay_brick");
-				specs[4] = ItemSpec(ITEM_CRAFT, "clay_brick");
-				specs[6] = ItemSpec(ITEM_CRAFT, "clay_brick");
-				specs[7] = ItemSpec(ITEM_CRAFT, "clay_brick");
-				if(checkItemCombination(items, specs))
-				{
-					rlist->addItem(new MaterialItem(CONTENT_BRICK, 1));
-					found = true;
-				}
-			}
-
-			// Paper
-			if(!found)
-			{
-				ItemSpec specs[9];
-				specs[3] = ItemSpec(ITEM_MATERIAL, CONTENT_PAPYRUS);
-				specs[4] = ItemSpec(ITEM_MATERIAL, CONTENT_PAPYRUS);
-				specs[5] = ItemSpec(ITEM_MATERIAL, CONTENT_PAPYRUS);
-				if(checkItemCombination(items, specs))
-				{
-					rlist->addItem(new CraftItem("paper", 1));
-					found = true;
-				}
-			}
-
-			// Book
-			if(!found)
-			{
-				ItemSpec specs[9];
-				specs[1] = ItemSpec(ITEM_CRAFT, "paper");
-				specs[4] = ItemSpec(ITEM_CRAFT, "paper");
-				specs[7] = ItemSpec(ITEM_CRAFT, "paper");
-				if(checkItemCombination(items, specs))
-				{
-					rlist->addItem(new CraftItem("book", 1));
-					found = true;
-				}
-			}
-
-			// Book shelf
-			if(!found)
-			{
-				ItemSpec specs[9];
-				specs[0] = ItemSpec(ITEM_MATERIAL, CONTENT_WOOD);
-				specs[1] = ItemSpec(ITEM_MATERIAL, CONTENT_WOOD);
-				specs[2] = ItemSpec(ITEM_MATERIAL, CONTENT_WOOD);
-				specs[3] = ItemSpec(ITEM_CRAFT, "book");
-				specs[4] = ItemSpec(ITEM_CRAFT, "book");
-				specs[5] = ItemSpec(ITEM_CRAFT, "book");
-				specs[6] = ItemSpec(ITEM_MATERIAL, CONTENT_WOOD);
-				specs[7] = ItemSpec(ITEM_MATERIAL, CONTENT_WOOD);
-				specs[8] = ItemSpec(ITEM_MATERIAL, CONTENT_WOOD);
-				if(checkItemCombination(items, specs))
-				{
-					rlist->addItem(new MaterialItem(CONTENT_BOOKSHELF, 1));
-					found = true;
-				}
-			}
+			// Get result of crafting grid
+			InventoryItem *result = craft_get_result(items);
+			if(result)
+				rlist->addItem(result);
 		}
 	
 	} // if creative_mode == false
@@ -4135,111 +3949,19 @@ std::wstring Server::getStatusString()
 	return os.str();
 }
 
-
-void setCreativeInventory(Player *player)
-{
-	player->resetInventory();
-	
-	// Give some good tools
-	{
-		InventoryItem *item = new ToolItem("MesePick", 0);
-		void* r = player->inventory.addItem("main", item);
-		assert(r == NULL);
-	}
-	{
-		InventoryItem *item = new ToolItem("SteelPick", 0);
-		void* r = player->inventory.addItem("main", item);
-		assert(r == NULL);
-	}
-	{
-		InventoryItem *item = new ToolItem("SteelAxe", 0);
-		void* r = player->inventory.addItem("main", item);
-		assert(r == NULL);
-	}
-	{
-		InventoryItem *item = new ToolItem("SteelShovel", 0);
-		void* r = player->inventory.addItem("main", item);
-		assert(r == NULL);
-	}
-
-	/*
-		Give materials
-	*/
-	
-	// CONTENT_IGNORE-terminated list
-	u8 material_items[] = {
-		CONTENT_TORCH,
-		CONTENT_COBBLE,
-		CONTENT_MUD,
-		CONTENT_STONE,
-		CONTENT_SAND,
-		CONTENT_SANDSTONE,
-		CONTENT_CLAY,
-		CONTENT_BRICK,
-		CONTENT_TREE,
-		CONTENT_LEAVES,
-		CONTENT_CACTUS,
-		CONTENT_PAPYRUS,
-		CONTENT_BOOKSHELF,
-		CONTENT_GLASS,
-		CONTENT_FENCE,
-		CONTENT_RAIL,
-		CONTENT_MESE,
-		CONTENT_WATERSOURCE,
-		CONTENT_CLOUD,
-		CONTENT_CHEST,
-		CONTENT_FURNACE,
-		CONTENT_SIGN_WALL,
-		CONTENT_IGNORE
-	};
-	
-	u8 *mip = material_items;
-	for(u16 i=0; i<PLAYER_INVENTORY_SIZE; i++)
-	{
-		if(*mip == CONTENT_IGNORE)
-			break;
-
-		InventoryItem *item = new MaterialItem(*mip, 1);
-		player->inventory.addItem("main", item);
-
-		mip++;
-	}
-
-#if 0
-	assert(USEFUL_CONTENT_COUNT <= PLAYER_INVENTORY_SIZE);
-	
-	// add torch first
-	InventoryItem *item = new MaterialItem(CONTENT_TORCH, 1);
-	player->inventory.addItem("main", item);
-	
-	// Then others
-	for(u16 i=0; i<USEFUL_CONTENT_COUNT; i++)
-	{
-		// Skip some materials
-		if(i == CONTENT_WATER || i == CONTENT_TORCH
-			|| i == CONTENT_COALSTONE)
-			continue;
-
-		InventoryItem *item = new MaterialItem(i, 1);
-		player->inventory.addItem("main", item);
-	}
-#endif
-
-	/*// Sign
-	{
-		InventoryItem *item = new MapBlockObjectItem("Sign Example text");
-		void* r = player->inventory.addItem("main", item);
-		assert(r == NULL);
-	}*/
-}
-
 v3f findSpawnPos(ServerMap &map)
 {
 	//return v3f(50,50,50)*BS;
-	
+
 	v2s16 nodepos;
 	s16 groundheight = 0;
 	
+#if 0
+	nodepos = v2s16(0,0);
+	groundheight = 20;
+#endif
+
+#if 1
 	// Try to find a good place a few times
 	for(s32 i=0; i<1000; i++)
 	{
@@ -4269,6 +3991,7 @@ v3f findSpawnPos(ServerMap &map)
 		//dstream<<"Searched through "<<i<<" places."<<std::endl;
 		break;
 	}
+#endif
 	
 	// If no suitable place was not found, go above water at least.
 	if(groundheight < WATER_LEVEL)
@@ -4276,7 +3999,7 @@ v3f findSpawnPos(ServerMap &map)
 
 	return intToFloat(v3s16(
 			nodepos.X,
-			groundheight + 2,
+			groundheight + 3,
 			nodepos.Y
 			), BS);
 }
@@ -4302,7 +4025,7 @@ Player *Server::emergePlayer(const char *name, const char *password, u16 peer_id
 		// Reset inventory to creative if in creative mode
 		if(g_settings.getBool("creative_mode"))
 		{
-			setCreativeInventory(player);
+			craft_set_creative_inventory(player);
 		}
 
 		return player;
@@ -4327,10 +4050,10 @@ Player *Server::emergePlayer(const char *name, const char *password, u16 peer_id
 		//player->peer_id = PEER_ID_INEXISTENT;
 		player->peer_id = peer_id;
 		player->updateName(name);
-		player->updatePassword(password);
-
-		if(g_settings.exists("default_privs"))
-				player->privs = g_settings.getU64("default_privs");
+		m_authmanager.add(name);
+		m_authmanager.setPassword(name, password);
+		m_authmanager.setPrivs(name,
+				stringToPrivs(g_settings.get("default_privs")));
 
 		/*
 			Set player position
@@ -4355,78 +4078,11 @@ Player *Server::emergePlayer(const char *name, const char *password, u16 peer_id
 		
 		if(g_settings.getBool("creative_mode"))
 		{
-			setCreativeInventory(player);
+			craft_set_creative_inventory(player);
 		}
 		else if(g_settings.getBool("give_initial_stuff"))
 		{
-			{
-				InventoryItem *item = new ToolItem("SteelPick", 0);
-				void* r = player->inventory.addItem("main", item);
-				assert(r == NULL);
-			}
-			{
-				InventoryItem *item = new MaterialItem(CONTENT_TORCH, 99);
-				void* r = player->inventory.addItem("main", item);
-				assert(r == NULL);
-			}
-			{
-				InventoryItem *item = new ToolItem("SteelAxe", 0);
-				void* r = player->inventory.addItem("main", item);
-				assert(r == NULL);
-			}
-			{
-				InventoryItem *item = new ToolItem("SteelShovel", 0);
-				void* r = player->inventory.addItem("main", item);
-				assert(r == NULL);
-			}
-			{
-				InventoryItem *item = new MaterialItem(CONTENT_COBBLE, 99);
-				void* r = player->inventory.addItem("main", item);
-				assert(r == NULL);
-			}
-			/*{
-				InventoryItem *item = new MaterialItem(CONTENT_MESE, 6);
-				void* r = player->inventory.addItem("main", item);
-				assert(r == NULL);
-			}
-			{
-				InventoryItem *item = new MaterialItem(CONTENT_COALSTONE, 6);
-				void* r = player->inventory.addItem("main", item);
-				assert(r == NULL);
-			}
-			{
-				InventoryItem *item = new MaterialItem(CONTENT_WOOD, 6);
-				void* r = player->inventory.addItem("main", item);
-				assert(r == NULL);
-			}
-			{
-				InventoryItem *item = new CraftItem("Stick", 4);
-				void* r = player->inventory.addItem("main", item);
-				assert(r == NULL);
-			}
-			{
-				InventoryItem *item = new ToolItem("WPick", 32000);
-				void* r = player->inventory.addItem("main", item);
-				assert(r == NULL);
-			}
-			{
-				InventoryItem *item = new ToolItem("STPick", 32000);
-				void* r = player->inventory.addItem("main", item);
-				assert(r == NULL);
-			}*/
-			/*// and some signs
-			for(u16 i=0; i<4; i++)
-			{
-				InventoryItem *item = new MapBlockObjectItem("Sign Example text");
-				bool r = player->inventory.addItem("main", item);
-				assert(r == true);
-			}*/
-			/*// Give some other stuff
-			{
-				InventoryItem *item = new MaterialItem(CONTENT_TREE, 999);
-				bool r = player->inventory.addItem("main", item);
-				assert(r == true);
-			}*/
+			craft_give_initial_stuff(player);
 		}
 
 		return player;
@@ -4544,29 +4200,69 @@ void Server::handlePeerChanges()
 	}
 }
 
+u64 Server::getPlayerPrivs(Player *player)
+{
+	if(player==NULL)
+		return 0;
+	std::string playername = player->getName();
+	// Local player gets all privileges regardless of
+	// what's set on their account.
+	if(g_settings.get("name") == playername)
+	{
+		return PRIV_ALL;
+	}
+	else
+	{
+		return getPlayerAuthPrivs(playername);
+	}
+}
+
 void dedicated_server_loop(Server &server, bool &kill)
 {
 	DSTACK(__FUNCTION_NAME);
 	
-	std::cout<<DTIME<<std::endl;
-	std::cout<<"========================"<<std::endl;
-	std::cout<<"Running dedicated server"<<std::endl;
-	std::cout<<"========================"<<std::endl;
-	std::cout<<std::endl;
+	dstream<<DTIME<<std::endl;
+	dstream<<"========================"<<std::endl;
+	dstream<<"Running dedicated server"<<std::endl;
+	dstream<<"========================"<<std::endl;
+	dstream<<std::endl;
+
+	IntervalLimiter m_profiler_interval;
 
 	for(;;)
 	{
 		// This is kind of a hack but can be done like this
 		// because server.step() is very light
-		sleep_ms(30);
+		{
+			ScopeProfiler sp(&g_profiler, "dedicated server sleep");
+			sleep_ms(30);
+		}
 		server.step(0.030);
 
 		if(server.getShutdownRequested() || kill)
 		{
-			std::cout<<DTIME<<" dedicated_server_loop(): Quitting."<<std::endl;
+			dstream<<DTIME<<" dedicated_server_loop(): Quitting."<<std::endl;
 			break;
 		}
 
+		/*
+			Profiler
+		*/
+		float profiler_print_interval =
+				g_settings.getFloat("profiler_print_interval");
+		if(profiler_print_interval != 0)
+		{
+			if(m_profiler_interval.step(0.030, profiler_print_interval))
+			{
+				dstream<<"Profiler:"<<std::endl;
+				g_profiler.print(dstream);
+				g_profiler.clear();
+			}
+		}
+		
+		/*
+			Player info
+		*/
 		static int counter = 0;
 		counter--;
 		if(counter <= 0)
@@ -4579,10 +4275,10 @@ void dedicated_server_loop(Server &server, bool &kill)
 			u32 sum = PIChecksum(list);
 			if(sum != sum_old)
 			{
-				std::cout<<DTIME<<"Player info:"<<std::endl;
+				dstream<<DTIME<<"Player info:"<<std::endl;
 				for(i=list.begin(); i!=list.end(); i++)
 				{
-					i->PrintLine(&std::cout);
+					i->PrintLine(&dstream);
 				}
 			}
 			sum_old = sum;

@@ -1,24 +1,25 @@
 /*
- Minetest-c55
- Copyright (C) 2010-2011 celeron55, Perttu Ahola <celeron55@gmail.com>
+Minetest-c55
+Copyright (C) 2010-2011 celeron55, Perttu Ahola <celeron55@gmail.com>
 
- This program is free software; you can redistribute it and/or modify
- it under the terms of the GNU General Public License as published by
- the Free Software Foundation; either version 2 of the License, or
- (at your option) any later version.
+This program is free software; you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation; either version 2 of the License, or
+(at your option) any later version.
 
- This program is distributed in the hope that it will be useful,
- but WITHOUT ANY WARRANTY; without even the implied warranty of
- MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- GNU General Public License for more details.
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
 
- You should have received a copy of the GNU General Public License along
- with this program; if not, write to the Free Software Foundation, Inc.,
- 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
- */
+You should have received a copy of the GNU General Public License along
+with this program; if not, write to the Free Software Foundation, Inc.,
+51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+*/
 
 #include "keycode.h"
 #include "main.h" // For g_settings
+
 #define CHECKKEY(x){if(strcmp(name, #x)==0) return irr::x;}
 
 irr::EKEY_CODE keyname_to_keycode(const char *name)
@@ -209,9 +210,10 @@ std::string keycode_to_keyname(s32 keycode)
 {
 	return KeyNames[keycode];
 }
+
 /*
- Key config
- */
+	Key config
+*/
 
 // A simple cache for quicker lookup
 core::map<std::string, irr::EKEY_CODE> g_key_setting_cache;
@@ -220,7 +222,7 @@ irr::EKEY_CODE getKeySetting(const char *settingname)
 {
 	core::map<std::string, irr::EKEY_CODE>::Node *n;
 	n = g_key_setting_cache.find(settingname);
-	if (n)
+	if(n)
 		return n->getValue();
 	irr::EKEY_CODE c = keyname_to_keycode(g_settings.get(settingname).c_str());
 	g_key_setting_cache.insert(settingname, c);
@@ -231,4 +233,3 @@ void clearKeyCache()
 {
 	g_key_setting_cache.clear();
 }
-
