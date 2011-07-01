@@ -1177,7 +1177,7 @@ u16 ServerEnvironment::addActiveObjectRaw(ServerActiveObject *object,
 			block->setChangedFlag();
 	}
 	else{
-		dstream<<"WARNING: Server: Could not find a block for "
+		dstream<<"WARNING: ServerEnv: Could not find a block for "
 				<<"storing newly added static active object"<<std::endl;
 	}
 
@@ -1349,7 +1349,20 @@ void ServerEnvironment::deactivateFarObjects(bool force_delete)
 		StaticObject s_obj(obj->getType(), objectpos, staticdata);
 		// Add to the block where the object is located in
 		v3s16 blockpos = getNodeBlockPos(floatToInt(objectpos, BS));
-		MapBlock *block = m_map->getBlockNoCreateNoEx(blockpos);
+		// Get or generate the block
+		MapBlock *block = m_map->emergeBlock(blockpos);
+
+		/*MapBlock *block = m_map->getBlockNoCreateNoEx(blockpos);
+		if(block == NULL)
+		{
+			// Block not found. Is the old block still ok?
+			if(oldblock)
+				block = oldblock;
+			// Load from disk or generate
+			else
+				block = m_map->emergeBlock(blockpos);
+		}*/
+
 		if(block)
 		{
 			block->m_static_objects.insert(0, s_obj);
@@ -1357,17 +1370,9 @@ void ServerEnvironment::deactivateFarObjects(bool force_delete)
 			obj->m_static_exists = true;
 			obj->m_static_block = block->getPos();
 		}
-		// If not possible, add back to previous block
-		else if(oldblock)
-		{
-			oldblock->m_static_objects.insert(0, s_obj);
-			oldblock->setChangedFlag();
-			obj->m_static_exists = true;
-			obj->m_static_block = oldblock->getPos();
-		}
 		else{
-			dstream<<"WARNING: Server: Could not find a block for "
-					<<"storing static object"<<std::endl;
+			dstream<<"WARNING: ServerEnv: Could not find or generate "
+					<<"a block for storing static object"<<std::endl;
 			obj->m_static_exists = false;
 			continue;
 		}

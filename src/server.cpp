@@ -1739,6 +1739,7 @@ void Server::AsyncRunStep()
 			*/
 			if(far_players.size() > 0)
 			{
+				// Convert list format to that wanted by SetBlocksNotSent
 				core::map<v3s16, MapBlock*> modified_blocks2;
 				for(core::map<v3s16, bool>::Iterator
 						i = event->modified_blocks.getIterator();
@@ -1748,6 +1749,7 @@ void Server::AsyncRunStep()
 					modified_blocks2.insert(p,
 							m_env.getMap().getBlockNoCreateNoEx(p));
 				}
+				// Set blocks not sent
 				for(core::list<u16>::Iterator
 						i = far_players.begin();
 						i != far_players.end(); i++)

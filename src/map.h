@@ -57,7 +57,7 @@ enum MapEditEventType{
 	// Node metadata of block changed (not knowing which node exactly)
 	// p stores block coordinate
 	MEET_BLOCK_NODE_METADATA_CHANGED,
-	// Anything else
+	// Anything else (modified_blocks are set unsent)
 	MEET_OTHER
 };
 
@@ -338,24 +338,13 @@ public:
 	*/
 	MapBlock * createBlock(v3s16 p);
 
-#if 0
 	/*
-		NOTE: This comment might be outdated
-		
 		Forcefully get a block from somewhere.
-
-		InvalidPositionException possible if only_from_disk==true
-		
-		Parameters:
-		changed_blocks: Blocks that have been modified
+		- Memory
+		- Load from disk
+		- Generate
 	*/
-	MapBlock * emergeBlock(
-			v3s16 p,
-			bool only_from_disk,
-			core::map<v3s16, MapBlock*> &changed_blocks,
-			core::map<v3s16, MapBlock*> &lighting_invalidated_blocks
-	);
-#endif
+	MapBlock * emergeBlock(v3s16 p, bool allow_generate=true);
 	
 	// Helper for placing objects on ground level
 	s16 findGroundLevel(v2s16 p2d);

@@ -126,6 +126,16 @@ SUGG: Erosion simulation at map generation time
 	- Simulate rock falling from cliffs when water has removed
 	  enough solid rock from the bottom
 
+SUGG: For non-mapgen FarMesh: Add a per-sector database to store surface
+      stuff as simple flags/values
+      - Light?
+	  - A building?
+	  And at some point make the server send this data to the client too,
+	  instead of referring to the noise functions
+	  - Ground height
+	  - Surface ground type
+	  - Trees?
+
 Gaming ideas:
 -------------
 
@@ -199,12 +209,13 @@ SUGG: Make fetching sector's blocks more efficient when rendering
       sectors that have very large amounts of blocks (on client)
 	  - Is this necessary at all?
 
-TODO: Flowing water animation
-
 SUGG: Draw cubes in inventory directly with 3D drawing commands, so that
       animating them is easier.
 
 SUGG: Option for enabling proper alpha channel for textures
+
+TODO: Flowing water animation
+
 TODO: A setting for enabling bilinear filtering for textures
 
 TODO: Better control of draw_control.wanted_max_blocks
@@ -320,15 +331,6 @@ TODO: Think about using same bits for material for fences and doors, for
 	  example
 TODO: Move mineral to param2, increment map serialization version, add
       conversion
-
-TODO: Add a per-sector database to store surface stuff as simple flags/values
-      - Light?
-	  - A building?
-	  And at some point make the server send this data to the client too,
-	  instead of referring to the noise functions
-	  - Ground height
-	  - Surface ground type
-	  - Trees?
 
 TODO: Restart irrlicht completely when coming back to main menu from game.
 	- This gets rid of everything that is stored in irrlicht's caches.

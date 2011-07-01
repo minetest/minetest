@@ -2442,23 +2442,51 @@ MapBlock * ServerMap::createBlock(v3s16 p)
 	return block;
 }
 
-#if 0
-MapBlock * ServerMap::emergeBlock(
-		v3s16 p,
-		bool only_from_disk,
-		core::map<v3s16, MapBlock*> &changed_blocks,
-		core::map<v3s16, MapBlock*> &lighting_invalidated_blocks
-)
+MapBlock * ServerMap::emergeBlock(v3s16 p, bool allow_generate)
 {
-	DSTACKF("%s: p=(%d,%d,%d), only_from_disk=%d",
+	DSTACKF("%s: p=(%d,%d,%d), allow_generate=%d",
 			__FUNCTION_NAME,
-			p.X, p.Y, p.Z, only_from_disk);
+			p.X, p.Y, p.Z, allow_generate);
 	
-	// This has to be redone or removed
-	assert(0);
+	{
+		MapBlock *block = getBlockNoCreateNoEx(p);
+		if(block)
+			return block;
+	}
+
+	{
+		MapBlock *block = loadBlock(p);
+		if(block)
+			return block;
+	}
+
+	if(allow_generate)
+	{
+		core::map<v3s16, MapBlock*> modified_blocks;
+		MapBlock *block = generateBlock(p, modified_blocks);
+		if(block)
+		{
+			MapEditEvent event;
+			event.type = MEET_OTHER;
+			event.p = p;
+
+			// Copy modified_blocks to event
+			for(core::map<v3s16, MapBlock*>::Iterator
+					i = modified_blocks.getIterator();
+					i.atEnd()==false; i++)
+			{
+				event.modified_blocks.insert(i.getNode()->getKey(), false);
+			}
+
+			// Queue event
+			dispatchEvent(&event);
+								
+			return block;
+		}
+	}
+
 	return NULL;
 }
-#endif
 
 #if 0
 	/*
