@@ -30,8 +30,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 ContentFeatures::~ContentFeatures()
 {
-	if(translate_to)
-		delete translate_to;
+	/*if(translate_to)
+		delete translate_to;*/
 	if(initial_metadata)
 		delete initial_metadata;
 }
@@ -239,6 +239,94 @@ u8 MapNode::getMineral()
 	}
 
 	return MINERAL_NONE;
+}
+
+u32 MapNode::serializedLength(u8 version)
+{
+	if(!ser_ver_supported(version))
+		throw VersionMismatchException("ERROR: MapNode format not supported");
+		
+	if(version == 0)
+		return 1;
+	else if(version <= 9)
+		return 2;
+	else
+		return 3;
+}
+void MapNode::serialize(u8 *dest, u8 version)
+{
+	if(!ser_ver_supported(version))
+		throw VersionMismatchException("ERROR: MapNode format not supported");
+		
+	u8 actual_d = d;
+
+	// Convert from new version to old
+	if(version <= 18)
+	{
+		// In these versions, CONTENT_IGNORE and CONTENT_AIR
+		// are 255 and 254
+		if(d == CONTENT_IGNORE)
+			d = 255;
+		else if(d == CONTENT_AIR)
+			d = 254;
+	}
+
+	if(version == 0)
+	{
+		dest[0] = actual_d;
+	}
+	else if(version <= 9)
+	{
+		dest[0] = actual_d;
+		dest[1] = param;
+	}
+	else
+	{
+		dest[0] = actual_d;
+		dest[1] = param;
+		dest[2] = param2;
+	}
+}
+void MapNode::deSerialize(u8 *source, u8 version)
+{
+	if(!ser_ver_supported(version))
+		throw VersionMismatchException("ERROR: MapNode format not supported");
+		
+	if(version == 0)
+	{
+		d = source[0];
+	}
+	else if(version == 1)
+	{
+		d = source[0];
+		// This version doesn't support saved lighting
+		if(light_propagates() || light_source() > 0)
+			param = 0;
+		else
+			param = source[1];
+	}
+	else if(version <= 9)
+	{
+		d = source[0];
+		param = source[1];
+	}
+	else
+	{
+		d = source[0];
+		param = source[1];
+		param2 = source[2];
+		
+		// Convert from old version to new
+		if(version <= 18)
+		{
+			// In these versions, CONTENT_IGNORE and CONTENT_AIR
+			// are 255 and 254
+			if(d == 255)
+				d = CONTENT_IGNORE;
+			else if(d == 254)
+				d = CONTENT_AIR;
+		}
+	}
 }
 
 /*
