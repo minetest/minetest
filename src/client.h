@@ -292,6 +292,15 @@ public:
 	{
 		return m_access_denied_reason;
 	}
+	
+	/*
+		This should only be used for calling the special drawing stuff in
+		ClientEnvironment
+	*/
+	ClientEnvironment * getEnv()
+	{
+		return &m_env;
+	}
 
 private:
 	

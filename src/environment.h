@@ -406,6 +406,9 @@ public:
 	
 	// Get event from queue. CEE_NONE is returned if queue is empty.
 	ClientEnvEvent getClientEvent();
+
+	// Post effects
+	void drawPostFx(video::IVideoDriver* driver, v3f camera_pos);
 	
 private:
 	ClientMap *m_map;

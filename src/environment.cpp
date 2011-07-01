@@ -1865,6 +1865,22 @@ ClientEnvEvent ClientEnvironment::getClientEvent()
 	return m_client_event_queue.pop_front();
 }
 
+void ClientEnvironment::drawPostFx(video::IVideoDriver* driver, v3f camera_pos)
+{
+	/*LocalPlayer *player = getLocalPlayer();
+	assert(player);
+	v3f pos_f = player->getPosition() + v3f(0,BS*1.625,0);*/
+	v3f pos_f = camera_pos;
+	v3s16 p_nodes = floatToInt(pos_f, BS);
+	MapNode n = m_map->getNodeNoEx(p_nodes);
+	if(n.d == CONTENT_WATER || n.d == CONTENT_WATERSOURCE)
+	{
+		v2u32 ss = driver->getScreenSize();
+		core::rect<s32> rect(0,0, ss.X, ss.Y);
+		driver->draw2DRectangle(video::SColor(64, 100, 100, 200), rect);
+	}
+}
+
 #endif // #ifndef SERVER
 
 

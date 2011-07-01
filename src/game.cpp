@@ -2241,6 +2241,13 @@ void the_game(
 					core::rect<s32>(0,0,screensize.X,screensize.Y),
 					NULL);
 		}
+
+		/*
+			Environment post fx
+		*/
+		{
+			client.getEnv()->drawPostFx(driver, camera_position);
+		}
 		
 		/*
 			End scene
