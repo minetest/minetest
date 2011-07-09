@@ -27,3 +27,6 @@ Alternate graphics:
 Building on GNU/Linux or OS X:
     cmake . -DRUN_IN_PLACE=1
     make -j2
+
+The “upstream” branch contains vanilla minetest-c55, created using:
+    hg-fast-export -r ~/share/src/games/minetest -o upstream
