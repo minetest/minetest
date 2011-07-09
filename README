@@ -30,3 +30,4 @@ Building on GNU/Linux or OS X:
 
 The “upstream” branch contains vanilla minetest-c55, created using:
     hg-fast-export -r ~/share/src/games/minetest -o upstream
+    git push origin upstream/master:upstream -f
