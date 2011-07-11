@@ -1874,15 +1874,9 @@ void the_game(
 		*/
 		if(farmesh)
 		{
-			farmesh_range = draw_control.wanted_range * 10;
-			if(draw_control.range_all && farmesh_range < 500)
-				farmesh_range = 500;
-			if(farmesh_range > 1000)
-				farmesh_range = 1000;
-
 			farmesh->step(dtime);
 			farmesh->update(v2f(player_position.X, player_position.Z),
-					0.05+brightness*0.95, farmesh_range);
+					0.05+brightness*0.95);
 		}
 		
 		// Store brightness value

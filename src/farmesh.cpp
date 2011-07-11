@@ -70,6 +70,7 @@ FarMesh::FarMesh(
 	m_box = core::aabbox3d<f32>(-BS*1000000,-BS*31000,-BS*1000000,
 			BS*1000000,BS*31000,BS*1000000);
 
+    trees = g_settings.getBool("farmesh_trees");
 }
 
 FarMesh::~FarMesh()
@@ -312,12 +313,11 @@ void FarMesh::render()
 				}
 				else
 				{
-					/*// Trees if there are over 0.01 trees per MapNode
-					if(tree_amount_avg > 0.01)
+					// Trees if there are over 0.01 trees per MapNode
+					if(trees && tree_amount_avg > 0.01)
 						c = video::SColor(255,50,128,50);
 					else
-						c = video::SColor(255,107,134,51);*/
-					c = video::SColor(255,107,134,51);
+						c = video::SColor(255,107,134,51);
 					ground_is_mud = true;
 				}
 			}
@@ -350,7 +350,7 @@ void FarMesh::render()
 				video::EVT_STANDARD, scene::EPT_TRIANGLES, video::EIT_16BIT);
 
 		// Add some trees if appropriate
-		if(tree_amount_avg >= 0.0065 && steepness < 1.4
+		if(trees && tree_amount_avg >= 0.0065 && steepness < 1.4
 				&& ground_is_mud == true)
 		{
 			driver->setMaterial(m_materials[1]);
@@ -403,11 +403,11 @@ void FarMesh::step(float dtime)
 	m_time += dtime;
 }
 
-void FarMesh::update(v2f camera_p, float brightness, s16 render_range)
+void FarMesh::update(v2f camera_p, float brightness)
 {
 	m_camera_pos = camera_p;
 	m_brightness = brightness;
-	m_render_range = render_range;
+	m_render_range = g_settings.getS16("farmesh_distance")*10;
 }
 
 
