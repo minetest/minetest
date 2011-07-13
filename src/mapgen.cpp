@@ -1317,7 +1317,8 @@ void make_block(BlockMakeData *data)
 			data->seed, v2s16(blockpos.X, blockpos.Z), 1);
 	// Maximum amount of ground above the bottom of the central block
 	s16 maximum_ground_depth = maximum_groundlevel - node_min.Y;
-	
+
+	#if 0
 	/*
 		Special case for high air or water: Just fill with air and water.
 	*/
@@ -1351,6 +1352,7 @@ void make_block(BlockMakeData *data)
 		// We're done
 		return;
 	}
+	#endif
 
 	/*
 		If block is deep underground, this is set to true and ground
