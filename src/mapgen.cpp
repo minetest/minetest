@@ -903,8 +903,8 @@ NoiseParams get_cave_noise2_params(u64 seed)
 
 NoiseParams get_ground_noise1_params(u64 seed)
 {
-	return NoiseParams(NOISE_PERLIN, seed+983240, 5,
-			0.60, 100.0, 30.0);
+	return NoiseParams(NOISE_PERLIN, seed+983240, 4,
+			0.55, 80.0, 40.0);
 }
 
 NoiseParams get_ground_crumbleness_params(u64 seed)
@@ -939,7 +939,7 @@ bool val_is_ground(double ground_noise1_val, v3s16 p, u64 seed)
 
 	double f = 0.8 + noise2d_perlin(
 			0.5+(float)p.X/250, 0.5+(float)p.Z/250,
-			seed+920381, 3, 0.5);
+			seed+920381, 3, 0.45);
 	if(f < 0.01)
 		f = 0.01;
 	else if(f >= 1.0)
