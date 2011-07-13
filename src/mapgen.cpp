@@ -1863,7 +1863,7 @@ void make_block(BlockMakeData *data)
 			//s16 y = find_ground_level(data->vmanip, v2s16(x,z));
 			s16 y = find_ground_level_from_noise(data->seed, v2s16(x,z), 4);
 			// Don't make a tree under water level
-			if(y < WATER_LEVEL - 1)
+			if(y < WATER_LEVEL)
 				continue;
 			// Make sure tree fits (only trees whose starting point is
 			// at this block are added)
@@ -1878,7 +1878,7 @@ void make_block(BlockMakeData *data)
 			{
 				u32 i = data->vmanip->m_area.index(p);
 				MapNode *n = &data->vmanip->m_data[i];
-				if(n->d != CONTENT_AIR && n->d != CONTENT_IGNORE)
+				if(n->d != CONTENT_AIR && n->d != CONTENT_WATERSOURCE && n->d != CONTENT_IGNORE)
 				{
 					found = true;
 					break;
@@ -1896,22 +1896,19 @@ void make_block(BlockMakeData *data)
 						continue;
 
 				// Papyrus grows only on mud and in water
-				if(n->d == CONTENT_MUD && y == WATER_LEVEL - 1)
+				if(n->d == CONTENT_MUD && y <= WATER_LEVEL)
 				{
 					p.Y++;
 					make_papyrus(vmanip, p);
 				}
-				// Don't make a tree under water level
-				if(y < WATER_LEVEL)
-					continue;
-				// Trees grow only on mud and grass
-				if(n->d == CONTENT_MUD || n->d == CONTENT_GRASS)
+				// Trees grow only on mud and grass, on land
+				else if((n->d == CONTENT_MUD || n->d == CONTENT_GRASS) && y > WATER_LEVEL + 2)
 				{
 					p.Y++;
 					make_tree(vmanip, p);
 				}
-				// Cactii grow only on sand
-				else if(n->d == CONTENT_SAND)
+				// Cactii grow only on sand, on land
+				else if(n->d == CONTENT_SAND && y > WATER_LEVEL + 2)
 				{
 					p.Y++;
 					make_cactus(vmanip, p);
