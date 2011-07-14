@@ -141,8 +141,10 @@ struct ContentFeatures
 	NodeMetadata *initial_metadata;
 	
 	// If the content is liquid, this is the flowing version of the liquid.
-	// If content is liquid, this is the same content.
+	// If content is flowing liquid, this is the same content.
 	u8 liquid_alternative_flowing;
+	// If the content is liquid, this is the source version of the liquid.
+	u8 liquid_alternative_source;
 	
 	// Amount of light the node emits
 	u8 light_source;

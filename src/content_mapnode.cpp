@@ -276,6 +276,7 @@ void content_mapnode_init()
 	f->buildable_to = true;
 	f->liquid_type = LIQUID_FLOWING;
 	f->liquid_alternative_flowing = CONTENT_WATER;
+	f->liquid_alternative_source = CONTENT_WATERSOURCE;
 	
 	i = CONTENT_WATERSOURCE;
 	f = &content_features(i);
@@ -307,6 +308,7 @@ void content_mapnode_init()
 	f->liquid_type = LIQUID_SOURCE;
 	f->dug_item = std::string("MaterialItem ")+itos(i)+" 1";
 	f->liquid_alternative_flowing = CONTENT_WATER;
+	f->liquid_alternative_source = CONTENT_WATERSOURCE;
 	
 	i = CONTENT_TORCH;
 	f = &content_features(i);

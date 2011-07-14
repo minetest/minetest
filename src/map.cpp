@@ -1204,16 +1204,24 @@ void Map::removeNodeAndUpdate(v3s16 p,
 
 	/*
 		Add neighboring liquid nodes to transform queue.
+
+		Also add horizontal neighbors of node on top of removed node
+		because they could be affected of the water on top flowing
+		down instead of into them.
 	*/
-	v3s16 dirs[6] = {
+	v3s16 dirs[10] = {
 		v3s16(0,0,1), // back
 		v3s16(0,1,0), // top
+		v3s16(1,1,0), // topright
+		v3s16(-1,1,0), // topleft
+		v3s16(0,1,1), // topback
+		v3s16(0,1,-1), // topfront
 		v3s16(1,0,0), // right
 		v3s16(0,0,-1), // front
 		v3s16(0,-1,0), // bottom
 		v3s16(-1,0,0), // left
 	};
-	for(u16 i=0; i<6; i++)
+	for(u16 i=0; i<10; i++)
 	{
 		try
 		{
@@ -1510,6 +1518,9 @@ void Map::transformLiquids(core::map<v3s16, MapBlock*> & modified_blocks)
 		// Turn possible source into non-source
 		u8 nonsource_c = make_liquid_flowing(n0.d);
 
+		// Counts surrounding liquid source blocks
+		u8 surrounding_sources = 0;
+
 		/*
 			If not source, check that some node flows into this one
 			and what is the level of liquid in this one
@@ -1547,7 +1558,9 @@ void Map::transformLiquids(core::map<v3s16, MapBlock*> & modified_blocks)
 					}
 					bool n2_is_source = !content_flowing_liquid(n2.d);
 					s8 n2_liquid_level = 8;
-					if(n2_is_source == false)
+					if(n2_is_source)
+						surrounding_sources++;
+					else
 						n2_liquid_level = n2.param2 & 0x07;
 
 					s8 new_liquid_level = -1;
@@ -1561,7 +1574,20 @@ void Map::transformLiquids(core::map<v3s16, MapBlock*> & modified_blocks)
 					}
 					else if(n2_liquid_level > 0)
 					{
-						new_liquid_level = n2_liquid_level - 1;
+						// If the neighbor node isn't a source and flows downwards,
+						// it doesn't flow into this node
+						if (n2_is_source)
+						{
+							new_liquid_level = n2_liquid_level - 1;
+						}
+						else
+						{
+							// Node below n2
+							MapNode n3 = getNodeNoEx(p2 + v3s16(0,-1,0));
+							// NOTE: collision of different liquids not yet handled here.
+							if (content_features(n3.d).liquid_type != LIQUID_FLOWING)
+							new_liquid_level = n2_liquid_level - 1;
+						}
 					}
 
 					if(new_liquid_level > new_liquid_level_max)
@@ -1577,9 +1603,14 @@ void Map::transformLiquids(core::map<v3s16, MapBlock*> & modified_blocks)
 				If liquid level should be something else, update it and
 				add all the neighboring water nodes to the transform queue.
 			*/
-			if(new_liquid_level_max != liquid_level)
+			if(new_liquid_level_max != liquid_level || (!is_source && surrounding_sources >= 2))
 			{
-				if(new_liquid_level_max == -1)
+				if (surrounding_sources >= 2)
+				{
+					n0.d = content_features(n0.d).liquid_alternative_source;
+					setNode(p0,n0);
+				}
+				else if(new_liquid_level_max == -1)
 				{
 					// Remove water alltoghether
 					n0.d = CONTENT_AIR;
@@ -1589,6 +1620,7 @@ void Map::transformLiquids(core::map<v3s16, MapBlock*> & modified_blocks)
 				else
 				{
 					n0.param2 = new_liquid_level_max;
+					liquid_level = new_liquid_level_max;
 					setNode(p0, n0);
 				}
 
@@ -1706,7 +1738,7 @@ void Map::transformLiquids(core::map<v3s16, MapBlock*> & modified_blocks)
 				}
 				else
 				{
-					if(liquid_next_level > liquid_level)
+					if(liquid_next_level > n2_liquid_level)
 					{
 						n2.param2 = liquid_next_level;
 						setNode(p2, n2);
