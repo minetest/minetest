@@ -22,7 +22,9 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "porting.h"
 #include "collision.h"
 #include "content_mapnode.h"
-
+#include "mapblock.h"
+#include "serverobject.h"
+#include "content_sao.h"
 
 Environment::Environment():
 	m_time_of_day(9000)
@@ -659,14 +661,6 @@ void ServerEnvironment::step(float dtime)
 	}
 	
 	/*
-		Let map update it's timers
-	*/
-	{
-		//TimeTaker timer("Server m_map->timerUpdate()");
-		m_map->timerUpdate(dtime);
-	}
-
-	/*
 		Handle players
 	*/
 	for(core::list<Player*>::Iterator i = m_players.begin();
@@ -867,6 +861,9 @@ void ServerEnvironment::step(float dtime)
 			MapBlock *block = m_map->getBlockNoCreateNoEx(p);
 			if(block==NULL)
 				continue;
+
+			// Reset block usage timer
+			block->resetUsageTimer();
 			
 			// Set current time as timestamp
 			block->setTimestampNoChangedFlag(m_game_time);
@@ -986,8 +983,14 @@ void ServerEnvironment::step(float dtime)
 			// Don't step if is to be removed or stored statically
 			if(obj->m_removed || obj->m_pending_deactivation)
 				continue;
-			// Step object, putting messages directly to the queue
-			obj->step(dtime, m_active_object_messages, send_recommended);
+			// Step object
+			obj->step(dtime, send_recommended);
+			// Read messages from object
+			while(obj->m_messages_out.size() > 0)
+			{
+				m_active_object_messages.push_back(
+						obj->m_messages_out.pop_front());
+			}
 		}
 	}
 	
@@ -1242,7 +1245,7 @@ u16 ServerEnvironment::addActiveObjectRaw(ServerActiveObject *object,
 			block->setChangedFlag();
 	}
 	else{
-		dstream<<"WARNING: Server: Could not find a block for "
+		dstream<<"WARNING: ServerEnv: Could not find a block for "
 				<<"storing newly added static active object"<<std::endl;
 	}
 
@@ -1414,7 +1417,20 @@ void ServerEnvironment::deactivateFarObjects(bool force_delete)
 		StaticObject s_obj(obj->getType(), objectpos, staticdata);
 		// Add to the block where the object is located in
 		v3s16 blockpos = getNodeBlockPos(floatToInt(objectpos, BS));
-		MapBlock *block = m_map->getBlockNoCreateNoEx(blockpos);
+		// Get or generate the block
+		MapBlock *block = m_map->emergeBlock(blockpos);
+
+		/*MapBlock *block = m_map->getBlockNoCreateNoEx(blockpos);
+		if(block == NULL)
+		{
+			// Block not found. Is the old block still ok?
+			if(oldblock)
+				block = oldblock;
+			// Load from disk or generate
+			else
+				block = m_map->emergeBlock(blockpos);
+		}*/
+
 		if(block)
 		{
 			block->m_static_objects.insert(0, s_obj);
@@ -1422,17 +1438,9 @@ void ServerEnvironment::deactivateFarObjects(bool force_delete)
 			obj->m_static_exists = true;
 			obj->m_static_block = block->getPos();
 		}
-		// If not possible, add back to previous block
-		else if(oldblock)
-		{
-			oldblock->m_static_objects.insert(0, s_obj);
-			oldblock->setChangedFlag();
-			obj->m_static_exists = true;
-			obj->m_static_block = oldblock->getPos();
-		}
 		else{
-			dstream<<"WARNING: Server: Could not find a block for "
-					<<"storing static object"<<std::endl;
+			dstream<<"WARNING: ServerEnv: Could not find or generate "
+					<<"a block for storing static object"<<std::endl;
 			obj->m_static_exists = false;
 			continue;
 		}
@@ -1526,11 +1534,6 @@ void ClientEnvironment::step(float dtime)
 	bool free_move = g_settings.getBool("free_move");
 	bool footprints = g_settings.getBool("footprints");
 
-	{
-		//TimeTaker timer("Client m_map->timerUpdate()");
-		m_map->timerUpdate(dtime);
-	}
-	
 	// Get local player
 	LocalPlayer *lplayer = getLocalPlayer();
 	assert(lplayer);
@@ -1728,17 +1731,21 @@ void ClientEnvironment::step(float dtime)
 		ClientActiveObject* obj = i.getNode()->getValue();
 		// Step object
 		obj->step(dtime, this);
-		// Update lighting
-		//u8 light = LIGHT_MAX;
-		u8 light = 0;
-		try{
-			// Get node at head
-			v3s16 p = obj->getLightPosition();
-			MapNode n = m_map->getNode(p);
-			light = n.getLightBlend(getDayNightRatio());
+
+		if(m_active_object_light_update_interval.step(dtime, 0.21))
+		{
+			// Update lighting
+			//u8 light = LIGHT_MAX;
+			u8 light = 0;
+			try{
+				// Get node at head
+				v3s16 p = obj->getLightPosition();
+				MapNode n = m_map->getNode(p);
+				light = n.getLightBlend(getDayNightRatio());
+			}
+			catch(InvalidPositionException &e) {}
+			obj->updateLight(light);
 		}
-		catch(InvalidPositionException &e) {}
-		obj->updateLight(light);
 	}
 }
 
@@ -1924,6 +1931,22 @@ ClientEnvEvent ClientEnvironment::getClientEvent()
 		return event;
 	}
 	return m_client_event_queue.pop_front();
+}
+
+void ClientEnvironment::drawPostFx(video::IVideoDriver* driver, v3f camera_pos)
+{
+	/*LocalPlayer *player = getLocalPlayer();
+	assert(player);
+	v3f pos_f = player->getPosition() + v3f(0,BS*1.625,0);*/
+	v3f pos_f = camera_pos;
+	v3s16 p_nodes = floatToInt(pos_f, BS);
+	MapNode n = m_map->getNodeNoEx(p_nodes);
+	if(n.d == CONTENT_WATER || n.d == CONTENT_WATERSOURCE)
+	{
+		v2u32 ss = driver->getScreenSize();
+		core::rect<s32> rect(0,0, ss.X, ss.Y);
+		driver->draw2DRectangle(video::SColor(64, 100, 100, 200), rect);
+	}
 }
 
 #endif // #ifndef SERVER

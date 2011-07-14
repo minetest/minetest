@@ -272,7 +272,7 @@ void mapblock_mesh_generate_special(MeshMakeData *data,
 		/*
 			Signs on walls
 		*/
-		if(n.d == CONTENT_SIGN_WALL)
+		else if(n.d == CONTENT_SIGN_WALL)
 		{
 			u8 l = decode_light(n.getLightBlend(data->m_daynight_ratio));
 			video::SColor c(255,l,l,l);

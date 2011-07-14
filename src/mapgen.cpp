@@ -23,8 +23,9 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "noise.h"
 #include "mapblock.h"
 #include "map.h"
-#include "serverobject.h"
 #include "mineral.h"
+//#include "serverobject.h"
+#include "content_sao.h"
 
 namespace mapgen
 {
@@ -531,7 +532,7 @@ static void make_corridor(VoxelManipulator &vmanip, v3s16 doorplace,
 	else
 		length = random.range(1,6);
 	length = random.range(1,13);
-	u32 partlength = random.range(1,length);
+	u32 partlength = random.range(1,13);
 	u32 partcount = 0;
 	s16 make_stairs = 0;
 	if(random.next()%2 == 0 && partlength >= 3)
@@ -700,14 +701,30 @@ public:
 				continue;
 			v3s16 roomplace;
 			// X east, Z north, Y up
+#if 1
 			if(doordir == v3s16(1,0,0)) // X+
-				roomplace = doorplace + v3s16(0,-1,-roomsize.Z/2+m_random.range(-roomsize.Z/2+1,roomsize.Z/2-1));
+				roomplace = doorplace +
+						v3s16(0,-1,m_random.range(-roomsize.Z+2,-2));
 			if(doordir == v3s16(-1,0,0)) // X-
-				roomplace = doorplace + v3s16(-roomsize.X+1,-1,-roomsize.Z/2+m_random.range(-roomsize.Z/2+1,roomsize.Z/2-1));
+				roomplace = doorplace +
+						v3s16(-roomsize.X+1,-1,m_random.range(-roomsize.Z+2,-2));
 			if(doordir == v3s16(0,0,1)) // Z+
-				roomplace = doorplace + v3s16(-roomsize.X/2+m_random.range(-roomsize.X/2+1,roomsize.X/2-1),-1,0);
+				roomplace = doorplace +
+						v3s16(m_random.range(-roomsize.X+2,-2),-1,0);
 			if(doordir == v3s16(0,0,-1)) // Z-
-				roomplace = doorplace + v3s16(-roomsize.X/2+m_random.range(-roomsize.X/2+1,roomsize.X/2-1),-1,-roomsize.Z+1);
+				roomplace = doorplace +
+						v3s16(m_random.range(-roomsize.X+2,-2),-1,-roomsize.Z+1);
+#endif
+#if 0
+			if(doordir == v3s16(1,0,0)) // X+
+				roomplace = doorplace + v3s16(0,-1,-roomsize.Z/2);
+			if(doordir == v3s16(-1,0,0)) // X-
+				roomplace = doorplace + v3s16(-roomsize.X+1,-1,-roomsize.Z/2);
+			if(doordir == v3s16(0,0,1)) // Z+
+				roomplace = doorplace + v3s16(-roomsize.X/2,-1,0);
+			if(doordir == v3s16(0,0,-1)) // Z-
+				roomplace = doorplace + v3s16(-roomsize.X/2,-1,-roomsize.Z+1);
+#endif
 			
 			// Check fit
 			bool fits = true;
@@ -818,7 +835,7 @@ static void make_dungeon1(VoxelManipulator &vmanip, PseudoRandom &random)
 		
 		// Determine walker start position
 
-		bool start_in_last_room = (random.range(0,1)==0);
+		bool start_in_last_room = (random.range(0,2)!=0);
 		//bool start_in_last_room = true;
 
 		v3s16 walker_start_place;
@@ -877,29 +894,46 @@ static void make_dungeon1(VoxelManipulator &vmanip, PseudoRandom &random)
 	Noise functions. Make sure seed is mangled differently in each one.
 */
 
-// This affects the shape of the contour
+/*
+	Scaling the output of the noise function affects the overdrive of the
+	contour function, which affects the shape of the output considerably.
+*/
+#define CAVE_NOISE_SCALE 12.0
 //#define CAVE_NOISE_SCALE 10.0
 //#define CAVE_NOISE_SCALE 7.5
-#define CAVE_NOISE_SCALE 5.0
+//#define CAVE_NOISE_SCALE 5.0
+//#define CAVE_NOISE_SCALE 1.0
+
+//#define CAVE_NOISE_THRESHOLD (2.5/CAVE_NOISE_SCALE)
+#define CAVE_NOISE_THRESHOLD (1.5/CAVE_NOISE_SCALE)
 
 NoiseParams get_cave_noise1_params(u64 seed)
 {
 	/*return NoiseParams(NOISE_PERLIN_CONTOUR, seed+52534, 5, 0.7,
 			200, CAVE_NOISE_SCALE);*/
-	return NoiseParams(NOISE_PERLIN_CONTOUR, seed+52534, 4, 0.7,
-			100, CAVE_NOISE_SCALE);
+	/*return NoiseParams(NOISE_PERLIN_CONTOUR, seed+52534, 4, 0.7,
+			100, CAVE_NOISE_SCALE);*/
+	/*return NoiseParams(NOISE_PERLIN_CONTOUR, seed+52534, 5, 0.6,
+			100, CAVE_NOISE_SCALE);*/
+	/*return NoiseParams(NOISE_PERLIN_CONTOUR, seed+52534, 5, 0.3,
+			100, CAVE_NOISE_SCALE);*/
+	return NoiseParams(NOISE_PERLIN_CONTOUR, seed+52534, 4, 0.5,
+			50, CAVE_NOISE_SCALE);
+	//return NoiseParams(NOISE_CONSTANT_ONE);
 }
 
 NoiseParams get_cave_noise2_params(u64 seed)
 {
 	/*return NoiseParams(NOISE_PERLIN_CONTOUR_FLIP_YZ, seed+10325, 5, 0.7,
 			200, CAVE_NOISE_SCALE);*/
-	return NoiseParams(NOISE_PERLIN_CONTOUR_FLIP_YZ, seed+10325, 4, 0.7,
-			100, CAVE_NOISE_SCALE);
+	/*return NoiseParams(NOISE_PERLIN_CONTOUR_FLIP_YZ, seed+10325, 4, 0.7,
+			100, CAVE_NOISE_SCALE);*/
+	/*return NoiseParams(NOISE_PERLIN_CONTOUR_FLIP_YZ, seed+10325, 5, 0.3,
+			100, CAVE_NOISE_SCALE);*/
+	return NoiseParams(NOISE_PERLIN_CONTOUR_FLIP_YZ, seed+10325, 4, 0.5,
+			50, CAVE_NOISE_SCALE);
+	//return NoiseParams(NOISE_CONSTANT_ONE);
 }
-
-//#define CAVE_NOISE_THRESHOLD (2.5/CAVE_NOISE_SCALE)
-#define CAVE_NOISE_THRESHOLD (2.0/CAVE_NOISE_SCALE)
 
 NoiseParams get_ground_noise1_params(u64 seed)
 {
@@ -937,13 +971,13 @@ bool val_is_ground(double ground_noise1_val, v3s16 p, u64 seed)
 {
 	//return ((double)p.Y < ground_noise1_val);
 
-	double f = 0.8 + noise2d_perlin(
+	double f = 0.55 + noise2d_perlin(
 			0.5+(float)p.X/250, 0.5+(float)p.Z/250,
 			seed+920381, 3, 0.45);
 	if(f < 0.01)
 		f = 0.01;
 	else if(f >= 1.0)
-		f *= 2.0;
+		f *= 1.6;
 	double h = WATER_LEVEL + 10 * noise2d_perlin(
 			0.5+(float)p.X/250, 0.5+(float)p.Z/250,
 			seed+84174, 4, 0.5);
@@ -1082,6 +1116,7 @@ double get_sector_maximum_ground_level(u64 seed, v2s16 sectorpos, double p)
 	v2s16 node_min = sectorpos*MAP_BLOCKSIZE;
 	v2s16 node_max = (sectorpos+v2s16(1,1))*MAP_BLOCKSIZE-v2s16(1,1);
 	double a = -31000;
+	// Corners
 	a = MYMAX(a, find_ground_level_from_noise(seed,
 			v2s16(node_min.X, node_min.Y), p));
 	a = MYMAX(a, find_ground_level_from_noise(seed,
@@ -1090,8 +1125,18 @@ double get_sector_maximum_ground_level(u64 seed, v2s16 sectorpos, double p)
 			v2s16(node_max.X, node_max.Y), p));
 	a = MYMAX(a, find_ground_level_from_noise(seed,
 			v2s16(node_min.X, node_min.Y), p));
+	// Center
 	a = MYMAX(a, find_ground_level_from_noise(seed,
 			v2s16(node_min.X+MAP_BLOCKSIZE/2, node_min.Y+MAP_BLOCKSIZE/2), p));
+	// Side middle points
+	a = MYMAX(a, find_ground_level_from_noise(seed,
+			v2s16(node_min.X+MAP_BLOCKSIZE/2, node_min.Y), p));
+	a = MYMAX(a, find_ground_level_from_noise(seed,
+			v2s16(node_min.X+MAP_BLOCKSIZE/2, node_max.Y), p));
+	a = MYMAX(a, find_ground_level_from_noise(seed,
+			v2s16(node_min.X, node_min.Y+MAP_BLOCKSIZE/2), p));
+	a = MYMAX(a, find_ground_level_from_noise(seed,
+			v2s16(node_max.X, node_min.Y+MAP_BLOCKSIZE/2), p));
 	return a;
 }
 
@@ -1102,6 +1147,7 @@ double get_sector_minimum_ground_level(u64 seed, v2s16 sectorpos, double p)
 	v2s16 node_min = sectorpos*MAP_BLOCKSIZE;
 	v2s16 node_max = (sectorpos+v2s16(1,1))*MAP_BLOCKSIZE-v2s16(1,1);
 	double a = 31000;
+	// Corners
 	a = MYMIN(a, find_ground_level_from_noise(seed,
 			v2s16(node_min.X, node_min.Y), p));
 	a = MYMIN(a, find_ground_level_from_noise(seed,
@@ -1110,8 +1156,18 @@ double get_sector_minimum_ground_level(u64 seed, v2s16 sectorpos, double p)
 			v2s16(node_max.X, node_max.Y), p));
 	a = MYMIN(a, find_ground_level_from_noise(seed,
 			v2s16(node_min.X, node_min.Y), p));
+	// Center
 	a = MYMIN(a, find_ground_level_from_noise(seed,
 			v2s16(node_min.X+MAP_BLOCKSIZE/2, node_min.Y+MAP_BLOCKSIZE/2), p));
+	// Side middle points
+	a = MYMIN(a, find_ground_level_from_noise(seed,
+			v2s16(node_min.X+MAP_BLOCKSIZE/2, node_min.Y), p));
+	a = MYMIN(a, find_ground_level_from_noise(seed,
+			v2s16(node_min.X+MAP_BLOCKSIZE/2, node_max.Y), p));
+	a = MYMIN(a, find_ground_level_from_noise(seed,
+			v2s16(node_min.X, node_min.Y+MAP_BLOCKSIZE/2), p));
+	a = MYMIN(a, find_ground_level_from_noise(seed,
+			v2s16(node_max.X, node_min.Y+MAP_BLOCKSIZE/2), p));
 	return a;
 }
 
@@ -1358,12 +1414,12 @@ void make_block(BlockMakeData *data)
 		If block is deep underground, this is set to true and ground
 		density noise is not generated, for speed optimization.
 	*/
-	bool all_is_ground_except_caves = (minimum_ground_depth > 16);
+	bool all_is_ground_except_caves = (minimum_ground_depth > 40);
 	
 	/*
 		Create a block-specific seed
 	*/
-	u32 blockseed = (data->seed%0x100000000) + full_node_min.Z*38134234
+	u32 blockseed = (u32)(data->seed%0x100000000) + full_node_min.Z*38134234
 			+ full_node_min.Y*42123 + full_node_min.X*23;
 	
 	/*
@@ -1385,13 +1441,13 @@ void make_block(BlockMakeData *data)
 		/*
 			Cave noise
 		*/
-
+#if 1
 		noisebuf_cave.create(get_cave_noise1_params(data->seed),
 				minpos_f.X, minpos_f.Y, minpos_f.Z,
 				maxpos_f.X, maxpos_f.Y, maxpos_f.Z,
-				4, 3, 4);
-		
+				2, 2, 2);
 		noisebuf_cave.multiply(get_cave_noise2_params(data->seed));
+#endif
 
 		/*
 			Ground noise

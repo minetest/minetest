@@ -21,25 +21,21 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #define MAP_HEADER
 
 #include <jmutex.h>
+#include <jmutexautolock.h>
 #include <jthread.h>
 #include <iostream>
 
-#ifdef _WIN32
-	#include <windows.h>
-	#define sleep_s(x) Sleep((x*1000))
-#else
-	#include <unistd.h>
-	#define sleep_s(x) sleep(x)
-#endif
-
 #include "common_irrlicht.h"
 #include "mapnode.h"
-#include "mapblock.h"
-#include "mapsector.h"
+#include "mapblock_nodemod.h"
 #include "constants.h"
 #include "voxel.h"
-#include "mapchunk.h"
-#include "nodemetadata.h"
+
+class MapSector;
+class ServerMapSector;
+class ClientMapSector;
+class MapBlock;
+class NodeMetadata;
 
 namespace mapgen{
 	struct BlockMakeData;
@@ -61,7 +57,7 @@ enum MapEditEventType{
 	// Node metadata of block changed (not knowing which node exactly)
 	// p stores block coordinate
 	MEET_BLOCK_NODE_METADATA_CHANGED,
-	// Anything else
+	// Anything else (modified_blocks are set unsent)
 	MEET_OTHER
 };
 
@@ -104,17 +100,17 @@ public:
 	virtual void onMapEditEvent(MapEditEvent *event) = 0;
 };
 
-class Map : public NodeContainer
+class Map /*: public NodeContainer*/
 {
 public:
 
 	Map(std::ostream &dout);
 	virtual ~Map();
 
-	virtual u16 nodeContainerId() const
+	/*virtual u16 nodeContainerId() const
 	{
 		return NODECONTAINER_ID_MAP;
-	}
+	}*/
 
 	virtual s32 mapType() const
 	{
@@ -155,66 +151,20 @@ public:
 	MapBlock * getBlockNoCreate(v3s16 p);
 	// Returns NULL if not found
 	MapBlock * getBlockNoCreateNoEx(v3s16 p);
-	// Gets an existing block or creates an empty one
-	//MapBlock * getBlockCreate(v3s16 p);
 	
 	// Returns InvalidPositionException if not found
 	bool isNodeUnderground(v3s16 p);
 	
-	// virtual from NodeContainer
-	bool isValidPosition(v3s16 p)
-	{
-		v3s16 blockpos = getNodeBlockPos(p);
-		MapBlock *blockref;
-		try{
-			blockref = getBlockNoCreate(blockpos);
-		}
-		catch(InvalidPositionException &e)
-		{
-			return false;
-		}
-		return true;
-		/*v3s16 relpos = p - blockpos*MAP_BLOCKSIZE;
-		bool is_valid = blockref->isValidPosition(relpos);
-		return is_valid;*/
-	}
+	bool isValidPosition(v3s16 p);
 	
-	// virtual from NodeContainer
 	// throws InvalidPositionException if not found
-	MapNode getNode(v3s16 p)
-	{
-		v3s16 blockpos = getNodeBlockPos(p);
-		MapBlock * blockref = getBlockNoCreate(blockpos);
-		v3s16 relpos = p - blockpos*MAP_BLOCKSIZE;
+	MapNode getNode(v3s16 p);
 
-		return blockref->getNodeNoCheck(relpos);
-	}
-
-	// virtual from NodeContainer
 	// throws InvalidPositionException if not found
-	void setNode(v3s16 p, MapNode & n)
-	{
-		v3s16 blockpos = getNodeBlockPos(p);
-		MapBlock * blockref = getBlockNoCreate(blockpos);
-		v3s16 relpos = p - blockpos*MAP_BLOCKSIZE;
-		blockref->setNodeNoCheck(relpos, n);
-	}
+	void setNode(v3s16 p, MapNode & n);
 	
 	// Returns a CONTENT_IGNORE node if not found
-	MapNode getNodeNoEx(v3s16 p)
-	{
-		try{
-			v3s16 blockpos = getNodeBlockPos(p);
-			MapBlock * blockref = getBlockNoCreate(blockpos);
-			v3s16 relpos = p - blockpos*MAP_BLOCKSIZE;
-
-			return blockref->getNodeNoCheck(relpos);
-		}
-		catch(InvalidPositionException &e)
-		{
-			return MapNode(CONTENT_IGNORE);
-		}
-	}
+	MapNode getNodeNoEx(v3s16 p);
 
 	void unspreadLight(enum LightBank bank,
 			core::map<v3s16, u8> & from_nodes,
@@ -273,23 +223,33 @@ public:
 	
 	virtual void save(bool only_changed){assert(0);};
 	
-	// Server implements this
+	// Server implements this.
+	// Client leaves it as no-op.
 	virtual void saveBlock(MapBlock *block){};
 
 	/*
-		Updates usage timers
+		Updates usage timers and unloads unused blocks and sectors.
+		Saves modified blocks before unloading on MAPTYPE_SERVER.
 	*/
-	void timerUpdate(float dtime);
-	
+	void timerUpdate(float dtime, float unload_timeout,
+			core::list<v3s16> *unloaded_blocks=NULL);
+		
+	// Deletes sectors and their blocks from memory
 	// Takes cache into account
-	// sector mutex should be locked when calling
-	void deleteSectors(core::list<v2s16> &list, bool only_blocks);
-	
-	// Returns count of deleted sectors
-	u32 unloadUnusedData(float timeout, bool only_blocks=false,
-			core::list<v3s16> *deleted_blocks=NULL);
+	// If deleted sector is in sector cache, clears cache
+	void deleteSectors(core::list<v2s16> &list);
 
-	// For debug printing
+#if 0
+	/*
+		Unload unused data
+		= flush changed to disk and delete from memory, if usage timer of
+		  block is more than timeout
+	*/
+	void unloadUnusedData(float timeout,
+			core::list<v3s16> *deleted_blocks=NULL);
+#endif
+
+	// For debug printing. Prints "Map: ", "ServerMap: " or "ClientMap: "
 	virtual void PrintInfo(std::ostream &out);
 	
 	void transformLiquids(core::map<v3s16, MapBlock*> & modified_blocks);
@@ -321,7 +281,6 @@ protected:
 	core::map<MapEventReceiver*, bool> m_event_receivers;
 	
 	core::map<v2s16, MapSector*> m_sectors;
-	//JMutex m_sector_mutex;
 
 	// Be sure to set this to NULL when the cached sector is deleted 
 	MapSector *m_sector_cache;
@@ -379,24 +338,13 @@ public:
 	*/
 	MapBlock * createBlock(v3s16 p);
 
-#if 0
 	/*
-		NOTE: This comment might be outdated
-		
 		Forcefully get a block from somewhere.
-
-		InvalidPositionException possible if only_from_disk==true
-		
-		Parameters:
-		changed_blocks: Blocks that have been modified
+		- Memory
+		- Load from disk
+		- Generate
 	*/
-	MapBlock * emergeBlock(
-			v3s16 p,
-			bool only_from_disk,
-			core::map<v3s16, MapBlock*> &changed_blocks,
-			core::map<v3s16, MapBlock*> &lighting_invalidated_blocks
-	);
-#endif
+	MapBlock * emergeBlock(v3s16 p, bool allow_generate=true);
 	
 	// Helper for placing objects on ground level
 	s16 findGroundLevel(v2s16 p2d);
@@ -547,7 +495,7 @@ public:
 	*/
 	MapSector * emergeSector(v2s16 p);
 
-	void deSerializeSector(v2s16 p2d, std::istream &is);
+	//void deSerializeSector(v2s16 p2d, std::istream &is);
 
 	/*
 		ISceneNode methods

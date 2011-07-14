@@ -21,15 +21,14 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "jmutexautolock.h"
 #include "client.h"
 #include "exceptions.h"
+#include "mapblock.h"
 
-MapSector::MapSector(NodeContainer *parent, v2s16 pos):
-		differs_from_disk(true),
+MapSector::MapSector(Map *parent, v2s16 pos):
+		differs_from_disk(false),
 		m_parent(parent),
 		m_pos(pos),
 		m_block_cache(NULL)
 {
-	m_mutex.Init();
-	assert(m_mutex.IsInitialized());
 }
 
 MapSector::~MapSector()
@@ -39,8 +38,6 @@ MapSector::~MapSector()
 
 void MapSector::deleteBlocks()
 {
-	JMutexAutoLock lock(m_mutex);
-
 	// Clear cache
 	m_block_cache = NULL;
 
@@ -83,26 +80,12 @@ MapBlock * MapSector::getBlockBuffered(s16 y)
 
 MapBlock * MapSector::getBlockNoCreateNoEx(s16 y)
 {
-	JMutexAutoLock lock(m_mutex);
-	
 	return getBlockBuffered(y);
-}
-
-MapBlock * MapSector::getBlockNoCreate(s16 y)
-{
-	MapBlock *block = getBlockNoCreateNoEx(y);
-
-	if(block == NULL)
-		throw InvalidPositionException();
-	
-	return block;
 }
 
 MapBlock * MapSector::createBlankBlockNoInsert(s16 y)
 {
-	// There should not be a block at this position
-	if(getBlockBuffered(y) != NULL)
-		throw AlreadyExistsException("Block already exists");
+	assert(getBlockBuffered(y) == NULL);
 
 	v3s16 blockpos_map(m_pos.X, y, m_pos.Y);
 	
@@ -113,8 +96,6 @@ MapBlock * MapSector::createBlankBlockNoInsert(s16 y)
 
 MapBlock * MapSector::createBlankBlock(s16 y)
 {
-	JMutexAutoLock lock(m_mutex);
-	
 	MapBlock *block = createBlankBlockNoInsert(y);
 	
 	m_blocks.insert(y, block);
@@ -126,39 +107,34 @@ void MapSector::insertBlock(MapBlock *block)
 {
 	s16 block_y = block->getPos().Y;
 
-	{
-		JMutexAutoLock lock(m_mutex);
-
-		MapBlock *block2 = getBlockBuffered(block_y);
-		if(block2 != NULL){
-			throw AlreadyExistsException("Block already exists");
-		}
-
-		v2s16 p2d(block->getPos().X, block->getPos().Z);
-		assert(p2d == m_pos);
-		
-		// Insert into container
-		m_blocks.insert(block_y, block);
+	MapBlock *block2 = getBlockBuffered(block_y);
+	if(block2 != NULL){
+		throw AlreadyExistsException("Block already exists");
 	}
+
+	v2s16 p2d(block->getPos().X, block->getPos().Z);
+	assert(p2d == m_pos);
+	
+	// Insert into container
+	m_blocks.insert(block_y, block);
 }
 
-void MapSector::removeBlock(MapBlock *block)
+void MapSector::deleteBlock(MapBlock *block)
 {
 	s16 block_y = block->getPos().Y;
 
-	JMutexAutoLock lock(m_mutex);
-	
 	// Clear from cache
 	m_block_cache = NULL;
 	
 	// Remove from container
 	m_blocks.remove(block_y);
+
+	// Delete
+	delete block;
 }
 
 void MapSector::getBlocks(core::list<MapBlock*> &dest)
 {
-	JMutexAutoLock lock(m_mutex);
-
 	core::list<MapBlock*> ref_list;
 
 	core::map<s16, MapBlock*>::Iterator bi;
@@ -175,21 +151,12 @@ void MapSector::getBlocks(core::list<MapBlock*> &dest)
 	ServerMapSector
 */
 
-ServerMapSector::ServerMapSector(NodeContainer *parent, v2s16 pos):
+ServerMapSector::ServerMapSector(Map *parent, v2s16 pos):
 		MapSector(parent, pos)
 {
 }
 
 ServerMapSector::~ServerMapSector()
-{
-}
-
-f32 ServerMapSector::getGroundHeight(v2s16 p, bool generate)
-{
-	return GROUNDHEIGHT_NOTFOUND_SETVALUE;
-}
-
-void ServerMapSector::setGroundHeight(v2s16 p, f32 y, bool generate)
 {
 }
 
@@ -217,7 +184,7 @@ void ServerMapSector::serialize(std::ostream &os, u8 version)
 
 ServerMapSector* ServerMapSector::deSerialize(
 		std::istream &is,
-		NodeContainer *parent,
+		Map *parent,
 		v2s16 p2d,
 		core::map<v2s16, MapSector*> & sectors
 	)
@@ -280,7 +247,7 @@ ServerMapSector* ServerMapSector::deSerialize(
 	ClientMapSector
 */
 
-ClientMapSector::ClientMapSector(NodeContainer *parent, v2s16 pos):
+ClientMapSector::ClientMapSector(Map *parent, v2s16 pos):
 		MapSector(parent, pos)
 {
 }
@@ -289,45 +256,6 @@ ClientMapSector::~ClientMapSector()
 {
 }
 
-void ClientMapSector::deSerialize(std::istream &is)
-{
-	/*
-		[0] u8 serialization version
-		[1] s16 corners[0]
-		[3] s16 corners[1]
-		[5] s16 corners[2]
-		[7] s16 corners[3]
-		size = 9
-		
-		In which corners are in these positions
-		v2s16(0,0),
-		v2s16(1,0),
-		v2s16(1,1),
-		v2s16(0,1),
-	*/
-	
-	// Read version
-	u8 version = SER_FMT_VER_INVALID;
-	is.read((char*)&version, 1);
-	
-	if(!ser_ver_supported(version))
-		throw VersionMismatchException("ERROR: MapSector format not supported");
-	
-	u8 buf[2];
-	
-	// Dummy read corners
-	is.read((char*)buf, 2);
-	is.read((char*)buf, 2);
-	is.read((char*)buf, 2);
-	is.read((char*)buf, 2);
-	
-	/*
-		Set stuff in sector
-	*/
-	
-	// Nothing here
-
-}
 #endif // !SERVER
 
 //END

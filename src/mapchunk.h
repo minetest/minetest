@@ -21,6 +21,11 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #define MAPCHUNK_HEADER
 
 /*
+	TODO: Remove
+*/
+
+#if 0
+/*
 	MapChunk contains map-generation-time metadata for an area of
 	some MapSectors. (something like 16x16)
 */
@@ -66,6 +71,7 @@ private:
 	u8 m_generation_level;
 	bool m_modified;
 };
+#endif
 
 #endif
 

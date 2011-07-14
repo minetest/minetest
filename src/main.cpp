@@ -27,6 +27,33 @@ NOTE: Global locale is now set at initialization
 NOTE: If VBO (EHM_STATIC) is used, remember to explicitly free the
       hardware buffer (it is not freed automatically)
 
+NOTE: A random to-do list saved here as documentation:
+A list of "active blocks" in which stuff happens. (+=done)
+	+ Add a never-resetted game timer to the server
+	+ Add a timestamp value to blocks
+	+ The simple rule: All blocks near some player are "active"
+	- Do stuff in real time in active blocks
+		+ Handle objects
+		- Grow grass, delete leaves without a tree
+		- Spawn some mobs based on some rules
+		- Transform cobble to mossy cobble near water
+		- Run a custom script
+		- ...And all kinds of other dynamic stuff
+	+ Keep track of when a block becomes active and becomes inactive
+	+ When a block goes inactive:
+		+ Store objects statically to block
+		+ Store timer value as the timestamp
+	+ When a block goes active:
+		+ Create active objects out of static objects
+		- Simulate the results of what would have happened if it would have
+		  been active for all the time
+		  	- Grow a lot of grass and so on
+	+ Initially it is fine to send information about every active object
+	  to every player. Eventually it should be modified to only send info
+	  about the nearest ones.
+	  	+ This was left to be done by the old system and it sends only the
+		  nearest ones.
+
 Old, wild and random suggestions that probably won't be done:
 -------------------------------------------------------------
 
@@ -73,9 +100,6 @@ SUGG: Make the amount of blocks sending to client and the total
 SUGG: Meshes of blocks could be split into 6 meshes facing into
       different directions and then only those drawn that need to be
 
-SUGG: Calculate lighting per vertex to get a lighting effect like in
-      bartwe's game
-
 SUGG: Background music based on cellular automata?
       http://www.earslap.com/projectslab/otomata
 
@@ -90,6 +114,8 @@ SUGG: Make a system for pregenerating quick information for mapblocks, so
 	  or even generated.
 
 SUGG: Erosion simulation at map generation time
+    - This might be plausible if larger areas of map were pregenerated
+	  without lighting (which is slow)
 	- Simulate water flows, which would carve out dirt fast and
 	  then turn stone into gravel and sand and relocate it.
 	- How about relocating minerals, too? Coal and gold in
@@ -99,6 +125,16 @@ SUGG: Erosion simulation at map generation time
 		parameter field is free for this.
 	- Simulate rock falling from cliffs when water has removed
 	  enough solid rock from the bottom
+
+SUGG: For non-mapgen FarMesh: Add a per-sector database to store surface
+      stuff as simple flags/values
+      - Light?
+	  - A building?
+	  And at some point make the server send this data to the client too,
+	  instead of referring to the noise functions
+	  - Ground height
+	  - Surface ground type
+	  - Trees?
 
 Gaming ideas:
 -------------
@@ -173,12 +209,13 @@ SUGG: Make fetching sector's blocks more efficient when rendering
       sectors that have very large amounts of blocks (on client)
 	  - Is this necessary at all?
 
-TODO: Flowing water animation
-
 SUGG: Draw cubes in inventory directly with 3D drawing commands, so that
       animating them is easier.
 
 SUGG: Option for enabling proper alpha channel for textures
+
+TODO: Flowing water animation
+
 TODO: A setting for enabling bilinear filtering for textures
 
 TODO: Better control of draw_control.wanted_max_blocks
@@ -192,6 +229,12 @@ TODO: Artificial (night) light could be more yellow colored than sunlight.
 	    in the dark but it's a bit more difficult.
 
 SUGG: Somehow make the night less colorful
+
+TODO: Occlusion culling
+      - At the same time, move some of the renderMap() block choosing code
+        to the same place as where the new culling happens.
+      - Shoot some rays per frame and when ready, make a new list of
+	    blocks for usage of renderMap and give it a new pointer to it.
 
 Configuration:
 --------------
@@ -231,6 +274,7 @@ FIXME: Server sometimes goes into some infinite PeerNotFoundException loop
 * Fix the problem with the server constantly saving one or a few
   blocks? List the first saved block, maybe it explains.
   - It is probably caused by oscillating water
+  - TODO: Investigate if this still happens (this is a very old one)
 * Make a small history check to transformLiquids to detect and log
   continuous oscillations, in such detail that they can be fixed.
 
@@ -238,44 +282,12 @@ FIXME: The new optimized map sending doesn't sometimes send enough blocks
        from big caves and such
 FIXME: Block send distance configuration does not take effect for some reason
 
-TODO: Map saving should be done by EmergeThread
-
-SUGG: Map unloading based on sector reference is not very good, it keeps
-	unnecessary stuff in memory. I guess. Investigate this.
-
-TODO: When block is placed and it has param_type==CPT_FACEDIR_SIMPLE, set
-      the direction accordingly.
-
 Environment:
 ------------
 
-TODO: A list of "active blocks" in which stuff happens. (+=done)
-	+ Add a never-resetted game timer to the server
-	+ Add a timestamp value to blocks
-	+ The simple rule: All blocks near some player are "active"
-	- Do stuff in real time in active blocks
-		+ Handle objects
-		TODO: Make proper hooks in here
-		- Grow grass, delete leaves without a tree
-		- Spawn some mobs based on some rules
-		- Transform cobble to mossy cobble near water
-		- Run a custom script
-		- ...And all kinds of other dynamic stuff
-	+ Keep track of when a block becomes active and becomes inactive
-	+ When a block goes inactive:
-		+ Store objects statically to block
-		+ Store timer value as the timestamp
-	+ When a block goes active:
-		+ Create active objects out of static objects
-		TODO: Make proper hooks in here
-		- Simulate the results of what would have happened if it would have
-		  been active for all the time
-		  	- Grow a lot of grass and so on
-	+ Initially it is fine to send information about every active object
-	  to every player. Eventually it should be modified to only send info
-	  about the nearest ones.
-	  	+ This was left to be done by the old system and it sends only the
-		  nearest ones.
+TODO: Add proper hooks to when adding and removing active blocks
+
+TODO: Finish the ActiveBlockModifier stuff and use it for something
 
 Objects:
 --------
@@ -287,6 +299,7 @@ TODO: Get rid of MapBlockObjects and use only ActiveObjects
 
 SUGG: MovingObject::move and Player::move are basically the same.
       combine them.
+	- NOTE: This is a bit tricky because player has the sneaking ability
 	- NOTE: Player::move is more up-to-date.
 	- NOTE: There is a simple move implementation now in collision.{h,cpp}
 	- NOTE: MovingObject will be deleted (MapBlockObject)
@@ -305,58 +318,24 @@ TODO: Mineral and ground material properties
 TODO: Flowing water to actually contain flow direction information
       - There is a space for this - it just has to be implemented.
 
-SUGG: Try out the notch way of generating maps, that is, make bunches
-      of low-res 3d noise and interpolate linearly.
-
-Mapgen v2 (the current one):
-* Possibly add some kind of erosion and other stuff
-* Better water generation (spread it to underwater caverns but don't
-  fill dungeons that don't touch big water masses)
-* When generating a chunk and the neighboring chunk doesn't have mud
-  and stuff yet and the ground is fairly flat, the mud will flow to
-  the other chunk making nasty straight walls when the other chunk
-  is generated. Fix it. Maybe just a special case if the ground is
-  flat?
-* Consider not updating this one and make a good mainly block-based
-  generator
-
-SUGG: Make two "modified states", one that forces the block to be saved at
-	the next save event, and one that makes the block to be saved at exit
-	time.
-
-TODO: Add a not_fully_generated flag to MapBlock, which would be set for
-	blocks that contain eg. trees from neighboring generations but haven't
-	been generated itself. This is required for the future generator.
+TODO: Consider smoothening cave floors after generating them
 
 Misc. stuff:
 ------------
-- Make sure server handles removing grass when a block is placed (etc)
-    - The client should not do it by itself
-- Block cube placement around player's head
-- Protocol version field
-- Consider getting some textures from cisoun's texture pack
-	- Ask from Cisoun
-- Make sure the fence implementation and data format is good
-	- Think about using same bits for material for fences and doors, for
-	example
-- Finish the ActiveBlockModifier stuff and use it for something
-- Move mineral to param2, increment map serialization version, add conversion
-
-TODO: Add a per-sector database to store surface stuff as simple flags/values
-      - Light?
-	  - A building?
-	  And at some point make the server send this data to the client too,
-	  instead of referring to the noise functions
-	  - Ground height
-	  - Surface ground type
-	  - Trees?
+TODO: Make sure server handles removing grass when a block is placed (etc)
+      - The client should not do it by itself
+	  - NOTE: I think nobody does it currently...
+TODO: Block cube placement around player's head
+TODO: Protocol version field
+TODO: Think about using same bits for material for fences and doors, for
+	  example
+TODO: Move mineral to param2, increment map serialization version, add
+      conversion
 
 TODO: Restart irrlicht completely when coming back to main menu from game.
 	- This gets rid of everything that is stored in irrlicht's caches.
 
 TODO: Merge bahamada's audio stuff (clean patch available)
-
-TODO: Merge spongie's chest/furnace direction (by hand)
 
 TODO: Merge key configuration menu (no clean patch available)
 
@@ -374,9 +353,6 @@ Stuff to do after release:
 
 Doing currently:
 ----------------
-
-TODO: Use MapBlock::resetUsageTimer() in appropriate places
-      (on client and server)
 
 ======================================================================
 
@@ -406,16 +382,12 @@ TODO: Use MapBlock::resetUsageTimer() in appropriate places
 
 #include <iostream>
 #include <fstream>
-//#include <jmutexautolock.h>
 #include <locale.h>
 #include "main.h"
 #include "common_irrlicht.h"
 #include "debug.h"
-//#include "map.h"
-//#include "player.h"
 #include "test.h"
 #include "server.h"
-//#include "client.h"
 #include "constants.h"
 #include "porting.h"
 #include "gettime.h"
@@ -424,11 +396,10 @@ TODO: Use MapBlock::resetUsageTimer() in appropriate places
 #include "config.h"
 #include "guiMainMenu.h"
 #include "mineral.h"
-//#include "noise.h"
-//#include "tile.h"
 #include "materials.h"
 #include "game.h"
 #include "keycode.h"
+#include "tile.h"
 
 // This makes textures
 ITextureSource *g_texturesource = NULL;

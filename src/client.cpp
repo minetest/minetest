@@ -25,6 +25,105 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "main.h"
 #include <sstream>
 #include "porting.h"
+#include "mapsector.h"
+#include "mapblock_mesh.h"
+#include "mapblock.h"
+
+/*
+	QueuedMeshUpdate
+*/
+
+QueuedMeshUpdate::QueuedMeshUpdate():
+	p(-1337,-1337,-1337),
+	data(NULL),
+	ack_block_to_server(false)
+{
+}
+
+QueuedMeshUpdate::~QueuedMeshUpdate()
+{
+	if(data)
+		delete data;
+}
+
+/*
+	MeshUpdateQueue
+*/
+	
+MeshUpdateQueue::MeshUpdateQueue()
+{
+	m_mutex.Init();
+}
+
+MeshUpdateQueue::~MeshUpdateQueue()
+{
+	JMutexAutoLock lock(m_mutex);
+
+	core::list<QueuedMeshUpdate*>::Iterator i;
+	for(i=m_queue.begin(); i!=m_queue.end(); i++)
+	{
+		QueuedMeshUpdate *q = *i;
+		delete q;
+	}
+}
+
+/*
+	peer_id=0 adds with nobody to send to
+*/
+void MeshUpdateQueue::addBlock(v3s16 p, MeshMakeData *data, bool ack_block_to_server)
+{
+	DSTACK(__FUNCTION_NAME);
+
+	assert(data);
+
+	JMutexAutoLock lock(m_mutex);
+
+	/*
+		Find if block is already in queue.
+		If it is, update the data and quit.
+	*/
+	core::list<QueuedMeshUpdate*>::Iterator i;
+	for(i=m_queue.begin(); i!=m_queue.end(); i++)
+	{
+		QueuedMeshUpdate *q = *i;
+		if(q->p == p)
+		{
+			if(q->data)
+				delete q->data;
+			q->data = data;
+			if(ack_block_to_server)
+				q->ack_block_to_server = true;
+			return;
+		}
+	}
+	
+	/*
+		Add the block
+	*/
+	QueuedMeshUpdate *q = new QueuedMeshUpdate;
+	q->p = p;
+	q->data = data;
+	q->ack_block_to_server = ack_block_to_server;
+	m_queue.push_back(q);
+}
+
+// Returned pointer must be deleted
+// Returns NULL if queue is empty
+QueuedMeshUpdate * MeshUpdateQueue::pop()
+{
+	JMutexAutoLock lock(m_mutex);
+
+	core::list<QueuedMeshUpdate*>::Iterator i = m_queue.begin();
+	if(i == m_queue.end())
+		return NULL;
+	QueuedMeshUpdate *q = *i;
+	m_queue.erase(i);
+	return q;
+}
+
+/*
+	MeshUpdateThread
+*/
 
 void * MeshUpdateThread::Thread()
 {
@@ -36,6 +135,15 @@ void * MeshUpdateThread::Thread()
 
 	while(getRun())
 	{
+		/*// Wait for output queue to flush.
+		// Allow 2 in queue, this makes less frametime jitter.
+		// Umm actually, there is no much difference
+		if(m_queue_out.size() >= 2)
+		{
+			sleep_ms(3);
+			continue;
+		}*/
+
 		QueuedMeshUpdate *q = m_queue_in.pop();
 		if(q == NULL)
 		{
@@ -91,7 +199,7 @@ Client::Client(
 	m_access_denied(false)
 {
 	m_packetcounter_timer = 0.0;
-	m_delete_unused_sectors_timer = 0.0;
+	//m_delete_unused_sectors_timer = 0.0;
 	m_connection_reinit_timer = 0.0;
 	m_avg_rtt_timer = 0.0;
 	m_playerpos_send_timer = 0.0;
@@ -195,7 +303,11 @@ void Client::step(float dtime)
 			m_packetcounter.clear();
 		}
 	}
+	
+	// Get connection status
+	bool connected = connectedAndInitialized();
 
+#if 0
 	{
 		/*
 			Delete unused sectors
@@ -225,16 +337,16 @@ void Client::step(float dtime)
 					true, &deleted_blocks);*/
 			
 			// Delete whole sectors
-			u32 num = m_env.getMap().unloadUnusedData
+			m_env.getMap().unloadUnusedData
 					(delete_unused_sectors_timeout,
-					false, &deleted_blocks);
+					&deleted_blocks);
 
-			if(num > 0)
+			if(deleted_blocks.size() > 0)
 			{
 				/*dstream<<DTIME<<"Client: Deleted blocks of "<<num
 						<<" unused sectors"<<std::endl;*/
-				dstream<<DTIME<<"Client: Deleted "<<num
-						<<" unused sectors"<<std::endl;
+				/*dstream<<DTIME<<"Client: Deleted "<<num
+						<<" unused sectors"<<std::endl;*/
 				
 				/*
 					Send info to server
@@ -284,8 +396,7 @@ void Client::step(float dtime)
 			}
 		}
 	}
-
-	bool connected = connectedAndInitialized();
+#endif
 
 	if(connected == false)
 	{
@@ -331,6 +442,67 @@ void Client::step(float dtime)
 	*/
 	
 	/*
+		Run Map's timers and unload unused data
+	*/
+	const float map_timer_and_unload_dtime = 5.25;
+	if(m_map_timer_and_unload_interval.step(dtime, map_timer_and_unload_dtime))
+	{
+		ScopeProfiler sp(&g_profiler, "Client: map timer and unload");
+		core::list<v3s16> deleted_blocks;
+		m_env.getMap().timerUpdate(map_timer_and_unload_dtime,
+				g_settings.getFloat("client_unload_unused_data_timeout"),
+				&deleted_blocks);
+				
+		/*if(deleted_blocks.size() > 0)
+			dstream<<"Client: Unloaded "<<deleted_blocks.size()
+					<<" unused blocks"<<std::endl;*/
+			
+		/*
+			Send info to server
+			NOTE: This loop is intentionally iterated the way it is.
+		*/
+
+		core::list<v3s16>::Iterator i = deleted_blocks.begin();
+		core::list<v3s16> sendlist;
+		for(;;)
+		{
+			if(sendlist.size() == 255 || i == deleted_blocks.end())
+			{
+				if(sendlist.size() == 0)
+					break;
+				/*
+					[0] u16 command
+					[2] u8 count
+					[3] v3s16 pos_0
+					[3+6] v3s16 pos_1
+					...
+				*/
+				u32 replysize = 2+1+6*sendlist.size();
+				SharedBuffer<u8> reply(replysize);
+				writeU16(&reply[0], TOSERVER_DELETEDBLOCKS);
+				reply[2] = sendlist.size();
+				u32 k = 0;
+				for(core::list<v3s16>::Iterator
+						j = sendlist.begin();
+						j != sendlist.end(); j++)
+				{
+					writeV3S16(&reply[2+1+6*k], *j);
+					k++;
+				}
+				m_con.Send(PEER_ID_SERVER, 1, reply, true);
+
+				if(i == deleted_blocks.end())
+					break;
+
+				sendlist.clear();
+			}
+
+			sendlist.push_back(*i);
+			i++;
+		}
+	}
+
+	/*
 		Handle environment
 	*/
 	{
@@ -345,23 +517,23 @@ void Client::step(float dtime)
 		//TimeTaker envtimer("env step", m_device);
 		// Step environment
 		m_env.step(dtime);
-
-		// Step active blocks
+		
+		/*
+			Handle active blocks
+			NOTE: These old objects are DEPRECATED. TODO: Remove
+		*/
 		for(core::map<v3s16, bool>::Iterator
 				i = m_active_blocks.getIterator();
 				i.atEnd() == false; i++)
 		{
 			v3s16 p = i.getNode()->getKey();
 
-			MapBlock *block = NULL;
-			try
-			{
-				block = m_env.getMap().getBlockNoCreate(p);
-				block->stepObjects(dtime, false, m_env.getDayNightRatio());
-			}
-			catch(InvalidPositionException &e)
-			{
-			}
+			MapBlock *block = m_env.getMap().getBlockNoCreateNoEx(p);
+			if(block == NULL)
+				continue;
+			
+			// Step MapBlockObjects
+			block->stepObjects(dtime, false, m_env.getDayNightRatio());
 		}
 
 		/*
@@ -695,78 +867,43 @@ void Client::ProcessData(u8 *data, u32 datasize, u16 sender_peer_id)
 		MapSector *sector;
 		MapBlock *block;
 		
-		{ //envlock
-			//JMutexAutoLock envlock(m_env_mutex); //bulk comment-out
-			
-			v2s16 p2d(p.X, p.Z);
-			sector = m_env.getMap().emergeSector(p2d);
-			
-			v2s16 sp = sector->getPos();
-			if(sp != p2d)
-			{
-				dstream<<"ERROR: Got sector with getPos()="
-						<<"("<<sp.X<<","<<sp.Y<<"), tried to get"
-						<<"("<<p2d.X<<","<<p2d.Y<<")"<<std::endl;
-			}
+		v2s16 p2d(p.X, p.Z);
+		sector = m_env.getMap().emergeSector(p2d);
+		
+		assert(sector->getPos() == p2d);
 
-			assert(sp == p2d);
-			//assert(sector->getPos() == p2d);
+		//TimeTaker timer("MapBlock deSerialize");
+		// 0ms
+		
+		block = sector->getBlockNoCreateNoEx(p.Y);
+		if(block)
+		{
+			/*
+				Update an existing block
+			*/
+			//dstream<<"Updating"<<std::endl;
+			block->deSerialize(istr, ser_version);
+		}
+		else
+		{
+			/*
+				Create a new block
+			*/
+			//dstream<<"Creating new"<<std::endl;
+			block = new MapBlock(&m_env.getMap(), p);
+			block->deSerialize(istr, ser_version);
+			sector->insertBlock(block);
 
-			//TimeTaker timer("MapBlock deSerialize");
-			// 0ms
-			
-			try{
-				block = sector->getBlockNoCreate(p.Y);
-				/*
-					Update an existing block
-				*/
-				//dstream<<"Updating"<<std::endl;
-				block->deSerialize(istr, ser_version);
-				//block->setChangedFlag();
-			}
-			catch(InvalidPositionException &e)
-			{
-				/*
-					Create a new block
-				*/
-				//dstream<<"Creating new"<<std::endl;
-				block = new MapBlock(&m_env.getMap(), p);
-				block->deSerialize(istr, ser_version);
-				sector->insertBlock(block);
-				//block->setChangedFlag();
-
-				//DEBUG
-				/*NodeMod mod;
-				mod.type = NODEMOD_CHANGECONTENT;
-				mod.param = CONTENT_MESE;
-				block->setTempMod(v3s16(8,10,8), mod);
-				block->setTempMod(v3s16(8,9,8), mod);
-				block->setTempMod(v3s16(8,8,8), mod);
-				block->setTempMod(v3s16(8,7,8), mod);
-				block->setTempMod(v3s16(8,6,8), mod);*/
-#if 0
-				/*
-					Add some coulds
-					Well, this is a dumb way to do it, they should just
-					be drawn as separate objects. But the looks of them
-					can be tested this way.
-				*/
-				if(p.Y == 3)
-				{
-					NodeMod mod;
-					mod.type = NODEMOD_CHANGECONTENT;
-					mod.param = CONTENT_CLOUD;
-					v3s16 p2;
-					p2.Y = 8;
-					for(p2.X=3; p2.X<=13; p2.X++)
-					for(p2.Z=3; p2.Z<=13; p2.Z++)
-					{
-						block->setTempMod(p2, mod);
-					}
-				}
-#endif
-			}
-		} //envlock
+			//DEBUG
+			/*NodeMod mod;
+			mod.type = NODEMOD_CHANGECONTENT;
+			mod.param = CONTENT_MESE;
+			block->setTempMod(v3s16(8,10,8), mod);
+			block->setTempMod(v3s16(8,9,8), mod);
+			block->setTempMod(v3s16(8,8,8), mod);
+			block->setTempMod(v3s16(8,7,8), mod);
+			block->setTempMod(v3s16(8,6,8), mod);*/
+		}
 
 #if 0
 		/*
@@ -798,6 +935,7 @@ void Client::ProcessData(u8 *data, u32 datasize, u16 sender_peer_id)
 		/*
 			Add it to mesh update queue and set it to be acknowledged after update.
 		*/
+		//std::cerr<<"Adding mesh update task for received block"<<std::endl;
 		addUpdateMeshTaskWithEdge(p, true);
 	}
 	else if(command == TOCLIENT_PLAYERPOS)
@@ -974,6 +1112,8 @@ void Client::ProcessData(u8 *data, u32 datasize, u16 sender_peer_id)
 	}
 	else if(command == TOCLIENT_SECTORMETA)
 	{
+		dstream<<"Client received DEPRECATED TOCLIENT_SECTORMETA"<<std::endl;
+#if 0
 		/*
 			[0] u16 command
 			[2] u8 sector count
@@ -1009,6 +1149,7 @@ void Client::ProcessData(u8 *data, u32 datasize, u16 sender_peer_id)
 				((ClientMap&)m_env.getMap()).deSerializeSector(pos, is);
 			}
 		} //envlock
+#endif
 	}
 	else if(command == TOCLIENT_INVENTORY)
 	{
@@ -1105,6 +1246,7 @@ void Client::ProcessData(u8 *data, u32 datasize, u16 sender_peer_id)
 
 		/*
 			Read block objects
+			NOTE: Deprecated stuff here, TODO: Remove
 		*/
 
 		// Read active block count
@@ -1753,7 +1895,7 @@ void Client::addNode(v3s16 p, MapNode n)
 
 	try
 	{
-		TimeTaker timer3("Client::addNode(): addNodeAndUpdate");
+		//TimeTaker timer3("Client::addNode(): addNodeAndUpdate");
 		m_env.getMap().addNodeAndUpdate(p, n, modified_blocks);
 	}
 	catch(InvalidPositionException &e)
@@ -1981,12 +2123,6 @@ void Client::printDebugInfo(std::ostream &os)
 		<<std::endl;*/
 }
 	
-/*s32 Client::getDayNightIndex()
-{
-	assert(m_daynight_i >= 0 && m_daynight_i < DAYNIGHT_CACHE_COUNT);
-	return m_daynight_i;
-}*/
-
 u32 Client::getDayNightRatio()
 {
 	//JMutexAutoLock envlock(m_env_mutex); //bulk comment-out
@@ -2000,6 +2136,40 @@ u16 Client::getHP()
 	return player->hp;
 }
 
+void Client::setTempMod(v3s16 p, NodeMod mod)
+{
+	//JMutexAutoLock envlock(m_env_mutex); //bulk comment-out
+	assert(m_env.getMap().mapType() == MAPTYPE_CLIENT);
+
+	core::map<v3s16, MapBlock*> affected_blocks;
+	((ClientMap&)m_env.getMap()).setTempMod(p, mod,
+			&affected_blocks);
+
+	for(core::map<v3s16, MapBlock*>::Iterator
+			i = affected_blocks.getIterator();
+			i.atEnd() == false; i++)
+	{
+		i.getNode()->getValue()->updateMesh(m_env.getDayNightRatio());
+	}
+}
+
+void Client::clearTempMod(v3s16 p)
+{
+	//JMutexAutoLock envlock(m_env_mutex); //bulk comment-out
+	assert(m_env.getMap().mapType() == MAPTYPE_CLIENT);
+
+	core::map<v3s16, MapBlock*> affected_blocks;
+	((ClientMap&)m_env.getMap()).clearTempMod(p,
+			&affected_blocks);
+
+	for(core::map<v3s16, MapBlock*>::Iterator
+			i = affected_blocks.getIterator();
+			i.atEnd() == false; i++)
+	{
+		i.getNode()->getValue()->updateMesh(m_env.getDayNightRatio());
+	}
+}
+
 void Client::addUpdateMeshTask(v3s16 p, bool ack_to_server)
 {
 	/*dstream<<"Client::addUpdateMeshTask(): "
@@ -2009,7 +2179,7 @@ void Client::addUpdateMeshTask(v3s16 p, bool ack_to_server)
 	MapBlock *b = m_env.getMap().getBlockNoCreateNoEx(p);
 	if(b == NULL)
 		return;
-
+	
 	/*
 		Create a task to update the mesh of the block
 	*/
@@ -2018,7 +2188,8 @@ void Client::addUpdateMeshTask(v3s16 p, bool ack_to_server)
 	
 	{
 		//TimeTaker timer("data fill");
-		// 0ms
+		// Release: ~0ms
+		// Debug: 1-6ms, avg=2ms
 		data->fill(getDayNightRatio(), b);
 	}
 
@@ -2044,6 +2215,10 @@ void Client::addUpdateMeshTask(v3s16 p, bool ack_to_server)
 	}
 #endif
 
+	/*
+		Mark mesh as non-expired at this point so that it can already
+		be marked as expired again if the data changes
+	*/
 	b->setMeshExpired(false);
 }
 

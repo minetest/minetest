@@ -61,6 +61,7 @@ configure_file(
 )
 
 set(common_SRCS
+	content_sao.cpp
 	mapgen.cpp
 	content_inventory.cpp
 	content_nodemeta.cpp
@@ -102,6 +103,7 @@ set(common_SRCS
 # Client sources
 set(minetest_SRCS
 	${common_SRCS}
+	content_cao.cpp
 	mapblock_mesh.cpp
 	farmesh.cpp
 	keycode.cpp

@@ -25,6 +25,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "map.h"
 #include "inventory.h"
 #include "utility.h"
+#include "mapblock.h"
 
 /*
 	MapBlockObject
@@ -856,16 +857,7 @@ bool MapBlockObjectList::wrapObject(MapBlockObject *object)
 	assert(m_objects.find(object->m_id) != NULL);
 	assert(m_objects[object->m_id] == object);
 
-	NodeContainer *parentcontainer = m_block->getParent();
-	// This will only work if the parent is the map
-	if(parentcontainer->nodeContainerId() != NODECONTAINER_ID_MAP)
-	{
-		dstream<<"WARNING: Wrapping object not possible: "
-				"MapBlock's parent is not map"<<std::endl;
-		return true;
-	}
-	// OK, we have the map!
-	Map *map = (Map*)parentcontainer;
+	Map *map = m_block->getParent();
 	
 	// Calculate blockpos on map
 	v3s16 oldblock_pos_i_on_map = m_block->getPosRelative();

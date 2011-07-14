@@ -36,6 +36,11 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "map.h"
 #include <ostream>
 #include "utility.h"
+#include "activeobject.h"
+
+class Server;
+class ActiveBlockModifier;
+class ServerActiveObject;
 
 class Environment
 {
@@ -117,11 +122,6 @@ private:
 
 	This is not thread-safe. Server uses an environment mutex.
 */
-
-#include "serverobject.h"
-
-class Server;
-class ActiveBlockModifier;
 
 class ServerEnvironment : public Environment
 {
@@ -406,12 +406,16 @@ public:
 	
 	// Get event from queue. CEE_NONE is returned if queue is empty.
 	ClientEnvEvent getClientEvent();
+
+	// Post effects
+	void drawPostFx(video::IVideoDriver* driver, v3f camera_pos);
 	
 private:
 	ClientMap *m_map;
 	scene::ISceneManager *m_smgr;
 	core::map<u16, ClientActiveObject*> m_active_objects;
 	Queue<ClientEnvEvent> m_client_event_queue;
+	IntervalLimiter m_active_object_light_update_interval;
 };
 
 #endif

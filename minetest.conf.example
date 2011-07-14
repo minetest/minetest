@@ -9,25 +9,28 @@
 #
 # Further documentation:
 # http://celeron.55.lt/~celeron55/minetest/wiki/doku.php
+#
+# NOTE: This file might not be up-to-date, refer to the
+#       defaultsettings.cpp file for an up-to-date list:
+# https://bitbucket.org/celeron55/minetest/src/tip/src/defaultsettings.cpp
+#
+# A vim command to convert most of defaultsettings.cpp to conf file format:
+# :'<,'>s/\tg_settings\.setDefault("\([^"]*\)", "\([^"]*\)");.*/#\1 = \2/g
 
 #
-# Client side stuff
+# Client and server
 #
 
-# Initial window size
-#screenW = 800
-#screenH = 600
-
-# Port to connect to and to bind a server at
-#port = 30000
-
-# Address to connect to (blank = start local server)
-#address = 
-
-# Name of player. On server, this is the default admin.
+# Network port (UDP)
+#port = 
+# Name of player; on a server this is the main admin
 #name = 
 
-# Key configuration.
+#
+# Client stuff
+#
+
+# Key mappings
 # See http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3
 #keymap_forward = KEY_KEY_W
 #keymap_backward = KEY_KEY_S
@@ -38,108 +41,99 @@
 #keymap_inventory = KEY_KEY_I
 #keymap_chat = KEY_KEY_T
 #keymap_rangeselect = KEY_KEY_R
-# Some (temporary) keys for debugging features
+#keymap_freemove = KEY_KEY_K
+#keymap_fastmove = KEY_KEY_J
+#keymap_frametime_graph = KEY_F1
+#keymap_screenshot = KEY_F12
+# Some (temporary) keys for debugging
 #keymap_special1 = KEY_KEY_E
 #keymap_print_debug_stacks = KEY_KEY_P
 
-#invert_mouse = false
-
 # The desired FPS
 #wanted_fps = 30
-
 # If FPS would go higher than this, limit it by sleeping
 # (to not waste CPU power for no benefit)
 #fps_max = 60
-
 # The allowed adjustment range for the automatic rendering range adjustment
 #viewing_range_nodes_max = 300
-#viewing_range_nodes_min = 35
-
+#viewing_range_nodes_min = 25
+# Initial window size
+screenW# = 800
+screenH# = 600
+# Address to connect to (#blank = start local server)
+#address = 
+# Enable random user input, for testing
+#random_input = false
+# Timeout for client to remove unused map data from memory
+#client_unload_unused_data_timeout = 600
 # Whether to fog out the end of the visible area
 #enable_fog = true
-
-# Enable/disable clouds
-#enable_clouds = true
-
-# Experimental
-#enable_farmesh = false
-
-# Enable a bit lower water surface; disable for speed
-#new_style_water = true
-
+# Enable a bit lower water surface; disable for speed (not quite optimized)
+#new_style_water = false
 # Enable nice leaves; disable for speed
 #new_style_leaves = true
-
 # Enable smooth lighting with simple ambient occlusion;
 # disable for speed or for different looks.
 #smooth_lighting = true
-
 # Whether to draw a frametime graph (for debugging frametime)
 #frametime_graph = false
-
 # Enable combining mainly used textures to a bigger one for improved speed
 # disable if it causes graphics glitches.
 #enable_texture_atlas = true
-
 # Path to texture directory. All textures are first searched from here.
-#texture_path =
-
+#texture_path = 
 # Video back-end.
 # Possible values: null, software, burningsvideo, direct3d8, direct3d9, opengl
 #video_driver = opengl
-
-# Enable random user input, for testing
-#random_input = false
-
-# Timeout for client to remove unused map data from memory
-#client_delete_unused_sectors_timeout = 1200
+# Unobstructed movement without physics, downwards key is keymap_special1
+#free_move = false
+# Continuous forward movement (for testing)
+#continuous_forward = false
+# Fast movement (keymap_special1)
+#fast_move = false
+# Invert mouse
+#invert_mouse = false
+# FarMesh thingy
+#enable_farmesh = false
+# Enable/disable clouds
+#enable_clouds = true
+# Don't draw stone (for testing)
+#invisible_stone = false
+# Path for screenshots
+#screenshot_path = .
 
 #
-# Server side stuff
+# Server stuff
 #
 
 # Map directory (everything in the world is stored here)
-#map-dir = /home/palle/custom_map
-
+#map-#dir = /custom/map
+# Set to true to enable experimental features or stuff that is tested
+# (varies from version to version, usually not useful at all)
+#enable_experimental = false
 # Set to true to enable creative mode (unlimited inventory)
 #creative_mode = false
-
 #enable_damage = false
-
-#default_password = 
-
-# Available privileges: build, teleport, settime, privs, shout
-#default_privs = build, shout
-
 # Gives some stuff to players at the beginning
 #give_initial_stuff = false
-
-# Set to true to enable experimental features
-# (varies from version to version, see wiki)
-#enable_experimental = false
-
-# Profiler data print interval. 0 = disable.
-#profiler_print_interval = 10
+#default_password = 
+# Available privileges: build, teleport, settime, privs, shout
+#default_privs = build, shout
+# Profiler data print interval. #0 = disable.
+#profiler_print_interval = 0
+#enable_mapgen_debug_info = false
 
 # Player and object positions are sent at intervals specified by this
-#objectdata_inverval = 0.2
-
+#objectdata_interval = 0.2
 #active_object_range = 2
-
-#max_simultaneous_block_sends_per_client = 1
-#max_simultaneous_block_sends_server_total = 4
-
-#max_block_send_distance = 5
-#max_block_generate_distance = 4
-
-# 20 min/day
+#max_simultaneous_block_sends_per_client = 2
+#max_simultaneous_block_sends_server_total = 8
+#max_block_send_distance = 8
+#max_block_generate_distance = 8
+#time_send_interval = 20
+# Length of day/night cycle. 72=20min, 360=4min, 1=24hour
 #time_speed = 72
-# 4 min/day
-#time_speed = 360
-# 1 min/day
-#time_speed = 1440
-
-#time_send_interval = 5
-#server_unload_unused_sectors_timeout = 60
+#server_unload_unused_data_timeout = 60
 #server_map_save_interval = 60
+#full_block_send_enable_min_time_from_building = 2.0
 

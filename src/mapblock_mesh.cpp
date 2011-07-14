@@ -64,11 +64,7 @@ void MeshMakeData::fill(u32 daynight_ratio, MapBlock *block)
 		*/
 		
 		// Get map
-		NodeContainer *parentcontainer = block->getParent();
-		// This will only work if the parent is the map
-		assert(parentcontainer->nodeContainerId() == NODECONTAINER_ID_MAP);
-		// OK, we have the map!
-		Map *map = (Map*)parentcontainer;
+		Map *map = block->getParent();
 
 		for(u16 i=0; i<6; i++)
 		{

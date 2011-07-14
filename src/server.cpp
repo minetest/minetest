@@ -34,6 +34,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "content_mapnode.h"
 #include "content_craft.h"
 #include "content_nodemeta.h"
+#include "mapblock.h"
+#include "serverobject.h"
 
 #define BLOCK_EMERGE_FLAG_FROMDISK (1<<0)
 
@@ -600,6 +602,9 @@ void RemoteClient::GetNextBlocks(Server *server, float dtime,
 			bool block_is_invalid = false;
 			if(block != NULL)
 			{
+				// Reset usage timer, this block will be of use in the future.
+				block->resetUsageTimer();
+
 				// Block is dummy if data doesn't exist.
 				// It means it has been not found from disk and not generated
 				if(block->isDummy())
@@ -1295,11 +1300,20 @@ void Server::AsyncRunStep()
 	}
 
 	{
-		// Step environment
-		// This also runs Map's timers
 		JMutexAutoLock lock(m_env_mutex);
+		// Step environment
 		ScopeProfiler sp(&g_profiler, "Server: environment step");
 		m_env.step(dtime);
+	}
+		
+	const float map_timer_and_unload_dtime = 5.15;
+	if(m_map_timer_and_unload_interval.step(dtime, map_timer_and_unload_dtime))
+	{
+		JMutexAutoLock lock(m_env_mutex);
+		// Run Map's timers and unload unused data
+		ScopeProfiler sp(&g_profiler, "Server: map timer and unload");
+		m_env.getMap().timerUpdate(map_timer_and_unload_dtime,
+				g_settings.getFloat("server_unload_unused_data_timeout"));
 	}
 	
 	/*
@@ -1656,9 +1670,22 @@ void Server::AsyncRunStep()
 	*/
 	{
 		// Don't send too many at a time
-		u32 count = 0;
+		//u32 count = 0;
+
+		// Single change sending is disabled if queue size is not small
+		bool disable_single_change_sending = false;
+		if(m_unsent_map_edit_queue.size() >= 4)
+			disable_single_change_sending = true;
+
+		bool got_any_events = false;
+
+		// We'll log the amount of each
+		Profiler prof;
+
 		while(m_unsent_map_edit_queue.size() != 0)
 		{
+			got_any_events = true;
+
 			MapEditEvent* event = m_unsent_map_edit_queue.pop_front();
 			
 			// Players far away from the change are stored here.
@@ -1668,28 +1695,41 @@ void Server::AsyncRunStep()
 
 			if(event->type == MEET_ADDNODE)
 			{
-				dstream<<"Server: MEET_ADDNODE"<<std::endl;
-				sendAddNode(event->p, event->n, event->already_known_by_peer,
-						&far_players, 30);
+				//dstream<<"Server: MEET_ADDNODE"<<std::endl;
+				prof.add("MEET_ADDNODE", 1);
+				if(disable_single_change_sending)
+					sendAddNode(event->p, event->n, event->already_known_by_peer,
+							&far_players, 5);
+				else
+					sendAddNode(event->p, event->n, event->already_known_by_peer,
+							&far_players, 30);
 			}
 			else if(event->type == MEET_REMOVENODE)
 			{
-				dstream<<"Server: MEET_REMOVENODE"<<std::endl;
-				sendRemoveNode(event->p, event->already_known_by_peer,
-						&far_players, 30);
+				//dstream<<"Server: MEET_REMOVENODE"<<std::endl;
+				prof.add("MEET_REMOVENODE", 1);
+				if(disable_single_change_sending)
+					sendRemoveNode(event->p, event->already_known_by_peer,
+							&far_players, 5);
+				else
+					sendRemoveNode(event->p, event->already_known_by_peer,
+							&far_players, 30);
 			}
 			else if(event->type == MEET_BLOCK_NODE_METADATA_CHANGED)
 			{
 				dstream<<"Server: MEET_BLOCK_NODE_METADATA_CHANGED"<<std::endl;
+				prof.add("MEET_BLOCK_NODE_METADATA_CHANGED", 1);
 				setBlockNotSent(event->p);
 			}
 			else if(event->type == MEET_OTHER)
 			{
+				prof.add("MEET_OTHER", 1);
 				dstream<<"WARNING: Server: MEET_OTHER not implemented"
 						<<std::endl;
 			}
 			else
 			{
+				prof.add("unknown", 1);
 				dstream<<"WARNING: Server: Unknown MapEditEvent "
 						<<((u32)event->type)<<std::endl;
 			}
@@ -1697,32 +1737,45 @@ void Server::AsyncRunStep()
 			/*
 				Set blocks not sent to far players
 			*/
-			core::map<v3s16, MapBlock*> modified_blocks2;
-			for(core::map<v3s16, bool>::Iterator
-					i = event->modified_blocks.getIterator();
-					i.atEnd()==false; i++)
+			if(far_players.size() > 0)
 			{
-				v3s16 p = i.getNode()->getKey();
-				modified_blocks2.insert(p, m_env.getMap().getBlockNoCreateNoEx(p));
-			}
-			for(core::list<u16>::Iterator
-					i = far_players.begin();
-					i != far_players.end(); i++)
-			{
-				u16 peer_id = *i;
-				RemoteClient *client = getClient(peer_id);
-				if(client==NULL)
-					continue;
-				client->SetBlocksNotSent(modified_blocks2);
+				// Convert list format to that wanted by SetBlocksNotSent
+				core::map<v3s16, MapBlock*> modified_blocks2;
+				for(core::map<v3s16, bool>::Iterator
+						i = event->modified_blocks.getIterator();
+						i.atEnd()==false; i++)
+				{
+					v3s16 p = i.getNode()->getKey();
+					modified_blocks2.insert(p,
+							m_env.getMap().getBlockNoCreateNoEx(p));
+				}
+				// Set blocks not sent
+				for(core::list<u16>::Iterator
+						i = far_players.begin();
+						i != far_players.end(); i++)
+				{
+					u16 peer_id = *i;
+					RemoteClient *client = getClient(peer_id);
+					if(client==NULL)
+						continue;
+					client->SetBlocksNotSent(modified_blocks2);
+				}
 			}
 
 			delete event;
 
-			// Don't send too many at a time
+			/*// Don't send too many at a time
 			count++;
 			if(count >= 1 && m_unsent_map_edit_queue.size() < 100)
-				break;
+				break;*/
 		}
+
+		if(got_any_events)
+		{
+			dstream<<"Server: MapEditEvents:"<<std::endl;
+			prof.print(dstream);
+		}
+		
 	}
 
 	/*
@@ -1745,39 +1798,6 @@ void Server::AsyncRunStep()
 		}
 	}
 	
-	/*
-		Step node metadata
-		TODO: Move to ServerEnvironment and utilize active block stuff
-	*/
-	/*{
-		//TimeTaker timer("Step node metadata");
-
-		JMutexAutoLock envlock(m_env_mutex);
-		JMutexAutoLock conlock(m_con_mutex);
-
-		ScopeProfiler sp(&g_profiler, "Server: stepping node metadata");
-
-		core::map<v3s16, MapBlock*> changed_blocks;
-		m_env.getMap().nodeMetadataStep(dtime, changed_blocks);
-		
-		// Use setBlockNotSent
-
-		for(core::map<v3s16, MapBlock*>::Iterator
-				i = changed_blocks.getIterator();
-				i.atEnd() == false; i++)
-		{
-			MapBlock *block = i.getNode()->getValue();
-
-			for(core::map<u16, RemoteClient*>::Iterator
-				i = m_clients.getIterator();
-				i.atEnd()==false; i++)
-			{
-				RemoteClient *client = i.getNode()->getValue();
-				client->SetBlockNotSent(block->getPos());
-			}
-		}
-	}*/
-		
 	/*
 		Trigger emergethread (it somehow gets to a non-triggered but
 		bysy state sometimes)
@@ -1809,26 +1829,29 @@ void Server::AsyncRunStep()
 			
 			// Map
 			JMutexAutoLock lock(m_env_mutex);
-			if(((ServerMap*)(&m_env.getMap()))->isSavingEnabled() == true)
+
+			/*// Unload unused data (delete from memory)
+			m_env.getMap().unloadUnusedData(
+					g_settings.getFloat("server_unload_unused_sectors_timeout"));
+					*/
+			/*u32 deleted_count = m_env.getMap().unloadUnusedData(
+					g_settings.getFloat("server_unload_unused_sectors_timeout"));
+					*/
+
+			// Save only changed parts
+			m_env.getMap().save(true);
+
+			/*if(deleted_count > 0)
 			{
-				// Save only changed parts
-				m_env.getMap().save(true);
+				dout_server<<"Server: Unloaded "<<deleted_count
+						<<" blocks from memory"<<std::endl;
+			}*/
 
-				// Delete unused sectors
-				u32 deleted_count = m_env.getMap().unloadUnusedData(
-						g_settings.getFloat("server_unload_unused_sectors_timeout"));
-				if(deleted_count > 0)
-				{
-					dout_server<<"Server: Unloaded "<<deleted_count
-							<<" sectors from memory"<<std::endl;
-				}
-
-				// Save players
-				m_env.serializePlayers(m_mapsavedir);
-				
-				// Save environment metadata
-				m_env.saveMeta(m_mapsavedir);
-			}
+			// Save players
+			m_env.serializePlayers(m_mapsavedir);
+			
+			// Save environment metadata
+			m_env.saveMeta(m_mapsavedir);
 		}
 	}
 }
@@ -2392,8 +2415,12 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 							toolname = titem->getToolName();
 						}
 					}
+
+					v3f playerpos = player->getPosition();
+					v3f objpos = obj->getBasePosition();
+					v3f dir = (objpos - playerpos).normalize();
 					
-					u16 wear = obj->punch(toolname);
+					u16 wear = obj->punch(toolname, dir);
 					
 					if(titem)
 					{
@@ -2710,9 +2737,31 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 				MaterialItem *mitem = (MaterialItem*)item;
 				MapNode n;
 				n.d = mitem->getMaterial();
+
+				// Calculate direction for wall mounted stuff
 				if(content_features(n.d).wall_mounted)
 					n.dir = packDir(p_under - p_over);
-				
+
+				// Calculate the direction for furnaces and chests and stuff
+				if(content_features(n.d).param_type == CPT_FACEDIR_SIMPLE)
+				{
+					v3f playerpos = player->getPosition();
+					v3f blockpos = intToFloat(p_over, BS) - playerpos;
+					blockpos = blockpos.normalize();
+					n.param1 = 0;
+					if (fabs(blockpos.X) > fabs(blockpos.Z)) {
+						if (blockpos.X < 0)
+							n.param1 = 3;
+						else
+							n.param1 = 1;
+					} else {
+						if (blockpos.Z < 0)
+							n.param1 = 2;
+						else
+							n.param1 = 0;
+					}
+				}
+
 				/*
 					Send to all close-by players
 				*/
@@ -3286,7 +3335,7 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 
 void Server::onMapEditEvent(MapEditEvent *event)
 {
-	dstream<<"Server::onMapEditEvent()"<<std::endl;
+	//dstream<<"Server::onMapEditEvent()"<<std::endl;
 	if(m_ignore_map_edit_events)
 		return;
 	MapEditEvent *e = event->clone();
