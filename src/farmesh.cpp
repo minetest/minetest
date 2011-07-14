@@ -280,7 +280,8 @@ void FarMesh::render()
 		if(h_avg < WATER_LEVEL*BS && h_max < (WATER_LEVEL+5)*BS)
 		{
 			//c = video::SColor(255,59,86,146);
-			c = video::SColor(255,82,120,204);
+			//c = video::SColor(255,82,120,204);
+			c = video::SColor(255,74,105,170);
 
 			/*// Set to water level
 			for(u32 i=0; i<4; i++)

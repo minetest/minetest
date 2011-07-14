@@ -224,7 +224,6 @@ void content_mapnode_init()
 	// Deprecated
 	i = CONTENT_COALSTONE;
 	f = &content_features(i);
-	//f->translate_to = new MapNode(CONTENT_STONE, MINERAL_COAL);
 	f->setAllTextures("stone.png^mineral_coal.png");
 	f->is_ground_content = true;
 	setStoneLikeDiggingProperties(f->digging_properties, 1.5);

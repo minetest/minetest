@@ -28,7 +28,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 	MapBlock
 */
 
-MapBlock::MapBlock(NodeContainer *parent, v3s16 pos, bool dummy):
+MapBlock::MapBlock(Map *parent, v3s16 pos, bool dummy):
 		m_parent(parent),
 		m_pos(pos),
 		m_modified(MOD_STATE_WRITE_NEEDED),
@@ -38,7 +38,7 @@ MapBlock::MapBlock(NodeContainer *parent, v3s16 pos, bool dummy):
 		m_generated(false),
 		m_objects(this),
 		m_timestamp(BLOCK_TIMESTAMP_UNDEFINED),
-		m_usage_timer(BLOCK_TIMESTAMP_UNDEFINED)
+		m_usage_timer(0)
 {
 	data = NULL;
 	if(dummy == false)
@@ -607,24 +607,20 @@ void MapBlock::serialize(std::ostream &os, u8 version)
 			Get data
 		*/
 
+		// Serialize nodes
+		SharedBuffer<u8> databuf_nodelist(nodecount*3);
+		for(u32 i=0; i<nodecount; i++)
+		{
+			data[i].serialize(&databuf_nodelist[i*3], version);
+		}
+		
+		// Create buffer with different parameters sorted
 		SharedBuffer<u8> databuf(nodecount*3);
-
-		// Get contents
 		for(u32 i=0; i<nodecount; i++)
 		{
-			databuf[i] = data[i].d;
-		}
-
-		// Get params
-		for(u32 i=0; i<nodecount; i++)
-		{
-			databuf[i+nodecount] = data[i].param;
-		}
-
-		// Get param2
-		for(u32 i=0; i<nodecount; i++)
-		{
-			databuf[i+nodecount*2] = data[i].param2;
+			databuf[i] = databuf_nodelist[i*3];
+			databuf[i+nodecount] = databuf_nodelist[i*3+1];
+			databuf[i+nodecount*2] = databuf_nodelist[i*3+2];
 		}
 
 		/*
@@ -773,20 +769,14 @@ void MapBlock::deSerialize(std::istream &is, u8 version)
 					("MapBlock::deSerialize: decompress resulted in size"
 					" other than nodecount*3");
 
-		// Set contents
+		// deserialize nodes from buffer
 		for(u32 i=0; i<nodecount; i++)
 		{
-			data[i].d = s[i];
-		}
-		// Set params
-		for(u32 i=0; i<nodecount; i++)
-		{
-			data[i].param = s[i+nodecount];
-		}
-		// Set param2
-		for(u32 i=0; i<nodecount; i++)
-		{
-			data[i].param2 = s[i+nodecount*2];
+			u8 buf[3];
+			buf[0] = s[i];
+			buf[1] = s[i+nodecount];
+			buf[2] = s[i+nodecount*2];
+			data[i].deSerialize(buf, version);
 		}
 		
 		/*
@@ -816,25 +806,6 @@ void MapBlock::deSerialize(std::istream &is, u8 version)
 				dstream<<"WARNING: MapBlock::deSerialize(): Ignoring an error"
 						<<" while deserializing node metadata"<<std::endl;
 			}
-		}
-	}
-	
-	/*
-		Translate nodes as specified in the translate_to fields of
-		node features
-
-		NOTE: This isn't really used. Should it be removed?
-	*/
-	for(u32 i=0; i<MAP_BLOCKSIZE*MAP_BLOCKSIZE*MAP_BLOCKSIZE; i++)
-	{
-		MapNode &n = data[i];
-
-		MapNode *translate_to = content_features(n.d).translate_to;
-		if(translate_to)
-		{
-			dstream<<"MapBlock: WARNING: Translating node "<<n.d<<" to "
-					<<translate_to->d<<std::endl;
-			n = *translate_to;
 		}
 	}
 }

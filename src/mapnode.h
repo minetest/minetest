@@ -37,6 +37,13 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 */
 
 /*
+	Ranges:
+		0x000...0x07f: param2 is fully usable
+		0x800...0xfff: param2 lower 4 bytes are free
+*/
+typedef u16 content_t;
+
+/*
 	Initializes all kind of stuff in here.
 	Many things depend on this.
 
@@ -59,14 +66,16 @@ void init_mapnode();
 	Doesn't create faces with anything and is considered being
 	out-of-map in the game map.
 */
-#define CONTENT_IGNORE 255
+//#define CONTENT_IGNORE 255
+#define CONTENT_IGNORE 127
 #define CONTENT_IGNORE_DEFAULT_PARAM 0
 
 /*
 	The common material through which the player can walk and which
 	is transparent to light
 */
-#define CONTENT_AIR 254
+//#define CONTENT_AIR 254
+#define CONTENT_AIR 126
 
 /*
 	Content feature list
@@ -94,7 +103,7 @@ class NodeMetadata;
 struct ContentFeatures
 {
 	// If non-NULL, content is translated to this when deserialized
-	MapNode *translate_to;
+	//MapNode *translate_to;
 
 	// Type of MapNode::param
 	ContentParamType param_type;
@@ -156,7 +165,7 @@ struct ContentFeatures
 
 	void reset()
 	{
-		translate_to = NULL;
+		//translate_to = NULL;
 		param_type = CPT_NONE;
 		inventory_texture = NULL;
 		is_ground_content = false;
@@ -196,6 +205,8 @@ struct ContentFeatures
 		{
 			setTexture(i, name, alpha);
 		}
+		// Force inventory texture too
+		setInventoryTexture(name);
 	}
 
 	void setTile(u16 i, const TileSpec &tile)
@@ -399,20 +410,30 @@ enum LightBank
 
 struct MapNode
 {
-	// Content
-	u8 d;
+	/*
+		Main content
+		0x00-0x7f: Short content type
+		0x80-0xff: Long content type (param2>>4 makes up low bytes)
+	*/
+	union
+	{
+		u8 param0;
+		u8 d;
+	};
 
 	/*
 		Misc parameter. Initialized to 0.
 		- For light_propagates() blocks, this is light intensity,
 		  stored logarithmically from 0 to LIGHT_MAX.
 		  Sunlight is LIGHT_SUN, which is LIGHT_MAX+1.
-		- Contains 2 values, day- and night lighting. Each takes 4 bits.
+		  - Contains 2 values, day- and night lighting. Each takes 4 bits.
+		- Mineral content (should be removed from here)
+		- Uhh... well, most blocks have light or nothing in here.
 	*/
 	union
 	{
-		s8 param;
 		u8 param1;
+		s8 param;
 	};
 	
 	/*
@@ -437,19 +458,21 @@ struct MapNode
 		param2 = a_param2;
 	}
 
-	/*MapNode & operator=(const MapNode &other)
-	{
-		d = other.d;
-		param = other.param;
-		param2 = other.param2;
-		return *this;
-	}*/
-
 	bool operator==(const MapNode &other)
 	{
 		return (d == other.d
 				&& param == other.param
 				&& param2 == other.param2);
+	}
+	
+	// To be used everywhere
+	content_t getContent()
+	{
+		return d;
+	}
+	void setContent(content_t c)
+	{
+		d = c;
 	}
 	
 	/*
@@ -566,88 +589,15 @@ struct MapNode
 		MINERAL_NONE if doesn't contain or isn't able to contain mineral.
 	*/
 	u8 getMineral();
-
+	
 	/*
-		These serialization functions are used when informing client
-		of a single node add.
-
-		NOTE: When loading a MapBlock, these are not used. Should they?
+		Serialization functions
 	*/
 
-	static u32 serializedLength(u8 version)
-	{
-		if(!ser_ver_supported(version))
-			throw VersionMismatchException("ERROR: MapNode format not supported");
-			
-		if(version == 0)
-			return 1;
-		else if(version <= 9)
-			return 2;
-		else
-			return 3;
-	}
-	void serialize(u8 *dest, u8 version)
-	{
-		if(!ser_ver_supported(version))
-			throw VersionMismatchException("ERROR: MapNode format not supported");
-			
-		if(version == 0)
-		{
-			dest[0] = d;
-		}
-		else if(version <= 9)
-		{
-			dest[0] = d;
-			dest[1] = param;
-		}
-		else
-		{
-			dest[0] = d;
-			dest[1] = param;
-			dest[2] = param2;
-		}
-	}
-	void deSerialize(u8 *source, u8 version)
-	{
-		if(!ser_ver_supported(version))
-			throw VersionMismatchException("ERROR: MapNode format not supported");
-			
-		if(version == 0)
-		{
-			d = source[0];
-		}
-		else if(version == 1)
-		{
-			d = source[0];
-			// This version doesn't support saved lighting
-			if(light_propagates() || light_source() > 0)
-				param = 0;
-			else
-				param = source[1];
-		}
-		else if(version <= 9)
-		{
-			d = source[0];
-			param = source[1];
-		}
-		else
-		{
-			d = source[0];
-			param = source[1];
-			param2 = source[2];
-		}
-
-		// Translate deprecated stuff
-		// NOTE: This doesn't get used because MapBlock handles node
-		// parameters directly
-		MapNode *translate_to = content_features(d).translate_to;
-		if(translate_to)
-		{
-			dstream<<"MapNode: WARNING: Translating "<<d<<" to "
-					<<translate_to->d<<std::endl;
-			*this = *translate_to;
-		}
-	}
+	static u32 serializedLength(u8 version);
+	void serialize(u8 *dest, u8 version);
+	void deSerialize(u8 *source, u8 version);
+	
 };
 
 /*

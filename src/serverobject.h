@@ -78,8 +78,7 @@ public:
 			same time so that the data can be combined in a single
 			packet.
 	*/
-	virtual void step(float dtime, Queue<ActiveObjectMessage> &messages,
-			bool send_recommended){}
+	virtual void step(float dtime, bool send_recommended){}
 	
 	/*
 		The return value of this is passed to the client-side object
@@ -104,7 +103,8 @@ public:
 		If the object doesn't return an item, this will be called.
 		Return value is tool wear.
 	*/
-	virtual u16 punch(const std::string &toolname){return 0;}
+	virtual u16 punch(const std::string &toolname, v3f dir)
+	{return 0;}
 	
 	/*
 		Number of players which know about this object. Object won't be
@@ -144,6 +144,11 @@ public:
 	*/
 	v3s16 m_static_block;
 	
+	/*
+		Queue of messages to be sent to the client
+	*/
+	Queue<ActiveObjectMessage> m_messages_out;
+	
 protected:
 	// Used for creating objects based on type
 	typedef ServerActiveObject* (*Factory)
@@ -157,97 +162,6 @@ protected:
 private:
 	// Used for creating objects based on type
 	static core::map<u16, Factory> m_types;
-};
-
-class TestSAO : public ServerActiveObject
-{
-public:
-	TestSAO(ServerEnvironment *env, u16 id, v3f pos);
-	u8 getType() const
-		{return ACTIVEOBJECT_TYPE_TEST;}
-	static ServerActiveObject* create(ServerEnvironment *env, u16 id, v3f pos,
-			const std::string &data);
-	void step(float dtime, Queue<ActiveObjectMessage> &messages,
-			bool send_recommended);
-private:
-	float m_timer1;
-	float m_age;
-};
-
-class ItemSAO : public ServerActiveObject
-{
-public:
-	ItemSAO(ServerEnvironment *env, u16 id, v3f pos,
-			const std::string inventorystring);
-	u8 getType() const
-		{return ACTIVEOBJECT_TYPE_ITEM;}
-	static ServerActiveObject* create(ServerEnvironment *env, u16 id, v3f pos,
-			const std::string &data);
-	void step(float dtime, Queue<ActiveObjectMessage> &messages,
-			bool send_recommended);
-	std::string getClientInitializationData();
-	std::string getStaticData();
-	InventoryItem* createInventoryItem();
-	InventoryItem* createPickedUpItem(){return createInventoryItem();}
-private:
-	std::string m_inventorystring;
-	v3f m_speed_f;
-	v3f m_last_sent_position;
-	IntervalLimiter m_move_interval;
-};
-
-class RatSAO : public ServerActiveObject
-{
-public:
-	RatSAO(ServerEnvironment *env, u16 id, v3f pos);
-	u8 getType() const
-		{return ACTIVEOBJECT_TYPE_RAT;}
-	static ServerActiveObject* create(ServerEnvironment *env, u16 id, v3f pos,
-			const std::string &data);
-	void step(float dtime, Queue<ActiveObjectMessage> &messages,
-			bool send_recommended);
-	std::string getClientInitializationData();
-	std::string getStaticData();
-	InventoryItem* createPickedUpItem();
-private:
-	bool m_is_active;
-	IntervalLimiter m_inactive_interval;
-	v3f m_speed_f;
-	v3f m_oldpos;
-	v3f m_last_sent_position;
-	float m_yaw;
-	float m_counter1;
-	float m_counter2;
-	float m_age;
-	bool m_touching_ground;
-};
-
-class Oerkki1SAO : public ServerActiveObject
-{
-public:
-	Oerkki1SAO(ServerEnvironment *env, u16 id, v3f pos);
-	u8 getType() const
-		{return ACTIVEOBJECT_TYPE_OERKKI1;}
-	static ServerActiveObject* create(ServerEnvironment *env, u16 id, v3f pos,
-			const std::string &data);
-	void step(float dtime, Queue<ActiveObjectMessage> &messages,
-			bool send_recommended);
-	std::string getClientInitializationData();
-	std::string getStaticData();
-	InventoryItem* createPickedUpItem(){return NULL;}
-	u16 punch(const std::string &toolname);
-private:
-	bool m_is_active;
-	IntervalLimiter m_inactive_interval;
-	v3f m_speed_f;
-	v3f m_oldpos;
-	v3f m_last_sent_position;
-	float m_yaw;
-	float m_counter1;
-	float m_counter2;
-	float m_age;
-	bool m_touching_ground;
-	u8 m_hp;
 };
 
 #endif

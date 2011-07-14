@@ -238,7 +238,11 @@ double noise3d_param(const NoiseParams &param, double x, double y, double z)
 	y /= s;
 	z /= s;
 
-	if(param.type == NOISE_PERLIN)
+	if(param.type == NOISE_CONSTANT_ONE)
+	{
+		return 1.0;
+	}
+	else if(param.type == NOISE_PERLIN)
 	{
 		return param.noise_scale*noise3d_perlin(x,y,z, param.seed,
 				param.octaves,

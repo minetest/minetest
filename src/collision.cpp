@@ -182,4 +182,58 @@ collisionMoveResult collisionMoveSimple(Map *map, f32 pos_max_d,
 	return result;
 }
 
+collisionMoveResult collisionMovePrecise(Map *map, f32 pos_max_d,
+		const core::aabbox3d<f32> &box_0,
+		f32 dtime, v3f &pos_f, v3f &speed_f)
+{
+	collisionMoveResult final_result;
+
+	// Maximum time increment (for collision detection etc)
+	// time = distance / speed
+	f32 dtime_max_increment = pos_max_d / speed_f.getLength();
+	
+	// Maximum time increment is 10ms or lower
+	if(dtime_max_increment > 0.01)
+		dtime_max_increment = 0.01;
+	
+	// Don't allow overly huge dtime
+	if(dtime > 2.0)
+		dtime = 2.0;
+	
+	f32 dtime_downcount = dtime;
+
+	u32 loopcount = 0;
+	do
+	{
+		loopcount++;
+
+		f32 dtime_part;
+		if(dtime_downcount > dtime_max_increment)
+		{
+			dtime_part = dtime_max_increment;
+			dtime_downcount -= dtime_part;
+		}
+		else
+		{
+			dtime_part = dtime_downcount;
+			/*
+				Setting this to 0 (no -=dtime_part) disables an infinite loop
+				when dtime_part is so small that dtime_downcount -= dtime_part
+				does nothing
+			*/
+			dtime_downcount = 0;
+		}
+
+		collisionMoveResult result = collisionMoveSimple(map, pos_max_d,
+				box_0, dtime_part, pos_f, speed_f);
+
+		if(result.touching_ground)
+			final_result.touching_ground = true;
+	}
+	while(dtime_downcount > 0.001);
+		
+
+	return final_result;
+}
+
 

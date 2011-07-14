@@ -53,12 +53,13 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 	15: StaticObjects
 	16: larger maximum size of node metadata, and compression
 	17: MapBlocks contain timestamp
-	18: sqlite/new generator/whatever
+	18: new generator (not really necessary, but it's there)
+	19: new content type handling
 */
 // This represents an uninitialized or invalid format
 #define SER_FMT_VER_INVALID 255
 // Highest supported serialization version
-#define SER_FMT_VER_HIGHEST 18
+#define SER_FMT_VER_HIGHEST 19
 // Lowest supported serialization version
 #define SER_FMT_VER_LOWEST 0
 

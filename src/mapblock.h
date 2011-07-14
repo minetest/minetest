@@ -38,6 +38,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 	#include "mapblock_mesh.h"
 #endif
 
+class Map;
 
 #define BLOCK_TIMESTAMP_UNDEFINED 0xffffffff
 
@@ -81,6 +82,7 @@ enum ModifiedState
 	BLOCKGEN_FULLY_GENERATED=6
 };*/
 
+#if 0
 enum
 {
 	NODECONTAINER_ID_MAPBLOCK,
@@ -108,23 +110,24 @@ public:
 		}
 	}
 };
+#endif
 
 /*
 	MapBlock itself
 */
 
-class MapBlock : public NodeContainer
+class MapBlock /*: public NodeContainer*/
 {
 public:
-	MapBlock(NodeContainer *parent, v3s16 pos, bool dummy=false);
+	MapBlock(Map *parent, v3s16 pos, bool dummy=false);
 	~MapBlock();
 	
-	virtual u16 nodeContainerId() const
+	/*virtual u16 nodeContainerId() const
 	{
 		return NODECONTAINER_ID_MAPBLOCK;
-	}
+	}*/
 	
-	NodeContainer * getParent()
+	Map * getParent()
 	{
 		return m_parent;
 	}
@@ -640,7 +643,7 @@ private:
 	*/
 
 	// NOTE: Lots of things rely on this being the Map
-	NodeContainer *m_parent;
+	Map *m_parent;
 	// Position in blocks on parent
 	v3s16 m_pos;
 	

@@ -25,7 +25,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 extern Settings g_settings;
 
 // This makes and maps textures
-#include "tile.h"
+class ITextureSource;
 extern ITextureSource *g_texturesource;
 
 // Global profiler

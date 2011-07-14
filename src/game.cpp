@@ -30,8 +30,12 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "clouds.h"
 #include "keycode.h"
 #include "farmesh.h"
+#include "mapblock.h"
 
-// TODO: Move content-aware stuff to separate file
+/*
+	TODO: Move content-aware stuff to separate file by adding properties
+	      and virtual interfaces
+*/
 #include "content_mapnode.h"
 #include "content_nodemeta.h"
 
@@ -672,6 +676,34 @@ void update_skybox(video::IVideoDriver* driver,
 	}
 }
 
+/*
+	Draws a screen with a single text on it.
+	Text will be removed when the screen is drawn the next time.
+*/
+/*gui::IGUIStaticText **/
+void draw_load_screen(const std::wstring &text,
+		video::IVideoDriver* driver, gui::IGUIFont* font)
+{
+	v2u32 screensize = driver->getScreenSize();
+	const wchar_t *loadingtext = text.c_str();
+	core::vector2d<u32> textsize_u = font->getDimension(loadingtext);
+	core::vector2d<s32> textsize(textsize_u.X,textsize_u.Y);
+	core::vector2d<s32> center(screensize.X/2, screensize.Y/2);
+	core::rect<s32> textrect(center - textsize/2, center + textsize/2);
+
+	gui::IGUIStaticText *guitext = guienv->addStaticText(
+			loadingtext, textrect, false, false);
+	guitext->setTextAlignment(gui::EGUIA_CENTER, gui::EGUIA_UPPERLEFT);
+
+	driver->beginScene(true, true, video::SColor(255,0,0,0));
+	guienv->drawAll();
+	driver->endScene();
+	
+	guitext->remove();
+	
+	//return guitext;
+}
+
 void the_game(
 	bool &kill,
 	bool random_input,
@@ -688,13 +720,18 @@ void the_game(
 {
 	video::IVideoDriver* driver = device->getVideoDriver();
 	scene::ISceneManager* smgr = device->getSceneManager();
+	
+	// Calculate text height using the font
+	u32 text_height = font->getDimension(L"Random test string").Height;
 
 	v2u32 screensize(0,0);
 	v2u32 last_screensize(0,0);
 	screensize = driver->getScreenSize();
 
 	const s32 hotbar_itemcount = 8;
-	const s32 hotbar_imagesize = 36;
+	//const s32 hotbar_imagesize = 36;
+	//const s32 hotbar_imagesize = 64;
+	s32 hotbar_imagesize = 48;
 	
 	// The color of the sky
 
@@ -705,20 +742,10 @@ void the_game(
 	/*
 		Draw "Loading" screen
 	*/
-	const wchar_t *loadingtext = L"Loading and connecting...";
-	u32 text_height = font->getDimension(loadingtext).Height;
-	core::vector2d<s32> center(screensize.X/2, screensize.Y/2);
-	core::vector2d<s32> textsize(300, text_height);
-	core::rect<s32> textrect(center - textsize/2, center + textsize/2);
+	/*gui::IGUIStaticText *gui_loadingtext = */
+	//draw_load_screen(L"Loading and connecting...", driver, font);
 
-	gui::IGUIStaticText *gui_loadingtext = guienv->addStaticText(
-			loadingtext, textrect, false, false);
-	gui_loadingtext->setTextAlignment(gui::EGUIA_CENTER, gui::EGUIA_UPPERLEFT);
-
-	driver->beginScene(true, true, video::SColor(255,0,0,0));
-	guienv->drawAll();
-	driver->endScene();
-
+	draw_load_screen(L"Loading...", driver, font);
 	
 	/*
 		Create server.
@@ -726,6 +753,7 @@ void the_game(
 	*/
 	SharedPtr<Server> server;
 	if(address == ""){
+		draw_load_screen(L"Creating server...", driver, font);
 		std::cout<<DTIME<<"Creating server"<<std::endl;
 		server = new Server(map_dir);
 		server->start(port);
@@ -735,9 +763,11 @@ void the_game(
 		Create client
 	*/
 
+	draw_load_screen(L"Creating client...", driver, font);
 	std::cout<<DTIME<<"Creating client"<<std::endl;
 	Client client(device, playername.c_str(), password, draw_control);
 			
+	draw_load_screen(L"Resolving address...", driver, font);
 	Address connect_address(0,0,0,0, port);
 	try{
 		if(address == "")
@@ -751,7 +781,7 @@ void the_game(
 		std::cout<<DTIME<<"Couldn't resolve address"<<std::endl;
 		//return 0;
 		error_message = L"Couldn't resolve address";
-		gui_loadingtext->remove();
+		//gui_loadingtext->remove();
 		return;
 	}
 
@@ -784,11 +814,17 @@ void the_game(
 			{
 				break;
 			}
+			
+			std::wostringstream ss;
+			ss<<L"Connecting to server... (timeout in ";
+			ss<<(int)(10.0 - time_counter + 1.0);
+			ss<<L" seconds)";
+			draw_load_screen(ss.str(), driver, font);
 
-			// Update screen
+			/*// Update screen
 			driver->beginScene(true, true, video::SColor(255,0,0,0));
 			guienv->drawAll();
-			driver->endScene();
+			driver->endScene();*/
 
 			// Update client and server
 
@@ -818,7 +854,7 @@ void the_game(
 			error_message = L"Connection timed out.";
 			std::cout<<DTIME<<"Timed out."<<std::endl;
 		}
-		gui_loadingtext->remove();
+		//gui_loadingtext->remove();
 		return;
 	}
 
@@ -880,7 +916,7 @@ void the_game(
 		Move into game
 	*/
 	
-	gui_loadingtext->remove();
+	//gui_loadingtext->remove();
 
 	/*
 		Add some gui stuff
@@ -973,6 +1009,8 @@ void the_game(
 
 	while(device->run() && kill == false)
 	{
+		//std::cerr<<"frame"<<std::endl;
+
 		if(g_gamecallback->disconnect_requested)
 		{
 			g_gamecallback->disconnect_requested = false;
@@ -998,6 +1036,14 @@ void the_game(
 		screensize = driver->getScreenSize();
 		v2s32 displaycenter(screensize.X/2,screensize.Y/2);
 		//bool screensize_changed = screensize != last_screensize;
+
+		// Resize hotbar
+		if(screensize.Y <= 600)
+			hotbar_imagesize = 32;
+		else if(screensize.Y <= 1024)
+			hotbar_imagesize = 48;
+		else
+			hotbar_imagesize = 64;
 		
 		// Hilight boxes collected during the loop and displayed
 		core::list< core::aabbox3d<f32> > hilightboxes;
@@ -1090,7 +1136,7 @@ void the_game(
 		*/
 
 		static f32 dtime_avg1 = 0.0;
-		dtime_avg1 = dtime_avg1 * 0.98 + dtime * 0.02;
+		dtime_avg1 = dtime_avg1 * 0.96 + dtime * 0.04;
 		f32 dtime_jitter1 = dtime - dtime_avg1;
 
 		static f32 dtime_jitter1_max_sample = 0.0;
@@ -1253,6 +1299,38 @@ void the_game(
 				g_settings.set("fast_move","true");
 				chat_lines.push_back(ChatLine(L"fast_move enabled"));
 			}
+		}
+		else if(input->wasKeyDown(getKeySetting("keymap_frametime_graph")))
+		{
+			if(g_settings.getBool("frametime_graph"))
+			{
+				g_settings.set("frametime_graph","false");
+				chat_lines.push_back(ChatLine(L"frametime_graph disabled"));
+			}
+			else
+			{
+				g_settings.set("frametime_graph","true");
+				chat_lines.push_back(ChatLine(L"frametime_graph enabled"));
+			}
+		}
+		else if(input->wasKeyDown(getKeySetting("keymap_screenshot")))
+		{
+			irr::video::IImage* const image = driver->createScreenShot(); 
+			if (image) { 
+				irr::c8 filename[256]; 
+				snprintf(filename, 256, "%s/screenshot_%u.png", 
+						 g_settings.get("screenshot_path").c_str(),
+						 device->getTimer()->getRealTime()); 
+				if (driver->writeImageToFile(image, filename)) {
+					std::wstringstream sstr;
+					sstr<<"Saved screenshot to '"<<filename<<"'";
+					dstream<<"Saved screenshot to '"<<filename<<"'"<<std::endl;
+					chat_lines.push_back(ChatLine(sstr.str()));
+				} else{
+					dstream<<"Failed to save screenshot '"<<filename<<"'"<<std::endl;
+				}
+				image->drop(); 
+			}			 
 		}
 
 		// Item selection with mouse wheel
@@ -2194,6 +2272,13 @@ void the_game(
 					core::rect<s32>(0,0,screensize.X,screensize.Y),
 					NULL);
 		}
+
+		/*
+			Environment post fx
+		*/
+		{
+			client.getEnv()->drawPostFx(driver, camera_position);
+		}
 		
 		/*
 			End scene
@@ -2237,15 +2322,12 @@ void the_game(
 		generator and other stuff quits
 	*/
 	{
-		const wchar_t *shuttingdowntext = L"Shutting down stuff...";
-		gui::IGUIStaticText *gui_shuttingdowntext = guienv->addStaticText(
-				shuttingdowntext, textrect, false, false);
-		gui_shuttingdowntext->setTextAlignment(gui::EGUIA_CENTER,
-				gui::EGUIA_UPPERLEFT);
-		driver->beginScene(true, true, video::SColor(255,0,0,0));
+		/*gui::IGUIStaticText *gui_shuttingdowntext = */
+		draw_load_screen(L"Shutting down stuff...", driver, font);
+		/*driver->beginScene(true, true, video::SColor(255,0,0,0));
 		guienv->drawAll();
 		driver->endScene();
-		gui_shuttingdowntext->remove();
+		gui_shuttingdowntext->remove();*/
 	}
 }
 

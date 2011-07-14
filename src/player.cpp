@@ -309,6 +309,8 @@ void LocalPlayer::move(f32 dtime, Map &map, f32 pos_max_d,
 	v3f oldpos = position;
 	v3s16 oldpos_i = floatToInt(oldpos, BS);
 
+	v3f old_speed = m_speed;
+
 	/*std::cout<<"oldpos_i=("<<oldpos_i.X<<","<<oldpos_i.Y<<","
 			<<oldpos_i.Z<<")"<<std::endl;*/
 
@@ -405,8 +407,23 @@ void LocalPlayer::move(f32 dtime, Map &map, f32 pos_max_d,
 		if(position.Y < min_y)
 		{
 			position.Y = min_y;
+
+			//v3f old_speed = m_speed;
+
 			if(m_speed.Y < 0)
 				m_speed.Y = 0;
+
+			/*if(collision_info)
+			{
+				// Report fall collision
+				if(old_speed.Y < m_speed.Y - 0.1)
+				{
+					CollisionInfo info;
+					info.t = COLLISION_FALL;
+					info.speed = m_speed.Y - old_speed.Y;
+					collision_info->push_back(info);
+				}
+			}*/
 		}
 	}
 
@@ -557,13 +574,13 @@ void LocalPlayer::move(f32 dtime, Map &map, f32 pos_max_d,
 			*/
 			if(other_axes_overlap && main_axis_collides)
 			{
-				v3f old_speed = m_speed;
+				//v3f old_speed = m_speed;
 
 				m_speed -= m_speed.dotProduct(dirs[i]) * dirs[i];
 				position -= position.dotProduct(dirs[i]) * dirs[i];
 				position += oldpos.dotProduct(dirs[i]) * dirs[i];
 				
-				if(collision_info)
+				/*if(collision_info)
 				{
 					// Report fall collision
 					if(old_speed.Y < m_speed.Y - 0.1)
@@ -573,7 +590,7 @@ void LocalPlayer::move(f32 dtime, Map &map, f32 pos_max_d,
 						info.speed = m_speed.Y - old_speed.Y;
 						collision_info->push_back(info);
 					}
-				}
+				}*/
 			}
 		
 		}
@@ -656,6 +673,21 @@ void LocalPlayer::move(f32 dtime, Map &map, f32 pos_max_d,
 		Set new position
 	*/
 	setPosition(position);
+	
+	/*
+		Report collisions
+	*/
+	if(collision_info)
+	{
+		// Report fall collision
+		if(old_speed.Y < m_speed.Y - 0.1)
+		{
+			CollisionInfo info;
+			info.t = COLLISION_FALL;
+			info.speed = m_speed.Y - old_speed.Y;
+			collision_info->push_back(info);
+		}
+	}
 }
 
 void LocalPlayer::move(f32 dtime, Map &map, f32 pos_max_d)

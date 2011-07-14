@@ -9,7 +9,12 @@ src/jthread/CMakeFiles/*
 src/jthread/Makefile
 src/jthread/cmake_config.h
 src/jthread/cmake_install.cmake
+src/.*.swp
+src/sqlite/libsqlite3.a
+src/session.vim
+util/uloste.png
 minetest.conf
+debug.txt
 bin/
 CMakeCache.txt
 CPackConfig.cmake
