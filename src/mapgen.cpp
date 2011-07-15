@@ -85,7 +85,7 @@ static void make_tree(VoxelManipulator &vmanip, v3s16 p0)
 	MapNode treenode(CONTENT_TREE);
 	MapNode leavesnode(CONTENT_LEAVES);
 
-	s16 trunk_h = myrand_range(3, 6);
+	s16 trunk_h = myrand_range(4, 5);
 	v3s16 p1 = p0;
 	for(s16 ii=0; ii<trunk_h; ii++)
 	{
@@ -97,7 +97,7 @@ static void make_tree(VoxelManipulator &vmanip, v3s16 p0)
 	// p1 is now the last piece of the trunk
 	p1.Y -= 1;
 
-	VoxelArea leaves_a(v3s16(-2,-2,-2), v3s16(2,2,2));
+	VoxelArea leaves_a(v3s16(-2,-1,-2), v3s16(2,2,2));
 	//SharedPtr<u8> leaves_d(new u8[leaves_a.getVolume()]);
 	Buffer<u8> leaves_d(leaves_a.getVolume());
 	for(s32 i=0; i<leaves_a.getVolume(); i++)
