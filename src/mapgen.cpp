@@ -1840,13 +1840,6 @@ void make_block(BlockMakeData *data)
 				bool water_detected = false;
 				bool have_clay = false;
 
-				// Determine whether to have clay in the sand here
-				double claynoise = noise2d_perlin(
-						0.5+(float)p2d.X/500, 0.5+(float)p2d.Y/500,
-						data->seed+4321, 6, 0.95);
-
-				have_clay = have_sand && (claynoise > 1.25);
-
 				// Use fast index incrementing
 				s16 start_y = node_max.Y+2;
 				v3s16 em = vmanip.m_area.getExtent();
@@ -1873,6 +1866,15 @@ void make_block(BlockMakeData *data)
 						{
 							if(have_sand)
 							{
+								// Determine whether to have clay in the sand here
+								double claynoise = noise2d_perlin(
+										0.5+(float)p2d.X/500, 0.5+(float)p2d.Y/500,
+										data->seed+4321, 6, 0.95) + 0.5;
+				
+								have_clay = (y <= WATER_LEVEL) && (y >= WATER_LEVEL-2) && (
+									((claynoise > 0) && (claynoise < 0.04) && (current_depth == 0)) ||
+									((claynoise > 0) && (claynoise < 0.12) && (current_depth == 1))
+									);
 								if (have_clay)
 									vmanip.m_data[i] = MapNode(CONTENT_CLAY);
 								else
