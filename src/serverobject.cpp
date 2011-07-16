@@ -21,8 +21,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <fstream>
 #include "inventory.h"
 
-core::map<u16, ServerActiveObject::Factory> ServerActiveObject::m_types;
-
 ServerActiveObject::ServerActiveObject(ServerEnvironment *env, u16 id, v3f pos):
 	ActiveObject(id),
 	m_known_by_count(0),

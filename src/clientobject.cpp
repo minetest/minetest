@@ -26,8 +26,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 	ClientActiveObject
 */
 
-core::map<u16, ClientActiveObject::Factory> ClientActiveObject::m_types;
-
 ClientActiveObject::ClientActiveObject(u16 id):
 	ActiveObject(id)
 {
