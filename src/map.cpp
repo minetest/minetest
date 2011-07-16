@@ -1086,7 +1086,7 @@ void Map::addNodeAndUpdate(v3s16 p, MapNode n,
 		v3s16 p2 = p + dirs[i];
 
 		MapNode n2 = getNode(p2);
-		if(content_liquid(n2.d))
+		if(content_liquid(n2.d) || n2.d == CONTENT_AIR)
 		{
 			m_transforming_liquid.push_back(p2);
 		}
@@ -1241,18 +1241,10 @@ void Map::removeNodeAndUpdate(v3s16 p,
 
 	/*
 		Add neighboring liquid nodes to transform queue.
-
-		Also add horizontal neighbors of node on top of removed node
-		because they could be affected of the water on top flowing
-		down instead of into them.
 	*/
 	v3s16 dirs[10] = {
 		v3s16(0,0,1), // back
 		v3s16(0,1,0), // top
-		v3s16(1,1,0), // topright
-		v3s16(-1,1,0), // topleft
-		v3s16(0,1,1), // topback
-		v3s16(0,1,-1), // topfront
 		v3s16(1,0,0), // right
 		v3s16(0,0,-1), // front
 		v3s16(0,-1,0), // bottom
@@ -1266,7 +1258,7 @@ void Map::removeNodeAndUpdate(v3s16 p,
 		v3s16 p2 = p + dirs[i];
 
 		MapNode n2 = getNode(p2);
-		if(content_liquid(n2.d))
+		if(content_liquid(n2.d) || n2.d == CONTENT_AIR)
 		{
 			m_transforming_liquid.push_back(p2);
 		}
@@ -1546,6 +1538,17 @@ void Map::PrintInfo(std::ostream &out)
 
 #define WATER_DROP_BOOST 4
 
+enum NeighborType {
+	NEIGHBOR_UPPER,
+	NEIGHBOR_SAME_LEVEL,
+	NEIGHBOR_LOWER
+};
+struct NodeNeighbor {
+	MapNode n;
+	NeighborType t;
+	v3s16 p;
+};
+
 void Map::transformLiquids(core::map<v3s16, MapBlock*> & modified_blocks)
 {
 	DSTACK(__FUNCTION_NAME);
@@ -1565,264 +1568,210 @@ void Map::transformLiquids(core::map<v3s16, MapBlock*> & modified_blocks)
 		v3s16 p0 = m_transforming_liquid.pop_front();
 
 		MapNode n0 = getNodeNoEx(p0);
-
-		// Don't deal with non-liquids
-		if(content_liquid(n0.d) == false)
-			continue;
-
-		bool is_source = !content_flowing_liquid(n0.d);
-
-		u8 liquid_level = 8;
-		if(is_source == false)
-			liquid_level = n0.param2 & 0x0f;
-
-		// Turn possible source into non-source
-		u8 nonsource_c = make_liquid_flowing(n0.d);
-
-		// Counts surrounding liquid source blocks
-		u8 surrounding_sources = 0;
-
+				
 		/*
-			If not source, check that some node flows into this one
-			and what is the level of liquid in this one
-		*/
-		if(is_source == false)
-		{
-			s8 new_liquid_level_max = -1;
-
-			v3s16 dirs_from[5] = {
-				v3s16(0,1,0), // top
-				v3s16(0,0,1), // back
-				v3s16(1,0,0), // right
-				v3s16(0,0,-1), // front
-				v3s16(-1,0,0), // left
-			};
-			for(u16 i=0; i<5; i++)
-			{
-				bool from_top = (i==0);
-
-				v3s16 p2 = p0 + dirs_from[i];
-				MapNode n2 = getNodeNoEx(p2);
-
-				if(content_liquid(n2.d))
-				{
-					u8 n2_nonsource_c = make_liquid_flowing(n2.d);
-					// Check that the liquids are the same type
-					if(n2_nonsource_c != nonsource_c)
-					{
-						dstream<<"WARNING: Not handling: different liquids"
-								" collide"<<std::endl;
-						continue;
-					}
-					bool n2_is_source = !content_flowing_liquid(n2.d);
-					s8 n2_liquid_level = 8;
-					if(n2_is_source)
-						surrounding_sources++;
-					else
-						n2_liquid_level = n2.param2 & 0x07;
-
-					s8 new_liquid_level = -1;
-					if(from_top)
-					{
-						//new_liquid_level = 7;
-						if(n2_liquid_level >= 7 - WATER_DROP_BOOST)
-							new_liquid_level = 7;
-						else
-							new_liquid_level = n2_liquid_level + WATER_DROP_BOOST;
-					}
-					else if(n2_liquid_level > 0)
-					{
-						// If the neighbor node isn't a source and flows downwards,
-						// it doesn't flow into this node
-						if (n2_is_source)
-						{
-							new_liquid_level = n2_liquid_level - 1;
-						}
-						else
-						{
-							// Node below n2
-							MapNode n3 = getNodeNoEx(p2 + v3s16(0,-1,0));
-							// NOTE: collision of different liquids not yet handled here.
-							if (content_features(n3.d).liquid_type != LIQUID_FLOWING)
-							new_liquid_level = n2_liquid_level - 1;
-						}
-					}
-
-					if(new_liquid_level > new_liquid_level_max)
-						new_liquid_level_max = new_liquid_level;
-				}
-			} //for
-
-			/*
-				If liquid level should be something else, update it and
-				add all the neighboring water nodes to the transform queue.
-			*/
-			if(new_liquid_level_max != liquid_level || (!is_source && surrounding_sources >= 2))
-			{
-				if (surrounding_sources >= 2)
-				{
-					n0.d = content_features(n0.d).liquid_alternative_source;
-					setNode(p0,n0);
-				}
-				else if(new_liquid_level_max == -1)
-				{
-					// Remove water alltoghether
-					n0.d = CONTENT_AIR;
-					n0.param2 = 0;
-					setNode(p0, n0);
-				}
-				else
-				{
-					n0.param2 = new_liquid_level_max;
-					liquid_level = new_liquid_level_max;
-					setNode(p0, n0);
-				}
-
-				// Block has been modified
-				{
-					v3s16 blockpos = getNodeBlockPos(p0);
-					MapBlock *block = getBlockNoCreateNoEx(blockpos);
-					if(block != NULL)
-						modified_blocks.insert(blockpos, block);
-				}
-
-				/*
-					Add neighboring non-source liquid nodes to transform queue.
-				*/
-				v3s16 dirs[6] = {
-					v3s16(0,0,1), // back
-					v3s16(0,1,0), // top
-					v3s16(1,0,0), // right
-					v3s16(0,0,-1), // front
-					v3s16(0,-1,0), // bottom
-					v3s16(-1,0,0), // left
-				};
-				for(u16 i=0; i<6; i++)
-				{
-					v3s16 p2 = p0 + dirs[i];
-
-					MapNode n2 = getNodeNoEx(p2);
-					if(content_flowing_liquid(n2.d))
-					{
-						m_transforming_liquid.push_back(p2);
-					}
-				}
-			}
-		}
-
-		// Get a new one from queue if the node has turned into non-water
-		if(content_liquid(n0.d) == false)
-			continue;
-
-		/*
-			Flow water from this node
-		*/
-		v3s16 dirs_to[5] = {
-			v3s16(0,-1,0), // bottom
-			v3s16(0,0,1), // back
-			v3s16(1,0,0), // right
-			v3s16(0,0,-1), // front
-			v3s16(-1,0,0), // left
-		};
-		for(u16 i=0; i<5; i++)
-		{
-			bool to_bottom = (i == 0);
-
-			// If liquid is at lowest possible height, it's not going
-			// anywhere except down
-			if(liquid_level == 0 && to_bottom == false)
-				continue;
-
-			u8 liquid_next_level = 0;
-			// If going to bottom
-			if(to_bottom)
-			{
-				//liquid_next_level = 7;
-				if(liquid_level >= 7 - WATER_DROP_BOOST)
-					liquid_next_level = 7;
-				else
-					liquid_next_level = liquid_level + WATER_DROP_BOOST;
-			}
-			else
-				liquid_next_level = liquid_level - 1;
-
-			bool n2_changed = false;
-			bool flowed = false;
-
-			v3s16 p2 = p0 + dirs_to[i];
-
-			MapNode n2 = getNodeNoEx(p2);
-			//dstream<<"[1] n2.param="<<(int)n2.param<<std::endl;
-
-			if(content_liquid(n2.d))
-			{
-				u8 n2_nonsource_c = make_liquid_flowing(n2.d);
-				// Check that the liquids are the same type
-				if(n2_nonsource_c != nonsource_c)
-				{
-					dstream<<"WARNING: Not handling: different liquids"
-							" collide"<<std::endl;
+			Collect information about current node
+		 */
+		s8 liquid_level = -1;
+		u8 liquid_kind;
+		LiquidType liquid_type = content_features(n0.d).liquid_type;
+		switch (liquid_type) {
+			case LIQUID_SOURCE:
+				liquid_level = 8;
+				liquid_kind = content_features(n0.d).liquid_alternative_flowing;
+				break;
+			case LIQUID_FLOWING:
+				liquid_level = (n0.param2 & LIQUID_LEVEL_MASK);
+				liquid_kind = n0.d;
+				break;
+			case LIQUID_NONE:
+				// if this is an air node, it *could* be transformed into a liquid. otherwise,
+				// continue with the next node.
+				if (n0.d != CONTENT_AIR)
 					continue;
-				}
-				bool n2_is_source = !content_flowing_liquid(n2.d);
-				u8 n2_liquid_level = 8;
-				if(n2_is_source == false)
-					n2_liquid_level = n2.param2 & 0x07;
-
-				if(to_bottom)
-				{
-					flowed = true;
-				}
-
-				if(n2_is_source)
-				{
-					// Just flow into the source, nothing changes.
-					// n2_changed is not set because destination didn't change
-					flowed = true;
-				}
-				else
-				{
-					if(liquid_next_level > n2_liquid_level)
-					{
-						n2.param2 = liquid_next_level;
-						setNode(p2, n2);
-
-						n2_changed = true;
-						flowed = true;
-					}
-				}
-			}
-			else if(n2.d == CONTENT_AIR)
-			{
-				n2.d = nonsource_c;
-				n2.param2 = liquid_next_level;
-				setNode(p2, n2);
-
-				n2_changed = true;
-				flowed = true;
-			}
-
-			//dstream<<"[2] n2.param="<<(int)n2.param<<std::endl;
-
-			if(n2_changed)
-			{
-				m_transforming_liquid.push_back(p2);
-
-				v3s16 blockpos = getNodeBlockPos(p2);
-				MapBlock *block = getBlockNoCreateNoEx(blockpos);
-				if(block != NULL)
-					modified_blocks.insert(blockpos, block);
-			}
-
-			// If n2_changed to bottom, don't flow anywhere else
-			if(to_bottom && flowed && !is_source)
+				liquid_kind = CONTENT_AIR;
 				break;
 		}
-
+		
+		/*
+			Collect information about the environment
+		 */
+		v3s16 dirs[6] = {
+			v3s16( 0, 1, 0), // top
+			v3s16( 0,-1, 0), // bottom
+			v3s16( 1, 0, 0), // right
+			v3s16(-1, 0, 0), // left
+			v3s16( 0, 0, 1), // back
+			v3s16( 0, 0,-1)  // front
+		};
+		NodeNeighbor sources[6]; // surrounding sources
+		int num_sources = 0;
+		NodeNeighbor flows[6]; // surrounding flowing liquid nodes
+		int num_flows = 0;
+		NodeNeighbor airs[6]; // surrounding air
+		int num_airs = 0;
+		NodeNeighbor neutrals[6]; // nodes that are solid, another kind of liquid
+		int num_neutrals = 0;
+		bool flowing_down = false;
+		for (u16 i = 0; i < 6; i++) {
+			NeighborType nt = NEIGHBOR_SAME_LEVEL;
+			switch (i) {
+				case 0:
+					nt = NEIGHBOR_UPPER;
+					break;
+				case 1:
+					nt = NEIGHBOR_LOWER;
+					break;
+			}
+			v3s16 npos = p0 + dirs[i];
+			NodeNeighbor nb = {getNodeNoEx(npos), nt, npos};
+			switch (content_features(nb.n.d).liquid_type) {
+				case LIQUID_NONE:
+					if (nb.n.d == CONTENT_AIR) {
+						airs[num_airs++] = nb;
+						// if the current nodes happens to be a flowing node, it will start to flow down here.
+						if (nb.t == NEIGHBOR_LOWER)
+							flowing_down = true;
+					} else {
+						neutrals[num_neutrals++] = nb;
+					}
+					break;
+				case LIQUID_SOURCE:
+					// if this node is not (yet) of a liquid type, choose the first liquid type we encounter 
+					if (liquid_kind == CONTENT_AIR)
+						liquid_kind = content_features(nb.n.d).liquid_alternative_flowing;
+					if (content_features(nb.n.d).liquid_alternative_flowing !=liquid_kind) {
+						neutrals[num_neutrals++] = nb;
+					} else {
+						sources[num_sources++] = nb;
+					}
+					break;
+				case LIQUID_FLOWING:
+					// if this node is not (yet) of a liquid type, choose the first liquid type we encounter
+					// (while ignoring flowing liquids at the lowest level, which cannot flow into this node)
+					if (liquid_kind == CONTENT_AIR && ((nb.n.param2 & LIQUID_LEVEL_MASK) > 0))
+						liquid_kind = content_features(nb.n.d).liquid_alternative_flowing;
+					if (content_features(nb.n.d).liquid_alternative_flowing != liquid_kind) {
+						neutrals[num_neutrals++] = nb;
+					} else {
+						// order flowing neighbors by liquid level descending
+						int	insert_at = 0;
+						while (insert_at < num_flows && ((flows[insert_at].n.param2 & LIQUID_LEVEL_MASK) >
+														 (nb.n.param2 & LIQUID_LEVEL_MASK))) {
+							insert_at++;
+						}
+						flows[insert_at] = nb;
+						num_flows++;
+						if (nb.t == NEIGHBOR_LOWER)
+							flowing_down = true;
+					}
+					break;
+			}
+		}
+		
+		/*
+			decide on the type (and possibly level) of the current node
+		 */
+		u8 new_node_content;
+		s8 new_node_level = -1;
+		if (num_sources >= 2 || liquid_type == LIQUID_SOURCE) {
+			// liquid_kind will be set to either the flowing alternative of the node (if it's a liquid)
+			// or the flowing alternative of the first of the surrounding sources (if it's air), so
+			// it's perfectly safe to use liquid_kind here to determine the new node content.
+			new_node_content = content_features(liquid_kind).liquid_alternative_source;
+		} else if (num_sources == 1 && sources[0].t != NEIGHBOR_LOWER) {
+			// liquid_kind is set properly, see above
+			new_node_content = liquid_kind;
+			new_node_level = 7;
+		} else {
+			// no surrounding sources, so get the maximum level that can flow into this node
+			for (u16 i = 0; i < num_flows; i++) {
+				u8 nb_liquid_level = (flows[i].n.param2 & LIQUID_LEVEL_MASK);
+				switch (flows[i].t) {
+					case NEIGHBOR_UPPER:
+						if (nb_liquid_level + WATER_DROP_BOOST > new_node_level) {
+							new_node_level = 7;
+							if (nb_liquid_level + WATER_DROP_BOOST < 7)
+								new_node_level = nb_liquid_level + WATER_DROP_BOOST;
+						}
+						break;
+					case NEIGHBOR_LOWER:
+						break;
+					case NEIGHBOR_SAME_LEVEL:
+						if ((flows[i].n.param2 & LIQUID_FLOW_DOWN_MASK) != LIQUID_FLOW_DOWN_MASK &&
+							nb_liquid_level > 0 && nb_liquid_level - 1 > new_node_level) {
+							new_node_level = nb_liquid_level - 1;
+						}
+						break;
+				}
+			}
+			if (new_node_level >= 0)
+				new_node_content = liquid_kind;
+			else
+				new_node_content = CONTENT_AIR;
+		}
+		
+		/*
+			check if anything has changed. if not, just continue with the next node.
+		 */
+		if (new_node_content == n0.d && (content_features(n0.d).liquid_type != LIQUID_FLOWING ||
+										 ((n0.param2 & LIQUID_LEVEL_MASK) == (u8)new_node_level) &&
+										 ((n0.param2 & LIQUID_FLOW_DOWN_MASK) == LIQUID_FLOW_DOWN_MASK)
+										 == flowing_down))
+			continue;
+		
+		/*
+			update the current node
+		 */
+		bool flow_down_enabled = (flowing_down && ((n0.param2 & LIQUID_FLOW_DOWN_MASK) != LIQUID_FLOW_DOWN_MASK));
+		n0.d = new_node_content;
+		if (content_features(n0.d).liquid_type == LIQUID_FLOWING) {
+			// set level to last 3 bits, flowing down bit to 4th bit
+			n0.param2 = (flowing_down ? LIQUID_FLOW_DOWN_MASK : 0x00) | (new_node_level & LIQUID_LEVEL_MASK); 
+		} else {
+			n0.param2 = 0;
+		}
+		setNode(p0, n0);
+		v3s16 blockpos = getNodeBlockPos(p0);
+		MapBlock *block = getBlockNoCreateNoEx(blockpos);
+		if(block != NULL)
+			modified_blocks.insert(blockpos, block);
+		
+		switch (content_features(n0.d).liquid_type) {
+			case LIQUID_SOURCE:
+				// make sure source flows into all neighboring nodes
+				for (u16 i = 0; i < num_flows; i++)
+					if (flows[i].t != NEIGHBOR_UPPER)
+						m_transforming_liquid.push_back(flows[i].p);
+				for (u16 i = 0; i < num_airs; i++)
+					if (airs[i].t != NEIGHBOR_UPPER)
+						m_transforming_liquid.push_back(airs[i].p);
+				break;
+			case LIQUID_NONE:
+				// this flow has turned to air; neighboring flows might need to do the same
+				for (u16 i = 0; i < num_flows; i++)
+					m_transforming_liquid.push_back(flows[i].p);
+				break;
+			case LIQUID_FLOWING:
+				for (u16 i = 0; i < num_flows; i++) {
+					u8 flow_level = (flows[i].n.param2 & LIQUID_LEVEL_MASK);
+					// liquid_level is still the ORIGINAL level of this node.
+					if (flows[i].t != NEIGHBOR_UPPER && ((flow_level < liquid_level || flow_level < new_node_level) ||
+						flow_down_enabled))
+						m_transforming_liquid.push_back(flows[i].p);
+				}
+				for (u16 i = 0; i < num_airs; i++) {
+					if (airs[i].t != NEIGHBOR_UPPER && (airs[i].t == NEIGHBOR_LOWER || new_node_level > 0))
+						m_transforming_liquid.push_back(airs[i].p);
+				}
+				break;
+		}
+		
 		loopcount++;
 		//if(loopcount >= 100000)
-		if(loopcount >= initial_size * 1)
+		if(loopcount >= initial_size * 1) {
 			break;
+		}
 	}
 	//dstream<<"Map::transformLiquids(): loopcount="<<loopcount<<std::endl;
 }
