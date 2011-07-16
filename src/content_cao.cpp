@@ -21,6 +21,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "tile.h"
 #include "environment.h"
 
+core::map<u16, ClientActiveObject::Factory> ClientActiveObject::m_types;
+
 /*
 	TestCAO
 */
