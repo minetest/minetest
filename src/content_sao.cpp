@@ -21,6 +21,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "collision.h"
 #include "environment.h"
 
+core::map<u16, ServerActiveObject::Factory> ServerActiveObject::m_types;
+
 /*
 	TestSAO
 */
