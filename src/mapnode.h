@@ -405,8 +405,15 @@ enum LightBank
 };
 
 /*
+	Masks for MapNode.param2 of flowing liquids
+ */
+#define LIQUID_LEVEL_MASK 0x07
+#define LIQUID_FLOW_DOWN_MASK 0x08
+
+/*
 	This is the stuff what the whole world consists of.
 */
+
 
 struct MapNode
 {

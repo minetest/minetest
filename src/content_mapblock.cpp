@@ -375,7 +375,7 @@ void mapblock_mesh_generate_special(MeshMakeData *data,
 					if(n2.d == CONTENT_WATERSOURCE)
 						level = (-0.5+node_water_level) * BS;
 					else if(n2.d == CONTENT_WATER)
-						level = (-0.5 + ((float)n2.param2 + 0.5) / 8.0
+						level = (-0.5 + ((float)(n2.param2 & LIQUID_LEVEL_MASK) + 0.5) / 8.0
 								* node_water_level) * BS;
 
 					// Check node above neighbor.
