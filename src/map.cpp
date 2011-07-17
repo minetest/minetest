@@ -2033,9 +2033,14 @@ void ServerMap::initBlockMake(mapgen::BlockMakeData *data, v3s16 blockpos)
 
 			for(s16 y=-1; y<=1; y++)
 			{
-				MapBlock *block = createBlock(blockpos);
+				//MapBlock *block = createBlock(blockpos);
+				// 1) get from memory, 2) load from disk
+				MapBlock *block = emergeBlock(blockpos, false);
+				// 3) create a blank one
+				if(block == NULL)
+					block = createBlock(blockpos);
 
-				// Lighting won't be calculated
+				// Lighting will not be valid after make_chunk is called
 				block->setLightingExpired(true);
 				// Lighting will be calculated
 				//block->setLightingExpired(false);
@@ -2152,10 +2157,18 @@ MapBlock* ServerMap::finishBlockMake(mapgen::BlockMakeData *data,
 		TimeTaker t("finishBlockMake lighting update");
 
 		core::map<v3s16, MapBlock*> lighting_update_blocks;
+#if 1
 		// Center block
 		lighting_update_blocks.insert(block->getPos(), block);
-	#if 0
+#endif
+#if 0
 		// All modified blocks
+		// NOTE: Should this be done? If this is not done, then the lighting
+		// of the others will be updated in a different place, one by one, i
+		// think... or they might not? Well, at least they are left marked as
+		// "lighting expired"; it seems that is not handled at all anywhere,
+		// so enabling this will slow it down A LOT because otherwise it
+		// would not do this at all. This causes the black trees.
 		for(core::map<v3s16, MapBlock*>::Iterator
 				i = changed_blocks.getIterator();
 				i.atEnd() == false; i++)
@@ -2163,7 +2176,7 @@ MapBlock* ServerMap::finishBlockMake(mapgen::BlockMakeData *data,
 			lighting_update_blocks.insert(i.getNode()->getKey(),
 					i.getNode()->getValue());
 		}
-	#endif
+#endif
 		updateLighting(lighting_update_blocks, changed_blocks);
 
 		if(enable_mapgen_debug_info == false)
