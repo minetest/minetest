@@ -1612,7 +1612,7 @@ void Map::transformLiquids(core::map<v3s16, MapBlock*> & modified_blocks)
 		int num_flows = 0;
 		NodeNeighbor airs[6]; // surrounding air
 		int num_airs = 0;
-		NodeNeighbor neutrals[6]; // nodes that are solid, another kind of liquid
+		NodeNeighbor neutrals[6]; // nodes that are solid or another kind of liquid
 		int num_neutrals = 0;
 		bool flowing_down = false;
 		for (u16 i = 0; i < 6; i++) {
@@ -1631,7 +1631,7 @@ void Map::transformLiquids(core::map<v3s16, MapBlock*> & modified_blocks)
 				case LIQUID_NONE:
 					if (nb.n.d == CONTENT_AIR) {
 						airs[num_airs++] = nb;
-						// if the current nodes happens to be a flowing node, it will start to flow down here.
+						// if the current node happens to be a flowing node, it will start to flow down here.
 						if (nb.t == NEIGHBOR_LOWER)
 							flowing_down = true;
 					} else {
@@ -1650,22 +1650,12 @@ void Map::transformLiquids(core::map<v3s16, MapBlock*> & modified_blocks)
 					break;
 				case LIQUID_FLOWING:
 					// if this node is not (yet) of a liquid type, choose the first liquid type we encounter
-					// (while ignoring flowing liquids at the lowest level, which cannot flow into this node)
 					if (liquid_kind == CONTENT_AIR)
 						liquid_kind = content_features(nb.n.d).liquid_alternative_flowing;
 					if (content_features(nb.n.d).liquid_alternative_flowing != liquid_kind) {
 						neutrals[num_neutrals++] = nb;
 					} else {
-						// order flowing neighbors by liquid level descending
-						u16	insert_at = 0;
-						while (insert_at < num_flows && ((flows[insert_at].n.param2 & LIQUID_LEVEL_MASK) >
-														 (nb.n.param2 & LIQUID_LEVEL_MASK))) {
-							insert_at++;
-						}
-						for (u16 j = insert_at; j < num_flows; j++)
-							flows[j + 1] = flows[j];
-						flows[insert_at] = nb;
-						num_flows++;
+						flows[num_flows++] = nb;
 						if (nb.t == NEIGHBOR_LOWER)
 							flowing_down = true;
 					}
@@ -1776,10 +1766,10 @@ void Map::transformLiquids(core::map<v3s16, MapBlock*> & modified_blocks)
 				break;
 			case LIQUID_FLOWING:
 				for (u16 i = 0; i < num_flows; i++) {
-					/*u8 flow_level = (flows[i].n.param2 & LIQUID_LEVEL_MASK);
+					u8 flow_level = (flows[i].n.param2 & LIQUID_LEVEL_MASK);
 					// liquid_level is still the ORIGINAL level of this node.
 					if (flows[i].t != NEIGHBOR_UPPER && ((flow_level < liquid_level || flow_level < new_node_level) ||
-						flow_down_enabled))*/
+						flow_down_enabled))
 						m_transforming_liquid.push_back(flows[i].p);
 				}
 				for (u16 i = 0; i < num_airs; i++) {
