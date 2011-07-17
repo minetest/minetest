@@ -1651,7 +1651,7 @@ void Map::transformLiquids(core::map<v3s16, MapBlock*> & modified_blocks)
 				case LIQUID_FLOWING:
 					// if this node is not (yet) of a liquid type, choose the first liquid type we encounter
 					// (while ignoring flowing liquids at the lowest level, which cannot flow into this node)
-					if (liquid_kind == CONTENT_AIR && ((nb.n.param2 & LIQUID_LEVEL_MASK) > 0))
+					if (liquid_kind == CONTENT_AIR)
 						liquid_kind = content_features(nb.n.d).liquid_alternative_flowing;
 					if (content_features(nb.n.d).liquid_alternative_flowing != liquid_kind) {
 						neutrals[num_neutrals++] = nb;
@@ -1746,7 +1746,7 @@ void Map::transformLiquids(core::map<v3s16, MapBlock*> & modified_blocks)
 		n0.d = new_node_content;
 		if (content_features(n0.d).liquid_type == LIQUID_FLOWING) {
 			// set level to last 3 bits, flowing down bit to 4th bit
-			n0.param2 = (flowing_down ? LIQUID_FLOW_DOWN_MASK : 0x00) | (new_node_level & LIQUID_LEVEL_MASK); 
+			n0.param2 = (flowing_down ? LIQUID_FLOW_DOWN_MASK : 0x00) | (new_node_level & LIQUID_LEVEL_MASK);
 		} else {
 			n0.param2 = 0;
 		}
@@ -1776,10 +1776,10 @@ void Map::transformLiquids(core::map<v3s16, MapBlock*> & modified_blocks)
 				break;
 			case LIQUID_FLOWING:
 				for (u16 i = 0; i < num_flows; i++) {
-					u8 flow_level = (flows[i].n.param2 & LIQUID_LEVEL_MASK);
+					/*u8 flow_level = (flows[i].n.param2 & LIQUID_LEVEL_MASK);
 					// liquid_level is still the ORIGINAL level of this node.
 					if (flows[i].t != NEIGHBOR_UPPER && ((flow_level < liquid_level || flow_level < new_node_level) ||
-						flow_down_enabled))
+						flow_down_enabled))*/
 						m_transforming_liquid.push_back(flows[i].p);
 				}
 				for (u16 i = 0; i < num_airs; i++) {
@@ -1791,7 +1791,7 @@ void Map::transformLiquids(core::map<v3s16, MapBlock*> & modified_blocks)
 		
 		loopcount++;
 		//if(loopcount >= 100000)
-		if(loopcount >= initial_size * 1) {
+		if(loopcount >= initial_size * 10) {
 			break;
 		}
 	}
