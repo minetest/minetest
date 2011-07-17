@@ -1240,17 +1240,19 @@ void Map::removeNodeAndUpdate(v3s16 p,
 	}
 
 	/*
-		Add neighboring liquid nodes to transform queue.
+		Add neighboring liquid nodes and this node to transform queue.
+		(it's vital for the node itself to get updated last.)
 	*/
-	v3s16 dirs[10] = {
+	v3s16 dirs[7] = {
 		v3s16(0,0,1), // back
 		v3s16(0,1,0), // top
 		v3s16(1,0,0), // right
 		v3s16(0,0,-1), // front
 		v3s16(0,-1,0), // bottom
 		v3s16(-1,0,0), // left
+		v3s16(0,0,0), // self
 	};
-	for(u16 i=0; i<10; i++)
+	for(u16 i=0; i<7; i++)
 	{
 		try
 		{
@@ -1602,7 +1604,7 @@ void Map::transformLiquids(core::map<v3s16, MapBlock*> & modified_blocks)
 			v3s16( 1, 0, 0), // right
 			v3s16(-1, 0, 0), // left
 			v3s16( 0, 0, 1), // back
-			v3s16( 0, 0,-1)  // front
+			v3s16( 0, 0,-1), // front
 		};
 		NodeNeighbor sources[6]; // surrounding sources
 		int num_sources = 0;
@@ -1655,11 +1657,13 @@ void Map::transformLiquids(core::map<v3s16, MapBlock*> & modified_blocks)
 						neutrals[num_neutrals++] = nb;
 					} else {
 						// order flowing neighbors by liquid level descending
-						int	insert_at = 0;
+						u16	insert_at = 0;
 						while (insert_at < num_flows && ((flows[insert_at].n.param2 & LIQUID_LEVEL_MASK) >
 														 (nb.n.param2 & LIQUID_LEVEL_MASK))) {
 							insert_at++;
 						}
+						for (u16 j = insert_at; j < num_flows; j++)
+							flows[j + 1] = flows[j];
 						flows[insert_at] = nb;
 						num_flows++;
 						if (nb.t == NEIGHBOR_LOWER)
@@ -1705,6 +1709,20 @@ void Map::transformLiquids(core::map<v3s16, MapBlock*> & modified_blocks)
 						break;
 				}
 			}
+			// don't flow as far in open terrain - if there isn't at least one adjacent solid block,
+			// substract another unit from the resulting water level.
+			if (!flowing_down && new_node_level >= 1) {
+				bool at_wall = false;
+				for (u16 i = 0; i < num_neutrals; i++) {
+					if (neutrals[i].t == NEIGHBOR_SAME_LEVEL) {
+						at_wall = true;
+						break;
+					}
+				}
+				if (!at_wall)
+					new_node_level -= 1;
+			}
+			
 			if (new_node_level >= 0)
 				new_node_content = liquid_kind;
 			else
@@ -1715,10 +1733,11 @@ void Map::transformLiquids(core::map<v3s16, MapBlock*> & modified_blocks)
 			check if anything has changed. if not, just continue with the next node.
 		 */
 		if (new_node_content == n0.d && (content_features(n0.d).liquid_type != LIQUID_FLOWING ||
-										 ((n0.param2 & LIQUID_LEVEL_MASK) == (u8)new_node_level) &&
+										 ((n0.param2 & LIQUID_LEVEL_MASK) == (u8)new_node_level &&
 										 ((n0.param2 & LIQUID_FLOW_DOWN_MASK) == LIQUID_FLOW_DOWN_MASK)
-										 == flowing_down))
+										 == flowing_down)))
 			continue;
+		
 		
 		/*
 			update the current node
@@ -1737,6 +1756,9 @@ void Map::transformLiquids(core::map<v3s16, MapBlock*> & modified_blocks)
 		if(block != NULL)
 			modified_blocks.insert(blockpos, block);
 		
+		/*
+			enqueue neighbors for update if neccessary
+		 */
 		switch (content_features(n0.d).liquid_type) {
 			case LIQUID_SOURCE:
 				// make sure source flows into all neighboring nodes
