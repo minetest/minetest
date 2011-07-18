@@ -125,22 +125,73 @@ void Clouds::render()
 				m_seed, 3, 0.4);
 		if(noise < 0.8)
 			continue;
-		
-		v2f p1 = p0 + v2f(1,1)*cloud_size;
 
-		//video::SColor c(128,255,255,255);
 		float b = m_brightness;
 		video::SColor c(128,b*230,b*230,b*255);
-		video::S3DVertex vertices[4] =
+
+		video::S3DVertex v[4] =
 		{
-			video::S3DVertex(p0.X,m_cloud_y,p0.Y, 0,0,0, c, 0,1),
-			video::S3DVertex(p0.X,m_cloud_y,p1.Y, 0,0,0, c, 1,1),
-			video::S3DVertex(p1.X,m_cloud_y,p1.Y, 0,0,0, c, 1,0),
-			video::S3DVertex(p1.X,m_cloud_y,p0.Y, 0,0,0, c, 0,0),
+			video::S3DVertex(0,0,0, 0,0,0, c, 0, 1),
+			video::S3DVertex(0,0,0, 0,0,0, c, 1, 1),
+			video::S3DVertex(0,0,0, 0,0,0, c, 1, 0),
+			video::S3DVertex(0,0,0, 0,0,0, c, 0, 0)
 		};
-		u16 indices[] = {0,1,2,2,3,0};
-		driver->drawVertexPrimitiveList(vertices, 4, indices, 2,
-				video::EVT_STANDARD, scene::EPT_TRIANGLES, video::EIT_16BIT);
+
+		f32 rx = cloud_size;
+		f32 ry = 16*BS;
+		f32 rz = cloud_size;
+
+		for(int i=0;i<6;i++)
+		{
+			switch(i)
+			{
+				case 0:	// top
+					v[0].Pos.X=-rx; v[0].Pos.Y= ry; v[0].Pos.Z=-rz;
+					v[1].Pos.X=-rx; v[1].Pos.Y= ry; v[1].Pos.Z= rz;
+					v[2].Pos.X= rx; v[2].Pos.Y= ry; v[2].Pos.Z= rz;
+					v[3].Pos.X= rx; v[3].Pos.Y= ry, v[3].Pos.Z=-rz;
+					break;
+				case 1: // back
+					v[0].Pos.X=-rx; v[0].Pos.Y= ry; v[0].Pos.Z=-rz;
+					v[1].Pos.X= rx; v[1].Pos.Y= ry; v[1].Pos.Z=-rz;
+					v[2].Pos.X= rx; v[2].Pos.Y=-ry; v[2].Pos.Z=-rz;
+					v[3].Pos.X=-rx; v[3].Pos.Y=-ry, v[3].Pos.Z=-rz;
+					break;
+				case 2: //right
+					v[0].Pos.X= rx; v[0].Pos.Y= ry; v[0].Pos.Z=-rz;
+					v[1].Pos.X= rx; v[1].Pos.Y= ry; v[1].Pos.Z= rz;
+					v[2].Pos.X= rx; v[2].Pos.Y=-ry; v[2].Pos.Z= rz;
+					v[3].Pos.X= rx; v[3].Pos.Y=-ry, v[3].Pos.Z=-rz;
+					break;
+				case 3: // front
+					v[0].Pos.X= rx; v[0].Pos.Y= ry; v[0].Pos.Z= rz;
+					v[1].Pos.X=-rx; v[1].Pos.Y= ry; v[1].Pos.Z= rz;
+					v[2].Pos.X=-rx; v[2].Pos.Y=-ry; v[2].Pos.Z= rz;
+					v[3].Pos.X= rx; v[3].Pos.Y=-ry, v[3].Pos.Z= rz;
+					break;
+				case 4: // left
+					v[0].Pos.X=-rx; v[0].Pos.Y= ry; v[0].Pos.Z= rz;
+					v[1].Pos.X=-rx; v[1].Pos.Y= ry; v[1].Pos.Z=-rz;
+					v[2].Pos.X=-rx; v[2].Pos.Y=-ry; v[2].Pos.Z=-rz;
+					v[3].Pos.X=-rx; v[3].Pos.Y=-ry, v[3].Pos.Z= rz;
+					break;
+				case 5: // bottom
+					v[0].Pos.X= rx; v[0].Pos.Y=-ry; v[0].Pos.Z= rz;
+					v[1].Pos.X=-rx; v[1].Pos.Y=-ry; v[1].Pos.Z= rz;
+					v[2].Pos.X=-rx; v[2].Pos.Y=-ry; v[2].Pos.Z=-rz;
+					v[3].Pos.X= rx; v[3].Pos.Y=-ry, v[3].Pos.Z=-rz;
+					break;
+			}
+
+			v3f pos = v3f(p0.X,m_cloud_y,p0.Y);
+
+			for(u16 i=0; i<4; i++)
+				v[i].Pos += pos;
+			u16 indices[] = {0,1,2,2,3,0};
+			driver->drawVertexPrimitiveList(v, 4, indices, 2,
+					video::EVT_STANDARD, scene::EPT_TRIANGLES, video::EIT_16BIT);
+		}
+
 	}
 }
 
