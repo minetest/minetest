@@ -127,18 +127,21 @@ void Clouds::render()
 			continue;
 
 		float b = m_brightness;
-		video::SColor c(128,b*230,b*230,b*255);
+		video::SColor c_top(128,b*240,b*240,b*255);
+		video::SColor c_side_1(128,b*230,b*230,b*255);
+		video::SColor c_side_2(128,b*220,b*220,b*245);
+		video::SColor c_bottom(128,b*205,b*205,b*230);
 
 		video::S3DVertex v[4] =
 		{
-			video::S3DVertex(0,0,0, 0,0,0, c, 0, 1),
-			video::S3DVertex(0,0,0, 0,0,0, c, 1, 1),
-			video::S3DVertex(0,0,0, 0,0,0, c, 1, 0),
-			video::S3DVertex(0,0,0, 0,0,0, c, 0, 0)
+			video::S3DVertex(0,0,0, 0,0,0, c_top, 0, 1),
+			video::S3DVertex(0,0,0, 0,0,0, c_top, 1, 1),
+			video::S3DVertex(0,0,0, 0,0,0, c_top, 1, 0),
+			video::S3DVertex(0,0,0, 0,0,0, c_top, 0, 0)
 		};
 
 		f32 rx = cloud_size;
-		f32 ry = 16*BS;
+		f32 ry = 8*BS;
 		f32 rz = cloud_size;
 
 		for(int i=0;i<6;i++)
@@ -152,30 +155,40 @@ void Clouds::render()
 					v[3].Pos.X= rx; v[3].Pos.Y= ry, v[3].Pos.Z=-rz;
 					break;
 				case 1: // back
+					for(int j=0;j<4;j++)
+						v[j].Color=c_side_1;
 					v[0].Pos.X=-rx; v[0].Pos.Y= ry; v[0].Pos.Z=-rz;
 					v[1].Pos.X= rx; v[1].Pos.Y= ry; v[1].Pos.Z=-rz;
 					v[2].Pos.X= rx; v[2].Pos.Y=-ry; v[2].Pos.Z=-rz;
 					v[3].Pos.X=-rx; v[3].Pos.Y=-ry, v[3].Pos.Z=-rz;
 					break;
 				case 2: //right
+					for(int j=0;j<4;j++)
+						v[j].Color=c_side_2;
 					v[0].Pos.X= rx; v[0].Pos.Y= ry; v[0].Pos.Z=-rz;
 					v[1].Pos.X= rx; v[1].Pos.Y= ry; v[1].Pos.Z= rz;
 					v[2].Pos.X= rx; v[2].Pos.Y=-ry; v[2].Pos.Z= rz;
 					v[3].Pos.X= rx; v[3].Pos.Y=-ry, v[3].Pos.Z=-rz;
 					break;
 				case 3: // front
+					for(int j=0;j<4;j++)
+						v[j].Color=c_side_1;
 					v[0].Pos.X= rx; v[0].Pos.Y= ry; v[0].Pos.Z= rz;
 					v[1].Pos.X=-rx; v[1].Pos.Y= ry; v[1].Pos.Z= rz;
 					v[2].Pos.X=-rx; v[2].Pos.Y=-ry; v[2].Pos.Z= rz;
 					v[3].Pos.X= rx; v[3].Pos.Y=-ry, v[3].Pos.Z= rz;
 					break;
 				case 4: // left
+					for(int j=0;j<4;j++)
+						v[j].Color=c_side_2;
 					v[0].Pos.X=-rx; v[0].Pos.Y= ry; v[0].Pos.Z= rz;
 					v[1].Pos.X=-rx; v[1].Pos.Y= ry; v[1].Pos.Z=-rz;
 					v[2].Pos.X=-rx; v[2].Pos.Y=-ry; v[2].Pos.Z=-rz;
 					v[3].Pos.X=-rx; v[3].Pos.Y=-ry, v[3].Pos.Z= rz;
 					break;
 				case 5: // bottom
+					for(int j=0;j<4;j++)
+						v[j].Color=c_bottom;
 					v[0].Pos.X= rx; v[0].Pos.Y=-ry; v[0].Pos.Z= rz;
 					v[1].Pos.X=-rx; v[1].Pos.Y=-ry; v[1].Pos.Z= rz;
 					v[2].Pos.X=-rx; v[2].Pos.Y=-ry; v[2].Pos.Z=-rz;
