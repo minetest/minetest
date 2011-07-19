@@ -4,6 +4,7 @@ New features:
 * Submenu for key assignment (changes apply after restart)
 * configurable far mesh tree display (boolean)
 * configurable far mesh rendering distance
+* volumetric clouds (using fake shading)
 
 New bricks:
 * Sandstone (crafted from 4 sand, yields sand)
@@ -25,6 +26,7 @@ Alternate graphics:
 * Omsk birds (instead of Oerkki ghosts)
 * Rat
 * Glass
+* Heart
 
 Building on GNU/Linux or OS X:
     cmake . -DRUN_IN_PLACE=1
