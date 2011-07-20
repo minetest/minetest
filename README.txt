@@ -153,7 +153,7 @@ Compiling on Windows:
 	ZLIB_LIBRARIES           DIR/zlib125dll/dll32/zlibwapi.lib
 	GETTEXT_BIN_DIR          DIR/gettext/bin
 	GETTEXT_INCLUDE_DIR      DIR/gettext/include
-	GETTEXT_LIBRARIES        DIR/gettext/lib/intl.lib
+	GETTEXT_LIBRARIES        DIR/gettext/lib/libintl.lib
 	GETTEXT_MSGFMT           DIR/gettext/bin/msgfmt
 	-----------------
 	- Hit "Configure"
