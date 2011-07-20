@@ -5,6 +5,8 @@ New features:
 * configurable far mesh tree display (boolean)
 * configurable far mesh rendering distance
 * volumetric clouds (using fake shading)
+* translation support (including questionable translation into german)
+* build system uses local jthread & sqlite libraries if available
 
 New bricks:
 * Sandstone (crafted from 4 sand, yields sand)
