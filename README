@@ -35,3 +35,5 @@ Building on GNU/Linux or OS X:
 The “upstream” branch contains vanilla minetest-c55, created using:
     hg-fast-export -r ~/share/src/games/minetest -o upstream
     git push origin upstream/master:upstream -f
+
+All new/replaced graphics done by erlehmann are dual-licensed under GPL (version 2 or, at your option, any later version) and CC-BY-SA (version 3.0 or, at your option, any later version).
