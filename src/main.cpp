@@ -401,6 +401,8 @@ Doing currently:
 #include "keycode.h"
 #include "tile.h"
 
+#include "gettext.h"
+
 // This makes textures
 ITextureSource *g_texturesource = NULL;
 
@@ -1058,6 +1060,9 @@ int main(int argc, char *argv[])
 	std::locale::global(std::locale("C"));
 	// This enables printing all characters in bitmap font
 	setlocale(LC_CTYPE, "en_US");
+	setlocale(LC_ALL, "");
+	bindtextdomain("minetest-c55", "./../locale");
+	textdomain("minetest-c55");
 
 	/*
 		Parse command line
