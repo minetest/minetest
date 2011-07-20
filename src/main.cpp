@@ -1350,6 +1350,9 @@ int main(int argc, char *argv[])
 	
 	// Set device in game parameters
 	device = device;
+
+	// Set the window caption
+	device->setWindowCaption(L"Minetest [Main Menu]");
 	
 	// Create time getter
 	g_timegetter = new IrrlichtTimeGetter(device);

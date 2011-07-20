@@ -43,6 +43,8 @@ else()
 		find_package(JPEG REQUIRED)
 		find_package(BZip2 REQUIRED)
 		find_package(PNG REQUIRED)
+		find_package(Jthread REQUIRED)
+		find_package(Sqlite3 REQUIRED)
 		if(APPLE)
 			FIND_LIBRARY(CARBON_LIB Carbon)
 			FIND_LIBRARY(COCOA_LIB Cocoa)
@@ -143,8 +145,8 @@ include_directories(
 	${CMAKE_BUILD_TYPE}
 	${PNG_INCLUDE_DIR}
 	${GETTEXT_INCLUDE_DIR}
-	"${PROJECT_SOURCE_DIR}/jthread"
-	"${PROJECT_SOURCE_DIR}/sqlite"
+	${JTHREAD_INCLUDE_DIR}
+	${SQLITE3_INCLUDE_DIR}
 )
 
 set(EXECUTABLE_OUTPUT_PATH ../bin)
@@ -163,8 +165,8 @@ if(BUILD_CLIENT)
 		${GETTEXT_LIBRARIES}
 		${PLATFORM_LIBS}
 		${CLIENT_PLATFORM_LIBS}
-		jthread
-		sqlite3
+		${JTHREAD_LIBRARY}
+		${SQLITE3_LIBRARY}
 	)
 endif(BUILD_CLIENT)
 
@@ -174,8 +176,8 @@ if(BUILD_SERVER)
 		minetestserver
 		${ZLIB_LIBRARIES}
 		${PLATFORM_LIBS}
-		jthread
-		sqlite3
+		${JTHREAD_LIBRARY}
+		${SQLITE3_LIBRARY}
 	)
 endif(BUILD_SERVER)
 
@@ -296,7 +298,14 @@ add_custom_target(translation_de ALL COMMENT "mo update [de]" DEPENDS ${CMAKE_BI
 
 # Subdirectories
 
-add_subdirectory(jthread)
+if (JTHREAD_FOUND)
+else (JTHREAD_FOUND)
+	add_subdirectory(jthread)
+endif (JTHREAD_FOUND)
+
+if (SQLITE3_FOUND)
+else (SQLITE3_FOUND)
 add_subdirectory(sqlite)
+endif (SQLITE3_FOUND)
 
 #end
