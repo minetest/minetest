@@ -90,6 +90,8 @@ Compiling on Windows:
 		http://www.winimage.com/zLibDll/index.html
 	* Zlib library (zlibwapi.lib and zlibwapi.dll from zlib125dll.zip):
 		http://www.winimage.com/zLibDll/index.html
+	* gettext bibrary and tools:
+		http://gnuwin32.sourceforge.net/downlinks/gettext.php
 	* And, of course, Minetest-c55:
 		http://celeron.55.lt/~celeron55/minetest/download
 - Steps:
@@ -117,6 +119,10 @@ Compiling on Windows:
 			+ lib
 			+ include
 			...
+		+ gettext
+			+bin
+			+include
+			+lib
 		+ minetest
 			+ src
 			+ doc
@@ -145,6 +151,10 @@ Compiling on Windows:
 	ZLIB_DLL                 DIR/zlib125dll/dll32/zlibwapi.dll
 	ZLIB_INCLUDE_DIR         DIR/zlib-1.2.5
 	ZLIB_LIBRARIES           DIR/zlib125dll/dll32/zlibwapi.lib
+	GETTEXT_BIN_DIR          DIR/gettext/bin
+	GETTEXT_INCLUDE_DIR      DIR/gettext/include
+	GETTEXT_LIBRARIES        DIR/gettext/lib/intl.lib
+	GETTEXT_MSGFMT           DIR/gettext/bin/msgfmt
 	-----------------
 	- Hit "Configure"
 	- Hit "Generate"

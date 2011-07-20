@@ -24,6 +24,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "config.h"
 #include "main.h"
 
+#include "gettext.h"
+
 GUIPauseMenu::GUIPauseMenu(gui::IGUIEnvironment* env,
 		gui::IGUIElement* parent, s32 id,
 		IGameCallback *gamecallback,
@@ -104,43 +106,43 @@ void GUIPauseMenu::regenerateGui(v2u32 screensize)
 	{
 		core::rect<s32> rect(0, 0, 140, btn_height);
 		rect = rect + v2s32(size.X/2-140/2, btn_y);
-		Environment->addButton(rect, this, 256, L"Continue");
+		Environment->addButton(rect, this, 256, chartowchar_t(gettext("Continue")));
 	}
 	btn_y += btn_height + btn_gap;
 	{
 		core::rect<s32> rect(0, 0, 140, btn_height);
 		rect = rect + v2s32(size.X/2-140/2, btn_y);
-		Environment->addButton(rect, this, 261, L"Change Password");
+		Environment->addButton(rect, this, 261, chartowchar_t(gettext("Change Password")));
 	}
 	btn_y += btn_height + btn_gap;
 	{
 		core::rect<s32> rect(0, 0, 140, btn_height);
 		rect = rect + v2s32(size.X/2-140/2, btn_y);
-		Environment->addButton(rect, this, 260, L"Disconnect");
+		Environment->addButton(rect, this, 260, chartowchar_t(gettext("Disconnect")));
 	}
 	btn_y += btn_height + btn_gap;
 	{
 		core::rect<s32> rect(0, 0, 140, btn_height);
 		rect = rect + v2s32(size.X/2-140/2, btn_y);
-		Environment->addButton(rect, this, 257, L"Exit to OS");
+		Environment->addButton(rect, this, 257, chartowchar_t(gettext("Exit to OS")));
 	}
 
 	{
 		core::rect<s32> rect(0, 0, 180, 240);
 		rect = rect + v2s32(size.X/2 + 90, size.Y/2-rect.getHeight()/2);
-		const wchar_t *text =
-		L"Keys:\n"
-		L"- WASD: Walk\n"
-		L"- Mouse left: dig blocks\n"
-		L"- Mouse right: place blocks\n"
-		L"- Mouse wheel: select item\n"
-		L"- 0...9: select item\n"
-		L"- Shift: sneak\n"
-		L"- R: Toggle viewing all loaded chunks\n"
-		L"- I: Inventory menu\n"
-		L"- ESC: This menu\n"
-		L"- T: Chat\n";
-		Environment->addStaticText(text, rect, false, true, this, 258);
+		Environment->addStaticText(chartowchar_t(gettext(
+		"Keys:\n"
+		"- WASD: Walk\n"
+		"- Mouse left: dig blocks\n"
+		"- Mouse right: place blocks\n"
+		"- Mouse wheel: select item\n"
+		"- 0...9: select item\n"
+		"- Shift: sneak\n"
+		"- R: Toggle viewing all loaded chunks\n"
+		"- I: Inventory menu\n"
+		"- ESC: This menu\n"
+		"- T: Chat\n"
+		)), rect, false, true, this, 258);
 	}
 	{
 		core::rect<s32> rect(0, 0, 180, 220);
