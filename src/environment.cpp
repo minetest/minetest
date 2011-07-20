@@ -976,7 +976,8 @@ void ServerEnvironment::step(float dtime)
 		//TestSAO *obj = new TestSAO(this, 0, pos);
 		//ServerActiveObject *obj = new ItemSAO(this, 0, pos, "CraftItem Stick 1");
 		//ServerActiveObject *obj = new RatSAO(this, 0, pos);
-		ServerActiveObject *obj = new Oerkki1SAO(this, 0, pos);
+		//ServerActiveObject *obj = new Oerkki1SAO(this, 0, pos);
+		ServerActiveObject *obj = new FireflySAO(this, 0, pos);
 		addActiveObject(obj);
 	}
 #endif

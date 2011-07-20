@@ -752,4 +752,161 @@ void Oerkki1CAO::initialize(const std::string &data)
 	updateNodePos();
 }
 
+/*
+	FireflyCAO
+*/
 
+// Prototype
+FireflyCAO proto_FireflyCAO;
+
+FireflyCAO::FireflyCAO():
+	ClientActiveObject(0),
+	m_selection_box(-BS/3.,0.0,-BS/3., BS/3.,BS/2.,BS/3.),
+	m_node(NULL),
+	m_position(v3f(0,10*BS,0)),
+	m_yaw(0)
+{
+	ClientActiveObject::registerType(getType(), create);
+}
+
+FireflyCAO::~FireflyCAO()
+{
+}
+
+ClientActiveObject* FireflyCAO::create()
+{
+	return new FireflyCAO();
+}
+
+void FireflyCAO::addToScene(scene::ISceneManager *smgr)
+{
+	if(m_node != NULL)
+		return;
+	
+	video::IVideoDriver* driver = smgr->getVideoDriver();
+	
+	scene::SMesh *mesh = new scene::SMesh();
+	scene::IMeshBuffer *buf = new scene::SMeshBuffer();
+	video::SColor c(255,255,255,255);
+	video::S3DVertex vertices[4] =
+	{
+		video::S3DVertex(0,0,0, 0,0,0, c, 0,1),
+		video::S3DVertex(BS/2,0,0, 0,0,0, c, 1,1),
+		video::S3DVertex(BS/2,BS/2,0, 0,0,0, c, 1,0),
+		video::S3DVertex(0,BS/2,0, 0,0,0, c, 0,0),
+	};
+	u16 indices[] = {0,1,2,2,3,0};
+	buf->append(vertices, 4, indices, 6);
+	// Set material
+	buf->getMaterial().setFlag(video::EMF_LIGHTING, false);
+	buf->getMaterial().setFlag(video::EMF_BACK_FACE_CULLING, false);
+	//buf->getMaterial().setTexture(0, NULL);
+	buf->getMaterial().setTexture
+			(0, driver->getTexture(getTexturePath("firefly.png").c_str()));
+	buf->getMaterial().setFlag(video::EMF_BILINEAR_FILTER, false);
+	buf->getMaterial().setFlag(video::EMF_FOG_ENABLE, true);
+	buf->getMaterial().MaterialType = video::EMT_TRANSPARENT_ALPHA_CHANNEL;
+	// Add to mesh
+	mesh->addMeshBuffer(buf);
+	buf->drop();
+	m_node = smgr->addMeshSceneNode(mesh, NULL);
+	mesh->drop();
+	// Set it to use the materials of the meshbuffers directly.
+	// This is needed for changing the texture in the future
+	m_node->setReadOnlyMaterials(true);
+	updateNodePos();
+}
+
+void FireflyCAO::removeFromScene()
+{
+	if(m_node == NULL)
+		return;
+
+	m_node->remove();
+	m_node = NULL;
+}
+
+void FireflyCAO::updateLight(u8 light_at_pos)
+{
+	if(m_node == NULL)
+		return;
+
+	u8 li = 255;
+	video::SColor color(255,li,li,li);
+
+	scene::IMesh *mesh = m_node->getMesh();
+	if(mesh == NULL)
+		return;
+	
+	u16 mc = mesh->getMeshBufferCount();
+	for(u16 j=0; j<mc; j++)
+	{
+		scene::IMeshBuffer *buf = mesh->getMeshBuffer(j);
+		video::S3DVertex *vertices = (video::S3DVertex*)buf->getVertices();
+		u16 vc = buf->getVertexCount();
+		for(u16 i=0; i<vc; i++)
+		{
+			vertices[i].Color = color;
+		}
+	}
+}
+
+v3s16 FireflyCAO::getLightPosition()
+{
+	return floatToInt(m_position+v3f(0,BS*0.5,0), BS);
+}
+
+void FireflyCAO::updateNodePos()
+{
+	if(m_node == NULL)
+		return;
+
+	//m_node->setPosition(m_position);
+	m_node->setPosition(pos_translator.vect_show);
+
+	v3f rot = m_node->getRotation();
+	rot.Y = 180.0 - m_yaw;
+	m_node->setRotation(rot);
+}
+
+void FireflyCAO::step(float dtime, ClientEnvironment *env)
+{
+	pos_translator.translate(dtime);
+	updateNodePos();
+}
+
+void FireflyCAO::processMessage(const std::string &data)
+{
+	//dstream<<"FireflyCAO: Got message"<<std::endl;
+	std::istringstream is(data, std::ios::binary);
+	// command
+	u8 cmd = readU8(is);
+	if(cmd == 0)
+	{
+		// pos
+		m_position = readV3F1000(is);
+		pos_translator.update(m_position);
+		// yaw
+		m_yaw = readF1000(is);
+		updateNodePos();
+	}
+}
+
+void FireflyCAO::initialize(const std::string &data)
+{
+	//dstream<<"FireflyCAO: Got init data"<<std::endl;
+	
+	{
+		std::istringstream is(data, std::ios::binary);
+		// version
+		u8 version = readU8(is);
+		// check version
+		if(version != 0)
+			return;
+		// pos
+		m_position = readV3F1000(is);
+		pos_translator.init(m_position);
+	}
+	
+	updateNodePos();
+}

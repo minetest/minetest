@@ -65,6 +65,8 @@ std::string item_craft_get_image_name(const std::string &subname)
 		return "clay_brick.png";
 	else if(subname == "rat")
 		return "rat.png";
+	else if(subname == "firefly")
+		return "firefly.png";
 	else
 		return "cloud.png"; // just something
 }
@@ -77,13 +79,18 @@ ServerActiveObject* item_craft_create_object(const std::string &subname,
 		ServerActiveObject *obj = new RatSAO(env, id, pos);
 		return obj;
 	}
+	else if(subname == "firefly")
+	{
+		ServerActiveObject *obj = new FireflySAO(env, id, pos);
+		return obj;
+	}
 
 	return NULL;
 }
 
 s16 item_craft_get_drop_count(const std::string &subname)
 {
-	if(subname == "rat")
+	if(subname == "rat" || subname == "firefly")
 		return 1;
 
 	return -1;
