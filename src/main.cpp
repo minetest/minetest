@@ -1060,10 +1060,6 @@ int main(int argc, char *argv[])
 	std::locale::global(std::locale("C"));
 	// This enables printing all characters in bitmap font
 	setlocale(LC_CTYPE, "en_US");
-	setlocale(LC_ALL, "");
-	bindtextdomain("minetest-c55", "./../locale");
-	textdomain("minetest-c55");
-
 	/*
 		Parse command line
 	*/
@@ -1135,6 +1131,10 @@ int main(int argc, char *argv[])
 
 	// Create user data directory
 	fs::CreateDir(porting::path_userdata);
+
+	setlocale(LC_ALL, "");
+	bindtextdomain("minetest-c55", (porting::path_userdata+"/locale").c_str());
+	textdomain("minetest-c55");
 	
 	// Initialize debug streams
 #ifdef RUN_IN_PLACE
