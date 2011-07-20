@@ -243,6 +243,48 @@ private:
 	bool m_damage_texture_enabled;
 };
 
+/*
+	FireflyCAO
+*/
+
+class FireflyCAO : public ClientActiveObject
+{
+public:
+	FireflyCAO();
+	virtual ~FireflyCAO();
+	
+	u8 getType() const
+	{
+		return ACTIVEOBJECT_TYPE_FIREFLY;
+	}
+	
+	static ClientActiveObject* create();
+
+	void addToScene(scene::ISceneManager *smgr);
+	void removeFromScene();
+	void updateLight(u8 light_at_pos);
+	v3s16 getLightPosition();
+	void updateNodePos();
+
+	void step(float dtime, ClientEnvironment *env);
+
+	void processMessage(const std::string &data);
+
+	void initialize(const std::string &data);
+	
+	core::aabbox3d<f32>* getSelectionBox()
+		{return &m_selection_box;}
+	v3f getPosition()
+		{return m_position;}
+
+private:
+	core::aabbox3d<f32> m_selection_box;
+	scene::IMeshSceneNode *m_node;
+	v3f m_position;
+	float m_yaw;
+	SmoothTranslator pos_translator;
+};
+
 
 #endif
 
