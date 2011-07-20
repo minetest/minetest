@@ -43,8 +43,6 @@ else()
 		find_package(JPEG REQUIRED)
 		find_package(BZip2 REQUIRED)
 		find_package(PNG REQUIRED)
-		find_package(Jthread REQUIRED)
-		find_package(Sqlite3 REQUIRED)
 		if(APPLE)
 			FIND_LIBRARY(CARBON_LIB Carbon)
 			FIND_LIBRARY(COCOA_LIB Cocoa)
@@ -64,6 +62,9 @@ else()
 	find_library(XXF86VM_LIBRARY Xxf86vm)
 	set(CLIENT_PLATFORM_LIBS ${CLIENT_PLATFORM_LIBS} ${XXF86VM_LIBRARY})
 endif()
+
+find_package(Jthread REQUIRED)
+find_package(Sqlite3 REQUIRED)
 
 configure_file(
 	"${PROJECT_SOURCE_DIR}/cmake_config.h.in"
