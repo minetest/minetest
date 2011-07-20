@@ -1,0 +1,121 @@
+# German translations for minetest-c55 package.
+# Copyright (C) 2011 celeron
+# This file is distributed under the same license as the minetest-c55 package.
+# Constantin Wenger <constantin.wenger@googlemail.com>, 2011.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: 0.0.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2011-07-20 16:03+0200\n"
+"PO-Revision-Date: 2011-07-20 16:04+0100\n"
+"Last-Translator: Constantin Wenger <constantin.wenger@googlemail.com>\n"
+"Language-Team: Deutsch <>\n"
+"Language: de\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n!=1);\n"
+
+#: src/guiMainMenu.cpp:173
+msgid "Name/Password"
+msgstr "Name/Passwort"
+
+#: src/guiMainMenu.cpp:195
+msgid "Address/Port"
+msgstr "Adresse / Port"
+
+#: src/guiMainMenu.cpp:214
+msgid "Leave address blank to start a local server."
+msgstr "Lasse die Adresse frei um einen eigenen Server zu starten"
+
+#: src/guiMainMenu.cpp:220
+msgid "Fancy trees"
+msgstr "Schöne Bäume"
+
+#: src/guiMainMenu.cpp:226
+msgid "Smooth Lighting"
+msgstr "Besseres Licht"
+
+#: src/guiMainMenu.cpp:233
+msgid "Start Game / Connect"
+msgstr "Spiel starten / Verbinden"
+
+#: src/guiMainMenu.cpp:256
+msgid "Creative Mode"
+msgstr "Kreativitätsmodus"
+
+#: src/guiMainMenu.cpp:261
+msgid "Enable Damage"
+msgstr "Schaden einschalten"
+
+#: src/guiMainMenu.cpp:268
+msgid "Delete world"
+msgstr "Welt löschen"
+
+#: src/guiMessageMenu.cpp:92
+#: src/guiTextInputMenu.cpp:110
+msgid "Proceed"
+msgstr "Fortsetzen"
+
+#: src/guiPasswordChange.cpp:102
+msgid "Old Password"
+msgstr "Altes Passwort"
+
+#: src/guiPasswordChange.cpp:116
+msgid "New Password"
+msgstr "Neues Passwort"
+
+#: src/guiPasswordChange.cpp:129
+msgid "Confirm Password"
+msgstr "Passwort wiederholen"
+
+#: src/guiPasswordChange.cpp:143
+msgid "Change"
+msgstr "Ändern"
+
+#: src/guiPasswordChange.cpp:151
+msgid "Passwords do not match!"
+msgstr "Passwörter passen nicht zusammen"
+
+#: src/guiPauseMenu.cpp:109
+msgid "Continue"
+msgstr "Weiter"
+
+#: src/guiPauseMenu.cpp:115
+msgid "Change Password"
+msgstr "Passwort ändern"
+
+#: src/guiPauseMenu.cpp:121
+msgid "Disconnect"
+msgstr "Verbindung trennen"
+
+#: src/guiPauseMenu.cpp:127
+msgid "Exit to OS"
+msgstr "Programm beenden"
+
+#: src/guiPauseMenu.cpp:134
+msgid ""
+"Keys:\n"
+"- WASD: Walk\n"
+"- Mouse left: dig blocks\n"
+"- Mouse right: place blocks\n"
+"- Mouse wheel: select item\n"
+"- 0...9: select item\n"
+"- Shift: sneak\n"
+"- R: Toggle viewing all loaded chunks\n"
+"- I: Inventory menu\n"
+"- ESC: This menu\n"
+"- T: Chat\n"
+msgstr ""
+"Tastenkürzel:\n"
+"- WASD: Gehen\n"
+"- linke Maustaste: dig blocks\n"
+"- rechte Maustaste: place blocks\n"
+"- Mausrad: Item auswählen\n"
+"- 0...9: Item auswählen\n"
+"- Shift: ducken\n"
+"- R: Alle geladenen Kartenteile anzeigen, umschalten\n"
+"- I: Inventarmenü\n"
+"- T: Chat\n"
+
