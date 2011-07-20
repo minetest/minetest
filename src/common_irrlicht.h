@@ -35,7 +35,15 @@ typedef core::vector2d<s32> v2s32;
 typedef core::vector2d<u32> v2u32;
 typedef core::vector2d<f32> v2f32;
 
-typedef unsigned long long u64;
+#ifdef _MSC_VER
+	// Windows
+	typedef unsigned long long u64;
+#else
+	// Posix
+	#include <stdint.h>
+	typedef uint64_t u64;
+	//typedef unsigned long long u64;
+#endif
 
 #endif
 
