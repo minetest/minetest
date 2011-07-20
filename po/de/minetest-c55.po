@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: 0.0.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2011-07-20 16:03+0200\n"
-"PO-Revision-Date: 2011-07-20 16:04+0100\n"
+"POT-Creation-Date: 2011-07-20 16:57+0200\n"
+"PO-Revision-Date: 2011-07-20 16:58+0100\n"
 "Last-Translator: Constantin Wenger <constantin.wenger@googlemail.com>\n"
 "Language-Team: Deutsch <>\n"
 "Language: de\n"
@@ -17,41 +17,45 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n!=1);\n"
 
-#: src/guiMainMenu.cpp:173
+#: src/guiMainMenu.cpp:180
 msgid "Name/Password"
 msgstr "Name/Passwort"
 
-#: src/guiMainMenu.cpp:195
+#: src/guiMainMenu.cpp:202
 msgid "Address/Port"
 msgstr "Adresse / Port"
 
-#: src/guiMainMenu.cpp:214
+#: src/guiMainMenu.cpp:220
 msgid "Leave address blank to start a local server."
 msgstr "Lasse die Adresse frei um einen eigenen Server zu starten"
 
-#: src/guiMainMenu.cpp:220
+#: src/guiMainMenu.cpp:226
 msgid "Fancy trees"
 msgstr "Schöne Bäume"
 
-#: src/guiMainMenu.cpp:226
+#: src/guiMainMenu.cpp:232
 msgid "Smooth Lighting"
 msgstr "Besseres Licht"
 
-#: src/guiMainMenu.cpp:233
+#: src/guiMainMenu.cpp:239
 msgid "Start Game / Connect"
 msgstr "Spiel starten / Verbinden"
 
-#: src/guiMainMenu.cpp:256
+#: src/guiMainMenu.cpp:247
+msgid "Change keys"
+msgstr "Tastenbelegung ändern"
+
+#: src/guiMainMenu.cpp:269
 msgid "Creative Mode"
 msgstr "Kreativitätsmodus"
 
-#: src/guiMainMenu.cpp:261
+#: src/guiMainMenu.cpp:274
 msgid "Enable Damage"
 msgstr "Schaden einschalten"
 
-#: src/guiMainMenu.cpp:268
-msgid "Delete world"
-msgstr "Welt löschen"
+#: src/guiMainMenu.cpp:281
+msgid "Delete map"
+msgstr "Karte löschen"
 
 #: src/guiMessageMenu.cpp:92
 #: src/guiTextInputMenu.cpp:110
