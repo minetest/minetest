@@ -84,7 +84,7 @@ void Clouds::render()
 	*/
 
 	const s16 cloud_radius_i = 12;
-	const float cloud_size = BS*50;
+	const float cloud_size = BS*48;
 	const v2f cloud_speed(-BS*2, 0);
 	
 	// Position of cloud noise origin in world coordinates
@@ -123,7 +123,7 @@ void Clouds::render()
 				(float)p_in_noise_i.X*cloud_size/BS/200,
 				(float)p_in_noise_i.Y*cloud_size/BS/200,
 				m_seed, 3, 0.4);
-		if(noise < 0.8)
+		if(noise < 0.95)
 			continue;
 
 		float b = m_brightness;
