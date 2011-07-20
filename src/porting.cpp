@@ -26,6 +26,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "porting.h"
 #include "config.h"
 #include "debug.h"
+#include "filesys.h"
 
 #ifdef __APPLE__
 	#include "CoreFoundation/CoreFoundation.h"
@@ -210,6 +211,11 @@ void initializePaths()
 
 	path_data = std::string(buf) + "/../share/" + APPNAME;
 	//path_data = std::string(INSTALL_PREFIX) + "/share/" + APPNAME;
+	if (!fs::PathExists(path_data)) {
+		dstream<<"WARNING: data path " << path_data << " not found!";
+		path_data = std::string(buf) + "/../data";
+		dstream<<" Trying " << path_data << std::endl;
+	}
 	
 	path_userdata = std::string(getenv("HOME")) + "/." + APPNAME;
 
