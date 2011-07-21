@@ -339,6 +339,12 @@ TODO: Merge bahamada's audio stuff (clean patch available)
 
 TODO: Merge key configuration menu (no clean patch available)
 
+TODO: Add some kind of content range validation to mapnode serialization
+
+TODO: Make sure menu text position is fixed
+
+TODO: Fix sector over limits error
+
 Making it more portable:
 ------------------------
  
