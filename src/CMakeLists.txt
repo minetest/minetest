@@ -6,12 +6,22 @@ if(RUN_IN_PLACE)
 endif(RUN_IN_PLACE)
 
 if(USE_GETTEXT)
-	add_definitions( -DUSE_GETTEXT )
-	message(STATUS "GetText enabled")
-else()
-	set(GETTEXT_INCLUDE_DIR "")
-	set(GETTEXT_BIN_DIR "")
-	set(GETTEXT_LIBRARIES "")
+	find_package(GettextLib REQUIRED)
+	if (GETTEXT_FOUND)
+		add_definitions( -DUSE_GETTEXT )
+		message(STATUS "gettext include path: ${GETTEXT_INCLUDE_DIR}")
+		message(STATUS "gettext msgfmt path: ${GETTEXT_MSGFMT}")
+		if(WIN32)
+			message(STATUS "gettext library: ${GETTEXT_LIBRARY}")
+			message(STATUS "gettext dll: ${GETTEXT_DLL}")
+			message(STATUS "gettext iconv dll: ${GETTEXT_ICONV_DLL}")
+		endif()
+		message(STATUS "GetText enabled")
+	else()
+		message(ERROR "GetText enabled but not found, disabling")
+		set(USE_GETTEXT FALSE)
+	endif(GETTEXT_FOUND)
+else(USE_GETTEXT)
 	message(STATUS "GetText disabled")
 endif(USE_GETTEXT)
 
@@ -39,14 +49,6 @@ if(WIN32)
 			CACHE FILEPATH "Path to zlibwapi.dll (for installation)")
 	set(IRRLICHT_SOURCE_DIR "${PROJECT_SOURCE_DIR}/../../irrlicht-1.7.2"
 			CACHE PATH "irrlicht dir")
-	if (USE_GETTEXT)
-		set(GETTEXT_INCLUDE_DIR "${PROJECT_SOURCE_DIR}/../../gettext/include"
-			CACHE PATH "gettext include directory")
-		set(GETTEXT_BIN_DIR "${PROJECT_SOURCE_DIR}/../../gettext/bin"
-			CACHE PATH "gettext bin directory")
-		set(GETTEXT_LIBRARIES "${PROJECT_SOURCE_DIR}/../../gettext/lib/libintl.lib"
-			CACHE FILEPATH "gettext libintl.lib")
-	endif(USE_GETTEXT)
 else()
 	# Unix probably
 	if(BUILD_CLIENT)
@@ -175,7 +177,7 @@ if(BUILD_CLIENT)
 		${BZIP2_LIBRARIES}
 		${PNG_LIBRARIES}
 		${X11_LIBRARIES}
-		${GETTEXT_LIBRARIES}
+		${GETTEXT_LIBRARY}
 		${PLATFORM_LIBS}
 		${CLIENT_PLATFORM_LIBS}
 		${JTHREAD_LIBRARY}
@@ -234,7 +236,7 @@ else()
 	endif()
 
 	if(WIN32 AND USE_GETTEXT)
-		set(CMAKE_EXE_LINKER_FLAGS "-lintl -L ${GETTEXT_BIN_DIR}")
+		set(CMAKE_EXE_LINKER_FLAGS "-l${GETTEXT_LIBRARY}")
 	endif()
 
 	set(CMAKE_CXX_FLAGS_RELEASE "-DNDEBUG ${RELEASE_WARNING_FLAGS} ${WARNING_FLAGS} -O3 -ffast-math -Wall -fomit-frame-pointer -pipe -funroll-loops")
@@ -277,10 +279,14 @@ if(BUILD_CLIENT)
 		if(DEFINED ZLIB_DLL)
 			install(FILES ${ZLIB_DLL} DESTINATION ${BINDIR})
 		endif()
-		if(USE_GETTEXT AND DEFINED GETTEXT_BIN_DIR)
-			install(FILES ${GETTEXT_BIN_DIR}/libintl3.dll DESTINATION ${BINDIR})
-			install(FILES ${GETTEXT_BIN_DIR}/libiconv2.dll DESTINATION ${BINDIR})
-		endif()
+		if(USE_GETTEXT)
+			if(defined GETTEXT_DLL)
+				install(FILES ${GETTEXT_DLL} DESTINATION ${BINDIR})
+			endif()
+			if(defined GETTEXT_ICONV_DLL)
+				install(FILES ${GETTEXT_ICONV_DLL} DESTINATION ${BINDIR})
+			endif()
+		endif(USE_GETTEXT)
 	endif()
 endif(BUILD_CLIENT)
 
@@ -289,14 +295,6 @@ if(BUILD_SERVER)
 endif(BUILD_SERVER)
 
 if (USE_GETTEXT)
-	if(WIN32)
-		set(GETTEXT_MSGFMT "${GETTEXT_BIN_DIR}/msgfmt.exe" CACHE FILEPATH "path to msgfmt")
-	elseif(APPLE)
-		set(GETTEXT_MSGFMT "${GETTEXT_BIN_DIR}/msgfmt" CACHE FILEPATH "path to msgfmt")
-	else()
-		set(GETTEXT_MSGFMT "msgfmt")
-	endif()
-
 	add_custom_command(OUTPUT ${CMAKE_BINARY_DIR}/locale/de/LC_MESSAGES COMMAND ${CMAKE_COMMAND} -E make_directory ${CMAKE_BINARY_DIR}/locale/de/LC_MESSAGES COMMENT "mo-update [de]: Creating locale directory.")
 
 	add_custom_command(
