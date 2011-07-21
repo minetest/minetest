@@ -235,10 +235,6 @@ else()
 		set(ARCH i386)
 	endif()
 
-	if(WIN32 AND USE_GETTEXT)
-		set(CMAKE_EXE_LINKER_FLAGS "-l${GETTEXT_LIBRARY}")
-	endif()
-
 	set(CMAKE_CXX_FLAGS_RELEASE "-DNDEBUG ${RELEASE_WARNING_FLAGS} ${WARNING_FLAGS} -O3 -ffast-math -Wall -fomit-frame-pointer -pipe -funroll-loops")
 	set(CMAKE_CXX_FLAGS_DEBUG "-g -O1 -Wall ${WARNING_FLAGS}")
 

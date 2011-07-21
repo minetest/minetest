@@ -20,8 +20,15 @@ FIND_PROGRAM(GETTEXT_MSGFMT
 # they do not because gettext is part of glibc
 # TODO check the requirements on other BSDs and older Linux
 IF (WIN32)
+	IF(MSVC)
+		SET(GETTEXT_LIB_NAMES
+			libintl.lib intl.lib libintl3.lib intl3.lib)
+	ELSE()
+		SET(GETTEXT_LIB_NAMES
+			libintl.dll.a intl.dll.a libintl3.dll.a intl3.dll.a)
+	ENDIF()
 	FIND_LIBRARY(GETTEXT_LIBRARY
-		NAMES libintl.lib intl.lib libintl3.lib intl3.lib
+		NAMES ${GETTEXT_LIB_NAMES}
 		PATHS "${CUSTOM_GETTEXT_PATH}/lib"
 		DOC "gettext *intl*.lib")
 	FIND_LIBRARY(GETTEXT_DLL
