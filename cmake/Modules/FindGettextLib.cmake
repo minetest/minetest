@@ -31,11 +31,11 @@ IF (WIN32)
 		NAMES ${GETTEXT_LIB_NAMES}
 		PATHS "${CUSTOM_GETTEXT_PATH}/lib"
 		DOC "gettext *intl*.lib")
-	FIND_LIBRARY(GETTEXT_DLL
+	FIND_FILE(GETTEXT_DLL
 		NAMES libintl.dll intl.dll libintl3.dll intl3.dll
 		PATHS "${CUSTOM_GETTEXT_PATH}/bin" "${CUSTOM_GETTEXT_PATH}/lib" 
 		DOC "gettext *intl*.dll")
-	FIND_LIBRARY(GETTEXT_ICONV_DLL
+	FIND_FILE(GETTEXT_ICONV_DLL
 		NAMES libiconv2.dll
 		PATHS "${CUSTOM_GETTEXT_PATH}/bin" "${CUSTOM_GETTEXT_PATH}/lib"
 		DOC "gettext *iconv*.lib")
