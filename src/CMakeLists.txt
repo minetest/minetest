@@ -1,4 +1,4 @@
-project(minetest)
+project(minetest-delta)
 cmake_minimum_required( VERSION 2.6 )
 
 if(RUN_IN_PLACE)
@@ -153,9 +153,9 @@ include_directories(
 set(EXECUTABLE_OUTPUT_PATH ../bin)
 
 if(BUILD_CLIENT)
-	add_executable(minetest ${minetest_SRCS})
+	add_executable(${PROJECT_NAME} ${minetest_SRCS})
 	target_link_libraries(
-		minetest
+		${PROJECT_NAME}
 		${ZLIB_LIBRARIES}
 		${IRRLICHT_LIBRARY}
 		${OPENGL_LIBRARIES}
@@ -172,9 +172,9 @@ if(BUILD_CLIENT)
 endif(BUILD_CLIENT)
 
 if(BUILD_SERVER)
-	add_executable(minetestserver ${minetestserver_SRCS})
+	add_executable(${PROJECT_NAME}server ${minetestserver_SRCS})
 	target_link_libraries(
-		minetestserver
+		${PROJECT_NAME}server
 		${ZLIB_LIBRARIES}
 		${PLATFORM_LIBS}
 		${JTHREAD_LIBRARY}
@@ -199,7 +199,7 @@ if(MSVC)
 	set(CMAKE_CXX_FLAGS_DEBUG "/MDd /Zi /Ob0 /Od /RTC1")
 	
 	if(BUILD_SERVER)
-		set_target_properties(minetestserver PROPERTIES
+		set_target_properties(${PROJECT_NAME}server PROPERTIES
 				COMPILE_DEFINITIONS "SERVER")
 	endif(BUILD_SERVER)
 
@@ -233,7 +233,7 @@ else()
 	endif()
 	
 	if(BUILD_SERVER)
-		set_target_properties(minetestserver PROPERTIES
+		set_target_properties(${PROJECT_NAME}server PROPERTIES
 				COMPILE_DEFINITIONS "SERVER")
 	endif(BUILD_SERVER)
 
@@ -250,13 +250,13 @@ endif()
 install(FILES "${CMAKE_CURRENT_SOURCE_DIR}/../minetest.conf.example" DESTINATION ${EXAMPLE_CONF_DIR})
 
 if(BUILD_CLIENT)
-	install(TARGETS minetest DESTINATION ${BINDIR})
+	install(TARGETS ${PROJECT_NAME} DESTINATION ${BINDIR})
 
 	file(GLOB images "${CMAKE_CURRENT_SOURCE_DIR}/../data/*.png")
 
 	install(FILES ${images} DESTINATION ${DATADIR})
 
-	install(FILES ${CMAKE_BINARY_DIR}/locale/de/LC_MESSAGES/minetest-c55.mo DESTINATION locale/de/LC_MESSAGES)
+	install(FILES ${CMAKE_BINARY_DIR}/locale/de/LC_MESSAGES/minetest-delta.mo DESTINATION locale/de/LC_MESSAGES)
  
 	if(WIN32)
 		if(DEFINED IRRLICHT_DLL)
@@ -273,7 +273,7 @@ if(BUILD_CLIENT)
 endif(BUILD_CLIENT)
 
 if(BUILD_SERVER)
-	install(TARGETS minetestserver DESTINATION ${BINDIR})
+	install(TARGETS ${PROJECT_NAME}server DESTINATION ${BINDIR})
 endif(BUILD_SERVER)
 
 if(WIN32)
@@ -287,15 +287,15 @@ endif()
 add_custom_command(OUTPUT ${CMAKE_BINARY_DIR}/locale/de/LC_MESSAGES COMMAND ${CMAKE_COMMAND} -E make_directory ${CMAKE_BINARY_DIR}/locale/de/LC_MESSAGES COMMENT "mo-update [de]: Creating locale directory.")
 
 add_custom_command(
-		OUTPUT ${CMAKE_BINARY_DIR}/locale/de/LC_MESSAGES/minetest-c55.mo
-		COMMAND ${GETTEXT_MSGFMT} -o ${CMAKE_BINARY_DIR}/locale/de/LC_MESSAGES/minetest-c55.mo ${CMAKE_SOURCE_DIR}/po/de/minetest-c55.po 
+		OUTPUT ${CMAKE_BINARY_DIR}/locale/de/LC_MESSAGES/minetest-delta.mo
+		COMMAND ${GETTEXT_MSGFMT} -o ${CMAKE_BINARY_DIR}/locale/de/LC_MESSAGES/minetest-delta.mo ${CMAKE_SOURCE_DIR}/po/de/minetest-c55.po 
 		DEPENDS 
 			${CMAKE_BINARY_DIR}/locale/de/LC_MESSAGES
 			${CMAKE_SOURCE_DIR}/po/de/minetest-c55.po
 		WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}/po/de
 		COMMENT "mo-update [de]: Creating mo file."
 		)
-add_custom_target(translation_de ALL COMMENT "mo update [de]" DEPENDS ${CMAKE_BINARY_DIR}/locale/de/LC_MESSAGES/minetest-c55.mo)
+add_custom_target(translation_de ALL COMMENT "mo update [de]" DEPENDS ${CMAKE_BINARY_DIR}/locale/de/LC_MESSAGES/minetest-delta.mo)
 
 # Subdirectories
 
