@@ -270,8 +270,10 @@ if(BUILD_CLIENT)
 
 	install(FILES ${images} DESTINATION ${DATADIR})
 
-	install(FILES ${CMAKE_BINARY_DIR}/locale/de/LC_MESSAGES/minetest-delta.mo DESTINATION locale/de/LC_MESSAGES)
- 
+	if (USE_GETTEXT)
+		install(FILES ${CMAKE_BINARY_DIR}/locale/de/LC_MESSAGES/minetest-delta.mo DESTINATION locale/de/LC_MESSAGES)
+	endif()
+
 	if(WIN32)
 		if(DEFINED IRRLICHT_DLL)
 			install(FILES ${IRRLICHT_DLL} DESTINATION ${BINDIR})
