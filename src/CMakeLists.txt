@@ -31,8 +31,8 @@ if(WIN32)
 			CACHE PATH "gettext include directory")
 	set(GETTEXT_BIN_DIR "${PROJECT_SOURCE_DIR}/../../gettext/bin"
 			CACHE PATH "gettext bin directory")
-	set(GETTEXT_LIBRARIES "${PROJECT_SOURCE_DIR}/../../gettext/lib/intl.lib"
-			CACHE FILEPATH "gettext intl.lib")
+	set(GETTEXT_LIBRARIES "${PROJECT_SOURCE_DIR}/../../gettext/lib/libintl.lib"
+			CACHE FILEPATH "gettext libintl.lib")
 	set(IRRLICHT_SOURCE_DIR "${PROJECT_SOURCE_DIR}/../../irrlicht-1.7.2"
 			CACHE PATH "irrlicht dir")
 else()
@@ -277,7 +277,7 @@ if(BUILD_SERVER)
 endif(BUILD_SERVER)
 
 if(WIN32)
-	set(GETTEXT_MSGFMT "${GETTEXT_BIN_DIR}/msgfmt" CACHE FILEPATH "path to msgfmt")
+	set(GETTEXT_MSGFMT "${GETTEXT_BIN_DIR}/msgfmt.exe" CACHE FILEPATH "path to msgfmt")
 elseif(APPLE)
 	set(GETTEXT_MSGFMT "${GETTEXT_BIN_DIR}/msgfmt" CACHE FILEPATH "path to msgfmt")
 else()
