@@ -809,7 +809,7 @@ void FireflySAO::step(float dtime, bool send_recommended)
 		Move it, with collision detection
 	*/
 
-	core::aabbox3d<f32> box(-BS/3.,0.0,-BS/3., BS/3.,BS*2./3.,BS/3.);
+	core::aabbox3d<f32> box(-BS/3.,-BS*2/3.0,-BS/3., BS/3.,BS*4./3.,BS/3.);
 	collisionMoveResult moveresult;
 	// Maximum movement without glitches
 	f32 pos_max_d = BS*0.25;
