@@ -257,7 +257,8 @@ if(BUILD_CLIENT)
 	install(FILES ${images} DESTINATION ${DATADIR})
 
 	install(FILES ${CMAKE_BINARY_DIR}/locale/de/LC_MESSAGES/minetest-c55.mo DESTINATION locale/de/LC_MESSAGES)
- 
+ 	install(FILES ${CMAKE_BINARY_DIR}/locale/fr/LC_MESSAGES/minetest-c55.mo DESTINATION locale/fr/LC_MESSAGES)
+ 	
 	if(WIN32)
 		if(DEFINED IRRLICHT_DLL)
 			install(FILES ${IRRLICHT_DLL} DESTINATION ${BINDIR})
@@ -285,6 +286,7 @@ else()
 endif()
 
 add_custom_command(OUTPUT ${CMAKE_BINARY_DIR}/locale/de/LC_MESSAGES COMMAND ${CMAKE_COMMAND} -E make_directory ${CMAKE_BINARY_DIR}/locale/de/LC_MESSAGES COMMENT "mo-update [de]: Creating locale directory.")
+add_custom_command(OUTPUT ${CMAKE_BINARY_DIR}/locale/fr/LC_MESSAGES COMMAND ${CMAKE_COMMAND} -E make_directory ${CMAKE_BINARY_DIR}/locale/fr/LC_MESSAGES COMMENT "mo-update [fr]: Creating locale directory.")
 
 add_custom_command(
 		OUTPUT ${CMAKE_BINARY_DIR}/locale/de/LC_MESSAGES/minetest-c55.mo
@@ -295,7 +297,19 @@ add_custom_command(
 		WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}/po/de
 		COMMENT "mo-update [de]: Creating mo file."
 		)
+add_custom_command(
+		OUTPUT ${CMAKE_BINARY_DIR}/locale/fr/LC_MESSAGES/minetest-c55.mo
+		COMMAND ${GETTEXT_MSGFMT} -o ${CMAKE_BINARY_DIR}/locale/fr/LC_MESSAGES/minetest-c55.mo ${CMAKE_SOURCE_DIR}/po/fr/minetest-c55.po 
+		DEPENDS 
+			${CMAKE_BINARY_DIR}/locale/fr/LC_MESSAGES
+			${CMAKE_SOURCE_DIR}/po/fr/minetest-c55.po
+		WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}/po/fr
+		COMMENT "mo-update [fr]: Creating mo file."
+		)
+		
 add_custom_target(translation_de ALL COMMENT "mo update [de]" DEPENDS ${CMAKE_BINARY_DIR}/locale/de/LC_MESSAGES/minetest-c55.mo)
+add_custom_target(translation_fr ALL COMMENT "mo update [fr]" DEPENDS ${CMAKE_BINARY_DIR}/locale/fr/LC_MESSAGES/minetest-c55.mo)
+
 
 # Subdirectories
 
