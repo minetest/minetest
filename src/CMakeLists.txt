@@ -5,6 +5,16 @@ if(RUN_IN_PLACE)
 	add_definitions ( -DRUN_IN_PLACE )
 endif(RUN_IN_PLACE)
 
+if(USE_GETTEXT)
+	add_definitions( -DUSE_GETTEXT )
+	message(STATUS "GetText enabled")
+else()
+	set(GETTEXT_INCLUDE_DIR "")
+	set(GETTEXT_BIN_DIR "")
+	set(GETTEXT_LIBRARIES "")
+	message(STATUS "GetText disabled")
+endif(USE_GETTEXT)
+
 if(NOT MSVC)
 	set(USE_GPROF 0 CACHE BOOL "Use -pg flag for g++")
 endif()
@@ -27,14 +37,16 @@ if(WIN32)
 			CACHE FILEPATH "Path to zlibwapi.lib")
 	set(ZLIB_DLL "${PROJECT_SOURCE_DIR}/../../zlib125dll/dll32/zlibwapi.dll"
 			CACHE FILEPATH "Path to zlibwapi.dll (for installation)")
-	set(GETTEXT_INCLUDE_DIR "${PROJECT_SOURCE_DIR}/../../gettext/include"
-			CACHE PATH "gettext include directory")
-	set(GETTEXT_BIN_DIR "${PROJECT_SOURCE_DIR}/../../gettext/bin"
-			CACHE PATH "gettext bin directory")
-	set(GETTEXT_LIBRARIES "${PROJECT_SOURCE_DIR}/../../gettext/lib/libintl.lib"
-			CACHE FILEPATH "gettext libintl.lib")
 	set(IRRLICHT_SOURCE_DIR "${PROJECT_SOURCE_DIR}/../../irrlicht-1.7.2"
 			CACHE PATH "irrlicht dir")
+	if (USE_GETTEXT)
+		set(GETTEXT_INCLUDE_DIR "${PROJECT_SOURCE_DIR}/../../gettext/include"
+			CACHE PATH "gettext include directory")
+		set(GETTEXT_BIN_DIR "${PROJECT_SOURCE_DIR}/../../gettext/bin"
+			CACHE PATH "gettext bin directory")
+		set(GETTEXT_LIBRARIES "${PROJECT_SOURCE_DIR}/../../gettext/lib/libintl.lib"
+			CACHE FILEPATH "gettext libintl.lib")
+	endif(USE_GETTEXT)
 else()
 	# Unix probably
 	if(BUILD_CLIENT)
@@ -221,7 +233,7 @@ else()
 		set(ARCH i386)
 	endif()
 
-	if(WIN32)
+	if(WIN32 AND USE_GETTEXT)
 		set(CMAKE_EXE_LINKER_FLAGS "-lintl -L ${GETTEXT_BIN_DIR}")
 	endif()
 
@@ -265,7 +277,7 @@ if(BUILD_CLIENT)
 		if(DEFINED ZLIB_DLL)
 			install(FILES ${ZLIB_DLL} DESTINATION ${BINDIR})
 		endif()
-		if(DEFINED GETTEXT_BIN_DIR)
+		if(USE_GETTEXT AND DEFINED GETTEXT_BIN_DIR)
 			install(FILES ${GETTEXT_BIN_DIR}/libintl3.dll DESTINATION ${BINDIR})
 			install(FILES ${GETTEXT_BIN_DIR}/libiconv2.dll DESTINATION ${BINDIR})
 		endif()
@@ -276,26 +288,28 @@ if(BUILD_SERVER)
 	install(TARGETS ${PROJECT_NAME}server DESTINATION ${BINDIR})
 endif(BUILD_SERVER)
 
-if(WIN32)
-	set(GETTEXT_MSGFMT "${GETTEXT_BIN_DIR}/msgfmt.exe" CACHE FILEPATH "path to msgfmt")
-elseif(APPLE)
-	set(GETTEXT_MSGFMT "${GETTEXT_BIN_DIR}/msgfmt" CACHE FILEPATH "path to msgfmt")
-else()
-	set(GETTEXT_MSGFMT "msgfmt")
-endif()
+if (USE_GETTEXT)
+	if(WIN32)
+		set(GETTEXT_MSGFMT "${GETTEXT_BIN_DIR}/msgfmt.exe" CACHE FILEPATH "path to msgfmt")
+	elseif(APPLE)
+		set(GETTEXT_MSGFMT "${GETTEXT_BIN_DIR}/msgfmt" CACHE FILEPATH "path to msgfmt")
+	else()
+		set(GETTEXT_MSGFMT "msgfmt")
+	endif()
 
-add_custom_command(OUTPUT ${CMAKE_BINARY_DIR}/locale/de/LC_MESSAGES COMMAND ${CMAKE_COMMAND} -E make_directory ${CMAKE_BINARY_DIR}/locale/de/LC_MESSAGES COMMENT "mo-update [de]: Creating locale directory.")
+	add_custom_command(OUTPUT ${CMAKE_BINARY_DIR}/locale/de/LC_MESSAGES COMMAND ${CMAKE_COMMAND} -E make_directory ${CMAKE_BINARY_DIR}/locale/de/LC_MESSAGES COMMENT "mo-update [de]: Creating locale directory.")
 
-add_custom_command(
-		OUTPUT ${CMAKE_BINARY_DIR}/locale/de/LC_MESSAGES/minetest-delta.mo
-		COMMAND ${GETTEXT_MSGFMT} -o ${CMAKE_BINARY_DIR}/locale/de/LC_MESSAGES/minetest-delta.mo ${CMAKE_SOURCE_DIR}/po/de/minetest-c55.po 
-		DEPENDS 
-			${CMAKE_BINARY_DIR}/locale/de/LC_MESSAGES
-			${CMAKE_SOURCE_DIR}/po/de/minetest-c55.po
-		WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}/po/de
-		COMMENT "mo-update [de]: Creating mo file."
-		)
-add_custom_target(translation_de ALL COMMENT "mo update [de]" DEPENDS ${CMAKE_BINARY_DIR}/locale/de/LC_MESSAGES/minetest-delta.mo)
+	add_custom_command(
+			OUTPUT ${CMAKE_BINARY_DIR}/locale/de/LC_MESSAGES/minetest-delta.mo
+			COMMAND ${GETTEXT_MSGFMT} -o ${CMAKE_BINARY_DIR}/locale/de/LC_MESSAGES/minetest-delta.mo ${CMAKE_SOURCE_DIR}/po/de/minetest-c55.po 
+			DEPENDS 
+				${CMAKE_BINARY_DIR}/locale/de/LC_MESSAGES
+				${CMAKE_SOURCE_DIR}/po/de/minetest-c55.po
+			WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}/po/de
+			COMMENT "mo-update [de]: Creating mo file."
+			)
+	add_custom_target(translation_de ALL COMMENT "mo update [de]" DEPENDS ${CMAKE_BINARY_DIR}/locale/de/LC_MESSAGES/minetest-delta.mo)
+endif(USE_GETTEXT)
 
 # Subdirectories
 
