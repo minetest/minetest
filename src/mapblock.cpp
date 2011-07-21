@@ -242,7 +242,12 @@ bool MapBlock::propagateSunlight(core::map<v3s16, bool> & light_sources,
 			// Check if node above block has sunlight
 			try{
 				MapNode n = getNodeParent(v3s16(x, MAP_BLOCKSIZE, z));
-				if(n.d == CONTENT_IGNORE || n.getLight(LIGHTBANK_DAY) != LIGHT_SUN)
+				if(n.d == CONTENT_IGNORE)
+				{
+					// Trust heuristics
+					no_sunlight = is_underground;
+				}
+				else if(n.getLight(LIGHTBANK_DAY) != LIGHT_SUN)
 				{
 					no_sunlight = true;
 				}

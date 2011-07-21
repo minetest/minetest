@@ -2033,25 +2033,28 @@ void ServerMap::initBlockMake(mapgen::BlockMakeData *data, v3s16 blockpos)
 
 			for(s16 y=-1; y<=1; y++)
 			{
-				//MapBlock *block = createBlock(blockpos);
+				v3s16 p(blockpos.X+x, blockpos.Y+y, blockpos.Z+z);
+				//MapBlock *block = createBlock(p);
 				// 1) get from memory, 2) load from disk
-				MapBlock *block = emergeBlock(blockpos, false);
+				MapBlock *block = emergeBlock(p, false);
 				// 3) create a blank one
 				if(block == NULL)
-					block = createBlock(blockpos);
+				{
+					block = createBlock(p);
+
+					/*
+						Block gets sunlight if this is true.
+
+						Refer to the map generator heuristics.
+					*/
+					bool ug = mapgen::block_is_underground(data->seed, p);
+					block->setIsUnderground(ug);
+				}
 
 				// Lighting will not be valid after make_chunk is called
 				block->setLightingExpired(true);
 				// Lighting will be calculated
 				//block->setLightingExpired(false);
-
-				/*
-					Block gets sunlight if this is true.
-
-					This should be set to true when the top side of a block
-					is completely exposed to the sky.
-				*/
-				block->setIsUnderground(false);
 			}
 		}
 	}
@@ -2126,10 +2129,14 @@ MapBlock* ServerMap::finishBlockMake(mapgen::BlockMakeData *data,
 	assert(block);
 
 	/*
-		Set is_underground flag for lighting with sunlight
-	*/
+		Set is_underground flag for lighting with sunlight.
 
-	block->setIsUnderground(mapgen::block_is_underground(data->seed, blockpos));
+		Refer to map generator heuristics.
+
+		NOTE: This is done in initChunkMake
+	*/
+	//block->setIsUnderground(mapgen::block_is_underground(data->seed, blockpos));
+
 
 	/*
 		Add sunlight to central block.
@@ -2160,6 +2167,13 @@ MapBlock* ServerMap::finishBlockMake(mapgen::BlockMakeData *data,
 #if 1
 		// Center block
 		lighting_update_blocks.insert(block->getPos(), block);
+
+		/*{
+			s16 x = 0;
+			s16 z = 0;
+			v3s16 p = block->getPos()+v3s16(x,1,z);
+			lighting_update_blocks[p] = getBlockNoCreateNoEx(p);
+		}*/
 #endif
 #if 0
 		// All modified blocks
@@ -2176,8 +2190,28 @@ MapBlock* ServerMap::finishBlockMake(mapgen::BlockMakeData *data,
 			lighting_update_blocks.insert(i.getNode()->getKey(),
 					i.getNode()->getValue());
 		}
+		/*// Also force-add all the upmost blocks for proper sunlight
+		for(s16 x=-1; x<=1; x++)
+		for(s16 z=-1; z<=1; z++)
+		{
+			v3s16 p = block->getPos()+v3s16(x,1,z);
+			lighting_update_blocks[p] = getBlockNoCreateNoEx(p);
+		}*/
 #endif
 		updateLighting(lighting_update_blocks, changed_blocks);
+		
+		/*
+			Set lighting to non-expired state in all of them.
+			This is cheating, but it is not fast enough if all of them
+			would actually be updated.
+		*/
+		for(s16 x=-1; x<=1; x++)
+		for(s16 y=-1; y<=1; y++)
+		for(s16 z=-1; z<=1; z++)
+		{
+			v3s16 p = block->getPos()+v3s16(x,y,z);
+			getBlockNoCreateNoEx(p)->setLightingExpired(false);
+		}
 
 		if(enable_mapgen_debug_info == false)
 			t.stop(true); // Hide output
@@ -2463,7 +2497,7 @@ MapBlock * ServerMap::emergeBlock(v3s16 p, bool allow_generate)
 	
 	{
 		MapBlock *block = getBlockNoCreateNoEx(p);
-		if(block)
+		if(block && block->isDummy() == false)
 			return block;
 	}
 
@@ -4065,10 +4099,16 @@ void ManualMapVoxelManipulator::blitBackAll(
 			i = m_loaded_blocks.getIterator();
 			i.atEnd() == false; i++)
 	{
+		v3s16 p = i.getNode()->getKey();
 		bool existed = i.getNode()->getValue();
 		if(existed == false)
+		{
+			// The Great Bug was found using this
+			/*dstream<<"ManualMapVoxelManipulator::blitBackAll: "
+					<<"Inexistent ("<<p.X<<","<<p.Y<<","<<p.Z<<")"
+					<<std::endl;*/
 			continue;
-		v3s16 p = i.getNode()->getKey();
+		}
 		MapBlock *block = m_map->getBlockNoCreateNoEx(p);
 		if(block == NULL)
 		{
