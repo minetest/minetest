@@ -1060,6 +1060,7 @@ int main(int argc, char *argv[])
 	std::locale::global(std::locale("C"));
 	// This enables printing all characters in bitmap font
 	setlocale(LC_CTYPE, "en_US");
+
 	/*
 		Parse command line
 	*/

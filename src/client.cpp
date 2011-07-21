@@ -932,6 +932,7 @@ void Client::ProcessData(u8 *data, u32 datasize, u16 sender_peer_id)
 		*/
 
 		//m_env.getClientMap().updateMeshes(block->getPos(), getDayNightRatio());
+		
 		/*
 			Add it to mesh update queue and set it to be acknowledged after update.
 		*/
