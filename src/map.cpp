@@ -2012,7 +2012,15 @@ void ServerMap::initBlockMake(mapgen::BlockMakeData *data, v3s16 blockpos)
 {
 	/*dstream<<"initBlockMake(): ("<<blockpos.X<<","<<blockpos.Y<<","
 			<<blockpos.Z<<")"<<std::endl;*/
-
+	
+	// Do nothing if not inside limits (+-1 because of neighbors)
+	if(blockpos_over_limit(blockpos - v3s16(1,1,1)) ||
+		blockpos_over_limit(blockpos + v3s16(1,1,1)))
+	{
+		data->no_op = true;
+		return;
+	}
+	
 	data->no_op = false;
 	data->seed = m_seed;
 	data->blockpos = blockpos;
@@ -2063,6 +2071,7 @@ void ServerMap::initBlockMake(mapgen::BlockMakeData *data, v3s16 blockpos)
 		neighboring blocks
 	*/
 	
+	// The area that contains this block and it's neighbors
 	v3s16 bigarea_blocks_min = blockpos - v3s16(1,1,1);
 	v3s16 bigarea_blocks_max = blockpos + v3s16(1,1,1);
 	
@@ -2087,7 +2096,7 @@ MapBlock* ServerMap::finishBlockMake(mapgen::BlockMakeData *data,
 
 	if(data->no_op)
 	{
-		dstream<<"finishBlockMake(): no-op"<<std::endl;
+		//dstream<<"finishBlockMake(): no-op"<<std::endl;
 		return NULL;
 	}
 
@@ -2339,31 +2348,33 @@ MapBlock * ServerMap::generateBlock(
 		Get central block
 	*/
 	MapBlock *block = getBlockNoCreateNoEx(p);
-	assert(block);
 
 #if 0
 	/*
 		Check result
 	*/
-	bool erroneus_content = false;
-	for(s16 z0=0; z0<MAP_BLOCKSIZE; z0++)
-	for(s16 y0=0; y0<MAP_BLOCKSIZE; y0++)
-	for(s16 x0=0; x0<MAP_BLOCKSIZE; x0++)
+	if(block)
 	{
-		v3s16 p(x0,y0,z0);
-		MapNode n = block->getNode(p);
-		if(n.d == CONTENT_IGNORE)
+		bool erroneus_content = false;
+		for(s16 z0=0; z0<MAP_BLOCKSIZE; z0++)
+		for(s16 y0=0; y0<MAP_BLOCKSIZE; y0++)
+		for(s16 x0=0; x0<MAP_BLOCKSIZE; x0++)
 		{
-			dstream<<"CONTENT_IGNORE at "
-					<<"("<<p.X<<","<<p.Y<<","<<p.Z<<")"
-					<<std::endl;
-			erroneus_content = true;
+			v3s16 p(x0,y0,z0);
+			MapNode n = block->getNode(p);
+			if(n.d == CONTENT_IGNORE)
+			{
+				dstream<<"CONTENT_IGNORE at "
+						<<"("<<p.X<<","<<p.Y<<","<<p.Z<<")"
+						<<std::endl;
+				erroneus_content = true;
+				assert(0);
+			}
+		}
+		if(erroneus_content)
+		{
 			assert(0);
 		}
-	}
-	if(erroneus_content)
-	{
-		assert(0);
 	}
 #endif
 
@@ -2371,17 +2382,20 @@ MapBlock * ServerMap::generateBlock(
 	/*
 		Generate a completely empty block
 	*/
-	for(s16 z0=0; z0<MAP_BLOCKSIZE; z0++)
-	for(s16 x0=0; x0<MAP_BLOCKSIZE; x0++)
+	if(block)
 	{
-		for(s16 y0=0; y0<MAP_BLOCKSIZE; y0++)
+		for(s16 z0=0; z0<MAP_BLOCKSIZE; z0++)
+		for(s16 x0=0; x0<MAP_BLOCKSIZE; x0++)
 		{
-			MapNode n;
-			if(y0%2==0)
-				n.d = CONTENT_AIR;
-			else
-				n.d = CONTENT_STONE;
-			block->setNode(v3s16(x0,y0,z0), n);
+			for(s16 y0=0; y0<MAP_BLOCKSIZE; y0++)
+			{
+				MapNode n;
+				if(y0%2==0)
+					n.d = CONTENT_AIR;
+				else
+					n.d = CONTENT_STONE;
+				block->setNode(v3s16(x0,y0,z0), n);
+			}
 		}
 	}
 #endif
