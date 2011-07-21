@@ -17,6 +17,7 @@ FIND_PROGRAM(GETTEXT_MSGFMT
 	DOC "path to msgfmt")
 
 # modern Linux, as well as Mac, seem to not need require special linking
+# they do not because gettext is part of glibc
 # TODO check the requirements on other BSDs and older Linux
 IF (WIN32)
 	FIND_LIBRARY(GETTEXT_LIBRARY
@@ -25,11 +26,11 @@ IF (WIN32)
 		DOC "gettext *intl*.lib")
 	FIND_LIBRARY(GETTEXT_DLL
 		NAMES libintl.dll intl.dll libintl3.dll intl3.dll
-		PATHS "${CUSTOM_GETTEXT_PATH}/lib"
+		PATHS "${CUSTOM_GETTEXT_PATH}/bin" "${CUSTOM_GETTEXT_PATH}/lib" 
 		DOC "gettext *intl*.dll")
 	FIND_LIBRARY(GETTEXT_ICONV_DLL
 		NAMES libiconv2.dll
-		PATHS "${CUSTOM_GETTEXT_PATH}/lib"
+		PATHS "${CUSTOM_GETTEXT_PATH}/bin" "${CUSTOM_GETTEXT_PATH}/lib"
 		DOC "gettext *iconv*.lib")
 ENDIF(WIN32)
 
