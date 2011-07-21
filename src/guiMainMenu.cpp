@@ -217,6 +217,7 @@ void GUIMainMenu::regenerateGui(v2u32 screensize)
 	}
 	{
 		core::rect<s32> rect(0, 0, 400, 20);
+		rect += topleft_client + v2s32(160, 100+35);
 		Environment->addStaticText(chartowchar_t(gettext("Leave address blank to start a local server.")), rect, false, true, this, -1);
 	}
 	{
