@@ -1,7 +1,7 @@
 Minetest Δ (“Minetest Delta”) is a fork of Minetest-c55 <http://celeron.55.lt/~celeron55/minetest/>, incorporating experimental features that are not (yet) included in Minetest-c55.
 
 New features:
-* Submenu for key assignment (changes apply after restart)
+* Submenu for key assignment
 * configurable far mesh tree display (boolean)
 * configurable far mesh rendering distance
 * volumetric clouds (using fake shading)
