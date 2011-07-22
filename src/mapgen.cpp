@@ -1331,7 +1331,7 @@ void make_block(BlockMakeData *data)
 {
 	if(data->no_op)
 	{
-		dstream<<"makeBlock: no-op"<<std::endl;
+		//dstream<<"makeBlock: no-op"<<std::endl;
 		return;
 	}
 
