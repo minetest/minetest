@@ -5,6 +5,8 @@ if(RUN_IN_PLACE)
 	add_definitions ( -DRUN_IN_PLACE )
 endif(RUN_IN_PLACE)
 
+OPTION(USE_GETTEXT "Use GetText for internationalization" OFF)
+
 if(USE_GETTEXT)
 	find_package(GettextLib REQUIRED)
 	message(STATUS "gettext include path: ${GETTEXT_INCLUDE_DIR}")
