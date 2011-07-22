@@ -16,6 +16,21 @@ FIND_PROGRAM(GETTEXT_MSGFMT
 	PATHS "${CUSTOM_GETTEXT_PATH}/bin"
 	DOC "path to msgfmt")
 
+FIND_PROGRAM(GETTEXT_MSGMERGE
+	NAMES msgmerge
+	PATHS "${CUSTOM_GETTEXT_PATH}/bin"
+	DOC "path to msgmerge")
+
+FIND_PROGRAM(GETTEXT_MSGEN
+	NAMES msgen
+	PATHS "${CUSTOM_GETTEXT_PATH}/bin"
+	DOC "path to msgen")
+
+FIND_PROGRAM(GETTEXT_EXTRACT
+	NAMES xgettext
+	PATHS "${CUSTOM_GETTEXT_PATH}/bin"
+	DOC "path to xgettext")
+
 # modern Linux, as well as Mac, seem to not need require special linking
 # they do not because gettext is part of glibc
 # TODO check the requirements on other BSDs and older Linux
