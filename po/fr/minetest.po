@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: 0.0.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2011-07-21 02:00+0200\n"
+"POT-Creation-Date: 2011-07-22 11:00+0200\n"
 "PO-Revision-Date: 2011-07-21 15:48+0200\n"
 "Last-Translator: Cyriaque 'Cisoun' Skrapits <cysoun@gmail.com>\n"
 "Language-Team: Français <>\n"
@@ -21,44 +21,43 @@ msgstr ""
 msgid "Name/Password"
 msgstr "Nom / MdP"
 
-#: src/guiMainMenu.cpp:202
+#: src/guiMainMenu.cpp:203
 msgid "Address/Port"
 msgstr "Adresse / Port"
 
-#: src/guiMainMenu.cpp:220
+#: src/guiMainMenu.cpp:223
 msgid "Leave address blank to start a local server."
 msgstr "Laisser l'adresse vide pour lancer un serveur local."
 
-#: src/guiMainMenu.cpp:226
+#: src/guiMainMenu.cpp:230
 msgid "Fancy trees"
 msgstr "Arbres spéciaux"
 
-#: src/guiMainMenu.cpp:232
+#: src/guiMainMenu.cpp:236
 msgid "Smooth Lighting"
 msgstr "Lumière douce"
 
-#: src/guiMainMenu.cpp:239
+#: src/guiMainMenu.cpp:244
 msgid "Start Game / Connect"
 msgstr "Démarrer / Connecter"
 
-#: src/guiMainMenu.cpp:247
+#: src/guiMainMenu.cpp:253
 msgid "Change keys"
 msgstr "Changer touches"
 
-#: src/guiMainMenu.cpp:269
+#: src/guiMainMenu.cpp:276
 msgid "Creative Mode"
 msgstr "Mode créatif"
 
-#: src/guiMainMenu.cpp:274
+#: src/guiMainMenu.cpp:282
 msgid "Enable Damage"
 msgstr "Activer blessures"
 
-#: src/guiMainMenu.cpp:281
+#: src/guiMainMenu.cpp:290
 msgid "Delete map"
 msgstr "Supprimer carte"
 
-#: src/guiMessageMenu.cpp:92
-#: src/guiTextInputMenu.cpp:110
+#: src/guiMessageMenu.cpp:93 src/guiTextInputMenu.cpp:111
 msgid "Proceed"
 msgstr "OK"
 
@@ -66,39 +65,39 @@ msgstr "OK"
 msgid "Old Password"
 msgstr "Ancien mot de passe"
 
-#: src/guiPasswordChange.cpp:116
+#: src/guiPasswordChange.cpp:117
 msgid "New Password"
 msgstr "Nouveau mot de passe"
 
-#: src/guiPasswordChange.cpp:129
+#: src/guiPasswordChange.cpp:131
 msgid "Confirm Password"
 msgstr "Confirmer mot de passe"
 
-#: src/guiPasswordChange.cpp:143
+#: src/guiPasswordChange.cpp:146
 msgid "Change"
 msgstr "Changer"
 
-#: src/guiPasswordChange.cpp:151
+#: src/guiPasswordChange.cpp:155
 msgid "Passwords do not match!"
 msgstr "Mauvaise correspondance!"
 
-#: src/guiPauseMenu.cpp:109
+#: src/guiPauseMenu.cpp:110
 msgid "Continue"
 msgstr "Continuer"
 
-#: src/guiPauseMenu.cpp:115
+#: src/guiPauseMenu.cpp:117
 msgid "Change Password"
 msgstr "Changer mot de passe"
 
-#: src/guiPauseMenu.cpp:121
+#: src/guiPauseMenu.cpp:124
 msgid "Disconnect"
 msgstr "Déconnection"
 
-#: src/guiPauseMenu.cpp:127
+#: src/guiPauseMenu.cpp:131
 msgid "Exit to OS"
 msgstr "Quitter le jeu"
 
-#: src/guiPauseMenu.cpp:134
+#: src/guiPauseMenu.cpp:138
 msgid ""
 "Keys:\n"
 "- WASD: Walk\n"
@@ -122,4 +121,3 @@ msgstr ""
 "- R: Active la vue de tous les blocs\n"
 "- I: Inventaire\n"
 "- T: Chat\n"
-
