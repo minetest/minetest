@@ -5,11 +5,11 @@ if(${CMAKE_VERSION} STREQUAL "2.8.2")
 endif(${CMAKE_VERSION} STREQUAL "2.8.2")
 
 # This can be read from ${PROJECT_NAME} after project() is called
-project(minetest)
+project(minetest-delta)
 
 set(VERSION_MAJOR 0)
 set(VERSION_MINOR 2)
-set(VERSION_PATCH 20110704_0)
+set(VERSION_PATCH 20110720_0)
 set(VERSION_STRING "${VERSION_MAJOR}.${VERSION_MINOR}.${VERSION_PATCH}")
 
 # Configuration options
@@ -48,15 +48,15 @@ if(WIN32)
 	set(EXAMPLE_CONF_DIR ".")
 elseif(APPLE)
 	# random placeholders
-	set(DATADIR "share/minetest")
+	set(DATADIR "share/${PROJECT_NAME}")
 	set(BINDIR "bin")
-	set(DOCDIR "share/doc/minetest")
+	set(DOCDIR "share/doc/${PROJECT_NAME}")
 	set(EXAMPLE_CONF_DIR ".")
 elseif(UNIX) # Linux, BSD etc
-	set(DATADIR "share/minetest")
+	set(DATADIR "share/${PROJECT_NAME}")
 	set(BINDIR "bin")
-	set(DOCDIR "share/doc/minetest")
-	set(EXAMPLE_CONF_DIR "share/doc/minetest")
+	set(DOCDIR "share/doc/${PROJECT_NAME}")
+	set(EXAMPLE_CONF_DIR "share/doc/${PROJECT_NAME}")
 endif()
 
 install(FILES "doc/README.txt" DESTINATION "${DOCDIR}")
@@ -103,7 +103,7 @@ elseif(APPLE)
 	set(CPACK_BUNDLE_NAME ${PROJECT_NAME})
 	set(CPACK_BUNDLE_ICON "")
 	set(CPACK_BUNDLE_PLIST "")
-	set(CPACK_BUNDLE_STARTUP_COMMAND "Contents/MacOS/minetest")
+	set(CPACK_BUNDLE_STARTUP_COMMAND "Contents/MacOS/${PROJECT_NAME}")
 	set(CPACK_GENERATOR "Bundle")
 else()
 	set(CPACK_PACKAGE_FILE_NAME "${PROJECT_NAME}-${VERSION_STRING}-linux")
