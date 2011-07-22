@@ -16,7 +16,7 @@ if(USE_GETTEXT)
 	endif()
 	if (GETTEXT_FOUND)
 		add_definitions( -DUSE_GETTEXT )
-		message(STATUS "GetText enabled")
+		message(STATUS "GetText enabled; locales found: ${GETTEXT_AVAILABLE_LOCALES}")
 	else()
 		message(STATUS "ERROR: GetText enabled but not found, disabling")
 		set(USE_GETTEXT FALSE)
@@ -267,8 +267,11 @@ if(BUILD_CLIENT)
 	install(FILES ${images} DESTINATION ${DATADIR})
 
 	if (USE_GETTEXT)
-		install(FILES ${CMAKE_BINARY_DIR}/locale/de/LC_MESSAGES/${PROJECT_NAME}.mo DESTINATION locale/de/LC_MESSAGES)
-		install(FILES ${CMAKE_BINARY_DIR}/locale/fr/LC_MESSAGES/${PROJECT_NAME}.mo DESTINATION locale/fr/LC_MESSAGES)
+		foreach(LOCALE ${GETTEXT_AVAILABLE_LOCALES})
+			set_mo_paths(MO_BUILD_PATH MO_DEST_PATH ${LOCALE})
+			set(MO_BUILD_PATH "${MO_BUILD_PATH}/${PROJECT_NAME}.mo")
+			install(FILES ${MO_BUILD_PATH} DESTINATION ${MO_DEST_PATH})
+		endforeach(LOCALE ${GETTEXT_AVAILABLE_LOCALES})
 	endif()
 
 	if(WIN32)
@@ -294,30 +297,28 @@ if(BUILD_SERVER)
 endif(BUILD_SERVER)
 
 if (USE_GETTEXT)
-	add_custom_command(OUTPUT ${CMAKE_BINARY_DIR}/locale/de/LC_MESSAGES COMMAND ${CMAKE_COMMAND} -E make_directory ${CMAKE_BINARY_DIR}/locale/de/LC_MESSAGES COMMENT "mo-update [de]: Creating locale directory.")
-	add_custom_command(OUTPUT ${CMAKE_BINARY_DIR}/locale/fr/LC_MESSAGES COMMAND ${CMAKE_COMMAND} -E make_directory ${CMAKE_BINARY_DIR}/locale/fr/LC_MESSAGES COMMENT "mo-update [fr]: Creating locale directory.")
+	set(MO_FILES)
+	foreach(LOCALE ${GETTEXT_AVAILABLE_LOCALES})
+		set_mo_paths(MO_BUILD_PATH MO_DEST_PATH ${LOCALE})
+		add_custom_command(OUTPUT ${MO_BUILD_PATH}
+			COMMAND ${CMAKE_COMMAND} -E make_directory ${MO_BUILD_PATH}
+			COMMENT "mo-update [${LOCALE}]: Creating locale directory.")
 
-	add_custom_command(
-			OUTPUT ${CMAKE_BINARY_DIR}/locale/de/LC_MESSAGES/${PROJECT_NAME}.mo
-			COMMAND ${GETTEXT_MSGFMT} -o ${CMAKE_BINARY_DIR}/locale/de/LC_MESSAGES/minetest-delta.mo ${CMAKE_SOURCE_DIR}/po/de/minetest-c55.po 
-			DEPENDS 
-				${CMAKE_BINARY_DIR}/locale/de/LC_MESSAGES
-				${CMAKE_SOURCE_DIR}/po/de/minetest-c55.po
-			WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}/po/de
-			COMMENT "mo-update [de]: Creating mo file."
-			)
-	add_custom_command(
-			OUTPUT ${CMAKE_BINARY_DIR}/locale/fr/LC_MESSAGES/${PROJECT_NAME}.mo
-			COMMAND ${GETTEXT_MSGFMT} -o ${CMAKE_BINARY_DIR}/locale/fr/LC_MESSAGES/minetest-c55.mo ${CMAKE_SOURCE_DIR}/po/fr/minetest-c55.po 
-			DEPENDS 
-				${CMAKE_BINARY_DIR}/locale/fr/LC_MESSAGES
-				${CMAKE_SOURCE_DIR}/po/fr/minetest-c55.po
-			WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}/po/fr
-			COMMENT "mo-update [fr]: Creating mo file."
+		set(MO_FILE_PATH "${MO_BUILD_PATH}/${PROJECT_NAME}.mo")
+		set(PO_FILE_PATH "${GETTEXT_PO_PATH}/${LOCALE}/minetest-c55.po")
+
+		add_custom_command(
+			OUTPUT ${MO_FILE_PATH}
+			COMMAND ${GETTEXT_MSGFMT} -o ${MO_FILE_PATH} ${PO_FILE_PATH}
+			DEPENDS ${MO_BUILD_PATH} ${PO_FILE_PATH}
+			WORKING_DIRECTORY "${GETTEXT_PO_PATH}/${LOCALE}"
+			COMMENT "mo-update [${LOCALE}]: Creating mo file."
 			)
 
-	add_custom_target(translation_de ALL COMMENT "mo update [de]" DEPENDS ${CMAKE_BINARY_DIR}/locale/de/LC_MESSAGES/${PROJECT_NAME}.mo)
-	add_custom_target(translation_fr ALL COMMENT "mo update [fr]" DEPENDS ${CMAKE_BINARY_DIR}/locale/fr/LC_MESSAGES/${PROJECT_NAME}.mo)
+		set(MO_FILES ${MO_FILES} ${MO_FILE_PATH})
+	endforeach(LOCALE ${GETTEXT_AVAILABLE_LOCALES})
+
+	add_custom_target(translations ALL COMMENT "mo update" DEPENDS ${MO_FILES})
 endif(USE_GETTEXT)
 
 # Subdirectories
