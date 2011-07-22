@@ -119,7 +119,8 @@ struct ContentFeatures
 	TileSpec tiles[6];
 	
 	video::ITexture *inventory_texture;
-
+	
+	// True for all ground-like things like stone and mud, false for eg. trees
 	bool is_ground_content;
 	bool light_propagates;
 	bool sunlight_propagates;

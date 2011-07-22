@@ -57,6 +57,8 @@ void content_mapnode_init();
 #define CONTENT_PAPYRUS 28
 #define CONTENT_BOOKSHELF 29
 #define CONTENT_RAIL 30
+#define CONTENT_JUNGLETREE 31
+#define CONTENT_JUNGLEGRASS 32
 
 #endif
 

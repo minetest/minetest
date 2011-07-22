@@ -136,12 +136,34 @@ void content_mapnode_init()
 	f->dug_item = std::string("MaterialItem ")+itos(i)+" 1";
 	setWoodLikeDiggingProperties(f->digging_properties, 1.0);
 	
+	i = CONTENT_JUNGLETREE;
+	f = &content_features(i);
+	f->setAllTextures("jungletree.png");
+	f->setTexture(0, "jungletree_top.png");
+	f->setTexture(1, "jungletree_top.png");
+	f->param_type = CPT_MINERAL;
+	//f->is_ground_content = true;
+	f->dug_item = std::string("MaterialItem ")+itos(i)+" 1";
+	setWoodLikeDiggingProperties(f->digging_properties, 1.0);
+	
+	i = CONTENT_JUNGLEGRASS;
+	f = &content_features(i);
+	f->setInventoryTexture("junglegrass.png");
+	f->light_propagates = true;
+	f->param_type = CPT_LIGHT;
+	//f->is_ground_content = true;
+	f->air_equivalent = false; // grass grows underneath
+	f->dug_item = std::string("MaterialItem ")+itos(i)+" 1";
+	f->solidness = 0; // drawn separately, makes no faces
+	f->walkable = false;
+	setWoodLikeDiggingProperties(f->digging_properties, 0.10);
+
 	i = CONTENT_LEAVES;
 	f = &content_features(i);
 	f->light_propagates = true;
 	//f->param_type = CPT_MINERAL;
 	f->param_type = CPT_LIGHT;
-	f->is_ground_content = true;
+	//f->is_ground_content = true;
 	if(new_style_leaves)
 	{
 		f->solidness = 0; // drawn separately, makes no faces

@@ -152,6 +152,92 @@ static void make_tree(VoxelManipulator &vmanip, v3s16 p0)
 	}
 }
 
+static void make_jungletree(VoxelManipulator &vmanip, v3s16 p0)
+{
+	MapNode treenode(CONTENT_JUNGLETREE);
+	MapNode leavesnode(CONTENT_LEAVES);
+
+	for(s16 x=-1; x<=1; x++)
+	for(s16 z=-1; z<=1; z++)
+	{
+		if(myrand_range(0, 2) == 0)
+			continue;
+		v3s16 p1 = p0 + v3s16(x,0,z);
+		v3s16 p2 = p0 + v3s16(x,-1,z);
+		if(vmanip.m_area.contains(p2)
+				&& vmanip.m_data[vmanip.m_area.index(p2)] == CONTENT_AIR)
+			vmanip.m_data[vmanip.m_area.index(p2)] = treenode;
+		else if(vmanip.m_area.contains(p1))
+			vmanip.m_data[vmanip.m_area.index(p1)] = treenode;
+	}
+
+	s16 trunk_h = myrand_range(8, 12);
+	v3s16 p1 = p0;
+	for(s16 ii=0; ii<trunk_h; ii++)
+	{
+		if(vmanip.m_area.contains(p1))
+			vmanip.m_data[vmanip.m_area.index(p1)] = treenode;
+		p1.Y++;
+	}
+
+	// p1 is now the last piece of the trunk
+	p1.Y -= 1;
+
+	VoxelArea leaves_a(v3s16(-3,-2,-3), v3s16(3,2,3));
+	//SharedPtr<u8> leaves_d(new u8[leaves_a.getVolume()]);
+	Buffer<u8> leaves_d(leaves_a.getVolume());
+	for(s32 i=0; i<leaves_a.getVolume(); i++)
+		leaves_d[i] = 0;
+
+	// Force leaves at near the end of the trunk
+	{
+		s16 d = 1;
+		for(s16 z=-d; z<=d; z++)
+		for(s16 y=-d; y<=d; y++)
+		for(s16 x=-d; x<=d; x++)
+		{
+			leaves_d[leaves_a.index(v3s16(x,y,z))] = 1;
+		}
+	}
+
+	// Add leaves randomly
+	for(u32 iii=0; iii<30; iii++)
+	{
+		s16 d = 1;
+
+		v3s16 p(
+			myrand_range(leaves_a.MinEdge.X, leaves_a.MaxEdge.X-d),
+			myrand_range(leaves_a.MinEdge.Y, leaves_a.MaxEdge.Y-d),
+			myrand_range(leaves_a.MinEdge.Z, leaves_a.MaxEdge.Z-d)
+		);
+
+		for(s16 z=0; z<=d; z++)
+		for(s16 y=0; y<=d; y++)
+		for(s16 x=0; x<=d; x++)
+		{
+			leaves_d[leaves_a.index(p+v3s16(x,y,z))] = 1;
+		}
+	}
+
+	// Blit leaves to vmanip
+	for(s16 z=leaves_a.MinEdge.Z; z<=leaves_a.MaxEdge.Z; z++)
+	for(s16 y=leaves_a.MinEdge.Y; y<=leaves_a.MaxEdge.Y; y++)
+	for(s16 x=leaves_a.MinEdge.X; x<=leaves_a.MaxEdge.X; x++)
+	{
+		v3s16 p(x,y,z);
+		p += p1;
+		if(vmanip.m_area.contains(p) == false)
+			continue;
+		u32 vi = vmanip.m_area.index(p);
+		if(vmanip.m_data[vi].d != CONTENT_AIR
+				&& vmanip.m_data[vi].d != CONTENT_IGNORE)
+			continue;
+		u32 i = leaves_a.index(x,y,z);
+		if(leaves_d[i] == 1)
+			vmanip.m_data[vi] = leavesnode;
+	}
+}
+
 void make_papyrus(VoxelManipulator &vmanip, v3s16 p0)
 {
 	MapNode papyrusnode(CONTENT_PAPYRUS);
@@ -1004,11 +1090,24 @@ double tree_amount_2d(u64 seed, v2s16 p)
 	double noise = noise2d_perlin(
 			0.5+(float)p.X/125, 0.5+(float)p.Y/125,
 			seed+2, 4, 0.66);
-	double zeroval = -0.35;
+	double zeroval = -0.39;
 	if(noise < zeroval)
 		return 0;
 	else
 		return 0.04 * (noise-zeroval) / (1.0-zeroval);
+}
+
+double surface_humidity_2d(u64 seed, v2s16 p)
+{
+	double noise = noise2d_perlin(
+			0.5+(float)p.X/500, 0.5+(float)p.Y/500,
+			seed+72384, 4, 0.66);
+	noise = (noise + 1.0)/2.0;
+	if(noise < 0.0)
+		noise = 0.0;
+	if(noise > 1.0)
+		noise = 1.0;
+	return noise;
 }
 
 #if 0
@@ -1909,11 +2008,19 @@ void make_block(BlockMakeData *data)
 		}
 
 		/*
-			Add trees
+			Calculate some stuff
 		*/
 		
+		float surface_humidity = surface_humidity_2d(data->seed, p2d_center);
+		bool is_jungle = surface_humidity > 0.75;
 		// Amount of trees
 		u32 tree_count = block_area_nodes * tree_amount_2d(data->seed, p2d_center);
+		if(is_jungle)
+			tree_count *= 5;
+
+		/*
+			Add trees
+		*/
 		PseudoRandom treerandom(blockseed);
 		// Put trees in random places on part of division
 		for(u32 i=0; i<tree_count; i++)
@@ -1938,7 +2045,8 @@ void make_block(BlockMakeData *data)
 			{
 				u32 i = data->vmanip->m_area.index(p);
 				MapNode *n = &data->vmanip->m_data[i];
-				if(n->d != CONTENT_AIR && n->d != CONTENT_WATERSOURCE && n->d != CONTENT_IGNORE)
+				//if(n->d != CONTENT_AIR && n->d != CONTENT_WATERSOURCE && n->d != CONTENT_IGNORE)
+				if(content_features(n->d).is_ground_content)
 				{
 					found = true;
 					break;
@@ -1965,7 +2073,11 @@ void make_block(BlockMakeData *data)
 				else if((n->d == CONTENT_MUD || n->d == CONTENT_GRASS) && y > WATER_LEVEL + 2)
 				{
 					p.Y++;
-					make_tree(vmanip, p);
+					//if(surface_humidity_2d(data->seed, v2s16(x, y)) < 0.5)
+					if(is_jungle == false)
+						make_tree(vmanip, p);
+					else
+						make_jungletree(vmanip, p);
 				}
 				// Cactii grow only on sand, on land
 				else if(n->d == CONTENT_SAND && y > WATER_LEVEL + 2)
@@ -1973,6 +2085,54 @@ void make_block(BlockMakeData *data)
 					p.Y++;
 					make_cactus(vmanip, p);
 				}
+			}
+		}
+
+		/*
+			Add jungle grass
+		*/
+		if(is_jungle)
+		{
+			PseudoRandom grassrandom(blockseed);
+			for(u32 i=0; i<surface_humidity*5*tree_count; i++)
+			{
+				s16 x = grassrandom.range(node_min.X, node_max.X);
+				s16 z = grassrandom.range(node_min.Z, node_max.Z);
+				s16 y = find_ground_level_from_noise(data->seed, v2s16(x,z), 4);
+				if(y < WATER_LEVEL)
+					continue;
+				if(y < node_min.Y || y > node_max.Y)
+					continue;
+				/*
+					Find exact ground level
+				*/
+				v3s16 p(x,y+6,z);
+				bool found = false;
+				for(; p.Y >= y-6; p.Y--)
+				{
+					u32 i = data->vmanip->m_area.index(p);
+					MapNode *n = &data->vmanip->m_data[i];
+					if(content_features(n->d).is_ground_content
+							|| n->d == CONTENT_JUNGLETREE)
+					{
+						found = true;
+						break;
+					}
+				}
+				// If not found, handle next one
+				if(found == false)
+					continue;
+				p.Y++;
+				if(vmanip.m_area.contains(p) == false)
+					continue;
+				if(vmanip.m_data[vmanip.m_area.index(p)].d != CONTENT_AIR)
+					continue;
+				/*p.Y--;
+				if(vmanip.m_area.contains(p))
+					vmanip.m_data[vmanip.m_area.index(p)] = CONTENT_MUD;
+				p.Y++;*/
+				if(vmanip.m_area.contains(p))
+					vmanip.m_data[vmanip.m_area.index(p)] = CONTENT_JUNGLEGRASS;
 			}
 		}
 
