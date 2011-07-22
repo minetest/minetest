@@ -1132,7 +1132,7 @@ int main(int argc, char *argv[])
 	// Create user data directory
 	fs::CreateDir(porting::path_userdata);
 
-	setlocale(LC_ALL, "");
+	setlocale(LC_MESSAGES, "");
 	bindtextdomain("minetest-c55", (porting::path_userdata+"/locale").c_str());
 	textdomain("minetest-c55");
 	
