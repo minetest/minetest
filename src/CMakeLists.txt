@@ -267,8 +267,8 @@ if(BUILD_CLIENT)
 	install(FILES ${images} DESTINATION ${DATADIR})
 
 	if (USE_GETTEXT)
-		install(FILES ${CMAKE_BINARY_DIR}/locale/de/LC_MESSAGES/minetest-delta.mo DESTINATION locale/de/LC_MESSAGES)
-		install(FILES ${CMAKE_BINARY_DIR}/locale/fr/LC_MESSAGES/minetest-c55.mo DESTINATION locale/fr/LC_MESSAGES)
+		install(FILES ${CMAKE_BINARY_DIR}/locale/de/LC_MESSAGES/${PROJECT_NAME}.mo DESTINATION locale/de/LC_MESSAGES)
+		install(FILES ${CMAKE_BINARY_DIR}/locale/fr/LC_MESSAGES/${PROJECT_NAME}.mo DESTINATION locale/fr/LC_MESSAGES)
 	endif()
 
 	if(WIN32)
@@ -298,7 +298,7 @@ if (USE_GETTEXT)
 	add_custom_command(OUTPUT ${CMAKE_BINARY_DIR}/locale/fr/LC_MESSAGES COMMAND ${CMAKE_COMMAND} -E make_directory ${CMAKE_BINARY_DIR}/locale/fr/LC_MESSAGES COMMENT "mo-update [fr]: Creating locale directory.")
 
 	add_custom_command(
-			OUTPUT ${CMAKE_BINARY_DIR}/locale/de/LC_MESSAGES/minetest-delta.mo
+			OUTPUT ${CMAKE_BINARY_DIR}/locale/de/LC_MESSAGES/${PROJECT_NAME}.mo
 			COMMAND ${GETTEXT_MSGFMT} -o ${CMAKE_BINARY_DIR}/locale/de/LC_MESSAGES/minetest-delta.mo ${CMAKE_SOURCE_DIR}/po/de/minetest-c55.po 
 			DEPENDS 
 				${CMAKE_BINARY_DIR}/locale/de/LC_MESSAGES
@@ -307,7 +307,7 @@ if (USE_GETTEXT)
 			COMMENT "mo-update [de]: Creating mo file."
 			)
 	add_custom_command(
-			OUTPUT ${CMAKE_BINARY_DIR}/locale/fr/LC_MESSAGES/minetest-c55.mo
+			OUTPUT ${CMAKE_BINARY_DIR}/locale/fr/LC_MESSAGES/${PROJECT_NAME}.mo
 			COMMAND ${GETTEXT_MSGFMT} -o ${CMAKE_BINARY_DIR}/locale/fr/LC_MESSAGES/minetest-c55.mo ${CMAKE_SOURCE_DIR}/po/fr/minetest-c55.po 
 			DEPENDS 
 				${CMAKE_BINARY_DIR}/locale/fr/LC_MESSAGES
@@ -316,8 +316,8 @@ if (USE_GETTEXT)
 			COMMENT "mo-update [fr]: Creating mo file."
 			)
 
-	add_custom_target(translation_de ALL COMMENT "mo update [de]" DEPENDS ${CMAKE_BINARY_DIR}/locale/de/LC_MESSAGES/minetest-delta.mo)
-	add_custom_target(translation_fr ALL COMMENT "mo update [fr]" DEPENDS ${CMAKE_BINARY_DIR}/locale/fr/LC_MESSAGES/minetest-c55.mo)
+	add_custom_target(translation_de ALL COMMENT "mo update [de]" DEPENDS ${CMAKE_BINARY_DIR}/locale/de/LC_MESSAGES/${PROJECT_NAME}.mo)
+	add_custom_target(translation_fr ALL COMMENT "mo update [fr]" DEPENDS ${CMAKE_BINARY_DIR}/locale/fr/LC_MESSAGES/${PROJECT_NAME}.mo)
 endif(USE_GETTEXT)
 
 # Subdirectories
