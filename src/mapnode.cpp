@@ -267,10 +267,10 @@ void MapNode::serialize(u8 *dest, u8 version)
 	{
 		// In these versions, CONTENT_IGNORE and CONTENT_AIR
 		// are 255 and 254
-		if(d == CONTENT_IGNORE)
-			d = 255;
-		else if(d == CONTENT_AIR)
-			d = 254;
+		if(actual_d == CONTENT_IGNORE)
+			actual_d = 255;
+		else if(actual_d == CONTENT_AIR)
+			actual_d = 254;
 	}
 
 	if(version == 0)
@@ -317,17 +317,25 @@ void MapNode::deSerialize(u8 *source, u8 version)
 		d = source[0];
 		param = source[1];
 		param2 = source[2];
-		
-		// Convert from old version to new
-		if(version <= 18)
-		{
-			// In these versions, CONTENT_IGNORE and CONTENT_AIR
-			// are 255 and 254
-			if(d == 255)
-				d = CONTENT_IGNORE;
-			else if(d == 254)
-				d = CONTENT_AIR;
-		}
+	}
+	
+	// Convert from old version to new
+	if(version <= 18)
+	{
+		// In these versions, CONTENT_IGNORE and CONTENT_AIR
+		// are 255 and 254
+		if(d == 255)
+			d = CONTENT_IGNORE;
+		else if(d == 254)
+			d = CONTENT_AIR;
+	}
+	// version 19 is fucked up with sometimes the old values and sometimes not
+	if(version == 19)
+	{
+		if(d == 255)
+			d = CONTENT_IGNORE;
+		else if(d == 254)
+			d = CONTENT_AIR;
 	}
 }
 
