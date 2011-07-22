@@ -1,5 +1,5 @@
 #! /bin/bash
-xgettext -n -o minetest-c55.pot ./src/*.cpp ./src/*.h
-msgmerge -U ./po/de/minetest-c55.po minetest-c55.pot
-msgmerge -U ./po/fr/minetest-c55.po minetest-c55.pot
-rm minetest-c55.pot
+xgettext -n -o minetest.pot ./src/*.cpp ./src/*.h
+msgmerge -U ./po/de/minetest.po minetest.pot
+msgmerge -U ./po/fr/minetest.po minetest.pot
+rm minetest.pot

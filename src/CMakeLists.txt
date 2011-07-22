@@ -305,7 +305,7 @@ if (USE_GETTEXT)
 			COMMENT "mo-update [${LOCALE}]: Creating locale directory.")
 
 		set(MO_FILE_PATH "${MO_BUILD_PATH}/${PROJECT_NAME}.mo")
-		set(PO_FILE_PATH "${GETTEXT_PO_PATH}/${LOCALE}/minetest-c55.po")
+		set(PO_FILE_PATH "${GETTEXT_PO_PATH}/${LOCALE}/minetest.po")
 
 		add_custom_command(
 			OUTPUT ${MO_FILE_PATH}
