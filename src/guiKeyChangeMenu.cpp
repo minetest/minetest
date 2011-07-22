@@ -338,7 +338,7 @@ bool GUIKeyChangeMenu::acceptInput()
 	g_settings.set("keymap_fastmove", keycode_to_keyname(key_fast));
 	g_settings.set("keymap_special1", keycode_to_keyname(key_use));
 	g_settings.set("keymap_print_debug_stacks", keycode_to_keyname(key_dump));
-	//clearKeyCache(); Y U NO SCOPE?!
+	clearKeyCache();
 	return true;
 }
 void GUIKeyChangeMenu::init_keys()
