@@ -151,7 +151,7 @@ video::SColor MapBlock_LightColor(u8 alpha, u8 light)
 #if 1
 	// Emphase blue a bit in darker places
 	float lim = 80;
-	float power = 0.7;
+	float power = 0.8;
 	if(light > lim)
 		return video::SColor(alpha,light,light,light);
 	else
