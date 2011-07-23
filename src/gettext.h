@@ -1,5 +1,11 @@
+#ifdef GETTEXT_FOUND
 #ifdef USE_GETTEXT
 #include <libintl.h>
+#else
+#define gettext(String) String
+#define bindtextdomain(domain, dir) /* */
+#define textdomain(domain) /* */
+#endif
 #else
 #define gettext(String) String
 #define bindtextdomain(domain, dir) /* */
