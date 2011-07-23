@@ -18,9 +18,14 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 */
 
 #include "guiMainMenu.h"
+#include "guiKeyChangeMenu.h"
 #include "debug.h"
 #include "serialization.h"
 #include <string>
+
+
+
+#include "gettext.h"
 
 GUIMainMenu::GUIMainMenu(gui::IGUIEnvironment* env,
 		gui::IGUIElement* parent, s32 id,
@@ -34,6 +39,10 @@ GUIMainMenu::GUIMainMenu(gui::IGUIEnvironment* env,
 	m_gamecallback(gamecallback)
 {
 	assert(m_data);
+	this->env = env;
+	this->parent = parent;
+	this->id = id;
+	this->menumgr = menumgr;
 }
 
 GUIMainMenu::~GUIMainMenu()
@@ -70,35 +79,35 @@ void GUIMainMenu::regenerateGui(v2u32 screensize)
 	
 	// Client options
 	{
-		gui::IGUIElement *e = getElementFromId(258);
+		gui::IGUIElement *e = getElementFromId(GUI_ID_NAME_INPUT);
 		if(e != NULL)
 			text_name = e->getText();
 		else
 			text_name = m_data->name;
 	}
 	{
-		gui::IGUIElement *e = getElementFromId(256);
+		gui::IGUIElement *e = getElementFromId(GUI_ID_ADDRESS_INPUT);
 		if(e != NULL)
 			text_address = e->getText();
 		else
 			text_address = m_data->address;
 	}
 	{
-		gui::IGUIElement *e = getElementFromId(257);
+		gui::IGUIElement *e = getElementFromId(GUI_ID_PORT_INPUT);
 		if(e != NULL)
 			text_port = e->getText();
 		else
 			text_port = m_data->port;
 	}
 	{
-		gui::IGUIElement *e = getElementFromId(263);
+		gui::IGUIElement *e = getElementFromId(GUI_ID_FANCYTREE_CB);
 		if(e != NULL && e->getType() == gui::EGUIET_CHECK_BOX)
 			fancy_trees = ((gui::IGUICheckBox*)e)->isChecked();
 		else
 			fancy_trees = m_data->fancy_trees;
 	}
 	{
-		gui::IGUIElement *e = getElementFromId(262);
+		gui::IGUIElement *e = getElementFromId(GUI_ID_SMOOTH_LIGHTING_CB);
 		if(e != NULL && e->getType() == gui::EGUIET_CHECK_BOX)
 			smooth_lighting = ((gui::IGUICheckBox*)e)->isChecked();
 		else
@@ -107,14 +116,14 @@ void GUIMainMenu::regenerateGui(v2u32 screensize)
 	
 	// Server options
 	{
-		gui::IGUIElement *e = getElementFromId(259);
+		gui::IGUIElement *e = getElementFromId(GUI_ID_CREATIVE_CB);
 		if(e != NULL && e->getType() == gui::EGUIET_CHECK_BOX)
 			creative_mode = ((gui::IGUICheckBox*)e)->isChecked();
 		else
 			creative_mode = m_data->creative_mode;
 	}
 	{
-		gui::IGUIElement *e = getElementFromId(261);
+		gui::IGUIElement *e = getElementFromId(GUI_ID_DAMAGE_CB);
 		if(e != NULL && e->getType() == gui::EGUIET_CHECK_BOX)
 			enable_damage = ((gui::IGUICheckBox*)e)->isChecked();
 		else
@@ -168,14 +177,14 @@ void GUIMainMenu::regenerateGui(v2u32 screensize)
 	{
 		core::rect<s32> rect(0, 0, 110, 20);
 		rect += topleft_client + v2s32(35, 50+6);
-		const wchar_t *text = L"Name/Password";
-		Environment->addStaticText(text, rect, false, true, this, -1);
+		Environment->addStaticText(chartowchar_t(gettext("Name/Password")), 
+			rect, false, true, this, -1);
 	}
 	{
 		core::rect<s32> rect(0, 0, 230, 30);
 		rect += topleft_client + v2s32(160, 50);
 		gui::IGUIElement *e = 
-		Environment->addEditBox(text_name.c_str(), rect, true, this, 258);
+		Environment->addEditBox(text_name.c_str(), rect, true, this, GUI_ID_NAME_INPUT);
 		if(text_name == L"")
 			Environment->setFocus(e);
 	}
@@ -191,14 +200,14 @@ void GUIMainMenu::regenerateGui(v2u32 screensize)
 	{
 		core::rect<s32> rect(0, 0, 110, 20);
 		rect += topleft_client + v2s32(35, 100+6);
-		const wchar_t *text = L"Address/Port";
-		Environment->addStaticText(text, rect, false, true, this, -1);
+		Environment->addStaticText(chartowchar_t(gettext("Address/Port")),
+			rect, false, true, this, -1);
 	}
 	{
 		core::rect<s32> rect(0, 0, 230, 30);
 		rect += topleft_client + v2s32(160, 100);
 		gui::IGUIElement *e = 
-		Environment->addEditBox(text_address.c_str(), rect, true, this, 256);
+		Environment->addEditBox(text_address.c_str(), rect, true, this, GUI_ID_ADDRESS_INPUT);
 		if(text_name != L"")
 			Environment->setFocus(e);
 	}
@@ -206,34 +215,43 @@ void GUIMainMenu::regenerateGui(v2u32 screensize)
 		core::rect<s32> rect(0, 0, 120, 30);
 		//rect += topleft_client + v2s32(160+250+20, 125);
 		rect += topleft_client + v2s32(size_client.X-60-100, 100);
-		Environment->addEditBox(text_port.c_str(), rect, true, this, 257);
+		Environment->addEditBox(text_port.c_str(), rect, true, this, GUI_ID_PORT_INPUT);
 	}
 	{
 		core::rect<s32> rect(0, 0, 400, 20);
 		rect += topleft_client + v2s32(160, 100+35);
-		const wchar_t *text = L"Leave address blank to start a local server.";
-		Environment->addStaticText(text, rect, false, true, this, -1);
+		Environment->addStaticText(chartowchar_t(gettext("Leave address blank to start a local server.")),
+			rect, false, true, this, -1);
 	}
 	{
 		core::rect<s32> rect(0, 0, 250, 30);
 		rect += topleft_client + v2s32(35, 150);
-		Environment->addCheckBox(fancy_trees, rect, this, 263,
-				L"Fancy trees");
+		Environment->addCheckBox(fancy_trees, rect, this, GUI_ID_FANCYTREE_CB,
+			chartowchar_t(gettext("Fancy trees"))); 
 	}
 	{
 		core::rect<s32> rect(0, 0, 250, 30);
 		rect += topleft_client + v2s32(35, 150+30);
-		Environment->addCheckBox(smooth_lighting, rect, this, 262,
-				L"Smooth Lighting");
+		Environment->addCheckBox(smooth_lighting, rect, this, GUI_ID_SMOOTH_LIGHTING_CB,
+				chartowchar_t(gettext("Smooth Lighting")));
 	}
 	// Start game button
 	{
 		core::rect<s32> rect(0, 0, 180, 30);
 		//rect += topleft_client + v2s32(size_client.X/2-180/2, 225-30/2);
 		rect += topleft_client + v2s32(size_client.X-180-40, 150+25);
-		Environment->addButton(rect, this, 257, L"Start Game / Connect");
+		Environment->addButton(rect, this, GUI_ID_JOIN_GAME_BUTTON,
+			chartowchar_t(gettext("Start Game / Connect")));
 	}
 
+	// Key change button
+	{
+		core::rect<s32> rect(0, 0, 100, 30);
+		//rect += topleft_client + v2s32(size_client.X/2-180/2, 225-30/2);
+		rect += topleft_client + v2s32(size_client.X-180-40-100-20, 150+25);
+		Environment->addButton(rect, this, GUI_ID_CHANGE_KEYS_BUTTON,
+			chartowchar_t(gettext("Change keys")));
+	}
 	/*
 		Server section
 	*/
@@ -254,19 +272,22 @@ void GUIMainMenu::regenerateGui(v2u32 screensize)
 	{
 		core::rect<s32> rect(0, 0, 250, 30);
 		rect += topleft_server + v2s32(35, 30);
-		Environment->addCheckBox(creative_mode, rect, this, 259, L"Creative Mode");
+		Environment->addCheckBox(creative_mode, rect, this, GUI_ID_CREATIVE_CB,
+			chartowchar_t(gettext("Creative Mode")));
 	}
 	{
 		core::rect<s32> rect(0, 0, 250, 30);
 		rect += topleft_server + v2s32(35, 60);
-		Environment->addCheckBox(enable_damage, rect, this, 261, L"Enable Damage");
+		Environment->addCheckBox(enable_damage, rect, this, GUI_ID_DAMAGE_CB,
+			chartowchar_t(gettext("Enable Damage")));
 	}
 	// Map delete button
 	{
 		core::rect<s32> rect(0, 0, 130, 30);
 		//rect += topleft_server + v2s32(size_server.X-40-130, 100+25);
 		rect += topleft_server + v2s32(40, 100+25);
-		Environment->addButton(rect, this, 260, L"Delete world");
+		Environment->addButton(rect, this, GUI_ID_DELETE_MAP_BUTTON,
+			  chartowchar_t(gettext("Delete map")));
 	}
 }
 
@@ -300,7 +321,7 @@ void GUIMainMenu::drawMenu()
 void GUIMainMenu::acceptInput()
 {
 	{
-		gui::IGUIElement *e = getElementFromId(258);
+		gui::IGUIElement *e = getElementFromId(GUI_ID_NAME_INPUT);
 		if(e != NULL)
 			m_data->name = e->getText();
 	}
@@ -310,32 +331,32 @@ void GUIMainMenu::acceptInput()
 			m_data->password = e->getText();
 	}
 	{
-		gui::IGUIElement *e = getElementFromId(256);
+		gui::IGUIElement *e = getElementFromId(GUI_ID_ADDRESS_INPUT);
 		if(e != NULL)
 			m_data->address = e->getText();
 	}
 	{
-		gui::IGUIElement *e = getElementFromId(257);
+		gui::IGUIElement *e = getElementFromId(GUI_ID_PORT_INPUT);
 		if(e != NULL)
 			m_data->port = e->getText();
 	}
 	{
-		gui::IGUIElement *e = getElementFromId(259);
+		gui::IGUIElement *e = getElementFromId(GUI_ID_CREATIVE_CB);
 		if(e != NULL && e->getType() == gui::EGUIET_CHECK_BOX)
 			m_data->creative_mode = ((gui::IGUICheckBox*)e)->isChecked();
 	}
 	{
-		gui::IGUIElement *e = getElementFromId(261);
+		gui::IGUIElement *e = getElementFromId(GUI_ID_DAMAGE_CB);
 		if(e != NULL && e->getType() == gui::EGUIET_CHECK_BOX)
 			m_data->enable_damage = ((gui::IGUICheckBox*)e)->isChecked();
 	}
 	{
-		gui::IGUIElement *e = getElementFromId(262);
+		gui::IGUIElement *e = getElementFromId(GUI_ID_SMOOTH_LIGHTING_CB);
 		if(e != NULL && e->getType() == gui::EGUIET_CHECK_BOX)
 			m_data->smooth_lighting = ((gui::IGUICheckBox*)e)->isChecked();
 	}
 	{
-		gui::IGUIElement *e = getElementFromId(263);
+		gui::IGUIElement *e = getElementFromId(GUI_ID_FANCYTREE_CB);
 		if(e != NULL && e->getType() == gui::EGUIET_CHECK_BOX)
 			m_data->fancy_trees = ((gui::IGUICheckBox*)e)->isChecked();
 	}
@@ -377,11 +398,16 @@ bool GUIMainMenu::OnEvent(const SEvent& event)
 		{
 			switch(event.GUIEvent.Caller->getID())
 			{
-			case 257: // Start game
+			case GUI_ID_JOIN_GAME_BUTTON: // Start game
 				acceptInput();
 				quitMenu();
 				return true;
-			case 260: // Delete map
+			case GUI_ID_CHANGE_KEYS_BUTTON: {
+				GUIKeyChangeMenu *kmenu = new GUIKeyChangeMenu(env, parent, -1,menumgr);
+				kmenu->drop();
+				return true;
+			}
+			case GUI_ID_DELETE_MAP_BUTTON: // Delete map
 				// Don't accept input data, just set deletion request
 				m_data->delete_map = true;
 				m_accepted = true;
@@ -393,7 +419,7 @@ bool GUIMainMenu::OnEvent(const SEvent& event)
 		{
 			switch(event.GUIEvent.Caller->getID())
 			{
-				case 256: case 257: case 258: case 264:
+				case GUI_ID_ADDRESS_INPUT: case GUI_ID_PORT_INPUT: case GUI_ID_NAME_INPUT: case 264:
 				acceptInput();
 				quitMenu();
 				return true;

@@ -1,0 +1,123 @@
+# French translations for minetest-c55 package.
+# Copyright (C) 2011 celeron
+# This file is distributed under the same license as the minetest-c55 package.
+# Cyriaque 'Cisoun' Skrapits <cysoun@gmail.com>, 2011
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: 0.0.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2011-07-22 11:00+0200\n"
+"PO-Revision-Date: 2011-07-21 15:48+0200\n"
+"Last-Translator: Cyriaque 'Cisoun' Skrapits <cysoun@gmail.com>\n"
+"Language-Team: Français <>\n"
+"Language: fr\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n!=1);\n"
+
+#: src/guiMainMenu.cpp:180
+msgid "Name/Password"
+msgstr "Nom / MdP"
+
+#: src/guiMainMenu.cpp:203
+msgid "Address/Port"
+msgstr "Adresse / Port"
+
+#: src/guiMainMenu.cpp:223
+msgid "Leave address blank to start a local server."
+msgstr "Laisser l'adresse vide pour lancer un serveur local."
+
+#: src/guiMainMenu.cpp:230
+msgid "Fancy trees"
+msgstr "Arbres spéciaux"
+
+#: src/guiMainMenu.cpp:236
+msgid "Smooth Lighting"
+msgstr "Lumière douce"
+
+#: src/guiMainMenu.cpp:244
+msgid "Start Game / Connect"
+msgstr "Démarrer / Connecter"
+
+#: src/guiMainMenu.cpp:253
+msgid "Change keys"
+msgstr "Changer touches"
+
+#: src/guiMainMenu.cpp:276
+msgid "Creative Mode"
+msgstr "Mode créatif"
+
+#: src/guiMainMenu.cpp:282
+msgid "Enable Damage"
+msgstr "Activer blessures"
+
+#: src/guiMainMenu.cpp:290
+msgid "Delete map"
+msgstr "Supprimer carte"
+
+#: src/guiMessageMenu.cpp:93 src/guiTextInputMenu.cpp:111
+msgid "Proceed"
+msgstr "OK"
+
+#: src/guiPasswordChange.cpp:102
+msgid "Old Password"
+msgstr "Ancien mot de passe"
+
+#: src/guiPasswordChange.cpp:117
+msgid "New Password"
+msgstr "Nouveau mot de passe"
+
+#: src/guiPasswordChange.cpp:131
+msgid "Confirm Password"
+msgstr "Confirmer mot de passe"
+
+#: src/guiPasswordChange.cpp:146
+msgid "Change"
+msgstr "Changer"
+
+#: src/guiPasswordChange.cpp:155
+msgid "Passwords do not match!"
+msgstr "Mauvaise correspondance!"
+
+#: src/guiPauseMenu.cpp:110
+msgid "Continue"
+msgstr "Continuer"
+
+#: src/guiPauseMenu.cpp:117
+msgid "Change Password"
+msgstr "Changer mot de passe"
+
+#: src/guiPauseMenu.cpp:124
+msgid "Disconnect"
+msgstr "Déconnection"
+
+#: src/guiPauseMenu.cpp:131
+msgid "Exit to OS"
+msgstr "Quitter le jeu"
+
+#: src/guiPauseMenu.cpp:138
+msgid ""
+"Keys:\n"
+"- WASD: Walk\n"
+"- Mouse left: dig blocks\n"
+"- Mouse right: place blocks\n"
+"- Mouse wheel: select item\n"
+"- 0...9: select item\n"
+"- Shift: sneak\n"
+"- R: Toggle viewing all loaded chunks\n"
+"- I: Inventory menu\n"
+"- ESC: This menu\n"
+"- T: Chat\n"
+msgstr ""
+"Touches:\n"
+"- WASD: Marcher\n"
+"- Clic gauche: Creuser bloc\n"
+"- Clic droite: Insérer bloc\n"
+"- Roulette: Sélection élément\n"
+"- 0...9: Sélection élément\n"
+"- Shift: S'accroupir\n"
+"- R: Active la vue de tous les blocs\n"
+"- I: Inventaire\n"
+"- T: Chat\n"

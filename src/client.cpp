@@ -5,7 +5,7 @@ Copyright (C) 2010 celeron55, Perttu Ahola <celeron55@gmail.com>
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
 the Free Software Foundation; either version 2 of the License, or
-MeshUpdateQueue::(at your option) any later version.
+(at your option) any later version.
 
 This program is distributed in the hope that it will be useful,
 but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -328,7 +328,8 @@ void Client::step(float dtime)
 
 			core::list<v3s16> deleted_blocks;
 
-				g_settings.getFloat("client_unload_unused_data_timeout");
+			float delete_unused_sectors_timeout = 
+				g_settings.getFloat("client_delete_unused_sectors_timeout");
 	
 			// Delete sector blocks
 			/*u32 num = m_env.getMap().unloadUnusedData

@@ -1240,17 +1240,19 @@ void Map::removeNodeAndUpdate(v3s16 p,
 	}
 
 	/*
-		Add neighboring liquid nodes to transform queue.
+		Add neighboring liquid nodes and this node to transform queue.
+		(it's vital for the node itself to get updated last.)
 	*/
-	v3s16 dirs[6] = {
+	v3s16 dirs[7] = {
 		v3s16(0,0,1), // back
 		v3s16(0,1,0), // top
 		v3s16(1,0,0), // right
 		v3s16(0,0,-1), // front
 		v3s16(0,-1,0), // bottom
 		v3s16(-1,0,0), // left
+		v3s16(0,0,0), // self
 	};
-	for(u16 i=0; i<6; i++)
+	for(u16 i=0; i<7; i++)
 	{
 		try
 		{

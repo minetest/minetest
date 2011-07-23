@@ -148,6 +148,8 @@ struct ContentFeatures
 	// If the content is liquid, this is the flowing version of the liquid.
 	// If content is liquid, this is the same content.
 	content_t liquid_alternative_flowing;
+	// If the content is liquid, this is the source version of the liquid.
+	content_t liquid_alternative_source;
 	
 	// Amount of light the node emits
 	u8 light_source;

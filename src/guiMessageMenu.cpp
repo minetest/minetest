@@ -22,6 +22,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "serialization.h"
 #include <string>
 
+#include "gettext.h"
+
 GUIMessageMenu::GUIMessageMenu(gui::IGUIEnvironment* env,
 		gui::IGUIElement* parent, s32 id,
 		IMenuManager *menumgr,
@@ -87,7 +89,8 @@ void GUIMessageMenu::regenerateGui(v2u32 screensize)
 		core::rect<s32> rect(0, 0, 140, 30);
 		rect = rect + v2s32(size.X/2-140/2, size.Y/2-30/2+25);
 		gui::IGUIElement *e = 
-		Environment->addButton(rect, this, 257, L"Proceed");
+		Environment->addButton(rect, this, 257,
+			chartowchar_t(gettext("Proceed")));
 		Environment->setFocus(e);
 	}
 }

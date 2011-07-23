@@ -85,7 +85,7 @@ static void make_tree(VoxelManipulator &vmanip, v3s16 p0)
 	MapNode treenode(CONTENT_TREE);
 	MapNode leavesnode(CONTENT_LEAVES);
 
-	s16 trunk_h = myrand_range(3, 6);
+	s16 trunk_h = myrand_range(4, 5);
 	v3s16 p1 = p0;
 	for(s16 ii=0; ii<trunk_h; ii++)
 	{
@@ -97,7 +97,7 @@ static void make_tree(VoxelManipulator &vmanip, v3s16 p0)
 	// p1 is now the last piece of the trunk
 	p1.Y -= 1;
 
-	VoxelArea leaves_a(v3s16(-2,-2,-2), v3s16(2,2,2));
+	VoxelArea leaves_a(v3s16(-2,-1,-2), v3s16(2,2,2));
 	//SharedPtr<u8> leaves_d(new u8[leaves_a.getVolume()]);
 	Buffer<u8> leaves_d(leaves_a.getVolume());
 	for(s32 i=0; i<leaves_a.getVolume(); i++)
@@ -149,6 +149,34 @@ static void make_tree(VoxelManipulator &vmanip, v3s16 p0)
 		u32 i = leaves_a.index(x,y,z);
 		if(leaves_d[i] == 1)
 			vmanip.m_data[vi] = leavesnode;
+	}
+}
+
+void make_papyrus(VoxelManipulator &vmanip, v3s16 p0)
+{
+	MapNode papyrusnode(CONTENT_PAPYRUS);
+
+	s16 trunk_h = myrand_range(2, 3);
+	v3s16 p1 = p0;
+	for(s16 ii=0; ii<trunk_h; ii++)
+	{
+		if(vmanip.m_area.contains(p1))
+			vmanip.m_data[vmanip.m_area.index(p1)] = papyrusnode;
+		p1.Y++;
+	}
+}
+
+void make_cactus(VoxelManipulator &vmanip, v3s16 p0)
+{
+	MapNode cactusnode(CONTENT_CACTUS);
+
+	s16 trunk_h = 3;
+	v3s16 p1 = p0;
+	for(s16 ii=0; ii<trunk_h; ii++)
+	{
+		if(vmanip.m_area.contains(p1))
+			vmanip.m_data[vmanip.m_area.index(p1)] = cactusnode;
+		p1.Y++;
 	}
 }
 
@@ -909,8 +937,8 @@ NoiseParams get_cave_noise2_params(u64 seed)
 
 NoiseParams get_ground_noise1_params(u64 seed)
 {
-	return NoiseParams(NOISE_PERLIN, seed+983240, 5,
-			0.60, 100.0, 30.0);
+	return NoiseParams(NOISE_PERLIN, seed+983240, 4,
+			0.55, 80.0, 40.0);
 }
 
 NoiseParams get_ground_crumbleness_params(u64 seed)
@@ -945,7 +973,7 @@ bool val_is_ground(double ground_noise1_val, v3s16 p, u64 seed)
 
 	double f = 0.55 + noise2d_perlin(
 			0.5+(float)p.X/250, 0.5+(float)p.Z/250,
-			seed+920381, 3, 0.5);
+			seed+920381, 3, 0.45);
 	if(f < 0.01)
 		f = 0.01;
 	else if(f >= 1.0)
@@ -1345,7 +1373,8 @@ void make_block(BlockMakeData *data)
 			data->seed, v2s16(blockpos.X, blockpos.Z), 1);
 	// Maximum amount of ground above the bottom of the central block
 	s16 maximum_ground_depth = maximum_groundlevel - node_min.Y;
-	
+
+	#if 0
 	/*
 		Special case for high air or water: Just fill with air and water.
 	*/
@@ -1379,6 +1408,7 @@ void make_block(BlockMakeData *data)
 		// We're done
 		return;
 	}
+	#endif
 
 	/*
 		If block is deep underground, this is set to true and ground
@@ -1808,6 +1838,8 @@ void make_block(BlockMakeData *data)
 				u32 current_depth = 0;
 				bool air_detected = false;
 				bool water_detected = false;
+				bool have_clay = false;
+
 				// Use fast index incrementing
 				s16 start_y = node_max.Y+2;
 				v3s16 em = vmanip.m_area.getExtent();
@@ -1834,7 +1866,19 @@ void make_block(BlockMakeData *data)
 						{
 							if(have_sand)
 							{
-								vmanip.m_data[i] = MapNode(CONTENT_SAND);
+								// Determine whether to have clay in the sand here
+								double claynoise = noise2d_perlin(
+										0.5+(float)p2d.X/500, 0.5+(float)p2d.Y/500,
+										data->seed+4321, 6, 0.95) + 0.5;
+				
+								have_clay = (y <= WATER_LEVEL) && (y >= WATER_LEVEL-2) && (
+									((claynoise > 0) && (claynoise < 0.04) && (current_depth == 0)) ||
+									((claynoise > 0) && (claynoise < 0.12) && (current_depth == 1))
+									);
+								if (have_clay)
+									vmanip.m_data[i] = MapNode(CONTENT_CLAY);
+								else
+									vmanip.m_data[i] = MapNode(CONTENT_SAND);
 							}
 							#if 1
 							else if(current_depth==0 && !water_detected
@@ -1894,7 +1938,7 @@ void make_block(BlockMakeData *data)
 			{
 				u32 i = data->vmanip->m_area.index(p);
 				MapNode *n = &data->vmanip->m_data[i];
-				if(n->getContent() != CONTENT_AIR && n->getContent() != CONTENT_IGNORE)
+				if(n->getContent() != CONTENT_AIR && n->getContent() != CONTENT_WATERSOURCE && n->getContent() != CONTENT_IGNORE)
 				{
 					found = true;
 					break;
@@ -1903,19 +1947,33 @@ void make_block(BlockMakeData *data)
 			// If not found, handle next one
 			if(found == false)
 				continue;
-			/*
-				Trees grow only on mud and grass
-			*/
+
 			{
 				u32 i = data->vmanip->m_area.index(p);
 				MapNode *n = &data->vmanip->m_data[i];
-				if(n->getContent() != CONTENT_MUD && n->getContent() != CONTENT_GRASS)
-					continue;
+
+				if(n->getContent() != CONTENT_MUD && n->getContent() != CONTENT_GRASS && n->getContent() != CONTENT_SAND)
+						continue;
+
+				// Papyrus grows only on mud and in water
+				if(n->getContent() == CONTENT_MUD && y <= WATER_LEVEL)
+				{
+					p.Y++;
+					make_papyrus(vmanip, p);
+				}
+				// Trees grow only on mud and grass, on land
+				else if((n->getContent() == CONTENT_MUD || n->getContent() == CONTENT_GRASS) && y > WATER_LEVEL + 2)
+				{
+					p.Y++;
+					make_tree(vmanip, p);
+				}
+				// Cactii grow only on sand, on land
+				else if(n->getContent() == CONTENT_SAND && y > WATER_LEVEL + 2)
+				{
+					p.Y++;
+					make_cactus(vmanip, p);
+				}
 			}
-			// Tree will be placed one higher
-			p.Y++;
-			// Make a tree
-			make_tree(vmanip, p);
 		}
 
 #if 0

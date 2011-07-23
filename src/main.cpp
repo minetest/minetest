@@ -357,6 +357,12 @@ TODO: Merge bahamada's audio stuff (clean patch available)
 
 TODO: Move content_features to mapnode_content_features.{h,cpp} or so
 
+TODO: Add some kind of content range validation to mapnode serialization
+
+TODO: Make sure menu text position is fixed
+
+TODO: Fix sector over limits error
+
 Making it more portable:
 ------------------------
  
@@ -418,6 +424,8 @@ Doing currently:
 #include "game.h"
 #include "keycode.h"
 #include "tile.h"
+
+#include "gettext.h"
 
 // This makes textures
 ITextureSource *g_texturesource = NULL;
@@ -1148,6 +1156,10 @@ int main(int argc, char *argv[])
 
 	// Create user data directory
 	fs::CreateDir(porting::path_userdata);
+
+	setlocale(LC_MESSAGES, "");
+	bindtextdomain("minetest", (porting::path_userdata+"/locale").c_str());
+	textdomain("minetest");
 	
 	// Initialize debug streams
 #ifdef RUN_IN_PLACE
@@ -1363,6 +1375,9 @@ int main(int argc, char *argv[])
 	
 	// Set device in game parameters
 	device = device;
+
+	// Set the window caption
+	device->setWindowCaption(L"Minetest [Main Menu]");
 	
 	// Create time getter
 	g_timegetter = new IrrlichtTimeGetter(device);

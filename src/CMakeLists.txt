@@ -1,9 +1,31 @@
-project(minetest)
+project(minetest-delta)
 cmake_minimum_required( VERSION 2.6 )
 
 if(RUN_IN_PLACE)
 	add_definitions ( -DRUN_IN_PLACE )
 endif(RUN_IN_PLACE)
+
+OPTION(USE_GETTEXT "Use GetText for internationalization" OFF)
+
+if(USE_GETTEXT)
+	find_package(GettextLib REQUIRED)
+	message(STATUS "gettext include path: ${GETTEXT_INCLUDE_DIR}")
+	message(STATUS "gettext msgfmt path: ${GETTEXT_MSGFMT}")
+	if(WIN32)
+		message(STATUS "gettext library: ${GETTEXT_LIBRARY}")
+		message(STATUS "gettext dll: ${GETTEXT_DLL}")
+		message(STATUS "gettext iconv dll: ${GETTEXT_ICONV_DLL}")
+	endif()
+	if (GETTEXT_FOUND)
+		add_definitions( -DUSE_GETTEXT )
+		message(STATUS "GetText enabled; locales found: ${GETTEXT_AVAILABLE_LOCALES}")
+	else()
+		message(STATUS "ERROR: GetText enabled but not found, disabling")
+		set(USE_GETTEXT FALSE)
+	endif(GETTEXT_FOUND)
+else(USE_GETTEXT)
+	message(STATUS "GetText disabled")
+endif(USE_GETTEXT)
 
 if(NOT MSVC)
 	set(USE_GPROF 0 CACHE BOOL "Use -pg flag for g++")
@@ -27,6 +49,8 @@ if(WIN32)
 			CACHE FILEPATH "Path to zlibwapi.lib")
 	set(ZLIB_DLL "${PROJECT_SOURCE_DIR}/../../zlib125dll/dll32/zlibwapi.dll"
 			CACHE FILEPATH "Path to zlibwapi.dll (for installation)")
+	set(IRRLICHT_SOURCE_DIR "${PROJECT_SOURCE_DIR}/../../irrlicht-1.7.2"
+			CACHE PATH "irrlicht dir")
 else()
 	# Unix probably
 	if(BUILD_CLIENT)
@@ -54,6 +78,9 @@ else()
 	find_library(XXF86VM_LIBRARY Xxf86vm)
 	set(CLIENT_PLATFORM_LIBS ${CLIENT_PLATFORM_LIBS} ${XXF86VM_LIBRARY})
 endif()
+
+find_package(Jthread REQUIRED)
+find_package(Sqlite3 REQUIRED)
 
 configure_file(
 	"${PROJECT_SOURCE_DIR}/cmake_config.h.in"
@@ -110,6 +137,7 @@ set(minetest_SRCS
 	clouds.cpp
 	clientobject.cpp
 	guiMainMenu.cpp
+	guiKeyChangeMenu.cpp
 	guiMessageMenu.cpp
 	guiTextInputMenu.cpp
 	guiInventoryMenu.cpp
@@ -133,16 +161,17 @@ include_directories(
 	${ZLIB_INCLUDE_DIR}
 	${CMAKE_BUILD_TYPE}
 	${PNG_INCLUDE_DIR}
-	"${PROJECT_SOURCE_DIR}/jthread"
-	"${PROJECT_SOURCE_DIR}/sqlite"
+	${GETTEXT_INCLUDE_DIR}
+	${JTHREAD_INCLUDE_DIR}
+	${SQLITE3_INCLUDE_DIR}
 )
 
 set(EXECUTABLE_OUTPUT_PATH ../bin)
 
 if(BUILD_CLIENT)
-	add_executable(minetest ${minetest_SRCS})
+	add_executable(${PROJECT_NAME} ${minetest_SRCS})
 	target_link_libraries(
-		minetest
+		${PROJECT_NAME}
 		${ZLIB_LIBRARIES}
 		${IRRLICHT_LIBRARY}
 		${OPENGL_LIBRARIES}
@@ -150,21 +179,22 @@ if(BUILD_CLIENT)
 		${BZIP2_LIBRARIES}
 		${PNG_LIBRARIES}
 		${X11_LIBRARIES}
+		${GETTEXT_LIBRARY}
 		${PLATFORM_LIBS}
 		${CLIENT_PLATFORM_LIBS}
-		jthread
-		sqlite3
+		${JTHREAD_LIBRARY}
+		${SQLITE3_LIBRARY}
 	)
 endif(BUILD_CLIENT)
 
 if(BUILD_SERVER)
-	add_executable(minetestserver ${minetestserver_SRCS})
+	add_executable(${PROJECT_NAME}server ${minetestserver_SRCS})
 	target_link_libraries(
-		minetestserver
+		${PROJECT_NAME}server
 		${ZLIB_LIBRARIES}
 		${PLATFORM_LIBS}
-		jthread
-		sqlite3
+		${JTHREAD_LIBRARY}
+		${SQLITE3_LIBRARY}
 	)
 endif(BUILD_SERVER)
 
@@ -185,7 +215,7 @@ if(MSVC)
 	set(CMAKE_CXX_FLAGS_DEBUG "/MDd /Zi /Ob0 /Od /RTC1")
 	
 	if(BUILD_SERVER)
-		set_target_properties(minetestserver PROPERTIES
+		set_target_properties(${PROJECT_NAME}server PROPERTIES
 				COMPILE_DEFINITIONS "SERVER")
 	endif(BUILD_SERVER)
 
@@ -215,7 +245,7 @@ else()
 	endif()
 	
 	if(BUILD_SERVER)
-		set_target_properties(minetestserver PROPERTIES
+		set_target_properties(${PROJECT_NAME}server PROPERTIES
 				COMPILE_DEFINITIONS "SERVER")
 	endif(BUILD_SERVER)
 
@@ -232,11 +262,19 @@ endif()
 install(FILES "${CMAKE_CURRENT_SOURCE_DIR}/../minetest.conf.example" DESTINATION ${EXAMPLE_CONF_DIR})
 
 if(BUILD_CLIENT)
-	install(TARGETS minetest DESTINATION ${BINDIR})
+	install(TARGETS ${PROJECT_NAME} DESTINATION ${BINDIR})
 
 	file(GLOB images "${CMAKE_CURRENT_SOURCE_DIR}/../data/*.png")
 
 	install(FILES ${images} DESTINATION ${DATADIR})
+
+	if (USE_GETTEXT)
+		foreach(LOCALE ${GETTEXT_AVAILABLE_LOCALES})
+			set_mo_paths(MO_BUILD_PATH MO_DEST_PATH ${LOCALE})
+			set(MO_BUILD_PATH "${MO_BUILD_PATH}/${PROJECT_NAME}.mo")
+			install(FILES ${MO_BUILD_PATH} DESTINATION ${MO_DEST_PATH})
+		endforeach(LOCALE ${GETTEXT_AVAILABLE_LOCALES})
+	endif()
 
 	if(WIN32)
 		if(DEFINED IRRLICHT_DLL)
@@ -245,16 +283,82 @@ if(BUILD_CLIENT)
 		if(DEFINED ZLIB_DLL)
 			install(FILES ${ZLIB_DLL} DESTINATION ${BINDIR})
 		endif()
+		if(USE_GETTEXT)
+			if(DEFINED GETTEXT_DLL)
+				install(FILES ${GETTEXT_DLL} DESTINATION ${BINDIR})
+			endif()
+			if(DEFINED GETTEXT_ICONV_DLL)
+				install(FILES ${GETTEXT_ICONV_DLL} DESTINATION ${BINDIR})
+			endif()
+		endif(USE_GETTEXT)
 	endif()
 endif(BUILD_CLIENT)
 
 if(BUILD_SERVER)
-	install(TARGETS minetestserver DESTINATION ${BINDIR})
+	install(TARGETS ${PROJECT_NAME}server DESTINATION ${BINDIR})
 endif(BUILD_SERVER)
+
+if (USE_GETTEXT)
+	add_custom_command(OUTPUT "${GETTEXT_PO_PATH}/en"
+		COMMAND ${CMAKE_COMMAND} -E make_directory "${GETTEXT_PO_PATH}/en"
+		COMMENT "po-update [en]: creating translation template base directory")
+	set(POT_FILE "${GETTEXT_PO_PATH}/en/minetest.pot")
+	file(GLOB GETTEXT_POT_DEPS *.cpp *.h)
+	file(GLOB GETTEXT_POT_DEPS_REL RELATIVE ${CMAKE_SOURCE_DIR} *.cpp *.h)
+	add_custom_command(OUTPUT ${POT_FILE}
+		COMMAND ${GETTEXT_EXTRACT} -F -n -o ${POT_FILE} ${GETTEXT_POT_DEPS_REL}
+		DEPENDS "${GETTEXT_PO_PATH}/en" ${GETTEXT_POT_DEPS}
+		WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
+		COMMENT "po-update [en]: updating translation template")
+
+	set(PO_FILES)
+	set(MO_FILES)
+
+	foreach(LOCALE ${GETTEXT_AVAILABLE_LOCALES})
+		# skip the 'en' locale which is treated separately
+		if (NOT LOCALE STREQUAL "en")
+			set(PO_FILE_PATH "${GETTEXT_PO_PATH}/${LOCALE}/minetest.po")
+			add_custom_command(OUTPUT ${PO_FILE_PATH}
+				COMMAND ${GETTEXT_MSGMERGE} -F -U ${PO_FILE_PATH} ${POT_FILE}
+				DEPENDS ${POT_FILE}
+				WORKING_DIRECTORY "${GETTEXT_PO_PATH}/${LOCALE}"
+				COMMENT "po-update [${LOCALE}]: updating strings")
+
+
+			set_mo_paths(MO_BUILD_PATH MO_DEST_PATH ${LOCALE})
+			add_custom_command(OUTPUT ${MO_BUILD_PATH}
+				COMMAND ${CMAKE_COMMAND} -E make_directory ${MO_BUILD_PATH}
+				COMMENT "mo-update [${LOCALE}]: Creating locale directory.")
+
+			set(MO_FILE_PATH "${MO_BUILD_PATH}/minetest.mo")
+
+			add_custom_command(
+				OUTPUT ${MO_FILE_PATH}
+				COMMAND ${GETTEXT_MSGFMT} -o ${MO_FILE_PATH} ${PO_FILE_PATH}
+				DEPENDS ${MO_BUILD_PATH} ${PO_FILE_PATH}
+				WORKING_DIRECTORY "${GETTEXT_PO_PATH}/${LOCALE}"
+				COMMENT "mo-update [${LOCALE}]: Creating mo file."
+				)
+
+			set(MO_FILES ${MO_FILES} ${MO_FILE_PATH})
+			set(PO_FILES ${PO_FILES} ${PO_FILE_PATH})
+		endif(NOT LOCALE STREQUAL "en")
+	endforeach(LOCALE ${GETTEXT_AVAILABLE_LOCALES})
+
+	add_custom_target(translations ALL COMMENT "mo update" DEPENDS ${MO_FILES})
+	add_custom_target(updatepo COMMENT "po update" DEPENDS ${PO_FILES})
+endif(USE_GETTEXT)
 
 # Subdirectories
 
-add_subdirectory(jthread)
+if (JTHREAD_FOUND)
+else (JTHREAD_FOUND)
+	add_subdirectory(jthread)
+endif (JTHREAD_FOUND)
+
+if (SQLITE3_FOUND)
+else (SQLITE3_FOUND)
 add_subdirectory(sqlite)
+endif (SQLITE3_FOUND)
 
 #end

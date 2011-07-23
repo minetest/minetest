@@ -113,6 +113,30 @@ private:
 	float m_after_jump_timer;
 };
 
+class FireflySAO : public ServerActiveObject
+{
+public:
+	FireflySAO(ServerEnvironment *env, u16 id, v3f pos);
+	u8 getType() const
+		{return ACTIVEOBJECT_TYPE_FIREFLY;}
+	static ServerActiveObject* create(ServerEnvironment *env, u16 id, v3f pos,
+			const std::string &data);
+	void step(float dtime, bool send_recommended);
+	std::string getClientInitializationData();
+	std::string getStaticData();
+	InventoryItem* createPickedUpItem();
+private:
+	bool m_is_active;
+	IntervalLimiter m_inactive_interval;
+	v3f m_speed_f;
+	v3f m_oldpos;
+	v3f m_last_sent_position;
+	float m_yaw;
+	float m_counter1;
+	float m_counter2;
+	float m_age;
+	bool m_touching_ground;
+};
 
 #endif
 

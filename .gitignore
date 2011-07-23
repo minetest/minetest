@@ -19,4 +19,4 @@ cmake_install.cmake
 src/jthread/libjthread.a
 debug.txt
 bin/debug.txt
-
+minetestmapper/map.png

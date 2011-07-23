@@ -21,6 +21,8 @@ OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 #include "serialization.h"
 #include <string>
 
+#include "gettext.h"
+
 const int ID_oldPassword = 256;
 const int ID_newPassword1 = 257;
 const int ID_newPassword2 = 258;
@@ -97,8 +99,8 @@ void GUIPasswordChange::regenerateGui(v2u32 screensize)
 	{
 		core::rect<s32> rect(0, 0, 110, 20);
 		rect += topleft_client + v2s32(35, ypos+6);
-		const wchar_t *text = L"Old Password";
-		Environment->addStaticText(text, rect, false, true, this, -1);
+		Environment->addStaticText(chartowchar_t(gettext("Old Password")),
+			rect, false, true, this, -1);
 	}
 	{
 		core::rect<s32> rect(0, 0, 230, 30);
@@ -112,8 +114,8 @@ void GUIPasswordChange::regenerateGui(v2u32 screensize)
 	{
 		core::rect<s32> rect(0, 0, 110, 20);
 		rect += topleft_client + v2s32(35, ypos+6);
-		const wchar_t *text = L"New Password";
-		Environment->addStaticText(text, rect, false, true, this, -1);
+		Environment->addStaticText(chartowchar_t(gettext("New Password")),
+			rect, false, true, this, -1);
 	}
 	{
 		core::rect<s32> rect(0, 0, 230, 30);
@@ -126,8 +128,8 @@ void GUIPasswordChange::regenerateGui(v2u32 screensize)
 	{
 		core::rect<s32> rect(0, 0, 110, 20);
 		rect += topleft_client + v2s32(35, ypos+6);
-		const wchar_t *text = L"Confirm Password";
-		Environment->addStaticText(text, rect, false, true, this, -1);
+		Environment->addStaticText(chartowchar_t(gettext("Confirm Password")),
+			rect, false, true, this, -1);
 	}
 	{
 		core::rect<s32> rect(0, 0, 230, 30);
@@ -141,16 +143,17 @@ void GUIPasswordChange::regenerateGui(v2u32 screensize)
 	{
 		core::rect<s32> rect(0, 0, 140, 30);
 		rect = rect + v2s32(size.X/2-140/2, ypos);
-		Environment->addButton(rect, this, ID_change, L"Change");
+		Environment->addButton(rect, this, ID_change, chartowchar_t(gettext("Change")));
 	}
 
 	ypos += 50;
 	{
 		core::rect<s32> rect(0, 0, 300, 20);
 		rect += topleft_client + v2s32(35, ypos);
-		const wchar_t *text = L"Passwords do not match!";
 		IGUIElement *e = 
-		Environment->addStaticText(text, rect, false, true, this, ID_message);
+		Environment->addStaticText(
+			chartowchar_t(gettext("Passwords do not match!")),
+			rect, false, true, this, ID_message);
 		e->setVisible(false);
 	}
 

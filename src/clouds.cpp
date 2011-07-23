@@ -84,7 +84,7 @@ void Clouds::render()
 	*/
 
 	const s16 cloud_radius_i = 12;
-	const float cloud_size = BS*50;
+	const float cloud_size = BS*48;
 	const v2f cloud_speed(-BS*2, 0);
 	
 	// Position of cloud noise origin in world coordinates
@@ -123,24 +123,88 @@ void Clouds::render()
 				(float)p_in_noise_i.X*cloud_size/BS/200,
 				(float)p_in_noise_i.Y*cloud_size/BS/200,
 				m_seed, 3, 0.4);
-		if(noise < 0.8)
+		if(noise < 0.95)
 			continue;
-		
-		v2f p1 = p0 + v2f(1,1)*cloud_size;
 
-		//video::SColor c(128,255,255,255);
 		float b = m_brightness;
-		video::SColor c(128,b*230,b*230,b*255);
-		video::S3DVertex vertices[4] =
+		video::SColor c_top(128,b*240,b*240,b*255);
+		video::SColor c_side_1(128,b*230,b*230,b*255);
+		video::SColor c_side_2(128,b*220,b*220,b*245);
+		video::SColor c_bottom(128,b*205,b*205,b*230);
+
+		video::S3DVertex v[4] =
 		{
-			video::S3DVertex(p0.X,m_cloud_y,p0.Y, 0,0,0, c, 0,1),
-			video::S3DVertex(p0.X,m_cloud_y,p1.Y, 0,0,0, c, 1,1),
-			video::S3DVertex(p1.X,m_cloud_y,p1.Y, 0,0,0, c, 1,0),
-			video::S3DVertex(p1.X,m_cloud_y,p0.Y, 0,0,0, c, 0,0),
+			video::S3DVertex(0,0,0, 0,0,0, c_top, 0, 1),
+			video::S3DVertex(0,0,0, 0,0,0, c_top, 1, 1),
+			video::S3DVertex(0,0,0, 0,0,0, c_top, 1, 0),
+			video::S3DVertex(0,0,0, 0,0,0, c_top, 0, 0)
 		};
-		u16 indices[] = {0,1,2,2,3,0};
-		driver->drawVertexPrimitiveList(vertices, 4, indices, 2,
-				video::EVT_STANDARD, scene::EPT_TRIANGLES, video::EIT_16BIT);
+
+		f32 rx = cloud_size;
+		f32 ry = 8*BS;
+		f32 rz = cloud_size;
+
+		for(int i=0;i<6;i++)
+		{
+			switch(i)
+			{
+				case 0:	// top
+					v[0].Pos.X=-rx; v[0].Pos.Y= ry; v[0].Pos.Z=-rz;
+					v[1].Pos.X=-rx; v[1].Pos.Y= ry; v[1].Pos.Z= rz;
+					v[2].Pos.X= rx; v[2].Pos.Y= ry; v[2].Pos.Z= rz;
+					v[3].Pos.X= rx; v[3].Pos.Y= ry, v[3].Pos.Z=-rz;
+					break;
+				case 1: // back
+					for(int j=0;j<4;j++)
+						v[j].Color=c_side_1;
+					v[0].Pos.X=-rx; v[0].Pos.Y= ry; v[0].Pos.Z=-rz;
+					v[1].Pos.X= rx; v[1].Pos.Y= ry; v[1].Pos.Z=-rz;
+					v[2].Pos.X= rx; v[2].Pos.Y=-ry; v[2].Pos.Z=-rz;
+					v[3].Pos.X=-rx; v[3].Pos.Y=-ry, v[3].Pos.Z=-rz;
+					break;
+				case 2: //right
+					for(int j=0;j<4;j++)
+						v[j].Color=c_side_2;
+					v[0].Pos.X= rx; v[0].Pos.Y= ry; v[0].Pos.Z=-rz;
+					v[1].Pos.X= rx; v[1].Pos.Y= ry; v[1].Pos.Z= rz;
+					v[2].Pos.X= rx; v[2].Pos.Y=-ry; v[2].Pos.Z= rz;
+					v[3].Pos.X= rx; v[3].Pos.Y=-ry, v[3].Pos.Z=-rz;
+					break;
+				case 3: // front
+					for(int j=0;j<4;j++)
+						v[j].Color=c_side_1;
+					v[0].Pos.X= rx; v[0].Pos.Y= ry; v[0].Pos.Z= rz;
+					v[1].Pos.X=-rx; v[1].Pos.Y= ry; v[1].Pos.Z= rz;
+					v[2].Pos.X=-rx; v[2].Pos.Y=-ry; v[2].Pos.Z= rz;
+					v[3].Pos.X= rx; v[3].Pos.Y=-ry, v[3].Pos.Z= rz;
+					break;
+				case 4: // left
+					for(int j=0;j<4;j++)
+						v[j].Color=c_side_2;
+					v[0].Pos.X=-rx; v[0].Pos.Y= ry; v[0].Pos.Z= rz;
+					v[1].Pos.X=-rx; v[1].Pos.Y= ry; v[1].Pos.Z=-rz;
+					v[2].Pos.X=-rx; v[2].Pos.Y=-ry; v[2].Pos.Z=-rz;
+					v[3].Pos.X=-rx; v[3].Pos.Y=-ry, v[3].Pos.Z= rz;
+					break;
+				case 5: // bottom
+					for(int j=0;j<4;j++)
+						v[j].Color=c_bottom;
+					v[0].Pos.X= rx; v[0].Pos.Y=-ry; v[0].Pos.Z= rz;
+					v[1].Pos.X=-rx; v[1].Pos.Y=-ry; v[1].Pos.Z= rz;
+					v[2].Pos.X=-rx; v[2].Pos.Y=-ry; v[2].Pos.Z=-rz;
+					v[3].Pos.X= rx; v[3].Pos.Y=-ry, v[3].Pos.Z=-rz;
+					break;
+			}
+
+			v3f pos = v3f(p0.X,m_cloud_y,p0.Y);
+
+			for(u16 i=0; i<4; i++)
+				v[i].Pos += pos;
+			u16 indices[] = {0,1,2,2,3,0};
+			driver->drawVertexPrimitiveList(v, 4, indices, 2,
+					video::EVT_STANDARD, scene::EPT_TRIANGLES, video::EIT_16BIT);
+		}
+
 	}
 }
 
