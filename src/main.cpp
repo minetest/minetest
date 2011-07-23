@@ -330,13 +330,16 @@ Map:
 
 TODO: Mineral and ground material properties
       - This way mineral ground toughness can be calculated with just
-	    some formula, as well as tool strengths
+	    some formula, as well as tool strengths. Sounds too.
 	  - There are TODOs in appropriate files: material.h, content_mapnode.h
 
 TODO: Flowing water to actually contain flow direction information
       - There is a space for this - it just has to be implemented.
 
 TODO: Consider smoothening cave floors after generating them
+
+TODO: Fix make_tree, make_* to use seed-position-consistent pseudorandom
+	  - delta also
 
 Misc. stuff:
 ------------
@@ -350,18 +353,13 @@ TODO: Think about using same bits for material for fences and doors, for
 TODO: Move mineral to param2, increment map serialization version, add
       conversion
 
-TODO: Restart irrlicht completely when coming back to main menu from game.
+SUGG: Restart irrlicht completely when coming back to main menu from game.
 	- This gets rid of everything that is stored in irrlicht's caches.
+	- This might be needed for texture pack selection in menu
 
 TODO: Merge bahamada's audio stuff (clean patch available)
 
 TODO: Move content_features to mapnode_content_features.{h,cpp} or so
-
-TODO: Add some kind of content range validation to mapnode serialization
-
-TODO: Make sure menu text position is fixed
-
-TODO: Fix sector over limits error
 
 Making it more portable:
 ------------------------
