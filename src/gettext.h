@@ -1,20 +1,20 @@
-#ifdef GETTEXT_FOUND
-#ifdef USE_GETTEXT
+#if defined(GETTEXT_FOUND) && defined(USE_GETTEXT)
 #include <libintl.h>
 #else
 #define gettext(String) String
-#define bindtextdomain(domain, dir) /* */
-#define textdomain(domain) /* */
-#endif
-#else
-#define gettext(String) String
-#define bindtextdomain(domain, dir) /* */
-#define textdomain(domain) /* */
 #endif
 
 #define _(String) gettext(String)
 #define gettext_noop(String) String
 #define N_(String) gettext_noop (String)
+
+inline void init_gettext(const char *path) {
+#if USE_GETTEXT
+	setlocale(LC_MESSAGES, "");
+	bindtextdomain(PROJECT_NAME, path);
+	textdomain(PROJECT_NAME);
+#endif
+}
 
 inline wchar_t* chartowchar_t(const char *str)
 {
