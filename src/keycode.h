@@ -24,11 +24,13 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <string>
 
 irr::EKEY_CODE keyname_to_keycode(const char *name);
+std::string keycode_to_keyname(s32 keycode);
 
 // Key configuration getter
 irr::EKEY_CODE getKeySetting(const char *settingname);
-std::string keycode_to_keyname(s32 keycode);
-void clearCache();
+
+// Clear fast lookup cache
+void clearKeyCache();
 
 #endif
 

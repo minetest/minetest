@@ -106,25 +106,29 @@ void GUIPauseMenu::regenerateGui(v2u32 screensize)
 	{
 		core::rect<s32> rect(0, 0, 140, btn_height);
 		rect = rect + v2s32(size.X/2-140/2, btn_y);
-		Environment->addButton(rect, this, 256, chartowchar_t(gettext("Continue")));
+		Environment->addButton(rect, this, 256,
+			chartowchar_t(gettext("Continue")));
 	}
 	btn_y += btn_height + btn_gap;
 	{
 		core::rect<s32> rect(0, 0, 140, btn_height);
 		rect = rect + v2s32(size.X/2-140/2, btn_y);
-		Environment->addButton(rect, this, 261, chartowchar_t(gettext("Change Password")));
+		Environment->addButton(rect, this, 261,
+			chartowchar_t(gettext("Change Password")));
 	}
 	btn_y += btn_height + btn_gap;
 	{
 		core::rect<s32> rect(0, 0, 140, btn_height);
 		rect = rect + v2s32(size.X/2-140/2, btn_y);
-		Environment->addButton(rect, this, 260, chartowchar_t(gettext("Disconnect")));
+		Environment->addButton(rect, this, 260,
+			chartowchar_t(gettext("Disconnect")));
 	}
 	btn_y += btn_height + btn_gap;
 	{
 		core::rect<s32> rect(0, 0, 140, btn_height);
 		rect = rect + v2s32(size.X/2-140/2, btn_y);
-		Environment->addButton(rect, this, 257, chartowchar_t(gettext("Exit to OS")));
+		Environment->addButton(rect, this, 257,
+			chartowchar_t(gettext("Exit to OS")));
 	}
 
 	{

@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: 0.0.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2011-07-20 16:57+0200\n"
+"POT-Creation-Date: 2011-07-22 11:00+0200\n"
 "PO-Revision-Date: 2011-07-20 16:58+0100\n"
 "Last-Translator: Constantin Wenger <constantin.wenger@googlemail.com>\n"
 "Language-Team: Deutsch <>\n"
@@ -21,44 +21,43 @@ msgstr ""
 msgid "Name/Password"
 msgstr "Name/Passwort"
 
-#: src/guiMainMenu.cpp:202
+#: src/guiMainMenu.cpp:203
 msgid "Address/Port"
 msgstr "Adresse / Port"
 
-#: src/guiMainMenu.cpp:220
+#: src/guiMainMenu.cpp:223
 msgid "Leave address blank to start a local server."
 msgstr "Lasse die Adresse frei um einen eigenen Server zu starten"
 
-#: src/guiMainMenu.cpp:226
+#: src/guiMainMenu.cpp:230
 msgid "Fancy trees"
 msgstr "Schöne Bäume"
 
-#: src/guiMainMenu.cpp:232
+#: src/guiMainMenu.cpp:236
 msgid "Smooth Lighting"
 msgstr "Besseres Licht"
 
-#: src/guiMainMenu.cpp:239
+#: src/guiMainMenu.cpp:244
 msgid "Start Game / Connect"
 msgstr "Spiel starten / Verbinden"
 
-#: src/guiMainMenu.cpp:247
+#: src/guiMainMenu.cpp:253
 msgid "Change keys"
 msgstr "Tastenbelegung ändern"
 
-#: src/guiMainMenu.cpp:269
+#: src/guiMainMenu.cpp:276
 msgid "Creative Mode"
 msgstr "Kreativitätsmodus"
 
-#: src/guiMainMenu.cpp:274
+#: src/guiMainMenu.cpp:282
 msgid "Enable Damage"
 msgstr "Schaden einschalten"
 
-#: src/guiMainMenu.cpp:281
+#: src/guiMainMenu.cpp:290
 msgid "Delete map"
 msgstr "Karte löschen"
 
-#: src/guiMessageMenu.cpp:92
-#: src/guiTextInputMenu.cpp:110
+#: src/guiMessageMenu.cpp:93 src/guiTextInputMenu.cpp:111
 msgid "Proceed"
 msgstr "Fortsetzen"
 
@@ -66,39 +65,39 @@ msgstr "Fortsetzen"
 msgid "Old Password"
 msgstr "Altes Passwort"
 
-#: src/guiPasswordChange.cpp:116
+#: src/guiPasswordChange.cpp:117
 msgid "New Password"
 msgstr "Neues Passwort"
 
-#: src/guiPasswordChange.cpp:129
+#: src/guiPasswordChange.cpp:131
 msgid "Confirm Password"
 msgstr "Passwort wiederholen"
 
-#: src/guiPasswordChange.cpp:143
+#: src/guiPasswordChange.cpp:146
 msgid "Change"
 msgstr "Ändern"
 
-#: src/guiPasswordChange.cpp:151
+#: src/guiPasswordChange.cpp:155
 msgid "Passwords do not match!"
 msgstr "Passwörter passen nicht zusammen"
 
-#: src/guiPauseMenu.cpp:109
+#: src/guiPauseMenu.cpp:110
 msgid "Continue"
 msgstr "Weiter"
 
-#: src/guiPauseMenu.cpp:115
+#: src/guiPauseMenu.cpp:117
 msgid "Change Password"
 msgstr "Passwort ändern"
 
-#: src/guiPauseMenu.cpp:121
+#: src/guiPauseMenu.cpp:124
 msgid "Disconnect"
 msgstr "Verbindung trennen"
 
-#: src/guiPauseMenu.cpp:127
+#: src/guiPauseMenu.cpp:131
 msgid "Exit to OS"
 msgstr "Programm beenden"
 
-#: src/guiPauseMenu.cpp:134
+#: src/guiPauseMenu.cpp:138
 msgid ""
 "Keys:\n"
 "- WASD: Walk\n"
@@ -122,4 +121,3 @@ msgstr ""
 "- R: Alle geladenen Kartenteile anzeigen, umschalten\n"
 "- I: Inventarmenü\n"
 "- T: Chat\n"
-
