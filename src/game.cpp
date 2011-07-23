@@ -1038,9 +1038,9 @@ void the_game(
 		//bool screensize_changed = screensize != last_screensize;
 
 		// Resize hotbar
-		if(screensize.Y <= 600)
+		if(screensize.Y <= 800)
 			hotbar_imagesize = 32;
-		else if(screensize.Y <= 1024)
+		else if(screensize.Y <= 1280)
 			hotbar_imagesize = 48;
 		else
 			hotbar_imagesize = 64;
