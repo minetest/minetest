@@ -272,6 +272,7 @@ void content_mapnode_init()
 	i = CONTENT_GLASS;
 	f = &content_features(i);
 	f->light_propagates = true;
+	f->sunlight_propagates = true;
 	f->param_type = CPT_LIGHT;
 	f->is_ground_content = true;
 	f->dug_item = std::string("MaterialItem ")+itos(i)+" 1";
