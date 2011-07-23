@@ -863,7 +863,7 @@ void ServerEnvironment::step(float dtime)
 				{
 					if(myrand()%20 == 0)
 					{
-						MapNode n_top = block->getNodeNoEx(p0+v3s16(0,1,0));
+						MapNode n_top = m_map->getNodeNoEx(p+v3s16(0,1,0));
 						if(content_features(n_top).air_equivalent &&
 								n_top.getLightBlend(getDayNightRatio()) >= 13)
 						{
@@ -879,9 +879,8 @@ void ServerEnvironment::step(float dtime)
 				{
 					//if(myrand()%20 == 0)
 					{
-						MapNode n_top = block->getNodeNoEx(p0+v3s16(0,1,0));
-						if(n_top.getContent() != CONTENT_AIR
-								&& n_top.getContent() != CONTENT_IGNORE)
+						MapNode n_top = m_map->getNodeNoEx(p+v3s16(0,1,0));
+                        if(content_features(n_top).air_equivalent == false)
 						{
 							n.setContent(CONTENT_MUD);
 							m_map->addNodeWithEvent(p, n);
