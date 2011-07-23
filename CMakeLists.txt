@@ -5,7 +5,7 @@ if(${CMAKE_VERSION} STREQUAL "2.8.2")
 endif(${CMAKE_VERSION} STREQUAL "2.8.2")
 
 # This can be read from ${PROJECT_NAME} after project() is called
-project(minetest-delta)
+project(minetest)
 
 set(VERSION_MAJOR 0)
 set(VERSION_MINOR 2)

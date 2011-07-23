@@ -172,7 +172,7 @@ void GUIPauseMenu::regenerateGui(v2u32 screensize)
 		);*/
 
 		std::ostringstream os;
-		os<<"Minetest-delta\n";
+		os<<"Minetest-c55\n";
 		os<<"by Perttu Ahola and contributors\n";
 		os<<"celeron55@gmail.com\n";
 		os<<BUILD_INFO<<"\n";

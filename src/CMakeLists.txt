@@ -1,5 +1,6 @@
-project(minetest-delta)
 cmake_minimum_required( VERSION 2.6 )
+
+project(minetest)
 
 if(RUN_IN_PLACE)
 	add_definitions ( -DRUN_IN_PLACE )
