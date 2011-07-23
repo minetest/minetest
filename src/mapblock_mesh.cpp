@@ -140,9 +140,24 @@ void getNodeVertexDirs(v3s16 dir, v3s16 *vertex_dirs)
 	}
 }
 
-inline video::SColor lightColor(u8 alpha, u8 light)
+video::SColor MapBlock_LightColor(u8 alpha, u8 light)
 {
+#if 0
 	return video::SColor(alpha,light,light,light);
+#endif
+	//return video::SColor(alpha,light,light,MYMAX(0, (s16)light-25)+25);
+	/*return video::SColor(alpha,light,light,MYMAX(0,
+			pow((float)light/255.0, 0.8)*255.0));*/
+#if 1
+	// Emphase blue a bit in darker places
+	float lim = 80;
+	float power = 0.7;
+	if(light > lim)
+		return video::SColor(alpha,light,light,light);
+	else
+		return video::SColor(alpha,light,light,MYMAX(0,
+				pow((float)light/lim, power)*lim));
+#endif
 }
 
 struct FastFace
@@ -198,7 +213,7 @@ void makeFastFace(TileSpec tile, u8 li0, u8 li1, u8 li2, u8 li3, v3f p,
 	float w = tile.texture.size.X;
 	float h = tile.texture.size.Y;
 
-	/*video::SColor c = lightColor(alpha, li);
+	/*video::SColor c = MapBlock_LightColor(alpha, li);
 
 	face.vertices[0] = video::S3DVertex(vertex_pos[0], v3f(0,1,0), c,
 			core::vector2d<f32>(x0+w*abs_scale, y0+h));
@@ -210,16 +225,16 @@ void makeFastFace(TileSpec tile, u8 li0, u8 li1, u8 li2, u8 li3, v3f p,
 			core::vector2d<f32>(x0+w*abs_scale, y0));*/
 
 	face.vertices[0] = video::S3DVertex(vertex_pos[0], v3f(0,1,0),
-			lightColor(alpha, li0),
+			MapBlock_LightColor(alpha, li0),
 			core::vector2d<f32>(x0+w*abs_scale, y0+h));
 	face.vertices[1] = video::S3DVertex(vertex_pos[1], v3f(0,1,0),
-			lightColor(alpha, li1),
+			MapBlock_LightColor(alpha, li1),
 			core::vector2d<f32>(x0, y0+h));
 	face.vertices[2] = video::S3DVertex(vertex_pos[2], v3f(0,1,0),
-			lightColor(alpha, li2),
+			MapBlock_LightColor(alpha, li2),
 			core::vector2d<f32>(x0, y0));
 	face.vertices[3] = video::S3DVertex(vertex_pos[3], v3f(0,1,0),
-			lightColor(alpha, li3),
+			MapBlock_LightColor(alpha, li3),
 			core::vector2d<f32>(x0+w*abs_scale, y0));
 
 	face.tile = tile;

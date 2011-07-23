@@ -21,6 +21,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "content_mapnode.h"
 #include "main.h" // For g_settings and g_texturesource
 #include "mineral.h"
+#include "mapblock_mesh.h" // For MapBlock_LightColor()
 
 #ifndef SERVER
 // Create a cuboid.
@@ -286,7 +287,7 @@ void mapblock_mesh_generate_special(MeshMakeData *data,
 		else if(n.d == CONTENT_SIGN_WALL)
 		{
 			u8 l = decode_light(n.getLightBlend(data->m_daynight_ratio));
-			video::SColor c(255,l,l,l);
+			video::SColor c = MapBlock_LightColor(255, l);
 				
 			float d = (float)BS/16;
 			// Wall at X+ of node
@@ -352,7 +353,7 @@ void mapblock_mesh_generate_special(MeshMakeData *data,
 			// Otherwise use the light of this node (the water)
 			else
 				l = decode_light(n.getLightBlend(data->m_daynight_ratio));
-			video::SColor c(WATER_ALPHA,l,l,l);
+			video::SColor c = MapBlock_LightColor(WATER_ALPHA, l);
 			
 			// Neighbor water levels (key = relative position)
 			// Includes current node
@@ -618,7 +619,7 @@ void mapblock_mesh_generate_special(MeshMakeData *data,
 				continue;
 
 			u8 l = decode_light(n.getLightBlend(data->m_daynight_ratio));
-			video::SColor c(WATER_ALPHA,l,l,l);
+			video::SColor c = MapBlock_LightColor(WATER_ALPHA, l);
 			
 			video::S3DVertex vertices[4] =
 			{
@@ -653,7 +654,7 @@ void mapblock_mesh_generate_special(MeshMakeData *data,
 		{
 			/*u8 l = decode_light(n.getLightBlend(data->m_daynight_ratio));*/
 			u8 l = decode_light(undiminish_light(n.getLightBlend(data->m_daynight_ratio)));
-			video::SColor c(255,l,l,l);
+			video::SColor c = MapBlock_LightColor(255, l);
 
 			for(u32 j=0; j<6; j++)
 			{
@@ -720,7 +721,7 @@ void mapblock_mesh_generate_special(MeshMakeData *data,
 		else if(n.d == CONTENT_GLASS)
 		{
 			u8 l = decode_light(undiminish_light(n.getLightBlend(data->m_daynight_ratio)));
-			video::SColor c(255,l,l,l);
+			video::SColor c = MapBlock_LightColor(255, l);
 
 			for(u32 j=0; j<6; j++)
 			{
@@ -783,7 +784,7 @@ void mapblock_mesh_generate_special(MeshMakeData *data,
 		else if(n.d == CONTENT_FENCE)
 		{
 			u8 l = decode_light(undiminish_light(n.getLightBlend(data->m_daynight_ratio)));
-			video::SColor c(255,l,l,l);
+			video::SColor c = MapBlock_LightColor(255, l);
 
 			const f32 post_rad=(f32)BS/10;
 			const f32 bar_rad=(f32)BS/20;
@@ -872,7 +873,7 @@ void mapblock_mesh_generate_special(MeshMakeData *data,
 				else
 					l = 255;*/
 				u8 l = 255;
-				video::SColor c(255,l,l,l);
+				video::SColor c = MapBlock_LightColor(255, l);
 				
 				// Get the right texture
 				TileSpec ts = n.getTile(dir);
@@ -930,7 +931,7 @@ void mapblock_mesh_generate_special(MeshMakeData *data,
 		else if(n.d == CONTENT_PAPYRUS)
 		{
 			u8 l = decode_light(undiminish_light(n.getLightBlend(data->m_daynight_ratio)));
-			video::SColor c(255,l,l,l);
+			video::SColor c = MapBlock_LightColor(255, l);
 
 			for(u32 j=0; j<4; j++)
 			{
@@ -980,7 +981,7 @@ void mapblock_mesh_generate_special(MeshMakeData *data,
 		else if(n.d == CONTENT_JUNGLEGRASS)
 		{
 			u8 l = decode_light(undiminish_light(n.getLightBlend(data->m_daynight_ratio)));
-			video::SColor c(255,l,l,l);
+			video::SColor c = MapBlock_LightColor(255, l);
 
 			for(u32 j=0; j<4; j++)
 			{
@@ -1031,7 +1032,7 @@ void mapblock_mesh_generate_special(MeshMakeData *data,
 		else if(n.d == CONTENT_RAIL)
 		{
 			u8 l = decode_light(n.getLightBlend(data->m_daynight_ratio));
-			video::SColor c(255,l,l,l);
+			video::SColor c = MapBlock_LightColor(255, l);
 
 			bool is_rail_x [] = { false, false };  /* x-1, x+1 */
 			bool is_rail_z [] = { false, false };  /* z-1, z+1 */
