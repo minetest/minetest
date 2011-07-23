@@ -1134,8 +1134,8 @@ int main(int argc, char *argv[])
 
 #ifdef LC_MESSAGES
 	setlocale(LC_MESSAGES, "");
-	bindtextdomain("minetest", (porting::path_userdata+"/locale").c_str());
-	textdomain("minetest");
+	bindtextdomain(PROJECT_NAME, (porting::path_userdata+"/locale").c_str());
+	textdomain(PROJECT_NAME);
 #endif
 
 	// Initialize debug streams
