@@ -21,6 +21,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "inventory.h"
 #include "content_mapnode.h"
 #include "player.h"
+#include "mapnode.h" // For content_t
 
 /*
 	items: actually *items[9]
@@ -347,7 +348,7 @@ void craft_set_creative_inventory(Player *player)
 	*/
 	
 	// CONTENT_IGNORE-terminated list
-	u8 material_items[] = {
+	content_t material_items[] = {
 		CONTENT_TORCH,
 		CONTENT_COBBLE,
 		CONTENT_MUD,
@@ -366,7 +367,7 @@ void craft_set_creative_inventory(Player *player)
 		CONTENT_IGNORE
 	};
 	
-	u8 *mip = material_items;
+	content_t *mip = material_items;
 	for(u16 i=0; i<PLAYER_INVENTORY_SIZE; i++)
 	{
 		if(*mip == CONTENT_IGNORE)

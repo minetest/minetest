@@ -543,11 +543,11 @@ void spawnRandomObjects(MapBlock *block)
 		{
 			v3s16 p(x0,y0,z0);
 			MapNode n = block->getNodeNoEx(p);
-			if(n.d == CONTENT_IGNORE)
+			if(n.getContent() == CONTENT_IGNORE)
 				continue;
-			if(content_features(n.d).liquid_type != LIQUID_NONE)
+			if(content_features(n).liquid_type != LIQUID_NONE)
 				continue;
-			if(content_features(n.d).walkable)
+			if(content_features(n).walkable)
 			{
 				last_node_walkable = true;
 				continue;
@@ -555,7 +555,7 @@ void spawnRandomObjects(MapBlock *block)
 			if(last_node_walkable)
 			{
 				// If block contains light information
-				if(content_features(n.d).param_type == CPT_LIGHT)
+				if(content_features(n).param_type == CPT_LIGHT)
 				{
 					if(n.getLight(LIGHTBANK_DAY) <= 5)
 					{
@@ -624,15 +624,15 @@ void ServerEnvironment::activateBlock(MapBlock *block, u32 additional_dtime)
 #if 1
 		// Test something:
 		// Convert all mud under proper day lighting to grass
-		if(n.d == CONTENT_MUD)
+		if(n.getContent() == CONTENT_MUD)
 		{
 			if(dtime_s > 300)
 			{
 				MapNode n_top = block->getNodeNoEx(p0+v3s16(0,1,0));
-				if(content_features(n_top.d).air_equivalent &&
+				if(content_features(n_top).air_equivalent &&
 						n_top.getLight(LIGHTBANK_DAY) >= 13)
 				{
-					n.d = CONTENT_GRASS;
+					n.setContent(CONTENT_GRASS);
 					m_map->addNodeWithEvent(p, n);
 				}
 			}
@@ -686,9 +686,9 @@ void ServerEnvironment::step(float dtime)
 			v3s16 bottompos = floatToInt(playerpos + v3f(0,-BS/4,0), BS);
 			try{
 				MapNode n = m_map->getNode(bottompos);
-				if(n.d == CONTENT_GRASS)
+				if(n.getContent() == CONTENT_GRASS)
 				{
-					n.d = CONTENT_GRASS_FOOTSTEPS;
+					n.setContent(CONTENT_GRASS_FOOTSTEPS);
 					m_map->setNode(bottompos, n);
 				}
 			}
@@ -859,15 +859,15 @@ void ServerEnvironment::step(float dtime)
 					Test something:
 					Convert mud under proper lighting to grass
 				*/
-				if(n.d == CONTENT_MUD)
+				if(n.getContent() == CONTENT_MUD)
 				{
 					if(myrand()%20 == 0)
 					{
 						MapNode n_top = block->getNodeNoEx(p0+v3s16(0,1,0));
-						if(content_features(n_top.d).air_equivalent &&
+						if(content_features(n_top).air_equivalent &&
 								n_top.getLightBlend(getDayNightRatio()) >= 13)
 						{
-							n.d = CONTENT_GRASS;
+							n.setContent(CONTENT_GRASS);
 							m_map->addNodeWithEvent(p, n);
 						}
 					}
@@ -875,15 +875,15 @@ void ServerEnvironment::step(float dtime)
 				/*
 					Convert grass into mud if under something else than air
 				*/
-				else if(n.d == CONTENT_GRASS)
+				else if(n.getContent() == CONTENT_GRASS)
 				{
 					//if(myrand()%20 == 0)
 					{
 						MapNode n_top = block->getNodeNoEx(p0+v3s16(0,1,0));
-						if(n_top.d != CONTENT_AIR
-								&& n_top.d != CONTENT_IGNORE)
+						if(n_top.getContent() != CONTENT_AIR
+								&& n_top.getContent() != CONTENT_IGNORE)
 						{
-							n.d = CONTENT_MUD;
+							n.setContent(CONTENT_MUD);
 							m_map->addNodeWithEvent(p, n);
 						}
 					}
@@ -1632,9 +1632,9 @@ void ClientEnvironment::step(float dtime)
 			v3s16 bottompos = floatToInt(playerpos + v3f(0,-BS/4,0), BS);
 			try{
 				MapNode n = m_map->getNode(bottompos);
-				if(n.d == CONTENT_GRASS)
+				if(n.getContent() == CONTENT_GRASS)
 				{
-					n.d = CONTENT_GRASS_FOOTSTEPS;
+					n.setContent(CONTENT_GRASS_FOOTSTEPS);
 					m_map->setNode(bottompos, n);
 					// Update mesh on client
 					if(m_map->mapType() == MAPTYPE_CLIENT)
@@ -1873,7 +1873,7 @@ void ClientEnvironment::drawPostFx(video::IVideoDriver* driver, v3f camera_pos)
 	v3f pos_f = camera_pos;
 	v3s16 p_nodes = floatToInt(pos_f, BS);
 	MapNode n = m_map->getNodeNoEx(p_nodes);
-	if(n.d == CONTENT_WATER || n.d == CONTENT_WATERSOURCE)
+	if(n.getContent() == CONTENT_WATER || n.getContent() == CONTENT_WATERSOURCE)
 	{
 		v2u32 ss = driver->getScreenSize();
 		core::rect<s32> rect(0,0, ss.X, ss.Y);

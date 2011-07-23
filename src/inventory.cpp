@@ -61,7 +61,7 @@ InventoryItem* InventoryItem::deSerialize(std::istream &is)
 		is>>material;
 		u16 count;
 		is>>count;
-		if(material > 255)
+		if(material > MAX_CONTENT)
 			throw SerializationError("Too large material number");
 		return new MaterialItem(material, count);
 	}

@@ -199,7 +199,7 @@ void mapblock_mesh_generate_special(MeshMakeData *data,
 		/*
 			Add torches to mesh
 		*/
-		if(n.d == CONTENT_TORCH)
+		if(n.getContent() == CONTENT_TORCH)
 		{
 			video::SColor c(255,255,255,255);
 
@@ -212,7 +212,7 @@ void mapblock_mesh_generate_special(MeshMakeData *data,
 				video::S3DVertex(-BS/2,BS/2,0, 0,0,0, c, 0,0),
 			};
 
-			v3s16 dir = unpackDir(n.dir);
+			v3s16 dir = unpackDir(n.param2);
 
 			for(s32 i=0; i<4; i++)
 			{
@@ -262,7 +262,7 @@ void mapblock_mesh_generate_special(MeshMakeData *data,
 		/*
 			Signs on walls
 		*/
-		else if(n.d == CONTENT_SIGN_WALL)
+		else if(n.getContent() == CONTENT_SIGN_WALL)
 		{
 			u8 l = decode_light(n.getLightBlend(data->m_daynight_ratio));
 			video::SColor c(255,l,l,l);
@@ -277,7 +277,7 @@ void mapblock_mesh_generate_special(MeshMakeData *data,
 				video::S3DVertex(BS/2-d,BS/2,-BS/2, 0,0,0, c, 0,0),
 			};
 
-			v3s16 dir = unpackDir(n.dir);
+			v3s16 dir = unpackDir(n.param2);
 
 			for(s32 i=0; i<4; i++)
 			{
@@ -317,16 +317,16 @@ void mapblock_mesh_generate_special(MeshMakeData *data,
 		/*
 			Add flowing water to mesh
 		*/
-		else if(n.d == CONTENT_WATER)
+		else if(n.getContent() == CONTENT_WATER)
 		{
 			bool top_is_water = false;
 			MapNode ntop = data->m_vmanip.getNodeNoEx(blockpos_nodes + v3s16(x,y+1,z));
-			if(ntop.d == CONTENT_WATER || ntop.d == CONTENT_WATERSOURCE)
+			if(ntop.getContent() == CONTENT_WATER || ntop.getContent() == CONTENT_WATERSOURCE)
 				top_is_water = true;
 			
 			u8 l = 0;
 			// Use the light of the node on top if possible
-			if(content_features(ntop.d).param_type == CPT_LIGHT)
+			if(content_features(ntop).param_type == CPT_LIGHT)
 				l = decode_light(ntop.getLightBlend(data->m_daynight_ratio));
 			// Otherwise use the light of this node (the water)
 			else
@@ -336,7 +336,7 @@ void mapblock_mesh_generate_special(MeshMakeData *data,
 			// Neighbor water levels (key = relative position)
 			// Includes current node
 			core::map<v3s16, f32> neighbor_levels;
-			core::map<v3s16, u8> neighbor_contents;
+			core::map<v3s16, content_t> neighbor_contents;
 			core::map<v3s16, u8> neighbor_flags;
 			const u8 neighborflag_top_is_water = 0x01;
 			v3s16 neighbor_dirs[9] = {
@@ -358,13 +358,13 @@ void mapblock_mesh_generate_special(MeshMakeData *data,
 				// Check neighbor
 				v3s16 p2 = p + neighbor_dirs[i];
 				MapNode n2 = data->m_vmanip.getNodeNoEx(blockpos_nodes + p2);
-				if(n2.d != CONTENT_IGNORE)
+				if(n2.getContent() != CONTENT_IGNORE)
 				{
-					content = n2.d;
+					content = n2.getContent();
 
-					if(n2.d == CONTENT_WATERSOURCE)
+					if(n2.getContent() == CONTENT_WATERSOURCE)
 						level = (-0.5+node_water_level) * BS;
-					else if(n2.d == CONTENT_WATER)
+					else if(n2.getContent() == CONTENT_WATER)
 						level = (-0.5 + ((float)n2.param2 + 0.5) / 8.0
 								* node_water_level) * BS;
 
@@ -373,7 +373,7 @@ void mapblock_mesh_generate_special(MeshMakeData *data,
 					//       doesn't exist
 					p2.Y += 1;
 					n2 = data->m_vmanip.getNodeNoEx(blockpos_nodes + p2);
-					if(n2.d == CONTENT_WATERSOURCE || n2.d == CONTENT_WATER)
+					if(n2.getContent() == CONTENT_WATERSOURCE || n2.getContent() == CONTENT_WATER)
 						flags |= neighborflag_top_is_water;
 				}
 				
@@ -581,14 +581,14 @@ void mapblock_mesh_generate_special(MeshMakeData *data,
 		/*
 			Add water sources to mesh if using new style
 		*/
-		else if(n.d == CONTENT_WATERSOURCE && new_style_water)
+		else if(n.getContent() == CONTENT_WATERSOURCE && new_style_water)
 		{
 			//bool top_is_water = false;
 			bool top_is_air = false;
 			MapNode n = data->m_vmanip.getNodeNoEx(blockpos_nodes + v3s16(x,y+1,z));
-			/*if(n.d == CONTENT_WATER || n.d == CONTENT_WATERSOURCE)
+			/*if(n.getContent() == CONTENT_WATER || n.getContent() == CONTENT_WATERSOURCE)
 				top_is_water = true;*/
-			if(n.d == CONTENT_AIR)
+			if(n.getContent() == CONTENT_AIR)
 				top_is_air = true;
 			
 			/*if(top_is_water == true)
@@ -628,7 +628,7 @@ void mapblock_mesh_generate_special(MeshMakeData *data,
 		/*
 			Add leaves if using new style
 		*/
-		else if(n.d == CONTENT_LEAVES && new_style_leaves)
+		else if(n.getContent() == CONTENT_LEAVES && new_style_leaves)
 		{
 			/*u8 l = decode_light(n.getLightBlend(data->m_daynight_ratio));*/
 			u8 l = decode_light(undiminish_light(n.getLightBlend(data->m_daynight_ratio)));
@@ -696,7 +696,7 @@ void mapblock_mesh_generate_special(MeshMakeData *data,
 		/*
 			Add glass
 		*/
-		else if(n.d == CONTENT_GLASS)
+		else if(n.getContent() == CONTENT_GLASS)
 		{
 			u8 l = decode_light(undiminish_light(n.getLightBlend(data->m_daynight_ratio)));
 			video::SColor c(255,l,l,l);
@@ -759,7 +759,7 @@ void mapblock_mesh_generate_special(MeshMakeData *data,
 		/*
 			Add fence
 		*/
-		else if(n.d == CONTENT_FENCE)
+		else if(n.getContent() == CONTENT_FENCE)
 		{
 			u8 l = decode_light(undiminish_light(n.getLightBlend(data->m_daynight_ratio)));
 			video::SColor c(255,l,l,l);
@@ -785,7 +785,7 @@ void mapblock_mesh_generate_special(MeshMakeData *data,
 			v3s16 p2 = p;
 			p2.X++;
 			MapNode n2 = data->m_vmanip.getNodeNoEx(blockpos_nodes + p2);
-			if(n2.d == CONTENT_FENCE)
+			if(n2.getContent() == CONTENT_FENCE)
 			{
 				pos = intToFloat(p+blockpos_nodes, BS);
 				pos.X += BS/2;
@@ -811,7 +811,7 @@ void mapblock_mesh_generate_special(MeshMakeData *data,
 			p2 = p;
 			p2.Z++;
 			n2 = data->m_vmanip.getNodeNoEx(blockpos_nodes + p2);
-			if(n2.d == CONTENT_FENCE)
+			if(n2.getContent() == CONTENT_FENCE)
 			{
 				pos = intToFloat(p+blockpos_nodes, BS);
 				pos.Z += BS/2;
@@ -838,7 +838,7 @@ void mapblock_mesh_generate_special(MeshMakeData *data,
 		/*
 			Add stones with minerals if stone is invisible
 		*/
-		else if(n.d == CONTENT_STONE && invisible_stone && n.getMineral() != MINERAL_NONE)
+		else if(n.getContent() == CONTENT_STONE && invisible_stone && n.getMineral() != MINERAL_NONE)
 		{
 			for(u32 j=0; j<6; j++)
 			{
@@ -846,7 +846,7 @@ void mapblock_mesh_generate_special(MeshMakeData *data,
 				v3s16 dir = g_6dirs[j];
 				/*u8 l = 0;
 				MapNode n2 = data->m_vmanip.getNodeNoEx(blockpos_nodes + dir);
-				if(content_features(n2.d).param_type == CPT_LIGHT)
+				if(content_features(n2).param_type == CPT_LIGHT)
 					l = decode_light(n2.getLightBlend(data->m_daynight_ratio));
 				else
 					l = 255;*/

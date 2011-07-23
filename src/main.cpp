@@ -54,6 +54,24 @@ A list of "active blocks" in which stuff happens. (+=done)
 	  	+ This was left to be done by the old system and it sends only the
 		  nearest ones.
 
+Vim conversion regexpes for moving to extended content type storage:
+%s/\(\.\|->\)d \([!=]=\)/\1getContent() \2/g
+%s/content_features(\([^.]*\)\.d)/content_features(\1)/g
+%s/\(\.\|->\)d = \([^;]*\);/\1setContent(\2);/g
+%s/\(getNodeNoExNoEmerge([^)]*)\)\.d/\1.getContent()/g
+%s/\(getNodeNoExNoEmerge(.*)\)\.d/\1.getContent()/g
+%s/\.d;/.getContent();/g
+%s/\(content_liquid\|content_flowing_liquid\|make_liquid_flowing\|content_pointable\)(\([^.]*\).d)/\1(\2.getContent())/g
+Other things to note:
+- node.d = node.param0 (only in raw serialization; use getContent() otherwise)
+- node.param = node.param1
+- node.dir = node.param2
+- content_walkable(node.d) etc should be changed to
+  content_features(node).walkable etc
+- Also check for lines that store the result of getContent to a 8-bit
+  variable and fix them (result of getContent() must be stored in
+  content_t, which is 16-bit)
+
 Old, wild and random suggestions that probably won't be done:
 -------------------------------------------------------------
 
@@ -337,7 +355,7 @@ TODO: Restart irrlicht completely when coming back to main menu from game.
 
 TODO: Merge bahamada's audio stuff (clean patch available)
 
-TODO: Merge key configuration menu (no clean patch available)
+TODO: Move content_features to mapnode_content_features.{h,cpp} or so
 
 Making it more portable:
 ------------------------

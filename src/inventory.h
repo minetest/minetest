@@ -30,8 +30,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "common_irrlicht.h"
 #include "debug.h"
 #include "mapblockobject.h"
-// For g_materials
-#include "main.h"
+#include "main.h" // For g_materials
+#include "mapnode.h" // For content_t
 
 #define QUANTITY_ITEM_MAX_COUNT 99
 
@@ -113,7 +113,7 @@ protected:
 class MaterialItem : public InventoryItem
 {
 public:
-	MaterialItem(u8 content, u16 count):
+	MaterialItem(content_t content, u16 count):
 		InventoryItem(count)
 	{
 		m_content = content;
@@ -175,12 +175,12 @@ public:
 	/*
 		Special methods
 	*/
-	u8 getMaterial()
+	content_t getMaterial()
 	{
 		return m_content;
 	}
 private:
-	u8 m_content;
+	content_t m_content;
 };
 
 //TODO: Remove

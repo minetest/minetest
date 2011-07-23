@@ -22,13 +22,14 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "common_irrlicht.h" // For u8, s16
 #include <string>
+#include "mapnode.h" // For content_t
 
 class InventoryItem;
 class ServerActiveObject;
 class ServerEnvironment;
 
-bool           item_material_is_cookable(u8 content);
-InventoryItem* item_material_create_cook_result(u8 content);
+bool           item_material_is_cookable(content_t content);
+InventoryItem* item_material_create_cook_result(content_t content);
 
 std::string         item_craft_get_image_name(const std::string &subname);
 ServerActiveObject* item_craft_create_object(const std::string &subname,

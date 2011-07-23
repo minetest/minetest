@@ -170,6 +170,9 @@ stuff = {}
 
 starttime = time.time()
 
+def data_is_air(d):
+	return (d == 254 or d == 126)
+
 # Go through all sectors.
 for n in range(len(xlist)):
 	#if n > 500:
@@ -283,7 +286,7 @@ for n in range(len(xlist)):
 			for (x, z) in reversed(pixellist):
 				for y in reversed(range(16)):
 					datapos = x + y * 16 + z * 256
-					if(ord(mapdata[datapos]) != 254 and ord(mapdata[datapos]) in colors):
+					if(not data_is_air(ord(mapdata[datapos])) and ord(mapdata[datapos]) in colors):
 						if(ord(mapdata[datapos]) == 2 or ord(mapdata[datapos]) == 9):
 							water[(x, z)] += 1
 							# Add dummy stuff for drawing sea without seabed
@@ -293,7 +296,7 @@ for n in range(len(xlist)):
 							# Memorize information on the type and height of the block and for drawing the picture.
 							stuff[(chunkxpos + x, chunkzpos + z)] = (chunkypos + y, ord(mapdata[datapos]), water[(x, z)])
 							break
-					elif(ord(mapdata[datapos]) != 254 and ord(mapdata[datapos]) not in colors):
+					elif(not data_is_air(ord(mapdata[datapos])) and ord(mapdata[datapos]) not in colors):
 						print "strange block: " + xhex + "/" + zhex + "/" + yhex + " x: " + str(x) + " y: " + str(y) + " z: " + str(z) + " palikka: " + str(ord(mapdata[datapos]))
 		
 		# After finding all the pixels in the sector, we can move on to the next sector without having to continue the Y axis.
@@ -324,7 +327,7 @@ for n in range(len(xlist)):
 				for (x, z) in reversed(pixellist):
 					for y in reversed(range(16)):
 						datapos = x + y * 16 + z * 256
-						if(ord(mapdata[datapos]) != 254 and ord(mapdata[datapos]) in colors):
+						if(not data_is_air(ord(mapdata[datapos])) and ord(mapdata[datapos]) in colors):
 							if(ord(mapdata[datapos]) == 2 or ord(mapdata[datapos]) == 9):
 								water[(x, z)] += 1
 								# Add dummy stuff for drawing sea without seabed
@@ -334,7 +337,7 @@ for n in range(len(xlist)):
 								# Memorize information on the type and height of the block and for drawing the picture.
 								stuff[(chunkxpos + x, chunkzpos + z)] = (chunkypos + y, ord(mapdata[datapos]), water[(x, z)])
 								break
-						elif(ord(mapdata[datapos]) != 254 and ord(mapdata[datapos]) not in colors):
+						elif(not data_is_air(ord(mapdata[datapos])) and ord(mapdata[datapos]) not in colors):
 							print "outo palikka: " + xhex + "/" + zhex + "/" + yhex + " x: " + str(x) + " y: " + str(y) + " z: " + str(z) + " palikka: " + str(ord(mapdata[datapos]))
 			
 			# After finding all the pixels in the sector, we can move on to the next sector without having to continue the Y axis.

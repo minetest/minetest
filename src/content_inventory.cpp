@@ -23,7 +23,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 //#include "serverobject.h"
 #include "content_sao.h"
 
-bool item_material_is_cookable(u8 content)
+bool item_material_is_cookable(content_t content)
 {
 	if(content == CONTENT_TREE)
 		return true;
@@ -34,7 +34,7 @@ bool item_material_is_cookable(u8 content)
 	return false;
 }
 
-InventoryItem* item_material_create_cook_result(u8 content)
+InventoryItem* item_material_create_cook_result(content_t content)
 {
 	if(content == CONTENT_TREE)
 		return new CraftItem("lump_of_coal", 1);

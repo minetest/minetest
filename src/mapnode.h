@@ -32,16 +32,15 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 /*
 	Naming scheme:
 	- Material = irrlicht's Material class
-	- Content = (u8) content of a node
+	- Content = (content_t) content of a node
 	- Tile = TileSpec at some side of a node of some content type
-*/
 
-/*
-	Ranges:
+	Content ranges:
 		0x000...0x07f: param2 is fully usable
 		0x800...0xfff: param2 lower 4 bytes are free
 */
 typedef u16 content_t;
+#define MAX_CONTENT 0xfff
 
 /*
 	Initializes all kind of stuff in here.
@@ -102,10 +101,7 @@ class NodeMetadata;
 
 struct ContentFeatures
 {
-	// If non-NULL, content is translated to this when deserialized
-	//MapNode *translate_to;
-
-	// Type of MapNode::param
+	// Type of MapNode::param1
 	ContentParamType param_type;
 
 	/*
@@ -151,7 +147,7 @@ struct ContentFeatures
 	
 	// If the content is liquid, this is the flowing version of the liquid.
 	// If content is liquid, this is the same content.
-	u8 liquid_alternative_flowing;
+	content_t liquid_alternative_flowing;
 	
 	// Amount of light the node emits
 	u8 light_source;
@@ -163,7 +159,6 @@ struct ContentFeatures
 
 	void reset()
 	{
-		//translate_to = NULL;
 		param_type = CPT_NONE;
 		inventory_texture = NULL;
 		is_ground_content = false;
@@ -228,8 +223,8 @@ struct ContentFeatures
 /*
 	Call this to access the ContentFeature list
 */
-ContentFeatures & content_features(u8 i);
-
+ContentFeatures & content_features(content_t i);
+ContentFeatures & content_features(MapNode &n);
 
 /*
 	Here is a bunch of DEPRECATED functions.
@@ -240,7 +235,7 @@ ContentFeatures & content_features(u8 i);
 	in param.
 	NOTE: Don't use, use "content_features(m).whatever" instead
 */
-inline bool light_propagates_content(u8 m)
+inline bool light_propagates_content(content_t m)
 {
 	return content_features(m).light_propagates;
 }
@@ -249,7 +244,7 @@ inline bool light_propagates_content(u8 m)
 	NOTE: It doesn't seem to go through torches regardlessly of this
 	NOTE: Don't use, use "content_features(m).whatever" instead
 */
-inline bool sunlight_propagates_content(u8 m)
+inline bool sunlight_propagates_content(content_t m)
 {
 	return content_features(m).sunlight_propagates;
 }
@@ -261,35 +256,35 @@ inline bool sunlight_propagates_content(u8 m)
 	2: Opaque
 	NOTE: Don't use, use "content_features(m).whatever" instead
 */
-inline u8 content_solidness(u8 m)
+inline u8 content_solidness(content_t m)
 {
 	return content_features(m).solidness;
 }
 // Objects collide with walkable contents
 // NOTE: Don't use, use "content_features(m).whatever" instead
-inline bool content_walkable(u8 m)
+inline bool content_walkable(content_t m)
 {
 	return content_features(m).walkable;
 }
 // NOTE: Don't use, use "content_features(m).whatever" instead
-inline bool content_liquid(u8 m)
+inline bool content_liquid(content_t m)
 {
 	return content_features(m).liquid_type != LIQUID_NONE;
 }
 // NOTE: Don't use, use "content_features(m).whatever" instead
-inline bool content_flowing_liquid(u8 m)
+inline bool content_flowing_liquid(content_t m)
 {
 	return content_features(m).liquid_type == LIQUID_FLOWING;
 }
 // NOTE: Don't use, use "content_features(m).whatever" instead
-inline bool content_liquid_source(u8 m)
+inline bool content_liquid_source(content_t m)
 {
 	return content_features(m).liquid_type == LIQUID_SOURCE;
 }
 // CONTENT_WATER || CONTENT_WATERSOURCE -> CONTENT_WATER
 // CONTENT_LAVA || CONTENT_LAVASOURCE -> CONTENT_LAVA
 // NOTE: Don't use, use "content_features(m).whatever" instead
-inline u8 make_liquid_flowing(u8 m)
+inline content_t make_liquid_flowing(content_t m)
 {
 	u8 c = content_features(m).liquid_alternative_flowing;
 	assert(c != CONTENT_IGNORE);
@@ -297,17 +292,17 @@ inline u8 make_liquid_flowing(u8 m)
 }
 // Pointable contents can be pointed to in the map
 // NOTE: Don't use, use "content_features(m).whatever" instead
-inline bool content_pointable(u8 m)
+inline bool content_pointable(content_t m)
 {
 	return content_features(m).pointable;
 }
 // NOTE: Don't use, use "content_features(m).whatever" instead
-inline bool content_diggable(u8 m)
+inline bool content_diggable(content_t m)
 {
 	return content_features(m).diggable;
 }
 // NOTE: Don't use, use "content_features(m).whatever" instead
-inline bool content_buildable_to(u8 m)
+inline bool content_buildable_to(content_t m)
 {
 	return content_features(m).buildable_to;
 }
@@ -319,7 +314,7 @@ inline bool content_buildable_to(u8 m)
 		1: Face uses m1's content
 		2: Face uses m2's content
 */
-inline u8 face_contents(u8 m1, u8 m2)
+inline u8 face_contents(content_t m1, content_t m2)
 {
 	if(m1 == CONTENT_IGNORE || m2 == CONTENT_IGNORE)
 		return 0;
@@ -416,7 +411,7 @@ struct MapNode
 	union
 	{
 		u8 param0;
-		u8 d;
+		//u8 d;
 	};
 
 	/*
@@ -431,17 +426,18 @@ struct MapNode
 	union
 	{
 		u8 param1;
-		s8 param;
+		//s8 param;
 	};
 	
 	/*
 		The second parameter. Initialized to 0.
 		E.g. direction for torches and flowing water.
+		If param0 >= 0x80, bits 0xf0 of this is extended content type data
 	*/
 	union
 	{
 		u8 param2;
-		u8 dir;
+		//u8 dir;
 	};
 
 	MapNode(const MapNode & n)
@@ -449,28 +445,44 @@ struct MapNode
 		*this = n;
 	}
 	
-	MapNode(u8 data=CONTENT_AIR, u8 a_param=0, u8 a_param2=0)
+	MapNode(content_t content=CONTENT_AIR, u8 a_param1=0, u8 a_param2=0)
 	{
-		d = data;
-		param = a_param;
+		//param0 = a_param0;
+		param1 = a_param1;
 		param2 = a_param2;
+		// Set after other params because this needs to override part of param2
+		setContent(content);
 	}
 
 	bool operator==(const MapNode &other)
 	{
-		return (d == other.d
-				&& param == other.param
+		return (param0 == other.param0
+				&& param1 == other.param1
 				&& param2 == other.param2);
 	}
 	
 	// To be used everywhere
 	content_t getContent()
 	{
-		return d;
+		if(param0 < 0x80)
+			return param0;
+		else
+			return (param0<<4) + (param2>>4);
 	}
 	void setContent(content_t c)
 	{
-		d = c;
+		if(c < 0x80)
+		{
+			if(param0 >= 0x80)
+				param2 &= ~(0xf0);
+			param0 = c;
+		}
+		else
+		{
+			param0 = c>>4;
+			param2 &= ~(0xf0);
+			param2 |= (c&0x0f)<<4;
+		}
 	}
 	
 	/*
@@ -478,19 +490,19 @@ struct MapNode
 	*/
 	bool light_propagates()
 	{
-		return light_propagates_content(d);
+		return light_propagates_content(getContent());
 	}
 	bool sunlight_propagates()
 	{
-		return sunlight_propagates_content(d);
+		return sunlight_propagates_content(getContent());
 	}
 	u8 solidness()
 	{
-		return content_solidness(d);
+		return content_solidness(getContent());
 	}
 	u8 light_source()
 	{
-		return content_features(d).light_source;
+		return content_features(*this).light_source;
 	}
 
 	u8 getLightBanksWithSource()
@@ -498,10 +510,10 @@ struct MapNode
 		// Select the brightest of [light source, propagated light]
 		u8 lightday = 0;
 		u8 lightnight = 0;
-		if(content_features(d).param_type == CPT_LIGHT)
+		if(content_features(*this).param_type == CPT_LIGHT)
 		{
-			lightday = param & 0x0f;
-			lightnight = (param>>4)&0x0f;
+			lightday = param1 & 0x0f;
+			lightnight = (param1>>4)&0x0f;
 		}
 		if(light_source() > lightday)
 			lightday = light_source();
@@ -514,12 +526,12 @@ struct MapNode
 	{
 		// Select the brightest of [light source, propagated light]
 		u8 light = 0;
-		if(content_features(d).param_type == CPT_LIGHT)
+		if(content_features(*this).param_type == CPT_LIGHT)
 		{
 			if(bank == LIGHTBANK_DAY)
-				light = param & 0x0f;
+				light = param1 & 0x0f;
 			else if(bank == LIGHTBANK_NIGHT)
-				light = (param>>4)&0x0f;
+				light = (param1>>4)&0x0f;
 			else
 				assert(0);
 		}
@@ -557,17 +569,17 @@ struct MapNode
 	void setLight(enum LightBank bank, u8 a_light)
 	{
 		// If node doesn't contain light data, ignore this
-		if(content_features(d).param_type != CPT_LIGHT)
+		if(content_features(*this).param_type != CPT_LIGHT)
 			return;
 		if(bank == LIGHTBANK_DAY)
 		{
-			param &= 0xf0;
-			param |= a_light & 0x0f;
+			param1 &= 0xf0;
+			param1 |= a_light & 0x0f;
 		}
 		else if(bank == LIGHTBANK_NIGHT)
 		{
-			param &= 0x0f;
-			param |= (a_light & 0x0f)<<4;
+			param1 &= 0x0f;
+			param1 |= (a_light & 0x0f)<<4;
 		}
 		else
 			assert(0);

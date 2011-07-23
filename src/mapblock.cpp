@@ -242,7 +242,7 @@ bool MapBlock::propagateSunlight(core::map<v3s16, bool> & light_sources,
 			// Check if node above block has sunlight
 			try{
 				MapNode n = getNodeParent(v3s16(x, MAP_BLOCKSIZE, z));
-				if(n.d == CONTENT_IGNORE || n.getLight(LIGHTBANK_DAY) != LIGHT_SUN)
+				if(n.getContent() == CONTENT_IGNORE || n.getLight(LIGHTBANK_DAY) != LIGHT_SUN)
 				{
 					no_sunlight = true;
 				}
@@ -260,8 +260,8 @@ bool MapBlock::propagateSunlight(core::map<v3s16, bool> & light_sources,
 				else
 				{
 					MapNode n = getNode(v3s16(x, MAP_BLOCKSIZE-1, z));
-					//if(n.d == CONTENT_WATER || n.d == CONTENT_WATERSOURCE)
-					if(content_features(n.d).sunlight_propagates == false)
+					//if(n.getContent() == CONTENT_WATER || n.getContent() == CONTENT_WATERSOURCE)
+					if(content_features(n).sunlight_propagates == false)
 					{
 						no_sunlight = true;
 					}
@@ -322,14 +322,14 @@ bool MapBlock::propagateSunlight(core::map<v3s16, bool> & light_sources,
 						bool upper_is_air = false;
 						try
 						{
-							if(getNodeParent(pos+v3s16(0,1,0)).d == CONTENT_AIR)
+							if(getNodeParent(pos+v3s16(0,1,0)).getContent() == CONTENT_AIR)
 								upper_is_air = true;
 						}
 						catch(InvalidPositionException &e)
 						{
 						}
 						// Turn mud into grass
-						if(upper_is_air && n.d == CONTENT_MUD
+						if(upper_is_air && n.getContent() == CONTENT_MUD
 								&& current_light == LIGHT_SUN)
 						{
 							n.d = CONTENT_GRASS;
@@ -473,7 +473,7 @@ void MapBlock::updateDayNightDiff()
 		for(u32 i=0; i<MAP_BLOCKSIZE*MAP_BLOCKSIZE*MAP_BLOCKSIZE; i++)
 		{
 			MapNode &n = data[i];
-			if(n.d != CONTENT_AIR)
+			if(n.getContent() != CONTENT_AIR)
 			{
 				only_air = false;
 				break;
@@ -496,8 +496,8 @@ s16 MapBlock::getGroundLevel(v2s16 p2d)
 		s16 y = MAP_BLOCKSIZE-1;
 		for(; y>=0; y--)
 		{
-			//if(is_ground_content(getNodeRef(p2d.X, y, p2d.Y).d))
-			if(content_features(getNodeRef(p2d.X, y, p2d.Y).d).walkable)
+			MapNode n = getNodeRef(p2d.X, y, p2d.Y);
+			if(content_features(n).walkable)
 			{
 				if(y == MAP_BLOCKSIZE-1)
 					return -2;
@@ -560,7 +560,7 @@ void MapBlock::serialize(std::ostream &os, u8 version)
 		SharedBuffer<u8> materialdata(nodecount);
 		for(u32 i=0; i<nodecount; i++)
 		{
-			materialdata[i] = data[i].d;
+			materialdata[i] = data[i].param0;
 		}
 		compress(materialdata, os, version);
 
@@ -568,7 +568,7 @@ void MapBlock::serialize(std::ostream &os, u8 version)
 		SharedBuffer<u8> lightdata(nodecount);
 		for(u32 i=0; i<nodecount; i++)
 		{
-			lightdata[i] = data[i].param;
+			lightdata[i] = data[i].param1;
 		}
 		compress(lightdata, os, version);
 		
@@ -715,7 +715,7 @@ void MapBlock::deSerialize(std::istream &is, u8 version)
 						("MapBlock::deSerialize: invalid format");
 			for(u32 i=0; i<s.size(); i++)
 			{
-				data[i].d = s[i];
+				data[i].param0 = s[i];
 			}
 		}
 		{
@@ -728,7 +728,7 @@ void MapBlock::deSerialize(std::istream &is, u8 version)
 						("MapBlock::deSerialize: invalid format");
 			for(u32 i=0; i<s.size(); i++)
 			{
-				data[i].param = s[i];
+				data[i].param1 = s[i];
 			}
 		}
 	

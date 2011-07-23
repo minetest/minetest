@@ -2494,7 +2494,7 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 			// Mandatory parameter; actually used for nothing
 			core::map<v3s16, MapBlock*> modified_blocks;
 
-			u8 material = CONTENT_IGNORE;
+			content_t material = CONTENT_IGNORE;
 			u8 mineral = MINERAL_NONE;
 
 			bool cannot_remove_node = false;
@@ -2505,7 +2505,7 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 				// Get mineral
 				mineral = n.getMineral();
 				// Get material at position
-				material = n.d;
+				material = n.getContent();
 				// If not yet cancelled
 				if(cannot_remove_node == false)
 				{
@@ -2705,7 +2705,7 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 							<<" because privileges are "<<getPlayerPrivs(player)
 							<<std::endl;
 
-					if(content_buildable_to(n2.d) == false
+					if(content_features(n2).buildable_to == false
 						|| no_enough_privs)
 					{
 						// Client probably has wrong data.
@@ -2736,14 +2736,14 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 				// Create node data
 				MaterialItem *mitem = (MaterialItem*)item;
 				MapNode n;
-				n.d = mitem->getMaterial();
+				n.setContent(mitem->getMaterial());
 
 				// Calculate direction for wall mounted stuff
-				if(content_features(n.d).wall_mounted)
-					n.dir = packDir(p_under - p_over);
+				if(content_features(n).wall_mounted)
+					n.param2 = packDir(p_under - p_over);
 
 				// Calculate the direction for furnaces and chests and stuff
-				if(content_features(n.d).param_type == CPT_FACEDIR_SIMPLE)
+				if(content_features(n).param_type == CPT_FACEDIR_SIMPLE)
 				{
 					v3f playerpos = player->getPosition();
 					v3f blockpos = intToFloat(p_over, BS) - playerpos;

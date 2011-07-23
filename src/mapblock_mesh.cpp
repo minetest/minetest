@@ -285,7 +285,7 @@ TileSpec getNodeTile(MapNode mn, v3s16 p, v3s16 face_dir,
 	return spec;
 }
 
-u8 getNodeContent(v3s16 p, MapNode mn, NodeModMap &temp_mods)
+content_t getNodeContent(v3s16 p, MapNode mn, NodeModMap &temp_mods)
 {
 	/*
 		Check temporary modifications on this node
@@ -320,7 +320,7 @@ u8 getNodeContent(v3s16 p, MapNode mn, NodeModMap &temp_mods)
 		}
 	}
 
-	return mn.d;
+	return mn.getContent();
 }
 
 v3s16 dirs8[8] = {
@@ -343,16 +343,16 @@ u8 getSmoothLight(v3s16 p, VoxelManipulator &vmanip, u32 daynight_ratio)
 	for(u32 i=0; i<8; i++)
 	{
 		MapNode n = vmanip.getNodeNoEx(p - dirs8[i]);
-		if(content_features(n.d).param_type == CPT_LIGHT
+		if(content_features(n).param_type == CPT_LIGHT
 				// Fast-style leaves look better this way
-				&& content_features(n.d).solidness != 2)
+				&& content_features(n).solidness != 2)
 		{
 			light += decode_light(n.getLightBlend(daynight_ratio));
 			light_count++;
 		}
 		else
 		{
-			if(n.d != CONTENT_IGNORE)
+			if(n.getContent() != CONTENT_IGNORE)
 				ambient_occlusion++;
 		}
 	}
@@ -408,8 +408,8 @@ void getTileInfo(
 	TileSpec tile1 = getNodeTile(n1, p + face_dir, -face_dir, temp_mods);
 	
 	// This is hackish
-	u8 content0 = getNodeContent(p, n0, temp_mods);
-	u8 content1 = getNodeContent(p + face_dir, n1, temp_mods);
+	content_t content0 = getNodeContent(p, n0, temp_mods);
+	content_t content1 = getNodeContent(p + face_dir, n1, temp_mods);
 	u8 mf = face_contents(content0, content1);
 
 	if(mf == 0)

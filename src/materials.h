@@ -97,7 +97,7 @@ private:
 };
 
 // For getting the default properties, set tool=""
-DiggingProperties getDiggingProperties(u8 material, const std::string &tool);
+DiggingProperties getDiggingProperties(u16 material, const std::string &tool);
 
 #endif
 

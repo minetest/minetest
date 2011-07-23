@@ -417,7 +417,7 @@ void getPointedNode(Client *client, v3f player_position,
 		try
 		{
 			n = client->getNode(v3s16(x,y,z));
-			if(content_pointable(n.d) == false)
+			if(content_pointable(n.getContent()) == false)
 				continue;
 		}
 		catch(InvalidPositionException &e)
@@ -442,9 +442,9 @@ void getPointedNode(Client *client, v3f player_position,
 		/*
 			Meta-objects
 		*/
-		if(n.d == CONTENT_TORCH)
+		if(n.getContent() == CONTENT_TORCH)
 		{
-			v3s16 dir = unpackDir(n.dir);
+			v3s16 dir = unpackDir(n.param2);
 			v3f dir_f = v3f(dir.X, dir.Y, dir.Z);
 			dir_f *= BS/2 - BS/6 - BS/20;
 			v3f cpf = npf + dir_f;
@@ -489,9 +489,9 @@ void getPointedNode(Client *client, v3f player_position,
 				}
 			}
 		}
-		else if(n.d == CONTENT_SIGN_WALL)
+		else if(n.getContent() == CONTENT_SIGN_WALL)
 		{
-			v3s16 dir = unpackDir(n.dir);
+			v3s16 dir = unpackDir(n.param2);
 			v3f dir_f = v3f(dir.X, dir.Y, dir.Z);
 			dir_f *= BS/2 - BS/6 - BS/20;
 			v3f cpf = npf + dir_f;
@@ -1722,7 +1722,7 @@ void the_game(
 					}
 
 					// Get digging properties for material and tool
-					u8 material = n.d;
+					content_t material = n.getContent();
 					DiggingProperties prop =
 							getDiggingProperties(material, toolname);
 					
