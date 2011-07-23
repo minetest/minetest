@@ -233,3 +233,4 @@ void clearKeyCache()
 {
 	g_key_setting_cache.clear();
 }
+

@@ -121,6 +121,9 @@ private:
 	core::array<PreMeshBuffer> m_prebuffers;
 };
 
+// Helper functions
+video::SColor MapBlock_LightColor(u8 alpha, u8 light);
+
 class MapBlock;
 
 struct MeshMakeData
@@ -137,6 +140,7 @@ struct MeshMakeData
 	void fill(u32 daynight_ratio, MapBlock *block);
 };
 
+// This is the highest-level function in here
 scene::SMesh* makeMapBlockMesh(MeshMakeData *data);
 
 #endif
