@@ -2012,8 +2012,9 @@ ServerMap::~ServerMap()
 
 void ServerMap::initBlockMake(mapgen::BlockMakeData *data, v3s16 blockpos)
 {
-	dstream<<"initBlockMake(): ("<<blockpos.X<<","<<blockpos.Y<<","
-			<<blockpos.Z<<")"<<std::endl;
+	if(enable_mapgen_debug_info)
+		dstream<<"initBlockMake(): ("<<blockpos.X<<","<<blockpos.Y<<","
+				<<blockpos.Z<<")"<<std::endl;
 	
 	// Do nothing if not inside limits (+-1 because of neighbors)
 	if(blockpos_over_limit(blockpos - v3s16(1,1,1)) ||
