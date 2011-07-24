@@ -267,11 +267,9 @@ if(BUILD_CLIENT)
 
 	if(GETTEXT_FOUND AND USE_GETTEXT)
 		foreach(LOCALE ${GETTEXT_AVAILABLE_LOCALES})
-			if (NOT LOCALE STREQUAL "en")
-				set_mo_paths(MO_BUILD_PATH MO_DEST_PATH ${LOCALE})
-				set(MO_BUILD_PATH "${MO_BUILD_PATH}/${PROJECT_NAME}.mo")
-				install(FILES ${MO_BUILD_PATH} DESTINATION ${MO_DEST_PATH})
-			endif(NOT LOCALE STREQUAL "en")
+			set_mo_paths(MO_BUILD_PATH MO_DEST_PATH ${LOCALE})
+			set(MO_BUILD_PATH "${MO_BUILD_PATH}/${PROJECT_NAME}.mo")
+			install(FILES ${MO_BUILD_PATH} DESTINATION ${MO_DEST_PATH})
 		endforeach(LOCALE ${GETTEXT_AVAILABLE_LOCALES})
 	endif()
 
@@ -298,54 +296,29 @@ if(BUILD_SERVER)
 endif(BUILD_SERVER)
 
 if (GETTEXT_FOUND AND USE_GETTEXT)
-	add_custom_command(OUTPUT "${GETTEXT_PO_PATH}/en"
-		COMMAND ${CMAKE_COMMAND} -E make_directory "${GETTEXT_PO_PATH}/en"
-		COMMENT "po-update [en]: creating translation template base directory")
-	set(POT_FILE "${GETTEXT_PO_PATH}/en/minetest.pot")
-	file(GLOB GETTEXT_POT_DEPS *.cpp *.h)
-	file(GLOB GETTEXT_POT_DEPS_REL RELATIVE ${CMAKE_SOURCE_DIR} *.cpp *.h)
-	add_custom_command(OUTPUT ${POT_FILE}
-		COMMAND ${GETTEXT_EXTRACT} -F -n -o ${POT_FILE} ${GETTEXT_POT_DEPS_REL}
-		DEPENDS "${GETTEXT_PO_PATH}/en" ${GETTEXT_POT_DEPS}
-		WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
-		COMMENT "po-update [en]: updating translation template")
-
-	set(PO_FILES)
 	set(MO_FILES)
 
 	foreach(LOCALE ${GETTEXT_AVAILABLE_LOCALES})
-		# skip the 'en' locale which is treated separately
-		if (NOT LOCALE STREQUAL "en")
-			set(PO_FILE_PATH "${GETTEXT_PO_PATH}/${LOCALE}/minetest.po")
-			add_custom_command(OUTPUT ${PO_FILE_PATH}
-				COMMAND ${GETTEXT_MSGMERGE} -F -U ${PO_FILE_PATH} ${POT_FILE}
-				DEPENDS ${POT_FILE}
-				WORKING_DIRECTORY "${GETTEXT_PO_PATH}/${LOCALE}"
-				COMMENT "po-update [${LOCALE}]: updating strings")
+		set(PO_FILE_PATH "${GETTEXT_PO_PATH}/${LOCALE}/minetest.po")
+		set_mo_paths(MO_BUILD_PATH MO_DEST_PATH ${LOCALE})
+		set(MO_FILE_PATH "${MO_BUILD_PATH}/${PROJECT_NAME}.mo")
 
+		add_custom_command(OUTPUT ${MO_BUILD_PATH}
+			COMMAND ${CMAKE_COMMAND} -E make_directory ${MO_BUILD_PATH}
+			COMMENT "mo-update [${LOCALE}]: Creating locale directory.")
 
-			set_mo_paths(MO_BUILD_PATH MO_DEST_PATH ${LOCALE})
-			add_custom_command(OUTPUT ${MO_BUILD_PATH}
-				COMMAND ${CMAKE_COMMAND} -E make_directory ${MO_BUILD_PATH}
-				COMMENT "mo-update [${LOCALE}]: Creating locale directory.")
+		add_custom_command(
+			OUTPUT ${MO_FILE_PATH}
+			COMMAND ${GETTEXT_MSGFMT} -o ${MO_FILE_PATH} ${PO_FILE_PATH}
+			DEPENDS ${MO_BUILD_PATH} ${PO_FILE_PATH}
+			WORKING_DIRECTORY "${GETTEXT_PO_PATH}/${LOCALE}"
+			COMMENT "mo-update [${LOCALE}]: Creating mo file."
+			)
 
-			set(MO_FILE_PATH "${MO_BUILD_PATH}/${PROJECT_NAME}.mo")
-
-			add_custom_command(
-				OUTPUT ${MO_FILE_PATH}
-				COMMAND ${GETTEXT_MSGFMT} -o ${MO_FILE_PATH} ${PO_FILE_PATH}
-				DEPENDS ${MO_BUILD_PATH} ${PO_FILE_PATH}
-				WORKING_DIRECTORY "${GETTEXT_PO_PATH}/${LOCALE}"
-				COMMENT "mo-update [${LOCALE}]: Creating mo file."
-				)
-
-			set(MO_FILES ${MO_FILES} ${MO_FILE_PATH})
-			set(PO_FILES ${PO_FILES} ${PO_FILE_PATH})
-		endif(NOT LOCALE STREQUAL "en")
+		set(MO_FILES ${MO_FILES} ${MO_FILE_PATH})
 	endforeach(LOCALE ${GETTEXT_AVAILABLE_LOCALES})
 
 	add_custom_target(translations ALL COMMENT "mo update" DEPENDS ${MO_FILES})
-	add_custom_target(updatepo COMMENT "po update" DEPENDS ${PO_FILES})
 endif(GETTEXT_FOUND AND USE_GETTEXT)
 
 # Subdirectories

@@ -16,21 +16,6 @@ FIND_PROGRAM(GETTEXT_MSGFMT
 	PATHS "${CUSTOM_GETTEXT_PATH}/bin"
 	DOC "path to msgfmt")
 
-FIND_PROGRAM(GETTEXT_MSGMERGE
-	NAMES msgmerge
-	PATHS "${CUSTOM_GETTEXT_PATH}/bin"
-	DOC "path to msgmerge")
-
-FIND_PROGRAM(GETTEXT_MSGEN
-	NAMES msgen
-	PATHS "${CUSTOM_GETTEXT_PATH}/bin"
-	DOC "path to msgen")
-
-FIND_PROGRAM(GETTEXT_EXTRACT
-	NAMES xgettext
-	PATHS "${CUSTOM_GETTEXT_PATH}/bin"
-	DOC "path to xgettext")
-
 # modern Linux, as well as Mac, seem to not need require special linking
 # they do not because gettext is part of glibc
 # TODO check the requirements on other BSDs and older Linux
@@ -73,6 +58,7 @@ IF(GETTEXT_FOUND)
 	SET(GETTEXT_MO_BUILD_PATH ${CMAKE_BINARY_DIR}/locale/<locale>/LC_MESSAGES)
 	SET(GETTEXT_MO_DEST_PATH locale/<locale>/LC_MESSAGES)
 	FILE(GLOB GETTEXT_AVAILABLE_LOCALES RELATIVE ${GETTEXT_PO_PATH} "${GETTEXT_PO_PATH}/*")
+	LIST(REMOVE_ITEM GETTEXT_AVAILABLE_LOCALES minetest.pot)
 	MACRO(SET_MO_PATHS _buildvar _destvar _locale)
 		STRING(REPLACE "<locale>" ${_locale} ${_buildvar} ${GETTEXT_MO_BUILD_PATH})
 		STRING(REPLACE "<locale>" ${_locale} ${_destvar} ${GETTEXT_MO_DEST_PATH})
