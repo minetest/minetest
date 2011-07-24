@@ -1,4 +1,4 @@
-#if defined(GETTEXT_FOUND) && defined(USE_GETTEXT)
+#if USE_GETTEXT
 #include <libintl.h>
 #else
 #define gettext(String) String

@@ -5,11 +5,15 @@ if(RUN_IN_PLACE)
 	add_definitions ( -DRUN_IN_PLACE )
 endif(RUN_IN_PLACE)
 
-OPTION(USE_GETTEXT "Use GetText for internationalization" ON)
+# user-visible option to enable/disable gettext usage
+OPTION(ENABLE_GETTEXT "Use GetText for internationalization" ON)
+
+# this is only set to 1 if gettext is enabled _and_ available
+set(USE_GETTEXT 0)
 
 find_package(GettextLib)
 
-if(GETTEXT_FOUND AND USE_GETTEXT)
+if(GETTEXT_FOUND AND ENABLE_GETTEXT)
 	message(STATUS "gettext include path: ${GETTEXT_INCLUDE_DIR}")
 	message(STATUS "gettext msgfmt path: ${GETTEXT_MSGFMT}")
 	if(WIN32)
@@ -17,12 +21,13 @@ if(GETTEXT_FOUND AND USE_GETTEXT)
 		message(STATUS "gettext dll: ${GETTEXT_DLL}")
 		message(STATUS "gettext iconv dll: ${GETTEXT_ICONV_DLL}")
 	endif()
+	set(USE_GETTEXT 1)
 	message(STATUS "GetText enabled; locales found: ${GETTEXT_AVAILABLE_LOCALES}")
-elseif(GETTEXT_FOUND AND NOT USE_GETTEXT)
+elseif(GETTEXT_FOUND AND NOT ENABLE_GETTEXT)
 	MESSAGE(STATUS "GetText found but disabled;")
-else(GETTEXT_FOUND AND USE_GETTEXT)
+else(GETTEXT_FOUND AND ENABLE_GETTEXT)
 	message(STATUS "GetText disabled")
-endif(GETTEXT_FOUND AND USE_GETTEXT)
+endif(GETTEXT_FOUND AND ENABLE_GETTEXT)
 
 if(NOT MSVC)
 	set(USE_GPROF 0 CACHE BOOL "Use -pg flag for g++")
@@ -265,7 +270,7 @@ if(BUILD_CLIENT)
 
 	install(FILES ${images} DESTINATION ${DATADIR})
 
-	if(GETTEXT_FOUND AND USE_GETTEXT)
+	if(USE_GETTEXT)
 		foreach(LOCALE ${GETTEXT_AVAILABLE_LOCALES})
 			set_mo_paths(MO_BUILD_PATH MO_DEST_PATH ${LOCALE})
 			set(MO_BUILD_PATH "${MO_BUILD_PATH}/${PROJECT_NAME}.mo")
@@ -280,14 +285,14 @@ if(BUILD_CLIENT)
 		if(DEFINED ZLIB_DLL)
 			install(FILES ${ZLIB_DLL} DESTINATION ${BINDIR})
 		endif()
-		if(GETTEXT_FOUND AND USE_GETTEXT)
+		if(USE_GETTEXT)
 			if(DEFINED GETTEXT_DLL)
 				install(FILES ${GETTEXT_DLL} DESTINATION ${BINDIR})
 			endif()
 			if(DEFINED GETTEXT_ICONV_DLL)
 				install(FILES ${GETTEXT_ICONV_DLL} DESTINATION ${BINDIR})
 			endif()
-		endif(GETTEXT_FOUND AND USE_GETTEXT)
+		endif(USE_GETTEXT)
 	endif()
 endif(BUILD_CLIENT)
 
@@ -295,7 +300,7 @@ if(BUILD_SERVER)
 	install(TARGETS ${PROJECT_NAME}server DESTINATION ${BINDIR})
 endif(BUILD_SERVER)
 
-if (GETTEXT_FOUND AND USE_GETTEXT)
+if (USE_GETTEXT)
 	set(MO_FILES)
 
 	foreach(LOCALE ${GETTEXT_AVAILABLE_LOCALES})
@@ -319,7 +324,7 @@ if (GETTEXT_FOUND AND USE_GETTEXT)
 	endforeach(LOCALE ${GETTEXT_AVAILABLE_LOCALES})
 
 	add_custom_target(translations ALL COMMENT "mo update" DEPENDS ${MO_FILES})
-endif(GETTEXT_FOUND AND USE_GETTEXT)
+endif(USE_GETTEXT)
 
 # Subdirectories
 
