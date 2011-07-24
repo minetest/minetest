@@ -518,13 +518,11 @@ void TextureSource::buildMainAtlas()
 	sourcelist.push_back("cobble.png");
 	sourcelist.push_back("mossycobble.png");
 	sourcelist.push_back("gravel.png");
+	sourcelist.push_back("cactus.png");
+	sourcelist.push_back("jungletree.png");
 	
 	sourcelist.push_back("stone.png^mineral_coal.png");
 	sourcelist.push_back("stone.png^mineral_iron.png");
-	sourcelist.push_back("mud.png^mineral_coal.png");
-	sourcelist.push_back("mud.png^mineral_iron.png");
-	sourcelist.push_back("sand.png^mineral_coal.png");
-	sourcelist.push_back("sand.png^mineral_iron.png");
 	
 	// Padding to disallow texture bleeding
 	s32 padding = 16;
