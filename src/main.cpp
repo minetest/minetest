@@ -1132,7 +1132,7 @@ int main(int argc, char *argv[])
 	// Create user data directory
 	fs::CreateDir(porting::path_userdata);
 
-	init_gettext((porting::path_userdata+"/locale").c_str());
+	init_gettext((porting::path_data+"/../locale").c_str());
 
 	// Initialize debug streams
 #ifdef RUN_IN_PLACE
