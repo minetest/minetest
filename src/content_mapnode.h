@@ -44,8 +44,6 @@ MapNode mapnode_translate_to_internal(MapNode n_from, u8 version);
 #define CONTENT_FURNACE 16
 #define CONTENT_FENCE 21
 #define CONTENT_RAIL 30
-#define CONTENT_JUNGLETREE 31
-#define CONTENT_JUNGLEGRASS 32
 
 // 0x800...0xfff (2048...4095): higher 4 bytes of param2 are not usable
 #define CONTENT_GRASS 0x800 //1
@@ -70,6 +68,8 @@ MapNode mapnode_translate_to_internal(MapNode n_from, u8 version);
 #define CONTENT_CLAY 0x812 //27
 #define CONTENT_PAPYRUS 0x813 //28
 #define CONTENT_BOOKSHELF 0x814 //29
+#define CONTENT_JUNGLETREE 0x815
+#define CONTENT_JUNGLEGRASS 0x816
 
 
 #endif
