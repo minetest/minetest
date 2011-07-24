@@ -1,37 +1,37 @@
-# SOME DESCRIPTIVE TITLE.
-# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
-# This file is distributed under the same license as the PACKAGE package.
-# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+# Italian translations for minetest package.
+# Copyright (C) 2011 THE minetest'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the minetest package.
+# Giuseppe Bilotta <giuseppe.bilotta@gmail.com>, 2011.
 #
-#, fuzzy
 msgid ""
 msgstr ""
 "Project-Id-Version: minetest\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2011-07-24 18:56+0200\n"
-"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
-"Language-Team: LANGUAGE <LL@li.org>\n"
-"Language: \n"
+"PO-Revision-Date: 2011-07-24 18:56+0200\n"
+"Last-Translator: Giuseppe Bilotta <giuseppe.bilotta@gmail.com>\n"
+"Language-Team: Italian\n"
+"Language: it\n"
 "MIME-Version: 1.0\n"
-"Content-Type: text/plain; charset=CHARSET\n"
+"Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
 #: src/guiMainMenu.cpp:180
 msgid "Name/Password"
-msgstr ""
+msgstr "Nome/Password"
 
 #: src/guiMainMenu.cpp:203
 msgid "Address/Port"
-msgstr ""
+msgstr "Indirizzo/Porta"
 
 #: src/guiMainMenu.cpp:223
 msgid "Leave address blank to start a local server."
-msgstr ""
+msgstr "Lascia vuoto l'indirizzo per avviare un server locale"
 
 #: src/guiMainMenu.cpp:230
 msgid "Fancy trees"
-msgstr ""
+msgstr "Alberi strani"
 
 #: src/guiMainMenu.cpp:236
 msgid "Smooth Lighting"
@@ -39,63 +39,63 @@ msgstr ""
 
 #: src/guiMainMenu.cpp:244
 msgid "Start Game / Connect"
-msgstr ""
+msgstr "Avvia Gioco / Connetti"
 
 #: src/guiMainMenu.cpp:253
 msgid "Change keys"
-msgstr ""
+msgstr "Modifica tasti"
 
 #: src/guiMainMenu.cpp:276
 msgid "Creative Mode"
-msgstr ""
+msgstr "Modalità creativa"
 
 #: src/guiMainMenu.cpp:282
 msgid "Enable Damage"
-msgstr ""
+msgstr "Attiva Danno"
 
 #: src/guiMainMenu.cpp:290
 msgid "Delete map"
-msgstr ""
+msgstr "Cancella mappa"
 
 #: src/guiMessageMenu.cpp:93 src/guiTextInputMenu.cpp:111
 msgid "Proceed"
-msgstr ""
+msgstr "Procedi"
 
 #: src/guiPasswordChange.cpp:102
 msgid "Old Password"
-msgstr ""
+msgstr "Vecchia password"
 
 #: src/guiPasswordChange.cpp:117
 msgid "New Password"
-msgstr ""
+msgstr "Nuova password"
 
 #: src/guiPasswordChange.cpp:131
 msgid "Confirm Password"
-msgstr ""
+msgstr "Conferma password"
 
 #: src/guiPasswordChange.cpp:146
 msgid "Change"
-msgstr ""
+msgstr "Modifica"
 
 #: src/guiPasswordChange.cpp:155
 msgid "Passwords do not match!"
-msgstr ""
+msgstr "Le password non corrispondono!"
 
 #: src/guiPauseMenu.cpp:110
 msgid "Continue"
-msgstr ""
+msgstr "Continua"
 
 #: src/guiPauseMenu.cpp:117
 msgid "Change Password"
-msgstr ""
+msgstr "Cambia password"
 
 #: src/guiPauseMenu.cpp:124
 msgid "Disconnect"
-msgstr ""
+msgstr "Disconnetti"
 
 #: src/guiPauseMenu.cpp:131
 msgid "Exit to OS"
-msgstr ""
+msgstr "Esci al S.O."
 
 #: src/guiPauseMenu.cpp:138
 msgid ""
@@ -111,3 +111,14 @@ msgid ""
 "- ESC: This menu\n"
 "- T: Chat\n"
 msgstr ""
+"Tasti:\n"
+"- WASD: Cammina\n"
+"- Mouse left: scava blocchi\n"
+"- Mouse right: piazza blocchi\n"
+"- Mouse wheel: seleziona oggetto\n"
+"- 0...9: seleziona oggetto\n"
+"- Shift: furtivo\n"
+"- R: (Dis)attiva motra tutti i blocchi caricati\n"
+"- I: Inventario\n"
+"- ESC: Questo menu\n"
+"- T: Parla\n"
