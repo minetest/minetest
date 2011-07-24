@@ -5,11 +5,15 @@ if(RUN_IN_PLACE)
 	add_definitions ( -DRUN_IN_PLACE )
 endif(RUN_IN_PLACE)
 
-OPTION(USE_GETTEXT "Use GetText for internationalization" ON)
+# user-visible option to enable/disable gettext usage
+OPTION(ENABLE_GETTEXT "Use GetText for internationalization" ON)
+
+# this is only set to 1 if gettext is enabled _and_ available
+set(USE_GETTEXT 0)
 
 find_package(GettextLib)
 
-if(GETTEXT_FOUND AND USE_GETTEXT)
+if(GETTEXT_FOUND AND ENABLE_GETTEXT)
 	message(STATUS "gettext include path: ${GETTEXT_INCLUDE_DIR}")
 	message(STATUS "gettext msgfmt path: ${GETTEXT_MSGFMT}")
 	if(WIN32)
@@ -17,12 +21,13 @@ if(GETTEXT_FOUND AND USE_GETTEXT)
 		message(STATUS "gettext dll: ${GETTEXT_DLL}")
 		message(STATUS "gettext iconv dll: ${GETTEXT_ICONV_DLL}")
 	endif()
+	set(USE_GETTEXT 1)
 	message(STATUS "GetText enabled; locales found: ${GETTEXT_AVAILABLE_LOCALES}")
-elseif(GETTEXT_FOUND AND NOT USE_GETTEXT)
+elseif(GETTEXT_FOUND AND NOT ENABLE_GETTEXT)
 	MESSAGE(STATUS "GetText found but disabled;")
-else(GETTEXT_FOUND AND USE_GETTEXT)
+else(GETTEXT_FOUND AND ENABLE_GETTEXT)
 	message(STATUS "GetText disabled")
-endif(GETTEXT_FOUND AND USE_GETTEXT)
+endif(GETTEXT_FOUND AND ENABLE_GETTEXT)
 
 if(NOT MSVC)
 	set(USE_GPROF 0 CACHE BOOL "Use -pg flag for g++")
@@ -265,7 +270,7 @@ if(BUILD_CLIENT)
 
 	install(FILES ${images} DESTINATION ${DATADIR})
 
-	if(GETTEXT_FOUND AND USE_GETTEXT)
+	if(USE_GETTEXT)
 		foreach(LOCALE ${GETTEXT_AVAILABLE_LOCALES})
 			set_mo_paths(MO_BUILD_PATH MO_DEST_PATH ${LOCALE})
 			set(MO_BUILD_PATH "${MO_BUILD_PATH}/${PROJECT_NAME}.mo")
@@ -280,14 +285,14 @@ if(BUILD_CLIENT)
 		if(DEFINED ZLIB_DLL)
 			install(FILES ${ZLIB_DLL} DESTINATION ${BINDIR})
 		endif()
-		if(GETTEXT_FOUND AND USE_GETTEXT)
+		if(USE_GETTEXT)
 			if(DEFINED GETTEXT_DLL)
 				install(FILES ${GETTEXT_DLL} DESTINATION ${BINDIR})
 			endif()
 			if(DEFINED GETTEXT_ICONV_DLL)
 				install(FILES ${GETTEXT_ICONV_DLL} DESTINATION ${BINDIR})
 			endif()
-		endif(GETTEXT_FOUND AND USE_GETTEXT)
+		endif(USE_GETTEXT)
 	endif()
 endif(BUILD_CLIENT)
 
@@ -295,56 +300,31 @@ if(BUILD_SERVER)
 	install(TARGETS ${PROJECT_NAME}server DESTINATION ${BINDIR})
 endif(BUILD_SERVER)
 
-if (GETTEXT_FOUND AND USE_GETTEXT)
-	add_custom_command(OUTPUT "${GETTEXT_PO_PATH}/en"
-		COMMAND ${CMAKE_COMMAND} -E make_directory "${GETTEXT_PO_PATH}/en"
-		COMMENT "po-update [en]: creating translation template base directory")
-	set(POT_FILE "${GETTEXT_PO_PATH}/en/minetest.pot")
-	file(GLOB GETTEXT_POT_DEPS *.cpp *.h)
-	file(GLOB GETTEXT_POT_DEPS_REL RELATIVE ${CMAKE_SOURCE_DIR} *.cpp *.h)
-	add_custom_command(OUTPUT ${POT_FILE}
-		COMMAND ${GETTEXT_EXTRACT} -F -n -o ${POT_FILE} ${GETTEXT_POT_DEPS_REL}
-		DEPENDS "${GETTEXT_PO_PATH}/en" ${GETTEXT_POT_DEPS}
-		WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
-		COMMENT "po-update [en]: updating translation template")
-
-	set(PO_FILES)
+if (USE_GETTEXT)
 	set(MO_FILES)
 
 	foreach(LOCALE ${GETTEXT_AVAILABLE_LOCALES})
-		# skip the 'en' locale which is treated separately
-		if (NOT LOCALE STREQUAL "en")
-			set(PO_FILE_PATH "${GETTEXT_PO_PATH}/${LOCALE}/minetest.po")
-			add_custom_command(OUTPUT ${PO_FILE_PATH}
-				COMMAND ${GETTEXT_MSGMERGE} -F -U ${PO_FILE_PATH} ${POT_FILE}
-				DEPENDS ${POT_FILE}
-				WORKING_DIRECTORY "${GETTEXT_PO_PATH}/${LOCALE}"
-				COMMENT "po-update [${LOCALE}]: updating strings")
+		set(PO_FILE_PATH "${GETTEXT_PO_PATH}/${LOCALE}/minetest.po")
+		set_mo_paths(MO_BUILD_PATH MO_DEST_PATH ${LOCALE})
+		set(MO_FILE_PATH "${MO_BUILD_PATH}/${PROJECT_NAME}.mo")
 
+		add_custom_command(OUTPUT ${MO_BUILD_PATH}
+			COMMAND ${CMAKE_COMMAND} -E make_directory ${MO_BUILD_PATH}
+			COMMENT "mo-update [${LOCALE}]: Creating locale directory.")
 
-			set_mo_paths(MO_BUILD_PATH MO_DEST_PATH ${LOCALE})
-			add_custom_command(OUTPUT ${MO_BUILD_PATH}
-				COMMAND ${CMAKE_COMMAND} -E make_directory ${MO_BUILD_PATH}
-				COMMENT "mo-update [${LOCALE}]: Creating locale directory.")
+		add_custom_command(
+			OUTPUT ${MO_FILE_PATH}
+			COMMAND ${GETTEXT_MSGFMT} -o ${MO_FILE_PATH} ${PO_FILE_PATH}
+			DEPENDS ${MO_BUILD_PATH} ${PO_FILE_PATH}
+			WORKING_DIRECTORY "${GETTEXT_PO_PATH}/${LOCALE}"
+			COMMENT "mo-update [${LOCALE}]: Creating mo file."
+			)
 
-			set(MO_FILE_PATH "${MO_BUILD_PATH}/minetest.mo")
-
-			add_custom_command(
-				OUTPUT ${MO_FILE_PATH}
-				COMMAND ${GETTEXT_MSGFMT} -o ${MO_FILE_PATH} ${PO_FILE_PATH}
-				DEPENDS ${MO_BUILD_PATH} ${PO_FILE_PATH}
-				WORKING_DIRECTORY "${GETTEXT_PO_PATH}/${LOCALE}"
-				COMMENT "mo-update [${LOCALE}]: Creating mo file."
-				)
-
-			set(MO_FILES ${MO_FILES} ${MO_FILE_PATH})
-			set(PO_FILES ${PO_FILES} ${PO_FILE_PATH})
-		endif(NOT LOCALE STREQUAL "en")
+		set(MO_FILES ${MO_FILES} ${MO_FILE_PATH})
 	endforeach(LOCALE ${GETTEXT_AVAILABLE_LOCALES})
 
 	add_custom_target(translations ALL COMMENT "mo update" DEPENDS ${MO_FILES})
-	add_custom_target(updatepo COMMENT "po update" DEPENDS ${PO_FILES})
-endif(GETTEXT_FOUND AND USE_GETTEXT)
+endif(USE_GETTEXT)
 
 # Subdirectories
 
