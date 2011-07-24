@@ -743,5 +743,10 @@ inline s16 getNodeBlockY(s16 y)
 	return getContainerPos(y, MAP_BLOCKSIZE);
 }
 
+/*
+	Get a quick string to describe what a block actually contains
+*/
+std::string analyze_block(MapBlock *block);
+
 #endif
 

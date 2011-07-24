@@ -867,5 +867,128 @@ void MapBlock::deSerializeDiskExtra(std::istream &is, u8 version)
 	}
 }
 
+/*
+	Get a quick string to describe what a block actually contains
+*/
+std::string analyze_block(MapBlock *block)
+{
+	if(block == NULL)
+	{
+		return "NULL";
+	}
+
+	std::ostringstream desc;
+	
+	v3s16 p = block->getPos();
+	char spos[20];
+	snprintf(spos, 20, "(%2d,%2d,%2d), ", p.X, p.Y, p.Z);
+	desc<<spos;
+	
+	switch(block->getModified())
+	{
+	case MOD_STATE_CLEAN:
+		desc<<"CLEAN,           ";
+		break;
+	case MOD_STATE_WRITE_AT_UNLOAD:
+		desc<<"WRITE_AT_UNLOAD, ";
+		break;
+	case MOD_STATE_WRITE_NEEDED:
+		desc<<"WRITE_NEEDED,    ";
+		break;
+	default:
+		desc<<"unknown getModified()="+itos(block->getModified())+", ";
+	}
+
+	if(block->isGenerated())
+		desc<<"is_gen [X], ";
+	else
+		desc<<"is_gen [ ], ";
+
+	if(block->getIsUnderground())
+		desc<<"is_ug [X], ";
+	else
+		desc<<"is_ug [ ], ";
+
+	if(block->getMeshExpired())
+		desc<<"mesh_exp [X], ";
+	else
+		desc<<"mesh_exp [ ], ";
+
+	if(block->getLightingExpired())
+		desc<<"lighting_exp [X], ";
+	else
+		desc<<"lighting_exp [ ], ";
+
+	if(block->isDummy())
+	{
+		desc<<"Dummy, ";
+	}
+	else
+	{
+		// We'll just define the numbers here, don't want to include
+		// content_mapnode.h
+		const content_t content_water = 2;
+		const content_t content_watersource = 9;
+		const content_t content_tree = 0x801;
+		const content_t content_leaves = 0x802;
+		const content_t content_jungletree = 0x815;
+
+		bool full_ignore = true;
+		bool some_ignore = false;
+		bool full_air = true;
+		bool some_air = false;
+		bool trees = false;
+		bool water = false;
+		for(s16 z0=0; z0<MAP_BLOCKSIZE; z0++)
+		for(s16 y0=0; y0<MAP_BLOCKSIZE; y0++)
+		for(s16 x0=0; x0<MAP_BLOCKSIZE; x0++)
+		{
+			v3s16 p(x0,y0,z0);
+			MapNode n = block->getNode(p);
+			content_t c = n.getContent();
+			if(c == CONTENT_IGNORE)
+				some_ignore = true;
+			else
+				full_ignore = false;
+			if(c == CONTENT_AIR)
+				some_air = true;
+			else
+				full_air = false;
+			if(c == content_tree || c == content_jungletree
+					|| c == content_leaves)
+				trees = true;
+			if(c == content_water
+					|| c == content_watersource)
+				water = true;
+		}
+		
+		desc<<"content {";
+		
+		std::ostringstream ss;
+		
+		if(full_ignore)
+			ss<<"IGNORE (full), ";
+		else if(some_ignore)
+			ss<<"IGNORE, ";
+		
+		if(full_air)
+			ss<<"AIR (full), ";
+		else if(some_air)
+			ss<<"AIR, ";
+
+		if(trees)
+			ss<<"trees, ";
+		if(water)
+			ss<<"water, ";
+		
+		if(ss.str().size()>=2)
+			desc<<ss.str().substr(0, ss.str().size()-2);
+
+		desc<<"}, ";
+	}
+
+	return desc.str().substr(0, desc.str().size()-2);
+}
+
 
 //END

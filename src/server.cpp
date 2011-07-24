@@ -105,10 +105,10 @@ void * EmergeThread::Thread()
 
 	DSTACK(__FUNCTION_NAME);
 
-	//bool debug=false;
-	
 	BEGIN_DEBUG_EXCEPTION_HANDLER
 
+	bool enable_mapgen_debug_info = g_settings.getBool("enable_mapgen_debug_info");
+	
 	/*
 		Get block info from queue, emerge them and send them
 		to clients.
@@ -155,7 +155,7 @@ void * EmergeThread::Thread()
 			Also decrement the emerge queue count in clients.
 		*/
 
-		bool optional = true;
+		bool only_from_disk = true;
 
 		{
 			core::map<u16, u8>::Iterator i;
@@ -166,14 +166,15 @@ void * EmergeThread::Thread()
 				// Check flags
 				u8 flags = i.getNode()->getValue();
 				if((flags & BLOCK_EMERGE_FLAG_FROMDISK) == false)
-					optional = false;
+					only_from_disk = false;
 				
 			}
 		}
-
-		/*dstream<<"EmergeThread: p="
-				<<"("<<p.X<<","<<p.Y<<","<<p.Z<<") "
-				<<"optional="<<optional<<std::endl;*/
+		
+		if(enable_mapgen_debug_info)
+			dstream<<"EmergeThread: p="
+					<<"("<<p.X<<","<<p.Y<<","<<p.Z<<") "
+					<<"only_from_disk="<<only_from_disk<<std::endl;
 		
 		ServerMap &map = ((ServerMap&)m_server->m_env.getMap());
 			
@@ -184,11 +185,6 @@ void * EmergeThread::Thread()
 		bool got_block = true;
 		core::map<v3s16, MapBlock*> modified_blocks;
 		
-		bool only_from_disk = false;
-		
-		if(optional)
-			only_from_disk = true;
-
 		/*
 			Fetch block from map or generate a single block
 		*/
@@ -203,6 +199,9 @@ void * EmergeThread::Thread()
 			block = map.getBlockNoCreateNoEx(p);
 			if(!block || block->isDummy() || !block->isGenerated())
 			{
+				if(enable_mapgen_debug_info)
+					dstream<<"EmergeThread: not in memory, loading"<<std::endl;
+
 				// Get, load or create sector
 				/*ServerMapSector *sector =
 						(ServerMapSector*)map.createSector(p2d);*/
@@ -213,12 +212,20 @@ void * EmergeThread::Thread()
 						lighting_invalidated_blocks);*/
 
 				block = map.loadBlock(p);
+				
+				if(only_from_disk == false)
+				{
+					if(block == NULL || block->isGenerated() == false)
+					{
+						if(enable_mapgen_debug_info)
+							dstream<<"EmergeThread: generating"<<std::endl;
+						block = map.generateBlock(p, modified_blocks);
+					}
+				}
 
-				if(block == NULL && only_from_disk == false)
-					block = map.generateBlock(p, modified_blocks);
-					//block = map.generateBlock(p, changed_blocks);
-					/*block = map.generateBlock(p, block, sector, changed_blocks,
-							lighting_invalidated_blocks);*/
+				if(enable_mapgen_debug_info)
+					dstream<<"EmergeThread: ended up with: "
+							<<analyze_block(block)<<std::endl;
 
 				if(block == NULL)
 				{

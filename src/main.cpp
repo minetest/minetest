@@ -72,6 +72,12 @@ Other things to note:
   variable and fix them (result of getContent() must be stored in
   content_t, which is 16-bit)
 
+NOTE: Seeds in 1260:6c77e7dbfd29:
+5721858502589302589:
+	Spawns you on a small sand island with a surface dungeon
+2983455799928051958:
+	Enormous jungle + a surface dungeon at ~(250,0,0)
+
 Old, wild and random suggestions that probably won't be done:
 -------------------------------------------------------------
 
