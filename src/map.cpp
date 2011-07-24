@@ -2012,6 +2012,7 @@ ServerMap::~ServerMap()
 
 void ServerMap::initBlockMake(mapgen::BlockMakeData *data, v3s16 blockpos)
 {
+	bool enable_mapgen_debug_info = g_settings.getBool("enable_mapgen_debug_info");
 	if(enable_mapgen_debug_info)
 		dstream<<"initBlockMake(): ("<<blockpos.X<<","<<blockpos.Y<<","
 				<<blockpos.Z<<")"<<std::endl;
