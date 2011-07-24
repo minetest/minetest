@@ -1,3 +1,5 @@
+#include "config.h" // for USE_GETTEXT
+
 #if USE_GETTEXT
 #include <libintl.h>
 #else
