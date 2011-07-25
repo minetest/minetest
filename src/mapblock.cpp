@@ -909,10 +909,12 @@ std::string analyze_block(MapBlock *block)
 	else
 		desc<<"is_ug [ ], ";
 
+#ifndef SERVER
 	if(block->getMeshExpired())
 		desc<<"mesh_exp [X], ";
 	else
 		desc<<"mesh_exp [ ], ";
+#endif
 
 	if(block->getLightingExpired())
 		desc<<"lighting_exp [X], ";
