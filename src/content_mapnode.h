@@ -46,6 +46,7 @@ MapNode mapnode_translate_to_internal(MapNode n_from, u8 version);
 #define CONTENT_FURNACE 16
 #define CONTENT_FENCE 21
 #define CONTENT_RAIL 30
+#define CONTENT_LADDER 31
 
 // 0x800...0xfff (2048...4095): higher 4 bytes of param2 are not usable
 #define CONTENT_GRASS 0x800 //1
