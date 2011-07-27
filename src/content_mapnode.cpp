@@ -314,6 +314,7 @@ void content_mapnode_init()
 	f->solidness = 0;
 	f->air_equivalent = true;
 	f->walkable = false;
+	f->climbable = true;
 	setWoodLikeDiggingProperties(f->digging_properties, 0.5);
 
 	// Deprecated

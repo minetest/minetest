@@ -376,6 +376,21 @@ void LocalPlayer::move(f32 dtime, Map &map, f32 pos_max_d,
 	}
 
 	/*
+	        Check if player is climbing
+	*/
+
+	try {
+	        v3s16 pp = floatToInt(position + v3f(0,0.5*BS,0), BS);
+		v3s16 pp2 = floatToInt(position + v3f(0,-0.2*BS,0), BS);
+		is_climbing = (content_features(map.getNode(pp).d).climbable ||
+			       content_features(map.getNode(pp2).d).climbable);
+	}
+	catch(InvalidPositionException &e)
+	{
+	        is_climbing = false;
+	}
+
+	/*
 		Collision uncertainty radius
 		Make it a bit larger than the maximum distance of movement
 	*/
@@ -461,7 +476,7 @@ void LocalPlayer::move(f32 dtime, Map &map, f32 pos_max_d,
 		Player is allowed to jump when this is true.
 	*/
 	touching_ground = false;
-	
+
 	/*std::cout<<"Checking collisions for ("
 			<<oldpos_i.X<<","<<oldpos_i.Y<<","<<oldpos_i.Z
 			<<") -> ("
@@ -811,6 +826,19 @@ void LocalPlayer::applyControl(float dtime)
 			speed.Y = 1.5*BS;
 			setSpeed(speed);
 			swimming_up = true;
+		}
+	}
+
+	if (is_climbing) {
+	        if (control.up || control.left || control.right || control.down) {
+		        v3f speed = getSpeed();
+			speed.Y = 2*BS;
+			setSpeed(speed);
+		}
+		else {
+		        v3f speed = getSpeed();
+			speed.Y = -2*BS;
+			setSpeed(speed);
 		}
 	}
 

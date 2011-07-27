@@ -118,6 +118,7 @@ public:
 	bool in_water;
 	// This is more stable and defines the maximum speed of the player
 	bool in_water_stable;
+	bool is_climbing;
 	bool swimming_up;
 	
 	Inventory inventory;
