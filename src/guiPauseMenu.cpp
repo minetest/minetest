@@ -103,6 +103,7 @@ void GUIPauseMenu::regenerateGui(v2u32 screensize)
 	const s32 btn_gap = 20;
 	const s32 btn_num = 4;
 	s32 btn_y = size.Y/2-((btn_num*btn_height+(btn_num-1)*btn_gap))/2;
+	setlocale(LC_CTYPE, "");
 	{
 		core::rect<s32> rect(0, 0, 140, btn_height);
 		rect = rect + v2s32(size.X/2-140/2, btn_y);
@@ -180,6 +181,7 @@ void GUIPauseMenu::regenerateGui(v2u32 screensize)
 	
 		Environment->addStaticText(narrow_to_wide(os.str()).c_str(), rect, false, true, this, 259);
 	}
+	setlocale(LC_CTYPE, "en_US");
 }
 
 void GUIPauseMenu::drawMenu()

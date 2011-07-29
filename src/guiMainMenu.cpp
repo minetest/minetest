@@ -164,6 +164,7 @@ void GUIMainMenu::regenerateGui(v2u32 screensize)
 	v2s32 topleft_client(40, 0);
 	v2s32 size_client = size - v2s32(40, 0);
 	
+	setlocale(LC_CTYPE, "");
 	{
 		core::rect<s32> rect(0, 0, 20, 125);
 		rect += topleft_client + v2s32(-15, 60);
@@ -180,6 +181,7 @@ void GUIMainMenu::regenerateGui(v2u32 screensize)
 		Environment->addStaticText(chartowchar_t(gettext("Name/Password")), 
 			rect, false, true, this, -1);
 	}
+	setlocale(LC_CTYPE, "en_US");
 	{
 		core::rect<s32> rect(0, 0, 230, 30);
 		rect += topleft_client + v2s32(160, 50);
@@ -196,6 +198,7 @@ void GUIMainMenu::regenerateGui(v2u32 screensize)
 		e->setPasswordBox(true);
 
 	}
+	setlocale(LC_CTYPE, "");
 	// Address + port
 	{
 		core::rect<s32> rect(0, 0, 110, 20);
@@ -203,6 +206,7 @@ void GUIMainMenu::regenerateGui(v2u32 screensize)
 		Environment->addStaticText(chartowchar_t(gettext("Address/Port")),
 			rect, false, true, this, -1);
 	}
+	setlocale(LC_CTYPE, "en_US");
 	{
 		core::rect<s32> rect(0, 0, 230, 30);
 		rect += topleft_client + v2s32(160, 100);
@@ -217,6 +221,7 @@ void GUIMainMenu::regenerateGui(v2u32 screensize)
 		rect += topleft_client + v2s32(size_client.X-60-100, 100);
 		Environment->addEditBox(text_port.c_str(), rect, true, this, GUI_ID_PORT_INPUT);
 	}
+	setlocale(LC_CTYPE, "");
 	{
 		core::rect<s32> rect(0, 0, 400, 20);
 		rect += topleft_client + v2s32(160, 100+35);
@@ -289,6 +294,7 @@ void GUIMainMenu::regenerateGui(v2u32 screensize)
 		Environment->addButton(rect, this, GUI_ID_DELETE_MAP_BUTTON,
 			  chartowchar_t(gettext("Delete map")));
 	}
+	setlocale(LC_CTYPE, "en_US");
 }
 
 void GUIMainMenu::drawMenu()
