@@ -79,7 +79,7 @@ void set_default_settings()
 	// Server stuff
 	g_settings.setDefault("enable_experimental", "false");
 	g_settings.setDefault("creative_mode", "false");
-	g_settings.setDefault("enable_damage", "false"); //TODO: Set to true when healing is possible
+	g_settings.setDefault("enable_damage", "true");
 	g_settings.setDefault("give_initial_stuff", "false");
 	g_settings.setDefault("default_password", "");
 	g_settings.setDefault("default_privs", "build, shout");

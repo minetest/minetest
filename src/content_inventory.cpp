@@ -65,6 +65,10 @@ std::string item_craft_get_image_name(const std::string &subname)
 		return "clay_brick.png";
 	else if(subname == "rat")
 		return "rat.png";
+	else if(subname == "cooked_rat")
+		return "cooked_rat.png";
+	else if(subname == "scorched_stuff")
+		return "scorched_stuff.png";
 	else if(subname == "firefly")
 		return "firefly.png";
 	else
@@ -98,7 +102,7 @@ s16 item_craft_get_drop_count(const std::string &subname)
 
 bool item_craft_is_cookable(const std::string &subname)
 {
-	if(subname == "lump_of_iron" || subname == "lump_of_clay")
+	if(subname == "lump_of_iron" || subname == "lump_of_clay" || subname == "rat" || subname == "cooked_rat")
 		return true;
 		
 	return false;
@@ -110,6 +114,10 @@ InventoryItem* item_craft_create_cook_result(const std::string &subname)
 		return new CraftItem("steel_ingot", 1);
 	else if(subname == "lump_of_clay")
 		return new CraftItem("clay_brick", 1);
+	else if(subname == "rat")
+		return new CraftItem("cooked_rat", 1);
+	else if(subname == "cooked_rat")
+		return new CraftItem("scorched_stuff", 1);
 
 	return NULL;
 }

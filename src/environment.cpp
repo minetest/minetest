@@ -816,7 +816,7 @@ void ServerEnvironment::step(float dtime)
 	if(m_active_blocks_test_interval.step(dtime, 10.0))
 	{
 		//float dtime = 10.0;
-
+		
 		for(core::map<v3s16, bool>::Iterator
 				i = m_active_blocks.m_list.getIterator();
 				i.atEnd()==false; i++)
@@ -846,6 +846,21 @@ void ServerEnvironment::step(float dtime)
 				searching loop to keep things fast.
 			*/
 			// TODO: Implement usage of ActiveBlockModifier
+			
+			// Find out how many objects the block contains
+			u32 active_object_count = block->m_static_objects.m_active.size();
+			// Find out how many objects this and all the neighbors contain
+			u32 active_object_count_wider = 0;
+			for(s16 x=-1; x<=1; x++)
+			for(s16 y=-1; y<=1; y++)
+			for(s16 z=-1; z<=1; z++)
+			{
+				MapBlock *block = m_map->getBlockNoCreateNoEx(p+v3s16(x,y,z));
+				if(block==NULL)
+					continue;
+				active_object_count_wider +=
+						block->m_static_objects.m_active.size();
+			}
 
 			v3s16 p0;
 			for(p0.X=0; p0.X<MAP_BLOCKSIZE; p0.X++)
@@ -875,18 +890,39 @@ void ServerEnvironment::step(float dtime)
 				/*
 					Convert grass into mud if under something else than air
 				*/
-				else if(n.getContent() == CONTENT_GRASS)
+				if(n.getContent() == CONTENT_GRASS)
 				{
 					//if(myrand()%20 == 0)
 					{
 						MapNode n_top = m_map->getNodeNoEx(p+v3s16(0,1,0));
-                        if(content_features(n_top).air_equivalent == false)
+						if(content_features(n_top).air_equivalent == false)
 						{
 							n.setContent(CONTENT_MUD);
 							m_map->addNodeWithEvent(p, n);
 						}
 					}
 				}
+				/*
+					Rats spawn around regular trees
+				*/
+				if(n.getContent() == CONTENT_TREE ||
+						n.getContent() == CONTENT_JUNGLETREE)
+				{
+   					if(myrand()%200 == 0 && active_object_count_wider == 0)
+					{
+						v3s16 p1 = p + v3s16(myrand_range(-2, 2),
+								0, myrand_range(-2, 2));
+						MapNode n1 = m_map->getNodeNoEx(p1);
+						MapNode n1b = m_map->getNodeNoEx(p1+v3s16(0,-1,0));
+						if(n1b.getContent() == CONTENT_GRASS &&
+								n1.getContent() == CONTENT_AIR)
+						{
+							v3f pos = intToFloat(p1, BS);
+							ServerActiveObject *obj = new RatSAO(this, 0, pos);
+							addActiveObject(obj);
+						}
+					}
+			 }
 			}
 		}
 	}
