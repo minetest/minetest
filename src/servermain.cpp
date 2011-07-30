@@ -323,7 +323,7 @@ int main(int argc, char *argv[])
 		map_dir = g_settings.get("map-dir");
 	
 	// Create server
-	Server server(map_dir.c_str());
+	Server server(map_dir.c_str(), configpath);
 	server.start(port);
 
 	// Run server

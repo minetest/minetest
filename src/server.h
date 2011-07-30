@@ -235,6 +235,8 @@ public:
 	u16 peer_id;
 	// The serialization version to use with the client
 	u8 serialization_version;
+	//
+	u16 net_proto_version;
 	// Version is stored in here after INIT before INIT2
 	u8 pending_serialization_version;
 
@@ -244,6 +246,7 @@ public:
 	{
 		peer_id = 0;
 		serialization_version = SER_FMT_VER_INVALID;
+		net_proto_version = 0;
 		pending_serialization_version = SER_FMT_VER_INVALID;
 		m_nearest_unsent_d = 0;
 		m_nearest_unsent_reset_timer = 0.0;
@@ -364,7 +367,8 @@ public:
 	*/
 
 	Server(
-		std::string mapsavedir
+		std::string mapsavedir,
+		std::string configpath
 	);
 	~Server();
 	void start(unsigned short port);
@@ -442,6 +446,13 @@ public:
 		{
 			dstream<<"WARNING: Auth not found for "<<name<<std::endl;
 		}
+	}
+	
+	// Saves g_settings to configpath given at initialization
+	void saveConfig()
+	{
+		if(m_configpath != "")
+			g_settings.updateConfigFile(m_configpath.c_str());
 	}
 
 private:
@@ -605,6 +616,9 @@ private:
 
 	// Map directory
 	std::string m_mapsavedir;
+
+	// Configuration path ("" = no configuration file)
+	std::string m_configpath;
 
 	bool m_shutdown_requested;
 	

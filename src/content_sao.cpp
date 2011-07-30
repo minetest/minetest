@@ -215,6 +215,18 @@ InventoryItem * ItemSAO::createInventoryItem()
 	}
 }
 
+void ItemSAO::rightClick(Player *player)
+{
+	dstream<<__FUNCTION_NAME<<std::endl;
+	InventoryItem *item = createInventoryItem();
+	if(item == NULL)
+		return;
+	
+	bool to_be_deleted = item->use(m_env, player);
+
+	if(to_be_deleted)
+		m_removed = true;
+}
 
 /*
 	RatSAO
@@ -232,7 +244,7 @@ RatSAO::RatSAO(ServerEnvironment *env, u16 id, v3f pos):
 
 	m_oldpos = v3f(0,0,0);
 	m_last_sent_position = v3f(0,0,0);
-	m_yaw = 0;
+	m_yaw = myrand_range(0,PI*2);
 	m_counter1 = 0;
 	m_counter2 = 0;
 	m_age = 0;

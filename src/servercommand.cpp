@@ -142,9 +142,16 @@ void cmd_setting(std::wostringstream &os,
 		return;
 	}
 
-	std::string confline = wide_to_narrow(ctx->parms[1] + L" = " + ctx->parms[2]);
+	/*std::string confline = wide_to_narrow(
+			ctx->parms[1] + L" = " + ctx->params[2]);*/
+
+	std::string confline = wide_to_narrow(ctx->paramstring);
+	
 	g_settings.parseConfigLine(confline);
-	os<< L"-!- Setting changed.";
+	
+	ctx->server->saveConfig();
+
+	os<< L"-!- Setting changed and configuration saved.";
 }
 
 void cmd_teleport(std::wostringstream &os,

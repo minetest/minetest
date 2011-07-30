@@ -135,10 +135,10 @@ void GUIPauseMenu::regenerateGui(v2u32 screensize)
 		core::rect<s32> rect(0, 0, 180, 240);
 		rect = rect + v2s32(size.X/2 + 90, size.Y/2-rect.getHeight()/2);
 		Environment->addStaticText(chartowchar_t(gettext(
-		"Keys:\n"
+		"Default Controls:\n"
 		"- WASD: Walk\n"
-		"- Mouse left: dig blocks\n"
-		"- Mouse right: place blocks\n"
+		"- Mouse left: dig/hit\n"
+		"- Mouse right: place/use\n"
 		"- Mouse wheel: select item\n"
 		"- 0...9: select item\n"
 		"- Shift: sneak\n"

@@ -51,6 +51,7 @@ public:
 	std::string getStaticData();
 	InventoryItem* createInventoryItem();
 	InventoryItem* createPickedUpItem(){return createInventoryItem();}
+	void rightClick(Player *player);
 private:
 	std::string m_inventorystring;
 	v3f m_speed_f;

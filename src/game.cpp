@@ -715,7 +715,8 @@ void the_game(
 	std::string password,
 	std::string address,
 	u16 port,
-	std::wstring &error_message
+	std::wstring &error_message,
+    std::string configpath
 )
 {
 	video::IVideoDriver* driver = device->getVideoDriver();
@@ -755,7 +756,7 @@ void the_game(
 	if(address == ""){
 		draw_load_screen(L"Creating server...", driver, font);
 		std::cout<<DTIME<<"Creating server"<<std::endl;
-		server = new Server(map_dir);
+		server = new Server(map_dir, configpath);
 		server->start(port);
 	}
 	
@@ -1656,6 +1657,8 @@ void the_game(
 			else if(input->getRightClicked())
 			{
 				std::cout<<DTIME<<"Right-clicked object"<<std::endl;
+				client.clickActiveObject(1,
+						selected_active_object->getId(), g_selected_item);
 			}
 		}
 		else // selected_object == NULL
@@ -2021,7 +2024,7 @@ void the_game(
 			endscenetime_avg = endscenetime_avg * 0.95 + (float)endscenetime*0.05;
 			
 			char temptext[300];
-			snprintf(temptext, 300, "Minetest-delta %s ("
+			snprintf(temptext, 300, "Minetest-c55 %s ("
 					"R: range_all=%i"
 					")"
 					" drawtime=%.0f, beginscenetime=%.0f"

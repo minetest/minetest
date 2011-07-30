@@ -1058,7 +1058,8 @@ u32 PIChecksum(core::list<PlayerInfo> &l)
 */
 
 Server::Server(
-		std::string mapsavedir
+		std::string mapsavedir,
+		std::string configpath
 	):
 	m_env(new ServerMap(mapsavedir), this),
 	m_con(PROTOCOL_ID, 512, CONNECTION_TIMEOUT, this),
@@ -1069,6 +1070,7 @@ Server::Server(
 	m_time_of_day_send_timer(0),
 	m_uptime(0),
 	m_mapsavedir(mapsavedir),
+	m_configpath(configpath),
 	m_shutdown_requested(false),
 	m_ignore_map_edit_events(false),
 	m_ignore_map_edit_events_peer_id(0)
@@ -1964,8 +1966,26 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 			derr_server<<DTIME<<"Server: Cannot negotiate "
 					"serialization version with peer "
 					<<peer_id<<std::endl;
+			SendAccessDenied(m_con, peer_id,
+					L"Your client is too old (map format)");
 			return;
 		}
+		
+		/*
+			Check network protocol version
+		*/
+		u16 net_proto_version = 0;
+		if(datasize >= 2+1+PLAYERNAME_SIZE+PASSWORD_SIZE+2)
+		{
+			net_proto_version = readU16(&data[2+1+PLAYERNAME_SIZE+PASSWORD_SIZE]);
+		}
+		getClient(peer->id)->net_proto_version = net_proto_version;
+		/*if(net_proto_version == 0)
+		{
+			SendAccessDenied(m_con, peer_id,
+					L"Your client is too old (network protocol)");
+			return;
+		}*/
 
 		/*
 			Set up player
@@ -1997,7 +2017,7 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 
 		// Get password
 		char password[PASSWORD_SIZE];
-		if(datasize == 2+1+PLAYERNAME_SIZE)
+		if(datasize >= 2+1+PLAYERNAME_SIZE)
 		{
 			// old version - assume blank password
 			password[0] = 0;
@@ -2160,6 +2180,11 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 			message += name;
 			message += L" joined game";
 			BroadcastChatMessage(message);
+		}
+
+		if(getClient(peer->id)->net_proto_version == 0)
+		{
+			SendChatMessage(peer_id, L"# Server: NOTE: YOUR CLIENT IS OLD AND DOES NOT WORK PROPERLY WITH THIS SERVER");
 		}
 
 		return;
@@ -2368,75 +2393,92 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 			return;
 		}
 
+		// Skip if object has been removed
+		if(obj->m_removed)
+			return;
+		
 		//TODO: Check that object is reasonably close
 		
 		// Left click, pick object up (usually)
 		if(button == 0)
 		{
-			InventoryList *ilist = player->inventory.getList("main");
-			if(g_settings.getBool("creative_mode") == false && ilist != NULL)
-			{
+			/*
+				Try creating inventory item
+			*/
+			InventoryItem *item = obj->createPickedUpItem();
 			
-				// Skip if inventory has no free space
-				if(ilist->getUsedSlots() == ilist->getSize())
+			if(item)
+			{
+				InventoryList *ilist = player->inventory.getList("main");
+				if(ilist != NULL)
 				{
-					dout_server<<"Player inventory has no free space"<<std::endl;
-					return;
-				}
+					if(g_settings.getBool("creative_mode") == false)
+					{
+						// Skip if inventory has no free space
+						if(ilist->getUsedSlots() == ilist->getSize())
+						{
+							dout_server<<"Player inventory has no free space"<<std::endl;
+							return;
+						}
 
-				// Skip if object has been removed
-				if(obj->m_removed)
-					return;
-				
-				/*
-					Create the inventory item
-				*/
-				InventoryItem *item = obj->createPickedUpItem();
-				
-				if(item)
-				{
-					// Add to inventory and send inventory
-					ilist->addItem(item);
-					UpdateCrafting(player->peer_id);
-					SendInventory(player->peer_id);
+						// Add to inventory and send inventory
+						ilist->addItem(item);
+						UpdateCrafting(player->peer_id);
+						SendInventory(player->peer_id);
+					}
 
 					// Remove object from environment
 					obj->m_removed = true;
 				}
-				else
+			}
+			else
+			{
+				/*
+					Item cannot be picked up. Punch it instead.
+				*/
+
+				ToolItem *titem = NULL;
+				std::string toolname = "";
+
+				InventoryList *mlist = player->inventory.getList("main");
+				if(mlist != NULL)
 				{
-					/*
-						Item cannot be picked up. Punch it instead.
-					*/
-
-					ToolItem *titem = NULL;
-					std::string toolname = "";
-
-					InventoryList *mlist = player->inventory.getList("main");
-					if(mlist != NULL)
+					InventoryItem *item = mlist->getItem(item_i);
+					if(item && (std::string)item->getName() == "ToolItem")
 					{
-						InventoryItem *item = mlist->getItem(item_i);
-						if(item && (std::string)item->getName() == "ToolItem")
-						{
-							titem = (ToolItem*)item;
-							toolname = titem->getToolName();
-						}
-					}
-
-					v3f playerpos = player->getPosition();
-					v3f objpos = obj->getBasePosition();
-					v3f dir = (objpos - playerpos).normalize();
-					
-					u16 wear = obj->punch(toolname, dir);
-					
-					if(titem)
-					{
-						bool weared_out = titem->addWear(wear);
-						if(weared_out)
-							mlist->deleteItem(item_i);
-						SendInventory(player->peer_id);
+						titem = (ToolItem*)item;
+						toolname = titem->getToolName();
 					}
 				}
+
+				v3f playerpos = player->getPosition();
+				v3f objpos = obj->getBasePosition();
+				v3f dir = (objpos - playerpos).normalize();
+				
+				u16 wear = obj->punch(toolname, dir);
+				
+				if(titem)
+				{
+					bool weared_out = titem->addWear(wear);
+					if(weared_out)
+						mlist->deleteItem(item_i);
+					SendInventory(player->peer_id);
+				}
+			}
+		}
+		// Right click, do something with object
+		if(button == 1)
+		{
+			// Track hp changes super-crappily
+			u16 oldhp = player->hp;
+			
+			// Do stuff
+			obj->rightClick(player);
+			
+			// Send back stuff
+			if(player->hp != oldhp)
+			{
+				SendPlayerHP(player);
 			}
 		}
 	}
@@ -3179,9 +3221,14 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 			line += L"Server: ";
 
 			message = message.substr(commandprefix.size());
+			
+			WStrfnd f1(message);
+			f1.next(L" "); // Skip over /#whatever
+			std::wstring paramstring = f1.next(L"");
 
 			ServerCommandContext *ctx = new ServerCommandContext(
 				str_split(message, L' '),
+				paramstring,
 				this,
 				&m_env,
 				player,
@@ -4001,7 +4048,9 @@ std::wstring Server::getStatusString()
 	}
 	os<<L"}";
 	if(((ServerMap*)(&m_env.getMap()))->isSavingEnabled() == false)
-		os<<" WARNING: Map saving is disabled."<<std::endl;
+		os<<std::endl<<L"# Server: "<<" WARNING: Map saving is disabled.";
+	if(g_settings.get("motd") != "")
+		os<<std::endl<<L"# Server: "<<narrow_to_wide(g_settings.get("motd"));
 	return os.str();
 }
 

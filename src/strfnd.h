@@ -74,6 +74,56 @@ public:
     }
 };
 
+class WStrfnd{
+    std::wstring tek;
+    unsigned int p;
+public:
+    void start(std::wstring niinq){
+        tek = niinq;
+        p=0;
+    }
+    unsigned int where(){
+        return p;
+    }
+    void to(unsigned int i){
+        p = i;
+    }
+    std::wstring what(){
+        return tek;
+    }
+    std::wstring next(std::wstring plop){
+        //std::cout<<"tek=\""<<tek<<"\" plop=\""<<plop<<"\""<<std::endl;
+        size_t n;
+        std::wstring palautus;
+        if (p < tek.size())
+        {  
+            //std::cout<<"\tp<tek.size()"<<std::endl;
+            if ((n = tek.find(plop, p)) == std::wstring::npos || plop == L"")
+            {  
+                //std::cout<<"\t\tn == string::npos || plop == \"\""<<std::endl;
+                n = tek.size();
+            }
+            else
+            {  
+                //std::cout<<"\t\tn != string::npos"<<std::endl;
+            }
+            palautus = tek.substr(p, n-p);
+            p = n + plop.length();
+        }
+        //else
+            //std::cout<<"\tp>=tek.size()"<<std::endl;
+		//std::cout<<"palautus=\""<<palautus<<"\""<<std::endl;
+        return palautus;
+    }
+    bool atend(){
+        if(p>=tek.size()) return true;
+        return false;
+    }
+    WStrfnd(std::wstring s){
+        start(s);
+    }
+};
+
 inline std::string trim(const std::string &s)
 {
 	std::string str = s;

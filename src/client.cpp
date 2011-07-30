@@ -415,8 +415,9 @@ void Client::step(float dtime)
 			// [0] u16 TOSERVER_INIT
 			// [2] u8 SER_FMT_VER_HIGHEST
 			// [3] u8[20] player_name
-			// [23] u8[28] password
-			SharedBuffer<u8> data(2+1+PLAYERNAME_SIZE+PASSWORD_SIZE);
+			// [23] u8[28] password (new in some version)
+			// [51] u16 client network protocol version (new in some version)
+			SharedBuffer<u8> data(2+1+PLAYERNAME_SIZE+PASSWORD_SIZE+2);
 			writeU16(&data[0], TOSERVER_INIT);
 			writeU8(&data[2], SER_FMT_VER_HIGHEST);
 
@@ -428,6 +429,9 @@ void Client::step(float dtime)
 
 			memset((char*)&data[23], 0, PASSWORD_SIZE);
 			snprintf((char*)&data[23], PASSWORD_SIZE, "%s", m_password.c_str());
+			
+			// This should be incremented in each version
+			writeU16(&data[51], 1);
 
 			// Send as unreliable
 			Send(0, data, false);
