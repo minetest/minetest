@@ -29,6 +29,7 @@ struct ServerCommandContext
 {
 
 	std::vector<std::wstring> parms;
+	std::wstring paramstring;
 	Server* server;
 	ServerEnvironment *env;
 	Player* player;
@@ -39,11 +40,13 @@ struct ServerCommandContext
 
 	ServerCommandContext(
 		std::vector<std::wstring> parms,
+		std::wstring paramstring,
 		Server* server,
 		ServerEnvironment *env,
 		Player* player,
 		u64 privs)
-		: parms(parms), server(server), env(env), player(player), privs(privs)
+		: parms(parms), paramstring(paramstring),
+		server(server), env(env), player(player), privs(privs)
 	{
 	}
 

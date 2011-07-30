@@ -3196,9 +3196,14 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 			line += L"Server: ";
 
 			message = message.substr(commandprefix.size());
+			
+			WStrfnd f1(message);
+			f1.next(L" ");
+			std::wstring paramstring = f1.next(L"");
 
 			ServerCommandContext *ctx = new ServerCommandContext(
 				str_split(message, L' '),
+				paramstring,
 				this,
 				&m_env,
 				player,
@@ -4018,7 +4023,9 @@ std::wstring Server::getStatusString()
 	}
 	os<<L"}";
 	if(((ServerMap*)(&m_env.getMap()))->isSavingEnabled() == false)
-		os<<" WARNING: Map saving is disabled."<<std::endl;
+		os<<std::endl<<" WARNING: Map saving is disabled.";
+	if(g_settings.get("motd") != "")
+		os<<std::endl<<narrow_to_wide(g_settings.get("motd"));
 	return os.str();
 }
 
