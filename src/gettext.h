@@ -1,3 +1,4 @@
+#ifndef GETTEXT_HEADER
 #include "config.h" // for USE_GETTEXT
 
 #if USE_GETTEXT
@@ -12,7 +13,6 @@
 
 inline void init_gettext(const char *path) {
 #if USE_GETTEXT
-	setlocale(LC_MESSAGES, "");
 	bindtextdomain(PROJECT_NAME, path);
 	textdomain(PROJECT_NAME);
 #endif
@@ -25,3 +25,15 @@ inline wchar_t* chartowchar_t(const char *str)
 	mbstowcs(nstr, str, l);
 	return nstr;
 }
+
+inline void changeCtype(const char *l)
+{
+	char *ret = NULL;
+	ret = setlocale(LC_CTYPE, l);
+	if(ret == NULL)
+		std::cout<<"locale could not be set"<<std::endl;
+	else
+		std::cout<<"locale has been set to:"<<ret<<std::endl;
+}
+#define GETTEXT_HEADER
+#endif

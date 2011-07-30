@@ -96,12 +96,14 @@ void GUIPasswordChange::regenerateGui(v2u32 screensize)
 		Add stuff
 	*/
 	s32 ypos = 50;
+	changeCtype("");
 	{
 		core::rect<s32> rect(0, 0, 110, 20);
 		rect += topleft_client + v2s32(35, ypos+6);
 		Environment->addStaticText(chartowchar_t(gettext("Old Password")),
 			rect, false, true, this, -1);
 	}
+	changeCtype("C");
 	{
 		core::rect<s32> rect(0, 0, 230, 30);
 		rect += topleft_client + v2s32(160, ypos);
@@ -111,12 +113,14 @@ void GUIPasswordChange::regenerateGui(v2u32 screensize)
 		e->setPasswordBox(true);
 	}
 	ypos += 50;
+	changeCtype("");
 	{
 		core::rect<s32> rect(0, 0, 110, 20);
 		rect += topleft_client + v2s32(35, ypos+6);
 		Environment->addStaticText(chartowchar_t(gettext("New Password")),
 			rect, false, true, this, -1);
 	}
+	changeCtype("C");
 	{
 		core::rect<s32> rect(0, 0, 230, 30);
 		rect += topleft_client + v2s32(160, ypos);
@@ -125,12 +129,14 @@ void GUIPasswordChange::regenerateGui(v2u32 screensize)
 		e->setPasswordBox(true);
 	}
 	ypos += 50;
+	changeCtype("");
 	{
 		core::rect<s32> rect(0, 0, 110, 20);
 		rect += topleft_client + v2s32(35, ypos+6);
 		Environment->addStaticText(chartowchar_t(gettext("Confirm Password")),
 			rect, false, true, this, -1);
 	}
+	changeCtype("C");
 	{
 		core::rect<s32> rect(0, 0, 230, 30);
 		rect += topleft_client + v2s32(160, ypos);
@@ -140,6 +146,7 @@ void GUIPasswordChange::regenerateGui(v2u32 screensize)
 	}
 
 	ypos += 50;
+	changeCtype("");
 	{
 		core::rect<s32> rect(0, 0, 140, 30);
 		rect = rect + v2s32(size.X/2-140/2, ypos);
@@ -156,6 +163,7 @@ void GUIPasswordChange::regenerateGui(v2u32 screensize)
 			rect, false, true, this, ID_message);
 		e->setVisible(false);
 	}
+	changeCtype("C");
 
 }
 
