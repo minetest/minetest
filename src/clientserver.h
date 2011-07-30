@@ -171,7 +171,8 @@ enum ToServerCommand
 		[0] u16 TOSERVER_INIT
 		[2] u8 SER_FMT_VER_HIGHEST
 		[3] u8[20] player_name
-		[23] u8[28] password
+		[23] u8[28] password (new in some version)
+		[51] u16 client network protocol version (new in some version)
 	*/
 
 	TOSERVER_INIT2 = 0x11,

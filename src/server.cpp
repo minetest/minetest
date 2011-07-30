@@ -1966,6 +1966,23 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 			derr_server<<DTIME<<"Server: Cannot negotiate "
 					"serialization version with peer "
 					<<peer_id<<std::endl;
+			SendAccessDenied(m_con, peer_id,
+					L"Your client is too old (map format)");
+			return;
+		}
+		
+		/*
+			Check network protocol version
+		*/
+		u16 net_proto_version = 0;
+		if(datasize >= 2+1+PLAYERNAME_SIZE+PASSWORD_SIZE+2)
+		{
+			net_proto_version = readU16(&data[2+1+PLAYERNAME_SIZE+PASSWORD_SIZE]);
+		}
+		if(net_proto_version == 0)
+		{
+			SendAccessDenied(m_con, peer_id,
+					L"Your client is too old (network protocol)");
 			return;
 		}
 
@@ -1999,7 +2016,7 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 
 		// Get password
 		char password[PASSWORD_SIZE];
-		if(datasize == 2+1+PLAYERNAME_SIZE)
+		if(datasize >= 2+1+PLAYERNAME_SIZE)
 		{
 			// old version - assume blank password
 			password[0] = 0;
