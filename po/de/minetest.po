@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: 0.0.0\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2011-07-22 11:00+0200\n"
-"PO-Revision-Date: 2011-07-20 16:58+0100\n"
+"PO-Revision-Date: 2011-07-30 10:20+0100\n"
 "Last-Translator: Constantin Wenger <constantin.wenger@googlemail.com>\n"
 "Language-Team: Deutsch <>\n"
 "Language: de\n"
@@ -43,7 +43,7 @@ msgstr "Spiel starten / Verbinden"
 
 #: src/guiMainMenu.cpp:253
 msgid "Change keys"
-msgstr "Tastenbelegung ändern"
+msgstr "Tasten ändern"
 
 #: src/guiMainMenu.cpp:276
 msgid "Creative Mode"
@@ -57,7 +57,8 @@ msgstr "Schaden einschalten"
 msgid "Delete map"
 msgstr "Karte löschen"
 
-#: src/guiMessageMenu.cpp:93 src/guiTextInputMenu.cpp:111
+#: src/guiMessageMenu.cpp:93
+#: src/guiTextInputMenu.cpp:111
 msgid "Proceed"
 msgstr "Fortsetzen"
 
@@ -113,11 +114,12 @@ msgid ""
 msgstr ""
 "Tastenkürzel:\n"
 "- WASD: Gehen\n"
-"- linke Maustaste: dig blocks\n"
-"- rechte Maustaste: place blocks\n"
+"- linke Maustaste: Blöcke aufnehmen \n"
+"- rechte Maustaste: Blöche ablegen\n"
 "- Mausrad: Item auswählen\n"
 "- 0...9: Item auswählen\n"
 "- Shift: ducken\n"
-"- R: Alle geladenen Kartenteile anzeigen, umschalten\n"
+"- R: alle geladenen Blöcke anzeigen (wechseln)\n"
 "- I: Inventarmenü\n"
 "- T: Chat\n"
+
