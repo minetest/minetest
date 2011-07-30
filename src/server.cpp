@@ -2384,10 +2384,10 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 			
 			if(item)
 			{
-				if(g_settings.getBool("creative_mode") == false)
+				InventoryList *ilist = player->inventory.getList("main");
+				if(ilist != NULL)
 				{
-					InventoryList *ilist = player->inventory.getList("main");
-					if(ilist != NULL)
+					if(g_settings.getBool("creative_mode") == false)
 					{
 						// Skip if inventory has no free space
 						if(ilist->getUsedSlots() == ilist->getSize())
@@ -2400,10 +2400,10 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 						ilist->addItem(item);
 						UpdateCrafting(player->peer_id);
 						SendInventory(player->peer_id);
-
-						// Remove object from environment
-						obj->m_removed = true;
 					}
+
+					// Remove object from environment
+					obj->m_removed = true;
 				}
 			}
 			else
