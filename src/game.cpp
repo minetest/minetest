@@ -2021,7 +2021,7 @@ void the_game(
 			endscenetime_avg = endscenetime_avg * 0.95 + (float)endscenetime*0.05;
 			
 			char temptext[300];
-			snprintf(temptext, 300, "Minetest-delta %s ("
+			snprintf(temptext, 300, "Minetest-c55 %s ("
 					"R: range_all=%i"
 					")"
 					" drawtime=%.0f, beginscenetime=%.0f"
