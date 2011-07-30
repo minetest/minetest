@@ -130,7 +130,7 @@ set(common_SRCS
 
 # This gives us the icon
 if(WIN32 AND MSVC)
-    set(common_SRCS ${common_SRCS} winresource.rc)
+	set(common_SRCS ${common_SRCS} winresource.rc)
 endif()
 
 # Client sources

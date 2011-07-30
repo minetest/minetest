@@ -21,7 +21,11 @@ else()
 endif()
 
 set(BUILD_CLIENT 1 CACHE BOOL "Build client")
-set(BUILD_SERVER 1 CACHE BOOL "Build server")
+if(WIN32)
+	set(BUILD_SERVER 0 CACHE BOOL "Build server")
+else()
+	set(BUILD_SERVER 1 CACHE BOOL "Build server")
+endif()
 
 set(WARN_ALL 1 CACHE BOOL "Enable -Wall for Release build")
 
@@ -60,6 +64,7 @@ elseif(UNIX) # Linux, BSD etc
 endif()
 
 install(FILES "doc/README.txt" DESTINATION "${DOCDIR}")
+install(FILES "doc/changelog.txt" DESTINATION "${DOCDIR}")
 install(FILES "minetest.conf.example" DESTINATION "${DOCDIR}")
 
 #
