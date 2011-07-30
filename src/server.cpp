@@ -1981,9 +1981,10 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 		}
 		if(net_proto_version == 0)
 		{
-			SendAccessDenied(m_con, peer_id,
+			/*SendAccessDenied(m_con, peer_id,
 					L"Your client is too old (network protocol)");
-			return;
+			return;*/
+			SendChatMessage(peer_id, L"# Server: NOTE: YOUR CLIENT IS OLD AND DOES NOT WORK PROPERLY WITH THIS SERVER");
 		}
 
 		/*
