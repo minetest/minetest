@@ -16,6 +16,7 @@ For minor stuff, refer to the commit log of the repository.
 - Hotbar is a bit smaller
 - Health is now enabled by default; You can now eat cooked rats to heal yourself.
 - Finally added sword textures, altough sword is still of no use
+- Creative mode now preserves normal mode inventory
 
 2011-07-04:
 - Many small fixes
