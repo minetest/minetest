@@ -85,7 +85,7 @@ void GUIMessageMenu::regenerateGui(v2u32 screensize)
 		Environment->addStaticText(m_message_text.c_str(), rect, false,
 				true, this, 256);
 	}
-	setlocale(LC_CTYPE, "");
+	changeCtype("");
 	{
 		core::rect<s32> rect(0, 0, 140, 30);
 		rect = rect + v2s32(size.X/2-140/2, size.Y/2-30/2+25);
@@ -94,7 +94,7 @@ void GUIMessageMenu::regenerateGui(v2u32 screensize)
 			chartowchar_t(gettext("Proceed")));
 		Environment->setFocus(e);
 	}
-	setlocale(LC_CTYPE, "en_US");
+	changeCtype("en_US.UTF-8");
 }
 
 void GUIMessageMenu::drawMenu()

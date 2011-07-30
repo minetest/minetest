@@ -25,3 +25,13 @@ inline wchar_t* chartowchar_t(const char *str)
 	mbstowcs(nstr, str, l);
 	return nstr;
 }
+
+inline void changeCtype(const char *l)
+{
+	char *ret = NULL;
+	ret = setlocale(LC_CTYPE, l);
+	if(ret == NULL)
+		std::cout<<"locale could not be set"<<std::endl;
+	else
+		std::cout<<"locale has been set to:"<<ret<<std::endl;
+}
