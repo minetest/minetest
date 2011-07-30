@@ -391,6 +391,9 @@ inline v3s16 unpackDir(u8 b)
 	facedir: CPT_FACEDIR_SIMPLE param1 value
 	dir: The face for which stuff is wanted
 	return value: The face from which the stuff is actually found
+
+	NOTE: Currently this uses 2 bits for Z-,X-,Z+,X+, should there be Y+
+	      and Y- too?
 */
 v3s16 facedir_rotate(u8 facedir, v3s16 dir);
 

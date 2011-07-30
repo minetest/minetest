@@ -976,6 +976,40 @@ static void make_dungeon1(VoxelManipulator &vmanip, PseudoRandom &random)
 	}
 }
 
+static void make_nc(VoxelManipulator &vmanip, PseudoRandom &random)
+{
+	v3s16 dir;
+	u8 facedir_i = 0;
+	s32 r = random.range(0, 3);
+	if(r == 0){
+		dir = v3s16( 1, 0, 0);
+		facedir_i = 3;
+	}
+	if(r == 1){
+		dir = v3s16(-1, 0, 0);
+		facedir_i = 1;
+	}
+	if(r == 2){
+		dir = v3s16( 0, 0, 1);
+		facedir_i = 2;
+	}
+	if(r == 3){
+		dir = v3s16( 0, 0,-1);
+		facedir_i = 0;
+	}
+	v3s16 p = vmanip.m_area.MinEdge + v3s16(
+			16+random.range(0,15),
+			16+random.range(0,15),
+			16+random.range(0,15));
+	vmanip.m_data[vmanip.m_area.index(p)] = MapNode(CONTENT_NC, facedir_i);
+	u32 length = random.range(3,15);
+	for(u32 j=0; j<length; j++)
+	{
+		p -= dir;
+		vmanip.m_data[vmanip.m_area.index(p)] = MapNode(CONTENT_NC_RB);
+	}
+}
+
 /*
 	Noise functions. Make sure seed is mangled differently in each one.
 */
@@ -1869,6 +1903,17 @@ void make_block(BlockMakeData *data)
 					data->vmanip->m_area.add_y(em, i, -1);
 				}
 			}
+		}
+	}
+
+	/*
+		Add NC
+	*/
+	{
+		PseudoRandom ncrandom(blockseed+9324342);
+		if(ncrandom.range(0, 1000) == 0 && blockpos.Y <= -3)
+		{
+			make_nc(vmanip, ncrandom);
 		}
 	}
 	

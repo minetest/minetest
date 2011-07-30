@@ -474,13 +474,30 @@ void content_mapnode_init()
 	f->dug_item = std::string("MaterialItem ")+itos(i)+" 1";
 	setStoneLikeDiggingProperties(f->digging_properties, 5.0);
 	
+	i = CONTENT_NC;
+	f = &content_features(i);
+	f->param_type = CPT_FACEDIR_SIMPLE;
+	f->setAllTextures("nc_side.png");
+	f->setTexture(5, "nc_front.png"); // Z-
+	f->setTexture(4, "nc_back.png"); // Z+
+	f->setInventoryTexture("nc_front.png");
+	f->dug_item = std::string("MaterialItem ")+itos(i)+" 1";
+	setStoneLikeDiggingProperties(f->digging_properties, 3.0);
+	
+	i = CONTENT_NC_RB;
+	f = &content_features(i);
+	f->setAllTextures("nc_rb.png");
+	f->setInventoryTexture("nc_rb.png");
+	f->dug_item = std::string("MaterialItem ")+itos(i)+" 1";
+	setStoneLikeDiggingProperties(f->digging_properties, 3.0);
+	
 	// NOTE: Remember to add frequently used stuff to the texture atlas in tile.cpp
 	
 
 	/*
 		Add MesePick to everything
 	*/
-	for(u16 i=0; i<256; i++)
+	for(u16 i=0; i<=MAX_CONTENT; i++)
 	{
 		content_features(i).digging_properties.set("MesePick",
 				DiggingProperties(true, 0.0, 65535./1337));

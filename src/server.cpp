@@ -4130,6 +4130,11 @@ Player *Server::emergePlayer(const char *name, const char *password, u16 peer_id
 		// Reset inventory to creative if in creative mode
 		if(g_settings.getBool("creative_mode"))
 		{
+			// Warning: double code below
+			// Backup actual inventory
+			player->inventory_backup = new Inventory();
+			*(player->inventory_backup) = player->inventory;
+			// Set creative inventory
 			craft_set_creative_inventory(player);
 		}
 
@@ -4183,6 +4188,11 @@ Player *Server::emergePlayer(const char *name, const char *password, u16 peer_id
 		
 		if(g_settings.getBool("creative_mode"))
 		{
+			// Warning: double code above
+			// Backup actual inventory
+			player->inventory_backup = new Inventory();
+			*(player->inventory_backup) = player->inventory;
+			// Set creative inventory
 			craft_set_creative_inventory(player);
 		}
 		else if(g_settings.getBool("give_initial_stuff"))

@@ -70,6 +70,8 @@ MapNode mapnode_translate_to_internal(MapNode n_from, u8 version);
 #define CONTENT_BOOKSHELF 0x814 //29
 #define CONTENT_JUNGLETREE 0x815
 #define CONTENT_JUNGLEGRASS 0x816
+#define CONTENT_NC 0x817
+#define CONTENT_NC_RB 0x818
 
 
 #endif

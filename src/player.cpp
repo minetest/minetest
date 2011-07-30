@@ -29,6 +29,7 @@ Player::Player():
 	in_water(false),
 	in_water_stable(false),
 	swimming_up(false),
+	inventory_backup(NULL),
 	craftresult_is_preview(true),
 	hp(20),
 	peer_id(PEER_ID_INEXISTENT),
@@ -43,6 +44,7 @@ Player::Player():
 
 Player::~Player()
 {
+	delete inventory_backup;
 }
 
 void Player::resetInventory()
@@ -106,8 +108,13 @@ void Player::serialize(std::ostream &os)
 	args.writeLines(os);
 
 	os<<"PlayerArgsEnd\n";
-
-	inventory.serialize(os);
+	
+	// If actual inventory is backed up due to creative mode, save it
+	// instead of the dummy creative mode inventory
+	if(inventory_backup)
+		inventory_backup->serialize(os);
+	else
+		inventory.serialize(os);
 }
 
 void Player::deSerialize(std::istream &is)
