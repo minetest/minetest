@@ -1979,13 +1979,13 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 		{
 			net_proto_version = readU16(&data[2+1+PLAYERNAME_SIZE+PASSWORD_SIZE]);
 		}
-		if(net_proto_version == 0)
+		getClient(peer->id)->net_proto_version = net_proto_version;
+		/*if(net_proto_version == 0)
 		{
-			/*SendAccessDenied(m_con, peer_id,
+			SendAccessDenied(m_con, peer_id,
 					L"Your client is too old (network protocol)");
-			return;*/
-			SendChatMessage(peer_id, L"# Server: NOTE: YOUR CLIENT IS OLD AND DOES NOT WORK PROPERLY WITH THIS SERVER");
-		}
+			return;
+		}*/
 
 		/*
 			Set up player
@@ -2180,6 +2180,11 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 			message += name;
 			message += L" joined game";
 			BroadcastChatMessage(message);
+		}
+
+		if(getClient(peer->id)->net_proto_version == 0)
+		{
+			SendChatMessage(peer_id, L"# Server: NOTE: YOUR CLIENT IS OLD AND DOES NOT WORK PROPERLY WITH THIS SERVER");
 		}
 
 		return;
