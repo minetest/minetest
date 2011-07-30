@@ -1161,9 +1161,11 @@ int main(int argc, char *argv[])
 	// Create user data directory
 	fs::CreateDir(porting::path_userdata);
 
+#ifdef USE_GETTEXT
 	setlocale(LC_MESSAGES, "");
 	bindtextdomain("minetest", (porting::path_userdata+"/locale").c_str());
 	textdomain("minetest");
+#endif
 	
 	// Initialize debug streams
 #ifdef RUN_IN_PLACE

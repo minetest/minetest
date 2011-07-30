@@ -2,8 +2,6 @@
 #include <libintl.h>
 #else
 #define gettext(String) String
-#define bindtextdomain(domain, dir) /* */
-#define textdomain(domain) /* */
 #endif
 
 #define _(String) gettext(String)
