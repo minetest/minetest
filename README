@@ -1,27 +1,9 @@
 Minetest Δ (“Minetest Delta”) is a fork of Minetest-c55 <http://celeron.55.lt/~celeron55/minetest/>, incorporating experimental features that are not (yet) included in Minetest-c55.
+Currently it is considered the unstable development branch of Minetest-c55, which means almost everything is merged upstream from Minetest Δ.
 
 New features:
-* Submenu for key assignment
-* configurable far mesh tree display (boolean)
-* configurable far mesh rendering distance
-* volumetric clouds (using fake shading)
-* translation support (including questionable translation into german)
-* build system uses local jthread & sqlite libraries if available
-
-New bricks:
-* Sandstone (crafted from 4 sand, yields sand)
-* Cactus (plant that grows on sand)
-* Clay (found in sand at sea level, yields 4 lumps of clay)
-* Brick (made from 4 clay bricks, yields 4 clay bricks)
-* Papyrus (plant that grows in shallow water)
-* Book shelf (made from 6 wood and 3 books, sandwhiched)
-* Rail (made from 6 iron ingots and 3 sticks, vertically sandwhiched)
-
-New materials:
-* Lump of clay
-* Clay brick (made from lumps of clay in the furnace)
-* Paper (made from 3 papyrus horizontally)
-* Book (made from 3 paper vertically)
+* refactored liquids (currently broken, water does not flow)
+* translation support (including german, french, italian)
 
 Alternate graphics:
 * Player
