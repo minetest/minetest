@@ -95,6 +95,8 @@ screenH# = 600
 #invert_mouse = false
 # FarMesh thingy
 #enable_farmesh = false
+#farmesh_trees = true
+#farmesh_distance = 40
 # Enable/disable clouds
 #enable_clouds = true
 # Don't draw stone (for testing)
