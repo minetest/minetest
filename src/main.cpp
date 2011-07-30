@@ -1302,7 +1302,7 @@ int main(int argc, char *argv[])
 		g_timegetter = new SimpleTimeGetter();
 		
 		// Create server
-		Server server(map_dir.c_str());
+		Server server(map_dir.c_str(), configpath);
 		server.start(port);
 		
 		// Run server
@@ -1641,7 +1641,8 @@ int main(int argc, char *argv[])
 				password,
 				address,
 				port,
-				error_message
+				error_message,
+				configpath
 			);
 
 		} //try

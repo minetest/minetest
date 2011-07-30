@@ -1058,7 +1058,8 @@ u32 PIChecksum(core::list<PlayerInfo> &l)
 */
 
 Server::Server(
-		std::string mapsavedir
+		std::string mapsavedir,
+		std::string configpath
 	):
 	m_env(new ServerMap(mapsavedir), this),
 	m_con(PROTOCOL_ID, 512, CONNECTION_TIMEOUT, this),
@@ -1069,6 +1070,7 @@ Server::Server(
 	m_time_of_day_send_timer(0),
 	m_uptime(0),
 	m_mapsavedir(mapsavedir),
+	m_configpath(configpath),
 	m_shutdown_requested(false),
 	m_ignore_map_edit_events(false),
 	m_ignore_map_edit_events_peer_id(0)
@@ -3198,7 +3200,7 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 			message = message.substr(commandprefix.size());
 			
 			WStrfnd f1(message);
-			f1.next(L" ");
+			f1.next(L" "); // Skip over /#whatever
 			std::wstring paramstring = f1.next(L"");
 
 			ServerCommandContext *ctx = new ServerCommandContext(
@@ -4023,9 +4025,9 @@ std::wstring Server::getStatusString()
 	}
 	os<<L"}";
 	if(((ServerMap*)(&m_env.getMap()))->isSavingEnabled() == false)
-		os<<std::endl<<" WARNING: Map saving is disabled.";
+		os<<std::endl<<L"# Server: "<<" WARNING: Map saving is disabled.";
 	if(g_settings.get("motd") != "")
-		os<<std::endl<<narrow_to_wide(g_settings.get("motd"));
+		os<<std::endl<<L"# Server: "<<narrow_to_wide(g_settings.get("motd"));
 	return os.str();
 }
 

@@ -715,7 +715,8 @@ void the_game(
 	std::string password,
 	std::string address,
 	u16 port,
-	std::wstring &error_message
+	std::wstring &error_message,
+    std::string configpath
 )
 {
 	video::IVideoDriver* driver = device->getVideoDriver();
@@ -755,7 +756,7 @@ void the_game(
 	if(address == ""){
 		draw_load_screen(L"Creating server...", driver, font);
 		std::cout<<DTIME<<"Creating server"<<std::endl;
-		server = new Server(map_dir);
+		server = new Server(map_dir, configpath);
 		server->start(port);
 	}
 	

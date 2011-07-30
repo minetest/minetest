@@ -70,7 +70,8 @@ void the_game(
 	std::string password,
 	std::string address,
 	u16 port,
-	std::wstring &error_message
+	std::wstring &error_message,
+	std::string configpath
 );
 
 #endif

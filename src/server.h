@@ -364,7 +364,8 @@ public:
 	*/
 
 	Server(
-		std::string mapsavedir
+		std::string mapsavedir,
+		std::string configpath
 	);
 	~Server();
 	void start(unsigned short port);
@@ -442,6 +443,13 @@ public:
 		{
 			dstream<<"WARNING: Auth not found for "<<name<<std::endl;
 		}
+	}
+	
+	// Saves g_settings to configpath given at initialization
+	void saveConfig()
+	{
+		if(m_configpath != "")
+			g_settings.updateConfigFile(m_configpath.c_str());
 	}
 
 private:
@@ -605,6 +613,9 @@ private:
 
 	// Map directory
 	std::string m_mapsavedir;
+
+	// Configuration path ("" = no configuration file)
+	std::string m_configpath;
 
 	bool m_shutdown_requested;
 	
