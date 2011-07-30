@@ -1972,20 +1972,23 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 		}
 		
 		/*
-			Check network protocol version
+			Read and check network protocol version
 		*/
+
 		u16 net_proto_version = 0;
 		if(datasize >= 2+1+PLAYERNAME_SIZE+PASSWORD_SIZE+2)
 		{
 			net_proto_version = readU16(&data[2+1+PLAYERNAME_SIZE+PASSWORD_SIZE]);
 		}
+
 		getClient(peer->id)->net_proto_version = net_proto_version;
-		/*if(net_proto_version == 0)
+
+		if(net_proto_version == 0)
 		{
 			SendAccessDenied(m_con, peer_id,
-					L"Your client is too old (network protocol)");
+					L"Your client is too old. Please upgrade.");
 			return;
-		}*/
+		}
 
 		/*
 			Set up player
@@ -2181,11 +2184,12 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 			message += L" joined game";
 			BroadcastChatMessage(message);
 		}
-
-		if(getClient(peer->id)->net_proto_version == 0)
+		
+		// Warnings about protocol version can be issued here
+		/*if(getClient(peer->id)->net_proto_version == 0)
 		{
 			SendChatMessage(peer_id, L"# Server: NOTE: YOUR CLIENT IS OLD AND DOES NOT WORK PROPERLY WITH THIS SERVER");
-		}
+		}*/
 
 		return;
 	}
