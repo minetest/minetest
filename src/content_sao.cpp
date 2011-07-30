@@ -215,6 +215,18 @@ InventoryItem * ItemSAO::createInventoryItem()
 	}
 }
 
+void ItemSAO::rightClick(Player *player)
+{
+	dstream<<__FUNCTION_NAME<<std::endl;
+	InventoryItem *item = createInventoryItem();
+	if(item == NULL)
+		return;
+	
+	bool to_be_deleted = item->use(m_env, player);
+
+	if(to_be_deleted)
+		m_removed = true;
+}
 
 /*
 	RatSAO

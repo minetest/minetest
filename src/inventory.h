@@ -37,6 +37,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 class ServerActiveObject;
 class ServerEnvironment;
+class Player;
 
 class InventoryItem
 {
@@ -99,12 +100,19 @@ public:
 	/*
 		Other properties
 	*/
+
 	// Whether it can be cooked
 	virtual bool isCookable(){return false;}
 	// Time of cooking
 	virtual float getCookTime(){return 3.0;}
-	// Result of cooking
+	// Result of cooking (can randomize)
 	virtual InventoryItem *createCookResult(){return NULL;}
+	
+	// Eat, press, activate, whatever.
+	// Called when item is right-clicked when lying on ground.
+	// If returns true, item shall be deleted.
+	virtual bool use(ServerEnvironment *env,
+			Player *player){return false;}
 
 protected:
 	u16 m_count;
@@ -298,11 +306,16 @@ public:
 			return 0;
 		return QUANTITY_ITEM_MAX_COUNT - m_count;
 	}
+
 	/*
 		Other properties
 	*/
+
 	bool isCookable();
 	InventoryItem *createCookResult();
+
+	bool use(ServerEnvironment *env, Player *player);
+	
 	/*
 		Special methods
 	*/

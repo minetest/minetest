@@ -1656,6 +1656,8 @@ void the_game(
 			else if(input->getRightClicked())
 			{
 				std::cout<<DTIME<<"Right-clicked object"<<std::endl;
+				client.clickActiveObject(1,
+						selected_active_object->getId(), g_selected_item);
 			}
 		}
 		else // selected_object == NULL

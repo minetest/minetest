@@ -2368,75 +2368,92 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 			return;
 		}
 
+		// Skip if object has been removed
+		if(obj->m_removed)
+			return;
+		
 		//TODO: Check that object is reasonably close
 		
 		// Left click, pick object up (usually)
 		if(button == 0)
 		{
-			InventoryList *ilist = player->inventory.getList("main");
-			if(g_settings.getBool("creative_mode") == false && ilist != NULL)
-			{
+			/*
+				Try creating inventory item
+			*/
+			InventoryItem *item = obj->createPickedUpItem();
 			
-				// Skip if inventory has no free space
-				if(ilist->getUsedSlots() == ilist->getSize())
+			if(item)
+			{
+				if(g_settings.getBool("creative_mode") == false)
 				{
-					dout_server<<"Player inventory has no free space"<<std::endl;
-					return;
-				}
-
-				// Skip if object has been removed
-				if(obj->m_removed)
-					return;
-				
-				/*
-					Create the inventory item
-				*/
-				InventoryItem *item = obj->createPickedUpItem();
-				
-				if(item)
-				{
-					// Add to inventory and send inventory
-					ilist->addItem(item);
-					UpdateCrafting(player->peer_id);
-					SendInventory(player->peer_id);
-
-					// Remove object from environment
-					obj->m_removed = true;
-				}
-				else
-				{
-					/*
-						Item cannot be picked up. Punch it instead.
-					*/
-
-					ToolItem *titem = NULL;
-					std::string toolname = "";
-
-					InventoryList *mlist = player->inventory.getList("main");
-					if(mlist != NULL)
+					InventoryList *ilist = player->inventory.getList("main");
+					if(ilist != NULL)
 					{
-						InventoryItem *item = mlist->getItem(item_i);
-						if(item && (std::string)item->getName() == "ToolItem")
+						// Skip if inventory has no free space
+						if(ilist->getUsedSlots() == ilist->getSize())
 						{
-							titem = (ToolItem*)item;
-							toolname = titem->getToolName();
+							dout_server<<"Player inventory has no free space"<<std::endl;
+							return;
 						}
-					}
 
-					v3f playerpos = player->getPosition();
-					v3f objpos = obj->getBasePosition();
-					v3f dir = (objpos - playerpos).normalize();
-					
-					u16 wear = obj->punch(toolname, dir);
-					
-					if(titem)
-					{
-						bool weared_out = titem->addWear(wear);
-						if(weared_out)
-							mlist->deleteItem(item_i);
+						// Add to inventory and send inventory
+						ilist->addItem(item);
+						UpdateCrafting(player->peer_id);
 						SendInventory(player->peer_id);
+
+						// Remove object from environment
+						obj->m_removed = true;
 					}
 				}
+			}
+			else
+			{
+				/*
+					Item cannot be picked up. Punch it instead.
+				*/
+
+				ToolItem *titem = NULL;
+				std::string toolname = "";
+
+				InventoryList *mlist = player->inventory.getList("main");
+				if(mlist != NULL)
+				{
+					InventoryItem *item = mlist->getItem(item_i);
+					if(item && (std::string)item->getName() == "ToolItem")
+					{
+						titem = (ToolItem*)item;
+						toolname = titem->getToolName();
+					}
+				}
+
+				v3f playerpos = player->getPosition();
+				v3f objpos = obj->getBasePosition();
+				v3f dir = (objpos - playerpos).normalize();
+				
+				u16 wear = obj->punch(toolname, dir);
+				
+				if(titem)
+				{
+					bool weared_out = titem->addWear(wear);
+					if(weared_out)
+						mlist->deleteItem(item_i);
+					SendInventory(player->peer_id);
+				}
+			}
+		}
+		// Right click, do something with object
+		if(button == 1)
+		{
+			// Track hp changes super-crappily
+			u16 oldhp = player->hp;
+			
+			// Do stuff
+			obj->rightClick(player);
+			
+			// Send back stuff
+			if(player->hp != oldhp)
+			{
+				SendPlayerHP(player);
 			}
 		}
 	}

@@ -122,3 +122,18 @@ InventoryItem* item_craft_create_cook_result(const std::string &subname)
 	return NULL;
 }
 
+bool item_craft_is_eatable(const std::string &subname)
+{
+	if(subname == "cooked_rat")
+		return true;
+	return false;
+}
+
+s16 item_craft_eat_hp_change(const std::string &subname)
+{
+	if(subname == "cooked_rat")
+		return 6; // 3 hearts
+	return 0;
+}
+
+

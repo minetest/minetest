@@ -42,6 +42,7 @@ Some planning
 
 class ServerEnvironment;
 class InventoryItem;
+class Player;
 
 class ServerActiveObject : public ActiveObject
 {
@@ -105,6 +106,10 @@ public:
 	*/
 	virtual u16 punch(const std::string &toolname, v3f dir)
 	{return 0;}
+
+	/*
+	*/
+	virtual void rightClick(Player *player){}
 	
 	/*
 		Number of players which know about this object. Object won't be

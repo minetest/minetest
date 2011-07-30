@@ -31,6 +31,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "content_mapnode.h"
 #include "content_inventory.h"
 #include "content_sao.h"
+#include "player.h"
 
 /*
 	InventoryItem
@@ -166,6 +167,20 @@ bool CraftItem::isCookable()
 InventoryItem *CraftItem::createCookResult()
 {
 	return item_craft_create_cook_result(m_subname);
+}
+
+bool CraftItem::use(ServerEnvironment *env, Player *player)
+{
+	if(item_craft_is_eatable(m_subname))
+	{
+		s16 hp_change = item_craft_eat_hp_change(m_subname);
+		if(player->hp + hp_change > 20)
+			player->hp = 20;
+		else
+			player->hp += hp_change;
+		return true;
+	}
+	return false;
 }
 
 /*
