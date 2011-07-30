@@ -13,6 +13,10 @@
 
 inline void init_gettext(const char *path) {
 #if USE_GETTEXT
+	#if MSVC
+	#else
+		setlocale(LC_MESSAGES, "");
+	#endif
 	bindtextdomain(PROJECT_NAME, path);
 	textdomain(PROJECT_NAME);
 #endif
