@@ -94,7 +94,7 @@ void GUIMessageMenu::regenerateGui(v2u32 screensize)
 			chartowchar_t(gettext("Proceed")));
 		Environment->setFocus(e);
 	}
-	changeCtype("en_US.UTF-8");
+	changeCtype("C");
 }
 
 void GUIMessageMenu::drawMenu()
