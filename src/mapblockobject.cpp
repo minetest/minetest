@@ -161,8 +161,8 @@ void MovingObject::move(float dtime, v3f acceleration)
 		for(s16 x = oldpos_i.X - 1; x <= oldpos_i.X + 1; x++)
 		{
 			try{
-				if(content_walkable(m_block->getNodeParent(v3s16(x,y,z)).d)
-						== false)
+				MapNode n = m_block->getNodeParent(v3s16(x,y,z));
+				if(content_features(n).walkable == false)
 					continue;
 			}
 			catch(InvalidPositionException &e)

@@ -140,9 +140,24 @@ void getNodeVertexDirs(v3s16 dir, v3s16 *vertex_dirs)
 	}
 }
 
-inline video::SColor lightColor(u8 alpha, u8 light)
+video::SColor MapBlock_LightColor(u8 alpha, u8 light)
 {
+#if 0
 	return video::SColor(alpha,light,light,light);
+#endif
+	//return video::SColor(alpha,light,light,MYMAX(0, (s16)light-25)+25);
+	/*return video::SColor(alpha,light,light,MYMAX(0,
+			pow((float)light/255.0, 0.8)*255.0));*/
+#if 1
+	// Emphase blue a bit in darker places
+	float lim = 80;
+	float power = 0.8;
+	if(light > lim)
+		return video::SColor(alpha,light,light,light);
+	else
+		return video::SColor(alpha,light,light,MYMAX(0,
+				pow((float)light/lim, power)*lim));
+#endif
 }
 
 struct FastFace
@@ -198,7 +213,7 @@ void makeFastFace(TileSpec tile, u8 li0, u8 li1, u8 li2, u8 li3, v3f p,
 	float w = tile.texture.size.X;
 	float h = tile.texture.size.Y;
 
-	/*video::SColor c = lightColor(alpha, li);
+	/*video::SColor c = MapBlock_LightColor(alpha, li);
 
 	face.vertices[0] = video::S3DVertex(vertex_pos[0], v3f(0,1,0), c,
 			core::vector2d<f32>(x0+w*abs_scale, y0+h));
@@ -210,16 +225,16 @@ void makeFastFace(TileSpec tile, u8 li0, u8 li1, u8 li2, u8 li3, v3f p,
 			core::vector2d<f32>(x0+w*abs_scale, y0));*/
 
 	face.vertices[0] = video::S3DVertex(vertex_pos[0], v3f(0,1,0),
-			lightColor(alpha, li0),
+			MapBlock_LightColor(alpha, li0),
 			core::vector2d<f32>(x0+w*abs_scale, y0+h));
 	face.vertices[1] = video::S3DVertex(vertex_pos[1], v3f(0,1,0),
-			lightColor(alpha, li1),
+			MapBlock_LightColor(alpha, li1),
 			core::vector2d<f32>(x0, y0+h));
 	face.vertices[2] = video::S3DVertex(vertex_pos[2], v3f(0,1,0),
-			lightColor(alpha, li2),
+			MapBlock_LightColor(alpha, li2),
 			core::vector2d<f32>(x0, y0));
 	face.vertices[3] = video::S3DVertex(vertex_pos[3], v3f(0,1,0),
-			lightColor(alpha, li3),
+			MapBlock_LightColor(alpha, li3),
 			core::vector2d<f32>(x0+w*abs_scale, y0));
 
 	face.tile = tile;
@@ -285,7 +300,7 @@ TileSpec getNodeTile(MapNode mn, v3s16 p, v3s16 face_dir,
 	return spec;
 }
 
-u8 getNodeContent(v3s16 p, MapNode mn, NodeModMap &temp_mods)
+content_t getNodeContent(v3s16 p, MapNode mn, NodeModMap &temp_mods)
 {
 	/*
 		Check temporary modifications on this node
@@ -320,7 +335,7 @@ u8 getNodeContent(v3s16 p, MapNode mn, NodeModMap &temp_mods)
 		}
 	}
 
-	return mn.d;
+	return mn.getContent();
 }
 
 v3s16 dirs8[8] = {
@@ -343,16 +358,16 @@ u8 getSmoothLight(v3s16 p, VoxelManipulator &vmanip, u32 daynight_ratio)
 	for(u32 i=0; i<8; i++)
 	{
 		MapNode n = vmanip.getNodeNoEx(p - dirs8[i]);
-		if(content_features(n.d).param_type == CPT_LIGHT
+		if(content_features(n).param_type == CPT_LIGHT
 				// Fast-style leaves look better this way
-				&& content_features(n.d).solidness != 2)
+				&& content_features(n).solidness != 2)
 		{
 			light += decode_light(n.getLightBlend(daynight_ratio));
 			light_count++;
 		}
 		else
 		{
-			if(n.d != CONTENT_IGNORE)
+			if(n.getContent() != CONTENT_IGNORE)
 				ambient_occlusion++;
 		}
 	}
@@ -408,8 +423,8 @@ void getTileInfo(
 	TileSpec tile1 = getNodeTile(n1, p + face_dir, -face_dir, temp_mods);
 	
 	// This is hackish
-	u8 content0 = getNodeContent(p, n0, temp_mods);
-	u8 content1 = getNodeContent(p + face_dir, n1, temp_mods);
+	content_t content0 = getNodeContent(p, n0, temp_mods);
+	content_t content1 = getNodeContent(p + face_dir, n1, temp_mods);
 	u8 mf = face_contents(content0, content1);
 
 	if(mf == 0)

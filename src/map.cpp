@@ -630,9 +630,9 @@ s16 Map::propagateSunlight(v3s16 start,
 		else
 		{
 			/*// Turn mud into grass
-			if(n.d == CONTENT_MUD)
+			if(n.getContent() == CONTENT_MUD)
 			{
-				n.d = CONTENT_GRASS;
+				n.setContent(CONTENT_GRASS);
 				block->setNode(relpos, n);
 				modified_blocks.insert(blockpos, block);
 			}*/
@@ -920,15 +920,15 @@ void Map::addNodeAndUpdate(v3s16 p, MapNode n,
 	/*
 		If the new node is solid and there is grass below, change it to mud
 	*/
-	if(content_features(n.d).walkable == true)
+	if(content_features(n).walkable == true)
 	{
 		try{
 			MapNode bottomnode = getNode(bottompos);
 
-			if(bottomnode.d == CONTENT_GRASS
-					|| bottomnode.d == CONTENT_GRASS_FOOTSTEPS)
+			if(bottomnode.getContent() == CONTENT_GRASS
+					|| bottomnode.getContent() == CONTENT_GRASS_FOOTSTEPS)
 			{
-				bottomnode.d = CONTENT_MUD;
+				bottomnode.setContent(CONTENT_MUD);
 				setNode(bottompos, bottomnode);
 			}
 		}
@@ -943,9 +943,9 @@ void Map::addNodeAndUpdate(v3s16 p, MapNode n,
 		If the new node is mud and it is under sunlight, change it
 		to grass
 	*/
-	if(n.d == CONTENT_MUD && node_under_sunlight)
+	if(n.getContent() == CONTENT_MUD && node_under_sunlight)
 	{
-		n.d = CONTENT_GRASS;
+		n.setContent(CONTENT_GRASS);
 	}
 #endif
 
@@ -986,7 +986,7 @@ void Map::addNodeAndUpdate(v3s16 p, MapNode n,
 		If node lets sunlight through and is under sunlight, it has
 		sunlight too.
 	*/
-	if(node_under_sunlight && content_features(n.d).sunlight_propagates)
+	if(node_under_sunlight && content_features(n).sunlight_propagates)
 	{
 		n.setLight(LIGHTBANK_DAY, LIGHT_SUN);
 	}
@@ -1001,7 +1001,7 @@ void Map::addNodeAndUpdate(v3s16 p, MapNode n,
 		Add intial metadata
 	*/
 
-	NodeMetadata *meta_proto = content_features(n.d).initial_metadata;
+	NodeMetadata *meta_proto = content_features(n).initial_metadata;
 	if(meta_proto)
 	{
 		NodeMetadata *meta = meta_proto->clone();
@@ -1015,7 +1015,7 @@ void Map::addNodeAndUpdate(v3s16 p, MapNode n,
 		TODO: This could be optimized by mass-unlighting instead
 			  of looping
 	*/
-	if(node_under_sunlight && !content_features(n.d).sunlight_propagates)
+	if(node_under_sunlight && !content_features(n).sunlight_propagates)
 	{
 		s16 y = p.Y - 1;
 		for(;; y--){
@@ -1086,7 +1086,7 @@ void Map::addNodeAndUpdate(v3s16 p, MapNode n,
 		v3s16 p2 = p + dirs[i];
 
 		MapNode n2 = getNode(p2);
-		if(content_liquid(n2.d) || n2.d == CONTENT_AIR)
+		if(content_liquid(n2.getContent()))
 		{
 			m_transforming_liquid.push_back(p2);
 		}
@@ -1111,7 +1111,7 @@ void Map::removeNodeAndUpdate(v3s16 p,
 	v3s16 toppos = p + v3s16(0,1,0);
 
 	// Node will be replaced with this
-	u8 replace_material = CONTENT_AIR;
+	content_t replace_material = CONTENT_AIR;
 
 	/*
 		If there is a node at top and it doesn't have sunlight,
@@ -1158,7 +1158,7 @@ void Map::removeNodeAndUpdate(v3s16 p,
 	*/
 
 	MapNode n;
-	n.d = replace_material;
+	n.setContent(replace_material);
 	setNode(p, n);
 
 	for(s32 i=0; i<2; i++)
@@ -1260,7 +1260,7 @@ void Map::removeNodeAndUpdate(v3s16 p,
 		v3s16 p2 = p + dirs[i];
 
 		MapNode n2 = getNode(p2);
-		if(content_liquid(n2.d) || n2.d == CONTENT_AIR)
+		if(content_liquid(n2.getContent()))
 		{
 			m_transforming_liquid.push_back(p2);
 		}
@@ -1576,20 +1576,20 @@ void Map::transformLiquids(core::map<v3s16, MapBlock*> & modified_blocks)
 		 */
 		s8 liquid_level = -1;
 		u8 liquid_kind = CONTENT_IGNORE;
-		LiquidType liquid_type = content_features(n0.d).liquid_type;
+		LiquidType liquid_type = content_features(n0.getContent()).liquid_type;
 		switch (liquid_type) {
 			case LIQUID_SOURCE:
 				liquid_level = 8;
-				liquid_kind = content_features(n0.d).liquid_alternative_flowing;
+				liquid_kind = content_features(n0.getContent()).liquid_alternative_flowing;
 				break;
 			case LIQUID_FLOWING:
 				liquid_level = (n0.param2 & LIQUID_LEVEL_MASK);
-				liquid_kind = n0.d;
+				liquid_kind = n0.getContent();
 				break;
 			case LIQUID_NONE:
 				// if this is an air node, it *could* be transformed into a liquid. otherwise,
 				// continue with the next node.
-				if (n0.d != CONTENT_AIR)
+				if (n0.getContent() != CONTENT_AIR)
 					continue;
 				liquid_kind = CONTENT_AIR;
 				break;
@@ -1627,9 +1627,9 @@ void Map::transformLiquids(core::map<v3s16, MapBlock*> & modified_blocks)
 			}
 			v3s16 npos = p0 + dirs[i];
 			NodeNeighbor nb = {getNodeNoEx(npos), nt, npos};
-			switch (content_features(nb.n.d).liquid_type) {
+			switch (content_features(nb.n.getContent()).liquid_type) {
 				case LIQUID_NONE:
-					if (nb.n.d == CONTENT_AIR) {
+					if (nb.n.getContent() == CONTENT_AIR) {
 						airs[num_airs++] = nb;
 						// if the current node happens to be a flowing node, it will start to flow down here.
 						if (nb.t == NEIGHBOR_LOWER)
@@ -1641,8 +1641,8 @@ void Map::transformLiquids(core::map<v3s16, MapBlock*> & modified_blocks)
 				case LIQUID_SOURCE:
 					// if this node is not (yet) of a liquid type, choose the first liquid type we encounter 
 					if (liquid_kind == CONTENT_AIR)
-						liquid_kind = content_features(nb.n.d).liquid_alternative_flowing;
-					if (content_features(nb.n.d).liquid_alternative_flowing !=liquid_kind) {
+						liquid_kind = content_features(nb.n.getContent()).liquid_alternative_flowing;
+					if (content_features(nb.n.getContent()).liquid_alternative_flowing !=liquid_kind) {
 						neutrals[num_neutrals++] = nb;
 					} else {
 						sources[num_sources++] = nb;
@@ -1651,8 +1651,8 @@ void Map::transformLiquids(core::map<v3s16, MapBlock*> & modified_blocks)
 				case LIQUID_FLOWING:
 					// if this node is not (yet) of a liquid type, choose the first liquid type we encounter
 					if (liquid_kind == CONTENT_AIR)
-						liquid_kind = content_features(nb.n.d).liquid_alternative_flowing;
-					if (content_features(nb.n.d).liquid_alternative_flowing != liquid_kind) {
+						liquid_kind = content_features(nb.n.getContent()).liquid_alternative_flowing;
+					if (content_features(nb.n.getContent()).liquid_alternative_flowing != liquid_kind) {
 						neutrals[num_neutrals++] = nb;
 					} else {
 						flows[num_flows++] = nb;
@@ -1722,7 +1722,7 @@ void Map::transformLiquids(core::map<v3s16, MapBlock*> & modified_blocks)
 		/*
 			check if anything has changed. if not, just continue with the next node.
 		 */
-		if (new_node_content == n0.d && (content_features(n0.d).liquid_type != LIQUID_FLOWING ||
+		if (new_node_content == n0.getContent() && (content_features(n0.getContent()).liquid_type != LIQUID_FLOWING ||
 										 ((n0.param2 & LIQUID_LEVEL_MASK) == (u8)new_node_level &&
 										 ((n0.param2 & LIQUID_FLOW_DOWN_MASK) == LIQUID_FLOW_DOWN_MASK)
 										 == flowing_down)))
@@ -1733,8 +1733,8 @@ void Map::transformLiquids(core::map<v3s16, MapBlock*> & modified_blocks)
 			update the current node
 		 */
 		bool flow_down_enabled = (flowing_down && ((n0.param2 & LIQUID_FLOW_DOWN_MASK) != LIQUID_FLOW_DOWN_MASK));
-		n0.d = new_node_content;
-		if (content_features(n0.d).liquid_type == LIQUID_FLOWING) {
+		n0.setContent(new_node_content);
+		if (content_features(n0.getContent()).liquid_type == LIQUID_FLOWING) {
 			// set level to last 3 bits, flowing down bit to 4th bit
 			n0.param2 = (flowing_down ? LIQUID_FLOW_DOWN_MASK : 0x00) | (new_node_level & LIQUID_LEVEL_MASK);
 		} else {
@@ -1749,7 +1749,7 @@ void Map::transformLiquids(core::map<v3s16, MapBlock*> & modified_blocks)
 		/*
 			enqueue neighbors for update if neccessary
 		 */
-		switch (content_features(n0.d).liquid_type) {
+		switch (content_features(n0.getContent()).liquid_type) {
 			case LIQUID_SOURCE:
 				// make sure source flows into all neighboring nodes
 				for (u16 i = 0; i < num_flows; i++)
@@ -2003,8 +2003,10 @@ ServerMap::~ServerMap()
 
 void ServerMap::initBlockMake(mapgen::BlockMakeData *data, v3s16 blockpos)
 {
-	/*dstream<<"initBlockMake(): ("<<blockpos.X<<","<<blockpos.Y<<","
-			<<blockpos.Z<<")"<<std::endl;*/
+	bool enable_mapgen_debug_info = g_settings.getBool("enable_mapgen_debug_info");
+	if(enable_mapgen_debug_info)
+		dstream<<"initBlockMake(): ("<<blockpos.X<<","<<blockpos.Y<<","
+				<<blockpos.Z<<")"<<std::endl;
 	
 	// Do nothing if not inside limits (+-1 because of neighbors)
 	if(blockpos_over_limit(blockpos - v3s16(1,1,1)) ||
@@ -2034,25 +2036,28 @@ void ServerMap::initBlockMake(mapgen::BlockMakeData *data, v3s16 blockpos)
 
 			for(s16 y=-1; y<=1; y++)
 			{
-				//MapBlock *block = createBlock(blockpos);
+				v3s16 p(blockpos.X+x, blockpos.Y+y, blockpos.Z+z);
+				//MapBlock *block = createBlock(p);
 				// 1) get from memory, 2) load from disk
-				MapBlock *block = emergeBlock(blockpos, false);
+				MapBlock *block = emergeBlock(p, false);
 				// 3) create a blank one
 				if(block == NULL)
-					block = createBlock(blockpos);
+				{
+					block = createBlock(p);
+
+					/*
+						Block gets sunlight if this is true.
+
+						Refer to the map generator heuristics.
+					*/
+					bool ug = mapgen::block_is_underground(data->seed, p);
+					block->setIsUnderground(ug);
+				}
 
 				// Lighting will not be valid after make_chunk is called
 				block->setLightingExpired(true);
 				// Lighting will be calculated
 				//block->setLightingExpired(false);
-
-				/*
-					Block gets sunlight if this is true.
-
-					This should be set to true when the top side of a block
-					is completely exposed to the sky.
-				*/
-				block->setIsUnderground(false);
 			}
 		}
 	}
@@ -2128,10 +2133,14 @@ MapBlock* ServerMap::finishBlockMake(mapgen::BlockMakeData *data,
 	assert(block);
 
 	/*
-		Set is_underground flag for lighting with sunlight
-	*/
+		Set is_underground flag for lighting with sunlight.
 
-	block->setIsUnderground(mapgen::block_is_underground(data->seed, blockpos));
+		Refer to map generator heuristics.
+
+		NOTE: This is done in initChunkMake
+	*/
+	//block->setIsUnderground(mapgen::block_is_underground(data->seed, blockpos));
+
 
 	/*
 		Add sunlight to central block.
@@ -2162,6 +2171,13 @@ MapBlock* ServerMap::finishBlockMake(mapgen::BlockMakeData *data,
 #if 1
 		// Center block
 		lighting_update_blocks.insert(block->getPos(), block);
+
+		/*{
+			s16 x = 0;
+			s16 z = 0;
+			v3s16 p = block->getPos()+v3s16(x,1,z);
+			lighting_update_blocks[p] = getBlockNoCreateNoEx(p);
+		}*/
 #endif
 #if 0
 		// All modified blocks
@@ -2178,8 +2194,28 @@ MapBlock* ServerMap::finishBlockMake(mapgen::BlockMakeData *data,
 			lighting_update_blocks.insert(i.getNode()->getKey(),
 					i.getNode()->getValue());
 		}
+		/*// Also force-add all the upmost blocks for proper sunlight
+		for(s16 x=-1; x<=1; x++)
+		for(s16 z=-1; z<=1; z++)
+		{
+			v3s16 p = block->getPos()+v3s16(x,1,z);
+			lighting_update_blocks[p] = getBlockNoCreateNoEx(p);
+		}*/
 #endif
 		updateLighting(lighting_update_blocks, changed_blocks);
+		
+		/*
+			Set lighting to non-expired state in all of them.
+			This is cheating, but it is not fast enough if all of them
+			would actually be updated.
+		*/
+		for(s16 x=-1; x<=1; x++)
+		for(s16 y=-1; y<=1; y++)
+		for(s16 z=-1; z<=1; z++)
+		{
+			v3s16 p = block->getPos()+v3s16(x,y,z);
+			getBlockNoCreateNoEx(p)->setLightingExpired(false);
+		}
 
 		if(enable_mapgen_debug_info == false)
 			t.stop(true); // Hide output
@@ -2221,7 +2257,26 @@ MapBlock* ServerMap::finishBlockMake(mapgen::BlockMakeData *data,
 
 	/*dstream<<"finishBlockMake() done for ("<<blockpos.X<<","<<blockpos.Y<<","
 			<<blockpos.Z<<")"<<std::endl;*/
-	
+#if 0
+	if(enable_mapgen_debug_info)
+	{
+		/*
+			Analyze resulting blocks
+		*/
+		for(s16 x=-1; x<=1; x++)
+		for(s16 y=-1; y<=1; y++)
+		for(s16 z=-1; z<=1; z++)
+		{
+			v3s16 p = block->getPos()+v3s16(x,y,z);
+			MapBlock *block = getBlockNoCreateNoEx(p);
+			char spos[20];
+			snprintf(spos, 20, "(%2d,%2d,%2d)", x, y, z);
+			dstream<<"Generated "<<spos<<": "
+					<<analyze_block(block)<<std::endl;
+		}
+	}
+#endif
+
 	return block;
 }
 
@@ -2355,7 +2410,7 @@ MapBlock * ServerMap::generateBlock(
 		{
 			v3s16 p(x0,y0,z0);
 			MapNode n = block->getNode(p);
-			if(n.d == CONTENT_IGNORE)
+			if(n.getContent() == CONTENT_IGNORE)
 			{
 				dstream<<"CONTENT_IGNORE at "
 						<<"("<<p.X<<","<<p.Y<<","<<p.Z<<")"
@@ -2384,9 +2439,9 @@ MapBlock * ServerMap::generateBlock(
 			{
 				MapNode n;
 				if(y0%2==0)
-					n.d = CONTENT_AIR;
+					n.setContent(CONTENT_AIR);
 				else
-					n.d = CONTENT_STONE;
+					n.setContent(CONTENT_STONE);
 				block->setNode(v3s16(x0,y0,z0), n);
 			}
 		}
@@ -2470,7 +2525,7 @@ MapBlock * ServerMap::emergeBlock(v3s16 p, bool allow_generate)
 	
 	{
 		MapBlock *block = getBlockNoCreateNoEx(p);
-		if(block)
+		if(block && block->isDummy() == false)
 			return block;
 	}
 
@@ -2667,19 +2722,19 @@ s16 ServerMap::findGroundLevel(v2s16 p2d)
 	for(; p.Y>min; p.Y--)
 	{
 		MapNode n = getNodeNoEx(p);
-		if(n.d != CONTENT_IGNORE)
+		if(n.getContent() != CONTENT_IGNORE)
 			break;
 	}
 	if(p.Y == min)
 		goto plan_b;
 	// If this node is not air, go to plan b
-	if(getNodeNoEx(p).d != CONTENT_AIR)
+	if(getNodeNoEx(p).getContent() != CONTENT_AIR)
 		goto plan_b;
 	// Search existing walkable and return it
 	for(; p.Y>min; p.Y--)
 	{
 		MapNode n = getNodeNoEx(p);
-		if(content_walkable(n.d) && n.d != CONTENT_IGNORE)
+		if(content_walkable(n.d) && n.getContent() != CONTENT_IGNORE)
 			return p.Y;
 	}
 
@@ -4072,10 +4127,16 @@ void ManualMapVoxelManipulator::blitBackAll(
 			i = m_loaded_blocks.getIterator();
 			i.atEnd() == false; i++)
 	{
+		v3s16 p = i.getNode()->getKey();
 		bool existed = i.getNode()->getValue();
 		if(existed == false)
+		{
+			// The Great Bug was found using this
+			/*dstream<<"ManualMapVoxelManipulator::blitBackAll: "
+					<<"Inexistent ("<<p.X<<","<<p.Y<<","<<p.Z<<")"
+					<<std::endl;*/
 			continue;
-		v3s16 p = i.getNode()->getKey();
+		}
 		MapBlock *block = m_map->getBlockNoCreateNoEx(p);
 		if(block == NULL)
 		{

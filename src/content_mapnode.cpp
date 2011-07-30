@@ -31,6 +31,65 @@ void setStoneLikeDiggingProperties(DiggingPropertiesList &list, float toughness)
 void setDirtLikeDiggingProperties(DiggingPropertiesList &list, float toughness);
 void setWoodLikeDiggingProperties(DiggingPropertiesList &list, float toughness);
 
+content_t trans_table_19[][2] = {
+	{CONTENT_GRASS, 1},
+	{CONTENT_TREE, 4},
+	{CONTENT_LEAVES, 5},
+	{CONTENT_GRASS_FOOTSTEPS, 6},
+	{CONTENT_MESE, 7},
+	{CONTENT_MUD, 8},
+	{CONTENT_CLOUD, 10},
+	{CONTENT_COALSTONE, 11},
+	{CONTENT_WOOD, 12},
+	{CONTENT_SAND, 13},
+	{CONTENT_COBBLE, 18},
+	{CONTENT_STEEL, 19},
+	{CONTENT_GLASS, 20},
+	{CONTENT_MOSSYCOBBLE, 22},
+	{CONTENT_GRAVEL, 23},
+	{CONTENT_SANDSTONE, 24},
+	{CONTENT_CACTUS, 25},
+	{CONTENT_BRICK, 26},
+	{CONTENT_CLAY, 27},
+	{CONTENT_PAPYRUS, 28},
+	{CONTENT_BOOKSHELF, 29},
+};
+
+MapNode mapnode_translate_from_internal(MapNode n_from, u8 version)
+{
+	MapNode result = n_from;
+	if(version <= 19)
+	{
+		content_t c_from = n_from.getContent();
+		for(u32 i=0; i<sizeof(trans_table_19)/sizeof(trans_table_19[0]); i++)
+		{
+			if(trans_table_19[i][0] == c_from)
+			{
+				result.setContent(trans_table_19[i][1]);
+				break;
+			}
+		}
+	}
+	return result;
+}
+MapNode mapnode_translate_to_internal(MapNode n_from, u8 version)
+{
+	MapNode result = n_from;
+	if(version <= 19)
+	{
+		content_t c_from = n_from.getContent();
+		for(u32 i=0; i<sizeof(trans_table_19)/sizeof(trans_table_19[0]); i++)
+		{
+			if(trans_table_19[i][1] == c_from)
+			{
+				result.setContent(trans_table_19[i][0]);
+				break;
+			}
+		}
+	}
+	return result;
+}
+
 void content_mapnode_init()
 {
 	// Read some settings
@@ -38,7 +97,7 @@ void content_mapnode_init()
 	bool new_style_leaves = g_settings.getBool("new_style_leaves");
 	bool invisible_stone = g_settings.getBool("invisible_stone");
 
-	u8 i;
+	content_t i;
 	ContentFeatures *f = NULL;
 
 	i = CONTENT_STONE;
@@ -136,12 +195,34 @@ void content_mapnode_init()
 	f->dug_item = std::string("MaterialItem ")+itos(i)+" 1";
 	setWoodLikeDiggingProperties(f->digging_properties, 1.0);
 	
+	i = CONTENT_JUNGLETREE;
+	f = &content_features(i);
+	f->setAllTextures("jungletree.png");
+	f->setTexture(0, "jungletree_top.png");
+	f->setTexture(1, "jungletree_top.png");
+	f->param_type = CPT_MINERAL;
+	//f->is_ground_content = true;
+	f->dug_item = std::string("MaterialItem ")+itos(i)+" 1";
+	setWoodLikeDiggingProperties(f->digging_properties, 1.0);
+	
+	i = CONTENT_JUNGLEGRASS;
+	f = &content_features(i);
+	f->setInventoryTexture("junglegrass.png");
+	f->light_propagates = true;
+	f->param_type = CPT_LIGHT;
+	//f->is_ground_content = true;
+	f->air_equivalent = false; // grass grows underneath
+	f->dug_item = std::string("MaterialItem ")+itos(i)+" 1";
+	f->solidness = 0; // drawn separately, makes no faces
+	f->walkable = false;
+	setWoodLikeDiggingProperties(f->digging_properties, 0.10);
+
 	i = CONTENT_LEAVES;
 	f = &content_features(i);
 	f->light_propagates = true;
 	//f->param_type = CPT_MINERAL;
 	f->param_type = CPT_LIGHT;
-	f->is_ground_content = true;
+	//f->is_ground_content = true;
 	if(new_style_leaves)
 	{
 		f->solidness = 0; // drawn separately, makes no faces
@@ -191,6 +272,7 @@ void content_mapnode_init()
 	i = CONTENT_GLASS;
 	f = &content_features(i);
 	f->light_propagates = true;
+	f->sunlight_propagates = true;
 	f->param_type = CPT_LIGHT;
 	f->is_ground_content = true;
 	f->dug_item = std::string("MaterialItem ")+itos(i)+" 1";

@@ -93,7 +93,7 @@ void VoxelManipulator::print(std::ostream &o, VoxelPrintMode mode)
 				else
 				{
 					c = 'X';
-					u8 m = m_data[m_area.index(x,y,z)].d;
+					content_t m = m_data[m_area.index(x,y,z)].getContent();
 					u8 pr = m_data[m_area.index(x,y,z)].param2;
 					if(mode == VOXELPRINT_MATERIAL)
 					{

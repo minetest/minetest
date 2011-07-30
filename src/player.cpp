@@ -342,13 +342,13 @@ void LocalPlayer::move(f32 dtime, Map &map, f32 pos_max_d,
 		if(in_water)
 		{
 			v3s16 pp = floatToInt(position + v3f(0,BS*0.1,0), BS);
-			in_water = content_liquid(map.getNode(pp).d);
+			in_water = content_liquid(map.getNode(pp).getContent());
 		}
 		// If not in water, the threshold of going in is at lower y
 		else
 		{
 			v3s16 pp = floatToInt(position + v3f(0,BS*0.5,0), BS);
-			in_water = content_liquid(map.getNode(pp).d);
+			in_water = content_liquid(map.getNode(pp).getContent());
 		}
 	}
 	catch(InvalidPositionException &e)
@@ -361,7 +361,7 @@ void LocalPlayer::move(f32 dtime, Map &map, f32 pos_max_d,
 	*/
 	try{
 		v3s16 pp = floatToInt(position + v3f(0,0,0), BS);
-		in_water_stable = content_liquid(map.getNode(pp).d);
+		in_water_stable = content_liquid(map.getNode(pp).getContent());
 	}
 	catch(InvalidPositionException &e)
 	{
@@ -470,7 +470,7 @@ void LocalPlayer::move(f32 dtime, Map &map, f32 pos_max_d,
 	{
 		try{
 			// Player collides into walkable nodes
-			if(content_walkable(map.getNode(v3s16(x,y,z)).d) == false)
+			if(content_walkable(map.getNode(v3s16(x,y,z)).getContent()) == false)
 				continue;
 		}
 		catch(InvalidPositionException &e)
@@ -633,10 +633,10 @@ void LocalPlayer::move(f32 dtime, Map &map, f32 pos_max_d,
 
 			try{
 				// The node to be sneaked on has to be walkable
-				if(content_walkable(map.getNode(p).d) == false)
+				if(content_walkable(map.getNode(p).getContent()) == false)
 					continue;
 				// And the node above it has to be nonwalkable
-				if(content_walkable(map.getNode(p+v3s16(0,1,0)).d) == true)
+				if(content_walkable(map.getNode(p+v3s16(0,1,0)).getContent()) == true)
 					continue;
 			}
 			catch(InvalidPositionException &e)

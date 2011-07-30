@@ -78,7 +78,8 @@ collisionMoveResult collisionMoveSimple(Map *map, f32 pos_max_d,
 	{
 		try{
 			// Object collides into walkable nodes
-			if(content_walkable(map->getNode(v3s16(x,y,z)).d) == false)
+			MapNode n = map->getNode(v3s16(x,y,z));
+			if(content_features(n).walkable == false)
 				continue;
 		}
 		catch(InvalidPositionException &e)

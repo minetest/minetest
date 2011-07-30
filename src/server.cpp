@@ -105,10 +105,10 @@ void * EmergeThread::Thread()
 
 	DSTACK(__FUNCTION_NAME);
 
-	//bool debug=false;
-	
 	BEGIN_DEBUG_EXCEPTION_HANDLER
 
+	bool enable_mapgen_debug_info = g_settings.getBool("enable_mapgen_debug_info");
+	
 	/*
 		Get block info from queue, emerge them and send them
 		to clients.
@@ -155,7 +155,7 @@ void * EmergeThread::Thread()
 			Also decrement the emerge queue count in clients.
 		*/
 
-		bool optional = true;
+		bool only_from_disk = true;
 
 		{
 			core::map<u16, u8>::Iterator i;
@@ -166,14 +166,15 @@ void * EmergeThread::Thread()
 				// Check flags
 				u8 flags = i.getNode()->getValue();
 				if((flags & BLOCK_EMERGE_FLAG_FROMDISK) == false)
-					optional = false;
+					only_from_disk = false;
 				
 			}
 		}
-
-		/*dstream<<"EmergeThread: p="
-				<<"("<<p.X<<","<<p.Y<<","<<p.Z<<") "
-				<<"optional="<<optional<<std::endl;*/
+		
+		if(enable_mapgen_debug_info)
+			dstream<<"EmergeThread: p="
+					<<"("<<p.X<<","<<p.Y<<","<<p.Z<<") "
+					<<"only_from_disk="<<only_from_disk<<std::endl;
 		
 		ServerMap &map = ((ServerMap&)m_server->m_env.getMap());
 			
@@ -184,11 +185,6 @@ void * EmergeThread::Thread()
 		bool got_block = true;
 		core::map<v3s16, MapBlock*> modified_blocks;
 		
-		bool only_from_disk = false;
-		
-		if(optional)
-			only_from_disk = true;
-
 		/*
 			Fetch block from map or generate a single block
 		*/
@@ -203,6 +199,9 @@ void * EmergeThread::Thread()
 			block = map.getBlockNoCreateNoEx(p);
 			if(!block || block->isDummy() || !block->isGenerated())
 			{
+				if(enable_mapgen_debug_info)
+					dstream<<"EmergeThread: not in memory, loading"<<std::endl;
+
 				// Get, load or create sector
 				/*ServerMapSector *sector =
 						(ServerMapSector*)map.createSector(p2d);*/
@@ -213,12 +212,20 @@ void * EmergeThread::Thread()
 						lighting_invalidated_blocks);*/
 
 				block = map.loadBlock(p);
+				
+				if(only_from_disk == false)
+				{
+					if(block == NULL || block->isGenerated() == false)
+					{
+						if(enable_mapgen_debug_info)
+							dstream<<"EmergeThread: generating"<<std::endl;
+						block = map.generateBlock(p, modified_blocks);
+					}
+				}
 
-				if(block == NULL && only_from_disk == false)
-					block = map.generateBlock(p, modified_blocks);
-					//block = map.generateBlock(p, changed_blocks);
-					/*block = map.generateBlock(p, block, sector, changed_blocks,
-							lighting_invalidated_blocks);*/
+				if(enable_mapgen_debug_info)
+					dstream<<"EmergeThread: ended up with: "
+							<<analyze_block(block)<<std::endl;
 
 				if(block == NULL)
 				{
@@ -2494,7 +2501,7 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 			// Mandatory parameter; actually used for nothing
 			core::map<v3s16, MapBlock*> modified_blocks;
 
-			u8 material = CONTENT_IGNORE;
+			content_t material = CONTENT_IGNORE;
 			u8 mineral = MINERAL_NONE;
 
 			bool cannot_remove_node = false;
@@ -2505,7 +2512,7 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 				// Get mineral
 				mineral = n.getMineral();
 				// Get material at position
-				material = n.d;
+				material = n.getContent();
 				// If not yet cancelled
 				if(cannot_remove_node == false)
 				{
@@ -2705,7 +2712,7 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 							<<" because privileges are "<<getPlayerPrivs(player)
 							<<std::endl;
 
-					if(content_buildable_to(n2.d) == false
+					if(content_features(n2).buildable_to == false
 						|| no_enough_privs)
 					{
 						// Client probably has wrong data.
@@ -2736,14 +2743,14 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 				// Create node data
 				MaterialItem *mitem = (MaterialItem*)item;
 				MapNode n;
-				n.d = mitem->getMaterial();
+				n.setContent(mitem->getMaterial());
 
 				// Calculate direction for wall mounted stuff
-				if(content_features(n.d).wall_mounted)
-					n.dir = packDir(p_under - p_over);
+				if(content_features(n).wall_mounted)
+					n.param2 = packDir(p_under - p_over);
 
 				// Calculate the direction for furnaces and chests and stuff
-				if(content_features(n.d).param_type == CPT_FACEDIR_SIMPLE)
+				if(content_features(n).param_type == CPT_FACEDIR_SIMPLE)
 				{
 					v3f playerpos = player->getPosition();
 					v3f blockpos = intToFloat(p_over, BS) - playerpos;
