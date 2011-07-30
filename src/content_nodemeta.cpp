@@ -277,7 +277,56 @@ bool FurnaceNodeMetadata::step(float dtime)
 			fuel_list->decrementMaterials(1);
 			changed = true;
 		}
+		else if(ItemSpec(ITEM_MATERIAL, CONTENT_JUNGLETREE).checkItem(fuel_item))
+		{
+			m_fuel_totaltime = 30;
+			m_fuel_time = 0;
+			fuel_list->decrementMaterials(1);
+			changed = true;
+		}
+		else if(ItemSpec(ITEM_MATERIAL, CONTENT_FENCE).checkItem(fuel_item))
+		{
+			m_fuel_totaltime = 30/2;
+			m_fuel_time = 0;
+			fuel_list->decrementMaterials(1);
+			changed = true;
+		}
 		else if(ItemSpec(ITEM_MATERIAL, CONTENT_WOOD).checkItem(fuel_item))
+		{
+			m_fuel_totaltime = 30/4;
+			m_fuel_time = 0;
+			fuel_list->decrementMaterials(1);
+			changed = true;
+		}
+		else if(ItemSpec(ITEM_MATERIAL, CONTENT_BOOKSHELF).checkItem(fuel_item))
+		{
+			m_fuel_totaltime = 30/4;
+			m_fuel_time = 0;
+			fuel_list->decrementMaterials(1);
+			changed = true;
+		}
+		else if(ItemSpec(ITEM_MATERIAL, CONTENT_LEAVES).checkItem(fuel_item))
+		{
+			m_fuel_totaltime = 30/16;
+			m_fuel_time = 0;
+			fuel_list->decrementMaterials(1);
+			changed = true;
+		}
+		else if(ItemSpec(ITEM_MATERIAL, CONTENT_PAPYRUS).checkItem(fuel_item))
+		{
+			m_fuel_totaltime = 30/32;
+			m_fuel_time = 0;
+			fuel_list->decrementMaterials(1);
+			changed = true;
+		}
+		else if(ItemSpec(ITEM_MATERIAL, CONTENT_JUNGLEGRASS).checkItem(fuel_item))
+		{
+			m_fuel_totaltime = 30/32;
+			m_fuel_time = 0;
+			fuel_list->decrementMaterials(1);
+			changed = true;
+		}
+		else if(ItemSpec(ITEM_MATERIAL, CONTENT_CACTUS).checkItem(fuel_item))
 		{
 			m_fuel_totaltime = 30/4;
 			m_fuel_time = 0;
