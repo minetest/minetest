@@ -1,5 +1,5 @@
-#!/usr/bin/python2
-# -*- coding: windows-1252 -*-
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
 
 # This program is free software. It comes without any warranty, to
 # the extent permitted by applicable law. You can redistribute it
