@@ -26,35 +26,36 @@
 #include "utility.h"
 #include "modalMenu.h"
 #include "client.h"
+#include "gettext.h"
 #include <string>
 
 static const char *KeyNames[] =
-	{ "-", "Left Button", "Right Button", "Cancel", "Middle Button", "X Button 1",
-			"X Button 2", "-", "Back", "Tab", "-", "-", "Clear", "Return", "-",
-			"-", "Shift", "Control", "Menu", "Pause", "Capital", "Kana", "-",
-			"Junja", "Final", "Kanji", "-", "Escape", "Convert", "Nonconvert",
-			"Accept", "Mode Change", "Space", "Priot", "Next", "End", "Home",
-			"Left", "Up", "Right", "Down", "Select", "Print", "Execute",
-			"Snapshot", "Insert", "Delete", "Help", "0", "1", "2", "3", "4", "5",
+	{ "-", gettext("Left Button"), gettext("Right Button"), gettext("Cancel"), gettext("Middle Button"), gettext("X Button 1"),
+			gettext("X Button 2"), "-", gettext("Back"), gettext("Tab"), "-", "-", gettext("Clear"), gettext("Return"), "-",
+			"-", gettext("Shift"), gettext("Control"), gettext("Menu"), gettext("Pause"), gettext("Capital"), gettext("Kana"), "-",
+			gettext("Junja"), gettext("Final"), gettext("Kanji"), "-", gettext("Escape"), gettext("Convert"), gettext("Nonconvert"),
+			gettext("Accept"), gettext("Mode Change"), gettext("Space"), gettext("Priot"), gettext("Next"), gettext("End"), gettext("Home"),
+			gettext("Left"), gettext("Up"), gettext("Right"), gettext("Down"), gettext("Select"), gettext("Print"), gettext("Execute"),
+			gettext("Snapshot"), gettext("Insert"), gettext("Delete"), gettext("Help"), "0", "1", "2", "3", "4", "5",
 			"6", "7", "8", "9", "-", "-", "-", "-", "-", "-", "-", "A", "B", "C",
 			"D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q",
-			"R", "S", "T", "U", "V", "W", "X", "Y", "Z", "Left Windows",
-			"Right Windows", "Apps", "-", "Sleep", "Numpad 0", "Numpad 1",
-			"Numpad 2", "Numpad 3", "Numpad 4", "Numpad 5", "Numpad 6", "Numpad 7",
-			"Numpad 8", "Numpad 9", "Numpad *", "Numpad +", "Numpad /", "Numpad -",
+			"R", "S", "T", "U", "V", "W", "X", "Y", "Z", gettext("Left Windows"),
+			gettext("Right Windows"), gettext("Apps"), "-", gettext("Sleep"), gettext("Numpad 0"), gettext("Numpad 1"),
+			gettext("Numpad 2"), gettext("Numpad 3"), gettext("Numpad 4"), gettext("Numpad 5"), gettext("Numpad 6"), gettext("Numpad 7"),
+			gettext("Numpad 8"), gettext("Numpad 9"), gettext("Numpad *"), gettext("Numpad +"), gettext("Numpad /"), gettext("Numpad -"),
 			"Numpad .", "Numpad /", "F1", "F2", "F3", "F4", "F5", "F6", "F7", "F8",
 			"F9", "F10", "F11", "F12", "F13", "F14", "F15", "F16", "F17", "F18",
 			"F19", "F20", "F21", "F22", "F23", "F24", "-", "-", "-", "-", "-", "-",
-			"-", "-", "Num Lock", "Scroll Lock", "-", "-", "-", "-", "-", "-", "-",
-			"-", "-", "-", "-", "-", "-", "-", "Left Shift", "Right Shight",
-			"Left Control", "Right Control", "Left Menu", "Right Menu", "-", "-",
+			"-", "-", gettext("Num Lock"), gettext("Scroll Lock"), "-", "-", "-", "-", "-", "-", "-",
+			"-", "-", "-", "-", "-", "-", "-", gettext("Left Shift"), gettext("Right Shight"),
+			gettext("Left Control"), gettext("Right Control"), gettext("Left Menu"), gettext("Right Menu"), "-", "-",
 			"-", "-", "-", "-", "-", "-", "-", "-", "-", "-", "-", "-", "-", "-",
-			"-", "-", "-", "-", "-", "Plus", "Comma", "Minus", "Period", "-", "-",
+			"-", "-", "-", "-", "-", gettext("Plus"), gettext("Comma"), gettext("Minus"), gettext("Period"), "-", "-",
 			"-", "-", "-", "-", "-", "-", "-", "-", "-", "-", "-", "-", "-", "-",
 			"-", "-", "-", "-", "-", "-", "-", "-", "-", "-", "-", "-", "-", "-",
 			"-", "-", "-", "-", "-", "-", "-", "-", "-", "-", "-", "-", "-", "-",
-			"-", "-", "-", "-", "-", "-", "-", "-", "-", "-", "-", "Attn", "CrSel",
-			"ExSel", "Erase OEF", "Play", "Zoom", "PA1", "OEM Clear", "-" };
+			"-", "-", "-", "-", "-", "-", "-", "-", "-", "-", "-", gettext("Attn"), gettext("CrSel"),
+			gettext("ExSel"), gettext("Erase OEF"), gettext("Play"), gettext("Zoom"), gettext("PA1"), gettext("OEM Clear"), "-" };
 	enum
 	{
 		GUI_ID_BACK_BUTTON = 101, GUI_ID_ABORT_BUTTON, GUI_ID_SCROLL_BAR,
