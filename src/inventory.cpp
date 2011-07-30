@@ -46,6 +46,18 @@ InventoryItem::~InventoryItem()
 {
 }
 
+content_t content_translate_from_19_to_internal(content_t c_from)
+{
+	for(u32 i=0; i<sizeof(trans_table_19)/sizeof(trans_table_19[0]); i++)
+	{
+		if(trans_table_19[i][1] == c_from)
+		{
+			return trans_table_19[i][0];
+		}
+	}
+	return c_from;
+}
+
 InventoryItem* InventoryItem::deSerialize(std::istream &is)
 {
 	DSTACK(__FUNCTION_NAME);
@@ -58,6 +70,21 @@ InventoryItem* InventoryItem::deSerialize(std::istream &is)
 	if(name == "MaterialItem")
 	{
 		// u16 reads directly as a number (u8 doesn't)
+		u16 material;
+		is>>material;
+		u16 count;
+		is>>count;
+		// Convert old materials
+		if(material <= 0xff)
+		{
+			material = content_translate_from_19_to_internal(material);
+		}
+		if(material > MAX_CONTENT)
+			throw SerializationError("Too large material number");
+		return new MaterialItem(material, count);
+	}
+	else if(name == "MaterialItem2")
+	{
 		u16 material;
 		is>>material;
 		u16 count;

@@ -24,6 +24,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 void content_mapnode_init();
 
+extern content_t trans_table_19[21][2];
+
 MapNode mapnode_translate_from_internal(MapNode n_from, u8 version);
 MapNode mapnode_translate_to_internal(MapNode n_from, u8 version);
 
