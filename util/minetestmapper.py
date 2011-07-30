@@ -13,6 +13,7 @@
 # 2011-06-02: j0gge: command line parameters, coordinates, players, ...
 # 2011-06-04: celeron55: added #!/usr/bin/python2 and converted \r\n to \n
 #                        to make it easily executable on Linux
+# 2011-07-30: WF: Support for content types extension, refactoring
 
 # Requires Python Imaging Library: http://www.pythonware.com/products/pil/
 
@@ -27,6 +28,33 @@ import string
 import time
 import getopt
 import sys
+import array
+
+CONTENT_WATER = [2, 9]
+
+TRANSLATION_TABLE = {
+	1: 0x800, # CONTENT_GRASS
+	4: 0x801, # CONTENT_TREE
+	5: 0x802, # CONTENT_LEAVES
+	6: 0x803, # CONTENT_GRASS_FOOTSTEPS
+	7: 0x804, # CONTENT_MESE
+	8: 0x805, # CONTENT_MUD
+	10: 0x806, # CONTENT_CLOUD
+	11: 0x807, # CONTENT_COALSTONE
+	12: 0x808, # CONTENT_WOOD
+	13: 0x809, # CONTENT_SAND
+	18: 0x80a, # CONTENT_COBBLE
+	19: 0x80b, # CONTENT_STEEL
+	20: 0x80c, # CONTENT_GLASS
+	22: 0x80d, # CONTENT_MOSSYCOBBLE
+	23: 0x80e, # CONTENT_GRAVEL
+	24: 0x80f, #CONTENT_SANDSTONE
+	25: 0x810, #CONTENT_CACTUS
+	26: 0x811, #CONTENT_BRICK
+	27: 0x812, #CONTENT_CLAY
+	28: 0x813, #CONTENT_PAPYRUS
+	29: 0x814 #CONTENT_BOOKSHELF
+}
 
 def hex_to_int(h):
 	i = int(h, 16)
@@ -70,7 +98,7 @@ except getopt.GetoptError, err:
 	sys.exit(2)
 
 path = "../world/"
-output = "uloste.png"
+output = "map.png"
 border = 0
 scalecolor = "black"
 bgcolor = "white"
@@ -119,14 +147,14 @@ colors = {}
 f = file("colors.txt")
 for line in f:
 	values = string.split(line)
-	colors[int(values[0])] = (int(values[1]), int(values[2]), int(values[3]))
+	colors[int(values[0], 16)] = (int(values[1]), int(values[2]), int(values[3]))
 f.close()
 
 xlist = []
 zlist = []
 
 # List all sectors to memory and calculate the width and heigth of the resulting picture.
-try:
+if os.path.exists(path + "sectors2"):
 	for filename in os.listdir(path + "sectors2"):
 		for filename2 in os.listdir(path + "sectors2/" + filename):
 			x = hex_to_int(filename)
@@ -137,9 +165,8 @@ try:
 				continue
 			xlist.append(x)
 			zlist.append(z)
-except OSError:
-	pass
-try:
+
+if os.path.exists(path + "sectors"):
 	for filename in os.listdir(path + "sectors"):
 		x = hex4_to_int(filename[:4])
 		z = hex4_to_int(filename[-4:])
@@ -149,8 +176,6 @@ try:
 			continue
 		xlist.append(x)
 		zlist.append(z)
-except OSError:
-	pass
 
 minx = min(xlist)
 minz = min(zlist)
@@ -171,7 +196,54 @@ stuff = {}
 starttime = time.time()
 
 def data_is_air(d):
-	return (d == 254 or d == 126)
+	return d in [126, 127, 254]
+
+def read_blocknum(mapdata, version, datapos):
+	if version == 20:
+		if mapdata[datapos] < 0x80:
+			return mapdata[datapos]
+		else:
+			return (mapdata[datapos] << 4) | (mapdata[datapos + 0x2000] >> 4)
+	elif 16 <= version < 20:
+		return TRANSLATION_TABLE.get(mapdata[datapos], mapdata[datapos])
+	else:
+		raise Exception("Unsupported map format: " + str(version))
+
+def read_mapdata(f, version, pixellist, water):
+	global stuff  # oh my :-)
+	
+	dec_o = zlib.decompressobj()
+	try:
+		mapdata = array.array("B", dec_o.decompress(f.read()))
+	except:
+		mapdata = []
+		
+	f.close()
+	
+	if(len(mapdata) < 4096):
+		print "bad: " + xhex + "/" + zhex + "/" + yhex + " " + str(len(mapdata))
+	else:
+		chunkxpos = xpos * 16
+		chunkypos = ypos * 16
+		chunkzpos = zpos * 16
+		blocknum = 0
+		datapos = 0
+		for (x, z) in reversed(pixellist):
+			for y in reversed(range(16)):
+				datapos = x + y * 16 + z * 256
+				blocknum = read_blocknum(mapdata, version, datapos)
+				if not data_is_air(blocknum) and blocknum in colors:
+					if blocknum in CONTENT_WATER:
+						water[(x, z)] += 1
+						# Add dummy stuff for drawing sea without seabed
+						stuff[(chunkxpos + x, chunkzpos + z)] = (chunkypos + y, blocknum, water[(x, z)])
+					else:
+						pixellist.remove((x, z))
+						# Memorize information on the type and height of the block and for drawing the picture.
+						stuff[(chunkxpos + x, chunkzpos + z)] = (chunkypos + y, blocknum, water[(x, z)])
+						break
+				elif not data_is_air(blocknum) and blocknum not in colors:
+					print "strange block: %s/%s/%s x: %d y: %d z: %d block id: %x" % (xhex, zhex, yhex, x, y, z, blocknum)
 
 # Go through all sectors.
 for n in range(len(xlist)):
@@ -238,6 +310,7 @@ for n in range(len(xlist)):
 
 	ylist.sort()
 	
+	
 	# Make a list of pixels of the sector that are to be looked for.
 	pixellist = []
 	water = {}
@@ -260,7 +333,8 @@ for n in range(len(xlist)):
 
 		f = file(filename, "rb")
 
-		version = f.read(1)
+		# Let's just memorize these even though it's not really necessary.
+		version = ord(f.read(1))
 		flags = f.read(1)
 		
 		# Checking day and night differs -flag
@@ -269,35 +343,7 @@ for n in range(len(xlist)):
 			f.close()
 			continue
 
-		dec_o = zlib.decompressobj()
-		try:
-			mapdata = dec_o.decompress(f.read())
-		except:
-			mapdata = []
-			
-		f.close()
-		
-		if(len(mapdata) < 4096):
-			print "bad: " + xhex + "/" + zhex + "/" + yhex + " " + str(len(mapdata))
-		else:
-			chunkxpos = xpos * 16
-			chunkypos = ypos * 16
-			chunkzpos = zpos * 16
-			for (x, z) in reversed(pixellist):
-				for y in reversed(range(16)):
-					datapos = x + y * 16 + z * 256
-					if(not data_is_air(ord(mapdata[datapos])) and ord(mapdata[datapos]) in colors):
-						if(ord(mapdata[datapos]) == 2 or ord(mapdata[datapos]) == 9):
-							water[(x, z)] += 1
-							# Add dummy stuff for drawing sea without seabed
-							stuff[(chunkxpos + x, chunkzpos + z)] = (chunkypos + y, ord(mapdata[datapos]), water[(x, z)])
-						else:
-							pixellist.remove((x, z))
-							# Memorize information on the type and height of the block and for drawing the picture.
-							stuff[(chunkxpos + x, chunkzpos + z)] = (chunkypos + y, ord(mapdata[datapos]), water[(x, z)])
-							break
-					elif(not data_is_air(ord(mapdata[datapos])) and ord(mapdata[datapos]) not in colors):
-						print "strange block: " + xhex + "/" + zhex + "/" + yhex + " x: " + str(x) + " y: " + str(y) + " z: " + str(z) + " palikka: " + str(ord(mapdata[datapos]))
+		read_mapdata(f, version, pixellist, water)
 		
 		# After finding all the pixels in the sector, we can move on to the next sector without having to continue the Y axis.
 		if(len(pixellist) == 0):
@@ -307,38 +353,10 @@ for n in range(len(xlist)):
 		for (ypos, filename) in ylist2:
 			f = file(filename, "rb")
 
-			version = f.read(1)
+			version = ord(f.read(1))
 			flags = f.read(1)
-
-			dec_o = zlib.decompressobj()
-			try:
-				mapdata = dec_o.decompress(f.read())
-			except:
-				mapdata = []
-				
-			f.close()
 			
-			if(len(mapdata) < 4096):
-				print "bad: " + xhex + "/" + zhex + "/" + yhex + " " + str(len(mapdata))
-			else:
-				chunkxpos = xpos * 16
-				chunkypos = ypos * 16
-				chunkzpos = zpos * 16
-				for (x, z) in reversed(pixellist):
-					for y in reversed(range(16)):
-						datapos = x + y * 16 + z * 256
-						if(not data_is_air(ord(mapdata[datapos])) and ord(mapdata[datapos]) in colors):
-							if(ord(mapdata[datapos]) == 2 or ord(mapdata[datapos]) == 9):
-								water[(x, z)] += 1
-								# Add dummy stuff for drawing sea without seabed
-								stuff[(chunkxpos + x, chunkzpos + z)] = (chunkypos + y, ord(mapdata[datapos]), water[(x, z)])
-							else:
-								pixellist.remove((x, z))
-								# Memorize information on the type and height of the block and for drawing the picture.
-								stuff[(chunkxpos + x, chunkzpos + z)] = (chunkypos + y, ord(mapdata[datapos]), water[(x, z)])
-								break
-						elif(not data_is_air(ord(mapdata[datapos])) and ord(mapdata[datapos]) not in colors):
-							print "outo palikka: " + xhex + "/" + zhex + "/" + yhex + " x: " + str(x) + " y: " + str(y) + " z: " + str(z) + " palikka: " + str(ord(mapdata[datapos]))
+			read_mapdata(f, version, pixellist, water)
 			
 			# After finding all the pixels in the sector, we can move on to the next sector without having to continue the Y axis.
 			if(len(pixellist) == 0):
@@ -375,7 +393,7 @@ for (x, z) in stuff.iterkeys():
 		c1 = stuff[(x - 1, z)][1]
 		c2 = stuff[(x, z + 1)][1]
 		c = stuff[(x, z)][1]
-		if c1 != 2 and c1 != 9 and c2 != 2 and c2 != 9 and c != 2 and c != 9:
+		if c1 not in CONTENT_WATER and c2 not in CONTENT_WATER and c not in CONTENT_WATER:
 			y1 = stuff[(x - 1, z)][0]
 			y2 = stuff[(x, z + 1)][0]
 			y = stuff[(x, z)][0]
