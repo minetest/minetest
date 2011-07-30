@@ -1,3 +1,4 @@
+#ifndef GETTEXT_HEADER
 #include "config.h" // for USE_GETTEXT
 
 #if USE_GETTEXT
@@ -35,3 +36,5 @@ inline void changeCtype(const char *l)
 	else
 		std::cout<<"locale has been set to:"<<ret<<std::endl;
 }
+#define GETTEXT_HEADER
+#endif
