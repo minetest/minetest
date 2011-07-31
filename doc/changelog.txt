@@ -3,6 +3,9 @@ Minetest-c55 changelog
 This should contain all the major changes.
 For minor stuff, refer to the commit log of the repository.
 
+2011-07-31_2:
+- Fixes a bug that caused the server to always read an empty password from the client when a client connected.
+
 2011-07-31:
 - A number of small fixes, build system stuff and such (refer to version control log)
 - Map generator no longer crashes at generation limit
