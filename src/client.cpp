@@ -424,7 +424,7 @@ void Client::step(float dtime)
 			memset((char*)&data[3], 0, PLAYERNAME_SIZE);
 			snprintf((char*)&data[3], PLAYERNAME_SIZE, "%s", myplayer->getName());
 
-			/*dstream<<"Client: password hash is \""<<m_password<<"\""
+			/*dstream<<"Client: sending initial password hash: \""<<m_password<<"\""
 					<<std::endl;*/
 
 			memset((char*)&data[23], 0, PASSWORD_SIZE);

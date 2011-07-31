@@ -2020,7 +2020,7 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 
 		// Get password
 		char password[PASSWORD_SIZE];
-		if(datasize >= 2+1+PLAYERNAME_SIZE)
+		if(datasize < 2+1+PLAYERNAME_SIZE+PASSWORD_SIZE)
 		{
 			// old version - assume blank password
 			password[0] = 0;
@@ -2044,7 +2044,10 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 			checkpwd = g_settings.get("default_password");
 		}
 		
-		if(password != checkpwd && checkpwd != "")
+		/*dstream<<"Server: Client gave password '"<<password
+				<<"', the correct one is '"<<checkpwd<<"'"<<std::endl;*/
+		
+		if(password != checkpwd)
 		{
 			derr_server<<DTIME<<"Server: peer_id="<<peer_id
 					<<": supplied invalid password for "
@@ -3350,6 +3353,9 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 			newpwd += c;
 		}
 
+		dstream<<"Server: Client requests a password change from "
+				<<"'"<<oldpwd<<"' to '"<<newpwd<<"'"<<std::endl;
+
 		std::string playername = player->getName();
 
 		if(m_authmanager.exists(playername) == false)
@@ -3361,7 +3367,7 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 		}
 
 		std::string checkpwd = m_authmanager.getPassword(playername);
-		
+
 		if(oldpwd != checkpwd)
 		{
 			dstream<<"Server: invalid old password"<<std::endl;
