@@ -9,7 +9,7 @@ project(minetest-delta)
 
 set(VERSION_MAJOR 0)
 set(VERSION_MINOR 2)
-set(VERSION_PATCH 20110730_rc1)
+set(VERSION_PATCH 20110731_3)
 set(VERSION_STRING "${VERSION_MAJOR}.${VERSION_MINOR}.${VERSION_PATCH}")
 
 # Configuration options
@@ -21,7 +21,11 @@ else()
 endif()
 
 set(BUILD_CLIENT 1 CACHE BOOL "Build client")
-set(BUILD_SERVER 1 CACHE BOOL "Build server")
+if(WIN32)
+	set(BUILD_SERVER 0 CACHE BOOL "Build server")
+else()
+	set(BUILD_SERVER 1 CACHE BOOL "Build server")
+endif()
 
 set(WARN_ALL 1 CACHE BOOL "Enable -Wall for Release build")
 
@@ -60,6 +64,7 @@ elseif(UNIX) # Linux, BSD etc
 endif()
 
 install(FILES "doc/README.txt" DESTINATION "${DOCDIR}")
+install(FILES "doc/changelog.txt" DESTINATION "${DOCDIR}")
 install(FILES "minetest.conf.example" DESTINATION "${DOCDIR}")
 
 #

@@ -129,6 +129,11 @@ set(common_SRCS
 	base64.cpp
 )
 
+# This gives us the icon
+if(WIN32 AND MSVC)
+	set(common_SRCS ${common_SRCS} winresource.rc)
+endif()
+
 # Client sources
 set(minetest_SRCS
 	${common_SRCS}

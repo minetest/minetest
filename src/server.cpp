@@ -1972,20 +1972,23 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 		}
 		
 		/*
-			Check network protocol version
+			Read and check network protocol version
 		*/
+
 		u16 net_proto_version = 0;
 		if(datasize >= 2+1+PLAYERNAME_SIZE+PASSWORD_SIZE+2)
 		{
 			net_proto_version = readU16(&data[2+1+PLAYERNAME_SIZE+PASSWORD_SIZE]);
 		}
+
 		getClient(peer->id)->net_proto_version = net_proto_version;
-		/*if(net_proto_version == 0)
+
+		if(net_proto_version == 0)
 		{
 			SendAccessDenied(m_con, peer_id,
-					L"Your client is too old (network protocol)");
+					L"Your client is too old. Please upgrade.");
 			return;
-		}*/
+		}
 
 		/*
 			Set up player
@@ -2017,7 +2020,7 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 
 		// Get password
 		char password[PASSWORD_SIZE];
-		if(datasize >= 2+1+PLAYERNAME_SIZE)
+		if(datasize < 2+1+PLAYERNAME_SIZE+PASSWORD_SIZE)
 		{
 			// old version - assume blank password
 			password[0] = 0;
@@ -2041,7 +2044,10 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 			checkpwd = g_settings.get("default_password");
 		}
 		
-		if(password != checkpwd && checkpwd != "")
+		/*dstream<<"Server: Client gave password '"<<password
+				<<"', the correct one is '"<<checkpwd<<"'"<<std::endl;*/
+		
+		if(password != checkpwd && m_authmanager.exists(playername))
 		{
 			derr_server<<DTIME<<"Server: peer_id="<<peer_id
 					<<": supplied invalid password for "
@@ -2181,11 +2187,12 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 			message += L" joined game";
 			BroadcastChatMessage(message);
 		}
-
-		if(getClient(peer->id)->net_proto_version == 0)
+		
+		// Warnings about protocol version can be issued here
+		/*if(getClient(peer->id)->net_proto_version == 0)
 		{
 			SendChatMessage(peer_id, L"# Server: NOTE: YOUR CLIENT IS OLD AND DOES NOT WORK PROPERLY WITH THIS SERVER");
-		}
+		}*/
 
 		return;
 	}
@@ -3346,6 +3353,9 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 			newpwd += c;
 		}
 
+		dstream<<"Server: Client requests a password change from "
+				<<"'"<<oldpwd<<"' to '"<<newpwd<<"'"<<std::endl;
+
 		std::string playername = player->getName();
 
 		if(m_authmanager.exists(playername) == false)
@@ -3357,7 +3367,7 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 		}
 
 		std::string checkpwd = m_authmanager.getPassword(playername);
-		
+
 		if(oldpwd != checkpwd)
 		{
 			dstream<<"Server: invalid old password"<<std::endl;
@@ -4130,6 +4140,11 @@ Player *Server::emergePlayer(const char *name, const char *password, u16 peer_id
 		// Reset inventory to creative if in creative mode
 		if(g_settings.getBool("creative_mode"))
 		{
+			// Warning: double code below
+			// Backup actual inventory
+			player->inventory_backup = new Inventory();
+			*(player->inventory_backup) = player->inventory;
+			// Set creative inventory
 			craft_set_creative_inventory(player);
 		}
 
@@ -4183,6 +4198,11 @@ Player *Server::emergePlayer(const char *name, const char *password, u16 peer_id
 		
 		if(g_settings.getBool("creative_mode"))
 		{
+			// Warning: double code above
+			// Backup actual inventory
+			player->inventory_backup = new Inventory();
+			*(player->inventory_backup) = player->inventory;
+			// Set creative inventory
 			craft_set_creative_inventory(player);
 		}
 		else if(g_settings.getBool("give_initial_stuff"))

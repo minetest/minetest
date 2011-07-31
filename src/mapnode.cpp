@@ -150,7 +150,7 @@ void init_mapnode()
 			continue;
 		ContentFeatures *f = &g_content_features[i];
 		f->setAllTextures("unknown_block.png");
-		f->dug_item = std::string("MaterialItem ")+itos(i)+" 1";
+		f->dug_item = std::string("MaterialItem2 ")+itos(i)+" 1";
 	}
 
 	/*

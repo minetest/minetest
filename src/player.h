@@ -121,6 +121,8 @@ public:
 	bool swimming_up;
 	
 	Inventory inventory;
+	// Actual inventory is backed up here when creative mode is used
+	Inventory *inventory_backup;
 
 	bool craftresult_is_preview;
 

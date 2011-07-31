@@ -1579,6 +1579,8 @@ int main(int argc, char *argv[])
 
 				password = translatePassword(playername, menudata.password);
 
+				//dstream<<"Main: password hash: '"<<password<<"'"<<std::endl;
+
 				address = wide_to_narrow(menudata.address);
 				int newport = stoi(wide_to_narrow(menudata.port));
 				if(newport != 0)

@@ -3,6 +3,27 @@ Minetest-c55 changelog
 This should contain all the major changes.
 For minor stuff, refer to the commit log of the repository.
 
+2011-07-31_3:
+- Fixes a bug that made the server to deny non-empty passwords from players connecting the first time
+
+2011-07-31_2:
+- Fixes a bug that caused the server to always read an empty password from the client when a client connected.
+
+2011-07-31:
+- A number of small fixes, build system stuff and such (refer to version control log)
+- Map generator no longer crashes at generation limit
+- Fixed mapgen producing lots of cut-down trees
+- Some minor tweaks in map generator (some contributed)
+- Volumetric clouds (contributed)
+- Icon added (graphic contributed)
+- Key configuration menu (contributed)
+- Decorative blocks and items: bookshelf, sandstone, cactus, clay, brick, papyrus, rail, paper, book (contributed)
+- Jungles!
+- Hotbar is a bit smaller
+- Health is now enabled by default; You can now eat cooked rats to heal yourself.
+- Finally added sword textures, altough sword is still of no use
+- Creative mode now preserves normal mode inventory
+
 2011-07-04:
 - Many small fixes
 - Code reorganizing to aid further development

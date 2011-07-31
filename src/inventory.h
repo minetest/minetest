@@ -136,7 +136,7 @@ public:
 	virtual void serialize(std::ostream &os)
 	{
 		//os.imbue(std::locale("C"));
-		os<<getName();
+		os<<"MaterialItem2";
 		os<<" ";
 		os<<(unsigned int)m_content;
 		os<<" ";
