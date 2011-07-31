@@ -263,7 +263,6 @@ void GUIKeyChangeMenu::regenerateGui(v2u32 screensize)
 	{
 		core::rect < s32 > rect(0, 0, 100, 20);
 		rect += topleft + v2s32(offset.X, offset.Y);
-		const wchar_t *text = L"Range select";
 		Environment->addStaticText(chartowchar_t(gettext("Range select")),
 				rect, false, true, this, -1);
 		//t->setTextAlignment(gui::EGUIA_CENTER, gui::EGUIA_UPPERLEFT);
@@ -281,7 +280,6 @@ void GUIKeyChangeMenu::regenerateGui(v2u32 screensize)
 	{
 		core::rect < s32 > rect(0, 0, 100, 20);
 		rect += topleft + v2s32(offset.X, offset.Y);
-		const wchar_t *text = L"Print stacks";
 		Environment->addStaticText(chartowchar_t(gettext("Print stacks")),
 				rect, false, true, this, -1);
 		//t->setTextAlignment(gui::EGUIA_CENTER, gui::EGUIA_UPPERLEFT);
