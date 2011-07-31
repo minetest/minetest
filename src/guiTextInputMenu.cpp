@@ -109,7 +109,7 @@ void GUITextInputMenu::regenerateGui(v2u32 screensize)
 		core::rect<s32> rect(0, 0, 140, 30);
 		rect = rect + v2s32(size.X/2-140/2, size.Y/2-30/2+25);
 		Environment->addButton(rect, this, 257,
-			chartowchar_t(gettext("Proceed")));
+			wgettext("Proceed"));
 	}
 	changeCtype("C");
 }
