@@ -541,7 +541,7 @@ void getPointedNode(Client *client, v3f player_position,
 
 		else if(n.getContent() == CONTENT_LADDER)
 		{
-			v3s16 dir = unpackDir(n.dir);
+			v3s16 dir = unpackDir(n.param2);
 			v3f dir_f = v3f(dir.X, dir.Y, dir.Z);
 			dir_f *= BS/2 - BS/6 - BS/20;
 			v3f cpf = npf + dir_f;

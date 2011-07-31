@@ -1134,7 +1134,7 @@ void mapblock_mesh_generate_special(MeshMakeData *data,
 			u16 indices[] = {0,1,2,2,3,0};
 			collector.append(material_rail, vertices, 4, indices, 6);
 		}
-		else if (n.d == CONTENT_LADDER) {
+		else if (n.getContent() == CONTENT_LADDER) {
 			u8 l = decode_light(n.getLightBlend(data->m_daynight_ratio));
 			video::SColor c(255,l,l,l);
 
@@ -1149,7 +1149,7 @@ void mapblock_mesh_generate_special(MeshMakeData *data,
 				video::S3DVertex(BS/2-d,BS/2,-BS/2, 0,0,0, c, 0,0),
 			};
 
-			v3s16 dir = unpackDir(n.dir);
+			v3s16 dir = unpackDir(n.param2);
 
 			for(s32 i=0; i<4; i++)
 			{
