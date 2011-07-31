@@ -13,8 +13,8 @@
 
 inline void init_gettext(const char *path) {
 #if USE_GETTEXT
-	#if MSVC
-	#else
+	// don't do this if MSVC compiler is used, it gives an assertion fail
+	#ifndef _MSC_VER
 		setlocale(LC_MESSAGES, "");
 	#endif
 	bindtextdomain(PROJECT_NAME, path);
