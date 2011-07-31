@@ -76,6 +76,5 @@ MapNode mapnode_translate_to_internal(MapNode n_from, u8 version);
 #define CONTENT_NC 0x817
 #define CONTENT_NC_RB 0x818
 
-
 #endif
 
