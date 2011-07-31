@@ -30,6 +30,11 @@ inline wchar_t* chartowchar_t(const char *str)
 	return nstr;
 }
 
+inline wchar_t* wgettext(const char *str)
+{
+	return chartowchar_t(gettext(str));
+}
+
 inline void changeCtype(const char *l)
 {
 	char *ret = NULL;
