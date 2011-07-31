@@ -2047,7 +2047,7 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 		/*dstream<<"Server: Client gave password '"<<password
 				<<"', the correct one is '"<<checkpwd<<"'"<<std::endl;*/
 		
-		if(password != checkpwd)
+		if(password != checkpwd && m_authmanager.exists(playername))
 		{
 			derr_server<<DTIME<<"Server: peer_id="<<peer_id
 					<<": supplied invalid password for "

@@ -3,6 +3,9 @@ Minetest-c55 changelog
 This should contain all the major changes.
 For minor stuff, refer to the commit log of the repository.
 
+2011-07-31_3:
+- Fixes a bug that made the server to deny non-empty passwords from players connecting the first time
+
 2011-07-31_2:
 - Fixes a bug that caused the server to always read an empty password from the client when a client connected.
 
