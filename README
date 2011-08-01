@@ -5,6 +5,9 @@ New features:
 * refactored liquids (currently broken, water does not flow)
 * translation support (including german, french, italian)
 
+New blocks:
+* ladders (crafted from 7 sticks in a H form)
+
 Alternate graphics:
 * Player
 * Omsk birds (instead of Oerkki ghosts)
