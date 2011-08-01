@@ -367,6 +367,9 @@ TODO: Merge bahamada's audio stuff (clean patch available)
 
 TODO: Move content_features to mapnode_content_features.{h,cpp} or so
 
+TODO: Fix item use() stuff; dropping a stack of cooked rats and eating
+      it gives 3 hearts and consumes all the rats.
+
 Making it more portable:
 ------------------------
  
