@@ -154,10 +154,10 @@ void initializePaths()
 	/*
 		OS X
 	*/
-	#elif defined(__APPLE__)
+	#elif defined(__APPLE__) || defined(__FreeBSD__)
 	
 	//TODO: Get path of executable. This assumes working directory is bin/
-	dstream<<"WARNING: Relative path not properly supported on OS X"
+	dstream<<"WARNING: Relative path not properly supported on OS X and FreeBSD"
 			<<std::endl;
 	path_data = std::string("../data");
 	path_userdata = std::string("../");
@@ -244,6 +244,11 @@ void initializePaths()
     CFRelease(resources_url);
 	
 	path_userdata = std::string(getenv("HOME")) + "/Library/Application Support/" + APPNAME;
+
+	#elif defined(__FreeBSD__)
+
+	path_data = std::string(INSTALL_PREFIX) + "/share/" + APPNAME;
+	path_userdata = std::string(getenv("HOME")) + "/." + APPNAME;
     
 	#endif
 
