@@ -305,7 +305,7 @@ void content_mapnode_init()
 
 	i = CONTENT_LADDER;
 	f = &content_features(i);
-	f->setInventoryTexture("item_ladder.png");
+	f->setInventoryTexture("ladder.png");
 	f->light_propagates = true;
 	f->param_type = CPT_LIGHT;
 	f->is_ground_content = true;
