@@ -538,6 +538,56 @@ void getPointedNode(Client *client, v3f player_position,
 				}
 			}
 		}
+
+		else if(n.getContent() == CONTENT_LADDER)
+		{
+			v3s16 dir = unpackDir(n.param2);
+			v3f dir_f = v3f(dir.X, dir.Y, dir.Z);
+			dir_f *= BS/2 - BS/6 - BS/20;
+			v3f cpf = npf + dir_f;
+			f32 distance = (cpf - camera_position).getLength();
+
+			v3f vertices[4] =
+			{
+				v3f(BS*0.42,-BS/2,-BS/2),
+				v3f(BS*0.49, BS/2, BS/2),
+			};
+
+			for(s32 i=0; i<2; i++)
+			{
+				if(dir == v3s16(1,0,0))
+					vertices[i].rotateXZBy(0);
+				if(dir == v3s16(-1,0,0))
+					vertices[i].rotateXZBy(180);
+				if(dir == v3s16(0,0,1))
+					vertices[i].rotateXZBy(90);
+				if(dir == v3s16(0,0,-1))
+					vertices[i].rotateXZBy(-90);
+				if(dir == v3s16(0,-1,0))
+					vertices[i].rotateXYBy(-90);
+				if(dir == v3s16(0,1,0))
+					vertices[i].rotateXYBy(90);
+
+				vertices[i] += npf;
+			}
+
+			core::aabbox3d<f32> box;
+
+			box = core::aabbox3d<f32>(vertices[0]);
+			box.addInternalPoint(vertices[1]);
+
+			if(distance < mindistance)
+			{
+				if(box.intersectsWithLine(shootline))
+				{
+					nodefound = true;
+					nodepos = np;
+					neighbourpos = np;
+					mindistance = distance;
+					nodehilightbox = box;
+				}
+			}
+		}
 		else if(n.getContent() == CONTENT_RAIL)
 		{
 			v3s16 dir = unpackDir(n.param0);

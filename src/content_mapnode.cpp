@@ -303,6 +303,20 @@ void content_mapnode_init()
 	f->walkable = false;
 	setDirtLikeDiggingProperties(f->digging_properties, 0.75);
 
+	i = CONTENT_LADDER;
+	f = &content_features(i);
+	f->setInventoryTexture("item_ladder.png");
+	f->light_propagates = true;
+	f->param_type = CPT_LIGHT;
+	f->is_ground_content = true;
+	f->dug_item = std::string("MaterialItem ")+itos(i)+" 1";
+	f->wall_mounted = true;
+	f->solidness = 0;
+	f->air_equivalent = true;
+	f->walkable = false;
+	f->climbable = true;
+	setWoodLikeDiggingProperties(f->digging_properties, 0.5);
+
 	// Deprecated
 	i = CONTENT_COALSTONE;
 	f = &content_features(i);
