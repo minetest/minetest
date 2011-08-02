@@ -1,0 +1,497 @@
+# German translations for minetest-c55 package.
+# Copyright (C) 2011 celeron
+# This file is distributed under the same license as the minetest-c55 package.
+# Frederik Helth <Guides@live.dk>, 2011.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: 0.0.0\n"
+"Report-Msgid-Bugs-To: Constantin Wenger <constantin.wenger@googlemail.com>\n"
+"POT-Creation-Date: 2011-07-30 11:20+0200\n"
+"PO-Revision-Date: 2011-08-02 00:31+0100\n"
+"Last-Translator: Frederik Helth <Guides@live.dk>\n"
+"Language-Team: \n"
+"Language: da\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: src/guiKeyChangeMenu.cpp:84
+msgid "KEYBINDINGS"
+msgstr ""
+
+#: src/guiKeyChangeMenu.cpp:94
+msgid "Forward"
+msgstr "Frem"
+
+#: src/guiKeyChangeMenu.cpp:111
+msgid "Backward"
+msgstr "Tilbage"
+
+#: src/guiKeyChangeMenu.cpp:127
+#: src/guiKeyChangeMenu.h:38
+msgid "Left"
+msgstr "Venstre"
+
+#: src/guiKeyChangeMenu.cpp:142
+#: src/guiKeyChangeMenu.h:38
+msgid "Right"
+msgstr "Højre"
+
+#: src/guiKeyChangeMenu.cpp:158
+msgid "Use"
+msgstr "Brug"
+
+#: src/guiKeyChangeMenu.cpp:173
+msgid "Sneak"
+msgstr "Snig"
+
+#: src/guiKeyChangeMenu.cpp:189
+msgid "Jump"
+msgstr "Hop"
+
+#: src/guiKeyChangeMenu.cpp:204
+msgid "Inventory"
+msgstr "Ting"
+
+#: src/guiKeyChangeMenu.cpp:220
+msgid "Chat"
+msgstr "Chat"
+
+#: src/guiKeyChangeMenu.cpp:236
+msgid "Toggle fly"
+msgstr "Flyvning"
+
+#: src/guiKeyChangeMenu.cpp:251
+msgid "Toggle fast"
+msgstr "Hurtig flyvning"
+
+#: src/guiKeyChangeMenu.cpp:267
+msgid "Range select"
+msgstr "Afstands load"
+
+#: src/guiKeyChangeMenu.cpp:285
+msgid "Print stacks"
+msgstr "Print stykker"
+
+#: src/guiKeyChangeMenu.cpp:300
+msgid "Save"
+msgstr "Gem"
+
+#: src/guiKeyChangeMenu.cpp:306
+#: src/guiKeyChangeMenu.h:33
+msgid "Cancel"
+msgstr "Afslut"
+
+#: src/guiKeyChangeMenu.cpp:531
+#: src/guiKeyChangeMenu.cpp:536
+#: src/guiKeyChangeMenu.cpp:541
+#: src/guiKeyChangeMenu.cpp:546
+#: src/guiKeyChangeMenu.cpp:551
+#: src/guiKeyChangeMenu.cpp:556
+#: src/guiKeyChangeMenu.cpp:561
+#: src/guiKeyChangeMenu.cpp:566
+#: src/guiKeyChangeMenu.cpp:571
+#: src/guiKeyChangeMenu.cpp:576
+#: src/guiKeyChangeMenu.cpp:581
+#: src/guiKeyChangeMenu.cpp:586
+#: src/guiKeyChangeMenu.cpp:591
+msgid "press Key"
+msgstr "Tryk knap"
+
+#: src/guiKeyChangeMenu.h:33
+msgid "Left Button"
+msgstr "Venstre Knap"
+
+#: src/guiKeyChangeMenu.h:33
+msgid "Middle Button"
+msgstr "Midt Knap"
+
+#: src/guiKeyChangeMenu.h:33
+msgid "Right Button"
+msgstr "Højre Knap"
+
+#: src/guiKeyChangeMenu.h:33
+msgid "X Button 1"
+msgstr ""
+
+#: src/guiKeyChangeMenu.h:34
+msgid "Back"
+msgstr "Tilbage"
+
+#: src/guiKeyChangeMenu.h:34
+msgid "Clear"
+msgstr "Rens"
+
+#: src/guiKeyChangeMenu.h:34
+msgid "Return"
+msgstr "Tilbage"
+
+#: src/guiKeyChangeMenu.h:34
+msgid "Tab"
+msgstr ""
+
+#: src/guiKeyChangeMenu.h:34
+msgid "X Button 2"
+msgstr ""
+
+#: src/guiKeyChangeMenu.h:35
+msgid "Capital"
+msgstr ""
+
+#: src/guiKeyChangeMenu.h:35
+msgid "Control"
+msgstr "Kontrol"
+
+#: src/guiKeyChangeMenu.h:35
+msgid "Kana"
+msgstr ""
+
+#: src/guiKeyChangeMenu.h:35
+msgid "Menu"
+msgstr ""
+
+#: src/guiKeyChangeMenu.h:35
+msgid "Pause"
+msgstr ""
+
+#: src/guiKeyChangeMenu.h:35
+msgid "Shift"
+msgstr ""
+
+#: src/guiKeyChangeMenu.h:36
+msgid "Convert"
+msgstr ""
+
+#: src/guiKeyChangeMenu.h:36
+msgid "Escape"
+msgstr ""
+
+#: src/guiKeyChangeMenu.h:36
+msgid "Final"
+msgstr ""
+
+#: src/guiKeyChangeMenu.h:36
+msgid "Junja"
+msgstr ""
+
+#: src/guiKeyChangeMenu.h:36
+msgid "Kanji"
+msgstr ""
+
+#: src/guiKeyChangeMenu.h:36
+msgid "Nonconvert"
+msgstr ""
+
+#: src/guiKeyChangeMenu.h:37
+msgid "Accept"
+msgstr "Accepter"
+
+#: src/guiKeyChangeMenu.h:37
+msgid "End"
+msgstr "Slut"
+
+#: src/guiKeyChangeMenu.h:37
+msgid "Home"
+msgstr "Hjem"
+
+#: src/guiKeyChangeMenu.h:37
+msgid "Mode Change"
+msgstr "Mode skift"
+
+#: src/guiKeyChangeMenu.h:37
+msgid "Next"
+msgstr "Næste"
+
+#: src/guiKeyChangeMenu.h:37
+msgid "Priot"
+msgstr ""
+
+#: src/guiKeyChangeMenu.h:37
+msgid "Space"
+msgstr "Mellemrum"
+
+#: src/guiKeyChangeMenu.h:38
+msgid "Down"
+msgstr "Ned"
+
+#: src/guiKeyChangeMenu.h:38
+msgid "Execute"
+msgstr ""
+
+#: src/guiKeyChangeMenu.h:38
+msgid "Print"
+msgstr ""
+
+#: src/guiKeyChangeMenu.h:38
+msgid "Select"
+msgstr "Vælge"
+
+#: src/guiKeyChangeMenu.h:38
+msgid "Up"
+msgstr "Op"
+
+#: src/guiKeyChangeMenu.h:39
+msgid "Delete"
+msgstr "Slet"
+
+#: src/guiKeyChangeMenu.h:39
+msgid "Help"
+msgstr "Hjælp"
+
+#: src/guiKeyChangeMenu.h:39
+msgid "Insert"
+msgstr "Indset"
+
+#: src/guiKeyChangeMenu.h:39
+msgid "Snapshot"
+msgstr "Screenshot"
+
+#: src/guiKeyChangeMenu.h:42
+msgid "Left Windows"
+msgstr "Venstre windows"
+
+#: src/guiKeyChangeMenu.h:43
+msgid "Apps"
+msgstr ""
+
+#: src/guiKeyChangeMenu.h:43
+msgid "Numpad 0"
+msgstr ""
+
+#: src/guiKeyChangeMenu.h:43
+msgid "Numpad 1"
+msgstr ""
+
+#: src/guiKeyChangeMenu.h:43
+msgid "Right Windows"
+msgstr ""
+
+#: src/guiKeyChangeMenu.h:43
+msgid "Sleep"
+msgstr ""
+
+#: src/guiKeyChangeMenu.h:44
+msgid "Numpad 2"
+msgstr ""
+
+#: src/guiKeyChangeMenu.h:44
+msgid "Numpad 3"
+msgstr ""
+
+#: src/guiKeyChangeMenu.h:44
+msgid "Numpad 4"
+msgstr ""
+
+#: src/guiKeyChangeMenu.h:44
+msgid "Numpad 5"
+msgstr ""
+
+#: src/guiKeyChangeMenu.h:44
+msgid "Numpad 6"
+msgstr ""
+
+#: src/guiKeyChangeMenu.h:44
+msgid "Numpad 7"
+msgstr ""
+
+#: src/guiKeyChangeMenu.h:45
+msgid "Numpad *"
+msgstr ""
+
+#: src/guiKeyChangeMenu.h:45
+msgid "Numpad +"
+msgstr ""
+
+#: src/guiKeyChangeMenu.h:45
+msgid "Numpad -"
+msgstr ""
+
+#: src/guiKeyChangeMenu.h:45
+msgid "Numpad /"
+msgstr ""
+
+#: src/guiKeyChangeMenu.h:45
+msgid "Numpad 8"
+msgstr ""
+
+#: src/guiKeyChangeMenu.h:45
+msgid "Numpad 9"
+msgstr ""
+
+#: src/guiKeyChangeMenu.h:49
+msgid "Num Lock"
+msgstr ""
+
+#: src/guiKeyChangeMenu.h:49
+msgid "Scroll Lock"
+msgstr ""
+
+#: src/guiKeyChangeMenu.h:50
+msgid "Left Shift"
+msgstr ""
+
+#: src/guiKeyChangeMenu.h:50
+msgid "Right Shight"
+msgstr ""
+
+#: src/guiKeyChangeMenu.h:51
+msgid "Left Control"
+msgstr ""
+
+#: src/guiKeyChangeMenu.h:51
+msgid "Left Menu"
+msgstr ""
+
+#: src/guiKeyChangeMenu.h:51
+msgid "Right Control"
+msgstr ""
+
+#: src/guiKeyChangeMenu.h:51
+msgid "Right Menu"
+msgstr ""
+
+#: src/guiKeyChangeMenu.h:53
+msgid "Comma"
+msgstr ""
+
+#: src/guiKeyChangeMenu.h:53
+msgid "Minus"
+msgstr ""
+
+#: src/guiKeyChangeMenu.h:53
+msgid "Period"
+msgstr ""
+
+#: src/guiKeyChangeMenu.h:53
+msgid "Plus"
+msgstr ""
+
+#: src/guiKeyChangeMenu.h:57
+msgid "Attn"
+msgstr ""
+
+#: src/guiKeyChangeMenu.h:57
+msgid "CrSel"
+msgstr ""
+
+#: src/guiKeyChangeMenu.h:58
+msgid "Erase OEF"
+msgstr ""
+
+#: src/guiKeyChangeMenu.h:58
+msgid "ExSel"
+msgstr ""
+
+#: src/guiKeyChangeMenu.h:58
+msgid "OEM Clear"
+msgstr ""
+
+#: src/guiKeyChangeMenu.h:58
+msgid "PA1"
+msgstr ""
+
+#: src/guiKeyChangeMenu.h:58
+msgid "Play"
+msgstr "Spil"
+
+#: src/guiKeyChangeMenu.h:58
+msgid "Zoom"
+msgstr ""
+
+#: src/guiMainMenu.cpp:181
+msgid "Name/Password"
+msgstr "Navn/kodeord"
+
+#: src/guiMainMenu.cpp:206
+msgid "Address/Port"
+msgstr "Adresse/port"
+
+#: src/guiMainMenu.cpp:228
+msgid "Leave address blank to start a local server."
+msgstr "Lad black for at spille localt"
+
+#: src/guiMainMenu.cpp:235
+msgid "Fancy trees"
+msgstr "Fancy trær"
+
+#: src/guiMainMenu.cpp:241
+msgid "Smooth Lighting"
+msgstr ""
+
+#: src/guiMainMenu.cpp:249
+msgid "Start Game / Connect"
+msgstr "Start spil"
+
+#: src/guiMainMenu.cpp:258
+msgid "Change keys"
+msgstr "Indstillinger"
+
+#: src/guiMainMenu.cpp:281
+msgid "Creative Mode"
+msgstr "Kreativ mode"
+
+#: src/guiMainMenu.cpp:287
+msgid "Enable Damage"
+msgstr "Tag imod skade"
+
+#: src/guiMainMenu.cpp:295
+msgid "Delete map"
+msgstr "Slet mappen"
+
+#: src/guiMessageMenu.cpp:94
+#: src/guiTextInputMenu.cpp:112
+msgid "Proceed"
+msgstr "Fortsæt"
+
+#: src/guiPasswordChange.cpp:103
+msgid "Old Password"
+msgstr "Gamle kodeord"
+
+#: src/guiPasswordChange.cpp:120
+msgid "New Password"
+msgstr "Nye kodeord"
+
+#: src/guiPasswordChange.cpp:136
+msgid "Confirm Password"
+msgstr "Gentag kodeord"
+
+#: src/guiPasswordChange.cpp:153
+msgid "Change"
+msgstr "Skift"
+
+#: src/guiPasswordChange.cpp:162
+msgid "Passwords do not match!"
+msgstr "Kodeordne matcher ikke hinanden!"
+
+#: src/guiPauseMenu.cpp:111
+msgid "Continue"
+msgstr "Fortsæt"
+
+#: src/guiPauseMenu.cpp:118
+msgid "Change Password"
+msgstr "Skift kodeord"
+
+#: src/guiPauseMenu.cpp:125
+msgid "Disconnect"
+msgstr "Logud"
+
+#: src/guiPauseMenu.cpp:132
+msgid "Exit to OS"
+msgstr "Afslut til OS"
+
+#: src/guiPauseMenu.cpp:139
+msgid ""
+"Keys:\n"
+"- WASD: Walk\n"
+"- Mouse left: dig blocks\n"
+"- Mouse right: place blocks\n"
+"- Mouse wheel: select item\n"
+"- 0...9: select item\n"
+"- Shift: sneak\n"
+"- R: Toggle viewing all loaded chunks\n"
+"- I: Inventory menu\n"
+"- ESC: This menu\n"
+"- T: Chat\n"
+msgstr ""
+
