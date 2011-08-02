@@ -1666,7 +1666,7 @@ void Map::transformLiquids(core::map<v3s16, MapBlock*> & modified_blocks)
 		/*
 			decide on the type (and possibly level) of the current node
 		 */
-		u8 new_node_content;
+		content_t new_node_content;
 		s8 new_node_level = -1;
 		if (num_sources >= 2 || liquid_type == LIQUID_SOURCE) {
 			// liquid_kind will be set to either the flowing alternative of the node (if it's a liquid)
@@ -1736,9 +1736,10 @@ void Map::transformLiquids(core::map<v3s16, MapBlock*> & modified_blocks)
 		n0.setContent(new_node_content);
 		if (content_features(n0.getContent()).liquid_type == LIQUID_FLOWING) {
 			// set level to last 3 bits, flowing down bit to 4th bit
-			n0.param2 = (flowing_down ? LIQUID_FLOW_DOWN_MASK : 0x00) | (new_node_level & LIQUID_LEVEL_MASK);
+			n0.param2 |= (flowing_down ? LIQUID_FLOW_DOWN_MASK : 0x00) | (new_node_level & LIQUID_LEVEL_MASK);
 		} else {
-			n0.param2 = 0;
+			// set the liquid level and flow bit to 0
+			n0.param2 &= ~(LIQUID_LEVEL_MASK | LIQUID_FLOW_DOWN_MASK);
 		}
 		setNode(p0, n0);
 		v3s16 blockpos = getNodeBlockPos(p0);
