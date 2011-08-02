@@ -23,23 +23,23 @@ msgstr ""
 
 #: src/guiKeyChangeMenu.cpp:94
 msgid "Forward"
-msgstr ""
+msgstr "Avanti"
 
 #: src/guiKeyChangeMenu.cpp:111
 msgid "Backward"
-msgstr ""
+msgstr "Indietro"
 
 #: src/guiKeyChangeMenu.cpp:127 src/guiKeyChangeMenu.h:38
 msgid "Left"
-msgstr ""
+msgstr "Sinistra"
 
 #: src/guiKeyChangeMenu.cpp:142 src/guiKeyChangeMenu.h:38
 msgid "Right"
-msgstr ""
+msgstr "Destra"
 
 #: src/guiKeyChangeMenu.cpp:158
 msgid "Use"
-msgstr ""
+msgstr "Usa"
 
 #: src/guiKeyChangeMenu.cpp:173
 msgid "Sneak"
@@ -47,15 +47,15 @@ msgstr ""
 
 #: src/guiKeyChangeMenu.cpp:189
 msgid "Jump"
-msgstr ""
+msgstr "Salta"
 
 #: src/guiKeyChangeMenu.cpp:204
 msgid "Inventory"
-msgstr ""
+msgstr "Invetario"
 
 #: src/guiKeyChangeMenu.cpp:220
 msgid "Chat"
-msgstr ""
+msgstr "Parla"
 
 #: src/guiKeyChangeMenu.cpp:236
 msgid "Toggle fly"
@@ -75,11 +75,11 @@ msgstr ""
 
 #: src/guiKeyChangeMenu.cpp:298
 msgid "Save"
-msgstr ""
+msgstr "Salva"
 
 #: src/guiKeyChangeMenu.cpp:304 src/guiKeyChangeMenu.h:33
 msgid "Cancel"
-msgstr ""
+msgstr "Annulla"
 
 #: src/guiKeyChangeMenu.cpp:537 src/guiKeyChangeMenu.cpp:542
 #: src/guiKeyChangeMenu.cpp:547 src/guiKeyChangeMenu.cpp:552
@@ -89,19 +89,19 @@ msgstr ""
 #: src/guiKeyChangeMenu.cpp:587 src/guiKeyChangeMenu.cpp:592
 #: src/guiKeyChangeMenu.cpp:597
 msgid "press Key"
-msgstr ""
+msgstr "premi tasto"
 
 #: src/guiKeyChangeMenu.h:33
 msgid "Left Button"
-msgstr ""
+msgstr "Tasto sinistro"
 
 #: src/guiKeyChangeMenu.h:33
 msgid "Middle Button"
-msgstr ""
+msgstr "Tasto centrale"
 
 #: src/guiKeyChangeMenu.h:33
 msgid "Right Button"
-msgstr ""
+msgstr "Tasto destro"
 
 #: src/guiKeyChangeMenu.h:33
 msgid "X Button 1"
@@ -109,7 +109,7 @@ msgstr ""
 
 #: src/guiKeyChangeMenu.h:34
 msgid "Back"
-msgstr ""
+msgstr "Indietro"
 
 #: src/guiKeyChangeMenu.h:34
 msgid "Clear"
@@ -117,7 +117,7 @@ msgstr ""
 
 #: src/guiKeyChangeMenu.h:34
 msgid "Return"
-msgstr ""
+msgstr "Invio"
 
 #: src/guiKeyChangeMenu.h:34
 msgid "Tab"
@@ -188,9 +188,8 @@ msgid "Home"
 msgstr ""
 
 #: src/guiKeyChangeMenu.h:37
-#, fuzzy
 msgid "Mode Change"
-msgstr "Modifica"
+msgstr ""
 
 #: src/guiKeyChangeMenu.h:37
 msgid "Next"
@@ -202,11 +201,11 @@ msgstr ""
 
 #: src/guiKeyChangeMenu.h:37
 msgid "Space"
-msgstr ""
+msgstr "Spazio"
 
 #: src/guiKeyChangeMenu.h:38
 msgid "Down"
-msgstr ""
+msgstr "Giù"
 
 #: src/guiKeyChangeMenu.h:38
 msgid "Execute"
@@ -214,7 +213,7 @@ msgstr ""
 
 #: src/guiKeyChangeMenu.h:38
 msgid "Print"
-msgstr ""
+msgstr "Stampa"
 
 #: src/guiKeyChangeMenu.h:38
 msgid "Select"
@@ -225,9 +224,8 @@ msgid "Up"
 msgstr ""
 
 #: src/guiKeyChangeMenu.h:39
-#, fuzzy
 msgid "Delete"
-msgstr "Cancella mappa"
+msgstr "Cancella"
 
 #: src/guiKeyChangeMenu.h:39
 msgid "Help"
