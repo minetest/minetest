@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: 0.0.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2011-07-30 11:20+0200\n"
+"POT-Creation-Date: 2011-08-02 12:36+0200\n"
 "PO-Revision-Date: 2011-08-02 11:54+0100\n"
 "Last-Translator: Constantin Wenger <constantin.wenger@googlemail.com>\n"
 "Language-Team: Deutsch <>\n"
@@ -29,13 +29,11 @@ msgstr "Vorwärts"
 msgid "Backward"
 msgstr "Rückwärts"
 
-#: src/guiKeyChangeMenu.cpp:127
-#: src/guiKeyChangeMenu.h:38
+#: src/guiKeyChangeMenu.cpp:127 src/guiKeyChangeMenu.h:38
 msgid "Left"
 msgstr "Links"
 
-#: src/guiKeyChangeMenu.cpp:142
-#: src/guiKeyChangeMenu.h:38
+#: src/guiKeyChangeMenu.cpp:142 src/guiKeyChangeMenu.h:38
 msgid "Right"
 msgstr "Rechts"
 
@@ -67,36 +65,29 @@ msgstr "Fliegen umsch."
 msgid "Toggle fast"
 msgstr "Speed umsch."
 
-#: src/guiKeyChangeMenu.cpp:267
+#: src/guiKeyChangeMenu.cpp:266
 msgid "Range select"
 msgstr "Entfernung wählen"
 
-#: src/guiKeyChangeMenu.cpp:285
+#: src/guiKeyChangeMenu.cpp:283
 msgid "Print stacks"
 msgstr "Stack ausgeben"
 
-#: src/guiKeyChangeMenu.cpp:300
+#: src/guiKeyChangeMenu.cpp:298
 msgid "Save"
 msgstr "Speichern"
 
-#: src/guiKeyChangeMenu.cpp:306
-#: src/guiKeyChangeMenu.h:33
+#: src/guiKeyChangeMenu.cpp:304 src/guiKeyChangeMenu.h:33
 msgid "Cancel"
 msgstr "Abbrechen"
 
-#: src/guiKeyChangeMenu.cpp:531
-#: src/guiKeyChangeMenu.cpp:536
-#: src/guiKeyChangeMenu.cpp:541
-#: src/guiKeyChangeMenu.cpp:546
-#: src/guiKeyChangeMenu.cpp:551
-#: src/guiKeyChangeMenu.cpp:556
-#: src/guiKeyChangeMenu.cpp:561
-#: src/guiKeyChangeMenu.cpp:566
-#: src/guiKeyChangeMenu.cpp:571
-#: src/guiKeyChangeMenu.cpp:576
-#: src/guiKeyChangeMenu.cpp:581
-#: src/guiKeyChangeMenu.cpp:586
-#: src/guiKeyChangeMenu.cpp:591
+#: src/guiKeyChangeMenu.cpp:537 src/guiKeyChangeMenu.cpp:542
+#: src/guiKeyChangeMenu.cpp:547 src/guiKeyChangeMenu.cpp:552
+#: src/guiKeyChangeMenu.cpp:557 src/guiKeyChangeMenu.cpp:562
+#: src/guiKeyChangeMenu.cpp:567 src/guiKeyChangeMenu.cpp:572
+#: src/guiKeyChangeMenu.cpp:577 src/guiKeyChangeMenu.cpp:582
+#: src/guiKeyChangeMenu.cpp:587 src/guiKeyChangeMenu.cpp:592
+#: src/guiKeyChangeMenu.cpp:597
 msgid "press Key"
 msgstr "Taste drücken"
 
@@ -440,8 +431,7 @@ msgstr "Schaden einschalten"
 msgid "Delete map"
 msgstr "Karte löschen"
 
-#: src/guiMessageMenu.cpp:94
-#: src/guiTextInputMenu.cpp:112
+#: src/guiMessageMenu.cpp:94 src/guiTextInputMenu.cpp:112
 msgid "Proceed"
 msgstr "Fortsetzen"
 
@@ -482,11 +472,12 @@ msgid "Exit to OS"
 msgstr "Programm beenden"
 
 #: src/guiPauseMenu.cpp:139
+#, fuzzy
 msgid ""
-"Keys:\n"
+"Default Controls:\n"
 "- WASD: Walk\n"
-"- Mouse left: dig blocks\n"
-"- Mouse right: place blocks\n"
+"- Mouse left: dig/hit\n"
+"- Mouse right: place/use\n"
 "- Mouse wheel: select item\n"
 "- 0...9: select item\n"
 "- Shift: sneak\n"
@@ -505,4 +496,3 @@ msgstr ""
 "- R: alle geladenen Blöcke anzeigen (wechseln)\n"
 "- I: Inventarmenü\n"
 "- T: Chat\n"
-

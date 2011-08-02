@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: 0.0.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2011-07-30 11:20+0200\n"
+"POT-Creation-Date: 2011-08-02 12:36+0200\n"
 "PO-Revision-Date: 2011-07-21 15:48+0200\n"
 "Last-Translator: Cyriaque 'Cisoun' Skrapits <cysoun@gmail.com>\n"
 "Language-Team: Français <>\n"
@@ -65,29 +65,29 @@ msgstr ""
 msgid "Toggle fast"
 msgstr ""
 
-#: src/guiKeyChangeMenu.cpp:267
+#: src/guiKeyChangeMenu.cpp:266
 msgid "Range select"
 msgstr ""
 
-#: src/guiKeyChangeMenu.cpp:285
+#: src/guiKeyChangeMenu.cpp:283
 msgid "Print stacks"
 msgstr ""
 
-#: src/guiKeyChangeMenu.cpp:300
+#: src/guiKeyChangeMenu.cpp:298
 msgid "Save"
 msgstr ""
 
-#: src/guiKeyChangeMenu.cpp:306 src/guiKeyChangeMenu.h:33
+#: src/guiKeyChangeMenu.cpp:304 src/guiKeyChangeMenu.h:33
 msgid "Cancel"
 msgstr ""
 
-#: src/guiKeyChangeMenu.cpp:531 src/guiKeyChangeMenu.cpp:536
-#: src/guiKeyChangeMenu.cpp:541 src/guiKeyChangeMenu.cpp:546
-#: src/guiKeyChangeMenu.cpp:551 src/guiKeyChangeMenu.cpp:556
-#: src/guiKeyChangeMenu.cpp:561 src/guiKeyChangeMenu.cpp:566
-#: src/guiKeyChangeMenu.cpp:571 src/guiKeyChangeMenu.cpp:576
-#: src/guiKeyChangeMenu.cpp:581 src/guiKeyChangeMenu.cpp:586
-#: src/guiKeyChangeMenu.cpp:591
+#: src/guiKeyChangeMenu.cpp:537 src/guiKeyChangeMenu.cpp:542
+#: src/guiKeyChangeMenu.cpp:547 src/guiKeyChangeMenu.cpp:552
+#: src/guiKeyChangeMenu.cpp:557 src/guiKeyChangeMenu.cpp:562
+#: src/guiKeyChangeMenu.cpp:567 src/guiKeyChangeMenu.cpp:572
+#: src/guiKeyChangeMenu.cpp:577 src/guiKeyChangeMenu.cpp:582
+#: src/guiKeyChangeMenu.cpp:587 src/guiKeyChangeMenu.cpp:592
+#: src/guiKeyChangeMenu.cpp:597
 msgid "press Key"
 msgstr ""
 
@@ -474,11 +474,12 @@ msgid "Exit to OS"
 msgstr "Quitter le jeu"
 
 #: src/guiPauseMenu.cpp:139
+#, fuzzy
 msgid ""
-"Keys:\n"
+"Default Controls:\n"
 "- WASD: Walk\n"
-"- Mouse left: dig blocks\n"
-"- Mouse right: place blocks\n"
+"- Mouse left: dig/hit\n"
+"- Mouse right: place/use\n"
 "- Mouse wheel: select item\n"
 "- 0...9: select item\n"
 "- Shift: sneak\n"
