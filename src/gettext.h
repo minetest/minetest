@@ -1,5 +1,6 @@
 #ifndef GETTEXT_HEADER
 #include "config.h" // for USE_GETTEXT
+#include <iostream>
 
 #if USE_GETTEXT
 #include <libintl.h>
