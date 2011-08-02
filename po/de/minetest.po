@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: 0.0.0\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2011-07-30 11:20+0200\n"
-"PO-Revision-Date: 2011-07-30 22:27+0100\n"
+"PO-Revision-Date: 2011-08-02 11:54+0100\n"
 "Last-Translator: Constantin Wenger <constantin.wenger@googlemail.com>\n"
 "Language-Team: Deutsch <>\n"
 "Language: de\n"
@@ -61,11 +61,11 @@ msgstr "Chat"
 
 #: src/guiKeyChangeMenu.cpp:236
 msgid "Toggle fly"
-msgstr "Fliegen umschalten"
+msgstr "Fliegen umsch."
 
 #: src/guiKeyChangeMenu.cpp:251
 msgid "Toggle fast"
-msgstr "Speed umschalten"
+msgstr "Speed umsch."
 
 #: src/guiKeyChangeMenu.cpp:267
 msgid "Range select"
@@ -118,7 +118,7 @@ msgstr ""
 
 #: src/guiKeyChangeMenu.h:34
 msgid "Back"
-msgstr "Zurück"
+msgstr "Rücktaste"
 
 #: src/guiKeyChangeMenu.h:34
 msgid "Clear"
@@ -138,7 +138,7 @@ msgstr ""
 
 #: src/guiKeyChangeMenu.h:35
 msgid "Capital"
-msgstr ""
+msgstr "Feststellen"
 
 #: src/guiKeyChangeMenu.h:35
 msgid "Control"
@@ -158,7 +158,7 @@ msgstr "Pause"
 
 #: src/guiKeyChangeMenu.h:35
 msgid "Shift"
-msgstr "Umschalten"
+msgstr "Umsch."
 
 #: src/guiKeyChangeMenu.h:36
 msgid "Convert"
@@ -194,7 +194,7 @@ msgstr "Ende"
 
 #: src/guiKeyChangeMenu.h:37
 msgid "Home"
-msgstr "Home"
+msgstr "Pos1"
 
 #: src/guiKeyChangeMenu.h:37
 msgid "Mode Change"
@@ -202,11 +202,11 @@ msgstr ""
 
 #: src/guiKeyChangeMenu.h:37
 msgid "Next"
-msgstr "Nächstes"
+msgstr "Bild runter"
 
 #: src/guiKeyChangeMenu.h:37
 msgid "Priot"
-msgstr ""
+msgstr "Bild hoch"
 
 #: src/guiKeyChangeMenu.h:37
 msgid "Space"
@@ -330,11 +330,11 @@ msgstr "Rollen"
 
 #: src/guiKeyChangeMenu.h:50
 msgid "Left Shift"
-msgstr "Umschalten links"
+msgstr "Umsch. links"
 
 #: src/guiKeyChangeMenu.h:50
 msgid "Right Shight"
-msgstr ""
+msgstr "Umsch. rechts"
 
 #: src/guiKeyChangeMenu.h:51
 msgid "Left Control"
@@ -342,7 +342,7 @@ msgstr "Strg links"
 
 #: src/guiKeyChangeMenu.h:51
 msgid "Left Menu"
-msgstr "Menü links"
+msgstr "Alt"
 
 #: src/guiKeyChangeMenu.h:51
 msgid "Right Control"
@@ -350,7 +350,7 @@ msgstr "Strg rechts"
 
 #: src/guiKeyChangeMenu.h:51
 msgid "Right Menu"
-msgstr "Menü rechts"
+msgstr "Alt Gr"
 
 #: src/guiKeyChangeMenu.h:53
 msgid "Comma"
@@ -362,7 +362,7 @@ msgstr "Minus"
 
 #: src/guiKeyChangeMenu.h:53
 msgid "Period"
-msgstr "Periode"
+msgstr "Punkt"
 
 #: src/guiKeyChangeMenu.h:53
 msgid "Plus"
