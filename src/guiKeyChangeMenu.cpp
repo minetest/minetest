@@ -81,7 +81,7 @@ void GUIKeyChangeMenu::regenerateGui(v2u32 screensize)
 		core::rect < s32 > rect(0, 0, 125, 20);
 		rect += topleft + v2s32(25, 3);
 		//gui::IGUIStaticText *t =
-		Environment->addStaticText(chartowchar_t(gettext("KEYBINDINGS")),
+		Environment->addStaticText(wgettext("KEYBINDINGS"),
 				rect, false, true, this, -1);
 		//t->setTextAlignment(gui::EGUIA_CENTER, gui::EGUIA_UPPERLEFT);
 	}
@@ -91,7 +91,7 @@ void GUIKeyChangeMenu::regenerateGui(v2u32 screensize)
 	{
 		core::rect < s32 > rect(0, 0, 100, 20);
 		rect += topleft + v2s32(offset.X, offset.Y);
-		Environment->addStaticText(chartowchar_t(gettext("Forward")),
+		Environment->addStaticText(wgettext("Forward"),
 				rect, false, true, this, -1);
 		//t->setTextAlignment(gui::EGUIA_CENTER, gui::EGUIA_UPPERLEFT);
 	}
@@ -108,7 +108,7 @@ void GUIKeyChangeMenu::regenerateGui(v2u32 screensize)
 	{
 		core::rect < s32 > rect(0, 0, 100, 20);
 		rect += topleft + v2s32(offset.X, offset.Y);
-		Environment->addStaticText(chartowchar_t(gettext("Backward")),
+		Environment->addStaticText(wgettext("Backward"),
 				rect, false, true, this, -1);
 		//t->setTextAlignment(gui::EGUIA_CENTER, gui::EGUIA_UPPERLEFT);
 	}
@@ -124,7 +124,7 @@ void GUIKeyChangeMenu::regenerateGui(v2u32 screensize)
 	{
 		core::rect < s32 > rect(0, 0, 100, 20);
 		rect += topleft + v2s32(offset.X, offset.Y);
-		Environment->addStaticText(chartowchar_t(gettext("Left")),
+		Environment->addStaticText(wgettext("Left"),
 				rect, false, true, this, -1);
 		//t->setTextAlignment(gui::EGUIA_CENTER, gui::EGUIA_UPPERLEFT);
 	}
@@ -139,7 +139,7 @@ void GUIKeyChangeMenu::regenerateGui(v2u32 screensize)
 	{
 		core::rect < s32 > rect(0, 0, 100, 20);
 		rect += topleft + v2s32(offset.X, offset.Y);
-		Environment->addStaticText(chartowchar_t(gettext("Right")),
+		Environment->addStaticText(wgettext("Right"),
 				rect, false, true, this, -1);
 		//t->setTextAlignment(gui::EGUIA_CENTER, gui::EGUIA_UPPERLEFT);
 	}
@@ -155,7 +155,7 @@ void GUIKeyChangeMenu::regenerateGui(v2u32 screensize)
 	{
 		core::rect < s32 > rect(0, 0, 100, 20);
 		rect += topleft + v2s32(offset.X, offset.Y);
-		Environment->addStaticText(chartowchar_t(gettext("Use")),
+		Environment->addStaticText(wgettext("Use"),
 				rect, false, true, this, -1);
 		//t->setTextAlignment(gui::EGUIA_CENTER, gui::EGUIA_UPPERLEFT);
 	}
@@ -170,7 +170,7 @@ void GUIKeyChangeMenu::regenerateGui(v2u32 screensize)
 	{
 		core::rect < s32 > rect(0, 0, 100, 20);
 		rect += topleft + v2s32(offset.X, offset.Y);
-		Environment->addStaticText(chartowchar_t(gettext("Sneak")),
+		Environment->addStaticText(wgettext("Sneak"),
 				rect, false, true, this, -1);
 		//t->setTextAlignment(gui::EGUIA_CENTER, gui::EGUIA_UPPERLEFT);
 	}
@@ -186,7 +186,7 @@ void GUIKeyChangeMenu::regenerateGui(v2u32 screensize)
 	{
 		core::rect < s32 > rect(0, 0, 100, 20);
 		rect += topleft + v2s32(offset.X, offset.Y);
-		Environment->addStaticText(chartowchar_t(gettext("Jump")), rect, false, true, this, -1);
+		Environment->addStaticText(wgettext("Jump"), rect, false, true, this, -1);
 		//t->setTextAlignment(gui::EGUIA_CENTER, gui::EGUIA_UPPERLEFT);
 	}
 
@@ -201,7 +201,7 @@ void GUIKeyChangeMenu::regenerateGui(v2u32 screensize)
 	{
 		core::rect < s32 > rect(0, 0, 100, 20);
 		rect += topleft + v2s32(offset.X, offset.Y);
-		Environment->addStaticText(chartowchar_t(gettext("Inventory")),
+		Environment->addStaticText(wgettext("Inventory"),
 				rect, false, true, this, -1);
 		//t->setTextAlignment(gui::EGUIA_CENTER, gui::EGUIA_UPPERLEFT);
 	}
@@ -217,7 +217,7 @@ void GUIKeyChangeMenu::regenerateGui(v2u32 screensize)
 	{
 		core::rect < s32 > rect(0, 0, 100, 20);
 		rect += topleft + v2s32(offset.X, offset.Y);
-		Environment->addStaticText(chartowchar_t(gettext("Chat")), rect, false, true, this, -1);
+		Environment->addStaticText(wgettext("Chat"), rect, false, true, this, -1);
 		//t->setTextAlignment(gui::EGUIA_CENTER, gui::EGUIA_UPPERLEFT);
 	}
 
@@ -233,7 +233,7 @@ void GUIKeyChangeMenu::regenerateGui(v2u32 screensize)
 	{
 		core::rect < s32 > rect(0, 0, 100, 20);
 		rect += topleft + v2s32(offset.X, offset.Y);
-		Environment->addStaticText(chartowchar_t(gettext("Toggle fly")),
+		Environment->addStaticText(wgettext("Toggle fly"),
 				rect, false, true, this, -1);
 		//t->setTextAlignment(gui::EGUIA_CENTER, gui::EGUIA_UPPERLEFT);
 	}
@@ -248,7 +248,7 @@ void GUIKeyChangeMenu::regenerateGui(v2u32 screensize)
 	{
 		core::rect < s32 > rect(0, 0, 100, 20);
 		rect += topleft + v2s32(offset.X, offset.Y);
-		Environment->addStaticText(chartowchar_t(gettext("Toggle fast")),
+		Environment->addStaticText(wgettext("Toggle fast"),
 				rect, false, true, this, -1);
 		//t->setTextAlignment(gui::EGUIA_CENTER, gui::EGUIA_UPPERLEFT);
 	}
@@ -263,8 +263,7 @@ void GUIKeyChangeMenu::regenerateGui(v2u32 screensize)
 	{
 		core::rect < s32 > rect(0, 0, 100, 20);
 		rect += topleft + v2s32(offset.X, offset.Y);
-		const wchar_t *text = L"Range select";
-		Environment->addStaticText(chartowchar_t(gettext("Range select")),
+		Environment->addStaticText(wgettext("Range select"),
 				rect, false, true, this, -1);
 		//t->setTextAlignment(gui::EGUIA_CENTER, gui::EGUIA_UPPERLEFT);
 	}
@@ -281,8 +280,7 @@ void GUIKeyChangeMenu::regenerateGui(v2u32 screensize)
 	{
 		core::rect < s32 > rect(0, 0, 100, 20);
 		rect += topleft + v2s32(offset.X, offset.Y);
-		const wchar_t *text = L"Print stacks";
-		Environment->addStaticText(chartowchar_t(gettext("Print stacks")),
+		Environment->addStaticText(wgettext("Print stacks"),
 				rect, false, true, this, -1);
 		//t->setTextAlignment(gui::EGUIA_CENTER, gui::EGUIA_UPPERLEFT);
 	}
@@ -297,13 +295,13 @@ void GUIKeyChangeMenu::regenerateGui(v2u32 screensize)
 		core::rect < s32 > rect(0, 0, 100, 30);
 		rect += topleft + v2s32(size.X - 100 - 20, size.Y - 40);
 		Environment->addButton(rect, this, GUI_ID_BACK_BUTTON,
-		chartowchar_t(gettext("Save")));
+		wgettext("Save"));
 	}
 	{
 		core::rect < s32 > rect(0, 0, 100, 30);
 		rect += topleft + v2s32(size.X - 100 - 20 - 100 - 20, size.Y - 40);
 		Environment->addButton(rect, this, GUI_ID_ABORT_BUTTON,
-		chartowchar_t(gettext("Cancel")));
+		wgettext("Cancel"));
 	}
 }
 
@@ -528,67 +526,67 @@ bool GUIKeyChangeMenu::OnEvent(const SEvent& event)
 			case GUI_ID_KEY_FORWARD_BUTTON:
 				resetMenu();
 				activeKey = event.GUIEvent.Caller->getID();
-				this->forward->setText(chartowchar_t(gettext("press Key")));
+				this->forward->setText(wgettext("press Key"));
 				break;
 			case GUI_ID_KEY_BACKWARD_BUTTON:
 				resetMenu();
 				activeKey = event.GUIEvent.Caller->getID();
-				this->backward->setText(chartowchar_t(gettext("press Key")));
+				this->backward->setText(wgettext("press Key"));
 				break;
 			case GUI_ID_KEY_LEFT_BUTTON:
 				resetMenu();
 				activeKey = event.GUIEvent.Caller->getID();
-				this->left->setText(chartowchar_t(gettext("press Key")));
+				this->left->setText(wgettext("press Key"));
 				break;
 			case GUI_ID_KEY_RIGHT_BUTTON:
 				resetMenu();
 				activeKey = event.GUIEvent.Caller->getID();
-				this->right->setText(chartowchar_t(gettext("press Key")));
+				this->right->setText(wgettext("press Key"));
 				break;
 			case GUI_ID_KEY_USE_BUTTON:
 				resetMenu();
 				activeKey = event.GUIEvent.Caller->getID();
-				this->use->setText(chartowchar_t(gettext("press Key")));
+				this->use->setText(wgettext("press Key"));
 				break;
 			case GUI_ID_KEY_FLY_BUTTON:
 				resetMenu();
 				activeKey = event.GUIEvent.Caller->getID();
-				this->fly->setText(chartowchar_t(gettext("press Key")));
+				this->fly->setText(wgettext("press Key"));
 				break;
 			case GUI_ID_KEY_FAST_BUTTON:
 				resetMenu();
 				activeKey = event.GUIEvent.Caller->getID();
-				this->fast->setText(chartowchar_t(gettext("press Key")));
+				this->fast->setText(wgettext("press Key"));
 				break;
 			case GUI_ID_KEY_JUMP_BUTTON:
 				resetMenu();
 				activeKey = event.GUIEvent.Caller->getID();
-				this->jump->setText(chartowchar_t(gettext("press Key")));
+				this->jump->setText(wgettext("press Key"));
 				break;
 			case GUI_ID_KEY_CHAT_BUTTON:
 				resetMenu();
 				activeKey = event.GUIEvent.Caller->getID();
-				this->chat->setText(chartowchar_t(gettext("press Key")));
+				this->chat->setText(wgettext("press Key"));
 				break;
 			case GUI_ID_KEY_SNEAK_BUTTON:
 				resetMenu();
 				activeKey = event.GUIEvent.Caller->getID();
-				this->sneak->setText(chartowchar_t(gettext("press Key")));
+				this->sneak->setText(wgettext("press Key"));
 				break;
 			case GUI_ID_KEY_INVENTORY_BUTTON:
 				resetMenu();
 				activeKey = event.GUIEvent.Caller->getID();
-				this->inventory->setText(chartowchar_t(gettext("press Key")));
+				this->inventory->setText(wgettext("press Key"));
 				break;
 			case GUI_ID_KEY_DUMP_BUTTON:
 				resetMenu();
 				activeKey = event.GUIEvent.Caller->getID();
-				this->dump->setText(chartowchar_t(gettext("press Key")));
+				this->dump->setText(wgettext("press Key"));
 				break;
 			case GUI_ID_KEY_RANGE_BUTTON:
 				resetMenu();
 				activeKey = event.GUIEvent.Caller->getID();
-				this->range->setText(chartowchar_t(gettext("press Key")));
+				this->range->setText(wgettext("press Key"));
 				break;
 			}
 			//Buttons

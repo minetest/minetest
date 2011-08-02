@@ -108,28 +108,28 @@ void GUIPauseMenu::regenerateGui(v2u32 screensize)
 		core::rect<s32> rect(0, 0, 140, btn_height);
 		rect = rect + v2s32(size.X/2-140/2, btn_y);
 		Environment->addButton(rect, this, 256,
-			chartowchar_t(gettext("Continue")));
+			wgettext("Continue"));
 	}
 	btn_y += btn_height + btn_gap;
 	{
 		core::rect<s32> rect(0, 0, 140, btn_height);
 		rect = rect + v2s32(size.X/2-140/2, btn_y);
 		Environment->addButton(rect, this, 261,
-			chartowchar_t(gettext("Change Password")));
+			wgettext("Change Password"));
 	}
 	btn_y += btn_height + btn_gap;
 	{
 		core::rect<s32> rect(0, 0, 140, btn_height);
 		rect = rect + v2s32(size.X/2-140/2, btn_y);
 		Environment->addButton(rect, this, 260,
-			chartowchar_t(gettext("Disconnect")));
+			wgettext("Disconnect"));
 	}
 	btn_y += btn_height + btn_gap;
 	{
 		core::rect<s32> rect(0, 0, 140, btn_height);
 		rect = rect + v2s32(size.X/2-140/2, btn_y);
 		Environment->addButton(rect, this, 257,
-			chartowchar_t(gettext("Exit to OS")));
+			wgettext("Exit to OS"));
 	}
 
 	{

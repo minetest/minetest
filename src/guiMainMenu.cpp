@@ -178,7 +178,7 @@ void GUIMainMenu::regenerateGui(v2u32 screensize)
 	{
 		core::rect<s32> rect(0, 0, 110, 20);
 		rect += topleft_client + v2s32(35, 50+6);
-		Environment->addStaticText(chartowchar_t(gettext("Name/Password")), 
+		Environment->addStaticText(wgettext("Name/Password"), 
 			rect, false, true, this, -1);
 	}
 	changeCtype("C");
@@ -203,7 +203,7 @@ void GUIMainMenu::regenerateGui(v2u32 screensize)
 	{
 		core::rect<s32> rect(0, 0, 110, 20);
 		rect += topleft_client + v2s32(35, 100+6);
-		Environment->addStaticText(chartowchar_t(gettext("Address/Port")),
+		Environment->addStaticText(wgettext("Address/Port"),
 			rect, false, true, this, -1);
 	}
 	changeCtype("C");
@@ -225,20 +225,20 @@ void GUIMainMenu::regenerateGui(v2u32 screensize)
 	{
 		core::rect<s32> rect(0, 0, 400, 20);
 		rect += topleft_client + v2s32(160, 100+35);
-		Environment->addStaticText(chartowchar_t(gettext("Leave address blank to start a local server.")),
+		Environment->addStaticText(wgettext("Leave address blank to start a local server."),
 			rect, false, true, this, -1);
 	}
 	{
 		core::rect<s32> rect(0, 0, 250, 30);
 		rect += topleft_client + v2s32(35, 150);
 		Environment->addCheckBox(fancy_trees, rect, this, GUI_ID_FANCYTREE_CB,
-			chartowchar_t(gettext("Fancy trees"))); 
+			wgettext("Fancy trees")); 
 	}
 	{
 		core::rect<s32> rect(0, 0, 250, 30);
 		rect += topleft_client + v2s32(35, 150+30);
 		Environment->addCheckBox(smooth_lighting, rect, this, GUI_ID_SMOOTH_LIGHTING_CB,
-				chartowchar_t(gettext("Smooth Lighting")));
+				wgettext("Smooth Lighting"));
 	}
 	// Start game button
 	{
@@ -246,7 +246,7 @@ void GUIMainMenu::regenerateGui(v2u32 screensize)
 		//rect += topleft_client + v2s32(size_client.X/2-180/2, 225-30/2);
 		rect += topleft_client + v2s32(size_client.X-180-40, 150+25);
 		Environment->addButton(rect, this, GUI_ID_JOIN_GAME_BUTTON,
-			chartowchar_t(gettext("Start Game / Connect")));
+			wgettext("Start Game / Connect"));
 	}
 
 	// Key change button
@@ -255,7 +255,7 @@ void GUIMainMenu::regenerateGui(v2u32 screensize)
 		//rect += topleft_client + v2s32(size_client.X/2-180/2, 225-30/2);
 		rect += topleft_client + v2s32(size_client.X-180-40-100-20, 150+25);
 		Environment->addButton(rect, this, GUI_ID_CHANGE_KEYS_BUTTON,
-			chartowchar_t(gettext("Change keys")));
+			wgettext("Change keys"));
 	}
 	/*
 		Server section
@@ -278,13 +278,13 @@ void GUIMainMenu::regenerateGui(v2u32 screensize)
 		core::rect<s32> rect(0, 0, 250, 30);
 		rect += topleft_server + v2s32(35, 30);
 		Environment->addCheckBox(creative_mode, rect, this, GUI_ID_CREATIVE_CB,
-			chartowchar_t(gettext("Creative Mode")));
+			wgettext("Creative Mode"));
 	}
 	{
 		core::rect<s32> rect(0, 0, 250, 30);
 		rect += topleft_server + v2s32(35, 60);
 		Environment->addCheckBox(enable_damage, rect, this, GUI_ID_DAMAGE_CB,
-			chartowchar_t(gettext("Enable Damage")));
+			wgettext("Enable Damage"));
 	}
 	// Map delete button
 	{
@@ -292,7 +292,7 @@ void GUIMainMenu::regenerateGui(v2u32 screensize)
 		//rect += topleft_server + v2s32(size_server.X-40-130, 100+25);
 		rect += topleft_server + v2s32(40, 100+25);
 		Environment->addButton(rect, this, GUI_ID_DELETE_MAP_BUTTON,
-			  chartowchar_t(gettext("Delete map")));
+			  wgettext("Delete map"));
 	}
 	changeCtype("C");
 }

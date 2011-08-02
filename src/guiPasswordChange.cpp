@@ -100,7 +100,7 @@ void GUIPasswordChange::regenerateGui(v2u32 screensize)
 	{
 		core::rect<s32> rect(0, 0, 110, 20);
 		rect += topleft_client + v2s32(35, ypos+6);
-		Environment->addStaticText(chartowchar_t(gettext("Old Password")),
+		Environment->addStaticText(wgettext("Old Password"),
 			rect, false, true, this, -1);
 	}
 	changeCtype("C");
@@ -117,7 +117,7 @@ void GUIPasswordChange::regenerateGui(v2u32 screensize)
 	{
 		core::rect<s32> rect(0, 0, 110, 20);
 		rect += topleft_client + v2s32(35, ypos+6);
-		Environment->addStaticText(chartowchar_t(gettext("New Password")),
+		Environment->addStaticText(wgettext("New Password"),
 			rect, false, true, this, -1);
 	}
 	changeCtype("C");
@@ -133,7 +133,7 @@ void GUIPasswordChange::regenerateGui(v2u32 screensize)
 	{
 		core::rect<s32> rect(0, 0, 110, 20);
 		rect += topleft_client + v2s32(35, ypos+6);
-		Environment->addStaticText(chartowchar_t(gettext("Confirm Password")),
+		Environment->addStaticText(wgettext("Confirm Password"),
 			rect, false, true, this, -1);
 	}
 	changeCtype("C");
@@ -150,7 +150,7 @@ void GUIPasswordChange::regenerateGui(v2u32 screensize)
 	{
 		core::rect<s32> rect(0, 0, 140, 30);
 		rect = rect + v2s32(size.X/2-140/2, ypos);
-		Environment->addButton(rect, this, ID_change, chartowchar_t(gettext("Change")));
+		Environment->addButton(rect, this, ID_change, wgettext("Change"));
 	}
 
 	ypos += 50;
@@ -159,7 +159,7 @@ void GUIPasswordChange::regenerateGui(v2u32 screensize)
 		rect += topleft_client + v2s32(35, ypos);
 		IGUIElement *e = 
 		Environment->addStaticText(
-			chartowchar_t(gettext("Passwords do not match!")),
+			wgettext("Passwords do not match!"),
 			rect, false, true, this, ID_message);
 		e->setVisible(false);
 	}
