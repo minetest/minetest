@@ -96,7 +96,7 @@ enum LiquidType
 	LIQUID_SOURCE
 };
 
-class MapNode;
+struct MapNode;
 class NodeMetadata;
 
 struct ContentFeatures
