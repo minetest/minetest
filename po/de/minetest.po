@@ -19,7 +19,7 @@ msgstr ""
 
 #: src/guiKeyChangeMenu.cpp:84
 msgid "KEYBINDINGS"
-msgstr "TASTENZUORDNUNG"
+msgstr "TASTEN EINST."
 
 #: src/guiKeyChangeMenu.cpp:94
 msgid "Forward"
