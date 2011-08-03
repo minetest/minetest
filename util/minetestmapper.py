@@ -152,7 +152,10 @@ if path[-1:] != "/" and path[-1:] != "\\":
 
 # Load color information for the blocks.
 colors = {}
-f = file("colors.txt")
+try:
+	f = file("colors.txt")
+except IOError:
+	f = file(os.path.join(os.path.dirname(__file__), "colors.txt"))
 for line in f:
     values = string.split(line)
     colors[int(values[0], 16)] = (
