@@ -2,7 +2,7 @@ Minetest Δ (“Minetest Delta”) is a fork of Minetest-c55 <http://celeron.55.
 Currently it is considered the unstable development branch of Minetest-c55, which means almost everything is merged upstream from Minetest Δ.
 
 New features:
-* refactored liquids (currently broken, water does not flow)
+* refactored liquids (should not affect gameplay)
 * translation support (including german, french, italian)
 
 New blocks:
