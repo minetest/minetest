@@ -1086,7 +1086,7 @@ void Map::addNodeAndUpdate(v3s16 p, MapNode n,
 		v3s16 p2 = p + dirs[i];
 
 		MapNode n2 = getNode(p2);
-		if(content_liquid(n2.getContent()))
+		if(content_liquid(n2.getContent()) || n2.getContent() == CONTENT_AIR)
 		{
 			m_transforming_liquid.push_back(p2);
 		}
@@ -1260,7 +1260,7 @@ void Map::removeNodeAndUpdate(v3s16 p,
 		v3s16 p2 = p + dirs[i];
 
 		MapNode n2 = getNode(p2);
-		if(content_liquid(n2.getContent()))
+		if(content_liquid(n2.getContent()) || n2.getContent() == CONTENT_AIR)
 		{
 			m_transforming_liquid.push_back(p2);
 		}
