@@ -70,8 +70,6 @@ void set_default_settings()
 	g_settings.setDefault("fast_move", "false");
 	g_settings.setDefault("invert_mouse", "false");
 	g_settings.setDefault("enable_farmesh", "false");
-	g_settings.setDefault("farmesh_trees", "true");
-	g_settings.setDefault("farmesh_distance", "40");
 	g_settings.setDefault("enable_clouds", "true");
 	g_settings.setDefault("invisible_stone", "false");
 	g_settings.setDefault("screenshot_path", ".");
