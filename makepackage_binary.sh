@@ -1,6 +1,6 @@
 #!/bin/sh
 
-PROJECT_NAME=minetest-delta
+PROJECT_NAME=minetest
 PACKAGEDIR=../$PROJECT_NAME-packages
 PACKAGENAME=$PROJECT_NAME-binary-`date +%y%m%d%H%M%S`
 PACKAGEPATH=$PACKAGEDIR/$PACKAGENAME

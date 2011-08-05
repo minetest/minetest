@@ -85,14 +85,16 @@ void GUIMessageMenu::regenerateGui(v2u32 screensize)
 		Environment->addStaticText(m_message_text.c_str(), rect, false,
 				true, this, 256);
 	}
+	changeCtype("");
 	{
 		core::rect<s32> rect(0, 0, 140, 30);
 		rect = rect + v2s32(size.X/2-140/2, size.Y/2-30/2+25);
 		gui::IGUIElement *e = 
 		Environment->addButton(rect, this, 257,
-			chartowchar_t(gettext("Proceed")));
+			wgettext("Proceed"));
 		Environment->setFocus(e);
 	}
+	changeCtype("C");
 }
 
 void GUIMessageMenu::drawMenu()

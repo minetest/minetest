@@ -1134,6 +1134,53 @@ void mapblock_mesh_generate_special(MeshMakeData *data,
 			u16 indices[] = {0,1,2,2,3,0};
 			collector.append(material_rail, vertices, 4, indices, 6);
 		}
+		else if (n.getContent() == CONTENT_LADDER) {
+			u8 l = decode_light(n.getLightBlend(data->m_daynight_ratio));
+			video::SColor c(255,l,l,l);
+
+			float d = (float)BS/16;
+
+			// Assume wall is at X+
+			video::S3DVertex vertices[4] =
+			{
+				video::S3DVertex(BS/2-d,-BS/2,-BS/2, 0,0,0, c, 0,1),
+				video::S3DVertex(BS/2-d,-BS/2,BS/2, 0,0,0, c, 1,1),
+				video::S3DVertex(BS/2-d,BS/2,BS/2, 0,0,0, c, 1,0),
+				video::S3DVertex(BS/2-d,BS/2,-BS/2, 0,0,0, c, 0,0),
+			};
+
+			v3s16 dir = unpackDir(n.param2);
+
+			for(s32 i=0; i<4; i++)
+			{
+				if(dir == v3s16(1,0,0))
+					vertices[i].Pos.rotateXZBy(0);
+				if(dir == v3s16(-1,0,0))
+					vertices[i].Pos.rotateXZBy(180);
+				if(dir == v3s16(0,0,1))
+					vertices[i].Pos.rotateXZBy(90);
+				if(dir == v3s16(0,0,-1))
+					vertices[i].Pos.rotateXZBy(-90);
+				if(dir == v3s16(0,-1,0))
+					vertices[i].Pos.rotateXYBy(-90);
+				if(dir == v3s16(0,1,0))
+					vertices[i].Pos.rotateXYBy(90);
+
+				vertices[i].Pos += intToFloat(p + blockpos_nodes, BS);
+			}
+
+			video::SMaterial material_ladder;
+			material_ladder.setFlag(video::EMF_LIGHTING, false);
+			material_ladder.setFlag(video::EMF_BACK_FACE_CULLING, false);
+			material_ladder.setFlag(video::EMF_BILINEAR_FILTER, false);
+			material_ladder.setFlag(video::EMF_FOG_ENABLE, true);
+			material_ladder.MaterialType = video::EMT_TRANSPARENT_ALPHA_CHANNEL_REF;
+		        material_ladder.setTexture(0, g_texturesource->getTextureRaw("ladder.png"));
+
+			u16 indices[] = {0,1,2,2,3,0};
+			// Add to mesh collector
+			collector.append(material_ladder, vertices, 4, indices, 6);
+		}
 	}
 }
 #endif

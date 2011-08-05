@@ -96,7 +96,7 @@ enum LiquidType
 	LIQUID_SOURCE
 };
 
-class MapNode;
+struct MapNode;
 class NodeMetadata;
 
 struct ContentFeatures
@@ -128,6 +128,8 @@ struct ContentFeatures
 	bool pointable;
 	// Player can dig these
 	bool diggable;
+        // Player can climb these
+        bool climbable;
 	// Player can build on these
 	bool buildable_to;
 	// Whether the node has no liquid, source liquid or flowing liquid
@@ -171,6 +173,7 @@ struct ContentFeatures
 		walkable = true;
 		pointable = true;
 		diggable = true;
+		climbable = false;
 		buildable_to = false;
 		liquid_type = LIQUID_NONE;
 		wall_mounted = false;
@@ -404,8 +407,15 @@ enum LightBank
 };
 
 /*
+	Masks for MapNode.param2 of flowing liquids
+ */
+#define LIQUID_LEVEL_MASK 0x07
+#define LIQUID_FLOW_DOWN_MASK 0x08
+
+/*
 	This is the stuff what the whole world consists of.
 */
+
 
 struct MapNode
 {

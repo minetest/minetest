@@ -9,6 +9,8 @@
 #ifdef USE_CMAKE_CONFIG_H
 	#include "cmake_config.h"
 #else
+	#define PROJECT_NAME "minetest"
+
 	//#define INSTALL_PREFIX ""
 	#define VERSION_STRING "unknown"
 	#ifdef NDEBUG
@@ -21,8 +23,13 @@
 	#else
 		#define RUN_IN_PLACE_BOOLSTRING "0"
 	#endif
-	#define BUILD_INFO "NON-CMAKE RUN_IN_PLACE="RUN_IN_PLACE_BOOLSTRING" BUILD_TYPE="BUILD_TYPE
-#endif
+	#if USE_GETTEXT
+		#define USE_GETTEXT_BOOLSTRING "1"
+	#else
+		#define USE_GETTEXT_BOOLSTRING "0"
+	#endif
 
+	#define BUILD_INFO "NON-CMAKE RUN_IN_PLACE="RUN_IN_PLACE_BOOLSTRING" USE_GETTEXT="USE_GETTEXT_BOOLSTRING" BUILD_TYPE="BUILD_TYPE
+#endif
 #endif
 

@@ -103,32 +103,33 @@ void GUIPauseMenu::regenerateGui(v2u32 screensize)
 	const s32 btn_gap = 20;
 	const s32 btn_num = 4;
 	s32 btn_y = size.Y/2-((btn_num*btn_height+(btn_num-1)*btn_gap))/2;
+	changeCtype("");
 	{
 		core::rect<s32> rect(0, 0, 140, btn_height);
 		rect = rect + v2s32(size.X/2-140/2, btn_y);
 		Environment->addButton(rect, this, 256,
-			chartowchar_t(gettext("Continue")));
+			wgettext("Continue"));
 	}
 	btn_y += btn_height + btn_gap;
 	{
 		core::rect<s32> rect(0, 0, 140, btn_height);
 		rect = rect + v2s32(size.X/2-140/2, btn_y);
 		Environment->addButton(rect, this, 261,
-			chartowchar_t(gettext("Change Password")));
+			wgettext("Change Password"));
 	}
 	btn_y += btn_height + btn_gap;
 	{
 		core::rect<s32> rect(0, 0, 140, btn_height);
 		rect = rect + v2s32(size.X/2-140/2, btn_y);
 		Environment->addButton(rect, this, 260,
-			chartowchar_t(gettext("Disconnect")));
+			wgettext("Disconnect"));
 	}
 	btn_y += btn_height + btn_gap;
 	{
 		core::rect<s32> rect(0, 0, 140, btn_height);
 		rect = rect + v2s32(size.X/2-140/2, btn_y);
 		Environment->addButton(rect, this, 257,
-			chartowchar_t(gettext("Exit to OS")));
+			wgettext("Exit to OS"));
 	}
 
 	{
@@ -172,7 +173,7 @@ void GUIPauseMenu::regenerateGui(v2u32 screensize)
 		);*/
 
 		std::ostringstream os;
-		os<<"Minetest-c55\n";
+		os<<"Minetest\n";
 		os<<"by Perttu Ahola and contributors\n";
 		os<<"celeron55@gmail.com\n";
 		os<<BUILD_INFO<<"\n";
@@ -180,6 +181,7 @@ void GUIPauseMenu::regenerateGui(v2u32 screensize)
 	
 		Environment->addStaticText(narrow_to_wide(os.str()).c_str(), rect, false, true, this, 259);
 	}
+	changeCtype("C");
 }
 
 void GUIPauseMenu::drawMenu()
