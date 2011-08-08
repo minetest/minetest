@@ -85,7 +85,7 @@ public:
 		
 		return c;
 	}
-	int xsputn(const char *s, int n)
+	std::streamsize xsputn(const char *s, std::streamsize n)
 	{
 		for(int i=0; i<DEBUGSTREAM_COUNT; i++)
 		{

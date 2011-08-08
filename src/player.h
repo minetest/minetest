@@ -62,7 +62,7 @@ public:
 		return m_position;
 	}
 
-	virtual void setPosition(v3f position)
+	virtual void setPosition(const v3f &position)
 	{
 		m_position = position;
 	}
@@ -206,7 +206,7 @@ public:
 		return m_box;
 	}
 
-	void setPosition(v3f position)
+	void setPosition(const v3f &position)
 	{
 		m_oldpos = m_showpos;
 		
