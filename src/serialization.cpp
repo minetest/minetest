@@ -27,28 +27,28 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 /* report a zlib or i/o error */
 void zerr(int ret)
 {   
-    fputs("zerr: ", stderr);
+    dstream<<"zerr: ";
     switch (ret) {
     case Z_ERRNO:
         if (ferror(stdin))
-            fputs("error reading stdin\n", stderr);
+            dstream<<"error reading stdin"<<std::endl;
         if (ferror(stdout))
-            fputs("error writing stdout\n", stderr);
+            dstream<<"error writing stdout"<<std::endl;
         break;
     case Z_STREAM_ERROR:
-        fputs("invalid compression level\n", stderr);
+        dstream<<"invalid compression level"<<std::endl;
         break;
     case Z_DATA_ERROR:
-        fputs("invalid or incomplete deflate data\n", stderr);
+        dstream<<"invalid or incomplete deflate data"<<std::endl;
         break;
     case Z_MEM_ERROR:
-        fputs("out of memory\n", stderr);
+        dstream<<"out of memory"<<std::endl;
         break;
     case Z_VERSION_ERROR:
-        fputs("zlib version mismatch!\n", stderr);
+        dstream<<"zlib version mismatch!"<<std::endl;
 		break;
 	default:
-		dstream<<"return value = "<<ret<<"\n";
+		dstream<<"return value = "<<ret<<std::endl;
     }
 }
 
