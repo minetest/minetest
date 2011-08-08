@@ -558,7 +558,7 @@ struct InventoryContext
 	{}
 };
 
-class InventoryAction;
+struct InventoryAction;
 
 class InventoryManager
 {
