@@ -114,20 +114,20 @@ private:
 	gui::IGUIButton *dump;
 	gui::IGUIButton *chat;
 
-	u32 activeKey;
-	u32 key_forward;
-	u32 key_backward;
-	u32 key_left;
-	u32 key_right;
-	u32 key_use;
-	u32 key_sneak;
-	u32 key_jump;
-	u32 key_inventory;
-	u32 key_fly;
-	u32 key_fast;
-	u32 key_range;
-	u32 key_chat;
-	u32 key_dump;
+	s32 activeKey;
+	s32 key_forward;
+	s32 key_backward;
+	s32 key_left;
+	s32 key_right;
+	s32 key_use;
+	s32 key_sneak;
+	s32 key_jump;
+	s32 key_inventory;
+	s32 key_fly;
+	s32 key_fast;
+	s32 key_range;
+	s32 key_chat;
+	s32 key_dump;
 };
 
 #endif
