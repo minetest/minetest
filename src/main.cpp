@@ -1378,9 +1378,6 @@ int main(int argc, char *argv[])
 	if (device == 0)
 		return 1; // could not create selected driver.
 	
-	// Set device in game parameters
-	device = device;
-
 	// Set the window caption
 	device->setWindowCaption(L"Minetest [Main Menu]");
 	
