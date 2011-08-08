@@ -1456,6 +1456,8 @@ public:
 					i.getNode()->getValue());
 		}
 
+		return *this;
+
 	}
 
 	Settings & operator=(Settings &other)

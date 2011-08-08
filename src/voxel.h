@@ -453,12 +453,14 @@ public:
 		if(m_area.contains(p) == false)
 			return false;
 		m_data[m_area.index(p)] = n;
+		return true;
 	}
 	bool setNodeNoEmerge(s32 i, MapNode n)
 	{
 		if(m_area.contains(i) == false)
 			return false;
 		m_data[i] = n;
+		return true;
 	}
 	/*bool setContentNoEmerge(v3s16 p, u8 c)
 	{
