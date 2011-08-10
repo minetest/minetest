@@ -301,6 +301,14 @@ enum ToServerCommand
 		[30] u8[28] new password
 	*/
 
+	TOSERVER_PLAYERITEM=0x37,
+	/*
+		Sent to change selected item.
+
+		[0] u16 TOSERVER_PLAYERITEM
+		[2] u16 item
+	*/
+
 };
 
 inline SharedBuffer<u8> makePacket_TOCLIENT_TIME_OF_DAY(u16 time)

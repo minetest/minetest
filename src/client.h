@@ -318,6 +318,8 @@ private:
 	void sendPlayerPos();
 	// This sends the player's current name etc to the server
 	void sendPlayerInfo();
+	// Send the item number 'item' as player item to the server
+	void sendPlayerItem(u16 item);
 	
 	float m_packetcounter_timer;
 	float m_connection_reinit_timer;

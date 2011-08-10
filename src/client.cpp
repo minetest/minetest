@@ -1864,6 +1864,28 @@ void Client::sendPlayerPos()
 	Send(0, data, false);
 }
 
+void Client::sendPlayerItem(u16 item)
+{
+	Player *myplayer = m_env.getLocalPlayer();
+	if(myplayer == NULL)
+		return;
+
+	u16 our_peer_id = m_con.GetPeerID();
+
+	// Set peer id if not set already
+	if(myplayer->peer_id == PEER_ID_INEXISTENT)
+		myplayer->peer_id = our_peer_id;
+	// Check that an existing peer_id is the same as the connection's
+	assert(myplayer->peer_id == our_peer_id);
+
+	SharedBuffer<u8> data(2+2);
+	writeU16(&data[0], TOSERVER_PLAYERITEM);
+	writeU16(&data[2], item);
+
+	// Send as reliable
+	Send(0, data, true);
+}
+
 void Client::removeNode(v3s16 p)
 {
 	//JMutexAutoLock envlock(m_env_mutex); //bulk comment-out
@@ -1959,6 +1981,8 @@ void Client::selectPlayerItem(u16 item)
 	assert(player != NULL);
 
 	player->wieldItem(item);
+
+	sendPlayerItem(item);
 }
 
 // Returns true if the inventory of the local player has been

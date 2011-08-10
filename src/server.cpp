@@ -3381,6 +3381,14 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 				<<std::endl;
 		SendChatMessage(peer_id, L"Password change successful");
 	}
+	else if (command == TOSERVER_PLAYERITEM)
+	{
+		if (datasize < 2+2)
+			return;
+
+		u16 item = readU16(&data[2]);
+		player->wieldItem(item);
+	}
 	else
 	{
 		derr_server<<"WARNING: Server::ProcessData(): Ignoring "
