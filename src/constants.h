@@ -28,8 +28,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 //#define HAXMODE 0
 
-#define APPNAME "minetest"
-
 #define DEBUGFILE "debug.txt"
 
 #define WATER_ALPHA 160
