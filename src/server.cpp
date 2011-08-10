@@ -380,8 +380,7 @@ void RemoteClient::GetNextBlocks(Server *server, float dtime,
 	v3s16 center = getNodeBlockPos(center_nodepos);
 	
 	// Camera position and direction
-	v3f camera_pos =
-			playerpos + v3f(0, BS+BS/2, 0);
+	v3f camera_pos = player->getEyePosition();
 	v3f camera_dir = v3f(0,0,1);
 	camera_dir.rotateYZBy(player->getPitch());
 	camera_dir.rotateXZBy(player->getYaw());
