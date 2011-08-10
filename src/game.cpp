@@ -1521,7 +1521,8 @@ void the_game(
 		}
 		
 		// Get player position
-		v3f player_position = client.getPlayerPosition();
+		v3f camera_position;
+		v3f player_position = client.getPlayerPosition(&camera_position);
 
 		//TimeTaker //timer2("//timer2");
 
@@ -1581,11 +1582,6 @@ void the_game(
 		v3f camera_direction = v3f(0,0,1);
 		camera_direction.rotateYZBy(camera_pitch);
 		camera_direction.rotateXZBy(camera_yaw);
-		
-		// This is at the height of the eyes of the current figure
-		//v3f camera_position = player_position + v3f(0, BS+BS/2, 0);
-		// This is more like in minecraft
-		v3f camera_position = player_position + v3f(0, BS+BS*0.625, 0);
 
 		camera->setPosition(camera_position);
 		// *100.0 helps in large map coordinates

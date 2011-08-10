@@ -1935,11 +1935,13 @@ NodeMetadata* Client::getNodeMetadata(v3s16 p)
 	return m_env.getMap().getNodeMetadata(p);
 }
 
-v3f Client::getPlayerPosition()
+v3f Client::getPlayerPosition(v3f *eye_position)
 {
 	//JMutexAutoLock envlock(m_env_mutex); //bulk comment-out
 	LocalPlayer *player = m_env.getLocalPlayer();
 	assert(player != NULL);
+	if (eye_position)
+		*eye_position = player->getEyePosition();
 	return player->getPosition();
 }
 

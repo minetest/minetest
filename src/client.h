@@ -206,7 +206,9 @@ public:
 	// Wrapper to Map
 	NodeMetadata* getNodeMetadata(v3s16 p);
 
-	v3f getPlayerPosition();
+	// Get the player position, and optionally put the
+	// eye position in *eye_position
+	v3f getPlayerPosition(v3f *eye_position=NULL);
 
 	void setPlayerControl(PlayerControl &control);
 	
