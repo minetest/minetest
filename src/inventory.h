@@ -49,7 +49,7 @@ public:
 	
 	virtual const char* getName() const = 0;
 	// Shall write the name and the parameters
-	virtual void serialize(std::ostream &os) = 0;
+	virtual void serialize(std::ostream &os) const = 0;
 	// Shall make an exact clone of the item
 	virtual InventoryItem* clone() = 0;
 #ifndef SERVER
@@ -133,7 +133,7 @@ public:
 	{
 		return "MaterialItem";
 	}
-	virtual void serialize(std::ostream &os)
+	virtual void serialize(std::ostream &os) const
 	{
 		//os.imbue(std::locale("C"));
 		os<<"MaterialItem2";
@@ -208,18 +208,13 @@ public:
 	{
 		return "MBOItem";
 	}
-	virtual void serialize(std::ostream &os)
+	virtual void serialize(std::ostream &os) const
 	{
-		for(;;)
-		{
-			size_t t = m_inventorystring.find('|');
-			if(t == std::string::npos)
-				break;
-			m_inventorystring[t] = '?';
-		}
+		std::string sane_string(m_inventorystring);
+		str_replace_char(sane_string, '|', '?');
 		os<<getName();
 		os<<" ";
-		os<<m_inventorystring;
+		os<<sane_string;
 		os<<"|";
 	}
 	virtual InventoryItem* clone()
@@ -266,7 +261,7 @@ public:
 	{
 		return "CraftItem";
 	}
-	virtual void serialize(std::ostream &os)
+	virtual void serialize(std::ostream &os) const
 	{
 		os<<getName();
 		os<<" ";
@@ -343,7 +338,7 @@ public:
 	{
 		return "ToolItem";
 	}
-	virtual void serialize(std::ostream &os)
+	virtual void serialize(std::ostream &os) const
 	{
 		os<<getName();
 		os<<" ";
@@ -461,7 +456,7 @@ public:
 	InventoryList(std::string name, u32 size);
 	~InventoryList();
 	void clearItems();
-	void serialize(std::ostream &os);
+	void serialize(std::ostream &os) const;
 	void deSerialize(std::istream &is);
 
 	InventoryList(const InventoryList &other);
@@ -525,7 +520,7 @@ public:
 	Inventory(const Inventory &other);
 	Inventory & operator = (const Inventory &other);
 	
-	void serialize(std::ostream &os);
+	void serialize(std::ostream &os) const;
 	void deSerialize(std::istream &is);
 
 	InventoryList * addList(const std::string &name, u32 size);
@@ -591,7 +586,7 @@ struct InventoryAction
 	static InventoryAction * deSerialize(std::istream &is);
 	
 	virtual u16 getType() const = 0;
-	virtual void serialize(std::ostream &os) = 0;
+	virtual void serialize(std::ostream &os) const = 0;
 	virtual void apply(InventoryContext *c, InventoryManager *mgr) = 0;
 };
 
@@ -639,7 +634,7 @@ struct IMoveAction : public InventoryAction
 		return IACTION_MOVE;
 	}
 
-	void serialize(std::ostream &os)
+	void serialize(std::ostream &os) const
 	{
 		os<<"Move ";
 		os<<count<<" ";

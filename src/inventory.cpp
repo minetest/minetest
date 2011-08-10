@@ -320,7 +320,7 @@ void InventoryList::clearItems()
 	//setDirty(true);
 }
 
-void InventoryList::serialize(std::ostream &os)
+void InventoryList::serialize(std::ostream &os) const
 {
 	//os.imbue(std::locale("C"));
 	
@@ -661,7 +661,7 @@ Inventory & Inventory::operator = (const Inventory &other)
 	return *this;
 }
 
-void Inventory::serialize(std::ostream &os)
+void Inventory::serialize(std::ostream &os) const
 {
 	for(u32 i=0; i<m_lists.size(); i++)
 	{
