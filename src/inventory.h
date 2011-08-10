@@ -61,19 +61,19 @@ public:
 	// Creates an object from the item, to be placed in the world.
 	virtual ServerActiveObject* createSAO(ServerEnvironment *env, u16 id, v3f pos);
 	// Gets amount of items that dropping one SAO will decrement
-	virtual u16 getDropCount(){ return getCount(); }
+	virtual u16 getDropCount() const { return getCount(); }
 
 	/*
 		Quantity methods
 	*/
 
 	// Shall return true if the item can be add()ed to the other
-	virtual bool addableTo(InventoryItem *other)
+	virtual bool addableTo(const InventoryItem *other) const
 	{
 		return false;
 	}
 	
-	u16 getCount()
+	u16 getCount() const
 	{
 		return m_count;
 	}
@@ -82,7 +82,7 @@ public:
 		m_count = count;
 	}
 	// This should return something else for stackable items
-	virtual u16 freeSpace()
+	virtual u16 freeSpace() const
 	{
 		return 0;
 	}
@@ -102,11 +102,11 @@ public:
 	*/
 
 	// Whether it can be cooked
-	virtual bool isCookable(){return false;}
+	virtual bool isCookable() const {return false;}
 	// Time of cooking
 	virtual float getCookTime(){return 3.0;}
 	// Result of cooking (can randomize)
-	virtual InventoryItem *createCookResult(){return NULL;}
+	virtual InventoryItem *createCookResult() const {return NULL;}
 	
 	// Eat, press, activate, whatever.
 	// Called when item is right-clicked when lying on ground.
@@ -160,7 +160,7 @@ public:
 		return os.str();
 	}
 
-	virtual bool addableTo(InventoryItem *other)
+	virtual bool addableTo(const InventoryItem *other) const
 	{
 		if(std::string(other->getName()) != "MaterialItem")
 			return false;
@@ -169,7 +169,7 @@ public:
 			return false;
 		return true;
 	}
-	u16 freeSpace()
+	u16 freeSpace() const
 	{
 		if(m_count > QUANTITY_ITEM_MAX_COUNT)
 			return 0;
@@ -178,8 +178,8 @@ public:
 	/*
 		Other properties
 	*/
-	bool isCookable();
-	InventoryItem *createCookResult();
+	bool isCookable() const;
+	InventoryItem *createCookResult() const;
 	/*
 		Special methods
 	*/
@@ -289,9 +289,9 @@ public:
 	}
 
 	ServerActiveObject* createSAO(ServerEnvironment *env, u16 id, v3f pos);
-	u16 getDropCount();
+	u16 getDropCount() const;
 
-	virtual bool addableTo(InventoryItem *other)
+	virtual bool addableTo(const InventoryItem *other) const
 	{
 		if(std::string(other->getName()) != "CraftItem")
 			return false;
@@ -300,7 +300,7 @@ public:
 			return false;
 		return true;
 	}
-	u16 freeSpace()
+	u16 freeSpace() const
 	{
 		if(m_count > QUANTITY_ITEM_MAX_COUNT)
 			return 0;
@@ -311,8 +311,8 @@ public:
 		Other properties
 	*/
 
-	bool isCookable();
-	InventoryItem *createCookResult();
+	bool isCookable() const;
+	InventoryItem *createCookResult() const;
 
 	bool use(ServerEnvironment *env, Player *player);
 	
@@ -467,7 +467,7 @@ public:
 	InventoryList(const InventoryList &other);
 	InventoryList & operator = (const InventoryList &other);
 
-	std::string getName();
+	const std::string &getName() const;
 	u32 getSize();
 	// Count used slots
 	u32 getUsedSlots();
@@ -477,6 +477,7 @@ public:
 	void setDirty(bool dirty=true){ m_dirty = dirty; }*/
 	
 	// Get pointer to item
+	const InventoryItem * getItem(u32 i) const;
 	InventoryItem * getItem(u32 i);
 	// Returns old item (or NULL). Parameter can be NULL.
 	InventoryItem * changeItem(u32 i, InventoryItem *newitem);
@@ -529,6 +530,7 @@ public:
 
 	InventoryList * addList(const std::string &name, u32 size);
 	InventoryList * getList(const std::string &name);
+	const InventoryList * getList(const std::string &name) const;
 	bool deleteList(const std::string &name);
 	// A shorthand for adding items.
 	// Returns NULL if the item was fully added, leftover otherwise.
@@ -542,7 +544,7 @@ public:
 	
 private:
 	// -1 if not found
-	s32 getListIndex(const std::string &name);
+	const s32 getListIndex(const std::string &name) const;
 
 	core::array<InventoryList*> m_lists;
 };
@@ -689,14 +691,14 @@ struct ItemSpec
 	{
 	}
 
-	bool checkItem(InventoryItem *item);
+	bool checkItem(const InventoryItem *item) const;
 };
 
 /*
 	items: a pointer to an array of 9 pointers to items
 	specs: a pointer to an array of 9 ItemSpecs
 */
-bool checkItemCombination(InventoryItem **items, ItemSpec *specs);
+bool checkItemCombination(const InventoryItem * const*items, const ItemSpec *specs);
 
 #endif
 

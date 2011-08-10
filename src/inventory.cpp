@@ -139,12 +139,12 @@ ServerActiveObject* InventoryItem::createSAO(ServerEnvironment *env, u16 id, v3f
 	MaterialItem
 */
 
-bool MaterialItem::isCookable()
+bool MaterialItem::isCookable() const
 {
 	return item_material_is_cookable(m_content);
 }
 
-InventoryItem *MaterialItem::createCookResult()
+InventoryItem *MaterialItem::createCookResult() const
 {
 	return item_material_create_cook_result(m_content);
 }
@@ -176,7 +176,7 @@ ServerActiveObject* CraftItem::createSAO(ServerEnvironment *env, u16 id, v3f pos
 	return InventoryItem::createSAO(env, id, pos);
 }
 
-u16 CraftItem::getDropCount()
+u16 CraftItem::getDropCount() const
 {
 	// Special cases
 	s16 dc = item_craft_get_drop_count(m_subname);
@@ -186,12 +186,12 @@ u16 CraftItem::getDropCount()
 	return InventoryItem::getDropCount();
 }
 
-bool CraftItem::isCookable()
+bool CraftItem::isCookable() const
 {
 	return item_craft_is_cookable(m_subname);
 }
 
-InventoryItem *CraftItem::createCookResult()
+InventoryItem *CraftItem::createCookResult() const
 {
 	return item_craft_create_cook_result(m_subname);
 }
@@ -416,7 +416,7 @@ InventoryList & InventoryList::operator = (const InventoryList &other)
 	return *this;
 }
 
-std::string InventoryList::getName()
+const std::string &InventoryList::getName() const
 {
 	return m_name;
 }
@@ -441,6 +441,13 @@ u32 InventoryList::getUsedSlots()
 u32 InventoryList::getFreeSlots()
 {
 	return getSize() - getUsedSlots();
+}
+
+const InventoryItem * InventoryList::getItem(u32 i) const
+{
+	if(i > m_items.size() - 1)
+		return NULL;
+	return m_items[i];
 }
 
 InventoryItem * InventoryList::getItem(u32 i)
@@ -545,7 +552,7 @@ InventoryItem * InventoryList::addItem(u32 i, InventoryItem *newitem)
 bool InventoryList::itemFits(u32 i, InventoryItem *newitem)
 {
 	// If it is an empty position, it's an easy job.
-	InventoryItem *to_item = getItem(i);
+	const InventoryItem *to_item = getItem(i);
 	if(to_item == NULL)
 	{
 		return true;
@@ -736,7 +743,15 @@ InventoryList * Inventory::getList(const std::string &name)
 	return m_lists[i];
 }
 
-s32 Inventory::getListIndex(const std::string &name)
+const InventoryList * Inventory::getList(const std::string &name) const
+{
+	s32 i = getListIndex(name);
+	if(i == -1)
+		return NULL;
+	return m_lists[i];
+}
+
+const s32 Inventory::getListIndex(const std::string &name) const
 {
 	for(u32 i=0; i<m_lists.size(); i++)
 	{
@@ -866,7 +881,7 @@ void IMoveAction::apply(InventoryContext *c, InventoryManager *mgr)
 	Craft checking system
 */
 
-bool ItemSpec::checkItem(InventoryItem *item)
+bool ItemSpec::checkItem(const InventoryItem *item) const
 {
 	if(type == ITEM_NONE)
 	{
@@ -916,7 +931,7 @@ bool ItemSpec::checkItem(InventoryItem *item)
 	return true;
 }
 
-bool checkItemCombination(InventoryItem **items, ItemSpec *specs)
+bool checkItemCombination(InventoryItem const * const *items, const ItemSpec *specs)
 {
 	u16 items_min_x = 100;
 	u16 items_max_x = 100;
@@ -979,8 +994,8 @@ bool checkItemCombination(InventoryItem **items, ItemSpec *specs)
 		u16 items_y = items_min_y + y;
 		u16 specs_x = specs_min_x + x;
 		u16 specs_y = specs_min_y + y;
-		InventoryItem *item = items[items_y * 3 + items_x];
-		ItemSpec &spec = specs[specs_y * 3 + specs_x];
+		const InventoryItem *item = items[items_y * 3 + items_x];
+		const ItemSpec &spec = specs[specs_y * 3 + specs_x];
 
 		if(spec.checkItem(item) == false)
 			return false;

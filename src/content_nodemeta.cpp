@@ -178,9 +178,9 @@ std::string FurnaceNodeMetadata::infoText()
 	//return "Furnace";
 	if(m_fuel_time >= m_fuel_totaltime)
 	{
-		InventoryList *src_list = m_inventory->getList("src");
+		const InventoryList *src_list = m_inventory->getList("src");
 		assert(src_list);
-		InventoryItem *src_item = src_list->getItem(0);
+		const InventoryItem *src_item = src_list->getItem(0);
 
 		if(src_item)
 			return "Furnace is out of fuel";
@@ -219,7 +219,7 @@ bool FurnaceNodeMetadata::step(float dtime)
 
 		InventoryList *src_list = m_inventory->getList("src");
 		assert(src_list);
-		InventoryItem *src_item = src_list->getItem(0);
+		const InventoryItem *src_item = src_list->getItem(0);
 		
 		// Start only if there are free slots in dst, so that it can
 		// accomodate any result item
@@ -268,7 +268,7 @@ bool FurnaceNodeMetadata::step(float dtime)
 
 		InventoryList *fuel_list = m_inventory->getList("fuel");
 		assert(fuel_list);
-		InventoryItem *fuel_item = fuel_list->getItem(0);
+		const InventoryItem *fuel_item = fuel_list->getItem(0);
 
 		if(ItemSpec(ITEM_MATERIAL, CONTENT_TREE).checkItem(fuel_item))
 		{
