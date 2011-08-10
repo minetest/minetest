@@ -62,6 +62,11 @@ public:
 		return m_position;
 	}
 
+	v3s16 getLightPosition() const
+	{
+		return floatToInt(m_position + v3f(0,BS+BS/2,0), BS);
+	}
+
 	virtual void setPosition(const v3f &position)
 	{
 		m_position = position;

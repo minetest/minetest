@@ -1653,7 +1653,7 @@ void ClientEnvironment::step(float dtime)
 			u8 light = LIGHT_MAX;
 			try{
 				// Get node at head
-				v3s16 p = floatToInt(playerpos + v3f(0,BS+BS/2,0), BS);
+				v3s16 p = player->getLightPosition();
 				MapNode n = m_map->getNode(p);
 				light = n.getLightBlend(getDayNightRatio());
 			}
