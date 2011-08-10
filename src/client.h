@@ -211,7 +211,9 @@ public:
 	v3f getPlayerPosition(v3f *eye_position=NULL);
 
 	void setPlayerControl(PlayerControl &control);
-	
+
+	void selectPlayerItem(u16 item);
+
 	// Returns true if the inventory of the local player has been
 	// updated from the server. If it is true, it is set to false.
 	bool getLocalInventoryUpdated();

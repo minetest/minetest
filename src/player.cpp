@@ -33,6 +33,7 @@ Player::Player():
 	craftresult_is_preview(true),
 	hp(20),
 	peer_id(PEER_ID_INEXISTENT),
+	m_selected_item(0),
 	m_pitch(0),
 	m_yaw(0),
 	m_speed(0,0,0),
@@ -45,6 +46,11 @@ Player::Player():
 Player::~Player()
 {
 	delete inventory_backup;
+}
+
+void Player::wieldItem(u16 item)
+{
+	m_selected_item = item;
 }
 
 void Player::resetInventory()

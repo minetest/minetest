@@ -1953,6 +1953,14 @@ void Client::setPlayerControl(PlayerControl &control)
 	player->control = control;
 }
 
+void Client::selectPlayerItem(u16 item)
+{
+	LocalPlayer *player = m_env.getLocalPlayer();
+	assert(player != NULL);
+
+	player->wieldItem(item);
+}
+
 // Returns true if the inventory of the local player has been
 // updated from the server. If it is true, it is set to false.
 bool Client::getLocalInventoryUpdated()

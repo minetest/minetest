@@ -105,6 +105,15 @@ public:
 		snprintf(m_name, PLAYERNAME_SIZE, "%s", name);
 	}
 
+	virtual void wieldItem(u16 item);
+	virtual const InventoryItem *getWieldItem() const
+	{
+		const InventoryList *list = inventory.getList("main");
+		if (list)
+			return list->getItem(m_selected_item);
+		return NULL;
+	}
+
 	const char * getName()
 	{
 		return m_name;
@@ -146,6 +155,7 @@ public:
 
 protected:
 	char m_name[PLAYERNAME_SIZE];
+	u16 m_selected_item;
 	f32 m_pitch;
 	f32 m_yaw;
 	v3f m_speed;

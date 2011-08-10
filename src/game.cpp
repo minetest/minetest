@@ -2200,6 +2200,7 @@ void the_game(
 		if(client.getLocalInventoryUpdated()
 				|| g_selected_item != old_selected_item)
 		{
+			client.selectPlayerItem(g_selected_item);
 			old_selected_item = g_selected_item;
 			//std::cout<<"Updating local inventory"<<std::endl;
 			client.getLocalInventory(local_inventory);
