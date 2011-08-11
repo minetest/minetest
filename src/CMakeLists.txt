@@ -237,7 +237,7 @@ else()
 		set(RELEASE_WARNING_FLAGS "")
 	endif()
 	
-	if(NOT APPLE)
+	if(NOT APPLE AND NOT "${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang")
 		CHECK_CXX_COMPILER_FLAG("-Wno-unused-but-set-variable" HAS_UNUSED_BUT_SET_VARIABLE_WARNING)
 		if(HAS_UNUSED_BUT_SET_VARIABLE_WARNING)
 			set(WARNING_FLAGS "${WARNING_FLAGS} -Wno-unused-but-set-variable")
