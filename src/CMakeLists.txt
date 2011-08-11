@@ -209,7 +209,7 @@ endif(BUILD_SERVER)
 # Set some optimizations and tweaks
 #
 
-include(CheckCCompilerFlag)
+include(CheckCXXCompilerFlag)
 
 if(MSVC)
 	# Visual Studio
@@ -238,7 +238,7 @@ else()
 	endif()
 	
 	if(NOT APPLE)
-		check_c_compiler_flag("-Wno-unused-but-set-variable" HAS_UNUSED_BUT_SET_VARIABLE_WARNING)
+		CHECK_CXX_COMPILER_FLAG("-Wno-unused-but-set-variable" HAS_UNUSED_BUT_SET_VARIABLE_WARNING)
 		if(HAS_UNUSED_BUT_SET_VARIABLE_WARNING)
 			set(WARNING_FLAGS "${WARNING_FLAGS} -Wno-unused-but-set-variable")
 		endif(HAS_UNUSED_BUT_SET_VARIABLE_WARNING)
