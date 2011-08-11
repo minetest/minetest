@@ -68,9 +68,9 @@ Nullstream dummyout;
 void assert_fail(const char *assertion, const char *file,
 		unsigned int line, const char *function)
 {
-	DEBUGPRINT("\nIn thread %x:\n"
+	DEBUGPRINT("\nIn thread %lx:\n"
 			"%s:%d: %s: Assertion '%s' failed.\n",
-			(unsigned int)get_current_thread_id(),
+			(unsigned long)get_current_thread_id(),
 			file, line, function, assertion);
 	
 	debug_stacks_print();
@@ -95,8 +95,8 @@ DebugStack::DebugStack(threadid_t id)
 
 void DebugStack::print(FILE *file, bool everything)
 {
-	fprintf(file, "DEBUG STACK FOR THREAD %x:\n",
-			(unsigned int)threadid);
+	fprintf(file, "DEBUG STACK FOR THREAD %lx:\n",
+			(unsigned long)threadid);
 
 	for(int i=0; i<stack_max_i; i++)
 	{
