@@ -41,7 +41,6 @@ IF (WIN32)
 		DOC "gettext *iconv*.lib")
 ENDIF(WIN32)
 
-
 IF(GETTEXT_INCLUDE_DIR AND GETTEXT_MSGFMT)
 	IF (WIN32)
 		# in the Win32 case check also for the extra linking requirements
@@ -49,6 +48,10 @@ IF(GETTEXT_INCLUDE_DIR AND GETTEXT_MSGFMT)
 			SET(GETTEXT_FOUND TRUE)
 		ENDIF()
 	ELSE(WIN32)
+		# *BSD variants require special linkage as they don't use glibc
+		IF(${CMAKE_SYSTEM_NAME} MATCHES "BSD")
+			SET(GETTEXT_LIBRARY "intl")
+		ENDIF(${CMAKE_SYSTEM_NAME} MATCHES "BSD")
 		SET(GETTEXT_FOUND TRUE)
 	ENDIF(WIN32)
 ENDIF()
