@@ -1062,6 +1062,14 @@ void the_game(
 	{
 		//std::cerr<<"frame"<<std::endl;
 
+		if(client.accessDenied())
+		{
+			error_message = L"Access denied. Reason: "
+					+client.accessDeniedReason();
+			std::cout<<DTIME<<wide_to_narrow(error_message)<<std::endl;
+			break;
+		}
+
 		if(g_gamecallback->disconnect_requested)
 		{
 			g_gamecallback->disconnect_requested = false;

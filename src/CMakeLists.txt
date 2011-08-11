@@ -127,6 +127,7 @@ set(common_SRCS
 	test.cpp
 	sha1.cpp
 	base64.cpp
+	ban.cpp
 )
 
 # This gives us the icon

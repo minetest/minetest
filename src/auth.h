@@ -38,6 +38,7 @@ const u64 PRIV_SERVER = 16;          // Can manage the server (e.g. shutodwn
                                      // ,settings)
 const u64 PRIV_SHOUT = 32;           // Can broadcast chat messages to all
                                      // players
+const u64 PRIV_BAN = 64;             // Can ban players
 
 // Default privileges - these can be overriden for new players using the
 // config option "default_privs" - however, this value still applies for
