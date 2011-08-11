@@ -160,6 +160,13 @@ enum ToClientCommand
 		u16 reason_length
 		wstring reason
 	*/
+
+	TOCLIENT_PLAYERITEM = 0x36,
+	/*
+		u16 command
+		u16 peer id
+		string serialized item
+	*/
 };
 
 enum ToServerCommand

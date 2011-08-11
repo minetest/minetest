@@ -1549,6 +1549,47 @@ void Client::ProcessData(u8 *data, u32 datasize, u16 sender_peer_id)
 		// get damage from falling on ground
 		m_ignore_damage_timer = 3.0;
 	}
+	else if(command == TOCLIENT_PLAYERITEM)
+	{
+		std::string datastring((char*)&data[2], datasize-2);
+		std::istringstream is(datastring, std::ios_base::binary);
+
+		u16 count = readU16(is);
+
+		for (u16 i = 0; i < count; ++i) {
+			u16 peer_id = readU16(is);
+			Player *player = m_env.getPlayer(peer_id);
+
+			if (player == NULL)
+			{
+				dout_client<<DTIME<<"Client: ignoring player item "
+					<< deSerializeString(is)
+					<< " for non-existing peer id " << peer_id
+					<< std::endl;
+				continue;
+			} else if (player->isLocal()) {
+				dout_client<<DTIME<<"Client: ignoring player item "
+					<< deSerializeString(is)
+					<< " for local player" << std::endl;
+				continue;
+			} else {
+				InventoryList *inv = player->inventory.getList("main");
+				std::string itemstring(deSerializeString(is));
+				if (itemstring.empty()) {
+					inv->deleteItem(0);
+					dout_client<<DTIME
+						<<"Client: empty player item for peer "
+						<< peer_id << std::endl;
+				} else {
+					std::istringstream iss(itemstring);
+					delete inv->changeItem(0, InventoryItem::deSerialize(iss));
+					dout_client<<DTIME<<"Client: player item for peer " << peer_id << ": ";
+					player->getWieldItem()->serialize(dout_client);
+					dout_client<<std::endl;
+				}
+			}
+		}
+	}
 	else
 	{
 		dout_client<<DTIME<<"WARNING: Client: Ignoring unknown command "
