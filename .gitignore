@@ -9,6 +9,7 @@ src/jthread/CMakeFiles/*
 src/jthread/Makefile
 src/jthread/cmake_config.h
 src/jthread/cmake_install.cmake
+.*.swp
 minetest.conf
 bin/
 CMakeCache.txt
