@@ -173,7 +173,7 @@ include_directories(
 	${SQLITE3_INCLUDE_DIR}
 )
 
-set(EXECUTABLE_OUTPUT_PATH ../bin)
+set(EXECUTABLE_OUTPUT_PATH "${CMAKE_SOURCE_DIR}/bin")
 
 if(BUILD_CLIENT)
 	add_executable(${PROJECT_NAME} ${minetest_SRCS})
