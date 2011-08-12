@@ -1932,7 +1932,9 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 	// drop player if is ip is banned
 	if(m_banmanager.isIpBanned(peer->address.serializeString())){
 		SendAccessDenied(m_con, peer_id,
-				L"Your ip is banned!");
+				L"Your ip is banned. Banned name was "
+				+narrow_to_wide(m_banmanager.getBanName(
+					peer->address.serializeString())));
 		m_con.deletePeer(peer_id, false);
 		return;
 	}

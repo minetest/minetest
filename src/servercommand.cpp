@@ -183,7 +183,7 @@ void cmd_teleport(std::wostringstream &os,
 	os<< L"-!- Teleported.";
 }
 
-void cmd_ipbanunban(std::wostringstream &os, ServerCommandContext *ctx)
+void cmd_banunban(std::wostringstream &os, ServerCommandContext *ctx)
 {
 	if((ctx->privs && PRIV_BAN) == 0)
 	{
@@ -191,33 +191,39 @@ void cmd_ipbanunban(std::wostringstream &os, ServerCommandContext *ctx)
 		return;
 	}
 
-	if(ctx->parms.size() != 2)
+	if(ctx->parms.size() < 2)
 	{
-		os<<L"-!- Missing parameter";
+		std::string desc = ctx->server->getBanDescription("");
+		os<<L"-!- Ban list: "<<narrow_to_wide(desc);
 		return;
 	}
-	if(ctx->parms[0] == L"ipban")
+	if(ctx->parms[0] == L"ban")
 	{
 		Player *player = ctx->env->getPlayer(wide_to_narrow(ctx->parms[1]).c_str());
 
 		if(player == NULL)
 		{
-			os<<L"-!- No such Player!";
+			os<<L"-!- No such player";
 			return;
 		}
 
 		con::Peer *peer = ctx->server->getPeerNoEx(player->peer_id);
 		if(peer == NULL)
 		{
-			dstream<<"peer was not found!"<<std::endl;
+			dstream<<__FUNCTION_NAME<<": peer was not found"<<std::endl;
+			return;
 		}
-		ctx->server->setIpBanned(peer->address.serializeString());
-		os<<L"-!- IP: "<<narrow_to_wide(peer->address.serializeString())<<L" was banned!";
+		std::string ip_string = peer->address.serializeString();
+		ctx->server->setIpBanned(ip_string, player->getName());
+		os<<L"-!- Banned "<<narrow_to_wide(ip_string)<<L"|"
+				<<narrow_to_wide(player->getName());
 	}
 	else
 	{
-		ctx->server->unsetIpBanned(wide_to_narrow(ctx->parms[1]));
-		os<<L"-!- IP: "<<ctx->parms[1]<<L" was unbanned!";
+		std::string ip_or_name = wide_to_narrow(ctx->parms[1]);
+		std::string desc = ctx->server->getBanDescription(ip_or_name);
+		ctx->server->unsetIpBanned(ip_or_name);
+		os<<L"-!- Unbanned "<<narrow_to_wide(desc);
 	}
 }
 
@@ -243,7 +249,7 @@ std::wstring processServerCommand(ServerCommandContext *ctx)
 		if(privs & PRIV_PRIVS)
 			os<<L" grant revoke";
 		if(privs & PRIV_BAN)
-			os<<L" ipban ipunban";
+			os<<L" ban unban";
 	}
 	else if(ctx->parms[0] == L"status")
 	{
@@ -273,9 +279,9 @@ std::wstring processServerCommand(ServerCommandContext *ctx)
 	{
 		cmd_teleport(os, ctx);
 	}
-	else if(ctx->parms[0] == L"ipban" || ctx->parms[0] == L"ipunban")
+	else if(ctx->parms[0] == L"ban" || ctx->parms[0] == L"unban")
 	{
-		cmd_ipbanunban(os, ctx);
+		cmd_banunban(os, ctx);
 	}
 	else
 	{

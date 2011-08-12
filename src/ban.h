@@ -20,7 +20,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #ifndef BAN_HEADER
 #define BAN_HEADER
 
-#include <set>
+#include <map>
 #include <string>
 #include <jthread.h>
 #include <jmutex.h>
@@ -34,14 +34,17 @@ public:
 	~BanManager();
 	void load();
 	void save();
-	void add(std::string ip);
-	void remove(std::string ip);
-	bool isIpBanned(std::string ip);
+	bool isIpBanned(const std::string &ip);
+	// Supplying ip_or_name = "" lists all bans.
+	std::string getBanDescription(const std::string &ip_or_name);
+	std::string getBanName(const std::string &ip);
+	void add(const std::string &ip, const std::string &name);
+	void remove(const std::string &ip_or_name);
 	bool isModified();
 private:
 	JMutex m_mutex;
 	std::string m_banfilepath;
-	std::set<std::string> m_ips;
+	std::map<std::string, std::string> m_ips;
 	bool m_modified;
 
 };
