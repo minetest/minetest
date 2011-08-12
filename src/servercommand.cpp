@@ -185,7 +185,7 @@ void cmd_teleport(std::wostringstream &os,
 
 void cmd_banunban(std::wostringstream &os, ServerCommandContext *ctx)
 {
-	if((ctx->privs && PRIV_BAN) == 0)
+	if((ctx->privs & PRIV_BAN) == 0)
 	{
 		os<<L"-!- You don't have permission to do that";
 		return;

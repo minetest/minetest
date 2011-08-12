@@ -100,10 +100,10 @@ void Address::Resolve(const char *name)
 std::string Address::serializeString()
 {
 	unsigned int a, b, c, d;
-	a = (m_address && 0xFF000000)>>24;
-	b = (m_address && 0x00FF0000)>>16;
-	c = (m_address && 0x0000FF00)>>8;
-	d = (m_address && 0x000000FF);
+	a = (m_address & 0xFF000000)>>24;
+	b = (m_address & 0x00FF0000)>>16;
+	c = (m_address & 0x0000FF00)>>8;
+	d = (m_address & 0x000000FF);
 	return itos(a)+"."+itos(b)+"."+itos(c)+"."+itos(d);
 }
 
