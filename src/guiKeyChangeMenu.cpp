@@ -26,6 +26,34 @@
 #include "main.h"
 #include <string>
 
+static const char *KeyNamesLang[] =
+	{ "-", N_("Left Button"), N_("Right Button"), N_("Cancel"), N_("Middle Button"), N_("X Button 1"),
+			N_("X Button 2"), "-", N_("Back"), N_("Tab"), "-", "-", N_("Clear"), N_("Return"), "-",
+			"-", N_("Shift"), N_("Control"), N_("Menu"), N_("Pause"), N_("Capital"), N_("Kana"), "-",
+			N_("Junja"), N_("Final"), N_("Kanji"), "-", N_("Escape"), N_("Convert"), N_("Nonconvert"),
+			N_("Accept"), N_("Mode Change"), N_("Space"), N_("Priot"), N_("Next"), N_("End"), N_("Home"),
+			N_("Left"), N_("Up"), N_("Right"), N_("Down"), N_("Select"), N_("Print"), N_("Execute"),
+			N_("Snapshot"), N_("Insert"), N_("Delete"), N_("Help"), "0", "1", "2", "3", "4", "5",
+			"6", "7", "8", "9", "-", "-", "-", "-", "-", "-", "-", "A", "B", "C",
+			"D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q",
+			"R", "S", "T", "U", "V", "W", "X", "Y", "Z", N_("Left Windows"),
+			N_("Right Windows"), N_("Apps"), "-", N_("Sleep"), N_("Numpad 0"), N_("Numpad 1"),
+			N_("Numpad 2"), N_("Numpad 3"), N_("Numpad 4"), N_("Numpad 5"), N_("Numpad 6"), N_("Numpad 7"),
+			N_("Numpad 8"), N_("Numpad 9"), N_("Numpad *"), N_("Numpad +"), N_("Numpad /"), N_("Numpad -"),
+			"Numpad .", "Numpad /", "F1", "F2", "F3", "F4", "F5", "F6", "F7", "F8",
+			"F9", "F10", "F11", "F12", "F13", "F14", "F15", "F16", "F17", "F18",
+			"F19", "F20", "F21", "F22", "F23", "F24", "-", "-", "-", "-", "-", "-",
+			"-", "-", N_("Num Lock"), N_("Scroll Lock"), "-", "-", "-", "-", "-", "-", "-",
+			"-", "-", "-", "-", "-", "-", "-", N_("Left Shift"), N_("Right Shight"),
+			N_("Left Control"), N_("Right Control"), N_("Left Menu"), N_("Right Menu"), "-", "-",
+			"-", "-", "-", "-", "-", "-", "-", "-", "-", "-", "-", "-", "-", "-",
+			"-", "-", "-", "-", "-", N_("Plus"), N_("Comma"), N_("Minus"), N_("Period"), "-", "-",
+			"-", "-", "-", "-", "-", "-", "-", "-", "-", "-", "-", "-", "-", "-",
+			"-", "-", "-", "-", "-", "-", "-", "-", "-", "-", "-", "-", "-", "-",
+			"-", "-", "-", "-", "-", "-", "-", "-", "-", "-", "-", "-", "-", "-",
+			"-", "-", "-", "-", "-", "-", "-", "-", "-", "-", "-", N_("Attn"), N_("CrSel"),
+			N_("ExSel"), N_("Erase OEF"), N_("Play"), N_("Zoom"), N_("PA1"), N_("OEM Clear"), "-" };
+
 GUIKeyChangeMenu::GUIKeyChangeMenu(gui::IGUIEnvironment* env,
 		gui::IGUIElement* parent, s32 id, IMenuManager *menumgr) :
 	GUIModalMenu(env, parent, id, menumgr)
@@ -101,7 +129,7 @@ void GUIKeyChangeMenu::regenerateGui(v2u32 screensize)
 		rect += topleft + v2s32(offset.X + 105, offset.Y - 5);
 		this->forward = Environment->addButton(rect, this,
 				GUI_ID_KEY_FORWARD_BUTTON,
-				wgettext(KeyNames[key_forward]));
+				wgettext(KeyNamesLang[key_forward]));
 	}
 
 	offset += v2s32(0, 25);
@@ -118,7 +146,7 @@ void GUIKeyChangeMenu::regenerateGui(v2u32 screensize)
 		rect += topleft + v2s32(offset.X + 105, offset.Y - 5);
 		this->backward = Environment->addButton(rect, this,
 				GUI_ID_KEY_BACKWARD_BUTTON,
-				wgettext(KeyNames[key_backward]));
+				wgettext(KeyNamesLang[key_backward]));
 	}
 	offset += v2s32(0, 25);
 	{
@@ -133,7 +161,7 @@ void GUIKeyChangeMenu::regenerateGui(v2u32 screensize)
 		core::rect < s32 > rect(0, 0, 100, 30);
 		rect += topleft + v2s32(offset.X + 105, offset.Y - 5);
 		this->left = Environment->addButton(rect, this, GUI_ID_KEY_LEFT_BUTTON,
-				wgettext(KeyNames[key_left]));
+				wgettext(KeyNamesLang[key_left]));
 	}
 	offset += v2s32(0, 25);
 	{
@@ -149,7 +177,7 @@ void GUIKeyChangeMenu::regenerateGui(v2u32 screensize)
 		rect += topleft + v2s32(offset.X + 105, offset.Y - 5);
 		this->right = Environment->addButton(rect, this,
 				GUI_ID_KEY_RIGHT_BUTTON,
-				wgettext(KeyNames[key_right]));
+				wgettext(KeyNamesLang[key_right]));
 	}
 	offset += v2s32(0, 25);
 	{
@@ -164,7 +192,7 @@ void GUIKeyChangeMenu::regenerateGui(v2u32 screensize)
 		core::rect < s32 > rect(0, 0, 100, 30);
 		rect += topleft + v2s32(offset.X + 105, offset.Y - 5);
 		this->use = Environment->addButton(rect, this, GUI_ID_KEY_USE_BUTTON,
-				wgettext(KeyNames[key_use]));
+				wgettext(KeyNamesLang[key_use]));
 	}
 	offset += v2s32(0, 25);
 	{
@@ -180,7 +208,7 @@ void GUIKeyChangeMenu::regenerateGui(v2u32 screensize)
 		rect += topleft + v2s32(offset.X + 105, offset.Y - 5);
 		this->sneak = Environment->addButton(rect, this,
 				GUI_ID_KEY_SNEAK_BUTTON,
-				wgettext(KeyNames[key_sneak]));
+				wgettext(KeyNamesLang[key_sneak]));
 	}
 	offset += v2s32(0, 25);
 	{
@@ -194,7 +222,7 @@ void GUIKeyChangeMenu::regenerateGui(v2u32 screensize)
 		core::rect < s32 > rect(0, 0, 100, 30);
 		rect += topleft + v2s32(offset.X + 105, offset.Y - 5);
 		this->jump = Environment->addButton(rect, this, GUI_ID_KEY_JUMP_BUTTON,
-				wgettext(KeyNames[key_jump]));
+				wgettext(KeyNamesLang[key_jump]));
 	}
 
 	offset += v2s32(0, 25);
@@ -211,7 +239,7 @@ void GUIKeyChangeMenu::regenerateGui(v2u32 screensize)
 		rect += topleft + v2s32(offset.X + 105, offset.Y - 5);
 		this->inventory = Environment->addButton(rect, this,
 				GUI_ID_KEY_INVENTORY_BUTTON,
-				wgettext(KeyNames[key_inventory]));
+				wgettext(KeyNamesLang[key_inventory]));
 	}
 	offset += v2s32(0, 25);
 	{
@@ -225,7 +253,7 @@ void GUIKeyChangeMenu::regenerateGui(v2u32 screensize)
 		core::rect < s32 > rect(0, 0, 100, 30);
 		rect += topleft + v2s32(offset.X + 105, offset.Y - 5);
 		this->chat = Environment->addButton(rect, this, GUI_ID_KEY_CHAT_BUTTON,
-				wgettext(KeyNames[key_chat]));
+				wgettext(KeyNamesLang[key_chat]));
 	}
 
 	//next col
@@ -242,7 +270,7 @@ void GUIKeyChangeMenu::regenerateGui(v2u32 screensize)
 		core::rect < s32 > rect(0, 0, 100, 30);
 		rect += topleft + v2s32(offset.X + 105, offset.Y - 5);
 		this->fly = Environment->addButton(rect, this, GUI_ID_KEY_FLY_BUTTON,
-				wgettext(KeyNames[key_fly]));
+				wgettext(KeyNamesLang[key_fly]));
 	}
 	offset += v2s32(0, 25);
 	{
@@ -257,7 +285,7 @@ void GUIKeyChangeMenu::regenerateGui(v2u32 screensize)
 		core::rect < s32 > rect(0, 0, 100, 30);
 		rect += topleft + v2s32(offset.X + 105, offset.Y - 5);
 		this->fast = Environment->addButton(rect, this, GUI_ID_KEY_FAST_BUTTON,
-				wgettext(KeyNames[key_fast]));
+				wgettext(KeyNamesLang[key_fast]));
 	}
 	offset += v2s32(0, 25);
 	{
@@ -273,7 +301,7 @@ void GUIKeyChangeMenu::regenerateGui(v2u32 screensize)
 		rect += topleft + v2s32(offset.X + 105, offset.Y - 5);
 		this->range = Environment->addButton(rect, this,
 				GUI_ID_KEY_RANGE_BUTTON,
-				wgettext(KeyNames[key_range]));
+				wgettext(KeyNamesLang[key_range]));
 	}
 
 	offset += v2s32(0, 25);
@@ -289,7 +317,7 @@ void GUIKeyChangeMenu::regenerateGui(v2u32 screensize)
 		core::rect < s32 > rect(0, 0, 100, 30);
 		rect += topleft + v2s32(offset.X + 105, offset.Y - 5);
 		this->dump = Environment->addButton(rect, this, GUI_ID_KEY_DUMP_BUTTON,
-				wgettext(KeyNames[key_dump]));
+				wgettext(KeyNamesLang[key_dump]));
 	}
 	{
 		core::rect < s32 > rect(0, 0, 100, 30);
@@ -367,45 +395,45 @@ bool GUIKeyChangeMenu::resetMenu()
 		{
 		case GUI_ID_KEY_FORWARD_BUTTON:
 			this->forward->setText(
-					wgettext(KeyNames[key_forward]));
+					wgettext(KeyNamesLang[key_forward]));
 			break;
 		case GUI_ID_KEY_BACKWARD_BUTTON:
 			this->backward->setText(
-					wgettext(KeyNames[key_backward]));
+					wgettext(KeyNamesLang[key_backward]));
 			break;
 		case GUI_ID_KEY_LEFT_BUTTON:
-			this->left->setText(wgettext(KeyNames[key_left]));
+			this->left->setText(wgettext(KeyNamesLang[key_left]));
 			break;
 		case GUI_ID_KEY_RIGHT_BUTTON:
-			this->right->setText(wgettext(KeyNames[key_right]));
+			this->right->setText(wgettext(KeyNamesLang[key_right]));
 			break;
 		case GUI_ID_KEY_JUMP_BUTTON:
-			this->jump->setText(wgettext(KeyNames[key_jump]));
+			this->jump->setText(wgettext(KeyNamesLang[key_jump]));
 			break;
 		case GUI_ID_KEY_SNEAK_BUTTON:
-			this->sneak->setText(wgettext(KeyNames[key_sneak]));
+			this->sneak->setText(wgettext(KeyNamesLang[key_sneak]));
 			break;
 		case GUI_ID_KEY_INVENTORY_BUTTON:
 			this->inventory->setText(
-					wgettext(KeyNames[key_inventory]));
+					wgettext(KeyNamesLang[key_inventory]));
 			break;
 		case GUI_ID_KEY_CHAT_BUTTON:
-			this->chat->setText(wgettext(KeyNames[key_chat]));
+			this->chat->setText(wgettext(KeyNamesLang[key_chat]));
 			break;
 		case GUI_ID_KEY_RANGE_BUTTON:
-			this->range->setText(wgettext(KeyNames[key_range]));
+			this->range->setText(wgettext(KeyNamesLang[key_range]));
 			break;
 		case GUI_ID_KEY_FLY_BUTTON:
-			this->fly->setText(wgettext(KeyNames[key_fly]));
+			this->fly->setText(wgettext(KeyNamesLang[key_fly]));
 			break;
 		case GUI_ID_KEY_FAST_BUTTON:
-			this->fast->setText(wgettext(KeyNames[key_fast]));
+			this->fast->setText(wgettext(KeyNamesLang[key_fast]));
 			break;
 		case GUI_ID_KEY_USE_BUTTON:
-			this->use->setText(wgettext(KeyNames[key_use]));
+			this->use->setText(wgettext(KeyNamesLang[key_use]));
 			break;
 		case GUI_ID_KEY_DUMP_BUTTON:
-			this->dump->setText(wgettext(KeyNames[key_dump]));
+			this->dump->setText(wgettext(KeyNamesLang[key_dump]));
 			break;
 		}
 		activeKey = -1;
@@ -422,79 +450,79 @@ bool GUIKeyChangeMenu::OnEvent(const SEvent& event)
 		if (activeKey == GUI_ID_KEY_FORWARD_BUTTON)
 		{
 			this->forward->setText(
-					wgettext(KeyNames[event.KeyInput.Key]));
+					wgettext(KeyNamesLang[event.KeyInput.Key]));
 			this->key_forward = event.KeyInput.Key;
 		}
 		else if (activeKey == GUI_ID_KEY_BACKWARD_BUTTON)
 		{
 			this->backward->setText(
-					wgettext(KeyNames[event.KeyInput.Key]));
+					wgettext(KeyNamesLang[event.KeyInput.Key]));
 			this->key_backward = event.KeyInput.Key;
 		}
 		else if (activeKey == GUI_ID_KEY_LEFT_BUTTON)
 		{
 			this->left->setText(
-					wgettext(KeyNames[event.KeyInput.Key]));
+					wgettext(KeyNamesLang[event.KeyInput.Key]));
 			this->key_left = event.KeyInput.Key;
 		}
 		else if (activeKey == GUI_ID_KEY_RIGHT_BUTTON)
 		{
 			this->right->setText(
-					wgettext(KeyNames[event.KeyInput.Key]));
+					wgettext(KeyNamesLang[event.KeyInput.Key]));
 			this->key_right = event.KeyInput.Key;
 		}
 		else if (activeKey == GUI_ID_KEY_JUMP_BUTTON)
 		{
 			this->jump->setText(
-					wgettext(KeyNames[event.KeyInput.Key]));
+					wgettext(KeyNamesLang[event.KeyInput.Key]));
 			this->key_jump = event.KeyInput.Key;
 		}
 		else if (activeKey == GUI_ID_KEY_SNEAK_BUTTON)
 		{
 			this->sneak->setText(
-					wgettext(KeyNames[event.KeyInput.Key]));
+					wgettext(KeyNamesLang[event.KeyInput.Key]));
 			this->key_sneak = event.KeyInput.Key;
 		}
 		else if (activeKey == GUI_ID_KEY_INVENTORY_BUTTON)
 		{
 			this->inventory->setText(
-					wgettext(KeyNames[event.KeyInput.Key]));
+					wgettext(KeyNamesLang[event.KeyInput.Key]));
 			this->key_inventory = event.KeyInput.Key;
 		}
 		else if (activeKey == GUI_ID_KEY_CHAT_BUTTON)
 		{
 			this->chat->setText(
-					wgettext(KeyNames[event.KeyInput.Key]));
+					wgettext(KeyNamesLang[event.KeyInput.Key]));
 			this->key_chat = event.KeyInput.Key;
 		}
 		else if (activeKey == GUI_ID_KEY_RANGE_BUTTON)
 		{
 			this->range->setText(
-					wgettext(KeyNames[event.KeyInput.Key]));
+					wgettext(KeyNamesLang[event.KeyInput.Key]));
 			this->key_range = event.KeyInput.Key;
 		}
 		else if (activeKey == GUI_ID_KEY_FLY_BUTTON)
 		{
 			this->fly->setText(
-					wgettext(KeyNames[event.KeyInput.Key]));
+					wgettext(KeyNamesLang[event.KeyInput.Key]));
 			this->key_fly = event.KeyInput.Key;
 		}
 		else if (activeKey == GUI_ID_KEY_FAST_BUTTON)
 		{
 			this->fast->setText(
-					wgettext(KeyNames[event.KeyInput.Key]));
+					wgettext(KeyNamesLang[event.KeyInput.Key]));
 			this->key_fast = event.KeyInput.Key;
 		}
 		else if (activeKey == GUI_ID_KEY_USE_BUTTON)
 		{
 			this->use->setText(
-					wgettext(KeyNames[event.KeyInput.Key]));
+					wgettext(KeyNamesLang[event.KeyInput.Key]));
 			this->key_use = event.KeyInput.Key;
 		}
 		else if (activeKey == GUI_ID_KEY_DUMP_BUTTON)
 		{
 			this->dump->setText(
-					wgettext(KeyNames[event.KeyInput.Key]));
+					wgettext(KeyNamesLang[event.KeyInput.Key]));
 			this->key_dump = event.KeyInput.Key;
 		}
 		changeCtype("C");

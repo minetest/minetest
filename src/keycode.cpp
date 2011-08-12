@@ -206,7 +206,7 @@ static const char *KeyNames[] =
 		"-", "-", "-", "-", "-", "-", "-", "-", "Attn", "CrSel", "ExSel",
 		"Erase OEF", "Play", "Zoom", "PA1", "OEM Clear", "-" };
 
-std::string keycode_to_keyname(s32 keycode)
+const std::string &keycode_to_keyname(s32 keycode)
 {
 	return KeyNames[keycode];
 }
