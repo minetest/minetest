@@ -495,7 +495,13 @@ void TextureSource::buildMainAtlas()
 	core::dimension2d<u32> atlas_dim(1024,1024);
 	video::IImage *atlas_img =
 			driver->createImage(video::ECF_A8R8G8B8, atlas_dim);
-	assert(atlas_img);
+	//assert(atlas_img);
+	if(atlas_img == NULL)
+	{
+		dstream<<"TextureSource::buildMainAtlas(): Failed to create atlas "
+				"image; not building texture atlas."<<std::endl;
+		return;
+	}
 
 	/*
 		A list of stuff to add. This should contain as much of the
