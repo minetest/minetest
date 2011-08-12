@@ -29,6 +29,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "map.h"
 #include "inventory.h"
 #include "auth.h"
+#include "ban.h"
 
 /*
 	Some random functions
@@ -455,6 +456,23 @@ public:
 			g_settings.updateConfigFile(m_configpath.c_str());
 	}
 
+	void setIpBanned(std::string ip)
+	{
+		m_banmanager.add(ip);
+		return;
+	}
+
+	void unsetIpBanned(std::string ip)
+	{
+		m_banmanager.remove(ip);
+		return;
+	}
+
+	con::Peer* getPeerNoEx(u16 peer_id)
+	{
+		return m_con.GetPeerNoEx(peer_id);
+	}
+
 private:
 
 	// con::PeerHandler implementation.
@@ -566,6 +584,9 @@ private:
 
 	// User authentication
 	AuthManager m_authmanager;
+
+	// Bann checking
+	BanManager m_banmanager;
 	
 	/*
 		Threads

@@ -1063,6 +1063,7 @@ Server::Server(
 	m_env(new ServerMap(mapsavedir), this),
 	m_con(PROTOCOL_ID, 512, CONNECTION_TIMEOUT, this),
 	m_authmanager(mapsavedir+"/auth.txt"),
+	m_banmanager(mapsavedir+"/ipban.txt"),
 	m_thread(this),
 	m_emergethread(this),
 	m_time_counter(0),
@@ -1834,6 +1835,10 @@ void Server::AsyncRunStep()
 			// Auth stuff
 			if(m_authmanager.isModified())
 				m_authmanager.save();
+
+			//Bann stuff
+			if(m_banmanager.isModified())
+				m_banmanager.save();
 			
 			// Map
 			JMutexAutoLock lock(m_env_mutex);
@@ -1923,6 +1928,14 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 				<<peer_id<<" not found"<<std::endl;
 		return;
 	}
+
+	// drop player if is ip is banned
+	if(m_banmanager.isIpBanned(peer->address.serializeString())){
+		SendAccessDenied(m_con, peer_id,
+				L"Your ip is banned!");
+		m_con.deletePeer(peer_id, false);
+		return;
+	}
 	
 	u8 peer_ser_ver = getClient(peer->id)->serialization_version;
 
@@ -1959,7 +1972,7 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 
 		//peer->serialization_version = deployed;
 		getClient(peer->id)->pending_serialization_version = deployed;
-
+		
 		if(deployed == SER_FMT_VER_INVALID)
 		{
 			derr_server<<DTIME<<"Server: Cannot negotiate "
