@@ -1264,6 +1264,14 @@ public:
 		m_settings[name] = value;
 	}
 
+	void set(std::string name, const char *value)
+	{
+		JMutexAutoLock lock(m_mutex);
+
+		m_settings[name] = value;
+	}
+
+
 	void setDefault(std::string name, std::string value)
 	{
 		JMutexAutoLock lock(m_mutex);
