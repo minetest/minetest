@@ -114,18 +114,6 @@ struct TextDestChat : public TextDest
 		// Discard empty line
 		if(text == L"")
 			return;
-		
-		// Parse command (server command starts with "/#")
-		if(text[0] == L'/' && text[1] != L'#')
-		{
-			std::wstring reply = L"Local: ";
-
-			reply += L"Local commands not yet supported. "
-					L"Server prefix is \"/#\".";
-			
-			m_client->addChatMessage(reply);
-			return;
-		}
 
 		// Send to others
 		m_client->sendChatMessage(text);

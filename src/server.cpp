@@ -3245,12 +3245,14 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 		u64 privs = getPlayerPrivs(player);
 
 		// Parse commands
-		std::wstring commandprefix = L"/#";
-		if(message.substr(0, commandprefix.size()) == commandprefix)
+		if(message[0] == L'/')
 		{
 			line += L"Server: ";
 
-			message = message.substr(commandprefix.size());
+			size_t strip_size = 1;
+			if (message[1] == L'#') // support old-style commans
+				++strip_size;
+			message = message.substr(strip_size);
 			
 			WStrfnd f1(message);
 			f1.next(L" "); // Skip over /#whatever
