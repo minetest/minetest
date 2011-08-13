@@ -290,12 +290,9 @@ bool GUIInventoryMenu::OnEvent(const SEvent& event)
 {
 	if(event.EventType==EET_KEY_INPUT_EVENT)
 	{
-		if(event.KeyInput.Key==KEY_ESCAPE && event.KeyInput.PressedDown)
-		{
-			quitMenu();
-			return true;
-		}
-		if(event.KeyInput.Key==getKeySetting("keymap_inventory") && event.KeyInput.PressedDown)
+		KeyPress kp(event.KeyInput);
+		if (event.KeyInput.PressedDown && (kp == EscapeKey ||
+			kp == getKeySetting("keymap_inventory")))
 		{
 			quitMenu();
 			return true;

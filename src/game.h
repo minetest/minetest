@@ -23,6 +23,69 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "common_irrlicht.h"
 #include <string>
 
+#include "keycode.h"
+
+class KeyList : protected core::list<KeyPress>
+{
+	typedef core::list<KeyPress> super;
+	typedef super::Iterator Iterator;
+	typedef super::ConstIterator ConstIterator;
+
+	virtual ConstIterator find(const KeyPress &key) const
+	{
+		ConstIterator f(begin());
+		ConstIterator e(end());
+		while (f!=e) {
+			if (*f == key)
+				return f;
+			++f;
+		}
+		return e;
+	}
+
+	virtual Iterator find(const KeyPress &key)
+	{
+		Iterator f(begin());
+		Iterator e(end());
+		while (f!=e) {
+			if (*f == key)
+				return f;
+			++f;
+		}
+		return e;
+	}
+
+public:
+	void clear() { super::clear(); }
+
+	void set(const KeyPress &key)
+	{
+		if (find(key) == end())
+			push_back(key);
+	}
+
+	void unset(const KeyPress &key)
+	{
+		Iterator p(find(key));
+		if (p != end())
+			erase(p);
+	}
+
+	void toggle(const KeyPress &key)
+	{
+		Iterator p(this->find(key));
+		if (p != end())
+			erase(p);
+		else
+			push_back(key);
+	}
+
+	bool operator[](const KeyPress &key) const
+	{
+		return find(key) != end();
+	}
+};
+
 class InputHandler
 {
 public:
@@ -33,8 +96,8 @@ public:
 	{
 	}
 
-	virtual bool isKeyDown(EKEY_CODE keyCode) = 0;
-	virtual bool wasKeyDown(EKEY_CODE keyCode) = 0;
+	virtual bool isKeyDown(const KeyPress &keyCode) = 0;
+	virtual bool wasKeyDown(const KeyPress &keyCode) = 0;
 	
 	virtual v2s32 getMousePos() = 0;
 	virtual void setMousePos(s32 x, s32 y) = 0;

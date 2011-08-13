@@ -28,7 +28,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "materials.h"
 #include "config.h"
 #include "clouds.h"
-#include "keycode.h"
 #include "farmesh.h"
 #include "mapblock.h"
 
@@ -1314,7 +1313,7 @@ void the_game(
 
 			menu->drop();
 		}
-		else if(input->wasKeyDown(KEY_ESCAPE))
+		else if(input->wasKeyDown(EscapeKey))
 		{
 			dstream<<DTIME<<"the_game: "
 					<<"Launching pause menu"<<std::endl;
@@ -1417,10 +1416,8 @@ void the_game(
 		// Item selection
 		for(u16 i=0; i<10; i++)
 		{
-			s32 keycode = irr::KEY_KEY_1 + i;
-			if(i == 9)
-				keycode = irr::KEY_KEY_0;
-			if(input->wasKeyDown((irr::EKEY_CODE)keycode))
+			const KeyPress *kp = NumberKey + (i + 1) % 10;
+			if(input->wasKeyDown(*kp))
 			{
 				if(i < PLAYER_INVENTORY_SIZE && i < hotbar_itemcount)
 				{
