@@ -130,7 +130,7 @@ void cmd_shutdown(std::wostringstream &os,
 	ctx->server->requestShutdown();
 					
 	os<<L"*** Server shutting down (operator request)";
-	ctx->flags |= 2;
+	ctx->flags |= SEND_TO_OTHERS;
 }
 
 void cmd_setting(std::wostringstream &os,
@@ -232,7 +232,7 @@ std::wstring processServerCommand(ServerCommandContext *ctx)
 {
 
 	std::wostringstream os(std::ios_base::binary);
-	ctx->flags = 1;	// Default, unless we change it.
+	ctx->flags = SEND_TO_SENDER;	// Default, unless we change it.
 
 	u64 privs = ctx->privs;
 

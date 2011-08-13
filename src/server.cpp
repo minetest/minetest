@@ -3267,8 +3267,8 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 				privs);
 
 			line += processServerCommand(ctx);
-			send_to_sender = ctx->flags & 1;
-			send_to_others = ctx->flags & 2;
+			send_to_sender = ctx->flags & SEND_TO_SENDER;
+			send_to_others = ctx->flags & SEND_TO_OTHERS;
 			delete ctx;
 
 		}
