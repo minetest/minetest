@@ -189,12 +189,12 @@ void initializePaths()
 	
 	// Use "./bin/../data"
 	path_data = std::string(buf) + "/../data";
-	//path_data = std::string(buf) + "/../share/" + APPNAME;
+	//path_data = std::string(buf) + "/../share/" + PROJECT_NAME;
 		
-	// Use "C:\Documents and Settings\user\Application Data\<APPNAME>"
+	// Use "C:\Documents and Settings\user\Application Data\<PROJECT_NAME>"
 	len = GetEnvironmentVariable("APPDATA", buf, buflen);
 	assert(len < buflen);
-	path_userdata = std::string(buf) + "/" + APPNAME;
+	path_userdata = std::string(buf) + "/" + PROJECT_NAME;
 
 	/*
 		Linux
@@ -209,15 +209,15 @@ void initializePaths()
 	
 	pathRemoveFile(buf, '/');
 
-	path_data = std::string(buf) + "/../share/" + APPNAME;
-	//path_data = std::string(INSTALL_PREFIX) + "/share/" + APPNAME;
+	path_data = std::string(buf) + "/../share/" + PROJECT_NAME;
+	//path_data = std::string(INSTALL_PREFIX) + "/share/" + PROJECT_NAME;
 	if (!fs::PathExists(path_data)) {
 		dstream<<"WARNING: data path " << path_data << " not found!";
 		path_data = std::string(buf) + "/../data";
 		dstream<<" Trying " << path_data << std::endl;
 	}
 	
-	path_userdata = std::string(getenv("HOME")) + "/." + APPNAME;
+	path_userdata = std::string(getenv("HOME")) + "/." + PROJECT_NAME;
 
 	/*
 		OS X
@@ -243,12 +243,12 @@ void initializePaths()
     }
     CFRelease(resources_url);
 	
-	path_userdata = std::string(getenv("HOME")) + "/Library/Application Support/" + APPNAME;
+	path_userdata = std::string(getenv("HOME")) + "/Library/Application Support/" + PROJECT_NAME;
 
 	#elif defined(__FreeBSD__)
 
-	path_data = std::string(INSTALL_PREFIX) + "/share/" + APPNAME;
-	path_userdata = std::string(getenv("HOME")) + "/." + APPNAME;
+	path_data = std::string(INSTALL_PREFIX) + "/share/" + PROJECT_NAME;
+	path_userdata = std::string(getenv("HOME")) + "/." + PROJECT_NAME;
     
 	#endif
 

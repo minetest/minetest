@@ -63,9 +63,9 @@ extern std::string path_data;
 
 /*
 	Directory for storing user data. Examples:
-	Windows: "C:\Documents and Settings\user\Application Data\<APPNAME>"
-	Linux: "~/.<APPNAME>"
-	Mac: "~/Library/Application Support/<APPNAME>"
+	Windows: "C:\Documents and Settings\user\Application Data\<PROJECT_NAME>"
+	Linux: "~/.<PROJECT_NAME>"
+	Mac: "~/Library/Application Support/<PROJECT_NAME>"
 */
 extern std::string path_userdata;
 
