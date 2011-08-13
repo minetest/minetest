@@ -226,6 +226,21 @@ void GUIKeyChangeMenu::regenerateGui(v2u32 screensize)
 		this->chat = Environment->addButton(rect, this, GUI_ID_KEY_CHAT_BUTTON,
 				wgettext(key_chat.name()));
 	}
+	offset += v2s32(0, 25);
+	{
+		core::rect < s32 > rect(0, 0, 100, 20);
+		rect += topleft + v2s32(offset.X, offset.Y);
+		Environment->addStaticText(wgettext("Command"), rect, false, true, this, -1);
+		//t->setTextAlignment(gui::EGUIA_CENTER, gui::EGUIA_UPPERLEFT);
+	}
+
+	{
+		core::rect < s32 > rect(0, 0, 100, 30);
+		rect += topleft + v2s32(offset.X + 105, offset.Y - 5);
+		this->cmd = Environment->addButton(rect, this, GUI_ID_KEY_CMD_BUTTON,
+				wgettext(key_cmd.name()));
+	}
+
 
 	//next col
 	offset = v2s32(250, 40);
@@ -333,6 +348,7 @@ bool GUIKeyChangeMenu::acceptInput()
 	g_settings.set("keymap_sneak", key_sneak.sym());
 	g_settings.set("keymap_inventory", key_inventory.sym());
 	g_settings.set("keymap_chat", key_chat.sym());
+	g_settings.set("keymap_cmd", key_cmd.sym());
 	g_settings.set("keymap_rangeselect", key_range.sym());
 	g_settings.set("keymap_freemove", key_fly.sym());
 	g_settings.set("keymap_fastmove", key_fast.sym());
@@ -351,6 +367,7 @@ void GUIKeyChangeMenu::init_keys()
 	key_sneak = getKeySetting("keymap_sneak");
 	key_inventory = getKeySetting("keymap_inventory");
 	key_chat = getKeySetting("keymap_chat");
+	key_cmd = getKeySetting("keymap_cmd");
 	key_range = getKeySetting("keymap_rangeselect");
 	key_fly = getKeySetting("keymap_freemove");
 	key_fast = getKeySetting("keymap_fastmove");
@@ -390,6 +407,9 @@ bool GUIKeyChangeMenu::resetMenu()
 			break;
 		case GUI_ID_KEY_CHAT_BUTTON:
 			this->chat->setText(wgettext(key_chat.name()));
+			break;
+		case GUI_ID_KEY_CMD_BUTTON:
+			this->cmd->setText(wgettext(key_cmd.name()));
 			break;
 		case GUI_ID_KEY_RANGE_BUTTON:
 			this->range->setText(wgettext(key_range.name()));
@@ -459,6 +479,11 @@ bool GUIKeyChangeMenu::OnEvent(const SEvent& event)
 		{
 			this->chat->setText(wgettext(kp.name()));
 			this->key_chat = kp;
+		}
+		else if (activeKey == GUI_ID_KEY_CMD_BUTTON)
+		{
+			this->cmd->setText(wgettext(kp.name()));
+			this->key_cmd = kp;
 		}
 		else if (activeKey == GUI_ID_KEY_RANGE_BUTTON)
 		{
@@ -563,6 +588,11 @@ bool GUIKeyChangeMenu::OnEvent(const SEvent& event)
 				resetMenu();
 				activeKey = event.GUIEvent.Caller->getID();
 				this->chat->setText(wgettext("press Key"));
+				break;
+			case GUI_ID_KEY_CMD_BUTTON:
+				resetMenu();
+				activeKey = event.GUIEvent.Caller->getID();
+				this->cmd->setText(wgettext("press Key"));
 				break;
 			case GUI_ID_KEY_SNEAK_BUTTON:
 				resetMenu();

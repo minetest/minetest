@@ -1320,6 +1320,14 @@ void the_game(
 					&g_menumgr, dest,
 					L""))->drop();
 		}
+		else if(input->wasKeyDown(getKeySetting("keymap_cmd")))
+		{
+			TextDest *dest = new TextDestChat(&client);
+
+			(new GUITextInputMenu(guienv, guiroot, -1,
+					&g_menumgr, dest,
+					L"/"))->drop();
+		}
 		else if(input->wasKeyDown(getKeySetting("keymap_freemove")))
 		{
 			if(g_settings.getBool("free_move"))
