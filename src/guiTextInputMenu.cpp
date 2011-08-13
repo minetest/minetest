@@ -103,6 +103,12 @@ void GUITextInputMenu::regenerateGui(v2u32 screensize)
 		gui::IGUIElement *e = 
 		Environment->addEditBox(text.c_str(), rect, true, this, 256);
 		Environment->setFocus(e);
+
+		irr::SEvent evt;
+		evt.EventType = EET_KEY_INPUT_EVENT;
+		evt.KeyInput.Key = KEY_END;
+		evt.KeyInput.PressedDown = true;
+		e->OnEvent(evt);
 	}
 	changeCtype("");
 	{
