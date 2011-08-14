@@ -24,7 +24,7 @@ const char *mineral_filenames[MINERAL_COUNT] =
 {
 	NULL,
 	"mineral_coal.png",
-	"mineral_iron.png"
+	"mineral_iron.png",
 };
 
 std::string mineral_textures[MINERAL_COUNT];

@@ -458,6 +458,13 @@ void craft_set_creative_inventory(Player *player)
 		assert(r == NULL);
 	}
 
+
+	{
+		InventoryItem *item = new CraftItem("glowdust", 1);
+		void* r = player->inventory.addItem("main", item);
+		assert(r == NULL);
+	}
+
 	/*
 		Give materials
 	*/
@@ -486,6 +493,8 @@ void craft_set_creative_inventory(Player *player)
 		CONTENT_CHEST,
 		CONTENT_FURNACE,
 		CONTENT_SIGN_WALL,
+		CONTENT_BRIGHTGLASS,
+		CONTENT_GLOWSTONE,
 		CONTENT_IGNORE
 	};
 	
