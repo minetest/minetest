@@ -30,9 +30,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #define DEBUGFILE "debug.txt"
 
-#define WATER_ALPHA 160
-//#define WATER_ALPHA 190
-
 // Define for simulating the quirks of sending through internet.
 // Causes the socket class to deliberately drop random packets.
 // This disables unit testing of socket and connection.

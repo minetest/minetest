@@ -416,6 +416,7 @@ private:
 	core::map<u16, ClientActiveObject*> m_active_objects;
 	Queue<ClientEnvEvent> m_client_event_queue;
 	IntervalLimiter m_active_object_light_update_interval;
+	IntervalLimiter m_lava_hurt_interval;
 };
 
 #endif

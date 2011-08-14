@@ -30,8 +30,9 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 ContentFeatures::~ContentFeatures()
 {
-	if(initial_metadata)
-		delete initial_metadata;
+	delete initial_metadata;
+	delete special_material;
+	delete special_atlas;
 }
 
 void ContentFeatures::setTexture(u16 i, std::string name, u8 alpha)
