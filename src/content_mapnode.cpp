@@ -460,7 +460,7 @@ void content_mapnode_init()
 		f->special_material->setFlag(video::EMF_BACK_FACE_CULLING, false);
 		f->special_material->setFlag(video::EMF_BILINEAR_FILTER, false);
 		f->special_material->setFlag(video::EMF_FOG_ENABLE, true);
-		f->special_material->MaterialType = video::EMT_TRANSPARENT_VERTEX_ALPHA;
+		f->special_material->MaterialType = video::EMT_TRANSPARENT_ALPHA_CHANNEL_REF;
 		AtlasPointer *pa_lava1 = new AtlasPointer(
 			g_texturesource->getTexture(
 				g_texturesource->getTextureId("lava.png")));
@@ -508,7 +508,7 @@ void content_mapnode_init()
 		f->special_material->setFlag(video::EMF_BACK_FACE_CULLING, false);
 		f->special_material->setFlag(video::EMF_BILINEAR_FILTER, false);
 		f->special_material->setFlag(video::EMF_FOG_ENABLE, true);
-		f->special_material->MaterialType = video::EMT_TRANSPARENT_VERTEX_ALPHA;
+		f->special_material->MaterialType = video::EMT_TRANSPARENT_ALPHA_CHANNEL_REF;
 		AtlasPointer *pa_lava1 = new AtlasPointer(
 			g_texturesource->getTexture(
 				g_texturesource->getTextureId("lava.png")));
