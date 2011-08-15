@@ -24,6 +24,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "mapnode.h"
 #include "content_nodemeta.h"
 
+#define WATER_ALPHA 160
+
 // TODO: Get rid of these and set up some attributes like toughness,
 //       fluffyness, and a funciton to calculate time and durability loss
 //       (and sound? and whatever else) from them
@@ -372,7 +374,7 @@ void content_mapnode_init()
 	f->liquid_type = LIQUID_FLOWING;
 	f->liquid_alternative_flowing = CONTENT_WATER;
 	f->liquid_alternative_source = CONTENT_WATERSOURCE;
-	f->vertex_alpha = 160;
+	f->vertex_alpha = WATER_ALPHA;
 	if(f->special_material == NULL && g_texturesource)
 	{
 		// Flowing water material
@@ -404,7 +406,7 @@ void content_mapnode_init()
 		if(g_texturesource)
 			t.texture = g_texturesource->getTexture("water.png");
 		
-		t.alpha = 160;
+		t.alpha = WATER_ALPHA;
 		t.material_type = MATERIAL_ALPHA_VERTEX;
 		t.material_flags &= ~MATERIAL_FLAG_BACKFACE_CULLING;
 		f->setAllTiles(t);
@@ -419,7 +421,7 @@ void content_mapnode_init()
 	f->dug_item = std::string("MaterialItem2 ")+itos(i)+" 1";
 	f->liquid_alternative_flowing = CONTENT_WATER;
 	f->liquid_alternative_source = CONTENT_WATERSOURCE;
-	f->vertex_alpha = 160;
+	f->vertex_alpha = WATER_ALPHA;
 	if(f->special_material == NULL && g_texturesource)
 	{
 		// Flowing water material
