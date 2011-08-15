@@ -386,8 +386,8 @@ void mapblock_mesh_generate_special(MeshMakeData *data,
 					if(n2.getContent() == c_source)
 						level = (-0.5+node_liquid_level) * BS;
 					else if(n2.getContent() == c_flowing)
-						level = (-0.5 + ((float)n2.param2 + 0.5) / 8.0
-								* node_liquid_level) * BS;
+						level = (-0.5 + ((float)(n2.param2&LIQUID_LEVEL_MASK)
+								+ 0.5) / 8.0 * node_liquid_level) * BS;
 
 					// Check node above neighbor.
 					// NOTE: This doesn't get executed if neighbor
@@ -404,9 +404,6 @@ void mapblock_mesh_generate_special(MeshMakeData *data,
 				neighbor_flags.insert(neighbor_dirs[i], flags);
 			}
 
-			//float liquid_level = (-0.5 + ((float)n.param2 + 0.5) / 8.0) * BS;
-			//float liquid_level = neighbor_levels[v3s16(0,0,0)];
-
 			// Corner heights (average between four liquids)
 			f32 corner_levels[4];
 			
@@ -421,17 +418,27 @@ void mapblock_mesh_generate_special(MeshMakeData *data,
 				v3s16 cornerdir = halfdirs[i];
 				float cornerlevel = 0;
 				u32 valid_count = 0;
+				u32 air_count = 0;
 				for(u32 j=0; j<4; j++)
 				{
 					v3s16 neighbordir = cornerdir - halfdirs[j];
 					u8 content = neighbor_contents[neighbordir];
-					// Special case for source nodes
-					if(content == c_source)
+					// If top is liquid, draw starting from top of node
+					if(neighbor_flags[neighbordir] &
+							neighborflag_top_is_same_liquid)
+					{
+						cornerlevel = 0.5*BS;
+						valid_count = 1;
+						break;
+					}
+					// Source is always the same height
+					else if(content == c_source)
 					{
 						cornerlevel = (-0.5+node_liquid_level)*BS;
 						valid_count = 1;
 						break;
 					}
+					// Flowing liquid has level information
 					else if(content == c_flowing)
 					{
 						cornerlevel += neighbor_levels[neighbordir];
@@ -439,11 +446,18 @@ void mapblock_mesh_generate_special(MeshMakeData *data,
 					}
 					else if(content == CONTENT_AIR)
 					{
+						air_count++;
+					}
+					/*// Air is liquid level 0
+					else if(content == CONTENT_AIR)
+					{
 						cornerlevel += -0.5*BS;
 						valid_count++;
-					}
+					}*/
 				}
-				if(valid_count > 0)
+				if(air_count >= 2)
+					cornerlevel = -0.5*BS;
+				else if(valid_count > 0)
 					cornerlevel /= valid_count;
 				corner_levels[i] = cornerlevel;
 			}
