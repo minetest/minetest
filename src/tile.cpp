@@ -529,6 +529,9 @@ void TextureSource::buildMainAtlas()
 	
 	sourcelist.push_back("stone.png^mineral_coal.png");
 	sourcelist.push_back("stone.png^mineral_iron.png");
+	sourcelist.push_back("glowstone.png");
+	sourcelist.push_back("brightglass.png");
+
 	
 	// Padding to disallow texture bleeding
 	s32 padding = 16;

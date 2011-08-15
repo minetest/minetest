@@ -1760,6 +1760,37 @@ void make_block(BlockMakeData *data)
 				}
 			}
 		}
+
+
+		/*
+			Add glowstone (gs) (modified from coal)
+		*/
+		//for(s16 i=0; i < MYMAX(0, 50 - abs(node_min.Y+8 - (-30))); i++)
+		//for(s16 i=0; i<50; i++)
+		u16 gs_amount = 30;
+		u16 gs_rareness = 60 / gs_amount;
+		if(gs_rareness == 0)
+			gs_rareness = 1;
+		if(mineralrandom.next()%gs_rareness == 0)
+		{
+			u16 a = mineralrandom.next() % 16;
+			u16 amount = gs_amount * a*a*a / 1000;
+			for(s16 i=0; i<amount; i++)
+			{
+				s16 x = mineralrandom.range(node_min.X+1, node_max.X-1);
+				s16 y = mineralrandom.range(node_min.Y+1, node_max.Y-1);
+				s16 z = mineralrandom.range(node_min.Z+1, node_max.Z-1);
+				for(u16 i=0; i<27; i++)
+				{
+					v3s16 p = v3s16(x,y,z) + g_27dirs[i];
+					u32 vi = vmanip.m_area.index(p);
+					if(vmanip.m_data[vi].getContent() == CONTENT_STONE)
+						if(mineralrandom.next()%8 == 0)
+							vmanip.m_data[vi] = MapNode(0x81a); //	relies on the data value for glowstone being defined as 0x819 in content_mapnode.h.  Poor coding I know, but I couldn't figure out how to do it any other way.  I'm pretty sure this is also why the glowstone shows up even when the block is suppsosed to be mud or sand or whatever.
+				}
+			}
+		}
+
 		/*
 			Add iron
 		*/

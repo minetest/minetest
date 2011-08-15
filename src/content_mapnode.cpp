@@ -31,7 +31,7 @@ void setStoneLikeDiggingProperties(DiggingPropertiesList &list, float toughness)
 void setDirtLikeDiggingProperties(DiggingPropertiesList &list, float toughness);
 void setWoodLikeDiggingProperties(DiggingPropertiesList &list, float toughness);
 
-content_t trans_table_19[21][2] = {
+content_t trans_table_19[23][2] = {
 	{CONTENT_GRASS, 1},
 	{CONTENT_TREE, 4},
 	{CONTENT_LEAVES, 5},
@@ -53,6 +53,8 @@ content_t trans_table_19[21][2] = {
 	{CONTENT_CLAY, 27},
 	{CONTENT_PAPYRUS, 28},
 	{CONTENT_BOOKSHELF, 29},
+	{CONTENT_BRIGHTGLASS, 30},
+	{CONTENT_GLOWSTONE, 31},
 };
 
 MapNode mapnode_translate_from_internal(MapNode n_from, u8 version)
@@ -488,6 +490,29 @@ void content_mapnode_init()
 	f->dug_item = std::string("MaterialItem2 ")+itos(i)+" 1";
 	setStoneLikeDiggingProperties(f->digging_properties, 5.0);
 	
+	i = CONTENT_BRIGHTGLASS;
+	f = &content_features(i);
+	f->setAllTextures("brightglass.png");
+	f->light_propagates = true;
+	f->sunlight_propagates = true;
+	f->param_type = CPT_LIGHT;
+	f->is_ground_content = true;
+	f->dug_item = std::string("MaterialItem2 ")+itos(i)+" 1";
+	f->solidness = 0; // drawn separately, makes no faces
+	f->setInventoryTextureCube("brightglass.png", "brightglass.png", "brightglass.png");
+	setWoodLikeDiggingProperties(f->digging_properties, 0.15);
+	f->light_source = LIGHT_MAX-1;
+
+	i = CONTENT_GLOWSTONE;
+	f = &content_features(i);
+	f->setAllTextures("glowstone.png");
+//	f->setInventoryTextureCube("glowstone.png", "glowstone.png", "glowstone.png");
+	f->param_type = CPT_MINERAL;
+	f->is_ground_content = true;
+	f->dug_item = std::string("CraftItem glowdust 1");
+	setStoneLikeDiggingProperties(f->digging_properties, 1.0);
+	f->light_source = LIGHT_MAX-3;
+
 	i = CONTENT_NC;
 	f = &content_features(i);
 	f->param_type = CPT_FACEDIR_SIMPLE;
