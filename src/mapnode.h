@@ -164,6 +164,8 @@ struct ContentFeatures
 	
 	// Digging properties for different tools
 	DiggingPropertiesList digging_properties;
+
+	u32 damage_per_second;
 	
 	// NOTE: Move relevant properties to here from elsewhere
 
@@ -192,6 +194,7 @@ struct ContentFeatures
 		special_atlas = NULL;
 		light_source = 0;
 		digging_properties.clear();
+		damage_per_second = 0;
 	}
 
 	ContentFeatures()

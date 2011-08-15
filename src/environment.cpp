@@ -1638,18 +1638,28 @@ void ClientEnvironment::step(float dtime)
 	if(m_lava_hurt_interval.step(dtime, 1.0))
 	{
 		v3f pf = lplayer->getPosition();
-		v3s16 p1 = floatToInt(pf + v3f(0, BS*0.0, 0), BS);
+		
+		// Feet, middle and head
+		v3s16 p1 = floatToInt(pf + v3f(0, BS*0.1, 0), BS);
 		MapNode n1 = m_map->getNodeNoEx(p1);
-		v3s16 p2 = floatToInt(pf + v3f(0, BS*1.5, 0), BS);
+		v3s16 p2 = floatToInt(pf + v3f(0, BS*0.8, 0), BS);
 		MapNode n2 = m_map->getNodeNoEx(p2);
-		if(n1.getContent() == CONTENT_LAVA ||
-				n1.getContent() == CONTENT_LAVASOURCE ||
-				n2.getContent() == CONTENT_LAVA ||
-				n2.getContent() == CONTENT_LAVASOURCE)
+		v3s16 p3 = floatToInt(pf + v3f(0, BS*1.6, 0), BS);
+		MapNode n3 = m_map->getNodeNoEx(p2);
+
+		u32 damage_per_second = 0;
+		damage_per_second = MYMAX(damage_per_second,
+				content_features(n1).damage_per_second);
+		damage_per_second = MYMAX(damage_per_second,
+				content_features(n2).damage_per_second);
+		damage_per_second = MYMAX(damage_per_second,
+				content_features(n3).damage_per_second);
+		
+		if(damage_per_second != 0)
 		{
 			ClientEnvEvent event;
 			event.type = CEE_PLAYER_DAMAGE;
-			event.player_damage.amount = 4*2; // 4 hearts
+			event.player_damage.amount = damage_per_second;
 			m_client_event_queue.push_back(event);
 		}
 	}

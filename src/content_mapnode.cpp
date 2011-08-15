@@ -449,6 +449,7 @@ void content_mapnode_init()
 	f->liquid_type = LIQUID_FLOWING;
 	f->liquid_alternative_flowing = CONTENT_LAVA;
 	f->liquid_alternative_source = CONTENT_LAVASOURCE;
+	f->damage_per_second = 4*2;
 	if(f->special_material == NULL && g_texturesource)
 	{
 		// Flowing lava material
@@ -496,6 +497,7 @@ void content_mapnode_init()
 	f->dug_item = std::string("MaterialItem2 ")+itos(i)+" 1";
 	f->liquid_alternative_flowing = CONTENT_LAVA;
 	f->liquid_alternative_source = CONTENT_LAVASOURCE;
+	f->damage_per_second = 4*2;
 	if(f->special_material == NULL && g_texturesource)
 	{
 		// Flowing lava material
