@@ -1818,7 +1818,7 @@ void make_block(BlockMakeData *data)
 							vmanip.m_data[i] = MapNode(CONTENT_GRAVEL);
 					}
 					else if(noisebuf_ground_crumbleness.get(x,y,z) <
-							-2.3 + MYMIN(0.1 * sqrt(MYMAX(0, -y)), 1.5))
+							-3.0 + MYMIN(0.1 * sqrt(MYMAX(0, -y)), 1.5))
 					{
 						vmanip.m_data[i] = MapNode(CONTENT_LAVASOURCE);
 						for(s16 x1=-1; x1<=1; x1++)
