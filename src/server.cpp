@@ -1732,9 +1732,15 @@ void Server::AsyncRunStep()
 			}
 			else if(event->type == MEET_OTHER)
 			{
+				dstream<<"Server: MEET_OTHER"<<std::endl;
 				prof.add("MEET_OTHER", 1);
-				dstream<<"WARNING: Server: MEET_OTHER not implemented"
-						<<std::endl;
+				for(core::map<v3s16, bool>::Iterator
+						i = event->modified_blocks.getIterator();
+						i.atEnd()==false; i++)
+				{
+					v3s16 p = i.getNode()->getKey();
+					setBlockNotSent(p);
+				}
 			}
 			else
 			{
