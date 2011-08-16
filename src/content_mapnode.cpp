@@ -26,6 +26,9 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #define WATER_ALPHA 160
 
+#define WATER_VISC 1
+#define LAVA_VISC 7
+
 // TODO: Get rid of these and set up some attributes like toughness,
 //       fluffyness, and a funciton to calculate time and durability loss
 //       (and sound? and whatever else) from them
@@ -374,6 +377,7 @@ void content_mapnode_init()
 	f->liquid_type = LIQUID_FLOWING;
 	f->liquid_alternative_flowing = CONTENT_WATER;
 	f->liquid_alternative_source = CONTENT_WATERSOURCE;
+	f->liquid_viscosity = WATER_VISC;
 	f->vertex_alpha = WATER_ALPHA;
 	if(f->special_material == NULL && g_texturesource)
 	{
@@ -421,6 +425,7 @@ void content_mapnode_init()
 	f->dug_item = std::string("MaterialItem2 ")+itos(i)+" 1";
 	f->liquid_alternative_flowing = CONTENT_WATER;
 	f->liquid_alternative_source = CONTENT_WATERSOURCE;
+	f->liquid_viscosity = WATER_VISC;
 	f->vertex_alpha = WATER_ALPHA;
 	if(f->special_material == NULL && g_texturesource)
 	{
@@ -451,6 +456,7 @@ void content_mapnode_init()
 	f->liquid_type = LIQUID_FLOWING;
 	f->liquid_alternative_flowing = CONTENT_LAVA;
 	f->liquid_alternative_source = CONTENT_LAVASOURCE;
+	f->liquid_viscosity = LAVA_VISC;
 	f->damage_per_second = 4*2;
 	if(f->special_material == NULL && g_texturesource)
 	{
@@ -499,6 +505,7 @@ void content_mapnode_init()
 	f->dug_item = std::string("MaterialItem2 ")+itos(i)+" 1";
 	f->liquid_alternative_flowing = CONTENT_LAVA;
 	f->liquid_alternative_source = CONTENT_LAVASOURCE;
+	f->liquid_viscosity = LAVA_VISC;
 	f->damage_per_second = 4*2;
 	if(f->special_material == NULL && g_texturesource)
 	{

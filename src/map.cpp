@@ -1562,6 +1562,9 @@ void Map::transformLiquids(core::map<v3s16, MapBlock*> & modified_blocks)
 	/*if(initial_size != 0)
 		dstream<<"transformLiquids(): initial_size="<<initial_size<<std::endl;*/
 
+	// list of nodes that due to viscosity have not reached their max level height
+	UniqueQueue<v3s16> must_reflow;
+
 	while(m_transforming_liquid.size() != 0)
 	{
 		// This should be done here so that it is done when continue is used
@@ -1672,6 +1675,7 @@ void Map::transformLiquids(core::map<v3s16, MapBlock*> & modified_blocks)
 		 */
 		content_t new_node_content;
 		s8 new_node_level = -1;
+		s8 max_node_level = -1;
 		if (num_sources >= 2 || liquid_type == LIQUID_SOURCE) {
 			// liquid_kind will be set to either the flowing alternative of the node (if it's a liquid)
 			// or the flowing alternative of the first of the surrounding sources (if it's air), so
@@ -1680,34 +1684,51 @@ void Map::transformLiquids(core::map<v3s16, MapBlock*> & modified_blocks)
 		} else if (num_sources == 1 && sources[0].t != NEIGHBOR_LOWER) {
 			// liquid_kind is set properly, see above
 			new_node_content = liquid_kind;
-			new_node_level = LIQUID_LEVEL_MAX;
+			max_node_level = new_node_level = LIQUID_LEVEL_MAX;
 		} else {
 			// no surrounding sources, so get the maximum level that can flow into this node
 			for (u16 i = 0; i < num_flows; i++) {
 				u8 nb_liquid_level = (flows[i].n.param2 & LIQUID_LEVEL_MASK);
 				switch (flows[i].t) {
 					case NEIGHBOR_UPPER:
-						if (nb_liquid_level + WATER_DROP_BOOST > new_node_level) {
-							new_node_level = LIQUID_LEVEL_MAX;
+						if (nb_liquid_level + WATER_DROP_BOOST > max_node_level) {
+							max_node_level = LIQUID_LEVEL_MAX;
 							if (nb_liquid_level + WATER_DROP_BOOST < LIQUID_LEVEL_MAX)
-								new_node_level = nb_liquid_level + WATER_DROP_BOOST;
+								max_node_level = nb_liquid_level + WATER_DROP_BOOST;
 						}
 						break;
 					case NEIGHBOR_LOWER:
 						break;
 					case NEIGHBOR_SAME_LEVEL:
 						if ((flows[i].n.param2 & LIQUID_FLOW_DOWN_MASK) != LIQUID_FLOW_DOWN_MASK &&
-							nb_liquid_level > 0 && nb_liquid_level - 1 > new_node_level) {
-							new_node_level = nb_liquid_level - 1;
+							nb_liquid_level > 0 && nb_liquid_level - 1 > max_node_level) {
+							max_node_level = nb_liquid_level - 1;
 						}
 						break;
 				}
 			}
 
+			if (max_node_level != liquid_level) {
+				// amount to gain, limited by viscosity
+				// must be at least 1 in absolute value
+				s8 level_inc = max_node_level - liquid_level;
+				u8 viscosity = content_features(liquid_kind).liquid_viscosity;
+				if (level_inc < -viscosity || level_inc > viscosity)
+					new_node_level = liquid_level + level_inc/viscosity;
+				else if (level_inc < 0)
+					new_node_level = liquid_level - 1;
+				else if (level_inc > 0)
+					new_node_level = liquid_level + 1;
+				if (new_node_level != max_node_level)
+					must_reflow.push_back(p0);
+			} else
+				new_node_level = max_node_level;
+
 			if (new_node_level >= 0)
 				new_node_content = liquid_kind;
 			else
 				new_node_content = CONTENT_AIR;
+
 		}
 
 		/*
@@ -1760,6 +1781,8 @@ void Map::transformLiquids(core::map<v3s16, MapBlock*> & modified_blocks)
 		}
 	}
 	//dstream<<"Map::transformLiquids(): loopcount="<<loopcount<<std::endl;
+	while (must_reflow.size() > 0)
+		m_transforming_liquid.push_back(must_reflow.pop_front());
 }
 
 NodeMetadata* Map::getNodeMetadata(v3s16 p)

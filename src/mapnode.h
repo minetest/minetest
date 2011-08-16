@@ -153,6 +153,10 @@ struct ContentFeatures
 	content_t liquid_alternative_flowing;
 	// If the content is liquid, this is the source version of the liquid.
 	content_t liquid_alternative_source;
+	// Viscosity for fluid flow, ranging from 1 to 7, with
+	// 1 giving almost instantaneous propagation and 7 being
+	// the slowest possible
+	u8 liquid_viscosity;
 	// Used currently for flowing liquids
 	u8 vertex_alpha;
 	// Special irrlicht material, used sometimes
@@ -189,6 +193,7 @@ struct ContentFeatures
 		initial_metadata = NULL;
 		liquid_alternative_flowing = CONTENT_IGNORE;
 		liquid_alternative_source = CONTENT_IGNORE;
+		liquid_viscosity = 0;
 		vertex_alpha = 255;
 		special_material = NULL;
 		special_atlas = NULL;
