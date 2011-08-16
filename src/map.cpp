@@ -1708,11 +1708,11 @@ void Map::transformLiquids(core::map<v3s16, MapBlock*> & modified_blocks)
 				}
 			}
 
-			if (max_node_level != liquid_level) {
+			u8 viscosity = content_features(liquid_kind).liquid_viscosity;
+			if (viscosity > 1 && max_node_level != liquid_level) {
 				// amount to gain, limited by viscosity
 				// must be at least 1 in absolute value
 				s8 level_inc = max_node_level - liquid_level;
-				u8 viscosity = content_features(liquid_kind).liquid_viscosity;
 				if (level_inc < -viscosity || level_inc > viscosity)
 					new_node_level = liquid_level + level_inc/viscosity;
 				else if (level_inc < 0)
