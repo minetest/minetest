@@ -28,6 +28,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "porting.h"
 #include "mapgen.h"
 #include "nodemetadata.h"
+#include "content_mapnode.h"
 
 extern "C" {
 	#include "sqlite3.h"
