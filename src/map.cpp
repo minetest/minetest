@@ -1584,7 +1584,7 @@ void Map::transformLiquids(core::map<v3s16, MapBlock*> & modified_blocks)
 		LiquidType liquid_type = content_features(n0.getContent()).liquid_type;
 		switch (liquid_type) {
 			case LIQUID_SOURCE:
-				liquid_level = 8;
+				liquid_level = LIQUID_LEVEL_SOURCE;
 				liquid_kind = content_features(n0.getContent()).liquid_alternative_flowing;
 				break;
 			case LIQUID_FLOWING:
@@ -1674,7 +1674,7 @@ void Map::transformLiquids(core::map<v3s16, MapBlock*> & modified_blocks)
 		} else if (num_sources == 1 && sources[0].t != NEIGHBOR_LOWER) {
 			// liquid_kind is set properly, see above
 			new_node_content = liquid_kind;
-			new_node_level = 7;
+			new_node_level = LIQUID_LEVEL_MAX;
 		} else {
 			// no surrounding sources, so get the maximum level that can flow into this node
 			for (u16 i = 0; i < num_flows; i++) {
@@ -1682,8 +1682,8 @@ void Map::transformLiquids(core::map<v3s16, MapBlock*> & modified_blocks)
 				switch (flows[i].t) {
 					case NEIGHBOR_UPPER:
 						if (nb_liquid_level + WATER_DROP_BOOST > new_node_level) {
-							new_node_level = 7;
-							if (nb_liquid_level + WATER_DROP_BOOST < 7)
+							new_node_level = LIQUID_LEVEL_MAX;
+							if (nb_liquid_level + WATER_DROP_BOOST < LIQUID_LEVEL_MAX)
 								new_node_level = nb_liquid_level + WATER_DROP_BOOST;
 						}
 						break;
