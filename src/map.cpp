@@ -1731,14 +1731,14 @@ void Map::transformLiquids(core::map<v3s16, MapBlock*> & modified_blocks)
 			update the current node
 		 */
 		bool flow_down_enabled = (flowing_down && ((n0.param2 & LIQUID_FLOW_DOWN_MASK) != LIQUID_FLOW_DOWN_MASK));
-		n0.setContent(new_node_content);
-		if (content_features(n0.getContent()).liquid_type == LIQUID_FLOWING) {
+		if (content_features(new_node_content).liquid_type == LIQUID_FLOWING) {
 			// set level to last 3 bits, flowing down bit to 4th bit
-			n0.param2 |= (flowing_down ? LIQUID_FLOW_DOWN_MASK : 0x00) | (new_node_level & LIQUID_LEVEL_MASK);
+			n0.param2 = (flowing_down ? LIQUID_FLOW_DOWN_MASK : 0x00) | (new_node_level & LIQUID_LEVEL_MASK);
 		} else {
 			// set the liquid level and flow bit to 0
-			n0.param2 &= ~(LIQUID_LEVEL_MASK | LIQUID_FLOW_DOWN_MASK);
+			n0.param2 = ~(LIQUID_LEVEL_MASK | LIQUID_FLOW_DOWN_MASK);
 		}
+		n0.setContent(new_node_content);
 		setNode(p0, n0);
 		v3s16 blockpos = getNodeBlockPos(p0);
 		MapBlock *block = getBlockNoCreateNoEx(blockpos);
