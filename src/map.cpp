@@ -1629,9 +1629,15 @@ void Map::transformLiquids(core::map<v3s16, MapBlock*> & modified_blocks)
 				case LIQUID_NONE:
 					if (nb.n.getContent() == CONTENT_AIR) {
 						airs[num_airs++] = nb;
+						// if the current node is a water source the neighbor
+						// should be enqueded for transformation regardless of whether the
+						// current node changes or not.
+						if (nb.t != NEIGHBOR_UPPER && liquid_type != LIQUID_NONE)
+							m_transforming_liquid.push_back(npos);
 						// if the current node happens to be a flowing node, it will start to flow down here.
-						if (nb.t == NEIGHBOR_LOWER)
+						if (nb.t == NEIGHBOR_LOWER) {
 							flowing_down = true;
+						}
 					} else {
 						neutrals[num_neutrals++] = nb;
 					}
