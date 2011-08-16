@@ -1703,19 +1703,6 @@ void Map::transformLiquids(core::map<v3s16, MapBlock*> & modified_blocks)
 						break;
 				}
 			}
-			// don't flow as far in open terrain - if there isn't at least one adjacent solid block,
-			// substract another unit from the resulting water level.
-			if (!flowing_down && new_node_level >= 1) {
-				bool at_wall = false;
-				for (u16 i = 0; i < num_neutrals; i++) {
-					if (neutrals[i].t == NEIGHBOR_SAME_LEVEL) {
-						at_wall = true;
-						break;
-					}
-				}
-				if (!at_wall)
-					new_node_level -= 1;
-			}
 
 			if (new_node_level >= 0)
 				new_node_content = liquid_kind;
