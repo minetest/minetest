@@ -1575,7 +1575,7 @@ void Map::transformLiquids(core::map<v3s16, MapBlock*> & modified_blocks)
 		v3s16 p0 = m_transforming_liquid.pop_front();
 
 		MapNode n0 = getNodeNoEx(p0);
-				
+
 		/*
 			Collect information about current node
 		 */
@@ -1599,18 +1599,11 @@ void Map::transformLiquids(core::map<v3s16, MapBlock*> & modified_blocks)
 				liquid_kind = CONTENT_AIR;
 				break;
 		}
-		
+
 		/*
 			Collect information about the environment
 		 */
-		v3s16 dirs[6] = {
-			v3s16( 0, 1, 0), // top
-			v3s16( 0,-1, 0), // bottom
-			v3s16( 1, 0, 0), // right
-			v3s16(-1, 0, 0), // left
-			v3s16( 0, 0, 1), // back
-			v3s16( 0, 0,-1), // front
-		};
+		const v3s16 *dirs = g_6dirs;
 		NodeNeighbor sources[6]; // surrounding sources
 		int num_sources = 0;
 		NodeNeighbor flows[6]; // surrounding flowing liquid nodes
@@ -1623,10 +1616,10 @@ void Map::transformLiquids(core::map<v3s16, MapBlock*> & modified_blocks)
 		for (u16 i = 0; i < 6; i++) {
 			NeighborType nt = NEIGHBOR_SAME_LEVEL;
 			switch (i) {
-				case 0:
+				case 1:
 					nt = NEIGHBOR_UPPER;
 					break;
-				case 1:
+				case 4:
 					nt = NEIGHBOR_LOWER;
 					break;
 			}
@@ -1667,7 +1660,7 @@ void Map::transformLiquids(core::map<v3s16, MapBlock*> & modified_blocks)
 					break;
 			}
 		}
-		
+
 		/*
 			decide on the type (and possibly level) of the current node
 		 */
@@ -1717,13 +1710,13 @@ void Map::transformLiquids(core::map<v3s16, MapBlock*> & modified_blocks)
 				if (!at_wall)
 					new_node_level -= 1;
 			}
-			
+
 			if (new_node_level >= 0)
 				new_node_content = liquid_kind;
 			else
 				new_node_content = CONTENT_AIR;
 		}
-		
+
 		/*
 			check if anything has changed. if not, just continue with the next node.
 		 */
@@ -1732,8 +1725,8 @@ void Map::transformLiquids(core::map<v3s16, MapBlock*> & modified_blocks)
 										 ((n0.param2 & LIQUID_FLOW_DOWN_MASK) == LIQUID_FLOW_DOWN_MASK)
 										 == flowing_down)))
 			continue;
-		
-		
+
+
 		/*
 			update the current node
 		 */
@@ -1751,7 +1744,7 @@ void Map::transformLiquids(core::map<v3s16, MapBlock*> & modified_blocks)
 		MapBlock *block = getBlockNoCreateNoEx(blockpos);
 		if(block != NULL)
 			modified_blocks.insert(blockpos, block);
-		
+
 		/*
 			enqueue neighbors for update if neccessary
 		 */
