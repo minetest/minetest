@@ -1743,6 +1743,7 @@ void Map::transformLiquids(core::map<v3s16, MapBlock*> & modified_blocks)
 		 */
 		switch (content_features(n0.getContent()).liquid_type) {
 			case LIQUID_SOURCE:
+			case LIQUID_FLOWING:
 				// make sure source flows into all neighboring nodes
 				for (u16 i = 0; i < num_flows; i++)
 					if (flows[i].t != NEIGHBOR_UPPER)
@@ -1755,19 +1756,6 @@ void Map::transformLiquids(core::map<v3s16, MapBlock*> & modified_blocks)
 				// this flow has turned to air; neighboring flows might need to do the same
 				for (u16 i = 0; i < num_flows; i++)
 					m_transforming_liquid.push_back(flows[i].p);
-				break;
-			case LIQUID_FLOWING:
-				for (u16 i = 0; i < num_flows; i++) {
-					u8 flow_level = (flows[i].n.param2 & LIQUID_LEVEL_MASK);
-					// liquid_level is still the ORIGINAL level of this node.
-					if (flows[i].t != NEIGHBOR_UPPER && ((flow_level < liquid_level || flow_level < new_node_level) ||
-						flow_down_enabled))
-						m_transforming_liquid.push_back(flows[i].p);
-				}
-				for (u16 i = 0; i < num_airs; i++) {
-					if (airs[i].t != NEIGHBOR_UPPER && (airs[i].t == NEIGHBOR_LOWER || new_node_level > 0))
-						m_transforming_liquid.push_back(airs[i].p);
-				}
 				break;
 		}
 	}
