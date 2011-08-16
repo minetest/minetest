@@ -25,6 +25,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "mapblock.h"
 #include "serverobject.h"
 #include "content_sao.h"
+#include "mapgen.h"
 
 Environment::Environment():
 	m_time_of_day(9000)
@@ -922,7 +923,34 @@ void ServerEnvironment::step(float dtime)
 							addActiveObject(obj);
 						}
 					}
-			 }
+				}
+				/*
+				        Make trees from saplings!
+				*/
+				if(n.getContent() == CONTENT_SAPLING)
+				{
+				        if(myrand()%2 == 0)
+					{
+					        core::map<v3s16, MapBlock*> modified_blocks;
+					        v3s16 tree_p = p;
+						MapEditEvent event;
+						event.type = MEET_OTHER;
+						ManualMapVoxelManipulator vmanip(m_map);
+						v3s16 tree_blockp = getNodeBlockPos(tree_p);
+						vmanip.initialEmerge(tree_blockp - v3s16(1,1,1), tree_blockp + v3s16(1,1,1));
+						bool is_apple_tree = myrand()%4 == 0;
+						mapgen::make_tree(vmanip, tree_p, is_apple_tree);
+						for(core::map<v3s16, MapBlock*>::Iterator
+						      i = modified_blocks.getIterator();
+						      i.atEnd() == false; i++)
+					        {
+						        v3s16 p = i.getNode()->getKey();
+							event.modified_blocks.insert(p, true);
+						}
+						m_map->dispatchEvent(&event);
+					}
+				}
+						
 			}
 		}
 	}

@@ -145,6 +145,10 @@ struct ContentFeatures
 	// Inventory item string as which the node appears in inventory when dug.
 	// Mineral overrides this.
 	std::string dug_item;
+
+        // Extra dug item and its rarity
+        std::string extra_dug_item;
+        s32 extra_dug_item_rarity;
 	
 	// Initial metadata is cloned from this
 	NodeMetadata *initial_metadata;
