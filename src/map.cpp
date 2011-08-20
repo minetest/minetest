@@ -1698,7 +1698,8 @@ void Map::transformLiquids(core::map<v3s16, MapBlock*> & modified_blocks)
 							max_node_level = LIQUID_LEVEL_MAX;
 							if (nb_liquid_level + WATER_DROP_BOOST < LIQUID_LEVEL_MAX)
 								max_node_level = nb_liquid_level + WATER_DROP_BOOST;
-						}
+						} else if (nb_liquid_level > max_node_level)
+							max_node_level = nb_liquid_level;
 						break;
 					case NEIGHBOR_LOWER:
 						break;
