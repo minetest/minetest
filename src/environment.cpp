@@ -1633,6 +1633,38 @@ void ClientEnvironment::step(float dtime)
 	}
 	
 	/*
+		A quick draft of lava damage
+	*/
+	if(m_lava_hurt_interval.step(dtime, 1.0))
+	{
+		v3f pf = lplayer->getPosition();
+		
+		// Feet, middle and head
+		v3s16 p1 = floatToInt(pf + v3f(0, BS*0.1, 0), BS);
+		MapNode n1 = m_map->getNodeNoEx(p1);
+		v3s16 p2 = floatToInt(pf + v3f(0, BS*0.8, 0), BS);
+		MapNode n2 = m_map->getNodeNoEx(p2);
+		v3s16 p3 = floatToInt(pf + v3f(0, BS*1.6, 0), BS);
+		MapNode n3 = m_map->getNodeNoEx(p2);
+
+		u32 damage_per_second = 0;
+		damage_per_second = MYMAX(damage_per_second,
+				content_features(n1).damage_per_second);
+		damage_per_second = MYMAX(damage_per_second,
+				content_features(n2).damage_per_second);
+		damage_per_second = MYMAX(damage_per_second,
+				content_features(n3).damage_per_second);
+		
+		if(damage_per_second != 0)
+		{
+			ClientEnvEvent event;
+			event.type = CEE_PLAYER_DAMAGE;
+			event.player_damage.amount = damage_per_second;
+			m_client_event_queue.push_back(event);
+		}
+	}
+	
+	/*
 		Stuff that can be done in an arbitarily large dtime
 	*/
 	for(core::list<Player*>::Iterator i = m_players.begin();
@@ -1916,6 +1948,13 @@ void ClientEnvironment::drawPostFx(video::IVideoDriver* driver, v3f camera_pos)
 		v2u32 ss = driver->getScreenSize();
 		core::rect<s32> rect(0,0, ss.X, ss.Y);
 		driver->draw2DRectangle(video::SColor(64, 100, 100, 200), rect);
+	}
+	else if(content_features(n).solidness == 2 &&
+			g_settings.getBool("free_move") == false)
+	{
+		v2u32 ss = driver->getScreenSize();
+		core::rect<s32> rect(0,0, ss.X, ss.Y);
+		driver->draw2DRectangle(video::SColor(255, 0, 0, 0), rect);
 	}
 }
 

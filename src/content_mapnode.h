@@ -37,16 +37,24 @@ MapNode mapnode_translate_to_internal(MapNode n_from, u8 version);
 // 0x000...0x07f (0...127): param2 is fully usable
 // 126 and 127 are reserved.
 // Use these sparingly, only when the extra space in param2 might be needed.
+// Add a space when there is unused space between numbers.
 #define CONTENT_STONE 0
+
 #define CONTENT_WATER 2
 #define CONTENT_TORCH 3
+
 #define CONTENT_WATERSOURCE 9
+
 #define CONTENT_SIGN_WALL 14
 #define CONTENT_CHEST 15
 #define CONTENT_FURNACE 16
+
 #define CONTENT_FENCE 21
+
 #define CONTENT_RAIL 30
 #define CONTENT_LADDER 31
+#define CONTENT_LAVA 32
+#define CONTENT_LAVASOURCE 33
 
 // 0x800...0xfff (2048...4095): higher 4 bytes of param2 are not usable
 #define CONTENT_GRASS 0x800 //1

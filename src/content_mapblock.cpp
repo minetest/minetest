@@ -133,22 +133,11 @@ void mapblock_mesh_generate_special(MeshMakeData *data,
 	//bool smooth_lighting = g_settings.getBool("smooth_lighting");
 	bool invisible_stone = g_settings.getBool("invisible_stone");
 	
-	float node_water_level = 1.0;
+	float node_liquid_level = 1.0;
 	if(new_style_water)
-		node_water_level = 0.85;
+		node_liquid_level = 0.85;
 	
 	v3s16 blockpos_nodes = data->m_blockpos*MAP_BLOCKSIZE;
-
-	// Flowing water material
-	video::SMaterial material_water1;
-	material_water1.setFlag(video::EMF_LIGHTING, false);
-	material_water1.setFlag(video::EMF_BACK_FACE_CULLING, false);
-	material_water1.setFlag(video::EMF_BILINEAR_FILTER, false);
-	material_water1.setFlag(video::EMF_FOG_ENABLE, true);
-	material_water1.MaterialType = video::EMT_TRANSPARENT_VERTEX_ALPHA;
-	AtlasPointer pa_water1 = g_texturesource->getTexture(
-			g_texturesource->getTextureId("water.png"));
-	material_water1.setTexture(0, pa_water1.atlas);
 
 	// New-style leaves material
 	video::SMaterial material_leaves1;
@@ -337,30 +326,40 @@ void mapblock_mesh_generate_special(MeshMakeData *data,
 			collector.append(material, vertices, 4, indices, 6);
 		}
 		/*
-			Add flowing water to mesh
+			Add flowing liquid to mesh
 		*/
-		else if(n.getContent() == CONTENT_WATER)
+		else if(content_features(n).liquid_type == LIQUID_FLOWING)
 		{
-			bool top_is_water = false;
+			assert(content_features(n).special_material);
+			video::SMaterial &liquid_material =
+					*content_features(n).special_material;
+			assert(content_features(n).special_atlas);
+			AtlasPointer &pa_liquid1 =
+					*content_features(n).special_atlas;
+
+			bool top_is_same_liquid = false;
 			MapNode ntop = data->m_vmanip.getNodeNoEx(blockpos_nodes + v3s16(x,y+1,z));
-			if(ntop.getContent() == CONTENT_WATER || ntop.getContent() == CONTENT_WATERSOURCE)
-				top_is_water = true;
+			content_t c_flowing = content_features(n).liquid_alternative_flowing;
+			content_t c_source = content_features(n).liquid_alternative_source;
+			if(ntop.getContent() == c_flowing || ntop.getContent() == c_source)
+				top_is_same_liquid = true;
 			
 			u8 l = 0;
 			// Use the light of the node on top if possible
 			if(content_features(ntop).param_type == CPT_LIGHT)
 				l = decode_light(ntop.getLightBlend(data->m_daynight_ratio));
-			// Otherwise use the light of this node (the water)
+			// Otherwise use the light of this node (the liquid)
 			else
 				l = decode_light(n.getLightBlend(data->m_daynight_ratio));
-			video::SColor c = MapBlock_LightColor(WATER_ALPHA, l);
+			video::SColor c = MapBlock_LightColor(
+					content_features(n).vertex_alpha, l);
 			
-			// Neighbor water levels (key = relative position)
+			// Neighbor liquid levels (key = relative position)
 			// Includes current node
 			core::map<v3s16, f32> neighbor_levels;
 			core::map<v3s16, content_t> neighbor_contents;
 			core::map<v3s16, u8> neighbor_flags;
-			const u8 neighborflag_top_is_water = 0x01;
+			const u8 neighborflag_top_is_same_liquid = 0x01;
 			v3s16 neighbor_dirs[9] = {
 				v3s16(0,0,0),
 				v3s16(0,0,1),
@@ -384,19 +383,20 @@ void mapblock_mesh_generate_special(MeshMakeData *data,
 				{
 					content = n2.getContent();
 
-					if(n2.getContent() == CONTENT_WATERSOURCE)
-						level = (-0.5+node_water_level) * BS;
-					else if(n2.getContent() == CONTENT_WATER)
-						level = (-0.5 + ((float)n2.param2 + 0.5) / 8.0
-								* node_water_level) * BS;
+					if(n2.getContent() == c_source)
+						level = (-0.5+node_liquid_level) * BS;
+					else if(n2.getContent() == c_flowing)
+						level = (-0.5 + ((float)(n2.param2&LIQUID_LEVEL_MASK)
+								+ 0.5) / 8.0 * node_liquid_level) * BS;
 
 					// Check node above neighbor.
 					// NOTE: This doesn't get executed if neighbor
 					//       doesn't exist
 					p2.Y += 1;
 					n2 = data->m_vmanip.getNodeNoEx(blockpos_nodes + p2);
-					if(n2.getContent() == CONTENT_WATERSOURCE || n2.getContent() == CONTENT_WATER)
-						flags |= neighborflag_top_is_water;
+					if(n2.getContent() == c_source ||
+							n2.getContent() == c_flowing)
+						flags |= neighborflag_top_is_same_liquid;
 				}
 				
 				neighbor_levels.insert(neighbor_dirs[i], level);
@@ -404,10 +404,7 @@ void mapblock_mesh_generate_special(MeshMakeData *data,
 				neighbor_flags.insert(neighbor_dirs[i], flags);
 			}
 
-			//float water_level = (-0.5 + ((float)n.param2 + 0.5) / 8.0) * BS;
-			//float water_level = neighbor_levels[v3s16(0,0,0)];
-
-			// Corner heights (average between four waters)
+			// Corner heights (average between four liquids)
 			f32 corner_levels[4];
 			
 			v3s16 halfdirs[4] = {
@@ -421,29 +418,46 @@ void mapblock_mesh_generate_special(MeshMakeData *data,
 				v3s16 cornerdir = halfdirs[i];
 				float cornerlevel = 0;
 				u32 valid_count = 0;
+				u32 air_count = 0;
 				for(u32 j=0; j<4; j++)
 				{
 					v3s16 neighbordir = cornerdir - halfdirs[j];
 					u8 content = neighbor_contents[neighbordir];
-					// Special case for source nodes
-					if(content == CONTENT_WATERSOURCE)
+					// If top is liquid, draw starting from top of node
+					if(neighbor_flags[neighbordir] &
+							neighborflag_top_is_same_liquid)
 					{
-						cornerlevel = (-0.5+node_water_level)*BS;
+						cornerlevel = 0.5*BS;
 						valid_count = 1;
 						break;
 					}
-					else if(content == CONTENT_WATER)
+					// Source is always the same height
+					else if(content == c_source)
+					{
+						cornerlevel = (-0.5+node_liquid_level)*BS;
+						valid_count = 1;
+						break;
+					}
+					// Flowing liquid has level information
+					else if(content == c_flowing)
 					{
 						cornerlevel += neighbor_levels[neighbordir];
 						valid_count++;
 					}
 					else if(content == CONTENT_AIR)
 					{
+						air_count++;
+					}
+					/*// Air is liquid level 0
+					else if(content == CONTENT_AIR)
+					{
 						cornerlevel += -0.5*BS;
 						valid_count++;
-					}
+					}*/
 				}
-				if(valid_count > 0)
+				if(air_count >= 2)
+					cornerlevel = -0.5*BS;
+				else if(valid_count > 0)
 					cornerlevel /= valid_count;
 				corner_levels[i] = cornerlevel;
 			}
@@ -469,24 +483,24 @@ void mapblock_mesh_generate_special(MeshMakeData *data,
 				v3s16 dir = side_dirs[i];
 
 				/*
-					If our topside is water and neighbor's topside
-					is water, don't draw side face
+					If our topside is liquid and neighbor's topside
+					is liquid, don't draw side face
 				*/
-				if(top_is_water &&
-						neighbor_flags[dir] & neighborflag_top_is_water)
+				if(top_is_same_liquid &&
+						neighbor_flags[dir] & neighborflag_top_is_same_liquid)
 					continue;
 
 				u8 neighbor_content = neighbor_contents[dir];
 				
-				// Don't draw face if neighbor is not air or water
+				// Don't draw face if neighbor is not air or liquid
 				if(neighbor_content != CONTENT_AIR
-						&& neighbor_content != CONTENT_WATER)
+						&& neighbor_content != c_source)
 					continue;
 				
-				bool neighbor_is_water = (neighbor_content == CONTENT_WATER);
+				bool neighbor_is_liquid = (neighbor_content == c_source);
 				
-				// Don't draw any faces if neighbor is water and top is water
-				if(neighbor_is_water == true && top_is_water == false)
+				// Don't draw any faces if neighbor is liquid and top is liquid
+				if(neighbor_is_liquid == true && top_is_same_liquid == false)
 					continue;
 				
 				video::S3DVertex vertices[4] =
@@ -496,20 +510,20 @@ void mapblock_mesh_generate_special(MeshMakeData *data,
 					video::S3DVertex(BS/2,0,BS/2, 0,0,0, c, 1,0),
 					video::S3DVertex(-BS/2,0,BS/2, 0,0,0, c, 0,0),*/
 					video::S3DVertex(-BS/2,0,BS/2, 0,0,0, c,
-							pa_water1.x0(), pa_water1.y1()),
+							pa_liquid1.x0(), pa_liquid1.y1()),
 					video::S3DVertex(BS/2,0,BS/2, 0,0,0, c,
-							pa_water1.x1(), pa_water1.y1()),
+							pa_liquid1.x1(), pa_liquid1.y1()),
 					video::S3DVertex(BS/2,0,BS/2, 0,0,0, c,
-							pa_water1.x1(), pa_water1.y0()),
+							pa_liquid1.x1(), pa_liquid1.y0()),
 					video::S3DVertex(-BS/2,0,BS/2, 0,0,0, c,
-							pa_water1.x0(), pa_water1.y0()),
+							pa_liquid1.x0(), pa_liquid1.y0()),
 				};
 				
 				/*
-					If our topside is water, set upper border of face
+					If our topside is liquid, set upper border of face
 					at upper border of node
 				*/
-				if(top_is_water)
+				if(top_is_same_liquid)
 				{
 					vertices[2].Pos.Y = 0.5*BS;
 					vertices[3].Pos.Y = 0.5*BS;
@@ -524,16 +538,16 @@ void mapblock_mesh_generate_special(MeshMakeData *data,
 				}
 				
 				/*
-					If neighbor is water, lower border of face is corner
-					water levels
+					If neighbor is liquid, lower border of face is corner
+					liquid levels
 				*/
-				if(neighbor_is_water)
+				if(neighbor_is_liquid)
 				{
 					vertices[0].Pos.Y = corner_levels[side_corners[i][1]];
 					vertices[1].Pos.Y = corner_levels[side_corners[i][0]];
 				}
 				/*
-					If neighbor is not water, lower border of face is
+					If neighbor is not liquid, lower border of face is
 					lower border of node
 				*/
 				else
@@ -558,14 +572,14 @@ void mapblock_mesh_generate_special(MeshMakeData *data,
 
 				u16 indices[] = {0,1,2,2,3,0};
 				// Add to mesh collector
-				collector.append(material_water1, vertices, 4, indices, 6);
+				collector.append(liquid_material, vertices, 4, indices, 6);
 			}
 			
 			/*
 				Generate top side, if appropriate
 			*/
 			
-			if(top_is_water == false)
+			if(top_is_same_liquid == false)
 			{
 				video::S3DVertex vertices[4] =
 				{
@@ -574,13 +588,13 @@ void mapblock_mesh_generate_special(MeshMakeData *data,
 					video::S3DVertex(BS/2,0,BS/2, 0,0,0, c, 1,0),
 					video::S3DVertex(-BS/2,0,BS/2, 0,0,0, c, 0,0),*/
 					video::S3DVertex(-BS/2,0,BS/2, 0,0,0, c,
-							pa_water1.x0(), pa_water1.y1()),
+							pa_liquid1.x0(), pa_liquid1.y1()),
 					video::S3DVertex(BS/2,0,BS/2, 0,0,0, c,
-							pa_water1.x1(), pa_water1.y1()),
+							pa_liquid1.x1(), pa_liquid1.y1()),
 					video::S3DVertex(BS/2,0,-BS/2, 0,0,0, c,
-							pa_water1.x1(), pa_water1.y0()),
+							pa_liquid1.x1(), pa_liquid1.y0()),
 					video::S3DVertex(-BS/2,0,-BS/2, 0,0,0, c,
-							pa_water1.x0(), pa_water1.y0()),
+							pa_liquid1.x0(), pa_liquid1.y0()),
 				};
 				
 				// This fixes a strange bug
@@ -588,7 +602,7 @@ void mapblock_mesh_generate_special(MeshMakeData *data,
 
 				for(s32 i=0; i<4; i++)
 				{
-					//vertices[i].Pos.Y += water_level;
+					//vertices[i].Pos.Y += liquid_level;
 					//vertices[i].Pos.Y += neighbor_levels[v3s16(0,0,0)];
 					s32 j = corner_resolve[i];
 					vertices[i].Pos.Y += corner_levels[j];
@@ -597,29 +611,33 @@ void mapblock_mesh_generate_special(MeshMakeData *data,
 
 				u16 indices[] = {0,1,2,2,3,0};
 				// Add to mesh collector
-				collector.append(material_water1, vertices, 4, indices, 6);
+				collector.append(liquid_material, vertices, 4, indices, 6);
 			}
 		}
 		/*
 			Add water sources to mesh if using new style
 		*/
-		else if(n.getContent() == CONTENT_WATERSOURCE && new_style_water)
+		else if(content_features(n).liquid_type == LIQUID_SOURCE
+				&& new_style_water)
 		{
-			//bool top_is_water = false;
+			assert(content_features(n).special_material);
+			video::SMaterial &liquid_material =
+					*content_features(n).special_material;
+			assert(content_features(n).special_atlas);
+			AtlasPointer &pa_liquid1 =
+					*content_features(n).special_atlas;
+
 			bool top_is_air = false;
 			MapNode n = data->m_vmanip.getNodeNoEx(blockpos_nodes + v3s16(x,y+1,z));
-			/*if(n.getContent() == CONTENT_WATER || n.getContent() == CONTENT_WATERSOURCE)
-				top_is_water = true;*/
 			if(n.getContent() == CONTENT_AIR)
 				top_is_air = true;
 			
-			/*if(top_is_water == true)
-				continue;*/
 			if(top_is_air == false)
 				continue;
 
 			u8 l = decode_light(n.getLightBlend(data->m_daynight_ratio));
-			video::SColor c = MapBlock_LightColor(WATER_ALPHA, l);
+			video::SColor c = MapBlock_LightColor(
+					content_features(n).vertex_alpha, l);
 			
 			video::S3DVertex vertices[4] =
 			{
@@ -628,24 +646,24 @@ void mapblock_mesh_generate_special(MeshMakeData *data,
 				video::S3DVertex(BS/2,0,BS/2, 0,0,0, c, 1,0),
 				video::S3DVertex(-BS/2,0,BS/2, 0,0,0, c, 0,0),*/
 				video::S3DVertex(-BS/2,0,BS/2, 0,0,0, c,
-						pa_water1.x0(), pa_water1.y1()),
+						pa_liquid1.x0(), pa_liquid1.y1()),
 				video::S3DVertex(BS/2,0,BS/2, 0,0,0, c,
-						pa_water1.x1(), pa_water1.y1()),
+						pa_liquid1.x1(), pa_liquid1.y1()),
 				video::S3DVertex(BS/2,0,-BS/2, 0,0,0, c,
-						pa_water1.x1(), pa_water1.y0()),
+						pa_liquid1.x1(), pa_liquid1.y0()),
 				video::S3DVertex(-BS/2,0,-BS/2, 0,0,0, c,
-						pa_water1.x0(), pa_water1.y0()),
+						pa_liquid1.x0(), pa_liquid1.y0()),
 			};
 
 			for(s32 i=0; i<4; i++)
 			{
-				vertices[i].Pos.Y += (-0.5+node_water_level)*BS;
+				vertices[i].Pos.Y += (-0.5+node_liquid_level)*BS;
 				vertices[i].Pos += intToFloat(p + blockpos_nodes, BS);
 			}
 
 			u16 indices[] = {0,1,2,2,3,0};
 			// Add to mesh collector
-			collector.append(material_water1, vertices, 4, indices, 6);
+			collector.append(liquid_material, vertices, 4, indices, 6);
 		}
 		/*
 			Add leaves if using new style

@@ -128,8 +128,8 @@ struct ContentFeatures
 	bool pointable;
 	// Player can dig these
 	bool diggable;
-        // Player can climb these
-        bool climbable;
+	// Player can climb these
+	bool climbable;
 	// Player can build on these
 	bool buildable_to;
 	// Whether the node has no liquid, source liquid or flowing liquid
@@ -153,12 +153,19 @@ struct ContentFeatures
 	content_t liquid_alternative_flowing;
 	// If the content is liquid, this is the source version of the liquid.
 	content_t liquid_alternative_source;
+	// Used currently for flowing liquids
+	u8 vertex_alpha;
+	// Special irrlicht material, used sometimes
+	video::SMaterial *special_material;
+	AtlasPointer *special_atlas;
 	
 	// Amount of light the node emits
 	u8 light_source;
 	
 	// Digging properties for different tools
 	DiggingPropertiesList digging_properties;
+
+	u32 damage_per_second;
 	
 	// NOTE: Move relevant properties to here from elsewhere
 
@@ -181,8 +188,13 @@ struct ContentFeatures
 		dug_item = "";
 		initial_metadata = NULL;
 		liquid_alternative_flowing = CONTENT_IGNORE;
+		liquid_alternative_source = CONTENT_IGNORE;
+		vertex_alpha = 255;
+		special_material = NULL;
+		special_atlas = NULL;
 		light_source = 0;
 		digging_properties.clear();
+		damage_per_second = 0;
 	}
 
 	ContentFeatures()

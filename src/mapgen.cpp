@@ -1817,6 +1817,16 @@ void make_block(BlockMakeData *data)
 						if(noisebuf_ground_wetness.get(x,y,z) < -0.6)
 							vmanip.m_data[i] = MapNode(CONTENT_GRAVEL);
 					}
+					else if(noisebuf_ground_crumbleness.get(x,y,z) <
+							-3.0 + MYMIN(0.1 * sqrt((float)MYMAX(0, -y)), 1.5))
+					{
+						vmanip.m_data[i] = MapNode(CONTENT_LAVASOURCE);
+						for(s16 x1=-1; x1<=1; x1++)
+						for(s16 y1=-1; y1<=1; y1++)
+						for(s16 z1=-1; z1<=1; z1++)
+							data->transforming_liquid.push_back(
+									v3s16(p2d.X+x1, y+y1, p2d.Y+z1));
+					}
 				}
 
 				data->vmanip->m_area.add_y(em, i, -1);

@@ -1564,6 +1564,11 @@ void Map::transformLiquids(core::map<v3s16, MapBlock*> & modified_blocks)
 
 	while(m_transforming_liquid.size() != 0)
 	{
+		// This should be done here so that it is done when continue is used
+		if(loopcount >= initial_size * 3)
+			break;
+		loopcount++;
+
 		/*
 			Get a queued transforming liquid node
 		*/
@@ -1778,12 +1783,6 @@ void Map::transformLiquids(core::map<v3s16, MapBlock*> & modified_blocks)
 						m_transforming_liquid.push_back(airs[i].p);
 				}
 				break;
-		}
-		
-		loopcount++;
-		//if(loopcount >= 100000)
-		if(loopcount >= initial_size * 10) {
-			break;
 		}
 	}
 	//dstream<<"Map::transformLiquids(): loopcount="<<loopcount<<std::endl;
