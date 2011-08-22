@@ -373,7 +373,7 @@ void mapblock_mesh_generate_special(MeshMakeData *data,
 			};
 			for(u32 i=0; i<9; i++)
 			{
-				u8 content = CONTENT_AIR;
+				content_t content = CONTENT_AIR;
 				float level = -0.5 * BS;
 				u8 flags = 0;
 				// Check neighbor
@@ -422,7 +422,7 @@ void mapblock_mesh_generate_special(MeshMakeData *data,
 				for(u32 j=0; j<4; j++)
 				{
 					v3s16 neighbordir = cornerdir - halfdirs[j];
-					u8 content = neighbor_contents[neighbordir];
+					content_t content = neighbor_contents[neighbordir];
 					// If top is liquid, draw starting from top of node
 					if(neighbor_flags[neighbordir] &
 							neighborflag_top_is_same_liquid)
