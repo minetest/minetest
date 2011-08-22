@@ -1252,6 +1252,20 @@ void Server::AsyncRunStep()
 		m_uptime.set(m_uptime.get() + dtime);
 	}
 	
+	{
+		// Process connection's timeouts
+		JMutexAutoLock lock2(m_con_mutex);
+		ScopeProfiler sp(&g_profiler, "Server: connection timeout processing");
+		m_con.RunTimeouts(dtime);
+	}
+	
+	{
+		// This has to be called so that the client list gets synced
+		// with the peer list of the connection
+		ScopeProfiler sp(&g_profiler, "Server: peer change handling");
+		handlePeerChanges();
+	}
+
 	/*
 		Update m_time_of_day and overall game time
 	*/
@@ -1292,20 +1306,6 @@ void Server::AsyncRunStep()
 				m_con.Send(client->peer_id, 0, data, true);
 			}
 		}
-	}
-
-	{
-		// Process connection's timeouts
-		JMutexAutoLock lock2(m_con_mutex);
-		ScopeProfiler sp(&g_profiler, "Server: connection timeout processing");
-		m_con.RunTimeouts(dtime);
-	}
-	
-	{
-		// This has to be called so that the client list gets synced
-		// with the peer list of the connection
-		ScopeProfiler sp(&g_profiler, "Server: peer change handling");
-		handlePeerChanges();
 	}
 
 	{
