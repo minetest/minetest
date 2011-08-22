@@ -2923,6 +2923,18 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 					return;
 				}
 
+				/*
+					If in creative mode, item dropping is disabled unless
+					player has build privileges
+				*/
+				if(g_settings.getBool("creative_mode") &&
+					(getPlayerPrivs(player) & PRIV_BUILD) == 0)
+				{
+					derr_server<<"Not allowing player to drop item: "
+							"creative mode and no build privs"<<std::endl;
+					return;
+				}
+
 				dout_server<<"Placing a miscellaneous item on map"
 						<<std::endl;
 				
