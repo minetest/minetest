@@ -23,11 +23,42 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "common_irrlicht.h"
 #include <string>
 
-irr::EKEY_CODE keyname_to_keycode(const char *name);
-const char *keycode_to_keyname(s32 keycode);
+/* A key press, consisting of either an Irrlicht keycode
+   or an actual char */
+
+class KeyPress
+{
+public:
+	KeyPress();
+	KeyPress(const char *name);
+
+	KeyPress(const irr::SEvent::SKeyInput &in);
+
+	bool operator==(const KeyPress &o) const
+	{
+		return valid_kcode(Key) ? Key == o.Key : Char == o.Char;
+	}
+
+	const char *sym() const;
+	const char *name() const;
+
+	std::string debug() const;
+protected:
+	static bool valid_kcode(irr::EKEY_CODE k)
+	{
+		return k > 0 && k < irr::KEY_KEY_CODES_COUNT;
+	}
+
+	irr::EKEY_CODE Key;
+	wchar_t Char;
+	std::string m_name;
+};
+
+extern const KeyPress EscapeKey;
+extern const KeyPress NumberKey[10];
 
 // Key configuration getter
-irr::EKEY_CODE getKeySetting(const char *settingname);
+KeyPress getKeySetting(const char *settingname);
 
 // Clear fast lookup cache
 void clearKeyCache();

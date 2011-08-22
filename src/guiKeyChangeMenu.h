@@ -27,6 +27,7 @@
 #include "modalMenu.h"
 #include "client.h"
 #include "gettext.h"
+#include "keycode.h"
 #include <string>
 
 enum
@@ -88,19 +89,19 @@ private:
 	gui::IGUIButton *chat;
 
 	s32 activeKey;
-	s32 key_forward;
-	s32 key_backward;
-	s32 key_left;
-	s32 key_right;
-	s32 key_use;
-	s32 key_sneak;
-	s32 key_jump;
-	s32 key_inventory;
-	s32 key_fly;
-	s32 key_fast;
-	s32 key_range;
-	s32 key_chat;
-	s32 key_dump;
+	KeyPress key_forward;
+	KeyPress key_backward;
+	KeyPress key_left;
+	KeyPress key_right;
+	KeyPress key_use;
+	KeyPress key_sneak;
+	KeyPress key_jump;
+	KeyPress key_inventory;
+	KeyPress key_fly;
+	KeyPress key_fast;
+	KeyPress key_range;
+	KeyPress key_chat;
+	KeyPress key_dump;
 };
 
 #endif

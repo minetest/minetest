@@ -19,6 +19,14 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "keycode.h"
 #include "main.h" // For g_settings
+#include "exceptions.h"
+
+class UnknownKeycode : public BaseException
+{
+public:
+	UnknownKeycode(const char *s) :
+		BaseException(s) {};
+};
 
 #define CHECKKEY(x){if(strcmp(name, #x)==0) return irr::x;}
 
@@ -168,7 +176,7 @@ irr::EKEY_CODE keyname_to_keycode(const char *name)
 	CHECKKEY(KEY_PA1)
 	CHECKKEY(KEY_OEM_CLEAR)
 
-	return irr::KEY_KEY_CODES_COUNT;
+	throw UnknownKeycode(name);
 }
 
 static const char *KeyNames[] =
@@ -206,27 +214,128 @@ static const char *KeyNames[] =
 		"-", "-", "-", "-", "-", "-", "-", "-", "Attn", "CrSel", "ExSel",
 		"Erase OEF", "Play", "Zoom", "PA1", "OEM Clear", "-" };
 
-const char *keycode_to_keyname(s32 keycode)
+#define N_(text) text
+
+static const char *KeyNamesLang[] =
+	{ "-", N_("Left Button"), N_("Right Button"), N_("Cancel"), N_("Middle Button"), N_("X Button 1"),
+			N_("X Button 2"), "-", N_("Back"), N_("Tab"), "-", "-", N_("Clear"), N_("Return"), "-",
+			"-", N_("Shift"), N_("Control"), N_("Menu"), N_("Pause"), N_("Capital"), N_("Kana"), "-",
+			N_("Junja"), N_("Final"), N_("Kanji"), "-", N_("Escape"), N_("Convert"), N_("Nonconvert"),
+			N_("Accept"), N_("Mode Change"), N_("Space"), N_("Prior"), N_("Next"), N_("End"), N_("Home"),
+			N_("Left"), N_("Up"), N_("Right"), N_("Down"), N_("Select"), N_("Print"), N_("Execute"),
+			N_("Snapshot"), N_("Insert"), N_("Delete"), N_("Help"), "0", "1", "2", "3", "4", "5",
+			"6", "7", "8", "9", "-", "-", "-", "-", "-", "-", "-", "A", "B", "C",
+			"D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q",
+			"R", "S", "T", "U", "V", "W", "X", "Y", "Z", N_("Left Windows"),
+			N_("Right Windows"), N_("Apps"), "-", N_("Sleep"), N_("Numpad 0"), N_("Numpad 1"),
+			N_("Numpad 2"), N_("Numpad 3"), N_("Numpad 4"), N_("Numpad 5"), N_("Numpad 6"), N_("Numpad 7"),
+			N_("Numpad 8"), N_("Numpad 9"), N_("Numpad *"), N_("Numpad +"), N_("Numpad /"), N_("Numpad -"),
+			"Numpad .", "Numpad /", "F1", "F2", "F3", "F4", "F5", "F6", "F7", "F8",
+			"F9", "F10", "F11", "F12", "F13", "F14", "F15", "F16", "F17", "F18",
+			"F19", "F20", "F21", "F22", "F23", "F24", "-", "-", "-", "-", "-", "-",
+			"-", "-", N_("Num Lock"), N_("Scroll Lock"), "-", "-", "-", "-", "-", "-", "-",
+			"-", "-", "-", "-", "-", "-", "-", N_("Left Shift"), N_("Right Shift"),
+			N_("Left Control"), N_("Right Control"), N_("Left Menu"), N_("Right Menu"), "-", "-",
+			"-", "-", "-", "-", "-", "-", "-", "-", "-", "-", "-", "-", "-", "-",
+			"-", "-", "-", "-", "-", N_("Plus"), N_("Comma"), N_("Minus"), N_("Period"), "-", "-",
+			"-", "-", "-", "-", "-", "-", "-", "-", "-", "-", "-", "-", "-", "-",
+			"-", "-", "-", "-", "-", "-", "-", "-", "-", "-", "-", "-", "-", "-",
+			"-", "-", "-", "-", "-", "-", "-", "-", "-", "-", "-", "-", "-", "-",
+			"-", "-", "-", "-", "-", "-", "-", "-", "-", "-", "-", N_("Attn"), N_("CrSel"),
+			N_("ExSel"), N_("Erase OEF"), N_("Play"), N_("Zoom"), N_("PA1"), N_("OEM Clear"), "-" };
+
+#undef N_
+
+KeyPress::KeyPress() :
+	Key(irr::KEY_KEY_CODES_COUNT),
+	Char(L'\0')
+{}
+
+KeyPress::KeyPress(const char *name)
 {
-	return KeyNames[keycode];
+	if (strlen(name) > 4) {
+		try {
+			Key = keyname_to_keycode(name);
+			m_name = name;
+			if (strlen(name) > 8)
+				mbtowc(&Char, name + 8, 1);
+			else
+				Char = L'\0';
+			return;
+		} catch (UnknownKeycode &e) {};
+	} else {
+		// see if we can set it up as a KEY_KEY_something
+		m_name = "KEY_KEY_";
+		m_name += name;
+		try {
+			Key = keyname_to_keycode(m_name.c_str());
+			mbtowc(&Char, name, 1);
+			return;
+		} catch (UnknownKeycode &e) {};
+	}
+
+	// it's not a (known) key, just take the first char and use that
+
+	Key = irr::KEY_KEY_CODES_COUNT;
+
+	mbtowc(&Char, name, 1);
+	m_name = name[0];
 }
+
+KeyPress::KeyPress(const irr::SEvent::SKeyInput &in)
+{
+	Key = in.Key;
+	Char = in.Char;
+	if (valid_kcode(Key)) {
+		m_name = KeyNames[Key];
+	} else {
+		size_t maxlen = wctomb(NULL, Char);
+		m_name.resize(maxlen+1, '\0');
+		wctomb(&m_name[0], Char);
+	}
+}
+
+const char *KeyPress::sym() const
+{
+	if (Key && Key < irr::KEY_KEY_CODES_COUNT)
+		return KeyNames[Key];
+	else {
+		return m_name.c_str();
+	}
+}
+
+const char *KeyPress::name() const
+{
+	if (Key && Key < irr::KEY_KEY_CODES_COUNT)
+		return KeyNamesLang[Key];
+	else {
+		return m_name.c_str();
+	}
+}
+
+const KeyPress EscapeKey("KEY_ESCAPE");
+const KeyPress NumberKey[] = {
+	KeyPress("KEY_KEY_0"), KeyPress("KEY_KEY_1"), KeyPress("KEY_KEY_2"),
+	KeyPress("KEY_KEY_3"), KeyPress("KEY_KEY_4"), KeyPress("KEY_KEY_5"),
+	KeyPress("KEY_KEY_6"), KeyPress("KEY_KEY_7"), KeyPress("KEY_KEY_8"),
+	KeyPress("KEY_KEY_9")};
 
 /*
 	Key config
 */
 
 // A simple cache for quicker lookup
-core::map<std::string, irr::EKEY_CODE> g_key_setting_cache;
+core::map<std::string, KeyPress> g_key_setting_cache;
 
-irr::EKEY_CODE getKeySetting(const char *settingname)
+KeyPress getKeySetting(const char *settingname)
 {
-	core::map<std::string, irr::EKEY_CODE>::Node *n;
+	core::map<std::string, KeyPress>::Node *n;
 	n = g_key_setting_cache.find(settingname);
 	if(n)
 		return n->getValue();
-	irr::EKEY_CODE c = keyname_to_keycode(g_settings.get(settingname).c_str());
-	g_key_setting_cache.insert(settingname, c);
-	return c;
+	g_key_setting_cache.insert(settingname,
+			g_settings.get(settingname).c_str());
+	return g_key_setting_cache.find(settingname)->getValue();
 }
 
 void clearKeyCache()

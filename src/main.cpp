@@ -563,10 +563,12 @@ public:
 		// Remember whether each key is down or up
 		if(event.EventType == irr::EET_KEY_INPUT_EVENT)
 		{
-			keyIsDown[event.KeyInput.Key] = event.KeyInput.PressedDown;
-
-			if(event.KeyInput.PressedDown)
-				keyWasDown[event.KeyInput.Key] = true;
+			if(event.KeyInput.PressedDown) {
+				keyIsDown.set(event.KeyInput);
+				keyWasDown.set(event.KeyInput);
+			} else {
+				keyIsDown.unset(event.KeyInput);
+			}
 		}
 
 		if(event.EventType == irr::EET_MOUSE_INPUT_EVENT)
@@ -610,16 +612,17 @@ public:
 		return false;
 	}
 
-	bool IsKeyDown(EKEY_CODE keyCode) const
+	bool IsKeyDown(const KeyPress &keyCode) const
 	{
 		return keyIsDown[keyCode];
 	}
 	
 	// Checks whether a key was down and resets the state
-	bool WasKeyDown(EKEY_CODE keyCode)
+	bool WasKeyDown(const KeyPress &keyCode)
 	{
 		bool b = keyWasDown[keyCode];
-		keyWasDown[keyCode] = false;
+		if (b)
+			keyWasDown.unset(keyCode);
 		return b;
 	}
 
@@ -632,12 +635,9 @@ public:
 
 	void clearInput()
 	{
-		for(u32 i=0; i<KEY_KEY_CODES_COUNT; i++)
-		{
-			keyIsDown[i] = false;
-			keyWasDown[i] = false;
-		}
-		
+		keyIsDown.clear();
+		keyWasDown.clear();
+
 		leftclicked = false;
 		rightclicked = false;
 		leftreleased = false;
@@ -670,9 +670,9 @@ private:
 	IrrlichtDevice *m_device;
 	
 	// The current state of keys
-	bool keyIsDown[KEY_KEY_CODES_COUNT];
+	KeyList keyIsDown;
 	// Whether a key has been pressed or not
-	bool keyWasDown[KEY_KEY_CODES_COUNT];
+	KeyList keyWasDown;
 };
 
 /*
@@ -687,11 +687,11 @@ public:
 		m_receiver(receiver)
 	{
 	}
-	virtual bool isKeyDown(EKEY_CODE keyCode)
+	virtual bool isKeyDown(const KeyPress &keyCode)
 	{
 		return m_receiver->IsKeyDown(keyCode);
 	}
-	virtual bool wasKeyDown(EKEY_CODE keyCode)
+	virtual bool wasKeyDown(const KeyPress &keyCode)
 	{
 		return m_receiver->WasKeyDown(keyCode);
 	}
@@ -772,14 +772,13 @@ public:
 		rightclicked = false;
 		leftreleased = false;
 		rightreleased = false;
-		for(u32 i=0; i<KEY_KEY_CODES_COUNT; ++i)
-			keydown[i] = false;
+		keydown.clear();
 	}
-	virtual bool isKeyDown(EKEY_CODE keyCode)
+	virtual bool isKeyDown(const KeyPress &keyCode)
 	{
 		return keydown[keyCode];
 	}
-	virtual bool wasKeyDown(EKEY_CODE keyCode)
+	virtual bool wasKeyDown(const KeyPress &keyCode)
 	{
 		return false;
 	}
@@ -848,8 +847,7 @@ public:
 			if(counter1 < 0.0)
 			{
 				counter1 = 0.1*Rand(1, 40);
-				keydown[getKeySetting("keymap_jump")] =
-						!keydown[getKeySetting("keymap_jump")];
+				keydown.toggle(getKeySetting("keymap_jump"));
 			}
 		}
 		{
@@ -858,8 +856,7 @@ public:
 			if(counter1 < 0.0)
 			{
 				counter1 = 0.1*Rand(1, 40);
-				keydown[getKeySetting("keymap_special1")] =
-						!keydown[getKeySetting("keymap_special1")];
+				keydown.toggle(getKeySetting("keymap_special1"));
 			}
 		}
 		{
@@ -868,8 +865,7 @@ public:
 			if(counter1 < 0.0)
 			{
 				counter1 = 0.1*Rand(1, 40);
-				keydown[getKeySetting("keymap_forward")] =
-						!keydown[getKeySetting("keymap_forward")];
+				keydown.toggle(getKeySetting("keymap_forward"));
 			}
 		}
 		{
@@ -878,8 +874,7 @@ public:
 			if(counter1 < 0.0)
 			{
 				counter1 = 0.1*Rand(1, 40);
-				keydown[getKeySetting("keymap_left")] =
-						!keydown[getKeySetting("keymap_left")];
+				keydown.toggle(getKeySetting("keymap_left"));
 			}
 		}
 		{
@@ -925,7 +920,7 @@ public:
 		return (myrand()%(max-min+1))+min;
 	}
 private:
-	bool keydown[KEY_KEY_CODES_COUNT];
+	KeyList keydown;
 	v2s32 mousepos;
 	v2s32 mousespeed;
 	bool leftdown;
