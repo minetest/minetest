@@ -319,16 +319,60 @@ void draw_hotbar(video::IVideoDriver *driver, gui::IGUIFont *font,
 		
 		if(g_selected_item == i)
 		{
-			driver->draw2DRectangle(video::SColor(255,255,0,0),
-					core::rect<s32>(rect.UpperLeftCorner - v2s32(1,1)*padding,
-							rect.LowerRightCorner + v2s32(1,1)*padding),
-					NULL);
+			video::SColor c_outside(255,255,0,0);
+			//video::SColor c_outside(255,0,0,0);
+			//video::SColor c_inside(255,192,192,192);
+			s32 x1 = rect.UpperLeftCorner.X;
+			s32 y1 = rect.UpperLeftCorner.Y;
+			s32 x2 = rect.LowerRightCorner.X;
+			s32 y2 = rect.LowerRightCorner.Y;
+			// Black base borders
+			driver->draw2DRectangle(c_outside,
+					core::rect<s32>(
+						v2s32(x1 - padding, y1 - padding),
+						v2s32(x2 + padding, y1)
+					), NULL);
+			driver->draw2DRectangle(c_outside,
+					core::rect<s32>(
+						v2s32(x1 - padding, y2),
+						v2s32(x2 + padding, y2 + padding)
+					), NULL);
+			driver->draw2DRectangle(c_outside,
+					core::rect<s32>(
+						v2s32(x1 - padding, y1),
+						v2s32(x1, y2)
+					), NULL);
+			driver->draw2DRectangle(c_outside,
+					core::rect<s32>(
+						v2s32(x2, y1),
+						v2s32(x2 + padding, y2)
+					), NULL);
+			/*// Light inside borders
+			driver->draw2DRectangle(c_inside,
+					core::rect<s32>(
+						v2s32(x1 - padding/2, y1 - padding/2),
+						v2s32(x2 + padding/2, y1)
+					), NULL);
+			driver->draw2DRectangle(c_inside,
+					core::rect<s32>(
+						v2s32(x1 - padding/2, y2),
+						v2s32(x2 + padding/2, y2 + padding/2)
+					), NULL);
+			driver->draw2DRectangle(c_inside,
+					core::rect<s32>(
+						v2s32(x1 - padding/2, y1),
+						v2s32(x1, y2)
+					), NULL);
+			driver->draw2DRectangle(c_inside,
+					core::rect<s32>(
+						v2s32(x2, y1),
+						v2s32(x2 + padding/2, y2)
+					), NULL);
+			*/
 		}
-		else
-		{
-			video::SColor bgcolor2(128,0,0,0);
-			driver->draw2DRectangle(bgcolor2, rect, NULL);
-		}
+
+		video::SColor bgcolor2(128,0,0,0);
+		driver->draw2DRectangle(bgcolor2, rect, NULL);
 
 		if(item != NULL)
 		{
