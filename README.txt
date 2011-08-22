@@ -26,11 +26,11 @@ Map directory:
 - Map is stored in a directory, which can be removed to generate a new map.
 - There is a command-line option for it: --map-dir
 - For a RUN_IN_PLACE build, it is located in:
-		../map
+		../world
 - Otherwise something like this:
-	Windows: C:\Documents and Settings\user\Application Data\minetest\map
-	Linux: ~/.minetest/map
-	OS X: ~/Library/Application Support/minetest/map
+	Windows: C:\Documents and Settings\user\Application Data\minetest\world
+	Linux: ~/.minetest/world
+	OS X: ~/Library/Application Support/minetest/world
 
 Configuration file:
 -------------------
@@ -157,6 +157,8 @@ Compiling on Windows:
 	GETTEXT_MSGFMT           DIR/gettext/bin/msgfmt
 	-----------------
 	- Hit "Configure"
+	- Hit "Configure" once again 8)
+	- If something is still coloured red, you have a problem.
 	- Hit "Generate"
 	If using MSVC:
 		- Open the generated minetest.sln
