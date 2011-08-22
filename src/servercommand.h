@@ -25,9 +25,12 @@ OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 #include "player.h"
 #include "server.h"
 
+#define SEND_TO_SENDER (1<<0)
+#define SEND_TO_OTHERS (1<<1)
+#define SEND_NO_PREFIX (1<<2)
+
 struct ServerCommandContext
 {
-
 	std::vector<std::wstring> parms;
 	std::wstring paramstring;
 	Server* server;

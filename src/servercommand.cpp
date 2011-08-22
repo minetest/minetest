@@ -25,6 +25,14 @@ void cmd_status(std::wostringstream &os,
 	os<<ctx->server->getStatusString();
 }
 
+void cmd_me(std::wostringstream &os,
+	ServerCommandContext *ctx)
+{
+	std::wstring name = narrow_to_wide(ctx->player->getName());
+	os << L"* " << name << L" " << ctx->paramstring;
+	ctx->flags |= SEND_TO_OTHERS | SEND_NO_PREFIX;
+}
+
 void cmd_privs(std::wostringstream &os,
 	ServerCommandContext *ctx)
 {
@@ -130,7 +138,7 @@ void cmd_shutdown(std::wostringstream &os,
 	ctx->server->requestShutdown();
 					
 	os<<L"*** Server shutting down (operator request)";
-	ctx->flags |= 2;
+	ctx->flags |= SEND_TO_OTHERS;
 }
 
 void cmd_setting(std::wostringstream &os,
@@ -232,7 +240,7 @@ std::wstring processServerCommand(ServerCommandContext *ctx)
 {
 
 	std::wostringstream os(std::ios_base::binary);
-	ctx->flags = 1;	// Default, unless we change it.
+	ctx->flags = SEND_TO_SENDER;	// Default, unless we change it.
 
 	u64 privs = ctx->privs;
 
@@ -282,6 +290,10 @@ std::wstring processServerCommand(ServerCommandContext *ctx)
 	else if(ctx->parms[0] == L"ban" || ctx->parms[0] == L"unban")
 	{
 		cmd_banunban(os, ctx);
+	}
+	else if(ctx->parms[0] == L"me")
+	{
+		cmd_me(os, ctx);
 	}
 	else
 	{

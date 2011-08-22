@@ -270,6 +270,12 @@ public:
 
 	void addChatMessage(const std::wstring &message)
 	{
+		if (message[0] == L'/') {
+			m_chat_queue.push_back(
+				(std::wstring)L"issued command: "+message);
+			return;
+		}
+
 		//JMutexAutoLock envlock(m_env_mutex); //bulk comment-out
 		LocalPlayer *player = m_env.getLocalPlayer();
 		assert(player != NULL);

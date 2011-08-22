@@ -114,18 +114,6 @@ struct TextDestChat : public TextDest
 		// Discard empty line
 		if(text == L"")
 			return;
-		
-		// Parse command (server command starts with "/#")
-		if(text[0] == L'/' && text[1] != L'#')
-		{
-			std::wstring reply = L"Local: ";
-
-			reply += L"Local commands not yet supported. "
-					L"Server prefix is \"/#\".";
-			
-			m_client->addChatMessage(reply);
-			return;
-		}
 
 		// Send to others
 		m_client->sendChatMessage(text);
@@ -1331,6 +1319,14 @@ void the_game(
 			(new GUITextInputMenu(guienv, guiroot, -1,
 					&g_menumgr, dest,
 					L""))->drop();
+		}
+		else if(input->wasKeyDown(getKeySetting("keymap_cmd")))
+		{
+			TextDest *dest = new TextDestChat(&client);
+
+			(new GUITextInputMenu(guienv, guiroot, -1,
+					&g_menumgr, dest,
+					L"/"))->drop();
 		}
 		else if(input->wasKeyDown(getKeySetting("keymap_freemove")))
 		{
