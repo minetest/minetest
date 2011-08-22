@@ -236,17 +236,14 @@ inline u16 readU32(std::istream &is)
 
 inline void writeF1000(std::ostream &os, f32 p)
 {
-	char buf[2];
+	char buf[4];
 	writeF1000((u8*)buf, p);
-	os.write(buf, 2);
+	os.write(buf, 4);
 }
 inline f32 readF1000(std::istream &is)
 {
-	char buf[2];
-	is.read(buf, 2);
-	// TODO: verify if this gets rid of the valgrind warning
-	//if(is.gcount() != 2)
-	//	return 0;
+	char buf[4];
+	is.read(buf, 4);
 	return readF1000((u8*)buf);
 }
 
