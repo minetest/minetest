@@ -774,6 +774,7 @@ void RemoteClient::SendObjectData(
 		u16 command
 		u16 number of player positions
 		for each player:
+			u16 peer_id
 			v3s32 position*100
 			v3s32 speed*100
 			s32 pitch*100

@@ -1417,7 +1417,7 @@ void Client::ProcessData(u8 *data, u32 datasize, u16 sender_peer_id)
 				for all added objects {
 					u16 id
 					u8 type
-					u16 initialization data length
+					u32 initialization data length
 					string initialization data
 				}
 			*/
