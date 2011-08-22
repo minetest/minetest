@@ -1564,6 +1564,9 @@ void Map::transformLiquids(core::map<v3s16, MapBlock*> & modified_blocks)
 
 	// list of nodes that due to viscosity have not reached their max level height
 	UniqueQueue<v3s16> must_reflow;
+	
+	// List of MapBlocks that will require a lighting update (due to lava)
+	core::map<v3s16, MapBlock*> lighting_modified_blocks;
 
 	while(m_transforming_liquid.size() != 0)
 	{
@@ -1756,8 +1759,12 @@ void Map::transformLiquids(core::map<v3s16, MapBlock*> & modified_blocks)
 		setNode(p0, n0);
 		v3s16 blockpos = getNodeBlockPos(p0);
 		MapBlock *block = getBlockNoCreateNoEx(blockpos);
-		if(block != NULL)
+		if(block != NULL) {
 			modified_blocks.insert(blockpos, block);
+			// If node emits light, MapBlock requires lighting update
+			if(content_features(n0).light_source != 0)
+				lighting_modified_blocks[block->getPos()] = block;
+		}
 
 		/*
 			enqueue neighbors for update if neccessary
@@ -1783,6 +1790,7 @@ void Map::transformLiquids(core::map<v3s16, MapBlock*> & modified_blocks)
 	//dstream<<"Map::transformLiquids(): loopcount="<<loopcount<<std::endl;
 	while (must_reflow.size() > 0)
 		m_transforming_liquid.push_back(must_reflow.pop_front());
+	updateLighting(lighting_modified_blocks, modified_blocks);
 }
 
 NodeMetadata* Map::getNodeMetadata(v3s16 p)
