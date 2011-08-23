@@ -370,6 +370,7 @@ void content_mapnode_init()
 	f->param_type = CPT_LIGHT;
 	f->light_propagates = true;
 	f->solidness = 0; // Drawn separately, makes no faces
+	f->visual_solidness = 1;
 	f->walkable = false;
 	f->pointable = false;
 	f->diggable = false;
@@ -449,6 +450,7 @@ void content_mapnode_init()
 	f->light_propagates = false;
 	f->light_source = LIGHT_MAX-1;
 	f->solidness = 0; // Drawn separately, makes no faces
+	f->visual_solidness = 2;
 	f->walkable = false;
 	f->pointable = false;
 	f->diggable = false;

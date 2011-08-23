@@ -448,12 +448,6 @@ void mapblock_mesh_generate_special(MeshMakeData *data,
 					{
 						air_count++;
 					}
-					/*// Air is liquid level 0
-					else if(content == CONTENT_AIR)
-					{
-						cornerlevel += -0.5*BS;
-						valid_count++;
-					}*/
 				}
 				if(air_count >= 2)
 					cornerlevel = -0.5*BS;
@@ -490,17 +484,20 @@ void mapblock_mesh_generate_special(MeshMakeData *data,
 						neighbor_flags[dir] & neighborflag_top_is_same_liquid)
 					continue;
 
-				u8 neighbor_content = neighbor_contents[dir];
+				content_t neighbor_content = neighbor_contents[dir];
 				
 				// Don't draw face if neighbor is not air or liquid
 				if(neighbor_content != CONTENT_AIR
-						&& neighbor_content != c_source)
+						&& content_liquid(neighbor_content) == false)
 					continue;
 				
-				bool neighbor_is_liquid = (neighbor_content == c_source);
+				bool neighbor_is_same_liquid = (neighbor_content == c_source
+						|| neighbor_content == c_flowing);
 				
-				// Don't draw any faces if neighbor is liquid and top is liquid
-				if(neighbor_is_liquid == true && top_is_same_liquid == false)
+				// Don't draw any faces if neighbor same is liquid and top is
+				// same liquid
+				if(neighbor_is_same_liquid == true
+						&& top_is_same_liquid == false)
 					continue;
 				
 				video::S3DVertex vertices[4] =
@@ -541,7 +538,7 @@ void mapblock_mesh_generate_special(MeshMakeData *data,
 					If neighbor is liquid, lower border of face is corner
 					liquid levels
 				*/
-				if(neighbor_is_liquid)
+				if(neighbor_is_same_liquid)
 				{
 					vertices[0].Pos.Y = corner_levels[side_corners[i][1]];
 					vertices[1].Pos.Y = corner_levels[side_corners[i][0]];
@@ -566,6 +563,13 @@ void mapblock_mesh_generate_special(MeshMakeData *data,
 						vertices[j].Pos.rotateXZBy(90);
 					if(dir == v3s16(1,0,-0))
 						vertices[j].Pos.rotateXZBy(-90);
+						
+					// Do this to not cause glitches when two liquids are
+					// side-by-side
+					if(neighbor_is_same_liquid == false){
+						vertices[j].Pos.X *= 0.98;
+						vertices[j].Pos.Z *= 0.98;
+					}
 
 					vertices[j].Pos += intToFloat(p + blockpos_nodes, BS);
 				}
