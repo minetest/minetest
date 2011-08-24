@@ -3198,6 +3198,9 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 						mlist->addItem(item1);
 					}
 				}
+				// Disallow moving items if not allowed to build
+				else if((getPlayerPrivs(player) & PRIV_BUILD) == 0)
+					return;
 			}
 			
 			if(disable_action == false)
