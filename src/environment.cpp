@@ -1512,6 +1512,11 @@ void ClientEnvironment::step(float dtime)
 		Get the speed the player is going
 	*/
 	bool is_climbing = lplayer->is_climbing;
+	
+	/*
+		Check if the player is frozen (don't apply physics)
+	*/
+	bool is_frozen = lplayer->is_frozen;
 
 	f32 player_speed = 0.001; // just some small value
 	player_speed = lplayer->getSpeed().getLength();
@@ -1570,7 +1575,7 @@ void ClientEnvironment::step(float dtime)
 			v3f lplayerpos = lplayer->getPosition();
 			
 			// Apply physics
-			if(free_move == false && is_climbing == false)
+			if(free_move == false && is_climbing == false && is_frozen == false)
 			{
 				// Gravity
 				v3f speed = lplayer->getSpeed();

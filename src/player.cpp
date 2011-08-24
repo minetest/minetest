@@ -330,7 +330,18 @@ void LocalPlayer::move(f32 dtime, Map &map, f32 pos_max_d,
 	/*
 		Calculate new position
 	*/
-	position += m_speed * dtime;
+	if(is_frozen) {
+		// Still move very slowly so as not to feel all completely stuck
+		position += m_speed * dtime * 0.001;
+	}
+	else {
+		position += m_speed * dtime;
+	}
+	
+	/*
+		If the player enters an unloaded chunk this is set to true.
+	*/
+	is_frozen = false;
 
 	// Skip collision detection if a special movement mode is used
 	bool free_move = g_settings.getBool("free_move");
@@ -503,8 +514,11 @@ void LocalPlayer::move(f32 dtime, Map &map, f32 pos_max_d,
 		}
 		catch(InvalidPositionException &e)
 		{
-			// Doing nothing here will block the player from
-			// walking over map borders
+			if(!is_frozen) {
+				// freeze when entering unloaded areas
+				is_frozen = true;
+			}
+			continue;
 		}
 
 		core::aabbox3d<f32> nodebox = getNodeBox(v3s16(x,y,z), BS);

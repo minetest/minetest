@@ -142,6 +142,7 @@ public:
 	bool in_water_stable;
 	bool is_climbing;
 	bool swimming_up;
+	bool is_frozen;
 	
 	Inventory inventory;
 	// Actual inventory is backed up here when creative mode is used
