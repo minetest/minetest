@@ -196,6 +196,8 @@ void GUIMainMenu::regenerateGui(v2u32 screensize)
 		gui::IGUIEditBox *e =
 		Environment->addEditBox(L"", rect, true, this, 264);
 		e->setPasswordBox(true);
+		if(text_name != L"" && text_address != L"")
+			Environment->setFocus(e);
 
 	}
 	changeCtype("");
@@ -212,7 +214,7 @@ void GUIMainMenu::regenerateGui(v2u32 screensize)
 		rect += topleft_client + v2s32(160, 100);
 		gui::IGUIElement *e = 
 		Environment->addEditBox(text_address.c_str(), rect, true, this, GUI_ID_ADDRESS_INPUT);
-		if(text_name != L"")
+		if(text_name != L"" && text_address == L"")
 			Environment->setFocus(e);
 	}
 	{
