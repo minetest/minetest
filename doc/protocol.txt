@@ -42,7 +42,7 @@ Initialization:
 		u8 channel = 0
 		# Control packet header
 		u8 type = TYPE_CONTROL = 0
-		u8 controltype = CONTROLTYPE_DISCO = 2
+		u8 controltype = CONTROLTYPE_DISCO = 3
 
 - Here's a quick untested connect-disconnect done in PHP:
 # host: ip of server (use gethostbyname(hostname) to get from a dns name)
@@ -61,7 +61,7 @@ function check_if_minetestserver_up($host, $port)
 		$peer_id = substr($buf, 9, 2);
 		
 		# Disconnect
-		$buf = "\x4f\x45\x74\x03".$peer_id."\x00\x00\x02";
+		$buf = "\x4f\x45\x74\x03".$peer_id."\x00\x00\x03";
 		socket_sendto($socket, $buf, strlen($buf), 0, $host, $port);
 		socket_close($socket);
 		
