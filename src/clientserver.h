@@ -165,8 +165,12 @@ enum ToClientCommand
 	TOCLIENT_PLAYERITEM = 0x36,
 	/*
 		u16 command
-		u16 peer id
-		string serialized item
+		u16 count of player items
+		for all player items {
+			u16 peer id
+			u16 length of serialized item
+			string serialized item
+		}
 	*/
 };
 
