@@ -1786,7 +1786,7 @@ void make_block(BlockMakeData *data)
 					u32 vi = vmanip.m_area.index(p);
 					if(vmanip.m_data[vi].getContent() == CONTENT_STONE)
 						if(mineralrandom.next()%8 == 0)
-							vmanip.m_data[vi] = MapNode(0x81a); //	relies on the data value for glowstone being defined as 0x819 in content_mapnode.h.  Poor coding I know, but I couldn't figure out how to do it any other way.  I'm pretty sure this is also why the glowstone shows up even when the block is suppsosed to be mud or sand or whatever.
+							vmanip.m_data[vi] = MapNode(CONTENT_GLOWSTONE);
 				}
 			}
 		}
@@ -2028,6 +2028,7 @@ void make_block(BlockMakeData *data)
 
 					if((vmanip.m_data[i].getContent() == CONTENT_STONE
 							|| vmanip.m_data[i].getContent() == CONTENT_GRASS
+							|| vmanip.m_data[i].getContent() == CONTENT_GLOWSTONE
 							|| vmanip.m_data[i].getContent() == CONTENT_MUD
 							|| vmanip.m_data[i].getContent() == CONTENT_SAND
 							|| vmanip.m_data[i].getContent() == CONTENT_GRAVEL
