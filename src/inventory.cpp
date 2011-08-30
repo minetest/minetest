@@ -581,6 +581,8 @@ bool InventoryList::roomForItem(const InventoryItem *item)
 
 bool InventoryList::roomForCookedItem(const InventoryItem *item)
 {
+	if(!item)
+		return false;
 	const InventoryItem *cook = item->createCookResult();
 	if(!cook)
 		return false;
