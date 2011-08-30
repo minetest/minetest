@@ -76,6 +76,7 @@ public:
 	virtual Inventory* getInventory() {return m_inventory;}
 	virtual void inventoryModified();
 	virtual bool step(float dtime);
+	virtual bool nodeRemovalDisabled();
 	virtual std::string getInventoryDrawSpecString();
 
 private:

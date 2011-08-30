@@ -203,6 +203,24 @@ std::string FurnaceNodeMetadata::infoText()
 		return s;
 	}
 }
+bool FurnaceNodeMetadata::nodeRemovalDisabled()
+{
+	/*
+		Disable removal if furnace is not empty
+	*/
+	InventoryList *list[3] = {m_inventory->getList("src"),
+	m_inventory->getList("dst"), m_inventory->getList("fuel")};
+	
+	for(int i = 0; i < 3; i++) {
+		if(list[i] == NULL)
+			continue;
+		if(list[i]->getUsedSlots() == 0)
+			continue;
+		return true;
+	}
+	return false;
+	
+}
 void FurnaceNodeMetadata::inventoryModified()
 {
 	dstream<<"Furnace inventory modification callback"<<std::endl;
