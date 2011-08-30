@@ -490,7 +490,13 @@ public:
 	InventoryItem * addItem(u32 i, InventoryItem *newitem);
 
 	// Checks whether the item could be added to the given slot
-	bool itemFits(u32 i, InventoryItem *newitem);
+	bool itemFits(const u32 i, const InventoryItem *newitem);
+
+	// Checks whether there is room for a given item
+	bool roomForItem(const InventoryItem *item);
+
+	// Checks whether there is room for a given item aftr it has been cooked
+	bool roomForCookedItem(const InventoryItem *item);
 
 	// Takes some items from a slot.
 	// If there are not enough, takes as many as it can.

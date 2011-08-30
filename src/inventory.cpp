@@ -549,7 +549,7 @@ InventoryItem * InventoryList::addItem(u32 i, InventoryItem *newitem)
 	}
 }
 
-bool InventoryList::itemFits(u32 i, InventoryItem *newitem)
+bool InventoryList::itemFits(const u32 i, const InventoryItem *newitem)
 {
 	// If it is an empty position, it's an easy job.
 	const InventoryItem *to_item = getItem(i);
@@ -558,17 +558,35 @@ bool InventoryList::itemFits(u32 i, InventoryItem *newitem)
 		return true;
 	}
 	
-	// If not addable, return the item
+	// If not addable, fail
 	if(newitem->addableTo(to_item) == false)
 		return false;
 	
-	// If the item fits fully in the slot, add counter and delete it
+	// If the item fits fully in the slot, pass
 	if(newitem->getCount() <= to_item->freeSpace())
 	{
 		return true;
 	}
 
 	return false;
+}
+
+bool InventoryList::roomForItem(const InventoryItem *item)
+{
+	for(u32 i=0; i<m_items.size(); i++)
+		if(itemFits(i, item))
+			return true;
+	return false;
+}
+
+bool InventoryList::roomForCookedItem(const InventoryItem *item)
+{
+	const InventoryItem *cook = item->createCookResult();
+	if(!cook)
+		return false;
+	bool room = roomForItem(cook);
+	delete cook;
+	return room;
 }
 
 InventoryItem * InventoryList::takeItem(u32 i, u32 count)
