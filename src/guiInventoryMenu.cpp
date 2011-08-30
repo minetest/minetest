@@ -309,10 +309,17 @@ bool GUIInventoryMenu::OnEvent(const SEvent& event)
 	}
 	if(event.EventType==EET_MOUSE_INPUT_EVENT)
 	{
-		if(event.MouseInput.Event == EMIE_LMOUSE_PRESSED_DOWN
-				|| event.MouseInput.Event == EMIE_RMOUSE_PRESSED_DOWN)
+		char amount = -1;
+		
+		if(event.MouseInput.Event == EMIE_LMOUSE_PRESSED_DOWN)
+			amount = 0;
+		else if(event.MouseInput.Event == EMIE_RMOUSE_PRESSED_DOWN)
+			amount = 1;
+		else if(event.MouseInput.Event == EMIE_MMOUSE_PRESSED_DOWN)
+			amount = 10;
+		
+		if(amount >= 0)
 		{
-			bool right = (event.MouseInput.Event == EMIE_RMOUSE_PRESSED_DOWN);
 			v2s32 p(event.MouseInput.X, event.MouseInput.Y);
 			//dstream<<"Mouse down at p=("<<p.X<<","<<p.Y<<")"<<std::endl;
 			ItemSpec s = getItemAtPos(p);
@@ -343,7 +350,7 @@ bool GUIInventoryMenu::OnEvent(const SEvent& event)
 					{
 						dstream<<"Handing IACTION_MOVE to manager"<<std::endl;
 						IMoveAction *a = new IMoveAction();
-						a->count = right ? 1 : 0;
+						a->count = amount;
 						a->from_inv = m_selected_item->inventoryname;
 						a->from_list = m_selected_item->listname;
 						a->from_i = m_selected_item->i;
@@ -358,7 +365,7 @@ bool GUIInventoryMenu::OnEvent(const SEvent& event)
 					}
 					// Remove selection if target was left-clicked or source
 					// slot was emptied
-					if(right == false || source_empties)
+					if(amount == 0 || source_empties)
 					{
 						delete m_selected_item;
 						m_selected_item = NULL;
