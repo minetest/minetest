@@ -3,6 +3,15 @@ Minetest-c55 changelog
 This should contain all the major changes.
 For minor stuff, refer to the commit log of the repository.
 
+X:
+- Ladders
+- Lava
+- /me chat command
+- Slightly better looking inventory (transparency)
+- Fix the long-existed PeerNotFound loop bug
+- Some translations and localization-related fixes
+- Lots of small fixes, once again
+
 2011-07-31_3:
 - Fixes a bug that made the server to deny non-empty passwords from players connecting the first time
 
