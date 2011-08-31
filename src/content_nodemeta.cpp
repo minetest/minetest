@@ -293,7 +293,7 @@ bool FurnaceNodeMetadata::step(float dtime)
 			If there is no source item or source item is not cookable,
 			or furnace became overloaded, stop loop.
 		*/
-		if((m_fuel_time < m_fuel_totaltime || dst_list->roomForCookedItem(src_item) == false)
+		if((m_fuel_time < m_fuel_totaltime || (src_item && dst_list->roomForCookedItem(src_item) == false))
 			&& (src_item == NULL || m_src_totaltime < 0.001))
 		{
 			m_step_accumulator = 0;
