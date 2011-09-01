@@ -182,7 +182,7 @@ std::string FurnaceNodeMetadata::infoText()
 		assert(src_list);
 		const InventoryItem *src_item = src_list->getItem(0);
 
-		if(src_item) {
+		if(src_item && src_item->isCookable()) {
 			InventoryList *dst_list = m_inventory->getList("dst");
 			if(!dst_list->roomForCookedItem(src_item))
 				return "Furnace is overloaded";
@@ -284,17 +284,17 @@ bool FurnaceNodeMetadata::step(float dtime)
 			}
 			changed = true;
 			
-			// Fall through if the fuel item was used up this step
+			// If the fuel was not used up this step, just keep burning it
 			if(m_fuel_time < m_fuel_totaltime)
 				continue;
 		}
 		
 		/*
-			If there is no source item or source item is not cookable,
-			or furnace became overloaded, stop loop.
+			If there is no source item, or the source item is not cookable,
+			or the furnace is still cooking, or the furnace became overloaded, stop loop.
 		*/
-		if((m_fuel_time < m_fuel_totaltime || (src_item && dst_list->roomForCookedItem(src_item) == false))
-			&& (src_item == NULL || m_src_totaltime < 0.001))
+		if(src_item == NULL || !room_available || m_fuel_time < m_fuel_totaltime ||
+			dst_list->roomForCookedItem(src_item) == false)
 		{
 			m_step_accumulator = 0;
 			break;
