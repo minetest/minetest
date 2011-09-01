@@ -58,6 +58,8 @@ public:
 #endif
 	// Shall return a text to show in the GUI
 	virtual std::string getText() { return ""; }
+	// Returns the string used for inventory
+	virtual std::string getItemString();
 	// Creates an object from the item, to be placed in the world.
 	virtual ServerActiveObject* createSAO(ServerEnvironment *env, u16 id, v3f pos);
 	// Gets amount of items that dropping one SAO will decrement

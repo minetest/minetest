@@ -226,6 +226,11 @@ void ItemSAO::rightClick(Player *player)
 
 	if(to_be_deleted)
 		m_removed = true;
+	else
+		// Reflect changes to the item here
+		m_inventorystring = item->getItemString();
+	
+	delete item;
 }
 
 /*

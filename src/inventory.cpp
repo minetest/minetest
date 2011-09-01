@@ -122,16 +122,20 @@ InventoryItem* InventoryItem::deSerialize(std::istream &is)
 	}
 }
 
+std::string InventoryItem::getItemString() {
+	// Get item string
+	std::ostringstream os(std::ios_base::binary);
+	serialize(os);
+	return os.str();
+}
+
 ServerActiveObject* InventoryItem::createSAO(ServerEnvironment *env, u16 id, v3f pos)
 {
 	/*
 		Create an ItemSAO
 	*/
-	// Get item string
-	std::ostringstream os(std::ios_base::binary);
-	serialize(os);
 	// Create object
-	ServerActiveObject *obj = new ItemSAO(env, 0, pos, os.str());
+	ServerActiveObject *obj = new ItemSAO(env, 0, pos, getItemString());
 	return obj;
 }
 
@@ -200,12 +204,17 @@ bool CraftItem::use(ServerEnvironment *env, Player *player)
 {
 	if(item_craft_is_eatable(m_subname))
 	{
+		u16 result_count = getCount() - 1; // Eat one at a time
 		s16 hp_change = item_craft_eat_hp_change(m_subname);
 		if(player->hp + hp_change > 20)
 			player->hp = 20;
 		else
 			player->hp += hp_change;
-		return true;
+		
+		if(result_count < 1)
+			return true;
+		else
+			setCount(result_count);
 	}
 	return false;
 }
