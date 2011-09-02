@@ -245,7 +245,7 @@ bool FurnaceNodeMetadata::step(float dtime)
 
 		InventoryList *src_list = m_inventory->getList("src");
 		assert(src_list);
-		const InventoryItem *src_item = src_list->getItem(0);
+		InventoryItem *src_item = src_list->getItem(0);
 		
 		bool room_available = false;
 		
@@ -288,6 +288,11 @@ bool FurnaceNodeMetadata::step(float dtime)
 			if(m_fuel_time < m_fuel_totaltime)
 				continue;
 		}
+		
+		/*
+			Get the source again in case it has all burned
+		*/
+		src_item = src_list->getItem(0);
 		
 		/*
 			If there is no source item, or the source item is not cookable,
