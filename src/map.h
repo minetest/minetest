@@ -378,7 +378,7 @@ public:
 	// Verify we can read/write to the database
 	void verifyDatabase();
 	// Get an integer suitable for a block
-	static int getBlockAsInteger(const v3s16 pos);
+	static sqlite3_int64 getBlockAsInteger(const v3s16 pos);
 
 	// Returns true if the database file does not exist
 	bool loadFromFolders();

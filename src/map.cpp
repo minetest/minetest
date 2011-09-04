@@ -2849,8 +2849,9 @@ bool ServerMap::loadFromFolders() {
 	return false;
 }
 
-int ServerMap::getBlockAsInteger(const v3s16 pos) {
-	return (pos.Z+2048)*16777216 + (pos.Y+2048)*4096 + pos.X;
+sqlite3_int64 ServerMap::getBlockAsInteger(const v3s16 pos) {
+	return (sqlite3_int64)pos.Z*16777216 +
+		(sqlite3_int64)pos.Y*4096 + (sqlite3_int64)pos.X;
 }
 
 void ServerMap::createDirs(std::string path)
@@ -3318,7 +3319,7 @@ void ServerMap::saveBlock(MapBlock *block)
 	std::string tmp = o.str();
 	const char *bytes = tmp.c_str();
 	
-	if(sqlite3_bind_int(m_database_write, 1, getBlockAsInteger(p3d)) != SQLITE_OK)
+	if(sqlite3_bind_int64(m_database_write, 1, getBlockAsInteger(p3d)) != SQLITE_OK)
 		dstream<<"WARNING: Block position failed to bind: "<<sqlite3_errmsg(m_database)<<std::endl;
 	if(sqlite3_bind_blob(m_database_write, 2, (void *)bytes, o.tellp(), NULL) != SQLITE_OK) // TODO this mught not be the right length
 		dstream<<"WARNING: Block data failed to bind: "<<sqlite3_errmsg(m_database)<<std::endl;
@@ -3484,7 +3485,7 @@ MapBlock* ServerMap::loadBlock(v3s16 blockpos)
 	if(!loadFromFolders()) {
 		verifyDatabase();
 		
-		if(sqlite3_bind_int(m_database_read, 1, getBlockAsInteger(blockpos)) != SQLITE_OK)
+		if(sqlite3_bind_int64(m_database_read, 1, getBlockAsInteger(blockpos)) != SQLITE_OK)
 			dstream<<"WARNING: Could not bind block position for load: "
 				<<sqlite3_errmsg(m_database)<<std::endl;
 		if(sqlite3_step(m_database_read) == SQLITE_ROW) {
