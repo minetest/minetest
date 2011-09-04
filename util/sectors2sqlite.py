@@ -121,15 +121,3 @@ for base in paths:
 conn.commit()
 
 print('Finished. (' + str(count) + ' blocks)')
-
-
-
-
-
-
-
-
-
-
-
-
