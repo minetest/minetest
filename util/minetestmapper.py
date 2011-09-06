@@ -85,6 +85,13 @@ def int_to_hex4(i):
         return "%04X" % i
 
 
+def getBlockAsInteger(p):
+    return p[2]*16777216 + p[1]*4096 + p[0]
+
+def getIntegerAsBlock(i):
+    return i%4096, int(i/4096)%4096, int(i/16777216)%4096
+
+
 def limit(i, l, h):
     if(i > h):
         i = h
@@ -169,6 +176,30 @@ zlist = []
 
 # List all sectors to memory and calculate the width and heigth of the
 # resulting picture.
+
+conn = None
+cur = None
+if os.path.exists(path + "map.sqlite"):
+    import sqlite3
+    conn = sqlite3.connect(path + "map.sqlite")
+    cur = conn.cursor()
+    
+    cur.execute("SELECT `pos` FROM `blocks`")
+    while True:
+        r = cur.fetchone()
+        if not r:
+            break
+        
+        x, y, z = getIntegerAsBlock	(r[0])
+        
+        if x < sector_xmin or x > sector_xmax:
+            continue
+        if z < sector_zmin or z > sector_zmax:
+            continue
+        
+        xlist.append(x)
+        zlist.append(z)
+
 if os.path.exists(path + "sectors2"):
     for filename in os.listdir(path + "sectors2"):
         for filename2 in os.listdir(path + "sectors2/" + filename):
@@ -305,6 +336,16 @@ for n in range(len(xlist)):
 
     sectortype = ""
 
+    if cur:
+        ps = getBlockAsInteger((xpos, 0, zpos))
+        cur.execute("SELECT `pos` FROM `blocks` WHERE `pos`>=? AND `pos`<?", (ps, ps + 4096))
+        while True:
+            r = cur.fetchone()
+            if not r:
+                break
+            pos = getIntegerAsBlock(r[0])[1]
+            ylist.append(pos)
+            sectortype = "sqlite"
     try:
         for filename in os.listdir(path + "sectors/" + sector1):
             if(filename != "meta"):
@@ -316,7 +357,7 @@ for n in range(len(xlist)):
     except OSError:
         pass
 
-    if sectortype != "old":
+    if sectortype == "":
         try:
             for filename in os.listdir(path + "sectors2/" + sector2):
                 if(filename != "meta"):
@@ -348,10 +389,21 @@ for n in range(len(xlist)):
         yhex = int_to_hex4(ypos)
 
         filename = ""
-        if sectortype == "old":
-            filename = path + "sectors/" + sector1 + "/" + yhex.lower()
+        if sectortype == "sqlite":
+            ps = getBlockAsInteger((xpos, ypos, zpos))
+            cur.execute("SELECT `data` FROM `blocks` WHERE `pos`==? LIMIT 1", (ps,))
+            r = cur.fetchone()
+            if not r:
+                continue
+            filename = "mtm_tmp"
+            f = file(filename, 'wb')
+            f.write(r[0])
+            f.close()
         else:
-            filename = path + "sectors2/" + sector2 + "/" + yhex.lower()
+            if sectortype == "old":
+                filename = path + "sectors/" + sector1 + "/" + yhex.lower()
+            else:
+                filename = path + "sectors2/" + sector2 + "/" + yhex.lower()
 
         f = file(filename, "rb")
 
@@ -374,6 +426,16 @@ for n in range(len(xlist)):
 
     if len(pixellist) > 0:
         for (ypos, filename) in ylist2:
+            ps = getBlockAsInteger((xpos, ypos, zpos))
+            cur.execute("SELECT `data` FROM `blocks` WHERE `pos`==? LIMIT 1", (ps,))
+            r = cur.fetchone()
+            if not r:
+                continue
+            filename = "mtm_tmp"
+            f = file(filename, 'wb')
+            f.write(r[0])
+            f.close()
+            
             f = file(filename, "rb")
 
             version = ord(f.read(1))
@@ -494,6 +556,9 @@ if drawplayers:
             f.close()
     except OSError:
         pass
+
+if os.path.isfile("mtm_tmp"):
+    os.remove("mtm_tmp")
 
 print "Saving"
 im.save(output)
