@@ -1408,6 +1408,7 @@ void Map::timerUpdate(float dtime, float unload_timeout,
 
 	core::map<v2s16, MapSector*>::Iterator si;
 
+	beginSave();
 	si = m_sectors.getIterator();
 	for(; si.atEnd() == false; si++)
 	{
@@ -1418,7 +1419,6 @@ void Map::timerUpdate(float dtime, float unload_timeout,
 		core::list<MapBlock*> blocks;
 		sector->getBlocks(blocks);
 		
-		beginSave();
 		for(core::list<MapBlock*>::Iterator i = blocks.begin();
 				i != blocks.end(); i++)
 		{
@@ -1451,13 +1451,13 @@ void Map::timerUpdate(float dtime, float unload_timeout,
 				all_blocks_deleted = false;
 			}
 		}
-		endSave();
 
 		if(all_blocks_deleted)
 		{
 			sector_deletion_queue.push_back(si.getNode()->getKey());
 		}
 	}
+	endSave();
 	
 	// Finally delete the empty sectors
 	deleteSectors(sector_deletion_queue);
