@@ -254,7 +254,7 @@ bool RecursiveDelete(std::string path)
 		execv(argv[0], argv);
 		
 		// Execv shouldn't return. Failed.
-		return false;
+		_exit(1);
 	}
 	else
 	{
