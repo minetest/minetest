@@ -293,7 +293,7 @@ void content_mapnode_init()
 	f->dug_item = std::string("MaterialItem2 ")+itos(i)+" 1";
 	f->solidness = 0; // drawn separately, makes no faces
 	f->air_equivalent = true; // grass grows underneath
-	f->setInventoryTexture("item_fence.png");
+	f->setInventoryTexture("fence.png");
 	setWoodLikeDiggingProperties(f->digging_properties, 0.75);
 
 	i = CONTENT_RAIL;
