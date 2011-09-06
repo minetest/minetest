@@ -36,6 +36,11 @@ void setStoneLikeDiggingProperties(DiggingPropertiesList &list, float toughness)
 void setDirtLikeDiggingProperties(DiggingPropertiesList &list, float toughness);
 void setWoodLikeDiggingProperties(DiggingPropertiesList &list, float toughness);
 
+/*
+	A conversion table for backwards compatibility.
+	Maps <=v19 content types to current ones.
+	Should never be touched.
+*/
 content_t trans_table_19[21][2] = {
 	{CONTENT_GRASS, 1},
 	{CONTENT_TREE, 4},
