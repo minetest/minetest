@@ -29,12 +29,21 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "mapgen.h"
 #include "nodemetadata.h"
 
-extern "C" {
-	#include "sqlite3.h"
-}
 /*
 	SQLite format specification:
 	- Initially only replaces sectors/ and sectors2/
+	
+	If map.sqlite does not exist in the save dir
+	or the block was not found in the database
+	the map will try to load from sectors folder.
+	In either case, map.sqlite will be created
+	and all future saves will save there.
+	
+	Structure of map.sqlite:
+	Tables:
+		blocks
+			(PK) INT pos
+			BLOB data
 */
 
 /*
@@ -1408,6 +1417,8 @@ void Map::timerUpdate(float dtime, float unload_timeout,
 
 		core::list<MapBlock*> blocks;
 		sector->getBlocks(blocks);
+		
+		beginSave();
 		for(core::list<MapBlock*>::Iterator i = blocks.begin();
 				i != blocks.end(); i++)
 		{
@@ -1440,6 +1451,7 @@ void Map::timerUpdate(float dtime, float unload_timeout,
 				all_blocks_deleted = false;
 			}
 		}
+		endSave();
 
 		if(all_blocks_deleted)
 		{
@@ -1873,7 +1885,10 @@ void Map::nodeMetadataStep(float dtime,
 ServerMap::ServerMap(std::string savedir):
 	Map(dout_server),
 	m_seed(0),
-	m_map_metadata_changed(true)
+	m_map_metadata_changed(true),
+	m_database(NULL),
+	m_database_read(NULL),
+	m_database_write(NULL)
 {
 	dstream<<__FUNCTION_NAME<<std::endl;
 
@@ -2000,6 +2015,16 @@ ServerMap::~ServerMap()
 		dstream<<DTIME<<"Server: Failed to save map to "<<m_savedir
 				<<", exception: "<<e.what()<<std::endl;
 	}
+
+	/*
+		Close database if it was opened
+	*/
+	if(m_database_read)
+		sqlite3_finalize(m_database_read);
+	if(m_database_write)
+		sqlite3_finalize(m_database_write);
+	if(m_database)
+		sqlite3_close(m_database);
 
 #if 0
 	/*
@@ -2314,6 +2339,7 @@ ServerMapSector * ServerMap::createSector(v2s16 p2d)
 	/*
 		Try to load metadata from disk
 	*/
+#if 0
 	if(loadSectorMeta(p2d) == true)
 	{
 		ServerMapSector *sector = (ServerMapSector*)getSectorNoGenerateNoEx(p2d);
@@ -2324,7 +2350,7 @@ ServerMapSector * ServerMap::createSector(v2s16 p2d)
 		}
 		return sector;
 	}
-
+#endif
 	/*
 		Do not create over-limit
 	*/
@@ -2766,6 +2792,75 @@ plan_b:
 	//return (s16)level;
 }
 
+void ServerMap::createDatabase() {
+	int e;
+	assert(m_database);
+	e = sqlite3_exec(m_database,
+		"CREATE TABLE IF NOT EXISTS `blocks` ("
+			"`pos` INT NOT NULL PRIMARY KEY,"
+			"`data` BLOB"
+		");"
+	, NULL, NULL, NULL);
+	if(e == SQLITE_ABORT)
+		throw FileNotGoodException("Could not create database structure");
+	else
+		dstream<<"Server: Database structure was created";
+}
+
+void ServerMap::verifyDatabase() {
+	if(m_database)
+		return;
+	
+	{
+		std::string dbp = m_savedir + "/map.sqlite";
+		bool needs_create = false;
+		int d;
+		
+		/*
+			Open the database connection
+		*/
+	
+		createDirs(m_savedir);
+	
+		if(!fs::PathExists(dbp))
+			needs_create = true;
+	
+		d = sqlite3_open_v2(dbp.c_str(), &m_database, SQLITE_OPEN_READWRITE | SQLITE_OPEN_CREATE, NULL);
+		if(d != SQLITE_OK) {
+			dstream<<"WARNING: Database failed to open: "<<sqlite3_errmsg(m_database)<<std::endl;
+			throw FileNotGoodException("Cannot open database file");
+		}
+		
+		if(needs_create)
+			createDatabase();
+	
+		d = sqlite3_prepare(m_database, "SELECT `data` FROM `blocks` WHERE `pos`=? LIMIT 1", -1, &m_database_read, NULL);
+		if(d != SQLITE_OK) {
+			dstream<<"WARNING: Database read statment failed to prepare: "<<sqlite3_errmsg(m_database)<<std::endl;
+			throw FileNotGoodException("Cannot prepare read statement");
+		}
+		
+		d = sqlite3_prepare(m_database, "REPLACE INTO `blocks` VALUES(?, ?)", -1, &m_database_write, NULL);
+		if(d != SQLITE_OK) {
+			dstream<<"WARNING: Database write statment failed to prepare: "<<sqlite3_errmsg(m_database)<<std::endl;
+			throw FileNotGoodException("Cannot prepare write statement");
+		}
+		
+		dstream<<"Server: Database opened"<<std::endl;
+	}
+}
+
+bool ServerMap::loadFromFolders() {
+	if(!m_database && !fs::PathExists(m_savedir + "/map.sqlite"))
+		return true;
+	return false;
+}
+
+sqlite3_int64 ServerMap::getBlockAsInteger(const v3s16 pos) {
+	return (sqlite3_int64)pos.Z*16777216 +
+		(sqlite3_int64)pos.Y*4096 + (sqlite3_int64)pos.X;
+}
+
 void ServerMap::createDirs(std::string path)
 {
 	if(fs::CreateAllDirs(path) == false)
@@ -2869,6 +2964,7 @@ void ServerMap::save(bool only_changed)
 	u32 block_count = 0;
 	u32 block_count_all = 0; // Number of blocks in memory
 	
+	beginSave();
 	core::map<v2s16, MapSector*>::Iterator i = m_sectors.getIterator();
 	for(; i.atEnd() == false; i++)
 	{
@@ -2883,6 +2979,8 @@ void ServerMap::save(bool only_changed)
 		core::list<MapBlock*> blocks;
 		sector->getBlocks(blocks);
 		core::list<MapBlock*>::Iterator j;
+		
+		//sqlite3_exec(m_database, "BEGIN;", NULL, NULL, NULL);
 		for(j=blocks.begin(); j!=blocks.end(); j++)
 		{
 			MapBlock *block = *j;
@@ -2901,8 +2999,10 @@ void ServerMap::save(bool only_changed)
 						<<block->getPos().Z<<")"
 						<<std::endl;*/
 			}
+		//sqlite3_exec(m_database, "COMMIT;", NULL, NULL, NULL);
 		}
 	}
+	endSave();
 
 	/*
 		Only print if something happened or saved whole map
@@ -3161,6 +3261,18 @@ bool ServerMap::loadSectorFull(v2s16 p2d)
 }
 #endif
 
+void ServerMap::beginSave() {
+	verifyDatabase();
+	if(sqlite3_exec(m_database, "BEGIN;", NULL, NULL, NULL) != SQLITE_OK)
+		dstream<<"WARNING: beginSave() failed, saving might be slow.";
+}
+
+void ServerMap::endSave() {
+	verifyDatabase();
+	if(sqlite3_exec(m_database, "COMMIT;", NULL, NULL, NULL) != SQLITE_OK)
+		dstream<<"WARNING: endSave() failed, map might not have saved.";
+}
+
 void ServerMap::saveBlock(MapBlock *block)
 {
 	DSTACK(__FUNCTION_NAME);
@@ -3180,6 +3292,8 @@ void ServerMap::saveBlock(MapBlock *block)
 	// Get destination
 	v3s16 p3d = block->getPos();
 	
+	
+#if 0
 	v2s16 p2d(p3d.X, p3d.Z);
 	std::string sectordir = getSectorDir(p2d);
 
@@ -3189,11 +3303,16 @@ void ServerMap::saveBlock(MapBlock *block)
 	std::ofstream o(fullpath.c_str(), std::ios_base::binary);
 	if(o.good() == false)
 		throw FileNotGoodException("Cannot open block data");
-
+#endif
 	/*
 		[0] u8 serialization version
 		[1] data
 	*/
+	
+	verifyDatabase();
+	
+	std::ostringstream o(std::ios_base::binary);
+	
 	o.write((char*)&version, 1);
 	
 	// Write basic data
@@ -3201,7 +3320,23 @@ void ServerMap::saveBlock(MapBlock *block)
 	
 	// Write extra data stored on disk
 	block->serializeDiskExtra(o, version);
-
+	
+	// Write block to database
+	
+	std::string tmp = o.str();
+	const char *bytes = tmp.c_str();
+	
+	if(sqlite3_bind_int64(m_database_write, 1, getBlockAsInteger(p3d)) != SQLITE_OK)
+		dstream<<"WARNING: Block position failed to bind: "<<sqlite3_errmsg(m_database)<<std::endl;
+	if(sqlite3_bind_blob(m_database_write, 2, (void *)bytes, o.tellp(), NULL) != SQLITE_OK) // TODO this mught not be the right length
+		dstream<<"WARNING: Block data failed to bind: "<<sqlite3_errmsg(m_database)<<std::endl;
+	int written = sqlite3_step(m_database_write);
+	if(written != SQLITE_DONE)
+		dstream<<"WARNING: Block failed to save ("<<p3d.X<<", "<<p3d.Y<<", "<<p3d.Z<<") "
+		<<sqlite3_errmsg(m_database)<<std::endl;
+	// Make ready for later reuse
+	sqlite3_reset(m_database_write);
+	
 	// We just wrote it to the disk so clear modified flag
 	block->resetModified();
 }
@@ -3282,11 +3417,110 @@ void ServerMap::loadBlock(std::string sectordir, std::string blockfile, MapSecto
 	}
 }
 
+void ServerMap::loadBlock(std::string *blob, v3s16 p3d, MapSector *sector, bool save_after_load)
+{
+	DSTACK(__FUNCTION_NAME);
+
+	try {
+		std::istringstream is(*blob, std::ios_base::binary);
+		
+		u8 version = SER_FMT_VER_INVALID;
+		is.read((char*)&version, 1);
+
+		if(is.fail())
+			throw SerializationError("ServerMap::loadBlock(): Failed"
+					" to read MapBlock version");
+
+		/*u32 block_size = MapBlock::serializedLength(version);
+		SharedBuffer<u8> data(block_size);
+		is.read((char*)*data, block_size);*/
+
+		// This will always return a sector because we're the server
+		//MapSector *sector = emergeSector(p2d);
+
+		MapBlock *block = NULL;
+		bool created_new = false;
+		block = sector->getBlockNoCreateNoEx(p3d.Y);
+		if(block == NULL)
+		{
+			block = sector->createBlankBlockNoInsert(p3d.Y);
+			created_new = true;
+		}
+		
+		// Read basic data
+		block->deSerialize(is, version);
+
+		// Read extra data stored on disk
+		block->deSerializeDiskExtra(is, version);
+		
+		// If it's a new block, insert it to the map
+		if(created_new)
+			sector->insertBlock(block);
+		
+		/*
+			Save blocks loaded in old format in new format
+		*/
+
+		if(version < SER_FMT_VER_HIGHEST || save_after_load)
+		{
+			saveBlock(block);
+		}
+		
+		// We just loaded it from, so it's up-to-date.
+		block->resetModified();
+
+	}
+	catch(SerializationError &e)
+	{
+		dstream<<"WARNING: Invalid block data in database "
+				<<" (SerializationError). "
+				<<"what()="<<e.what()
+				<<std::endl;
+				//" Ignoring. A new one will be generated.
+		assert(0);
+
+		// TODO: Copy to a backup database.
+	}
+}
+
 MapBlock* ServerMap::loadBlock(v3s16 blockpos)
 {
 	DSTACK(__FUNCTION_NAME);
 
 	v2s16 p2d(blockpos.X, blockpos.Z);
+
+	if(!loadFromFolders()) {
+		verifyDatabase();
+		
+		if(sqlite3_bind_int64(m_database_read, 1, getBlockAsInteger(blockpos)) != SQLITE_OK)
+			dstream<<"WARNING: Could not bind block position for load: "
+				<<sqlite3_errmsg(m_database)<<std::endl;
+		if(sqlite3_step(m_database_read) == SQLITE_ROW) {
+			/*
+				Make sure sector is loaded
+			*/
+			MapSector *sector = createSector(p2d);
+			
+			/*
+				Load block
+			*/
+			const char * data = (const char *)sqlite3_column_blob(m_database_read, 0);
+			size_t len = sqlite3_column_bytes(m_database_read, 0);
+			
+			std::string datastr(data, len);
+			
+			loadBlock(&datastr, blockpos, sector, false);
+
+			sqlite3_step(m_database_read);
+			// We should never get more than 1 row, so ok to reset
+			sqlite3_reset(m_database_read);
+
+			return getBlockNoCreateNoEx(blockpos);
+		}
+		sqlite3_reset(m_database_read);
+		
+		// Not found in database, try the files
+	}
 
 	// The directory layout we're going to load from.
 	//  1 - original sectors/xxxxzzzz/
@@ -3338,9 +3572,9 @@ MapBlock* ServerMap::loadBlock(v3s16 blockpos)
 		return NULL;
 
 	/*
-		Load block
+		Load block and save it to the database
 	*/
-	loadBlock(sectordir, blockfilename, sector, loadlayout != 2);
+	loadBlock(sectordir, blockfilename, sector, true);
 	return getBlockNoCreateNoEx(blockpos);
 }
 

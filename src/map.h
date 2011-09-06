@@ -24,12 +24,17 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <jmutexautolock.h>
 #include <jthread.h>
 #include <iostream>
+#include <sstream>
 
 #include "common_irrlicht.h"
 #include "mapnode.h"
 #include "mapblock_nodemod.h"
 #include "constants.h"
 #include "voxel.h"
+
+extern "C" {
+	#include "sqlite3.h"
+}
 
 class MapSector;
 class ServerMapSector;
@@ -220,6 +225,10 @@ public:
 	//core::aabbox3d<s16> getDisplayedBlockArea();
 
 	//bool updateChangedVisibleArea();
+
+	// Call these before and after saving of many blocks
+	virtual void beginSave() {return;};
+	virtual void endSave() {return;};
 	
 	virtual void save(bool only_changed){assert(0);};
 	
@@ -361,6 +370,23 @@ public:
 	v3s16 getBlockPos(std::string sectordir, std::string blockfile);
 	static std::string getBlockFilename(v3s16 p);
 
+	/*
+		Database functions
+	*/
+	// Create the database structure
+	void createDatabase();
+	// Verify we can read/write to the database
+	void verifyDatabase();
+	// Get an integer suitable for a block
+	static sqlite3_int64 getBlockAsInteger(const v3s16 pos);
+
+	// Returns true if the database file does not exist
+	bool loadFromFolders();
+
+	// Call these before and after saving of blocks
+	void beginSave();
+	void endSave();
+
 	void save(bool only_changed);
 	//void loadAll();
 	
@@ -391,6 +417,8 @@ public:
 	// This will generate a sector with getSector if not found.
 	void loadBlock(std::string sectordir, std::string blockfile, MapSector *sector, bool save_after_load=false);
 	MapBlock* loadBlock(v3s16 p);
+	// Database version
+	void loadBlock(std::string *blob, v3s16 p3d, MapSector *sector, bool save_after_load=false);
 
 	// For debug printing
 	virtual void PrintInfo(std::ostream &out);
@@ -419,6 +447,13 @@ private:
 		This is reset to false when written on disk.
 	*/
 	bool m_map_metadata_changed;
+	
+	/*
+		SQLite database and statements
+	*/
+	sqlite3 *m_database;
+	sqlite3_stmt *m_database_read;
+	sqlite3_stmt *m_database_write;
 };
 
 /*
