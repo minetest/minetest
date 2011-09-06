@@ -1121,7 +1121,9 @@ void Connection::Send(u16 peer_id, u8 channelnum,
 {
 	assert(channelnum < CHANNEL_COUNT);
 	
-	Peer *peer = GetPeer(peer_id);
+	Peer *peer = GetPeerNoEx(peer_id);
+	if(peer == NULL)
+		return;
 	Channel *channel = &(peer->channels[channelnum]);
 
 	u32 chunksize_max = m_max_packet_size - BASE_HEADER_SIZE;
