@@ -504,8 +504,16 @@ void TextureSource::buildMainAtlas()
 	}
 
 	/*
-		A list of stuff to add. This should contain as much of the
-		stuff shown in game as possible, to minimize texture changes.
+		A list of stuff to include in the texture atlas.
+
+		It is a single-dimensional texture atlas due to the need to tile
+		textures.
+		
+		It should contain as much of the stuff shown in game as possible,
+		to minimize texture changes.
+
+		It fills up quickly, so do not add anything that isn't contained
+		in most MapBlocks. E.g. mese isn't suitable but stone is.
 	*/
 
 	core::array<std::string> sourcelist;
