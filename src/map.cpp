@@ -3397,6 +3397,9 @@ void ServerMap::loadBlock(std::string sectordir, std::string blockfile, MapSecto
 		if(version < SER_FMT_VER_HIGHEST || save_after_load)
 		{
 			saveBlock(block);
+			
+			// Should be in database now, so delete the old file
+			fs::RecursiveDelete(fullpath);
 		}
 		
 		// We just loaded it from the disk, so it's up-to-date.
