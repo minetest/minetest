@@ -51,7 +51,7 @@ Camera::Camera(scene::ISceneManager* smgr, MapDrawControl& draw_control):
 	m_view_bobbing_anim(0),
 	m_view_bobbing_anim_left(0)
 {
-	dstream<<__FUNCTION_NAME<<std::endl;
+	//dstream<<__FUNCTION_NAME<<std::endl;
 
 	m_playernode = smgr->addEmptySceneNode(smgr->getRootSceneNode());
 	m_cameranode = smgr->addCameraSceneNode(m_playernode);
@@ -126,7 +126,7 @@ void Camera::updateViewingRange(f32 frametime_in)
 		return;
 	m_frametime_counter = 0.2;
 
-	dstream<<__FUNCTION_NAME
+	/*dstream<<__FUNCTION_NAME
 			<<": Collected "<<m_added_frames<<" frames, total of "
 			<<m_added_frametime<<"s."<<std::endl;
 
@@ -134,7 +134,7 @@ void Camera::updateViewingRange(f32 frametime_in)
 			<<m_draw_control.blocks_drawn
 			<<", m_draw_control.blocks_would_have_drawn="
 			<<m_draw_control.blocks_would_have_drawn
-			<<std::endl;
+			<<std::endl;*/
 
 	m_draw_control.wanted_min_range = m_viewing_range_min;
 	m_draw_control.wanted_max_blocks = (1.5*m_draw_control.blocks_would_have_drawn)+1;
@@ -156,12 +156,12 @@ void Camera::updateViewingRange(f32 frametime_in)
 	m_added_frames = 0;
 
 	f32 wanted_frametime_change = m_wanted_frametime - frametime;
-	dstream<<"wanted_frametime_change="<<wanted_frametime_change<<std::endl;
+	//dstream<<"wanted_frametime_change="<<wanted_frametime_change<<std::endl;
 
 	// If needed frametime change is small, just return
 	if (fabs(wanted_frametime_change) < m_wanted_frametime*0.4)
 	{
-		dstream<<"ignoring small wanted_frametime_change"<<std::endl;
+		//dstream<<"ignoring small wanted_frametime_change"<<std::endl;
 		return;
 	}
 
@@ -188,11 +188,11 @@ void Camera::updateViewingRange(f32 frametime_in)
 	if(m_time_per_range < min_time_per_range)
 	{
 		m_time_per_range = min_time_per_range;
-		dstream<<"m_time_per_range="<<m_time_per_range<<" (min)"<<std::endl;
+		//dstream<<"m_time_per_range="<<m_time_per_range<<" (min)"<<std::endl;
 	}
 	else
 	{
-		dstream<<"m_time_per_range="<<m_time_per_range<<std::endl;
+		//dstream<<"m_time_per_range="<<m_time_per_range<<std::endl;
 	}
 
 	f32 wanted_range_change = wanted_frametime_change / m_time_per_range;
@@ -200,22 +200,22 @@ void Camera::updateViewingRange(f32 frametime_in)
 	//wanted_range_change *= 0.9;
 	//wanted_range_change *= 0.75;
 	wanted_range_change *= 0.5;
-	dstream<<"wanted_range_change="<<wanted_range_change<<std::endl;
+	//dstream<<"wanted_range_change="<<wanted_range_change<<std::endl;
 
 	// If needed range change is very small, just return
 	if(fabs(wanted_range_change) < 0.001)
 	{
-		dstream<<"ignoring small wanted_range_change"<<std::endl;
+		//dstream<<"ignoring small wanted_range_change"<<std::endl;
 		return;
 	}
 
 	new_range += wanted_range_change;
 	
-	f32 new_range_unclamped = new_range;
+	//f32 new_range_unclamped = new_range;
 	new_range = MYMAX(new_range, m_viewing_range_min);
 	new_range = MYMIN(new_range, m_viewing_range_max);
-	dstream<<"new_range="<<new_range_unclamped
-			<<", clamped to "<<new_range<<std::endl;
+	/*dstream<<"new_range="<<new_range_unclamped
+			<<", clamped to "<<new_range<<std::endl;*/
 
 	m_draw_control.wanted_range = new_range;
 
