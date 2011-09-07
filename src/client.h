@@ -210,6 +210,7 @@ public:
 	// eye position in *eye_position
 	v3f getPlayerPosition(v3f *eye_position=NULL);
 
+	void setPlayerWield(scene::ISceneNode *wield);
 	void setPlayerControl(PlayerControl &control);
 
 	void selectPlayerItem(u16 item);

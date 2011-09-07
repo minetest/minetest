@@ -53,6 +53,10 @@ public:
 	// Shall make an exact clone of the item
 	virtual InventoryItem* clone() = 0;
 #ifndef SERVER
+	// Return the name of the image for this item
+	virtual std::string getBasename() { return ""; }
+	// Shall return an image of the item (or NULL)
+	virtual video::ITexture * getImageRaw() { return NULL; }
 	// Shall return an image to show in the GUI (or NULL)
 	virtual video::ITexture * getImage() { return NULL; }
 #endif
@@ -353,40 +357,53 @@ public:
 		return new ToolItem(m_toolname, m_wear);
 	}
 #ifndef SERVER
+	std::string getBasename() {
+		if(m_toolname == "WPick")
+			return "tool_woodpick.png";
+		else if(m_toolname == "STPick")
+			return "tool_stonepick.png";
+		else if(m_toolname == "SteelPick")
+			return "tool_steelpick.png";
+		else if(m_toolname == "MesePick")
+			return "tool_mesepick.png";
+		else if(m_toolname == "WShovel")
+			return "tool_woodshovel.png";
+		else if(m_toolname == "STShovel")
+			return "tool_stoneshovel.png";
+		else if(m_toolname == "SteelShovel")
+			return "tool_steelshovel.png";
+		else if(m_toolname == "WAxe")
+			return "tool_woodaxe.png";
+		else if(m_toolname == "STAxe")
+			return "tool_stoneaxe.png";
+		else if(m_toolname == "SteelAxe")
+			return "tool_steelaxe.png";
+		else if(m_toolname == "WSword")
+			return "tool_woodsword.png";
+		else if(m_toolname == "STSword")
+			return "tool_stonesword.png";
+		else if(m_toolname == "SteelSword")
+			return "tool_steelsword.png";
+		else
+			return "cloud.png";
+}
+	
+	video::ITexture * getImageRaw()
+	{
+		if(g_texturesource == NULL)
+			return NULL;
+		
+		return g_texturesource->getTextureRaw(getBasename());
+	}
+	
 	video::ITexture * getImage()
 	{
 		if(g_texturesource == NULL)
 			return NULL;
 		
-		std::string basename;
-		if(m_toolname == "WPick")
-			basename = "tool_woodpick.png";
-		else if(m_toolname == "STPick")
-			basename = "tool_stonepick.png";
-		else if(m_toolname == "SteelPick")
-			basename = "tool_steelpick.png";
-		else if(m_toolname == "MesePick")
-			basename = "tool_mesepick.png";
-		else if(m_toolname == "WShovel")
-			basename = "tool_woodshovel.png";
-		else if(m_toolname == "STShovel")
-			basename = "tool_stoneshovel.png";
-		else if(m_toolname == "SteelShovel")
-			basename = "tool_steelshovel.png";
-		else if(m_toolname == "WAxe")
-			basename = "tool_woodaxe.png";
-		else if(m_toolname == "STAxe")
-			basename = "tool_stoneaxe.png";
-		else if(m_toolname == "SteelAxe")
-			basename = "tool_steelaxe.png";
-		else if(m_toolname == "WSword")
-			basename = "tool_woodsword.png";
-		else if(m_toolname == "STSword")
-			basename = "tool_stonesword.png";
-		else if(m_toolname == "SteelSword")
-			basename = "tool_steelsword.png";
-		else
-			basename = "cloud.png";
+		std::string basename = getBasename();
+		
+		return g_texturesource->getTextureRaw(basename);
 		
 		/*
 			Calculate a progress value with sane amount of
