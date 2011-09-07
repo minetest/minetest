@@ -201,14 +201,16 @@ public:
 	
 	void updateCamera(v3f pos, v3f dir);
 	
+	void renderPostFx();
+	
 	// Returns InvalidPositionException if not found
 	MapNode getNode(v3s16 p);
 	// Wrapper to Map
 	NodeMetadata* getNodeMetadata(v3s16 p);
 
-	// Get the player position, and optionally put the
-	// eye position in *eye_position
-	v3f getPlayerPosition(v3f *eye_position=NULL);
+	LocalPlayer* getLocalPlayer();
+
+	v3f getPlayerPosition(v3f *eye_position);
 
 	void setPlayerControl(PlayerControl &control);
 
@@ -302,15 +304,6 @@ public:
 	{
 		return m_access_denied_reason;
 	}
-	
-	/*
-		This should only be used for calling the special drawing stuff in
-		ClientEnvironment
-	*/
-	ClientEnvironment * getEnv()
-	{
-		return &m_env;
-	}
 
 private:
 	
@@ -342,9 +335,6 @@ private:
 
 	IrrlichtDevice *m_device;
 
-	v3f camera_position;
-	v3f camera_direction;
-	
 	// Server serialization version
 	u8 m_server_ser_ver;
 

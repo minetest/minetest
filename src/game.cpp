@@ -2032,7 +2032,7 @@ void the_game(
 			update_skybox(driver, smgr, skybox, brightness);
 
 		/*
-			Update coulds
+			Update clouds
 		*/
 		if(clouds)
 		{
@@ -2314,6 +2314,13 @@ void the_game(
 		}
 
 		/*
+			Post effects
+		*/
+		{
+			client.renderPostFx();
+		}
+
+		/*
 			Frametime log
 		*/
 		if(g_settings.getBool("frametime_graph") == true)
@@ -2352,13 +2359,6 @@ void the_game(
 		// 0-1ms
 		guienv->drawAll();
 
-		/*
-			Environment post fx
-		*/
-		{
-			client.getEnv()->drawPostFx(driver, camera_position);
-		}
-		
 		/*
 			Draw hotbar
 		*/

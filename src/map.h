@@ -552,6 +552,8 @@ public:
 
 	void renderMap(video::IVideoDriver* driver, s32 pass);
 
+	void renderPostFx();
+
 	/*
 		Methods for setting temporary modifications to nodes for
 		drawing.

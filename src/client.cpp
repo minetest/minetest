@@ -189,8 +189,6 @@ Client::Client(
 	),
 	m_con(PROTOCOL_ID, 512, CONNECTION_TIMEOUT, this),
 	m_device(device),
-	camera_position(0,0,0),
-	camera_direction(0,0,1),
 	m_server_ser_ver(SER_FMT_VER_INVALID),
 	m_inventory_updated(false),
 	m_time_of_day(0),
@@ -1983,8 +1981,11 @@ void Client::addNode(v3s16 p, MapNode n)
 void Client::updateCamera(v3f pos, v3f dir)
 {
 	m_env.getClientMap().updateCamera(pos, dir);
-	camera_position = pos;
-	camera_direction = dir;
+}
+
+void Client::renderPostFx()
+{
+	m_env.getClientMap().renderPostFx();
 }
 
 MapNode Client::getNode(v3s16 p)
@@ -1996,6 +1997,11 @@ MapNode Client::getNode(v3s16 p)
 NodeMetadata* Client::getNodeMetadata(v3s16 p)
 {
 	return m_env.getMap().getNodeMetadata(p);
+}
+
+LocalPlayer* Client::getLocalPlayer()
+{
+	return m_env.getLocalPlayer();
 }
 
 v3f Client::getPlayerPosition(v3f *eye_position)

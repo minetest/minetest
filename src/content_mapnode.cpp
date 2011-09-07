@@ -385,6 +385,7 @@ void content_mapnode_init()
 	f->liquid_alternative_source = CONTENT_WATERSOURCE;
 	f->liquid_viscosity = WATER_VISC;
 	f->vertex_alpha = WATER_ALPHA;
+	f->post_effect_color = video::SColor(64, 100, 100, 200);
 	if(f->special_material == NULL && g_texturesource)
 	{
 		// Flowing water material
@@ -433,6 +434,7 @@ void content_mapnode_init()
 	f->liquid_alternative_source = CONTENT_WATERSOURCE;
 	f->liquid_viscosity = WATER_VISC;
 	f->vertex_alpha = WATER_ALPHA;
+	f->post_effect_color = video::SColor(64, 100, 100, 200);
 	if(f->special_material == NULL && g_texturesource)
 	{
 		// Flowing water material
@@ -465,6 +467,7 @@ void content_mapnode_init()
 	f->liquid_alternative_source = CONTENT_LAVASOURCE;
 	f->liquid_viscosity = LAVA_VISC;
 	f->damage_per_second = 4*2;
+	f->post_effect_color = video::SColor(192, 255, 64, 0);
 	if(f->special_material == NULL && g_texturesource)
 	{
 		// Flowing lava material
@@ -514,6 +517,7 @@ void content_mapnode_init()
 	f->liquid_alternative_source = CONTENT_LAVASOURCE;
 	f->liquid_viscosity = LAVA_VISC;
 	f->damage_per_second = 4*2;
+	f->post_effect_color = video::SColor(192, 255, 64, 0);
 	if(f->special_material == NULL && g_texturesource)
 	{
 		// Flowing lava material
