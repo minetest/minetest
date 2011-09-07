@@ -584,7 +584,7 @@ void RemoteClient::GetNextBlocks(Server *server, float dtime,
 				Don't generate or send if not in sight
 			*/
 
-			if(isBlockInSight(p, camera_pos, camera_dir, 10000*BS) == false)
+			if(isBlockInSight(p, camera_pos, camera_dir, M_PI, 10000*BS) == false)
 			{
 				continue;
 			}

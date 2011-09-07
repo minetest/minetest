@@ -1978,9 +1978,9 @@ void Client::addNode(v3s16 p, MapNode n)
 	}
 }
 	
-void Client::updateCamera(v3f pos, v3f dir)
+void Client::updateCamera(v3f pos, v3f dir, f32 fov)
 {
-	m_env.getClientMap().updateCamera(pos, dir);
+	m_env.getClientMap().updateCamera(pos, dir, fov);
 }
 
 void Client::renderPostFx()
@@ -2002,16 +2002,6 @@ NodeMetadata* Client::getNodeMetadata(v3s16 p)
 LocalPlayer* Client::getLocalPlayer()
 {
 	return m_env.getLocalPlayer();
-}
-
-v3f Client::getPlayerPosition(v3f *eye_position)
-{
-	//JMutexAutoLock envlock(m_env_mutex); //bulk comment-out
-	LocalPlayer *player = m_env.getLocalPlayer();
-	assert(player != NULL);
-	if (eye_position)
-		*eye_position = player->getEyePosition();
-	return player->getPosition();
 }
 
 void Client::setPlayerControl(PlayerControl &control)

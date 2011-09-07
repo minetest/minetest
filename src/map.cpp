@@ -3604,7 +3604,8 @@ ClientMap::ClientMap(
 	m_client(client),
 	m_control(control),
 	m_camera_position(0,0,0),
-	m_camera_direction(0,0,1)
+	m_camera_direction(0,0,1),
+	m_camera_fov(M_PI)
 {
 	m_camera_mutex.Init();
 	assert(m_camera_mutex.IsInitialized());
@@ -3713,6 +3714,7 @@ void ClientMap::renderMap(video::IVideoDriver* driver, s32 pass)
 	m_camera_mutex.Lock();
 	v3f camera_position = m_camera_position;
 	v3f camera_direction = m_camera_direction;
+	f32 camera_fov = m_camera_fov;
 	m_camera_mutex.Unlock();
 
 	/*
@@ -3805,7 +3807,8 @@ void ClientMap::renderMap(video::IVideoDriver* driver, s32 pass)
 			
 			float d = 0.0;
 			if(isBlockInSight(block->getPos(), camera_position,
-					camera_direction, range, &d) == false)
+					camera_direction, camera_fov,
+					range, &d) == false)
 			{
 				continue;
 			}

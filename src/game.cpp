@@ -28,6 +28,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "materials.h"
 #include "config.h"
 #include "clouds.h"
+#include "camera.h"
 #include "farmesh.h"
 #include "mapblock.h"
 
@@ -48,8 +49,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 */
 #define FIELD_OF_VIEW_TEST 0
 
-
-MapDrawControl draw_control;
 
 // Chat data
 struct ChatLine
@@ -142,144 +141,6 @@ struct TextDestSignNode : public TextDest
 	v3s16 m_p;
 	Client *m_client;
 };
-
-/*
-	Render distance feedback loop
-*/
-void updateViewingRange(f32 frametime_in, Client *client)
-{
-	if(draw_control.range_all == true)
-		return;
-	
-	static f32 added_frametime = 0;
-	static s16 added_frames = 0;
-
-	added_frametime += frametime_in;
-	added_frames += 1;
-
-	// Actually this counter kind of sucks because frametime is busytime
-	static f32 counter = 0;
-	counter -= frametime_in;
-	if(counter > 0)
-		return;
-	//counter = 0.1;
-	counter = 0.2;
-
-	/*dstream<<__FUNCTION_NAME
-			<<": Collected "<<added_frames<<" frames, total of "
-			<<added_frametime<<"s."<<std::endl;*/
-	
-	/*dstream<<"draw_control.blocks_drawn="
-			<<draw_control.blocks_drawn
-			<<", draw_control.blocks_would_have_drawn="
-			<<draw_control.blocks_would_have_drawn
-			<<std::endl;*/
-	
-	float range_min = g_settings.getS16("viewing_range_nodes_min");
-	float range_max = g_settings.getS16("viewing_range_nodes_max");
-	
-	// Limit minimum to keep the feedback loop stable
-	if(range_min < 5)
-		range_min = 5;
-	
-	draw_control.wanted_min_range = range_min;
-	//draw_control.wanted_max_blocks = (1.5*draw_control.blocks_drawn)+1;
-	draw_control.wanted_max_blocks = (1.5*draw_control.blocks_would_have_drawn)+1;
-	if(draw_control.wanted_max_blocks < 10)
-		draw_control.wanted_max_blocks = 10;
-	
-	float block_draw_ratio = 1.0;
-	if(draw_control.blocks_would_have_drawn != 0)
-	{
-		block_draw_ratio = (float)draw_control.blocks_drawn
-			/ (float)draw_control.blocks_would_have_drawn;
-	}
-
-	// Calculate the average frametime in the case that all wanted
-	// blocks had been drawn
-	f32 frametime = added_frametime / added_frames / block_draw_ratio;
-	
-	added_frametime = 0.0;
-	added_frames = 0;
-	
-	float wanted_fps = g_settings.getFloat("wanted_fps");
-	float wanted_frametime = 1.0 / wanted_fps;
-	
-	f32 wanted_frametime_change = wanted_frametime - frametime;
-	//dstream<<"wanted_frametime_change="<<wanted_frametime_change<<std::endl;
-	
-	// If needed frametime change is small, just return
-	if(fabs(wanted_frametime_change) < wanted_frametime*0.4)
-	{
-		//dstream<<"ignoring small wanted_frametime_change"<<std::endl;
-		return;
-	}
-
-	float range = draw_control.wanted_range;
-	float new_range = range;
-
-	static s16 range_old = 0;
-	static f32 frametime_old = 0;
-	
-	float d_range = range - range_old;
-	f32 d_frametime = frametime - frametime_old;
-	// A sane default of 30ms per 50 nodes of range
-	static f32 time_per_range = 30. / 50;
-	if(d_range != 0)
-	{
-		time_per_range = d_frametime / d_range;
-	}
-	
-	// The minimum allowed calculated frametime-range derivative:
-	// Practically this sets the maximum speed of changing the range.
-	// The lower this value, the higher the maximum changing speed.
-	// A low value here results in wobbly range (0.001)
-	// A high value here results in slow changing range (0.0025)
-	// SUGG: This could be dynamically adjusted so that when
-	//       the camera is turning, this is lower
-	//float min_time_per_range = 0.0015;
-	float min_time_per_range = 0.0010;
-	//float min_time_per_range = 0.05 / range;
-	if(time_per_range < min_time_per_range)
-	{
-		time_per_range = min_time_per_range;
-		//dstream<<"time_per_range="<<time_per_range<<" (min)"<<std::endl;
-	}
-	else
-	{
-		//dstream<<"time_per_range="<<time_per_range<<std::endl;
-	}
-
-	f32 wanted_range_change = wanted_frametime_change / time_per_range;
-	// Dampen the change a bit to kill oscillations
-	//wanted_range_change *= 0.9;
-	//wanted_range_change *= 0.75;
-	wanted_range_change *= 0.5;
-	//dstream<<"wanted_range_change="<<wanted_range_change<<std::endl;
-
-	// If needed range change is very small, just return
-	if(fabs(wanted_range_change) < 0.001)
-	{
-		//dstream<<"ignoring small wanted_range_change"<<std::endl;
-		return;
-	}
-
-	new_range += wanted_range_change;
-	
-	//float new_range_unclamped = new_range;
-	if(new_range < range_min)
-		new_range = range_min;
-	if(new_range > range_max)
-		new_range = range_max;
-	
-	/*dstream<<"new_range="<<new_range_unclamped
-			<<", clamped to "<<new_range<<std::endl;*/
-
-	draw_control.wanted_range = new_range;
-
-	range_old = new_range;
-	frametime_old = frametime;
-}
 
 /*
 	Hotbar draw routine
@@ -847,6 +708,7 @@ void the_game(
 
 	draw_load_screen(L"Creating client...", driver, font);
 	std::cout<<DTIME<<"Creating client"<<std::endl;
+	MapDrawControl draw_control;
 	Client client(device, playername.c_str(), password, draw_control);
 			
 	draw_load_screen(L"Resolving address...", driver, font);
@@ -950,25 +812,18 @@ void the_game(
 	/*
 		Create the camera node
 	*/
-
-	scene::ICameraSceneNode* camera = smgr->addCameraSceneNode(
-		0, // Camera parent
-		v3f(BS*100, BS*2, BS*100), // Look from
-		v3f(BS*100+1, BS*2, BS*100), // Look to
-		-1 // Camera ID
-   	);
-
-	if(camera == NULL)
+	Camera camera(smgr, draw_control);
+	if (camera.getPlayerNode() == NULL)
+	{
+		error_message = L"Failed to create the player node";
+		return;
+	}
+	if (camera.getCameraNode() == NULL)
 	{
 		error_message = L"Failed to create the camera node";
 		return;
 	}
 
-	camera->setFOV(FOV_ANGLE);
-
-	// Just so big a value that everything rendered is visible
-	camera->setFarValue(100000*BS);
-	
 	f32 camera_yaw = 0; // "right/left"
 	f32 camera_pitch = 0; // "up/down"
 
@@ -1168,12 +1023,6 @@ void the_game(
 		// Necessary for device->getTimer()->getTime()
 		device->run();
 
-		/*
-			Viewing range
-		*/
-		
-		updateViewingRange(busytime, &client);
-		
 		/*
 			FPS limiter
 		*/
@@ -1565,10 +1414,6 @@ void the_game(
 			}
 		}
 		
-		// Get player position
-		v3f camera_position;
-		v3f player_position = client.getPlayerPosition(&camera_position);
-
 		//TimeTaker //timer2("//timer2");
 
 		/*
@@ -1621,25 +1466,25 @@ void the_game(
 			first_loop_after_window_activation = true;
 		}
 
-		camera_yaw = wrapDegrees(camera_yaw);
-		camera_pitch = wrapDegrees(camera_pitch);
-		
-		v3f camera_direction = v3f(0,0,1);
-		camera_direction.rotateYZBy(camera_pitch);
-		camera_direction.rotateXZBy(camera_yaw);
+		LocalPlayer* player = client.getLocalPlayer();
+		camera.update(player, busytime, screensize);
+		camera.step(dtime);
 
-		camera->setPosition(camera_position);
-		// *100.0 helps in large map coordinates
-		camera->setTarget(camera_position + camera_direction * 100.0);
+		v3f player_position = player->getPosition();
+		v3f camera_position = camera.getPosition();
+		v3f camera_direction = camera.getDirection();
+		f32 camera_fov = camera.getFovMax();
 
-		if(FIELD_OF_VIEW_TEST){
-			client.updateCamera(v3f(0,0,0), v3f(0,0,1));
+		if(FIELD_OF_VIEW_TEST)
+		{
+			client.updateCamera(v3f(0,0,0), v3f(0,0,1), M_PI);
 		}
-		else{
-			//TimeTaker timer("client.updateCamera");
-			client.updateCamera(camera_position, camera_direction);
+		else
+		{
+			client.updateCamera(camera_position,
+				camera_direction, camera_fov);
 		}
-		
+
 		//timer2.stop();
 		//TimeTaker //timer3("//timer3");
 
@@ -2010,8 +1855,6 @@ void the_game(
 			Calculate stuff for drawing
 		*/
 
-		camera->setAspectRatio((f32)screensize.X / (f32)screensize.Y);
-		
 		u32 daynight_ratio = client.getDayNightRatio();
 		u8 l = decode_light((daynight_ratio * LIGHT_SUN) / 1000);
 		video::SColor bgcolor = video::SColor(

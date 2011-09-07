@@ -142,6 +142,7 @@ set(minetest_SRCS
 	mapblock_mesh.cpp
 	farmesh.cpp
 	keycode.cpp
+	camera.cpp
 	clouds.cpp
 	clientobject.cpp
 	guiMainMenu.cpp

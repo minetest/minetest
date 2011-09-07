@@ -199,7 +199,7 @@ public:
 	// locks envlock
 	void addNode(v3s16 p, MapNode n);
 	
-	void updateCamera(v3f pos, v3f dir);
+	void updateCamera(v3f pos, v3f dir, f32 fov);
 	
 	void renderPostFx();
 	
@@ -209,8 +209,6 @@ public:
 	NodeMetadata* getNodeMetadata(v3s16 p);
 
 	LocalPlayer* getLocalPlayer();
-
-	v3f getPlayerPosition(v3f *eye_position);
 
 	void setPlayerControl(PlayerControl &control);
 

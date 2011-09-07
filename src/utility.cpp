@@ -162,8 +162,8 @@ void mysrand(unsigned seed)
 	camera_dir: an unit vector pointing to camera direction
 	range: viewing range
 */
-bool isBlockInSight(v3s16 blockpos_b, v3f camera_pos, v3f camera_dir, f32 range,
-		f32 *distance_ptr)
+bool isBlockInSight(v3s16 blockpos_b, v3f camera_pos, v3f camera_dir,
+		f32 camera_fov, f32 range, f32 *distance_ptr)
 {
 	v3s16 blockpos_nodes = blockpos_b * MAP_BLOCKSIZE;
 	
@@ -211,8 +211,7 @@ bool isBlockInSight(v3s16 blockpos_b, v3f camera_pos, v3f camera_dir, f32 range,
 		cosangle += block_max_radius / dforward;
 
 		// If block is not in the field of view, skip it
-		//if(cosangle < cos(FOV_ANGLE/2))
-		if(cosangle < cos(FOV_ANGLE/2. * 4./3.))
+		if(cosangle < cos(camera_fov / 2))
 			return false;
 	}
 
