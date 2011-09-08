@@ -38,7 +38,7 @@ public:
 
 	// Get player scene node.
 	// This node is positioned at the player's torso (without any view bobbing),
-	// as given by Player::m_position, Player::m_pitch and Player::m_yaw.
+	// as given by Player::m_position. Yaw is applied but not pitch.
 	// Things like wielded tools should be positioned relative to this node.
 	inline scene::ISceneNode* getPlayerNode() const
 	{
@@ -46,7 +46,6 @@ public:
 	}
 
 	// Get camera scene node.
-	// The camera node is a child of the player node.
 	// It has the eye transformation and view bobbing applied.
 	inline scene::ICameraSceneNode* getCameraNode() const
 	{
@@ -131,10 +130,12 @@ private:
 	f32 m_frametime_counter;
 	f32 m_time_per_range;
 
-	// View bobbing animation frame (0 <= m_view_bobbing < 0x10000)
-	u32 m_view_bobbing_anim;
-	// Number of frames to continue the view bobbing animation.
-	u32 m_view_bobbing_anim_left;
+	// View bobbing animation frame (0 <= m_view_bobbing < 0x1000000)
+	s32 m_view_bobbing_anim;
+	// If 0, view bobbing is off (e.g. player is standing).
+	// If 1, view bobbing is on (player is walking).
+	// If 2, view bobbing is getting switched off.
+	s32 m_view_bobbing_state;
 };
 
 #endif

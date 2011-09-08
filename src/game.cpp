@@ -1477,7 +1477,7 @@ void the_game(
 
 		if(FIELD_OF_VIEW_TEST)
 		{
-			client.updateCamera(v3f(0,0,0), v3f(0,0,1), M_PI);
+			client.updateCamera(v3f(0,0,0), v3f(0,0,1), camera_fov);
 		}
 		else
 		{

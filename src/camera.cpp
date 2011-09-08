@@ -49,12 +49,15 @@ Camera::Camera(scene::ISceneManager* smgr, MapDrawControl& draw_control):
 	m_time_per_range(30. / 50), // a sane default of 30ms per 50 nodes of range
 
 	m_view_bobbing_anim(0),
-	m_view_bobbing_anim_left(0)
+	m_view_bobbing_state(0)
 {
 	//dstream<<__FUNCTION_NAME<<std::endl;
 
+	// note: making the camera node a child of the player node
+	// would lead to unexpected behaviour, so we don't do that.
 	m_playernode = smgr->addEmptySceneNode(smgr->getRootSceneNode());
-	m_cameranode = smgr->addCameraSceneNode(m_playernode);
+	m_cameranode = smgr->addCameraSceneNode(smgr->getRootSceneNode());
+	m_cameranode->bindTargetAndRotation(true);
 
 	updateSettings();
 }
@@ -65,6 +68,21 @@ Camera::~Camera()
 
 void Camera::step(f32 dtime)
 {
+	if (m_view_bobbing_state != 0)
+	{
+		const f32 bobspeed = 0x1000000;
+		s32 offset = MYMAX(dtime * bobspeed, 1);
+		if (m_view_bobbing_state == 2)
+		{
+			// Animation is getting turned off
+			s32 subanim = (m_view_bobbing_anim & 0x7fffff);
+			if (subanim < 0x400000)
+				offset = -1 *  MYMIN(offset, subanim);
+			else
+				offset = MYMIN(offset, 0x800000 - subanim);
+		}
+		m_view_bobbing_anim = (m_view_bobbing_anim + offset) & 0xffffff;
+	}
 }
 
 void Camera::update(LocalPlayer* player, f32 frametime, v2u32 screensize)
@@ -72,43 +90,66 @@ void Camera::update(LocalPlayer* player, f32 frametime, v2u32 screensize)
 	if (m_playernode == NULL || m_cameranode == NULL)
 		return;
 
+	// Set player node transformation
+	m_playernode->setPosition(player->getPosition());
+	//m_playernode->setRotation(v3f(player->getPitch(), -1 * player->getYaw(), 0));
+	m_playernode->setRotation(v3f(0, -1 * player->getYaw(), 0));
+	m_playernode->updateAbsolutePosition();
+
+	// Compute relative camera position and target
+	v3f relative_cam_pos = player->getEyePosition() - player->getPosition();
+	v3f relative_cam_target = v3f(0,0,1);
+	relative_cam_target.rotateYZBy(player->getPitch());
+	relative_cam_target += relative_cam_pos;
+
+	f32 bobangle = m_view_bobbing_anim * 2 * M_PI / 0x1000000;
+	f32 bobangle_s = sin(bobangle);
+	f32 bobangle_c = cos(bobangle);
+	f32 bobwidth = 0.03 * cos(player->getPitch() * M_PI / 180)
+		/ (bobangle_c * bobangle_c + 1);
+	f32 bobheight = bobwidth;
+	relative_cam_pos.X += bobwidth * bobangle_s;
+	relative_cam_pos.Y += bobheight * bobangle_s * bobangle_c;
+
+	// Compute absolute camera position and target
+	m_playernode->getAbsoluteTransformation().transformVect(m_camera_position, relative_cam_pos);
+	m_playernode->getAbsoluteTransformation().transformVect(m_camera_direction, relative_cam_target);
+	m_camera_direction -= m_camera_position;
+
+	// Set camera node transformation
+	m_cameranode->setPosition(m_camera_position);
+	// *100.0 helps in large map coordinates
+	m_cameranode->setTarget(m_camera_position + 100.0 * m_camera_direction);
+
 	// FOV and and aspect ratio
 	m_aspect = (f32)screensize.X / (f32) screensize.Y;
 	m_fov_x = 2 * atan(0.5 * m_aspect * tan(m_fov_y));
 	m_cameranode->setAspectRatio(m_aspect);
 	m_cameranode->setFOV(m_fov_y);
-
 	// Just so big a value that everything rendered is visible
 	// Some more allowance that m_viewing_range_max * BS because of active objects etc.
 	m_cameranode->setFarValue(m_viewing_range_max * BS * 10);
 
-	m_camera_position = player->getEyePosition();  // TODO bobbing
-	m_cameranode->setPosition(m_camera_position);
-
-	m_camera_direction = v3f(0,0,1);
-	m_camera_direction.rotateYZBy(player->getPitch());
-	m_camera_direction.rotateXZBy(player->getYaw());
-	// *100.0 helps in large map coordinates
-	m_cameranode->setTarget(m_camera_position + m_camera_direction * 100.0);
-
 	// Render distance feedback loop
 	updateViewingRange(frametime);
 
-	// Check if view bobbing is active
+	// If the player seems to be walking on solid ground,
+	// view bobbing is enabled and free_move is off,
+	// start (or continue) the view bobbing animation.
 	v3f speed = player->getSpeed();
-	f32 epsilon = BS / 1000.0;
-	if (speed.X * speed.X + speed.Z * speed.Z > epsilon*epsilon &&
-			speed.Y < epsilon &&
-			g_settings.getBool("view_bobbing") == true &&
-			g_settings.getBool("free_move") == false)
+	//dstream<<"speed: ("<<speed.X<<","<<speed.Y<<","<<speed.Z<<")"<<std::endl;
+	if ((hypot(speed.X, speed.Z) > BS) &&
+		(fabs(speed.Y) < BS/10) &&
+		(g_settings.getBool("view_bobbing") == true) &&
+		(g_settings.getBool("free_move") == false))
 	{
-		// The player seems to be walking on solid ground.
-		// Enable view bobbing.
-		//dstream << "View bobbing active" << std::endl;
+		// Start animation
+		m_view_bobbing_state = 1;
 	}
-	else
+	else if (m_view_bobbing_state == 1)
 	{
-		//dstream << "View bobbing inactive" << std::endl;
+		// Stop animation
+		m_view_bobbing_state = 2;
 	}
 }
 
