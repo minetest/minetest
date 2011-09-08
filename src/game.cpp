@@ -831,7 +831,7 @@ void the_game(
 		Tool
 	*/
 	
-	v3f tool_wield_position(0.06*BS, 1.619*BS, 0.1*BS);
+	v3f tool_wield_position(0.06*BS, -0.06*BS, 0.1*BS);
 	v3f tool_wield_rotation(-25, 180, -25);
 	float tool_wield_animation = 0.0;
 	scene::IMeshSceneNode *tool_wield;
@@ -856,7 +856,7 @@ void the_game(
 		mesh->addMeshBuffer(buf);
 		buf->drop();
 	
-		tool_wield = smgr->addMeshSceneNode(mesh, camera.getPlayerNode());
+		tool_wield = smgr->addMeshSceneNode(mesh, camera.getCameraNode());
 		mesh->drop();
 	}
 	tool_wield->setVisible(false);
@@ -1997,8 +1997,9 @@ void the_game(
 			Animate tool
 		*/
 		{
-			tool_wield->setRotation(tool_wield_rotation - sin(tool_wield_animation * PI) * 40.0);
-			tool_wield->setPosition(tool_wield_position - sin(tool_wield_animation * PI) / 3.0);
+			f32 tool_wield_sin = sin(tool_wield_animation * PI);
+			tool_wield->setRotation(tool_wield_rotation - tool_wield_sin * 40.0);
+			tool_wield->setPosition(tool_wield_position - tool_wield_sin * BS / 30.0);
 		}
 
 

@@ -105,10 +105,10 @@ void Camera::update(LocalPlayer* player, f32 frametime, v2u32 screensize)
 
 	if ((m_view_bobbing_anim & (BOBFRAMES/2-1)) != 0)
 	{
-		f32 bobamount = cos(player->getPitch() * M_PI / 180);
+		f32 bobamount = cos(player->getPitch() * PI / 180);
 		bobamount = 2 * MYMIN(bobamount, 0.5);
 
-		f32 bobangle = m_view_bobbing_anim * 2 * M_PI / BOBFRAMES;
+		f32 bobangle = m_view_bobbing_anim * 2 * PI / BOBFRAMES;
 		f32 bobangle_s = sin(bobangle);
 		f32 bobangle_c = cos(bobangle);
 		f32 bobwidth = 0.02 * bobamount / (bobangle_c * bobangle_c + 1);
@@ -282,7 +282,7 @@ void Camera::updateSettings()
 	f32 fov_degrees = g_settings.getFloat("fov");
 	fov_degrees = MYMAX(fov_degrees, 10.0);
 	fov_degrees = MYMIN(fov_degrees, 170.0);
-	m_fov_y = fov_degrees * M_PI / 180.0;
+	m_fov_y = fov_degrees * PI / 180.0;
 
 	f32 wanted_fps = g_settings.getFloat("wanted_fps");
 	wanted_fps = MYMAX(wanted_fps, 1.0);
