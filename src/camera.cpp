@@ -25,6 +25,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "utility.h"
 #include <cmath>
 
+const s32 BOBFRAMES = 0x1000000; // must be a power of two
+
 Camera::Camera(scene::ISceneManager* smgr, MapDrawControl& draw_control):
 	m_smgr(smgr),
 	m_playernode(NULL),
@@ -70,18 +72,17 @@ void Camera::step(f32 dtime)
 {
 	if (m_view_bobbing_state != 0)
 	{
-		const f32 bobspeed = 0x1000000;
-		s32 offset = MYMAX(dtime * bobspeed, 1);
+		s32 offset = MYMAX(dtime * BOBFRAMES, 1);
 		if (m_view_bobbing_state == 2)
 		{
 			// Animation is getting turned off
-			s32 subanim = (m_view_bobbing_anim & 0x7fffff);
-			if (subanim < 0x400000)
+			s32 subanim = (m_view_bobbing_anim & (BOBFRAMES/2-1));
+			if (subanim < BOBFRAMES/4)
 				offset = -1 *  MYMIN(offset, subanim);
 			else
-				offset = MYMIN(offset, 0x800000 - subanim);
+				offset = MYMIN(offset, BOBFRAMES/2 - subanim);
 		}
-		m_view_bobbing_anim = (m_view_bobbing_anim + offset) & 0xffffff;
+		m_view_bobbing_anim = (m_view_bobbing_anim + offset) & (BOBFRAMES-1);
 	}
 }
 
@@ -102,14 +103,20 @@ void Camera::update(LocalPlayer* player, f32 frametime, v2u32 screensize)
 	relative_cam_target.rotateYZBy(player->getPitch());
 	relative_cam_target += relative_cam_pos;
 
-	f32 bobangle = m_view_bobbing_anim * 2 * M_PI / 0x1000000;
-	f32 bobangle_s = sin(bobangle);
-	f32 bobangle_c = cos(bobangle);
-	f32 bobwidth = 0.02 * cos(player->getPitch() * M_PI / 180)
-		/ (bobangle_c * bobangle_c + 1);
-	f32 bobheight = bobwidth;
-	relative_cam_pos.X += bobwidth * bobangle_s;
-	relative_cam_pos.Y += bobheight * bobangle_s * bobangle_c;
+	if ((m_view_bobbing_anim & (BOBFRAMES/2-1)) != 0)
+	{
+		f32 bobamount = cos(player->getPitch() * M_PI / 180);
+		bobamount = 2 * MYMIN(bobamount, 0.5);
+
+		f32 bobangle = m_view_bobbing_anim * 2 * M_PI / BOBFRAMES;
+		f32 bobangle_s = sin(bobangle);
+		f32 bobangle_c = cos(bobangle);
+		f32 bobwidth = 0.02 * bobamount / (bobangle_c * bobangle_c + 1);
+		f32 bobheight = 1.5 * bobwidth;
+
+		relative_cam_pos.X += bobwidth * bobangle_s;
+		relative_cam_pos.Y += bobheight * bobangle_s * bobangle_c;
+	}
 
 	// Compute absolute camera position and target
 	m_playernode->getAbsoluteTransformation().transformVect(m_camera_position, relative_cam_pos);
