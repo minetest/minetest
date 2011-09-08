@@ -105,7 +105,7 @@ void Camera::update(LocalPlayer* player, f32 frametime, v2u32 screensize)
 	f32 bobangle = m_view_bobbing_anim * 2 * M_PI / 0x1000000;
 	f32 bobangle_s = sin(bobangle);
 	f32 bobangle_c = cos(bobangle);
-	f32 bobwidth = 0.03 * cos(player->getPitch() * M_PI / 180)
+	f32 bobwidth = 0.02 * cos(player->getPitch() * M_PI / 180)
 		/ (bobangle_c * bobangle_c + 1);
 	f32 bobheight = bobwidth;
 	relative_cam_pos.X += bobwidth * bobangle_s;
