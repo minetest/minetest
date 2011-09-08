@@ -309,10 +309,29 @@ LocalPlayer::LocalPlayer():
 	// Initialize hp to 0, so that no hearts will be shown if server
 	// doesn't support health points
 	hp = 0;
+	
+	// No tool wielded initially
+	wield = NULL;
 }
 
 LocalPlayer::~LocalPlayer()
 {
+}
+
+void LocalPlayer::wieldItem(u16 item)
+{
+	m_selected_item = item;
+	
+	if(wield) {
+		InventoryItem* i = inventory.getList("main")->getItem(m_selected_item);
+	
+		if(i && strcmp(i->getName(), "ToolItem") == 0) {
+			wield->getMaterial(0).setTexture(0, i->getImageRaw());
+			wield->setVisible(true);
+		}
+		else
+			wield->setVisible(false);
+	}
 }
 
 void LocalPlayer::move(f32 dtime, Map &map, f32 pos_max_d,

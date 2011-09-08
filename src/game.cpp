@@ -828,6 +828,44 @@ void the_game(
 	f32 camera_pitch = 0; // "up/down"
 
 	/*
+		Tool
+	*/
+	
+	v3f tool_wield_position(0.06*BS, 1.619*BS, 0.1*BS);
+	v3f tool_wield_rotation(-25, 180, -25);
+	float tool_wield_animation = 0.0;
+	scene::IMeshSceneNode *tool_wield;
+	{
+		scene::SMesh *mesh = new scene::SMesh();
+		scene::IMeshBuffer *buf = new scene::SMeshBuffer();
+		video::SColor c(255,255,255,255);
+		video::S3DVertex vertices[4] =
+		{
+			video::S3DVertex(-0.5,0,0, 0,0,0, c, 0,1),
+			video::S3DVertex(0.5,0,0, 0,0,0, c, 1,1),
+			video::S3DVertex(0.5,0.5,0, 0,0,0, c, 1,0),
+			video::S3DVertex(-0.5,0.5,0, 0,0,0, c, 0,0),
+		};
+		u16 indices[] = {0,1,2,2,3,0};
+		buf->append(vertices, 4, indices, 6);
+		// Set material
+		buf->getMaterial().setFlag(video::EMF_LIGHTING, false);
+		buf->getMaterial().setFlag(video::EMF_BILINEAR_FILTER, false);
+		buf->getMaterial().MaterialType = video::EMT_TRANSPARENT_ALPHA_CHANNEL_REF;
+		// Add to mesh
+		mesh->addMeshBuffer(buf);
+		buf->drop();
+	
+		tool_wield = smgr->addMeshSceneNode(mesh, camera.getPlayerNode());
+		mesh->drop();
+	}
+	tool_wield->setVisible(false);
+	tool_wield->setPosition(tool_wield_position);
+	tool_wield->setRotation(tool_wield_rotation);
+	
+	client.setPlayerWield(tool_wield);
+
+	/*
 		Clouds
 	*/
 	
@@ -1765,6 +1803,7 @@ void the_game(
 				}
 			}
 			
+			
 			if(input->getRightClicked())
 			{
 				std::cout<<DTIME<<"Ground right-clicked"<<std::endl;
@@ -1830,6 +1869,14 @@ void the_game(
 		}
 		else{
 		}
+
+		
+		if(input->getLeftState())
+			// Tool animation loops 0.0 - 1.0 
+			tool_wield_animation = fmod(tool_wield_animation + dtime * 3.0, 1.0);
+		else
+			 // Return tool to holding position if not digging
+			tool_wield_animation /= 1.5;
 
 		} // selected_object == NULL
 		
@@ -1944,6 +1991,14 @@ void the_game(
 				false, // pixel fog
 				false // range fog
 			);
+		}
+
+		/*
+			Animate tool
+		*/
+		{
+			tool_wield->setRotation(tool_wield_rotation - sin(tool_wield_animation * PI) * 40.0);
+			tool_wield->setPosition(tool_wield_position - sin(tool_wield_animation * PI) / 3.0);
 		}
 
 

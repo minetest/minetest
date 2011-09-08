@@ -210,6 +210,7 @@ public:
 
 	LocalPlayer* getLocalPlayer();
 
+	void setPlayerWield(scene::ISceneNode *wield);
 	void setPlayerControl(PlayerControl &control);
 
 	void selectPlayerItem(u16 item);
