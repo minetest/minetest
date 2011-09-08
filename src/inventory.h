@@ -403,8 +403,6 @@ public:
 		
 		std::string basename = getBasename();
 		
-		return g_texturesource->getTextureRaw(basename);
-		
 		/*
 			Calculate a progress value with sane amount of
 			maximum states
