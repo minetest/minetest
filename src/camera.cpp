@@ -19,10 +19,10 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "camera.h"
 #include "debug.h"
+#include "client.h"
 #include "main.h" // for g_settings
 #include "map.h"
 #include "player.h"
-#include "utility.h"
 #include <cmath>
 
 const s32 BOBFRAMES = 0x1000000; // must be a power of two
@@ -51,7 +51,8 @@ Camera::Camera(scene::ISceneManager* smgr, MapDrawControl& draw_control):
 	m_time_per_range(30. / 50), // a sane default of 30ms per 50 nodes of range
 
 	m_view_bobbing_anim(0),
-	m_view_bobbing_state(0)
+	m_view_bobbing_state(0),
+	m_view_bobbing_slow(false)
 {
 	//dstream<<__FUNCTION_NAME<<std::endl;
 
@@ -72,7 +73,8 @@ void Camera::step(f32 dtime)
 {
 	if (m_view_bobbing_state != 0)
 	{
-		s32 offset = MYMAX(dtime * BOBFRAMES, 1);
+		f32 bobspeed = (m_view_bobbing_slow ? (BOBFRAMES / 4) : BOBFRAMES);
+		s32 offset = MYMAX(dtime * bobspeed, 1);
 		if (m_view_bobbing_state == 2)
 		{
 			// Animation is getting turned off
@@ -93,7 +95,6 @@ void Camera::update(LocalPlayer* player, f32 frametime, v2u32 screensize)
 
 	// Set player node transformation
 	m_playernode->setPosition(player->getPosition());
-	//m_playernode->setRotation(v3f(player->getPitch(), -1 * player->getYaw(), 0));
 	m_playernode->setRotation(v3f(0, -1 * player->getYaw(), 0));
 	m_playernode->updateAbsolutePosition();
 
@@ -144,9 +145,8 @@ void Camera::update(LocalPlayer* player, f32 frametime, v2u32 screensize)
 	// view bobbing is enabled and free_move is off,
 	// start (or continue) the view bobbing animation.
 	v3f speed = player->getSpeed();
-	//dstream<<"speed: ("<<speed.X<<","<<speed.Y<<","<<speed.Z<<")"<<std::endl;
 	if ((hypot(speed.X, speed.Z) > BS) &&
-		(fabs(speed.Y) < BS/10) &&
+		(player->touching_ground) &&
 		(g_settings.getBool("view_bobbing") == true) &&
 		(g_settings.getBool("free_move") == false))
 	{
@@ -158,6 +158,7 @@ void Camera::update(LocalPlayer* player, f32 frametime, v2u32 screensize)
 		// Stop animation
 		m_view_bobbing_state = 2;
 	}
+	m_view_bobbing_slow = player->in_water_stable;
 }
 
 void Camera::updateViewingRange(f32 frametime_in)
