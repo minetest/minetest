@@ -1,4 +1,4 @@
-/*
+ /*
 Minetest-c55
 Copyright (C) 2010-2011 celeron55, Perttu Ahola <celeron55@gmail.com>
 
@@ -71,6 +71,8 @@ std::string item_craft_get_image_name(const std::string &subname)
 		return "scorched_stuff.png";
 	else if(subname == "firefly")
 		return "firefly.png";
+	else if(subname == "apple")
+		return "apple.png";
 	else
 		return "cloud.png"; // just something
 }
@@ -94,7 +96,7 @@ ServerActiveObject* item_craft_create_object(const std::string &subname,
 
 s16 item_craft_get_drop_count(const std::string &subname)
 {
-	if(subname == "rat" || subname == "firefly")
+	if(subname == "rat" || subname == "firefly" || subname == "apple")
 		return 1;
 
 	return -1;
@@ -126,6 +128,8 @@ bool item_craft_is_eatable(const std::string &subname)
 {
 	if(subname == "cooked_rat")
 		return true;
+	else if(subname == "apple")
+		return true;
 	return false;
 }
 
@@ -133,6 +137,8 @@ s16 item_craft_eat_hp_change(const std::string &subname)
 {
 	if(subname == "cooked_rat")
 		return 6; // 3 hearts
+	else if(subname == "apple")
+		return 12; // 6 hearts
 	return 0;
 }
 

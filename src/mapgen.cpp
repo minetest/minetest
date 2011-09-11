@@ -1,4 +1,4 @@
-/*
+ /*
 Minetest-c55
 Copyright (C) 2010-2011 celeron55, Perttu Ahola <celeron55@gmail.com>
 
@@ -84,6 +84,11 @@ static void make_tree(VoxelManipulator &vmanip, v3s16 p0)
 {
 	MapNode treenode(CONTENT_TREE);
 	MapNode leavesnode(CONTENT_LEAVES);
+	MapNode applenode(CONTENT_APPLE);
+	
+	bool is_apple_tree = myrand_range(0,100) < 35?true:false;
+	s16 apple_count = 0;
+	
 
 	s16 trunk_h = myrand_range(4, 5);
 	v3s16 p1 = p0;
@@ -138,6 +143,7 @@ static void make_tree(VoxelManipulator &vmanip, v3s16 p0)
 	for(s16 y=leaves_a.MinEdge.Y; y<=leaves_a.MaxEdge.Y; y++)
 	for(s16 x=leaves_a.MinEdge.X; x<=leaves_a.MaxEdge.X; x++)
 	{
+		bool is_apple = myrand_range(0,100) < 50?true:false;
 		v3s16 p(x,y,z);
 		p += p1;
 		if(vmanip.m_area.contains(p) == false)
@@ -147,8 +153,14 @@ static void make_tree(VoxelManipulator &vmanip, v3s16 p0)
 				&& vmanip.m_data[vi].getContent() != CONTENT_IGNORE)
 			continue;
 		u32 i = leaves_a.index(x,y,z);
-		if(leaves_d[i] == 1)
-			vmanip.m_data[vi] = leavesnode;
+		if(leaves_d[i] == 1) {
+			if(is_apple_tree && is_apple && apple_count < 4) {
+				vmanip.m_data[vi] = applenode;
+				apple_count++;
+			} else {
+				vmanip.m_data[vi] = leavesnode;
+			}
+		}
 	}
 }
 
