@@ -1,4 +1,4 @@
- /*
+/*
 Minetest-c55
 Copyright (C) 2010-2011 celeron55, Perttu Ahola <celeron55@gmail.com>
 
