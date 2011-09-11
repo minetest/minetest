@@ -96,7 +96,7 @@ ServerActiveObject* item_craft_create_object(const std::string &subname,
 
 s16 item_craft_get_drop_count(const std::string &subname)
 {
-	if(subname == "rat" || subname == "firefly" || subname == "apple")
+	if(subname == "rat" || subname == "firefly")
 		return 1;
 
 	return -1;
