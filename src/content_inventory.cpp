@@ -138,7 +138,7 @@ s16 item_craft_eat_hp_change(const std::string &subname)
 	if(subname == "cooked_rat")
 		return 6; // 3 hearts
 	else if(subname == "apple")
-		return 12; // 6 hearts
+		return 4; // 2 hearts
 	return 0;
 }
 
