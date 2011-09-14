@@ -30,6 +30,7 @@ const s32 BOBFRAMES = 0x1000000; // must be a power of two
 Camera::Camera(scene::ISceneManager* smgr, MapDrawControl& draw_control):
 	m_smgr(smgr),
 	m_playernode(NULL),
+	m_headnode(NULL),
 	m_cameranode(NULL),
 	m_draw_control(draw_control),
 	m_viewing_range_min(5.0),
@@ -59,6 +60,7 @@ Camera::Camera(scene::ISceneManager* smgr, MapDrawControl& draw_control):
 	// note: making the camera node a child of the player node
 	// would lead to unexpected behaviour, so we don't do that.
 	m_playernode = smgr->addEmptySceneNode(smgr->getRootSceneNode());
+	m_headnode = smgr->addEmptySceneNode(m_playernode);
 	m_cameranode = smgr->addCameraSceneNode(smgr->getRootSceneNode());
 	m_cameranode->bindTargetAndRotation(true);
 
@@ -67,6 +69,26 @@ Camera::Camera(scene::ISceneManager* smgr, MapDrawControl& draw_control):
 
 Camera::~Camera()
 {
+}
+
+bool Camera::successfullyCreated(std::wstring& error_message)
+{
+	if (m_playernode == NULL)
+	{
+		error_message = L"Failed to create the player scene node";
+		return false;
+	}
+	if (m_headnode == NULL)
+	{
+		error_message = L"Failed to create the head scene node";
+		return false;
+	}
+	if (m_cameranode == NULL)
+	{
+		error_message = L"Failed to create the camera scene node";
+		return false;
+	}
+	return true;
 }
 
 void Camera::step(f32 dtime)
@@ -90,16 +112,18 @@ void Camera::step(f32 dtime)
 
 void Camera::update(LocalPlayer* player, f32 frametime, v2u32 screensize)
 {
-	if (m_playernode == NULL || m_cameranode == NULL)
-		return;
-
 	// Set player node transformation
 	m_playernode->setPosition(player->getPosition());
 	m_playernode->setRotation(v3f(0, -1 * player->getYaw(), 0));
 	m_playernode->updateAbsolutePosition();
 
+	// Set head node transformation
+	v3f eye_offset = player->getEyePosition() - player->getPosition();
+	m_headnode->setPosition(eye_offset);
+	m_headnode->setRotation(v3f(player->getPitch(), 0, 0));
+
 	// Compute relative camera position and target
-	v3f relative_cam_pos = player->getEyePosition() - player->getPosition();
+	v3f relative_cam_pos = eye_offset;
 	v3f relative_cam_target = v3f(0,0,1);
 	relative_cam_target.rotateYZBy(player->getPitch());
 	relative_cam_target += relative_cam_pos;
@@ -128,7 +152,6 @@ void Camera::update(LocalPlayer* player, f32 frametime, v2u32 screensize)
 	m_cameranode->setPosition(m_camera_position);
 	// *100.0 helps in large map coordinates
 	m_cameranode->setTarget(m_camera_position + 100.0 * m_camera_direction);
-
 	// FOV and and aspect ratio
 	m_aspect = (f32)screensize.X / (f32) screensize.Y;
 	m_fov_x = 2 * atan(0.5 * m_aspect * tan(m_fov_y));

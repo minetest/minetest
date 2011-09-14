@@ -813,16 +813,8 @@ void the_game(
 		Create the camera node
 	*/
 	Camera camera(smgr, draw_control);
-	if (camera.getPlayerNode() == NULL)
-	{
-		error_message = L"Failed to create the player node";
+	if (!camera.successfullyCreated(error_message))
 		return;
-	}
-	if (camera.getCameraNode() == NULL)
-	{
-		error_message = L"Failed to create the camera node";
-		return;
-	}
 
 	f32 camera_yaw = 0; // "right/left"
 	f32 camera_pitch = 0; // "up/down"
@@ -856,7 +848,7 @@ void the_game(
 		mesh->addMeshBuffer(buf);
 		buf->drop();
 	
-		tool_wield = smgr->addMeshSceneNode(mesh, camera.getCameraNode());
+		tool_wield = smgr->addMeshSceneNode(mesh, camera.getHeadNode());
 		mesh->drop();
 	}
 	tool_wield->setVisible(false);

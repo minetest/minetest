@@ -39,14 +39,21 @@ public:
 	// Get player scene node.
 	// This node is positioned at the player's torso (without any view bobbing),
 	// as given by Player::m_position. Yaw is applied but not pitch.
-	// Things like wielded tools should be positioned relative to this node.
 	inline scene::ISceneNode* getPlayerNode() const
 	{
 		return m_playernode;
 	}
 
+	// Get head scene node.
+	// It has the eye transformation and pitch applied,
+	// but no view bobbing.
+	inline scene::ISceneNode* getHeadNode() const
+	{
+		return m_headnode;
+	}
+
 	// Get camera scene node.
-	// It has the eye transformation and view bobbing applied.
+	// It has the eye transformation, pitch and view bobbing applied.
 	inline scene::ICameraSceneNode* getCameraNode() const
 	{
 		return m_cameranode;
@@ -84,6 +91,9 @@ public:
 		return MYMAX(m_fov_x, m_fov_y);
 	}
 
+	// Checks if the constructor was able to create the scene nodes
+	bool successfullyCreated(std::wstring& error_message);
+
 	// Step the camera: updates the viewing range and view bobbing.
 	void step(f32 dtime);
 
@@ -101,6 +111,7 @@ private:
 	// Scene manager and nodes
 	scene::ISceneManager* m_smgr;
 	scene::ISceneNode* m_playernode;
+	scene::ISceneNode* m_headnode;
 	scene::ICameraSceneNode* m_cameranode;
 
 	// draw control
