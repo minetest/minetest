@@ -428,6 +428,20 @@ InventoryItem *craft_get_result(InventoryItem **items)
 			return new MaterialItem(CONTENT_LADDER, 1);
 		}
 	}
+	
+	// Iron Apple
+	{
+		ItemSpec specs[9];
+		specs[1] = ItemSpec(ITEM_CRAFT, "steel_ingot");
+		specs[3] = ItemSpec(ITEM_CRAFT, "steel_ingot");
+		specs[4] = ItemSpec(ITEM_CRAFT, "apple");
+		specs[5] = ItemSpec(ITEM_CRAFT, "steel_ingot");
+		specs[7] = ItemSpec(ITEM_CRAFT, "steel_ingot");
+		if(checkItemCombination(items, specs))
+		{
+			return new CraftItem("apple_iron", 1);
+		}
+	}
 
 	return NULL;
 }
