@@ -11,6 +11,9 @@ X:
 - Fix the long-existed PeerNotFound loop bug
 - Some translations and localization-related fixes
 - Lots of small fixes, once again
+- Using chosen map seed is now possible through fixed_map_seed configuration option
+- Map is now saved in an SQLite database
+- Fixed the nasty server-side infinite PeerNotFound loop bug
 
 2011-07-31_3:
 - Fixes a bug that made the server to deny non-empty passwords from players connecting the first time
