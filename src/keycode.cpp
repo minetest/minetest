@@ -180,13 +180,13 @@ irr::EKEY_CODE keyname_to_keycode(const char *name)
 }
 
 static const char *KeyNames[] =
-{ "-", "KEY_LBUTTON", "KEY_RBUTTON", "Cancel", "Middle Button", "X Button 1",
-		"X Button 2", "-", "Back", "Tab", "-", "-", "Clear", "Return", "-",
-		"-", "KEY_SHIFT", "Control", "Menu", "Pause", "Capital", "Kana", "-",
-		"Junja", "Final", "Kanji", "-", "Escape", "Convert", "Nonconvert",
-		"Accept", "Mode Change", "KEY_SPACE", "Priot", "Next", "KEY_END",
-		"KEY_HOME", "Left", "Up", "Right", "Down", "Select", "KEY_PRINT",
-		"Execute", "Snapshot", "Insert", "Delete", "Help", "KEY_KEY_0",
+{ "-", "KEY_LBUTTON", "KEY_RBUTTON", "KEY_CANCEL", "KEY_MBUTTON", "KEY_XBUTTON1",
+		"KEY_XBUTTON2", "-", "KEY_BACK", "KEY_TAB", "-", "-", "KEY_CLEAR", "Return", "-",
+		"-", "KEY_SHIFT", "KEY_CONTROL", "KEY_MENU", "KEY_PAUSE", "KEY_CAPITAL", "KEY_KANA", "-",
+		"KEY_JUNJA", "KEY_FINAL", "KEY_KANJI", "-", "KEY_ESCAPE", "KEY_CONVERT", "KEY_NONCONVERT",
+		"KEY_ACCEPT", "KEY_MODECHANGE", "KEY_SPACE", "KEY_PRIOR", "KEY_NEXT", "KEY_END",
+		"KEY_HOME", "KEY_LEFT", "KEY_UP", "KEY_RIGHT", "KEY_DOWN", "KEY_SELECT", "KEY_PRINT",
+		"KEY_EXECUTE", "KEY_SNAPSHOT", "KEY_INSERT", "KEY_DELETE", "KEY_HELP", "KEY_KEY_0",
 		"KEY_KEY_1", "KEY_KEY_2", "KEY_KEY_3", "KEY_KEY_4", "KEY_KEY_5",
 		"KEY_KEY_6", "KEY_KEY_7", "KEY_KEY_8", "KEY_KEY_9", "-", "-", "-", "-",
 		"-", "-", "-", "KEY_KEY_A", "KEY_KEY_B", "KEY_KEY_C", "KEY_KEY_D",
@@ -203,16 +203,16 @@ static const char *KeyNames[] =
 		"KEY_F11", "KEY_F12", "KEY_F13", "KEY_F14", "KEY_F15", "KEY_F16",
 		"KEY_F17", "KEY_F18", "KEY_F19", "KEY_F20", "KEY_F21", "KEY_F22",
 		"KEY_F23", "KEY_F24", "-", "-", "-", "-", "-", "-", "-", "-",
-		"Num Lock", "Scroll Lock", "-", "-", "-", "-", "-", "-", "-", "-", "-",
-		"-", "-", "-", "-", "-", "KEY_LSHIFT", "KEY_RSHIFT", "Left Control",
-		"Right Control", "Left Menu", "Right Menu", "-", "-", "-", "-", "-",
+		"KEY_NUMLOCK", "KEY_SCROLL", "-", "-", "-", "-", "-", "-", "-", "-", "-",
+		"-", "-", "-", "-", "-", "KEY_LSHIFT", "KEY_RSHIFT", "KEY_LCONTROL",
+		"KEY_RCONTROL", "KEY_LMENU", "KEY_RMENU", "-", "-", "-", "-", "-",
 		"-", "-", "-", "-", "-", "-", "-", "-", "-", "-", "-", "-", "-", "-",
-		"-", "-", "Plus", "Comma", "Minus", "Period", "-", "-", "-", "-", "-",
+		"-", "-", "KEY_PLUS", "KEY_COMMA", "KEY_MINUS", "KEY_MINUS", "-", "-", "-", "-", "-",
 		"-", "-", "-", "-", "-", "-", "-", "-", "-", "-", "-", "-", "-", "-",
 		"-", "-", "-", "-", "-", "-", "-", "-", "-", "-", "-", "-", "-", "-",
 		"-", "-", "-", "-", "-", "-", "-", "-", "-", "-", "-", "-", "-", "-",
-		"-", "-", "-", "-", "-", "-", "-", "-", "Attn", "CrSel", "ExSel",
-		"Erase OEF", "Play", "Zoom", "PA1", "OEM Clear", "-" };
+		"-", "-", "-", "-", "-", "-", "-", "-", "KEY_ATTN", "KEY_CRSEL", "KEY_EXSEL",
+		"KEY_EREOF", "KEY_PLAY", "KEY_ZOOM", "KEY_PA1", "KEY_OEM_CLEAR", "-" };
 
 #define N_(text) text
 
