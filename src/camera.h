@@ -147,8 +147,8 @@ private:
 	// If 1, view bobbing is on (player is walking).
 	// If 2, view bobbing is getting switched off.
 	s32 m_view_bobbing_state;
-	// If true, view bobbing is slown down (player is swimming)
-	bool m_view_bobbing_slow;
+	// Speed of view bobbing animation
+	f32 m_view_bobbing_speed;
 };
 
 #endif

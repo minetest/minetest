@@ -53,7 +53,7 @@ Camera::Camera(scene::ISceneManager* smgr, MapDrawControl& draw_control):
 
 	m_view_bobbing_anim(0),
 	m_view_bobbing_state(0),
-	m_view_bobbing_slow(false)
+	m_view_bobbing_speed(0)
 {
 	//dstream<<__FUNCTION_NAME<<std::endl;
 
@@ -95,8 +95,7 @@ void Camera::step(f32 dtime)
 {
 	if (m_view_bobbing_state != 0)
 	{
-		f32 bobspeed = (m_view_bobbing_slow ? (BOBFRAMES / 4) : BOBFRAMES);
-		s32 offset = MYMAX(dtime * bobspeed, 1);
+		s32 offset = MYMAX(dtime * m_view_bobbing_speed * 0.035 * BOBFRAMES, 1);
 		if (m_view_bobbing_state == 2)
 		{
 			// Animation is getting turned off
@@ -123,35 +122,36 @@ void Camera::update(LocalPlayer* player, f32 frametime, v2u32 screensize)
 	m_headnode->setRotation(v3f(player->getPitch(), 0, 0));
 
 	// Compute relative camera position and target
-	v3f relative_cam_pos = eye_offset;
-	v3f relative_cam_target = v3f(0,0,1);
-	relative_cam_target.rotateYZBy(player->getPitch());
-	relative_cam_target += relative_cam_pos;
+	v3f rel_cam_pos = v3f(0,0,0);
+	v3f rel_cam_target = v3f(0,0,1);
 
-	if ((m_view_bobbing_anim & (BOBFRAMES/2-1)) != 0)
+	s32 bobframe = m_view_bobbing_anim & (BOBFRAMES/2-1);
+	if (bobframe != 0)
 	{
-		f32 bobamount = cos(player->getPitch() * PI / 180);
-		bobamount = 2 * MYMIN(bobamount, 0.5);
+		f32 bobfrac = (f32) bobframe / (BOBFRAMES/2);
+		f32 bobdir = (m_view_bobbing_anim < (BOBFRAMES/2)) ? 1.0 : -1.0;
 
-		f32 bobangle = m_view_bobbing_anim * 2 * PI / BOBFRAMES;
-		f32 bobangle_s = sin(bobangle);
-		f32 bobangle_c = cos(bobangle);
-		f32 bobwidth = 0.02 * bobamount / (bobangle_c * bobangle_c + 1);
-		f32 bobheight = 1.5 * bobwidth;
+		f32 bobknob = 1.2;
+		f32 bobtmp = sin(pow(bobfrac, bobknob) * PI);
 
-		relative_cam_pos.X += bobwidth * bobangle_s;
-		relative_cam_pos.Y += bobheight * bobangle_s * bobangle_c;
+		v3f bobvec = v3f(
+			0.01 * bobdir * sin(bobfrac * PI),
+			0.005 * bobtmp * bobtmp,
+			0.);
+
+		rel_cam_pos += bobvec * 3.;
+		rel_cam_target += bobvec * 1.5;
 	}
 
 	// Compute absolute camera position and target
-	m_playernode->getAbsoluteTransformation().transformVect(m_camera_position, relative_cam_pos);
-	m_playernode->getAbsoluteTransformation().transformVect(m_camera_direction, relative_cam_target);
+	m_headnode->getAbsoluteTransformation().transformVect(m_camera_position, rel_cam_pos);
+	m_headnode->getAbsoluteTransformation().transformVect(m_camera_direction, rel_cam_target);
 	m_camera_direction -= m_camera_position;
 
 	// Set camera node transformation
 	m_cameranode->setPosition(m_camera_position);
-	// *100.0 helps in large map coordinates
-	m_cameranode->setTarget(m_camera_position + 100.0 * m_camera_direction);
+	m_cameranode->setTarget(m_camera_position + m_camera_direction);
+
 	// FOV and and aspect ratio
 	m_aspect = (f32)screensize.X / (f32) screensize.Y;
 	m_fov_x = 2 * atan(0.5 * m_aspect * tan(m_fov_y));
@@ -175,13 +175,19 @@ void Camera::update(LocalPlayer* player, f32 frametime, v2u32 screensize)
 	{
 		// Start animation
 		m_view_bobbing_state = 1;
+		m_view_bobbing_speed = MYMIN(speed.getLength(), 40);
 	}
 	else if (m_view_bobbing_state == 1)
 	{
 		// Stop animation
 		m_view_bobbing_state = 2;
+		m_view_bobbing_speed = 100;
 	}
-	m_view_bobbing_slow = player->in_water_stable;
+	else if (m_view_bobbing_state == 2 && bobframe == 0)
+	{
+		// Stop animation completed
+		m_view_bobbing_state = 0;
+	}
 }
 
 void Camera::updateViewingRange(f32 frametime_in)
