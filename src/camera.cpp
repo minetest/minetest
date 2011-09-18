@@ -120,10 +120,12 @@ void Camera::update(LocalPlayer* player, f32 frametime, v2u32 screensize)
 	v3f eye_offset = player->getEyePosition() - player->getPosition();
 	m_headnode->setPosition(eye_offset);
 	m_headnode->setRotation(v3f(player->getPitch(), 0, 0));
+	m_headnode->updateAbsolutePosition();
 
 	// Compute relative camera position and target
 	v3f rel_cam_pos = v3f(0,0,0);
 	v3f rel_cam_target = v3f(0,0,1);
+	v3f rel_cam_up = v3f(0,1,0);
 
 	s32 bobframe = m_view_bobbing_anim & (BOBFRAMES/2-1);
 	if (bobframe != 0)
@@ -140,7 +142,7 @@ void Camera::update(LocalPlayer* player, f32 frametime, v2u32 screensize)
 			0.);
 
 		rel_cam_pos += bobvec * 3.;
-		rel_cam_target += bobvec * 1.5;
+		rel_cam_target += bobvec * 4.5;
 	}
 
 	// Compute absolute camera position and target
@@ -148,8 +150,13 @@ void Camera::update(LocalPlayer* player, f32 frametime, v2u32 screensize)
 	m_headnode->getAbsoluteTransformation().transformVect(m_camera_direction, rel_cam_target);
 	m_camera_direction -= m_camera_position;
 
+	v3f abs_cam_up;
+	m_headnode->getAbsoluteTransformation().transformVect(abs_cam_up, rel_cam_pos + rel_cam_up);
+	abs_cam_up -= m_camera_position;
+
 	// Set camera node transformation
 	m_cameranode->setPosition(m_camera_position);
+	m_cameranode->setUpVector(abs_cam_up);
 	m_cameranode->setTarget(m_camera_position + m_camera_direction);
 
 	// FOV and and aspect ratio
