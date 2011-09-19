@@ -748,10 +748,10 @@ scene::IMesh* ExtrudedSpriteSceneNode::createCubeMesh()
 		video::S3DVertex(-0.5,+0.5,+0.5, -1,0,0, c, 0,0),
 		video::S3DVertex(-0.5,+0.5,-0.5, -1,0,0, c, 1,0),
 		// Back
-		video::S3DVertex(-0.5,-0.5,+0.5, 0,0,-1, c, 1,1),
-		video::S3DVertex(+0.5,-0.5,+0.5, 0,0,-1, c, 0,1),
-		video::S3DVertex(+0.5,+0.5,+0.5, 0,0,-1, c, 0,0),
-		video::S3DVertex(-0.5,+0.5,+0.5, 0,0,-1, c, 1,0),
+		video::S3DVertex(-0.5,-0.5,+0.5, 0,0,1, c, 1,1),
+		video::S3DVertex(+0.5,-0.5,+0.5, 0,0,1, c, 0,1),
+		video::S3DVertex(+0.5,+0.5,+0.5, 0,0,1, c, 0,0),
+		video::S3DVertex(-0.5,+0.5,+0.5, 0,0,1, c, 1,0),
 		// Front
 		video::S3DVertex(-0.5,-0.5,-0.5, 0,0,-1, c, 0,1),
 		video::S3DVertex(-0.5,+0.5,-0.5, 0,0,-1, c, 0,0),
