@@ -56,8 +56,6 @@ public:
 	// Return the name of the image for this item
 	virtual std::string getBasename() { return ""; }
 	// Shall return an image of the item (or NULL)
-	virtual video::ITexture * getImageRaw() { return NULL; }
-	// Shall return an image to show in the GUI (or NULL)
 	virtual video::ITexture * getImage() { return NULL; }
 #endif
 	// Shall return a text to show in the GUI
@@ -156,7 +154,6 @@ public:
 	video::ITexture * getImage()
 	{
 		return content_features(m_content).inventory_texture;
-		return NULL;
 	}
 #endif
 	std::string getText()
@@ -387,14 +384,6 @@ public:
 		else
 			return "cloud.png";
 }
-	
-	video::ITexture * getImageRaw()
-	{
-		if(g_texturesource == NULL)
-			return NULL;
-		
-		return g_texturesource->getTextureRaw(getBasename());
-	}
 	
 	video::ITexture * getImage()
 	{

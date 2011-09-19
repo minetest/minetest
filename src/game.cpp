@@ -820,44 +820,6 @@ void the_game(
 	f32 camera_pitch = 0; // "up/down"
 
 	/*
-		Tool
-	*/
-	
-	v3f tool_wield_position(0.06*BS, -0.06*BS, 0.1*BS);
-	v3f tool_wield_rotation(-25, 180, -25);
-	float tool_wield_animation = 0.0;
-	scene::IMeshSceneNode *tool_wield;
-	{
-		scene::SMesh *mesh = new scene::SMesh();
-		scene::IMeshBuffer *buf = new scene::SMeshBuffer();
-		video::SColor c(255,255,255,255);
-		video::S3DVertex vertices[4] =
-		{
-			video::S3DVertex(-0.5,0,0, 0,0,0, c, 0,1),
-			video::S3DVertex(0.5,0,0, 0,0,0, c, 1,1),
-			video::S3DVertex(0.5,0.5,0, 0,0,0, c, 1,0),
-			video::S3DVertex(-0.5,0.5,0, 0,0,0, c, 0,0),
-		};
-		u16 indices[] = {0,1,2,2,3,0};
-		buf->append(vertices, 4, indices, 6);
-		// Set material
-		buf->getMaterial().setFlag(video::EMF_LIGHTING, false);
-		buf->getMaterial().setFlag(video::EMF_BILINEAR_FILTER, false);
-		buf->getMaterial().MaterialType = video::EMT_TRANSPARENT_ALPHA_CHANNEL_REF;
-		// Add to mesh
-		mesh->addMeshBuffer(buf);
-		buf->drop();
-	
-		tool_wield = smgr->addMeshSceneNode(mesh, camera.getHeadNode());
-		mesh->drop();
-	}
-	tool_wield->setVisible(false);
-	tool_wield->setPosition(tool_wield_position);
-	tool_wield->setRotation(tool_wield_rotation);
-	
-	client.setPlayerWield(tool_wield);
-
-	/*
 		Clouds
 	*/
 	
@@ -1552,6 +1514,7 @@ void the_game(
 				std::cout<<DTIME<<"Left-clicked object"<<std::endl;
 				client.clickObject(0, selected_object->getBlock()->getPos(),
 						selected_object->getId(), g_selected_item);
+				camera.setDigging(true);
 			}
 			else if(input->getRightClicked())
 			{
@@ -1619,6 +1582,7 @@ void the_game(
 				std::cout<<DTIME<<"Left-clicked object"<<std::endl;
 				client.clickActiveObject(0,
 						selected_active_object->getId(), g_selected_item);
+				camera.setDigging(true);
 			}
 			else if(input->getRightClicked())
 			{
@@ -1792,6 +1756,8 @@ void the_game(
 					}
 
 					dig_time += dtime;
+
+					camera.setDigging(true);
 				}
 			}
 			
@@ -1859,16 +1825,6 @@ void the_game(
 			
 			nodepos_old = nodepos;
 		}
-		else{
-		}
-
-		
-		if(input->getLeftState())
-			// Tool animation loops 0.0 - 1.0 
-			tool_wield_animation = fmod(tool_wield_animation + dtime * 3.0, 1.0);
-		else
-			 // Return tool to holding position if not digging
-			tool_wield_animation /= 1.5;
 
 		} // selected_object == NULL
 		
@@ -1880,6 +1836,7 @@ void the_game(
 			std::cout<<DTIME<<"Left button released (stopped digging)"
 					<<std::endl;
 			client.groundAction(2, v3s16(0,0,0), v3s16(0,0,0), 0);
+			camera.setDigging(false);
 		}
 		if(input->getRightReleased())
 		{
@@ -1984,16 +1941,6 @@ void the_game(
 				false // range fog
 			);
 		}
-
-		/*
-			Animate tool
-		*/
-		{
-			f32 tool_wield_sin = sin(tool_wield_animation * PI);
-			tool_wield->setRotation(tool_wield_rotation - tool_wield_sin * 40.0);
-			tool_wield->setPosition(tool_wield_position - tool_wield_sin * BS / 30.0);
-		}
-
 
 		/*
 			Update gui stuff (0ms)
@@ -2140,6 +2087,13 @@ void the_game(
 			old_selected_item = g_selected_item;
 			//std::cout<<"Updating local inventory"<<std::endl;
 			client.getLocalInventory(local_inventory);
+
+			// Update wielded tool
+			InventoryList *mlist = local_inventory.getList("main");
+			InventoryItem *item = NULL;
+			if(mlist != NULL)
+				item = mlist->getItem(g_selected_item);
+			camera.wield(item);
 		}
 		
 		/*

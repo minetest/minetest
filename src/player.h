@@ -357,8 +357,6 @@ public:
 		return true;
 	}
 	
-	void wieldItem(u16 item);
-
 	void move(f32 dtime, Map &map, f32 pos_max_d,
 			core::list<CollisionInfo> *collision_info);
 	void move(f32 dtime, Map &map, f32 pos_max_d);
@@ -366,8 +364,6 @@ public:
 	void applyControl(float dtime);
 	
 	PlayerControl control;
-
-	scene::ISceneNode *wield;
 
 private:
 	// This is used for determining the sneaking range

@@ -21,14 +21,17 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #define CAMERA_HEADER
 
 #include "common_irrlicht.h"
+#include "inventory.h"
 #include "utility.h"
 
 class LocalPlayer;
 class MapDrawControl;
+class ExtrudedSpriteSceneNode;
 
 /*
 	Client camera class, manages the player and camera scene nodes, the viewing distance
-	and performs view bobbing etc.
+	and performs view bobbing etc. It also displays the wielded tool in front of the
+	first-person camera.
 */
 class Camera
 {
@@ -57,6 +60,12 @@ public:
 	inline scene::ICameraSceneNode* getCameraNode() const
 	{
 		return m_cameranode;
+	}
+
+	// Get wielded item scene node.
+	inline ExtrudedSpriteSceneNode* getWieldNode() const
+	{
+		return m_wieldnode;
 	}
 
 	// Get the camera position (in absolute scene coordinates).
@@ -107,12 +116,19 @@ public:
 	// Update settings from g_settings
 	void updateSettings();
 
+	// Replace the wielded item mesh
+	void wield(InventoryItem* item);
+
+	// Start or stop digging animation
+	void setDigging(bool digging);
+
 private:
 	// Scene manager and nodes
 	scene::ISceneManager* m_smgr;
 	scene::ISceneNode* m_playernode;
 	scene::ISceneNode* m_headnode;
 	scene::ICameraSceneNode* m_cameranode;
+	ExtrudedSpriteSceneNode* m_wieldnode;
 
 	// draw control
 	MapDrawControl& m_draw_control;
@@ -151,5 +167,51 @@ private:
 	f32 m_view_bobbing_speed;
 };
 
-#endif
 
+/*
+	A scene node that displays a 2D mesh extruded into the third dimension,
+	to add an illusion of depth.
+
+	Since this class was created to display the wielded tool of the local
+	player, and only tools and items are rendered like this (but not solid
+	content like stone and mud, which are shown as cubes), the option to
+	draw a textured cube instead is provided.
+ */
+class ExtrudedSpriteSceneNode: public scene::ISceneNode
+{
+public:
+	ExtrudedSpriteSceneNode(
+		scene::ISceneNode* parent,
+		scene::ISceneManager* mgr,
+		s32 id = -1,
+		const v3f& position = v3f(0,0,0),
+		const v3f& rotation = v3f(0,0,0),
+		const v3f& scale = v3f(0,0,0));
+	~ExtrudedSpriteSceneNode();
+
+	void setSprite(video::ITexture* texture);
+	void setCube(const TileSpec faces[6]);
+
+	f32 getSpriteThickness() const { return m_thickness; }
+	void setSpriteThickness(f32 thickness);
+
+	void removeSpriteFromCache(video::ITexture* texture);
+
+	virtual const core::aabbox3d<f32>& getBoundingBox() const;
+	virtual void OnRegisterSceneNode();
+	virtual void render();
+
+private:
+	scene::IMeshSceneNode* m_meshnode;
+	f32 m_thickness;
+	scene::IMesh* m_cubemesh;
+	bool m_is_cube;
+
+	// internal extrusion helper methods
+	io::path getExtrudedName(video::ITexture* texture);
+	scene::IAnimatedMesh* extrudeARGB(u32 width, u32 height, u8* data);
+	scene::IAnimatedMesh* extrude(video::ITexture* texture);
+	scene::IMesh* createCubeMesh();
+};
+
+#endif

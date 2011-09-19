@@ -2004,14 +2004,6 @@ LocalPlayer* Client::getLocalPlayer()
 	return m_env.getLocalPlayer();
 }
 
-void Client::setPlayerWield(scene::ISceneNode *wield)
-{
-	//JMutexAutoLock envlock(m_env_mutex); //bulk comment-out
-	LocalPlayer *player = m_env.getLocalPlayer();
-	assert(player != NULL);
-	player->wield = wield;
-}
-
 void Client::setPlayerControl(PlayerControl &control)
 {
 	//JMutexAutoLock envlock(m_env_mutex); //bulk comment-out
