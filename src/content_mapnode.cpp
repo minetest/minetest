@@ -236,6 +236,8 @@ void content_mapnode_init()
 	if(new_style_leaves)
 	{
 		f->solidness = 0; // drawn separately, makes no faces
+		f->visual_solidness = 1;
+		f->setAllTextures("leaves.png");
 		f->setInventoryTextureCube("leaves.png", "leaves.png", "leaves.png");
 	}
 	else
@@ -287,6 +289,8 @@ void content_mapnode_init()
 	f->is_ground_content = true;
 	f->dug_item = std::string("MaterialItem2 ")+itos(i)+" 1";
 	f->solidness = 0; // drawn separately, makes no faces
+	f->visual_solidness = 1;
+	f->setAllTextures("glass.png");
 	f->setInventoryTextureCube("glass.png", "glass.png", "glass.png");
 	setWoodLikeDiggingProperties(f->digging_properties, 0.15);
 

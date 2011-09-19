@@ -54,7 +54,10 @@ Camera::Camera(scene::ISceneManager* smgr, MapDrawControl& draw_control):
 
 	m_view_bobbing_anim(0),
 	m_view_bobbing_state(0),
-	m_view_bobbing_speed(0)
+	m_view_bobbing_speed(0),
+
+	m_digging_anim(0),
+	m_digging_speed(0)
 {
 	//dstream<<__FUNCTION_NAME<<std::endl;
 
@@ -64,8 +67,7 @@ Camera::Camera(scene::ISceneManager* smgr, MapDrawControl& draw_control):
 	m_headnode = smgr->addEmptySceneNode(m_playernode);
 	m_cameranode = smgr->addCameraSceneNode(smgr->getRootSceneNode());
 	m_cameranode->bindTargetAndRotation(true);
-	m_wieldnode = new ExtrudedSpriteSceneNode(smgr->getRootSceneNode(), smgr, -1, v3f(0, 120, 10), v3f(0, 0, 0), v3f(100, 100, 100));
-	//m_wieldnode = new ExtrudedSpriteSceneNode(smgr->getRootSceneNode(), smgr, -1);
+	m_wieldnode = new ExtrudedSpriteSceneNode(m_headnode, smgr, -1, v3f(1.3, -1, 2), v3f(-20, -100, 20), v3f(1));
 
 	updateSettings();
 }
@@ -356,9 +358,10 @@ void Camera::wield(const InventoryItem* item)
 			// A block-type material
 			MaterialItem* mat_item = (MaterialItem*) item;
 			content_t content = mat_item->getMaterial();
-			if (content_features(content).solidness)
+			if (content_features(content).solidness || content_features(content).visual_solidness)
 			{
 				m_wieldnode->setCube(content_features(content).tiles);
+				m_wieldnode->setScale(v3f(0.9));
 				isCube = true;
 			}
 		}
@@ -367,6 +370,7 @@ void Camera::wield(const InventoryItem* item)
 		if (!isCube)
 		{
 			m_wieldnode->setSprite(item->getImageRaw());
+			m_wieldnode->setScale(v3f(1.2));
 		}
 
 		m_wieldnode->setVisible(true);
@@ -458,17 +462,9 @@ void ExtrudedSpriteSceneNode::setCube(const TileSpec tiles[6])
 	for (int i = 0; i < 6; ++i)
 	{
 		// Get the tile texture and atlas transformation
-		u32 texture_id = tiles[i].texture.id;
-		video::ITexture* atlas = NULL;
-		v2f pos(0,0);
-		v2f size(1,1);
-		if (g_texturesource)
-		{
-			AtlasPointer ap = g_texturesource->getTexture(texture_id);
-			atlas = ap.atlas;
-			pos = ap.pos;
-			size = ap.size;
-		}
+		video::ITexture* atlas = tiles[i].texture.atlas;
+		v2f pos = tiles[i].texture.pos;
+		v2f size = tiles[i].texture.size;
 
 		// Set material flags and texture
 		video::SMaterial& material = m_meshnode->getMaterial(i);

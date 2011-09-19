@@ -166,6 +166,11 @@ private:
 	s32 m_view_bobbing_state;
 	// Speed of view bobbing animation
 	f32 m_view_bobbing_speed;
+
+	// Digging animation
+	s32 m_digging_anim;
+	// Speed of digging animation
+	s32 m_digging_speed;
 };
 
 
@@ -187,7 +192,7 @@ public:
 		s32 id = -1,
 		const v3f& position = v3f(0,0,0),
 		const v3f& rotation = v3f(0,0,0),
-		const v3f& scale = v3f(0,0,0));
+		const v3f& scale = v3f(1,1,1));
 	~ExtrudedSpriteSceneNode();
 
 	void setSprite(video::ITexture* texture);
