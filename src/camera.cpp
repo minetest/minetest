@@ -23,6 +23,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "main.h" // for g_settings
 #include "map.h"
 #include "player.h"
+#include "tile.h"
 #include <cmath>
 
 const s32 BOBFRAMES = 0x1000000; // must be a power of two
@@ -343,17 +344,37 @@ void Camera::updateSettings()
 	m_wanted_frametime = 1.0 / wanted_fps;
 }
 
-void Camera::wield(InventoryItem* item)
+void Camera::wield(const InventoryItem* item)
 {
 	if (item != NULL)
 	{
-		dstream << "wield item: " << item->getName() << std::endl;
-		m_wieldnode->setSprite(item->getImageRaw());
+		bool isCube = false;
+
+		// Try to make a MaterialItem cube.
+		if (std::string(item->getName()) == "MaterialItem")
+		{
+			// A block-type material
+			MaterialItem* mat_item = (MaterialItem*) item;
+			content_t content = mat_item->getMaterial();
+			if (content_features(content).solidness)
+			{
+				m_wieldnode->setCube(content_features(content).tiles);
+				isCube = true;
+			}
+		}
+
+		// If that failed, make an extruded sprite.
+		if (!isCube)
+		{
+			m_wieldnode->setSprite(item->getImageRaw());
+		}
+
 		m_wieldnode->setVisible(true);
 	}
 	else
 	{
-		dstream << "wield item: none" << std::endl;
+		// Bare hands
+		dstream << "bare hands" << std::endl;
 		m_wieldnode->setVisible(false);
 	}
 }
@@ -427,23 +448,37 @@ void ExtrudedSpriteSceneNode::setSprite(video::ITexture* texture)
 	m_is_cube = false;
 }
 
-void ExtrudedSpriteSceneNode::setCube(video::ITexture* texture)
+void ExtrudedSpriteSceneNode::setCube(const TileSpec tiles[6])
 {
-	if (texture == NULL)
-	{
-		m_meshnode->setVisible(false);
-		return;
-	}
-
 	if (m_cubemesh == NULL)
-		m_cubemesh = SceneManager->getGeometryCreator()->createCubeMesh(v3f(1));
+		m_cubemesh = createCubeMesh();
 
 	m_meshnode->setMesh(m_cubemesh);
 	m_meshnode->setScale(v3f(1));
-	m_meshnode->getMaterial(0).setTexture(0, texture);
-	m_meshnode->getMaterial(0).setFlag(video::EMF_LIGHTING, false);
-	m_meshnode->getMaterial(0).setFlag(video::EMF_BILINEAR_FILTER, false);
-	m_meshnode->getMaterial(0).MaterialType = video::EMT_TRANSPARENT_ALPHA_CHANNEL_REF;
+	for (int i = 0; i < 6; ++i)
+	{
+		// Get the tile texture and atlas transformation
+		u32 texture_id = tiles[i].texture.id;
+		video::ITexture* atlas = NULL;
+		v2f pos(0,0);
+		v2f size(1,1);
+		if (g_texturesource)
+		{
+			AtlasPointer ap = g_texturesource->getTexture(texture_id);
+			atlas = ap.atlas;
+			pos = ap.pos;
+			size = ap.size;
+		}
+
+		// Set material flags and texture
+		video::SMaterial& material = m_meshnode->getMaterial(i);
+		material.setFlag(video::EMF_LIGHTING, false);
+		material.setFlag(video::EMF_BILINEAR_FILTER, false);
+		tiles[i].applyMaterialOptions(material);
+		material.setTexture(0, atlas);
+		material.getTextureMatrix(0).setTextureTranslate(pos.X, pos.Y);
+		material.getTextureMatrix(0).setTextureScale(size.X, size.Y);
+	}
 	m_meshnode->setVisible(true);
 	m_is_cube = true;
 }
@@ -500,13 +535,13 @@ scene::IAnimatedMesh* ExtrudedSpriteSceneNode::extrudeARGB(u32 width, u32 height
 		video::S3DVertex vertices[8] =
 		{
 			video::S3DVertex(-0.5,-0.5,-0.5, 0,0,-1, c, 0,1),
-			video::S3DVertex(-0.5,0.5,-0.5, 0,0,-1, c, 0,0),
-			video::S3DVertex(0.5,0.5,-0.5, 0,0,-1, c, 1,0),
-			video::S3DVertex(0.5,-0.5,-0.5, 0,0,-1, c, 1,1),
-			video::S3DVertex(0.5,-0.5,0.5, 0,0,1, c, 1,1),
-			video::S3DVertex(0.5,0.5,0.5, 0,0,1, c, 1,0),
-			video::S3DVertex(-0.5,0.5,0.5, 0,0,1, c, 0,0),
-			video::S3DVertex(-0.5,-0.5,0.5, 0,0,1, c, 0,1),
+			video::S3DVertex(-0.5,+0.5,-0.5, 0,0,-1, c, 0,0),
+			video::S3DVertex(+0.5,+0.5,-0.5, 0,0,-1, c, 1,0),
+			video::S3DVertex(+0.5,-0.5,-0.5, 0,0,-1, c, 1,1),
+			video::S3DVertex(+0.5,-0.5,+0.5, 0,0,+1, c, 1,1),
+			video::S3DVertex(+0.5,+0.5,+0.5, 0,0,+1, c, 1,0),
+			video::S3DVertex(-0.5,+0.5,+0.5, 0,0,+1, c, 0,0),
+			video::S3DVertex(-0.5,-0.5,+0.5, 0,0,+1, c, 0,1),
 		};
 		u16 indices[12] = {0,1,2,2,3,0,4,5,6,6,7,4};
 		buf->append(vertices, 8, indices, 12);
@@ -557,8 +592,8 @@ scene::IAnimatedMesh* ExtrudedSpriteSceneNode::extrudeARGB(u32 width, u32 height
 				{
 					video::S3DVertex(vx1,vy,-0.5, 0,-1,0, c, tx1,ty),
 					video::S3DVertex(vx2,vy,-0.5, 0,-1,0, c, tx2,ty),
-					video::S3DVertex(vx2,vy,0.5, 0,-1,0, c, tx2,ty),
-					video::S3DVertex(vx1,vy,0.5, 0,-1,0, c, tx1,ty),
+					video::S3DVertex(vx2,vy,+0.5, 0,-1,0, c, tx2,ty),
+					video::S3DVertex(vx1,vy,+0.5, 0,-1,0, c, tx1,ty),
 				};
 				u16 indices[6] = {0,1,2,2,3,0};
 				buf->append(vertices, 4, indices, 6);
@@ -578,8 +613,8 @@ scene::IAnimatedMesh* ExtrudedSpriteSceneNode::extrudeARGB(u32 width, u32 height
 				video::S3DVertex vertices[8] =
 				{
 					video::S3DVertex(vx1,vy,-0.5, 0,1,0, c, tx1,ty),
-					video::S3DVertex(vx1,vy,0.5, 0,1,0, c, tx1,ty),
-					video::S3DVertex(vx2,vy,0.5, 0,1,0, c, tx2,ty),
+					video::S3DVertex(vx1,vy,+0.5, 0,1,0, c, tx1,ty),
+					video::S3DVertex(vx2,vy,+0.5, 0,1,0, c, tx2,ty),
 					video::S3DVertex(vx2,vy,-0.5, 0,1,0, c, tx2,ty),
 				};
 				u16 indices[6] = {0,1,2,2,3,0};
@@ -608,8 +643,8 @@ scene::IAnimatedMesh* ExtrudedSpriteSceneNode::extrudeARGB(u32 width, u32 height
 				video::S3DVertex vertices[8] =
 				{
 					video::S3DVertex(vx,vy1,-0.5, 1,0,0, c, tx,ty1),
-					video::S3DVertex(vx,vy1,0.5, 1,0,0, c, tx,ty1),
-					video::S3DVertex(vx,vy2,0.5, 1,0,0, c, tx,ty2),
+					video::S3DVertex(vx,vy1,+0.5, 1,0,0, c, tx,ty1),
+					video::S3DVertex(vx,vy2,+0.5, 1,0,0, c, tx,ty2),
 					video::S3DVertex(vx,vy2,-0.5, 1,0,0, c, tx,ty2),
 				};
 				u16 indices[6] = {0,1,2,2,3,0};
@@ -631,8 +666,8 @@ scene::IAnimatedMesh* ExtrudedSpriteSceneNode::extrudeARGB(u32 width, u32 height
 				{
 					video::S3DVertex(vx,vy1,-0.5, -1,0,0, c, tx,ty1),
 					video::S3DVertex(vx,vy2,-0.5, -1,0,0, c, tx,ty2),
-					video::S3DVertex(vx,vy2,0.5, -1,0,0, c, tx,ty2),
-					video::S3DVertex(vx,vy1,0.5, -1,0,0, c, tx,ty1),
+					video::S3DVertex(vx,vy2,+0.5, -1,0,0, c, tx,ty2),
+					video::S3DVertex(vx,vy1,+0.5, -1,0,0, c, tx,ty1),
 				};
 				u16 indices[6] = {0,1,2,2,3,0};
 				buf->append(vertices, 4, indices, 6);
@@ -643,6 +678,7 @@ scene::IAnimatedMesh* ExtrudedSpriteSceneNode::extrudeARGB(u32 width, u32 height
 
 	// Add to mesh
 	scene::SMesh* mesh = new scene::SMesh();
+	buf->recalculateBoundingBox();
 	mesh->addMeshBuffer(buf);
 	buf->drop();
 	mesh->recalculateBoundingBox();
@@ -690,3 +726,54 @@ scene::IAnimatedMesh* ExtrudedSpriteSceneNode::extrude(video::ITexture* texture)
 	return mesh;
 }
 
+scene::IMesh* ExtrudedSpriteSceneNode::createCubeMesh()
+{
+	video::SColor c(255,255,255,255);
+	video::S3DVertex vertices[24] =
+	{
+		// Up
+		video::S3DVertex(-0.5,+0.5,-0.5, 0,1,0, c, 0,1),
+		video::S3DVertex(-0.5,+0.5,+0.5, 0,1,0, c, 0,0),
+		video::S3DVertex(+0.5,+0.5,+0.5, 0,1,0, c, 1,0),
+		video::S3DVertex(+0.5,+0.5,-0.5, 0,1,0, c, 1,1),
+		// Down
+		video::S3DVertex(-0.5,-0.5,-0.5, 0,-1,0, c, 0,0),
+		video::S3DVertex(+0.5,-0.5,-0.5, 0,-1,0, c, 1,0),
+		video::S3DVertex(+0.5,-0.5,+0.5, 0,-1,0, c, 1,1),
+		video::S3DVertex(-0.5,-0.5,+0.5, 0,-1,0, c, 0,1),
+		// Right
+		video::S3DVertex(+0.5,-0.5,-0.5, 1,0,0, c, 0,1),
+		video::S3DVertex(+0.5,+0.5,-0.5, 1,0,0, c, 0,0),
+		video::S3DVertex(+0.5,+0.5,+0.5, 1,0,0, c, 1,0),
+		video::S3DVertex(+0.5,-0.5,+0.5, 1,0,0, c, 1,1),
+		// Left
+		video::S3DVertex(-0.5,-0.5,-0.5, -1,0,0, c, 1,1),
+		video::S3DVertex(-0.5,-0.5,+0.5, -1,0,0, c, 0,1),
+		video::S3DVertex(-0.5,+0.5,+0.5, -1,0,0, c, 0,0),
+		video::S3DVertex(-0.5,+0.5,-0.5, -1,0,0, c, 1,0),
+		// Back
+		video::S3DVertex(-0.5,-0.5,+0.5, 0,0,-1, c, 1,1),
+		video::S3DVertex(+0.5,-0.5,+0.5, 0,0,-1, c, 0,1),
+		video::S3DVertex(+0.5,+0.5,+0.5, 0,0,-1, c, 0,0),
+		video::S3DVertex(-0.5,+0.5,+0.5, 0,0,-1, c, 1,0),
+		// Front
+		video::S3DVertex(-0.5,-0.5,-0.5, 0,0,-1, c, 0,1),
+		video::S3DVertex(-0.5,+0.5,-0.5, 0,0,-1, c, 0,0),
+		video::S3DVertex(+0.5,+0.5,-0.5, 0,0,-1, c, 1,0),
+		video::S3DVertex(+0.5,-0.5,-0.5, 0,0,-1, c, 1,1),
+	};
+
+	u16 indices[6] = {0,1,2,2,3,0};
+
+	scene::SMesh* mesh = new scene::SMesh();
+	for (u32 i=0; i<6; ++i)
+	{
+		scene::IMeshBuffer* buf = new scene::SMeshBuffer();
+		buf->append(vertices + 4 * i, 4, indices, 6);
+		buf->recalculateBoundingBox();
+		mesh->addMeshBuffer(buf);
+		buf->drop();
+	}
+	mesh->recalculateBoundingBox();
+	return mesh;
+}

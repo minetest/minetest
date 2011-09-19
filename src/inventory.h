@@ -54,9 +54,11 @@ public:
 	virtual InventoryItem* clone() = 0;
 #ifndef SERVER
 	// Return the name of the image for this item
-	virtual std::string getBasename() { return ""; }
+	virtual std::string getBasename() const { return ""; }
 	// Shall return an image of the item (or NULL)
-	virtual video::ITexture * getImage() { return NULL; }
+	virtual video::ITexture * getImage() const { return NULL; }
+	// Shall return an image of the item without embellishments (or NULL)
+	virtual video::ITexture * getImageRaw() const { return getImage(); }
 #endif
 	// Shall return a text to show in the GUI
 	virtual std::string getText() { return ""; }
@@ -151,7 +153,7 @@ public:
 		return new MaterialItem(m_content, m_count);
 	}
 #ifndef SERVER
-	video::ITexture * getImage()
+	video::ITexture * getImage() const
 	{
 		return content_features(m_content).inventory_texture;
 	}
@@ -226,7 +228,7 @@ public:
 	}
 
 #ifndef SERVER
-	video::ITexture * getImage();
+	video::ITexture * getImage() const;
 #endif
 	std::string getText();
 
@@ -277,7 +279,7 @@ public:
 		return new CraftItem(m_subname, m_count);
 	}
 #ifndef SERVER
-	video::ITexture * getImage();
+	video::ITexture * getImage() const;
 #endif
 	std::string getText()
 	{
@@ -354,7 +356,7 @@ public:
 		return new ToolItem(m_toolname, m_wear);
 	}
 #ifndef SERVER
-	std::string getBasename() {
+	std::string getBasename() const {
 		if(m_toolname == "WPick")
 			return "tool_woodpick.png";
 		else if(m_toolname == "STPick")
@@ -385,7 +387,7 @@ public:
 			return "cloud.png";
 }
 	
-	video::ITexture * getImage()
+	video::ITexture * getImage() const
 	{
 		if(g_texturesource == NULL)
 			return NULL;
@@ -404,6 +406,14 @@ public:
 		os<<basename<<"^[progressbar"<<value_f;
 
 		return g_texturesource->getTextureRaw(os.str());
+	}
+
+	video::ITexture * getImageRaw() const
+	{
+		if(g_texturesource == NULL)
+			return NULL;
+		
+		return g_texturesource->getTextureRaw(getBasename());
 	}
 #endif
 	std::string getText()

@@ -158,7 +158,7 @@ InventoryItem *MaterialItem::createCookResult() const
 */
 
 #ifndef SERVER
-video::ITexture * CraftItem::getImage()
+video::ITexture * CraftItem::getImage() const
 {
 	if(g_texturesource == NULL)
 		return NULL;
@@ -224,7 +224,7 @@ bool CraftItem::use(ServerEnvironment *env, Player *player)
 	TODO: Remove
 */
 #ifndef SERVER
-video::ITexture * MapBlockObjectItem::getImage()
+video::ITexture * MapBlockObjectItem::getImage() const
 {
 	if(m_inventorystring.substr(0,3) == "Rat")
 		return g_texturesource->getTextureRaw("rat.png");

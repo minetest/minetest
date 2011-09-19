@@ -22,6 +22,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "common_irrlicht.h"
 #include "inventory.h"
+#include "tile.h"
 #include "utility.h"
 
 class LocalPlayer;
@@ -117,7 +118,7 @@ public:
 	void updateSettings();
 
 	// Replace the wielded item mesh
-	void wield(InventoryItem* item);
+	void wield(const InventoryItem* item);
 
 	// Start or stop digging animation
 	void setDigging(bool digging);
@@ -190,7 +191,7 @@ public:
 	~ExtrudedSpriteSceneNode();
 
 	void setSprite(video::ITexture* texture);
-	void setCube(const TileSpec faces[6]);
+	void setCube(const TileSpec tiles[6]);
 
 	f32 getSpriteThickness() const { return m_thickness; }
 	void setSpriteThickness(f32 thickness);
