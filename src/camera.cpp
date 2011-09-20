@@ -195,17 +195,16 @@ void Camera::update(LocalPlayer* player, f32 frametime, v2u32 screensize)
 
 	// Compute absolute camera position and target
 	m_headnode->getAbsoluteTransformation().transformVect(m_camera_position, rel_cam_pos);
-	m_headnode->getAbsoluteTransformation().transformVect(m_camera_direction, rel_cam_target);
-	m_camera_direction -= m_camera_position;
+	m_headnode->getAbsoluteTransformation().rotateVect(m_camera_direction, rel_cam_target - rel_cam_pos);
 
 	v3f abs_cam_up;
-	m_headnode->getAbsoluteTransformation().transformVect(abs_cam_up, rel_cam_pos + rel_cam_up);
-	abs_cam_up -= m_camera_position;
+	m_headnode->getAbsoluteTransformation().rotateVect(abs_cam_up, rel_cam_up);
 
 	// Set camera node transformation
 	m_cameranode->setPosition(m_camera_position);
 	m_cameranode->setUpVector(abs_cam_up);
-	m_cameranode->setTarget(m_camera_position + m_camera_direction);
+	// *100.0 helps in large map coordinates
+	m_cameranode->setTarget(m_camera_position + 100 * m_camera_direction);
 
 	// FOV and and aspect ratio
 	m_aspect = (f32)screensize.X / (f32) screensize.Y;
