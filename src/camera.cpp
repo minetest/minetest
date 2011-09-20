@@ -26,13 +26,12 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "tile.h"
 #include <cmath>
 
-const s32 BOBFRAMES = 0x1000000; // must be a power of two
-
 Camera::Camera(scene::ISceneManager* smgr, MapDrawControl& draw_control):
 	m_smgr(smgr),
 	m_playernode(NULL),
 	m_headnode(NULL),
 	m_cameranode(NULL),
+	m_wieldnode(NULL),
 	m_draw_control(draw_control),
 	m_viewing_range_min(5.0),
 	m_viewing_range_max(5.0),
@@ -57,7 +56,7 @@ Camera::Camera(scene::ISceneManager* smgr, MapDrawControl& draw_control):
 	m_view_bobbing_speed(0),
 
 	m_digging_anim(0),
-	m_digging_speed(0)
+	m_digging_button(-1)
 {
 	//dstream<<__FUNCTION_NAME<<std::endl;
 
@@ -67,7 +66,7 @@ Camera::Camera(scene::ISceneManager* smgr, MapDrawControl& draw_control):
 	m_headnode = smgr->addEmptySceneNode(m_playernode);
 	m_cameranode = smgr->addCameraSceneNode(smgr->getRootSceneNode());
 	m_cameranode->bindTargetAndRotation(true);
-	m_wieldnode = new ExtrudedSpriteSceneNode(m_headnode, smgr, -1, v3f(1.3, -1, 2), v3f(-20, -100, 20), v3f(1));
+	m_wieldnode = new ExtrudedSpriteSceneNode(m_headnode, smgr);
 
 	updateSettings();
 }
@@ -93,24 +92,54 @@ bool Camera::successfullyCreated(std::wstring& error_message)
 		error_message = L"Failed to create the camera scene node";
 		return false;
 	}
+	if (m_wieldnode == NULL)
+	{
+		error_message = L"Failed to create the wielded item scene node";
+		return false;
+	}
 	return true;
+}
+
+// Returns the fractional part of x
+inline f32 my_modf(f32 x)
+{
+	double dummy;
+	return modf(x, &dummy);
 }
 
 void Camera::step(f32 dtime)
 {
 	if (m_view_bobbing_state != 0)
 	{
-		s32 offset = MYMAX(dtime * m_view_bobbing_speed * 0.035 * BOBFRAMES, 1);
+		f32 offset = dtime * m_view_bobbing_speed * 0.035;
 		if (m_view_bobbing_state == 2)
 		{
 			// Animation is getting turned off
-			s32 subanim = (m_view_bobbing_anim & (BOBFRAMES/2-1));
-			if (subanim < BOBFRAMES/4)
-				offset = -1 *  MYMIN(offset, subanim);
+			if (m_view_bobbing_anim < 0.5)
+				m_view_bobbing_anim -= offset;
 			else
-				offset = MYMIN(offset, BOBFRAMES/2 - subanim);
+				m_view_bobbing_anim += offset;
+			if (m_view_bobbing_anim <= 0 || m_view_bobbing_anim >= 1)
+			{
+				m_view_bobbing_anim = 0;
+				m_view_bobbing_state = 0;
+			}
 		}
-		m_view_bobbing_anim = (m_view_bobbing_anim + offset) & (BOBFRAMES-1);
+		else
+		{
+			m_view_bobbing_anim = my_modf(m_view_bobbing_anim + offset);
+		}
+	}
+
+	if (m_digging_button != -1)
+	{
+		f32 offset = dtime * 3.5;
+		m_digging_anim += offset;
+		if (m_digging_anim >= 1)
+		{
+			m_digging_anim = 0;
+			m_digging_button = -1;
+		}
 	}
 }
 
@@ -132,11 +161,10 @@ void Camera::update(LocalPlayer* player, f32 frametime, v2u32 screensize)
 	v3f rel_cam_target = v3f(0,0,1);
 	v3f rel_cam_up = v3f(0,1,0);
 
-	s32 bobframe = m_view_bobbing_anim & (BOBFRAMES/2-1);
-	if (bobframe != 0)
+	if (m_view_bobbing_anim != 0)
 	{
-		f32 bobfrac = (f32) bobframe / (BOBFRAMES/2);
-		f32 bobdir = (m_view_bobbing_anim < (BOBFRAMES/2)) ? 1.0 : -1.0;
+		f32 bobfrac = my_modf(m_view_bobbing_anim * 2);
+		f32 bobdir = (m_view_bobbing_anim < 0.5) ? 1.0 : -1.0;
 
 		#if 1
 		f32 bobknob = 1.2;
@@ -188,6 +216,27 @@ void Camera::update(LocalPlayer* player, f32 frametime, v2u32 screensize)
 	// Some more allowance that m_viewing_range_max * BS because of active objects etc.
 	m_cameranode->setFarValue(m_viewing_range_max * BS * 10);
 
+	// Position the wielded item
+	v3f wield_position = v3f(1.3, -1.1, 2);
+	v3f wield_rotation = v3f(90, -90, -90);
+	if (m_digging_button != -1)
+	{
+		f32 digfrac = m_digging_anim;
+		wield_position.X -= sin(pow(digfrac, 0.8) * PI);
+		wield_position.Y += 0.5 * sin(digfrac * 2 * PI);
+		wield_position.Z += 0.2 * digfrac;
+
+		// Euler angles are PURE EVIL, so why not use quaternions?
+		core::quaternion quat_begin(wield_rotation * core::DEGTORAD);
+		core::quaternion quat_end(v3f(90, 20, -130) * core::DEGTORAD);
+		core::quaternion quat_slerp;
+		quat_slerp.slerp(quat_begin, quat_end, sin(digfrac * PI));
+		quat_slerp.toEuler(wield_rotation);
+		wield_rotation *= core::RADTODEG;
+	}
+	m_wieldnode->setPosition(wield_position);
+	m_wieldnode->setRotation(wield_rotation);
+
 	// Render distance feedback loop
 	updateViewingRange(frametime);
 
@@ -208,12 +257,7 @@ void Camera::update(LocalPlayer* player, f32 frametime, v2u32 screensize)
 	{
 		// Stop animation
 		m_view_bobbing_state = 2;
-		m_view_bobbing_speed = 100;
-	}
-	else if (m_view_bobbing_state == 2 && bobframe == 0)
-	{
-		// Stop animation completed
-		m_view_bobbing_state = 0;
+		m_view_bobbing_speed = 60;
 	}
 }
 
@@ -378,14 +422,14 @@ void Camera::wield(const InventoryItem* item)
 	else
 	{
 		// Bare hands
-		dstream << "bare hands" << std::endl;
 		m_wieldnode->setVisible(false);
 	}
 }
 
-void Camera::setDigging(bool digging)
+void Camera::setDigging(s32 button)
 {
-	// TODO
+	if (m_digging_button == -1)
+		m_digging_button = button;
 }
 
 

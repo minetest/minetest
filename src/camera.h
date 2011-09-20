@@ -120,8 +120,9 @@ public:
 	// Replace the wielded item mesh
 	void wield(const InventoryItem* item);
 
-	// Start or stop digging animation
-	void setDigging(bool digging);
+	// Start digging animation
+	// Pass 0 for left click, 1 for right click
+	void setDigging(s32 button);
 
 private:
 	// Scene manager and nodes
@@ -158,8 +159,8 @@ private:
 	f32 m_frametime_counter;
 	f32 m_time_per_range;
 
-	// View bobbing animation frame (0 <= m_view_bobbing < 0x1000000)
-	s32 m_view_bobbing_anim;
+	// View bobbing animation frame (0 <= m_view_bobbing_anim < 1)
+	f32 m_view_bobbing_anim;
 	// If 0, view bobbing is off (e.g. player is standing).
 	// If 1, view bobbing is on (player is walking).
 	// If 2, view bobbing is getting switched off.
@@ -167,10 +168,12 @@ private:
 	// Speed of view bobbing animation
 	f32 m_view_bobbing_speed;
 
-	// Digging animation
-	s32 m_digging_anim;
-	// Speed of digging animation
-	s32 m_digging_speed;
+	// Digging animation frame (0 <= m_digging_anim < 1)
+	f32 m_digging_anim;
+	// If -1, no digging animation
+	// If 0, left-click digging animation
+	// If 1, right-click digging animation
+	s32 m_digging_button;
 };
 
 

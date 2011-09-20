@@ -1514,7 +1514,6 @@ void the_game(
 				std::cout<<DTIME<<"Left-clicked object"<<std::endl;
 				client.clickObject(0, selected_object->getBlock()->getPos(),
 						selected_object->getId(), g_selected_item);
-				camera.setDigging(true);
 			}
 			else if(input->getRightClicked())
 			{
@@ -1582,7 +1581,6 @@ void the_game(
 				std::cout<<DTIME<<"Left-clicked object"<<std::endl;
 				client.clickActiveObject(0,
 						selected_active_object->getId(), g_selected_item);
-				camera.setDigging(true);
 			}
 			else if(input->getRightClicked())
 			{
@@ -1757,7 +1755,7 @@ void the_game(
 
 					dig_time += dtime;
 
-					camera.setDigging(true);
+					camera.setDigging(0);  // left click animation
 				}
 			}
 			
@@ -1820,6 +1818,7 @@ void the_game(
 				else
 				{
 					client.groundAction(1, nodepos, neighbourpos, g_selected_item);
+					camera.setDigging(1);  // right click animation
 				}
 			}
 			
@@ -1828,6 +1827,11 @@ void the_game(
 
 		} // selected_object == NULL
 		
+		if(input->getLeftClicked())
+		{
+			camera.setDigging(0); // left click animation
+		}
+
 		input->resetLeftClicked();
 		input->resetRightClicked();
 		
@@ -1836,7 +1840,6 @@ void the_game(
 			std::cout<<DTIME<<"Left button released (stopped digging)"
 					<<std::endl;
 			client.groundAction(2, v3s16(0,0,0), v3s16(0,0,0), 0);
-			camera.setDigging(false);
 		}
 		if(input->getRightReleased())
 		{
