@@ -63,12 +63,6 @@ public:
 		return m_cameranode;
 	}
 
-	// Get wielded item scene node.
-	inline ExtrudedSpriteSceneNode* getWieldNode() const
-	{
-		return m_wieldnode;
-	}
-
 	// Get the camera position (in absolute scene coordinates).
 	// This has view bobbing applied.
 	inline v3f getPosition() const
@@ -124,12 +118,19 @@ public:
 	// Pass 0 for left click, 1 for right click
 	void setDigging(s32 button);
 
+	// Draw the wielded tool.
+	// This has to happen *after* the main scene is drawn.
+	// Warning: This clears the Z buffer.
+	void drawWieldedTool();
+
 private:
 	// Scene manager and nodes
 	scene::ISceneManager* m_smgr;
 	scene::ISceneNode* m_playernode;
 	scene::ISceneNode* m_headnode;
 	scene::ICameraSceneNode* m_cameranode;
+
+	scene::ISceneManager* m_wieldmgr;
 	ExtrudedSpriteSceneNode* m_wieldnode;
 
 	// draw control

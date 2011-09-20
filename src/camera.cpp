@@ -31,7 +31,10 @@ Camera::Camera(scene::ISceneManager* smgr, MapDrawControl& draw_control):
 	m_playernode(NULL),
 	m_headnode(NULL),
 	m_cameranode(NULL),
+
+	m_wieldmgr(NULL),
 	m_wieldnode(NULL),
+
 	m_draw_control(draw_control),
 	m_viewing_range_min(5.0),
 	m_viewing_range_max(5.0),
@@ -66,13 +69,20 @@ Camera::Camera(scene::ISceneManager* smgr, MapDrawControl& draw_control):
 	m_headnode = smgr->addEmptySceneNode(m_playernode);
 	m_cameranode = smgr->addCameraSceneNode(smgr->getRootSceneNode());
 	m_cameranode->bindTargetAndRotation(true);
-	m_wieldnode = new ExtrudedSpriteSceneNode(m_headnode, smgr);
+
+	// This needs to be in its own scene manager. It is drawn after
+	// all other 3D scene nodes and before the GUI.
+	m_wieldmgr = smgr->createNewSceneManager();
+	m_wieldmgr->addCameraSceneNode();
+	m_wieldnode = new ExtrudedSpriteSceneNode(m_wieldmgr->getRootSceneNode(), m_wieldmgr);
 
 	updateSettings();
 }
 
 Camera::~Camera()
 {
+	m_wieldmgr->drop();
+	m_wieldnode->drop();
 }
 
 bool Camera::successfullyCreated(std::wstring& error_message)
@@ -90,6 +100,11 @@ bool Camera::successfullyCreated(std::wstring& error_message)
 	if (m_cameranode == NULL)
 	{
 		error_message = L"Failed to create the camera scene node";
+		return false;
+	}
+	if (m_wieldmgr == NULL)
+	{
+		error_message = L"Failed to create the wielded item scene manager";
 		return false;
 	}
 	if (m_wieldnode == NULL)
@@ -215,14 +230,14 @@ void Camera::update(LocalPlayer* player, f32 frametime, v2u32 screensize)
 	m_cameranode->setFarValue(m_viewing_range_max * BS * 10);
 
 	// Position the wielded item
-	v3f wield_position = v3f(1.3, -1.1, 2);
+	v3f wield_position = v3f(45, -35, 65);
 	v3f wield_rotation = v3f(90, -90, -90);
 	if (m_digging_button != -1)
 	{
 		f32 digfrac = m_digging_anim;
-		wield_position.X -= sin(pow(digfrac, 0.8) * PI);
-		wield_position.Y += 0.5 * sin(digfrac * 2 * PI);
-		wield_position.Z += 0.2 * digfrac;
+		wield_position.X -= 30 * sin(pow(digfrac, 0.8f) * PI);
+		wield_position.Y += 15 * sin(digfrac * 2 * PI);
+		wield_position.Z += 5 * digfrac;
 
 		// Euler angles are PURE EVIL, so why not use quaternions?
 		core::quaternion quat_begin(wield_rotation * core::DEGTORAD);
@@ -403,7 +418,7 @@ void Camera::wield(const InventoryItem* item)
 			if (content_features(content).solidness || content_features(content).visual_solidness)
 			{
 				m_wieldnode->setCube(content_features(content).tiles);
-				m_wieldnode->setScale(v3f(0.9));
+				m_wieldnode->setScale(v3f(30));
 				isCube = true;
 			}
 		}
@@ -412,7 +427,7 @@ void Camera::wield(const InventoryItem* item)
 		if (!isCube)
 		{
 			m_wieldnode->setSprite(item->getImageRaw());
-			m_wieldnode->setScale(v3f(1.2));
+			m_wieldnode->setScale(v3f(40));
 		}
 
 		m_wieldnode->setVisible(true);
@@ -428,6 +443,18 @@ void Camera::setDigging(s32 button)
 {
 	if (m_digging_button == -1)
 		m_digging_button = button;
+}
+
+void Camera::drawWieldedTool()
+{
+	m_wieldmgr->getVideoDriver()->clearZBuffer();
+
+	scene::ICameraSceneNode* cam = m_wieldmgr->getActiveCamera();
+	cam->setAspectRatio(m_cameranode->getAspectRatio());
+	cam->setFOV(m_cameranode->getFOV());
+	cam->setNearValue(0.1);
+	cam->setFarValue(100);
+	m_wieldmgr->drawAll();
 }
 
 

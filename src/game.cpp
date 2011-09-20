@@ -2162,6 +2162,14 @@ void the_game(
 		}
 
 		/*
+			Wielded tool
+		*/
+		{
+			// Warning: This clears the Z buffer.
+			camera.drawWieldedTool();
+		}
+
+		/*
 			Post effects
 		*/
 		{
