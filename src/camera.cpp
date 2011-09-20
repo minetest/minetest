@@ -151,8 +151,7 @@ void Camera::update(LocalPlayer* player, f32 frametime, v2u32 screensize)
 	m_playernode->updateAbsolutePosition();
 
 	// Set head node transformation
-	v3f eye_offset = player->getEyePosition() - player->getPosition();
-	m_headnode->setPosition(eye_offset);
+	m_headnode->setPosition(player->getEyeOffset());
 	m_headnode->setRotation(v3f(player->getPitch(), 0, 0));
 	m_headnode->updateAbsolutePosition();
 

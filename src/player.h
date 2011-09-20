@@ -67,12 +67,17 @@ public:
 		return floatToInt(m_position + v3f(0,BS+BS/2,0), BS);
 	}
 
-	v3f getEyePosition()
+	v3f getEyeOffset()
 	{
 		// This is at the height of the eyes of the current figure
-		// return m_position + v3f(0, BS+BS/2, 0);
+		// return v3f(0, BS+BS/2, 0);
 		// This is more like in minecraft
-		return m_position + v3f(0,BS+(5*BS)/8,0);
+		return v3f(0,BS+(5*BS)/8,0);
+	}
+
+	v3f getEyePosition()
+	{
+		return m_position + getEyeOffset();
 	}
 
 	virtual void setPosition(const v3f &position)
