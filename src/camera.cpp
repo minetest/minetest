@@ -189,9 +189,9 @@ void Camera::update(LocalPlayer* player, f32 frametime, v2u32 screensize)
 			0.8 * bobtmp * bobtmp,
 			0.);
 
-		rel_cam_pos += 0.03 * bobvec;
-		rel_cam_target += 0.045 * bobvec;
-		rel_cam_up.rotateXYBy(0.03 * bobdir * bobtmp * PI);
+		rel_cam_pos += 0.02 * bobvec;
+		rel_cam_target += 0.03 * bobvec;
+		rel_cam_up.rotateXYBy(0.02 * bobdir * bobtmp * PI);
 		#else
 		f32 angle_deg = 1 * bobdir * sin(bobfrac * PI);
 		f32 angle_rad = angle_deg * PI / 180;
