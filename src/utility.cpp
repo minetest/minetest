@@ -156,6 +156,25 @@ void mysrand(unsigned seed)
    next = seed;
 }
 
+// Sets the color of all vertices in the mesh
+void setMeshVerticesColor(scene::IMesh* mesh, video::SColor& color)
+{
+	if(mesh == NULL)
+		return;
+	
+	u16 mc = mesh->getMeshBufferCount();
+	for(u16 j=0; j<mc; j++)
+	{
+		scene::IMeshBuffer *buf = mesh->getMeshBuffer(j);
+		video::S3DVertex *vertices = (video::S3DVertex*)buf->getVertices();
+		u16 vc = buf->getVertexCount();
+		for(u16 i=0; i<vc; i++)
+		{
+			vertices[i].Color = color;
+		}
+	}
+}
+
 /*
 	blockpos: position of block in block coordinates
 	camera_pos: position of camera in nodes

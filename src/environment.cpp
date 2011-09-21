@@ -1686,18 +1686,19 @@ void ClientEnvironment::step(float dtime)
 			// Move
 			player->move(dtime, *m_map, 100*BS);
 
-			// Update lighting on remote players on client
-			u8 light = LIGHT_MAX;
-			try{
-				// Get node at head
-				v3s16 p = player->getLightPosition();
-				MapNode n = m_map->getNode(p);
-				light = n.getLightBlend(getDayNightRatio());
-			}
-			catch(InvalidPositionException &e) {}
-			player->updateLight(light);
 		}
 		
+		// Update lighting on all players on client
+		u8 light = LIGHT_MAX;
+		try{
+			// Get node at head
+			v3s16 p = player->getLightPosition();
+			MapNode n = m_map->getNode(p);
+			light = n.getLightBlend(getDayNightRatio());
+		}
+		catch(InvalidPositionException &e) {}
+		player->updateLight(light);
+
 		/*
 			Add footsteps to grass
 		*/

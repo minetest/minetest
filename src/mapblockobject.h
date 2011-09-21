@@ -484,20 +484,7 @@ public:
 
 		u8 li = decode_light(light_at_pos);
 		video::SColor color(255,li,li,li);
-
-		scene::IMesh *mesh = m_node->getMesh();
-		
-		u16 mc = mesh->getMeshBufferCount();
-		for(u16 j=0; j<mc; j++)
-		{
-			scene::IMeshBuffer *buf = mesh->getMeshBuffer(j);
-			video::S3DVertex *vertices = (video::S3DVertex*)buf->getVertices();
-			u16 vc = buf->getVertexCount();
-			for(u16 i=0; i<vc; i++)
-			{
-				vertices[i].Color = color;
-			}
-		}
+		setMeshVerticesColor(m_node->getMesh(), color);
 	}
 #endif
 
@@ -676,20 +663,7 @@ public:
 
 		u8 li = decode_light(light_at_pos);
 		video::SColor color(255,li,li,li);
-
-		scene::IMesh *mesh = m_node->getMesh();
-		
-		u16 mc = mesh->getMeshBufferCount();
-		for(u16 j=0; j<mc; j++)
-		{
-			scene::IMeshBuffer *buf = mesh->getMeshBuffer(j);
-			video::S3DVertex *vertices = (video::S3DVertex*)buf->getVertices();
-			u16 vc = buf->getVertexCount();
-			for(u16 i=0; i<vc; i++)
-			{
-				vertices[i].Color = color;
-			}
-		}
+		setMeshVerticesColor(m_node->getMesh(), color);
 	}
 	
 #endif
@@ -836,20 +810,7 @@ public:
 
 		u8 li = decode_light(light_at_pos);
 		video::SColor color(255,li,li,li);
-
-		scene::IMesh *mesh = m_node->getMesh();
-		
-		u16 mc = mesh->getMeshBufferCount();
-		for(u16 j=0; j<mc; j++)
-		{
-			scene::IMeshBuffer *buf = mesh->getMeshBuffer(j);
-			video::S3DVertex *vertices = (video::S3DVertex*)buf->getVertices();
-			u16 vc = buf->getVertexCount();
-			for(u16 i=0; i<vc; i++)
-			{
-				vertices[i].Color = color;
-			}
-		}
+		setMeshVerticesColor(m_node->getMesh(), color);
 	}
 #endif
 
@@ -982,20 +943,7 @@ public:
 
 		u8 li = decode_light(light_at_pos);
 		video::SColor color(255,li,li,li);
-
-		scene::IMesh *mesh = m_node->getMesh();
-		
-		u16 mc = mesh->getMeshBufferCount();
-		for(u16 j=0; j<mc; j++)
-		{
-			scene::IMeshBuffer *buf = mesh->getMeshBuffer(j);
-			video::S3DVertex *vertices = (video::S3DVertex*)buf->getVertices();
-			u16 vc = buf->getVertexCount();
-			for(u16 i=0; i<vc; i++)
-			{
-				vertices[i].Color = color;
-			}
-		}
+		setMeshVerticesColor(m_node->getMesh(), color);
 	}
 	
 #endif

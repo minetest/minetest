@@ -205,6 +205,8 @@ public:
 	f32 getSpriteThickness() const { return m_thickness; }
 	void setSpriteThickness(f32 thickness);
 
+	void updateLight(u8 light);
+
 	void removeSpriteFromCache(video::ITexture* texture);
 
 	virtual const core::aabbox3d<f32>& getBoundingBox() const;
@@ -216,6 +218,7 @@ private:
 	f32 m_thickness;
 	scene::IMesh* m_cubemesh;
 	bool m_is_cube;
+	u8 m_light;
 
 	// internal extrusion helper methods
 	io::path getExtrudedName(video::ITexture* texture);

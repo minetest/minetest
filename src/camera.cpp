@@ -249,6 +249,7 @@ void Camera::update(LocalPlayer* player, f32 frametime, v2u32 screensize)
 	}
 	m_wieldnode->setPosition(wield_position);
 	m_wieldnode->setRotation(wield_rotation);
+	m_wieldnode->updateLight(player->light);
 
 	// Render distance feedback loop
 	updateViewingRange(frametime);
@@ -472,6 +473,7 @@ ExtrudedSpriteSceneNode::ExtrudedSpriteSceneNode(
 	m_thickness = 0.1;
 	m_cubemesh = NULL;
 	m_is_cube = false;
+	m_light = LIGHT_MAX;
 }
 
 ExtrudedSpriteSceneNode::~ExtrudedSpriteSceneNode()
@@ -519,6 +521,7 @@ void ExtrudedSpriteSceneNode::setSprite(video::ITexture* texture)
 	m_meshnode->getMaterial(0).MaterialType = video::EMT_TRANSPARENT_ALPHA_CHANNEL_REF;
 	m_meshnode->setVisible(true);
 	m_is_cube = false;
+	updateLight(m_light);
 }
 
 void ExtrudedSpriteSceneNode::setCube(const TileSpec tiles[6])
@@ -546,6 +549,16 @@ void ExtrudedSpriteSceneNode::setCube(const TileSpec tiles[6])
 	}
 	m_meshnode->setVisible(true);
 	m_is_cube = true;
+	updateLight(m_light);
+}
+
+void ExtrudedSpriteSceneNode::updateLight(u8 light)
+{
+	m_light = light;
+
+	u8 li = decode_light(light);
+	video::SColor color(255,li,li,li);
+	setMeshVerticesColor(m_meshnode->getMesh(), color);
 }
 
 void ExtrudedSpriteSceneNode::removeSpriteFromCache(video::ITexture* texture)
