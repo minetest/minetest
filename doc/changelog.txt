@@ -3,6 +3,9 @@ Minetest-c55 changelog
 This should contain all the major changes.
 For minor stuff, refer to the commit log of the repository.
 
+0.2.20110922_1:
+- Make client report a newer version number to the server than 2011-07-31 does and make server disallow old clients
+
 0.2.20110922:
 - Map is saved in an SQLite database file (by Queatz)
 - Ladders (MarkTraceur)
