@@ -118,6 +118,70 @@ std::string ChestNodeMetadata::getInventoryDrawSpecString()
 }
 
 /*
+	LockingChestNodeMetadata
+*/
+
+// Prototype
+LockingChestNodeMetadata proto_LockingChestNodeMetadata;
+
+LockingChestNodeMetadata::LockingChestNodeMetadata()
+{
+	NodeMetadata::registerType(typeId(), create);
+
+	m_inventory = new Inventory();
+	m_inventory->addList("0", 8*4);
+}
+LockingChestNodeMetadata::~LockingChestNodeMetadata()
+{
+	delete m_inventory;
+}
+u16 LockingChestNodeMetadata::typeId() const
+{
+	return CONTENT_LOCKABLE_CHEST;
+}
+NodeMetadata* LockingChestNodeMetadata::create(std::istream &is)
+{
+	LockingChestNodeMetadata *d = new LockingChestNodeMetadata();
+	d->setOwner(deSerializeString(is));
+	d->m_inventory->deSerialize(is);
+	return d;
+}
+NodeMetadata* LockingChestNodeMetadata::clone()
+{
+	LockingChestNodeMetadata *d = new LockingChestNodeMetadata();
+	*d->m_inventory = *m_inventory;
+	return d;
+}
+void LockingChestNodeMetadata::serializeBody(std::ostream &os)
+{
+	os<<serializeString(m_text);
+	m_inventory->serialize(os);
+}
+std::string LockingChestNodeMetadata::infoText()
+{
+	return "Locking Chest";
+}
+bool LockingChestNodeMetadata::nodeRemovalDisabled()
+{
+	/*
+		Disable removal if chest contains something
+	*/
+	InventoryList *list = m_inventory->getList("0");
+	if(list == NULL)
+		return false;
+	if(list->getUsedSlots() == 0)
+		return false;
+	return true;
+}
+std::string LockingChestNodeMetadata::getInventoryDrawSpecString()
+{
+	return
+		"invsize[8,9;]"
+		"list[current_name;0;0,0;8,4;]"
+		"list[current_player;main;0,5;8,4;]";
+}
+
+/*
 	FurnaceNodeMetadata
 */
 

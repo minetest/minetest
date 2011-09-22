@@ -573,6 +573,20 @@ void content_mapnode_init()
 		f->initial_metadata = new ChestNodeMetadata();
 	setWoodLikeDiggingProperties(f->digging_properties, 1.0);
 	
+	i = CONTENT_LOCKABLE_CHEST;
+	f = &content_features(i);
+	f->param_type = CPT_FACEDIR_SIMPLE;
+	f->setAllTextures("chest_side.png");
+	f->setTexture(0, "chest_top.png");
+	f->setTexture(1, "chest_top.png");
+	f->setTexture(5, "chest_lock.png"); // Z-
+	f->setInventoryTexture("chest_lock.png");
+	//f->setInventoryTextureCube("chest_top.png", "chest_side.png", "chest_side.png");
+	f->dug_item = std::string("MaterialItem2 ")+itos(i)+" 1";
+	if(f->initial_metadata == NULL)
+		f->initial_metadata = new LockingChestNodeMetadata();
+	setWoodLikeDiggingProperties(f->digging_properties, 1.0);
+
 	i = CONTENT_FURNACE;
 	f = &content_features(i);
 	f->param_type = CPT_FACEDIR_SIMPLE;
