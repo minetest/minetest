@@ -431,7 +431,7 @@ void Client::step(float dtime)
 			snprintf((char*)&data[23], PASSWORD_SIZE, "%s", m_password.c_str());
 			
 			// This should be incremented in each version
-			writeU16(&data[51], 1);
+			writeU16(&data[51], 2);
 
 			// Send as unreliable
 			Send(0, data, false);

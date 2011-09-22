@@ -80,11 +80,12 @@ static s16 find_ground_level_clever(VoxelManipulator &vmanip, v2s16 p2d)
 }
 #endif
 
-static void make_tree(VoxelManipulator &vmanip, v3s16 p0)
+static void make_tree(VoxelManipulator &vmanip, v3s16 p0, bool is_apple_tree)
 {
 	MapNode treenode(CONTENT_TREE);
 	MapNode leavesnode(CONTENT_LEAVES);
-
+	MapNode applenode(CONTENT_APPLE);
+	
 	s16 trunk_h = myrand_range(4, 5);
 	v3s16 p1 = p0;
 	for(s16 ii=0; ii<trunk_h; ii++)
@@ -147,8 +148,14 @@ static void make_tree(VoxelManipulator &vmanip, v3s16 p0)
 				&& vmanip.m_data[vi].getContent() != CONTENT_IGNORE)
 			continue;
 		u32 i = leaves_a.index(x,y,z);
-		if(leaves_d[i] == 1)
-			vmanip.m_data[vi] = leavesnode;
+		if(leaves_d[i] == 1) {
+			bool is_apple = myrand_range(0,99) < 10;
+			if(is_apple_tree && is_apple) {
+				vmanip.m_data[vi] = applenode;
+			} else {
+				vmanip.m_data[vi] = leavesnode;
+			}
+		}
 	}
 }
 
@@ -2129,7 +2136,16 @@ void make_block(BlockMakeData *data)
 					p.Y++;
 					//if(surface_humidity_2d(data->seed, v2s16(x, y)) < 0.5)
 					if(is_jungle == false)
-						make_tree(vmanip, p);
+					{
+						bool is_apple_tree;
+						if(myrand_range(0,4) != 0)
+							is_apple_tree = false;
+						else
+							is_apple_tree = noise2d_perlin(
+									0.5+(float)p.X/100, 0.5+(float)p.Z/100,
+									data->seed+342902, 3, 0.45) > 0.2;
+						make_tree(vmanip, p, is_apple_tree);
+					}
 					else
 						make_jungletree(vmanip, p);
 				}

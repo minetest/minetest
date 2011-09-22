@@ -630,6 +630,18 @@ void content_mapnode_init()
 	f->dug_item = std::string("MaterialItem2 ")+itos(i)+" 1";
 	setStoneLikeDiggingProperties(f->digging_properties, 3.0);
 	
+	i = CONTENT_APPLE;
+	f = &content_features(i);
+	f->setInventoryTexture("apple.png");
+	f->param_type = CPT_LIGHT;
+	f->light_propagates = true;
+	f->sunlight_propagates = true;
+	f->solidness = 0; // drawn separately, makes no faces
+	f->walkable = false;
+	f->air_equivalent = true;
+	f->dug_item = std::string("CraftItem apple 1");
+	f->digging_properties.set("", DiggingProperties(true, 0.0, 0));
+	
 	// NOTE: Remember to add frequently used stuff to the texture atlas in tile.cpp
 	
 

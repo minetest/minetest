@@ -2010,6 +2010,14 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 					L"Your client is too old. Please upgrade.");
 			return;
 		}
+		
+		/* Uhh... this should actually be a warning but let's do it like this */
+		if(net_proto_version < 2)
+		{
+			SendAccessDenied(m_con, peer_id,
+					L"Your client is too old. Please upgrade.");
+			return;
+		}
 
 		/*
 			Set up player
