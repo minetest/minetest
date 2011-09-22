@@ -3,17 +3,17 @@ Minetest-c55 changelog
 This should contain all the major changes.
 For minor stuff, refer to the commit log of the repository.
 
-X:
-- Ladders
+0.2.20110922_rc1:
+- Map is saved in an SQLite database file (by Queatz)
+- Ladders (MarkTraceur)
 - Lava
-- /me chat command
-- Slightly better looking inventory (transparency)
+- Apple trees (sfan5)
+- Slightly better looking inventory with transparency
+- /me chat command (Oblomov)
+- Using chosen map seed possible through fixed_map_seed configuration option (kahrl)
 - Fix the long-existed PeerNotFound loop bug
 - Some translations and localization-related fixes
-- Lots of small fixes, once again
-- Using chosen map seed is now possible through fixed_map_seed configuration option
-- Map is now saved in an SQLite database
-- Fixed the nasty server-side infinite PeerNotFound loop bug
+- Lots of small fixes
 
 2011-07-31_3:
 - Fixes a bug that made the server to deny non-empty passwords from players connecting the first time
