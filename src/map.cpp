@@ -28,8 +28,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "porting.h"
 #include "mapgen.h"
 #include "nodemetadata.h"
-#include "content_nodemeta.h"
-#include "content_mapnode.h"
 
 /*
 	SQLite format specification:
@@ -1016,19 +1014,8 @@ void Map::addNodeAndUpdate(v3s16 p, MapNode n,
 	if(meta_proto)
 	{
 		NodeMetadata *meta = meta_proto->clone();
-		/* lockable chest, insert the owner's name */
-		if (meta->typeId() == CONTENT_LOCKABLE_CHEST)
-		{
-			LockingChestNodeMetadata *lcm = (LockingChestNodeMetadata*)meta;
-			lcm->setOwner(player_name);
-		}
+		meta->setOwner(player_name);
 		setNodeMetadata(p, meta);
-	}
-	else if (n.getContent() == CONTENT_LOCKABLE_CHEST)
-	{
-		LockingChestNodeMetadata *lcm =  new LockingChestNodeMetadata();
-		lcm->setOwner(player_name);
-		setNodeMetadata(p, (NodeMetadata*)lcm);
 	}
 
 	/*

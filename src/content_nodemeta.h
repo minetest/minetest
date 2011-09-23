@@ -77,8 +77,8 @@ public:
 	virtual bool nodeRemovalDisabled();
 	virtual std::string getInventoryDrawSpecString();
 
-	std::string getOwner(){ return m_text; }
-	void setOwner(std::string t){ m_text = t; }
+	virtual std::string getOwner(){ return m_text; }
+	virtual void setOwner(std::string t){ m_text = t; }
 
 private:
 	Inventory *m_inventory;
