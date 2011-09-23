@@ -929,16 +929,29 @@ void ServerEnvironment::step(float dtime)
 				*/
 				if(n.getContent() == CONTENT_SAPLING)
 				{
-				        if(myrand()%2 == 0)
+				        if(myrand()%50 == 0)
 					{
 					        core::map<v3s16, MapBlock*> modified_blocks;
 					        v3s16 tree_p = p;
-						MapEditEvent event;
-						event.type = MEET_OTHER;
 						ManualMapVoxelManipulator vmanip(m_map);
 						v3s16 tree_blockp = getNodeBlockPos(tree_p);
 						vmanip.initialEmerge(tree_blockp - v3s16(1,1,1), tree_blockp + v3s16(1,1,1));
 						mapgen::make_tree(vmanip, tree_p);
+						vmanip.blitBackAll(&modified_blocks);
+
+						// update lighting
+						core::map<v3s16, MapBlock*> lighting_modified_blocks;
+						for(core::map<v3s16, MapBlock*>::Iterator
+						      i = modified_blocks.getIterator();
+						      i.atEnd() == false; i++)
+						{
+							lighting_modified_blocks.insert(i.getNode()->getKey(), i.getNode()->getValue());
+						}
+						m_map->updateLighting(lighting_modified_blocks, modified_blocks);
+
+						// Send a MEET_OTHER event
+						MapEditEvent event;
+						event.type = MEET_OTHER;
 						for(core::map<v3s16, MapBlock*>::Iterator
 						      i = modified_blocks.getIterator();
 						      i.atEnd() == false; i++)
