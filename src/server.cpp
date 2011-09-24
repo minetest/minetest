@@ -4109,7 +4109,7 @@ void Server::UpdateCrafting(u16 peer_id)
 		InventoryList *clist = player->inventory.getList("craft");
 		InventoryList *rlist = player->inventory.getList("craftresult");
 
-		if(rlist->getUsedSlots() == 0)
+		if(rlist && rlist->getUsedSlots() == 0)
 			player->craftresult_is_preview = true;
 
 		if(rlist && player->craftresult_is_preview)
