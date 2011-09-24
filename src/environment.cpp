@@ -1345,8 +1345,6 @@ void ServerEnvironment::deactivateFarObjects(bool force_delete)
 			i.atEnd()==false; i++)
 	{
 		ServerActiveObject* obj = i.getNode()->getValue();
-		u16 id = i.getNode()->getKey();
-		v3f objectpos = obj->getBasePosition();
 
 		// This shouldn't happen but check it
 		if(obj == NULL)
@@ -1357,9 +1355,12 @@ void ServerEnvironment::deactivateFarObjects(bool force_delete)
 			continue;
 		}
 
+		u16 id = i.getNode()->getKey();		
+		v3f objectpos = obj->getBasePosition();	
+
 		// The block in which the object resides in
 		v3s16 blockpos_o = getNodeBlockPos(floatToInt(objectpos, BS));
-		
+
 		// If block is active, don't remove
 		if(m_active_blocks.contains(blockpos_o))
 			continue;
