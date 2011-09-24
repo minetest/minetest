@@ -243,7 +243,7 @@ void content_mapnode_init()
 		f->setAllTextures("[noalpha:leaves.png");
 	}
 	f->extra_dug_item = std::string("MaterialItem2 ")+itos(CONTENT_SAPLING)+" 1";
-	f->extra_dug_item_rarity = 10;
+	f->extra_dug_item_rarity = 20;
 	f->dug_item = std::string("MaterialItem2 ")+itos(i)+" 1";
 	setWoodLikeDiggingProperties(f->digging_properties, 0.15);
 
