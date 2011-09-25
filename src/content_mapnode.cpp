@@ -63,6 +63,7 @@ content_t trans_table_19[21][2] = {
 	{CONTENT_CLAY, 27},
 	{CONTENT_PAPYRUS, 28},
 	{CONTENT_BOOKSHELF, 29},
+	
 };
 
 MapNode mapnode_translate_from_internal(MapNode n_from, u8 version)
@@ -168,6 +169,20 @@ void content_mapnode_init()
 	f->dug_item = std::string("MaterialItem2 ")+itos(i)+" 1";
 	setDirtLikeDiggingProperties(f->digging_properties, 1.75);
 	
+	i = CONTENT_JACKO;
+	f = &content_features(i);
+	f->setAllTextures("JackO-side.png");
+	f->setTexture(3,"JackO-front.png");
+	f->setInventoryTexture("JackO-front.png"); 
+	f->param_type = CPT_LIGHT;
+	f->light_propagates = true;
+	f->sunlight_propagates = true;
+	f->light_source = LIGHT_MAX-1;
+	f->param_type = CPT_MINERAL;
+	f->is_ground_content = true;
+	f->dug_item = std::string("MaterialItem2 ")+itos(i)+" 1";
+	setDirtLikeDiggingProperties(f->digging_properties, 1.0);	
+
 	i = CONTENT_SANDSTONE;
 	f = &content_features(i);
 	f->setAllTextures("sandstone.png");
