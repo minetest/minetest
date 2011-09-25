@@ -178,12 +178,10 @@ void content_mapnode_init()
 	f->light_propagates = true;
 	f->sunlight_propagates = true;
 	f->light_source = LIGHT_MAX-1;
-
 	f->param_type = CPT_MINERAL;
 	f->is_ground_content = true;
 	f->dug_item = std::string("MaterialItem2 ")+itos(i)+" 1";
-	setDirtLikeDiggingProperties(f->digging_properties, 1.00);	
-
+	setDirtLikeDiggingProperties(f->digging_properties, 1.0);	
 
 	i = CONTENT_SANDSTONE;
 	f = &content_features(i);
