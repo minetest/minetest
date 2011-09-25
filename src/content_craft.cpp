@@ -94,11 +94,13 @@ InventoryItem *craft_get_result(InventoryItem **items)
 
 	{
 		ItemSpec specs[9];
-		specs[0] = ItemSpec(ITEM_MATERIAL, CONTENT_WOOD);
-		specs[3] = ItemSpec(ITEM_CRAFT, CONTENT_WOOD);
+		specs[1] = ItemSpec(ITEM_MATERIAL, CONTENT_CACTUS);
+		specs[4] = ItemSpec(ITEM_MATERIAL, CONTENT_CACTUS);
+		specs[7] = ItemSpec(ITEM_MATERIAL, CONTENT_CACTUS);
+		
 		if(checkItemCombination(items, specs))
 		{
-			return new MaterialItem(CONTENT_JACKO, 4);
+			return new MaterialItem(CONTENT_JACKO, 22);
 		}
 	}
 
