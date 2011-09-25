@@ -100,7 +100,7 @@ InventoryItem *craft_get_result(InventoryItem **items)
 		
 		if(checkItemCombination(items, specs))
 		{
-			return new MaterialItem(CONTENT_JACKO, 22);
+			return new MaterialItem(CONTENT_JACKO, 2);
 		}
 	}
 
