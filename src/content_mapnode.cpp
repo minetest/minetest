@@ -63,6 +63,7 @@ content_t trans_table_19[21][2] = {
 	{CONTENT_CLAY, 27},
 	{CONTENT_PAPYRUS, 28},
 	{CONTENT_BOOKSHELF, 29},
+	
 };
 
 MapNode mapnode_translate_from_internal(MapNode n_from, u8 version)
@@ -171,7 +172,7 @@ void content_mapnode_init()
 	i = CONTENT_JACKO;
 	f = &content_features(i);
 	f->setAllTextures("JackO-front.png");
-	f->setInventoryTextureCube("Jack0-front.png", "Jack0-front.png", "JackO-front.png");
+	f->setInventoryTextureCube("JackO-front.png", "JackO-front.png", "JackO-front.png");
 	f->param_type = CPT_MINERAL;
 	f->is_ground_content = true;
 	f->dug_item = std::string("MaterialItem2 ")+itos(i)+" 1";
