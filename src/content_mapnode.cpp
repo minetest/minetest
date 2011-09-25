@@ -168,6 +168,16 @@ void content_mapnode_init()
 	f->dug_item = std::string("MaterialItem2 ")+itos(i)+" 1";
 	setDirtLikeDiggingProperties(f->digging_properties, 1.75);
 	
+	i = CONTENT_JACKO;
+	f = &content_features(i);
+	f->setAllTextures("JackO-front.png");
+	f->setInventoryTextureCube("Jack0-front.png", "Jack0-front.png", "JackO-front.png");
+	f->param_type = CPT_MINERAL;
+	f->is_ground_content = true;
+	f->dug_item = std::string("MaterialItem2 ")+itos(i)+" 1";
+	setDirtLikeDiggingProperties(f->digging_properties, 1.00);	
+
+	
 	i = CONTENT_SANDSTONE;
 	f = &content_features(i);
 	f->setAllTextures("sandstone.png");
