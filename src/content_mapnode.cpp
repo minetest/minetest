@@ -172,7 +172,7 @@ void content_mapnode_init()
 	i = CONTENT_JACKO;
 	f = &content_features(i);
 	f->setAllTextures("JackO-side.png");
-	f->setTexture(2,"JackO-front.png");
+	f->setTexture(3,"JackO-front.png");
 	f->setInventoryTexture("JackO-front.png"); 
 	f->param_type = CPT_LIGHT;
 	f->light_propagates = true;
