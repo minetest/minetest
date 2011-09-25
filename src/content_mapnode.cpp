@@ -171,8 +171,9 @@ void content_mapnode_init()
 	
 	i = CONTENT_JACKO;
 	f = &content_features(i);
-	f->setAllTextures("JackO-front.png");
-	f->setInventoryTextureCube("JackO-front.png", "JackO-front.png", "JackO-front.png");
+	f->setAllTextures("JackO-side.png");
+	f->setTexture(2,"JackO-front.png");
+	f->setInventoryTexture("JackO-front.png"); 
 	f->param_type = CPT_MINERAL;
 	f->is_ground_content = true;
 	f->dug_item = std::string("MaterialItem2 ")+itos(i)+" 1";
