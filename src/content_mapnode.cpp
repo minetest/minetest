@@ -244,6 +244,8 @@ void content_mapnode_init()
 	{
 		f->setAllTextures("[noalpha:leaves.png");
 	}
+	f->extra_dug_item = std::string("MaterialItem2 ")+itos(CONTENT_SAPLING)+" 1";
+	f->extra_dug_item_rarity = 20;
 	f->dug_item = std::string("MaterialItem2 ")+itos(i)+" 1";
 	setWoodLikeDiggingProperties(f->digging_properties, 0.15);
 
@@ -651,6 +653,18 @@ void content_mapnode_init()
 	f->setInventoryTexture("nc_rb.png");
 	f->dug_item = std::string("MaterialItem2 ")+itos(i)+" 1";
 	setStoneLikeDiggingProperties(f->digging_properties, 3.0);
+
+	i = CONTENT_SAPLING;
+	f = &content_features(i);
+	f->param_type = CPT_LIGHT;
+	f->setAllTextures("sapling.png");
+	f->setInventoryTexture("sapling.png");
+	f->dug_item = std::string("MaterialItem2 ")+itos(i)+" 1";
+	f->light_propagates = true;
+	f->air_equivalent = false;
+	f->solidness = 0; // drawn separately, makes no faces
+	f->walkable = false;
+	f->digging_properties.set("", DiggingProperties(true, 0.0, 0));
 	
 	i = CONTENT_APPLE;
 	f = &content_features(i);
