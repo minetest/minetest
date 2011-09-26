@@ -1337,6 +1337,57 @@ void the_game(
 		}
 
 		/*
+			Mouse and camera control
+			NOTE: Do this before client.setPlayerControl() to not cause a camera lag of one frame
+		*/
+		
+		if((device->isWindowActive() && noMenuActive()) || random_input)
+		{
+			if(!random_input)
+			{
+				// Mac OSX gets upset if this is set every frame
+				if(device->getCursorControl()->isVisible())
+					device->getCursorControl()->setVisible(false);
+			}
+
+			if(first_loop_after_window_activation){
+				//std::cout<<"window active, first loop"<<std::endl;
+				first_loop_after_window_activation = false;
+			}
+			else{
+				s32 dx = input->getMousePos().X - displaycenter.X;
+				s32 dy = input->getMousePos().Y - displaycenter.Y;
+				if(invert_mouse)
+					dy = -dy;
+				//std::cout<<"window active, pos difference "<<dx<<","<<dy<<std::endl;
+				
+				/*const float keyspeed = 500;
+				if(input->isKeyDown(irr::KEY_UP))
+					dy -= dtime * keyspeed;
+				if(input->isKeyDown(irr::KEY_DOWN))
+					dy += dtime * keyspeed;
+				if(input->isKeyDown(irr::KEY_LEFT))
+					dx -= dtime * keyspeed;
+				if(input->isKeyDown(irr::KEY_RIGHT))
+					dx += dtime * keyspeed;*/
+
+				camera_yaw -= dx*0.2;
+				camera_pitch += dy*0.2;
+				if(camera_pitch < -89.5) camera_pitch = -89.5;
+				if(camera_pitch > 89.5) camera_pitch = 89.5;
+			}
+			input->setMousePos(displaycenter.X, displaycenter.Y);
+		}
+		else{
+			// Mac OSX gets upset if this is set every frame
+			if(device->getCursorControl()->isVisible() == false)
+				device->getCursorControl()->setVisible(true);
+
+			//std::cout<<"window inactive"<<std::endl;
+			first_loop_after_window_activation = true;
+		}
+
+		/*
 			Player speed control
 			TODO: Cache the keycodes from getKeySetting
 		*/
@@ -1407,56 +1458,6 @@ void the_game(
 		}
 		
 		//TimeTaker //timer2("//timer2");
-
-		/*
-			Mouse and camera control
-		*/
-		
-		if((device->isWindowActive() && noMenuActive()) || random_input)
-		{
-			if(!random_input)
-			{
-				// Mac OSX gets upset if this is set every frame
-				if(device->getCursorControl()->isVisible())
-					device->getCursorControl()->setVisible(false);
-			}
-
-			if(first_loop_after_window_activation){
-				//std::cout<<"window active, first loop"<<std::endl;
-				first_loop_after_window_activation = false;
-			}
-			else{
-				s32 dx = input->getMousePos().X - displaycenter.X;
-				s32 dy = input->getMousePos().Y - displaycenter.Y;
-				if(invert_mouse)
-					dy = -dy;
-				//std::cout<<"window active, pos difference "<<dx<<","<<dy<<std::endl;
-				
-				/*const float keyspeed = 500;
-				if(input->isKeyDown(irr::KEY_UP))
-					dy -= dtime * keyspeed;
-				if(input->isKeyDown(irr::KEY_DOWN))
-					dy += dtime * keyspeed;
-				if(input->isKeyDown(irr::KEY_LEFT))
-					dx -= dtime * keyspeed;
-				if(input->isKeyDown(irr::KEY_RIGHT))
-					dx += dtime * keyspeed;*/
-
-				camera_yaw -= dx*0.2;
-				camera_pitch += dy*0.2;
-				if(camera_pitch < -89.5) camera_pitch = -89.5;
-				if(camera_pitch > 89.5) camera_pitch = 89.5;
-			}
-			input->setMousePos(displaycenter.X, displaycenter.Y);
-		}
-		else{
-			// Mac OSX gets upset if this is set every frame
-			if(device->getCursorControl()->isVisible() == false)
-				device->getCursorControl()->setVisible(true);
-
-			//std::cout<<"window inactive"<<std::endl;
-			first_loop_after_window_activation = true;
-		}
 
 		LocalPlayer* player = client.getLocalPlayer();
 		camera.update(player, busytime, screensize);

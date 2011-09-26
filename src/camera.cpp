@@ -126,9 +126,11 @@ void Camera::step(f32 dtime)
 {
 	if (m_view_bobbing_state != 0)
 	{
-		f32 offset = dtime * m_view_bobbing_speed * 0.035;
+		//f32 offset = dtime * m_view_bobbing_speed * 0.035;
+		f32 offset = dtime * m_view_bobbing_speed * 0.030;
 		if (m_view_bobbing_state == 2)
 		{
+#if 0
 			// Animation is getting turned off
 			if (m_view_bobbing_anim < 0.5)
 				m_view_bobbing_anim -= offset;
@@ -139,6 +141,29 @@ void Camera::step(f32 dtime)
 				m_view_bobbing_anim = 0;
 				m_view_bobbing_state = 0;
 			}
+#endif
+#if 1
+			// Animation is getting turned off
+			if(m_view_bobbing_anim < 0.25){
+				m_view_bobbing_anim -= offset;
+			} else if(m_view_bobbing_anim > 0.75){
+				m_view_bobbing_anim += offset;
+			} if(m_view_bobbing_anim < 0.5){
+				m_view_bobbing_anim += offset;
+				if(m_view_bobbing_anim > 0.5)
+					m_view_bobbing_anim = 0.5;
+			} else {
+				m_view_bobbing_anim -= offset;
+				if(m_view_bobbing_anim < 0.5)
+					m_view_bobbing_anim = 0.5;
+			}
+			if(m_view_bobbing_anim <= 0 || m_view_bobbing_anim >= 1 ||
+					fabs(m_view_bobbing_anim - 0.5) < 0.01)
+			{
+				m_view_bobbing_anim = 0;
+				m_view_bobbing_state = 0;
+			}
+#endif
 		}
 		else
 		{
@@ -183,15 +208,24 @@ void Camera::update(LocalPlayer* player, f32 frametime, v2u32 screensize)
 		#if 1
 		f32 bobknob = 1.2;
 		f32 bobtmp = sin(pow(bobfrac, bobknob) * PI);
+		f32 bobtmp2 = cos(pow(bobfrac, bobknob) * PI);
 
 		v3f bobvec = v3f(
-			bobdir * sin(bobfrac * PI),
-			0.8 * bobtmp * bobtmp,
+			0.3 * bobdir * sin(bobfrac * PI),
+			-0.28 * bobtmp * bobtmp,
 			0.);
 
-		rel_cam_pos += 0.02 * bobvec;
-		rel_cam_target += 0.03 * bobvec;
-		rel_cam_up.rotateXYBy(0.02 * bobdir * bobtmp * PI);
+		//rel_cam_pos += 0.2 * bobvec;
+		//rel_cam_target += 0.03 * bobvec;
+		//rel_cam_up.rotateXYBy(0.02 * bobdir * bobtmp * PI);
+		float f = 1.0;
+		rel_cam_pos += bobvec * f;
+		//rel_cam_target += 0.995 * bobvec * f;
+		rel_cam_target += bobvec * f;
+		rel_cam_target.Z -= 0.005 * bobvec.Z * f;
+		//rel_cam_target.X -= 0.005 * bobvec.X * f;
+		//rel_cam_target.Y -= 0.005 * bobvec.Y * f;
+		rel_cam_up.rotateXYBy(-0.03 * bobdir * bobtmp * PI * f);
 		#else
 		f32 angle_deg = 1 * bobdir * sin(bobfrac * PI);
 		f32 angle_rad = angle_deg * PI / 180;
@@ -241,11 +275,16 @@ void Camera::update(LocalPlayer* player, f32 frametime, v2u32 screensize)
 
 		// Euler angles are PURE EVIL, so why not use quaternions?
 		core::quaternion quat_begin(wield_rotation * core::DEGTORAD);
-		core::quaternion quat_end(v3f(90, 20, -130) * core::DEGTORAD);
+		core::quaternion quat_end(v3f(90, -10, -130) * core::DEGTORAD);
 		core::quaternion quat_slerp;
 		quat_slerp.slerp(quat_begin, quat_end, sin(digfrac * PI));
 		quat_slerp.toEuler(wield_rotation);
 		wield_rotation *= core::RADTODEG;
+	}
+	else {
+		f32 bobfrac = my_modf(m_view_bobbing_anim);
+		wield_position.X -= sin(bobfrac*PI*2.0) * 3.0;
+		wield_position.Y += sin(my_modf(bobfrac*2.0)*PI) * 3.0;
 	}
 	m_wieldnode->setPosition(wield_position);
 	m_wieldnode->setRotation(wield_rotation);
@@ -557,6 +596,8 @@ void ExtrudedSpriteSceneNode::updateLight(u8 light)
 	m_light = light;
 
 	u8 li = decode_light(light);
+	// Set brightness one lower than incoming light
+	diminish_light(li);
 	video::SColor color(255,li,li,li);
 	setMeshVerticesColor(m_meshnode->getMesh(), color);
 }
