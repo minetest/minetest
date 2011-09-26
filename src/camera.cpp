@@ -208,7 +208,7 @@ void Camera::update(LocalPlayer* player, f32 frametime, v2u32 screensize)
 		#if 1
 		f32 bobknob = 1.2;
 		f32 bobtmp = sin(pow(bobfrac, bobknob) * PI);
-		f32 bobtmp2 = cos(pow(bobfrac, bobknob) * PI);
+		//f32 bobtmp2 = cos(pow(bobfrac, bobknob) * PI);
 
 		v3f bobvec = v3f(
 			0.3 * bobdir * sin(bobfrac * PI),
@@ -265,7 +265,7 @@ void Camera::update(LocalPlayer* player, f32 frametime, v2u32 screensize)
 
 	// Position the wielded item
 	v3f wield_position = v3f(45, -35, 65);
-	v3f wield_rotation = v3f(90, -90, -90);
+	v3f wield_rotation = v3f(-100, 110, -100);
 	if (m_digging_button != -1)
 	{
 		f32 digfrac = m_digging_anim;
