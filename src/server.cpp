@@ -2096,10 +2096,20 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 					stringToPrivs(g_settings.get("default_privs")));
 			m_authmanager.save();
 		}
+		
+		// Enforce user limit.
+		// Don't enforce for users that have some admin right
+		if(m_clients.size() >= g_settings.getU16("max_users") &&
+				(m_authmanager.getPrivs(playername)
+					& (PRIV_SERVER|PRIV_BAN|PRIV_PRIVS)) == 0 &&
+				playername != g_settings.get("name"))
+		{
+			SendAccessDenied(m_con, peer_id, L"Too many users.");
+			return;
+		}
 
 		// Get player
 		Player *player = emergePlayer(playername, password, peer_id);
-
 
 		/*{
 			// DEBUG: Test serialization
@@ -4426,16 +4436,16 @@ void Server::handlePeerChange(PeerChange &c)
 		// Collect information about leaving in chat
 		std::wstring message;
 		{
-			std::wstring name = L"unknown";
 			Player *player = m_env.getPlayer(c.peer_id);
 			if(player != NULL)
-				name = narrow_to_wide(player->getName());
-			
-			message += L"*** ";
-			message += name;
-			message += L" left game";
-			if(c.timeout)
-				message += L" (timed out)";
+			{
+				std::wstring name = narrow_to_wide(player->getName());
+				message += L"*** ";
+				message += name;
+				message += L" left game";
+				if(c.timeout)
+					message += L" (timed out)";
+			}
 		}
 
 		/*// Delete player
