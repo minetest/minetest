@@ -40,6 +40,9 @@ namespace mapgen
 	
 	// Add objects according to block content
 	void add_random_objects(MapBlock *block);
+
+	// Add a tree
+	void make_tree(ManualMapVoxelManipulator &vmanip, v3s16 p0, bool is_apple_tree);
 	
 	/*
 		These are used by FarMesh
