@@ -3,7 +3,7 @@
 # Loads block files from sectors folders into map.sqlite database.
 # The sectors folder should be safe to remove after this prints "Finished."
 
-import time, os
+import time, os, sys
 
 try:
 	import sqlite3
@@ -114,8 +114,13 @@ for base in paths:
 					continue
 				
 				f = open(root+'/'+block, 'rb')
-				cur.execute('INSERT OR IGNORE INTO `blocks` VALUES(?, ?)', (pos, f.read()))
+				blob = f.read()
 				f.close()
+				if sys.version_info.major == 2:
+					blob = buffer(blob)
+				else:
+					blob = memoryview(blob)
+				cur.execute('INSERT OR IGNORE INTO `blocks` VALUES(?, ?)', (pos, blob))
 				count += 1
 		
 		if(time.time() - t > 3):
