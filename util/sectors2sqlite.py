@@ -3,7 +3,7 @@
 # Loads block files from sectors folders into map.sqlite database.
 # The sectors folder should be safe to remove after this prints "Finished."
 
-import time, os
+import time, os, sys
 
 try:
 	import sqlite3
@@ -23,9 +23,13 @@ if os.path.isdir(path + 'sectors/'):
 if not paths:
 	exit('Could not find sectors folder at ' + path + 'sectors2/ or ' + path + 'sectors/')
 
-def uint(u):
+def parseSigned12bit(u):
 	u = int('0x'+u, 16)
 	return (u if u < 2**11 else u - 2**12)
+
+def parseSigned16bit(u):
+	u = int('0x'+u, 16)
+	return (u if u < 2**15 else u - 2**16)
 
 def int64(u):
 	while u >= 2**63:
@@ -38,12 +42,12 @@ def int64(u):
 def getSectorPos(dirname):
 	if len(dirname) == 8:
 		# Old layout
-		x = uint(dirname[:4])
-		z = uint(dirname[4:])
+		x = parseSigned16bit(dirname[:4])
+		z = parseSigned16bit(dirname[4:])
 	elif len(dirname) == 7:
 		# New layout
-		x = uint(dirname[:3])
-		z = uint(dirname[4:])
+		x = parseSigned12bit(dirname[:3])
+		z = parseSigned12bit(dirname[4:])
 	else:
 		print('Terrible sector at ' + dirname)
 		return
@@ -60,7 +64,7 @@ def getBlockPos(sectordir, blockfile):
 	if len(blockfile) != 4:
 		print("Invalid block filename: " + blockfile)
 	
-	y = uint(blockfile)
+	y = parseSigned16bit(blockfile)
 	
 	return p2d[0], y, p2d[1]
 
@@ -110,8 +114,13 @@ for base in paths:
 					continue
 				
 				f = open(root+'/'+block, 'rb')
-				cur.execute('INSERT OR IGNORE INTO `blocks` VALUES(?, ?)', (pos, f.read()))
+				blob = f.read()
 				f.close()
+				if sys.version_info.major == 2:
+					blob = buffer(blob)
+				else:
+					blob = memoryview(blob)
+				cur.execute('INSERT OR IGNORE INTO `blocks` VALUES(?, ?)', (pos, blob))
 				count += 1
 		
 		if(time.time() - t > 3):
