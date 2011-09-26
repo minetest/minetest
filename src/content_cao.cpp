@@ -224,22 +224,7 @@ void ItemCAO::updateLight(u8 light_at_pos)
 
 	u8 li = decode_light(light_at_pos);
 	video::SColor color(255,li,li,li);
-
-	scene::IMesh *mesh = m_node->getMesh();
-	if(mesh == NULL)
-		return;
-	
-	u16 mc = mesh->getMeshBufferCount();
-	for(u16 j=0; j<mc; j++)
-	{
-		scene::IMeshBuffer *buf = mesh->getMeshBuffer(j);
-		video::S3DVertex *vertices = (video::S3DVertex*)buf->getVertices();
-		u16 vc = buf->getVertexCount();
-		for(u16 i=0; i<vc; i++)
-		{
-			vertices[i].Color = color;
-		}
-	}
+	setMeshVerticesColor(m_node->getMesh(), color);
 }
 
 v3s16 ItemCAO::getLightPosition()
@@ -430,22 +415,7 @@ void RatCAO::updateLight(u8 light_at_pos)
 
 	u8 li = decode_light(light_at_pos);
 	video::SColor color(255,li,li,li);
-
-	scene::IMesh *mesh = m_node->getMesh();
-	if(mesh == NULL)
-		return;
-	
-	u16 mc = mesh->getMeshBufferCount();
-	for(u16 j=0; j<mc; j++)
-	{
-		scene::IMeshBuffer *buf = mesh->getMeshBuffer(j);
-		video::S3DVertex *vertices = (video::S3DVertex*)buf->getVertices();
-		u16 vc = buf->getVertexCount();
-		for(u16 i=0; i<vc; i++)
-		{
-			vertices[i].Color = color;
-		}
-	}
+	setMeshVerticesColor(m_node->getMesh(), color);
 }
 
 v3s16 RatCAO::getLightPosition()
@@ -601,22 +571,7 @@ void Oerkki1CAO::updateLight(u8 light_at_pos)
 
 	u8 li = decode_light(light_at_pos);
 	video::SColor color(255,li,li,li);
-
-	scene::IMesh *mesh = m_node->getMesh();
-	if(mesh == NULL)
-		return;
-	
-	u16 mc = mesh->getMeshBufferCount();
-	for(u16 j=0; j<mc; j++)
-	{
-		scene::IMeshBuffer *buf = mesh->getMeshBuffer(j);
-		video::S3DVertex *vertices = (video::S3DVertex*)buf->getVertices();
-		u16 vc = buf->getVertexCount();
-		for(u16 i=0; i<vc; i++)
-		{
-			vertices[i].Color = color;
-		}
-	}
+	setMeshVerticesColor(m_node->getMesh(), color);
 }
 
 v3s16 Oerkki1CAO::getLightPosition()
@@ -833,22 +788,7 @@ void FireflyCAO::updateLight(u8 light_at_pos)
 
 	u8 li = 255;
 	video::SColor color(255,li,li,li);
-
-	scene::IMesh *mesh = m_node->getMesh();
-	if(mesh == NULL)
-		return;
-	
-	u16 mc = mesh->getMeshBufferCount();
-	for(u16 j=0; j<mc; j++)
-	{
-		scene::IMeshBuffer *buf = mesh->getMeshBuffer(j);
-		video::S3DVertex *vertices = (video::S3DVertex*)buf->getVertices();
-		u16 vc = buf->getVertexCount();
-		for(u16 i=0; i<vc; i++)
-		{
-			vertices[i].Color = color;
-		}
-	}
+	setMeshVerticesColor(m_node->getMesh(), color);
 }
 
 v3s16 FireflyCAO::getLightPosition()

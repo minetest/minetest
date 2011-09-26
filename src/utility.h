@@ -553,6 +553,9 @@ private:
 	u32 *m_result;
 };
 
+// Sets the color of all vertices in the mesh
+void setMeshVerticesColor(scene::IMesh* mesh, video::SColor& color);
+
 // Calculates the borders of a "d-radius" cube
 inline void getFacePositions(core::list<v3s16> &list, u16 d)
 {
@@ -1765,8 +1768,8 @@ inline int myrand_range(int min, int max)
 	Miscellaneous functions
 */
 
-bool isBlockInSight(v3s16 blockpos_b, v3f camera_pos, v3f camera_dir, f32 range,
-		f32 *distance_ptr=NULL);
+bool isBlockInSight(v3s16 blockpos_b, v3f camera_pos, v3f camera_dir,
+		f32 camera_fov, f32 range, f32 *distance_ptr=NULL);
 
 /*
 	Queue with unique values with fast checking of value existence

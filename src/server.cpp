@@ -582,9 +582,12 @@ void RemoteClient::GetNextBlocks(Server *server, float dtime,
 			
 			/*
 				Don't generate or send if not in sight
+				FIXME This only works if the client uses a small enough
+				FOV setting. The default of 72 degrees is fine.
 			*/
 
-			if(isBlockInSight(p, camera_pos, camera_dir, 10000*BS) == false)
+			float camera_fov = (72.0*PI/180) * 4./3.;
+			if(isBlockInSight(p, camera_pos, camera_dir, camera_fov, 10000*BS) == false)
 			{
 				continue;
 			}

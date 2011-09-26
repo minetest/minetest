@@ -189,8 +189,6 @@ Client::Client(
 	),
 	m_con(PROTOCOL_ID, 512, CONNECTION_TIMEOUT, this),
 	m_device(device),
-	camera_position(0,0,0),
-	camera_direction(0,0,1),
 	m_server_ser_ver(SER_FMT_VER_INVALID),
 	m_inventory_updated(false),
 	m_time_of_day(0),
@@ -1981,11 +1979,14 @@ void Client::addNode(v3s16 p, MapNode n)
 	}
 }
 	
-void Client::updateCamera(v3f pos, v3f dir)
+void Client::updateCamera(v3f pos, v3f dir, f32 fov)
 {
-	m_env.getClientMap().updateCamera(pos, dir);
-	camera_position = pos;
-	camera_direction = dir;
+	m_env.getClientMap().updateCamera(pos, dir, fov);
+}
+
+void Client::renderPostFx()
+{
+	m_env.getClientMap().renderPostFx();
 }
 
 MapNode Client::getNode(v3s16 p)
@@ -1999,14 +2000,9 @@ NodeMetadata* Client::getNodeMetadata(v3s16 p)
 	return m_env.getMap().getNodeMetadata(p);
 }
 
-v3f Client::getPlayerPosition(v3f *eye_position)
+LocalPlayer* Client::getLocalPlayer()
 {
-	//JMutexAutoLock envlock(m_env_mutex); //bulk comment-out
-	LocalPlayer *player = m_env.getLocalPlayer();
-	assert(player != NULL);
-	if (eye_position)
-		*eye_position = player->getEyePosition();
-	return player->getPosition();
+	return m_env.getLocalPlayer();
 }
 
 void Client::setPlayerControl(PlayerControl &control)

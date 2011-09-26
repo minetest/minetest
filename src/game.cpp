@@ -28,6 +28,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "materials.h"
 #include "config.h"
 #include "clouds.h"
+#include "camera.h"
 #include "farmesh.h"
 #include "mapblock.h"
 
@@ -48,8 +49,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 */
 #define FIELD_OF_VIEW_TEST 0
 
-
-MapDrawControl draw_control;
 
 // Chat data
 struct ChatLine
@@ -142,144 +141,6 @@ struct TextDestSignNode : public TextDest
 	v3s16 m_p;
 	Client *m_client;
 };
-
-/*
-	Render distance feedback loop
-*/
-void updateViewingRange(f32 frametime_in, Client *client)
-{
-	if(draw_control.range_all == true)
-		return;
-	
-	static f32 added_frametime = 0;
-	static s16 added_frames = 0;
-
-	added_frametime += frametime_in;
-	added_frames += 1;
-
-	// Actually this counter kind of sucks because frametime is busytime
-	static f32 counter = 0;
-	counter -= frametime_in;
-	if(counter > 0)
-		return;
-	//counter = 0.1;
-	counter = 0.2;
-
-	/*dstream<<__FUNCTION_NAME
-			<<": Collected "<<added_frames<<" frames, total of "
-			<<added_frametime<<"s."<<std::endl;*/
-	
-	/*dstream<<"draw_control.blocks_drawn="
-			<<draw_control.blocks_drawn
-			<<", draw_control.blocks_would_have_drawn="
-			<<draw_control.blocks_would_have_drawn
-			<<std::endl;*/
-	
-	float range_min = g_settings.getS16("viewing_range_nodes_min");
-	float range_max = g_settings.getS16("viewing_range_nodes_max");
-	
-	// Limit minimum to keep the feedback loop stable
-	if(range_min < 5)
-		range_min = 5;
-	
-	draw_control.wanted_min_range = range_min;
-	//draw_control.wanted_max_blocks = (1.5*draw_control.blocks_drawn)+1;
-	draw_control.wanted_max_blocks = (1.5*draw_control.blocks_would_have_drawn)+1;
-	if(draw_control.wanted_max_blocks < 10)
-		draw_control.wanted_max_blocks = 10;
-	
-	float block_draw_ratio = 1.0;
-	if(draw_control.blocks_would_have_drawn != 0)
-	{
-		block_draw_ratio = (float)draw_control.blocks_drawn
-			/ (float)draw_control.blocks_would_have_drawn;
-	}
-
-	// Calculate the average frametime in the case that all wanted
-	// blocks had been drawn
-	f32 frametime = added_frametime / added_frames / block_draw_ratio;
-	
-	added_frametime = 0.0;
-	added_frames = 0;
-	
-	float wanted_fps = g_settings.getFloat("wanted_fps");
-	float wanted_frametime = 1.0 / wanted_fps;
-	
-	f32 wanted_frametime_change = wanted_frametime - frametime;
-	//dstream<<"wanted_frametime_change="<<wanted_frametime_change<<std::endl;
-	
-	// If needed frametime change is small, just return
-	if(fabs(wanted_frametime_change) < wanted_frametime*0.4)
-	{
-		//dstream<<"ignoring small wanted_frametime_change"<<std::endl;
-		return;
-	}
-
-	float range = draw_control.wanted_range;
-	float new_range = range;
-
-	static s16 range_old = 0;
-	static f32 frametime_old = 0;
-	
-	float d_range = range - range_old;
-	f32 d_frametime = frametime - frametime_old;
-	// A sane default of 30ms per 50 nodes of range
-	static f32 time_per_range = 30. / 50;
-	if(d_range != 0)
-	{
-		time_per_range = d_frametime / d_range;
-	}
-	
-	// The minimum allowed calculated frametime-range derivative:
-	// Practically this sets the maximum speed of changing the range.
-	// The lower this value, the higher the maximum changing speed.
-	// A low value here results in wobbly range (0.001)
-	// A high value here results in slow changing range (0.0025)
-	// SUGG: This could be dynamically adjusted so that when
-	//       the camera is turning, this is lower
-	//float min_time_per_range = 0.0015;
-	float min_time_per_range = 0.0010;
-	//float min_time_per_range = 0.05 / range;
-	if(time_per_range < min_time_per_range)
-	{
-		time_per_range = min_time_per_range;
-		//dstream<<"time_per_range="<<time_per_range<<" (min)"<<std::endl;
-	}
-	else
-	{
-		//dstream<<"time_per_range="<<time_per_range<<std::endl;
-	}
-
-	f32 wanted_range_change = wanted_frametime_change / time_per_range;
-	// Dampen the change a bit to kill oscillations
-	//wanted_range_change *= 0.9;
-	//wanted_range_change *= 0.75;
-	wanted_range_change *= 0.5;
-	//dstream<<"wanted_range_change="<<wanted_range_change<<std::endl;
-
-	// If needed range change is very small, just return
-	if(fabs(wanted_range_change) < 0.001)
-	{
-		//dstream<<"ignoring small wanted_range_change"<<std::endl;
-		return;
-	}
-
-	new_range += wanted_range_change;
-	
-	//float new_range_unclamped = new_range;
-	if(new_range < range_min)
-		new_range = range_min;
-	if(new_range > range_max)
-		new_range = range_max;
-	
-	/*dstream<<"new_range="<<new_range_unclamped
-			<<", clamped to "<<new_range<<std::endl;*/
-
-	draw_control.wanted_range = new_range;
-
-	range_old = new_range;
-	frametime_old = frametime;
-}
 
 /*
 	Hotbar draw routine
@@ -847,6 +708,7 @@ void the_game(
 
 	draw_load_screen(L"Creating client...", driver, font);
 	std::cout<<DTIME<<"Creating client"<<std::endl;
+	MapDrawControl draw_control;
 	Client client(device, playername.c_str(), password, draw_control);
 			
 	draw_load_screen(L"Resolving address...", driver, font);
@@ -950,25 +812,10 @@ void the_game(
 	/*
 		Create the camera node
 	*/
-
-	scene::ICameraSceneNode* camera = smgr->addCameraSceneNode(
-		0, // Camera parent
-		v3f(BS*100, BS*2, BS*100), // Look from
-		v3f(BS*100+1, BS*2, BS*100), // Look to
-		-1 // Camera ID
-   	);
-
-	if(camera == NULL)
-	{
-		error_message = L"Failed to create the camera node";
+	Camera camera(smgr, draw_control);
+	if (!camera.successfullyCreated(error_message))
 		return;
-	}
 
-	camera->setFOV(FOV_ANGLE);
-
-	// Just so big a value that everything rendered is visible
-	camera->setFarValue(100000*BS);
-	
 	f32 camera_yaw = 0; // "right/left"
 	f32 camera_pitch = 0; // "up/down"
 
@@ -1168,12 +1015,6 @@ void the_game(
 		// Necessary for device->getTimer()->getTime()
 		device->run();
 
-		/*
-			Viewing range
-		*/
-		
-		updateViewingRange(busytime, &client);
-		
 		/*
 			FPS limiter
 		*/
@@ -1496,6 +1337,57 @@ void the_game(
 		}
 
 		/*
+			Mouse and camera control
+			NOTE: Do this before client.setPlayerControl() to not cause a camera lag of one frame
+		*/
+		
+		if((device->isWindowActive() && noMenuActive()) || random_input)
+		{
+			if(!random_input)
+			{
+				// Mac OSX gets upset if this is set every frame
+				if(device->getCursorControl()->isVisible())
+					device->getCursorControl()->setVisible(false);
+			}
+
+			if(first_loop_after_window_activation){
+				//std::cout<<"window active, first loop"<<std::endl;
+				first_loop_after_window_activation = false;
+			}
+			else{
+				s32 dx = input->getMousePos().X - displaycenter.X;
+				s32 dy = input->getMousePos().Y - displaycenter.Y;
+				if(invert_mouse)
+					dy = -dy;
+				//std::cout<<"window active, pos difference "<<dx<<","<<dy<<std::endl;
+				
+				/*const float keyspeed = 500;
+				if(input->isKeyDown(irr::KEY_UP))
+					dy -= dtime * keyspeed;
+				if(input->isKeyDown(irr::KEY_DOWN))
+					dy += dtime * keyspeed;
+				if(input->isKeyDown(irr::KEY_LEFT))
+					dx -= dtime * keyspeed;
+				if(input->isKeyDown(irr::KEY_RIGHT))
+					dx += dtime * keyspeed;*/
+
+				camera_yaw -= dx*0.2;
+				camera_pitch += dy*0.2;
+				if(camera_pitch < -89.5) camera_pitch = -89.5;
+				if(camera_pitch > 89.5) camera_pitch = 89.5;
+			}
+			input->setMousePos(displaycenter.X, displaycenter.Y);
+		}
+		else{
+			// Mac OSX gets upset if this is set every frame
+			if(device->getCursorControl()->isVisible() == false)
+				device->getCursorControl()->setVisible(true);
+
+			//std::cout<<"window inactive"<<std::endl;
+			first_loop_after_window_activation = true;
+		}
+
+		/*
 			Player speed control
 			TODO: Cache the keycodes from getKeySetting
 		*/
@@ -1565,81 +1457,27 @@ void the_game(
 			}
 		}
 		
-		// Get player position
-		v3f camera_position;
-		v3f player_position = client.getPlayerPosition(&camera_position);
-
 		//TimeTaker //timer2("//timer2");
 
-		/*
-			Mouse and camera control
-		*/
-		
-		if((device->isWindowActive() && noMenuActive()) || random_input)
+		LocalPlayer* player = client.getLocalPlayer();
+		camera.update(player, busytime, screensize);
+		camera.step(dtime);
+
+		v3f player_position = player->getPosition();
+		v3f camera_position = camera.getPosition();
+		v3f camera_direction = camera.getDirection();
+		f32 camera_fov = camera.getFovMax();
+
+		if(FIELD_OF_VIEW_TEST)
 		{
-			if(!random_input)
-			{
-				// Mac OSX gets upset if this is set every frame
-				if(device->getCursorControl()->isVisible())
-					device->getCursorControl()->setVisible(false);
-			}
-
-			if(first_loop_after_window_activation){
-				//std::cout<<"window active, first loop"<<std::endl;
-				first_loop_after_window_activation = false;
-			}
-			else{
-				s32 dx = input->getMousePos().X - displaycenter.X;
-				s32 dy = input->getMousePos().Y - displaycenter.Y;
-				if(invert_mouse)
-					dy = -dy;
-				//std::cout<<"window active, pos difference "<<dx<<","<<dy<<std::endl;
-				
-				/*const float keyspeed = 500;
-				if(input->isKeyDown(irr::KEY_UP))
-					dy -= dtime * keyspeed;
-				if(input->isKeyDown(irr::KEY_DOWN))
-					dy += dtime * keyspeed;
-				if(input->isKeyDown(irr::KEY_LEFT))
-					dx -= dtime * keyspeed;
-				if(input->isKeyDown(irr::KEY_RIGHT))
-					dx += dtime * keyspeed;*/
-
-				camera_yaw -= dx*0.2;
-				camera_pitch += dy*0.2;
-				if(camera_pitch < -89.5) camera_pitch = -89.5;
-				if(camera_pitch > 89.5) camera_pitch = 89.5;
-			}
-			input->setMousePos(displaycenter.X, displaycenter.Y);
+			client.updateCamera(v3f(0,0,0), v3f(0,0,1), camera_fov);
 		}
-		else{
-			// Mac OSX gets upset if this is set every frame
-			if(device->getCursorControl()->isVisible() == false)
-				device->getCursorControl()->setVisible(true);
-
-			//std::cout<<"window inactive"<<std::endl;
-			first_loop_after_window_activation = true;
+		else
+		{
+			client.updateCamera(camera_position,
+				camera_direction, camera_fov);
 		}
 
-		camera_yaw = wrapDegrees(camera_yaw);
-		camera_pitch = wrapDegrees(camera_pitch);
-		
-		v3f camera_direction = v3f(0,0,1);
-		camera_direction.rotateYZBy(camera_pitch);
-		camera_direction.rotateXZBy(camera_yaw);
-
-		camera->setPosition(camera_position);
-		// *100.0 helps in large map coordinates
-		camera->setTarget(camera_position + camera_direction * 100.0);
-
-		if(FIELD_OF_VIEW_TEST){
-			client.updateCamera(v3f(0,0,0), v3f(0,0,1));
-		}
-		else{
-			//TimeTaker timer("client.updateCamera");
-			client.updateCamera(camera_position, camera_direction);
-		}
-		
 		//timer2.stop();
 		//TimeTaker //timer3("//timer3");
 
@@ -1917,8 +1755,11 @@ void the_game(
 					}
 
 					dig_time += dtime;
+
+					camera.setDigging(0);  // left click animation
 				}
 			}
+			
 			
 			if(input->getRightClicked())
 			{
@@ -1978,16 +1819,20 @@ void the_game(
 				else
 				{
 					client.groundAction(1, nodepos, neighbourpos, g_selected_item);
+					camera.setDigging(1);  // right click animation
 				}
 			}
 			
 			nodepos_old = nodepos;
 		}
-		else{
-		}
 
 		} // selected_object == NULL
 		
+		if(input->getLeftClicked())
+		{
+			camera.setDigging(0); // left click animation
+		}
+
 		input->resetLeftClicked();
 		input->resetRightClicked();
 		
@@ -2010,8 +1855,6 @@ void the_game(
 			Calculate stuff for drawing
 		*/
 
-		camera->setAspectRatio((f32)screensize.X / (f32)screensize.Y);
-		
 		u32 daynight_ratio = client.getDayNightRatio();
 		u8 l = decode_light((daynight_ratio * LIGHT_SUN) / 1000);
 		video::SColor bgcolor = video::SColor(
@@ -2032,7 +1875,7 @@ void the_game(
 			update_skybox(driver, smgr, skybox, brightness);
 
 		/*
-			Update coulds
+			Update clouds
 		*/
 		if(clouds)
 		{
@@ -2102,7 +1945,6 @@ void the_game(
 				false // range fog
 			);
 		}
-
 
 		/*
 			Update gui stuff (0ms)
@@ -2249,6 +2091,13 @@ void the_game(
 			old_selected_item = g_selected_item;
 			//std::cout<<"Updating local inventory"<<std::endl;
 			client.getLocalInventory(local_inventory);
+
+			// Update wielded tool
+			InventoryList *mlist = local_inventory.getList("main");
+			InventoryItem *item = NULL;
+			if(mlist != NULL)
+				item = mlist->getItem(g_selected_item);
+			camera.wield(item);
 		}
 		
 		/*
@@ -2314,6 +2163,21 @@ void the_game(
 		}
 
 		/*
+			Wielded tool
+		*/
+		{
+			// Warning: This clears the Z buffer.
+			camera.drawWieldedTool();
+		}
+
+		/*
+			Post effects
+		*/
+		{
+			client.renderPostFx();
+		}
+
+		/*
 			Frametime log
 		*/
 		if(g_settings.getBool("frametime_graph") == true)
@@ -2352,13 +2216,6 @@ void the_game(
 		// 0-1ms
 		guienv->drawAll();
 
-		/*
-			Environment post fx
-		*/
-		{
-			client.getEnv()->drawPostFx(driver, camera_position);
-		}
-		
 		/*
 			Draw hotbar
 		*/

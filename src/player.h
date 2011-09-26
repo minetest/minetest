@@ -67,12 +67,17 @@ public:
 		return floatToInt(m_position + v3f(0,BS+BS/2,0), BS);
 	}
 
-	v3f getEyePosition()
+	v3f getEyeOffset()
 	{
 		// This is at the height of the eyes of the current figure
-		// return m_position + v3f(0, BS+BS/2, 0);
+		// return v3f(0, BS+BS/2, 0);
 		// This is more like in minecraft
-		return m_position + v3f(0,BS+(5*BS)/8,0);
+		return v3f(0,BS+(5*BS)/8,0);
+	}
+
+	v3f getEyePosition()
+	{
+		return m_position + getEyeOffset();
 	}
 
 	virtual void setPosition(const v3f &position)
@@ -121,7 +126,10 @@ public:
 
 	virtual bool isLocal() const = 0;
 
-	virtual void updateLight(u8 light_at_pos) {};
+	virtual void updateLight(u8 light_at_pos)
+	{
+		light = light_at_pos;
+	}
 	
 	// NOTE: Use peer_id == 0 for disconnected
 	/*virtual bool isClientConnected() { return false; }
@@ -144,6 +152,8 @@ public:
 	bool swimming_up;
 	bool is_frozen;
 	
+	u8 light;
+
 	Inventory inventory;
 	// Actual inventory is backed up here when creative mode is used
 	Inventory *inventory_backup;
@@ -261,25 +271,14 @@ public:
 
 	virtual void updateLight(u8 light_at_pos)
 	{
+		Player::updateLight(light_at_pos);
+
 		if(m_node == NULL)
 			return;
 
 		u8 li = decode_light(light_at_pos);
 		video::SColor color(255,li,li,li);
-
-		scene::IMesh *mesh = m_node->getMesh();
-		
-		u16 mc = mesh->getMeshBufferCount();
-		for(u16 j=0; j<mc; j++)
-		{
-			scene::IMeshBuffer *buf = mesh->getMeshBuffer(j);
-			video::S3DVertex *vertices = (video::S3DVertex*)buf->getVertices();
-			u16 vc = buf->getVertexCount();
-			for(u16 i=0; i<vc; i++)
-			{
-				vertices[i].Color = color;
-			}
-		}
+		setMeshVerticesColor(m_node->getMesh(), color);
 	}
 	
 	void move(f32 dtime, Map &map, f32 pos_max_d);
@@ -356,7 +355,7 @@ public:
 	{
 		return true;
 	}
-
+	
 	void move(f32 dtime, Map &map, f32 pos_max_d,
 			core::list<CollisionInfo> *collision_info);
 	void move(f32 dtime, Map &map, f32 pos_max_d);

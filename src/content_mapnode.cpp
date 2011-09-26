@@ -236,6 +236,8 @@ void content_mapnode_init()
 	if(new_style_leaves)
 	{
 		f->solidness = 0; // drawn separately, makes no faces
+		f->visual_solidness = 1;
+		f->setAllTextures("leaves.png");
 		f->setInventoryTextureCube("leaves.png", "leaves.png", "leaves.png");
 	}
 	else
@@ -287,6 +289,8 @@ void content_mapnode_init()
 	f->is_ground_content = true;
 	f->dug_item = std::string("MaterialItem2 ")+itos(i)+" 1";
 	f->solidness = 0; // drawn separately, makes no faces
+	f->visual_solidness = 1;
+	f->setAllTextures("glass.png");
 	f->setInventoryTextureCube("glass.png", "glass.png", "glass.png");
 	setWoodLikeDiggingProperties(f->digging_properties, 0.15);
 
@@ -385,6 +389,7 @@ void content_mapnode_init()
 	f->liquid_alternative_source = CONTENT_WATERSOURCE;
 	f->liquid_viscosity = WATER_VISC;
 	f->vertex_alpha = WATER_ALPHA;
+	f->post_effect_color = video::SColor(64, 100, 100, 200);
 	if(f->special_material == NULL && g_texturesource)
 	{
 		// Flowing water material
@@ -433,6 +438,7 @@ void content_mapnode_init()
 	f->liquid_alternative_source = CONTENT_WATERSOURCE;
 	f->liquid_viscosity = WATER_VISC;
 	f->vertex_alpha = WATER_ALPHA;
+	f->post_effect_color = video::SColor(64, 100, 100, 200);
 	if(f->special_material == NULL && g_texturesource)
 	{
 		// Flowing water material
@@ -465,6 +471,7 @@ void content_mapnode_init()
 	f->liquid_alternative_source = CONTENT_LAVASOURCE;
 	f->liquid_viscosity = LAVA_VISC;
 	f->damage_per_second = 4*2;
+	f->post_effect_color = video::SColor(192, 255, 64, 0);
 	if(f->special_material == NULL && g_texturesource)
 	{
 		// Flowing lava material
@@ -514,6 +521,7 @@ void content_mapnode_init()
 	f->liquid_alternative_source = CONTENT_LAVASOURCE;
 	f->liquid_viscosity = LAVA_VISC;
 	f->damage_per_second = 4*2;
+	f->post_effect_color = video::SColor(192, 255, 64, 0);
 	if(f->special_material == NULL && g_texturesource)
 	{
 		// Flowing lava material

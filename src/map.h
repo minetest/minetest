@@ -518,11 +518,12 @@ public:
 		ISceneNode::drop();
 	}
 
-	void updateCamera(v3f pos, v3f dir)
+	void updateCamera(v3f pos, v3f dir, f32 fov)
 	{
 		JMutexAutoLock lock(m_camera_mutex);
 		m_camera_position = pos;
 		m_camera_direction = dir;
+		m_camera_fov = fov;
 	}
 
 	/*
@@ -551,6 +552,8 @@ public:
 	}
 
 	void renderMap(video::IVideoDriver* driver, s32 pass);
+
+	void renderPostFx();
 
 	/*
 		Methods for setting temporary modifications to nodes for
@@ -601,6 +604,7 @@ private:
 
 	v3f m_camera_position;
 	v3f m_camera_direction;
+	f32 m_camera_fov;
 	JMutex m_camera_mutex;
 	
 	core::map<v2s16, bool> m_last_drawn_sectors;

@@ -1687,18 +1687,19 @@ void ClientEnvironment::step(float dtime)
 			// Move
 			player->move(dtime, *m_map, 100*BS);
 
-			// Update lighting on remote players on client
-			u8 light = LIGHT_MAX;
-			try{
-				// Get node at head
-				v3s16 p = player->getLightPosition();
-				MapNode n = m_map->getNode(p);
-				light = n.getLightBlend(getDayNightRatio());
-			}
-			catch(InvalidPositionException &e) {}
-			player->updateLight(light);
 		}
 		
+		// Update lighting on all players on client
+		u8 light = LIGHT_MAX;
+		try{
+			// Get node at head
+			v3s16 p = player->getLightPosition();
+			MapNode n = m_map->getNode(p);
+			light = n.getLightBlend(getDayNightRatio());
+		}
+		catch(InvalidPositionException &e) {}
+		player->updateLight(light);
+
 		/*
 			Add footsteps to grass
 		*/
@@ -1939,29 +1940,6 @@ ClientEnvEvent ClientEnvironment::getClientEvent()
 		return event;
 	}
 	return m_client_event_queue.pop_front();
-}
-
-void ClientEnvironment::drawPostFx(video::IVideoDriver* driver, v3f camera_pos)
-{
-	/*LocalPlayer *player = getLocalPlayer();
-	assert(player);
-	v3f pos_f = player->getPosition() + v3f(0,BS*1.625,0);*/
-	v3f pos_f = camera_pos;
-	v3s16 p_nodes = floatToInt(pos_f, BS);
-	MapNode n = m_map->getNodeNoEx(p_nodes);
-	if(n.getContent() == CONTENT_WATER || n.getContent() == CONTENT_WATERSOURCE)
-	{
-		v2u32 ss = driver->getScreenSize();
-		core::rect<s32> rect(0,0, ss.X, ss.Y);
-		driver->draw2DRectangle(video::SColor(64, 100, 100, 200), rect);
-	}
-	else if(content_features(n).solidness == 2 &&
-			g_settings.getBool("free_move") == false)
-	{
-		v2u32 ss = driver->getScreenSize();
-		core::rect<s32> rect(0,0, ss.X, ss.Y);
-		driver->draw2DRectangle(video::SColor(255, 0, 0, 0), rect);
-	}
 }
 
 #endif // #ifndef SERVER
