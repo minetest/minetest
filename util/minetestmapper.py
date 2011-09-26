@@ -56,6 +56,25 @@ TRANSLATION_TABLE = {
     28: 0x813,  # CONTENT_PAPYRUS
     29: 0x814}  # CONTENT_BOOKSHELF
 
+class Bytestream:
+    def __init__(self, stream):
+        self.stream = stream
+        self.pos = 0
+        
+        # So you can use files also
+        if hasattr(self.stream, 'read'):
+            self.read = self.stream.read
+    
+    def __len__(self):
+        return len(self.stream)
+    
+    def read(self, length = None):
+        if length is None:
+            length = len(self)
+        self.pos += length
+        return self.stream[self.pos - length:self.pos]
+    
+    def close(self): pass
 
 def hex_to_int(h):
     i = int(h, 16)
@@ -170,9 +189,9 @@ if path[-1:] != "/" and path[-1:] != "\\":
 # Load color information for the blocks.
 colors = {}
 try:
-	f = file("colors.txt")
+    f = file("colors.txt")
 except IOError:
-	f = file(os.path.join(os.path.dirname(__file__), "colors.txt"))
+    f = file(os.path.join(os.path.dirname(__file__), "colors.txt"))
 for line in f:
     values = string.split(line)
     colors[int(values[0], 16)] = (
@@ -200,7 +219,7 @@ if os.path.exists(path + "map.sqlite"):
         if not r:
             break
         
-        x, y, z = getIntegerAsBlock	(r[0])
+        x, y, z = getIntegerAsBlock(r[0])
         
         if x < sector_xmin or x > sector_xmax:
             continue
@@ -232,6 +251,9 @@ if os.path.exists(path + "sectors"):
             continue
         xlist.append(x)
         zlist.append(z)
+
+# Get rid of doubles
+xlist, zlist = zip(*sorted(set(zip(xlist, zlist))))
 
 minx = min(xlist)
 minz = min(zlist)
@@ -382,7 +404,8 @@ for n in range(len(xlist)):
     if sectortype == "":
         continue
 
-    ylist.sort()
+	#ylist.sort()
+	ylist = sorted(set(ylist))
 
     # Make a list of pixels of the sector that are to be looked for.
     pixellist = []
@@ -405,17 +428,14 @@ for n in range(len(xlist)):
             r = cur.fetchone()
             if not r:
                 continue
-            filename = "mtm_tmp"
-            f = file(filename, 'wb')
-            f.write(r[0])
-            f.close()
+            f = Bytestream(r[0])
         else:
             if sectortype == "old":
                 filename = path + "sectors/" + sector1 + "/" + yhex.lower()
             else:
                 filename = path + "sectors2/" + sector2 + "/" + yhex.lower()
 
-        f = file(filename, "rb")
+            f = file(filename, "rb")
 
         # Let's just memorize these even though it's not really necessary.
         version = ord(f.read(1))
@@ -441,12 +461,7 @@ for n in range(len(xlist)):
             r = cur.fetchone()
             if not r:
                 continue
-            filename = "mtm_tmp"
-            f = file(filename, 'wb')
-            f.write(r[0])
-            f.close()
-            
-            f = file(filename, "rb")
+            f = Bytestream(r[0])
 
             version = ord(f.read(1))
             flags = f.read(1)
@@ -566,9 +581,6 @@ if drawplayers:
             f.close()
     except OSError:
         pass
-
-if os.path.isfile("mtm_tmp"):
-    os.remove("mtm_tmp")
 
 print "Saving"
 im.save(output)
