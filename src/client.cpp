@@ -1963,7 +1963,8 @@ void Client::addNode(v3s16 p, MapNode n)
 	try
 	{
 		//TimeTaker timer3("Client::addNode(): addNodeAndUpdate");
-		m_env.getMap().addNodeAndUpdate(p, n, modified_blocks);
+		std::string st = std::string("");
+		m_env.getMap().addNodeAndUpdate(p, n, modified_blocks, st);
 	}
 	catch(InvalidPositionException &e)
 	{}

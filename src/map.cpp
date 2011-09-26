@@ -890,7 +890,7 @@ void Map::updateLighting(core::map<v3s16, MapBlock*> & a_blocks,
 /*
 */
 void Map::addNodeAndUpdate(v3s16 p, MapNode n,
-		core::map<v3s16, MapBlock*> &modified_blocks)
+		core::map<v3s16, MapBlock*> &modified_blocks, std::string &player_name)
 {
 	/*PrintInfo(m_dout);
 	m_dout<<DTIME<<"Map::addNodeAndUpdate(): p=("
@@ -1014,6 +1014,7 @@ void Map::addNodeAndUpdate(v3s16 p, MapNode n,
 	if(meta_proto)
 	{
 		NodeMetadata *meta = meta_proto->clone();
+		meta->setOwner(player_name);
 		setNodeMetadata(p, meta);
 	}
 
@@ -1290,7 +1291,8 @@ bool Map::addNodeWithEvent(v3s16 p, MapNode n)
 	bool succeeded = true;
 	try{
 		core::map<v3s16, MapBlock*> modified_blocks;
-		addNodeAndUpdate(p, n, modified_blocks);
+		std::string st = std::string("");
+		addNodeAndUpdate(p, n, modified_blocks, st);
 
 		// Copy modified_blocks to event
 		for(core::map<v3s16, MapBlock*>::Iterator

@@ -2881,7 +2881,8 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 				{
 					MapEditEventIgnorer ign(&m_ignore_map_edit_events);
 
-					m_env.getMap().addNodeAndUpdate(p_over, n, modified_blocks);
+					std::string p_name = std::string(player->getName());
+					m_env.getMap().addNodeAndUpdate(p_over, n, modified_blocks, p_name);
 				}
 				/*
 					Set blocks not sent to far players
@@ -3208,7 +3209,46 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 				}
 				// Disallow moving items if not allowed to build
 				else if((getPlayerPrivs(player) & PRIV_BUILD) == 0)
+				{
 					return;
+				}
+				// if it's a locking chest, only allow the owner or server admins to move items
+				else if (ma->from_inv != "current_player" && (getPlayerPrivs(player) & PRIV_SERVER) == 0)
+				{
+					Strfnd fn(ma->from_inv);
+					std::string id0 = fn.next(":");
+					if(id0 == "nodemeta")
+					{
+						v3s16 p;
+						p.X = stoi(fn.next(","));
+						p.Y = stoi(fn.next(","));
+						p.Z = stoi(fn.next(","));
+						NodeMetadata *meta = m_env.getMap().getNodeMetadata(p);
+						if(meta && meta->typeId() == CONTENT_LOCKABLE_CHEST) {
+							LockingChestNodeMetadata *lcm = (LockingChestNodeMetadata*)meta;
+							if (lcm->getOwner() != player->getName())
+								return;
+						}
+					}
+				}
+				else if (ma->to_inv != "current_player" && (getPlayerPrivs(player) & PRIV_SERVER) == 0)
+				{
+					Strfnd fn(ma->to_inv);
+					std::string id0 = fn.next(":");
+					if(id0 == "nodemeta")
+					{
+						v3s16 p;
+						p.X = stoi(fn.next(","));
+						p.Y = stoi(fn.next(","));
+						p.Z = stoi(fn.next(","));
+						NodeMetadata *meta = m_env.getMap().getNodeMetadata(p);
+						if(meta && meta->typeId() == CONTENT_LOCKABLE_CHEST) {
+							LockingChestNodeMetadata *lcm = (LockingChestNodeMetadata*)meta;
+							if (lcm->getOwner() != player->getName())
+								return;
+						}
+					}
+				}
 			}
 			
 			if(disable_action == false)

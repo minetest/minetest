@@ -65,6 +65,9 @@ public:
 	// Used to make custom inventory menus.
 	// See format in guiInventoryMenu.cpp.
 	virtual std::string getInventoryDrawSpecString(){return "";}
+	// primarily used for locking chests, but others can play too
+	virtual std::string getOwner(){ return std::string(""); }
+	virtual void setOwner(std::string t){  }
 
 protected:
 	static void registerType(u16 id, Factory f);
