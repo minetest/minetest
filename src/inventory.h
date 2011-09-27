@@ -368,7 +368,7 @@ public:
 		else if(m_toolname == "WShovel")
 			return "tool_woodshovel.png";
 		else if(m_toolname == "WBucket")
-			basename = "bucket.png";
+			return "bucket.png";
 		else if(m_toolname == "STShovel")
 			return "tool_stoneshovel.png";
 		else if(m_toolname == "SteelShovel")
