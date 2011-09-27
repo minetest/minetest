@@ -43,6 +43,7 @@ MapNode mapnode_translate_to_internal(MapNode n_from, u8 version);
 #define CONTENT_WATER 2
 #define CONTENT_TORCH 3
 
+#define CONTENT_WATERFOUNTAIN 8
 #define CONTENT_WATERSOURCE 9
 
 #define CONTENT_SIGN_WALL 14
