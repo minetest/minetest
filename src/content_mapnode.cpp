@@ -681,6 +681,7 @@ void content_mapnode_init()
 	i = CONTENT_JACKOLANTERN;
 	f = &content_features(i);
 	f->setAllTextures("jack_o_lantern_side.png");
+	f->setTexture(5, "jack_o_lantern_front.png"); 
 	f->setInventoryTexture("jack_o_lantern_front.png");
 	f->param_type = CPT_FACEDIR_SIMPLE;
 	f->digging_properties.set("", DiggingProperties(true, 0.0, 0));
