@@ -678,6 +678,13 @@ void content_mapnode_init()
 	f->dug_item = std::string("CraftItem apple 1");
 	f->digging_properties.set("", DiggingProperties(true, 0.0, 0));
 	
+	i = CONTENT_JACKOLANTERN;
+	f = &content_features(i);
+	f->setAllTextures("jack_o_lantern_side.png");
+	f->setInventoryTexture("jack_o_lantern_front.png");
+	f->param_type = CPT_FACEDIR_SIMPLE;
+	f->digging_properties.set("", DiggingProperties(true, 0.0, 0));
+	
 	// NOTE: Remember to add frequently used stuff to the texture atlas in tile.cpp
 	
 
