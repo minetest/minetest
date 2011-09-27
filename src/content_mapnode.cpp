@@ -374,6 +374,72 @@ void content_mapnode_init()
 	f->diggable = false;
 	f->buildable_to = true;
 	f->air_equivalent = true;
+
+	i = CONTENT_FWATER;
+	f = &content_features(i);
+	f->setInventoryTextureCube("water.png", "water.png", "water.png");
+	f->param_type = CPT_LIGHT;
+	f->light_propagates = true;
+	f->solidness = 0; // Drawn separately, makes no faces
+	f->visual_solidness = 1;
+	f->walkable = false;
+	f->pointable = false;
+	f->diggable = false;
+	f->buildable_to = true;
+	f->liquid_type = LIQUID_FLOWING;
+	f->liquid_alternative_flowing = CONTENT_FWATER;
+	f->liquid_alternative_source = CONTENT_WATERFOUNTAIN;
+	f->liquid_viscosity = WATER_VISC;
+	f->vertex_alpha = WATER_ALPHA;
+	setWaterLikeDiggingProperties(f->digging_properties, 0.5);
+	if(f->special_material == NULL && g_texturesource)
+	{
+		// Flowing water material
+		f->special_material = new video::SMaterial;
+		f->special_material->setFlag(video::EMF_LIGHTING, false);
+		f->special_material->setFlag(video::EMF_BACK_FACE_CULLING, false);
+		f->special_material->setFlag(video::EMF_BILINEAR_FILTER, false);
+		f->special_material->setFlag(video::EMF_FOG_ENABLE, true);
+		f->special_material->MaterialType = video::EMT_TRANSPARENT_VERTEX_ALPHA;
+		AtlasPointer *pa_water1 = new AtlasPointer(g_texturesource->getTexture(
+				g_texturesource->getTextureId("water.png")));
+		f->special_material->setTexture(0, pa_water1->atlas);
+		f->special_atlas = pa_water1;
+	}
+	
+
+	i = CONTENT_WATERFOUNTAIN;
+	f = &content_features(i);
+	f->setInventoryTextureCube("fountain.png", "fountain.png", "fountain.png");
+	if(new_style_water)
+	{
+		f->solidness = 0; // drawn separately, makes no faces
+	}
+	else // old style
+	{
+		f->solidness = 100;
+
+		TileSpec t;
+		if(g_texturesource)
+			t.texture = g_texturesource->getTexture("fountain.png");
+		
+		//t.alpha = WATER_ALPHA;
+		//t.material_type = MATERIAL_ALPHA_VERTEX;
+		t.material_flags &= ~MATERIAL_FLAG_BACKFACE_CULLING;
+		f->setAllTiles(t);
+	}
+	f->param_type = CPT_LIGHT;
+	f->light_propagates = true;
+	f->walkable = false;
+	//f->is_ground_content = true;	 	
+	f->dug_item = std::string("MaterialItem2 ")+itos(CONTENT_WATERFOUNTAIN)+" 1";
+	setWaterLikeDiggingProperties(f->digging_properties, 0.5);
+	f->liquid_type = LIQUID_SOURCE;
+	f->liquid_alternative_flowing = CONTENT_FWATER;
+	f->liquid_alternative_source = CONTENT_WATERFOUNTAIN;
+	f->liquid_viscosity = WATER_VISC;
+	f->vertex_alpha = WATER_ALPHA;
+	if(f->special_material == NULL && g_texturesource)
 	
 	i = CONTENT_WATER;
 	f = &content_features(i);
