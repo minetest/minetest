@@ -25,6 +25,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "mapblock.h"
 #include "serverobject.h"
 #include "content_sao.h"
+#include "mapgen.h"
 
 Environment::Environment():
 	m_time_of_day(9000)
@@ -922,7 +923,47 @@ void ServerEnvironment::step(float dtime)
 							addActiveObject(obj);
 						}
 					}
-			 }
+				}
+				/*
+				        Make trees from saplings!
+				*/
+				if(n.getContent() == CONTENT_SAPLING)
+				{
+				        if(myrand()%50 == 0)
+					{
+					        core::map<v3s16, MapBlock*> modified_blocks;
+					        v3s16 tree_p = p;
+						ManualMapVoxelManipulator vmanip(m_map);
+						v3s16 tree_blockp = getNodeBlockPos(tree_p);
+						vmanip.initialEmerge(tree_blockp - v3s16(1,1,1), tree_blockp + v3s16(1,1,1));
+						bool is_apple_tree = myrand()%4 == 0;
+						mapgen::make_tree(vmanip, tree_p, is_apple_tree);
+						vmanip.blitBackAll(&modified_blocks);
+
+						// update lighting
+						core::map<v3s16, MapBlock*> lighting_modified_blocks;
+						for(core::map<v3s16, MapBlock*>::Iterator
+						      i = modified_blocks.getIterator();
+						      i.atEnd() == false; i++)
+						{
+							lighting_modified_blocks.insert(i.getNode()->getKey(), i.getNode()->getValue());
+						}
+						m_map->updateLighting(lighting_modified_blocks, modified_blocks);
+
+						// Send a MEET_OTHER event
+						MapEditEvent event;
+						event.type = MEET_OTHER;
+						for(core::map<v3s16, MapBlock*>::Iterator
+						      i = modified_blocks.getIterator();
+						      i.atEnd() == false; i++)
+					        {
+						        v3s16 p = i.getNode()->getKey();
+							event.modified_blocks.insert(p, true);
+						}
+						m_map->dispatchEvent(&event);
+					}
+				}
+						
 			}
 		}
 	}
@@ -1345,8 +1386,6 @@ void ServerEnvironment::deactivateFarObjects(bool force_delete)
 			i.atEnd()==false; i++)
 	{
 		ServerActiveObject* obj = i.getNode()->getValue();
-		u16 id = i.getNode()->getKey();
-		v3f objectpos = obj->getBasePosition();
 
 		// This shouldn't happen but check it
 		if(obj == NULL)
@@ -1357,9 +1396,12 @@ void ServerEnvironment::deactivateFarObjects(bool force_delete)
 			continue;
 		}
 
+		u16 id = i.getNode()->getKey();		
+		v3f objectpos = obj->getBasePosition();	
+
 		// The block in which the object resides in
 		v3s16 blockpos_o = getNodeBlockPos(floatToInt(objectpos, BS));
-		
+
 		// If block is active, don't remove
 		if(m_active_blocks.contains(blockpos_o))
 			continue;
@@ -1686,18 +1728,19 @@ void ClientEnvironment::step(float dtime)
 			// Move
 			player->move(dtime, *m_map, 100*BS);
 
-			// Update lighting on remote players on client
-			u8 light = LIGHT_MAX;
-			try{
-				// Get node at head
-				v3s16 p = player->getLightPosition();
-				MapNode n = m_map->getNode(p);
-				light = n.getLightBlend(getDayNightRatio());
-			}
-			catch(InvalidPositionException &e) {}
-			player->updateLight(light);
 		}
 		
+		// Update lighting on all players on client
+		u8 light = LIGHT_MAX;
+		try{
+			// Get node at head
+			v3s16 p = player->getLightPosition();
+			MapNode n = m_map->getNode(p);
+			light = n.getLightBlend(getDayNightRatio());
+		}
+		catch(InvalidPositionException &e) {}
+		player->updateLight(light);
+
 		/*
 			Add footsteps to grass
 		*/
@@ -1938,29 +1981,6 @@ ClientEnvEvent ClientEnvironment::getClientEvent()
 		return event;
 	}
 	return m_client_event_queue.pop_front();
-}
-
-void ClientEnvironment::drawPostFx(video::IVideoDriver* driver, v3f camera_pos)
-{
-	/*LocalPlayer *player = getLocalPlayer();
-	assert(player);
-	v3f pos_f = player->getPosition() + v3f(0,BS*1.625,0);*/
-	v3f pos_f = camera_pos;
-	v3s16 p_nodes = floatToInt(pos_f, BS);
-	MapNode n = m_map->getNodeNoEx(p_nodes);
-	if(n.getContent() == CONTENT_WATER || n.getContent() == CONTENT_WATERSOURCE)
-	{
-		v2u32 ss = driver->getScreenSize();
-		core::rect<s32> rect(0,0, ss.X, ss.Y);
-		driver->draw2DRectangle(video::SColor(64, 100, 100, 200), rect);
-	}
-	else if(content_features(n).solidness == 2 &&
-			g_settings.getBool("free_move") == false)
-	{
-		v2u32 ss = driver->getScreenSize();
-		core::rect<s32> rect(0,0, ss.X, ss.Y);
-		driver->draw2DRectangle(video::SColor(255, 0, 0, 0), rect);
-	}
 }
 
 #endif // #ifndef SERVER

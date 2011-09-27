@@ -142,6 +142,7 @@ set(minetest_SRCS
 	mapblock_mesh.cpp
 	farmesh.cpp
 	keycode.cpp
+	camera.cpp
 	clouds.cpp
 	clientobject.cpp
 	guiMainMenu.cpp
@@ -188,10 +189,10 @@ if(BUILD_CLIENT)
 		${PNG_LIBRARIES}
 		${X11_LIBRARIES}
 		${GETTEXT_LIBRARY}
-		${PLATFORM_LIBS}
-		${CLIENT_PLATFORM_LIBS}
 		${JTHREAD_LIBRARY}
 		${SQLITE3_LIBRARY}
+		${PLATFORM_LIBS}
+		${CLIENT_PLATFORM_LIBS}
 	)
 endif(BUILD_CLIENT)
 
@@ -200,9 +201,9 @@ if(BUILD_SERVER)
 	target_link_libraries(
 		${PROJECT_NAME}server
 		${ZLIB_LIBRARIES}
-		${PLATFORM_LIBS}
 		${JTHREAD_LIBRARY}
 		${SQLITE3_LIBRARY}
+		${PLATFORM_LIBS}
 	)
 endif(BUILD_SERVER)
 

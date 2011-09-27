@@ -304,7 +304,7 @@ struct TileSpec
 	}
 	
 	// Sets everything else except the texture in the material
-	void applyMaterialOptions(video::SMaterial &material)
+	void applyMaterialOptions(video::SMaterial &material) const
 	{
 		if(alpha != 255 && material_type != MATERIAL_ALPHA_VERTEX)
 			dstream<<"WARNING: TileSpec: alpha != 255 "

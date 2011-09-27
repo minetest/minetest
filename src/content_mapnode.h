@@ -48,6 +48,7 @@ MapNode mapnode_translate_to_internal(MapNode n_from, u8 version);
 #define CONTENT_SIGN_WALL 14
 #define CONTENT_CHEST 15
 #define CONTENT_FURNACE 16
+#define CONTENT_LOCKABLE_CHEST 17
 
 #define CONTENT_FENCE 21
 
@@ -84,7 +85,7 @@ MapNode mapnode_translate_to_internal(MapNode n_from, u8 version);
 #define CONTENT_NC 0x817
 #define CONTENT_NC_RB 0x818
 #define CONTENT_APPLE 0x819
-
+#define CONTENT_SAPLING 0x820
 
 #endif
 

@@ -85,5 +85,10 @@ Furnace metadata:
 Chest metadata:
   TBD
 
+Locking Chest metadata:
+  u16 string_len
+  u8[string_len] string
+  TBD
+
 // END
 

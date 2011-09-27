@@ -28,6 +28,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "porting.h"
 #include "mapgen.h"
 #include "nodemetadata.h"
+#include "content_mapnode.h"
 
 /*
 	SQLite format specification:
@@ -890,7 +891,7 @@ void Map::updateLighting(core::map<v3s16, MapBlock*> & a_blocks,
 /*
 */
 void Map::addNodeAndUpdate(v3s16 p, MapNode n,
-		core::map<v3s16, MapBlock*> &modified_blocks)
+		core::map<v3s16, MapBlock*> &modified_blocks, std::string &player_name)
 {
 	/*PrintInfo(m_dout);
 	m_dout<<DTIME<<"Map::addNodeAndUpdate(): p=("
@@ -1014,6 +1015,7 @@ void Map::addNodeAndUpdate(v3s16 p, MapNode n,
 	if(meta_proto)
 	{
 		NodeMetadata *meta = meta_proto->clone();
+		meta->setOwner(player_name);
 		setNodeMetadata(p, meta);
 	}
 
@@ -1290,7 +1292,8 @@ bool Map::addNodeWithEvent(v3s16 p, MapNode n)
 	bool succeeded = true;
 	try{
 		core::map<v3s16, MapBlock*> modified_blocks;
-		addNodeAndUpdate(p, n, modified_blocks);
+		std::string st = std::string("");
+		addNodeAndUpdate(p, n, modified_blocks, st);
 
 		// Copy modified_blocks to event
 		for(core::map<v3s16, MapBlock*>::Iterator
@@ -3604,7 +3607,8 @@ ClientMap::ClientMap(
 	m_client(client),
 	m_control(control),
 	m_camera_position(0,0,0),
-	m_camera_direction(0,0,1)
+	m_camera_direction(0,0,1),
+	m_camera_fov(PI)
 {
 	m_camera_mutex.Init();
 	assert(m_camera_mutex.IsInitialized());
@@ -3713,6 +3717,7 @@ void ClientMap::renderMap(video::IVideoDriver* driver, s32 pass)
 	m_camera_mutex.Lock();
 	v3f camera_position = m_camera_position;
 	v3f camera_direction = m_camera_direction;
+	f32 camera_fov = m_camera_fov;
 	m_camera_mutex.Unlock();
 
 	/*
@@ -3805,7 +3810,8 @@ void ClientMap::renderMap(video::IVideoDriver* driver, s32 pass)
 			
 			float d = 0.0;
 			if(isBlockInSight(block->getPos(), camera_position,
-					camera_direction, range, &d) == false)
+					camera_direction, camera_fov,
+					range, &d) == false)
 			{
 				continue;
 			}
@@ -3923,6 +3929,35 @@ void ClientMap::renderMap(video::IVideoDriver* driver, s32 pass)
 
 	/*dstream<<"renderMap(): is_transparent_pass="<<is_transparent_pass
 			<<", rendered "<<vertex_count<<" vertices."<<std::endl;*/
+}
+
+void ClientMap::renderPostFx()
+{
+	// Sadly ISceneManager has no "post effects" render pass, in that case we
+	// could just register for that and handle it in renderMap().
+
+	m_camera_mutex.Lock();
+	v3f camera_position = m_camera_position;
+	m_camera_mutex.Unlock();
+
+	MapNode n = getNodeNoEx(floatToInt(camera_position, BS));
+
+	// - If the player is in a solid node, make everything black.
+	// - If the player is in liquid, draw a semi-transparent overlay.
+	ContentFeatures& features = content_features(n);
+	video::SColor post_effect_color = features.post_effect_color;
+	if(features.solidness == 2 && g_settings.getBool("free_move") == false)
+	{
+		post_effect_color = video::SColor(255, 0, 0, 0);
+	}
+	if (post_effect_color.getAlpha() != 0)
+	{
+		// Draw a full-screen rectangle
+		video::IVideoDriver* driver = SceneManager->getVideoDriver();
+		v2u32 ss = driver->getScreenSize();
+		core::rect<s32> rect(0,0, ss.X, ss.Y);
+		driver->draw2DRectangle(post_effect_color, rect);
+	}
 }
 
 bool ClientMap::setTempMod(v3s16 p, NodeMod mod,

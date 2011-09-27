@@ -582,9 +582,12 @@ void RemoteClient::GetNextBlocks(Server *server, float dtime,
 			
 			/*
 				Don't generate or send if not in sight
+				FIXME This only works if the client uses a small enough
+				FOV setting. The default of 72 degrees is fine.
 			*/
 
-			if(isBlockInSight(p, camera_pos, camera_dir, 10000*BS) == false)
+			float camera_fov = (72.0*PI/180) * 4./3.;
+			if(isBlockInSight(p, camera_pos, camera_dir, camera_fov, 10000*BS) == false)
 			{
 				continue;
 			}
@@ -2096,10 +2099,20 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 					stringToPrivs(g_settings.get("default_privs")));
 			m_authmanager.save();
 		}
+		
+		// Enforce user limit.
+		// Don't enforce for users that have some admin right
+		if(m_clients.size() >= g_settings.getU16("max_users") &&
+				(m_authmanager.getPrivs(playername)
+					& (PRIV_SERVER|PRIV_BAN|PRIV_PRIVS)) == 0 &&
+				playername != g_settings.get("name"))
+		{
+			SendAccessDenied(m_con, peer_id, L"Too many users.");
+			return;
+		}
 
 		// Get player
 		Player *player = emergePlayer(playername, password, peer_id);
-
 
 		/*{
 			// DEBUG: Test serialization
@@ -2735,6 +2748,34 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 					UpdateCrafting(player->peer_id);
 					SendInventory(player->peer_id);
 				}
+
+				item = NULL;
+
+				if(mineral != MINERAL_NONE)
+				  item = getDiggedMineralItem(mineral);
+			
+				// If not mineral
+				if(item == NULL)
+				{
+				        std::string &extra_dug_s = content_features(material).extra_dug_item;
+					s32 extra_rarity = content_features(material).extra_dug_item_rarity;
+					if(extra_dug_s != "" && extra_rarity != 0
+					   && myrand() % extra_rarity == 0)
+					{
+				                std::istringstream is(extra_dug_s, std::ios::binary);
+						item = InventoryItem::deSerialize(is);
+					}
+				}
+			
+				if(item != NULL)
+				{
+				        // Add a item to inventory
+				        player->inventory.addItem("main", item);
+
+					// Send inventory
+					UpdateCrafting(player->peer_id);
+					SendInventory(player->peer_id);
+				}
 			}
 
 			/*
@@ -2881,7 +2922,8 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 				{
 					MapEditEventIgnorer ign(&m_ignore_map_edit_events);
 
-					m_env.getMap().addNodeAndUpdate(p_over, n, modified_blocks);
+					std::string p_name = std::string(player->getName());
+					m_env.getMap().addNodeAndUpdate(p_over, n, modified_blocks, p_name);
 				}
 				/*
 					Set blocks not sent to far players
@@ -3208,7 +3250,46 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 				}
 				// Disallow moving items if not allowed to build
 				else if((getPlayerPrivs(player) & PRIV_BUILD) == 0)
+				{
 					return;
+				}
+				// if it's a locking chest, only allow the owner or server admins to move items
+				else if (ma->from_inv != "current_player" && (getPlayerPrivs(player) & PRIV_SERVER) == 0)
+				{
+					Strfnd fn(ma->from_inv);
+					std::string id0 = fn.next(":");
+					if(id0 == "nodemeta")
+					{
+						v3s16 p;
+						p.X = stoi(fn.next(","));
+						p.Y = stoi(fn.next(","));
+						p.Z = stoi(fn.next(","));
+						NodeMetadata *meta = m_env.getMap().getNodeMetadata(p);
+						if(meta && meta->typeId() == CONTENT_LOCKABLE_CHEST) {
+							LockingChestNodeMetadata *lcm = (LockingChestNodeMetadata*)meta;
+							if (lcm->getOwner() != player->getName())
+								return;
+						}
+					}
+				}
+				else if (ma->to_inv != "current_player" && (getPlayerPrivs(player) & PRIV_SERVER) == 0)
+				{
+					Strfnd fn(ma->to_inv);
+					std::string id0 = fn.next(":");
+					if(id0 == "nodemeta")
+					{
+						v3s16 p;
+						p.X = stoi(fn.next(","));
+						p.Y = stoi(fn.next(","));
+						p.Z = stoi(fn.next(","));
+						NodeMetadata *meta = m_env.getMap().getNodeMetadata(p);
+						if(meta && meta->typeId() == CONTENT_LOCKABLE_CHEST) {
+							LockingChestNodeMetadata *lcm = (LockingChestNodeMetadata*)meta;
+							if (lcm->getOwner() != player->getName())
+								return;
+						}
+					}
+				}
 			}
 			
 			if(disable_action == false)
@@ -4109,7 +4190,7 @@ void Server::UpdateCrafting(u16 peer_id)
 		InventoryList *clist = player->inventory.getList("craft");
 		InventoryList *rlist = player->inventory.getList("craftresult");
 
-		if(rlist->getUsedSlots() == 0)
+		if(rlist && rlist->getUsedSlots() == 0)
 			player->craftresult_is_preview = true;
 
 		if(rlist && player->craftresult_is_preview)
@@ -4386,16 +4467,16 @@ void Server::handlePeerChange(PeerChange &c)
 		// Collect information about leaving in chat
 		std::wstring message;
 		{
-			std::wstring name = L"unknown";
 			Player *player = m_env.getPlayer(c.peer_id);
 			if(player != NULL)
-				name = narrow_to_wide(player->getName());
-			
-			message += L"*** ";
-			message += name;
-			message += L" left game";
-			if(c.timeout)
-				message += L" (timed out)";
+			{
+				std::wstring name = narrow_to_wide(player->getName());
+				message += L"*** ";
+				message += name;
+				message += L" left game";
+				if(c.timeout)
+					message += L" (timed out)";
+			}
 		}
 
 		/*// Delete player

@@ -29,9 +29,8 @@ import time
 import getopt
 import sys
 import array
+import cStringIO
 from PIL import Image, ImageDraw, ImageFont, ImageColor
-
-CONTENT_WATER = [2, 9]
 
 TRANSLATION_TABLE = {
     1: 0x800,  # CONTENT_GRASS
@@ -88,9 +87,19 @@ def int_to_hex4(i):
 def getBlockAsInteger(p):
     return p[2]*16777216 + p[1]*4096 + p[0]
 
-def getIntegerAsBlock(i):
-    return i%4096, int(i/4096)%4096, int(i/16777216)%4096
+def unsignedToSigned(i, max_positive):
+    if i < max_positive:
+        return i
+    else:
+        return i - 2*max_positive
 
+def getIntegerAsBlock(i):
+    x = unsignedToSigned(i % 4096, 2048)
+    i = int((i - x) / 4096)
+    y = unsignedToSigned(i % 4096, 2048)
+    i = int((i - y) / 4096)
+    z = unsignedToSigned(i % 4096, 2048)
+    return x,y,z
 
 def limit(i, l, h):
     if(i > h):
@@ -101,14 +110,15 @@ def limit(i, l, h):
 
 
 def usage():
-    print "TODO: Help"
+    print("TODO: Help")
 try:
     opts, args = getopt.getopt(sys.argv[1:], "hi:o:", ["help", "input=",
         "output=", "bgcolor=", "scalecolor=", "origincolor=",
-        "playercolor=", "draworigin", "drawplayers", "drawscale"])
-except getopt.GetoptError, err:
+        "playercolor=", "draworigin", "drawplayers", "drawscale",
+        "drawunderground"])
+except getopt.GetoptError as err:
     # print help information and exit:
-    print str(err)  # will print something like "option -a not recognized"
+    print(str(err))  # will print something like "option -a not recognized"
     usage()
     sys.exit(2)
 
@@ -122,6 +132,7 @@ playercolor = "red"
 drawscale = False
 drawplayers = False
 draworigin = False
+drawunderground = False
 
 sector_xmin = -1500 / 16
 sector_xmax = 1500 / 16
@@ -151,6 +162,8 @@ for o, a in opts:
         drawplayers = True
     elif o == "--draworigin":
         draworigin = True
+    elif o == "--drawunderground":
+        drawunderground = True
     else:
         assert False, "unhandled option"
 
@@ -160,9 +173,9 @@ if path[-1:] != "/" and path[-1:] != "\\":
 # Load color information for the blocks.
 colors = {}
 try:
-	f = file("colors.txt")
+    f = file("colors.txt")
 except IOError:
-	f = file(os.path.join(os.path.dirname(__file__), "colors.txt"))
+    f = file(os.path.join(os.path.dirname(__file__), "colors.txt"))
 for line in f:
     values = string.split(line)
     colors[int(values[0], 16)] = (
@@ -190,7 +203,7 @@ if os.path.exists(path + "map.sqlite"):
         if not r:
             break
         
-        x, y, z = getIntegerAsBlock	(r[0])
+        x, y, z = getIntegerAsBlock(r[0])
         
         if x < sector_xmin or x > sector_xmax:
             continue
@@ -223,6 +236,9 @@ if os.path.exists(path + "sectors"):
         xlist.append(x)
         zlist.append(z)
 
+# Get rid of doubles
+xlist, zlist = zip(*sorted(set(zip(xlist, zlist))))
+
 minx = min(xlist)
 minz = min(zlist)
 maxx = max(xlist)
@@ -231,7 +247,7 @@ maxz = max(zlist)
 w = (maxx - minx) * 16 + 16
 h = (maxz - minz) * 16 + 16
 
-print "w=" + str(w) + " h=" + str(h)
+print("w=" + str(w) + " h=" + str(h))
 
 im = Image.new("RGB", (w + border, h + border), bgcolor)
 draw = ImageDraw.Draw(im)
@@ -241,12 +257,15 @@ stuff = {}
 
 starttime = time.time()
 
+CONTENT_WATER = 2
 
-def data_is_air(d):
+def content_is_water(d):
+    return d in [2, 9]
+
+def content_is_air(d):
     return d in [126, 127, 254]
 
-
-def read_blocknum(mapdata, version, datapos):
+def read_content(mapdata, version, datapos):
     if version == 20:
         if mapdata[datapos] < 0x80:
             return mapdata[datapos]
@@ -258,7 +277,7 @@ def read_blocknum(mapdata, version, datapos):
         raise Exception("Unsupported map format: " + str(version))
 
 
-def read_mapdata(f, version, pixellist, water):
+def read_mapdata(f, version, pixellist, water, day_night_differs):
     global stuff  # oh my :-)
 
     dec_o = zlib.decompressobj()
@@ -270,34 +289,35 @@ def read_mapdata(f, version, pixellist, water):
     f.close()
 
     if(len(mapdata) < 4096):
-        print "bad: " + xhex + "/" + zhex + "/" + yhex + " " + \
-            str(len(mapdata))
+        print("bad: " + xhex + "/" + zhex + "/" + yhex + " " + \
+            str(len(mapdata)))
     else:
         chunkxpos = xpos * 16
         chunkypos = ypos * 16
         chunkzpos = zpos * 16
-        blocknum = 0
+        content = 0
         datapos = 0
         for (x, z) in reversed(pixellist):
             for y in reversed(range(16)):
                 datapos = x + y * 16 + z * 256
-                blocknum = read_blocknum(mapdata, version, datapos)
-                if not data_is_air(blocknum) and blocknum in colors:
-                    if blocknum in CONTENT_WATER:
-                        water[(x, z)] += 1
-                        # Add dummy stuff for drawing sea without seabed
-                        stuff[(chunkxpos + x, chunkzpos + z)] = (
-                            chunkypos + y, blocknum, water[(x, z)])
-                    else:
-                        pixellist.remove((x, z))
-                        # Memorize information on the type and height of
-                        # the block and for drawing the picture.
-                        stuff[(chunkxpos + x, chunkzpos + z)] = (
-                            chunkypos + y, blocknum, water[(x, z)])
-                        break
-                elif not data_is_air(blocknum) and blocknum not in colors:
-                    print "strange block: %s/%s/%s x: %d y: %d z: %d \
-block id: %x" % (xhex, zhex, yhex, x, y, z, blocknum)
+                content = read_content(mapdata, version, datapos)
+                if content_is_air(content):
+                    pass
+                elif content_is_water(content):
+                    water[(x, z)] += 1
+                    # Add dummy stuff for drawing sea without seabed
+                    stuff[(chunkxpos + x, chunkzpos + z)] = (
+                        chunkypos + y, content, water[(x, z)], day_night_differs)
+                elif content in colors:
+                    # Memorize information on the type and height of
+                    # the block and for drawing the picture.
+                    stuff[(chunkxpos + x, chunkzpos + z)] = (
+                        chunkypos + y, content, water[(x, z)], day_night_differs)
+                    pixellist.remove((x, z))
+                    break
+                else:
+                    print("strange block: %s/%s/%s x: %d y: %d z: %d \
+block id: %x" % (xhex, zhex, yhex, x, y, z, content))
 
 # Go through all sectors.
 for n in range(len(xlist)):
@@ -337,8 +357,9 @@ for n in range(len(xlist)):
     sectortype = ""
 
     if cur:
-        ps = getBlockAsInteger((xpos, 0, zpos))
-        cur.execute("SELECT `pos` FROM `blocks` WHERE `pos`>=? AND `pos`<?", (ps, ps + 4096))
+        psmin = getBlockAsInteger((xpos, -2048, zpos))
+        psmax = getBlockAsInteger((xpos, 2047, zpos))
+        cur.execute("SELECT `pos` FROM `blocks` WHERE `pos`>=? AND `pos`<=? AND (`pos` - ?) % 4096 = 0", (psmin, psmax, psmin))
         while True:
             r = cur.fetchone()
             if not r:
@@ -383,72 +404,39 @@ for n in range(len(xlist)):
             water[(x, z)] = 0
 
     # Go through the Y axis from top to bottom.
-    ylist2 = []
     for ypos in reversed(ylist):
 
         yhex = int_to_hex4(ypos)
 
-        filename = ""
         if sectortype == "sqlite":
             ps = getBlockAsInteger((xpos, ypos, zpos))
             cur.execute("SELECT `data` FROM `blocks` WHERE `pos`==? LIMIT 1", (ps,))
             r = cur.fetchone()
             if not r:
                 continue
-            filename = "mtm_tmp"
-            f = file(filename, 'wb')
-            f.write(r[0])
-            f.close()
+            f = cStringIO.StringIO(r[0])
         else:
             if sectortype == "old":
                 filename = path + "sectors/" + sector1 + "/" + yhex.lower()
             else:
                 filename = path + "sectors2/" + sector2 + "/" + yhex.lower()
-
-        f = file(filename, "rb")
+            f = file(filename, "rb")
 
         # Let's just memorize these even though it's not really necessary.
         version = ord(f.read(1))
         flags = f.read(1)
 
         # Checking day and night differs -flag
-        if not ord(flags) & 2:
-            ylist2.append((ypos, filename))
-            f.close()
-            continue
+        day_night_differs = ((ord(flags) & 2) != 0)
 
-        read_mapdata(f, version, pixellist, water)
+        read_mapdata(f, version, pixellist, water, day_night_differs)
 
         # After finding all the pixels in the sector, we can move on to
         # the next sector without having to continue the Y axis.
         if(len(pixellist) == 0):
             break
 
-    if len(pixellist) > 0:
-        for (ypos, filename) in ylist2:
-            ps = getBlockAsInteger((xpos, ypos, zpos))
-            cur.execute("SELECT `data` FROM `blocks` WHERE `pos`==? LIMIT 1", (ps,))
-            r = cur.fetchone()
-            if not r:
-                continue
-            filename = "mtm_tmp"
-            f = file(filename, 'wb')
-            f.write(r[0])
-            f.close()
-            
-            f = file(filename, "rb")
-
-            version = ord(f.read(1))
-            flags = f.read(1)
-
-            read_mapdata(f, version, pixellist, water)
-
-            # After finding all the pixels in the sector, we can move on
-            # to the next sector without having to continue the Y axis.
-            if(len(pixellist) == 0):
-                break
-
-print "Drawing image"
+print("Drawing image")
 # Drawing the picture
 starttime = time.time()
 n = 0
@@ -474,18 +462,29 @@ for (x, z) in stuff.iterkeys():
     n += 1
 
     (r, g, b) = colors[stuff[(x, z)][1]]
+
+    dnd = stuff[(x, z)][3]  # day/night differs?
+    if not dnd and not drawunderground:
+        if stuff[(x, z)][2] > 0:  # water
+            (r, g, b) = colors[CONTENT_WATER]
+        else:
+            continue
+
     # Comparing heights of a couple of adjacent blocks and changing
     # brightness accordingly.
     try:
+        c = stuff[(x, z)][1]
         c1 = stuff[(x - 1, z)][1]
         c2 = stuff[(x, z + 1)][1]
-        c = stuff[(x, z)][1]
-        if c1 not in CONTENT_WATER and c2 not in CONTENT_WATER and \
-            c not in CONTENT_WATER:
-            y1 = stuff[(x - 1, z)][0]
-            y2 = stuff[(x, z + 1)][0]
+        dnd1 = stuff[(x - 1, z)][3]
+        dnd2 = stuff[(x, z + 1)][3]
+        if not dnd:
+            d = -69
+        elif not content_is_water(c1) and not content_is_water(c2) and \
+            not content_is_water(c):
             y = stuff[(x, z)][0]
-
+            y1 = stuff[(x - 1, z)][0] if dnd1 else y
+            y2 = stuff[(x, z + 1)][0] if dnd2 else y
             d = ((y - y1) + (y - y2)) * 12
         else:
             d = 0
@@ -542,10 +541,10 @@ if drawplayers:
                 p = string.split(line)
                 if p[0] == "name":
                     name = p[2]
-                    print filename + ": name = " + name
+                    print(filename + ": name = " + name)
                 if p[0] == "position":
                     position = string.split(p[2][1:-1], ",")
-                    print filename + ": position = " + p[2]
+                    print(filename + ": position = " + p[2])
             if len(name) > 0 and len(position) == 3:
                 x = (int(float(position[0]) / 10 - minx * 16))
                 z = int(h - (float(position[2]) / 10 - minz * 16))
@@ -557,8 +556,5 @@ if drawplayers:
     except OSError:
         pass
 
-if os.path.isfile("mtm_tmp"):
-    os.remove("mtm_tmp")
-
-print "Saving"
+print("Saving")
 im.save(output)

@@ -59,6 +59,8 @@ void set_default_settings()
 	g_settings.setDefault("random_input", "false");
 	g_settings.setDefault("client_unload_unused_data_timeout", "600");
 	g_settings.setDefault("enable_fog", "true");
+	g_settings.setDefault("fov", "72");
+	g_settings.setDefault("view_bobbing", "true");
 	g_settings.setDefault("new_style_water", "false");
 	g_settings.setDefault("new_style_leaves", "true");
 	g_settings.setDefault("smooth_lighting", "true");
@@ -77,6 +79,7 @@ void set_default_settings()
 
 	// Server stuff
 	g_settings.setDefault("motd", "");
+	g_settings.setDefault("max_users", "20");
 	g_settings.setDefault("enable_experimental", "false");
 	g_settings.setDefault("creative_mode", "false");
 	g_settings.setDefault("enable_damage", "true");

@@ -145,6 +145,10 @@ struct ContentFeatures
 	// Inventory item string as which the node appears in inventory when dug.
 	// Mineral overrides this.
 	std::string dug_item;
+
+        // Extra dug item and its rarity
+        std::string extra_dug_item;
+        s32 extra_dug_item_rarity;
 	
 	// Initial metadata is cloned from this
 	NodeMetadata *initial_metadata;
@@ -160,6 +164,8 @@ struct ContentFeatures
 	u8 liquid_viscosity;
 	// Used currently for flowing liquids
 	u8 vertex_alpha;
+	// Post effect color, drawn when the camera is inside the node.
+	video::SColor post_effect_color;
 	// Special irrlicht material, used sometimes
 	video::SMaterial *special_material;
 	AtlasPointer *special_atlas;
@@ -197,6 +203,7 @@ struct ContentFeatures
 		liquid_alternative_source = CONTENT_IGNORE;
 		liquid_viscosity = 0;
 		vertex_alpha = 255;
+		post_effect_color = video::SColor(0, 0, 0, 0);
 		special_material = NULL;
 		special_atlas = NULL;
 		light_source = 0;

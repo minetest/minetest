@@ -62,6 +62,29 @@ private:
 	Inventory *m_inventory;
 };
 
+class LockingChestNodeMetadata : public NodeMetadata
+{
+public:
+	LockingChestNodeMetadata();
+	~LockingChestNodeMetadata();
+
+	virtual u16 typeId() const;
+	static NodeMetadata* create(std::istream &is);
+	virtual NodeMetadata* clone();
+	virtual void serializeBody(std::ostream &os);
+	virtual std::string infoText();
+	virtual Inventory* getInventory() {return m_inventory;}
+	virtual bool nodeRemovalDisabled();
+	virtual std::string getInventoryDrawSpecString();
+
+	virtual std::string getOwner(){ return m_text; }
+	virtual void setOwner(std::string t){ m_text = t; }
+
+private:
+	Inventory *m_inventory;
+	std::string m_text;
+};
+
 class FurnaceNodeMetadata : public NodeMetadata
 {
 public:
