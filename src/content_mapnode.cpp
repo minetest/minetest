@@ -685,6 +685,12 @@ void content_mapnode_init()
 	f->setInventoryTexture("jack_o_lantern_front.png");
 	f->param_type = CPT_FACEDIR_SIMPLE;
 	f->digging_properties.set("", DiggingProperties(true, 0.0, 0));
+	f->param_type = CPT_LIGHT;
+	f->light_propagates = true;
+	f->sunlight_propagates = true;
+	f->light_source = LIGHT_MAX-1;
+
+	
 	
 	// NOTE: Remember to add frequently used stuff to the texture atlas in tile.cpp
 	
