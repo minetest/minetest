@@ -35,6 +35,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 void setStoneLikeDiggingProperties(DiggingPropertiesList &list, float toughness);
 void setDirtLikeDiggingProperties(DiggingPropertiesList &list, float toughness);
 void setWoodLikeDiggingProperties(DiggingPropertiesList &list, float toughness);
+void setWaterLikeDiggingProperties(DiggingPropertiesList &list, float toughness);
 
 /*
 	A conversion table for backwards compatibility.
@@ -236,16 +237,12 @@ void content_mapnode_init()
 	if(new_style_leaves)
 	{
 		f->solidness = 0; // drawn separately, makes no faces
-		f->visual_solidness = 1;
-		f->setAllTextures("leaves.png");
 		f->setInventoryTextureCube("leaves.png", "leaves.png", "leaves.png");
 	}
 	else
 	{
 		f->setAllTextures("[noalpha:leaves.png");
 	}
-	f->extra_dug_item = std::string("MaterialItem2 ")+itos(CONTENT_SAPLING)+" 1";
-	f->extra_dug_item_rarity = 20;
 	f->dug_item = std::string("MaterialItem2 ")+itos(i)+" 1";
 	setWoodLikeDiggingProperties(f->digging_properties, 0.15);
 
@@ -283,6 +280,18 @@ void content_mapnode_init()
 	f->is_ground_content = true;
 	setWoodLikeDiggingProperties(f->digging_properties, 0.75);
 
+	i = CONTENT_RATBED;
+	f = &content_features(i);
+	f->setAllTextures("ratbed.png");
+	f->setTexture(0, "ratbed_top.png");
+	f->setTexture(1, "wood.png");
+	// FIXME: setInventoryTextureCube() only cares for the first texture
+	f->setInventoryTextureCube("ratbed_top.png", "ratbed.png", "ratbed.png");
+	//f->setInventoryTextureCube("wood.png", "bookshelf.png", "bookshelf.png");
+	f->param_type = CPT_MINERAL;
+	f->is_ground_content = true;
+	setWoodLikeDiggingProperties(f->digging_properties, 0.75);
+
 	i = CONTENT_GLASS;
 	f = &content_features(i);
 	f->light_propagates = true;
@@ -291,8 +300,6 @@ void content_mapnode_init()
 	f->is_ground_content = true;
 	f->dug_item = std::string("MaterialItem2 ")+itos(i)+" 1";
 	f->solidness = 0; // drawn separately, makes no faces
-	f->visual_solidness = 1;
-	f->setAllTextures("glass.png");
 	f->setInventoryTextureCube("glass.png", "glass.png", "glass.png");
 	setWoodLikeDiggingProperties(f->digging_properties, 0.15);
 
@@ -374,7 +381,87 @@ void content_mapnode_init()
 	f->diggable = false;
 	f->buildable_to = true;
 	f->air_equivalent = true;
+	
+	i = CONTENT_WATER;
+	f = &content_features(i);
+	f->setInventoryTextureCube("water.png", "water.png", "water.png");
+	f->param_type = CPT_LIGHT;
+	f->light_propagates = true;
+	f->solidness = 0; // Drawn separately, makes no faces
+	f->visual_solidness = 1;
+	f->walkable = false;
+	f->pointable = false;
+	f->diggable = false;
+	f->buildable_to = true;
+	f->liquid_type = LIQUID_FLOWING;
+	f->liquid_alternative_flowing = CONTENT_WATER;
+	f->liquid_alternative_source = CONTENT_WATERSOURCE;
+	f->liquid_viscosity = WATER_VISC;
+	f->vertex_alpha = WATER_ALPHA;
+	setWaterLikeDiggingProperties(f->digging_properties, 0.5);
+	if(f->special_material == NULL && g_texturesource)
+	{
+		// Flowing water material
+		f->special_material = new video::SMaterial;
+		f->special_material->setFlag(video::EMF_LIGHTING, false);
+		f->special_material->setFlag(video::EMF_BACK_FACE_CULLING, false);
+		f->special_material->setFlag(video::EMF_BILINEAR_FILTER, false);
+		f->special_material->setFlag(video::EMF_FOG_ENABLE, true);
+		f->special_material->MaterialType = video::EMT_TRANSPARENT_VERTEX_ALPHA;
+		AtlasPointer *pa_water1 = new AtlasPointer(g_texturesource->getTexture(
+				g_texturesource->getTextureId("water.png")));
+		f->special_material->setTexture(0, pa_water1->atlas);
+		f->special_atlas = pa_water1;
+	}
+	
+	i = CONTENT_WATERSOURCE;
+	f = &content_features(i);
+	//f->setInventoryTexture("water.png");
+	f->setInventoryTextureCube("water.png", "water.png", "water.png");
+	if(new_style_water)
+	{
+		f->solidness = 0; // drawn separately, makes no faces
+	}
+	else // old style
+	{
+		f->solidness = 1;
 
+		TileSpec t;
+		if(g_texturesource)
+			t.texture = g_texturesource->getTexture("water.png");
+		
+		t.alpha = WATER_ALPHA;
+		t.material_type = MATERIAL_ALPHA_VERTEX;
+		t.material_flags &= ~MATERIAL_FLAG_BACKFACE_CULLING;
+		f->setAllTiles(t);
+	}
+	f->param_type = CPT_LIGHT;
+	f->light_propagates = true;
+	f->walkable = false;
+	//f->is_ground_content = true;
+	f->pointable = false;	
+	f->diggable = false;	 	
+	f->buildable_to = true;
+	f->liquid_type = LIQUID_SOURCE;
+	f->liquid_alternative_flowing = CONTENT_WATER;
+	f->liquid_alternative_source = CONTENT_WATERSOURCE;
+	f->liquid_viscosity = WATER_VISC;
+	f->vertex_alpha = WATER_ALPHA;
+	if(f->special_material == NULL && g_texturesource)
+	{
+		// Flowing water material
+		f->special_material = new video::SMaterial;
+		f->special_material->setFlag(video::EMF_LIGHTING, false);
+		f->special_material->setFlag(video::EMF_BACK_FACE_CULLING, false);
+		f->special_material->setFlag(video::EMF_BILINEAR_FILTER, false);
+		f->special_material->setFlag(video::EMF_FOG_ENABLE, true);
+		f->special_material->MaterialType = video::EMT_TRANSPARENT_VERTEX_ALPHA;
+		AtlasPointer *pa_water1 = new AtlasPointer(g_texturesource->getTexture(
+				g_texturesource->getTextureId("water.png")));
+		f->special_material->setTexture(0, pa_water1->atlas);
+		f->special_atlas = pa_water1;
+	}
+	
 	i = CONTENT_FWATER;
 	f = &content_features(i);
 	f->setInventoryTextureCube("water.png", "water.png", "water.png");
@@ -440,26 +527,7 @@ void content_mapnode_init()
 	f->liquid_viscosity = WATER_VISC;
 	f->vertex_alpha = WATER_ALPHA;
 	if(f->special_material == NULL && g_texturesource)
-	
-	i = CONTENT_WATER;
-	f = &content_features(i);
-	f->setInventoryTextureCube("water.png", "water.png", "water.png");
-	f->param_type = CPT_LIGHT;
-	f->light_propagates = true;
-	f->solidness = 0; // Drawn separately, makes no faces
-	f->visual_solidness = 1;
-	f->walkable = false;
-	f->pointable = false;
-	f->diggable = false;
-	f->buildable_to = true;
-	f->liquid_type = LIQUID_FLOWING;
-	f->liquid_alternative_flowing = CONTENT_WATER;
-	f->liquid_alternative_source = CONTENT_WATERSOURCE;
-	f->liquid_viscosity = WATER_VISC;
-	f->vertex_alpha = WATER_ALPHA;
-	f->post_effect_color = video::SColor(64, 100, 100, 200);
-	if(f->special_material == NULL && g_texturesource)
-	{
+	/*{
 		// Flowing water material
 		f->special_material = new video::SMaterial;
 		f->special_material->setFlag(video::EMF_LIGHTING, false);
@@ -471,56 +539,8 @@ void content_mapnode_init()
 				g_texturesource->getTextureId("water.png")));
 		f->special_material->setTexture(0, pa_water1->atlas);
 		f->special_atlas = pa_water1;
-	}
-	
-	i = CONTENT_WATERSOURCE;
-	f = &content_features(i);
-	//f->setInventoryTexture("water.png");
-	f->setInventoryTextureCube("water.png", "water.png", "water.png");
-	if(new_style_water)
-	{
-		f->solidness = 0; // drawn separately, makes no faces
-	}
-	else // old style
-	{
-		f->solidness = 1;
+	}*/
 
-		TileSpec t;
-		if(g_texturesource)
-			t.texture = g_texturesource->getTexture("water.png");
-		
-		t.alpha = WATER_ALPHA;
-		t.material_type = MATERIAL_ALPHA_VERTEX;
-		t.material_flags &= ~MATERIAL_FLAG_BACKFACE_CULLING;
-		f->setAllTiles(t);
-	}
-	f->param_type = CPT_LIGHT;
-	f->light_propagates = true;
-	f->walkable = false;
-	f->pointable = false;
-	f->diggable = false;
-	f->buildable_to = true;
-	f->liquid_type = LIQUID_SOURCE;
-	f->dug_item = std::string("MaterialItem2 ")+itos(i)+" 1";
-	f->liquid_alternative_flowing = CONTENT_WATER;
-	f->liquid_alternative_source = CONTENT_WATERSOURCE;
-	f->liquid_viscosity = WATER_VISC;
-	f->vertex_alpha = WATER_ALPHA;
-	f->post_effect_color = video::SColor(64, 100, 100, 200);
-	if(f->special_material == NULL && g_texturesource)
-	{
-		// Flowing water material
-		f->special_material = new video::SMaterial;
-		f->special_material->setFlag(video::EMF_LIGHTING, false);
-		f->special_material->setFlag(video::EMF_BACK_FACE_CULLING, false);
-		f->special_material->setFlag(video::EMF_BILINEAR_FILTER, false);
-		f->special_material->setFlag(video::EMF_FOG_ENABLE, true);
-		f->special_material->MaterialType = video::EMT_TRANSPARENT_VERTEX_ALPHA;
-		AtlasPointer *pa_water1 = new AtlasPointer(g_texturesource->getTexture(
-				g_texturesource->getTextureId("water.png")));
-		f->special_material->setTexture(0, pa_water1->atlas);
-		f->special_atlas = pa_water1;
-	}
 	
 	i = CONTENT_LAVA;
 	f = &content_features(i);
@@ -539,7 +559,6 @@ void content_mapnode_init()
 	f->liquid_alternative_source = CONTENT_LAVASOURCE;
 	f->liquid_viscosity = LAVA_VISC;
 	f->damage_per_second = 4*2;
-	f->post_effect_color = video::SColor(192, 255, 64, 0);
 	if(f->special_material == NULL && g_texturesource)
 	{
 		// Flowing lava material
@@ -589,7 +608,6 @@ void content_mapnode_init()
 	f->liquid_alternative_source = CONTENT_LAVASOURCE;
 	f->liquid_viscosity = LAVA_VISC;
 	f->damage_per_second = 4*2;
-	f->post_effect_color = video::SColor(192, 255, 64, 0);
 	if(f->special_material == NULL && g_texturesource)
 	{
 		// Flowing lava material
@@ -649,20 +667,6 @@ void content_mapnode_init()
 		f->initial_metadata = new ChestNodeMetadata();
 	setWoodLikeDiggingProperties(f->digging_properties, 1.0);
 	
-	i = CONTENT_LOCKABLE_CHEST;
-	f = &content_features(i);
-	f->param_type = CPT_FACEDIR_SIMPLE;
-	f->setAllTextures("chest_side.png");
-	f->setTexture(0, "chest_top.png");
-	f->setTexture(1, "chest_top.png");
-	f->setTexture(5, "chest_lock.png"); // Z-
-	f->setInventoryTexture("chest_lock.png");
-	//f->setInventoryTextureCube("chest_top.png", "chest_side.png", "chest_side.png");
-	f->dug_item = std::string("MaterialItem2 ")+itos(i)+" 1";
-	if(f->initial_metadata == NULL)
-		f->initial_metadata = new LockingChestNodeMetadata();
-	setWoodLikeDiggingProperties(f->digging_properties, 1.0);
-
 	i = CONTENT_FURNACE;
 	f = &content_features(i);
 	f->param_type = CPT_FACEDIR_SIMPLE;
@@ -673,6 +677,18 @@ void content_mapnode_init()
 	f->dug_item = std::string("MaterialItem2 ")+itos(CONTENT_COBBLE)+" 6";
 	if(f->initial_metadata == NULL)
 		f->initial_metadata = new FurnaceNodeMetadata();
+	setStoneLikeDiggingProperties(f->digging_properties, 3.0);
+
+	i = CONTENT_WORKBENCH;
+	f = &content_features(i);
+	f->param_type = CPT_FACEDIR_SIMPLE;
+	f->setAllTextures("workbench_side.png");
+	f->setTexture(5, "workbench_front.png"); // Z-
+	f->setInventoryTexture("workbench_front.png");
+	//f->dug_item = std::string("MaterialItem2 ")+itos(i)+" 1";
+	f->dug_item = std::string("MaterialItem2 ")+itos(CONTENT_COBBLE)+" 6";
+	if(f->initial_metadata == NULL)
+		f->initial_metadata = new WbenchNodeMetadata();
 	setStoneLikeDiggingProperties(f->digging_properties, 3.0);
 	
 	i = CONTENT_COBBLE;
@@ -719,18 +735,6 @@ void content_mapnode_init()
 	f->setInventoryTexture("nc_rb.png");
 	f->dug_item = std::string("MaterialItem2 ")+itos(i)+" 1";
 	setStoneLikeDiggingProperties(f->digging_properties, 3.0);
-
-	i = CONTENT_SAPLING;
-	f = &content_features(i);
-	f->param_type = CPT_LIGHT;
-	f->setAllTextures("sapling.png");
-	f->setInventoryTexture("sapling.png");
-	f->dug_item = std::string("MaterialItem2 ")+itos(i)+" 1";
-	f->light_propagates = true;
-	f->air_equivalent = false;
-	f->solidness = 0; // drawn separately, makes no faces
-	f->walkable = false;
-	f->digging_properties.set("", DiggingProperties(true, 0.0, 0));
 	
 	i = CONTENT_APPLE;
 	f = &content_features(i);
@@ -749,12 +753,12 @@ void content_mapnode_init()
 
 	/*
 		Add MesePick to everything
-	*/
+	
 	for(u16 i=0; i<=MAX_CONTENT; i++)
 	{
 		content_features(i).digging_properties.set("MesePick",
 				DiggingProperties(true, 0.0, 65535./1337));
-	}
+	}*/
 
 }
 
@@ -770,8 +774,21 @@ void setStoneLikeDiggingProperties(DiggingPropertiesList &list, float toughness)
 	list.set("SteelPick",
 			DiggingProperties(true, 0.50*toughness, 65535./333.*toughness));
 
-	/*list.set("MesePick",
-			DiggingProperties(true, 0.0*toughness, 65535./20.*toughness));*/
+	list.set("MesePick",
+			DiggingProperties(true, 0.0*toughness, 65535./1337*toughness));
+}
+
+void setWaterLikeDiggingProperties(DiggingPropertiesList &list, float toughness)
+{
+	list.set("",
+			DiggingProperties(true, 150000.0*toughness, 0));
+	
+	list.set("WBucket",
+			DiggingProperties(true, 0.0*toughness, 65535./30.*toughness));
+	list.set("MesePick",
+			DiggingProperties(true, 15000.0*toughness, 65535./1337*toughness));
+	
+	
 }
 
 void setDirtLikeDiggingProperties(DiggingPropertiesList &list, float toughness)
@@ -785,6 +802,8 @@ void setDirtLikeDiggingProperties(DiggingPropertiesList &list, float toughness)
 			DiggingProperties(true, 0.2*toughness, 65535./150.*toughness));
 	list.set("SteelShovel",
 			DiggingProperties(true, 0.15*toughness, 65535./400.*toughness));
+	list.set("MesePick",
+			DiggingProperties(true, 0.0*toughness, 65535./1337*toughness));
 }
 
 void setWoodLikeDiggingProperties(DiggingPropertiesList &list, float toughness)
@@ -798,6 +817,8 @@ void setWoodLikeDiggingProperties(DiggingPropertiesList &list, float toughness)
 			DiggingProperties(true, 0.75*toughness, 65535./100.*toughness));
 	list.set("SteelAxe",
 			DiggingProperties(true, 0.5*toughness, 65535./333.*toughness));
+	list.set("MesePick",
+			DiggingProperties(true, 0.0*toughness, 65535./1337*toughness));
 }
 
 
