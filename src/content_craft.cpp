@@ -147,6 +147,20 @@ InventoryItem *craft_get_result(InventoryItem **items)
 			return new ToolItem("MesePick", 0);
 		}
 	}
+	
+	// Wooden bucket
+	{
+		ItemSpec specs[9];
+		specs[3] = ItemSpec(ITEM_CRAFT, "Stick");
+		specs[5] = ItemSpec(ITEM_CRAFT, "Stick");
+		specs[6] = ItemSpec(ITEM_CRAFT, "Stick");
+		specs[7] = ItemSpec(ITEM_CRAFT, "Stick");
+		specs[8] = ItemSpec(ITEM_CRAFT, "Stick");
+		if(checkItemCombination(items, specs))
+		{
+			return new ToolItem("WBucket", 0);
+		}
+	}
 
 	// Wooden shovel
 	{
