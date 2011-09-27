@@ -1647,7 +1647,11 @@ void make_block(BlockMakeData *data)
 							v3s16(x,y,z), data->seed) == false)
 					{
 						if(y <= WATER_LEVEL)
-							vmanip.m_data[i] = MapNode(CONTENT_WATERSOURCE);
+							
+							if(y >= WATER_LEVEL - 80) //makes fountain very rare
+								vmanip.m_data[i] = MapNode(CONTENT_WATERSOURCE);
+							else
+								vmanip.m_data[i] = MapNode(CONTENT_WATERFOUNTAIN);
 						else
 							vmanip.m_data[i] = MapNode(CONTENT_AIR);
 					}
