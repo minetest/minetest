@@ -39,7 +39,7 @@ MapNode mapnode_translate_to_internal(MapNode n_from, u8 version);
 // Use these sparingly, only when the extra space in param2 might be needed.
 // Add a space when there is unused space between numbers.
 #define CONTENT_STONE 0
-
+#define CONTENT_FWATER 1
 #define CONTENT_WATER 2
 #define CONTENT_TORCH 3
 
