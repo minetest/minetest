@@ -461,6 +461,18 @@ InventoryItem *craft_get_result(InventoryItem **items)
 		}
 	}
 
+	// Jack O Lantern
+	{
+		ItemSpec specs[9];
+		specs[1] = ItemSpec(ITEM_MATERIAL, CONTENT_CACTUS);
+		specs[4] = ItemSpec(ITEM_MATERIAL, CONTENT_CACTUS);
+		specs[7] = ItemSpec(ITEM_MATERIAL, CONTENT_CACTUS);
+		if(checkItemCombination(items, specs))
+		{
+			return new MaterialItem(CONTENT_JACKOLANTERN, 1);
+		}
+	}
+
 	return NULL;
 }
 
