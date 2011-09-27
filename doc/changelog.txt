@@ -3,6 +3,10 @@ Minetest-c55 changelog
 This should contain all the major changes.
 For minor stuff, refer to the commit log of the repository.
 
+0.2.20110922_2:
+- Move PLATFORM_LIBS around to make sqlite3 link with libdl on some distros
+- sectors2sqlite.py and minetestmapper.py fixes
+
 0.2.20110922_1:
 - Make client report a newer version number to the server than 2011-07-31 does and make server disallow old clients
 
