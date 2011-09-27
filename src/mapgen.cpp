@@ -1648,7 +1648,7 @@ void make_block(BlockMakeData *data)
 					{
 						if(y <= WATER_LEVEL)
 							
-							if(y >= WATER_LEVEL - 80) //makes fountain very rare
+							if(y >= WATER_LEVEL - 2) //set higher for testing purposes
 								vmanip.m_data[i] = MapNode(CONTENT_WATERSOURCE);
 							else
 								vmanip.m_data[i] = MapNode(CONTENT_WATERFOUNTAIN);
