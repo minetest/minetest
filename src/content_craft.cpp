@@ -465,7 +465,7 @@ InventoryItem *craft_get_result(InventoryItem **items)
 	{
 		ItemSpec specs[9];
 		specs[1] = ItemSpec(ITEM_MATERIAL, CONTENT_CACTUS);
-		specs[4] = ItemSpec(ITEM_MATERIAL, CONTENT_CACTUS);
+		specs[4] = ItemSpec(ITEM_MATERIAL, CONTENT_TORCH);
 		specs[7] = ItemSpec(ITEM_MATERIAL, CONTENT_CACTUS);
 		if(checkItemCombination(items, specs))
 		{
