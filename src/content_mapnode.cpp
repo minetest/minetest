@@ -686,8 +686,8 @@ void content_mapnode_init()
 	f->param_type = CPT_FACEDIR_SIMPLE;
 	f->digging_properties.set("", DiggingProperties(true, 0.0, 0));
 	f->param_type = CPT_LIGHT;
-	f->light_propagates = true;
-	f->sunlight_propagates = true;
+	f->light_propagates = false;
+	f->sunlight_propagates = false;
 	f->light_source = LIGHT_MAX-1;
 
 	
