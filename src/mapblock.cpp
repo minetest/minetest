@@ -441,7 +441,8 @@ void MapBlock::stepObjects(float dtime, bool server, u32 daynight_ratio)
 	*/
 	m_objects.step(dtime, server, daynight_ratio);
 
-	setChangedFlag();
+	//setChangedFlag();
+	raiseModified(MOD_STATE_WRITE_AT_UNLOAD);
 }
 
 

@@ -225,8 +225,10 @@ public:
 
 	void setLightingExpired(bool expired)
 	{
-		m_lighting_expired = expired;
-		raiseModified(MOD_STATE_WRITE_NEEDED);
+		if(expired != m_lighting_expired){
+			m_lighting_expired = expired;
+			raiseModified(MOD_STATE_WRITE_NEEDED);
+		}
 	}
 	bool getLightingExpired()
 	{
@@ -239,8 +241,10 @@ public:
 	}
 	void setGenerated(bool b)
 	{
-		raiseModified(MOD_STATE_WRITE_NEEDED);
-		m_generated = b;
+		if(b != m_generated){
+			raiseModified(MOD_STATE_WRITE_NEEDED);
+			m_generated = b;
+		}
 	}
 
 	bool isValid()

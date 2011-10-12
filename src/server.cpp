@@ -897,7 +897,7 @@ void RemoteClient::SendObjectData(
 			{
 				block->stepObjects(dtime, true, server->m_env.getDayNightRatio());
 				stepped_blocks.insert(p, true);
-				block->setChangedFlag();
+				//block->setChangedFlag();
 			}
 
 			// Skip block if there are no objects
