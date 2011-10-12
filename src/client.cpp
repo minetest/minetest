@@ -28,6 +28,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "mapsector.h"
 #include "mapblock_mesh.h"
 #include "mapblock.h"
+#include "settings.h"
+#include "profiler.h"
 
 /*
 	QueuedMeshUpdate
@@ -151,7 +153,7 @@ void * MeshUpdateThread::Thread()
 			continue;
 		}
 
-		ScopeProfiler sp(&g_profiler, "mesh make");
+		ScopeProfiler sp(g_profiler, "mesh make");
 
 		scene::SMesh *mesh_new = NULL;
 		mesh_new = makeMapBlockMesh(q->data);
@@ -327,7 +329,7 @@ void Client::step(float dtime)
 			core::list<v3s16> deleted_blocks;
 
 			float delete_unused_sectors_timeout = 
-				g_settings.getFloat("client_delete_unused_sectors_timeout");
+				g_settings->getFloat("client_delete_unused_sectors_timeout");
 	
 			// Delete sector blocks
 			/*u32 num = m_env.getMap().unloadUnusedData
@@ -449,10 +451,10 @@ void Client::step(float dtime)
 	const float map_timer_and_unload_dtime = 5.25;
 	if(m_map_timer_and_unload_interval.step(dtime, map_timer_and_unload_dtime))
 	{
-		ScopeProfiler sp(&g_profiler, "Client: map timer and unload");
+		ScopeProfiler sp(g_profiler, "Client: map timer and unload");
 		core::list<v3s16> deleted_blocks;
 		m_env.getMap().timerUpdate(map_timer_and_unload_dtime,
-				g_settings.getFloat("client_unload_unused_data_timeout"),
+				g_settings->getFloat("client_unload_unused_data_timeout"),
 				&deleted_blocks);
 				
 		/*if(deleted_blocks.size() > 0)
@@ -1403,7 +1405,7 @@ void Client::ProcessData(u8 *data, u32 datasize, u16 sender_peer_id)
 	}
 	else if(command == TOCLIENT_ACTIVE_OBJECT_REMOVE_ADD)
 	{
-		//if(g_settings.getBool("enable_experimental"))
+		//if(g_settings->getBool("enable_experimental"))
 		{
 			/*
 				u16 command
@@ -1462,7 +1464,7 @@ void Client::ProcessData(u8 *data, u32 datasize, u16 sender_peer_id)
 	}
 	else if(command == TOCLIENT_ACTIVE_OBJECT_MESSAGES)
 	{
-		//if(g_settings.getBool("enable_experimental"))
+		//if(g_settings->getBool("enable_experimental"))
 		{
 			/*
 				u16 command

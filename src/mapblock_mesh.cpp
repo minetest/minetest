@@ -23,6 +23,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "map.h"
 #include "main.h" // For g_settings and g_texturesource
 #include "content_mapblock.h"
+#include "settings.h"
 
 void MeshMakeData::fill(u32 daynight_ratio, MapBlock *block)
 {
@@ -619,9 +620,9 @@ scene::SMesh* makeMapBlockMesh(MeshMakeData *data)
 	/*
 		Some settings
 	*/
-	//bool new_style_water = g_settings.getBool("new_style_water");
-	//bool new_style_leaves = g_settings.getBool("new_style_leaves");
-	bool smooth_lighting = g_settings.getBool("smooth_lighting");
+	//bool new_style_water = g_settings->getBool("new_style_water");
+	//bool new_style_leaves = g_settings->getBool("new_style_leaves");
+	bool smooth_lighting = g_settings->getBool("smooth_lighting");
 	
 	/*
 		We are including the faces of the trailing edges of the block.

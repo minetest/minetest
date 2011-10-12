@@ -22,6 +22,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "main.h" // for g_settings
 #include "filesys.h"
 #include "utility.h"
+#include "settings.h"
+#include <ICameraSceneNode.h>
 
 /*
 	A cache from texture name to texture path
@@ -112,7 +114,7 @@ std::string getTexturePath(const std::string &filename)
 	/*
 		Check from texture_path
 	*/
-	std::string texture_path = g_settings.get("texture_path");
+	std::string texture_path = g_settings->get("texture_path");
 	if(texture_path != "")
 	{
 		std::string testpath = texture_path + '/' + filename;
@@ -157,7 +159,7 @@ TextureSource::TextureSource(IrrlichtDevice *device):
 	m_name_to_id[""] = 0;
 
 	// Build main texture atlas
-	if(g_settings.getBool("enable_texture_atlas"))
+	if(g_settings->getBool("enable_texture_atlas"))
 		buildMainAtlas();
 	else
 		dstream<<"INFO: Not building texture atlas."<<std::endl;

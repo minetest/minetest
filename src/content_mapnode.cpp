@@ -23,6 +23,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "content_mapnode.h"
 #include "mapnode.h"
 #include "content_nodemeta.h"
+#include "settings.h"
 
 #define WATER_ALPHA 160
 
@@ -103,9 +104,9 @@ MapNode mapnode_translate_to_internal(MapNode n_from, u8 version)
 void content_mapnode_init()
 {
 	// Read some settings
-	bool new_style_water = g_settings.getBool("new_style_water");
-	bool new_style_leaves = g_settings.getBool("new_style_leaves");
-	bool invisible_stone = g_settings.getBool("invisible_stone");
+	bool new_style_water = g_settings->getBool("new_style_water");
+	bool new_style_leaves = g_settings->getBool("new_style_leaves");
+	bool invisible_stone = g_settings->getBool("invisible_stone");
 
 	content_t i;
 	ContentFeatures *f = NULL;
@@ -390,6 +391,7 @@ void content_mapnode_init()
 	f->liquid_alternative_flowing = CONTENT_WATER;
 	f->liquid_alternative_source = CONTENT_WATERSOURCE;
 	f->liquid_viscosity = WATER_VISC;
+#ifndef SERVER
 	f->vertex_alpha = WATER_ALPHA;
 	f->post_effect_color = video::SColor(64, 100, 100, 200);
 	if(f->special_material == NULL && g_texturesource)
@@ -406,6 +408,7 @@ void content_mapnode_init()
 		f->special_material->setTexture(0, pa_water1->atlas);
 		f->special_atlas = pa_water1;
 	}
+#endif
 	
 	i = CONTENT_WATERSOURCE;
 	f = &content_features(i);
@@ -418,7 +421,7 @@ void content_mapnode_init()
 	else // old style
 	{
 		f->solidness = 1;
-
+#ifndef SERVER
 		TileSpec t;
 		if(g_texturesource)
 			t.texture = g_texturesource->getTexture("water.png");
@@ -427,6 +430,7 @@ void content_mapnode_init()
 		t.material_type = MATERIAL_ALPHA_VERTEX;
 		t.material_flags &= ~MATERIAL_FLAG_BACKFACE_CULLING;
 		f->setAllTiles(t);
+#endif
 	}
 	f->param_type = CPT_LIGHT;
 	f->light_propagates = true;
@@ -439,6 +443,7 @@ void content_mapnode_init()
 	f->liquid_alternative_flowing = CONTENT_WATER;
 	f->liquid_alternative_source = CONTENT_WATERSOURCE;
 	f->liquid_viscosity = WATER_VISC;
+#ifndef SERVER
 	f->vertex_alpha = WATER_ALPHA;
 	f->post_effect_color = video::SColor(64, 100, 100, 200);
 	if(f->special_material == NULL && g_texturesource)
@@ -455,6 +460,7 @@ void content_mapnode_init()
 		f->special_material->setTexture(0, pa_water1->atlas);
 		f->special_atlas = pa_water1;
 	}
+#endif
 	
 	i = CONTENT_LAVA;
 	f = &content_features(i);
@@ -473,6 +479,7 @@ void content_mapnode_init()
 	f->liquid_alternative_source = CONTENT_LAVASOURCE;
 	f->liquid_viscosity = LAVA_VISC;
 	f->damage_per_second = 4*2;
+#ifndef SERVER
 	f->post_effect_color = video::SColor(192, 255, 64, 0);
 	if(f->special_material == NULL && g_texturesource)
 	{
@@ -489,6 +496,7 @@ void content_mapnode_init()
 		f->special_material->setTexture(0, pa_lava1->atlas);
 		f->special_atlas = pa_lava1;
 	}
+#endif
 	
 	i = CONTENT_LAVASOURCE;
 	f = &content_features(i);
@@ -500,7 +508,7 @@ void content_mapnode_init()
 	else // old style
 	{
 		f->solidness = 2;
-
+#ifndef SERVER
 		TileSpec t;
 		if(g_texturesource)
 			t.texture = g_texturesource->getTexture("lava.png");
@@ -509,6 +517,7 @@ void content_mapnode_init()
 		//t.material_type = MATERIAL_ALPHA_VERTEX;
 		//t.material_flags &= ~MATERIAL_FLAG_BACKFACE_CULLING;
 		f->setAllTiles(t);
+#endif
 	}
 	f->param_type = CPT_LIGHT;
 	f->light_propagates = false;
@@ -523,6 +532,7 @@ void content_mapnode_init()
 	f->liquid_alternative_source = CONTENT_LAVASOURCE;
 	f->liquid_viscosity = LAVA_VISC;
 	f->damage_per_second = 4*2;
+#ifndef SERVER
 	f->post_effect_color = video::SColor(192, 255, 64, 0);
 	if(f->special_material == NULL && g_texturesource)
 	{
@@ -539,6 +549,7 @@ void content_mapnode_init()
 		f->special_material->setTexture(0, pa_lava1->atlas);
 		f->special_atlas = pa_lava1;
 	}
+#endif
 	
 	i = CONTENT_TORCH;
 	f = &content_features(i);

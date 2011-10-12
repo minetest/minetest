@@ -25,6 +25,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "player.h"
 #include "tile.h"
 #include <cmath>
+#include <SAnimatedMesh.h>
+#include "settings.h"
 
 Camera::Camera(scene::ISceneManager* smgr, MapDrawControl& draw_control):
 	m_smgr(smgr),
@@ -299,8 +301,8 @@ void Camera::update(LocalPlayer* player, f32 frametime, v2u32 screensize)
 	v3f speed = player->getSpeed();
 	if ((hypot(speed.X, speed.Z) > BS) &&
 		(player->touching_ground) &&
-		(g_settings.getBool("view_bobbing") == true) &&
-		(g_settings.getBool("free_move") == false))
+		(g_settings->getBool("view_bobbing") == true) &&
+		(g_settings->getBool("free_move") == false))
 	{
 		// Start animation
 		m_view_bobbing_state = 1;
@@ -427,18 +429,18 @@ void Camera::updateViewingRange(f32 frametime_in)
 
 void Camera::updateSettings()
 {
-	m_viewing_range_min = g_settings.getS16("viewing_range_nodes_min");
+	m_viewing_range_min = g_settings->getS16("viewing_range_nodes_min");
 	m_viewing_range_min = MYMAX(5.0, m_viewing_range_min);
 
-	m_viewing_range_max = g_settings.getS16("viewing_range_nodes_max");
+	m_viewing_range_max = g_settings->getS16("viewing_range_nodes_max");
 	m_viewing_range_max = MYMAX(m_viewing_range_min, m_viewing_range_max);
 
-	f32 fov_degrees = g_settings.getFloat("fov");
+	f32 fov_degrees = g_settings->getFloat("fov");
 	fov_degrees = MYMAX(fov_degrees, 10.0);
 	fov_degrees = MYMIN(fov_degrees, 170.0);
 	m_fov_y = fov_degrees * PI / 180.0;
 
-	f32 wanted_fps = g_settings.getFloat("wanted_fps");
+	f32 wanted_fps = g_settings->getFloat("wanted_fps");
 	wanted_fps = MYMAX(wanted_fps, 1.0);
 	m_wanted_frametime = 1.0 / wanted_fps;
 }

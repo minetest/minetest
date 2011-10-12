@@ -17,8 +17,13 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
-#include "common_irrlicht.h"
 #include "game.h"
+#include "common_irrlicht.h"
+#include <IGUICheckBox.h>
+#include <IGUIEditBox.h>
+#include <IGUIButton.h>
+#include <IGUIStaticText.h>
+#include <IGUIFont.h>
 #include "client.h"
 #include "server.h"
 #include "guiPauseMenu.h"
@@ -31,6 +36,9 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "camera.h"
 #include "farmesh.h"
 #include "mapblock.h"
+#include "settings.h"
+#include "profiler.h"
+#include "mainmenumanager.h"
 
 /*
 	TODO: Move content-aware stuff to separate file by adding properties
@@ -583,7 +591,7 @@ void update_skybox(video::IVideoDriver* driver,
 	}
 	
 	/*// Disable skybox if FarMesh is enabled
-	if(g_settings.getBool("enable_farmesh"))
+	if(g_settings->getBool("enable_farmesh"))
 		return;*/
 	
 	if(brightness >= 0.5)
@@ -825,7 +833,7 @@ void the_game(
 	
 	float cloud_height = BS*100;
 	Clouds *clouds = NULL;
-	if(g_settings.getBool("enable_clouds"))
+	if(g_settings->getBool("enable_clouds"))
 	{
 		clouds = new Clouds(smgr->getRootSceneNode(), smgr, -1,
 				cloud_height, time(0));
@@ -836,7 +844,7 @@ void the_game(
 	*/
 
 	FarMesh *farmesh = NULL;
-	if(g_settings.getBool("enable_farmesh"))
+	if(g_settings->getBool("enable_farmesh"))
 	{
 		farmesh = new FarMesh(smgr->getRootSceneNode(), smgr, -1, client.getMapSeed(), &client);
 	}
@@ -919,7 +927,7 @@ void the_game(
 	float damage_flash_timer = 0;
 	s16 farmesh_range = 20*MAP_BLOCKSIZE;
 	
-	bool invert_mouse = g_settings.getBool("invert_mouse");
+	bool invert_mouse = g_settings->getBool("invert_mouse");
 
 	/*
 		Main loop
@@ -1020,7 +1028,7 @@ void the_game(
 		*/
 
 		{
-			float fps_max = g_settings.getFloat("fps_max");
+			float fps_max = g_settings->getFloat("fps_max");
 			u32 frametime_min = 1000./fps_max;
 			
 			if(busytime_u32 < frametime_min)
@@ -1133,14 +1141,14 @@ void the_game(
 			Profiler
 		*/
 		float profiler_print_interval =
-				g_settings.getFloat("profiler_print_interval");
+				g_settings->getFloat("profiler_print_interval");
 		if(profiler_print_interval != 0)
 		{
 			if(m_profiler_interval.step(0.030, profiler_print_interval))
 			{
 				dstream<<"Profiler:"<<std::endl;
-				g_profiler.print(dstream);
-				g_profiler.clear();
+				g_profiler->print(dstream);
+				g_profiler->clear();
 			}
 		}
 
@@ -1215,40 +1223,40 @@ void the_game(
 		}
 		else if(input->wasKeyDown(getKeySetting("keymap_freemove")))
 		{
-			if(g_settings.getBool("free_move"))
+			if(g_settings->getBool("free_move"))
 			{
-				g_settings.set("free_move","false");
+				g_settings->set("free_move","false");
 				chat_lines.push_back(ChatLine(L"free_move disabled"));
 			}
 			else
 			{
-				g_settings.set("free_move","true");
+				g_settings->set("free_move","true");
 				chat_lines.push_back(ChatLine(L"free_move enabled"));
 			}
 		}
 		else if(input->wasKeyDown(getKeySetting("keymap_fastmove")))
 		{
-			if(g_settings.getBool("fast_move"))
+			if(g_settings->getBool("fast_move"))
 			{
-				g_settings.set("fast_move","false");
+				g_settings->set("fast_move","false");
 				chat_lines.push_back(ChatLine(L"fast_move disabled"));
 			}
 			else
 			{
-				g_settings.set("fast_move","true");
+				g_settings->set("fast_move","true");
 				chat_lines.push_back(ChatLine(L"fast_move enabled"));
 			}
 		}
 		else if(input->wasKeyDown(getKeySetting("keymap_frametime_graph")))
 		{
-			if(g_settings.getBool("frametime_graph"))
+			if(g_settings->getBool("frametime_graph"))
 			{
-				g_settings.set("frametime_graph","false");
+				g_settings->set("frametime_graph","false");
 				chat_lines.push_back(ChatLine(L"frametime_graph disabled"));
 			}
 			else
 			{
-				g_settings.set("frametime_graph","true");
+				g_settings->set("frametime_graph","true");
 				chat_lines.push_back(ChatLine(L"frametime_graph enabled"));
 			}
 		}
@@ -1258,7 +1266,7 @@ void the_game(
 			if (image) { 
 				irr::c8 filename[256]; 
 				snprintf(filename, 256, "%s/screenshot_%u.png", 
-						 g_settings.get("screenshot_path").c_str(),
+						 g_settings->get("screenshot_path").c_str(),
 						 device->getTimer()->getRealTime()); 
 				if (driver->writeImageToFile(image, filename)) {
 					std::wstringstream sstr;
@@ -1907,7 +1915,7 @@ void the_game(
 			Fog
 		*/
 		
-		if(g_settings.getBool("enable_fog") == true)
+		if(g_settings->getBool("enable_fog") == true)
 		{
 			f32 range;
 			if(farmesh)
@@ -2180,7 +2188,7 @@ void the_game(
 		/*
 			Frametime log
 		*/
-		if(g_settings.getBool("frametime_graph") == true)
+		if(g_settings->getBool("frametime_graph") == true)
 		{
 			s32 x = 10;
 			for(core::list<float>::Iterator

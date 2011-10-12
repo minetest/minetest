@@ -23,7 +23,26 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #define endSceneX(d){d->draw2DLine(v2s32(0,0),v2s32(1,0),\
 video::SColor(255,30,30,30));d->endScene();}
 
-#include <irrlicht.h>
+#include <irrTypes.h>
+#include <vector2d.h>
+#include <vector3d.h>
+#include <irrMap.h>
+#include <irrList.h>
+#include <irrArray.h>
+#include <aabbox3d.h>
+#ifndef SERVER
+#include <SColor.h>
+#include <IMesh.h>
+#include <IImage.h>
+#include <IrrlichtDevice.h>
+#include <IMeshSceneNode.h>
+#include <SMesh.h>
+#include <ISceneManager.h>
+#include <IMeshBuffer.h>
+#include <SMeshBuffer.h>
+#include <IGUIElement.h>
+#include <IGUIEnvironment.h>
+#endif
 using namespace irr;
 typedef core::vector3df v3f;
 typedef core::vector3d<s16> v3s16;

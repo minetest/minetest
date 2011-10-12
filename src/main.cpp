@@ -411,10 +411,13 @@ Doing currently:
 	//#pragma comment(linker, "/subsystem:windows /ENTRY:mainCRTStartup")
 #endif
 
+#include "irrlicht.h" // createDevice
+
+#include "main.h"
+#include "mainmenumanager.h"
 #include <iostream>
 #include <fstream>
 #include <locale.h>
-#include "main.h"
 #include "common_irrlicht.h"
 #include "debug.h"
 #include "test.h"
@@ -431,8 +434,10 @@ Doing currently:
 #include "game.h"
 #include "keycode.h"
 #include "tile.h"
-
+#include "defaultsettings.h"
 #include "gettext.h"
+#include "settings.h"
+#include "profiler.h"
 
 // This makes textures
 ITextureSource *g_texturesource = NULL;
@@ -441,25 +446,23 @@ ITextureSource *g_texturesource = NULL;
 	Settings.
 	These are loaded from the config file.
 */
-
-Settings g_settings;
-// This is located in defaultsettings.cpp
-extern void set_default_settings();
+Settings main_settings;
+Settings *g_settings = &main_settings;
 
 // Global profiler
-Profiler g_profiler;
+Profiler main_profiler;
+Profiler *g_profiler = &main_profiler;
 
 /*
 	Random stuff
 */
 
 /*
-	GUI Stuff
+	mainmenumanager.h
 */
 
 gui::IGUIEnvironment* guienv = NULL;
 gui::IGUIStaticText *guiroot = NULL;
-
 MainMenuManager g_menumgr;
 
 bool noMenuActive()
@@ -468,7 +471,6 @@ bool noMenuActive()
 }
 
 // Passed to menus to allow disconnecting and exiting
-
 MainGameCallback *g_gamecallback = NULL;
 
 /*
@@ -1190,7 +1192,7 @@ int main(int argc, char *argv[])
 	*/
 
 	// Initialize default settings
-	set_default_settings();
+	set_default_settings(g_settings);
 	
 	// Initialize sockets
 	sockets_init();
@@ -1205,7 +1207,7 @@ int main(int argc, char *argv[])
 	
 	if(cmd_args.exists("config"))
 	{
-		bool r = g_settings.readConfigFile(cmd_args.get("config").c_str());
+		bool r = g_settings->readConfigFile(cmd_args.get("config").c_str());
 		if(r == false)
 		{
 			dstream<<"Could not read configuration from \""
@@ -1224,7 +1226,7 @@ int main(int argc, char *argv[])
 
 		for(u32 i=0; i<filenames.size(); i++)
 		{
-			bool r = g_settings.readConfigFile(filenames[i].c_str());
+			bool r = g_settings->readConfigFile(filenames[i].c_str());
 			if(r)
 			{
 				configpath = filenames[i];
@@ -1275,8 +1277,8 @@ int main(int argc, char *argv[])
 	u16 port = 30000;
 	if(cmd_args.exists("port"))
 		port = cmd_args.getU16("port");
-	else if(g_settings.exists("port"))
-		port = g_settings.getU16("port");
+	else if(g_settings->exists("port"))
+		port = g_settings->getU16("port");
 	if(port == 0)
 		port = 30000;
 	
@@ -1284,8 +1286,8 @@ int main(int argc, char *argv[])
 	std::string map_dir = porting::path_userdata+"/world";
 	if(cmd_args.exists("map-dir"))
 		map_dir = cmd_args.get("map-dir");
-	else if(g_settings.exists("map-dir"))
-		map_dir = g_settings.get("map-dir");
+	else if(g_settings->exists("map-dir"))
+		map_dir = g_settings->get("map-dir");
 	
 	// Run dedicated server if asked to
 	if(cmd_args.getFlag("server"))
@@ -1319,10 +1321,10 @@ int main(int argc, char *argv[])
 	}
 	else
 	{
-		address = g_settings.get("address");
+		address = g_settings->get("address");
 	}
 	
-	std::string playername = g_settings.get("name");
+	std::string playername = g_settings->get("name");
 
 	/*
 		Device initialization
@@ -1331,14 +1333,14 @@ int main(int argc, char *argv[])
 	// Resolution selection
 	
 	bool fullscreen = false;
-	u16 screenW = g_settings.getU16("screenW");
-	u16 screenH = g_settings.getU16("screenH");
+	u16 screenW = g_settings->getU16("screenW");
+	u16 screenH = g_settings->getU16("screenH");
 
 	// Determine driver
 
 	video::E_DRIVER_TYPE driverType;
 	
-	std::string driverstring = g_settings.get("video_driver");
+	std::string driverstring = g_settings->get("video_driver");
 
 	if(driverstring == "null")
 		driverType = video::EDT_NULL;
@@ -1397,7 +1399,7 @@ int main(int argc, char *argv[])
 	
 	device->setResizable(true);
 
-	bool random_input = g_settings.getBool("random_input")
+	bool random_input = g_settings->getBool("random_input")
 			|| cmd_args.getFlag("random-input");
 	InputHandler *input = NULL;
 	if(random_input)
@@ -1508,10 +1510,10 @@ int main(int argc, char *argv[])
 				menudata.address = narrow_to_wide(address);
 				menudata.name = narrow_to_wide(playername);
 				menudata.port = narrow_to_wide(itos(port));
-				menudata.fancy_trees = g_settings.getBool("new_style_leaves");
-				menudata.smooth_lighting = g_settings.getBool("smooth_lighting");
-				menudata.creative_mode = g_settings.getBool("creative_mode");
-				menudata.enable_damage = g_settings.getBool("enable_damage");
+				menudata.fancy_trees = g_settings->getBool("new_style_leaves");
+				menudata.smooth_lighting = g_settings->getBool("smooth_lighting");
+				menudata.creative_mode = g_settings->getBool("creative_mode");
+				menudata.enable_damage = g_settings->getBool("enable_damage");
 
 				GUIMainMenu *menu =
 						new GUIMainMenu(guienv, guiroot, -1, 
@@ -1580,10 +1582,10 @@ int main(int argc, char *argv[])
 				int newport = stoi(wide_to_narrow(menudata.port));
 				if(newport != 0)
 					port = newport;
-				g_settings.set("new_style_leaves", itos(menudata.fancy_trees));
-				g_settings.set("smooth_lighting", itos(menudata.smooth_lighting));
-				g_settings.set("creative_mode", itos(menudata.creative_mode));
-				g_settings.set("enable_damage", itos(menudata.enable_damage));
+				g_settings->set("new_style_leaves", itos(menudata.fancy_trees));
+				g_settings->set("smooth_lighting", itos(menudata.smooth_lighting));
+				g_settings->set("creative_mode", itos(menudata.creative_mode));
+				g_settings->set("enable_damage", itos(menudata.enable_damage));
 				
 				// NOTE: These are now checked server side; no need to do it
 				//       here, so let's not do it here.
@@ -1602,12 +1604,12 @@ int main(int argc, char *argv[])
 				}*/
 
 				// Save settings
-				g_settings.set("name", playername);
-				g_settings.set("address", address);
-				g_settings.set("port", itos(port));
+				g_settings->set("name", playername);
+				g_settings->set("address", address);
+				g_settings->set("port", itos(port));
 				// Update configuration file
 				if(configpath != "")
-					g_settings.updateConfigFile(configpath.c_str());
+					g_settings->updateConfigFile(configpath.c_str());
 			
 				// Continue to game
 				break;

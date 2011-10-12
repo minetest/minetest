@@ -32,6 +32,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "porting.h"
 #include "content_mapnode.h"
 #include "mapsector.h"
+#include "settings.h"
 
 /*
 	Asserts that the exception occurs

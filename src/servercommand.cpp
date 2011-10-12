@@ -18,6 +18,7 @@ OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 
 #include "servercommand.h"
 #include "utility.h"
+#include "settings.h"
 
 void cmd_status(std::wostringstream &os,
 	ServerCommandContext *ctx)
@@ -155,7 +156,7 @@ void cmd_setting(std::wostringstream &os,
 
 	std::string confline = wide_to_narrow(ctx->paramstring);
 	
-	g_settings.parseConfigLine(confline);
+	g_settings->parseConfigLine(confline);
 	
 	ctx->server->saveConfig();
 

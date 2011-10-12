@@ -70,18 +70,20 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "config.h"
 #include "mineral.h"
 #include "filesys.h"
+#include "defaultsettings.h"
+#include "settings.h"
+#include "profiler.h"
 
 /*
 	Settings.
 	These are loaded from the config file.
 */
-
-Settings g_settings;
-
-extern void set_default_settings();
+Settings main_settings;
+Settings *g_settings = &main_settings;
 
 // Global profiler
-Profiler g_profiler;
+Profiler main_profiler;
+Profiler *g_profiler = &main_profiler;
 
 // A dummy thing
 ITextureSource *g_texturesource = NULL;
@@ -221,7 +223,7 @@ int main(int argc, char *argv[])
 	*/
 
 	// Initialize default settings
-	set_default_settings();
+	set_default_settings(g_settings);
 	
 	// Initialize sockets
 	sockets_init();
@@ -236,7 +238,7 @@ int main(int argc, char *argv[])
 	
 	if(cmd_args.exists("config"))
 	{
-		bool r = g_settings.readConfigFile(cmd_args.get("config").c_str());
+		bool r = g_settings->readConfigFile(cmd_args.get("config").c_str());
 		if(r == false)
 		{
 			dstream<<"Could not read configuration from \""
@@ -255,7 +257,7 @@ int main(int argc, char *argv[])
 
 		for(u32 i=0; i<filenames.size(); i++)
 		{
-			bool r = g_settings.readConfigFile(filenames[i].c_str());
+			bool r = g_settings->readConfigFile(filenames[i].c_str());
 			if(r)
 			{
 				configpath = filenames[i];
@@ -305,9 +307,9 @@ int main(int argc, char *argv[])
 	{
 		port = cmd_args.getU16("port");
 	}
-	else if(g_settings.exists("port") && g_settings.getU16("port") != 0)
+	else if(g_settings->exists("port") && g_settings->getU16("port") != 0)
 	{
-		port = g_settings.getU16("port");
+		port = g_settings->getU16("port");
 	}
 	else
 	{
@@ -319,8 +321,8 @@ int main(int argc, char *argv[])
 	std::string map_dir = porting::path_userdata+"/world";
 	if(cmd_args.exists("map-dir"))
 		map_dir = cmd_args.get("map-dir");
-	else if(g_settings.exists("map-dir"))
-		map_dir = g_settings.get("map-dir");
+	else if(g_settings->exists("map-dir"))
+		map_dir = g_settings->get("map-dir");
 	
 	// Create server
 	Server server(map_dir.c_str(), configpath);

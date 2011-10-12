@@ -22,7 +22,10 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "connection.h"
 #include "constants.h"
 #include "utility.h"
-
+#ifndef SERVER
+#include <ITextSceneNode.h>
+#endif
+#include "settings.h"
 
 Player::Player():
 	touching_ground(false),
@@ -344,7 +347,7 @@ void LocalPlayer::move(f32 dtime, Map &map, f32 pos_max_d,
 	is_frozen = false;
 
 	// Skip collision detection if a special movement mode is used
-	bool free_move = g_settings.getBool("free_move");
+	bool free_move = g_settings->getBool("free_move");
 	if(free_move)
 	{
 		setPosition(position);
@@ -754,9 +757,9 @@ void LocalPlayer::applyControl(float dtime)
 	
 	v3f speed = v3f(0,0,0);
 
-	bool free_move = g_settings.getBool("free_move");
-	bool fast_move = g_settings.getBool("fast_move");
-	bool continuous_forward = g_settings.getBool("continuous_forward");
+	bool free_move = g_settings->getBool("free_move");
+	bool fast_move = g_settings->getBool("fast_move");
+	bool continuous_forward = g_settings->getBool("continuous_forward");
 
 	if(free_move || is_climbing)
 	{

@@ -22,6 +22,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "main.h" // For g_settings and g_texturesource
 #include "mineral.h"
 #include "mapblock_mesh.h" // For MapBlock_LightColor()
+#include "settings.h"
 
 #ifndef SERVER
 // Create a cuboid.
@@ -128,10 +129,10 @@ void mapblock_mesh_generate_special(MeshMakeData *data,
 	/*
 		Some settings
 	*/
-	bool new_style_water = g_settings.getBool("new_style_water");
-	bool new_style_leaves = g_settings.getBool("new_style_leaves");
-	//bool smooth_lighting = g_settings.getBool("smooth_lighting");
-	bool invisible_stone = g_settings.getBool("invisible_stone");
+	bool new_style_water = g_settings->getBool("new_style_water");
+	bool new_style_leaves = g_settings->getBool("new_style_leaves");
+	//bool smooth_lighting = g_settings->getBool("smooth_lighting");
+	bool invisible_stone = g_settings->getBool("invisible_stone");
 	
 	float node_liquid_level = 1.0;
 	if(new_style_water)

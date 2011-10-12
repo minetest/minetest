@@ -156,6 +156,7 @@ void mysrand(unsigned seed)
    next = seed;
 }
 
+#ifndef SERVER
 // Sets the color of all vertices in the mesh
 void setMeshVerticesColor(scene::IMesh* mesh, video::SColor& color)
 {
@@ -174,6 +175,7 @@ void setMeshVerticesColor(scene::IMesh* mesh, video::SColor& color)
 		}
 	}
 }
+#endif
 
 /*
 	blockpos: position of block in block coordinates

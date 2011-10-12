@@ -24,7 +24,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "environment.h"
 #include "common_irrlicht.h"
 #include <string>
-#include "utility.h"
 #include "porting.h"
 #include "map.h"
 #include "inventory.h"
@@ -450,11 +449,7 @@ public:
 	}
 	
 	// Saves g_settings to configpath given at initialization
-	void saveConfig()
-	{
-		if(m_configpath != "")
-			g_settings.updateConfigFile(m_configpath.c_str());
-	}
+	void saveConfig();
 
 	void setIpBanned(const std::string &ip, const std::string &name)
 	{

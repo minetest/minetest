@@ -36,6 +36,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "content_nodemeta.h"
 #include "mapblock.h"
 #include "serverobject.h"
+#include "settings.h"
+#include "profiler.h"
 
 #define BLOCK_EMERGE_FLAG_FROMDISK (1<<0)
 
@@ -107,7 +109,7 @@ void * EmergeThread::Thread()
 
 	BEGIN_DEBUG_EXCEPTION_HANDLER
 
-	bool enable_mapgen_debug_info = g_settings.getBool("enable_mapgen_debug_info");
+	bool enable_mapgen_debug_info = g_settings->getBool("enable_mapgen_debug_info");
 	
 	/*
 		Get block info from queue, emerge them and send them
@@ -354,7 +356,7 @@ void RemoteClient::GetNextBlocks(Server *server, float dtime,
 	}
 
 	// Won't send anything if already sending
-	if(m_blocks_sending.size() >= g_settings.getU16
+	if(m_blocks_sending.size() >= g_settings->getU16
 			("max_simultaneous_block_sends_per_client"))
 	{
 		//dstream<<"Not sending any blocks, Queue full."<<std::endl;
@@ -419,7 +421,7 @@ void RemoteClient::GetNextBlocks(Server *server, float dtime,
 
 	//dstream<<"d_start="<<d_start<<std::endl;
 
-	u16 max_simul_sends_setting = g_settings.getU16
+	u16 max_simul_sends_setting = g_settings->getU16
 			("max_simultaneous_block_sends_per_client");
 	u16 max_simul_sends_usually = max_simul_sends_setting;
 
@@ -429,7 +431,7 @@ void RemoteClient::GetNextBlocks(Server *server, float dtime,
 		Decrease send rate if player is building stuff.
 	*/
 	m_time_from_building += dtime;
-	if(m_time_from_building < g_settings.getFloat(
+	if(m_time_from_building < g_settings->getFloat(
 				"full_block_send_enable_min_time_from_building"))
 	{
 		max_simul_sends_usually
@@ -450,8 +452,8 @@ void RemoteClient::GetNextBlocks(Server *server, float dtime,
 	*/
 	s32 new_nearest_unsent_d = -1;
 
-	s16 d_max = g_settings.getS16("max_block_send_distance");
-	s16 d_max_gen = g_settings.getS16("max_block_generate_distance");
+	s16 d_max = g_settings->getS16("max_block_send_distance");
+	s16 d_max_gen = g_settings->getS16("max_block_generate_distance");
 	
 	// Don't loop very much at a time
 	if(d_max > d_start+1)
@@ -735,7 +737,7 @@ queue_full_break:
 	{
 		m_nothing_to_send_counter++;
 		if((s16)m_nothing_to_send_counter >=
-				g_settings.getS16("max_block_send_distance"))
+				g_settings->getS16("max_block_send_distance"))
 		{
 			// Pause time in seconds
 			m_nothing_to_send_pause_timer = 1.0;
@@ -858,7 +860,7 @@ void RemoteClient::SendObjectData(
 	v3s16 center_nodepos = floatToInt(playerpos, BS);
 	v3s16 center = getNodeBlockPos(center_nodepos);
 
-	s16 d_max = g_settings.getS16("active_object_range");
+	s16 d_max = g_settings->getS16("active_object_range");
 	
 	// Number of blocks whose objects were written to bos
 	u16 blockcount = 0;
@@ -1232,7 +1234,7 @@ void Server::AsyncRunStep()
 	}
 	
 	{
-		ScopeProfiler sp(&g_profiler, "Server: selecting and sending "
+		ScopeProfiler sp(g_profiler, "Server: selecting and sending "
 				"blocks to clients");
 		// Send blocks to clients
 		SendBlocks(dtime);
@@ -1259,14 +1261,14 @@ void Server::AsyncRunStep()
 	{
 		// Process connection's timeouts
 		JMutexAutoLock lock2(m_con_mutex);
-		ScopeProfiler sp(&g_profiler, "Server: connection timeout processing");
+		ScopeProfiler sp(g_profiler, "Server: connection timeout processing");
 		m_con.RunTimeouts(dtime);
 	}
 	
 	{
 		// This has to be called so that the client list gets synced
 		// with the peer list of the connection
-		ScopeProfiler sp(&g_profiler, "Server: peer change handling");
+		ScopeProfiler sp(g_profiler, "Server: peer change handling");
 		handlePeerChanges();
 	}
 
@@ -1277,7 +1279,7 @@ void Server::AsyncRunStep()
 		JMutexAutoLock envlock(m_env_mutex);
 
 		m_time_counter += dtime;
-		f32 speed = g_settings.getFloat("time_speed") * 24000./(24.*3600);
+		f32 speed = g_settings->getFloat("time_speed") * 24000./(24.*3600);
 		u32 units = (u32)(m_time_counter*speed);
 		m_time_counter -= (f32)units / speed;
 		
@@ -1292,7 +1294,7 @@ void Server::AsyncRunStep()
 		m_time_of_day_send_timer -= dtime;
 		if(m_time_of_day_send_timer < 0.0)
 		{
-			m_time_of_day_send_timer = g_settings.getFloat("time_send_interval");
+			m_time_of_day_send_timer = g_settings->getFloat("time_send_interval");
 
 			//JMutexAutoLock envlock(m_env_mutex);
 			JMutexAutoLock conlock(m_con_mutex);
@@ -1315,7 +1317,7 @@ void Server::AsyncRunStep()
 	{
 		JMutexAutoLock lock(m_env_mutex);
 		// Step environment
-		ScopeProfiler sp(&g_profiler, "Server: environment step");
+		ScopeProfiler sp(g_profiler, "Server: environment step");
 		m_env.step(dtime);
 	}
 		
@@ -1324,9 +1326,9 @@ void Server::AsyncRunStep()
 	{
 		JMutexAutoLock lock(m_env_mutex);
 		// Run Map's timers and unload unused data
-		ScopeProfiler sp(&g_profiler, "Server: map timer and unload");
+		ScopeProfiler sp(g_profiler, "Server: map timer and unload");
 		m_env.getMap().timerUpdate(map_timer_and_unload_dtime,
-				g_settings.getFloat("server_unload_unused_data_timeout"));
+				g_settings->getFloat("server_unload_unused_data_timeout"));
 	}
 	
 	/*
@@ -1343,7 +1345,7 @@ void Server::AsyncRunStep()
 		
 		JMutexAutoLock lock(m_env_mutex);
 
-		ScopeProfiler sp(&g_profiler, "Server: liquid transform");
+		ScopeProfiler sp(g_profiler, "Server: liquid transform");
 
 		core::map<v3s16, MapBlock*> modified_blocks;
 		m_env.getMap().transformLiquids(modified_blocks);
@@ -1409,7 +1411,7 @@ void Server::AsyncRunStep()
 		}
 	}
 
-	//if(g_settings.getBool("enable_experimental"))
+	//if(g_settings->getBool("enable_experimental"))
 	{
 
 	/*
@@ -1420,7 +1422,7 @@ void Server::AsyncRunStep()
 		JMutexAutoLock envlock(m_env_mutex);
 		JMutexAutoLock conlock(m_con_mutex);
 
-		ScopeProfiler sp(&g_profiler, "Server: checking added and deleted objects");
+		ScopeProfiler sp(g_profiler, "Server: checking added and deleted objects");
 
 		// Radius inside which objects are active
 		s16 radius = 32;
@@ -1568,7 +1570,7 @@ void Server::AsyncRunStep()
 		JMutexAutoLock envlock(m_env_mutex);
 		JMutexAutoLock conlock(m_con_mutex);
 
-		ScopeProfiler sp(&g_profiler, "Server: sending object messages");
+		ScopeProfiler sp(g_profiler, "Server: sending object messages");
 
 		// Key = object id
 		// Value = data sent by object
@@ -1804,12 +1806,12 @@ void Server::AsyncRunStep()
 	{
 		float &counter = m_objectdata_timer;
 		counter += dtime;
-		if(counter >= g_settings.getFloat("objectdata_interval"))
+		if(counter >= g_settings->getFloat("objectdata_interval"))
 		{
 			JMutexAutoLock lock1(m_env_mutex);
 			JMutexAutoLock lock2(m_con_mutex);
 
-			ScopeProfiler sp(&g_profiler, "Server: sending mbo positions");
+			ScopeProfiler sp(g_profiler, "Server: sending mbo positions");
 
 			SendObjectData(counter);
 
@@ -1836,11 +1838,11 @@ void Server::AsyncRunStep()
 	{
 		float &counter = m_savemap_timer;
 		counter += dtime;
-		if(counter >= g_settings.getFloat("server_map_save_interval"))
+		if(counter >= g_settings->getFloat("server_map_save_interval"))
 		{
 			counter = 0.0;
 
-			ScopeProfiler sp(&g_profiler, "Server: saving stuff");
+			ScopeProfiler sp(g_profiler, "Server: saving stuff");
 
 			// Auth stuff
 			if(m_authmanager.isModified())
@@ -1855,10 +1857,10 @@ void Server::AsyncRunStep()
 
 			/*// Unload unused data (delete from memory)
 			m_env.getMap().unloadUnusedData(
-					g_settings.getFloat("server_unload_unused_sectors_timeout"));
+					g_settings->getFloat("server_unload_unused_sectors_timeout"));
 					*/
 			/*u32 deleted_count = m_env.getMap().unloadUnusedData(
-					g_settings.getFloat("server_unload_unused_sectors_timeout"));
+					g_settings->getFloat("server_unload_unused_sectors_timeout"));
 					*/
 
 			// Save only changed parts
@@ -2073,7 +2075,7 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 		}
 		else
 		{
-			checkpwd = g_settings.get("default_password");
+			checkpwd = g_settings->get("default_password");
 		}
 		
 		/*dstream<<"Server: Client gave password '"<<password
@@ -2096,16 +2098,16 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 			m_authmanager.add(playername);
 			m_authmanager.setPassword(playername, checkpwd);
 			m_authmanager.setPrivs(playername,
-					stringToPrivs(g_settings.get("default_privs")));
+					stringToPrivs(g_settings->get("default_privs")));
 			m_authmanager.save();
 		}
 		
 		// Enforce user limit.
 		// Don't enforce for users that have some admin right
-		if(m_clients.size() >= g_settings.getU16("max_users") &&
+		if(m_clients.size() >= g_settings->getU16("max_users") &&
 				(m_authmanager.getPrivs(playername)
 					& (PRIV_SERVER|PRIV_BAN|PRIV_PRIVS)) == 0 &&
-				playername != g_settings.get("name"))
+				playername != g_settings->get("name"))
 		{
 			SendAccessDenied(m_con, peer_id, L"Too many users.");
 			return;
@@ -2381,7 +2383,7 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 		if(button == 0)
 		{
 			InventoryList *ilist = player->inventory.getList("main");
-			if(g_settings.getBool("creative_mode") == false && ilist != NULL)
+			if(g_settings->getBool("creative_mode") == false && ilist != NULL)
 			{
 			
 				// Skip if inventory has no free space
@@ -2464,7 +2466,7 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 				InventoryList *ilist = player->inventory.getList("main");
 				if(ilist != NULL)
 				{
-					if(g_settings.getBool("creative_mode") == false)
+					if(g_settings->getBool("creative_mode") == false)
 					{
 						// Skip if inventory has no free space
 						if(ilist->roomForItem(item) == false)
@@ -2685,7 +2687,7 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 				Update and send inventory
 			*/
 
-			if(g_settings.getBool("creative_mode") == false)
+			if(g_settings->getBool("creative_mode") == false)
 			{
 				/*
 					Wear out tool
@@ -2901,7 +2903,7 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 					Handle inventory
 				*/
 				InventoryList *ilist = player->inventory.getList("main");
-				if(g_settings.getBool("creative_mode") == false && ilist)
+				if(g_settings->getBool("creative_mode") == false && ilist)
 				{
 					// Remove from inventory and send inventory
 					if(mitem->getCount() == 1)
@@ -2977,7 +2979,7 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 					If in creative mode, item dropping is disabled unless
 					player has build privileges
 				*/
-				if(g_settings.getBool("creative_mode") &&
+				if(g_settings->getBool("creative_mode") &&
 					(getPlayerPrivs(player) & PRIV_BUILD) == 0)
 				{
 					derr_server<<"Not allowing player to drop item: "
@@ -3014,7 +3016,7 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 					
 					dout_server<<"Placed object"<<std::endl;
 
-					if(g_settings.getBool("creative_mode") == false)
+					if(g_settings->getBool("creative_mode") == false)
 					{
 						// Delete the right amount of items from the slot
 						u16 dropcount = item->getDropCount();
@@ -3176,7 +3178,7 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 	else if(command == TOSERVER_INVENTORY_ACTION)
 	{
 		/*// Ignore inventory changes if in creative mode
-		if(g_settings.getBool("creative_mode") == true)
+		if(g_settings->getBool("creative_mode") == true)
 		{
 			dstream<<"TOSERVER_INVENTORY_ACTION: ignoring in creative mode"
 					<<std::endl;
@@ -3199,7 +3201,7 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 			*/
 			bool disable_action = false;
 			if(a->getType() == IACTION_MOVE
-					&& g_settings.getBool("creative_mode") == false)
+					&& g_settings->getBool("creative_mode") == false)
 			{
 				IMoveAction *ma = (IMoveAction*)a;
 				if(ma->to_inv == "current_player" &&
@@ -3428,7 +3430,7 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 	}
 	else if(command == TOSERVER_DAMAGE)
 	{
-		if(g_settings.getBool("enable_damage"))
+		if(g_settings->getBool("enable_damage"))
 		{
 			std::string datastring((char*)&data[2], datasize-2);
 			std::istringstream is(datastring, std::ios_base::binary);
@@ -4119,7 +4121,7 @@ void Server::SendBlocks(float dtime)
 	s32 total_sending = 0;
 	
 	{
-		ScopeProfiler sp(&g_profiler, "Server: selecting blocks for sending");
+		ScopeProfiler sp(g_profiler, "Server: selecting blocks for sending");
 
 		for(core::map<u16, RemoteClient*>::Iterator
 			i = m_clients.getIterator();
@@ -4145,7 +4147,7 @@ void Server::SendBlocks(float dtime)
 	for(u32 i=0; i<queue.size(); i++)
 	{
 		//TODO: Calculate limit dynamically
-		if(total_sending >= g_settings.getS32
+		if(total_sending >= g_settings->getS32
 				("max_simultaneous_block_sends_server_total"))
 			break;
 		
@@ -4185,7 +4187,7 @@ void Server::UpdateCrafting(u16 peer_id)
 	/*
 		Calculate crafting stuff
 	*/
-	if(g_settings.getBool("creative_mode") == false)
+	if(g_settings->getBool("creative_mode") == false)
 	{
 		InventoryList *clist = player->inventory.getList("craft");
 		InventoryList *rlist = player->inventory.getList("craftresult");
@@ -4256,9 +4258,16 @@ std::wstring Server::getStatusString()
 	os<<L"}";
 	if(((ServerMap*)(&m_env.getMap()))->isSavingEnabled() == false)
 		os<<std::endl<<L"# Server: "<<" WARNING: Map saving is disabled.";
-	if(g_settings.get("motd") != "")
-		os<<std::endl<<L"# Server: "<<narrow_to_wide(g_settings.get("motd"));
+	if(g_settings->get("motd") != "")
+		os<<std::endl<<L"# Server: "<<narrow_to_wide(g_settings->get("motd"));
 	return os.str();
+}
+
+// Saves g_settings to configpath given at initialization
+void Server::saveConfig()
+{
+	if(m_configpath != "")
+		g_settings->updateConfigFile(m_configpath.c_str());
 }
 
 v3f findSpawnPos(ServerMap &map)
@@ -4335,7 +4344,7 @@ Player *Server::emergePlayer(const char *name, const char *password, u16 peer_id
 		player->peer_id = peer_id;
 		
 		// Reset inventory to creative if in creative mode
-		if(g_settings.getBool("creative_mode"))
+		if(g_settings->getBool("creative_mode"))
 		{
 			// Warning: double code below
 			// Backup actual inventory
@@ -4370,7 +4379,7 @@ Player *Server::emergePlayer(const char *name, const char *password, u16 peer_id
 		m_authmanager.add(name);
 		m_authmanager.setPassword(name, password);
 		m_authmanager.setPrivs(name,
-				stringToPrivs(g_settings.get("default_privs")));
+				stringToPrivs(g_settings->get("default_privs")));
 
 		/*
 			Set player position
@@ -4393,7 +4402,7 @@ Player *Server::emergePlayer(const char *name, const char *password, u16 peer_id
 			Add stuff to inventory
 		*/
 		
-		if(g_settings.getBool("creative_mode"))
+		if(g_settings->getBool("creative_mode"))
 		{
 			// Warning: double code above
 			// Backup actual inventory
@@ -4402,7 +4411,7 @@ Player *Server::emergePlayer(const char *name, const char *password, u16 peer_id
 			// Set creative inventory
 			craft_set_creative_inventory(player);
 		}
-		else if(g_settings.getBool("give_initial_stuff"))
+		else if(g_settings->getBool("give_initial_stuff"))
 		{
 			craft_give_initial_stuff(player);
 		}
@@ -4529,7 +4538,7 @@ u64 Server::getPlayerPrivs(Player *player)
 	std::string playername = player->getName();
 	// Local player gets all privileges regardless of
 	// what's set on their account.
-	if(g_settings.get("name") == playername)
+	if(g_settings->get("name") == playername)
 	{
 		return PRIV_ALL;
 	}
@@ -4556,7 +4565,7 @@ void dedicated_server_loop(Server &server, bool &kill)
 		// This is kind of a hack but can be done like this
 		// because server.step() is very light
 		{
-			ScopeProfiler sp(&g_profiler, "dedicated server sleep");
+			ScopeProfiler sp(g_profiler, "dedicated server sleep");
 			sleep_ms(30);
 		}
 		server.step(0.030);
@@ -4571,14 +4580,14 @@ void dedicated_server_loop(Server &server, bool &kill)
 			Profiler
 		*/
 		float profiler_print_interval =
-				g_settings.getFloat("profiler_print_interval");
+				g_settings->getFloat("profiler_print_interval");
 		if(profiler_print_interval != 0)
 		{
 			if(m_profiler_interval.step(0.030, profiler_print_interval))
 			{
 				dstream<<"Profiler:"<<std::endl;
-				g_profiler.print(dstream);
-				g_profiler.clear();
+				g_profiler->print(dstream);
+				g_profiler->clear();
 			}
 		}
 		

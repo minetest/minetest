@@ -346,8 +346,10 @@ class SignObject : public MapBlockObject
 public:
 	// The constructor of every MapBlockObject should be like this
 	SignObject(MapBlock *block, s16 id, v3f pos):
-		MapBlockObject(block, id, pos),
-		m_node(NULL)
+		MapBlockObject(block, id, pos)
+#ifndef SERVER
+		,m_node(NULL)
+#endif
 	{
 		m_selection_box = new core::aabbox3d<f32>
 				(-BS*0.4,-BS*0.5,-BS*0.4, BS*0.4,BS*0.5,BS*0.4);
@@ -534,7 +536,9 @@ public:
 	}
 	
 protected:
+#ifndef SERVER
 	scene::IMeshSceneNode *m_node;
+#endif
 	std::string m_text;
 	f32 m_yaw;
 };
@@ -543,8 +547,10 @@ class RatObject : public MovingObject
 {
 public:
 	RatObject(MapBlock *block, s16 id, v3f pos):
-		MovingObject(block, id, pos),
-		m_node(NULL)
+		MovingObject(block, id, pos)
+#ifndef SERVER
+		,m_node(NULL)
+#endif
 	{
 		m_collision_box = new core::aabbox3d<f32>
 				(-BS*0.3,-BS*.25,-BS*0.3, BS*0.3,BS*0.25,BS*0.3);
@@ -681,15 +687,19 @@ public:
 	
 	void updateNodePos()
 	{
+#ifndef SERVER
 		if(m_node == NULL)
 			return;
 
 		m_node->setPosition(getAbsoluteShowPos());
 		m_node->setRotation(v3f(0, -m_yaw+180, 0));
+#endif
 	}
 	
 protected:
+#ifndef SERVER
 	scene::IMeshSceneNode *m_node;
+#endif
 	float m_yaw;
 
 	float m_counter1;
@@ -708,8 +718,10 @@ class ItemObject : public MapBlockObject
 public:
 	// The constructor of every MapBlockObject should be like this
 	ItemObject(MapBlock *block, s16 id, v3f pos):
-		MapBlockObject(block, id, pos),
-		m_node(NULL)
+		MapBlockObject(block, id, pos)
+#ifndef SERVER
+		,m_node(NULL)
+#endif
 	{
 		/*m_selection_box = new core::aabbox3d<f32>
 				(-BS*0.4,-BS*0.5,-BS*0.4, BS*0.4,BS*0.5,BS*0.4);*/
@@ -855,7 +867,9 @@ public:
 	}
 
 protected:
+#ifndef SERVER
 	scene::IMeshSceneNode *m_node;
+#endif
 	std::string m_itemstring;
 	f32 m_yaw;
 };
@@ -868,7 +882,9 @@ class PlayerObject : public MovingObject
 public:
 	PlayerObject(MapBlock *block, s16 id, v3f pos):
 		MovingObject(block, id, pos),
+#ifndef SERVER
 		m_node(NULL),
+#endif
 		m_yaw(0)
 	{
 		m_collision_box = new core::aabbox3d<f32>
@@ -954,15 +970,19 @@ public:
 	
 	void updateNodePos()
 	{
+#ifndef SERVER
 		if(m_node == NULL)
 			return;
 
 		m_node->setPosition(getAbsoluteShowPos());
 		m_node->setRotation(v3f(0, -m_yaw+180, 0));
+#endif
 	}
 	
 protected:
+#ifndef SERVER
 	scene::IMeshSceneNode *m_node;
+#endif
 	float m_yaw;
 
 	v3f m_oldpos;
@@ -984,6 +1004,13 @@ struct DistanceSortedObject
 		return d < other.d;
 	}
 };
+
+namespace irr{
+namespace scene{
+	class ISceneManager;
+}
+}
+using namespace irr;
 
 class MapBlockObjectList
 {

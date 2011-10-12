@@ -24,6 +24,9 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "inventory.h"
 #include "tile.h"
 #include "utility.h"
+#include <ICameraSceneNode.h>
+#include <IMeshCache.h>
+#include <IAnimatedMesh.h>
 
 class LocalPlayer;
 class MapDrawControl;

@@ -29,6 +29,10 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "mapgen.h"
 #include "nodemetadata.h"
 #include "content_mapnode.h"
+#ifndef SERVER
+#include <IMaterialRenderer.h>
+#endif
+#include "settings.h"
 
 /*
 	SQLite format specification:
@@ -771,7 +775,7 @@ void Map::updateLighting(enum LightBank bank,
 		generation for testing or whatever
 	*/
 #if 0
-	//if(g_settings.get(""))
+	//if(g_settings->get(""))
 	{
 		core::map<v3s16, MapBlock*>::Iterator i;
 		i = blocks_to_update.getIterator();
@@ -1897,7 +1901,7 @@ ServerMap::ServerMap(std::string savedir):
 
 	//m_chunksize = 8; // Takes a few seconds
 
-	if (g_settings.get("fixed_map_seed").empty())
+	if (g_settings->get("fixed_map_seed").empty())
 	{
 		m_seed = (((u64)(myrand()%0xffff)<<0)
 				+ ((u64)(myrand()%0xffff)<<16)
@@ -1906,7 +1910,7 @@ ServerMap::ServerMap(std::string savedir):
 	}
 	else
 	{
-		m_seed = g_settings.getU64("fixed_map_seed");
+		m_seed = g_settings->getU64("fixed_map_seed");
 	}
 
 	/*
@@ -2044,7 +2048,7 @@ ServerMap::~ServerMap()
 
 void ServerMap::initBlockMake(mapgen::BlockMakeData *data, v3s16 blockpos)
 {
-	bool enable_mapgen_debug_info = g_settings.getBool("enable_mapgen_debug_info");
+	bool enable_mapgen_debug_info = g_settings->getBool("enable_mapgen_debug_info");
 	if(enable_mapgen_debug_info)
 		dstream<<"initBlockMake(): ("<<blockpos.X<<","<<blockpos.Y<<","
 				<<blockpos.Z<<")"<<std::endl;
@@ -2139,7 +2143,7 @@ MapBlock* ServerMap::finishBlockMake(mapgen::BlockMakeData *data,
 		return NULL;
 	}
 
-	bool enable_mapgen_debug_info = g_settings.getBool("enable_mapgen_debug_info");
+	bool enable_mapgen_debug_info = g_settings->getBool("enable_mapgen_debug_info");
 
 	/*dstream<<"Resulting vmanip:"<<std::endl;
 	data->vmanip.print(dstream);*/
@@ -2394,7 +2398,7 @@ MapBlock * ServerMap::generateBlock(
 			<<"("<<p.X<<","<<p.Y<<","<<p.Z<<")"
 			<<std::endl;*/
 	
-	bool enable_mapgen_debug_info = g_settings.getBool("enable_mapgen_debug_info");
+	bool enable_mapgen_debug_info = g_settings->getBool("enable_mapgen_debug_info");
 
 	TimeTaker timer("generateBlock");
 	
@@ -3946,7 +3950,7 @@ void ClientMap::renderPostFx()
 	// - If the player is in liquid, draw a semi-transparent overlay.
 	ContentFeatures& features = content_features(n);
 	video::SColor post_effect_color = features.post_effect_color;
-	if(features.solidness == 2 && g_settings.getBool("free_move") == false)
+	if(features.solidness == 2 && g_settings->getBool("free_move") == false)
 	{
 		post_effect_color = video::SColor(255, 0, 0, 0);
 	}

@@ -26,6 +26,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "serverobject.h"
 #include "content_sao.h"
 #include "mapgen.h"
+#include "settings.h"
 
 Environment::Environment():
 	m_time_of_day(9000)
@@ -649,7 +650,7 @@ void ServerEnvironment::step(float dtime)
 	//TimeTaker timer("ServerEnv step");
 
 	// Get some settings
-	bool footprints = g_settings.getBool("footprints");
+	bool footprints = g_settings->getBool("footprints");
 
 	/*
 		Increment game time
@@ -1013,7 +1014,7 @@ void ServerEnvironment::step(float dtime)
 		removeRemovedObjects();
 	}
 
-	if(g_settings.getBool("enable_experimental"))
+	if(g_settings->getBool("enable_experimental"))
 	{
 
 	/*
@@ -1541,8 +1542,8 @@ void ClientEnvironment::step(float dtime)
 	DSTACK(__FUNCTION_NAME);
 
 	// Get some settings
-	bool free_move = g_settings.getBool("free_move");
-	bool footprints = g_settings.getBool("footprints");
+	bool free_move = g_settings->getBool("free_move");
+	bool footprints = g_settings->getBool("footprints");
 
 	// Get local player
 	LocalPlayer *lplayer = getLocalPlayer();
