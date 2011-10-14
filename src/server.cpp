@@ -860,106 +860,9 @@ void RemoteClient::SendObjectData(
 	v3s16 center_nodepos = floatToInt(playerpos, BS);
 	v3s16 center = getNodeBlockPos(center_nodepos);
 
-	s16 d_max = g_settings->getS16("active_object_range");
-	
-	// Number of blocks whose objects were written to bos
-	u16 blockcount = 0;
-
-	std::ostringstream bos(std::ios_base::binary);
-
-	for(s16 d = 0; d <= d_max; d++)
-	{
-		core::list<v3s16> list;
-		getFacePositions(list, d);
-		
-		core::list<v3s16>::Iterator li;
-		for(li=list.begin(); li!=list.end(); li++)
-		{
-			v3s16 p = *li + center;
-
-			/*
-				Ignore blocks that haven't been sent to the client
-			*/
-			{
-				if(m_blocks_sent.find(p) == NULL)
-					continue;
-			}
-			
-			// Try stepping block and add it to a send queue
-			try
-			{
-
-			// Get block
-			MapBlock *block = server->m_env.getMap().getBlockNoCreate(p);
-
-			/*
-				Step block if not in stepped_blocks and add to stepped_blocks.
-			*/
-			if(stepped_blocks.find(p) == NULL)
-			{
-				block->stepObjects(dtime, true, server->m_env.getDayNightRatio());
-				stepped_blocks.insert(p, true);
-				//block->setChangedFlag();
-			}
-
-			// Skip block if there are no objects
-			if(block->getObjectCount() == 0)
-				continue;
-			
-			/*
-				Write objects
-			*/
-
-			// Write blockpos
-			writeV3S16(buf, p);
-			bos.write((char*)buf, 6);
-
-			// Write objects
-			//block->serializeObjects(bos, serialization_version); // DEPRECATED
-			// count=0
-			writeU16(bos, 0);
-
-			blockcount++;
-
-			/*
-				Stop collecting objects if data is already too big
-			*/
-			// Sum of player and object data sizes
-			s32 sum = (s32)os.tellp() + 2 + (s32)bos.tellp();
-			// break out if data too big
-			if(sum > MAX_OBJECTDATA_SIZE)
-			{
-				goto skip_subsequent;
-			}
-			
-			} //try
-			catch(InvalidPositionException &e)
-			{
-				// Not in memory
-				// Add it to the emerge queue and trigger the thread.
-				// Fetch the block only if it is on disk.
-				
-				// Grab and increment counter
-				/*SharedPtr<JMutexAutoLock> lock
-						(m_num_blocks_in_emerge_queue.getLock());
-				m_num_blocks_in_emerge_queue.m_value++;*/
-				
-				// Add to queue as an anonymous fetch from disk
-				u8 flags = BLOCK_EMERGE_FLAG_FROMDISK;
-				server->m_emerge_queue.addBlock(0, p, flags);
-				server->m_emergethread.trigger();
-			}
-		}
-	}
-
-skip_subsequent:
-
 	// Write block count
-	writeU16(buf, blockcount);
+	writeU16(buf, 0);
 	os.write((char*)buf, 2);
-
-	// Write block objects
-	os<<bos.str();
 
 	/*
 		Send data
@@ -1431,7 +1334,8 @@ void Server::AsyncRunStep()
 		ScopeProfiler sp(g_profiler, "Server: checking added and deleted objects");
 
 		// Radius inside which objects are active
-		s16 radius = 32;
+		s16 radius = g_settings->getS16("active_object_send_range_blocks");
+		radius *= MAP_BLOCKSIZE;
 
 		for(core::map<u16, RemoteClient*>::Iterator
 			i = m_clients.getIterator();
@@ -2343,87 +2247,8 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 	}
 	else if(command == TOSERVER_CLICK_OBJECT)
 	{
-		if(datasize < 13)
-			return;
-
-		if((getPlayerPrivs(player) & PRIV_BUILD) == 0)
-			return;
-
-		/*
-			[0] u16 command
-			[2] u8 button (0=left, 1=right)
-			[3] v3s16 block
-			[9] s16 id
-			[11] u16 item
-		*/
-		u8 button = readU8(&data[2]);
-		v3s16 p;
-		p.X = readS16(&data[3]);
-		p.Y = readS16(&data[5]);
-		p.Z = readS16(&data[7]);
-		s16 id = readS16(&data[9]);
-		//u16 item_i = readU16(&data[11]);
-
-		MapBlock *block = NULL;
-		try
-		{
-			block = m_env.getMap().getBlockNoCreate(p);
-		}
-		catch(InvalidPositionException &e)
-		{
-			derr_server<<"CLICK_OBJECT block not found"<<std::endl;
-			return;
-		}
-
-		MapBlockObject *obj = block->getObject(id);
-
-		if(obj == NULL)
-		{
-			derr_server<<"CLICK_OBJECT object not found"<<std::endl;
-			return;
-		}
-
-		//TODO: Check that object is reasonably close
-		
-		// Left click
-		if(button == 0)
-		{
-			InventoryList *ilist = player->inventory.getList("main");
-			if(g_settings->getBool("creative_mode") == false && ilist != NULL)
-			{
-			
-				// Skip if inventory has no free space
-				if(ilist->getUsedSlots() == ilist->getSize())
-				{
-					dout_server<<"Player inventory has no free space"<<std::endl;
-					return;
-				}
-				
-				/*
-					Create the inventory item
-				*/
-				InventoryItem *item = NULL;
-				// If it is an item-object, take the item from it
-				if(obj->getTypeId() == MAPBLOCKOBJECT_TYPE_ITEM)
-				{
-					item = ((ItemObject*)obj)->createInventoryItem();
-				}
-				// Else create an item of the object
-				else
-				{
-					item = new MapBlockObjectItem
-							(obj->getInventoryString());
-				}
-				
-				// Add to inventory and send inventory
-				ilist->addItem(item);
-				UpdateCrafting(player->peer_id);
-				SendInventory(player->peer_id);
-			}
-
-			// Remove from block
-			block->removeObject(id);
-		}
+		derr_server<<"Server: CLICK_OBJECT not supported anymore"<<std::endl;
+		return;
 	}
 	else if(command == TOSERVER_CLICK_ACTIVEOBJECT)
 	{
@@ -2442,7 +2267,7 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 		*/
 		u8 button = readU8(&data[2]);
 		u16 id = readS16(&data[3]);
-		u16 item_i = readU16(&data[11]);
+		u16 item_i = readU16(&data[5]);
 	
 		ServerActiveObject *obj = m_env.getActiveObject(id);
 
@@ -3076,62 +2901,9 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 #endif
 	else if(command == TOSERVER_SIGNTEXT)
 	{
-		if((getPlayerPrivs(player) & PRIV_BUILD) == 0)
-			return;
-		/*
-			u16 command
-			v3s16 blockpos
-			s16 id
-			u16 textlen
-			textdata
-		*/
-		std::string datastring((char*)&data[2], datasize-2);
-		std::istringstream is(datastring, std::ios_base::binary);
-		u8 buf[6];
-		// Read stuff
-		is.read((char*)buf, 6);
-		v3s16 blockpos = readV3S16(buf);
-		is.read((char*)buf, 2);
-		s16 id = readS16(buf);
-		is.read((char*)buf, 2);
-		u16 textlen = readU16(buf);
-		std::string text;
-		for(u16 i=0; i<textlen; i++)
-		{
-			is.read((char*)buf, 1);
-			text += (char)buf[0];
-		}
-
-		MapBlock *block = NULL;
-		try
-		{
-			block = m_env.getMap().getBlockNoCreate(blockpos);
-		}
-		catch(InvalidPositionException &e)
-		{
-			derr_server<<"Error while setting sign text: "
-					"block not found"<<std::endl;
-			return;
-		}
-
-		MapBlockObject *obj = block->getObject(id);
-		if(obj == NULL)
-		{
-			derr_server<<"Error while setting sign text: "
-					"object not found"<<std::endl;
-			return;
-		}
-		
-		if(obj->getTypeId() != MAPBLOCKOBJECT_TYPE_SIGN)
-		{
-			derr_server<<"Error while setting sign text: "
-					"object is not a sign"<<std::endl;
-			return;
-		}
-
-		((SignObject*)obj)->setText(text);
-
-		obj->getBlock()->setChangedFlag();
+		derr_server<<"Server: TOSERVER_SIGNTEXT not supported anymore"
+				<<std::endl;
+		return;
 	}
 	else if(command == TOSERVER_SIGNNODETEXT)
 	{

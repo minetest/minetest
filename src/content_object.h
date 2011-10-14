@@ -25,6 +25,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #define ACTIVEOBJECT_TYPE_RAT 3
 #define ACTIVEOBJECT_TYPE_OERKKI1 4
 #define ACTIVEOBJECT_TYPE_FIREFLY 5
+#define ACTIVEOBJECT_TYPE_MOBV2 6
 
 #endif
 

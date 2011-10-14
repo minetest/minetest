@@ -102,6 +102,22 @@ public:
 		return true;
 	}
 
+	void parseConfigLines(std::istream &is, const std::string &endstring)
+	{
+		for(;;){
+			if(is.eof())
+				break;
+			std::string line;
+			std::getline(is, line);
+			std::string trimmedline = trim(line);
+			if(endstring != ""){
+				if(trimmedline == endstring)
+					break;
+			}
+			parseConfigLine(line);
+		}
+	}
+
 	// Returns false on EOF
 	bool parseConfigObject(std::istream &is)
 	{
@@ -481,6 +497,16 @@ public:
 		return value;
 	}
 
+	v2f getV2F(std::string name)
+	{
+		v2f value;
+		Strfnd f(get(name));
+		f.next("(");
+		value.X = stof(f.next(","));
+		value.Y = stof(f.next(")"));
+		return value;
+	}
+
 	u64 getU64(std::string name)
 	{
 		u64 value = 0;
@@ -515,6 +541,13 @@ public:
 		set(name, os.str());
 	}
 
+	void setV2F(std::string name, v2f value)
+	{
+		std::ostringstream os;
+		os<<"("<<value.X<<","<<value.Y<<")";
+		set(name, os.str());
+	}
+
 	void setU64(std::string name, u64 value)
 	{
 		std::ostringstream os;
@@ -528,6 +561,47 @@ public:
 		
 		m_settings.clear();
 		m_defaults.clear();
+	}
+
+	void updateValue(Settings &other, const std::string &name)
+	{
+		JMutexAutoLock lock(m_mutex);
+		
+		if(&other == this)
+			return;
+
+		try{
+			std::string val = other.get(name);
+			m_settings[name] = val;
+		} catch(SettingNotFoundException &e){
+		}
+
+		return;
+	}
+
+	void update(Settings &other)
+	{
+		JMutexAutoLock lock(m_mutex);
+		JMutexAutoLock lock2(other.m_mutex);
+		
+		if(&other == this)
+			return;
+
+		for(core::map<std::string, std::string>::Iterator
+				i = other.m_settings.getIterator();
+				i.atEnd() == false; i++)
+		{
+			m_settings[i.getNode()->getKey()] = i.getNode()->getValue();
+		}
+		
+		for(core::map<std::string, std::string>::Iterator
+				i = other.m_defaults.getIterator();
+				i.atEnd() == false; i++)
+		{
+			m_defaults[i.getNode()->getKey()] = i.getNode()->getValue();
+		}
+
+		return;
 	}
 
 	Settings & operator+=(Settings &other)

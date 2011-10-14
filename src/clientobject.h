@@ -51,6 +51,7 @@ public:
 	virtual core::aabbox3d<f32>* getSelectionBox(){return NULL;}
 	virtual core::aabbox3d<f32>* getCollisionBox(){return NULL;}
 	virtual v3f getPosition(){return v3f(0,0,0);}
+	virtual bool doShowSelectionBox(){return true;}
 	
 	// Step object in time
 	virtual void step(float dtime, ClientEnvironment *env){}

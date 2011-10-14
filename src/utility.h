@@ -810,6 +810,35 @@ inline float wrapDegrees(float f)
 	return f;
 }
 
+/* Wrap to 0...360 */
+inline float wrapDegrees_0_360(float f)
+{
+	// Take examples of f=10, f=720.5, f=-0.5, f=-360.5
+	// This results in
+	// 10, 720, -1, -361
+	int i = floor(f);
+	// 0, 2, 0, -1
+	int l = i / 360;
+	// Wrap to 0...360
+	// 0, 2, -1, -2
+	if(i < 0)
+		l -= 1;
+	// 0, 720, 0, -360
+	int k = l * 360;
+	// 10, 0.5, -0.5, -0.5
+	f -= float(k);
+	return f;
+}
+
+/* Wrap to -180...180 */
+inline float wrapDegrees_180(float f)
+{
+	f += 180;
+	f = wrapDegrees_0_360(f);
+	f -= 180;
+	return f;
+}
+
 inline std::string lowercase(const std::string &s)
 {
 	std::string s2;

@@ -20,6 +20,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "content_cao.h"
 #include "tile.h"
 #include "environment.h"
+#include "settings.h"
+#include <ICameraSceneNode.h>
 
 core::map<u16, ClientActiveObject::Factory> ClientActiveObject::m_types;
 
@@ -683,7 +685,7 @@ void Oerkki1CAO::processMessage(const std::string &data)
 	}
 	else if(cmd == 1)
 	{
-		u16 damage = readU8(is);
+		//u16 damage = readU8(is);
 		m_damage_visual_timer = 1.0;
 	}
 }
@@ -850,3 +852,377 @@ void FireflyCAO::initialize(const std::string &data)
 	
 	updateNodePos();
 }
+
+/*
+	MobV2CAO
+*/
+
+// Prototype
+MobV2CAO proto_MobV2CAO;
+
+MobV2CAO::MobV2CAO():
+	ClientActiveObject(0),
+	m_selection_box(-0.4*BS,-0.4*BS,-0.4*BS, 0.4*BS,0.8*BS,0.4*BS),
+	m_node(NULL),
+	m_position(v3f(0,10*BS,0)),
+	m_yaw(0),
+	m_walking(false),
+	m_walking_unset_timer(0),
+	m_walk_timer(0),
+	m_walk_frame(0),
+	m_damage_visual_timer(0),
+	m_last_light(0),
+	m_shooting(0),
+	m_shooting_unset_timer(0),
+	m_bright_shooting(false),
+	m_player_hit_timer(0)
+{
+	ClientActiveObject::registerType(getType(), create);
+
+	m_properties = new Settings;
+}
+
+MobV2CAO::~MobV2CAO()
+{
+	delete m_properties;
+}
+
+ClientActiveObject* MobV2CAO::create()
+{
+	return new MobV2CAO();
+}
+
+void MobV2CAO::addToScene(scene::ISceneManager *smgr)
+{
+	if(m_node != NULL)
+		return;
+	
+	std::string texture_name = m_properties->get("texture_name");
+	//dstream<<"MobV2CAO::addToScene using texture_name="<<texture_name<<std::endl;
+	std::string texture_string = "[makealpha2:128,0,0;128,128,0:";
+	texture_string += texture_name;
+	
+	scene::MyBillboardSceneNode *bill = new scene::MyBillboardSceneNode(
+			smgr->getRootSceneNode(), smgr, -1, v3f(0,0,0), v2f(1,1));
+	bill->setMaterialTexture(0, g_texturesource->getTextureRaw(texture_string));
+	bill->setMaterialFlag(video::EMF_LIGHTING, false);
+	bill->setMaterialFlag(video::EMF_BILINEAR_FILTER, false);
+	bill->setMaterialType(video::EMT_TRANSPARENT_ALPHA_CHANNEL_REF);
+	bill->setMaterialFlag(video::EMF_FOG_ENABLE, true);
+	bill->setColor(video::SColor(255,0,0,0));
+	bill->setVisible(false); /* Set visible when brightness is known */
+	bill->setSize(m_sprite_size);
+	if(m_sprite_type == "humanoid_1"){
+		const float txp = 1./192;
+		const float txs = txp*32;
+		const float typ = 1./240;
+		const float tys = typ*48;
+		bill->setTCoords(0, v2f(txs*1, tys*1));
+		bill->setTCoords(1, v2f(txs*1, tys*0));
+		bill->setTCoords(2, v2f(txs*0, tys*0));
+		bill->setTCoords(3, v2f(txs*0, tys*1));
+	} else if(m_sprite_type == "simple"){
+		const float txs = 1.0;
+		const float tys = 1.0 / m_simple_anim_frames;
+		bill->setTCoords(0, v2f(txs*1, tys*1));
+		bill->setTCoords(1, v2f(txs*1, tys*0));
+		bill->setTCoords(2, v2f(txs*0, tys*0));
+		bill->setTCoords(3, v2f(txs*0, tys*1));
+	} else {
+		dstream<<"MobV2CAO: Unknown sprite type \""<<m_sprite_type<<"\""
+				<<std::endl;
+	}
+
+	m_node = bill;
+
+	updateNodePos();
+}
+
+void MobV2CAO::removeFromScene()
+{
+	if(m_node == NULL)
+		return;
+
+	m_node->drop();
+	m_node->remove();
+	m_node = NULL;
+}
+
+void MobV2CAO::updateLight(u8 light_at_pos)
+{
+	if(m_lock_full_brightness)
+		light_at_pos = 15;
+	
+	m_last_light = light_at_pos;
+
+	if(m_node == NULL)
+		return;
+	
+	if(m_damage_visual_timer > 0)
+		return;
+	
+	if(m_shooting && m_bright_shooting)
+		return;
+	
+	/*if(light_at_pos <= 2){
+		m_node->setVisible(false);
+		return;
+	}*/
+
+	m_node->setVisible(true);
+
+	u8 li = decode_light(light_at_pos);
+	video::SColor color(255,li,li,li);
+	m_node->setColor(color);
+}
+
+v3s16 MobV2CAO::getLightPosition()
+{
+	return floatToInt(m_position+v3f(0,0,0), BS);
+}
+
+void MobV2CAO::updateNodePos()
+{
+	if(m_node == NULL)
+		return;
+
+	m_node->setPosition(pos_translator.vect_show + m_sprite_pos);
+}
+
+void MobV2CAO::step(float dtime, ClientEnvironment *env)
+{
+	scene::MyBillboardSceneNode *bill = m_node;
+
+	pos_translator.translate(dtime);
+	
+	if(m_sprite_type == "humanoid_1"){
+		scene::ICameraSceneNode* camera = m_node->getSceneManager()->getActiveCamera();
+		v3f cam_to_mob = m_node->getAbsolutePosition() - camera->getAbsolutePosition();
+		cam_to_mob.normalize();
+		int col = 0;
+		if(cam_to_mob.Y > 0.7)
+			col = 5;
+		else if(cam_to_mob.Y < -0.7)
+			col = 4;
+		else{
+			float mob_dir = atan2(cam_to_mob.Z, cam_to_mob.X) / M_PI * 180.;
+			float dir = mob_dir - m_yaw;
+			dir = wrapDegrees_180(dir);
+			//dstream<<"id="<<m_id<<" dir="<<dir<<std::endl;
+			if(fabs(wrapDegrees_180(dir - 0)) <= 45.1)
+				col = 2;
+			else if(fabs(wrapDegrees_180(dir - 90)) <= 45.1)
+				col = 3;
+			else if(fabs(wrapDegrees_180(dir - 180)) <= 45.1)
+				col = 0;
+			else if(fabs(wrapDegrees_180(dir + 90)) <= 45.1)
+				col = 1;
+			else
+				col = 4;
+		}
+
+		int row = 0;
+		if(m_shooting){
+			row = 3;
+		} else if(m_walking){
+			m_walk_timer += dtime;
+			if(m_walk_timer >= 0.5){
+				m_walk_frame = (m_walk_frame + 1) % 2;
+				m_walk_timer = 0;
+			}
+			if(m_walk_frame == 0)
+				row = 1;
+			else
+				row = 2;
+		}
+
+		const float txp = 1./192;
+		const float txs = txp*32;
+		const float typ = 1./240;
+		const float tys = typ*48;
+		bill->setTCoords(0, v2f(txs*(1+col), tys*(1+row)));
+		bill->setTCoords(1, v2f(txs*(1+col), tys*(0+row)));
+		bill->setTCoords(2, v2f(txs*(0+col), tys*(0+row)));
+		bill->setTCoords(3, v2f(txs*(0+col), tys*(1+row)));
+	} else if(m_sprite_type == "simple"){
+		m_walk_timer += dtime;
+		if(m_walk_timer >= m_simple_anim_frametime){
+			m_walk_frame = (m_walk_frame + 1) % m_simple_anim_frames;
+			m_walk_timer = 0;
+		}
+		int col = 0;
+		int row = m_walk_frame;
+		const float txs = 1.0;
+		const float tys = 1.0 / m_simple_anim_frames;
+		bill->setTCoords(0, v2f(txs*(1+col), tys*(1+row)));
+		bill->setTCoords(1, v2f(txs*(1+col), tys*(0+row)));
+		bill->setTCoords(2, v2f(txs*(0+col), tys*(0+row)));
+		bill->setTCoords(3, v2f(txs*(0+col), tys*(1+row)));
+	} else {
+		dstream<<"MobV2CAO::step(): Unknown sprite type \""
+				<<m_sprite_type<<"\""<<std::endl;
+	}
+
+	updateNodePos();
+
+	/* Damage local player */
+	if(m_player_hit_damage && m_player_hit_timer <= 0.0){
+		LocalPlayer *player = env->getLocalPlayer();
+		assert(player);
+		
+		v3f playerpos = player->getPosition();
+		v2f playerpos_2d(playerpos.X,playerpos.Z);
+		v2f objectpos_2d(m_position.X,m_position.Z);
+
+		if(fabs(m_position.Y - playerpos.Y) < m_player_hit_distance*BS &&
+		objectpos_2d.getDistanceFrom(playerpos_2d) < m_player_hit_distance*BS)
+		{
+			env->damageLocalPlayer(m_player_hit_damage);
+			m_player_hit_timer = m_player_hit_interval;
+		}
+	}
+
+	/* Run timers */
+
+	m_player_hit_timer -= dtime;
+
+	if(m_damage_visual_timer >= 0){
+		m_damage_visual_timer -= dtime;
+		if(m_damage_visual_timer <= 0){
+			dstream<<"id="<<m_id<<" damage visual ended"<<std::endl;
+		}
+	}
+
+	m_walking_unset_timer += dtime;
+	if(m_walking_unset_timer >= 1.0){
+		m_walking = false;
+	}
+
+	m_shooting_unset_timer -= dtime;
+	if(m_shooting_unset_timer <= 0.0){
+		if(m_bright_shooting){
+			u8 li = decode_light(m_last_light);
+			video::SColor color(255,li,li,li);
+			bill->setColor(color);
+			m_bright_shooting = false;
+		}
+		m_shooting = false;
+	}
+
+}
+
+void MobV2CAO::processMessage(const std::string &data)
+{
+	//dstream<<"MobV2CAO: Got message"<<std::endl;
+	std::istringstream is(data, std::ios::binary);
+	// command
+	u8 cmd = readU8(is);
+
+	// Move
+	if(cmd == 0)
+	{
+		// pos
+		m_position = readV3F1000(is);
+		pos_translator.update(m_position);
+		// yaw
+		m_yaw = readF1000(is);
+
+		m_walking = true;
+		m_walking_unset_timer = 0;
+
+		updateNodePos();
+	}
+	// Damage
+	else if(cmd == 1)
+	{
+		//u16 damage = readU16(is);
+
+		u8 li = decode_light(m_last_light);
+		if(li >= 100)
+			li = 30;
+		else
+			li = 255;
+		video::SColor color(255,li,li,li);
+		m_node->setColor(color);
+
+		m_damage_visual_timer = 0.2;
+	}
+	// Trigger shooting
+	else if(cmd == 2)
+	{
+		// length
+		m_shooting_unset_timer = readF1000(is);
+		// bright?
+		m_bright_shooting = readU8(is);
+		if(m_bright_shooting){
+			u8 li = 255;
+			video::SColor color(255,li,li,li);
+			m_node->setColor(color);
+		}
+
+		m_shooting = true;
+	}
+}
+
+void MobV2CAO::initialize(const std::string &data)
+{
+	//dstream<<"MobV2CAO: Got init data"<<std::endl;
+	
+	{
+		std::istringstream is(data, std::ios::binary);
+		// version
+		u8 version = readU8(is);
+		// check version
+		if(version != 0){
+			dstream<<__FUNCTION_NAME<<": Invalid version"<<std::endl;
+			return;
+		}
+		
+		std::ostringstream tmp_os(std::ios::binary);
+		decompressZlib(is, tmp_os);
+		std::istringstream tmp_is(tmp_os.str(), std::ios::binary);
+		m_properties->parseConfigLines(tmp_is, "MobArgsEnd");
+
+		/*dstream<<"INFO: MobV2CAO::initialize(): got properties:"<<std::endl;
+		m_properties->writeLines(dstream);*/
+
+		m_properties->setDefault("texture_name", "stone.png");
+		m_properties->setDefault("yaw", "0");
+		m_properties->setDefault("pos", "(0,0,0)");
+		m_properties->setDefault("sprite_size", "(1,1)");
+		m_properties->setDefault("sprite_pos", "(0,0,0)");
+		m_properties->setDefault("selection_size", "(0.4,0.4)");
+		m_properties->setDefault("selection_y", "-0.4");
+		m_properties->setDefault("sprite_type", "humanoid_1");
+		m_properties->setDefault("simple_anim_frames", "1");
+		m_properties->setDefault("simple_anim_frametime", "0.5");
+		m_properties->setDefault("lock_full_brightness", "false");
+		m_properties->setDefault("player_hit_damage", "0");
+		m_properties->setDefault("player_hit_distance", "1.5");
+		m_properties->setDefault("player_hit_interval", "1.5");
+		
+		m_yaw = m_properties->getFloat("yaw");
+		m_position = m_properties->getV3F("pos");
+		m_sprite_size = m_properties->getV2F("sprite_size") * BS;
+		m_sprite_pos = m_properties->getV3F("sprite_pos") * BS;
+		v2f selection_size = m_properties->getV2F("selection_size") * BS;
+		float selection_y = m_properties->getFloat("selection_y") * BS;
+		m_selection_box = core::aabbox3d<f32>(
+				-selection_size.X, selection_y, -selection_size.X,
+				selection_size.X, selection_y+selection_size.Y,
+				selection_size.X);
+		m_sprite_type = m_properties->get("sprite_type");
+		m_simple_anim_frames = m_properties->getS32("simple_anim_frames");
+		m_simple_anim_frametime = m_properties->getFloat("simple_anim_frametime");
+		m_lock_full_brightness = m_properties->getBool("lock_full_brightness");
+		m_player_hit_damage = m_properties->getS32("player_hit_damage");
+		m_player_hit_distance = m_properties->getFloat("player_hit_distance");
+		m_player_hit_interval = m_properties->getFloat("player_hit_interval");
+
+		pos_translator.init(m_position);
+	}
+	
+	updateNodePos();
+}
+
+

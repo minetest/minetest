@@ -643,6 +643,24 @@ void ServerEnvironment::activateBlock(MapBlock *block, u32 additional_dtime)
 	}
 }
 
+static void getMob_dungeon_master(Settings &properties)
+{
+	properties.set("texture_name", "dungeon_master.png");
+	properties.setV3F("sprite_pos", v3f(0.0, 0.85, 0.0));
+	properties.setV2F("sprite_size", v2f(2.0, 3.0));
+	properties.setFloat("selection_y", -0.4);
+	properties.setV2F("selection_size", v2f(0.4, 2.6));
+	properties.setFloat("yaw", 1.57);
+	properties.setFloat("hp", 20);
+	properties.setBool("bright_shooting", true);
+	properties.set("shoot_type", "fireball");
+	properties.set("shoot_y", "0.7");
+	properties.set("sprite_type", "humanoid_1");
+	properties.set("player_hit_damage", "1");
+	properties.set("player_hit_distance", "1.0");
+	properties.set("player_hit_interval", "0.5");
+}
+
 void ServerEnvironment::step(float dtime)
 {
 	DSTACK(__FUNCTION_NAME);
@@ -725,7 +743,7 @@ void ServerEnvironment::step(float dtime)
 		/*
 			Update list of active blocks, collecting changes
 		*/
-		const s16 active_block_range = 5;
+		const s16 active_block_range = g_settings->getS16("active_block_range");
 		core::map<v3s16, bool> blocks_removed;
 		core::map<v3s16, bool> blocks_added;
 		m_active_blocks.update(players_blockpos, active_block_range,
@@ -926,14 +944,52 @@ void ServerEnvironment::step(float dtime)
 					}
 				}
 				/*
-				        Make trees from saplings!
+					Fun things spawn in caves and dungeons
+				*/
+				if(n.getContent() == CONTENT_STONE ||
+						n.getContent() == CONTENT_MOSSYCOBBLE)
+				{
+   					if(myrand()%200 == 0 && active_object_count_wider == 0)
+					{
+						v3s16 p1 = p + v3s16(0,1,0);
+						MapNode n1a = m_map->getNodeNoEx(p1+v3s16(0,0,0));
+						if(n1a.getLightBlend(getDayNightRatio()) <= 3){
+							MapNode n1b = m_map->getNodeNoEx(p1+v3s16(0,1,0));
+							if(n1a.getContent() == CONTENT_AIR &&
+									n1b.getContent() == CONTENT_AIR)
+							{
+								v3f pos = intToFloat(p1, BS);
+								int i = myrand()%5;
+								if(i == 0 || i == 1){
+									Settings properties;
+									getMob_dungeon_master(properties);
+									ServerActiveObject *obj = new MobV2SAO(
+											this, 0, pos, &properties);
+									addActiveObject(obj);
+								} else if(i == 2 || i == 3){
+									for(int j=0; j<3; j++){
+										ServerActiveObject *obj = new RatSAO(
+												this, 0, pos);
+										addActiveObject(obj);
+									}
+								} else {
+									ServerActiveObject *obj = new Oerkki1SAO(
+											this, 0, pos);
+									addActiveObject(obj);
+								}
+							}
+						}
+					}
+				}
+				/*
+					Make trees from saplings!
 				*/
 				if(n.getContent() == CONTENT_SAPLING)
 				{
-				        if(myrand()%50 == 0)
+					if(myrand()%50 == 0)
 					{
-					        core::map<v3s16, MapBlock*> modified_blocks;
-					        v3s16 tree_p = p;
+						core::map<v3s16, MapBlock*> modified_blocks;
+						v3s16 tree_p = p;
 						ManualMapVoxelManipulator vmanip(m_map);
 						v3s16 tree_blockp = getNodeBlockPos(tree_p);
 						vmanip.initialEmerge(tree_blockp - v3s16(1,1,1), tree_blockp + v3s16(1,1,1));
@@ -944,8 +1000,8 @@ void ServerEnvironment::step(float dtime)
 						// update lighting
 						core::map<v3s16, MapBlock*> lighting_modified_blocks;
 						for(core::map<v3s16, MapBlock*>::Iterator
-						      i = modified_blocks.getIterator();
-						      i.atEnd() == false; i++)
+							i = modified_blocks.getIterator();
+							i.atEnd() == false; i++)
 						{
 							lighting_modified_blocks.insert(i.getNode()->getKey(), i.getNode()->getValue());
 						}
@@ -955,16 +1011,15 @@ void ServerEnvironment::step(float dtime)
 						MapEditEvent event;
 						event.type = MEET_OTHER;
 						for(core::map<v3s16, MapBlock*>::Iterator
-						      i = modified_blocks.getIterator();
-						      i.atEnd() == false; i++)
-					        {
-						        v3s16 p = i.getNode()->getKey();
+							i = modified_blocks.getIterator();
+							i.atEnd() == false; i++)
+						{
+							v3s16 p = i.getNode()->getKey();
 							event.modified_blocks.insert(p, true);
 						}
 						m_map->dispatchEvent(&event);
 					}
 				}
-						
 			}
 		}
 	}
@@ -978,7 +1033,7 @@ void ServerEnvironment::step(float dtime)
 		// This helps the objects to send data at the same time
 		bool send_recommended = false;
 		m_send_recommended_timer += dtime;
-		if(m_send_recommended_timer > 0.15)
+		if(m_send_recommended_timer > 0.10)
 		{
 			m_send_recommended_timer = 0;
 			send_recommended = true;
@@ -1020,7 +1075,7 @@ void ServerEnvironment::step(float dtime)
 	/*
 		TEST CODE
 	*/
-#if 1
+#if 0
 	m_random_spawn_timer -= dtime;
 	if(m_random_spawn_timer < 0)
 	{
@@ -1042,7 +1097,7 @@ void ServerEnvironment::step(float dtime)
 			pos = player->getPosition();
 		pos += v3f(
 			myrand_range(-3,3)*BS,
-			0,
+			5,
 			myrand_range(-3,3)*BS
 		);
 
@@ -1054,7 +1109,14 @@ void ServerEnvironment::step(float dtime)
 		//ServerActiveObject *obj = new ItemSAO(this, 0, pos, "CraftItem Stick 1");
 		//ServerActiveObject *obj = new RatSAO(this, 0, pos);
 		//ServerActiveObject *obj = new Oerkki1SAO(this, 0, pos);
-		ServerActiveObject *obj = new FireflySAO(this, 0, pos);
+		//ServerActiveObject *obj = new FireflySAO(this, 0, pos);
+
+		dstream<<DTIME<<"INFO: Server: Spawning MobV2SAO at "
+				<<"("<<pos.X<<","<<pos.Y<<","<<pos.Z<<")"<<std::endl;
+		
+		Settings properties;
+		getMob_dungeon_master(properties);
+		ServerActiveObject *obj = new MobV2SAO(this, 0, pos, &properties);
 		addActiveObject(obj);
 	}
 #endif
@@ -1108,6 +1170,47 @@ u16 ServerEnvironment::addActiveObject(ServerActiveObject *object)
 	assert(object);
 	u16 id = addActiveObjectRaw(object, true);
 	return id;
+}
+
+bool ServerEnvironment::addActiveObjectAsStatic(ServerActiveObject *obj)
+{
+	assert(obj);
+
+	v3f objectpos = obj->getBasePosition();	
+
+	// The block in which the object resides in
+	v3s16 blockpos_o = getNodeBlockPos(floatToInt(objectpos, BS));
+
+	/*
+		Update the static data
+	*/
+
+	// Create new static object
+	std::string staticdata = obj->getStaticData();
+	StaticObject s_obj(obj->getType(), objectpos, staticdata);
+	// Add to the block where the object is located in
+	v3s16 blockpos = getNodeBlockPos(floatToInt(objectpos, BS));
+	// Get or generate the block
+	MapBlock *block = m_map->emergeBlock(blockpos);
+
+	bool succeeded = false;
+
+	if(block)
+	{
+		block->m_static_objects.insert(0, s_obj);
+		block->raiseModified(MOD_STATE_WRITE_AT_UNLOAD);
+		succeeded = true;
+	}
+	else{
+		dstream<<"WARNING: ServerEnvironment::addActiveObjectAsStatic: "
+				<<"Could not find or generate "
+				<<"a block for storing static object"<<std::endl;
+		succeeded = false;
+	}
+
+	delete obj;
+
+	return succeeded;
 }
 
 /*
@@ -1894,9 +1997,9 @@ void ClientEnvironment::addActiveObject(u16 id, u8 type,
 	
 	obj->setId(id);
 
-	addActiveObject(obj);
-
 	obj->initialize(init_data);
+	
+	addActiveObject(obj);
 }
 
 void ClientEnvironment::removeActiveObject(u16 id)

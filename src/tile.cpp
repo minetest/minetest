@@ -1055,6 +1055,120 @@ bool generate_image(std::string part_of_name, video::IImage *& baseimg,
 			}
 		}
 		/*
+			"[makealpha:R,G,B:filename.png"
+			Use an image with converting one color to transparent.
+		*/
+		else if(part_of_name.substr(0,11) == "[makealpha:")
+		{
+			if(baseimg != NULL)
+			{
+				dstream<<"WARNING: generate_image(): baseimg!=NULL "
+						<<"for part_of_name=\""<<part_of_name
+						<<"\", cancelling."<<std::endl;
+				return false;
+			}
+
+			Strfnd sf(part_of_name.substr(11));
+			u32 r1 = stoi(sf.next(","));
+			u32 g1 = stoi(sf.next(","));
+			u32 b1 = stoi(sf.next(":"));
+			std::string filename = sf.next("");
+
+			std::string path = getTexturePath(filename.c_str());
+
+			dstream<<"INFO: generate_image(): Loading path \""<<path
+					<<"\""<<std::endl;
+			
+			video::IImage *image = driver->createImageFromFile(path.c_str());
+			
+			if(image == NULL)
+			{
+				dstream<<"WARNING: generate_image(): Loading path \""
+						<<path<<"\" failed"<<std::endl;
+			}
+			else
+			{
+				core::dimension2d<u32> dim = image->getDimension();
+				baseimg = driver->createImage(video::ECF_A8R8G8B8, dim);
+				
+				for(u32 y=0; y<dim.Height; y++)
+				for(u32 x=0; x<dim.Width; x++)
+				{
+					video::SColor c = image->getPixel(x,y);
+					u32 r = c.getRed();
+					u32 g = c.getGreen();
+					u32 b = c.getBlue();
+					if(!(r == r1 && g == g1 && b == b1))
+						continue;
+					c.setAlpha(0);
+					image->setPixel(x,y,c);
+				}
+				// Blit
+				image->copyTo(baseimg);
+
+				image->drop();
+			}
+		}
+		/*
+			"[makealpha2:R,G,B;R2,G2,B2:filename.png"
+			Use an image with converting two colors to transparent.
+		*/
+		else if(part_of_name.substr(0,12) == "[makealpha2:")
+		{
+			if(baseimg != NULL)
+			{
+				dstream<<"WARNING: generate_image(): baseimg!=NULL "
+						<<"for part_of_name=\""<<part_of_name
+						<<"\", cancelling."<<std::endl;
+				return false;
+			}
+
+			Strfnd sf(part_of_name.substr(12));
+			u32 r1 = stoi(sf.next(","));
+			u32 g1 = stoi(sf.next(","));
+			u32 b1 = stoi(sf.next(";"));
+			u32 r2 = stoi(sf.next(","));
+			u32 g2 = stoi(sf.next(","));
+			u32 b2 = stoi(sf.next(":"));
+			std::string filename = sf.next("");
+
+			std::string path = getTexturePath(filename.c_str());
+
+			dstream<<"INFO: generate_image(): Loading path \""<<path
+					<<"\""<<std::endl;
+			
+			video::IImage *image = driver->createImageFromFile(path.c_str());
+			
+			if(image == NULL)
+			{
+				dstream<<"WARNING: generate_image(): Loading path \""
+						<<path<<"\" failed"<<std::endl;
+			}
+			else
+			{
+				core::dimension2d<u32> dim = image->getDimension();
+				baseimg = driver->createImage(video::ECF_A8R8G8B8, dim);
+				
+				for(u32 y=0; y<dim.Height; y++)
+				for(u32 x=0; x<dim.Width; x++)
+				{
+					video::SColor c = image->getPixel(x,y);
+					u32 r = c.getRed();
+					u32 g = c.getGreen();
+					u32 b = c.getBlue();
+					if(!(r == r1 && g == g1 && b == b1) &&
+					   !(r == r2 && g == g2 && b == b2))
+						continue;
+					c.setAlpha(0);
+					image->setPixel(x,y,c);
+				}
+				// Blit
+				image->copyTo(baseimg);
+
+				image->drop();
+			}
+		}
+		/*
 			[inventorycube{topimage{leftimage{rightimage
 			In every subimage, replace ^ with &.
 			Create an "inventory cube".

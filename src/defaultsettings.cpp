@@ -89,7 +89,8 @@ void set_default_settings(Settings *settings)
 	settings->setDefault("fixed_map_seed", "");
 
 	settings->setDefault("objectdata_interval", "0.2");
-	settings->setDefault("active_object_range", "2");
+	settings->setDefault("active_object_send_range_blocks", "3");
+	settings->setDefault("active_block_range", "5");
 	//settings->setDefault("max_simultaneous_block_sends_per_client", "1");
 	// This causes frametime jitter on client side, or does it?
 	settings->setDefault("max_simultaneous_block_sends_per_client", "2");

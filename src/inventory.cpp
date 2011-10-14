@@ -97,7 +97,7 @@ InventoryItem* InventoryItem::deSerialize(std::istream &is)
 	{
 		std::string inventorystring;
 		std::getline(is, inventorystring, '|');
-		return new MapBlockObjectItem(inventorystring);
+		throw SerializationError("MBOItem not supported anymore");
 	}
 	else if(name == "CraftItem")
 	{
@@ -217,77 +217,6 @@ bool CraftItem::use(ServerEnvironment *env, Player *player)
 			setCount(result_count);
 	}
 	return false;
-}
-
-/*
-	MapBlockObjectItem DEPRECATED
-	TODO: Remove
-*/
-#ifndef SERVER
-video::ITexture * MapBlockObjectItem::getImage() const
-{
-	if(m_inventorystring.substr(0,3) == "Rat")
-		return g_texturesource->getTextureRaw("rat.png");
-	
-	if(m_inventorystring.substr(0,4) == "Sign")
-		return g_texturesource->getTextureRaw("sign.png");
-
-	return NULL;
-}
-#endif
-std::string MapBlockObjectItem::getText()
-{
-	if(m_inventorystring.substr(0,3) == "Rat")
-		return "";
-	
-	if(m_inventorystring.substr(0,4) == "Sign")
-		return "";
-
-	return "obj";
-}
-
-MapBlockObject * MapBlockObjectItem::createObject
-		(v3f pos, f32 player_yaw, f32 player_pitch)
-{
-	std::istringstream is(m_inventorystring);
-	std::string name;
-	std::getline(is, name, ' ');
-	
-	if(name == "None")
-	{
-		return NULL;
-	}
-	else if(name == "Sign")
-	{
-		std::string text;
-		std::getline(is, text, '|');
-		SignObject *obj = new SignObject(NULL, -1, pos);
-		obj->setText(text);
-		obj->setYaw(-player_yaw);
-		return obj;
-	}
-	else if(name == "Rat")
-	{
-		RatObject *obj = new RatObject(NULL, -1, pos);
-		return obj;
-	}
-	else if(name == "ItemObj")
-	{
-		/*
-			Now we are an inventory item containing the serialization
-			string of an object that contains the serialization
-			string of an inventory item. Fuck this.
-		*/
-		//assert(0);
-		dstream<<__FUNCTION_NAME<<": WARNING: Ignoring ItemObj "
-				<<"because an item-object should never be inside "
-				<<"an object-item."<<std::endl;
-		return NULL;
-	}
-	else
-	{
-		return NULL;
-	}
 }
 
 /*

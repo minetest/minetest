@@ -89,27 +89,6 @@ u16 g_selected_item = 0;
 	Text input system
 */
 
-struct TextDestSign : public TextDest
-{
-	TextDestSign(v3s16 blockpos, s16 id, Client *client)
-	{
-		m_blockpos = blockpos;
-		m_id = id;
-		m_client = client;
-	}
-	void gotText(std::wstring text)
-	{
-		std::string ntext = wide_to_narrow(text);
-		dstream<<"Changing text of a sign object: "
-				<<ntext<<std::endl;
-		m_client->sendSignText(m_blockpos, m_id, ntext);
-	}
-
-	v3s16 m_blockpos;
-	s16 m_id;
-	Client *m_client;
-};
-
 struct TextDestChat : public TextDest
 {
 	TextDestChat(Client *client)
@@ -298,7 +277,7 @@ void getPointedNode(Client *client, v3f player_position,
 	
 	v3s16 pos_i = floatToInt(player_position, BS);
 
-	/*std::cout<<"pos_i=("<<pos_i.X<<","<<pos_i.Y<<","<<pos_i.Z<<")"
+	/*dstream<<"pos_i=("<<pos_i.X<<","<<pos_i.Y<<","<<pos_i.Z<<")"
 			<<std::endl;*/
 
 	s16 a = d;
@@ -705,7 +684,7 @@ void the_game(
 	SharedPtr<Server> server;
 	if(address == ""){
 		draw_load_screen(L"Creating server...", driver, font);
-		std::cout<<DTIME<<"Creating server"<<std::endl;
+		dstream<<DTIME<<"Creating server"<<std::endl;
 		server = new Server(map_dir, configpath);
 		server->start(port);
 	}
@@ -715,7 +694,7 @@ void the_game(
 	*/
 
 	draw_load_screen(L"Creating client...", driver, font);
-	std::cout<<DTIME<<"Creating client"<<std::endl;
+	dstream<<DTIME<<"Creating client"<<std::endl;
 	MapDrawControl draw_control;
 	Client client(device, playername.c_str(), password, draw_control);
 			
@@ -730,7 +709,7 @@ void the_game(
 	}
 	catch(ResolveError &e)
 	{
-		std::cout<<DTIME<<"Couldn't resolve address"<<std::endl;
+		dstream<<DTIME<<"Couldn't resolve address"<<std::endl;
 		//return 0;
 		error_message = L"Couldn't resolve address";
 		//gui_loadingtext->remove();
@@ -799,12 +778,12 @@ void the_game(
 		{
 			error_message = L"Access denied. Reason: "
 					+client.accessDeniedReason();
-			std::cout<<DTIME<<wide_to_narrow(error_message)<<std::endl;
+			dstream<<DTIME<<wide_to_narrow(error_message)<<std::endl;
 		}
 		else
 		{
 			error_message = L"Connection timed out.";
-			std::cout<<DTIME<<"Timed out."<<std::endl;
+			dstream<<DTIME<<"Timed out."<<std::endl;
 		}
 		//gui_loadingtext->remove();
 		return;
@@ -924,8 +903,16 @@ void the_game(
 
 	core::list<float> frametime_log;
 
+	float nodig_delay_counter = 0.0;
+	float dig_time = 0.0;
+	u16 dig_index = 0;
+	v3s16 nodepos_old(-32768,-32768,-32768);
+
 	float damage_flash_timer = 0;
 	s16 farmesh_range = 20*MAP_BLOCKSIZE;
+
+	const float object_hit_delay = 0.5;
+	float object_hit_delay_timer = 0.0;
 	
 	bool invert_mouse = g_settings->getBool("invert_mouse");
 
@@ -952,7 +939,7 @@ void the_game(
 		{
 			error_message = L"Access denied. Reason: "
 					+client.accessDeniedReason();
-			std::cout<<DTIME<<wide_to_narrow(error_message)<<std::endl;
+			dstream<<DTIME<<wide_to_narrow(error_message)<<std::endl;
 			break;
 		}
 
@@ -1018,7 +1005,7 @@ void the_game(
 			busytime = busytime_u32 / 1000.0;
 		}
 
-		//std::cout<<"busytime_u32="<<busytime_u32<<std::endl;
+		//dstream<<"busytime_u32="<<busytime_u32<<std::endl;
 	
 		// Necessary for device->getTimer()->getTime()
 		device->run();
@@ -1053,6 +1040,10 @@ void the_game(
 			dtime = 0;
 		lasttime = time;
 
+		/* Run timers */
+
+		object_hit_delay_timer -= dtime;
+
 		/*
 			Log frametime for visualization
 		*/
@@ -1067,8 +1058,8 @@ void the_game(
 			Visualize frametime in terminal
 		*/
 		/*for(u32 i=0; i<dtime*400; i++)
-			std::cout<<"X";
-		std::cout<<std::endl;*/
+			dstream<<"X";
+		dstream<<std::endl;*/
 
 		/*
 			Time average and jitter calculation
@@ -1133,7 +1124,7 @@ void the_game(
 			if(counter < 0)
 			{
 				counter = 30.0;
-				client.printDebugInfo(std::cout);
+				client.printDebugInfo(dstream);
 			}
 		}
 
@@ -1359,7 +1350,7 @@ void the_game(
 			}
 
 			if(first_loop_after_window_activation){
-				//std::cout<<"window active, first loop"<<std::endl;
+				//dstream<<"window active, first loop"<<std::endl;
 				first_loop_after_window_activation = false;
 			}
 			else{
@@ -1367,7 +1358,7 @@ void the_game(
 				s32 dy = input->getMousePos().Y - displaycenter.Y;
 				if(invert_mouse)
 					dy = -dy;
-				//std::cout<<"window active, pos difference "<<dx<<","<<dy<<std::endl;
+				//dstream<<"window active, pos difference "<<dx<<","<<dy<<std::endl;
 				
 				/*const float keyspeed = 500;
 				if(input->isKeyDown(irr::KEY_UP))
@@ -1391,7 +1382,7 @@ void the_game(
 			if(device->getCursorControl()->isVisible() == false)
 				device->getCursorControl()->setVisible(true);
 
-			//std::cout<<"window inactive"<<std::endl;
+			//dstream<<"window inactive"<<std::endl;
 			first_loop_after_window_activation = true;
 		}
 
@@ -1500,71 +1491,23 @@ void the_game(
 		core::line3d<f32> shootline(camera_position,
 				camera_position + camera_direction * BS * (d+1));
 
-		MapBlockObject *selected_object = client.getSelectedObject
-				(d*BS, camera_position, shootline);
-
 		ClientActiveObject *selected_active_object
 				= client.getSelectedActiveObject
 					(d*BS, camera_position, shootline);
+		
+		bool left_punch = false;
+		bool left_punch_muted = false;
 
-		if(selected_object != NULL)
+		if(selected_active_object != NULL)
 		{
-			//dstream<<"Client returned selected_object != NULL"<<std::endl;
-
-			core::aabbox3d<f32> box_on_map
-					= selected_object->getSelectionBoxOnMap();
-
-			hilightboxes.push_back(box_on_map);
-
-			infotext = narrow_to_wide(selected_object->infoText());
-
-			if(input->getLeftClicked())
+			/* Clear possible cracking animation */
+			if(nodepos_old != v3s16(-32768,-32768,-32768))
 			{
-				std::cout<<DTIME<<"Left-clicked object"<<std::endl;
-				client.clickObject(0, selected_object->getBlock()->getPos(),
-						selected_object->getId(), g_selected_item);
+				client.clearTempMod(nodepos_old);
+				dig_time = 0.0;
+				nodepos_old = v3s16(-32768,-32768,-32768);
 			}
-			else if(input->getRightClicked())
-			{
-				std::cout<<DTIME<<"Right-clicked object"<<std::endl;
-				/*
-					Check if we want to modify the object ourselves
-				*/
-				if(selected_object->getTypeId() == MAPBLOCKOBJECT_TYPE_SIGN)
-				{
-					dstream<<"Sign object right-clicked"<<std::endl;
-					
-					if(random_input == false)
-					{
-						// Get a new text for it
 
-						TextDest *dest = new TextDestSign(
-								selected_object->getBlock()->getPos(),
-								selected_object->getId(),
-								&client);
-
-						SignObject *sign_object = (SignObject*)selected_object;
-
-						std::wstring wtext =
-								narrow_to_wide(sign_object->getText());
-
-						(new GUITextInputMenu(guienv, guiroot, -1,
-								&g_menumgr, dest,
-								wtext))->drop();
-					}
-				}
-				/*
-					Otherwise pass the event to the server as-is
-				*/
-				else
-				{
-					client.clickObject(1, selected_object->getBlock()->getPos(),
-							selected_object->getId(), g_selected_item);
-				}
-			}
-		}
-		else if(selected_active_object != NULL)
-		{
 			//dstream<<"Client returned selected_active_object != NULL"<<std::endl;
 			
 			core::aabbox3d<f32> *selection_box
@@ -1579,21 +1522,31 @@ void the_game(
 					selection_box->MinEdge + pos,
 					selection_box->MaxEdge + pos
 			);
-
-			hilightboxes.push_back(box_on_map);
+			
+			if(selected_active_object->doShowSelectionBox())
+				hilightboxes.push_back(box_on_map);
 
 			//infotext = narrow_to_wide("A ClientActiveObject");
 			infotext = narrow_to_wide(selected_active_object->infoText());
 
-			if(input->getLeftClicked())
+			//if(input->getLeftClicked())
+			if(input->getLeftState())
 			{
-				std::cout<<DTIME<<"Left-clicked object"<<std::endl;
-				client.clickActiveObject(0,
-						selected_active_object->getId(), g_selected_item);
+				if(object_hit_delay_timer <= 0.0){
+					dstream<<DTIME<<"Left-clicked object"<<std::endl;
+					client.clickActiveObject(0,
+							selected_active_object->getId(), g_selected_item);
+					object_hit_delay_timer = object_hit_delay;
+					left_punch = true;
+				} else {
+					dstream<<DTIME<<"Left-clicked object faster than allowed"
+							<<std::endl;
+					left_punch_muted = true;
+				}
 			}
 			else if(input->getRightClicked())
 			{
-				std::cout<<DTIME<<"Right-clicked object"<<std::endl;
+				dstream<<DTIME<<"Right-clicked object"<<std::endl;
 				client.clickActiveObject(1,
 						selected_active_object->getId(), g_selected_item);
 			}
@@ -1616,15 +1569,14 @@ void the_game(
 				nodepos, neighbourpos,
 				nodehilightbox, d);
 	
-		static float nodig_delay_counter = 0.0;
-
-		if(nodefound)
-		{
-			static v3s16 nodepos_old(-32768,-32768,-32768);
-
-			static float dig_time = 0.0;
-			static u16 dig_index = 0;
-			
+		if(!nodefound){
+			if(nodepos_old != v3s16(-32768,-32768,-32768))
+			{
+				client.clearTempMod(nodepos_old);
+				dig_time = 0.0;
+				nodepos_old = v3s16(-32768,-32768,-32768);
+			}
+		} else {
 			/*
 				Visualize selection
 			*/
@@ -1661,13 +1613,14 @@ void the_game(
 			{
 				if(nodepos != nodepos_old)
 				{
-					std::cout<<DTIME<<"Pointing at ("<<nodepos.X<<","
+					dstream<<DTIME<<"Pointing at ("<<nodepos.X<<","
 							<<nodepos.Y<<","<<nodepos.Z<<")"<<std::endl;
 
 					if(nodepos_old != v3s16(-32768,-32768,-32768))
 					{
 						client.clearTempMod(nodepos_old);
 						dig_time = 0.0;
+						nodepos_old = v3s16(-32768,-32768,-32768);
 					}
 				}
 
@@ -1771,7 +1724,7 @@ void the_game(
 			
 			if(input->getRightClicked())
 			{
-				std::cout<<DTIME<<"Ground right-clicked"<<std::endl;
+				dstream<<DTIME<<"Ground right-clicked"<<std::endl;
 				
 				// If metadata provides an inventory view, activate it
 				if(meta && meta->getInventoryDrawSpecString() != "" && !random_input)
@@ -1836,7 +1789,7 @@ void the_game(
 
 		} // selected_object == NULL
 		
-		if(input->getLeftClicked())
+		if(left_punch || (input->getLeftClicked() && !left_punch_muted))
 		{
 			camera.setDigging(0); // left click animation
 		}
@@ -1846,13 +1799,13 @@ void the_game(
 		
 		if(input->getLeftReleased())
 		{
-			std::cout<<DTIME<<"Left button released (stopped digging)"
+			dstream<<DTIME<<"Left button released (stopped digging)"
 					<<std::endl;
 			client.groundAction(2, v3s16(0,0,0), v3s16(0,0,0), 0);
 		}
 		if(input->getRightReleased())
 		{
-			//std::cout<<DTIME<<"Right released"<<std::endl;
+			//dstream<<DTIME<<"Right released"<<std::endl;
 			// Nothing here
 		}
 		
@@ -2097,7 +2050,7 @@ void the_game(
 		{
 			client.selectPlayerItem(g_selected_item);
 			old_selected_item = g_selected_item;
-			//std::cout<<"Updating local inventory"<<std::endl;
+			//dstream<<"Updating local inventory"<<std::endl;
 			client.getLocalInventory(local_inventory);
 
 			// Update wielded tool
@@ -2136,7 +2089,7 @@ void the_game(
 		
 		//timer3.stop();
 		
-		//std::cout<<DTIME<<"smgr->drawAll()"<<std::endl;
+		//dstream<<DTIME<<"smgr->drawAll()"<<std::endl;
 		
 		{
 			TimeTaker timer("smgr");
@@ -2162,7 +2115,7 @@ void the_game(
 		for(core::list< core::aabbox3d<f32> >::Iterator i=hilightboxes.begin();
 				i != hilightboxes.end(); i++)
 		{
-			/*std::cout<<"hilightbox min="
+			/*dstream<<"hilightbox min="
 					<<"("<<i->MinEdge.X<<","<<i->MinEdge.Y<<","<<i->MinEdge.Z<<")"
 					<<" max="
 					<<"("<<i->MaxEdge.X<<","<<i->MaxEdge.Y<<","<<i->MaxEdge.Z<<")"

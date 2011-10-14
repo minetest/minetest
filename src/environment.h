@@ -176,6 +176,14 @@ public:
 	u16 addActiveObject(ServerActiveObject *object);
 	
 	/*
+		Add an active object as a static object to the corresponding
+		MapBlock.
+		Caller allocates memory, ServerEnvironment frees memory.
+		Return value: true if succeeded, false if failed.
+	*/
+	bool addActiveObjectAsStatic(ServerActiveObject *object);
+	
+	/*
 		Find out what new objects have been added to
 		inside a radius around a position
 	*/

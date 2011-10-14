@@ -523,24 +523,6 @@ void Client::step(float dtime)
 		m_env.step(dtime);
 		
 		/*
-			Handle active blocks
-			NOTE: These old objects are DEPRECATED. TODO: Remove
-		*/
-		for(core::map<v3s16, bool>::Iterator
-				i = m_active_blocks.getIterator();
-				i.atEnd() == false; i++)
-		{
-			v3s16 p = i.getNode()->getKey();
-
-			MapBlock *block = m_env.getMap().getBlockNoCreateNoEx(p);
-			if(block == NULL)
-				continue;
-			
-			// Step MapBlockObjects
-			block->stepObjects(dtime, false, m_env.getDayNightRatio());
-		}
-
-		/*
 			Get events
 		*/
 		for(;;)
@@ -1191,16 +1173,11 @@ void Client::ProcessData(u8 *data, u32 datasize, u16 sender_peer_id)
 	}
 	//DEBUG
 	else if(command == TOCLIENT_OBJECTDATA)
-	//else if(0)
 	{
 		// Strip command word and create a stringstream
 		std::string datastring((char*)&data[2], datasize-2);
 		std::istringstream is(datastring, std::ios_base::binary);
 		
-		{ //envlock
-		
-		//JMutexAutoLock envlock(m_env_mutex); //bulk comment-out
-
 		u8 buf[12];
 
 		/*
@@ -1250,106 +1227,16 @@ void Client::ProcessData(u8 *data, u32 datasize, u16 sender_peer_id)
 
 		/*
 			Read block objects
-			NOTE: Deprecated stuff here, TODO: Remove
+			NOTE: Deprecated stuff
 		*/
 
 		// Read active block count
-		is.read((char*)buf, 2);
-		u16 blockcount = readU16(buf);
-		
-		// Initialize delete queue with all active blocks
-		core::map<v3s16, bool> abs_to_delete;
-		for(core::map<v3s16, bool>::Iterator
-				i = m_active_blocks.getIterator();
-				i.atEnd() == false; i++)
-		{
-			v3s16 p = i.getNode()->getKey();
-			/*dstream<<"adding "
-					<<"("<<p.x<<","<<p.y<<","<<p.z<<") "
-					<<" to abs_to_delete"
-					<<std::endl;*/
-			abs_to_delete.insert(p, true);
+		u16 blockcount = readU16(is);
+		if(blockcount != 0){
+			dstream<<"WARNING: TOCLIENT_OBJECTDATA: blockcount != 0 "
+					"not supported"<<std::endl;
+			return;
 		}
-
-		/*dstream<<"Initial delete queue size: "<<abs_to_delete.size()
-				<<std::endl;*/
-		
-		for(u16 i=0; i<blockcount; i++)
-		{
-			// Read blockpos
-			is.read((char*)buf, 6);
-			v3s16 p = readV3S16(buf);
-			// Get block from somewhere
-			MapBlock *block = NULL;
-			try{
-				block = m_env.getMap().getBlockNoCreate(p);
-			}
-			catch(InvalidPositionException &e)
-			{
-				//TODO: Create a dummy block?
-			}
-			if(block == NULL)
-			{
-				dstream<<"WARNING: "
-						<<"Could not get block at blockpos "
-						<<"("<<p.X<<","<<p.Y<<","<<p.Z<<") "
-						<<"in TOCLIENT_OBJECTDATA. Ignoring "
-						<<"following block object data."
-						<<std::endl;
-				return;
-			}
-
-			/*dstream<<"Client updating objects for block "
-					<<"("<<p.X<<","<<p.Y<<","<<p.Z<<")"
-					<<std::endl;*/
-
-			// Insert to active block list
-			m_active_blocks.insert(p, true);
-
-			// Remove from deletion queue
-			if(abs_to_delete.find(p) != NULL)
-				abs_to_delete.remove(p);
-
-			/*
-				Update objects of block
-				
-				NOTE: Be sure this is done in the main thread.
-			*/
-			block->updateObjects(is, m_server_ser_ver,
-					m_device->getSceneManager(), m_env.getDayNightRatio());
-		}
-		
-		/*dstream<<"Final delete queue size: "<<abs_to_delete.size()
-				<<std::endl;*/
-		
-		// Delete objects of blocks in delete queue
-		for(core::map<v3s16, bool>::Iterator
-				i = abs_to_delete.getIterator();
-				i.atEnd() == false; i++)
-		{
-			v3s16 p = i.getNode()->getKey();
-			try
-			{
-				MapBlock *block = m_env.getMap().getBlockNoCreate(p);
-				
-				// Clear objects
-				block->clearObjects();
-				// Remove from active blocks list
-				m_active_blocks.remove(p);
-			}
-			catch(InvalidPositionException &e)
-			{
-				dstream<<"WARNAING: Client: "
-						<<"Couldn't clear objects of active->inactive"
-						<<" block "
-						<<"("<<p.X<<","<<p.Y<<","<<p.Z<<")"
-						<<" because block was not found"
-						<<std::endl;
-				// Ignore
-			}
-		}
-
-		} //envlock
 	}
 	else if(command == TOCLIENT_TIME_OF_DAY)
 	{
@@ -1636,32 +1523,6 @@ void Client::groundAction(u8 action, v3s16 nodepos_undersurface,
 	Send(0, data, true);
 }
 
-void Client::clickObject(u8 button, v3s16 blockpos, s16 id, u16 item)
-{
-	if(connectedAndInitialized() == false){
-		dout_client<<DTIME<<"Client::clickObject() "
-				"cancelled (not connected)"
-				<<std::endl;
-		return;
-	}
-	
-	/*
-		[0] u16 command=TOSERVER_CLICK_OBJECT
-		[2] u8 button (0=left, 1=right)
-		[3] v3s16 block
-		[9] s16 id
-		[11] u16 item
-	*/
-	u8 datasize = 2 + 1 + 6 + 2 + 2;
-	SharedBuffer<u8> data(datasize);
-	writeU16(&data[0], TOSERVER_CLICK_OBJECT);
-	writeU8(&data[2], button);
-	writeV3S16(&data[3], blockpos);
-	writeS16(&data[9], id);
-	writeU16(&data[11], item);
-	Send(0, data, true);
-}
-
 void Client::clickActiveObject(u8 button, u16 id, u16 item)
 {
 	if(connectedAndInitialized() == false){
@@ -1687,45 +1548,6 @@ void Client::clickActiveObject(u8 button, u16 id, u16 item)
 	Send(0, data, true);
 }
 
-void Client::sendSignText(v3s16 blockpos, s16 id, std::string text)
-{
-	/*
-		u16 command
-		v3s16 blockpos
-		s16 id
-		u16 textlen
-		textdata
-	*/
-	std::ostringstream os(std::ios_base::binary);
-	u8 buf[12];
-	
-	// Write command
-	writeU16(buf, TOSERVER_SIGNTEXT);
-	os.write((char*)buf, 2);
-	
-	// Write blockpos
-	writeV3S16(buf, blockpos);
-	os.write((char*)buf, 6);
-
-	// Write id
-	writeS16(buf, id);
-	os.write((char*)buf, 2);
-
-	u16 textlen = text.size();
-	// Write text length
-	writeS16(buf, textlen);
-	os.write((char*)buf, 2);
-
-	// Write text
-	os.write((char*)text.c_str(), textlen);
-	
-	// Make data buffer
-	std::string s = os.str();
-	SharedBuffer<u8> data((u8*)s.c_str(), s.size());
-	// Send as reliable
-	Send(0, data, true);
-}
-	
 void Client::sendSignNodeText(v3s16 p, std::string text)
 {
 	/*
@@ -2081,71 +1903,6 @@ Inventory* Client::getInventory(InventoryContext *c, std::string id)
 void Client::inventoryAction(InventoryAction *a)
 {
 	sendInventoryAction(a);
-}
-
-MapBlockObject * Client::getSelectedObject(
-		f32 max_d,
-		v3f from_pos_f_on_map,
-		core::line3d<f32> shootline_on_map
-	)
-{
-	//JMutexAutoLock envlock(m_env_mutex); //bulk comment-out
-
-	core::array<DistanceSortedObject> objects;
-
-	for(core::map<v3s16, bool>::Iterator
-			i = m_active_blocks.getIterator();
-			i.atEnd() == false; i++)
-	{
-		v3s16 p = i.getNode()->getKey();
-
-		MapBlock *block = NULL;
-		try
-		{
-			block = m_env.getMap().getBlockNoCreate(p);
-		}
-		catch(InvalidPositionException &e)
-		{
-			continue;
-		}
-
-		// Calculate from_pos relative to block
-		v3s16 block_pos_i_on_map = block->getPosRelative();
-		v3f block_pos_f_on_map = intToFloat(block_pos_i_on_map, BS);
-		v3f from_pos_f_on_block = from_pos_f_on_map - block_pos_f_on_map;
-
-		block->getObjects(from_pos_f_on_block, max_d, objects);
-		//block->getPseudoObjects(from_pos_f_on_block, max_d, objects);
-	}
-
-	//dstream<<"Collected "<<objects.size()<<" nearby objects"<<std::endl;
-	
-	// Sort them.
-	// After this, the closest object is the first in the array.
-	objects.sort();
-
-	for(u32 i=0; i<objects.size(); i++)
-	{
-		MapBlockObject *obj = objects[i].obj;
-		MapBlock *block = obj->getBlock();
-
-		// Calculate shootline relative to block
-		v3s16 block_pos_i_on_map = block->getPosRelative();
-		v3f block_pos_f_on_map = intToFloat(block_pos_i_on_map, BS);
-		core::line3d<f32> shootline_on_block(
-				shootline_on_map.start - block_pos_f_on_map,
-				shootline_on_map.end - block_pos_f_on_map
-		);
-
-		if(obj->isSelected(shootline_on_block))
-		{
-			//dstream<<"Returning selected object"<<std::endl;
-			return obj;
-		}
-	}
-
-	//dstream<<"No object selected; returning NULL."<<std::endl;
-	return NULL;
 }
 
 ClientActiveObject * Client::getSelectedActiveObject(

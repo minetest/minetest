@@ -183,10 +183,8 @@ public:
 
 	void groundAction(u8 action, v3s16 nodepos_undersurface,
 			v3s16 nodepos_oversurface, u16 item);
-	void clickObject(u8 button, v3s16 blockpos, s16 id, u16 item);
 	void clickActiveObject(u8 button, u16 id, u16 item);
 
-	void sendSignText(v3s16 blockpos, s16 id, std::string text);
 	void sendSignNodeText(v3s16 p, std::string text);
 	void sendInventoryAction(InventoryAction *a);
 	void sendChatMessage(const std::wstring &message);
@@ -224,14 +222,6 @@ public:
 
 	Inventory* getInventory(InventoryContext *c, std::string id);
 	void inventoryAction(InventoryAction *a);
-
-	// Gets closest object pointed by the shootline
-	// Returns NULL if not found
-	MapBlockObject * getSelectedObject(
-			f32 max_d,
-			v3f from_pos_f_on_map,
-			core::line3d<f32> shootline_on_map
-	);
 
 	// Gets closest object pointed by the shootline
 	// Returns NULL if not found

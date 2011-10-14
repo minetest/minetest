@@ -29,7 +29,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "exceptions.h"
 #include "serialization.h"
 #include "constants.h"
-#include "mapblockobject.h"
 #include "voxel.h"
 #include "nodemetadata.h"
 #include "staticobject.h"
@@ -423,68 +422,6 @@ public:
 	// Copies data from VoxelManipulator getPosRelative()
 	void copyFrom(VoxelManipulator &dst);
 
-	/*
-		MapBlockObject stuff
-		DEPRECATED
-	*/
-	
-	/*void serializeObjects(std::ostream &os, u8 version)
-	{
-		m_objects.serialize(os, version);
-	}*/
-	// If smgr!=NULL, new objects are added to the scene
-	void updateObjects(std::istream &is, u8 version,
-			scene::ISceneManager *smgr, u32 daynight_ratio)
-	{
-		m_objects.update(is, version, smgr, daynight_ratio);
-
-		raiseModified(MOD_STATE_WRITE_NEEDED);
-	}
-	void clearObjects()
-	{
-		m_objects.clear();
-
-		raiseModified(MOD_STATE_WRITE_NEEDED);
-	}
-	void addObject(MapBlockObject *object)
-			throw(ContainerFullException, AlreadyExistsException)
-	{
-		m_objects.add(object);
-
-		raiseModified(MOD_STATE_WRITE_NEEDED);
-	}
-	void removeObject(s16 id)
-	{
-		m_objects.remove(id);
-
-		raiseModified(MOD_STATE_WRITE_NEEDED);
-	}
-	MapBlockObject * getObject(s16 id)
-	{
-		return m_objects.get(id);
-	}
-	JMutexAutoLock * getObjectLock()
-	{
-		return m_objects.getLock();
-	}
-
-	/*
-		Moves objects, deletes objects and spawns new objects
-	*/
-	void stepObjects(float dtime, bool server, u32 daynight_ratio);
-
-	// origin is relative to block
-	void getObjects(v3f origin, f32 max_d,
-			core::array<DistanceSortedObject> &dest)
-	{
-		m_objects.getObjects(origin, max_d, dest);
-	}
-
-	s32 getObjectCount()
-	{
-		return m_objects.getCount();
-	}
-
 #ifndef SERVER // Only on client
 	/*
 		Methods for setting temporary modifications to nodes for
@@ -688,9 +625,6 @@ private:
 
 	bool m_generated;
 	
-	// DEPRECATED
-	MapBlockObjectList m_objects;
-
 #ifndef SERVER // Only on client
 	/*
 		Set to true if the mesh has been ordered to be updated

@@ -36,7 +36,6 @@ MapBlock::MapBlock(Map *parent, v3s16 pos, bool dummy):
 		m_lighting_expired(true),
 		m_day_night_differs(false),
 		m_generated(false),
-		m_objects(this),
 		m_timestamp(BLOCK_TIMESTAMP_UNDEFINED),
 		m_usage_timer(0)
 {
@@ -434,18 +433,6 @@ void MapBlock::copyFrom(VoxelManipulator &dst)
 			getPosRelative(), data_size);
 }
 
-void MapBlock::stepObjects(float dtime, bool server, u32 daynight_ratio)
-{
-	/*
-		Step objects
-	*/
-	m_objects.step(dtime, server, daynight_ratio);
-
-	//setChangedFlag();
-	raiseModified(MOD_STATE_WRITE_AT_UNLOAD);
-}
-
-
 void MapBlock::updateDayNightDiff()
 {
 	if(data == NULL)
@@ -818,10 +805,9 @@ void MapBlock::deSerialize(std::istream &is, u8 version)
 
 void MapBlock::serializeDiskExtra(std::ostream &os, u8 version)
 {
-	// Versions up from 9 have block objects.
+	// Versions up from 9 have block objects. (DEPRECATED)
 	if(version >= 9)
 	{
-		//serializeObjects(os, version); // DEPRECATED
 		// count=0
 		writeU16(os, 0);
 	}
@@ -842,11 +828,17 @@ void MapBlock::serializeDiskExtra(std::ostream &os, u8 version)
 void MapBlock::deSerializeDiskExtra(std::istream &is, u8 version)
 {
 	/*
-		Versions up from 9 have block objects.
+		Versions up from 9 have block objects. (DEPRECATED)
 	*/
 	if(version >= 9)
 	{
-		updateObjects(is, version, NULL, 0);
+		u16 count = readU16(is);
+		// Not supported and length not known if count is not 0
+		if(count != 0){
+			dstream<<"WARNING: MapBlock::deSerializeDiskExtra(): "
+					<<"Ignoring stuff coming at and after MBOs"<<std::endl;
+			return;
+		}
 	}
 
 	/*
