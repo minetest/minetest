@@ -8,9 +8,11 @@ endif(${CMAKE_VERSION} STREQUAL "2.8.2")
 project(minetest)
 
 set(VERSION_MAJOR 0)
-set(VERSION_MINOR 2)
-set(VERSION_PATCH 20110922_1)
+set(VERSION_MINOR 3)
+set(VERSION_PATCH dev-20111012a)
 set(VERSION_STRING "${VERSION_MAJOR}.${VERSION_MINOR}.${VERSION_PATCH}")
+
+MESSAGE(STATUS "*** Will build version ${VERSION_STRING} ***")
 
 # Configuration options
 
