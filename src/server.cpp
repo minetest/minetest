@@ -1139,19 +1139,23 @@ Server::~Server()
 			{}
 		}
 	}
-
-	/*
-		Save players
-	*/
-	dstream<<"Server: Saving players"<<std::endl;
-	m_env.serializePlayers(m_mapsavedir);
-
-	/*
-		Save environment metadata
-	*/
-	dstream<<"Server: Saving environment metadata"<<std::endl;
-	m_env.saveMeta(m_mapsavedir);
 	
+	{
+		JMutexAutoLock envlock(m_env_mutex);
+
+		/*
+			Save players
+		*/
+		dstream<<"Server: Saving players"<<std::endl;
+		m_env.serializePlayers(m_mapsavedir);
+
+		/*
+			Save environment metadata
+		*/
+		dstream<<"Server: Saving environment metadata"<<std::endl;
+		m_env.saveMeta(m_mapsavedir);
+	}
+		
 	/*
 		Stop threads
 	*/
@@ -1201,6 +1205,8 @@ void Server::start(unsigned short port)
 void Server::stop()
 {
 	DSTACK(__FUNCTION_NAME);
+	
+	dout_server<<"Server: Stopping and waiting threads"<<std::endl;
 
 	// Stop threads (set run=false first so both start stopping)
 	m_thread.setRun(false);
