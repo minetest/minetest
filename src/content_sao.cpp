@@ -1114,7 +1114,7 @@ void MobV2SAO::step(float dtime, bool send_recommended)
 		disturbing_player_distance = disturbing_player_off.getLength();
 		disturbing_player_norm = disturbing_player_off;
 		disturbing_player_norm.normalize();
-		disturbing_player_dir = 180./M_PI*atan2(disturbing_player_norm.Z,
+		disturbing_player_dir = 180./PI*atan2(disturbing_player_norm.Z,
 				disturbing_player_norm.X);
 	}
 
@@ -1211,7 +1211,7 @@ void MobV2SAO::step(float dtime, bool send_recommended)
 			v3f next_pos_f = intToFloat(m_next_pos_i, BS);
 
 			v3f v = next_pos_f - pos_f;
-			m_yaw = atan2(v.Z, v.X) / M_PI * 180;
+			m_yaw = atan2(v.Z, v.X) / PI * 180;
 			
 			v3f diff = next_pos_f - pos_f;
 			v3f dir = diff;
@@ -1336,7 +1336,7 @@ u16 MobV2SAO::punch(const std::string &toolname, v3f dir,
 	m_disturbing_player = playername;
 	m_next_pos_exists = false; // Cancel moving immediately
 	
-	m_yaw = wrapDegrees_180(180./M_PI*atan2(dir.Z, dir.X) + 180.);
+	m_yaw = wrapDegrees_180(180./PI*atan2(dir.Z, dir.X) + 180.);
 	v3f new_base_position = m_base_position + dir * BS;
 	{
 		v3s16 pos_i = floatToInt(new_base_position, BS);

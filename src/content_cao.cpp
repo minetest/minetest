@@ -1020,7 +1020,7 @@ void MobV2CAO::step(float dtime, ClientEnvironment *env)
 		else if(cam_to_mob.Y < -0.75)
 			col = 4;
 		else{
-			float mob_dir = atan2(cam_to_mob.Z, cam_to_mob.X) / M_PI * 180.;
+			float mob_dir = atan2(cam_to_mob.Z, cam_to_mob.X) / PI * 180.;
 			float dir = mob_dir - m_yaw;
 			dir = wrapDegrees_180(dir);
 			//dstream<<"id="<<m_id<<" dir="<<dir<<std::endl;
