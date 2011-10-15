@@ -129,8 +129,16 @@ set(common_SRCS
 )
 
 # This gives us the icon
-if(WIN32 AND MSVC)
-	set(common_SRCS ${common_SRCS} winresource.rc)
+if(WIN32)
+	if(MINGW)
+		ADD_CUSTOM_COMMAND(OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/winresource_rc.o
+			COMMAND windres.exe -I${CMAKE_CURRENT_SOURCE_DIR}
+			-i${CMAKE_CURRENT_SOURCE_DIR}/winresource.rc
+			-o ${CMAKE_CURRENT_BINARY_DIR}/winresource_rc.o)
+		SET(common_SRCS ${common_SRCS} ${CMAKE_CURRENT_BINARY_DIR}/winresource_rc.o)
+	else(MINGW) # Probably MSVC
+		set(common_SRCS ${common_SRCS} winresource.rc)
+	endif(MINGW)
 endif()
 
 # Client sources
