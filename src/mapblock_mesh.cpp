@@ -492,10 +492,10 @@ void updateFastFaceRow(
 	
 	u16 continuous_tiles_count = 0;
 	
-	bool makes_face;
+	bool makes_face = false;
 	v3s16 p_corrected;
 	v3s16 face_dir_corrected;
-	u8 lights[4];
+	u8 lights[4] = {0,0,0,0};
 	TileSpec tile;
 	getTileInfo(blockpos_nodes, p, face_dir, daynight_ratio,
 			vmanip, temp_mods, smooth_lighting,
