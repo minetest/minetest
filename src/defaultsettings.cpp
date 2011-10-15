@@ -76,18 +76,19 @@ void set_default_settings(Settings *settings)
 	settings->setDefault("screenshot_path", ".");
 
 	// Server stuff
+	// "map-dir" doesn't exist by default.
 	settings->setDefault("motd", "");
 	settings->setDefault("max_users", "20");
-	settings->setDefault("enable_experimental", "false");
+	settings->setDefault("strict_protocol_version_checking", "true");
 	settings->setDefault("creative_mode", "false");
 	settings->setDefault("enable_damage", "true");
+	settings->setDefault("fixed_map_seed", "");
 	settings->setDefault("give_initial_stuff", "false");
 	settings->setDefault("default_password", "");
 	settings->setDefault("default_privs", "build, shout");
+
 	settings->setDefault("profiler_print_interval", "0");
 	settings->setDefault("enable_mapgen_debug_info", "false");
-	settings->setDefault("fixed_map_seed", "");
-
 	settings->setDefault("objectdata_interval", "0.2");
 	settings->setDefault("active_object_send_range_blocks", "3");
 	settings->setDefault("active_block_range", "5");
@@ -100,8 +101,8 @@ void set_default_settings(Settings *settings)
 	settings->setDefault("time_send_interval", "20");
 	settings->setDefault("time_speed", "96");
 	settings->setDefault("server_unload_unused_data_timeout", "60");
-	settings->setDefault("server_map_save_interval", "60");
+	settings->setDefault("server_map_save_interval", "10");
 	settings->setDefault("full_block_send_enable_min_time_from_building", "2.0");
-	//settings->setDefault("dungeon_rarity", "0.025");
+	settings->setDefault("enable_experimental", "false");
 }
 

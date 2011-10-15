@@ -1927,11 +1927,14 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 		}
 		
 		/* Uhh... this should actually be a warning but let's do it like this */
-		if(net_proto_version < 2)
+		if(g_settings->getBool("strict_protocol_version_checking"))
 		{
-			SendAccessDenied(m_con, peer_id,
-					L"Your client is too old. Please upgrade.");
-			return;
+			if(net_proto_version < PROTOCOL_VERSION)
+			{
+				SendAccessDenied(m_con, peer_id,
+						L"Your client is too old. Please upgrade.");
+				return;
+			}
 		}
 
 		/*
@@ -2110,9 +2113,9 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 		}
 		
 		// Warnings about protocol version can be issued here
-		if(getClient(peer->id)->net_proto_version < 3)
+		if(getClient(peer->id)->net_proto_version < PROTOCOL_VERSION)
 		{
-			SendChatMessage(peer_id, L"# Server: WARNING: YOUR CLIENT IS OLD AND DOES NOT WORK PROPERLY WITH THIS SERVER");
+			SendChatMessage(peer_id, L"# Server: WARNING: YOUR CLIENT IS OLD AND MAY WORK PROPERLY WITH THIS SERVER");
 		}
 
 		/*

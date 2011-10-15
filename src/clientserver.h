@@ -22,6 +22,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "utility.h"
 
+#define PROTOCOL_VERSION 3
+
 #define PROTOCOL_ID 0x4f457403
 
 #define PASSWORD_SIZE 28       // Maximum password length. Allows for
