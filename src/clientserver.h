@@ -172,6 +172,13 @@ enum ToClientCommand
 			string serialized item
 		}
 	*/
+
+	TOCLIENT_DEATHSCREEN = 0x37,
+	/*
+		u16 command
+		u8 bool set camera point target
+		v3f1000 camera point target (to point the death cause or whatever)
+	*/
 };
 
 enum ToServerCommand
@@ -320,7 +327,11 @@ enum ToServerCommand
 		[0] u16 TOSERVER_PLAYERITEM
 		[2] u16 item
 	*/
-
+	
+	TOSERVER_RESPAWN=0x38,
+	/*
+		u16 TOSERVER_RESPAWN
+	*/
 };
 
 inline SharedBuffer<u8> makePacket_TOCLIENT_TIME_OF_DAY(u16 time)

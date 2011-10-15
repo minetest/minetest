@@ -431,7 +431,7 @@ void Client::step(float dtime)
 			snprintf((char*)&data[23], PASSWORD_SIZE, "%s", m_password.c_str());
 			
 			// This should be incremented in each version
-			writeU16(&data[51], 2);
+			writeU16(&data[51], 3);
 
 			// Send as unreliable
 			Send(0, data, false);
@@ -1477,6 +1477,22 @@ void Client::ProcessData(u8 *data, u32 datasize, u16 sender_peer_id)
 			}
 		}
 	}
+	else if(command == TOCLIENT_DEATHSCREEN)
+	{
+		std::string datastring((char*)&data[2], datasize-2);
+		std::istringstream is(datastring, std::ios_base::binary);
+		
+		bool set_camera_point_target = readU8(is);
+		v3f camera_point_target = readV3F1000(is);
+		
+		ClientEvent event;
+		event.type = CE_DEATHSCREEN;
+		event.deathscreen.set_camera_point_target = set_camera_point_target;
+		event.deathscreen.camera_point_target_x = camera_point_target.X;
+		event.deathscreen.camera_point_target_y = camera_point_target.Y;
+		event.deathscreen.camera_point_target_z = camera_point_target.Z;
+		m_client_event_queue.push_back(event);
+	}
 	else
 	{
 		dout_client<<DTIME<<"WARNING: Client: Ignoring unknown command "
@@ -1704,6 +1720,20 @@ void Client::sendDamage(u8 damage)
 
 	writeU16(os, TOSERVER_DAMAGE);
 	writeU8(os, damage);
+
+	// Make data buffer
+	std::string s = os.str();
+	SharedBuffer<u8> data((u8*)s.c_str(), s.size());
+	// Send as reliable
+	Send(0, data, true);
+}
+
+void Client::sendRespawn()
+{
+	DSTACK(__FUNCTION_NAME);
+	std::ostringstream os(std::ios_base::binary);
+
+	writeU16(os, TOSERVER_RESPAWN);
 
 	// Make data buffer
 	std::string s = os.str();

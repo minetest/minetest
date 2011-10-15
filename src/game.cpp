@@ -30,6 +30,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "guiPasswordChange.h"
 #include "guiInventoryMenu.h"
 #include "guiTextInputMenu.h"
+#include "guiDeathScreen.h"
 #include "materials.h"
 #include "config.h"
 #include "clouds.h"
@@ -39,6 +40,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "settings.h"
 #include "profiler.h"
 #include "mainmenumanager.h"
+#include "gettext.h"
 
 /*
 	TODO: Move content-aware stuff to separate file by adding properties
@@ -126,6 +128,26 @@ struct TextDestSignNode : public TextDest
 	}
 
 	v3s16 m_p;
+	Client *m_client;
+};
+
+/* Respawn menu callback */
+
+class MainRespawnInitiator: public IRespawnInitiator
+{
+public:
+	MainRespawnInitiator(bool *active, Client *client):
+		m_active(active), m_client(client)
+	{
+		*m_active = true;
+	}
+	void respawn()
+	{
+		*m_active = false;
+		m_client->sendRespawn();
+	}
+private:
+	bool *m_active;
 	Client *m_client;
 };
 
@@ -916,6 +938,8 @@ void the_game(
 	
 	bool invert_mouse = g_settings->getBool("invert_mouse");
 
+	bool respawn_menu_active = false;
+
 	/*
 		Main loop
 	*/
@@ -1388,9 +1412,24 @@ void the_game(
 
 		/*
 			Player speed control
-			TODO: Cache the keycodes from getKeySetting
 		*/
 		
+		if(!noMenuActive() || !device->isWindowActive())
+		{
+			PlayerControl control(
+				false,
+				false,
+				false,
+				false,
+				false,
+				false,
+				false,
+				camera_pitch,
+				camera_yaw
+			);
+			client.setPlayerControl(control);
+		}
+		else
 		{
 			/*bool a_up,
 			bool a_down,
@@ -1435,24 +1474,56 @@ void the_game(
 			//client.step(dtime_avg1);
 		}
 
-		// Read client events
-		for(;;)
 		{
-			ClientEvent event = client.getClientEvent();
-			if(event.type == CE_NONE)
+			// Read client events
+			for(;;)
 			{
-				break;
-			}
-			else if(event.type == CE_PLAYER_DAMAGE)
-			{
-				//u16 damage = event.player_damage.amount;
-				//dstream<<"Player damage: "<<damage<<std::endl;
-				damage_flash_timer = 0.05;
-			}
-			else if(event.type == CE_PLAYER_FORCE_MOVE)
-			{
-				camera_yaw = event.player_force_move.yaw;
-				camera_pitch = event.player_force_move.pitch;
+				ClientEvent event = client.getClientEvent();
+				if(event.type == CE_NONE)
+				{
+					break;
+				}
+				else if(event.type == CE_PLAYER_DAMAGE)
+				{
+					//u16 damage = event.player_damage.amount;
+					//dstream<<"Player damage: "<<damage<<std::endl;
+					damage_flash_timer = 0.05;
+					if(event.player_damage.amount >= 2){
+						damage_flash_timer += 0.05 * event.player_damage.amount;
+					}
+				}
+				else if(event.type == CE_PLAYER_FORCE_MOVE)
+				{
+					camera_yaw = event.player_force_move.yaw;
+					camera_pitch = event.player_force_move.pitch;
+				}
+				else if(event.type == CE_DEATHSCREEN)
+				{
+					if(respawn_menu_active)
+						continue;
+
+					/*bool set_camera_point_target =
+							event.deathscreen.set_camera_point_target;
+					v3f camera_point_target;
+					camera_point_target.X = event.deathscreen.camera_point_target_x;
+					camera_point_target.Y = event.deathscreen.camera_point_target_y;
+					camera_point_target.Z = event.deathscreen.camera_point_target_z;*/
+					MainRespawnInitiator *respawner =
+							new MainRespawnInitiator(
+									&respawn_menu_active, &client);
+					GUIDeathScreen *menu =
+							new GUIDeathScreen(guienv, guiroot, -1, 
+								&g_menumgr, respawner);
+					menu->drop();
+					
+					/* Handle visualization */
+
+					damage_flash_timer = 0;
+
+					/*LocalPlayer* player = client.getLocalPlayer();
+					player->setPosition(player->getPosition() + v3f(0,-BS,0));
+					camera.update(player, busytime, screensize);*/
+				}
 			}
 		}
 		
@@ -1466,16 +1537,12 @@ void the_game(
 		v3f camera_position = camera.getPosition();
 		v3f camera_direction = camera.getDirection();
 		f32 camera_fov = camera.getFovMax();
-
+		
 		if(FIELD_OF_VIEW_TEST)
-		{
 			client.updateCamera(v3f(0,0,0), v3f(0,0,1), camera_fov);
-		}
 		else
-		{
 			client.updateCamera(camera_position,
 				camera_direction, camera_fov);
-		}
 
 		//timer2.stop();
 		//TimeTaker //timer3("//timer3");

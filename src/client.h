@@ -113,7 +113,8 @@ enum ClientEventType
 {
 	CE_NONE,
 	CE_PLAYER_DAMAGE,
-	CE_PLAYER_FORCE_MOVE
+	CE_PLAYER_FORCE_MOVE,
+	CE_DEATHSCREEN,
 };
 
 struct ClientEvent
@@ -129,6 +130,12 @@ struct ClientEvent
 			f32 pitch;
 			f32 yaw;
 		} player_force_move;
+		struct{
+			bool set_camera_point_target;
+			f32 camera_point_target_x;
+			f32 camera_point_target_y;
+			f32 camera_point_target_z;
+		} deathscreen;
 	};
 };
 
@@ -191,6 +198,7 @@ public:
 	void sendChangePassword(const std::wstring oldpassword,
 		const std::wstring newpassword);
 	void sendDamage(u8 damage);
+	void sendRespawn();
 	
 	// locks envlock
 	void removeNode(v3s16 p);

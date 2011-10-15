@@ -2026,16 +2026,6 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 		// Get player
 		Player *player = emergePlayer(playername, password, peer_id);
 
-		/*{
-			// DEBUG: Test serialization
-			std::ostringstream test_os;
-			player->serialize(test_os);
-			dstream<<"Player serialization test: \""<<test_os.str()
-					<<"\""<<std::endl;
-			std::istringstream test_is(test_os.str());
-			player->deSerialize(test_is);
-		}*/
-
 		// If failed, cancel
 		if(player == NULL)
 		{
@@ -2044,32 +2034,6 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 			return;
 		}
 
-		/*
-		// If a client is already connected to the player, cancel
-		if(player->peer_id != 0)
-		{
-			derr_server<<DTIME<<"Server: peer_id="<<peer_id
-					<<" tried to connect to "
-					"an already connected player (peer_id="
-					<<player->peer_id<<")"<<std::endl;
-			return;
-		}
-		// Set client of player
-		player->peer_id = peer_id;
-		*/
-
-		// Check if player doesn't exist
-		if(player == NULL)
-			throw con::InvalidIncomingDataException
-				("Server::ProcessData(): INIT: Player doesn't exist");
-
-		/*// update name if it was supplied
-		if(datasize >= 20+3)
-		{
-			data[20+3-1] = 0;
-			player->updateName((const char*)&data[3]);
-		}*/
-		
 		/*
 			Answer with a TOCLIENT_INIT
 		*/
@@ -2146,10 +2110,18 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 		}
 		
 		// Warnings about protocol version can be issued here
-		/*if(getClient(peer->id)->net_proto_version == 0)
+		if(getClient(peer->id)->net_proto_version < 3)
 		{
-			SendChatMessage(peer_id, L"# Server: NOTE: YOUR CLIENT IS OLD AND DOES NOT WORK PROPERLY WITH THIS SERVER");
-		}*/
+			SendChatMessage(peer_id, L"# Server: WARNING: YOUR CLIENT IS OLD AND DOES NOT WORK PROPERLY WITH THIS SERVER");
+		}
+
+		/*
+			Check HP, respawn if necessary
+		*/
+		{
+			Player *player = m_env.getPlayer(peer_id);
+			HandlePlayerHP(player, 0);
+		}
 
 		return;
 	}
@@ -3208,33 +3180,18 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 	}
 	else if(command == TOSERVER_DAMAGE)
 	{
+		std::string datastring((char*)&data[2], datasize-2);
+		std::istringstream is(datastring, std::ios_base::binary);
+		u8 damage = readU8(is);
+
 		if(g_settings->getBool("enable_damage"))
 		{
-			std::string datastring((char*)&data[2], datasize-2);
-			std::istringstream is(datastring, std::ios_base::binary);
-			u8 damage = readU8(is);
-			if(player->hp > damage)
-			{
-				player->hp -= damage;
-			}
-			else
-			{
-				player->hp = 0;
-
-				dstream<<"TODO: Server: TOSERVER_HP_DECREMENT: Player dies"
-						<<std::endl;
-				
-				v3f pos = findSpawnPos(m_env.getServerMap());
-				player->setPosition(pos);
-				player->hp = 20;
-				SendMovePlayer(player);
-				SendPlayerHP(player);
-				
-				//TODO: Throw items around
-			}
+			HandlePlayerHP(player, damage);
 		}
-
-		SendPlayerHP(player);
+		else
+		{
+			SendPlayerHP(player);
+		}
 	}
 	else if(command == TOSERVER_PASSWORD)
 	{
@@ -3296,7 +3253,7 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 				<<std::endl;
 		SendChatMessage(peer_id, L"Password change successful");
 	}
-	else if (command == TOSERVER_PLAYERITEM)
+	else if(command == TOSERVER_PLAYERITEM)
 	{
 		if (datasize < 2+2)
 			return;
@@ -3304,6 +3261,13 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 		u16 item = readU16(&data[2]);
 		player->wieldItem(item);
 		SendWieldedItem(player);
+	}
+	else if(command == TOSERVER_RESPAWN)
+	{
+		if(player->hp != 0)
+			return;
+
+		RespawnPlayer(player);
 	}
 	else
 	{
@@ -3493,6 +3457,23 @@ void Server::SendAccessDenied(con::Connection &con, u16 peer_id,
 
 	writeU16(os, TOCLIENT_ACCESS_DENIED);
 	os<<serializeWideString(reason);
+
+	// Make data buffer
+	std::string s = os.str();
+	SharedBuffer<u8> data((u8*)s.c_str(), s.size());
+	// Send as reliable
+	con.Send(peer_id, 0, data, true);
+}
+
+void Server::SendDeathscreen(con::Connection &con, u16 peer_id,
+		bool set_camera_point_target, v3f camera_point_target)
+{
+	DSTACK(__FUNCTION_NAME);
+	std::ostringstream os(std::ios_base::binary);
+
+	writeU16(os, TOCLIENT_DEATHSCREEN);
+	writeU8(os, set_camera_point_target);
+	writeV3F1000(os, camera_point_target);
 
 	// Make data buffer
 	std::string s = os.str();
@@ -3954,6 +3935,51 @@ void Server::SendBlocks(float dtime)
 /*
 	Something random
 */
+
+void Server::HandlePlayerHP(Player *player, s16 damage)
+{
+	if(player->hp > damage)
+	{
+		player->hp -= damage;
+		SendPlayerHP(player);
+	}
+	else
+	{
+		dstream<<"Server::HandlePlayerHP(): Player "
+				<<player->getName()<<" dies"<<std::endl;
+		
+		player->hp = 0;
+		
+		//TODO: Throw items around
+		
+		// Handle players that are not connected
+		if(player->peer_id == PEER_ID_INEXISTENT){
+			RespawnPlayer(player);
+			return;
+		}
+
+		SendPlayerHP(player);
+		
+		RemoteClient *client = getClient(player->peer_id);
+		if(client->net_proto_version >= 3)
+		{
+			SendDeathscreen(m_con, player->peer_id, false, v3f(0,0,0));
+		}
+		else
+		{
+			RespawnPlayer(player);
+		}
+	}
+}
+
+void Server::RespawnPlayer(Player *player)
+{
+	v3f pos = findSpawnPos(m_env.getServerMap());
+	player->setPosition(pos);
+	player->hp = 20;
+	SendMovePlayer(player);
+	SendPlayerHP(player);
+}
 
 void Server::UpdateCrafting(u16 peer_id)
 {

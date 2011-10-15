@@ -152,6 +152,7 @@ set(minetest_SRCS
 	guiInventoryMenu.cpp
 	guiPauseMenu.cpp
 	guiPasswordChange.cpp
+	guiDeathScreen.cpp
 	client.cpp
 	tile.cpp
 	game.cpp
