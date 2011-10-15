@@ -1574,7 +1574,7 @@ void Client::clickActiveObject(u8 button, u16 id, u16 item_i)
 			v3f dir = (objpos - playerpos).normalize();
 			
 			bool disable_send = obj->directReportPunch(toolname, dir);
-
+			
 			if(disable_send)
 				return;
 		}

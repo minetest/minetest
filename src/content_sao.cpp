@@ -523,13 +523,14 @@ void Oerkki1SAO::step(float dtime, bool send_recommended)
 		Player *player = *i;
 		v3f playerpos = player->getPosition();
 		f32 dist = m_base_position.getDistanceFrom(playerpos);
-		if(dist < BS*1.45)
+		if(dist < BS*0.6)
 		{
+			m_removed = true;
+			return;
 			player_is_too_close = true;
 			near_player_pos = playerpos;
-			break;
 		}
-		else if(dist < BS*15.0)
+		else if(dist < BS*15.0 && !player_is_too_close)
 		{
 			player_is_close = true;
 			near_player_pos = playerpos;
@@ -681,7 +682,7 @@ u16 Oerkki1SAO::punch(const std::string &toolname, v3f dir)
 {
 	m_speed_f += dir*12*BS;
 
-	u16 amount = 5;
+	u16 amount = 20;
 	doDamage(amount);
 	return 65536/100;
 }
@@ -917,7 +918,9 @@ MobV2SAO::MobV2SAO(ServerEnvironment *env, u16 id, v3f pos,
 	m_shooting(false),
 	m_shooting_timer(0),
 	m_falling(false),
-	m_disturb_timer(100000)
+	m_disturb_timer(100000),
+	m_random_disturb_timer(0),
+	m_shoot_y(0)
 {
 	ServerActiveObject::registerType(getType(), create);
 	
@@ -1073,18 +1076,46 @@ void MobV2SAO::step(float dtime, bool send_recommended)
 		return;
 	}
 
+	m_random_disturb_timer += dtime;
+	if(m_random_disturb_timer >= 5.0)
+	{
+		m_random_disturb_timer = 0;
+		// Check connected players
+		core::list<Player*> players = m_env->getPlayers(true);
+		core::list<Player*>::Iterator i;
+		for(i = players.begin();
+				i != players.end(); i++)
+		{
+			Player *player = *i;
+			v3f playerpos = player->getPosition();
+			f32 dist = m_base_position.getDistanceFrom(playerpos);
+			if(dist < BS*16)
+			{
+				if(myrand_range(0,2) == 0){
+					dstream<<"ACTION: id="<<m_id<<" got randomly disturbed by "
+							<<player->getName()<<std::endl;
+					m_disturbing_player = player->getName();
+					m_disturb_timer = 0;
+					break;
+				}
+			}
+		}
+	}
+
 	Player *disturbing_player =
 			m_env->getPlayer(m_disturbing_player.c_str());
 	v3f disturbing_player_off = v3f(0,1,0);
+	v3f disturbing_player_norm = v3f(0,1,0);
 	float disturbing_player_distance = 1000000;
 	float disturbing_player_dir = 0;
 	if(disturbing_player){
 		disturbing_player_off =
 				disturbing_player->getPosition() - m_base_position;
 		disturbing_player_distance = disturbing_player_off.getLength();
-		disturbing_player_off.normalize();
-		disturbing_player_dir = 180./M_PI*atan2(disturbing_player_off.Z,
-				disturbing_player_off.X);
+		disturbing_player_norm = disturbing_player_off;
+		disturbing_player_norm.normalize();
+		disturbing_player_dir = 180./M_PI*atan2(disturbing_player_norm.Z,
+				disturbing_player_norm.X);
 	}
 
 	m_disturb_timer += dtime;
@@ -1100,6 +1131,8 @@ void MobV2SAO::step(float dtime, bool send_recommended)
 			shoot_pos.Y += m_properties->getFloat("shoot_y") * BS;
 			if(shoot_type == "fireball"){
 				v3f dir(cos(m_yaw/180*PI),0,sin(m_yaw/180*PI));
+				dir.Y = m_shoot_y;
+				dir.normalize();
 				v3f speed = dir * BS * 10.0;
 				v3f pos = m_base_position + shoot_pos;
 				dstream<<__FUNCTION_NAME<<": Shooting fireball from "<<PP(pos)
@@ -1130,13 +1163,16 @@ void MobV2SAO::step(float dtime, bool send_recommended)
 		if(m_disturb_timer <= 15.0)
 			reload_time = 3.0;
 
-		if(m_shoot_reload_timer >= reload_time && !m_next_pos_exists)
+		if(!m_shooting && m_shoot_reload_timer >= reload_time &&
+				!m_next_pos_exists)
 		{
+			m_shoot_y = 0;
 			if(m_disturb_timer < 30.0 && disturbing_player &&
 					disturbing_player_distance < 16*BS &&
-					fabs(disturbing_player_off.Y) < 5*BS){
+					fabs(disturbing_player_norm.Y) < 0.8){
 				m_yaw = disturbing_player_dir;
 				sendPosition();
+				m_shoot_y += disturbing_player_norm.Y;
 			}
 			m_shoot_reload_timer = 0.0;
 			m_shooting = true;
@@ -1292,9 +1328,13 @@ u16 MobV2SAO::punch(const std::string &toolname, v3f dir,
 {
 	assert(m_env);
 	Map *map = &m_env->getMap();
+	
+	dstream<<"ACTION: "<<playername<<" punches id="<<m_id
+			<<" with a \""<<toolname<<"\""<<std::endl;
 
 	m_disturb_timer = 0;
 	m_disturbing_player = playername;
+	m_next_pos_exists = false; // Cancel moving immediately
 	
 	m_yaw = wrapDegrees_180(180./M_PI*atan2(dir.Z, dir.X) + 180.);
 	v3f new_base_position = m_base_position + dir * BS;
@@ -1313,14 +1353,13 @@ u16 MobV2SAO::punch(const std::string &toolname, v3f dir,
 	sendPosition();
 	
 	u16 amount = 2;
-	dstream<<"id="<<m_id<<": punch with \""<<toolname<<"\""<<std::endl;
 	/* See tool names in inventory.h */
 	if(toolname == "WSword")
 		amount = 4;
 	if(toolname == "STSword")
-		amount = 7;
+		amount = 6;
 	if(toolname == "SteelSword")
-		amount = 10;
+		amount = 8;
 	if(toolname == "STAxe")
 		amount = 3;
 	if(toolname == "SteelAxe")

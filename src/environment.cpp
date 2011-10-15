@@ -647,7 +647,7 @@ static void getMob_dungeon_master(Settings &properties)
 {
 	properties.set("looks", "dungeon_master");
 	properties.setFloat("yaw", 1.57);
-	properties.setFloat("hp", 20);
+	properties.setFloat("hp", 30);
 	properties.setBool("bright_shooting", true);
 	properties.set("shoot_type", "fireball");
 	properties.set("shoot_y", "0.7");

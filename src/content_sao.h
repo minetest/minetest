@@ -186,6 +186,8 @@ private:
 	bool m_falling;
 	float m_disturb_timer;
 	std::string m_disturbing_player;
+	float m_random_disturb_timer;
+	float m_shoot_y;
 	
 	Settings *m_properties;
 };

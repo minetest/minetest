@@ -248,6 +248,9 @@ public:
 		{return pos_translator.vect_show;}
 		//{return m_position;}
 
+	// If returns true, punch will not be sent to the server
+	bool directReportPunch(const std::string &toolname, v3f dir);
+
 private:
 	IntervalLimiter m_attack_interval;
 	core::aabbox3d<f32> m_selection_box;

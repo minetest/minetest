@@ -606,7 +606,7 @@ void Oerkki1CAO::step(float dtime, ClientEnvironment *env)
 	v2f playerpos_2d(playerpos.X,playerpos.Z);
 	v2f objectpos_2d(m_position.X,m_position.Z);
 
-	if(fabs(m_position.Y - playerpos.Y) < 3.0*BS &&
+	if(fabs(m_position.Y - playerpos.Y) < 1.5*BS &&
 			objectpos_2d.getDistanceFrom(playerpos_2d) < 1.5*BS)
 	{
 		if(m_attack_interval.step(dtime, 0.5))
@@ -707,6 +707,18 @@ void Oerkki1CAO::initialize(const std::string &data)
 	}
 	
 	updateNodePos();
+}
+
+bool Oerkki1CAO::directReportPunch(const std::string &toolname, v3f dir)
+{
+	m_damage_visual_timer = 1.0;
+
+	m_position += dir * BS;
+	pos_translator.sharpen();
+	pos_translator.update(m_position);
+	updateNodePos();
+	
+	return false;
 }
 
 /*
@@ -1003,9 +1015,9 @@ void MobV2CAO::step(float dtime, ClientEnvironment *env)
 		v3f cam_to_mob = m_node->getAbsolutePosition() - camera->getAbsolutePosition();
 		cam_to_mob.normalize();
 		int col = 0;
-		if(cam_to_mob.Y > 0.7)
+		if(cam_to_mob.Y > 0.75)
 			col = 5;
-		else if(cam_to_mob.Y < -0.7)
+		else if(cam_to_mob.Y < -0.75)
 			col = 4;
 		else{
 			float mob_dir = atan2(cam_to_mob.Z, cam_to_mob.X) / M_PI * 180.;
