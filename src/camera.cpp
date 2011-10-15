@@ -221,6 +221,7 @@ void Camera::update(LocalPlayer* player, f32 frametime, v2u32 screensize)
 		//rel_cam_target += 0.03 * bobvec;
 		//rel_cam_up.rotateXYBy(0.02 * bobdir * bobtmp * PI);
 		float f = 1.0;
+		f *= g_settings->getFloat("view_bobbing_amount");
 		rel_cam_pos += bobvec * f;
 		//rel_cam_target += 0.995 * bobvec * f;
 		rel_cam_target += bobvec * f;

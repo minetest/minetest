@@ -103,6 +103,8 @@ screenH# = 600
 #invisible_stone = false
 # Path for screenshots
 #screenshot_path = .
+# Amount of view bobbing (0 = no view bobbing, 1.0 = normal, 2.0 = double)
+#view_bobbing_amount = 1.0
 
 #
 # Server stuff

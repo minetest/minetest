@@ -74,6 +74,7 @@ void set_default_settings(Settings *settings)
 	settings->setDefault("enable_clouds", "true");
 	settings->setDefault("invisible_stone", "false");
 	settings->setDefault("screenshot_path", ".");
+	settings->setDefault("view_bobbing_amount", "1.0");
 
 	// Server stuff
 	// "map-dir" doesn't exist by default.
