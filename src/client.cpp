@@ -1523,13 +1523,45 @@ void Client::groundAction(u8 action, v3s16 nodepos_undersurface,
 	Send(0, data, true);
 }
 
-void Client::clickActiveObject(u8 button, u16 id, u16 item)
+void Client::clickActiveObject(u8 button, u16 id, u16 item_i)
 {
 	if(connectedAndInitialized() == false){
 		dout_client<<DTIME<<"Client::clickActiveObject() "
 				"cancelled (not connected)"
 				<<std::endl;
 		return;
+	}
+
+	Player *player = m_env.getLocalPlayer();
+	if(player == NULL)
+		return;
+
+	ClientActiveObject *obj = m_env.getActiveObject(id);
+	if(obj){
+		if(button == 0){
+			ToolItem *titem = NULL;
+			std::string toolname = "";
+
+			InventoryList *mlist = player->inventory.getList("main");
+			if(mlist != NULL)
+			{
+				InventoryItem *item = mlist->getItem(item_i);
+				if(item && (std::string)item->getName() == "ToolItem")
+				{
+					titem = (ToolItem*)item;
+					toolname = titem->getToolName();
+				}
+			}
+
+			v3f playerpos = player->getPosition();
+			v3f objpos = obj->getPosition();
+			v3f dir = (objpos - playerpos).normalize();
+			
+			bool disable_send = obj->directReportPunch(toolname, dir);
+
+			if(disable_send)
+				return;
+		}
 	}
 	
 	/*
@@ -1544,7 +1576,7 @@ void Client::clickActiveObject(u8 button, u16 id, u16 item)
 	writeU16(&data[0], TOSERVER_CLICK_ACTIVEOBJECT);
 	writeU8(&data[2], button);
 	writeU16(&data[3], id);
-	writeU16(&data[5], item);
+	writeU16(&data[5], item_i);
 	Send(0, data, true);
 }
 

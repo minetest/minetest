@@ -645,17 +645,12 @@ void ServerEnvironment::activateBlock(MapBlock *block, u32 additional_dtime)
 
 static void getMob_dungeon_master(Settings &properties)
 {
-	properties.set("texture_name", "dungeon_master.png");
-	properties.setV3F("sprite_pos", v3f(0.0, 0.85, 0.0));
-	properties.setV2F("sprite_size", v2f(2.0, 3.0));
-	properties.setFloat("selection_y", -0.4);
-	properties.setV2F("selection_size", v2f(0.4, 2.6));
+	properties.set("looks", "dungeon_master");
 	properties.setFloat("yaw", 1.57);
 	properties.setFloat("hp", 20);
 	properties.setBool("bright_shooting", true);
 	properties.set("shoot_type", "fireball");
 	properties.set("shoot_y", "0.7");
-	properties.set("sprite_type", "humanoid_1");
 	properties.set("player_hit_damage", "1");
 	properties.set("player_hit_distance", "1.0");
 	properties.set("player_hit_interval", "0.5");

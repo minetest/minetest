@@ -874,7 +874,10 @@ MobV2CAO::MobV2CAO():
 	m_last_light(0),
 	m_shooting(0),
 	m_shooting_unset_timer(0),
+	m_sprite_size(BS,BS),
+	m_sprite_y(0),
 	m_bright_shooting(false),
+	m_lock_full_brightness(false),
 	m_player_hit_timer(0)
 {
 	ClientActiveObject::registerType(getType(), create);
@@ -897,10 +900,10 @@ void MobV2CAO::addToScene(scene::ISceneManager *smgr)
 	if(m_node != NULL)
 		return;
 	
-	std::string texture_name = m_properties->get("texture_name");
-	//dstream<<"MobV2CAO::addToScene using texture_name="<<texture_name<<std::endl;
+	/*dstream<<"MobV2CAO::addToScene using texture_name="<<
+			m_texture_name<<std::endl;*/
 	std::string texture_string = "[makealpha2:128,0,0;128,128,0:";
-	texture_string += texture_name;
+	texture_string += m_texture_name;
 	
 	scene::MyBillboardSceneNode *bill = new scene::MyBillboardSceneNode(
 			smgr->getRootSceneNode(), smgr, -1, v3f(0,0,0), v2f(1,1));
@@ -986,7 +989,7 @@ void MobV2CAO::updateNodePos()
 	if(m_node == NULL)
 		return;
 
-	m_node->setPosition(pos_translator.vect_show + m_sprite_pos);
+	m_node->setPosition(pos_translator.vect_show + v3f(0,m_sprite_y,0));
 }
 
 void MobV2CAO::step(float dtime, ClientEnvironment *env)
@@ -1137,15 +1140,16 @@ void MobV2CAO::processMessage(const std::string &data)
 	{
 		//u16 damage = readU16(is);
 
-		u8 li = decode_light(m_last_light);
+		/*u8 li = decode_light(m_last_light);
 		if(li >= 100)
 			li = 30;
 		else
-			li = 255;
-		video::SColor color(255,li,li,li);
+			li = 255;*/
+
+		/*video::SColor color(255,255,0,0);
 		m_node->setColor(color);
 
-		m_damage_visual_timer = 0.2;
+		m_damage_visual_timer = 0.2;*/
 	}
 	// Trigger shooting
 	else if(cmd == 2)
@@ -1183,38 +1187,19 @@ void MobV2CAO::initialize(const std::string &data)
 		std::istringstream tmp_is(tmp_os.str(), std::ios::binary);
 		m_properties->parseConfigLines(tmp_is, "MobArgsEnd");
 
-		/*dstream<<"INFO: MobV2CAO::initialize(): got properties:"<<std::endl;
-		m_properties->writeLines(dstream);*/
-
-		m_properties->setDefault("texture_name", "stone.png");
+		dstream<<"INFO: MobV2CAO::initialize(): got properties:"<<std::endl;
+		m_properties->writeLines(dstream);
+		
+		m_properties->setDefault("looks", "dummy_default");
 		m_properties->setDefault("yaw", "0");
 		m_properties->setDefault("pos", "(0,0,0)");
-		m_properties->setDefault("sprite_size", "(1,1)");
-		m_properties->setDefault("sprite_pos", "(0,0,0)");
-		m_properties->setDefault("selection_size", "(0.4,0.4)");
-		m_properties->setDefault("selection_y", "-0.4");
-		m_properties->setDefault("sprite_type", "humanoid_1");
-		m_properties->setDefault("simple_anim_frames", "1");
-		m_properties->setDefault("simple_anim_frametime", "0.5");
-		m_properties->setDefault("lock_full_brightness", "false");
 		m_properties->setDefault("player_hit_damage", "0");
 		m_properties->setDefault("player_hit_distance", "1.5");
 		m_properties->setDefault("player_hit_interval", "1.5");
 		
+		setLooks(m_properties->get("looks"));
 		m_yaw = m_properties->getFloat("yaw");
 		m_position = m_properties->getV3F("pos");
-		m_sprite_size = m_properties->getV2F("sprite_size") * BS;
-		m_sprite_pos = m_properties->getV3F("sprite_pos") * BS;
-		v2f selection_size = m_properties->getV2F("selection_size") * BS;
-		float selection_y = m_properties->getFloat("selection_y") * BS;
-		m_selection_box = core::aabbox3d<f32>(
-				-selection_size.X, selection_y, -selection_size.X,
-				selection_size.X, selection_y+selection_size.Y,
-				selection_size.X);
-		m_sprite_type = m_properties->get("sprite_type");
-		m_simple_anim_frames = m_properties->getS32("simple_anim_frames");
-		m_simple_anim_frametime = m_properties->getFloat("simple_anim_frametime");
-		m_lock_full_brightness = m_properties->getBool("lock_full_brightness");
 		m_player_hit_damage = m_properties->getS32("player_hit_damage");
 		m_player_hit_distance = m_properties->getFloat("player_hit_distance");
 		m_player_hit_interval = m_properties->getFloat("player_hit_interval");
@@ -1225,4 +1210,55 @@ void MobV2CAO::initialize(const std::string &data)
 	updateNodePos();
 }
 
+bool MobV2CAO::directReportPunch(const std::string &toolname, v3f dir)
+{
+	video::SColor color(255,255,0,0);
+	m_node->setColor(color);
+
+	m_damage_visual_timer = 0.05;
+
+	m_position += dir * BS;
+	pos_translator.sharpen();
+	pos_translator.update(m_position);
+	updateNodePos();
+	
+	return false;
+}
+
+void MobV2CAO::setLooks(const std::string &looks)
+{
+	v2f selection_size = v2f(0.4, 0.4) * BS;
+	float selection_y = 0 * BS;
+
+	if(looks == "dungeon_master"){
+		m_texture_name = "dungeon_master.png";
+		m_sprite_type = "humanoid_1";
+		m_sprite_size = v2f(2, 3) * BS;
+		m_sprite_y = 0.85 * BS;
+		selection_size = v2f(0.4, 2.6) * BS;
+		selection_y = -0.4 * BS;
+	}
+	else if(looks == "fireball"){
+		m_texture_name = "fireball.png";
+		m_sprite_type = "simple";
+		m_sprite_size = v2f(1, 1) * BS;
+		m_simple_anim_frames = 3;
+		m_simple_anim_frametime = 0.1;
+		m_lock_full_brightness = true;
+	}
+	else{
+		m_texture_name = "stone.png";
+		m_sprite_type = "simple";
+		m_sprite_size = v2f(1, 1) * BS;
+		m_simple_anim_frames = 3;
+		m_simple_anim_frametime = 0.333;
+		selection_size = v2f(0.4, 0.4) * BS;
+		selection_y = 0 * BS;
+	}
+
+	m_selection_box = core::aabbox3d<f32>(
+			-selection_size.X, selection_y, -selection_size.X,
+			selection_size.X, selection_y+selection_size.Y,
+			selection_size.X);
+}
 

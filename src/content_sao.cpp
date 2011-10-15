@@ -916,7 +916,8 @@ MobV2SAO::MobV2SAO(ServerEnvironment *env, u16 id, v3f pos,
 	m_shoot_reload_timer(0),
 	m_shooting(false),
 	m_shooting_timer(0),
-	m_falling(false)
+	m_falling(false),
+	m_disturb_timer(100000)
 {
 	ServerActiveObject::registerType(getType(), create);
 	
@@ -1071,6 +1072,22 @@ void MobV2SAO::step(float dtime, bool send_recommended)
 		m_removed = true;
 		return;
 	}
+
+	Player *disturbing_player =
+			m_env->getPlayer(m_disturbing_player.c_str());
+	v3f disturbing_player_off = v3f(0,1,0);
+	float disturbing_player_distance = 1000000;
+	float disturbing_player_dir = 0;
+	if(disturbing_player){
+		disturbing_player_off =
+				disturbing_player->getPosition() - m_base_position;
+		disturbing_player_distance = disturbing_player_off.getLength();
+		disturbing_player_off.normalize();
+		disturbing_player_dir = 180./M_PI*atan2(disturbing_player_off.Z,
+				disturbing_player_off.X);
+	}
+
+	m_disturb_timer += dtime;
 	
 	if(!m_falling)
 	{
@@ -1088,15 +1105,10 @@ void MobV2SAO::step(float dtime, bool send_recommended)
 				dstream<<__FUNCTION_NAME<<": Shooting fireball from "<<PP(pos)
 						<<" at speed "<<PP(speed)<<std::endl;
 				Settings properties;
+				properties.set("looks", "fireball");
 				properties.setV3F("speed", speed);
 				properties.setFloat("die_age", 5.0);
 				properties.set("move_type", "constant_speed");
-				properties.set("texture_name", "fireball.png");
-				properties.setV3F("sprite_pos", v3f(0.0, 0.0, 0.0));
-				properties.setV2F("sprite_size", v2f(1.0, 1.0));
-				properties.set("sprite_type", "simple");
-				properties.set("simple_anim_frames", "3");
-				properties.set("simple_anim_frametime", "0.1");
 				properties.setFloat("hp", 1000);
 				properties.set("lock_full_brightness", "true");
 				properties.set("player_hit_damage", "9");
@@ -1114,8 +1126,18 @@ void MobV2SAO::step(float dtime, bool send_recommended)
 
 		m_shoot_reload_timer += dtime;
 
-		if(m_shoot_reload_timer >= 5.0 && !m_next_pos_exists)
+		float reload_time = 15.0;
+		if(m_disturb_timer <= 15.0)
+			reload_time = 3.0;
+
+		if(m_shoot_reload_timer >= reload_time && !m_next_pos_exists)
 		{
+			if(m_disturb_timer < 30.0 && disturbing_player &&
+					disturbing_player_distance < 16*BS &&
+					fabs(disturbing_player_off.Y) < 5*BS){
+				m_yaw = disturbing_player_dir;
+				sendPosition();
+			}
 			m_shoot_reload_timer = 0.0;
 			m_shooting = true;
 			m_shooting_timer = 1.5;
@@ -1261,23 +1283,35 @@ void MobV2SAO::step(float dtime, bool send_recommended)
 
 	if(m_base_position.getDistanceFrom(m_last_sent_position) > 0.05*BS)
 	{
-		m_last_sent_position = m_base_position;
-
-		std::ostringstream os(std::ios::binary);
-		// command (0 = update position)
-		writeU8(os, 0);
-		// pos
-		writeV3F1000(os, m_base_position);
-		// yaw
-		writeF1000(os, m_yaw);
-		// create message and add to list
-		ActiveObjectMessage aom(getId(), false, os.str());
-		m_messages_out.push_back(aom);
+		sendPosition();
 	}
 }
 
-u16 MobV2SAO::punch(const std::string &toolname, v3f dir)
+u16 MobV2SAO::punch(const std::string &toolname, v3f dir,
+		const std::string &playername)
 {
+	assert(m_env);
+	Map *map = &m_env->getMap();
+
+	m_disturb_timer = 0;
+	m_disturbing_player = playername;
+	
+	m_yaw = wrapDegrees_180(180./M_PI*atan2(dir.Z, dir.X) + 180.);
+	v3f new_base_position = m_base_position + dir * BS;
+	{
+		v3s16 pos_i = floatToInt(new_base_position, BS);
+		v3s16 size_blocks = v3s16(m_size.X+0.5,m_size.Y+0.5,m_size.X+0.5);
+		v3s16 pos_size_off(0,0,0);
+		if(m_size.X >= 2.5){
+			pos_size_off.X = -1;
+			pos_size_off.Y = -1;
+		}
+		bool free = checkFreePosition(map, pos_i + pos_size_off, size_blocks);
+		if(free)
+			m_base_position = new_base_position;
+	}
+	sendPosition();
+	
 	u16 amount = 2;
 	dstream<<"id="<<m_id<<": punch with \""<<toolname<<"\""<<std::endl;
 	/* See tool names in inventory.h */
@@ -1295,6 +1329,22 @@ u16 MobV2SAO::punch(const std::string &toolname, v3f dir)
 		amount = 3;
 	doDamage(amount);
 	return 65536/100;
+}
+
+void MobV2SAO::sendPosition()
+{
+	m_last_sent_position = m_base_position;
+
+	std::ostringstream os(std::ios::binary);
+	// command (0 = update position)
+	writeU8(os, 0);
+	// pos
+	writeV3F1000(os, m_base_position);
+	// yaw
+	writeF1000(os, m_yaw);
+	// create message and add to list
+	ActiveObjectMessage aom(getId(), false, os.str());
+	m_messages_out.push_back(aom);
 }
 
 void MobV2SAO::setPropertyDefaults()

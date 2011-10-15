@@ -104,7 +104,8 @@ public:
 		If the object doesn't return an item, this will be called.
 		Return value is tool wear.
 	*/
-	virtual u16 punch(const std::string &toolname, v3f dir)
+	virtual u16 punch(const std::string &toolname, v3f dir,
+			const std::string &playername)
 	{return 0;}
 
 	/*

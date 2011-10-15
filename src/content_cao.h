@@ -33,19 +33,19 @@ class Settings;
 struct SmoothTranslator
 {
 	v3f vect_old;
+	v3f vect_show;
+	v3f vect_aim;
 	f32 anim_counter;
 	f32 anim_time;
 	f32 anim_time_counter;
-	v3f vect_show;
-	v3f vect_aim;
 
 	SmoothTranslator():
 		vect_old(0,0,0),
+		vect_show(0,0,0),
+		vect_aim(0,0,0),
 		anim_counter(0),
 		anim_time(0),
-		anim_time_counter(0),
-		vect_show(0,0,0),
-		vect_aim(0,0,0)
+		anim_time_counter(0)
 	{}
 
 	void init(v3f vect)
@@ -53,6 +53,14 @@ struct SmoothTranslator
 		vect_old = vect;
 		vect_show = vect;
 		vect_aim = vect;
+		anim_counter = 0;
+		anim_time = 0;
+		anim_time_counter = 0;
+	}
+
+	void sharpen()
+	{
+		init(vect_show);
 	}
 
 	void update(v3f vect_new)
@@ -329,11 +337,17 @@ public:
 		//{return m_position;}
 	bool doShowSelectionBox(){return false;}
 
+	// If returns true, punch will not be sent to the server
+	bool directReportPunch(const std::string &toolname, v3f dir);
+
 private:
+	void setLooks(const std::string &looks);
+	
 	IntervalLimiter m_attack_interval;
 	core::aabbox3d<f32> m_selection_box;
 	scene::MyBillboardSceneNode *m_node;
 	v3f m_position;
+	std::string m_texture_name;
 	float m_yaw;
 	SmoothTranslator pos_translator;
 	bool m_walking;
@@ -345,7 +359,7 @@ private:
 	bool m_shooting;
 	float m_shooting_unset_timer;
 	v2f m_sprite_size;
-	v3f m_sprite_pos;
+	float m_sprite_y;
 	bool m_bright_shooting;
 	std::string m_sprite_type;
 	int m_simple_anim_frames;

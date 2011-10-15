@@ -2340,7 +2340,7 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 				v3f objpos = obj->getBasePosition();
 				v3f dir = (objpos - playerpos).normalize();
 				
-				u16 wear = obj->punch(toolname, dir);
+				u16 wear = obj->punch(toolname, dir, player->getName());
 				
 				if(titem)
 				{

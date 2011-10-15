@@ -155,8 +155,10 @@ public:
 	std::string getClientInitializationData();
 	void step(float dtime, bool send_recommended);
 	InventoryItem* createPickedUpItem(){return NULL;}
-	u16 punch(const std::string &toolname, v3f dir);
+	u16 punch(const std::string &toolname, v3f dir,
+			const std::string &playername);
 private:
+	void sendPosition();
 	void setPropertyDefaults();
 	void readProperties();
 	void updateProperties();
@@ -182,6 +184,8 @@ private:
 	float m_die_age;
 	v2f m_size;
 	bool m_falling;
+	float m_disturb_timer;
+	std::string m_disturbing_player;
 	
 	Settings *m_properties;
 };

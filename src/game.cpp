@@ -1532,16 +1532,23 @@ void the_game(
 			//if(input->getLeftClicked())
 			if(input->getLeftState())
 			{
+				bool do_punch = false;
+				bool do_punch_damage = false;
 				if(object_hit_delay_timer <= 0.0){
+					do_punch = true;
+					do_punch_damage = true;
+					object_hit_delay_timer = object_hit_delay;
+				}
+				if(input->getLeftClicked()){
+					do_punch = true;
+				}
+				if(do_punch){
 					dstream<<DTIME<<"Left-clicked object"<<std::endl;
+					left_punch = true;
+				}
+				if(do_punch_damage){
 					client.clickActiveObject(0,
 							selected_active_object->getId(), g_selected_item);
-					object_hit_delay_timer = object_hit_delay;
-					left_punch = true;
-				} else {
-					dstream<<DTIME<<"Left-clicked object faster than allowed"
-							<<std::endl;
-					left_punch_muted = true;
 				}
 			}
 			else if(input->getRightClicked())

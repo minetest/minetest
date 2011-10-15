@@ -60,7 +60,7 @@ public:
 	virtual void processMessage(const std::string &data){}
 
 	virtual std::string infoText() {return "";}
-
+	
 	/*
 		This takes the return value of
 		ServerActiveObject::getClientInitializationData
@@ -69,6 +69,10 @@ public:
 	
 	// Create a certain type of ClientActiveObject
 	static ClientActiveObject* create(u8 type);
+
+	// If returns true, punch will not be sent to the server
+	virtual bool directReportPunch(const std::string &toolname, v3f dir)
+	{ return false; }
 
 protected:
 	// Used for creating objects based on type
