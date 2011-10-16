@@ -4377,6 +4377,7 @@ void Server::handlePeerChange(PeerChange &c)
 			/*
 				Print out action
 			*/
+			if(player != NULL)
 			{
 				std::ostringstream os(std::ios_base::binary);
 				for(core::map<u16, RemoteClient*>::Iterator
