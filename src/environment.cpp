@@ -684,7 +684,7 @@ void ServerEnvironment::step(float dtime)
 		Handle players
 	*/
 	{
-		ScopeProfiler sp(g_profiler, "SEnv: handle players avg", SPT_LOWPASS);
+		ScopeProfiler sp(g_profiler, "SEnv: handle players avg", SPT_AVG);
 		for(core::list<Player*>::Iterator i = m_players.begin();
 				i != m_players.end(); i++)
 		{
@@ -726,7 +726,7 @@ void ServerEnvironment::step(float dtime)
 	*/
 	if(m_active_blocks_management_interval.step(dtime, 2.0))
 	{
-		ScopeProfiler sp(g_profiler, "SEnv: manage act. block list avg", SPT_LOWPASS);
+		ScopeProfiler sp(g_profiler, "SEnv: manage act. block list avg /2s", SPT_AVG);
 		/*
 			Get player block positions
 		*/
@@ -803,7 +803,7 @@ void ServerEnvironment::step(float dtime)
 	*/
 	if(m_active_blocks_nodemetadata_interval.step(dtime, 1.0))
 	{
-		ScopeProfiler sp(g_profiler, "SEnv: mess in act. blocks avg", SPT_LOWPASS);
+		ScopeProfiler sp(g_profiler, "SEnv: mess in act. blocks avg /1s", SPT_AVG);
 		
 		float dtime = 1.0;
 
@@ -842,7 +842,7 @@ void ServerEnvironment::step(float dtime)
 	
 	if(m_active_blocks_test_interval.step(dtime, 10.0))
 	{
-		ScopeProfiler sp(g_profiler, "SEnv: modify in blocks avg", SPT_LOWPASS);
+		ScopeProfiler sp(g_profiler, "SEnv: modify in blocks avg /10s", SPT_AVG);
 		//float dtime = 10.0;
 		
 		for(core::map<v3s16, bool>::Iterator
@@ -1045,8 +1045,10 @@ void ServerEnvironment::step(float dtime)
 		Step active objects
 	*/
 	{
-		ScopeProfiler sp(g_profiler, "SEnv: step act. objs avg", SPT_LOWPASS);
+		ScopeProfiler sp(g_profiler, "SEnv: step act. objs avg", SPT_AVG);
 		//TimeTaker timer("Step active objects");
+
+		g_profiler->avg("SEnv: num of objects", m_active_objects.size());
 		
 		// This helps the objects to send data at the same time
 		bool send_recommended = false;
@@ -1086,7 +1088,7 @@ void ServerEnvironment::step(float dtime)
 	*/
 	if(m_object_management_interval.step(dtime, 0.5))
 	{
-		ScopeProfiler sp(g_profiler, "SEnv: remove removed objs avg", SPT_LOWPASS);
+		ScopeProfiler sp(g_profiler, "SEnv: remove removed objs avg /.5s", SPT_AVG);
 		/*
 			Remove objects that satisfy (m_removed && m_known_by_count==0)
 		*/

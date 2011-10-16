@@ -21,6 +21,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "collision.h"
 #include "environment.h"
 #include "settings.h"
+#include "profiler.h"
 
 core::map<u16, ServerActiveObject::Factory> ServerActiveObject::m_types;
 
@@ -137,6 +138,8 @@ ServerActiveObject* ItemSAO::create(ServerEnvironment *env, u16 id, v3f pos,
 
 void ItemSAO::step(float dtime, bool send_recommended)
 {
+	ScopeProfiler sp2(g_profiler, "ItemSAO::step avg", SPT_AVG);
+
 	assert(m_env);
 
 	const float interval = 0.2;
@@ -291,6 +294,8 @@ ServerActiveObject* RatSAO::create(ServerEnvironment *env, u16 id, v3f pos,
 
 void RatSAO::step(float dtime, bool send_recommended)
 {
+	ScopeProfiler sp2(g_profiler, "RatSAO::step avg", SPT_AVG);
+
 	assert(m_env);
 
 	if(m_is_active == false)
@@ -480,6 +485,8 @@ ServerActiveObject* Oerkki1SAO::create(ServerEnvironment *env, u16 id, v3f pos,
 
 void Oerkki1SAO::step(float dtime, bool send_recommended)
 {
+	ScopeProfiler sp2(g_profiler, "Oerkki1SAO::step avg", SPT_AVG);
+
 	assert(m_env);
 
 	if(m_is_active == false)
@@ -752,6 +759,8 @@ ServerActiveObject* FireflySAO::create(ServerEnvironment *env, u16 id, v3f pos,
 
 void FireflySAO::step(float dtime, bool send_recommended)
 {
+	ScopeProfiler sp2(g_profiler, "FireflySAO::step avg", SPT_AVG);
+
 	assert(m_env);
 
 	if(m_is_active == false)
@@ -1065,6 +1074,8 @@ static void explodeSquare(Map *map, v3s16 p0, v3s16 size)
 
 void MobV2SAO::step(float dtime, bool send_recommended)
 {
+	ScopeProfiler sp2(g_profiler, "MobV2SAO::step avg", SPT_AVG);
+
 	assert(m_env);
 	Map *map = &m_env->getMap();
 
