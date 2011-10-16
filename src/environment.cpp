@@ -1671,11 +1671,6 @@ void ClientEnvironment::step(float dtime)
 	*/
 	bool is_climbing = lplayer->is_climbing;
 	
-	/*
-		Check if the player is frozen (don't apply physics)
-	*/
-	bool is_frozen = lplayer->is_frozen;
-
 	f32 player_speed = 0.001; // just some small value
 	player_speed = lplayer->getSpeed().getLength();
 	
@@ -1733,7 +1728,7 @@ void ClientEnvironment::step(float dtime)
 			v3f lplayerpos = lplayer->getPosition();
 			
 			// Apply physics
-			if(free_move == false && is_climbing == false && is_frozen == false)
+			if(free_move == false && is_climbing == false)
 			{
 				// Gravity
 				v3f speed = lplayer->getSpeed();
@@ -1767,7 +1762,7 @@ void ClientEnvironment::step(float dtime)
 	while(dtime_downcount > 0.001);
 		
 	//std::cout<<"Looped "<<loopcount<<" times."<<std::endl;
-
+	
 	for(core::list<CollisionInfo>::Iterator
 			i = player_collisions.begin();
 			i != player_collisions.end(); i++)
