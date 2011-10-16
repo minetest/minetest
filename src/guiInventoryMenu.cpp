@@ -27,6 +27,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <IGUIButton.h>
 #include <IGUIStaticText.h>
 #include <IGUIFont.h>
+#include "log.h"
 
 void drawInventoryItem(video::IVideoDriver *driver,
 		gui::IGUIFont *font,
@@ -326,11 +327,11 @@ bool GUIInventoryMenu::OnEvent(const SEvent& event)
 		if(amount >= 0)
 		{
 			v2s32 p(event.MouseInput.X, event.MouseInput.Y);
-			//dstream<<"Mouse down at p=("<<p.X<<","<<p.Y<<")"<<std::endl;
+			//infostream<<"Mouse down at p=("<<p.X<<","<<p.Y<<")"<<std::endl;
 			ItemSpec s = getItemAtPos(p);
 			if(s.isValid())
 			{
-				dstream<<"Mouse down on "<<s.inventoryname
+				infostream<<"Mouse down on "<<s.inventoryname
 						<<"/"<<s.listname<<" "<<s.i<<std::endl;
 				if(m_selected_item)
 				{
@@ -345,15 +346,15 @@ bool GUIInventoryMenu::OnEvent(const SEvent& event)
 					InventoryList *list_to =
 							inv_to->getList(s.listname);
 					if(list_from == NULL)
-						dstream<<"from list doesn't exist"<<std::endl;
+						infostream<<"from list doesn't exist"<<std::endl;
 					if(list_to == NULL)
-						dstream<<"to list doesn't exist"<<std::endl;
+						infostream<<"to list doesn't exist"<<std::endl;
 					// Indicates whether source slot completely empties
 					bool source_empties = false;
 					if(list_from && list_to
 							&& list_from->getItem(m_selected_item->i) != NULL)
 					{
-						dstream<<"Handing IACTION_MOVE to manager"<<std::endl;
+						infostream<<"Handing IACTION_MOVE to manager"<<std::endl;
 						IMoveAction *a = new IMoveAction();
 						a->count = amount;
 						a->from_inv = m_selected_item->inventoryname;
@@ -408,7 +409,7 @@ bool GUIInventoryMenu::OnEvent(const SEvent& event)
 		{
 			if(!canTakeFocus(event.GUIEvent.Element))
 			{
-				dstream<<"GUIInventoryMenu: Not allowing focus change."
+				infostream<<"GUIInventoryMenu: Not allowing focus change."
 						<<std::endl;
 				// Returning true disables focus change
 				return true;
@@ -474,7 +475,7 @@ v2s16 GUIInventoryMenu::makeDrawSpecArrayFromString(
 	while(f.atend() == false)
 	{
 		std::string type = trim(f.next("["));
-		//dstream<<"type="<<type<<std::endl;
+		//infostream<<"type="<<type<<std::endl;
 		if(type == "list")
 		{
 			std::string name = f.next(";");
@@ -485,7 +486,7 @@ v2s16 GUIInventoryMenu::makeDrawSpecArrayFromString(
 			s32 pos_y = stoi(f.next(";"));
 			s32 geom_x = stoi(f.next(","));
 			s32 geom_y = stoi(f.next(";"));
-			dstream<<"list name="<<name<<", subname="<<subname
+			infostream<<"list name="<<name<<", subname="<<subname
 					<<", pos=("<<pos_x<<","<<pos_y<<")"
 					<<", geom=("<<geom_x<<","<<geom_y<<")"
 					<<std::endl;
@@ -498,14 +499,14 @@ v2s16 GUIInventoryMenu::makeDrawSpecArrayFromString(
 		{
 			invsize.X = stoi(f.next(","));
 			invsize.Y = stoi(f.next(";"));
-			dstream<<"invsize ("<<invsize.X<<","<<invsize.Y<<")"<<std::endl;
+			infostream<<"invsize ("<<invsize.X<<","<<invsize.Y<<")"<<std::endl;
 			f.next("]");
 		}
 		else
 		{
 			// Ignore others
 			std::string ts = f.next("]");
-			dstream<<"Unknown DrawSpec: type="<<type<<", data=\""<<ts<<"\""
+			infostream<<"Unknown DrawSpec: type="<<type<<", data=\""<<ts<<"\""
 					<<std::endl;
 		}
 	}

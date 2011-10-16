@@ -32,6 +32,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "content_inventory.h"
 #include "content_sao.h"
 #include "player.h"
+#include "log.h"
 
 /*
 	InventoryItem
@@ -117,7 +118,7 @@ InventoryItem* InventoryItem::deSerialize(std::istream &is)
 	}
 	else
 	{
-		dstream<<"Unknown InventoryItem name=\""<<name<<"\""<<std::endl;
+		infostream<<"Unknown InventoryItem name=\""<<name<<"\""<<std::endl;
 		throw SerializationError("Unknown InventoryItem name");
 	}
 }
@@ -738,51 +739,56 @@ InventoryAction * InventoryAction::deSerialize(std::istream &is)
 	return a;
 }
 
+static std::string describeC(const struct InventoryContext *c)
+{
+	if(c->current_player == NULL)
+		return "current_player=NULL";
+	else
+		return std::string("current_player=") + c->current_player->getName();
+}
+
 void IMoveAction::apply(InventoryContext *c, InventoryManager *mgr)
 {
-#if 1
-
-	/*dstream<<"from_inv="<<from_inv<<" to_inv="<<to_inv<<std::endl;
-	dstream<<"from_list="<<from_list<<" to_list="<<to_list<<std::endl;
-	dstream<<"from_i="<<from_i<<" to_i="<<to_i<<std::endl;*/
-
 	Inventory *inv_from = mgr->getInventory(c, from_inv);
 	Inventory *inv_to = mgr->getInventory(c, to_inv);
-
-	if(!inv_from || !inv_to)
-	{
-		dstream<<__FUNCTION_NAME<<": Operation not allowed "
-				<<"(inventories not found)"<<std::endl;
+	
+	if(!inv_from){
+		infostream<<"IMoveAction::apply(): FAIL: source inventory not found: "
+				<<"context=["<<describeC(c)<<"], from_inv=\""<<from_inv<<"\""
+				<<", to_inv=\""<<to_inv<<"\""<<std::endl;
+		return;
+	}
+	if(!inv_to){
+		infostream<<"IMoveAction::apply(): FAIL: destination inventory not found: "
+				"context=["<<describeC(c)<<"], from_inv=\""<<from_inv<<"\""
+				<<", to_inv=\""<<to_inv<<"\""<<std::endl;
 		return;
 	}
 
 	InventoryList *list_from = inv_from->getList(from_list);
 	InventoryList *list_to = inv_to->getList(to_list);
 
-	/*dstream<<"list_from="<<list_from<<" list_to="<<list_to
-			<<std::endl;*/
-	/*if(list_from)
-		dstream<<" list_from->getItem(from_i)="<<list_from->getItem(from_i)
-				<<std::endl;
-	if(list_to)
-		dstream<<" list_to->getItem(to_i)="<<list_to->getItem(to_i)
-				<<std::endl;*/
-	
 	/*
 		If a list doesn't exist or the source item doesn't exist
 	*/
-	if(!list_from || !list_to)
-	{
-		dstream<<__FUNCTION_NAME<<": Operation not allowed "
-				<<"(a list doesn't exist)"
-				<<std::endl;
+	if(!list_from){
+		infostream<<"IMoveAction::apply(): FAIL: source list not found: "
+				<<"context=["<<describeC(c)<<"], from_inv=\""<<from_inv<<"\""
+				<<", from_list=\""<<from_list<<"\""<<std::endl;
+		return;
+	}
+	if(!list_to){
+		infostream<<"IMoveAction::apply(): FAIL: destination list not found: "
+				<<"context=["<<describeC(c)<<"], to_inv=\""<<to_inv<<"\""
+				<<", to_list=\""<<to_list<<"\""<<std::endl;
 		return;
 	}
 	if(list_from->getItem(from_i) == NULL)
 	{
-		dstream<<__FUNCTION_NAME<<": Operation not allowed "
-				<<"(the source item doesn't exist)"
-				<<std::endl;
+		infostream<<"IMoveAction::apply(): FAIL: source item not found: "
+				<<"context=["<<describeC(c)<<"], from_inv=\""<<from_inv<<"\""
+				<<", from_list=\""<<from_list<<"\""
+				<<" from_i="<<from_i<<std::endl;
 		return;
 	}
 	/*
@@ -790,8 +796,9 @@ void IMoveAction::apply(InventoryContext *c, InventoryManager *mgr)
 	*/
 	if(inv_from == inv_to && list_from == list_to && from_i == to_i)
 	{
-		dstream<<__FUNCTION_NAME<<": Operation not allowed "
-				<<"(source and the destination slots are the same)"<<std::endl;
+		infostream<<"IMoveAction::apply(): FAIL: source and destination slots "
+				<<"are the same: inv=\""<<from_inv<<"\" list=\""<<from_list
+				<<"\" i="<<from_i<<std::endl;
 		return;
 	}
 	
@@ -832,7 +839,16 @@ void IMoveAction::apply(InventoryContext *c, InventoryManager *mgr)
 	mgr->inventoryModified(c, from_inv);
 	if(from_inv != to_inv)
 		mgr->inventoryModified(c, to_inv);
-#endif
+	
+	infostream<<"IMoveAction::apply(): moved at "
+			<<"["<<describeC(c)<<"]"
+			<<" from inv=\""<<from_inv<<"\""
+			<<" list=\""<<from_list<<"\""
+			<<" i="<<from_i
+			<<" to inv=\""<<to_inv<<"\""
+			<<" list=\""<<to_list<<"\""
+			<<" i="<<to_i
+			<<std::endl;
 }
 
 /*
