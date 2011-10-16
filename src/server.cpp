@@ -4399,8 +4399,9 @@ void Server::handlePeerChange(PeerChange &c)
 					os<<player->getName()<<" ";
 				}
 
-				actionstream<<player->getName()
-						<<" leaves game. List of players: "
+				actionstream<<player->getName()<<" "
+						<<(c.timeout?"times out.":"leaves game.")
+						<<" List of players: "
 						<<os.str()<<std::endl;
 			}
 		}
