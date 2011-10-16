@@ -1370,6 +1370,11 @@ u16 MobV2SAO::punch(const std::string &toolname, v3f dir,
 	return 65536/100;
 }
 
+bool MobV2SAO::isPeaceful()
+{
+	return m_properties->getBool("is_peaceful");
+}
+
 void MobV2SAO::sendPosition()
 {
 	m_last_sent_position = m_base_position;
@@ -1388,6 +1393,7 @@ void MobV2SAO::sendPosition()
 
 void MobV2SAO::setPropertyDefaults()
 {
+	m_properties->setDefault("is_peaceful", "false");
 	m_properties->setDefault("move_type", "ground_nodes");
 	m_properties->setDefault("speed", "(0,0,0)");
 	m_properties->setDefault("age", "0");

@@ -111,6 +111,8 @@ public:
 	/*
 	*/
 	virtual void rightClick(Player *player){}
+
+	virtual bool isPeaceful(){return true;}
 	
 	/*
 		Number of players which know about this object. Object won't be

@@ -1039,6 +1039,11 @@ void ServerEnvironment::step(float dtime)
 				i.atEnd()==false; i++)
 		{
 			ServerActiveObject* obj = i.getNode()->getValue();
+			// Remove non-peaceful mobs on peaceful mode
+			if(g_settings->getBool("only_peaceful_mobs")){
+				if(!obj->isPeaceful())
+					obj->m_removed = true;
+			}
 			// Don't step if is to be removed or stored statically
 			if(obj->m_removed || obj->m_pending_deactivation)
 				continue;

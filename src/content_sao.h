@@ -97,6 +97,7 @@ public:
 	std::string getStaticData();
 	InventoryItem* createPickedUpItem(){return NULL;}
 	u16 punch(const std::string &toolname, v3f dir);
+	bool isPeaceful(){return false;}
 private:
 	void doDamage(u16 d);
 
@@ -157,6 +158,7 @@ public:
 	InventoryItem* createPickedUpItem(){return NULL;}
 	u16 punch(const std::string &toolname, v3f dir,
 			const std::string &playername);
+	bool isPeaceful();
 private:
 	void sendPosition();
 	void setPropertyDefaults();
