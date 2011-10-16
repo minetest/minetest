@@ -28,6 +28,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "mapgen.h"
 #include "settings.h"
 #include "log.h"
+#include "profiler.h"
 
 #define PP(x) "("<<(x).X<<","<<(x).Y<<","<<(x).Z<<")"
 
@@ -682,37 +683,40 @@ void ServerEnvironment::step(float dtime)
 	/*
 		Handle players
 	*/
-	for(core::list<Player*>::Iterator i = m_players.begin();
-			i != m_players.end(); i++)
 	{
-		Player *player = *i;
-		
-		// Ignore disconnected players
-		if(player->peer_id == 0)
-			continue;
-
-		v3f playerpos = player->getPosition();
-		
-		// Move
-		player->move(dtime, *m_map, 100*BS);
-		
-		/*
-			Add footsteps to grass
-		*/
-		if(footprints)
+		ScopeProfiler sp(g_profiler, "SEnv: handle players avg", SPT_LOWPASS);
+		for(core::list<Player*>::Iterator i = m_players.begin();
+				i != m_players.end(); i++)
 		{
-			// Get node that is at BS/4 under player
-			v3s16 bottompos = floatToInt(playerpos + v3f(0,-BS/4,0), BS);
-			try{
-				MapNode n = m_map->getNode(bottompos);
-				if(n.getContent() == CONTENT_GRASS)
-				{
-					n.setContent(CONTENT_GRASS_FOOTSTEPS);
-					m_map->setNode(bottompos, n);
-				}
-			}
-			catch(InvalidPositionException &e)
+			Player *player = *i;
+			
+			// Ignore disconnected players
+			if(player->peer_id == 0)
+				continue;
+
+			v3f playerpos = player->getPosition();
+			
+			// Move
+			player->move(dtime, *m_map, 100*BS);
+			
+			/*
+				Add footsteps to grass
+			*/
+			if(footprints)
 			{
+				// Get node that is at BS/4 under player
+				v3s16 bottompos = floatToInt(playerpos + v3f(0,-BS/4,0), BS);
+				try{
+					MapNode n = m_map->getNode(bottompos);
+					if(n.getContent() == CONTENT_GRASS)
+					{
+						n.setContent(CONTENT_GRASS_FOOTSTEPS);
+						m_map->setNode(bottompos, n);
+					}
+				}
+				catch(InvalidPositionException &e)
+				{
+				}
 			}
 		}
 	}
@@ -722,6 +726,7 @@ void ServerEnvironment::step(float dtime)
 	*/
 	if(m_active_blocks_management_interval.step(dtime, 2.0))
 	{
+		ScopeProfiler sp(g_profiler, "SEnv: manage act. block list avg", SPT_LOWPASS);
 		/*
 			Get player block positions
 		*/
@@ -798,6 +803,8 @@ void ServerEnvironment::step(float dtime)
 	*/
 	if(m_active_blocks_nodemetadata_interval.step(dtime, 1.0))
 	{
+		ScopeProfiler sp(g_profiler, "SEnv: mess in act. blocks avg", SPT_LOWPASS);
+		
 		float dtime = 1.0;
 
 		for(core::map<v3s16, bool>::Iterator
@@ -832,8 +839,10 @@ void ServerEnvironment::step(float dtime)
 			}
 		}
 	}
+	
 	if(m_active_blocks_test_interval.step(dtime, 10.0))
 	{
+		ScopeProfiler sp(g_profiler, "SEnv: modify in blocks avg", SPT_LOWPASS);
 		//float dtime = 10.0;
 		
 		for(core::map<v3s16, bool>::Iterator
@@ -1036,6 +1045,7 @@ void ServerEnvironment::step(float dtime)
 		Step active objects
 	*/
 	{
+		ScopeProfiler sp(g_profiler, "SEnv: step act. objs avg", SPT_LOWPASS);
 		//TimeTaker timer("Step active objects");
 		
 		// This helps the objects to send data at the same time
@@ -1076,6 +1086,7 @@ void ServerEnvironment::step(float dtime)
 	*/
 	if(m_object_management_interval.step(dtime, 0.5))
 	{
+		ScopeProfiler sp(g_profiler, "SEnv: remove removed objs avg", SPT_LOWPASS);
 		/*
 			Remove objects that satisfy (m_removed && m_known_by_count==0)
 		*/

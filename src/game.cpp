@@ -1070,6 +1070,8 @@ void the_game(
 
 		object_hit_delay_timer -= dtime;
 
+		g_profiler->add("Elapsed time", dtime * 1000);
+
 		/*
 			Log frametime for visualization
 		*/

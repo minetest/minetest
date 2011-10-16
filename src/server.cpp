@@ -842,30 +842,8 @@ void RemoteClient::SendObjectData(
 	}
 	
 	/*
-		Get and write object data
+		Get and write object data (dummy, for compatibility)
 	*/
-
-	/*
-		Get nearby blocks.
-		
-		For making players to be able to build to their nearby
-		environment (building is not possible on blocks that are not
-		in memory):
-		- Set blocks changed
-		- Add blocks to emerge queue if they are not found
-
-		SUGGESTION: These could be ignored from the backside of the player
-	*/
-
-	Player *player = server->m_env.getPlayer(peer_id);
-
-	assert(player);
-
-	v3f playerpos = player->getPosition();
-	v3f playerspeed = player->getSpeed();
-
-	v3s16 center_nodepos = floatToInt(playerpos, BS);
-	v3s16 center = getNodeBlockPos(center_nodepos);
 
 	// Write block count
 	writeU16(buf, 0);
@@ -1143,6 +1121,8 @@ void Server::AsyncRunStep()
 {
 	DSTACK(__FUNCTION_NAME);
 	
+	g_profiler->add("Server::AsyncRunStep (num)", 1);
+	
 	float dtime;
 	{
 		JMutexAutoLock lock1(m_step_dtime_mutex);
@@ -1150,14 +1130,15 @@ void Server::AsyncRunStep()
 	}
 	
 	{
-		ScopeProfiler sp(g_profiler, "Server: selecting and sending "
-				"blocks to clients");
+		ScopeProfiler sp(g_profiler, "Server: sel and send blocks to clients");
 		// Send blocks to clients
 		SendBlocks(dtime);
 	}
 	
 	if(dtime < 0.001)
 		return;
+	
+	g_profiler->add("Server::AsyncRunStep with dtime (num)", 1);
 
 	//infostream<<"Server steps "<<dtime<<std::endl;
 	//infostream<<"Server::AsyncRunStep(): dtime="<<dtime<<std::endl;
@@ -1184,7 +1165,6 @@ void Server::AsyncRunStep()
 	{
 		// This has to be called so that the client list gets synced
 		// with the peer list of the connection
-		ScopeProfiler sp(g_profiler, "Server: peer change handling");
 		handlePeerChanges();
 	}
 
@@ -1233,7 +1213,8 @@ void Server::AsyncRunStep()
 	{
 		JMutexAutoLock lock(m_env_mutex);
 		// Step environment
-		ScopeProfiler sp(g_profiler, "Server: environment step");
+		ScopeProfiler sp(g_profiler, "SEnv step");
+		ScopeProfiler sp2(g_profiler, "SEnv step avg", SPT_LOWPASS);
 		m_env.step(dtime);
 	}
 		
@@ -1340,7 +1321,7 @@ void Server::AsyncRunStep()
 		JMutexAutoLock envlock(m_env_mutex);
 		JMutexAutoLock conlock(m_con_mutex);
 
-		ScopeProfiler sp(g_profiler, "Server: checking added and deleted objects");
+		ScopeProfiler sp(g_profiler, "Server: checking added and deleted objs");
 
 		// Radius inside which objects are active
 		s16 radius = g_settings->getS16("active_object_send_range_blocks");
@@ -1720,7 +1701,6 @@ void Server::AsyncRunStep()
 
 	/*
 		Send object positions
-		TODO: Get rid of MapBlockObjects
 	*/
 	{
 		float &counter = m_objectdata_timer;
@@ -1730,7 +1710,7 @@ void Server::AsyncRunStep()
 			JMutexAutoLock lock1(m_env_mutex);
 			JMutexAutoLock lock2(m_con_mutex);
 
-			ScopeProfiler sp(g_profiler, "Server: sending mbo positions");
+			ScopeProfiler sp(g_profiler, "Server: sending player positions");
 
 			SendObjectData(counter);
 

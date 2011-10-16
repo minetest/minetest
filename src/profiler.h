@@ -38,24 +38,38 @@ public:
 		m_mutex.Init();
 	}
 
-	void add(const std::string &name, u32 duration)
+	void add(const std::string &name, float value)
 	{
 		JMutexAutoLock lock(m_mutex);
-		core::map<std::string, u32>::Node *n = m_data.find(name);
+		core::map<std::string, float>::Node *n = m_data.find(name);
 		if(n == NULL)
 		{
-			m_data[name] = duration;
+			m_data[name] = value;
 		}
 		else
 		{
-			n->setValue(n->getValue()+duration);
+			n->setValue(n->getValue() + value);
+		}
+	}
+
+	void lowpass(const std::string &name, float value, float factor)
+	{
+		JMutexAutoLock lock(m_mutex);
+		core::map<std::string, float>::Node *n = m_data.find(name);
+		if(n == NULL)
+		{
+			m_data[name] = value;
+		}
+		else
+		{
+			n->setValue(n->getValue() * (1.0 - 1.0/factor) + value / factor);
 		}
 	}
 
 	void clear()
 	{
 		JMutexAutoLock lock(m_mutex);
-		for(core::map<std::string, u32>::Iterator
+		for(core::map<std::string, float>::Iterator
 				i = m_data.getIterator();
 				i.atEnd() == false; i++)
 		{
@@ -66,14 +80,14 @@ public:
 	void print(std::ostream &o)
 	{
 		JMutexAutoLock lock(m_mutex);
-		for(core::map<std::string, u32>::Iterator
+		for(core::map<std::string, float>::Iterator
 				i = m_data.getIterator();
 				i.atEnd() == false; i++)
 		{
 			std::string name = i.getNode()->getKey();
-			o<<name<<": ";
+			o<<"  "<<name<<": ";
 			s32 clampsize = 40;
-			s32 space = clampsize-name.size();
+			s32 space = clampsize - name.size();
 			for(s32 j=0; j<space; j++)
 			{
 				if(j%2 == 0 && j < space - 1)
@@ -88,25 +102,34 @@ public:
 
 private:
 	JMutex m_mutex;
-	core::map<std::string, u32> m_data;
+	core::map<std::string, float> m_data;
+};
+
+enum ScopeProfilerType{
+	SPT_ADD,
+	SPT_LOWPASS
 };
 
 class ScopeProfiler
 {
 public:
-	ScopeProfiler(Profiler *profiler, const std::string &name):
+	ScopeProfiler(Profiler *profiler, const std::string &name,
+			enum ScopeProfilerType type = SPT_ADD):
 		m_profiler(profiler),
 		m_name(name),
-		m_timer(NULL)
+		m_timer(NULL),
+		m_type(type)
 	{
 		if(m_profiler)
 			m_timer = new TimeTaker(m_name.c_str());
 	}
 	// name is copied
-	ScopeProfiler(Profiler *profiler, const char *name):
+	ScopeProfiler(Profiler *profiler, const char *name,
+			enum ScopeProfilerType type = SPT_ADD):
 		m_profiler(profiler),
 		m_name(name),
-		m_timer(NULL)
+		m_timer(NULL),
+		m_type(type)
 	{
 		if(m_profiler)
 			m_timer = new TimeTaker(m_name.c_str());
@@ -116,8 +139,16 @@ public:
 		if(m_timer)
 		{
 			u32 duration = m_timer->stop(true);
-			if(m_profiler)
-				m_profiler->add(m_name, duration);
+			if(m_profiler){
+				switch(m_type){
+				case SPT_ADD:
+					m_profiler->add(m_name, duration);
+					break;
+				case SPT_LOWPASS:
+					m_profiler->lowpass(m_name, duration, 20.0);
+					break;
+				}
+			}
 			delete m_timer;
 		}
 	}
@@ -125,6 +156,7 @@ private:
 	Profiler *m_profiler;
 	std::string m_name;
 	TimeTaker *m_timer;
+	enum ScopeProfilerType m_type;
 };
 
 #endif
