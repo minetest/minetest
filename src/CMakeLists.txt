@@ -90,6 +90,7 @@ configure_file(
 )
 
 set(common_SRCS
+	log.cpp
 	content_sao.cpp
 	mapgen.cpp
 	content_inventory.cpp
