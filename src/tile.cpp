@@ -1092,22 +1092,23 @@ bool generate_image(std::string part_of_name, video::IImage *& baseimg,
 				core::dimension2d<u32> dim = image->getDimension();
 				baseimg = driver->createImage(video::ECF_A8R8G8B8, dim);
 				
+				// Blit
+				image->copyTo(baseimg);
+
+				image->drop();
+
 				for(u32 y=0; y<dim.Height; y++)
 				for(u32 x=0; x<dim.Width; x++)
 				{
-					video::SColor c = image->getPixel(x,y);
+					video::SColor c = baseimg->getPixel(x,y);
 					u32 r = c.getRed();
 					u32 g = c.getGreen();
 					u32 b = c.getBlue();
 					if(!(r == r1 && g == g1 && b == b1))
 						continue;
 					c.setAlpha(0);
-					image->setPixel(x,y,c);
+					baseimg->setPixel(x,y,c);
 				}
-				// Blit
-				image->copyTo(baseimg);
-
-				image->drop();
 			}
 		}
 		/*
@@ -1149,11 +1150,16 @@ bool generate_image(std::string part_of_name, video::IImage *& baseimg,
 			{
 				core::dimension2d<u32> dim = image->getDimension();
 				baseimg = driver->createImage(video::ECF_A8R8G8B8, dim);
+
+				// Blit
+				image->copyTo(baseimg);
+
+				image->drop();
 				
 				for(u32 y=0; y<dim.Height; y++)
 				for(u32 x=0; x<dim.Width; x++)
 				{
-					video::SColor c = image->getPixel(x,y);
+					video::SColor c = baseimg->getPixel(x,y);
 					u32 r = c.getRed();
 					u32 g = c.getGreen();
 					u32 b = c.getBlue();
@@ -1161,12 +1167,8 @@ bool generate_image(std::string part_of_name, video::IImage *& baseimg,
 					   !(r == r2 && g == g2 && b == b2))
 						continue;
 					c.setAlpha(0);
-					image->setPixel(x,y,c);
+					baseimg->setPixel(x,y,c);
 				}
-				// Blit
-				image->copyTo(baseimg);
-
-				image->drop();
 			}
 		}
 		/*
