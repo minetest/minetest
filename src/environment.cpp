@@ -1134,6 +1134,43 @@ void ServerEnvironment::step(float dtime)
 						m_map->dispatchEvent(&event);
 					}
 				}
+				if (n.getContent() == CONTENT_LEAVES) // leaf decay
+				{
+				        if (myrand()%50 == 0)
+					{
+					        s16 max_d = 3;
+						v3s16 leaf_p = p;
+						v3s16 test_p;
+						MapNode treenode(CONTENT_TREE);
+						MapNode airnode(CONTENT_AIR);
+						MapNode jungnode(CONTENT_JUNGLETREE);
+						MapNode testnode;
+						bool found = false;
+						for(s16 z=-max_d; z<=max_d; z++) {
+						for(s16 y=-max_d; y<=max_d; y++) {
+						for(s16 x=-max_d; x<=max_d; x++)
+						{
+						        test_p = leaf_p + v3s16(x,y,z);
+							testnode = m_map->getNodeNoEx(test_p);
+							if (testnode.getContent() == treenode.getContent() ||
+							    testnode.getContent() == jungnode.getContent())
+							{
+							        found = true;
+								break;
+							}
+						}
+						if (found)
+						        break;
+						}
+						if (found)
+						        break;
+						}
+						if (!found)
+						{
+						        m_map->removeNodeWithEvent(leaf_p);
+						}
+					}
+				}
 			}
 		}
 	}
