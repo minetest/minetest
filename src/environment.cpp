@@ -657,6 +657,7 @@ static void getMob_dungeon_master(Settings &properties)
 	properties.set("player_hit_damage", "1");
 	properties.set("player_hit_distance", "1.0");
 	properties.set("player_hit_interval", "0.5");
+	properties.setBool("mindless_rage", myrand_range(0,100)==0);
 }
 
 void ServerEnvironment::step(float dtime)
@@ -866,7 +867,7 @@ void ServerEnvironment::step(float dtime)
 			// TODO: Implement usage of ActiveBlockModifier
 			
 			// Find out how many objects the block contains
-			u32 active_object_count = block->m_static_objects.m_active.size();
+			//u32 active_object_count = block->m_static_objects.m_active.size();
 			// Find out how many objects this and all the neighbors contain
 			u32 active_object_count_wider = 0;
 			for(s16 x=-1; x<=1; x++)

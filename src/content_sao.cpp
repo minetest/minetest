@@ -84,7 +84,6 @@ void TestSAO::step(float dtime, bool send_recommended)
 	if(m_timer1 < 0.0)
 	{
 		m_timer1 += 0.125;
-		//infostream<<"TestSAO: id="<<getId()<<" sending data"<<std::endl;
 
 		std::string data;
 
@@ -1091,8 +1090,10 @@ void MobV2SAO::step(float dtime, bool send_recommended)
 			f32 dist = m_base_position.getDistanceFrom(playerpos);
 			if(dist < BS*16)
 			{
-				if(myrand_range(0,2) == 0){
-					infostream<<"ACTION: id="<<m_id<<" got randomly disturbed by "
+				if(myrand_range(0,3) == 0){
+					actionstream<<"Mob id="<<m_id<<" at "
+							<<PP(m_base_position/BS)
+							<<" got randomly disturbed by "
 							<<player->getName()<<std::endl;
 					m_disturbing_player = player->getName();
 					m_disturb_timer = 0;
@@ -1135,7 +1136,8 @@ void MobV2SAO::step(float dtime, bool send_recommended)
 				dir.normalize();
 				v3f speed = dir * BS * 10.0;
 				v3f pos = m_base_position + shoot_pos;
-				infostream<<__FUNCTION_NAME<<": Shooting fireball from "<<PP(pos)
+				infostream<<__FUNCTION_NAME<<": Mob id="<<m_id
+						<<" shooting fireball from "<<PP(pos)
 						<<" at speed "<<PP(speed)<<std::endl;
 				Settings properties;
 				properties.set("looks", "fireball");
@@ -1152,7 +1154,8 @@ void MobV2SAO::step(float dtime, bool send_recommended)
 				//m_env->addActiveObjectAsStatic(obj);
 				m_env->addActiveObject(obj);
 			} else {
-				infostream<<__FUNCTION_NAME<<": Unknown shoot_type="<<shoot_type
+				infostream<<__FUNCTION_NAME<<": Mob id="<<m_id
+						<<": Unknown shoot_type="<<shoot_type
 						<<std::endl;
 			}
 		}
@@ -1163,16 +1166,23 @@ void MobV2SAO::step(float dtime, bool send_recommended)
 		if(m_disturb_timer <= 15.0)
 			reload_time = 3.0;
 
+		bool shoot_without_player = false;
+		if(m_properties->getBool("mindless_rage"))
+			shoot_without_player = true;
+
 		if(!m_shooting && m_shoot_reload_timer >= reload_time &&
-				!m_next_pos_exists)
+				!m_next_pos_exists &&
+				(m_disturb_timer <= 60.0 || shoot_without_player))
 		{
 			m_shoot_y = 0;
-			if(m_disturb_timer < 30.0 && disturbing_player &&
+			if(m_disturb_timer < 60.0 && disturbing_player &&
 					disturbing_player_distance < 16*BS &&
 					fabs(disturbing_player_norm.Y) < 0.8){
 				m_yaw = disturbing_player_dir;
 				sendPosition();
 				m_shoot_y += disturbing_player_norm.Y;
+			} else {
+				m_shoot_y = 0.01 * myrand_range(-30,10);
 			}
 			m_shoot_reload_timer = 0.0;
 			m_shooting = true;
@@ -1229,7 +1239,8 @@ void MobV2SAO::step(float dtime, bool send_recommended)
 			m_base_position = pos_f;
 
 			if((pos_f - next_pos_f).getLength() < 0.1 || arrived){
-				//infostream<<"id="<<m_id<<": arrived to "<<PP(m_next_pos_i)<<std::endl;
+				verbosestream<<"Mob id="<<m_id<<": arrived to "
+						<<PP(m_next_pos_i)<<std::endl;
 				m_next_pos_exists = false;
 			}
 		}
@@ -1271,16 +1282,10 @@ void MobV2SAO::step(float dtime, bool send_recommended)
 				}
 				u32 order[3*3*3];
 				get_random_u32_array(order, num_dps);
-				/*infostream<<"At pos "<<PP(pos_i)<<"; Random array: ";
-				for(int i=0; i<num_dps; i++){
-					infostream<<order[i]<<" ";
-				}
-				infostream<<std::endl;*/
 				for(int i=0; i<num_dps; i++){
 					v3s16 p = dps[order[i]] + pos_i;
 					bool is_free = checkFreeAndWalkablePosition(map,
 							p + pos_size_off, size_blocks);
-					//infostream<<PP(p)<<" is_free="<<is_free<<std::endl;
 					if(!is_free)
 						continue;
 					m_next_pos_i = p;
@@ -1310,7 +1315,7 @@ void MobV2SAO::step(float dtime, bool send_recommended)
 	}
 	else
 	{
-		infostream<<"MobV2SAO::step(): id="<<m_id<<" unknown move_type=\""
+		errorstream<<"MobV2SAO::step(): id="<<m_id<<" unknown move_type=\""
 				<<m_move_type<<"\""<<std::endl;
 	}
 
@@ -1329,7 +1334,7 @@ u16 MobV2SAO::punch(const std::string &toolname, v3f dir,
 	assert(m_env);
 	Map *map = &m_env->getMap();
 	
-	infostream<<"ACTION: "<<playername<<" punches id="<<m_id
+	actionstream<<playername<<" punches mob id="<<m_id
 			<<" with a \""<<toolname<<"\" at "
 			<<PP(m_base_position/BS)<<std::endl;
 
@@ -1405,6 +1410,7 @@ void MobV2SAO::setPropertyDefaults()
 	m_properties->setDefault("size", "(1,2)");
 	m_properties->setDefault("shoot_type", "fireball");
 	m_properties->setDefault("shoot_y", "0");
+	m_properties->setDefault("mindless_rage", "false");
 }
 void MobV2SAO::readProperties()
 {
