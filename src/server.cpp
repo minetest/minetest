@@ -3045,8 +3045,11 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 								player->inventory.getList("craftresult");
 						assert(list);
 						InventoryItem *item = list->getItem(0);
+						std::string itemname = "NULL";
+						if(item)
+							itemname = item->getName();
 						actionstream<<player->getName()<<" crafts "
-								<<item->getName()<<std::endl;
+								<<itemname<<std::endl;
 					}
 					/*
 						If the craftresult is placed on itself, move it to
