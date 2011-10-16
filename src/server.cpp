@@ -38,6 +38,9 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "serverobject.h"
 #include "settings.h"
 #include "profiler.h"
+#include "log.h"
+
+#define PP(x) "("<<(x).X<<","<<(x).Y<<","<<(x).Z<<")"
 
 #define BLOCK_EMERGE_FLAG_FROMDISK (1<<0)
 
@@ -70,6 +73,8 @@ void * ServerThread::Thread()
 {
 	ThreadStarted();
 
+	log_register_thread("ServerThread");
+
 	DSTACK(__FUNCTION_NAME);
 
 	BEGIN_DEBUG_EXCEPTION_HANDLER
@@ -84,7 +89,7 @@ void * ServerThread::Thread()
 				m_server->AsyncRunStep();
 			}
 		
-			//dout_server<<"Running m_server->Receive()"<<std::endl;
+			//infostream<<"Running m_server->Receive()"<<std::endl;
 			m_server->Receive();
 		}
 		catch(con::NoIncomingDataException &e)
@@ -92,11 +97,11 @@ void * ServerThread::Thread()
 		}
 		catch(con::PeerNotFoundException &e)
 		{
-			dout_server<<"Server: PeerNotFoundException"<<std::endl;
+			infostream<<"Server: PeerNotFoundException"<<std::endl;
 		}
 	}
 	
-	END_DEBUG_EXCEPTION_HANDLER
+	END_DEBUG_EXCEPTION_HANDLER(errorstream)
 
 	return NULL;
 }
@@ -104,6 +109,8 @@ void * ServerThread::Thread()
 void * EmergeThread::Thread()
 {
 	ThreadStarted();
+
+	log_register_thread("EmergeThread");
 
 	DSTACK(__FUNCTION_NAME);
 
@@ -139,7 +146,7 @@ void * EmergeThread::Thread()
 		|| p.Z > MAP_GENERATION_LIMIT / MAP_BLOCKSIZE)
 			continue;
 			
-		//derr_server<<"EmergeThread::Thread(): running"<<std::endl;
+		//infostream<<"EmergeThread::Thread(): running"<<std::endl;
 
 		//TimeTaker timer("block emerge");
 		
@@ -174,7 +181,7 @@ void * EmergeThread::Thread()
 		}
 		
 		if(enable_mapgen_debug_info)
-			dstream<<"EmergeThread: p="
+			infostream<<"EmergeThread: p="
 					<<"("<<p.X<<","<<p.Y<<","<<p.Z<<") "
 					<<"only_from_disk="<<only_from_disk<<std::endl;
 		
@@ -202,7 +209,7 @@ void * EmergeThread::Thread()
 			if(!block || block->isDummy() || !block->isGenerated())
 			{
 				if(enable_mapgen_debug_info)
-					dstream<<"EmergeThread: not in memory, loading"<<std::endl;
+					infostream<<"EmergeThread: not in memory, loading"<<std::endl;
 
 				// Get, load or create sector
 				/*ServerMapSector *sector =
@@ -220,13 +227,13 @@ void * EmergeThread::Thread()
 					if(block == NULL || block->isGenerated() == false)
 					{
 						if(enable_mapgen_debug_info)
-							dstream<<"EmergeThread: generating"<<std::endl;
+							infostream<<"EmergeThread: generating"<<std::endl;
 						block = map.generateBlock(p, modified_blocks);
 					}
 				}
 
 				if(enable_mapgen_debug_info)
-					dstream<<"EmergeThread: ended up with: "
+					infostream<<"EmergeThread: ended up with: "
 							<<analyze_block(block)<<std::endl;
 
 				if(block == NULL)
@@ -270,7 +277,7 @@ void * EmergeThread::Thread()
 #if 0
 			if(lighting_invalidated_blocks.size() > 0)
 			{
-				/*dstream<<"lighting "<<lighting_invalidated_blocks.size()
+				/*infostream<<"lighting "<<lighting_invalidated_blocks.size()
 						<<" blocks"<<std::endl;*/
 			
 				// 50-100ms for single block generation
@@ -332,7 +339,7 @@ void * EmergeThread::Thread()
 		
 	}
 
-	END_DEBUG_EXCEPTION_HANDLER
+	END_DEBUG_EXCEPTION_HANDLER(errorstream)
 
 	return NULL;
 }
@@ -359,7 +366,7 @@ void RemoteClient::GetNextBlocks(Server *server, float dtime,
 	if(m_blocks_sending.size() >= g_settings->getU16
 			("max_simultaneous_block_sends_per_client"))
 	{
-		//dstream<<"Not sending any blocks, Queue full."<<std::endl;
+		//infostream<<"Not sending any blocks, Queue full."<<std::endl;
 		return;
 	}
 
@@ -387,7 +394,7 @@ void RemoteClient::GetNextBlocks(Server *server, float dtime,
 	camera_dir.rotateYZBy(player->getPitch());
 	camera_dir.rotateXZBy(player->getYaw());
 
-	/*dstream<<"camera_dir=("<<camera_dir.X<<","<<camera_dir.Y<<","
+	/*infostream<<"camera_dir=("<<camera_dir.X<<","<<camera_dir.Y<<","
 			<<camera_dir.Z<<")"<<std::endl;*/
 
 	/*
@@ -400,7 +407,7 @@ void RemoteClient::GetNextBlocks(Server *server, float dtime,
 		m_last_center = center;
 	}
 
-	/*dstream<<"m_nearest_unsent_reset_timer="
+	/*infostream<<"m_nearest_unsent_reset_timer="
 			<<m_nearest_unsent_reset_timer<<std::endl;*/
 			
 	// This has to be incremented only when the nothing to send pause
@@ -412,14 +419,14 @@ void RemoteClient::GetNextBlocks(Server *server, float dtime,
 	{
 		m_nearest_unsent_reset_timer = 0;
 		m_nearest_unsent_d = 0;
-		/*dstream<<"Resetting m_nearest_unsent_d for "
+		/*infostream<<"Resetting m_nearest_unsent_d for "
 				<<server->getPlayerName(peer_id)<<std::endl;*/
 	}
 
 	//s16 last_nearest_unsent_d = m_nearest_unsent_d;
 	s16 d_start = m_nearest_unsent_d;
 
-	//dstream<<"d_start="<<d_start<<std::endl;
+	//infostream<<"d_start="<<d_start<<std::endl;
 
 	u16 max_simul_sends_setting = g_settings->getU16
 			("max_simultaneous_block_sends_per_client");
@@ -461,7 +468,7 @@ void RemoteClient::GetNextBlocks(Server *server, float dtime,
 	/*if(d_max_gen > d_start+2)
 		d_max_gen = d_start+2;*/
 	
-	//dstream<<"Starting from "<<d_start<<std::endl;
+	//infostream<<"Starting from "<<d_start<<std::endl;
 
 	bool sending_something = false;
 
@@ -472,7 +479,7 @@ void RemoteClient::GetNextBlocks(Server *server, float dtime,
 	s16 d;
 	for(d = d_start; d <= d_max; d++)
 	{
-		//dstream<<"RemoteClient::SendBlocks(): d="<<d<<std::endl;
+		//infostream<<"RemoteClient::SendBlocks(): d="<<d<<std::endl;
 		
 		/*
 			If m_nearest_unsent_d was changed by the EmergeThread
@@ -580,7 +587,7 @@ void RemoteClient::GetNextBlocks(Server *server, float dtime,
 			}
 #endif
 
-			//dstream<<"d="<<d<<std::endl;
+			//infostream<<"d="<<d<<std::endl;
 			
 			/*
 				Don't generate or send if not in sight
@@ -692,7 +699,7 @@ void RemoteClient::GetNextBlocks(Server *server, float dtime,
 				// Allow two blocks in queue per client
 				if(server->m_emerge_queue.peerItemCount(peer_id) < 2)
 				{
-					//dstream<<"Adding block to emerge queue"<<std::endl;
+					//infostream<<"Adding block to emerge queue"<<std::endl;
 					
 					// Add it to the emerge queue and trigger the thread
 					
@@ -722,7 +729,7 @@ void RemoteClient::GetNextBlocks(Server *server, float dtime,
 	}
 queue_full_break:
 
-	//dstream<<"Stopped at "<<d<<std::endl;
+	//infostream<<"Stopped at "<<d<<std::endl;
 	
 	if(no_blocks_found_for_sending)
 	{
@@ -741,7 +748,7 @@ queue_full_break:
 		{
 			// Pause time in seconds
 			m_nothing_to_send_pause_timer = 1.0;
-			/*dstream<<"nothing to send to "
+			/*infostream<<"nothing to send to "
 					<<server->getPlayerName(peer_id)
 					<<" (d="<<d<<")"<<std::endl;*/
 		}
@@ -753,7 +760,7 @@ queue_full_break:
 
 	/*timer_result = timer.stop(true);
 	if(timer_result != 0)
-		dstream<<"GetNextBlocks duration: "<<timer_result<<" (!=0)"<<std::endl;*/
+		infostream<<"GetNextBlocks duration: "<<timer_result<<" (!=0)"<<std::endl;*/
 }
 
 void RemoteClient::SendObjectData(
@@ -767,7 +774,7 @@ void RemoteClient::SendObjectData(
 	// Can't send anything without knowing version
 	if(serialization_version == SER_FMT_VER_INVALID)
 	{
-		dstream<<"RemoteClient::SendObjectData(): Not sending, no version."
+		infostream<<"RemoteClient::SendObjectData(): Not sending, no version."
 				<<std::endl;
 		return;
 	}
@@ -868,7 +875,7 @@ void RemoteClient::SendObjectData(
 		Send data
 	*/
 	
-	//dstream<<"Server: Sending object data to "<<peer_id<<std::endl;
+	//infostream<<"Server: Sending object data to "<<peer_id<<std::endl;
 
 	// Make data buffer
 	std::string s = os.str();
@@ -883,7 +890,7 @@ void RemoteClient::GotBlock(v3s16 p)
 		m_blocks_sending.remove(p);
 	else
 	{
-		/*dstream<<"RemoteClient::GotBlock(): Didn't find in"
+		/*infostream<<"RemoteClient::GotBlock(): Didn't find in"
 				" m_blocks_sending"<<std::endl;*/
 		m_excess_gotblocks++;
 	}
@@ -895,7 +902,7 @@ void RemoteClient::SentBlock(v3s16 p)
 	if(m_blocks_sending.find(p) == NULL)
 		m_blocks_sending.insert(p, 0.0);
 	else
-		dstream<<"RemoteClient::SentBlock(): Sent block"
+		infostream<<"RemoteClient::SentBlock(): Sent block"
 				" already in m_blocks_sending"<<std::endl;
 }
 
@@ -1001,18 +1008,18 @@ Server::Server(
 	// If file exists, load environment metadata
 	if(fs::PathExists(m_mapsavedir+"/env_meta.txt"))
 	{
-		dstream<<"Server: Loading environment metadata"<<std::endl;
+		infostream<<"Server: Loading environment metadata"<<std::endl;
 		m_env.loadMeta(m_mapsavedir);
 	}
 
 	// Load players
-	dstream<<"Server: Loading players"<<std::endl;
+	infostream<<"Server: Loading players"<<std::endl;
 	m_env.deSerializePlayers(m_mapsavedir);
 }
 
 Server::~Server()
 {
-	dstream<<"Server::~Server()"<<std::endl;
+	infostream<<"Server::~Server()"<<std::endl;
 
 	/*
 		Send shutdown message
@@ -1049,13 +1056,13 @@ Server::~Server()
 		/*
 			Save players
 		*/
-		dstream<<"Server: Saving players"<<std::endl;
+		infostream<<"Server: Saving players"<<std::endl;
 		m_env.serializePlayers(m_mapsavedir);
 
 		/*
 			Save environment metadata
 		*/
-		dstream<<"Server: Saving environment metadata"<<std::endl;
+		infostream<<"Server: Saving environment metadata"<<std::endl;
 		m_env.saveMeta(m_mapsavedir);
 	}
 		
@@ -1102,14 +1109,14 @@ void Server::start(unsigned short port)
 	m_thread.setRun(true);
 	m_thread.Start();
 	
-	dout_server<<"Server: Started on port "<<port<<std::endl;
+	infostream<<"Server: Started on port "<<port<<std::endl;
 }
 
 void Server::stop()
 {
 	DSTACK(__FUNCTION_NAME);
 	
-	dout_server<<"Server: Stopping and waiting threads"<<std::endl;
+	infostream<<"Server: Stopping and waiting threads"<<std::endl;
 
 	// Stop threads (set run=false first so both start stopping)
 	m_thread.setRun(false);
@@ -1117,7 +1124,7 @@ void Server::stop()
 	m_thread.stop();
 	m_emergethread.stop();
 	
-	dout_server<<"Server: Threads stopped"<<std::endl;
+	infostream<<"Server: Threads stopped"<<std::endl;
 }
 
 void Server::step(float dtime)
@@ -1152,8 +1159,8 @@ void Server::AsyncRunStep()
 	if(dtime < 0.001)
 		return;
 
-	//dstream<<"Server steps "<<dtime<<std::endl;
-	//dstream<<"Server::AsyncRunStep(): dtime="<<dtime<<std::endl;
+	//infostream<<"Server steps "<<dtime<<std::endl;
+	//infostream<<"Server::AsyncRunStep(): dtime="<<dtime<<std::endl;
 	
 	{
 		JMutexAutoLock lock1(m_step_dtime_mutex);
@@ -1194,7 +1201,7 @@ void Server::AsyncRunStep()
 		
 		m_env.setTimeOfDay((m_env.getTimeOfDay() + units) % 24000);
 		
-		//dstream<<"Server: m_time_of_day = "<<m_time_of_day.get()<<std::endl;
+		//infostream<<"Server: m_time_of_day = "<<m_time_of_day.get()<<std::endl;
 
 		/*
 			Send to clients at constant intervals
@@ -1304,7 +1311,9 @@ void Server::AsyncRunStep()
 			counter = 0.0;
 
 			JMutexAutoLock lock2(m_con_mutex);
-
+			
+			if(m_clients.size() != 0)
+				infostream<<"Players:"<<std::endl;
 			for(core::map<u16, RemoteClient*>::Iterator
 				i = m_clients.getIterator();
 				i.atEnd() == false; i++)
@@ -1314,8 +1323,8 @@ void Server::AsyncRunStep()
 				Player *player = m_env.getPlayer(client->peer_id);
 				if(player==NULL)
 					continue;
-				std::cout<<player->getName()<<"\t";
-				client->PrintInfo(std::cout);
+				infostream<<"* "<<player->getName()<<"\t";
+				client->PrintInfo(infostream);
 			}
 		}
 	}
@@ -1327,7 +1336,7 @@ void Server::AsyncRunStep()
 		Check added and deleted active objects
 	*/
 	{
-		//dstream<<"Server: Checking added and deleted active objects"<<std::endl;
+		//infostream<<"Server: Checking added and deleted active objects"<<std::endl;
 		JMutexAutoLock envlock(m_env_mutex);
 		JMutexAutoLock conlock(m_con_mutex);
 
@@ -1346,7 +1355,7 @@ void Server::AsyncRunStep()
 			if(player==NULL)
 			{
 				// This can happen if the client timeouts somehow
-				/*dstream<<"WARNING: "<<__FUNCTION_NAME<<": Client "
+				/*infostream<<"WARNING: "<<__FUNCTION_NAME<<": Client "
 						<<client->peer_id
 						<<" has no associated player"<<std::endl;*/
 				continue;
@@ -1363,7 +1372,7 @@ void Server::AsyncRunStep()
 			// Ignore if nothing happened
 			if(removed_objects.size() == 0 && added_objects.size() == 0)
 			{
-				//dstream<<"INFO: active objects: none changed"<<std::endl;
+				//infostream<<"active objects: none changed"<<std::endl;
 				continue;
 			}
 			
@@ -1407,7 +1416,7 @@ void Server::AsyncRunStep()
 				// Get object type
 				u8 type = ACTIVEOBJECT_TYPE_INVALID;
 				if(obj == NULL)
-					dstream<<"WARNING: "<<__FUNCTION_NAME
+					infostream<<"WARNING: "<<__FUNCTION_NAME
 							<<": NULL object"<<std::endl;
 				else
 					type = obj->getType();
@@ -1439,7 +1448,7 @@ void Server::AsyncRunStep()
 			// Send as reliable
 			m_con.Send(client->peer_id, 0, reply, true);
 
-			dstream<<"INFO: Server: Sent object remove/add: "
+			infostream<<"Server: Sent object remove/add: "
 					<<removed_objects.size()<<" removed, "
 					<<added_objects.size()<<" added, "
 					<<"packet size is "<<reply.getSize()<<std::endl;
@@ -1572,7 +1581,7 @@ void Server::AsyncRunStep()
 
 			/*if(reliable_data.size() > 0 || unreliable_data.size() > 0)
 			{
-				dstream<<"INFO: Server: Size of object message data: "
+				infostream<<"Server: Size of object message data: "
 						<<"reliable: "<<reliable_data.size()
 						<<", unreliable: "<<unreliable_data.size()
 						<<std::endl;
@@ -1620,7 +1629,7 @@ void Server::AsyncRunStep()
 
 			if(event->type == MEET_ADDNODE)
 			{
-				//dstream<<"Server: MEET_ADDNODE"<<std::endl;
+				//infostream<<"Server: MEET_ADDNODE"<<std::endl;
 				prof.add("MEET_ADDNODE", 1);
 				if(disable_single_change_sending)
 					sendAddNode(event->p, event->n, event->already_known_by_peer,
@@ -1631,7 +1640,7 @@ void Server::AsyncRunStep()
 			}
 			else if(event->type == MEET_REMOVENODE)
 			{
-				//dstream<<"Server: MEET_REMOVENODE"<<std::endl;
+				//infostream<<"Server: MEET_REMOVENODE"<<std::endl;
 				prof.add("MEET_REMOVENODE", 1);
 				if(disable_single_change_sending)
 					sendRemoveNode(event->p, event->already_known_by_peer,
@@ -1642,13 +1651,13 @@ void Server::AsyncRunStep()
 			}
 			else if(event->type == MEET_BLOCK_NODE_METADATA_CHANGED)
 			{
-				dstream<<"Server: MEET_BLOCK_NODE_METADATA_CHANGED"<<std::endl;
+				infostream<<"Server: MEET_BLOCK_NODE_METADATA_CHANGED"<<std::endl;
 				prof.add("MEET_BLOCK_NODE_METADATA_CHANGED", 1);
 				setBlockNotSent(event->p);
 			}
 			else if(event->type == MEET_OTHER)
 			{
-				dstream<<"Server: MEET_OTHER"<<std::endl;
+				infostream<<"Server: MEET_OTHER"<<std::endl;
 				prof.add("MEET_OTHER", 1);
 				for(core::map<v3s16, bool>::Iterator
 						i = event->modified_blocks.getIterator();
@@ -1661,7 +1670,7 @@ void Server::AsyncRunStep()
 			else
 			{
 				prof.add("unknown", 1);
-				dstream<<"WARNING: Server: Unknown MapEditEvent "
+				infostream<<"WARNING: Server: Unknown MapEditEvent "
 						<<((u32)event->type)<<std::endl;
 			}
 			
@@ -1703,8 +1712,8 @@ void Server::AsyncRunStep()
 
 		if(got_any_events)
 		{
-			dstream<<"Server: MapEditEvents:"<<std::endl;
-			prof.print(dstream);
+			infostream<<"Server: MapEditEvents:"<<std::endl;
+			prof.print(infostream);
 		}
 		
 	}
@@ -1778,7 +1787,7 @@ void Server::AsyncRunStep()
 
 			/*if(deleted_count > 0)
 			{
-				dout_server<<"Server: Unloaded "<<deleted_count
+				infostream<<"Server: Unloaded "<<deleted_count
 						<<" blocks from memory"<<std::endl;
 			}*/
 
@@ -1812,7 +1821,7 @@ void Server::Receive()
 	}
 	catch(con::InvalidIncomingDataException &e)
 	{
-		derr_server<<"Server::Receive(): "
+		infostream<<"Server::Receive(): "
 				"InvalidIncomingDataException: what()="
 				<<e.what()<<std::endl;
 	}
@@ -1825,7 +1834,7 @@ void Server::Receive()
 
 		/*JMutexAutoLock envlock(m_env_mutex);
 
-		dout_server<<"ServerThread: peer_id="<<peer_id
+		infostream<<"ServerThread: peer_id="<<peer_id
 				<<" has apparently closed connection. "
 				<<"Removing player."<<std::endl;
 
@@ -1846,7 +1855,7 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 	}
 	catch(con::PeerNotFoundException &e)
 	{
-		derr_server<<DTIME<<"Server::ProcessData(): Cancelling: peer "
+		infostream<<"Server::ProcessData(): Cancelling: peer "
 				<<peer_id<<" not found"<<std::endl;
 		return;
 	}
@@ -1881,7 +1890,7 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 		if(datasize < 2+1+PLAYERNAME_SIZE)
 			return;
 
-		derr_server<<DTIME<<"Server: Got TOSERVER_INIT from "
+		infostream<<"Server: Got TOSERVER_INIT from "
 				<<peer->id<<std::endl;
 
 		// First byte after command is maximum supported
@@ -1899,7 +1908,7 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 		
 		if(deployed == SER_FMT_VER_INVALID)
 		{
-			derr_server<<DTIME<<"Server: Cannot negotiate "
+			infostream<<"Server: Cannot negotiate "
 					"serialization version with peer "
 					<<peer_id<<std::endl;
 			SendAccessDenied(m_con, peer_id,
@@ -1951,7 +1960,7 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 		
 		if(playername[0]=='\0')
 		{
-			derr_server<<DTIME<<"Server: Player has empty name"<<std::endl;
+			infostream<<"Server: Player has empty name"<<std::endl;
 			SendAccessDenied(m_con, peer_id,
 					L"Empty name");
 			return;
@@ -1959,7 +1968,7 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 
 		if(string_allowed(playername, PLAYERNAME_ALLOWED_CHARS)==false)
 		{
-			derr_server<<DTIME<<"Server: Player has invalid name"<<std::endl;
+			infostream<<"Server: Player has invalid name"<<std::endl;
 			SendAccessDenied(m_con, peer_id,
 					L"Name contains unallowed characters");
 			return;
@@ -1991,12 +2000,12 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 			checkpwd = g_settings->get("default_password");
 		}
 		
-		/*dstream<<"Server: Client gave password '"<<password
+		/*infostream<<"Server: Client gave password '"<<password
 				<<"', the correct one is '"<<checkpwd<<"'"<<std::endl;*/
 		
 		if(password != checkpwd && m_authmanager.exists(playername))
 		{
-			derr_server<<DTIME<<"Server: peer_id="<<peer_id
+			infostream<<"Server: peer_id="<<peer_id
 					<<": supplied invalid password for "
 					<<playername<<std::endl;
 			SendAccessDenied(m_con, peer_id, L"Invalid password");
@@ -2006,7 +2015,7 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 		// Add player to auth manager
 		if(m_authmanager.exists(playername) == false)
 		{
-			derr_server<<DTIME<<"Server: adding player "<<playername
+			infostream<<"Server: adding player "<<playername
 					<<" to auth manager"<<std::endl;
 			m_authmanager.add(playername);
 			m_authmanager.setPassword(playername, checkpwd);
@@ -2032,7 +2041,7 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 		// If failed, cancel
 		if(player == NULL)
 		{
-			derr_server<<DTIME<<"Server: peer_id="<<peer_id
+			infostream<<"Server: peer_id="<<peer_id
 					<<": failed to emerge player"<<std::endl;
 			return;
 		}
@@ -2061,7 +2070,7 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 
 	if(command == TOSERVER_INIT2)
 	{
-		derr_server<<DTIME<<"Server: Got TOSERVER_INIT2 from "
+		infostream<<"Server: Got TOSERVER_INIT2 from "
 				<<peer->id<<std::endl;
 
 
@@ -2082,11 +2091,10 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 		// Send player items to all players
 		SendPlayerItems();
 
+		Player *player = m_env.getPlayer(peer_id);
+
 		// Send HP
-		{
-			Player *player = m_env.getPlayer(peer_id);
-			SendPlayerHP(player);
-		}
+		SendPlayerHP(player);
 		
 		// Send time of day
 		{
@@ -2121,9 +2129,31 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 		/*
 			Check HP, respawn if necessary
 		*/
+		HandlePlayerHP(player, 0);
+
+		/*
+			Print out action
+		*/
 		{
-			Player *player = m_env.getPlayer(peer_id);
-			HandlePlayerHP(player, 0);
+			std::ostringstream os(std::ios_base::binary);
+			for(core::map<u16, RemoteClient*>::Iterator
+				i = m_clients.getIterator();
+				i.atEnd() == false; i++)
+			{
+				RemoteClient *client = i.getNode()->getValue();
+				assert(client->peer_id == i.getNode()->getKey());
+				if(client->serialization_version == SER_FMT_VER_INVALID)
+					continue;
+				// Get player
+				Player *player = m_env.getPlayer(client->peer_id);
+				if(!player)
+					continue;
+				// Get name of player
+				os<<player->getName()<<" ";
+			}
+
+			actionstream<<player->getName()<<" joins game. List of players: "
+					<<os.str()<<std::endl;
 		}
 
 		return;
@@ -2131,7 +2161,7 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 
 	if(peer_ser_ver == SER_FMT_VER_INVALID)
 	{
-		derr_server<<DTIME<<"Server::ProcessData(): Cancelling: Peer"
+		infostream<<"Server::ProcessData(): Cancelling: Peer"
 				" serialization format invalid or not initialized."
 				" Skipping incoming command="<<command<<std::endl;
 		return;
@@ -2140,7 +2170,7 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 	Player *player = m_env.getPlayer(peer_id);
 
 	if(player == NULL){
-		derr_server<<"Server::ProcessData(): Cancelling: "
+		infostream<<"Server::ProcessData(): Cancelling: "
 				"No player for peer_id="<<peer_id
 				<<std::endl;
 		return;
@@ -2159,12 +2189,13 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 		v3f speed((f32)ss.X/100., (f32)ss.Y/100., (f32)ss.Z/100.);
 		pitch = wrapDegrees(pitch);
 		yaw = wrapDegrees(yaw);
+
 		player->setPosition(position);
 		player->setSpeed(speed);
 		player->setPitch(pitch);
 		player->setYaw(yaw);
 		
-		/*dout_server<<"Server::ProcessData(): Moved player "<<peer_id<<" to "
+		/*infostream<<"Server::ProcessData(): Moved player "<<peer_id<<" to "
 				<<"("<<position.X<<","<<position.Y<<","<<position.Z<<")"
 				<<" pitch="<<pitch<<" yaw="<<yaw<<std::endl;*/
 	}
@@ -2188,7 +2219,7 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 				throw con::InvalidIncomingDataException
 					("GOTBLOCKS length is too short");
 			v3s16 p = readV3S16(&data[2+1+i*6]);
-			/*dstream<<"Server: GOTBLOCKS ("
+			/*infostream<<"Server: GOTBLOCKS ("
 					<<p.X<<","<<p.Y<<","<<p.Z<<")"<<std::endl;*/
 			RemoteClient *client = getClient(peer_id);
 			client->GotBlock(p);
@@ -2214,7 +2245,7 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 				throw con::InvalidIncomingDataException
 					("DELETEDBLOCKS length is too short");
 			v3s16 p = readV3S16(&data[2+1+i*6]);
-			/*dstream<<"Server: DELETEDBLOCKS ("
+			/*infostream<<"Server: DELETEDBLOCKS ("
 					<<p.X<<","<<p.Y<<","<<p.Z<<")"<<std::endl;*/
 			RemoteClient *client = getClient(peer_id);
 			client->SetBlockNotSent(p);
@@ -2222,7 +2253,7 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 	}
 	else if(command == TOSERVER_CLICK_OBJECT)
 	{
-		derr_server<<"Server: CLICK_OBJECT not supported anymore"<<std::endl;
+		infostream<<"Server: CLICK_OBJECT not supported anymore"<<std::endl;
 		return;
 	}
 	else if(command == TOSERVER_CLICK_ACTIVEOBJECT)
@@ -2248,7 +2279,7 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 
 		if(obj == NULL)
 		{
-			derr_server<<"Server: CLICK_ACTIVEOBJECT: object not found"
+			infostream<<"Server: CLICK_ACTIVEOBJECT: object not found"
 					<<std::endl;
 			return;
 		}
@@ -2272,12 +2303,14 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 				InventoryList *ilist = player->inventory.getList("main");
 				if(ilist != NULL)
 				{
+					actionstream<<player->getName()<<" picked up "
+							<<item->getName()<<std::endl;
 					if(g_settings->getBool("creative_mode") == false)
 					{
 						// Skip if inventory has no free space
 						if(ilist->roomForItem(item) == false)
 						{
-							dout_server<<"Player inventory has no free space"<<std::endl;
+							infostream<<"Player inventory has no free space"<<std::endl;
 							return;
 						}
 
@@ -2296,6 +2329,9 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 				/*
 					Item cannot be picked up. Punch it instead.
 				*/
+
+				actionstream<<player->getName()<<" punches object "
+						<<obj->getId()<<std::endl;
 
 				ToolItem *titem = NULL;
 				std::string toolname = "";
@@ -2329,6 +2365,9 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 		// Right click, do something with object
 		if(button == 1)
 		{
+			actionstream<<player->getName()<<" right clicks object "
+					<<obj->getId()<<std::endl;
+
 			// Track hp changes super-crappily
 			u16 oldhp = player->hp;
 			
@@ -2421,7 +2460,7 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 					// If it's not diggable, do nothing
 					if(content_diggable(material) == false)
 					{
-						derr_server<<"Server: Not finishing digging: "
+						infostream<<"Server: Not finishing digging: "
 								<<"Node not diggable"
 								<<std::endl;
 						cannot_remove_node = true;
@@ -2434,7 +2473,7 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 					NodeMetadata *meta = m_env.getMap().getNodeMetadata(p_under);
 					if(meta && meta->nodeRemovalDisabled() == true)
 					{
-						derr_server<<"Server: Not finishing digging: "
+						infostream<<"Server: Not finishing digging: "
 								<<"Node metadata disables removal"
 								<<std::endl;
 						cannot_remove_node = true;
@@ -2443,7 +2482,7 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 			}
 			catch(InvalidPositionException &e)
 			{
-				derr_server<<"Server: Not finishing digging: Node not found."
+				infostream<<"Server: Not finishing digging: Node not found."
 						<<" Adding block to emerge queue."
 						<<std::endl;
 				m_emerge_queue.addBlock(peer_id,
@@ -2454,7 +2493,7 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 			// Make sure the player is allowed to do it
 			if((getPlayerPrivs(player) & PRIV_BUILD) == 0)
 			{
-				dstream<<"Player "<<player->getName()<<" cannot remove node"
+				infostream<<"Player "<<player->getName()<<" cannot remove node"
 						<<" because privileges are "<<getPlayerPrivs(player)
 						<<std::endl;
 				cannot_remove_node = true;
@@ -2466,12 +2505,12 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 			*/
 			if(cannot_remove_node)
 			{
-				derr_server<<"Server: Not finishing digging."<<std::endl;
+				infostream<<"Server: Not finishing digging."<<std::endl;
 
 				// Client probably has wrong data.
 				// Set block not sent, so that client will get
 				// a valid one.
-				dstream<<"Client "<<peer_id<<" tried to dig "
+				infostream<<"Client "<<peer_id<<" tried to dig "
 						<<"node; but node cannot be removed."
 						<<" setting MapBlock not sent."<<std::endl;
 				RemoteClient *client = getClient(peer_id);
@@ -2480,6 +2519,10 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 					
 				return;
 			}
+			
+			actionstream<<player->getName()<<" digs "<<PP(p_under)
+					<<", gets material "<<(int)material<<", mineral "
+					<<(int)mineral<<std::endl;
 			
 			/*
 				Send the removal to all close-by players.
@@ -2513,7 +2556,7 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 
 						if(prop.diggable == false)
 						{
-							derr_server<<"Server: WARNING: Player digged"
+							infostream<<"Server: WARNING: Player digged"
 									<<" with impossible material + tool"
 									<<" combination"<<std::endl;
 						}
@@ -2638,7 +2681,7 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 					bool no_enough_privs =
 							((getPlayerPrivs(player) & PRIV_BUILD)==0);
 					if(no_enough_privs)
-						dstream<<"Player "<<player->getName()<<" cannot add node"
+						infostream<<"Player "<<player->getName()<<" cannot add node"
 							<<" because privileges are "<<getPlayerPrivs(player)
 							<<std::endl;
 
@@ -2648,7 +2691,7 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 						// Client probably has wrong data.
 						// Set block not sent, so that client will get
 						// a valid one.
-						dstream<<"Client "<<peer_id<<" tried to place"
+						infostream<<"Client "<<peer_id<<" tried to place"
 								<<" node in invalid position; setting"
 								<<" MapBlock not sent."<<std::endl;
 						RemoteClient *client = getClient(peer_id);
@@ -2659,7 +2702,7 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 				}
 				catch(InvalidPositionException &e)
 				{
-					derr_server<<"Server: Ignoring ADDNODE: Node not found"
+					infostream<<"Server: Ignoring ADDNODE: Node not found"
 							<<" Adding block to emerge queue."
 							<<std::endl;
 					m_emerge_queue.addBlock(peer_id,
@@ -2675,6 +2718,10 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 				MapNode n;
 				n.setContent(mitem->getMaterial());
 
+				actionstream<<player->getName()<<" places material "
+						<<(int)mitem->getMaterial()
+						<<" at "<<PP(p_under)<<std::endl;
+			
 				// Calculate direction for wall mounted stuff
 				if(content_features(n).wall_mounted)
 					n.param2 = packDir(p_under - p_over);
@@ -2776,7 +2823,7 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 				MapBlock *block = m_env.getMap().getBlockNoCreateNoEx(blockpos);
 				if(block==NULL)
 				{
-					derr_server<<"Error while placing object: "
+					infostream<<"Error while placing object: "
 							"block not found"<<std::endl;
 					return;
 				}
@@ -2788,14 +2835,11 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 				if(g_settings->getBool("creative_mode") &&
 					(getPlayerPrivs(player) & PRIV_BUILD) == 0)
 				{
-					derr_server<<"Not allowing player to drop item: "
+					infostream<<"Not allowing player to drop item: "
 							"creative mode and no build privs"<<std::endl;
 					return;
 				}
 
-				dout_server<<"Placing a miscellaneous item on map"
-						<<std::endl;
-				
 				// Calculate a position for it
 				v3f pos = intToFloat(p_over, BS);
 				//pos.Y -= BS*0.45;
@@ -2811,16 +2855,19 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 
 				if(obj == NULL)
 				{
-					derr_server<<"WARNING: item resulted in NULL object, "
+					infostream<<"WARNING: item resulted in NULL object, "
 							<<"not placing onto map"
 							<<std::endl;
 				}
 				else
 				{
+					actionstream<<player->getName()<<" places "<<item->getName()
+							<<" at "<<PP(p_over)<<std::endl;
+				
 					// Add the object to the environment
 					m_env.addActiveObject(obj);
 					
-					dout_server<<"Placed object"<<std::endl;
+					infostream<<"Placed object"<<std::endl;
 
 					if(g_settings->getBool("creative_mode") == false)
 					{
@@ -2831,7 +2878,7 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 						if(item->getCount() <= dropcount)
 						{
 							if(item->getCount() < dropcount)
-								dstream<<"WARNING: Server: dropped more items"
+								infostream<<"WARNING: Server: dropped more items"
 										<<" than the slot contains"<<std::endl;
 							
 							InventoryList *ilist = player->inventory.getList("main");
@@ -2857,7 +2904,7 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 		*/
 		else
 		{
-			derr_server<<"WARNING: Server: Invalid action "
+			infostream<<"WARNING: Server: Invalid action "
 					<<action<<std::endl;
 		}
 	}
@@ -2871,12 +2918,12 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 			[0] u16 command
 			[2] u8 button
 		*/
-		dstream<<"TOSERVER_RELEASE ignored"<<std::endl;
+		infostream<<"TOSERVER_RELEASE ignored"<<std::endl;
 	}
 #endif
 	else if(command == TOSERVER_SIGNTEXT)
 	{
-		derr_server<<"Server: TOSERVER_SIGNTEXT not supported anymore"
+		infostream<<"Server: TOSERVER_SIGNTEXT not supported anymore"
 				<<std::endl;
 		return;
 	}
@@ -2913,6 +2960,9 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 		SignNodeMetadata *signmeta = (SignNodeMetadata*)meta;
 		signmeta->setText(text);
 		
+		actionstream<<player->getName()<<" writes \""<<text<<"\" to sign "
+				<<" at "<<PP(p)<<std::endl;
+				
 		v3s16 blockpos = getNodeBlockPos(p);
 		MapBlock *block = m_env.getMap().getBlockNoCreateNoEx(blockpos);
 		if(block)
@@ -2933,13 +2983,13 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 		/*// Ignore inventory changes if in creative mode
 		if(g_settings->getBool("creative_mode") == true)
 		{
-			dstream<<"TOSERVER_INVENTORY_ACTION: ignoring in creative mode"
+			infostream<<"TOSERVER_INVENTORY_ACTION: ignoring in creative mode"
 					<<std::endl;
 			return;
 		}*/
 		// Strip command and create a stream
 		std::string datastring((char*)&data[2], datasize-2);
-		dstream<<"TOSERVER_INVENTORY_ACTION: data="<<datastring<<std::endl;
+		infostream<<"TOSERVER_INVENTORY_ACTION: data="<<datastring<<std::endl;
 		std::istringstream is(datastring, std::ios_base::binary);
 		// Create an action
 		InventoryAction *a = InventoryAction::deSerialize(is);
@@ -2989,6 +3039,14 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 					{
 						player->craftresult_is_preview = false;
 						clist->decrementMaterials(1);
+						
+						/* Print out action */
+						InventoryList *list =
+								player->inventory.getList("craftresult");
+						assert(list);
+						InventoryItem *item = list->getItem(0);
+						actionstream<<player->getName()<<" crafts "
+								<<item->getName()<<std::endl;
 					}
 					/*
 						If the craftresult is placed on itself, move it to
@@ -3063,7 +3121,7 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 		}
 		else
 		{
-			dstream<<"TOSERVER_INVENTORY_ACTION: "
+			infostream<<"TOSERVER_INVENTORY_ACTION: "
 					<<"InventoryAction::deSerialize() returned NULL"
 					<<std::endl;
 		}
@@ -3155,7 +3213,8 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 		
 		if(line != L"")
 		{
-			dstream<<"CHAT: "<<wide_to_narrow(line)<<std::endl;
+			if(send_to_others)
+				actionstream<<"CHAT: "<<wide_to_narrow(line)<<std::endl;
 
 			/*
 				Send the message to clients
@@ -3189,6 +3248,10 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 
 		if(g_settings->getBool("enable_damage"))
 		{
+			actionstream<<player->getName()<<" damaged by "
+					<<(int)damage<<" hp at "<<PP(player->getPosition()/BS)
+					<<std::endl;
+				
 			HandlePlayerHP(player, damage);
 		}
 		else
@@ -3227,14 +3290,14 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 			newpwd += c;
 		}
 
-		dstream<<"Server: Client requests a password change from "
+		infostream<<"Server: Client requests a password change from "
 				<<"'"<<oldpwd<<"' to '"<<newpwd<<"'"<<std::endl;
 
 		std::string playername = player->getName();
 
 		if(m_authmanager.exists(playername) == false)
 		{
-			dstream<<"Server: playername not found in authmanager"<<std::endl;
+			infostream<<"Server: playername not found in authmanager"<<std::endl;
 			// Wrong old password supplied!!
 			SendChatMessage(peer_id, L"playername not found in authmanager");
 			return;
@@ -3244,15 +3307,17 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 
 		if(oldpwd != checkpwd)
 		{
-			dstream<<"Server: invalid old password"<<std::endl;
+			infostream<<"Server: invalid old password"<<std::endl;
 			// Wrong old password supplied!!
 			SendChatMessage(peer_id, L"Invalid old password supplied. Password NOT changed.");
 			return;
 		}
 
+		actionstream<<player->getName()<<" changes password"<<std::endl;
+
 		m_authmanager.setPassword(playername, newpwd);
 		
-		dstream<<"Server: password change successful for "<<playername
+		infostream<<"Server: password change successful for "<<playername
 				<<std::endl;
 		SendChatMessage(peer_id, L"Password change successful");
 	}
@@ -3269,19 +3334,22 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 	{
 		if(player->hp != 0)
 			return;
-
+		
 		RespawnPlayer(player);
+		
+		actionstream<<player->getName()<<" respawns at "
+				<<PP(player->getPosition()/BS)<<std::endl;
 	}
 	else
 	{
-		derr_server<<"WARNING: Server::ProcessData(): Ignoring "
+		infostream<<"Server::ProcessData(): Ignoring "
 				"unknown command "<<command<<std::endl;
 	}
 	
 	} //try
 	catch(SendFailedException &e)
 	{
-		derr_server<<"Server::ProcessData(): SendFailedException: "
+		errorstream<<"Server::ProcessData(): SendFailedException: "
 				<<"what="<<e.what()
 				<<std::endl;
 	}
@@ -3289,7 +3357,7 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 
 void Server::onMapEditEvent(MapEditEvent *event)
 {
-	//dstream<<"Server::onMapEditEvent()"<<std::endl;
+	//infostream<<"Server::onMapEditEvent()"<<std::endl;
 	if(m_ignore_map_edit_events)
 		return;
 	MapEditEvent *e = event->clone();
@@ -3316,12 +3384,12 @@ Inventory* Server::getInventory(InventoryContext *c, std::string id)
 		NodeMetadata *meta = m_env.getMap().getNodeMetadata(p);
 		if(meta)
 			return meta->getInventory();
-		dstream<<"nodemeta at ("<<p.X<<","<<p.Y<<","<<p.Z<<"): "
+		infostream<<"nodemeta at ("<<p.X<<","<<p.Y<<","<<p.Z<<"): "
 				<<"no metadata found"<<std::endl;
 		return NULL;
 	}
 
-	dstream<<__FUNCTION_NAME<<": unknown id "<<id<<std::endl;
+	infostream<<__FUNCTION_NAME<<": unknown id "<<id<<std::endl;
 	return NULL;
 }
 void Server::inventoryModified(InventoryContext *c, std::string id)
@@ -3361,7 +3429,7 @@ void Server::inventoryModified(InventoryContext *c, std::string id)
 		return;
 	}
 
-	dstream<<__FUNCTION_NAME<<": unknown id "<<id<<std::endl;
+	infostream<<__FUNCTION_NAME<<": unknown id "<<id<<std::endl;
 }
 
 core::list<PlayerInfo> Server::getPlayerInfo()
@@ -3410,7 +3478,7 @@ core::list<PlayerInfo> Server::getPlayerInfo()
 void Server::peerAdded(con::Peer *peer)
 {
 	DSTACK(__FUNCTION_NAME);
-	dout_server<<"Server::peerAdded(): peer->id="
+	infostream<<"Server::peerAdded(): peer->id="
 			<<peer->id<<std::endl;
 	
 	PeerChange c;
@@ -3423,7 +3491,7 @@ void Server::peerAdded(con::Peer *peer)
 void Server::deletingPeer(con::Peer *peer, bool timeout)
 {
 	DSTACK(__FUNCTION_NAME);
-	dout_server<<"Server::deletingPeer(): peer->id="
+	infostream<<"Server::deletingPeer(): peer->id="
 			<<peer->id<<", timeout="<<timeout<<std::endl;
 	
 	PeerChange c;
@@ -3532,7 +3600,7 @@ void Server::SendPlayerInfos()
 	{
 		Player *player = *i;
 
-		/*dstream<<"Server sending player info for player with "
+		/*infostream<<"Server sending player info for player with "
 				"peer_id="<<player->peer_id<<std::endl;*/
 		
 		writeU16(&data[start], player->peer_id);
@@ -3692,7 +3760,7 @@ void Server::SendMovePlayer(Player *player)
 		v3f pos = player->getPosition();
 		f32 pitch = player->getPitch();
 		f32 yaw = player->getYaw();
-		dstream<<"Server sending TOCLIENT_MOVE_PLAYER"
+		infostream<<"Server sending TOCLIENT_MOVE_PLAYER"
 				<<" pos=("<<pos.X<<","<<pos.Y<<","<<pos.Z<<")"
 				<<" pitch="<<pitch
 				<<" yaw="<<yaw
@@ -3837,10 +3905,10 @@ void Server::SendBlockNoLock(u16 peer_id, MapBlock *block, u8 ver)
 	}
 
 	// Print result
-	dstream<<"Server: Sending block ("<<p.X<<","<<p.Y<<","<<p.Z<<"): ";
+	infostream<<"Server: Sending block ("<<p.X<<","<<p.Y<<","<<p.Z<<"): ";
 	if(completely_air)
-		dstream<<"[completely air] ";
-	dstream<<std::endl;
+		infostream<<"[completely air] ";
+	infostream<<std::endl;
 #endif
 
 	/*
@@ -3860,7 +3928,7 @@ void Server::SendBlockNoLock(u16 peer_id, MapBlock *block, u8 ver)
 	writeS16(&reply[6], p.Z);
 	memcpy(&reply[8], *blockdata, blockdata.getSize());
 
-	/*dstream<<"Server: Sending block ("<<p.X<<","<<p.Y<<","<<p.Z<<")"
+	/*infostream<<"Server: Sending block ("<<p.X<<","<<p.Y<<","<<p.Z<<")"
 			<<":  \tpacket size: "<<replysize<<std::endl;*/
 	
 	/*
@@ -3948,7 +4016,7 @@ void Server::HandlePlayerHP(Player *player, s16 damage)
 	}
 	else
 	{
-		dstream<<"Server::HandlePlayerHP(): Player "
+		infostream<<"Server::HandlePlayerHP(): Player "
 				<<player->getName()<<" dies"<<std::endl;
 		
 		player->hp = 0;
@@ -4105,18 +4173,18 @@ v3f findSpawnPos(ServerMap &map)
 		// Don't go underwater
 		if(groundheight < WATER_LEVEL)
 		{
-			//dstream<<"-> Underwater"<<std::endl;
+			//infostream<<"-> Underwater"<<std::endl;
 			continue;
 		}
 		// Don't go to high places
 		if(groundheight > WATER_LEVEL + 4)
 		{
-			//dstream<<"-> Underwater"<<std::endl;
+			//infostream<<"-> Underwater"<<std::endl;
 			continue;
 		}
 
 		// Found a good place
-		//dstream<<"Searched through "<<i<<" places."<<std::endl;
+		//infostream<<"Searched through "<<i<<" places."<<std::endl;
 		break;
 	}
 #endif
@@ -4143,7 +4211,7 @@ Player *Server::emergePlayer(const char *name, const char *password, u16 peer_id
 		// If player is already connected, cancel
 		if(player->peer_id != 0)
 		{
-			dstream<<"emergePlayer(): Player already connected"<<std::endl;
+			infostream<<"emergePlayer(): Player already connected"<<std::endl;
 			return NULL;
 		}
 
@@ -4169,7 +4237,7 @@ Player *Server::emergePlayer(const char *name, const char *password, u16 peer_id
 	*/
 	if(m_env.getPlayer(peer_id) != NULL)
 	{
-		dstream<<"emergePlayer(): Player with wrong name but same"
+		infostream<<"emergePlayer(): Player with wrong name but same"
 				" peer_id already exists"<<std::endl;
 		return NULL;
 	}
@@ -4192,7 +4260,7 @@ Player *Server::emergePlayer(const char *name, const char *password, u16 peer_id
 			Set player position
 		*/
 		
-		dstream<<"Server: Finding spawn place for player \""
+		infostream<<"Server: Finding spawn place for player \""
 				<<player->getName()<<"\""<<std::endl;
 
 		v3f pos = findSpawnPos(m_env.getServerMap());
@@ -4305,6 +4373,32 @@ void Server::handlePeerChange(PeerChange &c)
 			Player *player = m_env.getPlayer(c.peer_id);
 			if(player != NULL)
 				player->peer_id = 0;
+			
+			/*
+				Print out action
+			*/
+			{
+				std::ostringstream os(std::ios_base::binary);
+				for(core::map<u16, RemoteClient*>::Iterator
+					i = m_clients.getIterator();
+					i.atEnd() == false; i++)
+				{
+					RemoteClient *client = i.getNode()->getValue();
+					assert(client->peer_id == i.getNode()->getKey());
+					if(client->serialization_version == SER_FMT_VER_INVALID)
+						continue;
+					// Get player
+					Player *player = m_env.getPlayer(client->peer_id);
+					if(!player)
+						continue;
+					// Get name of player
+					os<<player->getName()<<" ";
+				}
+
+				actionstream<<player->getName()
+						<<" leaves game. List of players: "
+						<<os.str()<<std::endl;
+			}
 		}
 		
 		// Delete client
@@ -4330,7 +4424,7 @@ void Server::handlePeerChanges()
 	{
 		PeerChange c = m_peer_change_queue.pop_front();
 
-		dout_server<<"Server: Handling peer change: "
+		infostream<<"Server: Handling peer change: "
 				<<"id="<<c.peer_id<<", timeout="<<c.timeout
 				<<std::endl;
 
@@ -4359,11 +4453,11 @@ void dedicated_server_loop(Server &server, bool &kill)
 {
 	DSTACK(__FUNCTION_NAME);
 	
-	dstream<<DTIME<<std::endl;
-	dstream<<"========================"<<std::endl;
-	dstream<<"Running dedicated server"<<std::endl;
-	dstream<<"========================"<<std::endl;
-	dstream<<std::endl;
+	infostream<<DTIME<<std::endl;
+	infostream<<"========================"<<std::endl;
+	infostream<<"Running dedicated server"<<std::endl;
+	infostream<<"========================"<<std::endl;
+	infostream<<std::endl;
 
 	IntervalLimiter m_profiler_interval;
 
@@ -4379,7 +4473,7 @@ void dedicated_server_loop(Server &server, bool &kill)
 
 		if(server.getShutdownRequested() || kill)
 		{
-			dstream<<DTIME<<" dedicated_server_loop(): Quitting."<<std::endl;
+			infostream<<DTIME<<" dedicated_server_loop(): Quitting."<<std::endl;
 			break;
 		}
 
@@ -4392,8 +4486,8 @@ void dedicated_server_loop(Server &server, bool &kill)
 		{
 			if(m_profiler_interval.step(0.030, profiler_print_interval))
 			{
-				dstream<<"Profiler:"<<std::endl;
-				g_profiler->print(dstream);
+				infostream<<"Profiler:"<<std::endl;
+				g_profiler->print(infostream);
 				g_profiler->clear();
 			}
 		}
@@ -4413,10 +4507,10 @@ void dedicated_server_loop(Server &server, bool &kill)
 			u32 sum = PIChecksum(list);
 			if(sum != sum_old)
 			{
-				dstream<<DTIME<<"Player info:"<<std::endl;
+				infostream<<DTIME<<"Player info:"<<std::endl;
 				for(i=list.begin(); i!=list.end(); i++)
 				{
-					i->PrintLine(&dstream);
+					i->PrintLine(&infostream);
 				}
 			}
 			sum_old = sum;

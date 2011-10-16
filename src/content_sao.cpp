@@ -84,7 +84,7 @@ void TestSAO::step(float dtime, bool send_recommended)
 	if(m_timer1 < 0.0)
 	{
 		m_timer1 += 0.125;
-		//dstream<<"TestSAO: id="<<getId()<<" sending data"<<std::endl;
+		//infostream<<"TestSAO: id="<<getId()<<" sending data"<<std::endl;
 
 		std::string data;
 
@@ -131,7 +131,7 @@ ServerActiveObject* ItemSAO::create(ServerEnvironment *env, u16 id, v3f pos,
 	if(version != 0)
 		return NULL;
 	std::string inventorystring = deSerializeString(is);
-	dstream<<"ItemSAO::create(): Creating item \""
+	infostream<<"ItemSAO::create(): Creating item \""
 			<<inventorystring<<"\""<<std::endl;
 	return new ItemSAO(env, id, pos, inventorystring);
 }
@@ -206,7 +206,7 @@ std::string ItemSAO::getClientInitializationData()
 
 std::string ItemSAO::getStaticData()
 {
-	dstream<<__FUNCTION_NAME<<std::endl;
+	infostream<<__FUNCTION_NAME<<std::endl;
 	std::ostringstream os(std::ios::binary);
 	char buf[1];
 	// version
@@ -222,14 +222,14 @@ InventoryItem * ItemSAO::createInventoryItem()
 	try{
 		std::istringstream is(m_inventorystring, std::ios_base::binary);
 		InventoryItem *item = InventoryItem::deSerialize(is);
-		dstream<<__FUNCTION_NAME<<": m_inventorystring=\""
+		infostream<<__FUNCTION_NAME<<": m_inventorystring=\""
 				<<m_inventorystring<<"\" -> item="<<item
 				<<std::endl;
 		return item;
 	}
 	catch(SerializationError &e)
 	{
-		dstream<<__FUNCTION_NAME<<": serialization error: "
+		infostream<<__FUNCTION_NAME<<": serialization error: "
 				<<"m_inventorystring=\""<<m_inventorystring<<"\""<<std::endl;
 		return NULL;
 	}
@@ -237,7 +237,7 @@ InventoryItem * ItemSAO::createInventoryItem()
 
 void ItemSAO::rightClick(Player *player)
 {
-	dstream<<__FUNCTION_NAME<<std::endl;
+	infostream<<__FUNCTION_NAME<<std::endl;
 	InventoryItem *item = createInventoryItem();
 	if(item == NULL)
 		return;
@@ -424,7 +424,7 @@ std::string RatSAO::getClientInitializationData()
 
 std::string RatSAO::getStaticData()
 {
-	//dstream<<__FUNCTION_NAME<<std::endl;
+	//infostream<<__FUNCTION_NAME<<std::endl;
 	std::ostringstream os(std::ios::binary);
 	// version
 	writeU8(os, 0);
@@ -669,7 +669,7 @@ std::string Oerkki1SAO::getClientInitializationData()
 
 std::string Oerkki1SAO::getStaticData()
 {
-	//dstream<<__FUNCTION_NAME<<std::endl;
+	//infostream<<__FUNCTION_NAME<<std::endl;
 	std::ostringstream os(std::ios::binary);
 	// version
 	writeU8(os, 0);
@@ -689,7 +689,7 @@ u16 Oerkki1SAO::punch(const std::string &toolname, v3f dir)
 
 void Oerkki1SAO::doDamage(u16 d)
 {
-	dstream<<"oerkki damage: "<<d<<std::endl;
+	infostream<<"oerkki damage: "<<d<<std::endl;
 	
 	if(d < m_hp)
 	{
@@ -877,7 +877,7 @@ std::string FireflySAO::getClientInitializationData()
 
 std::string FireflySAO::getStaticData()
 {
-	//dstream<<__FUNCTION_NAME<<std::endl;
+	//infostream<<__FUNCTION_NAME<<std::endl;
 	std::ostringstream os(std::ios::binary);
 	// version
 	writeU8(os, 0);
@@ -960,7 +960,7 @@ std::string MobV2SAO::getStaticData()
 
 std::string MobV2SAO::getClientInitializationData()
 {
-	//dstream<<__FUNCTION_NAME<<std::endl;
+	//infostream<<__FUNCTION_NAME<<std::endl;
 
 	updateProperties();
 
@@ -1092,7 +1092,7 @@ void MobV2SAO::step(float dtime, bool send_recommended)
 			if(dist < BS*16)
 			{
 				if(myrand_range(0,2) == 0){
-					dstream<<"ACTION: id="<<m_id<<" got randomly disturbed by "
+					infostream<<"ACTION: id="<<m_id<<" got randomly disturbed by "
 							<<player->getName()<<std::endl;
 					m_disturbing_player = player->getName();
 					m_disturb_timer = 0;
@@ -1135,7 +1135,7 @@ void MobV2SAO::step(float dtime, bool send_recommended)
 				dir.normalize();
 				v3f speed = dir * BS * 10.0;
 				v3f pos = m_base_position + shoot_pos;
-				dstream<<__FUNCTION_NAME<<": Shooting fireball from "<<PP(pos)
+				infostream<<__FUNCTION_NAME<<": Shooting fireball from "<<PP(pos)
 						<<" at speed "<<PP(speed)<<std::endl;
 				Settings properties;
 				properties.set("looks", "fireball");
@@ -1152,7 +1152,7 @@ void MobV2SAO::step(float dtime, bool send_recommended)
 				//m_env->addActiveObjectAsStatic(obj);
 				m_env->addActiveObject(obj);
 			} else {
-				dstream<<__FUNCTION_NAME<<": Unknown shoot_type="<<shoot_type
+				infostream<<__FUNCTION_NAME<<": Unknown shoot_type="<<shoot_type
 						<<std::endl;
 			}
 		}
@@ -1229,7 +1229,7 @@ void MobV2SAO::step(float dtime, bool send_recommended)
 			m_base_position = pos_f;
 
 			if((pos_f - next_pos_f).getLength() < 0.1 || arrived){
-				//dstream<<"id="<<m_id<<": arrived to "<<PP(m_next_pos_i)<<std::endl;
+				//infostream<<"id="<<m_id<<": arrived to "<<PP(m_next_pos_i)<<std::endl;
 				m_next_pos_exists = false;
 			}
 		}
@@ -1271,16 +1271,16 @@ void MobV2SAO::step(float dtime, bool send_recommended)
 				}
 				u32 order[3*3*3];
 				get_random_u32_array(order, num_dps);
-				/*dstream<<"At pos "<<PP(pos_i)<<"; Random array: ";
+				/*infostream<<"At pos "<<PP(pos_i)<<"; Random array: ";
 				for(int i=0; i<num_dps; i++){
-					dstream<<order[i]<<" ";
+					infostream<<order[i]<<" ";
 				}
-				dstream<<std::endl;*/
+				infostream<<std::endl;*/
 				for(int i=0; i<num_dps; i++){
 					v3s16 p = dps[order[i]] + pos_i;
 					bool is_free = checkFreeAndWalkablePosition(map,
 							p + pos_size_off, size_blocks);
-					//dstream<<PP(p)<<" is_free="<<is_free<<std::endl;
+					//infostream<<PP(p)<<" is_free="<<is_free<<std::endl;
 					if(!is_free)
 						continue;
 					m_next_pos_i = p;
@@ -1310,7 +1310,7 @@ void MobV2SAO::step(float dtime, bool send_recommended)
 	}
 	else
 	{
-		dstream<<"MobV2SAO::step(): id="<<m_id<<" unknown move_type=\""
+		infostream<<"MobV2SAO::step(): id="<<m_id<<" unknown move_type=\""
 				<<m_move_type<<"\""<<std::endl;
 	}
 
@@ -1329,8 +1329,9 @@ u16 MobV2SAO::punch(const std::string &toolname, v3f dir,
 	assert(m_env);
 	Map *map = &m_env->getMap();
 	
-	dstream<<"ACTION: "<<playername<<" punches id="<<m_id
-			<<" with a \""<<toolname<<"\""<<std::endl;
+	infostream<<"ACTION: "<<playername<<" punches id="<<m_id
+			<<" with a \""<<toolname<<"\" at "
+			<<PP(m_base_position/BS)<<std::endl;
 
 	m_disturb_timer = 0;
 	m_disturbing_player = playername;
@@ -1432,7 +1433,7 @@ void MobV2SAO::updateProperties()
 
 void MobV2SAO::doDamage(u16 d)
 {
-	dstream<<"MobV2 hp="<<m_hp<<" damage="<<d<<std::endl;
+	infostream<<"MobV2 hp="<<m_hp<<" damage="<<d<<std::endl;
 	
 	if(d < m_hp)
 	{
@@ -1440,6 +1441,8 @@ void MobV2SAO::doDamage(u16 d)
 	}
 	else
 	{
+		actionstream<<"A "<<(isPeaceful()?"peaceful":"non-peaceful")
+				<<" mob id="<<m_id<<" dies at "<<PP(m_base_position)<<std::endl;
 		// Die
 		m_hp = 0;
 		m_removed = true;

@@ -20,6 +20,8 @@ OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 #include "utility.h"
 #include "settings.h"
 
+#define PP(x) "("<<(x).X<<","<<(x).Y<<","<<(x).Z<<")"
+
 void cmd_status(std::wostringstream &os,
 	ServerCommandContext *ctx)
 {
@@ -94,10 +96,17 @@ void cmd_grantrevoke(std::wostringstream &os,
 	std::string playername = wide_to_narrow(ctx->parms[1]);
 	u64 privs = ctx->server->getPlayerAuthPrivs(playername);
 
-	if(ctx->parms[0] == L"grant")
+	if(ctx->parms[0] == L"grant"){
+		actionstream<<ctx->player->getName()<<" grants "
+				<<wide_to_narrow(ctx->parms[2])<<" to "
+				<<playername<<std::endl;
 		privs |= newprivs;
-	else
+	} else {
+		actionstream<<ctx->player->getName()<<" revokes "
+				<<wide_to_narrow(ctx->parms[2])<<" from "
+				<<playername<<std::endl;
 		privs &= ~newprivs;
+	}
 	
 	ctx->server->setPlayerAuthPrivs(playername, privs);
 	
@@ -123,6 +132,9 @@ void cmd_time(std::wostringstream &os,
 	u32 time = stoi(wide_to_narrow(ctx->parms[1]));
 	ctx->server->setTimeOfDay(time);
 	os<<L"-!- time_of_day changed.";
+
+	actionstream<<ctx->player->getName()<<" sets time "
+			<<time<<std::endl;
 }
 
 void cmd_shutdown(std::wostringstream &os,
@@ -134,8 +146,9 @@ void cmd_shutdown(std::wostringstream &os,
 		return;
 	}
 
-	dstream<<DTIME<<" Server: Operator requested shutdown."
-		<<std::endl;
+	actionstream<<ctx->player->getName()
+			<<" shuts down server"<<std::endl;
+
 	ctx->server->requestShutdown();
 					
 	os<<L"*** Server shutting down (operator request)";
@@ -156,6 +169,9 @@ void cmd_setting(std::wostringstream &os,
 
 	std::string confline = wide_to_narrow(ctx->paramstring);
 	
+	actionstream<<ctx->player->getName()
+			<<" sets: "<<confline<<std::endl;
+
 	g_settings->parseConfigLine(confline);
 	
 	ctx->server->saveConfig();
@@ -186,6 +202,11 @@ void cmd_teleport(std::wostringstream &os,
 	}
 
 	v3f dest(stoi(coords[0])*10, stoi(coords[1])*10, stoi(coords[2])*10);
+
+	actionstream<<ctx->player->getName()<<" teleports from "
+			<<PP(ctx->player->getPosition()/BS)<<" to "
+			<<PP(dest/BS)<<std::endl;
+
 	ctx->player->setPosition(dest);
 	ctx->server->SendMovePlayer(ctx->player);
 
@@ -226,6 +247,9 @@ void cmd_banunban(std::wostringstream &os, ServerCommandContext *ctx)
 		ctx->server->setIpBanned(ip_string, player->getName());
 		os<<L"-!- Banned "<<narrow_to_wide(ip_string)<<L"|"
 				<<narrow_to_wide(player->getName());
+
+		actionstream<<ctx->player->getName()<<" bans "
+				<<player->getName()<<" / "<<ip_string<<std::endl;
 	}
 	else
 	{
@@ -233,6 +257,9 @@ void cmd_banunban(std::wostringstream &os, ServerCommandContext *ctx)
 		std::string desc = ctx->server->getBanDescription(ip_or_name);
 		ctx->server->unsetIpBanned(ip_or_name);
 		os<<L"-!- Unbanned "<<narrow_to_wide(desc);
+
+		actionstream<<ctx->player->getName()<<" unbans "
+				<<ip_or_name<<std::endl;
 	}
 }
 

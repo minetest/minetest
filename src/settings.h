@@ -31,6 +31,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <sstream>
 #include "debug.h"
 #include "utility.h"
+#include "log.h"
 
 enum ValueType
 {
@@ -81,7 +82,7 @@ public:
 		if(trimmedline[0] == '#')
 			return true;
 
-		//dstream<<"trimmedline=\""<<trimmedline<<"\""<<std::endl;
+		//infostream<<"trimmedline=\""<<trimmedline<<"\""<<std::endl;
 
 		Strfnd sf(trim(line));
 
@@ -94,7 +95,7 @@ public:
 		std::string value = sf.next("\n");
 		value = trim(value);
 
-		/*dstream<<"Config name=\""<<name<<"\" value=\""
+		/*infostream<<"Config name=\""<<name<<"\" value=\""
 				<<value<<"\""<<std::endl;*/
 		
 		m_settings[name] = value;
@@ -130,7 +131,7 @@ public:
 		*/
 		std::string line;
 		std::getline(is, line);
-		//dstream<<"got line: \""<<line<<"\""<<std::endl;
+		//infostream<<"got line: \""<<line<<"\""<<std::endl;
 
 		return parseConfigLine(line);
 	}
@@ -145,12 +146,12 @@ public:
 		std::ifstream is(filename);
 		if(is.good() == false)
 		{
-			dstream<<"Error opening configuration file \""
+			errorstream<<"Error opening configuration file \""
 					<<filename<<"\""<<std::endl;
 			return false;
 		}
 
-		dstream<<"Parsing configuration file: \""
+		infostream<<"Parsing configuration file: \""
 				<<filename<<"\""<<std::endl;
 				
 		while(parseConfigObject(is));
@@ -215,7 +216,7 @@ public:
 			
 			if(newvalue != value)
 			{
-				dstream<<"Changing value of \""<<name<<"\" = \""
+				infostream<<"Changing value of \""<<name<<"\" = \""
 						<<value<<"\" -> \""<<newvalue<<"\""
 						<<std::endl;
 			}
@@ -235,7 +236,7 @@ public:
 	*/
 	bool updateConfigFile(const char *filename)
 	{
-		dstream<<"Updating configuration file: \""
+		infostream<<"Updating configuration file: \""
 				<<filename<<"\""<<std::endl;
 		
 		core::list<std::string> objects;
@@ -246,7 +247,7 @@ public:
 			std::ifstream is(filename);
 			if(is.good() == false)
 			{
-				dstream<<"INFO: updateConfigFile():"
+				infostream<<"updateConfigFile():"
 						" Error opening configuration file"
 						" for reading: \""
 						<<filename<<"\""<<std::endl;
@@ -264,7 +265,7 @@ public:
 			std::ofstream os(filename);
 			if(os.good() == false)
 			{
-				dstream<<"Error opening configuration file"
+				errorstream<<"Error opening configuration file"
 						" for writing: \""
 						<<filename<<"\""<<std::endl;
 				return false;
@@ -291,7 +292,7 @@ public:
 					continue;
 				std::string name = i.getNode()->getKey();
 				std::string value = i.getNode()->getValue();
-				dstream<<"Adding \""<<name<<"\" = \""<<value<<"\""
+				infostream<<"Adding \""<<name<<"\" = \""<<value<<"\""
 						<<std::endl;
 				os<<name<<" = "<<value<<"\n";
 			}
@@ -316,7 +317,7 @@ public:
 			std::string argname = argv[i];
 			if(argname.substr(0, 2) != "--")
 			{
-				dstream<<"Invalid command-line parameter \""
+				errorstream<<"Invalid command-line parameter \""
 						<<argname<<"\": --<option> expected."<<std::endl;
 				return false;
 			}
@@ -328,7 +329,7 @@ public:
 			n = allowed_options.find(name);
 			if(n == NULL)
 			{
-				dstream<<"Unknown command-line parameter \""
+				errorstream<<"Unknown command-line parameter \""
 						<<argname<<"\""<<std::endl;
 				return false;
 			}
@@ -345,7 +346,7 @@ public:
 			{
 				if(i >= argc)
 				{
-					dstream<<"Invalid command-line parameter \""
+					errorstream<<"Invalid command-line parameter \""
 							<<name<<"\": missing value"<<std::endl;
 					return false;
 				}
@@ -354,7 +355,7 @@ public:
 			}
 			
 
-			dstream<<"Valid command-line parameter: \""
+			infostream<<"Valid command-line parameter: \""
 					<<name<<"\" = \""<<value<<"\""
 					<<std::endl;
 			set(name, value);
@@ -403,7 +404,7 @@ public:
 			n = m_defaults.find(name);
 			if(n == NULL)
 			{
-				dstream<<"INFO: Settings: Setting not found: \""
+				infostream<<"Settings: Setting not found: \""
 						<<name<<"\""<<std::endl;
 				throw SettingNotFoundException("Setting not found");
 			}

@@ -25,6 +25,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "gettime.h"
 #include "sha1.h"
 #include "base64.h"
+#include "log.h"
 
 TimeTaker::TimeTaker(const char *name, u32 *result)
 {
@@ -47,7 +48,7 @@ u32 TimeTaker::stop(bool quiet)
 		else
 		{
 			if(quiet == false)
-				std::cout<<m_name<<" took "<<dtime<<"ms"<<std::endl;
+				infostream<<m_name<<" took "<<dtime<<"ms"<<std::endl;
 		}
 		m_running = false;
 		return dtime;
@@ -154,6 +155,21 @@ int myrand(void)
 void mysrand(unsigned seed)
 {
    next = seed;
+}
+
+int myrand_range(int min, int max)
+{
+	if(max-min > MYRAND_MAX)
+	{
+		errorstream<<"WARNING: myrand_range: max-min > MYRAND_MAX"<<std::endl;
+		assert(0);
+	}
+	if(min > max)
+	{
+		assert(0);
+		return max;
+	}
+	return (myrand()%(max-min+1))+min;
 }
 
 #ifndef SERVER
