@@ -175,7 +175,7 @@ int main(int argc, char *argv[])
 #ifdef RUN_IN_PLACE
 	std::string debugfile = DEBUGFILE;
 #else
-	std::string debugfile = porting::path_userdata+"/"+DEBUGFILE;
+	std::string debugfile = porting::path_userdata+DIR_DELIM+DEBUGFILE;
 #endif
 	debugstreams_init(disable_stderr, debugfile.c_str());
 	// Initialize debug stacks
@@ -279,9 +279,11 @@ int main(int argc, char *argv[])
 	else
 	{
 		core::array<std::string> filenames;
-		filenames.push_back(porting::path_userdata + "/minetest.conf");
+		filenames.push_back(porting::path_userdata +
+				DIR_DELIM + "minetest.conf");
 #ifdef RUN_IN_PLACE
-		filenames.push_back(porting::path_userdata + "/../minetest.conf");
+		filenames.push_back(porting::path_userdata +
+				DIR_DELIM + ".." + DIR_DELIM + "minetest.conf");
 #endif
 
 		for(u32 i=0; i<filenames.size(); i++)
@@ -347,7 +349,7 @@ int main(int argc, char *argv[])
 	}
 	
 	// Figure out path to map
-	std::string map_dir = porting::path_userdata+"/world";
+	std::string map_dir = porting::path_userdata+DIR_DELIM+"world";
 	if(cmd_args.exists("map-dir"))
 		map_dir = cmd_args.get("map-dir");
 	else if(g_settings->exists("map-dir"))

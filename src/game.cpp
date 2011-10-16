@@ -42,6 +42,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "mainmenumanager.h"
 #include "gettext.h"
 #include "log.h"
+#include "filesys.h"
 
 /*
 	TODO: Move content-aware stuff to separate file by adding properties
@@ -1281,7 +1282,7 @@ void the_game(
 			irr::video::IImage* const image = driver->createScreenShot(); 
 			if (image) { 
 				irr::c8 filename[256]; 
-				snprintf(filename, 256, "%s/screenshot_%u.png", 
+				snprintf(filename, 256, "%s" DIR_DELIM "screenshot_%u.png", 
 						 g_settings->get("screenshot_path").c_str(),
 						 device->getTimer()->getRealTime()); 
 				if (driver->writeImageToFile(image, filename)) {

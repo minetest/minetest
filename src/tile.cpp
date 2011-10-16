@@ -118,7 +118,7 @@ std::string getTexturePath(const std::string &filename)
 	std::string texture_path = g_settings->get("texture_path");
 	if(texture_path != "")
 	{
-		std::string testpath = texture_path + '/' + filename;
+		std::string testpath = texture_path + DIR_DELIM + filename;
 		// Check all filename extensions. Returns "" if not found.
 		fullpath = getImagePath(testpath);
 	}

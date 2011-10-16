@@ -2820,7 +2820,7 @@ void ServerMap::verifyDatabase() {
 		return;
 	
 	{
-		std::string dbp = m_savedir + "/map.sqlite";
+		std::string dbp = m_savedir + DIR_DELIM + "map.sqlite";
 		bool needs_create = false;
 		int d;
 		
@@ -2859,7 +2859,7 @@ void ServerMap::verifyDatabase() {
 }
 
 bool ServerMap::loadFromFolders() {
-	if(!m_database && !fs::PathExists(m_savedir + "/map.sqlite"))
+	if(!m_database && !fs::PathExists(m_savedir + DIR_DELIM + "map.sqlite"))
 		return true;
 	return false;
 }
@@ -2889,13 +2889,13 @@ std::string ServerMap::getSectorDir(v2s16 pos, int layout)
 				(unsigned int)pos.X&0xffff,
 				(unsigned int)pos.Y&0xffff);
 
-			return m_savedir + "/sectors/" + cc;
+			return m_savedir + DIR_DELIM + "sectors" + DIR_DELIM + cc;
 		case 2:
-			snprintf(cc, 9, "%.3x/%.3x",
+			snprintf(cc, 9, "%.3x" DIR_DELIM "%.3x",
 				(unsigned int)pos.X&0xfff,
 				(unsigned int)pos.Y&0xfff);
 
-			return m_savedir + "/sectors2/" + cc;
+			return m_savedir + DIR_DELIM + "sectors2" + DIR_DELIM + cc;
 		default:
 			assert(false);
 	}
@@ -2905,7 +2905,7 @@ v2s16 ServerMap::getSectorPos(std::string dirname)
 {
 	unsigned int x, y;
 	int r;
-	size_t spos = dirname.rfind('/') + 1;
+	size_t spos = dirname.rfind(DIR_DELIM_C) + 1;
 	assert(spos != std::string::npos);
 	if(dirname.size() - spos == 8)
 	{
@@ -2915,7 +2915,7 @@ v2s16 ServerMap::getSectorPos(std::string dirname)
 	else if(dirname.size() - spos == 3)
 	{
 		// New layout
-		r = sscanf(dirname.substr(spos-4).c_str(), "%3x/%3x", &x, &y);
+		r = sscanf(dirname.substr(spos-4).c_str(), "%3x" DIR_DELIM "%3x", &x, &y);
 		// Sign-extend the 12 bit values up to 16 bits...
 		if(x&0x800) x|=0xF000;
 		if(y&0x800) y|=0xF000;
@@ -3036,7 +3036,7 @@ void ServerMap::saveMapMeta()
 
 	createDirs(m_savedir);
 	
-	std::string fullpath = m_savedir + "/map_meta.txt";
+	std::string fullpath = m_savedir + DIR_DELIM + "map_meta.txt";
 	std::ofstream os(fullpath.c_str(), std::ios_base::binary);
 	if(os.good() == false)
 	{
@@ -3062,7 +3062,7 @@ void ServerMap::loadMapMeta()
 	infostream<<"ServerMap::loadMapMeta(): Loading map metadata"
 			<<std::endl;
 
-	std::string fullpath = m_savedir + "/map_meta.txt";
+	std::string fullpath = m_savedir + DIR_DELIM + "map_meta.txt";
 	std::ifstream is(fullpath.c_str(), std::ios_base::binary);
 	if(is.good() == false)
 	{
@@ -3101,7 +3101,7 @@ void ServerMap::saveSectorMeta(ServerMapSector *sector)
 	std::string dir = getSectorDir(pos);
 	createDirs(dir);
 	
-	std::string fullpath = dir + "/meta";
+	std::string fullpath = dir + DIR_DELIM + "meta";
 	std::ofstream o(fullpath.c_str(), std::ios_base::binary);
 	if(o.good() == false)
 		throw FileNotGoodException("Cannot open sector metafile");
@@ -3119,7 +3119,7 @@ MapSector* ServerMap::loadSectorMeta(std::string sectordir, bool save_after_load
 
 	ServerMapSector *sector = NULL;
 
-	std::string fullpath = sectordir + "/meta";
+	std::string fullpath = sectordir + DIR_DELIM + "meta";
 	std::ifstream is(fullpath.c_str(), std::ios_base::binary);
 	if(is.good() == false)
 	{
@@ -3305,7 +3305,7 @@ void ServerMap::saveBlock(MapBlock *block)
 
 	createDirs(sectordir);
 
-	std::string fullpath = sectordir+"/"+getBlockFilename(p3d);
+	std::string fullpath = sectordir+DIR_DELIM+getBlockFilename(p3d);
 	std::ofstream o(fullpath.c_str(), std::ios_base::binary);
 	if(o.good() == false)
 		throw FileNotGoodException("Cannot open block data");
@@ -3351,7 +3351,7 @@ void ServerMap::loadBlock(std::string sectordir, std::string blockfile, MapSecto
 {
 	DSTACK(__FUNCTION_NAME);
 
-	std::string fullpath = sectordir+"/"+blockfile;
+	std::string fullpath = sectordir+DIR_DELIM+blockfile;
 	try{
 
 		std::ifstream is(fullpath.c_str(), std::ios_base::binary);
@@ -3577,7 +3577,7 @@ MapBlock* ServerMap::loadBlock(v3s16 blockpos)
 	*/
 
 	std::string blockfilename = getBlockFilename(blockpos);
-	if(fs::PathExists(sectordir+"/"+blockfilename) == false)
+	if(fs::PathExists(sectordir+DIR_DELIM+blockfilename) == false)
 		return NULL;
 
 	/*
