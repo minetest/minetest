@@ -472,6 +472,9 @@ public:
 	{
 		return m_con.GetPeerNoEx(peer_id);
 	}
+	
+	// Envlock and conlock should be locked when calling this
+	void notifyPlayer(const char *name, const std::wstring msg);
 
 private:
 

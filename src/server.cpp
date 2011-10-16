@@ -4148,6 +4148,14 @@ void Server::saveConfig()
 		g_settings->updateConfigFile(m_configpath.c_str());
 }
 
+void Server::notifyPlayer(const char *name, const std::wstring msg)
+{
+	Player *player = m_env.getPlayer(name);
+	if(!player)
+		return;
+	SendChatMessage(player->peer_id, std::wstring(L"Server: -!- ")+msg);
+}
+
 v3f findSpawnPos(ServerMap &map)
 {
 	//return v3f(50,50,50)*BS;

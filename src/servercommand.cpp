@@ -97,15 +97,29 @@ void cmd_grantrevoke(std::wostringstream &os,
 	u64 privs = ctx->server->getPlayerAuthPrivs(playername);
 
 	if(ctx->parms[0] == L"grant"){
+		privs |= newprivs;
 		actionstream<<ctx->player->getName()<<" grants "
 				<<wide_to_narrow(ctx->parms[2])<<" to "
 				<<playername<<std::endl;
-		privs |= newprivs;
+
+		std::wstring msg;
+		msg += narrow_to_wide(ctx->player->getName());
+		msg += L" granted you the privilege \"";
+		msg += ctx->parms[2];
+		msg += L"\"";
+		ctx->server->notifyPlayer(playername.c_str(), msg);
 	} else {
+		privs &= ~newprivs;
 		actionstream<<ctx->player->getName()<<" revokes "
 				<<wide_to_narrow(ctx->parms[2])<<" from "
 				<<playername<<std::endl;
-		privs &= ~newprivs;
+
+		std::wstring msg;
+		msg += narrow_to_wide(ctx->player->getName());
+		msg += L" revoked from you the privilege \"";
+		msg += ctx->parms[2];
+		msg += L"\"";
+		ctx->server->notifyPlayer(playername.c_str(), msg);
 	}
 	
 	ctx->server->setPlayerAuthPrivs(playername, privs);
