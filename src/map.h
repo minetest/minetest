@@ -157,6 +157,10 @@ public:
 	// Returns NULL if not found
 	MapBlock * getBlockNoCreateNoEx(v3s16 p);
 	
+	/* Server overrides */
+	virtual MapBlock * emergeBlock(v3s16 p, bool allow_generate=true)
+	{ return getBlockNoCreateNoEx(p); }
+
 	// Returns InvalidPositionException if not found
 	bool isNodeUnderground(v3s16 p);
 	

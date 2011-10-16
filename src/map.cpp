@@ -35,6 +35,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "settings.h"
 #include "log.h"
 
+#define PP(x) "("<<(x).X<<","<<(x).Y<<","<<(x).Z<<")"
+
 /*
 	SQLite format specification:
 	- Initially only replaces sectors/ and sectors2/
@@ -1819,9 +1821,14 @@ NodeMetadata* Map::getNodeMetadata(v3s16 p)
 	v3s16 blockpos = getNodeBlockPos(p);
 	v3s16 p_rel = p - blockpos*MAP_BLOCKSIZE;
 	MapBlock *block = getBlockNoCreateNoEx(blockpos);
-	if(block == NULL)
+	if(!block){
+		infostream<<"Map::getNodeMetadata(): Need to emerge "
+				<<PP(blockpos)<<std::endl;
+		block = emergeBlock(blockpos, false);
+	}
+	if(!block)
 	{
-		infostream<<"WARNING: Map::setNodeMetadata(): Block not found"
+		infostream<<"WARNING: Map::getNodeMetadata(): Block not found"
 				<<std::endl;
 		return NULL;
 	}
@@ -1834,7 +1841,12 @@ void Map::setNodeMetadata(v3s16 p, NodeMetadata *meta)
 	v3s16 blockpos = getNodeBlockPos(p);
 	v3s16 p_rel = p - blockpos*MAP_BLOCKSIZE;
 	MapBlock *block = getBlockNoCreateNoEx(blockpos);
-	if(block == NULL)
+	if(!block){
+		infostream<<"Map::setNodeMetadata(): Need to emerge "
+				<<PP(blockpos)<<std::endl;
+		block = emergeBlock(blockpos, false);
+	}
+	if(!block)
 	{
 		infostream<<"WARNING: Map::setNodeMetadata(): Block not found"
 				<<std::endl;
