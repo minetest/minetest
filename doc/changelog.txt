@@ -3,6 +3,19 @@ Minetest-c55 changelog
 This should contain all the major changes.
 For minor stuff, refer to the commit log of the repository.
 
+0.3.dev-20111016:
+- Locked chest
+- Server user limit setting (max_users)
+- Wielded tool is shown in HUD
+- View bobbing
+- Saplings that drop from leaf blocks and when placed on ground will grow to trees
+- Optimized map saving (does not re-save everything all the time)
+- New mob system and new mob: dungeon master
+- Death/respawn screen
+
+0.2.20110922_3:
+- Fix the build for MSVC2010; also released for windows using MSVC2010.
+
 0.2.20110922_1:
 - Make client report a newer version number to the server than 2011-07-31 does and make server disallow old clients
 

@@ -73,6 +73,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "defaultsettings.h"
 #include "settings.h"
 #include "profiler.h"
+#include "log.h"
 
 /*
 	Settings.
@@ -94,15 +95,15 @@ ITextureSource *g_texturesource = NULL;
 
 // Connection
 std::ostream *dout_con_ptr = &dummyout;
-std::ostream *derr_con_ptr = &dstream_no_stderr;
+std::ostream *derr_con_ptr = &verbosestream;
 
 // Server
-std::ostream *dout_server_ptr = &dstream;
-std::ostream *derr_server_ptr = &dstream;
+std::ostream *dout_server_ptr = &infostream;
+std::ostream *derr_server_ptr = &errorstream;
 
 // Client
-std::ostream *dout_client_ptr = &dstream;
-std::ostream *derr_client_ptr = &dstream;
+std::ostream *dout_client_ptr = &infostream;
+std::ostream *derr_client_ptr = &errorstream;
 
 /*
 	gettime.h implementation
@@ -116,11 +117,36 @@ u32 getTimeMs()
 	return porting::getTimeMs();
 }
 
+class DstreamLogOutput: public ILogOutput
+{
+public:
+	/* line: Full line with timestamp, level and thread */
+	void printLog(const std::string &line)
+	{
+		dstream<<line<<std::endl;
+	}
+} main_dstream_log_out;
+
+class DstreamNoStderrLogOutput: public ILogOutput
+{
+public:
+	/* line: Full line with timestamp, level and thread */
+	void printLog(const std::string &line)
+	{
+		dstream_no_stderr<<line<<std::endl;
+	}
+} main_dstream_no_stderr_log_out;
+
 int main(int argc, char *argv[])
 {
 	/*
 		Initialization
 	*/
+
+	log_add_output_maxlev(&main_dstream_log_out, LMT_ACTION);
+	log_add_output_all_levs(&main_dstream_no_stderr_log_out);
+
+	log_register_thread("main");
 
 	// Set locale. This is for forcing '.' as the decimal point.
 	std::locale::global(std::locale("C"));
@@ -149,7 +175,7 @@ int main(int argc, char *argv[])
 #ifdef RUN_IN_PLACE
 	std::string debugfile = DEBUGFILE;
 #else
-	std::string debugfile = porting::path_userdata+"/"+DEBUGFILE;
+	std::string debugfile = porting::path_userdata+DIR_DELIM+DEBUGFILE;
 #endif
 	debugstreams_init(disable_stderr, debugfile.c_str());
 	// Initialize debug stacks
@@ -164,7 +190,7 @@ int main(int argc, char *argv[])
 	BEGIN_DEBUG_EXCEPTION_HANDLER
 
 	// Print startup message
-	dstream<<DTIME<<PROJECT_NAME <<
+	actionstream<<PROJECT_NAME<<
 			" with SER_FMT_VER_HIGHEST="<<(int)SER_FMT_VER_HIGHEST
 			<<", "<<BUILD_INFO
 			<<std::endl;
@@ -185,6 +211,7 @@ int main(int argc, char *argv[])
 	allowed_options.insert("disable-unittests", ValueSpec(VALUETYPE_FLAG));
 	allowed_options.insert("enable-unittests", ValueSpec(VALUETYPE_FLAG));
 	allowed_options.insert("map-dir", ValueSpec(VALUETYPE_STRING));
+	allowed_options.insert("info-on-stderr", ValueSpec(VALUETYPE_FLAG));
 
 	Settings cmd_args;
 	
@@ -217,6 +244,8 @@ int main(int argc, char *argv[])
 		return cmd_args.getFlag("help") ? 0 : 1;
 	}
 
+	if(cmd_args.getFlag("info-on-stderr"))
+		log_add_output(&main_dstream_log_out, LMT_INFO);
 
 	/*
 		Basic initialization
@@ -241,7 +270,7 @@ int main(int argc, char *argv[])
 		bool r = g_settings->readConfigFile(cmd_args.get("config").c_str());
 		if(r == false)
 		{
-			dstream<<"Could not read configuration from \""
+			errorstream<<"Could not read configuration from \""
 					<<cmd_args.get("config")<<"\""<<std::endl;
 			return 1;
 		}
@@ -250,9 +279,11 @@ int main(int argc, char *argv[])
 	else
 	{
 		core::array<std::string> filenames;
-		filenames.push_back(porting::path_userdata + "/minetest.conf");
+		filenames.push_back(porting::path_userdata +
+				DIR_DELIM + "minetest.conf");
 #ifdef RUN_IN_PLACE
-		filenames.push_back(porting::path_userdata + "/../minetest.conf");
+		filenames.push_back(porting::path_userdata +
+				DIR_DELIM + ".." + DIR_DELIM + "minetest.conf");
 #endif
 
 		for(u32 i=0; i<filenames.size(); i++)
@@ -318,7 +349,7 @@ int main(int argc, char *argv[])
 	}
 	
 	// Figure out path to map
-	std::string map_dir = porting::path_userdata+"/world";
+	std::string map_dir = porting::path_userdata+DIR_DELIM+"world";
 	if(cmd_args.exists("map-dir"))
 		map_dir = cmd_args.get("map-dir");
 	else if(g_settings->exists("map-dir"))
@@ -334,10 +365,10 @@ int main(int argc, char *argv[])
 	} //try
 	catch(con::PeerNotFoundException &e)
 	{
-		dstream<<DTIME<<"Connection timed out."<<std::endl;
+		errorstream<<"Connection timed out."<<std::endl;
 	}
 
-	END_DEBUG_EXCEPTION_HANDLER
+	END_DEBUG_EXCEPTION_HANDLER(errorstream)
 
 	debugstreams_deinit();
 	

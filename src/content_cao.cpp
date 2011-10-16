@@ -116,7 +116,7 @@ void TestCAO::step(float dtime, ClientEnvironment *env)
 	if(m_node)
 	{
 		v3f rot = m_node->getRotation();
-		//dstream<<"dtime="<<dtime<<", rot.Y="<<rot.Y<<std::endl;
+		//infostream<<"dtime="<<dtime<<", rot.Y="<<rot.Y<<std::endl;
 		rot.Y += dtime * 180;
 		m_node->setRotation(rot);
 	}
@@ -124,7 +124,7 @@ void TestCAO::step(float dtime, ClientEnvironment *env)
 
 void TestCAO::processMessage(const std::string &data)
 {
-	dstream<<"TestCAO: Got data: "<<data<<std::endl;
+	infostream<<"TestCAO: Got data: "<<data<<std::endl;
 	std::istringstream is(data, std::ios::binary);
 	u16 cmd;
 	is>>cmd;
@@ -259,7 +259,7 @@ void ItemCAO::step(float dtime, ClientEnvironment *env)
 
 void ItemCAO::processMessage(const std::string &data)
 {
-	dstream<<"ItemCAO: Got message"<<std::endl;
+	infostream<<"ItemCAO: Got message"<<std::endl;
 	std::istringstream is(data, std::ios::binary);
 	// command
 	u8 cmd = readU8(is);
@@ -273,7 +273,7 @@ void ItemCAO::processMessage(const std::string &data)
 
 void ItemCAO::initialize(const std::string &data)
 {
-	dstream<<"ItemCAO: Got init data"<<std::endl;
+	infostream<<"ItemCAO: Got init data"<<std::endl;
 	
 	{
 		std::istringstream is(data, std::ios::binary);
@@ -313,7 +313,7 @@ void ItemCAO::initialize(const std::string &data)
 	try{
 		InventoryItem *item = NULL;
 		item = InventoryItem::deSerialize(is);
-		dstream<<__FUNCTION_NAME<<": m_inventorystring=\""
+		infostream<<__FUNCTION_NAME<<": m_inventorystring=\""
 				<<m_inventorystring<<"\" -> item="<<item
 				<<std::endl;
 		if(item)
@@ -324,7 +324,7 @@ void ItemCAO::initialize(const std::string &data)
 	}
 	catch(SerializationError &e)
 	{
-		dstream<<"WARNING: "<<__FUNCTION_NAME
+		infostream<<"WARNING: "<<__FUNCTION_NAME
 				<<": error deSerializing inventorystring \""
 				<<m_inventorystring<<"\""<<std::endl;
 	}
@@ -446,7 +446,7 @@ void RatCAO::step(float dtime, ClientEnvironment *env)
 
 void RatCAO::processMessage(const std::string &data)
 {
-	//dstream<<"RatCAO: Got message"<<std::endl;
+	//infostream<<"RatCAO: Got message"<<std::endl;
 	std::istringstream is(data, std::ios::binary);
 	// command
 	u8 cmd = readU8(is);
@@ -463,7 +463,7 @@ void RatCAO::processMessage(const std::string &data)
 
 void RatCAO::initialize(const std::string &data)
 {
-	//dstream<<"RatCAO: Got init data"<<std::endl;
+	//infostream<<"RatCAO: Got init data"<<std::endl;
 	
 	{
 		std::istringstream is(data, std::ios::binary);
@@ -670,7 +670,7 @@ void Oerkki1CAO::step(float dtime, ClientEnvironment *env)
 
 void Oerkki1CAO::processMessage(const std::string &data)
 {
-	//dstream<<"Oerkki1CAO: Got message"<<std::endl;
+	//infostream<<"Oerkki1CAO: Got message"<<std::endl;
 	std::istringstream is(data, std::ios::binary);
 	// command
 	u8 cmd = readU8(is);
@@ -692,7 +692,7 @@ void Oerkki1CAO::processMessage(const std::string &data)
 
 void Oerkki1CAO::initialize(const std::string &data)
 {
-	//dstream<<"Oerkki1CAO: Got init data"<<std::endl;
+	//infostream<<"Oerkki1CAO: Got init data"<<std::endl;
 	
 	{
 		std::istringstream is(data, std::ios::binary);
@@ -831,7 +831,7 @@ void FireflyCAO::step(float dtime, ClientEnvironment *env)
 
 void FireflyCAO::processMessage(const std::string &data)
 {
-	//dstream<<"FireflyCAO: Got message"<<std::endl;
+	//infostream<<"FireflyCAO: Got message"<<std::endl;
 	std::istringstream is(data, std::ios::binary);
 	// command
 	u8 cmd = readU8(is);
@@ -848,7 +848,7 @@ void FireflyCAO::processMessage(const std::string &data)
 
 void FireflyCAO::initialize(const std::string &data)
 {
-	//dstream<<"FireflyCAO: Got init data"<<std::endl;
+	//infostream<<"FireflyCAO: Got init data"<<std::endl;
 	
 	{
 		std::istringstream is(data, std::ios::binary);
@@ -912,7 +912,7 @@ void MobV2CAO::addToScene(scene::ISceneManager *smgr)
 	if(m_node != NULL)
 		return;
 	
-	/*dstream<<"MobV2CAO::addToScene using texture_name="<<
+	/*infostream<<"MobV2CAO::addToScene using texture_name="<<
 			m_texture_name<<std::endl;*/
 	std::string texture_string = "[makealpha2:128,0,0;128,128,0:";
 	texture_string += m_texture_name;
@@ -944,7 +944,7 @@ void MobV2CAO::addToScene(scene::ISceneManager *smgr)
 		bill->setTCoords(2, v2f(txs*0, tys*0));
 		bill->setTCoords(3, v2f(txs*0, tys*1));
 	} else {
-		dstream<<"MobV2CAO: Unknown sprite type \""<<m_sprite_type<<"\""
+		infostream<<"MobV2CAO: Unknown sprite type \""<<m_sprite_type<<"\""
 				<<std::endl;
 	}
 
@@ -1023,7 +1023,7 @@ void MobV2CAO::step(float dtime, ClientEnvironment *env)
 			float mob_dir = atan2(cam_to_mob.Z, cam_to_mob.X) / PI * 180.;
 			float dir = mob_dir - m_yaw;
 			dir = wrapDegrees_180(dir);
-			//dstream<<"id="<<m_id<<" dir="<<dir<<std::endl;
+			//infostream<<"id="<<m_id<<" dir="<<dir<<std::endl;
 			if(fabs(wrapDegrees_180(dir - 0)) <= 45.1)
 				col = 2;
 			else if(fabs(wrapDegrees_180(dir - 90)) <= 45.1)
@@ -1074,7 +1074,7 @@ void MobV2CAO::step(float dtime, ClientEnvironment *env)
 		bill->setTCoords(2, v2f(txs*(0+col), tys*(0+row)));
 		bill->setTCoords(3, v2f(txs*(0+col), tys*(1+row)));
 	} else {
-		dstream<<"MobV2CAO::step(): Unknown sprite type \""
+		infostream<<"MobV2CAO::step(): Unknown sprite type \""
 				<<m_sprite_type<<"\""<<std::endl;
 	}
 
@@ -1104,7 +1104,7 @@ void MobV2CAO::step(float dtime, ClientEnvironment *env)
 	if(m_damage_visual_timer >= 0){
 		m_damage_visual_timer -= dtime;
 		if(m_damage_visual_timer <= 0){
-			dstream<<"id="<<m_id<<" damage visual ended"<<std::endl;
+			infostream<<"id="<<m_id<<" damage visual ended"<<std::endl;
 		}
 	}
 
@@ -1128,7 +1128,7 @@ void MobV2CAO::step(float dtime, ClientEnvironment *env)
 
 void MobV2CAO::processMessage(const std::string &data)
 {
-	//dstream<<"MobV2CAO: Got message"<<std::endl;
+	//infostream<<"MobV2CAO: Got message"<<std::endl;
 	std::istringstream is(data, std::ios::binary);
 	// command
 	u8 cmd = readU8(is);
@@ -1182,7 +1182,7 @@ void MobV2CAO::processMessage(const std::string &data)
 
 void MobV2CAO::initialize(const std::string &data)
 {
-	//dstream<<"MobV2CAO: Got init data"<<std::endl;
+	//infostream<<"MobV2CAO: Got init data"<<std::endl;
 	
 	{
 		std::istringstream is(data, std::ios::binary);
@@ -1190,7 +1190,7 @@ void MobV2CAO::initialize(const std::string &data)
 		u8 version = readU8(is);
 		// check version
 		if(version != 0){
-			dstream<<__FUNCTION_NAME<<": Invalid version"<<std::endl;
+			infostream<<__FUNCTION_NAME<<": Invalid version"<<std::endl;
 			return;
 		}
 		
@@ -1199,8 +1199,8 @@ void MobV2CAO::initialize(const std::string &data)
 		std::istringstream tmp_is(tmp_os.str(), std::ios::binary);
 		m_properties->parseConfigLines(tmp_is, "MobArgsEnd");
 
-		dstream<<"INFO: MobV2CAO::initialize(): got properties:"<<std::endl;
-		m_properties->writeLines(dstream);
+		infostream<<"MobV2CAO::initialize(): got properties:"<<std::endl;
+		m_properties->writeLines(infostream);
 		
 		m_properties->setDefault("looks", "dummy_default");
 		m_properties->setDefault("yaw", "0");

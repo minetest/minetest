@@ -1230,20 +1230,7 @@ int myrand(void);
 void mysrand(unsigned seed);
 #define MYRAND_MAX 32767
 
-inline int myrand_range(int min, int max)
-{
-	if(max-min > MYRAND_MAX)
-	{
-		dstream<<"WARNING: myrand_range: max-min > MYRAND_MAX"<<std::endl;
-		assert(0);
-	}
-	if(min > max)
-	{
-		assert(0);
-		return max;
-	}
-	return (myrand()%(max-min+1))+min;
-}
+int myrand_range(int min, int max);
 
 /*
 	Miscellaneous functions

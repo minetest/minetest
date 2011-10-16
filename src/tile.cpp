@@ -24,6 +24,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "utility.h"
 #include "settings.h"
 #include <ICameraSceneNode.h>
+#include "log.h"
 
 /*
 	A cache from texture name to texture path
@@ -117,7 +118,7 @@ std::string getTexturePath(const std::string &filename)
 	std::string texture_path = g_settings->get("texture_path");
 	if(texture_path != "")
 	{
-		std::string testpath = texture_path + '/' + filename;
+		std::string testpath = texture_path + DIR_DELIM + filename;
 		// Check all filename extensions. Returns "" if not found.
 		fullpath = getImagePath(testpath);
 	}
@@ -162,7 +163,7 @@ TextureSource::TextureSource(IrrlichtDevice *device):
 	if(g_settings->getBool("enable_texture_atlas"))
 		buildMainAtlas();
 	else
-		dstream<<"INFO: Not building texture atlas."<<std::endl;
+		infostream<<"Not building texture atlas."<<std::endl;
 }
 
 TextureSource::~TextureSource()
@@ -179,7 +180,7 @@ void TextureSource::processQueue()
 		GetRequest<std::string, u32, u8, u8>
 				request = m_get_texture_queue.pop();
 
-		dstream<<"INFO: TextureSource::processQueue(): "
+		infostream<<"TextureSource::processQueue(): "
 				<<"got texture request with "
 				<<"name=\""<<request.key<<"\""
 				<<std::endl;
@@ -196,7 +197,7 @@ void TextureSource::processQueue()
 
 u32 TextureSource::getTextureId(const std::string &name)
 {
-	//dstream<<"INFO: getTextureId(): \""<<name<<"\""<<std::endl;
+	//infostream<<"getTextureId(): \""<<name<<"\""<<std::endl;
 
 	{
 		/*
@@ -220,7 +221,7 @@ u32 TextureSource::getTextureId(const std::string &name)
 	}
 	else
 	{
-		dstream<<"INFO: getTextureId(): Queued: name=\""<<name<<"\""<<std::endl;
+		infostream<<"getTextureId(): Queued: name=\""<<name<<"\""<<std::endl;
 
 		// We're gonna ask the result to be put into here
 		ResultQueue<std::string, u32, u8, u8> result_queue;
@@ -228,7 +229,7 @@ u32 TextureSource::getTextureId(const std::string &name)
 		// Throw a request in
 		m_get_texture_queue.add(name, 0, 0, &result_queue);
 		
-		dstream<<"INFO: Waiting for texture from main thread, name=\""
+		infostream<<"Waiting for texture from main thread, name=\""
 				<<name<<"\""<<std::endl;
 		
 		try
@@ -244,12 +245,12 @@ u32 TextureSource::getTextureId(const std::string &name)
 		}
 		catch(ItemNotFoundException &e)
 		{
-			dstream<<"WARNING: Waiting for texture timed out."<<std::endl;
+			infostream<<"Waiting for texture timed out."<<std::endl;
 			return 0;
 		}
 	}
 	
-	dstream<<"WARNING: getTextureId(): Failed"<<std::endl;
+	infostream<<"getTextureId(): Failed"<<std::endl;
 
 	return 0;
 }
@@ -278,12 +279,12 @@ video::IImage* generate_image_from_scratch(std::string name,
 */
 u32 TextureSource::getTextureIdDirect(const std::string &name)
 {
-	//dstream<<"INFO: getTextureIdDirect(): name=\""<<name<<"\""<<std::endl;
+	//infostream<<"getTextureIdDirect(): name=\""<<name<<"\""<<std::endl;
 
 	// Empty name means texture 0
 	if(name == "")
 	{
-		dstream<<"INFO: getTextureIdDirect(): name is empty"<<std::endl;
+		infostream<<"getTextureIdDirect(): name is empty"<<std::endl;
 		return 0;
 	}
 	
@@ -292,7 +293,7 @@ u32 TextureSource::getTextureIdDirect(const std::string &name)
 	*/
 	if(get_current_thread_id() != m_main_thread)
 	{
-		dstream<<"ERROR: TextureSource::getTextureIdDirect() "
+		errorstream<<"TextureSource::getTextureIdDirect() "
 				"called not from main thread"<<std::endl;
 		return 0;
 	}
@@ -307,13 +308,13 @@ u32 TextureSource::getTextureIdDirect(const std::string &name)
 		n = m_name_to_id.find(name);
 		if(n != NULL)
 		{
-			dstream<<"INFO: getTextureIdDirect(): \""<<name
+			infostream<<"getTextureIdDirect(): \""<<name
 					<<"\" found in cache"<<std::endl;
 			return n->getValue();
 		}
 	}
 
-	dstream<<"INFO: getTextureIdDirect(): \""<<name
+	infostream<<"getTextureIdDirect(): \""<<name
 			<<"\" NOT found in cache. Creating it."<<std::endl;
 	
 	/*
@@ -348,13 +349,13 @@ u32 TextureSource::getTextureIdDirect(const std::string &name)
 	{
 		// Construct base name
 		base_image_name = name.substr(0, last_separator_position);
-		/*dstream<<"INFO: getTextureIdDirect(): Calling itself recursively"
+		/*infostream<<"getTextureIdDirect(): Calling itself recursively"
 				" to get base image of \""<<name<<"\" = \""
                 <<base_image_name<<"\""<<std::endl;*/
 		base_image_id = getTextureIdDirect(base_image_name);
 	}
 	
-	//dstream<<"base_image_id="<<base_image_id<<std::endl;
+	//infostream<<"base_image_id="<<base_image_id<<std::endl;
 	
 	video::IVideoDriver* driver = m_device->getVideoDriver();
 	assert(driver);
@@ -377,7 +378,7 @@ u32 TextureSource::getTextureIdDirect(const std::string &name)
 		
 		if(image == NULL)
 		{
-			dstream<<"WARNING: getTextureIdDirect(): NULL image in "
+			infostream<<"getTextureIdDirect(): NULL image in "
 					<<"cache: \""<<base_image_name<<"\""
 					<<std::endl;
 		}
@@ -396,7 +397,7 @@ u32 TextureSource::getTextureIdDirect(const std::string &name)
 					core::rect<s32>(pos_from, dim) // from
 			);
 
-			/*dstream<<"INFO: getTextureIdDirect(): Loaded \""
+			/*infostream<<"getTextureIdDirect(): Loaded \""
 					<<base_image_name<<"\" from image cache"
 					<<std::endl;*/
 		}
@@ -408,12 +409,12 @@ u32 TextureSource::getTextureIdDirect(const std::string &name)
 	*/
 
 	std::string last_part_of_name = name.substr(last_separator_position+1);
-	//dstream<<"last_part_of_name=\""<<last_part_of_name<<"\""<<std::endl;
+	//infostream<<"last_part_of_name=\""<<last_part_of_name<<"\""<<std::endl;
 
 	// Generate image according to part of name
 	if(generate_image(last_part_of_name, baseimg, m_device) == false)
 	{
-		dstream<<"INFO: getTextureIdDirect(): "
+		infostream<<"getTextureIdDirect(): "
 				"failed to generate \""<<last_part_of_name<<"\""
 				<<std::endl;
 	}
@@ -421,7 +422,7 @@ u32 TextureSource::getTextureIdDirect(const std::string &name)
 	// If no resulting image, print a warning
 	if(baseimg == NULL)
 	{
-		dstream<<"WARNING: getTextureIdDirect(): baseimg is NULL (attempted to"
+		infostream<<"getTextureIdDirect(): baseimg is NULL (attempted to"
 				" create texture \""<<name<<"\""<<std::endl;
 	}
 	
@@ -450,7 +451,7 @@ u32 TextureSource::getTextureIdDirect(const std::string &name)
 	m_atlaspointer_cache.push_back(nap);
 	m_name_to_id.insert(name, id);
 
-	/*dstream<<"INFO: getTextureIdDirect(): "
+	/*infostream<<"getTextureIdDirect(): "
 			<<"Returning id="<<id<<" for name \""<<name<<"\""<<std::endl;*/
 	
 	return id;
@@ -462,7 +463,7 @@ std::string TextureSource::getTextureName(u32 id)
 
 	if(id >= m_atlaspointer_cache.size())
 	{
-		dstream<<"WARNING: TextureSource::getTextureName(): id="<<id
+		infostream<<"TextureSource::getTextureName(): id="<<id
 				<<" >= m_atlaspointer_cache.size()="
 				<<m_atlaspointer_cache.size()<<std::endl;
 		return "";
@@ -484,7 +485,7 @@ AtlasPointer TextureSource::getTexture(u32 id)
 
 void TextureSource::buildMainAtlas() 
 {
-	dstream<<"TextureSource::buildMainAtlas()"<<std::endl;
+	infostream<<"TextureSource::buildMainAtlas()"<<std::endl;
 
 	//return; // Disable (for testing)
 	
@@ -500,7 +501,7 @@ void TextureSource::buildMainAtlas()
 	//assert(atlas_img);
 	if(atlas_img == NULL)
 	{
-		dstream<<"TextureSource::buildMainAtlas(): Failed to create atlas "
+		errorstream<<"TextureSource::buildMainAtlas(): Failed to create atlas "
 				"image; not building texture atlas."<<std::endl;
 		return;
 	}
@@ -569,7 +570,7 @@ void TextureSource::buildMainAtlas()
 		video::IImage *img2 = generate_image_from_scratch(name, m_device);
 		if(img2 == NULL)
 		{
-			dstream<<"WARNING: TextureSource::buildMainAtlas(): Couldn't generate texture atlas: Couldn't generate image \""<<name<<"\""<<std::endl;
+			infostream<<"TextureSource::buildMainAtlas(): Couldn't generate texture atlas: Couldn't generate image \""<<name<<"\""<<std::endl;
 			continue;
 		}
 
@@ -580,7 +581,7 @@ void TextureSource::buildMainAtlas()
 		if(dim.Width > max_size_in_atlas.Width
 		|| dim.Height > max_size_in_atlas.Height)
 		{
-			dstream<<"INFO: TextureSource::buildMainAtlas(): Not adding "
+			infostream<<"TextureSource::buildMainAtlas(): Not adding "
 					<<"\""<<name<<"\" because image is large"<<std::endl;
 			continue;
 		}
@@ -588,13 +589,13 @@ void TextureSource::buildMainAtlas()
 		// Stop making atlas if atlas is full
 		if(pos_in_atlas.Y + dim.Height > atlas_dim.Height)
 		{
-			dstream<<"WARNING: TextureSource::buildMainAtlas(): "
+			infostream<<"TextureSource::buildMainAtlas(): "
 					<<"Atlas is full, not adding more textures."
 					<<std::endl;
 			break;
 		}
 		
-        dstream<<"INFO: TextureSource::buildMainAtlas(): Adding \""<<name
+        infostream<<"TextureSource::buildMainAtlas(): Adding \""<<name
                 <<"\" to texture atlas"<<std::endl;
 
 		// Tile it a few times in the X direction
@@ -673,7 +674,7 @@ void TextureSource::buildMainAtlas()
 		if(m_name_to_id.find(name) == NULL)
 			continue;
 		u32 id = m_name_to_id[name];
-		//dstream<<"id of name "<<name<<" is "<<id<<std::endl;
+		//infostream<<"id of name "<<name<<" is "<<id<<std::endl;
 		m_atlaspointer_cache[id].a.atlas = t;
 	}
 
@@ -687,7 +688,7 @@ void TextureSource::buildMainAtlas()
 video::IImage* generate_image_from_scratch(std::string name,
 		IrrlichtDevice *device)
 {
-	/*dstream<<"INFO: generate_image_from_scratch(): "
+	/*infostream<<"generate_image_from_scratch(): "
 			"\""<<name<<"\""<<std::endl;*/
 	
 	video::IVideoDriver* driver = device->getVideoDriver();
@@ -712,7 +713,7 @@ video::IImage* generate_image_from_scratch(std::string name,
 		}
 	}
 
-	/*dstream<<"INFO: generate_image_from_scratch(): "
+	/*infostream<<"generate_image_from_scratch(): "
 			<<"last_separator_position="<<last_separator_position
 			<<std::endl;*/
 
@@ -725,7 +726,7 @@ video::IImage* generate_image_from_scratch(std::string name,
 	{
 		// Construct base name
 		base_image_name = name.substr(0, last_separator_position);
-		/*dstream<<"INFO: generate_image_from_scratch(): Calling itself recursively"
+		/*infostream<<"generate_image_from_scratch(): Calling itself recursively"
 				" to get base image of \""<<name<<"\" = \""
                 <<base_image_name<<"\""<<std::endl;*/
 		baseimg = generate_image_from_scratch(base_image_name, device);
@@ -737,12 +738,12 @@ video::IImage* generate_image_from_scratch(std::string name,
 	*/
 
 	std::string last_part_of_name = name.substr(last_separator_position+1);
-	//dstream<<"last_part_of_name=\""<<last_part_of_name<<"\""<<std::endl;
+	//infostream<<"last_part_of_name=\""<<last_part_of_name<<"\""<<std::endl;
 	
 	// Generate image according to part of name
 	if(generate_image(last_part_of_name, baseimg, device) == false)
 	{
-		dstream<<"INFO: generate_image_from_scratch(): "
+		infostream<<"generate_image_from_scratch(): "
 				"failed to generate \""<<last_part_of_name<<"\""
 				<<std::endl;
 		return NULL;
@@ -762,20 +763,20 @@ bool generate_image(std::string part_of_name, video::IImage *& baseimg,
 	{
 		// A normal texture; load it from a file
 		std::string path = getTexturePath(part_of_name.c_str());
-		/*dstream<<"INFO: generate_image(): Loading path \""<<path
+		/*infostream<<"generate_image(): Loading path \""<<path
 				<<"\""<<std::endl;*/
 		
 		video::IImage *image = driver->createImageFromFile(path.c_str());
 
 		if(image == NULL)
 		{
-			dstream<<"WARNING: generate_image(): Could not load image \""
+			infostream<<"generate_image(): Could not load image \""
                     <<part_of_name<<"\" from path \""<<path<<"\""
 					<<" while building texture"<<std::endl;
 
 			//return false;
 
-			dstream<<"WARNING: generate_image(): Creating a dummy"
+			infostream<<"generate_image(): Creating a dummy"
                     <<" image for \""<<part_of_name<<"\""<<std::endl;
 
 			// Just create a dummy image
@@ -800,7 +801,7 @@ bool generate_image(std::string part_of_name, video::IImage *& baseimg,
 		// If base image is NULL, load as base.
 		if(baseimg == NULL)
 		{
-			//dstream<<"INFO: Setting "<<part_of_name<<" as base"<<std::endl;
+			//infostream<<"Setting "<<part_of_name<<" as base"<<std::endl;
 			/*
 				Copy it this way to get an alpha channel.
 				Otherwise images with alpha cannot be blitted on 
@@ -814,7 +815,7 @@ bool generate_image(std::string part_of_name, video::IImage *& baseimg,
 		// Else blit on base.
 		else
 		{
-			//dstream<<"INFO: Blitting "<<part_of_name<<" on base"<<std::endl;
+			//infostream<<"Blitting "<<part_of_name<<" on base"<<std::endl;
 			// Size of the copied area
 			core::dimension2d<u32> dim = image->getDimension();
 			//core::dimension2d<u32> dim(16,16);
@@ -835,7 +836,7 @@ bool generate_image(std::string part_of_name, video::IImage *& baseimg,
 	{
 		// A special texture modification
 
-		dstream<<"INFO: generate_image(): generating special "
+		infostream<<"generate_image(): generating special "
 				<<"modification \""<<part_of_name<<"\""
 				<<std::endl;
 		
@@ -858,7 +859,7 @@ bool generate_image(std::string part_of_name, video::IImage *& baseimg,
 		{
 			if(baseimg == NULL)
 			{
-				dstream<<"WARNING: generate_image(): baseimg==NULL "
+				infostream<<"generate_image(): baseimg==NULL "
 						<<"for part_of_name=\""<<part_of_name
 						<<"\", cancelling."<<std::endl;
 				return false;
@@ -952,7 +953,7 @@ bool generate_image(std::string part_of_name, video::IImage *& baseimg,
 			sf.next(":");
 			u32 w0 = stoi(sf.next("x"));
 			u32 h0 = stoi(sf.next(":"));
-			dstream<<"INFO: combined w="<<w0<<" h="<<h0<<std::endl;
+			infostream<<"combined w="<<w0<<" h="<<h0<<std::endl;
 			core::dimension2d<u32> dim(w0,h0);
 			baseimg = driver->createImage(video::ECF_A8R8G8B8, dim);
 			while(sf.atend() == false)
@@ -960,7 +961,7 @@ bool generate_image(std::string part_of_name, video::IImage *& baseimg,
 				u32 x = stoi(sf.next(","));
 				u32 y = stoi(sf.next("="));
 				std::string filename = sf.next(":");
-				dstream<<"INFO: Adding \""<<filename
+				infostream<<"Adding \""<<filename
 						<<"\" to combined ("<<x<<","<<y<<")"
 						<<std::endl;
 				video::IImage *img = driver->createImageFromFile(
@@ -968,7 +969,7 @@ bool generate_image(std::string part_of_name, video::IImage *& baseimg,
 				if(img)
 				{
 					core::dimension2d<u32> dim = img->getDimension();
-					dstream<<"INFO: Size "<<dim.Width
+					infostream<<"Size "<<dim.Width
 							<<"x"<<dim.Height<<std::endl;
 					core::position2d<s32> pos_base(x, y);
 					video::IImage *img2 =
@@ -983,7 +984,7 @@ bool generate_image(std::string part_of_name, video::IImage *& baseimg,
 				}
 				else
 				{
-					dstream<<"WARNING: img==NULL"<<std::endl;
+					infostream<<"img==NULL"<<std::endl;
 				}
 			}
 		}
@@ -995,7 +996,7 @@ bool generate_image(std::string part_of_name, video::IImage *& baseimg,
 		{
 			if(baseimg == NULL)
 			{
-				dstream<<"WARNING: generate_image(): baseimg==NULL "
+				infostream<<"generate_image(): baseimg==NULL "
 						<<"for part_of_name=\""<<part_of_name
 						<<"\", cancelling."<<std::endl;
 				return false;
@@ -1015,7 +1016,7 @@ bool generate_image(std::string part_of_name, video::IImage *& baseimg,
 		{
 			if(baseimg != NULL)
 			{
-				dstream<<"WARNING: generate_image(): baseimg!=NULL "
+				infostream<<"generate_image(): baseimg!=NULL "
 						<<"for part_of_name=\""<<part_of_name
 						<<"\", cancelling."<<std::endl;
 				return false;
@@ -1025,14 +1026,14 @@ bool generate_image(std::string part_of_name, video::IImage *& baseimg,
 
 			std::string path = getTexturePath(filename.c_str());
 
-			dstream<<"INFO: generate_image(): Loading path \""<<path
+			infostream<<"generate_image(): Loading path \""<<path
 					<<"\""<<std::endl;
 			
 			video::IImage *image = driver->createImageFromFile(path.c_str());
 			
 			if(image == NULL)
 			{
-				dstream<<"WARNING: generate_image(): Loading path \""
+				infostream<<"generate_image(): Loading path \""
 						<<path<<"\" failed"<<std::endl;
 			}
 			else
@@ -1062,7 +1063,7 @@ bool generate_image(std::string part_of_name, video::IImage *& baseimg,
 		{
 			if(baseimg != NULL)
 			{
-				dstream<<"WARNING: generate_image(): baseimg!=NULL "
+				infostream<<"generate_image(): baseimg!=NULL "
 						<<"for part_of_name=\""<<part_of_name
 						<<"\", cancelling."<<std::endl;
 				return false;
@@ -1076,14 +1077,14 @@ bool generate_image(std::string part_of_name, video::IImage *& baseimg,
 
 			std::string path = getTexturePath(filename.c_str());
 
-			dstream<<"INFO: generate_image(): Loading path \""<<path
+			infostream<<"generate_image(): Loading path \""<<path
 					<<"\""<<std::endl;
 			
 			video::IImage *image = driver->createImageFromFile(path.c_str());
 			
 			if(image == NULL)
 			{
-				dstream<<"WARNING: generate_image(): Loading path \""
+				infostream<<"generate_image(): Loading path \""
 						<<path<<"\" failed"<<std::endl;
 			}
 			else
@@ -1117,7 +1118,7 @@ bool generate_image(std::string part_of_name, video::IImage *& baseimg,
 		{
 			if(baseimg != NULL)
 			{
-				dstream<<"WARNING: generate_image(): baseimg!=NULL "
+				infostream<<"generate_image(): baseimg!=NULL "
 						<<"for part_of_name=\""<<part_of_name
 						<<"\", cancelling."<<std::endl;
 				return false;
@@ -1134,14 +1135,14 @@ bool generate_image(std::string part_of_name, video::IImage *& baseimg,
 
 			std::string path = getTexturePath(filename.c_str());
 
-			dstream<<"INFO: generate_image(): Loading path \""<<path
+			infostream<<"generate_image(): Loading path \""<<path
 					<<"\""<<std::endl;
 			
 			video::IImage *image = driver->createImageFromFile(path.c_str());
 			
 			if(image == NULL)
 			{
-				dstream<<"WARNING: generate_image(): Loading path \""
+				infostream<<"generate_image(): Loading path \""
 						<<path<<"\" failed"<<std::endl;
 			}
 			else
@@ -1180,7 +1181,7 @@ bool generate_image(std::string part_of_name, video::IImage *& baseimg,
 		{
 			if(baseimg != NULL)
 			{
-				dstream<<"WARNING: generate_image(): baseimg!=NULL "
+				infostream<<"generate_image(): baseimg!=NULL "
 						<<"for part_of_name=\""<<part_of_name
 						<<"\", cancelling."<<std::endl;
 				return false;
@@ -1198,7 +1199,7 @@ bool generate_image(std::string part_of_name, video::IImage *& baseimg,
 
 			if(driver->queryFeature(video::EVDF_RENDER_TO_TARGET) == false)
 			{
-				dstream<<"WARNING: generate_image(): EVDF_RENDER_TO_TARGET"
+				infostream<<"generate_image(): EVDF_RENDER_TO_TARGET"
 						" not supported. Creating fallback image"<<std::endl;
 				baseimg = generate_image_from_scratch(
 						imagename_top, device);
@@ -1207,7 +1208,7 @@ bool generate_image(std::string part_of_name, video::IImage *& baseimg,
 			
 			u32 w0 = 64;
 			u32 h0 = 64;
-			//dstream<<"INFO: inventorycube w="<<w0<<" h="<<h0<<std::endl;
+			//infostream<<"inventorycube w="<<w0<<" h="<<h0<<std::endl;
 			core::dimension2d<u32> dim(w0,h0);
 			
 			// Generate images for the faces of the cube
@@ -1309,7 +1310,7 @@ bool generate_image(std::string part_of_name, video::IImage *& baseimg,
 		}
 		else
 		{
-			dstream<<"WARNING: generate_image(): Invalid "
+			infostream<<"generate_image(): Invalid "
 					" modification: \""<<part_of_name<<"\""<<std::endl;
 		}
 	}

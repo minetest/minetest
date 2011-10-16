@@ -33,6 +33,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "content_mapnode.h"
 #include "mapsector.h"
 #include "settings.h"
+#include "log.h"
 
 /*
 	Asserts that the exception occurs
@@ -49,9 +50,9 @@ struct TestUtilities
 {
 	void Run()
 	{
-		/*dstream<<"wrapDegrees(100.0) = "<<wrapDegrees(100.0)<<std::endl;
-		dstream<<"wrapDegrees(720.5) = "<<wrapDegrees(720.5)<<std::endl;
-		dstream<<"wrapDegrees(-0.5) = "<<wrapDegrees(-0.5)<<std::endl;*/
+		/*infostream<<"wrapDegrees(100.0) = "<<wrapDegrees(100.0)<<std::endl;
+		infostream<<"wrapDegrees(720.5) = "<<wrapDegrees(720.5)<<std::endl;
+		infostream<<"wrapDegrees(-0.5) = "<<wrapDegrees(-0.5)<<std::endl;*/
 		assert(fabs(wrapDegrees(100.0) - 100.0) < 0.001);
 		assert(fabs(wrapDegrees(720.5) - 0.5) < 0.001);
 		assert(fabs(wrapDegrees(-0.5) - (-0.5)) < 0.001);
@@ -112,13 +113,13 @@ struct TestCompress
 
 		std::string str_out = os.str();
 		
-		dstream<<"str_out.size()="<<str_out.size()<<std::endl;
-		dstream<<"TestCompress: 1,5,5,1 -> ";
+		infostream<<"str_out.size()="<<str_out.size()<<std::endl;
+		infostream<<"TestCompress: 1,5,5,1 -> ";
 		for(u32 i=0; i<str_out.size(); i++)
 		{
-			dstream<<(u32)str_out[i]<<",";
+			infostream<<(u32)str_out[i]<<",";
 		}
-		dstream<<std::endl;
+		infostream<<std::endl;
 
 		assert(str_out.size() == 10);
 
@@ -139,12 +140,12 @@ struct TestCompress
 		decompress(is, os2, 0);
 		std::string str_out2 = os2.str();
 
-		dstream<<"decompress: ";
+		infostream<<"decompress: ";
 		for(u32 i=0; i<str_out2.size(); i++)
 		{
-			dstream<<(u32)str_out2[i]<<",";
+			infostream<<(u32)str_out2[i]<<",";
 		}
-		dstream<<std::endl;
+		infostream<<std::endl;
 
 		assert(str_out2.size() == fromdata.getSize());
 
@@ -168,13 +169,13 @@ struct TestCompress
 
 		std::string str_out = os.str();
 		
-		dstream<<"str_out.size()="<<str_out.size()<<std::endl;
-		dstream<<"TestCompress: 1,5,5,1 -> ";
+		infostream<<"str_out.size()="<<str_out.size()<<std::endl;
+		infostream<<"TestCompress: 1,5,5,1 -> ";
 		for(u32 i=0; i<str_out.size(); i++)
 		{
-			dstream<<(u32)str_out[i]<<",";
+			infostream<<(u32)str_out[i]<<",";
 		}
-		dstream<<std::endl;
+		infostream<<std::endl;
 
 		/*assert(str_out.size() == 10);
 
@@ -195,12 +196,12 @@ struct TestCompress
 		decompress(is, os2, SER_FMT_VER_HIGHEST);
 		std::string str_out2 = os2.str();
 
-		dstream<<"decompress: ";
+		infostream<<"decompress: ";
 		for(u32 i=0; i<str_out2.size(); i++)
 		{
-			dstream<<(u32)str_out2[i]<<",";
+			infostream<<(u32)str_out2[i]<<",";
 		}
-		dstream<<std::endl;
+		infostream<<std::endl;
 
 		assert(str_out2.size() == fromdata.getSize());
 
@@ -258,12 +259,12 @@ struct TestVoxelManipulator
 
 		assert(aa.size() == results.size());
 		
-		dstream<<"Result of diff:"<<std::endl;
+		infostream<<"Result of diff:"<<std::endl;
 		for(core::list<VoxelArea>::Iterator
 				i = aa.begin(); i != aa.end(); i++)
 		{
-			i->print(dstream);
-			dstream<<std::endl;
+			i->print(infostream);
+			infostream<<std::endl;
 			
 			s32 j = results.linear_search(*i);
 			assert(j != -1);
@@ -277,27 +278,27 @@ struct TestVoxelManipulator
 		
 		VoxelManipulator v;
 
-		v.print(dstream);
+		v.print(infostream);
 
-		dstream<<"*** Setting (-1,0,-1)=2 ***"<<std::endl;
+		infostream<<"*** Setting (-1,0,-1)=2 ***"<<std::endl;
 		
 		v.setNodeNoRef(v3s16(-1,0,-1), MapNode(2));
 
-		v.print(dstream);
+		v.print(infostream);
 
  		assert(v.getNode(v3s16(-1,0,-1)).getContent() == 2);
 
-		dstream<<"*** Reading from inexistent (0,0,-1) ***"<<std::endl;
+		infostream<<"*** Reading from inexistent (0,0,-1) ***"<<std::endl;
 
 		EXCEPTION_CHECK(InvalidPositionException, v.getNode(v3s16(0,0,-1)));
 
-		v.print(dstream);
+		v.print(infostream);
 
-		dstream<<"*** Adding area ***"<<std::endl;
+		infostream<<"*** Adding area ***"<<std::endl;
 
 		v.addArea(a);
 		
-		v.print(dstream);
+		v.print(infostream);
 
 		assert(v.getNode(v3s16(-1,0,-1)).getContent() == 2);
 		EXCEPTION_CHECK(InvalidPositionException, v.getNode(v3s16(0,1,1)));
@@ -343,12 +344,12 @@ struct TestVoxelManipulator
 			p++;
 		}
 
-		v.print(dstream, VOXELPRINT_WATERPRESSURE);
+		v.print(infostream, VOXELPRINT_WATERPRESSURE);
 		
 		core::map<v3s16, u8> active_nodes;
 		v.updateAreaWaterPressure(area, active_nodes);
 
-		v.print(dstream, VOXELPRINT_WATERPRESSURE);
+		v.print(infostream, VOXELPRINT_WATERPRESSURE);
 		
 		//s16 highest_y = -32768;
 		/*
@@ -365,8 +366,8 @@ struct TestVoxelManipulator
 		//v.flowWater(active_nodes, 0, true, 1000);
 		v.flowWater(active_nodes, 0, false, 1000);
 		
-		dstream<<"Final result of flowWater:"<<std::endl;
-		v.print(dstream, VOXELPRINT_WATERPRESSURE);
+		infostream<<"Final result of flowWater:"<<std::endl;
+		v.print(infostream, VOXELPRINT_WATERPRESSURE);
 #endif
 		
 		//assert(0);
@@ -765,15 +766,15 @@ struct TestConnection
 		assert(readU8(&p1.data[6]) == channel);
 		assert(readU8(&p1.data[7]) == data1[0]);
 		
-		//dstream<<"initial data1[0]="<<((u32)data1[0]&0xff)<<std::endl;
+		//infostream<<"initial data1[0]="<<((u32)data1[0]&0xff)<<std::endl;
 
 		SharedBuffer<u8> p2 = con::makeReliablePacket(data1, seqnum);
 
-		/*dstream<<"p2.getSize()="<<p2.getSize()<<", data1.getSize()="
+		/*infostream<<"p2.getSize()="<<p2.getSize()<<", data1.getSize()="
 				<<data1.getSize()<<std::endl;
-		dstream<<"readU8(&p2[3])="<<readU8(&p2[3])
+		infostream<<"readU8(&p2[3])="<<readU8(&p2[3])
 				<<" p2[3]="<<((u32)p2[3]&0xff)<<std::endl;
-		dstream<<"data1[0]="<<((u32)data1[0]&0xff)<<std::endl;*/
+		infostream<<"data1[0]="<<((u32)data1[0]&0xff)<<std::endl;*/
 
 		assert(p2.getSize() == 3 + data1.getSize());
 		assert(readU8(&p2[0]) == TYPE_RELIABLE);
@@ -791,14 +792,14 @@ struct TestConnection
 		}
 		void peerAdded(con::Peer *peer)
 		{
-			dstream<<"Handler("<<name<<")::peerAdded(): "
+			infostream<<"Handler("<<name<<")::peerAdded(): "
 					"id="<<peer->id<<std::endl;
 			last_id = peer->id;
 			count++;
 		}
 		void deletingPeer(con::Peer *peer, bool timeout)
 		{
-			dstream<<"Handler("<<name<<")::deletingPeer(): "
+			infostream<<"Handler("<<name<<")::deletingPeer(): "
 					"id="<<peer->id
 					<<", timeout="<<timeout<<std::endl;
 			last_id = peer->id;
@@ -824,11 +825,11 @@ struct TestConnection
 		Handler hand_server("server");
 		Handler hand_client("client");
 		
-		dstream<<"** Creating server Connection"<<std::endl;
+		infostream<<"** Creating server Connection"<<std::endl;
 		con::Connection server(proto_id, 512, 5.0, &hand_server);
 		server.Serve(30001);
 		
-		dstream<<"** Creating client Connection"<<std::endl;
+		infostream<<"** Creating client Connection"<<std::endl;
 		con::Connection client(proto_id, 512, 5.0, &hand_client);
 
 		assert(hand_server.count == 0);
@@ -837,7 +838,7 @@ struct TestConnection
 		sleep_ms(50);
 		
 		Address server_address(127,0,0,1, 30001);
-		dstream<<"** running client.Connect()"<<std::endl;
+		infostream<<"** running client.Connect()"<<std::endl;
 		client.Connect(server_address);
 
 		sleep_ms(50);
@@ -852,9 +853,9 @@ struct TestConnection
 		{
 			u16 peer_id;
 			u8 data[100];
-			dstream<<"** running server.Receive()"<<std::endl;
+			infostream<<"** running server.Receive()"<<std::endl;
 			u32 size = server.Receive(peer_id, data, 100);
-			dstream<<"** Server received: peer_id="<<peer_id
+			infostream<<"** Server received: peer_id="<<peer_id
 					<<", size="<<size
 					<<std::endl;
 		}
@@ -879,9 +880,9 @@ struct TestConnection
 			{
 				u16 peer_id;
 				u8 data[100];
-				dstream<<"** running client.Receive()"<<std::endl;
+				infostream<<"** running client.Receive()"<<std::endl;
 				u32 size = client.Receive(peer_id, data, 100);
-				dstream<<"** Client received: peer_id="<<peer_id
+				infostream<<"** Client received: peer_id="<<peer_id
 						<<", size="<<size
 						<<std::endl;
 			}
@@ -897,9 +898,9 @@ struct TestConnection
 		{
 			u16 peer_id;
 			u8 data[100];
-			dstream<<"** running server.Receive()"<<std::endl;
+			infostream<<"** running server.Receive()"<<std::endl;
 			u32 size = server.Receive(peer_id, data, 100);
-			dstream<<"** Server received: peer_id="<<peer_id
+			infostream<<"** Server received: peer_id="<<peer_id
 					<<", size="<<size
 					<<std::endl;
 		}
@@ -912,16 +913,16 @@ struct TestConnection
 			u32 datasize = sizeof(data);*/
 			SharedBuffer<u8> data = SharedBufferFromString("Hello World!");
 
-			dstream<<"** running client.Send()"<<std::endl;
+			infostream<<"** running client.Send()"<<std::endl;
 			client.Send(PEER_ID_SERVER, 0, data, true);
 
 			sleep_ms(50);
 
 			u16 peer_id;
 			u8 recvdata[100];
-			dstream<<"** running server.Receive()"<<std::endl;
+			infostream<<"** running server.Receive()"<<std::endl;
 			u32 size = server.Receive(peer_id, recvdata, 100);
-			dstream<<"** Server received: peer_id="<<peer_id
+			infostream<<"** Server received: peer_id="<<peer_id
 					<<", size="<<size
 					<<", data="<<*data
 					<<std::endl;
@@ -942,7 +943,7 @@ struct TestConnection
 			Address client_address =
 					server.GetPeer(peer_id_client)->address;
 			
-			dstream<<"*** Sending packets in wrong order (2,1,2)"
+			infostream<<"*** Sending packets in wrong order (2,1,2)"
 					<<std::endl;
 			
 			u8 chn = 0;
@@ -957,16 +958,16 @@ struct TestConnection
 
 			sleep_ms(50);
 
-			dstream<<"*** Receiving the packets"<<std::endl;
+			infostream<<"*** Receiving the packets"<<std::endl;
 
 			u16 peer_id;
 			u8 recvdata[20];
 			u32 size;
 
-			dstream<<"** running client.Receive()"<<std::endl;
+			infostream<<"** running client.Receive()"<<std::endl;
 			peer_id = 132;
 			size = client.Receive(peer_id, recvdata, 20);
-			dstream<<"** Client received: peer_id="<<peer_id
+			infostream<<"** Client received: peer_id="<<peer_id
 					<<", size="<<size
 					<<", data="<<recvdata
 					<<std::endl;
@@ -974,10 +975,10 @@ struct TestConnection
 			assert(memcmp(*data1, recvdata, data1.getSize()) == 0);
 			assert(peer_id == PEER_ID_SERVER);
 			
-			dstream<<"** running client.Receive()"<<std::endl;
+			infostream<<"** running client.Receive()"<<std::endl;
 			peer_id = 132;
 			size = client.Receive(peer_id, recvdata, 20);
-			dstream<<"** Client received: peer_id="<<peer_id
+			infostream<<"** Client received: peer_id="<<peer_id
 					<<", size="<<size
 					<<", data="<<recvdata
 					<<std::endl;
@@ -988,17 +989,17 @@ struct TestConnection
 			bool got_exception = false;
 			try
 			{
-				dstream<<"** running client.Receive()"<<std::endl;
+				infostream<<"** running client.Receive()"<<std::endl;
 				peer_id = 132;
 				size = client.Receive(peer_id, recvdata, 20);
-				dstream<<"** Client received: peer_id="<<peer_id
+				infostream<<"** Client received: peer_id="<<peer_id
 						<<", size="<<size
 						<<", data="<<recvdata
 						<<std::endl;
 			}
 			catch(con::NoIncomingDataException &e)
 			{
-				dstream<<"** No incoming data for client"<<std::endl;
+				infostream<<"** No incoming data for client"<<std::endl;
 				got_exception = true;
 			}
 			assert(got_exception);
@@ -1010,35 +1011,35 @@ struct TestConnection
 				data1[i] = i/4;
 			}
 
-			dstream<<"Sending data (size="<<datasize<<"):";
+			infostream<<"Sending data (size="<<datasize<<"):";
 			for(int i=0; i<datasize && i<20; i++){
 				if(i%2==0) DEBUGPRINT(" ");
 				DEBUGPRINT("%.2X", ((int)((const char*)*data1)[i])&0xff);
 			}
 			if(datasize>20)
-				dstream<<"...";
-			dstream<<std::endl;
+				infostream<<"...";
+			infostream<<std::endl;
 			
 			server.Send(peer_id_client, 0, data1, true);
 
 			sleep_ms(50);
 			
 			u8 recvdata[datasize + 1000];
-			dstream<<"** running client.Receive()"<<std::endl;
+			infostream<<"** running client.Receive()"<<std::endl;
 			u16 peer_id = 132;
 			u16 size = client.Receive(peer_id, recvdata, datasize + 1000);
-			dstream<<"** Client received: peer_id="<<peer_id
+			infostream<<"** Client received: peer_id="<<peer_id
 					<<", size="<<size
 					<<std::endl;
 
-			dstream<<"Received data (size="<<size<<"):";
+			infostream<<"Received data (size="<<size<<"):";
 			for(int i=0; i<size && i<20; i++){
 				if(i%2==0) DEBUGPRINT(" ");
 				DEBUGPRINT("%.2X", ((int)((const char*)recvdata)[i])&0xff);
 			}
 			if(size>20)
-				dstream<<"...";
-			dstream<<std::endl;
+				infostream<<"...";
+			infostream<<std::endl;
 
 			assert(memcmp(*data1, recvdata, data1.getSize()) == 0);
 			assert(peer_id == PEER_ID_SERVER);
@@ -1057,14 +1058,14 @@ struct TestConnection
 #define TEST(X)\
 {\
 	X x;\
-	dstream<<"Running " #X <<std::endl;\
+	infostream<<"Running " #X <<std::endl;\
 	x.Run();\
 }
 
 void run_tests()
 {
 	DSTACK(__FUNCTION_NAME);
-	dstream<<"run_tests() started"<<std::endl;
+	infostream<<"run_tests() started"<<std::endl;
 	TEST(TestUtilities);
 	TEST(TestSettings);
 	TEST(TestCompress);
@@ -1078,6 +1079,6 @@ void run_tests()
 		TEST(TestConnection);
 		dout_con<<"=== END RUNNING UNIT TESTS FOR CONNECTION ==="<<std::endl;
 	}
-	dstream<<"run_tests() passed"<<std::endl;
+	infostream<<"run_tests() passed"<<std::endl;
 }
 
