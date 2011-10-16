@@ -684,11 +684,25 @@ std::string Oerkki1SAO::getStaticData()
 	return os.str();
 }
 
-u16 Oerkki1SAO::punch(const std::string &toolname, v3f dir)
+u16 Oerkki1SAO::punch(const std::string &toolname, v3f dir,
+		const std::string &playername)
 {
 	m_speed_f += dir*12*BS;
 
-	u16 amount = 20;
+	u16 amount = 5;
+	/* See tool names in inventory.h */
+	if(toolname == "WSword")
+		amount = 10;
+	if(toolname == "STSword")
+		amount = 12;
+	if(toolname == "SteelSword")
+		amount = 16;
+	if(toolname == "STAxe")
+		amount = 7;
+	if(toolname == "SteelAxe")
+		amount = 9;
+	if(toolname == "SteelPick")
+		amount = 7;
 	doDamage(amount);
 	return 65536/100;
 }

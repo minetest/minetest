@@ -96,7 +96,8 @@ public:
 	std::string getClientInitializationData();
 	std::string getStaticData();
 	InventoryItem* createPickedUpItem(){return NULL;}
-	u16 punch(const std::string &toolname, v3f dir);
+	u16 punch(const std::string &toolname, v3f dir,
+			const std::string &playername);
 	bool isPeaceful(){return false;}
 private:
 	void doDamage(u16 d);
