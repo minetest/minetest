@@ -1343,21 +1343,26 @@ u16 ServerEnvironment::addActiveObjectRaw(ServerActiveObject *object,
 		bool set_changed)
 {
 	assert(object);
-	if(object->getId() == 0)
-	{
+	if(object->getId() == 0){
 		u16 new_id = getFreeServerActiveObjectId(m_active_objects);
+		verbosestream<<"ServerEnvironment::addActiveObjectRaw(): "
+				<<"created new id "<<new_id<<std::endl;
 		if(new_id == 0)
 		{
-			infostream<<"ServerEnvironment::addActiveObjectRaw(): "
+			errorstream<<"ServerEnvironment::addActiveObjectRaw(): "
 					<<"no free ids available"<<std::endl;
 			delete object;
 			return 0;
 		}
 		object->setId(new_id);
 	}
+	else{
+		verbosestream<<"ServerEnvironment::addActiveObjectRaw(): "
+				<<"supplied with id "<<object->getId()<<std::endl;
+	}
 	if(isFreeServerActiveObjectId(object->getId(), m_active_objects) == false)
 	{
-		infostream<<"ServerEnvironment::addActiveObjectRaw(): "
+		errorstream<<"ServerEnvironment::addActiveObjectRaw(): "
 				<<"id is not free ("<<object->getId()<<")"<<std::endl;
 		delete object;
 		return 0;
@@ -1366,7 +1371,12 @@ u16 ServerEnvironment::addActiveObjectRaw(ServerActiveObject *object,
 			<<"added (id="<<object->getId()<<")"<<std::endl;*/
 			
 	m_active_objects.insert(object->getId(), object);
-
+  
+	verbosestream<<"ServerEnvironment::addActiveObjectRaw(): "
+			<<"Added id="<<object->getId()<<"; there are now "
+			<<m_active_objects.size()<<" active objects in the list."
+			<<std::endl;
+	
 	// Add static object to active static list of the block
 	v3f objectpos = object->getBasePosition();
 	std::string staticdata = object->getStaticData();
@@ -1376,6 +1386,12 @@ u16 ServerEnvironment::addActiveObjectRaw(ServerActiveObject *object,
 	MapBlock *block = m_map->getBlockNoCreateNoEx(blockpos);
 	if(block)
 	{
+		verbosestream<<"ServerEnvironment::addActiveObjectRaw(): "
+				<<"found block for storing id="<<object->getId()
+				<<" statically"
+				<<" (set_changed="<<(set_changed?"true":"false")<<")"
+				<<std::endl;
+
 		block->m_static_objects.m_active.insert(object->getId(), s_obj);
 		object->m_static_exists = true;
 		object->m_static_block = blockpos;
@@ -1384,8 +1400,8 @@ u16 ServerEnvironment::addActiveObjectRaw(ServerActiveObject *object,
 			block->setChangedFlag();
 	}
 	else{
-		infostream<<"ServerEnv: Could not find a block for "
-				<<"storing newly added static active object"<<std::endl;
+		errorstream<<"ServerEnv: Could not find a block for "
+				<<"storing newly added active object statically"<<std::endl;
 	}
 
 	return object->getId();
@@ -1460,6 +1476,10 @@ void ServerEnvironment::activateObjects(MapBlock *block)
 	// Ignore if no stored objects (to not set changed flag)
 	if(block->m_static_objects.m_stored.size() == 0)
 		return;
+	verbosestream<<"ServerEnvironment::activateObjects(): "
+			<<"activating objects of block "<<PP(block->getPos())
+			<<" ("<<block->m_static_objects.m_stored.size()
+			<<" objects)"<<std::endl;
 	// A list for objects that couldn't be converted to static for some
 	// reason. They will be stored back.
 	core::list<StaticObject> new_stored;
@@ -1536,6 +1556,10 @@ void ServerEnvironment::deactivateFarObjects(bool force_delete)
 		if(m_active_blocks.contains(blockpos_o))
 			continue;
 
+		verbosestream<<"ServerEnvironment::deactivateFarObjects(): "
+				<<"deactivating object id="<<id<<" on inactive block "
+				<<PP(blockpos_o)<<std::endl;
+
 		/*
 			Update the static data
 		*/
@@ -1579,7 +1603,7 @@ void ServerEnvironment::deactivateFarObjects(bool force_delete)
 			obj->m_static_block = block->getPos();
 		}
 		else{
-			infostream<<"ServerEnv: Could not find or generate "
+			errorstream<<"ServerEnv: Could not find or generate "
 					<<"a block for storing static object"<<std::endl;
 			obj->m_static_exists = false;
 			continue;
@@ -1593,12 +1617,17 @@ void ServerEnvironment::deactivateFarObjects(bool force_delete)
 		// If known by some client, don't delete.
 		if(obj->m_known_by_count > 0 && force_delete == false)
 		{
+			verbosestream<<"ServerEnvironment::deactivateFarObjects(): "
+					<<"object id="<<id<<" is known by clients"
+					<<"; not deleting yet"<<std::endl;
+
 			obj->m_pending_deactivation = true;
 			continue;
 		}
 		
-		/*infostream<<"Server: Stored static data. Deleting object."
-				<<std::endl;*/
+		verbosestream<<"ServerEnvironment::deactivateFarObjects(): "
+				<<"object id="<<id<<" is not known by clients"
+				<<"; deleting"<<std::endl;
 		// Delete active object
 		delete obj;
 		// Id to be removed from m_active_objects
