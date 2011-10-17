@@ -277,6 +277,35 @@ void cmd_banunban(std::wostringstream &os, ServerCommandContext *ctx)
 	}
 }
 
+void cmd_clearobjects(std::wostringstream &os,
+	ServerCommandContext *ctx)
+{
+	if((ctx->privs & PRIV_SERVER) ==0)
+	{
+		os<<L"-!- You don't have permission to do that";
+		return;
+	}
+
+	actionstream<<ctx->player->getName()
+			<<" clears all objects"<<std::endl;
+	
+	{
+		std::wstring msg;
+		msg += L"Clearing all objects. This may take long.";
+		msg += L" You may experience a timeout. (by ";
+		msg += narrow_to_wide(ctx->player->getName());
+		msg += L")";
+		ctx->server->notifyPlayers(msg);
+	}
+
+	ctx->env->clearAllObjects();
+					
+	actionstream<<"object clearing done"<<std::endl;
+	
+	os<<L"*** cleared all objects";
+	ctx->flags |= SEND_TO_OTHERS;
+}
+
 
 std::wstring processServerCommand(ServerCommandContext *ctx)
 {
@@ -302,45 +331,28 @@ std::wstring processServerCommand(ServerCommandContext *ctx)
 			os<<L" ban unban";
 	}
 	else if(ctx->parms[0] == L"status")
-	{
 		cmd_status(os, ctx);
-	}
 	else if(ctx->parms[0] == L"privs")
-	{
 		cmd_privs(os, ctx);
-	}
 	else if(ctx->parms[0] == L"grant" || ctx->parms[0] == L"revoke")
-	{
 		cmd_grantrevoke(os, ctx);
-	}
 	else if(ctx->parms[0] == L"time")
-	{
 		cmd_time(os, ctx);
-	}
 	else if(ctx->parms[0] == L"shutdown")
-	{
 		cmd_shutdown(os, ctx);
-	}
 	else if(ctx->parms[0] == L"setting")
-	{
 		cmd_setting(os, ctx);
-	}
 	else if(ctx->parms[0] == L"teleport")
-	{
 		cmd_teleport(os, ctx);
-	}
 	else if(ctx->parms[0] == L"ban" || ctx->parms[0] == L"unban")
-	{
 		cmd_banunban(os, ctx);
-	}
 	else if(ctx->parms[0] == L"me")
-	{
 		cmd_me(os, ctx);
-	}
+	else if(ctx->parms[0] == L"clearobjects")
+		cmd_clearobjects(os, ctx);
 	else
-	{
 		os<<L"-!- Invalid command: " + ctx->parms[0];
-	}
+	
 	return os.str();
 }
 

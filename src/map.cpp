@@ -2623,152 +2623,6 @@ MapBlock * ServerMap::emergeBlock(v3s16 p, bool allow_generate)
 	return NULL;
 }
 
-#if 0
-	/*
-		Do not generate over-limit
-	*/
-	if(p.X < -MAP_GENERATION_LIMIT / MAP_BLOCKSIZE
-	|| p.X > MAP_GENERATION_LIMIT / MAP_BLOCKSIZE
-	|| p.Y < -MAP_GENERATION_LIMIT / MAP_BLOCKSIZE
-	|| p.Y > MAP_GENERATION_LIMIT / MAP_BLOCKSIZE
-	|| p.Z < -MAP_GENERATION_LIMIT / MAP_BLOCKSIZE
-	|| p.Z > MAP_GENERATION_LIMIT / MAP_BLOCKSIZE)
-		throw InvalidPositionException("emergeBlock(): pos. over limit");
-	
-	v2s16 p2d(p.X, p.Z);
-	s16 block_y = p.Y;
-	/*
-		This will create or load a sector if not found in memory.
-		If block exists on disk, it will be loaded.
-	*/
-	ServerMapSector *sector;
-	try{
-		sector = createSector(p2d);
-		//sector = emergeSector(p2d, changed_blocks);
-	}
-	catch(InvalidPositionException &e)
-	{
-		infostream<<"emergeBlock: createSector() failed: "
-				<<e.what()<<std::endl;
-		infostream<<"Path to failed sector: "<<getSectorDir(p2d)
-				<<std::endl
-				<<"You could try to delete it."<<std::endl;
-		throw e;
-	}
-	catch(VersionMismatchException &e)
-	{
-		infostream<<"emergeBlock: createSector() failed: "
-				<<e.what()<<std::endl;
-		infostream<<"Path to failed sector: "<<getSectorDir(p2d)
-				<<std::endl
-				<<"You could try to delete it."<<std::endl;
-		throw e;
-	}
-
-	/*
-		Try to get a block from the sector
-	*/
-
-	bool does_not_exist = false;
-	bool lighting_expired = false;
-	MapBlock *block = sector->getBlockNoCreateNoEx(block_y);
-	
-	// If not found, try loading from disk
-	if(block == NULL)
-	{
-		block = loadBlock(p);
-	}
-	
-	// Handle result
-	if(block == NULL)
-	{
-		does_not_exist = true;
-	}
-	else if(block->isDummy() == true)
-	{
-		does_not_exist = true;
-	}
-	else if(block->getLightingExpired())
-	{
-		lighting_expired = true;
-	}
-	else
-	{
-		// Valid block
-		//infostream<<"emergeBlock(): Returning already valid block"<<std::endl;
-		return block;
-	}
-	
-	/*
-		If block was not found on disk and not going to generate a
-		new one, make sure there is a dummy block in place.
-	*/
-	if(only_from_disk && (does_not_exist || lighting_expired))
-	{
-		//infostream<<"emergeBlock(): Was not on disk but not generating"<<std::endl;
-
-		if(block == NULL)
-		{
-			// Create dummy block
-			block = new MapBlock(this, p, true);
-
-			// Add block to sector
-			sector->insertBlock(block);
-		}
-		// Done.
-		return block;
-	}
-
-	//infostream<<"Not found on disk, generating."<<std::endl;
-	// 0ms
-	//TimeTaker("emergeBlock() generate");
-
-	//infostream<<"emergeBlock(): Didn't find valid block -> making one"<<std::endl;
-
-	/*
-		If the block doesn't exist, generate the block.
-	*/
-	if(does_not_exist)
-	{
-		block = generateBlock(p, block, sector, changed_blocks,
-				lighting_invalidated_blocks); 
-	}
-
-	if(lighting_expired)
-	{
-		lighting_invalidated_blocks.insert(p, block);
-	}
-
-#if 0
-	/*
-		Initially update sunlight
-	*/
-	{
-		core::map<v3s16, bool> light_sources;
-		bool black_air_left = false;
-		bool bottom_invalid =
-				block->propagateSunlight(light_sources, true,
-				&black_air_left);
-
-		// If sunlight didn't reach everywhere and part of block is
-		// above ground, lighting has to be properly updated
-		//if(black_air_left && some_part_underground)
-		if(black_air_left)
-		{
-			lighting_invalidated_blocks[block->getPos()] = block;
-		}
-
-		if(bottom_invalid)
-		{
-			lighting_invalidated_blocks[block->getPos()] = block;
-		}
-	}
-#endif
-	
-	return block;
-}
-#endif
-
 s16 ServerMap::findGroundLevel(v2s16 p2d)
 {
 #if 0
@@ -2865,6 +2719,12 @@ void ServerMap::verifyDatabase() {
 		if(d != SQLITE_OK) {
 			infostream<<"WARNING: Database write statment failed to prepare: "<<sqlite3_errmsg(m_database)<<std::endl;
 			throw FileNotGoodException("Cannot prepare write statement");
+		}
+		
+		d = sqlite3_prepare(m_database, "SELECT `pos` FROM `blocks`", -1, &m_database_list, NULL);
+		if(d != SQLITE_OK) {
+			infostream<<"WARNING: Database list statment failed to prepare: "<<sqlite3_errmsg(m_database)<<std::endl;
+			throw FileNotGoodException("Cannot prepare read statement");
 		}
 		
 		infostream<<"Server: Database opened"<<std::endl;
@@ -3036,6 +2896,52 @@ void ServerMap::save(bool only_changed)
 				<<block_count<<" block files"
 				<<", "<<block_count_all<<" blocks in memory."
 				<<std::endl;
+	}
+}
+
+static s32 unsignedToSigned(s32 i, s32 max_positive)
+{
+	if(i < max_positive)
+		return i;
+	else
+		return i - 2*max_positive;
+}
+
+// modulo of a negative number does not work consistently in C
+static sqlite3_int64 pythonmodulo(sqlite3_int64 i, sqlite3_int64 mod)
+{
+	if(i >= 0)
+		return i % mod;
+	return mod - ((-i) % mod);
+}
+
+v3s16 ServerMap::getIntegerAsBlock(sqlite3_int64 i)
+{
+	s32 x = unsignedToSigned(pythonmodulo(i, 4096), 2048);
+	i = (i - x) / 4096;
+	s32 y = unsignedToSigned(pythonmodulo(i, 4096), 2048);
+	i = (i - y) / 4096;
+	s32 z = unsignedToSigned(pythonmodulo(i, 4096), 2048);
+	return v3s16(x,y,z);
+}
+
+void ServerMap::listAllLoadableBlocks(core::list<v3s16> &dst)
+{
+	if(loadFromFolders()){
+		errorstream<<"Map::listAllLoadableBlocks(): Result will be missing "
+				<<"all blocks that are stored in flat files"<<std::endl;
+	}
+	
+	{
+		verifyDatabase();
+		
+		while(sqlite3_step(m_database_list) == SQLITE_ROW)
+		{
+			sqlite3_int64 block_i = sqlite3_column_int64(m_database_list, 0);
+			v3s16 p = getIntegerAsBlock(block_i);
+			//dstream<<"block_i="<<block_i<<" p="<<PP(p)<<std::endl;
+			dst.push_back(p);
+		}
 	}
 }
 

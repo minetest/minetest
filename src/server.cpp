@@ -4136,6 +4136,11 @@ void Server::notifyPlayer(const char *name, const std::wstring msg)
 	SendChatMessage(player->peer_id, std::wstring(L"Server: -!- ")+msg);
 }
 
+void Server::notifyPlayers(const std::wstring msg)
+{
+	BroadcastChatMessage(msg);
+}
+
 v3f findSpawnPos(ServerMap &map)
 {
 	//return v3f(50,50,50)*BS;

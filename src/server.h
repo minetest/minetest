@@ -475,6 +475,7 @@ public:
 	
 	// Envlock and conlock should be locked when calling this
 	void notifyPlayer(const char *name, const std::wstring msg);
+	void notifyPlayers(const std::wstring msg);
 
 private:
 

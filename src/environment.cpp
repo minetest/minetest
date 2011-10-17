@@ -647,6 +647,92 @@ void ServerEnvironment::activateBlock(MapBlock *block, u32 additional_dtime)
 	}
 }
 
+void ServerEnvironment::clearAllObjects()
+{
+	infostream<<"ServerEnvironment::clearAllObjects(): "
+			<<"Removing all active objects"<<std::endl;
+	core::list<u16> objects_to_remove;
+	for(core::map<u16, ServerActiveObject*>::Iterator
+			i = m_active_objects.getIterator();
+			i.atEnd()==false; i++)
+	{
+		ServerActiveObject* obj = i.getNode()->getValue();
+		u16 id = i.getNode()->getKey();		
+		v3f objectpos = obj->getBasePosition();	
+		// Delete static object if block is loaded
+		if(obj->m_static_exists){
+			MapBlock *block = m_map->getBlockNoCreateNoEx(obj->m_static_block);
+			if(block){
+				block->m_static_objects.remove(id);
+				block->raiseModified(MOD_STATE_WRITE_NEEDED);
+				obj->m_static_exists = false;
+			}
+		}
+		// If known by some client, don't delete immediately
+		if(obj->m_known_by_count > 0){
+			obj->m_pending_deactivation = true;
+			obj->m_removed = true;
+			continue;
+		}
+		// Delete active object
+		delete obj;
+		// Id to be removed from m_active_objects
+		objects_to_remove.push_back(id);
+	}
+	// Remove references from m_active_objects
+	for(core::list<u16>::Iterator i = objects_to_remove.begin();
+			i != objects_to_remove.end(); i++)
+	{
+		m_active_objects.remove(*i);
+	}
+
+	core::list<v3s16> loadable_blocks;
+	infostream<<"ServerEnvironment::clearAllObjects(): "
+			<<"Listing all loadable blocks"<<std::endl;
+	m_map->listAllLoadableBlocks(loadable_blocks);
+	infostream<<"ServerEnvironment::clearAllObjects(): "
+			<<"Done listing all loadable blocks: "
+			<<loadable_blocks.size()
+			<<", now clearing"<<std::endl;
+	u32 report_interval = loadable_blocks.size() / 10;
+	u32 num_blocks_checked = 0;
+	u32 num_blocks_cleared = 0;
+	u32 num_objs_cleared = 0;
+	for(core::list<v3s16>::Iterator i = loadable_blocks.begin();
+			i != loadable_blocks.end(); i++)
+	{
+		v3s16 p = *i;
+		MapBlock *block = m_map->emergeBlock(p, false);
+		if(!block){
+			errorstream<<"ServerEnvironment::clearAllObjects(): "
+					<<"Failed to emerge block "<<PP(p)<<std::endl;
+			continue;
+		}
+		u32 num_stored = block->m_static_objects.m_stored.size();
+		u32 num_active = block->m_static_objects.m_active.size();
+		if(num_stored != 0 || num_active != 0){
+			block->m_static_objects.m_stored.clear();
+			block->m_static_objects.m_active.clear();
+			block->raiseModified(MOD_STATE_WRITE_NEEDED);
+			num_objs_cleared += num_stored + num_active;
+			num_blocks_cleared++;
+		}
+		num_blocks_checked++;
+
+		if(num_blocks_checked % report_interval == 0){
+			float percent = 100.0 * (float)num_blocks_checked /
+					loadable_blocks.size();
+			infostream<<"ServerEnvironment::clearAllObjects(): "
+					<<"Cleared "<<num_objs_cleared<<" objects"
+					<<" in "<<num_blocks_cleared<<" blocks ("
+					<<percent<<"%)"<<std::endl;
+		}
+	}
+	infostream<<"ServerEnvironment::clearAllObjects(): "
+			<<"Finished: Cleared "<<num_objs_cleared<<" objects"
+			<<" in "<<num_blocks_cleared<<" blocks"<<std::endl;
+}
+
 static void getMob_dungeon_master(Settings &properties)
 {
 	properties.set("looks", "dungeon_master");
