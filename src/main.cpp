@@ -1074,15 +1074,15 @@ void drawMenuBackground(video::IVideoDriver* driver)
 	}
 }
 
-class DstreamLogOutput: public ILogOutput
+class StderrLogOutput: public ILogOutput
 {
 public:
 	/* line: Full line with timestamp, level and thread */
 	void printLog(const std::string &line)
 	{
-		dstream<<line<<std::endl;
+		std::cerr<<line<<std::endl;
 	}
-} main_dstream_log_out;
+} main_stderr_log_out;
 
 class DstreamNoStderrLogOutput: public ILogOutput
 {
@@ -1100,7 +1100,7 @@ int main(int argc, char *argv[])
 		Initialization
 	*/
 
-	log_add_output_maxlev(&main_dstream_log_out, LMT_ACTION);
+	log_add_output_maxlev(&main_stderr_log_out, LMT_ACTION);
 	log_add_output_all_levs(&main_dstream_no_stderr_log_out);
 
 	log_register_thread("main");
@@ -1175,7 +1175,7 @@ int main(int argc, char *argv[])
 #endif
 	
 	if(cmd_args.getFlag("info-on-stderr"))
-		log_add_output(&main_dstream_log_out, LMT_INFO);
+		log_add_output(&main_stderr_log_out, LMT_INFO);
 
 	porting::signal_handler_init();
 	bool &kill = *porting::signal_handler_killstatus();
