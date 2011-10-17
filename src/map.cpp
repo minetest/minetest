@@ -34,6 +34,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #endif
 #include "settings.h"
 #include "log.h"
+#include "profiler.h"
 
 #define PP(x) "("<<(x).X<<","<<(x).Y<<","<<(x).Z<<")"
 
@@ -3760,6 +3761,7 @@ void ClientMap::renderMap(video::IVideoDriver* driver, s32 pass)
 			p_nodes_max.Z / MAP_BLOCKSIZE + 1);
 	
 	u32 vertex_count = 0;
+	u32 meshbuffer_count = 0;
 	
 	// For limiting number of mesh updates per frame
 	u32 mesh_update_count = 0;
@@ -3909,6 +3911,7 @@ void ClientMap::renderMap(video::IVideoDriver* driver, s32 pass)
 				sector_blocks_drawn++;
 
 				u32 c = mesh->getMeshBufferCount();
+				meshbuffer_count += c;
 
 				for(u32 i=0; i<c; i++)
 				{
@@ -3937,6 +3940,17 @@ void ClientMap::renderMap(video::IVideoDriver* driver, s32 pass)
 		{
 			m_last_drawn_sectors[sp] = true;
 		}
+	}
+	
+	if(pass == scene::ESNRP_SOLID){
+		g_profiler->avg("CM: blocks drawn on solid pass", blocks_drawn);
+		g_profiler->avg("CM: vertices drawn on solid pass", vertex_count);
+		if(blocks_drawn != 0)
+			g_profiler->avg("CM: solid meshbuffers per block",
+					(float)meshbuffer_count / (float)blocks_drawn);
+	} else {
+		g_profiler->avg("CM: blocks drawn on transparent pass", blocks_drawn);
+		g_profiler->avg("CM: vertices drawn on transparent pass", vertex_count);
 	}
 	
 	m_control.blocks_drawn = blocks_drawn;
