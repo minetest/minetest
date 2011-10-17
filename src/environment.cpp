@@ -1399,7 +1399,7 @@ u16 ServerEnvironment::addActiveObjectRaw(ServerActiveObject *object,
 		object->m_static_block = blockpos;
 
 		if(set_changed)
-			block->setChangedFlag();
+			block->raiseModified(MOD_STATE_WRITE_NEEDED);
 	}
 	else{
 		errorstream<<"ServerEnvironment::addActiveObjectRaw(): "
@@ -1444,11 +1444,12 @@ void ServerEnvironment::removeRemovedObjects()
 		*/
 		if(obj->m_static_exists && obj->m_removed)
 		{
-			MapBlock *block = m_map->getBlockNoCreateNoEx(obj->m_static_block);
+			MapBlock *block = m_map->emergeBlock(obj->m_static_block);
 			if(block)
 			{
 				block->m_static_objects.remove(id);
-				block->setChangedFlag();
+				block->raiseModified(MOD_STATE_WRITE_NEEDED);
+				obj->m_static_exists = false;
 			}
 		}
 
@@ -1556,7 +1557,6 @@ void ServerEnvironment::activateObjects(MapBlock *block)
 				<<" type="<<(int)s_obj.type<<std::endl;
 		// This will also add the object to the active static list
 		addActiveObjectRaw(obj, false);
-		//u16 id = addActiveObjectRaw(obj, false);
 	}
 	// Clear stored list
 	block->m_static_objects.m_stored.clear();
@@ -1568,13 +1568,18 @@ void ServerEnvironment::activateObjects(MapBlock *block)
 		StaticObject &s_obj = *i;
 		block->m_static_objects.m_stored.push_back(s_obj);
 	}
-	// Block has been modified
-	// NOTE: No it has not really. Save I/O here.
-	//block->setChangedFlag();
+	/*
+		Note: Block hasn't really been modified here.
+		The objects have just been activated and moved from the stored
+		static list to the active static list.
+		As such, the block is essentially the same.
+		Thus, do not call block->setChangedFlag().
+		Otherwise there would be a huge amount of unnecessary I/O.
+	*/
 }
 
 /*
-	Convert objects that are not in active blocks to static.
+	Convert objects that are not standing inside active blocks to static.
 
 	If m_known_by_count != 0, active object is not deleted, but static
 	data is still updated.
@@ -1594,7 +1599,7 @@ void ServerEnvironment::deactivateFarObjects(bool force_delete)
 		// This shouldn't happen but check it
 		if(obj == NULL)
 		{
-			infostream<<"NULL object found in ServerEnvironment"
+			errorstream<<"NULL object found in ServerEnvironment"
 					<<std::endl;
 			assert(0);
 			continue;
@@ -1619,17 +1624,15 @@ void ServerEnvironment::deactivateFarObjects(bool force_delete)
 		*/
 
 		// Delete old static object
-		MapBlock *oldblock = NULL;
 		if(obj->m_static_exists)
 		{
-			MapBlock *block = m_map->getBlockNoCreateNoEx
-					(obj->m_static_block);
+			MapBlock *block = m_map->emergeBlock(obj->m_static_block, false);
 			if(block)
 			{
 				block->m_static_objects.remove(id);
-				oldblock = block;
+				block->raiseModified(MOD_STATE_WRITE_AT_UNLOAD);
+				obj->m_static_exists = false;
 			}
-			obj->m_static_exists = false;
 		}
 
 		// Create new static object
@@ -1639,17 +1642,6 @@ void ServerEnvironment::deactivateFarObjects(bool force_delete)
 		v3s16 blockpos = getNodeBlockPos(floatToInt(objectpos, BS));
 		// Get or generate the block
 		MapBlock *block = m_map->emergeBlock(blockpos);
-
-		/*MapBlock *block = m_map->getBlockNoCreateNoEx(blockpos);
-		if(block == NULL)
-		{
-			// Block not found. Is the old block still ok?
-			if(oldblock)
-				block = oldblock;
-			// Load from disk or generate
-			else
-				block = m_map->emergeBlock(blockpos);
-		}*/
 
 		if(block)
 		{
@@ -1661,7 +1653,7 @@ void ServerEnvironment::deactivateFarObjects(bool force_delete)
 				force_delete = true;
 			} else {
 				block->m_static_objects.insert(0, s_obj);
-				block->setChangedFlag();
+				block->raiseModified(MOD_STATE_WRITE_AT_UNLOAD);
 				obj->m_static_exists = true;
 				obj->m_static_block = block->getPos();
 			}
