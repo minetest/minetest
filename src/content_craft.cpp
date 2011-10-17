@@ -261,6 +261,18 @@ InventoryItem *craft_get_result(InventoryItem **items)
 			return new ToolItem("SteelSword", 0);
 		}
 	}
+    
+    // Mese sword
+	{
+		ItemSpec specs[9];
+		specs[1] = ItemSpec(ITEM_MATERIAL, CONTENT_MESE);
+		specs[4] = ItemSpec(ITEM_MATERIAL, CONTENT_MESE);
+		specs[7] = ItemSpec(ITEM_CRAFT, "Stick");
+		if(checkItemCombination(items, specs))
+		{
+			return new ToolItem("MeseSword", 0);
+		}
+	}
 
 	// Rail
 	{

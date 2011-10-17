@@ -332,6 +332,8 @@ public:
 			return "tool_stonesword.png";
 		else if(m_toolname == "SteelSword")
 			return "tool_steelsword.png";
+        else if(m_toolname == "MeseSword")
+			return "tool_mesesword.png";
 		else
 			return "cloud.png";
 }
