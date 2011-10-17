@@ -887,9 +887,10 @@ void ServerEnvironment::step(float dtime)
 				if(block==NULL)
 					continue;
 				active_object_count_wider +=
-						block->m_static_objects.m_active.size();
+						block->m_static_objects.m_active.size()
+						+ block->m_static_objects.m_stored.size();
 				
-				if(block->m_static_objects.m_stored.size() != 0){
+				/*if(block->m_static_objects.m_stored.size() != 0){
 					errorstream<<"ServerEnvironment::step(): "
 							<<PP(block->getPos())<<" contains "
 							<<block->m_static_objects.m_stored.size()
@@ -897,7 +898,7 @@ void ServerEnvironment::step(float dtime)
 							<<"when spawning objects, when counting active "
 							<<"objects in wide area. relative position: "
 							<<"("<<x<<","<<y<<","<<z<<")"<<std::endl;
-				}
+				}*/
 			}
 
 			v3s16 p0;
@@ -1518,12 +1519,15 @@ void ServerEnvironment::activateObjects(MapBlock *block)
 			<<"activating objects of block "<<PP(block->getPos())
 			<<" ("<<block->m_static_objects.m_stored.size()
 			<<" objects)"<<std::endl;
-	bool large_amount = (block->m_static_objects.m_stored.size() >= 51);
+	bool large_amount = (block->m_static_objects.m_stored.size() > 49);
 	if(large_amount){
 		errorstream<<"suspiciously large amount of objects detected: "
 				<<block->m_static_objects.m_stored.size()<<" in "
 				<<PP(block->getPos())
-				<<"; not activating."<<std::endl;
+				<<"; removing all of them."<<std::endl;
+		// Clear stored list
+		block->m_static_objects.m_stored.clear();
+		block->raiseModified(MOD_STATE_WRITE_NEEDED);
 		return;
 	}
 	// A list for objects that couldn't be converted to static for some
@@ -1645,10 +1649,12 @@ void ServerEnvironment::deactivateFarObjects(bool force_delete)
 
 		if(block)
 		{
-			if(block->m_static_objects.m_stored.size() >= 50){
+			if(block->m_static_objects.m_stored.size() >= 49){
 				errorstream<<"ServerEnv: Trying to store id="<<obj->getId()
 						<<" statically but block "<<PP(blockpos)
-						<<" already contains over 50 objects."
+						<<" already contains "
+						<<block->m_static_objects.m_stored.size()
+						<<" (over 49) objects."
 						<<" Forcing delete."<<std::endl;
 				force_delete = true;
 			} else {
