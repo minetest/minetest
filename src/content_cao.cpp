@@ -993,6 +993,8 @@ void MobV2CAO::updateNodePos()
 void MobV2CAO::step(float dtime, ClientEnvironment *env)
 {
 	scene::MyBillboardSceneNode *bill = m_node;
+	if(!bill)
+		return;
 
 	pos_translator.translate(dtime);
 	
