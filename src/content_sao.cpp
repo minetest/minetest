@@ -1264,8 +1264,6 @@ void MobV2SAO::step(float dtime, bool send_recommended)
 			m_base_position = pos_f;
 
 			if((pos_f - next_pos_f).getLength() < 0.1 || arrived){
-				verbosestream<<"Mob id="<<m_id<<": arrived to "
-						<<PP(m_next_pos_i)<<std::endl;
 				m_next_pos_exists = false;
 			}
 		}
