@@ -888,6 +888,16 @@ void ServerEnvironment::step(float dtime)
 					continue;
 				active_object_count_wider +=
 						block->m_static_objects.m_active.size();
+				
+				if(block->m_static_objects.m_stored.size() != 0){
+					errorstream<<"ServerEnvironment::step(): "
+							<<PP(block->getPos())<<" contains "
+							<<block->m_static_objects.m_stored.size()
+							<<" stored objects; "
+							<<"when spawning objects, when counting active "
+							<<"objects in wide area. relative position: "
+							<<"("<<x<<","<<y<<","<<z<<")"<<std::endl;
+				}
 			}
 
 			v3s16 p0;
@@ -1507,7 +1517,7 @@ void ServerEnvironment::activateObjects(MapBlock *block)
 			<<"activating objects of block "<<PP(block->getPos())
 			<<" ("<<block->m_static_objects.m_stored.size()
 			<<" objects)"<<std::endl;
-	bool large_amount = (block->m_static_objects.m_stored.size() >= 50);
+	bool large_amount = (block->m_static_objects.m_stored.size() >= 51);
 	if(large_amount){
 		errorstream<<"suspiciously large amount of objects detected: "
 				<<block->m_static_objects.m_stored.size()<<" in "
