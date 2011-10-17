@@ -1345,8 +1345,6 @@ u16 ServerEnvironment::addActiveObjectRaw(ServerActiveObject *object,
 	assert(object);
 	if(object->getId() == 0){
 		u16 new_id = getFreeServerActiveObjectId(m_active_objects);
-		verbosestream<<"ServerEnvironment::addActiveObjectRaw(): "
-				<<"created new id "<<new_id<<std::endl;
 		if(new_id == 0)
 		{
 			errorstream<<"ServerEnvironment::addActiveObjectRaw(): "
@@ -1374,7 +1372,7 @@ u16 ServerEnvironment::addActiveObjectRaw(ServerActiveObject *object,
   
 	verbosestream<<"ServerEnvironment::addActiveObjectRaw(): "
 			<<"Added id="<<object->getId()<<"; there are now "
-			<<m_active_objects.size()<<" active objects in the list."
+			<<m_active_objects.size()<<" active objects."
 			<<std::endl;
 	
 	// Add static object to active static list of the block
@@ -1386,12 +1384,6 @@ u16 ServerEnvironment::addActiveObjectRaw(ServerActiveObject *object,
 	MapBlock *block = m_map->getBlockNoCreateNoEx(blockpos);
 	if(block)
 	{
-		verbosestream<<"ServerEnvironment::addActiveObjectRaw(): "
-				<<"found block for storing id="<<object->getId()
-				<<" statically"
-				<<" (set_changed="<<(set_changed?"true":"false")<<")"
-				<<std::endl;
-
 		block->m_static_objects.m_active.insert(object->getId(), s_obj);
 		object->m_static_exists = true;
 		object->m_static_block = blockpos;
@@ -1400,8 +1392,9 @@ u16 ServerEnvironment::addActiveObjectRaw(ServerActiveObject *object,
 			block->setChangedFlag();
 	}
 	else{
-		errorstream<<"ServerEnv: Could not find a block for "
-				<<"storing newly added active object statically"<<std::endl;
+		errorstream<<"ServerEnvironment::addActiveObjectRaw(): "
+				<<"could not find block for storing id="<<object->getId()
+				<<" statically"<<std::endl;
 	}
 
 	return object->getId();
@@ -1466,6 +1459,40 @@ void ServerEnvironment::removeRemovedObjects()
 	}
 }
 
+static void print_hexdump(std::ostream &o, const std::string &data)
+{
+	const int linelength = 16;
+	for(int l=0; ; l++){
+		int i0 = linelength * l;
+		bool at_end = false;
+		int thislinelength = linelength;
+		if(i0 + thislinelength > (int)data.size()){
+			thislinelength = data.size() - i0;
+			at_end = true;
+		}
+		for(int di=0; di<linelength; di++){
+			int i = i0 + di;
+			char buf[4];
+			if(di<thislinelength)
+				snprintf(buf, 4, "%.2x ", data[i]);
+			else
+				snprintf(buf, 4, "   ");
+			o<<buf;
+		}
+		o<<" ";
+		for(int di=0; di<thislinelength; di++){
+			int i = i0 + di;
+			if(data[i] >= 32)
+				o<<data[i];
+			else
+				o<<".";
+		}
+		o<<std::endl;
+		if(at_end)
+			break;
+	}
+}
+
 /*
 	Convert stored objects from blocks near the players to active.
 */
@@ -1480,6 +1507,14 @@ void ServerEnvironment::activateObjects(MapBlock *block)
 			<<"activating objects of block "<<PP(block->getPos())
 			<<" ("<<block->m_static_objects.m_stored.size()
 			<<" objects)"<<std::endl;
+	bool large_amount = (block->m_static_objects.m_stored.size() >= 50);
+	if(large_amount){
+		errorstream<<"suspiciously large amount of objects detected: "
+				<<block->m_static_objects.m_stored.size()<<" in "
+				<<PP(block->getPos())
+				<<"; not activating."<<std::endl;
+		return;
+	}
 	// A list for objects that couldn't be converted to static for some
 	// reason. They will be stored back.
 	core::list<StaticObject> new_stored;
@@ -1497,9 +1532,18 @@ void ServerEnvironment::activateObjects(MapBlock *block)
 		// If couldn't create object, store static data back.
 		if(obj==NULL)
 		{
+			errorstream<<"ServerEnvironment::activateObjects(): "
+					<<"failed to create active object from static object "
+					<<"in block "<<PP(s_obj.pos/BS)
+					<<" type="<<(int)s_obj.type<<" data:"<<std::endl;
+			print_hexdump(verbosestream, s_obj.data);
+			
 			new_stored.push_back(s_obj);
 			continue;
 		}
+		verbosestream<<"ServerEnvironment::activateObjects(): "
+				<<"activated static object pos="<<PP(s_obj.pos/BS)
+				<<" type="<<(int)s_obj.type<<std::endl;
 		// This will also add the object to the active static list
 		addActiveObjectRaw(obj, false);
 		//u16 id = addActiveObjectRaw(obj, false);
@@ -1575,7 +1619,9 @@ void ServerEnvironment::deactivateFarObjects(bool force_delete)
 				block->m_static_objects.remove(id);
 				oldblock = block;
 			}
+			obj->m_static_exists = false;
 		}
+
 		// Create new static object
 		std::string staticdata = obj->getStaticData();
 		StaticObject s_obj(obj->getType(), objectpos, staticdata);
@@ -1597,15 +1643,23 @@ void ServerEnvironment::deactivateFarObjects(bool force_delete)
 
 		if(block)
 		{
-			block->m_static_objects.insert(0, s_obj);
-			block->setChangedFlag();
-			obj->m_static_exists = true;
-			obj->m_static_block = block->getPos();
+			if(block->m_static_objects.m_stored.size() >= 50){
+				errorstream<<"ServerEnv: Trying to store id="<<obj->getId()
+						<<" statically but block "<<PP(blockpos)
+						<<" already contains over 50 objects."
+						<<" Forcing delete."<<std::endl;
+				force_delete = true;
+			} else {
+				block->m_static_objects.insert(0, s_obj);
+				block->setChangedFlag();
+				obj->m_static_exists = true;
+				obj->m_static_block = block->getPos();
+			}
 		}
 		else{
 			errorstream<<"ServerEnv: Could not find or generate "
-					<<"a block for storing static object"<<std::endl;
-			obj->m_static_exists = false;
+					<<"a block for storing id="<<obj->getId()
+					<<" statically"<<std::endl;
 			continue;
 		}
 
