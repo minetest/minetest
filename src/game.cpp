@@ -872,7 +872,6 @@ void the_game(
 			L"",
 			core::rect<s32>(5, 5+(text_height+5)*1, 795, (5+text_height)*2),
 			false, false);
-	
 	// At the middle of the screen
 	// Object infos are shown in this
 	gui::IGUIStaticText *guitext_info = guienv->addStaticText(
@@ -888,6 +887,15 @@ void the_game(
 			false, true);
 	//guitext_chat->setBackgroundColor(video::SColor(96,0,0,0));
 	core::list<ChatLine> chat_lines;
+	
+	// Profiler text
+	gui::IGUIStaticText *guitext_profiler = guienv->addStaticText(
+			L"<Profiler>",
+			core::rect<s32>(6, 4+(text_height+5)*3, 400,
+			(text_height+5)*3 + text_height*35),
+			false, false);
+	guitext_profiler->setBackgroundColor(video::SColor(80,0,0,0));
+	guitext_profiler->setVisible(false);
 	
 	/*GUIQuickInventory *quick_inventory = new GUIQuickInventory
 			(guienv, NULL, v2s32(10, 70), 5, &local_inventory);*/
@@ -941,6 +949,8 @@ void the_game(
 	bool invert_mouse = g_settings->getBool("invert_mouse");
 
 	bool respawn_menu_active = false;
+
+	bool show_profiler = false;
 
 	/*
 		Main loop
@@ -1162,14 +1172,23 @@ void the_game(
 		*/
 		float profiler_print_interval =
 				g_settings->getFloat("profiler_print_interval");
-		if(profiler_print_interval != 0)
+		bool print_to_log = true;
+		if(profiler_print_interval == 0){
+			print_to_log = false;
+			profiler_print_interval = 5;
+		}
+		if(m_profiler_interval.step(0.030, profiler_print_interval))
 		{
-			if(m_profiler_interval.step(0.030, profiler_print_interval))
-			{
+			if(print_to_log){
 				infostream<<"Profiler:"<<std::endl;
 				g_profiler->print(infostream);
-				g_profiler->clear();
 			}
+
+			std::ostringstream os(std::ios_base::binary);
+			g_profiler->print(os);
+			guitext_profiler->setText(narrow_to_wide(os.str()).c_str());
+
+			g_profiler->clear();
 		}
 
 		/*
@@ -1298,6 +1317,11 @@ void the_game(
 				}
 				image->drop(); 
 			}			 
+		}
+		else if(input->wasKeyDown(getKeySetting("keymap_toggle_profiler")))
+		{
+			show_profiler = !show_profiler;
+			guitext_profiler->setVisible(show_profiler);
 		}
 
 		// Item selection with mouse wheel
@@ -2114,7 +2138,8 @@ void the_game(
 
 			guitext_chat->setRelativePosition(rect);
 
-			if(chat_lines.size() == 0)
+			// Don't show chat if empty or profiler is enabled
+			if(chat_lines.size() == 0 || show_profiler)
 				guitext_chat->setVisible(false);
 			else
 				guitext_chat->setVisible(true);
