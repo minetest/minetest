@@ -1102,6 +1102,11 @@ u32 Connection::Receive(u16 &peer_id, u8 *data, u32 datasize)
 		if(m_socket.WaitData(0) == true)
 			continue;
 	}
+	catch(SendFailedException &e)
+	{
+		derr_con<<"Receive(): SendFailedException; peer_id="
+				<<peer_id<<std::endl;
+	}
 	} // for
 }
 
