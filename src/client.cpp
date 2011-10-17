@@ -2166,4 +2166,11 @@ ClientEvent Client::getClientEvent()
 	return m_client_event_queue.pop_front();
 }
 
+float Client::getRTT(void)
+{
+	con::Peer *peer = m_con.GetPeerNoEx(PEER_ID_SERVER);
+	if(!peer)
+		return 0.0;
+	return peer->avg_rtt;
+}
 

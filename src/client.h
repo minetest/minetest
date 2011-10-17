@@ -301,6 +301,8 @@ public:
 		return m_access_denied_reason;
 	}
 
+	float getRTT(void);
+
 private:
 	
 	// Virtual methods from con::PeerHandler

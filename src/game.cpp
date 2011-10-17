@@ -2025,14 +2025,15 @@ void the_game(
 					"(% .1f, % .1f, % .1f)"
 					" (% .3f < btime_jitter < % .3f"
 					", dtime_jitter = % .1f %%"
-					", v_range = %.1f)",
+					", v_range = %.1f, RTT = %.3f)",
 					player_position.X/BS,
 					player_position.Y/BS,
 					player_position.Z/BS,
 					busytime_jitter1_min_sample,
 					busytime_jitter1_max_sample,
 					dtime_jitter1_max_fraction * 100.0,
-					draw_control.wanted_range
+					draw_control.wanted_range,
+					client.getRTT()
 					);
 
 			guitext2->setText(narrow_to_wide(temptext).c_str());
