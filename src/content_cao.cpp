@@ -1000,6 +1000,8 @@ void MobV2CAO::step(float dtime, ClientEnvironment *env)
 	
 	if(m_sprite_type == "humanoid_1"){
 		scene::ICameraSceneNode* camera = m_node->getSceneManager()->getActiveCamera();
+		if(!camera)
+			return;
 		v3f cam_to_mob = m_node->getAbsolutePosition() - camera->getAbsolutePosition();
 		cam_to_mob.normalize();
 		int col = 0;
