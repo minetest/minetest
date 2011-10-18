@@ -103,9 +103,6 @@ class NodeMetadata;
 struct ContentFeatures
 {
 #ifndef SERVER
-	// List of all block textures that have been used (value is dummy)
-	core::map<std::string, bool> used_texturenames;
-	
 	/*
 		0: up
 		1: down
@@ -127,6 +124,10 @@ struct ContentFeatures
 	AtlasPointer *special_atlas;
 #endif
 
+	// List of all block textures that have been used (value is dummy)
+	// Exists on server too for cleaner code in content_mapnode.cpp
+	core::map<std::string, bool> used_texturenames;
+	
 	// Type of MapNode::param1
 	ContentParamType param_type;
 	// True for all ground-like things like stone and mud, false for eg. trees
