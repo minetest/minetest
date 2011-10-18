@@ -42,6 +42,8 @@ ContentFeatures::~ContentFeatures()
 #ifndef SERVER
 void ContentFeatures::setTexture(u16 i, std::string name, u8 alpha)
 {
+	used_texturenames[name] = true;
+	
 	if(g_texturesource)
 	{
 		tiles[i].texture = g_texturesource->getTexture(name);

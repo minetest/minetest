@@ -1278,6 +1278,9 @@ int main(int argc, char *argv[])
 	
 	// Initial call with g_texturesource not set.
 	init_mapnode();
+	// Must be called before g_texturesource is created
+	// (for texture atlas making)
+	init_mineral();
 
 	/*
 		Run unit tests
@@ -1475,7 +1478,6 @@ int main(int argc, char *argv[])
 	*/
 
 	init_mapnode(); // Second call with g_texturesource set
-	init_mineral();
 
 	/*
 		GUI stuff

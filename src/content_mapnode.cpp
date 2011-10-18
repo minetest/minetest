@@ -117,6 +117,7 @@ void content_mapnode_init()
 	f->setInventoryTextureCube("stone.png", "stone.png", "stone.png");
 	f->param_type = CPT_MINERAL;
 	f->is_ground_content = true;
+	f->often_contains_mineral = true;
 	f->dug_item = std::string("MaterialItem2 ")+itos(CONTENT_COBBLE)+" 1";
 	setStoneLikeDiggingProperties(f->digging_properties, 1.0);
 	if(invisible_stone)

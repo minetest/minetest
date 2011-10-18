@@ -25,6 +25,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "settings.h"
 #include <ICameraSceneNode.h>
 #include "log.h"
+#include "mapnode.h" // For texture atlas making
+#include "mineral.h" // For texture atlas making
 
 /*
 	A cache from texture name to texture path
@@ -507,52 +509,62 @@ void TextureSource::buildMainAtlas()
 	}
 
 	/*
-		A list of stuff to include in the texture atlas.
-
-		It is a single-dimensional texture atlas due to the need to tile
-		textures.
-		
-		It should contain as much of the stuff shown in game as possible,
-		to minimize texture changes.
-
-		It fills up quickly, so do not add anything that isn't contained
-		in most MapBlocks. E.g. mese isn't suitable but stone is.
+		Grab list of stuff to include in the texture atlas from the
+		main content features
 	*/
 
-	core::array<std::string> sourcelist;
+	core::map<std::string, bool> sourcelist;
 
-	sourcelist.push_back("stone.png");
-	sourcelist.push_back("mud.png");
-	sourcelist.push_back("sand.png");
-	sourcelist.push_back("grass.png");
-	sourcelist.push_back("grass_footsteps.png");
-	sourcelist.push_back("tree.png");
-	sourcelist.push_back("tree_top.png");
-	sourcelist.push_back("water.png");
-	sourcelist.push_back("leaves.png");
-	sourcelist.push_back("glass.png");
-	sourcelist.push_back("mud.png^grass_side.png");
-	sourcelist.push_back("cobble.png");
-	sourcelist.push_back("mossycobble.png");
-	sourcelist.push_back("gravel.png");
-	sourcelist.push_back("jungletree.png");
+	for(u16 j=0; j<MAX_CONTENT+1; j++)
+	{
+		if(j == CONTENT_IGNORE || j == CONTENT_AIR)
+			continue;
+		ContentFeatures *f = &content_features(j);
+		for(core::map<std::string, bool>::Iterator
+				i = f->used_texturenames.getIterator();
+				i.atEnd() == false; i++)
+		{
+			std::string name = i.getNode()->getKey();
+			sourcelist[name] = true;
+
+			if(f->often_contains_mineral){
+				for(int k=1; k<MINERAL_COUNT; k++){
+					std::string mineraltexture = mineral_block_texture(k);
+					std::string fulltexture = name + "^" + mineraltexture;
+					sourcelist[fulltexture] = true;
+				}
+			}
+		}
+	}
 	
-	sourcelist.push_back("stone.png^mineral_coal.png");
-	sourcelist.push_back("stone.png^mineral_iron.png");
-	
+	infostream<<"Creating texture atlas out of textures: ";
+	for(core::map<std::string, bool>::Iterator
+			i = sourcelist.getIterator();
+			i.atEnd() == false; i++)
+	{
+		std::string name = i.getNode()->getKey();
+		infostream<<"\""<<name<<"\" ";
+	}
+	infostream<<std::endl;
+
 	// Padding to disallow texture bleeding
 	s32 padding = 16;
+
+	s32 column_width = 256;
+	s32 column_padding = 16;
 
 	/*
 		First pass: generate almost everything
 	*/
 	core::position2d<s32> pos_in_atlas(0,0);
 	
-	pos_in_atlas.Y += padding;
+	pos_in_atlas.Y = padding;
 
-	for(u32 i=0; i<sourcelist.size(); i++)
+	for(core::map<std::string, bool>::Iterator
+			i = sourcelist.getIterator();
+			i.atEnd() == false; i++)
 	{
-		std::string name = sourcelist[i];
+		std::string name = i.getNode()->getKey();
 
 		/*video::IImage *img = driver->createImageFromFile(
 				getTexturePath(name.c_str()).c_str());
@@ -586,20 +598,26 @@ void TextureSource::buildMainAtlas()
 			continue;
 		}
 
-		// Stop making atlas if atlas is full
+		// Wrap columns and stop making atlas if atlas is full
 		if(pos_in_atlas.Y + dim.Height > atlas_dim.Height)
 		{
-			infostream<<"TextureSource::buildMainAtlas(): "
-					<<"Atlas is full, not adding more textures."
-					<<std::endl;
-			break;
+			if(pos_in_atlas.X > (s32)atlas_dim.Width - 256 - padding){
+				errorstream<<"TextureSource::buildMainAtlas(): "
+						<<"Atlas is full, not adding more textures."
+						<<std::endl;
+				break;
+			}
+			pos_in_atlas.Y = padding;
+			pos_in_atlas.X += column_width + column_padding;
 		}
 		
         infostream<<"TextureSource::buildMainAtlas(): Adding \""<<name
                 <<"\" to texture atlas"<<std::endl;
 
 		// Tile it a few times in the X direction
-		u16 xwise_tiling = 16;
+		u16 xwise_tiling = column_width / dim.Width;
+		if(xwise_tiling > 16) // Limit to 16 (more gives no benefit)
+			xwise_tiling = 16;
 		for(u32 j=0; j<xwise_tiling; j++)
 		{
 			// Copy the copy to the atlas
@@ -627,7 +645,7 @@ void TextureSource::buildMainAtlas()
 				dst_y = -y0 + pos_in_atlas.Y-1;
 				src_y = pos_in_atlas.Y;
 			}
-			s32 x = x0 + pos_in_atlas.X * dim.Width;
+			s32 x = x0 + pos_in_atlas.X;
 			video::SColor c = atlas_img->getPixel(x, src_y);
 			atlas_img->setPixel(x,dst_y,c);
 		}
@@ -668,9 +686,11 @@ void TextureSource::buildMainAtlas()
 	/*
 		Second pass: set texture pointer in generated AtlasPointers
 	*/
-	for(u32 i=0; i<sourcelist.size(); i++)
+	for(core::map<std::string, bool>::Iterator
+			i = sourcelist.getIterator();
+			i.atEnd() == false; i++)
 	{
-		std::string name = sourcelist[i];
+		std::string name = i.getNode()->getKey();
 		if(m_name_to_id.find(name) == NULL)
 			continue;
 		u32 id = m_name_to_id[name];
@@ -681,8 +701,12 @@ void TextureSource::buildMainAtlas()
 	/*
 		Write image to file so that it can be inspected
 	*/
-	/*driver->writeImageToFile(atlas_img, 
-			getTexturePath("main_atlas.png").c_str());*/
+	/*std::string atlaspath = porting::path_userdata
+			+ DIR_DELIM + "generated_texture_atlas.png";
+	infostream<<"Removing and writing texture atlas for inspection to "
+			<<atlaspath<<std::endl;
+	fs::RecursiveDelete(atlaspath);
+	driver->writeImageToFile(atlas_img, atlaspath.c_str());*/
 }
 
 video::IImage* generate_image_from_scratch(std::string name,
