@@ -3657,14 +3657,15 @@ void ClientMap::renderMap(video::IVideoDriver* driver, s32 pass)
 	v3s16 p_nodes_max = cam_pos_nodes + box_nodes_d;
 
 	// Take a fair amount as we will be dropping more out later
+	// Umm... these additions are a bit strange but they are needed.
 	v3s16 p_blocks_min(
 			p_nodes_min.X / MAP_BLOCKSIZE - 2,
 			p_nodes_min.Y / MAP_BLOCKSIZE - 2,
 			p_nodes_min.Z / MAP_BLOCKSIZE - 2);
 	v3s16 p_blocks_max(
-			p_nodes_max.X / MAP_BLOCKSIZE + 1,
-			p_nodes_max.Y / MAP_BLOCKSIZE + 1,
-			p_nodes_max.Z / MAP_BLOCKSIZE + 1);
+			p_nodes_max.X / MAP_BLOCKSIZE + 0,
+			p_nodes_max.Y / MAP_BLOCKSIZE + 0,
+			p_nodes_max.Z / MAP_BLOCKSIZE + 0);
 	
 	u32 vertex_count = 0;
 	u32 meshbuffer_count = 0;
@@ -3672,8 +3673,19 @@ void ClientMap::renderMap(video::IVideoDriver* driver, s32 pass)
 	// For limiting number of mesh updates per frame
 	u32 mesh_update_count = 0;
 	
+	// Number of blocks in rendering range
+	u32 blocks_in_range = 0;
+	// Number of blocks in rendering range but don't have a mesh
+	u32 blocks_in_range_without_mesh = 0;
+	// Blocks that had mesh that would have been drawn according to
+	// rendering range (if max blocks limit didn't kick in)
 	u32 blocks_would_have_drawn = 0;
+	// Blocks that were drawn and had a mesh
 	u32 blocks_drawn = 0;
+	// Blocks which had a corresponding meshbuffer for this pass
+	u32 blocks_had_pass_meshbuf = 0;
+	// Blocks from which stuff was actually drawn
+	u32 blocks_without_stuff = 0;
 
 	int timecheck_counter = 0;
 	core::map<v2s16, MapSector*>::Iterator si;
@@ -3746,6 +3758,8 @@ void ClientMap::renderMap(video::IVideoDriver* driver, s32 pass)
 			/*if(m_control.range_all == false &&
 					d - 0.5*BS*MAP_BLOCKSIZE > range)
 				continue;*/
+			
+			blocks_in_range++;
 
 #if 1
 			/*
@@ -3764,8 +3778,10 @@ void ClientMap::renderMap(video::IVideoDriver* driver, s32 pass)
 
 				// Mesh has not been expired and there is no mesh:
 				// block has no content
-				if(block->mesh == NULL && mesh_expired == false)
+				if(block->mesh == NULL && mesh_expired == false){
+					blocks_in_range_without_mesh++;
 					continue;
+				}
 			}
 
 			f32 faraway = BS*50;
@@ -3803,9 +3819,11 @@ void ClientMap::renderMap(video::IVideoDriver* driver, s32 pass)
 				JMutexAutoLock lock(block->mesh_mutex);
 
 				scene::SMesh *mesh = block->mesh;
-
-				if(mesh == NULL)
+				
+				if(mesh == NULL){
+					blocks_in_range_without_mesh++;
 					continue;
+				}
 				
 				blocks_would_have_drawn++;
 				if(blocks_drawn >= m_control.wanted_max_blocks
@@ -3817,8 +3835,7 @@ void ClientMap::renderMap(video::IVideoDriver* driver, s32 pass)
 				sector_blocks_drawn++;
 
 				u32 c = mesh->getMeshBufferCount();
-				meshbuffer_count += c;
-
+				bool stuff_actually_drawn = false;
 				for(u32 i=0; i<c; i++)
 				{
 					scene::IMeshBuffer *buf = mesh->getMeshBuffer(i);
@@ -3829,16 +3846,25 @@ void ClientMap::renderMap(video::IVideoDriver* driver, s32 pass)
 					// Render transparent on transparent pass and likewise.
 					if(transparent == is_transparent_pass)
 					{
+						if(buf->getVertexCount() == 0)
+							errorstream<<"Block ["<<analyze_block(block)
+									<<"] contains an empty meshbuf"<<std::endl;
 						/*
 							This *shouldn't* hurt too much because Irrlicht
 							doesn't change opengl textures if the old
-							material is set again.
+							material has the same texture.
 						*/
 						driver->setMaterial(buf->getMaterial());
 						driver->drawMeshBuffer(buf);
 						vertex_count += buf->getVertexCount();
+						meshbuffer_count++;
+						stuff_actually_drawn = true;
 					}
 				}
+				if(stuff_actually_drawn)
+					blocks_had_pass_meshbuf++;
+				else
+					blocks_without_stuff++;
 			}
 		} // foreach sectorblocks
 
@@ -3848,17 +3874,30 @@ void ClientMap::renderMap(video::IVideoDriver* driver, s32 pass)
 		}
 	}
 	
+	std::string prefix = "CM: ";
+
+	// Log only on solid pass because values are the same
 	if(pass == scene::ESNRP_SOLID){
-		g_profiler->avg("CM: blocks drawn on solid pass", blocks_drawn);
-		g_profiler->avg("CM: vertices drawn on solid pass", vertex_count);
-		if(blocks_drawn != 0)
-			g_profiler->avg("CM: solid meshbuffers per block",
-					(float)meshbuffer_count / (float)blocks_drawn);
-	} else {
-		g_profiler->avg("CM: blocks drawn on transparent pass", blocks_drawn);
-		g_profiler->avg("CM: vertices drawn on transparent pass", vertex_count);
+		g_profiler->avg(prefix+"blocks in range", blocks_in_range);
+		if(blocks_in_range != 0)
+			g_profiler->avg(prefix+"blocks in range without mesh (frac)",
+					(float)blocks_in_range_without_mesh/blocks_in_range);
+		g_profiler->avg(prefix+"blocks drawn", blocks_drawn);
 	}
 	
+	if(pass == scene::ESNRP_SOLID)
+		prefix = "CM: solid: ";
+	else
+		prefix = "CM: transparent: ";
+
+	g_profiler->avg(prefix+"vertices drawn", vertex_count);
+	if(blocks_had_pass_meshbuf != 0)
+		g_profiler->avg(prefix+"meshbuffers per block",
+				(float)meshbuffer_count / (float)blocks_had_pass_meshbuf);
+	if(blocks_drawn != 0)
+		g_profiler->avg(prefix+"empty blocks (frac)",
+				(float)blocks_without_stuff / blocks_drawn);
+
 	m_control.blocks_drawn = blocks_drawn;
 	m_control.blocks_would_have_drawn = blocks_would_have_drawn;
 

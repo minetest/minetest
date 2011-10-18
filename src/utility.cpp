@@ -236,7 +236,7 @@ bool isBlockInSight(v3s16 blockpos_b, v3f camera_pos, v3f camera_dir,
 	
 	// If block is (nearly) touching the camera, don't
 	// bother validating further (that is, render it anyway)
-	if(d > block_max_radius * 1.5)
+	if(d > block_max_radius)
 	{
 		// Cosine of the angle between the camera direction
 		// and the block direction (camera_dir is an unit vector)

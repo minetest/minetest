@@ -364,7 +364,9 @@ void Camera::updateViewingRange(f32 frametime_in)
 	//dstream<<"wanted_frametime_change="<<wanted_frametime_change<<std::endl;
 
 	// If needed frametime change is small, just return
-	if (fabs(wanted_frametime_change) < m_wanted_frametime*0.4)
+	// This value was 0.4 for many months until 2011-10-18 by c55;
+	// Let's see how this works out.
+	if (fabs(wanted_frametime_change) < m_wanted_frametime*0.25)
 	{
 		//dstream<<"ignoring small wanted_frametime_change"<<std::endl;
 		return;

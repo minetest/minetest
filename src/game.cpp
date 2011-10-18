@@ -1983,8 +1983,10 @@ void the_game(
 				range = draw_control.wanted_range*BS + MAP_BLOCKSIZE*BS*1.5;
 				if(draw_control.range_all)
 					range = 100000*BS;
-				if(range < 50*BS)
-					range = range * 0.5 + 25*BS;
+				/*if(range < 50*BS)
+					range = range * 0.5 + 25*BS;*/
+				// Move the invisible limit a bit further
+				//range *= 1.2;
 			}
 
 			driver->setFog(
