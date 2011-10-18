@@ -354,11 +354,10 @@ void RemoteClient::GetNextBlocks(Server *server, float dtime,
 	
 	// Increment timers
 	m_nothing_to_send_pause_timer -= dtime;
+	m_nearest_unsent_reset_timer += dtime;
 	
 	if(m_nothing_to_send_pause_timer >= 0)
 	{
-		// Keep this reset
-		m_nearest_unsent_reset_timer = 0;
 		return;
 	}
 
@@ -410,17 +409,13 @@ void RemoteClient::GetNextBlocks(Server *server, float dtime,
 	/*infostream<<"m_nearest_unsent_reset_timer="
 			<<m_nearest_unsent_reset_timer<<std::endl;*/
 			
-	// This has to be incremented only when the nothing to send pause
-	// is not active
-	m_nearest_unsent_reset_timer += dtime;
-	
-	// Reset periodically to avoid possible bugs or other mishaps
-	if(m_nearest_unsent_reset_timer > 10.0)
+	// Reset periodically to workaround for some bugs or stuff
+	if(m_nearest_unsent_reset_timer > 20.0)
 	{
 		m_nearest_unsent_reset_timer = 0;
 		m_nearest_unsent_d = 0;
-		/*infostream<<"Resetting m_nearest_unsent_d for "
-				<<server->getPlayerName(peer_id)<<std::endl;*/
+		//infostream<<"Resetting m_nearest_unsent_d for "
+		//		<<server->getPlayerName(peer_id)<<std::endl;
 	}
 
 	//s16 last_nearest_unsent_d = m_nearest_unsent_d;
@@ -463,22 +458,24 @@ void RemoteClient::GetNextBlocks(Server *server, float dtime,
 	s16 d_max_gen = g_settings->getS16("max_block_generate_distance");
 	
 	// Don't loop very much at a time
-	if(d_max > d_start+1)
-		d_max = d_start+1;
+	s16 max_d_increment_at_time = 2;
+	if(d_max > d_start + max_d_increment_at_time)
+		d_max = d_start + max_d_increment_at_time;
 	/*if(d_max_gen > d_start+2)
 		d_max_gen = d_start+2;*/
 	
 	//infostream<<"Starting from "<<d_start<<std::endl;
 
-	bool sending_something = false;
-
-	bool no_blocks_found_for_sending = true;
-
+	s32 nearest_emerged_d = -1;
+	s32 nearest_emergefull_d = -1;
+	s32 nearest_sent_d = -1;
 	bool queue_is_full = false;
 	
 	s16 d;
 	for(d = d_start; d <= d_max; d++)
 	{
+		/*errorstream<<"checking d="<<d<<" for "
+				<<server->getPlayerName(peer_id)<<std::endl;*/
 		//infostream<<"RemoteClient::SendBlocks(): d="<<d<<std::endl;
 		
 		/*
@@ -550,12 +547,12 @@ void RemoteClient::GetNextBlocks(Server *server, float dtime,
 				if(abs(p.Y - center.Y) > d_max_gen - d_max_gen / 3)
 					generate = false;*/
 
-				// Limit the send area vertically to 2/3
-				if(abs(p.Y - center.Y) > d_max_gen - d_max_gen / 3)
+				// Limit the send area vertically to 1/2
+				if(abs(p.Y - center.Y) > d_max / 2)
 					continue;
 			}
 
-#if 1
+#if 0
 			/*
 				If block is far away, don't generate it unless it is
 				near ground level.
@@ -588,7 +585,7 @@ void RemoteClient::GetNextBlocks(Server *server, float dtime,
 #endif
 
 			//infostream<<"d="<<d<<std::endl;
-			
+#if 1
 			/*
 				Don't generate or send if not in sight
 				FIXME This only works if the client uses a small enough
@@ -600,7 +597,7 @@ void RemoteClient::GetNextBlocks(Server *server, float dtime,
 			{
 				continue;
 			}
-			
+#endif
 			/*
 				Don't send already sent blocks
 			*/
@@ -658,7 +655,7 @@ void RemoteClient::GetNextBlocks(Server *server, float dtime,
 					Block is near ground level if night-time mesh
 					differs from day-time mesh.
 				*/
-				if(d > 3)
+				if(d >= 4)
 				{
 					if(block->dayNightDiffed() == false)
 						continue;
@@ -677,18 +674,6 @@ void RemoteClient::GetNextBlocks(Server *server, float dtime,
 			}
 
 			/*
-				Record the lowest d from which a block has been
-				found being not sent and possibly to exist
-			*/
-			if(no_blocks_found_for_sending)
-			{
-				if(generate == true)
-					new_nearest_unsent_d = d;
-			}
-
-			no_blocks_found_for_sending = false;
-					
-			/*
 				Add inexistent block to emerge queue.
 			*/
 			if(block == NULL || surely_not_found_on_disk || block_is_invalid)
@@ -697,7 +682,8 @@ void RemoteClient::GetNextBlocks(Server *server, float dtime,
 				// Allow only one block in emerge queue
 				//if(server->m_emerge_queue.peerItemCount(peer_id) < 1)
 				// Allow two blocks in queue per client
-				if(server->m_emerge_queue.peerItemCount(peer_id) < 2)
+				//if(server->m_emerge_queue.peerItemCount(peer_id) < 2)
+				if(server->m_emerge_queue.peerItemCount(peer_id) < 25)
 				{
 					//infostream<<"Adding block to emerge queue"<<std::endl;
 					
@@ -709,54 +695,62 @@ void RemoteClient::GetNextBlocks(Server *server, float dtime,
 					
 					server->m_emerge_queue.addBlock(peer_id, p, flags);
 					server->m_emergethread.trigger();
+
+					if(nearest_emerged_d == -1)
+						nearest_emerged_d = d;
+				} else {
+					if(nearest_emergefull_d == -1)
+						nearest_emergefull_d = d;
 				}
 				
 				// get next one.
 				continue;
 			}
 
+			if(nearest_sent_d == -1)
+				nearest_sent_d = d;
+
 			/*
 				Add block to send queue
 			*/
+
+			/*errorstream<<"sending from d="<<d<<" to "
+					<<server->getPlayerName(peer_id)<<std::endl;*/
 
 			PrioritySortedBlockTransfer q((float)d, p, peer_id);
 
 			dest.push_back(q);
 
 			num_blocks_selected += 1;
-			sending_something = true;
 		}
 	}
 queue_full_break:
 
 	//infostream<<"Stopped at "<<d<<std::endl;
 	
-	if(no_blocks_found_for_sending)
-	{
-		if(queue_is_full == false)
-			new_nearest_unsent_d = d;
+	// If nothing was found for sending and nothing was queued for
+	// emerging, continue next time browsing from here
+	if(nearest_emerged_d != -1){
+		new_nearest_unsent_d = nearest_emerged_d;
+	} else if(nearest_emergefull_d != -1){
+		new_nearest_unsent_d = nearest_emergefull_d;
+	} else {
+		if(d > g_settings->getS16("max_block_send_distance")){
+			new_nearest_unsent_d = 0;
+			m_nothing_to_send_pause_timer = 2.0;
+			/*infostream<<"GetNextBlocks(): d wrapped around for "
+					<<server->getPlayerName(peer_id)
+					<<"; setting to 0 and pausing"<<std::endl;*/
+		} else {
+			if(nearest_sent_d != -1)
+				new_nearest_unsent_d = nearest_sent_d;
+			else
+				new_nearest_unsent_d = d;
+		}
 	}
 
 	if(new_nearest_unsent_d != -1)
 		m_nearest_unsent_d = new_nearest_unsent_d;
-
-	if(sending_something == false)
-	{
-		m_nothing_to_send_counter++;
-		if((s16)m_nothing_to_send_counter >=
-				g_settings->getS16("max_block_send_distance"))
-		{
-			// Pause time in seconds
-			m_nothing_to_send_pause_timer = 1.0;
-			/*infostream<<"nothing to send to "
-					<<server->getPlayerName(peer_id)
-					<<" (d="<<d<<")"<<std::endl;*/
-		}
-	}
-	else
-	{
-		m_nothing_to_send_counter = 0;
-	}
 
 	/*timer_result = timer.stop(true);
 	if(timer_result != 0)
@@ -1470,7 +1464,7 @@ void Server::AsyncRunStep()
 		JMutexAutoLock envlock(m_env_mutex);
 		JMutexAutoLock conlock(m_con_mutex);
 
-		ScopeProfiler sp(g_profiler, "Server: sending object messages");
+		//ScopeProfiler sp(g_profiler, "Server: sending object messages");
 
 		// Key = object id
 		// Value = data sent by object
@@ -1710,7 +1704,7 @@ void Server::AsyncRunStep()
 			JMutexAutoLock lock1(m_env_mutex);
 			JMutexAutoLock lock2(m_con_mutex);
 
-			ScopeProfiler sp(g_profiler, "Server: sending player positions");
+			//ScopeProfiler sp(g_profiler, "Server: sending player positions");
 
 			SendObjectData(counter);
 

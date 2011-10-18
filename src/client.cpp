@@ -156,7 +156,7 @@ void * MeshUpdateThread::Thread()
 			continue;
 		}
 
-		ScopeProfiler sp(g_profiler, "mesh make");
+		ScopeProfiler sp(g_profiler, "Client: Mesh making");
 
 		scene::SMesh *mesh_new = NULL;
 		mesh_new = makeMapBlockMesh(q->data);

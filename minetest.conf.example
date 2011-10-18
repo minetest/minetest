@@ -143,8 +143,8 @@
 #active_block_range = 2
 #max_simultaneous_block_sends_per_client = 2
 #max_simultaneous_block_sends_server_total = 8
-#max_block_send_distance = 8
-#max_block_generate_distance = 8
+#max_block_send_distance = 7
+#max_block_generate_distance = 5
 #time_send_interval = 20
 # Length of day/night cycle. 72=20min, 360=4min, 1=24hour
 #time_speed = 72
