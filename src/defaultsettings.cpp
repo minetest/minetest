@@ -45,6 +45,7 @@ void set_default_settings(Settings *settings)
 	settings->setDefault("keymap_frametime_graph", "KEY_F1");
 	settings->setDefault("keymap_screenshot", "KEY_F12");
 	settings->setDefault("keymap_toggle_profiler", "KEY_F2");
+	settings->setDefault("keymap_toggle_force_fog_off", "KEY_F3");
 	// Some (temporary) keys for debugging
 	settings->setDefault("keymap_print_debug_stacks", "KEY_KEY_P");
 

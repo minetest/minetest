@@ -952,6 +952,8 @@ void the_game(
 
 	bool show_profiler = false;
 
+	bool force_fog_off = false;
+
 	/*
 		Main loop
 	*/
@@ -1322,6 +1324,10 @@ void the_game(
 		{
 			show_profiler = !show_profiler;
 			guitext_profiler->setVisible(show_profiler);
+		}
+		else if(input->wasKeyDown(getKeySetting("keymap_toggle_force_fog_off")))
+		{
+			force_fog_off = !force_fog_off;
 		}
 
 		// Item selection with mouse wheel
@@ -1971,7 +1977,7 @@ void the_game(
 			Fog
 		*/
 		
-		if(g_settings->getBool("enable_fog") == true)
+		if(g_settings->getBool("enable_fog") == true && !force_fog_off)
 		{
 			f32 range;
 			if(farmesh)
@@ -1981,12 +1987,11 @@ void the_game(
 			else
 			{
 				range = draw_control.wanted_range*BS + MAP_BLOCKSIZE*BS*1.5;
+				range *= 0.9;
 				if(draw_control.range_all)
 					range = 100000*BS;
 				/*if(range < 50*BS)
 					range = range * 0.5 + 25*BS;*/
-				// Move the invisible limit a bit further
-				//range *= 1.2;
 			}
 
 			driver->setFog(

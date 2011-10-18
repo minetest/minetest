@@ -342,7 +342,7 @@ void Camera::updateViewingRange(f32 frametime_in)
 			<<std::endl;*/
 
 	m_draw_control.wanted_min_range = m_viewing_range_min;
-	m_draw_control.wanted_max_blocks = (1.5*m_draw_control.blocks_would_have_drawn)+1;
+	m_draw_control.wanted_max_blocks = (2.0*m_draw_control.blocks_would_have_drawn)+1;
 	if (m_draw_control.wanted_max_blocks < 10)
 		m_draw_control.wanted_max_blocks = 10;
 
@@ -366,7 +366,7 @@ void Camera::updateViewingRange(f32 frametime_in)
 	// If needed frametime change is small, just return
 	// This value was 0.4 for many months until 2011-10-18 by c55;
 	// Let's see how this works out.
-	if (fabs(wanted_frametime_change) < m_wanted_frametime*0.25)
+	if (fabs(wanted_frametime_change) < m_wanted_frametime*0.33)
 	{
 		//dstream<<"ignoring small wanted_frametime_change"<<std::endl;
 		return;
