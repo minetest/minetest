@@ -97,7 +97,7 @@ public:
 	void setPort(unsigned short port);
 	void print(std::ostream *s) const;
 	void print() const;
-	std::string serializeString();
+	std::string serializeString() const;
 private:
 	unsigned int m_address;
 	unsigned short m_port;

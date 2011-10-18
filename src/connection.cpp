@@ -1104,8 +1104,6 @@ u32 Connection::Receive(u16 &peer_id, u8 *data, u32 datasize)
 	}
 	catch(SendFailedException &e)
 	{
-		derr_con<<"Receive(): SendFailedException; peer_id="
-				<<peer_id<<std::endl;
 	}
 	} // for
 }
@@ -1195,7 +1193,12 @@ void Connection::SendAsPacket(u16 peer_id, u8 channelnum,
 
 void Connection::RawSend(const BufferedPacket &packet)
 {
-	m_socket.Send(packet.address, *packet.data, packet.data.getSize());
+	try{
+		m_socket.Send(packet.address, *packet.data, packet.data.getSize());
+	} catch(SendFailedException &e){
+		derr_con<<"Connection::RawSend(): SendFailedException: "
+				<<packet.address.serializeString()<<std::endl;
+	}
 }
 
 void Connection::RunTimeouts(float dtime)
