@@ -27,6 +27,8 @@ bool item_material_is_cookable(content_t content)
 {
 	if(content == CONTENT_TREE)
 		return true;
+	else if(content == CONTENT_JUNGLETREE)
+		return true;
 	else if(content == CONTENT_COBBLE)
 		return true;
 	else if(content == CONTENT_SAND)
@@ -38,6 +40,8 @@ InventoryItem* item_material_create_cook_result(content_t content)
 {
 	if(content == CONTENT_TREE)
 		return new CraftItem("lump_of_coal", 1);
+	else if(content == CONTENT_JUNGLETREE)
+		return new CraftItem("lump of coal", 1);
 	else if(content == CONTENT_COBBLE)
 		return new MaterialItem(CONTENT_STONE, 1);
 	else if(content == CONTENT_SAND)
@@ -74,7 +78,7 @@ std::string item_craft_get_image_name(const std::string &subname)
 	else if(subname == "apple")
 		return "apple.png";
 		else if(subname == "apple_iron")
-		return "apple_iron.png";
+		return "apple.png^[forcesingle";
 	else
 		return "cloud.png"; // just something
 }
@@ -147,5 +151,4 @@ s16 item_craft_eat_hp_change(const std::string &subname)
 		return 8; // 4 hearts
 	return 0;
 }
-
 
