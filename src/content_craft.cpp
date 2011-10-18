@@ -48,6 +48,16 @@ InventoryItem *craft_get_result(InventoryItem **items)
 			return new CraftItem("Stick", 4);
 		}
 	}
+	//Jungle tree should become at least something small
+	//going to make it 2 wood
+	{
+		ItemSpec specs[9];
+		specs[0] = ItemSpec(ITEM_MATERIAL, CONTENT_JUNGLETREE);
+		if(checkItemCombination(items, specs))
+		{
+			return new CraftItem("Stick", 2);
+		}
+	}
 
 	// Fence
 	{
@@ -633,4 +643,3 @@ void craft_give_initial_stuff(Player *player)
 		assert(r == true);
 	}*/
 }
-
