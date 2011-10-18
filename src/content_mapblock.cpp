@@ -253,7 +253,7 @@ void mapblock_mesh_generate_special(MeshMakeData *data,
 			// Set material
 			video::SMaterial material;
 			material.setFlag(video::EMF_LIGHTING, false);
-			material.setFlag(video::EMF_BACK_FACE_CULLING, true);
+			material.setFlag(video::EMF_BACK_FACE_CULLING, false);
 			material.setFlag(video::EMF_BILINEAR_FILTER, false);
 			material.setFlag(video::EMF_FOG_ENABLE, true);
 			//material.MaterialType = video::EMT_TRANSPARENT_ALPHA_CHANNEL;
@@ -308,7 +308,7 @@ void mapblock_mesh_generate_special(MeshMakeData *data,
 			// Set material
 			video::SMaterial material;
 			material.setFlag(video::EMF_LIGHTING, false);
-			material.setFlag(video::EMF_BACK_FACE_CULLING, true);
+			material.setFlag(video::EMF_BACK_FACE_CULLING, false);
 			material.setFlag(video::EMF_BILINEAR_FILTER, false);
 			material.setFlag(video::EMF_FOG_ENABLE, true);
 			material.MaterialType
@@ -1104,7 +1104,7 @@ void mapblock_mesh_generate_special(MeshMakeData *data,
 
 			video::SMaterial material_rail;
 			material_rail.setFlag(video::EMF_LIGHTING, false);
-			material_rail.setFlag(video::EMF_BACK_FACE_CULLING, true);
+			material_rail.setFlag(video::EMF_BACK_FACE_CULLING, false);
 			material_rail.setFlag(video::EMF_BILINEAR_FILTER, false);
 			material_rail.setFlag(video::EMF_FOG_ENABLE, true);
 			material_rail.MaterialType
@@ -1177,7 +1177,7 @@ void mapblock_mesh_generate_special(MeshMakeData *data,
 			// Set material
 			video::SMaterial material_ladder;
 			material_ladder.setFlag(video::EMF_LIGHTING, false);
-			material_ladder.setFlag(video::EMF_BACK_FACE_CULLING, true);
+			material_ladder.setFlag(video::EMF_BACK_FACE_CULLING, false);
 			material_ladder.setFlag(video::EMF_BILINEAR_FILTER, false);
 			material_ladder.setFlag(video::EMF_FOG_ENABLE, true);
 			material_ladder.MaterialType = video::EMT_TRANSPARENT_ALPHA_CHANNEL_REF;
