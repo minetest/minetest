@@ -1177,7 +1177,7 @@ void the_game(
 			print_to_log = false;
 			profiler_print_interval = 5;
 		}
-		if(m_profiler_interval.step(0.030, profiler_print_interval))
+		if(m_profiler_interval.step(dtime, profiler_print_interval))
 		{
 			if(print_to_log){
 				infostream<<"Profiler:"<<std::endl;
