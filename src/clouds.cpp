@@ -21,6 +21,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "noise.h"
 #include "constants.h"
 #include "debug.h"
+#include "profiler.h"
+#include "main.h" // For g_profiler
 
 Clouds::Clouds(
 		scene::ISceneNode* parent,
@@ -75,6 +77,8 @@ void Clouds::render()
 		return;*/
 	if(SceneManager->getSceneNodeRenderPass() != scene::ESNRP_SOLID)
 		return;
+
+	ScopeProfiler sp(g_profiler, "Rendering of clouds, avg", SPT_AVG);
 
 	driver->setTransform(video::ETS_WORLD, AbsoluteTransformation);
 	driver->setMaterial(m_material);

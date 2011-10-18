@@ -143,7 +143,6 @@ void mapblock_mesh_generate_special(MeshMakeData *data,
 	// New-style leaves material
 	video::SMaterial material_leaves1;
 	material_leaves1.setFlag(video::EMF_LIGHTING, false);
-	//material_leaves1.setFlag(video::EMF_BACK_FACE_CULLING, false);
 	material_leaves1.setFlag(video::EMF_BILINEAR_FILTER, false);
 	material_leaves1.setFlag(video::EMF_FOG_ENABLE, true);
 	material_leaves1.MaterialType = video::EMT_TRANSPARENT_ALPHA_CHANNEL_REF;
@@ -229,24 +228,53 @@ void mapblock_mesh_generate_special(MeshMakeData *data,
 		v3s16 p(x,y,z);
 
 		MapNode n = data->m_vmanip.getNodeNoEx(blockpos_nodes+p);
-		
+
 		/*
 			Add torches to mesh
 		*/
 		if(n.getContent() == CONTENT_TORCH)
 		{
+			v3s16 dir = unpackDir(n.param2);
+			
+			const char *texturename = "torch.png";
+			if(dir == v3s16(0,-1,0)){
+				texturename = "torch_on_floor.png";
+			} else if(dir == v3s16(0,1,0)){
+				texturename = "torch_on_ceiling.png";
+			// For backwards compatibility
+			} else if(dir == v3s16(0,0,0)){
+				texturename = "torch_on_floor.png";
+			} else {
+				texturename = "torch.png";
+			}
+
+			AtlasPointer ap = g_texturesource->getTexture(texturename);
+
+			// Set material
+			video::SMaterial material;
+			material.setFlag(video::EMF_LIGHTING, false);
+			material.setFlag(video::EMF_BACK_FACE_CULLING, true);
+			material.setFlag(video::EMF_BILINEAR_FILTER, false);
+			material.setFlag(video::EMF_FOG_ENABLE, true);
+			//material.MaterialType = video::EMT_TRANSPARENT_ALPHA_CHANNEL;
+			material.MaterialType
+					= video::EMT_TRANSPARENT_ALPHA_CHANNEL_REF;
+			material.setTexture(0, ap.atlas);
+
 			video::SColor c(255,255,255,255);
 
 			// Wall at X+ of node
 			video::S3DVertex vertices[4] =
 			{
-				video::S3DVertex(-BS/2,-BS/2,0, 0,0,0, c, 0,1),
-				video::S3DVertex(BS/2,-BS/2,0, 0,0,0, c, 1,1),
-				video::S3DVertex(BS/2,BS/2,0, 0,0,0, c, 1,0),
-				video::S3DVertex(-BS/2,BS/2,0, 0,0,0, c, 0,0),
+				video::S3DVertex(-BS/2,-BS/2,0, 0,0,0, c,
+						ap.x0(), ap.y1()),
+				video::S3DVertex(BS/2,-BS/2,0, 0,0,0, c,
+						ap.x1(), ap.y1()),
+				video::S3DVertex(BS/2,BS/2,0, 0,0,0, c,
+						ap.x1(), ap.y0()),
+				video::S3DVertex(-BS/2,BS/2,0, 0,0,0, c,
+						ap.x0(), ap.y0()),
 			};
-
-			v3s16 dir = unpackDir(n.param2);
 
 			for(s32 i=0; i<4; i++)
 			{
@@ -266,29 +294,6 @@ void mapblock_mesh_generate_special(MeshMakeData *data,
 				vertices[i].Pos += intToFloat(p + blockpos_nodes, BS);
 			}
 
-			// Set material
-			video::SMaterial material;
-			material.setFlag(video::EMF_LIGHTING, false);
-			material.setFlag(video::EMF_BACK_FACE_CULLING, false);
-			material.setFlag(video::EMF_BILINEAR_FILTER, false);
-			//material.MaterialType = video::EMT_TRANSPARENT_ALPHA_CHANNEL;
-			material.MaterialType
-					= video::EMT_TRANSPARENT_ALPHA_CHANNEL_REF;
-
-			if(dir == v3s16(0,-1,0))
-				material.setTexture(0,
-						g_texturesource->getTextureRaw("torch_on_floor.png"));
-			else if(dir == v3s16(0,1,0))
-				material.setTexture(0,
-						g_texturesource->getTextureRaw("torch_on_ceiling.png"));
-			// For backwards compatibility
-			else if(dir == v3s16(0,0,0))
-				material.setTexture(0,
-						g_texturesource->getTextureRaw("torch_on_floor.png"));
-			else
-				material.setTexture(0, 
-						g_texturesource->getTextureRaw("torch.png"));
-
 			u16 indices[] = {0,1,2,2,3,0};
 			// Add to mesh collector
 			collector.append(material, vertices, 4, indices, 6);
@@ -298,6 +303,18 @@ void mapblock_mesh_generate_special(MeshMakeData *data,
 		*/
 		else if(n.getContent() == CONTENT_SIGN_WALL)
 		{
+			AtlasPointer ap = g_texturesource->getTexture("sign_wall.png");
+
+			// Set material
+			video::SMaterial material;
+			material.setFlag(video::EMF_LIGHTING, false);
+			material.setFlag(video::EMF_BACK_FACE_CULLING, true);
+			material.setFlag(video::EMF_BILINEAR_FILTER, false);
+			material.setFlag(video::EMF_FOG_ENABLE, true);
+			material.MaterialType
+					= video::EMT_TRANSPARENT_ALPHA_CHANNEL_REF;
+			material.setTexture(0, ap.atlas);
+
 			u8 l = decode_light(n.getLightBlend(data->m_daynight_ratio));
 			video::SColor c = MapBlock_LightColor(255, l);
 				
@@ -305,10 +322,14 @@ void mapblock_mesh_generate_special(MeshMakeData *data,
 			// Wall at X+ of node
 			video::S3DVertex vertices[4] =
 			{
-				video::S3DVertex(BS/2-d,-BS/2,-BS/2, 0,0,0, c, 0,1),
-				video::S3DVertex(BS/2-d,-BS/2,BS/2, 0,0,0, c, 1,1),
-				video::S3DVertex(BS/2-d,BS/2,BS/2, 0,0,0, c, 1,0),
-				video::S3DVertex(BS/2-d,BS/2,-BS/2, 0,0,0, c, 0,0),
+				video::S3DVertex(BS/2-d,-BS/2,-BS/2, 0,0,0, c,
+						ap.x0(), ap.y1()),
+				video::S3DVertex(BS/2-d,-BS/2,BS/2, 0,0,0, c,
+						ap.x1(), ap.y1()),
+				video::S3DVertex(BS/2-d,BS/2,BS/2, 0,0,0, c,
+						ap.x1(), ap.y0()),
+				video::S3DVertex(BS/2-d,BS/2,-BS/2, 0,0,0, c,
+						ap.x0(), ap.y0()),
 			};
 
 			v3s16 dir = unpackDir(n.param2);
@@ -330,19 +351,6 @@ void mapblock_mesh_generate_special(MeshMakeData *data,
 
 				vertices[i].Pos += intToFloat(p + blockpos_nodes, BS);
 			}
-
-			// Set material
-			video::SMaterial material;
-			material.setFlag(video::EMF_LIGHTING, false);
-			material.setFlag(video::EMF_BACK_FACE_CULLING, false);
-			material.setFlag(video::EMF_BILINEAR_FILTER, false);
-			material.setFlag(video::EMF_FOG_ENABLE, true);
-			//material.MaterialType = video::EMT_TRANSPARENT_ALPHA_CHANNEL;
-			material.MaterialType
-					= video::EMT_TRANSPARENT_ALPHA_CHANNEL_REF;
-
-			material.setTexture(0, 
-					g_texturesource->getTextureRaw("sign_wall.png"));
 
 			u16 indices[] = {0,1,2,2,3,0};
 			// Add to mesh collector
@@ -525,10 +533,6 @@ void mapblock_mesh_generate_special(MeshMakeData *data,
 				
 				video::S3DVertex vertices[4] =
 				{
-					/*video::S3DVertex(-BS/2,0,BS/2, 0,0,0, c, 0,1),
-					video::S3DVertex(BS/2,0,BS/2, 0,0,0, c, 1,1),
-					video::S3DVertex(BS/2,0,BS/2, 0,0,0, c, 1,0),
-					video::S3DVertex(-BS/2,0,BS/2, 0,0,0, c, 0,0),*/
 					video::S3DVertex(-BS/2,0,BS/2, 0,0,0, c,
 							pa_liquid1.x0(), pa_liquid1.y1()),
 					video::S3DVertex(BS/2,0,BS/2, 0,0,0, c,
@@ -610,10 +614,6 @@ void mapblock_mesh_generate_special(MeshMakeData *data,
 			{
 				video::S3DVertex vertices[4] =
 				{
-					/*video::S3DVertex(-BS/2,0,-BS/2, 0,0,0, c, 0,1),
-					video::S3DVertex(BS/2,0,-BS/2, 0,0,0, c, 1,1),
-					video::S3DVertex(BS/2,0,BS/2, 0,0,0, c, 1,0),
-					video::S3DVertex(-BS/2,0,BS/2, 0,0,0, c, 0,0),*/
 					video::S3DVertex(-BS/2,0,BS/2, 0,0,0, c,
 							pa_liquid1.x0(), pa_liquid1.y1()),
 					video::S3DVertex(BS/2,0,BS/2, 0,0,0, c,
@@ -668,10 +668,6 @@ void mapblock_mesh_generate_special(MeshMakeData *data,
 			
 			video::S3DVertex vertices[4] =
 			{
-				/*video::S3DVertex(-BS/2,0,-BS/2, 0,0,0, c, 0,1),
-				video::S3DVertex(BS/2,0,-BS/2, 0,0,0, c, 1,1),
-				video::S3DVertex(BS/2,0,BS/2, 0,0,0, c, 1,0),
-				video::S3DVertex(-BS/2,0,BS/2, 0,0,0, c, 0,0),*/
 				video::S3DVertex(-BS/2,0,BS/2, 0,0,0, c,
 						pa_liquid1.x0(), pa_liquid1.y1()),
 				video::S3DVertex(BS/2,0,BS/2, 0,0,0, c,
@@ -705,10 +701,6 @@ void mapblock_mesh_generate_special(MeshMakeData *data,
 			{
 				video::S3DVertex vertices[4] =
 				{
-					/*video::S3DVertex(-BS/2,-BS/2,BS/2, 0,0,0, c, 0,1),
-					video::S3DVertex(BS/2,-BS/2,BS/2, 0,0,0, c, 1,1),
-					video::S3DVertex(BS/2,BS/2,BS/2, 0,0,0, c, 1,0),
-					video::S3DVertex(-BS/2,BS/2,BS/2, 0,0,0, c, 0,0),*/
 					video::S3DVertex(-BS/2,-BS/2,BS/2, 0,0,0, c,
 						pa_leaves1.x0(), pa_leaves1.y1()),
 					video::S3DVertex(BS/2,-BS/2,BS/2, 0,0,0, c,
@@ -927,10 +919,6 @@ void mapblock_mesh_generate_special(MeshMakeData *data,
 
 				video::S3DVertex vertices[4] =
 				{
-					/*video::S3DVertex(-BS/2,-BS/2,BS/2, 0,0,0, c, 0,1),
-					video::S3DVertex(BS/2,-BS/2,BS/2, 0,0,0, c, 1,1),
-					video::S3DVertex(BS/2,BS/2,BS/2, 0,0,0, c, 1,0),
-					video::S3DVertex(-BS/2,BS/2,BS/2, 0,0,0, c, 0,0),*/
 					video::S3DVertex(-BS/2,-BS/2,BS/2, 0,0,0, c,
 						ap.x0(), ap.y1()),
 					video::S3DVertex(BS/2,-BS/2,BS/2, 0,0,0, c,
@@ -1034,13 +1022,13 @@ void mapblock_mesh_generate_special(MeshMakeData *data,
 				video::S3DVertex vertices[4] =
 				{
 					video::S3DVertex(-BS/2,-BS/2,0, 0,0,0, c,
-						pa_papyrus.x0(), pa_papyrus.y1()),
+						pa_junglegrass.x0(), pa_junglegrass.y1()),
 					video::S3DVertex(BS/2,-BS/2,0, 0,0,0, c,
-						pa_papyrus.x1(), pa_papyrus.y1()),
+						pa_junglegrass.x1(), pa_junglegrass.y1()),
 					video::S3DVertex(BS/2,BS/1,0, 0,0,0, c,
-						pa_papyrus.x1(), pa_papyrus.y0()),
+						pa_junglegrass.x1(), pa_junglegrass.y0()),
 					video::S3DVertex(-BS/2,BS/1,0, 0,0,0, c,
-						pa_papyrus.x0(), pa_papyrus.y0()),
+						pa_junglegrass.x0(), pa_junglegrass.y0()),
 				};
 
 				if(j == 0)
@@ -1077,9 +1065,6 @@ void mapblock_mesh_generate_special(MeshMakeData *data,
 		}
 		else if(n.getContent() == CONTENT_RAIL)
 		{
-			u8 l = decode_light(n.getLightBlend(data->m_daynight_ratio));
-			video::SColor c = MapBlock_LightColor(255, l);
-
 			bool is_rail_x [] = { false, false };  /* x-1, x+1 */
 			bool is_rail_z [] = { false, false };  /* z-1, z+1 */
 
@@ -1097,43 +1082,50 @@ void mapblock_mesh_generate_special(MeshMakeData *data,
 			if(n_plus_z.getContent() == CONTENT_RAIL)
 				is_rail_z[1] = true;
 
-			float d = (float)BS/16;
-			video::S3DVertex vertices[4] =
+			int adjacencies = is_rail_x[0] + is_rail_x[1] + is_rail_z[0] + is_rail_z[1];
+
+			// Assign textures
+			const char *texturename = "rail.png";
+			if(adjacencies < 2)
+				texturename = "rail.png";
+			else if(adjacencies == 2)
 			{
-				video::S3DVertex(-BS/2,-BS/2+d,-BS/2, 0,0,0, c,
-					0, 1),
-				video::S3DVertex(BS/2,-BS/2+d,-BS/2, 0,0,0, c,
-					1, 1),
-				video::S3DVertex(BS/2,-BS/2+d,BS/2, 0,0,0, c,
-					1, 0),
-				video::S3DVertex(-BS/2,-BS/2+d,BS/2, 0,0,0, c,
-					0, 0),
-			};
+				if((is_rail_x[0] && is_rail_x[1]) || (is_rail_z[0] && is_rail_z[1]))
+					texturename = "rail.png";
+				else
+					texturename = "rail_curved.png";
+			}
+			else if(adjacencies == 3)
+				texturename = "rail_t_junction.png";
+			else if(adjacencies == 4)
+				texturename = "rail_crossing.png";
+			
+			AtlasPointer ap = g_texturesource->getTexture(texturename);
 
 			video::SMaterial material_rail;
 			material_rail.setFlag(video::EMF_LIGHTING, false);
-			material_rail.setFlag(video::EMF_BACK_FACE_CULLING, false);
+			material_rail.setFlag(video::EMF_BACK_FACE_CULLING, true);
 			material_rail.setFlag(video::EMF_BILINEAR_FILTER, false);
 			material_rail.setFlag(video::EMF_FOG_ENABLE, true);
 			material_rail.MaterialType
 					= video::EMT_TRANSPARENT_ALPHA_CHANNEL_REF;
+			material_rail.setTexture(0, ap.atlas);
 
-			int adjacencies = is_rail_x[0] + is_rail_x[1] + is_rail_z[0] + is_rail_z[1];
+			u8 l = decode_light(n.getLightBlend(data->m_daynight_ratio));
+			video::SColor c = MapBlock_LightColor(255, l);
 
-			// Assign textures
-			if(adjacencies < 2)
-				material_rail.setTexture(0, g_texturesource->getTextureRaw("rail.png"));
-			else if(adjacencies == 2)
+			float d = (float)BS/16;
+			video::S3DVertex vertices[4] =
 			{
-				if((is_rail_x[0] && is_rail_x[1]) || (is_rail_z[0] && is_rail_z[1]))
-					material_rail.setTexture(0, g_texturesource->getTextureRaw("rail.png"));
-				else
-					material_rail.setTexture(0, g_texturesource->getTextureRaw("rail_curved.png"));
-			}
-			else if(adjacencies == 3)
-				material_rail.setTexture(0, g_texturesource->getTextureRaw("rail_t_junction.png"));
-			else if(adjacencies == 4)
-				material_rail.setTexture(0, g_texturesource->getTextureRaw("rail_crossing.png"));
+				video::S3DVertex(-BS/2,-BS/2+d,-BS/2, 0,0,0, c,
+						ap.x0(), ap.y1()),
+				video::S3DVertex(BS/2,-BS/2+d,-BS/2, 0,0,0, c,
+						ap.x1(), ap.y1()),
+				video::S3DVertex(BS/2,-BS/2+d,BS/2, 0,0,0, c,
+						ap.x1(), ap.y0()),
+				video::S3DVertex(-BS/2,-BS/2+d,BS/2, 0,0,0, c,
+						ap.x0(), ap.y0()),
+			};
 
 			// Rotate textures
 			int angle = 0;
@@ -1180,6 +1172,17 @@ void mapblock_mesh_generate_special(MeshMakeData *data,
 			collector.append(material_rail, vertices, 4, indices, 6);
 		}
 		else if (n.getContent() == CONTENT_LADDER) {
+			AtlasPointer ap = g_texturesource->getTexture("ladder.png");
+			
+			// Set material
+			video::SMaterial material_ladder;
+			material_ladder.setFlag(video::EMF_LIGHTING, false);
+			material_ladder.setFlag(video::EMF_BACK_FACE_CULLING, true);
+			material_ladder.setFlag(video::EMF_BILINEAR_FILTER, false);
+			material_ladder.setFlag(video::EMF_FOG_ENABLE, true);
+			material_ladder.MaterialType = video::EMT_TRANSPARENT_ALPHA_CHANNEL_REF;
+			material_ladder.setTexture(0, ap.atlas);
+
 			u8 l = decode_light(n.getLightBlend(data->m_daynight_ratio));
 			video::SColor c(255,l,l,l);
 
@@ -1188,10 +1191,14 @@ void mapblock_mesh_generate_special(MeshMakeData *data,
 			// Assume wall is at X+
 			video::S3DVertex vertices[4] =
 			{
-				video::S3DVertex(BS/2-d,-BS/2,-BS/2, 0,0,0, c, 0,1),
-				video::S3DVertex(BS/2-d,-BS/2,BS/2, 0,0,0, c, 1,1),
-				video::S3DVertex(BS/2-d,BS/2,BS/2, 0,0,0, c, 1,0),
-				video::S3DVertex(BS/2-d,BS/2,-BS/2, 0,0,0, c, 0,0),
+				video::S3DVertex(BS/2-d,-BS/2,-BS/2, 0,0,0, c,
+						ap.x0(), ap.y1()),
+				video::S3DVertex(BS/2-d,-BS/2,BS/2, 0,0,0, c,
+						ap.x1(), ap.y1()),
+				video::S3DVertex(BS/2-d,BS/2,BS/2, 0,0,0, c,
+						ap.x1(), ap.y0()),
+				video::S3DVertex(BS/2-d,BS/2,-BS/2, 0,0,0, c,
+						ap.x0(), ap.y0()),
 			};
 
 			v3s16 dir = unpackDir(n.param2);
@@ -1213,14 +1220,6 @@ void mapblock_mesh_generate_special(MeshMakeData *data,
 
 				vertices[i].Pos += intToFloat(p + blockpos_nodes, BS);
 			}
-
-			video::SMaterial material_ladder;
-			material_ladder.setFlag(video::EMF_LIGHTING, false);
-			material_ladder.setFlag(video::EMF_BACK_FACE_CULLING, false);
-			material_ladder.setFlag(video::EMF_BILINEAR_FILTER, false);
-			material_ladder.setFlag(video::EMF_FOG_ENABLE, true);
-			material_ladder.MaterialType = video::EMT_TRANSPARENT_ALPHA_CHANNEL_REF;
-		        material_ladder.setTexture(0, g_texturesource->getTextureRaw("ladder.png"));
 
 			u16 indices[] = {0,1,2,2,3,0};
 			// Add to mesh collector

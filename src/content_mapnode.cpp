@@ -220,6 +220,7 @@ void content_mapnode_init()
 	i = CONTENT_JUNGLEGRASS;
 	f = &content_features(i);
 	f->setInventoryTexture("junglegrass.png");
+	f->used_texturenames["junglegrass.png"] = true;
 	f->light_propagates = true;
 	f->param_type = CPT_LIGHT;
 	//f->is_ground_content = true;
@@ -265,6 +266,7 @@ void content_mapnode_init()
 	i = CONTENT_PAPYRUS;
 	f = &content_features(i);
 	f->setInventoryTexture("papyrus.png");
+	f->used_texturenames["papyrus.png"] = true;
 	f->light_propagates = true;
 	f->param_type = CPT_LIGHT;
 	f->is_ground_content = true;
@@ -307,11 +309,13 @@ void content_mapnode_init()
 	f->solidness = 0; // drawn separately, makes no faces
 	f->air_equivalent = true; // grass grows underneath
 	f->setInventoryTexture("fence.png");
+	f->used_texturenames["fence.png"] = true;
 	setWoodLikeDiggingProperties(f->digging_properties, 0.75);
 
 	i = CONTENT_RAIL;
 	f = &content_features(i);
 	f->setInventoryTexture("rail.png");
+	f->used_texturenames["rail.png"] = true;
 	f->light_propagates = true;
 	f->param_type = CPT_LIGHT;
 	f->is_ground_content = true;
@@ -324,6 +328,7 @@ void content_mapnode_init()
 	i = CONTENT_LADDER;
 	f = &content_features(i);
 	f->setInventoryTexture("ladder.png");
+	f->used_texturenames["ladder.png"] = true;
 	f->light_propagates = true;
 	f->param_type = CPT_LIGHT;
 	f->is_ground_content = true;
@@ -466,6 +471,7 @@ void content_mapnode_init()
 	i = CONTENT_LAVA;
 	f = &content_features(i);
 	f->setInventoryTextureCube("lava.png", "lava.png", "lava.png");
+	f->used_texturenames["lava.png"] = true;
 	f->param_type = CPT_LIGHT;
 	f->light_propagates = false;
 	f->light_source = LIGHT_MAX-1;
@@ -502,6 +508,7 @@ void content_mapnode_init()
 	i = CONTENT_LAVASOURCE;
 	f = &content_features(i);
 	f->setInventoryTextureCube("lava.png", "lava.png", "lava.png");
+	f->used_texturenames["ladder.png"] = true;
 	if(new_style_water)
 	{
 		f->solidness = 0; // drawn separately, makes no faces
@@ -555,6 +562,10 @@ void content_mapnode_init()
 	i = CONTENT_TORCH;
 	f = &content_features(i);
 	f->setInventoryTexture("torch_on_floor.png");
+	f->used_texturenames["torch_on_floor.png"] = true;
+	f->used_texturenames["torch_on_ceiling.png"] = true;
+	f->used_texturenames["torch_on_floor.png"] = true;
+	f->used_texturenames["torch.png"] = true;
 	f->param_type = CPT_LIGHT;
 	f->light_propagates = true;
 	f->sunlight_propagates = true;
@@ -569,6 +580,7 @@ void content_mapnode_init()
 	i = CONTENT_SIGN_WALL;
 	f = &content_features(i);
 	f->setInventoryTexture("sign_wall.png");
+	f->used_texturenames["sign_wall.png"] = true;
 	f->param_type = CPT_LIGHT;
 	f->light_propagates = true;
 	f->sunlight_propagates = true;
@@ -671,6 +683,7 @@ void content_mapnode_init()
 	f->param_type = CPT_LIGHT;
 	f->setAllTextures("sapling.png");
 	f->setInventoryTexture("sapling.png");
+	f->used_texturenames["sapling.png"] = true;
 	f->dug_item = std::string("MaterialItem2 ")+itos(i)+" 1";
 	f->light_propagates = true;
 	f->air_equivalent = false;
@@ -681,6 +694,7 @@ void content_mapnode_init()
 	i = CONTENT_APPLE;
 	f = &content_features(i);
 	f->setInventoryTexture("apple.png");
+	f->used_texturenames["apple.png"] = true;
 	f->param_type = CPT_LIGHT;
 	f->light_propagates = true;
 	f->sunlight_propagates = true;
