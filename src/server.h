@@ -468,9 +468,9 @@ public:
 		return m_banmanager.getBanDescription(ip_or_name);
 	}
 
-	con::Peer* getPeerNoEx(u16 peer_id)
+	Address getPeerAddress(u16 peer_id)
 	{
-		return m_con.GetPeerNoEx(peer_id);
+		return m_con.GetPeerAddress(peer_id);
 	}
 	
 	// Envlock and conlock should be locked when calling this

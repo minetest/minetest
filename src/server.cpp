@@ -1074,7 +1074,7 @@ void Server::start(unsigned short port)
 	m_thread.stop();
 	
 	// Initialize connection
-	m_con.setTimeoutMs(30);
+	m_con.SetTimeoutMs(30);
 	m_con.Serve(port);
 
 	// Start thread
@@ -1823,9 +1823,18 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 	JMutexAutoLock envlock(m_env_mutex);
 	JMutexAutoLock conlock(m_con_mutex);
 	
-	con::Peer *peer;
 	try{
-		peer = m_con.GetPeer(peer_id);
+		Address address = m_con.GetPeerAddress(peer_id);
+
+		// drop player if is ip is banned
+		if(m_banmanager.isIpBanned(address.serializeString())){
+			SendAccessDenied(m_con, peer_id,
+					L"Your ip is banned. Banned name was "
+					+narrow_to_wide(m_banmanager.getBanName(
+						address.serializeString())));
+			m_con.DeletePeer(peer_id);
+			return;
+		}
 	}
 	catch(con::PeerNotFoundException &e)
 	{
@@ -1834,17 +1843,7 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 		return;
 	}
 
-	// drop player if is ip is banned
-	if(m_banmanager.isIpBanned(peer->address.serializeString())){
-		SendAccessDenied(m_con, peer_id,
-				L"Your ip is banned. Banned name was "
-				+narrow_to_wide(m_banmanager.getBanName(
-					peer->address.serializeString())));
-		m_con.deletePeer(peer_id, false);
-		return;
-	}
-	
-	u8 peer_ser_ver = getClient(peer->id)->serialization_version;
+	u8 peer_ser_ver = getClient(peer_id)->serialization_version;
 
 	try
 	{
@@ -1865,7 +1864,7 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 			return;
 
 		infostream<<"Server: Got TOSERVER_INIT from "
-				<<peer->id<<std::endl;
+				<<peer_id<<std::endl;
 
 		// First byte after command is maximum supported
 		// serialization version
@@ -1878,7 +1877,7 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 			deployed = SER_FMT_VER_INVALID;
 
 		//peer->serialization_version = deployed;
-		getClient(peer->id)->pending_serialization_version = deployed;
+		getClient(peer_id)->pending_serialization_version = deployed;
 		
 		if(deployed == SER_FMT_VER_INVALID)
 		{
@@ -1900,7 +1899,7 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 			net_proto_version = readU16(&data[2+1+PLAYERNAME_SIZE+PASSWORD_SIZE]);
 		}
 
-		getClient(peer->id)->net_proto_version = net_proto_version;
+		getClient(peer_id)->net_proto_version = net_proto_version;
 
 		if(net_proto_version == 0)
 		{
@@ -2045,11 +2044,11 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 	if(command == TOSERVER_INIT2)
 	{
 		infostream<<"Server: Got TOSERVER_INIT2 from "
-				<<peer->id<<std::endl;
+				<<peer_id<<std::endl;
 
 
-		getClient(peer->id)->serialization_version
-				= getClient(peer->id)->pending_serialization_version;
+		getClient(peer_id)->serialization_version
+				= getClient(peer_id)->pending_serialization_version;
 
 		/*
 			Send some initialization data
@@ -2059,8 +2058,8 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 		SendPlayerInfos();
 
 		// Send inventory to player
-		UpdateCrafting(peer->id);
-		SendInventory(peer->id);
+		UpdateCrafting(peer_id);
+		SendInventory(peer_id);
 
 		// Send player items to all players
 		SendPlayerItems();
@@ -2074,7 +2073,7 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 		{
 			SharedBuffer<u8> data = makePacket_TOCLIENT_TIME_OF_DAY(
 					m_env.getTimeOfDay());
-			m_con.Send(peer->id, 0, data, true);
+			m_con.Send(peer_id, 0, data, true);
 		}
 		
 		// Send information about server to player in chat
@@ -2095,7 +2094,7 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 		}
 		
 		// Warnings about protocol version can be issued here
-		if(getClient(peer->id)->net_proto_version < PROTOCOL_VERSION)
+		if(getClient(peer_id)->net_proto_version < PROTOCOL_VERSION)
 		{
 			SendChatMessage(peer_id, L"# Server: WARNING: YOUR CLIENT IS OLD AND MAY WORK PROPERLY WITH THIS SERVER");
 		}
@@ -2402,7 +2401,7 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 		else if(action == 2)
 		{
 #if 0
-			RemoteClient *client = getClient(peer->id);
+			RemoteClient *client = getClient(peer_id);
 			JMutexAutoLock digmutex(client->m_dig_mutex);
 			client->m_dig_tool_item = -1;
 #endif
@@ -2685,7 +2684,7 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 				}
 
 				// Reset build time counter
-				getClient(peer->id)->m_time_from_building = 0.0;
+				getClient(peer_id)->m_time_from_building = 0.0;
 				
 				// Create node data
 				MaterialItem *mitem = (MaterialItem*)item;
@@ -3428,11 +3427,10 @@ core::list<PlayerInfo> Server::getPlayerInfo()
 		Player *player = *i;
 
 		try{
-			con::Peer *peer = m_con.GetPeer(player->peer_id);
-			// Copy info from peer to info struct
-			info.id = peer->id;
-			info.address = peer->address;
-			info.avg_rtt = peer->avg_rtt;
+			// Copy info from connection to info struct
+			info.id = player->peer_id;
+			info.address = m_con.GetPeerAddress(player->peer_id);
+			info.avg_rtt = m_con.GetPeerAvgRTT(player->peer_id);
 		}
 		catch(con::PeerNotFoundException &e)
 		{

@@ -251,11 +251,11 @@ public:
 
 	float getAvgRtt()
 	{
-		//JMutexAutoLock lock(m_con_mutex); //bulk comment-out
-		con::Peer *peer = m_con.GetPeerNoEx(PEER_ID_SERVER);
-		if(peer == NULL)
-			return 0.0;
-		return peer->avg_rtt;
+		try{
+			return m_con.GetPeerAvgRTT(PEER_ID_SERVER);
+		} catch(con::PeerNotFoundException){
+			return 1337;
+		}
 	}
 
 	bool getChatMessage(std::wstring &message)

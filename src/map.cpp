@@ -21,7 +21,9 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "mapsector.h"
 #include "mapblock.h"
 #include "main.h"
+#ifndef SERVER
 #include "client.h"
+#endif
 #include "filesys.h"
 #include "utility.h"
 #include "voxel.h"

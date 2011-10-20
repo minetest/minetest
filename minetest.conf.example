@@ -142,7 +142,7 @@
 #active_object_send_range_blocks = 3
 #active_block_range = 2
 #max_simultaneous_block_sends_per_client = 2
-#max_simultaneous_block_sends_server_total = 2
+#max_simultaneous_block_sends_server_total = 8
 #max_block_send_distance = 7
 #max_block_generate_distance = 5
 #time_send_interval = 20

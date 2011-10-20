@@ -481,6 +481,8 @@ MainGameCallback *g_gamecallback = NULL;
 // Connection
 std::ostream *dout_con_ptr = &dummyout;
 std::ostream *derr_con_ptr = &verbosestream;
+//std::ostream *dout_con_ptr = &infostream;
+//std::ostream *derr_con_ptr = &errorstream;
 
 // Server
 std::ostream *dout_server_ptr = &infostream;
