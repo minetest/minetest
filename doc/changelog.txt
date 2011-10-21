@@ -3,6 +3,11 @@ Minetest-c55 changelog
 This should contain all the major changes.
 For minor stuff, refer to the commit log of the repository.
 
+0.3.dev-20111021:
+- Modify dungeon masters to only try to shoot players
+- Fix object duplication bug at block load/unload bug
+- Improve network layer
+
 0.3.dev-20111016:
 - Locked chest
 - Server user limit setting (max_users)
