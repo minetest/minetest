@@ -469,8 +469,9 @@ void Peer::reportRTT(float rtt)
 			if(m_max_packets_per_second < 100)
 				m_max_packets_per_second += 2;
 		} else {
-			if(m_max_packets_per_second > 5)
-				m_max_packets_per_second *= 0.5;
+			m_max_packets_per_second *= 0.8;
+			if(m_max_packets_per_second < 10)
+				m_max_packets_per_second = 10;
 		}
 	}
 
