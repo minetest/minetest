@@ -1527,7 +1527,7 @@ ConnectionEvent Connection::waitEvent(u32 timeout_ms)
 {
 	try{
 		return m_event_queue.pop_front(timeout_ms);
-	} catch(ItemNotFoundException &e){
+	} catch(ItemNotFoundException &ex){
 		ConnectionEvent e;
 		e.type = CONNEVENT_NONE;
 		return e;
