@@ -19,7 +19,9 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "common_irrlicht.h"
 #include "mapnode.h"
+#ifndef SERVER
 #include "tile.h"
+#endif
 #include "porting.h"
 #include <string>
 #include "mineral.h"
@@ -31,12 +33,17 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 ContentFeatures::~ContentFeatures()
 {
 	delete initial_metadata;
+#ifndef SERVER
 	delete special_material;
 	delete special_atlas;
+#endif
 }
 
+#ifndef SERVER
 void ContentFeatures::setTexture(u16 i, std::string name, u8 alpha)
 {
+	used_texturenames[name] = true;
+	
 	if(g_texturesource)
 	{
 		tiles[i].texture = g_texturesource->getTexture(name);
@@ -81,6 +88,7 @@ void ContentFeatures::setInventoryTextureCube(std::string top,
 	imgname_full += right;
 	inventory_texture = g_texturesource->getTextureRaw(imgname_full);
 }
+#endif
 
 struct ContentFeatures g_content_features[MAX_CONTENT+1];
 
@@ -118,7 +126,8 @@ void init_mapnode()
 	/*
 		Initialize content feature table
 	*/
-	
+
+#ifndef SERVER
 	/*
 		Set initial material type to same in all tiles, so that the
 		same material can be used in more stuff.
@@ -140,6 +149,7 @@ void init_mapnode()
 		for(u16 j=0; j<6; j++)
 			f->tiles[j].material_type = initial_material_type;
 	}
+#endif
 
 	/*
 		Initially set every block to be shown as an unknown block.
@@ -184,6 +194,7 @@ v3s16 facedir_rotate(u8 facedir, v3s16 dir)
 	return newdir;
 }
 
+#ifndef SERVER
 TileSpec MapNode::getTile(v3s16 dir)
 {
 	if(content_features(*this).param_type == CPT_FACEDIR_SIMPLE)
@@ -235,6 +246,7 @@ TileSpec MapNode::getTile(v3s16 dir)
 
 	return spec;
 }
+#endif
 
 u8 MapNode::getMineral()
 {

@@ -20,6 +20,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "keycode.h"
 #include "main.h" // For g_settings
 #include "exceptions.h"
+#include "settings.h"
 
 class UnknownKeycode : public BaseException
 {
@@ -334,7 +335,7 @@ KeyPress getKeySetting(const char *settingname)
 	if(n)
 		return n->getValue();
 	g_key_setting_cache.insert(settingname,
-			g_settings.get(settingname).c_str());
+			g_settings->get(settingname).c_str());
 	return g_key_setting_cache.find(settingname)->getValue();
 }
 

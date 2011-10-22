@@ -23,6 +23,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "clientobject.h"
 #include "content_object.h"
 #include "utility.h" // For IntervalLimiter
+class Settings;
+#include "MyBillboardSceneNode.h"
 
 /*
 	SmoothTranslator
@@ -31,19 +33,19 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 struct SmoothTranslator
 {
 	v3f vect_old;
+	v3f vect_show;
+	v3f vect_aim;
 	f32 anim_counter;
 	f32 anim_time;
 	f32 anim_time_counter;
-	v3f vect_show;
-	v3f vect_aim;
 
 	SmoothTranslator():
 		vect_old(0,0,0),
+		vect_show(0,0,0),
+		vect_aim(0,0,0),
 		anim_counter(0),
 		anim_time(0),
-		anim_time_counter(0),
-		vect_show(0,0,0),
-		vect_aim(0,0,0)
+		anim_time_counter(0)
 	{}
 
 	void init(v3f vect)
@@ -51,6 +53,14 @@ struct SmoothTranslator
 		vect_old = vect;
 		vect_show = vect;
 		vect_aim = vect;
+		anim_counter = 0;
+		anim_time = 0;
+		anim_time_counter = 0;
+	}
+
+	void sharpen()
+	{
+		init(vect_show);
 	}
 
 	void update(v3f vect_new)
@@ -74,10 +84,15 @@ struct SmoothTranslator
 		if(anim_time > 0.001)
 			moveratio = anim_time_counter / anim_time;
 		// Move a bit less than should, to avoid oscillation
-		moveratio = moveratio * 0.8;
+		moveratio = moveratio * 0.5;
 		if(moveratio > 1.5)
 			moveratio = 1.5;
 		vect_show = vect_old + vect_move * moveratio;
+	}
+
+	bool is_moving()
+	{
+		return ((anim_time_counter / anim_time) < 1.4);
 	}
 };
 
@@ -233,6 +248,9 @@ public:
 		{return pos_translator.vect_show;}
 		//{return m_position;}
 
+	// If returns true, punch will not be sent to the server
+	bool directReportPunch(const std::string &toolname, v3f dir);
+
 private:
 	IntervalLimiter m_attack_interval;
 	core::aabbox3d<f32> m_selection_box;
@@ -284,6 +302,78 @@ private:
 	v3f m_position;
 	float m_yaw;
 	SmoothTranslator pos_translator;
+};
+
+/*
+	MobV2CAO
+*/
+
+class MobV2CAO : public ClientActiveObject
+{
+public:
+	MobV2CAO();
+	virtual ~MobV2CAO();
+	
+	u8 getType() const
+	{
+		return ACTIVEOBJECT_TYPE_MOBV2;
+	}
+	
+	static ClientActiveObject* create();
+
+	void addToScene(scene::ISceneManager *smgr);
+	void removeFromScene();
+	void updateLight(u8 light_at_pos);
+	v3s16 getLightPosition();
+	void updateNodePos();
+
+	void step(float dtime, ClientEnvironment *env);
+
+	void processMessage(const std::string &data);
+
+	void initialize(const std::string &data);
+	
+	core::aabbox3d<f32>* getSelectionBox()
+		{return &m_selection_box;}
+	v3f getPosition()
+		{return pos_translator.vect_show;}
+		//{return m_position;}
+	bool doShowSelectionBox(){return false;}
+
+	// If returns true, punch will not be sent to the server
+	bool directReportPunch(const std::string &toolname, v3f dir);
+
+private:
+	void setLooks(const std::string &looks);
+	
+	IntervalLimiter m_attack_interval;
+	core::aabbox3d<f32> m_selection_box;
+	scene::MyBillboardSceneNode *m_node;
+	v3f m_position;
+	std::string m_texture_name;
+	float m_yaw;
+	SmoothTranslator pos_translator;
+	bool m_walking;
+	float m_walking_unset_timer;
+	float m_walk_timer;
+	int m_walk_frame;
+	float m_damage_visual_timer;
+	u8 m_last_light;
+	bool m_shooting;
+	float m_shooting_unset_timer;
+	v2f m_sprite_size;
+	float m_sprite_y;
+	bool m_bright_shooting;
+	std::string m_sprite_type;
+	int m_simple_anim_frames;
+	float m_simple_anim_frametime;
+	bool m_lock_full_brightness;
+	int m_player_hit_damage;
+	float m_player_hit_distance;
+	float m_player_hit_interval;
+	float m_player_hit_timer;
+
+	Settings *m_properties;
 };
 
 

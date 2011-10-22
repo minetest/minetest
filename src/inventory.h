@@ -29,7 +29,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <string>
 #include "common_irrlicht.h"
 #include "debug.h"
-#include "mapblockobject.h"
 #include "main.h" // For g_materials
 #include "mapnode.h" // For content_t
 
@@ -194,56 +193,6 @@ public:
 	}
 private:
 	content_t m_content;
-};
-
-//TODO: Remove
-class MapBlockObjectItem : public InventoryItem
-{
-public:
-	MapBlockObjectItem(std::string inventorystring):
-		InventoryItem(1)
-	{
-		m_inventorystring = inventorystring;
-	}
-	
-	/*
-		Implementation interface
-	*/
-	virtual const char* getName() const
-	{
-		return "MBOItem";
-	}
-	virtual void serialize(std::ostream &os) const
-	{
-		std::string sane_string(m_inventorystring);
-		str_replace_char(sane_string, '|', '?');
-		os<<getName();
-		os<<" ";
-		os<<sane_string;
-		os<<"|";
-	}
-	virtual InventoryItem* clone()
-	{
-		return new MapBlockObjectItem(m_inventorystring);
-	}
-
-#ifndef SERVER
-	video::ITexture * getImage() const;
-#endif
-	std::string getText();
-
-	/*
-		Special methods
-	*/
-	std::string getInventoryString()
-	{
-		return m_inventorystring;
-	}
-
-	MapBlockObject * createObject(v3f pos, f32 player_yaw, f32 player_pitch);
-
-private:
-	std::string m_inventorystring;
 };
 
 /*

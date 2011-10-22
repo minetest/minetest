@@ -23,6 +23,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "map.h"
 #include "main.h" // For g_settings and g_texturesource
 #include "content_mapblock.h"
+#include "settings.h"
+#include "profiler.h"
 
 void MeshMakeData::fill(u32 daynight_ratio, MapBlock *block)
 {
@@ -491,10 +493,10 @@ void updateFastFaceRow(
 	
 	u16 continuous_tiles_count = 0;
 	
-	bool makes_face;
+	bool makes_face = false;
 	v3s16 p_corrected;
 	v3s16 face_dir_corrected;
-	u8 lights[4];
+	u8 lights[4] = {0,0,0,0};
 	TileSpec tile;
 	getTileInfo(blockpos_nodes, p, face_dir, daynight_ratio,
 			vmanip, temp_mods, smooth_lighting,
@@ -526,7 +528,7 @@ void updateFastFaceRow(
 					next_tile);
 			
 			if(next_makes_face == makes_face
-					&& next_p_corrected == p_corrected
+					&& next_p_corrected == p_corrected + translate_dir
 					&& next_face_dir_corrected == face_dir_corrected
 					&& next_lights[0] == lights[0]
 					&& next_lights[1] == lights[1]
@@ -536,6 +538,29 @@ void updateFastFaceRow(
 			{
 				next_is_different = false;
 			}
+			else{
+				/*if(makes_face){
+					g_profiler->add("Meshgen: diff: next_makes_face != makes_face",
+							next_makes_face != makes_face ? 1 : 0);
+					g_profiler->add("Meshgen: diff: n_p_corr != p_corr + t_dir",
+							(next_p_corrected != p_corrected + translate_dir) ? 1 : 0);
+					g_profiler->add("Meshgen: diff: next_f_dir_corr != f_dir_corr",
+							next_face_dir_corrected != face_dir_corrected ? 1 : 0);
+					g_profiler->add("Meshgen: diff: next_lights[] != lights[]",
+							(next_lights[0] != lights[0] ||
+							next_lights[0] != lights[0] ||
+							next_lights[0] != lights[0] ||
+							next_lights[0] != lights[0]) ? 1 : 0);
+					g_profiler->add("Meshgen: diff: !(next_tile == tile)",
+							!(next_tile == tile) ? 1 : 0);
+				}*/
+			}
+			/*g_profiler->add("Meshgen: Total faces checked", 1);
+			if(makes_face)
+				g_profiler->add("Meshgen: Total makes_face checked", 1);*/
+		} else {
+			/*if(makes_face)
+				g_profiler->add("Meshgen: diff: last position", 1);*/
 		}
 
 		continuous_tiles_count++;
@@ -567,6 +592,8 @@ void updateFastFaceRow(
 				v3f pf(p_corrected.X, p_corrected.Y, p_corrected.Z);
 				// Center point of face (kind of)
 				v3f sp = pf - ((f32)continuous_tiles_count / 2. - 0.5) * translate_dir_f;
+				if(continuous_tiles_count != 1)
+					sp += translate_dir_f;
 				v3f scale(1,1,1);
 
 				if(translate_dir.X != 0)
@@ -585,6 +612,11 @@ void updateFastFaceRow(
 				makeFastFace(tile, lights[0], lights[1], lights[2], lights[3],
 						sp, face_dir_corrected, scale,
 						posRelative_f, dest);
+				
+				g_profiler->avg("Meshgen: faces drawn by tiling", 0);
+				for(int i=1; i<continuous_tiles_count; i++){
+					g_profiler->avg("Meshgen: faces drawn by tiling", 1);
+				}
 			}
 
 			continuous_tiles_count = 0;
@@ -619,9 +651,9 @@ scene::SMesh* makeMapBlockMesh(MeshMakeData *data)
 	/*
 		Some settings
 	*/
-	//bool new_style_water = g_settings.getBool("new_style_water");
-	//bool new_style_leaves = g_settings.getBool("new_style_leaves");
-	bool smooth_lighting = g_settings.getBool("smooth_lighting");
+	//bool new_style_water = g_settings->getBool("new_style_water");
+	//bool new_style_leaves = g_settings->getBool("new_style_leaves");
+	bool smooth_lighting = g_settings->getBool("smooth_lighting");
 	
 	/*
 		We are including the faces of the trailing edges of the block.
@@ -706,10 +738,13 @@ scene::SMesh* makeMapBlockMesh(MeshMakeData *data)
 
 		video::SMaterial material;
 		material.setFlag(video::EMF_LIGHTING, false);
+		material.setFlag(video::EMF_BACK_FACE_CULLING, true);
 		material.setFlag(video::EMF_BILINEAR_FILTER, false);
 		material.setFlag(video::EMF_FOG_ENABLE, true);
 		//material.setFlag(video::EMF_ANTI_ALIASING, video::EAAM_OFF);
 		//material.setFlag(video::EMF_ANTI_ALIASING, video::EAAM_SIMPLE);
+		material.MaterialType
+				= video::EMT_TRANSPARENT_ALPHA_CHANNEL_REF;
 
 		for(u32 i=0; i<fastfaces_new.size(); i++)
 		{

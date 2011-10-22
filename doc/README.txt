@@ -53,12 +53,12 @@ Compiling on GNU/Linux:
 -----------------------
 
 Install dependencies. Here's an example for Debian/Ubuntu:
-$ apt-get install build-essential libirrlicht-dev cmake libbz2-dev libpng12-dev libjpeg8-dev libxxf86vm-dev libgl1-mesa-dev
+$ apt-get install build-essential libirrlicht-dev cmake libbz2-dev libpng12-dev libjpeg8-dev libxxf86vm-dev libgl1-mesa-dev libsqlite3-dev
 
 Download source, extract (this is the URL to the latest of source repository, which might not work at all times):
-$ wget https://bitbucket.org/celeron55/minetest/get/tip.tar.gz
-$ tar xf tip.tar.gz
-$ cd minetest
+$ wget https://github.com/celeron55/minetest/tarball/master -O master.tar.gz
+$ tar xf master.tar.gz
+$ cd celeron55-minetest-286edd4 (or similar)
 
 Build a version that runs directly from the source directory:
 $ cmake . -DRUN_IN_PLACE=1
@@ -162,6 +162,22 @@ Compiling on Windows:
 		  (or mingw32-make or whatever it happens to be)
 		- You should now have a working game with the executable in
 			DIR/minetest/bin/minetest.exe
+
+Windows releases of minetest are built using a bat script like this:
+--------------------------------------------------------------------
+
+set installpath="C:\tmp\minetest_install"
+set irrlichtpath="C:\tmp\irrlicht-1.7.2"
+
+set sourcedir=%CD%
+set builddir=%sourcedir%\bvc10
+mkdir %builddir%
+pushd %builddir%
+cmake %sourcedir% -G "Visual Studio 10" -DIRRLICHT_SOURCE_DIR=%irrlichtpath% -DRUN_IN_PLACE=1 -DCMAKE_INSTALL_PREFIX=%installpath%
+"C:\WINDOWS\Microsoft.NET\Framework\v4.0.30319\MSBuild.exe" ALL_BUILD.vcxproj /p:Configuration=Release
+"C:\WINDOWS\Microsoft.NET\Framework\v4.0.30319\MSBuild.exe" INSTALL.vcxproj /p:Configuration=Release
+"C:\WINDOWS\Microsoft.NET\Framework\v4.0.30319\MSBuild.exe" PACKAGE.vcxproj /p:Configuration=Release
+popd
 
 License of Minetest-c55
 -----------------------

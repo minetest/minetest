@@ -90,12 +90,12 @@ configure_file(
 )
 
 set(common_SRCS
+	log.cpp
 	content_sao.cpp
 	mapgen.cpp
 	content_inventory.cpp
 	content_nodemeta.cpp
 	content_craft.cpp
-	content_mapblock.cpp
 	content_mapnode.cpp
 	auth.cpp
 	collision.cpp
@@ -108,7 +108,6 @@ set(common_SRCS
 	defaultsettings.cpp
 	mapnode.cpp
 	voxel.cpp
-	mapblockobject.cpp
 	inventory.cpp
 	debug.cpp
 	serialization.cpp
@@ -131,13 +130,23 @@ set(common_SRCS
 )
 
 # This gives us the icon
-if(WIN32 AND MSVC)
-	set(common_SRCS ${common_SRCS} winresource.rc)
+if(WIN32)
+	if(MINGW)
+		ADD_CUSTOM_COMMAND(OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/winresource_rc.o
+			COMMAND windres.exe -I${CMAKE_CURRENT_SOURCE_DIR}
+			-i${CMAKE_CURRENT_SOURCE_DIR}/winresource.rc
+			-o ${CMAKE_CURRENT_BINARY_DIR}/winresource_rc.o)
+		SET(common_SRCS ${common_SRCS} ${CMAKE_CURRENT_BINARY_DIR}/winresource_rc.o)
+	else(MINGW) # Probably MSVC
+		set(common_SRCS ${common_SRCS} winresource.rc)
+	endif(MINGW)
 endif()
 
 # Client sources
 set(minetest_SRCS
 	${common_SRCS}
+	MyBillboardSceneNode.cpp
+	content_mapblock.cpp
 	content_cao.cpp
 	mapblock_mesh.cpp
 	farmesh.cpp
@@ -152,6 +161,7 @@ set(minetest_SRCS
 	guiInventoryMenu.cpp
 	guiPauseMenu.cpp
 	guiPasswordChange.cpp
+	guiDeathScreen.cpp
 	client.cpp
 	tile.cpp
 	game.cpp
@@ -217,13 +227,17 @@ if(MSVC)
 	# Visual Studio
 
 	# EHa enables SEH exceptions (used for catching segfaults)
-	set(CMAKE_CXX_FLAGS_RELEASE "/EHa /MD /O2 /Ob2 /Oi /Ot /Oy /GL /FD /MT /GS- /arch:SSE /fp:fast /D NDEBUG /D _HAS_ITERATOR_DEBUGGING=0 /TP")
+	set(CMAKE_CXX_FLAGS_RELEASE "/EHa /O2 /Ob2 /Oi /Ot /Oy /GL /FD /MT /GS- /arch:SSE /fp:fast /D NDEBUG /D _HAS_ITERATOR_DEBUGGING=0 /TP")
 	#set(CMAKE_EXE_LINKER_FLAGS_RELEASE "/LTCG /NODEFAULTLIB:\"libcmtd.lib\" /NODEFAULTLIB:\"libcmt.lib\"")
 	set(CMAKE_EXE_LINKER_FLAGS_RELEASE "/LTCG")
 
 	# Debug build doesn't catch exceptions by itself
 	# Add some optimizations because otherwise it's VERY slow
 	set(CMAKE_CXX_FLAGS_DEBUG "/MDd /Zi /Ob0 /Od /RTC1")
+
+	# Flags for C files (sqlite)
+	# /MT = Link statically with standard library stuff
+	set(CMAKE_C_FLAGS_RELEASE "/O2 /Ob2 /MT")
 	
 	if(BUILD_SERVER)
 		set_target_properties(${PROJECT_NAME}server PROPERTIES

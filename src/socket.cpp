@@ -97,7 +97,7 @@ void Address::Resolve(const char *name)
 	freeaddrinfo(resolved);
 }
 
-std::string Address::serializeString()
+std::string Address::serializeString() const
 {
 	unsigned int a, b, c, d;
 	a = (m_address & 0xFF000000)>>24;

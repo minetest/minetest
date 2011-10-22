@@ -24,6 +24,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "inventory.h"
 #include <sstream>
 #include "content_mapnode.h"
+#include "log.h"
 
 /*
 	NodeMetadata
@@ -55,7 +56,7 @@ NodeMetadata* NodeMetadata::deSerialize(std::istream &is)
 	if(n == NULL)
 	{
 		// If factory is not found, just return.
-		dstream<<"WARNING: NodeMetadata: No factory for typeId="
+		infostream<<"WARNING: NodeMetadata: No factory for typeId="
 				<<id<<std::endl;
 		return NULL;
 	}
@@ -71,7 +72,7 @@ NodeMetadata* NodeMetadata::deSerialize(std::istream &is)
 	}
 	catch(SerializationError &e)
 	{
-		dstream<<"WARNING: NodeMetadata: ignoring SerializationError"<<std::endl;
+		infostream<<"WARNING: NodeMetadata: ignoring SerializationError"<<std::endl;
 		return NULL;
 	}
 }
@@ -138,7 +139,7 @@ void NodeMetadataList::deSerialize(std::istream &is)
 
 	if(version > 1)
 	{
-		dstream<<__FUNCTION_NAME<<": version "<<version<<" not supported"
+		infostream<<__FUNCTION_NAME<<": version "<<version<<" not supported"
 				<<std::endl;
 		throw SerializationError("NodeMetadataList::deSerialize");
 	}
@@ -165,7 +166,7 @@ void NodeMetadataList::deSerialize(std::istream &is)
 		
 		if(m_data.find(p))
 		{
-			dstream<<"WARNING: NodeMetadataList::deSerialize(): "
+			infostream<<"WARNING: NodeMetadataList::deSerialize(): "
 					<<"already set data at position"
 					<<"("<<p.X<<","<<p.Y<<","<<p.Z<<"): Ignoring."
 					<<std::endl;

@@ -235,10 +235,9 @@ private:
 
 #if CATCH_UNHANDLED_EXCEPTIONS == 1
 	#define BEGIN_PORTABLE_DEBUG_EXCEPTION_HANDLER try{
-	#define END_PORTABLE_DEBUG_EXCEPTION_HANDLER\
+	#define END_PORTABLE_DEBUG_EXCEPTION_HANDLER(logstream)\
 		}catch(std::exception &e){\
-			dstream<<std::endl<<DTIME\
-					<<"ERROR: An unhandled exception occurred: "\
+			logstream<<"ERROR: An unhandled exception occurred: "\
 					<<e.what()<<std::endl;\
 			assert(0);\
 		}
@@ -257,24 +256,24 @@ public:
 				BEGIN_PORTABLE_DEBUG_EXCEPTION_HANDLER\
 				_set_se_translator(se_trans_func);
 
-			#define END_DEBUG_EXCEPTION_HANDLER \
-				END_PORTABLE_DEBUG_EXCEPTION_HANDLER
+			#define END_DEBUG_EXCEPTION_HANDLER(logstream) \
+				END_PORTABLE_DEBUG_EXCEPTION_HANDLER(logstream)
 		#else // Probably mingw
 			#define BEGIN_DEBUG_EXCEPTION_HANDLER\
 				BEGIN_PORTABLE_DEBUG_EXCEPTION_HANDLER
-			#define END_DEBUG_EXCEPTION_HANDLER\
-				END_PORTABLE_DEBUG_EXCEPTION_HANDLER
+			#define END_DEBUG_EXCEPTION_HANDLER(logstream)\
+				END_PORTABLE_DEBUG_EXCEPTION_HANDLER(logstream)
 		#endif
 	#else // Posix
 		#define BEGIN_DEBUG_EXCEPTION_HANDLER\
 			BEGIN_PORTABLE_DEBUG_EXCEPTION_HANDLER
-		#define END_DEBUG_EXCEPTION_HANDLER\
-			END_PORTABLE_DEBUG_EXCEPTION_HANDLER
+		#define END_DEBUG_EXCEPTION_HANDLER(logstream)\
+			END_PORTABLE_DEBUG_EXCEPTION_HANDLER(logstream)
 	#endif
 #else
 	// Dummy ones
 	#define BEGIN_DEBUG_EXCEPTION_HANDLER
-	#define END_DEBUG_EXCEPTION_HANDLER
+	#define END_DEBUG_EXCEPTION_HANDLER(logstream)
 #endif
 
 #endif // DEBUG_HEADER

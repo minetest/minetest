@@ -20,6 +20,11 @@ OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 #include "debug.h"
 #include "serialization.h"
 #include <string>
+#include <IGUICheckBox.h>
+#include <IGUIEditBox.h>
+#include <IGUIButton.h>
+#include <IGUIStaticText.h>
+#include <IGUIFont.h>
 
 #include "gettext.h"
 

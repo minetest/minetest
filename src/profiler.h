@@ -38,42 +38,83 @@ public:
 		m_mutex.Init();
 	}
 
-	void add(const std::string &name, u32 duration)
+	void add(const std::string &name, float value)
 	{
 		JMutexAutoLock lock(m_mutex);
-		core::map<std::string, u32>::Node *n = m_data.find(name);
-		if(n == NULL)
 		{
-			m_data[name] = duration;
+			/* No average shall have been used; mark add used as -2 */
+			core::map<std::string, int>::Node *n = m_avgcounts.find(name);
+			if(n == NULL)
+				m_avgcounts[name] = -2;
+			else{
+				if(n->getValue() == -1)
+					n->setValue(-2);
+				assert(n->getValue() == -2);
+			}
 		}
-		else
 		{
-			n->setValue(n->getValue()+duration);
+			core::map<std::string, float>::Node *n = m_data.find(name);
+			if(n == NULL)
+				m_data[name] = value;
+			else
+				n->setValue(n->getValue() + value);
+		}
+	}
+
+	void avg(const std::string &name, float value)
+	{
+		JMutexAutoLock lock(m_mutex);
+		{
+			core::map<std::string, int>::Node *n = m_avgcounts.find(name);
+			if(n == NULL)
+				m_avgcounts[name] = 1;
+			else{
+				/* No add shall have been used */
+				assert(n->getValue() != -2);
+				if(n->getValue() <= 0)
+					n->setValue(1);
+				else
+					n->setValue(n->getValue() + 1);
+			}
+		}
+		{
+			core::map<std::string, float>::Node *n = m_data.find(name);
+			if(n == NULL)
+				m_data[name] = value;
+			else
+				n->setValue(n->getValue() + value);
 		}
 	}
 
 	void clear()
 	{
 		JMutexAutoLock lock(m_mutex);
-		for(core::map<std::string, u32>::Iterator
+		for(core::map<std::string, float>::Iterator
 				i = m_data.getIterator();
 				i.atEnd() == false; i++)
 		{
 			i.getNode()->setValue(0);
 		}
+		m_avgcounts.clear();
 	}
 
 	void print(std::ostream &o)
 	{
 		JMutexAutoLock lock(m_mutex);
-		for(core::map<std::string, u32>::Iterator
+		for(core::map<std::string, float>::Iterator
 				i = m_data.getIterator();
 				i.atEnd() == false; i++)
 		{
 			std::string name = i.getNode()->getKey();
-			o<<name<<": ";
+			int avgcount = 1;
+			core::map<std::string, int>::Node *n = m_avgcounts.find(name);
+			if(n){
+				if(n->getValue() >= 1)
+					avgcount = n->getValue();
+			}
+			o<<"  "<<name<<": ";
 			s32 clampsize = 40;
-			s32 space = clampsize-name.size();
+			s32 space = clampsize - name.size();
 			for(s32 j=0; j<space; j++)
 			{
 				if(j%2 == 0 && j < space - 1)
@@ -81,32 +122,42 @@ public:
 				else
 					o<<" ";
 			}
-			o<<i.getNode()->getValue();
+			o<<(i.getNode()->getValue() / avgcount);
 			o<<std::endl;
 		}
 	}
 
 private:
 	JMutex m_mutex;
-	core::map<std::string, u32> m_data;
+	core::map<std::string, float> m_data;
+	core::map<std::string, int> m_avgcounts;
+};
+
+enum ScopeProfilerType{
+	SPT_ADD,
+	SPT_AVG
 };
 
 class ScopeProfiler
 {
 public:
-	ScopeProfiler(Profiler *profiler, const std::string &name):
+	ScopeProfiler(Profiler *profiler, const std::string &name,
+			enum ScopeProfilerType type = SPT_ADD):
 		m_profiler(profiler),
 		m_name(name),
-		m_timer(NULL)
+		m_timer(NULL),
+		m_type(type)
 	{
 		if(m_profiler)
 			m_timer = new TimeTaker(m_name.c_str());
 	}
 	// name is copied
-	ScopeProfiler(Profiler *profiler, const char *name):
+	ScopeProfiler(Profiler *profiler, const char *name,
+			enum ScopeProfilerType type = SPT_ADD):
 		m_profiler(profiler),
 		m_name(name),
-		m_timer(NULL)
+		m_timer(NULL),
+		m_type(type)
 	{
 		if(m_profiler)
 			m_timer = new TimeTaker(m_name.c_str());
@@ -115,9 +166,18 @@ public:
 	{
 		if(m_timer)
 		{
-			u32 duration = m_timer->stop(true);
-			if(m_profiler)
-				m_profiler->add(m_name, duration);
+			float duration_ms = m_timer->stop(true);
+			float duration = duration_ms / 1000.0;
+			if(m_profiler){
+				switch(m_type){
+				case SPT_ADD:
+					m_profiler->add(m_name, duration);
+					break;
+				case SPT_AVG:
+					m_profiler->avg(m_name, duration);
+					break;
+				}
+			}
 			delete m_timer;
 		}
 	}
@@ -125,6 +185,7 @@ private:
 	Profiler *m_profiler;
 	std::string m_name;
 	TimeTaker *m_timer;
+	enum ScopeProfilerType m_type;
 };
 
 #endif

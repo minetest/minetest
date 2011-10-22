@@ -23,6 +23,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "content_mapnode.h"
 #include "mapnode.h"
 #include "content_nodemeta.h"
+#include "settings.h"
 
 #define WATER_ALPHA 160
 
@@ -103,9 +104,9 @@ MapNode mapnode_translate_to_internal(MapNode n_from, u8 version)
 void content_mapnode_init()
 {
 	// Read some settings
-	bool new_style_water = g_settings.getBool("new_style_water");
-	bool new_style_leaves = g_settings.getBool("new_style_leaves");
-	bool invisible_stone = g_settings.getBool("invisible_stone");
+	bool new_style_water = g_settings->getBool("new_style_water");
+	bool new_style_leaves = g_settings->getBool("new_style_leaves");
+	bool invisible_stone = g_settings->getBool("invisible_stone");
 
 	content_t i;
 	ContentFeatures *f = NULL;
@@ -116,6 +117,7 @@ void content_mapnode_init()
 	f->setInventoryTextureCube("stone.png", "stone.png", "stone.png");
 	f->param_type = CPT_MINERAL;
 	f->is_ground_content = true;
+	f->often_contains_mineral = true;
 	f->dug_item = std::string("MaterialItem2 ")+itos(CONTENT_COBBLE)+" 1";
 	setStoneLikeDiggingProperties(f->digging_properties, 1.0);
 	if(invisible_stone)
@@ -218,6 +220,7 @@ void content_mapnode_init()
 	i = CONTENT_JUNGLEGRASS;
 	f = &content_features(i);
 	f->setInventoryTexture("junglegrass.png");
+	f->used_texturenames["junglegrass.png"] = true;
 	f->light_propagates = true;
 	f->param_type = CPT_LIGHT;
 	//f->is_ground_content = true;
@@ -263,6 +266,7 @@ void content_mapnode_init()
 	i = CONTENT_PAPYRUS;
 	f = &content_features(i);
 	f->setInventoryTexture("papyrus.png");
+	f->used_texturenames["papyrus.png"] = true;
 	f->light_propagates = true;
 	f->param_type = CPT_LIGHT;
 	f->is_ground_content = true;
@@ -305,11 +309,13 @@ void content_mapnode_init()
 	f->solidness = 0; // drawn separately, makes no faces
 	f->air_equivalent = true; // grass grows underneath
 	f->setInventoryTexture("fence.png");
+	f->used_texturenames["fence.png"] = true;
 	setWoodLikeDiggingProperties(f->digging_properties, 0.75);
 
 	i = CONTENT_RAIL;
 	f = &content_features(i);
 	f->setInventoryTexture("rail.png");
+	f->used_texturenames["rail.png"] = true;
 	f->light_propagates = true;
 	f->param_type = CPT_LIGHT;
 	f->is_ground_content = true;
@@ -322,6 +328,7 @@ void content_mapnode_init()
 	i = CONTENT_LADDER;
 	f = &content_features(i);
 	f->setInventoryTexture("ladder.png");
+	f->used_texturenames["ladder.png"] = true;
 	f->light_propagates = true;
 	f->param_type = CPT_LIGHT;
 	f->is_ground_content = true;
@@ -390,6 +397,7 @@ void content_mapnode_init()
 	f->liquid_alternative_flowing = CONTENT_WATER;
 	f->liquid_alternative_source = CONTENT_WATERSOURCE;
 	f->liquid_viscosity = WATER_VISC;
+#ifndef SERVER
 	f->vertex_alpha = WATER_ALPHA;
 	f->post_effect_color = video::SColor(64, 100, 100, 200);
 	if(f->special_material == NULL && g_texturesource)
@@ -406,6 +414,7 @@ void content_mapnode_init()
 		f->special_material->setTexture(0, pa_water1->atlas);
 		f->special_atlas = pa_water1;
 	}
+#endif
 	
 	i = CONTENT_WATERSOURCE;
 	f = &content_features(i);
@@ -418,7 +427,7 @@ void content_mapnode_init()
 	else // old style
 	{
 		f->solidness = 1;
-
+#ifndef SERVER
 		TileSpec t;
 		if(g_texturesource)
 			t.texture = g_texturesource->getTexture("water.png");
@@ -427,6 +436,7 @@ void content_mapnode_init()
 		t.material_type = MATERIAL_ALPHA_VERTEX;
 		t.material_flags &= ~MATERIAL_FLAG_BACKFACE_CULLING;
 		f->setAllTiles(t);
+#endif
 	}
 	f->param_type = CPT_LIGHT;
 	f->light_propagates = true;
@@ -439,6 +449,7 @@ void content_mapnode_init()
 	f->liquid_alternative_flowing = CONTENT_WATER;
 	f->liquid_alternative_source = CONTENT_WATERSOURCE;
 	f->liquid_viscosity = WATER_VISC;
+#ifndef SERVER
 	f->vertex_alpha = WATER_ALPHA;
 	f->post_effect_color = video::SColor(64, 100, 100, 200);
 	if(f->special_material == NULL && g_texturesource)
@@ -455,10 +466,12 @@ void content_mapnode_init()
 		f->special_material->setTexture(0, pa_water1->atlas);
 		f->special_atlas = pa_water1;
 	}
+#endif
 	
 	i = CONTENT_LAVA;
 	f = &content_features(i);
 	f->setInventoryTextureCube("lava.png", "lava.png", "lava.png");
+	f->used_texturenames["lava.png"] = true;
 	f->param_type = CPT_LIGHT;
 	f->light_propagates = false;
 	f->light_source = LIGHT_MAX-1;
@@ -473,6 +486,7 @@ void content_mapnode_init()
 	f->liquid_alternative_source = CONTENT_LAVASOURCE;
 	f->liquid_viscosity = LAVA_VISC;
 	f->damage_per_second = 4*2;
+#ifndef SERVER
 	f->post_effect_color = video::SColor(192, 255, 64, 0);
 	if(f->special_material == NULL && g_texturesource)
 	{
@@ -489,10 +503,12 @@ void content_mapnode_init()
 		f->special_material->setTexture(0, pa_lava1->atlas);
 		f->special_atlas = pa_lava1;
 	}
+#endif
 	
 	i = CONTENT_LAVASOURCE;
 	f = &content_features(i);
 	f->setInventoryTextureCube("lava.png", "lava.png", "lava.png");
+	f->used_texturenames["ladder.png"] = true;
 	if(new_style_water)
 	{
 		f->solidness = 0; // drawn separately, makes no faces
@@ -500,7 +516,7 @@ void content_mapnode_init()
 	else // old style
 	{
 		f->solidness = 2;
-
+#ifndef SERVER
 		TileSpec t;
 		if(g_texturesource)
 			t.texture = g_texturesource->getTexture("lava.png");
@@ -509,6 +525,7 @@ void content_mapnode_init()
 		//t.material_type = MATERIAL_ALPHA_VERTEX;
 		//t.material_flags &= ~MATERIAL_FLAG_BACKFACE_CULLING;
 		f->setAllTiles(t);
+#endif
 	}
 	f->param_type = CPT_LIGHT;
 	f->light_propagates = false;
@@ -523,6 +540,7 @@ void content_mapnode_init()
 	f->liquid_alternative_source = CONTENT_LAVASOURCE;
 	f->liquid_viscosity = LAVA_VISC;
 	f->damage_per_second = 4*2;
+#ifndef SERVER
 	f->post_effect_color = video::SColor(192, 255, 64, 0);
 	if(f->special_material == NULL && g_texturesource)
 	{
@@ -539,10 +557,15 @@ void content_mapnode_init()
 		f->special_material->setTexture(0, pa_lava1->atlas);
 		f->special_atlas = pa_lava1;
 	}
+#endif
 	
 	i = CONTENT_TORCH;
 	f = &content_features(i);
 	f->setInventoryTexture("torch_on_floor.png");
+	f->used_texturenames["torch_on_floor.png"] = true;
+	f->used_texturenames["torch_on_ceiling.png"] = true;
+	f->used_texturenames["torch_on_floor.png"] = true;
+	f->used_texturenames["torch.png"] = true;
 	f->param_type = CPT_LIGHT;
 	f->light_propagates = true;
 	f->sunlight_propagates = true;
@@ -557,6 +580,7 @@ void content_mapnode_init()
 	i = CONTENT_SIGN_WALL;
 	f = &content_features(i);
 	f->setInventoryTexture("sign_wall.png");
+	f->used_texturenames["sign_wall.png"] = true;
 	f->param_type = CPT_LIGHT;
 	f->light_propagates = true;
 	f->sunlight_propagates = true;
@@ -659,6 +683,7 @@ void content_mapnode_init()
 	f->param_type = CPT_LIGHT;
 	f->setAllTextures("sapling.png");
 	f->setInventoryTexture("sapling.png");
+	f->used_texturenames["sapling.png"] = true;
 	f->dug_item = std::string("MaterialItem2 ")+itos(i)+" 1";
 	f->light_propagates = true;
 	f->air_equivalent = false;
@@ -669,6 +694,7 @@ void content_mapnode_init()
 	i = CONTENT_APPLE;
 	f = &content_features(i);
 	f->setInventoryTexture("apple.png");
+	f->used_texturenames["apple.png"] = true;
 	f->param_type = CPT_LIGHT;
 	f->light_propagates = true;
 	f->sunlight_propagates = true;
