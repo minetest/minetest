@@ -427,6 +427,10 @@ do
 	}
 end
 
+-- TOSERVER_RESPAWN
+
+minetest_client_commands[0x38] = { "RESPAWN", 2 }
+
 
 
 
@@ -936,6 +940,40 @@ do
 	}
 end
 
+-- TOCLIENT_DEATHSCREEN
+
+do
+	local vs_set_camera_point_target = {
+		[0] = "False",
+		[1] = "True"
+	}
+
+	local f_set_camera_point_target = ProtoField.uint8(
+		"minetest.server.deathscreen_set_camera_point_target",
+		"Set camera point target", base.DEC, vs_set_camera_point_target)
+	local f_camera_point_target_x = ProtoField.int32(
+		"minetest.client.deathscreen_camera_point_target_x",
+		"Camera point target X", base.DEC)
+	local f_camera_point_target_y = ProtoField.int32(
+		"minetest.client.deathscreen_camera_point_target_y",
+		"Camera point target Y", base.DEC)
+	local f_camera_point_target_z = ProtoField.int32(
+		"minetest.client.deathscreen_camera_point_target_z",
+		"Camera point target Z", base.DEC)
+
+	minetest_server_commands[0x37] = {
+		"DEATHSCREEN", 15,
+		{ f_set_camera_point_target, f_camera_point_target_x,
+		  f_camera_point_target_y, f_camera_point_target_z},
+		function(buffer, pinfo, tree, t)
+			t:add(f_set_camera_point_target, buffer(2,1))
+			t:add(f_camera_point_target_x, buffer(3,4))
+			t:add(f_camera_point_target_y, buffer(7,4))
+			t:add(f_camera_point_target_z, buffer(11,4))
+		end
+	}
+end
+
 
 
 
@@ -1280,6 +1318,12 @@ function minetest_convert_utf16(tvb, name)
 			hex = hex .. " 3F"
 		end
 	end
-	return ByteArray.new(hex):tvb(name):range()
+	if hex == "" then
+		-- This is a hack to avoid a failed assertion in tvbuff.c
+		-- (function: ensure_contiguous_no_exception)
+		return ByteArray.new("00"):tvb(name):range(0,0)
+	else
+		return ByteArray.new(hex):tvb(name):range()
+	end
 end
 
