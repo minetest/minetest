@@ -952,13 +952,13 @@ do
 		"minetest.server.deathscreen_set_camera_point_target",
 		"Set camera point target", base.DEC, vs_set_camera_point_target)
 	local f_camera_point_target_x = ProtoField.int32(
-		"minetest.client.deathscreen_camera_point_target_x",
+		"minetest.server.deathscreen_camera_point_target_x",
 		"Camera point target X", base.DEC)
 	local f_camera_point_target_y = ProtoField.int32(
-		"minetest.client.deathscreen_camera_point_target_y",
+		"minetest.server.deathscreen_camera_point_target_y",
 		"Camera point target Y", base.DEC)
 	local f_camera_point_target_z = ProtoField.int32(
-		"minetest.client.deathscreen_camera_point_target_z",
+		"minetest.server.deathscreen_camera_point_target_z",
 		"Camera point target Z", base.DEC)
 
 	minetest_server_commands[0x37] = {
