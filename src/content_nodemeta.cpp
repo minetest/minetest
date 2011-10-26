@@ -20,6 +20,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "content_nodemeta.h"
 #include "inventory.h"
 #include "content_mapnode.h"
+#include "log.h"
 
 /*
 	SignNodeMetadata
@@ -287,12 +288,12 @@ bool FurnaceNodeMetadata::nodeRemovalDisabled()
 }
 void FurnaceNodeMetadata::inventoryModified()
 {
-	dstream<<"Furnace inventory modification callback"<<std::endl;
+	infostream<<"Furnace inventory modification callback"<<std::endl;
 }
 bool FurnaceNodeMetadata::step(float dtime)
 {
 	if(dtime > 60.0)
-		dstream<<"Furnace stepping a long time ("<<dtime<<")"<<std::endl;
+		infostream<<"Furnace stepping a long time ("<<dtime<<")"<<std::endl;
 	// Update at a fixed frequency
 	const float interval = 2.0;
 	m_step_accumulator += dtime;
@@ -302,7 +303,7 @@ bool FurnaceNodeMetadata::step(float dtime)
 		m_step_accumulator -= interval;
 		dtime = interval;
 
-		//dstream<<"Furnace step dtime="<<dtime<<std::endl;
+		//infostream<<"Furnace step dtime="<<dtime<<std::endl;
 		
 		InventoryList *dst_list = m_inventory->getList("dst");
 		assert(dst_list);
@@ -334,7 +335,7 @@ bool FurnaceNodeMetadata::step(float dtime)
 		*/
 		if(m_fuel_time < m_fuel_totaltime)
 		{
-			//dstream<<"Furnace is active"<<std::endl;
+			//infostream<<"Furnace is active"<<std::endl;
 			m_fuel_time += dtime;
 			m_src_time += dtime;
 			if(m_src_time >= m_src_totaltime && m_src_totaltime > 0.001
@@ -369,7 +370,7 @@ bool FurnaceNodeMetadata::step(float dtime)
 			break;
 		}
 		
-		//dstream<<"Furnace is out of fuel"<<std::endl;
+		//infostream<<"Furnace is out of fuel"<<std::endl;
 
 		InventoryList *fuel_list = m_inventory->getList("fuel");
 		assert(fuel_list);
@@ -454,7 +455,7 @@ bool FurnaceNodeMetadata::step(float dtime)
 		}
 		else
 		{
-			//dstream<<"No fuel found"<<std::endl;
+			//infostream<<"No fuel found"<<std::endl;
 			// No fuel, stop loop.
 			m_step_accumulator = 0;
 			break;

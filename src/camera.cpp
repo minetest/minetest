@@ -25,6 +25,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "player.h"
 #include "tile.h"
 #include <cmath>
+#include <SAnimatedMesh.h>
+#include "settings.h"
 
 Camera::Camera(scene::ISceneManager* smgr, MapDrawControl& draw_control):
 	m_smgr(smgr),
@@ -219,6 +221,7 @@ void Camera::update(LocalPlayer* player, f32 frametime, v2u32 screensize)
 		//rel_cam_target += 0.03 * bobvec;
 		//rel_cam_up.rotateXYBy(0.02 * bobdir * bobtmp * PI);
 		float f = 1.0;
+		f *= g_settings->getFloat("view_bobbing_amount");
 		rel_cam_pos += bobvec * f;
 		//rel_cam_target += 0.995 * bobvec * f;
 		rel_cam_target += bobvec * f;
@@ -299,8 +302,8 @@ void Camera::update(LocalPlayer* player, f32 frametime, v2u32 screensize)
 	v3f speed = player->getSpeed();
 	if ((hypot(speed.X, speed.Z) > BS) &&
 		(player->touching_ground) &&
-		(g_settings.getBool("view_bobbing") == true) &&
-		(g_settings.getBool("free_move") == false))
+		(g_settings->getBool("view_bobbing") == true) &&
+		(g_settings->getBool("free_move") == false))
 	{
 		// Start animation
 		m_view_bobbing_state = 1;
@@ -339,7 +342,7 @@ void Camera::updateViewingRange(f32 frametime_in)
 			<<std::endl;*/
 
 	m_draw_control.wanted_min_range = m_viewing_range_min;
-	m_draw_control.wanted_max_blocks = (1.5*m_draw_control.blocks_would_have_drawn)+1;
+	m_draw_control.wanted_max_blocks = (2.0*m_draw_control.blocks_would_have_drawn)+1;
 	if (m_draw_control.wanted_max_blocks < 10)
 		m_draw_control.wanted_max_blocks = 10;
 
@@ -361,7 +364,9 @@ void Camera::updateViewingRange(f32 frametime_in)
 	//dstream<<"wanted_frametime_change="<<wanted_frametime_change<<std::endl;
 
 	// If needed frametime change is small, just return
-	if (fabs(wanted_frametime_change) < m_wanted_frametime*0.4)
+	// This value was 0.4 for many months until 2011-10-18 by c55;
+	// Let's see how this works out.
+	if (fabs(wanted_frametime_change) < m_wanted_frametime*0.33)
 	{
 		//dstream<<"ignoring small wanted_frametime_change"<<std::endl;
 		return;
@@ -427,18 +432,18 @@ void Camera::updateViewingRange(f32 frametime_in)
 
 void Camera::updateSettings()
 {
-	m_viewing_range_min = g_settings.getS16("viewing_range_nodes_min");
+	m_viewing_range_min = g_settings->getS16("viewing_range_nodes_min");
 	m_viewing_range_min = MYMAX(5.0, m_viewing_range_min);
 
-	m_viewing_range_max = g_settings.getS16("viewing_range_nodes_max");
+	m_viewing_range_max = g_settings->getS16("viewing_range_nodes_max");
 	m_viewing_range_max = MYMAX(m_viewing_range_min, m_viewing_range_max);
 
-	f32 fov_degrees = g_settings.getFloat("fov");
+	f32 fov_degrees = g_settings->getFloat("fov");
 	fov_degrees = MYMAX(fov_degrees, 10.0);
 	fov_degrees = MYMIN(fov_degrees, 170.0);
 	m_fov_y = fov_degrees * PI / 180.0;
 
-	f32 wanted_fps = g_settings.getFloat("wanted_fps");
+	f32 wanted_fps = g_settings->getFloat("wanted_fps");
 	wanted_fps = MYMAX(wanted_fps, 1.0);
 	m_wanted_frametime = 1.0 / wanted_fps;
 }

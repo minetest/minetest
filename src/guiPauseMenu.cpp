@@ -23,6 +23,11 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "porting.h"
 #include "config.h"
 #include "main.h"
+#include <IGUICheckBox.h>
+#include <IGUIEditBox.h>
+#include <IGUIButton.h>
+#include <IGUIStaticText.h>
+#include <IGUIFont.h>
 
 #include "gettext.h"
 

@@ -24,6 +24,14 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <vector>
 #include "exceptions.h"
 
+#ifdef _WIN32 // WINDOWS
+#define DIR_DELIM "\\"
+#define DIR_DELIM_C '\\'
+#else // POSIX
+#define DIR_DELIM "/"
+#define DIR_DELIM_C '/'
+#endif
+
 namespace fs
 {
 

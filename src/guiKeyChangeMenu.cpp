@@ -24,6 +24,12 @@
 #include "serialization.h"
 #include "main.h"
 #include <string>
+#include <IGUICheckBox.h>
+#include <IGUIEditBox.h>
+#include <IGUIButton.h>
+#include <IGUIStaticText.h>
+#include <IGUIFont.h>
+#include "settings.h"
 
 GUIKeyChangeMenu::GUIKeyChangeMenu(gui::IGUIEnvironment* env,
 		gui::IGUIElement* parent, s32 id, IMenuManager *menumgr) :
@@ -340,20 +346,20 @@ void GUIKeyChangeMenu::drawMenu()
 
 bool GUIKeyChangeMenu::acceptInput()
 {
-	g_settings.set("keymap_forward", key_forward.sym());
-	g_settings.set("keymap_backward", key_backward.sym());
-	g_settings.set("keymap_left", key_left.sym());
-	g_settings.set("keymap_right", key_right.sym());
-	g_settings.set("keymap_jump", key_jump.sym());
-	g_settings.set("keymap_sneak", key_sneak.sym());
-	g_settings.set("keymap_inventory", key_inventory.sym());
-	g_settings.set("keymap_chat", key_chat.sym());
-	g_settings.set("keymap_cmd", key_cmd.sym());
-	g_settings.set("keymap_rangeselect", key_range.sym());
-	g_settings.set("keymap_freemove", key_fly.sym());
-	g_settings.set("keymap_fastmove", key_fast.sym());
-	g_settings.set("keymap_special1", key_use.sym());
-	g_settings.set("keymap_print_debug_stacks", key_dump.sym());
+	g_settings->set("keymap_forward", key_forward.sym());
+	g_settings->set("keymap_backward", key_backward.sym());
+	g_settings->set("keymap_left", key_left.sym());
+	g_settings->set("keymap_right", key_right.sym());
+	g_settings->set("keymap_jump", key_jump.sym());
+	g_settings->set("keymap_sneak", key_sneak.sym());
+	g_settings->set("keymap_inventory", key_inventory.sym());
+	g_settings->set("keymap_chat", key_chat.sym());
+	g_settings->set("keymap_cmd", key_cmd.sym());
+	g_settings->set("keymap_rangeselect", key_range.sym());
+	g_settings->set("keymap_freemove", key_fly.sym());
+	g_settings->set("keymap_fastmove", key_fast.sym());
+	g_settings->set("keymap_special1", key_use.sym());
+	g_settings->set("keymap_print_debug_stacks", key_dump.sym());
 	clearKeyCache();
 	return true;
 }

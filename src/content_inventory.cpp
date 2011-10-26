@@ -72,8 +72,8 @@ std::string item_craft_get_image_name(const std::string &subname)
 	else if(subname == "firefly")
 		return "firefly.png";
 	else if(subname == "apple")
-		return "apple.png";
-		else if(subname == "apple_iron")
+		return "apple.png^[forcesingle";
+	else if(subname == "apple_iron")
 		return "apple_iron.png";
 	else
 		return "cloud.png"; // just something

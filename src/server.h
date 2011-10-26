@@ -24,7 +24,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "environment.h"
 #include "common_irrlicht.h"
 #include <string>
-#include "utility.h"
 #include "porting.h"
 #include "map.h"
 #include "inventory.h"
@@ -450,11 +449,7 @@ public:
 	}
 	
 	// Saves g_settings to configpath given at initialization
-	void saveConfig()
-	{
-		if(m_configpath != "")
-			g_settings.updateConfigFile(m_configpath.c_str());
-	}
+	void saveConfig();
 
 	void setIpBanned(const std::string &ip, const std::string &name)
 	{
@@ -473,10 +468,14 @@ public:
 		return m_banmanager.getBanDescription(ip_or_name);
 	}
 
-	con::Peer* getPeerNoEx(u16 peer_id)
+	Address getPeerAddress(u16 peer_id)
 	{
-		return m_con.GetPeerNoEx(peer_id);
+		return m_con.GetPeerAddress(peer_id);
 	}
+	
+	// Envlock and conlock should be locked when calling this
+	void notifyPlayer(const char *name, const std::wstring msg);
+	void notifyPlayers(const std::wstring msg);
 
 private:
 
@@ -493,6 +492,8 @@ private:
 	static void SendHP(con::Connection &con, u16 peer_id, u8 hp);
 	static void SendAccessDenied(con::Connection &con, u16 peer_id,
 			const std::wstring &reason);
+	static void SendDeathscreen(con::Connection &con, u16 peer_id,
+			bool set_camera_point_target, v3f camera_point_target);
 	
 	/*
 		Non-static send methods
@@ -530,6 +531,9 @@ private:
 	/*
 		Something random
 	*/
+	
+	void HandlePlayerHP(Player *player, s16 damage);
+	void RespawnPlayer(Player *player);
 	
 	void UpdateCrafting(u16 peer_id);
 	

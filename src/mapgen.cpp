@@ -1405,6 +1405,7 @@ bool get_have_sand(u64 seed, v2s16 p2d)
 */
 void add_random_objects(MapBlock *block)
 {
+#if 0
 	for(s16 z0=0; z0<MAP_BLOCKSIZE; z0++)
 	for(s16 x0=0; x0<MAP_BLOCKSIZE; x0++)
 	{
@@ -1465,6 +1466,7 @@ void add_random_objects(MapBlock *block)
 		}
 	}
 	block->setChangedFlag();
+#endif
 }
 
 void make_block(BlockMakeData *data)

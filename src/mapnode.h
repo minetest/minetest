@@ -23,11 +23,12 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <iostream>
 #include "common_irrlicht.h"
 #include "light.h"
-#include "utility.h"
 #include "exceptions.h"
 #include "serialization.h"
-#include "tile.h"
 #include "materials.h"
+#ifndef SERVER
+#include "tile.h"
+#endif
 
 /*
 	Naming scheme:
@@ -101,9 +102,7 @@ class NodeMetadata;
 
 struct ContentFeatures
 {
-	// Type of MapNode::param1
-	ContentParamType param_type;
-
+#ifndef SERVER
 	/*
 		0: up
 		1: down
@@ -115,7 +114,22 @@ struct ContentFeatures
 	TileSpec tiles[6];
 	
 	video::ITexture *inventory_texture;
+
+	// Used currently for flowing liquids
+	u8 vertex_alpha;
+	// Post effect color, drawn when the camera is inside the node.
+	video::SColor post_effect_color;
+	// Special irrlicht material, used sometimes
+	video::SMaterial *special_material;
+	AtlasPointer *special_atlas;
+#endif
+
+	// List of all block textures that have been used (value is dummy)
+	// Exists on server too for cleaner code in content_mapnode.cpp
+	core::map<std::string, bool> used_texturenames;
 	
+	// Type of MapNode::param1
+	ContentParamType param_type;
 	// True for all ground-like things like stone and mud, false for eg. trees
 	bool is_ground_content;
 	bool light_propagates;
@@ -141,15 +155,19 @@ struct ContentFeatures
 	// If true, node is equivalent to air. Torches are, air is. Water is not.
 	// Is used for example to check whether a mud block can have grass on.
 	bool air_equivalent;
+	// Whether this content type often contains mineral.
+	// Used for texture atlas creation.
+	// Currently only enabled for CONTENT_STONE.
+	bool often_contains_mineral;
 	
 	// Inventory item string as which the node appears in inventory when dug.
 	// Mineral overrides this.
 	std::string dug_item;
 
-        // Extra dug item and its rarity
-        std::string extra_dug_item;
-        s32 extra_dug_item_rarity;
-	
+	// Extra dug item and its rarity
+	std::string extra_dug_item;
+	s32 extra_dug_item_rarity;
+
 	// Initial metadata is cloned from this
 	NodeMetadata *initial_metadata;
 	
@@ -162,13 +180,6 @@ struct ContentFeatures
 	// 1 giving almost instantaneous propagation and 7 being
 	// the slowest possible
 	u8 liquid_viscosity;
-	// Used currently for flowing liquids
-	u8 vertex_alpha;
-	// Post effect color, drawn when the camera is inside the node.
-	video::SColor post_effect_color;
-	// Special irrlicht material, used sometimes
-	video::SMaterial *special_material;
-	AtlasPointer *special_atlas;
 	
 	// Amount of light the node emits
 	u8 light_source;
@@ -182,8 +193,15 @@ struct ContentFeatures
 
 	void reset()
 	{
-		param_type = CPT_NONE;
+#ifndef SERVER
 		inventory_texture = NULL;
+		
+		vertex_alpha = 255;
+		post_effect_color = video::SColor(0, 0, 0, 0);
+		special_material = NULL;
+		special_atlas = NULL;
+#endif
+		param_type = CPT_NONE;
 		is_ground_content = false;
 		light_propagates = false;
 		sunlight_propagates = false;
@@ -197,15 +215,12 @@ struct ContentFeatures
 		liquid_type = LIQUID_NONE;
 		wall_mounted = false;
 		air_equivalent = false;
+		often_contains_mineral = false;
 		dug_item = "";
 		initial_metadata = NULL;
 		liquid_alternative_flowing = CONTENT_IGNORE;
 		liquid_alternative_source = CONTENT_IGNORE;
 		liquid_viscosity = 0;
-		vertex_alpha = 255;
-		post_effect_color = video::SColor(0, 0, 0, 0);
-		special_material = NULL;
-		special_atlas = NULL;
 		light_source = 0;
 		digging_properties.clear();
 		damage_per_second = 0;
@@ -222,6 +237,12 @@ struct ContentFeatures
 		Quickhands for simple materials
 	*/
 	
+#ifdef SERVER
+	void setTexture(u16 i, std::string name, u8 alpha=255)
+	{}
+	void setAllTextures(std::string name, u8 alpha=255)
+	{}
+#else
 	void setTexture(u16 i, std::string name, u8 alpha=255);
 
 	void setAllTextures(std::string name, u8 alpha=255)
@@ -233,7 +254,9 @@ struct ContentFeatures
 		// Force inventory texture too
 		setInventoryTexture(name);
 	}
+#endif
 
+#ifndef SERVER
 	void setTile(u16 i, const TileSpec &tile)
 	{
 		tiles[i] = tile;
@@ -245,11 +268,20 @@ struct ContentFeatures
 			setTile(i, tile);
 		}
 	}
+#endif
 
+#ifdef SERVER
+	void setInventoryTexture(std::string imgname)
+	{}
+	void setInventoryTextureCube(std::string top,
+			std::string left, std::string right)
+	{}
+#else
 	void setInventoryTexture(std::string imgname);
 	
 	void setInventoryTextureCube(std::string top,
 			std::string left, std::string right);
+#endif
 };
 
 /*
@@ -632,6 +664,7 @@ struct MapNode
 	}
 	
 	// In mapnode.cpp
+#ifndef SERVER
 	/*
 		Get tile of a face of the node.
 		dir: direction of face
@@ -639,6 +672,7 @@ struct MapNode
 		         which must be obeyed so that the texture atlas can be used.
 	*/
 	TileSpec getTile(v3s16 dir);
+#endif
 	
 	/*
 		Gets mineral content of node, if there is any.

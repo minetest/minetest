@@ -25,6 +25,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "gettime.h"
 #include "sha1.h"
 #include "base64.h"
+#include "log.h"
 
 TimeTaker::TimeTaker(const char *name, u32 *result)
 {
@@ -47,7 +48,7 @@ u32 TimeTaker::stop(bool quiet)
 		else
 		{
 			if(quiet == false)
-				std::cout<<m_name<<" took "<<dtime<<"ms"<<std::endl;
+				infostream<<m_name<<" took "<<dtime<<"ms"<<std::endl;
 		}
 		m_running = false;
 		return dtime;
@@ -156,6 +157,22 @@ void mysrand(unsigned seed)
    next = seed;
 }
 
+int myrand_range(int min, int max)
+{
+	if(max-min > MYRAND_MAX)
+	{
+		errorstream<<"WARNING: myrand_range: max-min > MYRAND_MAX"<<std::endl;
+		assert(0);
+	}
+	if(min > max)
+	{
+		assert(0);
+		return max;
+	}
+	return (myrand()%(max-min+1))+min;
+}
+
+#ifndef SERVER
 // Sets the color of all vertices in the mesh
 void setMeshVerticesColor(scene::IMesh* mesh, video::SColor& color)
 {
@@ -174,6 +191,7 @@ void setMeshVerticesColor(scene::IMesh* mesh, video::SColor& color)
 		}
 	}
 }
+#endif
 
 /*
 	blockpos: position of block in block coordinates
@@ -218,7 +236,7 @@ bool isBlockInSight(v3s16 blockpos_b, v3f camera_pos, v3f camera_dir,
 	
 	// If block is (nearly) touching the camera, don't
 	// bother validating further (that is, render it anyway)
-	if(d > block_max_radius * 1.5)
+	if(d > block_max_radius)
 	{
 		// Cosine of the angle between the camera direction
 		// and the block direction (camera_dir is an unit vector)

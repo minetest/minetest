@@ -87,8 +87,8 @@ void signal_handler_init(void)
 	Path mangler
 */
 
-std::string path_data = "../data";
-std::string path_userdata = "../";
+std::string path_data = ".." DIR_DELIM "data";
+std::string path_userdata = "..";
 
 void pathRemoveFile(char *path, char delim)
 {
@@ -127,10 +127,10 @@ void initializePaths()
 	pathRemoveFile(buf, '\\');
 
 	// Use "./bin/../data"
-	path_data = std::string(buf) + "/../data";
+	path_data = std::string(buf) + DIR_DELIM ".." DIR_DELIM "data";
 		
 	// Use "./bin/../"
-	path_userdata = std::string(buf) + "/../";
+	path_userdata = std::string(buf) + DIR_DELIM ".." DIR_DELIM;
 
 	/*
 		Linux
@@ -188,13 +188,13 @@ void initializePaths()
 	pathRemoveFile(buf, '\\');
 	
 	// Use "./bin/../data"
-	path_data = std::string(buf) + "/../data";
+	path_data = std::string(buf) + DIR_DELIM ".." DIR_DELIM "data";
 	//path_data = std::string(buf) + "/../share/" + PROJECT_NAME;
 		
 	// Use "C:\Documents and Settings\user\Application Data\<PROJECT_NAME>"
 	len = GetEnvironmentVariable("APPDATA", buf, buflen);
 	assert(len < buflen);
-	path_userdata = std::string(buf) + "/" + PROJECT_NAME;
+	path_userdata = std::string(buf) + DIR_DELIM + PROJECT_NAME;
 
 	/*
 		Linux

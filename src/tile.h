@@ -283,9 +283,9 @@ struct TileSpec
 	TileSpec():
 		texture(0),
 		alpha(255),
-		material_type(MATERIAL_ALPHA_NONE),
+		//material_type(MATERIAL_ALPHA_NONE),
 		// Use this so that leaves don't need a separate material
-		//material_type(MATERIAL_ALPHA_SIMPLE),
+		material_type(MATERIAL_ALPHA_SIMPLE),
 		material_flags(
 			//0 // <- DEBUG, Use the one below
 			MATERIAL_FLAG_BACKFACE_CULLING

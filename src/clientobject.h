@@ -51,6 +51,7 @@ public:
 	virtual core::aabbox3d<f32>* getSelectionBox(){return NULL;}
 	virtual core::aabbox3d<f32>* getCollisionBox(){return NULL;}
 	virtual v3f getPosition(){return v3f(0,0,0);}
+	virtual bool doShowSelectionBox(){return true;}
 	
 	// Step object in time
 	virtual void step(float dtime, ClientEnvironment *env){}
@@ -59,7 +60,7 @@ public:
 	virtual void processMessage(const std::string &data){}
 
 	virtual std::string infoText() {return "";}
-
+	
 	/*
 		This takes the return value of
 		ServerActiveObject::getClientInitializationData
@@ -68,6 +69,10 @@ public:
 	
 	// Create a certain type of ClientActiveObject
 	static ClientActiveObject* create(u8 type);
+
+	// If returns true, punch will not be sent to the server
+	virtual bool directReportPunch(const std::string &toolname, v3f dir)
+	{ return false; }
 
 protected:
 	// Used for creating objects based on type

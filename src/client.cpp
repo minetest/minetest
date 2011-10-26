@@ -28,6 +28,9 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "mapsector.h"
 #include "mapblock_mesh.h"
 #include "mapblock.h"
+#include "settings.h"
+#include "profiler.h"
+#include "log.h"
 
 /*
 	QueuedMeshUpdate
@@ -129,6 +132,8 @@ void * MeshUpdateThread::Thread()
 {
 	ThreadStarted();
 
+	log_register_thread("MeshUpdateThread");
+
 	DSTACK(__FUNCTION_NAME);
 	
 	BEGIN_DEBUG_EXCEPTION_HANDLER
@@ -151,7 +156,7 @@ void * MeshUpdateThread::Thread()
 			continue;
 		}
 
-		ScopeProfiler sp(&g_profiler, "mesh make");
+		ScopeProfiler sp(g_profiler, "Client: Mesh making");
 
 		scene::SMesh *mesh_new = NULL;
 		mesh_new = makeMapBlockMesh(q->data);
@@ -161,7 +166,7 @@ void * MeshUpdateThread::Thread()
 		r.mesh = mesh_new;
 		r.ack_block_to_server = q->ack_block_to_server;
 
-		/*dstream<<"MeshUpdateThread: Processed "
+		/*infostream<<"MeshUpdateThread: Processed "
 				<<"("<<q->p.X<<","<<q->p.Y<<","<<q->p.Z<<")"
 				<<std::endl;*/
 
@@ -170,7 +175,7 @@ void * MeshUpdateThread::Thread()
 		delete q;
 	}
 
-	END_DEBUG_EXCEPTION_HANDLER
+	END_DEBUG_EXCEPTION_HANDLER(errorstream)
 
 	return NULL;
 }
@@ -241,7 +246,7 @@ void Client::connect(Address address)
 {
 	DSTACK(__FUNCTION_NAME);
 	//JMutexAutoLock lock(m_con_mutex); //bulk comment-out
-	m_con.setTimeoutMs(0);
+	m_con.SetTimeoutMs(0);
 	m_con.Connect(address);
 }
 
@@ -271,7 +276,7 @@ void Client::step(float dtime)
 	else
 		m_ignore_damage_timer = 0.0;
 	
-	//dstream<<"Client steps "<<dtime<<std::endl;
+	//infostream<<"Client steps "<<dtime<<std::endl;
 
 	{
 		//TimeTaker timer("ReceiveAll()", m_device);
@@ -296,8 +301,8 @@ void Client::step(float dtime)
 		{
 			counter = 20.0;
 			
-			dout_client<<"Client packetcounter (20s):"<<std::endl;
-			m_packetcounter.print(dout_client);
+			infostream<<"Client packetcounter (20s):"<<std::endl;
+			m_packetcounter.print(infostream);
 			m_packetcounter.clear();
 		}
 	}
@@ -327,7 +332,7 @@ void Client::step(float dtime)
 			core::list<v3s16> deleted_blocks;
 
 			float delete_unused_sectors_timeout = 
-				g_settings.getFloat("client_delete_unused_sectors_timeout");
+				g_settings->getFloat("client_delete_unused_sectors_timeout");
 	
 			// Delete sector blocks
 			/*u32 num = m_env.getMap().unloadUnusedData
@@ -341,9 +346,9 @@ void Client::step(float dtime)
 
 			if(deleted_blocks.size() > 0)
 			{
-				/*dstream<<DTIME<<"Client: Deleted blocks of "<<num
+				/*infostream<<"Client: Deleted blocks of "<<num
 						<<" unused sectors"<<std::endl;*/
-				/*dstream<<DTIME<<"Client: Deleted "<<num
+				/*infostream<<"Client: Deleted "<<num
 						<<" unused sectors"<<std::endl;*/
 				
 				/*
@@ -422,14 +427,14 @@ void Client::step(float dtime)
 			memset((char*)&data[3], 0, PLAYERNAME_SIZE);
 			snprintf((char*)&data[3], PLAYERNAME_SIZE, "%s", myplayer->getName());
 
-			/*dstream<<"Client: sending initial password hash: \""<<m_password<<"\""
+			/*infostream<<"Client: sending initial password hash: \""<<m_password<<"\""
 					<<std::endl;*/
 
 			memset((char*)&data[23], 0, PASSWORD_SIZE);
 			snprintf((char*)&data[23], PASSWORD_SIZE, "%s", m_password.c_str());
 			
 			// This should be incremented in each version
-			writeU16(&data[51], 2);
+			writeU16(&data[51], 3);
 
 			// Send as unreliable
 			Send(0, data, false);
@@ -449,14 +454,14 @@ void Client::step(float dtime)
 	const float map_timer_and_unload_dtime = 5.25;
 	if(m_map_timer_and_unload_interval.step(dtime, map_timer_and_unload_dtime))
 	{
-		ScopeProfiler sp(&g_profiler, "Client: map timer and unload");
+		ScopeProfiler sp(g_profiler, "Client: map timer and unload");
 		core::list<v3s16> deleted_blocks;
 		m_env.getMap().timerUpdate(map_timer_and_unload_dtime,
-				g_settings.getFloat("client_unload_unused_data_timeout"),
+				g_settings->getFloat("client_unload_unused_data_timeout"),
 				&deleted_blocks);
 				
 		/*if(deleted_blocks.size() > 0)
-			dstream<<"Client: Unloaded "<<deleted_blocks.size()
+			infostream<<"Client: Unloaded "<<deleted_blocks.size()
 					<<" unused blocks"<<std::endl;*/
 			
 		/*
@@ -521,24 +526,6 @@ void Client::step(float dtime)
 		m_env.step(dtime);
 		
 		/*
-			Handle active blocks
-			NOTE: These old objects are DEPRECATED. TODO: Remove
-		*/
-		for(core::map<v3s16, bool>::Iterator
-				i = m_active_blocks.getIterator();
-				i.atEnd() == false; i++)
-		{
-			v3s16 p = i.getNode()->getKey();
-
-			MapBlock *block = m_env.getMap().getBlockNoCreateNoEx(p);
-			if(block == NULL)
-				continue;
-			
-			// Step MapBlockObjects
-			block->stepObjects(dtime, false, m_env.getDayNightRatio());
-		}
-
-		/*
 			Get events
 		*/
 		for(;;)
@@ -576,8 +563,8 @@ void Client::step(float dtime)
 			counter = 0.0;
 			//JMutexAutoLock lock(m_con_mutex); //bulk comment-out
 			// connectedAndInitialized() is true, peer exists.
-			con::Peer *peer = m_con.GetPeer(PEER_ID_SERVER);
-			dstream<<DTIME<<"Client: avg_rtt="<<peer->avg_rtt<<std::endl;
+			float avg_rtt = m_con.GetPeerAvgRTT(PEER_ID_SERVER);
+			infostream<<"Client: avg_rtt="<<avg_rtt<<std::endl;
 		}
 	}
 
@@ -603,7 +590,7 @@ void Client::step(float dtime)
 		//TimeTaker timer("** Processing mesh update result queue");
 		// 0ms
 		
-		/*dstream<<"Mesh update result queue size is "
+		/*infostream<<"Mesh update result queue size is "
 				<<m_mesh_update_thread.m_queue_out.size()
 				<<std::endl;*/
 
@@ -617,7 +604,7 @@ void Client::step(float dtime)
 			}
 			if(r.ack_block_to_server)
 			{
-				/*dstream<<"Client: ACK block ("<<r.p.X<<","<<r.p.Y
+				/*infostream<<"Client: ACK block ("<<r.p.X<<","<<r.p.Y
 						<<","<<r.p.Z<<")"<<std::endl;*/
 				/*
 					Acknowledge block
@@ -644,12 +631,12 @@ void Client::step(float dtime)
 // Virtual methods from con::PeerHandler
 void Client::peerAdded(con::Peer *peer)
 {
-	derr_client<<"Client::peerAdded(): peer->id="
+	infostream<<"Client::peerAdded(): peer->id="
 			<<peer->id<<std::endl;
 }
 void Client::deletingPeer(con::Peer *peer, bool timeout)
 {
-	derr_client<<"Client::deletingPeer(): "
+	infostream<<"Client::deletingPeer(): "
 			"Server Peer is getting deleted "
 			<<"(timeout="<<timeout<<")"<<std::endl;
 }
@@ -668,7 +655,7 @@ void Client::ReceiveAll()
 		}
 		catch(con::InvalidIncomingDataException &e)
 		{
-			dout_client<<DTIME<<"Client::ReceiveAll(): "
+			infostream<<"Client::ReceiveAll(): "
 					"InvalidIncomingDataException: what()="
 					<<e.what()<<std::endl;
 		}
@@ -707,7 +694,7 @@ void Client::ProcessData(u8 *data, u32 datasize, u16 sender_peer_id)
 
 	ToClientCommand command = (ToClientCommand)readU16(&data[0]);
 
-	//dstream<<"Client: received command="<<command<<std::endl;
+	//infostream<<"Client: received command="<<command<<std::endl;
 	m_packetcounter.add((u16)command);
 	
 	/*
@@ -716,23 +703,15 @@ void Client::ProcessData(u8 *data, u32 datasize, u16 sender_peer_id)
 	*/
 	if(sender_peer_id != PEER_ID_SERVER)
 	{
-		dout_client<<DTIME<<"Client::ProcessData(): Discarding data not "
+		infostream<<"Client::ProcessData(): Discarding data not "
 				"coming from server: peer_id="<<sender_peer_id
 				<<std::endl;
 		return;
 	}
 
-	con::Peer *peer;
-	{
-		//JMutexAutoLock lock(m_con_mutex); //bulk comment-out
-		// All data is coming from the server
-		// PeerNotFoundException is handled by caller.
-		peer = m_con.GetPeer(PEER_ID_SERVER);
-	}
-
 	u8 ser_version = m_server_ser_ver;
 
-	//dstream<<"Client received command="<<(int)command<<std::endl;
+	//infostream<<"Client received command="<<(int)command<<std::endl;
 
 	if(command == TOCLIENT_INIT)
 	{
@@ -741,13 +720,13 @@ void Client::ProcessData(u8 *data, u32 datasize, u16 sender_peer_id)
 
 		u8 deployed = data[2];
 
-		dout_client<<DTIME<<"Client: TOCLIENT_INIT received with "
+		infostream<<"Client: TOCLIENT_INIT received with "
 				"deployed="<<((int)deployed&0xff)<<std::endl;
 
 		if(deployed < SER_FMT_VER_LOWEST
 				|| deployed > SER_FMT_VER_HIGHEST)
 		{
-			derr_client<<DTIME<<"Client: TOCLIENT_INIT: Server sent "
+			infostream<<"Client: TOCLIENT_INIT: Server sent "
 					<<"unsupported ser_fmt_ver"<<std::endl;
 			return;
 		}
@@ -773,7 +752,7 @@ void Client::ProcessData(u8 *data, u32 datasize, u16 sender_peer_id)
 		{
 			// Get map seed
 			m_map_seed = readU64(&data[2+1+6]);
-			dstream<<"Client: received map seed: "<<m_map_seed<<std::endl;
+			infostream<<"Client: received map seed: "<<m_map_seed<<std::endl;
 		}
 		
 		// Reply to server
@@ -804,7 +783,7 @@ void Client::ProcessData(u8 *data, u32 datasize, u16 sender_peer_id)
 
 	if(ser_version == SER_FMT_VER_INVALID)
 	{
-		dout_client<<DTIME<<"WARNING: Client: Server serialization"
+		infostream<<"Client: Server serialization"
 				" format invalid or not initialized."
 				" Skipping incoming command="<<command<<std::endl;
 		return;
@@ -858,9 +837,9 @@ void Client::ProcessData(u8 *data, u32 datasize, u16 sender_peer_id)
 		p.Y = readS16(&data[4]);
 		p.Z = readS16(&data[6]);
 		
-		/*dout_client<<DTIME<<"Client: Thread: BLOCKDATA for ("
+		/*infostream<<"Client: Thread: BLOCKDATA for ("
 				<<p.X<<","<<p.Y<<","<<p.Z<<")"<<std::endl;*/
-		/*dstream<<DTIME<<"Client: Thread: BLOCKDATA for ("
+		/*infostream<<"Client: Thread: BLOCKDATA for ("
 				<<p.X<<","<<p.Y<<","<<p.Z<<")"<<std::endl;*/
 		
 		std::string datastring((char*)&data[8], datasize-8);
@@ -883,7 +862,7 @@ void Client::ProcessData(u8 *data, u32 datasize, u16 sender_peer_id)
 			/*
 				Update an existing block
 			*/
-			//dstream<<"Updating"<<std::endl;
+			//infostream<<"Updating"<<std::endl;
 			block->deSerialize(istr, ser_version);
 		}
 		else
@@ -891,7 +870,7 @@ void Client::ProcessData(u8 *data, u32 datasize, u16 sender_peer_id)
 			/*
 				Create a new block
 			*/
-			//dstream<<"Creating new"<<std::endl;
+			//infostream<<"Creating new"<<std::endl;
 			block = new MapBlock(&m_env.getMap(), p);
 			block->deSerialize(istr, ser_version);
 			sector->insertBlock(block);
@@ -937,12 +916,12 @@ void Client::ProcessData(u8 *data, u32 datasize, u16 sender_peer_id)
 		/*
 			Add it to mesh update queue and set it to be acknowledged after update.
 		*/
-		//std::cerr<<"Adding mesh update task for received block"<<std::endl;
+		//infostream<<"Adding mesh update task for received block"<<std::endl;
 		addUpdateMeshTaskWithEdge(p, true);
 	}
 	else if(command == TOCLIENT_PLAYERPOS)
 	{
-		dstream<<"WARNING: Received deprecated TOCLIENT_PLAYERPOS"
+		infostream<<"Received deprecated TOCLIENT_PLAYERPOS"
 				<<std::endl;
 		/*u16 our_peer_id;
 		{
@@ -951,7 +930,7 @@ void Client::ProcessData(u8 *data, u32 datasize, u16 sender_peer_id)
 		}
 		// Cancel if we don't have a peer id
 		if(our_peer_id == PEER_ID_INEXISTENT){
-			dout_client<<DTIME<<"TOCLIENT_PLAYERPOS cancelled: "
+			infostream<<"TOCLIENT_PLAYERPOS cancelled: "
 					"we have no peer id"
 					<<std::endl;
 			return;
@@ -988,7 +967,7 @@ void Client::ProcessData(u8 *data, u32 datasize, u16 sender_peer_id)
 				v3s32 ss = readV3S32(&data[start+2+12]);
 				s32 pitch_i = readS32(&data[start+2+12+12]);
 				s32 yaw_i = readS32(&data[start+2+12+12+4]);
-				/*dstream<<"Client: got "
+				/*infostream<<"Client: got "
 						<<"pitch_i="<<pitch_i
 						<<" yaw_i="<<yaw_i<<std::endl;*/
 				f32 pitch = (f32)pitch_i / 100.0;
@@ -1000,7 +979,7 @@ void Client::ProcessData(u8 *data, u32 datasize, u16 sender_peer_id)
 				player->setPitch(pitch);
 				player->setYaw(yaw);
 
-				/*dstream<<"Client: player "<<peer_id
+				/*infostream<<"Client: player "<<peer_id
 						<<" pitch="<<pitch
 						<<" yaw="<<yaw<<std::endl;*/
 
@@ -1017,13 +996,13 @@ void Client::ProcessData(u8 *data, u32 datasize, u16 sender_peer_id)
 		}
 		// Cancel if we don't have a peer id
 		if(our_peer_id == PEER_ID_INEXISTENT){
-			dout_client<<DTIME<<"TOCLIENT_PLAYERINFO cancelled: "
+			infostream<<"TOCLIENT_PLAYERINFO cancelled: "
 					"we have no peer id"
 					<<std::endl;
 			return;
 		}
 		
-		//dstream<<DTIME<<"Client: Server reports players:"<<std::endl;
+		//infostream<<"Client: Server reports players:"<<std::endl;
 
 		{ //envlock
 			//JMutexAutoLock envlock(m_env_mutex); //bulk comment-out
@@ -1042,7 +1021,7 @@ void Client::ProcessData(u8 *data, u32 datasize, u16 sender_peer_id)
 
 				players_alive.push_back(peer_id);
 				
-				/*dstream<<DTIME<<"peer_id="<<peer_id
+				/*infostream<<"peer_id="<<peer_id
 						<<" name="<<((char*)&data[start+2])<<std::endl;*/
 
 				// Don't update the info of the local player
@@ -1063,7 +1042,7 @@ void Client::ProcessData(u8 *data, u32 datasize, u16 sender_peer_id)
 							-1);
 					player->peer_id = peer_id;
 					m_env.addPlayer(player);
-					dout_client<<DTIME<<"Client: Adding new player "
+					infostream<<"Client: Adding new player "
 							<<peer_id<<std::endl;
 				}
 				
@@ -1076,7 +1055,7 @@ void Client::ProcessData(u8 *data, u32 datasize, u16 sender_peer_id)
 				Remove those players from the environment that
 				weren't listed by the server.
 			*/
-			//dstream<<DTIME<<"Removing dead players"<<std::endl;
+			//infostream<<"Removing dead players"<<std::endl;
 			core::list<Player*> players = m_env.getPlayers();
 			core::list<Player*>::Iterator ip;
 			for(ip=players.begin(); ip!=players.end(); ip++)
@@ -1088,7 +1067,7 @@ void Client::ProcessData(u8 *data, u32 datasize, u16 sender_peer_id)
 				// Warn about a special case
 				if((*ip)->peer_id == 0)
 				{
-					dstream<<DTIME<<"WARNING: Client: Removing "
+					infostream<<"Client: Removing "
 							"dead player with id=0"<<std::endl;
 				}
 
@@ -1102,11 +1081,11 @@ void Client::ProcessData(u8 *data, u32 datasize, u16 sender_peer_id)
 						break;
 					}
 				}
-				/*dstream<<DTIME<<"peer_id="<<((*ip)->peer_id)
+				/*infostream<<"peer_id="<<((*ip)->peer_id)
 						<<" is_alive="<<is_alive<<std::endl;*/
 				if(is_alive)
 					continue;
-				dstream<<DTIME<<"Removing dead player "<<(*ip)->peer_id
+				infostream<<"Removing dead player "<<(*ip)->peer_id
 						<<std::endl;
 				m_env.removePlayer((*ip)->peer_id);
 			}
@@ -1114,7 +1093,7 @@ void Client::ProcessData(u8 *data, u32 datasize, u16 sender_peer_id)
 	}
 	else if(command == TOCLIENT_SECTORMETA)
 	{
-		dstream<<"Client received DEPRECATED TOCLIENT_SECTORMETA"<<std::endl;
+		infostream<<"Client received DEPRECATED TOCLIENT_SECTORMETA"<<std::endl;
 #if 0
 		/*
 			[0] u16 command
@@ -1124,7 +1103,7 @@ void Client::ProcessData(u8 *data, u32 datasize, u16 sender_peer_id)
 		if(datasize < 3)
 			return;
 
-		//dstream<<"Client received TOCLIENT_SECTORMETA"<<std::endl;
+		//infostream<<"Client received TOCLIENT_SECTORMETA"<<std::endl;
 
 		{ //envlock
 			//JMutexAutoLock envlock(m_env_mutex); //bulk comment-out
@@ -1137,14 +1116,14 @@ void Client::ProcessData(u8 *data, u32 datasize, u16 sender_peer_id)
 			is.read((char*)buf, 1);
 			u16 sector_count = readU8(buf);
 			
-			//dstream<<"sector_count="<<sector_count<<std::endl;
+			//infostream<<"sector_count="<<sector_count<<std::endl;
 
 			for(u16 i=0; i<sector_count; i++)
 			{
 				// Read position
 				is.read((char*)buf, 4);
 				v2s16 pos = readV2S16(buf);
-				/*dstream<<"Client: deserializing sector at "
+				/*infostream<<"Client: deserializing sector at "
 						<<"("<<pos.X<<","<<pos.Y<<")"<<std::endl;*/
 				// Create sector
 				assert(m_env.getMap().mapType() == MAPTYPE_CLIENT);
@@ -1170,7 +1149,7 @@ void Client::ProcessData(u8 *data, u32 datasize, u16 sender_peer_id)
 			std::istringstream is(datastring, std::ios_base::binary);
 			//t3.stop();
 			
-			//m_env.printPlayers(dstream);
+			//m_env.printPlayers(infostream);
 
 			//TimeTaker t4("player get", m_device);
 			Player *player = m_env.getLocalPlayer();
@@ -1183,22 +1162,17 @@ void Client::ProcessData(u8 *data, u32 datasize, u16 sender_peer_id)
 
 			m_inventory_updated = true;
 
-			//dstream<<"Client got player inventory:"<<std::endl;
-			//player->inventory.print(dstream);
+			//infostream<<"Client got player inventory:"<<std::endl;
+			//player->inventory.print(infostream);
 		}
 	}
 	//DEBUG
 	else if(command == TOCLIENT_OBJECTDATA)
-	//else if(0)
 	{
 		// Strip command word and create a stringstream
 		std::string datastring((char*)&data[2], datasize-2);
 		std::istringstream is(datastring, std::ios_base::binary);
 		
-		{ //envlock
-		
-		//JMutexAutoLock envlock(m_env_mutex); //bulk comment-out
-
 		u8 buf[12];
 
 		/*
@@ -1248,106 +1222,16 @@ void Client::ProcessData(u8 *data, u32 datasize, u16 sender_peer_id)
 
 		/*
 			Read block objects
-			NOTE: Deprecated stuff here, TODO: Remove
+			NOTE: Deprecated stuff
 		*/
 
 		// Read active block count
-		is.read((char*)buf, 2);
-		u16 blockcount = readU16(buf);
-		
-		// Initialize delete queue with all active blocks
-		core::map<v3s16, bool> abs_to_delete;
-		for(core::map<v3s16, bool>::Iterator
-				i = m_active_blocks.getIterator();
-				i.atEnd() == false; i++)
-		{
-			v3s16 p = i.getNode()->getKey();
-			/*dstream<<"adding "
-					<<"("<<p.x<<","<<p.y<<","<<p.z<<") "
-					<<" to abs_to_delete"
-					<<std::endl;*/
-			abs_to_delete.insert(p, true);
+		u16 blockcount = readU16(is);
+		if(blockcount != 0){
+			infostream<<"TOCLIENT_OBJECTDATA: blockcount != 0 "
+					"not supported"<<std::endl;
+			return;
 		}
-
-		/*dstream<<"Initial delete queue size: "<<abs_to_delete.size()
-				<<std::endl;*/
-		
-		for(u16 i=0; i<blockcount; i++)
-		{
-			// Read blockpos
-			is.read((char*)buf, 6);
-			v3s16 p = readV3S16(buf);
-			// Get block from somewhere
-			MapBlock *block = NULL;
-			try{
-				block = m_env.getMap().getBlockNoCreate(p);
-			}
-			catch(InvalidPositionException &e)
-			{
-				//TODO: Create a dummy block?
-			}
-			if(block == NULL)
-			{
-				dstream<<"WARNING: "
-						<<"Could not get block at blockpos "
-						<<"("<<p.X<<","<<p.Y<<","<<p.Z<<") "
-						<<"in TOCLIENT_OBJECTDATA. Ignoring "
-						<<"following block object data."
-						<<std::endl;
-				return;
-			}
-
-			/*dstream<<"Client updating objects for block "
-					<<"("<<p.X<<","<<p.Y<<","<<p.Z<<")"
-					<<std::endl;*/
-
-			// Insert to active block list
-			m_active_blocks.insert(p, true);
-
-			// Remove from deletion queue
-			if(abs_to_delete.find(p) != NULL)
-				abs_to_delete.remove(p);
-
-			/*
-				Update objects of block
-				
-				NOTE: Be sure this is done in the main thread.
-			*/
-			block->updateObjects(is, m_server_ser_ver,
-					m_device->getSceneManager(), m_env.getDayNightRatio());
-		}
-		
-		/*dstream<<"Final delete queue size: "<<abs_to_delete.size()
-				<<std::endl;*/
-		
-		// Delete objects of blocks in delete queue
-		for(core::map<v3s16, bool>::Iterator
-				i = abs_to_delete.getIterator();
-				i.atEnd() == false; i++)
-		{
-			v3s16 p = i.getNode()->getKey();
-			try
-			{
-				MapBlock *block = m_env.getMap().getBlockNoCreate(p);
-				
-				// Clear objects
-				block->clearObjects();
-				// Remove from active blocks list
-				m_active_blocks.remove(p);
-			}
-			catch(InvalidPositionException &e)
-			{
-				dstream<<"WARNAING: Client: "
-						<<"Couldn't clear objects of active->inactive"
-						<<" block "
-						<<"("<<p.X<<","<<p.Y<<","<<p.Z<<")"
-						<<" because block was not found"
-						<<std::endl;
-				// Ignore
-			}
-		}
-
-		} //envlock
 	}
 	else if(command == TOCLIENT_TIME_OF_DAY)
 	{
@@ -1356,7 +1240,7 @@ void Client::ProcessData(u8 *data, u32 datasize, u16 sender_peer_id)
 		
 		u16 time_of_day = readU16(&data[2]);
 		time_of_day = time_of_day % 24000;
-		//dstream<<"Client: time_of_day="<<time_of_day<<std::endl;
+		//infostream<<"Client: time_of_day="<<time_of_day<<std::endl;
 		
 		/*
 			time_of_day:
@@ -1368,7 +1252,7 @@ void Client::ProcessData(u8 *data, u32 datasize, u16 sender_peer_id)
 
 			u32 dr = m_env.getDayNightRatio();
 
-			dstream<<"Client: time_of_day="<<time_of_day
+			infostream<<"Client: time_of_day="<<time_of_day
 					<<", dr="<<dr
 					<<std::endl;
 		}
@@ -1396,14 +1280,14 @@ void Client::ProcessData(u8 *data, u32 datasize, u16 sender_peer_id)
 			message += (wchar_t)readU16(buf);
 		}
 
-		/*dstream<<"Client received chat message: "
+		/*infostream<<"Client received chat message: "
 				<<wide_to_narrow(message)<<std::endl;*/
 		
 		m_chat_queue.push_back(message);
 	}
 	else if(command == TOCLIENT_ACTIVE_OBJECT_REMOVE_ADD)
 	{
-		//if(g_settings.getBool("enable_experimental"))
+		//if(g_settings->getBool("enable_experimental"))
 		{
 			/*
 				u16 command
@@ -1462,7 +1346,7 @@ void Client::ProcessData(u8 *data, u32 datasize, u16 sender_peer_id)
 	}
 	else if(command == TOCLIENT_ACTIVE_OBJECT_MESSAGES)
 	{
-		//if(g_settings.getBool("enable_experimental"))
+		//if(g_settings->getBool("enable_experimental"))
 		{
 			/*
 				u16 command
@@ -1525,7 +1409,7 @@ void Client::ProcessData(u8 *data, u32 datasize, u16 sender_peer_id)
 		/*player->setPitch(pitch);
 		player->setYaw(yaw);*/
 
-		dstream<<"Client got TOCLIENT_MOVE_PLAYER"
+		infostream<<"Client got TOCLIENT_MOVE_PLAYER"
 				<<" pos=("<<pos.X<<","<<pos.Y<<","<<pos.Z<<")"
 				<<" pitch="<<pitch
 				<<" yaw="<<yaw
@@ -1560,13 +1444,13 @@ void Client::ProcessData(u8 *data, u32 datasize, u16 sender_peer_id)
 
 			if (player == NULL)
 			{
-				dout_client<<DTIME<<"Client: ignoring player item "
+				infostream<<"Client: ignoring player item "
 					<< deSerializeString(is)
 					<< " for non-existing peer id " << peer_id
 					<< std::endl;
 				continue;
 			} else if (player->isLocal()) {
-				dout_client<<DTIME<<"Client: ignoring player item "
+				infostream<<"Client: ignoring player item "
 					<< deSerializeString(is)
 					<< " for local player" << std::endl;
 				continue;
@@ -1575,22 +1459,38 @@ void Client::ProcessData(u8 *data, u32 datasize, u16 sender_peer_id)
 				std::string itemstring(deSerializeString(is));
 				if (itemstring.empty()) {
 					inv->deleteItem(0);
-					dout_client<<DTIME
+					infostream
 						<<"Client: empty player item for peer "
 						<< peer_id << std::endl;
 				} else {
 					std::istringstream iss(itemstring);
 					delete inv->changeItem(0, InventoryItem::deSerialize(iss));
-					dout_client<<DTIME<<"Client: player item for peer " << peer_id << ": ";
-					player->getWieldItem()->serialize(dout_client);
-					dout_client<<std::endl;
+					infostream<<"Client: player item for peer " << peer_id << ": ";
+					player->getWieldItem()->serialize(infostream);
+					infostream<<std::endl;
 				}
 			}
 		}
 	}
+	else if(command == TOCLIENT_DEATHSCREEN)
+	{
+		std::string datastring((char*)&data[2], datasize-2);
+		std::istringstream is(datastring, std::ios_base::binary);
+		
+		bool set_camera_point_target = readU8(is);
+		v3f camera_point_target = readV3F1000(is);
+		
+		ClientEvent event;
+		event.type = CE_DEATHSCREEN;
+		event.deathscreen.set_camera_point_target = set_camera_point_target;
+		event.deathscreen.camera_point_target_x = camera_point_target.X;
+		event.deathscreen.camera_point_target_y = camera_point_target.Y;
+		event.deathscreen.camera_point_target_z = camera_point_target.Z;
+		m_client_event_queue.push_back(event);
+	}
 	else
 	{
-		dout_client<<DTIME<<"WARNING: Client: Ignoring unknown command "
+		infostream<<"Client: Ignoring unknown command "
 				<<command<<std::endl;
 	}
 }
@@ -1605,7 +1505,7 @@ void Client::groundAction(u8 action, v3s16 nodepos_undersurface,
 		v3s16 nodepos_oversurface, u16 item)
 {
 	if(connectedAndInitialized() == false){
-		dout_client<<DTIME<<"Client::groundAction() "
+		infostream<<"Client::groundAction() "
 				"cancelled (not connected)"
 				<<std::endl;
 		return;
@@ -1634,39 +1534,45 @@ void Client::groundAction(u8 action, v3s16 nodepos_undersurface,
 	Send(0, data, true);
 }
 
-void Client::clickObject(u8 button, v3s16 blockpos, s16 id, u16 item)
+void Client::clickActiveObject(u8 button, u16 id, u16 item_i)
 {
 	if(connectedAndInitialized() == false){
-		dout_client<<DTIME<<"Client::clickObject() "
+		infostream<<"Client::clickActiveObject() "
 				"cancelled (not connected)"
 				<<std::endl;
 		return;
 	}
-	
-	/*
-		[0] u16 command=TOSERVER_CLICK_OBJECT
-		[2] u8 button (0=left, 1=right)
-		[3] v3s16 block
-		[9] s16 id
-		[11] u16 item
-	*/
-	u8 datasize = 2 + 1 + 6 + 2 + 2;
-	SharedBuffer<u8> data(datasize);
-	writeU16(&data[0], TOSERVER_CLICK_OBJECT);
-	writeU8(&data[2], button);
-	writeV3S16(&data[3], blockpos);
-	writeS16(&data[9], id);
-	writeU16(&data[11], item);
-	Send(0, data, true);
-}
 
-void Client::clickActiveObject(u8 button, u16 id, u16 item)
-{
-	if(connectedAndInitialized() == false){
-		dout_client<<DTIME<<"Client::clickActiveObject() "
-				"cancelled (not connected)"
-				<<std::endl;
+	Player *player = m_env.getLocalPlayer();
+	if(player == NULL)
 		return;
+
+	ClientActiveObject *obj = m_env.getActiveObject(id);
+	if(obj){
+		if(button == 0){
+			ToolItem *titem = NULL;
+			std::string toolname = "";
+
+			InventoryList *mlist = player->inventory.getList("main");
+			if(mlist != NULL)
+			{
+				InventoryItem *item = mlist->getItem(item_i);
+				if(item && (std::string)item->getName() == "ToolItem")
+				{
+					titem = (ToolItem*)item;
+					toolname = titem->getToolName();
+				}
+			}
+
+			v3f playerpos = player->getPosition();
+			v3f objpos = obj->getPosition();
+			v3f dir = (objpos - playerpos).normalize();
+			
+			bool disable_send = obj->directReportPunch(toolname, dir);
+			
+			if(disable_send)
+				return;
+		}
 	}
 	
 	/*
@@ -1681,49 +1587,10 @@ void Client::clickActiveObject(u8 button, u16 id, u16 item)
 	writeU16(&data[0], TOSERVER_CLICK_ACTIVEOBJECT);
 	writeU8(&data[2], button);
 	writeU16(&data[3], id);
-	writeU16(&data[5], item);
+	writeU16(&data[5], item_i);
 	Send(0, data, true);
 }
 
-void Client::sendSignText(v3s16 blockpos, s16 id, std::string text)
-{
-	/*
-		u16 command
-		v3s16 blockpos
-		s16 id
-		u16 textlen
-		textdata
-	*/
-	std::ostringstream os(std::ios_base::binary);
-	u8 buf[12];
-	
-	// Write command
-	writeU16(buf, TOSERVER_SIGNTEXT);
-	os.write((char*)buf, 2);
-	
-	// Write blockpos
-	writeV3S16(buf, blockpos);
-	os.write((char*)buf, 6);
-
-	// Write id
-	writeS16(buf, id);
-	os.write((char*)buf, 2);
-
-	u16 textlen = text.size();
-	// Write text length
-	writeS16(buf, textlen);
-	os.write((char*)buf, 2);
-
-	// Write text
-	os.write((char*)text.c_str(), textlen);
-	
-	// Make data buffer
-	std::string s = os.str();
-	SharedBuffer<u8> data((u8*)s.c_str(), s.size());
-	// Send as reliable
-	Send(0, data, true);
-}
-	
 void Client::sendSignNodeText(v3s16 p, std::string text)
 {
 	/*
@@ -1848,6 +1715,20 @@ void Client::sendDamage(u8 damage)
 
 	writeU16(os, TOSERVER_DAMAGE);
 	writeU8(os, damage);
+
+	// Make data buffer
+	std::string s = os.str();
+	SharedBuffer<u8> data((u8*)s.c_str(), s.size());
+	// Send as reliable
+	Send(0, data, true);
+}
+
+void Client::sendRespawn()
+{
+	DSTACK(__FUNCTION_NAME);
+	std::ostringstream os(std::ios_base::binary);
+
+	writeU16(os, TOSERVER_RESPAWN);
 
 	// Make data buffer
 	std::string s = os.str();
@@ -2068,82 +1949,17 @@ Inventory* Client::getInventory(InventoryContext *c, std::string id)
 		NodeMetadata* meta = getNodeMetadata(p);
 		if(meta)
 			return meta->getInventory();
-		dstream<<"nodemeta at ("<<p.X<<","<<p.Y<<","<<p.Z<<"): "
+		infostream<<"nodemeta at ("<<p.X<<","<<p.Y<<","<<p.Z<<"): "
 				<<"no metadata found"<<std::endl;
 		return NULL;
 	}
 
-	dstream<<__FUNCTION_NAME<<": unknown id "<<id<<std::endl;
+	infostream<<__FUNCTION_NAME<<": unknown id "<<id<<std::endl;
 	return NULL;
 }
 void Client::inventoryAction(InventoryAction *a)
 {
 	sendInventoryAction(a);
-}
-
-MapBlockObject * Client::getSelectedObject(
-		f32 max_d,
-		v3f from_pos_f_on_map,
-		core::line3d<f32> shootline_on_map
-	)
-{
-	//JMutexAutoLock envlock(m_env_mutex); //bulk comment-out
-
-	core::array<DistanceSortedObject> objects;
-
-	for(core::map<v3s16, bool>::Iterator
-			i = m_active_blocks.getIterator();
-			i.atEnd() == false; i++)
-	{
-		v3s16 p = i.getNode()->getKey();
-
-		MapBlock *block = NULL;
-		try
-		{
-			block = m_env.getMap().getBlockNoCreate(p);
-		}
-		catch(InvalidPositionException &e)
-		{
-			continue;
-		}
-
-		// Calculate from_pos relative to block
-		v3s16 block_pos_i_on_map = block->getPosRelative();
-		v3f block_pos_f_on_map = intToFloat(block_pos_i_on_map, BS);
-		v3f from_pos_f_on_block = from_pos_f_on_map - block_pos_f_on_map;
-
-		block->getObjects(from_pos_f_on_block, max_d, objects);
-		//block->getPseudoObjects(from_pos_f_on_block, max_d, objects);
-	}
-
-	//dstream<<"Collected "<<objects.size()<<" nearby objects"<<std::endl;
-	
-	// Sort them.
-	// After this, the closest object is the first in the array.
-	objects.sort();
-
-	for(u32 i=0; i<objects.size(); i++)
-	{
-		MapBlockObject *obj = objects[i].obj;
-		MapBlock *block = obj->getBlock();
-
-		// Calculate shootline relative to block
-		v3s16 block_pos_i_on_map = block->getPosRelative();
-		v3f block_pos_f_on_map = intToFloat(block_pos_i_on_map, BS);
-		core::line3d<f32> shootline_on_block(
-				shootline_on_map.start - block_pos_f_on_map,
-				shootline_on_map.end - block_pos_f_on_map
-		);
-
-		if(obj->isSelected(shootline_on_block))
-		{
-			//dstream<<"Returning selected object"<<std::endl;
-			return obj;
-		}
-	}
-
-	//dstream<<"No object selected; returning NULL."<<std::endl;
-	return NULL;
 }
 
 ClientActiveObject * Client::getSelectedActiveObject(
@@ -2156,7 +1972,7 @@ ClientActiveObject * Client::getSelectedActiveObject(
 
 	m_env.getActiveObjects(from_pos_f_on_map, max_d, objects);
 
-	//dstream<<"Collected "<<objects.size()<<" nearby objects"<<std::endl;
+	//infostream<<"Collected "<<objects.size()<<" nearby objects"<<std::endl;
 	
 	// Sort them.
 	// After this, the closest object is the first in the array.
@@ -2179,12 +1995,12 @@ ClientActiveObject * Client::getSelectedActiveObject(
 
 		if(offsetted_box.intersectsWithLine(shootline_on_map))
 		{
-			//dstream<<"Returning selected object"<<std::endl;
+			//infostream<<"Returning selected object"<<std::endl;
 			return obj;
 		}
 	}
 
-	//dstream<<"No object selected; returning NULL."<<std::endl;
+	//infostream<<"No object selected; returning NULL."<<std::endl;
 	return NULL;
 }
 
@@ -2248,7 +2064,7 @@ void Client::clearTempMod(v3s16 p)
 
 void Client::addUpdateMeshTask(v3s16 p, bool ack_to_server)
 {
-	/*dstream<<"Client::addUpdateMeshTask(): "
+	/*infostream<<"Client::addUpdateMeshTask(): "
 			<<"("<<p.X<<","<<p.Y<<","<<p.Z<<")"
 			<<std::endl;*/
 
@@ -2275,7 +2091,7 @@ void Client::addUpdateMeshTask(v3s16 p, bool ack_to_server)
 	// Add task to queue
 	m_mesh_update_thread.m_queue_in.addBlock(p, data, ack_to_server);
 
-	/*dstream<<"Mesh update input queue size is "
+	/*infostream<<"Mesh update input queue size is "
 			<<m_mesh_update_thread.m_queue_in.size()
 			<<std::endl;*/
 	
@@ -2302,7 +2118,7 @@ void Client::addUpdateMeshTaskWithEdge(v3s16 blockpos, bool ack_to_server)
 {
 	/*{
 		v3s16 p = blockpos;
-		dstream<<"Client::addUpdateMeshTaskWithEdge(): "
+		infostream<<"Client::addUpdateMeshTaskWithEdge(): "
 				<<"("<<p.X<<","<<p.Y<<","<<p.Z<<")"
 				<<std::endl;
 	}*/
@@ -2342,4 +2158,12 @@ ClientEvent Client::getClientEvent()
 	return m_client_event_queue.pop_front();
 }
 
+float Client::getRTT(void)
+{
+	try{
+		return m_con.GetPeerAvgRTT(PEER_ID_SERVER);
+	} catch(con::PeerNotFoundException &e){
+		return 1337;
+	}
+}
 

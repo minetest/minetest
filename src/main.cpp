@@ -411,10 +411,13 @@ Doing currently:
 	//#pragma comment(linker, "/subsystem:windows /ENTRY:mainCRTStartup")
 #endif
 
+#include "irrlicht.h" // createDevice
+
+#include "main.h"
+#include "mainmenumanager.h"
 #include <iostream>
 #include <fstream>
 #include <locale.h>
-#include "main.h"
 #include "common_irrlicht.h"
 #include "debug.h"
 #include "test.h"
@@ -431,8 +434,11 @@ Doing currently:
 #include "game.h"
 #include "keycode.h"
 #include "tile.h"
-
+#include "defaultsettings.h"
 #include "gettext.h"
+#include "settings.h"
+#include "profiler.h"
+#include "log.h"
 
 // This makes textures
 ITextureSource *g_texturesource = NULL;
@@ -441,25 +447,23 @@ ITextureSource *g_texturesource = NULL;
 	Settings.
 	These are loaded from the config file.
 */
-
-Settings g_settings;
-// This is located in defaultsettings.cpp
-extern void set_default_settings();
+Settings main_settings;
+Settings *g_settings = &main_settings;
 
 // Global profiler
-Profiler g_profiler;
+Profiler main_profiler;
+Profiler *g_profiler = &main_profiler;
 
 /*
 	Random stuff
 */
 
 /*
-	GUI Stuff
+	mainmenumanager.h
 */
 
 gui::IGUIEnvironment* guienv = NULL;
 gui::IGUIStaticText *guiroot = NULL;
-
 MainMenuManager g_menumgr;
 
 bool noMenuActive()
@@ -468,7 +472,6 @@ bool noMenuActive()
 }
 
 // Passed to menus to allow disconnecting and exiting
-
 MainGameCallback *g_gamecallback = NULL;
 
 /*
@@ -477,19 +480,17 @@ MainGameCallback *g_gamecallback = NULL;
 
 // Connection
 std::ostream *dout_con_ptr = &dummyout;
-std::ostream *derr_con_ptr = &dstream_no_stderr;
-//std::ostream *dout_con_ptr = &dstream_no_stderr;
-//std::ostream *derr_con_ptr = &dstream_no_stderr;
-//std::ostream *dout_con_ptr = &dstream;
-//std::ostream *derr_con_ptr = &dstream;
+std::ostream *derr_con_ptr = &verbosestream;
+//std::ostream *dout_con_ptr = &infostream;
+//std::ostream *derr_con_ptr = &errorstream;
 
 // Server
-std::ostream *dout_server_ptr = &dstream;
-std::ostream *derr_server_ptr = &dstream;
+std::ostream *dout_server_ptr = &infostream;
+std::ostream *derr_server_ptr = &errorstream;
 
 // Client
-std::ostream *dout_client_ptr = &dstream;
-std::ostream *derr_client_ptr = &dstream;
+std::ostream *dout_client_ptr = &infostream;
+std::ostream *derr_client_ptr = &errorstream;
 
 /*
 	gettime.h implementation
@@ -581,7 +582,6 @@ public:
 			}
 			else
 			{
-				//dstream<<"MyEventReceiver: mouse input"<<std::endl;
 				left_active = event.MouseInput.isLeftPressed();
 				middle_active = event.MouseInput.isMiddlePressed();
 				right_active = event.MouseInput.isRightPressed();
@@ -1024,7 +1024,7 @@ void SpeedTests()
 
 		u32 dtime = timer.stop();
 		u32 per_ms = n / dtime;
-		std::cout<<"Done. "<<dtime<<"ms, "
+		dstream<<"Done. "<<dtime<<"ms, "
 				<<per_ms<<"/ms"<<std::endl;
 	}
 }
@@ -1076,11 +1076,36 @@ void drawMenuBackground(video::IVideoDriver* driver)
 	}
 }
 
+class StderrLogOutput: public ILogOutput
+{
+public:
+	/* line: Full line with timestamp, level and thread */
+	void printLog(const std::string &line)
+	{
+		std::cerr<<line<<std::endl;
+	}
+} main_stderr_log_out;
+
+class DstreamNoStderrLogOutput: public ILogOutput
+{
+public:
+	/* line: Full line with timestamp, level and thread */
+	void printLog(const std::string &line)
+	{
+		dstream_no_stderr<<line<<std::endl;
+	}
+} main_dstream_no_stderr_log_out;
+
 int main(int argc, char *argv[])
 {
 	/*
 		Initialization
 	*/
+
+	log_add_output_maxlev(&main_stderr_log_out, LMT_ACTION);
+	log_add_output_all_levs(&main_dstream_no_stderr_log_out);
+
+	log_register_thread("main");
 
 	// Set locale. This is for forcing '.' as the decimal point.
 	std::locale::global(std::locale("C"));
@@ -1108,6 +1133,7 @@ int main(int argc, char *argv[])
 	allowed_options.insert("dstream-on-stderr", ValueSpec(VALUETYPE_FLAG));
 #endif
 	allowed_options.insert("speedtests", ValueSpec(VALUETYPE_FLAG));
+	allowed_options.insert("info-on-stderr", ValueSpec(VALUETYPE_FLAG));
 
 	Settings cmd_args;
 	
@@ -1149,6 +1175,9 @@ int main(int argc, char *argv[])
 	if(cmd_args.getFlag("dstream-on-stderr") == false)
 		disable_stderr = true;
 #endif
+	
+	if(cmd_args.getFlag("info-on-stderr"))
+		log_add_output(&main_stderr_log_out, LMT_INFO);
 
 	porting::signal_handler_init();
 	bool &kill = *porting::signal_handler_killstatus();
@@ -1159,13 +1188,13 @@ int main(int argc, char *argv[])
 	// Create user data directory
 	fs::CreateDir(porting::path_userdata);
 
-	init_gettext((porting::path_data+"/../locale").c_str());
+	init_gettext((porting::path_data+DIR_DELIM+".."+DIR_DELIM+"locale").c_str());
 	
 	// Initialize debug streams
 #ifdef RUN_IN_PLACE
 	std::string debugfile = DEBUGFILE;
 #else
-	std::string debugfile = porting::path_userdata+"/"+DEBUGFILE;
+	std::string debugfile = porting::path_userdata+DIR_DELIM+DEBUGFILE;
 #endif
 	debugstreams_init(disable_stderr, debugfile.c_str());
 	// Initialize debug stacks
@@ -1180,7 +1209,7 @@ int main(int argc, char *argv[])
 	BEGIN_DEBUG_EXCEPTION_HANDLER
 
 	// Print startup message
-	dstream<<DTIME<<PROJECT_NAME
+	actionstream<<PROJECT_NAME<<
 			" with SER_FMT_VER_HIGHEST="<<(int)SER_FMT_VER_HIGHEST
 			<<", "<<BUILD_INFO
 			<<std::endl;
@@ -1190,7 +1219,7 @@ int main(int argc, char *argv[])
 	*/
 
 	// Initialize default settings
-	set_default_settings();
+	set_default_settings(g_settings);
 	
 	// Initialize sockets
 	sockets_init();
@@ -1205,10 +1234,10 @@ int main(int argc, char *argv[])
 	
 	if(cmd_args.exists("config"))
 	{
-		bool r = g_settings.readConfigFile(cmd_args.get("config").c_str());
+		bool r = g_settings->readConfigFile(cmd_args.get("config").c_str());
 		if(r == false)
 		{
-			dstream<<"Could not read configuration from \""
+			errorstream<<"Could not read configuration from \""
 					<<cmd_args.get("config")<<"\""<<std::endl;
 			return 1;
 		}
@@ -1217,14 +1246,16 @@ int main(int argc, char *argv[])
 	else
 	{
 		core::array<std::string> filenames;
-		filenames.push_back(porting::path_userdata + "/minetest.conf");
+		filenames.push_back(porting::path_userdata +
+				DIR_DELIM + "minetest.conf");
 #ifdef RUN_IN_PLACE
-		filenames.push_back(porting::path_userdata + "/../minetest.conf");
+		filenames.push_back(porting::path_userdata +
+				DIR_DELIM + ".." + DIR_DELIM + "minetest.conf");
 #endif
 
 		for(u32 i=0; i<filenames.size(); i++)
 		{
-			bool r = g_settings.readConfigFile(filenames[i].c_str());
+			bool r = g_settings->readConfigFile(filenames[i].c_str());
 			if(r)
 			{
 				configpath = filenames[i];
@@ -1249,6 +1280,9 @@ int main(int argc, char *argv[])
 	
 	// Initial call with g_texturesource not set.
 	init_mapnode();
+	// Must be called before g_texturesource is created
+	// (for texture atlas making)
+	init_mineral();
 
 	/*
 		Run unit tests
@@ -1275,17 +1309,17 @@ int main(int argc, char *argv[])
 	u16 port = 30000;
 	if(cmd_args.exists("port"))
 		port = cmd_args.getU16("port");
-	else if(g_settings.exists("port"))
-		port = g_settings.getU16("port");
+	else if(g_settings->exists("port"))
+		port = g_settings->getU16("port");
 	if(port == 0)
 		port = 30000;
 	
 	// Map directory
-	std::string map_dir = porting::path_userdata+"/world";
+	std::string map_dir = porting::path_userdata+DIR_DELIM+"world";
 	if(cmd_args.exists("map-dir"))
 		map_dir = cmd_args.get("map-dir");
-	else if(g_settings.exists("map-dir"))
-		map_dir = g_settings.get("map-dir");
+	else if(g_settings->exists("map-dir"))
+		map_dir = g_settings->get("map-dir");
 	
 	// Run dedicated server if asked to
 	if(cmd_args.getFlag("server"))
@@ -1319,10 +1353,10 @@ int main(int argc, char *argv[])
 	}
 	else
 	{
-		address = g_settings.get("address");
+		address = g_settings->get("address");
 	}
 	
-	std::string playername = g_settings.get("name");
+	std::string playername = g_settings->get("name");
 
 	/*
 		Device initialization
@@ -1331,14 +1365,14 @@ int main(int argc, char *argv[])
 	// Resolution selection
 	
 	bool fullscreen = false;
-	u16 screenW = g_settings.getU16("screenW");
-	u16 screenH = g_settings.getU16("screenH");
+	u16 screenW = g_settings->getU16("screenW");
+	u16 screenH = g_settings->getU16("screenH");
 
 	// Determine driver
 
 	video::E_DRIVER_TYPE driverType;
 	
-	std::string driverstring = g_settings.get("video_driver");
+	std::string driverstring = g_settings->get("video_driver");
 
 	if(driverstring == "null")
 		driverType = video::EDT_NULL;
@@ -1354,7 +1388,7 @@ int main(int argc, char *argv[])
 		driverType = video::EDT_OPENGL;
 	else
 	{
-		dstream<<"WARNING: Invalid video_driver specified; defaulting "
+		errorstream<<"WARNING: Invalid video_driver specified; defaulting "
 				"to opengl"<<std::endl;
 		driverType = video::EDT_OPENGL;
 	}
@@ -1397,7 +1431,7 @@ int main(int argc, char *argv[])
 	
 	device->setResizable(true);
 
-	bool random_input = g_settings.getBool("random_input")
+	bool random_input = g_settings->getBool("random_input")
 			|| cmd_args.getFlag("random-input");
 	InputHandler *input = NULL;
 	if(random_input)
@@ -1425,14 +1459,14 @@ int main(int argc, char *argv[])
 	if(font)
 		skin->setFont(font);
 	else
-		dstream<<"WARNING: Font file was not found."
+		errorstream<<"WARNING: Font file was not found."
 				" Using default font."<<std::endl;
 	// If font was not found, this will get us one
 	font = skin->getFont();
 	assert(font);
 	
 	u32 text_height = font->getDimension(L"Hello, world!").Height;
-	dstream<<"text_height="<<text_height<<std::endl;
+	infostream<<"text_height="<<text_height<<std::endl;
 
 	//skin->setColor(gui::EGDC_BUTTON_TEXT, video::SColor(255,0,0,0));
 	skin->setColor(gui::EGDC_BUTTON_TEXT, video::SColor(255,255,255,255));
@@ -1446,7 +1480,6 @@ int main(int argc, char *argv[])
 	*/
 
 	init_mapnode(); // Second call with g_texturesource set
-	init_mineral();
 
 	/*
 		GUI stuff
@@ -1508,10 +1541,10 @@ int main(int argc, char *argv[])
 				menudata.address = narrow_to_wide(address);
 				menudata.name = narrow_to_wide(playername);
 				menudata.port = narrow_to_wide(itos(port));
-				menudata.fancy_trees = g_settings.getBool("new_style_leaves");
-				menudata.smooth_lighting = g_settings.getBool("smooth_lighting");
-				menudata.creative_mode = g_settings.getBool("creative_mode");
-				menudata.enable_damage = g_settings.getBool("enable_damage");
+				menudata.fancy_trees = g_settings->getBool("new_style_leaves");
+				menudata.smooth_lighting = g_settings->getBool("smooth_lighting");
+				menudata.creative_mode = g_settings->getBool("creative_mode");
+				menudata.enable_damage = g_settings->getBool("enable_damage");
 
 				GUIMainMenu *menu =
 						new GUIMainMenu(guienv, guiroot, -1, 
@@ -1520,7 +1553,7 @@ int main(int argc, char *argv[])
 
 				if(error_message != L"")
 				{
-					dstream<<"WARNING: error_message = "
+					errorstream<<"error_message = "
 							<<wide_to_narrow(error_message)<<std::endl;
 
 					GUIMessageMenu *menu2 =
@@ -1532,7 +1565,7 @@ int main(int argc, char *argv[])
 
 				video::IVideoDriver* driver = device->getVideoDriver();
 				
-				dstream<<"Created main menu"<<std::endl;
+				infostream<<"Created main menu"<<std::endl;
 
 				while(device->run() && kill == false)
 				{
@@ -1557,7 +1590,7 @@ int main(int argc, char *argv[])
 				if(device->run() == false || kill == true)
 					break;
 				
-				dstream<<"Dropping main menu"<<std::endl;
+				infostream<<"Dropping main menu"<<std::endl;
 
 				menu->drop();
 				
@@ -1574,16 +1607,16 @@ int main(int argc, char *argv[])
 
 				password = translatePassword(playername, menudata.password);
 
-				//dstream<<"Main: password hash: '"<<password<<"'"<<std::endl;
+				//infostream<<"Main: password hash: '"<<password<<"'"<<std::endl;
 
 				address = wide_to_narrow(menudata.address);
 				int newport = stoi(wide_to_narrow(menudata.port));
 				if(newport != 0)
 					port = newport;
-				g_settings.set("new_style_leaves", itos(menudata.fancy_trees));
-				g_settings.set("smooth_lighting", itos(menudata.smooth_lighting));
-				g_settings.set("creative_mode", itos(menudata.creative_mode));
-				g_settings.set("enable_damage", itos(menudata.enable_damage));
+				g_settings->set("new_style_leaves", itos(menudata.fancy_trees));
+				g_settings->set("smooth_lighting", itos(menudata.smooth_lighting));
+				g_settings->set("creative_mode", itos(menudata.creative_mode));
+				g_settings->set("enable_damage", itos(menudata.enable_damage));
 				
 				// NOTE: These are now checked server side; no need to do it
 				//       here, so let's not do it here.
@@ -1602,12 +1635,12 @@ int main(int argc, char *argv[])
 				}*/
 
 				// Save settings
-				g_settings.set("name", playername);
-				g_settings.set("address", address);
-				g_settings.set("port", itos(port));
+				g_settings->set("name", playername);
+				g_settings->set("address", address);
+				g_settings->set("port", itos(port));
 				// Update configuration file
 				if(configpath != "")
-					g_settings.updateConfigFile(configpath.c_str());
+					g_settings->updateConfigFile(configpath.c_str());
 			
 				// Continue to game
 				break;
@@ -1641,12 +1674,12 @@ int main(int argc, char *argv[])
 		} //try
 		catch(con::PeerNotFoundException &e)
 		{
-			dstream<<DTIME<<"Connection error (timed out?)"<<std::endl;
+			errorstream<<"Connection error (timed out?)"<<std::endl;
 			error_message = L"Connection error (timed out?)";
 		}
 		catch(SocketException &e)
 		{
-			dstream<<DTIME<<"Socket error (port already in use?)"<<std::endl;
+			errorstream<<"Socket error (port already in use?)"<<std::endl;
 			error_message = L"Socket error (port already in use?)";
 		}
 #ifdef NDEBUG
@@ -1655,7 +1688,7 @@ int main(int argc, char *argv[])
 			std::string narrow_message = "Some exception, what()=\"";
 			narrow_message += e.what();
 			narrow_message += "\"";
-			dstream<<DTIME<<narrow_message<<std::endl;
+			errorstream<<narrow_message<<std::endl;
 			error_message = narrow_to_wide(narrow_message);
 		}
 #endif
@@ -1669,7 +1702,7 @@ int main(int argc, char *argv[])
 	*/
 	device->drop();
 	
-	END_DEBUG_EXCEPTION_HANDLER
+	END_DEBUG_EXCEPTION_HANDLER(errorstream)
 	
 	debugstreams_deinit();
 	

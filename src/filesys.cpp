@@ -279,7 +279,7 @@ bool RecursiveDeleteContent(std::string path)
 	{
 		if(trim(list[i].name) == "." || trim(list[i].name) == "..")
 			continue;
-		std::string childpath = path + "/" + list[i].name;
+		std::string childpath = path + DIR_DELIM + list[i].name;
 		bool r = RecursiveDelete(childpath);
 		if(r == false)
 		{
@@ -299,7 +299,7 @@ bool CreateAllDirs(std::string path)
 	while(!PathExists(basepath))
 	{
 		tocreate.push_back(basepath);
-		pos = basepath.rfind('/');
+		pos = basepath.rfind(DIR_DELIM_C);
 		if(pos == std::string::npos)
 			return false;
 		basepath = basepath.substr(0,pos);

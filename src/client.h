@@ -113,7 +113,8 @@ enum ClientEventType
 {
 	CE_NONE,
 	CE_PLAYER_DAMAGE,
-	CE_PLAYER_FORCE_MOVE
+	CE_PLAYER_FORCE_MOVE,
+	CE_DEATHSCREEN,
 };
 
 struct ClientEvent
@@ -129,6 +130,12 @@ struct ClientEvent
 			f32 pitch;
 			f32 yaw;
 		} player_force_move;
+		struct{
+			bool set_camera_point_target;
+			f32 camera_point_target_x;
+			f32 camera_point_target_y;
+			f32 camera_point_target_z;
+		} deathscreen;
 	};
 };
 
@@ -183,16 +190,15 @@ public:
 
 	void groundAction(u8 action, v3s16 nodepos_undersurface,
 			v3s16 nodepos_oversurface, u16 item);
-	void clickObject(u8 button, v3s16 blockpos, s16 id, u16 item);
-	void clickActiveObject(u8 button, u16 id, u16 item);
+	void clickActiveObject(u8 button, u16 id, u16 item_i);
 
-	void sendSignText(v3s16 blockpos, s16 id, std::string text);
 	void sendSignNodeText(v3s16 p, std::string text);
 	void sendInventoryAction(InventoryAction *a);
 	void sendChatMessage(const std::wstring &message);
 	void sendChangePassword(const std::wstring oldpassword,
 		const std::wstring newpassword);
 	void sendDamage(u8 damage);
+	void sendRespawn();
 	
 	// locks envlock
 	void removeNode(v3s16 p);
@@ -227,14 +233,6 @@ public:
 
 	// Gets closest object pointed by the shootline
 	// Returns NULL if not found
-	MapBlockObject * getSelectedObject(
-			f32 max_d,
-			v3f from_pos_f_on_map,
-			core::line3d<f32> shootline_on_map
-	);
-
-	// Gets closest object pointed by the shootline
-	// Returns NULL if not found
 	ClientActiveObject * getSelectedActiveObject(
 			f32 max_d,
 			v3f from_pos_f_on_map,
@@ -253,11 +251,11 @@ public:
 
 	float getAvgRtt()
 	{
-		//JMutexAutoLock lock(m_con_mutex); //bulk comment-out
-		con::Peer *peer = m_con.GetPeerNoEx(PEER_ID_SERVER);
-		if(peer == NULL)
-			return 0.0;
-		return peer->avg_rtt;
+		try{
+			return m_con.GetPeerAvgRTT(PEER_ID_SERVER);
+		} catch(con::PeerNotFoundException){
+			return 1337;
+		}
 	}
 
 	bool getChatMessage(std::wstring &message)
@@ -302,6 +300,8 @@ public:
 	{
 		return m_access_denied_reason;
 	}
+
+	float getRTT(void);
 
 private:
 	

@@ -45,7 +45,7 @@ ClientActiveObject* ClientActiveObject::create(u8 type)
 	{
 		// If factory is not found, just return.
 		dstream<<"WARNING: ClientActiveObject: No factory for type="
-				<<type<<std::endl;
+				<<(int)type<<std::endl;
 		return NULL;
 	}
 

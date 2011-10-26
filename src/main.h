@@ -21,16 +21,16 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #define MAIN_HEADER
 
 // Settings
-#include "utility.h"
-extern Settings g_settings;
+class Settings;
+extern Settings *g_settings;
 
 // This makes and maps textures
 class ITextureSource;
 extern ITextureSource *g_texturesource;
 
 // Global profiler
-#include "profiler.h"
-extern Profiler g_profiler;
+class Profiler;
+extern Profiler *g_profiler;
 
 // Debug streams
 
@@ -49,106 +49,6 @@ extern std::ostream *derr_server_ptr;
 #define derr_client (*derr_client_ptr)
 #define dout_server (*dout_server_ptr)
 #define derr_server (*derr_server_ptr)
-
-/*
-	All kinds of stuff that needs to be exposed from main.cpp
-*/
-
-#include "modalMenu.h"
-#include "guiPauseMenu.h" //For IGameCallback
-
-extern gui::IGUIEnvironment* guienv;
-extern gui::IGUIStaticText *guiroot;
-
-// Handler for the modal menus
-
-class MainMenuManager : public IMenuManager
-{
-public:
-	virtual void createdMenu(GUIModalMenu *menu)
-	{
-		for(core::list<GUIModalMenu*>::Iterator
-				i = m_stack.begin();
-				i != m_stack.end(); i++)
-		{
-			assert(*i != menu);
-		}
-
-		if(m_stack.size() != 0)
-			(*m_stack.getLast())->setVisible(false);
-		m_stack.push_back(menu);
-	}
-
-	virtual void deletingMenu(GUIModalMenu *menu)
-	{
-		// Remove all entries if there are duplicates
-		bool removed_entry;
-		do{
-			removed_entry = false;
-			for(core::list<GUIModalMenu*>::Iterator
-					i = m_stack.begin();
-					i != m_stack.end(); i++)
-			{
-				if(*i == menu)
-				{
-					m_stack.erase(i);
-					removed_entry = true;
-					break;
-				}
-			}
-		}while(removed_entry);
-
-		/*core::list<GUIModalMenu*>::Iterator i = m_stack.getLast();
-		assert(*i == menu);
-		m_stack.erase(i);*/
-		
-		if(m_stack.size() != 0)
-			(*m_stack.getLast())->setVisible(true);
-	}
-
-	u32 menuCount()
-	{
-		return m_stack.size();
-	}
-
-	core::list<GUIModalMenu*> m_stack;
-};
-
-extern MainMenuManager g_menumgr;
-
-extern bool noMenuActive();
-
-class MainGameCallback : public IGameCallback
-{
-public:
-	MainGameCallback(IrrlichtDevice *a_device):
-		disconnect_requested(false),
-		changepassword_requested(false),
-		device(a_device)
-	{
-	}
-
-	virtual void exitToOS()
-	{
-		device->closeDevice();
-	}
-
-	virtual void disconnect()
-	{
-		disconnect_requested = true;
-	}
-
-	virtual void changePassword()
-	{
-		changepassword_requested = true;
-	}
-
-	bool disconnect_requested;
-	bool changepassword_requested;
-	IrrlichtDevice *device;
-};
-
-extern MainGameCallback *g_gamecallback;
 
 #endif
 

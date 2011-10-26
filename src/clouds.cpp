@@ -21,6 +21,9 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "noise.h"
 #include "constants.h"
 #include "debug.h"
+#include "main.h" // For g_profiler and g_settings
+#include "profiler.h"
+#include "settings.h"
 
 Clouds::Clouds(
 		scene::ISceneNode* parent,
@@ -75,6 +78,12 @@ void Clouds::render()
 		return;*/
 	if(SceneManager->getSceneNodeRenderPass() != scene::ESNRP_SOLID)
 		return;
+
+	ScopeProfiler sp(g_profiler, "Rendering of clouds, avg", SPT_AVG);
+
+	int num_faces_to_draw = 6;
+	if(g_settings->getBool("enable_2d_clouds"))
+		num_faces_to_draw = 1;
 
 	driver->setTransform(video::ETS_WORLD, AbsoluteTransformation);
 	driver->setMaterial(m_material);
@@ -144,7 +153,7 @@ void Clouds::render()
 		f32 ry = 8*BS;
 		f32 rz = cloud_size;
 
-		for(int i=0;i<6;i++)
+		for(int i=0; i<num_faces_to_draw; i++)
 		{
 			switch(i)
 			{

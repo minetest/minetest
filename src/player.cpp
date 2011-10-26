@@ -22,12 +22,16 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "connection.h"
 #include "constants.h"
 #include "utility.h"
-
+#ifndef SERVER
+#include <ITextSceneNode.h>
+#endif
+#include "settings.h"
 
 Player::Player():
 	touching_ground(false),
 	in_water(false),
 	in_water_stable(false),
+	is_climbing(false),
 	swimming_up(false),
 	inventory_backup(NULL),
 	craftresult_is_preview(true),
@@ -330,21 +334,10 @@ void LocalPlayer::move(f32 dtime, Map &map, f32 pos_max_d,
 	/*
 		Calculate new position
 	*/
-	if(is_frozen) {
-		// Still move very slowly so as not to feel all completely stuck
-		position += m_speed * dtime * 0.001;
-	}
-	else {
-		position += m_speed * dtime;
-	}
+	position += m_speed * dtime;
 	
-	/*
-		If the player enters an unloaded chunk this is set to true.
-	*/
-	is_frozen = false;
-
 	// Skip collision detection if a special movement mode is used
-	bool free_move = g_settings.getBool("free_move");
+	bool free_move = g_settings->getBool("free_move");
 	if(free_move)
 	{
 		setPosition(position);
@@ -500,6 +493,8 @@ void LocalPlayer::move(f32 dtime, Map &map, f32 pos_max_d,
 			<<pos_i.X<<","<<pos_i.Y<<","<<pos_i.Z
 			<<"):"<<std::endl;*/
 	
+	bool standing_on_unloaded = false;
+	
 	/*
 		Go through every node around the player
 	*/
@@ -507,6 +502,7 @@ void LocalPlayer::move(f32 dtime, Map &map, f32 pos_max_d,
 	for(s16 z = oldpos_i.Z - 1; z <= oldpos_i.Z + 1; z++)
 	for(s16 x = oldpos_i.X - 1; x <= oldpos_i.X + 1; x++)
 	{
+		bool is_unloaded = false;
 		try{
 			// Player collides into walkable nodes
 			if(content_walkable(map.getNode(v3s16(x,y,z)).getContent()) == false)
@@ -514,11 +510,9 @@ void LocalPlayer::move(f32 dtime, Map &map, f32 pos_max_d,
 		}
 		catch(InvalidPositionException &e)
 		{
-			if(!is_frozen) {
-				// freeze when entering unloaded areas
-				is_frozen = true;
-			}
-			continue;
+			is_unloaded = true;
+			// Doing nothing here will block the player from
+			// walking over map borders
 		}
 
 		core::aabbox3d<f32> nodebox = getNodeBox(v3s16(x,y,z), BS);
@@ -541,6 +535,8 @@ void LocalPlayer::move(f32 dtime, Map &map, f32 pos_max_d,
 				&& nodebox.MinEdge.Z+d < playerbox.MaxEdge.Z
 		){
 			touching_ground = true;
+			if(is_unloaded)
+				standing_on_unloaded = true;
 		}
 		
 		// If player doesn't intersect with node, ignore node.
@@ -722,7 +718,7 @@ void LocalPlayer::move(f32 dtime, Map &map, f32 pos_max_d,
 	if(collision_info)
 	{
 		// Report fall collision
-		if(old_speed.Y < m_speed.Y - 0.1)
+		if(old_speed.Y < m_speed.Y - 0.1 && !standing_on_unloaded)
 		{
 			CollisionInfo info;
 			info.t = COLLISION_FALL;
@@ -754,9 +750,9 @@ void LocalPlayer::applyControl(float dtime)
 	
 	v3f speed = v3f(0,0,0);
 
-	bool free_move = g_settings.getBool("free_move");
-	bool fast_move = g_settings.getBool("fast_move");
-	bool continuous_forward = g_settings.getBool("continuous_forward");
+	bool free_move = g_settings->getBool("free_move");
+	bool fast_move = g_settings->getBool("fast_move");
+	bool continuous_forward = g_settings->getBool("continuous_forward");
 
 	if(free_move || is_climbing)
 	{

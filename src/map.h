@@ -157,6 +157,10 @@ public:
 	// Returns NULL if not found
 	MapBlock * getBlockNoCreateNoEx(v3s16 p);
 	
+	/* Server overrides */
+	virtual MapBlock * emergeBlock(v3s16 p, bool allow_generate=true)
+	{ return getBlockNoCreateNoEx(p); }
+
 	// Returns InvalidPositionException if not found
 	bool isNodeUnderground(v3s16 p);
 	
@@ -379,6 +383,7 @@ public:
 	void verifyDatabase();
 	// Get an integer suitable for a block
 	static sqlite3_int64 getBlockAsInteger(const v3s16 pos);
+	static v3s16 getIntegerAsBlock(sqlite3_int64 i);
 
 	// Returns true if the database file does not exist
 	bool loadFromFolders();
@@ -389,6 +394,8 @@ public:
 
 	void save(bool only_changed);
 	//void loadAll();
+	
+	void listAllLoadableBlocks(core::list<v3s16> &dst);
 	
 	// Saves map seed and possibly other stuff
 	void saveMapMeta();
@@ -454,6 +461,7 @@ private:
 	sqlite3 *m_database;
 	sqlite3_stmt *m_database_read;
 	sqlite3_stmt *m_database_write;
+	sqlite3_stmt *m_database_list;
 };
 
 /*
