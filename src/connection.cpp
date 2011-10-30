@@ -670,7 +670,7 @@ void Connection::receive()
 	// TODO: We can not know how many layers of header there are.
 	// For now, just assume there are no other than the base headers.
 	u32 packet_maxsize = datasize + BASE_HEADER_SIZE;
-	Buffer<u8> packetdata(packet_maxsize);
+	SharedBuffer<u8> packetdata(packet_maxsize);
 
 	bool single_wait_done = false;
 	
