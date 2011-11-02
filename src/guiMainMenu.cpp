@@ -80,6 +80,7 @@ void GUIMainMenu::regenerateGui(v2u32 screensize)
 	bool enable_damage;
 	bool fancy_trees;
 	bool smooth_lighting;
+	bool clouds_3d;
 	
 	// Client options
 	{
@@ -116,6 +117,13 @@ void GUIMainMenu::regenerateGui(v2u32 screensize)
 			smooth_lighting = ((gui::IGUICheckBox*)e)->isChecked();
 		else
 			smooth_lighting = m_data->smooth_lighting;
+	}
+	{
+		gui::IGUIElement *e = getElementFromId(GUI_ID_3D_CLOUDS_CB);
+		if(e != NULL && e->getType() == gui::EGUIET_CHECK_BOX)
+			clouds_3d = ((gui::IGUICheckBox*)e)->isChecked();
+		else
+			clouds_3d = m_data->clouds_3d;
 	}
 	
 	// Server options
@@ -242,9 +250,15 @@ void GUIMainMenu::regenerateGui(v2u32 screensize)
 	}
 	{
 		core::rect<s32> rect(0, 0, 250, 30);
-		rect += topleft_client + v2s32(35, 150+30);
+		rect += topleft_client + v2s32(35, 150+20);
 		Environment->addCheckBox(smooth_lighting, rect, this, GUI_ID_SMOOTH_LIGHTING_CB,
 				wgettext("Smooth Lighting"));
+	}
+	{
+		core::rect<s32> rect(0, 0, 250, 30);
+		rect += topleft_client + v2s32(35, 150+40);
+		Environment->addCheckBox(clouds_3d, rect, this, GUI_ID_3D_CLOUDS_CB,
+				wgettext("3D Clouds"));
 	}
 	// Start game button
 	{
@@ -361,6 +375,11 @@ void GUIMainMenu::acceptInput()
 		gui::IGUIElement *e = getElementFromId(GUI_ID_DAMAGE_CB);
 		if(e != NULL && e->getType() == gui::EGUIET_CHECK_BOX)
 			m_data->enable_damage = ((gui::IGUICheckBox*)e)->isChecked();
+	}
+	{
+		gui::IGUIElement *e = getElementFromId(GUI_ID_3D_CLOUDS_CB);
+		if(e != NULL && e->getType() == gui::EGUIET_CHECK_BOX)
+			m_data->clouds_3d = ((gui::IGUICheckBox*)e)->isChecked();
 	}
 	{
 		gui::IGUIElement *e = getElementFromId(GUI_ID_SMOOTH_LIGHTING_CB);
