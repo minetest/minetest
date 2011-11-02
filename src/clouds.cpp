@@ -81,9 +81,9 @@ void Clouds::render()
 
 	ScopeProfiler sp(g_profiler, "Rendering of clouds, avg", SPT_AVG);
 
-	int num_faces_to_draw = 6;
-	if(g_settings->getBool("enable_2d_clouds"))
-		num_faces_to_draw = 1;
+	int num_faces_to_draw = 1;
+	if(g_settings->getBool("enable_3d_clouds"))
+		num_faces_to_draw = 6;
 
 	driver->setTransform(video::ETS_WORLD, AbsoluteTransformation);
 	driver->setMaterial(m_material);

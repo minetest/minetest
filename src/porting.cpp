@@ -129,8 +129,8 @@ void initializePaths()
 	// Use "./bin/../data"
 	path_data = std::string(buf) + DIR_DELIM ".." DIR_DELIM "data";
 		
-	// Use "./bin/../"
-	path_userdata = std::string(buf) + DIR_DELIM ".." DIR_DELIM;
+	// Use "./bin/.."
+	path_userdata = std::string(buf) + DIR_DELIM "..";
 
 	/*
 		Linux
@@ -149,7 +149,7 @@ void initializePaths()
 	path_data = std::string(buf) + "/../data";
 		
 	// Use "./bin/../"
-	path_userdata = std::string(buf) + "/../";
+	path_userdata = std::string(buf) + "/..";
 	
 	/*
 		OS X
@@ -160,7 +160,7 @@ void initializePaths()
 	dstream<<"WARNING: Relative path not properly supported on OS X and FreeBSD"
 			<<std::endl;
 	path_data = std::string("../data");
-	path_userdata = std::string("../");
+	path_userdata = std::string("..");
 
 	#endif
 
