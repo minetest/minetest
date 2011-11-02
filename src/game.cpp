@@ -888,11 +888,11 @@ void the_game(
 	//guitext_chat->setBackgroundColor(video::SColor(96,0,0,0));
 	core::list<ChatLine> chat_lines;
 	
-	// Profiler text
+	// Profiler text (size is updated when text is updated)
 	gui::IGUIStaticText *guitext_profiler = guienv->addStaticText(
 			L"<Profiler>",
-			core::rect<s32>(6, 4+(text_height+5)*3, 400,
-			(text_height+5)*3 + text_height*35),
+			core::rect<s32>(6, 4+(text_height+5)*2, 400,
+			(text_height+5)*2 + text_height*35),
 			false, false);
 	guitext_profiler->setBackgroundColor(video::SColor(80,0,0,0));
 	guitext_profiler->setVisible(false);
@@ -951,8 +951,8 @@ void the_game(
 	bool respawn_menu_active = false;
 
 	bool show_profiler = false;
-
 	bool force_fog_off = false;
+	bool disable_camera_update = false;
 
 	/*
 		Main loop
@@ -1188,9 +1188,18 @@ void the_game(
 
 			std::ostringstream os(std::ios_base::binary);
 			g_profiler->print(os);
-			guitext_profiler->setText(narrow_to_wide(os.str()).c_str());
+			std::wstring text = narrow_to_wide(os.str());
+			guitext_profiler->setText(text.c_str());
 
 			g_profiler->clear();
+			
+			s32 w = font->getDimension(text.c_str()).Width;
+			if(w < 400)
+				w = 400;
+			core::rect<s32> rect(6, 4+(text_height+5)*2, 12+w,
+					8+(text_height+5)*2 +
+					font->getDimension(text.c_str()).Height);
+			guitext_profiler->setRelativePosition(rect);
 		}
 
 		/*
@@ -1324,10 +1333,26 @@ void the_game(
 		{
 			show_profiler = !show_profiler;
 			guitext_profiler->setVisible(show_profiler);
+			if(show_profiler)
+				chat_lines.push_back(ChatLine(L"Profiler disabled"));
+			else
+				chat_lines.push_back(ChatLine(L"Profiler enabled"));
 		}
 		else if(input->wasKeyDown(getKeySetting("keymap_toggle_force_fog_off")))
 		{
 			force_fog_off = !force_fog_off;
+			if(force_fog_off)
+				chat_lines.push_back(ChatLine(L"Fog disabled"));
+			else
+				chat_lines.push_back(ChatLine(L"Fog enabled"));
+		}
+		else if(input->wasKeyDown(getKeySetting("keymap_toggle_update_camera")))
+		{
+			disable_camera_update = !disable_camera_update;
+			if(disable_camera_update)
+				chat_lines.push_back(ChatLine(L"Camera update disabled"));
+			else
+				chat_lines.push_back(ChatLine(L"Camera update enabled"));
 		}
 
 		// Item selection with mouse wheel
@@ -1573,11 +1598,10 @@ void the_game(
 		v3f camera_direction = camera.getDirection();
 		f32 camera_fov = camera.getFovMax();
 		
-		if(FIELD_OF_VIEW_TEST)
-			client.updateCamera(v3f(0,0,0), v3f(0,0,1), camera_fov);
-		else
+		if(!disable_camera_update){
 			client.updateCamera(camera_position,
 				camera_direction, camera_fov);
+		}
 
 		//timer2.stop();
 		//TimeTaker //timer3("//timer3");

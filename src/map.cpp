@@ -3620,6 +3620,12 @@ void ClientMap::renderMap(video::IVideoDriver* driver, s32 pass)
 
 	bool is_transparent_pass = pass == scene::ESNRP_TRANSPARENT;
 	
+	std::string prefix;
+	if(pass == scene::ESNRP_SOLID)
+		prefix = "CM: solid: ";
+	else
+		prefix = "CM: transparent: ";
+
 	/*
 		This is called two times per frame, reset on the non-transparent one
 	*/
@@ -3689,27 +3695,19 @@ void ClientMap::renderMap(video::IVideoDriver* driver, s32 pass)
 	// Blocks from which stuff was actually drawn
 	u32 blocks_without_stuff = 0;
 
-	int timecheck_counter = 0;
-	core::map<v2s16, MapSector*>::Iterator si;
-	si = m_sectors.getIterator();
-	for(; si.atEnd() == false; si++)
-	{
-		{
-			timecheck_counter++;
-			if(timecheck_counter > 50)
-			{
-				timecheck_counter = 0;
-				int time2 = time(0);
-				if(time2 > time1 + 4)
-				{
-					infostream<<"ClientMap::renderMap(): "
-						"Rendering takes ages, returning."
-						<<std::endl;
-					return;
-				}
-			}
-		}
+	/*
+		Collect a set of blocks for drawing
+	*/
+	
+	core::map<v3s16, MapBlock*> drawset;
 
+	{
+	ScopeProfiler sp(g_profiler, prefix+"collecting blocks for drawing", SPT_AVG);
+
+	for(core::map<v2s16, MapSector*>::Iterator
+			si = m_sectors.getIterator();
+			si.atEnd() == false; si++)
+	{
 		MapSector *sector = si.getNode()->getValue();
 		v2s16 sp = sector->getPos();
 		
@@ -3726,11 +3724,11 @@ void ClientMap::renderMap(video::IVideoDriver* driver, s32 pass)
 		sector->getBlocks(sectorblocks);
 		
 		/*
-			Draw blocks
+			Loop through blocks in sector
 		*/
-		
-		u32 sector_blocks_drawn = 0;
 
+		u32 sector_blocks_drawn = 0;
+		
 		core::list< MapBlock * >::Iterator i;
 		for(i=sectorblocks.begin(); i!=sectorblocks.end(); i++)
 		{
@@ -3744,7 +3742,7 @@ void ClientMap::renderMap(video::IVideoDriver* driver, s32 pass)
 			float range = 100000 * BS;
 			if(m_control.range_all == false)
 				range = m_control.wanted_range * BS;
-			
+
 			float d = 0.0;
 			if(isBlockInSight(block->getPos(), camera_position,
 					camera_direction, camera_fov,
@@ -3753,16 +3751,16 @@ void ClientMap::renderMap(video::IVideoDriver* driver, s32 pass)
 				continue;
 			}
 
-			// Okay, this block will be drawn. Reset usage timer.
-			block->resetUsageTimer();
-			
 			// This is ugly (spherical distance limit?)
 			/*if(m_control.range_all == false &&
 					d - 0.5*BS*MAP_BLOCKSIZE > range)
 				continue;*/
 			
-			blocks_in_range++;
+			// This block is in range. Reset usage timer.
+			block->resetUsageTimer();
 
+			blocks_in_range++;
+			
 #if 1
 			/*
 				Update expired mesh (used for day/night change)
@@ -3812,11 +3810,8 @@ void ClientMap::renderMap(video::IVideoDriver* driver, s32 pass)
 
 				mesh_expired = false;
 			}
-			
 #endif
-			/*
-				Draw the faces of the block
-			*/
+
 			{
 				JMutexAutoLock lock(block->mesh_mutex);
 
@@ -3832,66 +3827,103 @@ void ClientMap::renderMap(video::IVideoDriver* driver, s32 pass)
 						&& m_control.range_all == false
 						&& d > m_control.wanted_min_range * BS)
 					continue;
-
-				blocks_drawn++;
-				sector_blocks_drawn++;
-
-				u32 c = mesh->getMeshBufferCount();
-				bool stuff_actually_drawn = false;
-				for(u32 i=0; i<c; i++)
-				{
-					scene::IMeshBuffer *buf = mesh->getMeshBuffer(i);
-					const video::SMaterial& material = buf->getMaterial();
-					video::IMaterialRenderer* rnd =
-							driver->getMaterialRenderer(material.MaterialType);
-					bool transparent = (rnd && rnd->isTransparent());
-					// Render transparent on transparent pass and likewise.
-					if(transparent == is_transparent_pass)
-					{
-						if(buf->getVertexCount() == 0)
-							errorstream<<"Block ["<<analyze_block(block)
-									<<"] contains an empty meshbuf"<<std::endl;
-						/*
-							This *shouldn't* hurt too much because Irrlicht
-							doesn't change opengl textures if the old
-							material has the same texture.
-						*/
-						driver->setMaterial(buf->getMaterial());
-						driver->drawMeshBuffer(buf);
-						vertex_count += buf->getVertexCount();
-						meshbuffer_count++;
-						stuff_actually_drawn = true;
-					}
-				}
-				if(stuff_actually_drawn)
-					blocks_had_pass_meshbuf++;
-				else
-					blocks_without_stuff++;
 			}
+
+			drawset[block->getPos()] = block;
+			
+			sector_blocks_drawn++;
+			blocks_drawn++;
+
 		} // foreach sectorblocks
 
 		if(sector_blocks_drawn != 0)
-		{
 			m_last_drawn_sectors[sp] = true;
+	}
+	} // ScopeProfiler
+	
+	/*
+		Draw the selected MapBlocks
+	*/
+
+	{
+	ScopeProfiler sp(g_profiler, prefix+"drawing blocks", SPT_AVG);
+
+	int timecheck_counter = 0;
+	for(core::map<v3s16, MapBlock*>::Iterator
+			i = drawset.getIterator();
+			i.atEnd() == false; i++)
+	{
+		{
+			timecheck_counter++;
+			if(timecheck_counter > 50)
+			{
+				timecheck_counter = 0;
+				int time2 = time(0);
+				if(time2 > time1 + 4)
+				{
+					infostream<<"ClientMap::renderMap(): "
+						"Rendering takes ages, returning."
+						<<std::endl;
+					return;
+				}
+			}
+		}
+		
+		MapBlock *block = i.getNode()->getValue();
+
+		/*
+			Draw the faces of the block
+		*/
+		{
+			JMutexAutoLock lock(block->mesh_mutex);
+
+			scene::SMesh *mesh = block->mesh;
+			assert(mesh);
+			
+			u32 c = mesh->getMeshBufferCount();
+			bool stuff_actually_drawn = false;
+			for(u32 i=0; i<c; i++)
+			{
+				scene::IMeshBuffer *buf = mesh->getMeshBuffer(i);
+				const video::SMaterial& material = buf->getMaterial();
+				video::IMaterialRenderer* rnd =
+						driver->getMaterialRenderer(material.MaterialType);
+				bool transparent = (rnd && rnd->isTransparent());
+				// Render transparent on transparent pass and likewise.
+				if(transparent == is_transparent_pass)
+				{
+					if(buf->getVertexCount() == 0)
+						errorstream<<"Block ["<<analyze_block(block)
+								<<"] contains an empty meshbuf"<<std::endl;
+					/*
+						This *shouldn't* hurt too much because Irrlicht
+						doesn't change opengl textures if the old
+						material has the same texture.
+					*/
+					driver->setMaterial(buf->getMaterial());
+					driver->drawMeshBuffer(buf);
+					vertex_count += buf->getVertexCount();
+					meshbuffer_count++;
+					stuff_actually_drawn = true;
+				}
+			}
+			if(stuff_actually_drawn)
+				blocks_had_pass_meshbuf++;
+			else
+				blocks_without_stuff++;
 		}
 	}
+	} // ScopeProfiler
 	
-	std::string prefix = "CM: ";
-
 	// Log only on solid pass because values are the same
 	if(pass == scene::ESNRP_SOLID){
-		g_profiler->avg(prefix+"blocks in range", blocks_in_range);
+		g_profiler->avg("CM: blocks in range", blocks_in_range);
 		if(blocks_in_range != 0)
-			g_profiler->avg(prefix+"blocks in range without mesh (frac)",
+			g_profiler->avg("CM: blocks in range without mesh (frac)",
 					(float)blocks_in_range_without_mesh/blocks_in_range);
-		g_profiler->avg(prefix+"blocks drawn", blocks_drawn);
+		g_profiler->avg("CM: blocks drawn", blocks_drawn);
 	}
 	
-	if(pass == scene::ESNRP_SOLID)
-		prefix = "CM: solid: ";
-	else
-		prefix = "CM: transparent: ";
-
 	g_profiler->avg(prefix+"vertices drawn", vertex_count);
 	if(blocks_had_pass_meshbuf != 0)
 		g_profiler->avg(prefix+"meshbuffers per block",
