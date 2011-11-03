@@ -3613,6 +3613,34 @@ void ClientMap::OnRegisterSceneNode()
 	ISceneNode::OnRegisterSceneNode();
 }
 
+static bool isOccluded(Map *map, v3s16 p0, v3s16 p1, float step,
+		float start_off, float end_off, u32 needed_count)
+{
+	float d0 = (float)BS * p0.getDistanceFrom(p1);
+	v3s16 u0 = p1 - p0;
+	v3f uf = v3f(u0.X, u0.Y, u0.Z) * BS;
+	uf.normalize();
+	v3f p0f = v3f(p0.X, p0.Y, p0.Z) * BS;
+	u32 count = 0;
+	for(float s=start_off; s<d0+end_off; s+=step){
+		v3f pf = p0f + uf * s;
+		v3s16 p = floatToInt(pf, BS);
+		MapNode n = map->getNodeNoEx(p);
+		bool is_transparent = false;
+		ContentFeatures &f = content_features(n);
+		if(f.solidness == 0)
+			is_transparent = (f.visual_solidness != 2);
+		else
+			is_transparent = (f.solidness != 2);
+		if(!is_transparent){
+			count++;
+			if(count >= needed_count)
+				return true;
+		}
+	}
+	return false;
+}
+
 void ClientMap::renderMap(video::IVideoDriver* driver, s32 pass)
 {
 	//m_dout<<DTIME<<"Rendering map..."<<std::endl;
@@ -3654,11 +3682,8 @@ void ClientMap::renderMap(video::IVideoDriver* driver, s32 pass)
 		Get all blocks and draw all visible ones
 	*/
 
-	v3s16 cam_pos_nodes(
-			camera_position.X / BS,
-			camera_position.Y / BS,
-			camera_position.Z / BS);
-
+	v3s16 cam_pos_nodes = floatToInt(camera_position, BS);
+	
 	v3s16 box_nodes_d = m_control.wanted_range * v3s16(1,1,1);
 
 	v3s16 p_nodes_min = cam_pos_nodes - box_nodes_d;
@@ -3683,6 +3708,8 @@ void ClientMap::renderMap(video::IVideoDriver* driver, s32 pass)
 	
 	// Number of blocks in rendering range
 	u32 blocks_in_range = 0;
+	// Number of blocks occlusion culled
+	u32 blocks_occlusion_culled = 0;
 	// Number of blocks in rendering range but don't have a mesh
 	u32 blocks_in_range_without_mesh = 0;
 	// Blocks that had mesh that would have been drawn according to
@@ -3755,12 +3782,12 @@ void ClientMap::renderMap(video::IVideoDriver* driver, s32 pass)
 			/*if(m_control.range_all == false &&
 					d - 0.5*BS*MAP_BLOCKSIZE > range)
 				continue;*/
+
+			blocks_in_range++;
 			
 			// This block is in range. Reset usage timer.
 			block->resetUsageTimer();
 
-			blocks_in_range++;
-			
 #if 1
 			/*
 				Update expired mesh (used for day/night change)
@@ -3812,6 +3839,46 @@ void ClientMap::renderMap(video::IVideoDriver* driver, s32 pass)
 			}
 #endif
 
+			/*
+				Occlusion culling
+			*/
+
+			v3s16 cpn = v3s16(block->getPos() * MAP_BLOCKSIZE)
+					+ v3s16(MAP_BLOCKSIZE)/2;
+			float step = BS*2;
+			float startoff = BS*3;
+			float endoff = -BS*MAP_BLOCKSIZE*1.42*1.42;
+			v3s16 spn = cam_pos_nodes + v3s16(0,0,0);
+			s16 bs2 = MAP_BLOCKSIZE/2 + 1;
+			u32 needed_count = 1;
+			if(
+				isOccluded(this, spn, cpn + v3s16(0,0,0),
+						step, startoff, endoff, needed_count) &&
+				isOccluded(this, spn, cpn + v3s16(bs2,bs2,bs2),
+						step, startoff, endoff, needed_count) &&
+				isOccluded(this, spn, cpn + v3s16(bs2,bs2,-bs2),
+						step, startoff, endoff, needed_count) &&
+				isOccluded(this, spn, cpn + v3s16(bs2,-bs2,bs2),
+						step, startoff, endoff, needed_count) &&
+				isOccluded(this, spn, cpn + v3s16(bs2,-bs2,-bs2),
+						step, startoff, endoff, needed_count) &&
+				isOccluded(this, spn, cpn + v3s16(-bs2,bs2,bs2),
+						step, startoff, endoff, needed_count) &&
+				isOccluded(this, spn, cpn + v3s16(-bs2,bs2,-bs2),
+						step, startoff, endoff, needed_count) &&
+				isOccluded(this, spn, cpn + v3s16(-bs2,-bs2,bs2),
+						step, startoff, endoff, needed_count) &&
+				isOccluded(this, spn, cpn + v3s16(-bs2,-bs2,-bs2),
+						step, startoff, endoff, needed_count)
+			)
+			{
+				blocks_occlusion_culled++;
+				continue;
+			}
+			
+			/*
+				Ignore if mesh doesn't exist
+			*/
 			{
 				JMutexAutoLock lock(block->mesh_mutex);
 
@@ -3821,14 +3888,16 @@ void ClientMap::renderMap(video::IVideoDriver* driver, s32 pass)
 					blocks_in_range_without_mesh++;
 					continue;
 				}
-				
-				blocks_would_have_drawn++;
-				if(blocks_drawn >= m_control.wanted_max_blocks
-						&& m_control.range_all == false
-						&& d > m_control.wanted_min_range * BS)
-					continue;
 			}
-
+			
+			// Limit block count in case of a sudden increase
+			blocks_would_have_drawn++;
+			if(blocks_drawn >= m_control.wanted_max_blocks
+					&& m_control.range_all == false
+					&& d > m_control.wanted_min_range * BS)
+				continue;
+			
+			// Add to set
 			drawset[block->getPos()] = block;
 			
 			sector_blocks_drawn++;
@@ -3918,6 +3987,7 @@ void ClientMap::renderMap(video::IVideoDriver* driver, s32 pass)
 	// Log only on solid pass because values are the same
 	if(pass == scene::ESNRP_SOLID){
 		g_profiler->avg("CM: blocks in range", blocks_in_range);
+		g_profiler->avg("CM: blocks occlusion culled", blocks_occlusion_culled);
 		if(blocks_in_range != 0)
 			g_profiler->avg("CM: blocks in range without mesh (frac)",
 					(float)blocks_in_range_without_mesh/blocks_in_range);
