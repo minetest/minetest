@@ -1407,6 +1407,21 @@ int main(int argc, char *argv[])
 	if (device == 0)
 		return 1; // could not create selected driver.
 	
+	/*
+		Continue initialization
+	*/
+
+	video::IVideoDriver* driver = device->getVideoDriver();
+
+	// Disable mipmaps (because some of them look ugly)
+	driver->setTextureCreationFlag(video::ETCF_CREATE_MIP_MAPS, false);
+
+	/*
+		This changes the minimum allowed number of vertices in a VBO.
+		Default is 500.
+	*/
+	//driver->setMinHardwareBufferVertexCount(50);
+
 	// Set the window caption
 	device->setWindowCaption(L"Minetest [Main Menu]");
 	
@@ -1439,18 +1454,6 @@ int main(int argc, char *argv[])
 	else
 		input = new RealInputHandler(device, &receiver);
 	
-	/*
-		Continue initialization
-	*/
-
-	//video::IVideoDriver* driver = device->getVideoDriver();
-
-	/*
-		This changes the minimum allowed number of vertices in a VBO.
-		Default is 500.
-	*/
-	//driver->setMinHardwareBufferVertexCount(50);
-
 	scene::ISceneManager* smgr = device->getSceneManager();
 
 	guienv = device->getGUIEnvironment();

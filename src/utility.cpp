@@ -236,21 +236,21 @@ bool isBlockInSight(v3s16 blockpos_b, v3f camera_pos, v3f camera_dir,
 	
 	// If block is (nearly) touching the camera, don't
 	// bother validating further (that is, render it anyway)
-	if(d > block_max_radius)
-	{
-		// Cosine of the angle between the camera direction
-		// and the block direction (camera_dir is an unit vector)
-		f32 cosangle = dforward / d;
-		
-		// Compensate for the size of the block
-		// (as the block has to be shown even if it's a bit off FOV)
-		// This is an estimate.
-		cosangle += block_max_radius / dforward;
+	if(d < block_max_radius)
+		return true;
+	
+	// Cosine of the angle between the camera direction
+	// and the block direction (camera_dir is an unit vector)
+	f32 cosangle = dforward / d;
+	
+	// Compensate for the size of the block
+	// (as the block has to be shown even if it's a bit off FOV)
+	// This is an estimate, plus an arbitary factor
+	cosangle += block_max_radius / d * 0.5;
 
-		// If block is not in the field of view, skip it
-		if(cosangle < cos(camera_fov / 2))
-			return false;
-	}
+	// If block is not in the field of view, skip it
+	if(cosangle < cos(camera_fov / 2))
+		return false;
 
 	return true;
 }
