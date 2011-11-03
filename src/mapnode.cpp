@@ -164,6 +164,9 @@ void init_mapnode()
 		f->dug_item = std::string("MaterialItem2 ")+itos(i)+" 1";
 	}
 
+	// Make CONTENT_IGNORE to not block the view when occlusion culling
+	content_features(CONTENT_IGNORE).solidness = 0;
+
 	/*
 		Initialize mapnode content
 	*/
