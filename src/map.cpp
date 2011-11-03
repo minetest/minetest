@@ -3844,8 +3844,8 @@ void ClientMap::renderMap(video::IVideoDriver* driver, s32 pass)
 				Occlusion culling
 			*/
 
-			v3s16 cpn = v3s16(block->getPos() * MAP_BLOCKSIZE)
-					+ v3s16(MAP_BLOCKSIZE)/2;
+			v3s16 cpn = block->getPos() * MAP_BLOCKSIZE;
+			cpn += v3s16(MAP_BLOCKSIZE/2, MAP_BLOCKSIZE/2, MAP_BLOCKSIZE/2);
 			float step = BS*1;
 			float stepfac = 1.1;
 			float startoff = BS*1;
