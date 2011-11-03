@@ -593,10 +593,10 @@ void mapblock_mesh_generate_special(MeshMakeData *data,
 						
 					// Do this to not cause glitches when two liquids are
 					// side-by-side
-					if(neighbor_is_same_liquid == false){
+					/*if(neighbor_is_same_liquid == false){
 						vertices[j].Pos.X *= 0.98;
 						vertices[j].Pos.Z *= 0.98;
-					}
+					}*/
 
 					vertices[j].Pos += intToFloat(p + blockpos_nodes, BS);
 				}
