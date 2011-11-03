@@ -316,6 +316,8 @@ public:
 			return "tool_mesepick.png";
 		else if(m_toolname == "WShovel")
 			return "tool_woodshovel.png";
+		else if(m_toolname == "WBucket")
+			return "bucket.png";
 		else if(m_toolname == "STShovel")
 			return "tool_stoneshovel.png";
 		else if(m_toolname == "SteelShovel")

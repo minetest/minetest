@@ -513,6 +513,27 @@ void TextureSource::buildMainAtlas()
 		main content features
 	*/
 
+	core::array<std::string> sourcelist;
+
+	sourcelist.push_back("stone.png");
+	sourcelist.push_back("mud.png");
+	sourcelist.push_back("sand.png");
+	sourcelist.push_back("grass.png");
+	sourcelist.push_back("grass_footsteps.png");
+	sourcelist.push_back("tree.png");
+	sourcelist.push_back("tree_top.png");
+	sourcelist.push_back("water.png");
+	sourcelist.push_back("fountain.png");
+	sourcelist.push_back("leaves.png");
+	sourcelist.push_back("glass.png");
+	sourcelist.push_back("mud.png^grass_side.png");
+	sourcelist.push_back("cobble.png");
+	sourcelist.push_back("mossycobble.png");
+	sourcelist.push_back("gravel.png");
+	sourcelist.push_back("jungletree.png");
+	
+	sourcelist.push_back("stone.png^mineral_coal.png");
+	sourcelist.push_back("stone.png^mineral_iron.png");
 	core::map<std::string, bool> sourcelist;
 
 	for(u16 j=0; j<MAX_CONTENT+1; j++)
