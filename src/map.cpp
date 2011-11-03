@@ -3613,7 +3613,7 @@ void ClientMap::OnRegisterSceneNode()
 	ISceneNode::OnRegisterSceneNode();
 }
 
-static bool isOccluded(Map *map, v3s16 p0, v3s16 p1, float step,
+static bool isOccluded(Map *map, v3s16 p0, v3s16 p1, float step, float stepfac,
 		float start_off, float end_off, u32 needed_count)
 {
 	float d0 = (float)BS * p0.getDistanceFrom(p1);
@@ -3637,6 +3637,7 @@ static bool isOccluded(Map *map, v3s16 p0, v3s16 p1, float step,
 			if(count >= needed_count)
 				return true;
 		}
+		step *= stepfac;
 	}
 	return false;
 }
@@ -3845,31 +3846,32 @@ void ClientMap::renderMap(video::IVideoDriver* driver, s32 pass)
 
 			v3s16 cpn = v3s16(block->getPos() * MAP_BLOCKSIZE)
 					+ v3s16(MAP_BLOCKSIZE)/2;
-			float step = BS*2;
-			float startoff = BS*3;
+			float step = BS*1;
+			float stepfac = 1.2;
+			float startoff = BS*1;
 			float endoff = -BS*MAP_BLOCKSIZE*1.42*1.42;
 			v3s16 spn = cam_pos_nodes + v3s16(0,0,0);
 			s16 bs2 = MAP_BLOCKSIZE/2 + 1;
 			u32 needed_count = 1;
 			if(
 				isOccluded(this, spn, cpn + v3s16(0,0,0),
-						step, startoff, endoff, needed_count) &&
+						step, stepfac, startoff, endoff, needed_count) &&
 				isOccluded(this, spn, cpn + v3s16(bs2,bs2,bs2),
-						step, startoff, endoff, needed_count) &&
+						step, stepfac, startoff, endoff, needed_count) &&
 				isOccluded(this, spn, cpn + v3s16(bs2,bs2,-bs2),
-						step, startoff, endoff, needed_count) &&
+						step, stepfac, startoff, endoff, needed_count) &&
 				isOccluded(this, spn, cpn + v3s16(bs2,-bs2,bs2),
-						step, startoff, endoff, needed_count) &&
+						step, stepfac, startoff, endoff, needed_count) &&
 				isOccluded(this, spn, cpn + v3s16(bs2,-bs2,-bs2),
-						step, startoff, endoff, needed_count) &&
+						step, stepfac, startoff, endoff, needed_count) &&
 				isOccluded(this, spn, cpn + v3s16(-bs2,bs2,bs2),
-						step, startoff, endoff, needed_count) &&
+						step, stepfac, startoff, endoff, needed_count) &&
 				isOccluded(this, spn, cpn + v3s16(-bs2,bs2,-bs2),
-						step, startoff, endoff, needed_count) &&
+						step, stepfac, startoff, endoff, needed_count) &&
 				isOccluded(this, spn, cpn + v3s16(-bs2,-bs2,bs2),
-						step, startoff, endoff, needed_count) &&
+						step, stepfac, startoff, endoff, needed_count) &&
 				isOccluded(this, spn, cpn + v3s16(-bs2,-bs2,-bs2),
-						step, startoff, endoff, needed_count)
+						step, stepfac, startoff, endoff, needed_count)
 			)
 			{
 				blocks_occlusion_culled++;
