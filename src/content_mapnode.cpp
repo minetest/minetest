@@ -107,6 +107,7 @@ void content_mapnode_init()
 	bool new_style_water = g_settings->getBool("new_style_water");
 	bool new_style_leaves = g_settings->getBool("new_style_leaves");
 	bool invisible_stone = g_settings->getBool("invisible_stone");
+	bool opaque_water = g_settings->getBool("opaque_water");
 
 	content_t i;
 	ContentFeatures *f = NULL;
@@ -398,7 +399,8 @@ void content_mapnode_init()
 	f->liquid_alternative_source = CONTENT_WATERSOURCE;
 	f->liquid_viscosity = WATER_VISC;
 #ifndef SERVER
-	f->vertex_alpha = WATER_ALPHA;
+	if(!opaque_water)
+		f->vertex_alpha = WATER_ALPHA;
 	f->post_effect_color = video::SColor(64, 100, 100, 200);
 	if(f->special_material == NULL && g_texturesource)
 	{
@@ -408,7 +410,8 @@ void content_mapnode_init()
 		f->special_material->setFlag(video::EMF_BACK_FACE_CULLING, false);
 		f->special_material->setFlag(video::EMF_BILINEAR_FILTER, false);
 		f->special_material->setFlag(video::EMF_FOG_ENABLE, true);
-		f->special_material->MaterialType = video::EMT_TRANSPARENT_VERTEX_ALPHA;
+		if(!opaque_water)
+			f->special_material->MaterialType = video::EMT_TRANSPARENT_VERTEX_ALPHA;
 		AtlasPointer *pa_water1 = new AtlasPointer(g_texturesource->getTexture(
 				g_texturesource->getTextureId("water.png")));
 		f->special_material->setTexture(0, pa_water1->atlas);
@@ -432,8 +435,10 @@ void content_mapnode_init()
 		if(g_texturesource)
 			t.texture = g_texturesource->getTexture("water.png");
 		
-		t.alpha = WATER_ALPHA;
-		t.material_type = MATERIAL_ALPHA_VERTEX;
+		if(!opaque_water){
+			t.alpha = WATER_ALPHA;
+			t.material_type = MATERIAL_ALPHA_VERTEX;
+		}
 		t.material_flags &= ~MATERIAL_FLAG_BACKFACE_CULLING;
 		f->setAllTiles(t);
 #endif
@@ -450,7 +455,8 @@ void content_mapnode_init()
 	f->liquid_alternative_source = CONTENT_WATERSOURCE;
 	f->liquid_viscosity = WATER_VISC;
 #ifndef SERVER
-	f->vertex_alpha = WATER_ALPHA;
+	if(!opaque_water)
+		f->vertex_alpha = WATER_ALPHA;
 	f->post_effect_color = video::SColor(64, 100, 100, 200);
 	if(f->special_material == NULL && g_texturesource)
 	{

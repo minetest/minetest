@@ -1547,6 +1547,7 @@ int main(int argc, char *argv[])
 				menudata.fancy_trees = g_settings->getBool("new_style_leaves");
 				menudata.smooth_lighting = g_settings->getBool("smooth_lighting");
 				menudata.clouds_3d = g_settings->getBool("enable_3d_clouds");
+				menudata.opaque_water = g_settings->getBool("opaque_water");
 				menudata.creative_mode = g_settings->getBool("creative_mode");
 				menudata.enable_damage = g_settings->getBool("enable_damage");
 
@@ -1620,6 +1621,7 @@ int main(int argc, char *argv[])
 				g_settings->set("new_style_leaves", itos(menudata.fancy_trees));
 				g_settings->set("smooth_lighting", itos(menudata.smooth_lighting));
 				g_settings->set("enable_3d_clouds", itos(menudata.clouds_3d));
+				g_settings->set("opaque_water", itos(menudata.opaque_water));
 				g_settings->set("creative_mode", itos(menudata.creative_mode));
 				g_settings->set("enable_damage", itos(menudata.enable_damage));
 				

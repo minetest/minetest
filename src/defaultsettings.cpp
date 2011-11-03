@@ -79,6 +79,7 @@ void set_default_settings(Settings *settings)
 	settings->setDefault("screenshot_path", ".");
 	settings->setDefault("view_bobbing_amount", "1.0");
 	settings->setDefault("enable_3d_clouds", "false");
+	settings->setDefault("opaque_water", "false");
 
 	// Server stuff
 	// "map-dir" doesn't exist by default.
