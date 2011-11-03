@@ -66,7 +66,7 @@ elseif(UNIX) # Linux, BSD etc
 	set(EXAMPLE_CONF_DIR "share/doc/${PROJECT_NAME}")
 endif()
 
-install(FILES "doc/README.txt" DESTINATION "${DOCDIR}")
+install(FILES "README.txt" DESTINATION "${DOCDIR}")
 install(FILES "doc/changelog.txt" DESTINATION "${DOCDIR}")
 install(FILES "minetest.conf.example" DESTINATION "${DOCDIR}")
 
