@@ -1134,6 +1134,62 @@ void ServerEnvironment::step(float dtime)
 						m_map->dispatchEvent(&event);
 					}
 				}
+                /*
+					Let Cactii grow
+				*/
+				if(n.getContent() == CONTENT_CACTUS)
+				{
+					if(myrand()%50 == 0)
+					{
+                        int grow_size = 0;
+                        v3s16 first_cactii_block;
+                        bool first_cactii_block_set = false;
+                        for(int i = p.Y - 2; i < p.Y + 2;i++) {
+                            if(m_map->getNodeNoEx(v3s16(p.X,i,p.Z)).getContent() == CONTENT_CACTUS) {
+                                grow_size++;
+                                if(first_cactii_block_set == false) {
+                                    first_cactii_block = v3s16(p.X,i,p.Z);
+                                    first_cactii_block_set = true;
+                                }
+                            }
+                        }
+                        if(grow_size < 3) {
+                            v3s16 p1 = first_cactii_block + v3s16(0,grow_size,0);
+                            MapNode n1 = m_map->getNodeNoEx(p1);
+                            n1.setContent(CONTENT_CACTUS);
+							m_map->addNodeWithEvent(p1, n1);
+                            actionstream<<"Cactus grows at "<<PP(p)<<std::endl;
+                        }
+					}
+				}
+                /*
+					Let Cactii grow
+				*/
+				if(n.getContent() == CONTENT_PAPYRUS)
+				{
+					if(myrand()%50 == 0)
+					{
+                        int grow_size = 0;
+                        v3s16 first_papyrus_block;
+                        bool first_papyrus_block_set = false;
+                        for(int i = p.Y - 2; i < p.Y + 2;i++) {
+                            if(m_map->getNodeNoEx(v3s16(p.X,i,p.Z)).getContent() == CONTENT_PAPYRUS) {
+                                grow_size++;
+                                if(first_papyrus_block_set == false) {
+                                    first_papyrus_block = v3s16(p.X,i,p.Z);
+                                    first_papyrus_block_set = true;
+                                }
+                            }
+                        }
+                        if(grow_size < 3) {
+                            v3s16 p1 = first_papyrus_block + v3s16(0,grow_size,0);
+                            MapNode n1 = m_map->getNodeNoEx(p1);
+                            n1.setContent(CONTENT_PAPYRUS);
+							m_map->addNodeWithEvent(p1, n1);
+                            actionstream<<"Papyrus grows at "<<PP(p)<<std::endl;
+                        }
+					}
+				}
 			}
 		}
 	}
