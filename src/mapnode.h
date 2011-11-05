@@ -395,8 +395,22 @@ inline u8 face_contents(content_t m1, content_t m2)
 
 	if(makes_face == false)
 		return 0;
+	
+	u8 c1 = content_solidness(m1);
+	u8 c2 = content_solidness(m2);
+	
+	/*
+		Special case for half-transparent content.
 
-	if(content_solidness(m1) > content_solidness(m2))
+		This makes eg. the water (solidness=1) surrounding an underwater
+		glass block (solidness=0, visual_solidness=1) not get drawn.
+	*/
+	if(c1 == 1 && c2 == 0 && content_features(m2).visual_solidness != 0)
+		return 0;
+	if(c2 == 1 && c1 == 0 && content_features(m1).visual_solidness != 0)
+		return 0;
+
+	if(c1 > c2)
 		return 1;
 	else
 		return 2;
