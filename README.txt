@@ -73,7 +73,7 @@ $ ./minetest
 - If you want to install it system-wide (or are making a distribution package), you will want to use -DRUN_IN_PLACE=0
 - You can build a bare server or a bare client by specifying -DBUILD_CLIENT=0 or -DBUILD_SERVER=0
 - You can select between Release and Debug build by -DCMAKE_BUILD_TYPE=<Debug or Release>
-  - Note that the Debug build is considerably slower
+  - Debug build is slower, but gives much more useful output in a debugger
 
 Compiling on Windows:
 ---------------------
@@ -90,16 +90,18 @@ Compiling on Windows:
 		http://www.winimage.com/zLibDll/index.html
 	* Zlib library (zlibwapi.lib and zlibwapi.dll from zlib125dll.zip):
 		http://www.winimage.com/zLibDll/index.html
-	* gettext bibrary and tools:
+	* Optional: gettext bibrary and tools:
 		http://gnuwin32.sourceforge.net/downlinks/gettext.php
+		- This is used for other UI languages. Feel free to leave it out.
 	* And, of course, Minetest-c55:
 		http://celeron.55.lt/~celeron55/minetest/download
 - Steps:
 	- Select a directory called DIR hereafter in which you will operate.
 	- Make sure you have CMake and a compiler installed.
-	- Download all the other stuff to DIR and extract them into there. All those
-	  packages contain a nice base directory in them, which should end up being
-	  the direct subdirectories of DIR.
+	- Download all the other stuff to DIR and extract them into there.
+	  ("extract here", not "extract to packagename/")
+	- All those packages contain a nice base directory in them, which
+	  should end up being the direct subdirectories of DIR.
 	- You will end up with a directory structure like this (+=dir, -=file):
 	-----------------
 	+ DIR
@@ -119,7 +121,7 @@ Compiling on Windows:
 			+ lib
 			+ include
 			...
-		+ gettext
+		+ gettext (optional)
 			+bin
 			+include
 			+lib
@@ -163,7 +165,8 @@ Compiling on Windows:
 	If using MSVC:
 		- Open the generated minetest.sln
 		- The project defaults to the "Debug" configuration. Make very sure to
-		  select "Release", unless you want to debug some stuff (it's slower)
+		  select "Release", unless you want to debug some stuff (it's slower
+		  and might not even work at all)
 		- Build the ALL_BUILD project
 		- Build the INSTALL project
 		- You should now have a working game with the executable in
