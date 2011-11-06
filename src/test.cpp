@@ -953,10 +953,10 @@ struct TestConnection
 		
 		u16 peer_id_client = 2;
 #if 0
+		/*
+			Send consequent packets in different order
+		*/
 		{
-			/*
-				Send consequent packets in different order
-			*/
 			//u8 data1[] = "hello1";
 			//u8 data2[] = "hello2";
 			SharedBuffer<u8> data1 = SharedBufferFromString("hello1");
@@ -1027,6 +1027,42 @@ struct TestConnection
 			assert(got_exception);
 		}
 #endif
+		/*
+			Send large amounts of packets (infinite test)
+		*/
+		{
+			infostream<<"Sending large amounts of packets (infinite test)"<<std::endl;
+			int sendcount = 0;
+			for(;;){
+				int datasize = myrand_range(0,10)==0?myrand_range(100,10000):myrand_range(0,100);
+				SharedBuffer<u8> data1(datasize);
+				for(u16 i=0; i<datasize; i++)
+					data1[i] = i/4;
+				
+				int sendtimes = myrand_range(1,10);
+				for(int i=0; i<sendtimes; i++){
+					server.Send(peer_id_client, 0, data1, true);
+					sendcount++;
+				}
+				infostream<<"sendcount="<<sendcount<<std::endl;
+				
+				int receivetimes = myrand_range(1,11);
+				for(int i=0; i<receivetimes; i++){
+					u8 recvdata[datasize + 1000];
+					u16 peer_id = 132;
+					u16 size = 0;
+					bool received = false;
+					try{
+						size = client.Receive(peer_id, recvdata, datasize + 1000);
+						received = true;
+					}catch(con::NoIncomingDataException &e){
+					}
+				}
+			}
+		}
+		/*
+			Send a large packet
+		*/
 		{
 			const int datasize = 30000;
 			SharedBuffer<u8> data1(datasize);
