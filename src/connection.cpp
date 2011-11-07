@@ -1577,7 +1577,7 @@ void Connection::Disconnect()
 	putCommand(c);
 }
 
-u32 Connection::Receive(u16 &peer_id, u8 *data, u32 datasize)
+u32 Connection::Receive(u16 &peer_id, SharedBuffer<u8> &data)
 {
 	for(;;){
 		ConnectionEvent e = waitEvent(m_bc_receive_timeout);
@@ -1589,7 +1589,7 @@ u32 Connection::Receive(u16 &peer_id, u8 *data, u32 datasize)
 			throw NoIncomingDataException("No incoming data");
 		case CONNEVENT_DATA_RECEIVED:
 			peer_id = e.peer_id;
-			memcpy(data, *e.data, e.data.getSize());
+			data = SharedBuffer<u8>(e.data);
 			return e.data.getSize();
 		case CONNEVENT_PEER_ADDED: {
 			Peer tmp(e.peer_id, e.address);

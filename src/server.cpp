@@ -1777,14 +1777,13 @@ void Server::AsyncRunStep()
 void Server::Receive()
 {
 	DSTACK(__FUNCTION_NAME);
-	u32 data_maxsize = 10000;
-	Buffer<u8> data(data_maxsize);
+	SharedBuffer<u8> data;
 	u16 peer_id;
 	u32 datasize;
 	try{
 		{
 			JMutexAutoLock conlock(m_con_mutex);
-			datasize = m_con.Receive(peer_id, *data, data_maxsize);
+			datasize = m_con.Receive(peer_id, data);
 		}
 
 		// This has to be called so that the client list gets synced

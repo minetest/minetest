@@ -665,14 +665,13 @@ void Client::ReceiveAll()
 void Client::Receive()
 {
 	DSTACK(__FUNCTION_NAME);
-	u32 data_maxsize = 200000;
-	Buffer<u8> data(data_maxsize);
+	SharedBuffer<u8> data;
 	u16 sender_peer_id;
 	u32 datasize;
 	{
 		//TimeTaker t1("con mutex and receive", m_device);
 		//JMutexAutoLock lock(m_con_mutex); //bulk comment-out
-		datasize = m_con.Receive(sender_peer_id, *data, data_maxsize);
+		datasize = m_con.Receive(sender_peer_id, data);
 	}
 	//TimeTaker t1("ProcessData", m_device);
 	ProcessData(*data, datasize, sender_peer_id);
