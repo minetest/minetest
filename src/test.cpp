@@ -929,7 +929,10 @@ struct TestConnection
 		catch(con::NoIncomingDataException &e)
 		{
 		}
-
+#if 1
+		/*
+			Simple send-receive test
+		*/
 		{
 			/*u8 data[] = "Hello World!";
 			u32 datasize = sizeof(data);*/
@@ -950,11 +953,12 @@ struct TestConnection
 					<<std::endl;
 			assert(memcmp(*data, recvdata, data.getSize()) == 0);
 		}
-		
+#endif
 		u16 peer_id_client = 2;
 #if 0
 		/*
 			Send consequent packets in different order
+			Not compatible with new Connection, thus commented out.
 		*/
 		{
 			//u8 data1[] = "hello1";
@@ -1027,14 +1031,17 @@ struct TestConnection
 			assert(got_exception);
 		}
 #endif
+#if 0
 		/*
 			Send large amounts of packets (infinite test)
+			Commented out because of infinity.
 		*/
 		{
 			infostream<<"Sending large amounts of packets (infinite test)"<<std::endl;
 			int sendcount = 0;
 			for(;;){
-				int datasize = myrand_range(0,10)==0?myrand_range(100,10000):myrand_range(0,100);
+				int datasize = myrand_range(0,5)==0?myrand_range(100,10000):myrand_range(0,100);
+				infostream<<"datasize="<<datasize<<std::endl;
 				SharedBuffer<u8> data1(datasize);
 				for(u16 i=0; i<datasize; i++)
 					data1[i] = i/4;
@@ -1046,20 +1053,22 @@ struct TestConnection
 				}
 				infostream<<"sendcount="<<sendcount<<std::endl;
 				
-				int receivetimes = myrand_range(1,11);
+				//int receivetimes = myrand_range(1,20);
+				int receivetimes = 20;
 				for(int i=0; i<receivetimes; i++){
-					u8 recvdata[datasize + 1000];
+					u8 recvdata[100000];
 					u16 peer_id = 132;
 					u16 size = 0;
 					bool received = false;
 					try{
-						size = client.Receive(peer_id, recvdata, datasize + 1000);
+						size = client.Receive(peer_id, recvdata, 100000);
 						received = true;
 					}catch(con::NoIncomingDataException &e){
 					}
 				}
 			}
 		}
+#endif
 		/*
 			Send a large packet
 		*/
