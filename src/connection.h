@@ -430,7 +430,7 @@ struct ConnectionEvent
 {
 	enum ConnectionEventType type;
 	u16 peer_id;
-	SharedBuffer<u8> data;
+	Buffer<u8> data;
 	bool timeout;
 	Address address;
 
@@ -489,7 +489,7 @@ struct ConnectionCommand
 	Address address;
 	u16 peer_id;
 	u8 channelnum;
-	SharedBuffer<u8> data;
+	Buffer<u8> data;
 	bool reliable;
 	
 	ConnectionCommand(): type(CONNCMD_NONE) {}
