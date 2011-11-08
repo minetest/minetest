@@ -427,7 +427,8 @@ void getTileInfo(
 	// This is hackish
 	content_t content0 = getNodeContent(p, n0, temp_mods);
 	content_t content1 = getNodeContent(p + face_dir, n1, temp_mods);
-	u8 mf = face_contents(content0, content1);
+	bool equivalent = false;
+	u8 mf = face_contents(content0, content1, &equivalent);
 
 	if(mf == 0)
 	{
@@ -449,6 +450,10 @@ void getTileInfo(
 		p_corrected = p + face_dir;
 		face_dir_corrected = -face_dir;
 	}
+	
+	// eg. water and glass
+	if(equivalent)
+		tile.material_flags |= MATERIAL_FLAG_BACKFACE_CULLING;
 	
 	if(smooth_lighting == false)
 	{

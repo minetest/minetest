@@ -415,6 +415,12 @@ void content_mapnode_init()
 		AtlasPointer *pa_water1 = new AtlasPointer(g_texturesource->getTexture(
 				g_texturesource->getTextureId("water.png")));
 		f->special_material->setTexture(0, pa_water1->atlas);
+
+		// Flowing water material, backface culled
+		f->special_material2 = new video::SMaterial;
+		*f->special_material2 = *f->special_material;
+		f->special_material2->setFlag(video::EMF_BACK_FACE_CULLING, true);
+		
 		f->special_atlas = pa_water1;
 	}
 #endif
@@ -460,7 +466,7 @@ void content_mapnode_init()
 	f->post_effect_color = video::SColor(64, 100, 100, 200);
 	if(f->special_material == NULL && g_texturesource)
 	{
-		// Flowing water material
+		// New-style water source material (mostly unused)
 		f->special_material = new video::SMaterial;
 		f->special_material->setFlag(video::EMF_LIGHTING, false);
 		f->special_material->setFlag(video::EMF_BACK_FACE_CULLING, false);
@@ -482,7 +488,7 @@ void content_mapnode_init()
 	f->light_propagates = false;
 	f->light_source = LIGHT_MAX-1;
 	f->solidness = 0; // Drawn separately, makes no faces
-	f->visual_solidness = 2;
+	f->visual_solidness = 1; // Does not completely cover block boundaries
 	f->walkable = false;
 	f->pointable = false;
 	f->diggable = false;
@@ -503,10 +509,17 @@ void content_mapnode_init()
 		f->special_material->setFlag(video::EMF_BILINEAR_FILTER, false);
 		f->special_material->setFlag(video::EMF_FOG_ENABLE, true);
 		f->special_material->MaterialType = video::EMT_TRANSPARENT_ALPHA_CHANNEL_REF;
+
 		AtlasPointer *pa_lava1 = new AtlasPointer(
 			g_texturesource->getTexture(
 				g_texturesource->getTextureId("lava.png")));
 		f->special_material->setTexture(0, pa_lava1->atlas);
+
+		// Flowing lava material, backface culled
+		f->special_material2 = new video::SMaterial;
+		*f->special_material2 = *f->special_material;
+		f->special_material2->setFlag(video::EMF_BACK_FACE_CULLING, true);
+
 		f->special_atlas = pa_lava1;
 	}
 #endif
@@ -550,7 +563,7 @@ void content_mapnode_init()
 	f->post_effect_color = video::SColor(192, 255, 64, 0);
 	if(f->special_material == NULL && g_texturesource)
 	{
-		// Flowing lava material
+		// New-style lava source material (mostly unused)
 		f->special_material = new video::SMaterial;
 		f->special_material->setFlag(video::EMF_LIGHTING, false);
 		f->special_material->setFlag(video::EMF_BACK_FACE_CULLING, false);
@@ -561,6 +574,7 @@ void content_mapnode_init()
 			g_texturesource->getTexture(
 				g_texturesource->getTextureId("lava.png")));
 		f->special_material->setTexture(0, pa_lava1->atlas);
+
 		f->special_atlas = pa_lava1;
 	}
 #endif

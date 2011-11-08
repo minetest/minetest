@@ -364,6 +364,9 @@ void mapblock_mesh_generate_special(MeshMakeData *data,
 			assert(content_features(n).special_material);
 			video::SMaterial &liquid_material =
 					*content_features(n).special_material;
+			video::SMaterial &liquid_material_bfculled =
+					*content_features(n).special_material2;
+
 			assert(content_features(n).special_atlas);
 			AtlasPointer &pa_liquid1 =
 					*content_features(n).special_atlas;
@@ -516,10 +519,10 @@ void mapblock_mesh_generate_special(MeshMakeData *data,
 					continue;
 
 				content_t neighbor_content = neighbor_contents[dir];
+				ContentFeatures &n_feat = content_features(neighbor_content);
 				
-				// Don't draw face if neighbor is not air or liquid
-				if(neighbor_content != CONTENT_AIR
-						&& content_liquid(neighbor_content) == false)
+				// Don't draw face if neighbor is blocking the view
+				if(n_feat.solidness == 2)
 					continue;
 				
 				bool neighbor_is_same_liquid = (neighbor_content == c_source
@@ -530,6 +533,12 @@ void mapblock_mesh_generate_special(MeshMakeData *data,
 				if(neighbor_is_same_liquid == true
 						&& top_is_same_liquid == false)
 					continue;
+
+				// Use backface culled material if neighbor doesn't have a
+				// solidness of 0
+				video::SMaterial *current_material = &liquid_material;
+				if(n_feat.solidness != 0 || n_feat.visual_solidness != 0)
+					current_material = &liquid_material_bfculled;
 				
 				video::S3DVertex vertices[4] =
 				{
@@ -603,7 +612,7 @@ void mapblock_mesh_generate_special(MeshMakeData *data,
 
 				u16 indices[] = {0,1,2,2,3,0};
 				// Add to mesh collector
-				collector.append(liquid_material, vertices, 4, indices, 6);
+				collector.append(*current_material, vertices, 4, indices, 6);
 			}
 			
 			/*

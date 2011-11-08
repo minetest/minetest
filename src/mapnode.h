@@ -121,6 +121,7 @@ struct ContentFeatures
 	video::SColor post_effect_color;
 	// Special irrlicht material, used sometimes
 	video::SMaterial *special_material;
+	video::SMaterial *special_material2;
 	AtlasPointer *special_atlas;
 #endif
 
@@ -199,6 +200,7 @@ struct ContentFeatures
 		vertex_alpha = 255;
 		post_effect_color = video::SColor(0, 0, 0, 0);
 		special_material = NULL;
+		special_material2 = NULL;
 		special_atlas = NULL;
 #endif
 		param_type = CPT_NONE;
@@ -377,44 +379,9 @@ inline bool content_buildable_to(content_t m)
 		0: No face
 		1: Face uses m1's content
 		2: Face uses m2's content
+	equivalent: Whether the blocks share the same face (eg. water and glass)
 */
-inline u8 face_contents(content_t m1, content_t m2)
-{
-	if(m1 == CONTENT_IGNORE || m2 == CONTENT_IGNORE)
-		return 0;
-	
-	bool contents_differ = (m1 != m2);
-	
-	// Contents don't differ for different forms of same liquid
-	if(content_liquid(m1) && content_liquid(m2)
-			&& make_liquid_flowing(m1) == make_liquid_flowing(m2))
-		contents_differ = false;
-	
-	bool solidness_differs = (content_solidness(m1) != content_solidness(m2));
-	bool makes_face = contents_differ && solidness_differs;
-
-	if(makes_face == false)
-		return 0;
-	
-	u8 c1 = content_solidness(m1);
-	u8 c2 = content_solidness(m2);
-	
-	/*
-		Special case for half-transparent content.
-
-		This makes eg. the water (solidness=1) surrounding an underwater
-		glass block (solidness=0, visual_solidness=1) not get drawn.
-	*/
-	if(c1 == 1 && c2 == 0 && content_features(m2).visual_solidness != 0)
-		return 0;
-	if(c2 == 1 && c1 == 0 && content_features(m1).visual_solidness != 0)
-		return 0;
-
-	if(c1 > c2)
-		return 1;
-	else
-		return 2;
-}
+u8 face_contents(content_t m1, content_t m2, bool *equivalent);
 
 /*
 	Packs directions like (1,0,0), (1,-1,0)
