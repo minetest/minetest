@@ -3786,9 +3786,6 @@ void ClientMap::renderMap(video::IVideoDriver* driver, s32 pass)
 
 			blocks_in_range++;
 			
-			// This block is in range. Reset usage timer.
-			block->resetUsageTimer();
-
 #if 1
 			/*
 				Update expired mesh (used for day/night change)
@@ -3878,6 +3875,9 @@ void ClientMap::renderMap(video::IVideoDriver* driver, s32 pass)
 				continue;
 			}
 			
+			// This block is in range. Reset usage timer.
+			block->resetUsageTimer();
+
 			/*
 				Ignore if mesh doesn't exist
 			*/
