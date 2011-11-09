@@ -3,6 +3,17 @@ Minetest-c55 changelog
 This should contain all the major changes.
 For minor stuff, refer to the commit log of the repository.
 
+0.3.1: (released on 2011-11-09)
+- Fix frustum culling (previous versions have rendered too much stuff that is not actually visible (about 180 degrees, while should have been more like 100.))
+- Add occlusion culling (improves performance a lot)
+- Add “3d clouds” on/off checkbox in main menu
+- Add “opaque water” on/off checkbox
+- Fix some random minor stuff
+- Turn mipmapping off (This makes far-away textures a bit noisier but better looking)
+- Add Command-line signal handler for Windows (contributed by SpeedProg)
+- Fix network layer segmentation fault introduced in 0.3.dev-20111021
+- Fix water-glass and water-lava and lava-glass surfaces
+
 0.3.0: (released on 2011-11-01)
 - Some small fixes
 0.3.dev-20111021:
@@ -10,11 +21,11 @@ For minor stuff, refer to the commit log of the repository.
 - Fix object duplication bug at block load/unload bug
 - Improve network layer
 0.3.dev-20111016:
-- Locked chest
+- Locked chest (contributed)
 - Server user limit setting (max_users)
-- Wielded tool is shown in HUD
-- View bobbing
-- Saplings that drop from leaf blocks and when placed on ground will grow to trees
+- Wielded tool is shown in HUD (contributed)
+- View bobbing (contributed)
+- Saplings that drop from leaf blocks and when placed on ground will grow to trees (contributed)
 - Optimized map saving (does not re-save everything all the time)
 - New mob system and new mob: dungeon master
 - Death/respawn screen
