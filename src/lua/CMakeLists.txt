@@ -7,8 +7,6 @@ project(lua C)
 
 set(CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake)
 
-include(CustomMacros)
-
 set(COMMON_CFLAGS)
 set(COMMON_LDFLAGS)
 set(LIBS)

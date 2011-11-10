@@ -45,8 +45,6 @@ include_directories(${CMAKE_CURRENT_SOURCE_DIR}
 # Lua library.
 #
 add_library(lua STATIC ${LUA_CORE_SRC})
-add_target_properties(lua COMPILE_FLAGS "${COMMON_CFLAGS}")
-add_target_properties(lua LINK_FLAGS "${LD_FLAGS} ${COMMON_LDFLAGS}")
 target_link_libraries(lua ${LIBS})
 set(LUA_STATIC_LIB lua)
 set(LUA_LIBS lua)
