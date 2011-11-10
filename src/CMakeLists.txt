@@ -84,6 +84,10 @@ endif()
 find_package(Jthread REQUIRED)
 find_package(Sqlite3 REQUIRED)
 
+# TODO: Create proper find script for Lua
+set(LUA_INCLUDE_DIR "${PROJECT_SOURCE_DIR}/lua/src")
+set(LUA_LIBRARY "lua")
+
 configure_file(
 	"${PROJECT_SOURCE_DIR}/cmake_config.h.in"
 	"${PROJECT_BINARY_DIR}/cmake_config.h"
@@ -183,6 +187,7 @@ include_directories(
 	${GETTEXT_INCLUDE_DIR}
 	${JTHREAD_INCLUDE_DIR}
 	${SQLITE3_INCLUDE_DIR}
+	${LUA_INCLUDE_DIR}
 )
 
 set(EXECUTABLE_OUTPUT_PATH "${CMAKE_SOURCE_DIR}/bin")
@@ -201,6 +206,7 @@ if(BUILD_CLIENT)
 		${GETTEXT_LIBRARY}
 		${JTHREAD_LIBRARY}
 		${SQLITE3_LIBRARY}
+		${LUA_LIBRARY}
 		${PLATFORM_LIBS}
 		${CLIENT_PLATFORM_LIBS}
 	)
@@ -213,6 +219,7 @@ if(BUILD_SERVER)
 		${ZLIB_LIBRARIES}
 		${JTHREAD_LIBRARY}
 		${SQLITE3_LIBRARY}
+		${LUA_LIBRARY}
 		${PLATFORM_LIBS}
 	)
 endif(BUILD_SERVER)
@@ -361,7 +368,12 @@ endif (JTHREAD_FOUND)
 
 if (SQLITE3_FOUND)
 else (SQLITE3_FOUND)
-add_subdirectory(sqlite)
+	add_subdirectory(sqlite)
 endif (SQLITE3_FOUND)
+
+if (LUA_FOUND)
+else (LUA_FOUND)
+	add_subdirectory(lua)
+endif (LUA_FOUND)
 
 #end
