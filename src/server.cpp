@@ -950,8 +950,8 @@ Server::Server(
 	):
 	m_env(new ServerMap(mapsavedir), this),
 	m_con(PROTOCOL_ID, 512, CONNECTION_TIMEOUT, this),
-	m_authmanager(mapsavedir+"/auth.txt"),
-	m_banmanager(mapsavedir+"/ipban.txt"),
+	m_authmanager(mapsavedir+DIR_DELIM+"auth.txt"),
+	m_banmanager(mapsavedir+DIR_DELIM+"ipban.txt"),
 	m_thread(this),
 	m_emergethread(this),
 	m_time_counter(0),
@@ -978,7 +978,7 @@ Server::Server(
 	m_env.getMap().addEventReceiver(this);
 
 	// If file exists, load environment metadata
-	if(fs::PathExists(m_mapsavedir+"/env_meta.txt"))
+	if(fs::PathExists(m_mapsavedir+DIR_DELIM+"env_meta.txt"))
 	{
 		infostream<<"Server: Loading environment metadata"<<std::endl;
 		m_env.loadMeta(m_mapsavedir);

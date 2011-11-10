@@ -299,9 +299,8 @@ install(FILES "${CMAKE_CURRENT_SOURCE_DIR}/../minetest.conf.example" DESTINATION
 if(BUILD_CLIENT)
 	install(TARGETS ${PROJECT_NAME} DESTINATION ${BINDIR})
 
-	file(GLOB images "${CMAKE_CURRENT_SOURCE_DIR}/../data/*.png")
-
-	install(FILES ${images} DESTINATION ${DATADIR})
+	file(GLOB images "${CMAKE_CURRENT_SOURCE_DIR}/../data/textures/*.png")
+	install(FILES ${images} DESTINATION ${DATADIR}/textures)
 
 	if(USE_GETTEXT)
 		foreach(LOCALE ${GETTEXT_AVAILABLE_LOCALES})

@@ -125,6 +125,11 @@ void signal_handler_init(void)
 std::string path_data = ".." DIR_DELIM "data";
 std::string path_userdata = "..";
 
+std::string getDataPath(const char *subpath)
+{
+	return path_data + DIR_DELIM + subpath;
+}
+
 void pathRemoveFile(char *path, char delim)
 {
 	// Remove filename and path delimiter
