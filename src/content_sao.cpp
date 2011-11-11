@@ -1516,7 +1516,7 @@ LuaEntitySAO::~LuaEntitySAO()
 {
 	if(m_registered){
 		lua_State *L = m_env->getLua();
-		scriptapi_luaentity_deregister(L, m_id);
+		scriptapi_luaentity_rm(L, m_id);
 	}
 }
 
@@ -1527,7 +1527,7 @@ void LuaEntitySAO::addedToEnvironment(u16 id)
 	// Create entity by name and state
 	m_registered = true;
 	lua_State *L = m_env->getLua();
-	scriptapi_luaentity_register(L, id, m_init_name.c_str(), m_init_state.c_str());
+	scriptapi_luaentity_add(L, id, m_init_name.c_str(), m_init_state.c_str());
 }
 
 ServerActiveObject* LuaEntitySAO::create(ServerEnvironment *env, v3f pos,
@@ -1553,7 +1553,7 @@ void LuaEntitySAO::step(float dtime, bool send_recommended)
 {
 	if(m_registered){
 		lua_State *L = m_env->getLua();
-		scriptapi_luaentity_step(L, m_id, dtime, send_recommended);
+		scriptapi_luaentity_step(L, m_id, dtime);
 	}
 }
 
@@ -1578,7 +1578,6 @@ std::string LuaEntitySAO::getStaticData()
 	// state
 	if(m_registered){
 		lua_State *L = m_env->getLua();
-		scriptapi_luaentity_deregister(L, m_id);
 		std::string state = scriptapi_luaentity_get_state(L, m_id);
 		os<<serializeLongString(state);
 	} else {

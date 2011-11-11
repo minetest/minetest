@@ -76,21 +76,36 @@ static void realitycheck(lua_State *L)
 	}
 }
 
-// Register new object prototype (must be based on entity)
+// Register new object prototype
+// register_entity(name, prototype)
 static int l_register_entity(lua_State *L)
 {
 	const char *name = luaL_checkstring(L, 1);
-	luaL_checkany(L, 2);
+	luaL_checktype(L, 2, LUA_TTABLE);
 	infostream<<"register_entity: "<<name<<std::endl;
-	// Get the minetest table
+
+	// Get minetest.registered_entities
 	lua_getglobal(L, "minetest");
-	// Get field "registered_entities"
 	lua_getfield(L, -1, "registered_entities");
 	luaL_checktype(L, -1, LUA_TTABLE);
-	int objectstable = lua_gettop(L);
-	// Object is in param 2
-	lua_pushvalue(L, 2); // Copy object to top of stack
-	lua_setfield(L, objectstable, name); // registered_entities[name] = object
+	int registered_entities = lua_gettop(L);
+	lua_pushvalue(L, 2); // Object = param 2 -> stack top
+	// registered_entities[name] = object
+	lua_setfield(L, registered_entities, name);
+	
+	// Get registered object to top of stack
+	lua_pushvalue(L, 2);
+	
+	// Set __index to point to itself
+	lua_pushvalue(L, -1);
+	lua_setfield(L, -2, "__index");
+
+	// Set metatable.__index = metatable
+	luaL_getmetatable(L, "minetest.entity");
+	lua_pushvalue(L, -1); // duplicate metatable
+	lua_setfield(L, -2, "__index");
+	// Set object metatable
+	lua_setmetatable(L, -2);
 
 	return 0; /* number of results */
 }
@@ -286,36 +301,76 @@ void scriptapi_export(lua_State *L, Server *server)
 	ObjectRef::Register(L);
 }
 
-void scriptapi_luaentity_register(lua_State *L, u16 id, const char *name,
+// Dump stack top with the dump2 function
+static void dump2(lua_State *L, const char *name)
+{
+	// Dump object (debug)
+	lua_getglobal(L, "dump2");
+	luaL_checktype(L, -1, LUA_TFUNCTION);
+	lua_pushvalue(L, -2); // Get previous stack top as first parameter
+	lua_pushstring(L, name);
+	if(lua_pcall(L, 2, 0, 0))
+		script_error(L, "error: %s\n", lua_tostring(L, -1));
+}
+
+void scriptapi_luaentity_add(lua_State *L, u16 id, const char *name,
 		const char *init_state)
 {
 	realitycheck(L);
 	assert(lua_checkstack(L, 20));
-	infostream<<"scriptapi_luaentity_register: id="<<id<<std::endl;
+	infostream<<"scriptapi_luaentity_add: id="<<id<<" name=\""
+			<<name<<"\""<<std::endl;
+
+	int initial_top = lua_gettop(L);
 	
 	// Create object as a dummy string (TODO: Create properly)
-	lua_pushstring(L, "dummy object string");
+
+	// Get minetest.registered_entities[name]
+	lua_getglobal(L, "minetest");
+	lua_getfield(L, -1, "registered_entities");
+	luaL_checktype(L, -1, LUA_TTABLE);
+	lua_pushstring(L, name);
+	lua_gettable(L, -2);
+	// Should be a table, which we will use as a prototype
+	luaL_checktype(L, -1, LUA_TTABLE);
+	int prototype_table = lua_gettop(L);
+	//dump2(L, "prototype_table");
+	
+	// Create entity object
+	lua_newtable(L);
 	int object = lua_gettop(L);
+
+	// Set object metatable
+	lua_pushvalue(L, prototype_table);
+	lua_setmetatable(L, -2);
+	
+	/*// Set prototype_table.__index = prototype_table
+	lua_pushvalue(L, prototype_table); // Copy to top of stack
+	lua_pushvalue(L, -1); // duplicate prototype_table
+	lua_setfield(L, -2, "__index");*/
+	
+	/*lua_pushstring(L, "debug from C");
+	lua_setfield(L, -2, "on_step");*/
 
 	// Get minetest.luaentities table
 	lua_getglobal(L, "minetest");
 	lua_getfield(L, -1, "luaentities");
 	luaL_checktype(L, -1, LUA_TTABLE);
-	int objectstable = lua_gettop(L);
+	int luaentities = lua_gettop(L);
 	
 	// luaentities[id] = object
 	lua_pushnumber(L, id); // Push id
 	lua_pushvalue(L, object); // Copy object to top of stack
-	lua_settable(L, objectstable);
+	lua_settable(L, luaentities);
 	
-	lua_pop(L, 3); // pop luaentities, minetest and the object
+	lua_settop(L, initial_top); // Reset stack
 }
 
-void scriptapi_luaentity_deregister(lua_State *L, u16 id)
+void scriptapi_luaentity_rm(lua_State *L, u16 id)
 {
 	realitycheck(L);
 	assert(lua_checkstack(L, 20));
-	infostream<<"scriptapi_luaentity_deregister: id="<<id<<std::endl;
+	infostream<<"scriptapi_luaentity_rm: id="<<id<<std::endl;
 
 	// Get minetest.luaentities table
 	lua_getglobal(L, "minetest");
@@ -337,24 +392,35 @@ void scriptapi_luaentity_deregister(lua_State *L, u16 id)
 	lua_pop(L, 2); // pop luaentities, minetest
 }
 
-void scriptapi_luaentity_step(lua_State *L, u16 id,
-		float dtime, bool send_recommended)
+void scriptapi_luaentity_step(lua_State *L, u16 id, float dtime)
 {
 	realitycheck(L);
 	assert(lua_checkstack(L, 20));
-	//infostream<<"scriptapi_luaentity_step: id="<<id<<std::endl;
+	infostream<<"scriptapi_luaentity_step: id="<<id<<std::endl;
 
-	// Get minetest.luaentities table
+	// Get minetest.luaentities[i]
 	lua_getglobal(L, "minetest");
 	lua_getfield(L, -1, "luaentities");
 	luaL_checktype(L, -1, LUA_TTABLE);
-	int objectstable = lua_gettop(L);
-	
-	// Get luaentities[id]
-	lua_pushnumber(L, id); // Push id
-	lua_gettable(L, objectstable);
-
-	// TODO: Call step function
+	lua_pushnumber(L, id);
+	lua_gettable(L, -2);
+	int object = lua_gettop(L);
+	// State: object is at top of stack
+	/*dump2(L, "entity");
+	lua_getmetatable(L, -1);
+	dump2(L, "getmetatable(entity)");
+	lua_getfield(L, -1, "__index");
+	dump2(L, "getmetatable(entity).__index");
+	lua_pop(L, 1);
+	lua_pop(L, 1);*/
+	// Get step function
+	lua_getfield(L, -1, "on_step");
+	luaL_checktype(L, -1, LUA_TFUNCTION);
+	lua_pushvalue(L, object); // self
+	lua_pushnumber(L, dtime); // dtime
+	// Call with 2 arguments, 0 results
+	if(lua_pcall(L, 2, 0, 0))
+		script_error(L, "error running function 'step': %s\n", lua_tostring(L, -1));
 
 	lua_pop(L, 1); // pop object
 	lua_pop(L, 2); // pop luaentities, minetest

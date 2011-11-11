@@ -61,7 +61,7 @@ end]]
 	return s
 end]]
 
-function basic_serialize(o)
+function basic_dump2(o)
 	if type(o) == "number" then
 		return tostring(o)
 	elseif type(o) == "string" then
@@ -70,6 +70,8 @@ function basic_serialize(o)
 		return tostring(o)
 	elseif type(o) == "function" then
 		return "<function>"
+	elseif type(o) == "userdata" then
+		return "<userdata>"
 	elseif type(o) == "nil" then
 		return "nil"
 	else
@@ -78,13 +80,14 @@ function basic_serialize(o)
 	end
 end
 
-function serialize(o, name, dumped)
+function dump2(o, name, dumped)
 	name = name or "_"
 	dumped = dumped or {}
 	io.write(name, " = ")
 	if type(o) == "number" or type(o) == "string" or type(o) == "boolean"
-			or type(o) == "function" or type(o) == "nil" then
-		io.write(basic_serialize(o), "\n")
+			or type(o) == "function" or type(o) == "nil"
+			or type(o) == "userdata" then
+		io.write(basic_dump2(o), "\n")
 	elseif type(o) == "table" then
 		if dumped[o] then
 			io.write(dumped[o], "\n")
@@ -92,8 +95,8 @@ function serialize(o, name, dumped)
 			dumped[o] = name
 			io.write("{}\n") -- new table
 			for k,v in pairs(o) do
-				local fieldname = string.format("%s[%s]", name, basic_serialize(k))
-				serialize(v, fieldname, dumped)
+				local fieldname = string.format("%s[%s]", name, basic_dump2(k))
+				dump2(v, fieldname, dumped)
 			end
 		end
 	else
@@ -131,8 +134,6 @@ end
 print("omg lol")
 print("minetest dump: "..dump(minetest))
 
-minetest.register_entity("a", "dummy string");
-
 --local TNT = minetest.new_entity {
 local TNT = {
 	-- Maybe handle gravity and collision this way? dunno
@@ -148,30 +149,34 @@ local TNT = {
 }
 
 -- Called after object is created
-function TNT:on_create(env)
+function TNT:on_create()
+	print("TNT:on_create()")
 end
 
 -- Called periodically
-function TNT:on_step(env, dtime)
-	self.timer = self.timer + dtime
+function TNT:on_step(dtime)
+	print("TNT:on_step()")
+	--[[self.timer = self.timer + dtime
 	if self.timer > 4.0 then
 		self.to_be_deleted = true -- Environment will delete this object at a suitable point of execution
 		env:explode(self.pos, 3) -- Uh... well, something like that
-	end
+	end]]
 end
 
 -- Called when object is punched
-function TNT:on_punch(env, hitter)
-	-- If tool is bomb defuser, revert back to being a block
+function TNT:on_punch(hitter)
+	print("TNT:on_punch()")
+	--[[-- If tool is bomb defuser, revert back to being a block
 	local item = hitter.inventory.get_current()
 	if item.itemtype == "tool" and item.param == "bomb_defuser" then
 		env:add_node(self.pos, 3072)
 		self.to_be_deleted = true
-	end
+	end]]
 end
 
 -- Called when object is right-clicked
-function TNT:on_rightclick(self, env, hitter)
+function TNT:on_rightclick(clicker)
+	print("TNT:on_rightclick()")
 end
 
 print("TNT dump: "..dump(TNT))
@@ -181,5 +186,5 @@ minetest.register_entity("TNT", TNT)
 
 --print("minetest.registered_entities: "..dump(minetest.registered_entities))
 print("minetest.registered_entities:")
-serialize(minetest.registered_entities)
+dump2(minetest.registered_entities)
 

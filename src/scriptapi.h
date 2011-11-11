@@ -32,11 +32,10 @@ void scriptapi_export(lua_State *L, Server *server);
 void scriptapi_add_object_reference(lua_State *L, ServerActiveObject *cobj);
 void scriptapi_rm_object_reference(lua_State *L, ServerActiveObject *cobj);
 
-void scriptapi_luaentity_register(lua_State *L, u16 id, const char *name,
+void scriptapi_luaentity_add(lua_State *L, u16 id, const char *name,
 		const char *init_state);
-void scriptapi_luaentity_deregister(lua_State *L, u16 id);
-void scriptapi_luaentity_step(lua_State *L, u16 id,
-		float dtime, bool send_recommended);
+void scriptapi_luaentity_rm(lua_State *L, u16 id);
+void scriptapi_luaentity_step(lua_State *L, u16 id, float dtime);
 std::string scriptapi_luaentity_get_state(lua_State *L, u16 id);
 
 #endif
