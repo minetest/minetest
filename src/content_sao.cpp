@@ -49,20 +49,20 @@ void accelerate_xz(v3f &speed, v3f target_speed, f32 max_increase)
 */
 
 // Prototype
-TestSAO proto_TestSAO(NULL, 0, v3f(0,0,0));
+TestSAO proto_TestSAO(NULL, v3f(0,0,0));
 
-TestSAO::TestSAO(ServerEnvironment *env, u16 id, v3f pos):
-	ServerActiveObject(env, id, pos),
+TestSAO::TestSAO(ServerEnvironment *env, v3f pos):
+	ServerActiveObject(env, pos),
 	m_timer1(0),
 	m_age(0)
 {
 	ServerActiveObject::registerType(getType(), create);
 }
 
-ServerActiveObject* TestSAO::create(ServerEnvironment *env, u16 id, v3f pos,
+ServerActiveObject* TestSAO::create(ServerEnvironment *env, v3f pos,
 		const std::string &data)
 {
-	return new TestSAO(env, id, pos);
+	return new TestSAO(env, pos);
 }
 
 void TestSAO::step(float dtime, bool send_recommended)
@@ -107,11 +107,11 @@ void TestSAO::step(float dtime, bool send_recommended)
 */
 
 // Prototype
-ItemSAO proto_ItemSAO(NULL, 0, v3f(0,0,0), "");
+ItemSAO proto_ItemSAO(NULL, v3f(0,0,0), "");
 
-ItemSAO::ItemSAO(ServerEnvironment *env, u16 id, v3f pos,
+ItemSAO::ItemSAO(ServerEnvironment *env, v3f pos,
 		const std::string inventorystring):
-	ServerActiveObject(env, id, pos),
+	ServerActiveObject(env, pos),
 	m_inventorystring(inventorystring),
 	m_speed_f(0,0,0),
 	m_last_sent_position(0,0,0)
@@ -119,7 +119,7 @@ ItemSAO::ItemSAO(ServerEnvironment *env, u16 id, v3f pos,
 	ServerActiveObject::registerType(getType(), create);
 }
 
-ServerActiveObject* ItemSAO::create(ServerEnvironment *env, u16 id, v3f pos,
+ServerActiveObject* ItemSAO::create(ServerEnvironment *env, v3f pos,
 		const std::string &data)
 {
 	std::istringstream is(data, std::ios::binary);
@@ -133,7 +133,7 @@ ServerActiveObject* ItemSAO::create(ServerEnvironment *env, u16 id, v3f pos,
 	std::string inventorystring = deSerializeString(is);
 	infostream<<"ItemSAO::create(): Creating item \""
 			<<inventorystring<<"\""<<std::endl;
-	return new ItemSAO(env, id, pos, inventorystring);
+	return new ItemSAO(env, pos, inventorystring);
 }
 
 void ItemSAO::step(float dtime, bool send_recommended)
@@ -260,10 +260,10 @@ void ItemSAO::rightClick(Player *player)
 */
 
 // Prototype
-RatSAO proto_RatSAO(NULL, 0, v3f(0,0,0));
+RatSAO proto_RatSAO(NULL, v3f(0,0,0));
 
-RatSAO::RatSAO(ServerEnvironment *env, u16 id, v3f pos):
-	ServerActiveObject(env, id, pos),
+RatSAO::RatSAO(ServerEnvironment *env, v3f pos):
+	ServerActiveObject(env, pos),
 	m_is_active(false),
 	m_speed_f(0,0,0)
 {
@@ -278,7 +278,7 @@ RatSAO::RatSAO(ServerEnvironment *env, u16 id, v3f pos):
 	m_touching_ground = false;
 }
 
-ServerActiveObject* RatSAO::create(ServerEnvironment *env, u16 id, v3f pos,
+ServerActiveObject* RatSAO::create(ServerEnvironment *env, v3f pos,
 		const std::string &data)
 {
 	std::istringstream is(data, std::ios::binary);
@@ -289,7 +289,7 @@ ServerActiveObject* RatSAO::create(ServerEnvironment *env, u16 id, v3f pos,
 	// check if version is supported
 	if(version != 0)
 		return NULL;
-	return new RatSAO(env, id, pos);
+	return new RatSAO(env, pos);
 }
 
 void RatSAO::step(float dtime, bool send_recommended)
@@ -447,10 +447,10 @@ InventoryItem* RatSAO::createPickedUpItem()
 */
 
 // Prototype
-Oerkki1SAO proto_Oerkki1SAO(NULL, 0, v3f(0,0,0));
+Oerkki1SAO proto_Oerkki1SAO(NULL, v3f(0,0,0));
 
-Oerkki1SAO::Oerkki1SAO(ServerEnvironment *env, u16 id, v3f pos):
-	ServerActiveObject(env, id, pos),
+Oerkki1SAO::Oerkki1SAO(ServerEnvironment *env, v3f pos):
+	ServerActiveObject(env, pos),
 	m_is_active(false),
 	m_speed_f(0,0,0)
 {
@@ -467,7 +467,7 @@ Oerkki1SAO::Oerkki1SAO(ServerEnvironment *env, u16 id, v3f pos):
 	m_after_jump_timer = 0;
 }
 
-ServerActiveObject* Oerkki1SAO::create(ServerEnvironment *env, u16 id, v3f pos,
+ServerActiveObject* Oerkki1SAO::create(ServerEnvironment *env, v3f pos,
 		const std::string &data)
 {
 	std::istringstream is(data, std::ios::binary);
@@ -478,7 +478,7 @@ ServerActiveObject* Oerkki1SAO::create(ServerEnvironment *env, u16 id, v3f pos,
 	// check if version is supported
 	if(version != 0)
 		return NULL;
-	Oerkki1SAO *o = new Oerkki1SAO(env, id, pos);
+	Oerkki1SAO *o = new Oerkki1SAO(env, pos);
 	o->m_hp = hp;
 	return o;
 }
@@ -739,10 +739,10 @@ void Oerkki1SAO::doDamage(u16 d)
 */
 
 // Prototype
-FireflySAO proto_FireflySAO(NULL, 0, v3f(0,0,0));
+FireflySAO proto_FireflySAO(NULL, v3f(0,0,0));
 
-FireflySAO::FireflySAO(ServerEnvironment *env, u16 id, v3f pos):
-	ServerActiveObject(env, id, pos),
+FireflySAO::FireflySAO(ServerEnvironment *env, v3f pos):
+	ServerActiveObject(env, pos),
 	m_is_active(false),
 	m_speed_f(0,0,0)
 {
@@ -757,7 +757,7 @@ FireflySAO::FireflySAO(ServerEnvironment *env, u16 id, v3f pos):
 	m_touching_ground = false;
 }
 
-ServerActiveObject* FireflySAO::create(ServerEnvironment *env, u16 id, v3f pos,
+ServerActiveObject* FireflySAO::create(ServerEnvironment *env, v3f pos,
 		const std::string &data)
 {
 	std::istringstream is(data, std::ios::binary);
@@ -768,7 +768,7 @@ ServerActiveObject* FireflySAO::create(ServerEnvironment *env, u16 id, v3f pos,
 	// check if version is supported
 	if(version != 0)
 		return NULL;
-	return new FireflySAO(env, id, pos);
+	return new FireflySAO(env, pos);
 }
 
 void FireflySAO::step(float dtime, bool send_recommended)
@@ -918,11 +918,11 @@ InventoryItem* FireflySAO::createPickedUpItem()
 */
 
 // Prototype
-MobV2SAO proto_MobV2SAO(NULL, 0, v3f(0,0,0), NULL);
+MobV2SAO proto_MobV2SAO(NULL, v3f(0,0,0), NULL);
 
-MobV2SAO::MobV2SAO(ServerEnvironment *env, u16 id, v3f pos,
+MobV2SAO::MobV2SAO(ServerEnvironment *env, v3f pos,
 		Settings *init_properties):
-	ServerActiveObject(env, id, pos),
+	ServerActiveObject(env, pos),
 	m_move_type("ground_nodes"),
 	m_speed(0,0,0),
 	m_last_sent_position(0,0,0),
@@ -961,13 +961,13 @@ MobV2SAO::~MobV2SAO()
 	delete m_properties;
 }
 
-ServerActiveObject* MobV2SAO::create(ServerEnvironment *env, u16 id, v3f pos,
+ServerActiveObject* MobV2SAO::create(ServerEnvironment *env, v3f pos,
 		const std::string &data)
 {
 	std::istringstream is(data, std::ios::binary);
 	Settings properties;
 	properties.parseConfigLines(is, "MobArgsEnd");
-	MobV2SAO *o = new MobV2SAO(env, id, pos, &properties);
+	MobV2SAO *o = new MobV2SAO(env, pos, &properties);
 	return o;
 }
 
@@ -1174,7 +1174,7 @@ void MobV2SAO::step(float dtime, bool send_recommended)
 				properties.set("player_hit_damage", "9");
 				properties.set("player_hit_distance", "2");
 				properties.set("player_hit_interval", "1");
-				ServerActiveObject *obj = new MobV2SAO(m_env, 0,
+				ServerActiveObject *obj = new MobV2SAO(m_env,
 						pos, &properties);
 				//m_env->addActiveObjectAsStatic(obj);
 				m_env->addActiveObject(obj);
@@ -1487,6 +1487,98 @@ void MobV2SAO::doDamage(u16 d)
 		ActiveObjectMessage aom(getId(), false, os.str());
 		m_messages_out.push_back(aom);
 	}
+}
+
+
+/*
+	LuaEntitySAO
+*/
+
+#include "scriptapi.h"
+
+// Prototype
+LuaEntitySAO proto_LuaEntitySAO(NULL, v3f(0,0,0), "_prototype", "");
+
+LuaEntitySAO::LuaEntitySAO(ServerEnvironment *env, v3f pos,
+		const std::string &name, const std::string &state):
+	ServerActiveObject(env, pos),
+	m_init_name(name),
+	m_init_state(state),
+	m_registered(false)
+{
+	if(env == NULL){
+		ServerActiveObject::registerType(getType(), create);
+		return;
+	}
+}
+
+LuaEntitySAO::~LuaEntitySAO()
+{
+	if(m_registered){
+		lua_State *L = m_env->getLua();
+		scriptapi_luaentity_deregister(L, m_id);
+	}
+}
+
+void LuaEntitySAO::addedToEnvironment(u16 id)
+{
+	ServerActiveObject::addedToEnvironment(id);
+	
+	// Create entity by name and state
+	m_registered = true;
+	lua_State *L = m_env->getLua();
+	scriptapi_luaentity_register(L, id, m_init_name.c_str(), m_init_state.c_str());
+}
+
+ServerActiveObject* LuaEntitySAO::create(ServerEnvironment *env, v3f pos,
+		const std::string &data)
+{
+	std::istringstream is(data, std::ios::binary);
+	// read version
+	u8 version = readU8(is);
+	// check if version is supported
+	if(version != 0)
+		return NULL;
+	// read name
+	std::string name = deSerializeString(is);
+	// read state
+	std::string state = deSerializeLongString(is);
+	// create object
+	infostream<<"LuaEntitySAO::create(name=\""<<name<<"\" state=\""
+			<<state<<"\")"<<std::endl;
+	return new LuaEntitySAO(env, pos, name, state);
+}
+
+void LuaEntitySAO::step(float dtime, bool send_recommended)
+{
+	if(m_registered){
+		lua_State *L = m_env->getLua();
+		scriptapi_luaentity_step(L, m_id, dtime, send_recommended);
+	}
+}
+
+std::string LuaEntitySAO::getClientInitializationData()
+{
+	std::ostringstream os(std::ios::binary);
+	// version
+	writeU8(os, 0);
+	// pos
+	writeV3F1000(os, m_base_position);
+	return os.str();
+}
+
+std::string LuaEntitySAO::getStaticData()
+{
+	infostream<<__FUNCTION_NAME<<std::endl;
+	std::ostringstream os(std::ios::binary);
+	// version
+	writeU8(os, 0);
+	// name
+	os<<serializeString(m_init_name);
+	// state
+	std::string state = scriptapi_luaentity_get_state(L, m_id);
+	os<<serializeString(state);
+	return os.str();
 }
 
 

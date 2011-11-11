@@ -1,6 +1,6 @@
 /*
 Minetest-c55
-Copyright (C) 2010-2011 celeron55, Perttu Ahola <celeron55@gmail.com>
+Copyright (C) 2011 celeron55, Perttu Ahola <celeron55@gmail.com>
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -17,27 +17,27 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
-#ifndef COMMON_IRRLICHT_HEADER
-#define COMMON_IRRLICHT_HEADER
-
-#define endSceneX(d){d->draw2DLine(v2s32(0,0),v2s32(1,0),\
-video::SColor(255,30,30,30));d->endScene();}
+#ifndef SCRIPTAPI_HEADER
+#define SCRIPTAPI_HEADER
 
 #include "irrlichttypes.h"
+#include <string>
 
-#ifndef SERVER
-#include <SColor.h>
-#include <IMesh.h>
-#include <IImage.h>
-#include <IrrlichtDevice.h>
-#include <IMeshSceneNode.h>
-#include <SMesh.h>
-#include <ISceneManager.h>
-#include <IMeshBuffer.h>
-#include <SMeshBuffer.h>
-#include <IGUIElement.h>
-#include <IGUIEnvironment.h>
-#endif
+class Server;
+class ServerActiveObject;
+typedef struct lua_State lua_State;
+
+void scriptapi_export(lua_State *L, Server *server);
+	
+void scriptapi_add_object_reference(lua_State *L, ServerActiveObject *cobj);
+void scriptapi_rm_object_reference(lua_State *L, ServerActiveObject *cobj);
+
+void scriptapi_luaentity_register(lua_State *L, u16 id, const char *name,
+		const char *init_state);
+void scriptapi_luaentity_deregister(lua_State *L, u16 id);
+void scriptapi_luaentity_step(lua_State *L, u16 id,
+		float dtime, bool send_recommended);
+std::string scriptapi_luaentity_get_state(lua_State *L, u16 id);
 
 #endif
 

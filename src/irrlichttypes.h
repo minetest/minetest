@@ -17,26 +17,35 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
-#ifndef COMMON_IRRLICHT_HEADER
-#define COMMON_IRRLICHT_HEADER
+#ifndef IRRLICHTTYPES_HEADER
+#define IRRLICHTTYPES_HEADER
 
-#define endSceneX(d){d->draw2DLine(v2s32(0,0),v2s32(1,0),\
-video::SColor(255,30,30,30));d->endScene();}
+#include <irrTypes.h>
+#include <vector2d.h>
+#include <vector3d.h>
+#include <irrMap.h>
+#include <irrList.h>
+#include <irrArray.h>
+#include <aabbox3d.h>
+using namespace irr;
+typedef core::vector3df v3f;
+typedef core::vector3d<s16> v3s16;
+typedef core::vector3d<s32> v3s32;
 
-#include "irrlichttypes.h"
+typedef core::vector2d<f32> v2f;
+typedef core::vector2d<s16> v2s16;
+typedef core::vector2d<s32> v2s32;
+typedef core::vector2d<u32> v2u32;
+typedef core::vector2d<f32> v2f32;
 
-#ifndef SERVER
-#include <SColor.h>
-#include <IMesh.h>
-#include <IImage.h>
-#include <IrrlichtDevice.h>
-#include <IMeshSceneNode.h>
-#include <SMesh.h>
-#include <ISceneManager.h>
-#include <IMeshBuffer.h>
-#include <SMeshBuffer.h>
-#include <IGUIElement.h>
-#include <IGUIEnvironment.h>
+#ifdef _MSC_VER
+	// Windows
+	typedef unsigned long long u64;
+#else
+	// Posix
+	#include <stdint.h>
+	typedef uint64_t u64;
+	//typedef unsigned long long u64;
 #endif
 
 #endif

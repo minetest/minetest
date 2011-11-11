@@ -21,8 +21,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <fstream>
 #include "inventory.h"
 
-ServerActiveObject::ServerActiveObject(ServerEnvironment *env, u16 id, v3f pos):
-	ActiveObject(id),
+ServerActiveObject::ServerActiveObject(ServerEnvironment *env, v3f pos):
+	ActiveObject(0),
 	m_known_by_count(0),
 	m_removed(false),
 	m_pending_deactivation(false),
@@ -35,6 +35,11 @@ ServerActiveObject::ServerActiveObject(ServerEnvironment *env, u16 id, v3f pos):
 
 ServerActiveObject::~ServerActiveObject()
 {
+}
+
+void ServerActiveObject::addedToEnvironment(u16 id)
+{
+	setId(id);
 }
 
 ServerActiveObject* ServerActiveObject::create(u8 type,
@@ -53,7 +58,7 @@ ServerActiveObject* ServerActiveObject::create(u8 type,
 	}
 
 	Factory f = n->getValue();
-	ServerActiveObject *object = (*f)(env, id, pos, data);
+	ServerActiveObject *object = (*f)(env, pos, data);
 	return object;
 }
 

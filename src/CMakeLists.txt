@@ -94,6 +94,8 @@ configure_file(
 )
 
 set(common_SRCS
+	scriptapi.cpp
+	script.cpp
 	log.cpp
 	content_sao.cpp
 	mapgen.cpp

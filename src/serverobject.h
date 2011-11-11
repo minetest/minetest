@@ -51,9 +51,11 @@ public:
 		NOTE: m_env can be NULL, but step() isn't called if it is.
 		Prototypes are used that way.
 	*/
-	ServerActiveObject(ServerEnvironment *env, u16 id, v3f pos);
+	ServerActiveObject(ServerEnvironment *env, v3f pos);
 	virtual ~ServerActiveObject();
 
+	virtual void addedToEnvironment(u16 id);
+	
 	// Create a certain type of ServerActiveObject
 	static ServerActiveObject* create(u8 type,
 			ServerEnvironment *env, u16 id, v3f pos,
@@ -160,7 +162,7 @@ public:
 protected:
 	// Used for creating objects based on type
 	typedef ServerActiveObject* (*Factory)
-			(ServerEnvironment *env, u16 id, v3f pos,
+			(ServerEnvironment *env, v3f pos,
 			const std::string &data);
 	static void registerType(u16 type, Factory f);
 

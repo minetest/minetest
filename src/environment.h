@@ -41,6 +41,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 class Server;
 class ActiveBlockModifier;
 class ServerActiveObject;
+typedef struct lua_State lua_State;
 
 class Environment
 {
@@ -126,7 +127,7 @@ private:
 class ServerEnvironment : public Environment
 {
 public:
-	ServerEnvironment(ServerMap *map, Server *server);
+	ServerEnvironment(ServerMap *map, lua_State *L);
 	~ServerEnvironment();
 
 	Map & getMap()
@@ -139,13 +140,11 @@ public:
 		return *m_map;
 	}
 
-	Server * getServer()
+	lua_State* getLua()
 	{
-		return m_server;
+		return m_lua;
 	}
 
-	void step(f32 dtime);
-	
 	/*
 		Save players
 	*/
@@ -222,7 +221,9 @@ public:
 	
 	// Clear all objects, loading and going through every MapBlock
 	void clearAllObjects();
-
+	
+	void step(f32 dtime);
+	
 private:
 
 	/*
@@ -269,8 +270,8 @@ private:
 	
 	// The map
 	ServerMap *m_map;
-	// Pointer to server (which is handling this environment)
-	Server *m_server;
+	// Lua state
+	lua_State *m_lua;
 	// Active object list
 	core::map<u16, ServerActiveObject*> m_active_objects;
 	// Outgoing network message buffer for active objects

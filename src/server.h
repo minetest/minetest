@@ -29,6 +29,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "inventory.h"
 #include "auth.h"
 #include "ban.h"
+struct LuaState;
+typedef struct lua_State lua_State;
 
 /*
 	Some random functions
@@ -391,7 +393,7 @@ public:
 	// Environment must be locked when called
 	void setTimeOfDay(u32 time)
 	{
-		m_env.setTimeOfDay(time);
+		m_env->setTimeOfDay(time);
 		m_time_of_day_send_timer = 0;
 	}
 
@@ -476,6 +478,9 @@ public:
 	// Envlock and conlock should be locked when calling this
 	void notifyPlayer(const char *name, const std::wstring msg);
 	void notifyPlayers(const std::wstring msg);
+	
+	// Envlock and conlock should be locked when using Lua
+	lua_State *getLua(){ return m_lua; }
 
 private:
 
@@ -543,7 +548,7 @@ private:
 	// When called, environment mutex should be locked
 	std::string getPlayerName(u16 peer_id)
 	{
-		Player *player = m_env.getPlayer(peer_id);
+		Player *player = m_env->getPlayer(peer_id);
 		if(player == NULL)
 			return "[id="+itos(peer_id);
 		return player->getName();
@@ -582,7 +587,7 @@ private:
 	// environment shall be locked first.
 
 	// Environment
-	ServerEnvironment m_env;
+	ServerEnvironment *m_env;
 	JMutex m_env_mutex;
 	
 	// Connection
@@ -596,6 +601,10 @@ private:
 
 	// Bann checking
 	BanManager m_banmanager;
+
+	// Scripting
+	// Envlock and conlock should be locked when using Lua
+	lua_State *m_lua;
 	
 	/*
 		Threads

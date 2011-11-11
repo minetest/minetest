@@ -56,9 +56,10 @@ void sigint_handler(int sig)
 		dstream<<DTIME<<"INFO: sigint_handler(): "
 				<<"Ctrl-C pressed, shutting down."<<std::endl;
 		
-		dstream<<DTIME<<"INFO: sigint_handler(): "
+		// Comment out for less clutter when testing scripts
+		/*dstream<<DTIME<<"INFO: sigint_handler(): "
 				<<"Printing debug stacks"<<std::endl;
-		debug_stacks_print();
+		debug_stacks_print();*/
 
 		g_killed = true;
 	}
@@ -91,9 +92,10 @@ void signal_handler_init(void)
 			{
 				dstream<<DTIME<<"INFO: event_handler(): "
 						<<"Ctrl+C, Close Event, Logoff Event or Shutdown Event, shutting down."<<std::endl;
-				dstream<<DTIME<<"INFO: event_handler(): "
+				// Comment out for less clutter when testing scripts
+				/*dstream<<DTIME<<"INFO: event_handler(): "
 						<<"Printing debug stacks"<<std::endl;
-				debug_stacks_print();
+				debug_stacks_print();*/
 
 				g_killed = true;
 			}

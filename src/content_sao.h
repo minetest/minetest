@@ -26,10 +26,10 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 class TestSAO : public ServerActiveObject
 {
 public:
-	TestSAO(ServerEnvironment *env, u16 id, v3f pos);
+	TestSAO(ServerEnvironment *env, v3f pos);
 	u8 getType() const
 		{return ACTIVEOBJECT_TYPE_TEST;}
-	static ServerActiveObject* create(ServerEnvironment *env, u16 id, v3f pos,
+	static ServerActiveObject* create(ServerEnvironment *env, v3f pos,
 			const std::string &data);
 	void step(float dtime, bool send_recommended);
 private:
@@ -40,11 +40,11 @@ private:
 class ItemSAO : public ServerActiveObject
 {
 public:
-	ItemSAO(ServerEnvironment *env, u16 id, v3f pos,
+	ItemSAO(ServerEnvironment *env, v3f pos,
 			const std::string inventorystring);
 	u8 getType() const
 		{return ACTIVEOBJECT_TYPE_ITEM;}
-	static ServerActiveObject* create(ServerEnvironment *env, u16 id, v3f pos,
+	static ServerActiveObject* create(ServerEnvironment *env, v3f pos,
 			const std::string &data);
 	void step(float dtime, bool send_recommended);
 	std::string getClientInitializationData();
@@ -62,10 +62,10 @@ private:
 class RatSAO : public ServerActiveObject
 {
 public:
-	RatSAO(ServerEnvironment *env, u16 id, v3f pos);
+	RatSAO(ServerEnvironment *env, v3f pos);
 	u8 getType() const
 		{return ACTIVEOBJECT_TYPE_RAT;}
-	static ServerActiveObject* create(ServerEnvironment *env, u16 id, v3f pos,
+	static ServerActiveObject* create(ServerEnvironment *env, v3f pos,
 			const std::string &data);
 	void step(float dtime, bool send_recommended);
 	std::string getClientInitializationData();
@@ -87,10 +87,10 @@ private:
 class Oerkki1SAO : public ServerActiveObject
 {
 public:
-	Oerkki1SAO(ServerEnvironment *env, u16 id, v3f pos);
+	Oerkki1SAO(ServerEnvironment *env, v3f pos);
 	u8 getType() const
 		{return ACTIVEOBJECT_TYPE_OERKKI1;}
-	static ServerActiveObject* create(ServerEnvironment *env, u16 id, v3f pos,
+	static ServerActiveObject* create(ServerEnvironment *env, v3f pos,
 			const std::string &data);
 	void step(float dtime, bool send_recommended);
 	std::string getClientInitializationData();
@@ -119,10 +119,10 @@ private:
 class FireflySAO : public ServerActiveObject
 {
 public:
-	FireflySAO(ServerEnvironment *env, u16 id, v3f pos);
+	FireflySAO(ServerEnvironment *env, v3f pos);
 	u8 getType() const
 		{return ACTIVEOBJECT_TYPE_FIREFLY;}
-	static ServerActiveObject* create(ServerEnvironment *env, u16 id, v3f pos,
+	static ServerActiveObject* create(ServerEnvironment *env, v3f pos,
 			const std::string &data);
 	void step(float dtime, bool send_recommended);
 	std::string getClientInitializationData();
@@ -146,12 +146,12 @@ class Settings;
 class MobV2SAO : public ServerActiveObject
 {
 public:
-	MobV2SAO(ServerEnvironment *env, u16 id, v3f pos,
+	MobV2SAO(ServerEnvironment *env, v3f pos,
 			Settings *init_properties);
 	virtual ~MobV2SAO();
 	u8 getType() const
 		{return ACTIVEOBJECT_TYPE_MOBV2;}
-	static ServerActiveObject* create(ServerEnvironment *env, u16 id, v3f pos,
+	static ServerActiveObject* create(ServerEnvironment *env, v3f pos,
 			const std::string &data);
 	std::string getStaticData();
 	std::string getClientInitializationData();
@@ -193,6 +193,28 @@ private:
 	float m_shoot_y;
 	
 	Settings *m_properties;
+};
+
+struct LuaState;
+
+class LuaEntitySAO : public ServerActiveObject
+{
+public:
+	LuaEntitySAO(ServerEnvironment *env, v3f pos,
+			const std::string &name, const std::string &state);
+	~LuaEntitySAO();
+	u8 getType() const
+		{return ACTIVEOBJECT_TYPE_LUAENTITY;}
+	virtual void addedToEnvironment(u16 id);
+	static ServerActiveObject* create(ServerEnvironment *env, v3f pos,
+			const std::string &data);
+	void step(float dtime, bool send_recommended);
+	std::string getClientInitializationData();
+	std::string getStaticData();
+private:
+	std::string m_init_name;
+	std::string m_init_state;
+	bool m_registered;
 };
 
 #endif

@@ -29,6 +29,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "settings.h"
 #include "log.h"
 #include "profiler.h"
+#include "scriptapi.h"
 
 #define PP(x) "("<<(x).X<<","<<(x).Y<<","<<(x).Z<<")"
 
@@ -267,9 +268,9 @@ void ActiveBlockList::update(core::list<v3s16> &active_positions,
 	ServerEnvironment
 */
 
-ServerEnvironment::ServerEnvironment(ServerMap *map, Server *server):
+ServerEnvironment::ServerEnvironment(ServerMap *map, lua_State *L):
 	m_map(map),
-	m_server(server),
+	m_lua(L),
 	m_random_spawn_timer(3),
 	m_send_recommended_timer(0),
 	m_game_time(0),
@@ -674,6 +675,8 @@ void ServerEnvironment::clearAllObjects()
 			obj->m_removed = true;
 			continue;
 		}
+		// Deregister in scripting api
+		scriptapi_rm_object_reference(m_lua, obj);
 		// Delete active object
 		delete obj;
 		// Id to be removed from m_active_objects
@@ -1043,7 +1046,7 @@ void ServerEnvironment::step(float dtime)
 								n1.getContent() == CONTENT_AIR)
 						{
 							v3f pos = intToFloat(p1, BS);
-							ServerActiveObject *obj = new RatSAO(this, 0, pos);
+							ServerActiveObject *obj = new RatSAO(this, pos);
 							addActiveObject(obj);
 						}
 					}
@@ -1071,21 +1074,21 @@ void ServerEnvironment::step(float dtime)
 									Settings properties;
 									getMob_dungeon_master(properties);
 									ServerActiveObject *obj = new MobV2SAO(
-											this, 0, pos, &properties);
+											this, pos, &properties);
 									addActiveObject(obj);
 								} else if(i == 2 || i == 3){
 									actionstream<<"Rats spawn at "
 											<<PP(p1)<<std::endl;
 									for(int j=0; j<3; j++){
 										ServerActiveObject *obj = new RatSAO(
-												this, 0, pos);
+												this, pos);
 										addActiveObject(obj);
 									}
 								} else {
 									actionstream<<"An oerkki spawns at "
 											<<PP(p1)<<std::endl;
 									ServerActiveObject *obj = new Oerkki1SAO(
-											this, 0, pos);
+											this, pos);
 									addActiveObject(obj);
 								}
 							}
@@ -1228,18 +1231,18 @@ void ServerEnvironment::step(float dtime)
 			Create a ServerActiveObject
 		*/
 
-		//TestSAO *obj = new TestSAO(this, 0, pos);
-		//ServerActiveObject *obj = new ItemSAO(this, 0, pos, "CraftItem Stick 1");
-		//ServerActiveObject *obj = new RatSAO(this, 0, pos);
-		//ServerActiveObject *obj = new Oerkki1SAO(this, 0, pos);
-		//ServerActiveObject *obj = new FireflySAO(this, 0, pos);
+		//TestSAO *obj = new TestSAO(this, pos);
+		//ServerActiveObject *obj = new ItemSAO(this, pos, "CraftItem Stick 1");
+		//ServerActiveObject *obj = new RatSAO(this, pos);
+		//ServerActiveObject *obj = new Oerkki1SAO(this, pos);
+		//ServerActiveObject *obj = new FireflySAO(this, pos);
 
 		infostream<<"Server: Spawning MobV2SAO at "
 				<<"("<<pos.X<<","<<pos.Y<<","<<pos.Z<<")"<<std::endl;
 		
 		Settings properties;
 		getMob_dungeon_master(properties);
-		ServerActiveObject *obj = new MobV2SAO(this, 0, pos, &properties);
+		ServerActiveObject *obj = new MobV2SAO(this, pos, &properties);
 		addActiveObject(obj);
 	}
 #endif
@@ -1493,6 +1496,11 @@ u16 ServerEnvironment::addActiveObjectRaw(ServerActiveObject *object,
 				<<"could not find block for storing id="<<object->getId()
 				<<" statically"<<std::endl;
 	}
+	
+	// Post-initialize object
+	object->addedToEnvironment(object->getId());
+	// Register reference in scripting api
+	scriptapi_add_object_reference(m_lua, object);
 
 	return object->getId();
 }
@@ -1544,6 +1552,9 @@ void ServerEnvironment::removeRemovedObjects()
 		if(obj->m_known_by_count > 0)
 			continue;
 		
+		// Deregister in scripting api
+		scriptapi_rm_object_reference(m_lua, obj);
+
 		// Delete
 		delete obj;
 		// Id to be removed from m_active_objects
@@ -1815,6 +1826,10 @@ void ServerEnvironment::deactivateFarObjects(bool force_delete)
 		verbosestream<<"ServerEnvironment::deactivateFarObjects(): "
 				<<"object id="<<id<<" is not known by clients"
 				<<"; deleting"<<std::endl;
+
+		// Deregister in scripting api
+		scriptapi_rm_object_reference(m_lua, obj);
+
 		// Delete active object
 		delete obj;
 		// Id to be removed from m_active_objects

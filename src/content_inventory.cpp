@@ -80,16 +80,16 @@ std::string item_craft_get_image_name(const std::string &subname)
 }
 
 ServerActiveObject* item_craft_create_object(const std::string &subname,
-		ServerEnvironment *env, u16 id, v3f pos)
+		ServerEnvironment *env, v3f pos)
 {
 	if(subname == "rat")
 	{
-		ServerActiveObject *obj = new RatSAO(env, id, pos);
+		ServerActiveObject *obj = new RatSAO(env, pos);
 		return obj;
 	}
 	else if(subname == "firefly")
 	{
-		ServerActiveObject *obj = new FireflySAO(env, id, pos);
+		ServerActiveObject *obj = new FireflySAO(env, pos);
 		return obj;
 	}
 

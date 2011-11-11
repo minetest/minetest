@@ -39,6 +39,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "settings.h"
 #include "profiler.h"
 #include "log.h"
+#include "script.h"
+#include "scriptapi.h"
 
 #define PP(x) "("<<(x).X<<","<<(x).Y<<","<<(x).Z<<")"
 
@@ -185,7 +187,7 @@ void * EmergeThread::Thread()
 					<<"("<<p.X<<","<<p.Y<<","<<p.Z<<") "
 					<<"only_from_disk="<<only_from_disk<<std::endl;
 		
-		ServerMap &map = ((ServerMap&)m_server->m_env.getMap());
+		ServerMap &map = ((ServerMap&)m_server->m_env->getMap());
 			
 		//core::map<v3s16, MapBlock*> changed_blocks;
 		//core::map<v3s16, MapBlock*> lighting_invalidated_blocks;
@@ -250,7 +252,7 @@ void * EmergeThread::Thread()
 					MapEditEventIgnorer ign(&m_server->m_ignore_map_edit_events);
 					
 					// Activate objects and stuff
-					m_server->m_env.activateBlock(block, 3600);
+					m_server->m_env->activateBlock(block, 3600);
 				}
 			}
 			else
@@ -371,7 +373,7 @@ void RemoteClient::GetNextBlocks(Server *server, float dtime,
 
 	//TimeTaker timer("RemoteClient::GetNextBlocks");
 	
-	Player *player = server->m_env.getPlayer(peer_id);
+	Player *player = server->m_env->getPlayer(peer_id);
 
 	assert(player != NULL);
 
@@ -572,7 +574,7 @@ void RemoteClient::GetNextBlocks(Server *server, float dtime,
 					MAP_BLOCKSIZE*p.Z);
 				
 				// Get ground height in nodes
-				s16 gh = server->m_env.getServerMap().findGroundLevel(
+				s16 gh = server->m_env->getServerMap().findGroundLevel(
 						p2d_nodes_center);
 
 				// If differs a lot, don't generate
@@ -611,7 +613,7 @@ void RemoteClient::GetNextBlocks(Server *server, float dtime,
 			/*
 				Check if map has this block
 			*/
-			MapBlock *block = server->m_env.getMap().getBlockNoCreateNoEx(p);
+			MapBlock *block = server->m_env->getMap().getBlockNoCreateNoEx(p);
 			
 			bool surely_not_found_on_disk = false;
 			bool block_is_invalid = false;
@@ -640,7 +642,7 @@ void RemoteClient::GetNextBlocks(Server *server, float dtime,
 
 #if 0
 				v2s16 p2d(p.X, p.Z);
-				ServerMap *map = (ServerMap*)(&server->m_env.getMap());
+				ServerMap *map = (ServerMap*)(&server->m_env->getMap());
 				v2s16 chunkpos = map->sector_to_chunk(p2d);
 				if(map->chunkNonVolatile(chunkpos) == false)
 					block_is_invalid = true;
@@ -802,7 +804,7 @@ void RemoteClient::SendObjectData(
 	*/
 	
 	// Get connected players
-	core::list<Player*> players = server->m_env.getPlayers(true);
+	core::list<Player*> players = server->m_env->getPlayers(true);
 
 	// Write player count
 	u16 playercount = players.size();
@@ -948,10 +950,12 @@ Server::Server(
 		std::string mapsavedir,
 		std::string configpath
 	):
-	m_env(new ServerMap(mapsavedir), this),
+	m_env(NULL),
 	m_con(PROTOCOL_ID, 512, CONNECTION_TIMEOUT, this),
 	m_authmanager(mapsavedir+DIR_DELIM+"auth.txt"),
 	m_banmanager(mapsavedir+DIR_DELIM+"ipban.txt"),
+	m_lua(NULL),
+	//m_scriptapi(NULL),
 	m_thread(this),
 	m_emergethread(this),
 	m_time_counter(0),
@@ -973,20 +977,38 @@ Server::Server(
 	m_con_mutex.Init();
 	m_step_dtime_mutex.Init();
 	m_step_dtime = 0.0;
+
+	JMutexAutoLock envlock(m_env_mutex);
+	JMutexAutoLock conlock(m_con_mutex);
+	
+	// Initialize scripting
+	
+	infostream<<"Server: Initializing scripting"<<std::endl;
+	m_lua = script_init();
+	assert(m_lua);
+	// Export API
+	scriptapi_export(m_lua, this);
+	// Load and run scripts
+	script_load(m_lua, (porting::path_data + DIR_DELIM + "scripts"
+			+ DIR_DELIM + "default.lua").c_str());
+	
+	// Initialize Environment
+	
+	m_env = new ServerEnvironment(new ServerMap(mapsavedir), m_lua);
 	
 	// Register us to receive map edit events
-	m_env.getMap().addEventReceiver(this);
+	m_env->getMap().addEventReceiver(this);
 
 	// If file exists, load environment metadata
 	if(fs::PathExists(m_mapsavedir+DIR_DELIM+"env_meta.txt"))
 	{
 		infostream<<"Server: Loading environment metadata"<<std::endl;
-		m_env.loadMeta(m_mapsavedir);
+		m_env->loadMeta(m_mapsavedir);
 	}
 
 	// Load players
 	infostream<<"Server: Loading players"<<std::endl;
-	m_env.deSerializePlayers(m_mapsavedir);
+	m_env->deSerializePlayers(m_mapsavedir);
 }
 
 Server::~Server()
@@ -1029,13 +1051,13 @@ Server::~Server()
 			Save players
 		*/
 		infostream<<"Server: Saving players"<<std::endl;
-		m_env.serializePlayers(m_mapsavedir);
+		m_env->serializePlayers(m_mapsavedir);
 
 		/*
 			Save environment metadata
 		*/
 		infostream<<"Server: Saving environment metadata"<<std::endl;
-		m_env.saveMeta(m_mapsavedir);
+		m_env->saveMeta(m_mapsavedir);
 	}
 		
 	/*
@@ -1058,13 +1080,20 @@ Server::~Server()
 			{
 				u16 peer_id = i.getNode()->getKey();
 				JMutexAutoLock envlock(m_env_mutex);
-				m_env.removePlayer(peer_id);
+				m_env->removePlayer(peer_id);
 			}*/
 			
 			// Delete client
 			delete i.getNode()->getValue();
 		}
 	}
+
+	// Delete Environment
+	delete m_env;
+	
+	// Deinitialize scripting
+	infostream<<"Server: Deinitializing scripting"<<std::endl;
+	script_deinit(m_lua);
 }
 
 void Server::start(unsigned short port)
@@ -1173,7 +1202,7 @@ void Server::AsyncRunStep()
 		u32 units = (u32)(m_time_counter*speed);
 		m_time_counter -= (f32)units / speed;
 		
-		m_env.setTimeOfDay((m_env.getTimeOfDay() + units) % 24000);
+		m_env->setTimeOfDay((m_env->getTimeOfDay() + units) % 24000);
 		
 		//infostream<<"Server: m_time_of_day = "<<m_time_of_day.get()<<std::endl;
 
@@ -1194,10 +1223,10 @@ void Server::AsyncRunStep()
 				i.atEnd() == false; i++)
 			{
 				RemoteClient *client = i.getNode()->getValue();
-				//Player *player = m_env.getPlayer(client->peer_id);
+				//Player *player = m_env->getPlayer(client->peer_id);
 				
 				SharedBuffer<u8> data = makePacket_TOCLIENT_TIME_OF_DAY(
-						m_env.getTimeOfDay());
+						m_env->getTimeOfDay());
 				// Send as reliable
 				m_con.Send(client->peer_id, 0, data, true);
 			}
@@ -1209,7 +1238,7 @@ void Server::AsyncRunStep()
 		// Step environment
 		ScopeProfiler sp(g_profiler, "SEnv step");
 		ScopeProfiler sp2(g_profiler, "SEnv step avg", SPT_AVG);
-		m_env.step(dtime);
+		m_env->step(dtime);
 	}
 		
 	const float map_timer_and_unload_dtime = 5.15;
@@ -1218,7 +1247,7 @@ void Server::AsyncRunStep()
 		JMutexAutoLock lock(m_env_mutex);
 		// Run Map's timers and unload unused data
 		ScopeProfiler sp(g_profiler, "Server: map timer and unload");
-		m_env.getMap().timerUpdate(map_timer_and_unload_dtime,
+		m_env->getMap().timerUpdate(map_timer_and_unload_dtime,
 				g_settings->getFloat("server_unload_unused_data_timeout"));
 	}
 	
@@ -1239,13 +1268,13 @@ void Server::AsyncRunStep()
 		ScopeProfiler sp(g_profiler, "Server: liquid transform");
 
 		core::map<v3s16, MapBlock*> modified_blocks;
-		m_env.getMap().transformLiquids(modified_blocks);
+		m_env->getMap().transformLiquids(modified_blocks);
 #if 0		
 		/*
 			Update lighting
 		*/
 		core::map<v3s16, MapBlock*> lighting_modified_blocks;
-		ServerMap &map = ((ServerMap&)m_env.getMap());
+		ServerMap &map = ((ServerMap&)m_env->getMap());
 		map.updateLighting(modified_blocks, lighting_modified_blocks);
 		
 		// Add blocks modified by lighting to modified_blocks
@@ -1295,7 +1324,7 @@ void Server::AsyncRunStep()
 			{
 				//u16 peer_id = i.getNode()->getKey();
 				RemoteClient *client = i.getNode()->getValue();
-				Player *player = m_env.getPlayer(client->peer_id);
+				Player *player = m_env->getPlayer(client->peer_id);
 				if(player==NULL)
 					continue;
 				infostream<<"* "<<player->getName()<<"\t";
@@ -1326,7 +1355,7 @@ void Server::AsyncRunStep()
 			i.atEnd() == false; i++)
 		{
 			RemoteClient *client = i.getNode()->getValue();
-			Player *player = m_env.getPlayer(client->peer_id);
+			Player *player = m_env->getPlayer(client->peer_id);
 			if(player==NULL)
 			{
 				// This can happen if the client timeouts somehow
@@ -1339,9 +1368,9 @@ void Server::AsyncRunStep()
 
 			core::map<u16, bool> removed_objects;
 			core::map<u16, bool> added_objects;
-			m_env.getRemovedActiveObjects(pos, radius,
+			m_env->getRemovedActiveObjects(pos, radius,
 					client->m_known_objects, removed_objects);
-			m_env.getAddedActiveObjects(pos, radius,
+			m_env->getAddedActiveObjects(pos, radius,
 					client->m_known_objects, added_objects);
 			
 			// Ignore if nothing happened
@@ -1364,7 +1393,7 @@ void Server::AsyncRunStep()
 			{
 				// Get object
 				u16 id = i.getNode()->getKey();
-				ServerActiveObject* obj = m_env.getActiveObject(id);
+				ServerActiveObject* obj = m_env->getActiveObject(id);
 
 				// Add to data buffer for sending
 				writeU16((u8*)buf, i.getNode()->getKey());
@@ -1386,7 +1415,7 @@ void Server::AsyncRunStep()
 			{
 				// Get object
 				u16 id = i.getNode()->getKey();
-				ServerActiveObject* obj = m_env.getActiveObject(id);
+				ServerActiveObject* obj = m_env->getActiveObject(id);
 				
 				// Get object type
 				u8 type = ACTIVEOBJECT_TYPE_INVALID;
@@ -1452,7 +1481,7 @@ void Server::AsyncRunStep()
 			}
 		}
 		
-		m_env.setKnownActiveObjects(whatever);
+		m_env->setKnownActiveObjects(whatever);
 #endif
 
 	}
@@ -1473,7 +1502,7 @@ void Server::AsyncRunStep()
 		// Get active object messages from environment
 		for(;;)
 		{
-			ActiveObjectMessage aom = m_env.getActiveObjectMessage();
+			ActiveObjectMessage aom = m_env->getActiveObjectMessage();
 			if(aom.id == 0)
 				break;
 			
@@ -1662,7 +1691,7 @@ void Server::AsyncRunStep()
 				{
 					v3s16 p = i.getNode()->getKey();
 					modified_blocks2.insert(p,
-							m_env.getMap().getBlockNoCreateNoEx(p));
+							m_env->getMap().getBlockNoCreateNoEx(p));
 				}
 				// Set blocks not sent
 				for(core::list<u16>::Iterator
@@ -1749,15 +1778,15 @@ void Server::AsyncRunStep()
 			JMutexAutoLock lock(m_env_mutex);
 
 			/*// Unload unused data (delete from memory)
-			m_env.getMap().unloadUnusedData(
+			m_env->getMap().unloadUnusedData(
 					g_settings->getFloat("server_unload_unused_sectors_timeout"));
 					*/
-			/*u32 deleted_count = m_env.getMap().unloadUnusedData(
+			/*u32 deleted_count = m_env->getMap().unloadUnusedData(
 					g_settings->getFloat("server_unload_unused_sectors_timeout"));
 					*/
 
 			// Save only changed parts
-			m_env.getMap().save(true);
+			m_env->getMap().save(true);
 
 			/*if(deleted_count > 0)
 			{
@@ -1766,10 +1795,10 @@ void Server::AsyncRunStep()
 			}*/
 
 			// Save players
-			m_env.serializePlayers(m_mapsavedir);
+			m_env->serializePlayers(m_mapsavedir);
 			
 			// Save environment metadata
-			m_env.saveMeta(m_mapsavedir);
+			m_env->saveMeta(m_mapsavedir);
 		}
 	}
 }
@@ -1811,7 +1840,7 @@ void Server::Receive()
 				<<" has apparently closed connection. "
 				<<"Removing player."<<std::endl;
 
-		m_env.removePlayer(peer_id);*/
+		m_env->removePlayer(peer_id);*/
 	}
 }
 
@@ -2026,7 +2055,7 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 			writeU16(&reply[0], TOCLIENT_INIT);
 			writeU8(&reply[2], deployed);
 			writeV3S16(&reply[2+1], floatToInt(player->getPosition()+v3f(0,BS/2,0), BS));
-			writeU64(&reply[2+1+6], m_env.getServerMap().getSeed());
+			writeU64(&reply[2+1+6], m_env->getServerMap().getSeed());
 			
 			// Send as reliable
 			m_con.Send(peer_id, 0, reply, true);
@@ -2063,7 +2092,7 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 		// Send player items to all players
 		SendPlayerItems();
 
-		Player *player = m_env.getPlayer(peer_id);
+		Player *player = m_env->getPlayer(peer_id);
 
 		// Send HP
 		SendPlayerHP(player);
@@ -2071,7 +2100,7 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 		// Send time of day
 		{
 			SharedBuffer<u8> data = makePacket_TOCLIENT_TIME_OF_DAY(
-					m_env.getTimeOfDay());
+					m_env->getTimeOfDay());
 			m_con.Send(peer_id, 0, data, true);
 		}
 		
@@ -2081,7 +2110,7 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 		// Send information about joining in chat
 		{
 			std::wstring name = L"unknown";
-			Player *player = m_env.getPlayer(peer_id);
+			Player *player = m_env->getPlayer(peer_id);
 			if(player != NULL)
 				name = narrow_to_wide(player->getName());
 			
@@ -2117,7 +2146,7 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 				if(client->serialization_version == SER_FMT_VER_INVALID)
 					continue;
 				// Get player
-				Player *player = m_env.getPlayer(client->peer_id);
+				Player *player = m_env->getPlayer(client->peer_id);
 				if(!player)
 					continue;
 				// Get name of player
@@ -2139,7 +2168,7 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 		return;
 	}
 	
-	Player *player = m_env.getPlayer(peer_id);
+	Player *player = m_env->getPlayer(peer_id);
 
 	if(player == NULL){
 		infostream<<"Server::ProcessData(): Cancelling: "
@@ -2247,7 +2276,7 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 		u16 id = readS16(&data[3]);
 		u16 item_i = readU16(&data[5]);
 	
-		ServerActiveObject *obj = m_env.getActiveObject(id);
+		ServerActiveObject *obj = m_env->getActiveObject(id);
 
 		if(obj == NULL)
 		{
@@ -2421,7 +2450,7 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 
 			try
 			{
-				MapNode n = m_env.getMap().getNode(p_under);
+				MapNode n = m_env->getMap().getNode(p_under);
 				// Get mineral
 				mineral = n.getMineral();
 				// Get material at position
@@ -2442,7 +2471,7 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 				if(cannot_remove_node == false)
 				{
 					// Get node metadata
-					NodeMetadata *meta = m_env.getMap().getNodeMetadata(p_under);
+					NodeMetadata *meta = m_env->getMap().getNodeMetadata(p_under);
 					if(meta && meta->nodeRemovalDisabled() == true)
 					{
 						infostream<<"Server: Not finishing digging: "
@@ -2608,7 +2637,7 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 			{
 				MapEditEventIgnorer ign(&m_ignore_map_edit_events);
 
-				m_env.getMap().removeNodeAndUpdate(p_under, modified_blocks);
+				m_env->getMap().removeNodeAndUpdate(p_under, modified_blocks);
 			}
 			/*
 				Set blocks not sent to far players
@@ -2649,7 +2678,7 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 			{
 				try{
 					// Don't add a node if this is not a free space
-					MapNode n2 = m_env.getMap().getNode(p_over);
+					MapNode n2 = m_env->getMap().getNode(p_over);
 					bool no_enough_privs =
 							((getPlayerPrivs(player) & PRIV_BUILD)==0);
 					if(no_enough_privs)
@@ -2750,7 +2779,7 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 					MapEditEventIgnorer ign(&m_ignore_map_edit_events);
 
 					std::string p_name = std::string(player->getName());
-					m_env.getMap().addNodeAndUpdate(p_over, n, modified_blocks, p_name);
+					m_env->getMap().addNodeAndUpdate(p_over, n, modified_blocks, p_name);
 				}
 				/*
 					Set blocks not sent to far players
@@ -2792,7 +2821,7 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 					Check that the block is loaded so that the item
 					can properly be added to the static list too
 				*/
-				MapBlock *block = m_env.getMap().getBlockNoCreateNoEx(blockpos);
+				MapBlock *block = m_env->getMap().getBlockNoCreateNoEx(blockpos);
 				if(block==NULL)
 				{
 					infostream<<"Error while placing object: "
@@ -2823,7 +2852,7 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 				/*
 					Create the object
 				*/
-				ServerActiveObject *obj = item->createSAO(&m_env, 0, pos);
+				ServerActiveObject *obj = item->createSAO(m_env, 0, pos);
 
 				if(obj == NULL)
 				{
@@ -2837,7 +2866,7 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 							<<" at "<<PP(p_over)<<std::endl;
 				
 					// Add the object to the environment
-					m_env.addActiveObject(obj);
+					m_env->addActiveObject(obj);
 					
 					infostream<<"Placed object"<<std::endl;
 
@@ -2924,7 +2953,7 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 			text += (char)buf[0];
 		}
 
-		NodeMetadata *meta = m_env.getMap().getNodeMetadata(p);
+		NodeMetadata *meta = m_env->getMap().getNodeMetadata(p);
 		if(!meta)
 			return;
 		if(meta->typeId() != CONTENT_SIGN_WALL)
@@ -2936,7 +2965,7 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 				<<" at "<<PP(p)<<std::endl;
 				
 		v3s16 blockpos = getNodeBlockPos(p);
-		MapBlock *block = m_env.getMap().getBlockNoCreateNoEx(blockpos);
+		MapBlock *block = m_env->getMap().getBlockNoCreateNoEx(blockpos);
 		if(block)
 		{
 			block->setChangedFlag();
@@ -3052,7 +3081,7 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 						p.X = stoi(fn.next(","));
 						p.Y = stoi(fn.next(","));
 						p.Z = stoi(fn.next(","));
-						NodeMetadata *meta = m_env.getMap().getNodeMetadata(p);
+						NodeMetadata *meta = m_env->getMap().getNodeMetadata(p);
 						if(meta && meta->typeId() == CONTENT_LOCKABLE_CHEST) {
 							LockingChestNodeMetadata *lcm = (LockingChestNodeMetadata*)meta;
 							if (lcm->getOwner() != player->getName())
@@ -3070,7 +3099,7 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 						p.X = stoi(fn.next(","));
 						p.Y = stoi(fn.next(","));
 						p.Z = stoi(fn.next(","));
-						NodeMetadata *meta = m_env.getMap().getNodeMetadata(p);
+						NodeMetadata *meta = m_env->getMap().getNodeMetadata(p);
 						if(meta && meta->typeId() == CONTENT_LOCKABLE_CHEST) {
 							LockingChestNodeMetadata *lcm = (LockingChestNodeMetadata*)meta;
 							if (lcm->getOwner() != player->getName())
@@ -3153,7 +3182,7 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 				str_split(message, L' '),
 				paramstring,
 				this,
-				&m_env,
+				m_env,
 				player,
 				privs);
 
@@ -3356,7 +3385,7 @@ Inventory* Server::getInventory(InventoryContext *c, std::string id)
 		p.X = stoi(fn.next(","));
 		p.Y = stoi(fn.next(","));
 		p.Z = stoi(fn.next(","));
-		NodeMetadata *meta = m_env.getMap().getNodeMetadata(p);
+		NodeMetadata *meta = m_env->getMap().getNodeMetadata(p);
 		if(meta)
 			return meta->getInventory();
 		infostream<<"nodemeta at ("<<p.X<<","<<p.Y<<","<<p.Z<<"): "
@@ -3389,7 +3418,7 @@ void Server::inventoryModified(InventoryContext *c, std::string id)
 		p.Z = stoi(fn.next(","));
 		v3s16 blockpos = getNodeBlockPos(p);
 
-		NodeMetadata *meta = m_env.getMap().getNodeMetadata(p);
+		NodeMetadata *meta = m_env->getMap().getNodeMetadata(p);
 		if(meta)
 			meta->inventoryModified();
 
@@ -3415,7 +3444,7 @@ core::list<PlayerInfo> Server::getPlayerInfo()
 	
 	core::list<PlayerInfo> list;
 
-	core::list<Player*> players = m_env.getPlayers();
+	core::list<Player*> players = m_env->getPlayers();
 	
 	core::list<Player*>::Iterator i;
 	for(i = players.begin();
@@ -3559,7 +3588,7 @@ void Server::SendPlayerInfos()
 	//JMutexAutoLock envlock(m_env_mutex);
 	
 	// Get connected players
-	core::list<Player*> players = m_env.getPlayers(true);
+	core::list<Player*> players = m_env->getPlayers(true);
 	
 	u32 player_count = players.getSize();
 	u32 datasize = 2+(2+PLAYERNAME_SIZE)*player_count;
@@ -3593,7 +3622,7 @@ void Server::SendInventory(u16 peer_id)
 {
 	DSTACK(__FUNCTION_NAME);
 	
-	Player* player = m_env.getPlayer(peer_id);
+	Player* player = m_env->getPlayer(peer_id);
 	assert(player);
 
 	/*
@@ -3650,7 +3679,7 @@ void Server::SendPlayerItems()
 	DSTACK(__FUNCTION_NAME);
 
 	std::ostringstream os(std::ios_base::binary);
-	core::list<Player *> players = m_env.getPlayers(true);
+	core::list<Player *> players = m_env->getPlayers(true);
 
 	writeU16(os, TOCLIENT_PLAYERITEM);
 	writeU16(os, players.size());
@@ -3779,7 +3808,7 @@ void Server::sendRemoveNode(v3s16 p, u16 ignore_id,
 		if(far_players)
 		{
 			// Get player
-			Player *player = m_env.getPlayer(client->peer_id);
+			Player *player = m_env->getPlayer(client->peer_id);
 			if(player)
 			{
 				// If player is far away, only set modified blocks not sent
@@ -3820,7 +3849,7 @@ void Server::sendAddNode(v3s16 p, MapNode n, u16 ignore_id,
 		if(far_players)
 		{
 			// Get player
-			Player *player = m_env.getPlayer(client->peer_id);
+			Player *player = m_env->getPlayer(client->peer_id);
 			if(player)
 			{
 				// If player is far away, only set modified blocks not sent
@@ -3960,7 +3989,7 @@ void Server::SendBlocks(float dtime)
 		MapBlock *block = NULL;
 		try
 		{
-			block = m_env.getMap().getBlockNoCreate(q.pos);
+			block = m_env->getMap().getBlockNoCreate(q.pos);
 		}
 		catch(InvalidPositionException &e)
 		{
@@ -4019,7 +4048,7 @@ void Server::HandlePlayerHP(Player *player, s16 damage)
 
 void Server::RespawnPlayer(Player *player)
 {
-	v3f pos = findSpawnPos(m_env.getServerMap());
+	v3f pos = findSpawnPos(m_env->getServerMap());
 	player->setPosition(pos);
 	player->hp = 20;
 	SendMovePlayer(player);
@@ -4030,7 +4059,7 @@ void Server::UpdateCrafting(u16 peer_id)
 {
 	DSTACK(__FUNCTION_NAME);
 	
-	Player* player = m_env.getPlayer(peer_id);
+	Player* player = m_env->getPlayer(peer_id);
 	assert(player);
 
 	/*
@@ -4096,7 +4125,7 @@ std::wstring Server::getStatusString()
 		if(client->serialization_version == SER_FMT_VER_INVALID)
 			continue;
 		// Get player
-		Player *player = m_env.getPlayer(client->peer_id);
+		Player *player = m_env->getPlayer(client->peer_id);
 		// Get name of player
 		std::wstring name = L"unknown";
 		if(player != NULL)
@@ -4105,7 +4134,7 @@ std::wstring Server::getStatusString()
 		os<<name<<L",";
 	}
 	os<<L"}";
-	if(((ServerMap*)(&m_env.getMap()))->isSavingEnabled() == false)
+	if(((ServerMap*)(&m_env->getMap()))->isSavingEnabled() == false)
 		os<<std::endl<<L"# Server: "<<" WARNING: Map saving is disabled.";
 	if(g_settings->get("motd") != "")
 		os<<std::endl<<L"# Server: "<<narrow_to_wide(g_settings->get("motd"));
@@ -4121,7 +4150,7 @@ void Server::saveConfig()
 
 void Server::notifyPlayer(const char *name, const std::wstring msg)
 {
-	Player *player = m_env.getPlayer(name);
+	Player *player = m_env->getPlayer(name);
 	if(!player)
 		return;
 	SendChatMessage(player->peer_id, std::wstring(L"Server: -!- ")+msg);
@@ -4200,7 +4229,7 @@ Player *Server::emergePlayer(const char *name, const char *password, u16 peer_id
 	/*
 		Try to get an existing player
 	*/
-	Player *player = m_env.getPlayer(name);
+	Player *player = m_env->getPlayer(name);
 	if(player != NULL)
 	{
 		// If player is already connected, cancel
@@ -4230,7 +4259,7 @@ Player *Server::emergePlayer(const char *name, const char *password, u16 peer_id
 	/*
 		If player with the wanted peer_id already exists, cancel.
 	*/
-	if(m_env.getPlayer(peer_id) != NULL)
+	if(m_env->getPlayer(peer_id) != NULL)
 	{
 		infostream<<"emergePlayer(): Player with wrong name but same"
 				" peer_id already exists"<<std::endl;
@@ -4258,7 +4287,7 @@ Player *Server::emergePlayer(const char *name, const char *password, u16 peer_id
 		infostream<<"Server: Finding spawn place for player \""
 				<<player->getName()<<"\""<<std::endl;
 
-		v3f pos = findSpawnPos(m_env.getServerMap());
+		v3f pos = findSpawnPos(m_env->getServerMap());
 
 		player->setPosition(pos);
 
@@ -4266,7 +4295,7 @@ Player *Server::emergePlayer(const char *name, const char *password, u16 peer_id
 			Add player to environment
 		*/
 
-		m_env.addPlayer(player);
+		m_env->addPlayer(player);
 
 		/*
 			Add stuff to inventory
@@ -4337,7 +4366,7 @@ void Server::handlePeerChange(PeerChange &c)
 		{
 			// Get object
 			u16 id = i.getNode()->getKey();
-			ServerActiveObject* obj = m_env.getActiveObject(id);
+			ServerActiveObject* obj = m_env->getActiveObject(id);
 			
 			if(obj && obj->m_known_by_count > 0)
 				obj->m_known_by_count--;
@@ -4346,7 +4375,7 @@ void Server::handlePeerChange(PeerChange &c)
 		// Collect information about leaving in chat
 		std::wstring message;
 		{
-			Player *player = m_env.getPlayer(c.peer_id);
+			Player *player = m_env->getPlayer(c.peer_id);
 			if(player != NULL)
 			{
 				std::wstring name = narrow_to_wide(player->getName());
@@ -4360,12 +4389,12 @@ void Server::handlePeerChange(PeerChange &c)
 
 		/*// Delete player
 		{
-			m_env.removePlayer(c.peer_id);
+			m_env->removePlayer(c.peer_id);
 		}*/
 
 		// Set player client disconnected
 		{
-			Player *player = m_env.getPlayer(c.peer_id);
+			Player *player = m_env->getPlayer(c.peer_id);
 			if(player != NULL)
 				player->peer_id = 0;
 			
@@ -4384,7 +4413,7 @@ void Server::handlePeerChange(PeerChange &c)
 					if(client->serialization_version == SER_FMT_VER_INVALID)
 						continue;
 					// Get player
-					Player *player = m_env.getPlayer(client->peer_id);
+					Player *player = m_env->getPlayer(client->peer_id);
 					if(!player)
 						continue;
 					// Get name of player

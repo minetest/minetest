@@ -136,7 +136,7 @@ ServerActiveObject* InventoryItem::createSAO(ServerEnvironment *env, u16 id, v3f
 		Create an ItemSAO
 	*/
 	// Create object
-	ServerActiveObject *obj = new ItemSAO(env, 0, pos, getItemString());
+	ServerActiveObject *obj = new ItemSAO(env, pos, getItemString());
 	return obj;
 }
 
@@ -174,7 +174,7 @@ video::ITexture * CraftItem::getImage() const
 ServerActiveObject* CraftItem::createSAO(ServerEnvironment *env, u16 id, v3f pos)
 {
 	// Special cases
-	ServerActiveObject *obj = item_craft_create_object(m_subname, env, id, pos);
+	ServerActiveObject *obj = item_craft_create_object(m_subname, env, pos);
 	if(obj)
 		return obj;
 	// Default
