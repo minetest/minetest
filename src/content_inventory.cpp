@@ -75,6 +75,8 @@ std::string item_craft_get_image_name(const std::string &subname)
 		return "apple.png^[forcesingle";
 	else if(subname == "apple_iron")
 		return "apple_iron.png";
+	else if(subname == "testobject1") // test object
+		return "unknown_block.png^[forcesingle";
 	else
 		return "cloud.png"; // just something
 }
@@ -92,13 +94,18 @@ ServerActiveObject* item_craft_create_object(const std::string &subname,
 		ServerActiveObject *obj = new FireflySAO(env, pos);
 		return obj;
 	}
+	else if(subname == "testobject1")
+	{
+		ServerActiveObject *obj = new LuaEntitySAO(env, pos, "TNT", "");
+		return obj;
+	}
 
 	return NULL;
 }
 
 s16 item_craft_get_drop_count(const std::string &subname)
 {
-	if(subname == "rat" || subname == "firefly")
+	if(subname == "rat" || subname == "firefly" || subname == "testobject1")
 		return 1;
 
 	return -1;

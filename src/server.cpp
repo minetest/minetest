@@ -989,8 +989,14 @@ Server::Server(
 	// Export API
 	scriptapi_export(m_lua, this);
 	// Load and run scripts
-	script_load(m_lua, (porting::path_data + DIR_DELIM + "scripts"
-			+ DIR_DELIM + "default.lua").c_str());
+	std::string defaultscript = porting::path_data + DIR_DELIM
+			+ "scripts" + DIR_DELIM + "default.lua";
+	bool success = script_load(m_lua, defaultscript.c_str());
+	if(!success){
+		errorstream<<"Server: Failed to load and run "
+				<<defaultscript<<std::endl;
+		assert(0);
+	}
 	
 	// Initialize Environment
 	

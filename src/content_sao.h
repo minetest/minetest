@@ -211,6 +211,7 @@ public:
 	void step(float dtime, bool send_recommended);
 	std::string getClientInitializationData();
 	std::string getStaticData();
+	InventoryItem* createPickedUpItem();
 private:
 	std::string m_init_name;
 	std::string m_init_state;

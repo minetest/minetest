@@ -131,9 +131,10 @@ end
 print("omg lol")
 print("minetest dump: "..dump(minetest))
 
-minetest.register_object("a", "dummy string");
+minetest.register_entity("a", "dummy string");
 
-local TNT = minetest.new_entity {
+--local TNT = minetest.new_entity {
+local TNT = {
 	-- Maybe handle gravity and collision this way? dunno
 	physical = true,
 	weight = 5,
@@ -176,9 +177,9 @@ end
 print("TNT dump: "..dump(TNT))
 
 print("Registering TNT");
-minetest.register_object("TNT", TNT)
+minetest.register_entity("TNT", TNT)
 
---print("minetest.registered_objects: "..dump(minetest.registered_objects))
-print("minetest.registered_objects:")
-serialize(minetest.registered_objects)
+--print("minetest.registered_entities: "..dump(minetest.registered_entities))
+print("minetest.registered_entities:")
+serialize(minetest.registered_entities)
 

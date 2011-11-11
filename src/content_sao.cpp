@@ -1576,9 +1576,22 @@ std::string LuaEntitySAO::getStaticData()
 	// name
 	os<<serializeString(m_init_name);
 	// state
-	std::string state = scriptapi_luaentity_get_state(L, m_id);
-	os<<serializeString(state);
+	if(m_registered){
+		lua_State *L = m_env->getLua();
+		scriptapi_luaentity_deregister(L, m_id);
+		std::string state = scriptapi_luaentity_get_state(L, m_id);
+		os<<serializeLongString(state);
+	} else {
+		os<<serializeLongString(m_init_state);
+	}
 	return os.str();
+}
+
+InventoryItem* LuaEntitySAO::createPickedUpItem()
+{
+	std::istringstream is("CraftItem testobject1 1", std::ios_base::binary);
+	InventoryItem *item = InventoryItem::deSerialize(is);
+	return item;
 }
 
 

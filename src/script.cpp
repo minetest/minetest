@@ -108,7 +108,8 @@ bool script_load(lua_State *L, const char *path)
 	infostream<<"Loading and running script from "<<path<<std::endl;
 	int ret = luaL_loadfile(L, path) || lua_pcall(L, 0, 0, 0);
 	if(ret){
-		errorstream<<"Failed to load and run script from "<<path<<": "<<lua_tostring(L, -1)<<std::endl;
+		errorstream<<"Failed to load and run script from "<<path<<":"<<std::endl;
+		errorstream<<"[LUA] "<<lua_tostring(L, -1)<<std::endl;
 		lua_pop(L, 1); // Pop error message from stack
 		return false;
 	}

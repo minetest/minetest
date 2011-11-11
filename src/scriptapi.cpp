@@ -77,24 +77,25 @@ static void realitycheck(lua_State *L)
 }
 
 // Register new object prototype (must be based on entity)
-static int l_register_object(lua_State *L)
+static int l_register_entity(lua_State *L)
 {
 	const char *name = luaL_checkstring(L, 1);
 	luaL_checkany(L, 2);
-	infostream<<"register_object: "<<name<<std::endl;
+	infostream<<"register_entity: "<<name<<std::endl;
 	// Get the minetest table
 	lua_getglobal(L, "minetest");
-	// Get field "registered_objects"
-	lua_getfield(L, -1, "registered_objects");
+	// Get field "registered_entities"
+	lua_getfield(L, -1, "registered_entities");
 	luaL_checktype(L, -1, LUA_TTABLE);
 	int objectstable = lua_gettop(L);
 	// Object is in param 2
 	lua_pushvalue(L, 2); // Copy object to top of stack
-	lua_setfield(L, objectstable, name); // registered_objects[name] = object
+	lua_setfield(L, objectstable, name); // registered_entities[name] = object
 
 	return 0; /* number of results */
 }
 
+#if 0
 static int l_new_entity(lua_State *L)
 {
 	/* o = o or {}
@@ -111,10 +112,11 @@ static int l_new_entity(lua_State *L)
 	// return table
 	return 1;
 }
+#endif
 
 static const struct luaL_Reg minetest_f [] = {
-	{"register_object", l_register_object},
-	{"new_entity", l_new_entity},
+	{"register_entity", l_register_entity},
+	//{"new_entity", l_new_entity},
 	{NULL, NULL}
 };
 
@@ -251,9 +253,9 @@ void scriptapi_export(lua_State *L, Server *server)
 	// Get the main minetest table
 	lua_getglobal(L, "minetest");
 
-	// Add registered_objects table in minetest
+	// Add registered_entities table in minetest
 	lua_newtable(L);
-	lua_setfield(L, -2, "registered_objects");
+	lua_setfield(L, -2, "registered_entities");
 
 	// Add object_refs table in minetest
 	lua_newtable(L);
@@ -328,7 +330,7 @@ void scriptapi_luaentity_deregister(lua_State *L, u16 id)
 	lua_pop(L, 1); // pop object*/
 
 	// Set luaentities[id] = nil
-	lua_pushnumber(L, cobj->getId()); // Push id
+	lua_pushnumber(L, id); // Push id
 	lua_pushnil(L);
 	lua_settable(L, objectstable);
 	
@@ -340,7 +342,7 @@ void scriptapi_luaentity_step(lua_State *L, u16 id,
 {
 	realitycheck(L);
 	assert(lua_checkstack(L, 20));
-	infostream<<"scriptapi_luaentity_step: id="<<id<<std::endl;
+	//infostream<<"scriptapi_luaentity_step: id="<<id<<std::endl;
 
 	// Get minetest.luaentities table
 	lua_getglobal(L, "minetest");
@@ -349,7 +351,7 @@ void scriptapi_luaentity_step(lua_State *L, u16 id,
 	int objectstable = lua_gettop(L);
 	
 	// Get luaentities[id]
-	lua_pushnumber(L, cobj->getId()); // Push id
+	lua_pushnumber(L, id); // Push id
 	lua_gettable(L, objectstable);
 
 	// TODO: Call step function
