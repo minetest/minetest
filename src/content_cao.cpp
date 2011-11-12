@@ -1366,9 +1366,11 @@ void LuaEntityCAO::processMessage(const std::string &data)
 		m_position = readV3F1000(is);
 		// yaw
 		m_yaw = readF1000(is);
+		// is_end_position (for interpolation)
+		bool is_end_position = readU8(is);
 		
 		if(do_interpolate)
-			pos_translator.update(m_position);
+			pos_translator.update(m_position, is_end_position);
 		else
 			pos_translator.init(m_position);
 		updateNodePos();

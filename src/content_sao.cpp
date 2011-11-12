@@ -1572,14 +1572,17 @@ void LuaEntitySAO::step(float dtime, bool send_recommended)
 	if(send_recommended == false)
 		return;
 	
+	bool move_end = false;
 	float minchange = 0.2*BS;
-	if(m_last_sent_position_timer > 1.0)
+	if(m_last_sent_position_timer > 1.0){
 		minchange = 0.01*BS;
-	else if(m_last_sent_position_timer > 0.2)
+		move_end = true;
+	} else if(m_last_sent_position_timer > 0.2){
 		minchange = 0.05*BS;
+	}
 	if(m_base_position.getDistanceFrom(m_last_sent_position) > minchange
 			|| fabs(m_yaw - m_last_sent_yaw) > 1.0){
-		sendPosition(true);
+		sendPosition(true, move_end);
 	}
 }
 
@@ -1643,15 +1646,16 @@ void LuaEntitySAO::rightClick(Player *player)
 void LuaEntitySAO::setPos(v3f pos)
 {
 	m_base_position = pos;
-	sendPosition(false);
+	sendPosition(false, true);
 }
 
 void LuaEntitySAO::moveTo(v3f pos)
 {
 	m_base_position = pos;
+	sendPosition(true, true);
 }
 
-void LuaEntitySAO::sendPosition(bool do_interpolate)
+void LuaEntitySAO::sendPosition(bool do_interpolate, bool is_movement_end)
 {
 	m_last_sent_yaw = m_yaw;
 	m_last_sent_position = m_base_position;
@@ -1660,12 +1664,16 @@ void LuaEntitySAO::sendPosition(bool do_interpolate)
 	std::ostringstream os(std::ios::binary);
 	// command (0 = update position)
 	writeU8(os, 0);
+
 	// do_interpolate
 	writeU8(os, do_interpolate);
 	// pos
 	writeV3F1000(os, m_base_position);
 	// yaw
 	writeF1000(os, m_yaw);
+	// is_end_position (for interpolation)
+	writeU8(os, is_movement_end);
+
 	// create message and add to list
 	ActiveObjectMessage aom(getId(), false, os.str());
 	m_messages_out.push_back(aom);

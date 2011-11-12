@@ -35,6 +35,7 @@ struct SmoothTranslator
 	v3f vect_old;
 	v3f vect_show;
 	v3f vect_aim;
+	bool aim_is_end;
 	f32 anim_counter;
 	f32 anim_time;
 	f32 anim_time_counter;
@@ -53,6 +54,7 @@ struct SmoothTranslator
 		vect_old = vect;
 		vect_show = vect;
 		vect_aim = vect;
+		aim_is_end = true;
 		anim_counter = 0;
 		anim_time = 0;
 		anim_time_counter = 0;
@@ -63,8 +65,9 @@ struct SmoothTranslator
 		init(vect_show);
 	}
 
-	void update(v3f vect_new)
+	void update(v3f vect_new, bool is_end_position=false)
 	{
+		aim_is_end = is_end_position;
 		vect_old = vect_show;
 		vect_aim = vect_new;
 		if(anim_time < 0.001 || anim_time > 1.0)
@@ -85,8 +88,11 @@ struct SmoothTranslator
 			moveratio = anim_time_counter / anim_time;
 		// Move a bit less than should, to avoid oscillation
 		moveratio = moveratio * 0.5;
-		if(moveratio > 1.5)
-			moveratio = 1.5;
+		float move_end = 1.5;
+		if(aim_is_end)
+			move_end = 1.0;
+		if(moveratio > move_end)
+			moveratio = move_end;
 		vect_show = vect_old + vect_move * moveratio;
 	}
 

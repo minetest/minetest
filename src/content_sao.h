@@ -219,7 +219,7 @@ public:
 	void setPos(v3f pos);
 	void moveTo(v3f pos);
 private:
-	void sendPosition(bool do_interpolate);
+	void sendPosition(bool do_interpolate, bool is_movement_end);
 
 	std::string m_init_name;
 	std::string m_init_state;
