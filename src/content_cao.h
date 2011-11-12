@@ -410,13 +410,16 @@ public:
 	core::aabbox3d<f32>* getSelectionBox()
 		{return &m_selection_box;}
 	v3f getPosition()
-		{return m_position;}
+		{return pos_translator.vect_show;}
 
 private:
 	core::aabbox3d<f32> m_selection_box;
-	scene::IMeshSceneNode *m_node;
+	scene::IMeshSceneNode *m_meshnode;
+	scene::MyBillboardSceneNode *m_spritenode;
 	v3f m_position;
+	float m_yaw;
 	struct LuaEntityProperties *m_prop;
+	SmoothTranslator pos_translator;
 };
 
 

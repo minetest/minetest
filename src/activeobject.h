@@ -20,7 +20,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #ifndef ACTIVEOBJECT_HEADER
 #define ACTIVEOBJECT_HEADER
 
-#include "common_irrlicht.h"
+#include "irrlichttypes.h"
 #include <string>
 
 #define ACTIVEOBJECT_TYPE_INVALID 0

@@ -215,11 +215,20 @@ public:
 	u16 punch(const std::string &toolname, v3f dir,
 			const std::string &playername);
 	void rightClick(Player *player);
+
+	void setPos(v3f pos);
+	void moveTo(v3f pos);
 private:
+	void sendPosition(bool do_interpolate);
+
 	std::string m_init_name;
 	std::string m_init_state;
 	bool m_registered;
 	struct LuaEntityProperties *m_prop;
+	
+	float m_yaw;
+	float m_last_sent_yaw;
+	v3f m_last_sent_position;
 };
 
 #endif

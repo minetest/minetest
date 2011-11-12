@@ -164,6 +164,12 @@ end
 
 -- Called when object is right-clicked
 function TNT:on_rightclick(clicker)
+	pos = self.object:getpos()
+	pos = {x=pos.x, y=pos.y+0.1, z=pos.z}
+	self.object:moveto(pos)
+end
+--[[
+function TNT:on_rightclick(clicker)
 	print("TNT:on_rightclick()")
 	print("self: "..dump(self))
 	print("getmetatable(self): "..dump(getmetatable(self)))
@@ -173,6 +179,7 @@ function TNT:on_rightclick(clicker)
 	pos = {x=pos.x+0.5+1, y=pos.y+0.5, z=pos.z+0.5}
 	--minetest.env:add_node(pos, 0)
 end
+--]]
 
 print("TNT dump: "..dump(TNT))
 

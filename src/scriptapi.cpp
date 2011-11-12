@@ -34,6 +34,7 @@ extern "C" {
 #include "script.h"
 //#include "luna.h"
 #include "luaentity_common.h"
+#include "content_sao.h" // For LuaEntitySAO
 
 /*
 TODO:
@@ -110,6 +111,29 @@ public:
 	}
 };
 
+v3f readFloatPos(lua_State *L, int index)
+{
+	v3f pos;
+	lua_pushvalue(L, index); // Push pos
+	luaL_checktype(L, -1, LUA_TTABLE);
+	lua_getfield(L, -1, "x");
+	pos.X = lua_tonumber(L, -1);
+	lua_pop(L, 1);
+	lua_getfield(L, -1, "y");
+	pos.Y = lua_tonumber(L, -1);
+	lua_pop(L, 1);
+	lua_getfield(L, -1, "z");
+	pos.Z = lua_tonumber(L, -1);
+	lua_pop(L, 1);
+	lua_pop(L, 1); // Pop pos
+	pos *= BS; // Scale to internal format
+	return pos;
+}
+
+/*
+	Global functions
+*/
+
 // Register new object prototype
 // register_entity(name, prototype)
 static int l_register_entity(lua_State *L)
@@ -149,15 +173,17 @@ static const struct luaL_Reg minetest_f [] = {
 	{NULL, NULL}
 };
 
-static int l_entity_set_deleted(lua_State *L)
-{
-	return 0;
-}
+/*
+	LuaEntity functions
+*/
 
 static const struct luaL_Reg minetest_entity_m [] = {
-	{"set_deleted", l_entity_set_deleted},
 	{NULL, NULL}
 };
+
+/*
+	Getters for stuff in main tables
+*/
 
 static void objectref_get(lua_State *L, u16 id)
 {
@@ -324,12 +350,28 @@ private:
 		return *(ObjectRef**)ud;  // unbox pointer
 	}
 	
+	static ServerActiveObject* getobject(ObjectRef *ref)
+	{
+		ServerActiveObject *co = ref->m_object;
+		return co;
+	}
+	
+	static LuaEntitySAO* getluaobject(ObjectRef *ref)
+	{
+		ServerActiveObject *obj = getobject(ref);
+		if(obj == NULL)
+			return NULL;
+		if(obj->getType() != ACTIVEOBJECT_TYPE_LUAENTITY)
+			return NULL;
+		return (LuaEntitySAO*)obj;
+	}
+	
 	// Exported functions
 
 	static int l_remove(lua_State *L)
 	{
-		ObjectRef *o = checkobject(L, 1);
-		ServerActiveObject *co = o->m_object;
+		ObjectRef *ref = checkobject(L, 1);
+		ServerActiveObject *co = getobject(ref);
 		if(co == NULL) return 0;
 		infostream<<"ObjectRef::l_remove(): id="<<co->getId()<<std::endl;
 		co->m_removed = true;
@@ -338,8 +380,8 @@ private:
 
 	static int l_getpos(lua_State *L)
 	{
-		ObjectRef *o = checkobject(L, 1);
-		ServerActiveObject *co = o->m_object;
+		ObjectRef *ref = checkobject(L, 1);
+		ServerActiveObject *co = getobject(ref);
 		if(co == NULL) return 0;
 		infostream<<"ObjectRef::l_getpos(): id="<<co->getId()<<std::endl;
 		v3f pos = co->getBasePosition() / BS;
@@ -351,6 +393,32 @@ private:
 		lua_pushnumber(L, pos.Z);
 		lua_setfield(L, -2, "z");
 		return 1;
+	}
+
+	static int l_setpos(lua_State *L)
+	{
+		ObjectRef *ref = checkobject(L, 1);
+		//LuaEntitySAO *co = getluaobject(ref);
+		ServerActiveObject *co = getobject(ref);
+		if(co == NULL) return 0;
+		// pos
+		v3f pos = readFloatPos(L, 2);
+		// Do it
+		co->setPos(pos);
+		return 0;
+	}
+
+	static int l_moveto(lua_State *L)
+	{
+		ObjectRef *ref = checkobject(L, 1);
+		//LuaEntitySAO *co = getluaobject(ref);
+		ServerActiveObject *co = getobject(ref);
+		if(co == NULL) return 0;
+		// pos
+		v3f pos = readFloatPos(L, 2);
+		// Do it
+		co->moveTo(pos);
+		return 0;
 	}
 
 	static int gc_object(lua_State *L) {
@@ -426,6 +494,8 @@ const char ObjectRef::className[] = "ObjectRef";
 const luaL_reg ObjectRef::methods[] = {
 	method(ObjectRef, remove),
 	method(ObjectRef, getpos),
+	method(ObjectRef, setpos),
+	method(ObjectRef, moveto),
 	{0,0}
 };
 
@@ -438,6 +508,7 @@ void scriptapi_export(lua_State *L, Server *server)
 	realitycheck(L);
 	assert(lua_checkstack(L, 20));
 	infostream<<"scriptapi_export"<<std::endl;
+	StackUnroller stack_unroller(L);
 	
 	// Register global functions in table minetest
 	lua_newtable(L);
@@ -459,14 +530,6 @@ void scriptapi_export(lua_State *L, Server *server)
 	lua_newtable(L);
 	lua_setfield(L, -2, "luaentities");
 
-	// Load and run some base Lua stuff
-	/*script_load(L, (porting::path_data + DIR_DELIM + "scripts"
-			+ DIR_DELIM + "base.lua").c_str());*/
-	
-	// Create entity reference metatable
-	//luaL_newmetatable(L, "minetest.entity_reference");
-	//lua_pop(L, 1);
-	
 	// Create entity prototype
 	luaL_newmetatable(L, "minetest.entity");
 	// metatable.__index = metatable
@@ -488,6 +551,7 @@ void scriptapi_add_environment(lua_State *L, ServerEnvironment *env)
 	realitycheck(L);
 	assert(lua_checkstack(L, 20));
 	infostream<<"scriptapi_add_environment"<<std::endl;
+	StackUnroller stack_unroller(L);
 
 	// Create EnvRef on stack
 	EnvRef::create(L, env);
@@ -498,9 +562,6 @@ void scriptapi_add_environment(lua_State *L, ServerEnvironment *env)
 	luaL_checktype(L, -1, LUA_TTABLE);
 	lua_pushvalue(L, envref);
 	lua_setfield(L, -2, "env");
-	
-	// pop minetest and envref
-	lua_pop(L, 2);
 }
 
 // Dump stack top with the dump2 function
@@ -524,6 +585,7 @@ void scriptapi_add_object_reference(lua_State *L, ServerActiveObject *cobj)
 	realitycheck(L);
 	assert(lua_checkstack(L, 20));
 	infostream<<"scriptapi_add_object_reference: id="<<cobj->getId()<<std::endl;
+	StackUnroller stack_unroller(L);
 
 	// Create object on stack
 	ObjectRef::create(L, cobj); // Puts ObjectRef (as userdata) on stack
@@ -539,9 +601,6 @@ void scriptapi_add_object_reference(lua_State *L, ServerActiveObject *cobj)
 	lua_pushnumber(L, cobj->getId()); // Push id
 	lua_pushvalue(L, object); // Copy object to top of stack
 	lua_settable(L, objectstable);
-	
-	// pop object_refs, minetest and the object
-	lua_pop(L, 3);
 }
 
 void scriptapi_rm_object_reference(lua_State *L, ServerActiveObject *cobj)
@@ -549,6 +608,7 @@ void scriptapi_rm_object_reference(lua_State *L, ServerActiveObject *cobj)
 	realitycheck(L);
 	assert(lua_checkstack(L, 20));
 	infostream<<"scriptapi_rm_object_reference: id="<<cobj->getId()<<std::endl;
+	StackUnroller stack_unroller(L);
 
 	// Get minetest.object_refs table
 	lua_getglobal(L, "minetest");
@@ -567,9 +627,6 @@ void scriptapi_rm_object_reference(lua_State *L, ServerActiveObject *cobj)
 	lua_pushnumber(L, cobj->getId()); // Push id
 	lua_pushnil(L);
 	lua_settable(L, objectstable);
-	
-	// pop object_refs, minetest
-	lua_pop(L, 2);
 }
 
 /*

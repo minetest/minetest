@@ -1506,7 +1506,10 @@ LuaEntitySAO::LuaEntitySAO(ServerEnvironment *env, v3f pos,
 	m_init_name(name),
 	m_init_state(state),
 	m_registered(false),
-	m_prop(new LuaEntityProperties)
+	m_prop(new LuaEntityProperties),
+	m_yaw(0),
+	m_last_sent_yaw(0),
+	m_last_sent_position(0,0,0)
 {
 	// Only register type if no environment supplied
 	if(env == NULL){
@@ -1562,6 +1565,13 @@ void LuaEntitySAO::step(float dtime, bool send_recommended)
 		lua_State *L = m_env->getLua();
 		scriptapi_luaentity_step(L, m_id, dtime);
 	}
+
+	if(send_recommended == false)
+		return;
+	if(m_base_position.getDistanceFrom(m_last_sent_position) > 0.05*BS
+			|| fabs(m_yaw - m_last_sent_yaw) > 1.0){
+		sendPosition(true);
+	}
 }
 
 std::string LuaEntitySAO::getClientInitializationData()
@@ -1571,6 +1581,8 @@ std::string LuaEntitySAO::getClientInitializationData()
 	writeU8(os, 0);
 	// pos
 	writeV3F1000(os, m_base_position);
+	// yaw
+	writeF1000(os, m_yaw);
 	// properties
 	std::ostringstream prop_os(std::ios::binary);
 	m_prop->serialize(prop_os);
@@ -1618,4 +1630,35 @@ void LuaEntitySAO::rightClick(Player *player)
 	lua_State *L = m_env->getLua();
 	scriptapi_luaentity_rightclick_player(L, m_id, player->getName());
 }
+
+void LuaEntitySAO::setPos(v3f pos)
+{
+	m_base_position = pos;
+	sendPosition(false);
+}
+
+void LuaEntitySAO::moveTo(v3f pos)
+{
+	m_base_position = pos;
+}
+
+void LuaEntitySAO::sendPosition(bool do_interpolate)
+{
+	m_last_sent_yaw = m_yaw;
+	m_last_sent_position = m_base_position;
+
+	std::ostringstream os(std::ios::binary);
+	// command (0 = update position)
+	writeU8(os, 0);
+	// do_interpolate
+	writeU8(os, do_interpolate);
+	// pos
+	writeV3F1000(os, m_base_position);
+	// yaw
+	writeF1000(os, m_yaw);
+	// create message and add to list
+	ActiveObjectMessage aom(getId(), false, os.str());
+	m_messages_out.push_back(aom);
+}
+
 

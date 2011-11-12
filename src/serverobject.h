@@ -20,7 +20,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #ifndef SERVEROBJECT_HEADER
 #define SERVEROBJECT_HEADER
 
-#include "common_irrlicht.h"
+#include "irrlichttypes.h"
 #include "activeobject.h"
 #include "utility.h"
 
@@ -64,13 +64,16 @@ public:
 	/*
 		Some simple getters/setters
 	*/
-	v3f getBasePosition()
-		{return m_base_position;}
-	void setBasePosition(v3f pos)
-		{m_base_position = pos;}
-	ServerEnvironment* getEnv()
-		{return m_env;}
+	v3f getBasePosition(){ return m_base_position; }
+	void setBasePosition(v3f pos){ m_base_position = pos; }
+	ServerEnvironment* getEnv(){ return m_env; }
 	
+	/*
+		Some more dynamic interface
+	*/
+	virtual void setPos(v3f pos){ setBasePosition(pos); }
+	virtual void moveTo(v3f pos){ setBasePosition(pos); }
+
 	/*
 		Step object in time.
 		Messages added to messages are sent to client over network.
