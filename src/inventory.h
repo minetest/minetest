@@ -36,7 +36,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 class ServerActiveObject;
 class ServerEnvironment;
-class Player;
 
 class InventoryItem
 {
@@ -117,7 +116,7 @@ public:
 	// Called when item is right-clicked when lying on ground.
 	// If returns true, item shall be deleted.
 	virtual bool use(ServerEnvironment *env,
-			Player *player){return false;}
+			ServerActiveObject *user){return false;}
 
 protected:
 	u16 m_count;
@@ -263,7 +262,7 @@ public:
 	bool isCookable() const;
 	InventoryItem *createCookResult() const;
 
-	bool use(ServerEnvironment *env, Player *player);
+	bool use(ServerEnvironment *env, ServerActiveObject *user);
 	
 	/*
 		Special methods

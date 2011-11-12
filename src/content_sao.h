@@ -50,9 +50,8 @@ public:
 	std::string getClientInitializationData();
 	std::string getStaticData();
 	InventoryItem* createInventoryItem();
-	InventoryItem* createPickedUpItem(){return createInventoryItem();}
-	void rightClick(Player *player);
-
+	void punch(ServerActiveObject *puncher);
+	void rightClick(ServerActiveObject *clicker);
 	float getMinimumSavedMovement(){ return 0.1*BS; }
 private:
 	std::string m_inventorystring;
@@ -72,7 +71,7 @@ public:
 	void step(float dtime, bool send_recommended);
 	std::string getClientInitializationData();
 	std::string getStaticData();
-	InventoryItem* createPickedUpItem();
+	void punch(ServerActiveObject *puncher);
 private:
 	bool m_is_active;
 	IntervalLimiter m_inactive_interval;
@@ -98,8 +97,7 @@ public:
 	std::string getClientInitializationData();
 	std::string getStaticData();
 	InventoryItem* createPickedUpItem(){return NULL;}
-	u16 punch(const std::string &toolname, v3f dir,
-			const std::string &playername);
+	void punch(ServerActiveObject *puncher);
 	bool isPeaceful(){return false;}
 private:
 	void doDamage(u16 d);
@@ -159,8 +157,7 @@ public:
 	std::string getClientInitializationData();
 	void step(float dtime, bool send_recommended);
 	InventoryItem* createPickedUpItem(){return NULL;}
-	u16 punch(const std::string &toolname, v3f dir,
-			const std::string &playername);
+	void punch(ServerActiveObject *puncher);
 	bool isPeaceful();
 private:
 	void sendPosition();
@@ -214,10 +211,8 @@ public:
 	std::string getClientInitializationData();
 	std::string getStaticData();
 	InventoryItem* createPickedUpItem();
-	u16 punch(const std::string &toolname, v3f dir,
-			const std::string &playername);
-	void rightClick(Player *player);
-
+	void punch(ServerActiveObject *puncher);
+	void rightClick(ServerActiveObject *clicker);
 	void setPos(v3f pos);
 	void moveTo(v3f pos, bool continuous);
 	float getMinimumSavedMovement();

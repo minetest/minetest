@@ -237,14 +237,24 @@ InventoryItem * ItemSAO::createInventoryItem()
 	}
 }
 
-void ItemSAO::rightClick(Player *player)
+void ItemSAO::punch(ServerActiveObject *puncher)
+{
+	InventoryItem *item = createInventoryItem();
+	bool fits = puncher->addToInventory(item);
+	if(fits)
+		m_removed = true;
+	else
+		delete item;
+}
+
+void ItemSAO::rightClick(ServerActiveObject *clicker)
 {
 	infostream<<__FUNCTION_NAME<<std::endl;
 	InventoryItem *item = createInventoryItem();
 	if(item == NULL)
 		return;
 	
-	bool to_be_deleted = item->use(m_env, player);
+	bool to_be_deleted = item->use(m_env, clicker);
 
 	if(to_be_deleted)
 		m_removed = true;
@@ -252,7 +262,7 @@ void ItemSAO::rightClick(Player *player)
 		// Reflect changes to the item here
 		m_inventorystring = item->getItemString();
 	
-	delete item;
+	delete item; // Delete temporary item
 }
 
 /*
@@ -435,11 +445,15 @@ std::string RatSAO::getStaticData()
 	return os.str();
 }
 
-InventoryItem* RatSAO::createPickedUpItem()
+void RatSAO::punch(ServerActiveObject *puncher)
 {
 	std::istringstream is("CraftItem rat 1", std::ios_base::binary);
 	InventoryItem *item = InventoryItem::deSerialize(is);
-	return item;
+	bool fits = puncher->addToInventory(item);
+	if(fits)
+		m_removed = true;
+	else
+		delete item;
 }
 
 /*
@@ -684,9 +698,17 @@ std::string Oerkki1SAO::getStaticData()
 	return os.str();
 }
 
-u16 Oerkki1SAO::punch(const std::string &toolname, v3f dir,
-		const std::string &playername)
+void Oerkki1SAO::punch(ServerActiveObject *puncher)
 {
+	v3f dir = (getBasePosition() - puncher->getBasePosition()).normalize();
+
+	std::string toolname = "";
+	InventoryItem *item = puncher->getWieldedItem();
+	if(item && (std::string)item->getName() == "ToolItem"){
+		ToolItem *titem = (ToolItem*)item;
+		toolname = titem->getToolName();
+	}
+
 	m_speed_f += dir*12*BS;
 
 	u16 amount = 5;
@@ -704,7 +726,8 @@ u16 Oerkki1SAO::punch(const std::string &toolname, v3f dir,
 	if(toolname == "SteelPick")
 		amount = 7;
 	doDamage(amount);
-	return 65536/100;
+	
+	puncher->damageWieldedItem(65536/100);
 }
 
 void Oerkki1SAO::doDamage(u16 d)
@@ -1351,10 +1374,20 @@ void MobV2SAO::step(float dtime, bool send_recommended)
 	}
 }
 
-u16 MobV2SAO::punch(const std::string &toolname, v3f dir,
-		const std::string &playername)
+void MobV2SAO::punch(ServerActiveObject *puncher)
 {
-	assert(m_env);
+	v3f dir = (getBasePosition() - puncher->getBasePosition()).normalize();
+
+	std::string toolname = "";
+	InventoryItem *item = puncher->getWieldedItem();
+	if(item && (std::string)item->getName() == "ToolItem"){
+		ToolItem *titem = (ToolItem*)item;
+		toolname = titem->getToolName();
+	}
+	
+	// A quick hack; SAO description is player name for player
+	std::string playername = puncher->getDescription();
+
 	Map *map = &m_env->getMap();
 	
 	actionstream<<playername<<" punches mob id="<<m_id
@@ -1396,7 +1429,8 @@ u16 MobV2SAO::punch(const std::string &toolname, v3f dir,
 	if(toolname == "SteelPick")
 		amount = 3;
 	doDamage(amount);
-	return 65536/100;
+	
+	puncher->damageWieldedItem(65536/100);
 }
 
 bool MobV2SAO::isPeaceful()
@@ -1629,18 +1663,20 @@ InventoryItem* LuaEntitySAO::createPickedUpItem()
 	return item;
 }
 
-u16 LuaEntitySAO::punch(const std::string &toolname, v3f dir,
-		const std::string &playername)
-{
-	return 0;
-}
-
-void LuaEntitySAO::rightClick(Player *player)
+void LuaEntitySAO::punch(ServerActiveObject *puncher)
 {
 	if(!m_registered)
 		return;
 	lua_State *L = m_env->getLua();
-	scriptapi_luaentity_rightclick_player(L, m_id, player->getName());
+	scriptapi_luaentity_punch(L, m_id, puncher);
+}
+
+void LuaEntitySAO::rightClick(ServerActiveObject *clicker)
+{
+	if(!m_registered)
+		return;
+	lua_State *L = m_env->getLua();
+	scriptapi_luaentity_rightclick(L, m_id, clicker);
 }
 
 void LuaEntitySAO::setPos(v3f pos)

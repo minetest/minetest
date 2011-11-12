@@ -165,6 +165,70 @@ void Player::deSerialize(std::istream &is)
 }
 
 /*
+	ServerRemotePlayer
+*/
+
+/* ServerActiveObject interface */
+
+InventoryItem* ServerRemotePlayer::getWieldedItem()
+{
+	InventoryList *list = inventory.getList("main");
+	if (list)
+		return list->getItem(m_selected_item);
+	return NULL;
+}
+void ServerRemotePlayer::damageWieldedItem(u16 amount)
+{
+	infostream<<"Damaging "<<getName()<<"'s wielded item for amount="
+			<<amount<<std::endl;
+	InventoryList *list = inventory.getList("main");
+	if(!list)
+		return;
+	InventoryItem *item = list->getItem(m_selected_item);
+	if(item && (std::string)item->getName() == "ToolItem"){
+		ToolItem *titem = (ToolItem*)item;
+		bool weared_out = titem->addWear(amount);
+		if(weared_out)
+			list->deleteItem(m_selected_item);
+	}
+}
+bool ServerRemotePlayer::addToInventory(InventoryItem *item)
+{
+	infostream<<"Adding "<<item->getName()<<" into "<<getName()
+			<<"'s inventory"<<std::endl;
+	
+	InventoryList *ilist = inventory.getList("main");
+	if(ilist == NULL)
+		return false;
+	
+	// In creative mode, just delete the item
+	if(g_settings->getBool("creative_mode")){
+		return false;
+	}
+
+	// Skip if inventory has no free space
+	if(ilist->roomForItem(item) == false)
+	{
+		infostream<<"Player inventory has no free space"<<std::endl;
+		return false;
+	}
+
+	// Add to inventory
+	InventoryItem *leftover = ilist->addItem(item);
+	assert(!leftover);
+
+	return true;
+}
+void ServerRemotePlayer::setHP(s16 hp_)
+{
+	hp = hp_;
+}
+s16 ServerRemotePlayer::getHP()
+{
+	return hp;
+}
+
+/*
 	RemotePlayer
 */
 

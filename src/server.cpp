@@ -2299,10 +2299,23 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 			return;
 		
 		//TODO: Check that object is reasonably close
+	
+		// Get ServerRemotePlayer
+		ServerRemotePlayer *srp = (ServerRemotePlayer*)player;
+
+		// Update wielded item
+		srp->wieldItem(item_i);
 		
-		// Left click, pick object up (usually)
+		// Left click, pick/punch
 		if(button == 0)
 		{
+			actionstream<<player->getName()<<" punches object "
+					<<obj->getId()<<std::endl;
+			
+			// Do stuff
+			obj->punch(srp);
+			
+#if 0
 			/*
 				Try creating inventory item
 			*/
@@ -2371,6 +2384,7 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 					SendInventory(player->peer_id);
 				}
 			}
+#endif
 		}
 		// Right click, do something with object
 		if(button == 1)
@@ -2378,18 +2392,16 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 			actionstream<<player->getName()<<" right clicks object "
 					<<obj->getId()<<std::endl;
 
-			// Track hp changes super-crappily
-			u16 oldhp = player->hp;
-			
 			// Do stuff
-			obj->rightClick(player);
-			
-			// Send back stuff
-			if(player->hp != oldhp)
-			{
-				SendPlayerHP(player);
-			}
+			obj->rightClick(srp);
 		}
+
+		/*
+			Update player state to client
+		*/
+		SendPlayerHP(player);
+		UpdateCrafting(player->peer_id);
+		SendInventory(player->peer_id);
 	}
 	else if(command == TOSERVER_GROUND_ACTION)
 	{

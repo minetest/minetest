@@ -215,12 +215,20 @@ public:
 		Player::setPosition(position);
 		ServerActiveObject::setBasePosition(position);
 	}
+	
+	/* ServerActiveObject interface */
 
-	/*
-		ServerActiveObject interface
-	*/
 	u8 getType() const
 		{return ACTIVEOBJECT_TYPE_PLAYER;}
+	virtual std::string getDescription(){return getName();}
+	// Returns a reference
+	virtual InventoryItem* getWieldedItem();
+	virtual void damageWieldedItem(u16 amount);
+	// If all fits, eats item and returns true. Otherwise returns false.
+	virtual bool addToInventory(InventoryItem *item);
+	virtual void setHP(s16 hp_);
+	virtual s16 getHP();
+
 private:
 };
 

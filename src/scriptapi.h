@@ -42,8 +42,10 @@ std::string scriptapi_luaentity_get_state(lua_State *L, u16 id);
 void scriptapi_luaentity_get_properties(lua_State *L, u16 id,
 		LuaEntityProperties *prop);
 void scriptapi_luaentity_step(lua_State *L, u16 id, float dtime);
-void scriptapi_luaentity_rightclick_player(lua_State *L, u16 id,
-		const char *playername);
+void scriptapi_luaentity_punch(lua_State *L, u16 id,
+		ServerActiveObject *clicker);
+void scriptapi_luaentity_rightclick(lua_State *L, u16 id,
+		ServerActiveObject *clicker);
 
 #endif
 

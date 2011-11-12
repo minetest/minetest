@@ -368,6 +368,14 @@ private:
 	
 	// Exported functions
 	
+	// garbage collector
+	static int gc_object(lua_State *L) {
+		ObjectRef *o = *(ObjectRef **)(lua_touserdata(L, 1));
+		//infostream<<"ObjectRef::gc_object: o="<<o<<std::endl;
+		delete o;
+		return 0;
+	}
+
 	// remove(self)
 	static int l_remove(lua_State *L)
 	{
@@ -427,12 +435,25 @@ private:
 		return 0;
 	}
 
-	static int gc_object(lua_State *L) {
-		//ObjectRef *o = checkobject(L, 1);
-		ObjectRef *o = *(ObjectRef **)(lua_touserdata(L, 1));
-		//infostream<<"ObjectRef::gc_object: o="<<o<<std::endl;
-		delete o;
-		return 0;
+	// add_to_inventory(self, itemstring)
+	// returns: true if item was added, false otherwise
+	static int l_add_to_inventory(lua_State *L)
+	{
+		ObjectRef *ref = checkobject(L, 1);
+		luaL_checkstring(L, 2);
+		ServerActiveObject *co = getobject(ref);
+		if(co == NULL) return 0;
+		// itemstring
+		const char *itemstring = lua_tostring(L, 2);
+		infostream<<"ObjectRef::l_add_to_inventory(): id="<<co->getId()
+				<<" itemstring=\""<<itemstring<<"\""<<std::endl;
+		// Do it
+		std::istringstream is(itemstring, std::ios::binary);
+		InventoryItem *item = InventoryItem::deSerialize(is);
+		bool fits = co->addToInventory(item);
+		// Return
+		lua_pushboolean(L, fits);
+		return 1;
 	}
 
 public:
@@ -502,8 +523,19 @@ const luaL_reg ObjectRef::methods[] = {
 	method(ObjectRef, getpos),
 	method(ObjectRef, setpos),
 	method(ObjectRef, moveto),
+	method(ObjectRef, add_to_inventory),
 	{0,0}
 };
+
+// Creates a new anonymous reference if id=0
+static void objectref_get_or_create(lua_State *L, ServerActiveObject *cobj)
+{
+	if(cobj->getId() == 0){
+		ObjectRef::create(L, cobj);
+	} else {
+		objectref_get(L, cobj->getId());
+	}
+}
 
 /*
 	Main export function
@@ -570,6 +602,7 @@ void scriptapi_add_environment(lua_State *L, ServerEnvironment *env)
 	lua_setfield(L, -2, "env");
 }
 
+#if 0
 // Dump stack top with the dump2 function
 static void dump2(lua_State *L, const char *name)
 {
@@ -581,6 +614,7 @@ static void dump2(lua_State *L, const char *name)
 	if(lua_pcall(L, 2, 0, 0))
 		script_error(L, "error: %s\n", lua_tostring(L, -1));
 }
+#endif
 
 /*
 	object_reference
@@ -815,8 +849,9 @@ void scriptapi_luaentity_step(lua_State *L, u16 id, float dtime)
 		script_error(L, "error running function 'step': %s\n", lua_tostring(L, -1));
 }
 
-void scriptapi_luaentity_rightclick_player(lua_State *L, u16 id,
-		const char *playername)
+// Calls entity:on_punch(ObjectRef puncher)
+void scriptapi_luaentity_punch(lua_State *L, u16 id,
+		ServerActiveObject *puncher)
 {
 	realitycheck(L);
 	assert(lua_checkstack(L, 20));
@@ -827,12 +862,36 @@ void scriptapi_luaentity_rightclick_player(lua_State *L, u16 id,
 	luaentity_get(L, id);
 	int object = lua_gettop(L);
 	// State: object is at top of stack
-	// Get step function
+	// Get function
+	lua_getfield(L, -1, "on_punch");
+	luaL_checktype(L, -1, LUA_TFUNCTION);
+	lua_pushvalue(L, object); // self
+	objectref_get_or_create(L, puncher); // Clicker reference
+	// Call with 2 arguments, 0 results
+	if(lua_pcall(L, 2, 0, 0))
+		script_error(L, "error running function 'on_punch': %s\n", lua_tostring(L, -1));
+}
+
+// Calls entity:on_rightclick(ObjectRef clicker)
+void scriptapi_luaentity_rightclick(lua_State *L, u16 id,
+		ServerActiveObject *clicker)
+{
+	realitycheck(L);
+	assert(lua_checkstack(L, 20));
+	//infostream<<"scriptapi_luaentity_step: id="<<id<<std::endl;
+	StackUnroller stack_unroller(L);
+
+	// Get minetest.luaentities[id]
+	luaentity_get(L, id);
+	int object = lua_gettop(L);
+	// State: object is at top of stack
+	// Get function
 	lua_getfield(L, -1, "on_rightclick");
 	luaL_checktype(L, -1, LUA_TFUNCTION);
 	lua_pushvalue(L, object); // self
-	// Call with 1 arguments, 0 results
-	if(lua_pcall(L, 1, 0, 0))
-		script_error(L, "error running function 'step': %s\n", lua_tostring(L, -1));
+	objectref_get_or_create(L, clicker); // Clicker reference
+	// Call with 2 arguments, 0 results
+	if(lua_pcall(L, 2, 0, 0))
+		script_error(L, "error running function 'on_rightclick': %s\n", lua_tostring(L, -1));
 }
 

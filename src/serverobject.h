@@ -71,6 +71,7 @@ public:
 	/*
 		Some more dynamic interface
 	*/
+	
 	virtual void setPos(v3f pos)
 		{ setBasePosition(pos); }
 	// continuous: if true, object does not stop immediately at pos
@@ -80,7 +81,11 @@ public:
 	// saving to disk may be omitted
 	virtual float getMinimumSavedMovement()
 		{ return 2.0*BS; }
+	
+	virtual bool isPeaceful(){return true;}
 
+	virtual std::string getDescription(){return "SAO";}
+	
 	/*
 		Step object in time.
 		Messages added to messages are sent to client over network.
@@ -106,26 +111,22 @@ public:
 	*/
 	virtual std::string getStaticData(){return "";}
 	
-	/*
-		Item that the player gets when this object is picked up.
-		If NULL, object cannot be picked up.
-	*/
-	virtual InventoryItem* createPickedUpItem(){return NULL;}
+	virtual void punch(ServerActiveObject *puncher){}
+	virtual void rightClick(ServerActiveObject *clicker){}
 	
-	/*
-		If the object doesn't return an item, this will be called.
-		Return value is tool wear.
-	*/
-	virtual u16 punch(const std::string &toolname, v3f dir,
-			const std::string &playername)
-	{return 0;}
+	// Returns a reference
+	virtual InventoryItem* getWieldedItem()
+		{ return NULL; }
+	virtual void damageWieldedItem(u16 amount)
+		{}
+	// If all fits, eats item and returns true. Otherwise returns false.
+	virtual bool addToInventory(InventoryItem *item)
+		{return false;}
+	virtual void setHP(s16 hp)
+		{}
+	virtual s16 getHP()
+		{return 0;}
 
-	/*
-	*/
-	virtual void rightClick(Player *player){}
-
-	virtual bool isPeaceful(){return true;}
-	
 	/*
 		Number of players which know about this object. Object won't be
 		deleted until this is 0 to keep the id preserved for the right

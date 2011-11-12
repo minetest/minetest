@@ -205,22 +205,23 @@ InventoryItem *CraftItem::createCookResult() const
 	return item_craft_create_cook_result(m_subname);
 }
 
-bool CraftItem::use(ServerEnvironment *env, Player *player)
+bool CraftItem::use(ServerEnvironment *env, ServerActiveObject *user)
 {
-	if(item_craft_is_eatable(m_subname))
-	{
-		u16 result_count = getCount() - 1; // Eat one at a time
-		s16 hp_change = item_craft_eat_hp_change(m_subname);
-		if(player->hp + hp_change > 20)
-			player->hp = 20;
-		else
-			player->hp += hp_change;
+	if(!item_craft_is_eatable(m_subname))
+		return false;
+	
+	u16 result_count = getCount() - 1; // Eat one at a time
+	s16 hp_change = item_craft_eat_hp_change(m_subname);
+	s16 hp = user->getHP();
+	hp += hp_change;
+	if(hp < 0)
+		hp = 0;
+	user->setHP(hp);
+	
+	if(result_count < 1)
+		return true;
 		
-		if(result_count < 1)
-			return true;
-		else
-			setCount(result_count);
-	}
+	setCount(result_count);
 	return false;
 }
 

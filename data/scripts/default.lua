@@ -162,6 +162,8 @@ end
 -- Called when object is punched
 function TNT:on_punch(hitter)
 	print("TNT:on_punch()")
+	self.object:remove()
+	hitter:add_to_inventory("CraftItem testobject1 1")
 end
 
 -- Called when object is right-clicked
