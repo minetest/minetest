@@ -383,7 +383,6 @@ private:
 		ObjectRef *ref = checkobject(L, 1);
 		ServerActiveObject *co = getobject(ref);
 		if(co == NULL) return 0;
-		infostream<<"ObjectRef::l_getpos(): id="<<co->getId()<<std::endl;
 		v3f pos = co->getBasePosition() / BS;
 		lua_newtable(L);
 		lua_pushnumber(L, pos.X);

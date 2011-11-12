@@ -229,6 +229,7 @@ private:
 	float m_yaw;
 	float m_last_sent_yaw;
 	v3f m_last_sent_position;
+	float m_last_sent_position_timer;
 };
 
 #endif

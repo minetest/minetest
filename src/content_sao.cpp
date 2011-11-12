@@ -1509,7 +1509,8 @@ LuaEntitySAO::LuaEntitySAO(ServerEnvironment *env, v3f pos,
 	m_prop(new LuaEntityProperties),
 	m_yaw(0),
 	m_last_sent_yaw(0),
-	m_last_sent_position(0,0,0)
+	m_last_sent_position(0,0,0),
+	m_last_sent_position_timer(0)
 {
 	// Only register type if no environment supplied
 	if(env == NULL){
@@ -1561,6 +1562,8 @@ ServerActiveObject* LuaEntitySAO::create(ServerEnvironment *env, v3f pos,
 
 void LuaEntitySAO::step(float dtime, bool send_recommended)
 {
+	m_last_sent_position_timer += dtime;
+	
 	if(m_registered){
 		lua_State *L = m_env->getLua();
 		scriptapi_luaentity_step(L, m_id, dtime);
@@ -1568,7 +1571,13 @@ void LuaEntitySAO::step(float dtime, bool send_recommended)
 
 	if(send_recommended == false)
 		return;
-	if(m_base_position.getDistanceFrom(m_last_sent_position) > 0.05*BS
+	
+	float minchange = 0.2*BS;
+	if(m_last_sent_position_timer > 1.0)
+		minchange = 0.01*BS;
+	else if(m_last_sent_position_timer > 0.2)
+		minchange = 0.05*BS;
+	if(m_base_position.getDistanceFrom(m_last_sent_position) > minchange
 			|| fabs(m_yaw - m_last_sent_yaw) > 1.0){
 		sendPosition(true);
 	}
@@ -1646,6 +1655,7 @@ void LuaEntitySAO::sendPosition(bool do_interpolate)
 {
 	m_last_sent_yaw = m_yaw;
 	m_last_sent_position = m_base_position;
+	m_last_sent_position_timer = 0;
 
 	std::ostringstream os(std::ios::binary);
 	// command (0 = update position)
