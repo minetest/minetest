@@ -179,11 +179,23 @@ public:
 	Player on the server
 */
 
-class ServerRemotePlayer : public Player
+#include "serverobject.h"
+#include "content_object.h" // Object type IDs
+
+class ServerRemotePlayer : public Player, public ServerActiveObject
 {
 public:
-	ServerRemotePlayer()
+	ServerRemotePlayer():
+		ServerActiveObject(NULL, v3f(0,0,0))
 	{
+	}
+	ServerRemotePlayer(ServerEnvironment *env, v3f pos_, u16 peer_id_,
+			const char *name_):
+		ServerActiveObject(env, pos_)
+	{
+		setPosition(pos_);
+		peer_id = peer_id_;
+		updateName(name_);
 	}
 	virtual ~ServerRemotePlayer()
 	{
@@ -198,6 +210,17 @@ public:
 	{
 	}
 	
+	virtual void setPosition(const v3f &position)
+	{
+		Player::setPosition(position);
+		ServerActiveObject::setBasePosition(position);
+	}
+
+	/*
+		ServerActiveObject interface
+	*/
+	u8 getType() const
+		{return ACTIVEOBJECT_TYPE_PLAYER;}
 private:
 };
 

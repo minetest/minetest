@@ -144,16 +144,12 @@ void Player::deSerialize(std::istream &is)
 		args.parseConfigLine(line);
 	}
 
-	//args.getS32("version");
+	//args.getS32("version"); // Version field value not used
 	std::string name = args.get("name");
 	updateName(name.c_str());
-	/*std::string password = "";
-	if(args.exists("password"))
-		password = args.get("password");
-	updatePassword(password.c_str());*/
-	m_pitch = args.getFloat("pitch");
-	m_yaw = args.getFloat("yaw");
-	m_position = args.getV3F("position");
+	setPitch(args.getFloat("pitch"));
+	setYaw(args.getFloat("yaw"));
+	setPosition(args.getV3F("position"));
 	try{
 		craftresult_is_preview = args.getBool("craftresult_is_preview");
 	}catch(SettingNotFoundException &e){
@@ -164,20 +160,6 @@ void Player::deSerialize(std::istream &is)
 	}catch(SettingNotFoundException &e){
 		hp = 20;
 	}
-	/*try{
-		std::string sprivs = args.get("privs");
-		if(sprivs == "all")
-		{
-			privs = PRIV_ALL;
-		}
-		else
-		{
-			std::istringstream ss(sprivs);
-			ss>>privs;
-		}
-	}catch(SettingNotFoundException &e){
-		privs = PRIV_DEFAULT;
-	}*/
 
 	inventory.deSerialize(is);
 }

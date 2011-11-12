@@ -4279,11 +4279,7 @@ Player *Server::emergePlayer(const char *name, const char *password, u16 peer_id
 		Create a new player
 	*/
 	{
-		player = new ServerRemotePlayer();
-		//player->peer_id = c.peer_id;
-		//player->peer_id = PEER_ID_INEXISTENT;
-		player->peer_id = peer_id;
-		player->updateName(name);
+		// Add authentication stuff
 		m_authmanager.add(name);
 		m_authmanager.setPassword(name, password);
 		m_authmanager.setPrivs(name,
@@ -4294,11 +4290,11 @@ Player *Server::emergePlayer(const char *name, const char *password, u16 peer_id
 		*/
 		
 		infostream<<"Server: Finding spawn place for player \""
-				<<player->getName()<<"\""<<std::endl;
+				<<name<<"\""<<std::endl;
 
 		v3f pos = findSpawnPos(m_env->getServerMap());
 
-		player->setPosition(pos);
+		player = new ServerRemotePlayer(m_env, pos, peer_id, name);
 
 		/*
 			Add player to environment

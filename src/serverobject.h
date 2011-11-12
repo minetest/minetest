@@ -72,13 +72,14 @@ public:
 		Some more dynamic interface
 	*/
 	virtual void setPos(v3f pos)
-	{ setBasePosition(pos); }
+		{ setBasePosition(pos); }
 	// continuous: if true, object does not stop immediately at pos
 	virtual void moveTo(v3f pos, bool continuous)
-	{ setBasePosition(pos); }
+		{ setBasePosition(pos); }
 	// If object has moved less than this and data has not changed,
 	// saving to disk may be omitted
-	virtual float getMinimumSavedMovement(){ return 2.0*BS; }
+	virtual float getMinimumSavedMovement()
+		{ return 2.0*BS; }
 
 	/*
 		Step object in time.
