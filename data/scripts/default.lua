@@ -72,12 +72,46 @@ function dump(o, dumped)
 	end
 end
 
+-- Global functions:
+-- minetest.register_entity(name, prototype_table)
+-- minetest.register_globalstep(func)
+--
+-- Global objects:
+-- minetest.env - environment reference
+--
+-- Global tables:
+-- minetest.registered_entities
+-- ^ List of registered entity prototypes, indexed by name
+-- minetest.object_refs
+-- ^ List of object references, indexed by active object id
+-- minetest.luaentities
+-- ^ List of lua entities, indexed by active object id
+--
+-- EnvRef methods:
+-- - add_node(pos, content); pos={x=num, y=num, z=num}
+--
+-- ObjectRef methods:
+-- - remove(): remove object (after returning from Lua)
+-- - getpos(): returns {x=num, y=num, z=num}
+-- - setpos(pos); pos={x=num, y=num, z=num}
+-- - moveto(pos, continuous=false): interpolated move
+-- - add_to_inventory(itemstring): add an item to object inventory
+--
+-- Registered entities:
+-- - Functions receive a "luaentity" as self:
+--   - It has the member .object, which is an ObjectRef pointing to the object
+--   - The original prototype stuff is visible directly via a metatable
+--
+
 print("omg lol")
 print("minetest dump: "..dump(minetest))
 
 -- Global environment step function
 function on_step(dtime)
+	-- print("on_step")
 end
+
+minetest.register_globalstep(on_step)
 
 local TNT = {
 	-- Maybe handle gravity and collision this way? dunno
@@ -112,6 +146,15 @@ function TNT:on_rightclick(clicker)
 	pos = {x=pos.x, y=pos.y+0.1, z=pos.z}
 	self.object:moveto(pos, false)
 end
+
+print("TNT dump: "..dump(TNT))
+
+print("Registering TNT");
+minetest.register_entity("TNT", TNT)
+
+print("minetest.registered_entities:")
+dump2(minetest.registered_entities)
+
 --[[
 function TNT:on_rightclick(clicker)
 	print("TNT:on_rightclick()")
@@ -124,15 +167,6 @@ function TNT:on_rightclick(clicker)
 	--minetest.env:add_node(pos, 0)
 end
 --]]
-
-print("TNT dump: "..dump(TNT))
-
-print("Registering TNT");
-minetest.register_entity("TNT", TNT)
-
---print("minetest.registered_entities: "..dump(minetest.registered_entities))
-print("minetest.registered_entities:")
-dump2(minetest.registered_entities)
 
 --[=[
 

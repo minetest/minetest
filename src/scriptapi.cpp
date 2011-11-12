@@ -170,8 +170,35 @@ static int l_register_entity(lua_State *L)
 	return 0; /* number of results */
 }
 
+// Register a global step function
+// register_globalstep(function)
+static int l_register_globalstep(lua_State *L)
+{
+	luaL_checktype(L, 1, LUA_TFUNCTION);
+	infostream<<"register_globalstep"<<std::endl;
+
+	lua_getglobal(L, "table");
+	lua_getfield(L, -1, "insert");
+	int table_insert = lua_gettop(L);
+	// Get minetest.registered_globalsteps
+	lua_getglobal(L, "minetest");
+	lua_getfield(L, -1, "registered_globalsteps");
+	luaL_checktype(L, -1, LUA_TTABLE);
+	int registered_globalsteps = lua_gettop(L);
+	// table.insert(registered_globalsteps, func)
+	lua_pushvalue(L, table_insert);
+	lua_pushvalue(L, registered_globalsteps);
+	lua_pushvalue(L, 1); // push function from argument 1
+	// Call insert
+	if(lua_pcall(L, 2, 0, 0))
+		script_error(L, "error: %s\n", lua_tostring(L, -1));
+
+	return 0; /* number of results */
+}
+
 static const struct luaL_Reg minetest_f [] = {
 	{"register_entity", l_register_entity},
+	{"register_globalstep", l_register_globalstep},
 	{NULL, NULL}
 };
 
@@ -567,6 +594,9 @@ void scriptapi_export(lua_State *L, Server *server)
 	lua_setfield(L, -2, "registered_entities");
 
 	lua_newtable(L);
+	lua_setfield(L, -2, "registered_globalsteps");
+
+	lua_newtable(L);
 	lua_setfield(L, -2, "object_refs");
 
 	lua_newtable(L);
@@ -684,12 +714,22 @@ void scriptapi_environment_step(lua_State *L, float dtime)
 	//infostream<<"scriptapi_luaentity_step: id="<<id<<std::endl;
 	StackUnroller stack_unroller(L);
 
-	lua_getglobal(L, "on_step");
-	if(lua_type(L, -1) != LUA_TFUNCTION)
-		return; // If no on_step function exist, do nothing
-	lua_pushnumber(L, dtime);
-	if(lua_pcall(L, 1, 0, 0))
-		script_error(L, "error: %s\n", lua_tostring(L, -1));
+	// Get minetest.registered_globalsteps
+	lua_getglobal(L, "minetest");
+	lua_getfield(L, -1, "registered_globalsteps");
+	luaL_checktype(L, -1, LUA_TTABLE);
+	int table = lua_gettop(L);
+	// Foreach
+	lua_pushnil(L);
+	while(lua_next(L, table) != 0){
+		// key at index -2 and value at index -1
+		luaL_checktype(L, -1, LUA_TFUNCTION);
+		// Call function
+		lua_pushnumber(L, dtime);
+		if(lua_pcall(L, 1, 0, 0))
+			script_error(L, "error: %s\n", lua_tostring(L, -1));
+		// value removed, keep key for next iteration
+	}
 }
 
 /*
