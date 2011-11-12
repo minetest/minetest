@@ -192,3 +192,48 @@ minetest.register_entity("TNT", TNT)
 print("minetest.registered_entities:")
 dump2(minetest.registered_entities)
 
+--[=[
+
+register_block(0, {
+	textures = "stone.png",
+	makefacetype = 0,
+	get_dig_duration = function(env, pos, digger)
+		-- Check stuff like digger.current_tool
+		return 1.5
+	end,
+	on_dig = function(env, pos, digger)
+		env:remove_node(pos)
+		digger.inventory.put("MaterialItem2 0");
+	end,
+})
+
+register_block(1, {
+	textures = {"grass.png","mud.png","mud_grass_side.png","mud_grass_side.png","mud_grass_side.png","mud_grass_side.png"},
+	makefacetype = 0,
+	get_dig_duration = function(env, pos, digger)
+		-- Check stuff like digger.current_tool
+		return 0.5
+	end,
+	on_dig = function(env, pos, digger)
+		env:remove_node(pos)
+		digger.inventory.put("MaterialItem2 1");
+	end,
+})
+
+-- Consider the "miscellaneous block namespace" to be 0xc00...0xfff = 3072...4095
+register_block(3072, {
+	textures = {"tnt_top.png","tnt_bottom.png","tnt_side.png","tnt_side.png","tnt_side.png","tnt_side.png"},
+	makefacetype = 0,
+	get_dig_duration = function(env, pos, digger)
+		-- Cannot be dug
+		return nil
+	end,
+	-- on_dig = function(env, pos, digger) end, -- Not implemented
+	on_hit = function(env, pos, hitter)
+		-- Replace with TNT object, which will explode after timer, follow gravity, blink and stuff
+		env:add_object("tnt", pos)
+		env:remove_node(pos)
+	end,
+})
+--]=]
+
