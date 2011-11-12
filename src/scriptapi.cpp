@@ -38,12 +38,12 @@ extern "C" {
 
 /*
 TODO:
-- Global environment step function
+- Node type definition
 - Random node triggers
 - Object visual client-side stuff
 	- Blink effect
 	- Spritesheets and animation
-- Named node types and dynamic id allocation
+- Named node types and dynamic id allocation per MapBlock
 - LuaNodeMetadata
 	blockdef.has_metadata = true/false
 	- Stores an inventory and stuff in a Settings object
@@ -558,15 +558,17 @@ void scriptapi_export(lua_State *L, Server *server)
 	// Get the main minetest table
 	lua_getglobal(L, "minetest");
 
-	// Add registered_entities table in minetest
+	// Add tables to minetest
+	
+	/*lua_newtable(L);
+	lua_setfield(L, -2, "registered_blocks");*/
+
 	lua_newtable(L);
 	lua_setfield(L, -2, "registered_entities");
 
-	// Add object_refs table in minetest
 	lua_newtable(L);
 	lua_setfield(L, -2, "object_refs");
 
-	// Add luaentities table in minetest
 	lua_newtable(L);
 	lua_setfield(L, -2, "luaentities");
 
@@ -694,7 +696,7 @@ void scriptapi_environment_step(lua_State *L, float dtime)
 	luaentity
 */
 
-void scriptapi_luaentity_add(lua_State *L, u16 id, const char *name,
+bool scriptapi_luaentity_add(lua_State *L, u16 id, const char *name,
 		const char *init_state)
 {
 	realitycheck(L);
@@ -712,7 +714,11 @@ void scriptapi_luaentity_add(lua_State *L, u16 id, const char *name,
 	lua_pushstring(L, name);
 	lua_gettable(L, -2);
 	// Should be a table, which we will use as a prototype
-	luaL_checktype(L, -1, LUA_TTABLE);
+	//luaL_checktype(L, -1, LUA_TTABLE);
+	if(lua_type(L, -1) != LUA_TTABLE){
+		errorstream<<"LuaEntity name \""<<name<<"\" not defined"<<std::endl;
+		return false;
+	}
 	int prototype_table = lua_gettop(L);
 	//dump2(L, "prototype_table");
 	
@@ -750,6 +756,8 @@ void scriptapi_luaentity_add(lua_State *L, u16 id, const char *name,
 	if(lua_pcall(L, 1, 0, 0))
 		script_error(L, "error running function %s:on_activate: %s\n",
 				name, lua_tostring(L, -1));*/
+
+	return true;
 }
 
 void scriptapi_luaentity_rm(lua_State *L, u16 id)

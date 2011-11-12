@@ -29,7 +29,7 @@ LuaEntityProperties::LuaEntityProperties():
 	collisionbox(-0.5,-0.5,-0.5, 0.5,0.5,0.5),
 	visual("single_sprite")
 {
-	textures.push_back("unknown_block.png");
+	textures.push_back("unknown_object.png");
 }
 
 std::string LuaEntityProperties::dump()

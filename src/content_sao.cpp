@@ -1568,12 +1568,13 @@ void LuaEntitySAO::addedToEnvironment(u16 id)
 	ServerActiveObject::addedToEnvironment(id);
 	
 	// Create entity from name and state
-	m_registered = true;
 	lua_State *L = m_env->getLua();
-	scriptapi_luaentity_add(L, id, m_init_name.c_str(), m_init_state.c_str());
+	m_registered = scriptapi_luaentity_add(L, id, m_init_name.c_str(), m_init_state.c_str());
 	
-	// Get properties
-	scriptapi_luaentity_get_properties(L, m_id, m_prop);
+	if(m_registered){
+		// Get properties
+		scriptapi_luaentity_get_properties(L, m_id, m_prop);
+	}
 }
 
 ServerActiveObject* LuaEntitySAO::create(ServerEnvironment *env, v3f pos,

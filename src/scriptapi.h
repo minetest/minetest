@@ -39,7 +39,8 @@ void scriptapi_rm_object_reference(lua_State *L, ServerActiveObject *cobj);
 void scriptapi_environment_step(lua_State *L, float dtime);
 
 /* luaentity */
-void scriptapi_luaentity_add(lua_State *L, u16 id, const char *name,
+// Returns true if succesfully added into Lua; false otherwise.
+bool scriptapi_luaentity_add(lua_State *L, u16 id, const char *name,
 		const char *init_state);
 void scriptapi_luaentity_rm(lua_State *L, u16 id);
 std::string scriptapi_luaentity_get_state(lua_State *L, u16 id);
