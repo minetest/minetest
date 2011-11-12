@@ -195,7 +195,7 @@ private:
 	Settings *m_properties;
 };
 
-struct LuaState;
+struct LuaEntityProperties;
 
 class LuaEntitySAO : public ServerActiveObject
 {
@@ -219,6 +219,7 @@ private:
 	std::string m_init_name;
 	std::string m_init_state;
 	bool m_registered;
+	struct LuaEntityProperties *m_prop;
 };
 
 #endif

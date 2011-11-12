@@ -606,16 +606,24 @@ void scriptapi_luaentity_add(lua_State *L, u16 id, const char *name,
 		luaL_typerror(L, -1, "ObjectRef");
 	lua_setfield(L, -2, "object");
 
-	// Get minetest.luaentities table
+	// minetest.luaentities[id] = object
 	lua_getglobal(L, "minetest");
 	lua_getfield(L, -1, "luaentities");
 	luaL_checktype(L, -1, LUA_TTABLE);
-	int luaentities = lua_gettop(L);
-	
-	// luaentities[id] = object
 	lua_pushnumber(L, id); // Push id
 	lua_pushvalue(L, object); // Copy object to top of stack
-	lua_settable(L, luaentities);
+	lua_settable(L, -3);
+	
+	// This callback doesn't really make sense
+	/*// Get on_activate function
+	lua_pushvalue(L, object);
+	lua_getfield(L, -1, "on_activate");
+	luaL_checktype(L, -1, LUA_TFUNCTION);
+	lua_pushvalue(L, object); // self
+	// Call with 1 arguments, 0 results
+	if(lua_pcall(L, 1, 0, 0))
+		script_error(L, "error running function %s:on_activate: %s\n",
+				name, lua_tostring(L, -1));*/
 }
 
 void scriptapi_luaentity_rm(lua_State *L, u16 id)
@@ -657,6 +665,76 @@ std::string scriptapi_luaentity_get_state(lua_State *L, u16 id)
 	infostream<<"scriptapi_luaentity_get_state: id="<<id<<std::endl;
 	
 	return "";
+}
+
+LuaEntityProperties scriptapi_luaentity_get_properties(lua_State *L, u16 id)
+{
+	realitycheck(L);
+	assert(lua_checkstack(L, 20));
+	infostream<<"scriptapi_luaentity_get_properties: id="<<id<<std::endl;
+	StackUnroller stack_unroller(L);
+
+	LuaEntityProperties prop;
+
+	// Get minetest.luaentities[id]
+	luaentity_get(L, id);
+	//int object = lua_gettop(L);
+
+	lua_getfield(L, -1, "physical");
+	if(lua_isboolean(L, -1))
+		prop.physical = lua_toboolean(L, -1);
+	lua_pop(L, 1);
+	
+	lua_getfield(L, -1, "weight");
+	prop.weight = lua_tonumber(L, -1);
+	lua_pop(L, 1);
+
+	lua_getfield(L, -1, "boundingbox");
+	if(lua_istable(L, -1)){
+		lua_rawgeti(L, -1, 1);
+		prop.boundingbox.MinEdge.X = lua_tonumber(L, -1);
+		lua_pop(L, 1);
+		lua_rawgeti(L, -1, 2);
+		prop.boundingbox.MinEdge.Y = lua_tonumber(L, -1);
+		lua_pop(L, 1);
+		lua_rawgeti(L, -1, 3);
+		prop.boundingbox.MinEdge.Z = lua_tonumber(L, -1);
+		lua_pop(L, 1);
+		lua_rawgeti(L, -1, 4);
+		prop.boundingbox.MaxEdge.X = lua_tonumber(L, -1);
+		lua_pop(L, 1);
+		lua_rawgeti(L, -1, 5);
+		prop.boundingbox.MaxEdge.Y = lua_tonumber(L, -1);
+		lua_pop(L, 1);
+		lua_rawgeti(L, -1, 6);
+		prop.boundingbox.MaxEdge.Z = lua_tonumber(L, -1);
+		lua_pop(L, 1);
+	}
+	lua_pop(L, 1);
+
+	lua_getfield(L, -1, "visual");
+	if(lua_isstring(L, -1))
+		prop.visual = lua_tostring(L, -1);
+	lua_pop(L, 1);
+	
+	lua_getfield(L, -1, "textures");
+	if(lua_istable(L, -1)){
+		prop.textures.clear();
+		int table = lua_gettop(L);
+		lua_pushnil(L);
+		while(lua_next(L, table) != 0){
+			// key at index -2 and value at index -1
+			if(lua_isstring(L, -1))
+				prop.textures.push_back(lua_tostring(L, -1));
+			else
+				prop.textures.push_back("");
+			// removes value, keeps key for next iteration
+			lua_pop(L, 1);
+		}
+	}
+	lua_pop(L, 1);
+
+	return prop;
 }
 
 void scriptapi_luaentity_step(lua_State *L, u16 id, float dtime)

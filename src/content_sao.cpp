@@ -1504,8 +1504,10 @@ LuaEntitySAO::LuaEntitySAO(ServerEnvironment *env, v3f pos,
 	ServerActiveObject(env, pos),
 	m_init_name(name),
 	m_init_state(state),
-	m_registered(false)
+	m_registered(false),
+	m_prop(new LuaEntityProperties)
 {
+	// Only register type if no environment supplied
 	if(env == NULL){
 		ServerActiveObject::registerType(getType(), create);
 		return;
@@ -1518,6 +1520,7 @@ LuaEntitySAO::~LuaEntitySAO()
 		lua_State *L = m_env->getLua();
 		scriptapi_luaentity_rm(L, m_id);
 	}
+	delete m_prop;
 }
 
 void LuaEntitySAO::addedToEnvironment(u16 id)
@@ -1528,6 +1531,10 @@ void LuaEntitySAO::addedToEnvironment(u16 id)
 	m_registered = true;
 	lua_State *L = m_env->getLua();
 	scriptapi_luaentity_add(L, id, m_init_name.c_str(), m_init_state.c_str());
+	
+	// Get properties
+	*m_prop = scriptapi_luaentity_get_properties(L, m_id);
+	infostream<<"m_prop->visual="<<m_prop->visual<<std::endl;
 }
 
 ServerActiveObject* LuaEntitySAO::create(ServerEnvironment *env, v3f pos,

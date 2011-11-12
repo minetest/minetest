@@ -26,7 +26,6 @@ typedef struct lua_State lua_State;
 lua_State* script_init();
 lua_State* script_deinit(lua_State *L);
 void script_error(lua_State *L, const char *fmt, ...);
-void script_call_va(lua_State *L, const char *func, const char *sig, ...);
 bool script_load(lua_State *L, const char *path);
 
 #endif

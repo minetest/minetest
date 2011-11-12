@@ -140,18 +140,13 @@ local TNT = {
 	physical = true,
 	weight = 5,
 	boundingbox = {-0.5,-0.5,-0.5, 0.5,0.5,0.5},
-	visual = "box",
+	visual = "cube",
 	textures = {"tnt_top.png","tnt_bottom.png","tnt_side.png","tnt_side.png","tnt_side.png","tnt_side.png"},
 	-- Initial value for our timer
 	timer = 0,
 	-- List names of state variables, for serializing object state
 	state_variables = {"timer"},
 }
-
--- Called after object is created
-function TNT:on_create()
-	print("TNT:on_create()")
-end
 
 -- Called periodically
 function TNT:on_step(dtime)
