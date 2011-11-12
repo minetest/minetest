@@ -1142,6 +1142,11 @@ void ServerEnvironment::step(float dtime)
 	}
 	
 	/*
+		Step script environment (run global on_step())
+	*/
+	scriptapi_environment_step(m_lua, dtime);
+
+	/*
 		Step active objects
 	*/
 	{

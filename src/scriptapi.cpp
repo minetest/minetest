@@ -40,7 +40,9 @@ extern "C" {
 TODO:
 - Global environment step function
 - Random node triggers
-- Object network and client-side stuff
+- Object visual client-side stuff
+	- Blink effect
+	- Spritesheets and animation
 - Named node types and dynamic id allocation
 - LuaNodeMetadata
 	blockdef.has_metadata = true/false
@@ -667,6 +669,25 @@ void scriptapi_rm_object_reference(lua_State *L, ServerActiveObject *cobj)
 	lua_pushnumber(L, cobj->getId()); // Push id
 	lua_pushnil(L);
 	lua_settable(L, objectstable);
+}
+
+/*
+	environment
+*/
+
+void scriptapi_environment_step(lua_State *L, float dtime)
+{
+	realitycheck(L);
+	assert(lua_checkstack(L, 20));
+	//infostream<<"scriptapi_luaentity_step: id="<<id<<std::endl;
+	StackUnroller stack_unroller(L);
+
+	lua_getglobal(L, "on_step");
+	if(lua_type(L, -1) != LUA_TFUNCTION)
+		return; // If no on_step function exist, do nothing
+	lua_pushnumber(L, dtime);
+	if(lua_pcall(L, 1, 0, 0))
+		script_error(L, "error: %s\n", lua_tostring(L, -1));
 }
 
 /*

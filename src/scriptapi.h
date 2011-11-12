@@ -35,6 +35,10 @@ void scriptapi_add_environment(lua_State *L, ServerEnvironment *env);
 void scriptapi_add_object_reference(lua_State *L, ServerActiveObject *cobj);
 void scriptapi_rm_object_reference(lua_State *L, ServerActiveObject *cobj);
 
+/* environment */
+void scriptapi_environment_step(lua_State *L, float dtime);
+
+/* luaentity */
 void scriptapi_luaentity_add(lua_State *L, u16 id, const char *name,
 		const char *init_state);
 void scriptapi_luaentity_rm(lua_State *L, u16 id);

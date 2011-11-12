@@ -138,7 +138,10 @@ end
 print("omg lol")
 print("minetest dump: "..dump(minetest))
 
---local TNT = minetest.new_entity {
+-- Global environment step function
+function on_step(dtime)
+end
+
 local TNT = {
 	-- Maybe handle gravity and collision this way? dunno
 	physical = true,
