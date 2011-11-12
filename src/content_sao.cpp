@@ -1593,4 +1593,17 @@ InventoryItem* LuaEntitySAO::createPickedUpItem()
 	return item;
 }
 
+u16 LuaEntitySAO::punch(const std::string &toolname, v3f dir,
+		const std::string &playername)
+{
+	return 0;
+}
+
+void LuaEntitySAO::rightClick(Player *player)
+{
+	if(!m_registered)
+		return;
+	lua_State *L = m_env->getLua();
+	scriptapi_luaentity_rightclick_player(L, m_id, player->getName());
+}
 

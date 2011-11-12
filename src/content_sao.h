@@ -212,6 +212,9 @@ public:
 	std::string getClientInitializationData();
 	std::string getStaticData();
 	InventoryItem* createPickedUpItem();
+	u16 punch(const std::string &toolname, v3f dir,
+			const std::string &playername);
+	void rightClick(Player *player);
 private:
 	std::string m_init_name;
 	std::string m_init_state;

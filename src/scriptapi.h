@@ -24,19 +24,23 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <string>
 
 class Server;
+class ServerEnvironment;
 class ServerActiveObject;
 typedef struct lua_State lua_State;
 
 void scriptapi_export(lua_State *L, Server *server);
-	
+void scriptapi_add_environment(lua_State *L, ServerEnvironment *env);
+
 void scriptapi_add_object_reference(lua_State *L, ServerActiveObject *cobj);
 void scriptapi_rm_object_reference(lua_State *L, ServerActiveObject *cobj);
 
 void scriptapi_luaentity_add(lua_State *L, u16 id, const char *name,
 		const char *init_state);
 void scriptapi_luaentity_rm(lua_State *L, u16 id);
-void scriptapi_luaentity_step(lua_State *L, u16 id, float dtime);
 std::string scriptapi_luaentity_get_state(lua_State *L, u16 id);
+void scriptapi_luaentity_step(lua_State *L, u16 id, float dtime);
+void scriptapi_luaentity_rightclick_player(lua_State *L, u16 id,
+		const char *playername);
 
 #endif
 

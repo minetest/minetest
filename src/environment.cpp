@@ -1497,10 +1497,10 @@ u16 ServerEnvironment::addActiveObjectRaw(ServerActiveObject *object,
 				<<" statically"<<std::endl;
 	}
 	
+	// Register reference in scripting api (must be done before post-init)
+	scriptapi_add_object_reference(m_lua, object);
 	// Post-initialize object
 	object->addedToEnvironment(object->getId());
-	// Register reference in scripting api
-	scriptapi_add_object_reference(m_lua, object);
 
 	return object->getId();
 }

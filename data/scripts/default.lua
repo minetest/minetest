@@ -155,28 +155,21 @@ end
 
 -- Called periodically
 function TNT:on_step(dtime)
-	print("TNT:on_step()")
-	--[[self.timer = self.timer + dtime
-	if self.timer > 4.0 then
-		self.to_be_deleted = true -- Environment will delete this object at a suitable point of execution
-		env:explode(self.pos, 3) -- Uh... well, something like that
-	end]]
+	--print("TNT:on_step()")
 end
 
 -- Called when object is punched
 function TNT:on_punch(hitter)
 	print("TNT:on_punch()")
-	--[[-- If tool is bomb defuser, revert back to being a block
-	local item = hitter.inventory.get_current()
-	if item.itemtype == "tool" and item.param == "bomb_defuser" then
-		env:add_node(self.pos, 3072)
-		self.to_be_deleted = true
-	end]]
 end
 
 -- Called when object is right-clicked
 function TNT:on_rightclick(clicker)
 	print("TNT:on_rightclick()")
+	pos = self.object:getpos()
+	print("TNT:on_rightclick(): object position: "..dump(pos))
+	pos = {x=pos.x+0.5+1, y=pos.y+0.5, z=pos.z+0.5}
+	minetest.env:add_node(pos, 0)
 end
 
 print("TNT dump: "..dump(TNT))

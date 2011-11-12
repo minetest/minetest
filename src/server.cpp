@@ -1001,6 +1001,9 @@ Server::Server(
 	// Initialize Environment
 	
 	m_env = new ServerEnvironment(new ServerMap(mapsavedir), m_lua);
+
+	// Give environment reference to scripting api
+	scriptapi_add_environment(m_lua, m_env);
 	
 	// Register us to receive map edit events
 	m_env->getMap().addEventReceiver(this);
