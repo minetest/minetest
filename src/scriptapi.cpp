@@ -33,6 +33,22 @@ extern "C" {
 #include "serverobject.h"
 #include "script.h"
 //#include "luna.h"
+#include "luaentity_common.h"
+
+/*
+TODO:
+- Global environment step function
+- Random node triggers
+- Object network and client-side stuff
+- Named node types and dynamic id allocation
+- LuaNodeMetadata
+	blockdef.has_metadata = true/false
+	- Stores an inventory and stuff in a Settings object
+	meta.inventory_add_list("main")
+	blockdef.on_inventory_modified
+	meta.set("owner", playername)
+	meta.get("owner")
+*/
 
 static void stackDump(lua_State *L, std::ostream &o)
 {
@@ -128,28 +144,8 @@ static int l_register_entity(lua_State *L)
 	return 0; /* number of results */
 }
 
-#if 0
-static int l_new_entity(lua_State *L)
-{
-	/* o = o or {}
-	   setmetatable(o, self)
-	   self.__index = self
-	   return o */
-	if(lua_isnil(L, -1))
-		lua_newtable(L);
-	luaL_checktype(L, -1, LUA_TTABLE);
-	luaL_getmetatable(L, "minetest.entity");
-	lua_pushvalue(L, -1); // duplicate metatable
-	lua_setfield(L, -2, "__index");
-	lua_setmetatable(L, -2);
-	// return table
-	return 1;
-}
-#endif
-
 static const struct luaL_Reg minetest_f [] = {
 	{"register_entity", l_register_entity},
-	//{"new_entity", l_new_entity},
 	{NULL, NULL}
 };
 
@@ -162,6 +158,30 @@ static const struct luaL_Reg minetest_entity_m [] = {
 	{"set_deleted", l_entity_set_deleted},
 	{NULL, NULL}
 };
+
+static void objectref_get(lua_State *L, u16 id)
+{
+	// Get minetest.object_refs[i]
+	lua_getglobal(L, "minetest");
+	lua_getfield(L, -1, "object_refs");
+	luaL_checktype(L, -1, LUA_TTABLE);
+	lua_pushnumber(L, id);
+	lua_gettable(L, -2);
+	lua_remove(L, -2); // object_refs
+	lua_remove(L, -2); // minetest
+}
+
+static void luaentity_get(lua_State *L, u16 id)
+{
+	// Get minetest.luaentities[i]
+	lua_getglobal(L, "minetest");
+	lua_getfield(L, -1, "luaentities");
+	luaL_checktype(L, -1, LUA_TTABLE);
+	lua_pushnumber(L, id);
+	lua_gettable(L, -2);
+	lua_remove(L, -2); // luaentities
+	lua_remove(L, -2); // minetest
+}
 
 /*
 	Reference objects
@@ -552,18 +572,6 @@ void scriptapi_rm_object_reference(lua_State *L, ServerActiveObject *cobj)
 	lua_pop(L, 2);
 }
 
-static void objectref_get(lua_State *L, u16 id)
-{
-	// Get minetest.object_refs[i]
-	lua_getglobal(L, "minetest");
-	lua_getfield(L, -1, "object_refs");
-	luaL_checktype(L, -1, LUA_TTABLE);
-	lua_pushnumber(L, id);
-	lua_gettable(L, -2);
-	lua_remove(L, -2); // object_refs
-	lua_remove(L, -2); // minetest
-}
-
 /*
 	luaentity
 */
@@ -646,18 +654,6 @@ void scriptapi_luaentity_rm(lua_State *L, u16 id)
 	lua_pop(L, 2); // pop luaentities, minetest
 }
 
-static void luaentity_get(lua_State *L, u16 id)
-{
-	// Get minetest.luaentities[i]
-	lua_getglobal(L, "minetest");
-	lua_getfield(L, -1, "luaentities");
-	luaL_checktype(L, -1, LUA_TTABLE);
-	lua_pushnumber(L, id);
-	lua_gettable(L, -2);
-	lua_remove(L, -2); // luaentities
-	lua_remove(L, -2); // minetest
-}
-
 std::string scriptapi_luaentity_get_state(lua_State *L, u16 id)
 {
 	realitycheck(L);
@@ -667,14 +663,13 @@ std::string scriptapi_luaentity_get_state(lua_State *L, u16 id)
 	return "";
 }
 
-LuaEntityProperties scriptapi_luaentity_get_properties(lua_State *L, u16 id)
+void scriptapi_luaentity_get_properties(lua_State *L, u16 id,
+		LuaEntityProperties *prop)
 {
 	realitycheck(L);
 	assert(lua_checkstack(L, 20));
 	infostream<<"scriptapi_luaentity_get_properties: id="<<id<<std::endl;
 	StackUnroller stack_unroller(L);
-
-	LuaEntityProperties prop;
 
 	// Get minetest.luaentities[id]
 	luaentity_get(L, id);
@@ -682,59 +677,57 @@ LuaEntityProperties scriptapi_luaentity_get_properties(lua_State *L, u16 id)
 
 	lua_getfield(L, -1, "physical");
 	if(lua_isboolean(L, -1))
-		prop.physical = lua_toboolean(L, -1);
+		prop->physical = lua_toboolean(L, -1);
 	lua_pop(L, 1);
 	
 	lua_getfield(L, -1, "weight");
-	prop.weight = lua_tonumber(L, -1);
+	prop->weight = lua_tonumber(L, -1);
 	lua_pop(L, 1);
 
-	lua_getfield(L, -1, "boundingbox");
+	lua_getfield(L, -1, "collisionbox");
 	if(lua_istable(L, -1)){
 		lua_rawgeti(L, -1, 1);
-		prop.boundingbox.MinEdge.X = lua_tonumber(L, -1);
+		prop->collisionbox.MinEdge.X = lua_tonumber(L, -1);
 		lua_pop(L, 1);
 		lua_rawgeti(L, -1, 2);
-		prop.boundingbox.MinEdge.Y = lua_tonumber(L, -1);
+		prop->collisionbox.MinEdge.Y = lua_tonumber(L, -1);
 		lua_pop(L, 1);
 		lua_rawgeti(L, -1, 3);
-		prop.boundingbox.MinEdge.Z = lua_tonumber(L, -1);
+		prop->collisionbox.MinEdge.Z = lua_tonumber(L, -1);
 		lua_pop(L, 1);
 		lua_rawgeti(L, -1, 4);
-		prop.boundingbox.MaxEdge.X = lua_tonumber(L, -1);
+		prop->collisionbox.MaxEdge.X = lua_tonumber(L, -1);
 		lua_pop(L, 1);
 		lua_rawgeti(L, -1, 5);
-		prop.boundingbox.MaxEdge.Y = lua_tonumber(L, -1);
+		prop->collisionbox.MaxEdge.Y = lua_tonumber(L, -1);
 		lua_pop(L, 1);
 		lua_rawgeti(L, -1, 6);
-		prop.boundingbox.MaxEdge.Z = lua_tonumber(L, -1);
+		prop->collisionbox.MaxEdge.Z = lua_tonumber(L, -1);
 		lua_pop(L, 1);
 	}
 	lua_pop(L, 1);
 
 	lua_getfield(L, -1, "visual");
 	if(lua_isstring(L, -1))
-		prop.visual = lua_tostring(L, -1);
+		prop->visual = lua_tostring(L, -1);
 	lua_pop(L, 1);
 	
 	lua_getfield(L, -1, "textures");
 	if(lua_istable(L, -1)){
-		prop.textures.clear();
+		prop->textures.clear();
 		int table = lua_gettop(L);
 		lua_pushnil(L);
 		while(lua_next(L, table) != 0){
 			// key at index -2 and value at index -1
 			if(lua_isstring(L, -1))
-				prop.textures.push_back(lua_tostring(L, -1));
+				prop->textures.push_back(lua_tostring(L, -1));
 			else
-				prop.textures.push_back("");
+				prop->textures.push_back("");
 			// removes value, keeps key for next iteration
 			lua_pop(L, 1);
 		}
 	}
 	lua_pop(L, 1);
-
-	return prop;
 }
 
 void scriptapi_luaentity_step(lua_State *L, u16 id, float dtime)

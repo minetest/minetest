@@ -21,3 +21,7 @@ src/jthread/libjthread.a
 debug.txt
 bin/debug.txt
 minetestmapper/map.png
+locale/
+src/lua/build/
+src/lua/CMakeFiles/
+*bak*

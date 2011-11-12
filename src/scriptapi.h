@@ -27,6 +27,7 @@ class Server;
 class ServerEnvironment;
 class ServerActiveObject;
 typedef struct lua_State lua_State;
+struct LuaEntityProperties;
 
 void scriptapi_export(lua_State *L, Server *server);
 void scriptapi_add_environment(lua_State *L, ServerEnvironment *env);
@@ -34,34 +35,12 @@ void scriptapi_add_environment(lua_State *L, ServerEnvironment *env);
 void scriptapi_add_object_reference(lua_State *L, ServerActiveObject *cobj);
 void scriptapi_rm_object_reference(lua_State *L, ServerActiveObject *cobj);
 
-struct LuaEntityProperties
-{
-	bool physical;
-	float weight;
-	core::aabbox3d<f32> boundingbox;
-	std::string visual;
-	core::list<std::string> textures;
-
-	LuaEntityProperties():
-		physical(true),
-		weight(5),
-		boundingbox(-0.5,-0.5,-0.5, 0.5,0.5,0.5),
-		visual("cube")
-	{
-		textures.push_back("unknown_block.png");
-		textures.push_back("unknown_block.png");
-		textures.push_back("unknown_block.png");
-		textures.push_back("unknown_block.png");
-		textures.push_back("unknown_block.png");
-		textures.push_back("unknown_block.png");
-	}
-};
-
 void scriptapi_luaentity_add(lua_State *L, u16 id, const char *name,
 		const char *init_state);
 void scriptapi_luaentity_rm(lua_State *L, u16 id);
 std::string scriptapi_luaentity_get_state(lua_State *L, u16 id);
-LuaEntityProperties scriptapi_luaentity_get_properties(lua_State *L, u16 id);
+void scriptapi_luaentity_get_properties(lua_State *L, u16 id,
+		LuaEntityProperties *prop);
 void scriptapi_luaentity_step(lua_State *L, u16 id, float dtime);
 void scriptapi_luaentity_rightclick_player(lua_State *L, u16 id,
 		const char *playername);

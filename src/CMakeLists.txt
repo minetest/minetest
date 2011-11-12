@@ -94,6 +94,7 @@ configure_file(
 )
 
 set(common_SRCS
+	luaentity_common.cpp
 	scriptapi.cpp
 	script.cpp
 	log.cpp

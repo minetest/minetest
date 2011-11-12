@@ -61,7 +61,7 @@ lua_State* script_init()
 	return L;
 }
 
-lua_State* script_deinit(lua_State *L)
+void script_deinit(lua_State *L)
 {
 	lua_close(L);
 }

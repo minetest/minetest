@@ -125,6 +125,10 @@ function dump(o, dumped)
 		return tostring(o)
 	elseif type(o) == "function" then
 		return "<function>"
+	elseif type(o) == "userdata" then
+		return "<userdata>"
+	elseif type(o) == "nil" then
+		return "nil"
 	else
 		error("cannot dump a " .. type(o))
 		return nil
@@ -139,7 +143,7 @@ local TNT = {
 	-- Maybe handle gravity and collision this way? dunno
 	physical = true,
 	weight = 5,
-	boundingbox = {-0.5,-0.5,-0.5, 0.5,0.5,0.5},
+	collisionbox = {-0.5,-0.5,-0.5, 0.5,0.5,0.5},
 	visual = "cube",
 	textures = {"tnt_top.png","tnt_bottom.png","tnt_side.png","tnt_side.png","tnt_side.png","tnt_side.png"},
 	-- Initial value for our timer
@@ -161,10 +165,13 @@ end
 -- Called when object is right-clicked
 function TNT:on_rightclick(clicker)
 	print("TNT:on_rightclick()")
+	print("self: "..dump(self))
+	print("getmetatable(self): "..dump(getmetatable(self)))
+	print("getmetatable(getmetatable(self)): "..dump(getmetatable(getmetatable(self))))
 	pos = self.object:getpos()
 	print("TNT:on_rightclick(): object position: "..dump(pos))
 	pos = {x=pos.x+0.5+1, y=pos.y+0.5, z=pos.z+0.5}
-	minetest.env:add_node(pos, 0)
+	--minetest.env:add_node(pos, 0)
 end
 
 print("TNT dump: "..dump(TNT))

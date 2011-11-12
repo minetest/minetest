@@ -1495,6 +1495,7 @@ void MobV2SAO::doDamage(u16 d)
 */
 
 #include "scriptapi.h"
+#include "luaentity_common.h"
 
 // Prototype
 LuaEntitySAO proto_LuaEntitySAO(NULL, v3f(0,0,0), "_prototype", "");
@@ -1527,14 +1528,13 @@ void LuaEntitySAO::addedToEnvironment(u16 id)
 {
 	ServerActiveObject::addedToEnvironment(id);
 	
-	// Create entity by name and state
+	// Create entity from name and state
 	m_registered = true;
 	lua_State *L = m_env->getLua();
 	scriptapi_luaentity_add(L, id, m_init_name.c_str(), m_init_state.c_str());
 	
 	// Get properties
-	*m_prop = scriptapi_luaentity_get_properties(L, m_id);
-	infostream<<"m_prop->visual="<<m_prop->visual<<std::endl;
+	scriptapi_luaentity_get_properties(L, m_id, m_prop);
 }
 
 ServerActiveObject* LuaEntitySAO::create(ServerEnvironment *env, v3f pos,
@@ -1571,6 +1571,11 @@ std::string LuaEntitySAO::getClientInitializationData()
 	writeU8(os, 0);
 	// pos
 	writeV3F1000(os, m_base_position);
+	// properties
+	std::ostringstream prop_os(std::ios::binary);
+	m_prop->serialize(prop_os);
+	os<<serializeLongString(prop_os.str());
+	// return result
 	return os.str();
 }
 

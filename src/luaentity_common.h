@@ -17,16 +17,26 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
-#ifndef SCRIPT_HEADER
-#define SCRIPT_HEADER
+#ifndef LUAENTITY_COMMON_HEADER
+#define LUAENTITY_COMMON_HEADER
 
-typedef struct lua_State lua_State;
-//#include <string>
+#include <string>
+#include "irrlichttypes.h"
+#include <iostream>
 
-lua_State* script_init();
-void script_deinit(lua_State *L);
-void script_error(lua_State *L, const char *fmt, ...);
-bool script_load(lua_State *L, const char *path);
+struct LuaEntityProperties
+{
+	bool physical;
+	float weight;
+	core::aabbox3d<f32> collisionbox;
+	std::string visual;
+	core::list<std::string> textures;
+
+	LuaEntityProperties();
+	std::string dump();
+	void serialize(std::ostream &os);
+	void deSerialize(std::istream &is);
+};
 
 #endif
 

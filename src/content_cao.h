@@ -380,6 +380,8 @@ private:
 	LuaEntityCAO
 */
 
+struct LuaEntityProperties;
+
 class LuaEntityCAO : public ClientActiveObject
 {
 public:
@@ -414,6 +416,7 @@ private:
 	core::aabbox3d<f32> m_selection_box;
 	scene::IMeshSceneNode *m_node;
 	v3f m_position;
+	struct LuaEntityProperties *m_prop;
 };
 
 

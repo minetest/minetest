@@ -1268,6 +1268,8 @@ void MobV2CAO::setLooks(const std::string &looks)
 	LuaEntityCAO
 */
 
+#include "luaentity_common.h"
+
 // Prototype
 LuaEntityCAO proto_LuaEntityCAO;
 
@@ -1275,13 +1277,15 @@ LuaEntityCAO::LuaEntityCAO():
 	ClientActiveObject(0),
 	m_selection_box(-BS/3.,0.0,-BS/3., BS/3.,BS*2./3.,BS/3.),
 	m_node(NULL),
-	m_position(v3f(0,10*BS,0))
+	m_position(v3f(0,10*BS,0)),
+	m_prop(new LuaEntityProperties)
 {
 	ClientActiveObject::registerType(getType(), create);
 }
 
 LuaEntityCAO::~LuaEntityCAO()
 {
+	delete m_prop;
 }
 
 ClientActiveObject* LuaEntityCAO::create()
@@ -1398,16 +1402,19 @@ void LuaEntityCAO::initialize(const std::string &data)
 {
 	infostream<<"LuaEntityCAO: Got init data"<<std::endl;
 	
-	{
-		std::istringstream is(data, std::ios::binary);
-		// version
-		u8 version = readU8(is);
-		// check version
-		if(version != 0)
-			return;
-		// pos
-		m_position = readV3F1000(is);
-	}
+	std::istringstream is(data, std::ios::binary);
+	// version
+	u8 version = readU8(is);
+	// check version
+	if(version != 0)
+		return;
+	// pos
+	m_position = readV3F1000(is);
+	// properties
+	std::istringstream prop_is(deSerializeLongString(is), std::ios::binary);
+	m_prop->deSerialize(prop_is);
+
+	infostream<<"m_prop: "<<m_prop->dump()<<std::endl;
 	
 	updateNodePos();
 }
