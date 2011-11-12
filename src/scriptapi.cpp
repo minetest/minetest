@@ -367,7 +367,8 @@ private:
 	}
 	
 	// Exported functions
-
+	
+	// remove(self)
 	static int l_remove(lua_State *L)
 	{
 		ObjectRef *ref = checkobject(L, 1);
@@ -377,7 +378,9 @@ private:
 		co->m_removed = true;
 		return 0;
 	}
-
+	
+	// getpos(self)
+	// returns: {x=num, y=num, z=num}
 	static int l_getpos(lua_State *L)
 	{
 		ObjectRef *ref = checkobject(L, 1);
@@ -393,7 +396,8 @@ private:
 		lua_setfield(L, -2, "z");
 		return 1;
 	}
-
+	
+	// setpos(self, pos)
 	static int l_setpos(lua_State *L)
 	{
 		ObjectRef *ref = checkobject(L, 1);
@@ -406,7 +410,8 @@ private:
 		co->setPos(pos);
 		return 0;
 	}
-
+	
+	// moveto(self, pos, continuous=false)
 	static int l_moveto(lua_State *L)
 	{
 		ObjectRef *ref = checkobject(L, 1);
@@ -415,8 +420,10 @@ private:
 		if(co == NULL) return 0;
 		// pos
 		v3f pos = readFloatPos(L, 2);
+		// continuous
+		bool continuous = lua_toboolean(L, 3);
 		// Do it
-		co->moveTo(pos);
+		co->moveTo(pos, continuous);
 		return 0;
 	}
 

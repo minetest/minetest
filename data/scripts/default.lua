@@ -166,7 +166,7 @@ end
 function TNT:on_rightclick(clicker)
 	pos = self.object:getpos()
 	pos = {x=pos.x, y=pos.y+0.1, z=pos.z}
-	self.object:moveto(pos)
+	self.object:moveto(pos, false)
 end
 --[[
 function TNT:on_rightclick(clicker)

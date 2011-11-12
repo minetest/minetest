@@ -71,8 +71,11 @@ public:
 	/*
 		Some more dynamic interface
 	*/
-	virtual void setPos(v3f pos){ setBasePosition(pos); }
-	virtual void moveTo(v3f pos){ setBasePosition(pos); }
+	virtual void setPos(v3f pos)
+	{ setBasePosition(pos); }
+	// continuous: if true, object does not stop immediately at pos
+	virtual void moveTo(v3f pos, bool continuous)
+	{ setBasePosition(pos); }
 
 	/*
 		Step object in time.

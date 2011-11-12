@@ -217,7 +217,7 @@ public:
 	void rightClick(Player *player);
 
 	void setPos(v3f pos);
-	void moveTo(v3f pos);
+	void moveTo(v3f pos, bool continuous);
 private:
 	void sendPosition(bool do_interpolate, bool is_movement_end);
 
@@ -230,6 +230,7 @@ private:
 	float m_last_sent_yaw;
 	v3f m_last_sent_position;
 	float m_last_sent_position_timer;
+	float m_last_sent_move_precision;
 };
 
 #endif

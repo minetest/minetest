@@ -145,6 +145,11 @@ public:
 		return m_lua;
 	}
 
+	float getSendRecommendedInterval()
+	{
+		return 0.10;
+	}
+
 	/*
 		Save players
 	*/

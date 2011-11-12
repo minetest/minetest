@@ -35,10 +35,10 @@ struct SmoothTranslator
 	v3f vect_old;
 	v3f vect_show;
 	v3f vect_aim;
-	bool aim_is_end;
 	f32 anim_counter;
 	f32 anim_time;
 	f32 anim_time_counter;
+	bool aim_is_end;
 
 	SmoothTranslator():
 		vect_old(0,0,0),
@@ -46,7 +46,8 @@ struct SmoothTranslator
 		vect_aim(0,0,0),
 		anim_counter(0),
 		anim_time(0),
-		anim_time_counter(0)
+		anim_time_counter(0),
+		aim_is_end(true)
 	{}
 
 	void init(v3f vect)
@@ -54,10 +55,10 @@ struct SmoothTranslator
 		vect_old = vect;
 		vect_show = vect;
 		vect_aim = vect;
-		aim_is_end = true;
 		anim_counter = 0;
 		anim_time = 0;
 		anim_time_counter = 0;
+		aim_is_end = true;
 	}
 
 	void sharpen()
@@ -65,15 +66,19 @@ struct SmoothTranslator
 		init(vect_show);
 	}
 
-	void update(v3f vect_new, bool is_end_position=false)
+	void update(v3f vect_new, bool is_end_position=false, float update_interval=-1)
 	{
 		aim_is_end = is_end_position;
 		vect_old = vect_show;
 		vect_aim = vect_new;
-		if(anim_time < 0.001 || anim_time > 1.0)
-			anim_time = anim_time_counter;
-		else
-			anim_time = anim_time * 0.9 + anim_time_counter * 0.1;
+		if(update_interval > 0){
+			anim_time = update_interval;
+		} else {
+			if(anim_time < 0.001 || anim_time > 1.0)
+				anim_time = anim_time_counter;
+			else
+				anim_time = anim_time * 0.9 + anim_time_counter * 0.1;
+		}
 		anim_time_counter = 0;
 		anim_counter = 0;
 	}

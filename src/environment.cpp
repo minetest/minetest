@@ -1153,9 +1153,9 @@ void ServerEnvironment::step(float dtime)
 		// This helps the objects to send data at the same time
 		bool send_recommended = false;
 		m_send_recommended_timer += dtime;
-		if(m_send_recommended_timer > 0.10)
+		if(m_send_recommended_timer > getSendRecommendedInterval())
 		{
-			m_send_recommended_timer = 0;
+			m_send_recommended_timer -= getSendRecommendedInterval();
 			send_recommended = true;
 		}
 

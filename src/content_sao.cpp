@@ -1510,7 +1510,8 @@ LuaEntitySAO::LuaEntitySAO(ServerEnvironment *env, v3f pos,
 	m_yaw(0),
 	m_last_sent_yaw(0),
 	m_last_sent_position(0,0,0),
-	m_last_sent_position_timer(0)
+	m_last_sent_position_timer(0),
+	m_last_sent_move_precision(0)
 {
 	// Only register type if no environment supplied
 	if(env == NULL){
@@ -1572,17 +1573,16 @@ void LuaEntitySAO::step(float dtime, bool send_recommended)
 	if(send_recommended == false)
 		return;
 	
-	bool move_end = false;
 	float minchange = 0.2*BS;
 	if(m_last_sent_position_timer > 1.0){
 		minchange = 0.01*BS;
-		move_end = true;
 	} else if(m_last_sent_position_timer > 0.2){
 		minchange = 0.05*BS;
 	}
-	if(m_base_position.getDistanceFrom(m_last_sent_position) > minchange
-			|| fabs(m_yaw - m_last_sent_yaw) > 1.0){
-		sendPosition(true, move_end);
+	float move_d = m_base_position.getDistanceFrom(m_last_sent_position);
+	move_d += m_last_sent_move_precision;
+	if(move_d > minchange || fabs(m_yaw - m_last_sent_yaw) > 1.0){
+		sendPosition(true, false);
 	}
 }
 
@@ -1649,17 +1649,22 @@ void LuaEntitySAO::setPos(v3f pos)
 	sendPosition(false, true);
 }
 
-void LuaEntitySAO::moveTo(v3f pos)
+void LuaEntitySAO::moveTo(v3f pos, bool continuous)
 {
 	m_base_position = pos;
-	sendPosition(true, true);
+	if(!continuous)
+		sendPosition(true, true);
 }
 
 void LuaEntitySAO::sendPosition(bool do_interpolate, bool is_movement_end)
 {
+	m_last_sent_move_precision = m_base_position.getDistanceFrom(
+			m_last_sent_position);
+	m_last_sent_position_timer = 0;
 	m_last_sent_yaw = m_yaw;
 	m_last_sent_position = m_base_position;
-	m_last_sent_position_timer = 0;
+
+	float update_interval = m_env->getSendRecommendedInterval();
 
 	std::ostringstream os(std::ios::binary);
 	// command (0 = update position)
@@ -1673,6 +1678,8 @@ void LuaEntitySAO::sendPosition(bool do_interpolate, bool is_movement_end)
 	writeF1000(os, m_yaw);
 	// is_end_position (for interpolation)
 	writeU8(os, is_movement_end);
+	// update_interval (for interpolation)
+	writeF1000(os, update_interval);
 
 	// create message and add to list
 	ActiveObjectMessage aom(getId(), false, os.str());
