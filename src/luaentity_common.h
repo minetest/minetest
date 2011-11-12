@@ -26,11 +26,12 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 struct LuaEntityProperties
 {
+	// Values are BS=1
 	bool physical;
 	float weight;
 	core::aabbox3d<f32> collisionbox;
 	std::string visual;
-	core::list<std::string> textures;
+	core::array<std::string> textures;
 
 	LuaEntityProperties();
 	std::string dump();

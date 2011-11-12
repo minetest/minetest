@@ -1275,7 +1275,7 @@ LuaEntityCAO proto_LuaEntityCAO;
 
 LuaEntityCAO::LuaEntityCAO():
 	ClientActiveObject(0),
-	m_selection_box(-BS/3.,0.0,-BS/3., BS/3.,BS*2./3.,BS/3.),
+	m_selection_box(-BS/3.,-BS/3.,-BS/3., BS/3.,BS/3.,BS/3.),
 	m_meshnode(NULL),
 	m_spritenode(NULL),
 	m_position(v3f(0,10*BS,0)),
@@ -1303,9 +1303,114 @@ void LuaEntityCAO::addToScene(scene::ISceneManager *smgr)
 	//video::IVideoDriver* driver = smgr->getVideoDriver();
 
 	if(m_prop->visual == "single_sprite"){
+		infostream<<"LuaEntityCAO::addToScene(): single_sprite"<<std::endl;
+		m_spritenode = new scene::MyBillboardSceneNode(
+				smgr->getRootSceneNode(), smgr, -1, v3f(0,0,0), v2f(1,1));
+		std::string texturestring = "unknown_block.png";
+		if(m_prop->textures.size() >= 1)
+			texturestring = m_prop->textures[0];
+		m_spritenode->setMaterialTexture(0,
+				g_texturesource->getTextureRaw(texturestring));
+		m_spritenode->setMaterialFlag(video::EMF_LIGHTING, false);
+		m_spritenode->setMaterialFlag(video::EMF_BILINEAR_FILTER, false);
+		m_spritenode->setMaterialType(video::EMT_TRANSPARENT_ALPHA_CHANNEL_REF);
+		m_spritenode->setMaterialFlag(video::EMF_FOG_ENABLE, true);
+		m_spritenode->setColor(video::SColor(255,0,0,0));
+		m_spritenode->setVisible(false); /* Set visible when brightness is known */
+		m_spritenode->setSize(v2f(1,1)*1.0*BS);
+		{
+			const float txs = 1.0 / 1;
+			const float tys = 1.0 / 1;
+			m_spritenode->setTCoords(0, v2f(txs*1, tys*1));
+			m_spritenode->setTCoords(1, v2f(txs*1, tys*0));
+			m_spritenode->setTCoords(2, v2f(txs*0, tys*0));
+			m_spritenode->setTCoords(3, v2f(txs*0, tys*1));
+		}
 	} else if(m_prop->visual == "cube"){
+		infostream<<"LuaEntityCAO::addToScene(): cube"<<std::endl;
+		video::SColor c(255,255,255,255);
+		video::S3DVertex vertices[24] =
+		{
+			// Up
+			video::S3DVertex(-0.5,+0.5,-0.5, 0,1,0, c, 0,1),
+			video::S3DVertex(-0.5,+0.5,+0.5, 0,1,0, c, 0,0),
+			video::S3DVertex(+0.5,+0.5,+0.5, 0,1,0, c, 1,0),
+			video::S3DVertex(+0.5,+0.5,-0.5, 0,1,0, c, 1,1),
+			// Down
+			video::S3DVertex(-0.5,-0.5,-0.5, 0,-1,0, c, 0,0),
+			video::S3DVertex(+0.5,-0.5,-0.5, 0,-1,0, c, 1,0),
+			video::S3DVertex(+0.5,-0.5,+0.5, 0,-1,0, c, 1,1),
+			video::S3DVertex(-0.5,-0.5,+0.5, 0,-1,0, c, 0,1),
+			// Right
+			video::S3DVertex(+0.5,-0.5,-0.5, 1,0,0, c, 0,1),
+			video::S3DVertex(+0.5,+0.5,-0.5, 1,0,0, c, 0,0),
+			video::S3DVertex(+0.5,+0.5,+0.5, 1,0,0, c, 1,0),
+			video::S3DVertex(+0.5,-0.5,+0.5, 1,0,0, c, 1,1),
+			// Left
+			video::S3DVertex(-0.5,-0.5,-0.5, -1,0,0, c, 1,1),
+			video::S3DVertex(-0.5,-0.5,+0.5, -1,0,0, c, 0,1),
+			video::S3DVertex(-0.5,+0.5,+0.5, -1,0,0, c, 0,0),
+			video::S3DVertex(-0.5,+0.5,-0.5, -1,0,0, c, 1,0),
+			// Back
+			video::S3DVertex(-0.5,-0.5,+0.5, 0,0,1, c, 1,1),
+			video::S3DVertex(+0.5,-0.5,+0.5, 0,0,1, c, 0,1),
+			video::S3DVertex(+0.5,+0.5,+0.5, 0,0,1, c, 0,0),
+			video::S3DVertex(-0.5,+0.5,+0.5, 0,0,1, c, 1,0),
+			// Front
+			video::S3DVertex(-0.5,-0.5,-0.5, 0,0,-1, c, 0,1),
+			video::S3DVertex(-0.5,+0.5,-0.5, 0,0,-1, c, 0,0),
+			video::S3DVertex(+0.5,+0.5,-0.5, 0,0,-1, c, 1,0),
+			video::S3DVertex(+0.5,-0.5,-0.5, 0,0,-1, c, 1,1),
+		};
+		
+		for(u32 i=0; i<24; ++i){
+			vertices[i].Pos *= BS;
+		}
+
+		u16 indices[6] = {0,1,2,2,3,0};
+
+		scene::SMesh* mesh = new scene::SMesh();
+		for (u32 i=0; i<6; ++i)
+		{
+			scene::IMeshBuffer* buf = new scene::SMeshBuffer();
+			buf->append(vertices + 4 * i, 4, indices, 6);
+			buf->recalculateBoundingBox();
+			mesh->addMeshBuffer(buf);
+			buf->drop();
+		}
+		mesh->recalculateBoundingBox();
+	
+		m_meshnode = smgr->addMeshSceneNode(mesh, NULL);
+		
+		m_meshnode->setMesh(mesh);
+		m_meshnode->setScale(v3f(1));
+		for (u32 i = 0; i < 6; ++i)
+		{
+			std::string texturestring = "unknown_block.png";
+			if(m_prop->textures.size() > i)
+				texturestring = m_prop->textures[i];
+			AtlasPointer ap = g_texturesource->getTexture(texturestring);
+
+			// Get the tile texture and atlas transformation
+			video::ITexture* atlas = ap.atlas;
+			v2f pos = ap.pos;
+			v2f size = ap.size;
+
+			// Set material flags and texture
+			video::SMaterial& material = m_meshnode->getMaterial(i);
+			material.setFlag(video::EMF_LIGHTING, false);
+			material.setFlag(video::EMF_BILINEAR_FILTER, false);
+			material.setTexture(0, atlas);
+			material.getTextureMatrix(0).setTextureTranslate(pos.X, pos.Y);
+			material.getTextureMatrix(0).setTextureScale(size.X, size.Y);
+		}
+		// Will be shown when we know the brightness
+		m_meshnode->setVisible(false);
 	} else {
+		infostream<<"LuaEntityCAO::addToScene(): \""<<m_prop->visual
+				<<"\" not supported"<<std::endl;
 	}
+	updateNodePos();
 }
 
 void LuaEntityCAO::removeFromScene()
@@ -1326,9 +1431,11 @@ void LuaEntityCAO::updateLight(u8 light_at_pos)
 	video::SColor color(255,li,li,li);
 	if(m_meshnode){
 		setMeshVerticesColor(m_meshnode->getMesh(), color);
+		m_meshnode->setVisible(true);
 	}
 	if(m_spritenode){
 		m_spritenode->setColor(color);
+		m_spritenode->setVisible(true);
 	}
 }
 
@@ -1350,6 +1457,7 @@ void LuaEntityCAO::updateNodePos()
 void LuaEntityCAO::step(float dtime, ClientEnvironment *env)
 {
 	pos_translator.translate(dtime);
+	updateNodePos();
 }
 
 void LuaEntityCAO::processMessage(const std::string &data)
@@ -1398,6 +1506,10 @@ void LuaEntityCAO::initialize(const std::string &data)
 	m_prop->deSerialize(prop_is);
 
 	infostream<<"m_prop: "<<m_prop->dump()<<std::endl;
+
+	m_selection_box = m_prop->collisionbox;
+	m_selection_box.MinEdge *= BS;
+	m_selection_box.MaxEdge *= BS;
 		
 	pos_translator.init(m_position);
 	

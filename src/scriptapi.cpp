@@ -791,6 +791,7 @@ void scriptapi_luaentity_get_properties(lua_State *L, u16 id,
 		}
 	}
 	lua_pop(L, 1);
+
 }
 
 void scriptapi_luaentity_step(lua_State *L, u16 id, float dtime)

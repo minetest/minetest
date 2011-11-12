@@ -135,6 +135,10 @@ ServerActiveObject* InventoryItem::createSAO(ServerEnvironment *env, u16 id, v3f
 	/*
 		Create an ItemSAO
 	*/
+	pos.Y -= BS*0.25; // let it drop a bit
+	// Randomize a bit
+	pos.X += BS*0.2*(float)myrand_range(-1000,1000)/1000.0;
+	pos.Z += BS*0.2*(float)myrand_range(-1000,1000)/1000.0;
 	// Create object
 	ServerActiveObject *obj = new ItemSAO(env, pos, getItemString());
 	return obj;

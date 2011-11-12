@@ -146,6 +146,8 @@ local TNT = {
 	collisionbox = {-0.5,-0.5,-0.5, 0.5,0.5,0.5},
 	visual = "cube",
 	textures = {"tnt_top.png","tnt_bottom.png","tnt_side.png","tnt_side.png","tnt_side.png","tnt_side.png"},
+	--visual = "single_sprite",
+	--textures = {"mese.png^[forcesingle"},
 	-- Initial value for our timer
 	timer = 0,
 	-- List names of state variables, for serializing object state

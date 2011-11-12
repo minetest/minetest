@@ -1656,6 +1656,11 @@ void LuaEntitySAO::moveTo(v3f pos, bool continuous)
 		sendPosition(true, true);
 }
 
+float LuaEntitySAO::getMinimumSavedMovement()
+{
+	return 0.1 * BS;
+}
+
 void LuaEntitySAO::sendPosition(bool do_interpolate, bool is_movement_end)
 {
 	m_last_sent_move_precision = m_base_position.getDistanceFrom(

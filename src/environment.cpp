@@ -1749,8 +1749,10 @@ void ServerEnvironment::deactivateFarObjects(bool force_delete)
 			if(n){
 				StaticObject static_old = n->getValue();
 
+				float save_movem = obj->getMinimumSavedMovement();
+
 				if(static_old.data == staticdata_new &&
-						(static_old.pos - objectpos).getLength() < 2*BS)
+						(static_old.pos - objectpos).getLength() < save_movem)
 					data_changed = false;
 			} else {
 				errorstream<<"ServerEnvironment::deactivateFarObjects(): "
@@ -1759,6 +1761,8 @@ void ServerEnvironment::deactivateFarObjects(bool force_delete)
 						<<PP(obj->m_static_block)<<std::endl;
 			}
 		}
+
+		bool shall_be_written = (!stays_in_same_block || data_changed);
 		
 		// Delete old static object
 		if(obj->m_static_exists)
@@ -1769,7 +1773,7 @@ void ServerEnvironment::deactivateFarObjects(bool force_delete)
 				block->m_static_objects.remove(id);
 				obj->m_static_exists = false;
 				// Only mark block as modified if data changed considerably
-				if(!stays_in_same_block || data_changed)
+				if(shall_be_written)
 					block->raiseModified(MOD_STATE_WRITE_NEEDED);
 			}
 		}
@@ -1794,7 +1798,7 @@ void ServerEnvironment::deactivateFarObjects(bool force_delete)
 				block->m_static_objects.insert(new_id, s_obj);
 				
 				// Only mark block as modified if data changed considerably
-				if(!stays_in_same_block || data_changed)
+				if(shall_be_written)
 					block->raiseModified(MOD_STATE_WRITE_NEEDED);
 				
 				obj->m_static_exists = true;

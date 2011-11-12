@@ -52,6 +52,8 @@ public:
 	InventoryItem* createInventoryItem();
 	InventoryItem* createPickedUpItem(){return createInventoryItem();}
 	void rightClick(Player *player);
+
+	float getMinimumSavedMovement(){ return 0.1*BS; }
 private:
 	std::string m_inventorystring;
 	v3f m_speed_f;
@@ -218,6 +220,7 @@ public:
 
 	void setPos(v3f pos);
 	void moveTo(v3f pos, bool continuous);
+	float getMinimumSavedMovement();
 private:
 	void sendPosition(bool do_interpolate, bool is_movement_end);
 

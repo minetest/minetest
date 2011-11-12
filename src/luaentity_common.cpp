@@ -40,9 +40,8 @@ std::string LuaEntityProperties::dump()
 	os<<", collisionbox="<<PP(collisionbox.MinEdge)<<","<<PP(collisionbox.MaxEdge);
 	os<<", visual="<<visual;
 	os<<", textures=[";
-	for(core::list<std::string>::Iterator i = textures.begin();
-			i != textures.end(); i++){
-		os<<"\""<<(*i)<<"\" ";
+	for(u32 i=0; i<textures.size(); i++){
+		os<<"\""<<textures[i]<<"\" ";
 	}
 	os<<"]";
 	return os.str();
@@ -57,9 +56,8 @@ void LuaEntityProperties::serialize(std::ostream &os)
 	writeV3F1000(os, collisionbox.MaxEdge);
 	os<<serializeString(visual);
 	writeU16(os, textures.size());
-	for(core::list<std::string>::Iterator i = textures.begin();
-			i != textures.end(); i++){
-		os<<serializeString(*i);
+	for(u32 i=0; i<textures.size(); i++){
+		os<<serializeString(textures[i]);
 	}
 }
 
@@ -74,8 +72,8 @@ void LuaEntityProperties::deSerialize(std::istream &is)
 	collisionbox.MaxEdge = readV3F1000(is);
 	visual = deSerializeString(is);
 	textures.clear();
-	int texture_count = readU16(is);
-	for(int i=0; i<texture_count; i++){
+	u32 texture_count = readU16(is);
+	for(u32 i=0; i<texture_count; i++){
 		textures.push_back(deSerializeString(is));
 	}
 }
