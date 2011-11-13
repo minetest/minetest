@@ -46,11 +46,11 @@ ToolProperties getToolProperties(const std::string &toolname)
 		return ToolProperties(0, 0,0,0,0, 1337, 0,0,0,0);
 	
 	else if(toolname == "WShovel")
-		return ToolProperties(1.5, 0.5,2,-1.5,0.3, 50, 0,0,0,0);
+		return ToolProperties(2.0, 0.5,2,-1.5,0.3, 50, 0,0,0,0);
 	else if(toolname == "STShovel")
-		return ToolProperties(1.0, 0.5,2,-1.5,0.1, 100, 0,0,0,0);
+		return ToolProperties(1.5, 0.5,2,-1.5,0.1, 100, 0,0,0,0);
 	else if(toolname == "SteelShovel")
-		return ToolProperties(0.6, 0.5,2,-1.5,0.0, 300, 0,0,0,0);
+		return ToolProperties(1.0, 0.5,2,-1.5,0.0, 300, 0,0,0,0);
 
 	// weight, crackiness, crumbleness, cuttability
 	else if(toolname == "WAxe")
@@ -68,7 +68,7 @@ ToolProperties getToolProperties(const std::string &toolname)
 		return ToolProperties(2.0, 3,0,1,-1, 300, 0,0,0,0);
 
 	// Properties of hand
-	return ToolProperties(0.5, 1,0.4,-0.75,0, 50, 0,0,0,0);
+	return ToolProperties(0.5, 1,0,-1,0, 50, 0,0,0,0);
 }
 
 DiggingProperties getDiggingProperties(u16 material, const std::string &tool)

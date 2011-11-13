@@ -49,7 +49,7 @@ void setStoneLikeMaterialProperties(MaterialProperties &mprop, float toughness)
 void setDirtLikeMaterialProperties(MaterialProperties &mprop, float toughness)
 {
 	mprop.diggability = DIGGABLE_NORMAL;
-	mprop.weight = toughness * 2.0;
+	mprop.weight = toughness * 1.2;
 	mprop.crackiness = 0;
 	mprop.crumbliness = 1.2;
 	mprop.cuttability = -0.4;
@@ -68,9 +68,9 @@ void setWoodLikeMaterialProperties(MaterialProperties &mprop, float toughness)
 {
 	mprop.diggability = DIGGABLE_NORMAL;
 	mprop.weight = toughness * 1.0;
-	mprop.crackiness = 2.0;
+	mprop.crackiness = 0.75;
 	mprop.crumbliness = -1.0;
-	mprop.cuttability = 2.0;
+	mprop.cuttability = 1.5;
 }
 
 void setLeavesLikeMaterialProperties(MaterialProperties &mprop, float toughness)
@@ -85,7 +85,7 @@ void setLeavesLikeMaterialProperties(MaterialProperties &mprop, float toughness)
 void setGlassLikeMaterialProperties(MaterialProperties &mprop, float toughness)
 {
 	mprop.diggability = DIGGABLE_NORMAL;
-	mprop.weight = 0.5 * toughness;
+	mprop.weight = 0.1 * toughness;
 	mprop.crackiness = 2.0;
 	mprop.crumbliness = -1.0;
 	mprop.cuttability = -1.0;
