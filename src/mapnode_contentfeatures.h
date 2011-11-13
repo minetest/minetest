@@ -86,7 +86,8 @@ struct ContentFeatures
 #endif
 
 	// List of all block textures that have been used (value is dummy)
-	// Exists on server too for cleaner code in content_mapnode.cpp
+	// Used for texture atlas making.
+	// Exists on server too for cleaner code in content_mapnode.cpp.
 	core::map<std::string, bool> used_texturenames;
 	
 	// Type of MapNode::param1
@@ -108,8 +109,6 @@ struct ContentFeatures
 	bool climbable;
 	// Player can build on these
 	bool buildable_to;
-	// Whether the node has no liquid, source liquid or flowing liquid
-	enum LiquidType liquid_type;
 	// If true, param2 is set to direction when placed. Used for torches.
 	// NOTE: the direction format is quite inefficient and should be changed
 	bool wall_mounted;
@@ -132,8 +131,9 @@ struct ContentFeatures
 	// Initial metadata is cloned from this
 	NodeMetadata *initial_metadata;
 	
+	// Whether the node is non-liquid, source liquid or flowing liquid
+	enum LiquidType liquid_type;
 	// If the content is liquid, this is the flowing version of the liquid.
-	// If content is liquid, this is the same content.
 	content_t liquid_alternative_flowing;
 	// If the content is liquid, this is the source version of the liquid.
 	content_t liquid_alternative_source;
@@ -174,12 +174,12 @@ struct ContentFeatures
 		diggable = true;
 		climbable = false;
 		buildable_to = false;
-		liquid_type = LIQUID_NONE;
 		wall_mounted = false;
 		air_equivalent = false;
 		often_contains_mineral = false;
 		dug_item = "";
 		initial_metadata = NULL;
+		liquid_type = LIQUID_NONE;
 		liquid_alternative_flowing = CONTENT_IGNORE;
 		liquid_alternative_source = CONTENT_IGNORE;
 		liquid_viscosity = 0;
