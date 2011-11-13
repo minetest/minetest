@@ -733,7 +733,7 @@ void content_mapnode_init()
 	for(u16 i=0; i<=MAX_CONTENT; i++)
 	{
 		content_features(i).digging_properties.set("MesePick",
-				DiggingProperties(true, 0.0, 65535./1337));
+				DiggingProperties(true, 0.5, 65535./555));
 	}
 
 }

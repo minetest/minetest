@@ -697,6 +697,8 @@ u16 Oerkki1SAO::punch(const std::string &toolname, v3f dir,
 		amount = 12;
 	if(toolname == "SteelSword")
 		amount = 16;
+    if(toolname == "MeseSword")
+		amount = 18;
 	if(toolname == "STAxe")
 		amount = 7;
 	if(toolname == "SteelAxe")
@@ -1389,6 +1391,8 @@ u16 MobV2SAO::punch(const std::string &toolname, v3f dir,
 		amount = 6;
 	if(toolname == "SteelSword")
 		amount = 8;
+    if(toolname == "MeseSword")
+		amount = 9;
 	if(toolname == "STAxe")
 		amount = 3;
 	if(toolname == "SteelAxe")
