@@ -30,7 +30,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "serialization.h"
 #include "constants.h"
 #include "voxel.h"
-#include "nodemetadata.h"
 #include "staticobject.h"
 #include "mapblock_nodemod.h"
 #ifndef SERVER
@@ -38,6 +37,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #endif
 
 class Map;
+class NodeMetadataList;
 
 #define BLOCK_TIMESTAMP_UNDEFINED 0xffffffff
 
@@ -575,7 +575,7 @@ public:
 	JMutex mesh_mutex;
 #endif
 	
-	NodeMetadataList m_node_metadata;
+	NodeMetadataList *m_node_metadata;
 	StaticObjectList m_static_objects;
 	
 private:

@@ -1836,7 +1836,7 @@ NodeMetadata* Map::getNodeMetadata(v3s16 p)
 				<<std::endl;
 		return NULL;
 	}
-	NodeMetadata *meta = block->m_node_metadata.get(p_rel);
+	NodeMetadata *meta = block->m_node_metadata->get(p_rel);
 	return meta;
 }
 
@@ -1856,7 +1856,7 @@ void Map::setNodeMetadata(v3s16 p, NodeMetadata *meta)
 				<<std::endl;
 		return;
 	}
-	block->m_node_metadata.set(p_rel, meta);
+	block->m_node_metadata->set(p_rel, meta);
 }
 
 void Map::removeNodeMetadata(v3s16 p)
@@ -1870,7 +1870,7 @@ void Map::removeNodeMetadata(v3s16 p)
 				<<std::endl;
 		return;
 	}
-	block->m_node_metadata.remove(p_rel);
+	block->m_node_metadata->remove(p_rel);
 }
 
 void Map::nodeMetadataStep(float dtime,
@@ -1895,7 +1895,7 @@ void Map::nodeMetadataStep(float dtime,
 		for(i=sectorblocks.begin(); i!=sectorblocks.end(); i++)
 		{
 			MapBlock *block = *i;
-			bool changed = block->m_node_metadata.step(dtime);
+			bool changed = block->m_node_metadata->step(dtime);
 			if(changed)
 				changed_blocks[block->getPos()] = block;
 		}

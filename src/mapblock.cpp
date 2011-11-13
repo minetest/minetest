@@ -24,12 +24,14 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "light.h"
 #include <sstream>
 #include "mapnode_contentfeatures.h"
+#include "nodemetadata.h"
 
 /*
 	MapBlock
 */
 
 MapBlock::MapBlock(Map *parent, v3s16 pos, bool dummy):
+		m_node_metadata(new NodeMetadataList),
 		m_parent(parent),
 		m_pos(pos),
 		m_modified(MOD_STATE_WRITE_NEEDED),
@@ -44,8 +46,6 @@ MapBlock::MapBlock(Map *parent, v3s16 pos, bool dummy):
 	if(dummy == false)
 		reallocate();
 	
-	//m_spawn_timer = -10000;
-
 #ifndef SERVER
 	m_mesh_expired = false;
 	mesh_mutex.Init();
@@ -67,6 +67,8 @@ MapBlock::~MapBlock()
 		}
 	}
 #endif
+
+	delete m_node_metadata;
 
 	if(data)
 		delete[] data;
@@ -632,7 +634,7 @@ void MapBlock::serialize(std::ostream &os, u8 version)
 			{
 				try{
 					std::ostringstream oss(std::ios_base::binary);
-					m_node_metadata.serialize(oss);
+					m_node_metadata->serialize(oss);
 					os<<serializeString(oss.str());
 				}
 				// This will happen if the string is longer than 65535
@@ -645,7 +647,7 @@ void MapBlock::serialize(std::ostream &os, u8 version)
 			else
 			{
 				std::ostringstream oss(std::ios_base::binary);
-				m_node_metadata.serialize(oss);
+				m_node_metadata->serialize(oss);
 				compressZlib(oss.str(), os);
 				//os<<serializeLongString(oss.str());
 			}
@@ -784,7 +786,7 @@ void MapBlock::deSerialize(std::istream &is, u8 version)
 				{
 					std::string data = deSerializeString(is);
 					std::istringstream iss(data, std::ios_base::binary);
-					m_node_metadata.deSerialize(iss);
+					m_node_metadata->deSerialize(iss);
 				}
 				else
 				{
@@ -792,7 +794,7 @@ void MapBlock::deSerialize(std::istream &is, u8 version)
 					std::ostringstream oss(std::ios_base::binary);
 					decompressZlib(is, oss);
 					std::istringstream iss(oss.str(), std::ios_base::binary);
-					m_node_metadata.deSerialize(iss);
+					m_node_metadata->deSerialize(iss);
 				}
 			}
 			catch(SerializationError &e)

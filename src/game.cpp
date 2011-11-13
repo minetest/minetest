@@ -45,6 +45,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "filesys.h"
 // Needed for determining pointing to nodes
 #include "mapnode_contentfeatures.h"
+#include "nodemetadata.h"
 
 /*
 	Setting this to 1 enables a special camera mode that forces

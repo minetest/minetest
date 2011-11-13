@@ -31,6 +31,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "profiler.h"
 #include "scriptapi.h"
 #include "mapnode_contentfeatures.h"
+#include "nodemetadata.h"
 
 #define PP(x) "("<<(x).X<<","<<(x).Y<<","<<(x).Z<<")"
 
@@ -607,7 +608,7 @@ void ServerEnvironment::activateBlock(MapBlock *block, u32 additional_dtime)
 	activateObjects(block);
 
 	// Run node metadata
-	bool changed = block->m_node_metadata.step((float)dtime_s);
+	bool changed = block->m_node_metadata->step((float)dtime_s);
 	if(changed)
 	{
 		MapEditEvent event;
@@ -917,7 +918,7 @@ void ServerEnvironment::step(float dtime)
 			block->setTimestampNoChangedFlag(m_game_time);
 
 			// Run node metadata
-			bool changed = block->m_node_metadata.step(dtime);
+			bool changed = block->m_node_metadata->step(dtime);
 			if(changed)
 			{
 				MapEditEvent event;
