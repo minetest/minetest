@@ -335,6 +335,7 @@ void content_mapnode_init()
 	f->solidness = 0; // drawn separately, makes no faces
 	f->air_equivalent = true; // grass grows underneath
 	f->walkable = false;
+	f->selection_box.type = NODEBOX_FIXED;
 	setDirtLikeDiggingProperties(f->digging_properties, 0.75);
 
 	i = CONTENT_LADDER;
@@ -350,6 +351,7 @@ void content_mapnode_init()
 	f->air_equivalent = true;
 	f->walkable = false;
 	f->climbable = true;
+	f->selection_box.type = NODEBOX_WALLMOUNTED;
 	setWoodLikeDiggingProperties(f->digging_properties, 0.5);
 
 	// Deprecated
@@ -606,6 +608,13 @@ void content_mapnode_init()
 	f->air_equivalent = true;
 	f->dug_item = std::string("MaterialItem2 ")+itos(i)+" 1";
 	f->light_source = LIGHT_MAX-1;
+	f->selection_box.type = NODEBOX_WALLMOUNTED;
+	f->selection_box.wall_top = core::aabbox3d<f32>(
+			-BS/10, BS/2-BS/3.333*2, -BS/10, BS/10, BS/2, BS/10);
+	f->selection_box.wall_bottom = core::aabbox3d<f32>(
+			-BS/10, -BS/2, -BS/10, BS/10, -BS/2+BS/3.333*2, BS/10);
+	f->selection_box.wall_side = core::aabbox3d<f32>(
+			-BS/2, -BS/3.333, -BS/10, -BS/2+BS/3.333, BS/3.333, BS/10);
 	f->digging_properties.set("", DiggingProperties(true, 0.0, 0));
 	
 	i = CONTENT_SIGN_WALL;
@@ -623,6 +632,7 @@ void content_mapnode_init()
 	if(f->initial_metadata == NULL)
 		f->initial_metadata = new SignNodeMetadata("Some sign");
 	f->digging_properties.set("", DiggingProperties(true, 0.5, 0));
+	f->selection_box.type = NODEBOX_WALLMOUNTED;
 	
 	i = CONTENT_CHEST;
 	f = &content_features(i);

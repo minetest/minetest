@@ -43,7 +43,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "gettext.h"
 #include "log.h"
 #include "filesys.h"
-// Needed for some special cases for CONTENT_TORCH and CONTENT_SIGN_WALL
+// Needed for writing to signs (CONTENT_SIGN_WALL)
 // TODO: A generic way for handling such should be created
 #include "content_mapnode.h"
 // Needed for sign text input
@@ -343,10 +343,29 @@ void getPointedNode(Client *client, v3f player_position,
 			v3s16(-1,0,0), // left
 		};
 		
-		/*
-			Meta-objects
-		*/
-		if(n.getContent() == CONTENT_TORCH)
+		ContentFeatures &f = content_features(n);
+		
+		if(f.selection_box.type == NODEBOX_FIXED)
+		{
+			f32 distance = (npf - camera_position).getLength();
+
+			core::aabbox3d<f32> box = f.selection_box.fixed;
+			box.MinEdge += npf;
+			box.MaxEdge += npf;
+
+			if(distance < mindistance)
+			{
+				if(box.intersectsWithLine(shootline))
+				{
+					nodefound = true;
+					nodepos = np;
+					neighbourpos = np;
+					mindistance = distance;
+					nodehilightbox = box;
+				}
+			}
+		}
+		else if(f.selection_box.type == NODEBOX_WALLMOUNTED)
 		{
 			v3s16 dir = unpackDir(n.param2);
 			v3f dir_f = v3f(dir.X, dir.Y, dir.Z);
@@ -356,31 +375,41 @@ void getPointedNode(Client *client, v3f player_position,
 
 			core::aabbox3d<f32> box;
 			
-			// bottom
-			if(dir == v3s16(0,-1,0))
-			{
-				box = core::aabbox3d<f32>(
-					npf - v3f(BS/6, BS/2, BS/6),
-					npf + v3f(BS/6, -BS/2+BS/3*2, BS/6)
-				);
-			}
 			// top
-			else if(dir == v3s16(0,1,0))
-			{
-				box = core::aabbox3d<f32>(
-					npf - v3f(BS/6, -BS/2+BS/3*2, BS/6),
-					npf + v3f(BS/6, BS/2, BS/6)
-				);
+			if(dir == v3s16(0,1,0)){
+				box = f.selection_box.wall_top;
+			}
+			// bottom
+			else if(dir == v3s16(0,-1,0)){
+				box = f.selection_box.wall_bottom;
 			}
 			// side
-			else
-			{
-				box = core::aabbox3d<f32>(
-					cpf - v3f(BS/6, BS/3, BS/6),
-					cpf + v3f(BS/6, BS/3, BS/6)
-				);
+			else{
+				v3f vertices[2] =
+				{
+					f.selection_box.wall_side.MinEdge,
+					f.selection_box.wall_side.MaxEdge
+				};
+
+				for(s32 i=0; i<2; i++)
+				{
+					if(dir == v3s16(-1,0,0))
+						vertices[i].rotateXZBy(0);
+					if(dir == v3s16(1,0,0))
+						vertices[i].rotateXZBy(180);
+					if(dir == v3s16(0,0,-1))
+						vertices[i].rotateXZBy(90);
+					if(dir == v3s16(0,0,1))
+						vertices[i].rotateXZBy(-90);
+				}
+
+				box = core::aabbox3d<f32>(vertices[0]);
+				box.addInternalPoint(vertices[1]);
 			}
 
+			box.MinEdge += npf;
+			box.MaxEdge += npf;
+			
 			if(distance < mindistance)
 			{
 				if(box.intersectsWithLine(shootline))
@@ -393,146 +422,7 @@ void getPointedNode(Client *client, v3f player_position,
 				}
 			}
 		}
-		else if(n.getContent() == CONTENT_SIGN_WALL)
-		{
-			v3s16 dir = unpackDir(n.param2);
-			v3f dir_f = v3f(dir.X, dir.Y, dir.Z);
-			dir_f *= BS/2 - BS/6 - BS/20;
-			v3f cpf = npf + dir_f;
-			f32 distance = (cpf - camera_position).getLength();
-
-			v3f vertices[4] =
-			{
-				v3f(BS*0.42,-BS*0.35,-BS*0.4),
-				v3f(BS*0.49, BS*0.35, BS*0.4),
-			};
-
-			for(s32 i=0; i<2; i++)
-			{
-				if(dir == v3s16(1,0,0))
-					vertices[i].rotateXZBy(0);
-				if(dir == v3s16(-1,0,0))
-					vertices[i].rotateXZBy(180);
-				if(dir == v3s16(0,0,1))
-					vertices[i].rotateXZBy(90);
-				if(dir == v3s16(0,0,-1))
-					vertices[i].rotateXZBy(-90);
-				if(dir == v3s16(0,-1,0))
-					vertices[i].rotateXYBy(-90);
-				if(dir == v3s16(0,1,0))
-					vertices[i].rotateXYBy(90);
-
-				vertices[i] += npf;
-			}
-
-			core::aabbox3d<f32> box;
-
-			box = core::aabbox3d<f32>(vertices[0]);
-			box.addInternalPoint(vertices[1]);
-
-			if(distance < mindistance)
-			{
-				if(box.intersectsWithLine(shootline))
-				{
-					nodefound = true;
-					nodepos = np;
-					neighbourpos = np;
-					mindistance = distance;
-					nodehilightbox = box;
-				}
-			}
-		}
-
-		else if(n.getContent() == CONTENT_LADDER)
-		{
-			v3s16 dir = unpackDir(n.param2);
-			v3f dir_f = v3f(dir.X, dir.Y, dir.Z);
-			dir_f *= BS/2 - BS/6 - BS/20;
-			v3f cpf = npf + dir_f;
-			f32 distance = (cpf - camera_position).getLength();
-
-			v3f vertices[4] =
-			{
-				v3f(BS*0.42,-BS/2,-BS/2),
-				v3f(BS*0.49, BS/2, BS/2),
-			};
-
-			for(s32 i=0; i<2; i++)
-			{
-				if(dir == v3s16(1,0,0))
-					vertices[i].rotateXZBy(0);
-				if(dir == v3s16(-1,0,0))
-					vertices[i].rotateXZBy(180);
-				if(dir == v3s16(0,0,1))
-					vertices[i].rotateXZBy(90);
-				if(dir == v3s16(0,0,-1))
-					vertices[i].rotateXZBy(-90);
-				if(dir == v3s16(0,-1,0))
-					vertices[i].rotateXYBy(-90);
-				if(dir == v3s16(0,1,0))
-					vertices[i].rotateXYBy(90);
-
-				vertices[i] += npf;
-			}
-
-			core::aabbox3d<f32> box;
-
-			box = core::aabbox3d<f32>(vertices[0]);
-			box.addInternalPoint(vertices[1]);
-
-			if(distance < mindistance)
-			{
-				if(box.intersectsWithLine(shootline))
-				{
-					nodefound = true;
-					nodepos = np;
-					neighbourpos = np;
-					mindistance = distance;
-					nodehilightbox = box;
-				}
-			}
-		}
-		else if(n.getContent() == CONTENT_RAIL)
-		{
-			v3s16 dir = unpackDir(n.param0);
-			v3f dir_f = v3f(dir.X, dir.Y, dir.Z);
-			dir_f *= BS/2 - BS/6 - BS/20;
-			v3f cpf = npf + dir_f;
-			f32 distance = (cpf - camera_position).getLength();
-
-			float d = (float)BS/16;
-			v3f vertices[4] =
-			{
-				v3f(BS/2, -BS/2+d, -BS/2),
-				v3f(-BS/2, -BS/2, BS/2),
-			};
-
-			for(s32 i=0; i<2; i++)
-			{
-				vertices[i] += npf;
-			}
-
-			core::aabbox3d<f32> box;
-
-			box = core::aabbox3d<f32>(vertices[0]);
-			box.addInternalPoint(vertices[1]);
-
-			if(distance < mindistance)
-			{
-				if(box.intersectsWithLine(shootline))
-				{
-					nodefound = true;
-					nodepos = np;
-					neighbourpos = np;
-					mindistance = distance;
-					nodehilightbox = box;
-				}
-			}
-		}
-		/*
-			Regular blocks
-		*/
-		else
+		else // NODEBOX_REGULAR
 		{
 			for(u16 i=0; i<6; i++)
 			{

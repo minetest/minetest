@@ -57,6 +57,35 @@ enum LiquidType
 	LIQUID_SOURCE
 };
 
+enum NodeBoxType
+{
+	NODEBOX_REGULAR, // Regular block; allows buildable_to
+	NODEBOX_FIXED, // Static separately defined box
+	NODEBOX_WALLMOUNTED, // Box for wall_mounted nodes; (top, bottom, side)
+};
+
+struct NodeBox
+{
+	enum NodeBoxType type;
+	// NODEBOX_REGULAR (no parameters)
+	// NODEBOX_FIXED
+	core::aabbox3d<f32> fixed;
+	// NODEBOX_WALLMOUNTED
+	core::aabbox3d<f32> wall_top;
+	core::aabbox3d<f32> wall_bottom;
+	core::aabbox3d<f32> wall_side; // being at the -X side
+
+	NodeBox():
+		type(NODEBOX_REGULAR),
+		// default is rail-like
+		fixed(-BS/2, -BS/2, -BS/2, BS/2, -BS/2+BS/16., BS/2),
+		// default is sign/ladder-like
+		wall_top(-BS/2, BS/2-BS/16., -BS/2, BS/2, BS/2, BS/2),
+		wall_bottom(-BS/2, -BS/2, -BS/2, BS/2, -BS/2+BS/16., BS/2),
+		wall_side(-BS/2, -BS/2, -BS/2, -BS/2+BS/16., BS/2, BS/2)
+	{}
+};
+
 struct MapNode;
 class NodeMetadata;
 
@@ -149,6 +178,8 @@ struct ContentFeatures
 	DiggingPropertiesList digging_properties;
 
 	u32 damage_per_second;
+
+	NodeBox selection_box;
 	
 	// NOTE: Move relevant properties to here from elsewhere
 
@@ -186,6 +217,7 @@ struct ContentFeatures
 		light_source = 0;
 		digging_properties.clear();
 		damage_per_second = 0;
+		selection_box = NodeBox();
 	}
 
 	ContentFeatures()
