@@ -43,12 +43,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "gettext.h"
 #include "log.h"
 #include "filesys.h"
-// Needed for writing to signs (CONTENT_SIGN_WALL)
-// TODO: A generic way for handling such should be created
-#include "content_mapnode.h"
-// Needed for sign text input
-// TODO: A generic way for handling such should be created
-#include "content_nodemeta.h"
 // Needed for determining pointing to nodes
 #include "mapnode_contentfeatures.h"
 
@@ -115,9 +109,9 @@ struct TextDestChat : public TextDest
 	Client *m_client;
 };
 
-struct TextDestSignNode : public TextDest
+struct TextDestNodeMetadata : public TextDest
 {
-	TextDestSignNode(v3s16 p, Client *client)
+	TextDestNodeMetadata(v3s16 p, Client *client)
 	{
 		m_p = p;
 		m_client = client;
@@ -1784,23 +1778,22 @@ void the_game(
 					menu->setDrawSpec(draw_spec);
 					menu->drop();
 				}
-				else if(meta && meta->typeId() == CONTENT_SIGN_WALL && !random_input)
+				// If metadata provides text input, activate text input
+				else if(meta && meta->allowsTextInput() && !random_input)
 				{
-					infostream<<"Sign node right-clicked"<<std::endl;
-					
-					SignNodeMetadata *signmeta = (SignNodeMetadata*)meta;
+					infostream<<"Launching metadata text input"<<std::endl;
 					
 					// Get a new text for it
 
-					TextDest *dest = new TextDestSignNode(nodepos, &client);
+					TextDest *dest = new TextDestNodeMetadata(nodepos, &client);
 
-					std::wstring wtext =
-							narrow_to_wide(signmeta->getText());
+					std::wstring wtext = narrow_to_wide(meta->getText());
 
 					(new GUITextInputMenu(guienv, guiroot, -1,
 							&g_menumgr, dest,
 							wtext))->drop();
 				}
+				// Otherwise report right click to server
 				else
 				{
 					client.groundAction(1, nodepos, neighbourpos, g_selected_item);

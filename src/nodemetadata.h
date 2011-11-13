@@ -25,16 +25,12 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <iostream>
 
 /*
-	Used for storing:
+	NodeMetadata stores arbitary amounts of data for special blocks.
+	Used for furnaces, chests and signs.
 
-	Oven:
-		- Item that is being burned
-		- Burning time
-		- Item stack that is being heated
-		- Result item stack
-	
-	Sign:
-		- Text
+	There are two interaction methods: inventory menu and text input.
+	Only one can be used for a single metadata, thus only inventory OR
+	text input should exist in a metadata.
 */
 
 class Inventory;
@@ -67,8 +63,10 @@ public:
 	virtual std::string getInventoryDrawSpecString(){return "";}
 	// primarily used for locking chests, but others can play too
 	virtual std::string getOwner(){ return std::string(""); }
-	virtual void setOwner(std::string t){  }
-
+	virtual void setOwner(std::string t){}
+	virtual bool allowsTextInput(){ return false; }
+	virtual std::string getText(){ return ""; }
+	virtual void setText(const std::string &t){}
 protected:
 	static void registerType(u16 id, Factory f);
 private:

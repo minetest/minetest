@@ -36,8 +36,9 @@ public:
 	virtual void serializeBody(std::ostream &os);
 	virtual std::string infoText();
 
-	std::string getText(){ return m_text; }
-	void setText(std::string t){ m_text = t; }
+	virtual bool allowsTextInput(){ return true; }
+	virtual std::string getText(){ return m_text; }
+	virtual void setText(const std::string &t){ m_text = t; }
 
 private:
 	std::string m_text;
