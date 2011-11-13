@@ -26,6 +26,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #ifndef SERVER
 #include "tile.h"
 #endif
+#include "materials.h" // DiggingProperties
 
 /*
 	Content feature list

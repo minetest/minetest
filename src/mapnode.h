@@ -21,11 +21,10 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #define MAPNODE_HEADER
 
 #include <iostream>
-#include "common_irrlicht.h"
+#include "irrlichttypes.h"
 #include "light.h"
 #include "exceptions.h"
 #include "serialization.h"
-#include "materials.h"
 #ifndef SERVER
 #include "tile.h"
 #endif
