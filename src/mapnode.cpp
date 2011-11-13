@@ -19,160 +19,12 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "common_irrlicht.h"
 #include "mapnode.h"
-#ifndef SERVER
-#include "tile.h"
-#endif
 #include "porting.h"
 #include <string>
 #include "mineral.h"
-// For g_settings
-#include "main.h"
-#include "content_mapnode.h"
-#include "nodemetadata.h"
-
-ContentFeatures::~ContentFeatures()
-{
-	delete initial_metadata;
-#ifndef SERVER
-	delete special_material;
-	delete special_atlas;
-#endif
-}
-
-#ifndef SERVER
-void ContentFeatures::setTexture(u16 i, std::string name, u8 alpha)
-{
-	used_texturenames[name] = true;
-	
-	if(g_texturesource)
-	{
-		tiles[i].texture = g_texturesource->getTexture(name);
-	}
-	
-	if(alpha != 255)
-	{
-		tiles[i].alpha = alpha;
-		tiles[i].material_type = MATERIAL_ALPHA_VERTEX;
-	}
-
-	if(inventory_texture == NULL)
-		setInventoryTexture(name);
-}
-
-void ContentFeatures::setInventoryTexture(std::string imgname)
-{
-	if(g_texturesource == NULL)
-		return;
-	
-	imgname += "^[forcesingle";
-	
-	inventory_texture = g_texturesource->getTextureRaw(imgname);
-}
-
-void ContentFeatures::setInventoryTextureCube(std::string top,
-		std::string left, std::string right)
-{
-	if(g_texturesource == NULL)
-		return;
-	
-	str_replace_char(top, '^', '&');
-	str_replace_char(left, '^', '&');
-	str_replace_char(right, '^', '&');
-
-	std::string imgname_full;
-	imgname_full += "[inventorycube{";
-	imgname_full += top;
-	imgname_full += "{";
-	imgname_full += left;
-	imgname_full += "{";
-	imgname_full += right;
-	inventory_texture = g_texturesource->getTextureRaw(imgname_full);
-}
-#endif
-
-struct ContentFeatures g_content_features[MAX_CONTENT+1];
-
-ContentFeatures & content_features(content_t i)
-{
-	return g_content_features[i];
-}
-ContentFeatures & content_features(MapNode &n)
-{
-	return content_features(n.getContent());
-}
-
-/*
-	See mapnode.h for description.
-*/
-void init_mapnode()
-{
-	if(g_texturesource == NULL)
-	{
-		dstream<<"INFO: Initial run of init_mapnode with "
-				"g_texturesource=NULL. If this segfaults, "
-				"there is a bug with something not checking for "
-				"the NULL value."<<std::endl;
-	}
-	else
-	{
-		dstream<<"INFO: Full run of init_mapnode with "
-				"g_texturesource!=NULL"<<std::endl;
-	}
-
-	/*// Read some settings
-	bool new_style_water = g_settings.getBool("new_style_water");
-	bool new_style_leaves = g_settings.getBool("new_style_leaves");*/
-
-	/*
-		Initialize content feature table
-	*/
-
-#ifndef SERVER
-	/*
-		Set initial material type to same in all tiles, so that the
-		same material can be used in more stuff.
-		This is set according to the leaves because they are the only
-		differing material to which all materials can be changed to
-		get this optimization.
-	*/
-	u8 initial_material_type = MATERIAL_ALPHA_SIMPLE;
-	/*if(new_style_leaves)
-		initial_material_type = MATERIAL_ALPHA_SIMPLE;
-	else
-		initial_material_type = MATERIAL_ALPHA_NONE;*/
-	for(u16 i=0; i<MAX_CONTENT+1; i++)
-	{
-		ContentFeatures *f = &g_content_features[i];
-		// Re-initialize
-		f->reset();
-
-		for(u16 j=0; j<6; j++)
-			f->tiles[j].material_type = initial_material_type;
-	}
-#endif
-
-	/*
-		Initially set every block to be shown as an unknown block.
-		Don't touch CONTENT_IGNORE or CONTENT_AIR.
-	*/
-	for(u16 i=0; i<MAX_CONTENT+1; i++)
-	{
-		if(i == CONTENT_IGNORE || i == CONTENT_AIR)
-			continue;
-		ContentFeatures *f = &g_content_features[i];
-		f->setAllTextures("unknown_block.png");
-		f->dug_item = std::string("MaterialItem2 ")+itos(i)+" 1";
-	}
-
-	// Make CONTENT_IGNORE to not block the view when occlusion culling
-	content_features(CONTENT_IGNORE).solidness = 0;
-
-	/*
-		Initialize mapnode content
-	*/
-	content_mapnode_init();
-	
-}
+#include "main.h" // For g_settings
+#include "mapnode_contentfeatures.h"
+#include "content_mapnode.h" // For mapnode_translate_*_internal
 
 /*
 	Nodes make a face if contents differ and solidness differs.
@@ -246,6 +98,125 @@ v3s16 facedir_rotate(u8 facedir, v3s16 dir)
 	else
 		newdir = dir;
 	return newdir;
+}
+
+u8 packDir(v3s16 dir)
+{
+	u8 b = 0;
+
+	if(dir.X > 0)
+		b |= (1<<0);
+	else if(dir.X < 0)
+		b |= (1<<1);
+
+	if(dir.Y > 0)
+		b |= (1<<2);
+	else if(dir.Y < 0)
+		b |= (1<<3);
+
+	if(dir.Z > 0)
+		b |= (1<<4);
+	else if(dir.Z < 0)
+		b |= (1<<5);
+	
+	return b;
+}
+v3s16 unpackDir(u8 b)
+{
+	v3s16 d(0,0,0);
+
+	if(b & (1<<0))
+		d.X = 1;
+	else if(b & (1<<1))
+		d.X = -1;
+
+	if(b & (1<<2))
+		d.Y = 1;
+	else if(b & (1<<3))
+		d.Y = -1;
+
+	if(b & (1<<4))
+		d.Z = 1;
+	else if(b & (1<<5))
+		d.Z = -1;
+	
+	return d;
+}
+
+/*
+	MapNode
+*/
+
+// These four are DEPRECATED.
+bool MapNode::light_propagates()
+{
+	return light_propagates_content(getContent());
+}
+bool MapNode::sunlight_propagates()
+{
+	return sunlight_propagates_content(getContent());
+}
+u8 MapNode::solidness()
+{
+	return content_solidness(getContent());
+}
+u8 MapNode::light_source()
+{
+	return content_features(*this).light_source;
+}
+
+void MapNode::setLight(enum LightBank bank, u8 a_light)
+{
+	// If node doesn't contain light data, ignore this
+	if(content_features(*this).param_type != CPT_LIGHT)
+		return;
+	if(bank == LIGHTBANK_DAY)
+	{
+		param1 &= 0xf0;
+		param1 |= a_light & 0x0f;
+	}
+	else if(bank == LIGHTBANK_NIGHT)
+	{
+		param1 &= 0x0f;
+		param1 |= (a_light & 0x0f)<<4;
+	}
+	else
+		assert(0);
+}
+
+u8 MapNode::getLight(enum LightBank bank)
+{
+	// Select the brightest of [light source, propagated light]
+	u8 light = 0;
+	if(content_features(*this).param_type == CPT_LIGHT)
+	{
+		if(bank == LIGHTBANK_DAY)
+			light = param1 & 0x0f;
+		else if(bank == LIGHTBANK_NIGHT)
+			light = (param1>>4)&0x0f;
+		else
+			assert(0);
+	}
+	if(light_source() > light)
+		light = light_source();
+	return light;
+}
+
+u8 MapNode::getLightBanksWithSource()
+{
+	// Select the brightest of [light source, propagated light]
+	u8 lightday = 0;
+	u8 lightnight = 0;
+	if(content_features(*this).param_type == CPT_LIGHT)
+	{
+		lightday = param1 & 0x0f;
+		lightnight = (param1>>4)&0x0f;
+	}
+	if(light_source() > lightday)
+		lightday = light_source();
+	if(light_source() > lightnight)
+		lightnight = light_source();
+	return (lightday&0x0f) | ((lightnight<<4)&0xf0);
 }
 
 #ifndef SERVER
@@ -424,8 +395,8 @@ void MapNode::deSerialize(u8 *source, u8 version)
 	
 	parameters:
 		daynight_ratio: 0...1000
-		n: getNodeParent(p)
-		n2: getNodeParent(p + face_dir)
+		n: getNode(p) (uses only the lighting value)
+		n2: getNode(p + face_dir) (uses only the lighting value)
 		face_dir: axis oriented unit vector from p to p2
 	
 	returns encoded light value.

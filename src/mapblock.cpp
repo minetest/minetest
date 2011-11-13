@@ -23,6 +23,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "main.h"
 #include "light.h"
 #include <sstream>
+#include "mapnode_contentfeatures.h"
 
 /*
 	MapBlock

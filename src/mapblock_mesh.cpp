@@ -25,6 +25,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "content_mapblock.h"
 #include "settings.h"
 #include "profiler.h"
+#include "mapnode_contentfeatures.h"
 
 void MeshMakeData::fill(u32 daynight_ratio, MapBlock *block)
 {

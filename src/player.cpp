@@ -26,6 +26,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <ITextSceneNode.h>
 #endif
 #include "settings.h"
+#include "mapnode_contentfeatures.h"
 
 Player::Player():
 	touching_ground(false),

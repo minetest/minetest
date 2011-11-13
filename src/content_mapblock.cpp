@@ -23,6 +23,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "mineral.h"
 #include "mapblock_mesh.h" // For MapBlock_LightColor()
 #include "settings.h"
+#include "mapnode_contentfeatures.h"
 
 #ifndef SERVER
 // Create a cuboid.

@@ -74,6 +74,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "settings.h"
 #include "profiler.h"
 #include "log.h"
+#include "mapnode_contentfeatures.h" // For init_contentfeatures
+#include "content_mapnode.h" // For content_mapnode_init
 
 /*
 	Settings.
@@ -303,7 +305,11 @@ int main(int argc, char *argv[])
 
 	// Initialize stuff
 	
-	init_mapnode();
+	// Initialize content feature table
+	init_contentfeatures();
+	// Initialize mapnode content without textures (with g_texturesource=NULL)
+	content_mapnode_init();
+
 	init_mineral();
 
 	/*

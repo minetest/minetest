@@ -365,11 +365,6 @@ SUGG: Restart irrlicht completely when coming back to main menu from game.
 
 TODO: Merge bahamada's audio stuff (clean patch available)
 
-TODO: Move content_features to mapnode_content_features.{h,cpp} or so
-
-TODO: Fix item use() stuff; dropping a stack of cooked rats and eating
-      it gives 3 hearts and consumes all the rats.
-
 Making it more portable:
 ------------------------
  
@@ -439,6 +434,8 @@ Doing currently:
 #include "settings.h"
 #include "profiler.h"
 #include "log.h"
+#include "mapnode_contentfeatures.h" // For init_contentfeatures
+#include "content_mapnode.h" // For content_mapnode_init
 
 // This makes textures
 ITextureSource *g_texturesource = NULL;
@@ -1278,8 +1275,10 @@ int main(int argc, char *argv[])
 		These are needed for unit tests at least.
 	*/
 	
-	// Initial call with g_texturesource not set.
-	init_mapnode();
+	// Initialize content feature table
+	init_contentfeatures();
+	// Initialize mapnode content without textures (with g_texturesource=NULL)
+	content_mapnode_init();
 	// Must be called before g_texturesource is created
 	// (for texture atlas making)
 	init_mineral();
@@ -1482,7 +1481,8 @@ int main(int argc, char *argv[])
 		Preload some textures and stuff
 	*/
 
-	init_mapnode(); // Second call with g_texturesource set
+	// Initialize mapnode content with textures (with g_texturesource!=NULL)
+	content_mapnode_init();
 
 	/*
 		GUI stuff
@@ -1658,7 +1658,10 @@ int main(int argc, char *argv[])
 				break;
 			
 			// Initialize mapnode again to enable changed graphics settings
-			init_mapnode();
+			// Initialize content feature table
+			init_contentfeatures();
+			// Initialize mapnode content with textures (with g_texturesource!=NULL)
+			content_mapnode_init();
 
 			/*
 				Run game

@@ -27,6 +27,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <cmath>
 #include <SAnimatedMesh.h>
 #include "settings.h"
+#include "mapnode_contentfeatures.h" // For wield visualization
 
 Camera::Camera(scene::ISceneManager* smgr, MapDrawControl& draw_control):
 	m_smgr(smgr),

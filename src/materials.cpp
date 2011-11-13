@@ -1,5 +1,6 @@
 #include "materials.h"
 #include "mapnode.h"
+#include "mapnode_contentfeatures.h"
 
 // NOTE: DEPRECATED
 

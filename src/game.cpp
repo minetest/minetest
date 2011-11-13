@@ -43,13 +43,14 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "gettext.h"
 #include "log.h"
 #include "filesys.h"
-
-/*
-	TODO: Move content-aware stuff to separate file by adding properties
-	      and virtual interfaces
-*/
+// Needed for some special cases for CONTENT_TORCH and CONTENT_SIGN_WALL
+// TODO: A generic way for handling such should be created
 #include "content_mapnode.h"
+// Needed for sign text input
+// TODO: A generic way for handling such should be created
 #include "content_nodemeta.h"
+// Needed for determining pointing to nodes
+#include "mapnode_contentfeatures.h"
 
 /*
 	Setting this to 1 enables a special camera mode that forces

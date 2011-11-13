@@ -33,6 +33,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "content_sao.h"
 #include "player.h"
 #include "log.h"
+#include "mapnode_contentfeatures.h"
 
 /*
 	InventoryItem
@@ -147,6 +148,13 @@ ServerActiveObject* InventoryItem::createSAO(ServerEnvironment *env, u16 id, v3f
 /*
 	MaterialItem
 */
+
+#ifndef SERVER
+video::ITexture * MaterialItem::getImage() const
+{
+	return content_features(m_content).inventory_texture;
+}
+#endif
 
 bool MaterialItem::isCookable() const
 {

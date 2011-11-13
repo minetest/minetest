@@ -26,6 +26,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "mineral.h"
 //#include "serverobject.h"
 #include "content_sao.h"
+#include "mapnode_contentfeatures.h"
 
 namespace mapgen
 {

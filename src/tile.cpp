@@ -27,6 +27,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "log.h"
 #include "mapnode.h" // For texture atlas making
 #include "mineral.h" // For texture atlas making
+#include "mapnode_contentfeatures.h" // For texture atlas making
 
 /*
 	A cache from texture name to texture path

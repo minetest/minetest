@@ -24,6 +24,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "mapnode.h"
 #include "content_nodemeta.h"
 #include "settings.h"
+#include "mapnode_contentfeatures.h"
 
 #define WATER_ALPHA 160
 
@@ -101,8 +102,18 @@ MapNode mapnode_translate_to_internal(MapNode n_from, u8 version)
 	return result;
 }
 
+// See header for description
 void content_mapnode_init()
 {
+	if(g_texturesource == NULL)
+		dstream<<"INFO: Initial run of content_mapnode_init with "
+				"g_texturesource=NULL. If this segfaults, "
+				"there is a bug with something not checking for "
+				"the NULL value."<<std::endl;
+	else
+		dstream<<"INFO: Full run of content_mapnode_init with "
+				"g_texturesource!=NULL"<<std::endl;
+
 	// Read some settings
 	bool new_style_water = g_settings->getBool("new_style_water");
 	bool new_style_leaves = g_settings->getBool("new_style_leaves");

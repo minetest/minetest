@@ -22,10 +22,22 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "mapnode.h"
 
+/*
+	Fills stuff to the global ContentFeatures lookup table.
+
+	This accesses g_texturesource; if it is non-NULL, textures are set
+	for the nodes.
+
+	Client first calls this with g_texturesource=NULL to run some
+	unit tests and stuff, then it runs this again with g_texturesource
+	defined to get the textures.
+
+	Server only calls this once with g_texturesource=NULL.
+*/
 void content_mapnode_init();
 
+// Backwards compatibility for non-extended content types in v19
 extern content_t trans_table_19[21][2];
-
 MapNode mapnode_translate_from_internal(MapNode n_from, u8 version);
 MapNode mapnode_translate_to_internal(MapNode n_from, u8 version);
 
