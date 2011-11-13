@@ -50,7 +50,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #define MAP_GENERATION_LIMIT (31000)
 
 // Size of node in rendering units
-#define BS 10
+#define BS (10.0)
 
 #define MAP_BLOCKSIZE 16
 /*
