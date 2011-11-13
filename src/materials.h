@@ -27,6 +27,46 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "common_irrlicht.h"
 #include <string>
 
+enum Diggability
+{
+	DIGGABLE_NOT,
+	DIGGABLE_NORMAL,
+	DIGGABLE_CONSTANT
+};
+
+struct MaterialProperties
+{
+	// Values can be anything. 0 is normal.
+	
+	enum Diggability diggability;
+
+	// Constant time for DIGGABLE_CONSTANT
+	float constant_time;
+
+	// Weight; the amount of stuff in the block. Not realistic.
+	float weight;
+	// Rock; wood a bit.
+	// A Pickaxe manages high crackiness well.
+	float crackiness;
+	// Sand is extremely crumble; dirt is quite crumble.
+	// A shovel is good for crumbly stuff. Pickaxe is horrible.
+	float crumbliness;
+	// An axe is best for cuttable heavy stuff.
+	// Sword is best for cuttable light stuff.
+	float cuttability;
+	// If high, ignites easily
+	//float flammability;
+
+	MaterialProperties():
+		diggability(DIGGABLE_NOT),
+		constant_time(0.5),
+		weight(1),
+		crackiness(1),
+		crumbliness(1),
+		cuttability(1)
+	{}
+};
+
 struct DiggingProperties
 {
 	DiggingProperties():
@@ -48,55 +88,7 @@ struct DiggingProperties
 	u16 wear;
 };
 
-/*
-	This is a bad way of determining mining characteristics.
-	TODO: Get rid of this and set up some attributes like toughness,
-	      fluffyness, and a funciton to calculate time and durability loss
-	      (and sound? and whatever else) from them
-*/
-class DiggingPropertiesList
-{
-public:
-	DiggingPropertiesList()
-	{
-	}
-
-	void set(const std::string toolname,
-			const DiggingProperties &prop)
-	{
-		m_digging_properties[toolname] = prop;
-	}
-
-	DiggingProperties get(const std::string toolname)
-	{
-		core::map<std::string, DiggingProperties>::Node *n;
-		n = m_digging_properties.find(toolname);
-		if(n == NULL)
-		{
-			// Not diggable by this tool, try to get defaults
-			n = m_digging_properties.find("");
-			if(n == NULL)
-			{
-				// Not diggable at all
-				return DiggingProperties();
-			}
-		}
-		// Return found properties
-		return n->getValue();
-	}
-
-	void clear()
-	{
-		m_digging_properties.clear();
-	}
-
-private:
-	// toolname="": default properties (digging by hand)
-	// Key is toolname
-	core::map<std::string, DiggingProperties> m_digging_properties;
-};
-
-// For getting the default properties, set tool=""
+// Tool "" is bare hands
 DiggingProperties getDiggingProperties(u16 material, const std::string &tool);
 
 #endif

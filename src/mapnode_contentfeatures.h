@@ -26,7 +26,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #ifndef SERVER
 #include "tile.h"
 #endif
-#include "materials.h" // DiggingProperties
+#include "materials.h" // MaterialProperties
 
 /*
 	Content feature list
@@ -175,12 +175,11 @@ struct ContentFeatures
 	// Amount of light the node emits
 	u8 light_source;
 	
-	// Digging properties for different tools
-	DiggingPropertiesList digging_properties;
-
 	u32 damage_per_second;
 
 	NodeBox selection_box;
+
+	MaterialProperties material;
 	
 	// NOTE: Move relevant properties to here from elsewhere
 
@@ -216,9 +215,9 @@ struct ContentFeatures
 		liquid_alternative_source = CONTENT_IGNORE;
 		liquid_viscosity = 0;
 		light_source = 0;
-		digging_properties.clear();
 		damage_per_second = 0;
 		selection_box = NodeBox();
+		material = MaterialProperties();
 	}
 
 	ContentFeatures()
