@@ -88,8 +88,9 @@ struct DiggingProperties
 	u16 wear;
 };
 
-// Tool "" is bare hands
-DiggingProperties getDiggingProperties(u16 material, const std::string &tool);
+class ToolDiggingProperties;
+
+DiggingProperties getDiggingProperties(u16 material, ToolDiggingProperties *tp);
 
 #endif
 

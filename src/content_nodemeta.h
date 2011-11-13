@@ -27,12 +27,12 @@ class Inventory;
 class SignNodeMetadata : public NodeMetadata
 {
 public:
-	SignNodeMetadata(std::string text);
+	SignNodeMetadata(IGameDef *gamedef, std::string text);
 	//~SignNodeMetadata();
 	
 	virtual u16 typeId() const;
-	static NodeMetadata* create(std::istream &is);
-	virtual NodeMetadata* clone();
+	static NodeMetadata* create(std::istream &is, IGameDef *gamedef);
+	virtual NodeMetadata* clone(IGameDef *gamedef);
 	virtual void serializeBody(std::ostream &os);
 	virtual std::string infoText();
 
@@ -47,12 +47,12 @@ private:
 class ChestNodeMetadata : public NodeMetadata
 {
 public:
-	ChestNodeMetadata();
+	ChestNodeMetadata(IGameDef *gamedef);
 	~ChestNodeMetadata();
 	
 	virtual u16 typeId() const;
-	static NodeMetadata* create(std::istream &is);
-	virtual NodeMetadata* clone();
+	static NodeMetadata* create(std::istream &is, IGameDef *gamedef);
+	virtual NodeMetadata* clone(IGameDef *gamedef);
 	virtual void serializeBody(std::ostream &os);
 	virtual std::string infoText();
 	virtual Inventory* getInventory() {return m_inventory;}
@@ -66,12 +66,12 @@ private:
 class LockingChestNodeMetadata : public NodeMetadata
 {
 public:
-	LockingChestNodeMetadata();
+	LockingChestNodeMetadata(IGameDef *gamedef);
 	~LockingChestNodeMetadata();
 
 	virtual u16 typeId() const;
-	static NodeMetadata* create(std::istream &is);
-	virtual NodeMetadata* clone();
+	static NodeMetadata* create(std::istream &is, IGameDef *gamedef);
+	virtual NodeMetadata* clone(IGameDef *gamedef);
 	virtual void serializeBody(std::ostream &os);
 	virtual std::string infoText();
 	virtual Inventory* getInventory() {return m_inventory;}
@@ -89,12 +89,12 @@ private:
 class FurnaceNodeMetadata : public NodeMetadata
 {
 public:
-	FurnaceNodeMetadata();
+	FurnaceNodeMetadata(IGameDef *gamedef);
 	~FurnaceNodeMetadata();
 	
 	virtual u16 typeId() const;
-	virtual NodeMetadata* clone();
-	static NodeMetadata* create(std::istream &is);
+	virtual NodeMetadata* clone(IGameDef *gamedef);
+	static NodeMetadata* create(std::istream &is, IGameDef *gamedef);
 	virtual void serializeBody(std::ostream &os);
 	virtual std::string infoText();
 	virtual Inventory* getInventory() {return m_inventory;}

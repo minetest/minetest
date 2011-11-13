@@ -26,6 +26,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "settings.h"
 #include "profiler.h"
 #include "mapnode_contentfeatures.h"
+#include "tile.h"
 
 void MeshMakeData::fill(u32 daynight_ratio, MapBlock *block)
 {
@@ -252,10 +253,10 @@ void makeFastFace(TileSpec tile, u8 li0, u8 li1, u8 li2, u8 li3, v3f p,
 	Returns TILE_NODE if doesn't exist or should not be drawn.
 */
 TileSpec getNodeTile(MapNode mn, v3s16 p, v3s16 face_dir,
-		NodeModMap &temp_mods)
+		NodeModMap &temp_mods, ITextureSource *tsrc)
 {
 	TileSpec spec;
-	spec = mn.getTile(face_dir);
+	spec = mn.getTile(face_dir, tsrc);
 	
 	/*
 		Check temporary modifications on this node
@@ -272,7 +273,7 @@ TileSpec getNodeTile(MapNode mn, v3s16 p, v3s16 face_dir,
 		if(mod.type == NODEMOD_CHANGECONTENT)
 		{
 			MapNode mn2(mod.param);
-			spec = mn2.getTile(face_dir);
+			spec = mn2.getTile(face_dir, tsrc);
 		}
 		if(mod.type == NODEMOD_CRACK)
 		{
@@ -283,20 +284,20 @@ TileSpec getNodeTile(MapNode mn, v3s16 p, v3s16 face_dir,
 
 			// Get original texture name
 			u32 orig_id = spec.texture.id;
-			std::string orig_name = g_texturesource->getTextureName(orig_id);
+			std::string orig_name = tsrc->getTextureName(orig_id);
 
 			// Create new texture name
 			std::ostringstream os;
 			os<<orig_name<<"^[crack"<<mod.param;
 
 			// Get new texture
-			u32 new_id = g_texturesource->getTextureId(os.str());
+			u32 new_id = tsrc->getTextureId(os.str());
 			
 			/*dstream<<"MapBlock::getNodeTile(): Switching from "
 					<<orig_name<<" to "<<os.str()<<" ("
 					<<orig_id<<" to "<<new_id<<")"<<std::endl;*/
 			
-			spec.texture = g_texturesource->getTexture(new_id);
+			spec.texture = tsrc->getTexture(new_id);
 		}
 	}
 	
@@ -412,6 +413,7 @@ void getTileInfo(
 		VoxelManipulator &vmanip,
 		NodeModMap &temp_mods,
 		bool smooth_lighting,
+		ITextureSource *tsrc,
 		// Output:
 		bool &makes_face,
 		v3s16 &p_corrected,
@@ -422,8 +424,8 @@ void getTileInfo(
 {
 	MapNode n0 = vmanip.getNodeNoEx(blockpos_nodes + p);
 	MapNode n1 = vmanip.getNodeNoEx(blockpos_nodes + p + face_dir);
-	TileSpec tile0 = getNodeTile(n0, p, face_dir, temp_mods);
-	TileSpec tile1 = getNodeTile(n1, p + face_dir, -face_dir, temp_mods);
+	TileSpec tile0 = getNodeTile(n0, p, face_dir, temp_mods, tsrc);
+	TileSpec tile1 = getNodeTile(n1, p + face_dir, -face_dir, temp_mods, tsrc);
 	
 	// This is hackish
 	content_t content0 = getNodeContent(p, n0, temp_mods);
@@ -493,7 +495,8 @@ void updateFastFaceRow(
 		NodeModMap &temp_mods,
 		VoxelManipulator &vmanip,
 		v3s16 blockpos_nodes,
-		bool smooth_lighting)
+		bool smooth_lighting,
+		ITextureSource *tsrc)
 {
 	v3s16 p = startpos;
 	
@@ -505,7 +508,7 @@ void updateFastFaceRow(
 	u8 lights[4] = {0,0,0,0};
 	TileSpec tile;
 	getTileInfo(blockpos_nodes, p, face_dir, daynight_ratio,
-			vmanip, temp_mods, smooth_lighting,
+			vmanip, temp_mods, smooth_lighting, tsrc,
 			makes_face, p_corrected, face_dir_corrected, lights, tile);
 
 	for(u16 j=0; j<length; j++)
@@ -528,7 +531,7 @@ void updateFastFaceRow(
 			p_next = p + translate_dir;
 			
 			getTileInfo(blockpos_nodes, p_next, face_dir, daynight_ratio,
-					vmanip, temp_mods, smooth_lighting,
+					vmanip, temp_mods, smooth_lighting, tsrc,
 					next_makes_face, next_p_corrected,
 					next_face_dir_corrected, next_lights,
 					next_tile);
@@ -641,7 +644,7 @@ void updateFastFaceRow(
 	}
 }
 
-scene::SMesh* makeMapBlockMesh(MeshMakeData *data)
+scene::SMesh* makeMapBlockMesh(MeshMakeData *data, ITextureSource *tsrc)
 {
 	// 4-21ms for MAP_BLOCKSIZE=16
 	// 24-155ms for MAP_BLOCKSIZE=32
@@ -688,7 +691,8 @@ scene::SMesh* makeMapBlockMesh(MeshMakeData *data)
 						data->m_temp_mods,
 						data->m_vmanip,
 						blockpos_nodes,
-						smooth_lighting);
+						smooth_lighting,
+						tsrc);
 			}
 		}
 		/*
@@ -706,7 +710,8 @@ scene::SMesh* makeMapBlockMesh(MeshMakeData *data)
 						data->m_temp_mods,
 						data->m_vmanip,
 						blockpos_nodes,
-						smooth_lighting);
+						smooth_lighting,
+						tsrc);
 			}
 		}
 		/*
@@ -724,7 +729,8 @@ scene::SMesh* makeMapBlockMesh(MeshMakeData *data)
 						data->m_temp_mods,
 						data->m_vmanip,
 						blockpos_nodes,
-						smooth_lighting);
+						smooth_lighting,
+						tsrc);
 			}
 		}
 	}
@@ -789,7 +795,7 @@ scene::SMesh* makeMapBlockMesh(MeshMakeData *data)
 		- whatever
 	*/
 
-	mapblock_mesh_generate_special(data, collector);
+	mapblock_mesh_generate_special(data, collector, tsrc);
 	
 	/*
 		Add stuff from collector to mesh

@@ -19,7 +19,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "content_mapblock.h"
 #include "content_mapnode.h"
-#include "main.h" // For g_settings and g_texturesource
+#include "main.h" // For g_settings
 #include "mineral.h"
 #include "mapblock_mesh.h" // For MapBlock_LightColor()
 #include "settings.h"
@@ -122,7 +122,7 @@ void makeCuboid(video::SMaterial &material, MeshCollector *collector,
 
 #ifndef SERVER
 void mapblock_mesh_generate_special(MeshMakeData *data,
-		MeshCollector &collector)
+		MeshCollector &collector, ITextureSource *tsrc)
 {
 	// 0ms
 	//TimeTaker timer("mapblock_mesh_generate_special()");
@@ -147,8 +147,8 @@ void mapblock_mesh_generate_special(MeshMakeData *data,
 	material_leaves1.setFlag(video::EMF_BILINEAR_FILTER, false);
 	material_leaves1.setFlag(video::EMF_FOG_ENABLE, true);
 	material_leaves1.MaterialType = video::EMT_TRANSPARENT_ALPHA_CHANNEL_REF;
-	AtlasPointer pa_leaves1 = g_texturesource->getTexture(
-			g_texturesource->getTextureId("leaves.png"));
+	AtlasPointer pa_leaves1 = tsrc->getTexture(
+			tsrc->getTextureId("leaves.png"));
 	material_leaves1.setTexture(0, pa_leaves1.atlas);
 
 	// Glass material
@@ -157,8 +157,8 @@ void mapblock_mesh_generate_special(MeshMakeData *data,
 	material_glass.setFlag(video::EMF_BILINEAR_FILTER, false);
 	material_glass.setFlag(video::EMF_FOG_ENABLE, true);
 	material_glass.MaterialType = video::EMT_TRANSPARENT_ALPHA_CHANNEL_REF;
-	AtlasPointer pa_glass = g_texturesource->getTexture(
-			g_texturesource->getTextureId("glass.png"));
+	AtlasPointer pa_glass = tsrc->getTexture(
+			tsrc->getTextureId("glass.png"));
 	material_glass.setTexture(0, pa_glass.atlas);
 
 	// Wood material
@@ -167,8 +167,8 @@ void mapblock_mesh_generate_special(MeshMakeData *data,
 	material_wood.setFlag(video::EMF_BILINEAR_FILTER, false);
 	material_wood.setFlag(video::EMF_FOG_ENABLE, true);
 	material_wood.MaterialType = video::EMT_TRANSPARENT_ALPHA_CHANNEL_REF;
-	AtlasPointer pa_wood = g_texturesource->getTexture(
-			g_texturesource->getTextureId("wood.png"));
+	AtlasPointer pa_wood = tsrc->getTexture(
+			tsrc->getTextureId("wood.png"));
 	material_wood.setTexture(0, pa_wood.atlas);
 
 	// General ground material for special output
@@ -186,8 +186,8 @@ void mapblock_mesh_generate_special(MeshMakeData *data,
 	material_papyrus.setFlag(video::EMF_BILINEAR_FILTER, false);
 	material_papyrus.setFlag(video::EMF_FOG_ENABLE, true);
 	material_papyrus.MaterialType = video::EMT_TRANSPARENT_ALPHA_CHANNEL_REF;
-	AtlasPointer pa_papyrus = g_texturesource->getTexture(
-			g_texturesource->getTextureId("papyrus.png"));
+	AtlasPointer pa_papyrus = tsrc->getTexture(
+			tsrc->getTextureId("papyrus.png"));
 	material_papyrus.setTexture(0, pa_papyrus.atlas);
 	
 	// Apple material
@@ -196,8 +196,8 @@ void mapblock_mesh_generate_special(MeshMakeData *data,
 	material_apple.setFlag(video::EMF_BILINEAR_FILTER, false);
 	material_apple.setFlag(video::EMF_FOG_ENABLE, true);
 	material_apple.MaterialType = video::EMT_TRANSPARENT_ALPHA_CHANNEL_REF;
-	AtlasPointer pa_apple = g_texturesource->getTexture(
-			g_texturesource->getTextureId("apple.png"));
+	AtlasPointer pa_apple = tsrc->getTexture(
+			tsrc->getTextureId("apple.png"));
 	material_apple.setTexture(0, pa_apple.atlas);
 
 
@@ -207,8 +207,8 @@ void mapblock_mesh_generate_special(MeshMakeData *data,
 	material_sapling.setFlag(video::EMF_BILINEAR_FILTER, false);
 	material_sapling.setFlag(video::EMF_FOG_ENABLE, true);
 	material_sapling.MaterialType = video::EMT_TRANSPARENT_ALPHA_CHANNEL_REF;
-	AtlasPointer pa_sapling = g_texturesource->getTexture(
-			g_texturesource->getTextureId("sapling.png"));
+	AtlasPointer pa_sapling = tsrc->getTexture(
+			tsrc->getTextureId("sapling.png"));
 	material_sapling.setTexture(0, pa_sapling.atlas);
 
 
@@ -218,8 +218,8 @@ void mapblock_mesh_generate_special(MeshMakeData *data,
 	material_junglegrass.setFlag(video::EMF_BILINEAR_FILTER, false);
 	material_junglegrass.setFlag(video::EMF_FOG_ENABLE, true);
 	material_junglegrass.MaterialType = video::EMT_TRANSPARENT_ALPHA_CHANNEL_REF;
-	AtlasPointer pa_junglegrass = g_texturesource->getTexture(
-			g_texturesource->getTextureId("junglegrass.png"));
+	AtlasPointer pa_junglegrass = tsrc->getTexture(
+			tsrc->getTextureId("junglegrass.png"));
 	material_junglegrass.setTexture(0, pa_junglegrass.atlas);
 
 	for(s16 z=0; z<MAP_BLOCKSIZE; z++)
@@ -249,7 +249,7 @@ void mapblock_mesh_generate_special(MeshMakeData *data,
 				texturename = "torch.png";
 			}
 
-			AtlasPointer ap = g_texturesource->getTexture(texturename);
+			AtlasPointer ap = tsrc->getTexture(texturename);
 
 			// Set material
 			video::SMaterial material;
@@ -304,7 +304,7 @@ void mapblock_mesh_generate_special(MeshMakeData *data,
 		*/
 		else if(n.getContent() == CONTENT_SIGN_WALL)
 		{
-			AtlasPointer ap = g_texturesource->getTexture("sign_wall.png");
+			AtlasPointer ap = tsrc->getTexture("sign_wall.png");
 
 			// Set material
 			video::SMaterial material;
@@ -923,7 +923,7 @@ void mapblock_mesh_generate_special(MeshMakeData *data,
 				video::SColor c = MapBlock_LightColor(255, l);
 				
 				// Get the right texture
-				TileSpec ts = n.getTile(dir);
+				TileSpec ts = n.getTile(dir, tsrc);
 				AtlasPointer ap = ts.texture;
 				material_general.setTexture(0, ap.atlas);
 
@@ -1110,7 +1110,7 @@ void mapblock_mesh_generate_special(MeshMakeData *data,
 			else if(adjacencies == 4)
 				texturename = "rail_crossing.png";
 			
-			AtlasPointer ap = g_texturesource->getTexture(texturename);
+			AtlasPointer ap = tsrc->getTexture(texturename);
 
 			video::SMaterial material_rail;
 			material_rail.setFlag(video::EMF_LIGHTING, false);
@@ -1182,7 +1182,7 @@ void mapblock_mesh_generate_special(MeshMakeData *data,
 			collector.append(material_rail, vertices, 4, indices, 6);
 		}
 		else if (n.getContent() == CONTENT_LADDER) {
-			AtlasPointer ap = g_texturesource->getTexture("ladder.png");
+			AtlasPointer ap = tsrc->getTexture("ladder.png");
 			
 			// Set material
 			video::SMaterial material_ladder;

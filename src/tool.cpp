@@ -18,76 +18,70 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 */
 
 #include "tool.h"
+#include "irrlichttypes.h"
+#include "log.h"
+#include <ostream>
 
-std::string tool_get_imagename(const std::string &toolname)
+class CToolDefManager: public IToolDefManager
 {
-	if(toolname == "WPick")
-		return "tool_woodpick.png";
-	else if(toolname == "STPick")
-		return "tool_stonepick.png";
-	else if(toolname == "SteelPick")
-		return "tool_steelpick.png";
-	else if(toolname == "MesePick")
-		return "tool_mesepick.png";
-	else if(toolname == "WShovel")
-		return "tool_woodshovel.png";
-	else if(toolname == "STShovel")
-		return "tool_stoneshovel.png";
-	else if(toolname == "SteelShovel")
-		return "tool_steelshovel.png";
-	else if(toolname == "WAxe")
-		return "tool_woodaxe.png";
-	else if(toolname == "STAxe")
-		return "tool_stoneaxe.png";
-	else if(toolname == "SteelAxe")
-		return "tool_steelaxe.png";
-	else if(toolname == "WSword")
-		return "tool_woodsword.png";
-	else if(toolname == "STSword")
-		return "tool_stonesword.png";
-	else if(toolname == "SteelSword")
-		return "tool_steelsword.png";
-	else
-		return "cloud.png";
-}
+public:
+	virtual ~CToolDefManager()
+	{
+		for(core::map<std::string, ToolDefinition*>::Iterator
+				i = m_tool_definitions.getIterator();
+				i.atEnd() == false; i++){
+			delete i.getNode()->getValue();
+		}
+	}
+	virtual bool registerTool(std::string toolname, const ToolDefinition &def)
+	{
+		infostream<<"registerTool: registering tool \""<<toolname<<"\""<<std::endl;
+		core::map<std::string, ToolDefinition*>::Node *n;
+		n = m_tool_definitions.find(toolname);
+		if(n != NULL){
+			errorstream<<"registerTool: registering tool \""<<toolname
+					<<"\" failed: name is already registered"<<std::endl;
+			return false;
+		}
+		m_tool_definitions[toolname] = new ToolDefinition(def);
+		return true;
+	}
+	virtual ToolDefinition* getToolDefinition(const std::string &toolname)
+	{
+		core::map<std::string, ToolDefinition*>::Node *n;
+		n = m_tool_definitions.find(toolname);
+		if(n == NULL)
+			return NULL;
+		return n->getValue();
+	}
+	virtual std::string getImagename(const std::string &toolname)
+	{
+		ToolDefinition *def = getToolDefinition(toolname);
+		if(def == NULL)
+			return "";
+		return def->imagename;
+	}
+	virtual ToolDiggingProperties getDiggingProperties(
+			const std::string &toolname)
+	{
+		ToolDefinition *def = getToolDefinition(toolname);
+		// If tool does not exist, just return an impossible
+		if(def == NULL){
+			// If tool does not exist, try empty name
+			ToolDefinition *def = getToolDefinition("");
+			if(def == NULL) // If that doesn't exist either, return default
+				return ToolDiggingProperties();
+			return def->properties;
+		}
+		return def->properties;
+	}
+private:
+	// Key is name
+	core::map<std::string, ToolDefinition*> m_tool_definitions;
+};
 
-ToolDiggingProperties tool_get_digging_properties(const std::string &toolname)
+IToolDefManager* createToolDefManager()
 {
-	// weight, crackiness, crumbleness, cuttability
-	if(toolname == "WPick")
-		return ToolDiggingProperties(2.0, 0,-1,2,0, 50, 0,0,0,0);
-	else if(toolname == "STPick")
-		return ToolDiggingProperties(1.5, 0,-1,2,0, 100, 0,0,0,0);
-	else if(toolname == "SteelPick")
-		return ToolDiggingProperties(1.0, 0,-1,2,0, 300, 0,0,0,0);
-
-	else if(toolname == "MesePick")
-		return ToolDiggingProperties(0, 0,0,0,0, 1337, 0,0,0,0);
-	
-	else if(toolname == "WShovel")
-		return ToolDiggingProperties(2.0, 0.5,2,-1.5,0.3, 50, 0,0,0,0);
-	else if(toolname == "STShovel")
-		return ToolDiggingProperties(1.5, 0.5,2,-1.5,0.1, 100, 0,0,0,0);
-	else if(toolname == "SteelShovel")
-		return ToolDiggingProperties(1.0, 0.5,2,-1.5,0.0, 300, 0,0,0,0);
-
-	// weight, crackiness, crumbleness, cuttability
-	else if(toolname == "WAxe")
-		return ToolDiggingProperties(2.0, 0.5,-0.2,1,-0.5, 50, 0,0,0,0);
-	else if(toolname == "STAxe")
-		return ToolDiggingProperties(1.5, 0.5,-0.2,1,-0.5, 100, 0,0,0,0);
-	else if(toolname == "SteelAxe")
-		return ToolDiggingProperties(1.0, 0.5,-0.2,1,-0.5, 300, 0,0,0,0);
-
-	else if(toolname == "WSword")
-		return ToolDiggingProperties(3.0, 3,0,1,-1, 50, 0,0,0,0);
-	else if(toolname == "STSword")
-		return ToolDiggingProperties(2.5, 3,0,1,-1, 100, 0,0,0,0);
-	else if(toolname == "SteelSword")
-		return ToolDiggingProperties(2.0, 3,0,1,-1, 300, 0,0,0,0);
-
-	// Properties of hand
-	return ToolDiggingProperties(0.5, 1,0,-1,0, 50, 0,0,0,0);
+	return new CToolDefManager();
 }
-
 

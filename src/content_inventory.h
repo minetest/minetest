@@ -27,18 +27,26 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 class InventoryItem;
 class ServerActiveObject;
 class ServerEnvironment;
+class IGameDef;
 
-bool           item_material_is_cookable(content_t content);
-InventoryItem* item_material_create_cook_result(content_t content);
+bool item_material_is_cookable(content_t content, IGameDef *gamedef);
+InventoryItem* item_material_create_cook_result(content_t content,
+		IGameDef *gamedef);
 
-std::string         item_craft_get_image_name(const std::string &subname);
+std::string         item_craft_get_image_name(const std::string &subname,
+		IGameDef *gamedef);
 ServerActiveObject* item_craft_create_object(const std::string &subname,
 		ServerEnvironment *env, v3f pos);
-s16                 item_craft_get_drop_count(const std::string &subname);
-bool                item_craft_is_cookable(const std::string &subname);
-InventoryItem*      item_craft_create_cook_result(const std::string &subname);
-bool                item_craft_is_eatable(const std::string &subname);
-s16                 item_craft_eat_hp_change(const std::string &subname);
+s16                 item_craft_get_drop_count(const std::string &subname,
+		IGameDef *gamedef);
+bool                item_craft_is_cookable(const std::string &subname,
+		IGameDef *gamedef);
+InventoryItem*      item_craft_create_cook_result(const std::string &subname,
+		IGameDef *gamedef);
+bool                item_craft_is_eatable(const std::string &subname,
+		IGameDef *gamedef);
+s16                 item_craft_eat_hp_change(const std::string &subname,
+		IGameDef *gamedef);
 
 #endif
 

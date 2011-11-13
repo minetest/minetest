@@ -1,6 +1,6 @@
 /*
 Minetest-c55
-Copyright (C) 2010 celeron55, Perttu Ahola <celeron55@gmail.com>
+Copyright (C) 2010-2011 celeron55, Perttu Ahola <celeron55@gmail.com>
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -17,16 +17,12 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
-/*
-(c) 2010 Perttu Ahola <celeron55@gmail.com>
-*/
-
 #include "inventory.h"
 #include "serialization.h"
 #include "utility.h"
 #include "debug.h"
 #include <sstream>
-#include "main.h"
+#include "main.h" // For tsrc, g_toolmanager
 #include "serverobject.h"
 #include "content_mapnode.h"
 #include "content_inventory.h"
@@ -35,14 +31,17 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "log.h"
 #include "mapnode_contentfeatures.h"
 #include "tool.h"
+#include "gamedef.h"
 
 /*
 	InventoryItem
 */
 
-InventoryItem::InventoryItem(u16 count)
+InventoryItem::InventoryItem(IGameDef *gamedef, u16 count):
+	m_gamedef(gamedef),
+	m_count(count)
 {
-	m_count = count;
+	assert(m_gamedef);
 }
 
 InventoryItem::~InventoryItem()
@@ -61,7 +60,7 @@ content_t content_translate_from_19_to_internal(content_t c_from)
 	return c_from;
 }
 
-InventoryItem* InventoryItem::deSerialize(std::istream &is)
+InventoryItem* InventoryItem::deSerialize(std::istream &is, IGameDef *gamedef)
 {
 	DSTACK(__FUNCTION_NAME);
 
@@ -84,7 +83,7 @@ InventoryItem* InventoryItem::deSerialize(std::istream &is)
 		}
 		if(material > MAX_CONTENT)
 			throw SerializationError("Too large material number");
-		return new MaterialItem(material, count);
+		return new MaterialItem(gamedef, material, count);
 	}
 	else if(name == "MaterialItem2")
 	{
@@ -94,7 +93,7 @@ InventoryItem* InventoryItem::deSerialize(std::istream &is)
 		is>>count;
 		if(material > MAX_CONTENT)
 			throw SerializationError("Too large material number");
-		return new MaterialItem(material, count);
+		return new MaterialItem(gamedef, material, count);
 	}
 	else if(name == "MBOItem")
 	{
@@ -108,7 +107,7 @@ InventoryItem* InventoryItem::deSerialize(std::istream &is)
 		std::getline(is, subname, ' ');
 		u16 count;
 		is>>count;
-		return new CraftItem(subname, count);
+		return new CraftItem(gamedef, subname, count);
 	}
 	else if(name == "ToolItem")
 	{
@@ -116,7 +115,7 @@ InventoryItem* InventoryItem::deSerialize(std::istream &is)
 		std::getline(is, toolname, ' ');
 		u16 wear;
 		is>>wear;
-		return new ToolItem(toolname, wear);
+		return new ToolItem(gamedef, toolname, wear);
 	}
 	else
 	{
@@ -151,7 +150,7 @@ ServerActiveObject* InventoryItem::createSAO(ServerEnvironment *env, u16 id, v3f
 */
 
 #ifndef SERVER
-video::ITexture * MaterialItem::getImage() const
+video::ITexture * MaterialItem::getImage(ITextureSource *tsrc) const
 {
 	return content_features(m_content).inventory_texture;
 }
@@ -159,12 +158,12 @@ video::ITexture * MaterialItem::getImage() const
 
 bool MaterialItem::isCookable() const
 {
-	return item_material_is_cookable(m_content);
+	return item_material_is_cookable(m_content, m_gamedef);
 }
 
 InventoryItem *MaterialItem::createCookResult() const
 {
-	return item_material_create_cook_result(m_content);
+	return item_material_create_cook_result(m_content, m_gamedef);
 }
 
 /*
@@ -173,23 +172,54 @@ InventoryItem *MaterialItem::createCookResult() const
 
 std::string ToolItem::getImageBasename() const
 {
-	return tool_get_imagename(m_toolname);
+	return m_gamedef->getToolDefManager()->getImagename(m_toolname);
 }
+
+#ifndef SERVER
+video::ITexture * ToolItem::getImage(ITextureSource *tsrc) const
+{
+	if(tsrc == NULL)
+		return NULL;
+	
+	std::string basename = getImageBasename();
+	
+	/*
+		Calculate a progress value with sane amount of
+		maximum states
+	*/
+	u32 maxprogress = 30;
+	u32 toolprogress = (65535-m_wear)/(65535/maxprogress);
+	
+	float value_f = (float)toolprogress / (float)maxprogress;
+	std::ostringstream os;
+	os<<basename<<"^[progressbar"<<value_f;
+
+	return tsrc->getTextureRaw(os.str());
+}
+
+video::ITexture * ToolItem::getImageRaw(ITextureSource *tsrc) const
+{
+	if(tsrc == NULL)
+		return NULL;
+	
+	return tsrc->getTextureRaw(getImageBasename());
+}
+#endif
 
 /*
 	CraftItem
 */
 
 #ifndef SERVER
-video::ITexture * CraftItem::getImage() const
+video::ITexture * CraftItem::getImage(ITextureSource *tsrc) const
 {
-	if(g_texturesource == NULL)
+	if(tsrc == NULL)
 		return NULL;
 	
-	std::string name = item_craft_get_image_name(m_subname);
+	std::string name = item_craft_get_image_name(m_subname, m_gamedef);
 
 	// Get such a texture
-	return g_texturesource->getTextureRaw(name);
+	return tsrc->getTextureRaw(name);
 }
 #endif
 
@@ -206,7 +236,7 @@ ServerActiveObject* CraftItem::createSAO(ServerEnvironment *env, u16 id, v3f pos
 u16 CraftItem::getDropCount() const
 {
 	// Special cases
-	s16 dc = item_craft_get_drop_count(m_subname);
+	s16 dc = item_craft_get_drop_count(m_subname, m_gamedef);
 	if(dc != -1)
 		return dc;
 	// Default
@@ -215,21 +245,21 @@ u16 CraftItem::getDropCount() const
 
 bool CraftItem::isCookable() const
 {
-	return item_craft_is_cookable(m_subname);
+	return item_craft_is_cookable(m_subname, m_gamedef);
 }
 
 InventoryItem *CraftItem::createCookResult() const
 {
-	return item_craft_create_cook_result(m_subname);
+	return item_craft_create_cook_result(m_subname, m_gamedef);
 }
 
 bool CraftItem::use(ServerEnvironment *env, ServerActiveObject *user)
 {
-	if(!item_craft_is_eatable(m_subname))
+	if(!item_craft_is_eatable(m_subname, m_gamedef))
 		return false;
 	
 	u16 result_count = getCount() - 1; // Eat one at a time
-	s16 hp_change = item_craft_eat_hp_change(m_subname);
+	s16 hp_change = item_craft_eat_hp_change(m_subname, m_gamedef);
 	s16 hp = user->getHP();
 	hp += hp_change;
 	if(hp < 0)
@@ -304,7 +334,7 @@ void InventoryList::serialize(std::ostream &os) const
 	os<<"EndInventoryList\n";
 }
 
-void InventoryList::deSerialize(std::istream &is)
+void InventoryList::deSerialize(std::istream &is, IGameDef *gamedef)
 {
 	//is.imbue(std::locale("C"));
 
@@ -335,7 +365,7 @@ void InventoryList::deSerialize(std::istream &is)
 		{
 			if(item_i > getSize() - 1)
 				throw SerializationError("too many items");
-			InventoryItem *item = InventoryItem::deSerialize(iss);
+			InventoryItem *item = InventoryItem::deSerialize(iss, gamedef);
 			m_items[item_i++] = item;
 		}
 		else if(name == "Empty")
@@ -655,7 +685,7 @@ void Inventory::serialize(std::ostream &os) const
 	os<<"EndInventory\n";
 }
 
-void Inventory::deSerialize(std::istream &is)
+void Inventory::deSerialize(std::istream &is, IGameDef *gamedef)
 {
 	clear();
 
@@ -687,7 +717,7 @@ void Inventory::deSerialize(std::istream &is)
 			iss>>listsize;
 
 			InventoryList *list = new InventoryList(listname, listsize);
-			list->deSerialize(is);
+			list->deSerialize(is, gamedef);
 
 			m_lists.push_back(list);
 		}

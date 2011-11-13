@@ -19,8 +19,11 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "mapnode_contentfeatures.h"
 
-#include "main.h" // For g_settings and g_texturesource
+#include "main.h" // For g_settings
 #include "nodemetadata.h"
+#ifndef SERVER
+#include "tile.h"
+#endif
 
 struct ContentFeatures g_content_features[MAX_CONTENT+1];
 
@@ -29,7 +32,7 @@ struct ContentFeatures g_content_features[MAX_CONTENT+1];
 
 	Must be called before accessing the table.
 */
-void init_contentfeatures()
+void init_contentfeatures(ITextureSource *tsrc)
 {
 #ifndef SERVER
 	/*
@@ -64,7 +67,7 @@ void init_contentfeatures()
 		if(i == CONTENT_IGNORE || i == CONTENT_AIR)
 			continue;
 		ContentFeatures *f = &g_content_features[i];
-		f->setAllTextures("unknown_block.png");
+		f->setAllTextures(tsrc, "unknown_block.png");
 		f->dug_item = std::string("MaterialItem2 ")+itos(i)+" 1";
 	}
 
@@ -83,13 +86,14 @@ ContentFeatures::~ContentFeatures()
 }
 
 #ifndef SERVER
-void ContentFeatures::setTexture(u16 i, std::string name, u8 alpha)
+void ContentFeatures::setTexture(ITextureSource *tsrc,
+		u16 i, std::string name, u8 alpha)
 {
 	used_texturenames[name] = true;
 	
-	if(g_texturesource)
+	if(tsrc)
 	{
-		tiles[i].texture = g_texturesource->getTexture(name);
+		tiles[i].texture = tsrc->getTexture(name);
 	}
 	
 	if(alpha != 255)
@@ -99,23 +103,24 @@ void ContentFeatures::setTexture(u16 i, std::string name, u8 alpha)
 	}
 
 	if(inventory_texture == NULL)
-		setInventoryTexture(name);
+		setInventoryTexture(name, tsrc);
 }
 
-void ContentFeatures::setInventoryTexture(std::string imgname)
+void ContentFeatures::setInventoryTexture(std::string imgname,
+		ITextureSource *tsrc)
 {
-	if(g_texturesource == NULL)
+	if(tsrc == NULL)
 		return;
 	
 	imgname += "^[forcesingle";
 	
-	inventory_texture = g_texturesource->getTextureRaw(imgname);
+	inventory_texture = tsrc->getTextureRaw(imgname);
 }
 
 void ContentFeatures::setInventoryTextureCube(std::string top,
-		std::string left, std::string right)
+		std::string left, std::string right, ITextureSource *tsrc)
 {
-	if(g_texturesource == NULL)
+	if(tsrc == NULL)
 		return;
 	
 	str_replace_char(top, '^', '&');
@@ -129,7 +134,7 @@ void ContentFeatures::setInventoryTextureCube(std::string top,
 	imgname_full += left;
 	imgname_full += "{";
 	imgname_full += right;
-	inventory_texture = g_texturesource->getTextureRaw(imgname_full);
+	inventory_texture = tsrc->getTextureRaw(imgname_full);
 }
 #endif
 

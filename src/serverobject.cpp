@@ -37,9 +37,8 @@ ServerActiveObject::~ServerActiveObject()
 {
 }
 
-void ServerActiveObject::addedToEnvironment(u16 id)
+void ServerActiveObject::addedToEnvironment()
 {
-	setId(id);
 }
 
 ServerActiveObject* ServerActiveObject::create(u8 type,

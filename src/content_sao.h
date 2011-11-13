@@ -204,7 +204,7 @@ public:
 	~LuaEntitySAO();
 	u8 getType() const
 		{return ACTIVEOBJECT_TYPE_LUAENTITY;}
-	virtual void addedToEnvironment(u16 id);
+	virtual void addedToEnvironment();
 	static ServerActiveObject* create(ServerEnvironment *env, v3f pos,
 			const std::string &data);
 	void step(float dtime, bool send_recommended);

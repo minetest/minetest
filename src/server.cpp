@@ -42,6 +42,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "script.h"
 #include "scriptapi.h"
 #include "mapnode_contentfeatures.h"
+#include "tool.h"
+#include "content_tool.h" // For content_tool_init
 
 #define PP(x) "("<<(x).X<<","<<(x).Y<<","<<(x).Z<<")"
 
@@ -956,7 +958,7 @@ Server::Server(
 	m_authmanager(mapsavedir+DIR_DELIM+"auth.txt"),
 	m_banmanager(mapsavedir+DIR_DELIM+"ipban.txt"),
 	m_lua(NULL),
-	//m_scriptapi(NULL),
+	m_toolmgr(createToolDefManager()),
 	m_thread(this),
 	m_emergethread(this),
 	m_time_counter(0),
@@ -982,6 +984,9 @@ Server::Server(
 	JMutexAutoLock envlock(m_env_mutex);
 	JMutexAutoLock conlock(m_con_mutex);
 	
+	// Initialize default tool definitions
+	content_tool_init(m_toolmgr);
+
 	// Initialize scripting
 	
 	infostream<<"Server: Initializing scripting"<<std::endl;
@@ -1001,7 +1006,7 @@ Server::Server(
 	
 	// Initialize Environment
 	
-	m_env = new ServerEnvironment(new ServerMap(mapsavedir), m_lua);
+	m_env = new ServerEnvironment(new ServerMap(mapsavedir, this), m_lua, this);
 
 	// Give environment reference to scripting api
 	scriptapi_add_environment(m_lua, m_env);
@@ -1100,6 +1105,8 @@ Server::~Server()
 
 	// Delete Environment
 	delete m_env;
+
+	delete m_toolmgr;
 	
 	// Deinitialize scripting
 	infostream<<"Server: Deinitializing scripting"<<std::endl;
@@ -2574,8 +2581,10 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 						std::string toolname = titem->getToolName();
 
 						// Get digging properties for material and tool
+						ToolDiggingProperties tp =
+								m_toolmgr->getDiggingProperties(toolname);
 						DiggingProperties prop =
-								getDiggingProperties(material, toolname);
+								getDiggingProperties(material, &tp);
 
 						if(prop.diggable == false)
 						{
@@ -2600,7 +2609,7 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 				InventoryItem *item = NULL;
 
 				if(mineral != MINERAL_NONE)
-					item = getDiggedMineralItem(mineral);
+					item = getDiggedMineralItem(mineral, this);
 				
 				// If not mineral
 				if(item == NULL)
@@ -2609,7 +2618,7 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 					if(dug_s != "")
 					{
 						std::istringstream is(dug_s, std::ios::binary);
-						item = InventoryItem::deSerialize(is);
+						item = InventoryItem::deSerialize(is, this);
 					}
 				}
 				
@@ -2626,7 +2635,7 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 				item = NULL;
 
 				if(mineral != MINERAL_NONE)
-				  item = getDiggedMineralItem(mineral);
+				  item = getDiggedMineralItem(mineral, this);
 			
 				// If not mineral
 				if(item == NULL)
@@ -2637,7 +2646,7 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 					   && myrand() % extra_rarity == 0)
 					{
 				                std::istringstream is(extra_dug_s, std::ios::binary);
-						item = InventoryItem::deSerialize(is);
+						item = InventoryItem::deSerialize(is, this);
 					}
 				}
 			
@@ -4108,7 +4117,7 @@ void Server::UpdateCrafting(u16 peer_id)
 			}
 			
 			// Get result of crafting grid
-			InventoryItem *result = craft_get_result(items);
+			InventoryItem *result = craft_get_result(items, this);
 			if(result)
 				rlist->addItem(result);
 		}
@@ -4272,7 +4281,7 @@ Player *Server::emergePlayer(const char *name, const char *password, u16 peer_id
 			player->inventory_backup = new Inventory();
 			*(player->inventory_backup) = player->inventory;
 			// Set creative inventory
-			craft_set_creative_inventory(player);
+			craft_set_creative_inventory(player, this);
 		}
 
 		return player;
@@ -4326,11 +4335,11 @@ Player *Server::emergePlayer(const char *name, const char *password, u16 peer_id
 			player->inventory_backup = new Inventory();
 			*(player->inventory_backup) = player->inventory;
 			// Set creative inventory
-			craft_set_creative_inventory(player);
+			craft_set_creative_inventory(player, this);
 		}
 		else if(g_settings->getBool("give_initial_stuff"))
 		{
-			craft_give_initial_stuff(player);
+			craft_give_initial_stuff(player, this);
 		}
 
 		return player;

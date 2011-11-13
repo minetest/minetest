@@ -38,6 +38,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 class Map;
 class NodeMetadataList;
+class ITextureSource;
+class IGameDef;
 
 #define BLOCK_TIMESTAMP_UNDEFINED 0xffffffff
 
@@ -407,7 +409,7 @@ public:
 		NOTE: Prefer generating the mesh separately and then using
 		replaceMesh().
 	*/
-	void updateMesh(u32 daynight_ratio);
+	void updateMesh(u32 daynight_ratio, ITextureSource *tsrc);
 #endif
 	// Replace the mesh with a new one
 	void replaceMesh(scene::SMesh *mesh_new);
@@ -537,7 +539,7 @@ public:
 	
 	// These don't write or read version by itself
 	void serialize(std::ostream &os, u8 version);
-	void deSerialize(std::istream &is, u8 version);
+	void deSerialize(std::istream &is, u8 version, IGameDef *gamedef);
 	// Used after the basic ones when writing on disk (serverside)
 	void serializeDiskExtra(std::ostream &os, u8 version);
 	void deSerializeDiskExtra(std::istream &is, u8 version);

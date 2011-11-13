@@ -1,6 +1,6 @@
 /*
 Minetest-c55
-Copyright (C) 2010 celeron55, Perttu Ahola <celeron55@gmail.com>
+Copyright (C) 2010-2011 celeron55, Perttu Ahola <celeron55@gmail.com>
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -17,10 +17,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
-/*
-(c) 2010 Perttu Ahola <celeron55@gmail.com>
-*/
-
 #ifndef INVENTORY_HEADER
 #define INVENTORY_HEADER
 
@@ -29,34 +25,37 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <string>
 #include "common_irrlicht.h"
 #include "debug.h"
-#include "main.h" // For g_materials
 #include "mapnode.h" // For content_t
 
 #define QUANTITY_ITEM_MAX_COUNT 99
 
 class ServerActiveObject;
 class ServerEnvironment;
+class ITextureSource;
+class IGameDef;
 
 class InventoryItem
 {
 public:
-	InventoryItem(u16 count);
+	InventoryItem(IGameDef *gamedef, u16 count);
 	virtual ~InventoryItem();
 	
-	static InventoryItem* deSerialize(std::istream &is);
+	static InventoryItem* deSerialize(std::istream &is, IGameDef *gamedef);
 	
 	virtual const char* getName() const = 0;
 	// Shall write the name and the parameters
 	virtual void serialize(std::ostream &os) const = 0;
 	// Shall make an exact clone of the item
 	virtual InventoryItem* clone() = 0;
-#ifndef SERVER
 	// Return the name of the image for this item
 	virtual std::string getImageBasename() const { return ""; }
+#ifndef SERVER
 	// Shall return an image of the item (or NULL)
-	virtual video::ITexture * getImage() const { return NULL; }
+	virtual video::ITexture * getImage(ITextureSource *tsrc) const
+		{ return NULL; }
 	// Shall return an image of the item without embellishments (or NULL)
-	virtual video::ITexture * getImageRaw() const { return getImage(); }
+	virtual video::ITexture * getImageRaw(ITextureSource *tsrc) const
+		{ return getImage(tsrc); }
 #endif
 	// Shall return a text to show in the GUI
 	virtual std::string getText() { return ""; }
@@ -119,14 +118,15 @@ public:
 			ServerActiveObject *user){return false;}
 
 protected:
+	IGameDef *m_gamedef;
 	u16 m_count;
 };
 
 class MaterialItem : public InventoryItem
 {
 public:
-	MaterialItem(content_t content, u16 count):
-		InventoryItem(count)
+	MaterialItem(IGameDef *gamedef, content_t content, u16 count):
+		InventoryItem(gamedef, count)
 	{
 		m_content = content;
 	}
@@ -148,10 +148,10 @@ public:
 	}
 	virtual InventoryItem* clone()
 	{
-		return new MaterialItem(m_content, m_count);
+		return new MaterialItem(m_gamedef, m_content, m_count);
 	}
 #ifndef SERVER
-	video::ITexture * getImage() const;
+	video::ITexture * getImage(ITextureSource *tsrc) const;
 #endif
 	std::string getText()
 	{
@@ -199,8 +199,8 @@ private:
 class CraftItem : public InventoryItem
 {
 public:
-	CraftItem(std::string subname, u16 count):
-		InventoryItem(count)
+	CraftItem(IGameDef *gamedef, std::string subname, u16 count):
+		InventoryItem(gamedef, count)
 	{
 		m_subname = subname;
 	}
@@ -221,10 +221,10 @@ public:
 	}
 	virtual InventoryItem* clone()
 	{
-		return new CraftItem(m_subname, m_count);
+		return new CraftItem(m_gamedef, m_subname, m_count);
 	}
 #ifndef SERVER
-	video::ITexture * getImage() const;
+	video::ITexture * getImage(ITextureSource *tsrc) const;
 #endif
 	std::string getText()
 	{
@@ -275,8 +275,8 @@ private:
 class ToolItem : public InventoryItem
 {
 public:
-	ToolItem(std::string toolname, u16 wear):
-		InventoryItem(1)
+	ToolItem(IGameDef *gamedef, std::string toolname, u16 wear):
+		InventoryItem(gamedef, 1)
 	{
 		m_toolname = toolname;
 		m_wear = wear;
@@ -298,41 +298,15 @@ public:
 	}
 	virtual InventoryItem* clone()
 	{
-		return new ToolItem(m_toolname, m_wear);
+		return new ToolItem(m_gamedef, m_toolname, m_wear);
 	}
 
 	std::string getImageBasename() const;
-
 #ifndef SERVER
-	video::ITexture * getImage() const
-	{
-		if(g_texturesource == NULL)
-			return NULL;
-		
-		std::string basename = getImageBasename();
-		
-		/*
-			Calculate a progress value with sane amount of
-			maximum states
-		*/
-		u32 maxprogress = 30;
-		u32 toolprogress = (65535-m_wear)/(65535/maxprogress);
-		
-		float value_f = (float)toolprogress / (float)maxprogress;
-		std::ostringstream os;
-		os<<basename<<"^[progressbar"<<value_f;
-
-		return g_texturesource->getTextureRaw(os.str());
-	}
-
-	video::ITexture * getImageRaw() const
-	{
-		if(g_texturesource == NULL)
-			return NULL;
-		
-		return g_texturesource->getTextureRaw(getImageBasename());
-	}
+	video::ITexture * getImage(ITextureSource *tsrc) const;
+	video::ITexture * getImageRaw(ITextureSource *tsrc) const;
 #endif
+
 	std::string getText()
 	{
 		return "";
@@ -390,7 +364,7 @@ public:
 	~InventoryList();
 	void clearItems();
 	void serialize(std::ostream &os) const;
-	void deSerialize(std::istream &is);
+	void deSerialize(std::istream &is, IGameDef *gamedef);
 
 	InventoryList(const InventoryList &other);
 	InventoryList & operator = (const InventoryList &other);
@@ -460,7 +434,7 @@ public:
 	Inventory & operator = (const Inventory &other);
 	
 	void serialize(std::ostream &os) const;
-	void deSerialize(std::istream &is);
+	void deSerialize(std::istream &is, IGameDef *gamedef);
 
 	InventoryList * addList(const std::string &name, u32 size);
 	InventoryList * getList(const std::string &name);

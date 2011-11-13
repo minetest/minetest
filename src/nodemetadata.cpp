@@ -32,7 +32,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 core::map<u16, NodeMetadata::Factory> NodeMetadata::m_types;
 
-NodeMetadata::NodeMetadata()
+NodeMetadata::NodeMetadata(IGameDef *gamedef):
+	m_gamedef(gamedef)
 {
 }
 
@@ -40,7 +41,7 @@ NodeMetadata::~NodeMetadata()
 {
 }
 
-NodeMetadata* NodeMetadata::deSerialize(std::istream &is)
+NodeMetadata* NodeMetadata::deSerialize(std::istream &is, IGameDef *gamedef)
 {
 	// Read id
 	u8 buf[2];
@@ -67,7 +68,7 @@ NodeMetadata* NodeMetadata::deSerialize(std::istream &is)
 		std::istringstream iss(data, std::ios_base::binary);
 		
 		Factory f = n->getValue();
-		NodeMetadata *meta = (*f)(iss);
+		NodeMetadata *meta = (*f)(iss, gamedef);
 		return meta;
 	}
 	catch(SerializationError &e)
@@ -128,7 +129,7 @@ void NodeMetadataList::serialize(std::ostream &os)
 	}
 	
 }
-void NodeMetadataList::deSerialize(std::istream &is)
+void NodeMetadataList::deSerialize(std::istream &is, IGameDef *gamedef)
 {
 	m_data.clear();
 
@@ -159,7 +160,7 @@ void NodeMetadataList::deSerialize(std::istream &is)
 		p16 -= p.Y * MAP_BLOCKSIZE;
 		p.X += p16;
 		
-		NodeMetadata *data = NodeMetadata::deSerialize(is);
+		NodeMetadata *data = NodeMetadata::deSerialize(is, gamedef);
 
 		if(data == NULL)
 			continue;

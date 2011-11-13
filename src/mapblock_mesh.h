@@ -141,7 +141,7 @@ struct MeshMakeData
 };
 
 // This is the highest-level function in here
-scene::SMesh* makeMapBlockMesh(MeshMakeData *data);
+scene::SMesh* makeMapBlockMesh(MeshMakeData *data, ITextureSource *tsrc);
 
 #endif
 

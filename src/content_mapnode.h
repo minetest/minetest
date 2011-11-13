@@ -21,20 +21,21 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #define CONTENT_MAPNODE_HEADER
 
 #include "mapnode.h"
+class ITextureSource;
 
 /*
 	Fills stuff to the global ContentFeatures lookup table.
 
-	This accesses g_texturesource; if it is non-NULL, textures are set
+	This accesses tsrc; if it is non-NULL, textures are set
 	for the nodes.
 
-	Client first calls this with g_texturesource=NULL to run some
-	unit tests and stuff, then it runs this again with g_texturesource
+	Client first calls this with tsrc=NULL to run some
+	unit tests and stuff, then it runs this again with tsrc
 	defined to get the textures.
 
-	Server only calls this once with g_texturesource=NULL.
+	Server only calls this once with tsrc=NULL.
 */
-void content_mapnode_init();
+void content_mapnode_init(ITextureSource *tsrc);
 
 // Backwards compatibility for non-extended content types in v19
 extern content_t trans_table_19[21][2];

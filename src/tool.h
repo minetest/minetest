@@ -51,9 +51,32 @@ struct ToolDiggingProperties
 	{}
 };
 
-std::string tool_get_imagename(const std::string &toolname);
+struct ToolDefinition
+{
+	std::string imagename;
+	ToolDiggingProperties properties;
 
-ToolDiggingProperties tool_get_digging_properties(const std::string &toolname);
+	ToolDefinition(){}
+	ToolDefinition(const std::string &imagename_,
+			ToolDiggingProperties properties_):
+		imagename(imagename_),
+		properties(properties_)
+	{}
+};
+
+class IToolDefManager
+{
+public:
+	IToolDefManager(){}
+	virtual ~IToolDefManager(){}
+	virtual bool registerTool(std::string toolname, const ToolDefinition &def)=0;
+	virtual ToolDefinition* getToolDefinition(const std::string &toolname)=0;
+	virtual std::string getImagename(const std::string &toolname)=0;
+	virtual ToolDiggingProperties getDiggingProperties(
+			const std::string &toolname)=0;
+};
+
+IToolDefManager* createToolDefManager();
 
 #endif
 

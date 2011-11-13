@@ -30,10 +30,10 @@ core::map<u16, ClientActiveObject::Factory> ClientActiveObject::m_types;
 */
 
 // Prototype
-TestCAO proto_TestCAO;
+TestCAO proto_TestCAO(NULL);
 
-TestCAO::TestCAO():
-	ClientActiveObject(0),
+TestCAO::TestCAO(IGameDef *gamedef):
+	ClientActiveObject(0, gamedef),
 	m_node(NULL),
 	m_position(v3f(0,10*BS,0))
 {
@@ -44,12 +44,12 @@ TestCAO::~TestCAO()
 {
 }
 
-ClientActiveObject* TestCAO::create()
+ClientActiveObject* TestCAO::create(IGameDef *gamedef)
 {
-	return new TestCAO();
+	return new TestCAO(gamedef);
 }
 
-void TestCAO::addToScene(scene::ISceneManager *smgr)
+void TestCAO::addToScene(scene::ISceneManager *smgr, ITextureSource *tsrc)
 {
 	if(m_node != NULL)
 		return;
@@ -146,10 +146,10 @@ void TestCAO::processMessage(const std::string &data)
 #include "inventory.h"
 
 // Prototype
-ItemCAO proto_ItemCAO;
+ItemCAO proto_ItemCAO(NULL);
 
-ItemCAO::ItemCAO():
-	ClientActiveObject(0),
+ItemCAO::ItemCAO(IGameDef *gamedef):
+	ClientActiveObject(0, gamedef),
 	m_selection_box(-BS/3.,0.0,-BS/3., BS/3.,BS*2./3.,BS/3.),
 	m_node(NULL),
 	m_position(v3f(0,10*BS,0))
@@ -161,12 +161,12 @@ ItemCAO::~ItemCAO()
 {
 }
 
-ClientActiveObject* ItemCAO::create()
+ClientActiveObject* ItemCAO::create(IGameDef *gamedef)
 {
-	return new ItemCAO();
+	return new ItemCAO(gamedef);
 }
 
-void ItemCAO::addToScene(scene::ISceneManager *smgr)
+void ItemCAO::addToScene(scene::ISceneManager *smgr, ITextureSource *tsrc)
 {
 	if(m_node != NULL)
 		return;
@@ -218,13 +218,13 @@ void ItemCAO::addToScene(scene::ISceneManager *smgr)
 	video::ITexture *texture = NULL;
 	try{
 		InventoryItem *item = NULL;
-		item = InventoryItem::deSerialize(is);
+		item = InventoryItem::deSerialize(is, m_gamedef);
 		infostream<<__FUNCTION_NAME<<": m_inventorystring=\""
 				<<m_inventorystring<<"\" -> item="<<item
 				<<std::endl;
 		if(item)
 		{
-			texture = item->getImage();
+			texture = item->getImage(tsrc);
 			delete item;
 		}
 	}
@@ -327,10 +327,10 @@ void ItemCAO::initialize(const std::string &data)
 #include "inventory.h"
 
 // Prototype
-RatCAO proto_RatCAO;
+RatCAO proto_RatCAO(NULL);
 
-RatCAO::RatCAO():
-	ClientActiveObject(0),
+RatCAO::RatCAO(IGameDef *gamedef):
+	ClientActiveObject(0, gamedef),
 	m_selection_box(-BS/3.,0.0,-BS/3., BS/3.,BS/2.,BS/3.),
 	m_node(NULL),
 	m_position(v3f(0,10*BS,0)),
@@ -343,12 +343,12 @@ RatCAO::~RatCAO()
 {
 }
 
-ClientActiveObject* RatCAO::create()
+ClientActiveObject* RatCAO::create(IGameDef *gamedef)
 {
-	return new RatCAO();
+	return new RatCAO(gamedef);
 }
 
-void RatCAO::addToScene(scene::ISceneManager *smgr)
+void RatCAO::addToScene(scene::ISceneManager *smgr, ITextureSource *tsrc)
 {
 	if(m_node != NULL)
 		return;
@@ -473,10 +473,10 @@ void RatCAO::initialize(const std::string &data)
 #include "inventory.h"
 
 // Prototype
-Oerkki1CAO proto_Oerkki1CAO;
+Oerkki1CAO proto_Oerkki1CAO(NULL);
 
-Oerkki1CAO::Oerkki1CAO():
-	ClientActiveObject(0),
+Oerkki1CAO::Oerkki1CAO(IGameDef *gamedef):
+	ClientActiveObject(0, gamedef),
 	m_selection_box(-BS/3.,0.0,-BS/3., BS/3.,BS*2.,BS/3.),
 	m_node(NULL),
 	m_position(v3f(0,10*BS,0)),
@@ -491,12 +491,12 @@ Oerkki1CAO::~Oerkki1CAO()
 {
 }
 
-ClientActiveObject* Oerkki1CAO::create()
+ClientActiveObject* Oerkki1CAO::create(IGameDef *gamedef)
 {
-	return new Oerkki1CAO();
+	return new Oerkki1CAO(gamedef);
 }
 
-void Oerkki1CAO::addToScene(scene::ISceneManager *smgr)
+void Oerkki1CAO::addToScene(scene::ISceneManager *smgr, ITextureSource *tsrc)
 {
 	if(m_node != NULL)
 		return;
@@ -712,10 +712,10 @@ bool Oerkki1CAO::directReportPunch(const std::string &toolname, v3f dir)
 */
 
 // Prototype
-FireflyCAO proto_FireflyCAO;
+FireflyCAO proto_FireflyCAO(NULL);
 
-FireflyCAO::FireflyCAO():
-	ClientActiveObject(0),
+FireflyCAO::FireflyCAO(IGameDef *gamedef):
+	ClientActiveObject(0, gamedef),
 	m_selection_box(-BS/3.,0.0,-BS/3., BS/3.,BS/2.,BS/3.),
 	m_node(NULL),
 	m_position(v3f(0,10*BS,0)),
@@ -728,12 +728,12 @@ FireflyCAO::~FireflyCAO()
 {
 }
 
-ClientActiveObject* FireflyCAO::create()
+ClientActiveObject* FireflyCAO::create(IGameDef *gamedef)
 {
-	return new FireflyCAO();
+	return new FireflyCAO(gamedef);
 }
 
-void FireflyCAO::addToScene(scene::ISceneManager *smgr)
+void FireflyCAO::addToScene(scene::ISceneManager *smgr, ITextureSource *tsrc)
 {
 	if(m_node != NULL)
 		return;
@@ -856,10 +856,10 @@ void FireflyCAO::initialize(const std::string &data)
 */
 
 // Prototype
-MobV2CAO proto_MobV2CAO;
+MobV2CAO proto_MobV2CAO(NULL);
 
-MobV2CAO::MobV2CAO():
-	ClientActiveObject(0),
+MobV2CAO::MobV2CAO(IGameDef *gamedef):
+	ClientActiveObject(0, gamedef),
 	m_selection_box(-0.4*BS,-0.4*BS,-0.4*BS, 0.4*BS,0.8*BS,0.4*BS),
 	m_node(NULL),
 	m_position(v3f(0,10*BS,0)),
@@ -888,12 +888,12 @@ MobV2CAO::~MobV2CAO()
 	delete m_properties;
 }
 
-ClientActiveObject* MobV2CAO::create()
+ClientActiveObject* MobV2CAO::create(IGameDef *gamedef)
 {
-	return new MobV2CAO();
+	return new MobV2CAO(gamedef);
 }
 
-void MobV2CAO::addToScene(scene::ISceneManager *smgr)
+void MobV2CAO::addToScene(scene::ISceneManager *smgr, ITextureSource *tsrc)
 {
 	if(m_node != NULL)
 		return;
@@ -905,7 +905,7 @@ void MobV2CAO::addToScene(scene::ISceneManager *smgr)
 	
 	scene::MyBillboardSceneNode *bill = new scene::MyBillboardSceneNode(
 			smgr->getRootSceneNode(), smgr, -1, v3f(0,0,0), v2f(1,1));
-	bill->setMaterialTexture(0, g_texturesource->getTextureRaw(texture_string));
+	bill->setMaterialTexture(0, tsrc->getTextureRaw(texture_string));
 	bill->setMaterialFlag(video::EMF_LIGHTING, false);
 	bill->setMaterialFlag(video::EMF_BILINEAR_FILTER, false);
 	bill->setMaterialType(video::EMT_TRANSPARENT_ALPHA_CHANNEL_REF);
@@ -1271,10 +1271,10 @@ void MobV2CAO::setLooks(const std::string &looks)
 #include "luaentity_common.h"
 
 // Prototype
-LuaEntityCAO proto_LuaEntityCAO;
+LuaEntityCAO proto_LuaEntityCAO(NULL);
 
-LuaEntityCAO::LuaEntityCAO():
-	ClientActiveObject(0),
+LuaEntityCAO::LuaEntityCAO(IGameDef *gamedef):
+	ClientActiveObject(0, gamedef),
 	m_selection_box(-BS/3.,-BS/3.,-BS/3., BS/3.,BS/3.,BS/3.),
 	m_meshnode(NULL),
 	m_spritenode(NULL),
@@ -1290,12 +1290,12 @@ LuaEntityCAO::~LuaEntityCAO()
 	delete m_prop;
 }
 
-ClientActiveObject* LuaEntityCAO::create()
+ClientActiveObject* LuaEntityCAO::create(IGameDef *gamedef)
 {
-	return new LuaEntityCAO();
+	return new LuaEntityCAO(gamedef);
 }
 
-void LuaEntityCAO::addToScene(scene::ISceneManager *smgr)
+void LuaEntityCAO::addToScene(scene::ISceneManager *smgr, ITextureSource *tsrc)
 {
 	if(m_meshnode != NULL || m_spritenode != NULL)
 		return;
@@ -1310,7 +1310,7 @@ void LuaEntityCAO::addToScene(scene::ISceneManager *smgr)
 		if(m_prop->textures.size() >= 1)
 			texturestring = m_prop->textures[0];
 		m_spritenode->setMaterialTexture(0,
-				g_texturesource->getTextureRaw(texturestring));
+				tsrc->getTextureRaw(texturestring));
 		m_spritenode->setMaterialFlag(video::EMF_LIGHTING, false);
 		m_spritenode->setMaterialFlag(video::EMF_BILINEAR_FILTER, false);
 		m_spritenode->setMaterialType(video::EMT_TRANSPARENT_ALPHA_CHANNEL_REF);
@@ -1389,7 +1389,7 @@ void LuaEntityCAO::addToScene(scene::ISceneManager *smgr)
 			std::string texturestring = "unknown_block.png";
 			if(m_prop->textures.size() > i)
 				texturestring = m_prop->textures[i];
-			AtlasPointer ap = g_texturesource->getTexture(texturestring);
+			AtlasPointer ap = tsrc->getTexture(texturestring);
 
 			// Get the tile texture and atlas transformation
 			video::ITexture* atlas = ap.atlas;

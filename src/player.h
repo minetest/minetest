@@ -141,7 +141,7 @@ public:
 		deSerialize stops reading exactly at the right point.
 	*/
 	void serialize(std::ostream &os);
-	void deSerialize(std::istream &is);
+	void deSerialize(std::istream &is, IGameDef *gamedef);
 
 	bool touching_ground;
 	// This oscillates so that the player jumps a bit above the surface
@@ -185,8 +185,8 @@ public:
 class ServerRemotePlayer : public Player, public ServerActiveObject
 {
 public:
-	ServerRemotePlayer():
-		ServerActiveObject(NULL, v3f(0,0,0))
+	ServerRemotePlayer(ServerEnvironment *env):
+		ServerActiveObject(env, v3f(0,0,0))
 	{
 	}
 	ServerRemotePlayer(ServerEnvironment *env, v3f pos_, u16 peer_id_,

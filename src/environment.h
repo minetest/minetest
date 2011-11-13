@@ -26,7 +26,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 	- The map
 	- Players
 	- Other objects
-	- The current time in the game (actually it only contains the brightness)
+	- The current time in the game
 	- etc.
 */
 
@@ -42,6 +42,8 @@ class Server;
 class ActiveBlockModifier;
 class ServerActiveObject;
 typedef struct lua_State lua_State;
+class ITextureSource;
+class IGameDef;
 
 class Environment
 {
@@ -127,23 +129,20 @@ private:
 class ServerEnvironment : public Environment
 {
 public:
-	ServerEnvironment(ServerMap *map, lua_State *L);
+	ServerEnvironment(ServerMap *map, lua_State *L, IGameDef *gamedef);
 	~ServerEnvironment();
 
 	Map & getMap()
-	{
-		return *m_map;
-	}
+		{ return *m_map; }
 
 	ServerMap & getServerMap()
-	{
-		return *m_map;
-	}
+		{ return *m_map; }
 
 	lua_State* getLua()
-	{
-		return m_lua;
-	}
+		{ return m_lua; }
+
+	IGameDef *getGameDef()
+		{ return m_gamedef; }
 
 	float getSendRecommendedInterval()
 	{
@@ -218,6 +217,7 @@ public:
 	/*
 		ActiveBlockModifiers (TODO)
 		-------------------------------------------
+		NOTE: Not used currently (TODO: Use or remove)
 	*/
 
 	void addActiveBlockModifier(ActiveBlockModifier *abm);
@@ -277,6 +277,8 @@ private:
 	ServerMap *m_map;
 	// Lua state
 	lua_State *m_lua;
+	// Game definition
+	IGameDef *m_gamedef;
 	// Active object list
 	core::map<u16, ServerActiveObject*> m_active_objects;
 	// Outgoing network message buffer for active objects
@@ -302,6 +304,8 @@ private:
 
 	These are fed into ServerEnvironment at initialization time;
 	ServerEnvironment handles deleting them.
+
+	NOTE: Not used currently (TODO: Use or remove)
 */
 
 class ActiveBlockModifier
@@ -353,7 +357,8 @@ struct ClientEnvEvent
 class ClientEnvironment : public Environment
 {
 public:
-	ClientEnvironment(ClientMap *map, scene::ISceneManager *smgr);
+	ClientEnvironment(ClientMap *map, scene::ISceneManager *smgr,
+			ITextureSource *texturesource, IGameDef *gamedef);
 	~ClientEnvironment();
 
 	Map & getMap()
@@ -370,8 +375,9 @@ public:
 
 	virtual void addPlayer(Player *player);
 	LocalPlayer * getLocalPlayer();
-
-	void updateMeshes(v3s16 blockpos);
+	
+	// Slightly deprecated
+	void updateMeshes(v3s16 blockpos, ITextureSource *tsrc);
 	void expireMeshes(bool only_daynight_diffed);
 
 	void setTimeOfDay(u32 time)
@@ -382,8 +388,8 @@ public:
 
 		if(getDayNightRatio() != old_dr)
 		{
-			dout_client<<DTIME<<"ClientEnvironment: DayNightRatio changed"
-					<<" -> expiring meshes"<<std::endl;
+			/*infostream<<"ClientEnvironment: DayNightRatio changed"
+					<<" -> expiring meshes"<<std::endl;*/
 			expireMeshes(true);
 		}
 	}
@@ -429,6 +435,8 @@ public:
 private:
 	ClientMap *m_map;
 	scene::ISceneManager *m_smgr;
+	ITextureSource *m_texturesource;
+	IGameDef *m_gamedef;
 	core::map<u16, ClientActiveObject*> m_active_objects;
 	Queue<ClientEnvEvent> m_client_event_queue;
 	IntervalLimiter m_active_object_light_update_interval;

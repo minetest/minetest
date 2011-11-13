@@ -88,9 +88,6 @@ Settings *g_settings = &main_settings;
 Profiler main_profiler;
 Profiler *g_profiler = &main_profiler;
 
-// A dummy thing
-ITextureSource *g_texturesource = NULL;
-
 /*
 	Debug streams
 */
@@ -305,10 +302,10 @@ int main(int argc, char *argv[])
 
 	// Initialize stuff
 	
-	// Initialize content feature table
-	init_contentfeatures();
-	// Initialize mapnode content without textures (with g_texturesource=NULL)
-	content_mapnode_init();
+	// Initialize content feature table without textures
+	init_contentfeatures(NULL);
+	// Initialize mapnode content without textures
+	content_mapnode_init(NULL);
 
 	init_mineral();
 

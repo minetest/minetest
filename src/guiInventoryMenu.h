@@ -26,10 +26,13 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "utility.h"
 #include "modalMenu.h"
 
+class ITextureSource;
+
 void drawInventoryItem(video::IVideoDriver *driver,
 		gui::IGUIFont *font,
 		InventoryItem *item, core::rect<s32> rect,
-		const core::rect<s32> *clip);
+		const core::rect<s32> *clip,
+		ITextureSource *tsrc);
 
 class GUIInventoryMenu : public GUIModalMenu
 {
@@ -114,7 +117,8 @@ public:
 			IMenuManager *menumgr,
 			v2s16 menu_size,
 			InventoryContext *c,
-			InventoryManager *invmgr
+			InventoryManager *invmgr,
+			ITextureSource *tsrc
 			);
 	~GUIInventoryMenu();
 
@@ -130,7 +134,7 @@ public:
 	void regenerateGui(v2u32 screensize);
 	
 	ItemSpec getItemAtPos(v2s32 p) const;
-	void drawList(const ListDrawSpec &s);
+	void drawList(const ListDrawSpec &s, ITextureSource *tsrc);
 	void drawMenu();
 
 	bool OnEvent(const SEvent& event);
@@ -149,6 +153,7 @@ protected:
 	
 	InventoryContext *m_c;
 	InventoryManager *m_invmgr;
+	ITextureSource *m_tsrc;
 
 	core::array<DrawSpec> m_init_draw_spec;
 	core::array<ListDrawSpec> m_draw_spec;

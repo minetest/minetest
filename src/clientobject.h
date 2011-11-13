@@ -36,14 +36,16 @@ Some planning
 */
 
 class ClientEnvironment;
+class ITextureSource;
+class IGameDef;
 
 class ClientActiveObject : public ActiveObject
 {
 public:
-	ClientActiveObject(u16 id);
+	ClientActiveObject(u16 id, IGameDef *gamedef);
 	virtual ~ClientActiveObject();
 
-	virtual void addToScene(scene::ISceneManager *smgr){}
+	virtual void addToScene(scene::ISceneManager *smgr, ITextureSource *tsrc){}
 	virtual void removeFromScene(){}
 	// 0 <= light_at_pos <= LIGHT_SUN
 	virtual void updateLight(u8 light_at_pos){}
@@ -68,7 +70,7 @@ public:
 	virtual void initialize(const std::string &data){}
 	
 	// Create a certain type of ClientActiveObject
-	static ClientActiveObject* create(u8 type);
+	static ClientActiveObject* create(u8 type, IGameDef *gamedef);
 
 	// If returns true, punch will not be sent to the server
 	virtual bool directReportPunch(const std::string &toolname, v3f dir)
@@ -76,8 +78,9 @@ public:
 
 protected:
 	// Used for creating objects based on type
-	typedef ClientActiveObject* (*Factory)();
+	typedef ClientActiveObject* (*Factory)(IGameDef *gamedef);
 	static void registerType(u16 type, Factory f);
+	IGameDef *m_gamedef;
 private:
 	// Used for creating objects based on type
 	static core::map<u16, Factory> m_types;

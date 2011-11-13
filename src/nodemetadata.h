@@ -34,21 +34,22 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 */
 
 class Inventory;
+class IGameDef;
 
 class NodeMetadata
 {
 public:
-	typedef NodeMetadata* (*Factory)(std::istream&);
+	typedef NodeMetadata* (*Factory)(std::istream&, IGameDef *gamedef);
 
-	NodeMetadata();
+	NodeMetadata(IGameDef *gamedef);
 	virtual ~NodeMetadata();
 	
-	static NodeMetadata* deSerialize(std::istream &is);
+	static NodeMetadata* deSerialize(std::istream &is, IGameDef *gamedef);
 	void serialize(std::ostream &os);
 	
 	// This usually is the CONTENT_ value
 	virtual u16 typeId() const = 0;
-	virtual NodeMetadata* clone() = 0;
+	virtual NodeMetadata* clone(IGameDef *gamedef) = 0;
 	virtual void serializeBody(std::ostream &os) = 0;
 	virtual std::string infoText() {return "";}
 	virtual Inventory* getInventory() {return NULL;}
@@ -69,6 +70,7 @@ public:
 	virtual void setText(const std::string &t){}
 protected:
 	static void registerType(u16 id, Factory f);
+	IGameDef *m_gamedef;
 private:
 	static core::map<u16, Factory> m_types;
 };
@@ -83,7 +85,7 @@ public:
 	~NodeMetadataList();
 
 	void serialize(std::ostream &os);
-	void deSerialize(std::istream &is);
+	void deSerialize(std::istream &is, IGameDef *gamedef);
 	
 	// Get pointer to data
 	NodeMetadata* get(v3s16 p);

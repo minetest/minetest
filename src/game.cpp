@@ -46,6 +46,10 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 // Needed for determining pointing to nodes
 #include "mapnode_contentfeatures.h"
 #include "nodemetadata.h"
+#include "main.h" // For g_settings
+#include "content_mapnode.h" // For content_mapnode_init
+#include "tool.h"
+#include "content_tool.h" // For content_tool_init
 
 /*
 	Setting this to 1 enables a special camera mode that forces
@@ -153,6 +157,7 @@ private:
 	Hotbar draw routine
 */
 void draw_hotbar(video::IVideoDriver *driver, gui::IGUIFont *font,
+		ITextureSource *tsrc,
 		v2s32 centerlowerpos, s32 imgsize, s32 itemcount,
 		Inventory *inventory, s32 halfheartcount)
 {
@@ -244,7 +249,7 @@ void draw_hotbar(video::IVideoDriver *driver, gui::IGUIFont *font,
 
 		if(item != NULL)
 		{
-			drawInventoryItem(driver, font, item, rect, NULL);
+			drawInventoryItem(driver, font, item, rect, NULL, tsrc);
 		}
 	}
 	
@@ -587,6 +592,21 @@ void the_game(
 
 	draw_load_screen(L"Loading...", driver, font);
 	
+	// Create tool manager
+	IToolDefManager *toolmgr = createToolDefManager();
+
+	// Create texture source
+	TextureSource *tsrc = new TextureSource(device);
+
+	// Initialize mapnode again to enable changed graphics settings
+	// Initialize content feature table with textures
+	init_contentfeatures(tsrc);
+	// Fill content feature table with default definitions
+	content_mapnode_init(tsrc);
+
+	// Initialize default tool definitions
+	content_tool_init(toolmgr);
+
 	/*
 		Create server.
 		SharedPtr will delete it when it goes out of scope.
@@ -606,7 +626,8 @@ void the_game(
 	draw_load_screen(L"Creating client...", driver, font);
 	infostream<<"Creating client"<<std::endl;
 	MapDrawControl draw_control;
-	Client client(device, playername.c_str(), password, draw_control);
+	Client client(device, playername.c_str(), password, draw_control,
+			tsrc, toolmgr);
 			
 	draw_load_screen(L"Resolving address...", driver, font);
 	Address connect_address(0,0,0,0, port);
@@ -883,7 +904,7 @@ void the_game(
 		/*
 			Process TextureSource's queue
 		*/
-		((TextureSource*)g_texturesource)->processQueue();
+		tsrc->processQueue();
 
 		/*
 			Random calculations
@@ -1113,7 +1134,7 @@ void the_game(
 				new GUIInventoryMenu(guienv, guiroot, -1,
 					&g_menumgr, v2s16(8,7),
 					client.getInventoryContext(),
-					&client);
+					&client, tsrc);
 
 			core::array<GUIInventoryMenu::DrawSpec> draw_spec;
 			draw_spec.push_back(GUIInventoryMenu::DrawSpec(
@@ -1672,8 +1693,10 @@ void the_game(
 
 					// Get digging properties for material and tool
 					content_t material = n.getContent();
+					ToolDiggingProperties tp =
+							toolmgr->getDiggingProperties(toolname);
 					DiggingProperties prop =
-							getDiggingProperties(material, toolname);
+							getDiggingProperties(material, &tp);
 					
 					float dig_time_complete = 0.0;
 
@@ -1775,7 +1798,7 @@ void the_game(
 						new GUIInventoryMenu(guienv, guiroot, -1,
 							&g_menumgr, invsize,
 							client.getInventoryContext(),
-							&client);
+							&client, tsrc);
 					menu->setDrawSpec(draw_spec);
 					menu->drop();
 				}
@@ -2079,7 +2102,7 @@ void the_game(
 			InventoryItem *item = NULL;
 			if(mlist != NULL)
 				item = mlist->getItem(g_selected_item);
-			camera.wield(item);
+			camera.wield(item, tsrc);
 		}
 		
 		/*
@@ -2202,7 +2225,8 @@ void the_game(
 			Draw hotbar
 		*/
 		{
-			draw_hotbar(driver, font, v2s32(displaycenter.X, screensize.Y),
+			draw_hotbar(driver, font, tsrc,
+					v2s32(displaycenter.X, screensize.Y),
 					hotbar_imagesize, hotbar_itemcount, &local_inventory,
 					client.getHP());
 		}
@@ -2269,6 +2293,9 @@ void the_game(
 		driver->endScene();
 		gui_shuttingdowntext->remove();*/
 	}
+
+	delete toolmgr;
+	delete tsrc;
 }
 
 

@@ -23,8 +23,9 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #ifndef SERVER
 	#include "mapblock_mesh.h"
 	#include "utility.h"
+class ITextureSource;
 void mapblock_mesh_generate_special(MeshMakeData *data,
-		MeshCollector &collector);
+		MeshCollector &collector, ITextureSource *tsrc);
 #endif
 
 #endif

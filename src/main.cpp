@@ -385,11 +385,11 @@ Doing currently:
 */
 
 #ifdef NDEBUG
-	#ifdef _WIN32
+	/*#ifdef _WIN32
 		#pragma message ("Disabling unit tests")
 	#else
 		#warning "Disabling unit tests"
-	#endif
+	#endif*/
 	// Disable unit tests
 	#define ENABLE_TESTS 0
 #else
@@ -436,9 +436,6 @@ Doing currently:
 #include "log.h"
 #include "mapnode_contentfeatures.h" // For init_contentfeatures
 #include "content_mapnode.h" // For content_mapnode_init
-
-// This makes textures
-ITextureSource *g_texturesource = NULL;
 
 /*
 	Settings.
@@ -1275,11 +1272,11 @@ int main(int argc, char *argv[])
 		These are needed for unit tests at least.
 	*/
 	
-	// Initialize content feature table
-	init_contentfeatures();
-	// Initialize mapnode content without textures (with g_texturesource=NULL)
-	content_mapnode_init();
-	// Must be called before g_texturesource is created
+	// Initialize content feature table without textures
+	init_contentfeatures(NULL);
+	// Initialize mapnode content without textures
+	content_mapnode_init(NULL);
+	// Must be called before texturesource is created
 	// (for texture atlas making)
 	init_mineral();
 
@@ -1430,9 +1427,6 @@ int main(int argc, char *argv[])
 	// Create game callback for menus
 	g_gamecallback = new MainGameCallback(device);
 	
-	// Create texture source
-	g_texturesource = new TextureSource(device);
-
 	/*
 		Speed tests (done after irrlicht is loaded to get timer)
 	*/
@@ -1477,13 +1471,6 @@ int main(int argc, char *argv[])
 	skin->setColor(gui::EGDC_3D_HIGH_LIGHT, video::SColor(255,0,0,0));
 	skin->setColor(gui::EGDC_3D_SHADOW, video::SColor(255,0,0,0));
 	
-	/*
-		Preload some textures and stuff
-	*/
-
-	// Initialize mapnode content with textures (with g_texturesource!=NULL)
-	content_mapnode_init();
-
 	/*
 		GUI stuff
 	*/
@@ -1657,12 +1644,6 @@ int main(int argc, char *argv[])
 			if(device->run() == false)
 				break;
 			
-			// Initialize mapnode again to enable changed graphics settings
-			// Initialize content feature table
-			init_contentfeatures();
-			// Initialize mapnode content with textures (with g_texturesource!=NULL)
-			content_mapnode_init();
-
 			/*
 				Run game
 			*/

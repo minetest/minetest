@@ -478,7 +478,11 @@ private:
 				<<" itemstring=\""<<itemstring<<"\""<<std::endl;
 		// Do it
 		std::istringstream is(itemstring, std::ios::binary);
-		InventoryItem *item = InventoryItem::deSerialize(is);
+		ServerEnvironment *env = co->getEnv();
+		assert(env);
+		IGameDef *gamedef = env->getGameDef();
+		InventoryItem *item = InventoryItem::deSerialize(is, gamedef);
+		infostream<<"item="<<env<<std::endl;
 		bool fits = co->addToInventory(item);
 		// Return
 		lua_pushboolean(L, fits);
@@ -557,7 +561,8 @@ const luaL_reg ObjectRef::methods[] = {
 };
 
 // Creates a new anonymous reference if id=0
-static void objectref_get_or_create(lua_State *L, ServerActiveObject *cobj)
+static void objectref_get_or_create(lua_State *L,
+		ServerActiveObject *cobj)
 {
 	if(cobj->getId() == 0){
 		ObjectRef::create(L, cobj);

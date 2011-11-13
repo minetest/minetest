@@ -115,7 +115,7 @@ struct SmoothTranslator
 class TestCAO : public ClientActiveObject
 {
 public:
-	TestCAO();
+	TestCAO(IGameDef *gamedef);
 	virtual ~TestCAO();
 	
 	u8 getType() const
@@ -123,9 +123,9 @@ public:
 		return ACTIVEOBJECT_TYPE_TEST;
 	}
 	
-	static ClientActiveObject* create();
+	static ClientActiveObject* create(IGameDef *gamedef);
 
-	void addToScene(scene::ISceneManager *smgr);
+	void addToScene(scene::ISceneManager *smgr, ITextureSource *tsrc);
 	void removeFromScene();
 	void updateLight(u8 light_at_pos);
 	v3s16 getLightPosition();
@@ -147,7 +147,7 @@ private:
 class ItemCAO : public ClientActiveObject
 {
 public:
-	ItemCAO();
+	ItemCAO(IGameDef *gamedef);
 	virtual ~ItemCAO();
 	
 	u8 getType() const
@@ -155,9 +155,9 @@ public:
 		return ACTIVEOBJECT_TYPE_ITEM;
 	}
 	
-	static ClientActiveObject* create();
+	static ClientActiveObject* create(IGameDef *gamedef);
 
-	void addToScene(scene::ISceneManager *smgr);
+	void addToScene(scene::ISceneManager *smgr, ITextureSource *tsrc);
 	void removeFromScene();
 	void updateLight(u8 light_at_pos);
 	v3s16 getLightPosition();
@@ -188,7 +188,7 @@ private:
 class RatCAO : public ClientActiveObject
 {
 public:
-	RatCAO();
+	RatCAO(IGameDef *gamedef);
 	virtual ~RatCAO();
 	
 	u8 getType() const
@@ -196,9 +196,9 @@ public:
 		return ACTIVEOBJECT_TYPE_RAT;
 	}
 	
-	static ClientActiveObject* create();
+	static ClientActiveObject* create(IGameDef *gamedef);
 
-	void addToScene(scene::ISceneManager *smgr);
+	void addToScene(scene::ISceneManager *smgr, ITextureSource *tsrc);
 	void removeFromScene();
 	void updateLight(u8 light_at_pos);
 	v3s16 getLightPosition();
@@ -231,7 +231,7 @@ private:
 class Oerkki1CAO : public ClientActiveObject
 {
 public:
-	Oerkki1CAO();
+	Oerkki1CAO(IGameDef *gamedef);
 	virtual ~Oerkki1CAO();
 	
 	u8 getType() const
@@ -239,9 +239,9 @@ public:
 		return ACTIVEOBJECT_TYPE_OERKKI1;
 	}
 	
-	static ClientActiveObject* create();
+	static ClientActiveObject* create(IGameDef *gamedef);
 
-	void addToScene(scene::ISceneManager *smgr);
+	void addToScene(scene::ISceneManager *smgr, ITextureSource *tsrc);
 	void removeFromScene();
 	void updateLight(u8 light_at_pos);
 	v3s16 getLightPosition();
@@ -280,7 +280,7 @@ private:
 class FireflyCAO : public ClientActiveObject
 {
 public:
-	FireflyCAO();
+	FireflyCAO(IGameDef *gamedef);
 	virtual ~FireflyCAO();
 	
 	u8 getType() const
@@ -288,9 +288,9 @@ public:
 		return ACTIVEOBJECT_TYPE_FIREFLY;
 	}
 	
-	static ClientActiveObject* create();
+	static ClientActiveObject* create(IGameDef *gamedef);
 
-	void addToScene(scene::ISceneManager *smgr);
+	void addToScene(scene::ISceneManager *smgr, ITextureSource *tsrc);
 	void removeFromScene();
 	void updateLight(u8 light_at_pos);
 	v3s16 getLightPosition();
@@ -322,7 +322,7 @@ private:
 class MobV2CAO : public ClientActiveObject
 {
 public:
-	MobV2CAO();
+	MobV2CAO(IGameDef *gamedef);
 	virtual ~MobV2CAO();
 	
 	u8 getType() const
@@ -330,9 +330,9 @@ public:
 		return ACTIVEOBJECT_TYPE_MOBV2;
 	}
 	
-	static ClientActiveObject* create();
+	static ClientActiveObject* create(IGameDef *gamedef);
 
-	void addToScene(scene::ISceneManager *smgr);
+	void addToScene(scene::ISceneManager *smgr, ITextureSource *tsrc);
 	void removeFromScene();
 	void updateLight(u8 light_at_pos);
 	v3s16 getLightPosition();
@@ -396,7 +396,7 @@ struct LuaEntityProperties;
 class LuaEntityCAO : public ClientActiveObject
 {
 public:
-	LuaEntityCAO();
+	LuaEntityCAO(IGameDef *gamedef);
 	virtual ~LuaEntityCAO();
 	
 	u8 getType() const
@@ -404,9 +404,9 @@ public:
 		return ACTIVEOBJECT_TYPE_LUAENTITY;
 	}
 	
-	static ClientActiveObject* create();
+	static ClientActiveObject* create(IGameDef *gamedef);
 
-	void addToScene(scene::ISceneManager *smgr);
+	void addToScene(scene::ISceneManager *smgr, ITextureSource *tsrc);
 	void removeFromScene();
 	void updateLight(u8 light_at_pos);
 	v3s16 getLightPosition();

@@ -27,7 +27,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 	items: actually *items[9]
 	return value: allocates a new item, or returns NULL.
 */
-InventoryItem *craft_get_result(InventoryItem **items)
+InventoryItem *craft_get_result(InventoryItem **items, IGameDef *gamedef)
 {
 	// Wood
 	{
@@ -35,7 +35,7 @@ InventoryItem *craft_get_result(InventoryItem **items)
 		specs[0] = ItemSpec(ITEM_MATERIAL, CONTENT_TREE);
 		if(checkItemCombination(items, specs))
 		{
-			return new MaterialItem(CONTENT_WOOD, 4);
+			return new MaterialItem(gamedef, CONTENT_WOOD, 4);
 		}
 	}
 
@@ -45,7 +45,7 @@ InventoryItem *craft_get_result(InventoryItem **items)
 		specs[0] = ItemSpec(ITEM_MATERIAL, CONTENT_WOOD);
 		if(checkItemCombination(items, specs))
 		{
-			return new CraftItem("Stick", 4);
+			return new CraftItem(gamedef, "Stick", 4);
 		}
 	}
 
@@ -60,7 +60,7 @@ InventoryItem *craft_get_result(InventoryItem **items)
 		specs[8] = ItemSpec(ITEM_CRAFT, "Stick");
 		if(checkItemCombination(items, specs))
 		{
-			return new MaterialItem(CONTENT_FENCE, 2);
+			return new MaterialItem(gamedef, CONTENT_FENCE, 2);
 		}
 	}
 
@@ -76,8 +76,8 @@ InventoryItem *craft_get_result(InventoryItem **items)
 		specs[7] = ItemSpec(ITEM_CRAFT, "Stick");
 		if(checkItemCombination(items, specs))
 		{
-			//return new MapBlockObjectItem("Sign");
-			return new MaterialItem(CONTENT_SIGN_WALL, 1);
+			//return new MapBlockObjectItem(gamedef, "Sign");
+			return new MaterialItem(gamedef, CONTENT_SIGN_WALL, 1);
 		}
 	}
 
@@ -88,7 +88,7 @@ InventoryItem *craft_get_result(InventoryItem **items)
 		specs[3] = ItemSpec(ITEM_CRAFT, "Stick");
 		if(checkItemCombination(items, specs))
 		{
-			return new MaterialItem(CONTENT_TORCH, 4);
+			return new MaterialItem(gamedef, CONTENT_TORCH, 4);
 		}
 	}
 
@@ -102,7 +102,7 @@ InventoryItem *craft_get_result(InventoryItem **items)
 		specs[7] = ItemSpec(ITEM_CRAFT, "Stick");
 		if(checkItemCombination(items, specs))
 		{
-			return new ToolItem("WPick", 0);
+			return new ToolItem(gamedef, "WPick", 0);
 		}
 	}
 
@@ -116,7 +116,7 @@ InventoryItem *craft_get_result(InventoryItem **items)
 		specs[7] = ItemSpec(ITEM_CRAFT, "Stick");
 		if(checkItemCombination(items, specs))
 		{
-			return new ToolItem("STPick", 0);
+			return new ToolItem(gamedef, "STPick", 0);
 		}
 	}
 
@@ -130,7 +130,7 @@ InventoryItem *craft_get_result(InventoryItem **items)
 		specs[7] = ItemSpec(ITEM_CRAFT, "Stick");
 		if(checkItemCombination(items, specs))
 		{
-			return new ToolItem("SteelPick", 0);
+			return new ToolItem(gamedef, "SteelPick", 0);
 		}
 	}
 
@@ -144,7 +144,7 @@ InventoryItem *craft_get_result(InventoryItem **items)
 		specs[7] = ItemSpec(ITEM_CRAFT, "Stick");
 		if(checkItemCombination(items, specs))
 		{
-			return new ToolItem("MesePick", 0);
+			return new ToolItem(gamedef, "MesePick", 0);
 		}
 	}
 
@@ -156,7 +156,7 @@ InventoryItem *craft_get_result(InventoryItem **items)
 		specs[7] = ItemSpec(ITEM_CRAFT, "Stick");
 		if(checkItemCombination(items, specs))
 		{
-			return new ToolItem("WShovel", 0);
+			return new ToolItem(gamedef, "WShovel", 0);
 		}
 	}
 
@@ -168,7 +168,7 @@ InventoryItem *craft_get_result(InventoryItem **items)
 		specs[7] = ItemSpec(ITEM_CRAFT, "Stick");
 		if(checkItemCombination(items, specs))
 		{
-			return new ToolItem("STShovel", 0);
+			return new ToolItem(gamedef, "STShovel", 0);
 		}
 	}
 
@@ -180,7 +180,7 @@ InventoryItem *craft_get_result(InventoryItem **items)
 		specs[7] = ItemSpec(ITEM_CRAFT, "Stick");
 		if(checkItemCombination(items, specs))
 		{
-			return new ToolItem("SteelShovel", 0);
+			return new ToolItem(gamedef, "SteelShovel", 0);
 		}
 	}
 
@@ -194,7 +194,7 @@ InventoryItem *craft_get_result(InventoryItem **items)
 		specs[7] = ItemSpec(ITEM_CRAFT, "Stick");
 		if(checkItemCombination(items, specs))
 		{
-			return new ToolItem("WAxe", 0);
+			return new ToolItem(gamedef, "WAxe", 0);
 		}
 	}
 
@@ -208,7 +208,7 @@ InventoryItem *craft_get_result(InventoryItem **items)
 		specs[7] = ItemSpec(ITEM_CRAFT, "Stick");
 		if(checkItemCombination(items, specs))
 		{
-			return new ToolItem("STAxe", 0);
+			return new ToolItem(gamedef, "STAxe", 0);
 		}
 	}
 
@@ -222,7 +222,7 @@ InventoryItem *craft_get_result(InventoryItem **items)
 		specs[7] = ItemSpec(ITEM_CRAFT, "Stick");
 		if(checkItemCombination(items, specs))
 		{
-			return new ToolItem("SteelAxe", 0);
+			return new ToolItem(gamedef, "SteelAxe", 0);
 		}
 	}
 
@@ -234,7 +234,7 @@ InventoryItem *craft_get_result(InventoryItem **items)
 		specs[7] = ItemSpec(ITEM_CRAFT, "Stick");
 		if(checkItemCombination(items, specs))
 		{
-			return new ToolItem("WSword", 0);
+			return new ToolItem(gamedef, "WSword", 0);
 		}
 	}
 
@@ -246,7 +246,7 @@ InventoryItem *craft_get_result(InventoryItem **items)
 		specs[7] = ItemSpec(ITEM_CRAFT, "Stick");
 		if(checkItemCombination(items, specs))
 		{
-			return new ToolItem("STSword", 0);
+			return new ToolItem(gamedef, "STSword", 0);
 		}
 	}
 
@@ -258,7 +258,7 @@ InventoryItem *craft_get_result(InventoryItem **items)
 		specs[7] = ItemSpec(ITEM_CRAFT, "Stick");
 		if(checkItemCombination(items, specs))
 		{
-			return new ToolItem("SteelSword", 0);
+			return new ToolItem(gamedef, "SteelSword", 0);
 		}
 	}
 
@@ -276,7 +276,7 @@ InventoryItem *craft_get_result(InventoryItem **items)
 		specs[8] = ItemSpec(ITEM_CRAFT, "steel_ingot");
 		if(checkItemCombination(items, specs))
 		{
-			return new MaterialItem(CONTENT_RAIL, 15);
+			return new MaterialItem(gamedef, CONTENT_RAIL, 15);
 		}
 	}
 
@@ -293,7 +293,7 @@ InventoryItem *craft_get_result(InventoryItem **items)
 		specs[8] = ItemSpec(ITEM_MATERIAL, CONTENT_WOOD);
 		if(checkItemCombination(items, specs))
 		{
-			return new MaterialItem(CONTENT_CHEST, 1);
+			return new MaterialItem(gamedef, CONTENT_CHEST, 1);
 		}
 	}
 
@@ -311,7 +311,7 @@ InventoryItem *craft_get_result(InventoryItem **items)
 		specs[8] = ItemSpec(ITEM_MATERIAL, CONTENT_WOOD);
 		if(checkItemCombination(items, specs))
 		{
-			return new MaterialItem(CONTENT_LOCKABLE_CHEST, 1);
+			return new MaterialItem(gamedef, CONTENT_LOCKABLE_CHEST, 1);
 		}
 	}
 
@@ -328,7 +328,7 @@ InventoryItem *craft_get_result(InventoryItem **items)
 		specs[8] = ItemSpec(ITEM_MATERIAL, CONTENT_COBBLE);
 		if(checkItemCombination(items, specs))
 		{
-			return new MaterialItem(CONTENT_FURNACE, 1);
+			return new MaterialItem(gamedef, CONTENT_FURNACE, 1);
 		}
 	}
 
@@ -346,7 +346,7 @@ InventoryItem *craft_get_result(InventoryItem **items)
 		specs[8] = ItemSpec(ITEM_CRAFT, "steel_ingot");
 		if(checkItemCombination(items, specs))
 		{
-			return new MaterialItem(CONTENT_STEEL, 1);
+			return new MaterialItem(gamedef, CONTENT_STEEL, 1);
 		}
 	}
 
@@ -359,7 +359,7 @@ InventoryItem *craft_get_result(InventoryItem **items)
 		specs[7] = ItemSpec(ITEM_MATERIAL, CONTENT_SAND);
 		if(checkItemCombination(items, specs))
 		{
-			return new MaterialItem(CONTENT_SANDSTONE, 1);
+			return new MaterialItem(gamedef, CONTENT_SANDSTONE, 1);
 		}
 	}
 
@@ -372,7 +372,7 @@ InventoryItem *craft_get_result(InventoryItem **items)
 		specs[7] = ItemSpec(ITEM_CRAFT, "lump_of_clay");
 		if(checkItemCombination(items, specs))
 		{
-			return new MaterialItem(CONTENT_CLAY, 1);
+			return new MaterialItem(gamedef, CONTENT_CLAY, 1);
 		}
 	}
 
@@ -385,7 +385,7 @@ InventoryItem *craft_get_result(InventoryItem **items)
 		specs[7] = ItemSpec(ITEM_CRAFT, "clay_brick");
 		if(checkItemCombination(items, specs))
 		{
-			return new MaterialItem(CONTENT_BRICK, 1);
+			return new MaterialItem(gamedef, CONTENT_BRICK, 1);
 		}
 	}
 
@@ -397,7 +397,7 @@ InventoryItem *craft_get_result(InventoryItem **items)
 		specs[5] = ItemSpec(ITEM_MATERIAL, CONTENT_PAPYRUS);
 		if(checkItemCombination(items, specs))
 		{
-			return new CraftItem("paper", 1);
+			return new CraftItem(gamedef, "paper", 1);
 		}
 	}
 
@@ -409,7 +409,7 @@ InventoryItem *craft_get_result(InventoryItem **items)
 		specs[7] = ItemSpec(ITEM_CRAFT, "paper");
 		if(checkItemCombination(items, specs))
 		{
-			return new CraftItem("book", 1);
+			return new CraftItem(gamedef, "book", 1);
 		}
 	}
 
@@ -427,7 +427,7 @@ InventoryItem *craft_get_result(InventoryItem **items)
 		specs[8] = ItemSpec(ITEM_MATERIAL, CONTENT_WOOD);
 		if(checkItemCombination(items, specs))
 		{
-			return new MaterialItem(CONTENT_BOOKSHELF, 1);
+			return new MaterialItem(gamedef, CONTENT_BOOKSHELF, 1);
 		}
 	}
 
@@ -443,7 +443,7 @@ InventoryItem *craft_get_result(InventoryItem **items)
 		specs[8] = ItemSpec(ITEM_CRAFT, "Stick");
 		if(checkItemCombination(items, specs))
 		{
-			return new MaterialItem(CONTENT_LADDER, 1);
+			return new MaterialItem(gamedef, CONTENT_LADDER, 1);
 		}
 	}
 	
@@ -457,35 +457,35 @@ InventoryItem *craft_get_result(InventoryItem **items)
 		specs[7] = ItemSpec(ITEM_CRAFT, "steel_ingot");
 		if(checkItemCombination(items, specs))
 		{
-			return new CraftItem("apple_iron", 1);
+			return new CraftItem(gamedef, "apple_iron", 1);
 		}
 	}
 
 	return NULL;
 }
 
-void craft_set_creative_inventory(Player *player)
+void craft_set_creative_inventory(Player *player, IGameDef *gamedef)
 {
 	player->resetInventory();
 	
 	// Give some good tools
 	{
-		InventoryItem *item = new ToolItem("MesePick", 0);
+		InventoryItem *item = new ToolItem(gamedef, "MesePick", 0);
 		void* r = player->inventory.addItem("main", item);
 		assert(r == NULL);
 	}
 	{
-		InventoryItem *item = new ToolItem("SteelPick", 0);
+		InventoryItem *item = new ToolItem(gamedef, "SteelPick", 0);
 		void* r = player->inventory.addItem("main", item);
 		assert(r == NULL);
 	}
 	{
-		InventoryItem *item = new ToolItem("SteelAxe", 0);
+		InventoryItem *item = new ToolItem(gamedef, "SteelAxe", 0);
 		void* r = player->inventory.addItem("main", item);
 		assert(r == NULL);
 	}
 	{
-		InventoryItem *item = new ToolItem("SteelShovel", 0);
+		InventoryItem *item = new ToolItem(gamedef, "SteelShovel", 0);
 		void* r = player->inventory.addItem("main", item);
 		assert(r == NULL);
 	}
@@ -528,7 +528,7 @@ void craft_set_creative_inventory(Player *player)
 		if(*mip == CONTENT_IGNORE)
 			break;
 
-		InventoryItem *item = new MaterialItem(*mip, 1);
+		InventoryItem *item = new MaterialItem(gamedef, *mip, 1);
 		player->inventory.addItem("main", item);
 
 		mip++;
@@ -538,7 +538,7 @@ void craft_set_creative_inventory(Player *player)
 	assert(USEFUL_CONTENT_COUNT <= PLAYER_INVENTORY_SIZE);
 	
 	// add torch first
-	InventoryItem *item = new MaterialItem(CONTENT_TORCH, 1);
+	InventoryItem *item = new MaterialItem(gamedef, CONTENT_TORCH, 1);
 	player->inventory.addItem("main", item);
 	
 	// Then others
@@ -549,86 +549,86 @@ void craft_set_creative_inventory(Player *player)
 			|| i == CONTENT_COALSTONE)
 			continue;
 
-		InventoryItem *item = new MaterialItem(i, 1);
+		InventoryItem *item = new MaterialItem(gamedef, i, 1);
 		player->inventory.addItem("main", item);
 	}
 #endif
 
 	/*// Sign
 	{
-		InventoryItem *item = new MapBlockObjectItem("Sign Example text");
+		InventoryItem *item = new MapBlockObjectItem(gamedef, "Sign Example text");
 		void* r = player->inventory.addItem("main", item);
 		assert(r == NULL);
 	}*/
 }
 
-void craft_give_initial_stuff(Player *player)
+void craft_give_initial_stuff(Player *player, IGameDef *gamedef)
 {
 	{
-		InventoryItem *item = new ToolItem("SteelPick", 0);
+		InventoryItem *item = new ToolItem(gamedef, "SteelPick", 0);
 		void* r = player->inventory.addItem("main", item);
 		assert(r == NULL);
 	}
 	{
-		InventoryItem *item = new MaterialItem(CONTENT_TORCH, 99);
+		InventoryItem *item = new MaterialItem(gamedef, CONTENT_TORCH, 99);
 		void* r = player->inventory.addItem("main", item);
 		assert(r == NULL);
 	}
 	{
-		InventoryItem *item = new ToolItem("SteelAxe", 0);
+		InventoryItem *item = new ToolItem(gamedef, "SteelAxe", 0);
 		void* r = player->inventory.addItem("main", item);
 		assert(r == NULL);
 	}
 	{
-		InventoryItem *item = new ToolItem("SteelShovel", 0);
+		InventoryItem *item = new ToolItem(gamedef, "SteelShovel", 0);
 		void* r = player->inventory.addItem("main", item);
 		assert(r == NULL);
 	}
 	{
-		InventoryItem *item = new MaterialItem(CONTENT_COBBLE, 99);
+		InventoryItem *item = new MaterialItem(gamedef, CONTENT_COBBLE, 99);
 		void* r = player->inventory.addItem("main", item);
 		assert(r == NULL);
 	}
 	/*{
-		InventoryItem *item = new MaterialItem(CONTENT_MESE, 6);
+		InventoryItem *item = new MaterialItem(gamedef, CONTENT_MESE, 6);
 		void* r = player->inventory.addItem("main", item);
 		assert(r == NULL);
 	}
 	{
-		InventoryItem *item = new MaterialItem(CONTENT_COALSTONE, 6);
+		InventoryItem *item = new MaterialItem(gamedef, CONTENT_COALSTONE, 6);
 		void* r = player->inventory.addItem("main", item);
 		assert(r == NULL);
 	}
 	{
-		InventoryItem *item = new MaterialItem(CONTENT_WOOD, 6);
+		InventoryItem *item = new MaterialItem(gamedef, CONTENT_WOOD, 6);
 		void* r = player->inventory.addItem("main", item);
 		assert(r == NULL);
 	}
 	{
-		InventoryItem *item = new CraftItem("Stick", 4);
+		InventoryItem *item = new CraftItem(gamedef, "Stick", 4);
 		void* r = player->inventory.addItem("main", item);
 		assert(r == NULL);
 	}
 	{
-		InventoryItem *item = new ToolItem("WPick", 32000);
+		InventoryItem *item = new ToolItem(gamedef, "WPick", 32000);
 		void* r = player->inventory.addItem("main", item);
 		assert(r == NULL);
 	}
 	{
-		InventoryItem *item = new ToolItem("STPick", 32000);
+		InventoryItem *item = new ToolItem(gamedef, "STPick", 32000);
 		void* r = player->inventory.addItem("main", item);
 		assert(r == NULL);
 	}*/
 	/*// and some signs
 	for(u16 i=0; i<4; i++)
 	{
-		InventoryItem *item = new MapBlockObjectItem("Sign Example text");
+		InventoryItem *item = new MapBlockObjectItem(gamedef, "Sign Example text");
 		bool r = player->inventory.addItem("main", item);
 		assert(r == true);
 	}*/
 	/*// Give some other stuff
 	{
-		InventoryItem *item = new MaterialItem(CONTENT_TREE, 999);
+		InventoryItem *item = new MaterialItem(gamedef, CONTENT_TREE, 999);
 		bool r = player->inventory.addItem("main", item);
 		assert(r == true);
 	}*/

@@ -29,8 +29,10 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "inventory.h"
 #include "auth.h"
 #include "ban.h"
+#include "gamedef.h"
 struct LuaState;
 typedef struct lua_State lua_State;
+class IToolDefManager;
 
 /*
 	Some random functions
@@ -361,7 +363,7 @@ private:
 };
 
 class Server : public con::PeerHandler, public MapEventReceiver,
-		public InventoryManager
+		public InventoryManager, public IGameDef
 {
 public:
 	/*
@@ -481,6 +483,13 @@ public:
 	
 	// Envlock and conlock should be locked when using Lua
 	lua_State *getLua(){ return m_lua; }
+	
+	// IGameDef interface
+	// Under envlock
+	virtual IToolDefManager* getToolDefManager()
+		{ return m_toolmgr; }
+	virtual INodeDefManager* getNodeDefManager()
+		{ assert(0); return NULL; } // TODO
 
 private:
 
@@ -605,6 +614,9 @@ private:
 	// Scripting
 	// Envlock and conlock should be locked when using Lua
 	lua_State *m_lua;
+
+	// Tool definition manager
+	IToolDefManager *m_toolmgr;
 	
 	/*
 		Threads
@@ -691,8 +703,6 @@ private:
 		This is behind m_env_mutex
 	*/
 	u16 m_ignore_map_edit_events_peer_id;
-
-	Profiler *m_profiler;
 
 	friend class EmergeThread;
 	friend class RemoteClient;

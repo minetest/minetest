@@ -138,7 +138,7 @@ MapNode MapBlock::getNodeParentNoEx(v3s16 p)
 #ifndef SERVER
 
 #if 1
-void MapBlock::updateMesh(u32 daynight_ratio)
+void MapBlock::updateMesh(u32 daynight_ratio, ITextureSource *tsrc)
 {
 #if 0
 	/*
@@ -154,7 +154,7 @@ void MapBlock::updateMesh(u32 daynight_ratio)
 	MeshMakeData data;
 	data.fill(daynight_ratio, this);
 	
-	scene::SMesh *mesh_new = makeMapBlockMesh(&data);
+	scene::SMesh *mesh_new = makeMapBlockMesh(&data, tsrc);
 	
 	/*
 		Replace the mesh
@@ -655,7 +655,7 @@ void MapBlock::serialize(std::ostream &os, u8 version)
 	}
 }
 
-void MapBlock::deSerialize(std::istream &is, u8 version)
+void MapBlock::deSerialize(std::istream &is, u8 version, IGameDef *gamedef)
 {
 	if(!ser_ver_supported(version))
 		throw VersionMismatchException("ERROR: MapBlock format not supported");
@@ -786,7 +786,7 @@ void MapBlock::deSerialize(std::istream &is, u8 version)
 				{
 					std::string data = deSerializeString(is);
 					std::istringstream iss(data, std::ios_base::binary);
-					m_node_metadata->deSerialize(iss);
+					m_node_metadata->deSerialize(iss, gamedef);
 				}
 				else
 				{
@@ -794,7 +794,7 @@ void MapBlock::deSerialize(std::istream &is, u8 version)
 					std::ostringstream oss(std::ios_base::binary);
 					decompressZlib(is, oss);
 					std::istringstream iss(oss.str(), std::ios_base::binary);
-					m_node_metadata->deSerialize(iss);
+					m_node_metadata->deSerialize(iss, gamedef);
 				}
 			}
 			catch(SerializationError &e)

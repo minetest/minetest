@@ -28,6 +28,7 @@ class ServerEnvironment;
 class ServerActiveObject;
 typedef struct lua_State lua_State;
 struct LuaEntityProperties;
+//class IGameDef;
 
 void scriptapi_export(lua_State *L, Server *server);
 void scriptapi_add_environment(lua_State *L, ServerEnvironment *env);
@@ -48,7 +49,7 @@ void scriptapi_luaentity_get_properties(lua_State *L, u16 id,
 		LuaEntityProperties *prop);
 void scriptapi_luaentity_step(lua_State *L, u16 id, float dtime);
 void scriptapi_luaentity_punch(lua_State *L, u16 id,
-		ServerActiveObject *clicker);
+		ServerActiveObject *puncher);
 void scriptapi_luaentity_rightclick(lua_State *L, u16 id,
 		ServerActiveObject *clicker);
 

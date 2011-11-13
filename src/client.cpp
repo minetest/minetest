@@ -160,7 +160,7 @@ void * MeshUpdateThread::Thread()
 		ScopeProfiler sp(g_profiler, "Client: Mesh making");
 
 		scene::SMesh *mesh_new = NULL;
-		mesh_new = makeMapBlockMesh(q->data);
+		mesh_new = makeMapBlockMesh(q->data, m_tsrc);
 
 		MeshUpdateResult r;
 		r.p = q->p;
@@ -185,13 +185,18 @@ Client::Client(
 		IrrlichtDevice *device,
 		const char *playername,
 		std::string password,
-		MapDrawControl &control):
-	m_mesh_update_thread(),
+		MapDrawControl &control,
+		ITextureSource *tsrc,
+		IToolDefManager *toolmgr):
+	m_tsrc(tsrc),
+	m_toolmgr(toolmgr),
+	m_mesh_update_thread(tsrc),
 	m_env(
-		new ClientMap(this, control,
+		new ClientMap(this, this, control,
 			device->getSceneManager()->getRootSceneNode(),
 			device->getSceneManager(), 666),
-		device->getSceneManager()
+		device->getSceneManager(),
+		tsrc, this
 	),
 	m_con(PROTOCOL_ID, 512, CONNECTION_TIMEOUT, this),
 	m_device(device),
@@ -863,7 +868,7 @@ void Client::ProcessData(u8 *data, u32 datasize, u16 sender_peer_id)
 				Update an existing block
 			*/
 			//infostream<<"Updating"<<std::endl;
-			block->deSerialize(istr, ser_version);
+			block->deSerialize(istr, ser_version, this);
 		}
 		else
 		{
@@ -872,7 +877,7 @@ void Client::ProcessData(u8 *data, u32 datasize, u16 sender_peer_id)
 			*/
 			//infostream<<"Creating new"<<std::endl;
 			block = new MapBlock(&m_env.getMap(), p);
-			block->deSerialize(istr, ser_version);
+			block->deSerialize(istr, ser_version, this);
 			sector->insertBlock(block);
 
 			//DEBUG
@@ -1157,7 +1162,7 @@ void Client::ProcessData(u8 *data, u32 datasize, u16 sender_peer_id)
 			//t4.stop();
 
 			//TimeTaker t1("inventory.deSerialize()", m_device);
-			player->inventory.deSerialize(is);
+			player->inventory.deSerialize(is, this);
 			//t1.stop();
 
 			m_inventory_updated = true;
@@ -1464,7 +1469,8 @@ void Client::ProcessData(u8 *data, u32 datasize, u16 sender_peer_id)
 						<< peer_id << std::endl;
 				} else {
 					std::istringstream iss(itemstring);
-					delete inv->changeItem(0, InventoryItem::deSerialize(iss));
+					delete inv->changeItem(0,
+							InventoryItem::deSerialize(iss, this));
 					infostream<<"Client: player item for peer " << peer_id << ": ";
 					player->getWieldItem()->serialize(infostream);
 					infostream<<std::endl;
@@ -2041,7 +2047,7 @@ void Client::setTempMod(v3s16 p, NodeMod mod)
 			i = affected_blocks.getIterator();
 			i.atEnd() == false; i++)
 	{
-		i.getNode()->getValue()->updateMesh(m_env.getDayNightRatio());
+		i.getNode()->getValue()->updateMesh(m_env.getDayNightRatio(), m_tsrc);
 	}
 }
 
@@ -2058,7 +2064,7 @@ void Client::clearTempMod(v3s16 p)
 			i = affected_blocks.getIterator();
 			i.atEnd() == false; i++)
 	{
-		i.getNode()->getValue()->updateMesh(m_env.getDayNightRatio());
+		i.getNode()->getValue()->updateMesh(m_env.getDayNightRatio(), m_tsrc);
 	}
 }
 

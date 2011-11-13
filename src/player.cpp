@@ -25,6 +25,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #ifndef SERVER
 #include <ITextSceneNode.h>
 #endif
+#include "main.h" // For g_settings
 #include "settings.h"
 #include "mapnode_contentfeatures.h"
 
@@ -128,7 +129,7 @@ void Player::serialize(std::ostream &os)
 		inventory.serialize(os);
 }
 
-void Player::deSerialize(std::istream &is)
+void Player::deSerialize(std::istream &is, IGameDef *gamedef)
 {
 	Settings args;
 	
@@ -162,7 +163,7 @@ void Player::deSerialize(std::istream &is)
 		hp = 20;
 	}
 
-	inventory.deSerialize(is);
+	inventory.deSerialize(is, gamedef);
 }
 
 /*

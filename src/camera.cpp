@@ -449,7 +449,7 @@ void Camera::updateSettings()
 	m_wanted_frametime = 1.0 / wanted_fps;
 }
 
-void Camera::wield(const InventoryItem* item)
+void Camera::wield(const InventoryItem* item, ITextureSource *tsrc)
 {
 	if (item != NULL)
 	{
@@ -472,7 +472,7 @@ void Camera::wield(const InventoryItem* item)
 		// If that failed, make an extruded sprite.
 		if (!isCube)
 		{
-			m_wieldnode->setSprite(item->getImageRaw());
+			m_wieldnode->setSprite(item->getImageRaw(tsrc));
 			m_wieldnode->setScale(v3f(40));
 		}
 

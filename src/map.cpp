@@ -62,8 +62,9 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 	Map
 */
 
-Map::Map(std::ostream &dout):
+Map::Map(std::ostream &dout, IGameDef *gamedef):
 	m_dout(dout),
+	m_gamedef(gamedef),
 	m_sector_cache(NULL)
 {
 	/*m_sector_mutex.Init();
@@ -1025,7 +1026,7 @@ void Map::addNodeAndUpdate(v3s16 p, MapNode n,
 	NodeMetadata *meta_proto = content_features(n).initial_metadata;
 	if(meta_proto)
 	{
-		NodeMetadata *meta = meta_proto->clone();
+		NodeMetadata *meta = meta_proto->clone(m_gamedef);
 		meta->setOwner(player_name);
 		setNodeMetadata(p, meta);
 	}
@@ -1906,8 +1907,8 @@ void Map::nodeMetadataStep(float dtime,
 	ServerMap
 */
 
-ServerMap::ServerMap(std::string savedir):
-	Map(dout_server),
+ServerMap::ServerMap(std::string savedir, IGameDef *gamedef):
+	Map(dout_server, gamedef),
 	m_seed(0),
 	m_map_metadata_changed(true),
 	m_database(NULL),
@@ -3309,7 +3310,7 @@ void ServerMap::loadBlock(std::string sectordir, std::string blockfile, MapSecto
 		}
 		
 		// Read basic data
-		block->deSerialize(is, version);
+		block->deSerialize(is, version, m_gamedef);
 
 		// Read extra data stored on disk
 		block->deSerializeDiskExtra(is, version);
@@ -3379,7 +3380,7 @@ void ServerMap::loadBlock(std::string *blob, v3s16 p3d, MapSector *sector, bool 
 		}
 		
 		// Read basic data
-		block->deSerialize(is, version);
+		block->deSerialize(is, version, m_gamedef);
 
 		// Read extra data stored on disk
 		block->deSerializeDiskExtra(is, version);
@@ -3522,12 +3523,13 @@ void ServerMap::PrintInfo(std::ostream &out)
 
 ClientMap::ClientMap(
 		Client *client,
+		IGameDef *gamedef,
 		MapDrawControl &control,
 		scene::ISceneNode* parent,
 		scene::ISceneManager* mgr,
 		s32 id
 ):
-	Map(dout_client),
+	Map(dout_client, gamedef),
 	scene::ISceneNode(parent, mgr, id),
 	m_client(client),
 	m_control(control),
@@ -4168,14 +4170,15 @@ void ClientMap::expireMeshes(bool only_daynight_diffed)
 	}
 }
 
-void ClientMap::updateMeshes(v3s16 blockpos, u32 daynight_ratio)
+void ClientMap::updateMeshes(v3s16 blockpos, u32 daynight_ratio,
+		ITextureSource *tsrc)
 {
 	assert(mapType() == MAPTYPE_CLIENT);
 
 	try{
 		v3s16 p = blockpos + v3s16(0,0,0);
 		MapBlock *b = getBlockNoCreate(p);
-		b->updateMesh(daynight_ratio);
+		b->updateMesh(daynight_ratio, tsrc);
 		//b->setMeshExpired(true);
 	}
 	catch(InvalidPositionException &e){}
@@ -4183,21 +4186,21 @@ void ClientMap::updateMeshes(v3s16 blockpos, u32 daynight_ratio)
 	try{
 		v3s16 p = blockpos + v3s16(-1,0,0);
 		MapBlock *b = getBlockNoCreate(p);
-		b->updateMesh(daynight_ratio);
+		b->updateMesh(daynight_ratio, tsrc);
 		//b->setMeshExpired(true);
 	}
 	catch(InvalidPositionException &e){}
 	try{
 		v3s16 p = blockpos + v3s16(0,-1,0);
 		MapBlock *b = getBlockNoCreate(p);
-		b->updateMesh(daynight_ratio);
+		b->updateMesh(daynight_ratio, tsrc);
 		//b->setMeshExpired(true);
 	}
 	catch(InvalidPositionException &e){}
 	try{
 		v3s16 p = blockpos + v3s16(0,0,-1);
 		MapBlock *b = getBlockNoCreate(p);
-		b->updateMesh(daynight_ratio);
+		b->updateMesh(daynight_ratio, tsrc);
 		//b->setMeshExpired(true);
 	}
 	catch(InvalidPositionException &e){}

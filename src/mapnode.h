@@ -226,7 +226,7 @@ struct MapNode
 		Returns: TileSpec. Can contain miscellaneous texture coordinates,
 		         which must be obeyed so that the texture atlas can be used.
 	*/
-	TileSpec getTile(v3s16 dir);
+	TileSpec getTile(v3s16 dir, ITextureSource *tsrc);
 #endif
 	
 	/*

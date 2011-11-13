@@ -32,13 +32,14 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 void drawInventoryItem(video::IVideoDriver *driver,
 		gui::IGUIFont *font,
 		InventoryItem *item, core::rect<s32> rect,
-		const core::rect<s32> *clip)
+		const core::rect<s32> *clip,
+		ITextureSource *tsrc)
 {
 	if(item == NULL)
 		return;
 	
 	video::ITexture *texture = NULL;
-	texture = item->getImage();
+	texture = item->getImage(tsrc);
 
 	if(texture != NULL)
 	{
@@ -89,12 +90,14 @@ GUIInventoryMenu::GUIInventoryMenu(gui::IGUIEnvironment* env,
 		IMenuManager *menumgr,
 		v2s16 menu_size,
 		InventoryContext *c,
-		InventoryManager *invmgr
+		InventoryManager *invmgr,
+		ITextureSource *tsrc
 		):
 	GUIModalMenu(env, parent, id, menumgr),
 	m_menu_size(menu_size),
 	m_c(c),
-	m_invmgr(invmgr)
+	m_invmgr(invmgr),
+	m_tsrc(tsrc)
 {
 	m_selected_item = NULL;
 }
@@ -218,7 +221,7 @@ GUIInventoryMenu::ItemSpec GUIInventoryMenu::getItemAtPos(v2s32 p) const
 	return ItemSpec("", "", -1);
 }
 
-void GUIInventoryMenu::drawList(const ListDrawSpec &s)
+void GUIInventoryMenu::drawList(const ListDrawSpec &s, ITextureSource *tsrc)
 {
 	video::IVideoDriver* driver = Environment->getVideoDriver();
 
@@ -269,7 +272,7 @@ void GUIInventoryMenu::drawList(const ListDrawSpec &s)
 		if(item)
 		{
 			drawInventoryItem(driver, font, item,
-					rect, &AbsoluteClippingRect);
+					rect, &AbsoluteClippingRect, tsrc);
 		}
 
 	}
@@ -292,7 +295,7 @@ void GUIInventoryMenu::drawMenu()
 	for(u32 i=0; i<m_draw_spec.size(); i++)
 	{
 		ListDrawSpec &s = m_draw_spec[i];
-		drawList(s);
+		drawList(s, m_tsrc);
 	}
 
 	/*

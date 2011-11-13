@@ -41,6 +41,7 @@ class ServerMapSector;
 class ClientMapSector;
 class MapBlock;
 class NodeMetadata;
+class IGameDef;
 
 namespace mapgen{
 	struct BlockMakeData;
@@ -109,7 +110,7 @@ class Map /*: public NodeContainer*/
 {
 public:
 
-	Map(std::ostream &dout);
+	Map(std::ostream &dout, IGameDef *gamedef);
 	virtual ~Map();
 
 	/*virtual u16 nodeContainerId() const
@@ -289,7 +290,9 @@ public:
 	
 protected:
 
-	std::ostream &m_dout;
+	std::ostream &m_dout; // A bit deprecated, could be removed
+
+	IGameDef *m_gamedef;
 
 	core::map<MapEventReceiver*, bool> m_event_receivers;
 	
@@ -315,7 +318,7 @@ public:
 	/*
 		savedir: directory to which map data should be saved
 	*/
-	ServerMap(std::string savedir);
+	ServerMap(std::string savedir, IGameDef *gamedef);
 	~ServerMap();
 
 	s32 mapType() const
@@ -435,9 +438,9 @@ public:
 	u64 getSeed(){ return m_seed; }
 
 private:
-	// Seed used for all kinds of randomness
+	// Seed used for all kinds of randomness in generation
 	u64 m_seed;
-
+	
 	std::string m_savedir;
 	bool m_map_saving_enabled;
 
@@ -496,6 +499,7 @@ struct MapDrawControl
 };
 
 class Client;
+class ITextureSource;
 
 /*
 	ClientMap
@@ -508,6 +512,7 @@ class ClientMap : public Map, public scene::ISceneNode
 public:
 	ClientMap(
 			Client *client,
+			IGameDef *gamedef,
 			MapDrawControl &control,
 			scene::ISceneNode* parent,
 			scene::ISceneManager* mgr,
@@ -583,9 +588,10 @@ public:
 	
 	/*
 		Update the faces of the given block and blocks on the
-		leading edge.
+		leading edge, without threading. Rarely used.
 	*/
-	void updateMeshes(v3s16 blockpos, u32 daynight_ratio);
+	void updateMeshes(v3s16 blockpos, u32 daynight_ratio,
+			ITextureSource *tsrc);
 	
 	// Update meshes that touch the node
 	//void updateNodeMeshes(v3s16 nodepos, u32 daynight_ratio);

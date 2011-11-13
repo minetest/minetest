@@ -29,6 +29,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <ostream>
 #include "clientobject.h"
 #include "utility.h" // For IntervalLimiter
+#include "gamedef.h"
 
 struct MeshMakeData;
 
@@ -98,7 +99,8 @@ class MeshUpdateThread : public SimpleThread
 {
 public:
 
-	MeshUpdateThread()
+	MeshUpdateThread(ITextureSource *tsrc):
+		m_tsrc(tsrc)
 	{
 	}
 
@@ -107,6 +109,8 @@ public:
 	MeshUpdateQueue m_queue_in;
 
 	MutexedQueue<MeshUpdateResult> m_queue_out;
+
+	ITextureSource *m_tsrc;
 };
 
 enum ClientEventType
@@ -139,7 +143,7 @@ struct ClientEvent
 	};
 };
 
-class Client : public con::PeerHandler, public InventoryManager
+class Client : public con::PeerHandler, public InventoryManager, public IGameDef
 {
 public:
 	/*
@@ -150,8 +154,10 @@ public:
 			IrrlichtDevice *device,
 			const char *playername,
 			std::string password,
-			MapDrawControl &control
-			);
+			MapDrawControl &control,
+			ITextureSource *tsrc,
+			IToolDefManager *toolmgr
+	);
 	
 	~Client();
 	/*
@@ -303,6 +309,13 @@ public:
 
 	float getRTT(void);
 
+	// IGameDef interface
+	// Under envlock
+	virtual IToolDefManager* getToolDefManager()
+		{ return m_toolmgr; }
+	virtual INodeDefManager* getNodeDefManager()
+		{ assert(0); return NULL; } // TODO
+
 private:
 	
 	// Virtual methods from con::PeerHandler
@@ -325,44 +338,31 @@ private:
 	float m_ignore_damage_timer; // Used after server moves player
 	IntervalLimiter m_map_timer_and_unload_interval;
 
+	ITextureSource *m_tsrc;
+	IToolDefManager *m_toolmgr;
 	MeshUpdateThread m_mesh_update_thread;
-	
 	ClientEnvironment m_env;
-	
 	con::Connection m_con;
-
 	IrrlichtDevice *m_device;
-
 	// Server serialization version
 	u8 m_server_ser_ver;
-
 	// This is behind m_env_mutex.
 	bool m_inventory_updated;
-
 	core::map<v3s16, bool> m_active_blocks;
-
 	PacketCounter m_packetcounter;
-	
 	// Received from the server. 0-23999
 	u32 m_time_of_day;
-	
 	// 0 <= m_daynight_i < DAYNIGHT_CACHE_COUNT
 	//s32 m_daynight_i;
 	//u32 m_daynight_ratio;
-
 	Queue<std::wstring> m_chat_queue;
-	
 	// The seed returned by the server in TOCLIENT_INIT is stored here
 	u64 m_map_seed;
-	
 	std::string m_password;
 	bool m_access_denied;
 	std::wstring m_access_denied_reason;
-
 	InventoryContext m_inventory_context;
-
 	Queue<ClientEvent> m_client_event_queue;
-
 	friend class FarMesh;
 };
 

@@ -23,7 +23,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 //#include "serverobject.h"
 #include "content_sao.h"
 
-bool item_material_is_cookable(content_t content)
+bool item_material_is_cookable(content_t content, IGameDef *gamedef)
 {
 	if(content == CONTENT_TREE)
 		return true;
@@ -34,18 +34,20 @@ bool item_material_is_cookable(content_t content)
 	return false;
 }
 
-InventoryItem* item_material_create_cook_result(content_t content)
+InventoryItem* item_material_create_cook_result(content_t content,
+		IGameDef *gamedef)
 {
 	if(content == CONTENT_TREE)
-		return new CraftItem("lump_of_coal", 1);
+		return new CraftItem(gamedef, "lump_of_coal", 1);
 	else if(content == CONTENT_COBBLE)
-		return new MaterialItem(CONTENT_STONE, 1);
+		return new MaterialItem(gamedef, CONTENT_STONE, 1);
 	else if(content == CONTENT_SAND)
-		return new MaterialItem(CONTENT_GLASS, 1);
+		return new MaterialItem(gamedef, CONTENT_GLASS, 1);
 	return NULL;
 }
 
-std::string item_craft_get_image_name(const std::string &subname)
+std::string item_craft_get_image_name(const std::string &subname,
+		IGameDef *gamedef)
 {
 	if(subname == "Stick")
 		return "stick.png";
@@ -103,7 +105,7 @@ ServerActiveObject* item_craft_create_object(const std::string &subname,
 	return NULL;
 }
 
-s16 item_craft_get_drop_count(const std::string &subname)
+s16 item_craft_get_drop_count(const std::string &subname, IGameDef *gamedef)
 {
 	if(subname == "rat" || subname == "firefly" || subname == "testobject1")
 		return 1;
@@ -111,7 +113,7 @@ s16 item_craft_get_drop_count(const std::string &subname)
 	return -1;
 }
 
-bool item_craft_is_cookable(const std::string &subname)
+bool item_craft_is_cookable(const std::string &subname, IGameDef *gamedef)
 {
 	if(subname == "lump_of_iron" || subname == "lump_of_clay" || subname == "rat" || subname == "cooked_rat")
 		return true;
@@ -119,21 +121,22 @@ bool item_craft_is_cookable(const std::string &subname)
 	return false;
 }
 
-InventoryItem* item_craft_create_cook_result(const std::string &subname)
+InventoryItem* item_craft_create_cook_result(const std::string &subname,
+		IGameDef *gamedef)
 {
 	if(subname == "lump_of_iron")
-		return new CraftItem("steel_ingot", 1);
+		return new CraftItem(gamedef, "steel_ingot", 1);
 	else if(subname == "lump_of_clay")
-		return new CraftItem("clay_brick", 1);
+		return new CraftItem(gamedef, "clay_brick", 1);
 	else if(subname == "rat")
-		return new CraftItem("cooked_rat", 1);
+		return new CraftItem(gamedef, "cooked_rat", 1);
 	else if(subname == "cooked_rat")
-		return new CraftItem("scorched_stuff", 1);
+		return new CraftItem(gamedef, "scorched_stuff", 1);
 
 	return NULL;
 }
 
-bool item_craft_is_eatable(const std::string &subname)
+bool item_craft_is_eatable(const std::string &subname, IGameDef *gamedef)
 {
 	if(subname == "cooked_rat")
 		return true;
@@ -144,7 +147,7 @@ bool item_craft_is_eatable(const std::string &subname)
 	return false;
 }
 
-s16 item_craft_eat_hp_change(const std::string &subname)
+s16 item_craft_eat_hp_change(const std::string &subname, IGameDef *gamedef)
 {
 	if(subname == "cooked_rat")
 		return 6; // 3 hearts

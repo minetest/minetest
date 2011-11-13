@@ -21,6 +21,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "collision.h"
 #include "environment.h"
 #include "settings.h"
+#include "main.h" // For g_profiler
 #include "profiler.h"
 
 core::map<u16, ServerActiveObject::Factory> ServerActiveObject::m_types;
@@ -223,7 +224,8 @@ InventoryItem * ItemSAO::createInventoryItem()
 {
 	try{
 		std::istringstream is(m_inventorystring, std::ios_base::binary);
-		InventoryItem *item = InventoryItem::deSerialize(is);
+		IGameDef *gamedef = m_env->getGameDef();
+		InventoryItem *item = InventoryItem::deSerialize(is, gamedef);
 		infostream<<__FUNCTION_NAME<<": m_inventorystring=\""
 				<<m_inventorystring<<"\" -> item="<<item
 				<<std::endl;
@@ -448,7 +450,8 @@ std::string RatSAO::getStaticData()
 void RatSAO::punch(ServerActiveObject *puncher)
 {
 	std::istringstream is("CraftItem rat 1", std::ios_base::binary);
-	InventoryItem *item = InventoryItem::deSerialize(is);
+	IGameDef *gamedef = m_env->getGameDef();
+	InventoryItem *item = InventoryItem::deSerialize(is, gamedef);
 	bool fits = puncher->addToInventory(item);
 	if(fits)
 		m_removed = true;
@@ -932,7 +935,8 @@ std::string FireflySAO::getStaticData()
 InventoryItem* FireflySAO::createPickedUpItem()
 {
 	std::istringstream is("CraftItem firefly 1", std::ios_base::binary);
-	InventoryItem *item = InventoryItem::deSerialize(is);
+	IGameDef *gamedef = m_env->getGameDef();
+	InventoryItem *item = InventoryItem::deSerialize(is, gamedef);
 	return item;
 }
 
@@ -1563,13 +1567,14 @@ LuaEntitySAO::~LuaEntitySAO()
 	delete m_prop;
 }
 
-void LuaEntitySAO::addedToEnvironment(u16 id)
+void LuaEntitySAO::addedToEnvironment()
 {
-	ServerActiveObject::addedToEnvironment(id);
+	ServerActiveObject::addedToEnvironment();
 	
 	// Create entity from name and state
 	lua_State *L = m_env->getLua();
-	m_registered = scriptapi_luaentity_add(L, id, m_init_name.c_str(), m_init_state.c_str());
+	m_registered = scriptapi_luaentity_add(L, m_id, m_init_name.c_str(),
+			m_init_state.c_str());
 	
 	if(m_registered){
 		// Get properties
@@ -1660,7 +1665,8 @@ std::string LuaEntitySAO::getStaticData()
 InventoryItem* LuaEntitySAO::createPickedUpItem()
 {
 	std::istringstream is("CraftItem testobject1 1", std::ios_base::binary);
-	InventoryItem *item = InventoryItem::deSerialize(is);
+	IGameDef *gamedef = m_env->getGameDef();
+	InventoryItem *item = InventoryItem::deSerialize(is, gamedef);
 	return item;
 }
 

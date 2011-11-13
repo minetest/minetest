@@ -220,7 +220,7 @@ u8 MapNode::getLightBanksWithSource()
 }
 
 #ifndef SERVER
-TileSpec MapNode::getTile(v3s16 dir)
+TileSpec MapNode::getTile(v3s16 dir, ITextureSource *tsrc)
 {
 	if(content_features(*this).param_type == CPT_FACEDIR_SIMPLE)
 		dir = facedir_rotate(param1, dir);
@@ -253,19 +253,19 @@ TileSpec MapNode::getTile(v3s16 dir)
 	/*
 		If it contains some mineral, change texture id
 	*/
-	if(content_features(*this).param_type == CPT_MINERAL && g_texturesource)
+	if(content_features(*this).param_type == CPT_MINERAL && tsrc)
 	{
 		u8 mineral = getMineral();
 		std::string mineral_texture_name = mineral_block_texture(mineral);
 		if(mineral_texture_name != "")
 		{
 			u32 orig_id = spec.texture.id;
-			std::string texture_name = g_texturesource->getTextureName(orig_id);
+			std::string texture_name = tsrc->getTextureName(orig_id);
 			//texture_name += "^blit:";
 			texture_name += "^";
 			texture_name += mineral_texture_name;
-			u32 new_id = g_texturesource->getTextureId(texture_name);
-			spec.texture = g_texturesource->getTexture(new_id);
+			u32 new_id = tsrc->getTextureId(texture_name);
+			spec.texture = tsrc->getTexture(new_id);
 		}
 	}
 

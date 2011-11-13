@@ -3,29 +3,28 @@
 #include "mapnode_contentfeatures.h"
 #include "tool.h"
 
-DiggingProperties getDiggingProperties(u16 material, const std::string &tool)
+DiggingProperties getDiggingProperties(u16 material, ToolDiggingProperties *tp)
 {
+	assert(tp);
 	MaterialProperties &mp = content_features(material).material;
 	if(mp.diggability == DIGGABLE_NOT)
 		return DiggingProperties(false, 0, 0);
 	if(mp.diggability == DIGGABLE_CONSTANT)
 		return DiggingProperties(true, mp.constant_time, 0);
 
-	ToolDiggingProperties tp = tool_get_digging_properties(tool);
-	
-	float time = tp.basetime;
-	time += tp.dt_weight * mp.weight;
-	time += tp.dt_crackiness * mp.crackiness;
-	time += tp.dt_crumbliness * mp.crumbliness;
-	time += tp.dt_cuttability * mp.cuttability;
+	float time = tp->basetime;
+	time += tp->dt_weight * mp.weight;
+	time += tp->dt_crackiness * mp.crackiness;
+	time += tp->dt_crumbliness * mp.crumbliness;
+	time += tp->dt_cuttability * mp.cuttability;
 	if(time < 0.2)
 		time = 0.2;
 
-	float durability = tp.basedurability;
-	durability += tp.dd_weight * mp.weight;
-	durability += tp.dd_crackiness * mp.crackiness;
-	durability += tp.dd_crumbliness * mp.crumbliness;
-	durability += tp.dd_cuttability * mp.cuttability;
+	float durability = tp->basedurability;
+	durability += tp->dd_weight * mp.weight;
+	durability += tp->dd_crackiness * mp.crackiness;
+	durability += tp->dd_crumbliness * mp.crumbliness;
+	durability += tp->dd_cuttability * mp.cuttability;
 	if(durability < 1)
 		durability = 1;
 

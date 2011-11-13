@@ -32,6 +32,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "scriptapi.h"
 #include "mapnode_contentfeatures.h"
 #include "nodemetadata.h"
+#include "main.h" // For g_settings, g_profiler
 
 #define PP(x) "("<<(x).X<<","<<(x).Y<<","<<(x).Z<<")"
 
@@ -270,9 +271,11 @@ void ActiveBlockList::update(core::list<v3s16> &active_positions,
 	ServerEnvironment
 */
 
-ServerEnvironment::ServerEnvironment(ServerMap *map, lua_State *L):
+ServerEnvironment::ServerEnvironment(ServerMap *map, lua_State *L,
+		IGameDef *gamedef):
 	m_map(map),
 	m_lua(L),
+	m_gamedef(gamedef),
 	m_random_spawn_timer(3),
 	m_send_recommended_timer(0),
 	m_game_time(0),
@@ -312,7 +315,7 @@ void ServerEnvironment::serializePlayers(const std::string &savedir)
 		//infostream<<"Checking player file "<<path<<std::endl;
 
 		// Load player to see what is its name
-		ServerRemotePlayer testplayer;
+		ServerRemotePlayer testplayer(this);
 		{
 			// Open file and deserialize
 			std::ifstream is(path.c_str(), std::ios_base::binary);
@@ -321,7 +324,7 @@ void ServerEnvironment::serializePlayers(const std::string &savedir)
 				infostream<<"Failed to read "<<path<<std::endl;
 				continue;
 			}
-			testplayer.deSerialize(is);
+			testplayer.deSerialize(is, m_gamedef);
 		}
 
 		//infostream<<"Loaded test player with name "<<testplayer.getName()<<std::endl;
@@ -426,7 +429,7 @@ void ServerEnvironment::deSerializePlayers(const std::string &savedir)
 		infostream<<"Checking player file "<<path<<std::endl;
 
 		// Load player to see what is its name
-		ServerRemotePlayer testplayer;
+		ServerRemotePlayer testplayer(this);
 		{
 			// Open file and deserialize
 			std::ifstream is(path.c_str(), std::ios_base::binary);
@@ -435,7 +438,7 @@ void ServerEnvironment::deSerializePlayers(const std::string &savedir)
 				infostream<<"Failed to read "<<path<<std::endl;
 				continue;
 			}
-			testplayer.deSerialize(is);
+			testplayer.deSerialize(is, m_gamedef);
 		}
 
 		if(!string_allowed(testplayer.getName(), PLAYERNAME_ALLOWED_CHARS))
@@ -454,7 +457,7 @@ void ServerEnvironment::deSerializePlayers(const std::string &savedir)
 		if(player == NULL)
 		{
 			infostream<<"Is a new player"<<std::endl;
-			player = new ServerRemotePlayer();
+			player = new ServerRemotePlayer(this);
 			newplayer = true;
 		}
 
@@ -469,7 +472,7 @@ void ServerEnvironment::deSerializePlayers(const std::string &savedir)
 				infostream<<"Failed to read "<<path<<std::endl;
 				continue;
 			}
-			player->deSerialize(is);
+			player->deSerialize(is, m_gamedef);
 		}
 
 		if(newplayer)
@@ -1507,7 +1510,7 @@ u16 ServerEnvironment::addActiveObjectRaw(ServerActiveObject *object,
 	// Register reference in scripting api (must be done before post-init)
 	scriptapi_add_object_reference(m_lua, object);
 	// Post-initialize object
-	object->addedToEnvironment(object->getId());
+	object->addedToEnvironment();
 
 	return object->getId();
 }
@@ -1862,9 +1865,12 @@ void ServerEnvironment::deactivateFarObjects(bool force_delete)
 	ClientEnvironment
 */
 
-ClientEnvironment::ClientEnvironment(ClientMap *map, scene::ISceneManager *smgr):
+ClientEnvironment::ClientEnvironment(ClientMap *map, scene::ISceneManager *smgr,
+		ITextureSource *texturesource, IGameDef *gamedef):
 	m_map(map),
-	m_smgr(smgr)
+	m_smgr(smgr),
+	m_texturesource(texturesource),
+	m_gamedef(gamedef)
 {
 	assert(m_map);
 	assert(m_smgr);
@@ -2166,9 +2172,9 @@ void ClientEnvironment::step(float dtime)
 	}
 }
 
-void ClientEnvironment::updateMeshes(v3s16 blockpos)
+void ClientEnvironment::updateMeshes(v3s16 blockpos, ITextureSource *tsrc)
 {
-	m_map->updateMeshes(blockpos, getDayNightRatio());
+	m_map->updateMeshes(blockpos, getDayNightRatio(), tsrc);
 }
 
 void ClientEnvironment::expireMeshes(bool only_daynight_diffed)
@@ -2242,14 +2248,15 @@ u16 ClientEnvironment::addActiveObject(ClientActiveObject *object)
 	infostream<<"ClientEnvironment::addActiveObject(): "
 			<<"added (id="<<object->getId()<<")"<<std::endl;
 	m_active_objects.insert(object->getId(), object);
-	object->addToScene(m_smgr);
+	// TODO: Make g_texturesource non-global
+	object->addToScene(m_smgr, m_texturesource);
 	return object->getId();
 }
 
 void ClientEnvironment::addActiveObject(u16 id, u8 type,
 		const std::string &init_data)
 {
-	ClientActiveObject* obj = ClientActiveObject::create(type);
+	ClientActiveObject* obj = ClientActiveObject::create(type, m_gamedef);
 	if(obj == NULL)
 	{
 		infostream<<"ClientEnvironment::addActiveObject(): "

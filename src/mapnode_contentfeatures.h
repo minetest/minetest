@@ -27,6 +27,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "tile.h"
 #endif
 #include "materials.h" // MaterialProperties
+class ITextureSource;
 
 /*
 	Content feature list
@@ -40,7 +41,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 	Must be called before accessing the table.
 */
-void init_contentfeatures();
+void init_contentfeatures(ITextureSource *tsrc);
 
 enum ContentParamType
 {
@@ -232,21 +233,24 @@ struct ContentFeatures
 	*/
 	
 #ifdef SERVER
-	void setTexture(u16 i, std::string name, u8 alpha=255)
+	void setTexture(ITextureSource *tsrc, u16 i, std::string name,
+			u8 alpha=255)
 	{}
-	void setAllTextures(std::string name, u8 alpha=255)
+	void setAllTextures(ITextureSource *tsrc, std::string name, u8 alpha=255)
 	{}
 #else
-	void setTexture(u16 i, std::string name, u8 alpha=255);
+	void setTexture(ITextureSource *tsrc,
+			u16 i, std::string name, u8 alpha=255);
 
-	void setAllTextures(std::string name, u8 alpha=255)
+	void setAllTextures(ITextureSource *tsrc,
+			std::string name, u8 alpha=255)
 	{
 		for(u16 i=0; i<6; i++)
 		{
-			setTexture(i, name, alpha);
+			setTexture(tsrc, i, name, alpha);
 		}
 		// Force inventory texture too
-		setInventoryTexture(name);
+		setInventoryTexture(name, tsrc);
 	}
 #endif
 
@@ -265,16 +269,17 @@ struct ContentFeatures
 #endif
 
 #ifdef SERVER
-	void setInventoryTexture(std::string imgname)
+	void setInventoryTexture(std::string imgname,
+			ITextureSource *tsrc)
 	{}
 	void setInventoryTextureCube(std::string top,
-			std::string left, std::string right)
+			std::string left, std::string right, ITextureSource *tsrc)
 	{}
 #else
-	void setInventoryTexture(std::string imgname);
+	void setInventoryTexture(std::string imgname, ITextureSource *tsrc);
 	
 	void setInventoryTextureCube(std::string top,
-			std::string left, std::string right);
+			std::string left, std::string right, ITextureSource *tsrc);
 #endif
 };
 

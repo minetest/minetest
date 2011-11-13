@@ -156,16 +156,16 @@ MapNode mapnode_translate_to_internal(MapNode n_from, u8 version)
 }
 
 // See header for description
-void content_mapnode_init()
+void content_mapnode_init(ITextureSource *tsrc)
 {
-	if(g_texturesource == NULL)
+	if(tsrc == NULL)
 		dstream<<"INFO: Initial run of content_mapnode_init with "
-				"g_texturesource=NULL. If this segfaults, "
+				"tsrc=NULL. If this segfaults, "
 				"there is a bug with something not checking for "
 				"the NULL value."<<std::endl;
 	else
 		dstream<<"INFO: Full run of content_mapnode_init with "
-				"g_texturesource!=NULL"<<std::endl;
+				"tsrc!=NULL"<<std::endl;
 
 	// Read some settings
 	bool new_style_water = g_settings->getBool("new_style_water");
@@ -178,8 +178,8 @@ void content_mapnode_init()
 
 	i = CONTENT_STONE;
 	f = &content_features(i);
-	f->setAllTextures("stone.png");
-	f->setInventoryTextureCube("stone.png", "stone.png", "stone.png");
+	f->setAllTextures(tsrc, "stone.png");
+	f->setInventoryTextureCube("stone.png", "stone.png", "stone.png", tsrc);
 	f->param_type = CPT_MINERAL;
 	f->is_ground_content = true;
 	f->often_contains_mineral = true;
@@ -190,9 +190,9 @@ void content_mapnode_init()
 	
 	i = CONTENT_GRASS;
 	f = &content_features(i);
-	f->setAllTextures("mud.png^grass_side.png");
-	f->setTexture(0, "grass.png");
-	f->setTexture(1, "mud.png");
+	f->setAllTextures(tsrc, "mud.png^grass_side.png");
+	f->setTexture(tsrc, 0, "grass.png");
+	f->setTexture(tsrc, 1, "mud.png");
 	f->param_type = CPT_MINERAL;
 	f->is_ground_content = true;
 	f->dug_item = std::string("MaterialItem2 ")+itos(CONTENT_MUD)+" 1";
@@ -200,9 +200,9 @@ void content_mapnode_init()
 	
 	i = CONTENT_GRASS_FOOTSTEPS;
 	f = &content_features(i);
-	f->setAllTextures("mud.png^grass_side.png");
-	f->setTexture(0, "grass_footsteps.png");
-	f->setTexture(1, "mud.png");
+	f->setAllTextures(tsrc, "mud.png^grass_side.png");
+	f->setTexture(tsrc, 0, "grass_footsteps.png");
+	f->setTexture(tsrc, 1, "mud.png");
 	f->param_type = CPT_MINERAL;
 	f->is_ground_content = true;
 	f->dug_item = std::string("MaterialItem2 ")+itos(CONTENT_MUD)+" 1";
@@ -210,8 +210,8 @@ void content_mapnode_init()
 	
 	i = CONTENT_MUD;
 	f = &content_features(i);
-	f->setAllTextures("mud.png");
-	f->setInventoryTextureCube("mud.png", "mud.png", "mud.png");
+	f->setAllTextures(tsrc, "mud.png");
+	f->setInventoryTextureCube("mud.png", "mud.png", "mud.png", tsrc);
 	f->param_type = CPT_MINERAL;
 	f->is_ground_content = true;
 	f->dug_item = std::string("MaterialItem2 ")+itos(i)+" 1";
@@ -219,8 +219,8 @@ void content_mapnode_init()
 	
 	i = CONTENT_SAND;
 	f = &content_features(i);
-	f->setAllTextures("sand.png");
-	f->setInventoryTextureCube("sand.png", "sand.png", "sand.png");
+	f->setAllTextures(tsrc, "sand.png");
+	f->setInventoryTextureCube("sand.png", "sand.png", "sand.png", tsrc);
 	f->param_type = CPT_MINERAL;
 	f->is_ground_content = true;
 	f->dug_item = std::string("MaterialItem2 ")+itos(i)+" 1";
@@ -228,8 +228,8 @@ void content_mapnode_init()
 	
 	i = CONTENT_GRAVEL;
 	f = &content_features(i);
-	f->setAllTextures("gravel.png");
-	f->setInventoryTextureCube("gravel.png", "gravel.png", "gravel.png");
+	f->setAllTextures(tsrc, "gravel.png");
+	f->setInventoryTextureCube("gravel.png", "gravel.png", "gravel.png", tsrc);
 	f->param_type = CPT_MINERAL;
 	f->is_ground_content = true;
 	f->dug_item = std::string("MaterialItem2 ")+itos(i)+" 1";
@@ -237,8 +237,8 @@ void content_mapnode_init()
 	
 	i = CONTENT_SANDSTONE;
 	f = &content_features(i);
-	f->setAllTextures("sandstone.png");
-	f->setInventoryTextureCube("sandstone.png", "sandstone.png", "sandstone.png");
+	f->setAllTextures(tsrc, "sandstone.png");
+	f->setInventoryTextureCube("sandstone.png", "sandstone.png", "sandstone.png", tsrc);
 	f->param_type = CPT_MINERAL;
 	f->is_ground_content = true;
 	f->dug_item = std::string("MaterialItem2 ")+itos(CONTENT_SAND)+" 1";
@@ -246,8 +246,8 @@ void content_mapnode_init()
 
 	i = CONTENT_CLAY;
 	f = &content_features(i);
-	f->setAllTextures("clay.png");
-	f->setInventoryTextureCube("clay.png", "clay.png", "clay.png");
+	f->setAllTextures(tsrc, "clay.png");
+	f->setInventoryTextureCube("clay.png", "clay.png", "clay.png", tsrc);
 	f->param_type = CPT_MINERAL;
 	f->is_ground_content = true;
 	f->dug_item = std::string("CraftItem lump_of_clay 4");
@@ -255,8 +255,8 @@ void content_mapnode_init()
 
 	i = CONTENT_BRICK;
 	f = &content_features(i);
-	f->setAllTextures("brick.png");
-	f->setInventoryTextureCube("brick.png", "brick.png", "brick.png");
+	f->setAllTextures(tsrc, "brick.png");
+	f->setInventoryTextureCube("brick.png", "brick.png", "brick.png", tsrc);
 	f->param_type = CPT_MINERAL;
 	f->is_ground_content = true;
 	f->dug_item = std::string("CraftItem clay_brick 4");
@@ -264,9 +264,9 @@ void content_mapnode_init()
 
 	i = CONTENT_TREE;
 	f = &content_features(i);
-	f->setAllTextures("tree.png");
-	f->setTexture(0, "tree_top.png");
-	f->setTexture(1, "tree_top.png");
+	f->setAllTextures(tsrc, "tree.png");
+	f->setTexture(tsrc, 0, "tree_top.png");
+	f->setTexture(tsrc, 1, "tree_top.png");
 	f->param_type = CPT_MINERAL;
 	f->is_ground_content = true;
 	f->dug_item = std::string("MaterialItem2 ")+itos(i)+" 1";
@@ -274,9 +274,9 @@ void content_mapnode_init()
 	
 	i = CONTENT_JUNGLETREE;
 	f = &content_features(i);
-	f->setAllTextures("jungletree.png");
-	f->setTexture(0, "jungletree_top.png");
-	f->setTexture(1, "jungletree_top.png");
+	f->setAllTextures(tsrc, "jungletree.png");
+	f->setTexture(tsrc, 0, "jungletree_top.png");
+	f->setTexture(tsrc, 1, "jungletree_top.png");
 	f->param_type = CPT_MINERAL;
 	//f->is_ground_content = true;
 	f->dug_item = std::string("MaterialItem2 ")+itos(i)+" 1";
@@ -284,7 +284,7 @@ void content_mapnode_init()
 	
 	i = CONTENT_JUNGLEGRASS;
 	f = &content_features(i);
-	f->setInventoryTexture("junglegrass.png");
+	f->setInventoryTexture("junglegrass.png", tsrc);
 	f->used_texturenames["junglegrass.png"] = true;
 	f->light_propagates = true;
 	f->param_type = CPT_LIGHT;
@@ -305,12 +305,12 @@ void content_mapnode_init()
 	{
 		f->solidness = 0; // drawn separately, makes no faces
 		f->visual_solidness = 1;
-		f->setAllTextures("leaves.png");
-		f->setInventoryTextureCube("leaves.png", "leaves.png", "leaves.png");
+		f->setAllTextures(tsrc, "leaves.png");
+		f->setInventoryTextureCube("leaves.png", "leaves.png", "leaves.png", tsrc);
 	}
 	else
 	{
-		f->setAllTextures("[noalpha:leaves.png");
+		f->setAllTextures(tsrc, "[noalpha:leaves.png");
 	}
 	f->extra_dug_item = std::string("MaterialItem2 ")+itos(CONTENT_SAPLING)+" 1";
 	f->extra_dug_item_rarity = 20;
@@ -319,10 +319,10 @@ void content_mapnode_init()
 
 	i = CONTENT_CACTUS;
 	f = &content_features(i);
-	f->setAllTextures("cactus_side.png");
-	f->setTexture(0, "cactus_top.png");
-	f->setTexture(1, "cactus_top.png");
-	f->setInventoryTextureCube("cactus_top.png", "cactus_side.png", "cactus_side.png");
+	f->setAllTextures(tsrc, "cactus_side.png");
+	f->setTexture(tsrc, 0, "cactus_top.png");
+	f->setTexture(tsrc, 1, "cactus_top.png");
+	f->setInventoryTextureCube("cactus_top.png", "cactus_side.png", "cactus_side.png", tsrc);
 	f->param_type = CPT_MINERAL;
 	f->is_ground_content = true;
 	f->dug_item = std::string("MaterialItem2 ")+itos(i)+" 1";
@@ -330,7 +330,7 @@ void content_mapnode_init()
 
 	i = CONTENT_PAPYRUS;
 	f = &content_features(i);
-	f->setInventoryTexture("papyrus.png");
+	f->setInventoryTexture("papyrus.png", tsrc);
 	f->used_texturenames["papyrus.png"] = true;
 	f->light_propagates = true;
 	f->param_type = CPT_LIGHT;
@@ -342,12 +342,12 @@ void content_mapnode_init()
 
 	i = CONTENT_BOOKSHELF;
 	f = &content_features(i);
-	f->setAllTextures("bookshelf.png");
-	f->setTexture(0, "wood.png");
-	f->setTexture(1, "wood.png");
+	f->setAllTextures(tsrc, "bookshelf.png");
+	f->setTexture(tsrc, 0, "wood.png");
+	f->setTexture(tsrc, 1, "wood.png");
 	// FIXME: setInventoryTextureCube() only cares for the first texture
-	f->setInventoryTextureCube("bookshelf.png", "bookshelf.png", "bookshelf.png");
-	//f->setInventoryTextureCube("wood.png", "bookshelf.png", "bookshelf.png");
+	f->setInventoryTextureCube("bookshelf.png", "bookshelf.png", "bookshelf.png", tsrc);
+	//f->setInventoryTextureCube("wood.png", "bookshelf.png", "bookshelf.png", tsrc);
 	f->param_type = CPT_MINERAL;
 	f->is_ground_content = true;
 	setWoodLikeMaterialProperties(f->material, 0.75);
@@ -361,8 +361,8 @@ void content_mapnode_init()
 	f->dug_item = std::string("MaterialItem2 ")+itos(i)+" 1";
 	f->solidness = 0; // drawn separately, makes no faces
 	f->visual_solidness = 1;
-	f->setAllTextures("glass.png");
-	f->setInventoryTextureCube("glass.png", "glass.png", "glass.png");
+	f->setAllTextures(tsrc, "glass.png");
+	f->setInventoryTextureCube("glass.png", "glass.png", "glass.png", tsrc);
 	setGlassLikeMaterialProperties(f->material, 1.0);
 
 	i = CONTENT_FENCE;
@@ -373,13 +373,13 @@ void content_mapnode_init()
 	f->dug_item = std::string("MaterialItem2 ")+itos(i)+" 1";
 	f->solidness = 0; // drawn separately, makes no faces
 	f->air_equivalent = true; // grass grows underneath
-	f->setInventoryTexture("fence.png");
+	f->setInventoryTexture("fence.png", tsrc);
 	f->used_texturenames["fence.png"] = true;
 	setWoodLikeMaterialProperties(f->material, 0.75);
 
 	i = CONTENT_RAIL;
 	f = &content_features(i);
-	f->setInventoryTexture("rail.png");
+	f->setInventoryTexture("rail.png", tsrc);
 	f->used_texturenames["rail.png"] = true;
 	f->light_propagates = true;
 	f->param_type = CPT_LIGHT;
@@ -393,7 +393,7 @@ void content_mapnode_init()
 
 	i = CONTENT_LADDER;
 	f = &content_features(i);
-	f->setInventoryTexture("ladder.png");
+	f->setInventoryTexture("ladder.png", tsrc);
 	f->used_texturenames["ladder.png"] = true;
 	f->light_propagates = true;
 	f->param_type = CPT_LIGHT;
@@ -410,30 +410,30 @@ void content_mapnode_init()
 	// Deprecated
 	i = CONTENT_COALSTONE;
 	f = &content_features(i);
-	f->setAllTextures("stone.png^mineral_coal.png");
+	f->setAllTextures(tsrc, "stone.png^mineral_coal.png");
 	f->is_ground_content = true;
 	setStoneLikeMaterialProperties(f->material, 1.5);
 	
 	i = CONTENT_WOOD;
 	f = &content_features(i);
-	f->setAllTextures("wood.png");
-	f->setInventoryTextureCube("wood.png", "wood.png", "wood.png");
+	f->setAllTextures(tsrc, "wood.png");
+	f->setInventoryTextureCube("wood.png", "wood.png", "wood.png", tsrc);
 	f->is_ground_content = true;
 	f->dug_item = std::string("MaterialItem2 ")+itos(i)+" 1";
 	setWoodLikeMaterialProperties(f->material, 0.75);
 	
 	i = CONTENT_MESE;
 	f = &content_features(i);
-	f->setAllTextures("mese.png");
-	f->setInventoryTextureCube("mese.png", "mese.png", "mese.png");
+	f->setAllTextures(tsrc, "mese.png");
+	f->setInventoryTextureCube("mese.png", "mese.png", "mese.png", tsrc);
 	f->is_ground_content = true;
 	f->dug_item = std::string("MaterialItem2 ")+itos(i)+" 1";
 	setStoneLikeMaterialProperties(f->material, 0.5);
 	
 	i = CONTENT_CLOUD;
 	f = &content_features(i);
-	f->setAllTextures("cloud.png");
-	f->setInventoryTextureCube("cloud.png", "cloud.png", "cloud.png");
+	f->setAllTextures(tsrc, "cloud.png");
+	f->setInventoryTextureCube("cloud.png", "cloud.png", "cloud.png", tsrc);
 	f->is_ground_content = true;
 	f->dug_item = std::string("MaterialItem2 ")+itos(i)+" 1";
 	
@@ -451,7 +451,7 @@ void content_mapnode_init()
 	
 	i = CONTENT_WATER;
 	f = &content_features(i);
-	f->setInventoryTextureCube("water.png", "water.png", "water.png");
+	f->setInventoryTextureCube("water.png", "water.png", "water.png", tsrc);
 	f->param_type = CPT_LIGHT;
 	f->light_propagates = true;
 	f->solidness = 0; // Drawn separately, makes no faces
@@ -468,7 +468,7 @@ void content_mapnode_init()
 	if(!opaque_water)
 		f->vertex_alpha = WATER_ALPHA;
 	f->post_effect_color = video::SColor(64, 100, 100, 200);
-	if(f->special_material == NULL && g_texturesource)
+	if(f->special_material == NULL && tsrc)
 	{
 		// Flowing water material
 		f->special_material = new video::SMaterial;
@@ -478,8 +478,8 @@ void content_mapnode_init()
 		f->special_material->setFlag(video::EMF_FOG_ENABLE, true);
 		if(!opaque_water)
 			f->special_material->MaterialType = video::EMT_TRANSPARENT_VERTEX_ALPHA;
-		AtlasPointer *pa_water1 = new AtlasPointer(g_texturesource->getTexture(
-				g_texturesource->getTextureId("water.png")));
+		AtlasPointer *pa_water1 = new AtlasPointer(tsrc->getTexture(
+				tsrc->getTextureId("water.png")));
 		f->special_material->setTexture(0, pa_water1->atlas);
 
 		// Flowing water material, backface culled
@@ -493,8 +493,8 @@ void content_mapnode_init()
 	
 	i = CONTENT_WATERSOURCE;
 	f = &content_features(i);
-	//f->setInventoryTexture("water.png");
-	f->setInventoryTextureCube("water.png", "water.png", "water.png");
+	//f->setInventoryTexture("water.png", tsrc);
+	f->setInventoryTextureCube("water.png", "water.png", "water.png", tsrc);
 	if(new_style_water)
 	{
 		f->solidness = 0; // drawn separately, makes no faces
@@ -504,8 +504,8 @@ void content_mapnode_init()
 		f->solidness = 1;
 #ifndef SERVER
 		TileSpec t;
-		if(g_texturesource)
-			t.texture = g_texturesource->getTexture("water.png");
+		if(tsrc)
+			t.texture = tsrc->getTexture("water.png");
 		
 		if(!opaque_water){
 			t.alpha = WATER_ALPHA;
@@ -530,7 +530,7 @@ void content_mapnode_init()
 	if(!opaque_water)
 		f->vertex_alpha = WATER_ALPHA;
 	f->post_effect_color = video::SColor(64, 100, 100, 200);
-	if(f->special_material == NULL && g_texturesource)
+	if(f->special_material == NULL && tsrc)
 	{
 		// New-style water source material (mostly unused)
 		f->special_material = new video::SMaterial;
@@ -539,8 +539,8 @@ void content_mapnode_init()
 		f->special_material->setFlag(video::EMF_BILINEAR_FILTER, false);
 		f->special_material->setFlag(video::EMF_FOG_ENABLE, true);
 		f->special_material->MaterialType = video::EMT_TRANSPARENT_VERTEX_ALPHA;
-		AtlasPointer *pa_water1 = new AtlasPointer(g_texturesource->getTexture(
-				g_texturesource->getTextureId("water.png")));
+		AtlasPointer *pa_water1 = new AtlasPointer(tsrc->getTexture(
+				tsrc->getTextureId("water.png")));
 		f->special_material->setTexture(0, pa_water1->atlas);
 		f->special_atlas = pa_water1;
 	}
@@ -548,7 +548,7 @@ void content_mapnode_init()
 	
 	i = CONTENT_LAVA;
 	f = &content_features(i);
-	f->setInventoryTextureCube("lava.png", "lava.png", "lava.png");
+	f->setInventoryTextureCube("lava.png", "lava.png", "lava.png", tsrc);
 	f->used_texturenames["lava.png"] = true;
 	f->param_type = CPT_LIGHT;
 	f->light_propagates = false;
@@ -566,7 +566,7 @@ void content_mapnode_init()
 	f->damage_per_second = 4*2;
 #ifndef SERVER
 	f->post_effect_color = video::SColor(192, 255, 64, 0);
-	if(f->special_material == NULL && g_texturesource)
+	if(f->special_material == NULL && tsrc)
 	{
 		// Flowing lava material
 		f->special_material = new video::SMaterial;
@@ -577,8 +577,8 @@ void content_mapnode_init()
 		f->special_material->MaterialType = video::EMT_TRANSPARENT_ALPHA_CHANNEL_REF;
 
 		AtlasPointer *pa_lava1 = new AtlasPointer(
-			g_texturesource->getTexture(
-				g_texturesource->getTextureId("lava.png")));
+			tsrc->getTexture(
+				tsrc->getTextureId("lava.png")));
 		f->special_material->setTexture(0, pa_lava1->atlas);
 
 		// Flowing lava material, backface culled
@@ -592,7 +592,7 @@ void content_mapnode_init()
 	
 	i = CONTENT_LAVASOURCE;
 	f = &content_features(i);
-	f->setInventoryTextureCube("lava.png", "lava.png", "lava.png");
+	f->setInventoryTextureCube("lava.png", "lava.png", "lava.png", tsrc);
 	f->used_texturenames["ladder.png"] = true;
 	if(new_style_water)
 	{
@@ -603,8 +603,8 @@ void content_mapnode_init()
 		f->solidness = 2;
 #ifndef SERVER
 		TileSpec t;
-		if(g_texturesource)
-			t.texture = g_texturesource->getTexture("lava.png");
+		if(tsrc)
+			t.texture = tsrc->getTexture("lava.png");
 		
 		//t.alpha = 255;
 		//t.material_type = MATERIAL_ALPHA_VERTEX;
@@ -627,7 +627,7 @@ void content_mapnode_init()
 	f->damage_per_second = 4*2;
 #ifndef SERVER
 	f->post_effect_color = video::SColor(192, 255, 64, 0);
-	if(f->special_material == NULL && g_texturesource)
+	if(f->special_material == NULL && tsrc)
 	{
 		// New-style lava source material (mostly unused)
 		f->special_material = new video::SMaterial;
@@ -637,8 +637,8 @@ void content_mapnode_init()
 		f->special_material->setFlag(video::EMF_FOG_ENABLE, true);
 		f->special_material->MaterialType = video::EMT_TRANSPARENT_ALPHA_CHANNEL_REF;
 		AtlasPointer *pa_lava1 = new AtlasPointer(
-			g_texturesource->getTexture(
-				g_texturesource->getTextureId("lava.png")));
+			tsrc->getTexture(
+				tsrc->getTextureId("lava.png")));
 		f->special_material->setTexture(0, pa_lava1->atlas);
 
 		f->special_atlas = pa_lava1;
@@ -647,7 +647,7 @@ void content_mapnode_init()
 	
 	i = CONTENT_TORCH;
 	f = &content_features(i);
-	f->setInventoryTexture("torch_on_floor.png");
+	f->setInventoryTexture("torch_on_floor.png", tsrc);
 	f->used_texturenames["torch_on_floor.png"] = true;
 	f->used_texturenames["torch_on_ceiling.png"] = true;
 	f->used_texturenames["torch_on_floor.png"] = true;
@@ -672,7 +672,7 @@ void content_mapnode_init()
 	
 	i = CONTENT_SIGN_WALL;
 	f = &content_features(i);
-	f->setInventoryTexture("sign_wall.png");
+	f->setInventoryTexture("sign_wall.png", tsrc);
 	f->used_texturenames["sign_wall.png"] = true;
 	f->param_type = CPT_LIGHT;
 	f->light_propagates = true;
@@ -683,54 +683,54 @@ void content_mapnode_init()
 	f->air_equivalent = true;
 	f->dug_item = std::string("MaterialItem2 ")+itos(i)+" 1";
 	if(f->initial_metadata == NULL)
-		f->initial_metadata = new SignNodeMetadata("Some sign");
+		f->initial_metadata = new SignNodeMetadata(NULL, "Some sign");
 	setConstantMaterialProperties(f->material, 0.5);
 	f->selection_box.type = NODEBOX_WALLMOUNTED;
 	
 	i = CONTENT_CHEST;
 	f = &content_features(i);
 	f->param_type = CPT_FACEDIR_SIMPLE;
-	f->setAllTextures("chest_side.png");
-	f->setTexture(0, "chest_top.png");
-	f->setTexture(1, "chest_top.png");
-	f->setTexture(5, "chest_front.png"); // Z-
-	f->setInventoryTexture("chest_top.png");
-	//f->setInventoryTextureCube("chest_top.png", "chest_side.png", "chest_side.png");
+	f->setAllTextures(tsrc, "chest_side.png");
+	f->setTexture(tsrc, 0, "chest_top.png");
+	f->setTexture(tsrc, 1, "chest_top.png");
+	f->setTexture(tsrc, 5, "chest_front.png"); // Z-
+	f->setInventoryTexture("chest_top.png", tsrc);
+	//f->setInventoryTextureCube("chest_top.png", "chest_side.png", "chest_side.png", tsrc);
 	f->dug_item = std::string("MaterialItem2 ")+itos(i)+" 1";
 	if(f->initial_metadata == NULL)
-		f->initial_metadata = new ChestNodeMetadata();
+		f->initial_metadata = new ChestNodeMetadata(NULL);
 	setWoodLikeMaterialProperties(f->material, 1.0);
 	
 	i = CONTENT_LOCKABLE_CHEST;
 	f = &content_features(i);
 	f->param_type = CPT_FACEDIR_SIMPLE;
-	f->setAllTextures("chest_side.png");
-	f->setTexture(0, "chest_top.png");
-	f->setTexture(1, "chest_top.png");
-	f->setTexture(5, "chest_lock.png"); // Z-
-	f->setInventoryTexture("chest_lock.png");
-	//f->setInventoryTextureCube("chest_top.png", "chest_side.png", "chest_side.png");
+	f->setAllTextures(tsrc, "chest_side.png");
+	f->setTexture(tsrc, 0, "chest_top.png");
+	f->setTexture(tsrc, 1, "chest_top.png");
+	f->setTexture(tsrc, 5, "chest_lock.png"); // Z-
+	f->setInventoryTexture("chest_lock.png", tsrc);
+	//f->setInventoryTextureCube("chest_top.png", "chest_side.png", "chest_side.png", tsrc);
 	f->dug_item = std::string("MaterialItem2 ")+itos(i)+" 1";
 	if(f->initial_metadata == NULL)
-		f->initial_metadata = new LockingChestNodeMetadata();
+		f->initial_metadata = new LockingChestNodeMetadata(NULL);
 	setWoodLikeMaterialProperties(f->material, 1.0);
 
 	i = CONTENT_FURNACE;
 	f = &content_features(i);
 	f->param_type = CPT_FACEDIR_SIMPLE;
-	f->setAllTextures("furnace_side.png");
-	f->setTexture(5, "furnace_front.png"); // Z-
-	f->setInventoryTexture("furnace_front.png");
+	f->setAllTextures(tsrc, "furnace_side.png");
+	f->setTexture(tsrc, 5, "furnace_front.png"); // Z-
+	f->setInventoryTexture("furnace_front.png", tsrc);
 	//f->dug_item = std::string("MaterialItem2 ")+itos(i)+" 1";
 	f->dug_item = std::string("MaterialItem2 ")+itos(CONTENT_COBBLE)+" 6";
 	if(f->initial_metadata == NULL)
-		f->initial_metadata = new FurnaceNodeMetadata();
+		f->initial_metadata = new FurnaceNodeMetadata(NULL);
 	setStoneLikeMaterialProperties(f->material, 3.0);
 	
 	i = CONTENT_COBBLE;
 	f = &content_features(i);
-	f->setAllTextures("cobble.png");
-	f->setInventoryTextureCube("cobble.png", "cobble.png", "cobble.png");
+	f->setAllTextures(tsrc, "cobble.png");
+	f->setInventoryTextureCube("cobble.png", "cobble.png", "cobble.png", tsrc);
 	f->param_type = CPT_NONE;
 	f->is_ground_content = true;
 	f->dug_item = std::string("MaterialItem2 ")+itos(i)+" 1";
@@ -738,8 +738,8 @@ void content_mapnode_init()
 
 	i = CONTENT_MOSSYCOBBLE;
 	f = &content_features(i);
-	f->setAllTextures("mossycobble.png");
-	f->setInventoryTextureCube("mossycobble.png", "mossycobble.png", "mossycobble.png");
+	f->setAllTextures(tsrc, "mossycobble.png");
+	f->setInventoryTextureCube("mossycobble.png", "mossycobble.png", "mossycobble.png", tsrc);
 	f->param_type = CPT_NONE;
 	f->is_ground_content = true;
 	f->dug_item = std::string("MaterialItem2 ")+itos(i)+" 1";
@@ -747,9 +747,9 @@ void content_mapnode_init()
 	
 	i = CONTENT_STEEL;
 	f = &content_features(i);
-	f->setAllTextures("steel_block.png");
+	f->setAllTextures(tsrc, "steel_block.png");
 	f->setInventoryTextureCube("steel_block.png", "steel_block.png",
-			"steel_block.png");
+			"steel_block.png", tsrc);
 	f->param_type = CPT_NONE;
 	f->is_ground_content = true;
 	f->dug_item = std::string("MaterialItem2 ")+itos(i)+" 1";
@@ -758,25 +758,25 @@ void content_mapnode_init()
 	i = CONTENT_NC;
 	f = &content_features(i);
 	f->param_type = CPT_FACEDIR_SIMPLE;
-	f->setAllTextures("nc_side.png");
-	f->setTexture(5, "nc_front.png"); // Z-
-	f->setTexture(4, "nc_back.png"); // Z+
-	f->setInventoryTexture("nc_front.png");
+	f->setAllTextures(tsrc, "nc_side.png");
+	f->setTexture(tsrc, 5, "nc_front.png"); // Z-
+	f->setTexture(tsrc, 4, "nc_back.png"); // Z+
+	f->setInventoryTexture("nc_front.png", tsrc);
 	f->dug_item = std::string("MaterialItem2 ")+itos(i)+" 1";
 	setStoneLikeMaterialProperties(f->material, 3.0);
 	
 	i = CONTENT_NC_RB;
 	f = &content_features(i);
-	f->setAllTextures("nc_rb.png");
-	f->setInventoryTexture("nc_rb.png");
+	f->setAllTextures(tsrc, "nc_rb.png");
+	f->setInventoryTexture("nc_rb.png", tsrc);
 	f->dug_item = std::string("MaterialItem2 ")+itos(i)+" 1";
 	setStoneLikeMaterialProperties(f->material, 3.0);
 
 	i = CONTENT_SAPLING;
 	f = &content_features(i);
 	f->param_type = CPT_LIGHT;
-	f->setAllTextures("sapling.png");
-	f->setInventoryTexture("sapling.png");
+	f->setAllTextures(tsrc, "sapling.png");
+	f->setInventoryTexture("sapling.png", tsrc);
 	f->used_texturenames["sapling.png"] = true;
 	f->dug_item = std::string("MaterialItem2 ")+itos(i)+" 1";
 	f->light_propagates = true;
@@ -787,7 +787,7 @@ void content_mapnode_init()
 	
 	i = CONTENT_APPLE;
 	f = &content_features(i);
-	f->setInventoryTexture("apple.png");
+	f->setInventoryTexture("apple.png", tsrc);
 	f->used_texturenames["apple.png"] = true;
 	f->param_type = CPT_LIGHT;
 	f->light_propagates = true;

@@ -54,7 +54,8 @@ public:
 	ServerActiveObject(ServerEnvironment *env, v3f pos);
 	virtual ~ServerActiveObject();
 
-	virtual void addedToEnvironment(u16 id);
+	// Call after id has been set and has been inserted in environment
+	virtual void addedToEnvironment();
 	
 	// Create a certain type of ServerActiveObject
 	static ServerActiveObject* create(u8 type,
