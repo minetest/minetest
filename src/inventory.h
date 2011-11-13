@@ -52,7 +52,7 @@ public:
 	virtual InventoryItem* clone() = 0;
 #ifndef SERVER
 	// Return the name of the image for this item
-	virtual std::string getBasename() const { return ""; }
+	virtual std::string getImageBasename() const { return ""; }
 	// Shall return an image of the item (or NULL)
 	virtual video::ITexture * getImage() const { return NULL; }
 	// Shall return an image of the item without embellishments (or NULL)
@@ -300,44 +300,16 @@ public:
 	{
 		return new ToolItem(m_toolname, m_wear);
 	}
+
+	std::string getImageBasename() const;
+
 #ifndef SERVER
-	std::string getBasename() const {
-		if(m_toolname == "WPick")
-			return "tool_woodpick.png";
-		else if(m_toolname == "STPick")
-			return "tool_stonepick.png";
-		else if(m_toolname == "SteelPick")
-			return "tool_steelpick.png";
-		else if(m_toolname == "MesePick")
-			return "tool_mesepick.png";
-		else if(m_toolname == "WShovel")
-			return "tool_woodshovel.png";
-		else if(m_toolname == "STShovel")
-			return "tool_stoneshovel.png";
-		else if(m_toolname == "SteelShovel")
-			return "tool_steelshovel.png";
-		else if(m_toolname == "WAxe")
-			return "tool_woodaxe.png";
-		else if(m_toolname == "STAxe")
-			return "tool_stoneaxe.png";
-		else if(m_toolname == "SteelAxe")
-			return "tool_steelaxe.png";
-		else if(m_toolname == "WSword")
-			return "tool_woodsword.png";
-		else if(m_toolname == "STSword")
-			return "tool_stonesword.png";
-		else if(m_toolname == "SteelSword")
-			return "tool_steelsword.png";
-		else
-			return "cloud.png";
-}
-	
 	video::ITexture * getImage() const
 	{
 		if(g_texturesource == NULL)
 			return NULL;
 		
-		std::string basename = getBasename();
+		std::string basename = getImageBasename();
 		
 		/*
 			Calculate a progress value with sane amount of
@@ -358,7 +330,7 @@ public:
 		if(g_texturesource == NULL)
 			return NULL;
 		
-		return g_texturesource->getTextureRaw(getBasename());
+		return g_texturesource->getTextureRaw(getImageBasename());
 	}
 #endif
 	std::string getText()

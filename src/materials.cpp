@@ -1,75 +1,7 @@
 #include "materials.h"
 #include "mapnode.h"
 #include "mapnode_contentfeatures.h"
-
-
-struct ToolProperties
-{
-	// time = basetime + sum(feature here * feature in MaterialProperties)
-	float basetime;
-	float dt_weight;
-	float dt_crackiness;
-	float dt_crumbliness;
-	float dt_cuttability;
-	float basedurability;
-	float dd_weight;
-	float dd_crackiness;
-	float dd_crumbliness;
-	float dd_cuttability;
-
-	ToolProperties(float a=0.75, float b=0, float c=0, float d=0, float e=0,
-			float f=50, float g=0, float h=0, float i=0, float j=0):
-		basetime(a),
-		dt_weight(b),
-		dt_crackiness(c),
-		dt_crumbliness(d),
-		dt_cuttability(e),
-		basedurability(f),
-		dd_weight(g),
-		dd_crackiness(h),
-		dd_crumbliness(i),
-		dd_cuttability(j)
-	{}
-};
-
-ToolProperties getToolProperties(const std::string &toolname)
-{
-	// weight, crackiness, crumbleness, cuttability
-	if(toolname == "WPick")
-		return ToolProperties(2.0, 0,-1,2,0, 50, 0,0,0,0);
-	else if(toolname == "STPick")
-		return ToolProperties(1.5, 0,-1,2,0, 100, 0,0,0,0);
-	else if(toolname == "SteelPick")
-		return ToolProperties(1.0, 0,-1,2,0, 300, 0,0,0,0);
-
-	else if(toolname == "MesePick")
-		return ToolProperties(0, 0,0,0,0, 1337, 0,0,0,0);
-	
-	else if(toolname == "WShovel")
-		return ToolProperties(2.0, 0.5,2,-1.5,0.3, 50, 0,0,0,0);
-	else if(toolname == "STShovel")
-		return ToolProperties(1.5, 0.5,2,-1.5,0.1, 100, 0,0,0,0);
-	else if(toolname == "SteelShovel")
-		return ToolProperties(1.0, 0.5,2,-1.5,0.0, 300, 0,0,0,0);
-
-	// weight, crackiness, crumbleness, cuttability
-	else if(toolname == "WAxe")
-		return ToolProperties(2.0, 0.5,-0.2,1,-0.5, 50, 0,0,0,0);
-	else if(toolname == "STAxe")
-		return ToolProperties(1.5, 0.5,-0.2,1,-0.5, 100, 0,0,0,0);
-	else if(toolname == "SteelAxe")
-		return ToolProperties(1.0, 0.5,-0.2,1,-0.5, 300, 0,0,0,0);
-
-	else if(toolname == "WSword")
-		return ToolProperties(3.0, 3,0,1,-1, 50, 0,0,0,0);
-	else if(toolname == "STSword")
-		return ToolProperties(2.5, 3,0,1,-1, 100, 0,0,0,0);
-	else if(toolname == "SteelSword")
-		return ToolProperties(2.0, 3,0,1,-1, 300, 0,0,0,0);
-
-	// Properties of hand
-	return ToolProperties(0.5, 1,0,-1,0, 50, 0,0,0,0);
-}
+#include "tool.h"
 
 DiggingProperties getDiggingProperties(u16 material, const std::string &tool)
 {
@@ -79,7 +11,7 @@ DiggingProperties getDiggingProperties(u16 material, const std::string &tool)
 	if(mp.diggability == DIGGABLE_CONSTANT)
 		return DiggingProperties(true, mp.constant_time, 0);
 
-	ToolProperties tp = getToolProperties(tool);
+	ToolDiggingProperties tp = tool_get_digging_properties(tool);
 	
 	float time = tp.basetime;
 	time += tp.dt_weight * mp.weight;

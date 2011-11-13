@@ -34,6 +34,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "player.h"
 #include "log.h"
 #include "mapnode_contentfeatures.h"
+#include "tool.h"
 
 /*
 	InventoryItem
@@ -164,6 +165,15 @@ bool MaterialItem::isCookable() const
 InventoryItem *MaterialItem::createCookResult() const
 {
 	return item_material_create_cook_result(m_content);
+}
+
+/*
+	ToolItem
+*/
+
+std::string ToolItem::getImageBasename() const
+{
+	return tool_get_imagename(m_toolname);
 }
 
 /*

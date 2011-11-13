@@ -94,6 +94,7 @@ configure_file(
 )
 
 set(common_SRCS
+	tool.cpp
 	mapnode_contentfeatures.cpp
 	luaentity_common.cpp
 	scriptapi.cpp
