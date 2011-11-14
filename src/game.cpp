@@ -348,22 +348,66 @@ void getPointedNode(Client *client, v3f player_position,
 		
 		if(f.selection_box.type == NODEBOX_FIXED)
 		{
-			f32 distance = (npf - camera_position).getLength();
-
 			core::aabbox3d<f32> box = f.selection_box.fixed;
 			box.MinEdge += npf;
 			box.MaxEdge += npf;
 
-			if(distance < mindistance)
+			v3s16 facedirs[6] = {
+				v3s16(-1,0,0),
+				v3s16(1,0,0),
+				v3s16(0,-1,0),
+				v3s16(0,1,0),
+				v3s16(0,0,-1),
+				v3s16(0,0,1),
+			};
+
+			core::aabbox3d<f32> faceboxes[6] = {
+				// X-
+				core::aabbox3d<f32>(
+					box.MinEdge.X, box.MinEdge.Y, box.MinEdge.Z,
+					box.MinEdge.X+d, box.MaxEdge.Y, box.MaxEdge.Z
+				),
+				// X+
+				core::aabbox3d<f32>(
+					box.MaxEdge.X-d, box.MinEdge.Y, box.MinEdge.Z,
+					box.MaxEdge.X, box.MaxEdge.Y, box.MaxEdge.Z
+				),
+				// Y-
+				core::aabbox3d<f32>(
+					box.MinEdge.X, box.MinEdge.Y, box.MinEdge.Z,
+					box.MaxEdge.X, box.MinEdge.Y+d, box.MaxEdge.Z
+				),
+				// Y+
+				core::aabbox3d<f32>(
+					box.MinEdge.X, box.MaxEdge.Y-d, box.MinEdge.Z,
+					box.MaxEdge.X, box.MaxEdge.Y, box.MaxEdge.Z
+				),
+				// Z-
+				core::aabbox3d<f32>(
+					box.MinEdge.X, box.MinEdge.Y, box.MinEdge.Z,
+					box.MaxEdge.X, box.MaxEdge.Y, box.MinEdge.Z+d
+				),
+				// Z+
+				core::aabbox3d<f32>(
+					box.MinEdge.X, box.MinEdge.Y, box.MaxEdge.Z-d,
+					box.MaxEdge.X, box.MaxEdge.Y, box.MaxEdge.Z
+				),
+			};
+
+			for(u16 i=0; i<6; i++)
 			{
-				if(box.intersectsWithLine(shootline))
-				{
-					nodefound = true;
-					nodepos = np;
-					neighbourpos = np;
-					mindistance = distance;
-					nodehilightbox = box;
-				}
+				v3f facedir_f(facedirs[i].X, facedirs[i].Y, facedirs[i].Z);
+				v3f centerpoint = npf + facedir_f * BS/2;
+				f32 distance = (centerpoint - camera_position).getLength();
+				if(distance >= mindistance)
+					continue;
+				if(!faceboxes[i].intersectsWithLine(shootline))
+					continue;
+				nodefound = true;
+				nodepos = np;
+				neighbourpos = np+facedirs[i];
+				mindistance = distance;
+				nodehilightbox = box;
 			}
 		}
 		else if(f.selection_box.type == NODEBOX_WALLMOUNTED)

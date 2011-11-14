@@ -375,6 +375,9 @@ void content_mapnode_init(ITextureSource *tsrc, IWritableNodeDefManager *nodemgr
 	f->air_equivalent = true; // grass grows underneath
 	f->setInventoryTexture("fence.png", tsrc);
 	f->used_texturenames.insert("fence.png"); // Add to atlas
+	f->selection_box.type = NODEBOX_FIXED;
+	f->selection_box.fixed = core::aabbox3d<f32>(
+			-BS/7, -BS/2, -BS/7, BS/7, BS/2, BS/7);
 	setWoodLikeMaterialProperties(f->material, 0.75);
 
 	i = CONTENT_RAIL;
