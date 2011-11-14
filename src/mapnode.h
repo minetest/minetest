@@ -29,6 +29,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "tile.h"
 #endif
 
+class INodeDefManager;
+
 /*
 	Naming scheme:
 	- Material = irrlicht's Material class
@@ -68,7 +70,8 @@ typedef u16 content_t;
 		2: Face uses m2's content
 	equivalent: Whether the blocks share the same face (eg. water and glass)
 */
-u8 face_contents(content_t m1, content_t m2, bool *equivalent);
+u8 face_contents(content_t m1, content_t m2, bool *equivalent,
+		INodeDefManager *nodemgr);
 
 /*
 	Packs directions like (1,0,0), (1,-1,0) in six bits.
@@ -157,7 +160,7 @@ struct MapNode
 	}
 	
 	// To be used everywhere
-	content_t getContent()
+	content_t getContent() const
 	{
 		if(param0 < 0x80)
 			return param0;
@@ -180,27 +183,19 @@ struct MapNode
 		}
 	}
 	
-	/*
-		These four are DEPRECATED I guess. -c55
-	*/
-	bool light_propagates();
-	bool sunlight_propagates();
-	u8 solidness();
-	u8 light_source();
-
-	void setLight(enum LightBank bank, u8 a_light);
-	u8 getLight(enum LightBank bank);
-	u8 getLightBanksWithSource();
+	void setLight(enum LightBank bank, u8 a_light, INodeDefManager *nodemgr);
+	u8 getLight(enum LightBank bank, INodeDefManager *nodemgr) const;
+	u8 getLightBanksWithSource(INodeDefManager *nodemgr) const;
 	
 	// 0 <= daylight_factor <= 1000
 	// 0 <= return value <= LIGHT_SUN
-	u8 getLightBlend(u32 daylight_factor)
+	u8 getLightBlend(u32 daylight_factor, INodeDefManager *nodemgr) const
 	{
-		u8 l = ((daylight_factor * getLight(LIGHTBANK_DAY)
-			+ (1000-daylight_factor) * getLight(LIGHTBANK_NIGHT))
+		u8 l = ((daylight_factor * getLight(LIGHTBANK_DAY, nodemgr)
+			+ (1000-daylight_factor) * getLight(LIGHTBANK_NIGHT, nodemgr))
 			)/1000;
 		u8 max = LIGHT_MAX;
-		if(getLight(LIGHTBANK_DAY) == LIGHT_SUN)
+		if(getLight(LIGHTBANK_DAY, nodemgr) == LIGHT_SUN)
 			max = LIGHT_SUN;
 		if(l > max)
 			l = max;
@@ -208,10 +203,10 @@ struct MapNode
 	}
 	/*// 0 <= daylight_factor <= 1000
 	// 0 <= return value <= 255
-	u8 getLightBlend(u32 daylight_factor)
+	u8 getLightBlend(u32 daylight_factor, INodeDefManager *nodemgr)
 	{
-		u8 daylight = decode_light(getLight(LIGHTBANK_DAY));
-		u8 nightlight = decode_light(getLight(LIGHTBANK_NIGHT));
+		u8 daylight = decode_light(getLight(LIGHTBANK_DAY, nodemgr));
+		u8 nightlight = decode_light(getLight(LIGHTBANK_NIGHT, nodemgr));
 		u8 mix = ((daylight_factor * daylight
 			+ (1000-daylight_factor) * nightlight)
 			)/1000;
@@ -226,14 +221,15 @@ struct MapNode
 		Returns: TileSpec. Can contain miscellaneous texture coordinates,
 		         which must be obeyed so that the texture atlas can be used.
 	*/
-	TileSpec getTile(v3s16 dir, ITextureSource *tsrc);
+	TileSpec getTile(v3s16 dir, ITextureSource *tsrc,
+			INodeDefManager *nodemgr) const;
 #endif
 	
 	/*
 		Gets mineral content of node, if there is any.
 		MINERAL_NONE if doesn't contain or isn't able to contain mineral.
 	*/
-	u8 getMineral();
+	u8 getMineral(INodeDefManager *nodemgr) const;
 	
 	/*
 		Serialization functions
@@ -241,7 +237,7 @@ struct MapNode
 
 	static u32 serializedLength(u8 version);
 	void serialize(u8 *dest, u8 version);
-	void deSerialize(u8 *source, u8 version);
+	void deSerialize(u8 *source, u8 version, INodeDefManager *nodemgr);
 	
 };
 
@@ -262,7 +258,7 @@ struct MapNode
 	returns encoded light value.
 */
 u8 getFaceLight(u32 daynight_ratio, MapNode n, MapNode n2,
-		v3s16 face_dir);
+		v3s16 face_dir, INodeDefManager *nodemgr);
 
 #endif
 

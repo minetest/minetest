@@ -17,12 +17,12 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
-#include "tool.h"
+#include "tooldef.h"
 #include "irrlichttypes.h"
 #include "log.h"
 #include <ostream>
 
-class CToolDefManager: public IToolDefManager
+class CToolDefManager: public IWritableToolDefManager
 {
 public:
 	virtual ~CToolDefManager()
@@ -32,6 +32,35 @@ public:
 				i.atEnd() == false; i++){
 			delete i.getNode()->getValue();
 		}
+	}
+	virtual const ToolDefinition* getToolDefinition(const std::string &toolname) const
+	{
+		core::map<std::string, ToolDefinition*>::Node *n;
+		n = m_tool_definitions.find(toolname);
+		if(n == NULL)
+			return NULL;
+		return n->getValue();
+	}
+	virtual std::string getImagename(const std::string &toolname) const
+	{
+		const ToolDefinition *def = getToolDefinition(toolname);
+		if(def == NULL)
+			return "";
+		return def->imagename;
+	}
+	virtual ToolDiggingProperties getDiggingProperties(
+			const std::string &toolname) const
+	{
+		const ToolDefinition *def = getToolDefinition(toolname);
+		// If tool does not exist, just return an impossible
+		if(def == NULL){
+			// If tool does not exist, try empty name
+			const ToolDefinition *def = getToolDefinition("");
+			if(def == NULL) // If that doesn't exist either, return default
+				return ToolDiggingProperties();
+			return def->properties;
+		}
+		return def->properties;
 	}
 	virtual bool registerTool(std::string toolname, const ToolDefinition &def)
 	{
@@ -46,41 +75,12 @@ public:
 		m_tool_definitions[toolname] = new ToolDefinition(def);
 		return true;
 	}
-	virtual ToolDefinition* getToolDefinition(const std::string &toolname)
-	{
-		core::map<std::string, ToolDefinition*>::Node *n;
-		n = m_tool_definitions.find(toolname);
-		if(n == NULL)
-			return NULL;
-		return n->getValue();
-	}
-	virtual std::string getImagename(const std::string &toolname)
-	{
-		ToolDefinition *def = getToolDefinition(toolname);
-		if(def == NULL)
-			return "";
-		return def->imagename;
-	}
-	virtual ToolDiggingProperties getDiggingProperties(
-			const std::string &toolname)
-	{
-		ToolDefinition *def = getToolDefinition(toolname);
-		// If tool does not exist, just return an impossible
-		if(def == NULL){
-			// If tool does not exist, try empty name
-			ToolDefinition *def = getToolDefinition("");
-			if(def == NULL) // If that doesn't exist either, return default
-				return ToolDiggingProperties();
-			return def->properties;
-		}
-		return def->properties;
-	}
 private:
 	// Key is name
 	core::map<std::string, ToolDefinition*> m_tool_definitions;
 };
 
-IToolDefManager* createToolDefManager()
+IWritableToolDefManager* createToolDefManager()
 {
 	return new CToolDefManager();
 }

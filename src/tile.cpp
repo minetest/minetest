@@ -27,7 +27,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "log.h"
 #include "mapnode.h" // For texture atlas making
 #include "mineral.h" // For texture atlas making
-#include "mapnode_contentfeatures.h" // For texture atlas making
+#include "nodedef.h" // For texture atlas making
+#include "gamedef.h"
 
 /*
 	A cache from texture name to texture path
@@ -148,6 +149,142 @@ std::string getTexturePath(const std::string &filename)
 	TextureSource
 */
 
+class TextureSource : public IWritableTextureSource
+{
+public:
+	TextureSource(IrrlichtDevice *device);
+	~TextureSource();
+
+	/*
+		Example case:
+		Now, assume a texture with the id 1 exists, and has the name
+		"stone.png^mineral1".
+		Then a random thread calls getTextureId for a texture called
+		"stone.png^mineral1^crack0".
+		...Now, WTF should happen? Well:
+		- getTextureId strips off stuff recursively from the end until
+		  the remaining part is found, or nothing is left when
+		  something is stripped out
+
+		But it is slow to search for textures by names and modify them
+		like that?
+		- ContentFeatures is made to contain ids for the basic plain
+		  textures
+		- Crack textures can be slow by themselves, but the framework
+		  must be fast.
+
+		Example case #2:
+		- Assume a texture with the id 1 exists, and has the name
+		  "stone.png^mineral1" and is specified as a part of some atlas.
+		- Now MapBlock::getNodeTile() stumbles upon a node which uses
+		  texture id 1, and finds out that NODEMOD_CRACK must be applied
+		  with progression=0
+		- It finds out the name of the texture with getTextureName(1),
+		  appends "^crack0" to it and gets a new texture id with
+		  getTextureId("stone.png^mineral1^crack0")
+
+	*/
+	
+	/*
+		Gets a texture id from cache or
+		- if main thread, from getTextureIdDirect
+		- if other thread, adds to request queue and waits for main thread
+	*/
+	u32 getTextureId(const std::string &name);
+	
+	/*
+		Example names:
+		"stone.png"
+		"stone.png^crack2"
+		"stone.png^blit:mineral_coal.png"
+		"stone.png^blit:mineral_coal.png^crack1"
+
+		- If texture specified by name is found from cache, return the
+		  cached id.
+		- Otherwise generate the texture, add to cache and return id.
+		  Recursion is used to find out the largest found part of the
+		  texture and continue based on it.
+
+		The id 0 points to a NULL texture. It is returned in case of error.
+	*/
+	u32 getTextureIdDirect(const std::string &name);
+
+	/*
+		Finds out the name of a cached texture.
+	*/
+	std::string getTextureName(u32 id);
+
+	/*
+		If texture specified by the name pointed by the id doesn't
+		exist, create it, then return the cached texture.
+
+		Can be called from any thread. If called from some other thread
+		and not found in cache, the call is queued to the main thread
+		for processing.
+	*/
+	AtlasPointer getTexture(u32 id);
+	
+	AtlasPointer getTexture(const std::string &name)
+	{
+		return getTexture(getTextureId(name));
+	}
+	
+	// Gets a separate texture
+	video::ITexture* getTextureRaw(const std::string &name)
+	{
+		AtlasPointer ap = getTexture(name);
+		return ap.atlas;
+	}
+
+	/*
+		Update new texture pointer and texture coordinates to an
+		AtlasPointer based on it's texture id
+	*/
+	void updateAP(AtlasPointer &ap);
+
+	/*
+		Build the main texture atlas which contains most of the
+		textures.
+		
+		This is called by the constructor.
+	*/
+	void buildMainAtlas(class IGameDef *gamedef);
+	
+	/*
+		Processes queued texture requests from other threads.
+
+		Shall be called from the main thread.
+	*/
+	void processQueue();
+	
+private:
+	
+	// The id of the thread that is allowed to use irrlicht directly
+	threadid_t m_main_thread;
+	// The irrlicht device
+	IrrlichtDevice *m_device;
+	
+	// A texture id is index in this array.
+	// The first position contains a NULL texture.
+	core::array<SourceAtlasPointer> m_atlaspointer_cache;
+	// Maps a texture name to an index in the former.
+	core::map<std::string, u32> m_name_to_id;
+	// The two former containers are behind this mutex
+	JMutex m_atlaspointer_cache_mutex;
+	
+	// Main texture atlas. This is filled at startup and is then not touched.
+	video::IImage *m_main_atlas_image;
+	video::ITexture *m_main_atlas_texture;
+
+	// Queued texture fetches (to be processed by the main thread)
+	RequestQueue<std::string, u32, u8, u8> m_get_texture_queue;
+};
+
+IWritableTextureSource* createTextureSource(IrrlichtDevice *device)
+{
+	return new TextureSource(device);
+}
+
 TextureSource::TextureSource(IrrlichtDevice *device):
 		m_device(device),
 		m_main_atlas_image(NULL),
@@ -162,12 +299,6 @@ TextureSource::TextureSource(IrrlichtDevice *device):
 	// Add a NULL AtlasPointer as the first index, named ""
 	m_atlaspointer_cache.push_back(SourceAtlasPointer(""));
 	m_name_to_id[""] = 0;
-
-	// Build main texture atlas
-	if(g_settings->getBool("enable_texture_atlas"))
-		buildMainAtlas();
-	else
-		infostream<<"Not building texture atlas."<<std::endl;
 }
 
 TextureSource::~TextureSource()
@@ -487,8 +618,17 @@ AtlasPointer TextureSource::getTexture(u32 id)
 	return m_atlaspointer_cache[id].a;
 }
 
-void TextureSource::buildMainAtlas() 
+void TextureSource::updateAP(AtlasPointer &ap)
 {
+	AtlasPointer ap2 = getTexture(ap.id);
+	ap = ap2;
+}
+
+void TextureSource::buildMainAtlas(class IGameDef *gamedef) 
+{
+	assert(gamedef->tsrc() == this);
+	INodeDefManager *ndef = gamedef->ndef();
+
 	infostream<<"TextureSource::buildMainAtlas()"<<std::endl;
 
 	//return; // Disable (for testing)
@@ -521,15 +661,15 @@ void TextureSource::buildMainAtlas()
 	{
 		if(j == CONTENT_IGNORE || j == CONTENT_AIR)
 			continue;
-		ContentFeatures *f = &content_features(j);
-		for(core::map<std::string, bool>::Iterator
-				i = f->used_texturenames.getIterator();
-				i.atEnd() == false; i++)
+		const ContentFeatures &f = ndef->get(j);
+		for(std::set<std::string>::const_iterator
+				i = f.used_texturenames.begin();
+				i != f.used_texturenames.end(); i++)
 		{
-			std::string name = i.getNode()->getKey();
+			std::string name = *i;
 			sourcelist[name] = true;
 
-			if(f->often_contains_mineral){
+			if(f.often_contains_mineral){
 				for(int k=1; k<MINERAL_COUNT; k++){
 					std::string mineraltexture = mineral_block_texture(k);
 					std::string fulltexture = name + "^" + mineraltexture;
@@ -658,8 +798,18 @@ void TextureSource::buildMainAtlas()
 			Add texture to caches
 		*/
 		
-		// Get next id
+		bool reuse_old_id = false;
 		u32 id = m_atlaspointer_cache.size();
+		// Check old id without fetching a texture
+		core::map<std::string, u32>::Node *n;
+		n = m_name_to_id.find(name);
+		// If it exists, we will replace the old definition
+		if(n){
+			id = n->getValue();
+			reuse_old_id = true;
+		}
+		infostream<<"TextureSource::buildMainAtlas(): "
+				<<"Replacing old AtlasPointer"<<std::endl;
 
 		// Create AtlasPointer
 		AtlasPointer ap(id);
@@ -672,8 +822,11 @@ void TextureSource::buildMainAtlas()
 
 		// Create SourceAtlasPointer and add to containers
 		SourceAtlasPointer nap(name, ap, atlas_img, pos_in_atlas, dim);
-		m_atlaspointer_cache.push_back(nap);
-		m_name_to_id.insert(name, id);
+		if(reuse_old_id)
+			m_atlaspointer_cache[id] = nap;
+		else
+			m_atlaspointer_cache.push_back(nap);
+		m_name_to_id[name] = id;
 			
 		// Increment position
 		pos_in_atlas.Y += dim.Height + padding * 2;

@@ -24,6 +24,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "mapblock_nodemod.h"
 #include "voxel.h"
 
+class IGameDef;
+
 /*
 	Mesh making stuff
 */
@@ -141,7 +143,7 @@ struct MeshMakeData
 };
 
 // This is the highest-level function in here
-scene::SMesh* makeMapBlockMesh(MeshMakeData *data, ITextureSource *tsrc);
+scene::SMesh* makeMapBlockMesh(MeshMakeData *data, IGameDef *gamedef);
 
 #endif
 

@@ -22,11 +22,12 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "mapblock.h"
 #include "map.h"
 #include "main.h" // For g_settings and g_texturesource
-#include "content_mapblock.h"
 #include "settings.h"
 #include "profiler.h"
-#include "mapnode_contentfeatures.h"
+#include "nodedef.h"
 #include "tile.h"
+#include "gamedef.h"
+#include "content_mapblock.h"
 
 void MeshMakeData::fill(u32 daynight_ratio, MapBlock *block)
 {
@@ -84,7 +85,7 @@ void MeshMakeData::fill(u32 daynight_ratio, MapBlock *block)
 /*
 	vertex_dirs: v3s16[4]
 */
-void getNodeVertexDirs(v3s16 dir, v3s16 *vertex_dirs)
+static void getNodeVertexDirs(v3s16 dir, v3s16 *vertex_dirs)
 {
 	/*
 		If looked from outside the node towards the face, the corners are:
@@ -170,7 +171,7 @@ struct FastFace
 	video::S3DVertex vertices[4]; // Precalculated vertices
 };
 
-void makeFastFace(TileSpec tile, u8 li0, u8 li1, u8 li2, u8 li3, v3f p,
+static void makeFastFace(TileSpec tile, u8 li0, u8 li1, u8 li2, u8 li3, v3f p,
 		v3s16 dir, v3f scale, v3f posRelative_f,
 		core::array<FastFace> &dest)
 {
@@ -252,11 +253,11 @@ void makeFastFace(TileSpec tile, u8 li0, u8 li1, u8 li2, u8 li3, v3f p,
 	Gets node tile from any place relative to block.
 	Returns TILE_NODE if doesn't exist or should not be drawn.
 */
-TileSpec getNodeTile(MapNode mn, v3s16 p, v3s16 face_dir,
-		NodeModMap &temp_mods, ITextureSource *tsrc)
+static TileSpec getNodeTile(MapNode mn, v3s16 p, v3s16 face_dir,
+		NodeModMap &temp_mods, ITextureSource *tsrc, INodeDefManager *ndef)
 {
 	TileSpec spec;
-	spec = mn.getTile(face_dir, tsrc);
+	spec = mn.getTile(face_dir, tsrc, ndef);
 	
 	/*
 		Check temporary modifications on this node
@@ -273,7 +274,7 @@ TileSpec getNodeTile(MapNode mn, v3s16 p, v3s16 face_dir,
 		if(mod.type == NODEMOD_CHANGECONTENT)
 		{
 			MapNode mn2(mod.param);
-			spec = mn2.getTile(face_dir, tsrc);
+			spec = mn2.getTile(face_dir, tsrc, ndef);
 		}
 		if(mod.type == NODEMOD_CRACK)
 		{
@@ -304,7 +305,7 @@ TileSpec getNodeTile(MapNode mn, v3s16 p, v3s16 face_dir,
 	return spec;
 }
 
-content_t getNodeContent(v3s16 p, MapNode mn, NodeModMap &temp_mods)
+static content_t getNodeContent(v3s16 p, MapNode mn, NodeModMap &temp_mods)
 {
 	/*
 		Check temporary modifications on this node
@@ -354,7 +355,8 @@ v3s16 dirs8[8] = {
 };
 
 // Calculate lighting at the XYZ- corner of p
-u8 getSmoothLight(v3s16 p, VoxelManipulator &vmanip, u32 daynight_ratio)
+static u8 getSmoothLight(v3s16 p, VoxelManipulator &vmanip, u32 daynight_ratio,
+		INodeDefManager *ndef)
 {
 	u16 ambient_occlusion = 0;
 	u16 light = 0;
@@ -362,11 +364,11 @@ u8 getSmoothLight(v3s16 p, VoxelManipulator &vmanip, u32 daynight_ratio)
 	for(u32 i=0; i<8; i++)
 	{
 		MapNode n = vmanip.getNodeNoEx(p - dirs8[i]);
-		if(content_features(n).param_type == CPT_LIGHT
+		if(ndef->get(n).param_type == CPT_LIGHT
 				// Fast-style leaves look better this way
-				&& content_features(n).solidness != 2)
+				&& ndef->get(n).solidness != 2)
 		{
-			light += decode_light(n.getLightBlend(daynight_ratio));
+			light += decode_light(n.getLightBlend(daynight_ratio, ndef));
 			light_count++;
 		}
 		else
@@ -391,8 +393,8 @@ u8 getSmoothLight(v3s16 p, VoxelManipulator &vmanip, u32 daynight_ratio)
 }
 
 // Calculate lighting at the given corner of p
-u8 getSmoothLight(v3s16 p, v3s16 corner,
-		VoxelManipulator &vmanip, u32 daynight_ratio)
+static u8 getSmoothLight(v3s16 p, v3s16 corner,
+		VoxelManipulator &vmanip, u32 daynight_ratio, INodeDefManager *ndef)
 {
 	if(corner.X == 1) p.X += 1;
 	else              assert(corner.X == -1);
@@ -401,10 +403,10 @@ u8 getSmoothLight(v3s16 p, v3s16 corner,
 	if(corner.Z == 1) p.Z += 1;
 	else              assert(corner.Z == -1);
 	
-	return getSmoothLight(p, vmanip, daynight_ratio);
+	return getSmoothLight(p, vmanip, daynight_ratio, ndef);
 }
 
-void getTileInfo(
+static void getTileInfo(
 		// Input:
 		v3s16 blockpos_nodes,
 		v3s16 p,
@@ -413,7 +415,7 @@ void getTileInfo(
 		VoxelManipulator &vmanip,
 		NodeModMap &temp_mods,
 		bool smooth_lighting,
-		ITextureSource *tsrc,
+		IGameDef *gamedef,
 		// Output:
 		bool &makes_face,
 		v3s16 &p_corrected,
@@ -422,16 +424,19 @@ void getTileInfo(
 		TileSpec &tile
 	)
 {
+	ITextureSource *tsrc = gamedef->tsrc();
+	INodeDefManager *ndef = gamedef->ndef();
+
 	MapNode n0 = vmanip.getNodeNoEx(blockpos_nodes + p);
 	MapNode n1 = vmanip.getNodeNoEx(blockpos_nodes + p + face_dir);
-	TileSpec tile0 = getNodeTile(n0, p, face_dir, temp_mods, tsrc);
-	TileSpec tile1 = getNodeTile(n1, p + face_dir, -face_dir, temp_mods, tsrc);
+	TileSpec tile0 = getNodeTile(n0, p, face_dir, temp_mods, tsrc, ndef);
+	TileSpec tile1 = getNodeTile(n1, p + face_dir, -face_dir, temp_mods, tsrc, ndef);
 	
 	// This is hackish
 	content_t content0 = getNodeContent(p, n0, temp_mods);
 	content_t content1 = getNodeContent(p + face_dir, n1, temp_mods);
 	bool equivalent = false;
-	u8 mf = face_contents(content0, content1, &equivalent);
+	u8 mf = face_contents(content0, content1, &equivalent, ndef);
 
 	if(mf == 0)
 	{
@@ -461,7 +466,7 @@ void getTileInfo(
 	if(smooth_lighting == false)
 	{
 		lights[0] = lights[1] = lights[2] = lights[3] =
-				decode_light(getFaceLight(daynight_ratio, n0, n1, face_dir));
+				decode_light(getFaceLight(daynight_ratio, n0, n1, face_dir, ndef));
 	}
 	else
 	{
@@ -470,7 +475,7 @@ void getTileInfo(
 		for(u16 i=0; i<4; i++)
 		{
 			lights[i] = getSmoothLight(blockpos_nodes + p_corrected,
-					vertex_dirs[i], vmanip, daynight_ratio);
+					vertex_dirs[i], vmanip, daynight_ratio, ndef);
 		}
 	}
 	
@@ -482,7 +487,7 @@ void getTileInfo(
 	translate_dir: unit vector with only one of x, y or z
 	face_dir: unit vector with only one of x, y or z
 */
-void updateFastFaceRow(
+static void updateFastFaceRow(
 		u32 daynight_ratio,
 		v3f posRelative_f,
 		v3s16 startpos,
@@ -496,7 +501,7 @@ void updateFastFaceRow(
 		VoxelManipulator &vmanip,
 		v3s16 blockpos_nodes,
 		bool smooth_lighting,
-		ITextureSource *tsrc)
+		IGameDef *gamedef)
 {
 	v3s16 p = startpos;
 	
@@ -508,7 +513,7 @@ void updateFastFaceRow(
 	u8 lights[4] = {0,0,0,0};
 	TileSpec tile;
 	getTileInfo(blockpos_nodes, p, face_dir, daynight_ratio,
-			vmanip, temp_mods, smooth_lighting, tsrc,
+			vmanip, temp_mods, smooth_lighting, gamedef,
 			makes_face, p_corrected, face_dir_corrected, lights, tile);
 
 	for(u16 j=0; j<length; j++)
@@ -531,7 +536,7 @@ void updateFastFaceRow(
 			p_next = p + translate_dir;
 			
 			getTileInfo(blockpos_nodes, p_next, face_dir, daynight_ratio,
-					vmanip, temp_mods, smooth_lighting, tsrc,
+					vmanip, temp_mods, smooth_lighting, gamedef,
 					next_makes_face, next_p_corrected,
 					next_face_dir_corrected, next_lights,
 					next_tile);
@@ -644,7 +649,7 @@ void updateFastFaceRow(
 	}
 }
 
-scene::SMesh* makeMapBlockMesh(MeshMakeData *data, ITextureSource *tsrc)
+scene::SMesh* makeMapBlockMesh(MeshMakeData *data, IGameDef *gamedef)
 {
 	// 4-21ms for MAP_BLOCKSIZE=16
 	// 24-155ms for MAP_BLOCKSIZE=32
@@ -692,7 +697,7 @@ scene::SMesh* makeMapBlockMesh(MeshMakeData *data, ITextureSource *tsrc)
 						data->m_vmanip,
 						blockpos_nodes,
 						smooth_lighting,
-						tsrc);
+						gamedef);
 			}
 		}
 		/*
@@ -711,7 +716,7 @@ scene::SMesh* makeMapBlockMesh(MeshMakeData *data, ITextureSource *tsrc)
 						data->m_vmanip,
 						blockpos_nodes,
 						smooth_lighting,
-						tsrc);
+						gamedef);
 			}
 		}
 		/*
@@ -730,7 +735,7 @@ scene::SMesh* makeMapBlockMesh(MeshMakeData *data, ITextureSource *tsrc)
 						data->m_vmanip,
 						blockpos_nodes,
 						smooth_lighting,
-						tsrc);
+						gamedef);
 			}
 		}
 	}
@@ -795,7 +800,7 @@ scene::SMesh* makeMapBlockMesh(MeshMakeData *data, ITextureSource *tsrc)
 		- whatever
 	*/
 
-	mapblock_mesh_generate_special(data, collector, tsrc);
+	mapblock_mesh_generate_special(data, collector, gamedef);
 	
 	/*
 		Add stuff from collector to mesh

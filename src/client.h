@@ -32,6 +32,9 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "gamedef.h"
 
 struct MeshMakeData;
+class IGameDef;
+class IWritableToolDefManager;
+class IWritableNodeDefManager;
 
 class ClientNotReadyException : public BaseException
 {
@@ -99,8 +102,8 @@ class MeshUpdateThread : public SimpleThread
 {
 public:
 
-	MeshUpdateThread(ITextureSource *tsrc):
-		m_tsrc(tsrc)
+	MeshUpdateThread(IGameDef *gamedef):
+		m_gamedef(gamedef)
 	{
 	}
 
@@ -110,7 +113,7 @@ public:
 
 	MutexedQueue<MeshUpdateResult> m_queue_out;
 
-	ITextureSource *m_tsrc;
+	IGameDef *m_gamedef;
 };
 
 enum ClientEventType
@@ -155,8 +158,9 @@ public:
 			const char *playername,
 			std::string password,
 			MapDrawControl &control,
-			ITextureSource *tsrc,
-			IToolDefManager *toolmgr
+			IWritableTextureSource *tsrc,
+			IWritableToolDefManager *tooldef,
+			IWritableNodeDefManager *nodedef
 	);
 	
 	~Client();
@@ -311,10 +315,9 @@ public:
 
 	// IGameDef interface
 	// Under envlock
-	virtual IToolDefManager* getToolDefManager()
-		{ return m_toolmgr; }
-	virtual INodeDefManager* getNodeDefManager()
-		{ assert(0); return NULL; } // TODO
+	virtual IToolDefManager* getToolDefManager();
+	virtual INodeDefManager* getNodeDefManager();
+	virtual ITextureSource* getTextureSource();
 
 private:
 	
@@ -338,8 +341,9 @@ private:
 	float m_ignore_damage_timer; // Used after server moves player
 	IntervalLimiter m_map_timer_and_unload_interval;
 
-	ITextureSource *m_tsrc;
-	IToolDefManager *m_toolmgr;
+	IWritableTextureSource *m_tsrc;
+	IWritableToolDefManager *m_tooldef;
+	IWritableNodeDefManager *m_nodedef;
 	MeshUpdateThread m_mesh_update_thread;
 	ClientEnvironment m_env;
 	con::Connection m_con;

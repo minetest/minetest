@@ -434,7 +434,7 @@ Doing currently:
 #include "settings.h"
 #include "profiler.h"
 #include "log.h"
-#include "mapnode_contentfeatures.h" // For init_contentfeatures
+#include "nodedef.h" // For init_contentfeatures
 #include "content_mapnode.h" // For content_mapnode_init
 
 /*
@@ -1272,10 +1272,6 @@ int main(int argc, char *argv[])
 		These are needed for unit tests at least.
 	*/
 	
-	// Initialize content feature table without textures
-	init_contentfeatures(NULL);
-	// Initialize mapnode content without textures
-	content_mapnode_init(NULL);
 	// Must be called before texturesource is created
 	// (for texture atlas making)
 	init_mineral();

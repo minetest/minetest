@@ -377,7 +377,7 @@ public:
 	LocalPlayer * getLocalPlayer();
 	
 	// Slightly deprecated
-	void updateMeshes(v3s16 blockpos, ITextureSource *tsrc);
+	void updateMeshes(v3s16 blockpos);
 	void expireMeshes(bool only_daynight_diffed);
 
 	void setTimeOfDay(u32 time)

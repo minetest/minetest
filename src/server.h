@@ -32,7 +32,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "gamedef.h"
 struct LuaState;
 typedef struct lua_State lua_State;
-class IToolDefManager;
+class IWritableToolDefManager;
+class IWritableNodeDefManager;
 
 /*
 	Some random functions
@@ -486,10 +487,9 @@ public:
 	
 	// IGameDef interface
 	// Under envlock
-	virtual IToolDefManager* getToolDefManager()
-		{ return m_toolmgr; }
-	virtual INodeDefManager* getNodeDefManager()
-		{ assert(0); return NULL; } // TODO
+	virtual IToolDefManager* getToolDefManager();
+	virtual INodeDefManager* getNodeDefManager();
+	virtual ITextureSource* getTextureSource();
 
 private:
 
@@ -616,7 +616,10 @@ private:
 	lua_State *m_lua;
 
 	// Tool definition manager
-	IToolDefManager *m_toolmgr;
+	IWritableToolDefManager *m_toolmgr;
+	
+	// Node definition manager
+	IWritableNodeDefManager *m_nodemgr;
 	
 	/*
 		Threads

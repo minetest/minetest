@@ -38,7 +38,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 class Map;
 class NodeMetadataList;
-class ITextureSource;
 class IGameDef;
 
 #define BLOCK_TIMESTAMP_UNDEFINED 0xffffffff
@@ -120,7 +119,7 @@ public:
 class MapBlock /*: public NodeContainer*/
 {
 public:
-	MapBlock(Map *parent, v3s16 pos, bool dummy=false);
+	MapBlock(Map *parent, v3s16 pos, IGameDef *gamedef, bool dummy=false);
 	~MapBlock();
 	
 	/*virtual u16 nodeContainerId() const
@@ -393,12 +392,13 @@ public:
 				getNodeParentNoEx(p + face_dir),
 				face_dir);
 	}*/
-	u8 getFaceLight2(u32 daynight_ratio, v3s16 p, v3s16 face_dir)
+	u8 getFaceLight2(u32 daynight_ratio, v3s16 p, v3s16 face_dir,
+			INodeDefManager *nodemgr)
 	{
 		return getFaceLight(daynight_ratio,
 				getNodeParentNoEx(p),
 				getNodeParentNoEx(p + face_dir),
-				face_dir);
+				face_dir, nodemgr);
 	}
 	
 #ifndef SERVER // Only on client
@@ -409,7 +409,7 @@ public:
 		NOTE: Prefer generating the mesh separately and then using
 		replaceMesh().
 	*/
-	void updateMesh(u32 daynight_ratio, ITextureSource *tsrc);
+	void updateMesh(u32 daynight_ratio);
 #endif
 	// Replace the mesh with a new one
 	void replaceMesh(scene::SMesh *mesh_new);
@@ -539,7 +539,7 @@ public:
 	
 	// These don't write or read version by itself
 	void serialize(std::ostream &os, u8 version);
-	void deSerialize(std::istream &is, u8 version, IGameDef *gamedef);
+	void deSerialize(std::istream &is, u8 version);
 	// Used after the basic ones when writing on disk (serverside)
 	void serializeDiskExtra(std::ostream &os, u8 version);
 	void deSerializeDiskExtra(std::istream &is, u8 version);
@@ -589,6 +589,8 @@ private:
 	Map *m_parent;
 	// Position in blocks on parent
 	v3s16 m_pos;
+
+	IGameDef *m_gamedef;
 	
 	/*
 		If NULL, block is a dummy block.

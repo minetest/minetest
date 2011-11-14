@@ -26,6 +26,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 struct BlockMakeData;
 class MapBlock;
 class ManualMapVoxelManipulator;
+class INodeDefManager;
 
 namespace mapgen
 {
@@ -54,10 +55,11 @@ namespace mapgen
 	struct BlockMakeData
 	{
 		bool no_op;
-		ManualMapVoxelManipulator *vmanip;
+		ManualMapVoxelManipulator *vmanip; // Destructor deletes
 		u64 seed;
 		v3s16 blockpos;
 		UniqueQueue<v3s16> transforming_liquid;
+		INodeDefManager *nodemgr; // Destructor deletes
 
 		BlockMakeData();
 		~BlockMakeData();

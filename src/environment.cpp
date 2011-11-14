@@ -30,9 +30,10 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "log.h"
 #include "profiler.h"
 #include "scriptapi.h"
-#include "mapnode_contentfeatures.h"
+#include "nodedef.h"
 #include "nodemetadata.h"
 #include "main.h" // For g_settings, g_profiler
+#include "gamedef.h"
 
 #define PP(x) "("<<(x).X<<","<<(x).Y<<","<<(x).Z<<")"
 
@@ -324,7 +325,7 @@ void ServerEnvironment::serializePlayers(const std::string &savedir)
 				infostream<<"Failed to read "<<path<<std::endl;
 				continue;
 			}
-			testplayer.deSerialize(is, m_gamedef);
+			testplayer.deSerialize(is);
 		}
 
 		//infostream<<"Loaded test player with name "<<testplayer.getName()<<std::endl;
@@ -438,7 +439,7 @@ void ServerEnvironment::deSerializePlayers(const std::string &savedir)
 				infostream<<"Failed to read "<<path<<std::endl;
 				continue;
 			}
-			testplayer.deSerialize(is, m_gamedef);
+			testplayer.deSerialize(is);
 		}
 
 		if(!string_allowed(testplayer.getName(), PLAYERNAME_ALLOWED_CHARS))
@@ -472,7 +473,7 @@ void ServerEnvironment::deSerializePlayers(const std::string &savedir)
 				infostream<<"Failed to read "<<path<<std::endl;
 				continue;
 			}
-			player->deSerialize(is, m_gamedef);
+			player->deSerialize(is);
 		}
 
 		if(newplayer)
@@ -557,9 +558,9 @@ void spawnRandomObjects(MapBlock *block)
 			MapNode n = block->getNodeNoEx(p);
 			if(n.getContent() == CONTENT_IGNORE)
 				continue;
-			if(content_features(n).liquid_type != LIQUID_NONE)
+			if(m_gamedef->ndef()->get(n).liquid_type != LIQUID_NONE)
 				continue;
-			if(content_features(n).walkable)
+			if(m_gamedef->ndef()->get(n).walkable)
 			{
 				last_node_walkable = true;
 				continue;
@@ -567,7 +568,7 @@ void spawnRandomObjects(MapBlock *block)
 			if(last_node_walkable)
 			{
 				// If block contains light information
-				if(content_features(n).param_type == CPT_LIGHT)
+				if(m_gamedef->ndef()->get(n).param_type == CPT_LIGHT)
 				{
 					if(n.getLight(LIGHTBANK_DAY) <= 5)
 					{
@@ -641,8 +642,8 @@ void ServerEnvironment::activateBlock(MapBlock *block, u32 additional_dtime)
 			if(dtime_s > 300)
 			{
 				MapNode n_top = block->getNodeNoEx(p0+v3s16(0,1,0));
-				if(content_features(n_top).air_equivalent &&
-						n_top.getLight(LIGHTBANK_DAY) >= 13)
+				if(m_gamedef->ndef()->get(n_top).air_equivalent &&
+						n_top.getLight(LIGHTBANK_DAY, m_gamedef->ndef()) >= 13)
 				{
 					n.setContent(CONTENT_GRASS);
 					m_map->addNodeWithEvent(p, n);
@@ -1012,8 +1013,9 @@ void ServerEnvironment::step(float dtime)
 					if(myrand()%20 == 0)
 					{
 						MapNode n_top = m_map->getNodeNoEx(p+v3s16(0,1,0));
-						if(content_features(n_top).air_equivalent &&
-								n_top.getLightBlend(getDayNightRatio()) >= 13)
+						if(m_gamedef->ndef()->get(n_top).air_equivalent &&
+								n_top.getLightBlend(getDayNightRatio(),
+										m_gamedef->ndef()) >= 13)
 						{
 							n.setContent(CONTENT_GRASS);
 							m_map->addNodeWithEvent(p, n);
@@ -1028,7 +1030,7 @@ void ServerEnvironment::step(float dtime)
 					//if(myrand()%20 == 0)
 					{
 						MapNode n_top = m_map->getNodeNoEx(p+v3s16(0,1,0));
-						if(content_features(n_top).air_equivalent == false)
+						if(m_gamedef->ndef()->get(n_top).air_equivalent == false)
 						{
 							n.setContent(CONTENT_MUD);
 							m_map->addNodeWithEvent(p, n);
@@ -1066,7 +1068,8 @@ void ServerEnvironment::step(float dtime)
 					{
 						v3s16 p1 = p + v3s16(0,1,0);
 						MapNode n1a = m_map->getNodeNoEx(p1+v3s16(0,0,0));
-						if(n1a.getLightBlend(getDayNightRatio()) <= 3){
+						if(n1a.getLightBlend(getDayNightRatio(),
+								m_gamedef->ndef()) <= 3){
 							MapNode n1b = m_map->getNodeNoEx(p1+v3s16(0,1,0));
 							if(n1a.getContent() == CONTENT_AIR &&
 									n1b.getContent() == CONTENT_AIR)
@@ -2069,11 +2072,11 @@ void ClientEnvironment::step(float dtime)
 
 		u32 damage_per_second = 0;
 		damage_per_second = MYMAX(damage_per_second,
-				content_features(n1).damage_per_second);
+				m_gamedef->ndef()->get(n1).damage_per_second);
 		damage_per_second = MYMAX(damage_per_second,
-				content_features(n2).damage_per_second);
+				m_gamedef->ndef()->get(n2).damage_per_second);
 		damage_per_second = MYMAX(damage_per_second,
-				content_features(n3).damage_per_second);
+				m_gamedef->ndef()->get(n3).damage_per_second);
 		
 		if(damage_per_second != 0)
 		{
@@ -2109,7 +2112,7 @@ void ClientEnvironment::step(float dtime)
 			// Get node at head
 			v3s16 p = player->getLightPosition();
 			MapNode n = m_map->getNode(p);
-			light = n.getLightBlend(getDayNightRatio());
+			light = n.getLightBlend(getDayNightRatio(), m_gamedef->ndef());
 		}
 		catch(InvalidPositionException &e) {}
 		player->updateLight(light);
@@ -2164,7 +2167,7 @@ void ClientEnvironment::step(float dtime)
 				// Get node at head
 				v3s16 p = obj->getLightPosition();
 				MapNode n = m_map->getNode(p);
-				light = n.getLightBlend(getDayNightRatio());
+				light = n.getLightBlend(getDayNightRatio(), m_gamedef->ndef());
 			}
 			catch(InvalidPositionException &e) {}
 			obj->updateLight(light);
@@ -2172,9 +2175,9 @@ void ClientEnvironment::step(float dtime)
 	}
 }
 
-void ClientEnvironment::updateMeshes(v3s16 blockpos, ITextureSource *tsrc)
+void ClientEnvironment::updateMeshes(v3s16 blockpos)
 {
-	m_map->updateMeshes(blockpos, getDayNightRatio(), tsrc);
+	m_map->updateMeshes(blockpos, getDayNightRatio());
 }
 
 void ClientEnvironment::expireMeshes(bool only_daynight_diffed)

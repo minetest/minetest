@@ -590,8 +590,7 @@ public:
 		Update the faces of the given block and blocks on the
 		leading edge, without threading. Rarely used.
 	*/
-	void updateMeshes(v3s16 blockpos, u32 daynight_ratio,
-			ITextureSource *tsrc);
+	void updateMeshes(v3s16 blockpos, u32 daynight_ratio);
 	
 	// Update meshes that touch the node
 	//void updateNodeMeshes(v3s16 nodepos, u32 daynight_ratio);

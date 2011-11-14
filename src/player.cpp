@@ -27,9 +27,11 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #endif
 #include "main.h" // For g_settings
 #include "settings.h"
-#include "mapnode_contentfeatures.h"
+#include "nodedef.h"
+#include "environment.h"
+#include "gamedef.h"
 
-Player::Player():
+Player::Player(IGameDef *gamedef):
 	touching_ground(false),
 	in_water(false),
 	in_water_stable(false),
@@ -39,6 +41,8 @@ Player::Player():
 	craftresult_is_preview(true),
 	hp(20),
 	peer_id(PEER_ID_INEXISTENT),
+// protected
+	m_gamedef(gamedef),
 	m_selected_item(0),
 	m_pitch(0),
 	m_yaw(0),
@@ -129,7 +133,7 @@ void Player::serialize(std::ostream &os)
 		inventory.serialize(os);
 }
 
-void Player::deSerialize(std::istream &is, IGameDef *gamedef)
+void Player::deSerialize(std::istream &is)
 {
 	Settings args;
 	
@@ -163,12 +167,27 @@ void Player::deSerialize(std::istream &is, IGameDef *gamedef)
 		hp = 20;
 	}
 
-	inventory.deSerialize(is, gamedef);
+	inventory.deSerialize(is, m_gamedef);
 }
 
 /*
 	ServerRemotePlayer
 */
+
+ServerRemotePlayer::ServerRemotePlayer(ServerEnvironment *env):
+	Player(env->getGameDef()),
+	ServerActiveObject(env, v3f(0,0,0))
+{
+}
+ServerRemotePlayer::ServerRemotePlayer(ServerEnvironment *env, v3f pos_, u16 peer_id_,
+		const char *name_):
+	Player(env->getGameDef()),
+	ServerActiveObject(env, pos_)
+{
+	setPosition(pos_);
+	peer_id = peer_id_;
+	updateName(name_);
+}
 
 /* ServerActiveObject interface */
 
@@ -237,9 +256,11 @@ s16 ServerRemotePlayer::getHP()
 #ifndef SERVER
 
 RemotePlayer::RemotePlayer(
+		IGameDef *gamedef,
 		scene::ISceneNode* parent,
 		IrrlichtDevice *device,
 		s32 id):
+	Player(gamedef),
 	scene::ISceneNode(parent, (device==NULL)?NULL:device->getSceneManager(), id),
 	m_text(NULL)
 {
@@ -354,7 +375,8 @@ void RemotePlayer::move(f32 dtime, Map &map, f32 pos_max_d)
 	LocalPlayer
 */
 
-LocalPlayer::LocalPlayer():
+LocalPlayer::LocalPlayer(IGameDef *gamedef):
+	Player(gamedef),
 	m_sneak_node(32767,32767,32767),
 	m_sneak_node_exists(false)
 {
@@ -370,6 +392,8 @@ LocalPlayer::~LocalPlayer()
 void LocalPlayer::move(f32 dtime, Map &map, f32 pos_max_d,
 		core::list<CollisionInfo> *collision_info)
 {
+	INodeDefManager *nodemgr = m_gamedef->ndef();
+
 	v3f position = getPosition();
 	v3f oldpos = position;
 	v3s16 oldpos_i = floatToInt(oldpos, BS);
@@ -407,13 +431,13 @@ void LocalPlayer::move(f32 dtime, Map &map, f32 pos_max_d,
 		if(in_water)
 		{
 			v3s16 pp = floatToInt(position + v3f(0,BS*0.1,0), BS);
-			in_water = content_liquid(map.getNode(pp).getContent());
+			in_water = nodemgr->get(map.getNode(pp).getContent()).isLiquid();
 		}
 		// If not in water, the threshold of going in is at lower y
 		else
 		{
 			v3s16 pp = floatToInt(position + v3f(0,BS*0.5,0), BS);
-			in_water = content_liquid(map.getNode(pp).getContent());
+			in_water = nodemgr->get(map.getNode(pp).getContent()).isLiquid();
 		}
 	}
 	catch(InvalidPositionException &e)
@@ -426,7 +450,7 @@ void LocalPlayer::move(f32 dtime, Map &map, f32 pos_max_d,
 	*/
 	try{
 		v3s16 pp = floatToInt(position + v3f(0,0,0), BS);
-		in_water_stable = content_liquid(map.getNode(pp).getContent());
+		in_water_stable = nodemgr->get(map.getNode(pp).getContent()).isLiquid();
 	}
 	catch(InvalidPositionException &e)
 	{
@@ -438,14 +462,14 @@ void LocalPlayer::move(f32 dtime, Map &map, f32 pos_max_d,
 	*/
 
 	try {
-	        v3s16 pp = floatToInt(position + v3f(0,0.5*BS,0), BS);
+		v3s16 pp = floatToInt(position + v3f(0,0.5*BS,0), BS);
 		v3s16 pp2 = floatToInt(position + v3f(0,-0.2*BS,0), BS);
-		is_climbing = ((content_features(map.getNode(pp).getContent()).climbable ||
-				content_features(map.getNode(pp2).getContent()).climbable) && !free_move);
+		is_climbing = ((nodemgr->get(map.getNode(pp).getContent()).climbable ||
+		nodemgr->get(map.getNode(pp2).getContent()).climbable) && !free_move);
 	}
 	catch(InvalidPositionException &e)
 	{
-	        is_climbing = false;
+		is_climbing = false;
 	}
 
 	/*
@@ -553,7 +577,7 @@ void LocalPlayer::move(f32 dtime, Map &map, f32 pos_max_d,
 		bool is_unloaded = false;
 		try{
 			// Player collides into walkable nodes
-			if(content_walkable(map.getNode(v3s16(x,y,z)).getContent()) == false)
+			if(nodemgr->get(map.getNode(v3s16(x,y,z))).walkable == false)
 				continue;
 		}
 		catch(InvalidPositionException &e)
@@ -719,10 +743,10 @@ void LocalPlayer::move(f32 dtime, Map &map, f32 pos_max_d,
 
 			try{
 				// The node to be sneaked on has to be walkable
-				if(content_walkable(map.getNode(p).getContent()) == false)
+				if(nodemgr->get(map.getNode(p)).walkable == false)
 					continue;
 				// And the node above it has to be nonwalkable
-				if(content_walkable(map.getNode(p+v3s16(0,1,0)).getContent()) == true)
+				if(nodemgr->get(map.getNode(p+v3s16(0,1,0))).walkable == true)
 					continue;
 			}
 			catch(InvalidPositionException &e)

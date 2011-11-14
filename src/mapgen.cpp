@@ -26,7 +26,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "mineral.h"
 //#include "serverobject.h"
 #include "content_sao.h"
-#include "mapnode_contentfeatures.h"
+#include "nodedef.h"
 
 namespace mapgen
 {
@@ -1417,9 +1417,9 @@ void add_random_objects(MapBlock *block)
 			MapNode n = block->getNodeNoEx(p);
 			if(n.getContent() == CONTENT_IGNORE)
 				continue;
-			if(content_features(n).liquid_type != LIQUID_NONE)
+			if(data->nodemgr->get(n)->liquid_type != LIQUID_NONE)
 				continue;
-			if(content_features(n).walkable)
+			if(data->nodemgr->get(n)->walkable)
 			{
 				last_node_walkable = true;
 				continue;
@@ -1477,6 +1477,9 @@ void make_block(BlockMakeData *data)
 		//dstream<<"makeBlock: no-op"<<std::endl;
 		return;
 	}
+
+	assert(data->vmanip);
+	assert(data->nodemgr);
 
 	v3s16 blockpos = data->blockpos;
 	
@@ -2185,7 +2188,7 @@ void make_block(BlockMakeData *data)
 				{
 					u32 i = data->vmanip->m_area.index(p);
 					MapNode *n = &data->vmanip->m_data[i];
-					if(content_features(*n).is_ground_content
+					if(data->nodemgr->get(*n).is_ground_content
 							|| n->getContent() == CONTENT_JUNGLETREE)
 					{
 						found = true;
@@ -2284,7 +2287,8 @@ void make_block(BlockMakeData *data)
 BlockMakeData::BlockMakeData():
 	no_op(false),
 	vmanip(NULL),
-	seed(0)
+	seed(0),
+	nodemgr(NULL)
 {}
 
 BlockMakeData::~BlockMakeData()

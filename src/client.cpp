@@ -32,6 +32,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "profiler.h"
 #include "log.h"
 #include "nodemetadata.h"
+#include "nodedef.h"
+#include "tooldef.h"
 
 /*
 	QueuedMeshUpdate
@@ -160,7 +162,7 @@ void * MeshUpdateThread::Thread()
 		ScopeProfiler sp(g_profiler, "Client: Mesh making");
 
 		scene::SMesh *mesh_new = NULL;
-		mesh_new = makeMapBlockMesh(q->data, m_tsrc);
+		mesh_new = makeMapBlockMesh(q->data, m_gamedef);
 
 		MeshUpdateResult r;
 		r.p = q->p;
@@ -186,11 +188,14 @@ Client::Client(
 		const char *playername,
 		std::string password,
 		MapDrawControl &control,
-		ITextureSource *tsrc,
-		IToolDefManager *toolmgr):
+		IWritableTextureSource *tsrc,
+		IWritableToolDefManager *tooldef,
+		IWritableNodeDefManager *nodedef
+):
 	m_tsrc(tsrc),
-	m_toolmgr(toolmgr),
-	m_mesh_update_thread(tsrc),
+	m_tooldef(tooldef),
+	m_nodedef(nodedef),
+	m_mesh_update_thread(this),
 	m_env(
 		new ClientMap(this, this, control,
 			device->getSceneManager()->getRootSceneNode(),
@@ -214,18 +219,22 @@ Client::Client(
 	m_playerpos_send_timer = 0.0;
 	m_ignore_damage_timer = 0.0;
 
-	//m_env_mutex.Init();
-	//m_con_mutex.Init();
+	// Build main texture atlas, now that the GameDef exists (that is, us)
+	if(g_settings->getBool("enable_texture_atlas"))
+		tsrc->buildMainAtlas(this);
+	else
+		infostream<<"Not building texture atlas."<<std::endl;
 
+	// NOTE: This should be done only after getting possible dynamic
+	// game definitions from the server, or at least shut down and
+	// restarted when doing so
 	m_mesh_update_thread.Start();
 
 	/*
 		Add local player
 	*/
 	{
-		//JMutexAutoLock envlock(m_env_mutex); //bulk comment-out
-
-		Player *player = new LocalPlayer();
+		Player *player = new LocalPlayer(this);
 
 		player->updateName(playername);
 
@@ -827,7 +836,7 @@ void Client::ProcessData(u8 *data, u32 datasize, u16 sender_peer_id)
 		//TimeTaker t1("TOCLIENT_ADDNODE");
 
 		MapNode n;
-		n.deSerialize(&data[8], ser_version);
+		n.deSerialize(&data[8], ser_version, m_nodedef);
 		
 		addNode(p, n);
 	}
@@ -868,7 +877,7 @@ void Client::ProcessData(u8 *data, u32 datasize, u16 sender_peer_id)
 				Update an existing block
 			*/
 			//infostream<<"Updating"<<std::endl;
-			block->deSerialize(istr, ser_version, this);
+			block->deSerialize(istr, ser_version);
 		}
 		else
 		{
@@ -876,8 +885,8 @@ void Client::ProcessData(u8 *data, u32 datasize, u16 sender_peer_id)
 				Create a new block
 			*/
 			//infostream<<"Creating new"<<std::endl;
-			block = new MapBlock(&m_env.getMap(), p);
-			block->deSerialize(istr, ser_version, this);
+			block = new MapBlock(&m_env.getMap(), p, this);
+			block->deSerialize(istr, ser_version);
 			sector->insertBlock(block);
 
 			//DEBUG
@@ -1041,7 +1050,7 @@ void Client::ProcessData(u8 *data, u32 datasize, u16 sender_peer_id)
 				// Create a player if it doesn't exist
 				if(player == NULL)
 				{
-					player = new RemotePlayer(
+					player = new RemotePlayer(this,
 							m_device->getSceneManager()->getRootSceneNode(),
 							m_device,
 							-1);
@@ -2047,7 +2056,7 @@ void Client::setTempMod(v3s16 p, NodeMod mod)
 			i = affected_blocks.getIterator();
 			i.atEnd() == false; i++)
 	{
-		i.getNode()->getValue()->updateMesh(m_env.getDayNightRatio(), m_tsrc);
+		i.getNode()->getValue()->updateMesh(m_env.getDayNightRatio());
 	}
 }
 
@@ -2064,7 +2073,7 @@ void Client::clearTempMod(v3s16 p)
 			i = affected_blocks.getIterator();
 			i.atEnd() == false; i++)
 	{
-		i.getNode()->getValue()->updateMesh(m_env.getDayNightRatio(), m_tsrc);
+		i.getNode()->getValue()->updateMesh(m_env.getDayNightRatio());
 	}
 }
 
@@ -2171,5 +2180,20 @@ float Client::getRTT(void)
 	} catch(con::PeerNotFoundException &e){
 		return 1337;
 	}
+}
+
+// IGameDef interface
+// Under envlock
+IToolDefManager* Client::getToolDefManager()
+{
+	return m_tooldef;
+}
+INodeDefManager* Client::getNodeDefManager()
+{
+	return m_nodedef;
+}
+ITextureSource* Client::getTextureSource()
+{
+	return m_tsrc;
 }
 

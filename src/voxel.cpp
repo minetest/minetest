@@ -21,7 +21,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "map.h"
 #include "utility.h" // For TimeTaker
 #include "gettime.h"
-#include "content_mapnode.h"
+#include "nodedef.h"
 
 /*
 	Debug stuff
@@ -63,7 +63,8 @@ void VoxelManipulator::clear()
 	m_flags = NULL;
 }
 
-void VoxelManipulator::print(std::ostream &o, VoxelPrintMode mode)
+void VoxelManipulator::print(std::ostream &o, INodeDefManager *nodemgr,
+		VoxelPrintMode mode)
 {
 	v3s16 em = m_area.getExtent();
 	v3s16 of = m_area.MinEdge;
@@ -102,7 +103,7 @@ void VoxelManipulator::print(std::ostream &o, VoxelPrintMode mode)
 					}
 					else if(mode == VOXELPRINT_WATERPRESSURE)
 					{
-						if(m == CONTENT_WATER)
+						if(nodemgr->get(m).isLiquid())
 						{
 							c = 'w';
 							if(pr <= 9)
@@ -279,7 +280,7 @@ void VoxelManipulator::clearFlag(u8 flags)
 }
 
 void VoxelManipulator::unspreadLight(enum LightBank bank, v3s16 p, u8 oldlight,
-		core::map<v3s16, bool> & light_sources)
+		core::map<v3s16, bool> & light_sources, INodeDefManager *nodemgr)
 {
 	v3s16 dirs[6] = {
 		v3s16(0,0,1), // back
@@ -309,21 +310,21 @@ void VoxelManipulator::unspreadLight(enum LightBank bank, v3s16 p, u8 oldlight,
 			If the neighbor is dimmer than what was specified
 			as oldlight (the light of the previous node)
 		*/
-		if(n2.getLight(bank) < oldlight)
+		if(n2.getLight(bank, nodemgr) < oldlight)
 		{
 			/*
 				And the neighbor is transparent and it has some light
 			*/
-			if(n2.light_propagates() && n2.getLight(bank) != 0)
+			if(nodemgr->get(n2).light_propagates && n2.getLight(bank, nodemgr) != 0)
 			{
 				/*
 					Set light to 0 and add to queue
 				*/
 
-				u8 current_light = n2.getLight(bank);
-				n2.setLight(bank, 0);
+				u8 current_light = n2.getLight(bank, nodemgr);
+				n2.setLight(bank, 0, nodemgr);
 				
-				unspreadLight(bank, n2pos, current_light, light_sources);
+				unspreadLight(bank, n2pos, current_light, light_sources, nodemgr);
 				
 				/*
 					Remove from light_sources if it is there
@@ -362,7 +363,7 @@ void VoxelManipulator::unspreadLight(enum LightBank bank, v3s16 p, u8 oldlight,
 */
 void VoxelManipulator::unspreadLight(enum LightBank bank,
 		core::map<v3s16, u8> & from_nodes,
-		core::map<v3s16, bool> & light_sources)
+		core::map<v3s16, bool> & light_sources, INodeDefManager *nodemgr)
 {
 	if(from_nodes.size() == 0)
 		return;
@@ -378,7 +379,7 @@ void VoxelManipulator::unspreadLight(enum LightBank bank,
 		
 		u8 oldlight = j.getNode()->getValue();
 
-		unspreadLight(bank, pos, oldlight, light_sources);
+		unspreadLight(bank, pos, oldlight, light_sources, nodemgr);
 	}
 }
 #endif
@@ -448,18 +449,18 @@ void VoxelManipulator::unspreadLight(enum LightBank bank,
 				If the neighbor is dimmer than what was specified
 				as oldlight (the light of the previous node)
 			*/
-			if(n2.getLight(bank) < oldlight)
+			if(n2.getLight(bank, nodemgr) < oldlight)
 			{
 				/*
 					And the neighbor is transparent and it has some light
 				*/
-				if(n2.light_propagates() && n2.getLight(bank) != 0)
+				if(nodemgr->get(n2).light_propagates && n2.getLight(bank, nodemgr) != 0)
 				{
 					/*
 						Set light to 0 and add to queue
 					*/
 
-					u8 current_light = n2.getLight(bank);
+					u8 current_light = n2.getLight(bank, nodemgr);
 					n2.setLight(bank, 0);
 
 					unlighted_nodes.insert(n2pos, current_light);
@@ -491,7 +492,8 @@ void VoxelManipulator::unspreadLight(enum LightBank bank,
 }
 #endif
 
-void VoxelManipulator::spreadLight(enum LightBank bank, v3s16 p)
+void VoxelManipulator::spreadLight(enum LightBank bank, v3s16 p,
+		INodeDefManager *nodemgr)
 {
 	const v3s16 dirs[6] = {
 		v3s16(0,0,1), // back
@@ -511,7 +513,7 @@ void VoxelManipulator::spreadLight(enum LightBank bank, v3s16 p)
 
 	MapNode &n = m_data[i];
 
-	u8 oldlight = n.getLight(bank);
+	u8 oldlight = n.getLight(bank, nodemgr);
 	u8 newlight = diminish_light(oldlight);
 
 	// Loop through 6 neighbors
@@ -531,20 +533,20 @@ void VoxelManipulator::spreadLight(enum LightBank bank, v3s16 p)
 			If the neighbor is brighter than the current node,
 			add to list (it will light up this node on its turn)
 		*/
-		if(n2.getLight(bank) > undiminish_light(oldlight))
+		if(n2.getLight(bank, nodemgr) > undiminish_light(oldlight))
 		{
-			spreadLight(bank, n2pos);
+			spreadLight(bank, n2pos, nodemgr);
 		}
 		/*
 			If the neighbor is dimmer than how much light this node
 			would spread on it, add to list
 		*/
-		if(n2.getLight(bank) < newlight)
+		if(n2.getLight(bank, nodemgr) < newlight)
 		{
-			if(n2.light_propagates())
+			if(nodemgr->get(n2).light_propagates)
 			{
-				n2.setLight(bank, newlight);
-				spreadLight(bank, n2pos);
+				n2.setLight(bank, newlight, nodemgr);
+				spreadLight(bank, n2pos, nodemgr);
 			}
 		}
 	}
@@ -583,7 +585,7 @@ void VoxelManipulator::spreadLight(enum LightBank bank,
 	goes on recursively.
 */
 void VoxelManipulator::spreadLight(enum LightBank bank,
-		core::map<v3s16, bool> & from_nodes)
+		core::map<v3s16, bool> & from_nodes, INodeDefManager *nodemgr)
 {
 	const v3s16 dirs[6] = {
 		v3s16(0,0,1), // back
@@ -614,7 +616,7 @@ void VoxelManipulator::spreadLight(enum LightBank bank,
 
 		MapNode &n = m_data[i];
 
-		u8 oldlight = n.getLight(bank);
+		u8 oldlight = n.getLight(bank, nodemgr);
 		u8 newlight = diminish_light(oldlight);
 
 		// Loop through 6 neighbors
@@ -636,7 +638,7 @@ void VoxelManipulator::spreadLight(enum LightBank bank,
 					If the neighbor is brighter than the current node,
 					add to list (it will light up this node on its turn)
 				*/
-				if(n2.getLight(bank) > undiminish_light(oldlight))
+				if(n2.getLight(bank, nodemgr) > undiminish_light(oldlight))
 				{
 					lighted_nodes.insert(n2pos, true);
 				}
@@ -644,11 +646,11 @@ void VoxelManipulator::spreadLight(enum LightBank bank,
 					If the neighbor is dimmer than how much light this node
 					would spread on it, add to list
 				*/
-				if(n2.getLight(bank) < newlight)
+				if(n2.getLight(bank, nodemgr) < newlight)
 				{
-					if(n2.light_propagates())
+					if(nodemgr->get(n2).light_propagates)
 					{
-						n2.setLight(bank, newlight);
+						n2.setLight(bank, newlight, nodemgr);
 						lighted_nodes.insert(n2pos, true);
 					}
 				}
@@ -666,7 +668,7 @@ void VoxelManipulator::spreadLight(enum LightBank bank,
 			<<std::endl;*/
 	
 	if(lighted_nodes.size() > 0)
-		spreadLight(bank, lighted_nodes);
+		spreadLight(bank, lighted_nodes, nodemgr);
 }
 #endif
 

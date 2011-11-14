@@ -17,17 +17,24 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
-#ifndef MAPNODE_CONTENTFEATURES_HEADER
-#define MAPNODE_CONTENTFEATURES_HEADER
+#ifndef NODEDEF_HEADER
+#define NODEDEF_HEADER
 
 #include "common_irrlicht.h"
 #include <string>
+#include <set>
 #include "mapnode.h"
 #ifndef SERVER
 #include "tile.h"
 #endif
 #include "materials.h" // MaterialProperties
 class ITextureSource;
+
+/*
+	TODO: Rename to nodedef.h
+*/
+
+#if 0
 
 /*
 	Content feature list
@@ -42,6 +49,8 @@ class ITextureSource;
 	Must be called before accessing the table.
 */
 void init_contentfeatures(ITextureSource *tsrc);
+
+#endif
 
 enum ContentParamType
 {
@@ -119,7 +128,7 @@ struct ContentFeatures
 	// List of all block textures that have been used (value is dummy)
 	// Used for texture atlas making.
 	// Exists on server too for cleaner code in content_mapnode.cpp.
-	core::map<std::string, bool> used_texturenames;
+	std::set<std::string> used_texturenames;
 	
 	// Type of MapNode::param1
 	ContentParamType param_type;
@@ -195,6 +204,7 @@ struct ContentFeatures
 		special_material2 = NULL;
 		special_atlas = NULL;
 #endif
+		used_texturenames.clear();
 		param_type = CPT_NONE;
 		is_ground_content = false;
 		light_propagates = false;
@@ -256,16 +266,9 @@ struct ContentFeatures
 
 #ifndef SERVER
 	void setTile(u16 i, const TileSpec &tile)
-	{
-		tiles[i] = tile;
-	}
+	{ tiles[i] = tile; }
 	void setAllTiles(const TileSpec &tile)
-	{
-		for(u16 i=0; i<6; i++)
-		{
-			setTile(i, tile);
-		}
-	}
+	{ for(u16 i=0; i<6; i++) setTile(i, tile); }
 #endif
 
 #ifdef SERVER
@@ -281,94 +284,46 @@ struct ContentFeatures
 	void setInventoryTextureCube(std::string top,
 			std::string left, std::string right, ITextureSource *tsrc);
 #endif
+
+	/*
+		Some handy methods
+	*/
+	bool isLiquid() const{
+		return (liquid_type != LIQUID_NONE);
+	}
+	bool sameLiquid(const ContentFeatures &f) const{
+		if(!isLiquid() || !f.isLiquid()) return false;
+		return (liquid_alternative_flowing == f.liquid_alternative_flowing);
+	}
 };
 
-/*
-	Call this to access the ContentFeature list
-*/
-ContentFeatures & content_features(content_t i);
-ContentFeatures & content_features(MapNode &n);
+class INodeDefManager
+{
+public:
+	INodeDefManager(){}
+	virtual ~INodeDefManager(){}
+	// Get node definition
+	virtual const ContentFeatures& get(content_t c) const=0;
+	virtual const ContentFeatures& get(const MapNode &n) const=0;
+};
 
-/*
-	Here is a bunch of DEPRECATED functions.
-*/
+class IWritableNodeDefManager : public INodeDefManager
+{
+public:
+	IWritableNodeDefManager(){}
+	virtual ~IWritableNodeDefManager(){}
+	virtual IWritableNodeDefManager* clone()=0;
+	// Get node definition
+	virtual const ContentFeatures& get(content_t c) const=0;
+	virtual const ContentFeatures& get(const MapNode &n) const=0;
+		
+	// Register node definition
+	virtual void set(content_t c, const ContentFeatures &def)=0;
+	virtual ContentFeatures* getModifiable(content_t c)=0;
+};
 
-/*
-	If true, the material allows light propagation and brightness is stored
-	in param.
-	NOTE: Don't use, use "content_features(m).whatever" instead
-*/
-inline bool light_propagates_content(content_t m)
-{
-	return content_features(m).light_propagates;
-}
-/*
-	If true, the material allows lossless sunlight propagation.
-	NOTE: It doesn't seem to go through torches regardlessly of this
-	NOTE: Don't use, use "content_features(m).whatever" instead
-*/
-inline bool sunlight_propagates_content(content_t m)
-{
-	return content_features(m).sunlight_propagates;
-}
-/*
-	On a node-node surface, the material of the node with higher solidness
-	is used for drawing.
-	0: Invisible
-	1: Transparent
-	2: Opaque
-	NOTE: Don't use, use "content_features(m).whatever" instead
-*/
-inline u8 content_solidness(content_t m)
-{
-	return content_features(m).solidness;
-}
-// Objects collide with walkable contents
-// NOTE: Don't use, use "content_features(m).whatever" instead
-inline bool content_walkable(content_t m)
-{
-	return content_features(m).walkable;
-}
-// NOTE: Don't use, use "content_features(m).whatever" instead
-inline bool content_liquid(content_t m)
-{
-	return content_features(m).liquid_type != LIQUID_NONE;
-}
-// NOTE: Don't use, use "content_features(m).whatever" instead
-inline bool content_flowing_liquid(content_t m)
-{
-	return content_features(m).liquid_type == LIQUID_FLOWING;
-}
-// NOTE: Don't use, use "content_features(m).whatever" instead
-inline bool content_liquid_source(content_t m)
-{
-	return content_features(m).liquid_type == LIQUID_SOURCE;
-}
-// CONTENT_WATER || CONTENT_WATERSOURCE -> CONTENT_WATER
-// CONTENT_LAVA || CONTENT_LAVASOURCE -> CONTENT_LAVA
-// NOTE: Don't use, use "content_features(m).whatever" instead
-inline content_t make_liquid_flowing(content_t m)
-{
-	u8 c = content_features(m).liquid_alternative_flowing;
-	assert(c != CONTENT_IGNORE);
-	return c;
-}
-// Pointable contents can be pointed to in the map
-// NOTE: Don't use, use "content_features(m).whatever" instead
-inline bool content_pointable(content_t m)
-{
-	return content_features(m).pointable;
-}
-// NOTE: Don't use, use "content_features(m).whatever" instead
-inline bool content_diggable(content_t m)
-{
-	return content_features(m).diggable;
-}
-// NOTE: Don't use, use "content_features(m).whatever" instead
-inline bool content_buildable_to(content_t m)
-{
-	return content_features(m).buildable_to;
-}
+// If textures not actually available (server), tsrc can be NULL
+IWritableNodeDefManager* createNodeDefManager(ITextureSource *tsrc);
 
 
 #endif

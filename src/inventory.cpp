@@ -29,8 +29,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "content_sao.h"
 #include "player.h"
 #include "log.h"
-#include "mapnode_contentfeatures.h"
-#include "tool.h"
+#include "nodedef.h"
+#include "tooldef.h"
 #include "gamedef.h"
 
 /*
@@ -152,7 +152,7 @@ ServerActiveObject* InventoryItem::createSAO(ServerEnvironment *env, u16 id, v3f
 #ifndef SERVER
 video::ITexture * MaterialItem::getImage(ITextureSource *tsrc) const
 {
-	return content_features(m_content).inventory_texture;
+	return m_gamedef->getNodeDefManager()->get(m_content).inventory_texture;
 }
 #endif
 

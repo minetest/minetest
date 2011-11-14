@@ -27,7 +27,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <cmath>
 #include <SAnimatedMesh.h>
 #include "settings.h"
-#include "mapnode_contentfeatures.h" // For wield visualization
+#include "nodedef.h" // For wield visualization
 
 Camera::Camera(scene::ISceneManager* smgr, MapDrawControl& draw_control):
 	m_smgr(smgr),
@@ -449,8 +449,11 @@ void Camera::updateSettings()
 	m_wanted_frametime = 1.0 / wanted_fps;
 }
 
-void Camera::wield(const InventoryItem* item, ITextureSource *tsrc)
+void Camera::wield(const InventoryItem* item, IGameDef *gamedef)
 {
+	ITextureSource *tsrc = gamedef->tsrc();
+	INodeDefManager *ndef = gamedef->ndef();
+
 	if (item != NULL)
 	{
 		bool isCube = false;
@@ -461,9 +464,9 @@ void Camera::wield(const InventoryItem* item, ITextureSource *tsrc)
 			// A block-type material
 			MaterialItem* mat_item = (MaterialItem*) item;
 			content_t content = mat_item->getMaterial();
-			if (content_features(content).solidness || content_features(content).visual_solidness)
+			if (ndef->get(content).solidness || ndef->get(content).visual_solidness)
 			{
-				m_wieldnode->setCube(content_features(content).tiles);
+				m_wieldnode->setCube(ndef->get(content).tiles);
 				m_wieldnode->setScale(v3f(30));
 				isCube = true;
 			}

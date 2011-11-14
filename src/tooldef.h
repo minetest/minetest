@@ -17,10 +17,14 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
-#ifndef TOOL_HEADER
-#define TOOL_HEADER
+#ifndef TOOLDEF_HEADER
+#define TOOLDEF_HEADER
 
 #include <string>
+
+/*
+	TODO: Rename to tooldef.h
+*/
 
 struct ToolDiggingProperties
 {
@@ -69,14 +73,26 @@ class IToolDefManager
 public:
 	IToolDefManager(){}
 	virtual ~IToolDefManager(){}
-	virtual bool registerTool(std::string toolname, const ToolDefinition &def)=0;
-	virtual ToolDefinition* getToolDefinition(const std::string &toolname)=0;
-	virtual std::string getImagename(const std::string &toolname)=0;
+	virtual const ToolDefinition* getToolDefinition(const std::string &toolname) const=0;
+	virtual std::string getImagename(const std::string &toolname) const =0;
 	virtual ToolDiggingProperties getDiggingProperties(
-			const std::string &toolname)=0;
+			const std::string &toolname) const =0;
 };
 
-IToolDefManager* createToolDefManager();
+class IWritableToolDefManager : public IToolDefManager
+{
+public:
+	IWritableToolDefManager(){}
+	virtual ~IWritableToolDefManager(){}
+	virtual const ToolDefinition* getToolDefinition(const std::string &toolname) const=0;
+	virtual std::string getImagename(const std::string &toolname) const =0;
+	virtual ToolDiggingProperties getDiggingProperties(
+			const std::string &toolname) const =0;
+			
+	virtual bool registerTool(std::string toolname, const ToolDefinition &def)=0;
+};
+
+IWritableToolDefManager* createToolDefManager();
 
 #endif
 

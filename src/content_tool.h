@@ -17,8 +17,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
-class IToolDefManager;
+class IWritableToolDefManager;
 
 // Add default tools to manager
-void content_tool_init(IToolDefManager *mgr);
+void content_tool_init(IWritableToolDefManager *mgr);
 

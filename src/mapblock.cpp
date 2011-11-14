@@ -23,17 +23,19 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "main.h"
 #include "light.h"
 #include <sstream>
-#include "mapnode_contentfeatures.h"
+#include "nodedef.h"
 #include "nodemetadata.h"
+#include "gamedef.h"
 
 /*
 	MapBlock
 */
 
-MapBlock::MapBlock(Map *parent, v3s16 pos, bool dummy):
+MapBlock::MapBlock(Map *parent, v3s16 pos, IGameDef *gamedef, bool dummy):
 		m_node_metadata(new NodeMetadataList),
 		m_parent(parent),
 		m_pos(pos),
+		m_gamedef(gamedef),
 		m_modified(MOD_STATE_WRITE_NEEDED),
 		is_underground(false),
 		m_lighting_expired(true),
@@ -138,7 +140,7 @@ MapNode MapBlock::getNodeParentNoEx(v3s16 p)
 #ifndef SERVER
 
 #if 1
-void MapBlock::updateMesh(u32 daynight_ratio, ITextureSource *tsrc)
+void MapBlock::updateMesh(u32 daynight_ratio)
 {
 #if 0
 	/*
@@ -154,7 +156,7 @@ void MapBlock::updateMesh(u32 daynight_ratio, ITextureSource *tsrc)
 	MeshMakeData data;
 	data.fill(daynight_ratio, this);
 	
-	scene::SMesh *mesh_new = makeMapBlockMesh(&data, tsrc);
+	scene::SMesh *mesh_new = makeMapBlockMesh(&data, m_gamedef);
 	
 	/*
 		Replace the mesh
@@ -229,6 +231,8 @@ void MapBlock::replaceMesh(scene::SMesh *mesh_new)
 bool MapBlock::propagateSunlight(core::map<v3s16, bool> & light_sources,
 		bool remove_light, bool *black_air_left)
 {
+	INodeDefManager *nodemgr = m_gamedef->ndef();
+
 	// Whether the sunlight at the top of the bottom block is valid
 	bool block_below_is_valid = true;
 	
@@ -249,7 +253,7 @@ bool MapBlock::propagateSunlight(core::map<v3s16, bool> & light_sources,
 					// Trust heuristics
 					no_sunlight = is_underground;
 				}
-				else if(n.getLight(LIGHTBANK_DAY) != LIGHT_SUN)
+				else if(n.getLight(LIGHTBANK_DAY, m_gamedef->ndef()) != LIGHT_SUN)
 				{
 					no_sunlight = true;
 				}
@@ -268,7 +272,7 @@ bool MapBlock::propagateSunlight(core::map<v3s16, bool> & light_sources,
 				{
 					MapNode n = getNode(v3s16(x, MAP_BLOCKSIZE-1, z));
 					//if(n.getContent() == CONTENT_WATER || n.getContent() == CONTENT_WATERSOURCE)
-					if(content_features(n).sunlight_propagates == false)
+					if(m_gamedef->ndef()->get(n).sunlight_propagates == false)
 					{
 						no_sunlight = true;
 					}
@@ -317,11 +321,11 @@ bool MapBlock::propagateSunlight(core::map<v3s16, bool> & light_sources,
 				{
 					// Do nothing
 				}
-				else if(current_light == LIGHT_SUN && n.sunlight_propagates())
+				else if(current_light == LIGHT_SUN && nodemgr->get(n).sunlight_propagates)
 				{
 					// Do nothing: Sunlight is continued
 				}
-				else if(n.light_propagates() == false)
+				else if(nodemgr->get(n).light_propagates == false)
 				{
 					/*// DEPRECATED TODO: REMOVE
 					if(grow_grass)
@@ -355,11 +359,11 @@ bool MapBlock::propagateSunlight(core::map<v3s16, bool> & light_sources,
 					current_light = diminish_light(current_light);
 				}
 
-				u8 old_light = n.getLight(LIGHTBANK_DAY);
+				u8 old_light = n.getLight(LIGHTBANK_DAY, nodemgr);
 
 				if(current_light > old_light || remove_light)
 				{
-					n.setLight(LIGHTBANK_DAY, current_light);
+					n.setLight(LIGHTBANK_DAY, current_light, nodemgr);
 				}
 				
 				if(diminish_light(current_light) != 0)
@@ -392,12 +396,12 @@ bool MapBlock::propagateSunlight(core::map<v3s16, bool> & light_sources,
 			if(block_below_is_valid)
 			{
 				MapNode n = getNodeParent(v3s16(x, -1, z));
-				if(n.light_propagates())
+				if(nodemgr->get(n).light_propagates)
 				{
-					if(n.getLight(LIGHTBANK_DAY) == LIGHT_SUN
+					if(n.getLight(LIGHTBANK_DAY, nodemgr) == LIGHT_SUN
 							&& sunlight_should_go_down == false)
 						block_below_is_valid = false;
-					else if(n.getLight(LIGHTBANK_DAY) != LIGHT_SUN
+					else if(n.getLight(LIGHTBANK_DAY, nodemgr) != LIGHT_SUN
 							&& sunlight_should_go_down == true)
 						block_below_is_valid = false;
 				}
@@ -438,6 +442,8 @@ void MapBlock::copyFrom(VoxelManipulator &dst)
 
 void MapBlock::updateDayNightDiff()
 {
+	INodeDefManager *nodemgr = m_gamedef->ndef();
+
 	if(data == NULL)
 	{
 		m_day_night_differs = false;
@@ -452,7 +458,7 @@ void MapBlock::updateDayNightDiff()
 	for(u32 i=0; i<MAP_BLOCKSIZE*MAP_BLOCKSIZE*MAP_BLOCKSIZE; i++)
 	{
 		MapNode &n = data[i];
-		if(n.getLight(LIGHTBANK_DAY) != n.getLight(LIGHTBANK_NIGHT))
+		if(n.getLight(LIGHTBANK_DAY, nodemgr) != n.getLight(LIGHTBANK_NIGHT, nodemgr))
 		{
 			differs = true;
 			break;
@@ -493,7 +499,7 @@ s16 MapBlock::getGroundLevel(v2s16 p2d)
 		for(; y>=0; y--)
 		{
 			MapNode n = getNodeRef(p2d.X, y, p2d.Y);
-			if(content_features(n).walkable)
+			if(m_gamedef->ndef()->get(n).walkable)
 			{
 				if(y == MAP_BLOCKSIZE-1)
 					return -2;
@@ -655,8 +661,10 @@ void MapBlock::serialize(std::ostream &os, u8 version)
 	}
 }
 
-void MapBlock::deSerialize(std::istream &is, u8 version, IGameDef *gamedef)
+void MapBlock::deSerialize(std::istream &is, u8 version)
 {
+	INodeDefManager *nodemgr = m_gamedef->ndef();
+
 	if(!ser_ver_supported(version))
 		throw VersionMismatchException("ERROR: MapBlock format not supported");
 
@@ -690,7 +698,7 @@ void MapBlock::deSerialize(std::istream &is, u8 version, IGameDef *gamedef)
 			if(is.gcount() != len)
 				throw SerializationError
 						("MapBlock::deSerialize: no enough input data");
-			data[i].deSerialize(*d, version);
+			data[i].deSerialize(*d, version, nodemgr);
 		}
 	}
 	else if(version <= 10)
@@ -772,7 +780,7 @@ void MapBlock::deSerialize(std::istream &is, u8 version, IGameDef *gamedef)
 			buf[0] = s[i];
 			buf[1] = s[i+nodecount];
 			buf[2] = s[i+nodecount*2];
-			data[i].deSerialize(buf, version);
+			data[i].deSerialize(buf, version, m_gamedef->getNodeDefManager());
 		}
 		
 		/*
@@ -786,7 +794,7 @@ void MapBlock::deSerialize(std::istream &is, u8 version, IGameDef *gamedef)
 				{
 					std::string data = deSerializeString(is);
 					std::istringstream iss(data, std::ios_base::binary);
-					m_node_metadata->deSerialize(iss, gamedef);
+					m_node_metadata->deSerialize(iss, m_gamedef);
 				}
 				else
 				{
@@ -794,7 +802,7 @@ void MapBlock::deSerialize(std::istream &is, u8 version, IGameDef *gamedef)
 					std::ostringstream oss(std::ios_base::binary);
 					decompressZlib(is, oss);
 					std::istringstream iss(oss.str(), std::ios_base::binary);
-					m_node_metadata->deSerialize(iss, gamedef);
+					m_node_metadata->deSerialize(iss, m_gamedef);
 				}
 			}
 			catch(SerializationError &e)

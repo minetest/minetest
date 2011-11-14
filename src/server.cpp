@@ -41,8 +41,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "log.h"
 #include "script.h"
 #include "scriptapi.h"
-#include "mapnode_contentfeatures.h"
-#include "tool.h"
+#include "nodedef.h"
+#include "tooldef.h"
 #include "content_tool.h" // For content_tool_init
 
 #define PP(x) "("<<(x).X<<","<<(x).Y<<","<<(x).Z<<")"
@@ -959,6 +959,7 @@ Server::Server(
 	m_banmanager(mapsavedir+DIR_DELIM+"ipban.txt"),
 	m_lua(NULL),
 	m_toolmgr(createToolDefManager()),
+	m_nodemgr(createNodeDefManager(NULL)),
 	m_thread(this),
 	m_emergethread(this),
 	m_time_counter(0),
@@ -983,9 +984,14 @@ Server::Server(
 
 	JMutexAutoLock envlock(m_env_mutex);
 	JMutexAutoLock conlock(m_con_mutex);
+
+	infostream<<"m_nodemgr="<<m_nodemgr<<std::endl;
 	
 	// Initialize default tool definitions
 	content_tool_init(m_toolmgr);
+
+	// Initialize default node definitions
+	content_mapnode_init(NULL, m_nodemgr);
 
 	// Initialize scripting
 	
@@ -1107,6 +1113,7 @@ Server::~Server()
 	delete m_env;
 
 	delete m_toolmgr;
+	delete m_nodemgr;
 	
 	// Deinitialize scripting
 	infostream<<"Server: Deinitializing scripting"<<std::endl;
@@ -2481,14 +2488,14 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 			{
 				MapNode n = m_env->getMap().getNode(p_under);
 				// Get mineral
-				mineral = n.getMineral();
+				mineral = n.getMineral(m_nodemgr);
 				// Get material at position
 				material = n.getContent();
 				// If not yet cancelled
 				if(cannot_remove_node == false)
 				{
 					// If it's not diggable, do nothing
-					if(content_diggable(material) == false)
+					if(m_nodemgr->get(material).diggable == false)
 					{
 						infostream<<"Server: Not finishing digging: "
 								<<"Node not diggable"
@@ -2584,7 +2591,7 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 						ToolDiggingProperties tp =
 								m_toolmgr->getDiggingProperties(toolname);
 						DiggingProperties prop =
-								getDiggingProperties(material, &tp);
+								getDiggingProperties(material, &tp, m_nodemgr);
 
 						if(prop.diggable == false)
 						{
@@ -2614,7 +2621,7 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 				// If not mineral
 				if(item == NULL)
 				{
-					std::string &dug_s = content_features(material).dug_item;
+					const std::string &dug_s = m_nodemgr->get(material).dug_item;
 					if(dug_s != "")
 					{
 						std::istringstream is(dug_s, std::ios::binary);
@@ -2640,20 +2647,20 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 				// If not mineral
 				if(item == NULL)
 				{
-				        std::string &extra_dug_s = content_features(material).extra_dug_item;
-					s32 extra_rarity = content_features(material).extra_dug_item_rarity;
+					const std::string &extra_dug_s = m_nodemgr->get(material).extra_dug_item;
+					s32 extra_rarity = m_nodemgr->get(material).extra_dug_item_rarity;
 					if(extra_dug_s != "" && extra_rarity != 0
 					   && myrand() % extra_rarity == 0)
 					{
-				                std::istringstream is(extra_dug_s, std::ios::binary);
+						std::istringstream is(extra_dug_s, std::ios::binary);
 						item = InventoryItem::deSerialize(is, this);
 					}
 				}
 			
 				if(item != NULL)
 				{
-				        // Add a item to inventory
-				        player->inventory.addItem("main", item);
+					// Add a item to inventory
+					player->inventory.addItem("main", item);
 
 					// Send inventory
 					UpdateCrafting(player->peer_id);
@@ -2717,7 +2724,7 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 							<<" because privileges are "<<getPlayerPrivs(player)
 							<<std::endl;
 
-					if(content_features(n2).buildable_to == false
+					if(m_nodemgr->get(n2).buildable_to == false
 						|| no_enough_privs)
 					{
 						// Client probably has wrong data.
@@ -2755,11 +2762,11 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 						<<" at "<<PP(p_under)<<std::endl;
 			
 				// Calculate direction for wall mounted stuff
-				if(content_features(n).wall_mounted)
+				if(m_nodemgr->get(n).wall_mounted)
 					n.param2 = packDir(p_under - p_over);
 
 				// Calculate the direction for furnaces and chests and stuff
-				if(content_features(n).param_type == CPT_FACEDIR_SIMPLE)
+				if(m_nodemgr->get(n).param_type == CPT_FACEDIR_SIMPLE)
 				{
 					v3f playerpos = player->getPosition();
 					v3f blockpos = intToFloat(p_over, BS) - playerpos;
@@ -4190,6 +4197,21 @@ void Server::notifyPlayer(const char *name, const std::wstring msg)
 void Server::notifyPlayers(const std::wstring msg)
 {
 	BroadcastChatMessage(msg);
+}
+
+// IGameDef interface
+// Under envlock
+IToolDefManager* Server::getToolDefManager()
+{
+	return m_toolmgr;
+}
+INodeDefManager* Server::getNodeDefManager()
+{
+	return m_nodemgr;
+}
+ITextureSource* Server::getTextureSource()
+{
+	return NULL;
 }
 
 v3f findSpawnPos(ServerMap &map)

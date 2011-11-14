@@ -23,6 +23,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "common_irrlicht.h"
 
 class Map;
+class IGameDef;
 
 struct collisionMoveResult
 {
@@ -34,13 +35,13 @@ struct collisionMoveResult
 };
 
 // Moves using a single iteration; speed should not exceed pos_max_d/dtime
-collisionMoveResult collisionMoveSimple(Map *map, f32 pos_max_d,
-		const core::aabbox3d<f32> &box_0,
+collisionMoveResult collisionMoveSimple(Map *map, IGameDef *gamedef,
+		f32 pos_max_d, const core::aabbox3d<f32> &box_0,
 		f32 dtime, v3f &pos_f, v3f &speed_f);
 
 // Moves using as many iterations as needed
-collisionMoveResult collisionMovePrecise(Map *map, f32 pos_max_d,
-		const core::aabbox3d<f32> &box_0,
+collisionMoveResult collisionMovePrecise(Map *map, IGameDef *gamedef,
+		f32 pos_max_d, const core::aabbox3d<f32> &box_0,
 		f32 dtime, v3f &pos_f, v3f &speed_f);
 
 enum CollisionType

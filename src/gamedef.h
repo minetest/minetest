@@ -21,9 +21,10 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #define GAMEDEF_HEADER
 
 class IToolDefManager;
-class INodeDefManager; //TODO
+class INodeDefManager;
 //class IItemDefManager; //TODO
 // Mineral too?
+class ITextureSource;
 
 /*
 	An interface for fetching game-global definitions like tool and
@@ -33,9 +34,20 @@ class INodeDefManager; //TODO
 class IGameDef
 {
 public:
+	// These are thread-safe IF they are not edited while running threads.
+	// Thus, first they are set up and then they are only read.
 	virtual IToolDefManager* getToolDefManager()=0;
 	virtual INodeDefManager* getNodeDefManager()=0;
 	//virtual IItemDefManager* getItemDefManager()=0;
+
+	// This is always thread-safe, but referencing the irrlicht texture
+	// pointers in other threads than main thread will make things explode.
+	virtual ITextureSource* getTextureSource()=0;
+
+	// Shorthands
+	IToolDefManager* tdef(){return getToolDefManager();}
+	INodeDefManager* ndef(){return getNodeDefManager();}
+	ITextureSource* tsrc(){return getTextureSource();}
 };
 
 #endif

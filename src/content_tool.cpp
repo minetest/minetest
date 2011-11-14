@@ -18,9 +18,9 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 */
 
 #include "content_tool.h"
-#include "tool.h"
+#include "tooldef.h"
 
-void content_tool_init(IToolDefManager *mgr)
+void content_tool_init(IWritableToolDefManager *mgr)
 {
 	mgr->registerTool("WPick",
 			ToolDefinition("tool_woodpick.png",
@@ -62,7 +62,7 @@ void content_tool_init(IToolDefManager *mgr)
 			ToolDefinition("tool_steelsword.png",
 			ToolDiggingProperties(2.0, 3,0,1,-1, 300, 0,0,0,0)));
 	mgr->registerTool("",
-			ToolDefinition("tool_hand.png",
+			ToolDefinition("tooldef.hand.png",
 			ToolDiggingProperties(0.5, 1,0,-1,0, 50, 0,0,0,0)));
 }
 

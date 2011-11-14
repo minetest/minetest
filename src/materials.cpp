@@ -1,12 +1,13 @@
 #include "materials.h"
 #include "mapnode.h"
-#include "mapnode_contentfeatures.h"
-#include "tool.h"
+#include "nodedef.h"
+#include "tooldef.h"
 
-DiggingProperties getDiggingProperties(u16 material, ToolDiggingProperties *tp)
+DiggingProperties getDiggingProperties(u16 content, ToolDiggingProperties *tp,
+		INodeDefManager *nodemgr)
 {
 	assert(tp);
-	MaterialProperties &mp = content_features(material).material;
+	const MaterialProperties &mp = nodemgr->get(content).material;
 	if(mp.diggability == DIGGABLE_NOT)
 		return DiggingProperties(false, 0, 0);
 	if(mp.diggability == DIGGABLE_CONSTANT)

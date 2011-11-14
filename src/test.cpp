@@ -31,6 +31,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <sstream>
 #include "porting.h"
 #include "content_mapnode.h"
+#include "nodedef.h"
 #include "mapsector.h"
 #include "settings.h"
 #include "log.h"
@@ -216,26 +217,26 @@ struct TestCompress
 
 struct TestMapNode
 {
-	void Run()
+	void Run(INodeDefManager *nodedef)
 	{
 		MapNode n;
 
 		// Default values
 		assert(n.getContent() == CONTENT_AIR);
-		assert(n.getLight(LIGHTBANK_DAY) == 0);
-		assert(n.getLight(LIGHTBANK_NIGHT) == 0);
+		assert(n.getLight(LIGHTBANK_DAY, nodedef) == 0);
+		assert(n.getLight(LIGHTBANK_NIGHT, nodedef) == 0);
 		
 		// Transparency
 		n.setContent(CONTENT_AIR);
-		assert(n.light_propagates() == true);
+		assert(nodedef->get(n).light_propagates == true);
 		n.setContent(CONTENT_STONE);
-		assert(n.light_propagates() == false);
+		assert(nodedef->get(n).light_propagates == false);
 	}
 };
 
 struct TestVoxelManipulator
 {
-	void Run()
+	void Run(INodeDefManager *nodedef)
 	{
 		/*
 			VoxelArea
@@ -278,13 +279,13 @@ struct TestVoxelManipulator
 		
 		VoxelManipulator v;
 
-		v.print(infostream);
+		v.print(infostream, nodedef);
 
 		infostream<<"*** Setting (-1,0,-1)=2 ***"<<std::endl;
 		
 		v.setNodeNoRef(v3s16(-1,0,-1), MapNode(2));
 
-		v.print(infostream);
+		v.print(infostream, nodedef);
 
  		assert(v.getNode(v3s16(-1,0,-1)).getContent() == 2);
 
@@ -292,85 +293,16 @@ struct TestVoxelManipulator
 
 		EXCEPTION_CHECK(InvalidPositionException, v.getNode(v3s16(0,0,-1)));
 
-		v.print(infostream);
+		v.print(infostream, nodedef);
 
 		infostream<<"*** Adding area ***"<<std::endl;
 
 		v.addArea(a);
 		
-		v.print(infostream);
+		v.print(infostream, nodedef);
 
 		assert(v.getNode(v3s16(-1,0,-1)).getContent() == 2);
 		EXCEPTION_CHECK(InvalidPositionException, v.getNode(v3s16(0,1,1)));
-
-#if 0
-		/*
-			Water stuff
-		*/
-
-		v.clear();
-
-		const char *content =
-			"#...######  "
-			"#...##..##  "
-			"#........ .."
-			"############"
-
-			"#...######  "
-			"#...##..##  "
-			"#........#  "
-			"############"
-		;
-
-		v3s16 size(12, 4, 2);
-		VoxelArea area(v3s16(0,0,0), size-v3s16(1,1,1));
-		
-		const char *p = content;
-		for(s16 z=0; z<size.Z; z++)
-		for(s16 y=size.Y-1; y>=0; y--)
-		for(s16 x=0; x<size.X; x++)
-		{
-			MapNode n;
-			//n.pressure = size.Y - y;
-			if(*p == '#')
-				n.setContent(CONTENT_STONE);
-			else if(*p == '.')
-				n.setContent(CONTENT_WATER);
-			else if(*p == ' ')
-				n.setContent(CONTENT_AIR);
-			else
-				assert(0);
-			v.setNode(v3s16(x,y,z), n);
-			p++;
-		}
-
-		v.print(infostream, VOXELPRINT_WATERPRESSURE);
-		
-		core::map<v3s16, u8> active_nodes;
-		v.updateAreaWaterPressure(area, active_nodes);
-
-		v.print(infostream, VOXELPRINT_WATERPRESSURE);
-		
-		//s16 highest_y = -32768;
-		/*
-			NOTE: These are commented out because this behaviour is changed
-			      all the time
-		*/
-		//assert(v.getWaterPressure(v3s16(7, 1, 1), highest_y, 0) == -1);
-		//assert(highest_y == 3);
-		/*assert(v.getWaterPressure(v3s16(7, 1, 1), highest_y, 0) == 3);
-		//assert(highest_y == 3);*/
-		
-		active_nodes.clear();
-		active_nodes[v3s16(9,1,0)] = 1;
-		//v.flowWater(active_nodes, 0, true, 1000);
-		v.flowWater(active_nodes, 0, false, 1000);
-		
-		infostream<<"Final result of flowWater:"<<std::endl;
-		v.print(infostream, VOXELPRINT_WATERPRESSURE);
-#endif
-		
-		//assert(0);
 	}
 };
 
@@ -1143,15 +1075,27 @@ struct TestConnection
 	x.Run();\
 }
 
+#define TESTPARAMS(X, ...)\
+{\
+	X x;\
+	infostream<<"Running " #X <<std::endl;\
+	x.Run(__VA_ARGS__);\
+}
+
 void run_tests()
 {
 	DSTACK(__FUNCTION_NAME);
+	
+	// Create node definitions
+	IWritableNodeDefManager *nodedef = createNodeDefManager(NULL);
+	content_mapnode_init(NULL, nodedef);
+
 	infostream<<"run_tests() started"<<std::endl;
 	TEST(TestUtilities);
 	TEST(TestSettings);
 	TEST(TestCompress);
-	TEST(TestMapNode);
-	TEST(TestVoxelManipulator);
+	TESTPARAMS(TestMapNode, nodedef);
+	TESTPARAMS(TestVoxelManipulator, nodedef);
 	//TEST(TestMapBlock);
 	//TEST(TestMapSector);
 	if(INTERNET_SIMULATOR == false){

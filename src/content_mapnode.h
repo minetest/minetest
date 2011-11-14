@@ -22,9 +22,10 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "mapnode.h"
 class ITextureSource;
+class IWritableNodeDefManager;
 
 /*
-	Fills stuff to the global ContentFeatures lookup table.
+	Initialize default node definitions
 
 	This accesses tsrc; if it is non-NULL, textures are set
 	for the nodes.
@@ -35,7 +36,7 @@ class ITextureSource;
 
 	Server only calls this once with tsrc=NULL.
 */
-void content_mapnode_init(ITextureSource *tsrc);
+void content_mapnode_init(ITextureSource *tsrc, IWritableNodeDefManager *nodemgr);
 
 // Backwards compatibility for non-extended content types in v19
 extern content_t trans_table_19[21][2];

@@ -30,13 +30,13 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 
 class Map;
+class IGameDef;
 
 class Player
 {
 public:
 
-
-	Player();
+	Player(IGameDef *gamedef);
 	virtual ~Player();
 
 	void resetInventory();
@@ -141,7 +141,7 @@ public:
 		deSerialize stops reading exactly at the right point.
 	*/
 	void serialize(std::ostream &os);
-	void deSerialize(std::istream &is, IGameDef *gamedef);
+	void deSerialize(std::istream &is);
 
 	bool touching_ground;
 	// This oscillates so that the player jumps a bit above the surface
@@ -164,6 +164,8 @@ public:
 	u16 peer_id;
 
 protected:
+	IGameDef *m_gamedef;
+
 	char m_name[PLAYERNAME_SIZE];
 	u16 m_selected_item;
 	f32 m_pitch;
@@ -185,26 +187,15 @@ public:
 class ServerRemotePlayer : public Player, public ServerActiveObject
 {
 public:
-	ServerRemotePlayer(ServerEnvironment *env):
-		ServerActiveObject(env, v3f(0,0,0))
-	{
-	}
+	ServerRemotePlayer(ServerEnvironment *env);
 	ServerRemotePlayer(ServerEnvironment *env, v3f pos_, u16 peer_id_,
-			const char *name_):
-		ServerActiveObject(env, pos_)
-	{
-		setPosition(pos_);
-		peer_id = peer_id_;
-		updateName(name_);
-	}
+			const char *name_);
+
 	virtual ~ServerRemotePlayer()
-	{
-	}
+	{}
 
 	virtual bool isLocal() const
-	{
-		return false;
-	}
+	{ return false; }
 
 	virtual void move(f32 dtime, Map &map, f32 pos_max_d)
 	{
@@ -242,6 +233,7 @@ class RemotePlayer : public Player, public scene::ISceneNode
 {
 public:
 	RemotePlayer(
+		IGameDef *gamedef,
 		scene::ISceneNode* parent=NULL,
 		IrrlichtDevice *device=NULL,
 		s32 id=0);
@@ -378,7 +370,7 @@ struct PlayerControl
 class LocalPlayer : public Player
 {
 public:
-	LocalPlayer();
+	LocalPlayer(IGameDef *gamedef);
 	virtual ~LocalPlayer();
 
 	bool isLocal() const

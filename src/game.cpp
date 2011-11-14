@@ -44,12 +44,13 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "log.h"
 #include "filesys.h"
 // Needed for determining pointing to nodes
-#include "mapnode_contentfeatures.h"
+#include "nodedef.h"
 #include "nodemetadata.h"
 #include "main.h" // For g_settings
 #include "content_mapnode.h" // For content_mapnode_init
-#include "tool.h"
-#include "content_tool.h" // For content_tool_init
+#include "tooldef.h"
+#include "content_tool.h" // Default tools
+#include "content_mapnode.h" // Default nodes
 
 /*
 	Setting this to 1 enables a special camera mode that forces
@@ -321,7 +322,7 @@ void getPointedNode(Client *client, v3f player_position,
 		try
 		{
 			n = client->getNode(v3s16(x,y,z));
-			if(content_pointable(n.getContent()) == false)
+			if(client->getNodeDefManager()->get(n).pointable == false)
 				continue;
 		}
 		catch(InvalidPositionException &e)
@@ -343,7 +344,7 @@ void getPointedNode(Client *client, v3f player_position,
 			v3s16(-1,0,0), // left
 		};
 		
-		ContentFeatures &f = content_features(n);
+		const ContentFeatures &f = client->getNodeDefManager()->get(n);
 		
 		if(f.selection_box.type == NODEBOX_FIXED)
 		{
@@ -592,20 +593,17 @@ void the_game(
 
 	draw_load_screen(L"Loading...", driver, font);
 	
-	// Create tool manager
-	IToolDefManager *toolmgr = createToolDefManager();
-
+	// Create tool definition manager
+	IWritableToolDefManager *tooldef = createToolDefManager();
 	// Create texture source
-	TextureSource *tsrc = new TextureSource(device);
+	IWritableTextureSource *tsrc = createTextureSource(device);
+	// Create node definition manager
+	IWritableNodeDefManager *nodedef = createNodeDefManager(tsrc);
 
-	// Initialize mapnode again to enable changed graphics settings
-	// Initialize content feature table with textures
-	init_contentfeatures(tsrc);
-	// Fill content feature table with default definitions
-	content_mapnode_init(tsrc);
-
-	// Initialize default tool definitions
-	content_tool_init(toolmgr);
+	// Fill node feature table with default definitions
+	content_mapnode_init(tsrc, nodedef);
+	// Set default tool definitions
+	content_tool_init(tooldef);
 
 	/*
 		Create server.
@@ -625,9 +623,14 @@ void the_game(
 
 	draw_load_screen(L"Creating client...", driver, font);
 	infostream<<"Creating client"<<std::endl;
+	
 	MapDrawControl draw_control;
+
 	Client client(device, playername.c_str(), password, draw_control,
-			tsrc, toolmgr);
+			tsrc, tooldef, nodedef);
+	
+	// Client acts as our GameDef
+	IGameDef *gamedef = &client;
 			
 	draw_load_screen(L"Resolving address...", driver, font);
 	Address connect_address(0,0,0,0, port);
@@ -1694,9 +1697,9 @@ void the_game(
 					// Get digging properties for material and tool
 					content_t material = n.getContent();
 					ToolDiggingProperties tp =
-							toolmgr->getDiggingProperties(toolname);
+							tooldef->getDiggingProperties(toolname);
 					DiggingProperties prop =
-							getDiggingProperties(material, &tp);
+							getDiggingProperties(material, &tp, nodedef);
 					
 					float dig_time_complete = 0.0;
 
@@ -2102,7 +2105,7 @@ void the_game(
 			InventoryItem *item = NULL;
 			if(mlist != NULL)
 				item = mlist->getItem(g_selected_item);
-			camera.wield(item, tsrc);
+			camera.wield(item, gamedef);
 		}
 		
 		/*
@@ -2294,7 +2297,7 @@ void the_game(
 		gui_shuttingdowntext->remove();*/
 	}
 
-	delete toolmgr;
+	delete tooldef;
 	delete tsrc;
 }
 

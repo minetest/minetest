@@ -23,7 +23,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <string>
 #include "mineral.h"
 #include "main.h" // For g_settings
-#include "mapnode_contentfeatures.h"
+#include "nodedef.h"
 #include "content_mapnode.h" // For mapnode_translate_*_internal
 
 /*
@@ -33,8 +33,11 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 		1: Face uses m1's content
 		2: Face uses m2's content
 	equivalent: Whether the blocks share the same face (eg. water and glass)
+
+	TODO: Add 3: Both faces drawn with backface culling, remove equivalent
 */
-u8 face_contents(content_t m1, content_t m2, bool *equivalent)
+u8 face_contents(content_t m1, content_t m2, bool *equivalent,
+		INodeDefManager *nodemgr)
 {
 	*equivalent = false;
 
@@ -43,13 +46,15 @@ u8 face_contents(content_t m1, content_t m2, bool *equivalent)
 	
 	bool contents_differ = (m1 != m2);
 	
+	const ContentFeatures &f1 = nodemgr->get(m1);
+	const ContentFeatures &f2 = nodemgr->get(m2);
+
 	// Contents don't differ for different forms of same liquid
-	if(content_liquid(m1) && content_liquid(m2)
-			&& make_liquid_flowing(m1) == make_liquid_flowing(m2))
+	if(f1.sameLiquid(f2))
 		contents_differ = false;
 	
-	u8 c1 = content_solidness(m1);
-	u8 c2 = content_solidness(m2);
+	u8 c1 = f1.solidness;
+	u8 c2 = f2.solidness;
 
 	bool solidness_differs = (c1 != c2);
 	bool makes_face = contents_differ && solidness_differs;
@@ -58,16 +63,16 @@ u8 face_contents(content_t m1, content_t m2, bool *equivalent)
 		return 0;
 	
 	if(c1 == 0)
-		c1 = content_features(m1).visual_solidness;
+		c1 = f1.visual_solidness;
 	if(c2 == 0)
-		c2 = content_features(m2).visual_solidness;
+		c2 = f2.visual_solidness;
 	
 	if(c1 == c2){
 		*equivalent = true;
 		// If same solidness, liquid takes precense
-		if(content_features(m1).liquid_type != LIQUID_NONE)
+		if(f1.isLiquid())
 			return 1;
-		if(content_features(m2).liquid_type != LIQUID_NONE)
+		if(f2.isLiquid())
 			return 2;
 	}
 	
@@ -147,28 +152,10 @@ v3s16 unpackDir(u8 b)
 	MapNode
 */
 
-// These four are DEPRECATED.
-bool MapNode::light_propagates()
-{
-	return light_propagates_content(getContent());
-}
-bool MapNode::sunlight_propagates()
-{
-	return sunlight_propagates_content(getContent());
-}
-u8 MapNode::solidness()
-{
-	return content_solidness(getContent());
-}
-u8 MapNode::light_source()
-{
-	return content_features(*this).light_source;
-}
-
-void MapNode::setLight(enum LightBank bank, u8 a_light)
+void MapNode::setLight(enum LightBank bank, u8 a_light, INodeDefManager *nodemgr)
 {
 	// If node doesn't contain light data, ignore this
-	if(content_features(*this).param_type != CPT_LIGHT)
+	if(nodemgr->get(*this).param_type != CPT_LIGHT)
 		return;
 	if(bank == LIGHTBANK_DAY)
 	{
@@ -184,11 +171,11 @@ void MapNode::setLight(enum LightBank bank, u8 a_light)
 		assert(0);
 }
 
-u8 MapNode::getLight(enum LightBank bank)
+u8 MapNode::getLight(enum LightBank bank, INodeDefManager *nodemgr) const
 {
 	// Select the brightest of [light source, propagated light]
 	u8 light = 0;
-	if(content_features(*this).param_type == CPT_LIGHT)
+	if(nodemgr->get(*this).param_type == CPT_LIGHT)
 	{
 		if(bank == LIGHTBANK_DAY)
 			light = param1 & 0x0f;
@@ -197,32 +184,33 @@ u8 MapNode::getLight(enum LightBank bank)
 		else
 			assert(0);
 	}
-	if(light_source() > light)
-		light = light_source();
+	if(nodemgr->get(*this).light_source > light)
+		light = nodemgr->get(*this).light_source;
 	return light;
 }
 
-u8 MapNode::getLightBanksWithSource()
+u8 MapNode::getLightBanksWithSource(INodeDefManager *nodemgr) const
 {
 	// Select the brightest of [light source, propagated light]
 	u8 lightday = 0;
 	u8 lightnight = 0;
-	if(content_features(*this).param_type == CPT_LIGHT)
+	if(nodemgr->get(*this).param_type == CPT_LIGHT)
 	{
 		lightday = param1 & 0x0f;
 		lightnight = (param1>>4)&0x0f;
 	}
-	if(light_source() > lightday)
-		lightday = light_source();
-	if(light_source() > lightnight)
-		lightnight = light_source();
+	if(nodemgr->get(*this).light_source > lightday)
+		lightday = nodemgr->get(*this).light_source;
+	if(nodemgr->get(*this).light_source > lightnight)
+		lightnight = nodemgr->get(*this).light_source;
 	return (lightday&0x0f) | ((lightnight<<4)&0xf0);
 }
 
 #ifndef SERVER
-TileSpec MapNode::getTile(v3s16 dir, ITextureSource *tsrc)
+TileSpec MapNode::getTile(v3s16 dir, ITextureSource *tsrc,
+		INodeDefManager *nodemgr) const
 {
-	if(content_features(*this).param_type == CPT_FACEDIR_SIMPLE)
+	if(nodemgr->get(*this).param_type == CPT_FACEDIR_SIMPLE)
 		dir = facedir_rotate(param1, dir);
 	
 	TileSpec spec;
@@ -246,16 +234,16 @@ TileSpec MapNode::getTile(v3s16 dir, ITextureSource *tsrc)
 	
 	if(dir_i == -1)
 		// Non-directional
-		spec = content_features(*this).tiles[0];
+		spec = nodemgr->get(*this).tiles[0];
 	else 
-		spec = content_features(*this).tiles[dir_i];
+		spec = nodemgr->get(*this).tiles[dir_i];
 	
 	/*
 		If it contains some mineral, change texture id
 	*/
-	if(content_features(*this).param_type == CPT_MINERAL && tsrc)
+	if(nodemgr->get(*this).param_type == CPT_MINERAL && tsrc)
 	{
-		u8 mineral = getMineral();
+		u8 mineral = getMineral(nodemgr);
 		std::string mineral_texture_name = mineral_block_texture(mineral);
 		if(mineral_texture_name != "")
 		{
@@ -273,9 +261,9 @@ TileSpec MapNode::getTile(v3s16 dir, ITextureSource *tsrc)
 }
 #endif
 
-u8 MapNode::getMineral()
+u8 MapNode::getMineral(INodeDefManager *nodemgr) const
 {
-	if(content_features(*this).param_type == CPT_MINERAL)
+	if(nodemgr->get(*this).param_type == CPT_MINERAL)
 	{
 		return param1 & 0x0f;
 	}
@@ -332,7 +320,7 @@ void MapNode::serialize(u8 *dest, u8 version)
 		dest[2] = n_foreign.param2;
 	}
 }
-void MapNode::deSerialize(u8 *source, u8 version)
+void MapNode::deSerialize(u8 *source, u8 version, INodeDefManager *nodemgr)
 {
 	if(!ser_ver_supported(version))
 		throw VersionMismatchException("ERROR: MapNode format not supported");
@@ -345,7 +333,7 @@ void MapNode::deSerialize(u8 *source, u8 version)
 	{
 		param0 = source[0];
 		// This version doesn't support saved lighting
-		if(light_propagates() || light_source() > 0)
+		if(nodemgr->get(*this).light_propagates || nodemgr->get(*this).light_source > 0)
 			param1 = 0;
 		else
 			param1 = source[1];
@@ -402,12 +390,12 @@ void MapNode::deSerialize(u8 *source, u8 version)
 	returns encoded light value.
 */
 u8 getFaceLight(u32 daynight_ratio, MapNode n, MapNode n2,
-		v3s16 face_dir)
+		v3s16 face_dir, INodeDefManager *nodemgr)
 {
 	try{
 		u8 light;
-		u8 l1 = n.getLightBlend(daynight_ratio);
-		u8 l2 = n2.getLightBlend(daynight_ratio);
+		u8 l1 = n.getLightBlend(daynight_ratio, nodemgr);
+		u8 l2 = n2.getLightBlend(daynight_ratio, nodemgr);
 		if(l1 > l2)
 			light = l1;
 		else

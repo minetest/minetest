@@ -31,7 +31,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 class LocalPlayer;
 class MapDrawControl;
 class ExtrudedSpriteSceneNode;
-class ITextureSource;
+class IGameDef;
 
 /*
 	Client camera class, manages the player and camera scene nodes, the viewing distance
@@ -116,7 +116,7 @@ public:
 	void updateSettings();
 
 	// Replace the wielded item mesh
-	void wield(const InventoryItem* item, ITextureSource *tsrc);
+	void wield(const InventoryItem* item, IGameDef *gamedef);
 
 	// Start digging animation
 	// Pass 0 for left click, 1 for right click

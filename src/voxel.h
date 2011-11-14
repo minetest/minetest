@@ -25,6 +25,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "debug.h"
 #include "mapnode.h"
 
+class INodeDefManager;
+
 // For VC++
 #undef min
 #undef max
@@ -475,7 +477,8 @@ public:
 
 	virtual void clear();
 
-	void print(std::ostream &o, VoxelPrintMode mode=VOXELPRINT_MATERIAL);
+	void print(std::ostream &o, INodeDefManager *nodemgr,
+			VoxelPrintMode mode=VOXELPRINT_MATERIAL);
 	
 	void addArea(VoxelArea area);
 
@@ -497,14 +500,14 @@ public:
 	void clearFlag(u8 flag);
 	
 	void unspreadLight(enum LightBank bank, v3s16 p, u8 oldlight,
-			core::map<v3s16, bool> & light_sources);
+			core::map<v3s16, bool> & light_sources, INodeDefManager *nodemgr);
 	void unspreadLight(enum LightBank bank,
 			core::map<v3s16, u8> & from_nodes,
-			core::map<v3s16, bool> & light_sources);
+			core::map<v3s16, bool> & light_sources, INodeDefManager *nodemgr);
 	
-	void spreadLight(enum LightBank bank, v3s16 p);
+	void spreadLight(enum LightBank bank, v3s16 p, INodeDefManager *nodemgr);
 	void spreadLight(enum LightBank bank,
-			core::map<v3s16, bool> & from_nodes);
+			core::map<v3s16, bool> & from_nodes, INodeDefManager *nodemgr);
 	
 	/*
 		Virtual functions

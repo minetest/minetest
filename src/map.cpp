@@ -37,7 +37,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "settings.h"
 #include "log.h"
 #include "profiler.h"
-#include "mapnode_contentfeatures.h"
+#include "nodedef.h"
+#include "gamedef.h"
 
 #define PP(x) "("<<(x).X<<","<<(x).Y<<","<<(x).Z<<")"
 
@@ -234,6 +235,8 @@ void Map::unspreadLight(enum LightBank bank,
 		core::map<v3s16, bool> & light_sources,
 		core::map<v3s16, MapBlock*>  & modified_blocks)
 {
+	INodeDefManager *nodemgr = m_gamedef->ndef();
+
 	v3s16 dirs[6] = {
 		v3s16(0,0,1), // back
 		v3s16(0,1,0), // top
@@ -330,19 +333,20 @@ void Map::unspreadLight(enum LightBank bank,
 					If the neighbor is dimmer than what was specified
 					as oldlight (the light of the previous node)
 				*/
-				if(n2.getLight(bank) < oldlight)
+				if(n2.getLight(bank, nodemgr) < oldlight)
 				{
 					/*
 						And the neighbor is transparent and it has some light
 					*/
-					if(n2.light_propagates() && n2.getLight(bank) != 0)
+					if(nodemgr->get(n2).light_propagates
+							&& n2.getLight(bank, nodemgr) != 0)
 					{
 						/*
 							Set light to 0 and add to queue
 						*/
 
-						u8 current_light = n2.getLight(bank);
-						n2.setLight(bank, 0);
+						u8 current_light = n2.getLight(bank, nodemgr);
+						n2.setLight(bank, 0, nodemgr);
 						block->setNode(relpos, n2);
 
 						unlighted_nodes.insert(n2pos, current_light);
@@ -416,6 +420,8 @@ void Map::spreadLight(enum LightBank bank,
 		core::map<v3s16, bool> & from_nodes,
 		core::map<v3s16, MapBlock*> & modified_blocks)
 {
+	INodeDefManager *nodemgr = m_gamedef->ndef();
+
 	const v3s16 dirs[6] = {
 		v3s16(0,0,1), // back
 		v3s16(0,1,0), // top
@@ -474,7 +480,7 @@ void Map::spreadLight(enum LightBank bank,
 		// Get node straight from the block
 		MapNode n = block->getNode(relpos);
 
-		u8 oldlight = n.getLight(bank);
+		u8 oldlight = n.getLight(bank, nodemgr);
 		u8 newlight = diminish_light(oldlight);
 
 		// Loop through 6 neighbors
@@ -512,7 +518,7 @@ void Map::spreadLight(enum LightBank bank,
 					If the neighbor is brighter than the current node,
 					add to list (it will light up this node on its turn)
 				*/
-				if(n2.getLight(bank) > undiminish_light(oldlight))
+				if(n2.getLight(bank, nodemgr) > undiminish_light(oldlight))
 				{
 					lighted_nodes.insert(n2pos, true);
 					//lighted_nodes.push_back(n2pos);
@@ -522,11 +528,11 @@ void Map::spreadLight(enum LightBank bank,
 					If the neighbor is dimmer than how much light this node
 					would spread on it, add to list
 				*/
-				if(n2.getLight(bank) < newlight)
+				if(n2.getLight(bank, nodemgr) < newlight)
 				{
-					if(n2.light_propagates())
+					if(nodemgr->get(n2).light_propagates)
 					{
-						n2.setLight(bank, newlight);
+						n2.setLight(bank, newlight, nodemgr);
 						block->setNode(relpos, n2);
 						lighted_nodes.insert(n2pos, true);
 						//lighted_nodes.push_back(n2pos);
@@ -575,6 +581,8 @@ void Map::lightNeighbors(enum LightBank bank,
 
 v3s16 Map::getBrightestNeighbour(enum LightBank bank, v3s16 p)
 {
+	INodeDefManager *nodemgr = m_gamedef->ndef();
+
 	v3s16 dirs[6] = {
 		v3s16(0,0,1), // back
 		v3s16(0,1,0), // top
@@ -600,8 +608,8 @@ v3s16 Map::getBrightestNeighbour(enum LightBank bank, v3s16 p)
 		{
 			continue;
 		}
-		if(n2.getLight(bank) > brightest_light || found_something == false){
-			brightest_light = n2.getLight(bank);
+		if(n2.getLight(bank, nodemgr) > brightest_light || found_something == false){
+			brightest_light = n2.getLight(bank, nodemgr);
 			brightest_pos = n2pos;
 			found_something = true;
 		}
@@ -624,6 +632,8 @@ v3s16 Map::getBrightestNeighbour(enum LightBank bank, v3s16 p)
 s16 Map::propagateSunlight(v3s16 start,
 		core::map<v3s16, MapBlock*> & modified_blocks)
 {
+	INodeDefManager *nodemgr = m_gamedef->ndef();
+
 	s16 y = start.Y;
 	for(; ; y--)
 	{
@@ -642,9 +652,9 @@ s16 Map::propagateSunlight(v3s16 start,
 		v3s16 relpos = pos - blockpos*MAP_BLOCKSIZE;
 		MapNode n = block->getNode(relpos);
 
-		if(n.sunlight_propagates())
+		if(nodemgr->get(n).sunlight_propagates)
 		{
-			n.setLight(LIGHTBANK_DAY, LIGHT_SUN);
+			n.setLight(LIGHTBANK_DAY, LIGHT_SUN, nodemgr);
 			block->setNode(relpos, n);
 
 			modified_blocks.insert(blockpos, block);
@@ -670,6 +680,8 @@ void Map::updateLighting(enum LightBank bank,
 		core::map<v3s16, MapBlock*> & a_blocks,
 		core::map<v3s16, MapBlock*> & modified_blocks)
 {
+	INodeDefManager *nodemgr = m_gamedef->ndef();
+
 	/*m_dout<<DTIME<<"Map::updateLighting(): "
 			<<a_blocks.size()<<" blocks."<<std::endl;*/
 
@@ -713,8 +725,8 @@ void Map::updateLighting(enum LightBank bank,
 				try{
 					v3s16 p(x,y,z);
 					MapNode n = block->getNode(v3s16(x,y,z));
-					u8 oldlight = n.getLight(bank);
-					n.setLight(bank, 0);
+					u8 oldlight = n.getLight(bank, nodemgr);
+					n.setLight(bank, 0, nodemgr);
 					block->setNode(v3s16(x,y,z), n);
 
 					// Collect borders for unlighting
@@ -865,11 +877,11 @@ void Map::updateLighting(enum LightBank bank,
 
 		{
 			//TimeTaker timer("unSpreadLight");
-			vmanip.unspreadLight(bank, unlight_from, light_sources);
+			vmanip.unspreadLight(bank, unlight_from, light_sources, nodemgr);
 		}
 		{
 			//TimeTaker timer("spreadLight");
-			vmanip.spreadLight(bank, light_sources);
+			vmanip.spreadLight(bank, light_sources, nodemgr);
 		}
 		{
 			//TimeTaker timer("blitBack");
@@ -905,6 +917,8 @@ void Map::updateLighting(core::map<v3s16, MapBlock*> & a_blocks,
 void Map::addNodeAndUpdate(v3s16 p, MapNode n,
 		core::map<v3s16, MapBlock*> &modified_blocks, std::string &player_name)
 {
+	INodeDefManager *nodemgr = m_gamedef->ndef();
+
 	/*PrintInfo(m_dout);
 	m_dout<<DTIME<<"Map::addNodeAndUpdate(): p=("
 			<<p.X<<","<<p.Y<<","<<p.Z<<")"<<std::endl;*/
@@ -931,7 +945,7 @@ void Map::addNodeAndUpdate(v3s16 p, MapNode n,
 	try{
 		MapNode topnode = getNode(toppos);
 
-		if(topnode.getLight(LIGHTBANK_DAY) != LIGHT_SUN)
+		if(topnode.getLight(LIGHTBANK_DAY, nodemgr) != LIGHT_SUN)
 			node_under_sunlight = false;
 	}
 	catch(InvalidPositionException &e)
@@ -942,7 +956,7 @@ void Map::addNodeAndUpdate(v3s16 p, MapNode n,
 	/*
 		If the new node is solid and there is grass below, change it to mud
 	*/
-	if(content_features(n).walkable == true)
+	if(nodemgr->get(n).walkable == true)
 	{
 		try{
 			MapNode bottomnode = getNode(bottompos);
@@ -984,7 +998,7 @@ void Map::addNodeAndUpdate(v3s16 p, MapNode n,
 	{
 		enum LightBank bank = banks[i];
 
-		u8 lightwas = getNode(p).getLight(bank);
+		u8 lightwas = getNode(p).getLight(bank, nodemgr);
 
 		// Add the block of the added node to modified_blocks
 		v3s16 blockpos = getNodeBlockPos(p);
@@ -1001,16 +1015,16 @@ void Map::addNodeAndUpdate(v3s16 p, MapNode n,
 		// light again into this.
 		unLightNeighbors(bank, p, lightwas, light_sources, modified_blocks);
 
-		n.setLight(bank, 0);
+		n.setLight(bank, 0, nodemgr);
 	}
 
 	/*
 		If node lets sunlight through and is under sunlight, it has
 		sunlight too.
 	*/
-	if(node_under_sunlight && content_features(n).sunlight_propagates)
+	if(node_under_sunlight && nodemgr->get(n).sunlight_propagates)
 	{
-		n.setLight(LIGHTBANK_DAY, LIGHT_SUN);
+		n.setLight(LIGHTBANK_DAY, LIGHT_SUN, nodemgr);
 	}
 
 	/*
@@ -1023,7 +1037,7 @@ void Map::addNodeAndUpdate(v3s16 p, MapNode n,
 		Add intial metadata
 	*/
 
-	NodeMetadata *meta_proto = content_features(n).initial_metadata;
+	NodeMetadata *meta_proto = nodemgr->get(n).initial_metadata;
 	if(meta_proto)
 	{
 		NodeMetadata *meta = meta_proto->clone(m_gamedef);
@@ -1038,7 +1052,7 @@ void Map::addNodeAndUpdate(v3s16 p, MapNode n,
 		TODO: This could be optimized by mass-unlighting instead
 			  of looping
 	*/
-	if(node_under_sunlight && !content_features(n).sunlight_propagates)
+	if(node_under_sunlight && !nodemgr->get(n).sunlight_propagates)
 	{
 		s16 y = p.Y - 1;
 		for(;; y--){
@@ -1054,12 +1068,12 @@ void Map::addNodeAndUpdate(v3s16 p, MapNode n,
 				break;
 			}
 
-			if(n2.getLight(LIGHTBANK_DAY) == LIGHT_SUN)
+			if(n2.getLight(LIGHTBANK_DAY, nodemgr) == LIGHT_SUN)
 			{
 				unLightNeighbors(LIGHTBANK_DAY,
-						n2pos, n2.getLight(LIGHTBANK_DAY),
+						n2pos, n2.getLight(LIGHTBANK_DAY, nodemgr),
 						light_sources, modified_blocks);
-				n2.setLight(LIGHTBANK_DAY, 0);
+				n2.setLight(LIGHTBANK_DAY, 0, nodemgr);
 				setNode(n2pos, n2);
 			}
 			else
@@ -1109,7 +1123,7 @@ void Map::addNodeAndUpdate(v3s16 p, MapNode n,
 		v3s16 p2 = p + dirs[i];
 
 		MapNode n2 = getNode(p2);
-		if(content_liquid(n2.getContent()) || n2.getContent() == CONTENT_AIR)
+		if(nodemgr->get(n2).isLiquid() || n2.getContent() == CONTENT_AIR)
 		{
 			m_transforming_liquid.push_back(p2);
 		}
@@ -1125,6 +1139,8 @@ void Map::addNodeAndUpdate(v3s16 p, MapNode n,
 void Map::removeNodeAndUpdate(v3s16 p,
 		core::map<v3s16, MapBlock*> &modified_blocks)
 {
+	INodeDefManager *nodemgr = m_gamedef->ndef();
+
 	/*PrintInfo(m_dout);
 	m_dout<<DTIME<<"Map::removeNodeAndUpdate(): p=("
 			<<p.X<<","<<p.Y<<","<<p.Z<<")"<<std::endl;*/
@@ -1143,7 +1159,7 @@ void Map::removeNodeAndUpdate(v3s16 p,
 	try{
 		MapNode topnode = getNode(toppos);
 
-		if(topnode.getLight(LIGHTBANK_DAY) != LIGHT_SUN)
+		if(topnode.getLight(LIGHTBANK_DAY, nodemgr) != LIGHT_SUN)
 			node_under_sunlight = false;
 	}
 	catch(InvalidPositionException &e)
@@ -1165,7 +1181,7 @@ void Map::removeNodeAndUpdate(v3s16 p,
 			Unlight neighbors (in case the node is a light source)
 		*/
 		unLightNeighbors(bank, p,
-				getNode(p).getLight(bank),
+				getNode(p).getLight(bank, nodemgr),
 				light_sources, modified_blocks);
 	}
 
@@ -1227,7 +1243,7 @@ void Map::removeNodeAndUpdate(v3s16 p,
 		// TODO: Is this needed? Lighting is cleared up there already.
 		try{
 			MapNode n = getNode(p);
-			n.setLight(LIGHTBANK_DAY, 0);
+			n.setLight(LIGHTBANK_DAY, 0, nodemgr);
 			setNode(p, n);
 		}
 		catch(InvalidPositionException &e)
@@ -1283,7 +1299,7 @@ void Map::removeNodeAndUpdate(v3s16 p,
 		v3s16 p2 = p + dirs[i];
 
 		MapNode n2 = getNode(p2);
-		if(content_liquid(n2.getContent()) || n2.getContent() == CONTENT_AIR)
+		if(nodemgr->get(n2).isLiquid() || n2.getContent() == CONTENT_AIR)
 		{
 			m_transforming_liquid.push_back(p2);
 		}
@@ -1580,6 +1596,8 @@ struct NodeNeighbor {
 
 void Map::transformLiquids(core::map<v3s16, MapBlock*> & modified_blocks)
 {
+	INodeDefManager *nodemgr = m_gamedef->ndef();
+
 	DSTACK(__FUNCTION_NAME);
 	//TimeTaker timer("transformLiquids()");
 
@@ -1614,11 +1632,11 @@ void Map::transformLiquids(core::map<v3s16, MapBlock*> & modified_blocks)
 		 */
 		s8 liquid_level = -1;
 		u8 liquid_kind = CONTENT_IGNORE;
-		LiquidType liquid_type = content_features(n0.getContent()).liquid_type;
+		LiquidType liquid_type = nodemgr->get(n0).liquid_type;
 		switch (liquid_type) {
 			case LIQUID_SOURCE:
 				liquid_level = LIQUID_LEVEL_SOURCE;
-				liquid_kind = content_features(n0.getContent()).liquid_alternative_flowing;
+				liquid_kind = nodemgr->get(n0).liquid_alternative_flowing;
 				break;
 			case LIQUID_FLOWING:
 				liquid_level = (n0.param2 & LIQUID_LEVEL_MASK);
@@ -1658,7 +1676,7 @@ void Map::transformLiquids(core::map<v3s16, MapBlock*> & modified_blocks)
 			}
 			v3s16 npos = p0 + dirs[i];
 			NodeNeighbor nb = {getNodeNoEx(npos), nt, npos};
-			switch (content_features(nb.n.getContent()).liquid_type) {
+			switch (nodemgr->get(nb.n.getContent()).liquid_type) {
 				case LIQUID_NONE:
 					if (nb.n.getContent() == CONTENT_AIR) {
 						airs[num_airs++] = nb;
@@ -1678,8 +1696,8 @@ void Map::transformLiquids(core::map<v3s16, MapBlock*> & modified_blocks)
 				case LIQUID_SOURCE:
 					// if this node is not (yet) of a liquid type, choose the first liquid type we encounter 
 					if (liquid_kind == CONTENT_AIR)
-						liquid_kind = content_features(nb.n.getContent()).liquid_alternative_flowing;
-					if (content_features(nb.n.getContent()).liquid_alternative_flowing !=liquid_kind) {
+						liquid_kind = nodemgr->get(nb.n.getContent()).liquid_alternative_flowing;
+					if (nodemgr->get(nb.n.getContent()).liquid_alternative_flowing !=liquid_kind) {
 						neutrals[num_neutrals++] = nb;
 					} else {
 						sources[num_sources++] = nb;
@@ -1688,8 +1706,8 @@ void Map::transformLiquids(core::map<v3s16, MapBlock*> & modified_blocks)
 				case LIQUID_FLOWING:
 					// if this node is not (yet) of a liquid type, choose the first liquid type we encounter
 					if (liquid_kind == CONTENT_AIR)
-						liquid_kind = content_features(nb.n.getContent()).liquid_alternative_flowing;
-					if (content_features(nb.n.getContent()).liquid_alternative_flowing != liquid_kind) {
+						liquid_kind = nodemgr->get(nb.n.getContent()).liquid_alternative_flowing;
+					if (nodemgr->get(nb.n.getContent()).liquid_alternative_flowing != liquid_kind) {
 						neutrals[num_neutrals++] = nb;
 					} else {
 						flows[num_flows++] = nb;
@@ -1710,7 +1728,7 @@ void Map::transformLiquids(core::map<v3s16, MapBlock*> & modified_blocks)
 			// liquid_kind will be set to either the flowing alternative of the node (if it's a liquid)
 			// or the flowing alternative of the first of the surrounding sources (if it's air), so
 			// it's perfectly safe to use liquid_kind here to determine the new node content.
-			new_node_content = content_features(liquid_kind).liquid_alternative_source;
+			new_node_content = nodemgr->get(liquid_kind).liquid_alternative_source;
 		} else if (num_sources == 1 && sources[0].t != NEIGHBOR_LOWER) {
 			// liquid_kind is set properly, see above
 			new_node_content = liquid_kind;
@@ -1739,7 +1757,7 @@ void Map::transformLiquids(core::map<v3s16, MapBlock*> & modified_blocks)
 				}
 			}
 
-			u8 viscosity = content_features(liquid_kind).liquid_viscosity;
+			u8 viscosity = nodemgr->get(liquid_kind).liquid_viscosity;
 			if (viscosity > 1 && max_node_level != liquid_level) {
 				// amount to gain, limited by viscosity
 				// must be at least 1 in absolute value
@@ -1765,7 +1783,7 @@ void Map::transformLiquids(core::map<v3s16, MapBlock*> & modified_blocks)
 		/*
 			check if anything has changed. if not, just continue with the next node.
 		 */
-		if (new_node_content == n0.getContent() && (content_features(n0.getContent()).liquid_type != LIQUID_FLOWING ||
+		if (new_node_content == n0.getContent() && (nodemgr->get(n0.getContent()).liquid_type != LIQUID_FLOWING ||
 										 ((n0.param2 & LIQUID_LEVEL_MASK) == (u8)new_node_level &&
 										 ((n0.param2 & LIQUID_FLOW_DOWN_MASK) == LIQUID_FLOW_DOWN_MASK)
 										 == flowing_down)))
@@ -1776,7 +1794,7 @@ void Map::transformLiquids(core::map<v3s16, MapBlock*> & modified_blocks)
 			update the current node
 		 */
 		//bool flow_down_enabled = (flowing_down && ((n0.param2 & LIQUID_FLOW_DOWN_MASK) != LIQUID_FLOW_DOWN_MASK));
-		if (content_features(new_node_content).liquid_type == LIQUID_FLOWING) {
+		if (nodemgr->get(new_node_content).liquid_type == LIQUID_FLOWING) {
 			// set level to last 3 bits, flowing down bit to 4th bit
 			n0.param2 = (flowing_down ? LIQUID_FLOW_DOWN_MASK : 0x00) | (new_node_level & LIQUID_LEVEL_MASK);
 		} else {
@@ -1790,14 +1808,14 @@ void Map::transformLiquids(core::map<v3s16, MapBlock*> & modified_blocks)
 		if(block != NULL) {
 			modified_blocks.insert(blockpos, block);
 			// If node emits light, MapBlock requires lighting update
-			if(content_features(n0).light_source != 0)
+			if(nodemgr->get(n0).light_source != 0)
 				lighting_modified_blocks[block->getPos()] = block;
 		}
 
 		/*
 			enqueue neighbors for update if neccessary
 		 */
-		switch (content_features(n0.getContent()).liquid_type) {
+		switch (nodemgr->get(n0.getContent()).liquid_type) {
 			case LIQUID_SOURCE:
 			case LIQUID_FLOWING:
 				// make sure source flows into all neighboring nodes
@@ -2082,6 +2100,7 @@ void ServerMap::initBlockMake(mapgen::BlockMakeData *data, v3s16 blockpos)
 	data->no_op = false;
 	data->seed = m_seed;
 	data->blockpos = blockpos;
+	data->nodemgr = m_gamedef->ndef();
 
 	/*
 		Create the whole area of this and the neighboring blocks
@@ -2389,7 +2408,7 @@ ServerMapSector * ServerMap::createSector(v2s16 p2d)
 		Generate blank sector
 	*/
 	
-	sector = new ServerMapSector(this, p2d);
+	sector = new ServerMapSector(this, p2d, m_gamedef);
 	
 	// Sector position on map in nodes
 	v2s16 nodepos2d = p2d * MAP_BLOCKSIZE;
@@ -3054,7 +3073,7 @@ MapSector* ServerMap::loadSectorMeta(std::string sectordir, bool save_after_load
 					<<fullpath<<" doesn't exist but directory does."
 					<<" Continuing with a sector with no metadata."
 					<<std::endl;*/
-			sector = new ServerMapSector(this, p2d);
+			sector = new ServerMapSector(this, p2d, m_gamedef);
 			m_sectors.insert(p2d, sector);
 		}
 		else
@@ -3065,7 +3084,7 @@ MapSector* ServerMap::loadSectorMeta(std::string sectordir, bool save_after_load
 	else
 	{
 		sector = ServerMapSector::deSerialize
-				(is, this, p2d, m_sectors);
+				(is, this, p2d, m_sectors, m_gamedef);
 		if(save_after_load)
 			saveSectorMeta(sector);
 	}
@@ -3310,7 +3329,7 @@ void ServerMap::loadBlock(std::string sectordir, std::string blockfile, MapSecto
 		}
 		
 		// Read basic data
-		block->deSerialize(is, version, m_gamedef);
+		block->deSerialize(is, version);
 
 		// Read extra data stored on disk
 		block->deSerializeDiskExtra(is, version);
@@ -3380,7 +3399,7 @@ void ServerMap::loadBlock(std::string *blob, v3s16 p3d, MapSector *sector, bool 
 		}
 		
 		// Read basic data
-		block->deSerialize(is, version, m_gamedef);
+		block->deSerialize(is, version);
 
 		// Read extra data stored on disk
 		block->deSerializeDiskExtra(is, version);
@@ -3567,7 +3586,7 @@ MapSector * ClientMap::emergeSector(v2s16 p2d)
 	}
 	
 	// Create a sector
-	ClientMapSector *sector = new ClientMapSector(this, p2d);
+	ClientMapSector *sector = new ClientMapSector(this, p2d, m_gamedef);
 	
 	{
 		//JMutexAutoLock lock(m_sector_mutex); // Bulk comment-out
@@ -3617,7 +3636,7 @@ void ClientMap::OnRegisterSceneNode()
 }
 
 static bool isOccluded(Map *map, v3s16 p0, v3s16 p1, float step, float stepfac,
-		float start_off, float end_off, u32 needed_count)
+		float start_off, float end_off, u32 needed_count, INodeDefManager *nodemgr)
 {
 	float d0 = (float)BS * p0.getDistanceFrom(p1);
 	v3s16 u0 = p1 - p0;
@@ -3630,7 +3649,7 @@ static bool isOccluded(Map *map, v3s16 p0, v3s16 p1, float step, float stepfac,
 		v3s16 p = floatToInt(pf, BS);
 		MapNode n = map->getNodeNoEx(p);
 		bool is_transparent = false;
-		ContentFeatures &f = content_features(n);
+		const ContentFeatures &f = nodemgr->get(n);
 		if(f.solidness == 0)
 			is_transparent = (f.visual_solidness != 2);
 		else
@@ -3647,6 +3666,8 @@ static bool isOccluded(Map *map, v3s16 p0, v3s16 p1, float step, float stepfac,
 
 void ClientMap::renderMap(video::IVideoDriver* driver, s32 pass)
 {
+	INodeDefManager *nodemgr = m_gamedef->ndef();
+
 	//m_dout<<DTIME<<"Rendering map..."<<std::endl;
 	DSTACK(__FUNCTION_NAME);
 
@@ -3855,23 +3876,23 @@ void ClientMap::renderMap(video::IVideoDriver* driver, s32 pass)
 			u32 needed_count = 1;
 			if(
 				isOccluded(this, spn, cpn + v3s16(0,0,0),
-						step, stepfac, startoff, endoff, needed_count) &&
+					step, stepfac, startoff, endoff, needed_count, nodemgr) &&
 				isOccluded(this, spn, cpn + v3s16(bs2,bs2,bs2),
-						step, stepfac, startoff, endoff, needed_count) &&
+					step, stepfac, startoff, endoff, needed_count, nodemgr) &&
 				isOccluded(this, spn, cpn + v3s16(bs2,bs2,-bs2),
-						step, stepfac, startoff, endoff, needed_count) &&
+					step, stepfac, startoff, endoff, needed_count, nodemgr) &&
 				isOccluded(this, spn, cpn + v3s16(bs2,-bs2,bs2),
-						step, stepfac, startoff, endoff, needed_count) &&
+					step, stepfac, startoff, endoff, needed_count, nodemgr) &&
 				isOccluded(this, spn, cpn + v3s16(bs2,-bs2,-bs2),
-						step, stepfac, startoff, endoff, needed_count) &&
+					step, stepfac, startoff, endoff, needed_count, nodemgr) &&
 				isOccluded(this, spn, cpn + v3s16(-bs2,bs2,bs2),
-						step, stepfac, startoff, endoff, needed_count) &&
+					step, stepfac, startoff, endoff, needed_count, nodemgr) &&
 				isOccluded(this, spn, cpn + v3s16(-bs2,bs2,-bs2),
-						step, stepfac, startoff, endoff, needed_count) &&
+					step, stepfac, startoff, endoff, needed_count, nodemgr) &&
 				isOccluded(this, spn, cpn + v3s16(-bs2,-bs2,bs2),
-						step, stepfac, startoff, endoff, needed_count) &&
+					step, stepfac, startoff, endoff, needed_count, nodemgr) &&
 				isOccluded(this, spn, cpn + v3s16(-bs2,-bs2,-bs2),
-						step, stepfac, startoff, endoff, needed_count)
+					step, stepfac, startoff, endoff, needed_count, nodemgr)
 			)
 			{
 				blocks_occlusion_culled++;
@@ -4016,6 +4037,8 @@ void ClientMap::renderMap(video::IVideoDriver* driver, s32 pass)
 
 void ClientMap::renderPostFx()
 {
+	INodeDefManager *nodemgr = m_gamedef->ndef();
+
 	// Sadly ISceneManager has no "post effects" render pass, in that case we
 	// could just register for that and handle it in renderMap().
 
@@ -4027,7 +4050,7 @@ void ClientMap::renderPostFx()
 
 	// - If the player is in a solid node, make everything black.
 	// - If the player is in liquid, draw a semi-transparent overlay.
-	ContentFeatures& features = content_features(n);
+	const ContentFeatures& features = nodemgr->get(n);
 	video::SColor post_effect_color = features.post_effect_color;
 	if(features.solidness == 2 && g_settings->getBool("free_move") == false)
 	{
@@ -4170,15 +4193,14 @@ void ClientMap::expireMeshes(bool only_daynight_diffed)
 	}
 }
 
-void ClientMap::updateMeshes(v3s16 blockpos, u32 daynight_ratio,
-		ITextureSource *tsrc)
+void ClientMap::updateMeshes(v3s16 blockpos, u32 daynight_ratio)
 {
 	assert(mapType() == MAPTYPE_CLIENT);
 
 	try{
 		v3s16 p = blockpos + v3s16(0,0,0);
 		MapBlock *b = getBlockNoCreate(p);
-		b->updateMesh(daynight_ratio, tsrc);
+		b->updateMesh(daynight_ratio);
 		//b->setMeshExpired(true);
 	}
 	catch(InvalidPositionException &e){}
@@ -4186,21 +4208,21 @@ void ClientMap::updateMeshes(v3s16 blockpos, u32 daynight_ratio,
 	try{
 		v3s16 p = blockpos + v3s16(-1,0,0);
 		MapBlock *b = getBlockNoCreate(p);
-		b->updateMesh(daynight_ratio, tsrc);
+		b->updateMesh(daynight_ratio);
 		//b->setMeshExpired(true);
 	}
 	catch(InvalidPositionException &e){}
 	try{
 		v3s16 p = blockpos + v3s16(0,-1,0);
 		MapBlock *b = getBlockNoCreate(p);
-		b->updateMesh(daynight_ratio, tsrc);
+		b->updateMesh(daynight_ratio);
 		//b->setMeshExpired(true);
 	}
 	catch(InvalidPositionException &e){}
 	try{
 		v3s16 p = blockpos + v3s16(0,0,-1);
 		MapBlock *b = getBlockNoCreate(p);
-		b->updateMesh(daynight_ratio, tsrc);
+		b->updateMesh(daynight_ratio);
 		//b->setMeshExpired(true);
 	}
 	catch(InvalidPositionException &e){}

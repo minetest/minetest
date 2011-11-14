@@ -31,6 +31,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 class MapBlock;
 class Map;
+class IGameDef;
 
 /*
 	This is an Y-wise stack of MapBlocks.
@@ -43,7 +44,7 @@ class MapSector
 {
 public:
 	
-	MapSector(Map *parent, v2s16 pos);
+	MapSector(Map *parent, v2s16 pos, IGameDef *gamedef);
 	virtual ~MapSector();
 
 	virtual u32 getId() const = 0;
@@ -76,7 +77,9 @@ protected:
 	Map *m_parent;
 	// Position on parent (in MapBlock widths)
 	v2s16 m_pos;
-	
+
+	IGameDef *m_gamedef;
+ 	
 	// Last-used block is cached here for quicker access.
 	// Be sure to set this to NULL when the cached block is deleted 
 	MapBlock *m_block_cache;
@@ -92,7 +95,7 @@ protected:
 class ServerMapSector : public MapSector
 {
 public:
-	ServerMapSector(Map *parent, v2s16 pos);
+	ServerMapSector(Map *parent, v2s16 pos, IGameDef *gamedef);
 	~ServerMapSector();
 	
 	u32 getId() const
@@ -111,7 +114,8 @@ public:
 			std::istream &is,
 			Map *parent,
 			v2s16 p2d,
-			core::map<v2s16, MapSector*> & sectors
+			core::map<v2s16, MapSector*> & sectors,
+			IGameDef *gamedef
 		);
 		
 private:
@@ -121,7 +125,7 @@ private:
 class ClientMapSector : public MapSector
 {
 public:
-	ClientMapSector(Map *parent, v2s16 pos);
+	ClientMapSector(Map *parent, v2s16 pos, IGameDef *gamedef);
 	~ClientMapSector();
 	
 	u32 getId() const

@@ -159,8 +159,9 @@ void ItemSAO::step(float dtime, bool send_recommended)
 		m_speed_f *= pos_max_d / (m_speed_f.getLength()*dtime);
 	v3f pos_f = getBasePosition();
 	v3f pos_f_old = pos_f;
-	moveresult = collisionMoveSimple(&m_env->getMap(), pos_max_d,
-			box, dtime, pos_f, m_speed_f);
+	IGameDef *gamedef = m_env->getGameDef();
+	moveresult = collisionMoveSimple(&m_env->getMap(), gamedef,
+			pos_max_d, box, dtime, pos_f, m_speed_f);
 	
 	if(send_recommended == false)
 		return;
@@ -402,8 +403,9 @@ void RatSAO::step(float dtime, bool send_recommended)
 		m_speed_f *= pos_max_d / (m_speed_f.getLength()*dtime);
 	v3f pos_f = getBasePosition();
 	v3f pos_f_old = pos_f;
-	moveresult = collisionMoveSimple(&m_env->getMap(), pos_max_d,
-			box, dtime, pos_f, m_speed_f);
+	IGameDef *gamedef = m_env->getGameDef();
+	moveresult = collisionMoveSimple(&m_env->getMap(), gamedef,
+			pos_max_d, box, dtime, pos_f, m_speed_f);
 	m_touching_ground = moveresult.touching_ground;
 	
 	setBasePosition(pos_f);
@@ -639,8 +641,9 @@ void Oerkki1SAO::step(float dtime, bool send_recommended)
 		m_speed_f *= pos_max_d / (m_speed_f.getLength()*dtime);*/
 	v3f pos_f = getBasePosition();
 	v3f pos_f_old = pos_f;
-	moveresult = collisionMovePrecise(&m_env->getMap(), pos_max_d,
-			box, dtime, pos_f, m_speed_f);
+	IGameDef *gamedef = m_env->getGameDef();
+	moveresult = collisionMovePrecise(&m_env->getMap(), gamedef,
+			pos_max_d, box, dtime, pos_f, m_speed_f);
 	m_touching_ground = moveresult.touching_ground;
 	
 	// Do collision damage
@@ -887,8 +890,9 @@ void FireflySAO::step(float dtime, bool send_recommended)
 		m_speed_f *= pos_max_d / (m_speed_f.getLength()*dtime);
 	v3f pos_f = getBasePosition();
 	v3f pos_f_old = pos_f;
-	moveresult = collisionMoveSimple(&m_env->getMap(), pos_max_d,
-			box, dtime, pos_f, m_speed_f);
+	IGameDef *gamedef = m_env->getGameDef();
+	moveresult = collisionMoveSimple(&m_env->getMap(), gamedef,
+			pos_max_d, box, dtime, pos_f, m_speed_f);
 	m_touching_ground = moveresult.touching_ground;
 	
 	setBasePosition(pos_f);
