@@ -93,7 +93,7 @@ struct DiggingProperties
 	u16 wear;
 };
 
-class ToolDiggingProperties;
+struct ToolDiggingProperties;
 class INodeDefManager;
 
 DiggingProperties getDiggingProperties(u16 content, ToolDiggingProperties *tp,

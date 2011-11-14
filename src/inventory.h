@@ -31,7 +31,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 class ServerActiveObject;
 class ServerEnvironment;
-class PointedThing;
+struct PointedThing;
 class ITextureSource;
 class IGameDef;
 

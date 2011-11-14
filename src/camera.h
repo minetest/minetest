@@ -29,7 +29,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <IAnimatedMesh.h>
 
 class LocalPlayer;
-class MapDrawControl;
+struct MapDrawControl;
 class ExtrudedSpriteSceneNode;
 class IGameDef;
 
