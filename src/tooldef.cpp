@@ -66,7 +66,7 @@ void ToolDefinition::deSerialize(std::istream &is)
 {
 	int version = readU8(is);
 	if(version != 0) throw SerializationError(
-			"unsupported ToolDiggingProperties version");
+			"unsupported ToolDefinition version");
 	imagename = deSerializeString(is);
 	properties.basetime = readF1000(is);
 	properties.dt_weight = readF1000(is);
@@ -132,6 +132,41 @@ public:
 		}
 		m_tool_definitions[toolname] = new ToolDefinition(def);
 		return true;
+	}
+	virtual void serialize(std::ostream &os)
+	{
+		writeU8(os, 0); // version
+		u16 count = m_tool_definitions.size();
+		writeU16(os, count);
+		for(core::map<std::string, ToolDefinition*>::Iterator
+				i = m_tool_definitions.getIterator();
+				i.atEnd() == false; i++){
+			std::string name = i.getNode()->getKey();
+			ToolDefinition *def = i.getNode()->getValue();
+			// Serialize name
+			os<<serializeString(name);
+			// Serialize ToolDefinition and write wrapped in a string
+			std::ostringstream tmp_os(std::ios::binary);
+			def->serialize(tmp_os);
+			os<<serializeString(tmp_os.str());
+		}
+	}
+	virtual void deSerialize(std::istream &is)
+	{
+		int version = readU8(is);
+		if(version != 0) throw SerializationError(
+				"unsupported ToolDefManager version");
+		u16 count = readU16(is);
+		for(u16 i=0; i<count; i++){
+			// Deserialize name
+			std::string name = deSerializeString(is);
+			// Deserialize a string and grab a ToolDefinition from it
+			std::istringstream tmp_is(deSerializeString(is), std::ios::binary);
+			ToolDefinition def;
+			def.deSerialize(tmp_is);
+			// Register
+			registerTool(name, def);
+		}
 	}
 private:
 	// Key is name
