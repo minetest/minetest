@@ -20,7 +20,65 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "tooldef.h"
 #include "irrlichttypes.h"
 #include "log.h"
-#include <ostream>
+#include <sstream>
+#include "utility.h"
+
+ToolDiggingProperties::ToolDiggingProperties(
+		float a, float b, float c, float d, float e,
+		float f, float g, float h, float i, float j):
+	basetime(a),
+	dt_weight(b),
+	dt_crackiness(c),
+	dt_crumbliness(d),
+	dt_cuttability(e),
+	basedurability(f),
+	dd_weight(g),
+	dd_crackiness(h),
+	dd_crumbliness(i),
+	dd_cuttability(j)
+{}
+
+std::string ToolDefinition::dump()
+{
+	std::ostringstream os(std::ios::binary);
+	os<<"[ToolDefinition::dump() not implemented due to lazyness]"
+			<<std::endl;
+	return os.str();
+}
+
+void ToolDefinition::serialize(std::ostream &os)
+{
+	writeU8(os, 0); // version
+	os<<serializeString(imagename);
+	writeF1000(os, properties.basetime);
+	writeF1000(os, properties.dt_weight);
+	writeF1000(os, properties.dt_crackiness);
+	writeF1000(os, properties.dt_crumbliness);
+	writeF1000(os, properties.dt_cuttability);
+	writeF1000(os, properties.basedurability);
+	writeF1000(os, properties.dd_weight);
+	writeF1000(os, properties.dd_crackiness);
+	writeF1000(os, properties.dd_crumbliness);
+	writeF1000(os, properties.dd_cuttability);
+}
+
+void ToolDefinition::deSerialize(std::istream &is)
+{
+	int version = readU8(is);
+	if(version != 0) throw SerializationError(
+			"unsupported ToolDiggingProperties version");
+	imagename = deSerializeString(is);
+	properties.basetime = readF1000(is);
+	properties.dt_weight = readF1000(is);
+	properties.dt_crackiness = readF1000(is);
+	properties.dt_crumbliness = readF1000(is);
+	properties.dt_cuttability = readF1000(is);
+	properties.basedurability = readF1000(is);
+	properties.dd_weight = readF1000(is);
+	properties.dd_crackiness = readF1000(is);
+	properties.dd_crumbliness = readF1000(is);
+	properties.dd_cuttability = readF1000(is);
+}
 
 class CToolDefManager: public IWritableToolDefManager
 {

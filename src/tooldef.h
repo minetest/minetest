@@ -21,6 +21,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #define TOOLDEF_HEADER
 
 #include <string>
+#include <iostream>
 
 /*
 	TODO: Rename to tooldef.h
@@ -40,19 +41,9 @@ struct ToolDiggingProperties
 	float dd_crumbliness;
 	float dd_cuttability;
 
-	ToolDiggingProperties(float a=0.75, float b=0, float c=0, float d=0, float e=0,
-			float f=50, float g=0, float h=0, float i=0, float j=0):
-		basetime(a),
-		dt_weight(b),
-		dt_crackiness(c),
-		dt_crumbliness(d),
-		dt_cuttability(e),
-		basedurability(f),
-		dd_weight(g),
-		dd_crackiness(h),
-		dd_crumbliness(i),
-		dd_cuttability(j)
-	{}
+	ToolDiggingProperties(
+			float a=0.75, float b=0, float c=0, float d=0, float e=0,
+			float f=50, float g=0, float h=0, float i=0, float j=0);
 };
 
 struct ToolDefinition
@@ -66,6 +57,10 @@ struct ToolDefinition
 		imagename(imagename_),
 		properties(properties_)
 	{}
+	
+	std::string dump();
+	void serialize(std::ostream &os);
+	void deSerialize(std::istream &is);
 };
 
 class IToolDefManager
