@@ -320,6 +320,12 @@ public:
 	// Register node definition
 	virtual void set(content_t c, const ContentFeatures &def)=0;
 	virtual ContentFeatures* getModifiable(content_t c)=0;
+
+	/*
+		Update tile textures to latest return values of TextueSource.
+		Call after updating the texture atlas of a TextureSource.
+	*/
+	virtual void updateTextures(ITextureSource *tsrc)=0;
 };
 
 // If textures not actually available (server), tsrc can be NULL

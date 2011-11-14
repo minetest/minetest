@@ -224,6 +224,9 @@ Client::Client(
 		tsrc->buildMainAtlas(this);
 	else
 		infostream<<"Not building texture atlas."<<std::endl;
+	
+	// Update textures
+	m_nodedef->updateTextures(tsrc);
 
 	// NOTE: This should be done only after getting possible dynamic
 	// game definitions from the server, or at least shut down and

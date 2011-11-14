@@ -164,6 +164,21 @@ public:
 		assert(c <= MAX_CONTENT);
 		return &m_content_features[c];
 	}
+	virtual void updateTextures(ITextureSource *tsrc)
+	{
+#ifndef SERVER
+		infostream<<"CNodeDefManager::updateTextures(): Updating "
+				<<"textures in node definitions"<<std::endl;
+		for(u16 i=0; i<=MAX_CONTENT; i++)
+		{
+			ContentFeatures *f = &m_content_features[i];
+			for(u16 j=0; j<6; j++)
+				tsrc->updateAP(f->tiles[j].texture);
+			if(f->special_atlas)
+				tsrc->updateAP(*(f->special_atlas));
+		}
+#endif
+	}
 private:
 	ContentFeatures m_content_features[MAX_CONTENT+1];
 };

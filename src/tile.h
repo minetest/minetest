@@ -138,6 +138,7 @@ public:
 		{return AtlasPointer(0);}
 	virtual video::ITexture* getTextureRaw(const std::string &name)
 		{return NULL;}
+	virtual void updateAP(AtlasPointer &ap){};
 };
 
 class IWritableTextureSource : public ITextureSource
@@ -153,8 +154,8 @@ public:
 		{return AtlasPointer(0);}
 	virtual video::ITexture* getTextureRaw(const std::string &name)
 		{return NULL;}
+	virtual void updateAP(AtlasPointer &ap){};
 
-	virtual void updateAP(AtlasPointer &ap)=0;
 	virtual void buildMainAtlas(class IGameDef *gamedef)=0;
 	virtual void processQueue()=0;
 };
