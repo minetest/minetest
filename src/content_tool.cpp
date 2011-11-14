@@ -24,13 +24,13 @@ void content_tool_init(IWritableToolDefManager *mgr)
 {
 	mgr->registerTool("WPick",
 			ToolDefinition("tool_woodpick.png",
-			ToolDiggingProperties(2.0, 0,-1,2,0, 50, 0,0,0,0)));
+			ToolDiggingProperties(2.0, 0,-0.5,2,0, 50, 0,0,0,0)));
 	mgr->registerTool("STPick",
 			ToolDefinition("tool_stonepick.png",
-			ToolDiggingProperties(1.5, 0,-1,2,0, 100, 0,0,0,0)));
+			ToolDiggingProperties(1.5, 0,-0.5,2,0, 100, 0,0,0,0)));
 	mgr->registerTool("SteelPick",
 			ToolDefinition("tool_steelpick.png",
-			ToolDiggingProperties(1.0, 0,-1,2,0, 300, 0,0,0,0)));
+			ToolDiggingProperties(1.0, 0,-0.5,2,0, 300, 0,0,0,0)));
 	mgr->registerTool("MesePick",
 			ToolDefinition("tool_mesepick.png",
 			ToolDiggingProperties(0, 0,0,0,0, 1337, 0,0,0,0)));

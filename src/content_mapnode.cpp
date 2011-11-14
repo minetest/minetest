@@ -59,7 +59,7 @@ void setGravelLikeMaterialProperties(MaterialProperties &mprop, float toughness)
 {
 	mprop.diggability = DIGGABLE_NORMAL;
 	mprop.weight = toughness * 2.0;
-	mprop.crackiness = 0.5;
+	mprop.crackiness = 0.2;
 	mprop.crumbliness = 1.5;
 	mprop.cuttability = -1.0;
 }
