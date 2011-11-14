@@ -660,6 +660,8 @@ void the_game(
 		server = new Server(map_dir, configpath);
 		server->start(port);
 	}
+
+	{ // Client scope
 	
 	/*
 		Create client
@@ -2341,8 +2343,11 @@ void the_game(
 		gui_shuttingdowntext->remove();*/
 	}
 
+	} // Client scope (must be destructed before destructing *def and tsrc
+
 	delete tooldef;
 	delete tsrc;
+	delete nodedef;
 }
 
 

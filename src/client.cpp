@@ -452,7 +452,7 @@ void Client::step(float dtime)
 			snprintf((char*)&data[23], PASSWORD_SIZE, "%s", m_password.c_str());
 			
 			// This should be incremented in each version
-			writeU16(&data[51], 3);
+			writeU16(&data[51], PROTOCOL_VERSION);
 
 			// Send as unreliable
 			Send(0, data, false);
@@ -1505,6 +1505,23 @@ void Client::ProcessData(u8 *data, u32 datasize, u16 sender_peer_id)
 		event.deathscreen.camera_point_target_y = camera_point_target.Y;
 		event.deathscreen.camera_point_target_z = camera_point_target.Z;
 		m_client_event_queue.push_back(event);
+	}
+	else if(command == TOCLIENT_TOOLDEF)
+	{
+		infostream<<"Client: Received tool definitions"<<std::endl;
+
+		std::string datastring((char*)&data[2], datasize-2);
+		std::istringstream is(datastring, std::ios_base::binary);
+
+		// Stop threads while updating content definitions
+		m_mesh_update_thread.stop();
+
+		std::istringstream tmp_is(deSerializeLongString(is), std::ios::binary);
+		m_tooldef->deSerialize(tmp_is);
+		
+		// Resume threads
+		m_mesh_update_thread.setRun(true);
+		m_mesh_update_thread.Start();
 	}
 	else
 	{

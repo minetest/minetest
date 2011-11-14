@@ -508,6 +508,8 @@ private:
 			const std::wstring &reason);
 	static void SendDeathscreen(con::Connection &con, u16 peer_id,
 			bool set_camera_point_target, v3f camera_point_target);
+	static void SendToolDef(con::Connection &con, u16 peer_id,
+			IToolDefManager *tooldef);
 	
 	/*
 		Non-static send methods

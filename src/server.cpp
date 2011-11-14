@@ -2106,6 +2106,9 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 			Send some initialization data
 		*/
 		
+		// Send tool definitions
+		SendToolDef(m_con, peer_id, m_toolmgr);
+		
 		// Send player info to all players
 		SendPlayerInfos();
 
@@ -3586,6 +3589,29 @@ void Server::SendDeathscreen(con::Connection &con, u16 peer_id,
 	writeU16(os, TOCLIENT_DEATHSCREEN);
 	writeU8(os, set_camera_point_target);
 	writeV3F1000(os, camera_point_target);
+
+	// Make data buffer
+	std::string s = os.str();
+	SharedBuffer<u8> data((u8*)s.c_str(), s.size());
+	// Send as reliable
+	con.Send(peer_id, 0, data, true);
+}
+
+void Server::SendToolDef(con::Connection &con, u16 peer_id,
+		IToolDefManager *tooldef)
+{
+	DSTACK(__FUNCTION_NAME);
+	std::ostringstream os(std::ios_base::binary);
+
+	/*
+		u16 command
+		u32 length of the next item
+		serialized ToolDefManager
+	*/
+	writeU16(os, TOCLIENT_TOOLDEF);
+	std::ostringstream tmp_os(std::ios::binary);
+	tooldef->serialize(tmp_os);
+	os<<serializeLongString(tmp_os.str());
 
 	// Make data buffer
 	std::string s = os.str();

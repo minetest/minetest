@@ -22,7 +22,16 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "utility.h"
 
-#define PROTOCOL_VERSION 3
+/*
+	changes by PROTOCOL_VERSION:
+
+	PROTOCOL_VERSION 3:
+		Base for writing changes here
+	PROTOCOL_VERSION 4:
+		Add TOCLIENT_TOOLDEF
+*/
+
+#define PROTOCOL_VERSION 4
 
 #define PROTOCOL_ID 0x4f457403
 
@@ -180,6 +189,19 @@ enum ToClientCommand
 		u16 command
 		u8 bool set camera point target
 		v3f1000 camera point target (to point the death cause or whatever)
+	*/
+
+	TOCLIENT_TOOLDEF = 0x38,
+	/*
+		u16 command
+		u32 length of the next item
+		serialized ToolDefManager
+	*/
+	
+	//TOCLIENT_CONTENT_SENDING_MODE = 0x38,
+	/*
+		u16 command
+		u8 mode (0 = off, 1 = on)
 	*/
 };
 

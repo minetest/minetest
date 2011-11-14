@@ -72,6 +72,8 @@ public:
 	virtual std::string getImagename(const std::string &toolname) const =0;
 	virtual ToolDiggingProperties getDiggingProperties(
 			const std::string &toolname) const =0;
+	
+	virtual void serialize(std::ostream &os)=0;
 };
 
 class IWritableToolDefManager : public IToolDefManager
@@ -85,6 +87,7 @@ public:
 			const std::string &toolname) const =0;
 			
 	virtual bool registerTool(std::string toolname, const ToolDefinition &def)=0;
+	virtual void clear()=0;
 
 	virtual void serialize(std::ostream &os)=0;
 	virtual void deSerialize(std::istream &is)=0;

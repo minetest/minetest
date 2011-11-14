@@ -85,11 +85,7 @@ class CToolDefManager: public IWritableToolDefManager
 public:
 	virtual ~CToolDefManager()
 	{
-		for(core::map<std::string, ToolDefinition*>::Iterator
-				i = m_tool_definitions.getIterator();
-				i.atEnd() == false; i++){
-			delete i.getNode()->getValue();
-		}
+		clear();
 	}
 	virtual const ToolDefinition* getToolDefinition(const std::string &toolname) const
 	{
@@ -123,15 +119,24 @@ public:
 	virtual bool registerTool(std::string toolname, const ToolDefinition &def)
 	{
 		infostream<<"registerTool: registering tool \""<<toolname<<"\""<<std::endl;
-		core::map<std::string, ToolDefinition*>::Node *n;
+		/*core::map<std::string, ToolDefinition*>::Node *n;
 		n = m_tool_definitions.find(toolname);
 		if(n != NULL){
 			errorstream<<"registerTool: registering tool \""<<toolname
 					<<"\" failed: name is already registered"<<std::endl;
 			return false;
-		}
+		}*/
 		m_tool_definitions[toolname] = new ToolDefinition(def);
 		return true;
+	}
+	virtual void clear()
+	{
+		for(core::map<std::string, ToolDefinition*>::Iterator
+				i = m_tool_definitions.getIterator();
+				i.atEnd() == false; i++){
+			delete i.getNode()->getValue();
+		}
+		m_tool_definitions.clear();
 	}
 	virtual void serialize(std::ostream &os)
 	{
@@ -153,6 +158,9 @@ public:
 	}
 	virtual void deSerialize(std::istream &is)
 	{
+		// Clear everything
+		clear();
+		// Deserialize
 		int version = readU8(is);
 		if(version != 0) throw SerializationError(
 				"unsupported ToolDefManager version");
