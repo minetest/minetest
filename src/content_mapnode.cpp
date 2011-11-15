@@ -206,6 +206,7 @@ void content_mapnode_init(IWritableNodeDefManager *nodemgr)
 	f->param_type = CPT_MINERAL;
 	f->is_ground_content = true;
 	f->dug_item = std::string("MaterialItem2 ")+itos(i)+" 1";
+	f->cookresult_item = std::string("MaterialItem2 ")+itos(CONTENT_GLASS)+" 1";
 	setDirtLikeMaterialProperties(f->material, 1.0);
 	
 	i = CONTENT_GRAVEL;
@@ -252,6 +253,7 @@ void content_mapnode_init(IWritableNodeDefManager *nodemgr)
 	f->param_type = CPT_MINERAL;
 	f->is_ground_content = true;
 	f->dug_item = std::string("MaterialItem2 ")+itos(i)+" 1";
+	f->cookresult_item = "CraftItem lump_of_coal 1";
 	setWoodLikeMaterialProperties(f->material, 1.0);
 	
 	i = CONTENT_JUNGLETREE;
@@ -596,6 +598,7 @@ void content_mapnode_init(IWritableNodeDefManager *nodemgr)
 	f->param_type = CPT_NONE;
 	f->is_ground_content = true;
 	f->dug_item = std::string("MaterialItem2 ")+itos(i)+" 1";
+	f->cookresult_item = std::string("MaterialItem2 ")+itos(CONTENT_STONE)+" 1";
 	setStoneLikeMaterialProperties(f->material, 0.9);
 
 	i = CONTENT_MOSSYCOBBLE;

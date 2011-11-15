@@ -29,10 +29,6 @@ class ServerActiveObject;
 class ServerEnvironment;
 class IGameDef;
 
-bool item_material_is_cookable(content_t content, IGameDef *gamedef);
-InventoryItem* item_material_create_cook_result(content_t content,
-		IGameDef *gamedef);
-
 std::string         item_craft_get_image_name(const std::string &subname,
 		IGameDef *gamedef);
 ServerActiveObject* item_craft_create_object(const std::string &subname,

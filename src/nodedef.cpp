@@ -140,6 +140,8 @@ void ContentFeatures::reset()
 	air_equivalent = false;
 	often_contains_mineral = false;
 	dug_item = "";
+	extra_dug_item = "";
+	extra_dug_item_rarity = 2;
 	initial_metadata = NULL;
 	liquid_type = LIQUID_NONE;
 	liquid_alternative_flowing = CONTENT_IGNORE;
@@ -149,6 +151,7 @@ void ContentFeatures::reset()
 	damage_per_second = 0;
 	selection_box = NodeBox();
 	material = MaterialProperties();
+	cookresult_item = "";
 }
 
 void ContentFeatures::serialize(std::ostream &os)
@@ -198,6 +201,7 @@ void ContentFeatures::serialize(std::ostream &os)
 	writeU32(os, damage_per_second);
 	selection_box.serialize(os);
 	material.serialize(os);
+	os<<serializeString(cookresult_item);
 }
 
 void ContentFeatures::deSerialize(std::istream &is, IGameDef *gamedef)
@@ -250,6 +254,7 @@ void ContentFeatures::deSerialize(std::istream &is, IGameDef *gamedef)
 	damage_per_second = readU32(is);
 	selection_box.deSerialize(is);
 	material.deSerialize(is);
+	cookresult_item = deSerializeString(is);
 }
 
 void ContentFeatures::setTexture(u16 i, std::string name)

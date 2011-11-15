@@ -209,6 +209,7 @@ struct ContentFeatures
 	std::string dug_item;
 	// Extra dug item and its rarity
 	std::string extra_dug_item;
+	// Usual get interval for extra dug item
 	s32 extra_dug_item_rarity;
 	// Initial metadata is cloned from this
 	NodeMetadata *initial_metadata;
@@ -227,6 +228,7 @@ struct ContentFeatures
 	u32 damage_per_second;
 	NodeBox selection_box;
 	MaterialProperties material;
+	std::string cookresult_item;
 
 	/*
 		Methods

@@ -22,29 +22,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "content_mapnode.h"
 //#include "serverobject.h"
 #include "content_sao.h"
-
-bool item_material_is_cookable(content_t content, IGameDef *gamedef)
-{
-	if(content == CONTENT_TREE)
-		return true;
-	else if(content == CONTENT_COBBLE)
-		return true;
-	else if(content == CONTENT_SAND)
-		return true;
-	return false;
-}
-
-InventoryItem* item_material_create_cook_result(content_t content,
-		IGameDef *gamedef)
-{
-	if(content == CONTENT_TREE)
-		return new CraftItem(gamedef, "lump_of_coal", 1);
-	else if(content == CONTENT_COBBLE)
-		return new MaterialItem(gamedef, CONTENT_STONE, 1);
-	else if(content == CONTENT_SAND)
-		return new MaterialItem(gamedef, CONTENT_GLASS, 1);
-	return NULL;
-}
+//#include "gamedef.h"
+//#include "nodedef.h"
 
 std::string item_craft_get_image_name(const std::string &subname,
 		IGameDef *gamedef)

@@ -158,12 +158,17 @@ video::ITexture * MaterialItem::getImage(ITextureSource *tsrc) const
 
 bool MaterialItem::isCookable() const
 {
-	return item_material_is_cookable(m_content, m_gamedef);
+	INodeDefManager *ndef = m_gamedef->ndef();
+	const ContentFeatures &f = ndef->get(m_content);
+	return (f.cookresult_item != "");
 }
 
 InventoryItem *MaterialItem::createCookResult() const
 {
-	return item_material_create_cook_result(m_content, m_gamedef);
+	INodeDefManager *ndef = m_gamedef->ndef();
+	const ContentFeatures &f = ndef->get(m_content);
+	std::istringstream is(f.cookresult_item, std::ios::binary);
+	return InventoryItem::deSerialize(is, m_gamedef);
 }
 
 /*
