@@ -987,7 +987,7 @@ Server::Server(
 	m_banmanager(mapsavedir+DIR_DELIM+"ipban.txt"),
 	m_lua(NULL),
 	m_toolmgr(createToolDefManager()),
-	m_nodemgr(createNodeDefManager(NULL)),
+	m_nodemgr(createNodeDefManager()),
 	m_thread(this),
 	m_emergethread(this),
 	m_time_counter(0),

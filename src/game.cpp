@@ -642,7 +642,7 @@ void the_game(
 	// Create texture source
 	IWritableTextureSource *tsrc = createTextureSource(device);
 	// Create node definition manager
-	IWritableNodeDefManager *nodedef = createNodeDefManager(tsrc);
+	IWritableNodeDefManager *nodedef = createNodeDefManager();
 
 	// Fill node feature table with default definitions
 	content_mapnode_init(tsrc, nodedef);

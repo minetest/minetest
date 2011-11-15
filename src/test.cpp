@@ -1087,7 +1087,7 @@ void run_tests()
 	DSTACK(__FUNCTION_NAME);
 	
 	// Create node definitions
-	IWritableNodeDefManager *nodedef = createNodeDefManager(NULL);
+	IWritableNodeDefManager *nodedef = createNodeDefManager();
 	content_mapnode_init(NULL, nodedef);
 
 	infostream<<"run_tests() started"<<std::endl;

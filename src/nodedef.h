@@ -103,31 +103,28 @@ class NodeMetadata;
 struct ContentFeatures
 {
 #ifndef SERVER
-	/*
-		0: up
-		1: down
-		2: right
-		3: left
-		4: back
-		5: front
-	*/
+	// 0     1     2     3     4     5
+	// up    down  right left  back  front 
 	TileSpec tiles[6];
 	
-	std::string inventory_texture_name;
 	video::ITexture *inventory_texture;
 
-	// Used currently for flowing liquids
-	u8 vertex_alpha;
 	// Post effect color, drawn when the camera is inside the node.
 	video::SColor post_effect_color;
-	// Special irrlicht material, used sometimes
+
+	// Special material/texture
+	// - Currently used for flowing liquids
 	video::SMaterial *special_material;
 	video::SMaterial *special_material2;
-	// Currently used for fetching liquid texture coordinates
-	// - This is also updated to the above two (if they are non-NULL)
-	//   when textures are updated
 	AtlasPointer *special_atlas;
 #endif
+	
+	// Texture names
+	std::string tname_tiles[6];
+	std::string tname_inventory;
+	std::string tname_special;
+	u8 alpha;
+	bool backface_culling;
 
 	// List of all block textures that have been used (value is dummy)
 	// Used for texture atlas making.
@@ -199,15 +196,22 @@ struct ContentFeatures
 
 	void reset()
 	{
+		// This isn't exactly complete due to lazyness
+		// TODO: Make it completely reset everything
 #ifndef SERVER
 		inventory_texture = NULL;
 		
-		vertex_alpha = 255;
 		post_effect_color = video::SColor(0, 0, 0, 0);
 		special_material = NULL;
 		special_material2 = NULL;
 		special_atlas = NULL;
 #endif
+		for(u32 i=0; i<6; i++)
+			tname_tiles[i] = "";
+		tname_inventory = "";
+		tname_special = "";
+		alpha = 255;
+		backface_culling = true;
 		used_texturenames.clear();
 		param_type = CPT_NONE;
 		is_ground_content = false;
@@ -246,47 +250,28 @@ struct ContentFeatures
 		Quickhands for simple materials
 	*/
 	
-#ifdef SERVER
-	void setTexture(ITextureSource *tsrc, u16 i, std::string name,
-			u8 alpha=255)
-	{}
-	void setAllTextures(ITextureSource *tsrc, std::string name, u8 alpha=255)
-	{}
-#else
-	void setTexture(ITextureSource *tsrc,
-			u16 i, std::string name, u8 alpha=255);
+	void setTexture(u16 i, std::string name);
 
-	void setAllTextures(ITextureSource *tsrc,
-			std::string name, u8 alpha=255)
+	void setAllTextures(std::string name, u8 alpha=255)
 	{
 		for(u16 i=0; i<6; i++)
-		{
-			setTexture(tsrc, i, name, alpha);
-		}
+			setTexture(i, name);
+		alpha = alpha;
 		// Force inventory texture too
-		setInventoryTexture(name, tsrc);
+		setInventoryTexture(name);
 	}
-#endif
 
+	void setInventoryTexture(std::string imgname);
+	void setInventoryTextureCube(std::string top,
+			std::string left, std::string right);
+
+#if 0
 #ifndef SERVER
 	void setTile(u16 i, const TileSpec &tile)
 	{ tiles[i] = tile; }
 	void setAllTiles(const TileSpec &tile)
 	{ for(u16 i=0; i<6; i++) setTile(i, tile); }
 #endif
-
-#ifdef SERVER
-	void setInventoryTexture(std::string imgname,
-			ITextureSource *tsrc)
-	{}
-	void setInventoryTextureCube(std::string top,
-			std::string left, std::string right, ITextureSource *tsrc)
-	{}
-#else
-	void setInventoryTexture(std::string imgname, ITextureSource *tsrc);
-	
-	void setInventoryTextureCube(std::string top,
-			std::string left, std::string right, ITextureSource *tsrc);
 #endif
 
 	/*
@@ -332,9 +317,7 @@ public:
 	virtual void updateTextures(ITextureSource *tsrc)=0;
 };
 
-// If textures not actually available (server), tsrc can be NULL
-IWritableNodeDefManager* createNodeDefManager(ITextureSource *tsrc);
-
+IWritableNodeDefManager* createNodeDefManager();
 
 #endif
 

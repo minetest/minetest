@@ -391,7 +391,7 @@ void mapblock_mesh_generate_special(MeshMakeData *data,
 			else
 				l = decode_light(n.getLightBlend(data->m_daynight_ratio, nodedef));
 			video::SColor c = MapBlock_LightColor(
-					nodedef->get(n).vertex_alpha, l);
+					nodedef->get(n).alpha, l);
 			
 			// Neighbor liquid levels (key = relative position)
 			// Includes current node
@@ -678,7 +678,7 @@ void mapblock_mesh_generate_special(MeshMakeData *data,
 
 			u8 l = decode_light(n.getLightBlend(data->m_daynight_ratio, nodedef));
 			video::SColor c = MapBlock_LightColor(
-					nodedef->get(n).vertex_alpha, l);
+					nodedef->get(n).alpha, l);
 			
 			video::S3DVertex vertices[4] =
 			{

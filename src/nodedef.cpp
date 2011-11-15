@@ -35,7 +35,7 @@ ContentFeatures::~ContentFeatures()
 #endif
 }
 
-#ifndef SERVER
+#if 0
 void ContentFeatures::setTexture(ITextureSource *tsrc,
 		u16 i, std::string name, u8 alpha)
 {
@@ -64,7 +64,6 @@ void ContentFeatures::setInventoryTexture(std::string imgname,
 	
 	imgname += "^[forcesingle";
 	
-	inventory_texture_name = imgname;
 	inventory_texture = tsrc->getTextureRaw(imgname);
 }
 
@@ -85,49 +84,53 @@ void ContentFeatures::setInventoryTextureCube(std::string top,
 	imgname_full += left;
 	imgname_full += "{";
 	imgname_full += right;
-	inventory_texture_name = imgname_full;
 	inventory_texture = tsrc->getTextureRaw(imgname_full);
 }
 #endif
 
+void ContentFeatures::setTexture(u16 i, std::string name)
+{
+	used_texturenames.insert(name);
+	tname_tiles[i] = name;
+	if(tname_inventory == "")
+		tname_inventory = name;
+}
+
+void ContentFeatures::setInventoryTexture(std::string imgname)
+{
+	tname_inventory = imgname + "^[forcesingle";
+}
+
+void ContentFeatures::setInventoryTextureCube(std::string top,
+		std::string left, std::string right)
+{
+	str_replace_char(top, '^', '&');
+	str_replace_char(left, '^', '&');
+	str_replace_char(right, '^', '&');
+
+	std::string imgname_full;
+	imgname_full += "[inventorycube{";
+	imgname_full += top;
+	imgname_full += "{";
+	imgname_full += left;
+	imgname_full += "{";
+	imgname_full += right;
+	tname_inventory = imgname_full;
+}
+
 class CNodeDefManager: public IWritableNodeDefManager
 {
 public:
-	CNodeDefManager(ITextureSource *tsrc)
+	CNodeDefManager()
 	{
-#ifndef SERVER
-		/*
-			Set initial material type to same in all tiles, so that the
-			same material can be used in more stuff.
-			This is set according to the leaves because they are the only
-			differing material to which all materials can be changed to
-			get this optimization.
-		*/
-		u8 initial_material_type = MATERIAL_ALPHA_SIMPLE;
-		/*if(new_style_leaves)
-			initial_material_type = MATERIAL_ALPHA_SIMPLE;
-		else
-			initial_material_type = MATERIAL_ALPHA_NONE;*/
 		for(u16 i=0; i<=MAX_CONTENT; i++)
 		{
 			ContentFeatures *f = &m_content_features[i];
-			// Re-initialize
+			// Reset to defaults
 			f->reset();
-
-			for(u16 j=0; j<6; j++)
-				f->tiles[j].material_type = initial_material_type;
-		}
-#endif
-		/*
-			Initially set every block to be shown as an unknown block.
-			Don't touch CONTENT_IGNORE or CONTENT_AIR.
-		*/
-		for(u16 i=0; i<=MAX_CONTENT; i++)
-		{
 			if(i == CONTENT_IGNORE || i == CONTENT_AIR)
 				continue;
-			ContentFeatures *f = &m_content_features[i];
-			f->setAllTextures(tsrc, "unknown_block.png");
+			f->setAllTextures("unknown_block.png");
 			f->dug_item = std::string("MaterialItem2 ")+itos(i)+" 1";
 		}
 		// Make CONTENT_IGNORE to not block the view when occlusion culling
@@ -138,7 +141,7 @@ public:
 	}
 	virtual IWritableNodeDefManager* clone()
 	{
-		CNodeDefManager *mgr = new CNodeDefManager(NULL);
+		CNodeDefManager *mgr = new CNodeDefManager();
 		for(u16 i=0; i<=MAX_CONTENT; i++)
 		{
 			mgr->set(i, get(i));
@@ -173,19 +176,41 @@ public:
 				<<"textures in node definitions"<<std::endl;
 		for(u16 i=0; i<=MAX_CONTENT; i++)
 		{
+			infostream<<"Updating content "<<i<<std::endl;
 			ContentFeatures *f = &m_content_features[i];
-			for(u16 j=0; j<6; j++)
-				tsrc->updateAP(f->tiles[j].texture);
-			if(f->special_atlas){
-				tsrc->updateAP(*(f->special_atlas));
+			// Inventory texture
+			if(f->tname_inventory != "")
+				f->inventory_texture = tsrc->getTextureRaw(f->tname_inventory);
+			else
+				f->inventory_texture = NULL;
+			// Tile textures
+			for(u16 j=0; j<6; j++){
+				if(f->tname_tiles[j] == "")
+					continue;
+				f->tiles[j].texture = tsrc->getTexture(f->tname_tiles[j]);
+				f->tiles[j].alpha = f->alpha;
+				if(f->alpha == 255)
+					f->tiles[j].material_type = MATERIAL_ALPHA_SIMPLE;
+				else
+					f->tiles[j].material_type = MATERIAL_ALPHA_VERTEX;
+				if(f->backface_culling)
+					f->tiles[j].material_flags |= MATERIAL_FLAG_BACKFACE_CULLING;
+				else
+					f->tiles[j].material_flags &= ~MATERIAL_FLAG_BACKFACE_CULLING;
+			}
+			// Special texture
+			if(f->tname_special != ""){
+				if(!f->special_atlas)
+					f->special_atlas = new AtlasPointer(
+							tsrc->getTexture(f->tname_special));
+				else
+					*(f->special_atlas) =
+							tsrc->getTexture(f->tname_special);
+				// Special material textures
 				if(f->special_material)
 					f->special_material->setTexture(0, f->special_atlas->atlas);
 				if(f->special_material2)
 					f->special_material2->setTexture(0, f->special_atlas->atlas);
-			}
-			if(f->inventory_texture_name != ""){
-				f->inventory_texture =
-					tsrc->getTextureRaw(f->inventory_texture_name);
 			}
 		}
 #endif
@@ -194,8 +219,8 @@ private:
 	ContentFeatures m_content_features[MAX_CONTENT+1];
 };
 
-IWritableNodeDefManager* createNodeDefManager(ITextureSource *tsrc)
+IWritableNodeDefManager* createNodeDefManager()
 {
-	return new CNodeDefManager(tsrc);
+	return new CNodeDefManager();
 }
 
