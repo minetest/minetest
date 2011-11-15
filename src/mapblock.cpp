@@ -931,20 +931,10 @@ std::string analyze_block(MapBlock *block)
 	}
 	else
 	{
-		// We'll just define the numbers here, don't want to include
-		// content_mapnode.h
-		const content_t content_water = 2;
-		const content_t content_watersource = 9;
-		const content_t content_tree = 0x801;
-		const content_t content_leaves = 0x802;
-		const content_t content_jungletree = 0x815;
-
 		bool full_ignore = true;
 		bool some_ignore = false;
 		bool full_air = true;
 		bool some_air = false;
-		bool trees = false;
-		bool water = false;
 		for(s16 z0=0; z0<MAP_BLOCKSIZE; z0++)
 		for(s16 y0=0; y0<MAP_BLOCKSIZE; y0++)
 		for(s16 x0=0; x0<MAP_BLOCKSIZE; x0++)
@@ -960,12 +950,6 @@ std::string analyze_block(MapBlock *block)
 				some_air = true;
 			else
 				full_air = false;
-			if(c == content_tree || c == content_jungletree
-					|| c == content_leaves)
-				trees = true;
-			if(c == content_water
-					|| c == content_watersource)
-				water = true;
 		}
 		
 		desc<<"content {";
@@ -981,11 +965,6 @@ std::string analyze_block(MapBlock *block)
 			ss<<"AIR (full), ";
 		else if(some_air)
 			ss<<"AIR, ";
-
-		if(trees)
-			ss<<"trees, ";
-		if(water)
-			ss<<"water, ";
 		
 		if(ss.str().size()>=2)
 			desc<<ss.str().substr(0, ss.str().size()-2);
