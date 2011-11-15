@@ -511,14 +511,14 @@ u32 TextureSource::getTextureIdDirect(const std::string &name)
 		n = m_name_to_id.find(name);
 		if(n != NULL)
 		{
-			infostream<<"getTextureIdDirect(): \""<<name
-					<<"\" found in cache"<<std::endl;
+			/*infostream<<"getTextureIdDirect(): \""<<name
+					<<"\" found in cache"<<std::endl;*/
 			return n->getValue();
 		}
 	}
 
-	infostream<<"getTextureIdDirect(): \""<<name
-			<<"\" NOT found in cache. Creating it."<<std::endl;
+	/*infostream<<"getTextureIdDirect(): \""<<name
+			<<"\" NOT found in cache. Creating it."<<std::endl;*/
 	
 	/*
 		Get the base image
@@ -581,7 +581,7 @@ u32 TextureSource::getTextureIdDirect(const std::string &name)
 		
 		if(image == NULL)
 		{
-			infostream<<"getTextureIdDirect(): NULL image in "
+			infostream<<"getTextureIdDirect(): WARNING: NULL image in "
 					<<"cache: \""<<base_image_name<<"\""
 					<<std::endl;
 		}
@@ -617,7 +617,7 @@ u32 TextureSource::getTextureIdDirect(const std::string &name)
 	// Generate image according to part of name
 	if(!generate_image(last_part_of_name, baseimg, m_device, &m_sourcecache))
 	{
-		infostream<<"getTextureIdDirect(): "
+		errorstream<<"getTextureIdDirect(): "
 				"failed to generate \""<<last_part_of_name<<"\""
 				<<std::endl;
 	}
@@ -625,7 +625,7 @@ u32 TextureSource::getTextureIdDirect(const std::string &name)
 	// If no resulting image, print a warning
 	if(baseimg == NULL)
 	{
-		infostream<<"getTextureIdDirect(): baseimg is NULL (attempted to"
+		errorstream<<"getTextureIdDirect(): baseimg is NULL (attempted to"
 				" create texture \""<<name<<"\""<<std::endl;
 	}
 	
@@ -666,7 +666,7 @@ std::string TextureSource::getTextureName(u32 id)
 
 	if(id >= m_atlaspointer_cache.size())
 	{
-		infostream<<"TextureSource::getTextureName(): id="<<id
+		errorstream<<"TextureSource::getTextureName(): id="<<id
 				<<" >= m_atlaspointer_cache.size()="
 				<<m_atlaspointer_cache.size()<<std::endl;
 		return "";
@@ -702,10 +702,10 @@ void TextureSource::processQueue()
 		GetRequest<std::string, u32, u8, u8>
 				request = m_get_texture_queue.pop();
 
-		infostream<<"TextureSource::processQueue(): "
+		/*infostream<<"TextureSource::processQueue(): "
 				<<"got texture request with "
 				<<"name=\""<<request.key<<"\""
-				<<std::endl;
+				<<std::endl;*/
 
 		GetResult<std::string, u32, u8, u8>
 				result;
@@ -719,48 +719,11 @@ void TextureSource::processQueue()
 
 void TextureSource::insertSourceImage(const std::string &name, video::IImage *img)
 {
-	infostream<<"TextureSource::insertSourceImage(): name="<<name<<std::endl;
+	//infostream<<"TextureSource::insertSourceImage(): name="<<name<<std::endl;
 	
 	assert(get_current_thread_id() == m_main_thread);
 	
 	m_sourcecache.insert(name, img, false);
-
-#if 0
-	JMutexAutoLock lock(m_atlaspointer_cache_mutex);
-
-	video::IVideoDriver* driver = m_device->getVideoDriver();
-	assert(driver);
-
-	// Create texture
-	video::ITexture *t = driver->addTexture(name.c_str(), img);
-
-	bool reuse_old_id = false;
-	u32 id = m_atlaspointer_cache.size();
-	// Check old id without fetching a texture
-	core::map<std::string, u32>::Node *n;
-	n = m_name_to_id.find(name);
-	// If it exists, we will replace the old definition
-	if(n){
-		id = n->getValue();
-		reuse_old_id = true;
-	}
-	
-	// Create AtlasPointer
-	AtlasPointer ap(id);
-	ap.atlas = t;
-	ap.pos = v2f(0,0);
-	ap.size = v2f(1,1);
-	ap.tiled = 0;
-	core::dimension2d<u32> dim = img->getDimension();
-
-	// Create SourceAtlasPointer and add to containers
-	SourceAtlasPointer nap(name, ap, img, v2s32(0,0), dim);
-	if(reuse_old_id)
-		m_atlaspointer_cache[id] = nap;
-	else
-		m_atlaspointer_cache.push_back(nap);
-	m_name_to_id[name] = id;
-#endif
 }
 	
 void TextureSource::rebuildImagesAndTextures()
@@ -891,7 +854,8 @@ void TextureSource::buildMainAtlas(class IGameDef *gamedef)
 				&m_sourcecache);
 		if(img2 == NULL)
 		{
-			infostream<<"TextureSource::buildMainAtlas(): Couldn't generate texture atlas: Couldn't generate image \""<<name<<"\""<<std::endl;
+			errorstream<<"TextureSource::buildMainAtlas(): "
+					<<"Couldn't generate image \""<<name<<"\""<<std::endl;
 			continue;
 		}
 
@@ -920,8 +884,8 @@ void TextureSource::buildMainAtlas(class IGameDef *gamedef)
 			pos_in_atlas.X += column_width + column_padding;
 		}
 		
-        infostream<<"TextureSource::buildMainAtlas(): Adding \""<<name
-                <<"\" to texture atlas"<<std::endl;
+		/*infostream<<"TextureSource::buildMainAtlas(): Adding \""<<name
+				<<"\" to texture atlas"<<std::endl;*/
 
 		// Tile it a few times in the X direction
 		u16 xwise_tiling = column_width / dim.Width;
@@ -974,8 +938,8 @@ void TextureSource::buildMainAtlas(class IGameDef *gamedef)
 		if(n){
 			id = n->getValue();
 			reuse_old_id = true;
-			infostream<<"TextureSource::buildMainAtlas(): "
-					<<"Replacing old AtlasPointer"<<std::endl;
+			/*infostream<<"TextureSource::buildMainAtlas(): "
+					<<"Replacing old AtlasPointer"<<std::endl;*/
 		}
 
 		// Create AtlasPointer
@@ -1090,7 +1054,7 @@ video::IImage* generate_image_from_scratch(std::string name,
 	// Generate image according to part of name
 	if(!generate_image(last_part_of_name, baseimg, device, sourcecache))
 	{
-		infostream<<"generate_image_from_scratch(): "
+		errorstream<<"generate_image_from_scratch(): "
 				"failed to generate \""<<last_part_of_name<<"\""
 				<<std::endl;
 		return NULL;
@@ -1112,12 +1076,9 @@ bool generate_image(std::string part_of_name, video::IImage *& baseimg,
 
 		if(image == NULL)
 		{
-			infostream<<"generate_image(): Could not load image \""
+			errorstream<<"generate_image(): Could not load image \""
                     <<part_of_name<<"\""<<" while building texture"<<std::endl;
-
-			//return false;
-
-			infostream<<"generate_image(): Creating a dummy"
+			errorstream<<"generate_image(): Creating a dummy"
                     <<" image for \""<<part_of_name<<"\""<<std::endl;
 
 			// Just create a dummy image
@@ -1177,9 +1138,9 @@ bool generate_image(std::string part_of_name, video::IImage *& baseimg,
 	{
 		// A special texture modification
 
-		infostream<<"generate_image(): generating special "
+		/*infostream<<"generate_image(): generating special "
 				<<"modification \""<<part_of_name<<"\""
-				<<std::endl;
+				<<std::endl;*/
 		
 		/*
 			This is the simplest of all; it just adds stuff to the
@@ -1200,7 +1161,7 @@ bool generate_image(std::string part_of_name, video::IImage *& baseimg,
 		{
 			if(baseimg == NULL)
 			{
-				infostream<<"generate_image(): baseimg==NULL "
+				errorstream<<"generate_image(): baseimg==NULL "
 						<<"for part_of_name=\""<<part_of_name
 						<<"\", cancelling."<<std::endl;
 				return false;
@@ -1335,7 +1296,7 @@ bool generate_image(std::string part_of_name, video::IImage *& baseimg,
 		{
 			if(baseimg == NULL)
 			{
-				infostream<<"generate_image(): baseimg==NULL "
+				errorstream<<"generate_image(): baseimg==NULL "
 						<<"for part_of_name=\""<<part_of_name
 						<<"\", cancelling."<<std::endl;
 				return false;
@@ -1355,7 +1316,7 @@ bool generate_image(std::string part_of_name, video::IImage *& baseimg,
 		{
 			if(baseimg != NULL)
 			{
-				infostream<<"generate_image(): baseimg!=NULL "
+				errorstream<<"generate_image(): baseimg!=NULL "
 						<<"for part_of_name=\""<<part_of_name
 						<<"\", cancelling."<<std::endl;
 				return false;
@@ -1365,8 +1326,8 @@ bool generate_image(std::string part_of_name, video::IImage *& baseimg,
 
 			std::string path = getTexturePath(filename.c_str());
 
-			infostream<<"generate_image(): Loading file \""<<filename
-					<<"\""<<std::endl;
+			/*infostream<<"generate_image(): Loading file \""<<filename
+					<<"\""<<std::endl;*/
 			
 			video::IImage *image = sourcecache->getOrLoad(filename, device);
 			
@@ -1402,7 +1363,7 @@ bool generate_image(std::string part_of_name, video::IImage *& baseimg,
 		{
 			if(baseimg != NULL)
 			{
-				infostream<<"generate_image(): baseimg!=NULL "
+				errorstream<<"generate_image(): baseimg!=NULL "
 						<<"for part_of_name=\""<<part_of_name
 						<<"\", cancelling."<<std::endl;
 				return false;
@@ -1414,14 +1375,14 @@ bool generate_image(std::string part_of_name, video::IImage *& baseimg,
 			u32 b1 = stoi(sf.next(":"));
 			std::string filename = sf.next("");
 
-			infostream<<"generate_image(): Loading file \""<<filename
-					<<"\""<<std::endl;
+			/*infostream<<"generate_image(): Loading file \""<<filename
+					<<"\""<<std::endl;*/
 			
 			video::IImage *image = sourcecache->getOrLoad(filename, device);
 			
 			if(image == NULL)
 			{
-				infostream<<"generate_image(): Loading file \""
+				errorstream<<"generate_image(): Loading file \""
 						<<filename<<"\" failed"<<std::endl;
 			}
 			else
@@ -1456,7 +1417,7 @@ bool generate_image(std::string part_of_name, video::IImage *& baseimg,
 		{
 			if(baseimg != NULL)
 			{
-				infostream<<"generate_image(): baseimg!=NULL "
+				errorstream<<"generate_image(): baseimg!=NULL "
 						<<"for part_of_name=\""<<part_of_name
 						<<"\", cancelling."<<std::endl;
 				return false;
@@ -1471,14 +1432,14 @@ bool generate_image(std::string part_of_name, video::IImage *& baseimg,
 			u32 b2 = stoi(sf.next(":"));
 			std::string filename = sf.next("");
 
-			infostream<<"generate_image(): Loading filename \""<<filename
-					<<"\""<<std::endl;
+			/*infostream<<"generate_image(): Loading filename \""<<filename
+					<<"\""<<std::endl;*/
 			
 			video::IImage *image = sourcecache->getOrLoad(filename, device);
 			
 			if(image == NULL)
 			{
-				infostream<<"generate_image(): Loading file \""
+				errorstream<<"generate_image(): Loading file \""
 						<<filename<<"\" failed"<<std::endl;
 			}
 			else
@@ -1518,7 +1479,7 @@ bool generate_image(std::string part_of_name, video::IImage *& baseimg,
 		{
 			if(baseimg != NULL)
 			{
-				infostream<<"generate_image(): baseimg!=NULL "
+				errorstream<<"generate_image(): baseimg!=NULL "
 						<<"for part_of_name=\""<<part_of_name
 						<<"\", cancelling."<<std::endl;
 				return false;
@@ -1536,7 +1497,7 @@ bool generate_image(std::string part_of_name, video::IImage *& baseimg,
 
 			if(driver->queryFeature(video::EVDF_RENDER_TO_TARGET) == false)
 			{
-				infostream<<"generate_image(): EVDF_RENDER_TO_TARGET"
+				errorstream<<"generate_image(): EVDF_RENDER_TO_TARGET"
 						" not supported. Creating fallback image"<<std::endl;
 				baseimg = generate_image_from_scratch(
 						imagename_top, device, sourcecache);
@@ -1649,7 +1610,7 @@ bool generate_image(std::string part_of_name, video::IImage *& baseimg,
 		}
 		else
 		{
-			infostream<<"generate_image(): Invalid "
+			errorstream<<"generate_image(): Invalid "
 					" modification: \""<<part_of_name<<"\""<<std::endl;
 		}
 	}
