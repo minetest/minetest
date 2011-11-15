@@ -64,6 +64,7 @@ void ContentFeatures::setInventoryTexture(std::string imgname,
 	
 	imgname += "^[forcesingle";
 	
+	inventory_texture_name = imgname;
 	inventory_texture = tsrc->getTextureRaw(imgname);
 }
 
@@ -84,6 +85,7 @@ void ContentFeatures::setInventoryTextureCube(std::string top,
 	imgname_full += left;
 	imgname_full += "{";
 	imgname_full += right;
+	inventory_texture_name = imgname_full;
 	inventory_texture = tsrc->getTextureRaw(imgname_full);
 }
 #endif
@@ -180,6 +182,10 @@ public:
 					f->special_material->setTexture(0, f->special_atlas->atlas);
 				if(f->special_material2)
 					f->special_material2->setTexture(0, f->special_atlas->atlas);
+			}
+			if(f->inventory_texture_name != ""){
+				f->inventory_texture =
+					tsrc->getTextureRaw(f->inventory_texture_name);
 			}
 		}
 #endif

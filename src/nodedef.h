@@ -113,6 +113,7 @@ struct ContentFeatures
 	*/
 	TileSpec tiles[6];
 	
+	std::string inventory_texture_name;
 	video::ITexture *inventory_texture;
 
 	// Used currently for flowing liquids
