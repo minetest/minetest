@@ -334,11 +334,6 @@ TODO: Add a long step function to objects that is called with the time
 Map:
 ----
 
-TODO: Mineral and ground material properties
-      - This way mineral ground toughness can be calculated with just
-	    some formula, as well as tool strengths. Sounds too.
-	  - There are TODOs in appropriate files: material.h, content_mapnode.h
-
 TODO: Flowing water to actually contain flow direction information
       - There is a space for this - it just has to be implemented.
 
@@ -434,8 +429,6 @@ Doing currently:
 #include "settings.h"
 #include "profiler.h"
 #include "log.h"
-#include "nodedef.h" // For init_contentfeatures
-#include "content_mapnode.h" // For content_mapnode_init
 
 /*
 	Settings.
