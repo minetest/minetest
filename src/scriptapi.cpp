@@ -39,7 +39,7 @@ extern "C" {
 
 /*
 TODO:
-- Node type definition
+- Node definition
 - Random node triggers
 - Object visual client-side stuff
 	- Blink effect
@@ -52,6 +52,7 @@ TODO:
 	blockdef.on_inventory_modified
 	meta.set("owner", playername)
 	meta.get("owner")
+- Item definition
 */
 
 static void stackDump(lua_State *L, std::ostream &o)
