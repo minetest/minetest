@@ -43,7 +43,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "scriptapi.h"
 #include "nodedef.h"
 #include "tooldef.h"
-#include "content_tool.h" // For content_tool_init
 
 #define PP(x) "("<<(x).X<<","<<(x).Y<<","<<(x).Z<<")"
 
@@ -987,9 +986,6 @@ Server::Server(
 
 	infostream<<"m_nodemgr="<<m_nodemgr<<std::endl;
 	
-	// Initialize default tool definitions
-	content_tool_init(m_toolmgr);
-
 	// Initialize default node definitions
 	content_mapnode_init(NULL, m_nodemgr);
 
@@ -4238,6 +4234,15 @@ INodeDefManager* Server::getNodeDefManager()
 ITextureSource* Server::getTextureSource()
 {
 	return NULL;
+}
+
+IWritableToolDefManager* Server::getWritableToolDefManager()
+{
+	return m_toolmgr;
+}
+IWritableNodeDefManager* Server::getWritableNodeDefManager()
+{
+	return m_nodemgr;
 }
 
 v3f findSpawnPos(ServerMap &map)

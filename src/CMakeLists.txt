@@ -94,7 +94,6 @@ configure_file(
 )
 
 set(common_SRCS
-	content_tool.cpp
 	tooldef.cpp
 	nodedef.cpp
 	luaentity_common.cpp

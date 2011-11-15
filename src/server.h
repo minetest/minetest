@@ -490,6 +490,9 @@ public:
 	virtual IToolDefManager* getToolDefManager();
 	virtual INodeDefManager* getNodeDefManager();
 	virtual ITextureSource* getTextureSource();
+	
+	IWritableToolDefManager* getWritableToolDefManager();
+	IWritableNodeDefManager* getWritableNodeDefManager();
 
 private:
 

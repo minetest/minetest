@@ -35,6 +35,7 @@ extern "C" {
 //#include "luna.h"
 #include "luaentity_common.h"
 #include "content_sao.h" // For LuaEntitySAO
+#include "tooldef.h"
 
 /*
 TODO:
@@ -141,8 +142,8 @@ v3f readFloatPos(lua_State *L, int index)
 static int l_register_entity(lua_State *L)
 {
 	const char *name = luaL_checkstring(L, 1);
-	luaL_checktype(L, 2, LUA_TTABLE);
 	infostream<<"register_entity: "<<name<<std::endl;
+	luaL_checktype(L, 2, LUA_TTABLE);
 
 	// Get minetest.registered_entities
 	lua_getglobal(L, "minetest");
@@ -196,9 +197,99 @@ static int l_register_globalstep(lua_State *L)
 	return 0; /* number of results */
 }
 
+#if 0
+// Clear all registered tools
+// deregister_tools()
+static int l_deregister_tools(lua_State *L)
+{
+	infostream<<"deregister_tools"<<std::endl;
+
+	// Get server from registry
+	lua_getfield(L, LUA_REGISTRYINDEX, "minetest_server");
+	Server *server = (Server*)lua_touserdata(L, -1);
+	// And get the writable tool definition manager from the server
+	IWritableToolDefManager *tooldef =
+			server->getWritableToolDefManager();
+	
+	tooldef->clear();
+
+	return 0; /* number of results */
+}
+#endif
+
+// register_tool(name, {lots of stuff})
+static int l_register_tool(lua_State *L)
+{
+	const char *name = luaL_checkstring(L, 1);
+	infostream<<"register_tool: "<<name<<std::endl;
+	luaL_checktype(L, 2, LUA_TTABLE);
+
+	// Get server from registry
+	lua_getfield(L, LUA_REGISTRYINDEX, "minetest_server");
+	Server *server = (Server*)lua_touserdata(L, -1);
+	// And get the writable tool definition manager from the server
+	IWritableToolDefManager *tooldef =
+			server->getWritableToolDefManager();
+	
+	int table = 2;
+	
+	ToolDefinition def;
+
+	lua_getfield(L, table, "image");
+	if(lua_isstring(L, -1))
+		def.imagename = lua_tostring(L, -1);
+	lua_pop(L, 1);
+	
+	lua_getfield(L, table, "basetime");
+	def.properties.basetime = lua_tonumber(L, -1);
+	lua_pop(L, 1);
+
+	lua_getfield(L, table, "dt_weight");
+	def.properties.dt_weight = lua_tonumber(L, -1);
+	lua_pop(L, 1);
+
+	lua_getfield(L, table, "dt_crackiness");
+	def.properties.dt_crackiness = lua_tonumber(L, -1);
+	lua_pop(L, 1);
+
+	lua_getfield(L, table, "dt_crumbliness");
+	def.properties.dt_crumbliness = lua_tonumber(L, -1);
+	lua_pop(L, 1);
+
+	lua_getfield(L, table, "dt_cuttability");
+	def.properties.dt_cuttability = lua_tonumber(L, -1);
+	lua_pop(L, 1);
+
+	lua_getfield(L, table, "basedurability");
+	def.properties.basedurability = lua_tonumber(L, -1);
+	lua_pop(L, 1);
+
+	lua_getfield(L, table, "dd_weight");
+	def.properties.dd_weight = lua_tonumber(L, -1);
+	lua_pop(L, 1);
+
+	lua_getfield(L, table, "dd_crackiness");
+	def.properties.dd_crackiness = lua_tonumber(L, -1);
+	lua_pop(L, 1);
+
+	lua_getfield(L, table, "dd_crumbliness");
+	def.properties.dd_crumbliness = lua_tonumber(L, -1);
+	lua_pop(L, 1);
+
+	lua_getfield(L, table, "dd_cuttability");
+	def.properties.dd_cuttability = lua_tonumber(L, -1);
+	lua_pop(L, 1);
+
+	tooldef->registerTool(name, def);
+
+	return 0; /* number of results */
+}
+
 static const struct luaL_Reg minetest_f [] = {
 	{"register_entity", l_register_entity},
 	{"register_globalstep", l_register_globalstep},
+	//{"deregister_tools", l_deregister_tools},
+	{"register_tool", l_register_tool},
 	{NULL, NULL}
 };
 
@@ -581,6 +672,10 @@ void scriptapi_export(lua_State *L, Server *server)
 	assert(lua_checkstack(L, 20));
 	infostream<<"scriptapi_export"<<std::endl;
 	StackUnroller stack_unroller(L);
+
+	// Store server as light userdata in registry
+	lua_pushlightuserdata(L, server);
+	lua_setfield(L, LUA_REGISTRYINDEX, "minetest_server");
 	
 	// Register global functions in table minetest
 	lua_newtable(L);

@@ -113,6 +113,205 @@ end
 
 minetest.register_globalstep(on_step)
 
+minetest.register_tool("WPick", {
+	image = "tool_woodpick.png",
+	basetime = 2.0,
+	dt_weight = 0,
+	dt_crackiness = -0.5,
+	dt_crumbliness = 2,
+	dt_cuttability = 0,
+	basedurability = 50,
+	dd_weight = 0,
+	dd_crackiness = 0,
+	dd_crumbliness = 0,
+	dd_cuttability = 0,
+})
+minetest.register_tool("STPick", {
+	image = "tool_stonepick.png",
+	basetime = 1.5,
+	dt_weight = 0,
+	dt_crackiness = -0.5,
+	dt_crumbliness = 2,
+	dt_cuttability = 0,
+	basedurability = 100,
+	dd_weight = 0,
+	dd_crackiness = 0,
+	dd_crumbliness = 0,
+	dd_cuttability = 0,
+})
+minetest.register_tool("SteelPick", {
+	image = "tool_steelpick.png",
+	basetime = 1.0,
+	dt_weight = 0,
+	dt_crackiness = -0.5,
+	dt_crumbliness = 2,
+	dt_cuttability = 0,
+	basedurability = 300,
+	dd_weight = 0,
+	dd_crackiness = 0,
+	dd_crumbliness = 0,
+	dd_cuttability = 0,
+})
+minetest.register_tool("MesePick", {
+	image = "tool_mesepick.png",
+	basetime = 0,
+	dt_weight = 0,
+	dt_crackiness = 0,
+	dt_crumbliness = 0,
+	dt_cuttability = 0,
+	basedurability = 1337,
+	dd_weight = 0,
+	dd_crackiness = 0,
+	dd_crumbliness = 0,
+	dd_cuttability = 0,
+})
+minetest.register_tool("WShovel", {
+	image = "tool_woodshovel.png",
+	basetime = 2.0,
+	dt_weight = 0.5,
+	dt_crackiness = 2,
+	dt_crumbliness = -1.5,
+	dt_cuttability = 0.3,
+	basedurability = 50,
+	dd_weight = 0,
+	dd_crackiness = 0,
+	dd_crumbliness = 0,
+	dd_cuttability = 0,
+})
+minetest.register_tool("STShovel", {
+	image = "tool_stoneshovel.png",
+	basetime = 1.5,
+	dt_weight = 0.5,
+	dt_crackiness = 2,
+	dt_crumbliness = -1.5,
+	dt_cuttability = 0.1,
+	basedurability = 100,
+	dd_weight = 0,
+	dd_crackiness = 0,
+	dd_crumbliness = 0,
+	dd_cuttability = 0,
+})
+minetest.register_tool("SteelShovel", {
+	image = "tool_steelshovel.png",
+	basetime = 1.0,
+	dt_weight = 0.5,
+	dt_crackiness = 2,
+	dt_crumbliness = -1.5,
+	dt_cuttability = 0.0,
+	basedurability = 300,
+	dd_weight = 0,
+	dd_crackiness = 0,
+	dd_crumbliness = 0,
+	dd_cuttability = 0,
+})
+minetest.register_tool("WAxe", {
+	image = "tool_woodaxe.png",
+	basetime = 2.0,
+	dt_weight = 0.5,
+	dt_crackiness = -0.2,
+	dt_crumbliness = 1,
+	dt_cuttability = -0.5,
+	basedurability = 50,
+	dd_weight = 0,
+	dd_crackiness = 0,
+	dd_crumbliness = 0,
+	dd_cuttability = 0,
+})
+minetest.register_tool("STAxe", {
+	image = "tool_stoneaxe.png",
+	basetime = 1.5,
+	dt_weight = 0.5,
+	dt_crackiness = -0.2,
+	dt_crumbliness = 1,
+	dt_cuttability = -0.5,
+	basedurability = 100,
+	dd_weight = 0,
+	dd_crackiness = 0,
+	dd_crumbliness = 0,
+	dd_cuttability = 0,
+})
+minetest.register_tool("SteelAxe", {
+	image = "tool_steelaxe.png",
+	basetime = 1.0,
+	dt_weight = 0.5,
+	dt_crackiness = -0.2,
+	dt_crumbliness = 1,
+	dt_cuttability = -0.5,
+	basedurability = 300,
+	dd_weight = 0,
+	dd_crackiness = 0,
+	dd_crumbliness = 0,
+	dd_cuttability = 0,
+})
+minetest.register_tool("WSword", {
+	image = "tool_woodsword.png",
+	basetime = 3.0,
+	dt_weight = 3,
+	dt_crackiness = 0,
+	dt_crumbliness = 1,
+	dt_cuttability = -1,
+	basedurability = 50,
+	dd_weight = 0,
+	dd_crackiness = 0,
+	dd_crumbliness = 0,
+	dd_cuttability = 0,
+})
+minetest.register_tool("STSword", {
+	image = "tool_stonesword.png",
+	basetime = 2.5,
+	dt_weight = 3,
+	dt_crackiness = 0,
+	dt_crumbliness = 1,
+	dt_cuttability = -1,
+	basedurability = 100,
+	dd_weight = 0,
+	dd_crackiness = 0,
+	dd_crumbliness = 0,
+	dd_cuttability = 0,
+})
+minetest.register_tool("SteelSword", {
+	image = "tool_steelsword.png",
+	basetime = 2.0,
+	dt_weight = 3,
+	dt_crackiness = 0,
+	dt_crumbliness = 1,
+	dt_cuttability = -1,
+	basedurability = 300,
+	dd_weight = 0,
+	dd_crackiness = 0,
+	dd_crumbliness = 0,
+	dd_cuttability = 0,
+})
+minetest.register_tool("", {
+	image = "",
+	basetime = 0.5,
+	dt_weight = 1,
+	dt_crackiness = 0,
+	dt_crumbliness = -1,
+	dt_cuttability = 0,
+	basedurability = 50,
+	dd_weight = 0,
+	dd_crackiness = 0,
+	dd_crumbliness = 0,
+	dd_cuttability = 0,
+})
+
+--[[
+minetest.register_tool("horribletool", {
+	image = "lava.png",
+	basetime = 2.0
+	dt_weight = 0.2
+	dt_crackiness = 0.2
+	dt_crumbliness = 0.2
+	dt_cuttability = 0.2
+	basedurability = 50
+	dd_weight = -5
+	dd_crackiness = -5
+	dd_crumbliness = -5
+	dd_cuttability = -5
+})
+--]]
+
 local TNT = {
 	-- Maybe handle gravity and collision this way? dunno
 	physical = true,

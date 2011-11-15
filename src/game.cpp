@@ -49,7 +49,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "main.h" // For g_settings
 #include "content_mapnode.h" // For content_mapnode_init
 #include "tooldef.h"
-#include "content_tool.h" // Default tools
 #include "content_mapnode.h" // Default nodes
 
 /*
@@ -646,8 +645,6 @@ void the_game(
 
 	// Fill node feature table with default definitions
 	content_mapnode_init(tsrc, nodedef);
-	// Set default tool definitions
-	content_tool_init(tooldef);
 
 	/*
 		Create server.
