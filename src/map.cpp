@@ -30,7 +30,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "porting.h"
 #include "mapgen.h"
 #include "nodemetadata.h"
-#include "content_mapnode.h"
 #ifndef SERVER
 #include <IMaterialRenderer.h>
 #endif
@@ -661,14 +660,6 @@ s16 Map::propagateSunlight(v3s16 start,
 		}
 		else
 		{
-			/*// Turn mud into grass
-			if(n.getContent() == CONTENT_MUD)
-			{
-				n.setContent(CONTENT_GRASS);
-				block->setNode(relpos, n);
-				modified_blocks.insert(blockpos, block);
-			}*/
-
 			// Sunlight goes no further
 			break;
 		}
@@ -951,39 +942,6 @@ void Map::addNodeAndUpdate(v3s16 p, MapNode n,
 	catch(InvalidPositionException &e)
 	{
 	}
-
-#if 0
-	/*
-		If the new node is solid and there is grass below, change it to mud
-	*/
-	if(nodemgr->get(n).walkable == true)
-	{
-		try{
-			MapNode bottomnode = getNode(bottompos);
-
-			if(bottomnode.getContent() == CONTENT_GRASS
-					|| bottomnode.getContent() == CONTENT_GRASS_FOOTSTEPS)
-			{
-				bottomnode.setContent(CONTENT_MUD);
-				setNode(bottompos, bottomnode);
-			}
-		}
-		catch(InvalidPositionException &e)
-		{
-		}
-	}
-#endif
-
-#if 0
-	/*
-		If the new node is mud and it is under sunlight, change it
-		to grass
-	*/
-	if(n.getContent() == CONTENT_MUD && node_under_sunlight)
-	{
-		n.setContent(CONTENT_GRASS);
-	}
-#endif
 
 	/*
 		Remove all light that has come out of this node
@@ -2521,10 +2479,7 @@ MapBlock * ServerMap::generateBlock(
 			for(s16 y0=0; y0<MAP_BLOCKSIZE; y0++)
 			{
 				MapNode n;
-				if(y0%2==0)
-					n.setContent(CONTENT_AIR);
-				else
-					n.setContent(CONTENT_STONE);
+				n.setContent(CONTENT_AIR);
 				block->setNode(v3s16(x0,y0,z0), n);
 			}
 		}
