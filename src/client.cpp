@@ -1517,9 +1517,6 @@ void Client::ProcessData(u8 *data, u32 datasize, u16 sender_peer_id)
 	}
 	else if(command == TOCLIENT_TEXTURES)
 	{
-		infostream<<"Client: Received textures: packet size: "<<datasize
-				<<std::endl;
-
 		io::IFileSystem *irrfs = m_device->getFileSystem();
 		video::IVideoDriver *vdrv = m_device->getVideoDriver();
 
@@ -1547,8 +1544,9 @@ void Client::ProcessData(u8 *data, u32 datasize, u16 sender_peer_id)
 		if(bunch_i == num_bunches - 1)
 			m_textures_received = true;
 		int num_textures = readU32(is);
-		infostream<<"Client: Received textures: count: "<<num_textures
-				<<std::endl;
+		infostream<<"Client: Received textures: bunch "<<bunch_i<<"/"
+				<<num_bunches<<" textures="<<num_textures
+				<<" size="<<datasize<<std::endl;
 		for(int i=0; i<num_textures; i++){
 			std::string name = deSerializeString(is);
 			std::string data = deSerializeLongString(is);

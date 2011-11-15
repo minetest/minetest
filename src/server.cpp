@@ -3640,7 +3640,6 @@ void Server::SendToolDef(con::Connection &con, u16 peer_id,
 		IToolDefManager *tooldef)
 {
 	DSTACK(__FUNCTION_NAME);
-	infostream<<"Server: Sending tool definitions"<<std::endl;
 	std::ostringstream os(std::ios_base::binary);
 
 	/*
@@ -3655,7 +3654,7 @@ void Server::SendToolDef(con::Connection &con, u16 peer_id,
 
 	// Make data buffer
 	std::string s = os.str();
-	infostream<<"Server: Sending tool definitions: data size: "
+	infostream<<"Server::SendToolDef(): Sending tool definitions: size="
 			<<s.size()<<std::endl;
 	SharedBuffer<u8> data((u8*)s.c_str(), s.size());
 	// Send as reliable
@@ -3666,7 +3665,6 @@ void Server::SendNodeDef(con::Connection &con, u16 peer_id,
 		INodeDefManager *nodedef)
 {
 	DSTACK(__FUNCTION_NAME);
-	infostream<<"Server: Sending node definitions"<<std::endl;
 	std::ostringstream os(std::ios_base::binary);
 
 	/*
@@ -3681,7 +3679,7 @@ void Server::SendNodeDef(con::Connection &con, u16 peer_id,
 
 	// Make data buffer
 	std::string s = os.str();
-	infostream<<"Server: Sending node definitions: data size: "
+	infostream<<"Server::SendNodeDef(): Sending node definitions: size="
 			<<s.size()<<std::endl;
 	SharedBuffer<u8> data((u8*)s.c_str(), s.size());
 	// Send as reliable
@@ -4205,8 +4203,8 @@ void Server::SendTextures(u16 peer_id)
 						<<tname<<"\""<<std::endl;
 				continue;
 			}
-			errorstream<<"Server::SendTextures(): Loaded \""
-					<<tname<<"\""<<std::endl;
+			/*infostream<<"Server::SendTextures(): Loaded \""
+					<<tname<<"\""<<std::endl;*/
 			// Put in list
 			texture_bunches[texture_bunches.size()-1].push_back(
 					SendableTexture(tname, tpath, tmp_os.str()));
@@ -4252,9 +4250,9 @@ void Server::SendTextures(u16 peer_id)
 		
 		// Make data buffer
 		std::string s = os.str();
-		infostream<<"Server::SendTextures(): number of textures in bunch["
-				<<i<<"]: "<<texture_bunches[i].size()
-				<<", size: "<<s.size()<<std::endl;
+		infostream<<"Server::SendTextures(): bunch "<<i<<"/"<<num_bunches
+				<<" textures="<<texture_bunches[i].size()
+				<<" size=" <<s.size()<<std::endl;
 		SharedBuffer<u8> data((u8*)s.c_str(), s.size());
 		// Send as reliable
 		m_con.Send(peer_id, 0, data, true);
