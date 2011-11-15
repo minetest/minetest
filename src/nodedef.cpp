@@ -37,59 +37,6 @@ ContentFeatures::~ContentFeatures()
 #endif
 }
 
-#if 0
-void ContentFeatures::setTexture(ITextureSource *tsrc,
-		u16 i, std::string name, u8 alpha)
-{
-	used_texturenames.insert(name);
-	
-	if(tsrc)
-	{
-		tiles[i].texture = tsrc->getTexture(name);
-	}
-	
-	if(alpha != 255)
-	{
-		tiles[i].alpha = alpha;
-		tiles[i].material_type = MATERIAL_ALPHA_VERTEX;
-	}
-
-	if(inventory_texture == NULL)
-		setInventoryTexture(name, tsrc);
-}
-
-void ContentFeatures::setInventoryTexture(std::string imgname,
-		ITextureSource *tsrc)
-{
-	if(tsrc == NULL)
-		return;
-	
-	imgname += "^[forcesingle";
-	
-	inventory_texture = tsrc->getTextureRaw(imgname);
-}
-
-void ContentFeatures::setInventoryTextureCube(std::string top,
-		std::string left, std::string right, ITextureSource *tsrc)
-{
-	if(tsrc == NULL)
-		return;
-	
-	str_replace_char(top, '^', '&');
-	str_replace_char(left, '^', '&');
-	str_replace_char(right, '^', '&');
-
-	std::string imgname_full;
-	imgname_full += "[inventorycube{";
-	imgname_full += top;
-	imgname_full += "{";
-	imgname_full += left;
-	imgname_full += "{";
-	imgname_full += right;
-	inventory_texture = tsrc->getTextureRaw(imgname_full);
-}
-#endif
-
 void ContentFeatures::setTexture(u16 i, std::string name)
 {
 	used_texturenames.insert(name);

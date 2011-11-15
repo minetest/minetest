@@ -234,6 +234,10 @@ void mapblock_mesh_generate_special(MeshMakeData *data,
 
 		MapNode n = data->m_vmanip.getNodeNoEx(blockpos_nodes+p);
 
+		// Only solidness=0 stuff is drawn here
+		if(nodedef->get(n).solidness != 0)
+			continue;
+
 		/*
 			Add torches to mesh
 		*/

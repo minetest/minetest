@@ -137,6 +137,8 @@ struct ContentFeatures
 	MaterialSpec mspec_special[CF_SPECIAL_COUNT];
 	u8 alpha;
 	bool backface_culling;
+	u8 solidness; // Used when choosing which face is drawn
+	u8 visual_solidness; // When solidness=0, this tells how it looks like
 
 	// List of all block textures that have been used (value is dummy)
 	// Used for texture atlas making.
@@ -149,8 +151,6 @@ struct ContentFeatures
 	bool is_ground_content;
 	bool light_propagates;
 	bool sunlight_propagates;
-	u8 solidness; // Used when choosing which face is drawn
-	u8 visual_solidness; // When solidness=0, this tells how it looks like
 	// This is used for collision detection.
 	// Also for general solidness queries.
 	bool walkable;
@@ -226,13 +226,13 @@ struct ContentFeatures
 		tname_inventory = "";
 		alpha = 255;
 		backface_culling = true;
+		solidness = 2;
+		visual_solidness = 0;
 		used_texturenames.clear();
 		param_type = CPT_NONE;
 		is_ground_content = false;
 		light_propagates = false;
 		sunlight_propagates = false;
-		solidness = 2;
-		visual_solidness = 0;
 		walkable = true;
 		pointable = true;
 		diggable = true;
