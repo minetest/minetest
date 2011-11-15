@@ -28,6 +28,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "tile.h"
 #include "gamedef.h"
 #include "content_mapblock.h"
+#include "mineral.h" // For mineral_block_texture
 
 void MeshMakeData::fill(u32 daynight_ratio, MapBlock *block)
 {
@@ -249,6 +250,61 @@ static void makeFastFace(TileSpec tile, u8 li0, u8 li1, u8 li2, u8 li3, v3f p,
 	dest.push_back(face);
 }
 	
+static TileSpec getTile(const MapNode &node, v3s16 dir,
+		ITextureSource *tsrc, INodeDefManager *nodemgr)
+{
+	const ContentFeatures &f = nodemgr->get(node);
+	
+	if(f.param_type == CPT_FACEDIR_SIMPLE)
+		dir = facedir_rotate(node.param1, dir);
+	
+	TileSpec spec;
+	
+	s32 dir_i = -1;
+	
+	if(dir == v3s16(0,0,0))
+		dir_i = -1;
+	else if(dir == v3s16(0,1,0))
+		dir_i = 0;
+	else if(dir == v3s16(0,-1,0))
+		dir_i = 1;
+	else if(dir == v3s16(1,0,0))
+		dir_i = 2;
+	else if(dir == v3s16(-1,0,0))
+		dir_i = 3;
+	else if(dir == v3s16(0,0,1))
+		dir_i = 4;
+	else if(dir == v3s16(0,0,-1))
+		dir_i = 5;
+	
+	if(dir_i == -1)
+		// Non-directional
+		spec = f.tiles[0];
+	else 
+		spec = f.tiles[dir_i];
+	
+	/*
+		If it contains some mineral, change texture id
+	*/
+	if(f.param_type == CPT_MINERAL && tsrc)
+	{
+		u8 mineral = node.getMineral(nodemgr);
+		std::string mineral_texture_name = mineral_block_texture(mineral);
+		if(mineral_texture_name != "")
+		{
+			u32 orig_id = spec.texture.id;
+			std::string texture_name = tsrc->getTextureName(orig_id);
+			//texture_name += "^blit:";
+			texture_name += "^";
+			texture_name += mineral_texture_name;
+			u32 new_id = tsrc->getTextureId(texture_name);
+			spec.texture = tsrc->getTexture(new_id);
+		}
+	}
+
+	return spec;
+}
+
 /*
 	Gets node tile from any place relative to block.
 	Returns TILE_NODE if doesn't exist or should not be drawn.
@@ -257,7 +313,7 @@ static TileSpec getNodeTile(MapNode mn, v3s16 p, v3s16 face_dir,
 		NodeModMap &temp_mods, ITextureSource *tsrc, INodeDefManager *ndef)
 {
 	TileSpec spec;
-	spec = mn.getTile(face_dir, tsrc, ndef);
+	spec = getTile(mn, face_dir, tsrc, ndef);
 	
 	/*
 		Check temporary modifications on this node
@@ -274,7 +330,7 @@ static TileSpec getNodeTile(MapNode mn, v3s16 p, v3s16 face_dir,
 		if(mod.type == NODEMOD_CHANGECONTENT)
 		{
 			MapNode mn2(mod.param);
-			spec = mn2.getTile(face_dir, tsrc, ndef);
+			spec = getTile(mn2, face_dir, tsrc, ndef);
 		}
 		if(mod.type == NODEMOD_CRACK)
 		{

@@ -62,10 +62,7 @@ public:
 		return m_position;
 	}
 
-	v3s16 getLightPosition() const
-	{
-		return floatToInt(m_position + v3f(0,BS+BS/2,0), BS);
-	}
+	v3s16 getLightPosition() const;
 
 	v3f getEyeOffset()
 	{

@@ -25,6 +25,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "main.h" // For g_settings
 #include "nodedef.h"
 #include "content_mapnode.h" // For mapnode_translate_*_internal
+#include "serialization.h" // For ser_ver_supported
 
 #ifndef SERVER
 /*
@@ -207,61 +208,6 @@ u8 MapNode::getLightBanksWithSource(INodeDefManager *nodemgr) const
 		lightnight = nodemgr->get(*this).light_source;
 	return (lightday&0x0f) | ((lightnight<<4)&0xf0);
 }
-
-#ifndef SERVER
-TileSpec MapNode::getTile(v3s16 dir, ITextureSource *tsrc,
-		INodeDefManager *nodemgr) const
-{
-	if(nodemgr->get(*this).param_type == CPT_FACEDIR_SIMPLE)
-		dir = facedir_rotate(param1, dir);
-	
-	TileSpec spec;
-	
-	s32 dir_i = -1;
-	
-	if(dir == v3s16(0,0,0))
-		dir_i = -1;
-	else if(dir == v3s16(0,1,0))
-		dir_i = 0;
-	else if(dir == v3s16(0,-1,0))
-		dir_i = 1;
-	else if(dir == v3s16(1,0,0))
-		dir_i = 2;
-	else if(dir == v3s16(-1,0,0))
-		dir_i = 3;
-	else if(dir == v3s16(0,0,1))
-		dir_i = 4;
-	else if(dir == v3s16(0,0,-1))
-		dir_i = 5;
-	
-	if(dir_i == -1)
-		// Non-directional
-		spec = nodemgr->get(*this).tiles[0];
-	else 
-		spec = nodemgr->get(*this).tiles[dir_i];
-	
-	/*
-		If it contains some mineral, change texture id
-	*/
-	if(nodemgr->get(*this).param_type == CPT_MINERAL && tsrc)
-	{
-		u8 mineral = getMineral(nodemgr);
-		std::string mineral_texture_name = mineral_block_texture(mineral);
-		if(mineral_texture_name != "")
-		{
-			u32 orig_id = spec.texture.id;
-			std::string texture_name = tsrc->getTextureName(orig_id);
-			//texture_name += "^blit:";
-			texture_name += "^";
-			texture_name += mineral_texture_name;
-			u32 new_id = tsrc->getTextureId(texture_name);
-			spec.texture = tsrc->getTexture(new_id);
-		}
-	}
-
-	return spec;
-}
-#endif
 
 u8 MapNode::getMineral(INodeDefManager *nodemgr) const
 {

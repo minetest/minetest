@@ -23,13 +23,15 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 */
 
 #include "farmesh.h"
+
 #include "constants.h"
 #include "debug.h"
 #include "noise.h"
 #include "map.h"
 #include "client.h"
+#include "tile.h" // ITextureSource
 
-#include "mapgen.h"
+#include "mapgen.h" // Shouldn't really be done this way
 
 FarMesh::FarMesh(
 		scene::ISceneNode* parent,
@@ -47,7 +49,7 @@ FarMesh::FarMesh(
 {
 	dstream<<__FUNCTION_NAME<<std::endl;
 	
-	video::IVideoDriver* driver = mgr->getVideoDriver();
+	//video::IVideoDriver* driver = mgr->getVideoDriver();
 
 	m_materials[0].setFlag(video::EMF_LIGHTING, false);
 	m_materials[0].setFlag(video::EMF_BACK_FACE_CULLING, true);
@@ -62,8 +64,7 @@ FarMesh::FarMesh(
 	m_materials[1].setFlag(video::EMF_BACK_FACE_CULLING, false);
 	m_materials[1].setFlag(video::EMF_BILINEAR_FILTER, false);
 	m_materials[1].setFlag(video::EMF_FOG_ENABLE, false);
-	m_materials[1].setTexture
-			(0, driver->getTexture(getTexturePath("treeprop.png").c_str()));
+	m_materials[1].setTexture(0, client->tsrc()->getTextureRaw("treeprop.png"));
 	m_materials[1].MaterialType = video::EMT_TRANSPARENT_ALPHA_CHANNEL_REF;
 	m_materials[1].setFlag(video::EMF_FOG_ENABLE, true);
 

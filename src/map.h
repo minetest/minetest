@@ -31,6 +31,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "mapblock_nodemod.h"
 #include "constants.h"
 #include "voxel.h"
+#include "utility.h" // Needed for UniqueQueue, a member of Map
 
 extern "C" {
 	#include "sqlite3.h"

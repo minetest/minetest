@@ -20,14 +20,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #ifndef MAPNODE_HEADER
 #define MAPNODE_HEADER
 
-#include <iostream>
 #include "irrlichttypes.h"
 #include "light.h"
-#include "exceptions.h"
-#include "serialization.h"
-#ifndef SERVER
-#include "tile.h"
-#endif
 
 class INodeDefManager;
 
@@ -215,18 +209,6 @@ struct MapNode
 		return mix;
 	}*/
 
-	// In mapnode.cpp
-#ifndef SERVER
-	/*
-		Get tile of a face of the node.
-		dir: direction of face
-		Returns: TileSpec. Can contain miscellaneous texture coordinates,
-		         which must be obeyed so that the texture atlas can be used.
-	*/
-	TileSpec getTile(v3s16 dir, ITextureSource *tsrc,
-			INodeDefManager *nodemgr) const;
-#endif
-	
 	/*
 		Gets mineral content of node, if there is any.
 		MINERAL_NONE if doesn't contain or isn't able to contain mineral.

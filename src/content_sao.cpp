@@ -23,6 +23,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "settings.h"
 #include "main.h" // For g_profiler
 #include "profiler.h"
+#include "serialization.h" // For compressZlib
 
 core::map<u16, ServerActiveObject::Factory> ServerActiveObject::m_types;
 

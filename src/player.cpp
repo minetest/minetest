@@ -108,6 +108,11 @@ void Player::accelerate(v3f target_speed, f32 max_increase)
 #endif
 }
 
+v3s16 Player::getLightPosition() const
+{
+	return floatToInt(m_position + v3f(0,BS+BS/2,0), BS);
+}
+
 void Player::serialize(std::ostream &os)
 {
 	// Utilize a Settings object for storing values

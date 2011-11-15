@@ -800,6 +800,28 @@ static std::string describeC(const struct InventoryContext *c)
 		return std::string("current_player=") + c->current_player->getName();
 }
 
+IMoveAction::IMoveAction(std::istream &is)
+{
+	std::string ts;
+
+	std::getline(is, ts, ' ');
+	count = stoi(ts);
+
+	std::getline(is, from_inv, ' ');
+
+	std::getline(is, from_list, ' ');
+
+	std::getline(is, ts, ' ');
+	from_i = stoi(ts);
+
+	std::getline(is, to_inv, ' ');
+
+	std::getline(is, to_list, ' ');
+
+	std::getline(is, ts, ' ');
+	to_i = stoi(ts);
+}
+
 void IMoveAction::apply(InventoryContext *c, InventoryManager *mgr)
 {
 	Inventory *inv_from = mgr->getInventory(c, from_inv);

@@ -520,27 +520,8 @@ struct IMoveAction : public InventoryAction
 		from_i = -1;
 		to_i = -1;
 	}
-	IMoveAction(std::istream &is)
-	{
-		std::string ts;
-
-		std::getline(is, ts, ' ');
-		count = stoi(ts);
-
-		std::getline(is, from_inv, ' ');
-
-		std::getline(is, from_list, ' ');
-
-		std::getline(is, ts, ' ');
-		from_i = stoi(ts);
-
-		std::getline(is, to_inv, ' ');
-
-		std::getline(is, to_list, ' ');
-
-		std::getline(is, ts, ' ');
-		to_i = stoi(ts);
-	}
+	
+	IMoveAction(std::istream &is);
 
 	u16 getType() const
 	{

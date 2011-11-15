@@ -23,6 +23,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "mapnode.h"
 #include "content_nodemeta.h"
 #include "nodedef.h"
+#include "utility.h"
 
 #define WATER_ALPHA 160
 

@@ -22,6 +22,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "environment.h"
 #include "settings.h"
 #include <ICameraSceneNode.h>
+#include "serialization.h" // For decompressZlib
 
 core::map<u16, ClientActiveObject::Factory> ClientActiveObject::m_types;
 

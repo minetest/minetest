@@ -33,6 +33,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 struct MeshMakeData;
 class IGameDef;
+class IWritableTextureSource;
 class IWritableToolDefManager;
 class IWritableNodeDefManager;
 

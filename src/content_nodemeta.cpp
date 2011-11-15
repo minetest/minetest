@@ -21,6 +21,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "inventory.h"
 #include "content_mapnode.h"
 #include "log.h"
+#include "utility.h"
 
 /*
 	SignNodeMetadata
