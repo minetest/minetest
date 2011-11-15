@@ -637,7 +637,7 @@ void content_mapnode_init(IWritableNodeDefManager *nodemgr)
 	i = CONTENT_SAPLING;
 	f = nodemgr->getModifiable(i);
 	f->drawtype = NDT_PLANTLIKE;
-	f->visual_scale = 1.5;
+	f->visual_scale = 1.0;
 	f->setAllTextures("sapling.png");
 	f->setInventoryTexture("sapling.png");
 	f->param_type = CPT_LIGHT;
