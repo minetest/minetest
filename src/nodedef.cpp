@@ -174,8 +174,13 @@ public:
 			ContentFeatures *f = &m_content_features[i];
 			for(u16 j=0; j<6; j++)
 				tsrc->updateAP(f->tiles[j].texture);
-			if(f->special_atlas)
+			if(f->special_atlas){
 				tsrc->updateAP(*(f->special_atlas));
+				if(f->special_material)
+					f->special_material->setTexture(0, f->special_atlas->atlas);
+				if(f->special_material2)
+					f->special_material2->setTexture(0, f->special_atlas->atlas);
+			}
 		}
 #endif
 	}

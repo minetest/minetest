@@ -222,16 +222,14 @@ Client::Client(
 
 	// Build main texture atlas, now that the GameDef exists (that is, us)
 	if(g_settings->getBool("enable_texture_atlas"))
-		tsrc->buildMainAtlas(this);
+		m_tsrc->buildMainAtlas(this);
 	else
 		infostream<<"Not building texture atlas."<<std::endl;
 	
-	// Update textures
-	m_nodedef->updateTextures(tsrc);
+	// Update node textures
+	m_nodedef->updateTextures(m_tsrc);
 
-	// NOTE: This should be done only after getting possible dynamic
-	// game definitions from the server, or at least shut down and
-	// restarted when doing so
+	// Start threads after setting up content definitions
 	m_mesh_update_thread.Start();
 
 	/*
@@ -1568,17 +1566,28 @@ void Client::ProcessData(u8 *data, u32 datasize, u16 sender_peer_id)
 				rfile->drop();
 				continue;
 			}
-			m_tsrc->insertImage(name, img);
+			m_tsrc->insertSourceImage(name, img);
+			img->drop();
 			rfile->drop();
 		}
+		
+		// Rebuild inherited images and recreate textures
+		m_tsrc->rebuildImagesAndTextures();
 
 		// Update texture atlas
 		if(g_settings->getBool("enable_texture_atlas"))
 			m_tsrc->buildMainAtlas(this);
 		
+		// Update node textures
+		m_nodedef->updateTextures(m_tsrc);
+
 		// Resume threads
 		m_mesh_update_thread.setRun(true);
 		m_mesh_update_thread.Start();
+
+		ClientEvent event;
+		event.type = CE_TEXTURES_UPDATED;
+		m_client_event_queue.push_back(event);
 	}
 	else
 	{

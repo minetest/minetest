@@ -146,6 +146,95 @@ std::string getTexturePath(const std::string &filename)
 }
 
 /*
+	An internal variant of AtlasPointer with more data.
+	(well, more like a wrapper)
+*/
+
+struct SourceAtlasPointer
+{
+	std::string name;
+	AtlasPointer a;
+	video::IImage *atlas_img; // The source image of the atlas
+	// Integer variants of position and size
+	v2s32 intpos;
+	v2u32 intsize;
+
+	SourceAtlasPointer(
+			const std::string &name_,
+			AtlasPointer a_=AtlasPointer(0, NULL),
+			video::IImage *atlas_img_=NULL,
+			v2s32 intpos_=v2s32(0,0),
+			v2u32 intsize_=v2u32(0,0)
+		):
+		name(name_),
+		a(a_),
+		atlas_img(atlas_img_),
+		intpos(intpos_),
+		intsize(intsize_)
+	{
+	}
+};
+
+/*
+	SourceImageCache: A cache used for storing source images.
+*/
+
+class SourceImageCache
+{
+public:
+	void insert(const std::string &name, video::IImage *img)
+	{
+		assert(img);
+		core::map<std::string, video::IImage*>::Node *n;
+		n = m_images.find(name);
+		if(n){
+			video::IImage *oldimg = n->getValue();
+			if(oldimg)
+				oldimg->drop();
+		}
+		img->grab();
+		m_images[name] = img;
+	}
+	video::IImage* get(const std::string &name)
+	{
+		core::map<std::string, video::IImage*>::Node *n;
+		n = m_images.find(name);
+		if(n)
+			return n->getValue();
+		return NULL;
+	}
+	// Primarily fetches from cache, secondarily tries to read from filesystem
+	video::IImage* getOrLoad(const std::string &name, IrrlichtDevice *device)
+	{
+		core::map<std::string, video::IImage*>::Node *n;
+		n = m_images.find(name);
+		if(n){
+			n->getValue()->grab(); // Grab for caller
+			return n->getValue();
+		}
+		video::IVideoDriver* driver = device->getVideoDriver();
+		std::string path = getTexturePath(name.c_str());
+		if(path == ""){
+			infostream<<"SourceImageCache::getOrLoad(): No path found for \""
+					<<name<<"\""<<std::endl;
+			return NULL;
+		}
+		infostream<<"SourceImageCache::getOrLoad(): Loading path \""<<path
+				<<"\""<<std::endl;
+		video::IImage *img = driver->createImageFromFile(path.c_str());
+		// Even if could not be loaded, put as NULL
+		//m_images[name] = img;
+		if(img){
+			m_images[name] = img;
+			img->grab(); // Grab for caller
+		}
+		return img;
+	}
+private:
+	core::map<std::string, video::IImage*> m_images;
+};
+
+/*
 	TextureSource
 */
 
@@ -209,9 +298,7 @@ public:
 	*/
 	u32 getTextureIdDirect(const std::string &name);
 
-	/*
-		Finds out the name of a cached texture.
-	*/
+	// Finds out the name of a cached texture.
 	std::string getTextureName(u32 id);
 
 	/*
@@ -236,29 +323,25 @@ public:
 		return ap.atlas;
 	}
 
-	/*
-		Update new texture pointer and texture coordinates to an
-		AtlasPointer based on it's texture id
-	*/
+	// Update new texture pointer and texture coordinates to an
+	// AtlasPointer based on it's texture id
 	void updateAP(AtlasPointer &ap);
 
-	/*
-		Processes queued texture requests from other threads.
-
-		Shall be called from the main thread.
-	*/
+	// Processes queued texture requests from other threads.
+	// Shall be called from the main thread.
 	void processQueue();
 	
-	/*
-		Build the main texture atlas which contains most of the
-		textures.
-	*/
-	void buildMainAtlas(class IGameDef *gamedef);
+	// Insert an image into the cache without touching the filesystem.
+	// Shall be called from the main thread.
+	void insertSourceImage(const std::string &name, video::IImage *img);
 	
-	/*
-		Insert an image into the cache without touching the filesystem.
-	*/
-	void insertImage(const std::string &name, video::IImage *img);
+	// Rebuild images and textures from the current set of source images
+	// Shall be called from the main thread.
+	void rebuildImagesAndTextures();
+
+	// Build the main texture atlas which contains most of the
+	// textures.
+	void buildMainAtlas(class IGameDef *gamedef);
 	
 private:
 	
@@ -267,6 +350,10 @@ private:
 	// The irrlicht device
 	IrrlichtDevice *m_device;
 	
+	// Cache of source images
+	// This should be only accessed from the main thread
+	SourceImageCache m_sourcecache;
+
 	// A texture id is index in this array.
 	// The first position contains a NULL texture.
 	core::array<SourceAtlasPointer> m_atlaspointer_cache;
@@ -376,7 +463,7 @@ void make_progressbar(float value, video::IImage *image);
 	if baseimg is NULL, it is created. Otherwise stuff is made on it.
 */
 bool generate_image(std::string part_of_name, video::IImage *& baseimg,
-		IrrlichtDevice *device);
+		IrrlichtDevice *device, SourceImageCache *sourcecache);
 
 /*
 	Generates an image from a full string like
@@ -385,7 +472,7 @@ bool generate_image(std::string part_of_name, video::IImage *& baseimg,
 	This is used by buildMainAtlas().
 */
 video::IImage* generate_image_from_scratch(std::string name,
-		IrrlichtDevice *device);
+		IrrlichtDevice *device, SourceImageCache *sourcecache);
 
 /*
 	This method generates all the textures
@@ -525,7 +612,7 @@ u32 TextureSource::getTextureIdDirect(const std::string &name)
 	//infostream<<"last_part_of_name=\""<<last_part_of_name<<"\""<<std::endl;
 
 	// Generate image according to part of name
-	if(generate_image(last_part_of_name, baseimg, m_device) == false)
+	if(!generate_image(last_part_of_name, baseimg, m_device, &m_sourcecache))
 	{
 		infostream<<"getTextureIdDirect(): "
 				"failed to generate \""<<last_part_of_name<<"\""
@@ -627,6 +714,91 @@ void TextureSource::processQueue()
 	}
 }
 
+void TextureSource::insertSourceImage(const std::string &name, video::IImage *img)
+{
+	infostream<<"TextureSource::insertSourceImage(): name="<<name<<std::endl;
+	
+	assert(get_current_thread_id() == m_main_thread);
+	
+	m_sourcecache.insert(name, img);
+
+#if 0
+	JMutexAutoLock lock(m_atlaspointer_cache_mutex);
+
+	video::IVideoDriver* driver = m_device->getVideoDriver();
+	assert(driver);
+
+	// Create texture
+	video::ITexture *t = driver->addTexture(name.c_str(), img);
+
+	bool reuse_old_id = false;
+	u32 id = m_atlaspointer_cache.size();
+	// Check old id without fetching a texture
+	core::map<std::string, u32>::Node *n;
+	n = m_name_to_id.find(name);
+	// If it exists, we will replace the old definition
+	if(n){
+		id = n->getValue();
+		reuse_old_id = true;
+	}
+	
+	// Create AtlasPointer
+	AtlasPointer ap(id);
+	ap.atlas = t;
+	ap.pos = v2f(0,0);
+	ap.size = v2f(1,1);
+	ap.tiled = 0;
+	core::dimension2d<u32> dim = img->getDimension();
+
+	// Create SourceAtlasPointer and add to containers
+	SourceAtlasPointer nap(name, ap, img, v2s32(0,0), dim);
+	if(reuse_old_id)
+		m_atlaspointer_cache[id] = nap;
+	else
+		m_atlaspointer_cache.push_back(nap);
+	m_name_to_id[name] = id;
+#endif
+}
+	
+void TextureSource::rebuildImagesAndTextures()
+{
+	JMutexAutoLock lock(m_atlaspointer_cache_mutex);
+
+	/*// Oh well... just clear everything, they'll load sometime.
+	m_atlaspointer_cache.clear();
+	m_name_to_id.clear();*/
+
+	video::IVideoDriver* driver = m_device->getVideoDriver();
+	
+	// Remove source images from textures to disable inheriting textures
+	// from existing textures
+	/*for(u32 i=0; i<m_atlaspointer_cache.size(); i++){
+		SourceAtlasPointer *sap = &m_atlaspointer_cache[i];
+		sap->atlas_img->drop();
+		sap->atlas_img = NULL;
+	}*/
+	
+	// Recreate textures
+	for(u32 i=0; i<m_atlaspointer_cache.size(); i++){
+		SourceAtlasPointer *sap = &m_atlaspointer_cache[i];
+		video::IImage *img =
+			generate_image_from_scratch(sap->name, m_device, &m_sourcecache);
+		// Create texture from resulting image
+		video::ITexture *t = NULL;
+		if(img)
+			t = driver->addTexture(sap->name.c_str(), img);
+		
+		// Replace texture
+		sap->a.atlas = t;
+		sap->a.pos = v2f(0,0);
+		sap->a.size = v2f(1,1);
+		sap->a.tiled = 0;
+		sap->atlas_img = img;
+		sap->intpos = v2s32(0,0);
+		sap->intsize = img->getDimension();
+	}
+}
+
 void TextureSource::buildMainAtlas(class IGameDef *gamedef) 
 {
 	assert(gamedef->tsrc() == this);
@@ -711,20 +883,9 @@ void TextureSource::buildMainAtlas(class IGameDef *gamedef)
 	{
 		std::string name = i.getNode()->getKey();
 
-		/*video::IImage *img = driver->createImageFromFile(
-				getTexturePath(name.c_str()).c_str());
-		if(img == NULL)
-			continue;
-		
-		core::dimension2d<u32> dim = img->getDimension();
-		// Make a copy with the right color format
-		video::IImage *img2 =
-				driver->createImage(video::ECF_A8R8G8B8, dim);
-		img->copyTo(img2);
-		img->drop();*/
-		
 		// Generate image by name
-		video::IImage *img2 = generate_image_from_scratch(name, m_device);
+		video::IImage *img2 = generate_image_from_scratch(name, m_device,
+				&m_sourcecache);
 		if(img2 == NULL)
 		{
 			infostream<<"TextureSource::buildMainAtlas(): Couldn't generate texture atlas: Couldn't generate image \""<<name<<"\""<<std::endl;
@@ -810,9 +971,9 @@ void TextureSource::buildMainAtlas(class IGameDef *gamedef)
 		if(n){
 			id = n->getValue();
 			reuse_old_id = true;
+			infostream<<"TextureSource::buildMainAtlas(): "
+					<<"Replacing old AtlasPointer"<<std::endl;
 		}
-		infostream<<"TextureSource::buildMainAtlas(): "
-				<<"Replacing old AtlasPointer"<<std::endl;
 
 		// Create AtlasPointer
 		AtlasPointer ap(id);
@@ -867,48 +1028,8 @@ void TextureSource::buildMainAtlas(class IGameDef *gamedef)
 	driver->writeImageToFile(atlas_img, atlaspath.c_str());*/
 }
 
-void TextureSource::insertImage(const std::string &name, video::IImage *img)
-{
-	infostream<<"TextureSource::insertImage(): name="<<name<<std::endl;
-	
-	JMutexAutoLock lock(m_atlaspointer_cache_mutex);
-
-	video::IVideoDriver* driver = m_device->getVideoDriver();
-	assert(driver);
-
-	// Create texture
-	video::ITexture *t = driver->addTexture(name.c_str(), img);
-
-	bool reuse_old_id = false;
-	u32 id = m_atlaspointer_cache.size();
-	// Check old id without fetching a texture
-	core::map<std::string, u32>::Node *n;
-	n = m_name_to_id.find(name);
-	// If it exists, we will replace the old definition
-	if(n){
-		id = n->getValue();
-		reuse_old_id = true;
-	}
-	
-	// Create AtlasPointer
-	AtlasPointer ap(id);
-	ap.atlas = t;
-	ap.pos = v2f(0,0);
-	ap.size = v2f(1,1);
-	ap.tiled = 0;
-	core::dimension2d<u32> dim = img->getDimension();
-
-	// Create SourceAtlasPointer and add to containers
-	SourceAtlasPointer nap(name, ap, img, v2s32(0,0), dim);
-	if(reuse_old_id)
-		m_atlaspointer_cache[id] = nap;
-	else
-		m_atlaspointer_cache.push_back(nap);
-	m_name_to_id[name] = id;
-}
-	
 video::IImage* generate_image_from_scratch(std::string name,
-		IrrlichtDevice *device)
+		IrrlichtDevice *device, SourceImageCache *sourcecache)
 {
 	/*infostream<<"generate_image_from_scratch(): "
 			"\""<<name<<"\""<<std::endl;*/
@@ -951,7 +1072,8 @@ video::IImage* generate_image_from_scratch(std::string name,
 		/*infostream<<"generate_image_from_scratch(): Calling itself recursively"
 				" to get base image of \""<<name<<"\" = \""
                 <<base_image_name<<"\""<<std::endl;*/
-		baseimg = generate_image_from_scratch(base_image_name, device);
+		baseimg = generate_image_from_scratch(base_image_name, device,
+				sourcecache);
 	}
 	
 	/*
@@ -963,7 +1085,7 @@ video::IImage* generate_image_from_scratch(std::string name,
 	//infostream<<"last_part_of_name=\""<<last_part_of_name<<"\""<<std::endl;
 	
 	// Generate image according to part of name
-	if(generate_image(last_part_of_name, baseimg, device) == false)
+	if(!generate_image(last_part_of_name, baseimg, device, sourcecache))
 	{
 		infostream<<"generate_image_from_scratch(): "
 				"failed to generate \""<<last_part_of_name<<"\""
@@ -975,7 +1097,7 @@ video::IImage* generate_image_from_scratch(std::string name,
 }
 
 bool generate_image(std::string part_of_name, video::IImage *& baseimg,
-		IrrlichtDevice *device)
+		IrrlichtDevice *device, SourceImageCache *sourcecache)
 {
 	video::IVideoDriver* driver = device->getVideoDriver();
 	assert(driver);
@@ -983,18 +1105,12 @@ bool generate_image(std::string part_of_name, video::IImage *& baseimg,
 	// Stuff starting with [ are special commands
 	if(part_of_name[0] != '[')
 	{
-		// A normal texture; load it from a file
-		std::string path = getTexturePath(part_of_name.c_str());
-		/*infostream<<"generate_image(): Loading path \""<<path
-				<<"\""<<std::endl;*/
-		
-		video::IImage *image = driver->createImageFromFile(path.c_str());
+		video::IImage *image = sourcecache->getOrLoad(part_of_name, device);
 
 		if(image == NULL)
 		{
 			infostream<<"generate_image(): Could not load image \""
-                    <<part_of_name<<"\" from path \""<<path<<"\""
-					<<" while building texture"<<std::endl;
+                    <<part_of_name<<"\""<<" while building texture"<<std::endl;
 
 			//return false;
 
@@ -1099,8 +1215,7 @@ bool generate_image(std::string part_of_name, video::IImage *& baseimg,
 				It is an image with a number of cracking stages
 				horizontally tiled.
 			*/
-			video::IImage *img_crack = driver->createImageFromFile(
-					getTexturePath("crack.png").c_str());
+			video::IImage *img_crack = sourcecache->getOrLoad("crack.png", device);
 		
 			if(img_crack)
 			{
@@ -1186,8 +1301,7 @@ bool generate_image(std::string part_of_name, video::IImage *& baseimg,
 				infostream<<"Adding \""<<filename
 						<<"\" to combined ("<<x<<","<<y<<")"
 						<<std::endl;
-				video::IImage *img = driver->createImageFromFile(
-						getTexturePath(filename.c_str()).c_str());
+				video::IImage *img = sourcecache->getOrLoad(filename, device);
 				if(img)
 				{
 					core::dimension2d<u32> dim = img->getDimension();
@@ -1248,10 +1362,10 @@ bool generate_image(std::string part_of_name, video::IImage *& baseimg,
 
 			std::string path = getTexturePath(filename.c_str());
 
-			infostream<<"generate_image(): Loading path \""<<path
+			infostream<<"generate_image(): Loading file \""<<filename
 					<<"\""<<std::endl;
 			
-			video::IImage *image = driver->createImageFromFile(path.c_str());
+			video::IImage *image = sourcecache->getOrLoad(filename, device);
 			
 			if(image == NULL)
 			{
@@ -1297,17 +1411,15 @@ bool generate_image(std::string part_of_name, video::IImage *& baseimg,
 			u32 b1 = stoi(sf.next(":"));
 			std::string filename = sf.next("");
 
-			std::string path = getTexturePath(filename.c_str());
-
-			infostream<<"generate_image(): Loading path \""<<path
+			infostream<<"generate_image(): Loading file \""<<filename
 					<<"\""<<std::endl;
 			
-			video::IImage *image = driver->createImageFromFile(path.c_str());
+			video::IImage *image = sourcecache->getOrLoad(filename, device);
 			
 			if(image == NULL)
 			{
-				infostream<<"generate_image(): Loading path \""
-						<<path<<"\" failed"<<std::endl;
+				infostream<<"generate_image(): Loading file \""
+						<<filename<<"\" failed"<<std::endl;
 			}
 			else
 			{
@@ -1356,17 +1468,15 @@ bool generate_image(std::string part_of_name, video::IImage *& baseimg,
 			u32 b2 = stoi(sf.next(":"));
 			std::string filename = sf.next("");
 
-			std::string path = getTexturePath(filename.c_str());
-
-			infostream<<"generate_image(): Loading path \""<<path
+			infostream<<"generate_image(): Loading filename \""<<filename
 					<<"\""<<std::endl;
 			
-			video::IImage *image = driver->createImageFromFile(path.c_str());
+			video::IImage *image = sourcecache->getOrLoad(filename, device);
 			
 			if(image == NULL)
 			{
-				infostream<<"generate_image(): Loading path \""
-						<<path<<"\" failed"<<std::endl;
+				infostream<<"generate_image(): Loading file \""
+						<<filename<<"\" failed"<<std::endl;
 			}
 			else
 			{
@@ -1419,14 +1529,14 @@ bool generate_image(std::string part_of_name, video::IImage *& baseimg,
 			std::string imagename_right = sf.next("{");
 
 #if 1
-			//TODO
+			// TODO: Create cube with different textures on different sides
 
 			if(driver->queryFeature(video::EVDF_RENDER_TO_TARGET) == false)
 			{
 				infostream<<"generate_image(): EVDF_RENDER_TO_TARGET"
 						" not supported. Creating fallback image"<<std::endl;
 				baseimg = generate_image_from_scratch(
-						imagename_top, device);
+						imagename_top, device, sourcecache);
 				return true;
 			}
 			
@@ -1437,14 +1547,15 @@ bool generate_image(std::string part_of_name, video::IImage *& baseimg,
 			
 			// Generate images for the faces of the cube
 			video::IImage *img_top = generate_image_from_scratch(
-					imagename_top, device);
+					imagename_top, device, sourcecache);
 			video::IImage *img_left = generate_image_from_scratch(
-					imagename_left, device);
+					imagename_left, device, sourcecache);
 			video::IImage *img_right = generate_image_from_scratch(
-					imagename_right, device);
+					imagename_right, device, sourcecache);
 			assert(img_top && img_left && img_right);
 
-			// TODO: Create textures from images
+			// Create textures from images
+			// TODO: Use them all
 			video::ITexture *texture_top = driver->addTexture(
 					(imagename_top + "__temp__").c_str(), img_top);
 			assert(texture_top);
@@ -1515,7 +1626,8 @@ bool generate_image(std::string part_of_name, video::IImage *& baseimg,
 			// Unset render target
 			driver->setRenderTarget(0, true, true, 0);
 
-			//TODO: Free textures of images
+			// Free textures of images
+			// TODO: When all are used, free them all
 			driver->removeTexture(texture_top);
 			
 			// Create image of render target

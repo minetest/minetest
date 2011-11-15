@@ -50,6 +50,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "content_mapnode.h" // For content_mapnode_init
 #include "tooldef.h"
 #include "content_mapnode.h" // Default nodes
+#include "tile.h" // For TextureSource
 
 /*
 	Setting this to 1 enables a special camera mode that forces
@@ -519,7 +520,7 @@ void getPointedNode(Client *client, v3f player_position,
 	} // for coords
 }
 
-void update_skybox(video::IVideoDriver* driver,
+void update_skybox(video::IVideoDriver* driver, ITextureSource *tsrc,
 		scene::ISceneManager* smgr, scene::ISceneNode* &skybox,
 		float brightness)
 {
@@ -535,32 +536,32 @@ void update_skybox(video::IVideoDriver* driver,
 	if(brightness >= 0.5)
 	{
 		skybox = smgr->addSkyBoxSceneNode(
-			driver->getTexture(getTexturePath("skybox2.png").c_str()),
-			driver->getTexture(getTexturePath("skybox3.png").c_str()),
-			driver->getTexture(getTexturePath("skybox1.png").c_str()),
-			driver->getTexture(getTexturePath("skybox1.png").c_str()),
-			driver->getTexture(getTexturePath("skybox1.png").c_str()),
-			driver->getTexture(getTexturePath("skybox1.png").c_str()));
+			tsrc->getTextureRaw("skybox2.png"),
+			tsrc->getTextureRaw("skybox3.png"),
+			tsrc->getTextureRaw("skybox1.png"),
+			tsrc->getTextureRaw("skybox1.png"),
+			tsrc->getTextureRaw("skybox1.png"),
+			tsrc->getTextureRaw("skybox1.png"));
 	}
 	else if(brightness >= 0.2)
 	{
 		skybox = smgr->addSkyBoxSceneNode(
-			driver->getTexture(getTexturePath("skybox2_dawn.png").c_str()),
-			driver->getTexture(getTexturePath("skybox3_dawn.png").c_str()),
-			driver->getTexture(getTexturePath("skybox1_dawn.png").c_str()),
-			driver->getTexture(getTexturePath("skybox1_dawn.png").c_str()),
-			driver->getTexture(getTexturePath("skybox1_dawn.png").c_str()),
-			driver->getTexture(getTexturePath("skybox1_dawn.png").c_str()));
+			tsrc->getTextureRaw("skybox2_dawn.png"),
+			tsrc->getTextureRaw("skybox3_dawn.png"),
+			tsrc->getTextureRaw("skybox1_dawn.png"),
+			tsrc->getTextureRaw("skybox1_dawn.png"),
+			tsrc->getTextureRaw("skybox1_dawn.png"),
+			tsrc->getTextureRaw("skybox1_dawn.png"));
 	}
 	else
 	{
 		skybox = smgr->addSkyBoxSceneNode(
-			driver->getTexture(getTexturePath("skybox2_night.png").c_str()),
-			driver->getTexture(getTexturePath("skybox3_night.png").c_str()),
-			driver->getTexture(getTexturePath("skybox1_night.png").c_str()),
-			driver->getTexture(getTexturePath("skybox1_night.png").c_str()),
-			driver->getTexture(getTexturePath("skybox1_night.png").c_str()),
-			driver->getTexture(getTexturePath("skybox1_night.png").c_str()));
+			tsrc->getTextureRaw("skybox2_night.png"),
+			tsrc->getTextureRaw("skybox3_night.png"),
+			tsrc->getTextureRaw("skybox1_night.png"),
+			tsrc->getTextureRaw("skybox1_night.png"),
+			tsrc->getTextureRaw("skybox1_night.png"),
+			tsrc->getTextureRaw("skybox1_night.png"));
 	}
 }
 
@@ -771,7 +772,7 @@ void the_game(
 	*/
 	float old_brightness = 1.0;
 	scene::ISceneNode* skybox = NULL;
-	update_skybox(driver, smgr, skybox, 1.0);
+	update_skybox(driver, tsrc, smgr, skybox, 1.0);
 	
 	/*
 		Create the camera node
@@ -885,6 +886,8 @@ void the_game(
 	
 	// A test
 	//throw con::PeerNotFoundException("lol");
+
+	float brightness = 1.0;
 
 	core::list<float> frametime_log;
 
@@ -1537,6 +1540,10 @@ void the_game(
 					player->setPosition(player->getPosition() + v3f(0,-BS,0));
 					camera.update(player, busytime, screensize);*/
 				}
+				else if(event.type == CE_TEXTURES_UPDATED)
+				{
+					update_skybox(driver, tsrc, smgr, skybox, brightness);
+				}
 			}
 		}
 		
@@ -1902,25 +1909,27 @@ void the_game(
 		/*
 			Calculate stuff for drawing
 		*/
-
+		
+		/*
+			Calculate general brightness
+		*/
 		u32 daynight_ratio = client.getDayNightRatio();
-		u8 l = decode_light((daynight_ratio * LIGHT_SUN) / 1000);
+		u8 light8 = decode_light((daynight_ratio * LIGHT_SUN) / 1000);
+		brightness = (float)light8/255.0;
 		video::SColor bgcolor = video::SColor(
 				255,
-				bgcolor_bright.getRed() * l / 255,
-				bgcolor_bright.getGreen() * l / 255,
-				bgcolor_bright.getBlue() * l / 255);
-				/*skycolor.getRed() * l / 255,
-				skycolor.getGreen() * l / 255,
-				skycolor.getBlue() * l / 255);*/
-
-		float brightness = (float)l/255.0;
+				bgcolor_bright.getRed() * brightness,
+				bgcolor_bright.getGreen() * brightness,
+				bgcolor_bright.getBlue() * brightness);
+				/*skycolor.getRed() * brightness,
+				skycolor.getGreen() * brightness,
+				skycolor.getBlue() * brightness);*/
 
 		/*
 			Update skybox
 		*/
 		if(fabs(brightness - old_brightness) > 0.01)
-			update_skybox(driver, smgr, skybox, brightness);
+			update_skybox(driver, tsrc, smgr, skybox, brightness);
 
 		/*
 			Update clouds

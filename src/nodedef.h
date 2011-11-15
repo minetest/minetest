@@ -122,6 +122,9 @@ struct ContentFeatures
 	// Special irrlicht material, used sometimes
 	video::SMaterial *special_material;
 	video::SMaterial *special_material2;
+	// Currently used for fetching liquid texture coordinates
+	// - This is also updated to the above two (if they are non-NULL)
+	//   when textures are updated
 	AtlasPointer *special_atlas;
 #endif
 

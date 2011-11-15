@@ -122,6 +122,7 @@ enum ClientEventType
 	CE_PLAYER_DAMAGE,
 	CE_PLAYER_FORCE_MOVE,
 	CE_DEATHSCREEN,
+	CE_TEXTURES_UPDATED
 };
 
 struct ClientEvent
@@ -143,6 +144,8 @@ struct ClientEvent
 			f32 camera_point_target_y;
 			f32 camera_point_target_z;
 		} deathscreen;
+		struct{
+		} textures_updated;
 	};
 };
 
@@ -302,15 +305,11 @@ public:
 	ClientEvent getClientEvent();
 	
 	inline bool accessDenied()
-	{
-		return m_access_denied;
-	}
+	{ return m_access_denied; }
 
 	inline std::wstring accessDeniedReason()
-	{
-		return m_access_denied_reason;
-	}
-
+	{ return m_access_denied_reason; }
+	
 	float getRTT(void);
 
 	// IGameDef interface

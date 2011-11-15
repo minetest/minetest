@@ -94,34 +94,6 @@ struct AtlasPointer
 };
 
 /*
-	An internal variant of the former with more data.
-*/
-struct SourceAtlasPointer
-{
-	std::string name;
-	AtlasPointer a;
-	video::IImage *atlas_img; // The source image of the atlas
-	// Integer variants of position and size
-	v2s32 intpos;
-	v2u32 intsize;
-
-	SourceAtlasPointer(
-			const std::string &name_,
-			AtlasPointer a_=AtlasPointer(0, NULL),
-			video::IImage *atlas_img_=NULL,
-			v2s32 intpos_=v2s32(0,0),
-			v2u32 intsize_=v2u32(0,0)
-		):
-		name(name_),
-		a(a_),
-		atlas_img(atlas_img_),
-		intpos(intpos_),
-		intsize(intsize_)
-	{
-	}
-};
-
-/*
 	TextureSource creates and caches textures.
 */
 
@@ -157,9 +129,9 @@ public:
 	virtual void updateAP(AtlasPointer &ap){};
 
 	virtual void processQueue()=0;
+	virtual void insertSourceImage(const std::string &name, video::IImage *img)=0;
+	virtual void rebuildImagesAndTextures()=0;
 	virtual void buildMainAtlas(class IGameDef *gamedef)=0;
-	// img is eaten, do not drop it
-	virtual void insertImage(const std::string &name, video::IImage *img)=0;
 };
 
 IWritableTextureSource* createTextureSource(IrrlichtDevice *device);
