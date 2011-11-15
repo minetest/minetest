@@ -1016,7 +1016,7 @@ Server::Server(
 	infostream<<"m_nodemgr="<<m_nodemgr<<std::endl;
 	
 	// Initialize default node definitions
-	content_mapnode_init(NULL, m_nodemgr);
+	content_mapnode_init(m_nodemgr);
 	
 	// Add default global mod path
 	m_modspaths.push_back(porting::path_data + DIR_DELIM + "mods");

@@ -182,12 +182,15 @@ struct SourceAtlasPointer
 class SourceImageCache
 {
 public:
-	void insert(const std::string &name, video::IImage *img)
+	void insert(const std::string &name, video::IImage *img,
+			bool do_overwrite)
 	{
 		assert(img);
 		core::map<std::string, video::IImage*>::Node *n;
 		n = m_images.find(name);
 		if(n){
+			if(!do_overwrite)
+				return;
 			video::IImage *oldimg = n->getValue();
 			if(oldimg)
 				oldimg->drop();
@@ -720,7 +723,7 @@ void TextureSource::insertSourceImage(const std::string &name, video::IImage *im
 	
 	assert(get_current_thread_id() == m_main_thread);
 	
-	m_sourcecache.insert(name, img);
+	m_sourcecache.insert(name, img, false);
 
 #if 0
 	JMutexAutoLock lock(m_atlaspointer_cache_mutex);

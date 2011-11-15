@@ -17,13 +17,11 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
-// For g_settings
-#include "main.h"
-
 #include "content_mapnode.h"
+
+#include "irrlichttypes.h"
 #include "mapnode.h"
 #include "content_nodemeta.h"
-#include "settings.h"
 #include "nodedef.h"
 
 #define WATER_ALPHA 160
@@ -156,23 +154,8 @@ MapNode mapnode_translate_to_internal(MapNode n_from, u8 version)
 }
 
 // See header for description
-void content_mapnode_init(ITextureSource *tsrc, IWritableNodeDefManager *nodemgr)
+void content_mapnode_init(IWritableNodeDefManager *nodemgr)
 {
-	if(tsrc == NULL)
-		dstream<<"INFO: Initial run of content_mapnode_init with "
-				"tsrc=NULL. If this segfaults, "
-				"there is a bug with something not checking for "
-				"the NULL value."<<std::endl;
-	else
-		dstream<<"INFO: Full run of content_mapnode_init with "
-				"tsrc!=NULL"<<std::endl;
-
-	// Read some settings
-	bool new_style_water = g_settings->getBool("new_style_water");
-	bool new_style_leaves = g_settings->getBool("new_style_leaves");
-	bool invisible_stone = g_settings->getBool("invisible_stone");
-	bool opaque_water = g_settings->getBool("opaque_water");
-
 	content_t i;
 	ContentFeatures *f = NULL;
 
@@ -185,8 +168,6 @@ void content_mapnode_init(ITextureSource *tsrc, IWritableNodeDefManager *nodemgr
 	f->often_contains_mineral = true;
 	f->dug_item = std::string("MaterialItem2 ")+itos(CONTENT_COBBLE)+" 1";
 	setStoneLikeMaterialProperties(f->material, 1.0);
-	if(invisible_stone)
-		f->solidness = 0; // For debugging, hides regular stone
 	
 	i = CONTENT_GRASS;
 	f = nodemgr->getModifiable(i);
@@ -278,40 +259,29 @@ void content_mapnode_init(ITextureSource *tsrc, IWritableNodeDefManager *nodemgr
 	f->setTexture(0, "jungletree_top.png");
 	f->setTexture(1, "jungletree_top.png");
 	f->param_type = CPT_MINERAL;
-	//f->is_ground_content = true;
 	f->dug_item = std::string("MaterialItem2 ")+itos(i)+" 1";
 	setWoodLikeMaterialProperties(f->material, 1.0);
 	
 	i = CONTENT_JUNGLEGRASS;
 	f = nodemgr->getModifiable(i);
+	f->drawtype = NDT_PLANTLIKE;
+	f->visual_scale = 1.6;
+	f->setAllTextures("junglegrass.png");
 	f->setInventoryTexture("junglegrass.png");
-	f->used_texturenames.insert("junglegrass.png"); // Add to atlas
 	f->light_propagates = true;
 	f->param_type = CPT_LIGHT;
-	//f->is_ground_content = true;
 	f->air_equivalent = false; // grass grows underneath
 	f->dug_item = std::string("MaterialItem2 ")+itos(i)+" 1";
-	f->solidness = 0; // drawn separately, makes no faces
 	f->walkable = false;
 	setLeavesLikeMaterialProperties(f->material, 1.0);
 
 	i = CONTENT_LEAVES;
 	f = nodemgr->getModifiable(i);
+	f->drawtype = NDT_ALLFACES_OPTIONAL;
+	f->setAllTextures("leaves.png");
+	//f->setAllTextures("[noalpha:leaves.png");
 	f->light_propagates = true;
-	//f->param_type = CPT_MINERAL;
 	f->param_type = CPT_LIGHT;
-	//f->is_ground_content = true;
-	if(new_style_leaves)
-	{
-		f->solidness = 0; // drawn separately, makes no faces
-		f->visual_solidness = 1;
-		f->setAllTextures("leaves.png");
-		f->setInventoryTextureCube("leaves.png", "leaves.png", "leaves.png");
-	}
-	else
-	{
-		f->setAllTextures("[noalpha:leaves.png");
-	}
 	f->extra_dug_item = std::string("MaterialItem2 ")+itos(CONTENT_SAPLING)+" 1";
 	f->extra_dug_item_rarity = 20;
 	f->dug_item = std::string("MaterialItem2 ")+itos(i)+" 1";
@@ -330,13 +300,13 @@ void content_mapnode_init(ITextureSource *tsrc, IWritableNodeDefManager *nodemgr
 
 	i = CONTENT_PAPYRUS;
 	f = nodemgr->getModifiable(i);
+	f->drawtype = NDT_PLANTLIKE;
+	f->setAllTextures("papyrus.png");
 	f->setInventoryTexture("papyrus.png");
-	f->used_texturenames.insert("papyrus.png"); // Add to atlas
 	f->light_propagates = true;
 	f->param_type = CPT_LIGHT;
 	f->is_ground_content = true;
 	f->dug_item = std::string("MaterialItem2 ")+itos(i)+" 1";
-	f->solidness = 0; // drawn separately, makes no faces
 	f->walkable = false;
 	setLeavesLikeMaterialProperties(f->material, 0.5);
 
@@ -354,27 +324,26 @@ void content_mapnode_init(ITextureSource *tsrc, IWritableNodeDefManager *nodemgr
 
 	i = CONTENT_GLASS;
 	f = nodemgr->getModifiable(i);
+	f->drawtype = NDT_GLASSLIKE;
+	f->setAllTextures("glass.png");
 	f->light_propagates = true;
 	f->sunlight_propagates = true;
 	f->param_type = CPT_LIGHT;
 	f->is_ground_content = true;
 	f->dug_item = std::string("MaterialItem2 ")+itos(i)+" 1";
-	f->solidness = 0; // drawn separately, makes no faces
-	f->visual_solidness = 1;
-	f->setAllTextures("glass.png");
 	f->setInventoryTextureCube("glass.png", "glass.png", "glass.png");
 	setGlassLikeMaterialProperties(f->material, 1.0);
 
 	i = CONTENT_FENCE;
 	f = nodemgr->getModifiable(i);
+	f->drawtype = NDT_FENCELIKE;
+	f->setInventoryTexture("fence.png");
+	f->setTexture(0, "wood.png");
 	f->light_propagates = true;
 	f->param_type = CPT_LIGHT;
 	f->is_ground_content = true;
 	f->dug_item = std::string("MaterialItem2 ")+itos(i)+" 1";
-	f->solidness = 0; // drawn separately, makes no faces
 	f->air_equivalent = true; // grass grows underneath
-	f->setInventoryTexture("fence.png");
-	f->used_texturenames.insert("fence.png"); // Add to atlas
 	f->selection_box.type = NODEBOX_FIXED;
 	f->selection_box.fixed = core::aabbox3d<f32>(
 			-BS/7, -BS/2, -BS/7, BS/7, BS/2, BS/7);
@@ -382,13 +351,16 @@ void content_mapnode_init(ITextureSource *tsrc, IWritableNodeDefManager *nodemgr
 
 	i = CONTENT_RAIL;
 	f = nodemgr->getModifiable(i);
+	f->drawtype = NDT_RAILLIKE;
 	f->setInventoryTexture("rail.png");
-	f->used_texturenames.insert("rail.png"); // Add to atlas
+	f->setTexture(0, "rail.png");
+	f->setTexture(1, "rail_curved.png");
+	f->setTexture(2, "rail_t_junction.png");
+	f->setTexture(3, "rail_crossing.png");
 	f->light_propagates = true;
 	f->param_type = CPT_LIGHT;
 	f->is_ground_content = true;
 	f->dug_item = std::string("MaterialItem2 ")+itos(i)+" 1";
-	f->solidness = 0; // drawn separately, makes no faces
 	f->air_equivalent = true; // grass grows underneath
 	f->walkable = false;
 	f->selection_box.type = NODEBOX_FIXED;
@@ -396,14 +368,14 @@ void content_mapnode_init(ITextureSource *tsrc, IWritableNodeDefManager *nodemgr
 
 	i = CONTENT_LADDER;
 	f = nodemgr->getModifiable(i);
+	f->drawtype = NDT_SIGNLIKE;
+	f->setAllTextures("ladder.png");
 	f->setInventoryTexture("ladder.png");
-	f->used_texturenames.insert("ladder.png"); // Add to atlas
 	f->light_propagates = true;
 	f->param_type = CPT_LIGHT;
 	f->is_ground_content = true;
 	f->dug_item = std::string("MaterialItem ")+itos(i)+" 1";
 	f->wall_mounted = true;
-	f->solidness = 0;
 	f->air_equivalent = true;
 	f->walkable = false;
 	f->climbable = true;
@@ -445,7 +417,6 @@ void content_mapnode_init(ITextureSource *tsrc, IWritableNodeDefManager *nodemgr
 	f->param_type = CPT_LIGHT;
 	f->light_propagates = true;
 	f->sunlight_propagates = true;
-	f->solidness = 0;
 	f->walkable = false;
 	f->pointable = false;
 	f->diggable = false;
@@ -454,11 +425,11 @@ void content_mapnode_init(ITextureSource *tsrc, IWritableNodeDefManager *nodemgr
 	
 	i = CONTENT_WATER;
 	f = nodemgr->getModifiable(i);
+	f->drawtype = NDT_FLOWINGLIQUID;
+	f->setAllTextures("water.png", WATER_ALPHA);
 	f->setInventoryTextureCube("water.png", "water.png", "water.png");
 	f->param_type = CPT_LIGHT;
 	f->light_propagates = true;
-	f->solidness = 0; // Drawn separately, makes no faces
-	f->visual_solidness = 1;
 	f->walkable = false;
 	f->pointable = false;
 	f->diggable = false;
@@ -467,8 +438,6 @@ void content_mapnode_init(ITextureSource *tsrc, IWritableNodeDefManager *nodemgr
 	f->liquid_alternative_flowing = CONTENT_WATER;
 	f->liquid_alternative_source = CONTENT_WATERSOURCE;
 	f->liquid_viscosity = WATER_VISC;
-	if(!opaque_water)
-		f->alpha = WATER_ALPHA;
 	f->post_effect_color = video::SColor(64, 100, 100, 200);
 	// Flowing water material
 	f->mspec_special[0].tname = "water.png";
@@ -478,16 +447,8 @@ void content_mapnode_init(ITextureSource *tsrc, IWritableNodeDefManager *nodemgr
 
 	i = CONTENT_WATERSOURCE;
 	f = nodemgr->getModifiable(i);
-	if(new_style_water)
-	{
-		f->solidness = 0; // drawn separately, makes no faces
-	}
-	else // old style
-	{
-		f->solidness = 1;
-		f->setAllTextures("water.png", WATER_ALPHA);
-		f->backface_culling = false;
-	}
+	f->drawtype = NDT_LIQUID;
+	f->setAllTextures("water.png", WATER_ALPHA);
 	//f->setInventoryTexture("water.png");
 	f->setInventoryTextureCube("water.png", "water.png", "water.png");
 	f->param_type = CPT_LIGHT;
@@ -501,8 +462,6 @@ void content_mapnode_init(ITextureSource *tsrc, IWritableNodeDefManager *nodemgr
 	f->liquid_alternative_flowing = CONTENT_WATER;
 	f->liquid_alternative_source = CONTENT_WATERSOURCE;
 	f->liquid_viscosity = WATER_VISC;
-	if(!opaque_water)
-		f->alpha = WATER_ALPHA;
 	f->post_effect_color = video::SColor(64, 100, 100, 200);
 	// New-style water source material (mostly unused)
 	f->mspec_special[0].tname = "water.png";
@@ -510,13 +469,12 @@ void content_mapnode_init(ITextureSource *tsrc, IWritableNodeDefManager *nodemgr
 	
 	i = CONTENT_LAVA;
 	f = nodemgr->getModifiable(i);
+	f->drawtype = NDT_FLOWINGLIQUID;
+	f->setAllTextures("lava.png");
 	f->setInventoryTextureCube("lava.png", "lava.png", "lava.png");
-	f->used_texturenames.insert("lava.png"); // Add to atlas
 	f->param_type = CPT_LIGHT;
 	f->light_propagates = false;
 	f->light_source = LIGHT_MAX-1;
-	f->solidness = 0; // Drawn separately, makes no faces
-	f->visual_solidness = 1; // Does not completely cover block boundaries
 	f->walkable = false;
 	f->pointable = false;
 	f->diggable = false;
@@ -535,16 +493,8 @@ void content_mapnode_init(ITextureSource *tsrc, IWritableNodeDefManager *nodemgr
 	
 	i = CONTENT_LAVASOURCE;
 	f = nodemgr->getModifiable(i);
-	f->used_texturenames.insert("ladder.png"); // Add to atlas
-	if(new_style_water)
-	{
-		f->solidness = 0; // drawn separately, makes no faces
-	}
-	else // old style
-	{
-		f->solidness = 2;
-		f->setAllTextures("lava.png");
-	}
+	f->drawtype = NDT_LIQUID;
+	f->setAllTextures("lava.png");
 	f->setInventoryTextureCube("lava.png", "lava.png", "lava.png");
 	f->param_type = CPT_LIGHT;
 	f->light_propagates = false;
@@ -566,14 +516,14 @@ void content_mapnode_init(ITextureSource *tsrc, IWritableNodeDefManager *nodemgr
 	
 	i = CONTENT_TORCH;
 	f = nodemgr->getModifiable(i);
+	f->drawtype = NDT_TORCHLIKE;
+	f->setTexture(0, "torch_on_floor.png");
+	f->setTexture(1, "torch_on_ceiling.png");
+	f->setTexture(2, "torch.png");
 	f->setInventoryTexture("torch_on_floor.png");
-	f->used_texturenames.insert("torch_on_floor.png"); // Add to atlas
-	f->used_texturenames.insert("torch_on_ceiling.png"); // Add to atlas
-	f->used_texturenames.insert("torch.png"); // Add to atlas
 	f->param_type = CPT_LIGHT;
 	f->light_propagates = true;
 	f->sunlight_propagates = true;
-	f->solidness = 0; // drawn separately, makes no faces
 	f->walkable = false;
 	f->wall_mounted = true;
 	f->air_equivalent = true;
@@ -590,12 +540,12 @@ void content_mapnode_init(ITextureSource *tsrc, IWritableNodeDefManager *nodemgr
 	
 	i = CONTENT_SIGN_WALL;
 	f = nodemgr->getModifiable(i);
+	f->drawtype = NDT_SIGNLIKE;
+	f->setAllTextures("sign_wall.png");
 	f->setInventoryTexture("sign_wall.png");
-	f->used_texturenames.insert("sign_wall.png"); // Add to atlas
 	f->param_type = CPT_LIGHT;
 	f->light_propagates = true;
 	f->sunlight_propagates = true;
-	f->solidness = 0; // drawn separately, makes no faces
 	f->walkable = false;
 	f->wall_mounted = true;
 	f->air_equivalent = true;
@@ -692,25 +642,26 @@ void content_mapnode_init(ITextureSource *tsrc, IWritableNodeDefManager *nodemgr
 
 	i = CONTENT_SAPLING;
 	f = nodemgr->getModifiable(i);
-	f->param_type = CPT_LIGHT;
+	f->drawtype = NDT_PLANTLIKE;
+	f->visual_scale = 1.5;
 	f->setAllTextures("sapling.png");
 	f->setInventoryTexture("sapling.png");
-	f->used_texturenames.insert("sapling.png"); // Add to atlas
+	f->param_type = CPT_LIGHT;
 	f->dug_item = std::string("MaterialItem2 ")+itos(i)+" 1";
 	f->light_propagates = true;
 	f->air_equivalent = false;
-	f->solidness = 0; // drawn separately, makes no faces
 	f->walkable = false;
 	setConstantMaterialProperties(f->material, 0.0);
 	
 	i = CONTENT_APPLE;
 	f = nodemgr->getModifiable(i);
+	f->drawtype = NDT_PLANTLIKE;
+	f->visual_scale = 1.0;
+	f->setAllTextures("apple.png");
 	f->setInventoryTexture("apple.png");
-	f->used_texturenames.insert("apple.png"); // Add to atlas
 	f->param_type = CPT_LIGHT;
 	f->light_propagates = true;
 	f->sunlight_propagates = true;
-	f->solidness = 0; // drawn separately, makes no faces
 	f->walkable = false;
 	f->air_equivalent = true;
 	f->dug_item = std::string("CraftItem apple 1");

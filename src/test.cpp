@@ -1088,7 +1088,7 @@ void run_tests()
 	
 	// Create node definitions
 	IWritableNodeDefManager *nodedef = createNodeDefManager();
-	content_mapnode_init(NULL, nodedef);
+	content_mapnode_init(nodedef);
 
 	infostream<<"run_tests() started"<<std::endl;
 	TEST(TestUtilities);

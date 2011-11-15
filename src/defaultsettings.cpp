@@ -75,7 +75,6 @@ void set_default_settings(Settings *settings)
 	settings->setDefault("invert_mouse", "false");
 	settings->setDefault("enable_farmesh", "false");
 	settings->setDefault("enable_clouds", "true");
-	settings->setDefault("invisible_stone", "false");
 	settings->setDefault("screenshot_path", ".");
 	settings->setDefault("view_bobbing_amount", "1.0");
 	settings->setDefault("enable_3d_clouds", "false");

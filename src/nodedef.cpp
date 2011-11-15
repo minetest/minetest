@@ -25,6 +25,54 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "tile.h"
 #endif
 #include "log.h"
+#include "settings.h"
+
+void NodeBox::serialize(std::ostream &os)
+{
+	writeU8(os, 0); // version
+	writeU8(os, type);
+	writeV3F1000(os, fixed.MinEdge);
+	writeV3F1000(os, fixed.MaxEdge);
+	writeV3F1000(os, wall_top.MinEdge);
+	writeV3F1000(os, wall_top.MaxEdge);
+	writeV3F1000(os, wall_bottom.MinEdge);
+	writeV3F1000(os, wall_bottom.MaxEdge);
+	writeV3F1000(os, wall_side.MinEdge);
+	writeV3F1000(os, wall_side.MaxEdge);
+}
+
+void NodeBox::deSerialize(std::istream &is)
+{
+	int version = readU8(is);
+	if(version != 0)
+		throw SerializationError("unsupported NodeBox version");
+	type = (enum NodeBoxType)readU8(is);
+	fixed.MinEdge = readV3F1000(is);
+	fixed.MaxEdge = readV3F1000(is);
+	wall_top.MinEdge = readV3F1000(is);
+	wall_top.MaxEdge = readV3F1000(is);
+	wall_bottom.MinEdge = readV3F1000(is);
+	wall_bottom.MaxEdge = readV3F1000(is);
+	wall_side.MinEdge = readV3F1000(is);
+	wall_side.MaxEdge = readV3F1000(is);
+}
+
+void MaterialSpec::serialize(std::ostream &os)
+{
+	os<<serializeString(tname);
+	writeU8(os, backface_culling);
+}
+
+void MaterialSpec::deSerialize(std::istream &is)
+{
+	tname = deSerializeString(is);
+	backface_culling = readU8(is);
+}
+
+ContentFeatures::ContentFeatures()
+{
+	reset();
+}
 
 ContentFeatures::~ContentFeatures()
 {
@@ -35,6 +83,161 @@ ContentFeatures::~ContentFeatures()
 		delete special_aps[j];
 	}
 #endif
+}
+
+void ContentFeatures::reset()
+{
+	/*
+		Cached stuff
+	*/
+#ifndef SERVER
+	inventory_texture = NULL;
+	
+	for(u16 j=0; j<CF_SPECIAL_COUNT; j++){
+		special_materials[j] = NULL;
+		special_aps[j] = NULL;
+	}
+	solidness = 2;
+	visual_solidness = 0;
+	backface_culling = true;
+#endif
+	used_texturenames.clear();
+	modified = true; // NodeDefManager explicitly sets to false
+	/*
+		Actual data
+	*/
+	drawtype = NDT_NORMAL;
+	visual_scale = 1.0;
+	for(u32 i=0; i<6; i++)
+		tname_tiles[i] = "";
+	for(u16 j=0; j<CF_SPECIAL_COUNT; j++)
+		mspec_special[j] = MaterialSpec();
+	tname_inventory = "";
+	alpha = 255;
+	post_effect_color = video::SColor(0, 0, 0, 0);
+	param_type = CPT_NONE;
+	is_ground_content = false;
+	light_propagates = false;
+	sunlight_propagates = false;
+	walkable = true;
+	pointable = true;
+	diggable = true;
+	climbable = false;
+	buildable_to = false;
+	wall_mounted = false;
+	air_equivalent = false;
+	often_contains_mineral = false;
+	dug_item = "";
+	initial_metadata = NULL;
+	liquid_type = LIQUID_NONE;
+	liquid_alternative_flowing = CONTENT_IGNORE;
+	liquid_alternative_source = CONTENT_IGNORE;
+	liquid_viscosity = 0;
+	light_source = 0;
+	damage_per_second = 0;
+	selection_box = NodeBox();
+	material = MaterialProperties();
+}
+
+void ContentFeatures::serialize(std::ostream &os)
+{
+	writeU8(os, 0); // version
+	writeU8(os, drawtype);
+	writeF1000(os, visual_scale);
+	writeU8(os, 6);
+	for(u32 i=0; i<6; i++)
+		os<<serializeString(tname_tiles[i]);
+	os<<serializeString(tname_inventory);
+	writeU8(os, CF_SPECIAL_COUNT);
+	for(u32 i=0; i<CF_SPECIAL_COUNT; i++){
+		mspec_special[i].serialize(os);
+	}
+	writeU8(os, alpha);
+	writeU8(os, post_effect_color.getAlpha());
+	writeU8(os, post_effect_color.getRed());
+	writeU8(os, post_effect_color.getGreen());
+	writeU8(os, post_effect_color.getBlue());
+	writeU8(os, param_type);
+	writeU8(os, is_ground_content);
+	writeU8(os, light_propagates);
+	writeU8(os, sunlight_propagates);
+	writeU8(os, walkable);
+	writeU8(os, pointable);
+	writeU8(os, diggable);
+	writeU8(os, climbable);
+	writeU8(os, buildable_to);
+	writeU8(os, wall_mounted);
+	writeU8(os, air_equivalent);
+	writeU8(os, often_contains_mineral);
+	os<<serializeString(dug_item);
+	os<<serializeString(extra_dug_item);
+	writeS32(os, extra_dug_item_rarity);
+	if(initial_metadata){
+		writeU8(os, true);
+		initial_metadata->serialize(os);
+	} else {
+		writeU8(os, false);
+	}
+	writeU8(os, liquid_type);
+	writeU16(os, liquid_alternative_flowing);
+	writeU16(os, liquid_alternative_source);
+	writeU8(os, liquid_viscosity);
+	writeU8(os, light_source);
+	writeU32(os, damage_per_second);
+	selection_box.serialize(os);
+	material.serialize(os);
+}
+
+void ContentFeatures::deSerialize(std::istream &is, IGameDef *gamedef)
+{
+	int version = readU8(is);
+	if(version != 0)
+		throw SerializationError("unsupported ContentFeatures version");
+	drawtype = (enum NodeDrawType)readU8(is);
+	visual_scale = readF1000(is);
+	if(readU8(is) != 6)
+		throw SerializationError("unsupported tile count");
+	for(u32 i=0; i<6; i++)
+		tname_tiles[i] = deSerializeString(is);
+	tname_inventory = deSerializeString(is);
+	if(readU8(is) != CF_SPECIAL_COUNT)
+		throw SerializationError("unsupported CF_SPECIAL_COUNT");
+	for(u32 i=0; i<CF_SPECIAL_COUNT; i++){
+		mspec_special[i].deSerialize(is);
+	}
+	alpha = readU8(is);
+	post_effect_color.setAlpha(readU8(is));
+	post_effect_color.setRed(readU8(is));
+	post_effect_color.setGreen(readU8(is));
+	post_effect_color.setBlue(readU8(is));
+	param_type = (enum ContentParamType)readU8(is);
+	is_ground_content = readU8(is);
+	light_propagates = readU8(is);
+	sunlight_propagates = readU8(is);
+	walkable = readU8(is);
+	pointable = readU8(is);
+	diggable = readU8(is);
+	climbable = readU8(is);
+	buildable_to = readU8(is);
+	wall_mounted = readU8(is);
+	air_equivalent = readU8(is);
+	often_contains_mineral = readU8(is);
+	dug_item = deSerializeString(is);
+	extra_dug_item = deSerializeString(is);
+	extra_dug_item_rarity = readS32(is);
+	if(readU8(is)){
+		initial_metadata = NodeMetadata::deSerialize(is, gamedef);
+	} else {
+		initial_metadata = NULL;
+	}
+	liquid_type = (enum LiquidType)readU8(is);
+	liquid_alternative_flowing = readU16(is);
+	liquid_alternative_source = readU16(is);
+	liquid_viscosity = readU8(is);
+	light_source = readU8(is);
+	damage_per_second = readU32(is);
+	selection_box.deSerialize(is);
+	material.deSerialize(is);
 }
 
 void ContentFeatures::setTexture(u16 i, std::string name)
@@ -70,20 +273,28 @@ void ContentFeatures::setInventoryTextureCube(std::string top,
 class CNodeDefManager: public IWritableNodeDefManager
 {
 public:
-	CNodeDefManager()
+	void clear()
 	{
 		for(u16 i=0; i<=MAX_CONTENT; i++)
 		{
 			ContentFeatures *f = &m_content_features[i];
-			// Reset to defaults
-			f->reset();
-			if(i == CONTENT_IGNORE || i == CONTENT_AIR)
+			f->reset(); // Reset to defaults
+			f->modified = false; // Not changed from default
+			if(i == CONTENT_IGNORE || i == CONTENT_AIR){
+				f->drawtype = NDT_AIRLIKE;
 				continue;
+			}
 			f->setAllTextures("unknown_block.png");
-			f->dug_item = std::string("MaterialItem2 ")+itos(i)+" 1";
+			//f->dug_item = std::string("MaterialItem2 ")+itos(i)+" 1";
 		}
+#ifndef SERVER
 		// Make CONTENT_IGNORE to not block the view when occlusion culling
 		m_content_features[CONTENT_IGNORE].solidness = 0;
+#endif
+	}
+	CNodeDefManager()
+	{
+		clear();
 	}
 	virtual ~CNodeDefManager()
 	{
@@ -116,6 +327,7 @@ public:
 	virtual ContentFeatures* getModifiable(content_t c)
 	{
 		assert(c <= MAX_CONTENT);
+		m_content_features[c].modified = true; // Assume it is modified
 		return &m_content_features[c];
 	}
 	virtual void updateTextures(ITextureSource *tsrc)
@@ -123,10 +335,72 @@ public:
 #ifndef SERVER
 		infostream<<"CNodeDefManager::updateTextures(): Updating "
 				<<"textures in node definitions"<<std::endl;
+
+		bool new_style_water = g_settings->getBool("new_style_water");
+		bool new_style_leaves = g_settings->getBool("new_style_leaves");
+		bool opaque_water = g_settings->getBool("opaque_water");
+		
 		for(u16 i=0; i<=MAX_CONTENT; i++)
 		{
-			infostream<<"Updating content "<<i<<std::endl;
 			ContentFeatures *f = &m_content_features[i];
+
+			switch(f->drawtype){
+			default:
+			case NDT_NORMAL:
+				f->solidness = 2;
+				break;
+			case NDT_AIRLIKE:
+				f->solidness = 0;
+				break;
+			case NDT_LIQUID:
+				assert(f->liquid_type == LIQUID_SOURCE);
+				if(opaque_water)
+					f->alpha = 255;
+				if(new_style_water){
+					f->solidness = 0;
+				} else {
+					f->solidness = 1;
+					if(f->alpha == 255)
+						f->solidness = 2;
+				}
+				break;
+			case NDT_FLOWINGLIQUID:
+				assert(f->liquid_type == LIQUID_FLOWING);
+				f->solidness = 0;
+				if(opaque_water)
+					f->alpha = 255;
+				break;
+			case NDT_GLASSLIKE:
+				f->solidness = 0;
+				f->visual_solidness = 1;
+				break;
+			case NDT_ALLFACES:
+				f->solidness = 0;
+				f->visual_solidness = 1;
+				break;
+			case NDT_ALLFACES_OPTIONAL:
+				if(new_style_leaves){
+					f->drawtype = NDT_ALLFACES;
+					f->solidness = 0;
+					f->visual_solidness = 1;
+				} else {
+					f->drawtype = NDT_NORMAL;
+					f->solidness = 1;
+					for(u32 i=0; i<6; i++){
+						f->tname_tiles[i] = std::string("[noalpha:")
+								+ f->tname_tiles[i];
+					}
+				}
+				break;
+			case NDT_TORCHLIKE:
+			case NDT_SIGNLIKE:
+			case NDT_PLANTLIKE:
+			case NDT_FENCELIKE:
+			case NDT_RAILLIKE:
+				f->solidness = 0;
+				break;
+			}
+
 			// Inventory texture
 			if(f->tname_inventory != "")
 				f->inventory_texture = tsrc->getTextureRaw(f->tname_inventory);
@@ -174,6 +448,35 @@ public:
 			}
 		}
 #endif
+	}
+	void serialize(std::ostream &os)
+	{
+		std::ostringstream tmp_os(std::ios::binary);
+		for(u16 i=0; i<=MAX_CONTENT; i++)
+		{
+			ContentFeatures *f = &m_content_features[i];
+			if(!f->modified)
+				continue;
+			writeU16(tmp_os, i);
+			f->serialize(tmp_os);
+		}
+		os<<serializeLongString(tmp_os.str());
+	}
+	void deSerialize(std::istream &is, IGameDef *gamedef)
+	{
+		clear();
+		std::istringstream tmp_is(deSerializeLongString(is), std::ios::binary);
+		while(!tmp_is.eof()){
+			u16 i = readU16(tmp_is);
+			if(i > MAX_CONTENT){
+				errorstream<<"ContentFeatures::deSerialize(): "
+						<<"Too large content id: "<<i<<std::endl;
+				continue;
+			}
+			ContentFeatures *f = &m_content_features[i];
+			f->deSerialize(tmp_is, gamedef);
+			f->modified = true;
+		}
 	}
 private:
 	ContentFeatures m_content_features[MAX_CONTENT+1];

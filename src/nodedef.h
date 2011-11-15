@@ -22,6 +22,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "common_irrlicht.h"
 #include <string>
+#include <iostream>
 #include <set>
 #include "mapnode.h"
 #ifndef SERVER
@@ -29,6 +30,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #endif
 #include "materials.h" // MaterialProperties
 class ITextureSource;
+class IGameDef;
 
 /*
 	TODO: Rename to nodedef.h
@@ -95,6 +97,9 @@ struct NodeBox
 		wall_bottom(-BS/2, -BS/2, -BS/2, BS/2, -BS/2+BS/16., BS/2),
 		wall_side(-BS/2, -BS/2, -BS/2, -BS/2+BS/16., BS/2, BS/2)
 	{}
+
+	void serialize(std::ostream &os);
+	void deSerialize(std::istream &is);
 };
 
 struct MapNode;
@@ -109,42 +114,70 @@ struct MaterialSpec
 		tname(tname_),
 		backface_culling(backface_culling_)
 	{}
+
+	void serialize(std::ostream &os);
+	void deSerialize(std::istream &is);
+};
+
+enum NodeDrawType
+{
+	NDT_NORMAL, // A basic solid block
+	NDT_AIRLIKE, // Nothing is drawn
+	NDT_LIQUID, // Do not draw face towards same kind of flowing/source liquid
+	NDT_FLOWINGLIQUID, // A very special kind of thing
+	NDT_GLASSLIKE, // Glass-like, don't draw faces towards other glass
+	NDT_ALLFACES, // Leaves-like, draw all faces no matter what
+	NDT_ALLFACES_OPTIONAL, // Fancy -> allfaces, fast -> normal
+	NDT_TORCHLIKE,
+	NDT_SIGNLIKE,
+	NDT_PLANTLIKE,
+	NDT_FENCELIKE,
+	NDT_RAILLIKE,
 };
 
 #define CF_SPECIAL_COUNT 2
 
 struct ContentFeatures
 {
+	/*
+		Cached stuff
+	*/
 #ifndef SERVER
 	// 0     1     2     3     4     5
 	// up    down  right left  back  front 
 	TileSpec tiles[6];
-	
 	video::ITexture *inventory_texture;
-
-	// Post effect color, drawn when the camera is inside the node.
-	video::SColor post_effect_color;
-
 	// Special material/texture
 	// - Currently used for flowing liquids
 	video::SMaterial *special_materials[CF_SPECIAL_COUNT];
 	AtlasPointer *special_aps[CF_SPECIAL_COUNT];
-#endif
-	
-	// Visual definition
-	std::string tname_tiles[6];
-	std::string tname_inventory;
-	MaterialSpec mspec_special[CF_SPECIAL_COUNT];
-	u8 alpha;
-	bool backface_culling;
 	u8 solidness; // Used when choosing which face is drawn
 	u8 visual_solidness; // When solidness=0, this tells how it looks like
-
+	bool backface_culling;
+#endif
+	
 	// List of all block textures that have been used (value is dummy)
 	// Used for texture atlas making.
 	// Exists on server too for cleaner code in content_mapnode.cpp.
 	std::set<std::string> used_texturenames;
 	
+	// True if this actually contains non-default data
+	bool modified;
+
+	/*
+		Actual data
+	*/
+
+	// Visual definition
+	enum NodeDrawType drawtype;
+	float visual_scale; // Misc. scale parameter
+	std::string tname_tiles[6];
+	std::string tname_inventory;
+	MaterialSpec mspec_special[CF_SPECIAL_COUNT];
+	u8 alpha;
+
+	// Post effect color, drawn when the camera is inside the node.
+	video::SColor post_effect_color;
 	// Type of MapNode::param1
 	ContentParamType param_type;
 	// True for all ground-like things like stone and mud, false for eg. trees
@@ -172,18 +205,14 @@ struct ContentFeatures
 	// Used for texture atlas creation.
 	// Currently only enabled for CONTENT_STONE.
 	bool often_contains_mineral;
-	
 	// Inventory item string as which the node appears in inventory when dug.
 	// Mineral overrides this.
 	std::string dug_item;
-
 	// Extra dug item and its rarity
 	std::string extra_dug_item;
 	s32 extra_dug_item_rarity;
-
 	// Initial metadata is cloned from this
 	NodeMetadata *initial_metadata;
-	
 	// Whether the node is non-liquid, source liquid or flowing liquid
 	enum LiquidType liquid_type;
 	// If the content is liquid, this is the flowing version of the liquid.
@@ -194,72 +223,22 @@ struct ContentFeatures
 	// 1 giving almost instantaneous propagation and 7 being
 	// the slowest possible
 	u8 liquid_viscosity;
-	
 	// Amount of light the node emits
 	u8 light_source;
-	
 	u32 damage_per_second;
-
 	NodeBox selection_box;
-
 	MaterialProperties material;
+
+	/*
+		Methods
+	*/
 	
-	// NOTE: Move relevant properties to here from elsewhere
-
-	void reset()
-	{
-		// This isn't exactly complete due to lazyness
-		// TODO: Make it completely reset everything
-#ifndef SERVER
-		inventory_texture = NULL;
-		
-		post_effect_color = video::SColor(0, 0, 0, 0);
-		for(u16 j=0; j<CF_SPECIAL_COUNT; j++){
-			special_materials[j] = NULL;
-			special_aps[j] = NULL;
-		}
-#endif
-		for(u32 i=0; i<6; i++)
-			tname_tiles[i] = "";
-		for(u16 j=0; j<CF_SPECIAL_COUNT; j++)
-			mspec_special[j] = MaterialSpec();
-		tname_inventory = "";
-		alpha = 255;
-		backface_culling = true;
-		solidness = 2;
-		visual_solidness = 0;
-		used_texturenames.clear();
-		param_type = CPT_NONE;
-		is_ground_content = false;
-		light_propagates = false;
-		sunlight_propagates = false;
-		walkable = true;
-		pointable = true;
-		diggable = true;
-		climbable = false;
-		buildable_to = false;
-		wall_mounted = false;
-		air_equivalent = false;
-		often_contains_mineral = false;
-		dug_item = "";
-		initial_metadata = NULL;
-		liquid_type = LIQUID_NONE;
-		liquid_alternative_flowing = CONTENT_IGNORE;
-		liquid_alternative_source = CONTENT_IGNORE;
-		liquid_viscosity = 0;
-		light_source = 0;
-		damage_per_second = 0;
-		selection_box = NodeBox();
-		material = MaterialProperties();
-	}
-
-	ContentFeatures()
-	{
-		reset();
-	}
-
+	ContentFeatures();
 	~ContentFeatures();
-	
+	void reset();
+	void serialize(std::ostream &os);
+	void deSerialize(std::istream &is, IGameDef *gamedef);
+
 	/*
 		Quickhands for simple materials
 	*/
@@ -320,6 +299,9 @@ public:
 		Call after updating the texture atlas of a TextureSource.
 	*/
 	virtual void updateTextures(ITextureSource *tsrc)=0;
+
+	virtual void serialize(std::ostream &os)=0;
+	virtual void deSerialize(std::istream &is, IGameDef *gamedef)=0;
 };
 
 IWritableNodeDefManager* createNodeDefManager();

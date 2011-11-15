@@ -27,6 +27,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <irrList.h>
 #include <irrArray.h>
 #include <aabbox3d.h>
+#include <SColor.h>
 using namespace irr;
 typedef core::vector3df v3f;
 typedef core::vector3d<s16> v3s16;

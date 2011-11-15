@@ -26,7 +26,6 @@ video::SColor(255,30,30,30));d->endScene();}
 #include "irrlichttypes.h"
 
 #ifndef SERVER
-#include <SColor.h>
 #include <IMesh.h>
 #include <IImage.h>
 #include <IrrlichtDevice.h>

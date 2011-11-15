@@ -26,6 +26,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "nodedef.h"
 #include "content_mapnode.h" // For mapnode_translate_*_internal
 
+#ifndef SERVER
 /*
 	Nodes make a face if contents differ and solidness differs.
 	Return value:
@@ -81,6 +82,7 @@ u8 face_contents(content_t m1, content_t m2, bool *equivalent,
 	else
 		return 2;
 }
+#endif
 
 v3s16 facedir_rotate(u8 facedir, v3s16 dir)
 {

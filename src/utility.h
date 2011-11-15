@@ -235,6 +235,19 @@ inline u32 readU32(std::istream &is)
 	return readU32((u8*)buf);
 }
 
+inline void writeS32(std::ostream &os, u32 p)
+{
+	char buf[4];
+	writeS32((u8*)buf, p);
+	os.write(buf, 4);
+}
+inline u32 readS32(std::istream &is)
+{
+	char buf[4];
+	is.read(buf, 4);
+	return readS32((u8*)buf);
+}
+
 inline void writeF1000(std::ostream &os, f32 p)
 {
 	char buf[4];

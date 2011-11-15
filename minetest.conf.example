@@ -100,8 +100,6 @@
 #farmesh_distance = 40
 # Enable/disable clouds
 #enable_clouds = true
-# Don't draw stone (for testing)
-#invisible_stone = false
 # Path for screenshots
 #screenshot_path = .
 # Amount of view bobbing (0 = no view bobbing, 1.0 = normal, 2.0 = double)

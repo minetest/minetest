@@ -62,6 +62,7 @@ typedef u16 content_t;
 */
 #define CONTENT_AIR 126
 
+#ifndef SERVER
 /*
 	Nodes make a face if contents differ and solidness differs.
 	Return value:
@@ -72,6 +73,7 @@ typedef u16 content_t;
 */
 u8 face_contents(content_t m1, content_t m2, bool *equivalent,
 		INodeDefManager *nodemgr);
+#endif
 
 /*
 	Packs directions like (1,0,0), (1,-1,0) in six bits.

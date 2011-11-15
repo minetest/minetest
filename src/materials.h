@@ -1,6 +1,6 @@
 /*
 Minetest-c55
-Copyright (C) 2010 celeron55, Perttu Ahola <celeron55@gmail.com>
+Copyright (C) 2010-2011 celeron55, Perttu Ahola <celeron55@gmail.com>
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -26,6 +26,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "common_irrlicht.h"
 #include <string>
+#include <iostream>
 
 enum Diggability
 {
@@ -65,6 +66,9 @@ struct MaterialProperties
 		crumbliness(1),
 		cuttability(1)
 	{}
+
+	void serialize(std::ostream &os);
+	void deSerialize(std::istream &is);
 };
 
 struct DiggingProperties
