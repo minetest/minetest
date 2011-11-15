@@ -476,29 +476,6 @@ void content_mapnode_init(ITextureSource *tsrc, IWritableNodeDefManager *nodemgr
 	f->mspec_special[1].tname = "water.png";
 	f->mspec_special[1].backface_culling = true;
 
-/*#ifndef SERVER
-	if(f->special_material == NULL && tsrc)
-	{
-		f->special_material = new video::SMaterial;
-		f->special_material->setFlag(video::EMF_LIGHTING, false);
-		f->special_material->setFlag(video::EMF_BACK_FACE_CULLING, false);
-		f->special_material->setFlag(video::EMF_BILINEAR_FILTER, false);
-		f->special_material->setFlag(video::EMF_FOG_ENABLE, true);
-		if(!opaque_water)
-			f->special_material->MaterialType = video::EMT_TRANSPARENT_VERTEX_ALPHA;
-		AtlasPointer *pa_water1 = new AtlasPointer(tsrc->getTexture(
-				tsrc->getTextureId("water.png")));
-		f->special_material->setTexture(0, pa_water1->atlas);
-
-		// Flowing water material, backface culled
-		f->special_material2 = new video::SMaterial;
-		*f->special_material2 = *f->special_material;
-		f->special_material2->setFlag(video::EMF_BACK_FACE_CULLING, true);
-		
-		f->special_atlas = pa_water1;
-	}
-#endif*/
-	
 	i = CONTENT_WATERSOURCE;
 	f = nodemgr->getModifiable(i);
 	if(new_style_water)
@@ -530,21 +507,6 @@ void content_mapnode_init(ITextureSource *tsrc, IWritableNodeDefManager *nodemgr
 	// New-style water source material (mostly unused)
 	f->mspec_special[0].tname = "water.png";
 	f->mspec_special[0].backface_culling = false;
-/*#ifndef SERVER
-	if(f->special_material == NULL && tsrc)
-	{
-		f->special_material = new video::SMaterial;
-		f->special_material->setFlag(video::EMF_LIGHTING, false);
-		f->special_material->setFlag(video::EMF_BACK_FACE_CULLING, false);
-		f->special_material->setFlag(video::EMF_BILINEAR_FILTER, false);
-		f->special_material->setFlag(video::EMF_FOG_ENABLE, true);
-		f->special_material->MaterialType = video::EMT_TRANSPARENT_VERTEX_ALPHA;
-		AtlasPointer *pa_water1 = new AtlasPointer(tsrc->getTexture(
-				tsrc->getTextureId("water.png")));
-		f->special_material->setTexture(0, pa_water1->atlas);
-		f->special_atlas = pa_water1;
-	}
-#endif*/
 	
 	i = CONTENT_LAVA;
 	f = nodemgr->getModifiable(i);
@@ -570,11 +532,6 @@ void content_mapnode_init(ITextureSource *tsrc, IWritableNodeDefManager *nodemgr
 	f->mspec_special[0].backface_culling = false;
 	f->mspec_special[1].tname = "lava.png";
 	f->mspec_special[1].backface_culling = true;
-/*#ifndef SERVER
-	if(f->special_material == NULL && tsrc)
-	{
-	}
-#endif*/
 	
 	i = CONTENT_LAVASOURCE;
 	f = nodemgr->getModifiable(i);
@@ -606,11 +563,6 @@ void content_mapnode_init(ITextureSource *tsrc, IWritableNodeDefManager *nodemgr
 	// New-style lava source material (mostly unused)
 	f->mspec_special[0].tname = "lava.png";
 	f->mspec_special[0].backface_culling = false;
-/*#ifndef SERVER
-	if(f->special_material == NULL && tsrc)
-	{
-	}
-#endif*/
 	
 	i = CONTENT_TORCH;
 	f = nodemgr->getModifiable(i);
