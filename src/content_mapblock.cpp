@@ -529,6 +529,14 @@ void mapblock_mesh_generate_special(MeshMakeData *data,
 
 			for(u32 j=0; j<6; j++)
 			{
+				// Check this neighbor
+				v3s16 n2p = blockpos_nodes + p + g_6dirs[j];
+				MapNode n2 = data->m_vmanip.getNodeNoEx(n2p);
+				// Don't make face if neighbor is of same type
+				if(n2.getContent() == n.getContent())
+					continue;
+
+				// The face at Z+
 				video::S3DVertex vertices[4] =
 				{
 					video::S3DVertex(-BS/2,-BS/2,BS/2, 0,0,0, c,
@@ -540,40 +548,28 @@ void mapblock_mesh_generate_special(MeshMakeData *data,
 					video::S3DVertex(-BS/2,BS/2,BS/2, 0,0,0, c,
 						pa_glass.x0(), pa_glass.y0()),
 				};
-
-				if(j == 0)
-				{
+				
+				// Rotations in the g_6dirs format
+				if(j == 0) // Z+
 					for(u16 i=0; i<4; i++)
 						vertices[i].Pos.rotateXZBy(0);
-				}
-				else if(j == 1)
-				{
-					for(u16 i=0; i<4; i++)
-						vertices[i].Pos.rotateXZBy(180);
-				}
-				else if(j == 2)
-				{
-					for(u16 i=0; i<4; i++)
-						vertices[i].Pos.rotateXZBy(-90);
-				}
-				else if(j == 3)
-				{
-					for(u16 i=0; i<4; i++)
-						vertices[i].Pos.rotateXZBy(90);
-				}
-				else if(j == 4)
-				{
+				else if(j == 1) // Y+
 					for(u16 i=0; i<4; i++)
 						vertices[i].Pos.rotateYZBy(-90);
-				}
-				else if(j == 5)
-				{
+				else if(j == 2) // X+
+					for(u16 i=0; i<4; i++)
+						vertices[i].Pos.rotateXZBy(-90);
+				else if(j == 3) // Z-
+					for(u16 i=0; i<4; i++)
+						vertices[i].Pos.rotateXZBy(180);
+				else if(j == 4) // Y-
 					for(u16 i=0; i<4; i++)
 						vertices[i].Pos.rotateYZBy(90);
-				}
+				else if(j == 5) // X-
+					for(u16 i=0; i<4; i++)
+						vertices[i].Pos.rotateXZBy(90);
 
-				for(u16 i=0; i<4; i++)
-				{
+				for(u16 i=0; i<4; i++){
 					vertices[i].Pos += intToFloat(p + blockpos_nodes, BS);
 				}
 
@@ -609,39 +605,27 @@ void mapblock_mesh_generate_special(MeshMakeData *data,
 						pa_leaves1.x0(), pa_leaves1.y0()),
 				};
 
-				if(j == 0)
-				{
+				// Rotations in the g_6dirs format
+				if(j == 0) // Z+
 					for(u16 i=0; i<4; i++)
 						vertices[i].Pos.rotateXZBy(0);
-				}
-				else if(j == 1)
-				{
-					for(u16 i=0; i<4; i++)
-						vertices[i].Pos.rotateXZBy(180);
-				}
-				else if(j == 2)
-				{
-					for(u16 i=0; i<4; i++)
-						vertices[i].Pos.rotateXZBy(-90);
-				}
-				else if(j == 3)
-				{
-					for(u16 i=0; i<4; i++)
-						vertices[i].Pos.rotateXZBy(90);
-				}
-				else if(j == 4)
-				{
+				else if(j == 1) // Y+
 					for(u16 i=0; i<4; i++)
 						vertices[i].Pos.rotateYZBy(-90);
-				}
-				else if(j == 5)
-				{
+				else if(j == 2) // X+
+					for(u16 i=0; i<4; i++)
+						vertices[i].Pos.rotateXZBy(-90);
+				else if(j == 3) // Z-
+					for(u16 i=0; i<4; i++)
+						vertices[i].Pos.rotateXZBy(180);
+				else if(j == 4) // Y-
 					for(u16 i=0; i<4; i++)
 						vertices[i].Pos.rotateYZBy(90);
-				}
+				else if(j == 5) // X-
+					for(u16 i=0; i<4; i++)
+						vertices[i].Pos.rotateXZBy(90);
 
-				for(u16 i=0; i<4; i++)
-				{
+				for(u16 i=0; i<4; i++){
 					vertices[i].Pos += intToFloat(p + blockpos_nodes, BS);
 				}
 
