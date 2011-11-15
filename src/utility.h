@@ -225,7 +225,7 @@ inline u16 readU16(std::istream &is)
 inline void writeU32(std::ostream &os, u32 p)
 {
 	char buf[4];
-	writeU16((u8*)buf, p);
+	writeU32((u8*)buf, p);
 	os.write(buf, 4);
 }
 inline u32 readU32(std::istream &is)
@@ -367,7 +367,7 @@ public:
 		else
 			data = NULL;
 	}
-	Buffer(T *t, unsigned int size)
+	Buffer(const T *t, unsigned int size)
 	{
 		m_size = size;
 		if(size != 0)
