@@ -27,6 +27,7 @@ void MaterialProperties::serialize(std::ostream &os)
 {
 	writeU8(os, 0); // version
 	writeU8(os, diggability);
+	writeF1000(os, constant_time);
 	writeF1000(os, weight);
 	writeF1000(os, crackiness);
 	writeF1000(os, crumbliness);
@@ -39,6 +40,7 @@ void MaterialProperties::deSerialize(std::istream &is)
 	if(version != 0)
 		throw SerializationError("unsupported MaterialProperties version");
 	diggability = (enum Diggability)readU8(is);
+	constant_time = readF1000(is);
 	weight = readF1000(is);
 	crackiness = readF1000(is);
 	crumbliness = readF1000(is);
