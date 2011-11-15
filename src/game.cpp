@@ -47,9 +47,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "nodedef.h"
 #include "nodemetadata.h"
 #include "main.h" // For g_settings
-#include "content_mapnode.h" // For content_mapnode_init
 #include "tooldef.h"
-#include "content_mapnode.h" // Default nodes
 #include "tile.h" // For TextureSource
 
 /*
