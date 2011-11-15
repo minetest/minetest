@@ -789,13 +789,15 @@ void mapblock_mesh_generate_special(MeshMakeData *data,
 			{
 				video::S3DVertex vertices[4] =
 				{
-					video::S3DVertex(-BS/2,-BS/2,0, 0,0,0, c,
+					video::S3DVertex(-BS/2*f.visual_scale,-BS/2,0, 0,0,0, c,
 						pa_papyrus.x0(), pa_papyrus.y1()),
-					video::S3DVertex(BS/2,-BS/2,0, 0,0,0, c,
+					video::S3DVertex( BS/2*f.visual_scale,-BS/2,0, 0,0,0, c,
 						pa_papyrus.x1(), pa_papyrus.y1()),
-					video::S3DVertex(BS/2,BS/2,0, 0,0,0, c,
+					video::S3DVertex( BS/2*f.visual_scale,
+						-BS/2 + f.visual_scale*BS,0, 0,0,0, c,
 						pa_papyrus.x1(), pa_papyrus.y0()),
-					video::S3DVertex(-BS/2,BS/2,0, 0,0,0, c,
+					video::S3DVertex(-BS/2*f.visual_scale,
+						-BS/2 + f.visual_scale*BS,0, 0,0,0, c,
 						pa_papyrus.x0(), pa_papyrus.y0()),
 				};
 

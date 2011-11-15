@@ -266,7 +266,7 @@ void content_mapnode_init(IWritableNodeDefManager *nodemgr)
 	i = CONTENT_JUNGLEGRASS;
 	f = nodemgr->getModifiable(i);
 	f->drawtype = NDT_PLANTLIKE;
-	f->visual_scale = 1.6;
+	f->visual_scale = 1.3;
 	f->setAllTextures("junglegrass.png");
 	f->setInventoryTexture("junglegrass.png");
 	f->light_propagates = true;
