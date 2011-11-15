@@ -100,6 +100,19 @@ struct NodeBox
 struct MapNode;
 class NodeMetadata;
 
+struct MaterialSpec
+{
+	std::string tname;
+	bool backface_culling;
+	
+	MaterialSpec(const std::string &tname_="", bool backface_culling_=true):
+		tname(tname_),
+		backface_culling(backface_culling_)
+	{}
+};
+
+#define CF_SPECIAL_COUNT 2
+
 struct ContentFeatures
 {
 #ifndef SERVER
@@ -114,15 +127,14 @@ struct ContentFeatures
 
 	// Special material/texture
 	// - Currently used for flowing liquids
-	video::SMaterial *special_material;
-	video::SMaterial *special_material2;
-	AtlasPointer *special_atlas;
+	video::SMaterial *special_materials[CF_SPECIAL_COUNT];
+	AtlasPointer *special_aps[CF_SPECIAL_COUNT];
 #endif
 	
-	// Texture names
+	// Visual definition
 	std::string tname_tiles[6];
 	std::string tname_inventory;
-	std::string tname_special;
+	MaterialSpec mspec_special[CF_SPECIAL_COUNT];
 	u8 alpha;
 	bool backface_culling;
 
@@ -202,14 +214,16 @@ struct ContentFeatures
 		inventory_texture = NULL;
 		
 		post_effect_color = video::SColor(0, 0, 0, 0);
-		special_material = NULL;
-		special_material2 = NULL;
-		special_atlas = NULL;
+		for(u16 j=0; j<CF_SPECIAL_COUNT; j++){
+			special_materials[j] = NULL;
+			special_aps[j] = NULL;
+		}
 #endif
 		for(u32 i=0; i<6; i++)
 			tname_tiles[i] = "";
+		for(u16 j=0; j<CF_SPECIAL_COUNT; j++)
+			mspec_special[j] = MaterialSpec();
 		tname_inventory = "";
-		tname_special = "";
 		alpha = 255;
 		backface_culling = true;
 		used_texturenames.clear();
@@ -264,15 +278,6 @@ struct ContentFeatures
 	void setInventoryTexture(std::string imgname);
 	void setInventoryTextureCube(std::string top,
 			std::string left, std::string right);
-
-#if 0
-#ifndef SERVER
-	void setTile(u16 i, const TileSpec &tile)
-	{ tiles[i] = tile; }
-	void setAllTiles(const TileSpec &tile)
-	{ for(u16 i=0; i<6; i++) setTile(i, tile); }
-#endif
-#endif
 
 	/*
 		Some handy methods

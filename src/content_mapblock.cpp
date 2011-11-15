@@ -366,15 +366,16 @@ void mapblock_mesh_generate_special(MeshMakeData *data,
 		*/
 		else if(nodedef->get(n).liquid_type == LIQUID_FLOWING)
 		{
-			assert(nodedef->get(n).special_material);
-			video::SMaterial &liquid_material =
-					*nodedef->get(n).special_material;
-			video::SMaterial &liquid_material_bfculled =
-					*nodedef->get(n).special_material2;
+			assert(nodedef->get(n).special_materials[0]);
+			assert(nodedef->get(n).special_materials[1]);
+			assert(nodedef->get(n).special_aps[0]);
 
-			assert(nodedef->get(n).special_atlas);
+			video::SMaterial &liquid_material =
+					*nodedef->get(n).special_materials[0];
+			video::SMaterial &liquid_material_bfculled =
+					*nodedef->get(n).special_materials[1];
 			AtlasPointer &pa_liquid1 =
-					*nodedef->get(n).special_atlas;
+					*nodedef->get(n).special_aps[0];
 
 			bool top_is_same_liquid = false;
 			MapNode ntop = data->m_vmanip.getNodeNoEx(blockpos_nodes + v3s16(x,y+1,z));
@@ -661,12 +662,16 @@ void mapblock_mesh_generate_special(MeshMakeData *data,
 		else if(nodedef->get(n).liquid_type == LIQUID_SOURCE
 				&& new_style_water)
 		{
-			assert(nodedef->get(n).special_material);
+			assert(nodedef->get(n).special_materials[0]);
+			//assert(nodedef->get(n).special_materials[1]);
+			assert(nodedef->get(n).special_aps[0]);
+
 			video::SMaterial &liquid_material =
-					*nodedef->get(n).special_material;
-			assert(nodedef->get(n).special_atlas);
+					*nodedef->get(n).special_materials[0];
+			/*video::SMaterial &liquid_material_bfculled =
+					*nodedef->get(n).special_materials[1];*/
 			AtlasPointer &pa_liquid1 =
-					*nodedef->get(n).special_atlas;
+					*nodedef->get(n).special_aps[0];
 
 			bool top_is_air = false;
 			MapNode n = data->m_vmanip.getNodeNoEx(blockpos_nodes + v3s16(x,y+1,z));

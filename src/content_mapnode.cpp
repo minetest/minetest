@@ -467,13 +467,18 @@ void content_mapnode_init(ITextureSource *tsrc, IWritableNodeDefManager *nodemgr
 	f->liquid_alternative_flowing = CONTENT_WATER;
 	f->liquid_alternative_source = CONTENT_WATERSOURCE;
 	f->liquid_viscosity = WATER_VISC;
-#ifndef SERVER
 	if(!opaque_water)
 		f->alpha = WATER_ALPHA;
 	f->post_effect_color = video::SColor(64, 100, 100, 200);
+	// Flowing water material
+	f->mspec_special[0].tname = "water.png";
+	f->mspec_special[0].backface_culling = false;
+	f->mspec_special[1].tname = "water.png";
+	f->mspec_special[1].backface_culling = true;
+
+/*#ifndef SERVER
 	if(f->special_material == NULL && tsrc)
 	{
-		// Flowing water material
 		f->special_material = new video::SMaterial;
 		f->special_material->setFlag(video::EMF_LIGHTING, false);
 		f->special_material->setFlag(video::EMF_BACK_FACE_CULLING, false);
@@ -492,7 +497,7 @@ void content_mapnode_init(ITextureSource *tsrc, IWritableNodeDefManager *nodemgr
 		
 		f->special_atlas = pa_water1;
 	}
-#endif
+#endif*/
 	
 	i = CONTENT_WATERSOURCE;
 	f = nodemgr->getModifiable(i);
@@ -519,13 +524,15 @@ void content_mapnode_init(ITextureSource *tsrc, IWritableNodeDefManager *nodemgr
 	f->liquid_alternative_flowing = CONTENT_WATER;
 	f->liquid_alternative_source = CONTENT_WATERSOURCE;
 	f->liquid_viscosity = WATER_VISC;
-#ifndef SERVER
 	if(!opaque_water)
 		f->alpha = WATER_ALPHA;
 	f->post_effect_color = video::SColor(64, 100, 100, 200);
+	// New-style water source material (mostly unused)
+	f->mspec_special[0].tname = "water.png";
+	f->mspec_special[0].backface_culling = false;
+/*#ifndef SERVER
 	if(f->special_material == NULL && tsrc)
 	{
-		// New-style water source material (mostly unused)
 		f->special_material = new video::SMaterial;
 		f->special_material->setFlag(video::EMF_LIGHTING, false);
 		f->special_material->setFlag(video::EMF_BACK_FACE_CULLING, false);
@@ -537,7 +544,7 @@ void content_mapnode_init(ITextureSource *tsrc, IWritableNodeDefManager *nodemgr
 		f->special_material->setTexture(0, pa_water1->atlas);
 		f->special_atlas = pa_water1;
 	}
-#endif
+#endif*/
 	
 	i = CONTENT_LAVA;
 	f = nodemgr->getModifiable(i);
@@ -557,31 +564,17 @@ void content_mapnode_init(ITextureSource *tsrc, IWritableNodeDefManager *nodemgr
 	f->liquid_alternative_source = CONTENT_LAVASOURCE;
 	f->liquid_viscosity = LAVA_VISC;
 	f->damage_per_second = 4*2;
-#ifndef SERVER
 	f->post_effect_color = video::SColor(192, 255, 64, 0);
+	// Flowing lava material
+	f->mspec_special[0].tname = "lava.png";
+	f->mspec_special[0].backface_culling = false;
+	f->mspec_special[1].tname = "lava.png";
+	f->mspec_special[1].backface_culling = true;
+/*#ifndef SERVER
 	if(f->special_material == NULL && tsrc)
 	{
-		// Flowing lava material
-		f->special_material = new video::SMaterial;
-		f->special_material->setFlag(video::EMF_LIGHTING, false);
-		f->special_material->setFlag(video::EMF_BACK_FACE_CULLING, false);
-		f->special_material->setFlag(video::EMF_BILINEAR_FILTER, false);
-		f->special_material->setFlag(video::EMF_FOG_ENABLE, true);
-		f->special_material->MaterialType = video::EMT_TRANSPARENT_ALPHA_CHANNEL_REF;
-
-		AtlasPointer *pa_lava1 = new AtlasPointer(
-			tsrc->getTexture(
-				tsrc->getTextureId("lava.png")));
-		f->special_material->setTexture(0, pa_lava1->atlas);
-
-		// Flowing lava material, backface culled
-		f->special_material2 = new video::SMaterial;
-		*f->special_material2 = *f->special_material;
-		f->special_material2->setFlag(video::EMF_BACK_FACE_CULLING, true);
-
-		f->special_atlas = pa_lava1;
 	}
-#endif
+#endif*/
 	
 	i = CONTENT_LAVASOURCE;
 	f = nodemgr->getModifiable(i);
@@ -609,25 +602,15 @@ void content_mapnode_init(ITextureSource *tsrc, IWritableNodeDefManager *nodemgr
 	f->liquid_alternative_source = CONTENT_LAVASOURCE;
 	f->liquid_viscosity = LAVA_VISC;
 	f->damage_per_second = 4*2;
-#ifndef SERVER
 	f->post_effect_color = video::SColor(192, 255, 64, 0);
+	// New-style lava source material (mostly unused)
+	f->mspec_special[0].tname = "lava.png";
+	f->mspec_special[0].backface_culling = false;
+/*#ifndef SERVER
 	if(f->special_material == NULL && tsrc)
 	{
-		// New-style lava source material (mostly unused)
-		f->special_material = new video::SMaterial;
-		f->special_material->setFlag(video::EMF_LIGHTING, false);
-		f->special_material->setFlag(video::EMF_BACK_FACE_CULLING, false);
-		f->special_material->setFlag(video::EMF_BILINEAR_FILTER, false);
-		f->special_material->setFlag(video::EMF_FOG_ENABLE, true);
-		f->special_material->MaterialType = video::EMT_TRANSPARENT_ALPHA_CHANNEL_REF;
-		AtlasPointer *pa_lava1 = new AtlasPointer(
-			tsrc->getTexture(
-				tsrc->getTextureId("lava.png")));
-		f->special_material->setTexture(0, pa_lava1->atlas);
-
-		f->special_atlas = pa_lava1;
 	}
-#endif
+#endif*/
 	
 	i = CONTENT_TORCH;
 	f = nodemgr->getModifiable(i);
