@@ -32,28 +32,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 class ITextureSource;
 class IGameDef;
 
-/*
-	TODO: Rename to nodedef.h
-*/
-
-#if 0
-
-/*
-	Content feature list
-	
-	Used for determining properties of MapNodes by content type without
-	storing such properties in the nodes itself.
-*/
-
-/*
-	Initialize content feature table.
-
-	Must be called before accessing the table.
-*/
-void init_contentfeatures(ITextureSource *tsrc);
-
-#endif
-
 enum ContentParamType
 {
 	CPT_NONE,

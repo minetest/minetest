@@ -23,10 +23,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <string>
 #include <iostream>
 
-/*
-	TODO: Rename to tooldef.h
-*/
-
 struct ToolDiggingProperties
 {
 	// time = basetime + sum(feature here * feature in MaterialProperties)
