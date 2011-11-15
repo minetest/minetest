@@ -132,7 +132,7 @@ std::string getTexturePath(const std::string &filename)
 	*/
 	if(fullpath == "")
 	{
-		std::string rel_path = std::string("textures")+DIR_DELIM+filename;
+		std::string rel_path = std::string("clienttextures")+DIR_DELIM+filename;
 		std::string testpath = porting::path_data + DIR_DELIM + rel_path;
 		// Check all filename extensions. Returns "" if not found.
 		fullpath = getImagePath(testpath);

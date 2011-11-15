@@ -997,13 +997,27 @@ Server::Server(
 	// Export API
 	scriptapi_export(m_lua, this);
 	// Load and run scripts
-	std::string defaultscript = porting::path_data + DIR_DELIM
-			+ "scripts" + DIR_DELIM + "default.lua";
-	bool success = script_load(m_lua, defaultscript.c_str());
-	if(!success){
-		errorstream<<"Server: Failed to load and run "
-				<<defaultscript<<std::endl;
-		assert(0);
+	core::list<std::string> modspaths;
+	modspaths.push_back(porting::path_data + DIR_DELIM + "mods");
+	for(core::list<std::string>::Iterator i = modspaths.begin();
+			i != modspaths.end(); i++){
+		std::string modspath = *i;
+		std::vector<fs::DirListNode> dirlist = fs::GetDirListing(modspath);
+		for(u32 j=0; j<dirlist.size(); j++){
+			if(!dirlist[j].dir)
+				continue;
+			std::string modname = dirlist[j].name;
+			infostream<<"Server: Loading mod \""<<modname<<"\" script..."
+					<<std::endl;
+			std::string scriptpath = modspath + DIR_DELIM + modname
+					+ DIR_DELIM + "init.lua";
+			bool success = script_load(m_lua, scriptpath.c_str());
+			if(!success){
+				errorstream<<"Server: Failed to load and run "
+						<<scriptpath<<std::endl;
+				assert(0);
+			}
+		}
 	}
 	
 	// Initialize Environment

@@ -256,9 +256,9 @@ void draw_hotbar(video::IVideoDriver *driver, gui::IGUIFont *font,
 	/*
 		Draw hearts
 	*/
+	video::ITexture *heart_texture = tsrc->getTextureRaw("heart.png");
+	if(heart_texture)
 	{
-		video::ITexture *heart_texture =
-				driver->getTexture(getTexturePath("heart.png").c_str());
 		v2s32 p = pos + v2s32(0, -20);
 		for(s32 i=0; i<halfheartcount/2; i++)
 		{

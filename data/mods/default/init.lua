@@ -72,6 +72,10 @@ function dump(o, dumped)
 	end
 end
 
+-- Textures:
+-- Mods should prefix their textures with modname_, eg. given the mod
+-- name "foomod", a texture could be called "foomod_superfurnace.png"
+--
 -- Global functions:
 -- minetest.register_entity(name, prototype_table)
 -- minetest.register_globalstep(func)
