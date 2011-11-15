@@ -23,6 +23,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "settings.h"
 #include <ICameraSceneNode.h>
 #include "serialization.h" // For decompressZlib
+#include "gamedef.h"
 
 core::map<u16, ClientActiveObject::Factory> ClientActiveObject::m_types;
 
@@ -55,7 +56,7 @@ void TestCAO::addToScene(scene::ISceneManager *smgr, ITextureSource *tsrc)
 	if(m_node != NULL)
 		return;
 	
-	video::IVideoDriver* driver = smgr->getVideoDriver();
+	//video::IVideoDriver* driver = smgr->getVideoDriver();
 	
 	scene::SMesh *mesh = new scene::SMesh();
 	scene::IMeshBuffer *buf = new scene::SMeshBuffer();
@@ -72,8 +73,7 @@ void TestCAO::addToScene(scene::ISceneManager *smgr, ITextureSource *tsrc)
 	// Set material
 	buf->getMaterial().setFlag(video::EMF_LIGHTING, false);
 	buf->getMaterial().setFlag(video::EMF_BACK_FACE_CULLING, false);
-	buf->getMaterial().setTexture
-			(0, driver->getTexture(getTexturePath("rat.png").c_str()));
+	buf->getMaterial().setTexture(0, tsrc->getTextureRaw("rat.png"));
 	buf->getMaterial().setFlag(video::EMF_BILINEAR_FILTER, false);
 	buf->getMaterial().setFlag(video::EMF_FOG_ENABLE, true);
 	buf->getMaterial().MaterialType = video::EMT_TRANSPARENT_ALPHA_CHANNEL;
@@ -172,7 +172,7 @@ void ItemCAO::addToScene(scene::ISceneManager *smgr, ITextureSource *tsrc)
 	if(m_node != NULL)
 		return;
 	
-	video::IVideoDriver* driver = smgr->getVideoDriver();
+	//video::IVideoDriver* driver = smgr->getVideoDriver();
 	
 	scene::SMesh *mesh = new scene::SMesh();
 	scene::IMeshBuffer *buf = new scene::SMeshBuffer();
@@ -195,8 +195,7 @@ void ItemCAO::addToScene(scene::ISceneManager *smgr, ITextureSource *tsrc)
 	buf->getMaterial().setFlag(video::EMF_BACK_FACE_CULLING, false);
 	//buf->getMaterial().setTexture(0, NULL);
 	// Initialize with the stick texture
-	buf->getMaterial().setTexture
-			(0, driver->getTexture(getTexturePath("stick.png").c_str()));
+	buf->getMaterial().setTexture(0, tsrc->getTextureRaw("stick.png"));
 	buf->getMaterial().setFlag(video::EMF_BILINEAR_FILTER, false);
 	buf->getMaterial().setFlag(video::EMF_FOG_ENABLE, true);
 	buf->getMaterial().MaterialType = video::EMT_TRANSPARENT_ALPHA_CHANNEL;
@@ -354,7 +353,7 @@ void RatCAO::addToScene(scene::ISceneManager *smgr, ITextureSource *tsrc)
 	if(m_node != NULL)
 		return;
 	
-	video::IVideoDriver* driver = smgr->getVideoDriver();
+	//video::IVideoDriver* driver = smgr->getVideoDriver();
 	
 	scene::SMesh *mesh = new scene::SMesh();
 	scene::IMeshBuffer *buf = new scene::SMeshBuffer();
@@ -372,8 +371,7 @@ void RatCAO::addToScene(scene::ISceneManager *smgr, ITextureSource *tsrc)
 	buf->getMaterial().setFlag(video::EMF_LIGHTING, false);
 	buf->getMaterial().setFlag(video::EMF_BACK_FACE_CULLING, false);
 	//buf->getMaterial().setTexture(0, NULL);
-	buf->getMaterial().setTexture
-			(0, driver->getTexture(getTexturePath("rat.png").c_str()));
+	buf->getMaterial().setTexture(0, tsrc->getTextureRaw("rat.png"));
 	buf->getMaterial().setFlag(video::EMF_BILINEAR_FILTER, false);
 	buf->getMaterial().setFlag(video::EMF_FOG_ENABLE, true);
 	buf->getMaterial().MaterialType = video::EMT_TRANSPARENT_ALPHA_CHANNEL;
@@ -502,7 +500,7 @@ void Oerkki1CAO::addToScene(scene::ISceneManager *smgr, ITextureSource *tsrc)
 	if(m_node != NULL)
 		return;
 	
-	video::IVideoDriver* driver = smgr->getVideoDriver();
+	//video::IVideoDriver* driver = smgr->getVideoDriver();
 	
 	scene::SMesh *mesh = new scene::SMesh();
 	scene::IMeshBuffer *buf = new scene::SMeshBuffer();
@@ -520,8 +518,7 @@ void Oerkki1CAO::addToScene(scene::ISceneManager *smgr, ITextureSource *tsrc)
 	buf->getMaterial().setFlag(video::EMF_LIGHTING, false);
 	buf->getMaterial().setFlag(video::EMF_BACK_FACE_CULLING, false);
 	//buf->getMaterial().setTexture(0, NULL);
-	buf->getMaterial().setTexture
-			(0, driver->getTexture(getTexturePath("oerkki1.png").c_str()));
+	buf->getMaterial().setTexture(0, tsrc->getTextureRaw("oerkki1.png"));
 	buf->getMaterial().setFlag(video::EMF_BILINEAR_FILTER, false);
 	buf->getMaterial().setFlag(video::EMF_FOG_ENABLE, true);
 	buf->getMaterial().MaterialType = video::EMT_TRANSPARENT_ALPHA_CHANNEL;
@@ -583,6 +580,8 @@ void Oerkki1CAO::updateNodePos()
 
 void Oerkki1CAO::step(float dtime, ClientEnvironment *env)
 {
+	ITextureSource *tsrc = m_gamedef->tsrc();
+
 	pos_translator.translate(dtime);
 	updateNodePos();
 
@@ -609,8 +608,8 @@ void Oerkki1CAO::step(float dtime, ClientEnvironment *env)
 			// Enable damage texture
 			if(m_node)
 			{
-				video::IVideoDriver* driver =
-					m_node->getSceneManager()->getVideoDriver();
+				/*video::IVideoDriver* driver =
+					m_node->getSceneManager()->getVideoDriver();*/
 				
 				scene::IMesh *mesh = m_node->getMesh();
 				if(mesh == NULL)
@@ -620,8 +619,8 @@ void Oerkki1CAO::step(float dtime, ClientEnvironment *env)
 				for(u16 j=0; j<mc; j++)
 				{
 					scene::IMeshBuffer *buf = mesh->getMeshBuffer(j);
-					buf->getMaterial().setTexture(0, driver->getTexture(
-							getTexturePath("oerkki1_damaged.png").c_str()));
+					buf->getMaterial().setTexture(0,
+							tsrc->getTextureRaw("oerkki1_damaged.png"));
 				}
 			}
 			m_damage_texture_enabled = true;
@@ -635,8 +634,8 @@ void Oerkki1CAO::step(float dtime, ClientEnvironment *env)
 			// Disable damage texture
 			if(m_node)
 			{
-				video::IVideoDriver* driver =
-					m_node->getSceneManager()->getVideoDriver();
+				/*video::IVideoDriver* driver =
+					m_node->getSceneManager()->getVideoDriver();*/
 				
 				scene::IMesh *mesh = m_node->getMesh();
 				if(mesh == NULL)
@@ -646,8 +645,8 @@ void Oerkki1CAO::step(float dtime, ClientEnvironment *env)
 				for(u16 j=0; j<mc; j++)
 				{
 					scene::IMeshBuffer *buf = mesh->getMeshBuffer(j);
-					buf->getMaterial().setTexture(0, driver->getTexture(
-							getTexturePath("oerkki1.png").c_str()));
+					buf->getMaterial().setTexture(0,
+							tsrc->getTextureRaw("oerkki1.png"));
 				}
 			}
 			m_damage_texture_enabled = false;
@@ -739,7 +738,7 @@ void FireflyCAO::addToScene(scene::ISceneManager *smgr, ITextureSource *tsrc)
 	if(m_node != NULL)
 		return;
 	
-	video::IVideoDriver* driver = smgr->getVideoDriver();
+	//video::IVideoDriver* driver = smgr->getVideoDriver();
 	
 	scene::SMesh *mesh = new scene::SMesh();
 	scene::IMeshBuffer *buf = new scene::SMeshBuffer();
@@ -757,8 +756,7 @@ void FireflyCAO::addToScene(scene::ISceneManager *smgr, ITextureSource *tsrc)
 	buf->getMaterial().setFlag(video::EMF_LIGHTING, false);
 	buf->getMaterial().setFlag(video::EMF_BACK_FACE_CULLING, false);
 	//buf->getMaterial().setTexture(0, NULL);
-	buf->getMaterial().setTexture
-			(0, driver->getTexture(getTexturePath("firefly.png").c_str()));
+	buf->getMaterial().setTexture(0, tsrc->getTextureRaw("firefly.png"));
 	buf->getMaterial().setFlag(video::EMF_BILINEAR_FILTER, false);
 	buf->getMaterial().setFlag(video::EMF_FOG_ENABLE, true);
 	buf->getMaterial().MaterialType = video::EMT_TRANSPARENT_ALPHA_CHANNEL;
