@@ -27,7 +27,11 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "log.h"
 #include "settings.h"
 
-void NodeBox::serialize(std::ostream &os)
+/*
+	NodeBox
+*/
+
+void NodeBox::serialize(std::ostream &os) const
 {
 	writeU8(os, 0); // version
 	writeU8(os, type);
@@ -57,7 +61,11 @@ void NodeBox::deSerialize(std::istream &is)
 	wall_side.MaxEdge = readV3F1000(is);
 }
 
-void MaterialSpec::serialize(std::ostream &os)
+/*
+	MaterialSpec
+*/
+
+void MaterialSpec::serialize(std::ostream &os) const
 {
 	os<<serializeString(tname);
 	writeU8(os, backface_culling);
@@ -68,6 +76,10 @@ void MaterialSpec::deSerialize(std::istream &is)
 	tname = deSerializeString(is);
 	backface_culling = readU8(is);
 }
+
+/*
+	ContentFeatures
+*/
 
 ContentFeatures::ContentFeatures()
 {
@@ -248,6 +260,20 @@ void ContentFeatures::setTexture(u16 i, std::string name)
 		tname_inventory = name;
 }
 
+void ContentFeatures::setAllTextures(std::string name)
+{
+	for(u16 i=0; i<6; i++)
+		setTexture(i, name);
+	// Force inventory texture too
+	setInventoryTexture(name);
+}
+
+void ContentFeatures::setSpecialMaterial(u16 i, const MaterialSpec &mspec)
+{
+	assert(i < CF_SPECIAL_COUNT);
+	mspec_special[i] = mspec;
+}
+
 void ContentFeatures::setInventoryTexture(std::string imgname)
 {
 	tname_inventory = imgname + "^[forcesingle";
@@ -269,6 +295,10 @@ void ContentFeatures::setInventoryTextureCube(std::string top,
 	imgname_full += right;
 	tname_inventory = imgname_full;
 }
+
+/*
+	CNodeDefManager
+*/
 
 class CNodeDefManager: public IWritableNodeDefManager
 {

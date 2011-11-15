@@ -427,7 +427,8 @@ void content_mapnode_init(IWritableNodeDefManager *nodemgr)
 	i = CONTENT_WATER;
 	f = nodemgr->getModifiable(i);
 	f->drawtype = NDT_FLOWINGLIQUID;
-	f->setAllTextures("water.png", WATER_ALPHA);
+	f->setAllTextures("water.png");
+	f->alpha = WATER_ALPHA;
 	f->setInventoryTextureCube("water.png", "water.png", "water.png");
 	f->param_type = CPT_LIGHT;
 	f->light_propagates = true;
@@ -440,17 +441,14 @@ void content_mapnode_init(IWritableNodeDefManager *nodemgr)
 	f->liquid_alternative_source = CONTENT_WATERSOURCE;
 	f->liquid_viscosity = WATER_VISC;
 	f->post_effect_color = video::SColor(64, 100, 100, 200);
-	// Flowing water material
-	f->mspec_special[0].tname = "water.png";
-	f->mspec_special[0].backface_culling = false;
-	f->mspec_special[1].tname = "water.png";
-	f->mspec_special[1].backface_culling = true;
+	f->setSpecialMaterial(0, MaterialSpec("water.png", false));
+	f->setSpecialMaterial(1, MaterialSpec("water.png", true));
 
 	i = CONTENT_WATERSOURCE;
 	f = nodemgr->getModifiable(i);
 	f->drawtype = NDT_LIQUID;
-	f->setAllTextures("water.png", WATER_ALPHA);
-	//f->setInventoryTexture("water.png");
+	f->setAllTextures("water.png");
+	f->alpha = WATER_ALPHA;
 	f->setInventoryTextureCube("water.png", "water.png", "water.png");
 	f->param_type = CPT_LIGHT;
 	f->light_propagates = true;
@@ -465,8 +463,7 @@ void content_mapnode_init(IWritableNodeDefManager *nodemgr)
 	f->liquid_viscosity = WATER_VISC;
 	f->post_effect_color = video::SColor(64, 100, 100, 200);
 	// New-style water source material (mostly unused)
-	f->mspec_special[0].tname = "water.png";
-	f->mspec_special[0].backface_culling = false;
+	f->setSpecialMaterial(0, MaterialSpec("water.png", false));
 	
 	i = CONTENT_LAVA;
 	f = nodemgr->getModifiable(i);
@@ -486,11 +483,8 @@ void content_mapnode_init(IWritableNodeDefManager *nodemgr)
 	f->liquid_viscosity = LAVA_VISC;
 	f->damage_per_second = 4*2;
 	f->post_effect_color = video::SColor(192, 255, 64, 0);
-	// Flowing lava material
-	f->mspec_special[0].tname = "lava.png";
-	f->mspec_special[0].backface_culling = false;
-	f->mspec_special[1].tname = "lava.png";
-	f->mspec_special[1].backface_culling = true;
+	f->setSpecialMaterial(0, MaterialSpec("lava.png", false));
+	f->setSpecialMaterial(1, MaterialSpec("lava.png", true));
 	
 	i = CONTENT_LAVASOURCE;
 	f = nodemgr->getModifiable(i);
@@ -512,8 +506,7 @@ void content_mapnode_init(IWritableNodeDefManager *nodemgr)
 	f->damage_per_second = 4*2;
 	f->post_effect_color = video::SColor(192, 255, 64, 0);
 	// New-style lava source material (mostly unused)
-	f->mspec_special[0].tname = "lava.png";
-	f->mspec_special[0].backface_culling = false;
+	f->setSpecialMaterial(0, MaterialSpec("lava.png", false));
 	
 	i = CONTENT_TORCH;
 	f = nodemgr->getModifiable(i);

@@ -98,7 +98,7 @@ struct NodeBox
 		wall_side(-BS/2, -BS/2, -BS/2, -BS/2+BS/16., BS/2, BS/2)
 	{}
 
-	void serialize(std::ostream &os);
+	void serialize(std::ostream &os) const;
 	void deSerialize(std::istream &is);
 };
 
@@ -115,7 +115,7 @@ struct MaterialSpec
 		backface_culling(backface_culling_)
 	{}
 
-	void serialize(std::ostream &os);
+	void serialize(std::ostream &os) const;
 	void deSerialize(std::istream &is);
 };
 
@@ -156,9 +156,8 @@ struct ContentFeatures
 	bool backface_culling;
 #endif
 	
-	// List of all block textures that have been used (value is dummy)
-	// Used for texture atlas making.
-	// Exists on server too for cleaner code in content_mapnode.cpp.
+	// List of textures that are used and are wanted to be included in
+	// the texture atlas
 	std::set<std::string> used_texturenames;
 	
 	// True if this actually contains non-default data
@@ -173,7 +172,7 @@ struct ContentFeatures
 	float visual_scale; // Misc. scale parameter
 	std::string tname_tiles[6];
 	std::string tname_inventory;
-	MaterialSpec mspec_special[CF_SPECIAL_COUNT];
+	MaterialSpec mspec_special[CF_SPECIAL_COUNT]; // Use setter methods
 	u8 alpha;
 
 	// Post effect color, drawn when the camera is inside the node.
@@ -240,24 +239,19 @@ struct ContentFeatures
 	void deSerialize(std::istream &is, IGameDef *gamedef);
 
 	/*
-		Quickhands for simple materials
+		Texture setters.
+		
 	*/
 	
+	// Texture setters. They also add stuff to used_texturenames.
 	void setTexture(u16 i, std::string name);
-
-	void setAllTextures(std::string name, u8 alpha_=255)
-	{
-		for(u16 i=0; i<6; i++)
-			setTexture(i, name);
-		alpha = alpha_;
-		// Force inventory texture too
-		setInventoryTexture(name);
-	}
+	void setAllTextures(std::string name);
+	void setSpecialMaterial(u16 i, const MaterialSpec &mspec);
 
 	void setInventoryTexture(std::string imgname);
 	void setInventoryTextureCube(std::string top,
 			std::string left, std::string right);
-
+	
 	/*
 		Some handy methods
 	*/
