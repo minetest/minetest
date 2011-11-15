@@ -645,7 +645,7 @@ void the_game(
 	IWritableNodeDefManager *nodedef = createNodeDefManager();
 
 	// Fill node feature table with default definitions
-	content_mapnode_init(nodedef);
+	//content_mapnode_init(nodedef);
 
 	/*
 		Create server.

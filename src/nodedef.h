@@ -245,11 +245,11 @@ struct ContentFeatures
 	
 	void setTexture(u16 i, std::string name);
 
-	void setAllTextures(std::string name, u8 alpha=255)
+	void setAllTextures(std::string name, u8 alpha_=255)
 	{
 		for(u16 i=0; i<6; i++)
 			setTexture(i, name);
-		alpha = alpha;
+		alpha = alpha_;
 		// Force inventory texture too
 		setInventoryTexture(name);
 	}

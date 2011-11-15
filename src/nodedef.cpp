@@ -445,6 +445,9 @@ public:
 				f->special_materials[j]->setFlag(video::EMF_BILINEAR_FILTER, false);
 				f->special_materials[j]->setFlag(video::EMF_FOG_ENABLE, true);
 				f->special_materials[j]->setTexture(0, f->special_aps[j]->atlas);
+				if(f->alpha != 255)
+					f->special_materials[j]->MaterialType =
+							video::EMT_TRANSPARENT_VERTEX_ALPHA;
 			}
 		}
 #endif
