@@ -513,6 +513,8 @@ private:
 			bool set_camera_point_target, v3f camera_point_target);
 	static void SendToolDef(con::Connection &con, u16 peer_id,
 			IToolDefManager *tooldef);
+	static void SendNodeDef(con::Connection &con, u16 peer_id,
+			INodeDefManager *nodedef);
 	
 	/*
 		Non-static send methods.

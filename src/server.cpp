@@ -2145,6 +2145,9 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 		// Send tool definitions
 		SendToolDef(m_con, peer_id, m_toolmgr);
 		
+		// Send node definitions
+		SendNodeDef(m_con, peer_id, m_nodemgr);
+		
 		// Send player info to all players
 		SendPlayerInfos();
 
@@ -3637,6 +3640,7 @@ void Server::SendToolDef(con::Connection &con, u16 peer_id,
 		IToolDefManager *tooldef)
 {
 	DSTACK(__FUNCTION_NAME);
+	infostream<<"Server: Sending tool definitions"<<std::endl;
 	std::ostringstream os(std::ios_base::binary);
 
 	/*
@@ -3651,6 +3655,34 @@ void Server::SendToolDef(con::Connection &con, u16 peer_id,
 
 	// Make data buffer
 	std::string s = os.str();
+	infostream<<"Server: Sending tool definitions: data size: "
+			<<s.size()<<std::endl;
+	SharedBuffer<u8> data((u8*)s.c_str(), s.size());
+	// Send as reliable
+	con.Send(peer_id, 0, data, true);
+}
+
+void Server::SendNodeDef(con::Connection &con, u16 peer_id,
+		INodeDefManager *nodedef)
+{
+	DSTACK(__FUNCTION_NAME);
+	infostream<<"Server: Sending node definitions"<<std::endl;
+	std::ostringstream os(std::ios_base::binary);
+
+	/*
+		u16 command
+		u32 length of the next item
+		serialized NodeDefManager
+	*/
+	writeU16(os, TOCLIENT_NODEDEF);
+	std::ostringstream tmp_os(std::ios::binary);
+	nodedef->serialize(tmp_os);
+	os<<serializeLongString(tmp_os.str());
+
+	// Make data buffer
+	std::string s = os.str();
+	infostream<<"Server: Sending node definitions: data size: "
+			<<s.size()<<std::endl;
 	SharedBuffer<u8> data((u8*)s.c_str(), s.size());
 	// Send as reliable
 	con.Send(peer_id, 0, data, true);

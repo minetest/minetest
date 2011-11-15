@@ -30,6 +30,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 	PROTOCOL_VERSION 4:
 		Add TOCLIENT_TOOLDEF
 		Add TOCLIENT_TEXTURES
+		Add TOCLIENT_NODEDEF
 */
 
 #define PROTOCOL_VERSION 4
@@ -118,6 +119,8 @@ enum ToClientCommand
 		u16 command
 		u16 time (0-23999)
 	*/
+
+	// (oops, there is some gap here)
 
 	TOCLIENT_CHAT_MESSAGE = 0x30,
 	/*
@@ -209,6 +212,13 @@ enum ToClientCommand
 			u32 length of data
 			data
 		}
+	*/
+	
+	TOCLIENT_NODEDEF = 0x3a,
+	/*
+		u16 command
+		u32 length of the next item
+		serialized NodeDefManager
 	*/
 	
 	//TOCLIENT_CONTENT_SENDING_MODE = 0x38,
@@ -303,6 +313,8 @@ enum ToServerCommand
 	*/
 	
 	TOSERVER_RELEASE = 0x29, // Obsolete
+
+	// (oops, there is some gap here)
 
 	TOSERVER_SIGNTEXT = 0x30, // Old signs
 	/*

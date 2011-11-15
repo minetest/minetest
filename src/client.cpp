@@ -1507,7 +1507,8 @@ void Client::ProcessData(u8 *data, u32 datasize, u16 sender_peer_id)
 	}
 	else if(command == TOCLIENT_TOOLDEF)
 	{
-		infostream<<"Client: Received tool definitions"<<std::endl;
+		infostream<<"Client: Received tool definitions: packet size: "
+				<<datasize<<std::endl;
 
 		std::string datastring((char*)&data[2], datasize-2);
 		std::istringstream is(datastring, std::ios_base::binary);
@@ -1588,6 +1589,31 @@ void Client::ProcessData(u8 *data, u32 datasize, u16 sender_peer_id)
 		ClientEvent event;
 		event.type = CE_TEXTURES_UPDATED;
 		m_client_event_queue.push_back(event);
+	}
+	else if(command == TOCLIENT_NODEDEF)
+	{
+		infostream<<"Client: Received node definitions: packet size: "
+				<<datasize<<std::endl;
+
+		std::string datastring((char*)&data[2], datasize-2);
+		std::istringstream is(datastring, std::ios_base::binary);
+
+		// Stop threads while updating content definitions
+		m_mesh_update_thread.stop();
+
+		std::istringstream tmp_is(deSerializeLongString(is), std::ios::binary);
+		m_nodedef->deSerialize(tmp_is, this);
+		
+		// Update texture atlas
+		if(g_settings->getBool("enable_texture_atlas"))
+			m_tsrc->buildMainAtlas(this);
+		
+		// Update node textures
+		m_nodedef->updateTextures(m_tsrc);
+
+		// Resume threads
+		m_mesh_update_thread.setRun(true);
+		m_mesh_update_thread.Start();
 	}
 	else
 	{

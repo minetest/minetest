@@ -278,6 +278,8 @@ public:
 	// Get node definition
 	virtual const ContentFeatures& get(content_t c) const=0;
 	virtual const ContentFeatures& get(const MapNode &n) const=0;
+	
+	virtual void serialize(std::ostream &os)=0;
 };
 
 class IWritableNodeDefManager : public INodeDefManager

@@ -451,6 +451,7 @@ public:
 	}
 	void serialize(std::ostream &os)
 	{
+		u16 count = 0;
 		std::ostringstream tmp_os(std::ios::binary);
 		for(u16 i=0; i<=MAX_CONTENT; i++)
 		{
@@ -459,14 +460,17 @@ public:
 				continue;
 			writeU16(tmp_os, i);
 			f->serialize(tmp_os);
+			count++;
 		}
+		writeU16(os, count);
 		os<<serializeLongString(tmp_os.str());
 	}
 	void deSerialize(std::istream &is, IGameDef *gamedef)
 	{
 		clear();
+		u16 count = readU16(is);
 		std::istringstream tmp_is(deSerializeLongString(is), std::ios::binary);
-		while(!tmp_is.eof()){
+		for(u16 n=0; n<count; n++){
 			u16 i = readU16(tmp_is);
 			if(i > MAX_CONTENT){
 				errorstream<<"ContentFeatures::deSerialize(): "
