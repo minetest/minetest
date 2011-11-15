@@ -944,6 +944,35 @@ u32 PIChecksum(core::list<PlayerInfo> &l)
 	return checksum;
 }
 
+struct ModSpec
+{
+	std::string name;
+	std::string path;
+
+	ModSpec(const std::string &name_="", const std::string path_=""):
+		name(name_),
+		path(path_)
+	{}
+};
+
+static core::list<ModSpec> getMods(core::list<std::string> &modspaths)
+{
+	core::list<ModSpec> mods;
+	for(core::list<std::string>::Iterator i = modspaths.begin();
+			i != modspaths.end(); i++){
+		std::string modspath = *i;
+		std::vector<fs::DirListNode> dirlist = fs::GetDirListing(modspath);
+		for(u32 j=0; j<dirlist.size(); j++){
+			if(!dirlist[j].dir)
+				continue;
+			std::string modname = dirlist[j].name;
+			std::string modpath = modspath + DIR_DELIM + modname;
+			mods.push_back(ModSpec(modname, modpath));
+		}
+	}
+	return mods;
+}
+
 /*
 	Server
 */
@@ -988,6 +1017,9 @@ Server::Server(
 	
 	// Initialize default node definitions
 	content_mapnode_init(NULL, m_nodemgr);
+	
+	// Add default global mod path
+	m_modspaths.push_back(porting::path_data + DIR_DELIM + "mods");
 
 	// Initialize scripting
 	
@@ -997,26 +1029,17 @@ Server::Server(
 	// Export API
 	scriptapi_export(m_lua, this);
 	// Load and run scripts
-	core::list<std::string> modspaths;
-	modspaths.push_back(porting::path_data + DIR_DELIM + "mods");
-	for(core::list<std::string>::Iterator i = modspaths.begin();
-			i != modspaths.end(); i++){
-		std::string modspath = *i;
-		std::vector<fs::DirListNode> dirlist = fs::GetDirListing(modspath);
-		for(u32 j=0; j<dirlist.size(); j++){
-			if(!dirlist[j].dir)
-				continue;
-			std::string modname = dirlist[j].name;
-			infostream<<"Server: Loading mod \""<<modname<<"\" script..."
-					<<std::endl;
-			std::string scriptpath = modspath + DIR_DELIM + modname
-					+ DIR_DELIM + "init.lua";
-			bool success = script_load(m_lua, scriptpath.c_str());
-			if(!success){
-				errorstream<<"Server: Failed to load and run "
-						<<scriptpath<<std::endl;
-				assert(0);
-			}
+	core::list<ModSpec> mods = getMods(m_modspaths);
+	for(core::list<ModSpec>::Iterator i = mods.begin();
+			i != mods.end(); i++){
+		ModSpec mod = *i;
+		infostream<<"Server: Loading mod \""<<mod.name<<"\""<<std::endl;
+		std::string scriptpath = mod.path + DIR_DELIM + "init.lua";
+		bool success = script_load(m_lua, scriptpath.c_str());
+		if(!success){
+			errorstream<<"Server: Failed to load and run "
+					<<scriptpath<<std::endl;
+			assert(0);
 		}
 	}
 	
@@ -2115,6 +2138,9 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 		/*
 			Send some initialization data
 		*/
+
+		// Send textures
+		SendTextures(peer_id);
 		
 		// Send tool definitions
 		SendToolDef(m_con, peer_id, m_toolmgr);
@@ -4078,6 +4104,105 @@ void Server::SendBlocks(float dtime)
 
 		total_sending++;
 	}
+}
+
+struct SendableTexture
+{
+	std::string name;
+	std::string path;
+	std::string data;
+
+	SendableTexture(const std::string &name_="", const std::string path_="",
+			const std::string &data_=""):
+		name(name_),
+		path(path_),
+		data(data_)
+	{}
+};
+
+void Server::SendTextures(u16 peer_id)
+{
+	DSTACK(__FUNCTION_NAME);
+
+	infostream<<"Server::SendTextures(): Sending textures to client"<<std::endl;
+	
+	/* Read textures */
+	
+	core::list<SendableTexture> textures;
+	core::list<ModSpec> mods = getMods(m_modspaths);
+	for(core::list<ModSpec>::Iterator i = mods.begin();
+			i != mods.end(); i++){
+		ModSpec mod = *i;
+		std::string texturepath = mod.path + DIR_DELIM + "textures";
+		std::vector<fs::DirListNode> dirlist = fs::GetDirListing(texturepath);
+		for(u32 j=0; j<dirlist.size(); j++){
+			if(dirlist[j].dir) // Ignode dirs
+				continue;
+			std::string tname = dirlist[j].name;
+			std::string tpath = texturepath + DIR_DELIM + tname;
+			// Read data
+			std::ifstream fis(tpath.c_str(), std::ios_base::binary);
+			if(fis.good() == false){
+				errorstream<<"Server::SendTextures(): Could not open \""
+						<<tname<<"\" for reading"<<std::endl;
+				continue;
+			}
+			std::ostringstream tmp_os(std::ios_base::binary);
+			bool bad = false;
+			for(;;){
+				char buf[1024];
+				fis.read(buf, 1024);
+				std::streamsize len = fis.gcount();
+				tmp_os.write(buf, len);
+				if(fis.eof())
+					break;
+				if(!fis.good()){
+					bad = true;
+					break;
+				}
+			}
+			if(bad){
+				errorstream<<"Server::SendTextures(): Failed to read \""
+						<<tname<<"\""<<std::endl;
+				continue;
+			}
+			errorstream<<"Server::SendTextures(): Loaded \""
+					<<tname<<"\""<<std::endl;
+			// Put in list
+			textures.push_back(SendableTexture(tname, tpath, tmp_os.str()));
+		}
+	}
+
+	/* Create and send packet */
+
+	/*
+		u16 command
+		u32 number of textures
+		for each texture {
+			u16 length of name
+			string name
+			u32 length of data
+			data
+		}
+	*/
+	std::ostringstream os(std::ios_base::binary);
+
+	writeU16(os, TOCLIENT_TEXTURES);
+	writeU32(os, textures.size());
+	
+	for(core::list<SendableTexture>::Iterator i = textures.begin();
+			i != textures.end(); i++){
+		os<<serializeString(i->name);
+		os<<serializeLongString(i->data);
+	}
+	
+	// Make data buffer
+	std::string s = os.str();
+	infostream<<"Server::SendTextures(): number of textures: "
+			<<textures.size()<<", data size: "<<s.size()<<std::endl;
+	SharedBuffer<u8> data((u8*)s.c_str(), s.size());
+	// Send as reliable
+	m_con.Send(peer_id, 0, data, true);
 }
 
 /*

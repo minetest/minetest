@@ -29,6 +29,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 		Base for writing changes here
 	PROTOCOL_VERSION 4:
 		Add TOCLIENT_TOOLDEF
+		Add TOCLIENT_TEXTURES
 */
 
 #define PROTOCOL_VERSION 4
@@ -196,6 +197,18 @@ enum ToClientCommand
 		u16 command
 		u32 length of the next item
 		serialized ToolDefManager
+	*/
+	
+	TOCLIENT_TEXTURES = 0x39,
+	/*
+		u16 command
+		u32 number of textures
+		for each texture {
+			u16 length of name
+			string name
+			u32 length of data
+			data
+		}
 	*/
 	
 	//TOCLIENT_CONTENT_SENDING_MODE = 0x38,

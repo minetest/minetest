@@ -156,8 +156,10 @@ public:
 		{return NULL;}
 	virtual void updateAP(AtlasPointer &ap){};
 
-	virtual void buildMainAtlas(class IGameDef *gamedef)=0;
 	virtual void processQueue()=0;
+	virtual void buildMainAtlas(class IGameDef *gamedef)=0;
+	// img is eaten, do not drop it
+	virtual void insertImage(const std::string &name, video::IImage *img)=0;
 };
 
 IWritableTextureSource* createTextureSource(IrrlichtDevice *device);

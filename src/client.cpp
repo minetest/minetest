@@ -34,6 +34,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "nodemetadata.h"
 #include "nodedef.h"
 #include "tooldef.h"
+#include <IFileSystem.h>
 
 /*
 	QueuedMeshUpdate
@@ -1518,6 +1519,62 @@ void Client::ProcessData(u8 *data, u32 datasize, u16 sender_peer_id)
 
 		std::istringstream tmp_is(deSerializeLongString(is), std::ios::binary);
 		m_tooldef->deSerialize(tmp_is);
+		
+		// Resume threads
+		m_mesh_update_thread.setRun(true);
+		m_mesh_update_thread.Start();
+	}
+	else if(command == TOCLIENT_TEXTURES)
+	{
+		infostream<<"Client: Received textures: packet size: "<<datasize
+				<<std::endl;
+
+		io::IFileSystem *irrfs = m_device->getFileSystem();
+		video::IVideoDriver *vdrv = m_device->getVideoDriver();
+
+		std::string datastring((char*)&data[2], datasize-2);
+		std::istringstream is(datastring, std::ios_base::binary);
+
+		// Stop threads while updating content definitions
+		m_mesh_update_thread.stop();
+		
+		/*
+			u16 command
+			u32 number of textures
+			for each texture {
+				u16 length of name
+				string name
+				u32 length of data
+				data
+			}
+		*/
+		int num_textures = readU32(is);
+		infostream<<"Client: Received textures: count: "<<num_textures
+				<<std::endl;
+		for(int i=0; i<num_textures; i++){
+			std::string name = deSerializeString(is);
+			std::string data = deSerializeLongString(is);
+			// Silly irrlicht's const-incorrectness
+			Buffer<char> data_rw(data.c_str(), data.size());
+			// Create an irrlicht memory file
+			io::IReadFile *rfile = irrfs->createMemoryReadFile(
+					*data_rw, data.size(), "_tempreadfile");
+			assert(rfile);
+			// Read image
+			video::IImage *img = vdrv->createImageFromFile(rfile);
+			if(!img){
+				errorstream<<"Client: Cannot create image from data of "
+						<<"received texture \""<<name<<"\""<<std::endl;
+				rfile->drop();
+				continue;
+			}
+			m_tsrc->insertImage(name, img);
+			rfile->drop();
+		}
+
+		// Update texture atlas
+		if(g_settings->getBool("enable_texture_atlas"))
+			m_tsrc->buildMainAtlas(this);
 		
 		// Resume threads
 		m_mesh_update_thread.setRun(true);

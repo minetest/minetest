@@ -243,19 +243,22 @@ public:
 	void updateAP(AtlasPointer &ap);
 
 	/*
-		Build the main texture atlas which contains most of the
-		textures.
-		
-		This is called by the constructor.
-	*/
-	void buildMainAtlas(class IGameDef *gamedef);
-	
-	/*
 		Processes queued texture requests from other threads.
 
 		Shall be called from the main thread.
 	*/
 	void processQueue();
+	
+	/*
+		Build the main texture atlas which contains most of the
+		textures.
+	*/
+	void buildMainAtlas(class IGameDef *gamedef);
+	
+	/*
+		Insert an image into the cache without touching the filesystem.
+	*/
+	void insertImage(const std::string &name, video::IImage *img);
 	
 private:
 	
@@ -303,31 +306,6 @@ TextureSource::TextureSource(IrrlichtDevice *device):
 
 TextureSource::~TextureSource()
 {
-}
-
-void TextureSource::processQueue()
-{
-	/*
-		Fetch textures
-	*/
-	if(m_get_texture_queue.size() > 0)
-	{
-		GetRequest<std::string, u32, u8, u8>
-				request = m_get_texture_queue.pop();
-
-		infostream<<"TextureSource::processQueue(): "
-				<<"got texture request with "
-				<<"name=\""<<request.key<<"\""
-				<<std::endl;
-
-		GetResult<std::string, u32, u8, u8>
-				result;
-		result.key = request.key;
-		result.callers = request.callers;
-		result.item = getTextureIdDirect(request.key);
-
-		request.dest->push_back(result);
-	}
 }
 
 u32 TextureSource::getTextureId(const std::string &name)
@@ -624,6 +602,31 @@ void TextureSource::updateAP(AtlasPointer &ap)
 	ap = ap2;
 }
 
+void TextureSource::processQueue()
+{
+	/*
+		Fetch textures
+	*/
+	if(m_get_texture_queue.size() > 0)
+	{
+		GetRequest<std::string, u32, u8, u8>
+				request = m_get_texture_queue.pop();
+
+		infostream<<"TextureSource::processQueue(): "
+				<<"got texture request with "
+				<<"name=\""<<request.key<<"\""
+				<<std::endl;
+
+		GetResult<std::string, u32, u8, u8>
+				result;
+		result.key = request.key;
+		result.callers = request.callers;
+		result.item = getTextureIdDirect(request.key);
+
+		request.dest->push_back(result);
+	}
+}
+
 void TextureSource::buildMainAtlas(class IGameDef *gamedef) 
 {
 	assert(gamedef->tsrc() == this);
@@ -864,6 +867,46 @@ void TextureSource::buildMainAtlas(class IGameDef *gamedef)
 	driver->writeImageToFile(atlas_img, atlaspath.c_str());*/
 }
 
+void TextureSource::insertImage(const std::string &name, video::IImage *img)
+{
+	infostream<<"TextureSource::insertImage(): name="<<name<<std::endl;
+	
+	JMutexAutoLock lock(m_atlaspointer_cache_mutex);
+
+	video::IVideoDriver* driver = m_device->getVideoDriver();
+	assert(driver);
+
+	// Create texture
+	video::ITexture *t = driver->addTexture(name.c_str(), img);
+
+	bool reuse_old_id = false;
+	u32 id = m_atlaspointer_cache.size();
+	// Check old id without fetching a texture
+	core::map<std::string, u32>::Node *n;
+	n = m_name_to_id.find(name);
+	// If it exists, we will replace the old definition
+	if(n){
+		id = n->getValue();
+		reuse_old_id = true;
+	}
+	
+	// Create AtlasPointer
+	AtlasPointer ap(id);
+	ap.atlas = t;
+	ap.pos = v2f(0,0);
+	ap.size = v2f(1,1);
+	ap.tiled = 0;
+	core::dimension2d<u32> dim = img->getDimension();
+
+	// Create SourceAtlasPointer and add to containers
+	SourceAtlasPointer nap(name, ap, img, v2s32(0,0), dim);
+	if(reuse_old_id)
+		m_atlaspointer_cache[id] = nap;
+	else
+		m_atlaspointer_cache.push_back(nap);
+	m_name_to_id[name] = id;
+}
+	
 video::IImage* generate_image_from_scratch(std::string name,
 		IrrlichtDevice *device)
 {

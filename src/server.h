@@ -515,7 +515,10 @@ private:
 			IToolDefManager *tooldef);
 	
 	/*
-		Non-static send methods
+		Non-static send methods.
+		Conlock should be always used.
+		Envlock usage is documented badly but it's easy to figure out
+		which ones access the environment.
 	*/
 
 	// Envlock and conlock should be locked when calling these
@@ -546,6 +549,8 @@ private:
 	
 	// Sends blocks to clients (locks env and con on its own)
 	void SendBlocks(float dtime);
+	
+	void SendTextures(u16 peer_id);
 
 	/*
 		Something random
@@ -682,6 +687,9 @@ private:
 
 	// Configuration path ("" = no configuration file)
 	std::string m_configpath;
+	
+	// Mod parent directory paths
+	core::list<std::string> m_modspaths;
 
 	bool m_shutdown_requested;
 	
