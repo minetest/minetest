@@ -2139,14 +2139,14 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 			Send some initialization data
 		*/
 
-		// Send textures
-		SendTextures(peer_id);
-		
 		// Send tool definitions
 		SendToolDef(m_con, peer_id, m_toolmgr);
 		
 		// Send node definitions
 		SendNodeDef(m_con, peer_id, m_nodemgr);
+		
+		// Send textures
+		SendTextures(peer_id);
 		
 		// Send player info to all players
 		SendPlayerInfos();
@@ -4160,7 +4160,13 @@ void Server::SendTextures(u16 peer_id)
 	
 	/* Read textures */
 	
-	core::list<SendableTexture> textures;
+	// Put 5kB in one bunch (this is not accurate)
+	u32 bytes_per_bunch = 5000;
+	
+	core::array< core::list<SendableTexture> > texture_bunches;
+	texture_bunches.push_back(core::list<SendableTexture>());
+	
+	u32 texture_size_bunch_total = 0;
 	core::list<ModSpec> mods = getMods(m_modspaths);
 	for(core::list<ModSpec>::Iterator i = mods.begin();
 			i != mods.end(); i++){
@@ -4186,6 +4192,7 @@ void Server::SendTextures(u16 peer_id)
 				fis.read(buf, 1024);
 				std::streamsize len = fis.gcount();
 				tmp_os.write(buf, len);
+				texture_size_bunch_total += len;
 				if(fis.eof())
 					break;
 				if(!fis.good()){
@@ -4201,40 +4208,57 @@ void Server::SendTextures(u16 peer_id)
 			errorstream<<"Server::SendTextures(): Loaded \""
 					<<tname<<"\""<<std::endl;
 			// Put in list
-			textures.push_back(SendableTexture(tname, tpath, tmp_os.str()));
+			texture_bunches[texture_bunches.size()-1].push_back(
+					SendableTexture(tname, tpath, tmp_os.str()));
+			
+			// Start next bunch if got enough data
+			if(texture_size_bunch_total >= bytes_per_bunch){
+				texture_bunches.push_back(core::list<SendableTexture>());
+				texture_size_bunch_total = 0;
+			}
 		}
 	}
 
-	/* Create and send packet */
+	/* Create and send packets */
+	
+	u32 num_bunches = texture_bunches.size();
+	for(u32 i=0; i<num_bunches; i++)
+	{
+		/*
+			u16 command
+			u16 total number of texture bunches
+			u16 index of this bunch
+			u32 number of textures in this bunch
+			for each texture {
+				u16 length of name
+				string name
+				u32 length of data
+				data
+			}
+		*/
+		std::ostringstream os(std::ios_base::binary);
 
-	/*
-		u16 command
-		u32 number of textures
-		for each texture {
-			u16 length of name
-			string name
-			u32 length of data
-			data
+		writeU16(os, TOCLIENT_TEXTURES);
+		writeU16(os, num_bunches);
+		writeU16(os, i);
+		writeU32(os, texture_bunches[i].size());
+		
+		for(core::list<SendableTexture>::Iterator
+				j = texture_bunches[i].begin();
+				j != texture_bunches[i].end(); j++){
+			os<<serializeString(j->name);
+			os<<serializeLongString(j->data);
 		}
-	*/
-	std::ostringstream os(std::ios_base::binary);
-
-	writeU16(os, TOCLIENT_TEXTURES);
-	writeU32(os, textures.size());
-	
-	for(core::list<SendableTexture>::Iterator i = textures.begin();
-			i != textures.end(); i++){
-		os<<serializeString(i->name);
-		os<<serializeLongString(i->data);
+		
+		// Make data buffer
+		std::string s = os.str();
+		infostream<<"Server::SendTextures(): number of textures in bunch["
+				<<i<<"]: "<<texture_bunches[i].size()
+				<<", size: "<<s.size()<<std::endl;
+		SharedBuffer<u8> data((u8*)s.c_str(), s.size());
+		// Send as reliable
+		m_con.Send(peer_id, 0, data, true);
 	}
-	
-	// Make data buffer
-	std::string s = os.str();
-	infostream<<"Server::SendTextures(): number of textures: "
-			<<textures.size()<<", data size: "<<s.size()<<std::endl;
-	SharedBuffer<u8> data((u8*)s.c_str(), s.size());
-	// Send as reliable
-	m_con.Send(peer_id, 0, data, true);
 }
 
 /*

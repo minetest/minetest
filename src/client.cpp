@@ -211,7 +211,11 @@ Client::Client(
 	m_time_of_day(0),
 	m_map_seed(0),
 	m_password(password),
-	m_access_denied(false)
+	m_access_denied(false),
+	m_texture_receive_progress(0),
+	m_textures_received(false),
+	m_tooldef_received(false),
+	m_nodedef_received(false)
 {
 	m_packetcounter_timer = 0.0;
 	//m_delete_unused_sectors_timer = 0.0;
@@ -661,8 +665,14 @@ void Client::deletingPeer(con::Peer *peer, bool timeout)
 void Client::ReceiveAll()
 {
 	DSTACK(__FUNCTION_NAME);
+	u32 start_ms = porting::getTimeMs();
 	for(;;)
 	{
+		// Limit time even if there would be huge amounts of data to
+		// process
+		if(porting::getTimeMs() > start_ms + 100)
+			break;
+		
 		try{
 			Receive();
 		}
@@ -1505,24 +1515,6 @@ void Client::ProcessData(u8 *data, u32 datasize, u16 sender_peer_id)
 		event.deathscreen.camera_point_target_z = camera_point_target.Z;
 		m_client_event_queue.push_back(event);
 	}
-	else if(command == TOCLIENT_TOOLDEF)
-	{
-		infostream<<"Client: Received tool definitions: packet size: "
-				<<datasize<<std::endl;
-
-		std::string datastring((char*)&data[2], datasize-2);
-		std::istringstream is(datastring, std::ios_base::binary);
-
-		// Stop threads while updating content definitions
-		m_mesh_update_thread.stop();
-
-		std::istringstream tmp_is(deSerializeLongString(is), std::ios::binary);
-		m_tooldef->deSerialize(tmp_is);
-		
-		// Resume threads
-		m_mesh_update_thread.setRun(true);
-		m_mesh_update_thread.Start();
-	}
 	else if(command == TOCLIENT_TEXTURES)
 	{
 		infostream<<"Client: Received textures: packet size: "<<datasize
@@ -1539,7 +1531,9 @@ void Client::ProcessData(u8 *data, u32 datasize, u16 sender_peer_id)
 		
 		/*
 			u16 command
-			u32 number of textures
+			u16 total number of texture bunches
+			u16 index of this bunch
+			u32 number of textures in this bunch
 			for each texture {
 				u16 length of name
 				string name
@@ -1547,6 +1541,11 @@ void Client::ProcessData(u8 *data, u32 datasize, u16 sender_peer_id)
 				data
 			}
 		*/
+		int num_bunches = readU16(is);
+		int bunch_i = readU16(is);
+		m_texture_receive_progress = (float)bunch_i / (float)(num_bunches - 1);
+		if(bunch_i == num_bunches - 1)
+			m_textures_received = true;
 		int num_textures = readU32(is);
 		infostream<<"Client: Received textures: count: "<<num_textures
 				<<std::endl;
@@ -1572,15 +1571,17 @@ void Client::ProcessData(u8 *data, u32 datasize, u16 sender_peer_id)
 			rfile->drop();
 		}
 		
-		// Rebuild inherited images and recreate textures
-		m_tsrc->rebuildImagesAndTextures();
+		if(m_nodedef_received && m_textures_received){
+			// Rebuild inherited images and recreate textures
+			m_tsrc->rebuildImagesAndTextures();
 
-		// Update texture atlas
-		if(g_settings->getBool("enable_texture_atlas"))
-			m_tsrc->buildMainAtlas(this);
-		
-		// Update node textures
-		m_nodedef->updateTextures(m_tsrc);
+			// Update texture atlas
+			if(g_settings->getBool("enable_texture_atlas"))
+				m_tsrc->buildMainAtlas(this);
+			
+			// Update node textures
+			m_nodedef->updateTextures(m_tsrc);
+		}
 
 		// Resume threads
 		m_mesh_update_thread.setRun(true);
@@ -1590,6 +1591,26 @@ void Client::ProcessData(u8 *data, u32 datasize, u16 sender_peer_id)
 		event.type = CE_TEXTURES_UPDATED;
 		m_client_event_queue.push_back(event);
 	}
+	else if(command == TOCLIENT_TOOLDEF)
+	{
+		infostream<<"Client: Received tool definitions: packet size: "
+				<<datasize<<std::endl;
+
+		std::string datastring((char*)&data[2], datasize-2);
+		std::istringstream is(datastring, std::ios_base::binary);
+
+		m_tooldef_received = true;
+
+		// Stop threads while updating content definitions
+		m_mesh_update_thread.stop();
+
+		std::istringstream tmp_is(deSerializeLongString(is), std::ios::binary);
+		m_tooldef->deSerialize(tmp_is);
+		
+		// Resume threads
+		m_mesh_update_thread.setRun(true);
+		m_mesh_update_thread.Start();
+	}
 	else if(command == TOCLIENT_NODEDEF)
 	{
 		infostream<<"Client: Received node definitions: packet size: "
@@ -1598,18 +1619,22 @@ void Client::ProcessData(u8 *data, u32 datasize, u16 sender_peer_id)
 		std::string datastring((char*)&data[2], datasize-2);
 		std::istringstream is(datastring, std::ios_base::binary);
 
+		m_nodedef_received = true;
+
 		// Stop threads while updating content definitions
 		m_mesh_update_thread.stop();
 
 		std::istringstream tmp_is(deSerializeLongString(is), std::ios::binary);
 		m_nodedef->deSerialize(tmp_is, this);
 		
-		// Update texture atlas
-		if(g_settings->getBool("enable_texture_atlas"))
-			m_tsrc->buildMainAtlas(this);
-		
-		// Update node textures
-		m_nodedef->updateTextures(m_tsrc);
+		if(m_textures_received){
+			// Update texture atlas
+			if(g_settings->getBool("enable_texture_atlas"))
+				m_tsrc->buildMainAtlas(this);
+			
+			// Update node textures
+			m_nodedef->updateTextures(m_tsrc);
+		}
 
 		// Resume threads
 		m_mesh_update_thread.setRun(true);

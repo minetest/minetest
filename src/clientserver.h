@@ -28,8 +28,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 	PROTOCOL_VERSION 3:
 		Base for writing changes here
 	PROTOCOL_VERSION 4:
-		Add TOCLIENT_TOOLDEF
 		Add TOCLIENT_TEXTURES
+		Add TOCLIENT_TOOLDEF
 		Add TOCLIENT_NODEDEF
 */
 
@@ -195,17 +195,12 @@ enum ToClientCommand
 		v3f1000 camera point target (to point the death cause or whatever)
 	*/
 
-	TOCLIENT_TOOLDEF = 0x38,
+	TOCLIENT_TEXTURES = 0x38,
 	/*
 		u16 command
-		u32 length of the next item
-		serialized ToolDefManager
-	*/
-	
-	TOCLIENT_TEXTURES = 0x39,
-	/*
-		u16 command
-		u32 number of textures
+		u16 total number of texture bunches
+		u16 index of this bunch
+		u32 number of textures in this bunch
 		for each texture {
 			u16 length of name
 			string name
@@ -214,17 +209,18 @@ enum ToClientCommand
 		}
 	*/
 	
+	TOCLIENT_TOOLDEF = 0x39,
+	/*
+		u16 command
+		u32 length of the next item
+		serialized ToolDefManager
+	*/
+	
 	TOCLIENT_NODEDEF = 0x3a,
 	/*
 		u16 command
 		u32 length of the next item
 		serialized NodeDefManager
-	*/
-	
-	//TOCLIENT_CONTENT_SENDING_MODE = 0x38,
-	/*
-		u16 command
-		u8 mode (0 = off, 1 = on)
 	*/
 };
 

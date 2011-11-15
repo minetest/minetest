@@ -632,20 +632,17 @@ void the_game(
 	/*
 		Draw "Loading" screen
 	*/
-	/*gui::IGUIStaticText *gui_loadingtext = */
-	//draw_load_screen(L"Loading and connecting...", driver, font);
 
 	draw_load_screen(L"Loading...", driver, font);
 	
-	// Create tool definition manager
-	IWritableToolDefManager *tooldef = createToolDefManager();
 	// Create texture source
 	IWritableTextureSource *tsrc = createTextureSource(device);
+	
+	// These will be filled by data received from the server
+	// Create tool definition manager
+	IWritableToolDefManager *tooldef = createToolDefManager();
 	// Create node definition manager
 	IWritableNodeDefManager *nodedef = createNodeDefManager();
-
-	// Fill node feature table with default definitions
-	//content_mapnode_init(nodedef);
 
 	/*
 		Create server.
@@ -702,54 +699,51 @@ void the_game(
 	connect_address.print(&infostream);
 	infostream<<std::endl;
 	client.connect(connect_address);
-
-	bool could_connect = false;
 	
+	/*
+		Wait for server to accept connection
+	*/
+	bool could_connect = false;
 	try{
+		float frametime = 0.033;
+		const float timeout = 10.0;
 		float time_counter = 0.0;
 		for(;;)
 		{
-			if(client.connectedAndInitialized())
-			{
+			// Update client and server
+			client.step(frametime);
+			if(server != NULL)
+				server->step(frametime);
+			
+			// End condition
+			if(client.connectedAndInitialized()){
 				could_connect = true;
 				break;
 			}
+			// Break conditions
 			if(client.accessDenied())
-			{
 				break;
-			}
-			// Wait for 10 seconds
-			if(time_counter >= 10.0)
-			{
+			if(time_counter >= timeout)
 				break;
-			}
 			
+			// Display status
 			std::wostringstream ss;
 			ss<<L"Connecting to server... (timeout in ";
-			ss<<(int)(10.0 - time_counter + 1.0);
+			ss<<(int)(timeout - time_counter + 1.0);
 			ss<<L" seconds)";
 			draw_load_screen(ss.str(), driver, font);
-
-			/*// Update screen
-			driver->beginScene(true, true, video::SColor(255,0,0,0));
-			guienv->drawAll();
-			driver->endScene();*/
-
-			// Update client and server
-
-			client.step(0.1);
-
-			if(server != NULL)
-				server->step(0.1);
 			
 			// Delay a bit
-			sleep_ms(100);
-			time_counter += 0.1;
+			sleep_ms(1000*frametime);
+			time_counter += frametime;
 		}
 	}
 	catch(con::PeerNotFoundException &e)
 	{}
-
+	
+	/*
+		Handle failure to connect
+	*/
 	if(could_connect == false)
 	{
 		if(client.accessDenied())
@@ -765,6 +759,56 @@ void the_game(
 		}
 		//gui_loadingtext->remove();
 		return;
+	}
+	
+	/*
+		Wait until content has been received
+	*/
+	bool got_content = false;
+	{
+		float frametime = 0.033;
+		const float timeout = 5.0;
+		float time_counter = 0.0;
+		for(;;)
+		{
+			// Update client and server
+			client.step(frametime);
+			if(server != NULL)
+				server->step(frametime);
+			
+			// End condition
+			if(client.texturesReceived() &&
+					client.tooldefReceived() &&
+					client.nodedefReceived()){
+				got_content = true;
+				break;
+			}
+			// Break conditions
+			if(!client.connectedAndInitialized())
+				break;
+			if(time_counter >= timeout)
+				break;
+			
+			// Display status
+			std::wostringstream ss;
+			ss<<L"Waiting content... (continuing anyway in ";
+			ss<<(int)(timeout - time_counter + 1.0);
+			ss<<L" seconds)\n";
+
+			ss<<(client.tooldefReceived()?L"[X]":L"[  ]");
+			ss<<L" Tool definitions\n";
+			ss<<(client.nodedefReceived()?L"[X]":L"[  ]");
+			ss<<L" Node definitions\n";
+			//ss<<(client.texturesReceived()?L"[X]":L"[  ]");
+			ss<<L"["<<(int)(client.textureReceiveProgress()*100+0.5)<<L"%] ";
+			ss<<L" Textures\n";
+
+			draw_load_screen(ss.str(), driver, font);
+			
+			// Delay a bit
+			sleep_ms(1000*frametime);
+			time_counter += frametime;
+		}
 	}
 
 	/*

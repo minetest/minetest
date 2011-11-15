@@ -305,11 +305,21 @@ public:
 	// Get event from queue. CE_NONE is returned if queue is empty.
 	ClientEvent getClientEvent();
 	
-	inline bool accessDenied()
+	bool accessDenied()
 	{ return m_access_denied; }
 
-	inline std::wstring accessDeniedReason()
+	std::wstring accessDeniedReason()
 	{ return m_access_denied_reason; }
+
+	float textureReceiveProgress()
+	{ return m_texture_receive_progress; }
+
+	bool texturesReceived()
+	{ return m_textures_received; }
+	bool tooldefReceived()
+	{ return m_tooldef_received; }
+	bool nodedefReceived()
+	{ return m_nodedef_received; }
 	
 	float getRTT(void);
 
@@ -367,6 +377,10 @@ private:
 	std::wstring m_access_denied_reason;
 	InventoryContext m_inventory_context;
 	Queue<ClientEvent> m_client_event_queue;
+	float m_texture_receive_progress;
+	bool m_textures_received;
+	bool m_tooldef_received;
+	bool m_nodedef_received;
 	friend class FarMesh;
 };
 
