@@ -1016,8 +1016,13 @@ bool ItemSpec::checkItem(const InventoryItem *item) const
 		if(itemname != "MaterialItem")
 			return false;
 		MaterialItem *mitem = (MaterialItem*)item;
-		if(mitem->getMaterial() != num)
-			return false;
+		if(num != 65535){
+			if(mitem->getMaterial() != num)
+				return false;
+		} else {
+			if(mitem->getNodeName() != name)
+				return false;
+		}
 	}
 	else if(type == ITEM_CRAFT)
 	{
