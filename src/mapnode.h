@@ -147,6 +147,11 @@ struct MapNode
 		// because this needs to override part of param2
 		setContent(content);
 	}
+	
+	// Create directly from a nodename
+	// If name is unknown, sets CONTENT_IGNORE
+	MapNode(INodeDefManager *ndef, const std::string &name,
+			u8 a_param1=0, u8 a_param2=0);
 
 	bool operator==(const MapNode &other)
 	{

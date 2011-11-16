@@ -155,6 +155,20 @@ v3s16 unpackDir(u8 b)
 	MapNode
 */
 
+// Create directly from a nodename
+// If name is unknown, sets CONTENT_IGNORE
+MapNode::MapNode(INodeDefManager *ndef, const std::string &name,
+		u8 a_param1, u8 a_param2)
+{
+	content_t id = CONTENT_IGNORE;
+	ndef->getId(name, id);
+	param1 = a_param1;
+	param2 = a_param2;
+	// Set content (param0 and (param2&0xf0)) after other params
+	// because this needs to override part of param2
+	setContent(id);
+}
+
 void MapNode::setLight(enum LightBank bank, u8 a_light, INodeDefManager *nodemgr)
 {
 	// If node doesn't contain light data, ignore this
