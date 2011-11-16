@@ -32,9 +32,9 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "common_irrlicht.h"
 #include "debug.h"
-#include "strfnd.h"
 #include "exceptions.h"
 #include "porting.h"
+#include "strfnd.h" // For trim()
 
 extern const v3s16 g_6dirs[6];
 

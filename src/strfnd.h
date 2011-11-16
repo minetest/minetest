@@ -65,6 +65,19 @@ public:
 		//std::cout<<"palautus=\""<<palautus<<"\""<<std::endl;
         return palautus;
     }
+	void skip_over(std::string chars){
+		while(p < tek.size()){
+			bool is = false;
+			for(unsigned int i=0; i<chars.size(); i++){
+				if(chars[i] == tek[p]){
+					is = true;
+					break;
+				}
+			}
+			if(!is) break;
+			p++;
+		}
+	}
     bool atend(){
         if(p>=tek.size()) return true;
         return false;

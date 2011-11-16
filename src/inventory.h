@@ -139,22 +139,11 @@ public:
 	}
 	virtual void serialize(std::ostream &os) const
 	{
-		std::string nodename = m_nodename;
-		if(nodename == "")
-			nodename = "unknown_block";
-			
-		os<<"MaterialItem3";
+		os<<"NodeItem";
 		os<<" \"";
-		os<<nodename;
+		os<<m_nodename;
 		os<<"\" ";
 		os<<m_count;
-
-		// Old
-		/*os<<"MaterialItem2";
-		os<<" ";
-		os<<(unsigned int)m_content;
-		os<<" ";
-		os<<m_count;*/
 	}
 	virtual InventoryItem* clone()
 	{
@@ -225,9 +214,9 @@ public:
 	virtual void serialize(std::ostream &os) const
 	{
 		os<<getName();
-		os<<" ";
+		os<<" \"";
 		os<<m_subname;
-		os<<" ";
+		os<<"\" ";
 		os<<m_count;
 	}
 	virtual InventoryItem* clone()
@@ -304,9 +293,9 @@ public:
 	virtual void serialize(std::ostream &os) const
 	{
 		os<<getName();
-		os<<" ";
+		os<<" \"";
 		os<<m_toolname;
-		os<<" ";
+		os<<"\" ";
 		os<<m_wear;
 	}
 	virtual InventoryItem* clone()

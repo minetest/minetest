@@ -79,9 +79,7 @@ InventoryItem* InventoryItem::deSerialize(std::istream &is, IGameDef *gamedef)
 		is>>count;
 		// Convert old materials
 		if(material <= 0xff)
-		{
 			material = content_translate_from_19_to_internal(material);
-		}
 		if(material > MAX_CONTENT)
 			throw SerializationError("Too large material number");
 		return new MaterialItem(gamedef, material, count);
@@ -96,13 +94,22 @@ InventoryItem* InventoryItem::deSerialize(std::istream &is, IGameDef *gamedef)
 			throw SerializationError("Too large material number");
 		return new MaterialItem(gamedef, material, count);
 	}
-	else if(name == "MaterialItem3")
+	else if(name == "NodeItem" || name == "MaterialItem3")
 	{
 		std::string all;
 		std::getline(is, all, '\n');
+		std::string nodename;
+		// First attempt to read inside ""
 		Strfnd fnd(all);
 		fnd.next("\"");
-		std::string nodename = fnd.next("\"");
+		// If didn't skip to end, we have ""s
+		if(!fnd.atend()){
+			nodename = fnd.next("\"");
+		} else { // No luck, just read a word then
+			fnd.start(all);
+			nodename = fnd.next(" ");
+		}
+		fnd.skip_over(" ");
 		u16 count = stoi(trim(fnd.next("")));
 		return new MaterialItem(gamedef, nodename, count);
 	}
@@ -114,18 +121,42 @@ InventoryItem* InventoryItem::deSerialize(std::istream &is, IGameDef *gamedef)
 	}
 	else if(name == "CraftItem")
 	{
+		std::string all;
+		std::getline(is, all, '\n');
 		std::string subname;
-		std::getline(is, subname, ' ');
-		u16 count;
-		is>>count;
+		// First attempt to read inside ""
+		Strfnd fnd(all);
+		fnd.next("\"");
+		// If didn't skip to end, we have ""s
+		if(!fnd.atend()){
+			subname = fnd.next("\"");
+		} else { // No luck, just read a word then
+			fnd.start(all);
+			subname = fnd.next(" ");
+		}
+		// Then read count
+		fnd.skip_over(" ");
+		u16 count = stoi(trim(fnd.next("")));
 		return new CraftItem(gamedef, subname, count);
 	}
 	else if(name == "ToolItem")
 	{
+		std::string all;
+		std::getline(is, all, '\n');
 		std::string toolname;
-		std::getline(is, toolname, ' ');
-		u16 wear;
-		is>>wear;
+		// First attempt to read inside ""
+		Strfnd fnd(all);
+		fnd.next("\"");
+		// If didn't skip to end, we have ""s
+		if(!fnd.atend()){
+			toolname = fnd.next("\"");
+		} else { // No luck, just read a word then
+			fnd.start(all);
+			toolname = fnd.next(" ");
+		}
+		// Then read wear
+		fnd.skip_over(" ");
+		u16 wear = stoi(trim(fnd.next("")));
 		return new ToolItem(gamedef, toolname, wear);
 	}
 	else
