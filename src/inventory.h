@@ -127,11 +127,9 @@ protected:
 class MaterialItem : public InventoryItem
 {
 public:
-	MaterialItem(IGameDef *gamedef, content_t content, u16 count):
-		InventoryItem(gamedef, count)
-	{
-		m_content = content;
-	}
+	MaterialItem(IGameDef *gamedef, std::string nodename, u16 count);
+	// Legacy constructor
+	MaterialItem(IGameDef *gamedef, content_t content, u16 count);
 	/*
 		Implementation interface
 	*/
@@ -141,16 +139,26 @@ public:
 	}
 	virtual void serialize(std::ostream &os) const
 	{
-		//os.imbue(std::locale("C"));
-		os<<"MaterialItem2";
+		std::string nodename = m_nodename;
+		if(nodename == "")
+			nodename = "unknown_block";
+			
+		os<<"MaterialItem3";
+		os<<" \"";
+		os<<nodename;
+		os<<"\" ";
+		os<<m_count;
+
+		// Old
+		/*os<<"MaterialItem2";
 		os<<" ";
 		os<<(unsigned int)m_content;
 		os<<" ";
-		os<<m_count;
+		os<<m_count;*/
 	}
 	virtual InventoryItem* clone()
 	{
-		return new MaterialItem(m_gamedef, m_content, m_count);
+		return new MaterialItem(m_gamedef, m_nodename, m_count);
 	}
 #ifndef SERVER
 	video::ITexture * getImage(ITextureSource *tsrc) const;
@@ -167,7 +175,7 @@ public:
 		if(std::string(other->getName()) != "MaterialItem")
 			return false;
 		MaterialItem *m = (MaterialItem*)other;
-		if(m->getMaterial() != m_content)
+		if(m->m_nodename != m_nodename)
 			return false;
 		return true;
 	}
@@ -185,14 +193,13 @@ public:
 	float getCookTime() const;
 	float getBurnTime() const;
 	/*
-		Special methods
+		Special properties (not part of virtual interface)
 	*/
-	content_t getMaterial()
-	{
-		return m_content;
-	}
+	std::string getNodeName() const
+	{ return m_nodename; }
+	content_t getMaterial() const;
 private:
-	content_t m_content;
+	std::string m_nodename;
 };
 
 /*

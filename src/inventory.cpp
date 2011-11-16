@@ -32,6 +32,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "nodedef.h"
 #include "tooldef.h"
 #include "gamedef.h"
+#include "strfnd.h"
 
 /*
 	InventoryItem
@@ -95,6 +96,16 @@ InventoryItem* InventoryItem::deSerialize(std::istream &is, IGameDef *gamedef)
 			throw SerializationError("Too large material number");
 		return new MaterialItem(gamedef, material, count);
 	}
+	else if(name == "MaterialItem3")
+	{
+		std::string all;
+		std::getline(is, all, '\n');
+		Strfnd fnd(all);
+		fnd.next("\"");
+		std::string nodename = fnd.next("\"");
+		u16 count = stoi(trim(fnd.next("")));
+		return new MaterialItem(gamedef, nodename, count);
+	}
 	else if(name == "MBOItem")
 	{
 		std::string inventorystring;
@@ -149,24 +160,42 @@ ServerActiveObject* InventoryItem::createSAO(ServerEnvironment *env, u16 id, v3f
 	MaterialItem
 */
 
+MaterialItem::MaterialItem(IGameDef *gamedef, std::string nodename, u16 count):
+	InventoryItem(gamedef, count)
+{
+	if(nodename == "")
+		nodename = "unknown_block";
+	m_nodename = nodename;
+}
+// Legacy constructor
+MaterialItem::MaterialItem(IGameDef *gamedef, content_t content, u16 count):
+	InventoryItem(gamedef, count)
+{
+	INodeDefManager *ndef = m_gamedef->ndef();
+	std::string nodename = ndef->get(content).name;
+	if(nodename == "")
+		nodename = "unknown_block";
+	m_nodename = nodename;
+}
+
 #ifndef SERVER
 video::ITexture * MaterialItem::getImage(ITextureSource *tsrc) const
 {
-	return m_gamedef->getNodeDefManager()->get(m_content).inventory_texture;
+	return m_gamedef->getNodeDefManager()->get(m_nodename).inventory_texture;
 }
 #endif
 
 bool MaterialItem::isCookable() const
 {
 	INodeDefManager *ndef = m_gamedef->ndef();
-	const ContentFeatures &f = ndef->get(m_content);
+	const ContentFeatures &f = ndef->get(m_nodename);
 	return (f.cookresult_item != "");
 }
 
 InventoryItem *MaterialItem::createCookResult() const
 {
 	INodeDefManager *ndef = m_gamedef->ndef();
-	const ContentFeatures &f = ndef->get(m_content);
+	const ContentFeatures &f = ndef->get(m_nodename);
 	std::istringstream is(f.cookresult_item, std::ios::binary);
 	return InventoryItem::deSerialize(is, m_gamedef);
 }
@@ -174,15 +203,23 @@ InventoryItem *MaterialItem::createCookResult() const
 float MaterialItem::getCookTime() const
 {
 	INodeDefManager *ndef = m_gamedef->ndef();
-	const ContentFeatures &f = ndef->get(m_content);
+	const ContentFeatures &f = ndef->get(m_nodename);
 	return f.furnace_cooktime;
 }
 
 float MaterialItem::getBurnTime() const
 {
 	INodeDefManager *ndef = m_gamedef->ndef();
-	const ContentFeatures &f = ndef->get(m_content);
+	const ContentFeatures &f = ndef->get(m_nodename);
 	return f.furnace_burntime;
+}
+
+content_t MaterialItem::getMaterial() const
+{
+	INodeDefManager *ndef = m_gamedef->ndef();
+	content_t id = CONTENT_IGNORE;
+	ndef->getId(m_nodename, id);
+	return id;
 }
 
 /*

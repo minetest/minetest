@@ -406,6 +406,12 @@ public:
 	{
 		return m_name_id_mapping.getId(name, result);
 	}
+	virtual const ContentFeatures& get(const std::string &name) const
+	{
+		content_t id = CONTENT_IGNORE;
+		getId(name, id);
+		return get(id);
+	}
 	// IWritableNodeDefManager
 	virtual void set(content_t c, const ContentFeatures &def)
 	{
