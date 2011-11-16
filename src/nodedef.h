@@ -207,6 +207,8 @@ struct ContentFeatures
 	NodeBox selection_box;
 	MaterialProperties material;
 	std::string cookresult_item;
+	float furnace_cooktime;
+	float furnace_burntime;
 
 	/*
 		Methods

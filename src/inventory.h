@@ -106,10 +106,12 @@ public:
 
 	// Whether it can be cooked
 	virtual bool isCookable() const {return false;}
-	// Time of cooking
-	virtual float getCookTime(){return 3.0;}
 	// Result of cooking (can randomize)
 	virtual InventoryItem *createCookResult() const {return NULL;}
+	// Time of cooking
+	virtual float getCookTime() const {return 3.0;}
+	// Whether it can be burned (<0 = cannot be burned)
+	virtual float getBurnTime() const {return -1;}
 	
 	// Eat, press, activate, whatever.
 	// Called when item is right-clicked when lying on ground.
@@ -180,6 +182,8 @@ public:
 	*/
 	bool isCookable() const;
 	InventoryItem *createCookResult() const;
+	float getCookTime() const;
+	float getBurnTime() const;
 	/*
 		Special methods
 	*/
@@ -258,6 +262,8 @@ public:
 
 	bool isCookable() const;
 	InventoryItem *createCookResult() const;
+	float getCookTime() const;
+	float getBurnTime() const;
 
 	bool use(ServerEnvironment *env, ServerActiveObject *user);
 	

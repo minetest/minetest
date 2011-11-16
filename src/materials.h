@@ -56,15 +56,16 @@ struct MaterialProperties
 	// Sword is best for cuttable light stuff.
 	float cuttability;
 	// If high, ignites easily
-	//float flammability;
+	float flammability;
 
 	MaterialProperties():
 		diggability(DIGGABLE_NOT),
 		constant_time(0.5),
-		weight(1),
-		crackiness(1),
-		crumbliness(1),
-		cuttability(1)
+		weight(0),
+		crackiness(0),
+		crumbliness(0),
+		cuttability(0),
+		flammability(0)
 	{}
 
 	void serialize(std::ostream &os);

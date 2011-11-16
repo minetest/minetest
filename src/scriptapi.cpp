@@ -40,7 +40,8 @@ extern "C" {
 /*
 TODO:
 - Node definition
-- Random node triggers
+- Random node triggers (like grass growth)
+- Deterministic node triggers (like falling sand)
 - Object visual client-side stuff
 	- Blink effect
 	- Spritesheets and animation
@@ -52,7 +53,7 @@ TODO:
 	blockdef.on_inventory_modified
 	meta.set("owner", playername)
 	meta.get("owner")
-- Item definition
+- Item definition (actually, only CraftItem)
 */
 
 static void stackDump(lua_State *L, std::ostream &o)

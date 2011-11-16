@@ -171,6 +171,20 @@ InventoryItem *MaterialItem::createCookResult() const
 	return InventoryItem::deSerialize(is, m_gamedef);
 }
 
+float MaterialItem::getCookTime() const
+{
+	INodeDefManager *ndef = m_gamedef->ndef();
+	const ContentFeatures &f = ndef->get(m_content);
+	return f.furnace_cooktime;
+}
+
+float MaterialItem::getBurnTime() const
+{
+	INodeDefManager *ndef = m_gamedef->ndef();
+	const ContentFeatures &f = ndef->get(m_content);
+	return f.furnace_burntime;
+}
+
 /*
 	ToolItem
 */
@@ -256,6 +270,18 @@ bool CraftItem::isCookable() const
 InventoryItem *CraftItem::createCookResult() const
 {
 	return item_craft_create_cook_result(m_subname, m_gamedef);
+}
+
+float CraftItem::getCookTime() const
+{
+	return 3.0;
+}
+
+float CraftItem::getBurnTime() const
+{
+	if(m_subname == "lump_of_coal")
+		return 40;
+	return -1;
 }
 
 bool CraftItem::use(ServerEnvironment *env, ServerActiveObject *user)

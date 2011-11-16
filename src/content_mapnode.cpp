@@ -254,6 +254,7 @@ void content_mapnode_init(IWritableNodeDefManager *nodemgr)
 	f->is_ground_content = true;
 	f->dug_item = std::string("MaterialItem2 ")+itos(i)+" 1";
 	f->cookresult_item = "CraftItem lump_of_coal 1";
+	f->furnace_burntime = 30;
 	setWoodLikeMaterialProperties(f->material, 1.0);
 	
 	i = CONTENT_JUNGLETREE;
@@ -263,6 +264,7 @@ void content_mapnode_init(IWritableNodeDefManager *nodemgr)
 	f->setTexture(1, "jungletree_top.png");
 	f->param_type = CPT_MINERAL;
 	f->dug_item = std::string("MaterialItem2 ")+itos(i)+" 1";
+	f->furnace_burntime = 30;
 	setWoodLikeMaterialProperties(f->material, 1.0);
 	
 	i = CONTENT_JUNGLEGRASS;
@@ -277,6 +279,7 @@ void content_mapnode_init(IWritableNodeDefManager *nodemgr)
 	f->dug_item = std::string("MaterialItem2 ")+itos(i)+" 1";
 	f->walkable = false;
 	setLeavesLikeMaterialProperties(f->material, 1.0);
+	f->furnace_burntime = 2;
 
 	i = CONTENT_LEAVES;
 	f = nodemgr->getModifiable(i);
@@ -289,6 +292,7 @@ void content_mapnode_init(IWritableNodeDefManager *nodemgr)
 	f->extra_dug_item_rarity = 20;
 	f->dug_item = std::string("MaterialItem2 ")+itos(i)+" 1";
 	setLeavesLikeMaterialProperties(f->material, 1.0);
+	f->furnace_burntime = 1.0;
 
 	i = CONTENT_CACTUS;
 	f = nodemgr->getModifiable(i);
@@ -300,6 +304,7 @@ void content_mapnode_init(IWritableNodeDefManager *nodemgr)
 	f->is_ground_content = true;
 	f->dug_item = std::string("MaterialItem2 ")+itos(i)+" 1";
 	setWoodLikeMaterialProperties(f->material, 0.75);
+	f->furnace_burntime = 15;
 
 	i = CONTENT_PAPYRUS;
 	f = nodemgr->getModifiable(i);
@@ -312,6 +317,7 @@ void content_mapnode_init(IWritableNodeDefManager *nodemgr)
 	f->dug_item = std::string("MaterialItem2 ")+itos(i)+" 1";
 	f->walkable = false;
 	setLeavesLikeMaterialProperties(f->material, 0.5);
+	f->furnace_burntime = 1;
 
 	i = CONTENT_BOOKSHELF;
 	f = nodemgr->getModifiable(i);
@@ -324,6 +330,7 @@ void content_mapnode_init(IWritableNodeDefManager *nodemgr)
 	f->param_type = CPT_MINERAL;
 	f->is_ground_content = true;
 	setWoodLikeMaterialProperties(f->material, 0.75);
+	f->furnace_burntime = 30;
 
 	i = CONTENT_GLASS;
 	f = nodemgr->getModifiable(i);
@@ -350,6 +357,7 @@ void content_mapnode_init(IWritableNodeDefManager *nodemgr)
 	f->selection_box.type = NODEBOX_FIXED;
 	f->selection_box.fixed = core::aabbox3d<f32>(
 			-BS/7, -BS/2, -BS/7, BS/7, BS/2, BS/7);
+	f->furnace_burntime = 30/2;
 	setWoodLikeMaterialProperties(f->material, 0.75);
 
 	i = CONTENT_RAIL;
@@ -367,6 +375,7 @@ void content_mapnode_init(IWritableNodeDefManager *nodemgr)
 	f->air_equivalent = true; // grass grows underneath
 	f->walkable = false;
 	f->selection_box.type = NODEBOX_FIXED;
+	f->furnace_burntime = 5;
 	setDirtLikeMaterialProperties(f->material, 0.75);
 
 	i = CONTENT_LADDER;
@@ -383,6 +392,7 @@ void content_mapnode_init(IWritableNodeDefManager *nodemgr)
 	f->walkable = false;
 	f->climbable = true;
 	f->selection_box.type = NODEBOX_WALLMOUNTED;
+	f->furnace_burntime = 5;
 	setWoodLikeMaterialProperties(f->material, 0.5);
 
 	// Deprecated
@@ -398,6 +408,7 @@ void content_mapnode_init(IWritableNodeDefManager *nodemgr)
 	f->setInventoryTextureCube("wood.png", "wood.png", "wood.png");
 	f->is_ground_content = true;
 	f->dug_item = std::string("MaterialItem2 ")+itos(i)+" 1";
+	f->furnace_burntime = 30/4;
 	setWoodLikeMaterialProperties(f->material, 0.75);
 	
 	i = CONTENT_MESE;
@@ -406,6 +417,7 @@ void content_mapnode_init(IWritableNodeDefManager *nodemgr)
 	f->setInventoryTextureCube("mese.png", "mese.png", "mese.png");
 	f->is_ground_content = true;
 	f->dug_item = std::string("MaterialItem2 ")+itos(i)+" 1";
+	f->furnace_burntime = 30;
 	setStoneLikeMaterialProperties(f->material, 0.5);
 	
 	i = CONTENT_CLOUD;
@@ -509,6 +521,7 @@ void content_mapnode_init(IWritableNodeDefManager *nodemgr)
 	f->post_effect_color = video::SColor(192, 255, 64, 0);
 	// New-style lava source material (mostly unused)
 	f->setSpecialMaterial(0, MaterialSpec("lava.png", false));
+	f->furnace_burntime = 60;
 	
 	i = CONTENT_TORCH;
 	f = nodemgr->getModifiable(i);
@@ -533,6 +546,7 @@ void content_mapnode_init(IWritableNodeDefManager *nodemgr)
 	f->selection_box.wall_side = core::aabbox3d<f32>(
 			-BS/2, -BS/3.333, -BS/10, -BS/2+BS/3.333, BS/3.333, BS/10);
 	setConstantMaterialProperties(f->material, 0.0);
+	f->furnace_burntime = 4;
 	
 	i = CONTENT_SIGN_WALL;
 	f = nodemgr->getModifiable(i);
@@ -550,6 +564,7 @@ void content_mapnode_init(IWritableNodeDefManager *nodemgr)
 		f->initial_metadata = new SignNodeMetadata(NULL, "Some sign");
 	setConstantMaterialProperties(f->material, 0.5);
 	f->selection_box.type = NODEBOX_WALLMOUNTED;
+	f->furnace_burntime = 10;
 	
 	i = CONTENT_CHEST;
 	f = nodemgr->getModifiable(i);
@@ -564,6 +579,7 @@ void content_mapnode_init(IWritableNodeDefManager *nodemgr)
 	if(f->initial_metadata == NULL)
 		f->initial_metadata = new ChestNodeMetadata(NULL);
 	setWoodLikeMaterialProperties(f->material, 1.0);
+	f->furnace_burntime = 30;
 	
 	i = CONTENT_LOCKABLE_CHEST;
 	f = nodemgr->getModifiable(i);
@@ -578,6 +594,7 @@ void content_mapnode_init(IWritableNodeDefManager *nodemgr)
 	if(f->initial_metadata == NULL)
 		f->initial_metadata = new LockingChestNodeMetadata(NULL);
 	setWoodLikeMaterialProperties(f->material, 1.0);
+	f->furnace_burntime = 30;
 
 	i = CONTENT_FURNACE;
 	f = nodemgr->getModifiable(i);
@@ -629,6 +646,7 @@ void content_mapnode_init(IWritableNodeDefManager *nodemgr)
 	f->setInventoryTexture("nc_front.png");
 	f->dug_item = std::string("MaterialItem2 ")+itos(i)+" 1";
 	setStoneLikeMaterialProperties(f->material, 3.0);
+	f->furnace_burntime = 1;
 	
 	i = CONTENT_NC_RB;
 	f = nodemgr->getModifiable(i);
@@ -636,6 +654,7 @@ void content_mapnode_init(IWritableNodeDefManager *nodemgr)
 	f->setInventoryTexture("nc_rb.png");
 	f->dug_item = std::string("MaterialItem2 ")+itos(i)+" 1";
 	setStoneLikeMaterialProperties(f->material, 3.0);
+	f->furnace_burntime = 1;
 
 	i = CONTENT_SAPLING;
 	f = nodemgr->getModifiable(i);
@@ -649,6 +668,7 @@ void content_mapnode_init(IWritableNodeDefManager *nodemgr)
 	f->air_equivalent = false;
 	f->walkable = false;
 	setConstantMaterialProperties(f->material, 0.0);
+	f->furnace_burntime = 10;
 	
 	i = CONTENT_APPLE;
 	f = nodemgr->getModifiable(i);
@@ -663,6 +683,7 @@ void content_mapnode_init(IWritableNodeDefManager *nodemgr)
 	f->air_equivalent = true;
 	f->dug_item = std::string("CraftItem apple 1");
 	setConstantMaterialProperties(f->material, 0.0);
+	f->furnace_burntime = 3;
 }
 
 

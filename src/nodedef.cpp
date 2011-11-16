@@ -151,7 +151,9 @@ void ContentFeatures::reset()
 	damage_per_second = 0;
 	selection_box = NodeBox();
 	material = MaterialProperties();
-	cookresult_item = "";
+	cookresult_item = ""; // Cannot be cooked
+	furnace_cooktime = 3.0;
+	furnace_burntime = -1.0; // Cannot be burned
 }
 
 void ContentFeatures::serialize(std::ostream &os)
@@ -202,6 +204,8 @@ void ContentFeatures::serialize(std::ostream &os)
 	selection_box.serialize(os);
 	material.serialize(os);
 	os<<serializeString(cookresult_item);
+	writeF1000(os, furnace_cooktime);
+	writeF1000(os, furnace_burntime);
 }
 
 void ContentFeatures::deSerialize(std::istream &is, IGameDef *gamedef)
@@ -255,6 +259,8 @@ void ContentFeatures::deSerialize(std::istream &is, IGameDef *gamedef)
 	selection_box.deSerialize(is);
 	material.deSerialize(is);
 	cookresult_item = deSerializeString(is);
+	furnace_cooktime = readF1000(is);
+	furnace_burntime = readF1000(is);
 }
 
 void ContentFeatures::setTexture(u16 i, std::string name)

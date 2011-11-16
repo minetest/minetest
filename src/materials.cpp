@@ -32,6 +32,7 @@ void MaterialProperties::serialize(std::ostream &os)
 	writeF1000(os, crackiness);
 	writeF1000(os, crumbliness);
 	writeF1000(os, cuttability);
+	writeF1000(os, flammability);
 }
 
 void MaterialProperties::deSerialize(std::istream &is)
@@ -45,6 +46,7 @@ void MaterialProperties::deSerialize(std::istream &is)
 	crackiness = readF1000(is);
 	crumbliness = readF1000(is);
 	cuttability = readF1000(is);
+	flammability = readF1000(is);
 }
 
 DiggingProperties getDiggingProperties(u16 content, ToolDiggingProperties *tp,
