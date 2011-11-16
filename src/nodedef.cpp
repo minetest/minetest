@@ -355,7 +355,7 @@ public:
 			f.diggable = false;
 			f.buildable_to = true;
 			f.air_equivalent = true;
-			set(CONTENT_AIR, f);
+			set(CONTENT_IGNORE, f);
 		}
 	}
 	// CONTENT_IGNORE = not found
