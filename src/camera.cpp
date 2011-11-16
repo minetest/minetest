@@ -464,11 +464,19 @@ void Camera::wield(const InventoryItem* item, IGameDef *gamedef)
 			// A block-type material
 			MaterialItem* mat_item = (MaterialItem*) item;
 			content_t content = mat_item->getMaterial();
-			if (ndef->get(content).solidness || ndef->get(content).visual_solidness)
-			{
+			switch(ndef->get(content).drawtype){
+			case NDT_NORMAL:
+			case NDT_LIQUID:
+			case NDT_FLOWINGLIQUID:
+			case NDT_GLASSLIKE:
+			case NDT_ALLFACES:
+			case NDT_ALLFACES_OPTIONAL:
 				m_wieldnode->setCube(ndef->get(content).tiles);
 				m_wieldnode->setScale(v3f(30));
 				isCube = true;
+				break;
+			default:
+				break;
 			}
 		}
 
