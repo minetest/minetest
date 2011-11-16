@@ -2222,7 +2222,7 @@ void make_block(BlockMakeData *data)
 					vmanip.m_data[vmanip.m_area.index(p)] = LEGN(ndef, "CONTENT_MUD");
 				p.Y++;*/
 				if(vmanip.m_area.contains(p))
-					vmanip.m_data[vmanip.m_area.index(p)] = LEGN(ndef, "CONTENT_JUNGLEGNRASS");
+					vmanip.m_data[vmanip.m_area.index(p)] = LEGN(ndef, "CONTENT_JUNGLEGRASS");
 			}
 		}
 
