@@ -19,9 +19,13 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "content_nodemeta.h"
 #include "inventory.h"
-#include "content_mapnode.h"
 #include "log.h"
 #include "utility.h"
+
+#define NODEMETA_SIGN 14
+#define NODEMETA_CHEST 15
+#define NODEMETA_LOCKABLE_CHEST 17
+#define NODEMETA_FURNACE 16
 
 /*
 	SignNodeMetadata
@@ -38,7 +42,7 @@ SignNodeMetadata::SignNodeMetadata(IGameDef *gamedef, std::string text):
 }
 u16 SignNodeMetadata::typeId() const
 {
-	return CONTENT_SIGN_WALL;
+	return NODEMETA_SIGN;
 }
 NodeMetadata* SignNodeMetadata::create(std::istream &is, IGameDef *gamedef)
 {
@@ -79,7 +83,7 @@ ChestNodeMetadata::~ChestNodeMetadata()
 }
 u16 ChestNodeMetadata::typeId() const
 {
-	return CONTENT_CHEST;
+	return NODEMETA_CHEST;
 }
 NodeMetadata* ChestNodeMetadata::create(std::istream &is, IGameDef *gamedef)
 {
@@ -142,7 +146,7 @@ LockingChestNodeMetadata::~LockingChestNodeMetadata()
 }
 u16 LockingChestNodeMetadata::typeId() const
 {
-	return CONTENT_LOCKABLE_CHEST;
+	return NODEMETA_LOCKABLE_CHEST;
 }
 NodeMetadata* LockingChestNodeMetadata::create(std::istream &is, IGameDef *gamedef)
 {
@@ -215,7 +219,7 @@ FurnaceNodeMetadata::~FurnaceNodeMetadata()
 }
 u16 FurnaceNodeMetadata::typeId() const
 {
-	return CONTENT_FURNACE;
+	return NODEMETA_FURNACE;
 }
 NodeMetadata* FurnaceNodeMetadata::clone(IGameDef *gamedef)
 {

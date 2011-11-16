@@ -229,7 +229,7 @@ struct TestMapNode
 		// Transparency
 		n.setContent(CONTENT_AIR);
 		assert(nodedef->get(n).light_propagates == true);
-		n.setContent(CONTENT_STONE);
+		n.setContent(LEGN(nodedef, "CONTENT_STONE"));
 		assert(nodedef->get(n).light_propagates == false);
 	}
 };

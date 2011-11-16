@@ -637,7 +637,7 @@ void ServerEnvironment::activateBlock(MapBlock *block, u32 additional_dtime)
 #if 1
 		// Test something:
 		// Convert all mud under proper day lighting to grass
-		if(n.getContent() == CONTENT_MUD)
+		if(n.getContent() == LEGN(m_gamedef->ndef(), "CONTENT_MUD"))
 		{
 			if(dtime_s > 300)
 			{
@@ -645,7 +645,7 @@ void ServerEnvironment::activateBlock(MapBlock *block, u32 additional_dtime)
 				if(m_gamedef->ndef()->get(n_top).air_equivalent &&
 						n_top.getLight(LIGHTBANK_DAY, m_gamedef->ndef()) >= 13)
 				{
-					n.setContent(CONTENT_GRASS);
+					n.setContent(LEGN(m_gamedef->ndef(), "CONTENT_GRASS"));
 					m_map->addNodeWithEvent(p, n);
 				}
 			}
@@ -803,9 +803,9 @@ void ServerEnvironment::step(float dtime)
 				v3s16 bottompos = floatToInt(playerpos + v3f(0,-BS/4,0), BS);
 				try{
 					MapNode n = m_map->getNode(bottompos);
-					if(n.getContent() == CONTENT_GRASS)
+					if(n.getContent() == LEGN(m_gamedef->ndef(), "CONTENT_GRASS"))
 					{
-						n.setContent(CONTENT_GRASS_FOOTSTEPS);
+						n.setContent(LEGN(m_gamedef->ndef(), "CONTENT_GRASS_FOOTSTEPS"));
 						m_map->setNode(bottompos, n);
 					}
 				}
@@ -1008,7 +1008,7 @@ void ServerEnvironment::step(float dtime)
 					Test something:
 					Convert mud under proper lighting to grass
 				*/
-				if(n.getContent() == CONTENT_MUD)
+				if(n.getContent() == LEGN(m_gamedef->ndef(), "CONTENT_MUD"))
 				{
 					if(myrand()%20 == 0)
 					{
@@ -1017,7 +1017,7 @@ void ServerEnvironment::step(float dtime)
 								n_top.getLightBlend(getDayNightRatio(),
 										m_gamedef->ndef()) >= 13)
 						{
-							n.setContent(CONTENT_GRASS);
+							n.setContent(LEGN(m_gamedef->ndef(), "CONTENT_GRASS"));
 							m_map->addNodeWithEvent(p, n);
 						}
 					}
@@ -1025,14 +1025,14 @@ void ServerEnvironment::step(float dtime)
 				/*
 					Convert grass into mud if under something else than air
 				*/
-				if(n.getContent() == CONTENT_GRASS)
+				if(n.getContent() == LEGN(m_gamedef->ndef(), "CONTENT_GRASS"))
 				{
 					//if(myrand()%20 == 0)
 					{
 						MapNode n_top = m_map->getNodeNoEx(p+v3s16(0,1,0));
 						if(m_gamedef->ndef()->get(n_top).air_equivalent == false)
 						{
-							n.setContent(CONTENT_MUD);
+							n.setContent(LEGN(m_gamedef->ndef(), "CONTENT_MUD"));
 							m_map->addNodeWithEvent(p, n);
 						}
 					}
@@ -1040,8 +1040,8 @@ void ServerEnvironment::step(float dtime)
 				/*
 					Rats spawn around regular trees
 				*/
-				if(n.getContent() == CONTENT_TREE ||
-						n.getContent() == CONTENT_JUNGLETREE)
+				if(n.getContent() == LEGN(m_gamedef->ndef(), "CONTENT_TREE") ||
+						n.getContent() == LEGN(m_gamedef->ndef(), "CONTENT_JUNGLETREE"))
 				{
    					if(myrand()%200 == 0 && active_object_count_wider == 0)
 					{
@@ -1049,7 +1049,7 @@ void ServerEnvironment::step(float dtime)
 								0, myrand_range(-2, 2));
 						MapNode n1 = m_map->getNodeNoEx(p1);
 						MapNode n1b = m_map->getNodeNoEx(p1+v3s16(0,-1,0));
-						if(n1b.getContent() == CONTENT_GRASS &&
+						if(n1b.getContent() == LEGN(m_gamedef->ndef(), "CONTENT_GRASS") &&
 								n1.getContent() == CONTENT_AIR)
 						{
 							v3f pos = intToFloat(p1, BS);
@@ -1061,8 +1061,8 @@ void ServerEnvironment::step(float dtime)
 				/*
 					Fun things spawn in caves and dungeons
 				*/
-				if(n.getContent() == CONTENT_STONE ||
-						n.getContent() == CONTENT_MOSSYCOBBLE)
+				if(n.getContent() == LEGN(m_gamedef->ndef(), "CONTENT_STONE") ||
+						n.getContent() == LEGN(m_gamedef->ndef(), "CONTENT_MOSSYCOBBLE"))
 				{
    					if(myrand()%200 == 0 && active_object_count_wider == 0)
 					{
@@ -1106,7 +1106,7 @@ void ServerEnvironment::step(float dtime)
 				/*
 					Make trees from saplings!
 				*/
-				if(n.getContent() == CONTENT_SAPLING)
+				if(n.getContent() == LEGN(m_gamedef->ndef(), "CONTENT_SAPLING"))
 				{
 					if(myrand()%50 == 0)
 					{
@@ -1119,7 +1119,8 @@ void ServerEnvironment::step(float dtime)
 						v3s16 tree_blockp = getNodeBlockPos(tree_p);
 						vmanip.initialEmerge(tree_blockp - v3s16(1,1,1), tree_blockp + v3s16(1,1,1));
 						bool is_apple_tree = myrand()%4 == 0;
-						mapgen::make_tree(vmanip, tree_p, is_apple_tree);
+						mapgen::make_tree(vmanip, tree_p, is_apple_tree,
+								m_gamedef->ndef());
 						vmanip.blitBackAll(&modified_blocks);
 
 						// update lighting
@@ -2126,9 +2127,9 @@ void ClientEnvironment::step(float dtime)
 			v3s16 bottompos = floatToInt(playerpos + v3f(0,-BS/4,0), BS);
 			try{
 				MapNode n = m_map->getNode(bottompos);
-				if(n.getContent() == CONTENT_GRASS)
+				if(n.getContent() == LEGN(m_gamedef->ndef(), "CONTENT_GRASS"))
 				{
-					n.setContent(CONTENT_GRASS_FOOTSTEPS);
+					n.setContent(LEGN(m_gamedef->ndef(), "CONTENT_GRASS_FOOTSTEPS"));
 					m_map->setNode(bottompos, n);
 					// Update mesh on client
 					if(m_map->mapType() == MAPTYPE_CLIENT)

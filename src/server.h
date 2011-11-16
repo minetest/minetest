@@ -633,7 +633,7 @@ private:
 	IWritableToolDefManager *m_toolmgr;
 	
 	// Node definition manager
-	IWritableNodeDefManager *m_nodemgr;
+	IWritableNodeDefManager *m_nodedef;
 	
 	/*
 		Threads

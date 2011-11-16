@@ -19,7 +19,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "mapgen.h"
 #include "voxel.h"
-#include "content_mapnode.h"
 #include "noise.h"
 #include "mapblock.h"
 #include "map.h"
@@ -27,6 +26,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 //#include "serverobject.h"
 #include "content_sao.h"
 #include "nodedef.h"
+#include "content_mapnode.h" // For content_mapnode_get_new_name
 
 namespace mapgen
 {
@@ -68,8 +68,8 @@ static s16 find_ground_level_clever(VoxelManipulator &vmanip, v2s16 p2d)
 	{
 		MapNode &n = vmanip.m_data[i];
 		if(content_walkable(n.d)
-				&& n.getContent() != CONTENT_TREE
-				&& n.getContent() != CONTENT_LEAVES)
+				&& n.getContent() != LEGN(ndef, "CONTENT_TREE")
+				&& n.getContent() != LEGN(ndef, "CONTENT_LEAVES"))
 			break;
 
 		vmanip.m_area.add_y(em, i, -1);
@@ -81,11 +81,12 @@ static s16 find_ground_level_clever(VoxelManipulator &vmanip, v2s16 p2d)
 }
 #endif
 
-void make_tree(ManualMapVoxelManipulator &vmanip, v3s16 p0, bool is_apple_tree)
+void make_tree(ManualMapVoxelManipulator &vmanip, v3s16 p0,
+		bool is_apple_tree, INodeDefManager *ndef)
 {
-	MapNode treenode(CONTENT_TREE);
-	MapNode leavesnode(CONTENT_LEAVES);
-	MapNode applenode(CONTENT_APPLE);
+	MapNode treenode(LEGN(ndef, "CONTENT_TREE"));
+	MapNode leavesnode(LEGN(ndef, "CONTENT_LEAVES"));
+	MapNode applenode(LEGN(ndef, "CONTENT_APPLE"));
 	
 	s16 trunk_h = myrand_range(4, 5);
 	v3s16 p1 = p0;
@@ -160,10 +161,11 @@ void make_tree(ManualMapVoxelManipulator &vmanip, v3s16 p0, bool is_apple_tree)
 	}
 }
 
-static void make_jungletree(VoxelManipulator &vmanip, v3s16 p0)
+static void make_jungletree(VoxelManipulator &vmanip, v3s16 p0,
+		INodeDefManager *ndef)
 {
-	MapNode treenode(CONTENT_JUNGLETREE);
-	MapNode leavesnode(CONTENT_LEAVES);
+	MapNode treenode(LEGN(ndef, "CONTENT_JUNGLETREE"));
+	MapNode leavesnode(LEGN(ndef, "CONTENT_LEAVES"));
 
 	for(s16 x=-1; x<=1; x++)
 	for(s16 z=-1; z<=1; z++)
@@ -246,9 +248,10 @@ static void make_jungletree(VoxelManipulator &vmanip, v3s16 p0)
 	}
 }
 
-void make_papyrus(VoxelManipulator &vmanip, v3s16 p0)
+void make_papyrus(VoxelManipulator &vmanip, v3s16 p0,
+		INodeDefManager *ndef)
 {
-	MapNode papyrusnode(CONTENT_PAPYRUS);
+	MapNode papyrusnode(LEGN(ndef, "CONTENT_PAPYRUS"));
 
 	s16 trunk_h = myrand_range(2, 3);
 	v3s16 p1 = p0;
@@ -260,9 +263,10 @@ void make_papyrus(VoxelManipulator &vmanip, v3s16 p0)
 	}
 }
 
-void make_cactus(VoxelManipulator &vmanip, v3s16 p0)
+void make_cactus(VoxelManipulator &vmanip, v3s16 p0,
+		INodeDefManager *ndef)
 {
-	MapNode cactusnode(CONTENT_CACTUS);
+	MapNode cactusnode(LEGN(ndef, "CONTENT_CACTUS"));
 
 	s16 trunk_h = 3;
 	v3s16 p1 = p0;
@@ -277,7 +281,7 @@ void make_cactus(VoxelManipulator &vmanip, v3s16 p0)
 #if 0
 static void make_randomstone(VoxelManipulator &vmanip, v3s16 p0)
 {
-	MapNode stonenode(CONTENT_STONE);
+	MapNode stonenode(LEGN(ndef, "CONTENT_STONE"));
 
 	s16 size = myrand_range(3, 6);
 	
@@ -358,7 +362,7 @@ static void make_randomstone(VoxelManipulator &vmanip, v3s16 p0)
 #if 0
 static void make_largestone(VoxelManipulator &vmanip, v3s16 p0)
 {
-	MapNode stonenode(CONTENT_STONE);
+	MapNode stonenode(LEGN(ndef, "CONTENT_STONE"));
 
 	s16 size = myrand_range(8, 16);
 	
@@ -448,7 +452,8 @@ static void make_largestone(VoxelManipulator &vmanip, v3s16 p0)
 #define VMANIP_FLAG_DUNGEON_UNTOUCHABLE (\
 		VMANIP_FLAG_DUNGEON_INSIDE|VMANIP_FLAG_DUNGEON_PRESERVE)
 
-static void make_room1(VoxelManipulator &vmanip, v3s16 roomsize, v3s16 roomplace)
+static void make_room1(VoxelManipulator &vmanip, v3s16 roomsize, v3s16 roomplace,
+		INodeDefManager *ndef)
 {
 	// Make +-X walls
 	for(s16 z=0; z<roomsize.Z; z++)
@@ -461,7 +466,7 @@ static void make_room1(VoxelManipulator &vmanip, v3s16 roomsize, v3s16 roomplace
 			u32 vi = vmanip.m_area.index(p);
 			if(vmanip.m_flags[vi] & VMANIP_FLAG_DUNGEON_UNTOUCHABLE)
 				continue;
-			vmanip.m_data[vi] = MapNode(CONTENT_COBBLE);
+			vmanip.m_data[vi] = MapNode(LEGN(ndef, "CONTENT_COBBLE"));
 		}
 		{
 			v3s16 p = roomplace + v3s16(roomsize.X-1,y,z);
@@ -470,7 +475,7 @@ static void make_room1(VoxelManipulator &vmanip, v3s16 roomsize, v3s16 roomplace
 			u32 vi = vmanip.m_area.index(p);
 			if(vmanip.m_flags[vi] & VMANIP_FLAG_DUNGEON_UNTOUCHABLE)
 				continue;
-			vmanip.m_data[vi] = MapNode(CONTENT_COBBLE);
+			vmanip.m_data[vi] = MapNode(LEGN(ndef, "CONTENT_COBBLE"));
 		}
 	}
 	
@@ -485,7 +490,7 @@ static void make_room1(VoxelManipulator &vmanip, v3s16 roomsize, v3s16 roomplace
 			u32 vi = vmanip.m_area.index(p);
 			if(vmanip.m_flags[vi] & VMANIP_FLAG_DUNGEON_UNTOUCHABLE)
 				continue;
-			vmanip.m_data[vi] = MapNode(CONTENT_COBBLE);
+			vmanip.m_data[vi] = MapNode(LEGN(ndef, "CONTENT_COBBLE"));
 		}
 		{
 			v3s16 p = roomplace + v3s16(x,y,roomsize.Z-1);
@@ -494,7 +499,7 @@ static void make_room1(VoxelManipulator &vmanip, v3s16 roomsize, v3s16 roomplace
 			u32 vi = vmanip.m_area.index(p);
 			if(vmanip.m_flags[vi] & VMANIP_FLAG_DUNGEON_UNTOUCHABLE)
 				continue;
-			vmanip.m_data[vi] = MapNode(CONTENT_COBBLE);
+			vmanip.m_data[vi] = MapNode(LEGN(ndef, "CONTENT_COBBLE"));
 		}
 	}
 	
@@ -509,7 +514,7 @@ static void make_room1(VoxelManipulator &vmanip, v3s16 roomsize, v3s16 roomplace
 			u32 vi = vmanip.m_area.index(p);
 			if(vmanip.m_flags[vi] & VMANIP_FLAG_DUNGEON_UNTOUCHABLE)
 				continue;
-			vmanip.m_data[vi] = MapNode(CONTENT_COBBLE);
+			vmanip.m_data[vi] = MapNode(LEGN(ndef, "CONTENT_COBBLE"));
 		}
 		{
 			v3s16 p = roomplace + v3s16(x,roomsize.Y-1,z);
@@ -518,7 +523,7 @@ static void make_room1(VoxelManipulator &vmanip, v3s16 roomsize, v3s16 roomplace
 			u32 vi = vmanip.m_area.index(p);
 			if(vmanip.m_flags[vi] & VMANIP_FLAG_DUNGEON_UNTOUCHABLE)
 				continue;
-			vmanip.m_data[vi] = MapNode(CONTENT_COBBLE);
+			vmanip.m_data[vi] = MapNode(LEGN(ndef, "CONTENT_COBBLE"));
 		}
 	}
 	
@@ -554,17 +559,19 @@ static void make_fill(VoxelManipulator &vmanip, v3s16 place, v3s16 size,
 	}
 }
 
-static void make_hole1(VoxelManipulator &vmanip, v3s16 place)
+static void make_hole1(VoxelManipulator &vmanip, v3s16 place,
+		INodeDefManager *ndef)
 {
 	make_fill(vmanip, place, v3s16(1,2,1), 0, MapNode(CONTENT_AIR),
 			VMANIP_FLAG_DUNGEON_INSIDE);
 }
 
-static void make_door1(VoxelManipulator &vmanip, v3s16 doorplace, v3s16 doordir)
+static void make_door1(VoxelManipulator &vmanip, v3s16 doorplace, v3s16 doordir,
+		INodeDefManager *ndef)
 {
-	make_hole1(vmanip, doorplace);
+	make_hole1(vmanip, doorplace, ndef);
 	// Place torch (for testing)
-	//vmanip.m_data[vmanip.m_area.index(doorplace)] = MapNode(CONTENT_TORCH);
+	//vmanip.m_data[vmanip.m_area.index(doorplace)] = MapNode(LEGN(ndef, "CONTENT_TORCH"));
 }
 
 static v3s16 rand_ortho_dir(PseudoRandom &random)
@@ -615,9 +622,9 @@ static v3s16 random_turn(PseudoRandom &random, v3s16 olddir)
 
 static void make_corridor(VoxelManipulator &vmanip, v3s16 doorplace,
 		v3s16 doordir, v3s16 &result_place, v3s16 &result_dir,
-		PseudoRandom &random)
+		PseudoRandom &random, INodeDefManager *ndef)
 {
-	make_hole1(vmanip, doorplace);
+	make_hole1(vmanip, doorplace, ndef);
 	v3s16 p0 = doorplace;
 	v3s16 dir = doordir;
 	u32 length;
@@ -651,7 +658,7 @@ static void make_corridor(VoxelManipulator &vmanip, v3s16 doorplace,
 			if(make_stairs)
 			{
 				make_fill(vmanip, p+v3s16(-1,-1,-1), v3s16(3,5,3),
-						VMANIP_FLAG_DUNGEON_UNTOUCHABLE, MapNode(CONTENT_COBBLE), 0);
+						VMANIP_FLAG_DUNGEON_UNTOUCHABLE, MapNode(LEGN(ndef, "CONTENT_COBBLE")), 0);
 				make_fill(vmanip, p, v3s16(1,2,1), 0, MapNode(CONTENT_AIR),
 						VMANIP_FLAG_DUNGEON_INSIDE);
 				make_fill(vmanip, p-dir, v3s16(1,2,1), 0, MapNode(CONTENT_AIR),
@@ -660,8 +667,8 @@ static void make_corridor(VoxelManipulator &vmanip, v3s16 doorplace,
 			else
 			{
 				make_fill(vmanip, p+v3s16(-1,-1,-1), v3s16(3,4,3),
-						VMANIP_FLAG_DUNGEON_UNTOUCHABLE, MapNode(CONTENT_COBBLE), 0);
-				make_hole1(vmanip, p);
+						VMANIP_FLAG_DUNGEON_UNTOUCHABLE, MapNode(LEGN(ndef, "CONTENT_COBBLE")), 0);
+				make_hole1(vmanip, p, ndef);
 				/*make_fill(vmanip, p, v3s16(1,2,1), 0, MapNode(CONTENT_AIR),
 						VMANIP_FLAG_DUNGEON_INSIDE);*/
 			}
@@ -700,10 +707,12 @@ class RoomWalker
 {
 public:
 
-	RoomWalker(VoxelManipulator &vmanip_, v3s16 pos, PseudoRandom &random):
+	RoomWalker(VoxelManipulator &vmanip_, v3s16 pos, PseudoRandom &random,
+			INodeDefManager *ndef):
 			vmanip(vmanip_),
 			m_pos(pos),
-			m_random(random)
+			m_random(random),
+			m_ndef(ndef)
 	{
 		randomizeDir();
 	}
@@ -737,9 +746,9 @@ public:
 				continue;
 			}
 			if(vmanip.getNodeNoExNoEmerge(p).getContent()
-					== CONTENT_COBBLE
+					== LEGN(m_ndef, "CONTENT_COBBLE")
 			&& vmanip.getNodeNoExNoEmerge(p1).getContent()
-					== CONTENT_COBBLE)
+					== LEGN(m_ndef, "CONTENT_COBBLE"))
 			{
 				// Found wall, this is a good place!
 				result_place = p;
@@ -753,25 +762,25 @@ public:
 			*/
 			// Jump one up if the actual space is there
 			if(vmanip.getNodeNoExNoEmerge(p+v3s16(0,0,0)).getContent()
-					== CONTENT_COBBLE
+					== LEGN(m_ndef, "CONTENT_COBBLE")
 			&& vmanip.getNodeNoExNoEmerge(p+v3s16(0,1,0)).getContent()
-					== CONTENT_AIR
+					== LEGN(m_ndef, "CONTENT_AIR")
 			&& vmanip.getNodeNoExNoEmerge(p+v3s16(0,2,0)).getContent()
-					== CONTENT_AIR)
+					== LEGN(m_ndef, "CONTENT_AIR"))
 				p += v3s16(0,1,0);
 			// Jump one down if the actual space is there
 			if(vmanip.getNodeNoExNoEmerge(p+v3s16(0,1,0)).getContent()
-					== CONTENT_COBBLE
+					== LEGN(m_ndef, "CONTENT_COBBLE")
 			&& vmanip.getNodeNoExNoEmerge(p+v3s16(0,0,0)).getContent()
-					== CONTENT_AIR
+					== LEGN(m_ndef, "CONTENT_AIR")
 			&& vmanip.getNodeNoExNoEmerge(p+v3s16(0,-1,0)).getContent()
-					== CONTENT_AIR)
+					== LEGN(m_ndef, "CONTENT_AIR"))
 				p += v3s16(0,-1,0);
 			// Check if walking is now possible
 			if(vmanip.getNodeNoExNoEmerge(p).getContent()
-					!= CONTENT_AIR
+					!= LEGN(m_ndef, "CONTENT_AIR")
 			|| vmanip.getNodeNoExNoEmerge(p+v3s16(0,1,0)).getContent()
-					!= CONTENT_AIR)
+					!= LEGN(m_ndef, "CONTENT_AIR"))
 			{
 				// Cannot continue walking here
 				randomizeDir();
@@ -857,9 +866,11 @@ private:
 	v3s16 m_pos;
 	v3s16 m_dir;
 	PseudoRandom &m_random;
+	INodeDefManager *m_ndef;
 };
 
-static void make_dungeon1(VoxelManipulator &vmanip, PseudoRandom &random)
+static void make_dungeon1(VoxelManipulator &vmanip, PseudoRandom &random,
+		INodeDefManager *ndef)
 {
 	v3s16 areasize = vmanip.m_area.getExtent();
 	v3s16 roomsize;
@@ -916,12 +927,12 @@ static void make_dungeon1(VoxelManipulator &vmanip, PseudoRandom &random)
 	for(u32 i=0; i<room_count; i++)
 	{
 		// Make a room to the determined place
-		make_room1(vmanip, roomsize, roomplace);
+		make_room1(vmanip, roomsize, roomplace, ndef);
 		
 		v3s16 room_center = roomplace + v3s16(roomsize.X/2,1,roomsize.Z/2);
 
 		// Place torch at room center (for testing)
-		//vmanip.m_data[vmanip.m_area.index(room_center)] = MapNode(CONTENT_TORCH);
+		//vmanip.m_data[vmanip.m_area.index(room_center)] = MapNode(LEGN(ndef, "CONTENT_TORCH"));
 
 		// Quit if last room
 		if(i == room_count-1)
@@ -946,7 +957,7 @@ static void make_dungeon1(VoxelManipulator &vmanip, PseudoRandom &random)
 		}
 		
 		// Create walker and find a place for a door
-		RoomWalker walker(vmanip, walker_start_place, random);
+		RoomWalker walker(vmanip, walker_start_place, random, ndef);
 		v3s16 doorplace;
 		v3s16 doordir;
 		bool r = walker.findPlaceForDoor(doorplace, doordir);
@@ -955,7 +966,7 @@ static void make_dungeon1(VoxelManipulator &vmanip, PseudoRandom &random)
 		
 		if(random.range(0,1)==0)
 			// Make the door
-			make_door1(vmanip, doorplace, doordir);
+			make_door1(vmanip, doorplace, doordir, ndef);
 		else
 			// Don't actually make a door
 			doorplace -= doordir;
@@ -964,7 +975,7 @@ static void make_dungeon1(VoxelManipulator &vmanip, PseudoRandom &random)
 		v3s16 corridor_end;
 		v3s16 corridor_end_dir;
 		make_corridor(vmanip, doorplace, doordir, corridor_end,
-				corridor_end_dir, random);
+				corridor_end_dir, random, ndef);
 		
 		// Find a place for a random sized room
 		roomsize = v3s16(random.range(4,8),random.range(4,6),random.range(4,8));
@@ -976,7 +987,7 @@ static void make_dungeon1(VoxelManipulator &vmanip, PseudoRandom &random)
 
 		if(random.range(0,1)==0)
 			// Make the door
-			make_door1(vmanip, doorplace, doordir);
+			make_door1(vmanip, doorplace, doordir, ndef);
 		else
 			// Don't actually make a door
 			roomplace -= doordir;
@@ -984,7 +995,8 @@ static void make_dungeon1(VoxelManipulator &vmanip, PseudoRandom &random)
 	}
 }
 
-static void make_nc(VoxelManipulator &vmanip, PseudoRandom &random)
+static void make_nc(VoxelManipulator &vmanip, PseudoRandom &random,
+		INodeDefManager *ndef)
 {
 	v3s16 dir;
 	u8 facedir_i = 0;
@@ -1009,12 +1021,12 @@ static void make_nc(VoxelManipulator &vmanip, PseudoRandom &random)
 			16+random.range(0,15),
 			16+random.range(0,15),
 			16+random.range(0,15));
-	vmanip.m_data[vmanip.m_area.index(p)] = MapNode(CONTENT_NC, facedir_i);
+	vmanip.m_data[vmanip.m_area.index(p)] = MapNode(LEGN(ndef, "CONTENT_NC"), facedir_i);
 	u32 length = random.range(3,15);
 	for(u32 j=0; j<length; j++)
 	{
 		p -= dir;
-		vmanip.m_data[vmanip.m_area.index(p)] = MapNode(CONTENT_NC_RB);
+		vmanip.m_data[vmanip.m_area.index(p)] = MapNode(LEGN(ndef, "CONTENT_NC_RB"));
 	}
 }
 
@@ -1417,9 +1429,9 @@ void add_random_objects(MapBlock *block)
 			MapNode n = block->getNodeNoEx(p);
 			if(n.getContent() == CONTENT_IGNORE)
 				continue;
-			if(data->nodemgr->get(n)->liquid_type != LIQUID_NONE)
+			if(data->nodedef->get(n)->liquid_type != LIQUID_NONE)
 				continue;
-			if(data->nodemgr->get(n)->walkable)
+			if(data->nodedef->get(n)->walkable)
 			{
 				last_node_walkable = true;
 				continue;
@@ -1479,7 +1491,9 @@ void make_block(BlockMakeData *data)
 	}
 
 	assert(data->vmanip);
-	assert(data->nodemgr);
+	assert(data->nodedef);
+
+	INodeDefManager *ndef = data->nodedef;
 
 	v3s16 blockpos = data->blockpos;
 	
@@ -1541,7 +1555,7 @@ void make_block(BlockMakeData *data)
 					if(vmanip.m_data[i].getContent() == CONTENT_IGNORE)
 					{
 						if(y <= WATER_LEVEL)
-							vmanip.m_data[i] = MapNode(CONTENT_WATERSOURCE);
+							vmanip.m_data[i] = MapNode(LEGN(ndef, "CONTENT_WATERSOURCE"));
 						else
 							vmanip.m_data[i] = MapNode(CONTENT_AIR);
 					}
@@ -1653,14 +1667,14 @@ void make_block(BlockMakeData *data)
 							v3s16(x,y,z), data->seed) == false)
 					{
 						if(y <= WATER_LEVEL)
-							vmanip.m_data[i] = MapNode(CONTENT_WATERSOURCE);
+							vmanip.m_data[i] = MapNode(LEGN(ndef, "CONTENT_WATERSOURCE"));
 						else
 							vmanip.m_data[i] = MapNode(CONTENT_AIR);
 					}
 					else if(noisebuf_cave.get(x,y,z) > CAVE_NOISE_THRESHOLD)
 						vmanip.m_data[i] = MapNode(CONTENT_AIR);
 					else
-						vmanip.m_data[i] = MapNode(CONTENT_STONE);
+						vmanip.m_data[i] = MapNode(LEGN(ndef, "CONTENT_STONE"));
 				}
 			
 				data->vmanip->m_area.add_y(em, i, 1);
@@ -1689,9 +1703,9 @@ void make_block(BlockMakeData *data)
 				{
 					v3s16 p = v3s16(x,y,z) + g_27dirs[i];
 					u32 vi = vmanip.m_area.index(p);
-					if(vmanip.m_data[vi].getContent() == CONTENT_STONE)
+					if(vmanip.m_data[vi].getContent() == LEGN(ndef, "CONTENT_STONE"))
 						if(mineralrandom.next()%8 == 0)
-							vmanip.m_data[vi] = MapNode(CONTENT_MESE);
+							vmanip.m_data[vi] = MapNode(LEGN(ndef, "CONTENT_MESE"));
 				}
 					
 			}
@@ -1709,22 +1723,22 @@ void make_block(BlockMakeData *data)
 				s16 y = mineralrandom.range(node_min.Y+1, node_max.Y-1);
 				s16 z = mineralrandom.range(node_min.Z+1, node_max.Z-1);
 
-				u8 base_content = CONTENT_STONE;
+				u8 base_content = LEGN(ndef, "CONTENT_STONE");
 				MapNode new_content(CONTENT_IGNORE);
 				u32 sparseness = 6;
 
 				if(noisebuf_ground_crumbleness.get(x,y+5,z) < -0.1)
 				{
-					new_content = MapNode(CONTENT_STONE, MINERAL_COAL);
+					new_content = MapNode(LEGN(ndef, "CONTENT_STONE"), MINERAL_COAL);
 				}
 				else
 				{
 					if(noisebuf_ground_wetness.get(x,y+5,z) > 0.0)
-						new_content = MapNode(CONTENT_STONE, MINERAL_IRON);
+						new_content = MapNode(LEGN(ndef, "CONTENT_STONE"), MINERAL_IRON);
 					/*if(noisebuf_ground_wetness.get(x,y,z) > 0.0)
-						vmanip.m_data[i] = MapNode(CONTENT_MUD);
+						vmanip.m_data[i] = MapNode(LEGN(ndef, "CONTENT_MUD"));
 					else
-						vmanip.m_data[i] = MapNode(CONTENT_SAND);*/
+						vmanip.m_data[i] = MapNode(LEGN(ndef, "CONTENT_SAND"));*/
 				}
 				/*else if(noisebuf_ground_crumbleness.get(x,y,z) > 0.1)
 				{
@@ -1767,9 +1781,9 @@ void make_block(BlockMakeData *data)
 				{
 					v3s16 p = v3s16(x,y,z) + g_27dirs[i];
 					u32 vi = vmanip.m_area.index(p);
-					if(vmanip.m_data[vi].getContent() == CONTENT_STONE)
+					if(vmanip.m_data[vi].getContent() == LEGN(ndef, "CONTENT_STONE"))
 						if(mineralrandom.next()%8 == 0)
-							vmanip.m_data[vi] = MapNode(CONTENT_STONE, MINERAL_COAL);
+							vmanip.m_data[vi] = MapNode(LEGN(ndef, "CONTENT_STONE"), MINERAL_COAL);
 				}
 			}
 		}
@@ -1793,9 +1807,9 @@ void make_block(BlockMakeData *data)
 				{
 					v3s16 p = v3s16(x,y,z) + g_27dirs[i];
 					u32 vi = vmanip.m_area.index(p);
-					if(vmanip.m_data[vi].getContent() == CONTENT_STONE)
+					if(vmanip.m_data[vi].getContent() == LEGN(ndef, "CONTENT_STONE"))
 						if(mineralrandom.next()%8 == 0)
-							vmanip.m_data[vi] = MapNode(CONTENT_STONE, MINERAL_IRON);
+							vmanip.m_data[vi] = MapNode(LEGN(ndef, "CONTENT_STONE"), MINERAL_IRON);
 				}
 			}
 		}
@@ -1816,24 +1830,24 @@ void make_block(BlockMakeData *data)
 			u32 i = vmanip.m_area.index(v3s16(p2d.X, node_max.Y, p2d.Y));
 			for(s16 y=node_max.Y; y>=node_min.Y; y--)
 			{
-				if(vmanip.m_data[i].getContent() == CONTENT_STONE)
+				if(vmanip.m_data[i].getContent() == LEGN(ndef, "CONTENT_STONE"))
 				{
 					if(noisebuf_ground_crumbleness.get(x,y,z) > 1.3)
 					{
 						if(noisebuf_ground_wetness.get(x,y,z) > 0.0)
-							vmanip.m_data[i] = MapNode(CONTENT_MUD);
+							vmanip.m_data[i] = MapNode(LEGN(ndef, "CONTENT_MUD"));
 						else
-							vmanip.m_data[i] = MapNode(CONTENT_SAND);
+							vmanip.m_data[i] = MapNode(LEGN(ndef, "CONTENT_SAND"));
 					}
 					else if(noisebuf_ground_crumbleness.get(x,y,z) > 0.7)
 					{
 						if(noisebuf_ground_wetness.get(x,y,z) < -0.6)
-							vmanip.m_data[i] = MapNode(CONTENT_GRAVEL);
+							vmanip.m_data[i] = MapNode(LEGN(ndef, "CONTENT_GRAVEL"));
 					}
 					else if(noisebuf_ground_crumbleness.get(x,y,z) <
 							-3.0 + MYMIN(0.1 * sqrt((float)MYMAX(0, -y)), 1.5))
 					{
-						vmanip.m_data[i] = MapNode(CONTENT_LAVASOURCE);
+						vmanip.m_data[i] = MapNode(LEGN(ndef, "CONTENT_LAVASOURCE"));
 						for(s16 x1=-1; x1<=1; x1++)
 						for(s16 y1=-1; y1<=1; y1++)
 						for(s16 z1=-1; z1<=1; z1++)
@@ -1880,7 +1894,7 @@ void make_block(BlockMakeData *data)
 				{
 					if(vmanip.m_data[i].getContent() == CONTENT_AIR)
 						vmanip.m_flags[i] |= VMANIP_FLAG_DUNGEON_PRESERVE;
-					else if(vmanip.m_data[i].getContent() == CONTENT_WATERSOURCE)
+					else if(vmanip.m_data[i].getContent() == LEGN(ndef, "CONTENT_WATERSOURCE"))
 						vmanip.m_flags[i] |= VMANIP_FLAG_DUNGEON_PRESERVE;
 					data->vmanip->m_area.add_y(em, i, -1);
 				}
@@ -1890,7 +1904,7 @@ void make_block(BlockMakeData *data)
 		PseudoRandom random(blockseed+2);
 
 		// Add it
-		make_dungeon1(vmanip, random);
+		make_dungeon1(vmanip, random, ndef);
 		
 		// Convert some cobble to mossy cobble
 		for(s16 x=full_node_min.X; x<=full_node_max.X; x++)
@@ -1911,17 +1925,17 @@ void make_block(BlockMakeData *data)
 					double d = noise3d_perlin((float)x/2.5,
 							(float)y/2.5,(float)z/2.5,
 							blockseed, 2, 1.4);
-					if(vmanip.m_data[i].getContent() == CONTENT_COBBLE)
+					if(vmanip.m_data[i].getContent() == LEGN(ndef, "CONTENT_COBBLE"))
 					{
 						if(d < wetness/3.0)
 						{
-							vmanip.m_data[i].setContent(CONTENT_MOSSYCOBBLE);
+							vmanip.m_data[i].setContent(LEGN(ndef, "CONTENT_MOSSYCOBBLE"));
 						}
 					}
 					/*else if(vmanip.m_flags[i] & VMANIP_FLAG_DUNGEON_INSIDE)
 					{
 						if(wetness > 1.2)
-							vmanip.m_data[i].setContent(CONTENT_MUD);
+							vmanip.m_data[i].setContent(LEGN(ndef, "CONTENT_MUD"));
 					}*/
 					data->vmanip->m_area.add_y(em, i, -1);
 				}
@@ -1936,7 +1950,7 @@ void make_block(BlockMakeData *data)
 		PseudoRandom ncrandom(blockseed+9324342);
 		if(ncrandom.range(0, 1000) == 0 && blockpos.Y <= -3)
 		{
-			make_nc(vmanip, ncrandom);
+			make_nc(vmanip, ncrandom, ndef);
 		}
 	}
 	
@@ -1958,7 +1972,7 @@ void make_block(BlockMakeData *data)
 			{
 				if(water_found == false)
 				{
-					if(vmanip.m_data[i].getContent() == CONTENT_WATERSOURCE)
+					if(vmanip.m_data[i].getContent() == LEGN(ndef, "CONTENT_WATERSOURCE"))
 					{
 						v3s16 p = v3s16(p2d.X, y, p2d.Y);
 						data->transforming_liquid.push_back(p);
@@ -1970,7 +1984,7 @@ void make_block(BlockMakeData *data)
 					// This can be done because water_found can only
 					// turn to true and end up here after going through
 					// a single block.
-					if(vmanip.m_data[i+1].getContent() != CONTENT_WATERSOURCE)
+					if(vmanip.m_data[i+1].getContent() != LEGN(ndef, "CONTENT_WATERSOURCE"))
 					{
 						v3s16 p = v3s16(p2d.X, y+1, p2d.Y);
 						data->transforming_liquid.push_back(p);
@@ -2013,16 +2027,16 @@ void make_block(BlockMakeData *data)
 				u32 i = vmanip.m_area.index(v3s16(p2d.X, start_y, p2d.Y));
 				for(s16 y=start_y; y>=node_min.Y-3; y--)
 				{
-					if(vmanip.m_data[i].getContent() == CONTENT_WATERSOURCE)
+					if(vmanip.m_data[i].getContent() == LEGN(ndef, "CONTENT_WATERSOURCE"))
 						water_detected = true;
 					if(vmanip.m_data[i].getContent() == CONTENT_AIR)
 						air_detected = true;
 
-					if((vmanip.m_data[i].getContent() == CONTENT_STONE
-							|| vmanip.m_data[i].getContent() == CONTENT_GRASS
-							|| vmanip.m_data[i].getContent() == CONTENT_MUD
-							|| vmanip.m_data[i].getContent() == CONTENT_SAND
-							|| vmanip.m_data[i].getContent() == CONTENT_GRAVEL
+					if((vmanip.m_data[i].getContent() == LEGN(ndef, "CONTENT_STONE")
+							|| vmanip.m_data[i].getContent() == LEGN(ndef, "CONTENT_GRASS")
+							|| vmanip.m_data[i].getContent() == LEGN(ndef, "CONTENT_MUD")
+							|| vmanip.m_data[i].getContent() == LEGN(ndef, "CONTENT_SAND")
+							|| vmanip.m_data[i].getContent() == LEGN(ndef, "CONTENT_GRAVEL")
 							) && (air_detected || water_detected))
 					{
 						if(current_depth == 0 && y <= WATER_LEVEL+2
@@ -2043,23 +2057,23 @@ void make_block(BlockMakeData *data)
 									((claynoise > 0) && (claynoise < 0.12) && (current_depth == 1))
 									);
 								if (have_clay)
-									vmanip.m_data[i] = MapNode(CONTENT_CLAY);
+									vmanip.m_data[i] = MapNode(LEGN(ndef, "CONTENT_CLAY"));
 								else
-									vmanip.m_data[i] = MapNode(CONTENT_SAND);
+									vmanip.m_data[i] = MapNode(LEGN(ndef, "CONTENT_SAND"));
 							}
 							#if 1
 							else if(current_depth==0 && !water_detected
 									&& y >= WATER_LEVEL && air_detected)
-								vmanip.m_data[i] = MapNode(CONTENT_GRASS);
+								vmanip.m_data[i] = MapNode(LEGN(ndef, "CONTENT_GRASS"));
 							#endif
 							else
-								vmanip.m_data[i] = MapNode(CONTENT_MUD);
+								vmanip.m_data[i] = MapNode(LEGN(ndef, "CONTENT_MUD"));
 						}
 						else
 						{
-							if(vmanip.m_data[i].getContent() == CONTENT_MUD
-								|| vmanip.m_data[i].getContent() == CONTENT_GRASS)
-								vmanip.m_data[i] = MapNode(CONTENT_STONE);
+							if(vmanip.m_data[i].getContent() == LEGN(ndef, "CONTENT_MUD")
+								|| vmanip.m_data[i].getContent() == LEGN(ndef, "CONTENT_GRASS"))
+								vmanip.m_data[i] = MapNode(LEGN(ndef, "CONTENT_STONE"));
 						}
 
 						current_depth++;
@@ -2113,7 +2127,7 @@ void make_block(BlockMakeData *data)
 			{
 				u32 i = data->vmanip->m_area.index(p);
 				MapNode *n = &data->vmanip->m_data[i];
-				if(n->getContent() != CONTENT_AIR && n->getContent() != CONTENT_WATERSOURCE && n->getContent() != CONTENT_IGNORE)
+				if(n->getContent() != CONTENT_AIR && n->getContent() != LEGN(ndef, "CONTENT_WATERSOURCE") && n->getContent() != CONTENT_IGNORE)
 				{
 					found = true;
 					break;
@@ -2127,17 +2141,17 @@ void make_block(BlockMakeData *data)
 				u32 i = data->vmanip->m_area.index(p);
 				MapNode *n = &data->vmanip->m_data[i];
 
-				if(n->getContent() != CONTENT_MUD && n->getContent() != CONTENT_GRASS && n->getContent() != CONTENT_SAND)
+				if(n->getContent() != LEGN(ndef, "CONTENT_MUD") && n->getContent() != LEGN(ndef, "CONTENT_GRASS") && n->getContent() != LEGN(ndef, "CONTENT_SAND"))
 						continue;
 
 				// Papyrus grows only on mud and in water
-				if(n->getContent() == CONTENT_MUD && y <= WATER_LEVEL)
+				if(n->getContent() == LEGN(ndef, "CONTENT_MUD") && y <= WATER_LEVEL)
 				{
 					p.Y++;
-					make_papyrus(vmanip, p);
+					make_papyrus(vmanip, p, ndef);
 				}
 				// Trees grow only on mud and grass, on land
-				else if((n->getContent() == CONTENT_MUD || n->getContent() == CONTENT_GRASS) && y > WATER_LEVEL + 2)
+				else if((n->getContent() == LEGN(ndef, "CONTENT_MUD") || n->getContent() == LEGN(ndef, "CONTENT_GRASS")) && y > WATER_LEVEL + 2)
 				{
 					p.Y++;
 					//if(surface_humidity_2d(data->seed, v2s16(x, y)) < 0.5)
@@ -2150,16 +2164,16 @@ void make_block(BlockMakeData *data)
 							is_apple_tree = noise2d_perlin(
 									0.5+(float)p.X/100, 0.5+(float)p.Z/100,
 									data->seed+342902, 3, 0.45) > 0.2;
-						make_tree(vmanip, p, is_apple_tree);
+						make_tree(vmanip, p, is_apple_tree, ndef);
 					}
 					else
-						make_jungletree(vmanip, p);
+						make_jungletree(vmanip, p, ndef);
 				}
 				// Cactii grow only on sand, on land
-				else if(n->getContent() == CONTENT_SAND && y > WATER_LEVEL + 2)
+				else if(n->getContent() == LEGN(ndef, "CONTENT_SAND") && y > WATER_LEVEL + 2)
 				{
 					p.Y++;
-					make_cactus(vmanip, p);
+					make_cactus(vmanip, p, ndef);
 				}
 			}
 		}
@@ -2188,8 +2202,8 @@ void make_block(BlockMakeData *data)
 				{
 					u32 i = data->vmanip->m_area.index(p);
 					MapNode *n = &data->vmanip->m_data[i];
-					if(data->nodemgr->get(*n).is_ground_content
-							|| n->getContent() == CONTENT_JUNGLETREE)
+					if(data->nodedef->get(*n).is_ground_content
+							|| n->getContent() == LEGN(ndef, "CONTENT_JUNGLETREE"))
 					{
 						found = true;
 						break;
@@ -2205,10 +2219,10 @@ void make_block(BlockMakeData *data)
 					continue;
 				/*p.Y--;
 				if(vmanip.m_area.contains(p))
-					vmanip.m_data[vmanip.m_area.index(p)] = CONTENT_MUD;
+					vmanip.m_data[vmanip.m_area.index(p)] = LEGN(ndef, "CONTENT_MUD");
 				p.Y++;*/
 				if(vmanip.m_area.contains(p))
-					vmanip.m_data[vmanip.m_area.index(p)] = CONTENT_JUNGLEGRASS;
+					vmanip.m_data[vmanip.m_area.index(p)] = LEGN(ndef, "CONTENT_JUNGLEGNRASS");
 			}
 		}
 
@@ -2236,7 +2250,7 @@ void make_block(BlockMakeData *data)
 			/*{
 				u32 i = data->vmanip->m_area.index(v3s16(p));
 				MapNode *n = &data->vmanip->m_data[i];
-				if(n->getContent() != CONTENT_MUD && n->getContent() != CONTENT_GRASS)
+				if(n->getContent() != LEGN(ndef, "CONTENT_MUD") && n->getContent() != LEGN(ndef, "CONTENT_GRASS"))
 					continue;
 			}*/
 			// Will be placed one higher
@@ -2271,7 +2285,7 @@ void make_block(BlockMakeData *data)
 			/*{
 				u32 i = data->vmanip->m_area.index(v3s16(p));
 				MapNode *n = &data->vmanip->m_data[i];
-				if(n->getContent() != CONTENT_MUD && n->getContent() != CONTENT_GRASS)
+				if(n->getContent() != LEGN(ndef, "CONTENT_MUD") && n->getContent() != LEGN(ndef, "CONTENT_GRASS"))
 					continue;
 			}*/
 			// Will be placed one lower
@@ -2288,7 +2302,7 @@ BlockMakeData::BlockMakeData():
 	no_op(false),
 	vmanip(NULL),
 	seed(0),
-	nodemgr(NULL)
+	nodedef(NULL)
 {}
 
 BlockMakeData::~BlockMakeData()

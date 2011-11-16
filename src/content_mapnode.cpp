@@ -25,6 +25,11 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "nodedef.h"
 #include "utility.h"
 #include "nameidmapping.h"
+#include <map>
+
+/*
+	Legacy node definitions
+*/
 
 #define WATER_ALPHA 160
 
@@ -90,6 +95,54 @@ void setGlassLikeMaterialProperties(MaterialProperties &mprop, float toughness)
 	mprop.crumbliness = -1.0;
 	mprop.cuttability = -1.0;
 }
+
+/*
+	Legacy node content type IDs
+	Ranges:
+	0x000...0x07f (0...127): param2 is fully usable
+	126 and 127 are reserved (CONTENT_AIR and CONTENT_IGNORE).
+	0x800...0xfff (2048...4095): higher 4 bytes of param2 are not usable
+*/
+#define CONTENT_STONE 0
+#define CONTENT_WATER 2
+#define CONTENT_TORCH 3
+#define CONTENT_WATERSOURCE 9
+#define CONTENT_SIGN_WALL 14
+#define CONTENT_CHEST 15
+#define CONTENT_FURNACE 16
+#define CONTENT_LOCKABLE_CHEST 17
+#define CONTENT_FENCE 21
+#define CONTENT_RAIL 30
+#define CONTENT_LADDER 31
+#define CONTENT_LAVA 32
+#define CONTENT_LAVASOURCE 33
+#define CONTENT_GRASS 0x800 //1
+#define CONTENT_TREE 0x801 //4
+#define CONTENT_LEAVES 0x802 //5
+#define CONTENT_GRASS_FOOTSTEPS 0x803 //6
+#define CONTENT_MESE 0x804 //7
+#define CONTENT_MUD 0x805 //8
+#define CONTENT_CLOUD 0x806 //10
+#define CONTENT_COALSTONE 0x807 //11
+#define CONTENT_WOOD 0x808 //12
+#define CONTENT_SAND 0x809 //13
+#define CONTENT_COBBLE 0x80a //18
+#define CONTENT_STEEL 0x80b //19
+#define CONTENT_GLASS 0x80c //20
+#define CONTENT_MOSSYCOBBLE 0x80d //22
+#define CONTENT_GRAVEL 0x80e //23
+#define CONTENT_SANDSTONE 0x80f //24
+#define CONTENT_CACTUS 0x810 //25
+#define CONTENT_BRICK 0x811 //26
+#define CONTENT_CLAY 0x812 //27
+#define CONTENT_PAPYRUS 0x813 //28
+#define CONTENT_BOOKSHELF 0x814 //29
+#define CONTENT_JUNGLETREE 0x815
+#define CONTENT_JUNGLEGRASS 0x816
+#define CONTENT_NC 0x817
+#define CONTENT_NC_RB 0x818
+#define CONTENT_APPLE 0x819
+#define CONTENT_SAPLING 0x820
 
 /*
 	A conversion table for backwards compatibility.
@@ -202,7 +255,87 @@ void content_mapnode_get_name_id_mapping(NameIdMapping *nimap)
 	nimap->set(CONTENT_AIR, "air");
 }
 
-// See header for description
+class NewNameGetter
+{
+public:
+	NewNameGetter()
+	{
+		old_to_new["CONTENT_STONE"] = "";
+		old_to_new["CONTENT_WATER"] = "";
+		old_to_new["CONTENT_TORCH"] = "";
+		old_to_new["CONTENT_WATERSOURCE"] = "";
+		old_to_new["CONTENT_SIGN_WALL"] = "";
+		old_to_new["CONTENT_CHEST"] = "";
+		old_to_new["CONTENT_FURNACE"] = "";
+		old_to_new["CONTENT_LOCKABLE_CHEST"] = "";
+		old_to_new["CONTENT_FENCE"] = "";
+		old_to_new["CONTENT_RAIL"] = "";
+		old_to_new["CONTENT_LADDER"] = "";
+		old_to_new["CONTENT_LAVA"] = "";
+		old_to_new["CONTENT_LAVASOURCE"] = "";
+		old_to_new["CONTENT_GRASS"] = "";
+		old_to_new["CONTENT_TREE"] = "";
+		old_to_new["CONTENT_LEAVES"] = "";
+		old_to_new["CONTENT_GRASS_FOOTSTEPS"] = "";
+		old_to_new["CONTENT_MESE"] = "";
+		old_to_new["CONTENT_MUD"] = "";
+		old_to_new["CONTENT_CLOUD"] = "";
+		old_to_new["CONTENT_COALSTONE"] = "";
+		old_to_new["CONTENT_WOOD"] = "";
+		old_to_new["CONTENT_SAND"] = "";
+		old_to_new["CONTENT_COBBLE"] = "";
+		old_to_new["CONTENT_STEEL"] = "";
+		old_to_new["CONTENT_GLASS"] = "";
+		old_to_new["CONTENT_MOSSYCOBBLE"] = "";
+		old_to_new["CONTENT_GRAVEL"] = "";
+		old_to_new["CONTENT_SANDSTONE"] = "";
+		old_to_new["CONTENT_CACTUS"] = "";
+		old_to_new["CONTENT_BRICK"] = "";
+		old_to_new["CONTENT_CLAY"] = "";
+		old_to_new["CONTENT_PAPYRUS"] = "";
+		old_to_new["CONTENT_BOOKSHELF"] = "";
+		old_to_new["CONTENT_JUNGLETREE"] = "";
+		old_to_new["CONTENT_JUNGLEGRASS"] = "";
+		old_to_new["CONTENT_NC"] = "";
+		old_to_new["CONTENT_NC_RB"] = "";
+		old_to_new["CONTENT_APPLE"] = "";
+		old_to_new["CONTENT_SAPLING"] = "";
+		// Just in case
+		old_to_new["CONTENT_IGNORE"] = "ignore";
+		old_to_new["CONTENT_AIR"] = "air";
+	}
+	std::string get(const std::string &old)
+	{
+		std::map<std::string, std::string>::const_iterator i;
+		i = old_to_new.find(old);
+		if(i == old_to_new.end())
+			return "";
+		return i->second;
+	}
+private:
+	std::map<std::string, std::string> old_to_new;
+};
+
+NewNameGetter newnamegetter;
+
+std::string content_mapnode_get_new_name(const std::string &oldname)
+{
+	return newnamegetter.get(oldname);
+}
+
+content_t legacy_get_id(const std::string &oldname, INodeDefManager *ndef)
+{
+	std::string newname = content_mapnode_get_new_name(oldname);
+	if(newname == "")
+		return CONTENT_IGNORE;
+	content_t id;
+	bool found = ndef->getId(newname, id);
+	if(!found)
+		return CONTENT_IGNORE;
+	return id;
+}
+
+// Initialize default (legacy) node definitions
 void content_mapnode_init(IWritableNodeDefManager *nodemgr)
 {
 	content_t i;

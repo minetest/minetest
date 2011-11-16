@@ -22,6 +22,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "content_mapnode.h"
 #include "player.h"
 #include "mapnode.h" // For content_t
+#include "gamedef.h"
 
 /*
 	items: actually *items[9]
@@ -29,20 +30,22 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 */
 InventoryItem *craft_get_result(InventoryItem **items, IGameDef *gamedef)
 {
+	INodeDefManager *ndef = gamedef->ndef();
+
 	// Wood
 	{
 		ItemSpec specs[9];
-		specs[0] = ItemSpec(ITEM_MATERIAL, CONTENT_TREE);
+		specs[0] = ItemSpec(ITEM_MATERIAL, LEGN(ndef, "CONTENT_TREE"));
 		if(checkItemCombination(items, specs))
 		{
-			return new MaterialItem(gamedef, CONTENT_WOOD, 4);
+			return new MaterialItem(gamedef, LEGN(ndef, "CONTENT_WOOD"), 4);
 		}
 	}
 
 	// Stick
 	{
 		ItemSpec specs[9];
-		specs[0] = ItemSpec(ITEM_MATERIAL, CONTENT_WOOD);
+		specs[0] = ItemSpec(ITEM_MATERIAL, LEGN(ndef, "CONTENT_WOOD"));
 		if(checkItemCombination(items, specs))
 		{
 			return new CraftItem(gamedef, "Stick", 4);
@@ -60,24 +63,24 @@ InventoryItem *craft_get_result(InventoryItem **items, IGameDef *gamedef)
 		specs[8] = ItemSpec(ITEM_CRAFT, "Stick");
 		if(checkItemCombination(items, specs))
 		{
-			return new MaterialItem(gamedef, CONTENT_FENCE, 2);
+			return new MaterialItem(gamedef, LEGN(ndef, "CONTENT_FENCE"), 2);
 		}
 	}
 
 	// Sign
 	{
 		ItemSpec specs[9];
-		specs[0] = ItemSpec(ITEM_MATERIAL, CONTENT_WOOD);
-		specs[1] = ItemSpec(ITEM_MATERIAL, CONTENT_WOOD);
-		specs[2] = ItemSpec(ITEM_MATERIAL, CONTENT_WOOD);
-		specs[3] = ItemSpec(ITEM_MATERIAL, CONTENT_WOOD);
-		specs[4] = ItemSpec(ITEM_MATERIAL, CONTENT_WOOD);
-		specs[5] = ItemSpec(ITEM_MATERIAL, CONTENT_WOOD);
+		specs[0] = ItemSpec(ITEM_MATERIAL, LEGN(ndef, "CONTENT_WOOD"));
+		specs[1] = ItemSpec(ITEM_MATERIAL, LEGN(ndef, "CONTENT_WOOD"));
+		specs[2] = ItemSpec(ITEM_MATERIAL, LEGN(ndef, "CONTENT_WOOD"));
+		specs[3] = ItemSpec(ITEM_MATERIAL, LEGN(ndef, "CONTENT_WOOD"));
+		specs[4] = ItemSpec(ITEM_MATERIAL, LEGN(ndef, "CONTENT_WOOD"));
+		specs[5] = ItemSpec(ITEM_MATERIAL, LEGN(ndef, "CONTENT_WOOD"));
 		specs[7] = ItemSpec(ITEM_CRAFT, "Stick");
 		if(checkItemCombination(items, specs))
 		{
 			//return new MapBlockObjectItem(gamedef, "Sign");
-			return new MaterialItem(gamedef, CONTENT_SIGN_WALL, 1);
+			return new MaterialItem(gamedef, LEGN(ndef, "CONTENT_SIGN_WALL"), 1);
 		}
 	}
 
@@ -88,16 +91,16 @@ InventoryItem *craft_get_result(InventoryItem **items, IGameDef *gamedef)
 		specs[3] = ItemSpec(ITEM_CRAFT, "Stick");
 		if(checkItemCombination(items, specs))
 		{
-			return new MaterialItem(gamedef, CONTENT_TORCH, 4);
+			return new MaterialItem(gamedef, LEGN(ndef, "CONTENT_TORCH"), 4);
 		}
 	}
 
 	// Wooden pick
 	{
 		ItemSpec specs[9];
-		specs[0] = ItemSpec(ITEM_MATERIAL, CONTENT_WOOD);
-		specs[1] = ItemSpec(ITEM_MATERIAL, CONTENT_WOOD);
-		specs[2] = ItemSpec(ITEM_MATERIAL, CONTENT_WOOD);
+		specs[0] = ItemSpec(ITEM_MATERIAL, LEGN(ndef, "CONTENT_WOOD"));
+		specs[1] = ItemSpec(ITEM_MATERIAL, LEGN(ndef, "CONTENT_WOOD"));
+		specs[2] = ItemSpec(ITEM_MATERIAL, LEGN(ndef, "CONTENT_WOOD"));
 		specs[4] = ItemSpec(ITEM_CRAFT, "Stick");
 		specs[7] = ItemSpec(ITEM_CRAFT, "Stick");
 		if(checkItemCombination(items, specs))
@@ -109,9 +112,9 @@ InventoryItem *craft_get_result(InventoryItem **items, IGameDef *gamedef)
 	// Stone pick
 	{
 		ItemSpec specs[9];
-		specs[0] = ItemSpec(ITEM_MATERIAL, CONTENT_COBBLE);
-		specs[1] = ItemSpec(ITEM_MATERIAL, CONTENT_COBBLE);
-		specs[2] = ItemSpec(ITEM_MATERIAL, CONTENT_COBBLE);
+		specs[0] = ItemSpec(ITEM_MATERIAL, LEGN(ndef, "CONTENT_COBBLE"));
+		specs[1] = ItemSpec(ITEM_MATERIAL, LEGN(ndef, "CONTENT_COBBLE"));
+		specs[2] = ItemSpec(ITEM_MATERIAL, LEGN(ndef, "CONTENT_COBBLE"));
 		specs[4] = ItemSpec(ITEM_CRAFT, "Stick");
 		specs[7] = ItemSpec(ITEM_CRAFT, "Stick");
 		if(checkItemCombination(items, specs))
@@ -137,9 +140,9 @@ InventoryItem *craft_get_result(InventoryItem **items, IGameDef *gamedef)
 	// Mese pick
 	{
 		ItemSpec specs[9];
-		specs[0] = ItemSpec(ITEM_MATERIAL, CONTENT_MESE);
-		specs[1] = ItemSpec(ITEM_MATERIAL, CONTENT_MESE);
-		specs[2] = ItemSpec(ITEM_MATERIAL, CONTENT_MESE);
+		specs[0] = ItemSpec(ITEM_MATERIAL, LEGN(ndef, "CONTENT_MESE"));
+		specs[1] = ItemSpec(ITEM_MATERIAL, LEGN(ndef, "CONTENT_MESE"));
+		specs[2] = ItemSpec(ITEM_MATERIAL, LEGN(ndef, "CONTENT_MESE"));
 		specs[4] = ItemSpec(ITEM_CRAFT, "Stick");
 		specs[7] = ItemSpec(ITEM_CRAFT, "Stick");
 		if(checkItemCombination(items, specs))
@@ -151,7 +154,7 @@ InventoryItem *craft_get_result(InventoryItem **items, IGameDef *gamedef)
 	// Wooden shovel
 	{
 		ItemSpec specs[9];
-		specs[1] = ItemSpec(ITEM_MATERIAL, CONTENT_WOOD);
+		specs[1] = ItemSpec(ITEM_MATERIAL, LEGN(ndef, "CONTENT_WOOD"));
 		specs[4] = ItemSpec(ITEM_CRAFT, "Stick");
 		specs[7] = ItemSpec(ITEM_CRAFT, "Stick");
 		if(checkItemCombination(items, specs))
@@ -163,7 +166,7 @@ InventoryItem *craft_get_result(InventoryItem **items, IGameDef *gamedef)
 	// Stone shovel
 	{
 		ItemSpec specs[9];
-		specs[1] = ItemSpec(ITEM_MATERIAL, CONTENT_COBBLE);
+		specs[1] = ItemSpec(ITEM_MATERIAL, LEGN(ndef, "CONTENT_COBBLE"));
 		specs[4] = ItemSpec(ITEM_CRAFT, "Stick");
 		specs[7] = ItemSpec(ITEM_CRAFT, "Stick");
 		if(checkItemCombination(items, specs))
@@ -187,9 +190,9 @@ InventoryItem *craft_get_result(InventoryItem **items, IGameDef *gamedef)
 	// Wooden axe
 	{
 		ItemSpec specs[9];
-		specs[0] = ItemSpec(ITEM_MATERIAL, CONTENT_WOOD);
-		specs[1] = ItemSpec(ITEM_MATERIAL, CONTENT_WOOD);
-		specs[3] = ItemSpec(ITEM_MATERIAL, CONTENT_WOOD);
+		specs[0] = ItemSpec(ITEM_MATERIAL, LEGN(ndef, "CONTENT_WOOD"));
+		specs[1] = ItemSpec(ITEM_MATERIAL, LEGN(ndef, "CONTENT_WOOD"));
+		specs[3] = ItemSpec(ITEM_MATERIAL, LEGN(ndef, "CONTENT_WOOD"));
 		specs[4] = ItemSpec(ITEM_CRAFT, "Stick");
 		specs[7] = ItemSpec(ITEM_CRAFT, "Stick");
 		if(checkItemCombination(items, specs))
@@ -201,9 +204,9 @@ InventoryItem *craft_get_result(InventoryItem **items, IGameDef *gamedef)
 	// Stone axe
 	{
 		ItemSpec specs[9];
-		specs[0] = ItemSpec(ITEM_MATERIAL, CONTENT_COBBLE);
-		specs[1] = ItemSpec(ITEM_MATERIAL, CONTENT_COBBLE);
-		specs[3] = ItemSpec(ITEM_MATERIAL, CONTENT_COBBLE);
+		specs[0] = ItemSpec(ITEM_MATERIAL, LEGN(ndef, "CONTENT_COBBLE"));
+		specs[1] = ItemSpec(ITEM_MATERIAL, LEGN(ndef, "CONTENT_COBBLE"));
+		specs[3] = ItemSpec(ITEM_MATERIAL, LEGN(ndef, "CONTENT_COBBLE"));
 		specs[4] = ItemSpec(ITEM_CRAFT, "Stick");
 		specs[7] = ItemSpec(ITEM_CRAFT, "Stick");
 		if(checkItemCombination(items, specs))
@@ -229,8 +232,8 @@ InventoryItem *craft_get_result(InventoryItem **items, IGameDef *gamedef)
 	// Wooden sword
 	{
 		ItemSpec specs[9];
-		specs[1] = ItemSpec(ITEM_MATERIAL, CONTENT_WOOD);
-		specs[4] = ItemSpec(ITEM_MATERIAL, CONTENT_WOOD);
+		specs[1] = ItemSpec(ITEM_MATERIAL, LEGN(ndef, "CONTENT_WOOD"));
+		specs[4] = ItemSpec(ITEM_MATERIAL, LEGN(ndef, "CONTENT_WOOD"));
 		specs[7] = ItemSpec(ITEM_CRAFT, "Stick");
 		if(checkItemCombination(items, specs))
 		{
@@ -241,8 +244,8 @@ InventoryItem *craft_get_result(InventoryItem **items, IGameDef *gamedef)
 	// Stone sword
 	{
 		ItemSpec specs[9];
-		specs[1] = ItemSpec(ITEM_MATERIAL, CONTENT_COBBLE);
-		specs[4] = ItemSpec(ITEM_MATERIAL, CONTENT_COBBLE);
+		specs[1] = ItemSpec(ITEM_MATERIAL, LEGN(ndef, "CONTENT_COBBLE"));
+		specs[4] = ItemSpec(ITEM_MATERIAL, LEGN(ndef, "CONTENT_COBBLE"));
 		specs[7] = ItemSpec(ITEM_CRAFT, "Stick");
 		if(checkItemCombination(items, specs))
 		{
@@ -276,59 +279,59 @@ InventoryItem *craft_get_result(InventoryItem **items, IGameDef *gamedef)
 		specs[8] = ItemSpec(ITEM_CRAFT, "steel_ingot");
 		if(checkItemCombination(items, specs))
 		{
-			return new MaterialItem(gamedef, CONTENT_RAIL, 15);
+			return new MaterialItem(gamedef, LEGN(ndef, "CONTENT_RAIL"), 15);
 		}
 	}
 
 	// Chest
 	{
 		ItemSpec specs[9];
-		specs[0] = ItemSpec(ITEM_MATERIAL, CONTENT_WOOD);
-		specs[1] = ItemSpec(ITEM_MATERIAL, CONTENT_WOOD);
-		specs[2] = ItemSpec(ITEM_MATERIAL, CONTENT_WOOD);
-		specs[3] = ItemSpec(ITEM_MATERIAL, CONTENT_WOOD);
-		specs[5] = ItemSpec(ITEM_MATERIAL, CONTENT_WOOD);
-		specs[6] = ItemSpec(ITEM_MATERIAL, CONTENT_WOOD);
-		specs[7] = ItemSpec(ITEM_MATERIAL, CONTENT_WOOD);
-		specs[8] = ItemSpec(ITEM_MATERIAL, CONTENT_WOOD);
+		specs[0] = ItemSpec(ITEM_MATERIAL, LEGN(ndef, "CONTENT_WOOD"));
+		specs[1] = ItemSpec(ITEM_MATERIAL, LEGN(ndef, "CONTENT_WOOD"));
+		specs[2] = ItemSpec(ITEM_MATERIAL, LEGN(ndef, "CONTENT_WOOD"));
+		specs[3] = ItemSpec(ITEM_MATERIAL, LEGN(ndef, "CONTENT_WOOD"));
+		specs[5] = ItemSpec(ITEM_MATERIAL, LEGN(ndef, "CONTENT_WOOD"));
+		specs[6] = ItemSpec(ITEM_MATERIAL, LEGN(ndef, "CONTENT_WOOD"));
+		specs[7] = ItemSpec(ITEM_MATERIAL, LEGN(ndef, "CONTENT_WOOD"));
+		specs[8] = ItemSpec(ITEM_MATERIAL, LEGN(ndef, "CONTENT_WOOD"));
 		if(checkItemCombination(items, specs))
 		{
-			return new MaterialItem(gamedef, CONTENT_CHEST, 1);
+			return new MaterialItem(gamedef, LEGN(ndef, "CONTENT_CHEST"), 1);
 		}
 	}
 
 	// Locking Chest
 	{
 		ItemSpec specs[9];
-		specs[0] = ItemSpec(ITEM_MATERIAL, CONTENT_WOOD);
-		specs[1] = ItemSpec(ITEM_MATERIAL, CONTENT_WOOD);
-		specs[2] = ItemSpec(ITEM_MATERIAL, CONTENT_WOOD);
-		specs[3] = ItemSpec(ITEM_MATERIAL, CONTENT_WOOD);
+		specs[0] = ItemSpec(ITEM_MATERIAL, LEGN(ndef, "CONTENT_WOOD"));
+		specs[1] = ItemSpec(ITEM_MATERIAL, LEGN(ndef, "CONTENT_WOOD"));
+		specs[2] = ItemSpec(ITEM_MATERIAL, LEGN(ndef, "CONTENT_WOOD"));
+		specs[3] = ItemSpec(ITEM_MATERIAL, LEGN(ndef, "CONTENT_WOOD"));
 		specs[4] = ItemSpec(ITEM_CRAFT, "steel_ingot");
-		specs[5] = ItemSpec(ITEM_MATERIAL, CONTENT_WOOD);
-		specs[6] = ItemSpec(ITEM_MATERIAL, CONTENT_WOOD);
-		specs[7] = ItemSpec(ITEM_MATERIAL, CONTENT_WOOD);
-		specs[8] = ItemSpec(ITEM_MATERIAL, CONTENT_WOOD);
+		specs[5] = ItemSpec(ITEM_MATERIAL, LEGN(ndef, "CONTENT_WOOD"));
+		specs[6] = ItemSpec(ITEM_MATERIAL, LEGN(ndef, "CONTENT_WOOD"));
+		specs[7] = ItemSpec(ITEM_MATERIAL, LEGN(ndef, "CONTENT_WOOD"));
+		specs[8] = ItemSpec(ITEM_MATERIAL, LEGN(ndef, "CONTENT_WOOD"));
 		if(checkItemCombination(items, specs))
 		{
-			return new MaterialItem(gamedef, CONTENT_LOCKABLE_CHEST, 1);
+			return new MaterialItem(gamedef, LEGN(ndef, "CONTENT_LOCKABLE_CHEST"), 1);
 		}
 	}
 
 	// Furnace
 	{
 		ItemSpec specs[9];
-		specs[0] = ItemSpec(ITEM_MATERIAL, CONTENT_COBBLE);
-		specs[1] = ItemSpec(ITEM_MATERIAL, CONTENT_COBBLE);
-		specs[2] = ItemSpec(ITEM_MATERIAL, CONTENT_COBBLE);
-		specs[3] = ItemSpec(ITEM_MATERIAL, CONTENT_COBBLE);
-		specs[5] = ItemSpec(ITEM_MATERIAL, CONTENT_COBBLE);
-		specs[6] = ItemSpec(ITEM_MATERIAL, CONTENT_COBBLE);
-		specs[7] = ItemSpec(ITEM_MATERIAL, CONTENT_COBBLE);
-		specs[8] = ItemSpec(ITEM_MATERIAL, CONTENT_COBBLE);
+		specs[0] = ItemSpec(ITEM_MATERIAL, LEGN(ndef, "CONTENT_COBBLE"));
+		specs[1] = ItemSpec(ITEM_MATERIAL, LEGN(ndef, "CONTENT_COBBLE"));
+		specs[2] = ItemSpec(ITEM_MATERIAL, LEGN(ndef, "CONTENT_COBBLE"));
+		specs[3] = ItemSpec(ITEM_MATERIAL, LEGN(ndef, "CONTENT_COBBLE"));
+		specs[5] = ItemSpec(ITEM_MATERIAL, LEGN(ndef, "CONTENT_COBBLE"));
+		specs[6] = ItemSpec(ITEM_MATERIAL, LEGN(ndef, "CONTENT_COBBLE"));
+		specs[7] = ItemSpec(ITEM_MATERIAL, LEGN(ndef, "CONTENT_COBBLE"));
+		specs[8] = ItemSpec(ITEM_MATERIAL, LEGN(ndef, "CONTENT_COBBLE"));
 		if(checkItemCombination(items, specs))
 		{
-			return new MaterialItem(gamedef, CONTENT_FURNACE, 1);
+			return new MaterialItem(gamedef, LEGN(ndef, "CONTENT_FURNACE"), 1);
 		}
 	}
 
@@ -346,20 +349,20 @@ InventoryItem *craft_get_result(InventoryItem **items, IGameDef *gamedef)
 		specs[8] = ItemSpec(ITEM_CRAFT, "steel_ingot");
 		if(checkItemCombination(items, specs))
 		{
-			return new MaterialItem(gamedef, CONTENT_STEEL, 1);
+			return new MaterialItem(gamedef, LEGN(ndef, "CONTENT_STEEL"), 1);
 		}
 	}
 
 	// Sandstone
 	{
 		ItemSpec specs[9];
-		specs[3] = ItemSpec(ITEM_MATERIAL, CONTENT_SAND);
-		specs[4] = ItemSpec(ITEM_MATERIAL, CONTENT_SAND);
-		specs[6] = ItemSpec(ITEM_MATERIAL, CONTENT_SAND);
-		specs[7] = ItemSpec(ITEM_MATERIAL, CONTENT_SAND);
+		specs[3] = ItemSpec(ITEM_MATERIAL, LEGN(ndef, "CONTENT_SAND"));
+		specs[4] = ItemSpec(ITEM_MATERIAL, LEGN(ndef, "CONTENT_SAND"));
+		specs[6] = ItemSpec(ITEM_MATERIAL, LEGN(ndef, "CONTENT_SAND"));
+		specs[7] = ItemSpec(ITEM_MATERIAL, LEGN(ndef, "CONTENT_SAND"));
 		if(checkItemCombination(items, specs))
 		{
-			return new MaterialItem(gamedef, CONTENT_SANDSTONE, 1);
+			return new MaterialItem(gamedef, LEGN(ndef, "CONTENT_SANDSTONE"), 1);
 		}
 	}
 
@@ -372,7 +375,7 @@ InventoryItem *craft_get_result(InventoryItem **items, IGameDef *gamedef)
 		specs[7] = ItemSpec(ITEM_CRAFT, "lump_of_clay");
 		if(checkItemCombination(items, specs))
 		{
-			return new MaterialItem(gamedef, CONTENT_CLAY, 1);
+			return new MaterialItem(gamedef, LEGN(ndef, "CONTENT_CLAY"), 1);
 		}
 	}
 
@@ -385,16 +388,16 @@ InventoryItem *craft_get_result(InventoryItem **items, IGameDef *gamedef)
 		specs[7] = ItemSpec(ITEM_CRAFT, "clay_brick");
 		if(checkItemCombination(items, specs))
 		{
-			return new MaterialItem(gamedef, CONTENT_BRICK, 1);
+			return new MaterialItem(gamedef, LEGN(ndef, "CONTENT_BRICK"), 1);
 		}
 	}
 
 	// Paper
 	{
 		ItemSpec specs[9];
-		specs[3] = ItemSpec(ITEM_MATERIAL, CONTENT_PAPYRUS);
-		specs[4] = ItemSpec(ITEM_MATERIAL, CONTENT_PAPYRUS);
-		specs[5] = ItemSpec(ITEM_MATERIAL, CONTENT_PAPYRUS);
+		specs[3] = ItemSpec(ITEM_MATERIAL, LEGN(ndef, "CONTENT_PAPYRUS"));
+		specs[4] = ItemSpec(ITEM_MATERIAL, LEGN(ndef, "CONTENT_PAPYRUS"));
+		specs[5] = ItemSpec(ITEM_MATERIAL, LEGN(ndef, "CONTENT_PAPYRUS"));
 		if(checkItemCombination(items, specs))
 		{
 			return new CraftItem(gamedef, "paper", 1);
@@ -416,18 +419,18 @@ InventoryItem *craft_get_result(InventoryItem **items, IGameDef *gamedef)
 	// Book shelf
 	{
 		ItemSpec specs[9];
-		specs[0] = ItemSpec(ITEM_MATERIAL, CONTENT_WOOD);
-		specs[1] = ItemSpec(ITEM_MATERIAL, CONTENT_WOOD);
-		specs[2] = ItemSpec(ITEM_MATERIAL, CONTENT_WOOD);
+		specs[0] = ItemSpec(ITEM_MATERIAL, LEGN(ndef, "CONTENT_WOOD"));
+		specs[1] = ItemSpec(ITEM_MATERIAL, LEGN(ndef, "CONTENT_WOOD"));
+		specs[2] = ItemSpec(ITEM_MATERIAL, LEGN(ndef, "CONTENT_WOOD"));
 		specs[3] = ItemSpec(ITEM_CRAFT, "book");
 		specs[4] = ItemSpec(ITEM_CRAFT, "book");
 		specs[5] = ItemSpec(ITEM_CRAFT, "book");
-		specs[6] = ItemSpec(ITEM_MATERIAL, CONTENT_WOOD);
-		specs[7] = ItemSpec(ITEM_MATERIAL, CONTENT_WOOD);
-		specs[8] = ItemSpec(ITEM_MATERIAL, CONTENT_WOOD);
+		specs[6] = ItemSpec(ITEM_MATERIAL, LEGN(ndef, "CONTENT_WOOD"));
+		specs[7] = ItemSpec(ITEM_MATERIAL, LEGN(ndef, "CONTENT_WOOD"));
+		specs[8] = ItemSpec(ITEM_MATERIAL, LEGN(ndef, "CONTENT_WOOD"));
 		if(checkItemCombination(items, specs))
 		{
-			return new MaterialItem(gamedef, CONTENT_BOOKSHELF, 1);
+			return new MaterialItem(gamedef, LEGN(ndef, "CONTENT_BOOKSHELF"), 1);
 		}
 	}
 
@@ -443,7 +446,7 @@ InventoryItem *craft_get_result(InventoryItem **items, IGameDef *gamedef)
 		specs[8] = ItemSpec(ITEM_CRAFT, "Stick");
 		if(checkItemCombination(items, specs))
 		{
-			return new MaterialItem(gamedef, CONTENT_LADDER, 1);
+			return new MaterialItem(gamedef, LEGN(ndef, "CONTENT_LADDER"), 1);
 		}
 	}
 	
@@ -466,6 +469,8 @@ InventoryItem *craft_get_result(InventoryItem **items, IGameDef *gamedef)
 
 void craft_set_creative_inventory(Player *player, IGameDef *gamedef)
 {
+	INodeDefManager *ndef = gamedef->ndef();
+
 	player->resetInventory();
 	
 	// Give some good tools
@@ -496,29 +501,29 @@ void craft_set_creative_inventory(Player *player, IGameDef *gamedef)
 	
 	// CONTENT_IGNORE-terminated list
 	content_t material_items[] = {
-		CONTENT_TORCH,
-		CONTENT_COBBLE,
-		CONTENT_MUD,
-		CONTENT_STONE,
-		CONTENT_SAND,
-		CONTENT_SANDSTONE,
-		CONTENT_CLAY,
-		CONTENT_BRICK,
-		CONTENT_TREE,
-		CONTENT_LEAVES,
-		CONTENT_CACTUS,
-		CONTENT_PAPYRUS,
-		CONTENT_BOOKSHELF,
-		CONTENT_GLASS,
-		CONTENT_FENCE,
-		CONTENT_RAIL,
-		CONTENT_MESE,
-		CONTENT_WATERSOURCE,
-		CONTENT_CLOUD,
-		CONTENT_CHEST,
-		CONTENT_FURNACE,
-		CONTENT_SIGN_WALL,
-		CONTENT_LAVASOURCE,
+		LEGN(ndef, "CONTENT_TORCH"),
+		LEGN(ndef, "CONTENT_COBBLE"),
+		LEGN(ndef, "CONTENT_MUD"),
+		LEGN(ndef, "CONTENT_STONE"),
+		LEGN(ndef, "CONTENT_SAND"),
+		LEGN(ndef, "CONTENT_SANDSTONE"),
+		LEGN(ndef, "CONTENT_CLAY"),
+		LEGN(ndef, "CONTENT_BRICK"),
+		LEGN(ndef, "CONTENT_TREE"),
+		LEGN(ndef, "CONTENT_LEAVES"),
+		LEGN(ndef, "CONTENT_CACTUS"),
+		LEGN(ndef, "CONTENT_PAPYRUS"),
+		LEGN(ndef, "CONTENT_BOOKSHELF"),
+		LEGN(ndef, "CONTENT_GLASS"),
+		LEGN(ndef, "CONTENT_FENCE"),
+		LEGN(ndef, "CONTENT_RAIL"),
+		LEGN(ndef, "CONTENT_MESE"),
+		LEGN(ndef, "CONTENT_WATERSOURCE"),
+		LEGN(ndef, "CONTENT_CLOUD"),
+		LEGN(ndef, "CONTENT_CHEST"),
+		LEGN(ndef, "CONTENT_FURNACE"),
+		LEGN(ndef, "CONTENT_SIGN_WALL"),
+		LEGN(ndef, "CONTENT_LAVASOURCE"),
 		CONTENT_IGNORE
 	};
 	
@@ -535,18 +540,18 @@ void craft_set_creative_inventory(Player *player, IGameDef *gamedef)
 	}
 
 #if 0
-	assert(USEFUL_CONTENT_COUNT <= PLAYER_INVENTORY_SIZE);
+	assert(USEFUL_LEGN(ndef, "CONTENT_COUNT") <= PLAYER_INVENTORY_SIZE);
 	
 	// add torch first
-	InventoryItem *item = new MaterialItem(gamedef, CONTENT_TORCH, 1);
+	InventoryItem *item = new MaterialItem(gamedef, LEGN(ndef, "CONTENT_TORCH"), 1);
 	player->inventory.addItem("main", item);
 	
 	// Then others
-	for(u16 i=0; i<USEFUL_CONTENT_COUNT; i++)
+	for(u16 i=0; i<USEFUL_LEGN(ndef, "CONTENT_COUNT"); i++)
 	{
 		// Skip some materials
-		if(i == CONTENT_WATER || i == CONTENT_TORCH
-			|| i == CONTENT_COALSTONE)
+		if(i == LEGN(ndef, "CONTENT_WATER") || i == LEGN(ndef, "CONTENT_TORCH")
+			|| i == LEGN(ndef, "CONTENT_COALSTONE"))
 			continue;
 
 		InventoryItem *item = new MaterialItem(gamedef, i, 1);
@@ -564,13 +569,15 @@ void craft_set_creative_inventory(Player *player, IGameDef *gamedef)
 
 void craft_give_initial_stuff(Player *player, IGameDef *gamedef)
 {
+	INodeDefManager *ndef = gamedef->ndef();
+
 	{
 		InventoryItem *item = new ToolItem(gamedef, "SteelPick", 0);
 		void* r = player->inventory.addItem("main", item);
 		assert(r == NULL);
 	}
 	{
-		InventoryItem *item = new MaterialItem(gamedef, CONTENT_TORCH, 99);
+		InventoryItem *item = new MaterialItem(gamedef, LEGN(ndef, "CONTENT_TORCH"), 99);
 		void* r = player->inventory.addItem("main", item);
 		assert(r == NULL);
 	}
@@ -585,22 +592,22 @@ void craft_give_initial_stuff(Player *player, IGameDef *gamedef)
 		assert(r == NULL);
 	}
 	{
-		InventoryItem *item = new MaterialItem(gamedef, CONTENT_COBBLE, 99);
+		InventoryItem *item = new MaterialItem(gamedef, LEGN(ndef, "CONTENT_COBBLE"), 99);
 		void* r = player->inventory.addItem("main", item);
 		assert(r == NULL);
 	}
 	/*{
-		InventoryItem *item = new MaterialItem(gamedef, CONTENT_MESE, 6);
+		InventoryItem *item = new MaterialItem(gamedef, LEGN(ndef, "CONTENT_MESE"), 6);
 		void* r = player->inventory.addItem("main", item);
 		assert(r == NULL);
 	}
 	{
-		InventoryItem *item = new MaterialItem(gamedef, CONTENT_COALSTONE, 6);
+		InventoryItem *item = new MaterialItem(gamedef, LEGN(ndef, "CONTENT_COALSTONE"), 6);
 		void* r = player->inventory.addItem("main", item);
 		assert(r == NULL);
 	}
 	{
-		InventoryItem *item = new MaterialItem(gamedef, CONTENT_WOOD, 6);
+		InventoryItem *item = new MaterialItem(gamedef, LEGN(ndef, "CONTENT_WOOD"), 6);
 		void* r = player->inventory.addItem("main", item);
 		assert(r == NULL);
 	}
@@ -628,7 +635,7 @@ void craft_give_initial_stuff(Player *player, IGameDef *gamedef)
 	}*/
 	/*// Give some other stuff
 	{
-		InventoryItem *item = new MaterialItem(gamedef, CONTENT_TREE, 999);
+		InventoryItem *item = new MaterialItem(gamedef, LEGN(ndef, "CONTENT_TREE"), 999);
 		bool r = player->inventory.addItem("main", item);
 		assert(r == true);
 	}*/

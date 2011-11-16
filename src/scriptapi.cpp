@@ -45,7 +45,6 @@ TODO:
 - Object visual client-side stuff
 	- Blink effect
 	- Spritesheets and animation
-- Named node types and dynamic id allocation per MapBlock
 - LuaNodeMetadata
 	blockdef.has_metadata = true/false
 	- Stores an inventory and stuff in a Settings object

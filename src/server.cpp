@@ -987,7 +987,7 @@ Server::Server(
 	m_banmanager(mapsavedir+DIR_DELIM+"ipban.txt"),
 	m_lua(NULL),
 	m_toolmgr(createToolDefManager()),
-	m_nodemgr(createNodeDefManager()),
+	m_nodedef(createNodeDefManager()),
 	m_thread(this),
 	m_emergethread(this),
 	m_time_counter(0),
@@ -1013,10 +1013,10 @@ Server::Server(
 	JMutexAutoLock envlock(m_env_mutex);
 	JMutexAutoLock conlock(m_con_mutex);
 
-	infostream<<"m_nodemgr="<<m_nodemgr<<std::endl;
+	infostream<<"m_nodedef="<<m_nodedef<<std::endl;
 	
 	// Initialize default node definitions
-	content_mapnode_init(m_nodemgr);
+	content_mapnode_init(m_nodedef);
 	
 	// Add default global mod path
 	m_modspaths.push_back(porting::path_data + DIR_DELIM + "mods");
@@ -1146,7 +1146,7 @@ Server::~Server()
 	delete m_env;
 
 	delete m_toolmgr;
-	delete m_nodemgr;
+	delete m_nodedef;
 	
 	// Deinitialize scripting
 	infostream<<"Server: Deinitializing scripting"<<std::endl;
@@ -2143,7 +2143,7 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 		SendToolDef(m_con, peer_id, m_toolmgr);
 		
 		// Send node definitions
-		SendNodeDef(m_con, peer_id, m_nodemgr);
+		SendNodeDef(m_con, peer_id, m_nodedef);
 		
 		// Send textures
 		SendTextures(peer_id);
@@ -2530,14 +2530,14 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 			{
 				MapNode n = m_env->getMap().getNode(p_under);
 				// Get mineral
-				mineral = n.getMineral(m_nodemgr);
+				mineral = n.getMineral(m_nodedef);
 				// Get material at position
 				material = n.getContent();
 				// If not yet cancelled
 				if(cannot_remove_node == false)
 				{
 					// If it's not diggable, do nothing
-					if(m_nodemgr->get(material).diggable == false)
+					if(m_nodedef->get(material).diggable == false)
 					{
 						infostream<<"Server: Not finishing digging: "
 								<<"Node not diggable"
@@ -2633,7 +2633,7 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 						ToolDiggingProperties tp =
 								m_toolmgr->getDiggingProperties(toolname);
 						DiggingProperties prop =
-								getDiggingProperties(material, &tp, m_nodemgr);
+								getDiggingProperties(material, &tp, m_nodedef);
 
 						if(prop.diggable == false)
 						{
@@ -2663,7 +2663,7 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 				// If not mineral
 				if(item == NULL)
 				{
-					const std::string &dug_s = m_nodemgr->get(material).dug_item;
+					const std::string &dug_s = m_nodedef->get(material).dug_item;
 					if(dug_s != "")
 					{
 						std::istringstream is(dug_s, std::ios::binary);
@@ -2689,8 +2689,8 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 				// If not mineral
 				if(item == NULL)
 				{
-					const std::string &extra_dug_s = m_nodemgr->get(material).extra_dug_item;
-					s32 extra_rarity = m_nodemgr->get(material).extra_dug_item_rarity;
+					const std::string &extra_dug_s = m_nodedef->get(material).extra_dug_item;
+					s32 extra_rarity = m_nodedef->get(material).extra_dug_item_rarity;
 					if(extra_dug_s != "" && extra_rarity != 0
 					   && myrand() % extra_rarity == 0)
 					{
@@ -2766,7 +2766,7 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 							<<" because privileges are "<<getPlayerPrivs(player)
 							<<std::endl;
 
-					if(m_nodemgr->get(n2).buildable_to == false
+					if(m_nodedef->get(n2).buildable_to == false
 						|| no_enough_privs)
 					{
 						// Client probably has wrong data.
@@ -2804,11 +2804,11 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 						<<" at "<<PP(p_under)<<std::endl;
 			
 				// Calculate direction for wall mounted stuff
-				if(m_nodemgr->get(n).wall_mounted)
+				if(m_nodedef->get(n).wall_mounted)
 					n.param2 = packDir(p_under - p_over);
 
 				// Calculate the direction for furnaces and chests and stuff
-				if(m_nodemgr->get(n).param_type == CPT_FACEDIR_SIMPLE)
+				if(m_nodedef->get(n).param_type == CPT_FACEDIR_SIMPLE)
 				{
 					v3f playerpos = player->getPosition();
 					v3f blockpos = intToFloat(p_over, BS) - playerpos;
@@ -2879,7 +2879,7 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 					Calculate special events
 				*/
 				
-				/*if(n.d == CONTENT_MESE)
+				/*if(n.d == LEGN(m_nodedef, "CONTENT_MESE"))
 				{
 					u32 count = 0;
 					for(s16 z=-1; z<=1; z++)
@@ -3036,7 +3036,7 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 		NodeMetadata *meta = m_env->getMap().getNodeMetadata(p);
 		if(!meta)
 			return;
-		if(meta->typeId() != CONTENT_SIGN_WALL)
+		if(meta->typeId() != LEGN(m_nodedef, "CONTENT_SIGN_WALL"))
 			return;
 		SignNodeMetadata *signmeta = (SignNodeMetadata*)meta;
 		signmeta->setText(text);
@@ -3162,7 +3162,7 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 						p.Y = stoi(fn.next(","));
 						p.Z = stoi(fn.next(","));
 						NodeMetadata *meta = m_env->getMap().getNodeMetadata(p);
-						if(meta && meta->typeId() == CONTENT_LOCKABLE_CHEST) {
+						if(meta && meta->typeId() == LEGN(m_nodedef, "CONTENT_LOCKABLE_CHEST")) {
 							LockingChestNodeMetadata *lcm = (LockingChestNodeMetadata*)meta;
 							if (lcm->getOwner() != player->getName())
 								return;
@@ -3180,7 +3180,7 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 						p.Y = stoi(fn.next(","));
 						p.Z = stoi(fn.next(","));
 						NodeMetadata *meta = m_env->getMap().getNodeMetadata(p);
-						if(meta && meta->typeId() == CONTENT_LOCKABLE_CHEST) {
+						if(meta && meta->typeId() == LEGN(m_nodedef, "CONTENT_LOCKABLE_CHEST")) {
 							LockingChestNodeMetadata *lcm = (LockingChestNodeMetadata*)meta;
 							if (lcm->getOwner() != player->getName())
 								return;
@@ -4422,7 +4422,7 @@ IToolDefManager* Server::getToolDefManager()
 }
 INodeDefManager* Server::getNodeDefManager()
 {
-	return m_nodemgr;
+	return m_nodedef;
 }
 ITextureSource* Server::getTextureSource()
 {
@@ -4430,7 +4430,7 @@ ITextureSource* Server::getTextureSource()
 }
 u16 Server::allocateUnknownNodeId(const std::string &name)
 {
-	return m_nodemgr->allocateDummy(name);
+	return m_nodedef->allocateDummy(name);
 }
 
 IWritableToolDefManager* Server::getWritableToolDefManager()
@@ -4439,7 +4439,7 @@ IWritableToolDefManager* Server::getWritableToolDefManager()
 }
 IWritableNodeDefManager* Server::getWritableNodeDefManager()
 {
-	return m_nodemgr;
+	return m_nodedef;
 }
 
 v3f findSpawnPos(ServerMap &map)

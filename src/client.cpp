@@ -900,16 +900,6 @@ void Client::ProcessData(u8 *data, u32 datasize, u16 sender_peer_id)
 			block = new MapBlock(&m_env.getMap(), p, this);
 			block->deSerialize(istr, ser_version);
 			sector->insertBlock(block);
-
-			//DEBUG
-			/*NodeMod mod;
-			mod.type = NODEMOD_CHANGECONTENT;
-			mod.param = CONTENT_MESE;
-			block->setTempMod(v3s16(8,10,8), mod);
-			block->setTempMod(v3s16(8,9,8), mod);
-			block->setTempMod(v3s16(8,8,8), mod);
-			block->setTempMod(v3s16(8,7,8), mod);
-			block->setTempMod(v3s16(8,6,8), mod);*/
 		}
 
 #if 0

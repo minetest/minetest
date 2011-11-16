@@ -2058,7 +2058,7 @@ void ServerMap::initBlockMake(mapgen::BlockMakeData *data, v3s16 blockpos)
 	data->no_op = false;
 	data->seed = m_seed;
 	data->blockpos = blockpos;
-	data->nodemgr = m_gamedef->ndef();
+	data->nodedef = m_gamedef->ndef();
 
 	/*
 		Create the whole area of this and the neighboring blocks

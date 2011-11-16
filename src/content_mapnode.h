@@ -21,20 +21,14 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #define CONTENT_MAPNODE_HEADER
 
 #include "mapnode.h"
-class IWritableNodeDefManager;
 
 /*
-	Initialize default node definitions
-
-	This accesses tsrc; if it is non-NULL, textures are set
-	for the nodes.
-
-	Client first calls this with tsrc=NULL to run some
-	unit tests and stuff, then it runs this again with tsrc
-	defined to get the textures.
-
-	Server only calls this once with tsrc=NULL.
+	Legacy node definitions
 */
+
+class IWritableNodeDefManager;
+
+// Initialize default (legacy) node definitions
 void content_mapnode_init(IWritableNodeDefManager *nodemgr);
 
 // Backwards compatibility for non-extended content types in v19
@@ -42,67 +36,15 @@ extern content_t trans_table_19[21][2];
 MapNode mapnode_translate_from_internal(MapNode n_from, u8 version);
 MapNode mapnode_translate_to_internal(MapNode n_from, u8 version);
 
-// Get legacy node name mapping
+// Get legacy node name mapping for loading old blocks
 class NameIdMapping;
 void content_mapnode_get_name_id_mapping(NameIdMapping *nimap);
 
-/*
-	Node content type IDs
-	Ranges:
-*/
-
-// 0x000...0x07f (0...127): param2 is fully usable
-// 126 and 127 are reserved.
-// Use these sparingly, only when the extra space in param2 might be needed.
-// Add a space when there is unused space between numbers.
-#define CONTENT_STONE 0
-
-#define CONTENT_WATER 2
-#define CONTENT_TORCH 3
-
-#define CONTENT_WATERSOURCE 9
-
-#define CONTENT_SIGN_WALL 14
-#define CONTENT_CHEST 15
-#define CONTENT_FURNACE 16
-#define CONTENT_LOCKABLE_CHEST 17
-
-#define CONTENT_FENCE 21
-
-#define CONTENT_RAIL 30
-#define CONTENT_LADDER 31
-#define CONTENT_LAVA 32
-#define CONTENT_LAVASOURCE 33
-
-// 0x800...0xfff (2048...4095): higher 4 bytes of param2 are not usable
-#define CONTENT_GRASS 0x800 //1
-#define CONTENT_TREE 0x801 //4
-#define CONTENT_LEAVES 0x802 //5
-#define CONTENT_GRASS_FOOTSTEPS 0x803 //6
-#define CONTENT_MESE 0x804 //7
-#define CONTENT_MUD 0x805 //8
-// Pretty much useless, clouds won't be drawn this way
-#define CONTENT_CLOUD 0x806 //10
-#define CONTENT_COALSTONE 0x807 //11
-#define CONTENT_WOOD 0x808 //12
-#define CONTENT_SAND 0x809 //13
-#define CONTENT_COBBLE 0x80a //18
-#define CONTENT_STEEL 0x80b //19
-#define CONTENT_GLASS 0x80c //20
-#define CONTENT_MOSSYCOBBLE 0x80d //22
-#define CONTENT_GRAVEL 0x80e //23
-#define CONTENT_SANDSTONE 0x80f //24
-#define CONTENT_CACTUS 0x810 //25
-#define CONTENT_BRICK 0x811 //26
-#define CONTENT_CLAY 0x812 //27
-#define CONTENT_PAPYRUS 0x813 //28
-#define CONTENT_BOOKSHELF 0x814 //29
-#define CONTENT_JUNGLETREE 0x815
-#define CONTENT_JUNGLEGRASS 0x816
-#define CONTENT_NC 0x817
-#define CONTENT_NC_RB 0x818
-#define CONTENT_APPLE 0x819
-#define CONTENT_SAPLING 0x820
+// Convert "CONTENT_STONE"-style names to dynamic ids
+std::string content_mapnode_get_new_name(const std::string &oldname);
+class INodeDefManager;
+content_t legacy_get_id(const std::string &oldname, INodeDefManager *ndef);
+#define LEGN(ndef, oldname) legacy_get_id(oldname, ndef)
 
 #endif
 

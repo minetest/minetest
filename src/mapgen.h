@@ -43,7 +43,8 @@ namespace mapgen
 	void add_random_objects(MapBlock *block);
 
 	// Add a tree
-	void make_tree(ManualMapVoxelManipulator &vmanip, v3s16 p0, bool is_apple_tree);
+	void make_tree(ManualMapVoxelManipulator &vmanip, v3s16 p0,
+			bool is_apple_tree, INodeDefManager *ndef);
 	
 	/*
 		These are used by FarMesh
@@ -59,7 +60,7 @@ namespace mapgen
 		u64 seed;
 		v3s16 blockpos;
 		UniqueQueue<v3s16> transforming_liquid;
-		INodeDefManager *nodemgr; // Destructor deletes
+		INodeDefManager *nodedef; // Destructor deletes
 
 		BlockMakeData();
 		~BlockMakeData();

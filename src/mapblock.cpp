@@ -275,7 +275,6 @@ bool MapBlock::propagateSunlight(core::map<v3s16, bool> & light_sources,
 				else
 				{
 					MapNode n = getNode(v3s16(x, MAP_BLOCKSIZE-1, z));
-					//if(n.getContent() == CONTENT_WATER || n.getContent() == CONTENT_WATERSOURCE)
 					if(m_gamedef->ndef()->get(n).sunlight_propagates == false)
 					{
 						no_sunlight = true;
@@ -331,26 +330,6 @@ bool MapBlock::propagateSunlight(core::map<v3s16, bool> & light_sources,
 				}
 				else if(nodemgr->get(n).light_propagates == false)
 				{
-					/*// DEPRECATED TODO: REMOVE
-					if(grow_grass)
-					{
-						bool upper_is_air = false;
-						try
-						{
-							if(getNodeParent(pos+v3s16(0,1,0)).getContent() == CONTENT_AIR)
-								upper_is_air = true;
-						}
-						catch(InvalidPositionException &e)
-						{
-						}
-						// Turn mud into grass
-						if(upper_is_air && n.getContent() == CONTENT_MUD
-								&& current_light == LIGHT_SUN)
-						{
-							n.d = CONTENT_GRASS;
-						}
-					}*/
-
 					// A solid object is on the way.
 					stopped_to_solid_object = true;
 					
