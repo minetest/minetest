@@ -316,6 +316,11 @@ minetest.register_tool("horribletool", {
 })
 --]]
 
+minetest.register_node("somenode", {
+	tile_images = {"lava.png", "mese.png", "stone.png", "grass.png", "cobble.png", "tree_top.png"},
+	inventory_image = "treeprop.png"
+})
+
 local TNT = {
 	-- Maybe handle gravity and collision this way? dunno
 	physical = true,

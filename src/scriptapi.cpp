@@ -36,6 +36,7 @@ extern "C" {
 #include "luaentity_common.h"
 #include "content_sao.h" // For LuaEntitySAO
 #include "tooldef.h"
+#include "nodedef.h"
 
 /*
 TODO:
@@ -46,7 +47,13 @@ TODO:
 	- Blink effect
 	- Spritesheets and animation
 - LuaNodeMetadata
-	blockdef.has_metadata = true/false
+	blockdef.metadata_type =
+		""
+		"sign"
+		"furnace"
+		"chest"
+		"locked_chest"
+		"lua"
 	- Stores an inventory and stuff in a Settings object
 	meta.inventory_add_list("main")
 	blockdef.on_inventory_modified
@@ -224,6 +231,7 @@ static int l_register_tool(lua_State *L)
 	const char *name = luaL_checkstring(L, 1);
 	infostream<<"register_tool: "<<name<<std::endl;
 	luaL_checktype(L, 2, LUA_TTABLE);
+	int table = 2;
 
 	// Get server from registry
 	lua_getfield(L, LUA_REGISTRYINDEX, "minetest_server");
@@ -231,8 +239,6 @@ static int l_register_tool(lua_State *L)
 	// And get the writable tool definition manager from the server
 	IWritableToolDefManager *tooldef =
 			server->getWritableToolDefManager();
-	
-	int table = 2;
 	
 	ToolDefinition def;
 
@@ -282,7 +288,55 @@ static int l_register_tool(lua_State *L)
 	lua_pop(L, 1);
 
 	tooldef->registerTool(name, def);
+	return 0; /* number of results */
+}
 
+// register_node(name, {lots of stuff})
+static int l_register_node(lua_State *L)
+{
+	const char *name = luaL_checkstring(L, 1);
+	infostream<<"register_node: "<<name<<std::endl;
+	luaL_checktype(L, 2, LUA_TTABLE);
+	int table0 = 2;
+
+	// Get server from registry
+	lua_getfield(L, LUA_REGISTRYINDEX, "minetest_server");
+	Server *server = (Server*)lua_touserdata(L, -1);
+	// And get the writable node definition manager from the server
+	IWritableNodeDefManager *nodedef =
+			server->getWritableNodeDefManager();
+	
+	ContentFeatures f;
+	f.name = name;
+
+	lua_getfield(L, table0, "tile_images");
+	if(lua_istable(L, -1)){
+		int table = lua_gettop(L);
+		lua_pushnil(L);
+		int i = 0;
+		while(lua_next(L, table) != 0){
+			// key at index -2 and value at index -1
+			if(lua_isstring(L, -1))
+				f.tname_tiles[i] = lua_tostring(L, -1);
+			else
+				f.tname_tiles[i] = "";
+			// removes value, keeps key for next iteration
+			lua_pop(L, 1);
+			i++;
+			if(i==6){
+				lua_pop(L, 1);
+				break;
+			}
+		}
+	}
+	lua_pop(L, 1);
+
+	lua_getfield(L, table0, "inventory_image");
+	if(lua_isstring(L, -1))
+		f.tname_inventory = lua_tostring(L, -1);
+	lua_pop(L, 1);
+
+	nodedef->set(name, f);
 	return 0; /* number of results */
 }
 
@@ -291,6 +345,7 @@ static const struct luaL_Reg minetest_f [] = {
 	{"register_globalstep", l_register_globalstep},
 	//{"deregister_tools", l_deregister_tools},
 	{"register_tool", l_register_tool},
+	{"register_node", l_register_node},
 	{NULL, NULL}
 };
 
