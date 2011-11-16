@@ -138,12 +138,11 @@ struct ContentFeatures
 	// the texture atlas
 	std::set<std::string> used_texturenames;
 	
-	// True if this actually contains non-default data
-	bool modified;
-
 	/*
 		Actual data
 	*/
+
+	std::string name; // "" = undefined node
 
 	// Visual definition
 	enum NodeDrawType drawtype;

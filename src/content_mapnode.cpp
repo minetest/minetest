@@ -162,6 +162,7 @@ void content_mapnode_init(IWritableNodeDefManager *nodemgr)
 
 	i = CONTENT_STONE;
 	f = nodemgr->getModifiable(i);
+	f->name = "stone";
 	f->setAllTextures("stone.png");
 	f->setInventoryTextureCube("stone.png", "stone.png", "stone.png");
 	f->param_type = CPT_MINERAL;
@@ -172,6 +173,7 @@ void content_mapnode_init(IWritableNodeDefManager *nodemgr)
 	
 	i = CONTENT_GRASS;
 	f = nodemgr->getModifiable(i);
+	f->name = "grass";
 	f->setAllTextures("mud.png^grass_side.png");
 	f->setTexture(0, "grass.png");
 	f->setTexture(1, "mud.png");
@@ -182,6 +184,7 @@ void content_mapnode_init(IWritableNodeDefManager *nodemgr)
 	
 	i = CONTENT_GRASS_FOOTSTEPS;
 	f = nodemgr->getModifiable(i);
+	f->name = "grass_footsteps";
 	f->setAllTextures("mud.png^grass_side.png");
 	f->setTexture(0, "grass_footsteps.png");
 	f->setTexture(1, "mud.png");
@@ -192,6 +195,7 @@ void content_mapnode_init(IWritableNodeDefManager *nodemgr)
 	
 	i = CONTENT_MUD;
 	f = nodemgr->getModifiable(i);
+	f->name = "dirt";
 	f->setAllTextures("mud.png");
 	f->setInventoryTextureCube("mud.png", "mud.png", "mud.png");
 	f->param_type = CPT_MINERAL;
@@ -201,6 +205,7 @@ void content_mapnode_init(IWritableNodeDefManager *nodemgr)
 	
 	i = CONTENT_SAND;
 	f = nodemgr->getModifiable(i);
+	f->name = "sand";
 	f->setAllTextures("sand.png");
 	f->setInventoryTextureCube("sand.png", "sand.png", "sand.png");
 	f->param_type = CPT_MINERAL;
@@ -211,6 +216,7 @@ void content_mapnode_init(IWritableNodeDefManager *nodemgr)
 	
 	i = CONTENT_GRAVEL;
 	f = nodemgr->getModifiable(i);
+	f->name = "gravel";
 	f->setAllTextures("gravel.png");
 	f->setInventoryTextureCube("gravel.png", "gravel.png", "gravel.png");
 	f->param_type = CPT_MINERAL;
@@ -220,6 +226,7 @@ void content_mapnode_init(IWritableNodeDefManager *nodemgr)
 	
 	i = CONTENT_SANDSTONE;
 	f = nodemgr->getModifiable(i);
+	f->name = "sandstone";
 	f->setAllTextures("sandstone.png");
 	f->setInventoryTextureCube("sandstone.png", "sandstone.png", "sandstone.png");
 	f->param_type = CPT_MINERAL;
@@ -229,6 +236,7 @@ void content_mapnode_init(IWritableNodeDefManager *nodemgr)
 
 	i = CONTENT_CLAY;
 	f = nodemgr->getModifiable(i);
+	f->name = "clay";
 	f->setAllTextures("clay.png");
 	f->setInventoryTextureCube("clay.png", "clay.png", "clay.png");
 	f->param_type = CPT_MINERAL;
@@ -238,6 +246,7 @@ void content_mapnode_init(IWritableNodeDefManager *nodemgr)
 
 	i = CONTENT_BRICK;
 	f = nodemgr->getModifiable(i);
+	f->name = "brick";
 	f->setAllTextures("brick.png");
 	f->setInventoryTextureCube("brick.png", "brick.png", "brick.png");
 	f->param_type = CPT_MINERAL;
@@ -247,6 +256,7 @@ void content_mapnode_init(IWritableNodeDefManager *nodemgr)
 
 	i = CONTENT_TREE;
 	f = nodemgr->getModifiable(i);
+	f->name = "tree";
 	f->setAllTextures("tree.png");
 	f->setTexture(0, "tree_top.png");
 	f->setTexture(1, "tree_top.png");
@@ -259,6 +269,7 @@ void content_mapnode_init(IWritableNodeDefManager *nodemgr)
 	
 	i = CONTENT_JUNGLETREE;
 	f = nodemgr->getModifiable(i);
+	f->name = "jungletree";
 	f->setAllTextures("jungletree.png");
 	f->setTexture(0, "jungletree_top.png");
 	f->setTexture(1, "jungletree_top.png");
@@ -269,6 +280,7 @@ void content_mapnode_init(IWritableNodeDefManager *nodemgr)
 	
 	i = CONTENT_JUNGLEGRASS;
 	f = nodemgr->getModifiable(i);
+	f->name = "junglegrass";
 	f->drawtype = NDT_PLANTLIKE;
 	f->visual_scale = 1.3;
 	f->setAllTextures("junglegrass.png");
@@ -283,6 +295,7 @@ void content_mapnode_init(IWritableNodeDefManager *nodemgr)
 
 	i = CONTENT_LEAVES;
 	f = nodemgr->getModifiable(i);
+	f->name = "leaves";
 	f->drawtype = NDT_ALLFACES_OPTIONAL;
 	f->setAllTextures("leaves.png");
 	//f->setAllTextures("[noalpha:leaves.png");
@@ -296,6 +309,7 @@ void content_mapnode_init(IWritableNodeDefManager *nodemgr)
 
 	i = CONTENT_CACTUS;
 	f = nodemgr->getModifiable(i);
+	f->name = "cactus";
 	f->setAllTextures("cactus_side.png");
 	f->setTexture(0, "cactus_top.png");
 	f->setTexture(1, "cactus_top.png");
@@ -308,6 +322,7 @@ void content_mapnode_init(IWritableNodeDefManager *nodemgr)
 
 	i = CONTENT_PAPYRUS;
 	f = nodemgr->getModifiable(i);
+	f->name = "papyrus";
 	f->drawtype = NDT_PLANTLIKE;
 	f->setAllTextures("papyrus.png");
 	f->setInventoryTexture("papyrus.png");
@@ -321,6 +336,7 @@ void content_mapnode_init(IWritableNodeDefManager *nodemgr)
 
 	i = CONTENT_BOOKSHELF;
 	f = nodemgr->getModifiable(i);
+	f->name = "bookshelf";
 	f->setAllTextures("bookshelf.png");
 	f->setTexture(0, "wood.png");
 	f->setTexture(1, "wood.png");
@@ -334,6 +350,7 @@ void content_mapnode_init(IWritableNodeDefManager *nodemgr)
 
 	i = CONTENT_GLASS;
 	f = nodemgr->getModifiable(i);
+	f->name = "glass";
 	f->drawtype = NDT_GLASSLIKE;
 	f->setAllTextures("glass.png");
 	f->light_propagates = true;
@@ -346,6 +363,7 @@ void content_mapnode_init(IWritableNodeDefManager *nodemgr)
 
 	i = CONTENT_FENCE;
 	f = nodemgr->getModifiable(i);
+	f->name = "fence";
 	f->drawtype = NDT_FENCELIKE;
 	f->setInventoryTexture("fence.png");
 	f->setTexture(0, "wood.png");
@@ -362,6 +380,7 @@ void content_mapnode_init(IWritableNodeDefManager *nodemgr)
 
 	i = CONTENT_RAIL;
 	f = nodemgr->getModifiable(i);
+	f->name = "rail";
 	f->drawtype = NDT_RAILLIKE;
 	f->setInventoryTexture("rail.png");
 	f->setTexture(0, "rail.png");
@@ -380,6 +399,7 @@ void content_mapnode_init(IWritableNodeDefManager *nodemgr)
 
 	i = CONTENT_LADDER;
 	f = nodemgr->getModifiable(i);
+	f->name = "ladder";
 	f->drawtype = NDT_SIGNLIKE;
 	f->setAllTextures("ladder.png");
 	f->setInventoryTexture("ladder.png");
@@ -398,12 +418,14 @@ void content_mapnode_init(IWritableNodeDefManager *nodemgr)
 	// Deprecated
 	i = CONTENT_COALSTONE;
 	f = nodemgr->getModifiable(i);
+	f->name = "coalstone";
 	f->setAllTextures("stone.png^mineral_coal.png");
 	f->is_ground_content = true;
 	setStoneLikeMaterialProperties(f->material, 1.5);
 	
 	i = CONTENT_WOOD;
 	f = nodemgr->getModifiable(i);
+	f->name = "wood";
 	f->setAllTextures("wood.png");
 	f->setInventoryTextureCube("wood.png", "wood.png", "wood.png");
 	f->is_ground_content = true;
@@ -413,6 +435,7 @@ void content_mapnode_init(IWritableNodeDefManager *nodemgr)
 	
 	i = CONTENT_MESE;
 	f = nodemgr->getModifiable(i);
+	f->name = "mese";
 	f->setAllTextures("mese.png");
 	f->setInventoryTextureCube("mese.png", "mese.png", "mese.png");
 	f->is_ground_content = true;
@@ -422,6 +445,7 @@ void content_mapnode_init(IWritableNodeDefManager *nodemgr)
 	
 	i = CONTENT_CLOUD;
 	f = nodemgr->getModifiable(i);
+	f->name = "cloud";
 	f->setAllTextures("cloud.png");
 	f->setInventoryTextureCube("cloud.png", "cloud.png", "cloud.png");
 	f->is_ground_content = true;
@@ -429,6 +453,7 @@ void content_mapnode_init(IWritableNodeDefManager *nodemgr)
 	
 	i = CONTENT_AIR;
 	f = nodemgr->getModifiable(i);
+	f->name = "air";
 	f->param_type = CPT_LIGHT;
 	f->light_propagates = true;
 	f->sunlight_propagates = true;
@@ -440,6 +465,7 @@ void content_mapnode_init(IWritableNodeDefManager *nodemgr)
 	
 	i = CONTENT_WATER;
 	f = nodemgr->getModifiable(i);
+	f->name = "water_flowing";
 	f->drawtype = NDT_FLOWINGLIQUID;
 	f->setAllTextures("water.png");
 	f->alpha = WATER_ALPHA;
@@ -460,6 +486,7 @@ void content_mapnode_init(IWritableNodeDefManager *nodemgr)
 
 	i = CONTENT_WATERSOURCE;
 	f = nodemgr->getModifiable(i);
+	f->name = "water_source";
 	f->drawtype = NDT_LIQUID;
 	f->setAllTextures("water.png");
 	f->alpha = WATER_ALPHA;
@@ -481,6 +508,7 @@ void content_mapnode_init(IWritableNodeDefManager *nodemgr)
 	
 	i = CONTENT_LAVA;
 	f = nodemgr->getModifiable(i);
+	f->name = "lava_flowing";
 	f->drawtype = NDT_FLOWINGLIQUID;
 	f->setAllTextures("lava.png");
 	f->setInventoryTextureCube("lava.png", "lava.png", "lava.png");
@@ -502,6 +530,7 @@ void content_mapnode_init(IWritableNodeDefManager *nodemgr)
 	
 	i = CONTENT_LAVASOURCE;
 	f = nodemgr->getModifiable(i);
+	f->name = "lava_source";
 	f->drawtype = NDT_LIQUID;
 	f->setAllTextures("lava.png");
 	f->setInventoryTextureCube("lava.png", "lava.png", "lava.png");
@@ -525,6 +554,7 @@ void content_mapnode_init(IWritableNodeDefManager *nodemgr)
 	
 	i = CONTENT_TORCH;
 	f = nodemgr->getModifiable(i);
+	f->name = "torch";
 	f->drawtype = NDT_TORCHLIKE;
 	f->setTexture(0, "torch_on_floor.png");
 	f->setTexture(1, "torch_on_ceiling.png");
@@ -550,6 +580,7 @@ void content_mapnode_init(IWritableNodeDefManager *nodemgr)
 	
 	i = CONTENT_SIGN_WALL;
 	f = nodemgr->getModifiable(i);
+	f->name = "sign_wall";
 	f->drawtype = NDT_SIGNLIKE;
 	f->setAllTextures("sign_wall.png");
 	f->setInventoryTexture("sign_wall.png");
@@ -568,6 +599,7 @@ void content_mapnode_init(IWritableNodeDefManager *nodemgr)
 	
 	i = CONTENT_CHEST;
 	f = nodemgr->getModifiable(i);
+	f->name = "chest";
 	f->param_type = CPT_FACEDIR_SIMPLE;
 	f->setAllTextures("chest_side.png");
 	f->setTexture(0, "chest_top.png");
@@ -583,6 +615,7 @@ void content_mapnode_init(IWritableNodeDefManager *nodemgr)
 	
 	i = CONTENT_LOCKABLE_CHEST;
 	f = nodemgr->getModifiable(i);
+	f->name = "locked_chest";
 	f->param_type = CPT_FACEDIR_SIMPLE;
 	f->setAllTextures("chest_side.png");
 	f->setTexture(0, "chest_top.png");
@@ -598,6 +631,7 @@ void content_mapnode_init(IWritableNodeDefManager *nodemgr)
 
 	i = CONTENT_FURNACE;
 	f = nodemgr->getModifiable(i);
+	f->name = "furnace";
 	f->param_type = CPT_FACEDIR_SIMPLE;
 	f->setAllTextures("furnace_side.png");
 	f->setTexture(5, "furnace_front.png"); // Z-
@@ -610,6 +644,7 @@ void content_mapnode_init(IWritableNodeDefManager *nodemgr)
 	
 	i = CONTENT_COBBLE;
 	f = nodemgr->getModifiable(i);
+	f->name = "cobble";
 	f->setAllTextures("cobble.png");
 	f->setInventoryTextureCube("cobble.png", "cobble.png", "cobble.png");
 	f->param_type = CPT_NONE;
@@ -620,6 +655,7 @@ void content_mapnode_init(IWritableNodeDefManager *nodemgr)
 
 	i = CONTENT_MOSSYCOBBLE;
 	f = nodemgr->getModifiable(i);
+	f->name = "mossycobble";
 	f->setAllTextures("mossycobble.png");
 	f->setInventoryTextureCube("mossycobble.png", "mossycobble.png", "mossycobble.png");
 	f->param_type = CPT_NONE;
@@ -629,6 +665,7 @@ void content_mapnode_init(IWritableNodeDefManager *nodemgr)
 	
 	i = CONTENT_STEEL;
 	f = nodemgr->getModifiable(i);
+	f->name = "steelblock";
 	f->setAllTextures("steel_block.png");
 	f->setInventoryTextureCube("steel_block.png", "steel_block.png",
 			"steel_block.png");
@@ -639,6 +676,7 @@ void content_mapnode_init(IWritableNodeDefManager *nodemgr)
 	
 	i = CONTENT_NC;
 	f = nodemgr->getModifiable(i);
+	f->name = "nyancat";
 	f->param_type = CPT_FACEDIR_SIMPLE;
 	f->setAllTextures("nc_side.png");
 	f->setTexture(5, "nc_front.png"); // Z-
@@ -650,6 +688,7 @@ void content_mapnode_init(IWritableNodeDefManager *nodemgr)
 	
 	i = CONTENT_NC_RB;
 	f = nodemgr->getModifiable(i);
+	f->name = "nyancat_rainbow";
 	f->setAllTextures("nc_rb.png");
 	f->setInventoryTexture("nc_rb.png");
 	f->dug_item = std::string("MaterialItem2 ")+itos(i)+" 1";
@@ -658,6 +697,7 @@ void content_mapnode_init(IWritableNodeDefManager *nodemgr)
 
 	i = CONTENT_SAPLING;
 	f = nodemgr->getModifiable(i);
+	f->name = "sapling";
 	f->drawtype = NDT_PLANTLIKE;
 	f->visual_scale = 1.0;
 	f->setAllTextures("sapling.png");
@@ -672,6 +712,7 @@ void content_mapnode_init(IWritableNodeDefManager *nodemgr)
 	
 	i = CONTENT_APPLE;
 	f = nodemgr->getModifiable(i);
+	f->name = "apple";
 	f->drawtype = NDT_PLANTLIKE;
 	f->visual_scale = 1.0;
 	f->setAllTextures("apple.png");

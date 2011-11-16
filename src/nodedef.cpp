@@ -114,10 +114,10 @@ void ContentFeatures::reset()
 	backface_culling = true;
 #endif
 	used_texturenames.clear();
-	modified = true; // NodeDefManager explicitly sets to false
 	/*
 		Actual data
 	*/
+	name = "";
 	drawtype = NDT_NORMAL;
 	visual_scale = 1.0;
 	for(u32 i=0; i<6; i++)
@@ -159,6 +159,7 @@ void ContentFeatures::reset()
 void ContentFeatures::serialize(std::ostream &os)
 {
 	writeU8(os, 0); // version
+	os<<serializeString(name);
 	writeU8(os, drawtype);
 	writeF1000(os, visual_scale);
 	writeU8(os, 6);
@@ -213,6 +214,7 @@ void ContentFeatures::deSerialize(std::istream &is, IGameDef *gamedef)
 	int version = readU8(is);
 	if(version != 0)
 		throw SerializationError("unsupported ContentFeatures version");
+	name = deSerializeString(is);
 	drawtype = (enum NodeDrawType)readU8(is);
 	visual_scale = readF1000(is);
 	if(readU8(is) != 6)
@@ -320,13 +322,11 @@ public:
 		{
 			ContentFeatures *f = &m_content_features[i];
 			f->reset(); // Reset to defaults
-			f->modified = false; // Not changed from default
 			if(i == CONTENT_IGNORE || i == CONTENT_AIR){
 				f->drawtype = NDT_AIRLIKE;
 				continue;
 			}
 			f->setAllTextures("unknown_block.png");
-			//f->dug_item = std::string("MaterialItem2 ")+itos(i)+" 1";
 		}
 #ifndef SERVER
 		// Make CONTENT_IGNORE to not block the view when occlusion culling
@@ -361,14 +361,14 @@ public:
 	// Writable
 	virtual void set(content_t c, const ContentFeatures &def)
 	{
-		infostream<<"registerNode: registering content \""<<c<<"\""<<std::endl;
+		infostream<<"registerNode: registering content id \""<<c
+				<<"\": name=\""<<def.name<<"\""<<std::endl;
 		assert(c <= MAX_CONTENT);
 		m_content_features[c] = def;
 	}
 	virtual ContentFeatures* getModifiable(content_t c)
 	{
 		assert(c <= MAX_CONTENT);
-		m_content_features[c].modified = true; // Assume it is modified
 		return &m_content_features[c];
 	}
 	virtual void updateTextures(ITextureSource *tsrc)
@@ -500,7 +500,7 @@ public:
 		for(u16 i=0; i<=MAX_CONTENT; i++)
 		{
 			ContentFeatures *f = &m_content_features[i];
-			if(!f->modified)
+			if(f->name == "")
 				continue;
 			writeU16(tmp_os, i);
 			f->serialize(tmp_os);
@@ -523,7 +523,6 @@ public:
 			}
 			ContentFeatures *f = &m_content_features[i];
 			f->deSerialize(tmp_is, gamedef);
-			f->modified = true;
 		}
 	}
 private:
