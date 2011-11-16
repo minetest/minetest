@@ -20,6 +20,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #ifndef GAMEDEF_HEADER
 #define GAMEDEF_HEADER
 
+#include <string>
+
 class IToolDefManager;
 class INodeDefManager;
 //class IItemDefManager; //TODO
@@ -43,6 +45,9 @@ public:
 	// This is always thread-safe, but referencing the irrlicht texture
 	// pointers in other threads than main thread will make things explode.
 	virtual ITextureSource* getTextureSource()=0;
+	
+	// Used for keeping track of names/ids of unknown nodes
+	virtual u16 allocateUnknownNodeId(const std::string &name)=0;
 
 	// Shorthands
 	IToolDefManager* tdef(){return getToolDefManager();}

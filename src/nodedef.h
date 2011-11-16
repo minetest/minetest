@@ -253,6 +253,7 @@ public:
 	// Get node definition
 	virtual const ContentFeatures& get(content_t c) const=0;
 	virtual const ContentFeatures& get(const MapNode &n) const=0;
+	virtual bool getId(const std::string &name, content_t &result) const=0;
 	
 	virtual void serialize(std::ostream &os)=0;
 };
@@ -266,10 +267,16 @@ public:
 	// Get node definition
 	virtual const ContentFeatures& get(content_t c) const=0;
 	virtual const ContentFeatures& get(const MapNode &n) const=0;
+	virtual bool getId(const std::string &name, content_t &result) const=0;
 		
 	// Register node definition
 	virtual void set(content_t c, const ContentFeatures &def)=0;
-	virtual ContentFeatures* getModifiable(content_t c)=0;
+	// Register node definition by name (allocate an id)
+	// If returns CONTENT_IGNORE, could not allocate id
+	virtual content_t set(const std::string &name,
+			const ContentFeatures &def)=0;
+	// If returns CONTENT_IGNORE, could not allocate id
+	virtual content_t allocateDummy(const std::string &name)=0;
 
 	/*
 		Update tile textures to latest return values of TextueSource.

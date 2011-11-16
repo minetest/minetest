@@ -94,6 +94,7 @@ configure_file(
 )
 
 set(common_SRCS
+	nameidmapping.cpp
 	tooldef.cpp
 	nodedef.cpp
 	luaentity_common.cpp

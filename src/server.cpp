@@ -4428,6 +4428,10 @@ ITextureSource* Server::getTextureSource()
 {
 	return NULL;
 }
+u16 Server::allocateUnknownNodeId(const std::string &name)
+{
+	return m_nodemgr->allocateDummy(name);
+}
 
 IWritableToolDefManager* Server::getWritableToolDefManager()
 {

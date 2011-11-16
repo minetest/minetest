@@ -3367,10 +3367,10 @@ void ServerMap::loadBlock(std::string *blob, v3s16 p3d, MapSector *sector, bool 
 			Save blocks loaded in old format in new format
 		*/
 
-		if(version < SER_FMT_VER_HIGHEST || save_after_load)
-		{
+		//if(version < SER_FMT_VER_HIGHEST || save_after_load)
+		// Only save if asked to; no need to update version
+		if(save_after_load)
 			saveBlock(block);
-		}
 		
 		// We just loaded it from, so it's up-to-date.
 		block->resetModified();

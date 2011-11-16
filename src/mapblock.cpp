@@ -18,14 +18,18 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 */
 
 #include "mapblock.h"
+
+#include <sstream>
 #include "map.h"
 // For g_settings
 #include "main.h"
 #include "light.h"
-#include <sstream>
 #include "nodedef.h"
 #include "nodemetadata.h"
 #include "gamedef.h"
+#include "log.h"
+#include "nameidmapping.h"
+#include "content_mapnode.h" // For legacy name-id mapping
 
 /*
 	MapBlock
@@ -188,13 +192,13 @@ void MapBlock::replaceMesh(scene::SMesh *mesh_new)
 			IMeshBuffer *buf = mesh_old->getMeshBuffer(i);
 		}*/
 		
-		/*dstream<<"mesh_old->getReferenceCount()="
+		/*infostream<<"mesh_old->getReferenceCount()="
 				<<mesh_old->getReferenceCount()<<std::endl;
 		u32 c = mesh_old->getMeshBufferCount();
 		for(u32 i=0; i<c; i++)
 		{
 			scene::IMeshBuffer *buf = mesh_old->getMeshBuffer(i);
-			dstream<<"buf->getReferenceCount()="
+			infostream<<"buf->getReferenceCount()="
 					<<buf->getReferenceCount()<<std::endl;
 		}*/
 
@@ -519,6 +523,86 @@ s16 MapBlock::getGroundLevel(v2s16 p2d)
 	Serialization
 */
 
+// List relevant id-name pairs for ids in the block using nodedef
+static void getBlockNodeIdMapping(NameIdMapping *nimap, MapBlock *block,
+		INodeDefManager *nodedef)
+{
+	std::set<content_t> unknown_contents;
+	for(s16 z0=0; z0<MAP_BLOCKSIZE; z0++)
+	for(s16 y0=0; y0<MAP_BLOCKSIZE; y0++)
+	for(s16 x0=0; x0<MAP_BLOCKSIZE; x0++)
+	{
+		v3s16 p(x0,y0,z0);
+		MapNode n = block->getNode(p);
+		content_t id = n.getContent();
+		const ContentFeatures &f = nodedef->get(id);
+		const std::string &name = f.name;
+		if(name == "")
+			unknown_contents.insert(id);
+		else
+			nimap->set(id, name);
+	}
+	for(std::set<content_t>::const_iterator
+			i = unknown_contents.begin();
+			i != unknown_contents.end(); i++){
+		errorstream<<"getBlockNodeIdMapping(): IGNORING ERROR: "
+				<<"Name for node id "<<(*i)<<" not known"<<std::endl;
+	}
+}
+// Correct ids in the block to match nodedef based on names.
+// Unknown ones are added to nodedef.
+// Will not update itself to match id-name pairs in nodedef.
+void correctBlockNodeIds(const NameIdMapping *nimap, MapBlock *block,
+		IGameDef *gamedef)
+{
+	INodeDefManager *nodedef = gamedef->ndef();
+	// This means the block contains incorrect ids, and we contain
+	// the information to convert those to names.
+	// nodedef contains information to convert our names to globally
+	// correct ids.
+	std::set<content_t> unnamed_contents;
+	std::set<std::string> unallocatable_contents;
+	for(s16 z0=0; z0<MAP_BLOCKSIZE; z0++)
+	for(s16 y0=0; y0<MAP_BLOCKSIZE; y0++)
+	for(s16 x0=0; x0<MAP_BLOCKSIZE; x0++)
+	{
+		v3s16 p(x0,y0,z0);
+		MapNode n = block->getNode(p);
+		content_t local_id = n.getContent();
+		std::string name;
+		bool found = nimap->getName(local_id, name);
+		if(!found){
+			unnamed_contents.insert(local_id);
+			continue;
+		}
+		content_t global_id;
+		found = nodedef->getId(name, global_id);
+		if(!found){
+			global_id = gamedef->allocateUnknownNodeId(name);
+			if(global_id == CONTENT_IGNORE){
+				unallocatable_contents.insert(name);
+				continue;
+			}
+		}
+		n.setContent(global_id);
+		block->setNode(p, n);
+	}
+	for(std::set<content_t>::const_iterator
+			i = unnamed_contents.begin();
+			i != unnamed_contents.end(); i++){
+		errorstream<<"correctBlockNodeIds(): IGNORING ERROR: "
+				<<"Block contains id "<<(*i)
+				<<" with no name mapping"<<std::endl;
+	}
+	for(std::set<std::string>::const_iterator
+			i = unallocatable_contents.begin();
+			i != unallocatable_contents.end(); i++){
+		errorstream<<"correctBlockNodeIds(): IGNORING ERROR: "
+				<<"Could not allocate global id for node name \""
+				<<(*i)<<"\""<<std::endl;
+	}
+}
+
 void MapBlock::serialize(std::ostream &os, u8 version)
 {
 	if(!ser_ver_supported(version))
@@ -602,7 +686,7 @@ void MapBlock::serialize(std::ostream &os, u8 version)
 				flags |= 0x08;
 		}
 		os.write((char*)&flags, 1);
-
+		
 		u32 nodecount = MAP_BLOCKSIZE*MAP_BLOCKSIZE*MAP_BLOCKSIZE;
 
 		/*
@@ -663,8 +747,6 @@ void MapBlock::serialize(std::ostream &os, u8 version)
 
 void MapBlock::deSerialize(std::istream &is, u8 version)
 {
-	INodeDefManager *nodemgr = m_gamedef->ndef();
-
 	if(!ser_ver_supported(version))
 		throw VersionMismatchException("ERROR: MapBlock format not supported");
 
@@ -698,7 +780,7 @@ void MapBlock::deSerialize(std::istream &is, u8 version)
 			if(is.gcount() != len)
 				throw SerializationError
 						("MapBlock::deSerialize: no enough input data");
-			data[i].deSerialize(*d, version, nodemgr);
+			data[i].deSerialize(*d, version);
 		}
 	}
 	else if(version <= 10)
@@ -780,7 +862,7 @@ void MapBlock::deSerialize(std::istream &is, u8 version)
 			buf[0] = s[i];
 			buf[1] = s[i+nodecount];
 			buf[2] = s[i+nodecount*2];
-			data[i].deSerialize(buf, version, m_gamedef->getNodeDefManager());
+			data[i].deSerialize(buf, version);
 		}
 		
 		/*
@@ -807,7 +889,7 @@ void MapBlock::deSerialize(std::istream &is, u8 version)
 			}
 			catch(SerializationError &e)
 			{
-				dstream<<"WARNING: MapBlock::deSerialize(): Ignoring an error"
+				errorstream<<"WARNING: MapBlock::deSerialize(): Ignoring an error"
 						<<" while deserializing node metadata"<<std::endl;
 			}
 		}
@@ -834,6 +916,13 @@ void MapBlock::serializeDiskExtra(std::ostream &os, u8 version)
 	{
 		writeU32(os, getTimestamp());
 	}
+
+	// Scan and write node definition id mapping
+	if(version >= 21){
+		NameIdMapping nimap;
+		getBlockNodeIdMapping(&nimap, this, m_gamedef->ndef());
+		nimap.serialize(os);
+	}
 }
 
 void MapBlock::deSerializeDiskExtra(std::istream &is, u8 version)
@@ -841,12 +930,11 @@ void MapBlock::deSerializeDiskExtra(std::istream &is, u8 version)
 	/*
 		Versions up from 9 have block objects. (DEPRECATED)
 	*/
-	if(version >= 9)
-	{
+	if(version >= 9){
 		u16 count = readU16(is);
 		// Not supported and length not known if count is not 0
 		if(count != 0){
-			dstream<<"WARNING: MapBlock::deSerializeDiskExtra(): "
+			errorstream<<"WARNING: MapBlock::deSerializeDiskExtra(): "
 					<<"Ignoring stuff coming at and after MBOs"<<std::endl;
 			return;
 		}
@@ -856,19 +944,24 @@ void MapBlock::deSerializeDiskExtra(std::istream &is, u8 version)
 		Versions up from 15 have static objects.
 	*/
 	if(version >= 15)
-	{
 		m_static_objects.deSerialize(is);
-	}
 		
 	// Timestamp
 	if(version >= 17)
-	{
 		setTimestamp(readU32(is));
-	}
 	else
-	{
 		setTimestamp(BLOCK_TIMESTAMP_UNDEFINED);
+	
+	// Dynamically re-set ids based on node names
+	NameIdMapping nimap;
+	// If supported, read node definition id mapping
+	if(version >= 21){
+		nimap.deSerialize(is);
+	// Else set the legacy mapping
+	} else {
+		content_mapnode_get_name_id_mapping(&nimap);
 	}
+	correctBlockNodeIds(&nimap, this, m_gamedef);
 }
 
 /*
@@ -877,9 +970,7 @@ void MapBlock::deSerializeDiskExtra(std::istream &is, u8 version)
 std::string analyze_block(MapBlock *block)
 {
 	if(block == NULL)
-	{
 		return "NULL";
-	}
 
 	std::ostringstream desc;
 	

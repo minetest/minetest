@@ -39,6 +39,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 class Map;
 class NodeMetadataList;
 class IGameDef;
+class IWritableNodeDefManager;
 
 #define BLOCK_TIMESTAMP_UNDEFINED 0xffffffff
 
@@ -540,8 +541,11 @@ public:
 	// These don't write or read version by itself
 	void serialize(std::ostream &os, u8 version);
 	void deSerialize(std::istream &is, u8 version);
+
 	// Used after the basic ones when writing on disk (serverside)
 	void serializeDiskExtra(std::ostream &os, u8 version);
+	// In addition to doing other things, will add unknown blocks from
+	// id-name mapping to wndef
 	void deSerializeDiskExtra(std::istream &is, u8 version);
 
 private:

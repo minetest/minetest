@@ -848,7 +848,7 @@ void Client::ProcessData(u8 *data, u32 datasize, u16 sender_peer_id)
 		//TimeTaker t1("TOCLIENT_ADDNODE");
 
 		MapNode n;
-		n.deSerialize(&data[8], ser_version, m_nodedef);
+		n.deSerialize(&data[8], ser_version);
 		
 		addNode(p, n);
 	}
@@ -2330,5 +2330,12 @@ INodeDefManager* Client::getNodeDefManager()
 ITextureSource* Client::getTextureSource()
 {
 	return m_tsrc;
+}
+u16 Client::allocateUnknownNodeId(const std::string &name)
+{
+	errorstream<<"Client::allocateUnknownNodeId(): "
+			<<"Client cannot allocate node IDs"<<std::endl;
+	assert(0);
+	return CONTENT_IGNORE;
 }
 

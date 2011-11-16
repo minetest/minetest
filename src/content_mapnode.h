@@ -42,6 +42,10 @@ extern content_t trans_table_19[21][2];
 MapNode mapnode_translate_from_internal(MapNode n_from, u8 version);
 MapNode mapnode_translate_to_internal(MapNode n_from, u8 version);
 
+// Get legacy node name mapping
+class NameIdMapping;
+void content_mapnode_get_name_id_mapping(NameIdMapping *nimap);
+
 /*
 	Node content type IDs
 	Ranges:

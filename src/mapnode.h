@@ -221,7 +221,7 @@ struct MapNode
 
 	static u32 serializedLength(u8 version);
 	void serialize(u8 *dest, u8 version);
-	void deSerialize(u8 *source, u8 version, INodeDefManager *nodemgr);
+	void deSerialize(u8 *source, u8 version);
 	
 };
 

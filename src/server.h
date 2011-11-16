@@ -491,6 +491,7 @@ public:
 	virtual IToolDefManager* getToolDefManager();
 	virtual INodeDefManager* getNodeDefManager();
 	virtual ITextureSource* getTextureSource();
+	virtual u16 allocateUnknownNodeId(const std::string &name);
 	
 	IWritableToolDefManager* getWritableToolDefManager();
 	IWritableNodeDefManager* getWritableNodeDefManager();

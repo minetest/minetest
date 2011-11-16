@@ -56,11 +56,12 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 	18: new generator (not really necessary, but it's there)
 	19: new content type handling
 	20: many existing content types translated to extended ones
+	21: dynamic content type allocation
 */
 // This represents an uninitialized or invalid format
 #define SER_FMT_VER_INVALID 255
 // Highest supported serialization version
-#define SER_FMT_VER_HIGHEST 20
+#define SER_FMT_VER_HIGHEST 21
 // Lowest supported serialization version
 #define SER_FMT_VER_LOWEST 0
 

@@ -26,6 +26,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #endif
 #include "log.h"
 #include "settings.h"
+#include "nameidmapping.h"
 
 /*
 	NodeBox
@@ -318,20 +319,63 @@ class CNodeDefManager: public IWritableNodeDefManager
 public:
 	void clear()
 	{
+		m_name_id_mapping.clear();
 		for(u16 i=0; i<=MAX_CONTENT; i++)
 		{
-			ContentFeatures *f = &m_content_features[i];
-			f->reset(); // Reset to defaults
-			if(i == CONTENT_IGNORE || i == CONTENT_AIR){
-				f->drawtype = NDT_AIRLIKE;
-				continue;
-			}
-			f->setAllTextures("unknown_block.png");
+			ContentFeatures &f = m_content_features[i];
+			f.reset(); // Reset to defaults
+			f.setAllTextures("unknown_block.png");
 		}
-#ifndef SERVER
-		// Make CONTENT_IGNORE to not block the view when occlusion culling
-		m_content_features[CONTENT_IGNORE].solidness = 0;
-#endif
+		
+		// Set CONTENT_AIR
+		{
+			ContentFeatures f;
+			f.name = "air";
+			f.drawtype = NDT_AIRLIKE;
+			f.param_type = CPT_LIGHT;
+			f.light_propagates = true;
+			f.sunlight_propagates = true;
+			f.walkable = false;
+			f.pointable = false;
+			f.diggable = false;
+			f.buildable_to = true;
+			f.air_equivalent = true;
+			set(CONTENT_AIR, f);
+		}
+		// Set CONTENT_IGNORE
+		{
+			ContentFeatures f;
+			f.name = "ignore";
+			f.drawtype = NDT_AIRLIKE;
+			f.param_type = CPT_LIGHT;
+			f.light_propagates = true;
+			f.sunlight_propagates = true;
+			f.walkable = false;
+			f.pointable = false;
+			f.diggable = false;
+			f.buildable_to = true;
+			f.air_equivalent = true;
+			set(CONTENT_AIR, f);
+		}
+	}
+	// CONTENT_IGNORE = not found
+	content_t getFreeId(bool require_full_param2)
+	{
+		// If allowed, first search in the large 4-byte-param2 pool
+		if(!require_full_param2){
+			for(u16 i=0x800; i<=0xfff; i++){
+				const ContentFeatures &f = m_content_features[i];
+				if(f.name == "")
+					return i;
+			}
+		}
+		// Then search from the small 8-byte-param2 pool
+		for(u16 i=0; i<=125; i++){
+			const ContentFeatures &f = m_content_features[i];
+			if(f.name == "")
+				return i;
+		}
+		return CONTENT_IGNORE;
 	}
 	CNodeDefManager()
 	{
@@ -358,18 +402,54 @@ public:
 	{
 		return get(n.getContent());
 	}
-	// Writable
+	virtual bool getId(const std::string &name, content_t &result) const
+	{
+		return m_name_id_mapping.getId(name, result);
+	}
+	// IWritableNodeDefManager
 	virtual void set(content_t c, const ContentFeatures &def)
 	{
 		infostream<<"registerNode: registering content id \""<<c
 				<<"\": name=\""<<def.name<<"\""<<std::endl;
 		assert(c <= MAX_CONTENT);
 		m_content_features[c] = def;
+		if(def.name != "")
+			m_name_id_mapping.set(c, def.name);
 	}
-	virtual ContentFeatures* getModifiable(content_t c)
+	virtual content_t set(const std::string &name,
+			const ContentFeatures &def)
 	{
-		assert(c <= MAX_CONTENT);
-		return &m_content_features[c];
+		assert(name == def.name);
+		u16 id = CONTENT_IGNORE;
+		bool found = m_name_id_mapping.getId(name, id);
+		if(!found){
+			// Determine if full param2 is required
+			bool require_full_param2 = (
+				def.liquid_type == LIQUID_FLOWING
+				||
+				def.drawtype == NDT_FLOWINGLIQUID
+				||
+				def.drawtype == NDT_TORCHLIKE
+				||
+				def.drawtype == NDT_SIGNLIKE
+			);
+			// Get some id
+			id = getFreeId(require_full_param2);
+			if(id == CONTENT_IGNORE)
+				return CONTENT_IGNORE;
+			if(name != "")
+				m_name_id_mapping.set(id, name);
+		}
+		set(id, def);
+		return id;
+	}
+	virtual content_t allocateDummy(const std::string &name)
+	{
+		assert(name != "");
+		ContentFeatures f;
+		f.name = name;
+		f.setAllTextures("unknown_block.png");
+		return set(name, f);
 	}
 	virtual void updateTextures(ITextureSource *tsrc)
 	{
@@ -499,6 +579,8 @@ public:
 		std::ostringstream tmp_os(std::ios::binary);
 		for(u16 i=0; i<=MAX_CONTENT; i++)
 		{
+			if(i == CONTENT_IGNORE || i == CONTENT_AIR)
+				continue;
 			ContentFeatures *f = &m_content_features[i];
 			if(f->name == "")
 				continue;
@@ -523,10 +605,13 @@ public:
 			}
 			ContentFeatures *f = &m_content_features[i];
 			f->deSerialize(tmp_is, gamedef);
+			if(f->name != "")
+				m_name_id_mapping.set(i, f->name);
 		}
 	}
 private:
 	ContentFeatures m_content_features[MAX_CONTENT+1];
+	NameIdMapping m_name_id_mapping;
 };
 
 IWritableNodeDefManager* createNodeDefManager()

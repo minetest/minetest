@@ -324,10 +324,10 @@ public:
 	float getRTT(void);
 
 	// IGameDef interface
-	// Under envlock
 	virtual IToolDefManager* getToolDefManager();
 	virtual INodeDefManager* getNodeDefManager();
 	virtual ITextureSource* getTextureSource();
+	virtual u16 allocateUnknownNodeId(const std::string &name);
 
 private:
 	

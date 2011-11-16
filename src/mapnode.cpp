@@ -268,7 +268,7 @@ void MapNode::serialize(u8 *dest, u8 version)
 		dest[2] = n_foreign.param2;
 	}
 }
-void MapNode::deSerialize(u8 *source, u8 version, INodeDefManager *nodemgr)
+void MapNode::deSerialize(u8 *source, u8 version)
 {
 	if(!ser_ver_supported(version))
 		throw VersionMismatchException("ERROR: MapNode format not supported");
@@ -280,11 +280,6 @@ void MapNode::deSerialize(u8 *source, u8 version, INodeDefManager *nodemgr)
 	else if(version == 1)
 	{
 		param0 = source[0];
-		// This version doesn't support saved lighting
-		if(nodemgr->get(*this).light_propagates || nodemgr->get(*this).light_source > 0)
-			param1 = 0;
-		else
-			param1 = source[1];
 	}
 	else if(version <= 9)
 	{
