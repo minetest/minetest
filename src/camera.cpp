@@ -451,7 +451,7 @@ void Camera::updateSettings()
 
 void Camera::wield(const InventoryItem* item, IGameDef *gamedef)
 {
-	ITextureSource *tsrc = gamedef->tsrc();
+	//ITextureSource *tsrc = gamedef->tsrc();
 	INodeDefManager *ndef = gamedef->ndef();
 
 	if (item != NULL)
@@ -475,7 +475,7 @@ void Camera::wield(const InventoryItem* item, IGameDef *gamedef)
 		// If that failed, make an extruded sprite.
 		if (!isCube)
 		{
-			m_wieldnode->setSprite(item->getImageRaw(tsrc));
+			m_wieldnode->setSprite(item->getImageRaw());
 			m_wieldnode->setScale(v3f(40));
 		}
 

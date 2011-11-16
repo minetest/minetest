@@ -51,11 +51,11 @@ public:
 	virtual std::string getImageBasename() const { return ""; }
 #ifndef SERVER
 	// Shall return an image of the item (or NULL)
-	virtual video::ITexture * getImage(ITextureSource *tsrc) const
+	virtual video::ITexture * getImage() const
 		{ return NULL; }
 	// Shall return an image of the item without embellishments (or NULL)
-	virtual video::ITexture * getImageRaw(ITextureSource *tsrc) const
-		{ return getImage(tsrc); }
+	virtual video::ITexture * getImageRaw() const
+		{ return getImage(); }
 #endif
 	// Shall return a text to show in the GUI
 	virtual std::string getText() { return ""; }
@@ -161,7 +161,7 @@ public:
 		return new MaterialItem(m_gamedef, m_nodename, m_count);
 	}
 #ifndef SERVER
-	video::ITexture * getImage(ITextureSource *tsrc) const;
+	video::ITexture * getImage() const;
 #endif
 	std::string getText()
 	{
@@ -235,7 +235,7 @@ public:
 		return new CraftItem(m_gamedef, m_subname, m_count);
 	}
 #ifndef SERVER
-	video::ITexture * getImage(ITextureSource *tsrc) const;
+	video::ITexture * getImage() const;
 #endif
 	std::string getText()
 	{
@@ -316,8 +316,8 @@ public:
 
 	std::string getImageBasename() const;
 #ifndef SERVER
-	video::ITexture * getImage(ITextureSource *tsrc) const;
-	video::ITexture * getImageRaw(ITextureSource *tsrc) const;
+	video::ITexture * getImage() const;
+	video::ITexture * getImageRaw() const;
 #endif
 
 	std::string getText()

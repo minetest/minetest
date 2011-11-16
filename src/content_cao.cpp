@@ -224,7 +224,7 @@ void ItemCAO::addToScene(scene::ISceneManager *smgr, ITextureSource *tsrc)
 				<<std::endl;
 		if(item)
 		{
-			texture = item->getImage(tsrc);
+			texture = item->getImage();
 			delete item;
 		}
 	}

@@ -179,7 +179,7 @@ MaterialItem::MaterialItem(IGameDef *gamedef, content_t content, u16 count):
 }
 
 #ifndef SERVER
-video::ITexture * MaterialItem::getImage(ITextureSource *tsrc) const
+video::ITexture * MaterialItem::getImage() const
 {
 	return m_gamedef->getNodeDefManager()->get(m_nodename).inventory_texture;
 }
@@ -232,11 +232,10 @@ std::string ToolItem::getImageBasename() const
 }
 
 #ifndef SERVER
-video::ITexture * ToolItem::getImage(ITextureSource *tsrc) const
+video::ITexture * ToolItem::getImage() const
 {
-	if(tsrc == NULL)
-		return NULL;
-	
+	ITextureSource *tsrc = m_gamedef->tsrc();
+
 	std::string basename = getImageBasename();
 	
 	/*
@@ -253,10 +252,9 @@ video::ITexture * ToolItem::getImage(ITextureSource *tsrc) const
 	return tsrc->getTextureRaw(os.str());
 }
 
-video::ITexture * ToolItem::getImageRaw(ITextureSource *tsrc) const
+video::ITexture * ToolItem::getImageRaw() const
 {
-	if(tsrc == NULL)
-		return NULL;
+	ITextureSource *tsrc = m_gamedef->tsrc();
 	
 	return tsrc->getTextureRaw(getImageBasename());
 }
@@ -267,11 +265,10 @@ video::ITexture * ToolItem::getImageRaw(ITextureSource *tsrc) const
 */
 
 #ifndef SERVER
-video::ITexture * CraftItem::getImage(ITextureSource *tsrc) const
+video::ITexture * CraftItem::getImage() const
 {
-	if(tsrc == NULL)
-		return NULL;
-	
+	ITextureSource *tsrc = m_gamedef->tsrc();
+
 	std::string name = item_craft_get_image_name(m_subname, m_gamedef);
 
 	// Get such a texture

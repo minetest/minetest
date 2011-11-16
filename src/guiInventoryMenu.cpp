@@ -39,7 +39,7 @@ void drawInventoryItem(video::IVideoDriver *driver,
 		return;
 	
 	video::ITexture *texture = NULL;
-	texture = item->getImage(tsrc);
+	texture = item->getImage();
 
 	if(texture != NULL)
 	{
