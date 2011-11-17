@@ -114,8 +114,8 @@ public:
 			IGameDef *gamedef) const
 	{
 		if(input_cpi.width > 3){
-			errorstream<<"getCraftResult: IGNORING ERROR: "
-					<<"input_cpi.width > 3"<<std::endl;
+			errorstream<<"getCraftResult(): ERROR: "
+					<<"input_cpi.width > 3; Failing to craft."<<std::endl;
 			return NULL;
 		}
 		InventoryItem *input_items[9];
@@ -134,33 +134,42 @@ public:
 		{
 			CraftDefinition *def = *i;
 
-			infostream<<"Checking "<<createInput(input_cpi).dump()<<std::endl
+			/*infostream<<"Checking "<<createInput(input_cpi).dump()<<std::endl
 					<<" against "<<def->input.dump()
-					<<" (output=\""<<def->output<<"\")"<<std::endl;
+					<<" (output=\""<<def->output<<"\")"<<std::endl;*/
 
-			CraftPointerInput spec_cpi = createPointerInput(def->input, gamedef);
-			if(spec_cpi.width > 3){
-				errorstream<<"getCraftResult: IGNORING ERROR: "
-						<<"spec_cpi.width > 3"<<std::endl;
-				continue;
+			try {
+				CraftPointerInput spec_cpi = createPointerInput(def->input, gamedef);
+				if(spec_cpi.width > 3){
+					errorstream<<"getCraftResult: ERROR: "
+							<<"spec_cpi.width > 3 in recipe "
+							<<def->dump()<<std::endl;
+					continue;
+				}
+				InventoryItem *spec_items[9];
+				for(u32 y=0; y<3; y++)
+				for(u32 x=0; x<3; x++)
+				{
+					u32 i=y*3+x;
+					if(x >= spec_cpi.width || y >= spec_cpi.height())
+						spec_items[i] = NULL;
+					else
+						spec_items[i] = spec_cpi.items[y*spec_cpi.width+x];
+				}
+
+				bool match = checkItemCombination(input_items, spec_items);
+
+				if(match){
+					std::istringstream iss(def->output, std::ios::binary);
+					return InventoryItem::deSerialize(iss, gamedef);
+				}
 			}
-			InventoryItem *spec_items[9];
-			for(u32 y=0; y<3; y++)
-			for(u32 x=0; x<3; x++)
+			catch(SerializationError &e)
 			{
-				u32 i=y*3+x;
-				if(x >= spec_cpi.width || y >= spec_cpi.height())
-					spec_items[i] = NULL;
-				else
-					spec_items[i] = spec_cpi.items[y*spec_cpi.width+x];
-				infostream<<"spec_items["<<i<<"] = "<<spec_items[i]<<std::endl;
-			}
-
-			bool match = checkItemCombination(input_items, spec_items);
-
-			if(match){
-				std::istringstream iss(def->output, std::ios::binary);
-				return InventoryItem::deSerialize(iss, gamedef);
+				errorstream<<"getCraftResult: ERROR: "
+						<<"Serialization error in recipe "
+						<<def->dump()<<std::endl;
+				// then go on with the next craft definition
 			}
 		}
 		return NULL;
