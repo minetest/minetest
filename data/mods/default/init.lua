@@ -98,8 +98,9 @@ end
 --
 -- EnvRef is basically ServerEnvironment and ServerMap combined.
 -- EnvRef methods:
--- - add_node(pos, content); pos={x=num, y=num, z=num}
---   TODO: content -> MapNode as described below
+-- - add_node(pos, node)
+-- - remove_node(pos)
+-- - get_node(pos)
 --
 -- ObjectRef is basically ServerActiveObject.
 -- ObjectRef methods:
@@ -117,28 +118,11 @@ end
 -- MapNode representation:
 -- {name="name", param1=num, param2=num}
 --
+-- Position representation:
+-- {x=num, y=num, z=num}
+--
 
-print("omg lol")
-print("minetest dump: "..dump(minetest))
-
--- Global environment step function
-function on_step(dtime)
-	-- print("on_step")
-end
-
-minetest.register_globalstep(on_step)
-
-function on_placenode(p, node)
-	print("on_placenode")
-end
-
-minetest.register_on_placenode(on_placenode)
-
-function on_dignode(p, node)
-	print("on_dignode")
-end
-
-minetest.register_on_dignode(on_dignode)
+-- print("minetest dump: "..dump(minetest))
 
 minetest.register_tool("WPick", {
 	image = "tool_woodpick.png",
@@ -626,10 +610,43 @@ minetest.register_craft({
 	}
 })
 
+--
+-- Some common functions
+--
+
+function nodeupdate_single(p)
+	n = minetest.env:get_node(p)
+	if n.name == "sand" or n.name == "gravel" then
+		p_bottom = {x=p.x, y=p.y-1, z=p.z}
+		n_bottom = minetest.env:get_node(p_bottom)
+		if n_bottom.name == "air" then
+			minetest.env:remove_node(p)
+			minetest.env:add_luaentity(p, "falling_"..n.name)
+			nodeupdate(p)
+		end
+	end
+end
+
+function nodeupdate(p)
+	for x = -1,1 do
+	for y = -1,1 do
+	for z = -1,1 do
+		p2 = {x=p.x+x, y=p.y+y, z=p.z+z}
+		nodeupdate_single(p2)
+	end
+	end
+	end
+end
+
+--
+-- TNT (not functional)
+--
+
 local TNT = {
+	-- Static definition
 	-- Maybe handle gravity and collision this way? dunno
-	physical = true,
-	weight = 5,
+	-- physical = true,
+	-- weight = 5,
 	collisionbox = {-0.5,-0.5,-0.5, 0.5,0.5,0.5},
 	visual = "cube",
 	textures = {"tnt_top.png","tnt_bottom.png","tnt_side.png","tnt_side.png","tnt_side.png","tnt_side.png"},
@@ -638,7 +655,8 @@ local TNT = {
 	-- Initial value for our timer
 	timer = 0,
 	-- List names of state variables, for serializing object state
-	state_variables = {"timer"},
+	-- (NOTE: not implemented and implementation will not be like this)
+	-- state_variables = {"timer"},
 }
 
 -- Called periodically
@@ -665,8 +683,105 @@ print("TNT dump: "..dump(TNT))
 print("Registering TNT");
 minetest.register_entity("TNT", TNT)
 
+--
+-- Falling stuff
+--
+
+function register_falling_node(nodename, texture)
+	minetest.register_entity("falling_"..nodename, {
+		-- Static definition
+		collisionbox = {-0.5,-0.5,-0.5, 0.5,0.5,0.5},
+		visual = "cube",
+		textures = {texture,texture,texture,texture,texture,texture},
+		-- State
+		fallspeed = 0,
+		-- Methods
+		on_step = function(self, dtime)
+			-- Apply gravity manually
+			self.fallspeed = self.fallspeed + dtime * 5
+			fp = self.object:getpos()
+			fp.y = fp.y - self.fallspeed * dtime
+			self.object:moveto(fp, true)
+			-- Turn to actual sand when collides to ground or just move
+			bcp = {x=fp.x, y=fp.y-0.5, z=fp.z} -- Position of bottom center point
+			bcn = minetest.env:get_node(bcp)
+			if bcn.name ~= "air" then
+				-- Turn to a sand node
+				np = {x=bcp.x, y=bcp.y+1, z=bcp.z}
+				minetest.env:add_node(np, {name=nodename})
+				self.object:remove()
+			else
+				-- Do nothing
+			end
+		end
+	})
+end
+
+register_falling_node("sand", "sand.png")
+register_falling_node("gravel", "gravel.png")
+
+--[[
+minetest.register_entity("falling_sand", {
+	-- Definition
+	collisionbox = {-0.5,-0.5,-0.5, 0.5,0.5,0.5},
+	visual = "cube",
+	textures = {"sand.png","sand.png","sand.png","sand.png","sand.png","sand.png"},
+	-- State
+	fallspeed = 0,
+	-- Methods
+	on_step = function(self, dtime)
+		-- Apply gravity
+		self.fallspeed = self.fallspeed + dtime * 5
+		fp = self.object:getpos()
+		fp.y = fp.y - self.fallspeed * dtime
+		self.object:moveto(fp)
+		-- Turn to actual sand when collides to ground or just move
+		bcp = {x=fp.x, y=fp.y-0.5, z=fp.z} -- Position of bottom center point
+		bcn = minetest.env:get_node(bcp)
+		if bcn.name ~= "air" then
+			-- Turn to a sand node
+			np = {x=bcp.x, y=bcp.y+1, z=bcp.z}
+			minetest.env:add_node(np, {name="sand"})
+			self.object:remove()
+		else
+			-- Do nothing
+		end
+	end
+})
+--]]
+
+--
+-- Global callbacks
+--
+
+-- Global environment step function
+function on_step(dtime)
+	-- print("on_step")
+end
+minetest.register_globalstep(on_step)
+
+function on_placenode(p, node)
+	print("on_placenode")
+	nodeupdate(p)
+end
+minetest.register_on_placenode(on_placenode)
+
+function on_dignode(p, node)
+	print("on_dignode")
+	nodeupdate(p)
+end
+minetest.register_on_dignode(on_dignode)
+
+--
+-- Done, print some random stuff
+--
+
 print("minetest.registered_entities:")
 dump2(minetest.registered_entities)
+
+--
+-- Some random pre-implementation planning and drafting
+--
 
 --[[
 function TNT:on_rightclick(clicker)
@@ -677,7 +792,7 @@ function TNT:on_rightclick(clicker)
 	pos = self.object:getpos()
 	print("TNT:on_rightclick(): object position: "..dump(pos))
 	pos = {x=pos.x+0.5+1, y=pos.y+0.5, z=pos.z+0.5}
-	--minetest.env:add_node(pos, 0)
+	--minetest.env:add_node(pos, {name="stone")
 end
 --]]
 

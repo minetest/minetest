@@ -126,18 +126,16 @@ public:
 static v3f readFloatPos(lua_State *L, int index)
 {
 	v3f pos;
-	lua_pushvalue(L, index); // Push pos
-	luaL_checktype(L, -1, LUA_TTABLE);
-	lua_getfield(L, -1, "x");
+	luaL_checktype(L, index, LUA_TTABLE);
+	lua_getfield(L, index, "x");
 	pos.X = lua_tonumber(L, -1);
 	lua_pop(L, 1);
-	lua_getfield(L, -1, "y");
+	lua_getfield(L, index, "y");
 	pos.Y = lua_tonumber(L, -1);
 	lua_pop(L, 1);
-	lua_getfield(L, -1, "z");
+	lua_getfield(L, index, "z");
 	pos.Z = lua_tonumber(L, -1);
 	lua_pop(L, 1);
-	lua_pop(L, 1); // Pop pos
 	pos *= BS; // Scale to internal format
 	return pos;
 }
@@ -151,6 +149,18 @@ static void pushpos(lua_State *L, v3s16 p)
 	lua_setfield(L, -2, "y");
 	lua_pushnumber(L, p.Z);
 	lua_setfield(L, -2, "z");
+}
+
+static v3s16 readpos(lua_State *L, int index)
+{
+	v3s16 p;
+	lua_getfield(L, index, "x");
+	p.X = lua_tonumber(L, -1);
+	lua_getfield(L, index, "y");
+	p.Y = lua_tonumber(L, -1);
+	lua_getfield(L, index, "z");
+	p.Z = lua_tonumber(L, -1);
+	return p;
 }
 
 static void pushnode(lua_State *L, const MapNode &n, INodeDefManager *ndef)
@@ -169,11 +179,19 @@ static MapNode readnode(lua_State *L, int index, INodeDefManager *ndef)
 	lua_getfield(L, index, "name");
 	const char *name = lua_tostring(L, -1);
 	lua_pop(L, 1);
+	u8 param1;
 	lua_getfield(L, index, "param1");
-	u8 param1 = lua_tonumber(L, -1);
+	if(lua_isnil(L, -1))
+		param1 = 0;
+	else
+		param1 = lua_tonumber(L, -1);
 	lua_pop(L, 1);
+	u8 param2;
 	lua_getfield(L, index, "param2");
-	u8 param2 = lua_tonumber(L, -1);
+	if(lua_isnil(L, -1))
+		param2 = 0;
+	else
+		param2 = lua_tonumber(L, -1);
 	lua_pop(L, 1);
 	return MapNode(ndef, name, param1, param2);
 }
@@ -551,9 +569,8 @@ private:
 	
 	// Exported functions
 
-	// EnvRef:add_node(pos, content)
+	// EnvRef:add_node(pos, node)
 	// pos = {x=num, y=num, z=num}
-	// content = number
 	static int l_add_node(lua_State *L)
 	{
 		infostream<<"EnvRef::l_add_node()"<<std::endl;
@@ -561,26 +578,61 @@ private:
 		ServerEnvironment *env = o->m_env;
 		if(env == NULL) return 0;
 		// pos
-		v3s16 pos;
-		lua_pushvalue(L, 2); // Push pos
-		luaL_checktype(L, -1, LUA_TTABLE);
-		lua_getfield(L, -1, "x");
-		pos.X = lua_tonumber(L, -1);
-		lua_pop(L, 1);
-		lua_getfield(L, -1, "y");
-		pos.Y = lua_tonumber(L, -1);
-		lua_pop(L, 1);
-		lua_getfield(L, -1, "z");
-		pos.Z = lua_tonumber(L, -1);
-		lua_pop(L, 1);
-		lua_pop(L, 1); // Pop pos
+		v3s16 pos = readpos(L, 2);
 		// content
-		u16 content = 0;
-		lua_pushvalue(L, 3); // Push content
-		content = lua_tonumber(L, -1);
-		lua_pop(L, 1); // Pop content
+		MapNode n = readnode(L, 3, env->getGameDef()->ndef());
 		// Do it
-		env->getMap().addNodeWithEvent(pos, MapNode(content));
+		env->getMap().addNodeWithEvent(pos, n);
+		return 0;
+	}
+
+	// EnvRef:remove_node(pos)
+	// pos = {x=num, y=num, z=num}
+	static int l_remove_node(lua_State *L)
+	{
+		infostream<<"EnvRef::l_remove_node()"<<std::endl;
+		EnvRef *o = checkobject(L, 1);
+		ServerEnvironment *env = o->m_env;
+		if(env == NULL) return 0;
+		// pos
+		v3s16 pos = readpos(L, 2);
+		// Do it
+		env->getMap().removeNodeWithEvent(pos);
+		return 0;
+	}
+
+	// EnvRef:get_node(pos)
+	// pos = {x=num, y=num, z=num}
+	static int l_get_node(lua_State *L)
+	{
+		infostream<<"EnvRef::l_get_node()"<<std::endl;
+		EnvRef *o = checkobject(L, 1);
+		ServerEnvironment *env = o->m_env;
+		if(env == NULL) return 0;
+		// pos
+		v3s16 pos = readpos(L, 2);
+		// Do it
+		MapNode n = env->getMap().getNodeNoEx(pos);
+		// Return node
+		pushnode(L, n, env->getGameDef()->ndef());
+		return 1;
+	}
+
+	// EnvRef:add_luaentity(pos, entityname)
+	// pos = {x=num, y=num, z=num}
+	static int l_add_luaentity(lua_State *L)
+	{
+		infostream<<"EnvRef::l_add_luaentity()"<<std::endl;
+		EnvRef *o = checkobject(L, 1);
+		ServerEnvironment *env = o->m_env;
+		if(env == NULL) return 0;
+		// pos
+		v3f pos = readFloatPos(L, 2);
+		// content
+		const char *name = lua_tostring(L, 3);
+		// Do it
+		ServerActiveObject *obj = new LuaEntitySAO(env, pos, name, "");
+		env->addActiveObject(obj);
 		return 0;
 	}
 
@@ -650,6 +702,9 @@ public:
 const char EnvRef::className[] = "EnvRef";
 const luaL_reg EnvRef::methods[] = {
 	method(EnvRef, add_node),
+	method(EnvRef, remove_node),
+	method(EnvRef, get_node),
+	method(EnvRef, add_luaentity),
 	{0,0}
 };
 
@@ -1281,6 +1336,8 @@ void scriptapi_luaentity_step(lua_State *L, u16 id, float dtime)
 	// State: object is at top of stack
 	// Get step function
 	lua_getfield(L, -1, "on_step");
+	if(lua_isnil(L, -1))
+		return;
 	luaL_checktype(L, -1, LUA_TFUNCTION);
 	lua_pushvalue(L, object); // self
 	lua_pushnumber(L, dtime); // dtime
@@ -1304,6 +1361,8 @@ void scriptapi_luaentity_punch(lua_State *L, u16 id,
 	// State: object is at top of stack
 	// Get function
 	lua_getfield(L, -1, "on_punch");
+	if(lua_isnil(L, -1))
+		return;
 	luaL_checktype(L, -1, LUA_TFUNCTION);
 	lua_pushvalue(L, object); // self
 	objectref_get_or_create(L, puncher); // Clicker reference
@@ -1327,6 +1386,8 @@ void scriptapi_luaentity_rightclick(lua_State *L, u16 id,
 	// State: object is at top of stack
 	// Get function
 	lua_getfield(L, -1, "on_rightclick");
+	if(lua_isnil(L, -1))
+		return;
 	luaL_checktype(L, -1, LUA_TFUNCTION);
 	lua_pushvalue(L, object); // self
 	objectref_get_or_create(L, clicker); // Clicker reference
