@@ -2317,6 +2317,11 @@ INodeDefManager* Client::getNodeDefManager()
 {
 	return m_nodedef;
 }
+ICraftDefManager* Client::getCraftDefManager()
+{
+	return NULL;
+	//return m_craftdef;
+}
 ITextureSource* Client::getTextureSource()
 {
 	return m_tsrc;

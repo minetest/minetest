@@ -37,6 +37,7 @@ extern "C" {
 #include "content_sao.h" // For LuaEntitySAO
 #include "tooldef.h"
 #include "nodedef.h"
+#include "craftdef.h"
 
 /*
 TODO:
@@ -205,26 +206,6 @@ static int l_register_globalstep(lua_State *L)
 	return 0; /* number of results */
 }
 
-#if 0
-// Clear all registered tools
-// deregister_tools()
-static int l_deregister_tools(lua_State *L)
-{
-	infostream<<"deregister_tools"<<std::endl;
-
-	// Get server from registry
-	lua_getfield(L, LUA_REGISTRYINDEX, "minetest_server");
-	Server *server = (Server*)lua_touserdata(L, -1);
-	// And get the writable tool definition manager from the server
-	IWritableToolDefManager *tooldef =
-			server->getWritableToolDefManager();
-	
-	tooldef->clear();
-
-	return 0; /* number of results */
-}
-#endif
-
 // register_tool(name, {lots of stuff})
 static int l_register_tool(lua_State *L)
 {
@@ -336,16 +317,90 @@ static int l_register_node(lua_State *L)
 		f.tname_inventory = lua_tostring(L, -1);
 	lua_pop(L, 1);
 
+	// TODO: Replace with actual parameter reading
+	// Temporarily set some sane parameters to allow digging
+	f.material.diggability = DIGGABLE_NORMAL;
+	f.material.weight = 0;
+	f.material.crackiness = 0;
+	f.material.crumbliness = 0;
+	f.material.cuttability = 0;
+
 	nodedef->set(name, f);
+	return 0; /* number of results */
+}
+
+// register_craft({output=item, recipe={{item00,item10},{item01,item11}})
+static int l_register_craft(lua_State *L)
+{
+	infostream<<"register_craft"<<std::endl;
+	luaL_checktype(L, 1, LUA_TTABLE);
+	int table0 = 1;
+
+	// Get server from registry
+	lua_getfield(L, LUA_REGISTRYINDEX, "minetest_server");
+	Server *server = (Server*)lua_touserdata(L, -1);
+	// And get the writable craft definition manager from the server
+	IWritableCraftDefManager *craftdef =
+			server->getWritableCraftDefManager();
+	
+	std::string output;
+	int width = 0;
+	std::vector<std::string> input;
+
+	lua_getfield(L, table0, "output");
+	luaL_checktype(L, -1, LUA_TSTRING);
+	if(lua_isstring(L, -1))
+		output = lua_tostring(L, -1);
+	lua_pop(L, 1);
+
+	lua_getfield(L, table0, "recipe");
+	luaL_checktype(L, -1, LUA_TTABLE);
+	if(lua_istable(L, -1)){
+		int table1 = lua_gettop(L);
+		lua_pushnil(L);
+		int rowcount = 0;
+		while(lua_next(L, table1) != 0){
+			int colcount = 0;
+			// key at index -2 and value at index -1
+			luaL_checktype(L, -1, LUA_TTABLE);
+			if(lua_istable(L, -1)){
+				int table2 = lua_gettop(L);
+				lua_pushnil(L);
+				while(lua_next(L, table2) != 0){
+					// key at index -2 and value at index -1
+					luaL_checktype(L, -1, LUA_TSTRING);
+					input.push_back(lua_tostring(L, -1));
+					// removes value, keeps key for next iteration
+					lua_pop(L, 1);
+					colcount++;
+				}
+			}
+			if(rowcount == 0){
+				width = colcount;
+			} else {
+				if(colcount != width){
+					script_error(L, "error: %s\n", "Invalid crafting recipe");
+				}
+			}
+			// removes value, keeps key for next iteration
+			lua_pop(L, 1);
+			rowcount++;
+		}
+	}
+	lua_pop(L, 1);
+
+	CraftDefinition def(output, width, input);
+	craftdef->registerCraft(def);
+
 	return 0; /* number of results */
 }
 
 static const struct luaL_Reg minetest_f [] = {
 	{"register_entity", l_register_entity},
 	{"register_globalstep", l_register_globalstep},
-	//{"deregister_tools", l_deregister_tools},
 	{"register_tool", l_register_tool},
 	{"register_node", l_register_node},
+	{"register_craft", l_register_craft},
 	{NULL, NULL}
 };
 

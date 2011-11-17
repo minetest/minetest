@@ -36,6 +36,7 @@ class IGameDef;
 class IWritableTextureSource;
 class IWritableToolDefManager;
 class IWritableNodeDefManager;
+//class IWritableCraftDefManager;
 
 class ClientNotReadyException : public BaseException
 {
@@ -326,6 +327,7 @@ public:
 	// IGameDef interface
 	virtual IToolDefManager* getToolDefManager();
 	virtual INodeDefManager* getNodeDefManager();
+	virtual ICraftDefManager* getCraftDefManager();
 	virtual ITextureSource* getTextureSource();
 	virtual u16 allocateUnknownNodeId(const std::string &name);
 

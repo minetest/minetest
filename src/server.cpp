@@ -43,6 +43,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "scriptapi.h"
 #include "nodedef.h"
 #include "tooldef.h"
+#include "craftdef.h"
 
 #define PP(x) "("<<(x).X<<","<<(x).Y<<","<<(x).Z<<")"
 
@@ -988,6 +989,7 @@ Server::Server(
 	m_lua(NULL),
 	m_toolmgr(createToolDefManager()),
 	m_nodedef(createNodeDefManager()),
+	m_craftdef(createCraftDefManager()),
 	m_thread(this),
 	m_emergethread(this),
 	m_time_counter(0),
@@ -4332,14 +4334,19 @@ void Server::UpdateCrafting(u16 peer_id)
 		}
 		if(clist && rlist && player->craftresult_is_preview)
 		{
-			InventoryItem *items[9];
-			for(u16 i=0; i<9; i++)
-			{
-				items[i] = clist->getItem(i);
-			}
-			
 			// Get result of crafting grid
-			InventoryItem *result = craft_get_result(items, this);
+			
+			std::vector<InventoryItem*> items;
+			for(u16 i=0; i<9; i++){
+				if(clist->getItem(i) == NULL)
+					items.push_back(NULL);
+				else
+					items.push_back(clist->getItem(i)->clone());
+			}
+			CraftPointerInput cpi(3, items);
+			
+			InventoryItem *result = m_craftdef->getCraftResult(cpi, this);
+			//InventoryItem *result = craft_get_result(items, this);
 			if(result)
 				rlist->addItem(result);
 		}
@@ -4424,6 +4431,10 @@ INodeDefManager* Server::getNodeDefManager()
 {
 	return m_nodedef;
 }
+ICraftDefManager* Server::getCraftDefManager()
+{
+	return m_craftdef;
+}
 ITextureSource* Server::getTextureSource()
 {
 	return NULL;
@@ -4440,6 +4451,10 @@ IWritableToolDefManager* Server::getWritableToolDefManager()
 IWritableNodeDefManager* Server::getWritableNodeDefManager()
 {
 	return m_nodedef;
+}
+IWritableCraftDefManager* Server::getWritableCraftDefManager()
+{
+	return m_craftdef;
 }
 
 v3f findSpawnPos(ServerMap &map)

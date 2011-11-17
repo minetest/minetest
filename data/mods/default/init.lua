@@ -321,6 +321,29 @@ minetest.register_node("somenode", {
 	inventory_image = "treeprop.png"
 })
 
+minetest.register_node("TNT", {
+	tile_images = {"tnt_top.png", "tnt_bottom.png", "tnt_side.png", "tnt_side.png", "tnt_side.png", "tnt_side.png"},
+	inventory_image = "tnt_side.png"
+})
+
+minetest.register_craft({
+	output = 'ToolItem "STPick" 4',
+	recipe = {
+		{'NodeItem "cobble" 1', 'NodeItem "cobble" 1', 'NodeItem "cobble" 1'},
+		{'', 'CraftItem "Stick"', ''},
+		{'', 'CraftItem "Stick"', ''},
+	}
+})
+
+minetest.register_craft({
+	output = 'NodeItem "TNT" 4',
+	recipe = {
+		{'NodeItem "wood" 1'},
+		{'CraftItem "lump_of_coal" 1'},
+		{'NodeItem "wood" 1'}
+	}
+})
+
 local TNT = {
 	-- Maybe handle gravity and collision this way? dunno
 	physical = true,

@@ -35,6 +35,7 @@ struct LuaState;
 typedef struct lua_State lua_State;
 class IWritableToolDefManager;
 class IWritableNodeDefManager;
+class IWritableCraftDefManager;
 
 /*
 	Some random functions
@@ -490,11 +491,13 @@ public:
 	// Under envlock
 	virtual IToolDefManager* getToolDefManager();
 	virtual INodeDefManager* getNodeDefManager();
+	virtual ICraftDefManager* getCraftDefManager();
 	virtual ITextureSource* getTextureSource();
 	virtual u16 allocateUnknownNodeId(const std::string &name);
 	
 	IWritableToolDefManager* getWritableToolDefManager();
 	IWritableNodeDefManager* getWritableNodeDefManager();
+	IWritableCraftDefManager* getWritableCraftDefManager();
 
 private:
 
@@ -634,6 +637,9 @@ private:
 	
 	// Node definition manager
 	IWritableNodeDefManager *m_nodedef;
+	
+	// Craft definition manager
+	IWritableCraftDefManager *m_craftdef;
 	
 	/*
 		Threads

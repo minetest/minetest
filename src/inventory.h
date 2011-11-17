@@ -70,25 +70,26 @@ public:
 		Quantity methods
 	*/
 
-	// Shall return true if the item can be add()ed to the other
+	// Return true if the item can be add()ed to the other
 	virtual bool addableTo(const InventoryItem *other) const
-	{
-		return false;
-	}
+	{ return false; }
+	// Return true if the other item contains this item
+	virtual bool isSubsetOf(const InventoryItem *other) const
+	{ return false; }
+	// Remove the other item from this one if possible and return true
+	// Return false if not possible
+	virtual bool removeOther(const InventoryItem *other)
+	{ return false; }
 	
 	u16 getCount() const
-	{
-		return m_count;
-	}
+	{ return m_count; }
 	void setCount(u16 count)
-	{
-		m_count = count;
-	}
+	{ m_count = count; }
+
 	// This should return something else for stackable items
 	virtual u16 freeSpace() const
-	{
-		return 0;
-	}
+	{ return 0; }
+
 	void add(u16 count)
 	{
 		assert(m_count + count <= QUANTITY_ITEM_MAX_COUNT);
@@ -168,6 +169,24 @@ public:
 			return false;
 		return true;
 	}
+	virtual bool isSubsetOf(const InventoryItem *other) const
+	{
+		if(std::string(other->getName()) != "MaterialItem")
+			return false;
+		MaterialItem *m = (MaterialItem*)other;
+		if(m->m_nodename != m_nodename)
+			return false;
+		return m_count <= m->m_count;
+	}
+	virtual bool removeOther(const InventoryItem *other)
+	{
+		if(!other->isSubsetOf(this))
+			return false;
+		MaterialItem *m = (MaterialItem*)other;
+		m_count += m->m_count;
+		return true;
+	}
+
 	u16 freeSpace() const
 	{
 		if(m_count > QUANTITY_ITEM_MAX_COUNT)
@@ -245,6 +264,24 @@ public:
 			return false;
 		return true;
 	}
+	virtual bool isSubsetOf(const InventoryItem *other) const
+	{
+		if(std::string(other->getName()) != "CraftItem")
+			return false;
+		CraftItem *m = (CraftItem*)other;
+		if(m->m_subname != m_subname)
+			return false;
+		return m_count <= m->m_count;
+	}
+	virtual bool removeOther(const InventoryItem *other)
+	{
+		if(!other->isSubsetOf(this))
+			return false;
+		CraftItem *m = (CraftItem*)other;
+		m_count += m->m_count;
+		return true;
+	}
+
 	u16 freeSpace() const
 	{
 		if(m_count > QUANTITY_ITEM_MAX_COUNT)
@@ -312,23 +349,26 @@ public:
 	std::string getText()
 	{
 		return "";
-		
-		/*std::ostringstream os;
-		u16 f = 4;
-		u16 d = 65535/f;
-		u16 i;
-		for(i=0; i<(65535-m_wear)/d; i++)
-			os<<'X';
-		for(; i<f; i++)
-			os<<'-';
-		return os.str();*/
-		
-		/*std::ostringstream os;
-		os<<m_toolname;
-		os<<" ";
-		os<<(m_wear/655);
-		return os.str();*/
 	}
+
+	virtual bool isSubsetOf(const InventoryItem *other) const
+	{
+		if(std::string(other->getName()) != "ToolItem")
+			return false;
+		ToolItem *m = (ToolItem*)other;
+		if(m->m_toolname != m_toolname)
+			return false;
+		return m_wear <= m->m_wear;
+	}
+	virtual bool removeOther(const InventoryItem *other)
+	{
+		if(!other->isSubsetOf(this))
+			return false;
+		ToolItem *m = (ToolItem*)other;
+		m_wear -= m->m_wear;
+		return true;
+	}
+
 	/*
 		Special methods
 	*/
@@ -590,6 +630,13 @@ struct ItemSpec
 	specs: a pointer to an array of 9 ItemSpecs
 */
 bool checkItemCombination(const InventoryItem * const*items, const ItemSpec *specs);
+
+/*
+	items: a pointer to an array of 9 pointers to items
+	specs: a pointer to an array of 9 pointers to items
+*/
+bool checkItemCombination(const InventoryItem * const * items,
+		const InventoryItem * const * specs);
 
 #endif
 

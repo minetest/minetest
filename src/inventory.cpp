@@ -1153,5 +1153,85 @@ bool checkItemCombination(InventoryItem const * const *items, const ItemSpec *sp
 
 	return true;
 }
+
+bool checkItemCombination(const InventoryItem * const * items,
+		const InventoryItem * const * specs)
+{
+	u16 items_min_x = 100;
+	u16 items_max_x = 100;
+	u16 items_min_y = 100;
+	u16 items_max_y = 100;
+	for(u16 y=0; y<3; y++)
+	for(u16 x=0; x<3; x++)
+	{
+		if(items[y*3 + x] == NULL)
+			continue;
+		if(items_min_x == 100 || x < items_min_x)
+			items_min_x = x;
+		if(items_min_y == 100 || y < items_min_y)
+			items_min_y = y;
+		if(items_max_x == 100 || x > items_max_x)
+			items_max_x = x;
+		if(items_max_y == 100 || y > items_max_y)
+			items_max_y = y;
+	}
+	// No items at all, just return false
+	if(items_min_x == 100)
+		return false;
 	
+	u16 items_w = items_max_x - items_min_x + 1;
+	u16 items_h = items_max_y - items_min_y + 1;
+
+	u16 specs_min_x = 100;
+	u16 specs_max_x = 100;
+	u16 specs_min_y = 100;
+	u16 specs_max_y = 100;
+	for(u16 y=0; y<3; y++)
+	for(u16 x=0; x<3; x++)
+	{
+		if(specs[y*3 + x] == NULL)
+			continue;
+		if(specs_min_x == 100 || x < specs_min_x)
+			specs_min_x = x;
+		if(specs_min_y == 100 || y < specs_min_y)
+			specs_min_y = y;
+		if(specs_max_x == 100 || x > specs_max_x)
+			specs_max_x = x;
+		if(specs_max_y == 100 || y > specs_max_y)
+			specs_max_y = y;
+	}
+	// No specs at all, just return false
+	if(specs_min_x == 100)
+		return false;
+
+	u16 specs_w = specs_max_x - specs_min_x + 1;
+	u16 specs_h = specs_max_y - specs_min_y + 1;
+
+	// Different sizes
+	if(items_w != specs_w || items_h != specs_h)
+		return false;
+
+	for(u16 y=0; y<specs_h; y++)
+	for(u16 x=0; x<specs_w; x++)
+	{
+		u16 items_x = items_min_x + x;
+		u16 items_y = items_min_y + y;
+		u16 specs_x = specs_min_x + x;
+		u16 specs_y = specs_min_y + y;
+		const InventoryItem *item = items[items_y * 3 + items_x];
+		const InventoryItem *spec = specs[specs_y * 3 + specs_x];
+		
+		if(item == NULL && spec == NULL)
+			continue;
+		if(item == NULL && spec != NULL)
+			return false;
+		if(item != NULL && spec == NULL)
+			return false;
+		if(!spec->isSubsetOf(item))
+			return false;
+	}
+
+	return true;
+}
+
 //END
