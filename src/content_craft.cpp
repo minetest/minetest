@@ -27,6 +27,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 /*
 	items: actually *items[9]
 	return value: allocates a new item, or returns NULL.
+
+	NOTE: Not used anymore; TODO: Remove
 */
 InventoryItem *craft_get_result(InventoryItem **items, IGameDef *gamedef)
 {
