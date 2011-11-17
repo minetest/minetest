@@ -366,7 +366,7 @@ minetest.register_craft({
 })
 
 minetest.register_craft({
-	output = 'ToolItem "WPick" 4',
+	output = 'ToolItem "WPick"',
 	recipe = {
 		{'NodeItem "wood"', 'NodeItem "wood"', 'NodeItem "wood"'},
 		{'', 'CraftItem "Stick"', ''},
@@ -375,7 +375,7 @@ minetest.register_craft({
 })
 
 minetest.register_craft({
-	output = 'ToolItem "STPick" 4',
+	output = 'ToolItem "STPick"',
 	recipe = {
 		{'NodeItem "cobble"', 'NodeItem "cobble"', 'NodeItem "cobble"'},
 		{'', 'CraftItem "Stick"', ''},
@@ -384,7 +384,7 @@ minetest.register_craft({
 })
 
 minetest.register_craft({
-	output = 'ToolItem "SteelPick" 4',
+	output = 'ToolItem "SteelPick"',
 	recipe = {
 		{'CraftItem "steel_ingot"', 'CraftItem "steel_ingot"', 'CraftItem "steel_ingot"'},
 		{'', 'CraftItem "Stick"', ''},
@@ -393,7 +393,7 @@ minetest.register_craft({
 })
 
 minetest.register_craft({
-	output = 'ToolItem "MesePick" 4',
+	output = 'ToolItem "MesePick"',
 	recipe = {
 		{'NodeItem "mese"', 'NodeItem "mese"', 'NodeItem "mese"'},
 		{'', 'CraftItem "Stick"', ''},
@@ -402,7 +402,7 @@ minetest.register_craft({
 })
 
 minetest.register_craft({
-	output = 'ToolItem "WShovel" 4',
+	output = 'ToolItem "WShovel"',
 	recipe = {
 		{'NodeItem "wood"'},
 		{'CraftItem "Stick"'},
@@ -411,7 +411,7 @@ minetest.register_craft({
 })
 
 minetest.register_craft({
-	output = 'ToolItem "STShovel" 4',
+	output = 'ToolItem "STShovel"',
 	recipe = {
 		{'NodeItem "cobble"'},
 		{'CraftItem "Stick"'},
@@ -420,7 +420,7 @@ minetest.register_craft({
 })
 
 minetest.register_craft({
-	output = 'ToolItem "SteelShovel" 4',
+	output = 'ToolItem "SteelShovel"',
 	recipe = {
 		{'CraftItem "steel_ingot"'},
 		{'CraftItem "Stick"'},
@@ -429,7 +429,7 @@ minetest.register_craft({
 })
 
 minetest.register_craft({
-	output = 'ToolItem "WAxe" 4',
+	output = 'ToolItem "WAxe"',
 	recipe = {
 		{'NodeItem "wood"', 'NodeItem "wood"'},
 		{'NodeItem "wood"', 'CraftItem "Stick"'},
@@ -438,7 +438,7 @@ minetest.register_craft({
 })
 
 minetest.register_craft({
-	output = 'ToolItem "STAxe" 4',
+	output = 'ToolItem "STAxe"',
 	recipe = {
 		{'NodeItem "cobble"', 'NodeItem "cobble"'},
 		{'NodeItem "cobble"', 'CraftItem "Stick"'},
@@ -447,7 +447,7 @@ minetest.register_craft({
 })
 
 minetest.register_craft({
-	output = 'ToolItem "SteelAxe" 4',
+	output = 'ToolItem "SteelAxe"',
 	recipe = {
 		{'CraftItem "steel_ingot"', 'CraftItem "steel_ingot"'},
 		{'CraftItem "steel_ingot"', 'CraftItem "Stick"'},
@@ -456,7 +456,7 @@ minetest.register_craft({
 })
 
 minetest.register_craft({
-	output = 'ToolItem "WSword" 4',
+	output = 'ToolItem "WSword"',
 	recipe = {
 		{'NodeItem "wood"'},
 		{'NodeItem "wood"'},
@@ -465,7 +465,7 @@ minetest.register_craft({
 })
 
 minetest.register_craft({
-	output = 'ToolItem "STSword" 0',
+	output = 'ToolItem "STSword"',
 	recipe = {
 		{'NodeItem "cobble"'},
 		{'NodeItem "cobble"'},
@@ -474,7 +474,7 @@ minetest.register_craft({
 })
 
 minetest.register_craft({
-	output = 'ToolItem "SteelSword" 0',
+	output = 'ToolItem "SteelSword"',
 	recipe = {
 		{'CraftItem "steel_ingot"'},
 		{'CraftItem "steel_ingot"'},
