@@ -352,6 +352,7 @@ static int l_register_node(lua_State *L)
 	f.material.crackiness = 0;
 	f.material.crumbliness = 0;
 	f.material.cuttability = 0;
+	f.dug_item = std::string("NodeItem \"")+name+"\" 1";
 
 	nodedef->set(name, f);
 	return 0; /* number of results */
