@@ -24,12 +24,6 @@ class InventoryItem;
 class Player;
 class IGameDef;
 
-/*
-	items: actually *items[9]
-	return value: allocates a new item, or returns NULL.
-*/
-InventoryItem *craft_get_result(InventoryItem **items, IGameDef *gamedef);
-
 void craft_set_creative_inventory(Player *player, IGameDef *gamedef);
 
 // Called when give_initial_stuff setting is used
