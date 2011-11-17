@@ -76,7 +76,7 @@ DiggingProperties getDiggingProperties(u16 content, ToolDiggingProperties *tp,
 		durability = 1;
 
 	float wear = 1.0 / durability;
-	u16 wear_i = wear/65535.;
+	u16 wear_i = 65535.*wear;
 	return DiggingProperties(true, time, wear_i);
 }
 
