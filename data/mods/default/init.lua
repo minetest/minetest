@@ -78,7 +78,12 @@ end
 --
 -- Global functions:
 -- minetest.register_entity(name, prototype_table)
+-- minetest.register_tool(name, {lots of stuff})
+-- minetest.register_node(name, {lots of stuff})
+-- minetest.register_craft({output=item, recipe={...})
 -- minetest.register_globalstep(func)
+-- minetest.register_on_placenode(func)
+-- minetest.register_on_dignode(func)
 --
 -- Global objects:
 -- minetest.env - environment reference
@@ -91,9 +96,12 @@ end
 -- minetest.luaentities
 -- ^ List of lua entities, indexed by active object id
 --
+-- EnvRef is basically ServerEnvironment and ServerMap combined.
 -- EnvRef methods:
 -- - add_node(pos, content); pos={x=num, y=num, z=num}
+--   TODO: content -> MapNode as described below
 --
+-- ObjectRef is basically ServerActiveObject.
 -- ObjectRef methods:
 -- - remove(): remove object (after returning from Lua)
 -- - getpos(): returns {x=num, y=num, z=num}
@@ -106,6 +114,9 @@ end
 --   - It has the member .object, which is an ObjectRef pointing to the object
 --   - The original prototype stuff is visible directly via a metatable
 --
+-- MapNode representation:
+-- {name="name", param1=num, param2=num}
+--
 
 print("omg lol")
 print("minetest dump: "..dump(minetest))
@@ -116,6 +127,18 @@ function on_step(dtime)
 end
 
 minetest.register_globalstep(on_step)
+
+function on_placenode(p, node)
+	print("on_placenode")
+end
+
+minetest.register_on_placenode(on_placenode)
+
+function on_dignode(p, node)
+	print("on_dignode")
+end
+
+minetest.register_on_dignode(on_dignode)
 
 minetest.register_tool("WPick", {
 	image = "tool_woodpick.png",

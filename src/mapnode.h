@@ -183,6 +183,30 @@ struct MapNode
 			param2 |= (c&0x0f)<<4;
 		}
 	}
+	u8 getParam1() const
+	{
+		return param1;
+	}
+	void setParam1(u8 p)
+	{
+		param1 = p;
+	}
+	u8 getParam2() const
+	{
+		if(param0 < 0x80)
+			return param2;
+		else
+			return param2 & 0x0f;
+	}
+	void setParam2(u8 p)
+	{
+		if(param0 < 0x80)
+			param2 = p;
+		else{
+			param2 &= 0xf0;
+			param2 |= (p&0x0f);
+		}
+	}
 	
 	void setLight(enum LightBank bank, u8 a_light, INodeDefManager *nodemgr);
 	u8 getLight(enum LightBank bank, INodeDefManager *nodemgr) const;

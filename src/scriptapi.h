@@ -22,6 +22,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "irrlichttypes.h"
 #include <string>
+#include "mapnode.h"
 
 class Server;
 class ServerEnvironment;
@@ -37,7 +38,12 @@ void scriptapi_add_object_reference(lua_State *L, ServerActiveObject *cobj);
 void scriptapi_rm_object_reference(lua_State *L, ServerActiveObject *cobj);
 
 /* environment */
+// On environment step
 void scriptapi_environment_step(lua_State *L, float dtime);
+// After adding node
+void scriptapi_environment_on_placenode(lua_State *L, v3s16 p, MapNode newnode);
+// After removing node
+void scriptapi_environment_on_dignode(lua_State *L, v3s16 p, MapNode oldnode);
 
 /* luaentity */
 // Returns true if succesfully added into Lua; false otherwise.

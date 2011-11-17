@@ -2527,10 +2527,11 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 			u8 mineral = MINERAL_NONE;
 
 			bool cannot_remove_node = false;
-
+			
+			MapNode n(CONTENT_IGNORE);
 			try
 			{
-				MapNode n = m_env->getMap().getNode(p_under);
+				n = m_env->getMap().getNode(p_under);
 				// Get mineral
 				mineral = n.getMineral(m_nodedef);
 				// Get material at position
@@ -2734,6 +2735,11 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 					continue;
 				client->SetBlocksNotSent(modified_blocks);
 			}
+
+			/*
+				Run script hook
+			*/
+			scriptapi_environment_on_dignode(m_lua, p_under, n);
 		}
 		
 		/*
@@ -2876,6 +2882,11 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 						continue;
 					client->SetBlocksNotSent(modified_blocks);
 				}
+
+				/*
+					Run script hook
+				*/
+				scriptapi_environment_on_placenode(m_lua, p_over, n);
 
 				/*
 					Calculate special events
