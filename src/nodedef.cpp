@@ -347,13 +347,13 @@ public:
 			ContentFeatures f;
 			f.name = "ignore";
 			f.drawtype = NDT_AIRLIKE;
-			f.param_type = CPT_LIGHT;
+			/*f.param_type = CPT_LIGHT;
 			f.light_propagates = true;
-			f.sunlight_propagates = true;
+			f.sunlight_propagates = true;*/
 			f.walkable = false;
 			f.pointable = false;
 			f.diggable = false;
-			f.buildable_to = true;
+			f.buildable_to = false;
 			f.air_equivalent = true;
 			set(CONTENT_IGNORE, f);
 		}
@@ -424,6 +424,15 @@ public:
 		infostream<<"registerNode: registering content id \""<<c
 				<<"\": name=\""<<def.name<<"\""<<std::endl;
 		assert(c <= MAX_CONTENT);
+		// Check that the special contents are not redefined as different id
+		// because it would mess up everything
+		if((def.name == "ignore" && c != CONTENT_IGNORE) ||
+			(def.name == "air" && c != CONTENT_AIR)){
+			errorstream<<"registerNode: IGNORING ERROR: "
+					<<"trying to register built-in type \""
+					<<def.name<<"\" as different id"<<std::endl;
+			return;
+		}
 		m_content_features[c] = def;
 		if(def.name != "")
 			m_name_id_mapping.set(c, def.name);
@@ -615,6 +624,9 @@ public:
 						<<"Too large content id: "<<i<<std::endl;
 				continue;
 			}
+			/*// Do not deserialize special types
+			if(i == CONTENT_IGNORE || i == CONTENT_AIR)
+				continue;*/
 			ContentFeatures *f = &m_content_features[i];
 			f->deSerialize(tmp_is, gamedef);
 			if(f->name != "")
