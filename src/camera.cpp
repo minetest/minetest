@@ -29,6 +29,14 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "settings.h"
 #include "nodedef.h" // For wield visualization
 
+// In Irrlicht 1.8 the signature of ITexture::lock was changed from
+// (bool, u32) to (E_TEXTURE_LOCK_MODE, u32).
+#if IRRLICHT_VERSION_MAJOR == 1 && IRRLICHT_VERSION_MINOR <= 7
+#define MY_ETLM_READ_ONLY true
+#else
+#define MY_ETLM_READ_ONLY video::ETLM_READ_ONLY
+#endif
+
 Camera::Camera(scene::ISceneManager* smgr, MapDrawControl& draw_control):
 	m_smgr(smgr),
 	m_playernode(NULL),
@@ -832,7 +840,7 @@ scene::IAnimatedMesh* ExtrudedSpriteSceneNode::extrude(video::ITexture* texture)
 	{
 		// Texture is in the correct color format, we can pass it
 		// to extrudeARGB right away.
-		void* data = texture->lock(true);
+		void* data = texture->lock(MY_ETLM_READ_ONLY);
 		if (data == NULL)
 			return NULL;
 		mesh = extrudeARGB(size.Width, size.Height, (u8*) data);
@@ -842,7 +850,7 @@ scene::IAnimatedMesh* ExtrudedSpriteSceneNode::extrude(video::ITexture* texture)
 	{
 		video::IVideoDriver* driver = SceneManager->getVideoDriver();
 
-		video::IImage* img1 = driver->createImageFromData(format, size, texture->lock(true));
+		video::IImage* img1 = driver->createImageFromData(format, size, texture->lock(MY_ETLM_READ_ONLY));
 		if (img1 == NULL)
 			return NULL;
 
