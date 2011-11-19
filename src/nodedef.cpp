@@ -406,6 +406,12 @@ public:
 	{
 		return m_name_id_mapping.getId(name, result);
 	}
+	virtual content_t getId(const std::string &name) const
+	{
+		content_t id = CONTENT_IGNORE;
+		getId(name, id);
+		return id;
+	}
 	virtual const ContentFeatures& get(const std::string &name) const
 	{
 		content_t id = CONTENT_IGNORE;

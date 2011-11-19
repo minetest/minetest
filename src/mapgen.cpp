@@ -1641,7 +1641,27 @@ void make_block(BlockMakeData *data)
 				maxpos_f.X, maxpos_f.Y+5, maxpos_f.Z,
 				sl.X, sl.Y, sl.Z);
 	}
-	
+
+	/*
+		Cache some ground type values for speed
+	*/
+
+// Creates variables c_name=id and n_name=node
+#define CONTENT_VARIABLE(ndef, name)\
+	content_t c_##name = ndef->getId(#name);\
+	MapNode n_##name(c_##name);
+
+	CONTENT_VARIABLE(ndef, stone);
+	CONTENT_VARIABLE(ndef, water_source);
+	CONTENT_VARIABLE(ndef, air);
+	CONTENT_VARIABLE(ndef, dirt);
+	CONTENT_VARIABLE(ndef, sand);
+	CONTENT_VARIABLE(ndef, gravel);
+	CONTENT_VARIABLE(ndef, lava_source);
+	CONTENT_VARIABLE(ndef, cobble);
+	CONTENT_VARIABLE(ndef, mossycobble);
+	CONTENT_VARIABLE(ndef, dirt_with_grass);
+
 	/*
 		Make base ground level
 	*/
@@ -1667,14 +1687,14 @@ void make_block(BlockMakeData *data)
 							v3s16(x,y,z), data->seed) == false)
 					{
 						if(y <= WATER_LEVEL)
-							vmanip.m_data[i] = MapNode(LEGN(ndef, "CONTENT_WATERSOURCE"));
+							vmanip.m_data[i] = n_water_source;
 						else
-							vmanip.m_data[i] = MapNode(CONTENT_AIR);
+							vmanip.m_data[i] = n_air;
 					}
 					else if(noisebuf_cave.get(x,y,z) > CAVE_NOISE_THRESHOLD)
-						vmanip.m_data[i] = MapNode(CONTENT_AIR);
+						vmanip.m_data[i] = n_air;
 					else
-						vmanip.m_data[i] = MapNode(LEGN(ndef, "CONTENT_STONE"));
+						vmanip.m_data[i] = n_stone;
 				}
 			
 				data->vmanip->m_area.add_y(em, i, 1);
@@ -1703,7 +1723,7 @@ void make_block(BlockMakeData *data)
 				{
 					v3s16 p = v3s16(x,y,z) + g_27dirs[i];
 					u32 vi = vmanip.m_area.index(p);
-					if(vmanip.m_data[vi].getContent() == LEGN(ndef, "CONTENT_STONE"))
+					if(vmanip.m_data[vi].getContent() == c_stone)
 						if(mineralrandom.next()%8 == 0)
 							vmanip.m_data[vi] = MapNode(LEGN(ndef, "CONTENT_MESE"));
 				}
@@ -1781,7 +1801,7 @@ void make_block(BlockMakeData *data)
 				{
 					v3s16 p = v3s16(x,y,z) + g_27dirs[i];
 					u32 vi = vmanip.m_area.index(p);
-					if(vmanip.m_data[vi].getContent() == LEGN(ndef, "CONTENT_STONE"))
+					if(vmanip.m_data[vi].getContent() == c_stone)
 						if(mineralrandom.next()%8 == 0)
 							vmanip.m_data[vi] = MapNode(LEGN(ndef, "CONTENT_STONE"), MINERAL_COAL);
 				}
@@ -1807,7 +1827,7 @@ void make_block(BlockMakeData *data)
 				{
 					v3s16 p = v3s16(x,y,z) + g_27dirs[i];
 					u32 vi = vmanip.m_area.index(p);
-					if(vmanip.m_data[vi].getContent() == LEGN(ndef, "CONTENT_STONE"))
+					if(vmanip.m_data[vi].getContent() == c_stone)
 						if(mineralrandom.next()%8 == 0)
 							vmanip.m_data[vi] = MapNode(LEGN(ndef, "CONTENT_STONE"), MINERAL_IRON);
 				}
@@ -1830,24 +1850,24 @@ void make_block(BlockMakeData *data)
 			u32 i = vmanip.m_area.index(v3s16(p2d.X, node_max.Y, p2d.Y));
 			for(s16 y=node_max.Y; y>=node_min.Y; y--)
 			{
-				if(vmanip.m_data[i].getContent() == LEGN(ndef, "CONTENT_STONE"))
+				if(vmanip.m_data[i].getContent() == c_stone)
 				{
 					if(noisebuf_ground_crumbleness.get(x,y,z) > 1.3)
 					{
 						if(noisebuf_ground_wetness.get(x,y,z) > 0.0)
-							vmanip.m_data[i] = MapNode(LEGN(ndef, "CONTENT_MUD"));
+							vmanip.m_data[i] = n_dirt;
 						else
-							vmanip.m_data[i] = MapNode(LEGN(ndef, "CONTENT_SAND"));
+							vmanip.m_data[i] = n_sand;
 					}
 					else if(noisebuf_ground_crumbleness.get(x,y,z) > 0.7)
 					{
 						if(noisebuf_ground_wetness.get(x,y,z) < -0.6)
-							vmanip.m_data[i] = MapNode(LEGN(ndef, "CONTENT_GRAVEL"));
+							vmanip.m_data[i] = n_gravel;
 					}
 					else if(noisebuf_ground_crumbleness.get(x,y,z) <
 							-3.0 + MYMIN(0.1 * sqrt((float)MYMAX(0, -y)), 1.5))
 					{
-						vmanip.m_data[i] = MapNode(LEGN(ndef, "CONTENT_LAVASOURCE"));
+						vmanip.m_data[i] = n_lava_source;
 						for(s16 x1=-1; x1<=1; x1++)
 						for(s16 y1=-1; y1<=1; y1++)
 						for(s16 z1=-1; z1<=1; z1++)
@@ -1894,7 +1914,7 @@ void make_block(BlockMakeData *data)
 				{
 					if(vmanip.m_data[i].getContent() == CONTENT_AIR)
 						vmanip.m_flags[i] |= VMANIP_FLAG_DUNGEON_PRESERVE;
-					else if(vmanip.m_data[i].getContent() == LEGN(ndef, "CONTENT_WATERSOURCE"))
+					else if(vmanip.m_data[i].getContent() == c_water_source)
 						vmanip.m_flags[i] |= VMANIP_FLAG_DUNGEON_PRESERVE;
 					data->vmanip->m_area.add_y(em, i, -1);
 				}
@@ -1925,11 +1945,11 @@ void make_block(BlockMakeData *data)
 					double d = noise3d_perlin((float)x/2.5,
 							(float)y/2.5,(float)z/2.5,
 							blockseed, 2, 1.4);
-					if(vmanip.m_data[i].getContent() == LEGN(ndef, "CONTENT_COBBLE"))
+					if(vmanip.m_data[i].getContent() == c_cobble)
 					{
 						if(d < wetness/3.0)
 						{
-							vmanip.m_data[i].setContent(LEGN(ndef, "CONTENT_MOSSYCOBBLE"));
+							vmanip.m_data[i].setContent(c_mossycobble);
 						}
 					}
 					/*else if(vmanip.m_flags[i] & VMANIP_FLAG_DUNGEON_INSIDE)
@@ -1972,7 +1992,7 @@ void make_block(BlockMakeData *data)
 			{
 				if(water_found == false)
 				{
-					if(vmanip.m_data[i].getContent() == LEGN(ndef, "CONTENT_WATERSOURCE"))
+					if(vmanip.m_data[i].getContent() == c_water_source)
 					{
 						v3s16 p = v3s16(p2d.X, y, p2d.Y);
 						data->transforming_liquid.push_back(p);
@@ -1984,7 +2004,7 @@ void make_block(BlockMakeData *data)
 					// This can be done because water_found can only
 					// turn to true and end up here after going through
 					// a single block.
-					if(vmanip.m_data[i+1].getContent() != LEGN(ndef, "CONTENT_WATERSOURCE"))
+					if(vmanip.m_data[i+1].getContent() != c_water_source)
 					{
 						v3s16 p = v3s16(p2d.X, y+1, p2d.Y);
 						data->transforming_liquid.push_back(p);
@@ -2027,16 +2047,16 @@ void make_block(BlockMakeData *data)
 				u32 i = vmanip.m_area.index(v3s16(p2d.X, start_y, p2d.Y));
 				for(s16 y=start_y; y>=node_min.Y-3; y--)
 				{
-					if(vmanip.m_data[i].getContent() == LEGN(ndef, "CONTENT_WATERSOURCE"))
+					if(vmanip.m_data[i].getContent() == c_water_source)
 						water_detected = true;
 					if(vmanip.m_data[i].getContent() == CONTENT_AIR)
 						air_detected = true;
 
-					if((vmanip.m_data[i].getContent() == LEGN(ndef, "CONTENT_STONE")
-							|| vmanip.m_data[i].getContent() == LEGN(ndef, "CONTENT_GRASS")
-							|| vmanip.m_data[i].getContent() == LEGN(ndef, "CONTENT_MUD")
-							|| vmanip.m_data[i].getContent() == LEGN(ndef, "CONTENT_SAND")
-							|| vmanip.m_data[i].getContent() == LEGN(ndef, "CONTENT_GRAVEL")
+					if((vmanip.m_data[i].getContent() == c_stone
+							|| vmanip.m_data[i].getContent() == c_dirt_with_grass
+							|| vmanip.m_data[i].getContent() == c_dirt
+							|| vmanip.m_data[i].getContent() == c_sand
+							|| vmanip.m_data[i].getContent() == c_gravel
 							) && (air_detected || water_detected))
 					{
 						if(current_depth == 0 && y <= WATER_LEVEL+2
@@ -2127,7 +2147,7 @@ void make_block(BlockMakeData *data)
 			{
 				u32 i = data->vmanip->m_area.index(p);
 				MapNode *n = &data->vmanip->m_data[i];
-				if(n->getContent() != CONTENT_AIR && n->getContent() != LEGN(ndef, "CONTENT_WATERSOURCE") && n->getContent() != CONTENT_IGNORE)
+				if(n->getContent() != CONTENT_AIR && n->getContent() != c_water_source && n->getContent() != CONTENT_IGNORE)
 				{
 					found = true;
 					break;
@@ -2141,17 +2161,17 @@ void make_block(BlockMakeData *data)
 				u32 i = data->vmanip->m_area.index(p);
 				MapNode *n = &data->vmanip->m_data[i];
 
-				if(n->getContent() != LEGN(ndef, "CONTENT_MUD") && n->getContent() != LEGN(ndef, "CONTENT_GRASS") && n->getContent() != LEGN(ndef, "CONTENT_SAND"))
+				if(n->getContent() != c_dirt && n->getContent() != c_dirt_with_grass && n->getContent() != c_sand)
 						continue;
 
 				// Papyrus grows only on mud and in water
-				if(n->getContent() == LEGN(ndef, "CONTENT_MUD") && y <= WATER_LEVEL)
+				if(n->getContent() == c_dirt && y <= WATER_LEVEL)
 				{
 					p.Y++;
 					make_papyrus(vmanip, p, ndef);
 				}
 				// Trees grow only on mud and grass, on land
-				else if((n->getContent() == LEGN(ndef, "CONTENT_MUD") || n->getContent() == LEGN(ndef, "CONTENT_GRASS")) && y > WATER_LEVEL + 2)
+				else if((n->getContent() == c_dirt || n->getContent() == LEGN(ndef, "CONTENT_GRASS")) && y > WATER_LEVEL + 2)
 				{
 					p.Y++;
 					//if(surface_humidity_2d(data->seed, v2s16(x, y)) < 0.5)
@@ -2170,7 +2190,7 @@ void make_block(BlockMakeData *data)
 						make_jungletree(vmanip, p, ndef);
 				}
 				// Cactii grow only on sand, on land
-				else if(n->getContent() == LEGN(ndef, "CONTENT_SAND") && y > WATER_LEVEL + 2)
+				else if(n->getContent() == c_sand && y > WATER_LEVEL + 2)
 				{
 					p.Y++;
 					make_cactus(vmanip, p, ndef);
