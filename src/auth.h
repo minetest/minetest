@@ -41,6 +41,7 @@ const u64 PRIV_SHOUT = 32;           // Can broadcast chat messages to all
                                      // players
 const u64 PRIV_BAN = 64;             // Can ban players
 const u64 PRIV_GIVE = 128;             // Can give stuff
+const u64 PRIV_PASSWORD = 256;       // Can set other players' passwords
 
 // Default privileges - these can be overriden for new players using the
 // config option "default_privs" - however, this value still applies for

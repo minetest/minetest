@@ -2171,20 +2171,33 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 				password[PASSWORD_SIZE-1] = 0;
 		}
 		
-		std::string checkpwd;
-		if(m_authmanager.exists(playername))
+		// Add player to auth manager
+		if(m_authmanager.exists(playername) == false)
 		{
-			checkpwd = m_authmanager.getPassword(playername);
+			std::wstring default_password =
+				narrow_to_wide(g_settings->get("default_password"));
+			std::string translated_default_password =
+				translatePassword(playername, default_password);
+
+			// If default_password is empty, allow any initial password
+			if (default_password.length() == 0)
+				translated_default_password = password;
+
+			infostream<<"Server: adding player "<<playername
+					<<" to auth manager"<<std::endl;
+			m_authmanager.add(playername);
+			m_authmanager.setPassword(playername, translated_default_password);
+			m_authmanager.setPrivs(playername,
+					stringToPrivs(g_settings->get("default_privs")));
+			m_authmanager.save();
 		}
-		else
-		{
-			checkpwd = g_settings->get("default_password");
-		}
-		
+
+		std::string checkpwd = m_authmanager.getPassword(playername);
+
 		/*infostream<<"Server: Client gave password '"<<password
 				<<"', the correct one is '"<<checkpwd<<"'"<<std::endl;*/
-		
-		if(password != checkpwd && m_authmanager.exists(playername))
+
+		if(password != checkpwd)
 		{
 			infostream<<"Server: peer_id="<<peer_id
 					<<": supplied invalid password for "
@@ -2193,23 +2206,11 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 			return;
 		}
 		
-		// Add player to auth manager
-		if(m_authmanager.exists(playername) == false)
-		{
-			infostream<<"Server: adding player "<<playername
-					<<" to auth manager"<<std::endl;
-			m_authmanager.add(playername);
-			m_authmanager.setPassword(playername, checkpwd);
-			m_authmanager.setPrivs(playername,
-					stringToPrivs(g_settings->get("default_privs")));
-			m_authmanager.save();
-		}
-		
 		// Enforce user limit.
 		// Don't enforce for users that have some admin right
 		if(m_clients.size() >= g_settings->getU16("max_users") &&
 				(m_authmanager.getPrivs(playername)
-					& (PRIV_SERVER|PRIV_BAN|PRIV_PRIVS)) == 0 &&
+					& (PRIV_SERVER|PRIV_BAN|PRIV_PRIVS|PRIV_PASSWORD)) == 0 &&
 				playername != g_settings->get("name"))
 		{
 			SendAccessDenied(m_con, peer_id, L"Too many users.");
@@ -2217,7 +2218,7 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 		}
 
 		// Get player
-		Player *player = emergePlayer(playername, password, peer_id);
+		Player *player = emergePlayer(playername, peer_id);
 
 		// If failed, cancel
 		if(player == NULL)
@@ -4678,6 +4679,22 @@ std::wstring Server::getStatusString()
 	return os.str();
 }
 
+void Server::setPlayerPassword(const std::string &name, const std::wstring &password)
+{
+	// Add player to auth manager
+	if(m_authmanager.exists(name) == false)
+	{
+		infostream<<"Server: adding player "<<name
+				<<" to auth manager"<<std::endl;
+		m_authmanager.add(name);
+		m_authmanager.setPrivs(name,
+			stringToPrivs(g_settings->get("default_privs")));
+	}
+	// Change password and save
+	m_authmanager.setPassword(name, translatePassword(name, password));
+	m_authmanager.save();
+}
+
 // Saves g_settings to configpath given at initialization
 void Server::saveConfig()
 {
@@ -4813,7 +4830,7 @@ v3f findSpawnPos(ServerMap &map)
 	return intToFloat(nodepos, BS);
 }
 
-Player *Server::emergePlayer(const char *name, const char *password, u16 peer_id)
+Player *Server::emergePlayer(const char *name, u16 peer_id)
 {
 	/*
 		Try to get an existing player
@@ -4859,12 +4876,6 @@ Player *Server::emergePlayer(const char *name, const char *password, u16 peer_id
 		Create a new player
 	*/
 	{
-		// Add authentication stuff
-		m_authmanager.add(name);
-		m_authmanager.setPassword(name, password);
-		m_authmanager.setPrivs(name,
-				stringToPrivs(g_settings->get("default_privs")));
-
 		/* Set player position */
 		
 		infostream<<"Server: Finding spawn place for player \""

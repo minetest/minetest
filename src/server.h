@@ -456,6 +456,10 @@ public:
 			dstream<<"WARNING: Auth not found for "<<name<<std::endl;
 		}
 	}
+
+	// Changes a player's password, password must be given as plaintext
+	// If the player doesn't exist, a new entry is added to the auth manager
+	void setPlayerPassword(const std::string &name, const std::wstring &password);
 	
 	// Saves g_settings to configpath given at initialization
 	void saveConfig();
@@ -591,12 +595,11 @@ private:
 	/*
 		Get a player from memory or creates one.
 		If player is already connected, return NULL
-		The password is not checked here - it is only used to
-		set the password if a new player is created.
+		Does not verify/modify auth info and password.
 
 		Call with env and con locked.
 	*/
-	Player *emergePlayer(const char *name, const char *password, u16 peer_id);
+	Player *emergePlayer(const char *name, u16 peer_id);
 	
 	// Locks environment and connection by its own
 	struct PeerChange;

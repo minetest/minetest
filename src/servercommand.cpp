@@ -281,6 +281,54 @@ void cmd_banunban(std::wostringstream &os, ServerCommandContext *ctx)
 	}
 }
 
+void cmd_setclearpassword(std::wostringstream &os,
+	ServerCommandContext *ctx)
+{
+	if((ctx->privs & PRIV_PASSWORD) == 0)
+	{
+		os<<L"-!- You don't have permission to do that";
+		return;
+	}
+
+	std::string playername;
+	std::wstring password;
+
+	if(ctx->parms[0] == L"setpassword")
+	{
+		if(ctx->parms.size() != 3)
+		{
+			os<<L"-!- Missing parameter";
+			return;
+		}
+
+		playername = wide_to_narrow(ctx->parms[1]);
+		password = ctx->parms[2];
+
+		actionstream<<ctx->player->getName()<<" sets password of "
+			<<playername<<std::endl;
+	}
+	else
+	{
+		// clearpassword
+
+		if(ctx->parms.size() != 2)
+		{
+			os<<L"-!- Missing parameter";
+			return;
+		}
+
+		playername = wide_to_narrow(ctx->parms[1]);
+		password = L"";
+
+		actionstream<<ctx->player->getName()<<" clears password of"
+			<<playername<<std::endl;
+	}
+
+	ctx->server->setPlayerPassword(playername, password);
+
+	os<<L"-!- Password change for "<<narrow_to_wide(playername)<<" successful";
+}
+
 void cmd_clearobjects(std::wostringstream &os,
 	ServerCommandContext *ctx)
 {
@@ -322,9 +370,9 @@ std::wstring processServerCommand(ServerCommandContext *ctx)
 	if(ctx->parms.size() == 0 || ctx->parms[0] == L"help")
 	{
 		os<<L"-!- Available commands: ";
-		os<<L"status privs ";
+		os<<L"me status privs";
 		if(privs & PRIV_SERVER)
-			os<<L"shutdown setting ";
+			os<<L" shutdown setting clearobjects";
 		if(privs & PRIV_SETTIME)
 			os<<L" time";
 		if(privs & PRIV_TELEPORT)
@@ -333,6 +381,8 @@ std::wstring processServerCommand(ServerCommandContext *ctx)
 			os<<L" grant revoke";
 		if(privs & PRIV_BAN)
 			os<<L" ban unban";
+		if(privs & PRIV_PASSWORD)
+			os<<L" setpassword clearpassword";
 	}
 	else if(ctx->parms[0] == L"status")
 		cmd_status(os, ctx);
@@ -350,6 +400,8 @@ std::wstring processServerCommand(ServerCommandContext *ctx)
 		cmd_teleport(os, ctx);
 	else if(ctx->parms[0] == L"ban" || ctx->parms[0] == L"unban")
 		cmd_banunban(os, ctx);
+	else if(ctx->parms[0] == L"setpassword" || ctx->parms[0] == L"clearpassword")
+		cmd_setclearpassword(os, ctx);
 	else if(ctx->parms[0] == L"me")
 		cmd_me(os, ctx);
 	else if(ctx->parms[0] == L"clearobjects")

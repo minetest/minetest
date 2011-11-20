@@ -42,6 +42,8 @@ std::set<std::string> privsToSet(u64 privs)
 		s.insert("ban");
 	if(privs & PRIV_GIVE)
 		s.insert("give");
+	if(privs & PRIV_PASSWORD)
+		s.insert("password");
 	return s;
 }
 
@@ -64,6 +66,8 @@ std::string privsToString(u64 privs)
 		os<<"ban,";
 	if(privs & PRIV_GIVE)
 		os<<"give,";
+	if(privs & PRIV_PASSWORD)
+		os<<"password,";
 	if(os.tellp())
 	{
 		// Drop the trailing comma. (Why on earth can't
@@ -98,6 +102,8 @@ u64 stringToPrivs(std::string str)
 			privs |= PRIV_BAN;
 		else if(s == "give")
 			privs |= PRIV_GIVE;
+		else if(s == "password")
+			privs |= PRIV_PASSWORD;
 		else
 			return PRIV_INVALID;
 	}
