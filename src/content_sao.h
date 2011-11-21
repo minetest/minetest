@@ -216,6 +216,8 @@ public:
 	void setPos(v3f pos);
 	void moveTo(v3f pos, bool continuous);
 	float getMinimumSavedMovement();
+	void setVelocity(v3f velocity);
+	void setAcceleration(v3f acceleration);
 private:
 	void sendPosition(bool do_interpolate, bool is_movement_end);
 
@@ -224,6 +226,8 @@ private:
 	bool m_registered;
 	struct LuaEntityProperties *m_prop;
 	
+	v3f m_velocity;
+	v3f m_acceleration;
 	float m_yaw;
 	float m_last_sent_yaw;
 	v3f m_last_sent_position;

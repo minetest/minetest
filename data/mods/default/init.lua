@@ -101,6 +101,7 @@ end
 -- - add_node(pos, node)
 -- - remove_node(pos)
 -- - get_node(pos)
+-- - add_luaentity(pos, name)
 --
 -- ObjectRef is basically ServerActiveObject.
 -- ObjectRef methods:
@@ -114,6 +115,12 @@ end
 -- - Functions receive a "luaentity" as self:
 --   - It has the member .object, which is an ObjectRef pointing to the object
 --   - The original prototype stuff is visible directly via a metatable
+-- - Callbacks:
+--   - on_activate(self, staticdata)
+--   - on_step(self, dtime)
+--   - on_punch(self, hitter)
+--   - on_rightclick(self, clicker)
+--   - get_staticdata(self): return string
 --
 -- MapNode representation:
 -- {name="name", param1=num, param2=num}
@@ -654,10 +661,19 @@ local TNT = {
 	--textures = {"mese.png^[forcesingle"},
 	-- Initial value for our timer
 	timer = 0,
+	-- Number of punches required to defuse
+	health = 3,
 	-- List names of state variables, for serializing object state
 	-- (NOTE: not implemented and implementation will not be like this)
 	-- state_variables = {"timer"},
 }
+
+-- Called when a TNT object is created
+function TNT:on_activate(staticdata)
+	print("TNT:on_activate()")
+	self.object:setvelocity({x=0, y=1, z=0})
+	self.object:setacceleration({x=0, y=-5, z=0})
+end
 
 -- Called periodically
 function TNT:on_step(dtime)
@@ -667,15 +683,18 @@ end
 -- Called when object is punched
 function TNT:on_punch(hitter)
 	print("TNT:on_punch()")
-	self.object:remove()
-	hitter:add_to_inventory("CraftItem testobject1 1")
+	self.health = self.health - 1
+	if self.health <= 0 then
+		self.object:remove()
+		hitter:add_to_inventory("NodeItem TNT 1")
+	end
 end
 
 -- Called when object is right-clicked
 function TNT:on_rightclick(clicker)
-	pos = self.object:getpos()
-	pos = {x=pos.x, y=pos.y+0.1, z=pos.z}
-	self.object:moveto(pos, false)
+	--pos = self.object:getpos()
+	--pos = {x=pos.x, y=pos.y+0.1, z=pos.z}
+	--self.object:moveto(pos, false)
 end
 
 print("TNT dump: "..dump(TNT))
@@ -694,16 +713,13 @@ function register_falling_node(nodename, texture)
 		visual = "cube",
 		textures = {texture,texture,texture,texture,texture,texture},
 		-- State
-		fallspeed = 0,
 		-- Methods
 		on_step = function(self, dtime)
-			-- Apply gravity manually
-			self.fallspeed = self.fallspeed + dtime * 5
-			fp = self.object:getpos()
-			fp.y = fp.y - self.fallspeed * dtime
-			self.object:moveto(fp, true)
+			-- Set gravity
+			self.object:setacceleration({x=0, y=-10, z=0})
 			-- Turn to actual sand when collides to ground or just move
-			bcp = {x=fp.x, y=fp.y-0.5, z=fp.z} -- Position of bottom center point
+			pos = self.object:getpos()
+			bcp = {x=pos.x, y=pos.y-0.5, z=pos.z} -- Position of bottom center point
 			bcn = minetest.env:get_node(bcp)
 			if bcn.name ~= "air" then
 				-- Turn to a sand node
@@ -771,6 +787,16 @@ function on_dignode(p, node)
 	nodeupdate(p)
 end
 minetest.register_on_dignode(on_dignode)
+
+function on_punchnode(p, node)
+	print("on_punchnode")
+	if node.name == "TNT" then
+		minetest.env:remove_node(p)
+		minetest.env:add_luaentity(p, "TNT")
+		nodeupdate(p)
+	end
+end
+minetest.register_on_punchnode(on_punchnode)
 
 --
 -- Done, print some random stuff

@@ -44,13 +44,15 @@ void scriptapi_environment_step(lua_State *L, float dtime);
 void scriptapi_environment_on_placenode(lua_State *L, v3s16 p, MapNode newnode);
 // After removing node
 void scriptapi_environment_on_dignode(lua_State *L, v3s16 p, MapNode oldnode);
+// When punching node
+void scriptapi_environment_on_punchnode(lua_State *L, v3s16 p, MapNode node);
 
 /* luaentity */
 // Returns true if succesfully added into Lua; false otherwise.
 bool scriptapi_luaentity_add(lua_State *L, u16 id, const char *name,
-		const char *init_state);
+		const std::string &staticdata);
 void scriptapi_luaentity_rm(lua_State *L, u16 id);
-std::string scriptapi_luaentity_get_state(lua_State *L, u16 id);
+std::string scriptapi_luaentity_get_staticdata(lua_State *L, u16 id);
 void scriptapi_luaentity_get_properties(lua_State *L, u16 id,
 		LuaEntityProperties *prop);
 void scriptapi_luaentity_step(lua_State *L, u16 id, float dtime);

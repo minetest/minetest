@@ -1278,6 +1278,8 @@ LuaEntityCAO::LuaEntityCAO(IGameDef *gamedef):
 	m_meshnode(NULL),
 	m_spritenode(NULL),
 	m_position(v3f(0,10*BS,0)),
+	m_velocity(v3f(0,0,0)),
+	m_acceleration(v3f(0,0,0)),
 	m_yaw(0),
 	m_prop(new LuaEntityProperties)
 {
@@ -1455,6 +1457,9 @@ void LuaEntityCAO::updateNodePos()
 
 void LuaEntityCAO::step(float dtime, ClientEnvironment *env)
 {
+	m_position += dtime * m_velocity + 0.5 * dtime * dtime * m_acceleration;
+	m_velocity += dtime * m_acceleration;
+	pos_translator.update(m_position, pos_translator.aim_is_end, pos_translator.anim_time);
 	pos_translator.translate(dtime);
 	updateNodePos();
 }
@@ -1471,6 +1476,10 @@ void LuaEntityCAO::processMessage(const std::string &data)
 		bool do_interpolate = readU8(is);
 		// pos
 		m_position = readV3F1000(is);
+		// velocity
+		m_velocity = readV3F1000(is);
+		// acceleration
+		m_acceleration = readV3F1000(is);
 		// yaw
 		m_yaw = readF1000(is);
 		// is_end_position (for interpolation)

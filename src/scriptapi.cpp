@@ -61,6 +61,7 @@ TODO:
 	meta.set("owner", playername)
 	meta.get("owner")
 - Item definition (actually, only CraftItem)
+- (not scripting) Putting items in node metadata (virtual)
 */
 
 static void stackDump(lua_State *L, std::ostream &o)
@@ -424,80 +425,56 @@ static int l_register_craft(lua_State *L)
 	return 0; /* number of results */
 }
 
-// Register a global step function
-// register_globalstep(function)
-static int l_register_globalstep(lua_State *L)
+static int register_lua_callback(lua_State *L, const char *tablename)
 {
 	luaL_checktype(L, 1, LUA_TFUNCTION);
-	infostream<<"register_globalstep"<<std::endl;
 
 	lua_getglobal(L, "table");
 	lua_getfield(L, -1, "insert");
 	int table_insert = lua_gettop(L);
 	// Get minetest.registered_globalsteps
 	lua_getglobal(L, "minetest");
-	lua_getfield(L, -1, "registered_globalsteps");
+	lua_getfield(L, -1, tablename);
 	luaL_checktype(L, -1, LUA_TTABLE);
-	int registered_globalsteps = lua_gettop(L);
+	int registered = lua_gettop(L);
 	// table.insert(registered_globalsteps, func)
 	lua_pushvalue(L, table_insert);
-	lua_pushvalue(L, registered_globalsteps);
+	lua_pushvalue(L, registered);
 	lua_pushvalue(L, 1); // push function from argument 1
 	// Call insert
 	if(lua_pcall(L, 2, 0, 0))
 		script_error(L, "error: %s\n", lua_tostring(L, -1));
 
 	return 0; /* number of results */
+}
+
+// Register a global step function
+// register_globalstep(function)
+static int l_register_globalstep(lua_State *L)
+{
+	infostream<<"register_globalstep"<<std::endl;
+	return register_lua_callback(L, "registered_globalsteps");
 }
 
 // register_on_placenode(function)
 static int l_register_on_placenode(lua_State *L)
 {
-	luaL_checktype(L, 1, LUA_TFUNCTION);
 	infostream<<"register_on_placenode"<<std::endl;
-
-	lua_getglobal(L, "table");
-	lua_getfield(L, -1, "insert");
-	int table_insert = lua_gettop(L);
-	// Get minetest.registered_on_placenodes
-	lua_getglobal(L, "minetest");
-	lua_getfield(L, -1, "registered_on_placenodes");
-	luaL_checktype(L, -1, LUA_TTABLE);
-	int registered_on_placenodes = lua_gettop(L);
-	// table.insert(registered_on_placenodes, func)
-	lua_pushvalue(L, table_insert);
-	lua_pushvalue(L, registered_on_placenodes);
-	lua_pushvalue(L, 1); // push function from argument 1
-	// Call insert
-	if(lua_pcall(L, 2, 0, 0))
-		script_error(L, "error: %s\n", lua_tostring(L, -1));
-
-	return 0; /* number of results */
+	return register_lua_callback(L, "registered_on_placenodes");
 }
 
 // register_on_dignode(function)
 static int l_register_on_dignode(lua_State *L)
 {
-	luaL_checktype(L, 1, LUA_TFUNCTION);
 	infostream<<"register_on_dignode"<<std::endl;
+	return register_lua_callback(L, "registered_on_dignodes");
+}
 
-	lua_getglobal(L, "table");
-	lua_getfield(L, -1, "insert");
-	int table_insert = lua_gettop(L);
-	// Get minetest.registered_on_dignodes
-	lua_getglobal(L, "minetest");
-	lua_getfield(L, -1, "registered_on_dignodes");
-	luaL_checktype(L, -1, LUA_TTABLE);
-	int registered_on_dignodes = lua_gettop(L);
-	// table.insert(registered_on_dignodes, func)
-	lua_pushvalue(L, table_insert);
-	lua_pushvalue(L, registered_on_dignodes);
-	lua_pushvalue(L, 1); // push function from argument 1
-	// Call insert
-	if(lua_pcall(L, 2, 0, 0))
-		script_error(L, "error: %s\n", lua_tostring(L, -1));
-
-	return 0; /* number of results */
+// register_on_punchnode(function)
+static int l_register_on_punchnode(lua_State *L)
+{
+	infostream<<"register_on_punchnode"<<std::endl;
+	return register_lua_callback(L, "registered_on_punchnodes");
 }
 
 static const struct luaL_Reg minetest_f [] = {
@@ -508,6 +485,7 @@ static const struct luaL_Reg minetest_f [] = {
 	{"register_globalstep", l_register_globalstep},
 	{"register_on_placenode", l_register_on_placenode},
 	{"register_on_dignode", l_register_on_dignode},
+	{"register_on_punchnode", l_register_on_punchnode},
 	{NULL, NULL}
 };
 
@@ -583,8 +561,9 @@ private:
 		// content
 		MapNode n = readnode(L, 3, env->getGameDef()->ndef());
 		// Do it
-		env->getMap().addNodeWithEvent(pos, n);
-		return 0;
+		bool succeeded = env->getMap().addNodeWithEvent(pos, n);
+		lua_pushboolean(L, succeeded);
+		return 1;
 	}
 
 	// EnvRef:remove_node(pos)
@@ -598,8 +577,9 @@ private:
 		// pos
 		v3s16 pos = readpos(L, 2);
 		// Do it
-		env->getMap().removeNodeWithEvent(pos);
-		return 0;
+		bool succeeded = env->getMap().removeNodeWithEvent(pos);
+		lua_pushboolean(L, succeeded);
+		return 1;
 	}
 
 	// EnvRef:get_node(pos)
@@ -810,6 +790,32 @@ private:
 		return 0;
 	}
 
+	// setvelocity(self, velocity)
+	static int l_setvelocity(lua_State *L)
+	{
+		ObjectRef *ref = checkobject(L, 1);
+		LuaEntitySAO *co = getluaobject(ref);
+		if(co == NULL) return 0;
+		// pos
+		v3f pos = readFloatPos(L, 2);
+		// Do it
+		co->setVelocity(pos);
+		return 0;
+	}
+	
+	// setacceleration(self, acceleration)
+	static int l_setacceleration(lua_State *L)
+	{
+		ObjectRef *ref = checkobject(L, 1);
+		LuaEntitySAO *co = getluaobject(ref);
+		if(co == NULL) return 0;
+		// pos
+		v3f pos = readFloatPos(L, 2);
+		// Do it
+		co->setAcceleration(pos);
+		return 0;
+	}
+	
 	// add_to_inventory(self, itemstring)
 	// returns: true if item was added, false otherwise
 	static int l_add_to_inventory(lua_State *L)
@@ -902,6 +908,8 @@ const luaL_reg ObjectRef::methods[] = {
 	method(ObjectRef, getpos),
 	method(ObjectRef, setpos),
 	method(ObjectRef, moveto),
+	method(ObjectRef, setvelocity),
+	method(ObjectRef, setacceleration),
 	method(ObjectRef, add_to_inventory),
 	{0,0}
 };
@@ -956,6 +964,9 @@ void scriptapi_export(lua_State *L, Server *server)
 
 	lua_newtable(L);
 	lua_setfield(L, -2, "registered_on_dignodes");
+
+	lua_newtable(L);
+	lua_setfield(L, -2, "registered_on_punchnodes");
 
 	lua_newtable(L);
 	lua_setfield(L, -2, "object_refs");
@@ -1159,12 +1170,45 @@ void scriptapi_environment_on_dignode(lua_State *L, v3s16 p, MapNode oldnode)
 	}
 }
 
+void scriptapi_environment_on_punchnode(lua_State *L, v3s16 p, MapNode oldnode)
+{
+	realitycheck(L);
+	assert(lua_checkstack(L, 20));
+	//infostream<<"scriptapi_environment_on_punchnode"<<std::endl;
+	StackUnroller stack_unroller(L);
+
+	// Get server from registry
+	lua_getfield(L, LUA_REGISTRYINDEX, "minetest_server");
+	Server *server = (Server*)lua_touserdata(L, -1);
+	// And get the writable node definition manager from the server
+	IWritableNodeDefManager *ndef =
+			server->getWritableNodeDefManager();
+	
+	// Get minetest.registered_on_punchnodes
+	lua_getglobal(L, "minetest");
+	lua_getfield(L, -1, "registered_on_punchnodes");
+	luaL_checktype(L, -1, LUA_TTABLE);
+	int table = lua_gettop(L);
+	// Foreach
+	lua_pushnil(L);
+	while(lua_next(L, table) != 0){
+		// key at index -2 and value at index -1
+		luaL_checktype(L, -1, LUA_TFUNCTION);
+		// Call function
+		pushpos(L, p);
+		pushnode(L, oldnode, ndef);
+		if(lua_pcall(L, 2, 0, 0))
+			script_error(L, "error: %s\n", lua_tostring(L, -1));
+		// value removed, keep key for next iteration
+	}
+}
+
 /*
 	luaentity
 */
 
 bool scriptapi_luaentity_add(lua_State *L, u16 id, const char *name,
-		const char *init_state)
+		const std::string &staticdata)
 {
 	realitycheck(L);
 	assert(lua_checkstack(L, 20));
@@ -1172,8 +1216,6 @@ bool scriptapi_luaentity_add(lua_State *L, u16 id, const char *name,
 			<<name<<"\""<<std::endl;
 	StackUnroller stack_unroller(L);
 	
-	// Create object as a dummy string (TODO: Create properly)
-
 	// Get minetest.registered_entities[name]
 	lua_getglobal(L, "minetest");
 	lua_getfield(L, -1, "registered_entities");
@@ -1213,17 +1255,19 @@ bool scriptapi_luaentity_add(lua_State *L, u16 id, const char *name,
 	lua_pushvalue(L, object); // Copy object to top of stack
 	lua_settable(L, -3);
 	
-	// This callback doesn't really make sense
-	/*// Get on_activate function
+	// Get on_activate function
 	lua_pushvalue(L, object);
 	lua_getfield(L, -1, "on_activate");
-	luaL_checktype(L, -1, LUA_TFUNCTION);
-	lua_pushvalue(L, object); // self
-	// Call with 1 arguments, 0 results
-	if(lua_pcall(L, 1, 0, 0))
-		script_error(L, "error running function %s:on_activate: %s\n",
-				name, lua_tostring(L, -1));*/
-
+	if(!lua_isnil(L, -1)){
+		luaL_checktype(L, -1, LUA_TFUNCTION);
+		lua_pushvalue(L, object); // self
+		lua_pushlstring(L, staticdata.c_str(), staticdata.size());
+		// Call with 2 arguments, 0 results
+		if(lua_pcall(L, 2, 0, 0))
+			script_error(L, "error running function %s:on_activate: %s\n",
+					name, lua_tostring(L, -1));
+	}
+	
 	return true;
 }
 
@@ -1247,13 +1291,33 @@ void scriptapi_luaentity_rm(lua_State *L, u16 id)
 	lua_pop(L, 2); // pop luaentities, minetest
 }
 
-std::string scriptapi_luaentity_get_state(lua_State *L, u16 id)
+std::string scriptapi_luaentity_get_staticdata(lua_State *L, u16 id)
 {
 	realitycheck(L);
 	assert(lua_checkstack(L, 20));
-	infostream<<"scriptapi_luaentity_get_state: id="<<id<<std::endl;
+	infostream<<"scriptapi_luaentity_get_staticdata: id="<<id<<std::endl;
+	StackUnroller stack_unroller(L);
+
+	// Get minetest.luaentities[id]
+	luaentity_get(L, id);
+	int object = lua_gettop(L);
 	
-	return "";
+	// Get get_staticdata function
+	lua_pushvalue(L, object);
+	lua_getfield(L, -1, "get_staticdata");
+	if(lua_isnil(L, -1))
+		return "";
+	
+	luaL_checktype(L, -1, LUA_TFUNCTION);
+	lua_pushvalue(L, object); // self
+	// Call with 1 arguments, 1 results
+	if(lua_pcall(L, 1, 1, 0))
+		script_error(L, "error running function get_staticdata: %s\n",
+				lua_tostring(L, -1));
+	
+	size_t len=0;
+	const char *s = lua_tolstring(L, -1, &len);
+	return std::string(s, len);
 }
 
 void scriptapi_luaentity_get_properties(lua_State *L, u16 id,
@@ -1344,7 +1408,7 @@ void scriptapi_luaentity_step(lua_State *L, u16 id, float dtime)
 	lua_pushnumber(L, dtime); // dtime
 	// Call with 2 arguments, 0 results
 	if(lua_pcall(L, 2, 0, 0))
-		script_error(L, "error running function 'step': %s\n", lua_tostring(L, -1));
+		script_error(L, "error running function 'on_step': %s\n", lua_tostring(L, -1));
 }
 
 // Calls entity:on_punch(ObjectRef puncher)

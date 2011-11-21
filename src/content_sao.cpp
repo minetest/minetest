@@ -1550,6 +1550,8 @@ LuaEntitySAO::LuaEntitySAO(ServerEnvironment *env, v3f pos,
 	m_init_state(state),
 	m_registered(false),
 	m_prop(new LuaEntityProperties),
+	m_velocity(0,0,0),
+	m_acceleration(0,0,0),
 	m_yaw(0),
 	m_last_sent_yaw(0),
 	m_last_sent_position(0,0,0),
@@ -1610,6 +1612,9 @@ void LuaEntitySAO::step(float dtime, bool send_recommended)
 {
 	m_last_sent_position_timer += dtime;
 	
+	m_base_position += dtime * m_velocity + 0.5 * dtime * dtime * m_acceleration;
+	m_velocity += dtime * m_acceleration;
+
 	if(m_registered){
 		lua_State *L = m_env->getLua();
 		scriptapi_luaentity_step(L, m_id, dtime);
@@ -1618,6 +1623,7 @@ void LuaEntitySAO::step(float dtime, bool send_recommended)
 	if(send_recommended == false)
 		return;
 	
+	// TODO: force send when velocity/acceleration changes enough
 	float minchange = 0.2*BS;
 	if(m_last_sent_position_timer > 1.0){
 		minchange = 0.01*BS;
@@ -1659,7 +1665,7 @@ std::string LuaEntitySAO::getStaticData()
 	// state
 	if(m_registered){
 		lua_State *L = m_env->getLua();
-		std::string state = scriptapi_luaentity_get_state(L, m_id);
+		std::string state = scriptapi_luaentity_get_staticdata(L, m_id);
 		os<<serializeLongString(state);
 	} else {
 		os<<serializeLongString(m_init_state);
@@ -1709,6 +1715,16 @@ float LuaEntitySAO::getMinimumSavedMovement()
 	return 0.1 * BS;
 }
 
+void LuaEntitySAO::setVelocity(v3f velocity)
+{
+	m_velocity = velocity;
+}
+
+void LuaEntitySAO::setAcceleration(v3f acceleration)
+{
+	m_acceleration = acceleration;
+}
+
 void LuaEntitySAO::sendPosition(bool do_interpolate, bool is_movement_end)
 {
 	m_last_sent_move_precision = m_base_position.getDistanceFrom(
@@ -1716,6 +1732,8 @@ void LuaEntitySAO::sendPosition(bool do_interpolate, bool is_movement_end)
 	m_last_sent_position_timer = 0;
 	m_last_sent_yaw = m_yaw;
 	m_last_sent_position = m_base_position;
+	//m_last_sent_velocity = m_velocity;
+	//m_last_sent_acceleration = m_acceleration;
 
 	float update_interval = m_env->getSendRecommendedInterval();
 
@@ -1727,6 +1745,10 @@ void LuaEntitySAO::sendPosition(bool do_interpolate, bool is_movement_end)
 	writeU8(os, do_interpolate);
 	// pos
 	writeV3F1000(os, m_base_position);
+	// velocity
+	writeV3F1000(os, m_velocity);
+	// acceleration
+	writeV3F1000(os, m_acceleration);
 	// yaw
 	writeF1000(os, m_yaw);
 	// is_end_position (for interpolation)

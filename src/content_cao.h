@@ -428,6 +428,8 @@ private:
 	scene::IMeshSceneNode *m_meshnode;
 	scene::MyBillboardSceneNode *m_spritenode;
 	v3f m_position;
+	v3f m_velocity;
+	v3f m_acceleration;
 	float m_yaw;
 	struct LuaEntityProperties *m_prop;
 	SmoothTranslator pos_translator;

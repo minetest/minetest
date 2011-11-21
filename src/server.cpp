@@ -2501,6 +2501,32 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 				NOTE: This can be used in the future to check if
 				somebody is cheating, by checking the timing.
 			*/
+			bool cannot_punch_node = false;
+
+			MapNode n(CONTENT_IGNORE);
+
+			try
+			{
+				n = m_env->getMap().getNode(p_under);
+			}
+			catch(InvalidPositionException &e)
+			{
+				infostream<<"Server: Not punching: Node not found."
+						<<" Adding block to emerge queue."
+						<<std::endl;
+				m_emerge_queue.addBlock(peer_id,
+						getNodeBlockPos(p_over), BLOCK_EMERGE_FLAG_FROMDISK);
+				cannot_punch_node = true;
+			}
+
+			if(cannot_punch_node)
+				return;
+
+			/*
+				Run script hook
+			*/
+			scriptapi_environment_on_punchnode(m_lua, p_under, n);
+
 		} // action == 0
 
 		/*
