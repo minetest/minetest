@@ -1478,7 +1478,7 @@ void add_random_objects(MapBlock *block)
 			last_node_walkable = false;
 		}
 	}
-	block->setChangedFlag();
+	block->raiseModified(MOD_STATE_WRITE_NEEDED, "mapgen::add_random_objects");
 #endif
 }
 

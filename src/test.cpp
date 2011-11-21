@@ -393,9 +393,9 @@ struct TestMapBlock
 				MAP_BLOCKSIZE, MAP_BLOCKSIZE));*/
 		
 		// Changed flag should be initially set
-		assert(b.getChangedFlag() == true);
-		b.resetChangedFlag();
-		assert(b.getChangedFlag() == false);
+		assert(b.getModified() == MOD_STATE_WRITE_NEEDED);
+		b.resetModified();
+		assert(b.getModified() == MOD_STATE_CLEAN);
 
 		// All nodes should have been set to
 		// .d=CONTENT_IGNORE and .getLight() = 0

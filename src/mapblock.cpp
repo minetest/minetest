@@ -41,6 +41,8 @@ MapBlock::MapBlock(Map *parent, v3s16 pos, IGameDef *gamedef, bool dummy):
 		m_pos(pos),
 		m_gamedef(gamedef),
 		m_modified(MOD_STATE_WRITE_NEEDED),
+		m_modified_reason("initial"),
+		m_modified_reason_too_long(false),
 		is_underground(false),
 		m_lighting_expired(true),
 		m_day_night_differs(false),

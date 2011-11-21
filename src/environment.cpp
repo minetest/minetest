@@ -583,7 +583,8 @@ void spawnRandomObjects(MapBlock *block)
 							// Add one
 							block->m_static_objects.insert(0, s_obj);
 							delete obj;
-							block->setChangedFlag();
+							block->raiseModified(MOD_STATE_WRITE_NEEDED,
+									"spawnRandomObjects");
 						}
 					}
 				}
@@ -620,7 +621,8 @@ void ServerEnvironment::activateBlock(MapBlock *block, u32 additional_dtime)
 		event.p = block->getPos();
 		m_map->dispatchEvent(&event);
 
-		block->setChangedFlag();
+		block->raiseModified(MOD_STATE_WRITE_NEEDED,
+				"node metadata modified in activateBlock");
 	}
 
 	// TODO: Do something
@@ -671,7 +673,8 @@ void ServerEnvironment::clearAllObjects()
 			MapBlock *block = m_map->getBlockNoCreateNoEx(obj->m_static_block);
 			if(block){
 				block->m_static_objects.remove(id);
-				block->raiseModified(MOD_STATE_WRITE_NEEDED);
+				block->raiseModified(MOD_STATE_WRITE_NEEDED,
+						"clearAllObjects");
 				obj->m_static_exists = false;
 			}
 		}
@@ -722,7 +725,8 @@ void ServerEnvironment::clearAllObjects()
 		if(num_stored != 0 || num_active != 0){
 			block->m_static_objects.m_stored.clear();
 			block->m_static_objects.m_active.clear();
-			block->raiseModified(MOD_STATE_WRITE_NEEDED);
+			block->raiseModified(MOD_STATE_WRITE_NEEDED,
+					"clearAllObjects");
 			num_objs_cleared += num_stored + num_active;
 			num_blocks_cleared++;
 		}
@@ -930,7 +934,8 @@ void ServerEnvironment::step(float dtime)
 				event.p = p;
 				m_map->dispatchEvent(&event);
 
-				block->setChangedFlag();
+				block->raiseModified(MOD_STATE_WRITE_NEEDED,
+						"node metadata modified in step");
 			}
 		}
 	}
@@ -1338,7 +1343,8 @@ bool ServerEnvironment::addActiveObjectAsStatic(ServerActiveObject *obj)
 	if(block)
 	{
 		block->m_static_objects.insert(0, s_obj);
-		block->raiseModified(MOD_STATE_WRITE_AT_UNLOAD);
+		block->raiseModified(MOD_STATE_WRITE_AT_UNLOAD,
+				"addActiveObjectAsStatic");
 		succeeded = true;
 	}
 	else{
@@ -1503,7 +1509,8 @@ u16 ServerEnvironment::addActiveObjectRaw(ServerActiveObject *object,
 		object->m_static_block = blockpos;
 
 		if(set_changed)
-			block->raiseModified(MOD_STATE_WRITE_NEEDED);
+			block->raiseModified(MOD_STATE_WRITE_NEEDED, 
+					"addActiveObjectRaw");
 	}
 	else{
 		errorstream<<"ServerEnvironment::addActiveObjectRaw(): "
@@ -1557,7 +1564,8 @@ void ServerEnvironment::removeRemovedObjects()
 			if(block)
 			{
 				block->m_static_objects.remove(id);
-				block->raiseModified(MOD_STATE_WRITE_NEEDED);
+				block->raiseModified(MOD_STATE_WRITE_NEEDED,
+						"removeRemovedObjects");
 				obj->m_static_exists = false;
 			}
 		}
@@ -1638,7 +1646,9 @@ void ServerEnvironment::activateObjects(MapBlock *block)
 				<<"; removing all of them."<<std::endl;
 		// Clear stored list
 		block->m_static_objects.m_stored.clear();
-		block->raiseModified(MOD_STATE_WRITE_NEEDED);
+		block->raiseModified(MOD_STATE_WRITE_NEEDED,
+				"stored list cleared in activateObjects due to "
+				"large amount of objects");
 		return;
 	}
 	// A list for objects that couldn't be converted to static for some
@@ -1688,7 +1698,7 @@ void ServerEnvironment::activateObjects(MapBlock *block)
 		The objects have just been activated and moved from the stored
 		static list to the active static list.
 		As such, the block is essentially the same.
-		Thus, do not call block->setChangedFlag().
+		Thus, do not call block->raiseModified(MOD_STATE_WRITE_NEEDED).
 		Otherwise there would be a huge amount of unnecessary I/O.
 	*/
 }
@@ -1788,7 +1798,9 @@ void ServerEnvironment::deactivateFarObjects(bool force_delete)
 				obj->m_static_exists = false;
 				// Only mark block as modified if data changed considerably
 				if(shall_be_written)
-					block->raiseModified(MOD_STATE_WRITE_NEEDED);
+					block->raiseModified(MOD_STATE_WRITE_NEEDED,
+							"deactivateFarObjects: Static data "
+							"changed considerably");
 			}
 		}
 
@@ -1813,7 +1825,9 @@ void ServerEnvironment::deactivateFarObjects(bool force_delete)
 				
 				// Only mark block as modified if data changed considerably
 				if(shall_be_written)
-					block->raiseModified(MOD_STATE_WRITE_NEEDED);
+					block->raiseModified(MOD_STATE_WRITE_NEEDED,
+							"deactivateFarObjects: Static data "
+							"changed considerably");
 				
 				obj->m_static_exists = true;
 				obj->m_static_block = block->getPos();

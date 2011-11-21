@@ -143,7 +143,7 @@ public:
 			//data[i] = MapNode();
 			data[i] = MapNode(CONTENT_IGNORE);
 		}
-		raiseModified(MOD_STATE_WRITE_NEEDED);
+		raiseModified(MOD_STATE_WRITE_NEEDED, "reallocate");
 	}
 
 	/*
@@ -160,45 +160,37 @@ public:
 		reallocate();
 	}
 	
-	/*
-		This is called internally or externally after the block is
-		modified, so that the block is saved and possibly not deleted from
-		memory.
-	*/
-	// DEPRECATED, use *Modified()
-	void setChangedFlag()
-	{
-		//dstream<<"Deprecated setChangedFlag() called"<<std::endl;
-		raiseModified(MOD_STATE_WRITE_NEEDED);
-	}
-	// DEPRECATED, use *Modified()
-	void resetChangedFlag()
-	{
-		//dstream<<"Deprecated resetChangedFlag() called"<<std::endl;
-		resetModified();
-	}
-	// DEPRECATED, use *Modified()
-	bool getChangedFlag()
-	{
-		//dstream<<"Deprecated getChangedFlag() called"<<std::endl;
-		if(getModified() == MOD_STATE_CLEAN)
-			return false;
-		else
-			return true;
-	}
-	
 	// m_modified methods
-	void raiseModified(u32 mod)
+	void raiseModified(u32 mod, const std::string &reason="unknown")
 	{
-		m_modified = MYMAX(m_modified, mod);
+		if(mod > m_modified){
+			m_modified = mod;
+			m_modified_reason = reason;
+			m_modified_reason_too_long = false;
+		} else if(mod == m_modified){
+			if(!m_modified_reason_too_long){
+				if(m_modified_reason.size() < 40)
+					m_modified_reason += ", " + reason;
+				else{
+					m_modified_reason += "...";
+					m_modified_reason_too_long = true;
+				}
+			}
+		}
 	}
 	u32 getModified()
 	{
 		return m_modified;
 	}
+	std::string getModifiedReason()
+	{
+		return m_modified_reason;
+	}
 	void resetModified()
 	{
 		m_modified = MOD_STATE_CLEAN;
+		m_modified_reason = "none";
+		m_modified_reason_too_long = false;
 	}
 	
 	// is_underground getter/setter
@@ -209,7 +201,7 @@ public:
 	void setIsUnderground(bool a_is_underground)
 	{
 		is_underground = a_is_underground;
-		raiseModified(MOD_STATE_WRITE_NEEDED);
+		raiseModified(MOD_STATE_WRITE_NEEDED, "setIsUnderground");
 	}
 
 #ifndef SERVER
@@ -228,7 +220,7 @@ public:
 	{
 		if(expired != m_lighting_expired){
 			m_lighting_expired = expired;
-			raiseModified(MOD_STATE_WRITE_NEEDED);
+			raiseModified(MOD_STATE_WRITE_NEEDED, "setLightingExpired");
 		}
 	}
 	bool getLightingExpired()
@@ -243,7 +235,7 @@ public:
 	void setGenerated(bool b)
 	{
 		if(b != m_generated){
-			raiseModified(MOD_STATE_WRITE_NEEDED);
+			raiseModified(MOD_STATE_WRITE_NEEDED, "setGenerated");
 			m_generated = b;
 		}
 	}
@@ -324,7 +316,7 @@ public:
 		if(y < 0 || y >= MAP_BLOCKSIZE) throw InvalidPositionException();
 		if(z < 0 || z >= MAP_BLOCKSIZE) throw InvalidPositionException();
 		data[z*MAP_BLOCKSIZE*MAP_BLOCKSIZE + y*MAP_BLOCKSIZE + x] = n;
-		raiseModified(MOD_STATE_WRITE_NEEDED);
+		raiseModified(MOD_STATE_WRITE_NEEDED, "setNode");
 	}
 	
 	void setNode(v3s16 p, MapNode & n)
@@ -353,7 +345,7 @@ public:
 		if(data == NULL)
 			throw InvalidPositionException();
 		data[z*MAP_BLOCKSIZE*MAP_BLOCKSIZE + y*MAP_BLOCKSIZE + x] = n;
-		raiseModified(MOD_STATE_WRITE_NEEDED);
+		raiseModified(MOD_STATE_WRITE_NEEDED, "setNodeNoCheck");
 	}
 	
 	void setNodeNoCheck(v3s16 p, MapNode & n)
@@ -507,7 +499,7 @@ public:
 	void setTimestamp(u32 time)
 	{
 		m_timestamp = time;
-		raiseModified(MOD_STATE_WRITE_AT_UNLOAD);
+		raiseModified(MOD_STATE_WRITE_AT_UNLOAD, "setTimestamp");
 	}
 	void setTimestampNoChangedFlag(u32 time)
 	{
@@ -608,6 +600,8 @@ private:
 		- On the client, this is used for nothing.
 	*/
 	u32 m_modified;
+	std::string m_modified_reason;
+	bool m_modified_reason_too_long;
 
 	/*
 		When propagating sunlight and the above block doesn't exist,

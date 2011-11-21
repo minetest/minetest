@@ -3087,16 +3087,11 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 		MapBlock *block = m_env->getMap().getBlockNoCreateNoEx(blockpos);
 		if(block)
 		{
-			block->setChangedFlag();
+			block->raiseModified(MOD_STATE_WRITE_NEEDED,
+					"sign node text");
 		}
 
-		for(core::map<u16, RemoteClient*>::Iterator
-			i = m_clients.getIterator();
-			i.atEnd()==false; i++)
-		{
-			RemoteClient *client = i.getNode()->getValue();
-			client->SetBlockNotSent(blockpos);
-		}
+		setBlockNotSent(blockpos);
 	}
 	else if(command == TOSERVER_INVENTORY_ACTION)
 	{

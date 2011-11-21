@@ -1423,6 +1423,9 @@ void Map::timerUpdate(float dtime, float unload_timeout,
 				if(block->getModified() != MOD_STATE_CLEAN
 						&& save_before_unloading)
 				{
+					verbosestream<<"Saving block before unloading, "
+							<<"modified by: "
+							<<block->getModifiedReason()<<std::endl;
 					saveBlock(block);
 					saved_blocks_count++;
 				}
@@ -2281,7 +2284,8 @@ MapBlock* ServerMap::finishBlockMake(mapgen::BlockMakeData *data,
 		/*
 			Set block as modified
 		*/
-		block->raiseModified(MOD_STATE_WRITE_NEEDED);
+		block->raiseModified(MOD_STATE_WRITE_NEEDED,
+				"finishBlockMake updateDayNightDiff");
 	}
 
 	/*
@@ -2849,6 +2853,9 @@ void ServerMap::save(bool only_changed)
 			if(block->getModified() >= MOD_STATE_WRITE_NEEDED 
 					|| only_changed == false)
 			{
+				verbosestream<<"Saving block because of MOD_STATE_WRITE_NEEDED, "
+						<<"modified by: "
+						<<block->getModifiedReason()<<std::endl;
 				saveBlock(block);
 				block_count++;
 
