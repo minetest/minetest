@@ -106,8 +106,8 @@ void set_default_settings(Settings *settings)
 	settings->setDefault("max_block_generate_distance", "5");
 	settings->setDefault("time_send_interval", "20");
 	settings->setDefault("time_speed", "96");
-	settings->setDefault("server_unload_unused_data_timeout", "60");
-	settings->setDefault("server_map_save_interval", "10");
+	settings->setDefault("server_unload_unused_data_timeout", "19");
+	settings->setDefault("server_map_save_interval", "1.238");
 	settings->setDefault("full_block_send_enable_min_time_from_building", "2.0");
 	settings->setDefault("enable_experimental", "false");
 }

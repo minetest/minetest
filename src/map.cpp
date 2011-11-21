@@ -2836,7 +2836,9 @@ void ServerMap::save(bool only_changed)
 	u32 block_count = 0;
 	u32 block_count_all = 0; // Number of blocks in memory
 	
-	beginSave();
+	// Don't do anything with sqlite unless something is really saved
+	bool save_started = false;
+
 	core::map<v2s16, MapSector*>::Iterator i = m_sectors.getIterator();
 	for(; i.atEnd() == false; i++)
 	{
@@ -2852,7 +2854,6 @@ void ServerMap::save(bool only_changed)
 		sector->getBlocks(blocks);
 		core::list<MapBlock*>::Iterator j;
 		
-		//sqlite3_exec(m_database, "BEGIN;", NULL, NULL, NULL);
 		for(j=blocks.begin(); j!=blocks.end(); j++)
 		{
 			MapBlock *block = *j;
@@ -2862,7 +2863,14 @@ void ServerMap::save(bool only_changed)
 			if(block->getModified() >= MOD_STATE_WRITE_NEEDED 
 					|| only_changed == false)
 			{
+				// Lazy beginSave()
+				if(!save_started){
+					beginSave();
+					save_started = true;
+				}
+
 				modprofiler.add(block->getModifiedReason(), 1);
+
 				saveBlock(block);
 				block_count++;
 
@@ -2872,10 +2880,10 @@ void ServerMap::save(bool only_changed)
 						<<block->getPos().Z<<")"
 						<<std::endl;*/
 			}
-		//sqlite3_exec(m_database, "COMMIT;", NULL, NULL, NULL);
 		}
 	}
-	endSave();
+	if(save_started)
+		endSave();
 
 	/*
 		Only print if something happened or saved whole map

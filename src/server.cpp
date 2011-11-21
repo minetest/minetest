@@ -1300,7 +1300,7 @@ void Server::AsyncRunStep()
 		m_env->step(dtime);
 	}
 		
-	const float map_timer_and_unload_dtime = 5.15;
+	const float map_timer_and_unload_dtime = 2.92;
 	if(m_map_timer_and_unload_interval.step(dtime, map_timer_and_unload_dtime))
 	{
 		JMutexAutoLock lock(m_env_mutex);
