@@ -231,6 +231,7 @@ private:
 	float m_yaw;
 	float m_last_sent_yaw;
 	v3f m_last_sent_position;
+	v3f m_last_sent_velocity;
 	float m_last_sent_position_timer;
 	float m_last_sent_move_precision;
 };

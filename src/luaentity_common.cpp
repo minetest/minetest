@@ -24,7 +24,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #define PP(x) "("<<(x).X<<","<<(x).Y<<","<<(x).Z<<")"
 
 LuaEntityProperties::LuaEntityProperties():
-	physical(true),
+	physical(false),
 	weight(5),
 	collisionbox(-0.5,-0.5,-0.5, 0.5,0.5,0.5),
 	visual("single_sprite")

@@ -651,8 +651,7 @@ end
 
 local TNT = {
 	-- Static definition
-	-- Maybe handle gravity and collision this way? dunno
-	-- physical = true,
+	physical = true, -- Collides with things
 	-- weight = 5,
 	collisionbox = {-0.5,-0.5,-0.5, 0.5,0.5,0.5},
 	visual = "cube",
@@ -662,17 +661,14 @@ local TNT = {
 	-- Initial value for our timer
 	timer = 0,
 	-- Number of punches required to defuse
-	health = 3,
-	-- List names of state variables, for serializing object state
-	-- (NOTE: not implemented and implementation will not be like this)
-	-- state_variables = {"timer"},
+	health = 1,
 }
 
 -- Called when a TNT object is created
 function TNT:on_activate(staticdata)
 	print("TNT:on_activate()")
-	self.object:setvelocity({x=0, y=1, z=0})
-	self.object:setacceleration({x=0, y=-5, z=0})
+	self.object:setvelocity({x=0, y=2, z=0})
+	self.object:setacceleration({x=0, y=-10, z=0})
 end
 
 -- Called periodically
@@ -709,6 +705,7 @@ minetest.register_entity("TNT", TNT)
 function register_falling_node(nodename, texture)
 	minetest.register_entity("falling_"..nodename, {
 		-- Static definition
+		physical = true,
 		collisionbox = {-0.5,-0.5,-0.5, 0.5,0.5,0.5},
 		visual = "cube",
 		textures = {texture,texture,texture,texture,texture,texture},
@@ -719,7 +716,7 @@ function register_falling_node(nodename, texture)
 			self.object:setacceleration({x=0, y=-10, z=0})
 			-- Turn to actual sand when collides to ground or just move
 			pos = self.object:getpos()
-			bcp = {x=pos.x, y=pos.y-0.5, z=pos.z} -- Position of bottom center point
+			bcp = {x=pos.x, y=pos.y-0.6, z=pos.z} -- Position of bottom center point
 			bcn = minetest.env:get_node(bcp)
 			if bcn.name ~= "air" then
 				-- Turn to a sand node

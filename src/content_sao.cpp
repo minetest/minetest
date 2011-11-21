@@ -1555,6 +1555,7 @@ LuaEntitySAO::LuaEntitySAO(ServerEnvironment *env, v3f pos,
 	m_yaw(0),
 	m_last_sent_yaw(0),
 	m_last_sent_position(0,0,0),
+	m_last_sent_velocity(0,0,0),
 	m_last_sent_position_timer(0),
 	m_last_sent_move_precision(0)
 {
@@ -1612,8 +1613,27 @@ void LuaEntitySAO::step(float dtime, bool send_recommended)
 {
 	m_last_sent_position_timer += dtime;
 	
-	m_base_position += dtime * m_velocity + 0.5 * dtime * dtime * m_acceleration;
-	m_velocity += dtime * m_acceleration;
+	if(m_prop->physical){
+		core::aabbox3d<f32> box = m_prop->collisionbox;
+		box.MinEdge *= BS;
+		box.MaxEdge *= BS;
+		collisionMoveResult moveresult;
+		f32 pos_max_d = BS*0.25; // Distance per iteration
+		v3f p_pos = getBasePosition();
+		v3f p_velocity = m_velocity;
+		IGameDef *gamedef = m_env->getGameDef();
+		moveresult = collisionMovePrecise(&m_env->getMap(), gamedef,
+				pos_max_d, box, dtime, p_pos, p_velocity);
+		// Apply results
+		setBasePosition(p_pos);
+		m_velocity = p_velocity;
+
+		m_velocity += dtime * m_acceleration;
+	} else {
+		m_base_position += dtime * m_velocity + 0.5 * dtime
+				* dtime * m_acceleration;
+		m_velocity += dtime * m_acceleration;
+	}
 
 	if(m_registered){
 		lua_State *L = m_env->getLua();
@@ -1623,7 +1643,7 @@ void LuaEntitySAO::step(float dtime, bool send_recommended)
 	if(send_recommended == false)
 		return;
 	
-	// TODO: force send when velocity/acceleration changes enough
+	// TODO: force send when acceleration changes enough?
 	float minchange = 0.2*BS;
 	if(m_last_sent_position_timer > 1.0){
 		minchange = 0.01*BS;
@@ -1632,7 +1652,9 @@ void LuaEntitySAO::step(float dtime, bool send_recommended)
 	}
 	float move_d = m_base_position.getDistanceFrom(m_last_sent_position);
 	move_d += m_last_sent_move_precision;
-	if(move_d > minchange || fabs(m_yaw - m_last_sent_yaw) > 1.0){
+	float vel_d = m_velocity.getDistanceFrom(m_last_sent_velocity);
+	if(move_d > minchange || vel_d > minchange ||
+			fabs(m_yaw - m_last_sent_yaw) > 1.0){
 		sendPosition(true, false);
 	}
 }
@@ -1675,6 +1697,7 @@ std::string LuaEntitySAO::getStaticData()
 
 InventoryItem* LuaEntitySAO::createPickedUpItem()
 {
+	// TODO: Ask item from scriptapi
 	std::istringstream is("CraftItem testobject1 1", std::ios_base::binary);
 	IGameDef *gamedef = m_env->getGameDef();
 	InventoryItem *item = InventoryItem::deSerialize(is, gamedef);
@@ -1732,7 +1755,7 @@ void LuaEntitySAO::sendPosition(bool do_interpolate, bool is_movement_end)
 	m_last_sent_position_timer = 0;
 	m_last_sent_yaw = m_yaw;
 	m_last_sent_position = m_base_position;
-	//m_last_sent_velocity = m_velocity;
+	m_last_sent_velocity = m_velocity;
 	//m_last_sent_acceleration = m_acceleration;
 
 	float update_interval = m_env->getSendRecommendedInterval();

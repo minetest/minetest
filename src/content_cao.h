@@ -92,7 +92,7 @@ struct SmoothTranslator
 		if(anim_time > 0.001)
 			moveratio = anim_time_counter / anim_time;
 		// Move a bit less than should, to avoid oscillation
-		moveratio = moveratio * 0.5;
+		moveratio = moveratio * 0.8;
 		float move_end = 1.5;
 		if(aim_is_end)
 			move_end = 1.0;

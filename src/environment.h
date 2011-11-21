@@ -362,14 +362,13 @@ public:
 	~ClientEnvironment();
 
 	Map & getMap()
-	{
-		return *m_map;
-	}
+	{ return *m_map; }
 
 	ClientMap & getClientMap()
-	{
-		return *m_map;
-	}
+	{ return *m_map; }
+
+	IGameDef *getGameDef()
+	{ return m_gamedef; }
 
 	void step(f32 dtime);
 

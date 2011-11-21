@@ -177,6 +177,7 @@ collisionMoveResult collisionMoveSimple(Map *map, IGameDef *gamedef,
 				speed_f -= speed_f.dotProduct(dirs[i]) * dirs[i];
 				pos_f -= pos_f.dotProduct(dirs[i]) * dirs[i];
 				pos_f += oldpos_f.dotProduct(dirs[i]) * dirs[i];
+				result.collides = true;
 			}
 		
 		}
@@ -232,6 +233,8 @@ collisionMoveResult collisionMovePrecise(Map *map, IGameDef *gamedef,
 
 		if(result.touching_ground)
 			final_result.touching_ground = true;
+		if(result.collides)
+			final_result.collides = true;
 	}
 	while(dtime_downcount > 0.001);
 		

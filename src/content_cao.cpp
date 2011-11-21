@@ -1457,11 +1457,34 @@ void LuaEntityCAO::updateNodePos()
 
 void LuaEntityCAO::step(float dtime, ClientEnvironment *env)
 {
-	m_position += dtime * m_velocity + 0.5 * dtime * dtime * m_acceleration;
-	m_velocity += dtime * m_acceleration;
-	pos_translator.update(m_position, pos_translator.aim_is_end, pos_translator.anim_time);
-	pos_translator.translate(dtime);
-	updateNodePos();
+	if(m_prop->physical){
+		core::aabbox3d<f32> box = m_prop->collisionbox;
+		box.MinEdge *= BS;
+		box.MaxEdge *= BS;
+		collisionMoveResult moveresult;
+		f32 pos_max_d = BS*0.25; // Distance per iteration
+		v3f p_pos = m_position;
+		v3f p_velocity = m_velocity;
+		IGameDef *gamedef = env->getGameDef();
+		moveresult = collisionMovePrecise(&env->getMap(), gamedef,
+				pos_max_d, box, dtime, p_pos, p_velocity);
+		// Apply results
+		m_position = p_pos;
+		m_velocity = p_velocity;
+		
+		bool is_end_position = moveresult.collides;
+		pos_translator.update(m_position, is_end_position, dtime);
+		pos_translator.translate(dtime);
+		updateNodePos();
+
+		m_velocity += dtime * m_acceleration;
+	} else {
+		m_position += dtime * m_velocity + 0.5 * dtime * dtime * m_acceleration;
+		m_velocity += dtime * m_acceleration;
+		pos_translator.update(m_position, pos_translator.aim_is_end, pos_translator.anim_time);
+		pos_translator.translate(dtime);
+		updateNodePos();
+	}
 }
 
 void LuaEntityCAO::processMessage(const std::string &data)
@@ -1487,10 +1510,12 @@ void LuaEntityCAO::processMessage(const std::string &data)
 		// update_interval
 		float update_interval = readF1000(is);
 		
-		if(do_interpolate)
-			pos_translator.update(m_position, is_end_position, update_interval);
-		else
+		if(do_interpolate){
+			if(!m_prop->physical)
+				pos_translator.update(m_position, is_end_position, update_interval);
+		} else {
 			pos_translator.init(m_position);
+		}
 		updateNodePos();
 	}
 }

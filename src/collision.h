@@ -28,9 +28,11 @@ class IGameDef;
 struct collisionMoveResult
 {
 	bool touching_ground;
+	bool collides;
 
 	collisionMoveResult():
-		touching_ground(false)
+		touching_ground(false),
+		collides(false)
 	{}
 };
 
