@@ -1463,9 +1463,11 @@ void Map::timerUpdate(float dtime, float unload_timeout,
 		if(save_before_unloading)
 			infostream<<", of which "<<saved_blocks_count<<" were written";
 		infostream<<"."<<std::endl;
-		PrintInfo(infostream); // ServerMap/ClientMap:
-		infostream<<"Blocks modified by: "<<std::endl;
-		modprofiler.print(infostream);
+		if(saved_blocks_count != 0){
+			PrintInfo(infostream); // ServerMap/ClientMap:
+			infostream<<"Blocks modified by: "<<std::endl;
+			modprofiler.print(infostream);
+		}
 	}
 }
 
