@@ -326,6 +326,10 @@ void cmd_setclearpassword(std::wostringstream &os,
 
 	ctx->server->setPlayerPassword(playername, password);
 
+	std::wostringstream msg;
+	msg<<ctx->player->getName()<<L" changed your password";
+	ctx->server->notifyPlayer(playername.c_str(), msg.str());
+
 	os<<L"-!- Password change for "<<narrow_to_wide(playername)<<" successful";
 }
 
