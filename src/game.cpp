@@ -937,6 +937,7 @@ void the_game(
 	float dig_time = 0.0;
 	u16 dig_index = 0;
 	v3s16 nodepos_old(-32768,-32768,-32768);
+	bool ldown_for_dig = false;
 
 	float damage_flash_timer = 0;
 	s16 farmesh_range = 20*MAP_BLOCKSIZE;
@@ -1626,7 +1627,7 @@ void the_game(
 		bool left_punch = false;
 		bool left_punch_muted = false;
 
-		if(selected_active_object != NULL)
+		if(selected_active_object != NULL && !ldown_for_dig)
 		{
 			/* Clear possible cracking animation */
 			if(nodepos_old != v3s16(-32768,-32768,-32768))
@@ -1710,6 +1711,7 @@ void the_game(
 				client.clearTempMod(nodepos_old);
 				dig_time = 0.0;
 				nodepos_old = v3s16(-32768,-32768,-32768);
+				ldown_for_dig = false;
 			}
 		} else {
 			/*
@@ -1738,6 +1740,7 @@ void the_game(
 			{
 				client.clearTempMod(nodepos);
 				dig_time = 0.0;
+				ldown_for_dig = false;
 			}
 			
 			if(nodig_delay_counter > 0.0)
@@ -1768,6 +1771,7 @@ void the_game(
 				if(input->getLeftClicked())
 				{
 					client.setTempMod(nodepos, NodeMod(NODEMOD_CRACK, 0));
+					ldown_for_dig = true;
 				}
 				if(input->getLeftState())
 				{
@@ -1938,6 +1942,7 @@ void the_game(
 			infostream<<"Left button released (stopped digging)"
 					<<std::endl;
 			client.groundAction(2, v3s16(0,0,0), v3s16(0,0,0), 0);
+			ldown_for_dig = false;
 		}
 		if(input->getRightReleased())
 		{
