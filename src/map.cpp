@@ -1391,6 +1391,9 @@ void Map::timerUpdate(float dtime, float unload_timeout,
 {
 	bool save_before_unloading = (mapType() == MAPTYPE_SERVER);
 	
+	// Profile modified reasons
+	Profiler modprofiler;
+	
 	core::list<v2s16> sector_deletion_queue;
 	u32 deleted_blocks_count = 0;
 	u32 saved_blocks_count = 0;
@@ -1423,9 +1426,7 @@ void Map::timerUpdate(float dtime, float unload_timeout,
 				if(block->getModified() != MOD_STATE_CLEAN
 						&& save_before_unloading)
 				{
-					verbosestream<<"Saving block before unloading, "
-							<<"modified by: "
-							<<block->getModifiedReason()<<std::endl;
+					modprofiler.add(block->getModifiedReason(), 1);
 					saveBlock(block);
 					saved_blocks_count++;
 				}
@@ -1462,6 +1463,9 @@ void Map::timerUpdate(float dtime, float unload_timeout,
 		if(save_before_unloading)
 			infostream<<", of which "<<saved_blocks_count<<" were written";
 		infostream<<"."<<std::endl;
+		PrintInfo(infostream); // ServerMap/ClientMap:
+		infostream<<"Blocks modified by: "<<std::endl;
+		modprofiler.print(infostream);
 	}
 }
 
@@ -2823,6 +2827,9 @@ void ServerMap::save(bool only_changed)
 		saveMapMeta();
 	}
 
+	// Profile modified reasons
+	Profiler modprofiler;
+	
 	u32 sector_meta_count = 0;
 	u32 block_count = 0;
 	u32 block_count_all = 0; // Number of blocks in memory
@@ -2853,9 +2860,7 @@ void ServerMap::save(bool only_changed)
 			if(block->getModified() >= MOD_STATE_WRITE_NEEDED 
 					|| only_changed == false)
 			{
-				verbosestream<<"Saving block because of MOD_STATE_WRITE_NEEDED, "
-						<<"modified by: "
-						<<block->getModifiedReason()<<std::endl;
+				modprofiler.add(block->getModifiedReason(), 1);
 				saveBlock(block);
 				block_count++;
 
@@ -2881,6 +2886,9 @@ void ServerMap::save(bool only_changed)
 				<<block_count<<" block files"
 				<<", "<<block_count_all<<" blocks in memory."
 				<<std::endl;
+		PrintInfo(infostream); // ServerMap/ClientMap:
+		infostream<<"Blocks modified by: "<<std::endl;
+		modprofiler.print(infostream);
 	}
 }
 
