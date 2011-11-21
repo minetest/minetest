@@ -4824,7 +4824,8 @@ void Server::handlePeerChange(PeerChange &c)
 		//SendPlayerInfos();
 		
 		// Send leave chat message to all remaining clients
-		BroadcastChatMessage(message);
+		if(message.length() != 0)
+			BroadcastChatMessage(message);
 		
 	} // PEER_REMOVED
 	else
