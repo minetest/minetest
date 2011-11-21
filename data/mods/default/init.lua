@@ -715,12 +715,12 @@ function register_falling_node(nodename, texture)
 			-- Set gravity
 			self.object:setacceleration({x=0, y=-10, z=0})
 			-- Turn to actual sand when collides to ground or just move
-			pos = self.object:getpos()
-			bcp = {x=pos.x, y=pos.y-0.6, z=pos.z} -- Position of bottom center point
-			bcn = minetest.env:get_node(bcp)
+			local pos = self.object:getpos()
+			local bcp = {x=pos.x, y=pos.y-0.7, z=pos.z} -- Position of bottom center point
+			local bcn = minetest.env:get_node(bcp)
 			if bcn.name ~= "air" then
 				-- Turn to a sand node
-				np = {x=bcp.x, y=bcp.y+1, z=bcp.z}
+				local np = {x=bcp.x, y=bcp.y+1, z=bcp.z}
 				minetest.env:add_node(np, {name=nodename})
 				self.object:remove()
 			else

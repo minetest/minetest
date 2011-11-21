@@ -154,14 +154,17 @@ static void pushpos(lua_State *L, v3s16 p)
 
 static v3s16 readpos(lua_State *L, int index)
 {
-	v3s16 p;
+	// Correct rounding at <0
+	v3f pf = readFloatPos(L, index);
+	return floatToInt(pf, BS);
+	/*v3s16 p;
 	lua_getfield(L, index, "x");
 	p.X = lua_tonumber(L, -1);
 	lua_getfield(L, index, "y");
 	p.Y = lua_tonumber(L, -1);
 	lua_getfield(L, index, "z");
 	p.Z = lua_tonumber(L, -1);
-	return p;
+	return p;*/
 }
 
 static void pushnode(lua_State *L, const MapNode &n, INodeDefManager *ndef)
