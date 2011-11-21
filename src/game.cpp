@@ -942,7 +942,7 @@ void the_game(
 	float damage_flash_timer = 0;
 	s16 farmesh_range = 20*MAP_BLOCKSIZE;
 
-	const float object_hit_delay = 0.5;
+	const float object_hit_delay = 0.2;
 	float object_hit_delay_timer = 0.0;
 	
 	bool invert_mouse = g_settings->getBool("invert_mouse");
