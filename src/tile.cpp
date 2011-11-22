@@ -460,6 +460,8 @@ u32 TextureSource::getTextureId(const std::string &name)
 
 // Draw a progress bar on the image
 void make_progressbar(float value, video::IImage *image);
+// Brighten image
+void brighten(video::IImage *image);
 
 /*
 	Generate image based on a string like "stone.png" or "[crack0".
@@ -1306,53 +1308,46 @@ bool generate_image(std::string part_of_name, video::IImage *& baseimg,
 			make_progressbar(value, baseimg);
 		}
 		/*
-			"[noalpha:filename.png"
-			Use an image without it's alpha channel.
+			"[brighten"
+		*/
+		else if(part_of_name.substr(0,9) == "[brighten")
+		{
+			if(baseimg == NULL)
+			{
+				errorstream<<"generate_image(): baseimg==NULL "
+						<<"for part_of_name=\""<<part_of_name
+						<<"\", cancelling."<<std::endl;
+				return false;
+			}
+
+			brighten(baseimg);
+		}
+		/*
+			"[noalpha"
+			Make image completely opaque.
 			Used for the leaves texture when in old leaves mode, so
 			that the transparent parts don't look completely black 
 			when simple alpha channel is used for rendering.
 		*/
 		else if(part_of_name.substr(0,8) == "[noalpha")
 		{
-			if(baseimg != NULL)
+			if(baseimg == NULL)
 			{
-				errorstream<<"generate_image(): baseimg!=NULL "
+				errorstream<<"generate_image(): baseimg==NULL "
 						<<"for part_of_name=\""<<part_of_name
 						<<"\", cancelling."<<std::endl;
 				return false;
 			}
 
-			std::string filename = part_of_name.substr(9);
-
-			std::string path = getTexturePath(filename.c_str());
-
-			/*infostream<<"generate_image(): Loading file \""<<filename
-					<<"\""<<std::endl;*/
+			core::dimension2d<u32> dim = baseimg->getDimension();
 			
-			video::IImage *image = sourcecache->getOrLoad(filename, device);
-			
-			if(image == NULL)
+			// Set alpha to full
+			for(u32 y=0; y<dim.Height; y++)
+			for(u32 x=0; x<dim.Width; x++)
 			{
-				infostream<<"generate_image(): Loading path \""
-						<<path<<"\" failed"<<std::endl;
-			}
-			else
-			{
-				core::dimension2d<u32> dim = image->getDimension();
-				baseimg = driver->createImage(video::ECF_A8R8G8B8, dim);
-				
-				// Set alpha to full
-				for(u32 y=0; y<dim.Height; y++)
-				for(u32 x=0; x<dim.Width; x++)
-				{
-					video::SColor c = image->getPixel(x,y);
-					c.setAlpha(255);
-					image->setPixel(x,y,c);
-				}
-				// Blit
-				image->copyTo(baseimg);
-
-				image->drop();
+				video::SColor c = baseimg->getPixel(x,y);
+				c.setAlpha(255);
+				baseimg->setPixel(x,y,c);
 			}
 		}
 		/*
@@ -1647,6 +1642,24 @@ void make_progressbar(float value, video::IImage *image)
 		{
 			image->setPixel(x,y, *c);
 		}
+	}
+}
+
+void brighten(video::IImage *image)
+{
+	if(image == NULL)
+		return;
+	
+	core::dimension2d<u32> dim = image->getDimension();
+
+	for(u32 y=0; y<dim.Height; y++)
+	for(u32 x=0; x<dim.Width; x++)
+	{
+		video::SColor c = image->getPixel(x,y);
+		c.setRed(0.5 * 255 + 0.5 * (float)c.getRed());
+		c.setGreen(0.5 * 255 + 0.5 * (float)c.getGreen());
+		c.setBlue(0.5 * 255 + 0.5 * (float)c.getBlue());
+		image->setPixel(x,y,c);
 	}
 }
 
