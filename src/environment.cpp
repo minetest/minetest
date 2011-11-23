@@ -1159,63 +1159,78 @@ void ServerEnvironment::step(float dtime)
 						}
 					}
 				}
-				if (n.getContent() == CONTENT_LEAVES) // leaf decay
-				{
-				        if (myrand()%50 == 0)
-					{
-					        s16 max_d = 3;
-						v3s16 leaf_p = p;
-						v3s16 test_p;
-						MapNode treenode(CONTENT_TREE);
-						MapNode airnode(CONTENT_AIR);
-						MapNode jungnode(CONTENT_JUNGLETREE);
-						MapNode testnode;
-						bool found = false;
-						for(s16 z=-max_d; z<=max_d; z++) {
+				/*
+					Leaf decay
+				*/
+				if((n.getContent() == CONTENT_LEAVES) && (n.param2 &= NATURALLY_GROWN)) {
+					s16 max_d = 3;
+					v3s16 leaf_p = p;
+					v3s16 test_p;
+					MapNode treenode(CONTENT_TREE);
+					MapNode airnode(CONTENT_AIR);
+					MapNode jungnode(CONTENT_JUNGLETREE);
+					MapNode testnode;
+					bool found = false;
+					for(s16 z=-max_d; z<=max_d; z++) {
 						for(s16 y=-max_d; y<=max_d; y++) {
-						for(s16 x=-max_d; x<=max_d; x++)
-						{
-						        test_p = leaf_p + v3s16(x,y,z);
-							testnode = m_map->getNodeNoEx(test_p);
-							if (testnode.getContent() == treenode.getContent() ||
-							    testnode.getContent() == jungnode.getContent())
-							{
-							        found = true;
+							for(s16 x=-max_d; x<=max_d; x++) {
+								test_p = leaf_p + v3s16(x,y,z);
+								testnode = m_map->getNodeNoEx(test_p);
+								if (testnode.getContent() == treenode.getContent() ||
+									testnode.getContent() == jungnode.getContent()) 
+								{
+									found = true;
+									break;
+								}
+							}
+							if(found)
 								break;
-							}
 						}
-						if (found)
-						        break;
+						if(found)
+								break;
+					}
+					if(!found) {
+						m_map->removeNodeWithEvent(leaf_p);
+						if (myrand()%20 == 0) {
+							// sapling drops with 1/5 chance, position is smally randomized
+							v3f sapling_pos = intToFloat(leaf_p, BS);
+							sapling_pos += v3f(myrand_range(-1500,1500)*1.0/1000, 0, myrand_range(-1500,1500)*1.0/1000);
+							ServerActiveObject *obj = new ItemSAO(this, 0, sapling_pos, "MaterialItem2 2080 1");
+							addActiveObject(obj);
 						}
-						if (found)
-						        break;
-						}
-						if (!found)
-						{
-						        m_map->removeNodeWithEvent(leaf_p);
-							if (myrand()%20 == 0) {
-							        max_d = 7;
-								s16 y;
-								for (y=1; y<=max_d; y++) {
-								        test_p = leaf_p - v3s16(0,y,0);
-									testnode = m_map->getNodeNoEx(test_p);
-									if (testnode.getContent() == CONTENT_MUD ||
-									    testnode.getContent() == CONTENT_GRASS) {
-									        y--;
-										break;
-									}
-									else if (testnode.getContent() != airnode.getContent()) {
-									        y = max_d;
-										break;
-									}
+					}
+				}
+				/*
+					Apples should fall if there is no leaves block holding it
+				*/
+				if(n.getContent() == CONTENT_APPLE) {
+					//actionstream << "checking apple at " << PP(p) << "\n";
+					s16 max_d = 1;
+					v3s16 apple_p = p, test_p;
+					MapNode testnode;
+					bool found = false;
+					for(s16 z=-max_d; z<=max_d; z++) {
+						for(s16 y=-max_d; y<=max_d; y++) {
+							for(s16 x=-max_d; x<=max_d; x++) {
+								test_p = apple_p + v3s16(x,y,z);
+								testnode = m_map->getNodeNoEx(test_p);
+								if (testnode.getContent() == CONTENT_LEAVES) {
+									found = true;
+									break;
 								}
-								if (y != max_d) {
-								        actionstream<<"A sapling drops at "
-										    <<PP(p)<<std::endl;
-								        m_map->addNodeWithEvent(leaf_p-v3s16(0,y,0), MapNode(CONTENT_SAPLING));
-								}
 							}
+							if(found)
+								break;
 						}
+						if(found)
+							break;
+					}
+					if(!found) {
+						m_map->removeNodeWithEvent(apple_p);
+						v3f apple_pos = intToFloat(apple_p, BS);
+						apple_pos += v3f(myrand_range(-1500,1500)*1.0/1000, 0, myrand_range(-1500,1500)*1.0/1000);
+						ServerActiveObject *obj = new ItemSAO(this, 0, apple_pos, "CraftItem apple 1");
+						addActiveObject(obj);
 					}
 				}
 			}

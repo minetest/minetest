@@ -23,6 +23,9 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "common_irrlicht.h"
 #include "utility.h" // UniqueQueue
 
+// just a small define for node's .param2
+#define NATURALLY_GROWN 1
+
 struct BlockMakeData;
 class MapBlock;
 class ManualMapVoxelManipulator;
