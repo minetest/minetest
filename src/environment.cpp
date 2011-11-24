@@ -1195,7 +1195,7 @@ void ServerEnvironment::step(float dtime)
 							// sapling drops with 1/5 chance, position is smally randomized
 							v3f sapling_pos = intToFloat(leaf_p, BS);
 							sapling_pos += v3f(myrand_range(-1500,1500)*1.0/1000, 0, myrand_range(-1500,1500)*1.0/1000);
-							ServerActiveObject *obj = new ItemSAO(this, 0, sapling_pos, "MaterialItem2 2080 1");
+							ServerActiveObject *obj = new ItemSAO(this, 0, sapling_pos, "MaterialItem2 " + itos(CONTENT_SAPLING) + " 1");
 							addActiveObject(obj);
 						}
 					}
