@@ -1162,7 +1162,7 @@ void ServerEnvironment::step(float dtime)
 				/*
 					Leaf decay
 				*/
-				if((n.getContent() == CONTENT_LEAVES) && (n.param2 &= NATURALLY_GROWN)) {
+				if((n.getContent() == CONTENT_LEAVES) && (n.param2 & NATURALLY_GROWN)) {
 					s16 max_d = 3;
 					v3s16 leaf_p = p;
 					v3s16 test_p;
