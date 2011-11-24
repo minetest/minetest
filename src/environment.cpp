@@ -1099,39 +1099,138 @@ void ServerEnvironment::step(float dtime)
 				{
 					if(myrand()%50 == 0)
 					{
-						actionstream<<"A sapling grows into a tree at "
-								<<PP(p)<<std::endl;
-
-						core::map<v3s16, MapBlock*> modified_blocks;
-						v3s16 tree_p = p;
-						ManualMapVoxelManipulator vmanip(m_map);
-						v3s16 tree_blockp = getNodeBlockPos(tree_p);
-						vmanip.initialEmerge(tree_blockp - v3s16(1,1,1), tree_blockp + v3s16(1,1,1));
-						bool is_apple_tree = myrand()%4 == 0;
-						mapgen::make_tree(vmanip, tree_p, is_apple_tree);
-						vmanip.blitBackAll(&modified_blocks);
-
-						// update lighting
-						core::map<v3s16, MapBlock*> lighting_modified_blocks;
-						for(core::map<v3s16, MapBlock*>::Iterator
-							i = modified_blocks.getIterator();
-							i.atEnd() == false; i++)
-						{
-							lighting_modified_blocks.insert(i.getNode()->getKey(), i.getNode()->getValue());
+					        s16 max_y = 7;
+						s16 max_o = 2;
+						bool grow = true;
+						content_t below = m_map->getNodeNoEx(p+v3s16(0,-1,0)).getContent();
+						if (below != CONTENT_MUD && below != CONTENT_GRASS)
+						        grow = false;
+						for (s16 y=1; grow && y < 2; y++) {
+						        v3s16 test_p = p+v3s16(0,y,0);
 						}
-						m_map->updateLighting(lighting_modified_blocks, modified_blocks);
-
-						// Send a MEET_OTHER event
-						MapEditEvent event;
-						event.type = MEET_OTHER;
-						for(core::map<v3s16, MapBlock*>::Iterator
-							i = modified_blocks.getIterator();
-							i.atEnd() == false; i++)
-						{
-							v3s16 p = i.getNode()->getKey();
-							event.modified_blocks.insert(p, true);
+						for (s16 z=-max_o; grow && z < max_o; z++) {
+						for (s16 y=2; grow && y < max_y; y++) {
+						for (s16 x=-max_o; grow && x < max_o; x++) {
+						        v3s16 test_p = p + v3s16(x,y,z);
+						        if (test_p != p) {
+								content_t tcon = m_map->getNodeNoEx(test_p).getContent();
+								if (tcon != CONTENT_AIR && tcon != CONTENT_IGNORE) {
+								        grow = false;
+								}
+							}
 						}
-						m_map->dispatchEvent(&event);
+						}
+						}
+
+						if (grow) {
+ 						        actionstream<<"A sapling grows into a tree at "
+								    <<PP(p)<<std::endl;
+							
+							core::map<v3s16, MapBlock*> modified_blocks;
+							v3s16 tree_p = p;
+							ManualMapVoxelManipulator vmanip(m_map);
+							v3s16 tree_blockp = getNodeBlockPos(tree_p);
+							vmanip.initialEmerge(tree_blockp - v3s16(1,1,1), tree_blockp + v3s16(1,1,1));
+							bool is_apple_tree = myrand()%4 == 0;
+							mapgen::make_tree(vmanip, tree_p, is_apple_tree);
+							vmanip.blitBackAll(&modified_blocks);
+							
+							// update lighting
+							core::map<v3s16, MapBlock*> lighting_modified_blocks;
+							for(core::map<v3s16, MapBlock*>::Iterator
+							      i = modified_blocks.getIterator();
+							    i.atEnd() == false; i++)
+							{
+							        lighting_modified_blocks.insert(i.getNode()->getKey(), i.getNode()->getValue());
+							}
+							m_map->updateLighting(lighting_modified_blocks, modified_blocks);
+
+							// Send a MEET_OTHER event
+							MapEditEvent event;
+							event.type = MEET_OTHER;
+							for(core::map<v3s16, MapBlock*>::Iterator
+							      i = modified_blocks.getIterator();
+							    i.atEnd() == false; i++)
+							{
+							        v3s16 p = i.getNode()->getKey();
+								event.modified_blocks.insert(p, true);
+							}
+							m_map->dispatchEvent(&event);
+						}
+					}
+				}
+				/*
+					Leaf decay
+				*/
+				if((n.getContent() == CONTENT_LEAVES) && (n.param2 & NATURALLY_GROWN)) {
+					s16 max_d = 3;
+					v3s16 leaf_p = p;
+					v3s16 test_p;
+					MapNode treenode(CONTENT_TREE);
+					MapNode airnode(CONTENT_AIR);
+					MapNode jungnode(CONTENT_JUNGLETREE);
+					MapNode testnode;
+					bool found = false;
+					for(s16 z=-max_d; z<=max_d; z++) {
+						for(s16 y=-max_d; y<=max_d; y++) {
+							for(s16 x=-max_d; x<=max_d; x++) {
+								test_p = leaf_p + v3s16(x,y,z);
+								testnode = m_map->getNodeNoEx(test_p);
+								if (testnode.getContent() == treenode.getContent() ||
+									testnode.getContent() == jungnode.getContent()) 
+								{
+									found = true;
+									break;
+								}
+							}
+							if(found)
+								break;
+						}
+						if(found)
+								break;
+					}
+					if(!found) {
+						m_map->removeNodeWithEvent(leaf_p);
+						if (myrand()%20 == 0) {
+							// sapling drops with 1/5 chance, position is smally randomized
+							v3f sapling_pos = intToFloat(leaf_p, BS);
+							sapling_pos += v3f(myrand_range(-1500,1500)*1.0/1000, 0, myrand_range(-1500,1500)*1.0/1000);
+							ServerActiveObject *obj = new ItemSAO(this, 0, sapling_pos, "MaterialItem2 " + itos(CONTENT_SAPLING) + " 1");
+							addActiveObject(obj);
+						}
+					}
+				}
+				/*
+					Apples should fall if there is no leaves block holding it
+				*/
+				if(n.getContent() == CONTENT_APPLE) {
+					//actionstream << "checking apple at " << PP(p) << "\n";
+					s16 max_d = 1;
+					v3s16 apple_p = p, test_p;
+					MapNode testnode;
+					bool found = false;
+					for(s16 z=-max_d; z<=max_d; z++) {
+						for(s16 y=-max_d; y<=max_d; y++) {
+							for(s16 x=-max_d; x<=max_d; x++) {
+								test_p = apple_p + v3s16(x,y,z);
+								testnode = m_map->getNodeNoEx(test_p);
+								if (testnode.getContent() == CONTENT_LEAVES) {
+									found = true;
+									break;
+								}
+							}
+							if(found)
+								break;
+						}
+						if(found)
+							break;
+					}
+					if(!found) {
+						m_map->removeNodeWithEvent(apple_p);
+						v3f apple_pos = intToFloat(apple_p, BS);
+						apple_pos += v3f(myrand_range(-1500,1500)*1.0/1000, 0, myrand_range(-1500,1500)*1.0/1000);
+						ServerActiveObject *obj = new ItemSAO(this, 0, apple_pos, "CraftItem apple 1");
+						addActiveObject(obj);
 					}
 				}
 			}
