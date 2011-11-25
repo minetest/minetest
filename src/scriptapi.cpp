@@ -529,6 +529,14 @@ static int l_register_node(lua_State *L)
 				break;
 			}
 		}
+		// Copy last value to all remaining textures
+		if(i >= 1){
+			std::string lastname = f.tname_tiles[i-1];
+			while(i < 6){
+				f.tname_tiles[i] = lastname;
+				i++;
+			}
+		}
 	}
 	lua_pop(L, 1);
 
