@@ -330,7 +330,10 @@ public:
 			f.diggable = false;
 			f.buildable_to = true;
 			f.air_equivalent = true;
-			set(CONTENT_AIR, f);
+			// Insert directly into containers
+			content_t c = CONTENT_AIR;
+			m_content_features[c] = f;
+			m_name_id_mapping.set(c, f.name);
 		}
 		// Set CONTENT_IGNORE
 		{
@@ -346,7 +349,10 @@ public:
 			// A way to remove accidental CONTENT_IGNOREs
 			f.buildable_to = true;
 			f.air_equivalent = true;
-			set(CONTENT_IGNORE, f);
+			// Insert directly into containers
+			content_t c = CONTENT_IGNORE;
+			m_content_features[c] = f;
+			m_name_id_mapping.set(c, f.name);
 		}
 	}
 	// CONTENT_IGNORE = not found
@@ -415,6 +421,12 @@ public:
 		infostream<<"registerNode: registering content id \""<<c
 				<<"\": name=\""<<def.name<<"\""<<std::endl;
 		assert(c <= MAX_CONTENT);
+		// Don't allow redefining CONTENT_IGNORE (but allow air)
+		if(def.name == "ignore" || c == CONTENT_IGNORE){
+			infostream<<"registerNode: WARNING: Ignoring "
+					<<"CONTENT_IGNORE redefinition"<<std::endl;
+			return;
+		}
 		// Check that the special contents are not redefined as different id
 		// because it would mess up everything
 		if((def.name == "ignore" && c != CONTENT_IGNORE) ||
