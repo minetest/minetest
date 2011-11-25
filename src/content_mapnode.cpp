@@ -478,7 +478,6 @@ void content_mapnode_init(IWritableNodeDefManager *nodemgr)
 	f.setInventoryTexture("junglegrass.png");
 	f.light_propagates = true;
 	f.param_type = CPT_LIGHT;
-	f.air_equivalent = false; // grass grows underneath
 	f.dug_item = std::string("MaterialItem2 ")+itos(i)+" 1";
 	f.walkable = false;
 	setLeavesLikeMaterialProperties(f.material, 1.0);
@@ -568,7 +567,6 @@ void content_mapnode_init(IWritableNodeDefManager *nodemgr)
 	f.param_type = CPT_LIGHT;
 	f.is_ground_content = true;
 	f.dug_item = std::string("MaterialItem2 ")+itos(i)+" 1";
-	f.air_equivalent = true; // grass grows underneath
 	f.selection_box.type = NODEBOX_FIXED;
 	f.selection_box.fixed = core::aabbox3d<f32>(
 			-BS/7, -BS/2, -BS/7, BS/7, BS/2, BS/7);
@@ -589,7 +587,6 @@ void content_mapnode_init(IWritableNodeDefManager *nodemgr)
 	f.param_type = CPT_LIGHT;
 	f.is_ground_content = true;
 	f.dug_item = std::string("MaterialItem2 ")+itos(i)+" 1";
-	f.air_equivalent = true; // grass grows underneath
 	f.walkable = false;
 	f.selection_box.type = NODEBOX_FIXED;
 	f.furnace_burntime = 5;
@@ -607,7 +604,6 @@ void content_mapnode_init(IWritableNodeDefManager *nodemgr)
 	f.is_ground_content = true;
 	f.dug_item = std::string("MaterialItem ")+itos(i)+" 1";
 	f.wall_mounted = true;
-	f.air_equivalent = true;
 	f.walkable = false;
 	f.climbable = true;
 	f.selection_box.type = NODEBOX_WALLMOUNTED;
@@ -665,7 +661,6 @@ void content_mapnode_init(IWritableNodeDefManager *nodemgr)
 	f.pointable = false;
 	f.diggable = false;
 	f.buildable_to = true;
-	f.air_equivalent = true;
 	nodemgr->set(i, f);
 
 	i = CONTENT_WATER;
@@ -774,7 +769,6 @@ void content_mapnode_init(IWritableNodeDefManager *nodemgr)
 	f.sunlight_propagates = true;
 	f.walkable = false;
 	f.wall_mounted = true;
-	f.air_equivalent = true;
 	f.dug_item = std::string("MaterialItem2 ")+itos(i)+" 1";
 	f.light_source = LIGHT_MAX-1;
 	f.selection_box.type = NODEBOX_WALLMOUNTED;
@@ -799,7 +793,6 @@ void content_mapnode_init(IWritableNodeDefManager *nodemgr)
 	f.sunlight_propagates = true;
 	f.walkable = false;
 	f.wall_mounted = true;
-	f.air_equivalent = true;
 	f.dug_item = std::string("MaterialItem2 ")+itos(i)+" 1";
 	f.metadata_name = "sign";
 	setConstantMaterialProperties(f.material, 0.5);
@@ -920,7 +913,6 @@ void content_mapnode_init(IWritableNodeDefManager *nodemgr)
 	f.param_type = CPT_LIGHT;
 	f.dug_item = std::string("MaterialItem2 ")+itos(i)+" 1";
 	f.light_propagates = true;
-	f.air_equivalent = false;
 	f.walkable = false;
 	setConstantMaterialProperties(f.material, 0.0);
 	f.furnace_burntime = 10;
@@ -937,7 +929,6 @@ void content_mapnode_init(IWritableNodeDefManager *nodemgr)
 	f.light_propagates = true;
 	f.sunlight_propagates = true;
 	f.walkable = false;
-	f.air_equivalent = true;
 	f.dug_item = std::string("CraftItem apple 1");
 	setConstantMaterialProperties(f.material, 0.0);
 	f.furnace_burntime = 3;

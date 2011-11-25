@@ -1021,9 +1021,6 @@ Server::Server(
 
 	infostream<<"m_nodedef="<<m_nodedef<<std::endl;
 	
-	// Initialize default node definitions
-	content_mapnode_init(m_nodedef);
-	
 	// Path to builtin.lua
 	std::string builtinpath = porting::path_data + DIR_DELIM + "builtin.lua";
 	// Add default global mod path

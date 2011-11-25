@@ -28,7 +28,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 class IWritableNodeDefManager;
 
-// Initialize default (legacy) node definitions
+// Initialize legacy node definitions
+// Not used used anywhere else than in test.cpp (and SHALL NOT BE)
 void content_mapnode_init(IWritableNodeDefManager *nodemgr);
 
 // Backwards compatibility for non-extended content types in v19

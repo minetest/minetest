@@ -644,7 +644,8 @@ void ServerEnvironment::activateBlock(MapBlock *block, u32 additional_dtime)
 			if(dtime_s > 300)
 			{
 				MapNode n_top = block->getNodeNoEx(p0+v3s16(0,1,0));
-				if(m_gamedef->ndef()->get(n_top).air_equivalent &&
+				if(m_gamedef->ndef()->get(n_top).light_propagates &&
+						!m_gamedef->ndef()->get(n_top).isLiquid() &&
 						n_top.getLight(LIGHTBANK_DAY, m_gamedef->ndef()) >= 13)
 				{
 					n.setContent(LEGN(m_gamedef->ndef(), "CONTENT_GRASS"));
@@ -1018,7 +1019,8 @@ void ServerEnvironment::step(float dtime)
 					if(myrand()%20 == 0)
 					{
 						MapNode n_top = m_map->getNodeNoEx(p+v3s16(0,1,0));
-						if(m_gamedef->ndef()->get(n_top).air_equivalent &&
+						if(m_gamedef->ndef()->get(n_top).light_propagates &&
+								!m_gamedef->ndef()->get(n_top).isLiquid() &&
 								n_top.getLightBlend(getDayNightRatio(),
 										m_gamedef->ndef()) >= 13)
 						{
@@ -1035,7 +1037,8 @@ void ServerEnvironment::step(float dtime)
 					//if(myrand()%20 == 0)
 					{
 						MapNode n_top = m_map->getNodeNoEx(p+v3s16(0,1,0));
-						if(m_gamedef->ndef()->get(n_top).air_equivalent == false)
+						if(m_gamedef->ndef()->get(n_top).light_propagates == false ||
+								m_gamedef->ndef()->get(n_top).isLiquid())
 						{
 							n.setContent(LEGN(m_gamedef->ndef(), "CONTENT_MUD"));
 							m_map->addNodeWithEvent(p, n);

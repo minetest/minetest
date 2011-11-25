@@ -212,27 +212,27 @@ static video::SColor readARGB8(lua_State *L, int index)
 	return color;
 }
 
-static core::aabbox3d<f32> read_aabbox3df32(lua_State *L, int index)
+static core::aabbox3d<f32> read_aabbox3df32(lua_State *L, int index, f32 scale)
 {
 	core::aabbox3d<f32> box;
 	if(lua_istable(L, -1)){
 		lua_rawgeti(L, -1, 1);
-		box.MinEdge.X = lua_tonumber(L, -1);
+		box.MinEdge.X = lua_tonumber(L, -1) * scale;
 		lua_pop(L, 1);
 		lua_rawgeti(L, -1, 2);
-		box.MinEdge.Y = lua_tonumber(L, -1);
+		box.MinEdge.Y = lua_tonumber(L, -1) * scale;
 		lua_pop(L, 1);
 		lua_rawgeti(L, -1, 3);
-		box.MinEdge.Z = lua_tonumber(L, -1);
+		box.MinEdge.Z = lua_tonumber(L, -1) * scale;
 		lua_pop(L, 1);
 		lua_rawgeti(L, -1, 4);
-		box.MaxEdge.X = lua_tonumber(L, -1);
+		box.MaxEdge.X = lua_tonumber(L, -1) * scale;
 		lua_pop(L, 1);
 		lua_rawgeti(L, -1, 5);
-		box.MaxEdge.Y = lua_tonumber(L, -1);
+		box.MaxEdge.Y = lua_tonumber(L, -1) * scale;
 		lua_pop(L, 1);
 		lua_rawgeti(L, -1, 6);
-		box.MaxEdge.Z = lua_tonumber(L, -1);
+		box.MaxEdge.Z = lua_tonumber(L, -1) * scale;
 		lua_pop(L, 1);
 	}
 	return box;
@@ -600,9 +600,6 @@ static int l_register_node(lua_State *L)
 	// If true, param2 is set to direction when placed. Used for torches.
 	// NOTE: the direction format is quite inefficient and should be changed
 	getboolfield(L, table0, "wall_mounted", f.wall_mounted);
-	// If true, node is equivalent to air. Torches are, air is. Water is not.
-	// Is used for example to check whether a mud block can have grass on.
-	getboolfield(L, table0, "air_equivalent", f.air_equivalent);
 	// Whether this content type often contains mineral.
 	// Used for texture atlas creation.
 	// Currently only enabled for CONTENT_STONE.
@@ -643,22 +640,22 @@ static int l_register_node(lua_State *L)
 
 		lua_getfield(L, -1, "fixed");
 		if(lua_istable(L, -1))
-			f.selection_box.fixed = read_aabbox3df32(L, -1);
+			f.selection_box.fixed = read_aabbox3df32(L, -1, BS);
 		lua_pop(L, 1);
 
 		lua_getfield(L, -1, "wall_top");
 		if(lua_istable(L, -1))
-			f.selection_box.wall_top = read_aabbox3df32(L, -1);
+			f.selection_box.wall_top = read_aabbox3df32(L, -1, BS);
 		lua_pop(L, 1);
 
 		lua_getfield(L, -1, "wall_bottom");
 		if(lua_istable(L, -1))
-			f.selection_box.wall_bottom = read_aabbox3df32(L, -1);
+			f.selection_box.wall_bottom = read_aabbox3df32(L, -1, BS);
 		lua_pop(L, 1);
 
 		lua_getfield(L, -1, "wall_side");
 		if(lua_istable(L, -1))
-			f.selection_box.wall_side = read_aabbox3df32(L, -1);
+			f.selection_box.wall_side = read_aabbox3df32(L, -1, BS);
 		lua_pop(L, 1);
 	}
 	lua_pop(L, 1);

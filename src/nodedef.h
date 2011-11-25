@@ -174,9 +174,6 @@ struct ContentFeatures
 	// If true, param2 is set to direction when placed. Used for torches.
 	// NOTE: the direction format is quite inefficient and should be changed
 	bool wall_mounted;
-	// If true, node is equivalent to air. Torches are, air is. Water is not.
-	// Is used for example to check whether a mud block can have grass on.
-	bool air_equivalent;
 	// Whether this content type often contains mineral.
 	// Used for texture atlas creation.
 	// Currently only enabled for CONTENT_STONE.

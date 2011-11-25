@@ -2222,8 +2222,7 @@ void make_block(BlockMakeData *data)
 				{
 					u32 i = data->vmanip->m_area.index(p);
 					MapNode *n = &data->vmanip->m_data[i];
-					if(data->nodedef->get(*n).is_ground_content
-							|| n->getContent() == LEGN(ndef, "CONTENT_JUNGLETREE"))
+					if(data->nodedef->get(*n).is_ground_content)
 					{
 						found = true;
 						break;

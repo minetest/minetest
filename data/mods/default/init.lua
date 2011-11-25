@@ -62,6 +62,11 @@
 
 -- print("minetest dump: "..dump(minetest))
 
+WATER_ALPHA = 160
+WATER_VISC = 1
+LAVA_VISC = 7
+LIGHT_MAX = 14
+
 --
 -- Tool definition
 --
@@ -658,6 +663,7 @@ minetest.register_node("dirt_with_grass_footsteps", {
 	inventory_image = "grass_footsteps.png",
 	is_ground_content = true,
 	material = digprop_dirtlike(1.0),
+	dug_item = 'NodeItem "dirt" 1',
 })
 
 minetest.register_node("dirt", {
@@ -665,6 +671,432 @@ minetest.register_node("dirt", {
 	inventory_image = inventorycube("mud.png"),
 	is_ground_content = true,
 	material = digprop_dirtlike(1.0),
+})
+
+minetest.register_node("sand", {
+	tile_images = {"sand.png"},
+	inventory_image = inventorycube("sand.png"),
+	is_ground_content = true,
+	material = digprop_dirtlike(1.0),
+})
+
+minetest.register_node("gravel", {
+	tile_images = {"gravel.png"},
+	inventory_image = inventorycube("gravel.png"),
+	is_ground_content = true,
+	material = digprop_gravellike(1.0),
+})
+
+minetest.register_node("sandstone", {
+	tile_images = {"sandstone.png"},
+	inventory_image = inventorycube("sandstone.png"),
+	is_ground_content = true,
+	material = digprop_dirtlike(1.0),  -- FIXME should this be stonelike?
+	dug_item = 'NodeItem "sand" 1',  -- FIXME is this intentional?
+})
+
+minetest.register_node("clay", {
+	tile_images = {"clay.png"},
+	inventory_image = inventorycube("clay.png"),
+	is_ground_content = true,
+	material = digprop_dirtlike(1.0),
+	dug_item = 'CraftItem "lump_of_clay" 4',
+})
+
+minetest.register_node("brick", {
+	tile_images = {"brick.png"},
+	inventory_image = inventorycube("brick.png"),
+	is_ground_content = true,
+	material = digprop_stonelike(1.0),
+	dug_item = 'CraftItem "clay_brick" 4',
+})
+
+minetest.register_node("tree", {
+	tile_images = {"tree_top.png", "tree_top.png", "tree.png"},
+	inventory_image = inventorycube("tree_top.png", "tree.png", "tree.png"),
+	is_ground_content = true,
+	material = digprop_woodlike(1.0),
+	cookresult_item = 'CraftItem "lump_of_coal" 1',
+	furnace_burntime = 30,
+})
+
+minetest.register_node("jungletree", {
+	tile_images = {"jungletree_top.png", "jungletree_top.png", "jungletree.png"},
+	inventory_image = inventorycube("jungletree_top.png", "jungletree.png", "jungletree.png"),
+	is_ground_content = true,
+	material = digprop_woodlike(1.0),
+	cookresult_item = 'CraftItem "lump_of_coal" 1',
+	furnace_burntime = 30,
+})
+
+minetest.register_node("junglegrass", {
+	drawtype = "plantlike",
+	visual_scale = 1.3,
+	tile_images = {"junglegrass.png"},
+	inventory_image = "junglegrass.png",
+	light_propagates = true,
+	paramtype = "light",
+	walkable = false,
+	material = digprop_leaveslike(1.0),
+	furnace_burntime = 2,
+})
+
+minetest.register_node("leaves", {
+	drawtype = "allfaces_optional",
+	visual_scale = 1.3,
+	tile_images = {"leaves.png"},
+	inventory_image = "leaves.png",
+	light_propagates = true,
+	paramtype = "light",
+	material = digprop_leaveslike(1.0),
+	extra_dug_item = 'NodeItem "sapling" 1',
+	extra_dug_item_rarity = 20,
+	furnace_burntime = 1,
+})
+
+minetest.register_node("cactus", {
+	tile_images = {"cactus_top.png", "cactus_top.png", "cactus_side.png"},
+	inventory_image = inventorycube("cactus_top.png", "cactus_side.png", "cactus_side.png"),
+	is_ground_content = true,
+	material = digprop_woodlike(0.75),
+	furnace_burntime = 15,
+})
+
+minetest.register_node("papyrus", {
+	drawtype = "plantlike",
+	tile_images = {"papyrus.png"},
+	inventory_image = "papyrus.png",
+	light_propagates = true,
+	paramtype = "light",
+	is_ground_content = true,
+	walkable = false,
+	material = digprop_leaveslike(0.5),
+	furnace_burntime = 1,
+})
+
+minetest.register_node("bookshelf", {
+	tile_images = {"wood.png", "wood.png", "bookshelf.png"},
+	-- FIXME: inventorycube only cares for the first texture
+	--inventory_image = inventorycube("wood.png", "bookshelf.png", "bookshelf.png")
+	inventory_image = inventorycube("bookshelf.png"),
+	is_ground_content = true,
+	material = digprop_woodlike(0.75),
+	furnace_burntime = 30,
+})
+
+minetest.register_node("glass", {
+	drawtype = "glasslike",
+	tile_images = {"glass.png"},
+	inventory_image = inventorycube("glass.png"),
+	light_propagates = true,
+	paramtype = "light",
+	sunlight_propagates = true,
+	is_ground_content = true,
+	material = digprop_glasslike(1.0),
+})
+
+minetest.register_node("wooden_fence", {
+	drawtype = "fencelike",
+	tile_images = {"wood.png"},
+	inventory_image = "fence.png",
+	light_propagates = true,
+	paramtype = "light",
+	is_ground_content = true,
+	selection_box = {
+		type = "fixed",
+		fixed = {-1/7, -1/2, -1/7, 1/7, 1/2, 1/7},
+	},
+	furnace_burntime = 15,
+	material = digprop_woodlike(0.75),
+})
+
+minetest.register_node("rail", {
+	drawtype = "raillike",
+	tile_images = {"rail.png", "rail_curved.png", "rail_t_junction.png", "rail_crossing.png"},
+	inventory_image = "rail.png",
+	light_propagates = true,
+	paramtype = "light",
+	is_ground_content = true,
+	walkable = false,
+	selection_box = {
+		type = "fixed",
+		--fixed = <default>
+	},
+	material = digprop_dirtlike(0.75),
+})
+
+minetest.register_node("ladder", {
+	drawtype = "signlike",
+	tile_images = {"ladder.png"},
+	inventory_image = "ladder.png",
+	light_propagates = true,
+	paramtype = "light",
+	is_ground_content = true,
+	wall_mounted = true,
+	walkable = false,
+	climbable = true,
+	selection_box = {
+		type = "wallmounted",
+		--wall_top = = <default>
+		--wall_bottom = = <default>
+		--wall_side = = <default>
+	},
+	furnace_burntime = 5,
+	material = digprop_woodlike(0.5),
+})
+
+minetest.register_node("coalstone", {
+	tile_images = {"stone.png^mineral_coal.png"},
+	inventory_image = "stone.png^mineral_coal.png",
+	is_ground_content = true,
+	material = digprop_stonelike(1.5),
+})
+
+minetest.register_node("wood", {
+	tile_images = {"wood.png"},
+	inventory_image = inventorycube("wood.png"),
+	is_ground_content = true,
+	furnace_burntime = 7,
+	material = digprop_woodlike(0.75),
+})
+
+minetest.register_node("mese", {
+	tile_images = {"mese.png"},
+	inventory_image = inventorycube("mese.png"),
+	is_ground_content = true,
+	furnace_burntime = 30,
+	material = digprop_stonelike(0.5),
+})
+
+minetest.register_node("cloud", {
+	tile_images = {"cloud.png"},
+	inventory_image = inventorycube("cloud.png"),
+	is_ground_content = true,
+})
+
+minetest.register_node("water_flowing", {
+	drawtype = "flowingliquid",
+	tile_images = {"water.png"},
+	alpha = WATER_ALPHA,
+	inventory_image = inventorycube("water.png"),
+	paramtype = "light",
+	light_propagates = true,
+	walkable = false,
+	pointable = false,
+	diggable = false,
+	buildable_to = true,
+	liquidtype = "flowing",
+	liquid_alternative_flowing = "water_flowing",
+	liquid_alternative_source = "water_source",
+	liquid_viscosity = WATER_VISC,
+	post_effect_color = {a=64, r=100, g=100, b=200},
+	special_materials = {
+		{image="water.png", backface_culling=false},
+		{image="water.png", backface_culling=true},
+	},
+})
+
+minetest.register_node("water_source", {
+	drawtype = "liquid",
+	tile_images = {"water.png"},
+	alpha = WATER_ALPHA,
+	inventory_image = inventorycube("water.png"),
+	paramtype = "light",
+	light_propagates = true,
+	walkable = false,
+	pointable = false,
+	diggable = false,
+	buildable_to = true,
+	liquidtype = "source",
+	liquid_alternative_flowing = "water_flowing",
+	liquid_alternative_source = "water_source",
+	liquid_viscosity = WATER_VISC,
+	post_effect_color = {a=64, r=100, g=100, b=200},
+	special_materials = {
+		-- New-style water source material (mostly unused)
+		{image="water.png", backface_culling=false},
+	},
+})
+
+minetest.register_node("lava_flowing", {
+	drawtype = "flowingliquid",
+	tile_images = {"lava.png"},
+	inventory_image = inventorycube("lava.png"),
+	paramtype = "light",
+	light_propagates = false,
+	light_source = LIGHT_MAX - 1,
+	walkable = false,
+	pointable = false,
+	diggable = false,
+	buildable_to = true,
+	liquidtype = "flowing",
+	liquid_alternative_flowing = "lava_flowing",
+	liquid_alternative_source = "lava_source",
+	liquid_viscosity = LAVA_VISC,
+	damage_per_second = 4*2,
+	post_effect_color = {a=192, r=255, g=64, b=0},
+	special_materials = {
+		{image="lava.png", backface_culling=false},
+		{image="lava.png", backface_culling=true},
+	},
+})
+
+minetest.register_node("lava_source", {
+	drawtype = "liquid",
+	tile_images = {"lava.png"},
+	inventory_image = inventorycube("lava.png"),
+	paramtype = "light",
+	light_propagates = false,
+	light_source = LIGHT_MAX - 1,
+	walkable = false,
+	pointable = false,
+	diggable = false,
+	buildable_to = true,
+	liquidtype = "source",
+	liquid_alternative_flowing = "lava_flowing",
+	liquid_alternative_source = "lava_source",
+	liquid_viscosity = LAVA_VISC,
+	damage_per_second = 4*2,
+	post_effect_color = {a=192, r=255, g=64, b=0},
+	special_materials = {
+		-- New-style lava source material (mostly unused)
+		{image="lava.png", backface_culling=false},
+	},
+	furnace_burntime = 60,
+})
+
+minetest.register_node("torch", {
+	drawtype = "torchlike",
+	tile_images = {"torch_on_floor.png", "torch_on_ceiling.png", "torch.png"},
+	inventory_image = "torch_on_floor.png",
+	paramtype = "light",
+	light_propagates = true,
+	sunlight_propagates = true,
+	walkable = false,
+	wall_mounted = true,
+	light_source = LIGHT_MAX-1,
+	selection_box = {
+		type = "wallmounted",
+		wall_top = {-0.1, 0.5-0.6, -0.1, 0.1, 0.5, 0.1},
+		wall_bottom = {-0.1, -0.5, -0.1, 0.1, -0.5+0.6, 0.1},
+		wall_side = {-0.5, -0.3, -0.1, -0.5+0.3, 0.3, 0.1},
+	},
+	material = digprop_constanttime(0.0),
+	furnace_burntime = 4,
+})
+
+minetest.register_node("sign_wall", {
+	drawtype = "signlike",
+	tile_images = {"sign_wall.png"},
+	inventory_image = "sign_wall.png",
+	paramtype = "light",
+	light_propagates = true,
+	sunlight_propagates = true,
+	walkable = false,
+	wall_mounted = true,
+	metadata_name = "sign",
+	selection_box = {
+		type = "wallmounted",
+		--wall_top = <default>
+		--wall_bottom = <default>
+		--wall_side = <default>
+	},
+	material = digprop_constanttime(0.5),
+	furnace_burntime = 10,
+})
+
+minetest.register_node("chest", {
+	tile_images = {"chest_top.png", "chest_top.png", "chest_side.png",
+		"chest_side.png", "chest_side.png", "chest_front.png"},
+	inventory_image = "chest_top.png",
+	--inventory_image = inventorycube("chest_top.png", "chest_side.png", "chest_front.png"),
+	paramtype = "facedir_simple",
+	metadata_name = "chest",
+	material = digprop_woodlike(1.0),
+	furnace_burntime = 30,
+})
+
+minetest.register_node("locked_chest", {
+	tile_images = {"chest_top.png", "chest_top.png", "chest_side.png",
+		"chest_side.png", "chest_side.png", "chest_lock.png"},
+	inventory_image = "chest_lock.png",
+	paramtype = "facedir_simple",
+	metadata_name = "locked_chest",
+	material = digprop_woodlike(1.0),
+	furnace_burntime = 30,
+})
+
+minetest.register_node("furnace", {
+	tile_images = {"furnace_side.png", "furnace_side.png", "furnace_side.png",
+		"furnace_side.png", "furnace_side.png", "furnace_front.png"},
+	inventory_image = "furnace_front.png",
+	paramtype = "facedir_simple",
+	metadata_name = "furnace",
+	material = digprop_stonelike(3.0),
+})
+
+minetest.register_node("cobble", {
+	tile_images = {"cobble.png"},
+	inventory_image = inventorycube("cobble.png"),
+	is_ground_content = true,
+	cookresult_item = 'NodeItem "stone" 1',
+	material = digprop_stonelike(0.9),
+})
+
+minetest.register_node("mossycobble", {
+	tile_images = {"mossycobble.png"},
+	inventory_image = inventorycube("mossycobble.png"),
+	is_ground_content = true,
+	material = digprop_stonelike(0.8),
+})
+
+minetest.register_node("steelblock", {
+	tile_images = {"steel_block.png"},
+	inventory_image = inventorycube("steel_block.png"),
+	is_ground_content = true,
+	material = digprop_stonelike(5.0),
+})
+
+minetest.register_node("nyancat", {
+	tile_images = {"nc_side.png", "nc_side.png", "nc_side.png",
+		"nc_side.png", "nc_back.png", "nc_front.png"},
+	inventory_image = "nc_front.png",
+	paramtype = "facedir_simple",
+	material = digprop_stonelike(3.0),
+	furnace_burntime = 1,
+})
+
+minetest.register_node("nyancat_rainbow", {
+	tile_images = {"nc_rb.png"},
+	inventory_image = "nc_rb.png",
+	material = digprop_stonelike(3.0),
+	furnace_burntime = 1,
+})
+
+minetest.register_node("sapling", {
+	drawtype = "plantlike",
+	visual_scale = 1.0,
+	tile_images = {"sapling.png"},
+	inventory_image = "sapling.png",
+	paramtype = "light",
+	light_propagates = true,
+	walkable = false,
+	material = digprop_constanttime(0.0),
+	furnace_burntime = 10,
+})
+
+minetest.register_node("apple", {
+	drawtype = "plantlike",
+	visual_scale = 1.0,
+	tile_images = {"apple.png"},
+	inventory_image = "apple.png",
+	paramtype = "light",
+	light_propagates = true,
+	sunlight_propagates = true,
+	walkable = false,
+	dug_item = 'CraftItem "apple" 1',
+	material = digprop_constanttime(0.0),
+	furnace_burntime = 3,
 })
 
 -- New nodes

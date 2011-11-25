@@ -137,7 +137,6 @@ void ContentFeatures::reset()
 	climbable = false;
 	buildable_to = false;
 	wall_mounted = false;
-	air_equivalent = false;
 	often_contains_mineral = false;
 	dug_item = "";
 	extra_dug_item = "";
@@ -185,7 +184,6 @@ void ContentFeatures::serialize(std::ostream &os)
 	writeU8(os, climbable);
 	writeU8(os, buildable_to);
 	writeU8(os, wall_mounted);
-	writeU8(os, air_equivalent);
 	writeU8(os, often_contains_mineral);
 	os<<serializeString(dug_item);
 	os<<serializeString(extra_dug_item);
@@ -237,7 +235,6 @@ void ContentFeatures::deSerialize(std::istream &is, IGameDef *gamedef)
 	climbable = readU8(is);
 	buildable_to = readU8(is);
 	wall_mounted = readU8(is);
-	air_equivalent = readU8(is);
 	often_contains_mineral = readU8(is);
 	dug_item = deSerializeString(is);
 	extra_dug_item = deSerializeString(is);
@@ -329,7 +326,6 @@ public:
 			f.pointable = false;
 			f.diggable = false;
 			f.buildable_to = true;
-			f.air_equivalent = true;
 			// Insert directly into containers
 			content_t c = CONTENT_AIR;
 			m_content_features[c] = f;
@@ -348,7 +344,6 @@ public:
 			f.diggable = false;
 			// A way to remove accidental CONTENT_IGNOREs
 			f.buildable_to = true;
-			f.air_equivalent = true;
 			// Insert directly into containers
 			content_t c = CONTENT_IGNORE;
 			m_content_features[c] = f;
