@@ -688,7 +688,11 @@ void RemoteClient::GetNextBlocks(Server *server, float dtime,
 				//if(server->m_emerge_queue.peerItemCount(peer_id) < 1)
 				// Allow two blocks in queue per client
 				//if(server->m_emerge_queue.peerItemCount(peer_id) < 2)
-				if(server->m_emerge_queue.peerItemCount(peer_id) < 25)
+				s32 max_emerge = 25;
+				// Make it more responsive when needing to generate stuff
+				if(surely_not_found_on_disk)
+					max_emerge = 5;
+				if(server->m_emerge_queue.peerItemCount(peer_id) < max_emerge)
 				{
 					//infostream<<"Adding block to emerge queue"<<std::endl;
 					

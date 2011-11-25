@@ -1534,7 +1534,7 @@ void make_block(BlockMakeData *data)
 	// Maximum amount of ground above the bottom of the central block
 	s16 maximum_ground_depth = maximum_groundlevel - node_min.Y;
 
-	#if 0
+	#if 1
 	/*
 		Special case for high air or water: Just fill with air and water.
 	*/
