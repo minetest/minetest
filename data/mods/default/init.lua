@@ -628,9 +628,9 @@ function inventorycube(img1, img2, img3)
 	img2 = img2 or img1
 	img3 = img3 or img1
 	return "[inventorycube"
-			.. "{" .. img1:gsub("^", "&")
-			.. "{" .. img2:gsub("^", "&")
-			.. "{" .. img3:gsub("^", "&")
+			.. "{" .. img1:gsub("%^", "&")
+			.. "{" .. img2:gsub("%^", "&")
+			.. "{" .. img3:gsub("%^", "&")
 end
 
 -- Legacy nodes
@@ -642,6 +642,7 @@ minetest.register_node("stone", {
 	is_ground_content = true,
 	often_contains_mineral = true, -- Texture atlas hint
 	material = digprop_stonelike(1.0),
+	dug_item = 'NodeItem "cobble" 1',
 })
 
 minetest.register_node("dirt_with_grass", {
@@ -649,6 +650,7 @@ minetest.register_node("dirt_with_grass", {
 	inventory_image = inventorycube("mud.png^grass_side.png"),
 	is_ground_content = true,
 	material = digprop_dirtlike(1.0),
+	dug_item = 'NodeItem "dirt" 1',
 })
 
 minetest.register_node("dirt_with_grass_footsteps", {

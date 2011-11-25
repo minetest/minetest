@@ -84,7 +84,7 @@ minetest.register_node("air", {
 	walkable = false,
 	pointable = false,
 	diggable = false,
-	buildable_to = false,
+	buildable_to = true,
 	air_equivalent = true,
 })
 

@@ -497,6 +497,9 @@ static int l_register_node(lua_State *L)
 
 	// Default to getting the corresponding NodeItem when dug
 	f.dug_item = std::string("NodeItem \"")+name+"\" 1";
+	
+	// Default to unknown_block.png as all textures
+	f.setAllTextures("unknown_block.png");
 
 	/*
 		Read definiton from Lua
