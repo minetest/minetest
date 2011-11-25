@@ -26,8 +26,5 @@ class IGameDef;
 
 void craft_set_creative_inventory(Player *player, IGameDef *gamedef);
 
-// Called when give_initial_stuff setting is used
-void craft_give_initial_stuff(Player *player, IGameDef *gamedef);
-
 #endif
 

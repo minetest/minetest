@@ -89,7 +89,6 @@ void set_default_settings(Settings *settings)
 	settings->setDefault("enable_damage", "true");
 	settings->setDefault("only_peaceful_mobs", "false");
 	settings->setDefault("fixed_map_seed", "");
-	settings->setDefault("give_initial_stuff", "false");
 	settings->setDefault("default_password", "");
 	settings->setDefault("default_privs", "build, shout");
 

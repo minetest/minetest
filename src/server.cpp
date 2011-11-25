@@ -4647,10 +4647,6 @@ Player *Server::emergePlayer(const char *name, const char *password, u16 peer_id
 			// Set creative inventory
 			craft_set_creative_inventory(player, this);
 		}
-		else if(g_settings->getBool("give_initial_stuff"))
-		{
-			craft_give_initial_stuff(player, this);
-		}
 
 		return player;
 		
