@@ -144,8 +144,8 @@ void ContentFeatures::reset()
 	extra_dug_item_rarity = 2;
 	metadata_name = "";
 	liquid_type = LIQUID_NONE;
-	liquid_alternative_flowing = CONTENT_IGNORE;
-	liquid_alternative_source = CONTENT_IGNORE;
+	liquid_alternative_flowing = "";
+	liquid_alternative_source = "";
 	liquid_viscosity = 0;
 	light_source = 0;
 	damage_per_second = 0;
@@ -192,8 +192,8 @@ void ContentFeatures::serialize(std::ostream &os)
 	writeS32(os, extra_dug_item_rarity);
 	os<<serializeString(metadata_name);
 	writeU8(os, liquid_type);
-	writeU16(os, liquid_alternative_flowing);
-	writeU16(os, liquid_alternative_source);
+	os<<serializeString(liquid_alternative_flowing);
+	os<<serializeString(liquid_alternative_source);
 	writeU8(os, liquid_viscosity);
 	writeU8(os, light_source);
 	writeU32(os, damage_per_second);
@@ -244,8 +244,8 @@ void ContentFeatures::deSerialize(std::istream &is, IGameDef *gamedef)
 	extra_dug_item_rarity = readS32(is);
 	metadata_name = deSerializeString(is);
 	liquid_type = (enum LiquidType)readU8(is);
-	liquid_alternative_flowing = readU16(is);
-	liquid_alternative_source = readU16(is);
+	liquid_alternative_flowing = deSerializeString(is);
+	liquid_alternative_source = deSerializeString(is);
 	liquid_viscosity = readU8(is);
 	light_source = readU8(is);
 	damage_per_second = readU32(is);
@@ -337,13 +337,14 @@ public:
 			ContentFeatures f;
 			f.name = "ignore";
 			f.drawtype = NDT_AIRLIKE;
-			/*f.param_type = CPT_LIGHT;
-			f.light_propagates = true;
-			f.sunlight_propagates = true;*/
+			f.param_type = CPT_NONE;
+			f.light_propagates = false;
+			f.sunlight_propagates = false;
 			f.walkable = false;
 			f.pointable = false;
 			f.diggable = false;
-			f.buildable_to = false;
+			// A way to remove accidental CONTENT_IGNOREs
+			f.buildable_to = true;
 			f.air_equivalent = true;
 			set(CONTENT_IGNORE, f);
 		}

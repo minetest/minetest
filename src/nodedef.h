@@ -193,9 +193,9 @@ struct ContentFeatures
 	// Whether the node is non-liquid, source liquid or flowing liquid
 	enum LiquidType liquid_type;
 	// If the content is liquid, this is the flowing version of the liquid.
-	content_t liquid_alternative_flowing;
+	std::string liquid_alternative_flowing;
 	// If the content is liquid, this is the source version of the liquid.
-	content_t liquid_alternative_source;
+	std::string liquid_alternative_source;
 	// Viscosity for fluid flow, ranging from 1 to 7, with
 	// 1 giving almost instantaneous propagation and 7 being
 	// the slowest possible

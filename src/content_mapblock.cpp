@@ -237,8 +237,8 @@ void mapblock_mesh_generate_special(MeshMakeData *data,
 
 			bool top_is_same_liquid = false;
 			MapNode ntop = data->m_vmanip.getNodeNoEx(blockpos_nodes + v3s16(x,y+1,z));
-			content_t c_flowing = nodedef->get(n).liquid_alternative_flowing;
-			content_t c_source = nodedef->get(n).liquid_alternative_source;
+			content_t c_flowing = nodedef->getId(nodedef->get(n).liquid_alternative_flowing);
+			content_t c_source = nodedef->getId(nodedef->get(n).liquid_alternative_source);
 			if(ntop.getContent() == c_flowing || ntop.getContent() == c_source)
 				top_is_same_liquid = true;
 			

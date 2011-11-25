@@ -609,11 +609,11 @@ static int l_register_node(lua_State *L)
 	f.liquid_type = (LiquidType)getenumfield(L, table0, "liquidtype",
 			es_LiquidType, LIQUID_NONE);
 	// If the content is liquid, this is the flowing version of the liquid.
-	// TODO: as name
-	// content_t liquid_alternative_flowing;
+	getstringfield(L, table0, "liquid_alternative_flowing",
+			f.liquid_alternative_flowing);
 	// If the content is liquid, this is the source version of the liquid.
-	// TODO: as name
-	// content_t liquid_alternative_source;
+	getstringfield(L, table0, "liquid_alternative_source",
+			f.liquid_alternative_source);
 	// Viscosity for fluid flow, ranging from 1 to 7, with
 	// 1 giving almost instantaneous propagation and 7 being
 	// the slowest possible

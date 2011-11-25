@@ -682,8 +682,8 @@ void content_mapnode_init(IWritableNodeDefManager *nodemgr)
 	f.diggable = false;
 	f.buildable_to = true;
 	f.liquid_type = LIQUID_FLOWING;
-	f.liquid_alternative_flowing = CONTENT_WATER;
-	f.liquid_alternative_source = CONTENT_WATERSOURCE;
+	f.liquid_alternative_flowing = "water_flowing";
+	f.liquid_alternative_source = "water_source";
 	f.liquid_viscosity = WATER_VISC;
 	f.post_effect_color = video::SColor(64, 100, 100, 200);
 	f.setSpecialMaterial(0, MaterialSpec("water.png", false));
@@ -705,8 +705,8 @@ void content_mapnode_init(IWritableNodeDefManager *nodemgr)
 	f.buildable_to = true;
 	f.liquid_type = LIQUID_SOURCE;
 	f.dug_item = std::string("MaterialItem2 ")+itos(i)+" 1";
-	f.liquid_alternative_flowing = CONTENT_WATER;
-	f.liquid_alternative_source = CONTENT_WATERSOURCE;
+	f.liquid_alternative_flowing = "water_flowing";
+	f.liquid_alternative_source = "water_source";
 	f.liquid_viscosity = WATER_VISC;
 	f.post_effect_color = video::SColor(64, 100, 100, 200);
 	// New-style water source material (mostly unused)
@@ -727,8 +727,8 @@ void content_mapnode_init(IWritableNodeDefManager *nodemgr)
 	f.diggable = false;
 	f.buildable_to = true;
 	f.liquid_type = LIQUID_FLOWING;
-	f.liquid_alternative_flowing = CONTENT_LAVA;
-	f.liquid_alternative_source = CONTENT_LAVASOURCE;
+	f.liquid_alternative_flowing = "lava_flowing";
+	f.liquid_alternative_source = "lava_source";
 	f.liquid_viscosity = LAVA_VISC;
 	f.damage_per_second = 4*2;
 	f.post_effect_color = video::SColor(192, 255, 64, 0);
@@ -751,8 +751,8 @@ void content_mapnode_init(IWritableNodeDefManager *nodemgr)
 	f.buildable_to = true;
 	f.liquid_type = LIQUID_SOURCE;
 	f.dug_item = std::string("MaterialItem2 ")+itos(i)+" 1";
-	f.liquid_alternative_flowing = CONTENT_LAVA;
-	f.liquid_alternative_source = CONTENT_LAVASOURCE;
+	f.liquid_alternative_flowing = "lava_flowing";
+	f.liquid_alternative_source = "lava_source";
 	f.liquid_viscosity = LAVA_VISC;
 	f.damage_per_second = 4*2;
 	f.post_effect_color = video::SColor(192, 255, 64, 0);

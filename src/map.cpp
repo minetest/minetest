@@ -1602,7 +1602,7 @@ void Map::transformLiquids(core::map<v3s16, MapBlock*> & modified_blocks)
 		switch (liquid_type) {
 			case LIQUID_SOURCE:
 				liquid_level = LIQUID_LEVEL_SOURCE;
-				liquid_kind = nodemgr->get(n0).liquid_alternative_flowing;
+				liquid_kind = nodemgr->getId(nodemgr->get(n0).liquid_alternative_flowing);
 				break;
 			case LIQUID_FLOWING:
 				liquid_level = (n0.param2 & LIQUID_LEVEL_MASK);
@@ -1662,8 +1662,8 @@ void Map::transformLiquids(core::map<v3s16, MapBlock*> & modified_blocks)
 				case LIQUID_SOURCE:
 					// if this node is not (yet) of a liquid type, choose the first liquid type we encounter 
 					if (liquid_kind == CONTENT_AIR)
-						liquid_kind = nodemgr->get(nb.n.getContent()).liquid_alternative_flowing;
-					if (nodemgr->get(nb.n.getContent()).liquid_alternative_flowing !=liquid_kind) {
+						liquid_kind = nodemgr->getId(nodemgr->get(nb.n).liquid_alternative_flowing);
+					if (nodemgr->getId(nodemgr->get(nb.n).liquid_alternative_flowing) != liquid_kind) {
 						neutrals[num_neutrals++] = nb;
 					} else {
 						sources[num_sources++] = nb;
@@ -1672,8 +1672,8 @@ void Map::transformLiquids(core::map<v3s16, MapBlock*> & modified_blocks)
 				case LIQUID_FLOWING:
 					// if this node is not (yet) of a liquid type, choose the first liquid type we encounter
 					if (liquid_kind == CONTENT_AIR)
-						liquid_kind = nodemgr->get(nb.n.getContent()).liquid_alternative_flowing;
-					if (nodemgr->get(nb.n.getContent()).liquid_alternative_flowing != liquid_kind) {
+						liquid_kind = nodemgr->getId(nodemgr->get(nb.n).liquid_alternative_flowing);
+					if (nodemgr->getId(nodemgr->get(nb.n).liquid_alternative_flowing) != liquid_kind) {
 						neutrals[num_neutrals++] = nb;
 					} else {
 						flows[num_flows++] = nb;
@@ -1694,7 +1694,7 @@ void Map::transformLiquids(core::map<v3s16, MapBlock*> & modified_blocks)
 			// liquid_kind will be set to either the flowing alternative of the node (if it's a liquid)
 			// or the flowing alternative of the first of the surrounding sources (if it's air), so
 			// it's perfectly safe to use liquid_kind here to determine the new node content.
-			new_node_content = nodemgr->get(liquid_kind).liquid_alternative_source;
+			new_node_content = nodemgr->getId(nodemgr->get(liquid_kind).liquid_alternative_source);
 		} else if (num_sources == 1 && sources[0].t != NEIGHBOR_LOWER) {
 			// liquid_kind is set properly, see above
 			new_node_content = liquid_kind;
