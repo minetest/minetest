@@ -3535,14 +3535,12 @@ void Server::inventoryModified(InventoryContext *c, std::string id)
 		NodeMetadata *meta = m_env->getMap().getNodeMetadata(p);
 		if(meta)
 			meta->inventoryModified();
-
-		for(core::map<u16, RemoteClient*>::Iterator
-			i = m_clients.getIterator();
-			i.atEnd()==false; i++)
-		{
-			RemoteClient *client = i.getNode()->getValue();
-			client->SetBlockNotSent(blockpos);
-		}
+		
+		MapBlock *block = m_env.getMap().getBlockNoCreateNoEx(blockpos);
+		if(block)
+			block->raiseModified(MOD_STATE_WRITE_NEEDED);
+		
+		setBlockNotSent(blockpos);
 
 		return;
 	}
