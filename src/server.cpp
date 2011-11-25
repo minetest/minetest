@@ -2529,7 +2529,8 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 			/*
 				Run script hook
 			*/
-			scriptapi_environment_on_punchnode(m_lua, p_under, n);
+			ServerRemotePlayer *srp = (ServerRemotePlayer*)player;
+			scriptapi_environment_on_punchnode(m_lua, p_under, n, srp);
 
 		} // action == 0
 
@@ -2769,7 +2770,8 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 			/*
 				Run script hook
 			*/
-			scriptapi_environment_on_dignode(m_lua, p_under, n);
+			ServerRemotePlayer *srp = (ServerRemotePlayer*)player;
+			scriptapi_environment_on_dignode(m_lua, p_under, n, srp);
 		}
 		
 		/*
@@ -2916,7 +2918,8 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 				/*
 					Run script hook
 				*/
-				scriptapi_environment_on_placenode(m_lua, p_over, n);
+				ServerRemotePlayer *srp = (ServerRemotePlayer*)player;
+				scriptapi_environment_on_placenode(m_lua, p_over, n, srp);
 
 				/*
 					Calculate special events

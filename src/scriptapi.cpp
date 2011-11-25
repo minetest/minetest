@@ -1432,7 +1432,8 @@ void scriptapi_environment_step(lua_State *L, float dtime)
 	}
 }
 
-void scriptapi_environment_on_placenode(lua_State *L, v3s16 p, MapNode newnode)
+void scriptapi_environment_on_placenode(lua_State *L, v3s16 p, MapNode newnode,
+		ServerActiveObject *placer)
 {
 	realitycheck(L);
 	assert(lua_checkstack(L, 20));
@@ -1459,13 +1460,15 @@ void scriptapi_environment_on_placenode(lua_State *L, v3s16 p, MapNode newnode)
 		// Call function
 		pushpos(L, p);
 		pushnode(L, newnode, ndef);
-		if(lua_pcall(L, 2, 0, 0))
+		objectref_get_or_create(L, placer);
+		if(lua_pcall(L, 3, 0, 0))
 			script_error(L, "error: %s\n", lua_tostring(L, -1));
 		// value removed, keep key for next iteration
 	}
 }
 
-void scriptapi_environment_on_dignode(lua_State *L, v3s16 p, MapNode oldnode)
+void scriptapi_environment_on_dignode(lua_State *L, v3s16 p, MapNode oldnode,
+		ServerActiveObject *digger)
 {
 	realitycheck(L);
 	assert(lua_checkstack(L, 20));
@@ -1492,13 +1495,15 @@ void scriptapi_environment_on_dignode(lua_State *L, v3s16 p, MapNode oldnode)
 		// Call function
 		pushpos(L, p);
 		pushnode(L, oldnode, ndef);
-		if(lua_pcall(L, 2, 0, 0))
+		objectref_get_or_create(L, digger);
+		if(lua_pcall(L, 3, 0, 0))
 			script_error(L, "error: %s\n", lua_tostring(L, -1));
 		// value removed, keep key for next iteration
 	}
 }
 
-void scriptapi_environment_on_punchnode(lua_State *L, v3s16 p, MapNode oldnode)
+void scriptapi_environment_on_punchnode(lua_State *L, v3s16 p, MapNode node,
+		ServerActiveObject *puncher)
 {
 	realitycheck(L);
 	assert(lua_checkstack(L, 20));
@@ -1524,8 +1529,9 @@ void scriptapi_environment_on_punchnode(lua_State *L, v3s16 p, MapNode oldnode)
 		luaL_checktype(L, -1, LUA_TFUNCTION);
 		// Call function
 		pushpos(L, p);
-		pushnode(L, oldnode, ndef);
-		if(lua_pcall(L, 2, 0, 0))
+		pushnode(L, node, ndef);
+		objectref_get_or_create(L, puncher);
+		if(lua_pcall(L, 3, 0, 0))
 			script_error(L, "error: %s\n", lua_tostring(L, -1));
 		// value removed, keep key for next iteration
 	}

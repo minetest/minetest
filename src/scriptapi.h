@@ -41,11 +41,14 @@ void scriptapi_rm_object_reference(lua_State *L, ServerActiveObject *cobj);
 // On environment step
 void scriptapi_environment_step(lua_State *L, float dtime);
 // After adding node
-void scriptapi_environment_on_placenode(lua_State *L, v3s16 p, MapNode newnode);
+void scriptapi_environment_on_placenode(lua_State *L, v3s16 p, MapNode newnode,
+		ServerActiveObject *placer);
 // After removing node
-void scriptapi_environment_on_dignode(lua_State *L, v3s16 p, MapNode oldnode);
+void scriptapi_environment_on_dignode(lua_State *L, v3s16 p, MapNode oldnode,
+		ServerActiveObject *digger);
 // When punching node
-void scriptapi_environment_on_punchnode(lua_State *L, v3s16 p, MapNode node);
+void scriptapi_environment_on_punchnode(lua_State *L, v3s16 p, MapNode node,
+		ServerActiveObject *puncher);
 
 /* luaentity */
 // Returns true if succesfully added into Lua; false otherwise.

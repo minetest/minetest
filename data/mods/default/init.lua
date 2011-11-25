@@ -82,8 +82,9 @@ end
 -- minetest.register_node(name, {lots of stuff})
 -- minetest.register_craft({output=item, recipe={...})
 -- minetest.register_globalstep(func)
--- minetest.register_on_placenode(func)
--- minetest.register_on_dignode(func)
+-- minetest.register_on_placenode(func(pos, newnode, placer))
+-- minetest.register_on_dignode(func(pos, oldnode, digger))
+-- minetest.register_on_punchnode(func(pos, node, puncher))
 --
 -- Global objects:
 -- minetest.env - environment reference
