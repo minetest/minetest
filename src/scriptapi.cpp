@@ -157,14 +157,6 @@ static v3s16 readpos(lua_State *L, int index)
 	// Correct rounding at <0
 	v3f pf = readFloatPos(L, index);
 	return floatToInt(pf, BS);
-	/*v3s16 p;
-	lua_getfield(L, index, "x");
-	p.X = lua_tonumber(L, -1);
-	lua_getfield(L, index, "y");
-	p.Y = lua_tonumber(L, -1);
-	lua_getfield(L, index, "z");
-	p.Z = lua_tonumber(L, -1);
-	return p;*/
 }
 
 static void pushnode(lua_State *L, const MapNode &n, INodeDefManager *ndef)
@@ -199,6 +191,170 @@ static MapNode readnode(lua_State *L, int index, INodeDefManager *ndef)
 	lua_pop(L, 1);
 	return MapNode(ndef, name, param1, param2);
 }
+
+static video::SColor readARGB8(lua_State *L, int index)
+{
+	video::SColor color;
+	luaL_checktype(L, index, LUA_TTABLE);
+	lua_getfield(L, index, "a");
+	if(lua_isnumber(L, -1))
+		color.setAlpha(lua_tonumber(L, -1));
+	lua_pop(L, 1);
+	lua_getfield(L, index, "r");
+	color.setRed(lua_tonumber(L, -1));
+	lua_pop(L, 1);
+	lua_getfield(L, index, "g");
+	color.setGreen(lua_tonumber(L, -1));
+	lua_pop(L, 1);
+	lua_getfield(L, index, "b");
+	color.setBlue(lua_tonumber(L, -1));
+	lua_pop(L, 1);
+	return color;
+}
+
+static bool getstringfield(lua_State *L, int table,
+		const char *fieldname, std::string &result)
+{
+	lua_getfield(L, table, fieldname);
+	bool got = false;
+	if(lua_isstring(L, -1)){
+		result = lua_tostring(L, -1);
+		got = true;
+	}
+	lua_pop(L, 1);
+	return got;
+}
+
+static bool getintfield(lua_State *L, int table,
+		const char *fieldname, int &result)
+{
+	lua_getfield(L, table, fieldname);
+	bool got = false;
+	if(lua_isnumber(L, -1)){
+		result = lua_tonumber(L, -1);
+		got = true;
+	}
+	lua_pop(L, 1);
+	return got;
+}
+
+static bool getfloatfield(lua_State *L, int table,
+		const char *fieldname, float &result)
+{
+	lua_getfield(L, table, fieldname);
+	bool got = false;
+	if(lua_isnumber(L, -1)){
+		result = lua_tonumber(L, -1);
+		got = true;
+	}
+	lua_pop(L, 1);
+	return got;
+}
+
+static bool getboolfield(lua_State *L, int table,
+		const char *fieldname, bool &result)
+{
+	lua_getfield(L, table, fieldname);
+	bool got = false;
+	if(lua_isboolean(L, -1)){
+		result = lua_toboolean(L, -1);
+		got = true;
+	}
+	lua_pop(L, 1);
+	return got;
+}
+
+static std::string getstringfield_default(lua_State *L, int table,
+		const char *fieldname, const std::string &default_)
+{
+	std::string result = default_;
+	getstringfield(L, table, fieldname, result);
+	return result;
+}
+
+static int getintfield_default(lua_State *L, int table,
+		const char *fieldname, int default_)
+{
+	int result = default_;
+	getintfield(L, table, fieldname, result);
+	return result;
+}
+
+static bool getboolfield_default(lua_State *L, int table,
+		const char *fieldname, bool default_)
+{
+	bool result = default_;
+	getboolfield(L, table, fieldname, result);
+	return result;
+}
+
+struct EnumString
+{
+	int num;
+	const char *str;
+};
+
+static bool string_to_enum(const EnumString *spec, int &result,
+		const std::string &str)
+{
+	const EnumString *esp = spec;
+	while(esp->str){
+		if(str == std::string(esp->str)){
+			result = esp->num;
+			return true;
+		}
+		esp++;
+	}
+	return false;
+}
+
+/*static bool enum_to_string(const EnumString *spec, std::string &result,
+		int num)
+{
+	const EnumString *esp = spec;
+	while(esp){
+		if(num == esp->num){
+			result = esp->str;
+			return true;
+		}
+		esp++;
+	}
+	return false;
+}*/
+
+static int getenumfield(lua_State *L, int table,
+		const char *fieldname, const EnumString *spec, int default_)
+{
+	int result = default_;
+	string_to_enum(spec, result,
+			getstringfield_default(L, table, fieldname, ""));
+	return result;
+}
+
+struct EnumString es_DrawType[] =
+{
+	{NDT_NORMAL, "normal"},
+	{NDT_AIRLIKE, "airlike"},
+	{NDT_LIQUID, "liquid"},
+	{NDT_FLOWINGLIQUID, "flowingliquid"},
+	{NDT_GLASSLIKE, "glasslike"},
+	{NDT_ALLFACES, "allfaces"},
+	{NDT_ALLFACES_OPTIONAL, "allfaces_optional"},
+	{NDT_TORCHLIKE, "torchlike"},
+	{NDT_SIGNLIKE, "signlike"},
+	{NDT_PLANTLIKE, "plantlike"},
+	{NDT_FENCELIKE, "fencelike"},
+	{NDT_RAILLIKE, "raillike"},
+	{0, NULL},
+};
+
+struct EnumString es_ContentParamType[] =
+{
+	{CPT_NONE, "none"},
+	{CPT_LIGHT, "light"},
+	{CPT_MINERAL, "mineral"},
+	{CPT_FACEDIR_SIMPLE, "facedir_simple"},
+};
 
 /*
 	Global functions
@@ -254,51 +410,18 @@ static int l_register_tool(lua_State *L)
 			server->getWritableToolDefManager();
 	
 	ToolDefinition def;
-
-	lua_getfield(L, table, "image");
-	if(lua_isstring(L, -1))
-		def.imagename = lua_tostring(L, -1);
-	lua_pop(L, 1);
 	
-	lua_getfield(L, table, "basetime");
-	def.properties.basetime = lua_tonumber(L, -1);
-	lua_pop(L, 1);
-
-	lua_getfield(L, table, "dt_weight");
-	def.properties.dt_weight = lua_tonumber(L, -1);
-	lua_pop(L, 1);
-
-	lua_getfield(L, table, "dt_crackiness");
-	def.properties.dt_crackiness = lua_tonumber(L, -1);
-	lua_pop(L, 1);
-
-	lua_getfield(L, table, "dt_crumbliness");
-	def.properties.dt_crumbliness = lua_tonumber(L, -1);
-	lua_pop(L, 1);
-
-	lua_getfield(L, table, "dt_cuttability");
-	def.properties.dt_cuttability = lua_tonumber(L, -1);
-	lua_pop(L, 1);
-
-	lua_getfield(L, table, "basedurability");
-	def.properties.basedurability = lua_tonumber(L, -1);
-	lua_pop(L, 1);
-
-	lua_getfield(L, table, "dd_weight");
-	def.properties.dd_weight = lua_tonumber(L, -1);
-	lua_pop(L, 1);
-
-	lua_getfield(L, table, "dd_crackiness");
-	def.properties.dd_crackiness = lua_tonumber(L, -1);
-	lua_pop(L, 1);
-
-	lua_getfield(L, table, "dd_crumbliness");
-	def.properties.dd_crumbliness = lua_tonumber(L, -1);
-	lua_pop(L, 1);
-
-	lua_getfield(L, table, "dd_cuttability");
-	def.properties.dd_cuttability = lua_tonumber(L, -1);
-	lua_pop(L, 1);
+	getstringfield(L, table, "image", def.imagename);
+	getfloatfield(L, table, "basetime", def.properties.basetime);
+	getfloatfield(L, table, "dt_weight", def.properties.dt_weight);
+	getfloatfield(L, table, "dt_crackiness", def.properties.dt_crackiness);
+	getfloatfield(L, table, "dt_crumbliness", def.properties.dt_crumbliness);
+	getfloatfield(L, table, "dt_cuttability", def.properties.dt_cuttability);
+	getfloatfield(L, table, "basedurability", def.properties.basedurability);
+	getfloatfield(L, table, "dd_weight", def.properties.dd_weight);
+	getfloatfield(L, table, "dd_crackiness", def.properties.dd_crackiness);
+	getfloatfield(L, table, "dd_crumbliness", def.properties.dd_crumbliness);
+	getfloatfield(L, table, "dd_cuttability", def.properties.dd_cuttability);
 
 	tooldef->registerTool(name, def);
 	return 0; /* number of results */
@@ -320,7 +443,16 @@ static int l_register_node(lua_State *L)
 			server->getWritableNodeDefManager();
 	
 	ContentFeatures f;
+
 	f.name = name;
+
+	/*
+		Visual definition
+	*/
+
+	f.drawtype = (NodeDrawType)getenumfield(L, table0, "drawtype", es_DrawType,
+			f.drawtype);
+	getfloatfield(L, table0, "visual_scale", f.visual_scale);
 
 	lua_getfield(L, table0, "tile_images");
 	if(lua_istable(L, -1)){
@@ -344,10 +476,111 @@ static int l_register_node(lua_State *L)
 	}
 	lua_pop(L, 1);
 
-	lua_getfield(L, table0, "inventory_image");
-	if(lua_isstring(L, -1))
-		f.tname_inventory = lua_tostring(L, -1);
+	getstringfield(L, table0, "inventory_image", f.tname_inventory);
+
+	lua_getfield(L, table0, "special_materials");
+	if(lua_istable(L, -1)){
+		int table = lua_gettop(L);
+		lua_pushnil(L);
+		int i = 0;
+		while(lua_next(L, table) != 0){
+			// key at index -2 and value at index -1
+			int smtable = lua_gettop(L);
+			std::string tname = getstringfield_default(
+					L, smtable, "image", "");
+			bool backface_culling = getboolfield_default(
+					L, smtable, "backface_culling", true);
+			MaterialSpec mspec(tname, backface_culling);
+			f.setSpecialMaterial(i, mspec);
+			// removes value, keeps key for next iteration
+			lua_pop(L, 1);
+			i++;
+			if(i==6){
+				lua_pop(L, 1);
+				break;
+			}
+		}
+	}
 	lua_pop(L, 1);
+
+	f.alpha = getintfield_default(L, table0, "alpha", 255);
+
+	/*
+		Other stuff
+	*/
+	
+	lua_getfield(L, table0, "post_effect_color");
+	if(!lua_isnil(L, -1))
+		f.post_effect_color = readARGB8(L, -1);
+
+	f.param_type = (ContentParamType)getenumfield(L, table0, "paramtype",
+			es_ContentParamType, f.param_type);
+	
+	// True for all ground-like things like stone and mud, false for eg. trees
+	getboolfield(L, table0, "is_ground_content", f.is_ground_content);
+	getboolfield(L, table0, "light_propagates", f.light_propagates);
+	getboolfield(L, table0, "sunlight_propagates", f.sunlight_propagates);
+	// This is used for collision detection.
+	// Also for general solidness queries.
+	getboolfield(L, table0, "walkable", f.walkable);
+	// Player can point to these
+	getboolfield(L, table0, "pointable", f.pointable);
+	// Player can dig these
+	getboolfield(L, table0, "diggable", f.diggable);
+	// Player can climb these
+	getboolfield(L, table0, "climbable", f.climbable);
+	// Player can build on these
+	getboolfield(L, table0, "buildable_to", f.buildable_to);
+	// If true, param2 is set to direction when placed. Used for torches.
+	// NOTE: the direction format is quite inefficient and should be changed
+	getboolfield(L, table0, "wall_mounted", f.wall_mounted);
+	// If true, node is equivalent to air. Torches are, air is. Water is not.
+	// Is used for example to check whether a mud block can have grass on.
+	getboolfield(L, table0, "air_equivalent", f.air_equivalent);
+	// Whether this content type often contains mineral.
+	// Used for texture atlas creation.
+	// Currently only enabled for CONTENT_STONE.
+	getboolfield(L, table0, "often_contains_mineral", f.often_contains_mineral);
+	// Inventory item string as which the node appears in inventory when dug.
+	// Mineral overrides this.
+	getstringfield(L, table0, "dug_item", f.dug_item);
+	// Extra dug item and its rarity
+	getstringfield(L, table0, "extra_dug_item", f.extra_dug_item);
+	// Usual get interval for extra dug item
+	getintfield(L, table0, "extra_dug_item_rarity", f.extra_dug_item_rarity);
+	// Initial metadata is cloned from this
+	// TODO: As metadata name
+	// NodeMetadata *initial_metadata;
+	// Whether the node is non-liquid, source liquid or flowing liquid
+	// TODO: Enum read
+	// enum LiquidType liquid_type;
+	// If the content is liquid, this is the flowing version of the liquid.
+	// TODO: as name
+	// content_t liquid_alternative_flowing;
+	// If the content is liquid, this is the source version of the liquid.
+	// TODO: as name
+	// content_t liquid_alternative_source;
+	// Viscosity for fluid flow, ranging from 1 to 7, with
+	// 1 giving almost instantaneous propagation and 7 being
+	// the slowest possible
+	f.liquid_viscosity = getintfield_default(L, table0,
+			"liquid_viscosity", f.liquid_viscosity);
+	// Amount of light the node emits
+	f.light_source = getintfield_default(L, table0,
+			"light_source", f.light_source);
+	f.damage_per_second = getintfield_default(L, table0,
+			"damage_per_second", f.damage_per_second);
+	// TODO
+	//NodeBox selection_box;
+	// TODO
+	//MaterialProperties material;
+	getstringfield(L, table0, "cookresult_item", f.cookresult_item);
+	getfloatfield(L, table0, "furnace_cooktime", f.furnace_cooktime);
+	getfloatfield(L, table0, "furnace_burntime", f.furnace_burntime);
+	
+	/*
+		Temporary stuff
+	*/
 
 	// TODO: Replace with actual parameter reading
 	// Temporarily set some sane parameters to allow digging
@@ -358,7 +591,11 @@ static int l_register_node(lua_State *L)
 	f.material.cuttability = 0;
 	f.dug_item = std::string("NodeItem \"")+name+"\" 1";
 
+	/*
+		Register it
+	*/
 	nodedef->set(name, f);
+	
 	return 0; /* number of results */
 }
 
