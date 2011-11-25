@@ -101,7 +101,7 @@ void DebugStack::print(FILE *file, bool everything)
 	for(int i=0; i<stack_max_i; i++)
 	{
 		if(i == stack_i && everything == false)
-			continue;
+			break;
 
 		if(i < stack_i)
 			fprintf(file, "#%d  %s\n", i, stack[i]);
@@ -113,6 +113,24 @@ void DebugStack::print(FILE *file, bool everything)
 		fprintf(file, "Probably overflown.\n");
 }
 
+void DebugStack::print(std::ostream &os, bool everything)
+{
+	os<<"DEBUG STACK FOR THREAD "<<(unsigned long)threadid<<": "<<std::endl;
+
+	for(int i=0; i<stack_max_i; i++)
+	{
+		if(i == stack_i && everything == false)
+			break;
+
+		if(i < stack_i)
+			os<<"#"<<i<<"  "<<stack[i]<<std::endl;
+		else
+			os<<"(Leftover data: #"<<i<<"  "<<stack[i]<<")"<<std::endl;
+	}
+
+	if(stack_i == DEBUG_STACK_SIZE)
+		os<<"Probably overflown."<<std::endl;
+}
 
 core::map<threadid_t, DebugStack*> g_debug_stacks;
 JMutex g_debug_stacks_mutex;
@@ -120,6 +138,21 @@ JMutex g_debug_stacks_mutex;
 void debug_stacks_init()
 {
 	g_debug_stacks_mutex.Init();
+}
+
+void debug_stacks_print_to(std::ostream &os)
+{
+	JMutexAutoLock lock(g_debug_stacks_mutex);
+
+	os<<"Debug stacks:"<<std::endl;
+
+	for(core::map<threadid_t, DebugStack*>::Iterator
+			i = g_debug_stacks.getIterator();
+			i.atEnd() == false; i++)
+	{
+		DebugStack *stack = i.getNode()->getValue();
+		stack->print(os, false);
+	}
 }
 
 void debug_stacks_print()

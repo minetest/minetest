@@ -145,6 +145,7 @@ struct DebugStack
 {
 	DebugStack(threadid_t id);
 	void print(FILE *file, bool everything);
+	void print(std::ostream &os, bool everything);
 	
 	threadid_t threadid;
 	char stack[DEBUG_STACK_SIZE][DEBUG_STACK_TEXT_SIZE];
@@ -156,6 +157,7 @@ extern core::map<threadid_t, DebugStack*> g_debug_stacks;
 extern JMutex g_debug_stacks_mutex;
 
 extern void debug_stacks_init();
+extern void debug_stacks_print_to(std::ostream &os);
 extern void debug_stacks_print();
 
 class DebugStacker
