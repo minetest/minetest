@@ -1024,6 +1024,8 @@ Server::Server(
 	// Initialize default node definitions
 	content_mapnode_init(m_nodedef);
 	
+	// Path to builtin.lua
+	std::string builtinpath = porting::path_data + DIR_DELIM + "builtin.lua";
 	// Add default global mod path
 	m_modspaths.push_back(porting::path_data + DIR_DELIM + "mods");
 
@@ -1034,7 +1036,16 @@ Server::Server(
 	assert(m_lua);
 	// Export API
 	scriptapi_export(m_lua, this);
-	// Load and run scripts
+	// Load and run builtin.lua
+	infostream<<"Server: Loading builtin Lua stuff from \""<<builtinpath
+			<<"\""<<std::endl;
+	bool success = script_load(m_lua, builtinpath.c_str());
+	if(!success){
+		errorstream<<"Server: Failed to load and run "
+				<<builtinpath<<std::endl;
+		assert(0);
+	}
+	// Load and run "mod" scripts
 	core::list<ModSpec> mods = getMods(m_modspaths);
 	for(core::list<ModSpec>::Iterator i = mods.begin();
 			i != mods.end(); i++){
