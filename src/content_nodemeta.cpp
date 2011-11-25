@@ -38,7 +38,7 @@ SignNodeMetadata::SignNodeMetadata(IGameDef *gamedef, std::string text):
 	NodeMetadata(gamedef),
 	m_text(text)
 {
-	NodeMetadata::registerType(typeId(), create);
+	NodeMetadata::registerType(typeId(), typeName(), create);
 }
 u16 SignNodeMetadata::typeId() const
 {
@@ -72,7 +72,7 @@ ChestNodeMetadata proto_ChestNodeMetadata(NULL);
 ChestNodeMetadata::ChestNodeMetadata(IGameDef *gamedef):
 	NodeMetadata(gamedef)
 {
-	NodeMetadata::registerType(typeId(), create);
+	NodeMetadata::registerType(typeId(), typeName(), create);
 	
 	m_inventory = new Inventory();
 	m_inventory->addList("0", 8*4);
@@ -135,7 +135,7 @@ LockingChestNodeMetadata proto_LockingChestNodeMetadata(NULL);
 LockingChestNodeMetadata::LockingChestNodeMetadata(IGameDef *gamedef):
 	NodeMetadata(gamedef)
 {
-	NodeMetadata::registerType(typeId(), create);
+	NodeMetadata::registerType(typeId(), typeName(), create);
 
 	m_inventory = new Inventory();
 	m_inventory->addList("0", 8*4);
@@ -200,7 +200,7 @@ FurnaceNodeMetadata proto_FurnaceNodeMetadata(NULL);
 FurnaceNodeMetadata::FurnaceNodeMetadata(IGameDef *gamedef):
 	NodeMetadata(gamedef)
 {
-	NodeMetadata::registerType(typeId(), create);
+	NodeMetadata::registerType(typeId(), typeName(), create);
 	
 	m_inventory = new Inventory();
 	m_inventory->addList("fuel", 1);

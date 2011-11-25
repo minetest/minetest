@@ -31,6 +31,8 @@ public:
 	//~SignNodeMetadata();
 	
 	virtual u16 typeId() const;
+	virtual const char* typeName() const
+	{ return "sign"; }
 	static NodeMetadata* create(std::istream &is, IGameDef *gamedef);
 	virtual NodeMetadata* clone(IGameDef *gamedef);
 	virtual void serializeBody(std::ostream &os);
@@ -51,6 +53,8 @@ public:
 	~ChestNodeMetadata();
 	
 	virtual u16 typeId() const;
+	virtual const char* typeName() const
+	{ return "chest"; }
 	static NodeMetadata* create(std::istream &is, IGameDef *gamedef);
 	virtual NodeMetadata* clone(IGameDef *gamedef);
 	virtual void serializeBody(std::ostream &os);
@@ -70,6 +74,8 @@ public:
 	~LockingChestNodeMetadata();
 
 	virtual u16 typeId() const;
+	virtual const char* typeName() const
+	{ return "locked_chest"; }
 	static NodeMetadata* create(std::istream &is, IGameDef *gamedef);
 	virtual NodeMetadata* clone(IGameDef *gamedef);
 	virtual void serializeBody(std::ostream &os);
@@ -93,6 +99,8 @@ public:
 	~FurnaceNodeMetadata();
 	
 	virtual u16 typeId() const;
+	virtual const char* typeName() const
+	{ return "furnace"; }
 	virtual NodeMetadata* clone(IGameDef *gamedef);
 	static NodeMetadata* create(std::istream &is, IGameDef *gamedef);
 	virtual void serializeBody(std::ostream &os);

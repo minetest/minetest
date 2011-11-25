@@ -31,6 +31,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 */
 
 core::map<u16, NodeMetadata::Factory> NodeMetadata::m_types;
+core::map<std::string, NodeMetadata::Factory> NodeMetadata::m_names;
 
 NodeMetadata::NodeMetadata(IGameDef *gamedef):
 	m_gamedef(gamedef)
@@ -39,6 +40,36 @@ NodeMetadata::NodeMetadata(IGameDef *gamedef):
 
 NodeMetadata::~NodeMetadata()
 {
+}
+
+NodeMetadata* NodeMetadata::create(const std::string &name, IGameDef *gamedef)
+{
+	// Find factory function
+	core::map<std::string, Factory>::Node *n;
+	n = m_names.find(name);
+	if(n == NULL)
+	{
+		// If factory is not found, just return.
+		errorstream<<"WARNING: NodeMetadata: No factory for name=\""
+				<<name<<"\""<<std::endl;
+		return NULL;
+	}
+	
+	// Try to load the metadata. If it fails, just return.
+	try
+	{
+		std::istringstream iss("", std::ios_base::binary);
+		
+		Factory f = n->getValue();
+		NodeMetadata *meta = (*f)(iss, gamedef);
+		return meta;
+	}
+	catch(SerializationError &e)
+	{
+		errorstream<<"NodeMetadata: SerializationError "
+				<<"while creating name=\""<<name<<"\""<<std::endl;
+		return NULL;
+	}
 }
 
 NodeMetadata* NodeMetadata::deSerialize(std::istream &is, IGameDef *gamedef)
@@ -89,13 +120,20 @@ void NodeMetadata::serialize(std::ostream &os)
 	os<<serializeString(oss.str());
 }
 
-void NodeMetadata::registerType(u16 id, Factory f)
+void NodeMetadata::registerType(u16 id, const std::string &name, Factory f)
 {
-	core::map<u16, Factory>::Node *n;
-	n = m_types.find(id);
-	if(n)
-		return;
-	m_types.insert(id, f);
+	{ // typeId
+		core::map<u16, Factory>::Node *n;
+		n = m_types.find(id);
+		if(!n)
+			m_types.insert(id, f);
+	}
+	{ // typeName
+		core::map<std::string, Factory>::Node *n;
+		n = m_names.find(name);
+		if(!n)
+			m_names.insert(name, f);
+	}
 }
 
 /*

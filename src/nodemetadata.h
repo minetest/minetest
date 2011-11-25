@@ -20,7 +20,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #ifndef NODEMETADATA_HEADER
 #define NODEMETADATA_HEADER
 
-#include "common_irrlicht.h"
+#include "irrlichttypes.h"
 #include <string>
 #include <iostream>
 
@@ -44,11 +44,12 @@ public:
 	NodeMetadata(IGameDef *gamedef);
 	virtual ~NodeMetadata();
 	
+	static NodeMetadata* create(const std::string &name, IGameDef *gamedef);
 	static NodeMetadata* deSerialize(std::istream &is, IGameDef *gamedef);
 	void serialize(std::ostream &os);
 	
-	// This usually is the CONTENT_ value
 	virtual u16 typeId() const = 0;
+	virtual const char* typeName() const = 0;
 	virtual NodeMetadata* clone(IGameDef *gamedef) = 0;
 	virtual void serializeBody(std::ostream &os) = 0;
 	virtual std::string infoText() {return "";}
@@ -69,10 +70,11 @@ public:
 	virtual std::string getText(){ return ""; }
 	virtual void setText(const std::string &t){}
 protected:
-	static void registerType(u16 id, Factory f);
+	static void registerType(u16 id, const std::string &name, Factory f);
 	IGameDef *m_gamedef;
 private:
 	static core::map<u16, Factory> m_types;
+	static core::map<std::string, Factory> m_names;
 };
 
 /*
