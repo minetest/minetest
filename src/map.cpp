@@ -1405,6 +1405,7 @@ void Map::timerUpdate(float dtime, float unload_timeout,
 	core::list<v2s16> sector_deletion_queue;
 	u32 deleted_blocks_count = 0;
 	u32 saved_blocks_count = 0;
+	u32 block_count_all = 0;
 
 	core::map<v2s16, MapSector*>::Iterator si;
 
@@ -1450,6 +1451,7 @@ void Map::timerUpdate(float dtime, float unload_timeout,
 			else
 			{
 				all_blocks_deleted = false;
+				block_count_all++;
 			}
 		}
 
@@ -1470,6 +1472,7 @@ void Map::timerUpdate(float dtime, float unload_timeout,
 				<<" blocks from memory";
 		if(save_before_unloading)
 			infostream<<", of which "<<saved_blocks_count<<" were written";
+		infostream<<", "<<block_count_all<<" blocks in memory";
 		infostream<<"."<<std::endl;
 		if(saved_blocks_count != 0){
 			PrintInfo(infostream); // ServerMap/ClientMap:
