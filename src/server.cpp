@@ -3536,7 +3536,7 @@ void Server::inventoryModified(InventoryContext *c, std::string id)
 		if(meta)
 			meta->inventoryModified();
 		
-		MapBlock *block = m_env.getMap().getBlockNoCreateNoEx(blockpos);
+		MapBlock *block = m_env->getMap().getBlockNoCreateNoEx(blockpos);
 		if(block)
 			block->raiseModified(MOD_STATE_WRITE_NEEDED);
 		

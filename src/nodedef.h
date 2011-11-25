@@ -188,8 +188,8 @@ struct ContentFeatures
 	std::string extra_dug_item;
 	// Usual get interval for extra dug item
 	s32 extra_dug_item_rarity;
-	// Initial metadata is cloned from this
-	NodeMetadata *initial_metadata;
+	// Metadata name of node (eg. "furnace")
+	std::string metadata_name;
 	// Whether the node is non-liquid, source liquid or flowing liquid
 	enum LiquidType liquid_type;
 	// If the content is liquid, this is the flowing version of the liquid.

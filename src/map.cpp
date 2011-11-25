@@ -994,11 +994,10 @@ void Map::addNodeAndUpdate(v3s16 p, MapNode n,
 	/*
 		Add intial metadata
 	*/
-
-	NodeMetadata *meta_proto = nodemgr->get(n).initial_metadata;
-	if(meta_proto)
-	{
-		NodeMetadata *meta = meta_proto->clone(m_gamedef);
+	
+	std::string metadata_name = nodemgr->get(n).metadata_name;
+	if(metadata_name != ""){
+		NodeMetadata *meta = NodeMetadata::create(metadata_name, m_gamedef);
 		meta->setOwner(player_name);
 		setNodeMetadata(p, meta);
 	}

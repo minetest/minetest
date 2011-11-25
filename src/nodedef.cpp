@@ -89,7 +89,6 @@ ContentFeatures::ContentFeatures()
 
 ContentFeatures::~ContentFeatures()
 {
-	delete initial_metadata;
 #ifndef SERVER
 	for(u16 j=0; j<CF_SPECIAL_COUNT; j++){
 		delete special_materials[j];
@@ -143,7 +142,7 @@ void ContentFeatures::reset()
 	dug_item = "";
 	extra_dug_item = "";
 	extra_dug_item_rarity = 2;
-	initial_metadata = NULL;
+	metadata_name = "";
 	liquid_type = LIQUID_NONE;
 	liquid_alternative_flowing = CONTENT_IGNORE;
 	liquid_alternative_source = CONTENT_IGNORE;
@@ -191,12 +190,7 @@ void ContentFeatures::serialize(std::ostream &os)
 	os<<serializeString(dug_item);
 	os<<serializeString(extra_dug_item);
 	writeS32(os, extra_dug_item_rarity);
-	if(initial_metadata){
-		writeU8(os, true);
-		initial_metadata->serialize(os);
-	} else {
-		writeU8(os, false);
-	}
+	os<<serializeString(metadata_name);
 	writeU8(os, liquid_type);
 	writeU16(os, liquid_alternative_flowing);
 	writeU16(os, liquid_alternative_source);
@@ -248,11 +242,7 @@ void ContentFeatures::deSerialize(std::istream &is, IGameDef *gamedef)
 	dug_item = deSerializeString(is);
 	extra_dug_item = deSerializeString(is);
 	extra_dug_item_rarity = readS32(is);
-	if(readU8(is)){
-		initial_metadata = NodeMetadata::deSerialize(is, gamedef);
-	} else {
-		initial_metadata = NULL;
-	}
+	metadata_name = deSerializeString(is);
 	liquid_type = (enum LiquidType)readU8(is);
 	liquid_alternative_flowing = readU16(is);
 	liquid_alternative_source = readU16(is);

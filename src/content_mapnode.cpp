@@ -21,7 +21,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "irrlichttypes.h"
 #include "mapnode.h"
-#include "content_nodemeta.h"
 #include "nodedef.h"
 #include "utility.h"
 #include "nameidmapping.h"
@@ -802,8 +801,7 @@ void content_mapnode_init(IWritableNodeDefManager *nodemgr)
 	f.wall_mounted = true;
 	f.air_equivalent = true;
 	f.dug_item = std::string("MaterialItem2 ")+itos(i)+" 1";
-	if(f.initial_metadata == NULL)
-		f.initial_metadata = new SignNodeMetadata(NULL, "Some sign");
+	f.metadata_name = "sign";
 	setConstantMaterialProperties(f.material, 0.5);
 	f.selection_box.type = NODEBOX_WALLMOUNTED;
 	f.furnace_burntime = 10;
@@ -820,8 +818,7 @@ void content_mapnode_init(IWritableNodeDefManager *nodemgr)
 	f.setInventoryTexture("chest_top.png");
 	//f.setInventoryTextureCube("chest_top.png", "chest_side.png", "chest_side.png");
 	f.dug_item = std::string("MaterialItem2 ")+itos(i)+" 1";
-	if(f.initial_metadata == NULL)
-		f.initial_metadata = new ChestNodeMetadata(NULL);
+	f.metadata_name = "chest";
 	setWoodLikeMaterialProperties(f.material, 1.0);
 	f.furnace_burntime = 30;
 	nodemgr->set(i, f);
@@ -837,8 +834,7 @@ void content_mapnode_init(IWritableNodeDefManager *nodemgr)
 	f.setInventoryTexture("chest_lock.png");
 	//f.setInventoryTextureCube("chest_top.png", "chest_side.png", "chest_side.png");
 	f.dug_item = std::string("MaterialItem2 ")+itos(i)+" 1";
-	if(f.initial_metadata == NULL)
-		f.initial_metadata = new LockingChestNodeMetadata(NULL);
+	f.metadata_name = "locked_chest";
 	setWoodLikeMaterialProperties(f.material, 1.0);
 	f.furnace_burntime = 30;
 	nodemgr->set(i, f);
@@ -852,8 +848,7 @@ void content_mapnode_init(IWritableNodeDefManager *nodemgr)
 	f.setInventoryTexture("furnace_front.png");
 	//f.dug_item = std::string("MaterialItem2 ")+itos(i)+" 1";
 	f.dug_item = std::string("MaterialItem2 ")+itos(CONTENT_COBBLE)+" 6";
-	if(f.initial_metadata == NULL)
-		f.initial_metadata = new FurnaceNodeMetadata(NULL);
+	f.metadata_name = "furnace";
 	setStoneLikeMaterialProperties(f.material, 3.0);
 	nodemgr->set(i, f);
 
