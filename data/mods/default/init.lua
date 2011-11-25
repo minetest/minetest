@@ -626,6 +626,116 @@ minetest.register_craft({
 -- Node definitions
 --
 
+function digprop_constanttime(time)
+	return {
+		diggability = "constant",
+		constant_time = time,
+	}
+end
+
+function digprop_stonelike(toughness)
+	return {
+		diggablity = "normal",
+		weight = toughness * 5,
+		crackiness = 1,
+		crumbliness = -0.1,
+		cuttability = -0.2,
+	}
+end
+
+function digprop_dirtlike(toughness)
+	return {
+		diggablity = "normal",
+		weight = toughness * 1.2,
+		crackiness = 0,
+		crumbliness = 1.2,
+		cuttability = -0.4,
+	}
+end
+
+function digprop_gravellike(toughness)
+	return {
+		diggablity = "normal",
+		weight = toughness * 2,
+		crackiness = 0.2,
+		crumbliness = 1.5,
+		cuttability = -1.0,
+	}
+end
+
+function digprop_woodlike(toughness)
+	return {
+		diggablity = "normal",
+		weight = toughness * 1.0,
+		crackiness = 0.75,
+		crumbliness = -1.0,
+		cuttability = 1.5,
+	}
+end
+
+function digprop_leaveslike(toughness)
+	return {
+		diggablity = "normal",
+		weight = toughness * (-0.5),
+		crackiness = 0,
+		crumbliness = 0,
+		cuttability = 2.0,
+	}
+end
+
+function digprop_glasslike(toughness)
+	return {
+		diggablity = "normal",
+		weight = toughness * 0.1,
+		crackiness = 2.0,
+		crumbliness = -1.0,
+		cuttability = -1.0,
+	}
+end
+
+function inventorycube(img1, img2, img3)
+	img2 = img2 or img1
+	img3 = img3 or img1
+	return "[inventorycube"
+			.. "{" .. img1:gsub("^", "&")
+			.. "{" .. img2:gsub("^", "&")
+			.. "{" .. img3:gsub("^", "&")
+end
+
+-- Legacy nodes
+
+minetest.register_node("stone", {
+	tile_images = {"stone.png"},
+	inventory_image = inventorycube("stone.png"),
+	paramtype = "mineral",
+	is_ground_content = true,
+	often_contains_mineral = true, -- Texture atlas hint
+	material = digprop_stonelike(1.0),
+})
+
+minetest.register_node("dirt_with_grass", {
+	tile_images = {"grass.png", "mud.png", "mud.png^grass_side.png"},
+	inventory_image = inventorycube("mud.png^grass_side.png"),
+	is_ground_content = true,
+	material = digprop_dirtlike(1.0),
+})
+
+minetest.register_node("dirt_with_grass_footsteps", {
+	tile_images = {"grass_footsteps.png", "mud.png", "mud.png^grass_side.png"},
+	inventory_image = "grass_footsteps.png",
+	is_ground_content = true,
+	material = digprop_dirtlike(1.0),
+})
+
+minetest.register_node("dirt", {
+	tile_images = {"mud.png"},
+	inventory_image = inventorycube("mud.png"),
+	is_ground_content = true,
+	material = digprop_dirtlike(1.0),
+})
+
+-- New nodes
+
 minetest.register_node("somenode", {
 	tile_images = {"lava.png", "mese.png", "stone.png", "grass.png", "cobble.png", "tree_top.png"},
 	inventory_image = "treeprop.png",
