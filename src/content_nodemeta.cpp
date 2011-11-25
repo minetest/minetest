@@ -38,7 +38,7 @@ SignNodeMetadata::SignNodeMetadata(IGameDef *gamedef, std::string text):
 	NodeMetadata(gamedef),
 	m_text(text)
 {
-	NodeMetadata::registerType(typeId(), typeName(), create);
+	NodeMetadata::registerType(typeId(), typeName(), create, create);
 }
 u16 SignNodeMetadata::typeId() const
 {
@@ -48,6 +48,10 @@ NodeMetadata* SignNodeMetadata::create(std::istream &is, IGameDef *gamedef)
 {
 	std::string text = deSerializeString(is);
 	return new SignNodeMetadata(gamedef, text);
+}
+NodeMetadata* SignNodeMetadata::create(IGameDef *gamedef)
+{
+	return new SignNodeMetadata(gamedef, "");
 }
 NodeMetadata* SignNodeMetadata::clone(IGameDef *gamedef)
 {
@@ -72,7 +76,7 @@ ChestNodeMetadata proto_ChestNodeMetadata(NULL);
 ChestNodeMetadata::ChestNodeMetadata(IGameDef *gamedef):
 	NodeMetadata(gamedef)
 {
-	NodeMetadata::registerType(typeId(), typeName(), create);
+	NodeMetadata::registerType(typeId(), typeName(), create, create);
 	
 	m_inventory = new Inventory();
 	m_inventory->addList("0", 8*4);
@@ -89,6 +93,11 @@ NodeMetadata* ChestNodeMetadata::create(std::istream &is, IGameDef *gamedef)
 {
 	ChestNodeMetadata *d = new ChestNodeMetadata(gamedef);
 	d->m_inventory->deSerialize(is, gamedef);
+	return d;
+}
+NodeMetadata* ChestNodeMetadata::create(IGameDef *gamedef)
+{
+	ChestNodeMetadata *d = new ChestNodeMetadata(gamedef);
 	return d;
 }
 NodeMetadata* ChestNodeMetadata::clone(IGameDef *gamedef)
@@ -135,7 +144,7 @@ LockingChestNodeMetadata proto_LockingChestNodeMetadata(NULL);
 LockingChestNodeMetadata::LockingChestNodeMetadata(IGameDef *gamedef):
 	NodeMetadata(gamedef)
 {
-	NodeMetadata::registerType(typeId(), typeName(), create);
+	NodeMetadata::registerType(typeId(), typeName(), create, create);
 
 	m_inventory = new Inventory();
 	m_inventory->addList("0", 8*4);
@@ -153,6 +162,11 @@ NodeMetadata* LockingChestNodeMetadata::create(std::istream &is, IGameDef *gamed
 	LockingChestNodeMetadata *d = new LockingChestNodeMetadata(gamedef);
 	d->setOwner(deSerializeString(is));
 	d->m_inventory->deSerialize(is, gamedef);
+	return d;
+}
+NodeMetadata* LockingChestNodeMetadata::create(IGameDef *gamedef)
+{
+	LockingChestNodeMetadata *d = new LockingChestNodeMetadata(gamedef);
 	return d;
 }
 NodeMetadata* LockingChestNodeMetadata::clone(IGameDef *gamedef)
@@ -200,7 +214,7 @@ FurnaceNodeMetadata proto_FurnaceNodeMetadata(NULL);
 FurnaceNodeMetadata::FurnaceNodeMetadata(IGameDef *gamedef):
 	NodeMetadata(gamedef)
 {
-	NodeMetadata::registerType(typeId(), typeName(), create);
+	NodeMetadata::registerType(typeId(), typeName(), create, create);
 	
 	m_inventory = new Inventory();
 	m_inventory->addList("fuel", 1);
@@ -239,6 +253,11 @@ NodeMetadata* FurnaceNodeMetadata::create(std::istream &is, IGameDef *gamedef)
 	is>>temp;
 	d->m_fuel_time = (float)temp/10;
 
+	return d;
+}
+NodeMetadata* FurnaceNodeMetadata::create(IGameDef *gamedef)
+{
+	FurnaceNodeMetadata *d = new FurnaceNodeMetadata(gamedef);
 	return d;
 }
 void FurnaceNodeMetadata::serializeBody(std::ostream &os)

@@ -40,6 +40,7 @@ class NodeMetadata
 {
 public:
 	typedef NodeMetadata* (*Factory)(std::istream&, IGameDef *gamedef);
+	typedef NodeMetadata* (*Factory2)(IGameDef *gamedef);
 
 	NodeMetadata(IGameDef *gamedef);
 	virtual ~NodeMetadata();
@@ -70,11 +71,12 @@ public:
 	virtual std::string getText(){ return ""; }
 	virtual void setText(const std::string &t){}
 protected:
-	static void registerType(u16 id, const std::string &name, Factory f);
+	static void registerType(u16 id, const std::string &name, Factory f,
+			Factory2 f2);
 	IGameDef *m_gamedef;
 private:
 	static core::map<u16, Factory> m_types;
-	static core::map<std::string, Factory> m_names;
+	static core::map<std::string, Factory2> m_names;
 };
 
 /*

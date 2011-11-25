@@ -34,6 +34,7 @@ public:
 	virtual const char* typeName() const
 	{ return "sign"; }
 	static NodeMetadata* create(std::istream &is, IGameDef *gamedef);
+	static NodeMetadata* create(IGameDef *gamedef);
 	virtual NodeMetadata* clone(IGameDef *gamedef);
 	virtual void serializeBody(std::ostream &os);
 	virtual std::string infoText();
@@ -56,6 +57,7 @@ public:
 	virtual const char* typeName() const
 	{ return "chest"; }
 	static NodeMetadata* create(std::istream &is, IGameDef *gamedef);
+	static NodeMetadata* create(IGameDef *gamedef);
 	virtual NodeMetadata* clone(IGameDef *gamedef);
 	virtual void serializeBody(std::ostream &os);
 	virtual std::string infoText();
@@ -77,6 +79,7 @@ public:
 	virtual const char* typeName() const
 	{ return "locked_chest"; }
 	static NodeMetadata* create(std::istream &is, IGameDef *gamedef);
+	static NodeMetadata* create(IGameDef *gamedef);
 	virtual NodeMetadata* clone(IGameDef *gamedef);
 	virtual void serializeBody(std::ostream &os);
 	virtual std::string infoText();
@@ -103,6 +106,7 @@ public:
 	{ return "furnace"; }
 	virtual NodeMetadata* clone(IGameDef *gamedef);
 	static NodeMetadata* create(std::istream &is, IGameDef *gamedef);
+	static NodeMetadata* create(IGameDef *gamedef);
 	virtual void serializeBody(std::ostream &os);
 	virtual std::string infoText();
 	virtual Inventory* getInventory() {return m_inventory;}

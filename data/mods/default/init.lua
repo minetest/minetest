@@ -131,6 +131,10 @@ end
 
 -- print("minetest dump: "..dump(minetest))
 
+--
+-- Tool definition
+--
+
 minetest.register_tool("WPick", {
 	image = "tool_woodpick.png",
 	basetime = 2.0,
@@ -330,15 +334,9 @@ minetest.register_tool("horribletool", {
 })
 --]]
 
-minetest.register_node("somenode", {
-	tile_images = {"lava.png", "mese.png", "stone.png", "grass.png", "cobble.png", "tree_top.png"},
-	inventory_image = "treeprop.png"
-})
-
-minetest.register_node("TNT", {
-	tile_images = {"tnt_top.png", "tnt_bottom.png", "tnt_side.png", "tnt_side.png", "tnt_side.png", "tnt_side.png"},
-	inventory_image = "tnt_side.png"
-})
+--
+-- Crafting definition
+--
 
 minetest.register_craft({
 	output = 'NodeItem "wood" 4',
@@ -615,6 +613,40 @@ minetest.register_craft({
 		{'CraftItem "lump_of_coal" 1'},
 		{'NodeItem "wood" 1'}
 	}
+})
+
+minetest.register_craft({
+	output = 'NodeItem "somenode" 4',
+	recipe = {
+		{'CraftItem "Stick" 1'},
+	}
+})
+
+--
+-- Node definitions
+--
+
+minetest.register_node("somenode", {
+	tile_images = {"lava.png", "mese.png", "stone.png", "grass.png", "cobble.png", "tree_top.png"},
+	inventory_image = "treeprop.png",
+	material = {
+		diggability = "normal",
+		weight = 0,
+		crackiness = 0,
+		crumbliness = 0,
+		cuttability = 0,
+		flammability = 0
+	},
+	metadata_name = "chest",
+})
+
+minetest.register_node("TNT", {
+	tile_images = {"tnt_top.png", "tnt_bottom.png", "tnt_side.png", "tnt_side.png", "tnt_side.png", "tnt_side.png"},
+	inventory_image = "tnt_side.png",
+	dug_item = '', -- Get nothing
+	material = {
+		diggability = "not",
+	},
 })
 
 --

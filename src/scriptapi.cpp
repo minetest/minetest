@@ -48,7 +48,7 @@ TODO:
 	- Blink effect
 	- Spritesheets and animation
 - LuaNodeMetadata
-	blockdef.metadata_type =
+	blockdef.metadata_name =
 		""
 		"sign"
 		"furnace"
@@ -212,6 +212,32 @@ static video::SColor readARGB8(lua_State *L, int index)
 	return color;
 }
 
+static core::aabbox3d<f32> read_aabbox3df32(lua_State *L, int index)
+{
+	core::aabbox3d<f32> box;
+	if(lua_istable(L, -1)){
+		lua_rawgeti(L, -1, 1);
+		box.MinEdge.X = lua_tonumber(L, -1);
+		lua_pop(L, 1);
+		lua_rawgeti(L, -1, 2);
+		box.MinEdge.Y = lua_tonumber(L, -1);
+		lua_pop(L, 1);
+		lua_rawgeti(L, -1, 3);
+		box.MinEdge.Z = lua_tonumber(L, -1);
+		lua_pop(L, 1);
+		lua_rawgeti(L, -1, 4);
+		box.MaxEdge.X = lua_tonumber(L, -1);
+		lua_pop(L, 1);
+		lua_rawgeti(L, -1, 5);
+		box.MaxEdge.Y = lua_tonumber(L, -1);
+		lua_pop(L, 1);
+		lua_rawgeti(L, -1, 6);
+		box.MaxEdge.Z = lua_tonumber(L, -1);
+		lua_pop(L, 1);
+	}
+	return box;
+}
+
 static bool getstringfield(lua_State *L, int table,
 		const char *fieldname, std::string &result)
 {
@@ -356,6 +382,27 @@ struct EnumString es_ContentParamType[] =
 	{CPT_FACEDIR_SIMPLE, "facedir_simple"},
 };
 
+struct EnumString es_LiquidType[] =
+{
+	{LIQUID_NONE, "none"},
+	{LIQUID_FLOWING, "flowing"},
+	{LIQUID_SOURCE, "source"},
+};
+
+struct EnumString es_NodeBoxType[] =
+{
+	{NODEBOX_REGULAR, "regular"},
+	{NODEBOX_FIXED, "fixed"},
+	{NODEBOX_WALLMOUNTED, "wallmounted"},
+};
+
+struct EnumString es_Diggability[] =
+{
+	{DIGGABLE_NOT, "not"},
+	{DIGGABLE_NORMAL, "normal"},
+	{DIGGABLE_CONSTANT, "constant"},
+};
+
 /*
 	Global functions
 */
@@ -441,17 +488,26 @@ static int l_register_node(lua_State *L)
 	// And get the writable node definition manager from the server
 	IWritableNodeDefManager *nodedef =
 			server->getWritableNodeDefManager();
+
+	/*
+		Create definition
+	*/
 	
 	ContentFeatures f;
 
-	f.name = name;
+	// Default to getting the corresponding NodeItem when dug
+	f.dug_item = std::string("NodeItem \"")+name+"\" 1";
 
 	/*
-		Visual definition
+		Read definiton from Lua
 	*/
 
+	f.name = name;
+	
+	/* Visual definition */
+
 	f.drawtype = (NodeDrawType)getenumfield(L, table0, "drawtype", es_DrawType,
-			f.drawtype);
+			NDT_NORMAL);
 	getfloatfield(L, table0, "visual_scale", f.visual_scale);
 
 	lua_getfield(L, table0, "tile_images");
@@ -505,16 +561,15 @@ static int l_register_node(lua_State *L)
 
 	f.alpha = getintfield_default(L, table0, "alpha", 255);
 
-	/*
-		Other stuff
-	*/
+	/* Other stuff */
 	
 	lua_getfield(L, table0, "post_effect_color");
 	if(!lua_isnil(L, -1))
 		f.post_effect_color = readARGB8(L, -1);
+	lua_pop(L, 1);
 
 	f.param_type = (ContentParamType)getenumfield(L, table0, "paramtype",
-			es_ContentParamType, f.param_type);
+			es_ContentParamType, CPT_NONE);
 	
 	// True for all ground-like things like stone and mud, false for eg. trees
 	getboolfield(L, table0, "is_ground_content", f.is_ground_content);
@@ -551,8 +606,8 @@ static int l_register_node(lua_State *L)
 	// Metadata name of node (eg. "furnace")
 	getstringfield(L, table0, "metadata_name", f.metadata_name);
 	// Whether the node is non-liquid, source liquid or flowing liquid
-	// TODO: Enum read
-	// enum LiquidType liquid_type;
+	f.liquid_type = (LiquidType)getenumfield(L, table0, "liquidtype",
+			es_LiquidType, LIQUID_NONE);
 	// If the content is liquid, this is the flowing version of the liquid.
 	// TODO: as name
 	// content_t liquid_alternative_flowing;
@@ -569,30 +624,56 @@ static int l_register_node(lua_State *L)
 			"light_source", f.light_source);
 	f.damage_per_second = getintfield_default(L, table0,
 			"damage_per_second", f.damage_per_second);
-	// TODO
-	//NodeBox selection_box;
-	// TODO
-	//MaterialProperties material;
+	
+	lua_getfield(L, table0, "selection_box");
+	if(lua_istable(L, -1)){
+		f.selection_box.type = (NodeBoxType)getenumfield(L, -1, "type",
+				es_NodeBoxType, NODEBOX_REGULAR);
+
+		lua_getfield(L, -1, "fixed");
+		if(lua_istable(L, -1))
+			f.selection_box.fixed = read_aabbox3df32(L, -1);
+		lua_pop(L, 1);
+
+		lua_getfield(L, -1, "wall_top");
+		if(lua_istable(L, -1))
+			f.selection_box.wall_top = read_aabbox3df32(L, -1);
+		lua_pop(L, 1);
+
+		lua_getfield(L, -1, "wall_bottom");
+		if(lua_istable(L, -1))
+			f.selection_box.wall_bottom = read_aabbox3df32(L, -1);
+		lua_pop(L, 1);
+
+		lua_getfield(L, -1, "wall_side");
+		if(lua_istable(L, -1))
+			f.selection_box.wall_side = read_aabbox3df32(L, -1);
+		lua_pop(L, 1);
+	}
+	lua_pop(L, 1);
+
+	lua_getfield(L, table0, "material");
+	if(lua_istable(L, -1)){
+		f.material.diggability = (Diggability)getenumfield(L, -1, "diggability",
+				es_Diggability, DIGGABLE_NORMAL);
+		
+		getfloatfield(L, -1, "constant_time", f.material.constant_time);
+		getfloatfield(L, -1, "weight", f.material.weight);
+		getfloatfield(L, -1, "crackiness", f.material.crackiness);
+		getfloatfield(L, -1, "crumbliness", f.material.crumbliness);
+		getfloatfield(L, -1, "cuttability", f.material.cuttability);
+		getfloatfield(L, -1, "flammability", f.material.flammability);
+	}
+	lua_pop(L, 1);
+
 	getstringfield(L, table0, "cookresult_item", f.cookresult_item);
 	getfloatfield(L, table0, "furnace_cooktime", f.furnace_cooktime);
 	getfloatfield(L, table0, "furnace_burntime", f.furnace_burntime);
 	
 	/*
-		Temporary stuff
-	*/
-
-	// TODO: Replace with actual parameter reading
-	// Temporarily set some sane parameters to allow digging
-	f.material.diggability = DIGGABLE_NORMAL;
-	f.material.weight = 0;
-	f.material.crackiness = 0;
-	f.material.crumbliness = 0;
-	f.material.cuttability = 0;
-	f.dug_item = std::string("NodeItem \"")+name+"\" 1";
-
-	/*
 		Register it
 	*/
+	
 	nodedef->set(name, f);
 	
 	return 0; /* number of results */
