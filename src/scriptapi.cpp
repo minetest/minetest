@@ -861,8 +861,12 @@ static int l_register_on_respawnplayer(lua_State *L)
 static int l_setting_get(lua_State *L)
 {
 	const char *name = luaL_checkstring(L, 1);
-	std::string value = g_settings->get(name);
-	lua_pushstring(L, value.c_str());
+	try{
+		std::string value = g_settings->get(name);
+		lua_pushstring(L, value.c_str());
+	} catch(SettingNotFoundException &e){
+		lua_pushnil(L);
+	}
 	return 1;
 }
 
@@ -870,8 +874,12 @@ static int l_setting_get(lua_State *L)
 static int l_setting_getbool(lua_State *L)
 {
 	const char *name = luaL_checkstring(L, 1);
-	bool value = g_settings->getBool(name);
-	lua_pushboolean(L, value);
+	try{
+		bool value = g_settings->getBool(name);
+		lua_pushboolean(L, value);
+	} catch(SettingNotFoundException &e){
+		lua_pushnil(L);
+	}
 	return 1;
 }
 

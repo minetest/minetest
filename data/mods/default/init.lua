@@ -1316,7 +1316,8 @@ minetest.register_on_respawnplayer(function(player)
 end)
 
 -- Example setting get
-print("max_users = " .. dump(minetest.setting_get("max_users")))
+print("setting max_users = " .. dump(minetest.setting_get("max_users")))
+print("setting asdf = " .. dump(minetest.setting_get("asdf")))
 
 --
 -- Done, print some random stuff
