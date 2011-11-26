@@ -1325,10 +1325,41 @@ void Server::AsyncRunStep()
 	/*
 		Do background stuff
 	*/
+
+	/* Check player movements */
+	{
+		JMutexAutoLock lock(m_env_mutex);
+		JMutexAutoLock lock2(m_con_mutex);
+
+		//float player_max_speed = BS * 4.0; // Normal speed
+		float player_max_speed = BS * 4.0 * 5; // Fast speed
+		player_max_speed *= 1.5; // Tolerance
+
+		for(core::map<u16, RemoteClient*>::Iterator
+			i = m_clients.getIterator();
+			i.atEnd() == false; i++)
+		{
+			RemoteClient *client = i.getNode()->getValue();
+			ServerRemotePlayer *player =
+					(ServerRemotePlayer*)m_env->getPlayer(client->peer_id);
+			if(player==NULL)
+				continue;
+			player->m_last_good_position_age += dtime;
+			if(player->m_last_good_position_age > 1.0){
+				float age = player->m_last_good_position_age;
+				v3f diff = (player->getPosition() - player->m_last_good_position);
+				if(diff.getLength() <= age * player_max_speed){
+					player->m_last_good_position = player->getPosition();
+				} else {
+					player->setPosition(player->m_last_good_position);
+					SendMovePlayer(player);
+				}
+				player->m_last_good_position_age = 0;
+			}
+		}
+	}
 	
-	/*
-		Transform liquids
-	*/
+	/* Transform liquids */
 	m_liquid_transform_timer += dtime;
 	if(m_liquid_transform_timer >= 1.00)
 	{
@@ -2502,8 +2533,29 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 		p_over.Z = readS16(&data[13]);
 		u16 item_i = readU16(&data[15]);
 
-		//TODO: Check that target is reasonably close
-		
+		ServerRemotePlayer *srp = (ServerRemotePlayer*)player;
+
+		/*
+			Check that target is reasonably close
+		*/
+		{
+			v3f np_f = intToFloat(p_under, BS);
+			float max_d = BS * 8; // Just some large enough value
+			float d = srp->m_last_good_position.getDistanceFrom(np_f);
+			if(d > max_d){
+				actionstream<<"Player "<<player->getName()
+						<<" tried to access node from too far: "
+						<<"d="<<d<<", max_d="<<max_d
+						<<". ignoring."<<std::endl;
+				// Re-send block to revert change on client-side
+				RemoteClient *client = getClient(peer_id);
+				v3s16 blockpos = getNodeBlockPos(p_under);
+				client->SetBlockNotSent(blockpos);
+				// Do nothing else
+				return;
+			}
+		}
+
 		/*
 			0: start digging
 		*/
@@ -2537,7 +2589,6 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 			/*
 				Run script hook
 			*/
-			ServerRemotePlayer *srp = (ServerRemotePlayer*)player;
 			scriptapi_environment_on_punchnode(m_lua, p_under, n, srp);
 
 		} // action == 0
@@ -2778,7 +2829,6 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 			/*
 				Run script hook
 			*/
-			ServerRemotePlayer *srp = (ServerRemotePlayer*)player;
 			scriptapi_environment_on_dignode(m_lua, p_under, n, srp);
 		}
 		
@@ -2926,7 +2976,6 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 				/*
 					Run script hook
 				*/
-				ServerRemotePlayer *srp = (ServerRemotePlayer*)player;
 				scriptapi_environment_on_placenode(m_lua, p_over, n, srp);
 
 				/*
@@ -4354,6 +4403,8 @@ void Server::RespawnPlayer(Player *player)
 	if(!repositioned){
 		v3f pos = findSpawnPos(m_env->getServerMap());
 		player->setPosition(pos);
+		srp->m_last_good_position = pos;
+		srp->m_last_good_position_age = 0;
 	}
 	SendMovePlayer(player);
 	SendPlayerHP(player);

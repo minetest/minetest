@@ -181,7 +181,9 @@ void Player::deSerialize(std::istream &is)
 
 ServerRemotePlayer::ServerRemotePlayer(ServerEnvironment *env):
 	Player(env->getGameDef()),
-	ServerActiveObject(env, v3f(0,0,0))
+	ServerActiveObject(env, v3f(0,0,0)),
+	m_last_good_position(0,0,0),
+	m_last_good_position_age(0)
 {
 }
 ServerRemotePlayer::ServerRemotePlayer(ServerEnvironment *env, v3f pos_, u16 peer_id_,

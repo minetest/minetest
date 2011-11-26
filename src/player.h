@@ -207,12 +207,22 @@ public:
 	/* ServerActiveObject interface */
 
 	u8 getType() const
-		{return ACTIVEOBJECT_TYPE_PLAYER;}
+	{return ACTIVEOBJECT_TYPE_PLAYER;}
 	
 	virtual void setPos(v3f pos)
-		{ setPosition(pos); }
+	{
+		setPosition(pos);
+		// Movement caused by this command is always valid
+		m_last_good_position = pos;
+		m_last_good_position_age = 0;
+	}
 	virtual void moveTo(v3f pos, bool continuous)
-		{ setPosition(pos); }
+	{
+		setPosition(pos);
+		// Movement caused by this command is always valid
+		m_last_good_position = pos;
+		m_last_good_position_age = 0;
+	}
 	
 	virtual std::string getDescription(){return getName();}
 	// Returns a reference
@@ -222,7 +232,10 @@ public:
 	virtual bool addToInventory(InventoryItem *item);
 	virtual void setHP(s16 hp_);
 	virtual s16 getHP();
-
+	
+	v3f m_last_good_position;
+	float m_last_good_position_age;
+	
 private:
 };
 
