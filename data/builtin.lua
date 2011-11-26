@@ -103,7 +103,7 @@ minetest.register_nodedef_defaults({
 	extra_dug_item = "",
 	extra_dug_item_rarity = 2,
 	metadata_name = "",
-	liquid_type = "none",
+	liquidtype = "none",
 	liquid_alternative_flowing = "",
 	liquid_alternative_source = "",
 	liquid_viscosity = 0,
