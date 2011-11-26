@@ -945,6 +945,18 @@ void ServerEnvironment::step(float dtime)
 	{
 		ScopeProfiler sp(g_profiler, "SEnv: modify in blocks avg /10s", SPT_AVG);
 		//float dtime = 10.0;
+		TimeTaker timer("modify in active blocks");
+
+		INodeDefManager *ndef = m_gamedef->ndef();
+		
+		// Pre-fetch content ids for the luge loop
+		content_t c_dirt = ndef->getId("dirt");
+		content_t c_grass = ndef->getId("dirt_with_grass");
+		content_t c_tree = ndef->getId("tree");
+		content_t c_jungletree = ndef->getId("jungletree");
+		content_t c_stone = ndef->getId("stone");
+		content_t c_mossycobble = ndef->getId("mossycobble");
+		content_t c_sapling = ndef->getId("sapling");
 		
 		for(core::map<v3s16, bool>::Iterator
 				i = m_active_blocks.m_list.getIterator();
@@ -1012,9 +1024,9 @@ void ServerEnvironment::step(float dtime)
 
 				/*
 					Test something:
-					Convert mud under proper lighting to grass
+					Convert dirt under proper lighting to grass
 				*/
-				if(n.getContent() == LEGN(m_gamedef->ndef(), "CONTENT_MUD"))
+				if(n.getContent() == c_dirt)
 				{
 					if(myrand()%20 == 0)
 					{
@@ -1024,23 +1036,23 @@ void ServerEnvironment::step(float dtime)
 								n_top.getLightBlend(getDayNightRatio(),
 										m_gamedef->ndef()) >= 13)
 						{
-							n.setContent(LEGN(m_gamedef->ndef(), "CONTENT_GRASS"));
+							n.setContent(c_grass);
 							m_map->addNodeWithEvent(p, n);
 						}
 					}
 				}
 				/*
-					Convert grass into mud if under something else than air
+					Convert grass into dirt if under something else than air
 				*/
-				if(n.getContent() == LEGN(m_gamedef->ndef(), "CONTENT_GRASS"))
+				if(n.getContent() == c_grass)
 				{
 					//if(myrand()%20 == 0)
 					{
 						MapNode n_top = m_map->getNodeNoEx(p+v3s16(0,1,0));
-						if(m_gamedef->ndef()->get(n_top).light_propagates == false ||
+						if(!m_gamedef->ndef()->get(n_top).light_propagates ||
 								m_gamedef->ndef()->get(n_top).isLiquid())
 						{
-							n.setContent(LEGN(m_gamedef->ndef(), "CONTENT_MUD"));
+							n.setContent(c_dirt);
 							m_map->addNodeWithEvent(p, n);
 						}
 					}
@@ -1048,8 +1060,8 @@ void ServerEnvironment::step(float dtime)
 				/*
 					Rats spawn around regular trees
 				*/
-				if(n.getContent() == LEGN(m_gamedef->ndef(), "CONTENT_TREE") ||
-						n.getContent() == LEGN(m_gamedef->ndef(), "CONTENT_JUNGLETREE"))
+				if(n.getContent() == c_tree ||
+						n.getContent() == c_jungletree)
 				{
    					if(myrand()%200 == 0 && active_object_count_wider == 0)
 					{
@@ -1057,7 +1069,7 @@ void ServerEnvironment::step(float dtime)
 								0, myrand_range(-2, 2));
 						MapNode n1 = m_map->getNodeNoEx(p1);
 						MapNode n1b = m_map->getNodeNoEx(p1+v3s16(0,-1,0));
-						if(n1b.getContent() == LEGN(m_gamedef->ndef(), "CONTENT_GRASS") &&
+						if(n1b.getContent() == c_grass &&
 								n1.getContent() == CONTENT_AIR)
 						{
 							v3f pos = intToFloat(p1, BS);
@@ -1069,8 +1081,8 @@ void ServerEnvironment::step(float dtime)
 				/*
 					Fun things spawn in caves and dungeons
 				*/
-				if(n.getContent() == LEGN(m_gamedef->ndef(), "CONTENT_STONE") ||
-						n.getContent() == LEGN(m_gamedef->ndef(), "CONTENT_MOSSYCOBBLE"))
+				if(n.getContent() == c_stone ||
+						n.getContent() == c_mossycobble)
 				{
    					if(myrand()%200 == 0 && active_object_count_wider == 0)
 					{
@@ -1114,7 +1126,7 @@ void ServerEnvironment::step(float dtime)
 				/*
 					Make trees from saplings!
 				*/
-				if(n.getContent() == LEGN(m_gamedef->ndef(), "CONTENT_SAPLING"))
+				if(n.getContent() == c_sapling)
 				{
 					if(myrand()%50 == 0)
 					{
@@ -1155,6 +1167,14 @@ void ServerEnvironment::step(float dtime)
 					}
 				}
 			}
+		}
+
+		u32 time_ms = timer.stop(true);
+		u32 max_time_ms = 200;
+		if(time_ms > max_time_ms){
+			infostream<<"WARNING: active block modifiers took "
+					<<time_ms<<"ms (longer than "
+					<<max_time_ms<<"ms)"<<std::endl;
 		}
 	}
 	
