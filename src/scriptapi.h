@@ -50,6 +50,10 @@ void scriptapi_environment_on_dignode(lua_State *L, v3s16 p, MapNode oldnode,
 void scriptapi_environment_on_punchnode(lua_State *L, v3s16 p, MapNode node,
 		ServerActiveObject *puncher);
 
+/* misc */
+void scriptapi_on_newplayer(lua_State *L, ServerActiveObject *player);
+bool scriptapi_on_respawnplayer(lua_State *L, ServerActiveObject *player);
+
 /* luaentity */
 // Returns true if succesfully added into Lua; false otherwise.
 bool scriptapi_luaentity_add(lua_State *L, u16 id, const char *name,

@@ -208,6 +208,12 @@ public:
 
 	u8 getType() const
 		{return ACTIVEOBJECT_TYPE_PLAYER;}
+	
+	virtual void setPos(v3f pos)
+		{ setPosition(pos); }
+	virtual void moveTo(v3f pos, bool continuous)
+		{ setPosition(pos); }
+	
 	virtual std::string getDescription(){return getName();}
 	// Returns a reference
 	virtual InventoryItem* getWieldedItem();

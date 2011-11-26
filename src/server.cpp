@@ -4348,9 +4348,13 @@ void Server::HandlePlayerHP(Player *player, s16 damage)
 
 void Server::RespawnPlayer(Player *player)
 {
-	v3f pos = findSpawnPos(m_env->getServerMap());
-	player->setPosition(pos);
 	player->hp = 20;
+	ServerRemotePlayer *srp = (ServerRemotePlayer*)player;
+	bool repositioned = scriptapi_on_respawnplayer(m_lua, srp);
+	if(!repositioned){
+		v3f pos = findSpawnPos(m_env->getServerMap());
+		player->setPosition(pos);
+	}
 	SendMovePlayer(player);
 	SendPlayerHP(player);
 }
@@ -4617,9 +4621,7 @@ Player *Server::emergePlayer(const char *name, const char *password, u16 peer_id
 		m_authmanager.setPrivs(name,
 				stringToPrivs(g_settings->get("default_privs")));
 
-		/*
-			Set player position
-		*/
+		/* Set player position */
 		
 		infostream<<"Server: Finding spawn place for player \""
 				<<name<<"\""<<std::endl;
@@ -4628,16 +4630,14 @@ Player *Server::emergePlayer(const char *name, const char *password, u16 peer_id
 
 		player = new ServerRemotePlayer(m_env, pos, peer_id, name);
 
-		/*
-			Add player to environment
-		*/
-
+		/* Add player to environment */
 		m_env->addPlayer(player);
 
-		/*
-			Add stuff to inventory
-		*/
-		
+		/* Run scripts */
+		ServerRemotePlayer *srp = (ServerRemotePlayer*)player;
+		scriptapi_on_newplayer(m_lua, srp);
+
+		/* Add stuff to inventory */
 		if(g_settings->getBool("creative_mode"))
 		{
 			// Warning: double code above

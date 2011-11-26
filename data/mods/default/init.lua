@@ -15,6 +15,9 @@
 -- minetest.register_on_placenode(func(pos, newnode, placer))
 -- minetest.register_on_dignode(func(pos, oldnode, digger))
 -- minetest.register_on_punchnode(func(pos, node, puncher))
+-- minetest.register_on_newplayer(func(ObjectRef))
+-- minetest.register_on_respawnplayer(func(ObjectRef))
+-- ^ return true in func to disable regular player placement
 --
 -- Global objects:
 -- minetest.env - environment reference
@@ -1304,6 +1307,12 @@ function on_punchnode(p, node)
 end
 minetest.register_on_punchnode(on_punchnode)
 
+minetest.register_on_respawnplayer(function(player)
+	print("on_respawnplayer")
+	-- player:setpos({x=0, y=30, z=0})
+	-- return true
+end)
+
 --
 -- Done, print some random stuff
 --
@@ -1311,65 +1320,4 @@ minetest.register_on_punchnode(on_punchnode)
 print("minetest.registered_entities:")
 dump2(minetest.registered_entities)
 
---
--- Some random pre-implementation planning and drafting
---
-
---[[
-function TNT:on_rightclick(clicker)
-	print("TNT:on_rightclick()")
-	print("self: "..dump(self))
-	print("getmetatable(self): "..dump(getmetatable(self)))
-	print("getmetatable(getmetatable(self)): "..dump(getmetatable(getmetatable(self))))
-	pos = self.object:getpos()
-	print("TNT:on_rightclick(): object position: "..dump(pos))
-	pos = {x=pos.x+0.5+1, y=pos.y+0.5, z=pos.z+0.5}
-	--minetest.env:add_node(pos, {name="stone")
-end
---]]
-
---[=[
-
-register_block(0, {
-	textures = "stone.png",
-	makefacetype = 0,
-	get_dig_duration = function(env, pos, digger)
-		-- Check stuff like digger.current_tool
-		return 1.5
-	end,
-	on_dig = function(env, pos, digger)
-		env:remove_node(pos)
-		digger.inventory.put("MaterialItem2 0");
-	end,
-})
-
-register_block(1, {
-	textures = {"grass.png","mud.png","mud_grass_side.png","mud_grass_side.png","mud_grass_side.png","mud_grass_side.png"},
-	makefacetype = 0,
-	get_dig_duration = function(env, pos, digger)
-		-- Check stuff like digger.current_tool
-		return 0.5
-	end,
-	on_dig = function(env, pos, digger)
-		env:remove_node(pos)
-		digger.inventory.put("MaterialItem2 1");
-	end,
-})
-
--- Consider the "miscellaneous block namespace" to be 0xc00...0xfff = 3072...4095
-register_block(3072, {
-	textures = {"tnt_top.png","tnt_bottom.png","tnt_side.png","tnt_side.png","tnt_side.png","tnt_side.png"},
-	makefacetype = 0,
-	get_dig_duration = function(env, pos, digger)
-		-- Cannot be dug
-		return nil
-	end,
-	-- on_dig = function(env, pos, digger) end, -- Not implemented
-	on_hit = function(env, pos, hitter)
-		-- Replace with TNT object, which will explode after timer, follow gravity, blink and stuff
-		env:add_object("tnt", pos)
-		env:remove_node(pos)
-	end,
-})
---]=]
-
+-- END

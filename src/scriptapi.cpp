@@ -41,9 +41,8 @@ extern "C" {
 
 /*
 TODO:
-- Node definition
 - Random node triggers (like grass growth)
-- Deterministic node triggers (like falling sand)
+- All kinds of callbacks
 - Object visual client-side stuff
 	- Blink effect
 	- Spritesheets and animation
@@ -848,6 +847,20 @@ static int l_register_on_punchnode(lua_State *L)
 	return register_lua_callback(L, "registered_on_punchnodes");
 }
 
+// register_on_newplayer(function)
+static int l_register_on_newplayer(lua_State *L)
+{
+	infostream<<"register_on_newplayer"<<std::endl;
+	return register_lua_callback(L, "registered_on_newplayers");
+}
+
+// register_on_respawnplayer(function)
+static int l_register_on_respawnplayer(lua_State *L)
+{
+	infostream<<"register_on_respawnplayer"<<std::endl;
+	return register_lua_callback(L, "registered_on_respawnplayers");
+}
+
 static const struct luaL_Reg minetest_f [] = {
 	{"register_nodedef_defaults", l_register_nodedef_defaults},
 	{"register_entity", l_register_entity},
@@ -858,6 +871,8 @@ static const struct luaL_Reg minetest_f [] = {
 	{"register_on_placenode", l_register_on_placenode},
 	{"register_on_dignode", l_register_on_dignode},
 	{"register_on_punchnode", l_register_on_punchnode},
+	{"register_on_newplayer", l_register_on_newplayer},
+	{"register_on_respawnplayer", l_register_on_respawnplayer},
 	{"get_nodedef", l_get_nodedef},
 	{NULL, NULL}
 };
@@ -1327,30 +1342,25 @@ void scriptapi_export(lua_State *L, Server *server)
 
 	// Add tables to minetest
 	
-	/*lua_newtable(L);
-	lua_setfield(L, -2, "registered_blocks");*/
-
 	lua_newtable(L);
 	lua_setfield(L, -2, "registered_nodes");
-
 	lua_newtable(L);
 	lua_setfield(L, -2, "registered_entities");
-
 	lua_newtable(L);
 	lua_setfield(L, -2, "registered_globalsteps");
-
 	lua_newtable(L);
 	lua_setfield(L, -2, "registered_on_placenodes");
-
 	lua_newtable(L);
 	lua_setfield(L, -2, "registered_on_dignodes");
-
 	lua_newtable(L);
 	lua_setfield(L, -2, "registered_on_punchnodes");
-
+	lua_newtable(L);
+	lua_setfield(L, -2, "registered_on_newplayers");
+	lua_newtable(L);
+	lua_setfield(L, -2, "registered_on_respawnplayers");
+	
 	lua_newtable(L);
 	lua_setfield(L, -2, "object_refs");
-
 	lua_newtable(L);
 	lua_setfield(L, -2, "luaentities");
 
@@ -1453,6 +1463,65 @@ void scriptapi_rm_object_reference(lua_State *L, ServerActiveObject *cobj)
 	lua_pushnumber(L, cobj->getId()); // Push id
 	lua_pushnil(L);
 	lua_settable(L, objectstable);
+}
+
+
+/*
+	misc
+*/
+
+void scriptapi_on_newplayer(lua_State *L, ServerActiveObject *player)
+{
+	realitycheck(L);
+	assert(lua_checkstack(L, 20));
+	StackUnroller stack_unroller(L);
+
+	// Get minetest.registered_on_newplayers
+	lua_getglobal(L, "minetest");
+	lua_getfield(L, -1, "registered_on_newplayers");
+	luaL_checktype(L, -1, LUA_TTABLE);
+	int table = lua_gettop(L);
+	// Foreach
+	lua_pushnil(L);
+	while(lua_next(L, table) != 0){
+		// key at index -2 and value at index -1
+		luaL_checktype(L, -1, LUA_TFUNCTION);
+		// Call function
+		objectref_get_or_create(L, player);
+		if(lua_pcall(L, 1, 0, 0))
+			script_error(L, "error: %s\n", lua_tostring(L, -1));
+		// value removed, keep key for next iteration
+	}
+}
+bool scriptapi_on_respawnplayer(lua_State *L, ServerActiveObject *player)
+{
+	realitycheck(L);
+	assert(lua_checkstack(L, 20));
+	StackUnroller stack_unroller(L);
+
+	bool positioning_handled_by_some = false;
+
+	// Get minetest.registered_on_respawnplayers
+	lua_getglobal(L, "minetest");
+	lua_getfield(L, -1, "registered_on_respawnplayers");
+	luaL_checktype(L, -1, LUA_TTABLE);
+	int table = lua_gettop(L);
+	// Foreach
+	lua_pushnil(L);
+	while(lua_next(L, table) != 0){
+		// key at index -2 and value at index -1
+		luaL_checktype(L, -1, LUA_TFUNCTION);
+		// Call function
+		objectref_get_or_create(L, player);
+		if(lua_pcall(L, 1, 1, 0))
+			script_error(L, "error: %s\n", lua_tostring(L, -1));
+		bool positioning_handled = lua_toboolean(L, -1);
+		lua_pop(L, 1);
+		if(positioning_handled)
+			positioning_handled_by_some = true;
+		// value removed, keep key for next iteration
+	}
+	return positioning_handled_by_some;
 }
 
 /*
