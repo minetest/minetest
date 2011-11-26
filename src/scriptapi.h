@@ -49,6 +49,8 @@ void scriptapi_environment_on_dignode(lua_State *L, v3s16 p, MapNode oldnode,
 // When punching node
 void scriptapi_environment_on_punchnode(lua_State *L, v3s16 p, MapNode node,
 		ServerActiveObject *puncher);
+// After generating a piece of map
+void scriptapi_environment_on_generated(lua_State *L, v3s16 minp, v3s16 maxp);
 
 /* misc */
 void scriptapi_on_newplayer(lua_State *L, ServerActiveObject *player);

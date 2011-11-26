@@ -15,6 +15,7 @@
 -- minetest.register_on_placenode(func(pos, newnode, placer))
 -- minetest.register_on_dignode(func(pos, oldnode, digger))
 -- minetest.register_on_punchnode(func(pos, node, puncher))
+-- minetest.register_on_generated(func(minp, maxp))
 -- minetest.register_on_newplayer(func(ObjectRef))
 -- minetest.register_on_respawnplayer(func(ObjectRef))
 -- ^ return true in func to disable regular player placement
@@ -1327,6 +1328,12 @@ minetest.register_on_respawnplayer(function(player)
 	print("on_respawnplayer")
 	-- player:setpos({x=0, y=30, z=0})
 	-- return true
+end)
+
+minetest.register_on_generated(function(minp, maxp)
+	--print("on_generated: minp="..dump(minp).." maxp="..dump(maxp))
+	--cp = {x=(minp.x+maxp.x)/2, y=(minp.y+maxp.y)/2, z=(minp.z+maxp.z)/2}
+	--minetest.env:add_node(cp, {name="sand"})
 end)
 
 -- Example setting get

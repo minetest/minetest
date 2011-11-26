@@ -60,7 +60,7 @@ namespace mapgen
 		u64 seed;
 		v3s16 blockpos;
 		UniqueQueue<v3s16> transforming_liquid;
-		INodeDefManager *nodedef; // Destructor deletes
+		INodeDefManager *nodedef;
 
 		BlockMakeData();
 		~BlockMakeData();

@@ -234,6 +234,11 @@ void * EmergeThread::Thread()
 						if(enable_mapgen_debug_info)
 							infostream<<"EmergeThread: generating"<<std::endl;
 						block = map.generateBlock(p, modified_blocks);
+						
+						v3s16 minp = block->getPos()*MAP_BLOCKSIZE;
+						v3s16 maxp = minp + v3s16(1,1,1)*(MAP_BLOCKSIZE-1);
+						scriptapi_environment_on_generated(m_server->m_lua,
+								minp, maxp);
 					}
 				}
 

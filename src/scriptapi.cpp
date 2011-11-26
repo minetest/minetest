@@ -843,6 +843,13 @@ static int l_register_on_punchnode(lua_State *L)
 	return register_lua_callback(L, "registered_on_punchnodes");
 }
 
+// register_on_generated(function)
+static int l_register_on_generated(lua_State *L)
+{
+	infostream<<"register_on_generated"<<std::endl;
+	return register_lua_callback(L, "registered_on_generateds");
+}
+
 // register_on_newplayer(function)
 static int l_register_on_newplayer(lua_State *L)
 {
@@ -893,6 +900,7 @@ static const struct luaL_Reg minetest_f [] = {
 	{"register_on_placenode", l_register_on_placenode},
 	{"register_on_dignode", l_register_on_dignode},
 	{"register_on_punchnode", l_register_on_punchnode},
+	{"register_on_generated", l_register_on_generated},
 	{"register_on_newplayer", l_register_on_newplayer},
 	{"register_on_respawnplayer", l_register_on_respawnplayer},
 	{"setting_get", l_setting_get},
@@ -1391,6 +1399,8 @@ void scriptapi_export(lua_State *L, Server *server)
 	lua_newtable(L);
 	lua_setfield(L, -2, "registered_on_punchnodes");
 	lua_newtable(L);
+	lua_setfield(L, -2, "registered_on_generateds");
+	lua_newtable(L);
 	lua_setfield(L, -2, "registered_on_newplayers");
 	lua_newtable(L);
 	lua_setfield(L, -2, "registered_on_respawnplayers");
@@ -1689,6 +1699,32 @@ void scriptapi_environment_on_punchnode(lua_State *L, v3s16 p, MapNode node,
 		pushnode(L, node, ndef);
 		objectref_get_or_create(L, puncher);
 		if(lua_pcall(L, 3, 0, 0))
+			script_error(L, "error: %s\n", lua_tostring(L, -1));
+		// value removed, keep key for next iteration
+	}
+}
+
+void scriptapi_environment_on_generated(lua_State *L, v3s16 minp, v3s16 maxp)
+{
+	realitycheck(L);
+	assert(lua_checkstack(L, 20));
+	infostream<<"scriptapi_environment_on_generated"<<std::endl;
+	StackUnroller stack_unroller(L);
+
+	// Get minetest.registered_on_generateds
+	lua_getglobal(L, "minetest");
+	lua_getfield(L, -1, "registered_on_generateds");
+	luaL_checktype(L, -1, LUA_TTABLE);
+	int table = lua_gettop(L);
+	// Foreach
+	lua_pushnil(L);
+	while(lua_next(L, table) != 0){
+		// key at index -2 and value at index -1
+		luaL_checktype(L, -1, LUA_TFUNCTION);
+		// Call function
+		pushpos(L, minp);
+		pushpos(L, maxp);
+		if(lua_pcall(L, 2, 0, 0))
 			script_error(L, "error: %s\n", lua_tostring(L, -1));
 		// value removed, keep key for next iteration
 	}
