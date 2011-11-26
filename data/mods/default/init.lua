@@ -1331,7 +1331,7 @@ minetest.register_on_respawnplayer(function(player)
 end)
 
 minetest.register_on_generated(function(minp, maxp)
-	print("on_generated: minp="..dump(minp).." maxp="..dump(maxp))
+	--print("on_generated: minp="..dump(minp).." maxp="..dump(maxp))
 	--cp = {x=(minp.x+maxp.x)/2, y=(minp.y+maxp.y)/2, z=(minp.z+maxp.z)/2}
 	--minetest.env:add_node(cp, {name="sand"})
 end)
