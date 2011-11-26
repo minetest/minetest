@@ -1195,12 +1195,12 @@ function TNT:on_step(dtime)
 	self.blinktimer = self.blinktimer + dtime
 	if self.blinktimer > 0.5 then
 		self.blinktimer = self.blinktimer - 0.5
-		if blinkstatus then
+		if self.blinkstatus then
 			self.object:settexturemod("")
 		else
 			self.object:settexturemod("^[brighten")
 		end
-		blinkstatus = not blinkstatus
+		self.blinkstatus = not self.blinkstatus
 	end
 end
 
