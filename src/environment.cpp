@@ -1974,8 +1974,7 @@ void ClientEnvironment::step(float dtime)
 	*/
 	bool is_climbing = lplayer->is_climbing;
 	
-	f32 player_speed = 0.001; // just some small value
-	player_speed = lplayer->getSpeed().getLength();
+	f32 player_speed = lplayer->getSpeed().getLength();
 	
 	/*
 		Maximum position increment
@@ -1985,7 +1984,9 @@ void ClientEnvironment::step(float dtime)
 
 	// Maximum time increment (for collision detection etc)
 	// time = distance / speed
-	f32 dtime_max_increment = position_max_increment / player_speed;
+	f32 dtime_max_increment = 1;
+	if(player_speed > 0.001)
+		dtime_max_increment = position_max_increment / player_speed;
 	
 	// Maximum time increment is 10ms or lower
 	if(dtime_max_increment > 0.01)
