@@ -789,12 +789,6 @@ static int l_register_craft(lua_State *L)
 	return 0; /* number of results */
 }
 
-// get_nodedef(name)
-static int l_get_nodedef(lua_State *L)
-{
-	return 1;
-}
-
 static int register_lua_callback(lua_State *L, const char *tablename)
 {
 	luaL_checktype(L, 1, LUA_TFUNCTION);
@@ -873,7 +867,6 @@ static const struct luaL_Reg minetest_f [] = {
 	{"register_on_punchnode", l_register_on_punchnode},
 	{"register_on_newplayer", l_register_on_newplayer},
 	{"register_on_respawnplayer", l_register_on_respawnplayer},
-	{"get_nodedef", l_get_nodedef},
 	{NULL, NULL}
 };
 
