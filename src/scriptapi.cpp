@@ -1252,6 +1252,18 @@ private:
 		return 1;
 	}
 
+	// settexturemod(self, mod)
+	static int l_settexturemod(lua_State *L)
+	{
+		ObjectRef *ref = checkobject(L, 1);
+		LuaEntitySAO *co = getluaobject(ref);
+		if(co == NULL) return 0;
+		// Do it
+		std::string mod = lua_tostring(L, 2);
+		co->setTextureMod(mod);
+		return 0;
+	}
+	
 public:
 	ObjectRef(ServerActiveObject *object):
 		m_object(object)
@@ -1322,6 +1334,7 @@ const luaL_reg ObjectRef::methods[] = {
 	method(ObjectRef, setvelocity),
 	method(ObjectRef, setacceleration),
 	method(ObjectRef, add_to_inventory),
+	method(ObjectRef, settexturemod),
 	{0,0}
 };
 

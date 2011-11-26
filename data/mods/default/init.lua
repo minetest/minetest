@@ -1176,18 +1176,32 @@ local TNT = {
 	timer = 0,
 	-- Number of punches required to defuse
 	health = 1,
+	blinktimer = 0,
+	blinkstatus = true,
 }
 
 -- Called when a TNT object is created
 function TNT:on_activate(staticdata)
 	print("TNT:on_activate()")
-	self.object:setvelocity({x=0, y=2, z=0})
+	self.object:setvelocity({x=0, y=4, z=0})
 	self.object:setacceleration({x=0, y=-10, z=0})
+	self.object:settexturemod("^[brighten")
 end
 
 -- Called periodically
 function TNT:on_step(dtime)
 	--print("TNT:on_step()")
+	self.timer = self.timer + dtime
+	self.blinktimer = self.blinktimer + dtime
+	if self.blinktimer > 0.5 then
+		self.blinktimer = self.blinktimer - 0.5
+		if blinkstatus then
+			self.object:settexturemod("")
+		else
+			self.object:settexturemod("^[brighten")
+		end
+		blinkstatus = not blinkstatus
+	end
 end
 
 -- Called when object is punched

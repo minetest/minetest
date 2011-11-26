@@ -391,48 +391,25 @@ private:
 	LuaEntityCAO
 */
 
-struct LuaEntityProperties;
-
 class LuaEntityCAO : public ClientActiveObject
 {
 public:
-	LuaEntityCAO(IGameDef *gamedef);
-	virtual ~LuaEntityCAO();
-	
-	u8 getType() const
-	{
-		return ACTIVEOBJECT_TYPE_LUAENTITY;
-	}
-	
-	static ClientActiveObject* create(IGameDef *gamedef);
-
-	void addToScene(scene::ISceneManager *smgr, ITextureSource *tsrc);
-	void removeFromScene();
-	void updateLight(u8 light_at_pos);
-	v3s16 getLightPosition();
-	void updateNodePos();
-
-	void step(float dtime, ClientEnvironment *env);
-
-	void processMessage(const std::string &data);
-
-	void initialize(const std::string &data);
-	
-	core::aabbox3d<f32>* getSelectionBox()
-		{return &m_selection_box;}
-	v3f getPosition()
-		{return pos_translator.vect_show;}
-
+	LuaEntityCAO(IGameDef *gamedef):
+		ClientActiveObject(0, gamedef)
+	{}
+	virtual ~LuaEntityCAO(){}
+	virtual u8 getType() const=0;
+	virtual void addToScene(scene::ISceneManager *smgr, ITextureSource *tsrc)=0;
+	virtual void removeFromScene()=0;
+	virtual void updateLight(u8 light_at_pos)=0;
+	virtual v3s16 getLightPosition()=0;
+	virtual void updateNodePos()=0;
+	virtual void step(float dtime, ClientEnvironment *env)=0;
+	virtual void processMessage(const std::string &data)=0;
+	virtual void initialize(const std::string &data)=0;
+	virtual core::aabbox3d<f32>* getSelectionBox()=0;
+	virtual v3f getPosition()=0;
 private:
-	core::aabbox3d<f32> m_selection_box;
-	scene::IMeshSceneNode *m_meshnode;
-	scene::MyBillboardSceneNode *m_spritenode;
-	v3f m_position;
-	v3f m_velocity;
-	v3f m_acceleration;
-	float m_yaw;
-	struct LuaEntityProperties *m_prop;
-	SmoothTranslator pos_translator;
 };
 
 

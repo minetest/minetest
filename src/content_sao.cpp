@@ -1748,6 +1748,18 @@ void LuaEntitySAO::setAcceleration(v3f acceleration)
 	m_acceleration = acceleration;
 }
 
+void LuaEntitySAO::setTextureMod(const std::string &mod)
+{
+	std::ostringstream os(std::ios::binary);
+	// command (1 = set texture modification)
+	writeU8(os, 1);
+	// parameters
+	os<<serializeString(mod);
+	// create message and add to list
+	ActiveObjectMessage aom(getId(), false, os.str());
+	m_messages_out.push_back(aom);
+}
+
 void LuaEntitySAO::sendPosition(bool do_interpolate, bool is_movement_end)
 {
 	m_last_sent_move_precision = m_base_position.getDistanceFrom(

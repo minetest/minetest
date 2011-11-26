@@ -216,8 +216,10 @@ public:
 	void setPos(v3f pos);
 	void moveTo(v3f pos, bool continuous);
 	float getMinimumSavedMovement();
+	/* LuaEntitySAO-specific */
 	void setVelocity(v3f velocity);
 	void setAcceleration(v3f acceleration);
+	void setTextureMod(const std::string &mod);
 private:
 	void sendPosition(bool do_interpolate, bool is_movement_end);
 
