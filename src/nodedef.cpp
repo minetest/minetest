@@ -505,6 +505,7 @@ public:
 					f->solidness = 1;
 					if(f->alpha == 255)
 						f->solidness = 2;
+					f->backface_culling = false;
 				}
 				break;
 			case NDT_FLOWINGLIQUID:
