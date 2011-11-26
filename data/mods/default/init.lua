@@ -18,6 +18,8 @@
 -- minetest.register_on_newplayer(func(ObjectRef))
 -- minetest.register_on_respawnplayer(func(ObjectRef))
 -- ^ return true in func to disable regular player placement
+-- minetest.setting_get(name)
+-- minetest.setting_getbool(name)
 --
 -- Global objects:
 -- minetest.env - environment reference
@@ -1312,6 +1314,9 @@ minetest.register_on_respawnplayer(function(player)
 	-- player:setpos({x=0, y=30, z=0})
 	-- return true
 end)
+
+-- Example setting get
+print("max_users = " .. dump(minetest.setting_get("max_users")))
 
 --
 -- Done, print some random stuff

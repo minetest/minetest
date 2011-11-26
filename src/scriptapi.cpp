@@ -38,6 +38,8 @@ extern "C" {
 #include "tooldef.h"
 #include "nodedef.h"
 #include "craftdef.h"
+#include "main.h" // For g_settings
+#include "settings.h" // For accessing g_settings
 
 /*
 TODO:
@@ -855,6 +857,24 @@ static int l_register_on_respawnplayer(lua_State *L)
 	return register_lua_callback(L, "registered_on_respawnplayers");
 }
 
+// setting_get(name)
+static int l_setting_get(lua_State *L)
+{
+	const char *name = luaL_checkstring(L, 1);
+	std::string value = g_settings->get(name);
+	lua_pushstring(L, value.c_str());
+	return 1;
+}
+
+// setting_getbool(name)
+static int l_setting_getbool(lua_State *L)
+{
+	const char *name = luaL_checkstring(L, 1);
+	bool value = g_settings->getBool(name);
+	lua_pushboolean(L, value);
+	return 1;
+}
+
 static const struct luaL_Reg minetest_f [] = {
 	{"register_nodedef_defaults", l_register_nodedef_defaults},
 	{"register_entity", l_register_entity},
@@ -867,6 +887,8 @@ static const struct luaL_Reg minetest_f [] = {
 	{"register_on_punchnode", l_register_on_punchnode},
 	{"register_on_newplayer", l_register_on_newplayer},
 	{"register_on_respawnplayer", l_register_on_respawnplayer},
+	{"setting_get", l_setting_get},
+	{"setting_getbool", l_setting_getbool},
 	{NULL, NULL}
 };
 
