@@ -2162,7 +2162,17 @@ MapBlock* ServerMap::finishBlockMake(mapgen::BlockMakeData *data,
 
 	/*infostream<<"Resulting vmanip:"<<std::endl;
 	data->vmanip.print(infostream);*/
-	
+
+	// Make sure affected blocks are loaded
+	for(s16 x=-1; x<=1; x++)
+	for(s16 z=-1; z<=1; z++)
+	for(s16 y=-1; y<=1; y++)
+	{
+		v3s16 p(blockpos.X+x, blockpos.Y+y, blockpos.Z+z);
+		// Load from disk if not already in memory
+		emergeBlock(p, false);
+	}
+
 	/*
 		Blit generated stuff to map
 		NOTE: blitBackAll adds nearly everything to changed_blocks

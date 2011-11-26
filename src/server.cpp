@@ -44,6 +44,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "nodedef.h"
 #include "tooldef.h"
 #include "craftdef.h"
+#include "mapgen.h"
 
 #define PP(x) "("<<(x).X<<","<<(x).Y<<","<<(x).Z<<")"
 
@@ -143,12 +144,7 @@ void * EmergeThread::Thread()
 		/*
 			Do not generate over-limit
 		*/
-		if(p.X < -MAP_GENERATION_LIMIT / MAP_BLOCKSIZE
-		|| p.X > MAP_GENERATION_LIMIT / MAP_BLOCKSIZE
-		|| p.Y < -MAP_GENERATION_LIMIT / MAP_BLOCKSIZE
-		|| p.Y > MAP_GENERATION_LIMIT / MAP_BLOCKSIZE
-		|| p.Z < -MAP_GENERATION_LIMIT / MAP_BLOCKSIZE
-		|| p.Z > MAP_GENERATION_LIMIT / MAP_BLOCKSIZE)
+		if(blockpos_over_limit(p))
 			continue;
 			
 		//infostream<<"EmergeThread::Thread(): running"<<std::endl;
@@ -192,129 +188,106 @@ void * EmergeThread::Thread()
 		
 		ServerMap &map = ((ServerMap&)m_server->m_env->getMap());
 			
-		//core::map<v3s16, MapBlock*> changed_blocks;
-		//core::map<v3s16, MapBlock*> lighting_invalidated_blocks;
-
 		MapBlock *block = NULL;
 		bool got_block = true;
 		core::map<v3s16, MapBlock*> modified_blocks;
-		
+
 		/*
-			Fetch block from map or generate a single block
+			Try to fetch block from memory or disk.
+			If not found and asked to generate, initialize generator.
 		*/
+		
+		bool started_generate = false;
+		mapgen::BlockMakeData data;
+
 		{
 			JMutexAutoLock envlock(m_server->m_env_mutex);
 			
 			// Load sector if it isn't loaded
 			if(map.getSectorNoGenerateNoEx(p2d) == NULL)
-				//map.loadSectorFull(p2d);
 				map.loadSectorMeta(p2d);
-
+			
+			// Attempt to load block
 			block = map.getBlockNoCreateNoEx(p);
 			if(!block || block->isDummy() || !block->isGenerated())
 			{
 				if(enable_mapgen_debug_info)
-					infostream<<"EmergeThread: not in memory, loading"<<std::endl;
-
-				// Get, load or create sector
-				/*ServerMapSector *sector =
-						(ServerMapSector*)map.createSector(p2d);*/
-
-				// Load/generate block
-
-				/*block = map.emergeBlock(p, sector, changed_blocks,
-						lighting_invalidated_blocks);*/
+					infostream<<"EmergeThread: not in memory, "
+							<<"attempting to load from disk"<<std::endl;
 
 				block = map.loadBlock(p);
-				
-				if(only_from_disk == false)
-				{
-					if(block == NULL || block->isGenerated() == false)
-					{
-						if(enable_mapgen_debug_info)
-							infostream<<"EmergeThread: generating"<<std::endl;
-						block = map.generateBlock(p, modified_blocks);
-						
-						v3s16 minp = block->getPos()*MAP_BLOCKSIZE;
-						v3s16 maxp = minp + v3s16(1,1,1)*(MAP_BLOCKSIZE-1);
-						scriptapi_environment_on_generated(m_server->m_lua,
-								minp, maxp);
-					}
-				}
+			}
+			
+			// If could not load and allowed to generate, start generation
+			// inside this same envlock
+			if(only_from_disk == false &&
+					(block == NULL || block->isGenerated() == false)){
+				if(enable_mapgen_debug_info)
+					infostream<<"EmergeThread: generating"<<std::endl;
+				started_generate = true;
 
+				map.initBlockMake(&data, p);
+			}
+		}
+
+		/*
+			If generator was initialized, generate now when envlock is free.
+		*/
+		if(started_generate)
+		{
+			{
+				ScopeProfiler sp(g_profiler, "EmergeThread: mapgen::make_block",
+						SPT_AVG);
+				TimeTaker t("mapgen::make_block()");
+
+				mapgen::make_block(&data);
+
+				if(enable_mapgen_debug_info == false)
+					t.stop(true); // Hide output
+			}
+			
+			{
+				// Lock environment again to access the map
+				JMutexAutoLock envlock(m_server->m_env_mutex);
+				
+				ScopeProfiler sp(g_profiler, "EmergeThread: after "
+						"mapgen::make_block (envlock)", SPT_AVG);
+
+				// Blit data back on map, update lighting, add mobs and
+				// whatever this does
+				map.finishBlockMake(&data, modified_blocks);
+
+				// Get central block
+				block = map.getBlockNoCreateNoEx(p);
+
+				/*
+					Do some post-generate stuff
+				*/
+				
+				v3s16 minp = block->getPos()*MAP_BLOCKSIZE;
+				v3s16 maxp = minp + v3s16(1,1,1)*(MAP_BLOCKSIZE-1);
+				scriptapi_environment_on_generated(m_server->m_lua,
+						minp, maxp);
+				
 				if(enable_mapgen_debug_info)
 					infostream<<"EmergeThread: ended up with: "
 							<<analyze_block(block)<<std::endl;
 
-				if(block == NULL)
-				{
-					got_block = false;
-				}
-				else
-				{
-					/*
-						Ignore map edit events, they will not need to be
-						sent to anybody because the block hasn't been sent
-						to anybody
-					*/
-					MapEditEventIgnorer ign(&m_server->m_ignore_map_edit_events);
-					
-					// Activate objects and stuff
-					m_server->m_env->activateBlock(block, 3600);
-				}
+				/*
+					Ignore map edit events, they will not need to be
+					sent to anybody because the block hasn't been sent
+					to anybody
+				*/
+				MapEditEventIgnorer ign(&m_server->m_ignore_map_edit_events);
+				
+				// Activate objects and stuff
+				m_server->m_env->activateBlock(block, 3600);
 			}
-			else
-			{
-				/*if(block->getLightingExpired()){
-					lighting_invalidated_blocks[block->getPos()] = block;
-				}*/
-			}
-
-			// TODO: Some additional checking and lighting updating,
-			//       see emergeBlock
 		}
 
-		{//envlock
-		JMutexAutoLock envlock(m_server->m_env_mutex);
-		
-		if(got_block)
-		{
-			/*
-				Collect a list of blocks that have been modified in
-				addition to the fetched one.
-			*/
-
-#if 0
-			if(lighting_invalidated_blocks.size() > 0)
-			{
-				/*infostream<<"lighting "<<lighting_invalidated_blocks.size()
-						<<" blocks"<<std::endl;*/
+		if(block == NULL)
+			got_block = false;
 			
-				// 50-100ms for single block generation
-				//TimeTaker timer("** EmergeThread updateLighting");
-				
-				// Update lighting without locking the environment mutex,
-				// add modified blocks to changed blocks
-				map.updateLighting(lighting_invalidated_blocks, modified_blocks);
-			}
-				
-			// Add all from changed_blocks to modified_blocks
-			for(core::map<v3s16, MapBlock*>::Iterator i = changed_blocks.getIterator();
-					i.atEnd() == false; i++)
-			{
-				MapBlock *block = i.getNode()->getValue();
-				modified_blocks.insert(block->getPos(), block);
-			}
-#endif
-		}
-		// If we got no block, there should be no invalidated blocks
-		else
-		{
-			//assert(lighting_invalidated_blocks.size() == 0);
-		}
-
-		}//envlock
-
 		/*
 			Set sent status of modified blocks on clients
 		*/
