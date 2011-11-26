@@ -1326,14 +1326,24 @@ void Server::AsyncRunStep()
 		Do background stuff
 	*/
 
-	/* Check player movements */
+	/*
+		Check player movements
+
+		NOTE: Actually the server should handle player physics like the
+		client does and compare player's position to what is calculated
+		on our side. This is required when eg. players fly due to an
+		explosion.
+	*/
 	{
 		JMutexAutoLock lock(m_env_mutex);
 		JMutexAutoLock lock2(m_con_mutex);
 
 		//float player_max_speed = BS * 4.0; // Normal speed
-		float player_max_speed = BS * 4.0 * 5; // Fast speed
-		player_max_speed *= 1.5; // Tolerance
+		float player_max_speed = BS * 20; // Fast speed
+		float player_max_speed_up = BS * 20;
+		
+		player_max_speed *= 1.7; // Tolerance
+		player_max_speed_up *= 1.7;
 
 		for(core::map<u16, RemoteClient*>::Iterator
 			i = m_clients.getIterator();
@@ -1345,12 +1355,21 @@ void Server::AsyncRunStep()
 			if(player==NULL)
 				continue;
 			player->m_last_good_position_age += dtime;
-			if(player->m_last_good_position_age > 1.0){
+			if(player->m_last_good_position_age >= 2.0){
 				float age = player->m_last_good_position_age;
 				v3f diff = (player->getPosition() - player->m_last_good_position);
-				if(diff.getLength() <= age * player_max_speed){
+				float d_vert = diff.Y;
+				diff.Y = 0;
+				float d_horiz = diff.getLength();
+				/*infostream<<player->getName()<<"'s horizontal speed is "
+						<<(d_horiz/age)<<std::endl;*/
+				if(d_horiz <= age * player_max_speed &&
+						(d_vert < 0 || d_vert < age * player_max_speed_up)){
 					player->m_last_good_position = player->getPosition();
 				} else {
+					actionstream<<"Player "<<player->getName()
+							<<" moved too fast; resetting position"
+							<<std::endl;
 					player->setPosition(player->m_last_good_position);
 					SendMovePlayer(player);
 				}
