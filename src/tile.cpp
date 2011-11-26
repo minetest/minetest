@@ -183,17 +183,27 @@ class SourceImageCache
 {
 public:
 	void insert(const std::string &name, video::IImage *img,
-			bool do_overwrite)
+			bool prefer_local, video::IVideoDriver *driver)
 	{
 		assert(img);
+		// Remove old image
 		core::map<std::string, video::IImage*>::Node *n;
 		n = m_images.find(name);
 		if(n){
-			if(!do_overwrite)
-				return;
 			video::IImage *oldimg = n->getValue();
 			if(oldimg)
 				oldimg->drop();
+		}
+		// Try to use local texture instead if asked to
+		if(prefer_local){
+			std::string path = getTexturePath(name.c_str());
+			if(path != ""){
+				video::IImage *img2 = driver->createImageFromFile(path.c_str());
+				if(img2){
+					m_images[name] = img2;
+					return;
+				}
+			}
 		}
 		img->grab();
 		m_images[name] = img;
@@ -725,7 +735,7 @@ void TextureSource::insertSourceImage(const std::string &name, video::IImage *im
 	
 	assert(get_current_thread_id() == m_main_thread);
 	
-	m_sourcecache.insert(name, img, false);
+	m_sourcecache.insert(name, img, true, m_device->getVideoDriver());
 }
 	
 void TextureSource::rebuildImagesAndTextures()
