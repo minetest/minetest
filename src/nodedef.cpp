@@ -116,6 +116,9 @@ void ContentFeatures::reset()
 	used_texturenames.clear();
 	/*
 		Actual data
+		
+		NOTE: Most of this is always overridden by the default values given
+		      in builtin.lua
 	*/
 	name = "";
 	drawtype = NDT_NORMAL;

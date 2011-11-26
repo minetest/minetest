@@ -20,6 +20,8 @@
 -- minetest.env - environment reference
 --
 -- Global tables:
+-- minetest.registered_nodes
+-- ^ List of registed node definitions, indexed by name
 -- minetest.registered_entities
 -- ^ List of registered entity prototypes, indexed by name
 -- minetest.object_refs

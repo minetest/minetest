@@ -73,8 +73,55 @@ function dump(o, dumped)
 end
 
 --
--- Built-in node types. Also defined in C.
+-- Built-in node definitions. Also defined in C.
 --
+
+minetest.register_nodedef_defaults({
+	-- name intentionally not defined here
+	drawtype = "normal",
+	visual_scale = 1.0,
+	tile_images = {"unknown_block.png"},
+	inventory_image = "unknown_block.png",
+	special_materials = {
+		{image="", backface_culling=true},
+		{image="", backface_culling=true},
+	},
+	alpha = 255,
+	post_effect_color = {a=0, r=0, g=0, b=0},
+	paramtype = "none",
+	is_ground_content = false,
+	light_propagates = false,
+	sunlight_propagates = false,
+	walkable = true,
+	pointable = true,
+	diggable = true,
+	climbable = false,
+	buildable_to = false,
+	wall_mounted = false,
+	often_contains_mineral = false,
+	dug_item = "",
+	extra_dug_item = "",
+	extra_dug_item_rarity = 2,
+	metadata_name = "",
+	liquid_type = "none",
+	liquid_alternative_flowing = "",
+	liquid_alternative_source = "",
+	liquid_viscosity = 0,
+	light_source = 0,
+	damage_per_second = 0,
+	selection_box = {type="regular"},
+	material = {
+		diggablity = "normal",
+		weight = 0,
+		crackiness = 0,
+		crumbliness = 0,
+		cuttability = 0,
+		flammability = 0,
+	},
+	cookresult_item = "", -- Cannot be cooked
+	furnace_cooktime = 3.0,
+	furnace_burntime = -1, -- Cannot be used as fuel
+})
 
 minetest.register_node("air", {
 	drawtype = "airlike",

@@ -407,6 +407,16 @@ struct EnumString es_Diggability[] =
 	Global functions
 */
 
+static int l_register_nodedef_defaults(lua_State *L)
+{
+	luaL_checktype(L, 1, LUA_TTABLE);
+
+	lua_pushvalue(L, 1); // Explicitly put parameter 1 on top of stack
+	lua_setfield(L, LUA_REGISTRYINDEX, "minetest_nodedef_default");
+
+	return 0;
+}
+
 // Register new object prototype
 // register_entity(name, prototype)
 static int l_register_entity(lua_State *L)
@@ -480,7 +490,7 @@ static int l_register_node(lua_State *L)
 	const char *name = luaL_checkstring(L, 1);
 	infostream<<"register_node: "<<name<<std::endl;
 	luaL_checktype(L, 2, LUA_TTABLE);
-	int table0 = 2;
+	int nodedef_table = 2;
 
 	// Get server from registry
 	lua_getfield(L, LUA_REGISTRYINDEX, "minetest_server");
@@ -488,6 +498,33 @@ static int l_register_node(lua_State *L)
 	// And get the writable node definition manager from the server
 	IWritableNodeDefManager *nodedef =
 			server->getWritableNodeDefManager();
+	
+	// Get default node definition from registry
+	lua_getfield(L, LUA_REGISTRYINDEX, "minetest_nodedef_default");
+	int nodedef_default = lua_gettop(L);
+
+	/*
+		Add to minetest.registered_nodes with default as metatable
+	*/
+	
+	// Get the node definition table given as parameter
+	lua_pushvalue(L, nodedef_table);
+
+	// Set __index to point to itself
+	lua_pushvalue(L, -1);
+	lua_setfield(L, -2, "__index");
+
+	// Set nodedef_default as metatable for the definition
+	lua_pushvalue(L, nodedef_default);
+	lua_setmetatable(L, nodedef_table);
+	
+	// minetest.registered_nodes[name] = nodedef
+	lua_getglobal(L, "minetest");
+	lua_getfield(L, -1, "registered_nodes");
+	luaL_checktype(L, -1, LUA_TTABLE);
+	lua_pushstring(L, name);
+	lua_pushvalue(L, nodedef_table);
+	lua_settable(L, -3);
 
 	/*
 		Create definition
@@ -509,11 +546,11 @@ static int l_register_node(lua_State *L)
 	
 	/* Visual definition */
 
-	f.drawtype = (NodeDrawType)getenumfield(L, table0, "drawtype", es_DrawType,
+	f.drawtype = (NodeDrawType)getenumfield(L, nodedef_table, "drawtype", es_DrawType,
 			NDT_NORMAL);
-	getfloatfield(L, table0, "visual_scale", f.visual_scale);
+	getfloatfield(L, nodedef_table, "visual_scale", f.visual_scale);
 
-	lua_getfield(L, table0, "tile_images");
+	lua_getfield(L, nodedef_table, "tile_images");
 	if(lua_istable(L, -1)){
 		int table = lua_gettop(L);
 		lua_pushnil(L);
@@ -543,9 +580,9 @@ static int l_register_node(lua_State *L)
 	}
 	lua_pop(L, 1);
 
-	getstringfield(L, table0, "inventory_image", f.tname_inventory);
+	getstringfield(L, nodedef_table, "inventory_image", f.tname_inventory);
 
-	lua_getfield(L, table0, "special_materials");
+	lua_getfield(L, nodedef_table, "special_materials");
 	if(lua_istable(L, -1)){
 		int table = lua_gettop(L);
 		lua_pushnil(L);
@@ -570,70 +607,70 @@ static int l_register_node(lua_State *L)
 	}
 	lua_pop(L, 1);
 
-	f.alpha = getintfield_default(L, table0, "alpha", 255);
+	f.alpha = getintfield_default(L, nodedef_table, "alpha", 255);
 
 	/* Other stuff */
 	
-	lua_getfield(L, table0, "post_effect_color");
+	lua_getfield(L, nodedef_table, "post_effect_color");
 	if(!lua_isnil(L, -1))
 		f.post_effect_color = readARGB8(L, -1);
 	lua_pop(L, 1);
 
-	f.param_type = (ContentParamType)getenumfield(L, table0, "paramtype",
+	f.param_type = (ContentParamType)getenumfield(L, nodedef_table, "paramtype",
 			es_ContentParamType, CPT_NONE);
 	
 	// True for all ground-like things like stone and mud, false for eg. trees
-	getboolfield(L, table0, "is_ground_content", f.is_ground_content);
-	getboolfield(L, table0, "light_propagates", f.light_propagates);
-	getboolfield(L, table0, "sunlight_propagates", f.sunlight_propagates);
+	getboolfield(L, nodedef_table, "is_ground_content", f.is_ground_content);
+	getboolfield(L, nodedef_table, "light_propagates", f.light_propagates);
+	getboolfield(L, nodedef_table, "sunlight_propagates", f.sunlight_propagates);
 	// This is used for collision detection.
 	// Also for general solidness queries.
-	getboolfield(L, table0, "walkable", f.walkable);
+	getboolfield(L, nodedef_table, "walkable", f.walkable);
 	// Player can point to these
-	getboolfield(L, table0, "pointable", f.pointable);
+	getboolfield(L, nodedef_table, "pointable", f.pointable);
 	// Player can dig these
-	getboolfield(L, table0, "diggable", f.diggable);
+	getboolfield(L, nodedef_table, "diggable", f.diggable);
 	// Player can climb these
-	getboolfield(L, table0, "climbable", f.climbable);
+	getboolfield(L, nodedef_table, "climbable", f.climbable);
 	// Player can build on these
-	getboolfield(L, table0, "buildable_to", f.buildable_to);
+	getboolfield(L, nodedef_table, "buildable_to", f.buildable_to);
 	// If true, param2 is set to direction when placed. Used for torches.
 	// NOTE: the direction format is quite inefficient and should be changed
-	getboolfield(L, table0, "wall_mounted", f.wall_mounted);
+	getboolfield(L, nodedef_table, "wall_mounted", f.wall_mounted);
 	// Whether this content type often contains mineral.
 	// Used for texture atlas creation.
 	// Currently only enabled for CONTENT_STONE.
-	getboolfield(L, table0, "often_contains_mineral", f.often_contains_mineral);
+	getboolfield(L, nodedef_table, "often_contains_mineral", f.often_contains_mineral);
 	// Inventory item string as which the node appears in inventory when dug.
 	// Mineral overrides this.
-	getstringfield(L, table0, "dug_item", f.dug_item);
+	getstringfield(L, nodedef_table, "dug_item", f.dug_item);
 	// Extra dug item and its rarity
-	getstringfield(L, table0, "extra_dug_item", f.extra_dug_item);
+	getstringfield(L, nodedef_table, "extra_dug_item", f.extra_dug_item);
 	// Usual get interval for extra dug item
-	getintfield(L, table0, "extra_dug_item_rarity", f.extra_dug_item_rarity);
+	getintfield(L, nodedef_table, "extra_dug_item_rarity", f.extra_dug_item_rarity);
 	// Metadata name of node (eg. "furnace")
-	getstringfield(L, table0, "metadata_name", f.metadata_name);
+	getstringfield(L, nodedef_table, "metadata_name", f.metadata_name);
 	// Whether the node is non-liquid, source liquid or flowing liquid
-	f.liquid_type = (LiquidType)getenumfield(L, table0, "liquidtype",
+	f.liquid_type = (LiquidType)getenumfield(L, nodedef_table, "liquidtype",
 			es_LiquidType, LIQUID_NONE);
 	// If the content is liquid, this is the flowing version of the liquid.
-	getstringfield(L, table0, "liquid_alternative_flowing",
+	getstringfield(L, nodedef_table, "liquid_alternative_flowing",
 			f.liquid_alternative_flowing);
 	// If the content is liquid, this is the source version of the liquid.
-	getstringfield(L, table0, "liquid_alternative_source",
+	getstringfield(L, nodedef_table, "liquid_alternative_source",
 			f.liquid_alternative_source);
 	// Viscosity for fluid flow, ranging from 1 to 7, with
 	// 1 giving almost instantaneous propagation and 7 being
 	// the slowest possible
-	f.liquid_viscosity = getintfield_default(L, table0,
+	f.liquid_viscosity = getintfield_default(L, nodedef_table,
 			"liquid_viscosity", f.liquid_viscosity);
 	// Amount of light the node emits
-	f.light_source = getintfield_default(L, table0,
+	f.light_source = getintfield_default(L, nodedef_table,
 			"light_source", f.light_source);
-	f.damage_per_second = getintfield_default(L, table0,
+	f.damage_per_second = getintfield_default(L, nodedef_table,
 			"damage_per_second", f.damage_per_second);
 	
-	lua_getfield(L, table0, "selection_box");
+	lua_getfield(L, nodedef_table, "selection_box");
 	if(lua_istable(L, -1)){
 		f.selection_box.type = (NodeBoxType)getenumfield(L, -1, "type",
 				es_NodeBoxType, NODEBOX_REGULAR);
@@ -660,7 +697,7 @@ static int l_register_node(lua_State *L)
 	}
 	lua_pop(L, 1);
 
-	lua_getfield(L, table0, "material");
+	lua_getfield(L, nodedef_table, "material");
 	if(lua_istable(L, -1)){
 		f.material.diggability = (Diggability)getenumfield(L, -1, "diggability",
 				es_Diggability, DIGGABLE_NORMAL);
@@ -674,9 +711,9 @@ static int l_register_node(lua_State *L)
 	}
 	lua_pop(L, 1);
 
-	getstringfield(L, table0, "cookresult_item", f.cookresult_item);
-	getfloatfield(L, table0, "furnace_cooktime", f.furnace_cooktime);
-	getfloatfield(L, table0, "furnace_burntime", f.furnace_burntime);
+	getstringfield(L, nodedef_table, "cookresult_item", f.cookresult_item);
+	getfloatfield(L, nodedef_table, "furnace_cooktime", f.furnace_cooktime);
+	getfloatfield(L, nodedef_table, "furnace_burntime", f.furnace_burntime);
 	
 	/*
 		Register it
@@ -753,6 +790,12 @@ static int l_register_craft(lua_State *L)
 	return 0; /* number of results */
 }
 
+// get_nodedef(name)
+static int l_get_nodedef(lua_State *L)
+{
+	return 1;
+}
+
 static int register_lua_callback(lua_State *L, const char *tablename)
 {
 	luaL_checktype(L, 1, LUA_TFUNCTION);
@@ -806,6 +849,7 @@ static int l_register_on_punchnode(lua_State *L)
 }
 
 static const struct luaL_Reg minetest_f [] = {
+	{"register_nodedef_defaults", l_register_nodedef_defaults},
 	{"register_entity", l_register_entity},
 	{"register_tool", l_register_tool},
 	{"register_node", l_register_node},
@@ -814,6 +858,7 @@ static const struct luaL_Reg minetest_f [] = {
 	{"register_on_placenode", l_register_on_placenode},
 	{"register_on_dignode", l_register_on_dignode},
 	{"register_on_punchnode", l_register_on_punchnode},
+	{"get_nodedef", l_get_nodedef},
 	{NULL, NULL}
 };
 
@@ -1267,6 +1312,10 @@ void scriptapi_export(lua_State *L, Server *server)
 	// Store server as light userdata in registry
 	lua_pushlightuserdata(L, server);
 	lua_setfield(L, LUA_REGISTRYINDEX, "minetest_server");
+
+	// Store nil as minetest_nodedef_defaults in registry
+	lua_pushnil(L);
+	lua_setfield(L, LUA_REGISTRYINDEX, "minetest_nodedef_default");
 	
 	// Register global functions in table minetest
 	lua_newtable(L);
@@ -1280,6 +1329,9 @@ void scriptapi_export(lua_State *L, Server *server)
 	
 	/*lua_newtable(L);
 	lua_setfield(L, -2, "registered_blocks");*/
+
+	lua_newtable(L);
+	lua_setfield(L, -2, "registered_nodes");
 
 	lua_newtable(L);
 	lua_setfield(L, -2, "registered_entities");
@@ -1676,26 +1728,8 @@ void scriptapi_luaentity_get_properties(lua_State *L, u16 id,
 	lua_pop(L, 1);
 
 	lua_getfield(L, -1, "collisionbox");
-	if(lua_istable(L, -1)){
-		lua_rawgeti(L, -1, 1);
-		prop->collisionbox.MinEdge.X = lua_tonumber(L, -1);
-		lua_pop(L, 1);
-		lua_rawgeti(L, -1, 2);
-		prop->collisionbox.MinEdge.Y = lua_tonumber(L, -1);
-		lua_pop(L, 1);
-		lua_rawgeti(L, -1, 3);
-		prop->collisionbox.MinEdge.Z = lua_tonumber(L, -1);
-		lua_pop(L, 1);
-		lua_rawgeti(L, -1, 4);
-		prop->collisionbox.MaxEdge.X = lua_tonumber(L, -1);
-		lua_pop(L, 1);
-		lua_rawgeti(L, -1, 5);
-		prop->collisionbox.MaxEdge.Y = lua_tonumber(L, -1);
-		lua_pop(L, 1);
-		lua_rawgeti(L, -1, 6);
-		prop->collisionbox.MaxEdge.Z = lua_tonumber(L, -1);
-		lua_pop(L, 1);
-	}
+	if(lua_istable(L, -1))
+		prop->collisionbox = read_aabbox3df32(L, -1, 1.0);
 	lua_pop(L, 1);
 
 	lua_getfield(L, -1, "visual");
