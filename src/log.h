@@ -41,6 +41,8 @@ class ILogOutput
 public:
 	/* line: Full line with timestamp, level and thread */
 	virtual void printLog(const std::string &line){};
+	/* line: Full line with timestamp, level and thread */
+	virtual void printLog(const std::string &line, enum LogMessageLevel lev){};
 	/* line: Only actual printed text */
 	virtual void printLog(enum LogMessageLevel lev, const std::string &line){};
 };

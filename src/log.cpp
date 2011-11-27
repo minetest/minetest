@@ -100,6 +100,7 @@ void log_printline(enum LogMessageLevel lev, const std::string &text)
 			i != log_outputs[lev].end(); i++){
 		ILogOutput *out = *i;
 		out->printLog(os.str());
+		out->printLog(os.str(), lev);
 		out->printLog(lev, text);
 	}
 }
