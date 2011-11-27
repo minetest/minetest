@@ -77,7 +77,7 @@ ServerActiveObject* item_craft_create_object(const std::string &subname,
 	}
 	else if(subname == "testobject1")
 	{
-		ServerActiveObject *obj = new LuaEntitySAO(env, pos, "TNT", "");
+		ServerActiveObject *obj = new LuaEntitySAO(env, pos, "testentity", "");
 		return obj;
 	}
 

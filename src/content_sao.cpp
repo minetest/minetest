@@ -1748,6 +1748,11 @@ void LuaEntitySAO::setAcceleration(v3f acceleration)
 	m_acceleration = acceleration;
 }
 
+v3f LuaEntitySAO::getAcceleration()
+{
+	return m_acceleration;
+}
+
 void LuaEntitySAO::setTextureMod(const std::string &mod)
 {
 	std::ostringstream os(std::ios::binary);
@@ -1755,6 +1760,22 @@ void LuaEntitySAO::setTextureMod(const std::string &mod)
 	writeU8(os, 1);
 	// parameters
 	os<<serializeString(mod);
+	// create message and add to list
+	ActiveObjectMessage aom(getId(), false, os.str());
+	m_messages_out.push_back(aom);
+}
+
+void LuaEntitySAO::setSprite(v2s16 p, int num_frames, float framelength,
+		bool select_horiz_by_yawpitch)
+{
+	std::ostringstream os(std::ios::binary);
+	// command (2 = set sprite)
+	writeU8(os, 2);
+	// parameters
+	writeV2S16(os, p);
+	writeU16(os, num_frames);
+	writeF1000(os, framelength);
+	writeU8(os, select_horiz_by_yawpitch);
 	// create message and add to list
 	ActiveObjectMessage aom(getId(), false, os.str());
 	m_messages_out.push_back(aom);

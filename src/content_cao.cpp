@@ -899,8 +899,8 @@ void MobV2CAO::addToScene(scene::ISceneManager *smgr, ITextureSource *tsrc)
 	
 	/*infostream<<"MobV2CAO::addToScene using texture_name="<<
 			m_texture_name<<std::endl;*/
-	std::string texture_string = "[makealpha2:128,0,0;128,128,0:";
-	texture_string += m_texture_name;
+	std::string texture_string = m_texture_name +
+			"^[makealpha:128,0,0^[makealpha:128,128,0";
 	
 	scene::MyBillboardSceneNode *bill = new scene::MyBillboardSceneNode(
 			smgr->getRootSceneNode(), smgr, -1, v3f(0,0,0), v2f(1,1));
@@ -1281,8 +1281,81 @@ private:
 	float m_yaw;
 	struct LuaEntityProperties *m_prop;
 	SmoothTranslator pos_translator;
+	// Spritesheet/animation stuff
+	v2f m_tx_size;
+	v2s16 m_tx_basepos;
+	bool m_tx_select_horiz_by_yawpitch;
+	int m_anim_frame;
+	int m_anim_num_frames;
+	float m_anim_framelength;
+	float m_anim_timer;
 
 public:
+	CLuaEntityCAO(IGameDef *gamedef):
+		LuaEntityCAO(gamedef),
+		m_selection_box(-BS/3.,-BS/3.,-BS/3., BS/3.,BS/3.,BS/3.),
+		m_meshnode(NULL),
+		m_spritenode(NULL),
+		m_position(v3f(0,10*BS,0)),
+		m_velocity(v3f(0,0,0)),
+		m_acceleration(v3f(0,0,0)),
+		m_yaw(0),
+		m_prop(new LuaEntityProperties),
+		m_tx_size(1,1),
+		m_tx_basepos(0,0),
+		m_tx_select_horiz_by_yawpitch(false),
+		m_anim_frame(0),
+		m_anim_num_frames(1),
+		m_anim_framelength(0.2),
+		m_anim_timer(0)
+	{
+		ClientActiveObject::registerType(getType(), create);
+	}
+
+	void initialize(const std::string &data)
+	{
+		infostream<<"CLuaEntityCAO: Got init data"<<std::endl;
+		
+		std::istringstream is(data, std::ios::binary);
+		// version
+		u8 version = readU8(is);
+		// check version
+		if(version != 0)
+			return;
+		// pos
+		m_position = readV3F1000(is);
+		// yaw
+		m_yaw = readF1000(is);
+		// properties
+		std::istringstream prop_is(deSerializeLongString(is), std::ios::binary);
+		m_prop->deSerialize(prop_is);
+
+		infostream<<"m_prop: "<<m_prop->dump()<<std::endl;
+
+		m_selection_box = m_prop->collisionbox;
+		m_selection_box.MinEdge *= BS;
+		m_selection_box.MaxEdge *= BS;
+			
+		pos_translator.init(m_position);
+
+		m_tx_size.X = 1.0 / m_prop->spritediv.X;
+		m_tx_size.Y = 1.0 / m_prop->spritediv.Y;
+		m_tx_basepos.X = m_tx_size.X * m_prop->initial_sprite_basepos.X;
+		m_tx_basepos.Y = m_tx_size.Y * m_prop->initial_sprite_basepos.Y;
+		
+		updateNodePos();
+	}
+
+	~CLuaEntityCAO()
+	{
+		delete m_prop;
+	}
+
+	static ClientActiveObject* create(IGameDef *gamedef)
+	{
+		return new CLuaEntityCAO(gamedef);
+	}
+
 	u8 getType() const
 	{
 		return ACTIVEOBJECT_TYPE_LUAENTITY;
@@ -1296,30 +1369,6 @@ public:
 		return pos_translator.vect_show;
 	}
 		
-	CLuaEntityCAO(IGameDef *gamedef):
-		LuaEntityCAO(gamedef),
-		m_selection_box(-BS/3.,-BS/3.,-BS/3., BS/3.,BS/3.,BS/3.),
-		m_meshnode(NULL),
-		m_spritenode(NULL),
-		m_position(v3f(0,10*BS,0)),
-		m_velocity(v3f(0,0,0)),
-		m_acceleration(v3f(0,0,0)),
-		m_yaw(0),
-		m_prop(new LuaEntityProperties)
-	{
-		ClientActiveObject::registerType(getType(), create);
-	}
-
-	~CLuaEntityCAO()
-	{
-		delete m_prop;
-	}
-
-	static ClientActiveObject* create(IGameDef *gamedef)
-	{
-		return new CLuaEntityCAO(gamedef);
-	}
-
 	void addToScene(scene::ISceneManager *smgr, ITextureSource *tsrc)
 	{
 		if(m_meshnode != NULL || m_spritenode != NULL)
@@ -1327,7 +1376,7 @@ public:
 		
 		//video::IVideoDriver* driver = smgr->getVideoDriver();
 
-		if(m_prop->visual == "single_sprite"){
+		if(m_prop->visual == "sprite"){
 			infostream<<"CLuaEntityCAO::addToScene(): single_sprite"<<std::endl;
 			m_spritenode = new scene::MyBillboardSceneNode(
 					smgr->getRootSceneNode(), smgr, -1, v3f(0,0,0), v2f(1,1));
@@ -1339,7 +1388,7 @@ public:
 			m_spritenode->setMaterialFlag(video::EMF_FOG_ENABLE, true);
 			m_spritenode->setColor(video::SColor(255,0,0,0));
 			m_spritenode->setVisible(false); /* Set visible when brightness is known */
-			m_spritenode->setSize(v2f(1,1)*1.0*BS);
+			m_spritenode->setSize(m_prop->visual_size*BS);
 			{
 				const float txs = 1.0 / 1;
 				const float tys = 1.0 / 1;
@@ -1387,6 +1436,9 @@ public:
 			
 			for(u32 i=0; i<24; ++i){
 				vertices[i].Pos *= BS;
+				vertices[i].Pos.Y *= m_prop->visual_size.Y;
+				vertices[i].Pos.X *= m_prop->visual_size.X;
+				vertices[i].Pos.Z *= m_prop->visual_size.X;
 			}
 
 			u16 indices[6] = {0,1,2,2,3,0};
@@ -1487,6 +1539,66 @@ public:
 			pos_translator.translate(dtime);
 			updateNodePos();
 		}
+
+		m_anim_timer += dtime;
+		if(m_anim_timer >= m_anim_framelength){
+			m_anim_timer -= m_anim_framelength;
+			m_anim_frame++;
+			if(m_anim_frame >= m_anim_num_frames)
+				m_anim_frame = 0;
+		}
+
+		updateTexturePos();
+	}
+
+	void updateTexturePos()
+	{
+		if(m_spritenode){
+			scene::ICameraSceneNode* camera =
+					m_spritenode->getSceneManager()->getActiveCamera();
+			if(!camera)
+				return;
+			v3f cam_to_entity = m_spritenode->getAbsolutePosition()
+					- camera->getAbsolutePosition();
+			cam_to_entity.normalize();
+
+			int row = m_tx_basepos.Y;
+			int col = m_tx_basepos.X;
+			
+			if(m_tx_select_horiz_by_yawpitch)
+			{
+				if(cam_to_entity.Y > 0.75)
+					col += 5;
+				else if(cam_to_entity.Y < -0.75)
+					col += 4;
+				else{
+					float mob_dir = atan2(cam_to_entity.Z, cam_to_entity.X) / PI * 180.;
+					float dir = mob_dir - m_yaw;
+					dir = wrapDegrees_180(dir);
+					//infostream<<"id="<<m_id<<" dir="<<dir<<std::endl;
+					if(fabs(wrapDegrees_180(dir - 0)) <= 45.1)
+						col += 2;
+					else if(fabs(wrapDegrees_180(dir - 90)) <= 45.1)
+						col += 3;
+					else if(fabs(wrapDegrees_180(dir - 180)) <= 45.1)
+						col += 0;
+					else if(fabs(wrapDegrees_180(dir + 90)) <= 45.1)
+						col += 1;
+					else
+						col += 4;
+				}
+			}
+			
+			// Animation goes downwards
+			row += m_anim_frame;
+
+			float txs = m_tx_size.X;
+			float tys = m_tx_size.Y;
+			m_spritenode->setTCoords(0, v2f(txs*(1+col), tys*(1+row)));
+			m_spritenode->setTCoords(1, v2f(txs*(1+col), tys*(0+row)));
+			m_spritenode->setTCoords(2, v2f(txs*(0+col), tys*(0+row)));
+			m_spritenode->setTCoords(3, v2f(txs*(0+col), tys*(1+row)));
+		}
 	}
 
 	void updateTextures(const std::string &mod)
@@ -1562,35 +1674,20 @@ public:
 			std::string mod = deSerializeString(is);
 			updateTextures(mod);
 		}
-	}
-
-	void initialize(const std::string &data)
-	{
-		infostream<<"CLuaEntityCAO: Got init data"<<std::endl;
-		
-		std::istringstream is(data, std::ios::binary);
-		// version
-		u8 version = readU8(is);
-		// check version
-		if(version != 0)
-			return;
-		// pos
-		m_position = readV3F1000(is);
-		// yaw
-		m_yaw = readF1000(is);
-		// properties
-		std::istringstream prop_is(deSerializeLongString(is), std::ios::binary);
-		m_prop->deSerialize(prop_is);
-
-		infostream<<"m_prop: "<<m_prop->dump()<<std::endl;
-
-		m_selection_box = m_prop->collisionbox;
-		m_selection_box.MinEdge *= BS;
-		m_selection_box.MaxEdge *= BS;
+		else if(cmd == 2) // set sprite
+		{
+			v2s16 p = readV2S16(is);
+			int num_frames = readU16(is);
+			float framelength = readF1000(is);
+			bool select_horiz_by_yawpitch = readU8(is);
 			
-		pos_translator.init(m_position);
-		
-		updateNodePos();
+			m_tx_basepos = p;
+			m_anim_num_frames = num_frames;
+			m_anim_framelength = framelength;
+			m_tx_select_horiz_by_yawpitch = select_horiz_by_yawpitch;
+
+			updateTexturePos();
+		}
 	}
 };
 

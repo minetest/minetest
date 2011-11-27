@@ -148,6 +148,19 @@ inline v3f readV3F1000(u8 *data)
 	return p;
 }
 
+inline void writeV2F1000(u8 *data, v2f p)
+{
+	writeF1000(&data[0], p.X);
+	writeF1000(&data[4], p.Y);
+}
+inline v2f readV2F1000(u8 *data)
+{
+	v2f p;
+	p.X = (float)readF1000(&data[0]);
+	p.Y = (float)readF1000(&data[4]);
+	return p;
+}
+
 inline void writeV2S16(u8 *data, v2s16 p)
 {
 	writeS16(&data[0], p.X);
@@ -272,6 +285,45 @@ inline v3f readV3F1000(std::istream &is)
 	char buf[12];
 	is.read(buf, 12);
 	return readV3F1000((u8*)buf);
+}
+
+inline void writeV2F1000(std::ostream &os, v2f p)
+{
+	char buf[8];
+	writeV2F1000((u8*)buf, p);
+	os.write(buf, 8);
+}
+inline v2f readV2F1000(std::istream &is)
+{
+	char buf[8];
+	is.read(buf, 8);
+	return readV2F1000((u8*)buf);
+}
+
+inline void writeV2S16(std::ostream &os, v2s16 p)
+{
+	char buf[4];
+	writeV2S16((u8*)buf, p);
+	os.write(buf, 4);
+}
+inline v2s16 readV2S16(std::istream &is)
+{
+	char buf[4];
+	is.read(buf, 4);
+	return readV2S16((u8*)buf);
+}
+
+inline void writeV3S16(std::ostream &os, v3s16 p)
+{
+	char buf[6];
+	writeV3S16((u8*)buf, p);
+	os.write(buf, 6);
+}
+inline v3s16 readV3S16(std::istream &is)
+{
+	char buf[6];
+	is.read(buf, 6);
+	return readV3S16((u8*)buf);
 }
 
 /*

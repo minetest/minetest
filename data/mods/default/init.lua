@@ -49,6 +49,9 @@
 -- - setpos(pos); pos={x=num, y=num, z=num}
 -- - moveto(pos, continuous=false): interpolated move
 -- - add_to_inventory(itemstring): add an item to object inventory
+-- - settexturemod(mod)
+-- - setsprite(p={x=0,y=0}, num_frames=1, framelength=0.2,
+-- -           select_horiz_by_yawpitch=false)
 --
 -- Registered entities:
 -- - Functions receive a "luaentity" as self:
@@ -1171,8 +1174,6 @@ local TNT = {
 	collisionbox = {-0.5,-0.5,-0.5, 0.5,0.5,0.5},
 	visual = "cube",
 	textures = {"tnt_top.png","tnt_bottom.png","tnt_side.png","tnt_side.png","tnt_side.png","tnt_side.png"},
-	--visual = "single_sprite",
-	--textures = {"mese.png^[forcesingle"},
 	-- Initial value for our timer
 	timer = 0,
 	-- Number of punches required to defuse
@@ -1226,6 +1227,36 @@ print("TNT dump: "..dump(TNT))
 
 print("Registering TNT");
 minetest.register_entity("TNT", TNT)
+
+
+minetest.register_entity("testentity", {
+	-- Static definition
+	physical = true, -- Collides with things
+	-- weight = 5,
+	collisionbox = {-0.7,-1.35,-0.7, 0.7,1.0,0.7},
+	--collisionbox = {-0.5,-0.5,-0.5, 0.5,0.5,0.5},
+	visual = "sprite",
+	visual_size = {x=2, y=3},
+	textures = {"dungeon_master.png^[makealpha:128,0,0^[makealpha:128,128,0"},
+	spritediv = {x=6, y=5},
+	initial_sprite_basepos = {x=0, y=0},
+
+	on_activate = function(self, staticdata)
+		print("testentity.on_activate")
+		self.object:setsprite({x=0,y=0}, 1, 0, true)
+		--self.object:setsprite({x=0,y=0}, 4, 0.3, true)
+
+		-- Set gravity
+		self.object:setacceleration({x=0, y=-10, z=0})
+		-- Jump a bit upwards
+		self.object:setvelocity({x=0, y=10, z=0})
+	end,
+
+	on_punch = function(self, hitter)
+		self.object:remove()
+		hitter:add_to_inventory('CraftItem testobject1 1')
+	end,
+})
 
 --
 -- Falling stuff

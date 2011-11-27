@@ -31,7 +31,10 @@ struct LuaEntityProperties
 	float weight;
 	core::aabbox3d<f32> collisionbox;
 	std::string visual;
+	v2f visual_size;
 	core::array<std::string> textures;
+	v2s16 spritediv;
+	v2s16 initial_sprite_basepos;
 
 	LuaEntityProperties();
 	std::string dump();

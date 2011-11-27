@@ -72,11 +72,16 @@ collisionMoveResult collisionMoveSimple(Map *map, IGameDef *gamedef,
 	
 	/*
 		Go through every node around the object
-		TODO: Calculate the range of nodes that need to be checked
 	*/
-	for(s16 y = oldpos_i.Y - 1; y <= oldpos_i.Y + 2; y++)
-	for(s16 z = oldpos_i.Z - 1; z <= oldpos_i.Z + 1; z++)
-	for(s16 x = oldpos_i.X - 1; x <= oldpos_i.X + 1; x++)
+	s16 min_x = (box_0.MinEdge.X / BS) - 2;
+	s16 min_y = (box_0.MinEdge.Y / BS) - 2;
+	s16 min_z = (box_0.MinEdge.Z / BS) - 2;
+	s16 max_x = (box_0.MaxEdge.X / BS) + 1;
+	s16 max_y = (box_0.MaxEdge.Y / BS) + 1;
+	s16 max_z = (box_0.MaxEdge.Z / BS) + 1;
+	for(s16 y = oldpos_i.Y + min_y; y <= oldpos_i.Y + max_y; y++)
+	for(s16 z = oldpos_i.Z + min_z; z <= oldpos_i.Z + max_z; z++)
+	for(s16 x = oldpos_i.X + min_x; x <= oldpos_i.X + max_x; x++)
 	{
 		try{
 			// Object collides into walkable nodes

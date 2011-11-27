@@ -142,6 +142,18 @@ static v3f readFloatPos(lua_State *L, int index)
 	return pos;
 }
 
+static void pushFloatPos(lua_State *L, v3f p)
+{
+	p /= BS;
+	lua_newtable(L);
+	lua_pushnumber(L, p.X);
+	lua_setfield(L, -2, "x");
+	lua_pushnumber(L, p.Y);
+	lua_setfield(L, -2, "y");
+	lua_pushnumber(L, p.Z);
+	lua_setfield(L, -2, "z");
+}
+
 static void pushpos(lua_State *L, v3s16 p)
 {
 	lua_newtable(L);
@@ -239,6 +251,32 @@ static core::aabbox3d<f32> read_aabbox3df32(lua_State *L, int index, f32 scale)
 	return box;
 }
 
+static v2s16 read_v2s16(lua_State *L, int index)
+{
+	v2s16 p;
+	luaL_checktype(L, index, LUA_TTABLE);
+	lua_getfield(L, index, "x");
+	p.X = lua_tonumber(L, -1);
+	lua_pop(L, 1);
+	lua_getfield(L, index, "y");
+	p.Y = lua_tonumber(L, -1);
+	lua_pop(L, 1);
+	return p;
+}
+
+static v2f read_v2f(lua_State *L, int index)
+{
+	v2f p;
+	luaL_checktype(L, index, LUA_TTABLE);
+	lua_getfield(L, index, "x");
+	p.X = lua_tonumber(L, -1);
+	lua_pop(L, 1);
+	lua_getfield(L, index, "y");
+	p.Y = lua_tonumber(L, -1);
+	lua_pop(L, 1);
+	return p;
+}
+
 static bool getstringfield(lua_State *L, int table,
 		const char *fieldname, std::string &result)
 {
@@ -306,6 +344,14 @@ static int getintfield_default(lua_State *L, int table,
 	getintfield(L, table, fieldname, result);
 	return result;
 }
+
+/*static float getfloatfield_default(lua_State *L, int table,
+		const char *fieldname, float default_)
+{
+	float result = default_;
+	getfloatfield(L, table, fieldname, result);
+	return result;
+}*/
 
 static bool getboolfield_default(lua_State *L, int table,
 		const char *fieldname, bool default_)
@@ -1235,6 +1281,18 @@ private:
 		return 0;
 	}
 	
+	// getacceleration(self)
+	static int l_getacceleration(lua_State *L)
+	{
+		ObjectRef *ref = checkobject(L, 1);
+		LuaEntitySAO *co = getluaobject(ref);
+		if(co == NULL) return 0;
+		// Do it
+		v3f v = co->getAcceleration();
+		pushFloatPos(L, v);
+		return 1;
+	}
+	
 	// add_to_inventory(self, itemstring)
 	// returns: true if item was added, false otherwise
 	static int l_add_to_inventory(lua_State *L)
@@ -1269,6 +1327,30 @@ private:
 		// Do it
 		std::string mod = lua_tostring(L, 2);
 		co->setTextureMod(mod);
+		return 0;
+	}
+	
+	// setsprite(self, p={x=0,y=0}, num_frames=1, framelength=0.2,
+	//           select_horiz_by_yawpitch=false)
+	static int l_setsprite(lua_State *L)
+	{
+		ObjectRef *ref = checkobject(L, 1);
+		LuaEntitySAO *co = getluaobject(ref);
+		if(co == NULL) return 0;
+		// Do it
+		v2s16 p(0,0);
+		if(!lua_isnil(L, 2))
+			p = read_v2s16(L, 2);
+		int num_frames = 1;
+		if(!lua_isnil(L, 3))
+			num_frames = lua_tonumber(L, 3);
+		float framelength = 0.2;
+		if(!lua_isnil(L, 4))
+			framelength = lua_tonumber(L, 4);
+		bool select_horiz_by_yawpitch = false;
+		if(!lua_isnil(L, 5))
+			select_horiz_by_yawpitch = lua_toboolean(L, 5);
+		co->setSprite(p, num_frames, framelength, select_horiz_by_yawpitch);
 		return 0;
 	}
 	
@@ -1343,6 +1425,7 @@ const luaL_reg ObjectRef::methods[] = {
 	method(ObjectRef, setacceleration),
 	method(ObjectRef, add_to_inventory),
 	method(ObjectRef, settexturemod),
+	method(ObjectRef, setsprite),
 	{0,0}
 };
 
@@ -1859,25 +1942,24 @@ void scriptapi_luaentity_get_properties(lua_State *L, u16 id,
 	luaentity_get(L, id);
 	//int object = lua_gettop(L);
 
-	lua_getfield(L, -1, "physical");
-	if(lua_isboolean(L, -1))
-		prop->physical = lua_toboolean(L, -1);
-	lua_pop(L, 1);
+	/* Read stuff */
 	
-	lua_getfield(L, -1, "weight");
-	prop->weight = lua_tonumber(L, -1);
-	lua_pop(L, 1);
+	getboolfield(L, -1, "physical", prop->physical);
+
+	getfloatfield(L, -1, "weight", prop->weight);
 
 	lua_getfield(L, -1, "collisionbox");
 	if(lua_istable(L, -1))
 		prop->collisionbox = read_aabbox3df32(L, -1, 1.0);
 	lua_pop(L, 1);
 
-	lua_getfield(L, -1, "visual");
-	if(lua_isstring(L, -1))
-		prop->visual = lua_tostring(L, -1);
-	lua_pop(L, 1);
+	getstringfield(L, -1, "visual", prop->visual);
 	
+	lua_getfield(L, -1, "visual_size");
+	if(lua_istable(L, -1))
+		prop->visual_size = read_v2f(L, -1);
+	lua_pop(L, 1);
+
 	lua_getfield(L, -1, "textures");
 	if(lua_istable(L, -1)){
 		prop->textures.clear();
@@ -1894,7 +1976,16 @@ void scriptapi_luaentity_get_properties(lua_State *L, u16 id,
 		}
 	}
 	lua_pop(L, 1);
+	
+	lua_getfield(L, -1, "spritediv");
+	if(lua_istable(L, -1))
+		prop->spritediv = read_v2s16(L, -1);
+	lua_pop(L, 1);
 
+	lua_getfield(L, -1, "initial_sprite_basepos");
+	if(lua_istable(L, -1))
+		prop->initial_sprite_basepos = read_v2s16(L, -1);
+	lua_pop(L, 1);
 }
 
 void scriptapi_luaentity_step(lua_State *L, u16 id, float dtime)
