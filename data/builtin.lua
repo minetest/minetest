@@ -148,7 +148,7 @@ minetest.register_node("ignore", {
 })
 
 --
--- Chat message processing
+-- Callback registration
 --
 
 function make_registration()
