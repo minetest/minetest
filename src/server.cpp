@@ -3032,7 +3032,7 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 				/*
 					Create the object
 				*/
-				ServerActiveObject *obj = item->createSAO(m_env, 0, pos);
+				ServerActiveObject *obj = item->createSAO(m_env, pos);
 
 				if(obj == NULL)
 				{
@@ -3243,7 +3243,7 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 				// Disallow moving items if not allowed to build
 				else if((getPlayerPrivs(player) & PRIV_BUILD) == 0)
 				{
-					return;
+					disable_action = true;
 				}
 				// if it's a locking chest, only allow the owner or server admins to move items
 				else if (ma->from_inv != "current_player" && (getPlayerPrivs(player) & PRIV_SERVER) == 0)
@@ -3260,7 +3260,7 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 						if(meta && meta->typeId() == LEGN(m_nodedef, "CONTENT_LOCKABLE_CHEST")) {
 							LockingChestNodeMetadata *lcm = (LockingChestNodeMetadata*)meta;
 							if (lcm->getOwner() != player->getName())
-								return;
+								disable_action = true;
 						}
 					}
 				}
@@ -3278,7 +3278,36 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 						if(meta && meta->typeId() == LEGN(m_nodedef, "CONTENT_LOCKABLE_CHEST")) {
 							LockingChestNodeMetadata *lcm = (LockingChestNodeMetadata*)meta;
 							if (lcm->getOwner() != player->getName())
-								return;
+								disable_action = true;
+						}
+					}
+				}
+			}
+
+			if(a->getType() == IACTION_DROP)
+			{
+				IDropAction *da = (IDropAction*)a;
+				// Disallow dropping items if not allowed to build
+				if((getPlayerPrivs(player) & PRIV_BUILD) == 0)
+				{
+					disable_action = true;
+				}
+				// if it's a locking chest, only allow the owner or server admins to drop items
+				else if (da->from_inv != "current_player" && (getPlayerPrivs(player) & PRIV_SERVER) == 0)
+				{
+					Strfnd fn(da->from_inv);
+					std::string id0 = fn.next(":");
+					if(id0 == "nodemeta")
+					{
+						v3s16 p;
+						p.X = stoi(fn.next(","));
+						p.Y = stoi(fn.next(","));
+						p.Z = stoi(fn.next(","));
+						NodeMetadata *meta = m_env->getMap().getNodeMetadata(p);
+						if(meta && meta->typeId() == LEGN(m_nodedef, "CONTENT_LOCKABLE_CHEST")) {
+							LockingChestNodeMetadata *lcm = (LockingChestNodeMetadata*)meta;
+							if (lcm->getOwner() != player->getName())
+								disable_action = true;
 						}
 					}
 				}
@@ -3287,9 +3316,7 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 			if(disable_action == false)
 			{
 				// Feed action to player inventory
-				a->apply(&c, this);
-				// Eat the action
-				delete a;
+				a->apply(&c, this, m_env);
 			}
 			else
 			{
@@ -3297,6 +3324,9 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 				UpdateCrafting(player->peer_id);
 				SendInventory(player->peer_id);
 			}
+
+			// Eat the action
+			delete a;
 		}
 		else
 		{

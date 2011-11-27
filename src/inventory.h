@@ -62,7 +62,7 @@ public:
 	// Returns the string used for inventory
 	virtual std::string getItemString();
 	// Creates an object from the item, to be placed in the world.
-	virtual ServerActiveObject* createSAO(ServerEnvironment *env, u16 id, v3f pos);
+	virtual ServerActiveObject* createSAO(ServerEnvironment *env, v3f pos);
 	// Gets amount of items that dropping one SAO will decrement
 	virtual u16 getDropCount() const { return getCount(); }
 
@@ -252,7 +252,7 @@ public:
 		return os.str();
 	}
 
-	ServerActiveObject* createSAO(ServerEnvironment *env, u16 id, v3f pos);
+	ServerActiveObject* createSAO(ServerEnvironment *env, v3f pos);
 	u16 getDropCount() const;
 
 	virtual bool addableTo(const InventoryItem *other) const
@@ -535,6 +535,7 @@ public:
 };
 
 #define IACTION_MOVE 0
+#define IACTION_DROP 1
 
 struct InventoryAction
 {
@@ -542,7 +543,8 @@ struct InventoryAction
 	
 	virtual u16 getType() const = 0;
 	virtual void serialize(std::ostream &os) const = 0;
-	virtual void apply(InventoryContext *c, InventoryManager *mgr) = 0;
+	virtual void apply(InventoryContext *c, InventoryManager *mgr,
+			ServerEnvironment *env) = 0;
 };
 
 struct IMoveAction : public InventoryAction
@@ -582,7 +584,42 @@ struct IMoveAction : public InventoryAction
 		os<<to_i;
 	}
 
-	void apply(InventoryContext *c, InventoryManager *mgr);
+	void apply(InventoryContext *c, InventoryManager *mgr,
+			ServerEnvironment *env);
+};
+
+struct IDropAction : public InventoryAction
+{
+	// count=0 means "everything"
+	u16 count;
+	std::string from_inv;
+	std::string from_list;
+	s16 from_i;
+	
+	IDropAction()
+	{
+		count = 0;
+		from_i = -1;
+	}
+	
+	IDropAction(std::istream &is);
+
+	u16 getType() const
+	{
+		return IACTION_DROP;
+	}
+
+	void serialize(std::ostream &os) const
+	{
+		os<<"Drop ";
+		os<<count<<" ";
+		os<<from_inv<<" ";
+		os<<from_list<<" ";
+		os<<from_i;
+	}
+
+	void apply(InventoryContext *c, InventoryManager *mgr,
+			ServerEnvironment *env);
 };
 
 /*

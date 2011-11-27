@@ -206,6 +206,21 @@ void GUIKeyChangeMenu::regenerateGui(v2u32 screensize)
 	{
 		core::rect < s32 > rect(0, 0, 100, 20);
 		rect += topleft + v2s32(offset.X, offset.Y);
+		Environment->addStaticText(wgettext("Drop"), rect, false, true, this, -1);
+		//t->setTextAlignment(gui::EGUIA_CENTER, gui::EGUIA_UPPERLEFT);
+	}
+
+	{
+		core::rect < s32 > rect(0, 0, 100, 30);
+		rect += topleft + v2s32(offset.X + 105, offset.Y - 5);
+		this->dropbtn = Environment->addButton(rect, this, GUI_ID_KEY_DROP_BUTTON,
+				wgettext(key_drop.name()));
+	}
+
+	offset += v2s32(0, 25);
+	{
+		core::rect < s32 > rect(0, 0, 100, 20);
+		rect += topleft + v2s32(offset.X, offset.Y);
 		Environment->addStaticText(wgettext("Inventory"),
 				rect, false, true, this, -1);
 		//t->setTextAlignment(gui::EGUIA_CENTER, gui::EGUIA_UPPERLEFT);
@@ -352,6 +367,7 @@ bool GUIKeyChangeMenu::acceptInput()
 	g_settings->set("keymap_right", key_right.sym());
 	g_settings->set("keymap_jump", key_jump.sym());
 	g_settings->set("keymap_sneak", key_sneak.sym());
+	g_settings->set("keymap_drop", key_drop.sym());
 	g_settings->set("keymap_inventory", key_inventory.sym());
 	g_settings->set("keymap_chat", key_chat.sym());
 	g_settings->set("keymap_cmd", key_cmd.sym());
@@ -371,6 +387,7 @@ void GUIKeyChangeMenu::init_keys()
 	key_right = getKeySetting("keymap_right");
 	key_jump = getKeySetting("keymap_jump");
 	key_sneak = getKeySetting("keymap_sneak");
+	key_drop = getKeySetting("keymap_drop");
 	key_inventory = getKeySetting("keymap_inventory");
 	key_chat = getKeySetting("keymap_chat");
 	key_cmd = getKeySetting("keymap_cmd");
@@ -406,6 +423,9 @@ bool GUIKeyChangeMenu::resetMenu()
 			break;
 		case GUI_ID_KEY_SNEAK_BUTTON:
 			this->sneak->setText(wgettext(key_sneak.name()));
+			break;
+		case GUI_ID_KEY_DROP_BUTTON:
+			this->dropbtn->setText(wgettext(key_drop.name()));
 			break;
 		case GUI_ID_KEY_INVENTORY_BUTTON:
 			this->inventory->setText(
@@ -475,6 +495,11 @@ bool GUIKeyChangeMenu::OnEvent(const SEvent& event)
 		{
 			this->sneak->setText(wgettext(kp.name()));
 			this->key_sneak = kp;
+		}
+		else if (activeKey == GUI_ID_KEY_DROP_BUTTON)
+		{
+			this->dropbtn->setText(wgettext(kp.name()));
+			this->key_drop = kp;
 		}
 		else if (activeKey == GUI_ID_KEY_INVENTORY_BUTTON)
 		{
@@ -589,6 +614,11 @@ bool GUIKeyChangeMenu::OnEvent(const SEvent& event)
 				resetMenu();
 				activeKey = event.GUIEvent.Caller->getID();
 				this->jump->setText(wgettext("press Key"));
+				break;
+			case GUI_ID_KEY_DROP_BUTTON:
+				resetMenu();
+				activeKey = event.GUIEvent.Caller->getID();
+				this->dropbtn->setText(wgettext("press Key"));
 				break;
 			case GUI_ID_KEY_CHAT_BUTTON:
 				resetMenu();

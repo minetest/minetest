@@ -1215,9 +1215,19 @@ void the_game(
 		input->step(dtime);
 
 		/*
-			Launch menus according to keys
+			Launch menus and trigger stuff according to keys
 		*/
-		if(input->wasKeyDown(getKeySetting("keymap_inventory")))
+		if(input->wasKeyDown(getKeySetting("keymap_drop")))
+		{
+			// drop selected item
+			IDropAction *a = new IDropAction();
+			a->count = 0;
+			a->from_inv = "current_player";
+			a->from_list = "main";
+			a->from_i = g_selected_item;
+			client.inventoryAction(a);
+		}
+		else if(input->wasKeyDown(getKeySetting("keymap_inventory")))
 		{
 			infostream<<"the_game: "
 					<<"Launching inventory"<<std::endl;

@@ -27,6 +27,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "content_mapnode.h"
 #include "content_inventory.h"
 #include "content_sao.h"
+#include "environment.h"
+#include "mapblock.h"
 #include "player.h"
 #include "log.h"
 #include "nodedef.h"
@@ -173,7 +175,7 @@ std::string InventoryItem::getItemString() {
 	return os.str();
 }
 
-ServerActiveObject* InventoryItem::createSAO(ServerEnvironment *env, u16 id, v3f pos)
+ServerActiveObject* InventoryItem::createSAO(ServerEnvironment *env, v3f pos)
 {
 	/*
 		Create an ItemSAO
@@ -307,14 +309,14 @@ video::ITexture * CraftItem::getImage() const
 }
 #endif
 
-ServerActiveObject* CraftItem::createSAO(ServerEnvironment *env, u16 id, v3f pos)
+ServerActiveObject* CraftItem::createSAO(ServerEnvironment *env, v3f pos)
 {
 	// Special cases
 	ServerActiveObject *obj = item_craft_create_object(m_subname, env, pos);
 	if(obj)
 		return obj;
 	// Default
-	return InventoryItem::createSAO(env, id, pos);
+	return InventoryItem::createSAO(env, pos);
 }
 
 u16 CraftItem::getDropCount() const
@@ -884,6 +886,10 @@ InventoryAction * InventoryAction::deSerialize(std::istream &is)
 	{
 		a = new IMoveAction(is);
 	}
+	else if(type == "Drop")
+	{
+		a = new IDropAction(is);
+	}
 
 	return a;
 }
@@ -918,7 +924,8 @@ IMoveAction::IMoveAction(std::istream &is)
 	to_i = stoi(ts);
 }
 
-void IMoveAction::apply(InventoryContext *c, InventoryManager *mgr)
+void IMoveAction::apply(InventoryContext *c, InventoryManager *mgr,
+		ServerEnvironment *env)
 {
 	Inventory *inv_from = mgr->getInventory(c, from_inv);
 	Inventory *inv_to = mgr->getInventory(c, to_inv);
@@ -1019,6 +1026,100 @@ void IMoveAction::apply(InventoryContext *c, InventoryManager *mgr)
 			<<" to inv=\""<<to_inv<<"\""
 			<<" list=\""<<to_list<<"\""
 			<<" i="<<to_i
+			<<std::endl;
+}
+
+IDropAction::IDropAction(std::istream &is)
+{
+	std::string ts;
+
+	std::getline(is, ts, ' ');
+	count = stoi(ts);
+
+	std::getline(is, from_inv, ' ');
+
+	std::getline(is, from_list, ' ');
+
+	std::getline(is, ts, ' ');
+	from_i = stoi(ts);
+}
+
+void IDropAction::apply(InventoryContext *c, InventoryManager *mgr,
+		ServerEnvironment *env)
+{
+	Inventory *inv_from = mgr->getInventory(c, from_inv);
+	
+	if(!inv_from){
+		infostream<<"IDropAction::apply(): FAIL: source inventory not found: "
+				<<"context=["<<describeC(c)<<"], from_inv=\""<<from_inv<<"\""<<std::endl;
+		return;
+	}
+
+	InventoryList *list_from = inv_from->getList(from_list);
+
+	/*
+		If a list doesn't exist or the source item doesn't exist
+	*/
+	if(!list_from){
+		infostream<<"IDropAction::apply(): FAIL: source list not found: "
+				<<"context=["<<describeC(c)<<"], from_inv=\""<<from_inv<<"\""
+				<<", from_list=\""<<from_list<<"\""<<std::endl;
+		return;
+	}
+	if(list_from->getItem(from_i) == NULL)
+	{
+		infostream<<"IDropAction::apply(): FAIL: source item not found: "
+				<<"context=["<<describeC(c)<<"], from_inv=\""<<from_inv<<"\""
+				<<", from_list=\""<<from_list<<"\""
+				<<" from_i="<<from_i<<std::endl;
+		return;
+	}
+
+	v3f pos = c->current_player->getPosition();
+	pos.Y += 0.5*BS;
+	v3s16 blockpos = getNodeBlockPos(floatToInt(pos, BS));
+
+	/*
+		Ensure that the block is loaded so that the item
+		can properly be added to the static list too
+	*/
+	MapBlock *block = env->getMap().emergeBlock(blockpos, false);
+	if(block==NULL)
+	{
+		infostream<<"IDropAction::apply(): FAIL: block not found: "
+				<<blockpos.X<<","<<blockpos.Y<<","<<blockpos.Z
+				<<std::endl;
+		return;
+	}
+
+	// Take item from source list
+	if(count == 0)
+		count = list_from->getItem(from_i)->getDropCount();
+	InventoryItem *item1 = list_from->takeItem(from_i, count);
+
+	// Create an active object
+	ServerActiveObject *obj = item1->createSAO(env, pos);
+	if(obj == NULL)
+	{
+		infostream<<"IDropAction::apply(): item resulted in NULL object, "
+			<<"not placing onto map"
+			<<std::endl;
+	}
+	else
+	{
+		// Add the object to the environment
+		env->addActiveObject(obj);
+
+		infostream<<"Dropped object"<<std::endl;
+	}
+
+	mgr->inventoryModified(c, from_inv);
+
+	infostream<<"IDropAction::apply(): dropped "
+			<<"["<<describeC(c)<<"]"
+			<<" from inv=\""<<from_inv<<"\""
+			<<" list=\""<<from_list<<"\""
+			<<" i="<<from_i
 			<<std::endl;
 }
 

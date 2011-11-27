@@ -45,6 +45,7 @@ enum
 	GUI_ID_KEY_CHAT_BUTTON,
 	GUI_ID_KEY_CMD_BUTTON,
 	GUI_ID_KEY_SNEAK_BUTTON,
+	GUI_ID_KEY_DROP_BUTTON,
 	GUI_ID_KEY_INVENTORY_BUTTON,
 	GUI_ID_KEY_DUMP_BUTTON,
 	GUI_ID_KEY_RANGE_BUTTON
@@ -82,6 +83,7 @@ private:
 	gui::IGUIButton *use;
 	gui::IGUIButton *sneak;
 	gui::IGUIButton *jump;
+	gui::IGUIButton *dropbtn;
 	gui::IGUIButton *inventory;
 	gui::IGUIButton *fly;
 	gui::IGUIButton *fast;
@@ -98,6 +100,7 @@ private:
 	KeyPress key_use;
 	KeyPress key_sneak;
 	KeyPress key_jump;
+	KeyPress key_drop;
 	KeyPress key_inventory;
 	KeyPress key_fly;
 	KeyPress key_fast;
