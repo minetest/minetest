@@ -1420,20 +1420,6 @@ void scriptapi_export(lua_State *L, Server *server)
 	lua_setfield(L, -2, "registered_nodes");
 	lua_newtable(L);
 	lua_setfield(L, -2, "registered_entities");
-	lua_newtable(L);
-	lua_setfield(L, -2, "registered_globalsteps");
-	lua_newtable(L);
-	lua_setfield(L, -2, "registered_on_placenodes");
-	lua_newtable(L);
-	lua_setfield(L, -2, "registered_on_dignodes");
-	lua_newtable(L);
-	lua_setfield(L, -2, "registered_on_punchnodes");
-	lua_newtable(L);
-	lua_setfield(L, -2, "registered_on_generateds");
-	lua_newtable(L);
-	lua_setfield(L, -2, "registered_on_newplayers");
-	lua_newtable(L);
-	lua_setfield(L, -2, "registered_on_respawnplayers");
 	
 	lua_newtable(L);
 	lua_setfield(L, -2, "object_refs");
