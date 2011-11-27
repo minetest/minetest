@@ -22,6 +22,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <map>
 #include <list>
 #include <sstream>
+#include <algorithm>
 #include "threads.h"
 #include "debug.h"
 #include "gettime.h"
@@ -46,10 +47,26 @@ void log_add_output_all_levs(ILogOutput *out)
 		log_outputs[i].push_back(out);
 }
 
+void log_remove_output(ILogOutput *out)
+{
+	for(int i=0; i<LMT_NUM_VALUES; i++){
+		std::list<ILogOutput*>::iterator it =
+				std::find(log_outputs[i].begin(), log_outputs[i].end(), out);
+		if(it != log_outputs[i].end())
+			log_outputs[i].erase(it);
+	}
+}
+
 void log_register_thread(const std::string &name)
 {
 	threadid_t id = get_current_thread_id();
 	log_threadnames[id] = name;
+}
+
+void log_deregister_thread()
+{
+	threadid_t id = get_current_thread_id();
+	log_threadnames.erase(id);
 }
 
 static std::string get_lev_string(enum LogMessageLevel lev)

@@ -48,8 +48,10 @@ public:
 void log_add_output(ILogOutput *out, enum LogMessageLevel lev);
 void log_add_output_maxlev(ILogOutput *out, enum LogMessageLevel lev);
 void log_add_output_all_levs(ILogOutput *out);
+void log_remove_output(ILogOutput *out);
 
 void log_register_thread(const std::string &name);
+void log_deregister_thread();
 
 void log_printline(enum LogMessageLevel lev, const std::string &text);
 
