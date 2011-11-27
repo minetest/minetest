@@ -325,6 +325,8 @@ void * EmergeThread::Thread()
 
 	END_DEBUG_EXCEPTION_HANDLER(errorstream)
 
+	log_deregister_thread();
+
 	return NULL;
 }
 
