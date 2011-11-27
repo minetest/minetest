@@ -28,7 +28,7 @@ LuaEntityProperties::LuaEntityProperties():
 	physical(false),
 	weight(5),
 	collisionbox(-0.5,-0.5,-0.5, 0.5,0.5,0.5),
-	visual("single_sprite"),
+	visual("sprite"),
 	visual_size(1,1),
 	spritediv(1,1),
 	initial_sprite_basepos(0,0)
