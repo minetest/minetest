@@ -979,6 +979,7 @@ static core::list<ModSpec> getMods(core::list<std::string> &modspaths)
 				mods_satisfied.push(spec);
 		}
 	}
+	// Sort by depencencies
 	while(!mods_satisfied.empty()){
 		ModSpec mod = mods_satisfied.front();
 		mods_satisfied.pop();
@@ -993,6 +994,22 @@ static core::list<ModSpec> getMods(core::list<std::string> &modspaths)
 				continue;
 			mods_satisfied.push(mod2);
 		}
+	}
+	// Check unsatisfied dependencies
+	for(core::list<ModSpec>::Iterator i = mods_unsorted.begin();
+			i != mods_unsorted.end(); i++){
+		ModSpec mod = *i;
+		if(mod.unsatisfied_depends.empty())
+			continue;
+		errorstream<<"mod \""<<mod.name
+				<<"\" has unsatisfied dependencies:";
+		for(std::set<std::string>::iterator
+				i = mod.unsatisfied_depends.begin();
+				i != mod.unsatisfied_depends.end(); i++){
+			errorstream<<" \""<<(*i)<<"\"";
+		}
+		errorstream<<". Loading nevertheless."<<std::endl;
+		mods_sorted.push_back(mod);
 	}
 	return mods_sorted;
 }
