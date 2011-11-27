@@ -1078,7 +1078,8 @@ Server::Server(
 	
 	// Initialize Environment
 	
-	m_env = new ServerEnvironment(new ServerMap(mapsavedir, this), m_lua, this);
+	m_env = new ServerEnvironment(new ServerMap(mapsavedir, this), m_lua,
+			this, this);
 
 	// Give environment reference to scripting api
 	scriptapi_add_environment(m_lua, m_env);
@@ -4588,6 +4589,14 @@ void Server::notifyPlayer(const char *name, const std::wstring msg)
 void Server::notifyPlayers(const std::wstring msg)
 {
 	BroadcastChatMessage(msg);
+}
+
+void Server::queueBlockEmerge(v3s16 blockpos, bool allow_generate)
+{
+	u8 flags = 0;
+	if(!allow_generate)
+		flags |= BLOCK_EMERGE_FLAG_FROMDISK;
+	m_emerge_queue.addBlock(PEER_ID_INEXISTENT, blockpos, flags);
 }
 
 // IGameDef interface

@@ -273,10 +273,11 @@ void ActiveBlockList::update(core::list<v3s16> &active_positions,
 */
 
 ServerEnvironment::ServerEnvironment(ServerMap *map, lua_State *L,
-		IGameDef *gamedef):
+		IGameDef *gamedef, IBackgroundBlockEmerger *emerger):
 	m_map(map),
 	m_lua(L),
 	m_gamedef(gamedef),
+	m_emerger(emerger),
 	m_random_spawn_timer(3),
 	m_send_recommended_timer(0),
 	m_game_time(0),
@@ -891,8 +892,12 @@ void ServerEnvironment::step(float dtime)
 					<<") became active"<<std::endl;*/
 
 			MapBlock *block = m_map->getBlockNoCreateNoEx(p);
-			if(block==NULL)
+			if(block==NULL){
+				// Block needs to be fetched first
+				m_emerger->queueBlockEmerge(p, false);
+				m_active_blocks.m_list.remove(p);
 				continue;
+			}
 
 			activateBlock(block);
 		}

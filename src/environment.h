@@ -120,6 +120,12 @@ public:
 private:
 };
 
+class IBackgroundBlockEmerger
+{
+public:
+	virtual void queueBlockEmerge(v3s16 blockpos, bool allow_generate)=0;
+};
+
 /*
 	The server-side environment.
 
@@ -129,7 +135,8 @@ private:
 class ServerEnvironment : public Environment
 {
 public:
-	ServerEnvironment(ServerMap *map, lua_State *L, IGameDef *gamedef);
+	ServerEnvironment(ServerMap *map, lua_State *L, IGameDef *gamedef,
+			IBackgroundBlockEmerger *emerger);
 	~ServerEnvironment();
 
 	Map & getMap()
@@ -279,6 +286,8 @@ private:
 	lua_State *m_lua;
 	// Game definition
 	IGameDef *m_gamedef;
+	// Background block emerger (the server, in practice)
+	IBackgroundBlockEmerger *m_emerger;
 	// Active object list
 	core::map<u16, ServerActiveObject*> m_active_objects;
 	// Outgoing network message buffer for active objects

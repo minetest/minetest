@@ -366,7 +366,8 @@ private:
 };
 
 class Server : public con::PeerHandler, public MapEventReceiver,
-		public InventoryManager, public IGameDef
+		public InventoryManager, public IGameDef,
+		public IBackgroundBlockEmerger
 {
 public:
 	/*
@@ -483,6 +484,8 @@ public:
 	// Envlock and conlock should be locked when calling this
 	void notifyPlayer(const char *name, const std::wstring msg);
 	void notifyPlayers(const std::wstring msg);
+
+	void queueBlockEmerge(v3s16 blockpos, bool allow_generate);
 	
 	// Envlock and conlock should be locked when using Lua
 	lua_State *getLua(){ return m_lua; }
