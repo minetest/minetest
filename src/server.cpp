@@ -986,7 +986,7 @@ static core::list<ModSpec> getMods(core::list<std::string> &modspaths)
 		mods_sorted.push_back(mod);
 		for(core::list<ModSpec>::Iterator i = mods_unsorted.begin();
 				i != mods_unsorted.end(); i++){
-			ModSpec mod2 = *i;
+			ModSpec &mod2 = *i;
 			if(mod2.unsatisfied_depends.empty())
 				continue;
 			mod2.unsatisfied_depends.erase(mod.name);
@@ -998,7 +998,7 @@ static core::list<ModSpec> getMods(core::list<std::string> &modspaths)
 	// Check unsatisfied dependencies
 	for(core::list<ModSpec>::Iterator i = mods_unsorted.begin();
 			i != mods_unsorted.end(); i++){
-		ModSpec mod = *i;
+		ModSpec &mod = *i;
 		if(mod.unsatisfied_depends.empty())
 			continue;
 		errorstream<<"mod \""<<mod.name
