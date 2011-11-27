@@ -147,3 +147,24 @@ minetest.register_node("ignore", {
 	air_equivalent = true,
 })
 
+--
+-- Chat message processing
+--
+
+minetest.registered_on_chat_messages = {}
+
+minetest.on_chat_message = function(name, message)
+	for i,func in ipairs(minetest.registered_on_chat_messages) do
+		ate = func(name, message)
+		if ate then
+			return true
+		end
+	end
+	return false
+end
+
+minetest.register_on_chat_message = function(func)
+	table.insert(minetest.registered_on_chat_messages, func)
+end
+
+-- END

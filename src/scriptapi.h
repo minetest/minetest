@@ -37,6 +37,10 @@ void scriptapi_add_environment(lua_State *L, ServerEnvironment *env);
 void scriptapi_add_object_reference(lua_State *L, ServerActiveObject *cobj);
 void scriptapi_rm_object_reference(lua_State *L, ServerActiveObject *cobj);
 
+// Returns true if script handled message
+bool scriptapi_on_chat_message(lua_State *L, const std::string &name,
+		const std::string &message);
+
 /* environment */
 // On environment step
 void scriptapi_environment_step(lua_State *L, float dtime);

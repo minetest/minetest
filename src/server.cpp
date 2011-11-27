@@ -3422,6 +3422,13 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 		// Get player name of this client
 		std::wstring name = narrow_to_wide(player->getName());
 		
+		// Run script hook
+		bool ate = scriptapi_on_chat_message(m_lua, player->getName(),
+				wide_to_narrow(message));
+		// If script ate the message, don't proceed
+		if(ate)
+			return;
+		
 		// Line to send to players
 		std::wstring line;
 		// Whether to send to the player that sent the line

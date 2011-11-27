@@ -936,6 +936,31 @@ static int l_setting_getbool(lua_State *L)
 	return 1;
 }
 
+// chat_send_all(text)
+static int l_chat_send_all(lua_State *L)
+{
+	const char *text = luaL_checkstring(L, 1);
+	// Get server from registry
+	lua_getfield(L, LUA_REGISTRYINDEX, "minetest_server");
+	Server *server = (Server*)lua_touserdata(L, -1);
+	// Send
+	server->notifyPlayers(narrow_to_wide(text));
+	return 0;
+}
+
+// chat_send_player(name, text)
+static int l_chat_send_player(lua_State *L)
+{
+	const char *name = luaL_checkstring(L, 1);
+	const char *text = luaL_checkstring(L, 2);
+	// Get server from registry
+	lua_getfield(L, LUA_REGISTRYINDEX, "minetest_server");
+	Server *server = (Server*)lua_touserdata(L, -1);
+	// Send
+	server->notifyPlayer(name, narrow_to_wide(text));
+	return 0;
+}
+
 static const struct luaL_Reg minetest_f [] = {
 	{"register_nodedef_defaults", l_register_nodedef_defaults},
 	{"register_entity", l_register_entity},
@@ -951,6 +976,8 @@ static const struct luaL_Reg minetest_f [] = {
 	{"register_on_respawnplayer", l_register_on_respawnplayer},
 	{"setting_get", l_setting_get},
 	{"setting_getbool", l_setting_getbool},
+	{"chat_send_all", l_chat_send_all},
+	{"chat_send_player", l_chat_send_player},
 	{NULL, NULL}
 };
 
@@ -1594,6 +1621,26 @@ void scriptapi_rm_object_reference(lua_State *L, ServerActiveObject *cobj)
 	lua_settable(L, objectstable);
 }
 
+bool scriptapi_on_chat_message(lua_State *L, const std::string &name,
+		const std::string &message)
+{
+	realitycheck(L);
+	assert(lua_checkstack(L, 20));
+	StackUnroller stack_unroller(L);
+
+	// Get minetest.on_chat_message builtin function
+	lua_getglobal(L, "minetest");
+	lua_getfield(L, -1, "on_chat_message");
+	luaL_checktype(L, -1, LUA_TFUNCTION);
+
+	// Call function
+	lua_pushstring(L, name.c_str());
+	lua_pushstring(L, message.c_str());
+	if(lua_pcall(L, 2, 1, 0))
+		script_error(L, "error: %s\n", lua_tostring(L, -1));
+	bool ate = lua_toboolean(L, -1);
+	return ate;
+}
 
 /*
 	misc
@@ -1791,7 +1838,7 @@ void scriptapi_environment_on_generated(lua_State *L, v3s16 minp, v3s16 maxp)
 {
 	realitycheck(L);
 	assert(lua_checkstack(L, 20));
-	infostream<<"scriptapi_environment_on_generated"<<std::endl;
+	//infostream<<"scriptapi_environment_on_generated"<<std::endl;
 	StackUnroller stack_unroller(L);
 
 	// Get minetest.registered_on_generateds

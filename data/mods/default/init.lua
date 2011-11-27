@@ -19,8 +19,11 @@
 -- minetest.register_on_newplayer(func(ObjectRef))
 -- minetest.register_on_respawnplayer(func(ObjectRef))
 -- ^ return true in func to disable regular player placement
+-- minetest.register_on_chat_message(func(name, message))
 -- minetest.setting_get(name)
 -- minetest.setting_getbool(name)
+-- minetest.chat_send_all(text)
+-- minetest.chat_send_player(name, text)
 --
 -- Global objects:
 -- minetest.env - environment reference
@@ -1370,6 +1373,21 @@ end)
 -- Example setting get
 print("setting max_users = " .. dump(minetest.setting_get("max_users")))
 print("setting asdf = " .. dump(minetest.setting_get("asdf")))
+
+minetest.register_on_chat_message(function(name, message)
+	print("on_chat_message: name="..dump(name).." message="..dump(message))
+	local cmd = "/testcommand"
+	if message:sub(0, #cmd) == cmd then
+		print(cmd.." invoked")
+		return true
+	end
+	local cmd = "/help"
+	if message:sub(0, #cmd) == cmd then
+		print("script-overridden help command")
+		minetest.chat_send_all("script-overridden help command")
+		return true
+	end
+end)
 
 --
 -- Done, print some random stuff
