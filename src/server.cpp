@@ -20,6 +20,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "server.h"
 #include "utility.h"
 #include <iostream>
+#include <queue>
 #include "clientserver.h"
 #include "map.h"
 #include "jmutexautolock.h"
@@ -927,20 +928,32 @@ u32 PIChecksum(core::list<PlayerInfo> &l)
 	return checksum;
 }
 
+/*
+	Mods
+*/
+
 struct ModSpec
 {
 	std::string name;
 	std::string path;
+	std::set<std::string> depends;
+	std::set<std::string> unsatisfied_depends;
 
-	ModSpec(const std::string &name_="", const std::string path_=""):
+	ModSpec(const std::string &name_="", const std::string path_="",
+			const std::set<std::string> &depends_=std::set<std::string>()):
 		name(name_),
-		path(path_)
+		path(path_),
+		depends(depends_),
+		unsatisfied_depends(depends_)
 	{}
 };
 
+// Get a dependency-sorted list of ModSpecs
 static core::list<ModSpec> getMods(core::list<std::string> &modspaths)
 {
-	core::list<ModSpec> mods;
+	std::queue<ModSpec> mods_satisfied;
+	core::list<ModSpec> mods_unsorted;
+	core::list<ModSpec> mods_sorted;
 	for(core::list<std::string>::Iterator i = modspaths.begin();
 			i != modspaths.end(); i++){
 		std::string modspath = *i;
@@ -950,10 +963,38 @@ static core::list<ModSpec> getMods(core::list<std::string> &modspaths)
 				continue;
 			std::string modname = dirlist[j].name;
 			std::string modpath = modspath + DIR_DELIM + modname;
-			mods.push_back(ModSpec(modname, modpath));
+			std::set<std::string> depends;
+			std::ifstream is((modpath+DIR_DELIM+"depends.txt").c_str(),
+					std::ios_base::binary);
+			while(is.good()){
+				std::string dep;
+				std::getline(is, dep);
+				dep = trim(dep);
+				if(dep != "")
+					depends.insert(dep);
+			}
+			ModSpec spec(modname, modpath, depends);
+			mods_unsorted.push_back(spec);
+			if(depends.empty())
+				mods_satisfied.push(spec);
 		}
 	}
-	return mods;
+	while(!mods_satisfied.empty()){
+		ModSpec mod = mods_satisfied.front();
+		mods_satisfied.pop();
+		mods_sorted.push_back(mod);
+		for(core::list<ModSpec>::Iterator i = mods_unsorted.begin();
+				i != mods_unsorted.end(); i++){
+			ModSpec mod2 = *i;
+			if(mod2.unsatisfied_depends.empty())
+				continue;
+			mod2.unsatisfied_depends.erase(mod.name);
+			if(!mod2.unsatisfied_depends.empty())
+				continue;
+			mods_satisfied.push(mod2);
+		}
+	}
+	return mods_sorted;
 }
 
 /*
