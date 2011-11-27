@@ -46,6 +46,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "tooldef.h"
 #include "craftdef.h"
 #include "mapgen.h"
+#include "content_abm.h"
 
 #define PP(x) "("<<(x).X<<","<<(x).Y<<","<<(x).Z<<")"
 
@@ -282,7 +283,7 @@ void * EmergeThread::Thread()
 				MapEditEventIgnorer ign(&m_server->m_ignore_map_edit_events);
 				
 				// Activate objects and stuff
-				m_server->m_env->activateBlock(block, 3600);
+				m_server->m_env->activateBlock(block, 0);
 			}
 		}
 
@@ -1116,6 +1117,11 @@ Server::Server(
 	// Load players
 	infostream<<"Server: Loading players"<<std::endl;
 	m_env->deSerializePlayers(m_mapsavedir);
+
+	/*
+		Add some test ActiveBlockModifiers to environment
+	*/
+	add_legacy_abms(m_env, m_nodedef);
 }
 
 Server::~Server()
@@ -1937,22 +1943,8 @@ void Server::AsyncRunStep()
 			// Map
 			JMutexAutoLock lock(m_env_mutex);
 
-			/*// Unload unused data (delete from memory)
-			m_env->getMap().unloadUnusedData(
-					g_settings->getFloat("server_unload_unused_sectors_timeout"));
-					*/
-			/*u32 deleted_count = m_env->getMap().unloadUnusedData(
-					g_settings->getFloat("server_unload_unused_sectors_timeout"));
-					*/
-
-			// Save only changed parts
-			m_env->getMap().save(true);
-
-			/*if(deleted_count > 0)
-			{
-				infostream<<"Server: Unloaded "<<deleted_count
-						<<" blocks from memory"<<std::endl;
-			}*/
+			// Save changed parts of map
+			m_env->getMap().save(MOD_STATE_WRITE_NEEDED);
 
 			// Save players
 			m_env->serializePlayers(m_mapsavedir);

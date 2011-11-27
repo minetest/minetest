@@ -48,6 +48,7 @@ MapBlock::MapBlock(Map *parent, v3s16 pos, IGameDef *gamedef, bool dummy):
 		m_day_night_differs(false),
 		m_generated(false),
 		m_timestamp(BLOCK_TIMESTAMP_UNDEFINED),
+		m_disk_timestamp(BLOCK_TIMESTAMP_UNDEFINED),
 		m_usage_timer(0)
 {
 	data = NULL;
@@ -928,10 +929,12 @@ void MapBlock::deSerializeDiskExtra(std::istream &is, u8 version)
 		m_static_objects.deSerialize(is);
 		
 	// Timestamp
-	if(version >= 17)
+	if(version >= 17){
 		setTimestamp(readU32(is));
-	else
+		m_disk_timestamp = m_timestamp;
+	} else {
 		setTimestamp(BLOCK_TIMESTAMP_UNDEFINED);
+	}
 	
 	// Dynamically re-set ids based on node names
 	NameIdMapping nimap;

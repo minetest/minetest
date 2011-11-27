@@ -94,6 +94,7 @@ configure_file(
 )
 
 set(common_SRCS
+	content_abm.cpp
 	craftdef.cpp
 	nameidmapping.cpp
 	tooldef.cpp

@@ -35,6 +35,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #ifndef SERVER
 	#include "mapblock_mesh.h"
 #endif
+#include "modifiedstate.h"
 
 class Map;
 class NodeMetadataList;
@@ -52,19 +53,6 @@ enum{
 	FACE_BOTTOM,
 	FACE_LEFT
 };*/
-
-enum ModifiedState
-{
-	// Has not been modified.
-	MOD_STATE_CLEAN = 0,
-	MOD_RESERVED1 = 1,
-	// Has been modified, and will be saved when being unloaded.
-	MOD_STATE_WRITE_AT_UNLOAD = 2,
-	MOD_RESERVED3 = 3,
-	// Has been modified, and will be saved as soon as possible.
-	MOD_STATE_WRITE_NEEDED = 4,
-	MOD_RESERVED5 = 5,
-};
 
 // NOTE: If this is enabled, set MapBlock to be initialized with
 //       CONTENT_IGNORE.
@@ -167,6 +155,10 @@ public:
 			m_modified = mod;
 			m_modified_reason = reason;
 			m_modified_reason_too_long = false;
+
+			if(m_modified >= MOD_STATE_WRITE_AT_UNLOAD){
+				m_disk_timestamp = m_timestamp;
+			}
 		} else if(mod == m_modified){
 			if(!m_modified_reason_too_long){
 				if(m_modified_reason.size() < 40)
@@ -509,6 +501,10 @@ public:
 	{
 		return m_timestamp;
 	}
+	u32 getDiskTimestamp()
+	{
+		return m_disk_timestamp;
+	}
 	
 	/*
 		See m_usage_timer
@@ -646,6 +642,8 @@ private:
 		Value BLOCK_TIMESTAMP_UNDEFINED=0xffffffff means there is no timestamp.
 	*/
 	u32 m_timestamp;
+	// The on-disk (or to-be on-disk) timestamp value
+	u32 m_disk_timestamp;
 
 	/*
 		When the block is accessed, this is set to 0.

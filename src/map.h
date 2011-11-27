@@ -32,6 +32,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "constants.h"
 #include "voxel.h"
 #include "utility.h" // Needed for UniqueQueue, a member of Map
+#include "modifiedstate.h"
 
 extern "C" {
 	#include "sqlite3.h"
@@ -236,7 +237,7 @@ public:
 	virtual void beginSave() {return;};
 	virtual void endSave() {return;};
 	
-	virtual void save(bool only_changed){assert(0);};
+	virtual void save(ModifiedState save_level){assert(0);};
 	
 	// Server implements this.
 	// Client leaves it as no-op.
@@ -396,7 +397,7 @@ public:
 	void beginSave();
 	void endSave();
 
-	void save(bool only_changed);
+	void save(ModifiedState save_level);
 	//void loadAll();
 	
 	void listAllLoadableBlocks(core::list<v3s16> &dst);

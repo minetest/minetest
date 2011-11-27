@@ -30,7 +30,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 	- etc.
 */
 
-#include <list>
+#include <set>
 #include "common_irrlicht.h"
 #include "player.h"
 #include "map.h"
@@ -93,6 +93,29 @@ protected:
 	//u32 m_daynight_ratio;
 	// Time of day in milli-hours (0-23999); determines day and night
 	u32 m_time_of_day;
+};
+
+/*
+	Active block modifier interface.
+
+	These are fed into ServerEnvironment at initialization time;
+	ServerEnvironment handles deleting them.
+*/
+
+class ActiveBlockModifier
+{
+public:
+	ActiveBlockModifier(){};
+	virtual ~ActiveBlockModifier(){};
+	
+	virtual std::set<std::string> getTriggerContents()=0;
+	virtual float getTriggerInterval() = 0;
+	// chance of (1 / return value), 0 is disallowed
+	virtual u32 getTriggerChance() = 0;
+	// This is called usually at interval for 1/chance of the nodes
+	virtual void trigger(ServerEnvironment *env, v3s16 p, MapNode n){};
+	virtual void trigger(ServerEnvironment *env, v3s16 p, MapNode n,
+			u32 active_object_count, u32 active_object_count_wider){};
 };
 
 /*
@@ -299,38 +322,14 @@ private:
 	// List of active blocks
 	ActiveBlockList m_active_blocks;
 	IntervalLimiter m_active_blocks_management_interval;
-	IntervalLimiter m_active_blocks_test_interval;
+	IntervalLimiter m_active_block_modifier_interval;
 	IntervalLimiter m_active_blocks_nodemetadata_interval;
 	// Time from the beginning of the game in seconds.
 	// Incremented in step().
 	u32 m_game_time;
 	// A helper variable for incrementing the latter
 	float m_game_time_fraction_counter;
-};
-
-/*
-	Active block modifier interface.
-
-	These are fed into ServerEnvironment at initialization time;
-	ServerEnvironment handles deleting them.
-
-	NOTE: Not used currently (TODO: Use or remove)
-*/
-
-class ActiveBlockModifier
-{
-public:
-	ActiveBlockModifier(){};
-	virtual ~ActiveBlockModifier(){};
-
-	//virtual core::list<u8> update(ServerEnvironment *env) = 0;
-	virtual u32 getTriggerContentCount(){ return 1;}
-	virtual u8 getTriggerContent(u32 i) = 0;
-	virtual float getActiveInterval() = 0;
-	// chance of (1 / return value), 0 is disallowed
-	virtual u32 getActiveChance() = 0;
-	// This is called usually at interval for 1/chance of the nodes
-	virtual void triggerEvent(ServerEnvironment *env, v3s16 p) = 0;
+	core::list<ActiveBlockModifier*> m_abms;
 };
 
 #ifndef SERVER

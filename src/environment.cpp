@@ -17,6 +17,9 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
+#include <set>
+#include <list>
+#include <map>
 #include "environment.h"
 #include "filesys.h"
 #include "porting.h"
@@ -296,6 +299,12 @@ ServerEnvironment::~ServerEnvironment()
 
 	// Drop/delete map
 	m_map->drop();
+
+	// Delete ActiveBlockModifiers
+	for(core::list<ActiveBlockModifier*>::Iterator
+			i = m_abms.begin(); i != m_abms.end(); i++){
+		delete (*i);
+	}
 }
 
 void ServerEnvironment::serializePlayers(const std::string &savedir)
@@ -545,56 +554,101 @@ void ServerEnvironment::loadMeta(const std::string &savedir)
 	}
 }
 
-#if 0
-// This is probably very useless
-void spawnRandomObjects(MapBlock *block)
+struct ActiveABM
 {
-	for(s16 z0=0; z0<MAP_BLOCKSIZE; z0++)
-	for(s16 x0=0; x0<MAP_BLOCKSIZE; x0++)
+	ActiveBlockModifier *abm;
+	int chance;
+};
+
+class ABMHandler
+{
+private:
+	ServerEnvironment *m_env;
+	std::map<content_t, std::list<ActiveABM> > m_aabms;
+public:
+	ABMHandler(core::list<ActiveBlockModifier*> &abms,
+			float dtime_s, ServerEnvironment *env):
+		m_env(env)
 	{
-		bool last_node_walkable = false;
-		for(s16 y0=0; y0<MAP_BLOCKSIZE; y0++)
-		{
-			v3s16 p(x0,y0,z0);
-			MapNode n = block->getNodeNoEx(p);
-			if(n.getContent() == CONTENT_IGNORE)
-				continue;
-			if(m_gamedef->ndef()->get(n).liquid_type != LIQUID_NONE)
-				continue;
-			if(m_gamedef->ndef()->get(n).walkable)
-			{
-				last_node_walkable = true;
-				continue;
-			}
-			if(last_node_walkable)
-			{
-				// If block contains light information
-				if(m_gamedef->ndef()->get(n).param_type == CPT_LIGHT)
-				{
-					if(n.getLight(LIGHTBANK_DAY) <= 5)
-					{
-						if(myrand() % 1000 == 0)
-						{
-							v3f pos_f = intToFloat(p+block->getPosRelative(), BS);
-							pos_f.Y -= BS*0.4;
-							ServerActiveObject *obj = new Oerkki1SAO(NULL,0,pos_f);
-							std::string data = obj->getStaticData();
-							StaticObject s_obj(obj->getType(),
-									obj->getBasePosition(), data);
-							// Add one
-							block->m_static_objects.insert(0, s_obj);
-							delete obj;
-							block->raiseModified(MOD_STATE_WRITE_NEEDED,
-									"spawnRandomObjects");
-						}
-					}
+		infostream<<"ABMHandler: dtime_s="<<dtime_s<<std::endl;
+		if(dtime_s < 0.001)
+			return;
+		INodeDefManager *ndef = env->getGameDef()->ndef();
+		for(core::list<ActiveBlockModifier*>::Iterator
+				i = abms.begin(); i != abms.end(); i++){
+			ActiveBlockModifier *abm = *i;
+			ActiveABM aabm;
+			aabm.abm = abm;
+			float intervals = dtime_s / abm->getTriggerInterval();
+			float chance = abm->getTriggerChance();
+			if(chance == 0)
+				chance = 1;
+			aabm.chance = 1.0 / pow(1.0 / chance, intervals);
+			if(aabm.chance == 0)
+				aabm.chance = 1;
+			std::set<std::string> contents_s = abm->getTriggerContents();
+			for(std::set<std::string>::iterator
+					i = contents_s.begin(); i != contents_s.end(); i++){
+				content_t c = ndef->getId(*i);
+				if(c == CONTENT_IGNORE)
+					continue;
+				std::map<content_t, std::list<ActiveABM> >::iterator j;
+				j = m_aabms.find(c);
+				if(j == m_aabms.end()){
+					std::list<ActiveABM> aabmlist;
+					m_aabms[c] = aabmlist;
+					j = m_aabms.find(c);
 				}
+				j->second.push_back(aabm);
 			}
-			last_node_walkable = false;
 		}
 	}
-}
-#endif
+	void apply(MapBlock *block)
+	{
+		ServerMap *map = &m_env->getServerMap();
+		// Find out how many objects the block contains
+		u32 active_object_count = block->m_static_objects.m_active.size();
+		// Find out how many objects this and all the neighbors contain
+		u32 active_object_count_wider = 0;
+		for(s16 x=-1; x<=1; x++)
+		for(s16 y=-1; y<=1; y++)
+		for(s16 z=-1; z<=1; z++)
+		{
+			MapBlock *block2 = map->getBlockNoCreateNoEx(
+					block->getPos() + v3s16(x,y,z));
+			if(block2==NULL)
+				continue;
+			active_object_count_wider +=
+					block2->m_static_objects.m_active.size()
+					+ block2->m_static_objects.m_stored.size();
+		}
+
+		v3s16 p0;
+		for(p0.X=0; p0.X<MAP_BLOCKSIZE; p0.X++)
+		for(p0.Y=0; p0.Y<MAP_BLOCKSIZE; p0.Y++)
+		for(p0.Z=0; p0.Z<MAP_BLOCKSIZE; p0.Z++)
+		{
+			MapNode n = block->getNodeNoEx(p0);
+			content_t c = n.getContent();
+			v3s16 p = p0 + block->getPosRelative();
+
+			std::map<content_t, std::list<ActiveABM> >::iterator j;
+			j = m_aabms.find(c);
+			if(j == m_aabms.end())
+				continue;
+
+			for(std::list<ActiveABM>::iterator
+					i = j->second.begin(); i != j->second.end(); i++){
+				if(myrand() % i->chance != 0)
+					continue;
+				// Call all the trigger variations
+				i->abm->trigger(m_env, p, n);
+				i->abm->trigger(m_env, p, n,
+						active_object_count, active_object_count_wider);
+			}
+		}
+	}
+};
 
 void ServerEnvironment::activateBlock(MapBlock *block, u32 additional_dtime)
 {
@@ -605,10 +659,14 @@ void ServerEnvironment::activateBlock(MapBlock *block, u32 additional_dtime)
 		dtime_s = m_game_time - block->getTimestamp();
 	dtime_s += additional_dtime;
 
-	// Set current time as timestamp (and let it set ChangedFlag)
-	block->setTimestamp(m_game_time);
+	infostream<<"ServerEnvironment::activateBlock(): block timestamp: "
+			<<stamp<<", game time: "<<m_game_time<<std::endl;
 
-	//infostream<<"Block is "<<dtime_s<<" seconds old."<<std::endl;
+	// Set current time as timestamp
+	block->setTimestampNoChangedFlag(m_game_time);
+
+	infostream<<"ServerEnvironment::activateBlock(): block is "
+			<<dtime_s<<" seconds old."<<std::endl;
 	
 	// Activate stored objects
 	activateObjects(block);
@@ -626,36 +684,14 @@ void ServerEnvironment::activateBlock(MapBlock *block, u32 additional_dtime)
 				"node metadata modified in activateBlock");
 	}
 
-	// TODO: Do something
-	// TODO: Implement usage of ActiveBlockModifier
-	
-	// Here's a quick demonstration
-	v3s16 p0;
-	for(p0.X=0; p0.X<MAP_BLOCKSIZE; p0.X++)
-	for(p0.Y=0; p0.Y<MAP_BLOCKSIZE; p0.Y++)
-	for(p0.Z=0; p0.Z<MAP_BLOCKSIZE; p0.Z++)
-	{
-		v3s16 p = p0 + block->getPosRelative();
-		MapNode n = block->getNodeNoEx(p0);
-#if 1
-		// Test something:
-		// Convert all mud under proper day lighting to grass
-		if(n.getContent() == LEGN(m_gamedef->ndef(), "CONTENT_MUD"))
-		{
-			if(dtime_s > 300)
-			{
-				MapNode n_top = block->getNodeNoEx(p0+v3s16(0,1,0));
-				if(m_gamedef->ndef()->get(n_top).light_propagates &&
-						!m_gamedef->ndef()->get(n_top).isLiquid() &&
-						n_top.getLight(LIGHTBANK_DAY, m_gamedef->ndef()) >= 13)
-				{
-					n.setContent(LEGN(m_gamedef->ndef(), "CONTENT_GRASS"));
-					m_map->addNodeWithEvent(p, n);
-				}
-			}
-		}
-#endif
-	}
+	/* Handle ActiveBlockModifiers */
+	ABMHandler abmhandler(m_abms, dtime_s, this);
+	abmhandler.apply(block);
+}
+
+void ServerEnvironment::addActiveBlockModifier(ActiveBlockModifier *abm)
+{
+	m_abms.push_back(abm);
 }
 
 void ServerEnvironment::clearAllObjects()
@@ -746,20 +782,6 @@ void ServerEnvironment::clearAllObjects()
 	infostream<<"ServerEnvironment::clearAllObjects(): "
 			<<"Finished: Cleared "<<num_objs_cleared<<" objects"
 			<<" in "<<num_blocks_cleared<<" blocks"<<std::endl;
-}
-
-static void getMob_dungeon_master(Settings &properties)
-{
-	properties.set("looks", "dungeon_master");
-	properties.setFloat("yaw", 1.57);
-	properties.setFloat("hp", 30);
-	properties.setBool("bright_shooting", true);
-	properties.set("shoot_type", "fireball");
-	properties.set("shoot_y", "0.7");
-	properties.set("player_hit_damage", "1");
-	properties.set("player_hit_distance", "1.0");
-	properties.set("player_hit_interval", "0.5");
-	properties.setBool("mindless_rage", myrand_range(0,100)==0);
 }
 
 void ServerEnvironment::step(float dtime)
@@ -930,6 +952,11 @@ void ServerEnvironment::step(float dtime)
 			
 			// Set current time as timestamp
 			block->setTimestampNoChangedFlag(m_game_time);
+			// If time has changed much from the one on disk,
+			// set block to be saved when it is unloaded
+			if(block->getTimestamp() > block->getDiskTimestamp() + 60)
+				block->raiseModified(MOD_STATE_WRITE_AT_UNLOAD,
+						"Timestamp older than 60s (step)");
 
 			// Run node metadata
 			bool changed = block->m_node_metadata->step(dtime);
@@ -946,23 +973,15 @@ void ServerEnvironment::step(float dtime)
 		}
 	}
 	
-	if(m_active_blocks_test_interval.step(dtime, 10.0))
+	const float abm_interval = 10.0;
+	if(m_active_block_modifier_interval.step(dtime, abm_interval))
 	{
 		ScopeProfiler sp(g_profiler, "SEnv: modify in blocks avg /10s", SPT_AVG);
-		//float dtime = 10.0;
 		TimeTaker timer("modify in active blocks");
+		
+		// Initialize handling of ActiveBlockModifiers
+		ABMHandler abmhandler(m_abms, abm_interval, this);
 
-		INodeDefManager *ndef = m_gamedef->ndef();
-		
-		// Pre-fetch content ids for the luge loop
-		content_t c_dirt = ndef->getId("dirt");
-		content_t c_grass = ndef->getId("dirt_with_grass");
-		content_t c_tree = ndef->getId("tree");
-		content_t c_jungletree = ndef->getId("jungletree");
-		content_t c_stone = ndef->getId("stone");
-		content_t c_mossycobble = ndef->getId("mossycobble");
-		content_t c_sapling = ndef->getId("sapling");
-		
 		for(core::map<v3s16, bool>::Iterator
 				i = m_active_blocks.m_list.getIterator();
 				i.atEnd()==false; i++)
@@ -979,199 +998,8 @@ void ServerEnvironment::step(float dtime)
 			// Set current time as timestamp
 			block->setTimestampNoChangedFlag(m_game_time);
 
-			/*
-				Do stuff!
-
-				Note that map modifications should be done using the event-
-				making map methods so that the server gets information
-				about them.
-
-				Reading can be done quickly directly from the block.
-
-				Everything should bind to inside this single content
-				searching loop to keep things fast.
-			*/
-			// TODO: Implement usage of ActiveBlockModifier
-			
-			// Find out how many objects the block contains
-			//u32 active_object_count = block->m_static_objects.m_active.size();
-			// Find out how many objects this and all the neighbors contain
-			u32 active_object_count_wider = 0;
-			for(s16 x=-1; x<=1; x++)
-			for(s16 y=-1; y<=1; y++)
-			for(s16 z=-1; z<=1; z++)
-			{
-				MapBlock *block = m_map->getBlockNoCreateNoEx(p+v3s16(x,y,z));
-				if(block==NULL)
-					continue;
-				active_object_count_wider +=
-						block->m_static_objects.m_active.size()
-						+ block->m_static_objects.m_stored.size();
-				
-				/*if(block->m_static_objects.m_stored.size() != 0){
-					errorstream<<"ServerEnvironment::step(): "
-							<<PP(block->getPos())<<" contains "
-							<<block->m_static_objects.m_stored.size()
-							<<" stored objects; "
-							<<"when spawning objects, when counting active "
-							<<"objects in wide area. relative position: "
-							<<"("<<x<<","<<y<<","<<z<<")"<<std::endl;
-				}*/
-			}
-
-			v3s16 p0;
-			for(p0.X=0; p0.X<MAP_BLOCKSIZE; p0.X++)
-			for(p0.Y=0; p0.Y<MAP_BLOCKSIZE; p0.Y++)
-			for(p0.Z=0; p0.Z<MAP_BLOCKSIZE; p0.Z++)
-			{
-				v3s16 p = p0 + block->getPosRelative();
-				MapNode n = block->getNodeNoEx(p0);
-
-				/*
-					Test something:
-					Convert dirt under proper lighting to grass
-				*/
-				if(n.getContent() == c_dirt)
-				{
-					if(myrand()%20 == 0)
-					{
-						MapNode n_top = m_map->getNodeNoEx(p+v3s16(0,1,0));
-						if(m_gamedef->ndef()->get(n_top).light_propagates &&
-								!m_gamedef->ndef()->get(n_top).isLiquid() &&
-								n_top.getLightBlend(getDayNightRatio(),
-										m_gamedef->ndef()) >= 13)
-						{
-							n.setContent(c_grass);
-							m_map->addNodeWithEvent(p, n);
-						}
-					}
-				}
-				/*
-					Convert grass into dirt if under something else than air
-				*/
-				if(n.getContent() == c_grass)
-				{
-					//if(myrand()%20 == 0)
-					{
-						MapNode n_top = m_map->getNodeNoEx(p+v3s16(0,1,0));
-						if(!m_gamedef->ndef()->get(n_top).light_propagates ||
-								m_gamedef->ndef()->get(n_top).isLiquid())
-						{
-							n.setContent(c_dirt);
-							m_map->addNodeWithEvent(p, n);
-						}
-					}
-				}
-				/*
-					Rats spawn around regular trees
-				*/
-				if(n.getContent() == c_tree ||
-						n.getContent() == c_jungletree)
-				{
-   					if(myrand()%200 == 0 && active_object_count_wider == 0)
-					{
-						v3s16 p1 = p + v3s16(myrand_range(-2, 2),
-								0, myrand_range(-2, 2));
-						MapNode n1 = m_map->getNodeNoEx(p1);
-						MapNode n1b = m_map->getNodeNoEx(p1+v3s16(0,-1,0));
-						if(n1b.getContent() == c_grass &&
-								n1.getContent() == CONTENT_AIR)
-						{
-							v3f pos = intToFloat(p1, BS);
-							ServerActiveObject *obj = new RatSAO(this, pos);
-							addActiveObject(obj);
-						}
-					}
-				}
-				/*
-					Fun things spawn in caves and dungeons
-				*/
-				if(n.getContent() == c_stone ||
-						n.getContent() == c_mossycobble)
-				{
-   					if(myrand()%200 == 0 && active_object_count_wider == 0)
-					{
-						v3s16 p1 = p + v3s16(0,1,0);
-						MapNode n1a = m_map->getNodeNoEx(p1+v3s16(0,0,0));
-						if(n1a.getLightBlend(getDayNightRatio(),
-								m_gamedef->ndef()) <= 3){
-							MapNode n1b = m_map->getNodeNoEx(p1+v3s16(0,1,0));
-							if(n1a.getContent() == CONTENT_AIR &&
-									n1b.getContent() == CONTENT_AIR)
-							{
-								v3f pos = intToFloat(p1, BS);
-								int i = myrand()%5;
-								if(i == 0 || i == 1){
-									actionstream<<"A dungeon master spawns at "
-											<<PP(p1)<<std::endl;
-									Settings properties;
-									getMob_dungeon_master(properties);
-									ServerActiveObject *obj = new MobV2SAO(
-											this, pos, &properties);
-									addActiveObject(obj);
-								} else if(i == 2 || i == 3){
-									actionstream<<"Rats spawn at "
-											<<PP(p1)<<std::endl;
-									for(int j=0; j<3; j++){
-										ServerActiveObject *obj = new RatSAO(
-												this, pos);
-										addActiveObject(obj);
-									}
-								} else {
-									actionstream<<"An oerkki spawns at "
-											<<PP(p1)<<std::endl;
-									ServerActiveObject *obj = new Oerkki1SAO(
-											this, pos);
-									addActiveObject(obj);
-								}
-							}
-						}
-					}
-				}
-				/*
-					Make trees from saplings!
-				*/
-				if(n.getContent() == c_sapling)
-				{
-					if(myrand()%50 == 0)
-					{
-						actionstream<<"A sapling grows into a tree at "
-								<<PP(p)<<std::endl;
-
-						core::map<v3s16, MapBlock*> modified_blocks;
-						v3s16 tree_p = p;
-						ManualMapVoxelManipulator vmanip(m_map);
-						v3s16 tree_blockp = getNodeBlockPos(tree_p);
-						vmanip.initialEmerge(tree_blockp - v3s16(1,1,1), tree_blockp + v3s16(1,1,1));
-						bool is_apple_tree = myrand()%4 == 0;
-						mapgen::make_tree(vmanip, tree_p, is_apple_tree,
-								m_gamedef->ndef());
-						vmanip.blitBackAll(&modified_blocks);
-
-						// update lighting
-						core::map<v3s16, MapBlock*> lighting_modified_blocks;
-						for(core::map<v3s16, MapBlock*>::Iterator
-							i = modified_blocks.getIterator();
-							i.atEnd() == false; i++)
-						{
-							lighting_modified_blocks.insert(i.getNode()->getKey(), i.getNode()->getValue());
-						}
-						m_map->updateLighting(lighting_modified_blocks, modified_blocks);
-
-						// Send a MEET_OTHER event
-						MapEditEvent event;
-						event.type = MEET_OTHER;
-						for(core::map<v3s16, MapBlock*>::Iterator
-							i = modified_blocks.getIterator();
-							i.atEnd() == false; i++)
-						{
-							v3s16 p = i.getNode()->getKey();
-							event.modified_blocks.insert(p, true);
-						}
-						m_map->dispatchEvent(&event);
-					}
-				}
-			}
+			/* Handle ActiveBlockModifiers */
+			abmhandler.apply(block);
 		}
 
 		u32 time_ms = timer.stop(true);
@@ -1241,60 +1069,6 @@ void ServerEnvironment::step(float dtime)
 		*/
 		removeRemovedObjects();
 	}
-
-	if(g_settings->getBool("enable_experimental"))
-	{
-
-	/*
-		TEST CODE
-	*/
-#if 0
-	m_random_spawn_timer -= dtime;
-	if(m_random_spawn_timer < 0)
-	{
-		//m_random_spawn_timer += myrand_range(2.0, 20.0);
-		//m_random_spawn_timer += 2.0;
-		m_random_spawn_timer += 200.0;
-
-		/*
-			Find some position
-		*/
-
-		/*v2s16 p2d(myrand_range(-5,5), myrand_range(-5,5));
-		s16 y = 1 + getServerMap().findGroundLevel(p2d);
-		v3f pos(p2d.X*BS,y*BS,p2d.Y*BS);*/
-		
-		Player *player = getRandomConnectedPlayer();
-		v3f pos(0,0,0);
-		if(player)
-			pos = player->getPosition();
-		pos += v3f(
-			myrand_range(-3,3)*BS,
-			5,
-			myrand_range(-3,3)*BS
-		);
-
-		/*
-			Create a ServerActiveObject
-		*/
-
-		//TestSAO *obj = new TestSAO(this, pos);
-		//ServerActiveObject *obj = new ItemSAO(this, pos, "CraftItem Stick 1");
-		//ServerActiveObject *obj = new RatSAO(this, pos);
-		//ServerActiveObject *obj = new Oerkki1SAO(this, pos);
-		//ServerActiveObject *obj = new FireflySAO(this, pos);
-
-		infostream<<"Server: Spawning MobV2SAO at "
-				<<"("<<pos.X<<","<<pos.Y<<","<<pos.Z<<")"<<std::endl;
-		
-		Settings properties;
-		getMob_dungeon_master(properties);
-		ServerActiveObject *obj = new MobV2SAO(this, pos, &properties);
-		addActiveObject(obj);
-	}
-#endif
-
-	} // enable_experimental
 }
 
 ServerActiveObject* ServerEnvironment::getActiveObject(u16 id)

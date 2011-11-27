@@ -2011,7 +2011,7 @@ ServerMap::ServerMap(std::string savedir, IGameDef *gamedef):
 	emergeSector(v2s16(0,0));
 
 	// Initially write whole map
-	save(false);
+	save(MOD_STATE_CLEAN);
 }
 
 ServerMap::~ServerMap()
@@ -2023,7 +2023,7 @@ ServerMap::~ServerMap()
 		if(m_map_saving_enabled)
 		{
 			// Save only changed parts
-			save(true);
+			save(MOD_STATE_WRITE_AT_UNLOAD);
 			infostream<<"Server: saved map to "<<m_savedir<<std::endl;
 		}
 		else
@@ -2324,7 +2324,7 @@ MapBlock* ServerMap::finishBlockMake(mapgen::BlockMakeData *data,
 		Save changed parts of map
 		NOTE: Will be saved later.
 	*/
-	//save(true);
+	//save(MOD_STATE_WRITE_AT_UNLOAD);
 
 	/*infostream<<"finishBlockMake() done for ("<<blockpos.X<<","<<blockpos.Y<<","
 			<<blockpos.Z<<")"<<std::endl;*/
@@ -2832,7 +2832,7 @@ std::string ServerMap::getBlockFilename(v3s16 p)
 	return cc;
 }
 
-void ServerMap::save(bool only_changed)
+void ServerMap::save(ModifiedState save_level)
 {
 	DSTACK(__FUNCTION_NAME);
 	if(m_map_saving_enabled == false)
@@ -2841,11 +2841,11 @@ void ServerMap::save(bool only_changed)
 		return;
 	}
 	
-	if(only_changed == false)
+	if(save_level == MOD_STATE_CLEAN)
 		infostream<<"ServerMap: Saving whole map, this can take time."
 				<<std::endl;
 	
-	if(only_changed == false || m_map_metadata_changed)
+	if(m_map_metadata_changed || save_level == MOD_STATE_CLEAN)
 	{
 		saveMapMeta();
 	}
@@ -2866,7 +2866,7 @@ void ServerMap::save(bool only_changed)
 		ServerMapSector *sector = (ServerMapSector*)i.getNode()->getValue();
 		assert(sector->getId() == MAPSECTOR_SERVER);
 	
-		if(sector->differs_from_disk || only_changed == false)
+		if(sector->differs_from_disk || save_level == MOD_STATE_CLEAN)
 		{
 			saveSectorMeta(sector);
 			sector_meta_count++;
@@ -2881,8 +2881,7 @@ void ServerMap::save(bool only_changed)
 			
 			block_count_all++;
 
-			if(block->getModified() >= MOD_STATE_WRITE_NEEDED 
-					|| only_changed == false)
+			if(block->getModified() >= save_level)
 			{
 				// Lazy beginSave()
 				if(!save_started){
@@ -2909,7 +2908,7 @@ void ServerMap::save(bool only_changed)
 	/*
 		Only print if something happened or saved whole map
 	*/
-	if(only_changed == false || sector_meta_count != 0
+	if(save_level == MOD_STATE_CLEAN || sector_meta_count != 0
 			|| block_count != 0)
 	{
 		infostream<<"ServerMap: Written: "
