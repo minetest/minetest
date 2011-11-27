@@ -151,20 +151,29 @@ minetest.register_node("ignore", {
 -- Chat message processing
 --
 
-minetest.registered_on_chat_messages = {}
+function make_registration()
+	local t = {}
+	local registerfunc = function(func) table.insert(t, func) end
+	return t, registerfunc
+end
+
+minetest.registered_on_chat_messages, minetest.register_on_chat_message = make_registration()
+minetest.registered_globalsteps, minetest.register_globalstep = make_registration()
+minetest.registered_on_placenodes, minetest.register_on_placenode = make_registration()
+minetest.registered_on_dignodes, minetest.register_on_dignode = make_registration()
+minetest.registered_on_punchnodes, minetest.register_on_punchnode = make_registration()
+minetest.registered_on_generateds, minetest.register_on_generated = make_registration()
+minetest.registered_on_newplayers, minetest.register_on_newplayer = make_registration()
+minetest.registered_on_respawnplayers, minetest.register_on_respawnplayer = make_registration()
 
 minetest.on_chat_message = function(name, message)
 	for i,func in ipairs(minetest.registered_on_chat_messages) do
-		ate = func(name, message)
+		local ate = func(name, message)
 		if ate then
 			return true
 		end
 	end
 	return false
-end
-
-minetest.register_on_chat_message = function(func)
-	table.insert(minetest.registered_on_chat_messages, func)
 end
 
 -- END

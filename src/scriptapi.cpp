@@ -837,79 +837,6 @@ static int l_register_craft(lua_State *L)
 	return 0; /* number of results */
 }
 
-static int register_lua_callback(lua_State *L, const char *tablename)
-{
-	luaL_checktype(L, 1, LUA_TFUNCTION);
-
-	lua_getglobal(L, "table");
-	lua_getfield(L, -1, "insert");
-	int table_insert = lua_gettop(L);
-	// Get minetest.registered_globalsteps
-	lua_getglobal(L, "minetest");
-	lua_getfield(L, -1, tablename);
-	luaL_checktype(L, -1, LUA_TTABLE);
-	int registered = lua_gettop(L);
-	// table.insert(registered_globalsteps, func)
-	lua_pushvalue(L, table_insert);
-	lua_pushvalue(L, registered);
-	lua_pushvalue(L, 1); // push function from argument 1
-	// Call insert
-	if(lua_pcall(L, 2, 0, 0))
-		script_error(L, "error: %s\n", lua_tostring(L, -1));
-
-	return 0; /* number of results */
-}
-
-// Register a global step function
-// register_globalstep(function)
-static int l_register_globalstep(lua_State *L)
-{
-	infostream<<"register_globalstep"<<std::endl;
-	return register_lua_callback(L, "registered_globalsteps");
-}
-
-// register_on_placenode(function)
-static int l_register_on_placenode(lua_State *L)
-{
-	infostream<<"register_on_placenode"<<std::endl;
-	return register_lua_callback(L, "registered_on_placenodes");
-}
-
-// register_on_dignode(function)
-static int l_register_on_dignode(lua_State *L)
-{
-	infostream<<"register_on_dignode"<<std::endl;
-	return register_lua_callback(L, "registered_on_dignodes");
-}
-
-// register_on_punchnode(function)
-static int l_register_on_punchnode(lua_State *L)
-{
-	infostream<<"register_on_punchnode"<<std::endl;
-	return register_lua_callback(L, "registered_on_punchnodes");
-}
-
-// register_on_generated(function)
-static int l_register_on_generated(lua_State *L)
-{
-	infostream<<"register_on_generated"<<std::endl;
-	return register_lua_callback(L, "registered_on_generateds");
-}
-
-// register_on_newplayer(function)
-static int l_register_on_newplayer(lua_State *L)
-{
-	infostream<<"register_on_newplayer"<<std::endl;
-	return register_lua_callback(L, "registered_on_newplayers");
-}
-
-// register_on_respawnplayer(function)
-static int l_register_on_respawnplayer(lua_State *L)
-{
-	infostream<<"register_on_respawnplayer"<<std::endl;
-	return register_lua_callback(L, "registered_on_respawnplayers");
-}
-
 // setting_get(name)
 static int l_setting_get(lua_State *L)
 {
@@ -967,13 +894,6 @@ static const struct luaL_Reg minetest_f [] = {
 	{"register_tool", l_register_tool},
 	{"register_node", l_register_node},
 	{"register_craft", l_register_craft},
-	{"register_globalstep", l_register_globalstep},
-	{"register_on_placenode", l_register_on_placenode},
-	{"register_on_dignode", l_register_on_dignode},
-	{"register_on_punchnode", l_register_on_punchnode},
-	{"register_on_generated", l_register_on_generated},
-	{"register_on_newplayer", l_register_on_newplayer},
-	{"register_on_respawnplayer", l_register_on_respawnplayer},
 	{"setting_get", l_setting_get},
 	{"setting_getbool", l_setting_getbool},
 	{"chat_send_all", l_chat_send_all},
