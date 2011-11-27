@@ -49,6 +49,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "main.h" // For g_settings
 #include "tooldef.h"
 #include "tile.h" // For TextureSource
+#include "logoutputbuffer.h"
 
 /*
 	Setting this to 1 enables a special camera mode that forces
@@ -641,6 +642,9 @@ void the_game(
 	IWritableToolDefManager *tooldef = createToolDefManager();
 	// Create node definition manager
 	IWritableNodeDefManager *nodedef = createNodeDefManager();
+
+	// Add chat log output for errors to be shown in chat
+	LogOutputBuffer chat_log_error_buf(LMT_ERROR);
 
 	/*
 		Create server.
@@ -2122,7 +2126,13 @@ void the_game(
 			Get chat messages from client
 		*/
 		{
-			// Get new messages
+			// Get new messages from error log buffer
+			while(!chat_log_error_buf.empty())
+			{
+				chat_lines.push_back(ChatLine(narrow_to_wide(
+						chat_log_error_buf.get())));
+			}
+			// Get new messages from client
 			std::wstring message;
 			while(client.getChatMessage(message))
 			{
