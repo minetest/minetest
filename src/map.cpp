@@ -860,15 +860,15 @@ void Map::updateLighting(enum LightBank bank,
 			for(s16 y=-1; y<=1; y++)
 			for(s16 x=-1; x<=1; x++)
 			{
-				v3s16 p(x,y,z);
-				MapBlock *block = getBlockNoCreateNoEx(p);
+				v3s16 p2 = p + v3s16(x,y,z);
+				MapBlock *block = getBlockNoCreateNoEx(p2);
 				if(block == NULL)
 					continue;
 				if(block->isDummy())
 					continue;
 				if(block->getLightingExpired())
 					continue;
-				vmanip.initialEmerge(p, p);
+				vmanip.initialEmerge(p2, p2);
 			}*/
 
 			// Lighting of block will be updated completely
