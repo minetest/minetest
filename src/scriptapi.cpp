@@ -1548,18 +1548,28 @@ bool scriptapi_on_chat_message(lua_State *L, const std::string &name,
 	assert(lua_checkstack(L, 20));
 	StackUnroller stack_unroller(L);
 
-	// Get minetest.on_chat_message builtin function
+	// Get minetest.registered_on_chat_messages
 	lua_getglobal(L, "minetest");
-	lua_getfield(L, -1, "on_chat_message");
-	luaL_checktype(L, -1, LUA_TFUNCTION);
-
-	// Call function
-	lua_pushstring(L, name.c_str());
-	lua_pushstring(L, message.c_str());
-	if(lua_pcall(L, 2, 1, 0))
-		script_error(L, "error: %s\n", lua_tostring(L, -1));
-	bool ate = lua_toboolean(L, -1);
-	return ate;
+	lua_getfield(L, -1, "registered_on_chat_messages");
+	luaL_checktype(L, -1, LUA_TTABLE);
+	int table = lua_gettop(L);
+	// Foreach
+	lua_pushnil(L);
+	while(lua_next(L, table) != 0){
+		// key at index -2 and value at index -1
+		luaL_checktype(L, -1, LUA_TFUNCTION);
+		// Call function
+		lua_pushstring(L, name.c_str());
+		lua_pushstring(L, message.c_str());
+		if(lua_pcall(L, 2, 1, 0))
+			script_error(L, "error: %s\n", lua_tostring(L, -1));
+		bool ate = lua_toboolean(L, -1);
+		lua_pop(L, 1);
+		if(ate)
+			return true;
+		// value removed, keep key for next iteration
+	}
+	return false;
 }
 
 /*

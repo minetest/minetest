@@ -166,14 +166,4 @@ minetest.registered_on_generateds, minetest.register_on_generated = make_registr
 minetest.registered_on_newplayers, minetest.register_on_newplayer = make_registration()
 minetest.registered_on_respawnplayers, minetest.register_on_respawnplayer = make_registration()
 
-minetest.on_chat_message = function(name, message)
-	for i,func in ipairs(minetest.registered_on_chat_messages) do
-		local ate = func(name, message)
-		if ate then
-			return true
-		end
-	end
-	return false
-end
-
 -- END
