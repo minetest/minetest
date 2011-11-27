@@ -1320,8 +1320,8 @@ void Server::AsyncRunStep()
 		float player_max_speed = BS * 20; // Fast speed
 		float player_max_speed_up = BS * 20;
 		
-		player_max_speed *= 1.7; // Tolerance
-		player_max_speed_up *= 1.7;
+		player_max_speed *= 2.5; // Tolerance
+		player_max_speed_up *= 2.5;
 
 		for(core::map<u16, RemoteClient*>::Iterator
 			i = m_clients.getIterator();
@@ -2535,9 +2535,10 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 		/*
 			Check that target is reasonably close
 		*/
+		if(action != 2) // action 2 has always position (0,0,0)
 		{
 			v3f np_f = intToFloat(p_under, BS);
-			float max_d = BS * 8; // Just some large enough value
+			float max_d = BS * 10; // Just some large enough value
 			float d = srp->m_last_good_position.getDistanceFrom(np_f);
 			if(d > max_d){
 				actionstream<<"Player "<<player->getName()
