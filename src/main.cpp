@@ -1021,7 +1021,7 @@ void drawMenuBackground(video::IVideoDriver* driver)
 	core::dimension2d<u32> screensize = driver->getScreenSize();
 		
 	video::ITexture *bgtexture =
-			driver->getTexture(getTexturePath("mud.png").c_str());
+			driver->getTexture(getTexturePath("menubg.png").c_str());
 	if(bgtexture)
 	{
 		s32 texturesize = 128;

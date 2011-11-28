@@ -1088,10 +1088,12 @@ bool generate_image(std::string part_of_name, video::IImage *& baseimg,
 
 		if(image == NULL)
 		{
-			errorstream<<"generate_image(): Could not load image \""
-                    <<part_of_name<<"\""<<" while building texture"<<std::endl;
-			errorstream<<"generate_image(): Creating a dummy"
-                    <<" image for \""<<part_of_name<<"\""<<std::endl;
+			if(part_of_name != ""){
+				errorstream<<"generate_image(): Could not load image \""
+						<<part_of_name<<"\""<<" while building texture"<<std::endl;
+				errorstream<<"generate_image(): Creating a dummy"
+						<<" image for \""<<part_of_name<<"\""<<std::endl;
+			}
 
 			// Just create a dummy image
 			//core::dimension2d<u32> dim(2,2);
