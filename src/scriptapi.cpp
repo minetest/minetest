@@ -40,14 +40,12 @@ extern "C" {
 #include "craftdef.h"
 #include "main.h" // For g_settings
 #include "settings.h" // For accessing g_settings
+#include "nodemetadata.h"
+#include "mapblock.h" // For getNodeBlockPos
 
 /*
 TODO:
-- Random node triggers (like grass growth)
 - All kinds of callbacks
-- Object visual client-side stuff
-	- Blink effect
-	- Spritesheets and animation
 - LuaNodeMetadata
 	blockdef.metadata_name =
 		""
@@ -62,7 +60,7 @@ TODO:
 	meta.set("owner", playername)
 	meta.get("owner")
 - Item definition (actually, only CraftItem)
-- (not scripting) Putting items in node metadata (virtual)
+- Putting items in NodeMetadata (?)
 */
 
 static void stackDump(lua_State *L, std::ostream &o)
@@ -584,6 +582,7 @@ static int l_register_abm(lua_State *L)
 		if(lua_isnil(L, -1))
 			break;
 		lua_pop(L, 1);
+		id++;
 	}
 	lua_pop(L, 1);
 
@@ -1038,9 +1037,134 @@ static void luaentity_get(lua_State *L, u16 id)
 }
 
 /*
-	Reference objects
+	Reference wrappers
 */
+
 #define method(class, name) {#name, class::l_##name}
+
+/*
+	NodeMetaRef
+*/
+
+class NodeMetaRef
+{
+private:
+	v3s16 m_p;
+	ServerEnvironment *m_env;
+
+	static const char className[];
+	static const luaL_reg methods[];
+
+	static NodeMetaRef *checkobject(lua_State *L, int narg)
+	{
+		luaL_checktype(L, narg, LUA_TUSERDATA);
+		void *ud = luaL_checkudata(L, narg, className);
+		if(!ud) luaL_typerror(L, narg, className);
+		return *(NodeMetaRef**)ud;  // unbox pointer
+	}
+	
+	static NodeMetadata* getmeta(NodeMetaRef *ref)
+	{
+		NodeMetadata *meta = ref->m_env->getMap().getNodeMetadata(ref->m_p);
+		return meta;
+	}
+
+	static void reportMetadataChange(NodeMetaRef *ref)
+	{
+		// Inform other things that the metadata has changed
+		v3s16 blockpos = getNodeBlockPos(ref->m_p);
+		MapEditEvent event;
+		event.type = MEET_BLOCK_NODE_METADATA_CHANGED;
+		event.p = blockpos;
+		ref->m_env->getMap().dispatchEvent(&event);
+		// Set the block to be saved
+		MapBlock *block = ref->m_env->getMap().getBlockNoCreateNoEx(blockpos);
+		if(block)
+			block->raiseModified(MOD_STATE_WRITE_NEEDED, "l_settext");
+	}
+	
+	// Exported functions
+	
+	// garbage collector
+	static int gc_object(lua_State *L) {
+		NodeMetaRef *o = *(NodeMetaRef **)(lua_touserdata(L, 1));
+		delete o;
+		return 0;
+	}
+
+	// settext(self, text)
+	static int l_settext(lua_State *L)
+	{
+		NodeMetaRef *ref = checkobject(L, 1);
+		NodeMetadata *meta = getmeta(ref);
+		if(meta == NULL) return 0;
+		// Do it
+		std::string text = lua_tostring(L, 2);
+		meta->setText(text);
+		// Inform other things that the metadata has changed
+		reportMetadataChange(ref);
+		return 0;
+	}
+
+public:
+	NodeMetaRef(v3s16 p, ServerEnvironment *env):
+		m_p(p),
+		m_env(env)
+	{
+	}
+
+	~NodeMetaRef()
+	{
+	}
+
+	// Creates an NodeMetaRef and leaves it on top of stack
+	// Not callable from Lua; all references are created on the C side.
+	static void create(lua_State *L, v3s16 p, ServerEnvironment *env)
+	{
+		NodeMetaRef *o = new NodeMetaRef(p, env);
+		//infostream<<"NodeMetaRef::create: o="<<o<<std::endl;
+		*(void **)(lua_newuserdata(L, sizeof(void *))) = o;
+		luaL_getmetatable(L, className);
+		lua_setmetatable(L, -2);
+	}
+
+	static void Register(lua_State *L)
+	{
+		lua_newtable(L);
+		int methodtable = lua_gettop(L);
+		luaL_newmetatable(L, className);
+		int metatable = lua_gettop(L);
+
+		lua_pushliteral(L, "__metatable");
+		lua_pushvalue(L, methodtable);
+		lua_settable(L, metatable);  // hide metatable from Lua getmetatable()
+
+		lua_pushliteral(L, "__index");
+		lua_pushvalue(L, methodtable);
+		lua_settable(L, metatable);
+
+		lua_pushliteral(L, "__gc");
+		lua_pushcfunction(L, gc_object);
+		lua_settable(L, metatable);
+
+		lua_pop(L, 1);  // drop metatable
+
+		luaL_openlib(L, 0, methods, 0);  // fill methodtable
+		lua_pop(L, 1);  // drop methodtable
+
+		// Cannot be created from Lua
+		//lua_register(L, className, create_object);
+	}
+};
+const char NodeMetaRef::className[] = "NodeMetaRef";
+const luaL_reg NodeMetaRef::methods[] = {
+	method(NodeMetaRef, settext),
+	{0,0}
+};
+
+/*
+	EnvRef
+*/
 
 class EnvRef
 {
@@ -1129,6 +1253,19 @@ private:
 		return 0;
 	}
 
+	// EnvRef:get_meta(pos)
+	static int l_get_meta(lua_State *L)
+	{
+		infostream<<"EnvRef::l_get_meta()"<<std::endl;
+		EnvRef *o = checkobject(L, 1);
+		ServerEnvironment *env = o->m_env;
+		if(env == NULL) return 0;
+		// Do it
+		v3s16 p = readpos(L, 2);
+		NodeMetaRef::create(L, p, env);
+		return 1;
+	}
+
 	static int gc_object(lua_State *L) {
 		EnvRef *o = *(EnvRef **)(lua_touserdata(L, 1));
 		delete o;
@@ -1198,8 +1335,13 @@ const luaL_reg EnvRef::methods[] = {
 	method(EnvRef, remove_node),
 	method(EnvRef, get_node),
 	method(EnvRef, add_luaentity),
+	method(EnvRef, get_meta),
 	{0,0}
 };
+
+/*
+	ObjectRef
+*/
 
 class ObjectRef
 {
@@ -1536,11 +1678,10 @@ void scriptapi_export(lua_State *L, Server *server)
 	// Put functions in metatable
 	luaL_register(L, NULL, minetest_entity_m);
 	// Put other stuff in metatable
-
-	// Environment C reference
+	
+	// Register reference wrappers
+	NodeMetaRef::Register(L);
 	EnvRef::Register(L);
-
-	// Object C reference
 	ObjectRef::Register(L);
 }
 

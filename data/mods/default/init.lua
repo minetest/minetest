@@ -44,6 +44,10 @@
 -- - remove_node(pos)
 -- - get_node(pos)
 -- - add_luaentity(pos, name)
+-- - get_meta(pos) -- Get a NodeMetaRef at that position
+--
+-- NodeMetaRef
+-- - settext(text) -- eg. set the text of a sign
 --
 -- ObjectRef is basically ServerActiveObject.
 -- ObjectRef methods:
@@ -1359,7 +1363,8 @@ minetest.register_on_chat_message(function(name, message)
 	end
 end)
 
-minetest.register_abm({
+-- Grow papyrus on TNT every 10 seconds
+--[[minetest.register_abm({
 	nodenames = {"TNT"},
 	interval = 10.0,
 	chance = 1,
@@ -1368,7 +1373,23 @@ minetest.register_abm({
 		pos.y = pos.y + 1
 		minetest.env:add_node(pos, {name="papyrus"})
 	end,
-})
+})]]
+
+-- Replace texts of alls signs with "foo" every 10 seconds
+--[[minetest.register_abm({
+	nodenames = {"sign_wall"},
+	interval = 10.0,
+	chance = 1,
+	action = function(pos, node, active_object_count, active_object_count_wider)
+		print("ABM: Sign text changed")
+		local meta = minetest.env:get_meta(pos)
+		meta:settext("foo")
+	end,
+})]]
+
+-- LuaNodeMetadata should support something like this
+--meta.setvar("somevariable", {x=0, y=0, z=0})
+--meta.getvar("somevariable") -> {x=0, y=0, z=0}
 
 --
 -- Done, print some random stuff

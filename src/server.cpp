@@ -3190,12 +3190,10 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 		NodeMetadata *meta = m_env->getMap().getNodeMetadata(p);
 		if(!meta)
 			return;
-		if(meta->typeId() != LEGN(m_nodedef, "CONTENT_SIGN_WALL"))
-			return;
-		SignNodeMetadata *signmeta = (SignNodeMetadata*)meta;
-		signmeta->setText(text);
+
+		meta->setText(text);
 		
-		actionstream<<player->getName()<<" writes \""<<text<<"\" to sign "
+		actionstream<<player->getName()<<" writes \""<<text<<"\" to sign"
 				<<" at "<<PP(p)<<std::endl;
 				
 		v3s16 blockpos = getNodeBlockPos(p);
