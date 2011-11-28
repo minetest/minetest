@@ -118,6 +118,16 @@ public:
 			u32 active_object_count, u32 active_object_count_wider){};
 };
 
+struct ABMWithState
+{
+	ActiveBlockModifier *abm;
+	float timer;
+
+	ABMWithState(ActiveBlockModifier *abm_):
+		abm(abm_)
+	{}
+};
+
 /*
 	List of active blocks, used by ServerEnvironment
 */
@@ -329,7 +339,7 @@ private:
 	u32 m_game_time;
 	// A helper variable for incrementing the latter
 	float m_game_time_fraction_counter;
-	core::list<ActiveBlockModifier*> m_abms;
+	core::list<ABMWithState> m_abms;
 };
 
 #ifndef SERVER

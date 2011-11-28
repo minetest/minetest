@@ -301,9 +301,9 @@ ServerEnvironment::~ServerEnvironment()
 	m_map->drop();
 
 	// Delete ActiveBlockModifiers
-	for(core::list<ActiveBlockModifier*>::Iterator
+	for(core::list<ABMWithState>::Iterator
 			i = m_abms.begin(); i != m_abms.end(); i++){
-		delete (*i);
+		delete i->abm;
 	}
 }
 
@@ -566,20 +566,29 @@ private:
 	ServerEnvironment *m_env;
 	std::map<content_t, std::list<ActiveABM> > m_aabms;
 public:
-	ABMHandler(core::list<ActiveBlockModifier*> &abms,
-			float dtime_s, ServerEnvironment *env):
+	ABMHandler(core::list<ABMWithState> &abms,
+			float dtime_s, ServerEnvironment *env,
+			bool use_timers):
 		m_env(env)
 	{
-		infostream<<"ABMHandler: dtime_s="<<dtime_s<<std::endl;
 		if(dtime_s < 0.001)
 			return;
 		INodeDefManager *ndef = env->getGameDef()->ndef();
-		for(core::list<ActiveBlockModifier*>::Iterator
+		for(core::list<ABMWithState>::Iterator
 				i = abms.begin(); i != abms.end(); i++){
-			ActiveBlockModifier *abm = *i;
+			ActiveBlockModifier *abm = i->abm;
+			float trigger_interval = abm->getTriggerInterval();
+			if(trigger_interval < 0.001)
+				trigger_interval = 0.001;
+			if(use_timers){
+				i->timer += dtime_s;
+				if(i->timer < trigger_interval)
+					continue;
+				i->timer -= trigger_interval;
+			}
 			ActiveABM aabm;
 			aabm.abm = abm;
-			float intervals = dtime_s / abm->getTriggerInterval();
+			float intervals = dtime_s / trigger_interval;
 			float chance = abm->getTriggerChance();
 			if(chance == 0)
 				chance = 1;
@@ -605,6 +614,9 @@ public:
 	}
 	void apply(MapBlock *block)
 	{
+		if(m_aabms.empty())
+			return;
+
 		ServerMap *map = &m_env->getServerMap();
 		// Find out how many objects the block contains
 		u32 active_object_count = block->m_static_objects.m_active.size();
@@ -685,13 +697,13 @@ void ServerEnvironment::activateBlock(MapBlock *block, u32 additional_dtime)
 	}
 
 	/* Handle ActiveBlockModifiers */
-	ABMHandler abmhandler(m_abms, dtime_s, this);
+	ABMHandler abmhandler(m_abms, dtime_s, this, false);
 	abmhandler.apply(block);
 }
 
 void ServerEnvironment::addActiveBlockModifier(ActiveBlockModifier *abm)
 {
-	m_abms.push_back(abm);
+	m_abms.push_back(ABMWithState(abm));
 }
 
 void ServerEnvironment::clearAllObjects()
@@ -973,14 +985,14 @@ void ServerEnvironment::step(float dtime)
 		}
 	}
 	
-	const float abm_interval = 10.0;
+	const float abm_interval = 1.0;
 	if(m_active_block_modifier_interval.step(dtime, abm_interval))
 	{
-		ScopeProfiler sp(g_profiler, "SEnv: modify in blocks avg /10s", SPT_AVG);
+		ScopeProfiler sp(g_profiler, "SEnv: modify in blocks avg /1s", SPT_AVG);
 		TimeTaker timer("modify in active blocks");
 		
 		// Initialize handling of ActiveBlockModifiers
-		ABMHandler abmhandler(m_abms, abm_interval, this);
+		ABMHandler abmhandler(m_abms, abm_interval, this, true);
 
 		for(core::map<v3s16, bool>::Iterator
 				i = m_active_blocks.m_list.getIterator();
