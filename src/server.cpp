@@ -3309,9 +3309,8 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 						p.Y = stoi(fn.next(","));
 						p.Z = stoi(fn.next(","));
 						NodeMetadata *meta = m_env->getMap().getNodeMetadata(p);
-						if(meta && meta->typeId() == LEGN(m_nodedef, "CONTENT_LOCKABLE_CHEST")) {
-							LockingChestNodeMetadata *lcm = (LockingChestNodeMetadata*)meta;
-							if (lcm->getOwner() != player->getName())
+						if(meta->getOwner() != ""){
+							if(meta->getOwner() != player->getName())
 								disable_action = true;
 						}
 					}
@@ -3327,9 +3326,8 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 						p.Y = stoi(fn.next(","));
 						p.Z = stoi(fn.next(","));
 						NodeMetadata *meta = m_env->getMap().getNodeMetadata(p);
-						if(meta && meta->typeId() == LEGN(m_nodedef, "CONTENT_LOCKABLE_CHEST")) {
-							LockingChestNodeMetadata *lcm = (LockingChestNodeMetadata*)meta;
-							if (lcm->getOwner() != player->getName())
+						if(meta->getOwner() != ""){
+							if(meta->getOwner() != player->getName())
 								disable_action = true;
 						}
 					}
@@ -3356,9 +3354,8 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 						p.Y = stoi(fn.next(","));
 						p.Z = stoi(fn.next(","));
 						NodeMetadata *meta = m_env->getMap().getNodeMetadata(p);
-						if(meta && meta->typeId() == LEGN(m_nodedef, "CONTENT_LOCKABLE_CHEST")) {
-							LockingChestNodeMetadata *lcm = (LockingChestNodeMetadata*)meta;
-							if (lcm->getOwner() != player->getName())
+						if(meta->getOwner() != ""){
+							if(meta->getOwner() != player->getName())
 								disable_action = true;
 						}
 					}

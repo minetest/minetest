@@ -1007,8 +1007,13 @@ void Map::addNodeAndUpdate(v3s16 p, MapNode n,
 	std::string metadata_name = nodemgr->get(n).metadata_name;
 	if(metadata_name != ""){
 		NodeMetadata *meta = NodeMetadata::create(metadata_name, m_gamedef);
-		meta->setOwner(player_name);
-		setNodeMetadata(p, meta);
+		if(!meta){
+			errorstream<<"Failed to create node metadata \""
+					<<metadata_name<<"\""<<std::endl;
+		} else {
+			meta->setOwner(player_name);
+			setNodeMetadata(p, meta);
+		}
 	}
 
 	/*

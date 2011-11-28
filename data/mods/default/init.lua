@@ -47,7 +47,24 @@
 -- - get_meta(pos) -- Get a NodeMetaRef at that position
 --
 -- NodeMetaRef
--- - settext(text) -- eg. set the text of a sign
+-- - get_type()
+-- - allows_text_input()
+-- - set_text(text) -- eg. set the text of a sign
+-- - get_text()
+-- - get_owner()
+-- - set_infotext(infotext)
+-- - inventory_set_list(name, {item1, item2, ...})
+-- - inventory_get_list(name)
+-- - set_inventory_draw_spec(string)
+-- - set_allow_text_input(bool)
+-- - set_allow_removal(bool)
+-- - set_enforce_owner(bool)
+-- - is_inventory_modified()
+-- - reset_inventory_modified()
+-- - is_text_modified()
+-- - reset_text_modified()
+-- - set_string(name, value)
+-- - get_string(name)
 --
 -- ObjectRef is basically ServerActiveObject.
 -- ObjectRef methods:
@@ -1383,13 +1400,260 @@ end)
 	action = function(pos, node, active_object_count, active_object_count_wider)
 		print("ABM: Sign text changed")
 		local meta = minetest.env:get_meta(pos)
-		meta:settext("foo")
+		meta:set_text("foo")
 	end,
 })]]
 
 -- LuaNodeMetadata should support something like this
 --meta.setvar("somevariable", {x=0, y=0, z=0})
 --meta.getvar("somevariable") -> {x=0, y=0, z=0}
+
+--
+-- Random stuff
+--
+
+minetest.register_node("luafurnace", {
+	tile_images = {"lava.png", "furnace_side.png", "furnace_side.png",
+		"furnace_side.png", "furnace_side.png", "furnace_front.png"},
+	--inventory_image = "furnace_front.png",
+	inventory_image = inventorycube("furnace_front.png"),
+	paramtype = "facedir_simple",
+	metadata_name = "generic",
+	material = digprop_stonelike(3.0),
+})
+
+minetest.register_on_placenode(function(pos, newnode, placer)
+	if newnode.name == "luafurnace" then
+		print("get_meta");
+		local meta = minetest.env:get_meta(pos)
+		print("inventory_set_list");
+		meta:inventory_set_list("fuel", {""})
+		print("inventory_set_list");
+		meta:inventory_set_list("src", {""})
+		print("inventory_set_list");
+		meta:inventory_set_list("dst", {"","","",""})
+		print("set_inventory_draw_spec");
+		meta:set_inventory_draw_spec(
+			"invsize[8,9;]"
+			.."list[current_name;fuel;2,3;1,1;]"
+			.."list[current_name;src;2,1;1,1;]"
+			.."list[current_name;dst;5,1;2,2;]"
+			.."list[current_player;main;0,5;8,4;]"
+		)
+		
+		local total_cooked = 0;
+		print("set_string")
+		meta:set_string("total_cooked", total_cooked)
+		print("set_infotext");
+		meta:set_infotext("Lua Furnace: total cooked: "..total_cooked)
+	end
+end)
+
+function stackstring_take_item(stackstring)
+	if stackstring == nil then
+		return '', nil
+	end
+	local stacktype = nil
+	stacktype = string.match(stackstring,
+			'([%a%d]+Item[%a%d]*)')
+	if stacktype == "NodeItem" or stacktype == "CraftItem" then
+		local itemtype = nil
+		local itemname = nil
+		local itemcount = nil
+		itemtype, itemname, itemcount = string.match(stackstring,
+				'([%a%d]+Item[%a%d]*) "([^"]*)" (%d+)')
+		itemcount = tonumber(itemcount)
+		if itemcount == 0 then
+			return '', nil
+		elseif itemcount == 1 then
+			return '', {type=itemtype, name=itemname}
+		else
+			return itemtype.." \""..itemname.."\" "..(itemcount-1),
+					{type=itemtype, name=itemname}
+		end
+	elseif stacktype == "ToolItem" then
+		local itemtype = nil
+		local itemname = nil
+		local itemwear = nil
+		itemtype, itemname, itemwear = string.match(stackstring,
+				'([%a%d]+Item[%a%d]*) "([^"]*)" (%d+)')
+		itemwear = tonumber(itemwear)
+		return '', {type=itemtype, name=itemname, wear=itemwear}
+	end
+end
+
+function stackstring_put_item(stackstring, item)
+	if item == nil then
+		return stackstring, false
+	end
+	stackstring = stackstring or ''
+	local stacktype = nil
+	stacktype = string.match(stackstring,
+			'([%a%d]+Item[%a%d]*)')
+	stacktype = stacktype or ''
+	if stacktype ~= '' and stacktype ~= item.type then
+		return stackstring, false
+	end
+	if item.type == "NodeItem" or item.type == "CraftItem" then
+		local itemtype = nil
+		local itemname = nil
+		local itemcount = nil
+		itemtype, itemname, itemcount = string.match(stackstring,
+				'([%a%d]+Item[%a%d]*) "([^"]*)" (%d+)')
+		itemtype = itemtype or item.type
+		itemname = itemname or item.name
+		if itemcount == nil then
+			itemcount = 0
+		end
+		itemcount = itemcount + 1
+		return itemtype.." \""..itemname.."\" "..itemcount, true
+	elseif item.type == "ToolItem" then
+		if stacktype ~= nil then
+			return stackstring, false
+		end
+		local itemtype = nil
+		local itemname = nil
+		local itemwear = nil
+		itemtype, itemname, itemwear = string.match(stackstring,
+				'([%a%d]+Item[%a%d]*) "([^"]*)" (%d+)')
+		itemwear = tonumber(itemwear)
+		return itemtype.." \""..itemname.."\" "..itemwear, true
+	end
+	return stackstring, false
+end
+
+function stackstring_put_stackstring(stackstring, src)
+	while src ~= '' do
+		--print("src="..dump(src))
+		src, item = stackstring_take_item(src)
+		--print("src="..dump(src).." item="..dump(item))
+		local success
+		stackstring, success = stackstring_put_item(stackstring, item)
+		if not success then
+			return stackstring, false
+		end
+	end
+	return stackstring, true
+end
+
+function test_stack()
+	local stack
+	local item
+	local success
+
+	stack, item = stackstring_take_item('NodeItem "TNT" 3')
+	assert(stack == 'NodeItem "TNT" 2')
+	assert(item.type == 'NodeItem')
+	assert(item.name == 'TNT')
+
+	stack, item = stackstring_take_item('CraftItem "with spaces" 2')
+	assert(stack == 'CraftItem "with spaces" 1')
+	assert(item.type == 'CraftItem')
+	assert(item.name == 'with spaces')
+
+	stack, item = stackstring_take_item('CraftItem "with spaces" 1')
+	assert(stack == '')
+	assert(item.type == 'CraftItem')
+	assert(item.name == 'with spaces')
+
+	stack, item = stackstring_take_item('CraftItem "s8df2kj3" 0')
+	assert(stack == '')
+	assert(item == nil)
+
+	stack, item = stackstring_take_item('ToolItem "With Spaces" 32487')
+	assert(stack == '')
+	assert(item.type == 'ToolItem')
+	assert(item.name == 'With Spaces')
+	assert(item.wear == 32487)
+
+	stack, success = stackstring_put_item('NodeItem "With Spaces" 40',
+			{type='NodeItem', name='With Spaces'})
+	assert(stack == 'NodeItem "With Spaces" 41')
+	assert(success == true)
+
+	stack, success = stackstring_put_item('CraftItem "With Spaces" 40',
+			{type='CraftItem', name='With Spaces'})
+	assert(stack == 'CraftItem "With Spaces" 41')
+	assert(success == true)
+
+	stack, success = stackstring_put_item('ToolItem "With Spaces" 32487',
+			{type='ToolItem', name='With Spaces'})
+	assert(stack == 'ToolItem "With Spaces" 32487')
+	assert(success == false)
+
+	stack, success = stackstring_put_item('NodeItem "With Spaces" 40',
+			{type='ToolItem', name='With Spaces'})
+	assert(stack == 'NodeItem "With Spaces" 40')
+	assert(success == false)
+	
+	assert(stackstring_put_stackstring('NodeItem "With Spaces" 2',
+			'NodeItem "With Spaces" 1') == 'NodeItem "With Spaces" 3')
+end
+test_stack()
+
+minetest.register_abm({
+	nodenames = {"luafurnace"},
+	interval = 1.0,
+	chance = 1,
+	action = function(pos, node, active_object_count, active_object_count_wider)
+		local meta = minetest.env:get_meta(pos)
+		local fuellist = meta:inventory_get_list("fuel")
+		local srclist = meta:inventory_get_list("src")
+		local dstlist = meta:inventory_get_list("dst")
+		if fuellist == nil or srclist == nil or dstlist == nil then
+			return
+		end
+		_, srcitem = stackstring_take_item(srclist[1])
+		_, fuelitem = stackstring_take_item(fuellist[1])
+		if not srcitem or not fuelitem then return end
+		if fuelitem.type == "NodeItem" then
+			local prop = minetest.registered_nodes[fuelitem.name]
+			if prop == nil then return end
+			if prop.furnace_burntime < 0 then return end
+		else
+			return
+		end
+		local resultstack = nil
+		if srcitem.type == "NodeItem" then
+			local prop = minetest.registered_nodes[srcitem.name]
+			if prop == nil then return end
+			if prop.cookresult_item == "" then return end
+			resultstack = prop.cookresult_item
+		else
+			return
+		end
+
+		if resultstack == nil then
+			return
+		end
+
+		dstlist[1], success = stackstring_put_stackstring(dstlist[1], resultstack)
+		if not success then
+			return
+		end
+
+		fuellist[1], _ = stackstring_take_item(fuellist[1])
+		srclist[1], _ = stackstring_take_item(srclist[1])
+
+		meta:inventory_set_list("fuel", fuellist)
+		meta:inventory_set_list("src", srclist)
+		meta:inventory_set_list("dst", dstlist)
+
+		local total_cooked = meta:get_string("total_cooked")
+		total_cooked = tonumber(total_cooked) + 1
+		meta:set_string("total_cooked", total_cooked)
+		meta:set_infotext("Lua Furnace: total cooked: "..total_cooked)
+	end,
+})
+
+minetest.register_craft({
+	output = 'NodeItem "luafurnace" 1',
+	recipe = {
+		{'NodeItem "cobble"', 'NodeItem "cobble"', 'NodeItem "cobble"'},
+		{'NodeItem "cobble"', 'NodeItem "cobble"', 'NodeItem "cobble"'},
+		{'NodeItem "cobble"', 'NodeItem "cobble"', 'NodeItem "cobble"'},
+	}
+})
 
 --
 -- Done, print some random stuff

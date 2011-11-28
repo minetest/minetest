@@ -18,14 +18,119 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 */
 
 #include "content_nodemeta.h"
+
+#include <map>
 #include "inventory.h"
 #include "log.h"
 #include "utility.h"
 
+class Inventory;
+
+#define NODEMETA_GENERIC 1
 #define NODEMETA_SIGN 14
 #define NODEMETA_CHEST 15
-#define NODEMETA_LOCKABLE_CHEST 17
 #define NODEMETA_FURNACE 16
+#define NODEMETA_LOCKABLE_CHEST 17
+
+class SignNodeMetadata : public NodeMetadata
+{
+public:
+	SignNodeMetadata(IGameDef *gamedef, std::string text);
+	//~SignNodeMetadata();
+	
+	virtual u16 typeId() const;
+	virtual const char* typeName() const
+	{ return "sign"; }
+	static NodeMetadata* create(std::istream &is, IGameDef *gamedef);
+	static NodeMetadata* create(IGameDef *gamedef);
+	virtual NodeMetadata* clone(IGameDef *gamedef);
+	virtual void serializeBody(std::ostream &os);
+	virtual std::string infoText();
+
+	virtual bool allowsTextInput(){ return true; }
+	virtual std::string getText(){ return m_text; }
+	virtual void setText(const std::string &t){ m_text = t; }
+
+private:
+	std::string m_text;
+};
+
+class ChestNodeMetadata : public NodeMetadata
+{
+public:
+	ChestNodeMetadata(IGameDef *gamedef);
+	~ChestNodeMetadata();
+	
+	virtual u16 typeId() const;
+	virtual const char* typeName() const
+	{ return "chest"; }
+	static NodeMetadata* create(std::istream &is, IGameDef *gamedef);
+	static NodeMetadata* create(IGameDef *gamedef);
+	virtual NodeMetadata* clone(IGameDef *gamedef);
+	virtual void serializeBody(std::ostream &os);
+	virtual std::string infoText();
+	virtual Inventory* getInventory() {return m_inventory;}
+	virtual bool nodeRemovalDisabled();
+	virtual std::string getInventoryDrawSpecString();
+	
+private:
+	Inventory *m_inventory;
+};
+
+class LockingChestNodeMetadata : public NodeMetadata
+{
+public:
+	LockingChestNodeMetadata(IGameDef *gamedef);
+	~LockingChestNodeMetadata();
+
+	virtual u16 typeId() const;
+	virtual const char* typeName() const
+	{ return "locked_chest"; }
+	static NodeMetadata* create(std::istream &is, IGameDef *gamedef);
+	static NodeMetadata* create(IGameDef *gamedef);
+	virtual NodeMetadata* clone(IGameDef *gamedef);
+	virtual void serializeBody(std::ostream &os);
+	virtual std::string infoText();
+	virtual Inventory* getInventory() {return m_inventory;}
+	virtual bool nodeRemovalDisabled();
+	virtual std::string getInventoryDrawSpecString();
+
+	virtual std::string getOwner(){ return m_text; }
+	virtual void setOwner(std::string t){ m_text = t; }
+
+private:
+	Inventory *m_inventory;
+	std::string m_text;
+};
+
+class FurnaceNodeMetadata : public NodeMetadata
+{
+public:
+	FurnaceNodeMetadata(IGameDef *gamedef);
+	~FurnaceNodeMetadata();
+	
+	virtual u16 typeId() const;
+	virtual const char* typeName() const
+	{ return "furnace"; }
+	virtual NodeMetadata* clone(IGameDef *gamedef);
+	static NodeMetadata* create(std::istream &is, IGameDef *gamedef);
+	static NodeMetadata* create(IGameDef *gamedef);
+	virtual void serializeBody(std::ostream &os);
+	virtual std::string infoText();
+	virtual Inventory* getInventory() {return m_inventory;}
+	virtual void inventoryModified();
+	virtual bool step(float dtime);
+	virtual bool nodeRemovalDisabled();
+	virtual std::string getInventoryDrawSpecString();
+
+private:
+	Inventory *m_inventory;
+	float m_step_accumulator;
+	float m_fuel_totaltime;
+	float m_fuel_time;
+	float m_src_totaltime;
+	float m_src_time;
+};
 
 /*
 	SignNodeMetadata
@@ -428,4 +533,229 @@ std::string FurnaceNodeMetadata::getInventoryDrawSpecString()
 		"list[current_player;main;0,5;8,4;]";
 }
 
+/*
+	GenericNodeMetadata
+*/
+
+class GenericNodeMetadata : public NodeMetadata
+{
+private:
+	Inventory *m_inventory;
+	std::string m_text;
+	std::string m_owner;
+
+	std::string m_infotext;
+	std::string m_inventorydrawspec;
+	bool m_allow_text_input;
+	bool m_removal_disabled;
+	bool m_enforce_owner;
+
+	bool m_inventory_modified;
+	bool m_text_modified;
+
+	std::map<std::string, std::string> m_stringvars;
+
+public:
+	u16 typeId() const
+	{
+		return NODEMETA_GENERIC;
+	}
+	const char* typeName() const
+	{
+		return "generic";
+	}
+
+	GenericNodeMetadata(IGameDef *gamedef):
+		NodeMetadata(gamedef),
+
+		m_inventory(new Inventory()),
+		m_text(""),
+		m_owner(""),
+
+		m_infotext("GenericNodeMetadata"),
+		m_inventorydrawspec(""),
+		m_allow_text_input(false),
+		m_removal_disabled(false),
+		m_enforce_owner(false),
+
+		m_inventory_modified(false),
+		m_text_modified(false)
+	{
+		NodeMetadata::registerType(typeId(), typeName(), create, create);
+	}
+	virtual ~GenericNodeMetadata()
+	{
+		delete m_inventory;
+	}
+	NodeMetadata* clone(IGameDef *gamedef)
+	{
+		GenericNodeMetadata *d = new GenericNodeMetadata(m_gamedef);
+
+		*d->m_inventory = *m_inventory;
+		d->m_text = m_text;
+		d->m_owner = m_owner;
+
+		d->m_infotext = m_infotext;
+		d->m_inventorydrawspec = m_inventorydrawspec;
+		d->m_allow_text_input = m_allow_text_input;
+		d->m_removal_disabled = m_removal_disabled;
+		d->m_enforce_owner = m_enforce_owner;
+		d->m_inventory_modified = m_inventory_modified;
+		d->m_text_modified = m_text_modified;
+		return d;
+	}
+	static NodeMetadata* create(IGameDef *gamedef)
+	{
+		GenericNodeMetadata *d = new GenericNodeMetadata(gamedef);
+		return d;
+	}
+	static NodeMetadata* create(std::istream &is, IGameDef *gamedef)
+	{
+		GenericNodeMetadata *d = new GenericNodeMetadata(gamedef);
+		
+		d->m_inventory->deSerialize(is, gamedef);
+		d->m_text = deSerializeLongString(is);
+		d->m_owner = deSerializeString(is);
+		
+		d->m_infotext = deSerializeString(is);
+		d->m_inventorydrawspec = deSerializeString(is);
+		d->m_allow_text_input = readU8(is);
+		d->m_removal_disabled = readU8(is);
+		d->m_enforce_owner = readU8(is);
+
+		int num_vars = readU32(is);
+		for(int i=0; i<num_vars; i++){
+			std::string name = deSerializeString(is);
+			std::string var = deSerializeLongString(is);
+			d->m_stringvars[name] = var;
+		}
+
+		return d;
+	}
+	void serializeBody(std::ostream &os)
+	{
+		m_inventory->serialize(os);
+		os<<serializeLongString(m_text);
+		os<<serializeString(m_owner);
+
+		os<<serializeString(m_infotext);
+		os<<serializeString(m_inventorydrawspec);
+		writeU8(os, m_allow_text_input);
+		writeU8(os, m_removal_disabled);
+		writeU8(os, m_enforce_owner);
+
+		int num_vars = m_stringvars.size();
+		writeU32(os, num_vars);
+		for(std::map<std::string, std::string>::iterator
+				i = m_stringvars.begin(); i != m_stringvars.end(); i++){
+			os<<serializeString(i->first);
+			os<<serializeLongString(i->second);
+		}
+	}
+
+	std::string infoText()
+	{
+		return m_infotext;
+	}
+	Inventory* getInventory()
+	{
+		return m_inventory;
+	}
+	void inventoryModified()
+	{
+		m_inventory_modified = true;
+	}
+	bool step(float dtime)
+	{
+		return false;
+	}
+	bool nodeRemovalDisabled()
+	{
+		return m_removal_disabled;
+	}
+	std::string getInventoryDrawSpecString()
+	{
+		return m_inventorydrawspec;
+	}
+	bool allowsTextInput()
+	{
+		return m_allow_text_input;
+	}
+	std::string getText()
+	{
+		return m_text;
+	}
+	void setText(const std::string &t)
+	{
+		m_text = t;
+		m_text_modified = true;
+	}
+	std::string getOwner()
+	{
+		if(m_enforce_owner)
+			return m_owner;
+		else
+			return "";
+	}
+	void setOwner(std::string t)
+	{
+		m_owner = t;
+	}
+	
+	/* Interface for GenericNodeMetadata */
+
+	void setInfoText(const std::string &text)
+	{
+		infostream<<"GenericNodeMetadata::setInfoText(\""
+				<<text<<"\")"<<std::endl;
+		m_infotext = text;
+	}
+	void setInventoryDrawSpec(const std::string &text)
+	{
+		m_inventorydrawspec = text;
+	}
+	void setAllowTextInput(bool b)
+	{
+		m_allow_text_input = b;
+	}
+	void setRemovalDisabled(bool b)
+	{
+		m_removal_disabled = b;
+	}
+	void setEnforceOwner(bool b)
+	{
+		m_enforce_owner = b;
+	}
+	bool isInventoryModified()
+	{
+		return m_inventory_modified;
+	}
+	void resetInventoryModified()
+	{
+		m_inventory_modified = false;
+	}
+	bool isTextModified()
+	{
+		return m_text_modified;
+	}
+	void resetTextModified()
+	{
+		m_text_modified = false;
+	}
+	void setString(const std::string &name, const std::string &var)
+	{
+		m_stringvars[name] = var;
+	}
+	std::string getString(const std::string &name)
+	{
+		std::map<std::string, std::string>::iterator i;
+		i = m_stringvars.find(name);
+		if(i == m_stringvars.end())
+			return "";
+		return i->second;
+	}
+};
+
+// Prototype
+GenericNodeMetadata proto_GenericNodeMetadata(NULL);
 

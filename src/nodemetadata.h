@@ -53,23 +53,54 @@ public:
 	virtual const char* typeName() const = 0;
 	virtual NodeMetadata* clone(IGameDef *gamedef) = 0;
 	virtual void serializeBody(std::ostream &os) = 0;
+
+	// Called on client-side; shown on screen when pointed at
 	virtual std::string infoText() {return "";}
+	
+	//
 	virtual Inventory* getInventory() {return NULL;}
-	// This is called always after the inventory is modified, before
-	// the changes are copied elsewhere
+	// Called always after the inventory is modified, before the changes
+	// are copied elsewhere
 	virtual void inventoryModified(){}
-	// A step in time. Returns true if metadata changed.
+
+	// A step in time. Shall return true if metadata changed.
 	virtual bool step(float dtime) {return false;}
+
+	// Whether the related node and this metadata cannot be removed
 	virtual bool nodeRemovalDisabled(){return false;}
-	// Used to make custom inventory menus.
+	// If non-empty, player can interact by using an inventory view
 	// See format in guiInventoryMenu.cpp.
 	virtual std::string getInventoryDrawSpecString(){return "";}
-	// primarily used for locking chests, but others can play too
-	virtual std::string getOwner(){ return std::string(""); }
-	virtual void setOwner(std::string t){}
+
+	// If true, player can interact by writing text
 	virtual bool allowsTextInput(){ return false; }
+	// Get old text for player interaction
 	virtual std::string getText(){ return ""; }
+	// Set player-written text
 	virtual void setText(const std::string &t){}
+
+	// If returns non-empty, only given player can modify text/inventory
+	virtual std::string getOwner(){ return std::string(""); }
+	// The name of the player who placed the node
+	virtual void setOwner(std::string t){}
+
+	/* Interface for GenericNodeMetadata */
+
+	virtual void setInfoText(const std::string &text){};
+	virtual void setInventoryDrawSpec(const std::string &text){};
+	virtual void setAllowTextInput(bool b){};
+
+	virtual void setRemovalDisabled(bool b){};
+	virtual void setEnforceOwner(bool b){};
+
+	virtual bool isInventoryModified(){return false;};
+	virtual void resetInventoryModified(){};
+	virtual bool isTextModified(){return false;};
+	virtual void resetTextModified(){};
+
+	virtual void setString(const std::string &name, const std::string &var){}
+	virtual std::string getString(const std::string &name){return "";}
+
 protected:
 	static void registerType(u16 id, const std::string &name, Factory f,
 			Factory2 f2);
