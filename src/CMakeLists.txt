@@ -310,7 +310,9 @@ if(BUILD_CLIENT)
 
 	#file(GLOB images "${CMAKE_CURRENT_SOURCE_DIR}/../data/textures/*.png")
 	#install(FILES ${images} DESTINATION ${DATADIR}/textures)
-	install(DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/../data" DESTINATION ${DATADIR})
+	#file(GLOB datasubstuff "${CMAKE_CURRENT_SOURCE_DIR}/../data/*")
+	#install(DIRECTORY "${datasubstuff}" DESTINATION ${DATADIR})
+	install(DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/../data/" DESTINATION ${DATADIR})
 
 	if(USE_GETTEXT)
 		foreach(LOCALE ${GETTEXT_AVAILABLE_LOCALES})
