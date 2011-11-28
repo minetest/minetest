@@ -592,7 +592,7 @@ public:
 			float chance = abm->getTriggerChance();
 			if(chance == 0)
 				chance = 1;
-			aabm.chance = 1.0 / pow(1.0 / chance, intervals);
+			aabm.chance = 1.0 / pow((float)1.0/chance, (float)intervals);
 			if(aabm.chance == 0)
 				aabm.chance = 1;
 			std::set<std::string> contents_s = abm->getTriggerContents();
