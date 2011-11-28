@@ -168,6 +168,13 @@ InventoryItem* InventoryItem::deSerialize(std::istream &is, IGameDef *gamedef)
 	}
 }
 
+InventoryItem* InventoryItem::deSerialize(const std::string &str,
+		IGameDef *gamedef)
+{
+	std::istringstream is(str, std::ios_base::binary);
+	return deSerialize(is, gamedef);
+}
+
 std::string InventoryItem::getItemString() {
 	// Get item string
 	std::ostringstream os(std::ios_base::binary);
@@ -535,21 +542,22 @@ u32 InventoryList::getFreeSlots()
 
 const InventoryItem * InventoryList::getItem(u32 i) const
 {
-	if(i > m_items.size() - 1)
+	if(i >= m_items.size())
 		return NULL;
 	return m_items[i];
 }
 
 InventoryItem * InventoryList::getItem(u32 i)
 {
-	if(i > m_items.size() - 1)
+	if(i >= m_items.size())
 		return NULL;
 	return m_items[i];
 }
 
 InventoryItem * InventoryList::changeItem(u32 i, InventoryItem *newitem)
 {
-	assert(i < m_items.size());
+	if(i >= m_items.size())
+		return newitem;
 
 	InventoryItem *olditem = m_items[i];
 	m_items[i] = newitem;
@@ -606,6 +614,8 @@ InventoryItem * InventoryList::addItem(u32 i, InventoryItem *newitem)
 {
 	if(newitem == NULL)
 		return NULL;
+	if(i >= m_items.size())
+		return newitem;
 	
 	//setDirty(true);
 	
@@ -851,6 +861,16 @@ InventoryList * Inventory::getList(const std::string &name)
 	if(i == -1)
 		return NULL;
 	return m_lists[i];
+}
+
+bool Inventory::deleteList(const std::string &name)
+{
+	s32 i = getListIndex(name);
+	if(i == -1)
+		return false;
+	delete m_lists[i];
+	m_lists.erase(i);
+	return true;
 }
 
 const InventoryList * Inventory::getList(const std::string &name) const

@@ -41,6 +41,8 @@ public:
 	virtual ~InventoryItem();
 	
 	static InventoryItem* deSerialize(std::istream &is, IGameDef *gamedef);
+	static InventoryItem* deSerialize(const std::string &str,
+			IGameDef *gamedef);
 	
 	virtual const char* getName() const = 0;
 	// Shall write the name and the parameters
