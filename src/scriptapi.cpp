@@ -498,6 +498,105 @@ static int l_register_entity(lua_State *L)
 	return 0; /* number of results */
 }
 
+class LuaABM : public ActiveBlockModifier
+{
+private:
+	lua_State *m_lua;
+	int m_id;
+
+	std::set<std::string> m_trigger_contents;
+	float m_trigger_interval;
+	u32 m_trigger_chance;
+public:
+	LuaABM(lua_State *L, int id,
+			const std::set<std::string> &trigger_contents,
+			float trigger_interval, u32 trigger_chance):
+		m_lua(L),
+		m_id(id),
+		m_trigger_contents(trigger_contents),
+		m_trigger_interval(trigger_interval),
+		m_trigger_chance(trigger_chance)
+	{
+	}
+	virtual std::set<std::string> getTriggerContents()
+	{
+		return m_trigger_contents;
+	}
+	virtual float getTriggerInterval()
+	{
+		return m_trigger_interval;
+	}
+	virtual u32 getTriggerChance()
+	{
+		return m_trigger_chance;
+	}
+	virtual void trigger(ServerEnvironment *env, v3s16 p, MapNode n,
+			u32 active_object_count, u32 active_object_count_wider)
+	{
+		lua_State *L = m_lua;
+	
+		realitycheck(L);
+		assert(lua_checkstack(L, 20));
+		StackUnroller stack_unroller(L);
+
+		// Get minetest.registered_abms
+		lua_getglobal(L, "minetest");
+		lua_getfield(L, -1, "registered_abms");
+		luaL_checktype(L, -1, LUA_TTABLE);
+		int registered_abms = lua_gettop(L);
+
+		// Get minetest.registered_abms[m_id]
+		lua_pushnumber(L, m_id);
+		lua_gettable(L, registered_abms);
+		if(lua_isnil(L, -1))
+			assert(0);
+		
+		// Call action
+		luaL_checktype(L, -1, LUA_TTABLE);
+		lua_getfield(L, -1, "action");
+		luaL_checktype(L, -1, LUA_TFUNCTION);
+		pushpos(L, p);
+		pushnode(L, n, env->getGameDef()->ndef());
+		lua_pushnumber(L, active_object_count);
+		lua_pushnumber(L, active_object_count_wider);
+		if(lua_pcall(L, 4, 0, 0))
+			script_error(L, "error: %s\n", lua_tostring(L, -1));
+	}
+};
+
+// register_abm({...})
+static int l_register_abm(lua_State *L)
+{
+	infostream<<"register_abm"<<std::endl;
+	luaL_checktype(L, 1, LUA_TTABLE);
+
+	// Get minetest.registered_abms
+	lua_getglobal(L, "minetest");
+	lua_getfield(L, -1, "registered_abms");
+	luaL_checktype(L, -1, LUA_TTABLE);
+	int registered_abms = lua_gettop(L);
+
+	int id = 1;
+	// Find free id
+	for(;;){
+		lua_pushnumber(L, id);
+		lua_gettable(L, registered_abms);
+		if(lua_isnil(L, -1))
+			break;
+		lua_pop(L, 1);
+	}
+	lua_pop(L, 1);
+
+	infostream<<"register_abm: id="<<id<<std::endl;
+
+	// registered_abms[id] = spec
+	lua_pushnumber(L, id);
+	lua_pushvalue(L, 1);
+	lua_settable(L, registered_abms);
+	
+	return 0; /* number of results */
+}
+
 // register_tool(name, {lots of stuff})
 static int l_register_tool(lua_State *L)
 {
@@ -894,6 +993,7 @@ static const struct luaL_Reg minetest_f [] = {
 	{"register_tool", l_register_tool},
 	{"register_node", l_register_node},
 	{"register_craft", l_register_craft},
+	{"register_abm", l_register_abm},
 	{"setting_get", l_setting_get},
 	{"setting_getbool", l_setting_getbool},
 	{"chat_send_all", l_chat_send_all},
@@ -1420,6 +1520,8 @@ void scriptapi_export(lua_State *L, Server *server)
 	lua_setfield(L, -2, "registered_nodes");
 	lua_newtable(L);
 	lua_setfield(L, -2, "registered_entities");
+	lua_newtable(L);
+	lua_setfield(L, -2, "registered_abms");
 	
 	lua_newtable(L);
 	lua_setfield(L, -2, "object_refs");
@@ -1458,6 +1560,58 @@ void scriptapi_add_environment(lua_State *L, ServerEnvironment *env)
 	luaL_checktype(L, -1, LUA_TTABLE);
 	lua_pushvalue(L, envref);
 	lua_setfield(L, -2, "env");
+
+	// Store environment as light userdata in registry
+	lua_pushlightuserdata(L, env);
+	lua_setfield(L, LUA_REGISTRYINDEX, "minetest_env");
+
+	/* Add ActiveBlockModifiers to environment */
+
+	// Get minetest.registered_abms
+	lua_getglobal(L, "minetest");
+	lua_getfield(L, -1, "registered_abms");
+	luaL_checktype(L, -1, LUA_TTABLE);
+	int registered_abms = lua_gettop(L);
+	
+	if(lua_istable(L, registered_abms)){
+		int table = lua_gettop(L);
+		lua_pushnil(L);
+		while(lua_next(L, table) != 0){
+			// key at index -2 and value at index -1
+			int id = lua_tonumber(L, -2);
+			int current_abm = lua_gettop(L);
+
+			std::set<std::string> trigger_contents;
+			lua_getfield(L, current_abm, "nodenames");
+			if(lua_istable(L, -1)){
+				int table = lua_gettop(L);
+				lua_pushnil(L);
+				while(lua_next(L, table) != 0){
+					// key at index -2 and value at index -1
+					luaL_checktype(L, -1, LUA_TSTRING);
+					trigger_contents.insert(lua_tostring(L, -1));
+					// removes value, keeps key for next iteration
+					lua_pop(L, 1);
+				}
+			}
+			lua_pop(L, 1);
+
+			float trigger_interval = 10.0;
+			getfloatfield(L, current_abm, "interval", trigger_interval);
+
+			int trigger_chance = 50;
+			getintfield(L, current_abm, "chance", trigger_chance);
+
+			LuaABM *abm = new LuaABM(L, id, trigger_contents,
+					trigger_interval, trigger_chance);
+			
+			env->addActiveBlockModifier(abm);
+
+			// removes value, keeps key for next iteration
+			lua_pop(L, 1);
+		}
+	}
+	lua_pop(L, 1);
 }
 
 #if 0

@@ -1296,36 +1296,6 @@ end
 register_falling_node("sand", "sand.png")
 register_falling_node("gravel", "gravel.png")
 
---[[
-minetest.register_entity("falling_sand", {
-	-- Definition
-	collisionbox = {-0.5,-0.5,-0.5, 0.5,0.5,0.5},
-	visual = "cube",
-	textures = {"sand.png","sand.png","sand.png","sand.png","sand.png","sand.png"},
-	-- State
-	fallspeed = 0,
-	-- Methods
-	on_step = function(self, dtime)
-		-- Apply gravity
-		self.fallspeed = self.fallspeed + dtime * 5
-		fp = self.object:getpos()
-		fp.y = fp.y - self.fallspeed * dtime
-		self.object:moveto(fp)
-		-- Turn to actual sand when collides to ground or just move
-		bcp = {x=fp.x, y=fp.y-0.5, z=fp.z} -- Position of bottom center point
-		bcn = minetest.env:get_node(bcp)
-		if bcn.name ~= "air" then
-			-- Turn to a sand node
-			np = {x=bcp.x, y=bcp.y+1, z=bcp.z}
-			minetest.env:add_node(np, {name="sand"})
-			self.object:remove()
-		else
-			-- Do nothing
-		end
-	end
-})
---]]
-
 --
 -- Global callbacks
 --
@@ -1388,6 +1358,17 @@ minetest.register_on_chat_message(function(name, message)
 		return true
 	end
 end)
+
+minetest.register_abm({
+	nodenames = {"TNT"},
+	interval = 10.0,
+	chance = 1,
+	action = function(pos, node, active_object_count, active_object_count_wider)
+		print("TNT ABM action")
+		pos.y = pos.y + 1
+		minetest.env:add_node(pos, {name="papyrus"})
+	end,
+})
 
 --
 -- Done, print some random stuff
