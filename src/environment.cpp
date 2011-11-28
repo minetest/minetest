@@ -671,14 +671,14 @@ void ServerEnvironment::activateBlock(MapBlock *block, u32 additional_dtime)
 		dtime_s = m_game_time - block->getTimestamp();
 	dtime_s += additional_dtime;
 
-	infostream<<"ServerEnvironment::activateBlock(): block timestamp: "
-			<<stamp<<", game time: "<<m_game_time<<std::endl;
+	/*infostream<<"ServerEnvironment::activateBlock(): block timestamp: "
+			<<stamp<<", game time: "<<m_game_time<<std::endl;*/
 
 	// Set current time as timestamp
 	block->setTimestampNoChangedFlag(m_game_time);
 
-	infostream<<"ServerEnvironment::activateBlock(): block is "
-			<<dtime_s<<" seconds old."<<std::endl;
+	/*infostream<<"ServerEnvironment::activateBlock(): block is "
+			<<dtime_s<<" seconds old."<<std::endl;*/
 	
 	// Activate stored objects
 	activateObjects(block);
