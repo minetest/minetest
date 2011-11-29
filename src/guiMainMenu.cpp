@@ -185,15 +185,23 @@ void GUIMainMenu::regenerateGui(v2u32 screensize)
 	v2s32 size_client = size - v2s32(40, 0);
 	
 	changeCtype("");
+	
+	// Version
+	{
+		core::rect<s32> rect(0, 0, 300, 30);
+		rect += topleft_client + v2s32(-36, 0);
+		Environment->addStaticText(narrow_to_wide(VERSION_STRING).c_str(), 
+			rect, false, true, this, -1);
+	}
+	// CLIENT
 	{
 		core::rect<s32> rect(0, 0, 20, 125);
-		rect += topleft_client + v2s32(-15, 60);
+		rect += topleft_client + v2s32(-15, 80);
 		const wchar_t *text = L"C\nL\nI\nE\nN\nT";
 		//gui::IGUIStaticText *t =
 		Environment->addStaticText(text, rect, false, true, this, -1);
 		//t->setTextAlignment(gui::EGUIA_CENTER, gui::EGUIA_UPPERLEFT);
 	}
-
 	// Nickname + password
 	{
 		core::rect<s32> rect(0, 0, 110, 20);
@@ -295,28 +303,28 @@ void GUIMainMenu::regenerateGui(v2u32 screensize)
 		Server section
 	*/
 
-	v2s32 topleft_server(40, 250);
+	v2s32 topleft_server(40, 290);
 	v2s32 size_server = size - v2s32(40, 0);
 	
+	// SERVER
 	{
 		core::rect<s32> rect(0, 0, 20, 125);
-		rect += topleft_server + v2s32(-15, 40);
+		rect += topleft_server + v2s32(-15, 15);
 		const wchar_t *text = L"S\nE\nR\nV\nE\nR";
 		//gui::IGUIStaticText *t =
 		Environment->addStaticText(text, rect, false, true, this, -1);
 		//t->setTextAlignment(gui::EGUIA_CENTER, gui::EGUIA_UPPERLEFT);
 	}
-
 	// Server parameters
 	{
 		core::rect<s32> rect(0, 0, 250, 30);
-		rect += topleft_server + v2s32(35, 30);
+		rect += topleft_server + v2s32(35, 20);
 		Environment->addCheckBox(creative_mode, rect, this, GUI_ID_CREATIVE_CB,
 			wgettext("Creative Mode"));
 	}
 	{
 		core::rect<s32> rect(0, 0, 250, 30);
-		rect += topleft_server + v2s32(35, 60);
+		rect += topleft_server + v2s32(35, 40);
 		Environment->addCheckBox(enable_damage, rect, this, GUI_ID_DAMAGE_CB,
 			wgettext("Enable Damage"));
 	}
@@ -324,7 +332,7 @@ void GUIMainMenu::regenerateGui(v2u32 screensize)
 	{
 		core::rect<s32> rect(0, 0, 130, 30);
 		//rect += topleft_server + v2s32(size_server.X-40-130, 100+25);
-		rect += topleft_server + v2s32(40, 100+25);
+		rect += topleft_server + v2s32(40, 90);
 		Environment->addButton(rect, this, GUI_ID_DELETE_MAP_BUTTON,
 			  wgettext("Delete map"));
 	}
@@ -344,13 +352,13 @@ void GUIMainMenu::drawMenu()
 	video::SColor bgcolor(140,0,0,0);
 
 	{
-		core::rect<s32> rect(0, 0, 620, 230);
+		core::rect<s32> rect(0, 0, 620, 270);
 		rect += AbsoluteRect.UpperLeftCorner;
 		driver->draw2DRectangle(bgcolor, rect, &AbsoluteClippingRect);
 	}
 
 	{
-		core::rect<s32> rect(0, 250, 620, 430);
+		core::rect<s32> rect(0, 290, 620, 430);
 		rect += AbsoluteRect.UpperLeftCorner;
 		driver->draw2DRectangle(bgcolor, rect, &AbsoluteClippingRect);
 	}
