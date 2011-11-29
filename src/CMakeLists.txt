@@ -106,7 +106,6 @@ set(common_SRCS
 	log.cpp
 	content_sao.cpp
 	mapgen.cpp
-	content_inventory.cpp
 	content_nodemeta.cpp
 	content_craft.cpp
 	content_mapnode.cpp
