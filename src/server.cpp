@@ -2069,8 +2069,11 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 			infostream<<"Server: Cannot negotiate "
 					"serialization version with peer "
 					<<peer_id<<std::endl;
-			SendAccessDenied(m_con, peer_id,
-					L"Your client is too old (map format)");
+			SendAccessDenied(m_con, peer_id, std::wstring(
+					L"Your client's version is not supported.\n"
+					L"Server version is ")
+					+ narrow_to_wide(VERSION_STRING) + L"."
+			);
 			return;
 		}
 		
@@ -2088,18 +2091,23 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 
 		if(net_proto_version == 0)
 		{
-			SendAccessDenied(m_con, peer_id,
-					L"Your client is too old. Please upgrade.");
+			SendAccessDenied(m_con, peer_id, std::wstring(
+					L"Your client's version is not supported.\n"
+					L"Server version is ")
+					+ narrow_to_wide(VERSION_STRING) + L"."
+			);
 			return;
 		}
 		
-		/* Uhh... this should actually be a warning but let's do it like this */
 		if(g_settings->getBool("strict_protocol_version_checking"))
 		{
-			if(net_proto_version < PROTOCOL_VERSION)
+			if(net_proto_version != PROTOCOL_VERSION)
 			{
-				SendAccessDenied(m_con, peer_id,
-						L"Your client is too old. Please upgrade.");
+				SendAccessDenied(m_con, peer_id, std::wstring(
+						L"Your client's version is not supported.\n"
+						L"Server version is ")
+						+ narrow_to_wide(VERSION_STRING) + L"."
+				);
 				return;
 			}
 		}
