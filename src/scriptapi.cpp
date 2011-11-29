@@ -407,6 +407,7 @@ struct EnumString es_ContentParamType[] =
 	{CPT_LIGHT, "light"},
 	{CPT_MINERAL, "mineral"},
 	{CPT_FACEDIR_SIMPLE, "facedir_simple"},
+	{0, NULL},
 };
 
 struct EnumString es_LiquidType[] =
@@ -414,6 +415,7 @@ struct EnumString es_LiquidType[] =
 	{LIQUID_NONE, "none"},
 	{LIQUID_FLOWING, "flowing"},
 	{LIQUID_SOURCE, "source"},
+	{0, NULL},
 };
 
 struct EnumString es_NodeBoxType[] =
@@ -421,6 +423,7 @@ struct EnumString es_NodeBoxType[] =
 	{NODEBOX_REGULAR, "regular"},
 	{NODEBOX_FIXED, "fixed"},
 	{NODEBOX_WALLMOUNTED, "wallmounted"},
+	{0, NULL},
 };
 
 struct EnumString es_Diggability[] =
@@ -428,6 +431,7 @@ struct EnumString es_Diggability[] =
 	{DIGGABLE_NOT, "not"},
 	{DIGGABLE_NORMAL, "normal"},
 	{DIGGABLE_CONSTANT, "constant"},
+	{0, NULL},
 };
 
 /*
