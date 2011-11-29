@@ -1683,7 +1683,9 @@ void Map::transformLiquids(core::map<v3s16, MapBlock*> & modified_blocks)
 					if (nodemgr->getId(nodemgr->get(nb.n).liquid_alternative_flowing) != liquid_kind) {
 						neutrals[num_neutrals++] = nb;
 					} else {
-						sources[num_sources++] = nb;
+						// Do not count bottom source, it will screw things up
+						if(dirs[i].Y != -1)
+							sources[num_sources++] = nb;
 					}
 					break;
 				case LIQUID_FLOWING:
