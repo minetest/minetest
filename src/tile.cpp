@@ -1082,7 +1082,7 @@ bool generate_image(std::string part_of_name, video::IImage *& baseimg,
 	assert(driver);
 
 	// Stuff starting with [ are special commands
-	if(part_of_name[0] != '[')
+	if(part_of_name.size() == 0 || part_of_name[0] != '[')
 	{
 		video::IImage *image = sourcecache->getOrLoad(part_of_name, device);
 

@@ -78,8 +78,8 @@ public:
 		
 		std::string trimmedline = trim(line);
 		
-		// Ignore comments
-		if(trimmedline[0] == '#')
+		// Ignore empty lines and comments
+		if(trimmedline.size() == 0 || trimmedline[0] == '#')
 			return true;
 
 		//infostream<<"trimmedline=\""<<trimmedline<<"\""<<std::endl;
@@ -189,8 +189,8 @@ public:
 		if(is.eof() == false)
 			line_end = "\n";
 		
-		// Ignore comments
-		if(trimmedline[0] == '#')
+		// Ignore empty lines and comments
+		if(trimmedline.size() == 0 || trimmedline[0] == '#')
 		{
 			dst.push_back(line+line_end);
 			return true;
