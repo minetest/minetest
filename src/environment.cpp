@@ -472,6 +472,8 @@ void ServerEnvironment::deSerializePlayers(const std::string &savedir)
 			newplayer = true;
 		}
 
+		ServerRemotePlayer *srp = static_cast<ServerRemotePlayer*>(player);
+
 		// Load player
 		{
 			infostream<<"Reading player "<<testplayer.getName()<<" from "
@@ -483,7 +485,9 @@ void ServerEnvironment::deSerializePlayers(const std::string &savedir)
 				infostream<<"Failed to read "<<path<<std::endl;
 				continue;
 			}
-			player->deSerialize(is);
+			srp->deSerialize(is);
+			srp->m_last_good_position = srp->getBasePosition();
+			srp->m_last_good_position_age = 0;
 		}
 
 		if(newplayer)
