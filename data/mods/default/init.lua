@@ -5,6 +5,7 @@
 -- Textures:
 -- Mods should prefix their textures with modname_, eg. given the mod
 -- name "foomod", a texture could be called "foomod_superfurnace.png"
+-- Due to historical reasons, the default mod does not follow this rule.
 --
 -- Global functions:
 -- minetest.register_entity(name, prototype_table)
