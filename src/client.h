@@ -37,6 +37,7 @@ class IWritableTextureSource;
 class IWritableToolDefManager;
 class IWritableNodeDefManager;
 //class IWritableCraftDefManager;
+class IWritableCraftItemDefManager;
 
 class ClientNotReadyException : public BaseException
 {
@@ -165,7 +166,8 @@ public:
 			MapDrawControl &control,
 			IWritableTextureSource *tsrc,
 			IWritableToolDefManager *tooldef,
-			IWritableNodeDefManager *nodedef
+			IWritableNodeDefManager *nodedef,
+			IWritableCraftItemDefManager *craftitemdef
 	);
 	
 	~Client();
@@ -203,9 +205,7 @@ public:
 	// Pops out a packet from the packet queue
 	//IncomingPacket getPacket();
 
-	void groundAction(u8 action, v3s16 nodepos_undersurface,
-			v3s16 nodepos_oversurface, u16 item);
-	void clickActiveObject(u8 button, u16 id, u16 item_i);
+	void interact(u8 action, const PointedThing& pointed);
 
 	void sendSignNodeText(v3s16 p, std::string text);
 	void sendInventoryAction(InventoryAction *a);
@@ -234,6 +234,8 @@ public:
 	void setPlayerControl(PlayerControl &control);
 
 	void selectPlayerItem(u16 item);
+	u16 getPlayerItem() const
+	{ return m_playeritem; }
 
 	// Returns true if the inventory of the local player has been
 	// updated from the server. If it is true, it is set to false.
@@ -321,6 +323,8 @@ public:
 	{ return m_tooldef_received; }
 	bool nodedefReceived()
 	{ return m_nodedef_received; }
+	bool craftitemdefReceived()
+	{ return m_craftitemdef_received; }
 	
 	float getRTT(void);
 
@@ -328,6 +332,7 @@ public:
 	virtual IToolDefManager* getToolDefManager();
 	virtual INodeDefManager* getNodeDefManager();
 	virtual ICraftDefManager* getCraftDefManager();
+	virtual ICraftItemDefManager* getCraftItemDefManager();
 	virtual ITextureSource* getTextureSource();
 	virtual u16 allocateUnknownNodeId(const std::string &name);
 
@@ -356,13 +361,14 @@ private:
 	IWritableTextureSource *m_tsrc;
 	IWritableToolDefManager *m_tooldef;
 	IWritableNodeDefManager *m_nodedef;
+	IWritableCraftItemDefManager *m_craftitemdef;
 	MeshUpdateThread m_mesh_update_thread;
 	ClientEnvironment m_env;
 	con::Connection m_con;
 	IrrlichtDevice *m_device;
 	// Server serialization version
 	u8 m_server_ser_ver;
-	// This is behind m_env_mutex.
+	u16 m_playeritem;
 	bool m_inventory_updated;
 	core::map<v3s16, bool> m_active_blocks;
 	PacketCounter m_packetcounter;
@@ -383,6 +389,7 @@ private:
 	bool m_textures_received;
 	bool m_tooldef_received;
 	bool m_nodedef_received;
+	bool m_craftitemdef_received;
 	friend class FarMesh;
 };
 

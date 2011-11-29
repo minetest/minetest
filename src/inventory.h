@@ -31,6 +31,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 class ServerActiveObject;
 class ServerEnvironment;
+class PointedThing;
 class ITextureSource;
 class IGameDef;
 
@@ -63,10 +64,6 @@ public:
 	virtual std::string getText() { return ""; }
 	// Returns the string used for inventory
 	virtual std::string getItemString();
-	// Creates an object from the item, to be placed in the world.
-	virtual ServerActiveObject* createSAO(ServerEnvironment *env, v3f pos);
-	// Gets amount of items that dropping one SAO will decrement
-	virtual u16 getDropCount() const { return getCount(); }
 
 	/*
 		Quantity methods
@@ -88,13 +85,17 @@ public:
 	void setCount(u16 count)
 	{ m_count = count; }
 
-	// This should return something else for stackable items
-	virtual u16 freeSpace() const
-	{ return 0; }
+	u16 freeSpace() const
+	{
+		u16 max = getStackMax();
+		if(m_count > max)
+			return 0;
+		return max - m_count;
+	}
 
 	void add(u16 count)
 	{
-		assert(m_count + count <= QUANTITY_ITEM_MAX_COUNT);
+		assert(m_count + count <= getStackMax());
 		m_count += count;
 	}
 	void remove(u16 count)
@@ -107,6 +108,10 @@ public:
 		Other properties
 	*/
 
+	// Maximum size of a stack
+	virtual u16 getStackMax() const {return 1;}
+	// Whether it can be used
+	virtual bool isUsable() const {return false;}
 	// Whether it can be cooked
 	virtual bool isCookable() const {return false;}
 	// Result of cooking (can randomize)
@@ -115,12 +120,24 @@ public:
 	virtual float getCookTime() const {return 3.0;}
 	// Whether it can be burned (<0 = cannot be burned)
 	virtual float getBurnTime() const {return -1;}
-	
+	// Gets amount of items that dropping one ItemSAO will decrement
+	// -1 means as many as possible
+	virtual s16 getDropCount() const { return -1; }
+	// Whether this item can point to liquids
+	virtual bool areLiquidsPointable() const { return false; }
+
+	// Creates an object from the item and places it in the world.
+	// If return value is true, item should be removed.
+	virtual bool dropOrPlace(ServerEnvironment *env,
+			ServerActiveObject *dropper,
+			v3f pos, bool place, s16 count);
+
 	// Eat, press, activate, whatever.
-	// Called when item is right-clicked when lying on ground.
+	// Called when item is left-clicked while in hand.
 	// If returns true, item shall be deleted.
 	virtual bool use(ServerEnvironment *env,
-			ServerActiveObject *user){return false;}
+			ServerActiveObject *user,
+			const PointedThing& pointed){return false;}
 
 protected:
 	IGameDef *m_gamedef;
@@ -189,12 +206,11 @@ public:
 		return true;
 	}
 
-	u16 freeSpace() const
+	u16 getStackMax() const
 	{
-		if(m_count > QUANTITY_ITEM_MAX_COUNT)
-			return 0;
-		return QUANTITY_ITEM_MAX_COUNT - m_count;
+		return QUANTITY_ITEM_MAX_COUNT;
 	}
+
 	/*
 		Other properties
 	*/
@@ -254,9 +270,6 @@ public:
 		return os.str();
 	}
 
-	ServerActiveObject* createSAO(ServerEnvironment *env, v3f pos);
-	u16 getDropCount() const;
-
 	virtual bool addableTo(const InventoryItem *other) const
 	{
 		if(std::string(other->getName()) != "CraftItem")
@@ -284,24 +297,26 @@ public:
 		return true;
 	}
 
-	u16 freeSpace() const
-	{
-		if(m_count > QUANTITY_ITEM_MAX_COUNT)
-			return 0;
-		return QUANTITY_ITEM_MAX_COUNT - m_count;
-	}
-
 	/*
 		Other properties
 	*/
 
+	u16 getStackMax() const;
+	bool isUsable() const;
 	bool isCookable() const;
 	InventoryItem *createCookResult() const;
 	float getCookTime() const;
 	float getBurnTime() const;
+	s16 getDropCount() const;
+	bool areLiquidsPointable() const;
 
-	bool use(ServerEnvironment *env, ServerActiveObject *user);
-	
+	bool dropOrPlace(ServerEnvironment *env,
+			ServerActiveObject *dropper,
+			v3f pos, bool place, s16 count);
+	bool use(ServerEnvironment *env,
+			ServerActiveObject *user,
+			const PointedThing& pointed);
+
 	/*
 		Special methods
 	*/

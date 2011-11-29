@@ -188,8 +188,7 @@ public:
 	ServerRemotePlayer(ServerEnvironment *env, v3f pos_, u16 peer_id_,
 			const char *name_);
 
-	virtual ~ServerRemotePlayer()
-	{}
+	virtual ~ServerRemotePlayer();
 
 	virtual bool isLocal() const
 	{ return false; }
@@ -230,11 +229,15 @@ public:
 	virtual void damageWieldedItem(u16 amount);
 	// If all fits, eats item and returns true. Otherwise returns false.
 	virtual bool addToInventory(InventoryItem *item);
+	virtual void addToInventoryLater(InventoryItem *item);
+	void clearAddToInventoryLater();
+	void completeAddToInventoryLater(u16 preferred_index);
 	virtual void setHP(s16 hp_);
 	virtual s16 getHP();
 	
 	v3f m_last_good_position;
 	float m_last_good_position_age;
+	std::vector<InventoryItem*> m_additional_items;
 	
 private:
 };

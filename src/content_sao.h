@@ -51,7 +51,6 @@ public:
 	std::string getStaticData();
 	InventoryItem* createInventoryItem();
 	void punch(ServerActiveObject *puncher);
-	void rightClick(ServerActiveObject *clicker);
 	float getMinimumSavedMovement(){ return 0.1*BS; }
 private:
 	std::string m_inventorystring;

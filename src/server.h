@@ -36,6 +36,7 @@ typedef struct lua_State lua_State;
 class IWritableToolDefManager;
 class IWritableNodeDefManager;
 class IWritableCraftDefManager;
+class IWritableCraftItemDefManager;
 
 /*
 	Some random functions
@@ -495,12 +496,14 @@ public:
 	virtual IToolDefManager* getToolDefManager();
 	virtual INodeDefManager* getNodeDefManager();
 	virtual ICraftDefManager* getCraftDefManager();
+	virtual ICraftItemDefManager* getCraftItemDefManager();
 	virtual ITextureSource* getTextureSource();
 	virtual u16 allocateUnknownNodeId(const std::string &name);
 	
 	IWritableToolDefManager* getWritableToolDefManager();
 	IWritableNodeDefManager* getWritableNodeDefManager();
 	IWritableCraftDefManager* getWritableCraftDefManager();
+	IWritableCraftItemDefManager* getWritableCraftItemDefManager();
 
 private:
 
@@ -523,6 +526,8 @@ private:
 			IToolDefManager *tooldef);
 	static void SendNodeDef(con::Connection &con, u16 peer_id,
 			INodeDefManager *nodedef);
+	static void SendCraftItemDef(con::Connection &con, u16 peer_id,
+			ICraftItemDefManager *nodedef);
 	
 	/*
 		Non-static send methods.
@@ -643,6 +648,9 @@ private:
 	
 	// Craft definition manager
 	IWritableCraftDefManager *m_craftdef;
+	
+	// CraftItem definition manager
+	IWritableCraftItemDefManager *m_craftitemdef;
 	
 	/*
 		Threads

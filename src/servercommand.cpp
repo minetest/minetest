@@ -225,7 +225,7 @@ void cmd_teleport(std::wostringstream &os,
 	//ctx->player->setPosition(dest);
 
 	// Use the ServerActiveObject interface of ServerRemotePlayer
-	ServerRemotePlayer *srp = (ServerRemotePlayer*)ctx->player;
+	ServerRemotePlayer *srp = static_cast<ServerRemotePlayer*>(ctx->player);
 	srp->setPos(dest);
 	ctx->server->SendMovePlayer(ctx->player);
 

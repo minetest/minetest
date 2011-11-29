@@ -10,6 +10,7 @@
 -- minetest.register_entity(name, prototype_table)
 -- minetest.register_tool(name, {lots of stuff})
 -- minetest.register_node(name, {lots of stuff})
+-- minetest.register_craftitem(name, {lots of stuff})
 -- minetest.register_craft({output=item, recipe={...})
 -- minetest.register_globalstep(func)
 -- minetest.register_on_placenode(func(pos, newnode, placer))
@@ -30,7 +31,9 @@
 --
 -- Global tables:
 -- minetest.registered_nodes
--- ^ List of registed node definitions, indexed by name
+-- ^ List of registered node definitions, indexed by name
+-- minetest.registered_craftitems
+-- ^ List of registered craft item definitions, indexed by name
 -- minetest.registered_entities
 -- ^ List of registered entity prototypes, indexed by name
 -- minetest.object_refs
@@ -44,6 +47,9 @@
 -- - remove_node(pos)
 -- - get_node(pos)
 -- - add_luaentity(pos, name)
+-- - add_item(pos, itemstring)
+-- - add_rat(pos)
+-- - add_firefly(pos)
 -- - get_meta(pos) -- Get a NodeMetaRef at that position
 --
 -- NodeMetaRef
@@ -73,6 +79,9 @@
 -- - setpos(pos); pos={x=num, y=num, z=num}
 -- - moveto(pos, continuous=false): interpolated move
 -- - add_to_inventory(itemstring): add an item to object inventory
+-- - add_to_inventory_later(itemstring): like above, but after callback returns (only allowed for craftitem callbacks)
+-- - get_hp(): returns number of hitpoints (2 * number of hearts)
+-- - set_hp(hp): set number of hitpoints (2 * number of hearts)
 -- - settexturemod(mod)
 -- - setsprite(p={x=0,y=0}, num_frames=1, framelength=0.2,
 -- -           select_horiz_by_yawpitch=false)
@@ -1160,6 +1169,118 @@ minetest.register_node("TNT", {
 })
 
 --
+-- Crafting items
+--
+
+local craftitem_place_item = function(item, placer, pos)
+	--print("craftitem_place_item")
+	print("item: " .. dump(item))
+	print("placer: " .. dump(placer))
+	print("pos: " .. dump(pos))
+	minetest.env:add_item(pos, 'CraftItem "' .. item .. '" 1')
+	return true
+end
+
+local craftitem_eat = function(hp_change)
+	return function(item, user, pointed_thing)  -- closure
+		--print("craftitem_eat(" .. hp_change .. ")")
+		--print("item: " .. dump(item))
+		--print("user: " .. dump(user))
+		--print("pointed_thing: " .. dump(pointed_thing))
+		user:set_hp(user:get_hp() + hp_change)
+		return true
+	end
+end
+
+minetest.register_craftitem("Stick", {
+	image = "stick.png",
+	--furnace_burntime = ...,
+	on_place_on_ground = craftitem_place_item,
+})
+
+minetest.register_craftitem("paper", {
+	image = "paper.png",
+	on_place_on_ground = craftitem_place_item,
+})
+
+minetest.register_craftitem("book", {
+	image = "book.png",
+	on_place_on_ground = craftitem_place_item,
+})
+
+minetest.register_craftitem("lump_of_coal", {
+	image = "lump_of_coal.png",
+	furnace_burntime = 40;
+	on_place_on_ground = craftitem_place_item,
+})
+
+minetest.register_craftitem("lump_of_iron", {
+	image = "lump_of_iron.png",
+	cookresult_item = 'CraftItem "steel_ingot" 1',
+	on_place_on_ground = craftitem_place_item,
+})
+
+minetest.register_craftitem("lump_of_clay", {
+	image = "lump_of_clay.png",
+	cookresult_item = 'CraftItem "clay_brick" 1',
+	on_place_on_ground = craftitem_place_item,
+})
+
+minetest.register_craftitem("steel_ingot", {
+	image = "steel_ingot.png",
+	on_place_on_ground = craftitem_place_item,
+})
+
+minetest.register_craftitem("clay_brick", {
+	image = "clay_brick.png",
+	on_place_on_ground = craftitem_place_item,
+})
+
+minetest.register_craftitem("rat", {
+	image = "rat.png",
+	cookresult_item = 'CraftItem "cooked_rat" 1',
+	on_drop = function(item, dropper, pos)
+		minetest.env:add_rat(pos)
+		return true
+	end,
+})
+
+minetest.register_craftitem("cooked_rat", {
+	image = "cooked_rat.png",
+	cookresult_item = 'CraftItem "scorched_stuff" 1',
+	on_place_on_ground = craftitem_place_item,
+	on_use = craftitem_eat(6),
+})
+
+minetest.register_craftitem("scorched_stuff", {
+	image = "scorched_stuff.png",
+	on_place_on_ground = craftitem_place_item,
+})
+
+minetest.register_craftitem("firefly", {
+	image = "firefly.png",
+	on_drop = function(item, dropper, pos)
+		minetest.env:add_firefly(pos)
+		return true
+	end,
+})
+
+minetest.register_craftitem("apple", {
+	image = "apple.png",
+	on_place_on_ground = craftitem_place_item,
+	on_use = craftitem_eat(4),
+})
+
+minetest.register_craftitem("apple_iron", {
+	image = "apple_iron.png",
+	on_place_on_ground = craftitem_place_item,
+	on_use = craftitem_eat(8),
+})
+
+print(dump(minetest.registered_craftitems))
+
+
+--
 -- Some common functions
 --
 
@@ -1237,6 +1358,7 @@ function TNT:on_punch(hitter)
 	if self.health <= 0 then
 		self.object:remove()
 		hitter:add_to_inventory("NodeItem TNT 1")
+		hitter:set_hp(hitter:get_hp() - 1)
 	end
 end
 
@@ -1344,6 +1466,8 @@ function on_punchnode(p, node)
 	if node.name == "TNT" then
 		minetest.env:remove_node(p)
 		minetest.env:add_luaentity(p, "TNT")
+		--minetest.env:add_luaentity(p, "testentity")
+		--minetest.env:add_firefly(p)
 		nodeupdate(p)
 	end
 end
@@ -1381,7 +1505,7 @@ minetest.register_on_chat_message(function(name, message)
 end)
 
 -- Grow papyrus on TNT every 10 seconds
---[[minetest.register_abm({
+minetest.register_abm({
 	nodenames = {"TNT"},
 	interval = 10.0,
 	chance = 1,
@@ -1390,7 +1514,7 @@ end)
 		pos.y = pos.y + 1
 		minetest.env:add_node(pos, {name="papyrus"})
 	end,
-})]]
+})
 
 -- Replace texts of alls signs with "foo" every 10 seconds
 --[[minetest.register_abm({
@@ -1403,6 +1527,79 @@ end)
 		meta:set_text("foo")
 	end,
 })]]
+
+--[[local ncpos = nil
+local ncq = 1
+local ncstuff = {
+    {2, 1, 0, 3}, {3, 0, 1, 2}, {4, -1, 0, 1}, {5, -1, 0, 1}, {6, 0, -1, 0},
+    {7, 0, -1, 0}, {8, 1, 0, 3}, {9, 1, 0, 3}, {10, 1, 0, 3}, {11, 0, 1, 2},
+    {12, 0, 1, 2}, {13, 0, 1, 2}, {14, -1, 0, 1}, {15, -1, 0, 1}, {16, -1, 0, 1},
+    {17, -1, 0, 1}, {18, 0, -1, 0}, {19, 0, -1, 0}, {20, 0, -1, 0}, {21, 0, -1, 0},
+    {22, 1, 0, 3}, {23, 1, 0, 3}, {24, 1, 0, 3}, {25, 1, 0, 3}, {10, 0, 1, 2}
+}
+local ncold = {}
+local nctime = nil
+
+minetest.register_abm({
+    nodenames = {"dirt_with_grass"},
+    interval = 100000.0,
+    chance = 1,
+    action = function(pos, node, active_object_count, active_object_count_wider)
+        if ncpos ~= nil then
+            return
+        end
+       
+        if pos.x % 16 ~= 8 or pos.z % 16 ~= 8 then
+            return
+        end
+       
+        pos.y = pos.y + 1
+        n = minetest.env:get_node(pos)
+        print(dump(n))
+        if n.name ~= "air" then
+            return
+        end
+
+        pos.y = pos.y + 2
+        ncpos = pos
+        nctime = os.clock()
+        minetest.env:add_node(ncpos, {name="nyancat"})
+    end
+})
+
+minetest.register_abm({
+    nodenames = {"nyancat"},
+    interval = 1.0,
+    chance = 1,
+    action = function(pos, node, active_object_count, active_object_count_wider)
+        if ncpos == nil then
+            return
+        end
+        if pos.x == ncpos.x and pos.y == ncpos.y and pos.z == ncpos.z then
+            clock = os.clock()
+            if clock - nctime < 0.1 then
+                return
+            end
+            nctime = clock
+           
+            s0 = ncstuff[ncq]
+            ncq = s0[1]
+            s1 = ncstuff[ncq]
+            p0 = pos
+            p1 = {x = p0.x + s0[2], y = p0.y, z = p0.z + s0[3]}
+            p2 = {x = p1.x + s1[2], y = p1.y, z = p1.z + s1[3]}
+            table.insert(ncold, 1, p0)
+            while #ncold >= 10 do
+                minetest.env:add_node(ncold[#ncold], {name="air"})
+                table.remove(ncold, #ncold)
+            end
+            minetest.env:add_node(p0, {name="nyancat_rainbow"})
+            minetest.env:add_node(p1, {name="nyancat", param1=s0[4]})
+            minetest.env:add_node(p2, {name="air"})
+            ncpos = p1
+        end
+    end,
+})--]]
 
 -- LuaNodeMetadata should support something like this
 --meta.setvar("somevariable", {x=0, y=0, z=0})

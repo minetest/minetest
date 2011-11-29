@@ -104,18 +104,25 @@ inline s32 readS32(u8 *data){
 	return (s32)readU32(data);
 }
 
-inline void writeF1000(u8 *data, f32 i){
-	writeS32(data, i*1000);
-}
-inline f32 readF1000(u8 *data){
-	return (f32)readS32(data)/1000.;
-}
-
 inline void writeS16(u8 *data, s16 i){
 	writeU16(data, (u16)i);
 }
 inline s16 readS16(u8 *data){
 	return (s16)readU16(data);
+}
+
+inline void writeS8(u8 *data, s8 i){
+	writeU8(data, (u8)i);
+}
+inline s8 readS8(u8 *data){
+	return (s8)readU8(data);
+}
+
+inline void writeF1000(u8 *data, f32 i){
+	writeS32(data, i*1000);
+}
+inline f32 readF1000(u8 *data){
+	return (f32)readS32(data)/1000.;
 }
 
 inline void writeV3S32(u8 *data, v3s32 p)
@@ -248,17 +255,43 @@ inline u32 readU32(std::istream &is)
 	return readU32((u8*)buf);
 }
 
-inline void writeS32(std::ostream &os, u32 p)
+inline void writeS32(std::ostream &os, s32 p)
 {
 	char buf[4];
 	writeS32((u8*)buf, p);
 	os.write(buf, 4);
 }
-inline u32 readS32(std::istream &is)
+inline s32 readS32(std::istream &is)
 {
 	char buf[4];
 	is.read(buf, 4);
 	return readS32((u8*)buf);
+}
+
+inline void writeS16(std::ostream &os, s16 p)
+{
+	char buf[2];
+	writeS16((u8*)buf, p);
+	os.write(buf, 2);
+}
+inline s16 readS16(std::istream &is)
+{
+	char buf[2];
+	is.read(buf, 2);
+	return readS16((u8*)buf);
+}
+
+inline void writeS8(std::ostream &os, s8 p)
+{
+	char buf[1];
+	writeS8((u8*)buf, p);
+	os.write(buf, 1);
+}
+inline s8 readS8(std::istream &is)
+{
+	char buf[1];
+	is.read(buf, 1);
+	return readS8((u8*)buf);
 }
 
 inline void writeF1000(std::ostream &os, f32 p)
@@ -1724,6 +1757,28 @@ protected:
 };
 
 std::string translatePassword(std::string playername, std::wstring password);
+
+enum PointedThingType
+{
+	POINTEDTHING_NOTHING,
+	POINTEDTHING_NODE,
+	POINTEDTHING_OBJECT
+};
+
+struct PointedThing
+{
+	PointedThingType type;
+	v3s16 node_undersurface;
+	v3s16 node_abovesurface;
+	s16 object_id;
+
+	PointedThing();
+	std::string dump() const;
+	void serialize(std::ostream &os) const;
+	void deSerialize(std::istream &is);
+	bool operator==(const PointedThing &pt2) const;
+	bool operator!=(const PointedThing &pt2) const;
+};
 
 #endif
 

@@ -34,6 +34,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "nodemetadata.h"
 #include "nodedef.h"
 #include "tooldef.h"
+#include "craftitemdef.h"
 #include <IFileSystem.h>
 
 /*
@@ -191,11 +192,13 @@ Client::Client(
 		MapDrawControl &control,
 		IWritableTextureSource *tsrc,
 		IWritableToolDefManager *tooldef,
-		IWritableNodeDefManager *nodedef
+		IWritableNodeDefManager *nodedef,
+		IWritableCraftItemDefManager *craftitemdef
 ):
 	m_tsrc(tsrc),
 	m_tooldef(tooldef),
 	m_nodedef(nodedef),
+	m_craftitemdef(craftitemdef),
 	m_mesh_update_thread(this),
 	m_env(
 		new ClientMap(this, this, control,
@@ -207,6 +210,7 @@ Client::Client(
 	m_con(PROTOCOL_ID, 512, CONNECTION_TIMEOUT, this),
 	m_device(device),
 	m_server_ser_ver(SER_FMT_VER_INVALID),
+	m_playeritem(0),
 	m_inventory_updated(false),
 	m_time_of_day(0),
 	m_map_seed(0),
@@ -215,7 +219,8 @@ Client::Client(
 	m_texture_receive_progress(0),
 	m_textures_received(false),
 	m_tooldef_received(false),
-	m_nodedef_received(false)
+	m_nodedef_received(false),
+	m_craftitemdef_received(false)
 {
 	m_packetcounter_timer = 0.0;
 	//m_delete_unused_sectors_timer = 0.0;
@@ -1628,6 +1633,26 @@ void Client::ProcessData(u8 *data, u32 datasize, u16 sender_peer_id)
 		m_mesh_update_thread.setRun(true);
 		m_mesh_update_thread.Start();
 	}
+	else if(command == TOCLIENT_CRAFTITEMDEF)
+	{
+		infostream<<"Client: Received CraftItem definitions: packet size: "
+				<<datasize<<std::endl;
+
+		std::string datastring((char*)&data[2], datasize-2);
+		std::istringstream is(datastring, std::ios_base::binary);
+
+		m_craftitemdef_received = true;
+
+		// Stop threads while updating content definitions
+		m_mesh_update_thread.stop();
+
+		std::istringstream tmp_is(deSerializeLongString(is), std::ios::binary);
+		m_craftitemdef->deSerialize(tmp_is);
+		
+		// Resume threads
+		m_mesh_update_thread.setRun(true);
+		m_mesh_update_thread.Start();
+	}
 	else
 	{
 		infostream<<"Client: Ignoring unknown command "
@@ -1641,93 +1666,41 @@ void Client::Send(u16 channelnum, SharedBuffer<u8> data, bool reliable)
 	m_con.Send(PEER_ID_SERVER, channelnum, data, reliable);
 }
 
-void Client::groundAction(u8 action, v3s16 nodepos_undersurface,
-		v3s16 nodepos_oversurface, u16 item)
+void Client::interact(u8 action, const PointedThing& pointed)
 {
 	if(connectedAndInitialized() == false){
-		infostream<<"Client::groundAction() "
+		infostream<<"Client::interact() "
 				"cancelled (not connected)"
 				<<std::endl;
 		return;
 	}
-	
+
+	std::ostringstream os(std::ios_base::binary);
+
 	/*
-		length: 17
 		[0] u16 command
 		[2] u8 action
-		[3] v3s16 nodepos_undersurface
-		[9] v3s16 nodepos_abovesurface
-		[15] u16 item
+		[3] u16 item
+		[5] u32 length of the next item
+		[9] serialized PointedThing
 		actions:
-		0: start digging
-		1: place block
-		2: stop digging (all parameters ignored)
-		3: digging completed
+		0: start digging (from undersurface) or use
+		1: stop digging (all parameters ignored)
+		2: digging completed
+		3: place block or item (to abovesurface)
+		4: use item
 	*/
-	u8 datasize = 2 + 1 + 6 + 6 + 2;
-	SharedBuffer<u8> data(datasize);
-	writeU16(&data[0], TOSERVER_GROUND_ACTION);
-	writeU8(&data[2], action);
-	writeV3S16(&data[3], nodepos_undersurface);
-	writeV3S16(&data[9], nodepos_oversurface);
-	writeU16(&data[15], item);
-	Send(0, data, true);
-}
+	writeU16(os, TOSERVER_INTERACT);
+	writeU8(os, action);
+	writeU16(os, getPlayerItem());
+	std::ostringstream tmp_os(std::ios::binary);
+	pointed.serialize(tmp_os);
+	os<<serializeLongString(tmp_os.str());
 
-void Client::clickActiveObject(u8 button, u16 id, u16 item_i)
-{
-	if(connectedAndInitialized() == false){
-		infostream<<"Client::clickActiveObject() "
-				"cancelled (not connected)"
-				<<std::endl;
-		return;
-	}
+	std::string s = os.str();
+	SharedBuffer<u8> data((u8*)s.c_str(), s.size());
 
-	Player *player = m_env.getLocalPlayer();
-	if(player == NULL)
-		return;
-
-	ClientActiveObject *obj = m_env.getActiveObject(id);
-	if(obj){
-		if(button == 0){
-			ToolItem *titem = NULL;
-			std::string toolname = "";
-
-			InventoryList *mlist = player->inventory.getList("main");
-			if(mlist != NULL)
-			{
-				InventoryItem *item = mlist->getItem(item_i);
-				if(item && (std::string)item->getName() == "ToolItem")
-				{
-					titem = (ToolItem*)item;
-					toolname = titem->getToolName();
-				}
-			}
-
-			v3f playerpos = player->getPosition();
-			v3f objpos = obj->getPosition();
-			v3f dir = (objpos - playerpos).normalize();
-			
-			bool disable_send = obj->directReportPunch(toolname, dir);
-			
-			if(disable_send)
-				return;
-		}
-	}
-	
-	/*
-		length: 7
-		[0] u16 command
-		[2] u8 button (0=left, 1=right)
-		[3] u16 id
-		[5] u16 item
-	*/
-	u8 datasize = 2 + 1 + 6 + 2 + 2;
-	SharedBuffer<u8> data(datasize);
-	writeU16(&data[0], TOSERVER_CLICK_ACTIVEOBJECT);
-	writeU8(&data[2], button);
-	writeU16(&data[3], id);
-	writeU16(&data[5], item_i);
+	// Send as reliable
 	Send(0, data, true);
 }
 
@@ -2036,9 +2009,12 @@ void Client::setPlayerControl(PlayerControl &control)
 
 void Client::selectPlayerItem(u16 item)
 {
+	//JMutexAutoLock envlock(m_env_mutex); //bulk comment-out
+	m_playeritem = item;
+	m_inventory_updated = true;
+
 	LocalPlayer *player = m_env.getLocalPlayer();
 	assert(player != NULL);
-
 	player->wieldItem(item);
 
 	sendPlayerItem(item);
@@ -2321,6 +2297,10 @@ ICraftDefManager* Client::getCraftDefManager()
 {
 	return NULL;
 	//return m_craftdef;
+}
+ICraftItemDefManager* Client::getCraftItemDefManager()
+{
+	return m_craftitemdef;
 }
 ITextureSource* Client::getTextureSource()
 {

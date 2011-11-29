@@ -39,11 +39,13 @@ extern "C" {
 #include "tooldef.h"
 #include "nodedef.h"
 #include "craftdef.h"
+#include "craftitemdef.h"
 #include "main.h" // For g_settings
 #include "settings.h" // For accessing g_settings
 #include "nodemetadata.h"
 #include "mapblock.h" // For getNodeBlockPos
 #include "content_nodemeta.h"
+#include "utility.h"
 
 static void stackDump(lua_State *L, std::ostream &o)
 {
@@ -615,6 +617,55 @@ static int l_register_tool(lua_State *L)
 	return 0; /* number of results */
 }
 
+// register_craftitem(name, {lots of stuff})
+static int l_register_craftitem(lua_State *L)
+{
+	const char *name = luaL_checkstring(L, 1);
+	infostream<<"register_craftitem: "<<name<<std::endl;
+	luaL_checktype(L, 2, LUA_TTABLE);
+	int table = 2;
+
+	// Get server from registry
+	lua_getfield(L, LUA_REGISTRYINDEX, "minetest_server");
+	Server *server = (Server*)lua_touserdata(L, -1);
+	// And get the writable CraftItem definition manager from the server
+	IWritableCraftItemDefManager *craftitemdef =
+			server->getWritableCraftItemDefManager();
+	
+	// Check if on_drop is defined
+	lua_getfield(L, table, "on_drop");
+	bool got_on_drop = !lua_isnil(L, -1);
+	lua_pop(L, 1);
+
+	// Check if on_use is defined
+	lua_getfield(L, table, "on_use");
+	bool got_on_use = !lua_isnil(L, -1);
+	lua_pop(L, 1);
+
+	CraftItemDefinition def;
+	
+	getstringfield(L, table, "image", def.imagename);
+	getstringfield(L, table, "cookresult_item", def.cookresult_item);
+	getfloatfield(L, table, "furnace_cooktime", def.furnace_cooktime);
+	getfloatfield(L, table, "furnace_burntime", def.furnace_burntime);
+	def.usable = getboolfield_default(L, table, "usable", got_on_use);
+	getboolfield(L, table, "liquids_pointable", def.liquids_pointable);
+	def.dropcount = getintfield_default(L, table, "dropcount", def.dropcount);
+	def.stack_max = getintfield_default(L, table, "stack_max", def.stack_max);
+
+	// If an on_drop callback is defined, force dropcount to 1
+	if (got_on_drop)
+		def.dropcount = 1;
+
+	// Register it
+	craftitemdef->registerCraftItem(name, def);
+
+	lua_pushvalue(L, table);
+	scriptapi_add_craftitem(L, name);
+
+	return 0; /* number of results */
+}
+
 // register_node(name, {lots of stuff})
 static int l_register_node(lua_State *L)
 {
@@ -976,6 +1027,7 @@ static const struct luaL_Reg minetest_f [] = {
 	{"register_nodedef_defaults", l_register_nodedef_defaults},
 	{"register_entity", l_register_entity},
 	{"register_tool", l_register_tool},
+	{"register_craftitem", l_register_craftitem},
 	{"register_node", l_register_node},
 	{"register_craft", l_register_craft},
 	{"register_abm", l_register_abm},
@@ -1541,6 +1593,56 @@ private:
 		return 0;
 	}
 
+	// EnvRef:add_item(pos, inventorystring)
+	// pos = {x=num, y=num, z=num}
+	static int l_add_item(lua_State *L)
+	{
+		infostream<<"EnvRef::l_add_item()"<<std::endl;
+		EnvRef *o = checkobject(L, 1);
+		ServerEnvironment *env = o->m_env;
+		if(env == NULL) return 0;
+		// pos
+		v3f pos = readFloatPos(L, 2);
+		// inventorystring
+		const char *inventorystring = lua_tostring(L, 3);
+		// Do it
+		ServerActiveObject *obj = new ItemSAO(env, pos, inventorystring);
+		env->addActiveObject(obj);
+		return 0;
+	}
+
+	// EnvRef:add_rat(pos)
+	// pos = {x=num, y=num, z=num}
+	static int l_add_rat(lua_State *L)
+	{
+		infostream<<"EnvRef::l_add_rat()"<<std::endl;
+		EnvRef *o = checkobject(L, 1);
+		ServerEnvironment *env = o->m_env;
+		if(env == NULL) return 0;
+		// pos
+		v3f pos = readFloatPos(L, 2);
+		// Do it
+		ServerActiveObject *obj = new RatSAO(env, pos);
+		env->addActiveObject(obj);
+		return 0;
+	}
+
+	// EnvRef:add_firefly(pos)
+	// pos = {x=num, y=num, z=num}
+	static int l_add_firefly(lua_State *L)
+	{
+		infostream<<"EnvRef::l_add_firefly()"<<std::endl;
+		EnvRef *o = checkobject(L, 1);
+		ServerEnvironment *env = o->m_env;
+		if(env == NULL) return 0;
+		// pos
+		v3f pos = readFloatPos(L, 2);
+		// Do it
+		ServerActiveObject *obj = new FireflySAO(env, pos);
+		env->addActiveObject(obj);
+		return 0;
+	}
+
 	// EnvRef:get_meta(pos)
 	static int l_get_meta(lua_State *L)
 	{
@@ -1623,6 +1725,9 @@ const luaL_reg EnvRef::methods[] = {
 	method(EnvRef, remove_node),
 	method(EnvRef, get_node),
 	method(EnvRef, add_luaentity),
+	method(EnvRef, add_item),
+	method(EnvRef, add_rat),
+	method(EnvRef, add_firefly),
 	method(EnvRef, get_meta),
 	{0,0}
 };
@@ -1661,6 +1766,16 @@ private:
 		if(obj->getType() != ACTIVEOBJECT_TYPE_LUAENTITY)
 			return NULL;
 		return (LuaEntitySAO*)obj;
+	}
+	
+	static ServerRemotePlayer* getplayer(ObjectRef *ref)
+	{
+		ServerActiveObject *obj = getobject(ref);
+		if(obj == NULL)
+			return NULL;
+		if(obj->getType() != ACTIVEOBJECT_TYPE_PLAYER)
+			return NULL;
+		return static_cast<ServerRemotePlayer*>(obj);
 	}
 	
 	// Exported functions
@@ -1795,6 +1910,64 @@ private:
 		return 1;
 	}
 
+	// add_to_inventory_later(self, itemstring)
+	// returns: nil
+	static int l_add_to_inventory_later(lua_State *L)
+	{
+		ObjectRef *ref = checkobject(L, 1);
+		luaL_checkstring(L, 2);
+		ServerActiveObject *co = getobject(ref);
+		if(co == NULL) return 0;
+		// itemstring
+		const char *itemstring = lua_tostring(L, 2);
+		infostream<<"ObjectRef::l_add_to_inventory_later(): id="<<co->getId()
+				<<" itemstring=\""<<itemstring<<"\""<<std::endl;
+		// Do it
+		std::istringstream is(itemstring, std::ios::binary);
+		ServerEnvironment *env = co->getEnv();
+		assert(env);
+		IGameDef *gamedef = env->getGameDef();
+		InventoryItem *item = InventoryItem::deSerialize(is, gamedef);
+		infostream<<"item="<<env<<std::endl;
+		co->addToInventoryLater(item);
+		// Return
+		return 0;
+	}
+
+	// get_hp(self)
+	// returns: number of hitpoints (2 * number of hearts)
+	// 0 if not applicable to this type of object
+	static int l_get_hp(lua_State *L)
+	{
+		ObjectRef *ref = checkobject(L, 1);
+		ServerActiveObject *co = getobject(ref);
+		if(co == NULL) return 0;
+		int hp = co->getHP();
+		infostream<<"ObjectRef::l_get_hp(): id="<<co->getId()
+				<<" hp="<<hp<<std::endl;
+		// Return
+		lua_pushnumber(L, hp);
+		return 1;
+	}
+
+	// set_hp(self, hp)
+	// hp = number of hitpoints (2 * number of hearts)
+	// returns: nil
+	static int l_set_hp(lua_State *L)
+	{
+		ObjectRef *ref = checkobject(L, 1);
+		luaL_checknumber(L, 2);
+		ServerActiveObject *co = getobject(ref);
+		if(co == NULL) return 0;
+		int hp = lua_tonumber(L, 2);
+		infostream<<"ObjectRef::l_set_hp(): id="<<co->getId()
+				<<" hp="<<hp<<std::endl;
+		// Do it
+		co->setHP(hp);
+		// Return
+		return 0;
+	}
+
 	// settexturemod(self, mod)
 	static int l_settexturemod(lua_State *L)
 	{
@@ -1901,6 +2074,9 @@ const luaL_reg ObjectRef::methods[] = {
 	method(ObjectRef, setvelocity),
 	method(ObjectRef, setacceleration),
 	method(ObjectRef, add_to_inventory),
+	method(ObjectRef, add_to_inventory_later),
+	method(ObjectRef, get_hp),
+	method(ObjectRef, set_hp),
 	method(ObjectRef, settexturemod),
 	method(ObjectRef, setsprite),
 	{0,0}
@@ -1950,6 +2126,8 @@ void scriptapi_export(lua_State *L, Server *server)
 	lua_setfield(L, -2, "registered_nodes");
 	lua_newtable(L);
 	lua_setfield(L, -2, "registered_entities");
+	lua_newtable(L);
+	lua_setfield(L, -2, "registered_craftitems");
 	lua_newtable(L);
 	lua_setfield(L, -2, "registered_abms");
 	
@@ -2197,6 +2375,163 @@ bool scriptapi_on_respawnplayer(lua_State *L, ServerActiveObject *player)
 		// value removed, keep key for next iteration
 	}
 	return positioning_handled_by_some;
+}
+
+/*
+	craftitem
+*/
+
+static void pushPointedThing(lua_State *L, const PointedThing& pointed)
+{
+	lua_newtable(L);
+	if(pointed.type == POINTEDTHING_NODE)
+	{
+		lua_pushstring(L, "node");
+		lua_setfield(L, -2, "type");
+		pushpos(L, pointed.node_undersurface);
+		lua_setfield(L, -2, "under");
+		pushpos(L, pointed.node_abovesurface);
+		lua_setfield(L, -2, "above");
+	}
+	else if(pointed.type == POINTEDTHING_OBJECT)
+	{
+		lua_pushstring(L, "object");
+		lua_setfield(L, -2, "type");
+		objectref_get(L, pointed.object_id);
+		lua_setfield(L, -2, "ref");
+	}
+	else
+	{
+		lua_pushstring(L, "nothing");
+		lua_setfield(L, -2, "type");
+	}
+}
+
+void scriptapi_add_craftitem(lua_State *L, const char *name)
+{
+	StackUnroller stack_unroller(L);
+	assert(lua_gettop(L) > 0);
+
+	// Set minetest.registered_craftitems[name] = table on top of stack
+	lua_getglobal(L, "minetest");
+	lua_getfield(L, -1, "registered_craftitems");
+	luaL_checktype(L, -1, LUA_TTABLE);
+	lua_pushvalue(L, -3); // push another reference to the table to be registered
+	lua_setfield(L, -2, name); // set minetest.registered_craftitems[name]
+}
+
+static bool get_craftitem_callback(lua_State *L, const char *name,
+		const char *callbackname)
+{
+	// Get minetest.registered_craftitems[name][callbackname]
+	// If that is nil or on error, return false and stack is unchanged
+	// If that is a function, returns true and pushes the
+	// function onto the stack
+
+	lua_getglobal(L, "minetest");
+	lua_getfield(L, -1, "registered_craftitems");
+	lua_remove(L, -2);
+	luaL_checktype(L, -1, LUA_TTABLE);
+	lua_getfield(L, -1, name);
+	lua_remove(L, -2);
+	// Should be a table
+	if(lua_type(L, -1) != LUA_TTABLE)
+	{
+		errorstream<<"CraftItem name \""<<name<<"\" not defined"<<std::endl;
+		lua_pop(L, 1);
+		return false;
+	}
+	lua_getfield(L, -1, callbackname);
+	lua_remove(L, -2);
+	// Should be a function or nil
+	if(lua_type(L, -1) == LUA_TFUNCTION)
+	{
+		return true;
+	}
+	else if(lua_isnil(L, -1))
+	{
+		lua_pop(L, 1);
+		return false;
+	}
+	else
+	{
+		errorstream<<"CraftItem name \""<<name<<"\" callback \""
+			<<callbackname<<" is not a function"<<std::endl;
+		lua_pop(L, 1);
+		return false;
+	}
+}
+
+bool scriptapi_craftitem_on_drop(lua_State *L, const char *name,
+		ServerActiveObject *dropper, v3f pos,
+		bool &callback_exists)
+{
+	realitycheck(L);
+	assert(lua_checkstack(L, 20));
+	//infostream<<"scriptapi_craftitem_on_drop"<<std::endl;
+	StackUnroller stack_unroller(L);
+
+	bool result = false;
+	callback_exists = get_craftitem_callback(L, name, "on_drop");
+	if(callback_exists)
+	{
+		// Call function
+		lua_pushstring(L, name);
+		objectref_get_or_create(L, dropper);
+		pushFloatPos(L, pos);
+		if(lua_pcall(L, 3, 1, 0))
+			script_error(L, "error: %s\n", lua_tostring(L, -1));
+		result = lua_toboolean(L, -1);
+	}
+	return result;
+}
+
+bool scriptapi_craftitem_on_place_on_ground(lua_State *L, const char *name,
+		ServerActiveObject *placer, v3f pos,
+		bool &callback_exists)
+{
+	realitycheck(L);
+	assert(lua_checkstack(L, 20));
+	//infostream<<"scriptapi_craftitem_on_place_on_ground"<<std::endl;
+	StackUnroller stack_unroller(L);
+
+	bool result = false;
+	callback_exists = get_craftitem_callback(L, name, "on_place_on_ground");
+	if(callback_exists)
+	{
+		// Call function
+		lua_pushstring(L, name);
+		objectref_get_or_create(L, placer);
+		pushFloatPos(L, pos);
+		if(lua_pcall(L, 3, 1, 0))
+			script_error(L, "error: %s\n", lua_tostring(L, -1));
+		result = lua_toboolean(L, -1);
+	}
+	return result;
+}
+
+bool scriptapi_craftitem_on_use(lua_State *L, const char *name,
+		ServerActiveObject *user, const PointedThing& pointed,
+		bool &callback_exists)
+{
+	realitycheck(L);
+	assert(lua_checkstack(L, 20));
+	//infostream<<"scriptapi_craftitem_on_use"<<std::endl;
+	StackUnroller stack_unroller(L);
+
+	bool result = false;
+	callback_exists = get_craftitem_callback(L, name, "on_use");
+	if(callback_exists)
+	{
+		// Call function
+		lua_pushstring(L, name);
+		objectref_get_or_create(L, user);
+		pushPointedThing(L, pointed);
+		if(lua_pcall(L, 3, 1, 0))
+			script_error(L, "error: %s\n", lua_tostring(L, -1));
+		result = lua_toboolean(L, -1);
+	}
+	return result;
 }
 
 /*

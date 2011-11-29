@@ -123,6 +123,8 @@ public:
 	// If all fits, eats item and returns true. Otherwise returns false.
 	virtual bool addToInventory(InventoryItem *item)
 		{return false;}
+	virtual void addToInventoryLater(InventoryItem *item)
+		{}
 	virtual void setHP(s16 hp)
 		{}
 	virtual s16 getHP()

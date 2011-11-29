@@ -183,7 +183,8 @@ ServerRemotePlayer::ServerRemotePlayer(ServerEnvironment *env):
 	Player(env->getGameDef()),
 	ServerActiveObject(env, v3f(0,0,0)),
 	m_last_good_position(0,0,0),
-	m_last_good_position_age(0)
+	m_last_good_position_age(0),
+	m_additional_items()
 {
 }
 ServerRemotePlayer::ServerRemotePlayer(ServerEnvironment *env, v3f pos_, u16 peer_id_,
@@ -194,6 +195,10 @@ ServerRemotePlayer::ServerRemotePlayer(ServerEnvironment *env, v3f pos_, u16 pee
 	setPosition(pos_);
 	peer_id = peer_id_;
 	updateName(name_);
+}
+ServerRemotePlayer::~ServerRemotePlayer()
+{
+	clearAddToInventoryLater();
 }
 
 /* ServerActiveObject interface */
@@ -247,9 +252,59 @@ bool ServerRemotePlayer::addToInventory(InventoryItem *item)
 
 	return true;
 }
+void ServerRemotePlayer::addToInventoryLater(InventoryItem *item)
+{
+	infostream<<"Adding (later) "<<item->getName()<<" into "<<getName()
+			<<"'s inventory"<<std::endl;
+	m_additional_items.push_back(item);
+}
+void ServerRemotePlayer::clearAddToInventoryLater()
+{
+	for (std::vector<InventoryItem*>::iterator
+			i = m_additional_items.begin();
+			i != m_additional_items.end(); i++)
+	{
+		delete *i;
+	}
+	m_additional_items.clear();
+}
+void ServerRemotePlayer::completeAddToInventoryLater(u16 preferred_index)
+{
+	InventoryList *ilist = inventory.getList("main");
+	if(ilist == NULL)
+	{
+		clearAddToInventoryLater();
+		return;
+	}
+	
+	// In creative mode, just delete the items
+	if(g_settings->getBool("creative_mode"))
+	{
+		clearAddToInventoryLater();
+		return;
+	}
+	
+	for (std::vector<InventoryItem*>::iterator
+			i = m_additional_items.begin();
+			i != m_additional_items.end(); i++)
+	{
+		InventoryItem *item = *i;
+		InventoryItem *leftover = item;
+		leftover = ilist->addItem(preferred_index, leftover);
+		leftover = ilist->addItem(leftover);
+		delete leftover;
+	}
+	m_additional_items.clear();
+}
 void ServerRemotePlayer::setHP(s16 hp_)
 {
 	hp = hp_;
+
+	// FIXME: don't hardcode maximum HP, make configurable per object
+	if(hp < 0)
+		hp = 0;
+	else if(hp > 20)
+		hp = 20;
 }
 s16 ServerRemotePlayer::getHP()
 {

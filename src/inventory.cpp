@@ -33,7 +33,9 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "log.h"
 #include "nodedef.h"
 #include "tooldef.h"
+#include "craftitemdef.h"
 #include "gamedef.h"
+#include "scriptapi.h"
 #include "strfnd.h"
 
 /*
@@ -182,18 +184,52 @@ std::string InventoryItem::getItemString() {
 	return os.str();
 }
 
-ServerActiveObject* InventoryItem::createSAO(ServerEnvironment *env, v3f pos)
+bool InventoryItem::dropOrPlace(ServerEnvironment *env,
+		ServerActiveObject *dropper,
+		v3f pos, bool place, s16 count)
 {
 	/*
-		Create an ItemSAO
+		Ensure that the block is loaded so that the item
+		can properly be added to the static list too
 	*/
-	pos.Y -= BS*0.25; // let it drop a bit
-	// Randomize a bit
-	pos.X += BS*0.2*(float)myrand_range(-1000,1000)/1000.0;
-	pos.Z += BS*0.2*(float)myrand_range(-1000,1000)/1000.0;
-	// Create object
-	ServerActiveObject *obj = new ItemSAO(env, pos, getItemString());
-	return obj;
+	v3s16 blockpos = getNodeBlockPos(floatToInt(pos, BS));
+	MapBlock *block = env->getMap().emergeBlock(blockpos, false);
+	if(block==NULL)
+	{
+		infostream<<"InventoryItem::dropOrPlace(): FAIL: block not found: "
+				<<blockpos.X<<","<<blockpos.Y<<","<<blockpos.Z
+				<<std::endl;
+		return false;
+	}
+
+	/*
+		Take specified number of items,
+		but limit to getDropCount().
+	*/
+	s16 dropcount = getDropCount();
+	if(count < 0 || count > dropcount)
+		count = dropcount;
+	if(count < 0 || count > getCount());
+		count = getCount();
+	if(count > 0)
+	{
+		/*
+			Create an ItemSAO
+		*/
+		pos.Y -= BS*0.25; // let it drop a bit
+		// Randomize a bit
+		//pos.X += BS*0.2*(float)myrand_range(-1000,1000)/1000.0;
+		//pos.Z += BS*0.2*(float)myrand_range(-1000,1000)/1000.0;
+		// Create object
+		ServerActiveObject *obj = new ItemSAO(env, pos, getItemString());
+		// Add the object to the environment
+		env->addActiveObject(obj);
+		infostream<<"Dropped item"<<std::endl;
+
+		setCount(getCount() - count);
+	}
+
+	return getCount() < 1; // delete the item?
 }
 
 /*
@@ -307,75 +343,150 @@ video::ITexture * ToolItem::getImageRaw() const
 #ifndef SERVER
 video::ITexture * CraftItem::getImage() const
 {
+	ICraftItemDefManager *cidef = m_gamedef->cidef();
 	ITextureSource *tsrc = m_gamedef->tsrc();
-
-	std::string name = item_craft_get_image_name(m_subname, m_gamedef);
-
-	// Get such a texture
-	return tsrc->getTextureRaw(name);
+	std::string imagename = cidef->getImagename(m_subname);
+	return tsrc->getTextureRaw(imagename);
 }
 #endif
 
-ServerActiveObject* CraftItem::createSAO(ServerEnvironment *env, v3f pos)
+u16 CraftItem::getStackMax() const
 {
-	// Special cases
-	ServerActiveObject *obj = item_craft_create_object(m_subname, env, pos);
-	if(obj)
-		return obj;
-	// Default
-	return InventoryItem::createSAO(env, pos);
+	ICraftItemDefManager *cidef = m_gamedef->cidef();
+	const CraftItemDefinition *def = cidef->getCraftItemDefinition(m_subname);
+	if(def == NULL)
+		return InventoryItem::getStackMax();
+	return def->stack_max;
 }
 
-u16 CraftItem::getDropCount() const
+bool CraftItem::isUsable() const
 {
-	// Special cases
-	s16 dc = item_craft_get_drop_count(m_subname, m_gamedef);
-	if(dc != -1)
-		return dc;
-	// Default
-	return InventoryItem::getDropCount();
+	ICraftItemDefManager *cidef = m_gamedef->cidef();
+	const CraftItemDefinition *def = cidef->getCraftItemDefinition(m_subname);
+	return def != NULL && def->usable;
 }
 
 bool CraftItem::isCookable() const
 {
-	return item_craft_is_cookable(m_subname, m_gamedef);
+	ICraftItemDefManager *cidef = m_gamedef->cidef();
+	const CraftItemDefinition *def = cidef->getCraftItemDefinition(m_subname);
+	return def != NULL && def->cookresult_item != "";
 }
 
 InventoryItem *CraftItem::createCookResult() const
 {
-	return item_craft_create_cook_result(m_subname, m_gamedef);
+	ICraftItemDefManager *cidef = m_gamedef->cidef();
+	const CraftItemDefinition *def = cidef->getCraftItemDefinition(m_subname);
+	if(def == NULL)
+		return InventoryItem::createCookResult();
+	std::istringstream is(def->cookresult_item, std::ios::binary);
+	return InventoryItem::deSerialize(is, m_gamedef);
 }
 
 float CraftItem::getCookTime() const
 {
-	return 3.0;
+	ICraftItemDefManager *cidef = m_gamedef->cidef();
+	const CraftItemDefinition *def = cidef->getCraftItemDefinition(m_subname);
+	if (def == NULL)
+		return InventoryItem::getCookTime();
+	return def->furnace_cooktime;
 }
 
 float CraftItem::getBurnTime() const
 {
-	if(m_subname == "lump_of_coal")
-		return 40;
-	return -1;
+	ICraftItemDefManager *cidef = m_gamedef->cidef();
+	const CraftItemDefinition *def = cidef->getCraftItemDefinition(m_subname);
+	if (def == NULL)
+		return InventoryItem::getBurnTime();
+	return def->furnace_burntime;
 }
 
-bool CraftItem::use(ServerEnvironment *env, ServerActiveObject *user)
+s16 CraftItem::getDropCount() const
 {
-	if(!item_craft_is_eatable(m_subname, m_gamedef))
+	// Special cases
+	ICraftItemDefManager *cidef = m_gamedef->cidef();
+	const CraftItemDefinition *def = cidef->getCraftItemDefinition(m_subname);
+	if(def != NULL && def->dropcount >= 0)
+		return def->dropcount;
+	// Default
+	return InventoryItem::getDropCount();
+}
+
+bool CraftItem::areLiquidsPointable() const
+{
+	ICraftItemDefManager *cidef = m_gamedef->cidef();
+	const CraftItemDefinition *def = cidef->getCraftItemDefinition(m_subname);
+	return def != NULL && def->liquids_pointable;
+}
+
+bool CraftItem::dropOrPlace(ServerEnvironment *env,
+		ServerActiveObject *dropper,
+		v3f pos, bool place, s16 count)
+{
+	if(count == 0)
 		return false;
-	
-	u16 result_count = getCount() - 1; // Eat one at a time
-	s16 hp_change = item_craft_eat_hp_change(m_subname, m_gamedef);
-	s16 hp = user->getHP();
-	hp += hp_change;
-	if(hp < 0)
-		hp = 0;
-	user->setHP(hp);
-	
-	if(result_count < 1)
-		return true;
-		
-	setCount(result_count);
-	return false;
+
+	bool callback_exists = false;
+	bool result = false;
+
+	if(place)
+	{
+		result = scriptapi_craftitem_on_place_on_ground(
+				env->getLua(),
+				m_subname.c_str(), dropper, pos,
+				callback_exists);
+	}
+
+	// note: on_drop is fallback for on_place_on_ground
+
+	if(!callback_exists)
+	{
+		result = scriptapi_craftitem_on_drop(
+				env->getLua(),
+				m_subname.c_str(), dropper, pos,
+				callback_exists);
+	}
+
+	if(callback_exists)
+	{
+		// If the callback returned true, drop one item
+		if(result)
+			setCount(getCount() - 1);
+		return getCount() < 1;
+	}
+	else
+	{
+		// If neither on_place_on_ground (if place==true)
+		// nor on_drop exists, call the base implementation
+		return InventoryItem::dropOrPlace(env, dropper, pos, place, count);
+	}
+}
+
+bool CraftItem::use(ServerEnvironment *env,
+		ServerActiveObject *user,
+		const PointedThing& pointed)
+{
+	bool callback_exists = false;
+	bool result = false;
+
+	result = scriptapi_craftitem_on_use(
+			env->getLua(),
+			m_subname.c_str(), user, pointed,
+			callback_exists);
+
+	if(callback_exists)
+	{
+		// If the callback returned true, drop one item
+		if(result)
+			setCount(getCount() - 1);
+		return getCount() < 1;
+	}
+	else
+	{
+		// If neither on_place_on_ground (if place==true)
+		// nor on_drop exists, call the base implementation
+		return InventoryItem::use(env, user, pointed);
+	}
 }
 
 /*
@@ -1067,6 +1178,19 @@ IDropAction::IDropAction(std::istream &is)
 void IDropAction::apply(InventoryContext *c, InventoryManager *mgr,
 		ServerEnvironment *env)
 {
+	if(c->current_player == NULL){
+		infostream<<"IDropAction::apply(): FAIL: current_player is NULL"<<std::endl;
+		return;
+	}
+
+	// Do NOT cast directly to ServerActiveObject*, it breaks
+	// because of multiple inheritance.
+	ServerActiveObject *dropper =
+		static_cast<ServerActiveObject*>(
+		static_cast<ServerRemotePlayer*>(
+			c->current_player
+		));
+
 	Inventory *inv_from = mgr->getInventory(c, from_inv);
 	
 	if(!inv_from){
@@ -1086,7 +1210,8 @@ void IDropAction::apply(InventoryContext *c, InventoryManager *mgr,
 				<<", from_list=\""<<from_list<<"\""<<std::endl;
 		return;
 	}
-	if(list_from->getItem(from_i) == NULL)
+	InventoryItem *item = list_from->getItem(from_i);
+	if(item == NULL)
 	{
 		infostream<<"IDropAction::apply(): FAIL: source item not found: "
 				<<"context=["<<describeC(c)<<"], from_inv=\""<<from_inv<<"\""
@@ -1095,43 +1220,19 @@ void IDropAction::apply(InventoryContext *c, InventoryManager *mgr,
 		return;
 	}
 
-	v3f pos = c->current_player->getPosition();
+	v3f pos = dropper->getBasePosition();
 	pos.Y += 0.5*BS;
-	v3s16 blockpos = getNodeBlockPos(floatToInt(pos, BS));
+
+	s16 count2 = count;
+	if(count2 == 0)
+		count2 = -1;
 
 	/*
-		Ensure that the block is loaded so that the item
-		can properly be added to the static list too
+		Drop the item
 	*/
-	MapBlock *block = env->getMap().emergeBlock(blockpos, false);
-	if(block==NULL)
-	{
-		infostream<<"IDropAction::apply(): FAIL: block not found: "
-				<<blockpos.X<<","<<blockpos.Y<<","<<blockpos.Z
-				<<std::endl;
-		return;
-	}
-
-	// Take item from source list
-	if(count == 0)
-		count = list_from->getItem(from_i)->getDropCount();
-	InventoryItem *item1 = list_from->takeItem(from_i, count);
-
-	// Create an active object
-	ServerActiveObject *obj = item1->createSAO(env, pos);
-	if(obj == NULL)
-	{
-		infostream<<"IDropAction::apply(): item resulted in NULL object, "
-			<<"not placing onto map"
-			<<std::endl;
-	}
-	else
-	{
-		// Add the object to the environment
-		env->addActiveObject(obj);
-
-		infostream<<"Dropped object"<<std::endl;
-	}
+	bool remove = item->dropOrPlace(env, dropper, pos, false, count2);
+	if(remove)
+		list_from->deleteItem(from_i);
 
 	mgr->inventoryModified(c, from_inv);
 

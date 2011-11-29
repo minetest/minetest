@@ -31,6 +31,10 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 		Add TOCLIENT_TEXTURES
 		Add TOCLIENT_TOOLDEF
 		Add TOCLIENT_NODEDEF
+		Add TOCLIENT_CRAFTITEMDEF
+		Add TOSERVER_INTERACT
+		Obsolete TOSERVER_CLICK_ACTIVEOBJECT
+		Obsolete TOSERVER_GROUND_ACTION
 */
 
 #define PROTOCOL_VERSION 4
@@ -222,6 +226,13 @@ enum ToClientCommand
 		u32 length of the next item
 		serialized NodeDefManager
 	*/
+	
+	TOCLIENT_CRAFTITEMDEF = 0x3b,
+	/*
+		u16 command
+		u32 length of the next item
+		serialized CraftiItemDefManager
+	*/
 };
 
 enum ToServerCommand
@@ -283,7 +294,7 @@ enum ToServerCommand
 		[8] u16 i
 	*/
 
-	TOSERVER_CLICK_OBJECT = 0x27,
+	TOSERVER_CLICK_OBJECT = 0x27, // Obsolete
 	/*
 		length: 13
 		[0] u16 command
@@ -293,7 +304,7 @@ enum ToServerCommand
 		[11] u16 item
 	*/
 
-	TOSERVER_GROUND_ACTION = 0x28,
+	TOSERVER_GROUND_ACTION = 0x28, // Obsolete
 	/*
 		length: 17
 		[0] u16 command
@@ -312,7 +323,7 @@ enum ToServerCommand
 
 	// (oops, there is some gap here)
 
-	TOSERVER_SIGNTEXT = 0x30, // Old signs
+	TOSERVER_SIGNTEXT = 0x30, // Old signs, obsolete
 	/*
 		u16 command
 		v3s16 blockpos
@@ -341,7 +352,7 @@ enum ToServerCommand
 		textdata
 	*/
 
-	TOSERVER_CLICK_ACTIVEOBJECT = 0x34,
+	TOSERVER_CLICK_ACTIVEOBJECT = 0x34, // Obsolete
 	/*
 		length: 7
 		[0] u16 command
@@ -377,6 +388,24 @@ enum ToServerCommand
 	/*
 		u16 TOSERVER_RESPAWN
 	*/
+
+	TOSERVER_INTERACT = 0x39,
+	/*
+		[0] u16 command
+		[2] u8 action
+		[3] u16 item
+		[5] u32 length of the next item
+		[9] serialized PointedThing
+		actions:
+		0: start digging (from undersurface) or use
+		1: stop digging (all parameters ignored)
+		2: digging completed
+		3: place block or item (to abovesurface)
+		4: use item
+
+		(Obsoletes TOSERVER_GROUND_ACTION and TOSERVER_CLICK_ACTIVEOBJECT.)
+	*/
+	
 };
 
 inline SharedBuffer<u8> makePacket_TOCLIENT_TIME_OF_DAY(u16 time)

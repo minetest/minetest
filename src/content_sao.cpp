@@ -251,24 +251,6 @@ void ItemSAO::punch(ServerActiveObject *puncher)
 		delete item;
 }
 
-void ItemSAO::rightClick(ServerActiveObject *clicker)
-{
-	infostream<<__FUNCTION_NAME<<std::endl;
-	InventoryItem *item = createInventoryItem();
-	if(item == NULL)
-		return;
-	
-	bool to_be_deleted = item->use(m_env, clicker);
-
-	if(to_be_deleted)
-		m_removed = true;
-	else
-		// Reflect changes to the item here
-		m_inventorystring = item->getItemString();
-	
-	delete item; // Delete temporary item
-}
-
 /*
 	RatSAO
 */

@@ -29,6 +29,7 @@ class ServerEnvironment;
 class ServerActiveObject;
 typedef struct lua_State lua_State;
 struct LuaEntityProperties;
+struct PointedThing;
 //class IGameDef;
 
 void scriptapi_export(lua_State *L, Server *server);
@@ -59,6 +60,18 @@ void scriptapi_environment_on_generated(lua_State *L, v3s16 minp, v3s16 maxp);
 /* misc */
 void scriptapi_on_newplayer(lua_State *L, ServerActiveObject *player);
 bool scriptapi_on_respawnplayer(lua_State *L, ServerActiveObject *player);
+
+/* craftitem */
+void scriptapi_add_craftitem(lua_State *L, const char *name);
+bool scriptapi_craftitem_on_drop(lua_State *L, const char *name,
+		ServerActiveObject *dropper, v3f pos,
+		bool &callback_exists);
+bool scriptapi_craftitem_on_place_on_ground(lua_State *L, const char *name,
+		ServerActiveObject *placer, v3f pos,
+		bool &callback_exists);
+bool scriptapi_craftitem_on_use(lua_State *L, const char *name,
+		ServerActiveObject *user, const PointedThing& pointed,
+		bool &callback_exists);
 
 /* luaentity */
 // Returns true if succesfully added into Lua; false otherwise.

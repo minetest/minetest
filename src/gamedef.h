@@ -25,7 +25,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 class IToolDefManager;
 class INodeDefManager;
 class ICraftDefManager;
-//class IItemDefManager; //TODO
+class ICraftItemDefManager;
 // Mineral too?
 class ITextureSource;
 
@@ -42,7 +42,7 @@ public:
 	virtual IToolDefManager* getToolDefManager()=0;
 	virtual INodeDefManager* getNodeDefManager()=0;
 	virtual ICraftDefManager* getCraftDefManager()=0;
-	//virtual IItemDefManager* getItemDefManager()=0;
+	virtual ICraftItemDefManager* getCraftItemDefManager()=0;
 
 	// This is always thread-safe, but referencing the irrlicht texture
 	// pointers in other threads than main thread will make things explode.
@@ -55,6 +55,7 @@ public:
 	IToolDefManager* tdef(){return getToolDefManager();}
 	INodeDefManager* ndef(){return getNodeDefManager();}
 	ICraftDefManager* cdef(){return getCraftDefManager();}
+	ICraftItemDefManager* cidef(){return getCraftItemDefManager();}
 	ITextureSource* tsrc(){return getTextureSource();}
 };
 
