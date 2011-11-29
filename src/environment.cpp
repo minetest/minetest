@@ -618,22 +618,6 @@ public:
 			return;
 
 		ServerMap *map = &m_env->getServerMap();
-		// Find out how many objects the block contains
-		u32 active_object_count = block->m_static_objects.m_active.size();
-		// Find out how many objects this and all the neighbors contain
-		u32 active_object_count_wider = 0;
-		for(s16 x=-1; x<=1; x++)
-		for(s16 y=-1; y<=1; y++)
-		for(s16 z=-1; z<=1; z++)
-		{
-			MapBlock *block2 = map->getBlockNoCreateNoEx(
-					block->getPos() + v3s16(x,y,z));
-			if(block2==NULL)
-				continue;
-			active_object_count_wider +=
-					block2->m_static_objects.m_active.size()
-					+ block2->m_static_objects.m_stored.size();
-		}
 
 		v3s16 p0;
 		for(p0.X=0; p0.X<MAP_BLOCKSIZE; p0.X++)
@@ -650,9 +634,28 @@ public:
 				continue;
 
 			for(std::list<ActiveABM>::iterator
-					i = j->second.begin(); i != j->second.end(); i++){
+					i = j->second.begin(); i != j->second.end(); i++)
+			{
 				if(myrand() % i->chance != 0)
 					continue;
+
+				// Find out how many objects the block contains
+				u32 active_object_count = block->m_static_objects.m_active.size();
+				// Find out how many objects this and all the neighbors contain
+				u32 active_object_count_wider = 0;
+				for(s16 x=-1; x<=1; x++)
+				for(s16 y=-1; y<=1; y++)
+				for(s16 z=-1; z<=1; z++)
+				{
+					MapBlock *block2 = map->getBlockNoCreateNoEx(
+							block->getPos() + v3s16(x,y,z));
+					if(block2==NULL)
+						continue;
+					active_object_count_wider +=
+							block2->m_static_objects.m_active.size()
+							+ block2->m_static_objects.m_stored.size();
+				}
+
 				// Call all the trigger variations
 				i->abm->trigger(m_env, p, n);
 				i->abm->trigger(m_env, p, n,
