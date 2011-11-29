@@ -214,7 +214,7 @@ void Map::setNode(v3s16 p, MapNode & n)
 				<<" while trying to replace \""
 				<<m_gamedef->ndef()->get(block->getNodeNoCheck(relpos)).name
 				<<"\" at "<<PP(p)<<" (block "<<PP(blockpos)<<")"<<std::endl;
-		debug_stacks_print_to(errorstream);
+		debug_stacks_print_to(infostream);
 		return;
 	}
 	block->setNodeNoCheck(relpos, n);
