@@ -3361,7 +3361,7 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 					if(g_settings->getBool("creative_mode") == false && ilist)
 					{
 						// Remove from inventory and send inventory
-						if(mitem->getCount() == 1)
+						if(mitem->getCount() <= 1)
 							ilist->deleteItem(item_i);
 						else
 							mitem->remove(1);
