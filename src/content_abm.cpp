@@ -40,9 +40,9 @@ public:
 		return s;
 	}
 	virtual float getTriggerInterval()
-	{ return 10.0; }
+	{ return 2.0; }
 	virtual u32 getTriggerChance()
-	{ return 20; }
+	{ return 200; }
 	virtual void trigger(ServerEnvironment *env, v3s16 p, MapNode n)
 	{
 		INodeDefManager *ndef = env->getGameDef()->ndef();
@@ -70,9 +70,9 @@ public:
 		return s;
 	}
 	virtual float getTriggerInterval()
-	{ return 10.0; }
+	{ return 2.0; }
 	virtual u32 getTriggerChance()
-	{ return 1; }
+	{ return 20; }
 	virtual void trigger(ServerEnvironment *env, v3s16 p, MapNode n)
 	{
 		INodeDefManager *ndef = env->getGameDef()->ndef();
@@ -152,9 +152,9 @@ public:
 		return s;
 	}
 	virtual float getTriggerInterval()
-	{ return 10.0; }
+	{ return 2.0; }
 	virtual u32 getTriggerChance()
-	{ return 200; }
+	{ return 1000; }
 	virtual void trigger(ServerEnvironment *env, v3s16 p, MapNode n,
 			u32 active_object_count, u32 active_object_count_wider)
 	{
