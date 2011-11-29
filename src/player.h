@@ -238,6 +238,8 @@ public:
 	v3f m_last_good_position;
 	float m_last_good_position_age;
 	std::vector<InventoryItem*> m_additional_items;
+	bool m_inventory_not_sent;
+	bool m_hp_not_sent;
 	
 private:
 };

@@ -184,13 +184,17 @@ ServerRemotePlayer::ServerRemotePlayer(ServerEnvironment *env):
 	ServerActiveObject(env, v3f(0,0,0)),
 	m_last_good_position(0,0,0),
 	m_last_good_position_age(0),
-	m_additional_items()
+	m_additional_items(),
+	m_inventory_not_sent(false),
+	m_hp_not_sent(false)
 {
 }
 ServerRemotePlayer::ServerRemotePlayer(ServerEnvironment *env, v3f pos_, u16 peer_id_,
 		const char *name_):
 	Player(env->getGameDef()),
-	ServerActiveObject(env, pos_)
+	ServerActiveObject(env, pos_),
+	m_inventory_not_sent(false),
+	m_hp_not_sent(false)
 {
 	setPosition(pos_);
 	peer_id = peer_id_;
@@ -249,6 +253,8 @@ bool ServerRemotePlayer::addToInventory(InventoryItem *item)
 	// Add to inventory
 	InventoryItem *leftover = ilist->addItem(item);
 	assert(!leftover);
+	
+	m_inventory_not_sent = true;
 
 	return true;
 }
@@ -295,9 +301,12 @@ void ServerRemotePlayer::completeAddToInventoryLater(u16 preferred_index)
 		delete leftover;
 	}
 	m_additional_items.clear();
+	m_inventory_not_sent = true;
 }
 void ServerRemotePlayer::setHP(s16 hp_)
 {
+	s16 oldhp = hp;
+
 	hp = hp_;
 
 	// FIXME: don't hardcode maximum HP, make configurable per object
@@ -305,6 +314,9 @@ void ServerRemotePlayer::setHP(s16 hp_)
 		hp = 0;
 	else if(hp > 20)
 		hp = 20;
+
+	if(hp != oldhp)
+		m_hp_not_sent = true;
 }
 s16 ServerRemotePlayer::getHP()
 {

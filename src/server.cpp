@@ -1376,12 +1376,7 @@ void Server::AsyncRunStep()
 	*/
 
 	/*
-		Check player movements
-
-		NOTE: Actually the server should handle player physics like the
-		client does and compare player's position to what is calculated
-		on our side. This is required when eg. players fly due to an
-		explosion.
+		Handle players
 	*/
 	{
 		JMutexAutoLock lock(m_env_mutex);
@@ -1404,6 +1399,15 @@ void Server::AsyncRunStep()
 					(m_env->getPlayer(client->peer_id));
 			if(player==NULL)
 				continue;
+			
+			/*
+				Check player movements
+
+				NOTE: Actually the server should handle player physics like the
+				client does and compare player's position to what is calculated
+				on our side. This is required when eg. players fly due to an
+				explosion.
+			*/
 			player->m_last_good_position_age += dtime;
 			if(player->m_last_good_position_age >= 2.0){
 				float age = player->m_last_good_position_age;
@@ -1424,6 +1428,17 @@ void Server::AsyncRunStep()
 					SendMovePlayer(player);
 				}
 				player->m_last_good_position_age = 0;
+			}
+
+			/*
+				Send player inventories and HPs if necessary
+			*/
+			if(player->m_inventory_not_sent){
+				UpdateCrafting(player->peer_id);
+				SendInventory(player->peer_id);
+			}
+			if(player->m_hp_not_sent){
+				SendPlayerHP(player);
 			}
 		}
 	}
@@ -3181,6 +3196,8 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 						{
 							mlist->deleteItem(item_i);
 						}
+
+						srp->m_inventory_not_sent = true;
 					}
 				}
 
@@ -3208,12 +3225,13 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 				{
 					// Add a item to inventory
 					player->inventory.addItem("main", item);
+					srp->m_inventory_not_sent = true;
 				}
 
 				item = NULL;
 
 				if(mineral != MINERAL_NONE)
-				  item = getDiggedMineralItem(mineral, this);
+					item = getDiggedMineralItem(mineral, this);
 			
 				// If not mineral
 				if(item == NULL)
@@ -3232,6 +3250,7 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 				{
 					// Add a item to inventory
 					player->inventory.addItem("main", item);
+					srp->m_inventory_not_sent = true;
 				}
 			}
 
@@ -3373,6 +3392,7 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 							ilist->deleteItem(item_i);
 						else
 							mitem->remove(1);
+						srp->m_inventory_not_sent = true;
 					}
 					
 					/*
@@ -3480,9 +3500,11 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 					if(remove && g_settings->getBool("creative_mode") == false)
 					{
 						InventoryList *ilist = player->inventory.getList("main");
-						if(ilist)
+						if(ilist){
 							// Remove from inventory and send inventory
 							ilist->deleteItem(item_i);
+							srp->m_inventory_not_sent = true;
+						}
 					}
 				}
 			}
@@ -3534,12 +3556,15 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 					<<", pointing at "<<pointed.dump()<<std::endl;
 
 			bool remove = item->use(m_env, srp, pointed);
+			
 			if(remove && g_settings->getBool("creative_mode") == false)
 			{
 				InventoryList *ilist = player->inventory.getList("main");
-				if(ilist)
+				if(ilist){
 					// Remove from inventory and send inventory
 					ilist->deleteItem(item_i);
+					srp->m_inventory_not_sent = true;
+				}
 			}
 
 		} // action == 4
@@ -3555,11 +3580,6 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 
 		// Complete add_to_inventory_later
 		srp->completeAddToInventoryLater(item_i);
-
-		// Send inventory
-		// FIXME: Shouldn't be done unless something changed.
-		UpdateCrafting(player->peer_id);
-		SendInventory(player->peer_id);
 	}
 	else
 	{
@@ -3618,9 +3638,9 @@ void Server::inventoryModified(InventoryContext *c, std::string id)
 	if(id == "current_player")
 	{
 		assert(c->current_player);
-		// Send inventory
-		UpdateCrafting(c->current_player->peer_id);
-		SendInventory(c->current_player->peer_id);
+		ServerRemotePlayer *srp =
+				static_cast<ServerRemotePlayer*>(c->current_player);
+		srp->m_inventory_not_sent = true;
 		return;
 	}
 	
@@ -3912,8 +3932,11 @@ void Server::SendInventory(u16 peer_id)
 {
 	DSTACK(__FUNCTION_NAME);
 	
-	Player* player = m_env->getPlayer(peer_id);
+	ServerRemotePlayer* player =
+			static_cast<ServerRemotePlayer*>(m_env->getPlayer(peer_id));
 	assert(player);
+
+	player->m_inventory_not_sent = false;
 
 	/*
 		Serialize it
