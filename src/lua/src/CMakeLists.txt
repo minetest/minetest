@@ -56,8 +56,8 @@ set_target_properties(${LUA_LIBS} PROPERTIES
 )
 
 # Install library
-install(TARGETS ${LUA_LIBS}
-				RUNTIME DESTINATION bin
-				LIBRARY DESTINATION lib
-				ARCHIVE DESTINATION lib)
+#install(TARGETS ${LUA_LIBS}
+#				RUNTIME DESTINATION bin
+#				LIBRARY DESTINATION lib
+#				ARCHIVE DESTINATION lib)
 
