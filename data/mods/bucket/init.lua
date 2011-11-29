@@ -21,11 +21,11 @@ minetest.register_craftitem("bucket", {
 			n = minetest.env:get_node(pointed_thing.under)
 			if n.name == "water_source" then
 				minetest.env:add_node(pointed_thing.under, {name="air"})
-				player:add_to_inventory_later('CraftItem "water_bucket" 1')
+				player:add_to_inventory_later('CraftItem "bucket_water" 1')
 				return true
 			elseif n.name == "lava_source" then
 				minetest.env:add_node(pointed_thing.under, {name="air"})
-				player:add_to_inventory_later('CraftItem "lava_bucket" 1')
+				player:add_to_inventory_later('CraftItem "bucket_lava" 1')
 				return true
 			end
 		end
@@ -33,7 +33,7 @@ minetest.register_craftitem("bucket", {
 	end,
 })
 
-minetest.register_craftitem("water_bucket", {
+minetest.register_craftitem("bucket_water", {
 	image = "bucket_water.png",
 	stack_max = 1,
 	liquids_pointable = true,
@@ -55,7 +55,7 @@ minetest.register_craftitem("water_bucket", {
 	end,
 })
 
-minetest.register_craftitem("lava_bucket", {
+minetest.register_craftitem("bucket_lava", {
 	image = "bucket_lava.png",
 	stack_max = 1,
 	liquids_pointable = true,
