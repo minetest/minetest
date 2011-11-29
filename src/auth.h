@@ -20,10 +20,11 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #ifndef AUTH_HEADER
 #define AUTH_HEADER
 
+#include <set>
 #include <string>
 #include <jthread.h>
 #include <jmutex.h>
-#include "common_irrlicht.h"
+#include "irrlichttypes.h"
 #include "exceptions.h"
 
 // Player privileges. These form a bitmask stored in the privs field
@@ -39,6 +40,7 @@ const u64 PRIV_SERVER = 16;          // Can manage the server (e.g. shutodwn
 const u64 PRIV_SHOUT = 32;           // Can broadcast chat messages to all
                                      // players
 const u64 PRIV_BAN = 64;             // Can ban players
+const u64 PRIV_GIVE = 128;             // Can give stuff
 
 // Default privileges - these can be overriden for new players using the
 // config option "default_privs" - however, this value still applies for
@@ -46,6 +48,8 @@ const u64 PRIV_BAN = 64;             // Can ban players
 const u64 PRIV_DEFAULT = PRIV_BUILD|PRIV_SHOUT;
 const u64 PRIV_ALL = 0x7FFFFFFFFFFFFFFFULL;
 const u64 PRIV_INVALID = 0x8000000000000000ULL;
+
+std::set<std::string> privsToSet(u64 privs);
 
 // Convert a privileges value into a human-readable string,
 // with each component separated by a comma.

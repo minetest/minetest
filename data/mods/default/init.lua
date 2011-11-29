@@ -26,6 +26,7 @@
 -- minetest.setting_getbool(name)
 -- minetest.chat_send_all(text)
 -- minetest.chat_send_player(name, text)
+-- minetest.get_player_privs(name)
 --
 -- Global objects:
 -- minetest.env - environment reference
@@ -52,6 +53,7 @@
 -- - add_rat(pos)
 -- - add_firefly(pos)
 -- - get_meta(pos) -- Get a NodeMetaRef at that position
+-- - get_player_by_name(name) -- Get an ObjectRef to a player
 --
 -- NodeMetaRef
 -- - get_type()
@@ -1321,6 +1323,65 @@ function on_punchnode(p, node)
 	end
 end
 minetest.register_on_punchnode(on_punchnode)
+
+minetest.register_on_chat_message(function(name, message)
+	print("default on_chat_message: name="..dump(name).." message="..dump(message))
+	local cmd = "/giveme"
+	if message:sub(0, #cmd) == cmd then
+		if not minetest.get_player_privs(name)["give"] then
+			minetest.chat_send_player(name, "you don't have permission to give")
+			return true -- Handled chat message
+		end
+		stackstring = string.match(message, cmd.." (.*)")
+		if stackstring == nil then
+			minetest.chat_send_player(name, 'usage: '..cmd..' stackstring')
+			return true -- Handled chat message
+		end
+		print(cmd..' invoked, stackstring="'..stackstring..'"')
+		player = minetest.env:get_player_by_name(name)
+		added, error_msg = player:add_to_inventory(stackstring)
+		if added then
+			minetest.chat_send_player(name, '"'..stackstring
+					..'" added to inventory.');
+		else
+			minetest.chat_send_player(name, 'Could not give "'..stackstring
+					..'": '..error_msg);
+		end
+		return true -- Handled chat message
+	end
+	local cmd = "/give"
+	if message:sub(0, #cmd) == cmd then
+		print("minetest.get_player_privs(name)="
+				..dump(minetest.get_player_privs(name)))
+		if not minetest.get_player_privs(name)["give"] then
+			minetest.chat_send_player(name, "you don't have permission to give")
+			return true -- Handled chat message
+		end
+		name2, stackstring = string.match(message, cmd.." ([%a%d_-]+) (.*)")
+		if name == nil or stackstring == nil then
+			minetest.chat_send_player(name, 'usage: '..cmd..' name stackstring')
+			return true -- Handled chat message
+		end
+		print(cmd..' invoked, name2="'..name2
+				..'" stackstring="'..stackstring..'"')
+		player = minetest.env:get_player_by_name(name2)
+		if player == nil then
+			minetest.chat_send_player(name, name2..' is not a known player')
+			return true -- Handled chat message
+		end
+		added, error_msg = player:add_to_inventory(stackstring)
+		if added then
+			minetest.chat_send_player(name, '"'..stackstring
+					..'" added to '..name2..'\'s inventory.');
+			minetest.chat_send_player(name2, '"'..stackstring
+					..'" added to inventory.');
+		else
+			minetest.chat_send_player(name, 'Could not give "'..stackstring
+					..'": '..error_msg);
+		end
+		return true -- Handled chat message
+	end
+end)
 
 --
 -- Done, print some random stuff

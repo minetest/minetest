@@ -25,6 +25,26 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "strfnd.h"
 #include "debug.h"
 
+std::set<std::string> privsToSet(u64 privs)
+{
+	std::set<std::string> s;
+	if(privs & PRIV_BUILD)
+		s.insert("build");
+	if(privs & PRIV_TELEPORT)
+		s.insert("teleport");
+	if(privs & PRIV_SETTIME)
+		s.insert("settime");
+	if(privs & PRIV_PRIVS)
+		s.insert("privs");
+	if(privs & PRIV_SHOUT)
+		s.insert("shout");
+	if(privs & PRIV_BAN)
+		s.insert("ban");
+	if(privs & PRIV_GIVE)
+		s.insert("give");
+	return s;
+}
+
 // Convert a privileges value into a human-readable string,
 // with each component separated by a comma.
 std::string privsToString(u64 privs)
@@ -42,6 +62,8 @@ std::string privsToString(u64 privs)
 		os<<"shout,";
 	if(privs & PRIV_BAN)
 		os<<"ban,";
+	if(privs & PRIV_GIVE)
+		os<<"give,";
 	if(os.tellp())
 	{
 		// Drop the trailing comma. (Why on earth can't
@@ -74,6 +96,8 @@ u64 stringToPrivs(std::string str)
 			privs |= PRIV_SHOUT;
 		else if(s == "ban")
 			privs |= PRIV_BAN;
+		else if(s == "give")
+			privs |= PRIV_GIVE;
 		else
 			return PRIV_INVALID;
 	}

@@ -1023,6 +1023,30 @@ static int l_chat_send_player(lua_State *L)
 	return 0;
 }
 
+// get_player_privs(name, text)
+static int l_get_player_privs(lua_State *L)
+{
+	const char *name = luaL_checkstring(L, 1);
+	// Get server from registry
+	lua_getfield(L, LUA_REGISTRYINDEX, "minetest_server");
+	Server *server = (Server*)lua_touserdata(L, -1);
+	// Do it
+	lua_newtable(L);
+	int table = lua_gettop(L);
+	u64 privs_i = server->getPlayerAuthPrivs(name);
+	// Special case for the "name" setting (local player / server owner)
+	if(name == g_settings->get("name"))
+		privs_i = PRIV_ALL;
+	std::set<std::string> privs_s = privsToSet(privs_i);
+	for(std::set<std::string>::const_iterator
+			i = privs_s.begin(); i != privs_s.end(); i++){
+		lua_pushboolean(L, true);
+		lua_setfield(L, table, i->c_str());
+	}
+	lua_pushvalue(L, table);
+	return 1;
+}
+
 static const struct luaL_Reg minetest_f [] = {
 	{"register_nodedef_defaults", l_register_nodedef_defaults},
 	{"register_entity", l_register_entity},
@@ -1035,6 +1059,7 @@ static const struct luaL_Reg minetest_f [] = {
 	{"setting_getbool", l_setting_getbool},
 	{"chat_send_all", l_chat_send_all},
 	{"chat_send_player", l_chat_send_player},
+	{"get_player_privs", l_get_player_privs},
 	{NULL, NULL}
 };
 
@@ -1503,236 +1528,6 @@ const luaL_reg NodeMetaRef::methods[] = {
 };
 
 /*
-	EnvRef
-*/
-
-class EnvRef
-{
-private:
-	ServerEnvironment *m_env;
-
-	static const char className[];
-	static const luaL_reg methods[];
-
-	static EnvRef *checkobject(lua_State *L, int narg)
-	{
-		luaL_checktype(L, narg, LUA_TUSERDATA);
-		void *ud = luaL_checkudata(L, narg, className);
-		if(!ud) luaL_typerror(L, narg, className);
-		return *(EnvRef**)ud;  // unbox pointer
-	}
-	
-	// Exported functions
-
-	// EnvRef:add_node(pos, node)
-	// pos = {x=num, y=num, z=num}
-	static int l_add_node(lua_State *L)
-	{
-		//infostream<<"EnvRef::l_add_node()"<<std::endl;
-		EnvRef *o = checkobject(L, 1);
-		ServerEnvironment *env = o->m_env;
-		if(env == NULL) return 0;
-		// pos
-		v3s16 pos = readpos(L, 2);
-		// content
-		MapNode n = readnode(L, 3, env->getGameDef()->ndef());
-		// Do it
-		bool succeeded = env->getMap().addNodeWithEvent(pos, n);
-		lua_pushboolean(L, succeeded);
-		return 1;
-	}
-
-	// EnvRef:remove_node(pos)
-	// pos = {x=num, y=num, z=num}
-	static int l_remove_node(lua_State *L)
-	{
-		//infostream<<"EnvRef::l_remove_node()"<<std::endl;
-		EnvRef *o = checkobject(L, 1);
-		ServerEnvironment *env = o->m_env;
-		if(env == NULL) return 0;
-		// pos
-		v3s16 pos = readpos(L, 2);
-		// Do it
-		bool succeeded = env->getMap().removeNodeWithEvent(pos);
-		lua_pushboolean(L, succeeded);
-		return 1;
-	}
-
-	// EnvRef:get_node(pos)
-	// pos = {x=num, y=num, z=num}
-	static int l_get_node(lua_State *L)
-	{
-		//infostream<<"EnvRef::l_get_node()"<<std::endl;
-		EnvRef *o = checkobject(L, 1);
-		ServerEnvironment *env = o->m_env;
-		if(env == NULL) return 0;
-		// pos
-		v3s16 pos = readpos(L, 2);
-		// Do it
-		MapNode n = env->getMap().getNodeNoEx(pos);
-		// Return node
-		pushnode(L, n, env->getGameDef()->ndef());
-		return 1;
-	}
-
-	// EnvRef:add_luaentity(pos, entityname)
-	// pos = {x=num, y=num, z=num}
-	static int l_add_luaentity(lua_State *L)
-	{
-		//infostream<<"EnvRef::l_add_luaentity()"<<std::endl;
-		EnvRef *o = checkobject(L, 1);
-		ServerEnvironment *env = o->m_env;
-		if(env == NULL) return 0;
-		// pos
-		v3f pos = readFloatPos(L, 2);
-		// content
-		const char *name = lua_tostring(L, 3);
-		// Do it
-		ServerActiveObject *obj = new LuaEntitySAO(env, pos, name, "");
-		env->addActiveObject(obj);
-		return 0;
-	}
-
-	// EnvRef:add_item(pos, inventorystring)
-	// pos = {x=num, y=num, z=num}
-	static int l_add_item(lua_State *L)
-	{
-		infostream<<"EnvRef::l_add_item()"<<std::endl;
-		EnvRef *o = checkobject(L, 1);
-		ServerEnvironment *env = o->m_env;
-		if(env == NULL) return 0;
-		// pos
-		v3f pos = readFloatPos(L, 2);
-		// inventorystring
-		const char *inventorystring = lua_tostring(L, 3);
-		// Do it
-		ServerActiveObject *obj = new ItemSAO(env, pos, inventorystring);
-		env->addActiveObject(obj);
-		return 0;
-	}
-
-	// EnvRef:add_rat(pos)
-	// pos = {x=num, y=num, z=num}
-	static int l_add_rat(lua_State *L)
-	{
-		infostream<<"EnvRef::l_add_rat()"<<std::endl;
-		EnvRef *o = checkobject(L, 1);
-		ServerEnvironment *env = o->m_env;
-		if(env == NULL) return 0;
-		// pos
-		v3f pos = readFloatPos(L, 2);
-		// Do it
-		ServerActiveObject *obj = new RatSAO(env, pos);
-		env->addActiveObject(obj);
-		return 0;
-	}
-
-	// EnvRef:add_firefly(pos)
-	// pos = {x=num, y=num, z=num}
-	static int l_add_firefly(lua_State *L)
-	{
-		infostream<<"EnvRef::l_add_firefly()"<<std::endl;
-		EnvRef *o = checkobject(L, 1);
-		ServerEnvironment *env = o->m_env;
-		if(env == NULL) return 0;
-		// pos
-		v3f pos = readFloatPos(L, 2);
-		// Do it
-		ServerActiveObject *obj = new FireflySAO(env, pos);
-		env->addActiveObject(obj);
-		return 0;
-	}
-
-	// EnvRef:get_meta(pos)
-	static int l_get_meta(lua_State *L)
-	{
-		//infostream<<"EnvRef::l_get_meta()"<<std::endl;
-		EnvRef *o = checkobject(L, 1);
-		ServerEnvironment *env = o->m_env;
-		if(env == NULL) return 0;
-		// Do it
-		v3s16 p = readpos(L, 2);
-		NodeMetaRef::create(L, p, env);
-		return 1;
-	}
-
-	static int gc_object(lua_State *L) {
-		EnvRef *o = *(EnvRef **)(lua_touserdata(L, 1));
-		delete o;
-		return 0;
-	}
-
-public:
-	EnvRef(ServerEnvironment *env):
-		m_env(env)
-	{
-		infostream<<"EnvRef created"<<std::endl;
-	}
-
-	~EnvRef()
-	{
-		infostream<<"EnvRef destructing"<<std::endl;
-	}
-
-	// Creates an EnvRef and leaves it on top of stack
-	// Not callable from Lua; all references are created on the C side.
-	static void create(lua_State *L, ServerEnvironment *env)
-	{
-		EnvRef *o = new EnvRef(env);
-		//infostream<<"EnvRef::create: o="<<o<<std::endl;
-		*(void **)(lua_newuserdata(L, sizeof(void *))) = o;
-		luaL_getmetatable(L, className);
-		lua_setmetatable(L, -2);
-	}
-
-	static void set_null(lua_State *L)
-	{
-		EnvRef *o = checkobject(L, -1);
-		o->m_env = NULL;
-	}
-	
-	static void Register(lua_State *L)
-	{
-		lua_newtable(L);
-		int methodtable = lua_gettop(L);
-		luaL_newmetatable(L, className);
-		int metatable = lua_gettop(L);
-
-		lua_pushliteral(L, "__metatable");
-		lua_pushvalue(L, methodtable);
-		lua_settable(L, metatable);  // hide metatable from Lua getmetatable()
-
-		lua_pushliteral(L, "__index");
-		lua_pushvalue(L, methodtable);
-		lua_settable(L, metatable);
-
-		lua_pushliteral(L, "__gc");
-		lua_pushcfunction(L, gc_object);
-		lua_settable(L, metatable);
-
-		lua_pop(L, 1);  // drop metatable
-
-		luaL_openlib(L, 0, methods, 0);  // fill methodtable
-		lua_pop(L, 1);  // drop methodtable
-
-		// Cannot be created from Lua
-		//lua_register(L, className, create_object);
-	}
-};
-const char EnvRef::className[] = "EnvRef";
-const luaL_reg EnvRef::methods[] = {
-	method(EnvRef, add_node),
-	method(EnvRef, remove_node),
-	method(EnvRef, get_node),
-	method(EnvRef, add_luaentity),
-	method(EnvRef, add_item),
-	method(EnvRef, add_rat),
-	method(EnvRef, add_firefly),
-	method(EnvRef, get_meta),
-	{0,0}
-};
-
-/*
 	ObjectRef
 */
 
@@ -1886,7 +1681,7 @@ private:
 	}
 	
 	// add_to_inventory(self, itemstring)
-	// returns: true if item was added, false otherwise
+	// returns: true if item was added, (false, "reason") otherwise
 	static int l_add_to_inventory(lua_State *L)
 	{
 		ObjectRef *ref = checkobject(L, 1);
@@ -1902,12 +1697,23 @@ private:
 		ServerEnvironment *env = co->getEnv();
 		assert(env);
 		IGameDef *gamedef = env->getGameDef();
-		InventoryItem *item = InventoryItem::deSerialize(is, gamedef);
-		infostream<<"item="<<env<<std::endl;
-		bool fits = co->addToInventory(item);
-		// Return
-		lua_pushboolean(L, fits);
-		return 1;
+		try{
+			InventoryItem *item = InventoryItem::deSerialize(is, gamedef);
+			if(item->getCount() == 0)
+				item->setCount(1);
+			bool added = co->addToInventory(item);
+			// Return
+			lua_pushboolean(L, added);
+			if(!added)
+				lua_pushstring(L, "does not fit");
+			return 2;
+		} catch(SerializationError &e){
+			// Return
+			lua_pushboolean(L, false);
+			lua_pushstring(L, (std::string("Invalid item: ")
+					+ e.what()).c_str());
+			return 2;
+		}
 	}
 
 	// add_to_inventory_later(self, itemstring)
@@ -2092,6 +1898,256 @@ static void objectref_get_or_create(lua_State *L,
 		objectref_get(L, cobj->getId());
 	}
 }
+
+/*
+	EnvRef
+*/
+
+class EnvRef
+{
+private:
+	ServerEnvironment *m_env;
+
+	static const char className[];
+	static const luaL_reg methods[];
+
+	static EnvRef *checkobject(lua_State *L, int narg)
+	{
+		luaL_checktype(L, narg, LUA_TUSERDATA);
+		void *ud = luaL_checkudata(L, narg, className);
+		if(!ud) luaL_typerror(L, narg, className);
+		return *(EnvRef**)ud;  // unbox pointer
+	}
+	
+	// Exported functions
+
+	// EnvRef:add_node(pos, node)
+	// pos = {x=num, y=num, z=num}
+	static int l_add_node(lua_State *L)
+	{
+		//infostream<<"EnvRef::l_add_node()"<<std::endl;
+		EnvRef *o = checkobject(L, 1);
+		ServerEnvironment *env = o->m_env;
+		if(env == NULL) return 0;
+		// pos
+		v3s16 pos = readpos(L, 2);
+		// content
+		MapNode n = readnode(L, 3, env->getGameDef()->ndef());
+		// Do it
+		bool succeeded = env->getMap().addNodeWithEvent(pos, n);
+		lua_pushboolean(L, succeeded);
+		return 1;
+	}
+
+	// EnvRef:remove_node(pos)
+	// pos = {x=num, y=num, z=num}
+	static int l_remove_node(lua_State *L)
+	{
+		//infostream<<"EnvRef::l_remove_node()"<<std::endl;
+		EnvRef *o = checkobject(L, 1);
+		ServerEnvironment *env = o->m_env;
+		if(env == NULL) return 0;
+		// pos
+		v3s16 pos = readpos(L, 2);
+		// Do it
+		bool succeeded = env->getMap().removeNodeWithEvent(pos);
+		lua_pushboolean(L, succeeded);
+		return 1;
+	}
+
+	// EnvRef:get_node(pos)
+	// pos = {x=num, y=num, z=num}
+	static int l_get_node(lua_State *L)
+	{
+		//infostream<<"EnvRef::l_get_node()"<<std::endl;
+		EnvRef *o = checkobject(L, 1);
+		ServerEnvironment *env = o->m_env;
+		if(env == NULL) return 0;
+		// pos
+		v3s16 pos = readpos(L, 2);
+		// Do it
+		MapNode n = env->getMap().getNodeNoEx(pos);
+		// Return node
+		pushnode(L, n, env->getGameDef()->ndef());
+		return 1;
+	}
+
+	// EnvRef:add_luaentity(pos, entityname)
+	// pos = {x=num, y=num, z=num}
+	static int l_add_luaentity(lua_State *L)
+	{
+		//infostream<<"EnvRef::l_add_luaentity()"<<std::endl;
+		EnvRef *o = checkobject(L, 1);
+		ServerEnvironment *env = o->m_env;
+		if(env == NULL) return 0;
+		// pos
+		v3f pos = readFloatPos(L, 2);
+		// content
+		const char *name = lua_tostring(L, 3);
+		// Do it
+		ServerActiveObject *obj = new LuaEntitySAO(env, pos, name, "");
+		env->addActiveObject(obj);
+		return 0;
+	}
+
+	// EnvRef:add_item(pos, inventorystring)
+	// pos = {x=num, y=num, z=num}
+	static int l_add_item(lua_State *L)
+	{
+		infostream<<"EnvRef::l_add_item()"<<std::endl;
+		EnvRef *o = checkobject(L, 1);
+		ServerEnvironment *env = o->m_env;
+		if(env == NULL) return 0;
+		// pos
+		v3f pos = readFloatPos(L, 2);
+		// inventorystring
+		const char *inventorystring = lua_tostring(L, 3);
+		// Do it
+		ServerActiveObject *obj = new ItemSAO(env, pos, inventorystring);
+		env->addActiveObject(obj);
+		return 0;
+	}
+
+	// EnvRef:add_rat(pos)
+	// pos = {x=num, y=num, z=num}
+	static int l_add_rat(lua_State *L)
+	{
+		infostream<<"EnvRef::l_add_rat()"<<std::endl;
+		EnvRef *o = checkobject(L, 1);
+		ServerEnvironment *env = o->m_env;
+		if(env == NULL) return 0;
+		// pos
+		v3f pos = readFloatPos(L, 2);
+		// Do it
+		ServerActiveObject *obj = new RatSAO(env, pos);
+		env->addActiveObject(obj);
+		return 0;
+	}
+
+	// EnvRef:add_firefly(pos)
+	// pos = {x=num, y=num, z=num}
+	static int l_add_firefly(lua_State *L)
+	{
+		infostream<<"EnvRef::l_add_firefly()"<<std::endl;
+		EnvRef *o = checkobject(L, 1);
+		ServerEnvironment *env = o->m_env;
+		if(env == NULL) return 0;
+		// pos
+		v3f pos = readFloatPos(L, 2);
+		// Do it
+		ServerActiveObject *obj = new FireflySAO(env, pos);
+		env->addActiveObject(obj);
+		return 0;
+	}
+
+	// EnvRef:get_meta(pos)
+	static int l_get_meta(lua_State *L)
+	{
+		//infostream<<"EnvRef::l_get_meta()"<<std::endl;
+		EnvRef *o = checkobject(L, 1);
+		ServerEnvironment *env = o->m_env;
+		if(env == NULL) return 0;
+		// Do it
+		v3s16 p = readpos(L, 2);
+		NodeMetaRef::create(L, p, env);
+		return 1;
+	}
+
+	// EnvRef:get_player_by_name(name)
+	static int l_get_player_by_name(lua_State *L)
+	{
+		EnvRef *o = checkobject(L, 1);
+		ServerEnvironment *env = o->m_env;
+		if(env == NULL) return 0;
+		// Do it
+		const char *name = lua_tostring(L, 2);
+		ServerRemotePlayer *player =
+				static_cast<ServerRemotePlayer*>(env->getPlayer(name));
+		if(player == NULL){
+			lua_pushnil(L);
+			return 1;
+		}
+		// Put player on stack
+		objectref_get_or_create(L, player);
+		return 1;
+	}
+
+	static int gc_object(lua_State *L) {
+		EnvRef *o = *(EnvRef **)(lua_touserdata(L, 1));
+		delete o;
+		return 0;
+	}
+
+public:
+	EnvRef(ServerEnvironment *env):
+		m_env(env)
+	{
+		infostream<<"EnvRef created"<<std::endl;
+	}
+
+	~EnvRef()
+	{
+		infostream<<"EnvRef destructing"<<std::endl;
+	}
+
+	// Creates an EnvRef and leaves it on top of stack
+	// Not callable from Lua; all references are created on the C side.
+	static void create(lua_State *L, ServerEnvironment *env)
+	{
+		EnvRef *o = new EnvRef(env);
+		//infostream<<"EnvRef::create: o="<<o<<std::endl;
+		*(void **)(lua_newuserdata(L, sizeof(void *))) = o;
+		luaL_getmetatable(L, className);
+		lua_setmetatable(L, -2);
+	}
+
+	static void set_null(lua_State *L)
+	{
+		EnvRef *o = checkobject(L, -1);
+		o->m_env = NULL;
+	}
+	
+	static void Register(lua_State *L)
+	{
+		lua_newtable(L);
+		int methodtable = lua_gettop(L);
+		luaL_newmetatable(L, className);
+		int metatable = lua_gettop(L);
+
+		lua_pushliteral(L, "__metatable");
+		lua_pushvalue(L, methodtable);
+		lua_settable(L, metatable);  // hide metatable from Lua getmetatable()
+
+		lua_pushliteral(L, "__index");
+		lua_pushvalue(L, methodtable);
+		lua_settable(L, metatable);
+
+		lua_pushliteral(L, "__gc");
+		lua_pushcfunction(L, gc_object);
+		lua_settable(L, metatable);
+
+		lua_pop(L, 1);  // drop metatable
+
+		luaL_openlib(L, 0, methods, 0);  // fill methodtable
+		lua_pop(L, 1);  // drop methodtable
+
+		// Cannot be created from Lua
+		//lua_register(L, className, create_object);
+	}
+};
+const char EnvRef::className[] = "EnvRef";
+const luaL_reg EnvRef::methods[] = {
+	method(EnvRef, add_node),
+	method(EnvRef, remove_node),
+	method(EnvRef, get_node),
+	method(EnvRef, add_luaentity),
+	method(EnvRef, add_item),
+	method(EnvRef, add_rat),
+	method(EnvRef, add_firefly),
+	method(EnvRef, get_meta),
+	method(EnvRef, get_player_by_name),
+	{0,0}
+};
 
 /*
 	Main export function

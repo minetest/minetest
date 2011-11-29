@@ -41,148 +41,6 @@ minetest.register_on_placenode(function(pos, newnode, placer)
 	end
 end)
 
-function stackstring_take_item(stackstring)
-	if stackstring == nil then
-		return '', nil
-	end
-	local stacktype = nil
-	stacktype = string.match(stackstring,
-			'([%a%d]+Item[%a%d]*)')
-	if stacktype == "NodeItem" or stacktype == "CraftItem" then
-		local itemtype = nil
-		local itemname = nil
-		local itemcount = nil
-		itemtype, itemname, itemcount = string.match(stackstring,
-				'([%a%d]+Item[%a%d]*) "([^"]*)" (%d+)')
-		itemcount = tonumber(itemcount)
-		if itemcount == 0 then
-			return '', nil
-		elseif itemcount == 1 then
-			return '', {type=itemtype, name=itemname}
-		else
-			return itemtype.." \""..itemname.."\" "..(itemcount-1),
-					{type=itemtype, name=itemname}
-		end
-	elseif stacktype == "ToolItem" then
-		local itemtype = nil
-		local itemname = nil
-		local itemwear = nil
-		itemtype, itemname, itemwear = string.match(stackstring,
-				'([%a%d]+Item[%a%d]*) "([^"]*)" (%d+)')
-		itemwear = tonumber(itemwear)
-		return '', {type=itemtype, name=itemname, wear=itemwear}
-	end
-end
-
-function stackstring_put_item(stackstring, item)
-	if item == nil then
-		return stackstring, false
-	end
-	stackstring = stackstring or ''
-	local stacktype = nil
-	stacktype = string.match(stackstring,
-			'([%a%d]+Item[%a%d]*)')
-	stacktype = stacktype or ''
-	if stacktype ~= '' and stacktype ~= item.type then
-		return stackstring, false
-	end
-	if item.type == "NodeItem" or item.type == "CraftItem" then
-		local itemtype = nil
-		local itemname = nil
-		local itemcount = nil
-		itemtype, itemname, itemcount = string.match(stackstring,
-				'([%a%d]+Item[%a%d]*) "([^"]*)" (%d+)')
-		itemtype = itemtype or item.type
-		itemname = itemname or item.name
-		if itemcount == nil then
-			itemcount = 0
-		end
-		itemcount = itemcount + 1
-		return itemtype.." \""..itemname.."\" "..itemcount, true
-	elseif item.type == "ToolItem" then
-		if stacktype ~= nil then
-			return stackstring, false
-		end
-		local itemtype = nil
-		local itemname = nil
-		local itemwear = nil
-		itemtype, itemname, itemwear = string.match(stackstring,
-				'([%a%d]+Item[%a%d]*) "([^"]*)" (%d+)')
-		itemwear = tonumber(itemwear)
-		return itemtype.." \""..itemname.."\" "..itemwear, true
-	end
-	return stackstring, false
-end
-
-function stackstring_put_stackstring(stackstring, src)
-	while src ~= '' do
-		--print("src="..dump(src))
-		src, item = stackstring_take_item(src)
-		--print("src="..dump(src).." item="..dump(item))
-		local success
-		stackstring, success = stackstring_put_item(stackstring, item)
-		if not success then
-			return stackstring, false
-		end
-	end
-	return stackstring, true
-end
-
-function test_stack()
-	local stack
-	local item
-	local success
-
-	stack, item = stackstring_take_item('NodeItem "TNT" 3')
-	assert(stack == 'NodeItem "TNT" 2')
-	assert(item.type == 'NodeItem')
-	assert(item.name == 'TNT')
-
-	stack, item = stackstring_take_item('CraftItem "with spaces" 2')
-	assert(stack == 'CraftItem "with spaces" 1')
-	assert(item.type == 'CraftItem')
-	assert(item.name == 'with spaces')
-
-	stack, item = stackstring_take_item('CraftItem "with spaces" 1')
-	assert(stack == '')
-	assert(item.type == 'CraftItem')
-	assert(item.name == 'with spaces')
-
-	stack, item = stackstring_take_item('CraftItem "s8df2kj3" 0')
-	assert(stack == '')
-	assert(item == nil)
-
-	stack, item = stackstring_take_item('ToolItem "With Spaces" 32487')
-	assert(stack == '')
-	assert(item.type == 'ToolItem')
-	assert(item.name == 'With Spaces')
-	assert(item.wear == 32487)
-
-	stack, success = stackstring_put_item('NodeItem "With Spaces" 40',
-			{type='NodeItem', name='With Spaces'})
-	assert(stack == 'NodeItem "With Spaces" 41')
-	assert(success == true)
-
-	stack, success = stackstring_put_item('CraftItem "With Spaces" 40',
-			{type='CraftItem', name='With Spaces'})
-	assert(stack == 'CraftItem "With Spaces" 41')
-	assert(success == true)
-
-	stack, success = stackstring_put_item('ToolItem "With Spaces" 32487',
-			{type='ToolItem', name='With Spaces'})
-	assert(stack == 'ToolItem "With Spaces" 32487')
-	assert(success == false)
-
-	stack, success = stackstring_put_item('NodeItem "With Spaces" 40',
-			{type='ToolItem', name='With Spaces'})
-	assert(stack == 'NodeItem "With Spaces" 40')
-	assert(success == false)
-	
-	assert(stackstring_put_stackstring('NodeItem "With Spaces" 2',
-			'NodeItem "With Spaces" 1') == 'NodeItem "With Spaces" 3')
-end
-test_stack()
-
 minetest.register_abm({
 	nodenames = {"luafurnace"},
 	interval = 1.0,
@@ -426,7 +284,7 @@ print("setting max_users = " .. dump(minetest.setting_get("max_users")))
 print("setting asdf = " .. dump(minetest.setting_get("asdf")))
 
 minetest.register_on_chat_message(function(name, message)
-	print("on_chat_message: name="..dump(name).." message="..dump(message))
+	--[[print("on_chat_message: name="..dump(name).." message="..dump(message))
 	local cmd = "/testcommand"
 	if message:sub(0, #cmd) == cmd then
 		print(cmd.." invoked")
@@ -437,7 +295,7 @@ minetest.register_on_chat_message(function(name, message)
 		print("script-overridden help command")
 		minetest.chat_send_all("script-overridden help command")
 		return true
-	end
+	end]]
 end)
 
 -- Grow papyrus on TNT every 10 seconds
