@@ -30,9 +30,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 	NodeMetadata
 */
 
-core::map<u16, NodeMetadata::Factory> NodeMetadata::m_types;
-core::map<std::string, NodeMetadata::Factory2> NodeMetadata::m_names;
-
 NodeMetadata::NodeMetadata(IGameDef *gamedef):
 	m_gamedef(gamedef)
 {

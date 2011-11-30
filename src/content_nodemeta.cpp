@@ -32,6 +32,9 @@ class Inventory;
 #define NODEMETA_FURNACE 16
 #define NODEMETA_LOCKABLE_CHEST 17
 
+core::map<u16, NodeMetadata::Factory> NodeMetadata::m_types;
+core::map<std::string, NodeMetadata::Factory2> NodeMetadata::m_names;
+
 class SignNodeMetadata : public NodeMetadata
 {
 public:
