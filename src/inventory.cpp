@@ -114,6 +114,8 @@ InventoryItem* InventoryItem::deSerialize(std::istream &is, IGameDef *gamedef)
 		}
 		fnd.skip_over(" ");
 		u16 count = stoi(trim(fnd.next("")));
+		if(count == 0)
+			count = 1;
 		return new MaterialItem(gamedef, nodename, count);
 	}
 	else if(name == "MBOItem")
@@ -140,6 +142,8 @@ InventoryItem* InventoryItem::deSerialize(std::istream &is, IGameDef *gamedef)
 		// Then read count
 		fnd.skip_over(" ");
 		u16 count = stoi(trim(fnd.next("")));
+		if(count == 0)
+			count = 1;
 		return new CraftItem(gamedef, subname, count);
 	}
 	else if(name == "ToolItem")
