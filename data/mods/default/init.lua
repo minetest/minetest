@@ -81,6 +81,9 @@
 -- - getpos(): returns {x=num, y=num, z=num}
 -- - setpos(pos); pos={x=num, y=num, z=num}
 -- - moveto(pos, continuous=false): interpolated move
+-- - get_wielded_itemstring()
+-- - get_wielded_item()
+-- - damage_wielded_item(num) (item damage/wear range is 0-65535)
 -- - add_to_inventory(itemstring): add an item to object inventory
 -- - add_to_inventory_later(itemstring): like above, but after callback returns (only allowed for craftitem callbacks)
 -- - get_hp(): returns number of hitpoints (2 * number of hearts)
