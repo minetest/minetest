@@ -1642,44 +1642,80 @@ private:
 		return 0;
 	}
 
-	// setvelocity(self, velocity)
-	static int l_setvelocity(lua_State *L)
+	// get_wielded_itemstring(self)
+	static int l_get_wielded_itemstring(lua_State *L)
 	{
 		ObjectRef *ref = checkobject(L, 1);
-		LuaEntitySAO *co = getluaobject(ref);
-		if(co == NULL) return 0;
-		// pos
-		v3f pos = readFloatPos(L, 2);
-		// Do it
-		co->setVelocity(pos);
-		return 0;
-	}
-	
-	// setacceleration(self, acceleration)
-	static int l_setacceleration(lua_State *L)
-	{
-		ObjectRef *ref = checkobject(L, 1);
-		LuaEntitySAO *co = getluaobject(ref);
-		if(co == NULL) return 0;
-		// pos
-		v3f pos = readFloatPos(L, 2);
-		// Do it
-		co->setAcceleration(pos);
-		return 0;
-	}
-	
-	// getacceleration(self)
-	static int l_getacceleration(lua_State *L)
-	{
-		ObjectRef *ref = checkobject(L, 1);
-		LuaEntitySAO *co = getluaobject(ref);
+		ServerActiveObject *co = getobject(ref);
 		if(co == NULL) return 0;
 		// Do it
-		v3f v = co->getAcceleration();
-		pushFloatPos(L, v);
+		InventoryItem *item = co->getWieldedItem();
+		if(item == NULL){
+			lua_pushnil(L);
+			return 1;
+		}
+		lua_pushstring(L, item->getItemString().c_str());
 		return 1;
 	}
-	
+
+	// get_wielded_item(self)
+	static int l_get_wielded_item(lua_State *L)
+	{
+		ObjectRef *ref = checkobject(L, 1);
+		ServerActiveObject *co = getobject(ref);
+		if(co == NULL) return 0;
+		// Do it
+		InventoryItem *item0 = co->getWieldedItem();
+		if(item0 == NULL){
+			lua_pushnil(L);
+			return 1;
+		}
+		if(std::string("MaterialItem") == item0->getName()){
+			MaterialItem *item = (MaterialItem*)item0;
+			lua_newtable(L);
+			lua_pushstring(L, "NodeItem");
+			lua_setfield(L, -2, "type");
+			lua_pushstring(L, item->getNodeName().c_str());
+			lua_setfield(L, -2, "name");
+		}
+		else if(std::string("CraftItem") == item0->getName()){
+			CraftItem *item = (CraftItem*)item0;
+			lua_newtable(L);
+			lua_pushstring(L, "CraftItem");
+			lua_setfield(L, -2, "type");
+			lua_pushstring(L, item->getSubName().c_str());
+			lua_setfield(L, -2, "name");
+		}
+		else if(std::string("ToolItem") == item0->getName()){
+			ToolItem *item = (ToolItem*)item0;
+			lua_newtable(L);
+			lua_pushstring(L, "ToolItem");
+			lua_setfield(L, -2, "type");
+			lua_pushstring(L, item->getToolName().c_str());
+			lua_setfield(L, -2, "name");
+			lua_pushstring(L, itos(item->getWear()).c_str());
+			lua_setfield(L, -2, "wear");
+		}
+		else{
+			errorstream<<"l_get_wielded_item: Unknown item name: \""
+					<<item0->getName()<<"\""<<std::endl;
+			lua_pushnil(L);
+		}
+		return 1;
+	}
+
+	// damage_wielded_item(self, amount)
+	static int l_damage_wielded_item(lua_State *L)
+	{
+		ObjectRef *ref = checkobject(L, 1);
+		ServerActiveObject *co = getobject(ref);
+		if(co == NULL) return 0;
+		// Do it
+		int amount = lua_tonumber(L, 2);
+		co->damageWieldedItem(amount);
+		return 0;
+	}
+
 	// add_to_inventory(self, itemstring)
 	// returns: true if item was added, (false, "reason") otherwise
 	static int l_add_to_inventory(lua_State *L)
@@ -1740,22 +1776,6 @@ private:
 		return 0;
 	}
 
-	// get_hp(self)
-	// returns: number of hitpoints (2 * number of hearts)
-	// 0 if not applicable to this type of object
-	static int l_get_hp(lua_State *L)
-	{
-		ObjectRef *ref = checkobject(L, 1);
-		ServerActiveObject *co = getobject(ref);
-		if(co == NULL) return 0;
-		int hp = co->getHP();
-		infostream<<"ObjectRef::l_get_hp(): id="<<co->getId()
-				<<" hp="<<hp<<std::endl;
-		// Return
-		lua_pushnumber(L, hp);
-		return 1;
-	}
-
 	// set_hp(self, hp)
 	// hp = number of hitpoints (2 * number of hearts)
 	// returns: nil
@@ -1774,6 +1794,62 @@ private:
 		return 0;
 	}
 
+	// get_hp(self)
+	// returns: number of hitpoints (2 * number of hearts)
+	// 0 if not applicable to this type of object
+	static int l_get_hp(lua_State *L)
+	{
+		ObjectRef *ref = checkobject(L, 1);
+		ServerActiveObject *co = getobject(ref);
+		if(co == NULL) return 0;
+		int hp = co->getHP();
+		infostream<<"ObjectRef::l_get_hp(): id="<<co->getId()
+				<<" hp="<<hp<<std::endl;
+		// Return
+		lua_pushnumber(L, hp);
+		return 1;
+	}
+
+	/* LuaEntitySAO-only */
+
+	// setvelocity(self, {x=num, y=num, z=num})
+	static int l_setvelocity(lua_State *L)
+	{
+		ObjectRef *ref = checkobject(L, 1);
+		LuaEntitySAO *co = getluaobject(ref);
+		if(co == NULL) return 0;
+		// pos
+		v3f pos = readFloatPos(L, 2);
+		// Do it
+		co->setVelocity(pos);
+		return 0;
+	}
+	
+	// setacceleration(self, {x=num, y=num, z=num})
+	static int l_setacceleration(lua_State *L)
+	{
+		ObjectRef *ref = checkobject(L, 1);
+		LuaEntitySAO *co = getluaobject(ref);
+		if(co == NULL) return 0;
+		// pos
+		v3f pos = readFloatPos(L, 2);
+		// Do it
+		co->setAcceleration(pos);
+		return 0;
+	}
+	
+	// getacceleration(self)
+	static int l_getacceleration(lua_State *L)
+	{
+		ObjectRef *ref = checkobject(L, 1);
+		LuaEntitySAO *co = getluaobject(ref);
+		if(co == NULL) return 0;
+		// Do it
+		v3f v = co->getAcceleration();
+		pushFloatPos(L, v);
+		return 1;
+	}
+	
 	// settexturemod(self, mod)
 	static int l_settexturemod(lua_State *L)
 	{
@@ -1873,16 +1949,22 @@ public:
 };
 const char ObjectRef::className[] = "ObjectRef";
 const luaL_reg ObjectRef::methods[] = {
+	// ServerActiveObject
 	method(ObjectRef, remove),
 	method(ObjectRef, getpos),
 	method(ObjectRef, setpos),
 	method(ObjectRef, moveto),
-	method(ObjectRef, setvelocity),
-	method(ObjectRef, setacceleration),
+	method(ObjectRef, get_wielded_itemstring),
+	method(ObjectRef, get_wielded_item),
+	method(ObjectRef, damage_wielded_item),
 	method(ObjectRef, add_to_inventory),
 	method(ObjectRef, add_to_inventory_later),
-	method(ObjectRef, get_hp),
 	method(ObjectRef, set_hp),
+	method(ObjectRef, get_hp),
+	// LuaEntitySAO-only
+	method(ObjectRef, setvelocity),
+	method(ObjectRef, setacceleration),
+	method(ObjectRef, getacceleration),
 	method(ObjectRef, settexturemod),
 	method(ObjectRef, setsprite),
 	{0,0}

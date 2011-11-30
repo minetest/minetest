@@ -85,6 +85,10 @@
 -- - add_to_inventory_later(itemstring): like above, but after callback returns (only allowed for craftitem callbacks)
 -- - get_hp(): returns number of hitpoints (2 * number of hearts)
 -- - set_hp(hp): set number of hitpoints (2 * number of hearts)
+-- LuaEntitySAO-only:
+-- - setvelocity(self, {x=num, y=num, z=num})
+-- - setacceleration(self, {x=num, y=num, z=num})
+-- - getacceleration(self)
 -- - settexturemod(mod)
 -- - setsprite(p={x=0,y=0}, num_frames=1, framelength=0.2,
 -- -           select_horiz_by_yawpitch=false)
