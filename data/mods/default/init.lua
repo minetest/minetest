@@ -81,6 +81,8 @@
 -- - getpos(): returns {x=num, y=num, z=num}
 -- - setpos(pos); pos={x=num, y=num, z=num}
 -- - moveto(pos, continuous=false): interpolated move
+-- - punch(puncher); puncher = an another ObjectRef
+-- - right_click(clicker); clicker = an another ObjectRef
 -- - get_wielded_itemstring()
 -- - get_wielded_item()
 -- - damage_wielded_item(num) (item damage/wear range is 0-65535)
@@ -89,9 +91,9 @@
 -- - get_hp(): returns number of hitpoints (2 * number of hearts)
 -- - set_hp(hp): set number of hitpoints (2 * number of hearts)
 -- LuaEntitySAO-only:
--- - setvelocity(self, {x=num, y=num, z=num})
--- - setacceleration(self, {x=num, y=num, z=num})
--- - getacceleration(self)
+-- - setvelocity({x=num, y=num, z=num})
+-- - setacceleration({x=num, y=num, z=num})
+-- - getacceleration()
 -- - settexturemod(mod)
 -- - setsprite(p={x=0,y=0}, num_frames=1, framelength=0.2,
 -- -           select_horiz_by_yawpitch=false)

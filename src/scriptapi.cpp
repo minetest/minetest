@@ -1642,6 +1642,34 @@ private:
 		return 0;
 	}
 
+	// punch(self, puncher); puncher = an another ObjectRef
+	static int l_punch(lua_State *L)
+	{
+		ObjectRef *ref = checkobject(L, 1);
+		ObjectRef *ref2 = checkobject(L, 2);
+		ServerActiveObject *co = getobject(ref);
+		ServerActiveObject *co2 = getobject(ref2);
+		if(co == NULL) return 0;
+		if(co2 == NULL) return 0;
+		// Do it
+		co->punch(co2);
+		return 0;
+	}
+
+	// right_click(self, clicker); clicker = an another ObjectRef
+	static int l_right_click(lua_State *L)
+	{
+		ObjectRef *ref = checkobject(L, 1);
+		ObjectRef *ref2 = checkobject(L, 2);
+		ServerActiveObject *co = getobject(ref);
+		ServerActiveObject *co2 = getobject(ref2);
+		if(co == NULL) return 0;
+		if(co2 == NULL) return 0;
+		// Do it
+		co->rightClick(co2);
+		return 0;
+	}
+
 	// get_wielded_itemstring(self)
 	static int l_get_wielded_itemstring(lua_State *L)
 	{
@@ -1954,6 +1982,8 @@ const luaL_reg ObjectRef::methods[] = {
 	method(ObjectRef, getpos),
 	method(ObjectRef, setpos),
 	method(ObjectRef, moveto),
+	method(ObjectRef, punch),
+	method(ObjectRef, right_click),
 	method(ObjectRef, get_wielded_itemstring),
 	method(ObjectRef, get_wielded_item),
 	method(ObjectRef, damage_wielded_item),
