@@ -2361,6 +2361,7 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 	}
 	
 	Player *player = m_env->getPlayer(peer_id);
+	ServerRemotePlayer *srp = static_cast<ServerRemotePlayer*>(player);
 
 	if(player == NULL){
 		infostream<<"Server::ProcessData(): Cancelling: "
@@ -2530,162 +2531,231 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 		std::istringstream is(datastring, std::ios_base::binary);
 		// Create an action
 		InventoryAction *a = InventoryAction::deSerialize(is);
-		if(a != NULL)
-		{
-			// Create context
-			InventoryContext c;
-			c.current_player = player;
-
-			/*
-				Handle craftresult specially if not in creative mode
-			*/
-			bool disable_action = false;
-			if(a->getType() == IACTION_MOVE
-					&& g_settings->getBool("creative_mode") == false)
-			{
-				IMoveAction *ma = (IMoveAction*)a;
-				if(ma->to_inv == "current_player" &&
-						ma->from_inv == "current_player")
-				{
-					InventoryList *rlist = player->inventory.getList("craftresult");
-					assert(rlist);
-					InventoryList *clist = player->inventory.getList("craft");
-					assert(clist);
-					InventoryList *mlist = player->inventory.getList("main");
-					assert(mlist);
-					/*
-						Craftresult is no longer preview if something
-						is moved into it
-					*/
-					if(ma->to_list == "craftresult"
-							&& ma->from_list != "craftresult")
-					{
-						// If it currently is a preview, remove
-						// its contents
-						if(player->craftresult_is_preview)
-						{
-							rlist->deleteItem(0);
-						}
-						player->craftresult_is_preview = false;
-					}
-					/*
-						Crafting takes place if this condition is true.
-					*/
-					if(player->craftresult_is_preview &&
-							ma->from_list == "craftresult")
-					{
-						player->craftresult_is_preview = false;
-						clist->decrementMaterials(1);
-						
-						/* Print out action */
-						InventoryList *list =
-								player->inventory.getList("craftresult");
-						assert(list);
-						InventoryItem *item = list->getItem(0);
-						std::string itemname = "NULL";
-						if(item)
-							itemname = item->getName();
-						actionstream<<player->getName()<<" crafts "
-								<<itemname<<std::endl;
-					}
-					/*
-						If the craftresult is placed on itself, move it to
-						main inventory instead of doing the action
-					*/
-					if(ma->to_list == "craftresult"
-							&& ma->from_list == "craftresult")
-					{
-						disable_action = true;
-						
-						InventoryItem *item1 = rlist->changeItem(0, NULL);
-						mlist->addItem(item1);
-					}
-				}
-				// Disallow moving items if not allowed to build
-				else if((getPlayerPrivs(player) & PRIV_BUILD) == 0)
-				{
-					disable_action = true;
-				}
-				// if it's a locking chest, only allow the owner or server admins to move items
-				else if (ma->from_inv != "current_player" && (getPlayerPrivs(player) & PRIV_SERVER) == 0)
-				{
-					Strfnd fn(ma->from_inv);
-					std::string id0 = fn.next(":");
-					if(id0 == "nodemeta")
-					{
-						v3s16 p;
-						p.X = stoi(fn.next(","));
-						p.Y = stoi(fn.next(","));
-						p.Z = stoi(fn.next(","));
-						NodeMetadata *meta = m_env->getMap().getNodeMetadata(p);
-						if(meta->getOwner() != ""){
-							if(meta->getOwner() != player->getName())
-								disable_action = true;
-						}
-					}
-				}
-				else if (ma->to_inv != "current_player" && (getPlayerPrivs(player) & PRIV_SERVER) == 0)
-				{
-					Strfnd fn(ma->to_inv);
-					std::string id0 = fn.next(":");
-					if(id0 == "nodemeta")
-					{
-						v3s16 p;
-						p.X = stoi(fn.next(","));
-						p.Y = stoi(fn.next(","));
-						p.Z = stoi(fn.next(","));
-						NodeMetadata *meta = m_env->getMap().getNodeMetadata(p);
-						if(meta->getOwner() != ""){
-							if(meta->getOwner() != player->getName())
-								disable_action = true;
-						}
-					}
-				}
-			}
-
-			if(a->getType() == IACTION_DROP)
-			{
-				IDropAction *da = (IDropAction*)a;
-				// Disallow dropping items if not allowed to build
-				if((getPlayerPrivs(player) & PRIV_BUILD) == 0)
-				{
-					disable_action = true;
-				}
-				// if it's a locking chest, only allow the owner or server admins to drop items
-				else if (da->from_inv != "current_player" && (getPlayerPrivs(player) & PRIV_SERVER) == 0)
-				{
-					Strfnd fn(da->from_inv);
-					std::string id0 = fn.next(":");
-					if(id0 == "nodemeta")
-					{
-						v3s16 p;
-						p.X = stoi(fn.next(","));
-						p.Y = stoi(fn.next(","));
-						p.Z = stoi(fn.next(","));
-						NodeMetadata *meta = m_env->getMap().getNodeMetadata(p);
-						if(meta->getOwner() != ""){
-							if(meta->getOwner() != player->getName())
-								disable_action = true;
-						}
-					}
-				}
-			}
-			
-			if(disable_action == false)
-			{
-				// Feed action to player inventory
-				a->apply(&c, this, m_env);
-			}
-
-			// Eat the action
-			delete a;
-		}
-		else
+		if(a == NULL)
 		{
 			infostream<<"TOSERVER_INVENTORY_ACTION: "
 					<<"InventoryAction::deSerialize() returned NULL"
 					<<std::endl;
+			return;
 		}
+		// Create context
+		InventoryContext c;
+		c.current_player = player;
+
+		/*
+			Handle restrictions and special cases of the move action
+		*/
+		if(a->getType() == IACTION_MOVE
+				&& g_settings->getBool("creative_mode") == false)
+		{
+			InventoryList *rlist = player->inventory.getList("craftresult");
+			assert(rlist);
+			InventoryList *clist = player->inventory.getList("craft");
+			assert(clist);
+			InventoryList *mlist = player->inventory.getList("main");
+			assert(mlist);
+
+			IMoveAction *ma = (IMoveAction*)a;
+
+			/*
+				Disable moving items into craftresult from elsewhere
+			*/
+			if(ma->to_inv == "current_player"
+					&& ma->to_list == "craftresult"
+					&& (ma->from_inv != "current_player"
+					|| ma->from_list != "craftresult"))
+			{
+				infostream<<"Ignoring IMoveAction from "
+						<<ma->from_inv<<":"<<ma->from_list
+						<<" to "<<ma->to_inv<<":"<<ma->to_list
+						<<" because dst is craftresult"
+						<<" and src isn't craftresult"<<std::endl;
+				delete a;
+				return;
+			}
+
+			/*
+				Handle crafting (source is craftresult, which is preview)
+			*/
+			if(ma->from_inv == "current_player"
+					&& ma->from_list == "craftresult"
+					&& player->craftresult_is_preview)
+			{
+				/*
+					If the craftresult is placed on itself, crafting takes
+					place and result is moved into main list
+				*/
+				if(ma->to_inv == "current_player"
+						&& ma->to_list == "craftresult")
+				{
+					// Except if main list doesn't have free slots
+					if(mlist->getFreeSlots() == 0){
+						infostream<<"Cannot craft: Main list doesn't have"
+								<<" free slots"<<std::endl;
+						delete a;
+						return;
+					}
+					
+					player->craftresult_is_preview = false;
+					clist->decrementMaterials(1);
+
+					InventoryItem *item1 = rlist->changeItem(0, NULL);
+					mlist->addItem(item1);
+
+					srp->m_inventory_not_sent = true;
+
+					delete a;
+					return;
+				}
+				/*
+					Disable action if there are no free slots in
+					destination
+					
+					If the item is placed on an item that is not of the
+					same kind, the existing item will be first moved to
+					craftresult and immediately moved to the free slot.
+				*/
+				do{
+					Inventory *inv_to = getInventory(&c, ma->to_inv);
+					if(!inv_to) break;
+					InventoryList *list_to = inv_to->getList(ma->to_list);
+					if(!list_to) break;
+					if(list_to->getFreeSlots() == 0){
+						infostream<<"Cannot craft: Destination doesn't have"
+								<<" free slots"<<std::endl;
+						delete a;
+						return;
+					}
+				}while(0); // Allow break
+
+				/*
+					Ok, craft normally.
+				*/
+				player->craftresult_is_preview = false;
+				clist->decrementMaterials(1);
+				
+				/* Print out action */
+				InventoryItem *item = rlist->getItem(0);
+				std::string itemstring = "NULL";
+				if(item)
+					itemstring = item->getItemString();
+				actionstream<<player->getName()<<" crafts "
+						<<itemstring<<std::endl;
+
+				// Do the action
+				a->apply(&c, this, m_env);
+				
+				delete a;
+				return;
+			}
+
+			/*
+				Non-crafting move
+			*/
+			
+			// Disallow moving items in elsewhere than player's inventory
+			// if not allowed to build
+			if((getPlayerPrivs(player) & PRIV_BUILD) == 0
+					&& (ma->from_inv != "current_player"
+					|| ma->to_inv != "current_player"))
+			{
+				infostream<<"Cannot move outside of player's inventory: "
+						<<"No build privilege"<<std::endl;
+				delete a;
+				return;
+			}
+
+			// If player is not an admin, check for ownership of src
+			if(ma->from_inv != "current_player"
+					&& (getPlayerPrivs(player) & PRIV_SERVER) == 0)
+			{
+				Strfnd fn(ma->from_inv);
+				std::string id0 = fn.next(":");
+				if(id0 == "nodemeta")
+				{
+					v3s16 p;
+					p.X = stoi(fn.next(","));
+					p.Y = stoi(fn.next(","));
+					p.Z = stoi(fn.next(","));
+					NodeMetadata *meta = m_env->getMap().getNodeMetadata(p);
+					if(meta->getOwner() != "" &&
+							meta->getOwner() != player->getName())
+					{
+						infostream<<"Cannot move item: "
+								"not owner of metadata"
+								<<std::endl;
+						delete a;
+						return;
+					}
+				}
+			}
+			// If player is not an admin, check for ownership of dst
+			if(ma->to_inv != "current_player"
+					&& (getPlayerPrivs(player) & PRIV_SERVER) == 0)
+			{
+				Strfnd fn(ma->to_inv);
+				std::string id0 = fn.next(":");
+				if(id0 == "nodemeta")
+				{
+					v3s16 p;
+					p.X = stoi(fn.next(","));
+					p.Y = stoi(fn.next(","));
+					p.Z = stoi(fn.next(","));
+					NodeMetadata *meta = m_env->getMap().getNodeMetadata(p);
+					if(meta->getOwner() != "" &&
+							meta->getOwner() != player->getName())
+					{
+						infostream<<"Cannot move item: "
+								"not owner of metadata"
+								<<std::endl;
+						delete a;
+						return;
+					}
+				}
+			}
+		}
+		/*
+			Handle restrictions and special cases of the drop action
+		*/
+		else if(a->getType() == IACTION_DROP)
+		{
+			IDropAction *da = (IDropAction*)a;
+			// Disallow dropping items if not allowed to build
+			if((getPlayerPrivs(player) & PRIV_BUILD) == 0)
+			{
+				delete a;
+				return;
+			}
+			// If player is not an admin, check for ownership
+			else if (da->from_inv != "current_player"
+					&& (getPlayerPrivs(player) & PRIV_SERVER) == 0)
+			{
+				Strfnd fn(da->from_inv);
+				std::string id0 = fn.next(":");
+				if(id0 == "nodemeta")
+				{
+					v3s16 p;
+					p.X = stoi(fn.next(","));
+					p.Y = stoi(fn.next(","));
+					p.Z = stoi(fn.next(","));
+					NodeMetadata *meta = m_env->getMap().getNodeMetadata(p);
+					if(meta->getOwner() != "" &&
+							meta->getOwner() != player->getName())
+					{
+						infostream<<"Cannot move item: "
+								"not owner of metadata"
+								<<std::endl;
+						delete a;
+						return;
+					}
+				}
+			}
+		}
+		
+		// Do the action
+		a->apply(&c, this, m_env);
+		// Eat the action
+		delete a;
 	}
 	else if(command == TOSERVER_CHAT_MESSAGE)
 	{
@@ -2934,7 +3004,6 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 
 		infostream<<"TOSERVER_INTERACT: action="<<(int)action<<", item="<<item_i<<", pointed="<<pointed.dump()<<std::endl;
 
-		ServerRemotePlayer *srp = static_cast<ServerRemotePlayer*>(player);
 		v3f player_pos = srp->m_last_good_position;
 
 		// Update wielded item
@@ -4503,42 +4572,63 @@ void Server::UpdateCrafting(u16 peer_id)
 	
 	Player* player = m_env->getPlayer(peer_id);
 	assert(player);
+	ServerRemotePlayer *srp = static_cast<ServerRemotePlayer*>(player);
 
-	/*
-		Calculate crafting stuff
-	*/
-	if(g_settings->getBool("creative_mode") == false)
-	{
-		InventoryList *clist = player->inventory.getList("craft");
-		InventoryList *rlist = player->inventory.getList("craftresult");
-
-		if(rlist && rlist->getUsedSlots() == 0)
-			player->craftresult_is_preview = true;
-
-		if(rlist && player->craftresult_is_preview)
-		{
-			rlist->clearItems();
-		}
-		if(clist && rlist && player->craftresult_is_preview)
-		{
-			// Get result of crafting grid
-			
-			std::vector<InventoryItem*> items;
-			for(u16 i=0; i<9; i++){
-				if(clist->getItem(i) == NULL)
-					items.push_back(NULL);
-				else
-					items.push_back(clist->getItem(i)->clone());
-			}
-			CraftPointerInput cpi(3, items);
-			
-			InventoryItem *result = m_craftdef->getCraftResult(cpi, this);
-			//InventoryItem *result = craft_get_result(items, this);
-			if(result)
-				rlist->addItem(result);
-		}
+	// No crafting in creative mode
+	if(g_settings->getBool("creative_mode"))
+		return;
 	
-	} // if creative_mode == false
+	// Get the InventoryLists of the player in which we will operate
+	InventoryList *clist = player->inventory.getList("craft");
+	assert(clist);
+	InventoryList *rlist = player->inventory.getList("craftresult");
+	assert(rlist);
+	InventoryList *mlist = player->inventory.getList("main");
+	assert(mlist);
+
+	// If the result list is not a preview and is not empty, try to
+	// throw the item into main list
+	if(!player->craftresult_is_preview && rlist->getUsedSlots() != 0)
+	{
+		// Grab item out of craftresult
+		InventoryItem *item = rlist->changeItem(0, NULL);
+		// Try to put in main
+		InventoryItem *leftover = mlist->addItem(item);
+		// If there are leftovers, put them back to craftresult and
+		// delete leftovers
+		delete rlist->addItem(leftover);
+		// Inventory was modified
+		srp->m_inventory_not_sent = true;
+	}
+	
+	// If result list is empty, we will make it preview what would be
+	// crafted
+	if(rlist->getUsedSlots() == 0)
+		player->craftresult_is_preview = true;
+	
+	// If it is a preview, clear the possible old preview in it
+	if(player->craftresult_is_preview)
+		rlist->clearItems();
+
+	// If it is a preview, find out what is the crafting result
+	// and put it in
+	if(player->craftresult_is_preview)
+	{
+		// Mangle crafting grid to an another format
+		std::vector<InventoryItem*> items;
+		for(u16 i=0; i<9; i++){
+			if(clist->getItem(i) == NULL)
+				items.push_back(NULL);
+			else
+				items.push_back(clist->getItem(i)->clone());
+		}
+		CraftPointerInput cpi(3, items);
+
+		// Find out what is crafted and add it to result item slot
+		InventoryItem *result = m_craftdef->getCraftResult(cpi, this);
+		if(result)
+			rlist->addItem(result);
+	}
 }
 
 RemoteClient* Server::getClient(u16 peer_id)
