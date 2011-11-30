@@ -386,6 +386,79 @@ static int getenumfield(lua_State *L, int table,
 	return result;
 }
 
+/*
+	Inventory stuff
+*/
+
+static void inventory_set_list_from_lua(Inventory *inv, const char *name,
+		lua_State *L, int tableindex, IGameDef *gamedef)
+{
+	// If nil, delete list
+	if(lua_isnil(L, tableindex)){
+		inv->deleteList(name);
+		return;
+	}
+	// Otherwise set list
+	std::list<std::string> items;
+	luaL_checktype(L, tableindex, LUA_TTABLE);
+	int table = tableindex;
+	lua_pushnil(L);
+	while(lua_next(L, table) != 0){
+		// key at index -2 and value at index -1
+		luaL_checktype(L, -1, LUA_TSTRING);
+		std::string itemstring = lua_tostring(L, -1);
+		items.push_back(itemstring);
+		// removes value, keeps key for next iteration
+		lua_pop(L, 1);
+	}
+	InventoryList *invlist = inv->addList(name, items.size());
+	int index = 0;
+	for(std::list<std::string>::const_iterator
+			i = items.begin(); i != items.end(); i++){
+		const std::string &itemstring = *i;
+		InventoryItem *newitem = NULL;
+		if(itemstring != "")
+			newitem = InventoryItem::deSerialize(itemstring,
+					gamedef);
+		InventoryItem *olditem = invlist->changeItem(index, newitem);
+		delete olditem;
+		index++;
+	}
+}
+
+static void inventory_get_list_to_lua(Inventory *inv, const char *name,
+		lua_State *L)
+{
+	InventoryList *invlist = inv->getList(name);
+	if(invlist == NULL){
+		lua_pushnil(L);
+		return;
+	}
+	// Get the table insert function
+	lua_getglobal(L, "table");
+	lua_getfield(L, -1, "insert");
+	int table_insert = lua_gettop(L);
+	// Create and fill table
+	lua_newtable(L);
+	int table = lua_gettop(L);
+	for(u32 i=0; i<invlist->getSize(); i++){
+		InventoryItem *item = invlist->getItem(i);
+		lua_pushvalue(L, table_insert);
+		lua_pushvalue(L, table);
+		if(item == NULL){
+			lua_pushnil(L);
+		} else {
+			lua_pushstring(L, item->getItemString().c_str());
+		}
+		if(lua_pcall(L, 2, 0, 0))
+			script_error(L, "error: %s\n", lua_tostring(L, -1));
+	}
+}
+
+/*
+	EnumString definitions
+*/
+
 struct EnumString es_DrawType[] =
 {
 	{NDT_NORMAL, "normal"},
@@ -1252,41 +1325,9 @@ private:
 		if(meta == NULL) return 0;
 		// Do it
 		Inventory *inv = meta->getInventory();
-		std::string name = lua_tostring(L, 2);
-		// If nil, delete list
-		if(lua_isnil(L, 3)){
-			inv->deleteList(name);
-			return 0;
-		}
-		// Otherwise set list
-		std::list<std::string> items;
-		luaL_checktype(L, 3, LUA_TTABLE);
-		int table = 3;
-		lua_pushnil(L);
-		infostream<<"items: ";
-		while(lua_next(L, table) != 0){
-			// key at index -2 and value at index -1
-			luaL_checktype(L, -1, LUA_TSTRING);
-			std::string itemstring = lua_tostring(L, -1);
-			infostream<<"\""<<itemstring<<"\" ";
-			items.push_back(itemstring);
-			// removes value, keeps key for next iteration
-			lua_pop(L, 1);
-		}
-		infostream<<std::endl;
-		InventoryList *invlist = inv->addList(name, items.size());
-		int index = 0;
-		for(std::list<std::string>::const_iterator
-				i = items.begin(); i != items.end(); i++){
-			const std::string &itemstring = *i;
-			InventoryItem *newitem = NULL;
-			if(itemstring != "")
-				newitem = InventoryItem::deSerialize(itemstring,
-						ref->m_env->getGameDef());
-			InventoryItem *olditem = invlist->changeItem(index, newitem);
-			delete olditem;
-			index++;
-		}
+		const char *name = lua_tostring(L, 2);
+		inventory_set_list_from_lua(inv, name, L, 3,
+				ref->m_env->getGameDef());
 		reportMetadataChange(ref);
 		return 0;
 	}
@@ -1299,31 +1340,8 @@ private:
 		if(meta == NULL) return 0;
 		// Do it
 		Inventory *inv = meta->getInventory();
-		std::string name = lua_tostring(L, 2);
-		InventoryList *invlist = inv->getList(name);
-		if(invlist == NULL){
-			lua_pushnil(L);
-			return 1;
-		}
-		// Get the table insert function
-		lua_getglobal(L, "table");
-		lua_getfield(L, -1, "insert");
-		int table_insert = lua_gettop(L);
-		// Create and fill table
-		lua_newtable(L);
-		int table = lua_gettop(L);
-		for(u32 i=0; i<invlist->getSize(); i++){
-			InventoryItem *item = invlist->getItem(i);
-			lua_pushvalue(L, table_insert);
-			lua_pushvalue(L, table);
-			if(item == NULL){
-				lua_pushnil(L);
-			} else {
-				lua_pushstring(L, item->getItemString().c_str());
-			}
-			if(lua_pcall(L, 2, 0, 0))
-				script_error(L, "error: %s\n", lua_tostring(L, -1));
-		}
+		const char *name = lua_tostring(L, 2);
+		inventory_get_list_to_lua(inv, name, L);
 		return 1;
 	}
 
@@ -1913,7 +1931,49 @@ private:
 		co->setSprite(p, num_frames, framelength, select_horiz_by_yawpitch);
 		return 0;
 	}
+
+	/* Player-only */
 	
+	// get_player_name(self)
+	static int l_get_player_name(lua_State *L)
+	{
+		ObjectRef *ref = checkobject(L, 1);
+		ServerRemotePlayer *player = getplayer(ref);
+		if(player == NULL){
+			lua_pushnil(L);
+			return 1;
+		}
+		// Do it
+		lua_pushstring(L, player->getName());
+		return 1;
+	}
+	
+	// inventory_set_list(self, name, {item1, item2, ...})
+	static int l_inventory_set_list(lua_State *L)
+	{
+		ObjectRef *ref = checkobject(L, 1);
+		ServerRemotePlayer *player = getplayer(ref);
+		if(player == NULL) return 0;
+		const char *name = lua_tostring(L, 2);
+		// Do it
+		inventory_set_list_from_lua(&player->inventory, name, L, 3,
+				player->getEnv()->getGameDef());
+		player->m_inventory_not_sent = true;
+		return 0;
+	}
+
+	// inventory_get_list(self, name)
+	static int l_inventory_get_list(lua_State *L)
+	{
+		ObjectRef *ref = checkobject(L, 1);
+		ServerRemotePlayer *player = getplayer(ref);
+		if(player == NULL) return 0;
+		const char *name = lua_tostring(L, 2);
+		// Do it
+		inventory_get_list_to_lua(&player->inventory, name, L);
+		return 1;
+	}
+
 public:
 	ObjectRef(ServerActiveObject *object):
 		m_object(object)
@@ -1997,6 +2057,10 @@ const luaL_reg ObjectRef::methods[] = {
 	method(ObjectRef, getacceleration),
 	method(ObjectRef, settexturemod),
 	method(ObjectRef, setsprite),
+	// Player-only
+	method(ObjectRef, get_player_name),
+	method(ObjectRef, inventory_set_list),
+	method(ObjectRef, inventory_get_list),
 	{0,0}
 };
 

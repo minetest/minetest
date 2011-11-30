@@ -97,6 +97,10 @@
 -- - settexturemod(mod)
 -- - setsprite(p={x=0,y=0}, num_frames=1, framelength=0.2,
 -- -           select_horiz_by_yawpitch=false)
+-- Player-only:
+-- - get_player_name(): will return nil if is not a player
+-- - inventory_set_list(name, {item1, item2, ...})
+-- - inventory_get_list(name)
 --
 -- Registered entities:
 -- - Functions receive a "luaentity" as self:
