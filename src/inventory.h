@@ -95,7 +95,6 @@ public:
 
 	void add(u16 count)
 	{
-		assert(m_count + count <= getStackMax());
 		m_count += count;
 	}
 	void remove(u16 count)
