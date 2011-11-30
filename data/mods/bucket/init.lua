@@ -1,8 +1,3 @@
-local craftitem_place_item = function(item, player, pos)
-	minetest.env:add_item(pos, 'CraftItem "' .. item .. '" 1')
-	return true
-end
-
 minetest.register_craft({
 	output = 'CraftItem "bucket" 1',
 	recipe = {
@@ -15,7 +10,7 @@ minetest.register_craftitem("bucket", {
 	image = "bucket.png",
 	stack_max = 1,
 	liquids_pointable = true,
-	on_place_on_ground = craftitem_place_item,
+	on_place_on_ground = minetest.craftitem_place_item,
 	on_use = function(item, player, pointed_thing)
 		if pointed_thing.type == "node" then
 			n = minetest.env:get_node(pointed_thing.under)
@@ -37,7 +32,7 @@ minetest.register_craftitem("bucket_water", {
 	image = "bucket_water.png",
 	stack_max = 1,
 	liquids_pointable = true,
-	on_place_on_ground = craftitem_place_item,
+	on_place_on_ground = minetest.craftitem_place_item,
 	on_use = function(item, player, pointed_thing)
 		if pointed_thing.type == "node" then
 			n = minetest.env:get_node(pointed_thing.under)
@@ -59,7 +54,7 @@ minetest.register_craftitem("bucket_lava", {
 	image = "bucket_lava.png",
 	stack_max = 1,
 	liquids_pointable = true,
-	on_place_on_ground = craftitem_place_item,
+	on_place_on_ground = minetest.craftitem_place_item,
 	on_use = function(item, player, pointed_thing)
 		if pointed_thing.type == "node" then
 			n = minetest.env:get_node(pointed_thing.under)

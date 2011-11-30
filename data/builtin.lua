@@ -1,3 +1,10 @@
+--
+-- This file contains built-in stuff in Minetest implemented in Lua.
+--
+-- It is always loaded and executed after registration of the C API,
+-- before loading and running any mods.
+--
+
 function basic_dump2(o)
 	if type(o) == "number" then
 		return tostring(o)
@@ -295,6 +302,30 @@ function test_stackstring()
 			'NodeItem "With Spaces" 1') == 'NodeItem "With Spaces" 3')
 end
 test_stackstring()
+
+--
+-- craftitem helpers
+--
+
+minetest.craftitem_place_item = function(item, placer, pos)
+	--print("craftitem_place_item")
+	--print("item: " .. dump(item))
+	--print("placer: " .. dump(placer))
+	--print("pos: " .. dump(pos))
+	minetest.env:add_item(pos, 'CraftItem "' .. item .. '" 1')
+	return true
+end
+
+minetest.craftitem_eat = function(hp_change)
+	return function(item, user, pointed_thing)  -- closure
+		--print("craftitem_eat(" .. hp_change .. ")")
+		--print("item: " .. dump(item))
+		--print("user: " .. dump(user))
+		--print("pointed_thing: " .. dump(pointed_thing))
+		user:set_hp(user:get_hp() + hp_change)
+		return true
+	end
+end
 
 --
 -- Callback registration

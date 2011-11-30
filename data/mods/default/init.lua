@@ -1132,68 +1132,48 @@ minetest.register_node("apple", {
 -- Crafting items
 --
 
-local craftitem_place_item = function(item, placer, pos)
-	--print("craftitem_place_item")
-	--print("item: " .. dump(item))
-	--print("placer: " .. dump(placer))
-	--print("pos: " .. dump(pos))
-	minetest.env:add_item(pos, 'CraftItem "' .. item .. '" 1')
-	return true
-end
-
-local craftitem_eat = function(hp_change)
-	return function(item, user, pointed_thing)  -- closure
-		--print("craftitem_eat(" .. hp_change .. ")")
-		--print("item: " .. dump(item))
-		--print("user: " .. dump(user))
-		--print("pointed_thing: " .. dump(pointed_thing))
-		user:set_hp(user:get_hp() + hp_change)
-		return true
-	end
-end
-
 minetest.register_craftitem("Stick", {
 	image = "stick.png",
 	--furnace_burntime = ...,
-	on_place_on_ground = craftitem_place_item,
+	on_place_on_ground = minetest.craftitem_place_item,
 })
 
 minetest.register_craftitem("paper", {
 	image = "paper.png",
-	on_place_on_ground = craftitem_place_item,
+	on_place_on_ground = minetest.craftitem_place_item,
 })
 
 minetest.register_craftitem("book", {
 	image = "book.png",
-	on_place_on_ground = craftitem_place_item,
+	on_place_on_ground = minetest.craftitem_place_item,
 })
 
 minetest.register_craftitem("lump_of_coal", {
 	image = "lump_of_coal.png",
 	furnace_burntime = 40;
-	on_place_on_ground = craftitem_place_item,
+	on_place_on_ground = minetest.craftitem_place_item,
 })
 
 minetest.register_craftitem("lump_of_iron", {
 	image = "lump_of_iron.png",
 	cookresult_item = 'CraftItem "steel_ingot" 1',
-	on_place_on_ground = craftitem_place_item,
+	on_place_on_ground = minetest.craftitem_place_item,
 })
 
 minetest.register_craftitem("lump_of_clay", {
 	image = "lump_of_clay.png",
 	cookresult_item = 'CraftItem "clay_brick" 1',
-	on_place_on_ground = craftitem_place_item,
+	on_place_on_ground = minetest.craftitem_place_item,
 })
 
 minetest.register_craftitem("steel_ingot", {
 	image = "steel_ingot.png",
-	on_place_on_ground = craftitem_place_item,
+	on_place_on_ground = minetest.craftitem_place_item,
 })
 
 minetest.register_craftitem("clay_brick", {
 	image = "clay_brick.png",
-	on_place_on_ground = craftitem_place_item,
+	on_place_on_ground = minetest.craftitem_place_item,
 })
 
 minetest.register_craftitem("rat", {
@@ -1208,13 +1188,13 @@ minetest.register_craftitem("rat", {
 minetest.register_craftitem("cooked_rat", {
 	image = "cooked_rat.png",
 	cookresult_item = 'CraftItem "scorched_stuff" 1',
-	on_place_on_ground = craftitem_place_item,
-	on_use = craftitem_eat(6),
+	on_place_on_ground = minetest.craftitem_place_item,
+	on_use = minetest.craftitem_eat(6),
 })
 
 minetest.register_craftitem("scorched_stuff", {
 	image = "scorched_stuff.png",
-	on_place_on_ground = craftitem_place_item,
+	on_place_on_ground = minetest.craftitem_place_item,
 })
 
 minetest.register_craftitem("firefly", {
@@ -1227,14 +1207,14 @@ minetest.register_craftitem("firefly", {
 
 minetest.register_craftitem("apple", {
 	image = "apple.png",
-	on_place_on_ground = craftitem_place_item,
-	on_use = craftitem_eat(4),
+	on_place_on_ground = minetest.craftitem_place_item,
+	on_use = minetest.craftitem_eat(4),
 })
 
 minetest.register_craftitem("apple_iron", {
 	image = "apple_iron.png",
-	on_place_on_ground = craftitem_place_item,
-	on_use = craftitem_eat(8),
+	on_place_on_ground = minetest.craftitem_place_item,
+	on_use = minetest.craftitem_eat(8),
 })
 
 print(dump(minetest.registered_craftitems))
