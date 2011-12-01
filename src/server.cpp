@@ -1448,6 +1448,12 @@ void Server::AsyncRunStep()
 			i.atEnd() == false; i++)
 		{
 			RemoteClient *client = i.getNode()->getValue();
+
+			// If definitions and textures have not been sent, don't
+			// send objects either
+			if(!client->definitions_sent)
+				continue;
+
 			Player *player = m_env->getPlayer(client->peer_id);
 			if(player==NULL)
 			{
@@ -2173,7 +2179,7 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 		// Send inventory to player
 		UpdateCrafting(peer_id);
 		SendInventory(peer_id);
-
+		
 		// Send player items to all players
 		SendPlayerItems();
 
@@ -2188,6 +2194,9 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 					m_env->getTimeOfDay());
 			m_con.Send(peer_id, 0, data, true);
 		}
+		
+		// Now the client should know about everything
+		getClient(peer_id)->definitions_sent = true;
 		
 		// Send information about server to player in chat
 		SendChatMessage(peer_id, getStatusString());
@@ -2866,6 +2875,8 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 		if(player->hp != 0)
 			return;
 		
+		srp->m_respawn_active = false;
+
 		RespawnPlayer(player);
 		
 		actionstream<<player->getName()<<" respawns at "
@@ -4183,6 +4194,11 @@ void Server::SendBlocks(float dtime)
 			RemoteClient *client = i.getNode()->getValue();
 			assert(client->peer_id == i.getNode()->getKey());
 
+			// If definitions and textures have not been sent, don't
+			// send MapBlocks either
+			if(!client->definitions_sent)
+				continue;
+
 			total_sending += client->SendingCount();
 			
 			if(client->serialization_version == SER_FMT_VER_INVALID)
@@ -4400,7 +4416,6 @@ void Server::RespawnPlayer(Player *player)
 {
 	player->hp = 20;
 	ServerRemotePlayer *srp = static_cast<ServerRemotePlayer*>(player);
-	srp->m_respawn_active = false;
 	bool repositioned = scriptapi_on_respawnplayer(m_lua, srp);
 	if(!repositioned){
 		v3f pos = findSpawnPos(m_env->getServerMap());

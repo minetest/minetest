@@ -248,6 +248,8 @@ public:
 	// Version is stored in here after INIT before INIT2
 	u8 pending_serialization_version;
 
+	bool definitions_sent;
+
 	RemoteClient():
 		m_time_from_building(9999),
 		m_excess_gotblocks(0)
@@ -256,6 +258,7 @@ public:
 		serialization_version = SER_FMT_VER_INVALID;
 		net_proto_version = 0;
 		pending_serialization_version = SER_FMT_VER_INVALID;
+		definitions_sent = false;
 		m_nearest_unsent_d = 0;
 		m_nearest_unsent_reset_timer = 0.0;
 		m_nothing_to_send_counter = 0;
