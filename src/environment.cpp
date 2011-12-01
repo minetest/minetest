@@ -741,8 +741,12 @@ void ServerEnvironment::clearAllObjects()
 			obj->m_removed = true;
 			continue;
 		}
+
+		// Tell the object about removal
+		obj->removingFromEnvironment();
 		// Deregister in scripting api
 		scriptapi_rm_object_reference(m_lua, obj);
+
 		// Delete active object
 		delete obj;
 		// Id to be removed from m_active_objects
@@ -1395,6 +1399,8 @@ void ServerEnvironment::removeRemovedObjects()
 		if(obj->m_known_by_count > 0)
 			continue;
 		
+		// Tell the object about removal
+		obj->removingFromEnvironment();
 		// Deregister in scripting api
 		scriptapi_rm_object_reference(m_lua, obj);
 
@@ -1680,6 +1686,8 @@ void ServerEnvironment::deactivateFarObjects(bool force_delete)
 				<<"object id="<<id<<" is not known by clients"
 				<<"; deleting"<<std::endl;
 
+		// Tell the object about removal
+		obj->removingFromEnvironment();
 		// Deregister in scripting api
 		scriptapi_rm_object_reference(m_lua, obj);
 

@@ -54,8 +54,10 @@ public:
 	ServerActiveObject(ServerEnvironment *env, v3f pos);
 	virtual ~ServerActiveObject();
 
-	// Call after id has been set and has been inserted in environment
-	virtual void addedToEnvironment();
+	// Called after id has been set and has been inserted in environment
+	virtual void addedToEnvironment(){};
+	// Called before removing from environment
+	virtual void removingFromEnvironment(){};
 	
 	// Create a certain type of ServerActiveObject
 	static ServerActiveObject* create(u8 type,
@@ -111,6 +113,11 @@ public:
 		the data is the static form)
 	*/
 	virtual std::string getStaticData(){return "";}
+	/*
+		Return false in here to never save and instead remove object
+		on unload. getStaticData() will not be called in that case.
+	*/
+	virtual bool isStaticAllowed(){return true;}
 	
 	virtual void punch(ServerActiveObject *puncher){}
 	virtual void rightClick(ServerActiveObject *clicker){}

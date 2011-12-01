@@ -37,10 +37,6 @@ ServerActiveObject::~ServerActiveObject()
 {
 }
 
-void ServerActiveObject::addedToEnvironment()
-{
-}
-
 ServerActiveObject* ServerActiveObject::create(u8 type,
 		ServerEnvironment *env, u16 id, v3f pos,
 		const std::string &data)
