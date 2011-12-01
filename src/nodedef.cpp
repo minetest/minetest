@@ -281,7 +281,7 @@ void ContentFeatures::setSpecialMaterial(u16 i, const MaterialSpec &mspec)
 
 void ContentFeatures::setInventoryTexture(std::string imgname)
 {
-	tname_inventory = imgname + "^[forcesingle";
+	tname_inventory = imgname;
 }
 
 void ContentFeatures::setInventoryTextureCube(std::string top,
