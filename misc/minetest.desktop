@@ -1,0 +1,11 @@
+[Desktop Entry]
+Name=Minetest
+GenericName=Minetest
+Comment=Multiplayer infinite-world block sandbox
+Exec=minetest
+Icon=minetest-icon
+Terminal=false
+Type=Application
+Categories=Game;
+StartupNotify=false
+
