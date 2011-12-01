@@ -61,6 +61,7 @@
 -- - set_text(text) -- eg. set the text of a sign
 -- - get_text()
 -- - get_owner()
+-- Generic node metadata specific:
 -- - set_infotext(infotext)
 -- - inventory_set_list(name, {item1, item2, ...})
 -- - inventory_get_list(name)
