@@ -43,6 +43,7 @@ Some planning
 class ServerEnvironment;
 class InventoryItem;
 class Player;
+struct ToolDiggingProperties;
 
 class ServerActiveObject : public ActiveObject
 {
@@ -128,23 +129,24 @@ public:
 	virtual bool isStaticAllowed() const
 	{return true;}
 	
-	virtual void punch(ServerActiveObject *puncher){}
-	virtual void rightClick(ServerActiveObject *clicker){}
-	
-	// Returns a reference
-	virtual InventoryItem* getWieldedItem()
-		{ return NULL; }
+	// time_from_last_punch is used for lessening damage if punching fast
+	virtual void punch(ServerActiveObject *puncher,
+			float time_from_last_punch=1000000)
+	{}
+	virtual void rightClick(ServerActiveObject *clicker)
+	{}
+	virtual void getWieldDiggingProperties(ToolDiggingProperties *dst);
 	virtual void damageWieldedItem(u16 amount)
-		{}
+	{}
 	// If all fits, eats item and returns true. Otherwise returns false.
 	virtual bool addToInventory(InventoryItem *item)
-		{return false;}
+	{ return false; }
 	virtual void addToInventoryLater(InventoryItem *item)
-		{}
+	{}
 	virtual void setHP(s16 hp)
-		{}
+	{}
 	virtual s16 getHP()
-		{return 0;}
+	{ return 0; }
 
 	/*
 		Number of players which know about this object. Object won't be

@@ -7,13 +7,32 @@
 -- name "foomod", a texture could be called "foomod_superfurnace.png"
 -- Due to historical reasons, the default mod does not follow this rule.
 --
+-- MapNode representation:
+-- {name="name", param1=num, param2=num}
+--
+-- Position representation:
+-- {x=num, y=num, z=num}
+--
+-- stackstring/itemstring: A stack of items in serialized format.
+-- eg. 'NodeItem "dirt" 5'
+-- eg. 'ToolItem "WPick" 21323'
+-- eg. 'CraftItem "apple" 2'
+--
+-- item: A single item in Lua table format.
+-- eg. {type="NodeItem", name="dirt"} 
+--     ^ a single dirt node
+-- eg. {type="ToolItem", name="WPick", wear=21323}
+--     ^ a wooden pick about 1/3 weared out
+-- eg. {type="CraftItem", name="apple"}
+--     ^ an apple.
+--
 -- Global functions:
--- minetest.register_entity(name, prototype_table)
--- minetest.register_tool(name, {lots of stuff})
--- minetest.register_node(name, {lots of stuff})
--- minetest.register_craftitem(name, {lots of stuff})
--- minetest.register_craft({output=item, recipe={...})
--- minetest.register_globalstep(func)
+-- minetest.register_entity(name, prototype table)
+-- minetest.register_tool(name, tool definition)
+-- minetest.register_node(name, node definition)
+-- minetest.register_craftitem(name, craftitem definition)
+-- minetest.register_craft(recipe)
+-- minetest.register_globalstep(func(dtime))
 -- minetest.register_on_placenode(func(pos, newnode, placer))
 -- minetest.register_on_dignode(func(pos, oldnode, digger))
 -- minetest.register_on_punchnode(func(pos, node, puncher))
@@ -22,11 +41,14 @@
 -- minetest.register_on_respawnplayer(func(ObjectRef))
 -- ^ return true in func to disable regular player placement
 -- minetest.register_on_chat_message(func(name, message))
--- minetest.setting_get(name)
--- minetest.setting_getbool(name)
+-- minetest.setting_get(name) -> string or nil
+-- minetest.setting_getbool(name) -> boolean value or nil
 -- minetest.chat_send_all(text)
 -- minetest.chat_send_player(name, text)
--- minetest.get_player_privs(name)
+-- minetest.get_player_privs(name) -> set of privs
+-- stackstring_take_item(stackstring) -> stackstring, item
+-- stackstring_put_item(stackstring, item) -> stackstring, success
+-- stackstring_put_stackstring(stackstring, stackstring) -> stackstring, success
 --
 -- Global objects:
 -- minetest.env - environment reference
@@ -79,29 +101,28 @@
 -- ObjectRef is basically ServerActiveObject.
 -- ObjectRef methods:
 -- - remove(): remove object (after returning from Lua)
--- - getpos(): returns {x=num, y=num, z=num}
+-- - getpos() -> {x=num, y=num, z=num}
 -- - setpos(pos); pos={x=num, y=num, z=num}
 -- - moveto(pos, continuous=false): interpolated move
 -- - punch(puncher); puncher = an another ObjectRef
 -- - right_click(clicker); clicker = an another ObjectRef
--- - get_wielded_itemstring()
--- - get_wielded_item()
--- - damage_wielded_item(num) (item damage/wear range is 0-65535)
--- - add_to_inventory(itemstring): add an item to object inventory
+-- - get_wield_digging_properties() -> digging property table
 -- - add_to_inventory_later(itemstring): like above, but after callback returns (only allowed for craftitem callbacks)
 -- - get_hp(): returns number of hitpoints (2 * number of hearts)
 -- - set_hp(hp): set number of hitpoints (2 * number of hearts)
 -- LuaEntitySAO-only:
 -- - setvelocity({x=num, y=num, z=num})
 -- - setacceleration({x=num, y=num, z=num})
--- - getacceleration()
+-- - getacceleration() -> {x=num, y=num, z=num}
 -- - settexturemod(mod)
 -- - setsprite(p={x=0,y=0}, num_frames=1, framelength=0.2,
 -- -           select_horiz_by_yawpitch=false)
 -- Player-only:
 -- - get_player_name(): will return nil if is not a player
 -- - inventory_set_list(name, {item1, item2, ...})
--- - inventory_get_list(name)
+-- - inventory_get_list(name) -> {item1, item2, ...}
+-- - damage_wielded_item(num) (item damage/wear range is 0-65535)
+-- - add_to_inventory(itemstring): add an item to object inventory
 --
 -- Registered entities:
 -- - Functions receive a "luaentity" as self:
@@ -112,13 +133,113 @@
 --   - on_step(self, dtime)
 --   - on_punch(self, hitter)
 --   - on_rightclick(self, clicker)
---   - get_staticdata(self): return string
+--   - get_staticdata(self)
+--     ^ return string that will be passed to on_activate when the object
+--       is created next time
 --
--- MapNode representation:
--- {name="name", param1=num, param2=num}
+-- Entity prototype table:
+-- {
+--     physical = true,
+--     collisionbox = {-0.5,-0.5,-0.5, 0.5,0.5,0.5},
+--     visual = "cube",
+--     textures = {texture,texture,texture,texture,texture,texture},
+--     on_activate = function(self, staticdata),
+--     on_step = function(self, dtime),
+--     on_punch = function(self, hitter),
+--     on_rightclick = function(self, clicker),
+--     get_staticdata = function(self),
+--     # Also you can define arbitrary member variables here
+--     myvariable = whatever,
+-- }
 --
--- Position representation:
--- {x=num, y=num, z=num}
+-- Tool definition:
+-- {
+--     image = "tool_steelaxe.png",
+--     full_punch_interval = 1.0,
+--     basetime = 1.0,
+--     dt_weight = 0.5,
+--     dt_crackiness = -0.2,
+--     dt_crumbliness = 1,
+--     dt_cuttability = -0.5,
+--     basedurability = 330,
+--     dd_weight = 0,
+--     dd_crackiness = 0,
+--     dd_crumbliness = 0,
+--     dd_cuttability = 0,
+-- }
+--
+-- Node definition options:
+-- {
+--     name = "somenode",
+--     drawtype = "normal",
+--     visual_scale = 1.0,
+--     tile_images = {"unknown_block.png"},
+--     inventory_image = "unknown_block.png",
+--     special_materials = {
+--         {image="", backface_culling=true},
+--         {image="", backface_culling=true},
+--     },
+--     alpha = 255,
+--     post_effect_color = {a=0, r=0, g=0, b=0},
+--     paramtype = "none",
+--     is_ground_content = false,
+--     light_propagates = false,
+--     sunlight_propagates = false,
+--     walkable = true,
+--     pointable = true,
+--     diggable = true,
+--     climbable = false,
+--     buildable_to = false,
+--     wall_mounted = false,
+--     often_contains_mineral = false,
+--     dug_item = "",
+--     extra_dug_item = "",
+--     extra_dug_item_rarity = 2,
+--     metadata_name = "",
+--     liquidtype = "none",
+--     liquid_alternative_flowing = "",
+--     liquid_alternative_source = "",
+--     liquid_viscosity = 0,
+--     light_source = 0,
+--     damage_per_second = 0,
+--     selection_box = {type="regular"},
+--     material = {
+--         diggablity = "normal",
+--         weight = 0,
+--         crackiness = 0,
+--         crumbliness = 0,
+--         cuttability = 0,
+--         flammability = 0,
+--     },
+--     cookresult_item = "", -- Cannot be cooked
+--     furnace_cooktime = 3.0,
+--     furnace_burntime = -1, -- Cannot be used as fuel
+-- }
+--
+-- Craftitem definition options:
+-- minetest.register_craftitem("name", {
+--     image = "image.png",
+--     stack_max = <maximum number of items in stack>,
+--     cookresult_item = itemstring (result of cooking),
+--     furnace_cooktime = <cooking time>,
+--     furnace_burntime = <time to burn as fuel in furnace>,
+--     usable = <uh... some boolean value>,
+--     dropcount = <amount of items to drop using drop action>
+--     liquids_pointable = <whether can point liquids>,
+--     on_drop = func(item, dropper, pos),
+--     on_place_on_ground = func(item, placer, pos),
+--     on_use = func(item, player, pointed_thing),
+-- })
+-- 
+-- Recipe:
+-- {
+--     output = 'ToolItem "STPick"',
+--     recipe = {
+--         {'NodeItem "cobble"', 'NodeItem "cobble"', 'NodeItem "cobble"'},
+--         {'', 'CraftItem "Stick"', ''},
+--         {'', 'CraftItem "Stick"', ''},
+--     }
+-- }
 --
 
 -- print("minetest dump: "..dump(minetest))

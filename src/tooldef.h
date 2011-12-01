@@ -26,6 +26,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 struct ToolDiggingProperties
 {
 	// time = basetime + sum(feature here * feature in MaterialProperties)
+	float full_punch_interval;
 	float basetime;
 	float dt_weight;
 	float dt_crackiness;
@@ -37,7 +38,7 @@ struct ToolDiggingProperties
 	float dd_crumbliness;
 	float dd_cuttability;
 
-	ToolDiggingProperties(
+	ToolDiggingProperties(float full_punch_interval_=1.0,
 			float a=0.75, float b=0, float c=0, float d=0, float e=0,
 			float f=50, float g=0, float h=0, float i=0, float j=0);
 };

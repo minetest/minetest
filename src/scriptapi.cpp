@@ -386,6 +386,15 @@ static int getenumfield(lua_State *L, int table,
 	return result;
 }
 
+static void setfloatfield(lua_State *L, int table,
+		const char *fieldname, float value)
+{
+	lua_pushnumber(L, value);
+	if(table < 0)
+		table -= 1;
+	lua_setfield(L, table, fieldname);
+}
+
 /*
 	Inventory stuff
 */
@@ -453,6 +462,71 @@ static void inventory_get_list_to_lua(Inventory *inv, const char *name,
 		if(lua_pcall(L, 2, 0, 0))
 			script_error(L, "error: %s\n", lua_tostring(L, -1));
 	}
+}
+
+/*
+	ToolDiggingProperties
+*/
+
+static ToolDiggingProperties read_tool_digging_properties(
+		lua_State *L, int table)
+{
+	ToolDiggingProperties prop;
+	getfloatfield(L, table, "full_punch_interval", prop.full_punch_interval);
+	getfloatfield(L, table, "basetime", prop.basetime);
+	getfloatfield(L, table, "dt_weight", prop.dt_weight);
+	getfloatfield(L, table, "dt_crackiness", prop.dt_crackiness);
+	getfloatfield(L, table, "dt_crumbliness", prop.dt_crumbliness);
+	getfloatfield(L, table, "dt_cuttability", prop.dt_cuttability);
+	getfloatfield(L, table, "basedurability", prop.basedurability);
+	getfloatfield(L, table, "dd_weight", prop.dd_weight);
+	getfloatfield(L, table, "dd_crackiness", prop.dd_crackiness);
+	getfloatfield(L, table, "dd_crumbliness", prop.dd_crumbliness);
+	getfloatfield(L, table, "dd_cuttability", prop.dd_cuttability);
+	return prop;
+}
+
+static void set_tool_digging_properties(lua_State *L, int table,
+		const ToolDiggingProperties &prop)
+{
+	setfloatfield(L, table, "full_punch_interval", prop.full_punch_interval);
+	setfloatfield(L, table, "basetime", prop.basetime);
+	setfloatfield(L, table, "dt_weight", prop.dt_weight);
+	setfloatfield(L, table, "dt_crackiness", prop.dt_crackiness);
+	setfloatfield(L, table, "dt_crumbliness", prop.dt_crumbliness);
+	setfloatfield(L, table, "dt_cuttability", prop.dt_cuttability);
+	setfloatfield(L, table, "basedurability", prop.basedurability);
+	setfloatfield(L, table, "dd_weight", prop.dd_weight);
+	setfloatfield(L, table, "dd_crackiness", prop.dd_crackiness);
+	setfloatfield(L, table, "dd_crumbliness", prop.dd_crumbliness);
+	setfloatfield(L, table, "dd_cuttability", prop.dd_cuttability);
+}
+
+static void push_tool_digging_properties(lua_State *L,
+		const ToolDiggingProperties &prop)
+{
+	lua_newtable(L);
+	set_tool_digging_properties(L, -1, prop);
+}
+
+/*
+	ToolDefinition
+*/
+
+static ToolDefinition read_tool_definition(lua_State *L, int table)
+{
+	ToolDefinition def;
+	getstringfield(L, table, "image", def.imagename);
+	def.properties = read_tool_digging_properties(L, table);
+	return def;
+}
+
+static void push_tool_definition(lua_State *L, const ToolDefinition &def)
+{
+	lua_newtable(L);
+	lua_pushstring(L, def.imagename.c_str());
+	lua_setfield(L, -2, "image");
+	set_tool_digging_properties(L, -1, def.properties);
 }
 
 /*
@@ -672,19 +746,7 @@ static int l_register_tool(lua_State *L)
 	IWritableToolDefManager *tooldef =
 			server->getWritableToolDefManager();
 	
-	ToolDefinition def;
-	
-	getstringfield(L, table, "image", def.imagename);
-	getfloatfield(L, table, "basetime", def.properties.basetime);
-	getfloatfield(L, table, "dt_weight", def.properties.dt_weight);
-	getfloatfield(L, table, "dt_crackiness", def.properties.dt_crackiness);
-	getfloatfield(L, table, "dt_crumbliness", def.properties.dt_crumbliness);
-	getfloatfield(L, table, "dt_cuttability", def.properties.dt_cuttability);
-	getfloatfield(L, table, "basedurability", def.properties.basedurability);
-	getfloatfield(L, table, "dd_weight", def.properties.dd_weight);
-	getfloatfield(L, table, "dd_crackiness", def.properties.dd_crackiness);
-	getfloatfield(L, table, "dd_crumbliness", def.properties.dd_crumbliness);
-	getfloatfield(L, table, "dd_cuttability", def.properties.dd_cuttability);
+	ToolDefinition def = read_tool_definition(L, table);
 
 	tooldef->registerTool(name, def);
 	return 0; /* number of results */
@@ -1588,9 +1650,7 @@ private:
 			return NULL;
 		if(obj->getType() != ACTIVEOBJECT_TYPE_PLAYER)
 			return NULL;
-		PlayerSAO *player_sao = static_cast<PlayerSAO*>(obj);
-		return player_sao->getPlayer();
-		//return static_cast<ServerRemotePlayer*>(obj);
+		return static_cast<ServerRemotePlayer*>(obj);
 	}
 	
 	// Exported functions
@@ -1690,65 +1750,16 @@ private:
 		return 0;
 	}
 
-	// get_wielded_itemstring(self)
-	static int l_get_wielded_itemstring(lua_State *L)
+	// get_wield_digging_properties(self)
+	static int l_get_wield_digging_properties(lua_State *L)
 	{
 		ObjectRef *ref = checkobject(L, 1);
 		ServerActiveObject *co = getobject(ref);
 		if(co == NULL) return 0;
 		// Do it
-		InventoryItem *item = co->getWieldedItem();
-		if(item == NULL){
-			lua_pushnil(L);
-			return 1;
-		}
-		lua_pushstring(L, item->getItemString().c_str());
-		return 1;
-	}
-
-	// get_wielded_item(self)
-	static int l_get_wielded_item(lua_State *L)
-	{
-		ObjectRef *ref = checkobject(L, 1);
-		ServerActiveObject *co = getobject(ref);
-		if(co == NULL) return 0;
-		// Do it
-		InventoryItem *item0 = co->getWieldedItem();
-		if(item0 == NULL){
-			lua_pushnil(L);
-			return 1;
-		}
-		if(std::string("MaterialItem") == item0->getName()){
-			MaterialItem *item = (MaterialItem*)item0;
-			lua_newtable(L);
-			lua_pushstring(L, "NodeItem");
-			lua_setfield(L, -2, "type");
-			lua_pushstring(L, item->getNodeName().c_str());
-			lua_setfield(L, -2, "name");
-		}
-		else if(std::string("CraftItem") == item0->getName()){
-			CraftItem *item = (CraftItem*)item0;
-			lua_newtable(L);
-			lua_pushstring(L, "CraftItem");
-			lua_setfield(L, -2, "type");
-			lua_pushstring(L, item->getSubName().c_str());
-			lua_setfield(L, -2, "name");
-		}
-		else if(std::string("ToolItem") == item0->getName()){
-			ToolItem *item = (ToolItem*)item0;
-			lua_newtable(L);
-			lua_pushstring(L, "ToolItem");
-			lua_setfield(L, -2, "type");
-			lua_pushstring(L, item->getToolName().c_str());
-			lua_setfield(L, -2, "name");
-			lua_pushstring(L, itos(item->getWear()).c_str());
-			lua_setfield(L, -2, "wear");
-		}
-		else{
-			errorstream<<"l_get_wielded_item: Unknown item name: \""
-					<<item0->getName()<<"\""<<std::endl;
-			lua_pushnil(L);
-		}
+		ToolDiggingProperties prop;
+		co->getWieldDiggingProperties(&prop);
+		push_tool_digging_properties(L, prop);
 		return 1;
 	}
 
@@ -1976,6 +1987,68 @@ private:
 		return 1;
 	}
 
+	// get_wielded_itemstring(self)
+	static int l_get_wielded_itemstring(lua_State *L)
+	{
+		ObjectRef *ref = checkobject(L, 1);
+		ServerRemotePlayer *player = getplayer(ref);
+		if(player == NULL) return 0;
+		// Do it
+		InventoryItem *item = player->getWieldedItem();
+		if(item == NULL){
+			lua_pushnil(L);
+			return 1;
+		}
+		lua_pushstring(L, item->getItemString().c_str());
+		return 1;
+	}
+
+	// get_wielded_item(self)
+	static int l_get_wielded_item(lua_State *L)
+	{
+		ObjectRef *ref = checkobject(L, 1);
+		ServerRemotePlayer *player = getplayer(ref);
+		if(player == NULL) return 0;
+		// Do it
+		InventoryItem *item0 = player->getWieldedItem();
+		if(item0 == NULL){
+			lua_pushnil(L);
+			return 1;
+		}
+		if(std::string("MaterialItem") == item0->getName()){
+			MaterialItem *item = (MaterialItem*)item0;
+			lua_newtable(L);
+			lua_pushstring(L, "NodeItem");
+			lua_setfield(L, -2, "type");
+			lua_pushstring(L, item->getNodeName().c_str());
+			lua_setfield(L, -2, "name");
+		}
+		else if(std::string("CraftItem") == item0->getName()){
+			CraftItem *item = (CraftItem*)item0;
+			lua_newtable(L);
+			lua_pushstring(L, "CraftItem");
+			lua_setfield(L, -2, "type");
+			lua_pushstring(L, item->getSubName().c_str());
+			lua_setfield(L, -2, "name");
+		}
+		else if(std::string("ToolItem") == item0->getName()){
+			ToolItem *item = (ToolItem*)item0;
+			lua_newtable(L);
+			lua_pushstring(L, "ToolItem");
+			lua_setfield(L, -2, "type");
+			lua_pushstring(L, item->getToolName().c_str());
+			lua_setfield(L, -2, "name");
+			lua_pushstring(L, itos(item->getWear()).c_str());
+			lua_setfield(L, -2, "wear");
+		}
+		else{
+			errorstream<<"l_get_wielded_item: Unknown item name: \""
+					<<item0->getName()<<"\""<<std::endl;
+			lua_pushnil(L);
+		}
+		return 1;
+	}
+
 public:
 	ObjectRef(ServerActiveObject *object):
 		m_object(object)
@@ -2046,8 +2119,7 @@ const luaL_reg ObjectRef::methods[] = {
 	method(ObjectRef, moveto),
 	method(ObjectRef, punch),
 	method(ObjectRef, right_click),
-	method(ObjectRef, get_wielded_itemstring),
-	method(ObjectRef, get_wielded_item),
+	method(ObjectRef, get_wield_digging_properties),
 	method(ObjectRef, damage_wielded_item),
 	method(ObjectRef, add_to_inventory),
 	method(ObjectRef, add_to_inventory_later),
@@ -2063,6 +2135,8 @@ const luaL_reg ObjectRef::methods[] = {
 	method(ObjectRef, get_player_name),
 	method(ObjectRef, inventory_set_list),
 	method(ObjectRef, inventory_get_list),
+	method(ObjectRef, get_wielded_itemstring),
+	method(ObjectRef, get_wielded_item),
 	{0,0}
 };
 

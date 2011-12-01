@@ -50,7 +50,7 @@ public:
 	std::string getClientInitializationData();
 	std::string getStaticData();
 	InventoryItem* createInventoryItem();
-	void punch(ServerActiveObject *puncher);
+	void punch(ServerActiveObject *puncher, float time_from_last_punch);
 	float getMinimumSavedMovement(){ return 0.1*BS; }
 private:
 	std::string m_inventorystring;
@@ -70,7 +70,7 @@ public:
 	void step(float dtime, bool send_recommended);
 	std::string getClientInitializationData();
 	std::string getStaticData();
-	void punch(ServerActiveObject *puncher);
+	void punch(ServerActiveObject *puncher, float time_from_last_punch);
 private:
 	bool m_is_active;
 	IntervalLimiter m_inactive_interval;
@@ -96,7 +96,7 @@ public:
 	std::string getClientInitializationData();
 	std::string getStaticData();
 	InventoryItem* createPickedUpItem(){return NULL;}
-	void punch(ServerActiveObject *puncher);
+	void punch(ServerActiveObject *puncher, float time_from_last_punch);
 	bool isPeaceful(){return false;}
 private:
 	void doDamage(u16 d);
@@ -156,7 +156,7 @@ public:
 	std::string getClientInitializationData();
 	void step(float dtime, bool send_recommended);
 	InventoryItem* createPickedUpItem(){return NULL;}
-	void punch(ServerActiveObject *puncher);
+	void punch(ServerActiveObject *puncher, float time_from_last_punch);
 	bool isPeaceful();
 private:
 	void sendPosition();
@@ -210,7 +210,7 @@ public:
 	std::string getClientInitializationData();
 	std::string getStaticData();
 	InventoryItem* createPickedUpItem();
-	void punch(ServerActiveObject *puncher);
+	void punch(ServerActiveObject *puncher, float time_from_last_punch);
 	void rightClick(ServerActiveObject *clicker);
 	void setPos(v3f pos);
 	void moveTo(v3f pos, bool continuous);
@@ -238,31 +238,6 @@ private:
 	v3f m_last_sent_velocity;
 	float m_last_sent_position_timer;
 	float m_last_sent_move_precision;
-};
-
-class ServerRemotePlayer;
-
-class PlayerSAO : public ServerActiveObject
-{
-public:
-	PlayerSAO(ServerEnvironment *env, v3f pos,
-			ServerRemotePlayer *player);
-	~PlayerSAO();
-	u8 getType() const
-		{return ACTIVEOBJECT_TYPE_PLAYER;}
-	void step(float dtime, bool send_recommended);
-	std::string getClientInitializationData();
-	std::string getStaticData();
-	bool isStaticAllowed() const
-	{ return false; }
-	void punch(ServerActiveObject *puncher);
-	/* PlayerSAO-specific */
-	void setPlayer(ServerRemotePlayer *player);
-	ServerRemotePlayer* getPlayer();
-	void positionUpdated();
-private:
-	ServerRemotePlayer *m_player;
-	bool m_position_updated;
 };
 
 #endif

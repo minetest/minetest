@@ -49,34 +49,65 @@ void MaterialProperties::deSerialize(std::istream &is)
 	flammability = readF1000(is);
 }
 
-DiggingProperties getDiggingProperties(u16 content, ToolDiggingProperties *tp,
-		INodeDefManager *nodemgr)
+DiggingProperties getDiggingProperties(const MaterialProperties *mp,
+		const ToolDiggingProperties *tp, float time_from_last_punch)
 {
-	assert(tp);
-	const MaterialProperties &mp = nodemgr->get(content).material;
-	if(mp.diggability == DIGGABLE_NOT)
+	if(mp->diggability == DIGGABLE_NOT)
 		return DiggingProperties(false, 0, 0);
-	if(mp.diggability == DIGGABLE_CONSTANT)
-		return DiggingProperties(true, mp.constant_time, 0);
+	if(mp->diggability == DIGGABLE_CONSTANT)
+		return DiggingProperties(true, mp->constant_time, 0);
 
 	float time = tp->basetime;
-	time += tp->dt_weight * mp.weight;
-	time += tp->dt_crackiness * mp.crackiness;
-	time += tp->dt_crumbliness * mp.crumbliness;
-	time += tp->dt_cuttability * mp.cuttability;
+	time += tp->dt_weight * mp->weight;
+	time += tp->dt_crackiness * mp->crackiness;
+	time += tp->dt_crumbliness * mp->crumbliness;
+	time += tp->dt_cuttability * mp->cuttability;
 	if(time < 0.2)
 		time = 0.2;
 
 	float durability = tp->basedurability;
-	durability += tp->dd_weight * mp.weight;
-	durability += tp->dd_crackiness * mp.crackiness;
-	durability += tp->dd_crumbliness * mp.crumbliness;
-	durability += tp->dd_cuttability * mp.cuttability;
+	durability += tp->dd_weight * mp->weight;
+	durability += tp->dd_crackiness * mp->crackiness;
+	durability += tp->dd_crumbliness * mp->crumbliness;
+	durability += tp->dd_cuttability * mp->cuttability;
 	if(durability < 1)
 		durability = 1;
+	
+	if(time_from_last_punch < tp->full_punch_interval){
+		float f = time_from_last_punch / tp->full_punch_interval;
+		time /= f;
+		durability /= f;
+	}
 
 	float wear = 1.0 / durability;
 	u16 wear_i = 65535.*wear;
 	return DiggingProperties(true, time, wear_i);
+}
+
+DiggingProperties getDiggingProperties(const MaterialProperties *mp,
+		const ToolDiggingProperties *tp)
+{
+	return getDiggingProperties(mp, tp, 1000000);
+}
+
+DiggingProperties getDiggingProperties(u16 content,
+		const ToolDiggingProperties *tp, INodeDefManager *nodemgr)
+{
+	const MaterialProperties &mp = nodemgr->get(content).material;
+	return getDiggingProperties(&mp, tp);
+}
+
+HittingProperties getHittingProperties(const MaterialProperties *mp,
+		const ToolDiggingProperties *tp, float time_from_last_punch)
+{
+	DiggingProperties digprop = getDiggingProperties(mp, tp,
+			time_from_last_punch);
+	
+	// If digging time would be 1 second, 2 hearts go in 1 second.
+	s16 hp = 2.0 * 2.0 / digprop.time + 0.5;
+	// Wear is the same as for digging a single node
+	s16 wear = (float)digprop.wear + 0.5;
+
+	return HittingProperties(hp, wear);
 }
 

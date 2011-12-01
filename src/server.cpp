@@ -1432,6 +1432,11 @@ void Server::AsyncRunStep()
 			}
 
 			/*
+				Handle player HPs
+			*/
+			HandlePlayerHP(player, 0);
+
+			/*
 				Send player inventories and HPs if necessary
 			*/
 			if(player->m_inventory_not_sent){
@@ -2230,8 +2235,8 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 		}
 
 		// Add PlayerSAO
-		PlayerSAO *sao = new PlayerSAO(m_env, player->getPosition(), player);
-		m_env->addActiveObject(sao);
+		player->m_removed = false;
+		m_env->addActiveObject(player);
 
 		/*
 			Answer with a TOCLIENT_INIT
@@ -2983,6 +2988,9 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 		
 		actionstream<<player->getName()<<" respawns at "
 				<<PP(player->getPosition()/BS)<<std::endl;
+		
+		srp->m_removed = false;
+		m_env->addActiveObject(srp);
 	}
 	else if(command == TOSERVER_INTERACT)
 	{
@@ -4523,6 +4531,11 @@ void Server::SendTextures(u16 peer_id)
 
 void Server::HandlePlayerHP(Player *player, s16 damage)
 {
+	ServerRemotePlayer *srp = static_cast<ServerRemotePlayer*>(player);
+
+	if(srp->m_respawn_active)
+		return;
+	
 	if(player->hp > damage)
 	{
 		player->hp -= damage;
@@ -4549,6 +4562,8 @@ void Server::HandlePlayerHP(Player *player, s16 damage)
 		if(client->net_proto_version >= 3)
 		{
 			SendDeathscreen(m_con, player->peer_id, false, v3f(0,0,0));
+			srp->m_removed = true;
+			srp->m_respawn_active = true;
 		}
 		else
 		{
@@ -4561,6 +4576,7 @@ void Server::RespawnPlayer(Player *player)
 {
 	player->hp = 20;
 	ServerRemotePlayer *srp = static_cast<ServerRemotePlayer*>(player);
+	srp->m_respawn_active = false;
 	bool repositioned = scriptapi_on_respawnplayer(m_lua, srp);
 	if(!repositioned){
 		v3f pos = findSpawnPos(m_env->getServerMap());
@@ -4983,16 +4999,9 @@ void Server::handlePeerChange(PeerChange &c)
 			}
 		}
 		
-		// Remove PlayerSAO
+		// Remove from environment
 		if(player != NULL)
-		{
-			PlayerSAO *sao = player->getSAO();
-			if(sao){
-				sao->setPlayer(NULL);
-				sao->m_removed = true;
-			}
-			player->setSAO(NULL);
-		}
+			player->m_removed = true;
 		
 		// Set player client disconnected
 		if(player != NULL)

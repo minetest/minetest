@@ -750,7 +750,8 @@ void ServerEnvironment::clearAllObjects()
 		scriptapi_rm_object_reference(m_lua, obj);
 
 		// Delete active object
-		delete obj;
+		if(obj->environmentDeletes())
+			delete obj;
 		// Id to be removed from m_active_objects
 		objects_to_remove.push_back(id);
 	}
@@ -1181,7 +1182,8 @@ bool ServerEnvironment::addActiveObjectAsStatic(ServerActiveObject *obj)
 		succeeded = false;
 	}
 
-	delete obj;
+	if(obj->environmentDeletes())
+		delete obj;
 
 	return succeeded;
 }
@@ -1296,7 +1298,8 @@ u16 ServerEnvironment::addActiveObjectRaw(ServerActiveObject *object,
 		{
 			errorstream<<"ServerEnvironment::addActiveObjectRaw(): "
 					<<"no free ids available"<<std::endl;
-			delete object;
+			if(object->environmentDeletes())
+				delete object;
 			return 0;
 		}
 		object->setId(new_id);
@@ -1309,7 +1312,8 @@ u16 ServerEnvironment::addActiveObjectRaw(ServerActiveObject *object,
 	{
 		errorstream<<"ServerEnvironment::addActiveObjectRaw(): "
 				<<"id is not free ("<<object->getId()<<")"<<std::endl;
-		delete object;
+		if(object->environmentDeletes())
+			delete object;
 		return 0;
 	}
 	/*infostream<<"ServerEnvironment::addActiveObjectRaw(): "
@@ -1411,7 +1415,8 @@ void ServerEnvironment::removeRemovedObjects()
 		scriptapi_rm_object_reference(m_lua, obj);
 
 		// Delete
-		delete obj;
+		if(obj->environmentDeletes())
+			delete obj;
 		// Id to be removed from m_active_objects
 		objects_to_remove.push_back(id);
 	}
@@ -1699,7 +1704,8 @@ void ServerEnvironment::deactivateFarObjects(bool force_delete)
 		scriptapi_rm_object_reference(m_lua, obj);
 
 		// Delete active object
-		delete obj;
+		if(obj->environmentDeletes())
+			delete obj;
 		// Id to be removed from m_active_objects
 		objects_to_remove.push_back(id);
 	}

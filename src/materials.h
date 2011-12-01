@@ -74,30 +74,44 @@ struct MaterialProperties
 
 struct DiggingProperties
 {
-	DiggingProperties():
-		diggable(false),
-		time(0.0),
-		wear(0)
-	{
-	}
-	DiggingProperties(bool a_diggable, float a_time, u16 a_wear):
-		diggable(a_diggable),
-		time(a_time),
-		wear(a_wear)
-	{
-	}
 	bool diggable;
 	// Digging time in seconds
 	float time;
 	// Caused wear
 	u16 wear;
+
+	DiggingProperties(bool a_diggable=false, float a_time=0, u16 a_wear=0):
+		diggable(a_diggable),
+		time(a_time),
+		wear(a_wear)
+	{}
 };
 
 struct ToolDiggingProperties;
 class INodeDefManager;
 
-DiggingProperties getDiggingProperties(u16 content, ToolDiggingProperties *tp,
-		INodeDefManager *nodemgr);
+DiggingProperties getDiggingProperties(const MaterialProperties *mp,
+		const ToolDiggingProperties *tp, float time_from_last_punch);
+
+DiggingProperties getDiggingProperties(const MaterialProperties *mp,
+		const ToolDiggingProperties *tp);
+
+DiggingProperties getDiggingProperties(u16 content,
+		const ToolDiggingProperties *tp, INodeDefManager *nodemgr);
+
+struct HittingProperties
+{
+	s16 hp;
+	s16 wear;
+
+	HittingProperties(s16 hp_=0, s16 wear_=0):
+		hp(hp_),
+		wear(wear_)
+	{}
+};
+
+HittingProperties getHittingProperties(const MaterialProperties *mp,
+		const ToolDiggingProperties *tp, float time_from_last_punch);
 
 #endif
 

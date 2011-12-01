@@ -201,32 +201,34 @@ public:
 	
 	virtual void setPosition(const v3f &position);
 	
-	void setSAO(PlayerSAO *sao);
-	PlayerSAO* getSAO();
-
+	// Returns a reference
+	virtual InventoryItem* getWieldedItem();
+	
 	/* ServerActiveObject interface */
 
 	u8 getType() const
 	{return ACTIVEOBJECT_TYPE_PLAYER;}
 	
-	virtual void setPos(v3f pos)
-	{
-		setPosition(pos);
-		// Movement caused by this command is always valid
-		m_last_good_position = pos;
-		m_last_good_position_age = 0;
-	}
-	virtual void moveTo(v3f pos, bool continuous)
-	{
-		setPosition(pos);
-		// Movement caused by this command is always valid
-		m_last_good_position = pos;
-		m_last_good_position_age = 0;
-	}
+	// Called after id has been set and has been inserted in environment
+	void addedToEnvironment();
+	// Called before removing from environment
+	void removingFromEnvironment();
 	
+	bool environmentDeletes() const
+	{ return false; }
+	bool isStaticAllowed() const
+	{ return false; }
+
+	void step(float dtime, bool send_recommended);
+	std::string getClientInitializationData();
+	std::string getStaticData();
+	void punch(ServerActiveObject *puncher, float time_from_last_punch);
+	void rightClick(ServerActiveObject *clicker);
+	void setPos(v3f pos);
+	void moveTo(v3f pos, bool continuous);
 	virtual std::string getDescription(){return getName();}
-	// Returns a reference
-	virtual InventoryItem* getWieldedItem();
+
+	virtual void getWieldDiggingProperties(ToolDiggingProperties *dst);
 	virtual void damageWieldedItem(u16 amount);
 	// If all fits, eats item and returns true. Otherwise returns false.
 	virtual bool addToInventory(InventoryItem *item);
@@ -241,109 +243,12 @@ public:
 	std::vector<InventoryItem*> m_additional_items;
 	bool m_inventory_not_sent;
 	bool m_hp_not_sent;
+	bool m_respawn_active;
 	
 private:
-
-	PlayerSAO *m_sao;
+	bool m_is_in_environment;
+	bool m_position_not_sent;
 };
-
-#ifndef SERVER
-
-#if 0
-/*
-	All the other players on the client are these
-*/
-
-class RemotePlayer : public Player, public scene::ISceneNode
-{
-public:
-	RemotePlayer(
-		IGameDef *gamedef,
-		scene::ISceneNode* parent=NULL,
-		IrrlichtDevice *device=NULL,
-		s32 id=0);
-	
-	virtual ~RemotePlayer();
-
-	/*
-		ISceneNode methods
-	*/
-
-	virtual void OnRegisterSceneNode()
-	{
-		if (IsVisible)
-			SceneManager->registerNodeForRendering(this);
-
-		ISceneNode::OnRegisterSceneNode();
-	}
-
-	virtual void render()
-	{
-		// Do nothing
-	}
-	
-	virtual const core::aabbox3d<f32>& getBoundingBox() const
-	{
-		return m_box;
-	}
-
-	void setPosition(const v3f &position)
-	{
-		m_oldpos = m_showpos;
-		
-		if(m_pos_animation_time < 0.001 || m_pos_animation_time > 1.0)
-			m_pos_animation_time = m_pos_animation_time_counter;
-		else
-			m_pos_animation_time = m_pos_animation_time * 0.9
-					+ m_pos_animation_time_counter * 0.1;
-		m_pos_animation_time_counter = 0;
-		m_pos_animation_counter = 0;
-		
-		Player::setPosition(position);
-		//ISceneNode::setPosition(position);
-	}
-
-	virtual void setYaw(f32 yaw)
-	{
-		Player::setYaw(yaw);
-		ISceneNode::setRotation(v3f(0, -yaw, 0));
-	}
-
-	bool isLocal() const
-	{
-		return false;
-	}
-
-	void updateName(const char *name);
-
-	virtual void updateLight(u8 light_at_pos)
-	{
-		Player::updateLight(light_at_pos);
-
-		if(m_node == NULL)
-			return;
-
-		u8 li = decode_light(light_at_pos);
-		video::SColor color(255,li,li,li);
-		setMeshVerticesColor(m_node->getMesh(), color);
-	}
-	
-	void move(f32 dtime, Map &map, f32 pos_max_d);
-
-private:
-	scene::IMeshSceneNode *m_node;
-	scene::ITextSceneNode* m_text;
-	core::aabbox3d<f32> m_box;
-
-	v3f m_oldpos;
-	f32 m_pos_animation_counter;
-	f32 m_pos_animation_time;
-	f32 m_pos_animation_time_counter;
-	v3f m_showpos;
-};
-#endif
-
-#endif // !SERVER
 
 #ifndef SERVER
 struct PlayerControl

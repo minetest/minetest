@@ -2126,6 +2126,8 @@ public:
 		if(player && player->isLocal())
 			m_is_local_player = true;
 		
+		pos_translator.init(m_position);
+
 		updateNodePos();
 	}
 

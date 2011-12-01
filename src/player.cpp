@@ -31,6 +31,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "environment.h"
 #include "gamedef.h"
 #include "content_sao.h"
+#include "tooldef.h"
+#include "materials.h"
 
 Player::Player(IGameDef *gamedef):
 	touching_ground(false),
@@ -188,7 +190,9 @@ ServerRemotePlayer::ServerRemotePlayer(ServerEnvironment *env):
 	m_additional_items(),
 	m_inventory_not_sent(false),
 	m_hp_not_sent(false),
-	m_sao(NULL)
+	m_respawn_active(false),
+	m_is_in_environment(false),
+	m_position_not_sent(false)
 {
 }
 ServerRemotePlayer::ServerRemotePlayer(ServerEnvironment *env, v3f pos_, u16 peer_id_,
@@ -197,7 +201,8 @@ ServerRemotePlayer::ServerRemotePlayer(ServerEnvironment *env, v3f pos_, u16 pee
 	ServerActiveObject(env, pos_),
 	m_inventory_not_sent(false),
 	m_hp_not_sent(false),
-	m_sao(NULL)
+	m_is_in_environment(false),
+	m_position_not_sent(false)
 {
 	setPosition(pos_);
 	peer_id = peer_id_;
@@ -206,31 +211,14 @@ ServerRemotePlayer::ServerRemotePlayer(ServerEnvironment *env, v3f pos_, u16 pee
 ServerRemotePlayer::~ServerRemotePlayer()
 {
 	clearAddToInventoryLater();
-	if(m_sao)
-		m_sao->setPlayer(NULL);
 }
 
 void ServerRemotePlayer::setPosition(const v3f &position)
 {
 	Player::setPosition(position);
 	ServerActiveObject::setBasePosition(position);
-	if(m_sao)
-		m_sao->positionUpdated();
+	m_position_not_sent = true;
 }
-
-void ServerRemotePlayer::setSAO(PlayerSAO *sao)
-{
-	infostream<<"ServerRemotePlayer \""<<getName()
-			<<"\" got sao="<<sao<<std::endl;
-	m_sao = sao;
-}
-
-PlayerSAO* ServerRemotePlayer::getSAO()
-{
-	return m_sao;
-}
-
-/* ServerActiveObject interface */
 
 InventoryItem* ServerRemotePlayer::getWieldedItem()
 {
@@ -239,6 +227,120 @@ InventoryItem* ServerRemotePlayer::getWieldedItem()
 		return list->getItem(m_selected_item);
 	return NULL;
 }
+
+/* ServerActiveObject interface */
+
+void ServerRemotePlayer::addedToEnvironment()
+{
+	assert(!m_is_in_environment);
+	m_is_in_environment = true;
+}
+
+void ServerRemotePlayer::removingFromEnvironment()
+{
+	assert(m_is_in_environment);
+	m_is_in_environment = false;
+}
+
+void ServerRemotePlayer::step(float dtime, bool send_recommended)
+{
+	if(send_recommended == false)
+		return;
+	
+	if(m_position_not_sent)
+	{
+		m_position_not_sent = false;
+
+		std::ostringstream os(std::ios::binary);
+		// command (0 = update position)
+		writeU8(os, 0);
+		// pos
+		writeV3F1000(os, getPosition());
+		// yaw
+		writeF1000(os, getYaw());
+		// create message and add to list
+		ActiveObjectMessage aom(getId(), false, os.str());
+		m_messages_out.push_back(aom);
+	}
+}
+
+std::string ServerRemotePlayer::getClientInitializationData()
+{
+	std::ostringstream os(std::ios::binary);
+	// version
+	writeU8(os, 0);
+	// name
+	os<<serializeString(getName());
+	// pos
+	writeV3F1000(os, getPosition());
+	// yaw
+	writeF1000(os, getYaw());
+	return os.str();
+}
+
+std::string ServerRemotePlayer::getStaticData()
+{
+	assert(0);
+	return "";
+}
+
+void ServerRemotePlayer::punch(ServerActiveObject *puncher,
+		float time_from_last_punch)
+{
+	if(!puncher)
+		return;
+	
+	// "Material" properties of a player
+	MaterialProperties mp;
+	mp.diggability = DIGGABLE_NORMAL;
+	mp.crackiness = -1.0;
+	mp.cuttability = 1.0;
+
+	ToolDiggingProperties tp;
+	puncher->getWieldDiggingProperties(&tp);
+
+	HittingProperties hitprop = getHittingProperties(&mp, &tp,
+			time_from_last_punch);
+	
+	infostream<<"1. getHP()="<<getHP()<<std::endl;
+	setHP(getHP() - hitprop.hp);
+	infostream<<"2. getHP()="<<getHP()<<std::endl;
+	puncher->damageWieldedItem(hitprop.wear);
+}
+
+void ServerRemotePlayer::rightClick(ServerActiveObject *clicker)
+{
+}
+
+void ServerRemotePlayer::setPos(v3f pos)
+{
+	setPosition(pos);
+	// Movement caused by this command is always valid
+	m_last_good_position = pos;
+	m_last_good_position_age = 0;
+}
+void ServerRemotePlayer::moveTo(v3f pos, bool continuous)
+{
+	setPosition(pos);
+	// Movement caused by this command is always valid
+	m_last_good_position = pos;
+	m_last_good_position_age = 0;
+}
+
+void ServerRemotePlayer::getWieldDiggingProperties(ToolDiggingProperties *dst)
+{
+	IGameDef *gamedef = m_env->getGameDef();
+	IToolDefManager *tdef = gamedef->tdef();
+
+	InventoryItem *item = getWieldedItem();
+	if(item == NULL || std::string(item->getName()) != "ToolItem"){
+		*dst = ToolDiggingProperties();
+		return;
+	}
+	ToolItem *titem = (ToolItem*)item;
+	*dst = tdef->getDiggingProperties(titem->getToolName());
+}
+
 void ServerRemotePlayer::damageWieldedItem(u16 amount)
 {
 	infostream<<"Damaging "<<getName()<<"'s wielded item for amount="
@@ -332,13 +434,12 @@ void ServerRemotePlayer::setHP(s16 hp_)
 {
 	s16 oldhp = hp;
 
-	hp = hp_;
-
 	// FIXME: don't hardcode maximum HP, make configurable per object
-	if(hp < 0)
-		hp = 0;
-	else if(hp > 20)
-		hp = 20;
+	if(hp_ < 0)
+		hp_ = 0;
+	else if(hp_ > 20)
+		hp_ = 20;
+	hp = hp_;
 
 	if(hp != oldhp)
 		m_hp_not_sent = true;
@@ -347,129 +448,6 @@ s16 ServerRemotePlayer::getHP()
 {
 	return hp;
 }
-
-/*
-	RemotePlayer
-*/
-
-#ifndef SERVER
-
-#if 0
-RemotePlayer::RemotePlayer(
-		IGameDef *gamedef,
-		scene::ISceneNode* parent,
-		IrrlichtDevice *device,
-		s32 id):
-	Player(gamedef),
-	scene::ISceneNode(parent, (device==NULL)?NULL:device->getSceneManager(), id),
-	m_text(NULL)
-{
-	m_box = core::aabbox3d<f32>(-BS/2,0,-BS/2,BS/2,BS*2,BS/2);
-
-	if(parent != NULL && device != NULL)
-	{
-		// ISceneNode stores a member called SceneManager
-		scene::ISceneManager* mgr = SceneManager;
-		video::IVideoDriver* driver = mgr->getVideoDriver();
-		gui::IGUIEnvironment* gui = device->getGUIEnvironment();
-
-		// Add a text node for showing the name
-		wchar_t wname[1] = {0};
-		m_text = mgr->addTextSceneNode(gui->getBuiltInFont(),
-				wname, video::SColor(255,255,255,255), this);
-		m_text->setPosition(v3f(0, (f32)BS*2.1, 0));
-
-		// Attach a simple mesh to the player for showing an image
-		scene::SMesh *mesh = new scene::SMesh();
-		{ // Front
-		scene::IMeshBuffer *buf = new scene::SMeshBuffer();
-		video::SColor c(255,255,255,255);
-		video::S3DVertex vertices[4] =
-		{
-			video::S3DVertex(-BS/2,0,0, 0,0,0, c, 0,1),
-			video::S3DVertex(BS/2,0,0, 0,0,0, c, 1,1),
-			video::S3DVertex(BS/2,BS*2,0, 0,0,0, c, 1,0),
-			video::S3DVertex(-BS/2,BS*2,0, 0,0,0, c, 0,0),
-		};
-		u16 indices[] = {0,1,2,2,3,0};
-		buf->append(vertices, 4, indices, 6);
-		// Set material
-		buf->getMaterial().setFlag(video::EMF_LIGHTING, false);
-		//buf->getMaterial().setFlag(video::EMF_BACK_FACE_CULLING, false);
-		buf->getMaterial().setTexture(0, driver->getTexture(getTexturePath("player.png").c_str()));
-		buf->getMaterial().setFlag(video::EMF_BILINEAR_FILTER, false);
-		buf->getMaterial().setFlag(video::EMF_FOG_ENABLE, true);
-		//buf->getMaterial().MaterialType = video::EMT_TRANSPARENT_ALPHA_CHANNEL;
-		buf->getMaterial().MaterialType = video::EMT_TRANSPARENT_ALPHA_CHANNEL_REF;
-		// Add to mesh
-		mesh->addMeshBuffer(buf);
-		buf->drop();
-		}
-		{ // Back
-		scene::IMeshBuffer *buf = new scene::SMeshBuffer();
-		video::SColor c(255,255,255,255);
-		video::S3DVertex vertices[4] =
-		{
-			video::S3DVertex(BS/2,0,0, 0,0,0, c, 1,1),
-			video::S3DVertex(-BS/2,0,0, 0,0,0, c, 0,1),
-			video::S3DVertex(-BS/2,BS*2,0, 0,0,0, c, 0,0),
-			video::S3DVertex(BS/2,BS*2,0, 0,0,0, c, 1,0),
-		};
-		u16 indices[] = {0,1,2,2,3,0};
-		buf->append(vertices, 4, indices, 6);
-		// Set material
-		buf->getMaterial().setFlag(video::EMF_LIGHTING, false);
-		//buf->getMaterial().setFlag(video::EMF_BACK_FACE_CULLING, false);
-		buf->getMaterial().setTexture(0, driver->getTexture(getTexturePath("player_back.png").c_str()));
-		buf->getMaterial().setFlag(video::EMF_BILINEAR_FILTER, false);
-		buf->getMaterial().setFlag(video::EMF_FOG_ENABLE, true);
-		buf->getMaterial().MaterialType = video::EMT_TRANSPARENT_ALPHA_CHANNEL_REF;
-		// Add to mesh
-		mesh->addMeshBuffer(buf);
-		buf->drop();
-		}
-		m_node = mgr->addMeshSceneNode(mesh, this);
-		mesh->drop();
-		m_node->setPosition(v3f(0,0,0));
-	}
-}
-
-RemotePlayer::~RemotePlayer()
-{
-	if(SceneManager != NULL)
-		ISceneNode::remove();
-}
-
-void RemotePlayer::updateName(const char *name)
-{
-	Player::updateName(name);
-	if(m_text != NULL)
-	{
-		wchar_t wname[PLAYERNAME_SIZE];
-		mbstowcs(wname, m_name, strlen(m_name)+1);
-		m_text->setText(wname);
-	}
-}
-
-void RemotePlayer::move(f32 dtime, Map &map, f32 pos_max_d)
-{
-	m_pos_animation_time_counter += dtime;
-	m_pos_animation_counter += dtime;
-	v3f movevector = m_position - m_oldpos;
-	f32 moveratio;
-	if(m_pos_animation_time < 0.001)
-		moveratio = 1.0;
-	else
-		moveratio = m_pos_animation_counter / m_pos_animation_time;
-	if(moveratio > 1.5)
-		moveratio = 1.5;
-	m_showpos = m_oldpos + movevector * moveratio;
-	
-	ISceneNode::setPosition(m_showpos);
-}
-#endif
-
-#endif
 
 #ifndef SERVER
 /*

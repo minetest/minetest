@@ -24,6 +24,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "main.h" // For g_profiler
 #include "profiler.h"
 #include "serialization.h" // For compressZlib
+#include "materials.h" // For MaterialProperties
+#include "tooldef.h" // ToolDiggingProperties
 
 core::map<u16, ServerActiveObject::Factory> ServerActiveObject::m_types;
 
@@ -241,7 +243,7 @@ InventoryItem * ItemSAO::createInventoryItem()
 	}
 }
 
-void ItemSAO::punch(ServerActiveObject *puncher)
+void ItemSAO::punch(ServerActiveObject *puncher, float time_from_last_punch)
 {
 	InventoryItem *item = createInventoryItem();
 	bool fits = puncher->addToInventory(item);
@@ -432,7 +434,7 @@ std::string RatSAO::getStaticData()
 	return os.str();
 }
 
-void RatSAO::punch(ServerActiveObject *puncher)
+void RatSAO::punch(ServerActiveObject *puncher, float time_from_last_punch)
 {
 	std::istringstream is("CraftItem rat 1", std::ios_base::binary);
 	IGameDef *gamedef = m_env->getGameDef();
@@ -687,36 +689,28 @@ std::string Oerkki1SAO::getStaticData()
 	return os.str();
 }
 
-void Oerkki1SAO::punch(ServerActiveObject *puncher)
+void Oerkki1SAO::punch(ServerActiveObject *puncher, float time_from_last_punch)
 {
+	if(!puncher)
+		return;
+	
 	v3f dir = (getBasePosition() - puncher->getBasePosition()).normalize();
-
-	std::string toolname = "";
-	InventoryItem *item = puncher->getWieldedItem();
-	if(item && (std::string)item->getName() == "ToolItem"){
-		ToolItem *titem = (ToolItem*)item;
-		toolname = titem->getToolName();
-	}
-
 	m_speed_f += dir*12*BS;
 
-	u16 amount = 5;
-	/* See tool names in inventory.h */
-	if(toolname == "WSword")
-		amount = 10;
-	if(toolname == "STSword")
-		amount = 12;
-	if(toolname == "SteelSword")
-		amount = 16;
-	if(toolname == "STAxe")
-		amount = 7;
-	if(toolname == "SteelAxe")
-		amount = 9;
-	if(toolname == "SteelPick")
-		amount = 7;
-	doDamage(amount);
-	
-	puncher->damageWieldedItem(65536/100);
+	// "Material" properties of an oerkki
+	MaterialProperties mp;
+	mp.diggability = DIGGABLE_NORMAL;
+	mp.crackiness = -1.0;
+	mp.cuttability = 1.0;
+
+	ToolDiggingProperties tp;
+	puncher->getWieldDiggingProperties(&tp);
+
+	HittingProperties hitprop = getHittingProperties(&mp, &tp,
+			time_from_last_punch);
+
+	doDamage(hitprop.hp);
+	puncher->damageWieldedItem(hitprop.wear);
 }
 
 void Oerkki1SAO::doDamage(u16 d)
@@ -1365,25 +1359,20 @@ void MobV2SAO::step(float dtime, bool send_recommended)
 	}
 }
 
-void MobV2SAO::punch(ServerActiveObject *puncher)
+void MobV2SAO::punch(ServerActiveObject *puncher, float time_from_last_punch)
 {
+	if(!puncher)
+		return;
+	
 	v3f dir = (getBasePosition() - puncher->getBasePosition()).normalize();
 
-	std::string toolname = "";
-	InventoryItem *item = puncher->getWieldedItem();
-	if(item && (std::string)item->getName() == "ToolItem"){
-		ToolItem *titem = (ToolItem*)item;
-		toolname = titem->getToolName();
-	}
-	
 	// A quick hack; SAO description is player name for player
 	std::string playername = puncher->getDescription();
 
 	Map *map = &m_env->getMap();
 	
 	actionstream<<playername<<" punches mob id="<<m_id
-			<<" with a \""<<toolname<<"\" at "
-			<<PP(m_base_position/BS)<<std::endl;
+			<<" at "<<PP(m_base_position/BS)<<std::endl;
 
 	m_disturb_timer = 0;
 	m_disturbing_player = playername;
@@ -1405,23 +1394,21 @@ void MobV2SAO::punch(ServerActiveObject *puncher)
 	}
 	sendPosition();
 	
-	u16 amount = 2;
-	/* See tool names in inventory.h */
-	if(toolname == "WSword")
-		amount = 4;
-	if(toolname == "STSword")
-		amount = 6;
-	if(toolname == "SteelSword")
-		amount = 8;
-	if(toolname == "STAxe")
-		amount = 3;
-	if(toolname == "SteelAxe")
-		amount = 4;
-	if(toolname == "SteelPick")
-		amount = 3;
-	doDamage(amount);
-	
-	puncher->damageWieldedItem(65536/100);
+
+	// "Material" properties of the MobV2
+	MaterialProperties mp;
+	mp.diggability = DIGGABLE_NORMAL;
+	mp.crackiness = -1.0;
+	mp.cuttability = 1.0;
+
+	ToolDiggingProperties tp;
+	puncher->getWieldDiggingProperties(&tp);
+
+	HittingProperties hitprop = getHittingProperties(&mp, &tp,
+			time_from_last_punch);
+
+	doDamage(hitprop.hp);
+	puncher->damageWieldedItem(hitprop.wear);
 }
 
 bool MobV2SAO::isPeaceful()
@@ -1686,7 +1673,7 @@ InventoryItem* LuaEntitySAO::createPickedUpItem()
 	return item;
 }
 
-void LuaEntitySAO::punch(ServerActiveObject *puncher)
+void LuaEntitySAO::punch(ServerActiveObject *puncher, float time_from_last_punch)
 {
 	if(!m_registered)
 		return;
@@ -1797,98 +1784,5 @@ void LuaEntitySAO::sendPosition(bool do_interpolate, bool is_movement_end)
 	// create message and add to list
 	ActiveObjectMessage aom(getId(), false, os.str());
 	m_messages_out.push_back(aom);
-}
-
-/*
-	PlayerSAO
-*/
-
-// Prototype
-PlayerSAO proto_PlayerSAO(NULL, v3f(0,0,0), NULL);
-
-PlayerSAO::PlayerSAO(ServerEnvironment *env, v3f pos,
-		ServerRemotePlayer *player):
-	ServerActiveObject(env, pos),
-	m_player(player),
-	m_position_updated(true)
-{
-	if(m_player)
-		m_player->setSAO(this);
-}
-
-PlayerSAO::~PlayerSAO()
-{
-	if(m_player)
-		m_player->setSAO(NULL);
-}
-
-void PlayerSAO::step(float dtime, bool send_recommended)
-{
-	if(!m_player)
-		return;
-	
-	if(send_recommended == false)
-		return;
-	
-	if(m_position_updated)
-	{
-		m_position_updated = false;
-
-		std::ostringstream os(std::ios::binary);
-		// command (0 = update position)
-		writeU8(os, 0);
-		// pos
-		writeV3F1000(os, m_player->getPosition());
-		// yaw
-		writeF1000(os, m_player->getYaw());
-		// create message and add to list
-		ActiveObjectMessage aom(getId(), false, os.str());
-		m_messages_out.push_back(aom);
-	}
-}
-
-std::string PlayerSAO::getClientInitializationData()
-{
-	if(!m_player)
-		return "";
-	
-	std::ostringstream os(std::ios::binary);
-	// version
-	writeU8(os, 0);
-	// name
-	os<<serializeString(m_player->getName());
-	// pos
-	writeV3F1000(os, m_player->getPosition());
-	// yaw
-	writeF1000(os, m_player->getYaw());
-	return os.str();
-}
-
-std::string PlayerSAO::getStaticData()
-{
-	assert(0);
-	return "";
-}
-
-void PlayerSAO::punch(ServerActiveObject *puncher)
-{
-	infostream<<"TODO: PlayerSAO::punch()"<<std::endl;
-}
-	
-void PlayerSAO::setPlayer(ServerRemotePlayer *player)
-{
-	infostream<<"PlayerSAO id="<<getId()<<" got player \""
-			<<(player?player->getName():"(NULL)")<<"\""<<std::endl;
-	m_player = player;
-}
-
-ServerRemotePlayer* PlayerSAO::getPlayer()
-{
-	return m_player;
-}
-
-void PlayerSAO::positionUpdated()
-{
-	m_position_updated = true;
 }
 

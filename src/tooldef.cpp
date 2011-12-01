@@ -23,9 +23,10 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <sstream>
 #include "utility.h"
 
-ToolDiggingProperties::ToolDiggingProperties(
+ToolDiggingProperties::ToolDiggingProperties(float full_punch_interval_,
 		float a, float b, float c, float d, float e,
 		float f, float g, float h, float i, float j):
+	full_punch_interval(full_punch_interval_),
 	basetime(a),
 	dt_weight(b),
 	dt_crackiness(c),
@@ -60,6 +61,7 @@ void ToolDefinition::serialize(std::ostream &os)
 	writeF1000(os, properties.dd_crackiness);
 	writeF1000(os, properties.dd_crumbliness);
 	writeF1000(os, properties.dd_cuttability);
+	writeF1000(os, properties.full_punch_interval);
 }
 
 void ToolDefinition::deSerialize(std::istream &is)
@@ -78,6 +80,9 @@ void ToolDefinition::deSerialize(std::istream &is)
 	properties.dd_crackiness = readF1000(is);
 	properties.dd_crumbliness = readF1000(is);
 	properties.dd_cuttability = readF1000(is);
+	try{
+		properties.full_punch_interval = readF1000(is);
+	}catch(SerializationError &e){} // Temporary for 0.4.dev
 }
 
 class CToolDefManager: public IWritableToolDefManager
