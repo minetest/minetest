@@ -144,8 +144,8 @@
 #time_send_interval = 20
 # Length of day/night cycle. 72=20min, 360=4min, 1=24hour
 #time_speed = 72
-#server_unload_unused_data_timeout = 60
-#server_map_save_interval = 60
+#server_unload_unused_data_timeout = 29
+#server_map_save_interval = 5.3
 #full_block_send_enable_min_time_from_building = 2.0
 # Set to true to enable experimental features or stuff that is tested
 # (varies from version to version, usually not useful at all)
