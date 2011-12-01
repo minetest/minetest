@@ -1519,7 +1519,12 @@ void Client::ProcessData(u8 *data, u32 datasize, u16 sender_peer_id)
 		std::istringstream is(datastring, std::ios_base::binary);
 
 		// Stop threads while updating content definitions
-		m_mesh_update_thread.stop();
+		m_mesh_update_thread.setRun(false);
+		// Process the remaining TextureSource queue to let MeshUpdateThread
+		// get it's remaining textures and thus let it stop
+		while(m_mesh_update_thread.IsRunning()){
+			m_tsrc->processQueue();
+		}
 		
 		/*
 			u16 command
@@ -1595,8 +1600,13 @@ void Client::ProcessData(u8 *data, u32 datasize, u16 sender_peer_id)
 		m_tooldef_received = true;
 
 		// Stop threads while updating content definitions
-		m_mesh_update_thread.stop();
-
+		m_mesh_update_thread.setRun(false);
+		// Process the remaining TextureSource queue to let MeshUpdateThread
+		// get it's remaining textures and thus let it stop
+		while(m_mesh_update_thread.IsRunning()){
+			m_tsrc->processQueue();
+		}
+		
 		std::istringstream tmp_is(deSerializeLongString(is), std::ios::binary);
 		m_tooldef->deSerialize(tmp_is);
 		
@@ -1644,8 +1654,13 @@ void Client::ProcessData(u8 *data, u32 datasize, u16 sender_peer_id)
 		m_craftitemdef_received = true;
 
 		// Stop threads while updating content definitions
-		m_mesh_update_thread.stop();
-
+		m_mesh_update_thread.setRun(false);
+		// Process the remaining TextureSource queue to let MeshUpdateThread
+		// get it's remaining textures and thus let it stop
+		while(m_mesh_update_thread.IsRunning()){
+			m_tsrc->processQueue();
+		}
+		
 		std::istringstream tmp_is(deSerializeLongString(is), std::ios::binary);
 		m_craftitemdef->deSerialize(tmp_is);
 		
