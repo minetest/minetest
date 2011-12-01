@@ -265,9 +265,17 @@ void GUIInventoryMenu::drawList(const ListDrawSpec &s, ITextureSource *tsrc)
 							rect.LowerRightCorner + v2s32(1,1)*border),
 					&AbsoluteClippingRect);
 		}
-
-		video::SColor bgcolor(255,128,128,128);
-		driver->draw2DRectangle(bgcolor, rect, &AbsoluteClippingRect);
+		
+		if(rect.isPointInside(m_pointer) && m_selected_item)
+		{
+		    video::SColor bgcolor(255,192,192,192);
+		    driver->draw2DRectangle(bgcolor, rect, &AbsoluteClippingRect);
+		}
+		else
+		{
+		    video::SColor bgcolor(255,128,128,128);
+		    driver->draw2DRectangle(bgcolor, rect, &AbsoluteClippingRect);
+		}
 
 		if(item)
 		{
@@ -319,8 +327,10 @@ bool GUIInventoryMenu::OnEvent(const SEvent& event)
 	if(event.EventType==EET_MOUSE_INPUT_EVENT)
 	{
 		char amount = -1;
-		
-		if(event.MouseInput.Event == EMIE_LMOUSE_PRESSED_DOWN)
+
+		if(event.MouseInput.Event==EMIE_MOUSE_MOVED)
+		    m_pointer = v2s32(event.MouseInput.X, event.MouseInput.Y);
+		else if(event.MouseInput.Event == EMIE_LMOUSE_PRESSED_DOWN)
 			amount = 0;
 		else if(event.MouseInput.Event == EMIE_RMOUSE_PRESSED_DOWN)
 			amount = 1;

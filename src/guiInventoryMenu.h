@@ -159,6 +159,7 @@ protected:
 	core::array<ListDrawSpec> m_draw_spec;
 
 	ItemSpec *m_selected_item;
+	v2s32 m_pointer;
 };
 
 #endif
