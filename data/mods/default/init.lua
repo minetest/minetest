@@ -707,6 +707,7 @@ minetest.register_node("sand", {
 	inventory_image = inventorycube("sand.png"),
 	is_ground_content = true,
 	material = digprop_dirtlike(1.0),
+	cookresult_item = 'NodeItem "glass" 1',
 })
 
 minetest.register_node("gravel", {
