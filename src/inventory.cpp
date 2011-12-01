@@ -36,6 +36,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "gamedef.h"
 #include "scriptapi.h"
 #include "strfnd.h"
+#include "nameidmapping.h" // For loading legacy MaterialItems
 
 /*
 	InventoryItem
@@ -250,8 +251,10 @@ MaterialItem::MaterialItem(IGameDef *gamedef, std::string nodename, u16 count):
 MaterialItem::MaterialItem(IGameDef *gamedef, content_t content, u16 count):
 	InventoryItem(gamedef, count)
 {
-	INodeDefManager *ndef = m_gamedef->ndef();
-	std::string nodename = ndef->get(content).name;
+	NameIdMapping legacy_nimap;
+	content_mapnode_get_name_id_mapping(&legacy_nimap);
+	std::string nodename;
+	legacy_nimap.getName(content, nodename);
 	if(nodename == "")
 		nodename = "unknown_block";
 	m_nodename = nodename;
