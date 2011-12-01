@@ -532,8 +532,8 @@ public:
 					f->drawtype = NDT_NORMAL;
 					f->solidness = 1;
 					for(u32 i=0; i<6; i++){
-						f->tname_tiles[i] = f->tname_tiles[i]
-								+ std::string("^[noalpha");
+						f->setTexture(i, f->tname_tiles[i]
+								+ std::string("^[noalpha"));
 					}
 				}
 				break;
