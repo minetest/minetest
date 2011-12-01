@@ -328,6 +328,9 @@ bool GUIInventoryMenu::OnEvent(const SEvent& event)
 	{
 		char amount = -1;
 
+		v2s32 p(event.MouseInput.X, event.MouseInput.Y);
+		ItemSpec s = getItemAtPos(p);
+
 		if(event.MouseInput.Event==EMIE_MOUSE_MOVED)
 		    m_pointer = v2s32(event.MouseInput.X, event.MouseInput.Y);
 		else if(event.MouseInput.Event == EMIE_LMOUSE_PRESSED_DOWN)
@@ -336,15 +339,19 @@ bool GUIInventoryMenu::OnEvent(const SEvent& event)
 			amount = 1;
 		else if(event.MouseInput.Event == EMIE_MMOUSE_PRESSED_DOWN)
 			amount = 10;
+		else if(event.MouseInput.Event == EMIE_LMOUSE_LEFT_UP &&
+				m_selected_item &&
+				(m_selected_item->listname != s.listname
+					|| m_selected_item->i != s.i))
+			amount = 0;
+			
 		
 		if(amount >= 0)
 		{
-			v2s32 p(event.MouseInput.X, event.MouseInput.Y);
-			//infostream<<"Mouse down at p=("<<p.X<<","<<p.Y<<")"<<std::endl;
-			ItemSpec s = getItemAtPos(p);
+			//infostream<<"Mouse action at p=("<<p.X<<","<<p.Y<<")"<<std::endl;
 			if(s.isValid())
 			{
-				infostream<<"Mouse down on "<<s.inventoryname
+				infostream<<"Mouse action on "<<s.inventoryname
 						<<"/"<<s.listname<<" "<<s.i<<std::endl;
 				if(m_selected_item)
 				{
