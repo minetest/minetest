@@ -332,7 +332,7 @@ public:
 	// Gets a separate texture
 	video::ITexture* getTextureRaw(const std::string &name)
 	{
-		AtlasPointer ap = getTexture(name);
+		AtlasPointer ap = getTexture(name + "^[forcesingle");
 		return ap.atlas;
 	}
 
@@ -1170,6 +1170,15 @@ bool generate_image(std::string part_of_name, video::IImage *& baseimg,
 		*/
 		if(part_of_name == "[forcesingle")
 		{
+			// If base image is NULL, create a random color
+			if(baseimg == NULL)
+			{
+				core::dimension2d<u32> dim(1,1);
+				baseimg = driver->createImage(video::ECF_A8R8G8B8, dim);
+				assert(baseimg);
+				baseimg->setPixel(0,0, video::SColor(255,myrand()%256,
+						myrand()%256,myrand()%256));
+			}
 		}
 		/*
 			[crackN
