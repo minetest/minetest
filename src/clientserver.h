@@ -35,9 +35,11 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 		Add TOSERVER_INTERACT
 		Obsolete TOSERVER_CLICK_ACTIVEOBJECT
 		Obsolete TOSERVER_GROUND_ACTION
+	PROTOCOL_VERSION 5:
+		Make players to be handled mostly as ActiveObjects
 */
 
-#define PROTOCOL_VERSION 4
+#define PROTOCOL_VERSION 5
 
 #define PROTOCOL_ID 0x4f457403
 
@@ -76,7 +78,7 @@ enum ToClientCommand
 		[N+2+12+12+4] s32 yaw*100
 	*/
 
-	TOCLIENT_PLAYERINFO = 0x24,
+	TOCLIENT_PLAYERINFO = 0x24, // Obsolete
 	/*
 		[0] u16 command
 		// Followed by an arbitary number of these:
@@ -100,7 +102,7 @@ enum ToClientCommand
 		[2] serialized inventory
 	*/
 	
-	TOCLIENT_OBJECTDATA = 0x28,
+	TOCLIENT_OBJECTDATA = 0x28, // Obsolete
 	/*
 		Sent as unreliable.
 
