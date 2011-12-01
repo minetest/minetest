@@ -386,7 +386,7 @@ bool GUIInventoryMenu::OnEvent(const SEvent& event)
 						//ispec.actions->push_back(a);
 						m_invmgr->inventoryAction(a);
 						
-						if(list_from->getItem(m_selected_item->i)->getCount()==1)
+						if(list_from->getItem(m_selected_item->i)->getCount()<=amount)
 							source_empties = true;
 					}
 					// Remove selection if target was left-clicked or source
