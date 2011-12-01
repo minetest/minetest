@@ -530,7 +530,7 @@ public:
 					f->visual_solidness = 1;
 				} else {
 					f->drawtype = NDT_NORMAL;
-					f->solidness = 1;
+					f->solidness = 2;
 					for(u32 i=0; i<6; i++){
 						f->setTexture(i, f->tname_tiles[i]
 								+ std::string("^[noalpha"));
