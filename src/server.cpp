@@ -2015,7 +2015,11 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 				SendAccessDenied(m_con, peer_id, std::wstring(
 						L"Your client's version is not supported.\n"
 						L"Server version is ")
-						+ narrow_to_wide(VERSION_STRING) + L"."
+						+ narrow_to_wide(VERSION_STRING) + L",\n"
+						+ L"server's PROTOCOL_VERSION is "
+						+ narrow_to_wide(itos(PROTOCOL_VERSION))
+						+ L", client's PROTOCOL_VERSION is "
+						+ narrow_to_wide(itos(net_proto_version))
 				);
 				return;
 			}
