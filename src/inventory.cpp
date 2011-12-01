@@ -212,7 +212,7 @@ bool InventoryItem::dropOrPlace(ServerEnvironment *env,
 	s16 dropcount = getDropCount();
 	if(count < 0 || count > dropcount)
 		count = dropcount;
-	if(count < 0 || count > getCount());
+	if(count < 0 || count > getCount())
 		count = getCount();
 	if(count > 0)
 	{
