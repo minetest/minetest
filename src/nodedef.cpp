@@ -216,7 +216,8 @@ void ContentFeatures::deSerialize(std::istream &is, IGameDef *gamedef)
 	if(readU8(is) != 6)
 		throw SerializationError("unsupported tile count");
 	for(u32 i=0; i<6; i++)
-		tname_tiles[i] = deSerializeString(is);
+		setTexture(i, deSerializeString(is));
+		//tname_tiles[i] = deSerializeString(is);
 	tname_inventory = deSerializeString(is);
 	if(readU8(is) != CF_SPECIAL_COUNT)
 		throw SerializationError("unsupported CF_SPECIAL_COUNT");

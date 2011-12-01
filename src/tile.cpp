@@ -906,10 +906,14 @@ void TextureSource::buildMainAtlas(class IGameDef *gamedef)
 		for(u32 j=0; j<xwise_tiling; j++)
 		{
 			// Copy the copy to the atlas
-			img2->copyToWithAlpha(atlas_img,
+			/*img2->copyToWithAlpha(atlas_img,
 					pos_in_atlas + v2s32(j*dim.Width,0),
 					core::rect<s32>(v2s32(0,0), dim),
 					video::SColor(255,255,255,255),
+					NULL);*/
+			img2->copyTo(atlas_img,
+					pos_in_atlas + v2s32(j*dim.Width,0),
+					core::rect<s32>(v2s32(0,0), dim),
 					NULL);
 		}
 
