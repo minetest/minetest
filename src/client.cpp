@@ -205,7 +205,7 @@ Client::Client(
 			device->getSceneManager()->getRootSceneNode(),
 			device->getSceneManager(), 666),
 		device->getSceneManager(),
-		tsrc, this
+		tsrc, this, device
 	),
 	m_con(PROTOCOL_ID, 512, CONNECTION_TIMEOUT, this),
 	m_device(device),
@@ -1010,6 +1010,8 @@ void Client::ProcessData(u8 *data, u32 datasize, u16 sender_peer_id)
 	}
 	else if(command == TOCLIENT_PLAYERINFO)
 	{
+		infostream<<"Client received DEPRECATED TOCLIENT_PLAYERINFO"<<std::endl;
+#if 0
 		u16 our_peer_id;
 		{
 			//JMutexAutoLock lock(m_con_mutex); //bulk comment-out
@@ -1111,6 +1113,7 @@ void Client::ProcessData(u8 *data, u32 datasize, u16 sender_peer_id)
 				m_env.removePlayer((*ip)->peer_id);
 			}
 		} //envlock
+#endif
 	}
 	else if(command == TOCLIENT_SECTORMETA)
 	{

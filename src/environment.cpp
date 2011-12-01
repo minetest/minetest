@@ -491,7 +491,9 @@ void ServerEnvironment::deSerializePlayers(const std::string &savedir)
 		}
 
 		if(newplayer)
+		{
 			addPlayer(player);
+		}
 	}
 }
 
@@ -1320,34 +1322,38 @@ u16 ServerEnvironment::addActiveObjectRaw(ServerActiveObject *object,
 			<<m_active_objects.size()<<" active objects."
 			<<std::endl;
 	
-	// Add static object to active static list of the block
-	v3f objectpos = object->getBasePosition();
-	std::string staticdata = object->getStaticData();
-	StaticObject s_obj(object->getType(), objectpos, staticdata);
-	// Add to the block where the object is located in
-	v3s16 blockpos = getNodeBlockPos(floatToInt(objectpos, BS));
-	MapBlock *block = m_map->getBlockNoCreateNoEx(blockpos);
-	if(block)
-	{
-		block->m_static_objects.m_active.insert(object->getId(), s_obj);
-		object->m_static_exists = true;
-		object->m_static_block = blockpos;
-
-		if(set_changed)
-			block->raiseModified(MOD_STATE_WRITE_NEEDED, 
-					"addActiveObjectRaw");
-	}
-	else{
-		errorstream<<"ServerEnvironment::addActiveObjectRaw(): "
-				<<"could not find block for storing id="<<object->getId()
-				<<" statically"<<std::endl;
-	}
-	
 	// Register reference in scripting api (must be done before post-init)
 	scriptapi_add_object_reference(m_lua, object);
 	// Post-initialize object
 	object->addedToEnvironment();
+	
+	// Add static data to block
+	if(object->isStaticAllowed())
+	{
+		// Add static object to active static list of the block
+		v3f objectpos = object->getBasePosition();
+		std::string staticdata = object->getStaticData();
+		StaticObject s_obj(object->getType(), objectpos, staticdata);
+		// Add to the block where the object is located in
+		v3s16 blockpos = getNodeBlockPos(floatToInt(objectpos, BS));
+		MapBlock *block = m_map->getBlockNoCreateNoEx(blockpos);
+		if(block)
+		{
+			block->m_static_objects.m_active.insert(object->getId(), s_obj);
+			object->m_static_exists = true;
+			object->m_static_block = blockpos;
 
+			if(set_changed)
+				block->raiseModified(MOD_STATE_WRITE_NEEDED, 
+						"addActiveObjectRaw");
+		}
+		else{
+			errorstream<<"ServerEnvironment::addActiveObjectRaw(): "
+					<<"could not find block for storing id="<<object->getId()
+					<<" statically"<<std::endl;
+		}
+	}
+	
 	return object->getId();
 }
 
@@ -1547,18 +1553,14 @@ void ServerEnvironment::deactivateFarObjects(bool force_delete)
 			i.atEnd()==false; i++)
 	{
 		ServerActiveObject* obj = i.getNode()->getValue();
-
-		// This shouldn't happen but check it
-		if(obj == NULL)
-		{
-			errorstream<<"NULL object found in ServerEnvironment"
-					<<std::endl;
-			assert(0);
+		assert(obj);
+		
+		// Do not deactivate if static data creation not allowed
+		if(!force_delete && !obj->isStaticAllowed())
 			continue;
-		}
 
 		// If pending deactivation, let removeRemovedObjects() do it
-		if(obj->m_pending_deactivation)
+		if(!force_delete && obj->m_pending_deactivation)
 			continue;
 
 		u16 id = i.getNode()->getKey();		
@@ -1568,7 +1570,7 @@ void ServerEnvironment::deactivateFarObjects(bool force_delete)
 		v3s16 blockpos_o = getNodeBlockPos(floatToInt(objectpos, BS));
 
 		// If block is active, don't remove
-		if(m_active_blocks.contains(blockpos_o))
+		if(!force_delete && m_active_blocks.contains(blockpos_o))
 			continue;
 
 		verbosestream<<"ServerEnvironment::deactivateFarObjects(): "
@@ -1582,89 +1584,94 @@ void ServerEnvironment::deactivateFarObjects(bool force_delete)
 			Update the static data
 		*/
 
-		// Create new static object
-		std::string staticdata_new = obj->getStaticData();
-		StaticObject s_obj(obj->getType(), objectpos, staticdata_new);
-		
-		bool stays_in_same_block = false;
-		bool data_changed = true;
-
-		if(obj->m_static_exists){
-			if(obj->m_static_block == blockpos_o)
-				stays_in_same_block = true;
-
-			MapBlock *block = m_map->emergeBlock(obj->m_static_block, false);
-			
-			core::map<u16, StaticObject>::Node *n =
-					block->m_static_objects.m_active.find(id);
-			if(n){
-				StaticObject static_old = n->getValue();
-
-				float save_movem = obj->getMinimumSavedMovement();
-
-				if(static_old.data == staticdata_new &&
-						(static_old.pos - objectpos).getLength() < save_movem)
-					data_changed = false;
-			} else {
-				errorstream<<"ServerEnvironment::deactivateFarObjects(): "
-						<<"id="<<id<<" m_static_exists=true but "
-						<<"static data doesn't actually exist in "
-						<<PP(obj->m_static_block)<<std::endl;
-			}
-		}
-
-		bool shall_be_written = (!stays_in_same_block || data_changed);
-		
-		// Delete old static object
-		if(obj->m_static_exists)
+		if(obj->isStaticAllowed())
 		{
-			MapBlock *block = m_map->emergeBlock(obj->m_static_block, false);
+			// Create new static object
+			std::string staticdata_new = obj->getStaticData();
+			StaticObject s_obj(obj->getType(), objectpos, staticdata_new);
+			
+			bool stays_in_same_block = false;
+			bool data_changed = true;
+
+			if(obj->m_static_exists){
+				if(obj->m_static_block == blockpos_o)
+					stays_in_same_block = true;
+
+				MapBlock *block = m_map->emergeBlock(obj->m_static_block, false);
+				
+				core::map<u16, StaticObject>::Node *n =
+						block->m_static_objects.m_active.find(id);
+				if(n){
+					StaticObject static_old = n->getValue();
+
+					float save_movem = obj->getMinimumSavedMovement();
+
+					if(static_old.data == staticdata_new &&
+							(static_old.pos - objectpos).getLength() < save_movem)
+						data_changed = false;
+				} else {
+					errorstream<<"ServerEnvironment::deactivateFarObjects(): "
+							<<"id="<<id<<" m_static_exists=true but "
+							<<"static data doesn't actually exist in "
+							<<PP(obj->m_static_block)<<std::endl;
+				}
+			}
+
+			bool shall_be_written = (!stays_in_same_block || data_changed);
+			
+			// Delete old static object
+			if(obj->m_static_exists)
+			{
+				MapBlock *block = m_map->emergeBlock(obj->m_static_block, false);
+				if(block)
+				{
+					block->m_static_objects.remove(id);
+					obj->m_static_exists = false;
+					// Only mark block as modified if data changed considerably
+					if(shall_be_written)
+						block->raiseModified(MOD_STATE_WRITE_NEEDED,
+								"deactivateFarObjects: Static data "
+								"changed considerably");
+				}
+			}
+
+			// Add to the block where the object is located in
+			v3s16 blockpos = getNodeBlockPos(floatToInt(objectpos, BS));
+			// Get or generate the block
+			MapBlock *block = m_map->emergeBlock(blockpos);
+
 			if(block)
 			{
-				block->m_static_objects.remove(id);
-				obj->m_static_exists = false;
-				// Only mark block as modified if data changed considerably
-				if(shall_be_written)
-					block->raiseModified(MOD_STATE_WRITE_NEEDED,
-							"deactivateFarObjects: Static data "
-							"changed considerably");
+				if(block->m_static_objects.m_stored.size() >= 49){
+					errorstream<<"ServerEnv: Trying to store id="<<obj->getId()
+							<<" statically but block "<<PP(blockpos)
+							<<" already contains "
+							<<block->m_static_objects.m_stored.size()
+							<<" (over 49) objects."
+							<<" Forcing delete."<<std::endl;
+					force_delete = true;
+				} else {
+					u16 new_id = pending_delete ? id : 0;
+					block->m_static_objects.insert(new_id, s_obj);
+					
+					// Only mark block as modified if data changed considerably
+					if(shall_be_written)
+						block->raiseModified(MOD_STATE_WRITE_NEEDED,
+								"deactivateFarObjects: Static data "
+								"changed considerably");
+					
+					obj->m_static_exists = true;
+					obj->m_static_block = block->getPos();
+				}
 			}
-		}
-
-		// Add to the block where the object is located in
-		v3s16 blockpos = getNodeBlockPos(floatToInt(objectpos, BS));
-		// Get or generate the block
-		MapBlock *block = m_map->emergeBlock(blockpos);
-
-		if(block)
-		{
-			if(block->m_static_objects.m_stored.size() >= 49){
-				errorstream<<"ServerEnv: Trying to store id="<<obj->getId()
-						<<" statically but block "<<PP(blockpos)
-						<<" already contains "
-						<<block->m_static_objects.m_stored.size()
-						<<" (over 49) objects."
-						<<" Forcing delete."<<std::endl;
-				force_delete = true;
-			} else {
-				u16 new_id = pending_delete ? id : 0;
-				block->m_static_objects.insert(new_id, s_obj);
-				
-				// Only mark block as modified if data changed considerably
-				if(shall_be_written)
-					block->raiseModified(MOD_STATE_WRITE_NEEDED,
-							"deactivateFarObjects: Static data "
-							"changed considerably");
-				
-				obj->m_static_exists = true;
-				obj->m_static_block = block->getPos();
+			else{
+				if(!force_delete){
+					errorstream<<"ServerEnv: Could not find or generate "
+							<<"a block for storing id="<<obj->getId()
+							<<" statically"<<std::endl;
+					continue;
+				}
 			}
-		}
-		else{
-			errorstream<<"ServerEnv: Could not find or generate "
-					<<"a block for storing id="<<obj->getId()
-					<<" statically"<<std::endl;
-			continue;
 		}
 
 		/*
@@ -1672,7 +1679,7 @@ void ServerEnvironment::deactivateFarObjects(bool force_delete)
 			Otherwise delete it immediately.
 		*/
 
-		if(pending_delete)
+		if(pending_delete && !force_delete)
 		{
 			verbosestream<<"ServerEnvironment::deactivateFarObjects(): "
 					<<"object id="<<id<<" is known by clients"
@@ -1713,14 +1720,14 @@ void ServerEnvironment::deactivateFarObjects(bool force_delete)
 */
 
 ClientEnvironment::ClientEnvironment(ClientMap *map, scene::ISceneManager *smgr,
-		ITextureSource *texturesource, IGameDef *gamedef):
+		ITextureSource *texturesource, IGameDef *gamedef,
+		IrrlichtDevice *irr):
 	m_map(map),
 	m_smgr(smgr),
 	m_texturesource(texturesource),
-	m_gamedef(gamedef)
+	m_gamedef(gamedef),
+	m_irr(irr)
 {
-	assert(m_map);
-	assert(m_smgr);
 }
 
 ClientEnvironment::~ClientEnvironment()
@@ -2096,7 +2103,7 @@ u16 ClientEnvironment::addActiveObject(ClientActiveObject *object)
 	infostream<<"ClientEnvironment::addActiveObject(): "
 			<<"added (id="<<object->getId()<<")"<<std::endl;
 	m_active_objects.insert(object->getId(), object);
-	object->addToScene(m_smgr, m_texturesource);
+	object->addToScene(m_smgr, m_texturesource, m_irr);
 	{ // Update lighting immediately
 		u8 light = 0;
 		try{
@@ -2114,7 +2121,8 @@ u16 ClientEnvironment::addActiveObject(ClientActiveObject *object)
 void ClientEnvironment::addActiveObject(u16 id, u8 type,
 		const std::string &init_data)
 {
-	ClientActiveObject* obj = ClientActiveObject::create(type, m_gamedef);
+	ClientActiveObject* obj =
+			ClientActiveObject::create(type, m_gamedef, this);
 	if(obj == NULL)
 	{
 		infostream<<"ClientEnvironment::addActiveObject(): "

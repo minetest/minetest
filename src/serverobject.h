@@ -58,6 +58,10 @@ public:
 	virtual void addedToEnvironment(){};
 	// Called before removing from environment
 	virtual void removingFromEnvironment(){};
+	// Returns true if object's deletion is the job of the
+	// environment
+	virtual bool environmentDeletes() const
+	{ return true; }
 	
 	// Create a certain type of ServerActiveObject
 	static ServerActiveObject* create(u8 type,
@@ -112,12 +116,17 @@ public:
 		when it is created (converted from static to active - actually
 		the data is the static form)
 	*/
-	virtual std::string getStaticData(){return "";}
+	virtual std::string getStaticData()
+	{
+		assert(isStaticAllowed());
+		return "";
+	}
 	/*
 		Return false in here to never save and instead remove object
 		on unload. getStaticData() will not be called in that case.
 	*/
-	virtual bool isStaticAllowed(){return true;}
+	virtual bool isStaticAllowed() const
+	{return true;}
 	
 	virtual void punch(ServerActiveObject *puncher){}
 	virtual void rightClick(ServerActiveObject *clicker){}
@@ -156,12 +165,13 @@ public:
 	bool m_removed;
 	
 	/*
-		This is set to true when a block should be removed from the active
+		This is set to true when an object should be removed from the active
 		object list but couldn't be removed because the id has to be
 		reserved for some client.
 
 		The environment checks this periodically. If this is true and also
-		m_known_by_count is true, 
+		m_known_by_count is true, object is deleted from the active object
+		list.
 	*/
 	bool m_pending_deactivation;
 	

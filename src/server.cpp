@@ -48,6 +48,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "craftitemdef.h"
 #include "mapgen.h"
 #include "content_abm.h"
+#include "content_sao.h" // For PlayerSAO
 
 #define PP(x) "("<<(x).X<<","<<(x).Y<<","<<(x).Z<<")"
 
@@ -2218,7 +2219,7 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 		}
 
 		// Get player
-		Player *player = emergePlayer(playername, peer_id);
+		ServerRemotePlayer *player = emergePlayer(playername, peer_id);
 
 		// If failed, cancel
 		if(player == NULL)
@@ -2227,6 +2228,10 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 					<<": failed to emerge player"<<std::endl;
 			return;
 		}
+
+		// Add PlayerSAO
+		PlayerSAO *sao = new PlayerSAO(m_env, player->getPosition(), player);
+		m_env->addActiveObject(sao);
 
 		/*
 			Answer with a TOCLIENT_INIT
@@ -4830,12 +4835,13 @@ v3f findSpawnPos(ServerMap &map)
 	return intToFloat(nodepos, BS);
 }
 
-Player *Server::emergePlayer(const char *name, u16 peer_id)
+ServerRemotePlayer *Server::emergePlayer(const char *name, u16 peer_id)
 {
 	/*
 		Try to get an existing player
 	*/
-	Player *player = m_env->getPlayer(name);
+	ServerRemotePlayer *player =
+			static_cast<ServerRemotePlayer*>(m_env->getPlayer(name));
 	if(player != NULL)
 	{
 		// If player is already connected, cancel
@@ -4960,10 +4966,12 @@ void Server::handlePeerChange(PeerChange &c)
 				obj->m_known_by_count--;
 		}
 
+		ServerRemotePlayer* player =
+				static_cast<ServerRemotePlayer*>(m_env->getPlayer(c.peer_id));
+
 		// Collect information about leaving in chat
 		std::wstring message;
 		{
-			Player *player = m_env->getPlayer(c.peer_id);
 			if(player != NULL)
 			{
 				std::wstring name = narrow_to_wide(player->getName());
@@ -4974,21 +4982,26 @@ void Server::handlePeerChange(PeerChange &c)
 					message += L" (timed out)";
 			}
 		}
-
-		/*// Delete player
+		
+		// Remove PlayerSAO
+		if(player != NULL)
 		{
-			m_env->removePlayer(c.peer_id);
-		}*/
-
+			PlayerSAO *sao = player->getSAO();
+			if(sao){
+				sao->setPlayer(NULL);
+				sao->m_removed = true;
+			}
+			player->setSAO(NULL);
+		}
+		
 		// Set player client disconnected
+		if(player != NULL)
+			player->peer_id = 0;
+	
+		/*
+			Print out action
+		*/
 		{
-			Player *player = m_env->getPlayer(c.peer_id);
-			if(player != NULL)
-				player->peer_id = 0;
-			
-			/*
-				Print out action
-			*/
 			if(player != NULL)
 			{
 				std::ostringstream os(std::ios_base::binary);

@@ -30,6 +30,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "nodedef.h"
 #include "environment.h"
 #include "gamedef.h"
+#include "content_sao.h"
 
 Player::Player(IGameDef *gamedef):
 	touching_ground(false),
@@ -186,7 +187,8 @@ ServerRemotePlayer::ServerRemotePlayer(ServerEnvironment *env):
 	m_last_good_position_age(0),
 	m_additional_items(),
 	m_inventory_not_sent(false),
-	m_hp_not_sent(false)
+	m_hp_not_sent(false),
+	m_sao(NULL)
 {
 }
 ServerRemotePlayer::ServerRemotePlayer(ServerEnvironment *env, v3f pos_, u16 peer_id_,
@@ -194,7 +196,8 @@ ServerRemotePlayer::ServerRemotePlayer(ServerEnvironment *env, v3f pos_, u16 pee
 	Player(env->getGameDef()),
 	ServerActiveObject(env, pos_),
 	m_inventory_not_sent(false),
-	m_hp_not_sent(false)
+	m_hp_not_sent(false),
+	m_sao(NULL)
 {
 	setPosition(pos_);
 	peer_id = peer_id_;
@@ -203,6 +206,28 @@ ServerRemotePlayer::ServerRemotePlayer(ServerEnvironment *env, v3f pos_, u16 pee
 ServerRemotePlayer::~ServerRemotePlayer()
 {
 	clearAddToInventoryLater();
+	if(m_sao)
+		m_sao->setPlayer(NULL);
+}
+
+void ServerRemotePlayer::setPosition(const v3f &position)
+{
+	Player::setPosition(position);
+	ServerActiveObject::setBasePosition(position);
+	if(m_sao)
+		m_sao->positionUpdated();
+}
+
+void ServerRemotePlayer::setSAO(PlayerSAO *sao)
+{
+	infostream<<"ServerRemotePlayer \""<<getName()
+			<<"\" got sao="<<sao<<std::endl;
+	m_sao = sao;
+}
+
+PlayerSAO* ServerRemotePlayer::getSAO()
+{
+	return m_sao;
 }
 
 /* ServerActiveObject interface */
@@ -329,6 +354,7 @@ s16 ServerRemotePlayer::getHP()
 
 #ifndef SERVER
 
+#if 0
 RemotePlayer::RemotePlayer(
 		IGameDef *gamedef,
 		scene::ISceneNode* parent,
@@ -441,6 +467,7 @@ void RemotePlayer::move(f32 dtime, Map &map, f32 pos_max_d)
 	
 	ISceneNode::setPosition(m_showpos);
 }
+#endif
 
 #endif
 

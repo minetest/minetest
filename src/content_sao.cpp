@@ -1799,4 +1799,96 @@ void LuaEntitySAO::sendPosition(bool do_interpolate, bool is_movement_end)
 	m_messages_out.push_back(aom);
 }
 
+/*
+	PlayerSAO
+*/
+
+// Prototype
+PlayerSAO proto_PlayerSAO(NULL, v3f(0,0,0), NULL);
+
+PlayerSAO::PlayerSAO(ServerEnvironment *env, v3f pos,
+		ServerRemotePlayer *player):
+	ServerActiveObject(env, pos),
+	m_player(player),
+	m_position_updated(true)
+{
+	if(m_player)
+		m_player->setSAO(this);
+}
+
+PlayerSAO::~PlayerSAO()
+{
+	if(m_player)
+		m_player->setSAO(NULL);
+}
+
+void PlayerSAO::step(float dtime, bool send_recommended)
+{
+	if(!m_player)
+		return;
+	
+	if(send_recommended == false)
+		return;
+	
+	if(m_position_updated)
+	{
+		m_position_updated = false;
+
+		std::ostringstream os(std::ios::binary);
+		// command (0 = update position)
+		writeU8(os, 0);
+		// pos
+		writeV3F1000(os, m_player->getPosition());
+		// yaw
+		writeF1000(os, m_player->getYaw());
+		// create message and add to list
+		ActiveObjectMessage aom(getId(), false, os.str());
+		m_messages_out.push_back(aom);
+	}
+}
+
+std::string PlayerSAO::getClientInitializationData()
+{
+	if(!m_player)
+		return "";
+	
+	std::ostringstream os(std::ios::binary);
+	// version
+	writeU8(os, 0);
+	// name
+	os<<serializeString(m_player->getName());
+	// pos
+	writeV3F1000(os, m_player->getPosition());
+	// yaw
+	writeF1000(os, m_player->getYaw());
+	return os.str();
+}
+
+std::string PlayerSAO::getStaticData()
+{
+	assert(0);
+	return "";
+}
+
+void PlayerSAO::punch(ServerActiveObject *puncher)
+{
+	infostream<<"TODO: PlayerSAO::punch()"<<std::endl;
+}
+	
+void PlayerSAO::setPlayer(ServerRemotePlayer *player)
+{
+	infostream<<"PlayerSAO id="<<getId()<<" got player \""
+			<<(player?player->getName():"(NULL)")<<"\""<<std::endl;
+	m_player = player;
+}
+
+ServerRemotePlayer* PlayerSAO::getPlayer()
+{
+	return m_player;
+}
+
+void PlayerSAO::positionUpdated()
+{
+	m_position_updated = true;
+}
 

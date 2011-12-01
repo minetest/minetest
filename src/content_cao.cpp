@@ -22,20 +22,393 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "environment.h"
 #include "settings.h"
 #include <ICameraSceneNode.h>
+#include <ITextSceneNode.h>
 #include "serialization.h" // For decompressZlib
 #include "gamedef.h"
+#include "clientobject.h"
+#include "content_object.h"
+#include "utility.h" // For IntervalLimiter
+class Settings;
+#include "MyBillboardSceneNode.h"
 
 core::map<u16, ClientActiveObject::Factory> ClientActiveObject::m_types;
+
+/*
+	SmoothTranslator
+*/
+
+struct SmoothTranslator
+{
+	v3f vect_old;
+	v3f vect_show;
+	v3f vect_aim;
+	f32 anim_counter;
+	f32 anim_time;
+	f32 anim_time_counter;
+	bool aim_is_end;
+
+	SmoothTranslator():
+		vect_old(0,0,0),
+		vect_show(0,0,0),
+		vect_aim(0,0,0),
+		anim_counter(0),
+		anim_time(0),
+		anim_time_counter(0),
+		aim_is_end(true)
+	{}
+
+	void init(v3f vect)
+	{
+		vect_old = vect;
+		vect_show = vect;
+		vect_aim = vect;
+		anim_counter = 0;
+		anim_time = 0;
+		anim_time_counter = 0;
+		aim_is_end = true;
+	}
+
+	void sharpen()
+	{
+		init(vect_show);
+	}
+
+	void update(v3f vect_new, bool is_end_position=false, float update_interval=-1)
+	{
+		aim_is_end = is_end_position;
+		vect_old = vect_show;
+		vect_aim = vect_new;
+		if(update_interval > 0){
+			anim_time = update_interval;
+		} else {
+			if(anim_time < 0.001 || anim_time > 1.0)
+				anim_time = anim_time_counter;
+			else
+				anim_time = anim_time * 0.9 + anim_time_counter * 0.1;
+		}
+		anim_time_counter = 0;
+		anim_counter = 0;
+	}
+
+	void translate(f32 dtime)
+	{
+		anim_time_counter = anim_time_counter + dtime;
+		anim_counter = anim_counter + dtime;
+		v3f vect_move = vect_aim - vect_old;
+		f32 moveratio = 1.0;
+		if(anim_time > 0.001)
+			moveratio = anim_time_counter / anim_time;
+		// Move a bit less than should, to avoid oscillation
+		moveratio = moveratio * 0.8;
+		float move_end = 1.5;
+		if(aim_is_end)
+			move_end = 1.0;
+		if(moveratio > move_end)
+			moveratio = move_end;
+		vect_show = vect_old + vect_move * moveratio;
+	}
+
+	bool is_moving()
+	{
+		return ((anim_time_counter / anim_time) < 1.4);
+	}
+};
+
+
+/*
+	TestCAO
+*/
+
+class TestCAO : public ClientActiveObject
+{
+public:
+	TestCAO(IGameDef *gamedef, ClientEnvironment *env);
+	virtual ~TestCAO();
+	
+	u8 getType() const
+	{
+		return ACTIVEOBJECT_TYPE_TEST;
+	}
+	
+	static ClientActiveObject* create(IGameDef *gamedef, ClientEnvironment *env);
+
+	void addToScene(scene::ISceneManager *smgr, ITextureSource *tsrc,
+			IrrlichtDevice *irr);
+	void removeFromScene();
+	void updateLight(u8 light_at_pos);
+	v3s16 getLightPosition();
+	void updateNodePos();
+
+	void step(float dtime, ClientEnvironment *env);
+
+	void processMessage(const std::string &data);
+
+private:
+	scene::IMeshSceneNode *m_node;
+	v3f m_position;
+};
+
+/*
+	ItemCAO
+*/
+
+class ItemCAO : public ClientActiveObject
+{
+public:
+	ItemCAO(IGameDef *gamedef, ClientEnvironment *env);
+	virtual ~ItemCAO();
+	
+	u8 getType() const
+	{
+		return ACTIVEOBJECT_TYPE_ITEM;
+	}
+	
+	static ClientActiveObject* create(IGameDef *gamedef, ClientEnvironment *env);
+
+	void addToScene(scene::ISceneManager *smgr, ITextureSource *tsrc,
+			IrrlichtDevice *irr);
+	void removeFromScene();
+	void updateLight(u8 light_at_pos);
+	v3s16 getLightPosition();
+	void updateNodePos();
+
+	void step(float dtime, ClientEnvironment *env);
+
+	void processMessage(const std::string &data);
+
+	void initialize(const std::string &data);
+	
+	core::aabbox3d<f32>* getSelectionBox()
+		{return &m_selection_box;}
+	v3f getPosition()
+		{return m_position;}
+
+private:
+	core::aabbox3d<f32> m_selection_box;
+	scene::IMeshSceneNode *m_node;
+	v3f m_position;
+	std::string m_inventorystring;
+};
+
+/*
+	RatCAO
+*/
+
+class RatCAO : public ClientActiveObject
+{
+public:
+	RatCAO(IGameDef *gamedef, ClientEnvironment *env);
+	virtual ~RatCAO();
+	
+	u8 getType() const
+	{
+		return ACTIVEOBJECT_TYPE_RAT;
+	}
+	
+	static ClientActiveObject* create(IGameDef *gamedef, ClientEnvironment *env);
+
+	void addToScene(scene::ISceneManager *smgr, ITextureSource *tsrc,
+			IrrlichtDevice *irr);
+	void removeFromScene();
+	void updateLight(u8 light_at_pos);
+	v3s16 getLightPosition();
+	void updateNodePos();
+
+	void step(float dtime, ClientEnvironment *env);
+
+	void processMessage(const std::string &data);
+
+	void initialize(const std::string &data);
+	
+	core::aabbox3d<f32>* getSelectionBox()
+		{return &m_selection_box;}
+	v3f getPosition()
+		{return pos_translator.vect_show;}
+		//{return m_position;}
+
+private:
+	core::aabbox3d<f32> m_selection_box;
+	scene::IMeshSceneNode *m_node;
+	v3f m_position;
+	float m_yaw;
+	SmoothTranslator pos_translator;
+};
+
+/*
+	Oerkki1CAO
+*/
+
+class Oerkki1CAO : public ClientActiveObject
+{
+public:
+	Oerkki1CAO(IGameDef *gamedef, ClientEnvironment *env);
+	virtual ~Oerkki1CAO();
+	
+	u8 getType() const
+	{
+		return ACTIVEOBJECT_TYPE_OERKKI1;
+	}
+	
+	static ClientActiveObject* create(IGameDef *gamedef, ClientEnvironment *env);
+
+	void addToScene(scene::ISceneManager *smgr, ITextureSource *tsrc,
+			IrrlichtDevice *irr);
+	void removeFromScene();
+	void updateLight(u8 light_at_pos);
+	v3s16 getLightPosition();
+	void updateNodePos();
+
+	void step(float dtime, ClientEnvironment *env);
+
+	void processMessage(const std::string &data);
+
+	void initialize(const std::string &data);
+	
+	core::aabbox3d<f32>* getSelectionBox()
+		{return &m_selection_box;}
+	v3f getPosition()
+		{return pos_translator.vect_show;}
+		//{return m_position;}
+
+	// If returns true, punch will not be sent to the server
+	bool directReportPunch(const std::string &toolname, v3f dir);
+
+private:
+	IntervalLimiter m_attack_interval;
+	core::aabbox3d<f32> m_selection_box;
+	scene::IMeshSceneNode *m_node;
+	v3f m_position;
+	float m_yaw;
+	SmoothTranslator pos_translator;
+	float m_damage_visual_timer;
+	bool m_damage_texture_enabled;
+};
+
+/*
+	FireflyCAO
+*/
+
+class FireflyCAO : public ClientActiveObject
+{
+public:
+	FireflyCAO(IGameDef *gamedef, ClientEnvironment *env);
+	virtual ~FireflyCAO();
+	
+	u8 getType() const
+	{
+		return ACTIVEOBJECT_TYPE_FIREFLY;
+	}
+	
+	static ClientActiveObject* create(IGameDef *gamedef, ClientEnvironment *env);
+
+	void addToScene(scene::ISceneManager *smgr, ITextureSource *tsrc,
+			IrrlichtDevice *irr);
+	void removeFromScene();
+	void updateLight(u8 light_at_pos);
+	v3s16 getLightPosition();
+	void updateNodePos();
+
+	void step(float dtime, ClientEnvironment *env);
+
+	void processMessage(const std::string &data);
+
+	void initialize(const std::string &data);
+	
+	core::aabbox3d<f32>* getSelectionBox()
+		{return &m_selection_box;}
+	v3f getPosition()
+		{return m_position;}
+
+private:
+	core::aabbox3d<f32> m_selection_box;
+	scene::IMeshSceneNode *m_node;
+	v3f m_position;
+	float m_yaw;
+	SmoothTranslator pos_translator;
+};
+
+/*
+	MobV2CAO
+*/
+
+class MobV2CAO : public ClientActiveObject
+{
+public:
+	MobV2CAO(IGameDef *gamedef, ClientEnvironment *env);
+	virtual ~MobV2CAO();
+	
+	u8 getType() const
+	{
+		return ACTIVEOBJECT_TYPE_MOBV2;
+	}
+	
+	static ClientActiveObject* create(IGameDef *gamedef, ClientEnvironment *env);
+
+	void addToScene(scene::ISceneManager *smgr, ITextureSource *tsrc,
+			IrrlichtDevice *irr);
+	void removeFromScene();
+	void updateLight(u8 light_at_pos);
+	v3s16 getLightPosition();
+	void updateNodePos();
+
+	void step(float dtime, ClientEnvironment *env);
+
+	void processMessage(const std::string &data);
+
+	void initialize(const std::string &data);
+	
+	core::aabbox3d<f32>* getSelectionBox()
+		{return &m_selection_box;}
+	v3f getPosition()
+		{return pos_translator.vect_show;}
+		//{return m_position;}
+	bool doShowSelectionBox(){return false;}
+
+	// If returns true, punch will not be sent to the server
+	bool directReportPunch(const std::string &toolname, v3f dir);
+
+private:
+	void setLooks(const std::string &looks);
+	
+	IntervalLimiter m_attack_interval;
+	core::aabbox3d<f32> m_selection_box;
+	scene::MyBillboardSceneNode *m_node;
+	v3f m_position;
+	std::string m_texture_name;
+	float m_yaw;
+	SmoothTranslator pos_translator;
+	bool m_walking;
+	float m_walking_unset_timer;
+	float m_walk_timer;
+	int m_walk_frame;
+	float m_damage_visual_timer;
+	u8 m_last_light;
+	bool m_shooting;
+	float m_shooting_unset_timer;
+	v2f m_sprite_size;
+	float m_sprite_y;
+	bool m_bright_shooting;
+	std::string m_sprite_type;
+	int m_simple_anim_frames;
+	float m_simple_anim_frametime;
+	bool m_lock_full_brightness;
+	int m_player_hit_damage;
+	float m_player_hit_distance;
+	float m_player_hit_interval;
+	float m_player_hit_timer;
+
+	Settings *m_properties;
+};
 
 /*
 	TestCAO
 */
 
 // Prototype
-TestCAO proto_TestCAO(NULL);
+TestCAO proto_TestCAO(NULL, NULL);
 
-TestCAO::TestCAO(IGameDef *gamedef):
-	ClientActiveObject(0, gamedef),
+TestCAO::TestCAO(IGameDef *gamedef, ClientEnvironment *env):
+	ClientActiveObject(0, gamedef, env),
 	m_node(NULL),
 	m_position(v3f(0,10*BS,0))
 {
@@ -46,12 +419,13 @@ TestCAO::~TestCAO()
 {
 }
 
-ClientActiveObject* TestCAO::create(IGameDef *gamedef)
+ClientActiveObject* TestCAO::create(IGameDef *gamedef, ClientEnvironment *env)
 {
-	return new TestCAO(gamedef);
+	return new TestCAO(gamedef, env);
 }
 
-void TestCAO::addToScene(scene::ISceneManager *smgr, ITextureSource *tsrc)
+void TestCAO::addToScene(scene::ISceneManager *smgr, ITextureSource *tsrc,
+			IrrlichtDevice *irr)
 {
 	if(m_node != NULL)
 		return;
@@ -147,10 +521,10 @@ void TestCAO::processMessage(const std::string &data)
 #include "inventory.h"
 
 // Prototype
-ItemCAO proto_ItemCAO(NULL);
+ItemCAO proto_ItemCAO(NULL, NULL);
 
-ItemCAO::ItemCAO(IGameDef *gamedef):
-	ClientActiveObject(0, gamedef),
+ItemCAO::ItemCAO(IGameDef *gamedef, ClientEnvironment *env):
+	ClientActiveObject(0, gamedef, env),
 	m_selection_box(-BS/3.,0.0,-BS/3., BS/3.,BS*2./3.,BS/3.),
 	m_node(NULL),
 	m_position(v3f(0,10*BS,0))
@@ -162,12 +536,13 @@ ItemCAO::~ItemCAO()
 {
 }
 
-ClientActiveObject* ItemCAO::create(IGameDef *gamedef)
+ClientActiveObject* ItemCAO::create(IGameDef *gamedef, ClientEnvironment *env)
 {
-	return new ItemCAO(gamedef);
+	return new ItemCAO(gamedef, env);
 }
 
-void ItemCAO::addToScene(scene::ISceneManager *smgr, ITextureSource *tsrc)
+void ItemCAO::addToScene(scene::ISceneManager *smgr, ITextureSource *tsrc,
+			IrrlichtDevice *irr)
 {
 	if(m_node != NULL)
 		return;
@@ -288,7 +663,7 @@ void ItemCAO::step(float dtime, ClientEnvironment *env)
 
 void ItemCAO::processMessage(const std::string &data)
 {
-	infostream<<"ItemCAO: Got message"<<std::endl;
+	//infostream<<"ItemCAO: Got message"<<std::endl;
 	std::istringstream is(data, std::ios::binary);
 	// command
 	u8 cmd = readU8(is);
@@ -327,10 +702,10 @@ void ItemCAO::initialize(const std::string &data)
 #include "inventory.h"
 
 // Prototype
-RatCAO proto_RatCAO(NULL);
+RatCAO proto_RatCAO(NULL, NULL);
 
-RatCAO::RatCAO(IGameDef *gamedef):
-	ClientActiveObject(0, gamedef),
+RatCAO::RatCAO(IGameDef *gamedef, ClientEnvironment *env):
+	ClientActiveObject(0, gamedef, env),
 	m_selection_box(-BS/3.,0.0,-BS/3., BS/3.,BS/2.,BS/3.),
 	m_node(NULL),
 	m_position(v3f(0,10*BS,0)),
@@ -343,12 +718,13 @@ RatCAO::~RatCAO()
 {
 }
 
-ClientActiveObject* RatCAO::create(IGameDef *gamedef)
+ClientActiveObject* RatCAO::create(IGameDef *gamedef, ClientEnvironment *env)
 {
-	return new RatCAO(gamedef);
+	return new RatCAO(gamedef, env);
 }
 
-void RatCAO::addToScene(scene::ISceneManager *smgr, ITextureSource *tsrc)
+void RatCAO::addToScene(scene::ISceneManager *smgr, ITextureSource *tsrc,
+			IrrlichtDevice *irr)
 {
 	if(m_node != NULL)
 		return;
@@ -472,10 +848,10 @@ void RatCAO::initialize(const std::string &data)
 #include "inventory.h"
 
 // Prototype
-Oerkki1CAO proto_Oerkki1CAO(NULL);
+Oerkki1CAO proto_Oerkki1CAO(NULL, NULL);
 
-Oerkki1CAO::Oerkki1CAO(IGameDef *gamedef):
-	ClientActiveObject(0, gamedef),
+Oerkki1CAO::Oerkki1CAO(IGameDef *gamedef, ClientEnvironment *env):
+	ClientActiveObject(0, gamedef, env),
 	m_selection_box(-BS/3.,0.0,-BS/3., BS/3.,BS*2.,BS/3.),
 	m_node(NULL),
 	m_position(v3f(0,10*BS,0)),
@@ -490,12 +866,13 @@ Oerkki1CAO::~Oerkki1CAO()
 {
 }
 
-ClientActiveObject* Oerkki1CAO::create(IGameDef *gamedef)
+ClientActiveObject* Oerkki1CAO::create(IGameDef *gamedef, ClientEnvironment *env)
 {
-	return new Oerkki1CAO(gamedef);
+	return new Oerkki1CAO(gamedef, env);
 }
 
-void Oerkki1CAO::addToScene(scene::ISceneManager *smgr, ITextureSource *tsrc)
+void Oerkki1CAO::addToScene(scene::ISceneManager *smgr, ITextureSource *tsrc,
+			IrrlichtDevice *irr)
 {
 	if(m_node != NULL)
 		return;
@@ -712,10 +1089,10 @@ bool Oerkki1CAO::directReportPunch(const std::string &toolname, v3f dir)
 */
 
 // Prototype
-FireflyCAO proto_FireflyCAO(NULL);
+FireflyCAO proto_FireflyCAO(NULL, NULL);
 
-FireflyCAO::FireflyCAO(IGameDef *gamedef):
-	ClientActiveObject(0, gamedef),
+FireflyCAO::FireflyCAO(IGameDef *gamedef, ClientEnvironment *env):
+	ClientActiveObject(0, gamedef, env),
 	m_selection_box(-BS/3.,0.0,-BS/3., BS/3.,BS/2.,BS/3.),
 	m_node(NULL),
 	m_position(v3f(0,10*BS,0)),
@@ -728,12 +1105,13 @@ FireflyCAO::~FireflyCAO()
 {
 }
 
-ClientActiveObject* FireflyCAO::create(IGameDef *gamedef)
+ClientActiveObject* FireflyCAO::create(IGameDef *gamedef, ClientEnvironment *env)
 {
-	return new FireflyCAO(gamedef);
+	return new FireflyCAO(gamedef, env);
 }
 
-void FireflyCAO::addToScene(scene::ISceneManager *smgr, ITextureSource *tsrc)
+void FireflyCAO::addToScene(scene::ISceneManager *smgr, ITextureSource *tsrc,
+			IrrlichtDevice *irr)
 {
 	if(m_node != NULL)
 		return;
@@ -855,10 +1233,10 @@ void FireflyCAO::initialize(const std::string &data)
 */
 
 // Prototype
-MobV2CAO proto_MobV2CAO(NULL);
+MobV2CAO proto_MobV2CAO(NULL, NULL);
 
-MobV2CAO::MobV2CAO(IGameDef *gamedef):
-	ClientActiveObject(0, gamedef),
+MobV2CAO::MobV2CAO(IGameDef *gamedef, ClientEnvironment *env):
+	ClientActiveObject(0, gamedef, env),
 	m_selection_box(-0.4*BS,-0.4*BS,-0.4*BS, 0.4*BS,0.8*BS,0.4*BS),
 	m_node(NULL),
 	m_position(v3f(0,10*BS,0)),
@@ -887,12 +1265,13 @@ MobV2CAO::~MobV2CAO()
 	delete m_properties;
 }
 
-ClientActiveObject* MobV2CAO::create(IGameDef *gamedef)
+ClientActiveObject* MobV2CAO::create(IGameDef *gamedef, ClientEnvironment *env)
 {
-	return new MobV2CAO(gamedef);
+	return new MobV2CAO(gamedef, env);
 }
 
-void MobV2CAO::addToScene(scene::ISceneManager *smgr, ITextureSource *tsrc)
+void MobV2CAO::addToScene(scene::ISceneManager *smgr, ITextureSource *tsrc,
+			IrrlichtDevice *irr)
 {
 	if(m_node != NULL)
 		return;
@@ -1269,7 +1648,7 @@ void MobV2CAO::setLooks(const std::string &looks)
 
 #include "luaentity_common.h"
 
-class CLuaEntityCAO : public LuaEntityCAO
+class LuaEntityCAO : public ClientActiveObject
 {
 private:
 	core::aabbox3d<f32> m_selection_box;
@@ -1291,8 +1670,8 @@ private:
 	float m_anim_timer;
 
 public:
-	CLuaEntityCAO(IGameDef *gamedef):
-		LuaEntityCAO(gamedef),
+	LuaEntityCAO(IGameDef *gamedef, ClientEnvironment *env):
+		ClientActiveObject(0, gamedef, env),
 		m_selection_box(-BS/3.,-BS/3.,-BS/3., BS/3.,BS/3.,BS/3.),
 		m_meshnode(NULL),
 		m_spritenode(NULL),
@@ -1309,12 +1688,13 @@ public:
 		m_anim_framelength(0.2),
 		m_anim_timer(0)
 	{
-		ClientActiveObject::registerType(getType(), create);
+		if(gamedef == NULL)
+			ClientActiveObject::registerType(getType(), create);
 	}
 
 	void initialize(const std::string &data)
 	{
-		infostream<<"CLuaEntityCAO: Got init data"<<std::endl;
+		infostream<<"LuaEntityCAO: Got init data"<<std::endl;
 		
 		std::istringstream is(data, std::ios::binary);
 		// version
@@ -1346,14 +1726,14 @@ public:
 		updateNodePos();
 	}
 
-	~CLuaEntityCAO()
+	~LuaEntityCAO()
 	{
 		delete m_prop;
 	}
 
-	static ClientActiveObject* create(IGameDef *gamedef)
+	static ClientActiveObject* create(IGameDef *gamedef, ClientEnvironment *env)
 	{
-		return new CLuaEntityCAO(gamedef);
+		return new LuaEntityCAO(gamedef, env);
 	}
 
 	u8 getType() const
@@ -1369,7 +1749,8 @@ public:
 		return pos_translator.vect_show;
 	}
 		
-	void addToScene(scene::ISceneManager *smgr, ITextureSource *tsrc)
+	void addToScene(scene::ISceneManager *smgr, ITextureSource *tsrc,
+			IrrlichtDevice *irr)
 	{
 		if(m_meshnode != NULL || m_spritenode != NULL)
 			return;
@@ -1377,7 +1758,7 @@ public:
 		//video::IVideoDriver* driver = smgr->getVideoDriver();
 
 		if(m_prop->visual == "sprite"){
-			infostream<<"CLuaEntityCAO::addToScene(): single_sprite"<<std::endl;
+			infostream<<"LuaEntityCAO::addToScene(): single_sprite"<<std::endl;
 			m_spritenode = new scene::MyBillboardSceneNode(
 					smgr->getRootSceneNode(), smgr, -1, v3f(0,0,0), v2f(1,1));
 			m_spritenode->setMaterialTexture(0,
@@ -1398,7 +1779,7 @@ public:
 				m_spritenode->setTCoords(3, v2f(txs*0, tys*1));
 			}
 		} else if(m_prop->visual == "cube"){
-			infostream<<"CLuaEntityCAO::addToScene(): cube"<<std::endl;
+			infostream<<"LuaEntityCAO::addToScene(): cube"<<std::endl;
 			video::SColor c(255,255,255,255);
 			video::S3DVertex vertices[24] =
 			{
@@ -1461,7 +1842,7 @@ public:
 			// Will be shown when we know the brightness
 			m_meshnode->setVisible(false);
 		} else {
-			infostream<<"CLuaEntityCAO::addToScene(): \""<<m_prop->visual
+			infostream<<"LuaEntityCAO::addToScene(): \""<<m_prop->visual
 					<<"\" not supported"<<std::endl;
 		}
 		updateTextures("");
@@ -1640,7 +2021,7 @@ public:
 
 	void processMessage(const std::string &data)
 	{
-		infostream<<"CLuaEntityCAO: Got message"<<std::endl;
+		//infostream<<"LuaEntityCAO: Got message"<<std::endl;
 		std::istringstream is(data, std::ios::binary);
 		// command
 		u8 cmd = readU8(is);
@@ -1692,6 +2073,230 @@ public:
 };
 
 // Prototype
-CLuaEntityCAO proto_CLuaEntityCAO(NULL);
+LuaEntityCAO proto_LuaEntityCAO(NULL, NULL);
+
+/*
+	PlayerCAO
+*/
+
+class PlayerCAO : public ClientActiveObject
+{
+private:
+	core::aabbox3d<f32> m_selection_box;
+	scene::IMeshSceneNode *m_node;
+	scene::ITextSceneNode* m_text;
+	std::string m_name;
+	v3f m_position;
+	float m_yaw;
+	SmoothTranslator pos_translator;
+	bool m_is_local_player;
+
+public:
+	PlayerCAO(IGameDef *gamedef, ClientEnvironment *env):
+		ClientActiveObject(0, gamedef, env),
+		m_selection_box(-BS/3.,0.0,-BS/3., BS/3.,BS*2.0,BS/3.),
+		m_node(NULL),
+		m_text(NULL),
+		m_position(v3f(0,10*BS,0)),
+		m_yaw(0),
+		m_is_local_player(false)
+	{
+		if(gamedef == NULL)
+			ClientActiveObject::registerType(getType(), create);
+	}
+
+	void initialize(const std::string &data)
+	{
+		infostream<<"PlayerCAO: Got init data"<<std::endl;
+		
+		std::istringstream is(data, std::ios::binary);
+		// version
+		u8 version = readU8(is);
+		// check version
+		if(version != 0)
+			return;
+		// name
+		m_name = deSerializeString(is);
+		// pos
+		m_position = readV3F1000(is);
+		// yaw
+		m_yaw = readF1000(is);
+
+		Player *player = m_env->getPlayer(m_name.c_str());
+		if(player && player->isLocal())
+			m_is_local_player = true;
+		
+		updateNodePos();
+	}
+
+	~PlayerCAO()
+	{
+		if(m_node)
+			m_node->remove();
+	}
+
+	static ClientActiveObject* create(IGameDef *gamedef, ClientEnvironment *env)
+	{
+		return new PlayerCAO(gamedef, env);
+	}
+
+	u8 getType() const
+	{
+		return ACTIVEOBJECT_TYPE_PLAYER;
+	}
+	core::aabbox3d<f32>* getSelectionBox()
+	{
+		if(m_is_local_player)
+			return NULL;
+		return &m_selection_box;
+	}
+	v3f getPosition()
+	{
+		return pos_translator.vect_show;
+	}
+		
+	void addToScene(scene::ISceneManager *smgr, ITextureSource *tsrc,
+			IrrlichtDevice *irr)
+	{
+		if(m_node != NULL)
+			return;
+		if(m_is_local_player)
+			return;
+		
+		//video::IVideoDriver* driver = smgr->getVideoDriver();
+		gui::IGUIEnvironment* gui = irr->getGUIEnvironment();
+		
+		scene::SMesh *mesh = new scene::SMesh();
+		{ // Front
+		scene::IMeshBuffer *buf = new scene::SMeshBuffer();
+		video::SColor c(255,255,255,255);
+		video::S3DVertex vertices[4] =
+		{
+			video::S3DVertex(-BS/2,0,0, 0,0,0, c, 0,1),
+			video::S3DVertex(BS/2,0,0, 0,0,0, c, 1,1),
+			video::S3DVertex(BS/2,BS*2,0, 0,0,0, c, 1,0),
+			video::S3DVertex(-BS/2,BS*2,0, 0,0,0, c, 0,0),
+		};
+		u16 indices[] = {0,1,2,2,3,0};
+		buf->append(vertices, 4, indices, 6);
+		// Set material
+		buf->getMaterial().setFlag(video::EMF_LIGHTING, false);
+		buf->getMaterial().setTexture(0, tsrc->getTextureRaw("player.png"));
+		buf->getMaterial().setFlag(video::EMF_BILINEAR_FILTER, false);
+		buf->getMaterial().setFlag(video::EMF_FOG_ENABLE, true);
+		buf->getMaterial().MaterialType = video::EMT_TRANSPARENT_ALPHA_CHANNEL;
+		// Add to mesh
+		mesh->addMeshBuffer(buf);
+		buf->drop();
+		}
+		{ // Back
+		scene::IMeshBuffer *buf = new scene::SMeshBuffer();
+		video::SColor c(255,255,255,255);
+		video::S3DVertex vertices[4] =
+		{
+			video::S3DVertex(BS/2,0,0, 0,0,0, c, 1,1),
+			video::S3DVertex(-BS/2,0,0, 0,0,0, c, 0,1),
+			video::S3DVertex(-BS/2,BS*2,0, 0,0,0, c, 0,0),
+			video::S3DVertex(BS/2,BS*2,0, 0,0,0, c, 1,0),
+		};
+		u16 indices[] = {0,1,2,2,3,0};
+		buf->append(vertices, 4, indices, 6);
+		// Set material
+		buf->getMaterial().setFlag(video::EMF_LIGHTING, false);
+		buf->getMaterial().setTexture(0, tsrc->getTextureRaw("player_back.png"));
+		buf->getMaterial().setFlag(video::EMF_BILINEAR_FILTER, false);
+		buf->getMaterial().setFlag(video::EMF_FOG_ENABLE, true);
+		buf->getMaterial().MaterialType = video::EMT_TRANSPARENT_ALPHA_CHANNEL_REF;
+		// Add to mesh
+		mesh->addMeshBuffer(buf);
+		buf->drop();
+		}
+		m_node = smgr->addMeshSceneNode(mesh, NULL);
+		mesh->drop();
+		// Set it to use the materials of the meshbuffers directly.
+		// This is needed for changing the texture in the future
+		m_node->setReadOnlyMaterials(true);
+		updateNodePos();
+
+		// Add a text node for showing the name
+		std::wstring wname = narrow_to_wide(m_name);
+		m_text = smgr->addTextSceneNode(gui->getBuiltInFont(),
+				wname.c_str(), video::SColor(255,255,255,255), m_node);
+		m_text->setPosition(v3f(0, (f32)BS*2.1, 0));
+
+	}
+
+	void removeFromScene()
+	{
+		if(m_node == NULL)
+			return;
+
+		m_node->remove();
+		m_node = NULL;
+	}
+
+	void updateLight(u8 light_at_pos)
+	{
+		if(m_node == NULL)
+			return;
+		
+		if(light_at_pos <= 2)
+		{
+			m_node->setVisible(false);
+			return;
+		}
+
+		m_node->setVisible(true);
+
+		u8 li = decode_light(light_at_pos);
+		video::SColor color(255,li,li,li);
+		setMeshVerticesColor(m_node->getMesh(), color);
+	}
+
+	v3s16 getLightPosition()
+	{
+		return floatToInt(m_position+v3f(0,BS*1.5,0), BS);
+	}
+
+	void updateNodePos()
+	{
+		if(m_node == NULL)
+			return;
+
+		m_node->setPosition(pos_translator.vect_show);
+
+		v3f rot = m_node->getRotation();
+		rot.Y = -m_yaw;
+		m_node->setRotation(rot);
+	}
+
+	void step(float dtime, ClientEnvironment *env)
+	{
+		pos_translator.translate(dtime);
+		updateNodePos();
+	}
+
+	void processMessage(const std::string &data)
+	{
+		//infostream<<"PlayerCAO: Got message"<<std::endl;
+		std::istringstream is(data, std::ios::binary);
+		// command
+		u8 cmd = readU8(is);
+		if(cmd == 0) // update position
+		{
+			// pos
+			m_position = readV3F1000(is);
+			// yaw
+			m_yaw = readF1000(is);
+
+			pos_translator.update(m_position, false);
+
+			updateNodePos();
+		}
+	}
+};
+
+// Prototype
+PlayerCAO proto_PlayerCAO(NULL, NULL);
 
 

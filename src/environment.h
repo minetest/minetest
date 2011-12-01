@@ -376,7 +376,8 @@ class ClientEnvironment : public Environment
 {
 public:
 	ClientEnvironment(ClientMap *map, scene::ISceneManager *smgr,
-			ITextureSource *texturesource, IGameDef *gamedef);
+			ITextureSource *texturesource, IGameDef *gamedef,
+			IrrlichtDevice *device);
 	~ClientEnvironment();
 
 	Map & getMap()
@@ -454,6 +455,7 @@ private:
 	scene::ISceneManager *m_smgr;
 	ITextureSource *m_texturesource;
 	IGameDef *m_gamedef;
+	IrrlichtDevice *m_irr;
 	core::map<u16, ClientActiveObject*> m_active_objects;
 	Queue<ClientEnvEvent> m_client_event_queue;
 	IntervalLimiter m_active_object_light_update_interval;

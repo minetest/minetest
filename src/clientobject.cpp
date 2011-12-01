@@ -26,9 +26,11 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 	ClientActiveObject
 */
 
-ClientActiveObject::ClientActiveObject(u16 id, IGameDef *gamedef):
+ClientActiveObject::ClientActiveObject(u16 id, IGameDef *gamedef,
+		ClientEnvironment *env):
 	ActiveObject(id),
-	m_gamedef(gamedef)
+	m_gamedef(gamedef),
+	m_env(env)
 {
 }
 
@@ -37,7 +39,8 @@ ClientActiveObject::~ClientActiveObject()
 	removeFromScene();
 }
 
-ClientActiveObject* ClientActiveObject::create(u8 type, IGameDef *gamedef)
+ClientActiveObject* ClientActiveObject::create(u8 type, IGameDef *gamedef,
+		ClientEnvironment *env)
 {
 	// Find factory function
 	core::map<u16, Factory>::Node *n;
@@ -51,7 +54,7 @@ ClientActiveObject* ClientActiveObject::create(u8 type, IGameDef *gamedef)
 	}
 
 	Factory f = n->getValue();
-	ClientActiveObject *object = (*f)(gamedef);
+	ClientActiveObject *object = (*f)(gamedef, env);
 	return object;
 }
 

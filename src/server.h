@@ -599,7 +599,7 @@ private:
 
 		Call with env and con locked.
 	*/
-	Player *emergePlayer(const char *name, u16 peer_id);
+	ServerRemotePlayer *emergePlayer(const char *name, u16 peer_id);
 	
 	// Locks environment and connection by its own
 	struct PeerChange;

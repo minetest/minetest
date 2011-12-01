@@ -240,5 +240,30 @@ private:
 	float m_last_sent_move_precision;
 };
 
+class ServerRemotePlayer;
+
+class PlayerSAO : public ServerActiveObject
+{
+public:
+	PlayerSAO(ServerEnvironment *env, v3f pos,
+			ServerRemotePlayer *player);
+	~PlayerSAO();
+	u8 getType() const
+		{return ACTIVEOBJECT_TYPE_PLAYER;}
+	void step(float dtime, bool send_recommended);
+	std::string getClientInitializationData();
+	std::string getStaticData();
+	bool isStaticAllowed() const
+	{ return false; }
+	void punch(ServerActiveObject *puncher);
+	/* PlayerSAO-specific */
+	void setPlayer(ServerRemotePlayer *player);
+	ServerRemotePlayer* getPlayer();
+	void positionUpdated();
+private:
+	ServerRemotePlayer *m_player;
+	bool m_position_updated;
+};
+
 #endif
 

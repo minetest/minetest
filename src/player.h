@@ -181,6 +181,8 @@ public:
 #include "serverobject.h"
 #include "content_object.h" // Object type IDs
 
+class PlayerSAO;
+
 class ServerRemotePlayer : public Player, public ServerActiveObject
 {
 public:
@@ -197,12 +199,11 @@ public:
 	{
 	}
 	
-	virtual void setPosition(const v3f &position)
-	{
-		Player::setPosition(position);
-		ServerActiveObject::setBasePosition(position);
-	}
+	virtual void setPosition(const v3f &position);
 	
+	void setSAO(PlayerSAO *sao);
+	PlayerSAO* getSAO();
+
 	/* ServerActiveObject interface */
 
 	u8 getType() const
@@ -242,10 +243,13 @@ public:
 	bool m_hp_not_sent;
 	
 private:
+
+	PlayerSAO *m_sao;
 };
 
 #ifndef SERVER
 
+#if 0
 /*
 	All the other players on the client are these
 */
@@ -337,6 +341,7 @@ private:
 	f32 m_pos_animation_time_counter;
 	v3f m_showpos;
 };
+#endif
 
 #endif // !SERVER
 

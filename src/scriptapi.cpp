@@ -1588,7 +1588,9 @@ private:
 			return NULL;
 		if(obj->getType() != ACTIVEOBJECT_TYPE_PLAYER)
 			return NULL;
-		return static_cast<ServerRemotePlayer*>(obj);
+		PlayerSAO *player_sao = static_cast<PlayerSAO*>(obj);
+		return player_sao->getPlayer();
+		//return static_cast<ServerRemotePlayer*>(obj);
 	}
 	
 	// Exported functions

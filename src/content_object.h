@@ -29,7 +29,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #define ACTIVEOBJECT_TYPE_LUAENTITY 7
 
-// Special type, not stored in active object lists
+// Special type, not stored as a static object
 #define ACTIVEOBJECT_TYPE_PLAYER 100
 
 #endif
