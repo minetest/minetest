@@ -1217,10 +1217,12 @@ void ServerEnvironment::getAddedActiveObjects(v3s16 pos, s16 radius,
 		// Discard if removed
 		if(object->m_removed)
 			continue;
-		// Discard if too far
-		f32 distance_f = object->getBasePosition().getDistanceFrom(pos_f);
-		if(distance_f > radius_f)
-			continue;
+		if(object->unlimitedTransferDistance() == false){
+			// Discard if too far
+			f32 distance_f = object->getBasePosition().getDistanceFrom(pos_f);
+			if(distance_f > radius_f)
+				continue;
+		}
 		// Discard if already on current_objects
 		core::map<u16, bool>::Node *n;
 		n = current_objects.find(id);
@@ -1255,24 +1257,33 @@ void ServerEnvironment::getRemovedActiveObjects(v3s16 pos, s16 radius,
 	{
 		u16 id = i.getNode()->getKey();
 		ServerActiveObject *object = getActiveObject(id);
-		if(object == NULL)
-		{
+
+		if(object == NULL){
 			infostream<<"ServerEnvironment::getRemovedActiveObjects():"
 					<<" object in current_objects is NULL"<<std::endl;
+			removed_objects.insert(id, false);
+			continue;
 		}
-		else if(object->m_removed == false)
+
+		if(object->m_removed)
 		{
-			f32 distance_f = object->getBasePosition().getDistanceFrom(pos_f);
-			/*infostream<<"removed == false"
-					<<"distance_f = "<<distance_f
-					<<", radius_f = "<<radius_f<<std::endl;*/
-			if(distance_f < radius_f)
-			{
-				// Not removed
-				continue;
-			}
+			removed_objects.insert(id, false);
+			continue;
 		}
-		removed_objects.insert(id, false);
+		
+		// If transfer distance is unlimited, don't remove
+		if(object->unlimitedTransferDistance())
+			continue;
+
+		f32 distance_f = object->getBasePosition().getDistanceFrom(pos_f);
+
+		if(distance_f >= radius_f)
+		{
+			removed_objects.insert(id, false);
+			continue;
+		}
+		
+		// Not removed
 	}
 }
 

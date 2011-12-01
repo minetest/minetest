@@ -242,6 +242,11 @@ void ServerRemotePlayer::removingFromEnvironment()
 	m_is_in_environment = false;
 }
 
+bool ServerRemotePlayer::unlimitedTransferDistance() const
+{
+	return true;
+}
+
 void ServerRemotePlayer::step(float dtime, bool send_recommended)
 {
 	if(send_recommended == false)

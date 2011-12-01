@@ -216,6 +216,9 @@ public:
 	
 	bool environmentDeletes() const
 	{ return false; }
+
+	virtual bool unlimitedTransferDistance() const;
+	
 	bool isStaticAllowed() const
 	{ return false; }
 

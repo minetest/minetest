@@ -63,6 +63,9 @@ public:
 	// environment
 	virtual bool environmentDeletes() const
 	{ return true; }
+
+	virtual bool unlimitedTransferDistance() const
+	{ return false; }
 	
 	// Create a certain type of ServerActiveObject
 	static ServerActiveObject* create(u8 type,
