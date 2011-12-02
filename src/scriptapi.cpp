@@ -400,7 +400,7 @@ static void setfloatfield(lua_State *L, int table,
 */
 
 static void inventory_set_list_from_lua(Inventory *inv, const char *name,
-		lua_State *L, int tableindex, IGameDef *gamedef)
+		lua_State *L, int tableindex, IGameDef *gamedef, int forcesize=-1)
 {
 	// If nil, delete list
 	if(lua_isnil(L, tableindex)){
@@ -424,12 +424,19 @@ static void inventory_set_list_from_lua(Inventory *inv, const char *name,
 	int index = 0;
 	for(std::list<std::string>::const_iterator
 			i = items.begin(); i != items.end(); i++){
+		if(forcesize != -1 && index == forcesize)
+			break;
 		const std::string &itemstring = *i;
 		InventoryItem *newitem = NULL;
 		if(itemstring != "")
 			newitem = InventoryItem::deSerialize(itemstring,
 					gamedef);
 		InventoryItem *olditem = invlist->changeItem(index, newitem);
+		delete olditem;
+		index++;
+	}
+	while(forcesize != -1 && index < forcesize){
+		InventoryItem *olditem = invlist->changeItem(index, NULL);
 		delete olditem;
 		index++;
 	}
@@ -455,7 +462,7 @@ static void inventory_get_list_to_lua(Inventory *inv, const char *name,
 		lua_pushvalue(L, table_insert);
 		lua_pushvalue(L, table);
 		if(item == NULL){
-			lua_pushnil(L);
+			lua_pushstring(L, "");
 		} else {
 			lua_pushstring(L, item->getItemString().c_str());
 		}
@@ -1970,7 +1977,7 @@ private:
 		const char *name = lua_tostring(L, 2);
 		// Do it
 		inventory_set_list_from_lua(&player->inventory, name, L, 3,
-				player->getEnv()->getGameDef());
+				player->getEnv()->getGameDef(), PLAYER_INVENTORY_SIZE);
 		player->m_inventory_not_sent = true;
 		return 0;
 	}
