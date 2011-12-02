@@ -437,7 +437,7 @@ public:
 		Callbacks for activeobjects
 	*/
 
-	void damageLocalPlayer(u8 damage);
+	void damageLocalPlayer(u8 damage, bool handle_hp=true);
 
 	/*
 		Client likes to call these

@@ -2090,6 +2090,8 @@ private:
 	float m_yaw;
 	SmoothTranslator pos_translator;
 	bool m_is_local_player;
+	LocalPlayer *m_local_player;
+	float m_damage_visual_timer;
 
 public:
 	PlayerCAO(IGameDef *gamedef, ClientEnvironment *env):
@@ -2099,7 +2101,9 @@ public:
 		m_text(NULL),
 		m_position(v3f(0,10*BS,0)),
 		m_yaw(0),
-		m_is_local_player(false)
+		m_is_local_player(false),
+		m_local_player(NULL),
+		m_damage_visual_timer(0)
 	{
 		if(gamedef == NULL)
 			ClientActiveObject::registerType(getType(), create);
@@ -2122,13 +2126,13 @@ public:
 		// yaw
 		m_yaw = readF1000(is);
 
-		Player *player = m_env->getPlayer(m_name.c_str());
-		if(player && player->isLocal())
-			m_is_local_player = true;
-		
 		pos_translator.init(m_position);
 
-		updateNodePos();
+		Player *player = m_env->getPlayer(m_name.c_str());
+		if(player && player->isLocal()){
+			m_is_local_player = true;
+			m_local_player = (LocalPlayer*)player;
+		}
 	}
 
 	~PlayerCAO()
@@ -2183,7 +2187,6 @@ public:
 		buf->append(vertices, 4, indices, 6);
 		// Set material
 		buf->getMaterial().setFlag(video::EMF_LIGHTING, false);
-		buf->getMaterial().setTexture(0, tsrc->getTextureRaw("player.png"));
 		buf->getMaterial().setFlag(video::EMF_BILINEAR_FILTER, false);
 		buf->getMaterial().setFlag(video::EMF_FOG_ENABLE, true);
 		buf->getMaterial().MaterialType = video::EMT_TRANSPARENT_ALPHA_CHANNEL;
@@ -2205,7 +2208,6 @@ public:
 		buf->append(vertices, 4, indices, 6);
 		// Set material
 		buf->getMaterial().setFlag(video::EMF_LIGHTING, false);
-		buf->getMaterial().setTexture(0, tsrc->getTextureRaw("player_back.png"));
 		buf->getMaterial().setFlag(video::EMF_BILINEAR_FILTER, false);
 		buf->getMaterial().setFlag(video::EMF_FOG_ENABLE, true);
 		buf->getMaterial().MaterialType = video::EMT_TRANSPARENT_ALPHA_CHANNEL_REF;
@@ -2225,7 +2227,9 @@ public:
 		m_text = smgr->addTextSceneNode(gui->getBuiltInFont(),
 				wname.c_str(), video::SColor(255,255,255,255), m_node);
 		m_text->setPosition(v3f(0, (f32)BS*2.1, 0));
-
+		
+		updateTextures("");
+		updateNodePos();
 	}
 
 	void removeFromScene()
@@ -2295,6 +2299,36 @@ public:
 
 			updateNodePos();
 		}
+	}
+
+	void updateTextures(const std::string &mod)
+	{
+		if(!m_node)
+			return;
+		ITextureSource *tsrc = m_gamedef->tsrc();
+		scene::IMesh *mesh = m_node->getMesh();
+		if(mesh){
+			{
+				std::string tname = "player.png";
+				tname += mod;
+				scene::IMeshBuffer *buf = mesh->getMeshBuffer(0);
+				buf->getMaterial().setTexture(0,
+						tsrc->getTextureRaw(tname));
+			}
+			{
+				std::string tname = "player_back.png";
+				tname += mod;
+				scene::IMeshBuffer *buf = mesh->getMeshBuffer(1);
+				buf->getMaterial().setTexture(0,
+						tsrc->getTextureRaw(tname));
+			}
+		}
+	}
+	
+	bool directReportPunch(const std::string &toolname, v3f dir)
+	{
+		updateTextures("^[brighten");
+		return false;
 	}
 };
 

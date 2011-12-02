@@ -37,6 +37,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "scriptapi.h"
 #include "strfnd.h"
 #include "nameidmapping.h" // For loading legacy MaterialItems
+#include "serverremoteplayer.h"
 
 /*
 	InventoryItem

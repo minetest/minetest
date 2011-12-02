@@ -37,6 +37,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "nodemetadata.h"
 #include "main.h" // For g_settings, g_profiler
 #include "gamedef.h"
+#include "serverremoteplayer.h"
 
 #define PP(x) "("<<(x).X<<","<<(x).Y<<","<<(x).Z<<")"
 
@@ -2189,15 +2190,17 @@ void ClientEnvironment::processActiveObjectMessage(u16 id,
 	Callbacks for activeobjects
 */
 
-void ClientEnvironment::damageLocalPlayer(u8 damage)
+void ClientEnvironment::damageLocalPlayer(u8 damage, bool handle_hp)
 {
 	LocalPlayer *lplayer = getLocalPlayer();
 	assert(lplayer);
-
-	if(lplayer->hp > damage)
-		lplayer->hp -= damage;
-	else
-		lplayer->hp = 0;
+	
+	if(handle_hp){
+		if(lplayer->hp > damage)
+			lplayer->hp -= damage;
+		else
+			lplayer->hp = 0;
+	}
 
 	ClientEnvEvent event;
 	event.type = CEE_PLAYER_DAMAGE;

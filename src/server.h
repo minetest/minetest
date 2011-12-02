@@ -31,6 +31,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "ban.h"
 #include "gamedef.h"
 #include "serialization.h" // For SER_FMT_VER_INVALID
+#include "serverremoteplayer.h"
 struct LuaState;
 typedef struct lua_State lua_State;
 class IWritableToolDefManager;
