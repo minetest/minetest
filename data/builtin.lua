@@ -156,9 +156,9 @@ minetest.register_node("ignore", {
 
 --
 -- stackstring manipulation functions
--- example stackstring: 'CraftItem "apple" 4'
--- example item: {type="CraftItem", name="apple"}
--- example item: {type="ToolItem", name="SteelPick", wear="23272"}
+-- example stackstring: 'craft "apple" 4'
+-- example item: {type="craft", name="apple"}
+-- example item: {type="tool", name="SteelPick", wear="23272"}
 --
 
 function stackstring_take_item(stackstring)
@@ -167,13 +167,13 @@ function stackstring_take_item(stackstring)
 	end
 	local stacktype = nil
 	stacktype = string.match(stackstring,
-			'([%a%d]+Item[%a%d]*)')
-	if stacktype == "NodeItem" or stacktype == "CraftItem" then
+			'([%a%d]+)')
+	if stacktype == "node" or stacktype == "craft" then
 		local itemtype = nil
 		local itemname = nil
 		local itemcount = nil
 		itemtype, itemname, itemcount = string.match(stackstring,
-				'([%a%d]+Item[%a%d]*) "([^"]*)" (%d+)')
+				'([%a%d]+) "([^"]*)" (%d+)')
 		itemcount = tonumber(itemcount)
 		if itemcount == 0 then
 			return '', nil
@@ -183,12 +183,12 @@ function stackstring_take_item(stackstring)
 			return itemtype.." \""..itemname.."\" "..(itemcount-1),
 					{type=itemtype, name=itemname}
 		end
-	elseif stacktype == "ToolItem" then
+	elseif stacktype == "tool" then
 		local itemtype = nil
 		local itemname = nil
 		local itemwear = nil
 		itemtype, itemname, itemwear = string.match(stackstring,
-				'([%a%d]+Item[%a%d]*) "([^"]*)" (%d+)')
+				'([%a%d]+) "([^"]*)" (%d+)')
 		itemwear = tonumber(itemwear)
 		return '', {type=itemtype, name=itemname, wear=itemwear}
 	end
@@ -201,17 +201,17 @@ function stackstring_put_item(stackstring, item)
 	stackstring = stackstring or ''
 	local stacktype = nil
 	stacktype = string.match(stackstring,
-			'([%a%d]+Item[%a%d]*)')
+			'([%a%d]+)')
 	stacktype = stacktype or ''
 	if stacktype ~= '' and stacktype ~= item.type then
 		return stackstring, false
 	end
-	if item.type == "NodeItem" or item.type == "CraftItem" then
+	if item.type == "node" or item.type == "craft" then
 		local itemtype = nil
 		local itemname = nil
 		local itemcount = nil
 		itemtype, itemname, itemcount = string.match(stackstring,
-				'([%a%d]+Item[%a%d]*) "([^"]*)" (%d+)')
+				'([%a%d]+) "([^"]*)" (%d+)')
 		itemtype = itemtype or item.type
 		itemname = itemname or item.name
 		if itemcount == nil then
@@ -219,7 +219,7 @@ function stackstring_put_item(stackstring, item)
 		end
 		itemcount = itemcount + 1
 		return itemtype.." \""..itemname.."\" "..itemcount, true
-	elseif item.type == "ToolItem" then
+	elseif item.type == "tool" then
 		if stacktype ~= nil then
 			return stackstring, false
 		end
@@ -227,7 +227,7 @@ function stackstring_put_item(stackstring, item)
 		local itemname = nil
 		local itemwear = nil
 		itemtype, itemname, itemwear = string.match(stackstring,
-				'([%a%d]+Item[%a%d]*) "([^"]*)" (%d+)')
+				'([%a%d]+) "([^"]*)" (%d+)')
 		itemwear = tonumber(itemwear)
 		return itemtype.." \""..itemname.."\" "..itemwear, true
 	end
@@ -253,53 +253,53 @@ function test_stackstring()
 	local item
 	local success
 
-	stack, item = stackstring_take_item('NodeItem "TNT" 3')
-	assert(stack == 'NodeItem "TNT" 2')
-	assert(item.type == 'NodeItem')
+	stack, item = stackstring_take_item('node "TNT" 3')
+	assert(stack == 'node "TNT" 2')
+	assert(item.type == 'node')
 	assert(item.name == 'TNT')
 
-	stack, item = stackstring_take_item('CraftItem "with spaces" 2')
-	assert(stack == 'CraftItem "with spaces" 1')
-	assert(item.type == 'CraftItem')
+	stack, item = stackstring_take_item('craft "with spaces" 2')
+	assert(stack == 'craft "with spaces" 1')
+	assert(item.type == 'craft')
 	assert(item.name == 'with spaces')
 
-	stack, item = stackstring_take_item('CraftItem "with spaces" 1')
+	stack, item = stackstring_take_item('craft "with spaces" 1')
 	assert(stack == '')
-	assert(item.type == 'CraftItem')
+	assert(item.type == 'craft')
 	assert(item.name == 'with spaces')
 
-	stack, item = stackstring_take_item('CraftItem "s8df2kj3" 0')
+	stack, item = stackstring_take_item('craft "s8df2kj3" 0')
 	assert(stack == '')
 	assert(item == nil)
 
-	stack, item = stackstring_take_item('ToolItem "With Spaces" 32487')
+	stack, item = stackstring_take_item('tool "With Spaces" 32487')
 	assert(stack == '')
-	assert(item.type == 'ToolItem')
+	assert(item.type == 'tool')
 	assert(item.name == 'With Spaces')
 	assert(item.wear == 32487)
 
-	stack, success = stackstring_put_item('NodeItem "With Spaces" 40',
-			{type='NodeItem', name='With Spaces'})
-	assert(stack == 'NodeItem "With Spaces" 41')
+	stack, success = stackstring_put_item('node "With Spaces" 40',
+			{type='node', name='With Spaces'})
+	assert(stack == 'node "With Spaces" 41')
 	assert(success == true)
 
-	stack, success = stackstring_put_item('CraftItem "With Spaces" 40',
-			{type='CraftItem', name='With Spaces'})
-	assert(stack == 'CraftItem "With Spaces" 41')
+	stack, success = stackstring_put_item('craft "With Spaces" 40',
+			{type='craft', name='With Spaces'})
+	assert(stack == 'craft "With Spaces" 41')
 	assert(success == true)
 
-	stack, success = stackstring_put_item('ToolItem "With Spaces" 32487',
-			{type='ToolItem', name='With Spaces'})
-	assert(stack == 'ToolItem "With Spaces" 32487')
+	stack, success = stackstring_put_item('tool "With Spaces" 32487',
+			{type='tool', name='With Spaces'})
+	assert(stack == 'tool "With Spaces" 32487')
 	assert(success == false)
 
-	stack, success = stackstring_put_item('NodeItem "With Spaces" 40',
-			{type='ToolItem', name='With Spaces'})
-	assert(stack == 'NodeItem "With Spaces" 40')
+	stack, success = stackstring_put_item('node "With Spaces" 40',
+			{type='tool', name='With Spaces'})
+	assert(stack == 'node "With Spaces" 40')
 	assert(success == false)
 	
-	assert(stackstring_put_stackstring('NodeItem "With Spaces" 2',
-			'NodeItem "With Spaces" 1') == 'NodeItem "With Spaces" 3')
+	assert(stackstring_put_stackstring('node "With Spaces" 2',
+			'node "With Spaces" 1') == 'node "With Spaces" 3')
 end
 test_stackstring()
 
@@ -312,7 +312,7 @@ minetest.craftitem_place_item = function(item, placer, pos)
 	--print("item: " .. dump(item))
 	--print("placer: " .. dump(placer))
 	--print("pos: " .. dump(pos))
-	minetest.env:add_item(pos, 'CraftItem "' .. item .. '" 1')
+	minetest.env:add_item(pos, 'craft "' .. item .. '" 1')
 	return true
 end
 

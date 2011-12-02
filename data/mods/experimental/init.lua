@@ -56,7 +56,7 @@ minetest.register_abm({
 		_, srcitem = stackstring_take_item(srclist[1])
 		_, fuelitem = stackstring_take_item(fuellist[1])
 		if not srcitem or not fuelitem then return end
-		if fuelitem.type == "NodeItem" then
+		if fuelitem.type == "node" then
 			local prop = minetest.registered_nodes[fuelitem.name]
 			if prop == nil then return end
 			if prop.furnace_burntime < 0 then return end
@@ -64,7 +64,7 @@ minetest.register_abm({
 			return
 		end
 		local resultstack = nil
-		if srcitem.type == "NodeItem" then
+		if srcitem.type == "node" then
 			local prop = minetest.registered_nodes[srcitem.name]
 			if prop == nil then return end
 			if prop.cookresult_item == "" then return end
@@ -97,11 +97,11 @@ minetest.register_abm({
 })
 
 minetest.register_craft({
-	output = 'NodeItem "luafurnace" 1',
+	output = 'node "luafurnace" 1',
 	recipe = {
-		{'NodeItem "cobble"', 'NodeItem "cobble"', 'NodeItem "cobble"'},
-		{'NodeItem "cobble"', 'NodeItem "cobble"', 'NodeItem "cobble"'},
-		{'NodeItem "cobble"', 'NodeItem "cobble"', 'NodeItem "cobble"'},
+		{'node "cobble"', 'node "cobble"', 'node "cobble"'},
+		{'node "cobble"', 'node "cobble"', 'node "cobble"'},
+		{'node "cobble"', 'node "cobble"', 'node "cobble"'},
 	}
 })
 
@@ -126,9 +126,9 @@ minetest.register_tool("horribletool", {
 --]]
 
 minetest.register_craft({
-	output = 'NodeItem "somenode" 4',
+	output = 'node "somenode" 4',
 	recipe = {
-		{'CraftItem "Stick" 1'},
+		{'craft "Stick" 1'},
 	}
 })
 
@@ -151,11 +151,11 @@ minetest.register_node("somenode", {
 --
 
 minetest.register_craft({
-	output = 'NodeItem "TNT" 4',
+	output = 'node "TNT" 4',
 	recipe = {
-		{'NodeItem "wood" 1'},
-		{'CraftItem "lump_of_coal" 1'},
-		{'NodeItem "wood" 1'}
+		{'node "wood" 1'},
+		{'craft "lump_of_coal" 1'},
+		{'node "wood" 1'}
 	}
 })
 
@@ -213,7 +213,7 @@ function TNT:on_punch(hitter)
 	self.health = self.health - 1
 	if self.health <= 0 then
 		self.object:remove()
-		hitter:add_to_inventory("NodeItem TNT 1")
+		hitter:add_to_inventory("node TNT 1")
 		hitter:set_hp(hitter:get_hp() - 1)
 	end
 end
@@ -259,7 +259,7 @@ minetest.register_entity("testentity", {
 
 	on_punch = function(self, hitter)
 		self.object:remove()
-		hitter:add_to_inventory('CraftItem testobject1 1')
+		hitter:add_to_inventory('craft testobject1 1')
 	end,
 })
 

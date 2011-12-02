@@ -158,7 +158,7 @@ public:
 	}
 	virtual void serialize(std::ostream &os) const
 	{
-		os<<"NodeItem";
+		os<<"node";
 		os<<" \"";
 		os<<m_nodename;
 		os<<"\" ";
@@ -249,7 +249,7 @@ public:
 	}
 	virtual void serialize(std::ostream &os) const
 	{
-		os<<getName();
+		os<<"craft";
 		os<<" \"";
 		os<<m_subname;
 		os<<"\" ";
@@ -345,7 +345,7 @@ public:
 	}
 	virtual void serialize(std::ostream &os) const
 	{
-		os<<getName();
+		os<<"tool";
 		os<<" \"";
 		os<<m_toolname;
 		os<<"\" ";

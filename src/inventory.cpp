@@ -99,7 +99,7 @@ InventoryItem* InventoryItem::deSerialize(std::istream &is, IGameDef *gamedef)
 			throw SerializationError("Too large material number");
 		return new MaterialItem(gamedef, material, count);
 	}
-	else if(name == "NodeItem" || name == "MaterialItem3")
+	else if(name == "node" || name == "NodeItem" || name == "MaterialItem3")
 	{
 		std::string all;
 		std::getline(is, all, '\n');
@@ -126,7 +126,7 @@ InventoryItem* InventoryItem::deSerialize(std::istream &is, IGameDef *gamedef)
 		std::getline(is, inventorystring, '|');
 		throw SerializationError("MBOItem not supported anymore");
 	}
-	else if(name == "CraftItem")
+	else if(name == "craft" || name == "CraftItem")
 	{
 		std::string all;
 		std::getline(is, all, '\n');
@@ -148,7 +148,7 @@ InventoryItem* InventoryItem::deSerialize(std::istream &is, IGameDef *gamedef)
 			count = 1;
 		return new CraftItem(gamedef, subname, count);
 	}
-	else if(name == "ToolItem")
+	else if(name == "tool" || name == "ToolItem")
 	{
 		std::string all;
 		std::getline(is, all, '\n');

@@ -14,16 +14,16 @@
 -- {x=num, y=num, z=num}
 --
 -- stackstring/itemstring: A stack of items in serialized format.
--- eg. 'NodeItem "dirt" 5'
--- eg. 'ToolItem "WPick" 21323'
--- eg. 'CraftItem "apple" 2'
+-- eg. 'node "dirt" 5'
+-- eg. 'tool "WPick" 21323'
+-- eg. 'craft "apple" 2'
 --
 -- item: A single item in Lua table format.
--- eg. {type="NodeItem", name="dirt"} 
+-- eg. {type="node", name="dirt"} 
 --     ^ a single dirt node
--- eg. {type="ToolItem", name="WPick", wear=21323}
+-- eg. {type="tool", name="WPick", wear=21323}
 --     ^ a wooden pick about 1/3 weared out
--- eg. {type="CraftItem", name="apple"}
+-- eg. {type="craft", name="apple"}
 --     ^ an apple.
 --
 -- Global functions:
@@ -235,11 +235,11 @@
 -- 
 -- Recipe:
 -- {
---     output = 'ToolItem "STPick"',
+--     output = 'tool "STPick"',
 --     recipe = {
---         {'NodeItem "cobble"', 'NodeItem "cobble"', 'NodeItem "cobble"'},
---         {'', 'CraftItem "Stick"', ''},
---         {'', 'CraftItem "Stick"', ''},
+--         {'node "cobble"', 'node "cobble"', 'node "cobble"'},
+--         {'', 'craft "Stick"', ''},
+--         {'', 'craft "Stick"', ''},
 --     }
 -- }
 --
@@ -444,270 +444,270 @@ minetest.register_tool("", {
 --
 
 minetest.register_craft({
-	output = 'NodeItem "wood" 4',
+	output = 'node "wood" 4',
 	recipe = {
-		{'NodeItem "tree"'},
+		{'node "tree"'},
 	}
 })
 
 minetest.register_craft({
-	output = 'CraftItem "Stick" 4',
+	output = 'craft "Stick" 4',
 	recipe = {
-		{'NodeItem "wood"'},
+		{'node "wood"'},
 	}
 })
 
 minetest.register_craft({
-	output = 'NodeItem "wooden_fence" 2',
+	output = 'node "wooden_fence" 2',
 	recipe = {
-		{'CraftItem "Stick"', 'CraftItem "Stick"', 'CraftItem "Stick"'},
-		{'CraftItem "Stick"', 'CraftItem "Stick"', 'CraftItem "Stick"'},
+		{'craft "Stick"', 'craft "Stick"', 'craft "Stick"'},
+		{'craft "Stick"', 'craft "Stick"', 'craft "Stick"'},
 	}
 })
 
 minetest.register_craft({
-	output = 'NodeItem "sign_wall" 1',
+	output = 'node "sign_wall" 1',
 	recipe = {
-		{'NodeItem "wood"', 'NodeItem "wood"', 'NodeItem "wood"'},
-		{'NodeItem "wood"', 'NodeItem "wood"', 'NodeItem "wood"'},
-		{'', 'CraftItem "Stick"', ''},
+		{'node "wood"', 'node "wood"', 'node "wood"'},
+		{'node "wood"', 'node "wood"', 'node "wood"'},
+		{'', 'craft "Stick"', ''},
 	}
 })
 
 minetest.register_craft({
-	output = 'NodeItem "torch" 4',
+	output = 'node "torch" 4',
 	recipe = {
-		{'CraftItem "lump_of_coal"'},
-		{'CraftItem "Stick"'},
+		{'craft "lump_of_coal"'},
+		{'craft "Stick"'},
 	}
 })
 
 minetest.register_craft({
-	output = 'ToolItem "WPick"',
+	output = 'tool "WPick"',
 	recipe = {
-		{'NodeItem "wood"', 'NodeItem "wood"', 'NodeItem "wood"'},
-		{'', 'CraftItem "Stick"', ''},
-		{'', 'CraftItem "Stick"', ''},
+		{'node "wood"', 'node "wood"', 'node "wood"'},
+		{'', 'craft "Stick"', ''},
+		{'', 'craft "Stick"', ''},
 	}
 })
 
 minetest.register_craft({
-	output = 'ToolItem "STPick"',
+	output = 'tool "STPick"',
 	recipe = {
-		{'NodeItem "cobble"', 'NodeItem "cobble"', 'NodeItem "cobble"'},
-		{'', 'CraftItem "Stick"', ''},
-		{'', 'CraftItem "Stick"', ''},
+		{'node "cobble"', 'node "cobble"', 'node "cobble"'},
+		{'', 'craft "Stick"', ''},
+		{'', 'craft "Stick"', ''},
 	}
 })
 
 minetest.register_craft({
-	output = 'ToolItem "SteelPick"',
+	output = 'tool "SteelPick"',
 	recipe = {
-		{'CraftItem "steel_ingot"', 'CraftItem "steel_ingot"', 'CraftItem "steel_ingot"'},
-		{'', 'CraftItem "Stick"', ''},
-		{'', 'CraftItem "Stick"', ''},
+		{'craft "steel_ingot"', 'craft "steel_ingot"', 'craft "steel_ingot"'},
+		{'', 'craft "Stick"', ''},
+		{'', 'craft "Stick"', ''},
 	}
 })
 
 minetest.register_craft({
-	output = 'ToolItem "MesePick"',
+	output = 'tool "MesePick"',
 	recipe = {
-		{'NodeItem "mese"', 'NodeItem "mese"', 'NodeItem "mese"'},
-		{'', 'CraftItem "Stick"', ''},
-		{'', 'CraftItem "Stick"', ''},
+		{'node "mese"', 'node "mese"', 'node "mese"'},
+		{'', 'craft "Stick"', ''},
+		{'', 'craft "Stick"', ''},
 	}
 })
 
 minetest.register_craft({
-	output = 'ToolItem "WShovel"',
+	output = 'tool "WShovel"',
 	recipe = {
-		{'NodeItem "wood"'},
-		{'CraftItem "Stick"'},
-		{'CraftItem "Stick"'},
+		{'node "wood"'},
+		{'craft "Stick"'},
+		{'craft "Stick"'},
 	}
 })
 
 minetest.register_craft({
-	output = 'ToolItem "STShovel"',
+	output = 'tool "STShovel"',
 	recipe = {
-		{'NodeItem "cobble"'},
-		{'CraftItem "Stick"'},
-		{'CraftItem "Stick"'},
+		{'node "cobble"'},
+		{'craft "Stick"'},
+		{'craft "Stick"'},
 	}
 })
 
 minetest.register_craft({
-	output = 'ToolItem "SteelShovel"',
+	output = 'tool "SteelShovel"',
 	recipe = {
-		{'CraftItem "steel_ingot"'},
-		{'CraftItem "Stick"'},
-		{'CraftItem "Stick"'},
+		{'craft "steel_ingot"'},
+		{'craft "Stick"'},
+		{'craft "Stick"'},
 	}
 })
 
 minetest.register_craft({
-	output = 'ToolItem "WAxe"',
+	output = 'tool "WAxe"',
 	recipe = {
-		{'NodeItem "wood"', 'NodeItem "wood"'},
-		{'NodeItem "wood"', 'CraftItem "Stick"'},
-		{'', 'CraftItem "Stick"'},
+		{'node "wood"', 'node "wood"'},
+		{'node "wood"', 'craft "Stick"'},
+		{'', 'craft "Stick"'},
 	}
 })
 
 minetest.register_craft({
-	output = 'ToolItem "STAxe"',
+	output = 'tool "STAxe"',
 	recipe = {
-		{'NodeItem "cobble"', 'NodeItem "cobble"'},
-		{'NodeItem "cobble"', 'CraftItem "Stick"'},
-		{'', 'CraftItem "Stick"'},
+		{'node "cobble"', 'node "cobble"'},
+		{'node "cobble"', 'craft "Stick"'},
+		{'', 'craft "Stick"'},
 	}
 })
 
 minetest.register_craft({
-	output = 'ToolItem "SteelAxe"',
+	output = 'tool "SteelAxe"',
 	recipe = {
-		{'CraftItem "steel_ingot"', 'CraftItem "steel_ingot"'},
-		{'CraftItem "steel_ingot"', 'CraftItem "Stick"'},
-		{'', 'CraftItem "Stick"'},
+		{'craft "steel_ingot"', 'craft "steel_ingot"'},
+		{'craft "steel_ingot"', 'craft "Stick"'},
+		{'', 'craft "Stick"'},
 	}
 })
 
 minetest.register_craft({
-	output = 'ToolItem "WSword"',
+	output = 'tool "WSword"',
 	recipe = {
-		{'NodeItem "wood"'},
-		{'NodeItem "wood"'},
-		{'CraftItem "Stick"'},
+		{'node "wood"'},
+		{'node "wood"'},
+		{'craft "Stick"'},
 	}
 })
 
 minetest.register_craft({
-	output = 'ToolItem "STSword"',
+	output = 'tool "STSword"',
 	recipe = {
-		{'NodeItem "cobble"'},
-		{'NodeItem "cobble"'},
-		{'CraftItem "Stick"'},
+		{'node "cobble"'},
+		{'node "cobble"'},
+		{'craft "Stick"'},
 	}
 })
 
 minetest.register_craft({
-	output = 'ToolItem "SteelSword"',
+	output = 'tool "SteelSword"',
 	recipe = {
-		{'CraftItem "steel_ingot"'},
-		{'CraftItem "steel_ingot"'},
-		{'CraftItem "Stick"'},
+		{'craft "steel_ingot"'},
+		{'craft "steel_ingot"'},
+		{'craft "Stick"'},
 	}
 })
 
 minetest.register_craft({
-	output = 'NodeItem "rail" 15',
+	output = 'node "rail" 15',
 	recipe = {
-		{'CraftItem "steel_ingot"', '', 'CraftItem "steel_ingot"'},
-		{'CraftItem "steel_ingot"', 'CraftItem "Stick"', 'CraftItem "steel_ingot"'},
-		{'CraftItem "steel_ingot"', '', 'CraftItem "steel_ingot"'},
+		{'craft "steel_ingot"', '', 'craft "steel_ingot"'},
+		{'craft "steel_ingot"', 'craft "Stick"', 'craft "steel_ingot"'},
+		{'craft "steel_ingot"', '', 'craft "steel_ingot"'},
 	}
 })
 
 minetest.register_craft({
-	output = 'NodeItem "chest" 1',
+	output = 'node "chest" 1',
 	recipe = {
-		{'NodeItem "wood"', 'NodeItem "wood"', 'NodeItem "wood"'},
-		{'NodeItem "wood"', '', 'NodeItem "wood"'},
-		{'NodeItem "wood"', 'NodeItem "wood"', 'NodeItem "wood"'},
+		{'node "wood"', 'node "wood"', 'node "wood"'},
+		{'node "wood"', '', 'node "wood"'},
+		{'node "wood"', 'node "wood"', 'node "wood"'},
 	}
 })
 
 minetest.register_craft({
-	output = 'NodeItem "locked_chest" 1',
+	output = 'node "locked_chest" 1',
 	recipe = {
-		{'NodeItem "wood"', 'NodeItem "wood"', 'NodeItem "wood"'},
-		{'NodeItem "wood"', 'CraftItem "steel_ingot"', 'NodeItem "wood"'},
-		{'NodeItem "wood"', 'NodeItem "wood"', 'NodeItem "wood"'},
+		{'node "wood"', 'node "wood"', 'node "wood"'},
+		{'node "wood"', 'craft "steel_ingot"', 'node "wood"'},
+		{'node "wood"', 'node "wood"', 'node "wood"'},
 	}
 })
 
 minetest.register_craft({
-	output = 'NodeItem "furnace" 1',
+	output = 'node "furnace" 1',
 	recipe = {
-		{'NodeItem "cobble"', 'NodeItem "cobble"', 'NodeItem "cobble"'},
-		{'NodeItem "cobble"', '', 'NodeItem "cobble"'},
-		{'NodeItem "cobble"', 'NodeItem "cobble"', 'NodeItem "cobble"'},
+		{'node "cobble"', 'node "cobble"', 'node "cobble"'},
+		{'node "cobble"', '', 'node "cobble"'},
+		{'node "cobble"', 'node "cobble"', 'node "cobble"'},
 	}
 })
 
 minetest.register_craft({
-	output = 'NodeItem "steelblock" 1',
+	output = 'node "steelblock" 1',
 	recipe = {
-		{'CraftItem "steel_ingot"', 'CraftItem "steel_ingot"', 'CraftItem "steel_ingot"'},
-		{'CraftItem "steel_ingot"', 'CraftItem "steel_ingot"', 'CraftItem "steel_ingot"'},
-		{'CraftItem "steel_ingot"', 'CraftItem "steel_ingot"', 'CraftItem "steel_ingot"'},
+		{'craft "steel_ingot"', 'craft "steel_ingot"', 'craft "steel_ingot"'},
+		{'craft "steel_ingot"', 'craft "steel_ingot"', 'craft "steel_ingot"'},
+		{'craft "steel_ingot"', 'craft "steel_ingot"', 'craft "steel_ingot"'},
 	}
 })
 
 minetest.register_craft({
-	output = 'NodeItem "sandstone" 1',
+	output = 'node "sandstone" 1',
 	recipe = {
-		{'NodeItem "sand"', 'NodeItem "sand"'},
-		{'NodeItem "sand"', 'NodeItem "sand"'},
+		{'node "sand"', 'node "sand"'},
+		{'node "sand"', 'node "sand"'},
 	}
 })
 
 minetest.register_craft({
-	output = 'NodeItem "clay" 1',
+	output = 'node "clay" 1',
 	recipe = {
-		{'CraftItem "lump_of_clay"', 'CraftItem "lump_of_clay"'},
-		{'CraftItem "lump_of_clay"', 'CraftItem "lump_of_clay"'},
+		{'craft "lump_of_clay"', 'craft "lump_of_clay"'},
+		{'craft "lump_of_clay"', 'craft "lump_of_clay"'},
 	}
 })
 
 minetest.register_craft({
-	output = 'NodeItem "brick" 1',
+	output = 'node "brick" 1',
 	recipe = {
-		{'CraftItem "clay_brick"', 'CraftItem "clay_brick"'},
-		{'CraftItem "clay_brick"', 'CraftItem "clay_brick"'},
+		{'craft "clay_brick"', 'craft "clay_brick"'},
+		{'craft "clay_brick"', 'craft "clay_brick"'},
 	}
 })
 
 minetest.register_craft({
-	output = 'CraftItem "paper" 1',
+	output = 'craft "paper" 1',
 	recipe = {
-		{'NodeItem "papyrus"', 'NodeItem "papyrus"', 'NodeItem "papyrus"'},
+		{'node "papyrus"', 'node "papyrus"', 'node "papyrus"'},
 	}
 })
 
 minetest.register_craft({
-	output = 'CraftItem "book" 1',
+	output = 'craft "book" 1',
 	recipe = {
-		{'CraftItem "paper"'},
-		{'CraftItem "paper"'},
-		{'CraftItem "paper"'},
+		{'craft "paper"'},
+		{'craft "paper"'},
+		{'craft "paper"'},
 	}
 })
 
 minetest.register_craft({
-	output = 'NodeItem "bookshelf" 1',
+	output = 'node "bookshelf" 1',
 	recipe = {
-		{'NodeItem "wood"', 'NodeItem "wood"', 'NodeItem "wood"'},
-		{'CraftItem "book"', 'CraftItem "book"', 'CraftItem "book"'},
-		{'NodeItem "wood"', 'NodeItem "wood"', 'NodeItem "wood"'},
+		{'node "wood"', 'node "wood"', 'node "wood"'},
+		{'craft "book"', 'craft "book"', 'craft "book"'},
+		{'node "wood"', 'node "wood"', 'node "wood"'},
 	}
 })
 
 minetest.register_craft({
-	output = 'NodeItem "ladder" 1',
+	output = 'node "ladder" 1',
 	recipe = {
-		{'CraftItem "Stick"', '', 'CraftItem "Stick"'},
-		{'CraftItem "Stick"', 'CraftItem "Stick"', 'CraftItem "Stick"'},
-		{'CraftItem "Stick"', '', 'CraftItem "Stick"'},
+		{'craft "Stick"', '', 'craft "Stick"'},
+		{'craft "Stick"', 'craft "Stick"', 'craft "Stick"'},
+		{'craft "Stick"', '', 'craft "Stick"'},
 	}
 })
 
 minetest.register_craft({
-	output = 'CraftItem "apple_iron" 1',
+	output = 'craft "apple_iron" 1',
 	recipe = {
-		{'', 'CraftItem "steel_ingot"', ''},
-		{'CraftItem "steel_ingot"', 'CraftItem "apple"', 'CraftItem "steel_ingot"'},
-		{'', 'CraftItem "steel_ingot"', ''},
+		{'', 'craft "steel_ingot"', ''},
+		{'craft "steel_ingot"', 'craft "apple"', 'craft "steel_ingot"'},
+		{'', 'craft "steel_ingot"', ''},
 	}
 })
 
@@ -800,7 +800,7 @@ minetest.register_node("stone", {
 	is_ground_content = true,
 	often_contains_mineral = true, -- Texture atlas hint
 	material = digprop_stonelike(1.0),
-	dug_item = 'NodeItem "cobble" 1',
+	dug_item = 'node "cobble" 1',
 })
 
 minetest.register_node("dirt_with_grass", {
@@ -808,7 +808,7 @@ minetest.register_node("dirt_with_grass", {
 	inventory_image = inventorycube("mud.png^grass_side.png"),
 	is_ground_content = true,
 	material = digprop_dirtlike(1.0),
-	dug_item = 'NodeItem "dirt" 1',
+	dug_item = 'node "dirt" 1',
 })
 
 minetest.register_node("dirt_with_grass_footsteps", {
@@ -816,7 +816,7 @@ minetest.register_node("dirt_with_grass_footsteps", {
 	inventory_image = "grass_footsteps.png",
 	is_ground_content = true,
 	material = digprop_dirtlike(1.0),
-	dug_item = 'NodeItem "dirt" 1',
+	dug_item = 'node "dirt" 1',
 })
 
 minetest.register_node("dirt", {
@@ -831,7 +831,7 @@ minetest.register_node("sand", {
 	inventory_image = inventorycube("sand.png"),
 	is_ground_content = true,
 	material = digprop_dirtlike(1.0),
-	cookresult_item = 'NodeItem "glass" 1',
+	cookresult_item = 'node "glass" 1',
 })
 
 minetest.register_node("gravel", {
@@ -846,7 +846,7 @@ minetest.register_node("sandstone", {
 	inventory_image = inventorycube("sandstone.png"),
 	is_ground_content = true,
 	material = digprop_dirtlike(1.0),  -- FIXME should this be stonelike?
-	dug_item = 'NodeItem "sand" 1',  -- FIXME is this intentional?
+	dug_item = 'node "sand" 1',  -- FIXME is this intentional?
 })
 
 minetest.register_node("clay", {
@@ -854,7 +854,7 @@ minetest.register_node("clay", {
 	inventory_image = inventorycube("clay.png"),
 	is_ground_content = true,
 	material = digprop_dirtlike(1.0),
-	dug_item = 'CraftItem "lump_of_clay" 4',
+	dug_item = 'craft "lump_of_clay" 4',
 })
 
 minetest.register_node("brick", {
@@ -862,7 +862,7 @@ minetest.register_node("brick", {
 	inventory_image = inventorycube("brick.png"),
 	is_ground_content = true,
 	material = digprop_stonelike(1.0),
-	dug_item = 'CraftItem "clay_brick" 4',
+	dug_item = 'craft "clay_brick" 4',
 })
 
 minetest.register_node("tree", {
@@ -870,7 +870,7 @@ minetest.register_node("tree", {
 	inventory_image = inventorycube("tree_top.png", "tree.png", "tree.png"),
 	is_ground_content = true,
 	material = digprop_woodlike(1.0),
-	cookresult_item = 'CraftItem "lump_of_coal" 1',
+	cookresult_item = 'craft "lump_of_coal" 1',
 	furnace_burntime = 30,
 })
 
@@ -879,7 +879,7 @@ minetest.register_node("jungletree", {
 	inventory_image = inventorycube("jungletree_top.png", "jungletree.png", "jungletree.png"),
 	is_ground_content = true,
 	material = digprop_woodlike(1.0),
-	cookresult_item = 'CraftItem "lump_of_coal" 1',
+	cookresult_item = 'craft "lump_of_coal" 1',
 	furnace_burntime = 30,
 })
 
@@ -903,7 +903,7 @@ minetest.register_node("leaves", {
 	light_propagates = true,
 	paramtype = "light",
 	material = digprop_leaveslike(1.0),
-	extra_dug_item = 'NodeItem "sapling" 1',
+	extra_dug_item = 'node "sapling" 1',
 	extra_dug_item_rarity = 20,
 	furnace_burntime = 1,
 })
@@ -1193,7 +1193,7 @@ minetest.register_node("cobble", {
 	tile_images = {"cobble.png"},
 	inventory_image = inventorycube("cobble.png"),
 	is_ground_content = true,
-	cookresult_item = 'NodeItem "stone" 1',
+	cookresult_item = 'node "stone" 1',
 	material = digprop_stonelike(0.9),
 })
 
@@ -1248,7 +1248,7 @@ minetest.register_node("apple", {
 	light_propagates = true,
 	sunlight_propagates = true,
 	walkable = false,
-	dug_item = 'CraftItem "apple" 1',
+	dug_item = 'craft "apple" 1',
 	material = digprop_constanttime(0.0),
 	furnace_burntime = 3,
 })
@@ -1281,13 +1281,13 @@ minetest.register_craftitem("lump_of_coal", {
 
 minetest.register_craftitem("lump_of_iron", {
 	image = "lump_of_iron.png",
-	cookresult_item = 'CraftItem "steel_ingot" 1',
+	cookresult_item = 'craft "steel_ingot" 1',
 	on_place_on_ground = minetest.craftitem_place_item,
 })
 
 minetest.register_craftitem("lump_of_clay", {
 	image = "lump_of_clay.png",
-	cookresult_item = 'CraftItem "clay_brick" 1',
+	cookresult_item = 'craft "clay_brick" 1',
 	on_place_on_ground = minetest.craftitem_place_item,
 })
 
@@ -1303,7 +1303,7 @@ minetest.register_craftitem("clay_brick", {
 
 minetest.register_craftitem("rat", {
 	image = "rat.png",
-	cookresult_item = 'CraftItem "cooked_rat" 1',
+	cookresult_item = 'craft "cooked_rat" 1',
 	on_drop = function(item, dropper, pos)
 		minetest.env:add_rat(pos)
 		return true
@@ -1312,7 +1312,7 @@ minetest.register_craftitem("rat", {
 
 minetest.register_craftitem("cooked_rat", {
 	image = "cooked_rat.png",
-	cookresult_item = 'CraftItem "scorched_stuff" 1',
+	cookresult_item = 'craft "scorched_stuff" 1',
 	on_place_on_ground = minetest.craftitem_place_item,
 	on_use = minetest.craftitem_eat(6),
 })
