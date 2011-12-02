@@ -913,14 +913,6 @@ std::string FireflySAO::getStaticData()
 	return os.str();
 }
 
-InventoryItem* FireflySAO::createPickedUpItem()
-{
-	std::istringstream is("CraftItem firefly 1", std::ios_base::binary);
-	IGameDef *gamedef = m_env->getGameDef();
-	InventoryItem *item = InventoryItem::deSerialize(is, gamedef);
-	return item;
-}
-
 /*
 	MobV2SAO
 */
@@ -1662,15 +1654,6 @@ std::string LuaEntitySAO::getStaticData()
 		os<<serializeLongString(m_init_state);
 	}
 	return os.str();
-}
-
-InventoryItem* LuaEntitySAO::createPickedUpItem()
-{
-	// TODO: Ask item from scriptapi
-	std::istringstream is("CraftItem testobject1 1", std::ios_base::binary);
-	IGameDef *gamedef = m_env->getGameDef();
-	InventoryItem *item = InventoryItem::deSerialize(is, gamedef);
-	return item;
 }
 
 void LuaEntitySAO::punch(ServerActiveObject *puncher, float time_from_last_punch)

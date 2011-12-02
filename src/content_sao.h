@@ -95,7 +95,6 @@ public:
 	void step(float dtime, bool send_recommended);
 	std::string getClientInitializationData();
 	std::string getStaticData();
-	InventoryItem* createPickedUpItem(){return NULL;}
 	void punch(ServerActiveObject *puncher, float time_from_last_punch);
 	bool isPeaceful(){return false;}
 private:
@@ -126,7 +125,6 @@ public:
 	void step(float dtime, bool send_recommended);
 	std::string getClientInitializationData();
 	std::string getStaticData();
-	InventoryItem* createPickedUpItem();
 private:
 	bool m_is_active;
 	IntervalLimiter m_inactive_interval;
@@ -155,7 +153,6 @@ public:
 	std::string getStaticData();
 	std::string getClientInitializationData();
 	void step(float dtime, bool send_recommended);
-	InventoryItem* createPickedUpItem(){return NULL;}
 	void punch(ServerActiveObject *puncher, float time_from_last_punch);
 	bool isPeaceful();
 private:
@@ -209,7 +206,6 @@ public:
 	void step(float dtime, bool send_recommended);
 	std::string getClientInitializationData();
 	std::string getStaticData();
-	InventoryItem* createPickedUpItem();
 	void punch(ServerActiveObject *puncher, float time_from_last_punch);
 	void rightClick(ServerActiveObject *clicker);
 	void setPos(v3f pos);
