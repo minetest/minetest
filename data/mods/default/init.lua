@@ -104,7 +104,9 @@
 -- - getpos() -> {x=num, y=num, z=num}
 -- - setpos(pos); pos={x=num, y=num, z=num}
 -- - moveto(pos, continuous=false): interpolated move
--- - punch(puncher); puncher = an another ObjectRef
+-- - punch(puncher, time_from_last_punch)
+--   ^ puncher = an another ObjectRef,
+--   ^ time_from_last_punch = time since last punch action of the puncher
 -- - right_click(clicker); clicker = an another ObjectRef
 -- - get_wield_digging_properties() -> digging property table
 -- - add_to_inventory_later(itemstring): like above, but after callback returns (only allowed for craftitem callbacks)

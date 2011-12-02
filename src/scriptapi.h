@@ -83,7 +83,7 @@ void scriptapi_luaentity_get_properties(lua_State *L, u16 id,
 		LuaEntityProperties *prop);
 void scriptapi_luaentity_step(lua_State *L, u16 id, float dtime);
 void scriptapi_luaentity_punch(lua_State *L, u16 id,
-		ServerActiveObject *puncher);
+		ServerActiveObject *puncher, float time_from_last_punch);
 void scriptapi_luaentity_rightclick(lua_State *L, u16 id,
 		ServerActiveObject *clicker);
 

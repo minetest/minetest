@@ -3208,9 +3208,9 @@ void scriptapi_luaentity_step(lua_State *L, u16 id, float dtime)
 		script_error(L, "error running function 'on_step': %s\n", lua_tostring(L, -1));
 }
 
-// Calls entity:on_punch(ObjectRef puncher)
+// Calls entity:on_punch(ObjectRef puncher, time_from_last_punch)
 void scriptapi_luaentity_punch(lua_State *L, u16 id,
-		ServerActiveObject *puncher)
+		ServerActiveObject *puncher, float time_from_last_punch)
 {
 	realitycheck(L);
 	assert(lua_checkstack(L, 20));
@@ -3228,8 +3228,9 @@ void scriptapi_luaentity_punch(lua_State *L, u16 id,
 	luaL_checktype(L, -1, LUA_TFUNCTION);
 	lua_pushvalue(L, object); // self
 	objectref_get_or_create(L, puncher); // Clicker reference
+	lua_pushnumber(L, time_from_last_punch);
 	// Call with 2 arguments, 0 results
-	if(lua_pcall(L, 2, 0, 0))
+	if(lua_pcall(L, 3, 0, 0))
 		script_error(L, "error running function 'on_punch': %s\n", lua_tostring(L, -1));
 }
 

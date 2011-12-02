@@ -1678,7 +1678,7 @@ void LuaEntitySAO::punch(ServerActiveObject *puncher, float time_from_last_punch
 	if(!m_registered)
 		return;
 	lua_State *L = m_env->getLua();
-	scriptapi_luaentity_punch(L, m_id, puncher);
+	scriptapi_luaentity_punch(L, m_id, puncher, time_from_last_punch);
 }
 
 void LuaEntitySAO::rightClick(ServerActiveObject *clicker)
