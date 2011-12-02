@@ -31,6 +31,7 @@ typedef struct lua_State lua_State;
 struct LuaEntityProperties;
 struct PointedThing;
 //class IGameDef;
+class ServerRemotePlayer;
 
 void scriptapi_export(lua_State *L, Server *server);
 void scriptapi_add_environment(lua_State *L, ServerEnvironment *env);
@@ -60,6 +61,7 @@ void scriptapi_environment_on_generated(lua_State *L, v3s16 minp, v3s16 maxp);
 /* misc */
 void scriptapi_on_newplayer(lua_State *L, ServerActiveObject *player);
 bool scriptapi_on_respawnplayer(lua_State *L, ServerActiveObject *player);
+void scriptapi_get_creative_inventory(lua_State *L, ServerRemotePlayer *player);
 
 /* craftitem */
 void scriptapi_add_craftitem(lua_State *L, const char *name);

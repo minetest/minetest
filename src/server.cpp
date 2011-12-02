@@ -33,7 +33,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "servercommand.h"
 #include "filesys.h"
 #include "content_mapnode.h"
-#include "content_craft.h"
 #include "content_nodemeta.h"
 #include "mapblock.h"
 #include "serverobject.h"
@@ -4723,7 +4722,8 @@ ServerRemotePlayer *Server::emergePlayer(const char *name, u16 peer_id)
 			player->inventory_backup = new Inventory();
 			*(player->inventory_backup) = player->inventory;
 			// Set creative inventory
-			craft_set_creative_inventory(player, this);
+			player->resetInventory();
+			scriptapi_get_creative_inventory(m_lua, player);
 		}
 
 		return player;
@@ -4767,7 +4767,8 @@ ServerRemotePlayer *Server::emergePlayer(const char *name, u16 peer_id)
 			player->inventory_backup = new Inventory();
 			*(player->inventory_backup) = player->inventory;
 			// Set creative inventory
-			craft_set_creative_inventory(player, this);
+			player->resetInventory();
+			scriptapi_get_creative_inventory(m_lua, player);
 		}
 
 		return player;

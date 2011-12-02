@@ -41,6 +41,7 @@
 -- minetest.register_on_respawnplayer(func(ObjectRef))
 -- ^ return true in func to disable regular player placement
 -- minetest.register_on_chat_message(func(name, message))
+-- minetest.add_to_creative_inventory(itemstring)
 -- minetest.setting_get(name) -> string or nil
 -- minetest.setting_getbool(name) -> boolean value or nil
 -- minetest.chat_send_all(text)
@@ -1344,6 +1345,38 @@ minetest.register_craftitem("apple_iron", {
 
 print(dump(minetest.registered_craftitems))
 
+--
+-- Creative inventory
+--
+
+minetest.add_to_creative_inventory('tool MesePick 0')
+minetest.add_to_creative_inventory('tool SteelPick 0')
+minetest.add_to_creative_inventory('tool SteelAxe 0')
+minetest.add_to_creative_inventory('tool SteelShovel 0')
+
+minetest.add_to_creative_inventory('node torch 0')
+minetest.add_to_creative_inventory('node cobble 0')
+minetest.add_to_creative_inventory('node dirt 0')
+minetest.add_to_creative_inventory('node stone 0')
+minetest.add_to_creative_inventory('node sand 0')
+minetest.add_to_creative_inventory('node sandstone 0')
+minetest.add_to_creative_inventory('node clay 0')
+minetest.add_to_creative_inventory('node brick 0')
+minetest.add_to_creative_inventory('node tree 0')
+minetest.add_to_creative_inventory('node leaves 0')
+minetest.add_to_creative_inventory('node cactus 0')
+minetest.add_to_creative_inventory('node papyrus 0')
+minetest.add_to_creative_inventory('node bookshelf 0')
+minetest.add_to_creative_inventory('node glass 0')
+minetest.add_to_creative_inventory('node fence 0')
+minetest.add_to_creative_inventory('node rail 0')
+minetest.add_to_creative_inventory('node mese 0')
+minetest.add_to_creative_inventory('node chest 0')
+minetest.add_to_creative_inventory('node furnace 0')
+minetest.add_to_creative_inventory('node sign_wall 0')
+minetest.add_to_creative_inventory('node water_source 0')
+minetest.add_to_creative_inventory('node lava_source 0')
+minetest.add_to_creative_inventory('node ladder 0')
 
 --
 -- Some common functions

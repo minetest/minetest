@@ -402,6 +402,8 @@ static void setfloatfield(lua_State *L, int table,
 static void inventory_set_list_from_lua(Inventory *inv, const char *name,
 		lua_State *L, int tableindex, IGameDef *gamedef, int forcesize=-1)
 {
+	if(tableindex < 0)
+		tableindex = lua_gettop(L) + 1 + tableindex;
 	// If nil, delete list
 	if(lua_isnil(L, tableindex)){
 		inv->deleteList(name);
@@ -1808,7 +1810,7 @@ private:
 			// Return
 			lua_pushboolean(L, added);
 			if(!added)
-				lua_pushstring(L, "does not fit");
+				lua_pushstring(L, "failed to add item");
 			return 2;
 		} catch(SerializationError &e){
 			// Return
@@ -2691,6 +2693,15 @@ bool scriptapi_on_respawnplayer(lua_State *L, ServerActiveObject *player)
 		// value removed, keep key for next iteration
 	}
 	return positioning_handled_by_some;
+}
+
+void scriptapi_get_creative_inventory(lua_State *L, ServerRemotePlayer *player)
+{
+	lua_getglobal(L, "minetest");
+	lua_getfield(L, -1, "creative_inventory");
+	luaL_checktype(L, -1, LUA_TTABLE);
+	inventory_set_list_from_lua(&player->inventory, "main", L, -1,
+			player->getEnv()->getGameDef(), PLAYER_INVENTORY_SIZE);
 }
 
 /*

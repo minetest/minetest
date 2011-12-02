@@ -328,6 +328,16 @@ minetest.craftitem_eat = function(hp_change)
 end
 
 --
+-- Creative inventory
+--
+
+minetest.creative_inventory = {}
+
+minetest.add_to_creative_inventory = function(itemstring)
+	table.insert(minetest.creative_inventory, itemstring)
+end
+
+--
 -- Callback registration
 --
 

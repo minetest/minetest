@@ -108,7 +108,6 @@ set(common_SRCS
 	content_sao.cpp
 	mapgen.cpp
 	content_nodemeta.cpp
-	content_craft.cpp
 	content_mapnode.cpp
 	auth.cpp
 	collision.cpp
