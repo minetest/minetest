@@ -1283,6 +1283,8 @@ void Server::AsyncRunStep()
 		JMutexAutoLock lock(m_env_mutex);
 		JMutexAutoLock lock2(m_con_mutex);
 
+		ScopeProfiler sp(g_profiler, "Server: handle players");
+
 		//float player_max_speed = BS * 4.0; // Normal speed
 		float player_max_speed = BS * 20; // Fast speed
 		float player_max_speed_up = BS * 20;
@@ -1332,7 +1334,7 @@ void Server::AsyncRunStep()
 			}
 
 			/*
-				Handle player HPs
+				Handle player HPs (die if hp=0)
 			*/
 			HandlePlayerHP(player, 0);
 
@@ -1591,7 +1593,7 @@ void Server::AsyncRunStep()
 		JMutexAutoLock envlock(m_env_mutex);
 		JMutexAutoLock conlock(m_con_mutex);
 
-		//ScopeProfiler sp(g_profiler, "Server: sending object messages");
+		ScopeProfiler sp(g_profiler, "Server: sending object messages");
 
 		// Key = object id
 		// Value = data sent by object
@@ -3983,6 +3985,7 @@ void Server::BroadcastChatMessage(const std::wstring &message)
 void Server::SendPlayerHP(Player *player)
 {
 	SendHP(m_con, player->peer_id, player->hp);
+	static_cast<ServerRemotePlayer*>(player)->m_hp_not_sent = false;
 }
 
 void Server::SendMovePlayer(Player *player)
@@ -4381,39 +4384,41 @@ void Server::HandlePlayerHP(Player *player, s16 damage)
 	if(srp->m_respawn_active)
 		return;
 	
+	if(damage == 0)
+		return;
+	
 	if(player->hp > damage)
 	{
 		player->hp -= damage;
 		SendPlayerHP(player);
+		return;
+	}
+
+	infostream<<"Server::HandlePlayerHP(): Player "
+			<<player->getName()<<" dies"<<std::endl;
+	
+	player->hp = 0;
+	
+	//TODO: Throw items around
+	
+	// Handle players that are not connected
+	if(player->peer_id == PEER_ID_INEXISTENT){
+		RespawnPlayer(player);
+		return;
+	}
+
+	SendPlayerHP(player);
+	
+	RemoteClient *client = getClient(player->peer_id);
+	if(client->net_proto_version >= 3)
+	{
+		SendDeathscreen(m_con, player->peer_id, false, v3f(0,0,0));
+		srp->m_removed = true;
+		srp->m_respawn_active = true;
 	}
 	else
 	{
-		infostream<<"Server::HandlePlayerHP(): Player "
-				<<player->getName()<<" dies"<<std::endl;
-		
-		player->hp = 0;
-		
-		//TODO: Throw items around
-		
-		// Handle players that are not connected
-		if(player->peer_id == PEER_ID_INEXISTENT){
-			RespawnPlayer(player);
-			return;
-		}
-
-		SendPlayerHP(player);
-		
-		RemoteClient *client = getClient(player->peer_id);
-		if(client->net_proto_version >= 3)
-		{
-			SendDeathscreen(m_con, player->peer_id, false, v3f(0,0,0));
-			srp->m_removed = true;
-			srp->m_respawn_active = true;
-		}
-		else
-		{
-			RespawnPlayer(player);
-		}
+		RespawnPlayer(player);
 	}
 }
 
