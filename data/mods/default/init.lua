@@ -1448,14 +1448,18 @@ minetest.register_on_chat_message(function(name, message)
 			minetest.chat_send_player(name, "you don't have permission to give")
 			return true -- Handled chat message
 		end
-		stackstring = string.match(message, cmd.." (.*)")
+		local stackstring = string.match(message, cmd.." (.*)")
 		if stackstring == nil then
 			minetest.chat_send_player(name, 'usage: '..cmd..' stackstring')
 			return true -- Handled chat message
 		end
 		print(cmd..' invoked, stackstring="'..stackstring..'"')
-		player = minetest.env:get_player_by_name(name)
-		added, error_msg = player:add_to_inventory(stackstring)
+		local player = minetest.env:get_player_by_name(name)
+		if player == nil then
+			minetest.chat_send_player(name, name2..' is not a known player')
+			return true -- Handled chat message
+		end
+		local added, error_msg = player:add_to_inventory(stackstring)
 		if added then
 			minetest.chat_send_player(name, '"'..stackstring
 					..'" added to inventory.');
@@ -1473,19 +1477,19 @@ minetest.register_on_chat_message(function(name, message)
 			minetest.chat_send_player(name, "you don't have permission to give")
 			return true -- Handled chat message
 		end
-		name2, stackstring = string.match(message, cmd.." ([%a%d_-]+) (.*)")
+		local name2, stackstring = string.match(message, cmd.." ([%a%d_-]+) (.*)")
 		if name == nil or stackstring == nil then
 			minetest.chat_send_player(name, 'usage: '..cmd..' name stackstring')
 			return true -- Handled chat message
 		end
 		print(cmd..' invoked, name2="'..name2
 				..'" stackstring="'..stackstring..'"')
-		player = minetest.env:get_player_by_name(name2)
+		local player = minetest.env:get_player_by_name(name2)
 		if player == nil then
 			minetest.chat_send_player(name, name2..' is not a known player')
 			return true -- Handled chat message
 		end
-		added, error_msg = player:add_to_inventory(stackstring)
+		local added, error_msg = player:add_to_inventory(stackstring)
 		if added then
 			minetest.chat_send_player(name, '"'..stackstring
 					..'" added to '..name2..'\'s inventory.');
