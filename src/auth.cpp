@@ -28,8 +28,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 std::set<std::string> privsToSet(u64 privs)
 {
 	std::set<std::string> s;
-	if(privs & PRIV_BUILD)
-		s.insert("build");
+	if(privs & PRIV_INTERACT)
+		s.insert("interact");
 	if(privs & PRIV_TELEPORT)
 		s.insert("teleport");
 	if(privs & PRIV_SETTIME)
@@ -52,8 +52,8 @@ std::set<std::string> privsToSet(u64 privs)
 std::string privsToString(u64 privs)
 {
 	std::ostringstream os(std::ios_base::binary);
-	if(privs & PRIV_BUILD)
-		os<<"build,";
+	if(privs & PRIV_INTERACT)
+		os<<"interact,";
 	if(privs & PRIV_TELEPORT)
 		os<<"teleport,";
 	if(privs & PRIV_SETTIME)
@@ -89,7 +89,9 @@ u64 stringToPrivs(std::string str)
 	{
 		std::string s = trim(f.next(","));
 		if(s == "build")
-			privs |= PRIV_BUILD;
+			privs |= PRIV_INTERACT;
+		else if(s == "interact")
+			privs |= PRIV_INTERACT;
 		else if(s == "teleport")
 			privs |= PRIV_TELEPORT;
 		else if(s == "settime")

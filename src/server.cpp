@@ -2381,7 +2381,7 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 	}
 	else if(command == TOSERVER_SIGNNODETEXT)
 	{
-		if((getPlayerPrivs(player) & PRIV_BUILD) == 0)
+		if((getPlayerPrivs(player) & PRIV_INTERACT) == 0)
 			return;
 		/*
 			u16 command
@@ -2562,7 +2562,7 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 			
 			// Disallow moving items in elsewhere than player's inventory
 			// if not allowed to build
-			if((getPlayerPrivs(player) & PRIV_BUILD) == 0
+			if((getPlayerPrivs(player) & PRIV_INTERACT) == 0
 					&& (ma->from_inv != "current_player"
 					|| ma->to_inv != "current_player"))
 			{
@@ -2628,7 +2628,7 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 		{
 			IDropAction *da = (IDropAction*)a;
 			// Disallow dropping items if not allowed to build
-			if((getPlayerPrivs(player) & PRIV_BUILD) == 0)
+			if((getPlayerPrivs(player) & PRIV_INTERACT) == 0)
 			{
 				delete a;
 				return;
@@ -2976,7 +2976,7 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 		/*
 			Make sure the player is allowed to do it
 		*/
-		bool build_priv = (getPlayerPrivs(player) & PRIV_BUILD) != 0;
+		bool build_priv = (getPlayerPrivs(player) & PRIV_INTERACT) != 0;
 		if(!build_priv)
 		{
 			infostream<<"Ignoring interaction from player "<<player->getName()
