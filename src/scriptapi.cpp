@@ -1101,7 +1101,10 @@ static int l_register_craft(lua_State *L)
 				width = colcount;
 			} else {
 				if(colcount != width){
-					script_error(L, "error: %s\n", "Invalid crafting recipe");
+					std::string error;
+					error += "Invalid crafting recipe (output=\""
+							+ output + "\")";
+					throw LuaError(error);
 				}
 			}
 			// removes value, keeps key for next iteration
@@ -2467,6 +2470,21 @@ void scriptapi_export(lua_State *L, Server *server)
 	NodeMetaRef::Register(L);
 	EnvRef::Register(L);
 	ObjectRef::Register(L);
+}
+
+bool scriptapi_loadmod(lua_State *L, const std::string &scriptpath,
+		const std::string &modname)
+{
+	bool success = false;
+
+	try{
+		success = script_load(L, scriptpath.c_str());
+	}
+	catch(LuaError &e){
+		errorstream<<"Error loading mod: "<<e.what()<<std::endl;
+	}
+
+	return success;
 }
 
 void scriptapi_add_environment(lua_State *L, ServerEnvironment *env)

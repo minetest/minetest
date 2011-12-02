@@ -35,10 +35,11 @@ void script_error(lua_State *L, const char *fmt, ...)
 {
 	va_list argp;
 	va_start(argp, fmt);
-	vfprintf(stderr, fmt, argp);
+	char buf[10000];
+	vsnprintf(buf, 10000, fmt, argp);
 	va_end(argp);
-	lua_close(L);
-	exit(EXIT_FAILURE);
+	//errorstream<<"SCRIPT ERROR: "<<buf;
+	throw LuaError(buf);
 }
 
 bool script_load(lua_State *L, const char *path)

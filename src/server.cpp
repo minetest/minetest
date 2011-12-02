@@ -982,7 +982,7 @@ Server::Server(
 	if(!success){
 		errorstream<<"Server: Failed to load and run "
 				<<builtinpath<<std::endl;
-		assert(0);
+		exit(1);
 	}
 	// Load and run "mod" scripts
 	core::list<ModSpec> mods = getMods(m_modspaths);
@@ -991,11 +991,11 @@ Server::Server(
 		ModSpec mod = *i;
 		infostream<<"Server: Loading mod \""<<mod.name<<"\""<<std::endl;
 		std::string scriptpath = mod.path + DIR_DELIM + "init.lua";
-		bool success = script_load(m_lua, scriptpath.c_str());
+		bool success = scriptapi_loadmod(m_lua, scriptpath, mod.name);
 		if(!success){
 			errorstream<<"Server: Failed to load and run "
 					<<scriptpath<<std::endl;
-			assert(0);
+			exit(1);
 		}
 	}
 	

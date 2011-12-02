@@ -20,8 +20,27 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #ifndef SCRIPT_HEADER
 #define SCRIPT_HEADER
 
+#include <exception>
+#include <string>
+
+class LuaError : public std::exception
+{
+public:
+	LuaError(const std::string &s)
+	{
+		m_s = "LuaError: ";
+		m_s += s;
+	}
+	virtual ~LuaError() throw()
+	{}
+	virtual const char * what() const throw()
+	{
+		return m_s.c_str();
+	}
+	std::string m_s;
+};
+
 typedef struct lua_State lua_State;
-//#include <string>
 
 lua_State* script_init();
 void script_deinit(lua_State *L);
