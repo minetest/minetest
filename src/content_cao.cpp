@@ -2246,12 +2246,6 @@ public:
 		if(m_node == NULL)
 			return;
 		
-		if(light_at_pos <= 2)
-		{
-			m_node->setVisible(false);
-			return;
-		}
-
 		m_node->setVisible(true);
 
 		u8 li = decode_light(light_at_pos);
