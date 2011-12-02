@@ -277,7 +277,7 @@ void Camera::update(LocalPlayer* player, f32 frametime, v2u32 screensize)
 
 	// Position the wielded item
 	v3f wield_position = v3f(45, -35, 65);
-	v3f wield_rotation = v3f(-100, 110, -100);
+	v3f wield_rotation = v3f(-100, 120, -100);
 	if (m_digging_button != -1)
 	{
 		f32 digfrac = m_digging_anim;
@@ -500,7 +500,9 @@ void Camera::wield(const InventoryItem* item, IGameDef *gamedef)
 	else
 	{
 		// Bare hands
-		m_wieldnode->setVisible(false);
+		m_wieldnode->setSprite(gamedef->tsrc()->getTextureRaw("wieldhand.png"));
+		m_wieldnode->setScale(v3f(40));
+		m_wieldnode->setVisible(true);
 	}
 }
 
