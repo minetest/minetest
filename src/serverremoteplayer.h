@@ -92,9 +92,9 @@ public:
 	bool m_inventory_not_sent;
 	bool m_hp_not_sent;
 	bool m_respawn_active;
+	bool m_is_in_environment;
 
 private:
-	bool m_is_in_environment;
 	bool m_position_not_sent;
 };
 

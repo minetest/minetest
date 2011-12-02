@@ -1348,6 +1348,15 @@ void Server::AsyncRunStep()
 			if(player->m_hp_not_sent){
 				SendPlayerHP(player);
 			}
+
+			/*
+				Add to environment if is not in respawn screen
+			*/
+			if(!player->m_is_in_environment && !player->m_respawn_active){
+				player->m_removed = false;
+				player->setId(0);
+				m_env->addActiveObject(player);
+			}
 		}
 	}
 	
@@ -2127,11 +2136,6 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 			return;
 		}
 
-		// Add PlayerSAO
-		player->m_removed = false;
-		player->setId(0);
-		m_env->addActiveObject(player);
-
 		/*
 			Answer with a TOCLIENT_INIT
 		*/
@@ -2887,10 +2891,9 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 		
 		actionstream<<player->getName()<<" respawns at "
 				<<PP(player->getPosition()/BS)<<std::endl;
-		
-		srp->m_removed = false;
-		srp->setId(0);
-		m_env->addActiveObject(srp);
+
+		// ActiveObject is added to environment in AsyncRunStep after
+		// the previous addition has been succesfully removed
 	}
 	else if(command == TOSERVER_INTERACT)
 	{
