@@ -88,7 +88,7 @@ void ServerRemotePlayer::removingFromEnvironment()
 
 bool ServerRemotePlayer::unlimitedTransferDistance() const
 {
-	return true;
+	return g_settings->getBool("unlimited_player_transfer_distance");
 }
 
 void ServerRemotePlayer::step(float dtime, bool send_recommended)

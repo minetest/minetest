@@ -93,6 +93,7 @@ void set_default_settings(Settings *settings)
 	settings->setDefault("give_initial_stuff", "false");
 	settings->setDefault("default_password", "");
 	settings->setDefault("default_privs", "build, shout");
+	settings->setDefault("unlimited_player_transfer_distance", "true");
 
 	settings->setDefault("profiler_print_interval", "0");
 	settings->setDefault("enable_mapgen_debug_info", "false");

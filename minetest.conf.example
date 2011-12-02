@@ -131,6 +131,8 @@
 #default_password = 
 # Available privileges: build, teleport, settime, privs, shout
 #default_privs = build, shout
+# Whether players are transferred to client without any range limit
+#unlimited_player_transfer_distance = true
 
 # Profiler data print interval. #0 = disable.
 #profiler_print_interval = 0
