@@ -2274,6 +2274,13 @@ public:
 	{
 		pos_translator.translate(dtime);
 		updateNodePos();
+
+		if(m_damage_visual_timer > 0){
+			m_damage_visual_timer -= dtime;
+			if(m_damage_visual_timer <= 0){
+				updateTextures("");
+			}
+		}
 	}
 
 	void processMessage(const std::string &data)
@@ -2292,6 +2299,17 @@ public:
 			pos_translator.update(m_position, false);
 
 			updateNodePos();
+		}
+		else if(cmd == 1) // punched
+		{
+			// damage
+			s16 damage = readS16(is);
+			
+			if(m_is_local_player)
+				m_env->damageLocalPlayer(damage, false);
+			
+			m_damage_visual_timer = 0.5;
+			updateTextures("^[brighten");
 		}
 	}
 
@@ -2317,12 +2335,6 @@ public:
 						tsrc->getTextureRaw(tname));
 			}
 		}
-	}
-	
-	bool directReportPunch(const std::string &toolname, v3f dir)
-	{
-		updateTextures("^[brighten");
-		return false;
 	}
 };
 

@@ -151,10 +151,19 @@ void ServerRemotePlayer::punch(ServerActiveObject *puncher,
 	HittingProperties hitprop = getHittingProperties(&mp, &tp,
 			time_from_last_punch);
 	
-	infostream<<"1. getHP()="<<getHP()<<std::endl;
 	setHP(getHP() - hitprop.hp);
-	infostream<<"2. getHP()="<<getHP()<<std::endl;
 	puncher->damageWieldedItem(hitprop.wear);
+
+	{
+		std::ostringstream os(std::ios::binary);
+		// command (1 = punched)
+		writeU8(os, 1);
+		// damage
+		writeS16(os, hitprop.hp);
+		// create message and add to list
+		ActiveObjectMessage aom(getId(), false, os.str());
+		m_messages_out.push_back(aom);
+	}
 }
 
 void ServerRemotePlayer::rightClick(ServerActiveObject *clicker)
