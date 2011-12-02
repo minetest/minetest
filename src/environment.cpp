@@ -1920,6 +1920,7 @@ void ClientEnvironment::step(float dtime)
 				ClientEnvEvent event;
 				event.type = CEE_PLAYER_DAMAGE;
 				event.player_damage.amount = damage;
+				event.player_damage.send_to_server = true;
 				m_client_event_queue.push_back(event);
 			}
 		}
@@ -1953,6 +1954,7 @@ void ClientEnvironment::step(float dtime)
 			ClientEnvEvent event;
 			event.type = CEE_PLAYER_DAMAGE;
 			event.player_damage.amount = damage_per_second;
+			event.player_damage.send_to_server = true;
 			m_client_event_queue.push_back(event);
 		}
 	}
@@ -2205,6 +2207,7 @@ void ClientEnvironment::damageLocalPlayer(u8 damage, bool handle_hp)
 	ClientEnvEvent event;
 	event.type = CEE_PLAYER_DAMAGE;
 	event.player_damage.amount = damage;
+	event.player_damage.send_to_server = handle_hp;
 	m_client_event_queue.push_back(event);
 }
 

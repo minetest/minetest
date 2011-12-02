@@ -566,7 +566,9 @@ void Client::step(float dtime)
 				if(m_ignore_damage_timer <= 0)
 				{
 					u8 damage = event.player_damage.amount;
-					sendDamage(damage);
+					
+					if(event.player_damage.send_to_server)
+						sendDamage(damage);
 
 					// Add to ClientEvent queue
 					ClientEvent event;

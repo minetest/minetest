@@ -142,8 +142,8 @@ void ServerRemotePlayer::punch(ServerActiveObject *puncher,
 	// "Material" properties of a player
 	MaterialProperties mp;
 	mp.diggability = DIGGABLE_NORMAL;
-	mp.crackiness = -1.0;
-	mp.cuttability = 1.0;
+	mp.crackiness = -0.5;
+	mp.cuttability = 0.5;
 
 	ToolDiggingProperties tp;
 	puncher->getWieldDiggingProperties(&tp);

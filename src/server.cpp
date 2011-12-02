@@ -2128,6 +2128,7 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 
 		// Add PlayerSAO
 		player->m_removed = false;
+		player->setId(0);
 		m_env->addActiveObject(player);
 
 		/*
@@ -2887,6 +2888,7 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 				<<PP(player->getPosition()/BS)<<std::endl;
 		
 		srp->m_removed = false;
+		srp->setId(0);
 		m_env->addActiveObject(srp);
 	}
 	else if(command == TOSERVER_INTERACT)

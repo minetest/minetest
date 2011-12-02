@@ -368,6 +368,7 @@ struct ClientEnvEvent
 		} none;
 		struct{
 			u8 amount;
+			bool send_to_server;
 		} player_damage;
 	};
 };
