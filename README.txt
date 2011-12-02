@@ -195,10 +195,10 @@ cmake %sourcedir% -G "Visual Studio 10" -DIRRLICHT_SOURCE_DIR=%irrlichtpath% -DR
 "C:\WINDOWS\Microsoft.NET\Framework\v4.0.30319\MSBuild.exe" PACKAGE.vcxproj /p:Configuration=Release
 popd
 
-License of Minetest-c55 textures
---------------------------------
+License of Minetest-c55 textures and mods
+-----------------------------------------
 
-This does not apply to texture packs made by others.
+This applies to textures and mods contained in the main Minetest distribution.
 
 Attribution-ShareAlike 3.0 Unported (CC BY-SA 3.0)                                 
 http://creativecommons.org/licenses/by-sa/3.0/
