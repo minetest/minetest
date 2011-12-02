@@ -139,6 +139,12 @@ void ServerRemotePlayer::punch(ServerActiveObject *puncher,
 	if(!puncher)
 		return;
 	
+	// No effect if PvP disabled
+	if(g_settings->getBool("enable_pvp") == false){
+		if(puncher->getType() == ACTIVEOBJECT_TYPE_PLAYER)
+			return;
+	}
+	
 	// "Material" properties of a player
 	MaterialProperties mp;
 	mp.diggability = DIGGABLE_NORMAL;
