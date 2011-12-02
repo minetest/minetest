@@ -420,7 +420,8 @@ static void inventory_set_list_from_lua(Inventory *inv, const char *name,
 		// removes value, keeps key for next iteration
 		lua_pop(L, 1);
 	}
-	InventoryList *invlist = inv->addList(name, items.size());
+	int listsize = (forcesize != -1) ? forcesize : items.size();
+	InventoryList *invlist = inv->addList(name, listsize);
 	int index = 0;
 	for(std::list<std::string>::const_iterator
 			i = items.begin(); i != items.end(); i++){
