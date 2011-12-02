@@ -1476,7 +1476,7 @@ end
 minetest.register_on_punchnode(on_punchnode)
 
 minetest.register_on_chat_message(function(name, message)
-	print("default on_chat_message: name="..dump(name).." message="..dump(message))
+	--print("default on_chat_message: name="..dump(name).." message="..dump(message))
 	local cmd = "/giveme"
 	if message:sub(0, #cmd) == cmd then
 		if not minetest.get_player_privs(name)["give"] then
@@ -1506,8 +1506,6 @@ minetest.register_on_chat_message(function(name, message)
 	end
 	local cmd = "/give"
 	if message:sub(0, #cmd) == cmd then
-		print("minetest.get_player_privs(name)="
-				..dump(minetest.get_player_privs(name)))
 		if not minetest.get_player_privs(name)["give"] then
 			minetest.chat_send_player(name, "you don't have permission to give")
 			return true -- Handled chat message
