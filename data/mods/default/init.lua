@@ -21,16 +21,20 @@
 --
 -- Naming convention for registered textual names
 -- ----------------------------------------------
--- "modname_<whatever>"
+-- "modname:<whatever>" (<whatever> can have characters a-zA-Z0-9_)
 --
 -- This is to prevent conflicting names from corrupting maps and is
 -- enforced by the mod loader.
 --
 -- Example: mod "experimental", ideal item/node/entity name "tnt":
---          -> the name should be "experimental_tnt".
+--          -> the name should be "experimental:tnt".
 --
 -- Enforcement can be overridden by prefixing the name with ":". This can
 -- be used for overriding the registrations of some other mod.
+--
+-- Example: Any mod can redefine experimental:tnt by using the name
+--          ":experimental:tnt" when registering it.
+-- (also that mods is required to have "experimental" as a dependency)
 --
 -- Default mod uses ":" for maintaining backwards compatibility.
 --
@@ -1426,7 +1430,7 @@ function nodeupdate_single(p)
 		n_bottom = minetest.env:get_node(p_bottom)
 		if n_bottom.name == "air" then
 			minetest.env:remove_node(p)
-			minetest.env:add_luaentity(p, "default_falling_"..n.name)
+			minetest.env:add_luaentity(p, "default:falling_"..n.name)
 			nodeupdate(p)
 		end
 	end
@@ -1448,7 +1452,7 @@ end
 --
 
 function register_falling_node(nodename, texture)
-	minetest.register_entity("default_falling_"..nodename, {
+	minetest.register_entity("default:falling_"..nodename, {
 		-- Static definition
 		physical = true,
 		collisionbox = {-0.5,-0.5,-0.5, 0.5,0.5,0.5},

@@ -1,12 +1,12 @@
 minetest.register_craft({
-	output = 'craft "bucket_empty" 1',
+	output = 'craft "bucket:bucket_empty" 1',
 	recipe = {
 		{'craft "steel_ingot"', '', 'craft "steel_ingot"'},
 		{'', 'craft "steel_ingot"', ''},
 	}
 })
 
-minetest.register_craftitem("bucket_empty", {
+minetest.register_craftitem("bucket:bucket_empty", {
 	image = "bucket.png",
 	stack_max = 1,
 	liquids_pointable = true,
@@ -16,11 +16,11 @@ minetest.register_craftitem("bucket_empty", {
 			n = minetest.env:get_node(pointed_thing.under)
 			if n.name == "water_source" then
 				minetest.env:add_node(pointed_thing.under, {name="air"})
-				player:add_to_inventory_later('craft "bucket_water" 1')
+				player:add_to_inventory_later('craft "bucket:bucket_water" 1')
 				return true
 			elseif n.name == "lava_source" then
 				minetest.env:add_node(pointed_thing.under, {name="air"})
-				player:add_to_inventory_later('craft "bucket_lava" 1')
+				player:add_to_inventory_later('craft "bucket:bucket_lava" 1')
 				return true
 			end
 		end
@@ -28,8 +28,8 @@ minetest.register_craftitem("bucket_empty", {
 	end,
 })
 
-minetest.register_craftitem("bucket_water", {
-	image = "bucket_water.png",
+minetest.register_craftitem("bucket:bucket_water", {
+	image = "bucket:bucket_water.png",
 	stack_max = 1,
 	liquids_pointable = true,
 	on_place_on_ground = minetest.craftitem_place_item,
@@ -43,15 +43,15 @@ minetest.register_craftitem("bucket_water", {
 			else
 				minetest.env:add_node(pointed_thing.above, {name="water_source"})
 			end
-			player:add_to_inventory_later('craft "bucket_empty" 1')
+			player:add_to_inventory_later('craft "bucket:bucket_empty" 1')
 			return true
 		end
 		return false
 	end,
 })
 
-minetest.register_craftitem("bucket_lava", {
-	image = "bucket_lava.png",
+minetest.register_craftitem("bucket:bucket_lava", {
+	image = "bucket:bucket_lava.png",
 	stack_max = 1,
 	liquids_pointable = true,
 	on_place_on_ground = minetest.craftitem_place_item,
@@ -65,7 +65,7 @@ minetest.register_craftitem("bucket_lava", {
 			else
 				minetest.env:add_node(pointed_thing.above, {name="lava_source"})
 			end
-			player:add_to_inventory_later('craft "bucket_empty" 1')
+			player:add_to_inventory_later('craft "bucket:bucket_empty" 1')
 			return true
 		end
 		return false

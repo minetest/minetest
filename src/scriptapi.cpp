@@ -153,11 +153,18 @@ void check_modname_prefix(lua_State *L, std::string &name)
 	// For __builtin, anything goes
 	if(modname == "__builtin")
 		return;
-
-	if(name.substr(0, modname.size()+1) != modname + "_")
+	
+	if(name.substr(0, modname.size()+1) != modname + ":")
 		throw LuaError(L, std::string("Name \"")+name
 				+"\" does not follow naming conventions: "
-				+"\"modname_\" or \":\" prefix required)");
+				+"\"modname:\" or \":\" prefix required)");
+	
+	std::string subname = name.substr(modname.size()+1);
+	if(!string_allowed(subname, "abcdefghijklmnopqrstuvwxyz"
+			"ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789_"))
+		throw LuaError(L, std::string("Name \"")+name
+				+"\" does not follow naming conventions: "
+				+"\"contains unallowed characters)");
 }
 
 static v3f readFloatPos(lua_State *L, int index)

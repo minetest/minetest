@@ -4,7 +4,7 @@
 
 -- An example furnace-thing implemented in Lua
 
-minetest.register_node("experimental_luafurnace", {
+minetest.register_node("experimental:luafurnace", {
 	tile_images = {"lava.png", "furnace_side.png", "furnace_side.png",
 		"furnace_side.png", "furnace_side.png", "furnace_front.png"},
 	--inventory_image = "furnace_front.png",
@@ -15,7 +15,7 @@ minetest.register_node("experimental_luafurnace", {
 })
 
 minetest.register_on_placenode(function(pos, newnode, placer)
-	if newnode.name == "experimental_luafurnace" then
+	if newnode.name == "experimental:luafurnace" then
 		print("get_meta");
 		local meta = minetest.env:get_meta(pos)
 		print("inventory_set_list");
@@ -42,7 +42,7 @@ minetest.register_on_placenode(function(pos, newnode, placer)
 end)
 
 minetest.register_abm({
-	nodenames = {"experimental_luafurnace"},
+	nodenames = {"experimental:luafurnace"},
 	interval = 1.0,
 	chance = 1,
 	action = function(pos, node, active_object_count, active_object_count_wider)
@@ -97,7 +97,7 @@ minetest.register_abm({
 })
 
 minetest.register_craft({
-	output = 'node "experimental_luafurnace" 1',
+	output = 'node "experimental:luafurnace" 1',
 	recipe = {
 		{'node "cobble"', 'node "cobble"', 'node "cobble"'},
 		{'node "cobble"', 'node "cobble"', 'node "cobble"'},
@@ -132,7 +132,7 @@ minetest.register_craft({
 	}
 })
 
-minetest.register_node("experimental_somenode", {
+minetest.register_node("experimental:somenode", {
 	tile_images = {"lava.png", "mese.png", "stone.png", "grass.png", "cobble.png", "tree_top.png"},
 	inventory_image = "treeprop.png",
 	material = {
@@ -151,7 +151,7 @@ minetest.register_node("experimental_somenode", {
 --
 
 minetest.register_craft({
-	output = 'node "experimental_tnt" 4',
+	output = 'node "experimental:tnt" 4',
 	recipe = {
 		{'node "wood" 1'},
 		{'craft "lump_of_coal" 1'},
@@ -159,7 +159,7 @@ minetest.register_craft({
 	}
 })
 
-minetest.register_node("experimental_tnt", {
+minetest.register_node("experimental:tnt", {
 	tile_images = {"tnt_top.png", "tnt_bottom.png", "tnt_side.png", "tnt_side.png", "tnt_side.png", "tnt_side.png"},
 	inventory_image = "tnt_side.png",
 	dug_item = '', -- Get nothing
@@ -169,9 +169,9 @@ minetest.register_node("experimental_tnt", {
 })
 
 minetest.register_on_punchnode(function(p, node)
-	if node.name == "experimental_tnt" then
+	if node.name == "experimental:tnt" then
 		minetest.env:remove_node(p)
-		minetest.env:add_luaentity(p, "experimental_tnt")
+		minetest.env:add_luaentity(p, "experimental:tnt")
 		nodeupdate(p)
 	end
 end)
@@ -235,13 +235,13 @@ end
 
 --print("TNT dump: "..dump(TNT))
 --print("Registering TNT");
-minetest.register_entity("experimental_tnt", TNT)
+minetest.register_entity("experimental:tnt", TNT)
 
 --
 -- A test entity for testing animated and yaw-modulated sprites
 --
 
-minetest.register_entity("experimental_testentity", {
+minetest.register_entity("experimental:testentity", {
 	-- Static definition
 	physical = true, -- Collides with things
 	-- weight = 5,
