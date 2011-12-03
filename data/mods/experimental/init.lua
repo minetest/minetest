@@ -8,7 +8,7 @@ minetest.register_node("experimental:luafurnace", {
 	tile_images = {"lava.png", "furnace_side.png", "furnace_side.png",
 		"furnace_side.png", "furnace_side.png", "furnace_front.png"},
 	--inventory_image = "furnace_front.png",
-	inventory_image = inventorycube("furnace_front.png"),
+	inventory_image = minetest.inventorycube("furnace_front.png"),
 	paramtype = "facedir_simple",
 	metadata_name = "generic",
 	material = digprop_stonelike(3.0),
@@ -134,7 +134,8 @@ minetest.register_craft({
 
 minetest.register_node("experimental:somenode", {
 	tile_images = {"lava.png", "mese.png", "stone.png", "grass.png", "cobble.png", "tree_top.png"},
-	inventory_image = "treeprop.png",
+	inventory_image = minetest.inventorycube("lava.png", "mese.png", "stone.png"),
+	--inventory_image = "treeprop.png",
 	material = {
 		diggability = "normal",
 		weight = 0,

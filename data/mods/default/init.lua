@@ -824,20 +824,11 @@ function digprop_glasslike(toughness)
 	}
 end
 
-function inventorycube(img1, img2, img3)
-	img2 = img2 or img1
-	img3 = img3 or img1
-	return "[inventorycube"
-			.. "{" .. img1:gsub("%^", "&")
-			.. "{" .. img2:gsub("%^", "&")
-			.. "{" .. img3:gsub("%^", "&")
-end
-
 -- Legacy nodes
 
 minetest.register_node(":stone", {
 	tile_images = {"stone.png"},
-	inventory_image = inventorycube("stone.png"),
+	inventory_image = minetest.inventorycube("stone.png"),
 	paramtype = "mineral",
 	is_ground_content = true,
 	often_contains_mineral = true, -- Texture atlas hint
@@ -847,7 +838,7 @@ minetest.register_node(":stone", {
 
 minetest.register_node(":dirt_with_grass", {
 	tile_images = {"grass.png", "mud.png", "mud.png^grass_side.png"},
-	inventory_image = inventorycube("mud.png^grass_side.png"),
+	inventory_image = minetest.inventorycube("mud.png^grass_side.png"),
 	is_ground_content = true,
 	material = digprop_dirtlike(1.0),
 	dug_item = 'node "dirt" 1',
@@ -863,14 +854,14 @@ minetest.register_node(":dirt_with_grass_footsteps", {
 
 minetest.register_node(":dirt", {
 	tile_images = {"mud.png"},
-	inventory_image = inventorycube("mud.png"),
+	inventory_image = minetest.inventorycube("mud.png"),
 	is_ground_content = true,
 	material = digprop_dirtlike(1.0),
 })
 
 minetest.register_node(":sand", {
 	tile_images = {"sand.png"},
-	inventory_image = inventorycube("sand.png"),
+	inventory_image = minetest.inventorycube("sand.png"),
 	is_ground_content = true,
 	material = digprop_dirtlike(1.0),
 	cookresult_item = 'node "glass" 1',
@@ -878,14 +869,14 @@ minetest.register_node(":sand", {
 
 minetest.register_node(":gravel", {
 	tile_images = {"gravel.png"},
-	inventory_image = inventorycube("gravel.png"),
+	inventory_image = minetest.inventorycube("gravel.png"),
 	is_ground_content = true,
 	material = digprop_gravellike(1.0),
 })
 
 minetest.register_node(":sandstone", {
 	tile_images = {"sandstone.png"},
-	inventory_image = inventorycube("sandstone.png"),
+	inventory_image = minetest.inventorycube("sandstone.png"),
 	is_ground_content = true,
 	material = digprop_dirtlike(1.0),  -- FIXME should this be stonelike?
 	dug_item = 'node "sand" 1',  -- FIXME is this intentional?
@@ -893,7 +884,7 @@ minetest.register_node(":sandstone", {
 
 minetest.register_node(":clay", {
 	tile_images = {"clay.png"},
-	inventory_image = inventorycube("clay.png"),
+	inventory_image = minetest.inventorycube("clay.png"),
 	is_ground_content = true,
 	material = digprop_dirtlike(1.0),
 	dug_item = 'craft "lump_of_clay" 4',
@@ -901,7 +892,7 @@ minetest.register_node(":clay", {
 
 minetest.register_node(":brick", {
 	tile_images = {"brick.png"},
-	inventory_image = inventorycube("brick.png"),
+	inventory_image = minetest.inventorycube("brick.png"),
 	is_ground_content = true,
 	material = digprop_stonelike(1.0),
 	dug_item = 'craft "clay_brick" 4',
@@ -909,7 +900,7 @@ minetest.register_node(":brick", {
 
 minetest.register_node(":tree", {
 	tile_images = {"tree_top.png", "tree_top.png", "tree.png"},
-	inventory_image = inventorycube("tree_top.png", "tree.png", "tree.png"),
+	inventory_image = minetest.inventorycube("tree_top.png", "tree.png", "tree.png"),
 	is_ground_content = true,
 	material = digprop_woodlike(1.0),
 	cookresult_item = 'craft "lump_of_coal" 1',
@@ -918,7 +909,7 @@ minetest.register_node(":tree", {
 
 minetest.register_node(":jungletree", {
 	tile_images = {"jungletree_top.png", "jungletree_top.png", "jungletree.png"},
-	inventory_image = inventorycube("jungletree_top.png", "jungletree.png", "jungletree.png"),
+	inventory_image = minetest.inventorycube("jungletree_top.png", "jungletree.png", "jungletree.png"),
 	is_ground_content = true,
 	material = digprop_woodlike(1.0),
 	cookresult_item = 'craft "lump_of_coal" 1',
@@ -941,7 +932,7 @@ minetest.register_node(":leaves", {
 	drawtype = "allfaces_optional",
 	visual_scale = 1.3,
 	tile_images = {"leaves.png"},
-	inventory_image = "leaves.png",
+	inventory_image = minetest.inventorycube("leaves.png"),
 	light_propagates = true,
 	paramtype = "light",
 	material = digprop_leaveslike(1.0),
@@ -952,7 +943,7 @@ minetest.register_node(":leaves", {
 
 minetest.register_node(":cactus", {
 	tile_images = {"cactus_top.png", "cactus_top.png", "cactus_side.png"},
-	inventory_image = inventorycube("cactus_top.png", "cactus_side.png", "cactus_side.png"),
+	inventory_image = minetest.inventorycube("cactus_top.png", "cactus_side.png", "cactus_side.png"),
 	is_ground_content = true,
 	material = digprop_woodlike(0.75),
 	furnace_burntime = 15,
@@ -972,9 +963,7 @@ minetest.register_node(":papyrus", {
 
 minetest.register_node(":bookshelf", {
 	tile_images = {"wood.png", "wood.png", "bookshelf.png"},
-	-- FIXME: inventorycube only cares for the first texture
-	--inventory_image = inventorycube("wood.png", "bookshelf.png", "bookshelf.png")
-	inventory_image = inventorycube("bookshelf.png"),
+	inventory_image = minetest.inventorycube("wood.png", "bookshelf.png", "bookshelf.png"),
 	is_ground_content = true,
 	material = digprop_woodlike(0.75),
 	furnace_burntime = 30,
@@ -983,7 +972,7 @@ minetest.register_node(":bookshelf", {
 minetest.register_node(":glass", {
 	drawtype = "glasslike",
 	tile_images = {"glass.png"},
-	inventory_image = inventorycube("glass.png"),
+	inventory_image = minetest.inventorycube("glass.png"),
 	light_propagates = true,
 	paramtype = "light",
 	sunlight_propagates = true,
@@ -1050,7 +1039,7 @@ minetest.register_node(":coalstone", {
 
 minetest.register_node(":wood", {
 	tile_images = {"wood.png"},
-	inventory_image = inventorycube("wood.png"),
+	inventory_image = minetest.inventorycube("wood.png"),
 	is_ground_content = true,
 	furnace_burntime = 7,
 	material = digprop_woodlike(0.75),
@@ -1058,7 +1047,7 @@ minetest.register_node(":wood", {
 
 minetest.register_node(":mese", {
 	tile_images = {"mese.png"},
-	inventory_image = inventorycube("mese.png"),
+	inventory_image = minetest.inventorycube("mese.png"),
 	is_ground_content = true,
 	furnace_burntime = 30,
 	material = digprop_stonelike(0.5),
@@ -1066,7 +1055,7 @@ minetest.register_node(":mese", {
 
 minetest.register_node(":cloud", {
 	tile_images = {"cloud.png"},
-	inventory_image = inventorycube("cloud.png"),
+	inventory_image = minetest.inventorycube("cloud.png"),
 	is_ground_content = true,
 })
 
@@ -1074,7 +1063,7 @@ minetest.register_node(":water_flowing", {
 	drawtype = "flowingliquid",
 	tile_images = {"water.png"},
 	alpha = WATER_ALPHA,
-	inventory_image = inventorycube("water.png"),
+	inventory_image = minetest.inventorycube("water.png"),
 	paramtype = "light",
 	light_propagates = true,
 	walkable = false,
@@ -1096,7 +1085,7 @@ minetest.register_node(":water_source", {
 	drawtype = "liquid",
 	tile_images = {"water.png"},
 	alpha = WATER_ALPHA,
-	inventory_image = inventorycube("water.png"),
+	inventory_image = minetest.inventorycube("water.png"),
 	paramtype = "light",
 	light_propagates = true,
 	walkable = false,
@@ -1117,7 +1106,7 @@ minetest.register_node(":water_source", {
 minetest.register_node(":lava_flowing", {
 	drawtype = "flowingliquid",
 	tile_images = {"lava.png"},
-	inventory_image = inventorycube("lava.png"),
+	inventory_image = minetest.inventorycube("lava.png"),
 	paramtype = "light",
 	light_propagates = false,
 	light_source = LIGHT_MAX - 1,
@@ -1140,7 +1129,7 @@ minetest.register_node(":lava_flowing", {
 minetest.register_node(":lava_source", {
 	drawtype = "liquid",
 	tile_images = {"lava.png"},
-	inventory_image = inventorycube("lava.png"),
+	inventory_image = minetest.inventorycube("lava.png"),
 	paramtype = "light",
 	light_propagates = false,
 	light_source = LIGHT_MAX - 1,
@@ -1204,8 +1193,7 @@ minetest.register_node(":sign_wall", {
 minetest.register_node(":chest", {
 	tile_images = {"chest_top.png", "chest_top.png", "chest_side.png",
 		"chest_side.png", "chest_side.png", "chest_front.png"},
-	inventory_image = "chest_top.png",
-	--inventory_image = inventorycube("chest_top.png", "chest_side.png", "chest_front.png"),
+	inventory_image = minetest.inventorycube("chest_top.png", "chest_front.png", "chest_side.png"),
 	paramtype = "facedir_simple",
 	metadata_name = "chest",
 	material = digprop_woodlike(1.0),
@@ -1215,7 +1203,7 @@ minetest.register_node(":chest", {
 minetest.register_node(":locked_chest", {
 	tile_images = {"chest_top.png", "chest_top.png", "chest_side.png",
 		"chest_side.png", "chest_side.png", "chest_lock.png"},
-	inventory_image = "chest_lock.png",
+	inventory_image = minetest.inventorycube("chest_top.png", "chest_lock.png", "chest_side.png"),
 	paramtype = "facedir_simple",
 	metadata_name = "locked_chest",
 	material = digprop_woodlike(1.0),
@@ -1225,7 +1213,7 @@ minetest.register_node(":locked_chest", {
 minetest.register_node(":furnace", {
 	tile_images = {"furnace_side.png", "furnace_side.png", "furnace_side.png",
 		"furnace_side.png", "furnace_side.png", "furnace_front.png"},
-	inventory_image = "furnace_front.png",
+	inventory_image = minetest.inventorycube("furnace_side.png", "furnace_front.png", "furnace_side.png"),
 	paramtype = "facedir_simple",
 	metadata_name = "furnace",
 	material = digprop_stonelike(3.0),
@@ -1233,7 +1221,7 @@ minetest.register_node(":furnace", {
 
 minetest.register_node(":cobble", {
 	tile_images = {"cobble.png"},
-	inventory_image = inventorycube("cobble.png"),
+	inventory_image = minetest.inventorycube("cobble.png"),
 	is_ground_content = true,
 	cookresult_item = 'node "stone" 1',
 	material = digprop_stonelike(0.9),
@@ -1241,14 +1229,14 @@ minetest.register_node(":cobble", {
 
 minetest.register_node(":mossycobble", {
 	tile_images = {"mossycobble.png"},
-	inventory_image = inventorycube("mossycobble.png"),
+	inventory_image = minetest.inventorycube("mossycobble.png"),
 	is_ground_content = true,
 	material = digprop_stonelike(0.8),
 })
 
 minetest.register_node(":steelblock", {
 	tile_images = {"steel_block.png"},
-	inventory_image = inventorycube("steel_block.png"),
+	inventory_image = minetest.inventorycube("steel_block.png"),
 	is_ground_content = true,
 	material = digprop_stonelike(5.0),
 })

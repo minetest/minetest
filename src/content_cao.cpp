@@ -27,6 +27,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "gamedef.h"
 #include "clientobject.h"
 #include "content_object.h"
+#include "mesh.h"
 #include "utility.h" // For IntervalLimiter
 class Settings;
 #include "MyBillboardSceneNode.h"
@@ -630,7 +631,7 @@ void ItemCAO::updateLight(u8 light_at_pos)
 
 	u8 li = decode_light(light_at_pos);
 	video::SColor color(255,li,li,li);
-	setMeshVerticesColor(m_node->getMesh(), color);
+	setMeshColor(m_node->getMesh(), color);
 }
 
 v3s16 ItemCAO::getLightPosition()
@@ -778,7 +779,7 @@ void RatCAO::updateLight(u8 light_at_pos)
 
 	u8 li = decode_light(light_at_pos);
 	video::SColor color(255,li,li,li);
-	setMeshVerticesColor(m_node->getMesh(), color);
+	setMeshColor(m_node->getMesh(), color);
 }
 
 v3s16 RatCAO::getLightPosition()
@@ -934,7 +935,7 @@ void Oerkki1CAO::updateLight(u8 light_at_pos)
 
 	u8 li = decode_light(light_at_pos);
 	video::SColor color(255,li,li,li);
-	setMeshVerticesColor(m_node->getMesh(), color);
+	setMeshColor(m_node->getMesh(), color);
 }
 
 v3s16 Oerkki1CAO::getLightPosition()
@@ -1165,7 +1166,7 @@ void FireflyCAO::updateLight(u8 light_at_pos)
 
 	u8 li = 255;
 	video::SColor color(255,li,li,li);
-	setMeshVerticesColor(m_node->getMesh(), color);
+	setMeshColor(m_node->getMesh(), color);
 }
 
 v3s16 FireflyCAO::getLightPosition()
@@ -1866,7 +1867,7 @@ public:
 		u8 li = decode_light(light_at_pos);
 		video::SColor color(255,li,li,li);
 		if(m_meshnode){
-			setMeshVerticesColor(m_meshnode->getMesh(), color);
+			setMeshColor(m_meshnode->getMesh(), color);
 			m_meshnode->setVisible(true);
 		}
 		if(m_spritenode){
@@ -2250,7 +2251,7 @@ public:
 
 		u8 li = decode_light(light_at_pos);
 		video::SColor color(255,li,li,li);
-		setMeshVerticesColor(m_node->getMesh(), color);
+		setMeshColor(m_node->getMesh(), color);
 	}
 
 	v3s16 getLightPosition()

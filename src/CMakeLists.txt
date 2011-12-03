@@ -161,6 +161,7 @@ set(minetest_SRCS
 	MyBillboardSceneNode.cpp
 	content_mapblock.cpp
 	content_cao.cpp
+	mesh.cpp
 	mapblock_mesh.cpp
 	farmesh.cpp
 	keycode.cpp

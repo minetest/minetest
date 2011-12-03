@@ -22,6 +22,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "common_irrlicht.h"
 #include "inventory.h"
+#include "mesh.h"
 #include "tile.h"
 #include "utility.h"
 #include <ICameraSceneNode.h>
@@ -206,9 +207,6 @@ public:
 	void setSprite(video::ITexture* texture);
 	void setCube(const TileSpec tiles[6]);
 
-	f32 getSpriteThickness() const { return m_thickness; }
-	void setSpriteThickness(f32 thickness);
-
 	void updateLight(u8 light);
 
 	void removeSpriteFromCache(video::ITexture* texture);
@@ -219,16 +217,11 @@ public:
 
 private:
 	scene::IMeshSceneNode* m_meshnode;
-	f32 m_thickness;
 	scene::IMesh* m_cubemesh;
 	bool m_is_cube;
 	u8 m_light;
 
-	// internal extrusion helper methods
 	io::path getExtrudedName(video::ITexture* texture);
-	scene::IAnimatedMesh* extrudeARGB(u32 width, u32 height, u8* data);
-	scene::IAnimatedMesh* extrude(video::ITexture* texture);
-	scene::IMesh* createCubeMesh();
 };
 
 #endif

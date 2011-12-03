@@ -23,6 +23,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "filesys.h"
 #include "utility.h"
 #include "settings.h"
+#include "mesh.h"
 #include <ICameraSceneNode.h>
 #include "log.h"
 #include "mapnode.h" // For texture atlas making
@@ -1468,11 +1469,14 @@ bool generate_image(std::string part_of_name, video::IImage *& baseimg,
 			assert(img_top && img_left && img_right);
 
 			// Create textures from images
-			// TODO: Use them all
 			video::ITexture *texture_top = driver->addTexture(
 					(imagename_top + "__temp__").c_str(), img_top);
-			assert(texture_top);
-			
+			video::ITexture *texture_left = driver->addTexture(
+					(imagename_left + "__temp__").c_str(), img_left);
+			video::ITexture *texture_right = driver->addTexture(
+					(imagename_right + "__temp__").c_str(), img_right);
+			assert(texture_top && texture_left && texture_right);
+
 			// Drop images
 			img_top->drop();
 			img_left->drop();
@@ -1499,17 +1503,24 @@ bool generate_image(std::string part_of_name, video::IImage *& baseimg,
 				Create scene:
 				- An unit cube is centered at 0,0,0
 				- Camera looks at cube from Y+, Z- towards Y-, Z+
-				NOTE: Cube has to be changed to something else because
-				the textures cannot be set individually (or can they?)
 			*/
 
-			scene::ISceneNode* cube = smgr->addCubeSceneNode(1.0, NULL, -1,
-					v3f(0,0,0), v3f(0, 45, 0));
+			scene::IMesh* cube = createCubeMesh(v3f(1, 1, 1));
+			setMeshColor(cube, video::SColor(255, 255, 255, 255));
+
+			scene::IMeshSceneNode* cubenode = smgr->addMeshSceneNode(cube, NULL, -1, v3f(0,0,0), v3f(0,45,0), v3f(1,1,1), true);
+			cube->drop();
+
 			// Set texture of cube
-			cube->setMaterialTexture(0, texture_top);
-			//cube->setMaterialFlag(video::EMF_LIGHTING, false);
-			cube->setMaterialFlag(video::EMF_ANTI_ALIASING, false);
-			cube->setMaterialFlag(video::EMF_BILINEAR_FILTER, false);
+			cubenode->getMaterial(0).setTexture(0, texture_top);
+			cubenode->getMaterial(1).setTexture(0, texture_top);
+			cubenode->getMaterial(2).setTexture(0, texture_right);
+			cubenode->getMaterial(3).setTexture(0, texture_right);
+			cubenode->getMaterial(4).setTexture(0, texture_left);
+			cubenode->getMaterial(5).setTexture(0, texture_left);
+			cubenode->setMaterialFlag(video::EMF_LIGHTING, true);
+			cubenode->setMaterialFlag(video::EMF_ANTI_ALIASING, true);
+			cubenode->setMaterialFlag(video::EMF_BILINEAR_FILTER, true);
 
 			scene::ICameraSceneNode* camera = smgr->addCameraSceneNode(0,
 					v3f(0, 1.0, -1.5), v3f(0, 0, 0));
@@ -1519,7 +1530,7 @@ bool generate_image(std::string part_of_name, video::IImage *& baseimg,
 			camera->setProjectionMatrix(pm, true);
 
 			/*scene::ILightSceneNode *light =*/ smgr->addLightSceneNode(0,
-					v3f(-50, 100, 0), video::SColorf(0.5,0.5,0.5), 1000);
+					v3f(-50, 100, -75), video::SColorf(0.5,0.5,0.5), 1000);
 
 			smgr->setAmbientLight(video::SColorf(0.2,0.2,0.2));
 
@@ -1540,8 +1551,9 @@ bool generate_image(std::string part_of_name, video::IImage *& baseimg,
 			driver->setRenderTarget(0, true, true, 0);
 
 			// Free textures of images
-			// TODO: When all are used, free them all
 			driver->removeTexture(texture_top);
+			driver->removeTexture(texture_left);
+			driver->removeTexture(texture_right);
 			
 			// Create image of render target
 			video::IImage *image = driver->createImage(rtt, v2s32(0,0), dim);

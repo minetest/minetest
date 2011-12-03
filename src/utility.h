@@ -694,11 +694,6 @@ private:
 	u32 *m_result;
 };
 
-#ifndef SERVER
-// Sets the color of all vertices in the mesh
-void setMeshVerticesColor(scene::IMesh* mesh, video::SColor& color);
-#endif
-
 // Calculates the borders of a "d-radius" cube
 inline void getFacePositions(core::list<v3s16> &list, u16 d)
 {

@@ -304,6 +304,19 @@ end
 test_stackstring()
 
 --
+-- nodeitem helpers
+--
+
+minetest.inventorycube = function(img1, img2, img3)
+	img2 = img2 or img1
+	img3 = img3 or img1
+	return "[inventorycube"
+			.. "{" .. img1:gsub("%^", "&")
+			.. "{" .. img2:gsub("%^", "&")
+			.. "{" .. img3:gsub("%^", "&")
+end
+
+--
 -- craftitem helpers
 --
 
