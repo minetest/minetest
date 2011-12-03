@@ -85,8 +85,16 @@ public:
 	{
 		clear();
 	}
-	virtual const CraftItemDefinition* getCraftItemDefinition(const std::string &itemname) const
+	virtual const CraftItemDefinition* getCraftItemDefinition(const std::string &itemname_) const
 	{
+		// Convert name according to possible alias
+		std::string itemname = itemname_;
+		std::map<std::string, std::string>::const_iterator i;
+		i = m_aliases.find(itemname);
+		if(i != m_aliases.end()){
+			itemname = i->second;
+		}
+		// Get the definition
 		core::map<std::string, CraftItemDefinition*>::Node *n;
 		n = m_item_definitions.find(itemname);
 		if(n == NULL)
