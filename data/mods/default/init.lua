@@ -73,6 +73,7 @@
 -- minetest.register_node(name, node definition)
 -- minetest.register_craftitem(name, craftitem definition)
 -- minetest.register_craft(recipe)
+-- minetest.register_abm(abm definition)
 -- minetest.register_globalstep(func(dtime))
 -- minetest.register_on_placenode(func(pos, newnode, placer))
 -- minetest.register_on_dignode(func(pos, oldnode, digger))
@@ -285,6 +286,16 @@
 --     }
 -- }
 --
+-- ABM (ActiveBlockModifier) definition:
+-- {
+--     nodenames = {"lava_source"},
+--     neighbors = {"water_source", "water_flowing"}, -- (any of these)
+--      ^ If left out or empty, any neighbor will do
+--      ^ This might get removed in the future
+--     interval = 1.0, -- (operation interval)
+--     chance = 1, -- (chance of trigger is 1.0/this)
+--     action = func(pos, node, active_object_count, active_object_count_wider),
+-- }
 
 -- print("minetest dump: "..dump(minetest))
 

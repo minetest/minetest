@@ -709,15 +709,18 @@ private:
 	int m_id;
 
 	std::set<std::string> m_trigger_contents;
+	std::set<std::string> m_required_neighbors;
 	float m_trigger_interval;
 	u32 m_trigger_chance;
 public:
 	LuaABM(lua_State *L, int id,
 			const std::set<std::string> &trigger_contents,
+			const std::set<std::string> &required_neighbors,
 			float trigger_interval, u32 trigger_chance):
 		m_lua(L),
 		m_id(id),
 		m_trigger_contents(trigger_contents),
+		m_required_neighbors(required_neighbors),
 		m_trigger_interval(trigger_interval),
 		m_trigger_chance(trigger_chance)
 	{
@@ -725,6 +728,10 @@ public:
 	virtual std::set<std::string> getTriggerContents()
 	{
 		return m_trigger_contents;
+	}
+	virtual std::set<std::string> getRequiredNeighbors()
+	{
+		return m_required_neighbors;
 	}
 	virtual float getTriggerInterval()
 	{
@@ -2575,7 +2582,9 @@ void scriptapi_add_environment(lua_State *L, ServerEnvironment *env)
 	lua_pushlightuserdata(L, env);
 	lua_setfield(L, LUA_REGISTRYINDEX, "minetest_env");
 
-	/* Add ActiveBlockModifiers to environment */
+	/*
+		Add ActiveBlockModifiers to environment
+	*/
 
 	// Get minetest.registered_abms
 	lua_getglobal(L, "minetest");
@@ -2603,6 +2612,25 @@ void scriptapi_add_environment(lua_State *L, ServerEnvironment *env)
 					// removes value, keeps key for next iteration
 					lua_pop(L, 1);
 				}
+			} else if(lua_isstring(L, -1)){
+				trigger_contents.insert(lua_tostring(L, -1));
+			}
+			lua_pop(L, 1);
+
+			std::set<std::string> required_neighbors;
+			lua_getfield(L, current_abm, "neighbors");
+			if(lua_istable(L, -1)){
+				int table = lua_gettop(L);
+				lua_pushnil(L);
+				while(lua_next(L, table) != 0){
+					// key at index -2 and value at index -1
+					luaL_checktype(L, -1, LUA_TSTRING);
+					required_neighbors.insert(lua_tostring(L, -1));
+					// removes value, keeps key for next iteration
+					lua_pop(L, 1);
+				}
+			} else if(lua_isstring(L, -1)){
+				required_neighbors.insert(lua_tostring(L, -1));
 			}
 			lua_pop(L, 1);
 
@@ -2613,7 +2641,7 @@ void scriptapi_add_environment(lua_State *L, ServerEnvironment *env)
 			getintfield(L, current_abm, "chance", trigger_chance);
 
 			LuaABM *abm = new LuaABM(L, id, trigger_contents,
-					trigger_interval, trigger_chance);
+					required_neighbors, trigger_interval, trigger_chance);
 			
 			env->addActiveBlockModifier(abm);
 

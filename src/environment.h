@@ -108,9 +108,15 @@ public:
 	ActiveBlockModifier(){};
 	virtual ~ActiveBlockModifier(){};
 	
+	// Set of contents to trigger on
 	virtual std::set<std::string> getTriggerContents()=0;
+	// Set of required neighbors (trigger doesn't happen if none are found)
+	// Empty = do not check neighbors
+	virtual std::set<std::string> getRequiredNeighbors()
+	{ return std::set<std::string>(); }
+	// Trigger interval in seconds
 	virtual float getTriggerInterval() = 0;
-	// chance of (1 / return value), 0 is disallowed
+	// Random chance of (1 / return value), 0 is disallowed
 	virtual u32 getTriggerChance() = 0;
 	// This is called usually at interval for 1/chance of the nodes
 	virtual void trigger(ServerEnvironment *env, v3s16 p, MapNode n){};

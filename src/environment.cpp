@@ -565,6 +565,7 @@ struct ActiveABM
 {
 	ActiveBlockModifier *abm;
 	int chance;
+	std::set<content_t> required_neighbors;
 };
 
 class ABMHandler
@@ -602,6 +603,18 @@ public:
 			aabm.chance = 1.0 / pow((float)1.0/chance, (float)intervals);
 			if(aabm.chance == 0)
 				aabm.chance = 1;
+			// Trigger neighbors
+			std::set<std::string> required_neighbors_s
+					= abm->getRequiredNeighbors();
+			for(std::set<std::string>::iterator
+					i = required_neighbors_s.begin();
+					i != required_neighbors_s.end(); i++){
+				content_t c = ndef->getId(*i);
+				if(c == CONTENT_IGNORE)
+					continue;
+				aabm.required_neighbors.insert(c);
+			}
+			// Trigger contents
 			std::set<std::string> contents_s = abm->getTriggerContents();
 			for(std::set<std::string>::iterator
 					i = contents_s.begin(); i != contents_s.end(); i++){
@@ -645,6 +658,29 @@ public:
 			{
 				if(myrand() % i->chance != 0)
 					continue;
+
+				// Check neighbors
+				if(!i->required_neighbors.empty())
+				{
+					v3s16 p1;
+					for(p1.X = p.X-1; p1.X <= p.X+1; p1.X++)
+					for(p1.Y = p.Y-1; p1.Y <= p.Y+1; p1.Y++)
+					for(p1.Z = p.Z-1; p1.Z <= p.Z+1; p1.Z++)
+					{
+						if(p1 == p)
+							continue;
+						MapNode n = map->getNodeNoEx(p1);
+						content_t c = n.getContent();
+						std::set<content_t>::const_iterator k;
+						k = i->required_neighbors.find(c);
+						if(k != i->required_neighbors.end()){
+							goto neighbor_found;
+						}
+					}
+					// No required neighbor found
+					continue;
+				}
+neighbor_found:
 
 				// Find out how many objects the block contains
 				u32 active_object_count = block->m_static_objects.m_active.size();
