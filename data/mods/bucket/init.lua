@@ -29,7 +29,7 @@ minetest.register_craftitem("bucket:bucket_empty", {
 })
 
 minetest.register_craftitem("bucket:bucket_water", {
-	image = "bucket:bucket_water.png",
+	image = "bucket_water.png",
 	stack_max = 1,
 	liquids_pointable = true,
 	on_place_on_ground = minetest.craftitem_place_item,
@@ -51,7 +51,7 @@ minetest.register_craftitem("bucket:bucket_water", {
 })
 
 minetest.register_craftitem("bucket:bucket_lava", {
-	image = "bucket:bucket_lava.png",
+	image = "bucket_lava.png",
 	stack_max = 1,
 	liquids_pointable = true,
 	on_place_on_ground = minetest.craftitem_place_item,
