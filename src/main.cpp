@@ -429,6 +429,7 @@ Doing currently:
 #include "settings.h"
 #include "profiler.h"
 #include "log.h"
+#include "mods.h"
 
 /*
 	Settings.
@@ -1661,6 +1662,11 @@ int main(int argc, char *argv[])
 		{
 			errorstream<<"Socket error (port already in use?)"<<std::endl;
 			error_message = L"Socket error (port already in use?)";
+		}
+		catch(ModError &e)
+		{
+			errorstream<<e.what()<<std::endl;
+			error_message = narrow_to_wide(e.what());
 		}
 #ifdef NDEBUG
 		catch(std::exception &e)

@@ -47,7 +47,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "craftitemdef.h"
 #include "mapgen.h"
 #include "content_abm.h"
-#include "content_sao.h" // For PlayerSAO
+#include "mods.h"
 
 #define PP(x) "("<<(x).X<<","<<(x).Y<<","<<(x).Z<<")"
 
@@ -834,92 +834,6 @@ u32 PIChecksum(core::list<PlayerInfo> &l)
 }
 
 /*
-	Mods
-*/
-
-struct ModSpec
-{
-	std::string name;
-	std::string path;
-	std::set<std::string> depends;
-	std::set<std::string> unsatisfied_depends;
-
-	ModSpec(const std::string &name_="", const std::string path_="",
-			const std::set<std::string> &depends_=std::set<std::string>()):
-		name(name_),
-		path(path_),
-		depends(depends_),
-		unsatisfied_depends(depends_)
-	{}
-};
-
-// Get a dependency-sorted list of ModSpecs
-static core::list<ModSpec> getMods(core::list<std::string> &modspaths)
-{
-	std::queue<ModSpec> mods_satisfied;
-	core::list<ModSpec> mods_unsorted;
-	core::list<ModSpec> mods_sorted;
-	for(core::list<std::string>::Iterator i = modspaths.begin();
-			i != modspaths.end(); i++){
-		std::string modspath = *i;
-		std::vector<fs::DirListNode> dirlist = fs::GetDirListing(modspath);
-		for(u32 j=0; j<dirlist.size(); j++){
-			if(!dirlist[j].dir)
-				continue;
-			std::string modname = dirlist[j].name;
-			std::string modpath = modspath + DIR_DELIM + modname;
-			std::set<std::string> depends;
-			std::ifstream is((modpath+DIR_DELIM+"depends.txt").c_str(),
-					std::ios_base::binary);
-			while(is.good()){
-				std::string dep;
-				std::getline(is, dep);
-				dep = trim(dep);
-				if(dep != "")
-					depends.insert(dep);
-			}
-			ModSpec spec(modname, modpath, depends);
-			mods_unsorted.push_back(spec);
-			if(depends.empty())
-				mods_satisfied.push(spec);
-		}
-	}
-	// Sort by depencencies
-	while(!mods_satisfied.empty()){
-		ModSpec mod = mods_satisfied.front();
-		mods_satisfied.pop();
-		mods_sorted.push_back(mod);
-		for(core::list<ModSpec>::Iterator i = mods_unsorted.begin();
-				i != mods_unsorted.end(); i++){
-			ModSpec &mod2 = *i;
-			if(mod2.unsatisfied_depends.empty())
-				continue;
-			mod2.unsatisfied_depends.erase(mod.name);
-			if(!mod2.unsatisfied_depends.empty())
-				continue;
-			mods_satisfied.push(mod2);
-		}
-	}
-	// Check unsatisfied dependencies
-	for(core::list<ModSpec>::Iterator i = mods_unsorted.begin();
-			i != mods_unsorted.end(); i++){
-		ModSpec &mod = *i;
-		if(mod.unsatisfied_depends.empty())
-			continue;
-		errorstream<<"mod \""<<mod.name
-				<<"\" has unsatisfied dependencies:";
-		for(std::set<std::string>::iterator
-				i = mod.unsatisfied_depends.begin();
-				i != mod.unsatisfied_depends.end(); i++){
-			errorstream<<" \""<<(*i)<<"\"";
-		}
-		errorstream<<". Loading nevertheless."<<std::endl;
-		mods_sorted.push_back(mod);
-	}
-	return mods_sorted;
-}
-
-/*
 	Server
 */
 
@@ -985,7 +899,7 @@ Server::Server(
 	if(!success){
 		errorstream<<"Server: Failed to load and run "
 				<<builtinpath<<std::endl;
-		exit(1);
+		throw ModError("Failed to load and run "+builtinpath);
 	}
 	// Load and run "mod" scripts
 	core::list<ModSpec> mods = getMods(m_modspaths);
@@ -998,7 +912,7 @@ Server::Server(
 		if(!success){
 			errorstream<<"Server: Failed to load and run "
 					<<scriptpath<<std::endl;
-			exit(1);
+			throw ModError("Failed to load and run "+scriptpath);
 		}
 	}
 	

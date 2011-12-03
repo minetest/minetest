@@ -76,6 +76,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "log.h"
 #include "nodedef.h" // For init_contentfeatures
 #include "content_mapnode.h" // For content_mapnode_init
+#include "mods.h"
 
 /*
 	Settings.
@@ -364,6 +365,10 @@ int main(int argc, char *argv[])
 	catch(con::PeerNotFoundException &e)
 	{
 		errorstream<<"Connection timed out."<<std::endl;
+	}
+	catch(ModError &e)
+	{
+		errorstream<<e.what()<<std::endl;
 	}
 
 	END_DEBUG_EXCEPTION_HANDLER(errorstream)

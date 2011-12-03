@@ -94,6 +94,7 @@ configure_file(
 )
 
 set(common_SRCS
+	mods.cpp
 	serverremoteplayer.cpp
 	content_abm.cpp
 	craftdef.cpp
