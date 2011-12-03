@@ -92,6 +92,8 @@
 -- minetest.register_craftitem(name, craftitem definition)
 -- minetest.register_craft(recipe)
 -- minetest.register_abm(abm definition)
+-- minetest.alias_node(name, convert_to)
+-- minetest.alias_tool(name, convert_to)
 -- minetest.register_globalstep(func(dtime))
 -- minetest.register_on_placenode(func(pos, newnode, placer))
 -- minetest.register_on_dignode(func(pos, oldnode, digger))

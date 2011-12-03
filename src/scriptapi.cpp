@@ -1140,6 +1140,24 @@ static int l_alias_node(lua_State *L)
 	return 0; /* number of results */
 }
 
+// alias_tool(name, convert_to_name)
+static int l_alias_tool(lua_State *L)
+{
+	std::string name = luaL_checkstring(L, 1);
+	std::string convert_to = luaL_checkstring(L, 2);
+
+	// Get server from registry
+	lua_getfield(L, LUA_REGISTRYINDEX, "minetest_server");
+	Server *server = (Server*)lua_touserdata(L, -1);
+	// And get the writable tool definition manager from the server
+	IWritableToolDefManager *tooldef =
+			server->getWritableToolDefManager();
+	
+	tooldef->setAlias(name, convert_to);
+
+	return 0; /* number of results */
+}
+
 // register_craft({output=item, recipe={{item00,item10},{item01,item11}})
 static int l_register_craft(lua_State *L)
 {
@@ -1293,6 +1311,7 @@ static const struct luaL_Reg minetest_f [] = {
 	{"register_craft", l_register_craft},
 	{"register_abm", l_register_abm},
 	{"alias_node", l_alias_node},
+	{"alias_tool", l_alias_tool},
 	{"setting_get", l_setting_get},
 	{"setting_getbool", l_setting_getbool},
 	{"chat_send_all", l_chat_send_all},

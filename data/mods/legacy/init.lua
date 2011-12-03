@@ -40,6 +40,20 @@ minetest.alias_node("nyancat_rainbow", "default:nyancat_rainbow")
 minetest.alias_node("sapling", "default:sapling")
 minetest.alias_node("apple", "default:apple")
 
+minetest.alias_tool("WPick", "default:pick_wood")
+minetest.alias_tool("STPick", "default:pick_stone")
+minetest.alias_tool("SteelPick", "default:pick_steel")
+minetest.alias_tool("MesePick", "default:pick_mese")
+minetest.alias_tool("WShovel", "default:shovel_wood")
+minetest.alias_tool("STShovel", "default:shovel_stone")
+minetest.alias_tool("SteelShovel", "default:shovel_steel")
+minetest.alias_tool("WAxe", "default:axe_wood")
+minetest.alias_tool("STAxe", "default:axe_stone")
+minetest.alias_tool("SteelAxe", "default:axe_steel")
+minetest.alias_tool("WSword", "default:sword_wood")
+minetest.alias_tool("STSword", "default:sword_stone")
+minetest.alias_tool("SteelSword", "default:sword_steel")
+
 --[[
 WATER_ALPHA = 160
 WATER_VISC = 1

@@ -22,6 +22,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "log.h"
 #include <sstream>
 #include "utility.h"
+#include <map>
 
 ToolDiggingProperties::ToolDiggingProperties(float full_punch_interval_,
 		float a, float b, float c, float d, float e,
@@ -92,8 +93,16 @@ public:
 	{
 		clear();
 	}
-	virtual const ToolDefinition* getToolDefinition(const std::string &toolname) const
+	virtual const ToolDefinition* getToolDefinition(const std::string &toolname_) const
 	{
+		// Convert name according to possible alias
+		std::string toolname = toolname_;
+		std::map<std::string, std::string>::const_iterator i;
+		i = m_aliases.find(toolname);
+		if(i != m_aliases.end()){
+			toolname = i->second;
+		}
+		// Get the definition
 		core::map<std::string, ToolDefinition*>::Node *n;
 		n = m_tool_definitions.find(toolname);
 		if(n == NULL)
@@ -124,14 +133,14 @@ public:
 	virtual bool registerTool(std::string toolname, const ToolDefinition &def)
 	{
 		infostream<<"registerTool: registering tool \""<<toolname<<"\""<<std::endl;
-		/*core::map<std::string, ToolDefinition*>::Node *n;
-		n = m_tool_definitions.find(toolname);
-		if(n != NULL){
-			errorstream<<"registerTool: registering tool \""<<toolname
-					<<"\" failed: name is already registered"<<std::endl;
-			return false;
-		}*/
 		m_tool_definitions[toolname] = new ToolDefinition(def);
+
+		// Remove conflicting alias if it exists
+		bool alias_removed = (m_aliases.erase(toolname) != 0);
+		if(alias_removed)
+			infostream<<"tdef: erased alias "<<toolname
+					<<" because node was defined"<<std::endl;
+		
 		return true;
 	}
 	virtual void clear()
@@ -142,6 +151,19 @@ public:
 			delete i.getNode()->getValue();
 		}
 		m_tool_definitions.clear();
+		m_aliases.clear();
+	}
+	virtual void setAlias(const std::string &name,
+			const std::string &convert_to)
+	{
+		if(getToolDefinition(name) != NULL){
+			infostream<<"tdef: not setting alias "<<name<<" -> "<<convert_to
+					<<": "<<name<<" is already defined"<<std::endl;
+			return;
+		}
+		infostream<<"tdef: setting alias "<<name<<" -> "<<convert_to
+				<<std::endl;
+		m_aliases[name] = convert_to;
 	}
 	virtual void serialize(std::ostream &os)
 	{
@@ -159,6 +181,14 @@ public:
 			std::ostringstream tmp_os(std::ios::binary);
 			def->serialize(tmp_os);
 			os<<serializeString(tmp_os.str());
+		}
+
+		writeU16(os, m_aliases.size());
+		for(std::map<std::string, std::string>::const_iterator
+				i = m_aliases.begin(); i != m_aliases.end(); i++)
+		{
+			os<<serializeString(i->first);
+			os<<serializeString(i->second);
 		}
 	}
 	virtual void deSerialize(std::istream &is)
@@ -180,10 +210,21 @@ public:
 			// Register
 			registerTool(name, def);
 		}
+
+		u16 num_aliases = readU16(is);
+		if(!is.eof()){
+			for(u16 i=0; i<num_aliases; i++){
+				std::string name = deSerializeString(is);
+				std::string convert_to = deSerializeString(is);
+				m_aliases[name] = convert_to;
+			}
+		}
 	}
 private:
 	// Key is name
 	core::map<std::string, ToolDefinition*> m_tool_definitions;
+	// Aliases for loading legacy crap
+	std::map<std::string, std::string> m_aliases;
 };
 
 IWritableToolDefManager* createToolDefManager()
