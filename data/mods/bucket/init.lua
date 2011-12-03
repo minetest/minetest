@@ -21,11 +21,11 @@ minetest.register_craftitem("bucket:bucket_empty", {
 	on_use = function(item, player, pointed_thing)
 		if pointed_thing.type == "node" then
 			n = minetest.env:get_node(pointed_thing.under)
-			if n.name == "water_source" then
+			if n.name == "default:water_source" then
 				minetest.env:add_node(pointed_thing.under, {name="air"})
 				player:add_to_inventory_later('craft "bucket:bucket_water" 1')
 				return true
-			elseif n.name == "lava_source" then
+			elseif n.name == "default:lava_source" then
 				minetest.env:add_node(pointed_thing.under, {name="air"})
 				player:add_to_inventory_later('craft "bucket:bucket_lava" 1')
 				return true
@@ -43,12 +43,12 @@ minetest.register_craftitem("bucket:bucket_water", {
 	on_use = function(item, player, pointed_thing)
 		if pointed_thing.type == "node" then
 			n = minetest.env:get_node(pointed_thing.under)
-			if n.name == "water_source" then
+			if n.name == "default:water_source" then
 				-- unchanged
-			elseif n.name == "water_flowing" or n.name == "lava_source" or n.name == "lava_flowing" then
-				minetest.env:add_node(pointed_thing.under, {name="water_source"})
+			elseif n.name == "default:water_flowing" or n.name == "default:lava_source" or n.name == "default:lava_flowing" then
+				minetest.env:add_node(pointed_thing.under, {name="default:water_source"})
 			else
-				minetest.env:add_node(pointed_thing.above, {name="water_source"})
+				minetest.env:add_node(pointed_thing.above, {name="default:water_source"})
 			end
 			player:add_to_inventory_later('craft "bucket:bucket_empty" 1')
 			return true
@@ -65,12 +65,12 @@ minetest.register_craftitem("bucket:bucket_lava", {
 	on_use = function(item, player, pointed_thing)
 		if pointed_thing.type == "node" then
 			n = minetest.env:get_node(pointed_thing.under)
-			if n.name == "lava_source" then
+			if n.name == "default:lava_source" then
 				-- unchanged
-			elseif n.name == "water_source" or n.name == "water_flowing" or n.name == "lava_flowing" then
-				minetest.env:add_node(pointed_thing.under, {name="lava_source"})
+			elseif n.name == "default:water_source" or n.name == "default:water_flowing" or n.name == "default:lava_flowing" then
+				minetest.env:add_node(pointed_thing.under, {name="default:lava_source"})
 			else
-				minetest.env:add_node(pointed_thing.above, {name="lava_source"})
+				minetest.env:add_node(pointed_thing.above, {name="default:lava_source"})
 			end
 			player:add_to_inventory_later('craft "bucket:bucket_empty" 1')
 			return true
