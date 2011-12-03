@@ -493,6 +493,13 @@ minetest.register_craft({
 })
 
 minetest.register_craft({
+	output = 'node "wood" 4',
+	recipe = {
+		{'node "jungletree"'},
+	}
+})
+
+minetest.register_craft({
 	output = 'craft "Stick" 4',
 	recipe = {
 		{'node "wood"'},
