@@ -240,7 +240,7 @@
 -- }
 --
 -- Craftitem definition options:
--- minetest.register_craftitem(":name", {
+-- minetest.register_craftitem("modname_name", {
 --     image = "image.png",
 --     stack_max = <maximum number of items in stack>,
 --     cookresult_item = itemstring (result of cooking),
