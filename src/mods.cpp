@@ -21,8 +21,10 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <queue>
 #include <fstream>
 #include <sstream>
+#include <map>
 #include "filesys.h"
 #include "strfnd.h"
+#include "log.h"
 
 // Get a dependency-sorted list of ModSpecs
 core::list<ModSpec> getMods(core::list<std::string> &modspaths)
@@ -31,6 +33,8 @@ core::list<ModSpec> getMods(core::list<std::string> &modspaths)
 	std::queue<ModSpec> mods_satisfied;
 	core::list<ModSpec> mods_unsorted;
 	core::list<ModSpec> mods_sorted;
+	// name, path: For detecting name conflicts
+	std::map<std::string, std::string> mod_names;
 	for(core::list<std::string>::Iterator i = modspaths.begin();
 			i != modspaths.end(); i++){
 		std::string modspath = *i;
@@ -40,6 +44,19 @@ core::list<ModSpec> getMods(core::list<std::string> &modspaths)
 				continue;
 			std::string modname = dirlist[j].name;
 			std::string modpath = modspath + DIR_DELIM + modname;
+			// Detect mod name conflicts
+			{
+				std::map<std::string, std::string>::const_iterator i;
+				i = mod_names.find(modname);
+				if(i != mod_names.end()){
+					std::string s;
+					infostream<<"WARNING: Mod name conflict detected: "
+							<<std::endl
+							<<"Already loaded: "<<i->second<<std::endl
+							<<"Will not load: "<<modpath<<std::endl;
+					continue;
+				}
+			}
 			std::set<std::string> depends;
 			std::ifstream is((modpath+DIR_DELIM+"depends.txt").c_str(),
 					std::ios_base::binary);
@@ -54,6 +71,7 @@ core::list<ModSpec> getMods(core::list<std::string> &modspaths)
 			mods_unsorted.push_back(spec);
 			if(depends.empty())
 				mods_satisfied.push(spec);
+			mod_names[modname] = modpath;
 		}
 	}
 	// Sort by depencencies
