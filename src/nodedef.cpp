@@ -311,6 +311,9 @@ public:
 	void clear()
 	{
 		m_name_id_mapping.clear();
+
+		m_aliases.clear();
+		
 		for(u16 i=0; i<=MAX_CONTENT; i++)
 		{
 			ContentFeatures &f = m_content_features[i];
@@ -645,6 +648,14 @@ public:
 		}
 		writeU16(os, count);
 		os<<serializeLongString(tmp_os.str());
+
+		writeU16(os, m_aliases.size());
+		for(std::map<std::string, std::string>::const_iterator
+				i = m_aliases.begin(); i != m_aliases.end(); i++)
+		{
+			os<<serializeString(i->first);
+			os<<serializeString(i->second);
+		}
 	}
 	void deSerialize(std::istream &is, IGameDef *gamedef)
 	{
@@ -665,6 +676,15 @@ public:
 			f->deSerialize(tmp_is, gamedef);
 			if(f->name != "")
 				m_name_id_mapping.set(i, f->name);
+		}
+
+		u16 num_aliases = readU16(is);
+		if(!is.eof()){
+			for(u16 i=0; i<num_aliases; i++){
+				std::string name = deSerializeString(is);
+				std::string convert_to = deSerializeString(is);
+				m_aliases[name] = convert_to;
+			}
 		}
 	}
 private:
