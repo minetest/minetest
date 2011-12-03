@@ -23,6 +23,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "log.h"
 #include <sstream>
 #include "utility.h"
+#include <map>
 
 CraftItemDefinition::CraftItemDefinition():
 	imagename(""),
@@ -102,14 +103,14 @@ public:
 	virtual bool registerCraftItem(std::string itemname, const CraftItemDefinition &def)
 	{
 		infostream<<"registerCraftItem: registering CraftItem \""<<itemname<<"\""<<std::endl;
-		/*core::map<std::string, CraftItemDefinition*>::Node *n;
-		n = m_item_definitions.find(itemname);
-		if(n != NULL){
-			errorstream<<"registerCraftItem: registering item \""<<toolname
-					<<"\" failed: name is already registered"<<std::endl;
-			return false;
-		}*/
 		m_item_definitions[itemname] = new CraftItemDefinition(def);
+
+		// Remove conflicting alias if it exists
+		bool alias_removed = (m_aliases.erase(itemname) != 0);
+		if(alias_removed)
+			infostream<<"cidef: erased alias "<<itemname
+					<<" because item was defined"<<std::endl;
+		
 		return true;
 	}
 	virtual void clear()
@@ -120,6 +121,19 @@ public:
 			delete i.getNode()->getValue();
 		}
 		m_item_definitions.clear();
+		m_aliases.clear();
+	}
+	virtual void setAlias(const std::string &name,
+			const std::string &convert_to)
+	{
+		if(getCraftItemDefinition(name) != NULL){
+			infostream<<"nidef: not setting alias "<<name<<" -> "<<convert_to
+					<<": "<<name<<" is already defined"<<std::endl;
+			return;
+		}
+		infostream<<"nidef: setting alias "<<name<<" -> "<<convert_to
+				<<std::endl;
+		m_aliases[name] = convert_to;
 	}
 	virtual void serialize(std::ostream &os)
 	{
@@ -137,6 +151,14 @@ public:
 			std::ostringstream tmp_os(std::ios::binary);
 			def->serialize(tmp_os);
 			os<<serializeString(tmp_os.str());
+		}
+
+		writeU16(os, m_aliases.size());
+		for(std::map<std::string, std::string>::const_iterator
+				i = m_aliases.begin(); i != m_aliases.end(); i++)
+		{
+			os<<serializeString(i->first);
+			os<<serializeString(i->second);
 		}
 	}
 	virtual void deSerialize(std::istream &is)
@@ -158,10 +180,21 @@ public:
 			// Register
 			registerCraftItem(name, def);
 		}
+
+		u16 num_aliases = readU16(is);
+		if(!is.eof()){
+			for(u16 i=0; i<num_aliases; i++){
+				std::string name = deSerializeString(is);
+				std::string convert_to = deSerializeString(is);
+				m_aliases[name] = convert_to;
+			}
+		}
 	}
 private:
 	// Key is name
 	core::map<std::string, CraftItemDefinition*> m_item_definitions;
+	// Aliases
+	std::map<std::string, std::string> m_aliases;
 };
 
 IWritableCraftItemDefManager* createCraftItemDefManager()

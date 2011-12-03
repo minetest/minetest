@@ -63,6 +63,11 @@ public:
 
 	virtual bool registerCraftItem(std::string itemname, const CraftItemDefinition &def)=0;
 	virtual void clear()=0;
+	// Set an alias so that entries named <name> will load as <convert_to>.
+	// Alias is not set if <name> has already been defined.
+	// Alias will be removed if <name> is defined at a later point of time.
+	virtual void setAlias(const std::string &name,
+			const std::string &convert_to)=0;
 
 	virtual void serialize(std::ostream &os)=0;
 	virtual void deSerialize(std::istream &is)=0;
