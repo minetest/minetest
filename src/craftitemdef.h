@@ -49,6 +49,7 @@ public:
 	virtual ~ICraftItemDefManager(){}
 	virtual const CraftItemDefinition* getCraftItemDefinition(const std::string &itemname) const=0;
 	virtual std::string getImagename(const std::string &itemname) const =0;
+	virtual std::string getAlias(const std::string &name) const =0;
 
 	virtual void serialize(std::ostream &os)=0;
 };

@@ -238,11 +238,7 @@ private:
 class CraftItem : public InventoryItem
 {
 public:
-	CraftItem(IGameDef *gamedef, std::string subname, u16 count):
-		InventoryItem(gamedef, count)
-	{
-		m_subname = subname;
-	}
+	CraftItem(IGameDef *gamedef, std::string subname, u16 count);
 	/*
 		Implementation interface
 	*/

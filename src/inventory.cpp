@@ -354,6 +354,15 @@ bool ToolItem::isKnown() const
 	CraftItem
 */
 
+CraftItem::CraftItem(IGameDef *gamedef, std::string subname, u16 count):
+	InventoryItem(gamedef, count)
+{
+	// Convert directly to the correct name through aliases.
+	// This is necessary because CraftItem callbacks are stored in
+	// Lua refenced by their correct name
+	m_subname = gamedef->cidef()->getAlias(subname);
+}
+
 #ifndef SERVER
 video::ITexture * CraftItem::getImage() const
 {

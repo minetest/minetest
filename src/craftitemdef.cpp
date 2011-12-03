@@ -88,12 +88,7 @@ public:
 	virtual const CraftItemDefinition* getCraftItemDefinition(const std::string &itemname_) const
 	{
 		// Convert name according to possible alias
-		std::string itemname = itemname_;
-		std::map<std::string, std::string>::const_iterator i;
-		i = m_aliases.find(itemname);
-		if(i != m_aliases.end()){
-			itemname = i->second;
-		}
+		std::string itemname = getAlias(itemname_);
 		// Get the definition
 		core::map<std::string, CraftItemDefinition*>::Node *n;
 		n = m_item_definitions.find(itemname);
@@ -107,6 +102,14 @@ public:
 		if(def == NULL)
 			return "";
 		return def->imagename;
+	}
+	virtual std::string getAlias(const std::string &name) const
+	{
+		std::map<std::string, std::string>::const_iterator i;
+		i = m_aliases.find(name);
+		if(i != m_aliases.end())
+			return i->second;
+		return name;
 	}
 	virtual bool registerCraftItem(std::string itemname, const CraftItemDefinition &def)
 	{
