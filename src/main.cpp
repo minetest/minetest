@@ -1666,7 +1666,7 @@ int main(int argc, char *argv[])
 		catch(ModError &e)
 		{
 			errorstream<<e.what()<<std::endl;
-			error_message = narrow_to_wide(e.what());
+			error_message = narrow_to_wide(e.what()) + L"\nCheck debug.txt for details.";
 		}
 #ifdef NDEBUG
 		catch(std::exception &e)
