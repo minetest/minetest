@@ -183,12 +183,16 @@ public:
 		{return &m_selection_box;}
 	v3f getPosition()
 		{return m_position;}
+	
+	std::string infoText()
+		{return m_infotext;}
 
 private:
 	core::aabbox3d<f32> m_selection_box;
 	scene::IMeshSceneNode *m_node;
 	v3f m_position;
 	std::string m_inventorystring;
+	std::string m_infotext;
 };
 
 /*
@@ -530,7 +534,10 @@ ItemCAO::ItemCAO(IGameDef *gamedef, ClientEnvironment *env):
 	m_node(NULL),
 	m_position(v3f(0,10*BS,0))
 {
-	ClientActiveObject::registerType(getType(), create);
+	if(!gamedef && !env)
+	{
+		ClientActiveObject::registerType(getType(), create);
+	}
 }
 
 ItemCAO::~ItemCAO()
@@ -694,6 +701,23 @@ void ItemCAO::initialize(const std::string &data)
 	}
 	
 	updateNodePos();
+	
+	/*
+		Set infotext to item name if item cannot be deserialized
+	*/
+	try{
+		InventoryItem *item = NULL;
+		item = InventoryItem::deSerialize(m_inventorystring, m_gamedef);
+		if(item){
+			if(!item->isKnown())
+				m_infotext = "Unknown item: '" + m_inventorystring + "'";
+		}
+		delete item;
+	}
+	catch(SerializationError &e)
+	{
+		m_infotext = "Unknown item: '" + m_inventorystring + "'";
+	}
 }
 
 /*

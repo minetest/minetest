@@ -64,6 +64,9 @@ public:
 	virtual std::string getText() { return ""; }
 	// Returns the string used for inventory
 	virtual std::string getItemString();
+	
+	// Shall return false if item is not known and cannot be used
+	virtual bool isKnown() const { return true; }
 
 	/*
 		Quantity methods
@@ -269,6 +272,8 @@ public:
 		return os.str();
 	}
 
+	virtual bool isKnown() const;
+
 	virtual bool addableTo(const InventoryItem *other) const
 	{
 		if(std::string(other->getName()) != "CraftItem")
@@ -366,6 +371,8 @@ public:
 	{
 		return "";
 	}
+	
+	virtual bool isKnown() const;
 
 	virtual bool isSubsetOf(const InventoryItem *other) const
 	{

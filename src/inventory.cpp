@@ -343,6 +343,13 @@ video::ITexture * ToolItem::getImageRaw() const
 }
 #endif
 
+bool ToolItem::isKnown() const
+{
+	IToolDefManager *tdef = m_gamedef->tdef();
+	const ToolDefinition *def = tdef->getToolDefinition(m_toolname);
+	return (def != NULL);
+}
+
 /*
 	CraftItem
 */
@@ -356,6 +363,13 @@ video::ITexture * CraftItem::getImage() const
 	return tsrc->getTextureRaw(imagename);
 }
 #endif
+
+bool CraftItem::isKnown() const
+{
+	ICraftItemDefManager *cidef = m_gamedef->cidef();
+	const CraftItemDefinition *def = cidef->getCraftItemDefinition(m_subname);
+	return (def != NULL);
+}
 
 u16 CraftItem::getStackMax() const
 {
