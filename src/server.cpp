@@ -965,8 +965,11 @@ Server::Server(
 	
 	// Path to builtin.lua
 	std::string builtinpath = porting::path_data + DIR_DELIM + "builtin.lua";
-	// Add default global mod path
+
+	// Add default global mod search path
 	m_modspaths.push_back(porting::path_data + DIR_DELIM + "mods");
+	// Add world mod search path
+	m_modspaths.push_back(mapsavedir + DIR_DELIM + "mods");
 
 	// Initialize scripting
 	
