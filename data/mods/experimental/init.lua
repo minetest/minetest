@@ -159,7 +159,7 @@ minetest.register_node("experimental:tnt", {
 			"default_tnt_side.png", "default_tnt_side.png",
 			"default_tnt_side.png", "default_tnt_side.png"},
 	inventory_image = minetest.inventorycube("default_tnt_top.png",
-			"default_tnt_side.png", "default_tnt_side.png")
+			"default_tnt_side.png", "default_tnt_side.png"),
 	dug_item = '', -- Get nothing
 	material = {
 		diggability = "not",
