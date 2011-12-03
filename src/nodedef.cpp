@@ -472,6 +472,8 @@ public:
 		ContentFeatures f;
 		f.name = name;
 		f.setAllTextures("unknown_block.png");
+		// Make unknown blocks diggable
+		f.material.diggability = DIGGABLE_NORMAL;
 		return set(name, f);
 	}
 	virtual void updateTextures(ITextureSource *tsrc)
