@@ -11,7 +11,7 @@ minetest.register_node("experimental:luafurnace", {
 	inventory_image = minetest.inventorycube("furnace_front.png"),
 	paramtype = "facedir_simple",
 	metadata_name = "generic",
-	material = digprop_stonelike(3.0),
+	material = minetest.digprop_stonelike(3.0),
 })
 
 minetest.register_on_placenode(function(pos, newnode, placer)

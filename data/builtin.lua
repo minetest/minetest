@@ -341,6 +341,77 @@ minetest.craftitem_eat = function(hp_change)
 end
 
 --
+-- Default material types
+--
+
+function minetest.digprop_constanttime(time)
+	return {
+		diggability = "constant",
+		constant_time = time,
+	}
+end
+
+function minetest.digprop_stonelike(toughness)
+	return {
+		diggablity = "normal",
+		weight = toughness * 5,
+		crackiness = 1,
+		crumbliness = -0.1,
+		cuttability = -0.2,
+	}
+end
+
+function minetest.digprop_dirtlike(toughness)
+	return {
+		diggablity = "normal",
+		weight = toughness * 1.2,
+		crackiness = 0,
+		crumbliness = 1.2,
+		cuttability = -0.4,
+	}
+end
+
+function minetest.digprop_gravellike(toughness)
+	return {
+		diggablity = "normal",
+		weight = toughness * 2,
+		crackiness = 0.2,
+		crumbliness = 1.5,
+		cuttability = -1.0,
+	}
+end
+
+function minetest.digprop_woodlike(toughness)
+	return {
+		diggablity = "normal",
+		weight = toughness * 1.0,
+		crackiness = 0.75,
+		crumbliness = -1.0,
+		cuttability = 1.5,
+	}
+end
+
+function minetest.digprop_leaveslike(toughness)
+	return {
+		diggablity = "normal",
+		weight = toughness * (-0.5),
+		crackiness = 0,
+		crumbliness = 0,
+		cuttability = 2.0,
+	}
+end
+
+function minetest.digprop_glasslike(toughness)
+	return {
+		diggablity = "normal",
+		weight = toughness * 0.1,
+		crackiness = 2.0,
+		crumbliness = -1.0,
+		cuttability = -1.0,
+	}
+end
+
+--
 -- Creative inventory
 --
 
