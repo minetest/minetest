@@ -2,6 +2,23 @@
 -- dump2(obj, name="_", dumped={})
 -- dump(obj, dumped={})
 --
+-- Mod load path
+-- -------------
+-- Generic:
+-- $path_data/mods/
+-- $path_userdata/usermods/
+-- $mapdir/worldmods/
+--
+-- On a run-in-place version (eg. the distributed windows version):
+-- minetest-0.4.x/mods/
+-- minetest-0.4.x/usermods/
+-- minetest-0.4.x/world/worldmods/
+--
+-- On an installed version on linux:
+-- /usr/share/minetest/mods/
+-- ~/.minetest/usermods
+-- ~/.minetest/world/worldmods
+--
 -- Naming convention for registered textual names
 -- ----------------------------------------------
 -- "modname_<whatever>"

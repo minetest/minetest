@@ -875,16 +875,24 @@ Server::Server(
 	JMutexAutoLock envlock(m_env_mutex);
 	JMutexAutoLock conlock(m_con_mutex);
 
-	infostream<<"m_nodedef="<<m_nodedef<<std::endl;
-	
 	// Path to builtin.lua
 	std::string builtinpath = porting::path_data + DIR_DELIM + "builtin.lua";
 
 	// Add default global mod search path
 	m_modspaths.push_front(porting::path_data + DIR_DELIM + "mods");
 	// Add world mod search path
-	m_modspaths.push_front(mapsavedir + DIR_DELIM + "mods");
-
+	m_modspaths.push_front(mapsavedir + DIR_DELIM + "worldmods");
+	// Add user mod search path
+	m_modspaths.push_front(porting::path_userdata + DIR_DELIM + "usermods");
+	
+	// Print out mod search paths
+	infostream<<"Mod search paths:"<<std::endl;
+	for(core::list<std::string>::Iterator i = m_modspaths.begin();
+			i != m_modspaths.end(); i++){
+		std::string modspath = *i;
+		infostream<<"    "<<modspath<<std::endl;
+	}
+	
 	// Initialize scripting
 	
 	infostream<<"Server: Initializing scripting"<<std::endl;
