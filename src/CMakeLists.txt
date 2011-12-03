@@ -167,6 +167,7 @@ set(minetest_SRCS
 	camera.cpp
 	clouds.cpp
 	clientobject.cpp
+	chat.cpp
 	guiMainMenu.cpp
 	guiKeyChangeMenu.cpp
 	guiMessageMenu.cpp
@@ -175,6 +176,7 @@ set(minetest_SRCS
 	guiPauseMenu.cpp
 	guiPasswordChange.cpp
 	guiDeathScreen.cpp
+	guiChatConsole.cpp
 	client.cpp
 	tile.cpp
 	game.cpp

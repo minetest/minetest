@@ -122,6 +122,8 @@ public:
 	virtual void clear() {};
 };
 
+class ChatBackend;  /* to avoid having to include chat.h */
+
 void the_game(
 	bool &kill,
 	bool random_input,
@@ -134,7 +136,8 @@ void the_game(
 	std::string address,
 	u16 port,
 	std::wstring &error_message,
-	std::string configpath
+	std::string configpath,
+	ChatBackend &chat_backend
 );
 
 #endif

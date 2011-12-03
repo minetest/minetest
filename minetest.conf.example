@@ -42,6 +42,8 @@
 # Go down ladder / go down in fly mode / go fast in fast mode
 #keymap_special1 = KEY_KEY_E
 #keymap_chat = KEY_KEY_T
+#keymap_cmd = /
+#keyman_console = KEY_F10
 #keymap_rangeselect = KEY_KEY_R
 #keymap_freemove = KEY_KEY_K
 #keymap_fastmove = KEY_KEY_J
@@ -104,6 +106,10 @@
 #screenshot_path = .
 # Amount of view bobbing (0 = no view bobbing, 1.0 = normal, 2.0 = double)
 #view_bobbing_amount = 1.0
+# In-game chat console background color (R,G,B)
+#console_color = (0,0,0)
+# In-game chat console background alpha (opaqueness, between 0 and 255)
+#console_alpha = 200
 
 #
 # Server stuff

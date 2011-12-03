@@ -277,3 +277,21 @@ FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
 IN THE SOFTWARE.
 
 
+Fonts
+---------------
+
+DejaVu Sans Mono:
+
+  Fonts are (c) Bitstream (see below). DejaVu changes are in public domain.
+  Glyphs imported from Arev fonts are (c) Tavmjong Bah (see below)
+
+  Bitstream Vera Fonts Copyright:
+
+  Copyright (c) 2003 by Bitstream, Inc. All Rights Reserved. Bitstream Vera is
+  a trademark of Bitstream, Inc.
+
+  Arev Fonts Copyright:
+
+  Copyright (c) 2006 by Tavmjong Bah. All Rights Reserved.
+
+

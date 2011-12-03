@@ -2036,7 +2036,21 @@ void Client::printDebugInfo(std::ostream &os)
 		//<<", m_opt_not_found_history.size()="<<m_opt_not_found_history.size()
 		<<std::endl;*/
 }
-	
+
+core::list<std::wstring> Client::getConnectedPlayerNames()
+{
+	core::list<Player*> players = m_env.getPlayers(true);
+	core::list<std::wstring> playerNames;
+	for(core::list<Player*>::Iterator
+			i = players.begin();
+			i != players.end(); i++)
+	{
+		Player *player = *i;
+		playerNames.push_back(narrow_to_wide(player->getName()));
+	}
+	return playerNames;
+}
+
 u32 Client::getDayNightRatio()
 {
 	//JMutexAutoLock envlock(m_env_mutex); //bulk comment-out
@@ -2081,6 +2095,39 @@ void Client::clearTempMod(v3s16 p)
 			i.atEnd() == false; i++)
 	{
 		i.getNode()->getValue()->updateMesh(m_env.getDayNightRatio());
+	}
+}
+
+bool Client::getChatMessage(std::wstring &message)
+{
+	if(m_chat_queue.size() == 0)
+		return false;
+	message = m_chat_queue.pop_front();
+	return true;
+}
+
+void Client::typeChatMessage(const std::wstring &message)
+{
+	// Discard empty line
+	if(message == L"")
+		return;
+
+	// Send to others
+	sendChatMessage(message);
+
+	// Show locally
+	if (message[0] == L'/')
+	{
+		m_chat_queue.push_back(
+				(std::wstring)L"issued command: "+message);
+	}
+	else
+	{
+		LocalPlayer *player = m_env.getLocalPlayer();
+		assert(player != NULL);
+		std::wstring name = narrow_to_wide(player->getName());
+		m_chat_queue.push_back(
+				(std::wstring)L"<"+name+L"> "+message);
 	}
 }
 

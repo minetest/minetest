@@ -694,6 +694,46 @@ private:
 	u32 *m_result;
 };
 
+// Tests if two strings are equal, optionally case insensitive
+inline bool str_equal(const std::wstring& s1, const std::wstring& s2,
+		bool case_insensitive = false)
+{
+	if(case_insensitive)
+	{
+		if(s1.size() != s2.size())
+			return false;
+		for(size_t i = 0; i < s1.size(); ++i)
+			if(tolower(s1[i]) != tolower(s2[i]))
+				return false;
+		return true;
+	}
+	else
+	{
+		return s1 == s2;
+	}
+}
+
+// Tests if the second string is a prefix of the first, optionally case insensitive
+inline bool str_starts_with(const std::wstring& str, const std::wstring& prefix,
+		bool case_insensitive = false)
+{
+	if(str.size() < prefix.size())
+		return false;
+	if(case_insensitive)
+	{
+		for(size_t i = 0; i < prefix.size(); ++i)
+			if(tolower(str[i]) != tolower(prefix[i]))
+				return false;
+	}
+	else
+	{
+		for(size_t i = 0; i < prefix.size(); ++i)
+			if(str[i] != prefix[i])
+				return false;
+	}
+	return true;
+}
+
 // Calculates the borders of a "d-radius" cube
 inline void getFacePositions(core::list<v3s16> &list, u16 d)
 {
@@ -1564,6 +1604,15 @@ inline std::string wrap_rows(const std::string &from, u32 rowlen)
 */
 #define MYMIN(a,b) ((a)<(b)?(a):(b))
 #define MYMAX(a,b) ((a)>(b)?(a):(b))
+
+/*
+	Returns nearest 32-bit integer for given floating point number.
+	<cmath> and <math.h> in VC++ don't provide round().
+*/
+inline s32 myround(f32 f)
+{
+	return floor(f + 0.5);
+}
 
 /*
 	Returns integer position of node in given floating point position
