@@ -139,7 +139,7 @@ public:
 		bool alias_removed = (m_aliases.erase(toolname) != 0);
 		if(alias_removed)
 			infostream<<"tdef: erased alias "<<toolname
-					<<" because node was defined"<<std::endl;
+					<<" because tool was defined"<<std::endl;
 		
 		return true;
 	}
