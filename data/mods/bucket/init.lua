@@ -1,3 +1,10 @@
+-- bucket (Minetest 0.4 mod)
+-- A bucket, which can pick up water and lava
+
+minetest.alias_craftitem("bucket", "bucket:bucket_empty")
+minetest.alias_craftitem("bucket_water", "bucket:bucket_water")
+minetest.alias_craftitem("bucket_lava", "bucket:bucket_lava")
+
 minetest.register_craft({
 	output = 'craft "bucket:bucket_empty" 1',
 	recipe = {
