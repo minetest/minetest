@@ -279,6 +279,11 @@ public:
 			const ContentFeatures &def)=0;
 	// If returns CONTENT_IGNORE, could not allocate id
 	virtual content_t allocateDummy(const std::string &name)=0;
+	// Set an alias so that nodes named <name> will load as <convert_to>.
+	// Alias is not set if <name> has already been defined.
+	// Alias will be removed if <name> is defined at a later point of time.
+	virtual void setAlias(const std::string &name,
+			const std::string &convert_to)=0;
 
 	/*
 		Update tile textures to latest return values of TextueSource.

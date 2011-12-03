@@ -1,6 +1,46 @@
 -- legacy (Minetest 0.4 mod)
 -- Provides as much backwards-compatibility as feasible
 
+minetest.alias_node("stone", "default:stone")
+minetest.alias_node("dirt_with_grass", "default:dirt_with_grass")
+minetest.alias_node("dirt_with_grass_footsteps", "default:dirt_with_grass_footsteps")
+minetest.alias_node("dirt", "default:dirt")
+minetest.alias_node("sand", "default:sand")
+minetest.alias_node("gravel", "default:gravel")
+minetest.alias_node("sandstone", "default:sandstone")
+minetest.alias_node("clay", "default:clay")
+minetest.alias_node("brick", "default:brick")
+minetest.alias_node("tree", "default:tree")
+minetest.alias_node("jungletree", "default:jungletree")
+minetest.alias_node("junglegrass", "default:junglegrass")
+minetest.alias_node("leaves", "default:leaves")
+minetest.alias_node("cactus", "default:cactus")
+minetest.alias_node("papyrus", "default:papyrus")
+minetest.alias_node("bookshelf", "default:bookshelf")
+minetest.alias_node("glass", "default:glass")
+minetest.alias_node("wooden_fence", "default:fence_wood")
+minetest.alias_node("rail", "default:rail")
+minetest.alias_node("ladder", "default:ladder")
+minetest.alias_node("wood", "default:wood")
+minetest.alias_node("mese", "default:mese")
+minetest.alias_node("cloud", "default:cloud")
+minetest.alias_node("water_flowing", "default:water_flowing")
+minetest.alias_node("water_source", "default:water_source")
+minetest.alias_node("lava_flowing", "default:lava_flowing")
+minetest.alias_node("lava_source", "default:lava_source")
+minetest.alias_node("torch", "default:torch")
+minetest.alias_node("sign_wall", "default:sign_wall")
+minetest.alias_node("chest", "default:chest")
+minetest.alias_node("locked_chest", "default:chest_locked")
+minetest.alias_node("cobble", "default:cobble")
+minetest.alias_node("mossycobble", "default:mossycobble")
+minetest.alias_node("steelblock", "default:steelblock")
+minetest.alias_node("nyancat", "default:nyancat")
+minetest.alias_node("nyancat_rainbow", "default:nyancat_rainbow")
+minetest.alias_node("sapling", "default:sapling")
+minetest.alias_node("apple", "default:apple")
+
+--[[
 WATER_ALPHA = 160
 WATER_VISC = 1
 LAVA_VISC = 7
@@ -1016,5 +1056,5 @@ function on_dignode(p, node)
 	nodeupdate(p)
 end
 minetest.register_on_dignode(on_dignode)
-
+--]]
 -- END

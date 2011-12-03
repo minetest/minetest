@@ -107,9 +107,18 @@
 -- minetest.chat_send_all(text)
 -- minetest.chat_send_player(name, text)
 -- minetest.get_player_privs(name) -> set of privs
+--
 -- stackstring_take_item(stackstring) -> stackstring, item
 -- stackstring_put_item(stackstring, item) -> stackstring, success
 -- stackstring_put_stackstring(stackstring, stackstring) -> stackstring, success
+--
+-- minetest.digprop_constanttime(time)
+-- minetest.digprop_stonelike(toughness)
+-- minetest.digprop_dirtlike(toughness)
+-- minetest.digprop_gravellike(toughness)
+-- minetest.digprop_woodlike(toughness)
+-- minetest.digprop_leaveslike(toughness)
+-- minetest.digprop_glasslike(toughness)
 --
 -- Global objects:
 -- minetest.env - environment reference

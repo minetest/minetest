@@ -398,8 +398,18 @@ public:
 	{
 		return get(n.getContent());
 	}
-	virtual bool getId(const std::string &name, content_t &result) const
+	virtual bool getId(const std::string &name_, content_t &result) const
 	{
+		std::string name = name_;
+		// Convert name according to possible alias
+		std::map<std::string, std::string>::const_iterator i;
+		i = m_aliases.find(name);
+		if(i != m_aliases.end()){
+			/*infostream<<"ndef: alias active: "<<name<<" -> "<<i->second
+					<<std::endl;*/
+			name = i->second;
+		}
+		// Get id
 		return m_name_id_mapping.getId(name, result);
 	}
 	virtual content_t getId(const std::string &name) const
@@ -438,6 +448,12 @@ public:
 		m_content_features[c] = def;
 		if(def.name != "")
 			m_name_id_mapping.set(c, def.name);
+
+		// Remove conflicting alias if it exists
+		bool alias_removed = (m_aliases.erase(def.name) != 0);
+		if(alias_removed)
+			infostream<<"ndef: erased alias "<<def.name
+					<<" because node was defined"<<std::endl;
 	}
 	virtual content_t set(const std::string &name,
 			const ContentFeatures &def)
@@ -475,6 +491,19 @@ public:
 		// Make unknown blocks diggable
 		f.material.diggability = DIGGABLE_NORMAL;
 		return set(name, f);
+	}
+	virtual void setAlias(const std::string &name,
+			const std::string &convert_to)
+	{
+		content_t id;
+		if(getId(name, id)){
+			infostream<<"ndef: not setting alias "<<name<<" -> "<<convert_to
+					<<": "<<name<<" is already defined"<<std::endl;
+			return;
+		}
+		infostream<<"ndef: setting alias "<<name<<" -> "<<convert_to
+				<<std::endl;
+		m_aliases[name] = convert_to;
 	}
 	virtual void updateTextures(ITextureSource *tsrc)
 	{
@@ -639,8 +668,12 @@ public:
 		}
 	}
 private:
+	// Features indexed by id
 	ContentFeatures m_content_features[MAX_CONTENT+1];
+	// A mapping for fast converting back and forth between names and ids
 	NameIdMapping m_name_id_mapping;
+	// Aliases for loading legacy crap
+	std::map<std::string, std::string> m_aliases;
 };
 
 IWritableNodeDefManager* createNodeDefManager()
