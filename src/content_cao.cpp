@@ -576,9 +576,8 @@ void ItemCAO::addToScene(scene::ISceneManager *smgr, ITextureSource *tsrc,
 	// Set material
 	buf->getMaterial().setFlag(video::EMF_LIGHTING, false);
 	buf->getMaterial().setFlag(video::EMF_BACK_FACE_CULLING, false);
-	//buf->getMaterial().setTexture(0, NULL);
-	// Initialize with the stick texture
-	buf->getMaterial().setTexture(0, tsrc->getTextureRaw("stick.png"));
+	// Initialize with a generated placeholder texture
+	buf->getMaterial().setTexture(0, tsrc->getTextureRaw(""));
 	buf->getMaterial().setFlag(video::EMF_BILINEAR_FILTER, false);
 	buf->getMaterial().setFlag(video::EMF_FOG_ENABLE, true);
 	buf->getMaterial().MaterialType = video::EMT_TRANSPARENT_ALPHA_CHANNEL;
