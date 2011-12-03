@@ -860,7 +860,7 @@ static int l_register_craftitem(lua_State *L)
 	CraftItemDefinition def;
 	
 	getstringfield(L, table, "image", def.imagename);
-	getstringfield(L, table, "cookresult_item", def.cookresult_item);
+	getstringfield(L, table, "cookresult_itemstring", def.cookresult_item);
 	getfloatfield(L, table, "furnace_cooktime", def.furnace_cooktime);
 	getfloatfield(L, table, "furnace_burntime", def.furnace_burntime);
 	def.usable = getboolfield_default(L, table, "usable", got_on_use);
@@ -1109,7 +1109,7 @@ static int l_register_node(lua_State *L)
 	}
 	lua_pop(L, 1);
 
-	getstringfield(L, nodedef_table, "cookresult_item", f.cookresult_item);
+	getstringfield(L, nodedef_table, "cookresult_itemstring", f.cookresult_item);
 	getfloatfield(L, nodedef_table, "furnace_cooktime", f.furnace_cooktime);
 	getfloatfield(L, nodedef_table, "furnace_burntime", f.furnace_burntime);
 	
