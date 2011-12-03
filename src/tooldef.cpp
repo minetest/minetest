@@ -223,7 +223,7 @@ public:
 private:
 	// Key is name
 	core::map<std::string, ToolDefinition*> m_tool_definitions;
-	// Aliases for loading legacy crap
+	// Aliases
 	std::map<std::string, std::string> m_aliases;
 };
 

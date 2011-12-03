@@ -692,7 +692,7 @@ private:
 	ContentFeatures m_content_features[MAX_CONTENT+1];
 	// A mapping for fast converting back and forth between names and ids
 	NameIdMapping m_name_id_mapping;
-	// Aliases for loading legacy crap
+	// Aliases
 	std::map<std::string, std::string> m_aliases;
 };
 
