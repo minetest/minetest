@@ -2308,6 +2308,29 @@ private:
 		return 1;
 	}
 
+	// EnvRef:get_node_or_nil(pos)
+	// pos = {x=num, y=num, z=num}
+	static int l_get_node_or_nil(lua_State *L)
+	{
+		//infostream<<"EnvRef::l_get_node()"<<std::endl;
+		EnvRef *o = checkobject(L, 1);
+		ServerEnvironment *env = o->m_env;
+		if(env == NULL) return 0;
+		// pos
+		v3s16 pos = readpos(L, 2);
+		// Do it
+		try{
+			MapNode n = env->getMap().getNode(pos);
+			// Return node
+			pushnode(L, n, env->getGameDef()->ndef());
+			return 1;
+		} catch(InvalidPositionException &e)
+		{
+			lua_pushnil(L);
+			return 1;
+		}
+	}
+
 	// EnvRef:add_luaentity(pos, entityname)
 	// pos = {x=num, y=num, z=num}
 	static int l_add_luaentity(lua_State *L)
@@ -2476,6 +2499,7 @@ const luaL_reg EnvRef::methods[] = {
 	method(EnvRef, add_node),
 	method(EnvRef, remove_node),
 	method(EnvRef, get_node),
+	method(EnvRef, get_node_or_nil),
 	method(EnvRef, add_luaentity),
 	method(EnvRef, add_item),
 	method(EnvRef, add_rat),
