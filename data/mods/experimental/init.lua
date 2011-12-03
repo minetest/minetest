@@ -5,10 +5,11 @@
 -- An example furnace-thing implemented in Lua
 
 minetest.register_node("experimental:luafurnace", {
-	tile_images = {"lava.png", "furnace_side.png", "furnace_side.png",
-		"furnace_side.png", "furnace_side.png", "furnace_front.png"},
+	tile_images = {"default_lava.png", "default_furnace_side.png",
+		"default_furnace_side.png", "default_furnace_side.png",
+		"default_furnace_side.png", "default_furnace_front.png"},
 	--inventory_image = "furnace_front.png",
-	inventory_image = minetest.inventorycube("furnace_front.png"),
+	inventory_image = minetest.inventorycube("default_furnace_front.png"),
 	paramtype = "facedir_simple",
 	metadata_name = "generic",
 	material = minetest.digprop_stonelike(3.0),
@@ -16,15 +17,10 @@ minetest.register_node("experimental:luafurnace", {
 
 minetest.register_on_placenode(function(pos, newnode, placer)
 	if newnode.name == "experimental:luafurnace" then
-		print("get_meta");
 		local meta = minetest.env:get_meta(pos)
-		print("inventory_set_list");
 		meta:inventory_set_list("fuel", {""})
-		print("inventory_set_list");
 		meta:inventory_set_list("src", {""})
-		print("inventory_set_list");
 		meta:inventory_set_list("dst", {"","","",""})
-		print("set_inventory_draw_spec");
 		meta:set_inventory_draw_spec(
 			"invsize[8,9;]"
 			.."list[current_name;fuel;2,3;1,1;]"
@@ -34,9 +30,7 @@ minetest.register_on_placenode(function(pos, newnode, placer)
 		)
 		
 		local total_cooked = 0;
-		print("set_string")
 		meta:set_string("total_cooked", total_cooked)
-		print("set_infotext");
 		meta:set_infotext("Lua Furnace: total cooked: "..total_cooked)
 	end
 end)
@@ -99,9 +93,9 @@ minetest.register_abm({
 minetest.register_craft({
 	output = 'node "experimental:luafurnace" 1',
 	recipe = {
-		{'node "cobble"', 'node "cobble"', 'node "cobble"'},
-		{'node "cobble"', 'node "cobble"', 'node "cobble"'},
-		{'node "cobble"', 'node "cobble"', 'node "cobble"'},
+		{'node "default:cobble"', 'node "default:cobble"', 'node "default:cobble"'},
+		{'node "default:cobble"', 'node "default:steel_ingot"', 'node "default:cobble"'},
+		{'node "default:cobble"', 'node "default:cobble"', 'node "default:cobble"'},
 	}
 })
 
@@ -110,8 +104,8 @@ minetest.register_craft({
 --
 
 --[[
-minetest.register_tool("horribletool", {
-	image = "lava.png",
+minetest.register_tool("experimental:horribletool", {
+	image = "default_lava.png",
 	basetime = 2.0
 	dt_weight = 0.2
 	dt_crackiness = 0.2
@@ -125,10 +119,10 @@ minetest.register_tool("horribletool", {
 })
 --]]
 
-minetest.register_craft({
+--[[minetest.register_craft({
 	output = 'node "somenode" 4',
 	recipe = {
-		{'craft "Stick" 1'},
+		{'craft "default_tick" 1'},
 	}
 })
 
@@ -145,7 +139,7 @@ minetest.register_node("experimental:somenode", {
 		flammability = 0
 	},
 	metadata_name = "chest",
-})
+})]]
 
 --
 -- TNT (not functional)
@@ -154,15 +148,18 @@ minetest.register_node("experimental:somenode", {
 minetest.register_craft({
 	output = 'node "experimental:tnt" 4',
 	recipe = {
-		{'node "wood" 1'},
-		{'craft "lump_of_coal" 1'},
-		{'node "wood" 1'}
+		{'node "default:wood" 1'},
+		{'craft "default:lump_of_coal" 1'},
+		{'node "default:wood" 1'}
 	}
 })
 
 minetest.register_node("experimental:tnt", {
-	tile_images = {"tnt_top.png", "tnt_bottom.png", "tnt_side.png", "tnt_side.png", "tnt_side.png", "tnt_side.png"},
-	inventory_image = "tnt_side.png",
+	tile_images = {"default_tnt_top.png", "default_tnt_bottom.png",
+			"default_tnt_side.png", "default_tnt_side.png",
+			"default_tnt_side.png", "default_tnt_side.png"},
+	inventory_image = minetest.inventorycube("default_tnt_top.png",
+			"default_tnt_side.png", "default_tnt_side.png")
 	dug_item = '', -- Get nothing
 	material = {
 		diggability = "not",
@@ -183,7 +180,9 @@ local TNT = {
 	-- weight = 5,
 	collisionbox = {-0.5,-0.5,-0.5, 0.5,0.5,0.5},
 	visual = "cube",
-	textures = {"tnt_top.png","tnt_bottom.png","tnt_side.png","tnt_side.png","tnt_side.png","tnt_side.png"},
+	textures = {"default_tnt_top.png", "default_tnt_bottom.png",
+			"default_tnt_side.png", "default_tnt_side.png",
+			"default_tnt_side.png", "default_tnt_side.png"},
 	-- Initial value for our timer
 	timer = 0,
 	-- Number of punches required to defuse
@@ -288,8 +287,8 @@ minetest.register_on_generated(function(minp, maxp)
 end)
 
 -- Example setting get
-print("setting max_users = " .. dump(minetest.setting_get("max_users")))
-print("setting asdf = " .. dump(minetest.setting_get("asdf")))
+--print("setting max_users = " .. dump(minetest.setting_get("max_users")))
+--print("setting asdf = " .. dump(minetest.setting_get("asdf")))
 
 minetest.register_on_chat_message(function(name, message)
 	--[[print("on_chat_message: name="..dump(name).." message="..dump(message))
