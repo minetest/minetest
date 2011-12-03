@@ -2,10 +2,30 @@
 -- dump2(obj, name="_", dumped={})
 -- dump(obj, dumped={})
 --
--- Textures:
--- Mods should prefix their textures with modname_, eg. given the mod
--- name "foomod", a texture could be called "foomod_superfurnace.png"
--- Due to historical reasons, the default mod does not follow this rule.
+-- Naming convention for registered textual names
+-- ----------------------------------------------
+-- "modname_<whatever>"
+--
+-- This is to prevent conflicting names from corrupting maps and is
+-- enforced by the mod loader.
+--
+-- Example: mod "experimental", ideal item/node/entity name "tnt":
+--          -> the name should be "experimental_tnt".
+--
+-- Enforcement can be overridden by prefixing the name with ":". This can
+-- be used for overriding the registrations of some other mod.
+--
+-- Default mod uses ":" for maintaining backwards compatibility.
+--
+-- Textures
+-- --------
+-- Mods should generally prefix their textures with modname_, eg. given
+-- the mod name "foomod", a texture could be called "foomod_superfurnace.png"
+--
+-- This is not crucial and a conflicting name will not corrupt maps.
+--
+-- Representations of simple things
+-- --------------------------------
 --
 -- MapNode representation:
 -- {name="name", param1=num, param2=num}
@@ -220,7 +240,7 @@
 -- }
 --
 -- Craftitem definition options:
--- minetest.register_craftitem("name", {
+-- minetest.register_craftitem(":name", {
 --     image = "image.png",
 --     stack_max = <maximum number of items in stack>,
 --     cookresult_item = itemstring (result of cooking),
@@ -256,7 +276,7 @@ LIGHT_MAX = 14
 -- Tool definition
 --
 
-minetest.register_tool("WPick", {
+minetest.register_tool(":WPick", {
 	image = "tool_woodpick.png",
 	basetime = 2.0,
 	dt_weight = 0,
@@ -269,7 +289,7 @@ minetest.register_tool("WPick", {
 	dd_crumbliness = 0,
 	dd_cuttability = 0,
 })
-minetest.register_tool("STPick", {
+minetest.register_tool(":STPick", {
 	image = "tool_stonepick.png",
 	basetime = 1.5,
 	dt_weight = 0,
@@ -282,7 +302,7 @@ minetest.register_tool("STPick", {
 	dd_crumbliness = 0,
 	dd_cuttability = 0,
 })
-minetest.register_tool("SteelPick", {
+minetest.register_tool(":SteelPick", {
 	image = "tool_steelpick.png",
 	basetime = 1.0,
 	dt_weight = 0,
@@ -295,7 +315,7 @@ minetest.register_tool("SteelPick", {
 	dd_crumbliness = 0,
 	dd_cuttability = 0,
 })
-minetest.register_tool("MesePick", {
+minetest.register_tool(":MesePick", {
 	image = "tool_mesepick.png",
 	basetime = 0,
 	dt_weight = 0,
@@ -308,7 +328,7 @@ minetest.register_tool("MesePick", {
 	dd_crumbliness = 0,
 	dd_cuttability = 0,
 })
-minetest.register_tool("WShovel", {
+minetest.register_tool(":WShovel", {
 	image = "tool_woodshovel.png",
 	basetime = 2.0,
 	dt_weight = 0.5,
@@ -321,7 +341,7 @@ minetest.register_tool("WShovel", {
 	dd_crumbliness = 0,
 	dd_cuttability = 0,
 })
-minetest.register_tool("STShovel", {
+minetest.register_tool(":STShovel", {
 	image = "tool_stoneshovel.png",
 	basetime = 1.5,
 	dt_weight = 0.5,
@@ -334,7 +354,7 @@ minetest.register_tool("STShovel", {
 	dd_crumbliness = 0,
 	dd_cuttability = 0,
 })
-minetest.register_tool("SteelShovel", {
+minetest.register_tool(":SteelShovel", {
 	image = "tool_steelshovel.png",
 	basetime = 1.0,
 	dt_weight = 0.5,
@@ -347,7 +367,7 @@ minetest.register_tool("SteelShovel", {
 	dd_crumbliness = 0,
 	dd_cuttability = 0,
 })
-minetest.register_tool("WAxe", {
+minetest.register_tool(":WAxe", {
 	image = "tool_woodaxe.png",
 	basetime = 2.0,
 	dt_weight = 0.5,
@@ -360,7 +380,7 @@ minetest.register_tool("WAxe", {
 	dd_crumbliness = 0,
 	dd_cuttability = 0,
 })
-minetest.register_tool("STAxe", {
+minetest.register_tool(":STAxe", {
 	image = "tool_stoneaxe.png",
 	basetime = 1.5,
 	dt_weight = 0.5,
@@ -373,7 +393,7 @@ minetest.register_tool("STAxe", {
 	dd_crumbliness = 0,
 	dd_cuttability = 0,
 })
-minetest.register_tool("SteelAxe", {
+minetest.register_tool(":SteelAxe", {
 	image = "tool_steelaxe.png",
 	basetime = 1.0,
 	dt_weight = 0.5,
@@ -386,7 +406,7 @@ minetest.register_tool("SteelAxe", {
 	dd_crumbliness = 0,
 	dd_cuttability = 0,
 })
-minetest.register_tool("WSword", {
+minetest.register_tool(":WSword", {
 	image = "tool_woodsword.png",
 	basetime = 3.0,
 	dt_weight = 3,
@@ -399,7 +419,7 @@ minetest.register_tool("WSword", {
 	dd_crumbliness = 0,
 	dd_cuttability = 0,
 })
-minetest.register_tool("STSword", {
+minetest.register_tool(":STSword", {
 	image = "tool_stonesword.png",
 	basetime = 2.5,
 	dt_weight = 3,
@@ -412,7 +432,7 @@ minetest.register_tool("STSword", {
 	dd_crumbliness = 0,
 	dd_cuttability = 0,
 })
-minetest.register_tool("SteelSword", {
+minetest.register_tool(":SteelSword", {
 	image = "tool_steelsword.png",
 	basetime = 2.0,
 	dt_weight = 3,
@@ -426,7 +446,7 @@ minetest.register_tool("SteelSword", {
 	dd_cuttability = 0,
 })
 -- The hand
-minetest.register_tool("", {
+minetest.register_tool(":", {
 	image = "",
 	basetime = 0.5,
 	dt_weight = 1,
@@ -794,7 +814,7 @@ end
 
 -- Legacy nodes
 
-minetest.register_node("stone", {
+minetest.register_node(":stone", {
 	tile_images = {"stone.png"},
 	inventory_image = inventorycube("stone.png"),
 	paramtype = "mineral",
@@ -804,7 +824,7 @@ minetest.register_node("stone", {
 	dug_item = 'node "cobble" 1',
 })
 
-minetest.register_node("dirt_with_grass", {
+minetest.register_node(":dirt_with_grass", {
 	tile_images = {"grass.png", "mud.png", "mud.png^grass_side.png"},
 	inventory_image = inventorycube("mud.png^grass_side.png"),
 	is_ground_content = true,
@@ -812,7 +832,7 @@ minetest.register_node("dirt_with_grass", {
 	dug_item = 'node "dirt" 1',
 })
 
-minetest.register_node("dirt_with_grass_footsteps", {
+minetest.register_node(":dirt_with_grass_footsteps", {
 	tile_images = {"grass_footsteps.png", "mud.png", "mud.png^grass_side.png"},
 	inventory_image = "grass_footsteps.png",
 	is_ground_content = true,
@@ -820,14 +840,14 @@ minetest.register_node("dirt_with_grass_footsteps", {
 	dug_item = 'node "dirt" 1',
 })
 
-minetest.register_node("dirt", {
+minetest.register_node(":dirt", {
 	tile_images = {"mud.png"},
 	inventory_image = inventorycube("mud.png"),
 	is_ground_content = true,
 	material = digprop_dirtlike(1.0),
 })
 
-minetest.register_node("sand", {
+minetest.register_node(":sand", {
 	tile_images = {"sand.png"},
 	inventory_image = inventorycube("sand.png"),
 	is_ground_content = true,
@@ -835,14 +855,14 @@ minetest.register_node("sand", {
 	cookresult_item = 'node "glass" 1',
 })
 
-minetest.register_node("gravel", {
+minetest.register_node(":gravel", {
 	tile_images = {"gravel.png"},
 	inventory_image = inventorycube("gravel.png"),
 	is_ground_content = true,
 	material = digprop_gravellike(1.0),
 })
 
-minetest.register_node("sandstone", {
+minetest.register_node(":sandstone", {
 	tile_images = {"sandstone.png"},
 	inventory_image = inventorycube("sandstone.png"),
 	is_ground_content = true,
@@ -850,7 +870,7 @@ minetest.register_node("sandstone", {
 	dug_item = 'node "sand" 1',  -- FIXME is this intentional?
 })
 
-minetest.register_node("clay", {
+minetest.register_node(":clay", {
 	tile_images = {"clay.png"},
 	inventory_image = inventorycube("clay.png"),
 	is_ground_content = true,
@@ -858,7 +878,7 @@ minetest.register_node("clay", {
 	dug_item = 'craft "lump_of_clay" 4',
 })
 
-minetest.register_node("brick", {
+minetest.register_node(":brick", {
 	tile_images = {"brick.png"},
 	inventory_image = inventorycube("brick.png"),
 	is_ground_content = true,
@@ -866,7 +886,7 @@ minetest.register_node("brick", {
 	dug_item = 'craft "clay_brick" 4',
 })
 
-minetest.register_node("tree", {
+minetest.register_node(":tree", {
 	tile_images = {"tree_top.png", "tree_top.png", "tree.png"},
 	inventory_image = inventorycube("tree_top.png", "tree.png", "tree.png"),
 	is_ground_content = true,
@@ -875,7 +895,7 @@ minetest.register_node("tree", {
 	furnace_burntime = 30,
 })
 
-minetest.register_node("jungletree", {
+minetest.register_node(":jungletree", {
 	tile_images = {"jungletree_top.png", "jungletree_top.png", "jungletree.png"},
 	inventory_image = inventorycube("jungletree_top.png", "jungletree.png", "jungletree.png"),
 	is_ground_content = true,
@@ -884,7 +904,7 @@ minetest.register_node("jungletree", {
 	furnace_burntime = 30,
 })
 
-minetest.register_node("junglegrass", {
+minetest.register_node(":junglegrass", {
 	drawtype = "plantlike",
 	visual_scale = 1.3,
 	tile_images = {"junglegrass.png"},
@@ -896,7 +916,7 @@ minetest.register_node("junglegrass", {
 	furnace_burntime = 2,
 })
 
-minetest.register_node("leaves", {
+minetest.register_node(":leaves", {
 	drawtype = "allfaces_optional",
 	visual_scale = 1.3,
 	tile_images = {"leaves.png"},
@@ -909,7 +929,7 @@ minetest.register_node("leaves", {
 	furnace_burntime = 1,
 })
 
-minetest.register_node("cactus", {
+minetest.register_node(":cactus", {
 	tile_images = {"cactus_top.png", "cactus_top.png", "cactus_side.png"},
 	inventory_image = inventorycube("cactus_top.png", "cactus_side.png", "cactus_side.png"),
 	is_ground_content = true,
@@ -917,7 +937,7 @@ minetest.register_node("cactus", {
 	furnace_burntime = 15,
 })
 
-minetest.register_node("papyrus", {
+minetest.register_node(":papyrus", {
 	drawtype = "plantlike",
 	tile_images = {"papyrus.png"},
 	inventory_image = "papyrus.png",
@@ -929,7 +949,7 @@ minetest.register_node("papyrus", {
 	furnace_burntime = 1,
 })
 
-minetest.register_node("bookshelf", {
+minetest.register_node(":bookshelf", {
 	tile_images = {"wood.png", "wood.png", "bookshelf.png"},
 	-- FIXME: inventorycube only cares for the first texture
 	--inventory_image = inventorycube("wood.png", "bookshelf.png", "bookshelf.png")
@@ -939,7 +959,7 @@ minetest.register_node("bookshelf", {
 	furnace_burntime = 30,
 })
 
-minetest.register_node("glass", {
+minetest.register_node(":glass", {
 	drawtype = "glasslike",
 	tile_images = {"glass.png"},
 	inventory_image = inventorycube("glass.png"),
@@ -950,7 +970,7 @@ minetest.register_node("glass", {
 	material = digprop_glasslike(1.0),
 })
 
-minetest.register_node("wooden_fence", {
+minetest.register_node(":wooden_fence", {
 	drawtype = "fencelike",
 	tile_images = {"wood.png"},
 	inventory_image = "fence.png",
@@ -965,7 +985,7 @@ minetest.register_node("wooden_fence", {
 	material = digprop_woodlike(0.75),
 })
 
-minetest.register_node("rail", {
+minetest.register_node(":rail", {
 	drawtype = "raillike",
 	tile_images = {"rail.png", "rail_curved.png", "rail_t_junction.png", "rail_crossing.png"},
 	inventory_image = "rail.png",
@@ -980,7 +1000,7 @@ minetest.register_node("rail", {
 	material = digprop_dirtlike(0.75),
 })
 
-minetest.register_node("ladder", {
+minetest.register_node(":ladder", {
 	drawtype = "signlike",
 	tile_images = {"ladder.png"},
 	inventory_image = "ladder.png",
@@ -1000,14 +1020,14 @@ minetest.register_node("ladder", {
 	material = digprop_woodlike(0.5),
 })
 
-minetest.register_node("coalstone", {
+minetest.register_node(":coalstone", {
 	tile_images = {"stone.png^mineral_coal.png"},
 	inventory_image = "stone.png^mineral_coal.png",
 	is_ground_content = true,
 	material = digprop_stonelike(1.5),
 })
 
-minetest.register_node("wood", {
+minetest.register_node(":wood", {
 	tile_images = {"wood.png"},
 	inventory_image = inventorycube("wood.png"),
 	is_ground_content = true,
@@ -1015,7 +1035,7 @@ minetest.register_node("wood", {
 	material = digprop_woodlike(0.75),
 })
 
-minetest.register_node("mese", {
+minetest.register_node(":mese", {
 	tile_images = {"mese.png"},
 	inventory_image = inventorycube("mese.png"),
 	is_ground_content = true,
@@ -1023,13 +1043,13 @@ minetest.register_node("mese", {
 	material = digprop_stonelike(0.5),
 })
 
-minetest.register_node("cloud", {
+minetest.register_node(":cloud", {
 	tile_images = {"cloud.png"},
 	inventory_image = inventorycube("cloud.png"),
 	is_ground_content = true,
 })
 
-minetest.register_node("water_flowing", {
+minetest.register_node(":water_flowing", {
 	drawtype = "flowingliquid",
 	tile_images = {"water.png"},
 	alpha = WATER_ALPHA,
@@ -1051,7 +1071,7 @@ minetest.register_node("water_flowing", {
 	},
 })
 
-minetest.register_node("water_source", {
+minetest.register_node(":water_source", {
 	drawtype = "liquid",
 	tile_images = {"water.png"},
 	alpha = WATER_ALPHA,
@@ -1073,7 +1093,7 @@ minetest.register_node("water_source", {
 	},
 })
 
-minetest.register_node("lava_flowing", {
+minetest.register_node(":lava_flowing", {
 	drawtype = "flowingliquid",
 	tile_images = {"lava.png"},
 	inventory_image = inventorycube("lava.png"),
@@ -1096,7 +1116,7 @@ minetest.register_node("lava_flowing", {
 	},
 })
 
-minetest.register_node("lava_source", {
+minetest.register_node(":lava_source", {
 	drawtype = "liquid",
 	tile_images = {"lava.png"},
 	inventory_image = inventorycube("lava.png"),
@@ -1120,7 +1140,7 @@ minetest.register_node("lava_source", {
 	furnace_burntime = 60,
 })
 
-minetest.register_node("torch", {
+minetest.register_node(":torch", {
 	drawtype = "torchlike",
 	tile_images = {"torch_on_floor.png", "torch_on_ceiling.png", "torch.png"},
 	inventory_image = "torch_on_floor.png",
@@ -1140,7 +1160,7 @@ minetest.register_node("torch", {
 	furnace_burntime = 4,
 })
 
-minetest.register_node("sign_wall", {
+minetest.register_node(":sign_wall", {
 	drawtype = "signlike",
 	tile_images = {"sign_wall.png"},
 	inventory_image = "sign_wall.png",
@@ -1160,7 +1180,7 @@ minetest.register_node("sign_wall", {
 	furnace_burntime = 10,
 })
 
-minetest.register_node("chest", {
+minetest.register_node(":chest", {
 	tile_images = {"chest_top.png", "chest_top.png", "chest_side.png",
 		"chest_side.png", "chest_side.png", "chest_front.png"},
 	inventory_image = "chest_top.png",
@@ -1171,7 +1191,7 @@ minetest.register_node("chest", {
 	furnace_burntime = 30,
 })
 
-minetest.register_node("locked_chest", {
+minetest.register_node(":locked_chest", {
 	tile_images = {"chest_top.png", "chest_top.png", "chest_side.png",
 		"chest_side.png", "chest_side.png", "chest_lock.png"},
 	inventory_image = "chest_lock.png",
@@ -1181,7 +1201,7 @@ minetest.register_node("locked_chest", {
 	furnace_burntime = 30,
 })
 
-minetest.register_node("furnace", {
+minetest.register_node(":furnace", {
 	tile_images = {"furnace_side.png", "furnace_side.png", "furnace_side.png",
 		"furnace_side.png", "furnace_side.png", "furnace_front.png"},
 	inventory_image = "furnace_front.png",
@@ -1190,7 +1210,7 @@ minetest.register_node("furnace", {
 	material = digprop_stonelike(3.0),
 })
 
-minetest.register_node("cobble", {
+minetest.register_node(":cobble", {
 	tile_images = {"cobble.png"},
 	inventory_image = inventorycube("cobble.png"),
 	is_ground_content = true,
@@ -1198,21 +1218,21 @@ minetest.register_node("cobble", {
 	material = digprop_stonelike(0.9),
 })
 
-minetest.register_node("mossycobble", {
+minetest.register_node(":mossycobble", {
 	tile_images = {"mossycobble.png"},
 	inventory_image = inventorycube("mossycobble.png"),
 	is_ground_content = true,
 	material = digprop_stonelike(0.8),
 })
 
-minetest.register_node("steelblock", {
+minetest.register_node(":steelblock", {
 	tile_images = {"steel_block.png"},
 	inventory_image = inventorycube("steel_block.png"),
 	is_ground_content = true,
 	material = digprop_stonelike(5.0),
 })
 
-minetest.register_node("nyancat", {
+minetest.register_node(":nyancat", {
 	tile_images = {"nc_side.png", "nc_side.png", "nc_side.png",
 		"nc_side.png", "nc_back.png", "nc_front.png"},
 	inventory_image = "nc_front.png",
@@ -1221,14 +1241,14 @@ minetest.register_node("nyancat", {
 	furnace_burntime = 1,
 })
 
-minetest.register_node("nyancat_rainbow", {
+minetest.register_node(":nyancat_rainbow", {
 	tile_images = {"nc_rb.png"},
 	inventory_image = "nc_rb.png",
 	material = digprop_stonelike(3.0),
 	furnace_burntime = 1,
 })
 
-minetest.register_node("sapling", {
+minetest.register_node(":sapling", {
 	drawtype = "plantlike",
 	visual_scale = 1.0,
 	tile_images = {"sapling.png"},
@@ -1240,7 +1260,7 @@ minetest.register_node("sapling", {
 	furnace_burntime = 10,
 })
 
-minetest.register_node("apple", {
+minetest.register_node(":apple", {
 	drawtype = "plantlike",
 	visual_scale = 1.0,
 	tile_images = {"apple.png"},
@@ -1258,51 +1278,51 @@ minetest.register_node("apple", {
 -- Crafting items
 --
 
-minetest.register_craftitem("Stick", {
+minetest.register_craftitem(":Stick", {
 	image = "stick.png",
 	--furnace_burntime = ...,
 	on_place_on_ground = minetest.craftitem_place_item,
 })
 
-minetest.register_craftitem("paper", {
+minetest.register_craftitem(":paper", {
 	image = "paper.png",
 	on_place_on_ground = minetest.craftitem_place_item,
 })
 
-minetest.register_craftitem("book", {
+minetest.register_craftitem(":book", {
 	image = "book.png",
 	on_place_on_ground = minetest.craftitem_place_item,
 })
 
-minetest.register_craftitem("lump_of_coal", {
+minetest.register_craftitem(":lump_of_coal", {
 	image = "lump_of_coal.png",
 	furnace_burntime = 40;
 	on_place_on_ground = minetest.craftitem_place_item,
 })
 
-minetest.register_craftitem("lump_of_iron", {
+minetest.register_craftitem(":lump_of_iron", {
 	image = "lump_of_iron.png",
 	cookresult_item = 'craft "steel_ingot" 1',
 	on_place_on_ground = minetest.craftitem_place_item,
 })
 
-minetest.register_craftitem("lump_of_clay", {
+minetest.register_craftitem(":lump_of_clay", {
 	image = "lump_of_clay.png",
 	cookresult_item = 'craft "clay_brick" 1',
 	on_place_on_ground = minetest.craftitem_place_item,
 })
 
-minetest.register_craftitem("steel_ingot", {
+minetest.register_craftitem(":steel_ingot", {
 	image = "steel_ingot.png",
 	on_place_on_ground = minetest.craftitem_place_item,
 })
 
-minetest.register_craftitem("clay_brick", {
+minetest.register_craftitem(":clay_brick", {
 	image = "clay_brick.png",
 	on_place_on_ground = minetest.craftitem_place_item,
 })
 
-minetest.register_craftitem("rat", {
+minetest.register_craftitem(":rat", {
 	image = "rat.png",
 	cookresult_item = 'craft "cooked_rat" 1',
 	on_drop = function(item, dropper, pos)
@@ -1311,19 +1331,19 @@ minetest.register_craftitem("rat", {
 	end,
 })
 
-minetest.register_craftitem("cooked_rat", {
+minetest.register_craftitem(":cooked_rat", {
 	image = "cooked_rat.png",
 	cookresult_item = 'craft "scorched_stuff" 1',
 	on_place_on_ground = minetest.craftitem_place_item,
 	on_use = minetest.craftitem_eat(6),
 })
 
-minetest.register_craftitem("scorched_stuff", {
+minetest.register_craftitem(":scorched_stuff", {
 	image = "scorched_stuff.png",
 	on_place_on_ground = minetest.craftitem_place_item,
 })
 
-minetest.register_craftitem("firefly", {
+minetest.register_craftitem(":firefly", {
 	image = "firefly.png",
 	on_drop = function(item, dropper, pos)
 		minetest.env:add_firefly(pos)
@@ -1331,13 +1351,13 @@ minetest.register_craftitem("firefly", {
 	end,
 })
 
-minetest.register_craftitem("apple", {
+minetest.register_craftitem(":apple", {
 	image = "apple.png",
 	on_place_on_ground = minetest.craftitem_place_item,
 	on_use = minetest.craftitem_eat(4),
 })
 
-minetest.register_craftitem("apple_iron", {
+minetest.register_craftitem(":apple_iron", {
 	image = "apple_iron.png",
 	on_place_on_ground = minetest.craftitem_place_item,
 	on_use = minetest.craftitem_eat(8),
@@ -1389,7 +1409,7 @@ function nodeupdate_single(p)
 		n_bottom = minetest.env:get_node(p_bottom)
 		if n_bottom.name == "air" then
 			minetest.env:remove_node(p)
-			minetest.env:add_luaentity(p, "falling_"..n.name)
+			minetest.env:add_luaentity(p, "default_falling_"..n.name)
 			nodeupdate(p)
 		end
 	end
@@ -1411,7 +1431,7 @@ end
 --
 
 function register_falling_node(nodename, texture)
-	minetest.register_entity("falling_"..nodename, {
+	minetest.register_entity("default_falling_"..nodename, {
 		-- Static definition
 		physical = true,
 		collisionbox = {-0.5,-0.5,-0.5, 0.5,0.5,0.5},
@@ -1452,26 +1472,18 @@ end
 minetest.register_globalstep(on_step)
 
 function on_placenode(p, node)
-	print("on_placenode")
+	--print("on_placenode")
 	nodeupdate(p)
 end
 minetest.register_on_placenode(on_placenode)
 
 function on_dignode(p, node)
-	print("on_dignode")
+	--print("on_dignode")
 	nodeupdate(p)
 end
 minetest.register_on_dignode(on_dignode)
 
 function on_punchnode(p, node)
-	print("on_punchnode")
-	if node.name == "TNT" then
-		minetest.env:remove_node(p)
-		minetest.env:add_luaentity(p, "TNT")
-		--minetest.env:add_luaentity(p, "testentity")
-		--minetest.env:add_firefly(p)
-		nodeupdate(p)
-	end
 end
 minetest.register_on_punchnode(on_punchnode)
 

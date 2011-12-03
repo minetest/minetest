@@ -31,6 +31,27 @@ extern "C" {
 #include <lauxlib.h>
 }
 
+LuaError::LuaError(lua_State *L, const std::string &s)
+{
+	m_s = "LuaError: ";
+	m_s += s + "\n";
+	lua_getfield(L, LUA_GLOBALSINDEX, "debug");
+	if(lua_istable(L, -1)){
+		lua_getfield(L, -1, "traceback");
+		if(lua_isfunction(L, -1)){
+			lua_call(L, 0, 1);
+			if(lua_isstring(L, -1)){
+				m_s += lua_tostring(L, -1);
+			}
+			lua_pop(L, 1);
+		}
+		else{
+			lua_pop(L, 1);
+		}
+	}
+	lua_pop(L, 1);
+}
+
 void script_error(lua_State *L, const char *fmt, ...)
 {
 	va_list argp;
@@ -39,13 +60,34 @@ void script_error(lua_State *L, const char *fmt, ...)
 	vsnprintf(buf, 10000, fmt, argp);
 	va_end(argp);
 	//errorstream<<"SCRIPT ERROR: "<<buf;
-	throw LuaError(buf);
+	throw LuaError(L, buf);
+}
+
+int luaErrorHandler(lua_State *L) {
+	lua_getfield(L, LUA_GLOBALSINDEX, "debug");
+	if (!lua_istable(L, -1)) {
+		lua_pop(L, 1);
+		return 1;
+	}
+	lua_getfield(L, -1, "traceback");
+	if (!lua_isfunction(L, -1)) {
+		lua_pop(L, 2);
+		return 1;
+	}
+	lua_pushvalue(L, 1);
+	lua_pushinteger(L, 2);
+	lua_call(L, 2, 1);
+	return 1;
 }
 
 bool script_load(lua_State *L, const char *path)
 {
 	infostream<<"Loading and running script from "<<path<<std::endl;
-	int ret = luaL_loadfile(L, path) || lua_pcall(L, 0, 0, 0);
+
+	lua_pushcfunction(L, luaErrorHandler);
+	int errorhandler = lua_gettop(L);
+
+	int ret = luaL_loadfile(L, path) || lua_pcall(L, 0, 0, errorhandler);
 	if(ret){
 		errorstream<<"Failed to load and run script from "<<path<<":"<<std::endl;
 		errorstream<<"[LUA] "<<std::endl;

@@ -107,6 +107,59 @@ public:
 	}
 };
 
+class ModNameStorer
+{
+private:
+	lua_State *L;
+public:
+	ModNameStorer(lua_State *L_, const std::string modname):
+		L(L_)
+	{
+		// Store current modname in registry
+		lua_pushstring(L, modname.c_str());
+		lua_setfield(L, LUA_REGISTRYINDEX, "minetest_current_modname");
+	}
+	~ModNameStorer()
+	{
+		// Clear current modname in registry
+		lua_pushnil(L);
+		lua_setfield(L, LUA_REGISTRYINDEX, "minetest_current_modname");
+	}
+};
+
+std::string get_current_modname(lua_State *L)
+{
+	lua_getfield(L, LUA_REGISTRYINDEX, "minetest_current_modname");
+	std::string modname = "";
+	if(lua_type(L, -1) == LUA_TSTRING)
+		modname = lua_tostring(L, -1);
+	lua_pop(L, 1);
+	return modname;
+}
+
+void check_modname_prefix(lua_State *L, std::string &name)
+{
+	if(name.size() == 0)
+		throw LuaError(L, std::string("Name is empty"));
+	
+	if(name[0] == ':'){
+		name = name.substr(1);
+		return;
+	}
+	
+	std::string modname = get_current_modname(L);
+	assert(modname != "");
+	
+	// For __builtin, anything goes
+	if(modname == "__builtin")
+		return;
+
+	if(name.substr(0, modname.size()+1) != modname + "_")
+		throw LuaError(L, std::string("Name \"")+name
+				+"\" does not follow naming conventions: "
+				+"\"modname_\" or \":\" prefix required)");
+}
+
 static v3f readFloatPos(lua_State *L, int index)
 {
 	v3f pos;
@@ -470,7 +523,7 @@ static void inventory_get_list_to_lua(Inventory *inv, const char *name,
 			lua_pushstring(L, item->getItemString().c_str());
 		}
 		if(lua_pcall(L, 2, 0, 0))
-			script_error(L, "error: %s\n", lua_tostring(L, -1));
+			script_error(L, "error: %s", lua_tostring(L, -1));
 	}
 }
 
@@ -611,8 +664,9 @@ static int l_register_nodedef_defaults(lua_State *L)
 // register_entity(name, prototype)
 static int l_register_entity(lua_State *L)
 {
-	const char *name = luaL_checkstring(L, 1);
-	infostream<<"register_entity: "<<name<<std::endl;
+	std::string name = luaL_checkstring(L, 1);
+	check_modname_prefix(L, name);
+	//infostream<<"register_entity: "<<name<<std::endl;
 	luaL_checktype(L, 2, LUA_TTABLE);
 
 	// Get minetest.registered_entities
@@ -622,7 +676,7 @@ static int l_register_entity(lua_State *L)
 	int registered_entities = lua_gettop(L);
 	lua_pushvalue(L, 2); // Object = param 2 -> stack top
 	// registered_entities[name] = object
-	lua_setfield(L, registered_entities, name);
+	lua_setfield(L, registered_entities, name.c_str());
 	
 	// Get registered object to top of stack
 	lua_pushvalue(L, 2);
@@ -703,14 +757,14 @@ public:
 		lua_pushnumber(L, active_object_count);
 		lua_pushnumber(L, active_object_count_wider);
 		if(lua_pcall(L, 4, 0, 0))
-			script_error(L, "error: %s\n", lua_tostring(L, -1));
+			script_error(L, "error: %s", lua_tostring(L, -1));
 	}
 };
 
 // register_abm({...})
 static int l_register_abm(lua_State *L)
 {
-	infostream<<"register_abm"<<std::endl;
+	//infostream<<"register_abm"<<std::endl;
 	luaL_checktype(L, 1, LUA_TTABLE);
 
 	// Get minetest.registered_abms
@@ -744,8 +798,9 @@ static int l_register_abm(lua_State *L)
 // register_tool(name, {lots of stuff})
 static int l_register_tool(lua_State *L)
 {
-	const char *name = luaL_checkstring(L, 1);
-	infostream<<"register_tool: "<<name<<std::endl;
+	std::string name = luaL_checkstring(L, 1);
+	check_modname_prefix(L, name);
+	//infostream<<"register_tool: "<<name<<std::endl;
 	luaL_checktype(L, 2, LUA_TTABLE);
 	int table = 2;
 
@@ -765,8 +820,9 @@ static int l_register_tool(lua_State *L)
 // register_craftitem(name, {lots of stuff})
 static int l_register_craftitem(lua_State *L)
 {
-	const char *name = luaL_checkstring(L, 1);
-	infostream<<"register_craftitem: "<<name<<std::endl;
+	std::string name = luaL_checkstring(L, 1);
+	check_modname_prefix(L, name);
+	//infostream<<"register_craftitem: "<<name<<std::endl;
 	luaL_checktype(L, 2, LUA_TTABLE);
 	int table = 2;
 
@@ -806,7 +862,7 @@ static int l_register_craftitem(lua_State *L)
 	craftitemdef->registerCraftItem(name, def);
 
 	lua_pushvalue(L, table);
-	scriptapi_add_craftitem(L, name);
+	scriptapi_add_craftitem(L, name.c_str());
 
 	return 0; /* number of results */
 }
@@ -814,8 +870,9 @@ static int l_register_craftitem(lua_State *L)
 // register_node(name, {lots of stuff})
 static int l_register_node(lua_State *L)
 {
-	const char *name = luaL_checkstring(L, 1);
-	infostream<<"register_node: "<<name<<std::endl;
+	std::string name = luaL_checkstring(L, 1);
+	check_modname_prefix(L, name);
+	//infostream<<"register_node: "<<name<<std::endl;
 	luaL_checktype(L, 2, LUA_TTABLE);
 	int nodedef_table = 2;
 
@@ -849,7 +906,7 @@ static int l_register_node(lua_State *L)
 	lua_getglobal(L, "minetest");
 	lua_getfield(L, -1, "registered_nodes");
 	luaL_checktype(L, -1, LUA_TTABLE);
-	lua_pushstring(L, name);
+	lua_pushstring(L, name.c_str());
 	lua_pushvalue(L, nodedef_table);
 	lua_settable(L, -3);
 
@@ -1054,7 +1111,7 @@ static int l_register_node(lua_State *L)
 // register_craft({output=item, recipe={{item00,item10},{item01,item11}})
 static int l_register_craft(lua_State *L)
 {
-	infostream<<"register_craft"<<std::endl;
+	//infostream<<"register_craft"<<std::endl;
 	luaL_checktype(L, 1, LUA_TTABLE);
 	int table0 = 1;
 
@@ -1104,7 +1161,7 @@ static int l_register_craft(lua_State *L)
 					std::string error;
 					error += "Invalid crafting recipe (output=\""
 							+ output + "\")";
-					throw LuaError(error);
+					throw LuaError(L, error);
 				}
 			}
 			// removes value, keeps key for next iteration
@@ -2475,13 +2532,16 @@ void scriptapi_export(lua_State *L, Server *server)
 bool scriptapi_loadmod(lua_State *L, const std::string &scriptpath,
 		const std::string &modname)
 {
+	ModNameStorer modnamestorer(L, modname);
+
 	bool success = false;
 
 	try{
 		success = script_load(L, scriptpath.c_str());
 	}
 	catch(LuaError &e){
-		errorstream<<"Error loading mod: "<<e.what()<<std::endl;
+		errorstream<<"Error loading mod \""<<modname
+				<<"\": "<<e.what()<<std::endl;
 	}
 
 	return success;
@@ -2567,7 +2627,7 @@ static void dump2(lua_State *L, const char *name)
 	lua_pushvalue(L, -2); // Get previous stack top as first parameter
 	lua_pushstring(L, name);
 	if(lua_pcall(L, 2, 0, 0))
-		script_error(L, "error: %s\n", lua_tostring(L, -1));
+		script_error(L, "error: %s", lua_tostring(L, -1));
 }
 #endif
 
@@ -2645,7 +2705,7 @@ bool scriptapi_on_chat_message(lua_State *L, const std::string &name,
 		lua_pushstring(L, name.c_str());
 		lua_pushstring(L, message.c_str());
 		if(lua_pcall(L, 2, 1, 0))
-			script_error(L, "error: %s\n", lua_tostring(L, -1));
+			script_error(L, "error: %s", lua_tostring(L, -1));
 		bool ate = lua_toboolean(L, -1);
 		lua_pop(L, 1);
 		if(ate)
@@ -2678,7 +2738,7 @@ void scriptapi_on_newplayer(lua_State *L, ServerActiveObject *player)
 		// Call function
 		objectref_get_or_create(L, player);
 		if(lua_pcall(L, 1, 0, 0))
-			script_error(L, "error: %s\n", lua_tostring(L, -1));
+			script_error(L, "error: %s", lua_tostring(L, -1));
 		// value removed, keep key for next iteration
 	}
 }
@@ -2703,7 +2763,7 @@ bool scriptapi_on_respawnplayer(lua_State *L, ServerActiveObject *player)
 		// Call function
 		objectref_get_or_create(L, player);
 		if(lua_pcall(L, 1, 1, 0))
-			script_error(L, "error: %s\n", lua_tostring(L, -1));
+			script_error(L, "error: %s", lua_tostring(L, -1));
 		bool positioning_handled = lua_toboolean(L, -1);
 		lua_pop(L, 1);
 		if(positioning_handled)
@@ -2825,7 +2885,7 @@ bool scriptapi_craftitem_on_drop(lua_State *L, const char *name,
 		objectref_get_or_create(L, dropper);
 		pushFloatPos(L, pos);
 		if(lua_pcall(L, 3, 1, 0))
-			script_error(L, "error: %s\n", lua_tostring(L, -1));
+			script_error(L, "error: %s", lua_tostring(L, -1));
 		result = lua_toboolean(L, -1);
 	}
 	return result;
@@ -2849,7 +2909,7 @@ bool scriptapi_craftitem_on_place_on_ground(lua_State *L, const char *name,
 		objectref_get_or_create(L, placer);
 		pushFloatPos(L, pos);
 		if(lua_pcall(L, 3, 1, 0))
-			script_error(L, "error: %s\n", lua_tostring(L, -1));
+			script_error(L, "error: %s", lua_tostring(L, -1));
 		result = lua_toboolean(L, -1);
 	}
 	return result;
@@ -2873,7 +2933,7 @@ bool scriptapi_craftitem_on_use(lua_State *L, const char *name,
 		objectref_get_or_create(L, user);
 		pushPointedThing(L, pointed);
 		if(lua_pcall(L, 3, 1, 0))
-			script_error(L, "error: %s\n", lua_tostring(L, -1));
+			script_error(L, "error: %s", lua_tostring(L, -1));
 		result = lua_toboolean(L, -1);
 	}
 	return result;
@@ -2903,7 +2963,7 @@ void scriptapi_environment_step(lua_State *L, float dtime)
 		// Call function
 		lua_pushnumber(L, dtime);
 		if(lua_pcall(L, 1, 0, 0))
-			script_error(L, "error: %s\n", lua_tostring(L, -1));
+			script_error(L, "error: %s", lua_tostring(L, -1));
 		// value removed, keep key for next iteration
 	}
 }
@@ -2938,7 +2998,7 @@ void scriptapi_environment_on_placenode(lua_State *L, v3s16 p, MapNode newnode,
 		pushnode(L, newnode, ndef);
 		objectref_get_or_create(L, placer);
 		if(lua_pcall(L, 3, 0, 0))
-			script_error(L, "error: %s\n", lua_tostring(L, -1));
+			script_error(L, "error: %s", lua_tostring(L, -1));
 		// value removed, keep key for next iteration
 	}
 }
@@ -2973,7 +3033,7 @@ void scriptapi_environment_on_dignode(lua_State *L, v3s16 p, MapNode oldnode,
 		pushnode(L, oldnode, ndef);
 		objectref_get_or_create(L, digger);
 		if(lua_pcall(L, 3, 0, 0))
-			script_error(L, "error: %s\n", lua_tostring(L, -1));
+			script_error(L, "error: %s", lua_tostring(L, -1));
 		// value removed, keep key for next iteration
 	}
 }
@@ -3008,7 +3068,7 @@ void scriptapi_environment_on_punchnode(lua_State *L, v3s16 p, MapNode node,
 		pushnode(L, node, ndef);
 		objectref_get_or_create(L, puncher);
 		if(lua_pcall(L, 3, 0, 0))
-			script_error(L, "error: %s\n", lua_tostring(L, -1));
+			script_error(L, "error: %s", lua_tostring(L, -1));
 		// value removed, keep key for next iteration
 	}
 }
@@ -3034,7 +3094,7 @@ void scriptapi_environment_on_generated(lua_State *L, v3s16 minp, v3s16 maxp)
 		pushpos(L, minp);
 		pushpos(L, maxp);
 		if(lua_pcall(L, 2, 0, 0))
-			script_error(L, "error: %s\n", lua_tostring(L, -1));
+			script_error(L, "error: %s", lua_tostring(L, -1));
 		// value removed, keep key for next iteration
 	}
 }

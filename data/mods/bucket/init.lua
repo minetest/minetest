@@ -1,12 +1,12 @@
 minetest.register_craft({
-	output = 'craft "bucket" 1',
+	output = 'craft "bucket_empty" 1',
 	recipe = {
 		{'craft "steel_ingot"', '', 'craft "steel_ingot"'},
 		{'', 'craft "steel_ingot"', ''},
 	}
 })
 
-minetest.register_craftitem("bucket", {
+minetest.register_craftitem("bucket_empty", {
 	image = "bucket.png",
 	stack_max = 1,
 	liquids_pointable = true,
@@ -43,7 +43,7 @@ minetest.register_craftitem("bucket_water", {
 			else
 				minetest.env:add_node(pointed_thing.above, {name="water_source"})
 			end
-			player:add_to_inventory_later('craft "bucket" 1')
+			player:add_to_inventory_later('craft "bucket_empty" 1')
 			return true
 		end
 		return false
@@ -65,7 +65,7 @@ minetest.register_craftitem("bucket_lava", {
 			else
 				minetest.env:add_node(pointed_thing.above, {name="lava_source"})
 			end
-			player:add_to_inventory_later('craft "bucket" 1')
+			player:add_to_inventory_later('craft "bucket_empty" 1')
 			return true
 		end
 		return false

@@ -978,7 +978,7 @@ Server::Server(
 	// Load and run builtin.lua
 	infostream<<"Server: Loading builtin Lua stuff from \""<<builtinpath
 			<<"\""<<std::endl;
-	bool success = script_load(m_lua, builtinpath.c_str());
+	bool success = scriptapi_loadmod(m_lua, builtinpath, "__builtin");
 	if(!success){
 		errorstream<<"Server: Failed to load and run "
 				<<builtinpath<<std::endl;
