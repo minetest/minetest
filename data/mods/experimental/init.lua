@@ -149,7 +149,7 @@ minetest.register_craft({
 	output = 'node "experimental:tnt" 4',
 	recipe = {
 		{'node "default:wood" 1'},
-		{'craft "default:lump_of_coal" 1'},
+		{'craft "default:coal_lump" 1'},
 		{'node "default:wood" 1'}
 	}
 })

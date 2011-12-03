@@ -553,7 +553,7 @@ minetest.register_craft({
 minetest.register_craft({
 	output = 'node "default:torch" 4',
 	recipe = {
-		{'craft "default:lump_of_coal"'},
+		{'craft "default:coal_lump"'},
 		{'craft "default:stick"'},
 	}
 })
@@ -731,8 +731,8 @@ minetest.register_craft({
 minetest.register_craft({
 	output = 'node "default:clay" 1',
 	recipe = {
-		{'craft "default:lump_of_clay"', 'craft "default:lump_of_clay"'},
-		{'craft "default:lump_of_clay"', 'craft "default:lump_of_clay"'},
+		{'craft "default:clay_lump"', 'craft "default:clay_lump"'},
+		{'craft "default:clay_lump"', 'craft "default:clay_lump"'},
 	}
 })
 
@@ -843,7 +843,7 @@ minetest.register_node("default:clay", {
 	inventory_image = minetest.inventorycube("default_clay.png"),
 	is_ground_content = true,
 	material = minetest.digprop_dirtlike(1.0),
-	dug_item = 'craft "default:lump_of_clay" 4',
+	dug_item = 'craft "default:clay_lump" 4',
 })
 
 minetest.register_node("default:brick", {
@@ -859,7 +859,7 @@ minetest.register_node("default:tree", {
 	inventory_image = minetest.inventorycube("default_tree_top.png", "default_tree.png", "default_tree.png"),
 	is_ground_content = true,
 	material = minetest.digprop_woodlike(1.0),
-	cookresult_itemstring = 'craft "default:lump_of_coal" 1',
+	cookresult_itemstring = 'craft "default:coal_lump" 1',
 	furnace_burntime = 30,
 })
 
@@ -868,7 +868,7 @@ minetest.register_node("default:jungletree", {
 	inventory_image = minetest.inventorycube("default_jungletree_top.png", "default_jungletree.png", "default_jungletree.png"),
 	is_ground_content = true,
 	material = minetest.digprop_woodlike(1.0),
-	cookresult_itemstring = 'craft "default:lump_of_coal" 1',
+	cookresult_itemstring = 'craft "default:coal_lump" 1',
 	furnace_burntime = 30,
 })
 
@@ -1252,20 +1252,20 @@ minetest.register_craftitem("default:book", {
 	on_place_on_ground = minetest.craftitem_place_item,
 })
 
-minetest.register_craftitem("default:lump_of_coal", {
-	image = "default_lump_of_coal.png",
+minetest.register_craftitem("default:coal_lump", {
+	image = "default_coal_lump.png",
 	furnace_burntime = 40;
 	on_place_on_ground = minetest.craftitem_place_item,
 })
 
-minetest.register_craftitem("default:lump_of_iron", {
-	image = "default_lump_of_iron.png",
+minetest.register_craftitem("default:iron_lump", {
+	image = "default_iron_lump.png",
 	cookresult_itemstring = 'craft "default:steel_ingot" 1',
 	on_place_on_ground = minetest.craftitem_place_item,
 })
 
-minetest.register_craftitem("default:lump_of_clay", {
-	image = "default_lump_of_clay.png",
+minetest.register_craftitem("default:clay_lump", {
+	image = "default_clay_lump.png",
 	cookresult_itemstring = 'craft "default:clay_brick" 1',
 	on_place_on_ground = minetest.craftitem_place_item,
 })
