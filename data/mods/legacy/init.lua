@@ -445,15 +445,6 @@ minetest.register_craft({
 	}
 })
 
-minetest.register_craft({
-	output = 'craft "default:apple_iron" 1',
-	recipe = {
-		{'', 'craft "steel_ingot"', ''},
-		{'craft "steel_ingot"', 'craft "apple"', 'craft "steel_ingot"'},
-		{'', 'craft "steel_ingot"', ''},
-	}
-})
-
 --
 -- Node compatibility with old 0.4
 --

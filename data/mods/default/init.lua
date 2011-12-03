@@ -778,15 +778,6 @@ minetest.register_craft({
 	}
 })
 
-minetest.register_craft({
-	output = 'craft "default:apple_iron" 1',
-	recipe = {
-		{'', 'craft "default:steel_ingot"', ''},
-		{'craft "default:steel_ingot"', 'craft "apple"', 'craft "default:steel_ingot"'},
-		{'', 'craft "default:steel_ingot"', ''},
-	}
-})
-
 --
 -- Node definitions
 --
@@ -1329,12 +1320,6 @@ minetest.register_craftitem("default:apple", {
 	image = "apple.png",
 	on_place_on_ground = minetest.craftitem_place_item,
 	on_use = minetest.craftitem_eat(4),
-})
-
-minetest.register_craftitem("default:apple_iron", {
-	image = "apple_iron.png",
-	on_place_on_ground = minetest.craftitem_place_item,
-	on_use = minetest.craftitem_eat(8),
 })
 
 --
