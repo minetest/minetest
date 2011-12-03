@@ -986,13 +986,6 @@ minetest.register_node("default:ladder", {
 	material = minetest.digprop_woodlike(0.5),
 })
 
-minetest.register_node("default:coalstone", {
-	tile_images = {"stone.png^mineral_coal.png"},
-	inventory_image = "stone.png^mineral_coal.png",
-	is_ground_content = true,
-	material = minetest.digprop_stonelike(1.5),
-})
-
 minetest.register_node("default:wood", {
 	tile_images = {"default_wood.png"},
 	inventory_image = minetest.inventorycube("default_wood.png"),
