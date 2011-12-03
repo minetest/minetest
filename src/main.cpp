@@ -1631,7 +1631,7 @@ int main(int argc, char *argv[])
 			}
 			
 			// Break out of menu-game loop to shut down cleanly
-			if(device->run() == false)
+			if(device->run() == false || kill == true)
 				break;
 			
 			/*
