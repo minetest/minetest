@@ -1814,6 +1814,14 @@ void the_game(
 			{
 				infotext = narrow_to_wide(meta->infoText());
 			}
+			else
+			{
+				MapNode n = client.getNode(nodepos);
+				if(nodedef->get(n).tname_tiles[0] == "unknown_block.png"){
+					infotext = L"Unknown node: ";
+					infotext += narrow_to_wide(nodedef->get(n).name);
+				}
+			}
 			
 			/*
 				Handle digging
