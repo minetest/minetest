@@ -10,7 +10,7 @@
 -- $mapdir/worldmods/
 --
 -- On a run-in-place version (eg. the distributed windows version):
--- minetest-0.4.x/mods/
+-- minetest-0.4.x/data/mods/
 -- minetest-0.4.x/usermods/
 -- minetest-0.4.x/world/worldmods/
 --
