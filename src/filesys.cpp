@@ -196,18 +196,19 @@ std::vector<DirListNode> GetDirListing(std::string pathstring)
 			int isdir = -1; // -1 means unknown
 
 			/*
-				POSIX doesn't define d_type member of
-				struct dirent and certain filesystems on
-				glibc/Linux will only return DT_UNKNOWN for
-				the d_type member.
+				POSIX doesn't define d_type member of struct dirent and
+				certain filesystems on glibc/Linux will only return
+				DT_UNKNOWN for the d_type member.
+
+				Also we don't know whether symlinks are directories or not.
 			*/
 #ifdef _DIRENT_HAVE_D_TYPE
-			if(dirp->d_type != DT_UNKNOWN)
+			if(dirp->d_type != DT_UNKNOWN && dirp->d_type != DT_LNK)
 				isdir = (dirp->d_type == DT_DIR);
 #endif /* _DIRENT_HAVE_D_TYPE */
 
 			/*
-				Was d_type DT_UNKNOWN (or nonexistent)?
+				Was d_type DT_UNKNOWN, DT_LNK or nonexistent?
 				If so, try stat().
 			*/
 			if(isdir == -1)
