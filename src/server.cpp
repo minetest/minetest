@@ -4307,13 +4307,12 @@ void Server::HandlePlayerHP(Player *player, s16 damage)
 	if(srp->m_respawn_active)
 		return;
 	
-	if(damage == 0)
-		return;
-	
 	if(player->hp > damage)
 	{
-		player->hp -= damage;
-		SendPlayerHP(player);
+		if(damage != 0){
+			player->hp -= damage;
+			SendPlayerHP(player);
+		}
 		return;
 	}
 
