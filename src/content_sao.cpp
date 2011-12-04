@@ -1658,8 +1658,11 @@ std::string LuaEntitySAO::getStaticData()
 
 void LuaEntitySAO::punch(ServerActiveObject *puncher, float time_from_last_punch)
 {
-	if(!m_registered)
+	if(!m_registered){
+		// Delete unknown LuaEntities when punched
+		m_removed = true;
 		return;
+	}
 	lua_State *L = m_env->getLua();
 	scriptapi_luaentity_punch(L, m_id, puncher, time_from_last_punch);
 }
