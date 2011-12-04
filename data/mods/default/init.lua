@@ -146,6 +146,8 @@
 --   ^ Returns {name="ignore", ...} for unloaded area
 -- - get_node_or_nil(pos)
 --   ^ Returns nil for unloaded area
+-- - get_node_light(pos, timeofday) -> 0...15 or nil
+--   ^ timeofday: nil = current time, 0 = night, 0.5 = day
 -- - add_luaentity(pos, name)
 -- - add_item(pos, itemstring)
 -- - add_rat(pos)
