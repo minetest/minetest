@@ -1491,7 +1491,9 @@ minetest.register_on_chat_message(function(name, message)
 			print("Unable to spawn entity, player is nil")
 			return true -- Handled chat message
 		end
-		minetest.env:add_entity(player:getpos(), entityname)
+		local p = player:getpos()
+		p.y = p.y + 1
+		minetest.env:add_entity(p, entityname)
 		minetest.chat_send_player(name, '"'..entityname
 				..'" spawned.');
 		return true -- Handled chat message
