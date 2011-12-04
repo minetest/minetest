@@ -546,7 +546,7 @@ minetest.register_craft({
 })
 
 minetest.register_craft({
-	output = 'node "fence_wooden" 2',
+	output = 'node "default:fence_wood" 2',
 	recipe = {
 		{'craft "default:stick"', 'craft "default:stick"', 'craft "default:stick"'},
 		{'craft "default:stick"', 'craft "default:stick"', 'craft "default:stick"'},
@@ -948,7 +948,7 @@ minetest.register_node("default:glass", {
 	material = minetest.digprop_glasslike(1.0),
 })
 
-minetest.register_node("default:fence_wooden", {
+minetest.register_node("default:fence_wood", {
 	drawtype = "fencelike",
 	tile_images = {"default_wood.png"},
 	inventory_image = "default_fence.png",
