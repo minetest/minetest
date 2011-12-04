@@ -31,11 +31,11 @@ ServerRemotePlayer::ServerRemotePlayer(ServerEnvironment *env):
 	ServerActiveObject(env, v3f(0,0,0)),
 	m_last_good_position(0,0,0),
 	m_last_good_position_age(0),
-	m_additional_items(),
 	m_inventory_not_sent(false),
 	m_hp_not_sent(false),
 	m_respawn_active(false),
 	m_is_in_environment(false),
+	m_time_from_last_punch(0),
 	m_position_not_sent(false)
 {
 }
@@ -43,9 +43,12 @@ ServerRemotePlayer::ServerRemotePlayer(ServerEnvironment *env, v3f pos_, u16 pee
 		const char *name_):
 	Player(env->getGameDef()),
 	ServerActiveObject(env, pos_),
+	m_last_good_position(0,0,0),
+	m_last_good_position_age(0),
 	m_inventory_not_sent(false),
 	m_hp_not_sent(false),
 	m_is_in_environment(false),
+	m_time_from_last_punch(0),
 	m_position_not_sent(false)
 {
 	setPosition(pos_);
@@ -93,6 +96,8 @@ bool ServerRemotePlayer::unlimitedTransferDistance() const
 
 void ServerRemotePlayer::step(float dtime, bool send_recommended)
 {
+	m_time_from_last_punch += dtime;
+	
 	if(send_recommended == false)
 		return;
 	
@@ -157,9 +162,14 @@ void ServerRemotePlayer::punch(ServerActiveObject *puncher,
 	HittingProperties hitprop = getHittingProperties(&mp, &tp,
 			time_from_last_punch);
 	
+	actionstream<<"Player "<<getName()<<" punched by "
+			<<puncher->getDescription()<<", damage "<<hitprop.hp
+			<<" HP"<<std::endl;
+	
 	setHP(getHP() - hitprop.hp);
 	puncher->damageWieldedItem(hitprop.wear);
-
+	
+	if(hitprop.hp != 0)
 	{
 		std::ostringstream os(std::ios::binary);
 		// command (1 = punched)

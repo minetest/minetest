@@ -2964,7 +2964,8 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 					<<pointed.object_id<<std::endl;
 
 				// Do stuff
-				pointed_object->punch(srp);
+				pointed_object->punch(srp, srp->m_time_from_last_punch);
+				srp->m_time_from_last_punch = 0;
 			}
 
 		} // action == 0

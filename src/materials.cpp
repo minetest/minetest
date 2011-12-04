@@ -104,9 +104,9 @@ HittingProperties getHittingProperties(const MaterialProperties *mp,
 			time_from_last_punch);
 	
 	// If digging time would be 1 second, 2 hearts go in 1 second.
-	s16 hp = 2.0 * 2.0 / digprop.time + 0.5;
+	s16 hp = 2.0 * 2.0 / digprop.time;
 	// Wear is the same as for digging a single node
-	s16 wear = (float)digprop.wear + 0.5;
+	s16 wear = (float)digprop.wear;
 
 	return HittingProperties(hp, wear);
 }

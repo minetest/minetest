@@ -74,7 +74,8 @@ public:
 	void rightClick(ServerActiveObject *clicker);
 	void setPos(v3f pos);
 	void moveTo(v3f pos, bool continuous);
-	virtual std::string getDescription(){return getName();}
+	virtual std::string getDescription()
+	{return std::string("player ")+getName();}
 
 	virtual void getWieldDiggingProperties(ToolDiggingProperties *dst);
 	virtual void damageWieldedItem(u16 amount);
@@ -93,6 +94,8 @@ public:
 	bool m_hp_not_sent;
 	bool m_respawn_active;
 	bool m_is_in_environment;
+	// Incremented by step(), read and reset by Server
+	float m_time_from_last_punch;
 
 private:
 	bool m_position_not_sent;

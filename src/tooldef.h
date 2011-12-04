@@ -38,7 +38,7 @@ struct ToolDiggingProperties
 	float dd_crumbliness;
 	float dd_cuttability;
 
-	ToolDiggingProperties(float full_punch_interval_=1.0,
+	ToolDiggingProperties(float full_punch_interval_=2.0,
 			float a=0.75, float b=0, float c=0, float d=0, float e=0,
 			float f=50, float g=0, float h=0, float i=0, float j=0);
 };
