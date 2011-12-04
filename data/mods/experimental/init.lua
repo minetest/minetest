@@ -237,6 +237,9 @@ end
 --print("Registering TNT");
 minetest.register_entity("experimental:tnt", TNT)
 
+-- Add TNT's old name also
+minetest.alias_node("TNT", "experimental:tnt")
+
 --
 -- A test entity for testing animated and yaw-modulated sprites
 --
