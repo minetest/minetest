@@ -3140,12 +3140,7 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 				}
 
 				item = NULL;
-
-				if(mineral != MINERAL_NONE)
-					item = getDiggedMineralItem(mineral, this);
-			
-				// If not mineral
-				if(item == NULL)
+				
 				{
 					const std::string &extra_dug_s = m_nodedef->get(material).extra_dug_item;
 					s32 extra_rarity = m_nodedef->get(material).extra_dug_item_rarity;
