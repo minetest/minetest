@@ -2430,11 +2430,11 @@ private:
 		}
 	}
 
-	// EnvRef:add_luaentity(pos, entityname)
+	// EnvRef:add_entity(pos, entityname)
 	// pos = {x=num, y=num, z=num}
-	static int l_add_luaentity(lua_State *L)
+	static int l_add_entity(lua_State *L)
 	{
-		//infostream<<"EnvRef::l_add_luaentity()"<<std::endl;
+		//infostream<<"EnvRef::l_add_entity()"<<std::endl;
 		EnvRef *o = checkobject(L, 1);
 		ServerEnvironment *env = o->m_env;
 		if(env == NULL) return 0;
@@ -2600,7 +2600,7 @@ const luaL_reg EnvRef::methods[] = {
 	method(EnvRef, get_node),
 	method(EnvRef, get_node_or_nil),
 	method(EnvRef, get_node_light),
-	method(EnvRef, add_luaentity),
+	method(EnvRef, add_entity),
 	method(EnvRef, add_item),
 	method(EnvRef, add_rat),
 	method(EnvRef, add_firefly),
