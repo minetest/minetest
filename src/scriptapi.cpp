@@ -164,7 +164,7 @@ void check_modname_prefix(lua_State *L, std::string &name)
 			"ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789_"))
 		throw LuaError(L, std::string("Name \"")+name
 				+"\" does not follow naming conventions: "
-				+"\"contains unallowed characters)");
+				+"\"contains unallowed characters");
 }
 
 static v3f readFloatPos(lua_State *L, int index)
@@ -2672,6 +2672,14 @@ bool scriptapi_loadmod(lua_State *L, const std::string &scriptpath,
 {
 	ModNameStorer modnamestorer(L, modname);
 
+	if(!string_allowed(modname, "abcdefghijklmnopqrstuvwxyz"
+			"0123456789_")){
+		errorstream<<"Error loading mod \""<<modname
+				<<"\": modname does not follow naming conventions: "
+				<<"Only chararacters [a-z0-9_] are allowed."<<std::endl;
+		return false;
+	}
+	
 	bool success = false;
 
 	try{
