@@ -41,6 +41,7 @@ public:
 
 lua_State* script_init();
 void script_deinit(lua_State *L);
+std::string script_get_backtrace(lua_State *L);
 void script_error(lua_State *L, const char *fmt, ...);
 bool script_load(lua_State *L, const char *path);
 

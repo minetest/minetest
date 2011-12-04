@@ -455,6 +455,18 @@ static void setfloatfield(lua_State *L, int table,
 	lua_setfield(L, table, fieldname);
 }
 
+static void warn_if_field_exists(lua_State *L, int table,
+		const char *fieldname, const std::string &message)
+{
+	lua_getfield(L, table, fieldname);
+	if(!lua_isnil(L, -1)){
+		infostream<<script_get_backtrace(L)<<std::endl;
+		infostream<<"WARNING: field \""<<fieldname<<"\": "
+				<<message<<std::endl;
+	}
+	lua_pop(L, 1);
+}
+
 /*
 	Inventory stuff
 */
@@ -1019,7 +1031,9 @@ static int l_register_node(lua_State *L)
 	
 	// True for all ground-like things like stone and mud, false for eg. trees
 	getboolfield(L, nodedef_table, "is_ground_content", f.is_ground_content);
-	getboolfield(L, nodedef_table, "light_propagates", f.light_propagates);
+	f.light_propagates = (f.param_type == CPT_LIGHT);
+	warn_if_field_exists(L, nodedef_table, "light_propagates",
+			"deprecated: determined from paramtype");
 	getboolfield(L, nodedef_table, "sunlight_propagates", f.sunlight_propagates);
 	// This is used for collision detection.
 	// Also for general solidness queries.

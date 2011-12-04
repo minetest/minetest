@@ -35,13 +35,19 @@ LuaError::LuaError(lua_State *L, const std::string &s)
 {
 	m_s = "LuaError: ";
 	m_s += s + "\n";
+	m_s += script_get_backtrace(L);
+}
+
+std::string script_get_backtrace(lua_State *L)
+{
+	std::string s;
 	lua_getfield(L, LUA_GLOBALSINDEX, "debug");
 	if(lua_istable(L, -1)){
 		lua_getfield(L, -1, "traceback");
 		if(lua_isfunction(L, -1)){
 			lua_call(L, 0, 1);
 			if(lua_isstring(L, -1)){
-				m_s += lua_tostring(L, -1);
+				s += lua_tostring(L, -1);
 			}
 			lua_pop(L, 1);
 		}
@@ -50,6 +56,7 @@ LuaError::LuaError(lua_State *L, const std::string &s)
 		}
 	}
 	lua_pop(L, 1);
+	return s;
 }
 
 void script_error(lua_State *L, const char *fmt, ...)

@@ -97,7 +97,6 @@ minetest.register_nodedef_defaults({
 	post_effect_color = {a=0, r=0, g=0, b=0},
 	paramtype = "none",
 	is_ground_content = false,
-	light_propagates = false,
 	sunlight_propagates = false,
 	walkable = true,
 	pointable = true,
@@ -133,7 +132,6 @@ minetest.register_nodedef_defaults({
 minetest.register_node("air", {
 	drawtype = "airlike",
 	paramtype = "light",
-	light_propagates = true,
 	sunlight_propagates = true,
 	walkable = false,
 	pointable = false,
@@ -145,7 +143,6 @@ minetest.register_node("air", {
 minetest.register_node("ignore", {
 	drawtype = "airlike",
 	paramtype = "none",
-	light_propagates = false,
 	sunlight_propagates = false,
 	walkable = false,
 	pointable = false,
