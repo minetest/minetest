@@ -331,12 +331,7 @@ private:
 class ToolItem : public InventoryItem
 {
 public:
-	ToolItem(IGameDef *gamedef, std::string toolname, u16 wear):
-		InventoryItem(gamedef, 1)
-	{
-		m_toolname = toolname;
-		m_wear = wear;
-	}
+	ToolItem(IGameDef *gamedef, std::string toolname, u16 wear);
 	/*
 		Implementation interface
 	*/

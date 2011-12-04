@@ -403,15 +403,8 @@ public:
 	}
 	virtual bool getId(const std::string &name_, content_t &result) const
 	{
-		std::string name = name_;
 		// Convert name according to possible alias
-		std::map<std::string, std::string>::const_iterator i;
-		i = m_aliases.find(name);
-		if(i != m_aliases.end()){
-			/*infostream<<"ndef: alias active: "<<name<<" -> "<<i->second
-					<<std::endl;*/
-			name = i->second;
-		}
+		std::string name = getAlias(name_);
 		// Get id
 		return m_name_id_mapping.getId(name, result);
 	}
@@ -426,6 +419,14 @@ public:
 		content_t id = CONTENT_IGNORE;
 		getId(name, id);
 		return get(id);
+	}
+	virtual std::string getAlias(const std::string &name) const
+	{
+		std::map<std::string, std::string>::const_iterator i;
+		i = m_aliases.find(name);
+		if(i != m_aliases.end())
+			return i->second;
+		return name;
 	}
 	// IWritableNodeDefManager
 	virtual void set(content_t c, const ContentFeatures &def)

@@ -96,12 +96,7 @@ public:
 	virtual const ToolDefinition* getToolDefinition(const std::string &toolname_) const
 	{
 		// Convert name according to possible alias
-		std::string toolname = toolname_;
-		std::map<std::string, std::string>::const_iterator i;
-		i = m_aliases.find(toolname);
-		if(i != m_aliases.end()){
-			toolname = i->second;
-		}
+		std::string toolname = getAlias(toolname_);
 		// Get the definition
 		core::map<std::string, ToolDefinition*>::Node *n;
 		n = m_tool_definitions.find(toolname);
@@ -130,6 +125,15 @@ public:
 		}
 		return def->properties;
 	}
+	virtual std::string getAlias(const std::string &name) const
+	{
+		std::map<std::string, std::string>::const_iterator i;
+		i = m_aliases.find(name);
+		if(i != m_aliases.end())
+			return i->second;
+		return name;
+	}
+	// IWritableToolDefManager
 	virtual bool registerTool(std::string toolname, const ToolDefinition &def)
 	{
 		infostream<<"registerTool: registering tool \""<<toolname<<"\""<<std::endl;

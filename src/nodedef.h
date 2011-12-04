@@ -253,6 +253,7 @@ public:
 	virtual bool getId(const std::string &name, content_t &result) const=0;
 	virtual content_t getId(const std::string &name) const=0;
 	virtual const ContentFeatures& get(const std::string &name) const=0;
+	virtual std::string getAlias(const std::string &name) const =0;
 	
 	virtual void serialize(std::ostream &os)=0;
 };
@@ -270,6 +271,7 @@ public:
 	virtual content_t getId(const std::string &name) const=0;
 	// If not found, returns the features of CONTENT_IGNORE
 	virtual const ContentFeatures& get(const std::string &name) const=0;
+	virtual std::string getAlias(const std::string &name) const =0;
 		
 	// Register node definition
 	virtual void set(content_t c, const ContentFeatures &def)=0;

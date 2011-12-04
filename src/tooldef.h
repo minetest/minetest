@@ -69,6 +69,7 @@ public:
 	virtual std::string getImagename(const std::string &toolname) const =0;
 	virtual ToolDiggingProperties getDiggingProperties(
 			const std::string &toolname) const =0;
+	virtual std::string getAlias(const std::string &name) const =0;
 	
 	virtual void serialize(std::ostream &os)=0;
 };
@@ -82,6 +83,7 @@ public:
 	virtual std::string getImagename(const std::string &toolname) const =0;
 	virtual ToolDiggingProperties getDiggingProperties(
 			const std::string &toolname) const =0;
+	virtual std::string getAlias(const std::string &name) const =0;
 			
 	virtual bool registerTool(std::string toolname, const ToolDefinition &def)=0;
 	virtual void clear()=0;

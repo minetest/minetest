@@ -246,7 +246,9 @@ MaterialItem::MaterialItem(IGameDef *gamedef, std::string nodename, u16 count):
 {
 	if(nodename == "")
 		nodename = "unknown_block";
-	m_nodename = nodename;
+
+	// Convert directly to the correct name through aliases
+	m_nodename = gamedef->ndef()->getAlias(nodename);
 }
 // Legacy constructor
 MaterialItem::MaterialItem(IGameDef *gamedef, content_t content, u16 count):
@@ -309,6 +311,15 @@ content_t MaterialItem::getMaterial() const
 	ToolItem
 */
 
+ToolItem::ToolItem(IGameDef *gamedef, std::string toolname, u16 wear):
+	InventoryItem(gamedef, 1)
+{
+	// Convert directly to the correct name through aliases
+	m_toolname = gamedef->tdef()->getAlias(toolname);
+	
+	m_wear = wear;
+}
+
 std::string ToolItem::getImageBasename() const
 {
 	return m_gamedef->getToolDefManager()->getImagename(m_toolname);
@@ -357,9 +368,7 @@ bool ToolItem::isKnown() const
 CraftItem::CraftItem(IGameDef *gamedef, std::string subname, u16 count):
 	InventoryItem(gamedef, count)
 {
-	// Convert directly to the correct name through aliases.
-	// This is necessary because CraftItem callbacks are stored in
-	// Lua refenced by their correct name
+	// Convert directly to the correct name through aliases
 	m_subname = gamedef->cidef()->getAlias(subname);
 }
 
