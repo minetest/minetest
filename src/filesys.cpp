@@ -190,10 +190,35 @@ std::vector<DirListNode> GetDirListing(std::string pathstring)
 		if(dirp->d_name[0]!='.'){
 			DirListNode node;
 			node.name = dirp->d_name;
-			if(dirp->d_type == DT_DIR) node.dir = true;
-			else node.dir = false;
-			if(node.name != "." && node.name != "..")
-				listing.push_back(node);
+			if(node.name == "." || node.name == "..")
+				continue;
+
+			int isdir = -1; // -1 means unknown
+
+			/*
+				POSIX doesn't define d_type member of
+				struct dirent and certain filesystems on
+				glibc/Linux will only return DT_UNKNOWN for
+				the d_type member.
+			*/
+#ifdef _DIRENT_HAVE_D_TYPE
+			if(dirp->d_type != DT_UNKNOWN)
+				isdir = (dirp->d_type == DT_DIR);
+#endif /* _DIRENT_HAVE_D_TYPE */
+
+			/*
+				Was d_type DT_UNKNOWN (or nonexistent)?
+				If so, try stat().
+			*/
+			if(isdir == -1)
+			{
+				struct stat statbuf;
+				if (stat((pathstring + "/" + node.name).c_str(), &statbuf))
+					continue;
+				isdir = ((statbuf.st_mode & S_IFDIR) == S_IFDIR);
+			}
+			node.dir = isdir;
+			listing.push_back(node);
 		}
     }
     closedir(dp);
