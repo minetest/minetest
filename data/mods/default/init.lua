@@ -1472,6 +1472,28 @@ minetest.register_on_chat_message(function(name, message)
 		end
 		return true -- Handled chat message
 	end
+	local cmd = "/spawnentity"
+	if message:sub(0, #cmd) == cmd then
+		if not minetest.get_player_privs(name)["give"] then
+			minetest.chat_send_player(name, "you don't have permission to spawn (give)")
+			return true -- Handled chat message
+		end
+		local entityname = string.match(message, cmd.." (.*)")
+		if entityname == nil then
+			minetest.chat_send_player(name, 'usage: '..cmd..' entityname')
+			return true -- Handled chat message
+		end
+		print(cmd..' invoked, entityname="'..entityname..'"')
+		local player = minetest.env:get_player_by_name(name)
+		if player == nil then
+			print("Unable to spawn entity, player is nil")
+			return true -- Handled chat message
+		end
+		minetest.env:add_luaentity(player:getpos(), entityname)
+		minetest.chat_send_player(name, '"'..entityname
+				..'" spawned.');
+		return true -- Handled chat message
+	end
 end)
 
 --
