@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: 0.0.0\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2011-08-02 12:36+0200\n"
-"PO-Revision-Date: 2011-08-02 00:31+0100\n"
+"PO-Revision-Date: 2011-12-05 01:25+0100\n"
 "Last-Translator: Frederik Helth <Guides@live.dk>\n"
 "Language-Team: \n"
 "Language: da\n"
@@ -50,7 +50,7 @@ msgstr "Hop"
 
 #: src/guiKeyChangeMenu.cpp:204
 msgid "Inventory"
-msgstr "Ting"
+msgstr "Beholdning"
 
 #: src/guiKeyChangeMenu.cpp:220
 msgid "Chat"
@@ -78,7 +78,7 @@ msgstr "Gem"
 
 #: src/guiKeyChangeMenu.cpp:304 src/guiKeyChangeMenu.h:33
 msgid "Cancel"
-msgstr "Afslut"
+msgstr "Fortryd"
 
 #: src/guiKeyChangeMenu.cpp:537 src/guiKeyChangeMenu.cpp:542
 #: src/guiKeyChangeMenu.cpp:547 src/guiKeyChangeMenu.cpp:552
@@ -88,7 +88,7 @@ msgstr "Afslut"
 #: src/guiKeyChangeMenu.cpp:587 src/guiKeyChangeMenu.cpp:592
 #: src/guiKeyChangeMenu.cpp:597
 msgid "press Key"
-msgstr "Tryk knap"
+msgstr "tryk knap"
 
 #: src/guiKeyChangeMenu.h:33
 msgid "Left Button"
@@ -232,7 +232,7 @@ msgstr "Hjælp"
 
 #: src/guiKeyChangeMenu.h:39
 msgid "Insert"
-msgstr "Indset"
+msgstr "Indsæt"
 
 #: src/guiKeyChangeMenu.h:39
 msgid "Snapshot"
@@ -400,19 +400,19 @@ msgstr "Adresse/port"
 
 #: src/guiMainMenu.cpp:228
 msgid "Leave address blank to start a local server."
-msgstr "Lad black for at spille localt"
+msgstr "Efterlad blank for at starte en lokal server"
 
 #: src/guiMainMenu.cpp:235
 msgid "Fancy trees"
-msgstr "Fancy trær"
+msgstr "Fancy træer"
 
 #: src/guiMainMenu.cpp:241
 msgid "Smooth Lighting"
-msgstr ""
+msgstr "Jævn belysning"
 
 #: src/guiMainMenu.cpp:249
 msgid "Start Game / Connect"
-msgstr "Start spil"
+msgstr "Start spil / Forbind"
 
 #: src/guiMainMenu.cpp:258
 msgid "Change keys"
@@ -424,11 +424,11 @@ msgstr "Kreativ mode"
 
 #: src/guiMainMenu.cpp:287
 msgid "Enable Damage"
-msgstr "Tag imod skade"
+msgstr "Slå skade til"
 
 #: src/guiMainMenu.cpp:295
 msgid "Delete map"
-msgstr "Slet mappen"
+msgstr "Slet kort"
 
 #: src/guiMessageMenu.cpp:94 src/guiTextInputMenu.cpp:112
 msgid "Proceed"
@@ -436,11 +436,11 @@ msgstr "Fortsæt"
 
 #: src/guiPasswordChange.cpp:103
 msgid "Old Password"
-msgstr "Gamle kodeord"
+msgstr "Gammelt kodeord"
 
 #: src/guiPasswordChange.cpp:120
 msgid "New Password"
-msgstr "Nye kodeord"
+msgstr "Nyt kodeord"
 
 #: src/guiPasswordChange.cpp:136
 msgid "Confirm Password"
