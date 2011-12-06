@@ -2458,7 +2458,7 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 					craftresult and immediately moved to the free slot.
 				*/
 				do{
-					Inventory *inv_to = getInventory(&c, ma->to_inv);
+					Inventory *inv_to = InventoryManager::getInventory(&c, ma->to_inv);
 					if(!inv_to) break;
 					InventoryList *list_to = inv_to->getList(ma->to_list);
 					if(!list_to) break;
@@ -3517,6 +3517,68 @@ void Server::onMapEditEvent(MapEditEvent *event)
 	m_unsent_map_edit_queue.push_back(e);
 }
 
+Inventory* Server::getInventory(const InventoryLocation &loc)
+{
+	switch(loc.type){
+	case InventoryLocation::UNDEFINED:
+	{}
+	break;
+	case InventoryLocation::PLAYER:
+	{
+		Player *player = m_env->getPlayer(loc.name.c_str());
+		if(!player)
+			return NULL;
+		return &player->inventory;
+	}
+	break;
+	case InventoryLocation::NODEMETA:
+	{
+		NodeMetadata *meta = m_env->getMap().getNodeMetadata(loc.p);
+		if(!meta)
+			return NULL;
+		return meta->getInventory();
+	}
+	break;
+	default:
+		assert(0);
+	}
+	return NULL;
+}
+void Server::setInventoryModified(const InventoryLocation &loc)
+{
+	switch(loc.type){
+	case InventoryLocation::UNDEFINED:
+	{}
+	break;
+	case InventoryLocation::PLAYER:
+	{
+		ServerRemotePlayer *srp = static_cast<ServerRemotePlayer*>
+				(m_env->getPlayer(loc.name.c_str()));
+		if(!srp)
+			return;
+		srp->m_inventory_not_sent = true;
+	}
+	break;
+	case InventoryLocation::NODEMETA:
+	{
+		v3s16 blockpos = getNodeBlockPos(loc.p);
+
+		NodeMetadata *meta = m_env->getMap().getNodeMetadata(loc.p);
+		if(meta)
+			meta->inventoryModified();
+		
+		MapBlock *block = m_env->getMap().getBlockNoCreateNoEx(blockpos);
+		if(block)
+			block->raiseModified(MOD_STATE_WRITE_NEEDED);
+		
+		setBlockNotSent(blockpos);
+	}
+	break;
+	default:
+		assert(0);
+	}
+}
+#if 0
 Inventory* Server::getInventory(InventoryContext *c, std::string id)
 {
 	if(id == "current_player")
@@ -3534,12 +3596,10 @@ Inventory* Server::getInventory(InventoryContext *c, std::string id)
 		p.X = stoi(fn.next(","));
 		p.Y = stoi(fn.next(","));
 		p.Z = stoi(fn.next(","));
-		NodeMetadata *meta = m_env->getMap().getNodeMetadata(p);
-		if(meta)
-			return meta->getInventory();
-		infostream<<"nodemeta at ("<<p.X<<","<<p.Y<<","<<p.Z<<"): "
-				<<"no metadata found"<<std::endl;
-		return NULL;
+
+		InventoryLocation loc;
+		loc.setNodeMeta(p);
+		return getInventory(loc);
 	}
 
 	infostream<<__FUNCTION_NAME<<": unknown id "<<id<<std::endl;
@@ -3567,21 +3627,15 @@ void Server::inventoryModified(InventoryContext *c, std::string id)
 		p.Z = stoi(fn.next(","));
 		v3s16 blockpos = getNodeBlockPos(p);
 
-		NodeMetadata *meta = m_env->getMap().getNodeMetadata(p);
-		if(meta)
-			meta->inventoryModified();
-		
-		MapBlock *block = m_env->getMap().getBlockNoCreateNoEx(blockpos);
-		if(block)
-			block->raiseModified(MOD_STATE_WRITE_NEEDED);
-		
-		setBlockNotSent(blockpos);
-
+		InventoryLocation loc;
+		loc.setNodeMeta(p);
+		setInventoryModified(loc);
 		return;
 	}
 
 	infostream<<__FUNCTION_NAME<<": unknown id "<<id<<std::endl;
 }
+#endif
 
 core::list<PlayerInfo> Server::getPlayerInfo()
 {

@@ -28,6 +28,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <IGUIStaticText.h>
 #include <IGUIFont.h>
 #include "log.h"
+#include "inventorymanager.h"
 
 void drawInventoryItem(video::IVideoDriver *driver,
 		gui::IGUIFont *font,

@@ -30,6 +30,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "clientobject.h"
 #include "utility.h" // For IntervalLimiter
 #include "gamedef.h"
+#include "inventorymanager.h"
 
 struct MeshMakeData;
 class IGameDef;
@@ -245,7 +246,9 @@ public:
 	
 	InventoryContext *getInventoryContext();
 
-	Inventory* getInventory(InventoryContext *c, std::string id);
+	/* InventoryManager interface */
+	Inventory* getInventory(const InventoryLocation &loc);
+	//Inventory* getInventory(InventoryContext *c, std::string id);
 	void inventoryAction(InventoryAction *a);
 
 	// Gets closest object pointed by the shootline

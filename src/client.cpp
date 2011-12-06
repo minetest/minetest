@@ -1782,6 +1782,34 @@ InventoryContext *Client::getInventoryContext()
 	return &m_inventory_context;
 }
 
+Inventory* Client::getInventory(const InventoryLocation &loc)
+{
+	switch(loc.type){
+	case InventoryLocation::UNDEFINED:
+	{}
+	break;
+	case InventoryLocation::PLAYER:
+	{
+		Player *player = m_env.getPlayer(loc.name.c_str());
+		if(!player)
+			return NULL;
+		return &player->inventory;
+	}
+	break;
+	case InventoryLocation::NODEMETA:
+	{
+		NodeMetadata *meta = m_env.getMap().getNodeMetadata(loc.p);
+		if(!meta)
+			return NULL;
+		return meta->getInventory();
+	}
+	break;
+	default:
+		assert(0);
+	}
+	return NULL;
+}
+#if 0
 Inventory* Client::getInventory(InventoryContext *c, std::string id)
 {
 	if(id == "current_player")
@@ -1810,6 +1838,7 @@ Inventory* Client::getInventory(InventoryContext *c, std::string id)
 	infostream<<__FUNCTION_NAME<<": unknown id "<<id<<std::endl;
 	return NULL;
 }
+#endif
 void Client::inventoryAction(InventoryAction *a)
 {
 	sendInventoryAction(a);

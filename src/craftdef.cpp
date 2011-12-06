@@ -25,6 +25,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "utility.h"
 #include "gamedef.h"
 #include "inventory.h"
+#include "inventorymanager.h" // checkItemCombination
 
 CraftPointerInput::~CraftPointerInput()
 {

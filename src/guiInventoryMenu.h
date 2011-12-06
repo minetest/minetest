@@ -27,6 +27,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "modalMenu.h"
 
 class ITextureSource;
+class InventoryContext;
+class InventoryManager;
 
 void drawInventoryItem(video::IVideoDriver *driver,
 		gui::IGUIFont *font,

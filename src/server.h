@@ -33,6 +33,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "serialization.h" // For SER_FMT_VER_INVALID
 #include "serverremoteplayer.h"
 #include "mods.h"
+#include "inventorymanager.h"
 struct LuaState;
 typedef struct lua_State lua_State;
 class IWritableToolDefManager;
@@ -413,8 +414,8 @@ public:
 	/*
 		Shall be called with the environment and the connection locked.
 	*/
-	Inventory* getInventory(InventoryContext *c, std::string id);
-	void inventoryModified(InventoryContext *c, std::string id);
+	Inventory* getInventory(const InventoryLocation &loc);
+	void setInventoryModified(const InventoryLocation &loc);
 
 	// Connection must be locked when called
 	std::wstring getStatusString();

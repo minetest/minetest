@@ -94,6 +94,7 @@ configure_file(
 )
 
 set(common_SRCS
+	inventorymanager.cpp
 	mods.cpp
 	serverremoteplayer.cpp
 	content_abm.cpp

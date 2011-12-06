@@ -204,6 +204,20 @@ static v2f read_v2f(lua_State *L, int index)
 	return p;
 }
 
+static Server* get_server(lua_State *L)
+{
+	// Get server from registry
+	lua_getfield(L, LUA_REGISTRYINDEX, "minetest_server");
+	return (Server*)lua_touserdata(L, -1);
+}
+
+static ServerEnvironment* get_env(lua_State *L)
+{
+	// Get environment from registry
+	lua_getfield(L, LUA_REGISTRYINDEX, "minetest_env");
+	return (ServerEnvironment*)lua_touserdata(L, -1);
+}
+
 static v3f readFloatPos(lua_State *L, int index)
 {
 	v3f pos;
@@ -551,6 +565,68 @@ static void inventory_get_list_to_lua(Inventory *inv, const char *name,
 	}
 }
 
+static void push_stack_item(lua_State *L, InventoryItem *item0)
+{
+	if(item0 == NULL){
+		lua_pushnil(L);
+	}
+	if(std::string("MaterialItem") == item0->getName()){
+		MaterialItem *item = (MaterialItem*)item0;
+		lua_newtable(L);
+		lua_pushstring(L, "NodeItem");
+		lua_setfield(L, -2, "type");
+		lua_pushstring(L, item->getNodeName().c_str());
+		lua_setfield(L, -2, "name");
+	}
+	else if(std::string("CraftItem") == item0->getName()){
+		CraftItem *item = (CraftItem*)item0;
+		lua_newtable(L);
+		lua_pushstring(L, "CraftItem");
+		lua_setfield(L, -2, "type");
+		lua_pushstring(L, item->getSubName().c_str());
+		lua_setfield(L, -2, "name");
+	}
+	else if(std::string("ToolItem") == item0->getName()){
+		ToolItem *item = (ToolItem*)item0;
+		lua_newtable(L);
+		lua_pushstring(L, "ToolItem");
+		lua_setfield(L, -2, "type");
+		lua_pushstring(L, item->getToolName().c_str());
+		lua_setfield(L, -2, "name");
+		lua_pushstring(L, itos(item->getWear()).c_str());
+		lua_setfield(L, -2, "wear");
+	}
+	else{
+		errorstream<<"push_stack_item: Unknown item name: \""
+				<<item0->getName()<<"\""<<std::endl;
+		lua_pushnil(L);
+	}
+}
+
+static InventoryItem* check_stack_item(lua_State *L, int index)
+{
+	if(index < 0)
+		index = lua_gettop(L) + 1 + index;
+	if(lua_isnil(L, index))
+		return NULL;
+	if(!lua_istable(L, index))
+		throw LuaError(L, "check_stack_item: Item not nil or table");
+	// A very crappy implementation for now
+	// Will be replaced when unified namespace for items is made
+	std::string type = getstringfield_default(L, index, "type", "");
+	std::string name = getstringfield_default(L, index, "name", "");
+	std::string num = getstringfield_default(L, index, "wear", "_");
+	if(num == "_")
+		num = 1;
+	std::string itemstring = type + " \"" + name + "\" " + num;
+	try{
+		return InventoryItem::deSerialize(itemstring, get_server(L));
+	}catch(SerializationError &e){
+		throw LuaError(L, std::string("check_stack_item: "
+				"internal error (itemstring=\"")+itemstring+"\")");
+	}
+}
+
 /*
 	ToolDiggingProperties
 */
@@ -835,12 +911,9 @@ static int l_register_tool(lua_State *L)
 	luaL_checktype(L, 2, LUA_TTABLE);
 	int table = 2;
 
-	// Get server from registry
-	lua_getfield(L, LUA_REGISTRYINDEX, "minetest_server");
-	Server *server = (Server*)lua_touserdata(L, -1);
-	// And get the writable tool definition manager from the server
+	// Get the writable tool definition manager from the server
 	IWritableToolDefManager *tooldef =
-			server->getWritableToolDefManager();
+			get_server(L)->getWritableToolDefManager();
 	
 	ToolDefinition def = read_tool_definition(L, table);
 
@@ -857,12 +930,9 @@ static int l_register_craftitem(lua_State *L)
 	luaL_checktype(L, 2, LUA_TTABLE);
 	int table = 2;
 
-	// Get server from registry
-	lua_getfield(L, LUA_REGISTRYINDEX, "minetest_server");
-	Server *server = (Server*)lua_touserdata(L, -1);
-	// And get the writable CraftItem definition manager from the server
+	// Get the writable CraftItem definition manager from the server
 	IWritableCraftItemDefManager *craftitemdef =
-			server->getWritableCraftItemDefManager();
+			get_server(L)->getWritableCraftItemDefManager();
 	
 	// Check if on_drop is defined
 	lua_getfield(L, table, "on_drop");
@@ -907,12 +977,9 @@ static int l_register_node(lua_State *L)
 	luaL_checktype(L, 2, LUA_TTABLE);
 	int nodedef_table = 2;
 
-	// Get server from registry
-	lua_getfield(L, LUA_REGISTRYINDEX, "minetest_server");
-	Server *server = (Server*)lua_touserdata(L, -1);
-	// And get the writable node definition manager from the server
+	// Get the writable node definition manager from the server
 	IWritableNodeDefManager *nodedef =
-			server->getWritableNodeDefManager();
+			get_server(L)->getWritableNodeDefManager();
 	
 	// Get default node definition from registry
 	lua_getfield(L, LUA_REGISTRYINDEX, "minetest_nodedef_default");
@@ -1147,12 +1214,9 @@ static int l_alias_node(lua_State *L)
 	std::string name = luaL_checkstring(L, 1);
 	std::string convert_to = luaL_checkstring(L, 2);
 
-	// Get server from registry
-	lua_getfield(L, LUA_REGISTRYINDEX, "minetest_server");
-	Server *server = (Server*)lua_touserdata(L, -1);
-	// And get the writable node definition manager from the server
+	// Get the writable node definition manager from the server
 	IWritableNodeDefManager *nodedef =
-			server->getWritableNodeDefManager();
+			get_server(L)->getWritableNodeDefManager();
 	
 	nodedef->setAlias(name, convert_to);
 	
@@ -1165,12 +1229,9 @@ static int l_alias_tool(lua_State *L)
 	std::string name = luaL_checkstring(L, 1);
 	std::string convert_to = luaL_checkstring(L, 2);
 
-	// Get server from registry
-	lua_getfield(L, LUA_REGISTRYINDEX, "minetest_server");
-	Server *server = (Server*)lua_touserdata(L, -1);
-	// And get the writable tool definition manager from the server
+	// Get the writable tool definition manager from the server
 	IWritableToolDefManager *tooldef =
-			server->getWritableToolDefManager();
+			get_server(L)->getWritableToolDefManager();
 	
 	tooldef->setAlias(name, convert_to);
 
@@ -1183,12 +1244,9 @@ static int l_alias_craftitem(lua_State *L)
 	std::string name = luaL_checkstring(L, 1);
 	std::string convert_to = luaL_checkstring(L, 2);
 
-	// Get server from registry
-	lua_getfield(L, LUA_REGISTRYINDEX, "minetest_server");
-	Server *server = (Server*)lua_touserdata(L, -1);
-	// And get the writable CraftItem definition manager from the server
+	// Get the writable CraftItem definition manager from the server
 	IWritableCraftItemDefManager *craftitemdef =
-			server->getWritableCraftItemDefManager();
+			get_server(L)->getWritableCraftItemDefManager();
 	
 	craftitemdef->setAlias(name, convert_to);
 
@@ -1202,12 +1260,9 @@ static int l_register_craft(lua_State *L)
 	luaL_checktype(L, 1, LUA_TTABLE);
 	int table0 = 1;
 
-	// Get server from registry
-	lua_getfield(L, LUA_REGISTRYINDEX, "minetest_server");
-	Server *server = (Server*)lua_touserdata(L, -1);
-	// And get the writable craft definition manager from the server
+	// Get the writable craft definition manager from the server
 	IWritableCraftDefManager *craftdef =
-			server->getWritableCraftDefManager();
+			get_server(L)->getWritableCraftDefManager();
 	
 	std::string output;
 	int width = 0;
@@ -1295,8 +1350,7 @@ static int l_chat_send_all(lua_State *L)
 {
 	const char *text = luaL_checkstring(L, 1);
 	// Get server from registry
-	lua_getfield(L, LUA_REGISTRYINDEX, "minetest_server");
-	Server *server = (Server*)lua_touserdata(L, -1);
+	Server *server = get_server(L);
 	// Send
 	server->notifyPlayers(narrow_to_wide(text));
 	return 0;
@@ -1308,8 +1362,7 @@ static int l_chat_send_player(lua_State *L)
 	const char *name = luaL_checkstring(L, 1);
 	const char *text = luaL_checkstring(L, 2);
 	// Get server from registry
-	lua_getfield(L, LUA_REGISTRYINDEX, "minetest_server");
-	Server *server = (Server*)lua_touserdata(L, -1);
+	Server *server = get_server(L);
 	// Send
 	server->notifyPlayer(name, narrow_to_wide(text));
 	return 0;
@@ -1320,8 +1373,7 @@ static int l_get_player_privs(lua_State *L)
 {
 	const char *name = luaL_checkstring(L, 1);
 	// Get server from registry
-	lua_getfield(L, LUA_REGISTRYINDEX, "minetest_server");
-	Server *server = (Server*)lua_touserdata(L, -1);
+	Server *server = get_server(L);
 	// Do it
 	lua_newtable(L);
 	int table = lua_gettop(L);
@@ -1413,10 +1465,336 @@ static void luaentity_get(lua_State *L, u16 id)
 }
 
 /*
-	Reference wrappers
+	Object wrappers
 */
 
 #define method(class, name) {#name, class::l_##name}
+
+/*
+	InvStack
+*/
+
+class InvStack
+{
+private:
+	InventoryItem *m_stack;
+
+	static const char className[];
+	static const luaL_reg methods[];
+
+	// Exported functions
+	
+	// garbage collector
+	static int gc_object(lua_State *L) {
+		InvStack *o = *(InvStack **)(lua_touserdata(L, 1));
+		delete o;
+		return 0;
+	}
+
+	// take_item(self)
+	static int l_take_item(lua_State *L)
+	{
+		InvStack *o = checkobject(L, 1);
+		push_stack_item(L, o->m_stack);
+		if(o->m_stack->getCount() == 1){
+			delete o->m_stack;
+			o->m_stack = NULL;
+		} else {
+			o->m_stack->remove(1);
+		}
+		return 1;
+	}
+
+	// put_item(self, item) -> true/false
+	static int l_put_item(lua_State *L)
+	{
+		InvStack *o = checkobject(L, 1);
+		InventoryItem *item = check_stack_item(L, 2);
+		if(!item){ // nil can always be inserted
+			lua_pushboolean(L, true);
+			return 1;
+		}
+		if(!item->addableTo(o->m_stack)){
+			lua_pushboolean(L, false);
+			return 1;
+		}
+		o->m_stack->add(1);
+		delete item;
+		lua_pushboolean(L, true);
+		return 1;
+	}
+
+public:
+	InvStack(InventoryItem *item=NULL):
+		m_stack(item)
+	{
+	}
+
+	~InvStack()
+	{
+		delete m_stack;
+	}
+
+	static InvStack* checkobject(lua_State *L, int narg)
+	{
+		luaL_checktype(L, narg, LUA_TUSERDATA);
+		void *ud = luaL_checkudata(L, narg, className);
+		if(!ud) luaL_typerror(L, narg, className);
+		return *(InvStack**)ud;  // unbox pointer
+	}
+
+	InventoryItem* getItemCopy()
+	{
+		if(!m_stack)
+			return NULL;
+		return m_stack->clone();
+	}
+	
+	// Creates an InvStack and leaves it on top of stack
+	static int create_object(lua_State *L)
+	{
+		InventoryItem *item = NULL;
+		if(lua_isstring(L, 1)){
+			std::string itemstring = lua_tostring(L, 1);
+			if(itemstring != ""){
+				try{
+					IGameDef *gdef = get_server(L);
+					item = InventoryItem::deSerialize(itemstring, gdef);
+				}catch(SerializationError &e){
+				}
+			}
+		}
+		InvStack *o = new InvStack(item);
+		*(void **)(lua_newuserdata(L, sizeof(void *))) = o;
+		luaL_getmetatable(L, className);
+		lua_setmetatable(L, -2);
+		return 1;
+	}
+	// Not callable from Lua
+	static int create(lua_State *L, InventoryItem *item)
+	{
+		InvStack *o = new InvStack(item);
+		*(void **)(lua_newuserdata(L, sizeof(void *))) = o;
+		luaL_getmetatable(L, className);
+		lua_setmetatable(L, -2);
+		return 1;
+	}
+
+	static void Register(lua_State *L)
+	{
+		lua_newtable(L);
+		int methodtable = lua_gettop(L);
+		luaL_newmetatable(L, className);
+		int metatable = lua_gettop(L);
+
+		lua_pushliteral(L, "__metatable");
+		lua_pushvalue(L, methodtable);
+		lua_settable(L, metatable);  // hide metatable from Lua getmetatable()
+
+		lua_pushliteral(L, "__index");
+		lua_pushvalue(L, methodtable);
+		lua_settable(L, metatable);
+
+		lua_pushliteral(L, "__gc");
+		lua_pushcfunction(L, gc_object);
+		lua_settable(L, metatable);
+
+		lua_pop(L, 1);  // drop metatable
+
+		luaL_openlib(L, 0, methods, 0);  // fill methodtable
+		lua_pop(L, 1);  // drop methodtable
+
+		// Can be created from Lua (InvStack::create(itemstring))
+		lua_register(L, className, create_object);
+	}
+};
+const char InvStack::className[] = "InvStack";
+const luaL_reg InvStack::methods[] = {
+	method(InvStack, take_item),
+	method(InvStack, put_item),
+	{0,0}
+};
+
+/*
+	InvRef
+*/
+
+class InvRef
+{
+private:
+	InventoryLocation m_loc;
+
+	static const char className[];
+	static const luaL_reg methods[];
+
+	static InvRef *checkobject(lua_State *L, int narg)
+	{
+		luaL_checktype(L, narg, LUA_TUSERDATA);
+		void *ud = luaL_checkudata(L, narg, className);
+		if(!ud) luaL_typerror(L, narg, className);
+		return *(InvRef**)ud;  // unbox pointer
+	}
+	
+	static Inventory* getinv(lua_State *L, InvRef *ref)
+	{
+		return get_server(L)->getInventory(ref->m_loc);
+	}
+
+	static InventoryList* getlist(lua_State *L, InvRef *ref,
+			const char *listname)
+	{
+		Inventory *inv = getinv(L, ref);
+		if(!inv)
+			return NULL;
+		return inv->getList(listname);
+	}
+
+	static InventoryItem* getitem(lua_State *L, InvRef *ref,
+			const char *listname, int i)
+	{
+		InventoryList *list = getlist(L, ref, listname);
+		if(!list)
+			return NULL;
+		return list->getItem(i);
+	}
+
+	static void reportInventoryChange(lua_State *L, InvRef *ref)
+	{
+		// Inform other things that the inventory has changed
+		get_server(L)->setInventoryModified(ref->m_loc);
+	}
+	
+	// Exported functions
+	
+	// garbage collector
+	static int gc_object(lua_State *L) {
+		InvRef *o = *(InvRef **)(lua_touserdata(L, 1));
+		delete o;
+		return 0;
+	}
+
+	// set_size(self, listname, size)
+	static int l_set_size(lua_State *L)
+	{
+		InvRef *ref = checkobject(L, 1);
+		const char *listname = luaL_checkstring(L, 2);
+		int newsize = luaL_checknumber(L, 3);
+		Inventory *inv = getinv(L, ref);
+		if(newsize == 0){
+			inv->deleteList(listname);
+			return 0;
+		}
+		InventoryList *list = inv->getList(listname);
+		if(list){
+			list->setSize(newsize);
+		} else {
+			list = inv->addList(listname, newsize);
+		}
+		return 0;
+	}
+
+	// get_stack(self, listname, i)
+	static int l_get_stack(lua_State *L)
+	{
+		InvRef *ref = checkobject(L, 1);
+		const char *listname = luaL_checkstring(L, 2);
+		int i = luaL_checknumber(L, 3);
+		InventoryItem *item = getitem(L, ref, listname, i);
+		if(!item){
+			InvStack::create(L, NULL);
+			return 1;
+		}
+		InvStack::create(L, item->clone());
+		return 1;
+	}
+
+	// set_stack(self, listname, i, stack)
+	static int l_set_stack(lua_State *L)
+	{
+		InvRef *ref = checkobject(L, 1);
+		const char *listname = luaL_checkstring(L, 2);
+		int i = luaL_checknumber(L, 3);
+		InvStack *stack = InvStack::checkobject(L, 4);
+		InventoryList *list = getlist(L, ref, listname);
+		if(!list){
+			lua_pushboolean(L, false);
+			return 1;
+		}
+		InventoryItem *newitem = stack->getItemCopy();
+		InventoryItem *olditem = list->changeItem(i, newitem);
+		bool success = (olditem != newitem);
+		delete olditem;
+		lua_pushboolean(L, success);
+		return 1;
+	}
+
+public:
+	InvRef(const InventoryLocation &loc):
+		m_loc(loc)
+	{
+	}
+
+	~InvRef()
+	{
+	}
+
+	// Creates an InvRef and leaves it on top of stack
+	// Not callable from Lua; all references are created on the C side.
+	static void create(lua_State *L, const InventoryLocation &loc)
+	{
+		InvRef *o = new InvRef(loc);
+		*(void **)(lua_newuserdata(L, sizeof(void *))) = o;
+		luaL_getmetatable(L, className);
+		lua_setmetatable(L, -2);
+	}
+	static void createPlayer(lua_State *L, Player *player)
+	{
+		InventoryLocation loc;
+		loc.setPlayer(player->getName());
+		create(L, loc);
+	}
+	static void createNodeMeta(lua_State *L, v3s16 p)
+	{
+		InventoryLocation loc;
+		loc.setNodeMeta(p);
+		create(L, loc);
+	}
+
+	static void Register(lua_State *L)
+	{
+		lua_newtable(L);
+		int methodtable = lua_gettop(L);
+		luaL_newmetatable(L, className);
+		int metatable = lua_gettop(L);
+
+		lua_pushliteral(L, "__metatable");
+		lua_pushvalue(L, methodtable);
+		lua_settable(L, metatable);  // hide metatable from Lua getmetatable()
+
+		lua_pushliteral(L, "__index");
+		lua_pushvalue(L, methodtable);
+		lua_settable(L, metatable);
+
+		lua_pushliteral(L, "__gc");
+		lua_pushcfunction(L, gc_object);
+		lua_settable(L, metatable);
+
+		lua_pop(L, 1);  // drop metatable
+
+		luaL_openlib(L, 0, methods, 0);  // fill methodtable
+		lua_pop(L, 1);  // drop methodtable
+
+		// Cannot be created from Lua
+		//lua_register(L, className, create_object);
+	}
+};
+const char InvRef::className[] = "InvRef";
+const luaL_reg InvRef::methods[] = {
+	method(InvRef, set_size),
+	method(InvRef, get_stack),
+	method(InvRef, set_stack),
+	{0,0}
+};
 
 /*
 	NodeMetaRef
@@ -2189,41 +2567,7 @@ private:
 		if(player == NULL) return 0;
 		// Do it
 		InventoryItem *item0 = player->getWieldedItem();
-		if(item0 == NULL){
-			lua_pushnil(L);
-			return 1;
-		}
-		if(std::string("MaterialItem") == item0->getName()){
-			MaterialItem *item = (MaterialItem*)item0;
-			lua_newtable(L);
-			lua_pushstring(L, "NodeItem");
-			lua_setfield(L, -2, "type");
-			lua_pushstring(L, item->getNodeName().c_str());
-			lua_setfield(L, -2, "name");
-		}
-		else if(std::string("CraftItem") == item0->getName()){
-			CraftItem *item = (CraftItem*)item0;
-			lua_newtable(L);
-			lua_pushstring(L, "CraftItem");
-			lua_setfield(L, -2, "type");
-			lua_pushstring(L, item->getSubName().c_str());
-			lua_setfield(L, -2, "name");
-		}
-		else if(std::string("ToolItem") == item0->getName()){
-			ToolItem *item = (ToolItem*)item0;
-			lua_newtable(L);
-			lua_pushstring(L, "ToolItem");
-			lua_setfield(L, -2, "type");
-			lua_pushstring(L, item->getToolName().c_str());
-			lua_setfield(L, -2, "name");
-			lua_pushstring(L, itos(item->getWear()).c_str());
-			lua_setfield(L, -2, "wear");
-		}
-		else{
-			errorstream<<"l_get_wielded_item: Unknown item name: \""
-					<<item0->getName()<<"\""<<std::endl;
-			lua_pushnil(L);
-		}
+		push_stack_item(L, item0);
 		return 1;
 	}
 
@@ -3236,12 +3580,9 @@ void scriptapi_environment_on_placenode(lua_State *L, v3s16 p, MapNode newnode,
 	//infostream<<"scriptapi_environment_on_placenode"<<std::endl;
 	StackUnroller stack_unroller(L);
 
-	// Get server from registry
-	lua_getfield(L, LUA_REGISTRYINDEX, "minetest_server");
-	Server *server = (Server*)lua_touserdata(L, -1);
-	// And get the writable node definition manager from the server
+	// Get the writable node definition manager from the server
 	IWritableNodeDefManager *ndef =
-			server->getWritableNodeDefManager();
+			get_server(L)->getWritableNodeDefManager();
 	
 	// Get minetest.registered_on_placenodes
 	lua_getglobal(L, "minetest");
@@ -3271,12 +3612,9 @@ void scriptapi_environment_on_dignode(lua_State *L, v3s16 p, MapNode oldnode,
 	//infostream<<"scriptapi_environment_on_dignode"<<std::endl;
 	StackUnroller stack_unroller(L);
 
-	// Get server from registry
-	lua_getfield(L, LUA_REGISTRYINDEX, "minetest_server");
-	Server *server = (Server*)lua_touserdata(L, -1);
-	// And get the writable node definition manager from the server
+	// Get the writable node definition manager from the server
 	IWritableNodeDefManager *ndef =
-			server->getWritableNodeDefManager();
+			get_server(L)->getWritableNodeDefManager();
 	
 	// Get minetest.registered_on_dignodes
 	lua_getglobal(L, "minetest");
@@ -3306,12 +3644,9 @@ void scriptapi_environment_on_punchnode(lua_State *L, v3s16 p, MapNode node,
 	//infostream<<"scriptapi_environment_on_punchnode"<<std::endl;
 	StackUnroller stack_unroller(L);
 
-	// Get server from registry
-	lua_getfield(L, LUA_REGISTRYINDEX, "minetest_server");
-	Server *server = (Server*)lua_touserdata(L, -1);
-	// And get the writable node definition manager from the server
+	// Get the writable node definition manager from the server
 	IWritableNodeDefManager *ndef =
-			server->getWritableNodeDefManager();
+			get_server(L)->getWritableNodeDefManager();
 	
 	// Get minetest.registered_on_punchnodes
 	lua_getglobal(L, "minetest");
