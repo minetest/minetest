@@ -168,6 +168,7 @@
 -- - get_owner()
 -- Generic node metadata specific:
 -- - set_infotext(infotext)
+-- - get_inventory() -> InvRef
 -- - inventory_set_list(name, {item1, item2, ...})
 -- - inventory_get_list(name)
 -- - set_inventory_draw_spec(string)
@@ -206,6 +207,7 @@
 -- -           select_horiz_by_yawpitch=false)
 -- Player-only:
 -- - get_player_name(): will return nil if is not a player
+-- - get_inventory() -> InvRef
 -- - inventory_set_list(name, {item1, item2, ...})
 -- - inventory_get_list(name) -> {item1, item2, ...}
 -- - get_look_dir(): get camera direction as a unit vector
@@ -225,8 +227,8 @@
 -- ItemStack
 -- - peek_item(): return item from stack without removing it
 -- - take_item(): remove item from stack and return it
--- - put_item(): put item in stack; return false if not possible
--- - put_stackstring(): put stackstring in stack; return false if not possible
+-- - put_item(item): put item in stack; return false if not possible
+-- - put_stackstring(stackstring): return false if not possible
 --
 -- Registered entities:
 -- - Functions receive a "luaentity" as self:
