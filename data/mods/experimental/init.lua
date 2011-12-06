@@ -169,7 +169,7 @@ minetest.register_node("experimental:tnt", {
 minetest.register_on_punchnode(function(p, node)
 	if node.name == "experimental:tnt" then
 		minetest.env:remove_node(p)
-		minetest.env:add_luaentity(p, "experimental:tnt")
+		minetest.env:add_entity(p, "experimental:tnt")
 		nodeupdate(p)
 	end
 end)
@@ -199,11 +199,20 @@ function TNT:on_activate(staticdata)
 	self.object:settexturemod("^[brighten")
 end
 
+local TNT_RANGE = 3
+
 -- Called periodically
 function TNT:on_step(dtime)
 	--print("TNT:on_step()")
 	self.timer = self.timer + dtime
 	self.blinktimer = self.blinktimer + dtime
+    if self.timer>5 then
+        self.blinktimer = self.blinktimer + dtime
+        if self.timer>8 then
+            self.blinktimer = self.blinktimer + dtime
+            self.blinktimer = self.blinktimer + dtime
+        end
+    end
 	if self.blinktimer > 0.5 then
 		self.blinktimer = self.blinktimer - 0.5
 		if self.blinkstatus then
@@ -212,6 +221,28 @@ function TNT:on_step(dtime)
 			self.object:settexturemod("^[brighten")
 		end
 		self.blinkstatus = not self.blinkstatus
+	end
+	if self.timer > 10 then
+        -- explode
+        print("TNT exploded")
+		local pos = self.object:getpos()
+        pos.x = math.floor(pos.x+0.5)
+        pos.y = math.floor(pos.y+0.5)
+        pos.z = math.floor(pos.z+0.5)
+        for x=-TNT_RANGE,TNT_RANGE do
+        for y=-TNT_RANGE,TNT_RANGE do
+        for z=-TNT_RANGE,TNT_RANGE do
+            if x*x+y*y+z*z <= TNT_RANGE * TNT_RANGE + TNT_RANGE then
+                local np={x=pos.x+x,y=pos.y+y,z=pos.z+z}
+                local n = minetest.env:get_node(np)
+                if n.name ~= "air" then
+                    minetest.env:remove_node(np)
+                end
+            end
+        end
+        end
+        end
+		self.object:remove()
 	end
 end
 
