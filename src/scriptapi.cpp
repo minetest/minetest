@@ -2005,9 +2005,21 @@ private:
 		return 1;
 	}
 	
-	// inventory_set_list(self, name, {item1, item2, ...})
+	// get_inventory(self)
+	static int l_get_inventory(lua_State *L)
+	{
+		ObjectRef *ref = checkobject(L, 1);
+		ServerRemotePlayer *player = getplayer(ref);
+		if(player == NULL) return 0;
+		// Do it
+		InvRef::createPlayer(L, player);
+		return 1;
+	}
+
+	// deprecated: inventory_set_list(self, name, {item1, item2, ...})
 	static int l_inventory_set_list(lua_State *L)
 	{
+		infostream<<"Deprecated: inventory_set_list"<<std::endl;
 		ObjectRef *ref = checkobject(L, 1);
 		ServerRemotePlayer *player = getplayer(ref);
 		if(player == NULL) return 0;
@@ -2019,9 +2031,10 @@ private:
 		return 0;
 	}
 
-	// inventory_get_list(self, name)
+	// deprecated: inventory_get_list(self, name)
 	static int l_inventory_get_list(lua_State *L)
 	{
+		infostream<<"Deprecated: inventory_get_list"<<std::endl;
 		ObjectRef *ref = checkobject(L, 1);
 		ServerRemotePlayer *player = getplayer(ref);
 		if(player == NULL) return 0;
@@ -2179,8 +2192,9 @@ const luaL_reg ObjectRef::methods[] = {
 	method(ObjectRef, setsprite),
 	// Player-only
 	method(ObjectRef, get_player_name),
-	method(ObjectRef, inventory_set_list),
-	method(ObjectRef, inventory_get_list),
+	method(ObjectRef, get_inventory),
+	method(ObjectRef, inventory_set_list), // deprecated
+	method(ObjectRef, inventory_get_list), // deprecated
 	method(ObjectRef, get_wielded_itemstring),
 	method(ObjectRef, get_wielded_item),
 	method(ObjectRef, get_look_dir),
