@@ -609,7 +609,7 @@ static void push_stack_item(lua_State *L, InventoryItem *item0)
 	else if(std::string("MaterialItem") == item0->getName()){
 		MaterialItem *item = (MaterialItem*)item0;
 		lua_newtable(L);
-		lua_pushstring(L, "NodeItem");
+		lua_pushstring(L, "node");
 		lua_setfield(L, -2, "type");
 		lua_pushstring(L, item->getNodeName().c_str());
 		lua_setfield(L, -2, "name");
@@ -617,7 +617,7 @@ static void push_stack_item(lua_State *L, InventoryItem *item0)
 	else if(std::string("CraftItem") == item0->getName()){
 		CraftItem *item = (CraftItem*)item0;
 		lua_newtable(L);
-		lua_pushstring(L, "CraftItem");
+		lua_pushstring(L, "craft");
 		lua_setfield(L, -2, "type");
 		lua_pushstring(L, item->getSubName().c_str());
 		lua_setfield(L, -2, "name");
@@ -625,7 +625,7 @@ static void push_stack_item(lua_State *L, InventoryItem *item0)
 	else if(std::string("ToolItem") == item0->getName()){
 		ToolItem *item = (ToolItem*)item0;
 		lua_newtable(L);
-		lua_pushstring(L, "ToolItem");
+		lua_pushstring(L, "tool");
 		lua_setfield(L, -2, "type");
 		lua_pushstring(L, item->getToolName().c_str());
 		lua_setfield(L, -2, "name");
@@ -1093,7 +1093,7 @@ private:
 	{
 		InvRef *ref = checkobject(L, 1);
 		const char *listname = luaL_checkstring(L, 2);
-		int i = luaL_checknumber(L, 3);
+		int i = luaL_checknumber(L, 3) - 1;
 		InventoryItem *item = getitem(L, ref, listname, i);
 		if(!item){
 			ItemStack::create(L, NULL);
@@ -1108,7 +1108,7 @@ private:
 	{
 		InvRef *ref = checkobject(L, 1);
 		const char *listname = luaL_checkstring(L, 2);
-		int i = luaL_checknumber(L, 3);
+		int i = luaL_checknumber(L, 3) - 1;
 		ItemStack *stack = ItemStack::checkobject(L, 4);
 		InventoryList *list = getlist(L, ref, listname);
 		if(!list){
@@ -1149,6 +1149,53 @@ private:
 					get_server(L));
 		reportInventoryChange(L, ref);
 		return 0;
+	}
+
+	// autoinsert_stack(self, listname, stack)
+	static int l_autoinsert_stack(lua_State *L)
+	{
+		InvRef *ref = checkobject(L, 1);
+		const char *listname = luaL_checkstring(L, 2);
+		ItemStack *stack = ItemStack::checkobject(L, 3);
+		InventoryList *list = getlist(L, ref, listname);
+		if(!list){
+			lua_pushboolean(L, false);
+			return 1;
+		}
+		InventoryItem *item = stack->getItemCopy();
+		if(list->roomForItem(item)){
+			delete list->addItem(item);
+			lua_pushboolean(L, true);
+			reportInventoryChange(L, ref);
+		} else {
+			delete item;
+			lua_pushboolean(L, false);
+		}
+		return 1;
+	}
+
+	// autoinsert_stackstring(self, listname, stackstring)
+	static int l_autoinsert_stackstring(lua_State *L)
+	{
+		InvRef *ref = checkobject(L, 1);
+		const char *listname = luaL_checkstring(L, 2);
+		const char *stackstring = luaL_checkstring(L, 3);
+		InventoryList *list = getlist(L, ref, listname);
+		if(!list){
+			lua_pushboolean(L, false);
+			return 1;
+		}
+		InventoryItem *item = InventoryItem::deSerialize(stackstring,
+				get_server(L));
+		if(list->roomForItem(item)){
+			delete list->addItem(item);
+			lua_pushboolean(L, true);
+			reportInventoryChange(L, ref);
+		} else {
+			delete item;
+			lua_pushboolean(L, false);
+		}
+		return 1;
 	}
 
 public:
@@ -1219,6 +1266,8 @@ const luaL_reg InvRef::methods[] = {
 	method(InvRef, set_stack),
 	method(InvRef, get_list),
 	method(InvRef, set_list),
+	method(InvRef, autoinsert_stack),
+	method(InvRef, autoinsert_stackstring),
 	{0,0}
 };
 

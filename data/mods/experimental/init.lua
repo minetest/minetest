@@ -56,6 +56,15 @@ minetest.register_on_placenode(function(pos, newnode, placer)
 	end
 end)
 
+local get_item_definition = function(item)
+	if not item then return nil end
+	if item.type == "node" then
+		return minetest.registered_nodes[item.name]
+	elseif item.type == "craft" then
+		return minetest.registered_craftitems[item.name]
+	end
+end
+
 minetest.register_abm({
 	nodenames = {"experimental:luafurnace"},
 	interval = 1.0,
@@ -68,58 +77,54 @@ minetest.register_abm({
 				"src_totaltime",
 				"src_time"
 		}) do
-			if not tonumber(meta:get_string(name)) then
+			if not meta:get_string(name) then
 				meta:set_string(name, 0)
 			end
 		end
 
 		local inv = meta:get_inventory()
 		
-		fuelitem = inv:get_stack("fuel", 1):peek_item()
-		srcitem = inv:get_stack("src", 1):peek_item()
+		local fuelitem = inv:get_stack("fuel", 1):peek_item()
+		local srcitem = inv:get_stack("src", 1):peek_item()
+		--print("fuelitem="..dump(fuelitem))
+		--print("srcitem="..dump(srcitem))
 		
-		local cooked_something = false
+		local was_active = false
 
 		local src_cooktime = -1
 		local result_stackstring = nil
 		
 		if srcitem then
-			local prop = nil
-			if srcitem.type == "node" then
-				prop = minetest.registered_nodes[srcitem.name]
-			elseif srcitem.type == "craft" then
-				prop = minetest.registered_craftitems[srcitem.name]
-			end
+			local prop = get_item_definition(srcitem)
 			if prop and prop.cookresult_itemstring ~= "" then
 				result_stackstring = prop.cookresult_itemstring
 				src_cooktime = prop.furnace_cooktime or 3
 			end
 		end
 
+		print("src_cooktime="..dump(src_cooktime))
+		print("result_stackstring="..dump(result_stackstring))
+
 		if tonumber(meta:get_string("fuel_time")) < tonumber(meta:get_string("fuel_totaltime")) then
+			was_active = true
 			meta:set_string("fuel_time", tonumber(meta:get_string("fuel_time")) + 1)
 			meta:set_string("src_time", tonumber(meta:get_string("src_time")) + 1)
 			--print("result_stackstring="..dump(result_stackstring))
 			--print('tonumber(meta:get_string("src_time"))='..dump(tonumber(meta:get_string("src_time"))))
 			--print("src_cooktime="..dump(src_cooktime))
 			if result_stackstring and tonumber(meta:get_string("src_time")) >= src_cooktime and src_cooktime >= 0 then
-				for i=1,4 do
-					-- Put result in "dst" list
-					dststack = inv:get_stack("dst", i)
-					success = dststack:put_stackstring(result_stackstring)
-					inv:set_stack("dst", i, dststack)
-					-- If succeeded, take stuff from "src" list
-					if success then
-						srcstack = inv:get_stack("src", 1)
-						srcstack:take_item()
-						inv:set_stack("src", 1, srcstack)
-						break
-					end
+				-- Put result in "dst" list
+				success = inv:autoinsert_stackstring("dst", result_stackstring)
+				if not success then
+					print("Could not autoinsert '"..result_stackstring.."'")
 				end
-				meta:inventory_set_list("src", srclist)
-				meta:inventory_set_list("dst", dstlist)
+				-- If succeeded, take stuff from "src" list
+				if success then
+					srcstack = inv:get_stack("src", 1)
+					srcstack:take_item()
+					inv:set_stack("src", 1, srcstack)
+				end
 				meta:set_string("src_time", 0)
-				cooked_something = true
 			end
 		end
 		
@@ -128,50 +133,33 @@ minetest.register_abm({
 			return
 		end
 
-		local srclist = meta:inventory_get_list("src")
-		_, srcitem = stackstring_take_item(srclist[1])
+		local srcitem = inv:get_stack("src", 1):peek_item()
 
 		local src_cooktime = 0
 		local result_stackstring = nil
 		
 		if srcitem then
-			if srcitem.type == "node" then
-				local prop = minetest.registered_nodes[srcitem.name]
-				if prop and prop.cookresult_itemstring ~= "" then
-					result_stackstring = prop.cookresult_itemstring
-					src_cooktime = prop.furnace_cooktime or 3
-				end
-			elseif srcitem.type == "craft" then
-				local prop = minetest.registered_craftitems[srcitem.name]
-				if prop and prop.cookresult_itemstring ~= "" then
-					result_stackstring = prop.cookresult_itemstring
-					src_cooktime = prop.furnace_cooktime or 3
-				end
+			local prop = get_item_definition(srcitem)
+			if prop and prop.cookresult_itemstring ~= "" then
+				result_stackstring = prop.cookresult_itemstring
+				src_cooktime = prop.furnace_cooktime or 3
 			end
 		end
 
-		if not result_stackstring then
-			if cooked_something then
+		local fuelitem = inv:get_stack("fuel", 1):peek_item()
+
+		if not result_stackstring or not fuelitem then
+			if was_active then
 				meta:set_infotext("Furnace is empty")
 			end
 			return
 		end
 
-		local fuellist = meta:inventory_get_list("fuel")
-		_, fuelitem = stackstring_take_item(fuellist[1])
-
 		local burntime = -1
 		if fuelitem then
-			if fuelitem.type == "node" then
-				local prop = minetest.registered_nodes[fuelitem.name]
-				if prop then
-					burntime = prop.furnace_burntime or -1
-				end
-			elseif fuelitem.type == "craft" then
-				local prop = minetest.registered_craftitems[fuelitem.name]
-				if prop then
-					burntime = prop.furnace_burntime or -1
-				end
+			local prop = get_item_definition(fuelitem)
+			if prop then
+				burntime = prop.furnace_burntime or -1
 			end
 		end
 
@@ -182,9 +170,10 @@ minetest.register_abm({
 
 		meta:set_string("fuel_totaltime", burntime)
 		meta:set_string("fuel_time", 0)
-
-		fuellist[1], _ = stackstring_take_item(fuellist[1])
-		meta:inventory_set_list("fuel", fuellist)
+		
+		local stack = inv:get_stack("fuel", 1)
+		stack:take_item()
+		inv:set_stack("fuel", 1, stack)
 	end,
 })
 --[[

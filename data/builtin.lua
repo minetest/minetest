@@ -301,7 +301,7 @@ end
 test_stackstring()
 
 --
--- nodeitem helpers
+-- NodeItem helpers
 --
 
 minetest.inventorycube = function(img1, img2, img3)
@@ -314,7 +314,7 @@ minetest.inventorycube = function(img1, img2, img3)
 end
 
 --
--- craftitem helpers
+-- CraftItem helpers
 --
 
 minetest.craftitem_place_item = function(item, placer, pos)
