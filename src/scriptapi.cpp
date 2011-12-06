@@ -1496,7 +1496,7 @@ private:
 	{
 		ItemStack *o = checkobject(L, 1);
 		push_stack_item(L, o->m_stack);
-		if(o->m_stack->getCount() == 1){
+		if(o->m_stack->getCount() <= 1){
 			delete o->m_stack;
 			o->m_stack = NULL;
 		} else {
