@@ -1471,10 +1471,10 @@ static void luaentity_get(lua_State *L, u16 id)
 #define method(class, name) {#name, class::l_##name}
 
 /*
-	InvStack
+	ItemStack
 */
 
-class InvStack
+class ItemStack
 {
 private:
 	InventoryItem *m_stack;
@@ -1486,7 +1486,7 @@ private:
 	
 	// garbage collector
 	static int gc_object(lua_State *L) {
-		InvStack *o = *(InvStack **)(lua_touserdata(L, 1));
+		ItemStack *o = *(ItemStack **)(lua_touserdata(L, 1));
 		delete o;
 		return 0;
 	}
@@ -1494,7 +1494,7 @@ private:
 	// take_item(self)
 	static int l_take_item(lua_State *L)
 	{
-		InvStack *o = checkobject(L, 1);
+		ItemStack *o = checkobject(L, 1);
 		push_stack_item(L, o->m_stack);
 		if(o->m_stack->getCount() == 1){
 			delete o->m_stack;
@@ -1508,7 +1508,7 @@ private:
 	// put_item(self, item) -> true/false
 	static int l_put_item(lua_State *L)
 	{
-		InvStack *o = checkobject(L, 1);
+		ItemStack *o = checkobject(L, 1);
 		InventoryItem *item = check_stack_item(L, 2);
 		if(!item){ // nil can always be inserted
 			lua_pushboolean(L, true);
@@ -1525,22 +1525,22 @@ private:
 	}
 
 public:
-	InvStack(InventoryItem *item=NULL):
+	ItemStack(InventoryItem *item=NULL):
 		m_stack(item)
 	{
 	}
 
-	~InvStack()
+	~ItemStack()
 	{
 		delete m_stack;
 	}
 
-	static InvStack* checkobject(lua_State *L, int narg)
+	static ItemStack* checkobject(lua_State *L, int narg)
 	{
 		luaL_checktype(L, narg, LUA_TUSERDATA);
 		void *ud = luaL_checkudata(L, narg, className);
 		if(!ud) luaL_typerror(L, narg, className);
-		return *(InvStack**)ud;  // unbox pointer
+		return *(ItemStack**)ud;  // unbox pointer
 	}
 
 	InventoryItem* getItemCopy()
@@ -1550,7 +1550,7 @@ public:
 		return m_stack->clone();
 	}
 	
-	// Creates an InvStack and leaves it on top of stack
+	// Creates an ItemStack and leaves it on top of stack
 	static int create_object(lua_State *L)
 	{
 		InventoryItem *item = NULL;
@@ -1564,7 +1564,7 @@ public:
 				}
 			}
 		}
-		InvStack *o = new InvStack(item);
+		ItemStack *o = new ItemStack(item);
 		*(void **)(lua_newuserdata(L, sizeof(void *))) = o;
 		luaL_getmetatable(L, className);
 		lua_setmetatable(L, -2);
@@ -1573,7 +1573,7 @@ public:
 	// Not callable from Lua
 	static int create(lua_State *L, InventoryItem *item)
 	{
-		InvStack *o = new InvStack(item);
+		ItemStack *o = new ItemStack(item);
 		*(void **)(lua_newuserdata(L, sizeof(void *))) = o;
 		luaL_getmetatable(L, className);
 		lua_setmetatable(L, -2);
@@ -1604,14 +1604,14 @@ public:
 		luaL_openlib(L, 0, methods, 0);  // fill methodtable
 		lua_pop(L, 1);  // drop methodtable
 
-		// Can be created from Lua (InvStack::create(itemstring))
+		// Can be created from Lua (ItemStack::create(itemstring))
 		lua_register(L, className, create_object);
 	}
 };
-const char InvStack::className[] = "InvStack";
-const luaL_reg InvStack::methods[] = {
-	method(InvStack, take_item),
-	method(InvStack, put_item),
+const char ItemStack::className[] = "ItemStack";
+const luaL_reg ItemStack::methods[] = {
+	method(ItemStack, take_item),
+	method(ItemStack, put_item),
 	{0,0}
 };
 
@@ -1701,10 +1701,10 @@ private:
 		int i = luaL_checknumber(L, 3);
 		InventoryItem *item = getitem(L, ref, listname, i);
 		if(!item){
-			InvStack::create(L, NULL);
+			ItemStack::create(L, NULL);
 			return 1;
 		}
-		InvStack::create(L, item->clone());
+		ItemStack::create(L, item->clone());
 		return 1;
 	}
 
@@ -1714,7 +1714,7 @@ private:
 		InvRef *ref = checkobject(L, 1);
 		const char *listname = luaL_checkstring(L, 2);
 		int i = luaL_checknumber(L, 3);
-		InvStack *stack = InvStack::checkobject(L, 4);
+		ItemStack *stack = ItemStack::checkobject(L, 4);
 		InventoryList *list = getlist(L, ref, listname);
 		if(!list){
 			lua_pushboolean(L, false);
