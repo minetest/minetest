@@ -606,7 +606,7 @@ static void push_stack_item(lua_State *L, InventoryItem *item0)
 	if(item0 == NULL){
 		lua_pushnil(L);
 	}
-	if(std::string("MaterialItem") == item0->getName()){
+	else if(std::string("MaterialItem") == item0->getName()){
 		MaterialItem *item = (MaterialItem*)item0;
 		lua_newtable(L);
 		lua_pushstring(L, "NodeItem");
@@ -837,6 +837,14 @@ private:
 		return 0;
 	}
 
+	// peek_item(self)
+	static int l_peek_item(lua_State *L)
+	{
+		ItemStack *o = checkobject(L, 1);
+		push_stack_item(L, o->m_stack);
+		return 1;
+	}
+
 	// take_item(self)
 	static int l_take_item(lua_State *L)
 	{
@@ -868,6 +876,29 @@ private:
 		delete item;
 		lua_pushboolean(L, true);
 		return 1;
+	}
+
+	// put_stackstring(self, stackstring) -> true/false
+	static int l_put_stackstring(lua_State *L)
+	{
+		ItemStack *o = checkobject(L, 1);
+		std::string stackstring = luaL_checkstring(L, 2);
+		try{
+			InventoryItem *item = InventoryItem::deSerialize(stackstring,
+					get_server(L));
+			if(!item->addableTo(o->m_stack)){
+				lua_pushboolean(L, false);
+				return 1;
+			}
+			o->m_stack->add(1);
+			delete item;
+			lua_pushboolean(L, true);
+			return 1;
+		}
+		catch(SerializationError &e){
+			lua_pushboolean(L, false);
+			return 1;
+		}
 	}
 
 public:
@@ -956,8 +987,10 @@ public:
 };
 const char ItemStack::className[] = "ItemStack";
 const luaL_reg ItemStack::methods[] = {
+	method(ItemStack, peek_item),
 	method(ItemStack, take_item),
 	method(ItemStack, put_item),
+	method(ItemStack, put_stackstring),
 	{0,0}
 };
 
@@ -1317,7 +1350,6 @@ private:
 	// set_infotext(self, text)
 	static int l_set_infotext(lua_State *L)
 	{
-		infostream<<__FUNCTION_NAME<<std::endl;
 		NodeMetaRef *ref = checkobject(L, 1);
 		NodeMetadata *meta = getmeta(ref);
 		if(meta == NULL) return 0;
@@ -1328,9 +1360,21 @@ private:
 		return 0;
 	}
 
-	// inventory_set_list(self, name, {item1, item2, ...})
+	// get_inventory(self)
+	static int l_get_inventory(lua_State *L)
+	{
+		NodeMetaRef *ref = checkobject(L, 1);
+		NodeMetadata *meta = getmeta(ref);
+		if(meta == NULL) return 0;
+		// Do it
+		InvRef::createNodeMeta(L, ref->m_p);
+		return 1;
+	}
+
+	// deprecated: inventory_set_list(self, name, {item1, item2, ...})
 	static int l_inventory_set_list(lua_State *L)
 	{
+		infostream<<"Deprecated: inventory_set_list"<<std::endl;
 		NodeMetaRef *ref = checkobject(L, 1);
 		NodeMetadata *meta = getmeta(ref);
 		if(meta == NULL) return 0;
@@ -1343,9 +1387,10 @@ private:
 		return 0;
 	}
 
-	// inventory_get_list(self, name)
+	// deprecated: inventory_get_list(self, name)
 	static int l_inventory_get_list(lua_State *L)
 	{
+		infostream<<"Deprecated: inventory_get_list"<<std::endl;
 		NodeMetaRef *ref = checkobject(L, 1);
 		NodeMetadata *meta = getmeta(ref);
 		if(meta == NULL) return 0;
@@ -1541,8 +1586,9 @@ const luaL_reg NodeMetaRef::methods[] = {
 	method(NodeMetaRef, get_text),
 	method(NodeMetaRef, get_owner),
 	method(NodeMetaRef, set_infotext),
-	method(NodeMetaRef, inventory_set_list),
-	method(NodeMetaRef, inventory_get_list),
+	method(NodeMetaRef, get_inventory),
+	method(NodeMetaRef, inventory_set_list), // deprecated
+	method(NodeMetaRef, inventory_get_list), // deprecated
 	method(NodeMetaRef, set_inventory_draw_spec),
 	method(NodeMetaRef, set_allow_text_input),
 	method(NodeMetaRef, set_allow_removal),
@@ -3204,10 +3250,12 @@ void scriptapi_export(lua_State *L, Server *server)
 	luaL_register(L, NULL, minetest_entity_m);
 	// Put other stuff in metatable
 	
-	// Register reference wrappers
+	// Register wrappers
+	ItemStack::Register(L);
+	InvRef::Register(L);
 	NodeMetaRef::Register(L);
-	EnvRef::Register(L);
 	ObjectRef::Register(L);
+	EnvRef::Register(L);
 }
 
 bool scriptapi_loadmod(lua_State *L, const std::string &scriptpath,
