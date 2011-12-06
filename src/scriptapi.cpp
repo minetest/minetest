@@ -1042,6 +1042,7 @@ private:
 		Inventory *inv = getinv(L, ref);
 		if(newsize == 0){
 			inv->deleteList(listname);
+			reportInventoryChange(L, ref);
 			return 0;
 		}
 		InventoryList *list = inv->getList(listname);
@@ -1050,6 +1051,7 @@ private:
 		} else {
 			list = inv->addList(listname, newsize);
 		}
+		reportInventoryChange(L, ref);
 		return 0;
 	}
 
@@ -1085,7 +1087,35 @@ private:
 		bool success = (olditem != newitem);
 		delete olditem;
 		lua_pushboolean(L, success);
+		reportInventoryChange(L, ref);
 		return 1;
+	}
+
+	// get_list(self, listname) -> list or nil
+	static int l_get_list(lua_State *L)
+	{
+		InvRef *ref = checkobject(L, 1);
+		const char *listname = luaL_checkstring(L, 2);
+		Inventory *inv = getinv(L, ref);
+		inventory_get_list_to_lua(inv, listname, L);
+		return 1;
+	}
+
+	// set_list(self, listname, list)
+	static int l_set_list(lua_State *L)
+	{
+		InvRef *ref = checkobject(L, 1);
+		const char *listname = luaL_checkstring(L, 2);
+		Inventory *inv = getinv(L, ref);
+		InventoryList *list = inv->getList(listname);
+		if(list)
+			inventory_set_list_from_lua(inv, listname, L, 3,
+					get_server(L), list->getSize());
+		else
+			inventory_set_list_from_lua(inv, listname, L, 3,
+					get_server(L));
+		reportInventoryChange(L, ref);
+		return 0;
 	}
 
 public:
@@ -1154,6 +1184,8 @@ const luaL_reg InvRef::methods[] = {
 	method(InvRef, set_size),
 	method(InvRef, get_stack),
 	method(InvRef, set_stack),
+	method(InvRef, get_list),
+	method(InvRef, set_list),
 	{0,0}
 };
 
