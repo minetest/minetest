@@ -46,6 +46,7 @@ struct ToolDiggingProperties
 struct ToolDefinition
 {
 	std::string imagename;
+	std::string description;
 	ToolDiggingProperties properties;
 
 	ToolDefinition(){}
@@ -67,6 +68,7 @@ public:
 	virtual ~IToolDefManager(){}
 	virtual const ToolDefinition* getToolDefinition(const std::string &toolname) const=0;
 	virtual std::string getImagename(const std::string &toolname) const =0;
+	virtual std::string getDescription(const std::string &toolname) =0;
 	virtual ToolDiggingProperties getDiggingProperties(
 			const std::string &toolname) const =0;
 	virtual std::string getAlias(const std::string &name) const =0;
@@ -81,6 +83,7 @@ public:
 	virtual ~IWritableToolDefManager(){}
 	virtual const ToolDefinition* getToolDefinition(const std::string &toolname) const=0;
 	virtual std::string getImagename(const std::string &toolname) const =0;
+	virtual std::string getDescription(const std::string &toolname) =0;
 	virtual ToolDiggingProperties getDiggingProperties(
 			const std::string &toolname) const =0;
 	virtual std::string getAlias(const std::string &name) const =0;

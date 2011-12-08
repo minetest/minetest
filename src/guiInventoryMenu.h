@@ -160,6 +160,8 @@ protected:
 
 	ItemSpec *m_selected_item;
 	v2s32 m_pointer;
+	gui::IGUIButton* m_tooltip_button;	
+	std::wstring m_hovered_item_name;
 };
 
 #endif

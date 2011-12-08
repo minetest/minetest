@@ -299,6 +299,13 @@ float MaterialItem::getBurnTime() const
 	return f.furnace_burntime;
 }
 
+std::string MaterialItem::getDescription()
+{
+	INodeDefManager *ndef = m_gamedef->ndef();
+	const ContentFeatures &f = ndef->get(m_nodename);
+	return f.description;
+}
+
 content_t MaterialItem::getMaterial() const
 {
 	INodeDefManager *ndef = m_gamedef->ndef();
@@ -323,6 +330,11 @@ ToolItem::ToolItem(IGameDef *gamedef, std::string toolname, u16 wear):
 std::string ToolItem::getImageBasename() const
 {
 	return m_gamedef->getToolDefManager()->getImagename(m_toolname);
+}
+
+std::string ToolItem::getDescription()
+{
+	return m_gamedef->getToolDefManager()->getDescription(m_toolname);
 }
 
 #ifndef SERVER
@@ -381,6 +393,12 @@ video::ITexture * CraftItem::getImage() const
 	return tsrc->getTextureRaw(imagename);
 }
 #endif
+
+std::string CraftItem::getDescription()
+{
+	ICraftItemDefManager *cidef = m_gamedef->cidef();
+	return cidef->getDescription(m_subname);
+}
 
 bool CraftItem::isKnown() const
 {

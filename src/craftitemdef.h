@@ -29,6 +29,7 @@ struct CraftItemDefinition
 {
 	std::string imagename;
 	std::string cookresult_item;
+	std::string description;
 	float furnace_cooktime;
 	float furnace_burntime;
 	bool usable;
@@ -50,6 +51,7 @@ public:
 	virtual const CraftItemDefinition* getCraftItemDefinition(const std::string &itemname) const=0;
 	virtual std::string getImagename(const std::string &itemname) const =0;
 	virtual std::string getAlias(const std::string &name) const =0;
+	virtual std::string getDescription(const std::string &itemname)=0;
 
 	virtual void serialize(std::ostream &os)=0;
 };
@@ -62,6 +64,7 @@ public:
 	virtual const CraftItemDefinition* getCraftItemDefinition(const std::string &itemname) const=0;
 	virtual std::string getImagename(const std::string &itemname) const =0;
 
+	virtual std::string getDescription(const std::string &itemname)=0;
 	virtual bool registerCraftItem(std::string itemname, const CraftItemDefinition &def)=0;
 	virtual void clear()=0;
 	// Set an alias so that entries named <name> will load as <convert_to>.

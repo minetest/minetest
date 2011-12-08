@@ -156,6 +156,7 @@ void ContentFeatures::reset()
 	cookresult_item = ""; // Cannot be cooked
 	furnace_cooktime = 3.0;
 	furnace_burntime = -1.0; // Cannot be burned
+	description = "";
 }
 
 void ContentFeatures::serialize(std::ostream &os)
@@ -203,6 +204,7 @@ void ContentFeatures::serialize(std::ostream &os)
 	os<<serializeString(cookresult_item);
 	writeF1000(os, furnace_cooktime);
 	writeF1000(os, furnace_burntime);
+	os<<serializeString(description);
 }
 
 void ContentFeatures::deSerialize(std::istream &is, IGameDef *gamedef)
@@ -255,6 +257,7 @@ void ContentFeatures::deSerialize(std::istream &is, IGameDef *gamedef)
 	cookresult_item = deSerializeString(is);
 	furnace_cooktime = readF1000(is);
 	furnace_burntime = readF1000(is);
+	description = deSerializeString(is);
 }
 
 void ContentFeatures::setTexture(u16 i, std::string name)

@@ -105,7 +105,7 @@ GUIInventoryMenu::GUIInventoryMenu(gui::IGUIEnvironment* env,
 GUIInventoryMenu::~GUIInventoryMenu()
 {
 	removeChildren();
-
+	m_tooltip_button->remove();
 	if(m_selected_item)
 		delete m_selected_item;
 }
@@ -194,6 +194,7 @@ void GUIInventoryMenu::regenerateGui(v2u32 screensize)
 		const wchar_t *text =
 		L"Left click: Move all items, Right click: Move single item";
 		Environment->addStaticText(text, rect, false, true, this, 256);
+		m_tooltip_button = Environment->addButton(core::rect<s32>(0,0,110,18),0,-1,L"",L"");
 	}
 }
 
@@ -281,6 +282,15 @@ void GUIInventoryMenu::drawList(const ListDrawSpec &s, ITextureSource *tsrc)
 		{
 			drawInventoryItem(driver, font, item,
 					rect, &AbsoluteClippingRect, tsrc);
+			if (rect.isPointInside(m_pointer)) {
+				//get hovered item string name for tooltip
+				std::string itemstring;
+				itemstring = item->getDescription();
+				//need to convert the string into a wstring for a irrlicht button
+				std::wstring temp(itemstring.length(),L' ');
+				std::copy(itemstring.begin(), itemstring.end(), temp.begin());
+				m_hovered_item_name = temp;
+			}
 		}
 
 	}
@@ -296,6 +306,7 @@ void GUIInventoryMenu::drawMenu()
 	video::SColor bgcolor(140,0,0,0);
 	driver->draw2DRectangle(bgcolor, AbsoluteRect, &AbsoluteClippingRect);
 
+	m_hovered_item_name = L"";
 	/*
 		Draw items
 	*/
@@ -306,6 +317,18 @@ void GUIInventoryMenu::drawMenu()
 		drawList(s, m_tsrc);
 	}
 
+	if (m_hovered_item_name != L"") 
+	{
+		m_tooltip_button->setVisible(true);
+		this->bringToFront(m_tooltip_button);
+		int size = m_hovered_item_name.size();
+		if (size < 5) size = 5;
+		core::rect<s32> rr(m_pointer.X + 10,m_pointer.Y + 10,m_pointer.X + (size * 10) + 10,m_pointer.Y + 50);
+		m_tooltip_button->setRelativePosition(rr);
+		m_tooltip_button->setText(m_hovered_item_name.c_str());
+	} else {
+		m_tooltip_button->setVisible(false);
+	}
 	/*
 		Call base class
 	*/

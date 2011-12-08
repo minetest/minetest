@@ -75,6 +75,7 @@ minetest.alias_craftitem("apple", "default:apple")
 --
 
 minetest.register_craftitem(":rat", {
+	description = "Rat",
 	image = "rat.png",
 	cookresult_itemstring = 'craft "cooked_rat" 1',
 	on_drop = function(item, dropper, pos)
@@ -84,6 +85,7 @@ minetest.register_craftitem(":rat", {
 })
 
 minetest.register_craftitem(":cooked_rat", {
+	description = "Cooked Rat",
 	image = "cooked_rat.png",
 	cookresult_itemstring = 'craft "scorched_stuff" 1',
 	on_place_on_ground = minetest.craftitem_place_item,
@@ -91,6 +93,7 @@ minetest.register_craftitem(":cooked_rat", {
 })
 
 minetest.register_craftitem(":firefly", {
+	description = "Firefly",
 	image = "firefly.png",
 	on_drop = function(item, dropper, pos)
 		minetest.env:add_firefly(pos)
