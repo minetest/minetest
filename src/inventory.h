@@ -554,11 +554,12 @@ public:
 struct InventoryAction
 {
 	static InventoryAction * deSerialize(std::istream &is);
-	
+
 	virtual u16 getType() const = 0;
 	virtual void serialize(std::ostream &os) const = 0;
 	virtual void apply(InventoryContext *c, InventoryManager *mgr,
 			ServerEnvironment *env) = 0;
+	virtual ~InventoryAction() {};
 };
 
 struct IMoveAction : public InventoryAction

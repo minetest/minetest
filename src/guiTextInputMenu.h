@@ -28,6 +28,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 struct TextDest
 {
 	virtual void gotText(std::wstring text) = 0;
+	virtual ~TextDest() {};
 };
 
 class GUITextInputMenu : public GUIModalMenu

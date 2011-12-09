@@ -29,6 +29,7 @@ class IRespawnInitiator
 {
 public:
 	virtual void respawn() = 0;
+	virtual ~IRespawnInitiator() {};
 };
 
 class GUIDeathScreen : public GUIModalMenu
