@@ -169,7 +169,7 @@ minetest.register_node("experimental:tnt", {
 minetest.register_on_punchnode(function(p, node)
 	if node.name == "experimental:tnt" then
 		minetest.env:remove_node(p)
-		minetest.env:add_luaentity(p, "experimental:tnt")
+		minetest.env:add_entity(p, "experimental:tnt")
 		nodeupdate(p)
 	end
 end)
