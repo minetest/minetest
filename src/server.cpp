@@ -910,10 +910,10 @@ Server::Server(
 		throw ModError("Failed to load and run "+builtinpath);
 	}
 	// Load and run "mod" scripts
-	core::list<ModSpec> mods = getMods(m_modspaths);
-	for(core::list<ModSpec>::Iterator i = mods.begin();
-			i != mods.end(); i++){
-		ModSpec mod = *i;
+	m_mods = getMods(m_modspaths);
+	for(core::list<ModSpec>::Iterator i = m_mods.begin();
+			i != m_mods.end(); i++){
+		const ModSpec &mod = *i;
 		infostream<<"Server: Loading mod \""<<mod.name<<"\""<<std::endl;
 		std::string scriptpath = mod.path + DIR_DELIM + "init.lua";
 		bool success = scriptapi_loadmod(m_lua, scriptpath, mod.name);
@@ -4203,10 +4203,9 @@ void Server::SendTextures(u16 peer_id)
 	texture_bunches.push_back(core::list<SendableTexture>());
 	
 	u32 texture_size_bunch_total = 0;
-	core::list<ModSpec> mods = getMods(m_modspaths);
-	for(core::list<ModSpec>::Iterator i = mods.begin();
-			i != mods.end(); i++){
-		ModSpec mod = *i;
+	for(core::list<ModSpec>::Iterator i = m_mods.begin();
+			i != m_mods.end(); i++){
+		const ModSpec &mod = *i;
 		std::string texturepath = mod.path + DIR_DELIM + "textures";
 		std::vector<fs::DirListNode> dirlist = fs::GetDirListing(texturepath);
 		for(u32 j=0; j<dirlist.size(); j++){
@@ -4558,6 +4557,17 @@ IWritableCraftDefManager* Server::getWritableCraftDefManager()
 IWritableCraftItemDefManager* Server::getWritableCraftItemDefManager()
 {
 	return m_craftitemdef;
+}
+
+const ModSpec* Server::getModSpec(const std::string &modname)
+{
+	for(core::list<ModSpec>::Iterator i = m_mods.begin();
+			i != m_mods.end(); i++){
+		const ModSpec &mod = *i;
+		if(mod.name == modname)
+			return &mod;
+	}
+	return NULL;
 }
 
 v3f findSpawnPos(ServerMap &map)

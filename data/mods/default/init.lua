@@ -110,6 +110,7 @@
 -- minetest.chat_send_all(text)
 -- minetest.chat_send_player(name, text)
 -- minetest.get_player_privs(name) -> set of privs
+-- minetest.get_modpath(modname) -> eg. "/home/user/.minetest/usermods/modname"
 --
 -- stackstring_take_item(stackstring) -> stackstring, item
 -- stackstring_put_item(stackstring, item) -> stackstring, success

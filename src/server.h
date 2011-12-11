@@ -32,6 +32,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "gamedef.h"
 #include "serialization.h" // For SER_FMT_VER_INVALID
 #include "serverremoteplayer.h"
+#include "mods.h"
 struct LuaState;
 typedef struct lua_State lua_State;
 class IWritableToolDefManager;
@@ -502,6 +503,8 @@ public:
 	IWritableCraftDefManager* getWritableCraftDefManager();
 	IWritableCraftItemDefManager* getWritableCraftItemDefManager();
 
+	const ModSpec* getModSpec(const std::string &modname);
+
 private:
 
 	// con::PeerHandler implementation.
@@ -645,6 +648,9 @@ private:
 	
 	// CraftItem definition manager
 	IWritableCraftItemDefManager *m_craftitemdef;
+	
+	// Mods
+	core::list<ModSpec> m_mods;
 	
 	/*
 		Threads

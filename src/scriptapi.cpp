@@ -1334,6 +1334,23 @@ static int l_get_player_privs(lua_State *L)
 	return 1;
 }
 
+// get_modpath(modname)
+static int l_get_modpath(lua_State *L)
+{
+	const char *modname = luaL_checkstring(L, 1);
+	// Get server from registry
+	lua_getfield(L, LUA_REGISTRYINDEX, "minetest_server");
+	Server *server = (Server*)lua_touserdata(L, -1);
+	// Do it
+	const ModSpec *mod = server->getModSpec(modname);
+	if(!mod){
+		lua_pushnil(L);
+		return 1;
+	}
+	lua_pushstring(L, mod->path.c_str());
+	return 1;
+}
+
 static const struct luaL_Reg minetest_f [] = {
 	{"register_nodedef_defaults", l_register_nodedef_defaults},
 	{"register_entity", l_register_entity},
@@ -1350,6 +1367,7 @@ static const struct luaL_Reg minetest_f [] = {
 	{"chat_send_all", l_chat_send_all},
 	{"chat_send_player", l_chat_send_player},
 	{"get_player_privs", l_get_player_privs},
+	{"get_modpath", l_get_modpath},
 	{NULL, NULL}
 };
 

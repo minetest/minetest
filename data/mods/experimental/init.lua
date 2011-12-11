@@ -405,4 +405,6 @@ minetest.register_abm({
     end,
 })--]]
 
+print("experimental modpath="..dump(minetest.get_modpath("experimental")))
 
+-- END

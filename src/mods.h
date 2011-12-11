@@ -17,6 +17,9 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
+#ifndef MODS_HEADER
+#define MODS_HEADER
+
 #include "irrlichttypes.h"
 #include <set>
 #include <string>
@@ -58,4 +61,6 @@ struct ModSpec
 // Get a dependency-sorted list of ModSpecs
 core::list<ModSpec> getMods(core::list<std::string> &modspaths)
 		throw(ModError);
+
+#endif
 
