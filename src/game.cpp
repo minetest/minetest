@@ -824,7 +824,7 @@ void the_game(
 	bool got_content = false;
 	{
 		float frametime = 0.033;
-		const float timeout = 5.0;
+		const float timeout = 30.0;
 		float time_counter = 0.0;
 		for(;;)
 		{
