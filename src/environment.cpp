@@ -752,6 +752,23 @@ void ServerEnvironment::addActiveBlockModifier(ActiveBlockModifier *abm)
 	m_abms.push_back(ABMWithState(abm));
 }
 
+std::set<u16> ServerEnvironment::getObjectsInsideRadius(v3f pos, float radius)
+{
+	std::set<u16> objects;
+	for(core::map<u16, ServerActiveObject*>::Iterator
+			i = m_active_objects.getIterator();
+			i.atEnd()==false; i++)
+	{
+		ServerActiveObject* obj = i.getNode()->getValue();
+		u16 id = i.getNode()->getKey();
+		v3f objectpos = obj->getBasePosition();
+		if(objectpos.getDistanceFrom(pos) > radius)
+			continue;
+		objects.insert(id);
+	}
+	return objects;
+}
+
 void ServerEnvironment::clearAllObjects()
 {
 	infostream<<"ServerEnvironment::clearAllObjects(): "

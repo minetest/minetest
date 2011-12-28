@@ -261,18 +261,24 @@ public:
 	void activateBlock(MapBlock *block, u32 additional_dtime=0);
 
 	/*
-		ActiveBlockModifiers (TODO)
+		ActiveBlockModifiers
 		-------------------------------------------
-		NOTE: Not used currently (TODO: Use or remove)
 	*/
 
 	void addActiveBlockModifier(ActiveBlockModifier *abm);
 
-	/* Other stuff */
+	/*
+		Other stuff
+		-------------------------------------------
+	*/
+	
+	// Find all active objects inside a radius around a point
+	std::set<u16> getObjectsInsideRadius(v3f pos, float radius);
 	
 	// Clear all objects, loading and going through every MapBlock
 	void clearAllObjects();
 	
+	// This makes stuff happen
 	void step(f32 dtime);
 	
 private:

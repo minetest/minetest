@@ -7,12 +7,18 @@
 function on_step(dtime)
 	-- print("experimental on_step")
 	--[[
-	print("celeron55 dir: "..dump(
-			minetest.env:get_player_by_name("celeron55"):get_look_dir()))
-	print("celeron55 pitch: "..dump(
-			minetest.env:get_player_by_name("celeron55"):get_look_pitch()))
-	print("celeron55 yaw: "..dump(
-			minetest.env:get_player_by_name("celeron55"):get_look_yaw()))
+	objs = minetest.env:get_objects_inside_radius({x=0,y=0,z=0}, 10)
+	for k, obj in pairs(objs) do
+		name = obj:get_player_name()
+		if name then
+			print(name.." at "..dump(obj:getpos()))
+			print(name.." dir: "..dump(obj:get_look_dir()))
+			print(name.." pitch: "..dump(obj:get_look_pitch()))
+			print(name.." yaw: "..dump(obj:get_look_yaw()))
+		else
+			print("Some object at "..dump(obj:getpos()))
+		end
+	end
 	--]]
 end
 minetest.register_globalstep(on_step)

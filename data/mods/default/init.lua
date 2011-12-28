@@ -155,6 +155,7 @@
 -- - add_firefly(pos)
 -- - get_meta(pos) -- Get a NodeMetaRef at that position
 -- - get_player_by_name(name) -- Get an ObjectRef to a player
+-- - get_objects_inside_radius(pos, radius)
 --
 -- NodeMetaRef
 -- - get_type()

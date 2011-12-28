@@ -2592,6 +2592,36 @@ private:
 		return 1;
 	}
 
+	// EnvRef:get_objects_inside_radius(pos, radius)
+	static int l_get_objects_inside_radius(lua_State *L)
+	{
+		// Get the table insert function
+		lua_getglobal(L, "table");
+		lua_getfield(L, -1, "insert");
+		int table_insert = lua_gettop(L);
+		// Get environemnt
+		EnvRef *o = checkobject(L, 1);
+		ServerEnvironment *env = o->m_env;
+		if(env == NULL) return 0;
+		// Do it
+		v3f pos = readFloatPos(L, 2);
+		float radius = luaL_checknumber(L, 3) * BS;
+		std::set<u16> ids = env->getObjectsInsideRadius(pos, radius);
+		lua_newtable(L);
+		int table = lua_gettop(L);
+		for(std::set<u16>::const_iterator
+				i = ids.begin(); i != ids.end(); i++){
+			ServerActiveObject *obj = env->getActiveObject(*i);
+			// Insert object reference into table
+			lua_pushvalue(L, table_insert);
+			lua_pushvalue(L, table);
+			objectref_get_or_create(L, obj);
+			if(lua_pcall(L, 2, 0, 0))
+				script_error(L, "error: %s", lua_tostring(L, -1));
+		}
+		return 1;
+	}
+
 	static int gc_object(lua_State *L) {
 		EnvRef *o = *(EnvRef **)(lua_touserdata(L, 1));
 		delete o;
@@ -2668,6 +2698,7 @@ const luaL_reg EnvRef::methods[] = {
 	method(EnvRef, add_firefly),
 	method(EnvRef, get_meta),
 	method(EnvRef, get_player_by_name),
+	method(EnvRef, get_objects_inside_radius),
 	{0,0}
 };
 
