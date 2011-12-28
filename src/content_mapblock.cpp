@@ -722,14 +722,14 @@ void mapblock_mesh_generate_special(MeshMakeData *data,
 			// Wall at X+ of node
 			video::S3DVertex vertices[4] =
 			{
-				video::S3DVertex(BS/2-d,-BS/2,-BS/2, 0,0,0, c,
-						ap.x0(), ap.y1()),
-				video::S3DVertex(BS/2-d,-BS/2,BS/2, 0,0,0, c,
-						ap.x1(), ap.y1()),
 				video::S3DVertex(BS/2-d,BS/2,BS/2, 0,0,0, c,
-						ap.x1(), ap.y0()),
-				video::S3DVertex(BS/2-d,BS/2,-BS/2, 0,0,0, c,
 						ap.x0(), ap.y0()),
+				video::S3DVertex(BS/2-d,BS/2,-BS/2, 0,0,0, c,
+						ap.x1(), ap.y0()),
+				video::S3DVertex(BS/2-d,-BS/2,-BS/2, 0,0,0, c,
+						ap.x1(), ap.y1()),
+				video::S3DVertex(BS/2-d,-BS/2,BS/2, 0,0,0, c,
+						ap.x0(), ap.y1()),
 			};
 
 			v3s16 dir = unpackDir(n.param2);
