@@ -228,7 +228,7 @@ static void pushnode(lua_State *L, const MapNode &n, INodeDefManager *ndef)
 static MapNode readnode(lua_State *L, int index, INodeDefManager *ndef)
 {
 	lua_getfield(L, index, "name");
-	const char *name = lua_tostring(L, -1);
+	const char *name = luaL_checkstring(L, -1);
 	lua_pop(L, 1);
 	u8 param1;
 	lua_getfield(L, index, "param1");
@@ -489,7 +489,7 @@ static void inventory_set_list_from_lua(Inventory *inv, const char *name,
 	while(lua_next(L, table) != 0){
 		// key at index -2 and value at index -1
 		luaL_checktype(L, -1, LUA_TSTRING);
-		std::string itemstring = lua_tostring(L, -1);
+		std::string itemstring = luaL_checkstring(L, -1);
 		items.push_back(itemstring);
 		// removes value, keeps key for next iteration
 		lua_pop(L, 1);
@@ -1506,7 +1506,7 @@ private:
 		NodeMetadata *meta = getmeta(ref);
 		if(meta == NULL) return 0;
 		// Do it
-		std::string text = lua_tostring(L, 2);
+		std::string text = luaL_checkstring(L, 2);
 		meta->setText(text);
 		reportMetadataChange(ref);
 		return 0;
@@ -1546,7 +1546,7 @@ private:
 		NodeMetadata *meta = getmeta(ref);
 		if(meta == NULL) return 0;
 		// Do it
-		std::string text = lua_tostring(L, 2);
+		std::string text = luaL_checkstring(L, 2);
 		meta->setInfoText(text);
 		reportMetadataChange(ref);
 		return 0;
@@ -1560,7 +1560,7 @@ private:
 		if(meta == NULL) return 0;
 		// Do it
 		Inventory *inv = meta->getInventory();
-		const char *name = lua_tostring(L, 2);
+		const char *name = luaL_checkstring(L, 2);
 		inventory_set_list_from_lua(inv, name, L, 3,
 				ref->m_env->getGameDef());
 		reportMetadataChange(ref);
@@ -1575,7 +1575,7 @@ private:
 		if(meta == NULL) return 0;
 		// Do it
 		Inventory *inv = meta->getInventory();
-		const char *name = lua_tostring(L, 2);
+		const char *name = luaL_checkstring(L, 2);
 		inventory_get_list_to_lua(inv, name, L);
 		return 1;
 	}
@@ -1587,7 +1587,7 @@ private:
 		NodeMetadata *meta = getmeta(ref);
 		if(meta == NULL) return 0;
 		// Do it
-		std::string text = lua_tostring(L, 2);
+		std::string text = luaL_checkstring(L, 2);
 		meta->setInventoryDrawSpec(text);
 		reportMetadataChange(ref);
 		return 0;
@@ -1685,7 +1685,7 @@ private:
 		NodeMetadata *meta = getmeta(ref);
 		if(meta == NULL) return 0;
 		// Do it
-		std::string name = lua_tostring(L, 2);
+		std::string name = luaL_checkstring(L, 2);
 		size_t len = 0;
 		const char *s = lua_tolstring(L, 3, &len);
 		std::string str(s, len);
@@ -1701,7 +1701,7 @@ private:
 		NodeMetadata *meta = getmeta(ref);
 		if(meta == NULL) return 0;
 		// Do it
-		std::string name = lua_tostring(L, 2);
+		std::string name = luaL_checkstring(L, 2);
 		std::string str = meta->getString(name);
 		lua_pushlstring(L, str.c_str(), str.size());
 		return 1;
@@ -1957,7 +1957,7 @@ private:
 		ServerActiveObject *co = getobject(ref);
 		if(co == NULL) return 0;
 		// itemstring
-		const char *itemstring = lua_tostring(L, 2);
+		const char *itemstring = luaL_checkstring(L, 2);
 		infostream<<"ObjectRef::l_add_to_inventory(): id="<<co->getId()
 				<<" itemstring=\""<<itemstring<<"\""<<std::endl;
 		// Do it
@@ -1993,7 +1993,7 @@ private:
 		ServerActiveObject *co = getobject(ref);
 		if(co == NULL) return 0;
 		// itemstring
-		const char *itemstring = lua_tostring(L, 2);
+		const char *itemstring = luaL_checkstring(L, 2);
 		infostream<<"ObjectRef::l_add_to_inventory_later(): id="<<co->getId()
 				<<" itemstring=\""<<itemstring<<"\""<<std::endl;
 		// Do it
@@ -2089,7 +2089,7 @@ private:
 		LuaEntitySAO *co = getluaobject(ref);
 		if(co == NULL) return 0;
 		// Do it
-		std::string mod = lua_tostring(L, 2);
+		std::string mod = luaL_checkstring(L, 2);
 		co->setTextureMod(mod);
 		return 0;
 	}
@@ -2140,7 +2140,7 @@ private:
 		ObjectRef *ref = checkobject(L, 1);
 		ServerRemotePlayer *player = getplayer(ref);
 		if(player == NULL) return 0;
-		const char *name = lua_tostring(L, 2);
+		const char *name = luaL_checkstring(L, 2);
 		// Do it
 		inventory_set_list_from_lua(&player->inventory, name, L, 3,
 				player->getEnv()->getGameDef(), PLAYER_INVENTORY_SIZE);
@@ -2154,7 +2154,7 @@ private:
 		ObjectRef *ref = checkobject(L, 1);
 		ServerRemotePlayer *player = getplayer(ref);
 		if(player == NULL) return 0;
-		const char *name = lua_tostring(L, 2);
+		const char *name = luaL_checkstring(L, 2);
 		// Do it
 		inventory_get_list_to_lua(&player->inventory, name, L);
 		return 1;
@@ -2459,7 +2459,7 @@ private:
 		// pos
 		v3f pos = readFloatPos(L, 2);
 		// content
-		const char *name = lua_tostring(L, 3);
+		const char *name = luaL_checkstring(L, 3);
 		// Do it
 		ServerActiveObject *obj = new LuaEntitySAO(env, pos, name, "");
 		env->addActiveObject(obj);
@@ -2477,7 +2477,7 @@ private:
 		// pos
 		v3f pos = readFloatPos(L, 2);
 		// inventorystring
-		const char *inventorystring = lua_tostring(L, 3);
+		const char *inventorystring = luaL_checkstring(L, 3);
 		// Do it
 		ServerActiveObject *obj = new ItemSAO(env, pos, inventorystring);
 		env->addActiveObject(obj);
@@ -2536,7 +2536,7 @@ private:
 		ServerEnvironment *env = o->m_env;
 		if(env == NULL) return 0;
 		// Do it
-		const char *name = lua_tostring(L, 2);
+		const char *name = luaL_checkstring(L, 2);
 		ServerRemotePlayer *player =
 				static_cast<ServerRemotePlayer*>(env->getPlayer(name));
 		if(player == NULL){
