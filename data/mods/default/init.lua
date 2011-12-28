@@ -188,6 +188,8 @@
 --   ^ time_from_last_punch = time since last punch action of the puncher
 -- - right_click(clicker); clicker = an another ObjectRef
 -- - get_wield_digging_properties() -> digging property table
+-- - damage_wielded_item(num) (item damage/wear range is 0-65535)
+-- - add_to_inventory(itemstring): add an item to object inventory
 -- - add_to_inventory_later(itemstring): like above, but after callback returns (only allowed for craftitem callbacks)
 -- - get_hp(): returns number of hitpoints (2 * number of hearts)
 -- - set_hp(hp): set number of hitpoints (2 * number of hearts)
@@ -202,8 +204,9 @@
 -- - get_player_name(): will return nil if is not a player
 -- - inventory_set_list(name, {item1, item2, ...})
 -- - inventory_get_list(name) -> {item1, item2, ...}
--- - damage_wielded_item(num) (item damage/wear range is 0-65535)
--- - add_to_inventory(itemstring): add an item to object inventory
+-- - get_look_dir(): get camera direction as a unit vector
+-- - get_look_pitch(): pitch in radians
+-- - get_look_yaw(): yaw in radians (wraps around pretty randomly as of now)
 --
 -- Registered entities:
 -- - Functions receive a "luaentity" as self:

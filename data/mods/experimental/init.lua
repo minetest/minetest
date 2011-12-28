@@ -2,6 +2,21 @@
 -- Experimental things
 --
 
+-- For testing random stuff
+
+function on_step(dtime)
+	-- print("experimental on_step")
+	--[[
+	print("celeron55 dir: "..dump(
+			minetest.env:get_player_by_name("celeron55"):get_look_dir()))
+	print("celeron55 pitch: "..dump(
+			minetest.env:get_player_by_name("celeron55"):get_look_pitch()))
+	print("celeron55 yaw: "..dump(
+			minetest.env:get_player_by_name("celeron55"):get_look_yaw()))
+	--]]
+end
+minetest.register_globalstep(on_step)
+
 -- An example furnace-thing implemented in Lua
 
 minetest.register_node("experimental:luafurnace", {

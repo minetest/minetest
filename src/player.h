@@ -102,6 +102,16 @@ public:
 		return m_yaw;
 	}
 
+	f32 getRadPitch()
+	{
+		return -1.0 * m_pitch * core::DEGTORAD;
+	}
+
+	f32 getRadYaw()
+	{
+		return (m_yaw + 90.) * core::DEGTORAD;
+	}
+
 	virtual void updateName(const char *name)
 	{
 		snprintf(m_name, PLAYERNAME_SIZE, "%s", name);

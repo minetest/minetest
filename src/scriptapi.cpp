@@ -167,6 +167,43 @@ void check_modname_prefix(lua_State *L, std::string &name)
 				+"\"contains unallowed characters");
 }
 
+static void push_v3f(lua_State *L, v3f p)
+{
+	lua_newtable(L);
+	lua_pushnumber(L, p.X);
+	lua_setfield(L, -2, "x");
+	lua_pushnumber(L, p.Y);
+	lua_setfield(L, -2, "y");
+	lua_pushnumber(L, p.Z);
+	lua_setfield(L, -2, "z");
+}
+
+static v2s16 read_v2s16(lua_State *L, int index)
+{
+	v2s16 p;
+	luaL_checktype(L, index, LUA_TTABLE);
+	lua_getfield(L, index, "x");
+	p.X = lua_tonumber(L, -1);
+	lua_pop(L, 1);
+	lua_getfield(L, index, "y");
+	p.Y = lua_tonumber(L, -1);
+	lua_pop(L, 1);
+	return p;
+}
+
+static v2f read_v2f(lua_State *L, int index)
+{
+	v2f p;
+	luaL_checktype(L, index, LUA_TTABLE);
+	lua_getfield(L, index, "x");
+	p.X = lua_tonumber(L, -1);
+	lua_pop(L, 1);
+	lua_getfield(L, index, "y");
+	p.Y = lua_tonumber(L, -1);
+	lua_pop(L, 1);
+	return p;
+}
+
 static v3f readFloatPos(lua_State *L, int index)
 {
 	v3f pos;
@@ -187,13 +224,7 @@ static v3f readFloatPos(lua_State *L, int index)
 static void pushFloatPos(lua_State *L, v3f p)
 {
 	p /= BS;
-	lua_newtable(L);
-	lua_pushnumber(L, p.X);
-	lua_setfield(L, -2, "x");
-	lua_pushnumber(L, p.Y);
-	lua_setfield(L, -2, "y");
-	lua_pushnumber(L, p.Z);
-	lua_setfield(L, -2, "z");
+	push_v3f(L, p);
 }
 
 static void pushpos(lua_State *L, v3s16 p)
@@ -291,32 +322,6 @@ static core::aabbox3d<f32> read_aabbox3df32(lua_State *L, int index, f32 scale)
 		lua_pop(L, 1);
 	}
 	return box;
-}
-
-static v2s16 read_v2s16(lua_State *L, int index)
-{
-	v2s16 p;
-	luaL_checktype(L, index, LUA_TTABLE);
-	lua_getfield(L, index, "x");
-	p.X = lua_tonumber(L, -1);
-	lua_pop(L, 1);
-	lua_getfield(L, index, "y");
-	p.Y = lua_tonumber(L, -1);
-	lua_pop(L, 1);
-	return p;
-}
-
-static v2f read_v2f(lua_State *L, int index)
-{
-	v2f p;
-	luaL_checktype(L, index, LUA_TTABLE);
-	lua_getfield(L, index, "x");
-	p.X = lua_tonumber(L, -1);
-	lua_pop(L, 1);
-	lua_getfield(L, index, "y");
-	p.Y = lua_tonumber(L, -1);
-	lua_pop(L, 1);
-	return p;
 }
 
 static bool getstringfield(lua_State *L, int table,
@@ -2222,6 +2227,42 @@ private:
 		return 1;
 	}
 
+	// get_look_dir(self)
+	static int l_get_look_dir(lua_State *L)
+	{
+		ObjectRef *ref = checkobject(L, 1);
+		ServerRemotePlayer *player = getplayer(ref);
+		if(player == NULL) return 0;
+		// Do it
+		float pitch = player->getRadPitch();
+		float yaw = player->getRadYaw();
+		v3f v(cos(pitch)*cos(yaw), sin(pitch), cos(pitch)*sin(yaw));
+		push_v3f(L, v);
+		return 1;
+	}
+
+	// get_look_pitch(self)
+	static int l_get_look_pitch(lua_State *L)
+	{
+		ObjectRef *ref = checkobject(L, 1);
+		ServerRemotePlayer *player = getplayer(ref);
+		if(player == NULL) return 0;
+		// Do it
+		lua_pushnumber(L, player->getRadPitch());
+		return 1;
+	}
+
+	// get_look_yaw(self)
+	static int l_get_look_yaw(lua_State *L)
+	{
+		ObjectRef *ref = checkobject(L, 1);
+		ServerRemotePlayer *player = getplayer(ref);
+		if(player == NULL) return 0;
+		// Do it
+		lua_pushnumber(L, player->getRadYaw());
+		return 1;
+	}
+
 public:
 	ObjectRef(ServerActiveObject *object):
 		m_object(object)
@@ -2310,6 +2351,9 @@ const luaL_reg ObjectRef::methods[] = {
 	method(ObjectRef, inventory_get_list),
 	method(ObjectRef, get_wielded_itemstring),
 	method(ObjectRef, get_wielded_item),
+	method(ObjectRef, get_look_dir),
+	method(ObjectRef, get_look_pitch),
+	method(ObjectRef, get_look_yaw),
 	{0,0}
 };
 
