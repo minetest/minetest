@@ -101,8 +101,10 @@ bool script_load(lua_State *L, const char *path)
 		errorstream<<"[LUA] "<<lua_tostring(L, -1)<<std::endl;
 		errorstream<<"[LUA] "<<std::endl;
 		lua_pop(L, 1); // Pop error message from stack
+		lua_pop(L, 1); // Pop the error handler from stack
 		return false;
 	}
+	lua_pop(L, 1); // Pop the error handler from stack
 	return true;
 }
 
