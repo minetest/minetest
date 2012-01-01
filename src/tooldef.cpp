@@ -63,6 +63,7 @@ void ToolDefinition::serialize(std::ostream &os)
 	writeF1000(os, properties.dd_crumbliness);
 	writeF1000(os, properties.dd_cuttability);
 	writeF1000(os, properties.full_punch_interval);
+	os<<serializeString(description);
 }
 
 void ToolDefinition::deSerialize(std::istream &is)
@@ -83,6 +84,7 @@ void ToolDefinition::deSerialize(std::istream &is)
 	properties.dd_cuttability = readF1000(is);
 	try{
 		properties.full_punch_interval = readF1000(is);
+		description = deSerializeString(is);
 	}catch(SerializationError &e){} // Temporary for 0.4.dev
 }
 
@@ -110,6 +112,13 @@ public:
 		if(def == NULL)
 			return "";
 		return def->imagename;
+	}
+	virtual std::string getDescription(const std::string &toolname)
+	{
+		const ToolDefinition *def = getToolDefinition(toolname);
+		if(def == NULL)
+			return "";
+		return def->description;
 	}
 	virtual ToolDiggingProperties getDiggingProperties(
 			const std::string &toolname) const

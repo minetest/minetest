@@ -205,6 +205,7 @@ struct ContentFeatures
 	std::string cookresult_item;
 	float furnace_cooktime;
 	float furnace_burntime;
+	std::string description;
 
 	/*
 		Methods

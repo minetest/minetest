@@ -604,6 +604,7 @@ static ToolDefinition read_tool_definition(lua_State *L, int table)
 {
 	ToolDefinition def;
 	getstringfield(L, table, "image", def.imagename);
+	getstringfield(L, table, "description", def.description);
 	def.properties = read_tool_digging_properties(L, table);
 	return def;
 }
@@ -878,6 +879,7 @@ static int l_register_craftitem(lua_State *L)
 	
 	getstringfield(L, table, "image", def.imagename);
 	getstringfield(L, table, "cookresult_itemstring", def.cookresult_item);
+	getstringfield(L, table, "description", def.description);
 	getfloatfield(L, table, "furnace_cooktime", def.furnace_cooktime);
 	getfloatfield(L, table, "furnace_burntime", def.furnace_burntime);
 	def.usable = getboolfield_default(L, table, "usable", got_on_use);
@@ -965,6 +967,7 @@ static int l_register_node(lua_State *L)
 			NDT_NORMAL);
 	getfloatfield(L, nodedef_table, "visual_scale", f.visual_scale);
 
+	getstringfield(L, nodedef_table, "description", f.description);
 	lua_getfield(L, nodedef_table, "tile_images");
 	if(lua_istable(L, -1)){
 		int table = lua_gettop(L);

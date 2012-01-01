@@ -33,7 +33,8 @@ CraftItemDefinition::CraftItemDefinition():
 	usable(false),
 	liquids_pointable(false),
 	dropcount(-1),
-	stack_max(99)
+	stack_max(99),
+	description("")
 {}
 
 std::string CraftItemDefinition::dump()
@@ -47,6 +48,7 @@ std::string CraftItemDefinition::dump()
 	os<<", liquids_pointable="<<liquids_pointable;
 	os<<", dropcount="<<dropcount;
 	os<<", stack_max="<<stack_max;
+	os<<", description="<<description;
 	return os.str();
 }
 
@@ -61,6 +63,7 @@ void CraftItemDefinition::serialize(std::ostream &os)
 	writeU8(os, liquids_pointable);
 	writeS16(os, dropcount);
 	writeS16(os, stack_max);
+	os<<serializeString(description);
 }
 
 void CraftItemDefinition::deSerialize(std::istream &is)
@@ -76,6 +79,7 @@ void CraftItemDefinition::deSerialize(std::istream &is)
 	liquids_pointable = readU8(is);
 	dropcount = readS16(is);
 	stack_max = readS16(is);
+	description = deSerializeString(is);
 }
 
 class CCraftItemDefManager: public IWritableCraftItemDefManager
@@ -110,6 +114,13 @@ public:
 		if(i != m_aliases.end())
 			return i->second;
 		return name;
+	}
+	virtual std::string getDescription(const std::string &itemname)
+	{
+		const CraftItemDefinition *def = getCraftItemDefinition(itemname);
+		if(def == NULL)
+			return "";
+		return def->description;
 	}
 	virtual bool registerCraftItem(std::string itemname, const CraftItemDefinition &def)
 	{

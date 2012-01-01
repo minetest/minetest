@@ -64,7 +64,8 @@ public:
 	virtual std::string getText() { return ""; }
 	// Returns the string used for inventory
 	virtual std::string getItemString();
-	
+	// returns the tooltip to show in the GUI
+	virtual std::string getDescription() { return "Unknown"; }
 	// Shall return false if item is not known and cannot be used
 	virtual bool isKnown() const { return true; }
 
@@ -180,6 +181,7 @@ public:
 		os<<m_count;
 		return os.str();
 	}
+	virtual std::string getDescription();
 
 	virtual bool addableTo(const InventoryItem *other) const
 	{
@@ -261,6 +263,7 @@ public:
 #ifndef SERVER
 	video::ITexture * getImage() const;
 #endif
+	std::string getDescription();
 	std::string getText()
 	{
 		std::ostringstream os;
@@ -353,6 +356,7 @@ public:
 	}
 
 	std::string getImageBasename() const;
+	std::string getDescription();
 #ifndef SERVER
 	video::ITexture * getImage() const;
 	video::ITexture * getImageRaw() const;
