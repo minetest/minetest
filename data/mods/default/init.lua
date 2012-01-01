@@ -73,16 +73,16 @@
 -- {x=num, y=num, z=num}
 --
 -- stackstring/itemstring: A stack of items in serialized format.
--- eg. 'node "dirt" 5'
+-- eg. 'node "default:dirt" 5'
 -- eg. 'tool "default:pick_wood" 21323'
--- eg. 'craft "apple" 2'
+-- eg. 'craft "default:apple" 2'
 --
 -- item: A single item in Lua table format.
--- eg. {type="node", name="dirt"} 
+-- eg. {type="node", name="default:dirt"} 
 --     ^ a single dirt node
 -- eg. {type="tool", name="default:pick_wood", wear=21323}
 --     ^ a wooden pick about 1/3 weared out
--- eg. {type="craft", name="apple"}
+-- eg. {type="craft", name="default:apple"}
 --     ^ an apple.
 --
 -- Global functions:
@@ -319,7 +319,7 @@
 -- {
 --     output = 'tool "default:pick_stone"',
 --     recipe = {
---         {'node "cobble"', 'node "cobble"', 'node "cobble"'},
+--         {'node "default:cobble"', 'node "default:cobble"', 'node "default:cobble"'},
 --         {'', 'craft "default:stick"', ''},
 --         {'', 'craft "default:stick"', ''},
 --     }
@@ -327,8 +327,8 @@
 --
 -- ABM (ActiveBlockModifier) definition:
 -- {
---     nodenames = {"lava_source"},
---     neighbors = {"water_source", "water_flowing"}, -- (any of these)
+--     nodenames = {"default:lava_source"},
+--     neighbors = {"default:water_source", "default:water_flowing"}, -- (any of these)
 --      ^ If left out or empty, any neighbor will do
 --      ^ This might get removed in the future
 --     interval = 1.0, -- (operation interval)
@@ -540,7 +540,7 @@ minetest.register_tool("default:sword_steel", {
 minetest.register_craft({
 	output = 'node "default:wood" 4',
 	recipe = {
-		{'node "tree"'},
+		{'node "default:tree"'},
 	}
 })
 
@@ -588,7 +588,7 @@ minetest.register_craft({
 minetest.register_craft({
 	output = 'tool "default:pick_stone"',
 	recipe = {
-		{'node "cobble"', 'node "cobble"', 'node "cobble"'},
+		{'node "default:cobble"', 'node "default:cobble"', 'node "default:cobble"'},
 		{'', 'craft "default:stick"', ''},
 		{'', 'craft "default:stick"', ''},
 	}
@@ -606,7 +606,7 @@ minetest.register_craft({
 minetest.register_craft({
 	output = 'tool "default:pick_mese"',
 	recipe = {
-		{'node "mese"', 'node "mese"', 'node "mese"'},
+		{'node "default:mese"', 'node "default:mese"', 'node "default:mese"'},
 		{'', 'craft "default:stick"', ''},
 		{'', 'craft "default:stick"', ''},
 	}
@@ -624,7 +624,7 @@ minetest.register_craft({
 minetest.register_craft({
 	output = 'tool "default:shovel_stone"',
 	recipe = {
-		{'node "cobble"'},
+		{'node "default:cobble"'},
 		{'craft "default:stick"'},
 		{'craft "default:stick"'},
 	}
@@ -651,8 +651,8 @@ minetest.register_craft({
 minetest.register_craft({
 	output = 'tool "default:axe_stone"',
 	recipe = {
-		{'node "cobble"', 'node "cobble"'},
-		{'node "cobble"', 'craft "default:stick"'},
+		{'node "default:cobble"', 'node "default:cobble"'},
+		{'node "default:cobble"', 'craft "default:stick"'},
 		{'', 'craft "default:stick"'},
 	}
 })
@@ -678,8 +678,8 @@ minetest.register_craft({
 minetest.register_craft({
 	output = 'tool "default:sword_stone"',
 	recipe = {
-		{'node "cobble"'},
-		{'node "cobble"'},
+		{'node "default:cobble"'},
+		{'node "default:cobble"'},
 		{'craft "default:stick"'},
 	}
 })
@@ -723,9 +723,9 @@ minetest.register_craft({
 minetest.register_craft({
 	output = 'node "default:furnace" 1',
 	recipe = {
-		{'node "cobble"', 'node "cobble"', 'node "cobble"'},
-		{'node "cobble"', '', 'node "cobble"'},
-		{'node "cobble"', 'node "cobble"', 'node "cobble"'},
+		{'node "default:cobble"', 'node "default:cobble"', 'node "default:cobble"'},
+		{'node "default:cobble"', '', 'node "default:cobble"'},
+		{'node "default:cobble"', 'node "default:cobble"', 'node "default:cobble"'},
 	}
 })
 
@@ -741,8 +741,8 @@ minetest.register_craft({
 minetest.register_craft({
 	output = 'node "default:sandstone" 1',
 	recipe = {
-		{'node "sand"', 'node "sand"'},
-		{'node "sand"', 'node "sand"'},
+		{'node "default:sand"', 'node "default:sand"'},
+		{'node "default:sand"', 'node "default:sand"'},
 	}
 })
 
@@ -765,7 +765,7 @@ minetest.register_craft({
 minetest.register_craft({
 	output = 'craft "default:paper" 1',
 	recipe = {
-		{'node "papyrus"', 'node "papyrus"', 'node "papyrus"'},
+		{'node "default:papyrus"', 'node "default:papyrus"', 'node "default:papyrus"'},
 	}
 })
 
@@ -807,7 +807,7 @@ minetest.register_node("default:stone", {
 	is_ground_content = true,
 	often_contains_mineral = true, -- Texture atlas hint
 	material = minetest.digprop_stonelike(1.0),
-	dug_item = 'node "cobble" 1',
+	dug_item = 'node "default:cobble" 1',
 })
 
 minetest.register_node("default:dirt_with_grass", {
@@ -815,7 +815,7 @@ minetest.register_node("default:dirt_with_grass", {
 	inventory_image = minetest.inventorycube("default_dirt.png^default_grass_side.png"),
 	is_ground_content = true,
 	material = minetest.digprop_dirtlike(1.0),
-	dug_item = 'node "dirt" 1',
+	dug_item = 'node "default:dirt" 1',
 })
 
 minetest.register_node("default:dirt_with_grass_footsteps", {
@@ -823,7 +823,7 @@ minetest.register_node("default:dirt_with_grass_footsteps", {
 	inventory_image = "default_grass_footsteps.png",
 	is_ground_content = true,
 	material = minetest.digprop_dirtlike(1.0),
-	dug_item = 'node "dirt" 1',
+	dug_item = 'node "default:dirt" 1',
 })
 
 minetest.register_node("default:dirt", {
@@ -838,7 +838,7 @@ minetest.register_node("default:sand", {
 	inventory_image = minetest.inventorycube("default_sand.png"),
 	is_ground_content = true,
 	material = minetest.digprop_dirtlike(1.0),
-	cookresult_itemstring = 'node "glass" 1',
+	cookresult_itemstring = 'node "default:glass" 1',
 })
 
 minetest.register_node("default:gravel", {
@@ -853,7 +853,7 @@ minetest.register_node("default:sandstone", {
 	inventory_image = minetest.inventorycube("default_sandstone.png"),
 	is_ground_content = true,
 	material = minetest.digprop_dirtlike(1.0),  -- FIXME should this be stonelike?
-	dug_item = 'node "sand" 1',  -- FIXME is this intentional?
+	dug_item = 'node "default:sand" 1',  -- FIXME is this intentional?
 })
 
 minetest.register_node("default:clay", {
@@ -908,7 +908,7 @@ minetest.register_node("default:leaves", {
 	inventory_image = minetest.inventorycube("default_leaves.png"),
 	paramtype = "light",
 	material = minetest.digprop_leaveslike(1.0),
-	extra_dug_item = 'node "sapling" 1',
+	extra_dug_item = 'node "default:sapling" 1',
 	extra_dug_item_rarity = 20,
 	furnace_burntime = 1,
 })
@@ -1030,8 +1030,8 @@ minetest.register_node("default:water_flowing", {
 	diggable = false,
 	buildable_to = true,
 	liquidtype = "flowing",
-	liquid_alternative_flowing = "water_flowing",
-	liquid_alternative_source = "water_source",
+	liquid_alternative_flowing = "default:water_flowing",
+	liquid_alternative_source = "default:water_source",
 	liquid_viscosity = WATER_VISC,
 	post_effect_color = {a=64, r=100, g=100, b=200},
 	special_materials = {
@@ -1051,8 +1051,8 @@ minetest.register_node("default:water_source", {
 	diggable = false,
 	buildable_to = true,
 	liquidtype = "source",
-	liquid_alternative_flowing = "water_flowing",
-	liquid_alternative_source = "water_source",
+	liquid_alternative_flowing = "default:water_flowing",
+	liquid_alternative_source = "default:water_source",
 	liquid_viscosity = WATER_VISC,
 	post_effect_color = {a=64, r=100, g=100, b=200},
 	special_materials = {
@@ -1072,8 +1072,8 @@ minetest.register_node("default:lava_flowing", {
 	diggable = false,
 	buildable_to = true,
 	liquidtype = "flowing",
-	liquid_alternative_flowing = "lava_flowing",
-	liquid_alternative_source = "lava_source",
+	liquid_alternative_flowing = "default:lava_flowing",
+	liquid_alternative_source = "default:lava_source",
 	liquid_viscosity = LAVA_VISC,
 	damage_per_second = 4*2,
 	post_effect_color = {a=192, r=255, g=64, b=0},
@@ -1094,8 +1094,8 @@ minetest.register_node("default:lava_source", {
 	diggable = false,
 	buildable_to = true,
 	liquidtype = "source",
-	liquid_alternative_flowing = "lava_flowing",
-	liquid_alternative_source = "lava_source",
+	liquid_alternative_flowing = "default:lava_flowing",
+	liquid_alternative_source = "default:lava_source",
 	liquid_viscosity = LAVA_VISC,
 	damage_per_second = 4*2,
 	post_effect_color = {a=192, r=255, g=64, b=0},
@@ -1177,7 +1177,7 @@ minetest.register_node("default:cobble", {
 	tile_images = {"default_cobble.png"},
 	inventory_image = minetest.inventorycube("default_cobble.png"),
 	is_ground_content = true,
-	cookresult_itemstring = 'node "stone" 1',
+	cookresult_itemstring = 'node "default:stone" 1',
 	material = minetest.digprop_stonelike(0.9),
 })
 
@@ -1230,7 +1230,7 @@ minetest.register_node("default:apple", {
 	paramtype = "light",
 	sunlight_propagates = true,
 	walkable = false,
-	dug_item = 'craft "apple" 1',
+	dug_item = 'craft "default:apple" 1',
 	material = minetest.digprop_constanttime(0.0),
 	furnace_burntime = 3,
 })
