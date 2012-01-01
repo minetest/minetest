@@ -249,7 +249,7 @@ void * EmergeThread::Thread()
 					t.stop(true); // Hide output
 			}
 			
-			{
+			do{ // enable break
 				// Lock environment again to access the map
 				JMutexAutoLock envlock(m_server->m_env_mutex);
 				
@@ -262,6 +262,11 @@ void * EmergeThread::Thread()
 
 				// Get central block
 				block = map.getBlockNoCreateNoEx(p);
+				
+				// If block doesn't exist, don't try doing anything with it
+				// This happens if the block is not in generation boundaries
+				if(!block)
+					break;
 
 				/*
 					Do some post-generate stuff
@@ -285,7 +290,7 @@ void * EmergeThread::Thread()
 				
 				// Activate objects and stuff
 				m_server->m_env->activateBlock(block, 0);
-			}
+			}while(false);
 		}
 
 		if(block == NULL)
