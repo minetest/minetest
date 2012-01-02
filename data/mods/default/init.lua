@@ -212,9 +212,9 @@
 -- - inventory_get_list(name) -> {item1, item2, ...}
 -- - get_look_dir(): get camera direction as a unit vector
 -- - get_look_pitch(): pitch in radians
---
 -- - get_look_yaw(): yaw in radians (wraps around pretty randomly as of now)
--- InvRef
+--
+-- InvRef methods:
 -- - get_size(listname): get size of a list
 -- - set_size(listname, size): set size of a list
 -- - get_stack(listname, i): get a copy of stack index i in list
@@ -224,7 +224,7 @@
 -- - autoinsert_stack(listname, stack): insert stack somewhere in list
 -- - autoinsert_stackstring(listname, stackstring)
 --
--- ItemStack
+-- ItemStack methods:
 -- - peek_item(): return item from stack without removing it
 -- - take_item(): remove item from stack and return it
 -- - put_item(item): put item in stack; return false if not possible
