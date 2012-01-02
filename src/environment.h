@@ -130,7 +130,8 @@ struct ABMWithState
 	float timer;
 
 	ABMWithState(ActiveBlockModifier *abm_):
-		abm(abm_)
+		abm(abm_),
+		timer(0)
 	{}
 };
 

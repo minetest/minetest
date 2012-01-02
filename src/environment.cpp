@@ -588,15 +588,17 @@ public:
 			float trigger_interval = abm->getTriggerInterval();
 			if(trigger_interval < 0.001)
 				trigger_interval = 0.001;
+			float actual_interval = dtime_s;
 			if(use_timers){
 				i->timer += dtime_s;
 				if(i->timer < trigger_interval)
 					continue;
 				i->timer -= trigger_interval;
+				actual_interval = trigger_interval;
 			}
 			ActiveABM aabm;
 			aabm.abm = abm;
-			float intervals = dtime_s / trigger_interval;
+			float intervals = actual_interval / trigger_interval;
 			float chance = abm->getTriggerChance();
 			if(chance == 0)
 				chance = 1;
