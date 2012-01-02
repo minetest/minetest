@@ -48,6 +48,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "mapgen.h"
 #include "content_abm.h"
 #include "mods.h"
+#include "sha1.h"
+#include "base64.h"
 
 #define PP(x) "("<<(x).X<<","<<(x).Y<<","<<(x).Z<<")"
 
@@ -929,6 +931,9 @@ Server::Server(
 		}
 	}
 	
+	// Read Textures and calculate sha1 sums
+	PrepareTextures();
+
 	// Initialize Environment
 	
 	m_env = new ServerEnvironment(new ServerMap(mapsavedir, this), m_lua,
@@ -2110,8 +2115,8 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 		// Send CraftItem definitions
 		SendCraftItemDef(m_con, peer_id, m_craftitemdef);
 		
-		// Send textures
-		SendTextures(peer_id);
+		// Send texture announcement
+		SendTextureAnnouncement(peer_id);
 		
 		// Send player info to all players
 		//SendPlayerInfos();
@@ -2824,6 +2829,26 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 
 		// ActiveObject is added to environment in AsyncRunStep after
 		// the previous addition has been succesfully removed
+	}
+	else if(command == TOSERVER_REQUEST_TEXTURES) {
+		std::string datastring((char*)&data[2], datasize-2);
+		std::istringstream is(datastring, std::ios_base::binary);
+
+		infostream<<"TOSERVER_REQUEST_TEXTURES: "<<std::endl;
+
+		core::list<TextureRequest> tosend;
+
+		u16 numtextures = readU16(is);
+
+		for(int i = 0; i < numtextures; i++) {
+
+			std::string name = deSerializeString(is);
+
+			tosend.push_back(TextureRequest(name));
+			infostream<<"TOSERVER_REQUEST_TEXTURES: requested texture " << name <<std::endl;
+		}
+
+		SendTexturesRequested(peer_id, tosend);
 	}
 	else if(command == TOSERVER_INTERACT)
 	{
@@ -4233,6 +4258,124 @@ void Server::SendBlocks(float dtime)
 	}
 }
 
+void Server::PrepareTextures() {
+	DSTACK(__FUNCTION_NAME);
+
+	infostream<<"Server::PrepareTextures(): Calculate sha1 sums of textures"<<std::endl;
+
+	for(core::list<ModSpec>::Iterator i = m_mods.begin();
+					i != m_mods.end(); i++){
+			const ModSpec &mod = *i;
+			std::string texturepath = mod.path + DIR_DELIM + "textures";
+			std::vector<fs::DirListNode> dirlist = fs::GetDirListing(texturepath);
+			for(u32 j=0; j<dirlist.size(); j++){
+				if(dirlist[j].dir) // Ignode dirs
+					continue;
+				std::string tname = dirlist[j].name;
+				std::string tpath = texturepath + DIR_DELIM + tname;
+				// Read data
+				std::ifstream fis(tpath.c_str(), std::ios_base::binary);
+				if(fis.good() == false){
+					errorstream<<"Server::PrepareTextures(): Could not open \""
+							<<tname<<"\" for reading"<<std::endl;
+					continue;
+				}
+				std::ostringstream tmp_os(std::ios_base::binary);
+				bool bad = false;
+				for(;;){
+					char buf[1024];
+					fis.read(buf, 1024);
+					std::streamsize len = fis.gcount();
+					tmp_os.write(buf, len);
+					if(fis.eof())
+						break;
+					if(!fis.good()){
+						bad = true;
+						break;
+					}
+				}
+				if(bad){
+					errorstream<<"Server::PrepareTextures(): Failed to read \""
+							<<tname<<"\""<<std::endl;
+					continue;
+				}
+
+				SHA1 sha1;
+				sha1.addBytes(tmp_os.str().c_str(), tmp_os.str().length());
+
+				unsigned char *digest = sha1.getDigest();
+				std::string digest_string = base64_encode(digest, 20);
+
+				delete(digest);
+
+				// Put in list
+				this->m_Textures[tname] = TextureInformation(tpath,digest_string);
+				infostream<<"Server::PrepareTextures(): added sha1 for "<< tname <<std::endl;
+			}
+	}
+}
+
+struct SendableTextureAnnouncement
+	{
+		std::string name;
+		std::string sha1_digest;
+
+		SendableTextureAnnouncement(const std::string name_="",
+				const std::string sha1_digest_=""):
+			name(name_),
+			sha1_digest(sha1_digest_)
+		{
+		}
+	};
+
+void Server::SendTextureAnnouncement(u16 peer_id){
+	DSTACK(__FUNCTION_NAME);
+
+	infostream<<"Server::SendTextureAnnouncement(): Calculate sha1 sums of textures and send to client"<<std::endl;
+
+	core::list<SendableTextureAnnouncement> texture_announcements;
+
+	for (std::map<std::string,TextureInformation>::iterator i = m_Textures.begin();i != m_Textures.end(); i++ ) {
+
+		// Put in list
+		texture_announcements.push_back(
+				SendableTextureAnnouncement(i->first, i->second.sha1_digest));
+	}
+
+	//send announcements
+
+	/*
+		u16 command
+		u32 number of textures
+		for each texture {
+			u16 length of name
+			string name
+			u16 length of digest string
+			string sha1_digest
+		}
+	*/
+	std::ostringstream os(std::ios_base::binary);
+
+	writeU16(os, 	TOCLIENT_ANNOUNCE_TEXTURES);
+	writeU16(os, texture_announcements.size());
+
+	for(core::list<SendableTextureAnnouncement>::Iterator
+			j = texture_announcements.begin();
+			j != texture_announcements.end(); j++){
+		os<<serializeString(j->name);
+		os<<serializeString(j->sha1_digest);
+	}
+
+	// Make data buffer
+	std::string s = os.str();
+	infostream<<"Server::SendTextureAnnouncement(): Send to client"<<std::endl;
+	SharedBuffer<u8> data((u8*)s.c_str(), s.size());
+
+	// Send as reliable
+	m_con.Send(peer_id, 0, data, true);
+
+}
+
 struct SendableTexture
 {
 	std::string name;
@@ -4247,112 +4390,109 @@ struct SendableTexture
 	{}
 };
 
-void Server::SendTextures(u16 peer_id)
-{
+void Server::SendTexturesRequested(u16 peer_id,core::list<TextureRequest> tosend) {
 	DSTACK(__FUNCTION_NAME);
 
-	infostream<<"Server::SendTextures(): Sending textures to client"<<std::endl;
-	
+	infostream<<"Server::SendTexturesRequested(): Sending textures to client"<<std::endl;
+
 	/* Read textures */
-	
+
 	// Put 5kB in one bunch (this is not accurate)
 	u32 bytes_per_bunch = 5000;
-	
+
 	core::array< core::list<SendableTexture> > texture_bunches;
 	texture_bunches.push_back(core::list<SendableTexture>());
-	
+
 	u32 texture_size_bunch_total = 0;
-	for(core::list<ModSpec>::Iterator i = m_mods.begin();
-			i != m_mods.end(); i++){
-		const ModSpec &mod = *i;
-		std::string texturepath = mod.path + DIR_DELIM + "textures";
-		std::vector<fs::DirListNode> dirlist = fs::GetDirListing(texturepath);
-		for(u32 j=0; j<dirlist.size(); j++){
-			if(dirlist[j].dir) // Ignode dirs
-				continue;
-			std::string tname = dirlist[j].name;
-			std::string tpath = texturepath + DIR_DELIM + tname;
-			// Read data
-			std::ifstream fis(tpath.c_str(), std::ios_base::binary);
-			if(fis.good() == false){
-				errorstream<<"Server::SendTextures(): Could not open \""
-						<<tname<<"\" for reading"<<std::endl;
-				continue;
-			}
-			std::ostringstream tmp_os(std::ios_base::binary);
-			bool bad = false;
-			for(;;){
-				char buf[1024];
-				fis.read(buf, 1024);
-				std::streamsize len = fis.gcount();
-				tmp_os.write(buf, len);
-				texture_size_bunch_total += len;
-				if(fis.eof())
-					break;
-				if(!fis.good()){
-					bad = true;
-					break;
-				}
-			}
-			if(bad){
-				errorstream<<"Server::SendTextures(): Failed to read \""
-						<<tname<<"\""<<std::endl;
-				continue;
-			}
-			/*infostream<<"Server::SendTextures(): Loaded \""
-					<<tname<<"\""<<std::endl;*/
-			// Put in list
-			texture_bunches[texture_bunches.size()-1].push_back(
-					SendableTexture(tname, tpath, tmp_os.str()));
-			
-			// Start next bunch if got enough data
-			if(texture_size_bunch_total >= bytes_per_bunch){
-				texture_bunches.push_back(core::list<SendableTexture>());
-				texture_size_bunch_total = 0;
+
+	for(core::list<TextureRequest>::Iterator i = tosend.begin(); i != tosend.end(); i++) {
+
+		//TODO get path + name
+		std::string tpath = m_Textures[(*i).name].path;
+
+		// Read data
+		std::ifstream fis(tpath.c_str(), std::ios_base::binary);
+		if(fis.good() == false){
+			errorstream<<"Server::SendTexturesRequested(): Could not open \""
+					<<tpath<<"\" for reading"<<std::endl;
+			continue;
+		}
+		std::ostringstream tmp_os(std::ios_base::binary);
+		bool bad = false;
+		for(;;){
+			char buf[1024];
+			fis.read(buf, 1024);
+			std::streamsize len = fis.gcount();
+			tmp_os.write(buf, len);
+			texture_size_bunch_total += len;
+			if(fis.eof())
+				break;
+			if(!fis.good()){
+				bad = true;
+				break;
 			}
 		}
+		if(bad){
+			errorstream<<"Server::SendTexturesRequested(): Failed to read \""
+					<<(*i).name<<"\""<<std::endl;
+			continue;
+		}
+		/*infostream<<"Server::SendTexturesRequested(): Loaded \""
+				<<tname<<"\""<<std::endl;*/
+		// Put in list
+		texture_bunches[texture_bunches.size()-1].push_back(
+				SendableTexture((*i).name, tpath, tmp_os.str()));
+
+		// Start next bunch if got enough data
+		if(texture_size_bunch_total >= bytes_per_bunch){
+			texture_bunches.push_back(core::list<SendableTexture>());
+			texture_size_bunch_total = 0;
+		}
+
 	}
 
 	/* Create and send packets */
-	
-	u32 num_bunches = texture_bunches.size();
-	for(u32 i=0; i<num_bunches; i++)
-	{
-		/*
-			u16 command
-			u16 total number of texture bunches
-			u16 index of this bunch
-			u32 number of textures in this bunch
-			for each texture {
-				u16 length of name
-				string name
-				u32 length of data
-				data
-			}
-		*/
-		std::ostringstream os(std::ios_base::binary);
 
-		writeU16(os, TOCLIENT_TEXTURES);
-		writeU16(os, num_bunches);
-		writeU16(os, i);
-		writeU32(os, texture_bunches[i].size());
-		
-		for(core::list<SendableTexture>::Iterator
-				j = texture_bunches[i].begin();
-				j != texture_bunches[i].end(); j++){
-			os<<serializeString(j->name);
-			os<<serializeLongString(j->data);
+		u32 num_bunches = texture_bunches.size();
+		for(u32 i=0; i<num_bunches; i++)
+		{
+			/*
+				u16 command
+				u16 total number of texture bunches
+				u16 index of this bunch
+				u32 number of textures in this bunch
+				for each texture {
+					u16 length of name
+					string name
+					u32 length of data
+					data
+				}
+			*/
+			std::ostringstream os(std::ios_base::binary);
+
+			writeU16(os, TOCLIENT_TEXTURES);
+			writeU16(os, num_bunches);
+			writeU16(os, i);
+			writeU32(os, texture_bunches[i].size());
+
+			for(core::list<SendableTexture>::Iterator
+					j = texture_bunches[i].begin();
+					j != texture_bunches[i].end(); j++){
+				os<<serializeString(j->name);
+				os<<serializeLongString(j->data);
+			}
+
+			// Make data buffer
+			std::string s = os.str();
+			infostream<<"Server::SendTexturesRequested(): bunch "<<i<<"/"<<num_bunches
+					<<" textures="<<texture_bunches[i].size()
+					<<" size=" <<s.size()<<std::endl;
+			SharedBuffer<u8> data((u8*)s.c_str(), s.size());
+			// Send as reliable
+			m_con.Send(peer_id, 0, data, true);
 		}
-		
-		// Make data buffer
-		std::string s = os.str();
-		infostream<<"Server::SendTextures(): bunch "<<i<<"/"<<num_bunches
-				<<" textures="<<texture_bunches[i].size()
-				<<" size=" <<s.size()<<std::endl;
-		SharedBuffer<u8> data((u8*)s.c_str(), s.size());
-		// Send as reliable
-		m_con.Send(peer_id, 0, data, true);
-	}
+
+
 }
 
 /*

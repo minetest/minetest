@@ -36,6 +36,22 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "tooldef.h"
 #include "craftitemdef.h"
 #include <IFileSystem.h>
+#include "sha1.h"
+#include "base64.h"
+
+static std::string getTextureCacheDir()
+{
+	return porting::path_userdata + DIR_DELIM + "cache" + DIR_DELIM + "texture";
+}
+
+struct TextureRequest
+{
+	std::string name;
+
+	TextureRequest(const std::string &name_=""):
+		name(name_)
+	{}
+};
 
 /*
 	QueuedMeshUpdate
@@ -1232,6 +1248,157 @@ void Client::ProcessData(u8 *data, u32 datasize, u16 sender_peer_id)
 		event.deathscreen.camera_point_target_z = camera_point_target.Z;
 		m_client_event_queue.push_back(event);
 	}
+	else if(command == TOCLIENT_ANNOUNCE_TEXTURES)
+	{
+		io::IFileSystem *irrfs = m_device->getFileSystem();
+		video::IVideoDriver *vdrv = m_device->getVideoDriver();
+
+		std::string datastring((char*)&data[2], datasize-2);
+		std::istringstream is(datastring, std::ios_base::binary);
+
+
+		// Stop threads while updating content definitions
+		m_mesh_update_thread.setRun(false);
+		// Process the remaining TextureSource queue to let MeshUpdateThread
+		// get it's remaining textures and thus let it stop
+		while(m_mesh_update_thread.IsRunning()){
+			m_tsrc->processQueue();
+		}
+
+		int num_textures = readU16(is);
+
+		core::list<TextureRequest> texture_requests;
+
+		for(int i=0; i<num_textures; i++){
+
+			bool texture_found = false;
+
+			//read texture from cache
+			std::string name = deSerializeString(is);
+			std::string sha1_texture = deSerializeString(is);
+
+			std::string tpath = getTextureCacheDir() + DIR_DELIM + name;
+			// Read data
+			std::ifstream fis(tpath.c_str(), std::ios_base::binary);
+
+
+			if(fis.good() == false){
+				infostream<<"Client::Texture not found in cache: "
+						<<name << " expected it at: "<<tpath<<std::endl;
+			}
+			else
+			{
+				std::ostringstream tmp_os(std::ios_base::binary);
+				bool bad = false;
+				for(;;){
+					char buf[1024];
+					fis.read(buf, 1024);
+					std::streamsize len = fis.gcount();
+					tmp_os.write(buf, len);
+					if(fis.eof())
+						break;
+					if(!fis.good()){
+						bad = true;
+						break;
+					}
+				}
+				if(bad){
+					infostream<<"Client: Failed to read texture from cache\""
+							<<name<<"\""<<std::endl;
+				}
+				else {
+
+					SHA1 sha1;
+					sha1.addBytes(tmp_os.str().c_str(), tmp_os.str().length());
+
+					unsigned char *digest = sha1.getDigest();
+
+					std::string digest_string = base64_encode(digest, 20);
+
+					if (digest_string == sha1_texture) {
+						// Silly irrlicht's const-incorrectness
+						Buffer<char> data_rw(tmp_os.str().c_str(), tmp_os.str().size());
+
+						// Create an irrlicht memory file
+						io::IReadFile *rfile = irrfs->createMemoryReadFile(
+								*data_rw,  tmp_os.str().size(), "_tempreadfile");
+						assert(rfile);
+						// Read image
+						video::IImage *img = vdrv->createImageFromFile(rfile);
+						if(!img){
+							infostream<<"Client: Cannot create image from data of "
+									<<"received texture \""<<name<<"\""<<std::endl;
+							rfile->drop();
+						}
+						else {
+							m_tsrc->insertSourceImage(name, img);
+							img->drop();
+							rfile->drop();
+
+							texture_found = true;
+						}
+					}
+					else {
+						infostream<<"Client::Texture cached sha1 hash not matching server hash: "
+								<<name << ": server ->"<<sha1_texture <<" client -> "<<digest_string<<std::endl;
+					}
+
+					delete(digest);
+				}
+			}
+
+			//add texture request
+			if (!texture_found) {
+				infostream<<"Client: Adding texture to request list: \""
+						<<name<<"\""<<std::endl;
+				texture_requests.push_back(TextureRequest(name));
+			}
+
+		}
+		// Resume threads
+		m_mesh_update_thread.setRun(true);
+		m_mesh_update_thread.Start();
+
+		ClientEvent event;
+		event.type = CE_TEXTURES_UPDATED;
+		m_client_event_queue.push_back(event);
+
+
+		//send Texture request
+		/*
+				u16 command
+				u16 number of textures requested
+				for each texture {
+					u16 length of name
+					string name
+					u16 length of path
+					string path
+				}
+		 */
+		std::ostringstream os(std::ios_base::binary);
+		u8 buf[12];
+
+
+		// Write command
+		writeU16(buf, TOSERVER_REQUEST_TEXTURES);
+		os.write((char*)buf, 2);
+
+		writeU16(buf,texture_requests.size());
+		os.write((char*)buf, 2);
+
+
+		for(core::list<TextureRequest>::Iterator i = texture_requests.begin();
+				i != texture_requests.end(); i++) {
+			os<<serializeString(i->name);
+		}
+
+		// Make data buffer
+		std::string s = os.str();
+		SharedBuffer<u8> data((u8*)s.c_str(), s.size());
+		// Send as reliable
+		Send(0, data, true);
+		infostream<<"Client: Sending request list to server " <<std::endl;
+	}
 	else if(command == TOCLIENT_TEXTURES)
 	{
 		io::IFileSystem *irrfs = m_device->getFileSystem();
@@ -1286,6 +1453,20 @@ void Client::ProcessData(u8 *data, u32 datasize, u16 sender_peer_id)
 				rfile->drop();
 				continue;
 			}
+
+			fs::CreateAllDirs(getTextureCacheDir());
+
+			std::string filename = getTextureCacheDir() + DIR_DELIM + name;
+			std::ofstream outfile(filename.c_str(), std::ios_base::binary | std::ios_base::trunc);
+
+			if (outfile.good()) {
+				outfile.write(data.c_str(),data.length());
+				outfile.close();
+			}
+			else {
+				errorstream<<"Client: Unable to open cached texture file "<< filename <<std::endl;
+			}
+
 			m_tsrc->insertSourceImage(name, img);
 			img->drop();
 			rfile->drop();

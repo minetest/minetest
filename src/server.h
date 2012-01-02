@@ -236,6 +236,28 @@ struct PrioritySortedBlockTransfer
 	u16 peer_id;
 };
 
+struct TextureRequest
+{
+	std::string name;
+
+	TextureRequest(const std::string &name_=""):
+		name(name_)
+	{}
+};
+
+struct TextureInformation
+{
+	std::string path;
+	std::string sha1_digest;
+
+	TextureInformation(const std::string path_="",
+			const std::string sha1_digest_=""):
+		path(path_),
+		sha1_digest(sha1_digest_)
+	{
+	}
+};
+
 class RemoteClient
 {
 public:
@@ -564,7 +586,11 @@ private:
 	// Sends blocks to clients (locks env and con on its own)
 	void SendBlocks(float dtime);
 	
-	void SendTextures(u16 peer_id);
+	void PrepareTextures();
+
+	void SendTextureAnnouncement(u16 peer_id);
+
+	void SendTexturesRequested(u16 peer_id,core::list<TextureRequest> tosend);
 
 	/*
 		Something random
@@ -744,6 +770,8 @@ private:
 
 	friend class EmergeThread;
 	friend class RemoteClient;
+
+	std::map<std::string,TextureInformation> m_Textures;
 };
 
 /*

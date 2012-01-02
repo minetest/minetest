@@ -37,9 +37,11 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 		Obsolete TOSERVER_GROUND_ACTION
 	PROTOCOL_VERSION 5:
 		Make players to be handled mostly as ActiveObjects
+	PROTOCOL_VERSION 6:
+		Only non-cached textures are sent
 */
 
-#define PROTOCOL_VERSION 5
+#define PROTOCOL_VERSION 6
 
 #define PROTOCOL_ID 0x4f457403
 
@@ -235,6 +237,19 @@ enum ToClientCommand
 		u32 length of the next item
 		serialized CraftiItemDefManager
 	*/
+
+	TOCLIENT_ANNOUNCE_TEXTURES = 0x3c,
+
+	/*
+		u16 command
+		u32 number of textures
+		for each texture {
+			u16 length of name
+			string name
+			u16 length of sha1_digest
+			string sha1_digest
+		}
+	*/
 };
 
 enum ToServerCommand
@@ -408,6 +423,17 @@ enum ToServerCommand
 		(Obsoletes TOSERVER_GROUND_ACTION and TOSERVER_CLICK_ACTIVEOBJECT.)
 	*/
 	
+	TOSERVER_REQUEST_TEXTURES = 0x40,
+
+	/*
+			u16 command
+			u16 number of textures requested
+			for each texture {
+				u16 length of name
+				string name
+			}
+	 */
+
 };
 
 inline SharedBuffer<u8> makePacket_TOCLIENT_TIME_OF_DAY(u16 time)
