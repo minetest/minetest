@@ -4307,7 +4307,7 @@ void Server::PrepareTextures() {
 				unsigned char *digest = sha1.getDigest();
 				std::string digest_string = base64_encode(digest, 20);
 
-				delete(digest);
+				free(digest);
 
 				// Put in list
 				this->m_Textures[tname] = TextureInformation(tpath,digest_string);

@@ -1343,7 +1343,7 @@ void Client::ProcessData(u8 *data, u32 datasize, u16 sender_peer_id)
 								<<name << ": server ->"<<sha1_texture <<" client -> "<<digest_string<<std::endl;
 					}
 
-					delete(digest);
+					free(digest);
 				}
 			}
 
