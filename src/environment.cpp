@@ -204,6 +204,19 @@ u32 Environment::getDayNightRatio()
 }
 
 /*
+	ABMWithState
+*/
+
+ABMWithState::ABMWithState(ActiveBlockModifier *abm_):
+	abm(abm_),
+	timer(0)
+{
+	// Initialize timer to random value to spread processing
+	float itv = abm->getTriggerInterval();
+	timer = myrand_range(-0.51*itv, 0.51*itv);
+}
+
+/*
 	ActiveBlockList
 */
 
