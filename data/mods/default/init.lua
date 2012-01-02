@@ -152,7 +152,7 @@
 --   ^ Returns nil for unloaded area
 -- - get_node_light(pos, timeofday) -> 0...15 or nil
 --   ^ timeofday: nil = current time, 0 = night, 0.5 = day
--- - add_entity(pos, name)
+-- - add_entity(pos, name): Returns ObjectRef or nil if failed
 -- - add_item(pos, itemstring)
 -- - add_rat(pos)
 -- - add_firefly(pos)

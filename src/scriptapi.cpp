@@ -2352,8 +2352,13 @@ private:
 		const char *name = luaL_checkstring(L, 3);
 		// Do it
 		ServerActiveObject *obj = new LuaEntitySAO(env, pos, name, "");
-		env->addActiveObject(obj);
-		return 0;
+		int objectid = env->addActiveObject(obj);
+		// If failed to add, return nothing (reads as nil)
+		if(objectid == 0)
+			return 0;
+		// Return ObjectRef
+		objectref_get_or_create(L, obj);
+		return 1;
 	}
 
 	// EnvRef:add_item(pos, inventorystring)
