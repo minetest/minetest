@@ -2026,6 +2026,7 @@ private:
 		return 0;
 	}
 
+	// DEPRECATED
 	// get_entity_name(self)
 	static int l_get_entity_name(lua_State *L)
 	{

@@ -210,7 +210,7 @@
 -- -           select_horiz_by_yawpitch=false)
 -- - ^ Select sprite from spritesheet with optional animation and DM-style
 -- -   texture selection based on yaw relative to camera
--- - get_entity_name()
+-- - get_entity_name() (DEPRECATED: Will be removed in a future version)
 -- - get_luaentity()
 -- Player-only: (no-op for other objects)
 -- - get_player_name(): will return nil if is not a player
