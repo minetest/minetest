@@ -1928,6 +1928,18 @@ private:
 		return 0;
 	}
 	
+	// getvelocity(self)
+	static int l_getvelocity(lua_State *L)
+	{
+		ObjectRef *ref = checkobject(L, 1);
+		LuaEntitySAO *co = getluaobject(ref);
+		if(co == NULL) return 0;
+		// Do it
+		v3f v = co->getVelocity();
+		pushFloatPos(L, v);
+		return 1;
+	}
+	
 	// setacceleration(self, {x=num, y=num, z=num})
 	static int l_setacceleration(lua_State *L)
 	{
@@ -1950,6 +1962,31 @@ private:
 		// Do it
 		v3f v = co->getAcceleration();
 		pushFloatPos(L, v);
+		return 1;
+	}
+	
+	// setyaw(self, radians)
+	static int l_setyaw(lua_State *L)
+	{
+		ObjectRef *ref = checkobject(L, 1);
+		LuaEntitySAO *co = getluaobject(ref);
+		if(co == NULL) return 0;
+		// pos
+		float yaw = luaL_checknumber(L, 2) * core::RADTODEG;
+		// Do it
+		co->setYaw(yaw);
+		return 0;
+	}
+	
+	// getyaw(self)
+	static int l_getyaw(lua_State *L)
+	{
+		ObjectRef *ref = checkobject(L, 1);
+		LuaEntitySAO *co = getluaobject(ref);
+		if(co == NULL) return 0;
+		// Do it
+		float yaw = co->getYaw() * core::DEGTORAD;
+		lua_pushnumber(L, yaw);
 		return 1;
 	}
 	
@@ -2209,8 +2246,11 @@ const luaL_reg ObjectRef::methods[] = {
 	method(ObjectRef, get_hp),
 	// LuaEntitySAO-only
 	method(ObjectRef, setvelocity),
+	method(ObjectRef, getvelocity),
 	method(ObjectRef, setacceleration),
 	method(ObjectRef, getacceleration),
+	method(ObjectRef, setyaw),
+	method(ObjectRef, getyaw),
 	method(ObjectRef, settexturemod),
 	method(ObjectRef, setsprite),
 	method(ObjectRef, get_entity_name),

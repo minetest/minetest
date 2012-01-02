@@ -213,8 +213,11 @@ public:
 	float getMinimumSavedMovement();
 	/* LuaEntitySAO-specific */
 	void setVelocity(v3f velocity);
+	v3f getVelocity();
 	void setAcceleration(v3f acceleration);
 	v3f getAcceleration();
+	void setYaw(float yaw);
+	float getYaw();
 	void setTextureMod(const std::string &mod);
 	void setSprite(v2s16 p, int num_frames, float framelength,
 			bool select_horiz_by_yawpitch);

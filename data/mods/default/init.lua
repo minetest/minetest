@@ -200,8 +200,11 @@
 -- - set_hp(hp): set number of hitpoints (2 * number of hearts)
 -- LuaEntitySAO-only: (no-op for other objects)
 -- - setvelocity({x=num, y=num, z=num})
+-- - getvelocity() -> {x=num, y=num, z=num}
 -- - setacceleration({x=num, y=num, z=num})
 -- - getacceleration() -> {x=num, y=num, z=num}
+-- - setyaw(radians)
+-- - getyaw() -> radians
 -- - settexturemod(mod)
 -- - setsprite(p={x=0,y=0}, num_frames=1, framelength=0.2,
 -- -           select_horiz_by_yawpitch=false)
