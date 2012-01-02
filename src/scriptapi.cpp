@@ -2652,6 +2652,10 @@ static int l_register_entity(lua_State *L)
 	
 	// Get registered object to top of stack
 	lua_pushvalue(L, 2);
+
+	// Set name field
+	lua_pushvalue(L, 1);
+	lua_setfield(L, -2, "name");
 	
 	// Set __index to point to itself
 	lua_pushvalue(L, -1);

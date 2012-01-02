@@ -239,6 +239,7 @@
 --
 -- Registered entities:
 -- - Functions receive a "luaentity" as self:
+--   - It has the member .name, which is the registered name ("mod:thing")
 --   - It has the member .object, which is an ObjectRef pointing to the object
 --   - The original prototype stuff is visible directly via a metatable
 -- - Callbacks:
