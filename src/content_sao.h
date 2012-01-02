@@ -218,6 +218,7 @@ public:
 	void setTextureMod(const std::string &mod);
 	void setSprite(v2s16 p, int num_frames, float framelength,
 			bool select_horiz_by_yawpitch);
+	std::string getName();
 private:
 	void sendPosition(bool do_interpolate, bool is_movement_end);
 

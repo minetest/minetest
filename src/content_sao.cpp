@@ -1736,6 +1736,11 @@ void LuaEntitySAO::setSprite(v2s16 p, int num_frames, float framelength,
 	m_messages_out.push_back(aom);
 }
 
+std::string LuaEntitySAO::getName()
+{
+	return m_init_name;
+}
+
 void LuaEntitySAO::sendPosition(bool do_interpolate, bool is_movement_end)
 {
 	m_last_sent_move_precision = m_base_position.getDistanceFrom(

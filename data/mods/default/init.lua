@@ -160,7 +160,7 @@
 -- - get_player_by_name(name) -- Get an ObjectRef to a player
 -- - get_objects_inside_radius(pos, radius)
 --
--- NodeMetaRef
+-- NodeMetaRef (this stuff is subject to change in a future version)
 -- - get_type()
 -- - allows_text_input()
 -- - set_text(text) -- eg. set the text of a sign
@@ -194,18 +194,21 @@
 -- - right_click(clicker); clicker = an another ObjectRef
 -- - get_wield_digging_properties() -> digging property table
 -- - damage_wielded_item(num) (item damage/wear range is 0-65535)
--- - add_to_inventory(itemstring): add an item to object inventory
+-- - add_to_inventory(itemstring): add an item to object inventory (actually only works for the player as of now)
 -- - add_to_inventory_later(itemstring): like above, but after callback returns (only allowed for craftitem callbacks)
 -- - get_hp(): returns number of hitpoints (2 * number of hearts)
 -- - set_hp(hp): set number of hitpoints (2 * number of hearts)
--- LuaEntitySAO-only:
+-- LuaEntitySAO-only: (no-op for other objects)
 -- - setvelocity({x=num, y=num, z=num})
 -- - setacceleration({x=num, y=num, z=num})
 -- - getacceleration() -> {x=num, y=num, z=num}
 -- - settexturemod(mod)
 -- - setsprite(p={x=0,y=0}, num_frames=1, framelength=0.2,
 -- -           select_horiz_by_yawpitch=false)
--- Player-only:
+-- - ^ Select sprite from spritesheet with optional animation and DM-style
+-- -   texture selection based on yaw relative to camera
+-- - get_entity_name()
+-- Player-only: (no-op for other objects)
 -- - get_player_name(): will return nil if is not a player
 -- - get_inventory() -> InvRef
 -- - inventory_set_list(name, {item1, item2, ...})
@@ -247,8 +250,11 @@
 -- {
 --     physical = true,
 --     collisionbox = {-0.5,-0.5,-0.5, 0.5,0.5,0.5},
---     visual = "cube",
+--     visual = "cube"/"sprite",
+--     visual_size = {x=1, y=1},
 --     textures = {texture,texture,texture,texture,texture,texture},
+--     spritediv = {x=1, y=1},
+--     initial_sprite_basepos = {x=0, y=0},
 --     on_activate = function(self, staticdata),
 --     on_step = function(self, dtime),
 --     on_punch = function(self, hitter),
