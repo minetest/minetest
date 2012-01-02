@@ -2140,9 +2140,6 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 			m_con.Send(peer_id, 0, data, true);
 		}
 		
-		// Now the client should know about everything
-		getClient(peer_id)->definitions_sent = true;
-		
 		// Send information about server to player in chat
 		SendChatMessage(peer_id, getStatusString());
 		
@@ -2849,6 +2846,10 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 		}
 
 		SendTexturesRequested(peer_id, tosend);
+
+		// Now the client should know about everything
+		// (definitions and textures)
+		getClient(peer_id)->definitions_sent = true;
 	}
 	else if(command == TOSERVER_INTERACT)
 	{
