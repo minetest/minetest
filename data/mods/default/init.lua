@@ -208,6 +208,7 @@
 -- - ^ Select sprite from spritesheet with optional animation and DM-style
 -- -   texture selection based on yaw relative to camera
 -- - get_entity_name()
+-- - get_luaentity()
 -- Player-only: (no-op for other objects)
 -- - get_player_name(): will return nil if is not a player
 -- - get_inventory() -> InvRef

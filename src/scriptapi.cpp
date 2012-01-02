@@ -2001,6 +2001,17 @@ private:
 		return 1;
 	}
 	
+	// get_luaentity(self)
+	static int l_get_luaentity(lua_State *L)
+	{
+		ObjectRef *ref = checkobject(L, 1);
+		LuaEntitySAO *co = getluaobject(ref);
+		if(co == NULL) return 0;
+		// Do it
+		luaentity_get(L, co->getId());
+		return 1;
+	}
+	
 	/* Player-only */
 	
 	// get_player_name(self)
@@ -2203,6 +2214,7 @@ const luaL_reg ObjectRef::methods[] = {
 	method(ObjectRef, settexturemod),
 	method(ObjectRef, setsprite),
 	method(ObjectRef, get_entity_name),
+	method(ObjectRef, get_luaentity),
 	// Player-only
 	method(ObjectRef, get_player_name),
 	method(ObjectRef, get_inventory),
