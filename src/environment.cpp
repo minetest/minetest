@@ -213,7 +213,10 @@ ABMWithState::ABMWithState(ActiveBlockModifier *abm_):
 {
 	// Initialize timer to random value to spread processing
 	float itv = abm->getTriggerInterval();
-	timer = myrand_range(-0.51*itv, 0.51*itv);
+	itv = MYMAX(0.001, itv); // No less than 1ms
+	int minval = MYMAX(-0.51*itv, -60); // Clamp to
+	int maxval = MYMIN(0.51*itv, 60);   // +-60 seconds
+	timer = myrand_range(minval, maxval);
 }
 
 /*
