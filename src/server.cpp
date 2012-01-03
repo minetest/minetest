@@ -4273,6 +4273,12 @@ void Server::PrepareTextures() {
 				if(dirlist[j].dir) // Ignode dirs
 					continue;
 				std::string tname = dirlist[j].name;
+				// if name contains illegal characters, ignore the texture
+				if(!string_allowed(tname, TEXTURENAME_ALLOWED_CHARS)){
+					errorstream<<"Server: ignoring illegal texture name: \""
+							<<tname<<"\""<<std::endl;
+					continue;
+				}
 				std::string tpath = texturepath + DIR_DELIM + tname;
 				// Read data
 				std::ifstream fis(tpath.c_str(), std::ios_base::binary);
@@ -4298,6 +4304,11 @@ void Server::PrepareTextures() {
 				if(bad){
 					errorstream<<"Server::PrepareTextures(): Failed to read \""
 							<<tname<<"\""<<std::endl;
+					continue;
+				}
+				if(tmp_os.str().length() == 0){
+					errorstream<<"Server::PrepareTextures(): Empty file \""
+							<<tpath<<"\""<<std::endl;
 					continue;
 				}
 
@@ -4332,7 +4343,7 @@ struct SendableTextureAnnouncement
 void Server::SendTextureAnnouncement(u16 peer_id){
 	DSTACK(__FUNCTION_NAME);
 
-	infostream<<"Server::SendTextureAnnouncement(): Calculate sha1 sums of textures and send to client"<<std::endl;
+	infostream<<"Server::SendTextureAnnouncement()"<<std::endl;
 
 	core::list<SendableTextureAnnouncement> texture_announcements;
 
@@ -4407,6 +4418,11 @@ void Server::SendTexturesRequested(u16 peer_id,core::list<TextureRequest> tosend
 	u32 texture_size_bunch_total = 0;
 
 	for(core::list<TextureRequest>::Iterator i = tosend.begin(); i != tosend.end(); i++) {
+		if(m_Textures.find(i->name) == m_Textures.end()){
+			errorstream<<"Server::SendTexturesRequested(): Client asked for "
+					<<"unknown texture \""<<(i->name)<<"\""<<std::endl;
+			continue;
+		}
 
 		//TODO get path + name
 		std::string tpath = m_Textures[(*i).name].path;

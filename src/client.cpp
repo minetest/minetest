@@ -1276,6 +1276,13 @@ void Client::ProcessData(u8 *data, u32 datasize, u16 sender_peer_id)
 			//read texture from cache
 			std::string name = deSerializeString(is);
 			std::string sha1_texture = deSerializeString(is);
+			
+			// if name contains illegal characters, ignore the texture
+			if(!string_allowed(name, TEXTURENAME_ALLOWED_CHARS)){
+				errorstream<<"Client: ignoring illegal texture name "
+						<<"sent by server: \""<<name<<"\""<<std::endl;
+				continue;
+			}
 
 			std::string tpath = getTextureCacheDir() + DIR_DELIM + name;
 			// Read data
@@ -1371,8 +1378,6 @@ void Client::ProcessData(u8 *data, u32 datasize, u16 sender_peer_id)
 				for each texture {
 					u16 length of name
 					string name
-					u16 length of path
-					string path
 				}
 		 */
 		std::ostringstream os(std::ios_base::binary);
@@ -1439,6 +1444,14 @@ void Client::ProcessData(u8 *data, u32 datasize, u16 sender_peer_id)
 		for(int i=0; i<num_textures; i++){
 			std::string name = deSerializeString(is);
 			std::string data = deSerializeLongString(is);
+
+			// if name contains illegal characters, ignore the texture
+			if(!string_allowed(name, TEXTURENAME_ALLOWED_CHARS)){
+				errorstream<<"Client: ignoring illegal texture name "
+						<<"sent by server: \""<<name<<"\""<<std::endl;
+				continue;
+			}
+
 			// Silly irrlicht's const-incorrectness
 			Buffer<char> data_rw(data.c_str(), data.size());
 			// Create an irrlicht memory file
