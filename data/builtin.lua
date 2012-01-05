@@ -435,6 +435,7 @@ minetest.registered_on_dignodes, minetest.register_on_dignode = make_registratio
 minetest.registered_on_punchnodes, minetest.register_on_punchnode = make_registration()
 minetest.registered_on_generateds, minetest.register_on_generated = make_registration()
 minetest.registered_on_newplayers, minetest.register_on_newplayer = make_registration()
+minetest.registered_on_dieplayers, minetest.register_on_dieplayer = make_registration()
 minetest.registered_on_respawnplayers, minetest.register_on_respawnplayer = make_registration()
 
 -- END

@@ -3638,6 +3638,32 @@ void scriptapi_on_newplayer(lua_State *L, ServerActiveObject *player)
 		// value removed, keep key for next iteration
 	}
 }
+
+void scriptapi_on_dieplayer(lua_State *L, ServerActiveObject *player)
+{
+    realitycheck(L);
+    assert(lua_checkstack(L, 20));
+    StackUnroller stack_unroller(L);
+    
+    // Get minetest.registered_on_dieplayers
+    lua_getglobal(L, "minetest");
+    lua_getfield(L, -1, "registered_on_dieplayers");
+    luaL_checktype(L, -1, LUA_TTABLE);
+    int table = lua_gettop(L);
+    // Foreach
+    lua_pushnil(L);
+    while(lua_next(L, table) != 0){
+        // key at index -2 and value at index -1
+       luaL_checktype(L, -1, LUA_TFUNCTION);
+        // Call function
+       objectref_get_or_create(L, player);
+        if(lua_pcall(L, 1, 0, 0))
+            script_error(L, "error: %s", lua_tostring(L, -1));
+        // value removed, keep key for next iteration
+    }
+}
+
+
 bool scriptapi_on_respawnplayer(lua_State *L, ServerActiveObject *player)
 {
 	realitycheck(L);

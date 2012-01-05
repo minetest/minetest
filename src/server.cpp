@@ -4537,7 +4537,8 @@ void Server::HandlePlayerHP(Player *player, s16 damage)
 	
 	player->hp = 0;
 	
-	//TODO: Throw items around
+	// Trigger scripted stuff
+	scriptapi_on_dieplayer(m_lua, srp);
 	
 	// Handle players that are not connected
 	if(player->peer_id == PEER_ID_INEXISTENT){

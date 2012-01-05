@@ -101,8 +101,10 @@
 -- minetest.register_on_punchnode(func(pos, node, puncher))
 -- minetest.register_on_generated(func(minp, maxp))
 -- minetest.register_on_newplayer(func(ObjectRef))
+-- minetest.register_on_dieplayer(func(ObjectRef))
 -- minetest.register_on_respawnplayer(func(ObjectRef))
 -- ^ return true in func to disable regular player placement
+-- ^ currently called _before_ repositioning of player occurs
 -- minetest.register_on_chat_message(func(name, message))
 -- minetest.add_to_creative_inventory(itemstring)
 -- minetest.setting_get(name) -> string or nil
