@@ -1747,6 +1747,10 @@ private:
 		v3f pos = checkFloatPos(L, 2);
 		// Do it
 		co->setPos(pos);
+		// Move player if applicable
+		ServerRemotePlayer *player = getplayer(ref);
+		if(player != NULL)
+			get_server(L)->SendMovePlayer(player);
 		return 0;
 	}
 	
