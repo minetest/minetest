@@ -1394,6 +1394,18 @@ private:
 		return 1;
 	}
 
+	static int l_set_owner(lua_State *L)
+	{
+		NodeMetaRef *ref = checkobject(L, 1);
+		NodeMetadata *meta = getmeta(ref);
+		if(meta == NULL) return 0;
+		// Do it
+		std::string owner = lua_tostring(L, 2);
+		meta->setOwner(owner);
+		reportMetadataChange(ref);
+		return 0;
+	}
+
 	/* IGenericNodeMetadata interface */
 	
 	// set_infotext(self, text)
@@ -1634,6 +1646,7 @@ const luaL_reg NodeMetaRef::methods[] = {
 	method(NodeMetaRef, set_text),
 	method(NodeMetaRef, get_text),
 	method(NodeMetaRef, get_owner),
+	method(NodeMetaRef, set_owner),
 	method(NodeMetaRef, set_infotext),
 	method(NodeMetaRef, get_inventory),
 	method(NodeMetaRef, inventory_set_list), // deprecated

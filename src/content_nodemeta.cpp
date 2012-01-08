@@ -702,6 +702,8 @@ public:
 	}
 	void setOwner(std::string t)
 	{
+		infostream<<"GenericNodeMetadata::setOwner(\""
+						<<t<<"\")"<<std::endl;
 		m_owner = t;
 	}
 	
