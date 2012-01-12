@@ -18,73 +18,91 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 */
 
 #include "inventorymanager.h"
-#include "serverremoteplayer.h"
 #include "log.h"
-#include "mapblock.h" // getNodeBlockPos
+#include "environment.h"
+#include "scriptapi.h"
+#include "serverobject.h"
+#include "main.h"  // for g_settings
+#include "settings.h"
+#include "utility.h"
 
 /*
-	InventoryManager
+	InventoryLocation
 */
 
-// Wrapper for old code
-Inventory* InventoryManager::getInventory(InventoryContext *c, std::string id)
+std::string InventoryLocation::dump() const
 {
-	if(id == "current_player")
-	{
-		assert(c->current_player);
-		InventoryLocation loc;
-		loc.setPlayer(c->current_player->getName());
-		return getInventory(loc);
-	}
-	
-	Strfnd fn(id);
-	std::string id0 = fn.next(":");
-
-	if(id0 == "nodemeta")
-	{
-		v3s16 p;
-		p.X = stoi(fn.next(","));
-		p.Y = stoi(fn.next(","));
-		p.Z = stoi(fn.next(","));
-
-		InventoryLocation loc;
-		loc.setNodeMeta(p);
-		return getInventory(loc);
-	}
-
-	errorstream<<__FUNCTION_NAME<<": unknown id "<<id<<std::endl;
-	return NULL;
+	std::ostringstream os(std::ios::binary);
+	serialize(os);
+	return os.str();
 }
-// Wrapper for old code
-void InventoryManager::inventoryModified(InventoryContext *c, std::string id)
-{
-	if(id == "current_player")
-	{
-		assert(c->current_player);
-		InventoryLocation loc;
-		loc.setPlayer(c->current_player->getName());
-		setInventoryModified(loc);
-		return;
-	}
-	
-	Strfnd fn(id);
-	std::string id0 = fn.next(":");
 
-	if(id0 == "nodemeta")
+void InventoryLocation::serialize(std::ostream &os) const
+{
+        switch(type){
+        case InventoryLocation::UNDEFINED:
+        {
+		os<<"undefined";
+	}
+        break;
+        case InventoryLocation::CURRENT_PLAYER:
+        {
+		os<<"current_player";
+        }
+        break;
+        case InventoryLocation::PLAYER:
+        {
+		os<<"player:"<<name;
+        }
+        break;
+        case InventoryLocation::NODEMETA:
+        {
+		os<<"nodemeta:"<<p.X<<","<<p.Y<<","<<p.Z;
+        }
+        break;
+        default:
+                assert(0);
+        }
+}
+
+void InventoryLocation::deSerialize(std::istream &is)
+{
+	std::string tname;
+	std::getline(is, tname, ':');
+	if(tname == "undefined")
 	{
-		v3s16 p;
+		type = InventoryLocation::UNDEFINED;
+	}
+	else if(tname == "current_player")
+	{
+		type = InventoryLocation::CURRENT_PLAYER;
+	}
+	else if(tname == "player")
+	{
+		type = InventoryLocation::PLAYER;
+		std::getline(is, name, '\n');
+	}
+	else if(tname == "nodemeta")
+	{
+		type = InventoryLocation::NODEMETA;
+		std::string pos;
+		std::getline(is, pos, '\n');
+		Strfnd fn(pos);
 		p.X = stoi(fn.next(","));
 		p.Y = stoi(fn.next(","));
 		p.Z = stoi(fn.next(","));
-		v3s16 blockpos = getNodeBlockPos(p);
-
-		InventoryLocation loc;
-		loc.setNodeMeta(p);
-		setInventoryModified(loc);
-		return;
 	}
+	else
+	{
+		infostream<<"Unknown InventoryLocation type=\""<<tname<<"\""<<std::endl;
+		throw SerializationError("Unknown InventoryLocation type");
+	}
+}
 
-	errorstream<<__FUNCTION_NAME<<": unknown id "<<id<<std::endl;
+void InventoryLocation::deSerialize(std::string s)
+{
+	std::istringstream is(s, std::ios::binary);
+	deSerialize(is);
 }
 
 /*
@@ -110,14 +128,6 @@ InventoryAction * InventoryAction::deSerialize(std::istream &is)
 	return a;
 }
 
-static std::string describeC(const struct InventoryContext *c)
-{
-	if(c->current_player == NULL)
-		return "current_player=NULL";
-	else
-		return std::string("current_player=") + c->current_player->getName();
-}
-
 IMoveAction::IMoveAction(std::istream &is)
 {
 	std::string ts;
@@ -125,14 +135,16 @@ IMoveAction::IMoveAction(std::istream &is)
 	std::getline(is, ts, ' ');
 	count = stoi(ts);
 
-	std::getline(is, from_inv, ' ');
+	std::getline(is, ts, ' ');
+	from_inv.deSerialize(ts);
 
 	std::getline(is, from_list, ' ');
 
 	std::getline(is, ts, ' ');
 	from_i = stoi(ts);
 
-	std::getline(is, to_inv, ' ');
+	std::getline(is, ts, ' ');
+	to_inv.deSerialize(ts);
 
 	std::getline(is, to_list, ' ');
 
@@ -140,22 +152,21 @@ IMoveAction::IMoveAction(std::istream &is)
 	to_i = stoi(ts);
 }
 
-void IMoveAction::apply(InventoryContext *c, InventoryManager *mgr,
-		ServerEnvironment *env)
+void IMoveAction::apply(InventoryManager *mgr, ServerActiveObject *player)
 {
-	Inventory *inv_from = mgr->getInventory(c, from_inv);
-	Inventory *inv_to = mgr->getInventory(c, to_inv);
+	Inventory *inv_from = mgr->getInventory(from_inv);
+	Inventory *inv_to = mgr->getInventory(to_inv);
 	
 	if(!inv_from){
 		infostream<<"IMoveAction::apply(): FAIL: source inventory not found: "
-				<<"context=["<<describeC(c)<<"], from_inv=\""<<from_inv<<"\""
-				<<", to_inv=\""<<to_inv<<"\""<<std::endl;
+				<<"from_inv=\""<<from_inv.dump()<<"\""
+				<<", to_inv=\""<<to_inv.dump()<<"\""<<std::endl;
 		return;
 	}
 	if(!inv_to){
 		infostream<<"IMoveAction::apply(): FAIL: destination inventory not found: "
-				"context=["<<describeC(c)<<"], from_inv=\""<<from_inv<<"\""
-				<<", to_inv=\""<<to_inv<<"\""<<std::endl;
+				<<"from_inv=\""<<from_inv.dump()<<"\""
+				<<", to_inv=\""<<to_inv.dump()<<"\""<<std::endl;
 		return;
 	}
 
@@ -167,20 +178,20 @@ void IMoveAction::apply(InventoryContext *c, InventoryManager *mgr,
 	*/
 	if(!list_from){
 		infostream<<"IMoveAction::apply(): FAIL: source list not found: "
-				<<"context=["<<describeC(c)<<"], from_inv=\""<<from_inv<<"\""
+				<<"from_inv=\""<<from_inv.dump()<<"\""
 				<<", from_list=\""<<from_list<<"\""<<std::endl;
 		return;
 	}
 	if(!list_to){
 		infostream<<"IMoveAction::apply(): FAIL: destination list not found: "
-				<<"context=["<<describeC(c)<<"], to_inv=\""<<to_inv<<"\""
+				<<"to_inv=\""<<to_inv.dump()<<"\""
 				<<", to_list=\""<<to_list<<"\""<<std::endl;
 		return;
 	}
-	if(list_from->getItem(from_i) == NULL)
+	if(list_from->getItem(from_i).empty())
 	{
 		infostream<<"IMoveAction::apply(): FAIL: source item not found: "
-				<<"context=["<<describeC(c)<<"], from_inv=\""<<from_inv<<"\""
+				<<"from_inv=\""<<from_inv.dump()<<"\""
 				<<", from_list=\""<<from_list<<"\""
 				<<" from_i="<<from_i<<std::endl;
 		return;
@@ -191,27 +202,28 @@ void IMoveAction::apply(InventoryContext *c, InventoryManager *mgr,
 	if(inv_from == inv_to && list_from == list_to && from_i == to_i)
 	{
 		infostream<<"IMoveAction::apply(): FAIL: source and destination slots "
-				<<"are the same: inv=\""<<from_inv<<"\" list=\""<<from_list
+				<<"are the same: inv=\""<<from_inv.dump()
+				<<"\" list=\""<<from_list
 				<<"\" i="<<from_i<<std::endl;
 		return;
 	}
 	
 	// Take item from source list
-	InventoryItem *item1 = NULL;
+	ItemStack item1;
 	if(count == 0)
-		item1 = list_from->changeItem(from_i, NULL);
+		item1 = list_from->changeItem(from_i, ItemStack());
 	else
 		item1 = list_from->takeItem(from_i, count);
 
 	// Try to add the item to destination list
-	InventoryItem *olditem = item1;
+	int oldcount = item1.count;
 	item1 = list_to->addItem(to_i, item1);
 
 	// If something is returned, the item was not fully added
-	if(item1 != NULL)
+	if(!item1.empty())
 	{
 		// If olditem is returned, nothing was added.
-		bool nothing_added = (item1 == olditem);
+		bool nothing_added = (item1.count == oldcount);
 		
 		// If something else is returned, part of the item was left unadded.
 		// Add the other part back to the source item
@@ -222,24 +234,24 @@ void IMoveAction::apply(InventoryContext *c, InventoryManager *mgr,
 		if(nothing_added)
 		{
 			// Take item from source list
-			item1 = list_from->changeItem(from_i, NULL);
+			item1 = list_from->changeItem(from_i, ItemStack());
 			// Adding was not possible, swap the items.
-			InventoryItem *item2 = list_to->changeItem(to_i, item1);
+			ItemStack item2 = list_to->changeItem(to_i, item1);
 			// Put item from destination list to the source list
 			list_from->changeItem(from_i, item2);
 		}
 	}
 
-	mgr->inventoryModified(c, from_inv);
-	if(from_inv != to_inv)
-		mgr->inventoryModified(c, to_inv);
+	mgr->setInventoryModified(from_inv);
+	if(inv_from != inv_to)
+		mgr->setInventoryModified(to_inv);
 	
 	infostream<<"IMoveAction::apply(): moved at "
-			<<"["<<describeC(c)<<"]"
-			<<" from inv=\""<<from_inv<<"\""
+			<<" count="<<count<<"\""
+			<<" from inv=\""<<from_inv.dump()<<"\""
 			<<" list=\""<<from_list<<"\""
 			<<" i="<<from_i
-			<<" to inv=\""<<to_inv<<"\""
+			<<" to inv=\""<<to_inv.dump()<<"\""
 			<<" list=\""<<to_list<<"\""
 			<<" i="<<to_i
 			<<std::endl;
@@ -252,7 +264,8 @@ IDropAction::IDropAction(std::istream &is)
 	std::getline(is, ts, ' ');
 	count = stoi(ts);
 
-	std::getline(is, from_inv, ' ');
+	std::getline(is, ts, ' ');
+	from_inv.deSerialize(ts);
 
 	std::getline(is, from_list, ' ');
 
@@ -260,27 +273,13 @@ IDropAction::IDropAction(std::istream &is)
 	from_i = stoi(ts);
 }
 
-void IDropAction::apply(InventoryContext *c, InventoryManager *mgr,
-		ServerEnvironment *env)
+void IDropAction::apply(InventoryManager *mgr, ServerActiveObject *player)
 {
-	if(c->current_player == NULL){
-		infostream<<"IDropAction::apply(): FAIL: current_player is NULL"<<std::endl;
-		return;
-	}
-
-	// Do NOT cast directly to ServerActiveObject*, it breaks
-	// because of multiple inheritance.
-	ServerActiveObject *dropper =
-		static_cast<ServerActiveObject*>(
-		static_cast<ServerRemotePlayer*>(
-			c->current_player
-		));
-
-	Inventory *inv_from = mgr->getInventory(c, from_inv);
+	Inventory *inv_from = mgr->getInventory(from_inv);
 	
 	if(!inv_from){
 		infostream<<"IDropAction::apply(): FAIL: source inventory not found: "
-				<<"context=["<<describeC(c)<<"], from_inv=\""<<from_inv<<"\""<<std::endl;
+				<<"from_inv=\""<<from_inv.dump()<<"\""<<std::endl;
 		return;
 	}
 
@@ -291,254 +290,35 @@ void IDropAction::apply(InventoryContext *c, InventoryManager *mgr,
 	*/
 	if(!list_from){
 		infostream<<"IDropAction::apply(): FAIL: source list not found: "
-				<<"context=["<<describeC(c)<<"], from_inv=\""<<from_inv<<"\""
-				<<", from_list=\""<<from_list<<"\""<<std::endl;
+				<<"from_inv=\""<<from_inv.dump()<<"\""<<std::endl;
 		return;
 	}
-	InventoryItem *item = list_from->getItem(from_i);
-	if(item == NULL)
+	if(list_from->getItem(from_i).empty())
 	{
 		infostream<<"IDropAction::apply(): FAIL: source item not found: "
-				<<"context=["<<describeC(c)<<"], from_inv=\""<<from_inv<<"\""
+				<<"from_inv=\""<<from_inv.dump()<<"\""
 				<<", from_list=\""<<from_list<<"\""
 				<<" from_i="<<from_i<<std::endl;
 		return;
 	}
 
-	v3f pos = dropper->getBasePosition();
-	pos.Y += 0.5*BS;
-
-	s16 count2 = count;
-	if(count2 == 0)
-		count2 = -1;
-
 	/*
 		Drop the item
 	*/
-	bool remove = item->dropOrPlace(env, dropper, pos, false, count2);
-	if(remove)
-		list_from->deleteItem(from_i);
-
-	mgr->inventoryModified(c, from_inv);
+	ItemStack item = list_from->getItem(from_i);
+	if(scriptapi_item_on_drop(player->getEnv()->getLua(), item, player,
+				player->getBasePosition() + v3f(0,1,0)))
+	{
+		// Apply returned ItemStack
+		if(g_settings->getBool("creative_mode") == false
+				|| from_inv.type != InventoryLocation::PLAYER)
+			list_from->changeItem(from_i, item);
+		mgr->setInventoryModified(from_inv);
+	}
 
 	infostream<<"IDropAction::apply(): dropped "
-			<<"["<<describeC(c)<<"]"
-			<<" from inv=\""<<from_inv<<"\""
+			<<" from inv=\""<<from_inv.dump()<<"\""
 			<<" list=\""<<from_list<<"\""
 			<<" i="<<from_i
 			<<std::endl;
 }
-
-/*
-	Craft checking system
-*/
-
-bool ItemSpec::checkItem(const InventoryItem *item) const
-{
-	if(type == ITEM_NONE)
-	{
-		// Has to be no item
-		if(item != NULL)
-			return false;
-		return true;
-	}
-	
-	// There should be an item
-	if(item == NULL)
-		return false;
-
-	std::string itemname = item->getName();
-
-	if(type == ITEM_MATERIAL)
-	{
-		if(itemname != "MaterialItem")
-			return false;
-		MaterialItem *mitem = (MaterialItem*)item;
-		if(num != 65535){
-			if(mitem->getMaterial() != num)
-				return false;
-		} else {
-			if(mitem->getNodeName() != name)
-				return false;
-		}
-	}
-	else if(type == ITEM_CRAFT)
-	{
-		if(itemname != "CraftItem")
-			return false;
-		CraftItem *mitem = (CraftItem*)item;
-		if(mitem->getSubName() != name)
-			return false;
-	}
-	else if(type == ITEM_TOOL)
-	{
-		// Not supported yet
-		assert(0);
-	}
-	else if(type == ITEM_MBO)
-	{
-		// Not supported yet
-		assert(0);
-	}
-	else
-	{
-		// Not supported yet
-		assert(0);
-	}
-	return true;
-}
-
-bool checkItemCombination(InventoryItem const * const *items, const ItemSpec *specs)
-{
-	u16 items_min_x = 100;
-	u16 items_max_x = 100;
-	u16 items_min_y = 100;
-	u16 items_max_y = 100;
-	for(u16 y=0; y<3; y++)
-	for(u16 x=0; x<3; x++)
-	{
-		if(items[y*3 + x] == NULL)
-			continue;
-		if(items_min_x == 100 || x < items_min_x)
-			items_min_x = x;
-		if(items_min_y == 100 || y < items_min_y)
-			items_min_y = y;
-		if(items_max_x == 100 || x > items_max_x)
-			items_max_x = x;
-		if(items_max_y == 100 || y > items_max_y)
-			items_max_y = y;
-	}
-	// No items at all, just return false
-	if(items_min_x == 100)
-		return false;
-	
-	u16 items_w = items_max_x - items_min_x + 1;
-	u16 items_h = items_max_y - items_min_y + 1;
-
-	u16 specs_min_x = 100;
-	u16 specs_max_x = 100;
-	u16 specs_min_y = 100;
-	u16 specs_max_y = 100;
-	for(u16 y=0; y<3; y++)
-	for(u16 x=0; x<3; x++)
-	{
-		if(specs[y*3 + x].type == ITEM_NONE)
-			continue;
-		if(specs_min_x == 100 || x < specs_min_x)
-			specs_min_x = x;
-		if(specs_min_y == 100 || y < specs_min_y)
-			specs_min_y = y;
-		if(specs_max_x == 100 || x > specs_max_x)
-			specs_max_x = x;
-		if(specs_max_y == 100 || y > specs_max_y)
-			specs_max_y = y;
-	}
-	// No specs at all, just return false
-	if(specs_min_x == 100)
-		return false;
-
-	u16 specs_w = specs_max_x - specs_min_x + 1;
-	u16 specs_h = specs_max_y - specs_min_y + 1;
-
-	// Different sizes
-	if(items_w != specs_w || items_h != specs_h)
-		return false;
-
-	for(u16 y=0; y<specs_h; y++)
-	for(u16 x=0; x<specs_w; x++)
-	{
-		u16 items_x = items_min_x + x;
-		u16 items_y = items_min_y + y;
-		u16 specs_x = specs_min_x + x;
-		u16 specs_y = specs_min_y + y;
-		const InventoryItem *item = items[items_y * 3 + items_x];
-		const ItemSpec &spec = specs[specs_y * 3 + specs_x];
-
-		if(spec.checkItem(item) == false)
-			return false;
-	}
-
-	return true;
-}
-
-bool checkItemCombination(const InventoryItem * const * items,
-		const InventoryItem * const * specs)
-{
-	u16 items_min_x = 100;
-	u16 items_max_x = 100;
-	u16 items_min_y = 100;
-	u16 items_max_y = 100;
-	for(u16 y=0; y<3; y++)
-	for(u16 x=0; x<3; x++)
-	{
-		if(items[y*3 + x] == NULL)
-			continue;
-		if(items_min_x == 100 || x < items_min_x)
-			items_min_x = x;
-		if(items_min_y == 100 || y < items_min_y)
-			items_min_y = y;
-		if(items_max_x == 100 || x > items_max_x)
-			items_max_x = x;
-		if(items_max_y == 100 || y > items_max_y)
-			items_max_y = y;
-	}
-	// No items at all, just return false
-	if(items_min_x == 100)
-		return false;
-	
-	u16 items_w = items_max_x - items_min_x + 1;
-	u16 items_h = items_max_y - items_min_y + 1;
-
-	u16 specs_min_x = 100;
-	u16 specs_max_x = 100;
-	u16 specs_min_y = 100;
-	u16 specs_max_y = 100;
-	for(u16 y=0; y<3; y++)
-	for(u16 x=0; x<3; x++)
-	{
-		if(specs[y*3 + x] == NULL)
-			continue;
-		if(specs_min_x == 100 || x < specs_min_x)
-			specs_min_x = x;
-		if(specs_min_y == 100 || y < specs_min_y)
-			specs_min_y = y;
-		if(specs_max_x == 100 || x > specs_max_x)
-			specs_max_x = x;
-		if(specs_max_y == 100 || y > specs_max_y)
-			specs_max_y = y;
-	}
-	// No specs at all, just return false
-	if(specs_min_x == 100)
-		return false;
-
-	u16 specs_w = specs_max_x - specs_min_x + 1;
-	u16 specs_h = specs_max_y - specs_min_y + 1;
-
-	// Different sizes
-	if(items_w != specs_w || items_h != specs_h)
-		return false;
-
-	for(u16 y=0; y<specs_h; y++)
-	for(u16 x=0; x<specs_w; x++)
-	{
-		u16 items_x = items_min_x + x;
-		u16 items_y = items_min_y + y;
-		u16 specs_x = specs_min_x + x;
-		u16 specs_y = specs_min_y + y;
-		const InventoryItem *item = items[items_y * 3 + items_x];
-		const InventoryItem *spec = specs[specs_y * 3 + specs_x];
-		
-		if(item == NULL && spec == NULL)
-			continue;
-		if(item == NULL && spec != NULL)
-			return false;
-		if(item != NULL && spec == NULL)
-			return false;
-		if(!spec->isSubsetOf(item))
-			return false;
-	}
-
-	return true;
-}
-
-

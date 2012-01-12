@@ -32,9 +32,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "voxel.h"
 #include "staticobject.h"
 #include "mapblock_nodemod.h"
-#ifndef SERVER
-	#include "mapblock_mesh.h"
-#endif
 #include "modifiedstate.h"
 
 class Map;

@@ -25,6 +25,7 @@ minetest.register_globalstep(on_step)
 
 -- An example furnace-thing implemented in Lua
 
+--[[
 minetest.register_node("experimental:luafurnace", {
 	tile_images = {"default_lava.png", "default_furnace_side.png",
 		"default_furnace_side.png", "default_furnace_side.png",
@@ -55,15 +56,6 @@ minetest.register_on_placenode(function(pos, newnode, placer)
 		meta:set_infotext("Lua Furnace: total cooked: "..total_cooked)
 	end
 end)
-
-local get_item_definition = function(item)
-	if not item then return nil end
-	if item.type == "node" then
-		return minetest.registered_nodes[item.name]
-	elseif item.type == "craft" then
-		return minetest.registered_craftitems[item.name]
-	end
-end
 
 minetest.register_abm({
 	nodenames = {"experimental:luafurnace"},
@@ -176,7 +168,6 @@ minetest.register_abm({
 		inv:set_stack("fuel", 1, stack)
 	end,
 })
---[[
 minetest.register_abm({
 	nodenames = {"experimental:luafurnace"},
 	interval = 1.0,
@@ -231,7 +222,6 @@ minetest.register_abm({
 		meta:set_infotext("Lua Furnace: total cooked: "..total_cooked)
 	end,
 })
---]]
 minetest.register_craft({
 	output = 'node "experimental:luafurnace" 1',
 	recipe = {
@@ -240,6 +230,7 @@ minetest.register_craft({
 		{'node "default:cobble"', 'node "default:cobble"', 'node "default:cobble"'},
 	}
 })
+--]]
 
 --
 -- Random stuff
@@ -261,38 +252,16 @@ minetest.register_tool("experimental:horribletool", {
 })
 --]]
 
---[[minetest.register_craft({
-	output = 'node "somenode" 4',
-	recipe = {
-		{'craft "default_tick" 1'},
-	}
-})
-
-minetest.register_node("experimental:somenode", {
-	tile_images = {"lava.png", "mese.png", "stone.png", "grass.png", "cobble.png", "tree_top.png"},
-	inventory_image = minetest.inventorycube("lava.png", "mese.png", "stone.png"),
-	--inventory_image = "treeprop.png",
-	material = {
-		diggability = "normal",
-		weight = 0,
-		crackiness = 0,
-		crumbliness = 0,
-		cuttability = 0,
-		flammability = 0
-	},
-	metadata_name = "chest",
-})]]
-
 --
 -- TNT (not functional)
 --
 
 minetest.register_craft({
-	output = 'node "experimental:tnt" 4',
+	output = 'experimental:tnt',
 	recipe = {
-		{'node "default:wood" 1'},
-		{'craft "default:coal_lump" 1'},
-		{'node "default:wood" 1'}
+		{'default:wood'},
+		{'default:coal_lump'},
+		{'default:wood'}
 	}
 })
 
@@ -363,7 +332,7 @@ function TNT:on_punch(hitter)
 	self.health = self.health - 1
 	if self.health <= 0 then
 		self.object:remove()
-		hitter:add_to_inventory("node TNT 1")
+		hitter:get_inventory():add_item("main", "experimental:tnt")
 		hitter:set_hp(hitter:get_hp() - 1)
 	end
 end
@@ -380,7 +349,7 @@ end
 minetest.register_entity("experimental:tnt", TNT)
 
 -- Add TNT's old name also
-minetest.alias_node("TNT", "experimental:tnt")
+minetest.register_alias("TNT", "experimental:tnt")
 
 --
 -- A test entity for testing animated and yaw-modulated sprites
@@ -547,6 +516,7 @@ minetest.register_abm({
     end,
 })--]]
 
+print("experimental modname="..dump(minetest.get_current_modname()))
 print("experimental modpath="..dump(minetest.get_modpath("experimental")))
 
 -- END

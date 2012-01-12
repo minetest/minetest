@@ -21,19 +21,34 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #define INVENTORYMANAGER_HEADER
 
 #include "inventory.h"
+#include <iostream>
+#include <string>
+class ServerActiveObject;
 
-// Should probably somehow replace InventoryContext over time
 struct InventoryLocation
 {
 	enum Type{
 		UNDEFINED,
+		CURRENT_PLAYER,
 		PLAYER,
-		NODEMETA
+		NODEMETA,
 	} type;
 
 	std::string name; // PLAYER
 	v3s16 p; // NODEMETA
 
+	InventoryLocation()
+	{
+		setUndefined();
+	}
+	void setUndefined()
+	{
+		type = UNDEFINED;
+	}
+	void setCurrentPlayer()
+	{
+		type = CURRENT_PLAYER;
+	}
 	void setPlayer(const std::string &name_)
 	{
 		type = PLAYER;
@@ -44,17 +59,17 @@ struct InventoryLocation
 		type = NODEMETA;
 		p = p_;
 	}
-};
 
-class Player;
+	void applyCurrentPlayer(const std::string &name_)
+	{
+		if(type == CURRENT_PLAYER)
+			setPlayer(name_);
+	}
 
-struct InventoryContext
-{
-	Player *current_player;
-	
-	InventoryContext():
-		current_player(NULL)
-	{}
+	std::string dump() const;
+	void serialize(std::ostream &os) const;
+	void deSerialize(std::istream &is);
+	void deSerialize(std::string s);
 };
 
 struct InventoryAction;
@@ -68,18 +83,11 @@ public:
 	// Get an inventory or set it modified (so it will be updated over
 	// network or so)
 	virtual Inventory* getInventory(const InventoryLocation &loc){return NULL;}
+	virtual std::string getInventoryOwner(const InventoryLocation &loc){return "";}
 	virtual void setInventoryModified(const InventoryLocation &loc){}
 
 	// Used on the client to send an action to the server
 	virtual void inventoryAction(InventoryAction *a){}
-
-	// (Deprecated; these wrap to the latter ones)
-	// Get a pointer to an inventory specified by id. id can be:
-	// - "current_player"
-	// - "nodemeta:X,Y,Z"
-	Inventory* getInventory(InventoryContext *c, std::string id);
-	// Used on the server by InventoryAction::apply and other stuff
-	void inventoryModified(InventoryContext *c, std::string id);
 };
 
 #define IACTION_MOVE 0
@@ -91,18 +99,17 @@ struct InventoryAction
 	
 	virtual u16 getType() const = 0;
 	virtual void serialize(std::ostream &os) const = 0;
-	virtual void apply(InventoryContext *c, InventoryManager *mgr,
-			ServerEnvironment *env) = 0;
+	virtual void apply(InventoryManager *mgr, ServerActiveObject *player) = 0;
 };
 
 struct IMoveAction : public InventoryAction
 {
 	// count=0 means "everything"
 	u16 count;
-	std::string from_inv;
+	InventoryLocation from_inv;
 	std::string from_list;
 	s16 from_i;
-	std::string to_inv;
+	InventoryLocation to_inv;
 	std::string to_list;
 	s16 to_i;
 	
@@ -124,23 +131,22 @@ struct IMoveAction : public InventoryAction
 	{
 		os<<"Move ";
 		os<<count<<" ";
-		os<<from_inv<<" ";
+		os<<from_inv.dump()<<" ";
 		os<<from_list<<" ";
 		os<<from_i<<" ";
-		os<<to_inv<<" ";
+		os<<to_inv.dump()<<" ";
 		os<<to_list<<" ";
 		os<<to_i;
 	}
 
-	void apply(InventoryContext *c, InventoryManager *mgr,
-			ServerEnvironment *env);
+	void apply(InventoryManager *mgr, ServerActiveObject *player);
 };
 
 struct IDropAction : public InventoryAction
 {
 	// count=0 means "everything"
 	u16 count;
-	std::string from_inv;
+	InventoryLocation from_inv;
 	std::string from_list;
 	s16 from_i;
 	
@@ -161,68 +167,13 @@ struct IDropAction : public InventoryAction
 	{
 		os<<"Drop ";
 		os<<count<<" ";
-		os<<from_inv<<" ";
+		os<<from_inv.dump()<<" ";
 		os<<from_list<<" ";
 		os<<from_i;
 	}
 
-	void apply(InventoryContext *c, InventoryManager *mgr,
-			ServerEnvironment *env);
+	void apply(InventoryManager *mgr, ServerActiveObject *player);
 };
-
-/*
-	Craft checking system
-*/
-
-enum ItemSpecType
-{
-	ITEM_NONE,
-	ITEM_MATERIAL,
-	ITEM_CRAFT,
-	ITEM_TOOL,
-	ITEM_MBO
-};
-
-struct ItemSpec
-{
-	enum ItemSpecType type;
-	// Only other one of these is used
-	std::string name;
-	u16 num;
-
-	ItemSpec():
-		type(ITEM_NONE)
-	{
-	}
-	ItemSpec(enum ItemSpecType a_type, std::string a_name):
-		type(a_type),
-		name(a_name),
-		num(65535)
-	{
-	}
-	ItemSpec(enum ItemSpecType a_type, u16 a_num):
-		type(a_type),
-		name(""),
-		num(a_num)
-	{
-	}
-
-	bool checkItem(const InventoryItem *item) const;
-};
-
-/*
-	items: a pointer to an array of 9 pointers to items
-	specs: a pointer to an array of 9 ItemSpecs
-*/
-bool checkItemCombination(const InventoryItem * const*items, const ItemSpec *specs);
-
-/*
-	items: a pointer to an array of 9 pointers to items
-	specs: a pointer to an array of 9 pointers to items
-*/
-bool checkItemCombination(const InventoryItem * const * items,
-		const InventoryItem * const * specs);
-
 
 #endif
 

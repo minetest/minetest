@@ -26,12 +26,9 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "tile.h"
 #include "utility.h"
 #include <ICameraSceneNode.h>
-#include <IMeshCache.h>
-#include <IAnimatedMesh.h>
 
 class LocalPlayer;
 struct MapDrawControl;
-class ExtrudedSpriteSceneNode;
 class IGameDef;
 
 /*
@@ -116,12 +113,12 @@ public:
 	// Update settings from g_settings
 	void updateSettings();
 
-	// Replace the wielded item mesh
-	void wield(const InventoryItem* item, IGameDef *gamedef);
-
 	// Start digging animation
 	// Pass 0 for left click, 1 for right click
 	void setDigging(s32 button);
+
+	// Replace the wielded item mesh
+	void wield(const ItemStack &item, IGameDef *gamedef);
 
 	// Draw the wielded tool.
 	// This has to happen *after* the main scene is drawn.
@@ -136,7 +133,8 @@ private:
 	scene::ICameraSceneNode* m_cameranode;
 
 	scene::ISceneManager* m_wieldmgr;
-	ExtrudedSpriteSceneNode* m_wieldnode;
+	scene::IMeshSceneNode* m_wieldnode;
+	u8 m_wieldlight;
 
 	// draw control
 	MapDrawControl& m_draw_control;
@@ -180,48 +178,6 @@ private:
 	// If 0, left-click digging animation
 	// If 1, right-click digging animation
 	s32 m_digging_button;
-};
-
-
-/*
-	A scene node that displays a 2D mesh extruded into the third dimension,
-	to add an illusion of depth.
-
-	Since this class was created to display the wielded tool of the local
-	player, and only tools and items are rendered like this (but not solid
-	content like stone and mud, which are shown as cubes), the option to
-	draw a textured cube instead is provided.
- */
-class ExtrudedSpriteSceneNode: public scene::ISceneNode
-{
-public:
-	ExtrudedSpriteSceneNode(
-		scene::ISceneNode* parent,
-		scene::ISceneManager* mgr,
-		s32 id = -1,
-		const v3f& position = v3f(0,0,0),
-		const v3f& rotation = v3f(0,0,0),
-		const v3f& scale = v3f(1,1,1));
-	~ExtrudedSpriteSceneNode();
-
-	void setSprite(video::ITexture* texture);
-	void setCube(const TileSpec tiles[6]);
-
-	void updateLight(u8 light);
-
-	void removeSpriteFromCache(video::ITexture* texture);
-
-	virtual const core::aabbox3d<f32>& getBoundingBox() const;
-	virtual void OnRegisterSceneNode();
-	virtual void render();
-
-private:
-	scene::IMeshSceneNode* m_meshnode;
-	scene::IMesh* m_cubemesh;
-	bool m_is_cube;
-	u8 m_light;
-
-	io::path getExtrudedName(video::ITexture* texture);
 };
 
 #endif

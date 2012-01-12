@@ -36,10 +36,9 @@ extern "C" {
 //#include "luna.h"
 #include "luaentity_common.h"
 #include "content_sao.h" // For LuaEntitySAO
-#include "tooldef.h"
+#include "itemdef.h"
 #include "nodedef.h"
 #include "craftdef.h"
-#include "craftitemdef.h"
 #include "main.h" // For g_settings
 #include "settings.h" // For accessing g_settings
 #include "nodemetadata.h"
@@ -127,45 +126,281 @@ public:
 	}
 };
 
-std::string get_current_modname(lua_State *L)
+/*
+	Getters for stuff in main tables
+*/
+
+static Server* get_server(lua_State *L)
 {
-	lua_getfield(L, LUA_REGISTRYINDEX, "minetest_current_modname");
-	std::string modname = "";
-	if(lua_type(L, -1) == LUA_TSTRING)
-		modname = lua_tostring(L, -1);
+	// Get server from registry
+	lua_getfield(L, LUA_REGISTRYINDEX, "minetest_server");
+	Server *server = (Server*)lua_touserdata(L, -1);
 	lua_pop(L, 1);
-	return modname;
+	return server;
 }
 
-void check_modname_prefix(lua_State *L, std::string &name)
+static ServerEnvironment* get_env(lua_State *L)
 {
-	if(name.size() == 0)
-		throw LuaError(L, std::string("Name is empty"));
-	
-	if(name[0] == ':'){
-		name = name.substr(1);
-		return;
-	}
-	
-	std::string modname = get_current_modname(L);
-	assert(modname != "");
-	
-	// For __builtin, anything goes
-	if(modname == "__builtin")
-		return;
-	
-	if(name.substr(0, modname.size()+1) != modname + ":")
-		throw LuaError(L, std::string("Name \"")+name
-				+"\" does not follow naming conventions: "
-				+"\"modname:\" or \":\" prefix required)");
-	
-	std::string subname = name.substr(modname.size()+1);
-	if(!string_allowed(subname, "abcdefghijklmnopqrstuvwxyz"
-			"ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789_"))
-		throw LuaError(L, std::string("Name \"")+name
-				+"\" does not follow naming conventions: "
-				+"\"contains unallowed characters");
+	// Get environment from registry
+	lua_getfield(L, LUA_REGISTRYINDEX, "minetest_env");
+	ServerEnvironment *env = (ServerEnvironment*)lua_touserdata(L, -1);
+	lua_pop(L, 1);
+	return env;
 }
+
+static void objectref_get(lua_State *L, u16 id)
+{
+	// Get minetest.object_refs[i]
+	lua_getglobal(L, "minetest");
+	lua_getfield(L, -1, "object_refs");
+	luaL_checktype(L, -1, LUA_TTABLE);
+	lua_pushnumber(L, id);
+	lua_gettable(L, -2);
+	lua_remove(L, -2); // object_refs
+	lua_remove(L, -2); // minetest
+}
+
+static void luaentity_get(lua_State *L, u16 id)
+{
+	// Get minetest.luaentities[i]
+	lua_getglobal(L, "minetest");
+	lua_getfield(L, -1, "luaentities");
+	luaL_checktype(L, -1, LUA_TTABLE);
+	lua_pushnumber(L, id);
+	lua_gettable(L, -2);
+	lua_remove(L, -2); // luaentities
+	lua_remove(L, -2); // minetest
+}
+
+/*
+	Table field getters
+*/
+
+static bool getstringfield(lua_State *L, int table,
+		const char *fieldname, std::string &result)
+{
+	lua_getfield(L, table, fieldname);
+	bool got = false;
+	if(lua_isstring(L, -1)){
+		size_t len = 0;
+		const char *ptr = lua_tolstring(L, -1, &len);
+		result.assign(ptr, len);
+		got = true;
+	}
+	lua_pop(L, 1);
+	return got;
+}
+
+static bool getintfield(lua_State *L, int table,
+		const char *fieldname, int &result)
+{
+	lua_getfield(L, table, fieldname);
+	bool got = false;
+	if(lua_isnumber(L, -1)){
+		result = lua_tonumber(L, -1);
+		got = true;
+	}
+	lua_pop(L, 1);
+	return got;
+}
+
+static bool getfloatfield(lua_State *L, int table,
+		const char *fieldname, float &result)
+{
+	lua_getfield(L, table, fieldname);
+	bool got = false;
+	if(lua_isnumber(L, -1)){
+		result = lua_tonumber(L, -1);
+		got = true;
+	}
+	lua_pop(L, 1);
+	return got;
+}
+
+static bool getboolfield(lua_State *L, int table,
+		const char *fieldname, bool &result)
+{
+	lua_getfield(L, table, fieldname);
+	bool got = false;
+	if(lua_isboolean(L, -1)){
+		result = lua_toboolean(L, -1);
+		got = true;
+	}
+	lua_pop(L, 1);
+	return got;
+}
+
+static std::string checkstringfield(lua_State *L, int table,
+		const char *fieldname)
+{
+	lua_getfield(L, table, fieldname);
+	std::string s = luaL_checkstring(L, -1);
+	lua_pop(L, 1);
+	return s;
+}
+
+static std::string getstringfield_default(lua_State *L, int table,
+		const char *fieldname, const std::string &default_)
+{
+	std::string result = default_;
+	getstringfield(L, table, fieldname, result);
+	return result;
+}
+
+static int getintfield_default(lua_State *L, int table,
+		const char *fieldname, int default_)
+{
+	int result = default_;
+	getintfield(L, table, fieldname, result);
+	return result;
+}
+
+static float getfloatfield_default(lua_State *L, int table,
+		const char *fieldname, float default_)
+{
+	float result = default_;
+	getfloatfield(L, table, fieldname, result);
+	return result;
+}
+
+static bool getboolfield_default(lua_State *L, int table,
+		const char *fieldname, bool default_)
+{
+	bool result = default_;
+	getboolfield(L, table, fieldname, result);
+	return result;
+}
+
+struct EnumString
+{
+	int num;
+	const char *str;
+};
+
+static bool string_to_enum(const EnumString *spec, int &result,
+		const std::string &str)
+{
+	const EnumString *esp = spec;
+	while(esp->str){
+		if(str == std::string(esp->str)){
+			result = esp->num;
+			return true;
+		}
+		esp++;
+	}
+	return false;
+}
+
+/*static bool enum_to_string(const EnumString *spec, std::string &result,
+		int num)
+{
+	const EnumString *esp = spec;
+	while(esp){
+		if(num == esp->num){
+			result = esp->str;
+			return true;
+		}
+		esp++;
+	}
+	return false;
+}*/
+
+static int getenumfield(lua_State *L, int table,
+		const char *fieldname, const EnumString *spec, int default_)
+{
+	int result = default_;
+	string_to_enum(spec, result,
+			getstringfield_default(L, table, fieldname, ""));
+	return result;
+}
+
+static void setfloatfield(lua_State *L, int table,
+		const char *fieldname, float value)
+{
+	lua_pushnumber(L, value);
+	if(table < 0)
+		table -= 1;
+	lua_setfield(L, table, fieldname);
+}
+
+static void warn_if_field_exists(lua_State *L, int table,
+		const char *fieldname, const std::string &message)
+{
+	lua_getfield(L, table, fieldname);
+	if(!lua_isnil(L, -1)){
+		infostream<<script_get_backtrace(L)<<std::endl;
+		infostream<<"WARNING: field \""<<fieldname<<"\": "
+				<<message<<std::endl;
+	}
+	lua_pop(L, 1);
+}
+
+/*
+	EnumString definitions
+*/
+
+struct EnumString es_ItemType[] =
+{
+	{ITEM_NONE, "none"},
+	{ITEM_NODE, "node"},
+	{ITEM_CRAFT, "craft"},
+	{ITEM_TOOL, "tool"},
+	{0, NULL},
+};
+
+struct EnumString es_DrawType[] =
+{
+	{NDT_NORMAL, "normal"},
+	{NDT_AIRLIKE, "airlike"},
+	{NDT_LIQUID, "liquid"},
+	{NDT_FLOWINGLIQUID, "flowingliquid"},
+	{NDT_GLASSLIKE, "glasslike"},
+	{NDT_ALLFACES, "allfaces"},
+	{NDT_ALLFACES_OPTIONAL, "allfaces_optional"},
+	{NDT_TORCHLIKE, "torchlike"},
+	{NDT_SIGNLIKE, "signlike"},
+	{NDT_PLANTLIKE, "plantlike"},
+	{NDT_FENCELIKE, "fencelike"},
+	{NDT_RAILLIKE, "raillike"},
+	{0, NULL},
+};
+
+struct EnumString es_ContentParamType[] =
+{
+	{CPT_NONE, "none"},
+	{CPT_LIGHT, "light"},
+	{CPT_MINERAL, "mineral"},
+	{CPT_FACEDIR_SIMPLE, "facedir_simple"},
+	{0, NULL},
+};
+
+struct EnumString es_LiquidType[] =
+{
+	{LIQUID_NONE, "none"},
+	{LIQUID_FLOWING, "flowing"},
+	{LIQUID_SOURCE, "source"},
+	{0, NULL},
+};
+
+struct EnumString es_NodeBoxType[] =
+{
+	{NODEBOX_REGULAR, "regular"},
+	{NODEBOX_FIXED, "fixed"},
+	{NODEBOX_WALLMOUNTED, "wallmounted"},
+	{0, NULL},
+};
+
+struct EnumString es_Diggability[] =
+{
+	{DIGGABLE_NOT, "not"},
+	{DIGGABLE_NORMAL, "normal"},
+	{DIGGABLE_CONSTANT, "constant"},
+	{0, NULL},
+};
+
+/*
+	C struct <-> Lua table converter functions
+*/
 
 static void push_v3f(lua_State *L, v3f p)
 {
@@ -202,20 +437,6 @@ static v2f read_v2f(lua_State *L, int index)
 	p.Y = lua_tonumber(L, -1);
 	lua_pop(L, 1);
 	return p;
-}
-
-static Server* get_server(lua_State *L)
-{
-	// Get server from registry
-	lua_getfield(L, LUA_REGISTRYINDEX, "minetest_server");
-	return (Server*)lua_touserdata(L, -1);
-}
-
-static ServerEnvironment* get_env(lua_State *L)
-{
-	// Get environment from registry
-	lua_getfield(L, LUA_REGISTRYINDEX, "minetest_env");
-	return (ServerEnvironment*)lua_touserdata(L, -1);
 }
 
 static v3f read_v3f(lua_State *L, int index)
@@ -365,304 +586,6 @@ static core::aabbox3d<f32> read_aabbox3df32(lua_State *L, int index, f32 scale)
 	return box;
 }
 
-static bool getstringfield(lua_State *L, int table,
-		const char *fieldname, std::string &result)
-{
-	lua_getfield(L, table, fieldname);
-	bool got = false;
-	if(lua_isstring(L, -1)){
-		result = lua_tostring(L, -1);
-		got = true;
-	}
-	lua_pop(L, 1);
-	return got;
-}
-
-static bool getintfield(lua_State *L, int table,
-		const char *fieldname, int &result)
-{
-	lua_getfield(L, table, fieldname);
-	bool got = false;
-	if(lua_isnumber(L, -1)){
-		result = lua_tonumber(L, -1);
-		got = true;
-	}
-	lua_pop(L, 1);
-	return got;
-}
-
-static bool getfloatfield(lua_State *L, int table,
-		const char *fieldname, float &result)
-{
-	lua_getfield(L, table, fieldname);
-	bool got = false;
-	if(lua_isnumber(L, -1)){
-		result = lua_tonumber(L, -1);
-		got = true;
-	}
-	lua_pop(L, 1);
-	return got;
-}
-
-static bool getboolfield(lua_State *L, int table,
-		const char *fieldname, bool &result)
-{
-	lua_getfield(L, table, fieldname);
-	bool got = false;
-	if(lua_isboolean(L, -1)){
-		result = lua_toboolean(L, -1);
-		got = true;
-	}
-	lua_pop(L, 1);
-	return got;
-}
-
-static std::string checkstringfield(lua_State *L, int table,
-		const char *fieldname)
-{
-	lua_getfield(L, table, fieldname);
-	std::string s = luaL_checkstring(L, -1);
-	lua_pop(L, 1);
-	return s;
-}
-
-static std::string getstringfield_default(lua_State *L, int table,
-		const char *fieldname, const std::string &default_)
-{
-	std::string result = default_;
-	getstringfield(L, table, fieldname, result);
-	return result;
-}
-
-static int getintfield_default(lua_State *L, int table,
-		const char *fieldname, int default_)
-{
-	int result = default_;
-	getintfield(L, table, fieldname, result);
-	return result;
-}
-
-/*static float getfloatfield_default(lua_State *L, int table,
-		const char *fieldname, float default_)
-{
-	float result = default_;
-	getfloatfield(L, table, fieldname, result);
-	return result;
-}*/
-
-static bool getboolfield_default(lua_State *L, int table,
-		const char *fieldname, bool default_)
-{
-	bool result = default_;
-	getboolfield(L, table, fieldname, result);
-	return result;
-}
-
-struct EnumString
-{
-	int num;
-	const char *str;
-};
-
-static bool string_to_enum(const EnumString *spec, int &result,
-		const std::string &str)
-{
-	const EnumString *esp = spec;
-	while(esp->str){
-		if(str == std::string(esp->str)){
-			result = esp->num;
-			return true;
-		}
-		esp++;
-	}
-	return false;
-}
-
-/*static bool enum_to_string(const EnumString *spec, std::string &result,
-		int num)
-{
-	const EnumString *esp = spec;
-	while(esp){
-		if(num == esp->num){
-			result = esp->str;
-			return true;
-		}
-		esp++;
-	}
-	return false;
-}*/
-
-static int getenumfield(lua_State *L, int table,
-		const char *fieldname, const EnumString *spec, int default_)
-{
-	int result = default_;
-	string_to_enum(spec, result,
-			getstringfield_default(L, table, fieldname, ""));
-	return result;
-}
-
-static void setfloatfield(lua_State *L, int table,
-		const char *fieldname, float value)
-{
-	lua_pushnumber(L, value);
-	if(table < 0)
-		table -= 1;
-	lua_setfield(L, table, fieldname);
-}
-
-static void warn_if_field_exists(lua_State *L, int table,
-		const char *fieldname, const std::string &message)
-{
-	lua_getfield(L, table, fieldname);
-	if(!lua_isnil(L, -1)){
-		infostream<<script_get_backtrace(L)<<std::endl;
-		infostream<<"WARNING: field \""<<fieldname<<"\": "
-				<<message<<std::endl;
-	}
-	lua_pop(L, 1);
-}
-
-/*
-	Inventory stuff
-*/
-
-static void inventory_set_list_from_lua(Inventory *inv, const char *name,
-		lua_State *L, int tableindex, IGameDef *gamedef, int forcesize=-1)
-{
-	if(tableindex < 0)
-		tableindex = lua_gettop(L) + 1 + tableindex;
-	// If nil, delete list
-	if(lua_isnil(L, tableindex)){
-		inv->deleteList(name);
-		return;
-	}
-	// Otherwise set list
-	std::list<std::string> items;
-	luaL_checktype(L, tableindex, LUA_TTABLE);
-	int table = tableindex;
-	lua_pushnil(L);
-	while(lua_next(L, table) != 0){
-		// key at index -2 and value at index -1
-		luaL_checktype(L, -1, LUA_TSTRING);
-		std::string itemstring = luaL_checkstring(L, -1);
-		items.push_back(itemstring);
-		// removes value, keeps key for next iteration
-		lua_pop(L, 1);
-	}
-	int listsize = (forcesize != -1) ? forcesize : items.size();
-	InventoryList *invlist = inv->addList(name, listsize);
-	int index = 0;
-	for(std::list<std::string>::const_iterator
-			i = items.begin(); i != items.end(); i++){
-		if(forcesize != -1 && index == forcesize)
-			break;
-		const std::string &itemstring = *i;
-		InventoryItem *newitem = NULL;
-		if(itemstring != "")
-			newitem = InventoryItem::deSerialize(itemstring,
-					gamedef);
-		InventoryItem *olditem = invlist->changeItem(index, newitem);
-		delete olditem;
-		index++;
-	}
-	while(forcesize != -1 && index < forcesize){
-		InventoryItem *olditem = invlist->changeItem(index, NULL);
-		delete olditem;
-		index++;
-	}
-}
-
-static void inventory_get_list_to_lua(Inventory *inv, const char *name,
-		lua_State *L)
-{
-	InventoryList *invlist = inv->getList(name);
-	if(invlist == NULL){
-		lua_pushnil(L);
-		return;
-	}
-	// Get the table insert function
-	lua_getglobal(L, "table");
-	lua_getfield(L, -1, "insert");
-	int table_insert = lua_gettop(L);
-	// Create and fill table
-	lua_newtable(L);
-	int table = lua_gettop(L);
-	for(u32 i=0; i<invlist->getSize(); i++){
-		InventoryItem *item = invlist->getItem(i);
-		lua_pushvalue(L, table_insert);
-		lua_pushvalue(L, table);
-		if(item == NULL){
-			lua_pushstring(L, "");
-		} else {
-			lua_pushstring(L, item->getItemString().c_str());
-		}
-		if(lua_pcall(L, 2, 0, 0))
-			script_error(L, "error: %s", lua_tostring(L, -1));
-	}
-}
-
-static void push_stack_item(lua_State *L, InventoryItem *item0)
-{
-	if(item0 == NULL){
-		lua_pushnil(L);
-	}
-	else if(std::string("MaterialItem") == item0->getName()){
-		MaterialItem *item = (MaterialItem*)item0;
-		lua_newtable(L);
-		lua_pushstring(L, "node");
-		lua_setfield(L, -2, "type");
-		lua_pushstring(L, item->getNodeName().c_str());
-		lua_setfield(L, -2, "name");
-	}
-	else if(std::string("CraftItem") == item0->getName()){
-		CraftItem *item = (CraftItem*)item0;
-		lua_newtable(L);
-		lua_pushstring(L, "craft");
-		lua_setfield(L, -2, "type");
-		lua_pushstring(L, item->getSubName().c_str());
-		lua_setfield(L, -2, "name");
-	}
-	else if(std::string("ToolItem") == item0->getName()){
-		ToolItem *item = (ToolItem*)item0;
-		lua_newtable(L);
-		lua_pushstring(L, "tool");
-		lua_setfield(L, -2, "type");
-		lua_pushstring(L, item->getToolName().c_str());
-		lua_setfield(L, -2, "name");
-		lua_pushstring(L, itos(item->getWear()).c_str());
-		lua_setfield(L, -2, "wear");
-	}
-	else{
-		errorstream<<"push_stack_item: Unknown item name: \""
-				<<item0->getName()<<"\""<<std::endl;
-		lua_pushnil(L);
-	}
-}
-
-static InventoryItem* check_stack_item(lua_State *L, int index)
-{
-	if(index < 0)
-		index = lua_gettop(L) + 1 + index;
-	if(lua_isnil(L, index))
-		return NULL;
-	if(!lua_istable(L, index))
-		throw LuaError(L, "check_stack_item: Item not nil or table");
-	// A very crappy implementation for now
-	// Will be replaced when unified namespace for items is made
-	std::string type = getstringfield_default(L, index, "type", "");
-	std::string name = getstringfield_default(L, index, "name", "");
-	std::string num = getstringfield_default(L, index, "wear", "_");
-	if(num == "_")
-		num = 1;
-	std::string itemstring = type + " \"" + name + "\" " + num;
-	try{
-		return InventoryItem::deSerialize(itemstring, get_server(L));
-	}catch(SerializationError &e){
-		throw LuaError(L, std::string("check_stack_item: "
-				"internal error (itemstring=\"")+itemstring+"\")");
-	}
-}
-
 /*
 	ToolDiggingProperties
 */
@@ -709,121 +632,348 @@ static void push_tool_digging_properties(lua_State *L,
 }
 
 /*
-	ToolDefinition
+	PointedThing
 */
 
-static ToolDefinition read_tool_definition(lua_State *L, int table)
+static void push_pointed_thing(lua_State *L, const PointedThing& pointed)
 {
-	ToolDefinition def;
-	getstringfield(L, table, "image", def.imagename);
-	def.properties = read_tool_digging_properties(L, table);
+	lua_newtable(L);
+	if(pointed.type == POINTEDTHING_NODE)
+	{
+		lua_pushstring(L, "node");
+		lua_setfield(L, -2, "type");
+		push_v3s16(L, pointed.node_undersurface);
+		lua_setfield(L, -2, "under");
+		push_v3s16(L, pointed.node_abovesurface);
+		lua_setfield(L, -2, "above");
+	}
+	else if(pointed.type == POINTEDTHING_OBJECT)
+	{
+		lua_pushstring(L, "object");
+		lua_setfield(L, -2, "type");
+		objectref_get(L, pointed.object_id);
+		lua_setfield(L, -2, "ref");
+	}
+	else
+	{
+		lua_pushstring(L, "nothing");
+		lua_setfield(L, -2, "type");
+	}
+}
+
+/*
+	ItemDefinition
+*/
+
+static ItemDefinition read_item_definition(lua_State *L, int index)
+{
+	if(index < 0)
+		index = lua_gettop(L) + 1 + index;
+
+	// Read the item definition
+	ItemDefinition def;
+
+	def.type = (ItemType)getenumfield(L, index, "type",
+			es_ItemType, ITEM_NONE);
+	getstringfield(L, index, "name", def.name);
+	getstringfield(L, index, "description", def.description);
+	getstringfield(L, index, "inventory_image", def.inventory_image);
+	getstringfield(L, index, "wield_image", def.wield_image);
+
+	lua_getfield(L, index, "wield_scale");
+	if(lua_istable(L, -1)){
+		def.wield_scale = check_v3f(L, -1);
+	}
+	lua_pop(L, 1);
+
+	def.stack_max = getintfield_default(L, index, "stack_max", def.stack_max);
+	if(def.stack_max == 0)
+		def.stack_max = 1;
+
+	lua_getfield(L, index, "on_use");
+	def.usable = lua_isfunction(L, -1);
+	lua_pop(L, 1);
+
+	getboolfield(L, index, "liquids_pointable", def.liquids_pointable);
+
+	lua_getfield(L, index, "tool_digging_properties");
+	if(lua_istable(L, -1)){
+		def.tool_digging_properties = new ToolDiggingProperties(
+				read_tool_digging_properties(L, -1));
+	}
+	lua_pop(L, 1);
+
+	// If name is "" (hand), ensure there are ToolDiggingProperties
+	// because it will be looked up there whenever any other item has
+	// no ToolDiggingProperties
+	if(def.name == "" && def.tool_digging_properties == NULL){
+		def.tool_digging_properties = new ToolDiggingProperties();
+	}
+
 	return def;
 }
 
-static void push_tool_definition(lua_State *L, const ToolDefinition &def)
+/*
+	ContentFeatures
+*/
+
+static ContentFeatures read_content_features(lua_State *L, int index)
 {
+	if(index < 0)
+		index = lua_gettop(L) + 1 + index;
+
+	ContentFeatures f;
+	getstringfield(L, index, "name", f.name);
+
+	/* Visual definition */
+
+	f.drawtype = (NodeDrawType)getenumfield(L, index, "drawtype", es_DrawType,
+			NDT_NORMAL);
+	getfloatfield(L, index, "visual_scale", f.visual_scale);
+
+	lua_getfield(L, index, "tile_images");
+	if(lua_istable(L, -1)){
+		int table = lua_gettop(L);
+		lua_pushnil(L);
+		int i = 0;
+		while(lua_next(L, table) != 0){
+			// key at index -2 and value at index -1
+			if(lua_isstring(L, -1))
+				f.tname_tiles[i] = lua_tostring(L, -1);
+			else
+				f.tname_tiles[i] = "";
+			// removes value, keeps key for next iteration
+			lua_pop(L, 1);
+			i++;
+			if(i==6){
+				lua_pop(L, 1);
+				break;
+			}
+		}
+		// Copy last value to all remaining textures
+		if(i >= 1){
+			std::string lastname = f.tname_tiles[i-1];
+			while(i < 6){
+				f.tname_tiles[i] = lastname;
+				i++;
+			}
+		}
+	}
+	lua_pop(L, 1);
+
+	lua_getfield(L, index, "special_materials");
+	if(lua_istable(L, -1)){
+		int table = lua_gettop(L);
+		lua_pushnil(L);
+		int i = 0;
+		while(lua_next(L, table) != 0){
+			// key at index -2 and value at index -1
+			int smtable = lua_gettop(L);
+			std::string tname = getstringfield_default(
+					L, smtable, "image", "");
+			bool backface_culling = getboolfield_default(
+					L, smtable, "backface_culling", true);
+			MaterialSpec mspec(tname, backface_culling);
+			f.mspec_special[i] = mspec;
+			// removes value, keeps key for next iteration
+			lua_pop(L, 1);
+			i++;
+			if(i==6){
+				lua_pop(L, 1);
+				break;
+			}
+		}
+	}
+	lua_pop(L, 1);
+
+	f.alpha = getintfield_default(L, index, "alpha", 255);
+
+	/* Other stuff */
+	
+	lua_getfield(L, index, "post_effect_color");
+	if(!lua_isnil(L, -1))
+		f.post_effect_color = readARGB8(L, -1);
+	lua_pop(L, 1);
+
+	f.param_type = (ContentParamType)getenumfield(L, index, "paramtype",
+			es_ContentParamType, CPT_NONE);
+	
+	// True for all ground-like things like stone and mud, false for eg. trees
+	getboolfield(L, index, "is_ground_content", f.is_ground_content);
+	f.light_propagates = (f.param_type == CPT_LIGHT);
+	warn_if_field_exists(L, index, "light_propagates",
+			"deprecated: determined from paramtype");
+	getboolfield(L, index, "sunlight_propagates", f.sunlight_propagates);
+	// This is used for collision detection.
+	// Also for general solidness queries.
+	getboolfield(L, index, "walkable", f.walkable);
+	// Player can point to these
+	getboolfield(L, index, "pointable", f.pointable);
+	// Player can dig these
+	getboolfield(L, index, "diggable", f.diggable);
+	// Player can climb these
+	getboolfield(L, index, "climbable", f.climbable);
+	// Player can build on these
+	getboolfield(L, index, "buildable_to", f.buildable_to);
+	// If true, param2 is set to direction when placed. Used for torches.
+	// NOTE: the direction format is quite inefficient and should be changed
+	getboolfield(L, index, "wall_mounted", f.wall_mounted);
+	// Inventory item string as which the node appears in inventory when dug.
+	// Mineral overrides this.
+	getstringfield(L, index, "dug_item", f.dug_item);
+	// Extra dug item and its rarity
+	getstringfield(L, index, "extra_dug_item", f.extra_dug_item);
+	// Usual get interval for extra dug item
+	getintfield(L, index, "extra_dug_item_rarity", f.extra_dug_item_rarity);
+	// Metadata name of node (eg. "furnace")
+	getstringfield(L, index, "metadata_name", f.metadata_name);
+	// Whether the node is non-liquid, source liquid or flowing liquid
+	f.liquid_type = (LiquidType)getenumfield(L, index, "liquidtype",
+			es_LiquidType, LIQUID_NONE);
+	// If the content is liquid, this is the flowing version of the liquid.
+	getstringfield(L, index, "liquid_alternative_flowing",
+			f.liquid_alternative_flowing);
+	// If the content is liquid, this is the source version of the liquid.
+	getstringfield(L, index, "liquid_alternative_source",
+			f.liquid_alternative_source);
+	// Viscosity for fluid flow, ranging from 1 to 7, with
+	// 1 giving almost instantaneous propagation and 7 being
+	// the slowest possible
+	f.liquid_viscosity = getintfield_default(L, index,
+			"liquid_viscosity", f.liquid_viscosity);
+	// Amount of light the node emits
+	f.light_source = getintfield_default(L, index,
+			"light_source", f.light_source);
+	f.damage_per_second = getintfield_default(L, index,
+			"damage_per_second", f.damage_per_second);
+	
+	lua_getfield(L, index, "selection_box");
+	if(lua_istable(L, -1)){
+		f.selection_box.type = (NodeBoxType)getenumfield(L, -1, "type",
+				es_NodeBoxType, NODEBOX_REGULAR);
+
+		lua_getfield(L, -1, "fixed");
+		if(lua_istable(L, -1))
+			f.selection_box.fixed = read_aabbox3df32(L, -1, BS);
+		lua_pop(L, 1);
+
+		lua_getfield(L, -1, "wall_top");
+		if(lua_istable(L, -1))
+			f.selection_box.wall_top = read_aabbox3df32(L, -1, BS);
+		lua_pop(L, 1);
+
+		lua_getfield(L, -1, "wall_bottom");
+		if(lua_istable(L, -1))
+			f.selection_box.wall_bottom = read_aabbox3df32(L, -1, BS);
+		lua_pop(L, 1);
+
+		lua_getfield(L, -1, "wall_side");
+		if(lua_istable(L, -1))
+			f.selection_box.wall_side = read_aabbox3df32(L, -1, BS);
+		lua_pop(L, 1);
+	}
+	lua_pop(L, 1);
+
+	lua_getfield(L, index, "material");
+	if(lua_istable(L, -1)){
+		f.material.diggability = (Diggability)getenumfield(L, -1, "diggability",
+				es_Diggability, DIGGABLE_NORMAL);
+		
+		getfloatfield(L, -1, "constant_time", f.material.constant_time);
+		getfloatfield(L, -1, "weight", f.material.weight);
+		getfloatfield(L, -1, "crackiness", f.material.crackiness);
+		getfloatfield(L, -1, "crumbliness", f.material.crumbliness);
+		getfloatfield(L, -1, "cuttability", f.material.cuttability);
+		getfloatfield(L, -1, "flammability", f.material.flammability);
+	}
+	lua_pop(L, 1);
+
+	return f;
+}
+
+/*
+	Inventory stuff
+*/
+
+static ItemStack read_item(lua_State *L, int index);
+
+static void inventory_set_list_from_lua(Inventory *inv, const char *name,
+		lua_State *L, int tableindex, int forcesize=-1)
+{
+	dstream<<"inventory_set_list_from_lua\n";
+	if(tableindex < 0)
+		tableindex = lua_gettop(L) + 1 + tableindex;
+	// If nil, delete list
+	if(lua_isnil(L, tableindex)){
+		inv->deleteList(name);
+		return;
+	}
+	// Otherwise set list
+	std::vector<ItemStack> items;
+	luaL_checktype(L, tableindex, LUA_TTABLE);
+	lua_pushnil(L);
+	while(lua_next(L, tableindex) != 0){
+		// key at index -2 and value at index -1
+		items.push_back(read_item(L, -1));
+		// removes value, keeps key for next iteration
+		lua_pop(L, 1);
+	}
+	int listsize = (forcesize != -1) ? forcesize : items.size();
+	InventoryList *invlist = inv->addList(name, listsize);
+	int index = 0;
+	for(std::vector<ItemStack>::const_iterator
+			i = items.begin(); i != items.end(); i++){
+		if(forcesize != -1 && index == forcesize)
+			break;
+		invlist->changeItem(index, *i);
+		index++;
+	}
+	while(forcesize != -1 && index < forcesize){
+		invlist->deleteItem(index);
+		index++;
+	}
+	dstream<<"inventory_set_list_from_lua done\n";
+}
+
+static void inventory_get_list_to_lua(Inventory *inv, const char *name,
+		lua_State *L)
+{
+	InventoryList *invlist = inv->getList(name);
+	if(invlist == NULL){
+		lua_pushnil(L);
+		return;
+	}
+	// Get the table insert function
+	lua_getglobal(L, "table");
+	lua_getfield(L, -1, "insert");
+	int table_insert = lua_gettop(L);
+	// Create and fill table
 	lua_newtable(L);
-	lua_pushstring(L, def.imagename.c_str());
-	lua_setfield(L, -2, "image");
-	set_tool_digging_properties(L, -1, def.properties);
+	int table = lua_gettop(L);
+	for(u32 i=0; i<invlist->getSize(); i++){
+		ItemStack item = invlist->getItem(i);
+		lua_pushvalue(L, table_insert);
+		lua_pushvalue(L, table);
+		lua_pushstring(L, item.getItemString().c_str());
+		if(lua_pcall(L, 2, 0, 0))
+			script_error(L, "error: %s", lua_tostring(L, -1));
+	}
 }
 
 /*
-	EnumString definitions
-*/
-
-struct EnumString es_DrawType[] =
-{
-	{NDT_NORMAL, "normal"},
-	{NDT_AIRLIKE, "airlike"},
-	{NDT_LIQUID, "liquid"},
-	{NDT_FLOWINGLIQUID, "flowingliquid"},
-	{NDT_GLASSLIKE, "glasslike"},
-	{NDT_ALLFACES, "allfaces"},
-	{NDT_ALLFACES_OPTIONAL, "allfaces_optional"},
-	{NDT_TORCHLIKE, "torchlike"},
-	{NDT_SIGNLIKE, "signlike"},
-	{NDT_PLANTLIKE, "plantlike"},
-	{NDT_FENCELIKE, "fencelike"},
-	{NDT_RAILLIKE, "raillike"},
-	{0, NULL},
-};
-
-struct EnumString es_ContentParamType[] =
-{
-	{CPT_NONE, "none"},
-	{CPT_LIGHT, "light"},
-	{CPT_MINERAL, "mineral"},
-	{CPT_FACEDIR_SIMPLE, "facedir_simple"},
-	{0, NULL},
-};
-
-struct EnumString es_LiquidType[] =
-{
-	{LIQUID_NONE, "none"},
-	{LIQUID_FLOWING, "flowing"},
-	{LIQUID_SOURCE, "source"},
-	{0, NULL},
-};
-
-struct EnumString es_NodeBoxType[] =
-{
-	{NODEBOX_REGULAR, "regular"},
-	{NODEBOX_FIXED, "fixed"},
-	{NODEBOX_WALLMOUNTED, "wallmounted"},
-	{0, NULL},
-};
-
-struct EnumString es_Diggability[] =
-{
-	{DIGGABLE_NOT, "not"},
-	{DIGGABLE_NORMAL, "normal"},
-	{DIGGABLE_CONSTANT, "constant"},
-	{0, NULL},
-};
-
-/*
-	Getters for stuff in main tables
-*/
-
-static void objectref_get(lua_State *L, u16 id)
-{
-	// Get minetest.object_refs[i]
-	lua_getglobal(L, "minetest");
-	lua_getfield(L, -1, "object_refs");
-	luaL_checktype(L, -1, LUA_TTABLE);
-	lua_pushnumber(L, id);
-	lua_gettable(L, -2);
-	lua_remove(L, -2); // object_refs
-	lua_remove(L, -2); // minetest
-}
-
-static void luaentity_get(lua_State *L, u16 id)
-{
-	// Get minetest.luaentities[i]
-	lua_getglobal(L, "minetest");
-	lua_getfield(L, -1, "luaentities");
-	luaL_checktype(L, -1, LUA_TTABLE);
-	lua_pushnumber(L, id);
-	lua_gettable(L, -2);
-	lua_remove(L, -2); // luaentities
-	lua_remove(L, -2); // minetest
-}
-
-/*
-	Object wrappers
+	Helpful macros for userdata classes
 */
 
 #define method(class, name) {#name, class::l_##name}
 
 /*
-	ItemStack
+	LuaItemStack
 */
 
-class ItemStack
+class LuaItemStack
 {
 private:
-	InventoryItem *m_stack;
+	ItemStack m_stack;
 
 	static const char className[];
 	static const luaL_reg methods[];
@@ -831,130 +981,285 @@ private:
 	// Exported functions
 	
 	// garbage collector
-	static int gc_object(lua_State *L) {
-		ItemStack *o = *(ItemStack **)(lua_touserdata(L, 1));
+	static int gc_object(lua_State *L)
+	{
+		LuaItemStack *o = *(LuaItemStack **)(lua_touserdata(L, 1));
 		delete o;
 		return 0;
 	}
 
-	// peek_item(self)
-	static int l_peek_item(lua_State *L)
+	// is_empty(self) -> true/false
+	static int l_is_empty(lua_State *L)
 	{
-		ItemStack *o = checkobject(L, 1);
-		push_stack_item(L, o->m_stack);
+		LuaItemStack *o = checkobject(L, 1);
+		ItemStack &item = o->m_stack;
+		lua_pushboolean(L, item.empty());
 		return 1;
 	}
 
-	// take_item(self)
-	static int l_take_item(lua_State *L)
+	// get_name(self) -> string
+	static int l_get_name(lua_State *L)
 	{
-		ItemStack *o = checkobject(L, 1);
-		push_stack_item(L, o->m_stack);
-		if(o->m_stack->getCount() <= 1){
-			delete o->m_stack;
-			o->m_stack = NULL;
-		} else {
-			o->m_stack->remove(1);
-		}
+		LuaItemStack *o = checkobject(L, 1);
+		ItemStack &item = o->m_stack;
+		lua_pushstring(L, item.name.c_str());
 		return 1;
 	}
 
-	// put_item(self, item) -> true/false
-	static int l_put_item(lua_State *L)
+	// get_count(self) -> number
+	static int l_get_count(lua_State *L)
 	{
-		ItemStack *o = checkobject(L, 1);
-		InventoryItem *item = check_stack_item(L, 2);
-		if(!item){ // nil can always be inserted
-			lua_pushboolean(L, true);
-			return 1;
-		}
-		if(!item->addableTo(o->m_stack)){
-			lua_pushboolean(L, false);
-			return 1;
-		}
-		o->m_stack->add(1);
-		delete item;
+		LuaItemStack *o = checkobject(L, 1);
+		ItemStack &item = o->m_stack;
+		lua_pushinteger(L, item.count);
+		return 1;
+	}
+
+	// get_wear(self) -> number
+	static int l_get_wear(lua_State *L)
+	{
+		LuaItemStack *o = checkobject(L, 1);
+		ItemStack &item = o->m_stack;
+		lua_pushinteger(L, item.wear);
+		return 1;
+	}
+
+	// get_metadata(self) -> string
+	static int l_get_metadata(lua_State *L)
+	{
+		LuaItemStack *o = checkobject(L, 1);
+		ItemStack &item = o->m_stack;
+		lua_pushlstring(L, item.metadata.c_str(), item.metadata.size());
+		return 1;
+	}
+
+	// clear(self) -> true
+	static int l_clear(lua_State *L)
+	{
+		LuaItemStack *o = checkobject(L, 1);
+		o->m_stack.clear();
 		lua_pushboolean(L, true);
 		return 1;
 	}
 
-	// put_stackstring(self, stackstring) -> true/false
-	static int l_put_stackstring(lua_State *L)
+	// replace(self, itemstack or itemstring or table or nil) -> true
+	static int l_replace(lua_State *L)
 	{
-		ItemStack *o = checkobject(L, 1);
-		std::string stackstring = luaL_checkstring(L, 2);
-		try{
-			InventoryItem *item = InventoryItem::deSerialize(stackstring,
-					get_server(L));
-			if(!item->addableTo(o->m_stack)){
-				lua_pushboolean(L, false);
-				return 1;
-			}
-			o->m_stack->add(1);
-			delete item;
-			lua_pushboolean(L, true);
-			return 1;
+		LuaItemStack *o = checkobject(L, 1);
+		o->m_stack = read_item(L, 2);
+		lua_pushboolean(L, true);
+		return 1;
+	}
+
+	// to_string(self) -> string
+	static int l_to_string(lua_State *L)
+	{
+		LuaItemStack *o = checkobject(L, 1);
+		std::string itemstring = o->m_stack.getItemString();
+		lua_pushstring(L, itemstring.c_str());
+		return 1;
+	}
+
+	// to_table(self) -> table or nil
+	static int l_to_table(lua_State *L)
+	{
+		LuaItemStack *o = checkobject(L, 1);
+		const ItemStack &item = o->m_stack;
+		if(item.empty())
+		{
+			lua_pushnil(L);
 		}
-		catch(SerializationError &e){
-			lua_pushboolean(L, false);
-			return 1;
+		else
+		{
+			lua_newtable(L);
+			lua_pushstring(L, item.name.c_str());
+			lua_setfield(L, -2, "name");
+			lua_pushinteger(L, item.count);
+			lua_setfield(L, -2, "count");
+			lua_pushinteger(L, item.wear);
+			lua_setfield(L, -2, "wear");
+			lua_pushlstring(L, item.metadata.c_str(), item.metadata.size());
+			lua_setfield(L, -2, "metadata");
 		}
+		return 1;
+	}
+
+	// get_stack_max(self) -> number
+	static int l_get_stack_max(lua_State *L)
+	{
+		LuaItemStack *o = checkobject(L, 1);
+		ItemStack &item = o->m_stack;
+		lua_pushinteger(L, item.getStackMax(get_server(L)->idef()));
+		return 1;
+	}
+
+	// get_free_space(self) -> number
+	static int l_get_free_space(lua_State *L)
+	{
+		LuaItemStack *o = checkobject(L, 1);
+		ItemStack &item = o->m_stack;
+		lua_pushinteger(L, item.freeSpace(get_server(L)->idef()));
+		return 1;
+	}
+
+	// is_known(self) -> true/false
+	// Checks if the item is defined.
+	static int l_is_known(lua_State *L)
+	{
+		LuaItemStack *o = checkobject(L, 1);
+		ItemStack &item = o->m_stack;
+		bool is_known = item.isKnown(get_server(L)->idef());
+		lua_pushboolean(L, is_known);
+		return 1;
+	}
+
+	// get_definition(self) -> table
+	// Returns the item definition table from minetest.registered_items,
+	// or a fallback one (name="unknown")
+	static int l_get_definition(lua_State *L)
+	{
+		LuaItemStack *o = checkobject(L, 1);
+		ItemStack &item = o->m_stack;
+
+		// Get minetest.registered_items[name]
+		lua_getglobal(L, "minetest");
+		lua_getfield(L, -1, "registered_items");
+		luaL_checktype(L, -1, LUA_TTABLE);
+		lua_getfield(L, -1, item.name.c_str());
+		if(lua_isnil(L, -1))
+		{
+			lua_pop(L, 1);
+			lua_getfield(L, -1, "unknown");
+		}
+		return 1;
+	}
+
+	// get_tool_digging_properties(self) -> table
+	// Returns the effective tool digging properties.
+	// Returns those of the hand ("") if this item has none associated.
+	static int l_get_tool_digging_properties(lua_State *L)
+	{
+		LuaItemStack *o = checkobject(L, 1);
+		ItemStack &item = o->m_stack;
+		const ToolDiggingProperties &prop =
+			item.getToolDiggingProperties(get_server(L)->idef());
+		push_tool_digging_properties(L, prop);
+		return 1;
+	}
+
+	// add_wear(self, amount) -> true/false
+	// The range for "amount" is [0,65535]. Wear is only added if the item
+	// is a tool. Adding wear might destroy the item.
+	// Returns true if the item is (or was) a tool.
+	static int l_add_wear(lua_State *L)
+	{
+		LuaItemStack *o = checkobject(L, 1);
+		ItemStack &item = o->m_stack;
+		int amount = lua_tointeger(L, 2);
+		bool result = item.addWear(amount, get_server(L)->idef());
+		lua_pushboolean(L, result);
+		return 1;
+	}
+
+	// add_item(self, itemstack or itemstring or table or nil) -> itemstack
+	// Returns leftover item stack
+	static int l_add_item(lua_State *L)
+	{
+		LuaItemStack *o = checkobject(L, 1);
+		ItemStack &item = o->m_stack;
+		ItemStack newitem = read_item(L, 2);
+		ItemStack leftover = item.addItem(newitem, get_server(L)->idef());
+		create(L, leftover);
+		return 1;
+	}
+
+	// item_fits(self, itemstack or itemstring or table or nil) -> true/false, itemstack
+	// First return value is true iff the new item fits fully into the stack
+	// Second return value is the would-be-left-over item stack
+	static int l_item_fits(lua_State *L)
+	{
+		LuaItemStack *o = checkobject(L, 1);
+		ItemStack &item = o->m_stack;
+		ItemStack newitem = read_item(L, 2);
+		ItemStack restitem;
+		bool fits = item.itemFits(newitem, &restitem, get_server(L)->idef());
+		lua_pushboolean(L, fits);  // first return value
+		create(L, restitem);       // second return value
+		return 2;
+	}
+
+	// take_item(self, takecount=1) -> itemstack
+	static int l_take_item(lua_State *L)
+	{
+		LuaItemStack *o = checkobject(L, 1);
+		ItemStack &item = o->m_stack;
+		u32 takecount = 1;
+		if(!lua_isnone(L, 2))
+			takecount = lua_tointeger(L, 2);
+		ItemStack taken = item.takeItem(takecount);
+		create(L, taken);
+		return 1;
+	}
+
+	// peek_item(self, peekcount=1) -> itemstack
+	static int l_peek_item(lua_State *L)
+	{
+		LuaItemStack *o = checkobject(L, 1);
+		ItemStack &item = o->m_stack;
+		u32 peekcount = 1;
+		if(!lua_isnone(L, 2))
+			peekcount = lua_tointeger(L, 2);
+		ItemStack peekaboo = item.peekItem(peekcount);
+		create(L, peekaboo);
+		return 1;
 	}
 
 public:
-	ItemStack(InventoryItem *item=NULL):
+	LuaItemStack(const ItemStack &item):
 		m_stack(item)
 	{
 	}
 
-	~ItemStack()
+	~LuaItemStack()
 	{
-		delete m_stack;
 	}
 
-	static ItemStack* checkobject(lua_State *L, int narg)
+	const ItemStack& getItem() const
 	{
-		luaL_checktype(L, narg, LUA_TUSERDATA);
-		void *ud = luaL_checkudata(L, narg, className);
-		if(!ud) luaL_typerror(L, narg, className);
-		return *(ItemStack**)ud;  // unbox pointer
+		return m_stack;
 	}
-
-	InventoryItem* getItemCopy()
+	ItemStack& getItem()
 	{
-		if(!m_stack)
-			return NULL;
-		return m_stack->clone();
+		return m_stack;
 	}
 	
-	// Creates an ItemStack and leaves it on top of stack
+	// LuaItemStack(itemstack or itemstring or table or nil)
+	// Creates an LuaItemStack and leaves it on top of stack
 	static int create_object(lua_State *L)
 	{
-		InventoryItem *item = NULL;
-		if(lua_isstring(L, 1)){
-			std::string itemstring = lua_tostring(L, 1);
-			if(itemstring != ""){
-				try{
-					IGameDef *gdef = get_server(L);
-					item = InventoryItem::deSerialize(itemstring, gdef);
-				}catch(SerializationError &e){
-				}
-			}
-		}
-		ItemStack *o = new ItemStack(item);
+		ItemStack item = read_item(L, 1);
+		LuaItemStack *o = new LuaItemStack(item);
 		*(void **)(lua_newuserdata(L, sizeof(void *))) = o;
 		luaL_getmetatable(L, className);
 		lua_setmetatable(L, -2);
 		return 1;
 	}
 	// Not callable from Lua
-	static int create(lua_State *L, InventoryItem *item)
+	static int create(lua_State *L, const ItemStack &item)
 	{
-		ItemStack *o = new ItemStack(item);
+		LuaItemStack *o = new LuaItemStack(item);
 		*(void **)(lua_newuserdata(L, sizeof(void *))) = o;
 		luaL_getmetatable(L, className);
 		lua_setmetatable(L, -2);
 		return 1;
+	}
+
+	static LuaItemStack* checkobject(lua_State *L, int narg)
+	{
+		luaL_checktype(L, narg, LUA_TUSERDATA);
+		void *ud = luaL_checkudata(L, narg, className);
+		if(!ud) luaL_typerror(L, narg, className);
+		return *(LuaItemStack**)ud;  // unbox pointer
 	}
 
 	static void Register(lua_State *L)
@@ -981,18 +1286,82 @@ public:
 		luaL_openlib(L, 0, methods, 0);  // fill methodtable
 		lua_pop(L, 1);  // drop methodtable
 
-		// Can be created from Lua (ItemStack::create(itemstring))
+		// Can be created from Lua (LuaItemStack(itemstack or itemstring or table or nil))
 		lua_register(L, className, create_object);
 	}
 };
-const char ItemStack::className[] = "ItemStack";
-const luaL_reg ItemStack::methods[] = {
-	method(ItemStack, peek_item),
-	method(ItemStack, take_item),
-	method(ItemStack, put_item),
-	method(ItemStack, put_stackstring),
+const char LuaItemStack::className[] = "ItemStack";
+const luaL_reg LuaItemStack::methods[] = {
+	method(LuaItemStack, is_empty),
+	method(LuaItemStack, get_name),
+	method(LuaItemStack, get_count),
+	method(LuaItemStack, get_wear),
+	method(LuaItemStack, get_metadata),
+	method(LuaItemStack, clear),
+	method(LuaItemStack, replace),
+	method(LuaItemStack, to_string),
+	method(LuaItemStack, to_table),
+	method(LuaItemStack, get_stack_max),
+	method(LuaItemStack, get_free_space),
+	method(LuaItemStack, is_known),
+	method(LuaItemStack, get_definition),
+	method(LuaItemStack, get_tool_digging_properties),
+	method(LuaItemStack, add_wear),
+	method(LuaItemStack, add_item),
+	method(LuaItemStack, item_fits),
+	method(LuaItemStack, take_item),
+	method(LuaItemStack, peek_item),
 	{0,0}
 };
+
+static ItemStack read_item(lua_State *L, int index)
+{
+	if(index < 0)
+		index = lua_gettop(L) + 1 + index;
+
+	if(lua_isnil(L, index))
+	{
+		return ItemStack();
+	}
+	else if(lua_isuserdata(L, index))
+	{
+		// Convert from LuaItemStack
+		LuaItemStack *o = LuaItemStack::checkobject(L, index);
+		return o->getItem();
+	}
+	else if(lua_isstring(L, index))
+	{
+		// Convert from itemstring
+		std::string itemstring = lua_tostring(L, index);
+		IItemDefManager *idef = get_server(L)->idef();
+		try
+		{
+			ItemStack item;
+			item.deSerialize(itemstring, idef);
+			return item;
+		}
+		catch(SerializationError &e)
+		{
+			infostream<<"WARNING: unable to create item from itemstring"
+					<<": "<<itemstring<<std::endl;
+			return ItemStack();
+		}
+	}
+	else if(lua_istable(L, index))
+	{
+		// Convert from table
+		IItemDefManager *idef = get_server(L)->idef();
+		std::string name = getstringfield_default(L, index, "name", "");
+		int count = getintfield_default(L, index, "count", 1);
+		int wear = getintfield_default(L, index, "wear", 0);
+		std::string metadata = getstringfield_default(L, index, "metadata", "");
+		return ItemStack(name, count, wear, metadata, idef);
+	}
+	else
+	{
+		throw LuaError(L, "Expecting itemstack, itemstring, table or nil");
+	}
+}
 
 /*
 	InvRef
@@ -1026,15 +1395,6 @@ private:
 		if(!inv)
 			return NULL;
 		return inv->getList(listname);
-	}
-
-	static InventoryItem* getitem(lua_State *L, InvRef *ref,
-			const char *listname, int i)
-	{
-		InventoryList *list = getlist(L, ref, listname);
-		if(!list)
-			return NULL;
-		return list->getItem(i);
 	}
 
 	static void reportInventoryChange(lua_State *L, InvRef *ref)
@@ -1088,39 +1448,35 @@ private:
 		return 0;
 	}
 
-	// get_stack(self, listname, i)
+	// get_stack(self, listname, i) -> itemstack
 	static int l_get_stack(lua_State *L)
 	{
 		InvRef *ref = checkobject(L, 1);
 		const char *listname = luaL_checkstring(L, 2);
 		int i = luaL_checknumber(L, 3) - 1;
-		InventoryItem *item = getitem(L, ref, listname, i);
-		if(!item){
-			ItemStack::create(L, NULL);
-			return 1;
-		}
-		ItemStack::create(L, item->clone());
+		InventoryList *list = getlist(L, ref, listname);
+		ItemStack item;
+		if(list != NULL && i >= 0 && i < (int) list->getSize())
+			item = list->getItem(i);
+		LuaItemStack::create(L, item);
 		return 1;
 	}
 
-	// set_stack(self, listname, i, stack)
+	// set_stack(self, listname, i, stack) -> true/false
 	static int l_set_stack(lua_State *L)
 	{
 		InvRef *ref = checkobject(L, 1);
 		const char *listname = luaL_checkstring(L, 2);
 		int i = luaL_checknumber(L, 3) - 1;
-		ItemStack *stack = ItemStack::checkobject(L, 4);
+		ItemStack newitem = read_item(L, 4);
 		InventoryList *list = getlist(L, ref, listname);
-		if(!list){
+		if(list != NULL && i >= 0 && i < (int) list->getSize()){
+			list->changeItem(i, newitem);
+			reportInventoryChange(L, ref);
+			lua_pushboolean(L, true);
+		} else {
 			lua_pushboolean(L, false);
-			return 1;
 		}
-		InventoryItem *newitem = stack->getItemCopy();
-		InventoryItem *olditem = list->changeItem(i, newitem);
-		bool success = (olditem != newitem);
-		delete olditem;
-		lua_pushboolean(L, success);
-		reportInventoryChange(L, ref);
 		return 1;
 	}
 
@@ -1143,57 +1499,79 @@ private:
 		InventoryList *list = inv->getList(listname);
 		if(list)
 			inventory_set_list_from_lua(inv, listname, L, 3,
-					get_server(L), list->getSize());
+					list->getSize());
 		else
-			inventory_set_list_from_lua(inv, listname, L, 3,
-					get_server(L));
+			inventory_set_list_from_lua(inv, listname, L, 3);
 		reportInventoryChange(L, ref);
 		return 0;
 	}
 
-	// autoinsert_stack(self, listname, stack)
-	static int l_autoinsert_stack(lua_State *L)
+	// add_item(self, listname, itemstack or itemstring or table or nil) -> itemstack
+	// Returns the leftover stack
+	static int l_add_item(lua_State *L)
 	{
 		InvRef *ref = checkobject(L, 1);
 		const char *listname = luaL_checkstring(L, 2);
-		ItemStack *stack = ItemStack::checkobject(L, 3);
+		ItemStack item = read_item(L, 3);
 		InventoryList *list = getlist(L, ref, listname);
-		if(!list){
-			lua_pushboolean(L, false);
-			return 1;
-		}
-		InventoryItem *item = stack->getItemCopy();
-		if(list->roomForItem(item)){
-			delete list->addItem(item);
-			lua_pushboolean(L, true);
-			reportInventoryChange(L, ref);
+		if(list){
+			ItemStack leftover = list->addItem(item);
+			if(leftover.count != item.count)
+				reportInventoryChange(L, ref);
+			LuaItemStack::create(L, leftover);
 		} else {
-			delete item;
+			LuaItemStack::create(L, item);
+		}
+		return 1;
+	}
+
+	// room_for_item(self, listname, itemstack or itemstring or table or nil) -> true/false
+	// Returns true if the item completely fits into the list
+	static int l_room_for_item(lua_State *L)
+	{
+		InvRef *ref = checkobject(L, 1);
+		const char *listname = luaL_checkstring(L, 2);
+		ItemStack item = read_item(L, 3);
+		InventoryList *list = getlist(L, ref, listname);
+		if(list){
+			lua_pushboolean(L, list->roomForItem(item));
+		} else {
 			lua_pushboolean(L, false);
 		}
 		return 1;
 	}
 
-	// autoinsert_stackstring(self, listname, stackstring)
-	static int l_autoinsert_stackstring(lua_State *L)
+	// contains_item(self, listname, itemstack or itemstring or table or nil) -> true/false
+	// Returns true if the list contains the given count of the given item name
+	static int l_contains_item(lua_State *L)
 	{
 		InvRef *ref = checkobject(L, 1);
 		const char *listname = luaL_checkstring(L, 2);
-		const char *stackstring = luaL_checkstring(L, 3);
+		ItemStack item = read_item(L, 3);
 		InventoryList *list = getlist(L, ref, listname);
-		if(!list){
-			lua_pushboolean(L, false);
-			return 1;
-		}
-		InventoryItem *item = InventoryItem::deSerialize(stackstring,
-				get_server(L));
-		if(list->roomForItem(item)){
-			delete list->addItem(item);
-			lua_pushboolean(L, true);
-			reportInventoryChange(L, ref);
+		if(list){
+			lua_pushboolean(L, list->containsItem(item));
 		} else {
-			delete item;
 			lua_pushboolean(L, false);
+		}
+		return 1;
+	}
+
+	// remove_item(self, listname, itemstack or itemstring or table or nil) -> itemstack
+	// Returns the items that were actually removed
+	static int l_remove_item(lua_State *L)
+	{
+		InvRef *ref = checkobject(L, 1);
+		const char *listname = luaL_checkstring(L, 2);
+		ItemStack item = read_item(L, 3);
+		InventoryList *list = getlist(L, ref, listname);
+		if(list){
+			ItemStack removed = list->removeItem(item);
+			if(!removed.empty())
+				reportInventoryChange(L, ref);
+			LuaItemStack::create(L, removed);
+		} else {
+			LuaItemStack::create(L, ItemStack());
 		}
 		return 1;
 	}
@@ -1266,8 +1644,10 @@ const luaL_reg InvRef::methods[] = {
 	method(InvRef, set_stack),
 	method(InvRef, get_list),
 	method(InvRef, set_list),
-	method(InvRef, autoinsert_stack),
-	method(InvRef, autoinsert_stackstring),
+	method(InvRef, add_item),
+	method(InvRef, room_for_item),
+	method(InvRef, contains_item),
+	method(InvRef, remove_item),
 	{0,0}
 };
 
@@ -1417,36 +1797,6 @@ private:
 		if(meta == NULL) return 0;
 		// Do it
 		InvRef::createNodeMeta(L, ref->m_p);
-		return 1;
-	}
-
-	// deprecated: inventory_set_list(self, name, {item1, item2, ...})
-	static int l_inventory_set_list(lua_State *L)
-	{
-		infostream<<"Deprecated: inventory_set_list"<<std::endl;
-		NodeMetaRef *ref = checkobject(L, 1);
-		NodeMetadata *meta = getmeta(ref);
-		if(meta == NULL) return 0;
-		// Do it
-		Inventory *inv = meta->getInventory();
-		const char *name = luaL_checkstring(L, 2);
-		inventory_set_list_from_lua(inv, name, L, 3,
-				ref->m_env->getGameDef());
-		reportMetadataChange(ref);
-		return 0;
-	}
-
-	// deprecated: inventory_get_list(self, name)
-	static int l_inventory_get_list(lua_State *L)
-	{
-		infostream<<"Deprecated: inventory_get_list"<<std::endl;
-		NodeMetaRef *ref = checkobject(L, 1);
-		NodeMetadata *meta = getmeta(ref);
-		if(meta == NULL) return 0;
-		// Do it
-		Inventory *inv = meta->getInventory();
-		const char *name = luaL_checkstring(L, 2);
-		inventory_get_list_to_lua(inv, name, L);
 		return 1;
 	}
 
@@ -1636,8 +1986,6 @@ const luaL_reg NodeMetaRef::methods[] = {
 	method(NodeMetaRef, get_owner),
 	method(NodeMetaRef, set_infotext),
 	method(NodeMetaRef, get_inventory),
-	method(NodeMetaRef, inventory_set_list), // deprecated
-	method(NodeMetaRef, inventory_get_list), // deprecated
 	method(NodeMetaRef, set_inventory_draw_spec),
 	method(NodeMetaRef, set_allow_text_input),
 	method(NodeMetaRef, set_allow_removal),
@@ -1798,91 +2146,6 @@ private:
 		return 0;
 	}
 
-	// get_wield_digging_properties(self)
-	static int l_get_wield_digging_properties(lua_State *L)
-	{
-		ObjectRef *ref = checkobject(L, 1);
-		ServerActiveObject *co = getobject(ref);
-		if(co == NULL) return 0;
-		// Do it
-		ToolDiggingProperties prop;
-		co->getWieldDiggingProperties(&prop);
-		push_tool_digging_properties(L, prop);
-		return 1;
-	}
-
-	// damage_wielded_item(self, amount)
-	static int l_damage_wielded_item(lua_State *L)
-	{
-		ObjectRef *ref = checkobject(L, 1);
-		ServerActiveObject *co = getobject(ref);
-		if(co == NULL) return 0;
-		// Do it
-		int amount = lua_tonumber(L, 2);
-		co->damageWieldedItem(amount);
-		return 0;
-	}
-
-	// add_to_inventory(self, itemstring)
-	// returns: true if item was added, (false, "reason") otherwise
-	static int l_add_to_inventory(lua_State *L)
-	{
-		ObjectRef *ref = checkobject(L, 1);
-		luaL_checkstring(L, 2);
-		ServerActiveObject *co = getobject(ref);
-		if(co == NULL) return 0;
-		// itemstring
-		const char *itemstring = luaL_checkstring(L, 2);
-		infostream<<"ObjectRef::l_add_to_inventory(): id="<<co->getId()
-				<<" itemstring=\""<<itemstring<<"\""<<std::endl;
-		// Do it
-		std::istringstream is(itemstring, std::ios::binary);
-		ServerEnvironment *env = co->getEnv();
-		assert(env);
-		IGameDef *gamedef = env->getGameDef();
-		try{
-			InventoryItem *item = InventoryItem::deSerialize(is, gamedef);
-			if(item->getCount() == 0)
-				item->setCount(1);
-			bool added = co->addToInventory(item);
-			// Return
-			lua_pushboolean(L, added);
-			if(!added)
-				lua_pushstring(L, "failed to add item");
-			return 2;
-		} catch(SerializationError &e){
-			// Return
-			lua_pushboolean(L, false);
-			lua_pushstring(L, (std::string("Invalid item: ")
-					+ e.what()).c_str());
-			return 2;
-		}
-	}
-
-	// add_to_inventory_later(self, itemstring)
-	// returns: nil
-	static int l_add_to_inventory_later(lua_State *L)
-	{
-		ObjectRef *ref = checkobject(L, 1);
-		luaL_checkstring(L, 2);
-		ServerActiveObject *co = getobject(ref);
-		if(co == NULL) return 0;
-		// itemstring
-		const char *itemstring = luaL_checkstring(L, 2);
-		infostream<<"ObjectRef::l_add_to_inventory_later(): id="<<co->getId()
-				<<" itemstring=\""<<itemstring<<"\""<<std::endl;
-		// Do it
-		std::istringstream is(itemstring, std::ios::binary);
-		ServerEnvironment *env = co->getEnv();
-		assert(env);
-		IGameDef *gamedef = env->getGameDef();
-		InventoryItem *item = InventoryItem::deSerialize(is, gamedef);
-		infostream<<"item="<<env<<std::endl;
-		co->addToInventoryLater(item);
-		// Return
-		return 0;
-	}
-
 	// set_hp(self, hp)
 	// hp = number of hitpoints (2 * number of hearts)
 	// returns: nil
@@ -1914,6 +2177,67 @@ private:
 				<<" hp="<<hp<<std::endl;
 		// Return
 		lua_pushnumber(L, hp);
+		return 1;
+	}
+
+	// get_inventory(self)
+	static int l_get_inventory(lua_State *L)
+	{
+		ObjectRef *ref = checkobject(L, 1);
+		ServerActiveObject *co = getobject(ref);
+		if(co == NULL) return 0;
+		// Do it
+		InventoryLocation loc = co->getInventoryLocation();
+		if(get_server(L)->getInventory(loc) != NULL)
+			InvRef::create(L, loc);
+		else
+			lua_pushnil(L);
+		return 1;
+	}
+
+	// get_wield_list(self)
+	static int l_get_wield_list(lua_State *L)
+	{
+		ObjectRef *ref = checkobject(L, 1);
+		ServerActiveObject *co = getobject(ref);
+		if(co == NULL) return 0;
+		// Do it
+		lua_pushstring(L, co->getWieldList().c_str());
+		return 1;
+	}
+
+	// get_wield_index(self)
+	static int l_get_wield_index(lua_State *L)
+	{
+		ObjectRef *ref = checkobject(L, 1);
+		ServerActiveObject *co = getobject(ref);
+		if(co == NULL) return 0;
+		// Do it
+		lua_pushinteger(L, co->getWieldIndex() + 1);
+		return 1;
+	}
+
+	// get_wielded_item(self)
+	static int l_get_wielded_item(lua_State *L)
+	{
+		ObjectRef *ref = checkobject(L, 1);
+		ServerActiveObject *co = getobject(ref);
+		if(co == NULL) return 0;
+		// Do it
+		LuaItemStack::create(L, co->getWieldedItem());
+		return 1;
+	}
+
+	// set_wielded_item(self, itemstack or itemstring or table or nil)
+	static int l_set_wielded_item(lua_State *L)
+	{
+		ObjectRef *ref = checkobject(L, 1);
+		ServerActiveObject *co = getobject(ref);
+		if(co == NULL) return 0;
+		// Do it
+		ItemStack item = read_item(L, 2);
+		bool success = co->setWieldedItem(item);
+		lua_pushboolean(L, success);
 		return 1;
 	}
 
@@ -2070,73 +2394,6 @@ private:
 		return 1;
 	}
 	
-	// get_inventory(self)
-	static int l_get_inventory(lua_State *L)
-	{
-		ObjectRef *ref = checkobject(L, 1);
-		ServerRemotePlayer *player = getplayer(ref);
-		if(player == NULL) return 0;
-		// Do it
-		InvRef::createPlayer(L, player);
-		return 1;
-	}
-
-	// deprecated: inventory_set_list(self, name, {item1, item2, ...})
-	static int l_inventory_set_list(lua_State *L)
-	{
-		infostream<<"Deprecated: inventory_set_list"<<std::endl;
-		ObjectRef *ref = checkobject(L, 1);
-		ServerRemotePlayer *player = getplayer(ref);
-		if(player == NULL) return 0;
-		const char *name = luaL_checkstring(L, 2);
-		// Do it
-		inventory_set_list_from_lua(&player->inventory, name, L, 3,
-				player->getEnv()->getGameDef(), PLAYER_INVENTORY_SIZE);
-		player->m_inventory_not_sent = true;
-		return 0;
-	}
-
-	// deprecated: inventory_get_list(self, name)
-	static int l_inventory_get_list(lua_State *L)
-	{
-		infostream<<"Deprecated: inventory_get_list"<<std::endl;
-		ObjectRef *ref = checkobject(L, 1);
-		ServerRemotePlayer *player = getplayer(ref);
-		if(player == NULL) return 0;
-		const char *name = luaL_checkstring(L, 2);
-		// Do it
-		inventory_get_list_to_lua(&player->inventory, name, L);
-		return 1;
-	}
-
-	// get_wielded_itemstring(self)
-	static int l_get_wielded_itemstring(lua_State *L)
-	{
-		ObjectRef *ref = checkobject(L, 1);
-		ServerRemotePlayer *player = getplayer(ref);
-		if(player == NULL) return 0;
-		// Do it
-		InventoryItem *item = player->getWieldedItem();
-		if(item == NULL){
-			lua_pushnil(L);
-			return 1;
-		}
-		lua_pushstring(L, item->getItemString().c_str());
-		return 1;
-	}
-
-	// get_wielded_item(self)
-	static int l_get_wielded_item(lua_State *L)
-	{
-		ObjectRef *ref = checkobject(L, 1);
-		ServerRemotePlayer *player = getplayer(ref);
-		if(player == NULL) return 0;
-		// Do it
-		InventoryItem *item0 = player->getWieldedItem();
-		push_stack_item(L, item0);
-		return 1;
-	}
-
 	// get_look_dir(self)
 	static int l_get_look_dir(lua_State *L)
 	{
@@ -2243,12 +2500,13 @@ const luaL_reg ObjectRef::methods[] = {
 	method(ObjectRef, moveto),
 	method(ObjectRef, punch),
 	method(ObjectRef, right_click),
-	method(ObjectRef, get_wield_digging_properties),
-	method(ObjectRef, damage_wielded_item),
-	method(ObjectRef, add_to_inventory),
-	method(ObjectRef, add_to_inventory_later),
 	method(ObjectRef, set_hp),
 	method(ObjectRef, get_hp),
+	method(ObjectRef, get_inventory),
+	method(ObjectRef, get_wield_list),
+	method(ObjectRef, get_wield_index),
+	method(ObjectRef, get_wielded_item),
+	method(ObjectRef, set_wielded_item),
 	// LuaEntitySAO-only
 	method(ObjectRef, setvelocity),
 	method(ObjectRef, getvelocity),
@@ -2262,11 +2520,6 @@ const luaL_reg ObjectRef::methods[] = {
 	method(ObjectRef, get_luaentity),
 	// Player-only
 	method(ObjectRef, get_player_name),
-	method(ObjectRef, get_inventory),
-	method(ObjectRef, inventory_set_list), // deprecated
-	method(ObjectRef, inventory_get_list), // deprecated
-	method(ObjectRef, get_wielded_itemstring),
-	method(ObjectRef, get_wielded_item),
 	method(ObjectRef, get_look_dir),
 	method(ObjectRef, get_look_pitch),
 	method(ObjectRef, get_look_yaw),
@@ -2408,7 +2661,7 @@ private:
 		}
 	}
 
-	// EnvRef:add_entity(pos, entityname)
+	// EnvRef:add_entity(pos, entityname) -> ObjectRef or nil
 	// pos = {x=num, y=num, z=num}
 	static int l_add_entity(lua_State *L)
 	{
@@ -2431,22 +2684,29 @@ private:
 		return 1;
 	}
 
-	// EnvRef:add_item(pos, inventorystring)
+	// EnvRef:add_item(pos, itemstack or itemstring or table) -> ObjectRef or nil
 	// pos = {x=num, y=num, z=num}
 	static int l_add_item(lua_State *L)
 	{
-		infostream<<"EnvRef::l_add_item()"<<std::endl;
+		//infostream<<"EnvRef::l_add_item()"<<std::endl;
 		EnvRef *o = checkobject(L, 1);
 		ServerEnvironment *env = o->m_env;
 		if(env == NULL) return 0;
 		// pos
 		v3f pos = checkFloatPos(L, 2);
-		// inventorystring
-		const char *inventorystring = luaL_checkstring(L, 3);
+		// item
+		ItemStack item = read_item(L, 3);
+		if(item.empty() || !item.isKnown(get_server(L)->idef()))
+			return 0;
 		// Do it
-		ServerActiveObject *obj = new ItemSAO(env, pos, inventorystring);
-		env->addActiveObject(obj);
-		return 0;
+		ServerActiveObject *obj = new ItemSAO(env, pos, item.getItemString());
+		int objectid = env->addActiveObject(obj);
+		// If failed to add, return nothing (reads as nil)
+		if(objectid == 0)
+			return 0;
+		// Return ObjectRef
+		objectref_get_or_create(L, obj);
+		return 1;
 	}
 
 	// EnvRef:add_rat(pos)
@@ -2627,55 +2887,6 @@ const luaL_reg EnvRef::methods[] = {
 	Global functions
 */
 
-static int l_register_nodedef_defaults(lua_State *L)
-{
-	luaL_checktype(L, 1, LUA_TTABLE);
-
-	lua_pushvalue(L, 1); // Explicitly put parameter 1 on top of stack
-	lua_setfield(L, LUA_REGISTRYINDEX, "minetest_nodedef_default");
-
-	return 0;
-}
-
-// Register new object prototype
-// register_entity(name, prototype)
-static int l_register_entity(lua_State *L)
-{
-	std::string name = luaL_checkstring(L, 1);
-	check_modname_prefix(L, name);
-	//infostream<<"register_entity: "<<name<<std::endl;
-	luaL_checktype(L, 2, LUA_TTABLE);
-
-	// Get minetest.registered_entities
-	lua_getglobal(L, "minetest");
-	lua_getfield(L, -1, "registered_entities");
-	luaL_checktype(L, -1, LUA_TTABLE);
-	int registered_entities = lua_gettop(L);
-	lua_pushvalue(L, 2); // Object = param 2 -> stack top
-	// registered_entities[name] = object
-	lua_setfield(L, registered_entities, name.c_str());
-	
-	// Get registered object to top of stack
-	lua_pushvalue(L, 2);
-
-	// Set name field
-	lua_pushvalue(L, 1);
-	lua_setfield(L, -2, "name");
-	
-	// Set __index to point to itself
-	lua_pushvalue(L, -1);
-	lua_setfield(L, -2, "__index");
-
-	// Set metatable.__index = metatable
-	luaL_getmetatable(L, "minetest.entity");
-	lua_pushvalue(L, -1); // duplicate metatable
-	lua_setfield(L, -2, "__index");
-	// Set object metatable
-	lua_setmetatable(L, -2);
-
-	return 0; /* number of results */
-}
-
 class LuaABM : public ActiveBlockModifier
 {
 private:
@@ -2749,454 +2960,318 @@ public:
 	}
 };
 
-// register_abm({...})
-static int l_register_abm(lua_State *L)
+// debug(text)
+// Writes a line to dstream
+static int l_debug(lua_State *L)
 {
-	//infostream<<"register_abm"<<std::endl;
-	luaL_checktype(L, 1, LUA_TTABLE);
+	std::string text = lua_tostring(L, 1);
+	dstream << text << std::endl;
+	return 0;
+}
 
-	// Get minetest.registered_abms
-	lua_getglobal(L, "minetest");
-	lua_getfield(L, -1, "registered_abms");
-	luaL_checktype(L, -1, LUA_TTABLE);
-	int registered_abms = lua_gettop(L);
-
-	int id = 1;
-	// Find free id
-	for(;;){
-		lua_pushnumber(L, id);
-		lua_gettable(L, registered_abms);
-		if(lua_isnil(L, -1))
-			break;
-		lua_pop(L, 1);
-		id++;
+// log([level,] text)
+// Writes a line to the logger.
+// The one-argument version logs to infostream.
+// The two-argument version accept a log level: error, action, info, or verbose.
+static int l_log(lua_State *L)
+{
+	std::string text;
+	LogMessageLevel level = LMT_INFO;
+	if(lua_isnone(L, 2))
+	{
+		text = lua_tostring(L, 1);
 	}
-	lua_pop(L, 1);
-
-	infostream<<"register_abm: id="<<id<<std::endl;
-
-	// registered_abms[id] = spec
-	lua_pushnumber(L, id);
-	lua_pushvalue(L, 1);
-	lua_settable(L, registered_abms);
-	
-	return 0; /* number of results */
+	else
+	{
+		std::string levelname = lua_tostring(L, 1);
+		text = lua_tostring(L, 2);
+		if(levelname == "error")
+			level = LMT_ERROR;
+		else if(levelname == "action")
+			level = LMT_ACTION;
+		else if(levelname == "verbose")
+			level = LMT_VERBOSE;
+	}
+	log_printline(level, text);
+	return 0;
 }
 
-// register_tool(name, {lots of stuff})
-static int l_register_tool(lua_State *L)
+// register_item_raw({lots of stuff})
+static int l_register_item_raw(lua_State *L)
 {
-	std::string name = luaL_checkstring(L, 1);
-	check_modname_prefix(L, name);
-	//infostream<<"register_tool: "<<name<<std::endl;
-	luaL_checktype(L, 2, LUA_TTABLE);
-	int table = 2;
+	luaL_checktype(L, 1, LUA_TTABLE);
+	int table = 1;
 
-	// Get the writable tool definition manager from the server
-	IWritableToolDefManager *tooldef =
-			get_server(L)->getWritableToolDefManager();
-	
-	ToolDefinition def = read_tool_definition(L, table);
+	// Get the writable item and node definition managers from the server
+	IWritableItemDefManager *idef =
+			get_server(L)->getWritableItemDefManager();
+	IWritableNodeDefManager *ndef =
+			get_server(L)->getWritableNodeDefManager();
 
-	tooldef->registerTool(name, def);
-	return 0; /* number of results */
-}
-
-// register_craftitem(name, {lots of stuff})
-static int l_register_craftitem(lua_State *L)
-{
-	std::string name = luaL_checkstring(L, 1);
-	check_modname_prefix(L, name);
-	//infostream<<"register_craftitem: "<<name<<std::endl;
-	luaL_checktype(L, 2, LUA_TTABLE);
-	int table = 2;
-
-	// Get the writable CraftItem definition manager from the server
-	IWritableCraftItemDefManager *craftitemdef =
-			get_server(L)->getWritableCraftItemDefManager();
-	
-	// Check if on_drop is defined
-	lua_getfield(L, table, "on_drop");
-	bool got_on_drop = !lua_isnil(L, -1);
-	lua_pop(L, 1);
+	// Check if name is defined
+	lua_getfield(L, table, "name");
+	if(lua_isstring(L, -1)){
+		std::string name = lua_tostring(L, -1);
+		infostream<<"register_item_raw: "<<name<<std::endl;
+	} else {
+		throw LuaError(L, "register_item_raw: name is not defined or not a string");
+	}
 
 	// Check if on_use is defined
-	lua_getfield(L, table, "on_use");
-	bool got_on_use = !lua_isnil(L, -1);
-	lua_pop(L, 1);
 
-	CraftItemDefinition def;
-	
-	getstringfield(L, table, "image", def.imagename);
-	getstringfield(L, table, "cookresult_itemstring", def.cookresult_item);
-	getfloatfield(L, table, "furnace_cooktime", def.furnace_cooktime);
-	getfloatfield(L, table, "furnace_burntime", def.furnace_burntime);
-	def.usable = getboolfield_default(L, table, "usable", got_on_use);
-	getboolfield(L, table, "liquids_pointable", def.liquids_pointable);
-	def.dropcount = getintfield_default(L, table, "dropcount", def.dropcount);
-	def.stack_max = getintfield_default(L, table, "stack_max", def.stack_max);
+	// Read the item definition and register it
+	ItemDefinition def = read_item_definition(L, table);
+	idef->registerItem(def);
 
-	// If an on_drop callback is defined, force dropcount to 1
-	if (got_on_drop)
-		def.dropcount = 1;
-
-	// Register it
-	craftitemdef->registerCraftItem(name, def);
-
-	lua_pushvalue(L, table);
-	scriptapi_add_craftitem(L, name.c_str());
+	// Read the node definition (content features) and register it
+	if(def.type == ITEM_NODE)
+	{
+		ContentFeatures f = read_content_features(L, table);
+		ndef->set(f.name, f);
+	}
 
 	return 0; /* number of results */
 }
 
-// register_node(name, {lots of stuff})
-static int l_register_node(lua_State *L)
+// register_alias_raw(name, convert_to_name)
+static int l_register_alias_raw(lua_State *L)
 {
 	std::string name = luaL_checkstring(L, 1);
-	check_modname_prefix(L, name);
-	//infostream<<"register_node: "<<name<<std::endl;
-	luaL_checktype(L, 2, LUA_TTABLE);
-	int nodedef_table = 2;
+	std::string convert_to = luaL_checkstring(L, 2);
 
-	// Get the writable node definition manager from the server
-	IWritableNodeDefManager *nodedef =
-			get_server(L)->getWritableNodeDefManager();
+	// Get the writable item definition manager from the server
+	IWritableItemDefManager *idef =
+			get_server(L)->getWritableItemDefManager();
 	
-	// Get default node definition from registry
-	lua_getfield(L, LUA_REGISTRYINDEX, "minetest_nodedef_default");
-	int nodedef_default = lua_gettop(L);
-
-	/*
-		Add to minetest.registered_nodes with default as metatable
-	*/
+	idef->registerAlias(name, convert_to);
 	
-	// Get the node definition table given as parameter
-	lua_pushvalue(L, nodedef_table);
+	return 0; /* number of results */
+}
 
-	// Set __index to point to itself
-	lua_pushvalue(L, -1);
-	lua_setfield(L, -2, "__index");
+// helper for register_craft
+static bool read_craft_recipe_shaped(lua_State *L, int index,
+		int &width, std::vector<std::string> &recipe)
+{
+	if(index < 0)
+		index = lua_gettop(L) + 1 + index;
 
-	// Set nodedef_default as metatable for the definition
-	lua_pushvalue(L, nodedef_default);
-	lua_setmetatable(L, nodedef_table);
-	
-	// minetest.registered_nodes[name] = nodedef
-	lua_getglobal(L, "minetest");
-	lua_getfield(L, -1, "registered_nodes");
-	luaL_checktype(L, -1, LUA_TTABLE);
-	lua_pushstring(L, name.c_str());
-	lua_pushvalue(L, nodedef_table);
-	lua_settable(L, -3);
+	if(!lua_istable(L, index))
+		return false;
 
-	/*
-		Create definition
-	*/
-	
-	ContentFeatures f;
-
-	// Default to getting the corresponding NodeItem when dug
-	f.dug_item = std::string("NodeItem \"")+name+"\" 1";
-	
-	// Default to unknown_block.png as all textures
-	f.setAllTextures("unknown_block.png");
-
-	/*
-		Read definiton from Lua
-	*/
-
-	f.name = name;
-	
-	/* Visual definition */
-
-	f.drawtype = (NodeDrawType)getenumfield(L, nodedef_table, "drawtype", es_DrawType,
-			NDT_NORMAL);
-	getfloatfield(L, nodedef_table, "visual_scale", f.visual_scale);
-
-	lua_getfield(L, nodedef_table, "tile_images");
-	if(lua_istable(L, -1)){
-		int table = lua_gettop(L);
+	lua_pushnil(L);
+	int rowcount = 0;
+	while(lua_next(L, index) != 0){
+		int colcount = 0;
+		// key at index -2 and value at index -1
+		if(!lua_istable(L, -1))
+			return false;
+		int table2 = lua_gettop(L);
 		lua_pushnil(L);
-		int i = 0;
-		while(lua_next(L, table) != 0){
+		while(lua_next(L, table2) != 0){
 			// key at index -2 and value at index -1
-			if(lua_isstring(L, -1))
-				f.tname_tiles[i] = lua_tostring(L, -1);
-			else
-				f.tname_tiles[i] = "";
+			if(!lua_isstring(L, -1))
+				return false;
+			recipe.push_back(lua_tostring(L, -1));
 			// removes value, keeps key for next iteration
 			lua_pop(L, 1);
-			i++;
-			if(i==6){
-				lua_pop(L, 1);
-				break;
-			}
+			colcount++;
 		}
-		// Copy last value to all remaining textures
-		if(i >= 1){
-			std::string lastname = f.tname_tiles[i-1];
-			while(i < 6){
-				f.tname_tiles[i] = lastname;
-				i++;
-			}
+		if(rowcount == 0){
+			width = colcount;
+		} else {
+			if(colcount != width)
+				return false;
 		}
-	}
-	lua_pop(L, 1);
-
-	getstringfield(L, nodedef_table, "inventory_image", f.tname_inventory);
-
-	lua_getfield(L, nodedef_table, "special_materials");
-	if(lua_istable(L, -1)){
-		int table = lua_gettop(L);
-		lua_pushnil(L);
-		int i = 0;
-		while(lua_next(L, table) != 0){
-			// key at index -2 and value at index -1
-			int smtable = lua_gettop(L);
-			std::string tname = getstringfield_default(
-					L, smtable, "image", "");
-			bool backface_culling = getboolfield_default(
-					L, smtable, "backface_culling", true);
-			MaterialSpec mspec(tname, backface_culling);
-			f.setSpecialMaterial(i, mspec);
-			// removes value, keeps key for next iteration
-			lua_pop(L, 1);
-			i++;
-			if(i==6){
-				lua_pop(L, 1);
-				break;
-			}
-		}
-	}
-	lua_pop(L, 1);
-
-	f.alpha = getintfield_default(L, nodedef_table, "alpha", 255);
-
-	/* Other stuff */
-	
-	lua_getfield(L, nodedef_table, "post_effect_color");
-	if(!lua_isnil(L, -1))
-		f.post_effect_color = readARGB8(L, -1);
-	lua_pop(L, 1);
-
-	f.param_type = (ContentParamType)getenumfield(L, nodedef_table, "paramtype",
-			es_ContentParamType, CPT_NONE);
-	
-	// True for all ground-like things like stone and mud, false for eg. trees
-	getboolfield(L, nodedef_table, "is_ground_content", f.is_ground_content);
-	f.light_propagates = (f.param_type == CPT_LIGHT);
-	warn_if_field_exists(L, nodedef_table, "light_propagates",
-			"deprecated: determined from paramtype");
-	getboolfield(L, nodedef_table, "sunlight_propagates", f.sunlight_propagates);
-	// This is used for collision detection.
-	// Also for general solidness queries.
-	getboolfield(L, nodedef_table, "walkable", f.walkable);
-	// Player can point to these
-	getboolfield(L, nodedef_table, "pointable", f.pointable);
-	// Player can dig these
-	getboolfield(L, nodedef_table, "diggable", f.diggable);
-	// Player can climb these
-	getboolfield(L, nodedef_table, "climbable", f.climbable);
-	// Player can build on these
-	getboolfield(L, nodedef_table, "buildable_to", f.buildable_to);
-	// If true, param2 is set to direction when placed. Used for torches.
-	// NOTE: the direction format is quite inefficient and should be changed
-	getboolfield(L, nodedef_table, "wall_mounted", f.wall_mounted);
-	// Whether this content type often contains mineral.
-	// Used for texture atlas creation.
-	// Currently only enabled for CONTENT_STONE.
-	getboolfield(L, nodedef_table, "often_contains_mineral", f.often_contains_mineral);
-	// Inventory item string as which the node appears in inventory when dug.
-	// Mineral overrides this.
-	getstringfield(L, nodedef_table, "dug_item", f.dug_item);
-	// Extra dug item and its rarity
-	getstringfield(L, nodedef_table, "extra_dug_item", f.extra_dug_item);
-	// Usual get interval for extra dug item
-	getintfield(L, nodedef_table, "extra_dug_item_rarity", f.extra_dug_item_rarity);
-	// Metadata name of node (eg. "furnace")
-	getstringfield(L, nodedef_table, "metadata_name", f.metadata_name);
-	// Whether the node is non-liquid, source liquid or flowing liquid
-	f.liquid_type = (LiquidType)getenumfield(L, nodedef_table, "liquidtype",
-			es_LiquidType, LIQUID_NONE);
-	// If the content is liquid, this is the flowing version of the liquid.
-	getstringfield(L, nodedef_table, "liquid_alternative_flowing",
-			f.liquid_alternative_flowing);
-	// If the content is liquid, this is the source version of the liquid.
-	getstringfield(L, nodedef_table, "liquid_alternative_source",
-			f.liquid_alternative_source);
-	// Viscosity for fluid flow, ranging from 1 to 7, with
-	// 1 giving almost instantaneous propagation and 7 being
-	// the slowest possible
-	f.liquid_viscosity = getintfield_default(L, nodedef_table,
-			"liquid_viscosity", f.liquid_viscosity);
-	// Amount of light the node emits
-	f.light_source = getintfield_default(L, nodedef_table,
-			"light_source", f.light_source);
-	f.damage_per_second = getintfield_default(L, nodedef_table,
-			"damage_per_second", f.damage_per_second);
-	
-	lua_getfield(L, nodedef_table, "selection_box");
-	if(lua_istable(L, -1)){
-		f.selection_box.type = (NodeBoxType)getenumfield(L, -1, "type",
-				es_NodeBoxType, NODEBOX_REGULAR);
-
-		lua_getfield(L, -1, "fixed");
-		if(lua_istable(L, -1))
-			f.selection_box.fixed = read_aabbox3df32(L, -1, BS);
+		// removes value, keeps key for next iteration
 		lua_pop(L, 1);
-
-		lua_getfield(L, -1, "wall_top");
-		if(lua_istable(L, -1))
-			f.selection_box.wall_top = read_aabbox3df32(L, -1, BS);
-		lua_pop(L, 1);
-
-		lua_getfield(L, -1, "wall_bottom");
-		if(lua_istable(L, -1))
-			f.selection_box.wall_bottom = read_aabbox3df32(L, -1, BS);
-		lua_pop(L, 1);
-
-		lua_getfield(L, -1, "wall_side");
-		if(lua_istable(L, -1))
-			f.selection_box.wall_side = read_aabbox3df32(L, -1, BS);
-		lua_pop(L, 1);
+		rowcount++;
 	}
-	lua_pop(L, 1);
-
-	lua_getfield(L, nodedef_table, "material");
-	if(lua_istable(L, -1)){
-		f.material.diggability = (Diggability)getenumfield(L, -1, "diggability",
-				es_Diggability, DIGGABLE_NORMAL);
-		
-		getfloatfield(L, -1, "constant_time", f.material.constant_time);
-		getfloatfield(L, -1, "weight", f.material.weight);
-		getfloatfield(L, -1, "crackiness", f.material.crackiness);
-		getfloatfield(L, -1, "crumbliness", f.material.crumbliness);
-		getfloatfield(L, -1, "cuttability", f.material.cuttability);
-		getfloatfield(L, -1, "flammability", f.material.flammability);
-	}
-	lua_pop(L, 1);
-
-	getstringfield(L, nodedef_table, "cookresult_itemstring", f.cookresult_item);
-	getfloatfield(L, nodedef_table, "furnace_cooktime", f.furnace_cooktime);
-	getfloatfield(L, nodedef_table, "furnace_burntime", f.furnace_burntime);
-	
-	/*
-		Register it
-	*/
-	
-	nodedef->set(name, f);
-	
-	return 0; /* number of results */
+	return width != 0;
 }
 
-// alias_node(name, convert_to_name)
-static int l_alias_node(lua_State *L)
+// helper for register_craft
+static bool read_craft_recipe_shapeless(lua_State *L, int index,
+		std::vector<std::string> &recipe)
 {
-	std::string name = luaL_checkstring(L, 1);
-	std::string convert_to = luaL_checkstring(L, 2);
+	if(index < 0)
+		index = lua_gettop(L) + 1 + index;
 
-	// Get the writable node definition manager from the server
-	IWritableNodeDefManager *nodedef =
-			get_server(L)->getWritableNodeDefManager();
-	
-	nodedef->setAlias(name, convert_to);
-	
-	return 0; /* number of results */
+	if(!lua_istable(L, index))
+		return false;
+
+	lua_pushnil(L);
+	while(lua_next(L, index) != 0){
+		// key at index -2 and value at index -1
+		if(!lua_isstring(L, -1))
+			return false;
+		recipe.push_back(lua_tostring(L, -1));
+		// removes value, keeps key for next iteration
+		lua_pop(L, 1);
+	}
+	return true;
 }
 
-// alias_tool(name, convert_to_name)
-static int l_alias_tool(lua_State *L)
+// helper for register_craft
+static bool read_craft_replacements(lua_State *L, int index,
+		CraftReplacements &replacements)
 {
-	std::string name = luaL_checkstring(L, 1);
-	std::string convert_to = luaL_checkstring(L, 2);
+	if(index < 0)
+		index = lua_gettop(L) + 1 + index;
 
-	// Get the writable tool definition manager from the server
-	IWritableToolDefManager *tooldef =
-			get_server(L)->getWritableToolDefManager();
-	
-	tooldef->setAlias(name, convert_to);
+	if(!lua_istable(L, index))
+		return false;
 
-	return 0; /* number of results */
+	lua_pushnil(L);
+	while(lua_next(L, index) != 0){
+		// key at index -2 and value at index -1
+		if(!lua_istable(L, -1))
+			return false;
+		lua_rawgeti(L, -1, 1);
+		if(!lua_isstring(L, -1))
+			return false;
+		std::string replace_from = lua_tostring(L, -1);
+		lua_pop(L, 1);
+		lua_rawgeti(L, -1, 2);
+		if(!lua_isstring(L, -1))
+			return false;
+		std::string replace_to = lua_tostring(L, -1);
+		lua_pop(L, 1);
+		replacements.pairs.push_back(
+				std::make_pair(replace_from, replace_to));
+		// removes value, keeps key for next iteration
+		lua_pop(L, 1);
+	}
+	return true;
 }
-
-// alias_craftitem(name, convert_to_name)
-static int l_alias_craftitem(lua_State *L)
-{
-	std::string name = luaL_checkstring(L, 1);
-	std::string convert_to = luaL_checkstring(L, 2);
-
-	// Get the writable CraftItem definition manager from the server
-	IWritableCraftItemDefManager *craftitemdef =
-			get_server(L)->getWritableCraftItemDefManager();
-	
-	craftitemdef->setAlias(name, convert_to);
-
-	return 0; /* number of results */
-}
-
 // register_craft({output=item, recipe={{item00,item10},{item01,item11}})
 static int l_register_craft(lua_State *L)
 {
 	//infostream<<"register_craft"<<std::endl;
 	luaL_checktype(L, 1, LUA_TTABLE);
-	int table0 = 1;
+	int table = 1;
 
 	// Get the writable craft definition manager from the server
 	IWritableCraftDefManager *craftdef =
 			get_server(L)->getWritableCraftDefManager();
 	
-	std::string output;
-	int width = 0;
-	std::vector<std::string> input;
+	std::string type = getstringfield_default(L, table, "type", "shaped");
 
-	lua_getfield(L, table0, "output");
-	luaL_checktype(L, -1, LUA_TSTRING);
-	if(lua_isstring(L, -1))
-		output = lua_tostring(L, -1);
-	lua_pop(L, 1);
+	/*
+		CraftDefinitionShaped
+	*/
+	if(type == "shaped"){
+		std::string output = getstringfield_default(L, table, "output", "");
+		if(output == "")
+			throw LuaError(L, "Crafting definition is missing an output");
 
-	lua_getfield(L, table0, "recipe");
-	luaL_checktype(L, -1, LUA_TTABLE);
-	if(lua_istable(L, -1)){
-		int table1 = lua_gettop(L);
-		lua_pushnil(L);
-		int rowcount = 0;
-		while(lua_next(L, table1) != 0){
-			int colcount = 0;
-			// key at index -2 and value at index -1
-			luaL_checktype(L, -1, LUA_TTABLE);
-			if(lua_istable(L, -1)){
-				int table2 = lua_gettop(L);
-				lua_pushnil(L);
-				while(lua_next(L, table2) != 0){
-					// key at index -2 and value at index -1
-					luaL_checktype(L, -1, LUA_TSTRING);
-					input.push_back(lua_tostring(L, -1));
-					// removes value, keeps key for next iteration
-					lua_pop(L, 1);
-					colcount++;
-				}
-			}
-			if(rowcount == 0){
-				width = colcount;
-			} else {
-				if(colcount != width){
-					std::string error;
-					error += "Invalid crafting recipe (output=\""
-							+ output + "\")";
-					throw LuaError(L, error);
-				}
-			}
-			// removes value, keeps key for next iteration
-			lua_pop(L, 1);
-			rowcount++;
+		int width = 0;
+		std::vector<std::string> recipe;
+		lua_getfield(L, table, "recipe");
+		if(lua_isnil(L, -1))
+			throw LuaError(L, "Crafting definition is missing a recipe"
+					" (output=\"" + output + "\")");
+		if(!read_craft_recipe_shaped(L, -1, width, recipe))
+			throw LuaError(L, "Invalid crafting recipe"
+					" (output=\"" + output + "\")");
+
+		CraftReplacements replacements;
+		lua_getfield(L, table, "replacements");
+		if(!lua_isnil(L, -1))
+		{
+			if(!read_craft_replacements(L, -1, replacements))
+				throw LuaError(L, "Invalid replacements"
+						" (output=\"" + output + "\")");
 		}
+
+		CraftDefinition *def = new CraftDefinitionShaped(
+				output, width, recipe, replacements);
+		craftdef->registerCraft(def);
 	}
+	/*
+		CraftDefinitionShapeless
+	*/
+	else if(type == "shapeless"){
+		std::string output = getstringfield_default(L, table, "output", "");
+		if(output == "")
+			throw LuaError(L, "Crafting definition (shapeless)"
+					" is missing an output");
+
+		std::vector<std::string> recipe;
+		lua_getfield(L, table, "recipe");
+		if(lua_isnil(L, -1))
+			throw LuaError(L, "Crafting definition (shapeless)"
+					" is missing a recipe"
+					" (output=\"" + output + "\")");
+		if(!read_craft_recipe_shapeless(L, -1, recipe))
+			throw LuaError(L, "Invalid crafting recipe"
+					" (output=\"" + output + "\")");
+
+		CraftReplacements replacements;
+		lua_getfield(L, table, "replacements");
+		if(!lua_isnil(L, -1))
+		{
+			if(!read_craft_replacements(L, -1, replacements))
+				throw LuaError(L, "Invalid replacements"
+						" (output=\"" + output + "\")");
+		}
+
+		CraftDefinition *def = new CraftDefinitionShapeless(
+				output, recipe, replacements);
+		craftdef->registerCraft(def);
+	}
+	/*
+		CraftDefinitionToolRepair
+	*/
+	else if(type == "toolrepair"){
+		float additional_wear = getfloatfield_default(L, table,
+				"additional_wear", 0.0);
+
+		CraftDefinition *def = new CraftDefinitionToolRepair(
+				additional_wear);
+		craftdef->registerCraft(def);
+	}
+	/*
+		CraftDefinitionCooking
+	*/
+	else if(type == "cooking"){
+		std::string output = getstringfield_default(L, table, "output", "");
+		if(output == "")
+			throw LuaError(L, "Crafting definition (cooking)"
+					" is missing an output");
+
+		std::string recipe = getstringfield_default(L, table, "recipe", "");
+		if(recipe == "")
+			throw LuaError(L, "Crafting definition (cooking)"
+					" is missing a recipe"
+					" (output=\"" + output + "\")");
+
+		float cooktime = getfloatfield_default(L, table, "cooktime", 3.0);
+
+		CraftDefinition *def = new CraftDefinitionCooking(
+				output, recipe, cooktime);
+		craftdef->registerCraft(def);
+	}
+	/*
+		CraftDefinitionFuel
+	*/
+	else if(type == "fuel"){
+		std::string recipe = getstringfield_default(L, table, "recipe", "");
+		if(recipe == "")
+			throw LuaError(L, "Crafting definition (fuel)"
+					" is missing a recipe");
+
+		float burntime = getfloatfield_default(L, table, "burntime", 1.0);
+
+		CraftDefinition *def = new CraftDefinitionFuel(
+				recipe, burntime);
+		craftdef->registerCraft(def);
+	}
+	else
+	{
+		throw LuaError(L, "Unknown crafting definition type: \"" + type + "\"");
+	}
+
 	lua_pop(L, 1);
-
-	CraftDefinition def(output, width, input);
-	craftdef->registerCraft(def);
-
 	return 0; /* number of results */
 }
 
@@ -3294,15 +3369,19 @@ static int l_get_inventory(lua_State *L)
 	return 1;
 }
 
+// get_current_modname()
+static int l_get_current_modname(lua_State *L)
+{
+	lua_getfield(L, LUA_REGISTRYINDEX, "minetest_current_modname");
+	return 1;
+}
+
 // get_modpath(modname)
 static int l_get_modpath(lua_State *L)
 {
 	const char *modname = luaL_checkstring(L, 1);
-	// Get server from registry
-	lua_getfield(L, LUA_REGISTRYINDEX, "minetest_server");
-	Server *server = (Server*)lua_touserdata(L, -1);
 	// Do it
-	const ModSpec *mod = server->getModSpec(modname);
+	const ModSpec *mod = get_server(L)->getModSpec(modname);
 	if(!mod){
 		lua_pushnil(L);
 		return 1;
@@ -3312,31 +3391,19 @@ static int l_get_modpath(lua_State *L)
 }
 
 static const struct luaL_Reg minetest_f [] = {
-	{"register_nodedef_defaults", l_register_nodedef_defaults},
-	{"register_entity", l_register_entity},
-	{"register_tool", l_register_tool},
-	{"register_craftitem", l_register_craftitem},
-	{"register_node", l_register_node},
+	{"debug", l_debug},
+	{"log", l_log},
+	{"register_item_raw", l_register_item_raw},
+	{"register_alias_raw", l_register_alias_raw},
 	{"register_craft", l_register_craft},
-	{"register_abm", l_register_abm},
-	{"alias_node", l_alias_node},
-	{"alias_tool", l_alias_tool},
-	{"alias_craftitem", l_alias_craftitem},
 	{"setting_get", l_setting_get},
 	{"setting_getbool", l_setting_getbool},
 	{"chat_send_all", l_chat_send_all},
 	{"chat_send_player", l_chat_send_player},
 	{"get_player_privs", l_get_player_privs},
 	{"get_inventory", l_get_inventory},
+	{"get_current_modname", l_get_current_modname},
 	{"get_modpath", l_get_modpath},
-	{NULL, NULL}
-};
-
-/*
-	LuaEntity functions
-*/
-
-static const struct luaL_Reg minetest_entity_m [] = {
 	{NULL, NULL}
 };
 
@@ -3355,10 +3422,6 @@ void scriptapi_export(lua_State *L, Server *server)
 	lua_pushlightuserdata(L, server);
 	lua_setfield(L, LUA_REGISTRYINDEX, "minetest_server");
 
-	// Store nil as minetest_nodedef_defaults in registry
-	lua_pushnil(L);
-	lua_setfield(L, LUA_REGISTRYINDEX, "minetest_nodedef_default");
-	
 	// Register global functions in table minetest
 	lua_newtable(L);
 	luaL_register(L, NULL, minetest_f);
@@ -3370,30 +3433,12 @@ void scriptapi_export(lua_State *L, Server *server)
 	// Add tables to minetest
 	
 	lua_newtable(L);
-	lua_setfield(L, -2, "registered_nodes");
-	lua_newtable(L);
-	lua_setfield(L, -2, "registered_entities");
-	lua_newtable(L);
-	lua_setfield(L, -2, "registered_craftitems");
-	lua_newtable(L);
-	lua_setfield(L, -2, "registered_abms");
-	
-	lua_newtable(L);
 	lua_setfield(L, -2, "object_refs");
 	lua_newtable(L);
 	lua_setfield(L, -2, "luaentities");
 
-	// Create entity prototype
-	luaL_newmetatable(L, "minetest.entity");
-	// metatable.__index = metatable
-	lua_pushvalue(L, -1); // Duplicate metatable
-	lua_setfield(L, -2, "__index");
-	// Put functions in metatable
-	luaL_register(L, NULL, minetest_entity_m);
-	// Put other stuff in metatable
-	
 	// Register wrappers
-	ItemStack::Register(L);
+	LuaItemStack::Register(L);
 	InvRef::Register(L);
 	NodeMetaRef::Register(L);
 	ObjectRef::Register(L);
@@ -3705,62 +3750,22 @@ void scriptapi_get_creative_inventory(lua_State *L, ServerRemotePlayer *player)
 	lua_getfield(L, -1, "creative_inventory");
 	luaL_checktype(L, -1, LUA_TTABLE);
 	inventory_set_list_from_lua(&player->inventory, "main", L, -1,
-			player->getEnv()->getGameDef(), PLAYER_INVENTORY_SIZE);
+			PLAYER_INVENTORY_SIZE);
 }
 
 /*
-	craftitem
+	item callbacks
 */
 
-static void pushPointedThing(lua_State *L, const PointedThing& pointed)
+// Retrieves minetest.registered_items[name][callbackname]
+// If that is nil or on error, return false and stack is unchanged
+// If that is a function, returns true and pushes the
+// function onto the stack
+static bool get_item_callback(lua_State *L,
+		const char *name, const char *callbackname)
 {
-	lua_newtable(L);
-	if(pointed.type == POINTEDTHING_NODE)
-	{
-		lua_pushstring(L, "node");
-		lua_setfield(L, -2, "type");
-		push_v3s16(L, pointed.node_undersurface);
-		lua_setfield(L, -2, "under");
-		push_v3s16(L, pointed.node_abovesurface);
-		lua_setfield(L, -2, "above");
-	}
-	else if(pointed.type == POINTEDTHING_OBJECT)
-	{
-		lua_pushstring(L, "object");
-		lua_setfield(L, -2, "type");
-		objectref_get(L, pointed.object_id);
-		lua_setfield(L, -2, "ref");
-	}
-	else
-	{
-		lua_pushstring(L, "nothing");
-		lua_setfield(L, -2, "type");
-	}
-}
-
-void scriptapi_add_craftitem(lua_State *L, const char *name)
-{
-	StackUnroller stack_unroller(L);
-	assert(lua_gettop(L) > 0);
-
-	// Set minetest.registered_craftitems[name] = table on top of stack
 	lua_getglobal(L, "minetest");
-	lua_getfield(L, -1, "registered_craftitems");
-	luaL_checktype(L, -1, LUA_TTABLE);
-	lua_pushvalue(L, -3); // push another reference to the table to be registered
-	lua_setfield(L, -2, name); // set minetest.registered_craftitems[name]
-}
-
-static bool get_craftitem_callback(lua_State *L, const char *name,
-		const char *callbackname)
-{
-	// Get minetest.registered_craftitems[name][callbackname]
-	// If that is nil or on error, return false and stack is unchanged
-	// If that is a function, returns true and pushes the
-	// function onto the stack
-
-	lua_getglobal(L, "minetest");
-	lua_getfield(L, -1, "registered_craftitems");
+	lua_getfield(L, -1, "registered_items");
 	lua_remove(L, -2);
 	luaL_checktype(L, -1, LUA_TTABLE);
 	lua_getfield(L, -1, name);
@@ -3768,7 +3773,7 @@ static bool get_craftitem_callback(lua_State *L, const char *name,
 	// Should be a table
 	if(lua_type(L, -1) != LUA_TTABLE)
 	{
-		errorstream<<"CraftItem name \""<<name<<"\" not defined"<<std::endl;
+		errorstream<<"Item \""<<name<<"\" not defined"<<std::endl;
 		lua_pop(L, 1);
 		return false;
 	}
@@ -3786,83 +3791,77 @@ static bool get_craftitem_callback(lua_State *L, const char *name,
 	}
 	else
 	{
-		errorstream<<"CraftItem name \""<<name<<"\" callback \""
+		errorstream<<"Item \""<<name<<"\" callback \""
 			<<callbackname<<" is not a function"<<std::endl;
 		lua_pop(L, 1);
 		return false;
 	}
 }
 
-bool scriptapi_craftitem_on_drop(lua_State *L, const char *name,
-		ServerActiveObject *dropper, v3f pos,
-		bool &callback_exists)
+bool scriptapi_item_on_drop(lua_State *L, ItemStack &item,
+		ServerActiveObject *dropper, v3f pos)
 {
 	realitycheck(L);
 	assert(lua_checkstack(L, 20));
-	//infostream<<"scriptapi_craftitem_on_drop"<<std::endl;
 	StackUnroller stack_unroller(L);
 
-	bool result = false;
-	callback_exists = get_craftitem_callback(L, name, "on_drop");
-	if(callback_exists)
-	{
-		// Call function
-		lua_pushstring(L, name);
-		objectref_get_or_create(L, dropper);
-		pushFloatPos(L, pos);
-		if(lua_pcall(L, 3, 1, 0))
-			script_error(L, "error: %s", lua_tostring(L, -1));
-		result = lua_toboolean(L, -1);
-	}
-	return result;
+	// Push callback function on stack
+	if(!get_item_callback(L, item.name.c_str(), "on_drop"))
+		return false;
+
+	// Call function
+	LuaItemStack::create(L, item);
+	objectref_get_or_create(L, dropper);
+	pushFloatPos(L, pos);
+	if(lua_pcall(L, 3, 1, 0))
+		script_error(L, "error: %s", lua_tostring(L, -1));
+	if(!lua_isnil(L, -1))
+		item = read_item(L, -1);
+	return true;
 }
 
-bool scriptapi_craftitem_on_place_on_ground(lua_State *L, const char *name,
-		ServerActiveObject *placer, v3f pos,
-		bool &callback_exists)
+bool scriptapi_item_on_place(lua_State *L, ItemStack &item,
+		ServerActiveObject *placer, const PointedThing &pointed)
 {
 	realitycheck(L);
 	assert(lua_checkstack(L, 20));
-	//infostream<<"scriptapi_craftitem_on_place_on_ground"<<std::endl;
 	StackUnroller stack_unroller(L);
 
-	bool result = false;
-	callback_exists = get_craftitem_callback(L, name, "on_place_on_ground");
-	if(callback_exists)
-	{
-		// Call function
-		lua_pushstring(L, name);
-		objectref_get_or_create(L, placer);
-		pushFloatPos(L, pos);
-		if(lua_pcall(L, 3, 1, 0))
-			script_error(L, "error: %s", lua_tostring(L, -1));
-		result = lua_toboolean(L, -1);
-	}
-	return result;
+	// Push callback function on stack
+	if(!get_item_callback(L, item.name.c_str(), "on_place"))
+		return false;
+
+	// Call function
+	LuaItemStack::create(L, item);
+	objectref_get_or_create(L, placer);
+	push_pointed_thing(L, pointed);
+	if(lua_pcall(L, 3, 1, 0))
+		script_error(L, "error: %s", lua_tostring(L, -1));
+	if(!lua_isnil(L, -1))
+		item = read_item(L, -1);
+	return true;
 }
 
-bool scriptapi_craftitem_on_use(lua_State *L, const char *name,
-		ServerActiveObject *user, const PointedThing& pointed,
-		bool &callback_exists)
+bool scriptapi_item_on_use(lua_State *L, ItemStack &item,
+		ServerActiveObject *user, const PointedThing &pointed)
 {
 	realitycheck(L);
 	assert(lua_checkstack(L, 20));
-	//infostream<<"scriptapi_craftitem_on_use"<<std::endl;
 	StackUnroller stack_unroller(L);
 
-	bool result = false;
-	callback_exists = get_craftitem_callback(L, name, "on_use");
-	if(callback_exists)
-	{
-		// Call function
-		lua_pushstring(L, name);
-		objectref_get_or_create(L, user);
-		pushPointedThing(L, pointed);
-		if(lua_pcall(L, 3, 1, 0))
-			script_error(L, "error: %s", lua_tostring(L, -1));
-		result = lua_toboolean(L, -1);
-	}
-	return result;
+	// Push callback function on stack
+	if(!get_item_callback(L, item.name.c_str(), "on_use"))
+		return false;
+
+	// Call function
+	LuaItemStack::create(L, item);
+	objectref_get_or_create(L, user);
+	push_pointed_thing(L, pointed);
+	if(lua_pcall(L, 3, 1, 0))
+		script_error(L, "error: %s", lua_tostring(L, -1));
+	if(!lua_isnil(L, -1))
+		item = read_item(L, -1);
+	return true;
 }
 
 /*

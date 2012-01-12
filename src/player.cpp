@@ -28,6 +28,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "main.h" // For g_settings
 #include "settings.h"
 #include "nodedef.h"
+#include "collision.h"
 #include "environment.h"
 #include "gamedef.h"
 
@@ -37,13 +38,13 @@ Player::Player(IGameDef *gamedef):
 	in_water_stable(false),
 	is_climbing(false),
 	swimming_up(false),
+	inventory(gamedef->idef()),
 	inventory_backup(NULL),
 	craftresult_is_preview(true),
 	hp(20),
 	peer_id(PEER_ID_INEXISTENT),
 // protected
 	m_gamedef(gamedef),
-	m_selected_item(0),
 	m_pitch(0),
 	m_yaw(0),
 	m_speed(0,0,0),
@@ -56,11 +57,6 @@ Player::Player(IGameDef *gamedef):
 Player::~Player()
 {
 	delete inventory_backup;
-}
-
-void Player::wieldItem(u16 item)
-{
-	m_selected_item = item;
 }
 
 void Player::resetInventory()
@@ -172,7 +168,7 @@ void Player::deSerialize(std::istream &is)
 		hp = 20;
 	}
 
-	inventory.deSerialize(is, m_gamedef);
+	inventory.deSerialize(is);
 }
 
 #ifndef SERVER

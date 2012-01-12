@@ -25,7 +25,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "settings.h"
 #include "profiler.h"
 #include "nodedef.h"
-#include "tile.h"
 #include "gamedef.h"
 #include "content_mapblock.h"
 #include "mineral.h" // For mineral_block_texture
@@ -81,6 +80,39 @@ void MeshMakeData::fill(u32 daynight_ratio, MapBlock *block)
 				b->copyTo(m_vmanip);
 		}
 	}
+}
+
+void MeshMakeData::fillSingleNode(u32 daynight_ratio, MapNode *node)
+{
+	m_daynight_ratio = daynight_ratio;
+	m_blockpos = v3s16(0,0,0);
+	m_temp_mods.clear();
+	
+	v3s16 blockpos_nodes = v3s16(0,0,0);
+	VoxelArea area(blockpos_nodes-v3s16(1,1,1)*MAP_BLOCKSIZE,
+			blockpos_nodes+v3s16(1,1,1)*MAP_BLOCKSIZE*2-v3s16(1,1,1));
+	s32 volume = area.getVolume();
+	s32 our_node_index = area.index(1,1,1);
+
+	// Allocate this block + neighbors
+	m_vmanip.clear();
+	m_vmanip.addArea(area);
+
+	// Fill in data
+	MapNode *data = new MapNode[volume];
+	for(s32 i = 0; i < volume; i++)
+	{
+		if(i == our_node_index)
+		{
+			data[i] = *node;
+		}
+		else
+		{
+			data[i] = MapNode(CONTENT_AIR, LIGHT_MAX, 0);
+		}
+	}
+	m_vmanip.copyFrom(data, area, area.MinEdge, area.MinEdge, area.getExtent());
+	delete[] data;
 }
 
 /*
@@ -207,8 +239,8 @@ static void makeFastFace(TileSpec tile, u8 li0, u8 li1, u8 li2, u8 li3, v3f p,
 	else if(scale.Y < 0.999 || scale.Y > 1.001) abs_scale = scale.Y;
 	else if(scale.Z < 0.999 || scale.Z > 1.001) abs_scale = scale.Z;
 
-	v3f zerovector = v3f(0,0,0);
-	
+	v3f normal(dir.X, dir.Y, dir.Z);
+
 	u8 alpha = tile.alpha;
 	/*u8 alpha = 255;
 	if(tile.id == TILE_WATER)
@@ -230,16 +262,16 @@ static void makeFastFace(TileSpec tile, u8 li0, u8 li1, u8 li2, u8 li3, v3f p,
 	face.vertices[3] = video::S3DVertex(vertex_pos[3], v3f(0,1,0), c,
 			core::vector2d<f32>(x0+w*abs_scale, y0));*/
 
-	face.vertices[0] = video::S3DVertex(vertex_pos[0], v3f(0,1,0),
+	face.vertices[0] = video::S3DVertex(vertex_pos[0], normal,
 			MapBlock_LightColor(alpha, li0),
 			core::vector2d<f32>(x0+w*abs_scale, y0+h));
-	face.vertices[1] = video::S3DVertex(vertex_pos[1], v3f(0,1,0),
+	face.vertices[1] = video::S3DVertex(vertex_pos[1], normal,
 			MapBlock_LightColor(alpha, li1),
 			core::vector2d<f32>(x0, y0+h));
-	face.vertices[2] = video::S3DVertex(vertex_pos[2], v3f(0,1,0),
+	face.vertices[2] = video::S3DVertex(vertex_pos[2], normal,
 			MapBlock_LightColor(alpha, li2),
 			core::vector2d<f32>(x0, y0));
-	face.vertices[3] = video::S3DVertex(vertex_pos[3], v3f(0,1,0),
+	face.vertices[3] = video::S3DVertex(vertex_pos[3], normal,
 			MapBlock_LightColor(alpha, li3),
 			core::vector2d<f32>(x0+w*abs_scale, y0));
 
@@ -309,8 +341,8 @@ static TileSpec getTile(const MapNode &node, v3s16 dir,
 	Gets node tile from any place relative to block.
 	Returns TILE_NODE if doesn't exist or should not be drawn.
 */
-static TileSpec getNodeTile(MapNode mn, v3s16 p, v3s16 face_dir,
-		NodeModMap &temp_mods, ITextureSource *tsrc, INodeDefManager *ndef)
+TileSpec getNodeTile(MapNode mn, v3s16 p, v3s16 face_dir,
+		NodeModMap *temp_mods, ITextureSource *tsrc, INodeDefManager *ndef)
 {
 	TileSpec spec;
 	spec = getTile(mn, face_dir, tsrc, ndef);
@@ -325,13 +357,15 @@ static TileSpec getNodeTile(MapNode mn, v3s16 p, v3s16 face_dir,
 	{
 		struct NodeMod mod = n->getValue();*/
 	NodeMod mod;
-	if(temp_mods.get(p, &mod))
+	if(temp_mods && temp_mods->get(p, &mod))
 	{
+		#if 0  // NODEMOD_CHANGECONTENT isn't used at the moment
 		if(mod.type == NODEMOD_CHANGECONTENT)
 		{
 			MapNode mn2(mod.param);
 			spec = getTile(mn2, face_dir, tsrc, ndef);
 		}
+		#endif
 		if(mod.type == NODEMOD_CRACK)
 		{
 			/*
@@ -361,19 +395,14 @@ static TileSpec getNodeTile(MapNode mn, v3s16 p, v3s16 face_dir,
 	return spec;
 }
 
-static content_t getNodeContent(v3s16 p, MapNode mn, NodeModMap &temp_mods)
+static content_t getNodeContent(v3s16 p, MapNode mn, NodeModMap *temp_mods)
 {
 	/*
 		Check temporary modifications on this node
 	*/
-	/*core::map<v3s16, NodeMod>::Node *n;
-	n = m_temp_mods.find(p);
-	// If modified
-	if(n != NULL)
-	{
-		struct NodeMod mod = n->getValue();*/
+	#if 0  // NODEMOD_CHANGECONTENT isn't used at the moment
 	NodeMod mod;
-	if(temp_mods.get(p, &mod))
+	if(temp_mods && temp_mods->get(p, &mod))
 	{
 		if(mod.type == NODEMOD_CHANGECONTENT)
 		{
@@ -395,6 +424,7 @@ static content_t getNodeContent(v3s16 p, MapNode mn, NodeModMap &temp_mods)
 			*/
 		}
 	}
+	#endif
 
 	return mn.getContent();
 }
@@ -469,7 +499,7 @@ static void getTileInfo(
 		v3s16 face_dir,
 		u32 daynight_ratio,
 		VoxelManipulator &vmanip,
-		NodeModMap &temp_mods,
+		NodeModMap *temp_mods,
 		bool smooth_lighting,
 		IGameDef *gamedef,
 		// Output:
@@ -553,7 +583,7 @@ static void updateFastFaceRow(
 		v3s16 face_dir,
 		v3f face_dir_f,
 		core::array<FastFace> &dest,
-		NodeModMap &temp_mods,
+		NodeModMap *temp_mods,
 		VoxelManipulator &vmanip,
 		v3s16 blockpos_nodes,
 		bool smooth_lighting,
@@ -749,7 +779,7 @@ scene::SMesh* makeMapBlockMesh(MeshMakeData *data, IGameDef *gamedef)
 						v3s16(0,1,0), //face dir
 						v3f  (0,1,0),
 						fastfaces_new,
-						data->m_temp_mods,
+						&data->m_temp_mods,
 						data->m_vmanip,
 						blockpos_nodes,
 						smooth_lighting,
@@ -768,7 +798,7 @@ scene::SMesh* makeMapBlockMesh(MeshMakeData *data, IGameDef *gamedef)
 						v3s16(1,0,0),
 						v3f  (1,0,0),
 						fastfaces_new,
-						data->m_temp_mods,
+						&data->m_temp_mods,
 						data->m_vmanip,
 						blockpos_nodes,
 						smooth_lighting,
@@ -787,7 +817,7 @@ scene::SMesh* makeMapBlockMesh(MeshMakeData *data, IGameDef *gamedef)
 						v3s16(0,0,1),
 						v3f  (0,0,1),
 						fastfaces_new,
-						data->m_temp_mods,
+						&data->m_temp_mods,
 						data->m_vmanip,
 						blockpos_nodes,
 						smooth_lighting,

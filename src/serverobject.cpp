@@ -20,7 +20,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "serverobject.h"
 #include <fstream>
 #include "inventory.h"
-#include "tooldef.h"
+#include "materials.h"
 
 ServerActiveObject::ServerActiveObject(ServerEnvironment *env, v3f pos):
 	ActiveObject(0),
@@ -67,10 +67,31 @@ void ServerActiveObject::registerType(u16 type, Factory f)
 	m_types.insert(type, f);
 }
 
-void ServerActiveObject::getWieldDiggingProperties(ToolDiggingProperties *dst)
+ItemStack ServerActiveObject::getWieldedItem() const
 {
-	*dst = ToolDiggingProperties();
+	const Inventory *inv = getInventory();
+	if(inv)
+	{
+		const InventoryList *list = inv->getList(getWieldList());
+		if(list)
+			return list->getItem(getWieldIndex());
+	}
+	return ItemStack();
 }
 
-
+bool ServerActiveObject::setWieldedItem(const ItemStack &item)
+{
+	Inventory *inv = getInventory();
+	if(inv)
+	{
+		InventoryList *list = inv->getList(getWieldList());
+		if (list)
+		{
+			list->changeItem(getWieldIndex(), item);
+			setInventoryModified();
+			return true;
+		}
+	}
+	return false;
+}
 

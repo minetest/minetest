@@ -18,8 +18,12 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 */
 
 #include "mesh.h"
+#include "log.h"
+#include <cassert>
+#include <iostream>
 #include <IAnimatedMesh.h>
 #include <SAnimatedMesh.h>
+#include <ICameraSceneNode.h>
 
 // In Irrlicht 1.8 the signature of ITexture::lock was changed from
 // (bool, u32) to (E_TEXTURE_LOCK_MODE, u32).
@@ -73,9 +77,15 @@ scene::IAnimatedMesh* createCubeMesh(v3f scale)
 	{
 		scene::IMeshBuffer *buf = new scene::SMeshBuffer();
 		buf->append(vertices + 4 * i, 4, indices, 6);
+		// Set default material
+		buf->getMaterial().setFlag(video::EMF_LIGHTING, false);
+		buf->getMaterial().setFlag(video::EMF_BILINEAR_FILTER, false);
+		buf->getMaterial().MaterialType = video::EMT_TRANSPARENT_ALPHA_CHANNEL_REF;
+		// Add mesh buffer to mesh
 		mesh->addMeshBuffer(buf);
 		buf->drop();
 	}
+
 	scene::SAnimatedMesh *anim_mesh = new scene::SAnimatedMesh(mesh);
 	mesh->drop();
 	scaleMesh(anim_mesh, scale);  // also recalculates bounding box
@@ -280,6 +290,13 @@ scene::IAnimatedMesh* createExtrudedMesh(video::ITexture *texture,
 		}
 		img1->drop();
 	}
+
+	// Set default material
+	mesh->getMeshBuffer(0)->getMaterial().setTexture(0, texture);
+	mesh->getMeshBuffer(0)->getMaterial().setFlag(video::EMF_LIGHTING, false);
+	mesh->getMeshBuffer(0)->getMaterial().setFlag(video::EMF_BILINEAR_FILTER, false);
+	mesh->getMeshBuffer(0)->getMaterial().MaterialType = video::EMT_TRANSPARENT_ALPHA_CHANNEL_REF;
+
 	scaleMesh(mesh, scale);  // also recalculates bounding box
 	return mesh;
 }
@@ -301,6 +318,35 @@ void scaleMesh(scene::IMesh *mesh, v3f scale)
 		for(u16 i=0; i<vc; i++)
 		{
 			vertices[i].Pos *= scale;
+		}
+		buf->recalculateBoundingBox();
+
+		// calculate total bounding box
+		if(j == 0)
+			bbox = buf->getBoundingBox();
+		else
+			bbox.addInternalBox(buf->getBoundingBox());
+	}
+	mesh->setBoundingBox(bbox);
+}
+
+void translateMesh(scene::IMesh *mesh, v3f vec)
+{
+	if(mesh == NULL)
+		return;
+
+	core::aabbox3d<f32> bbox;
+	bbox.reset(0,0,0);
+
+	u16 mc = mesh->getMeshBufferCount();
+	for(u16 j=0; j<mc; j++)
+	{
+		scene::IMeshBuffer *buf = mesh->getMeshBuffer(j);
+		video::S3DVertex *vertices = (video::S3DVertex*)buf->getVertices();
+		u16 vc = buf->getVertexCount();
+		for(u16 i=0; i<vc; i++)
+		{
+			vertices[i].Pos += vec;
 		}
 		buf->recalculateBoundingBox();
 
@@ -359,4 +405,75 @@ void setMeshColorByNormalXYZ(scene::IMesh *mesh,
 
 		}
 	}
+}
+
+video::ITexture *generateTextureFromMesh(scene::IMesh *mesh,
+		IrrlichtDevice *device,
+		core::dimension2d<u32> dim,
+		std::string texture_name,
+		v3f camera_position,
+		v3f camera_lookat,
+		core::CMatrix4<f32> camera_projection_matrix,
+		video::SColorf ambient_light,
+		v3f light_position,
+		video::SColorf light_color,
+		f32 light_radius)
+{
+	video::IVideoDriver *driver = device->getVideoDriver();
+	if(driver->queryFeature(video::EVDF_RENDER_TO_TARGET) == false)
+	{
+		errorstream<<"generateTextureFromMesh(): EVDF_RENDER_TO_TARGET"
+				" not supported."<<std::endl;
+		return NULL;
+	}
+
+	// Create render target texture
+	video::ITexture *rtt = driver->addRenderTargetTexture(
+			dim, texture_name.c_str(), video::ECF_A8R8G8B8);
+	if(rtt == NULL)
+	{
+		errorstream<<"generateTextureFromMesh(): addRenderTargetTexture"
+				" returned NULL."<<std::endl;
+		return NULL;
+	}
+
+	// Set render target
+	driver->setRenderTarget(rtt, true, true, video::SColor(0,0,0,0));
+
+	// Get a scene manager
+	scene::ISceneManager *smgr_main = device->getSceneManager();
+	assert(smgr_main);
+	scene::ISceneManager *smgr = smgr_main->createNewSceneManager();
+	assert(smgr);
+
+	scene::IMeshSceneNode* meshnode = smgr->addMeshSceneNode(mesh, NULL, -1, v3f(0,0,0), v3f(0,0,0), v3f(1,1,1), true);
+	meshnode->setMaterialFlag(video::EMF_LIGHTING, true);
+	meshnode->setMaterialFlag(video::EMF_ANTI_ALIASING, true);
+	meshnode->setMaterialFlag(video::EMF_BILINEAR_FILTER, true);
+
+	scene::ICameraSceneNode* camera = smgr->addCameraSceneNode(0,
+			camera_position, camera_lookat);
+	// second parameter of setProjectionMatrix (isOrthogonal) is ignored
+	camera->setProjectionMatrix(camera_projection_matrix, false);
+
+	smgr->setAmbientLight(ambient_light);
+	smgr->addLightSceneNode(0, light_position, light_color, light_radius);
+
+	// Render scene
+	driver->beginScene(true, true, video::SColor(0,0,0,0));
+	smgr->drawAll();
+	driver->endScene();
+
+	// NOTE: The scene nodes should not be dropped, otherwise
+	//       smgr->drop() segfaults
+	/*cube->drop();
+	camera->drop();
+	light->drop();*/
+	// Drop scene manager
+	smgr->drop();
+
+	// Unset render target
+	driver->setRenderTarget(0, true, true, 0);
+
+	return rtt;
 }

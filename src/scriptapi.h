@@ -27,11 +27,12 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 class Server;
 class ServerEnvironment;
 class ServerActiveObject;
+class ServerRemotePlayer;
 typedef struct lua_State lua_State;
 struct LuaEntityProperties;
+class ItemStack;
 struct PointedThing;
 //class IGameDef;
-class ServerRemotePlayer;
 
 void scriptapi_export(lua_State *L, Server *server);
 bool scriptapi_loadmod(lua_State *L, const std::string &scriptpath,
@@ -66,17 +67,13 @@ void scriptapi_on_dieplayer(lua_State *L, ServerActiveObject *player);
 bool scriptapi_on_respawnplayer(lua_State *L, ServerActiveObject *player);
 void scriptapi_get_creative_inventory(lua_State *L, ServerRemotePlayer *player);
 
-/* craftitem */
-void scriptapi_add_craftitem(lua_State *L, const char *name);
-bool scriptapi_craftitem_on_drop(lua_State *L, const char *name,
-		ServerActiveObject *dropper, v3f pos,
-		bool &callback_exists);
-bool scriptapi_craftitem_on_place_on_ground(lua_State *L, const char *name,
-		ServerActiveObject *placer, v3f pos,
-		bool &callback_exists);
-bool scriptapi_craftitem_on_use(lua_State *L, const char *name,
-		ServerActiveObject *user, const PointedThing& pointed,
-		bool &callback_exists);
+/* item callbacks */
+bool scriptapi_item_on_drop(lua_State *L, ItemStack &item,
+		ServerActiveObject *dropper, v3f pos);
+bool scriptapi_item_on_place(lua_State *L, ItemStack &item,
+		ServerActiveObject *placer, const PointedThing &pointed);
+bool scriptapi_item_on_use(lua_State *L, ItemStack &item,
+		ServerActiveObject *user, const PointedThing &pointed);
 
 /* luaentity */
 // Returns true if succesfully added into Lua; false otherwise.

@@ -20,6 +20,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "guiInventoryMenu.h"
 #include "constants.h"
+#include "gamedef.h"
 #include "keycode.h"
 #include "strfnd.h"
 #include <IGUICheckBox.h>
@@ -28,20 +29,21 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <IGUIStaticText.h>
 #include <IGUIFont.h>
 #include "log.h"
-#include "inventorymanager.h"
 
-void drawInventoryItem(video::IVideoDriver *driver,
+void drawItemStack(video::IVideoDriver *driver,
 		gui::IGUIFont *font,
-		InventoryItem *item, core::rect<s32> rect,
+		const ItemStack &item,
+		const core::rect<s32> &rect,
 		const core::rect<s32> *clip,
-		ITextureSource *tsrc)
+		IGameDef *gamedef)
 {
-	if(item == NULL)
+	if(item.empty())
 		return;
 	
-	video::ITexture *texture = NULL;
-	texture = item->getImage();
+	const ItemDefinition &def = item.getDefinition(gamedef->idef());
+	video::ITexture *texture = def.inventory_texture;
 
+	// Draw the inventory texture
 	if(texture != NULL)
 	{
 		const video::SColor color(255,255,255,255);
@@ -51,34 +53,59 @@ void drawInventoryItem(video::IVideoDriver *driver,
 			core::dimension2di(texture->getOriginalSize())),
 			clip, colors, true);
 	}
-	else
+
+	if(def.type == ITEM_TOOL && item.wear != 0)
 	{
-		video::SColor bgcolor(255,50,50,128);
-		driver->draw2DRectangle(bgcolor, rect, clip);
+		// Draw a progressbar
+		float barheight = rect.getHeight()/16;
+		float barpad_x = rect.getWidth()/16;
+		float barpad_y = rect.getHeight()/16;
+		core::rect<s32> progressrect(
+			rect.UpperLeftCorner.X + barpad_x,
+			rect.LowerRightCorner.Y - barpad_y - barheight,
+			rect.LowerRightCorner.X - barpad_x,
+			rect.LowerRightCorner.Y - barpad_y);
+
+		// Shrink progressrect by amount of tool damage
+		float wear = item.wear / 65535.0;
+		progressrect.LowerRightCorner.X =
+			wear * progressrect.UpperLeftCorner.X +
+			(1-wear) * progressrect.LowerRightCorner.X;
+
+		// Compute progressbar color
+		//   wear = 0.0: green
+		//   wear = 0.5: yellow
+		//   wear = 1.0: red
+		video::SColor color(255,255,255,255);
+		int wear_i = floor(wear * 511);
+		wear_i = MYMIN(wear_i + 10, 511);
+		if(wear_i <= 255)
+			color.set(255, wear_i, 255, 0);
+		else
+			color.set(255, 255, 511-wear_i, 0);
+
+		driver->draw2DRectangle(color, progressrect, clip);
 	}
 
-	if(font != NULL)
+	if(font != NULL && item.count >= 2)
 	{
-		std::string text = item->getText();
-		if(font && text != "")
-		{
-			v2u32 dim = font->getDimension(narrow_to_wide(text).c_str());
-			v2s32 sdim(dim.X,dim.Y);
+		// Get the item count as a string
+		std::string text = itos(item.count);
+		v2u32 dim = font->getDimension(narrow_to_wide(text).c_str());
+		v2s32 sdim(dim.X,dim.Y);
 
-			core::rect<s32> rect2(
-				/*rect.UpperLeftCorner,
-				core::dimension2d<u32>(rect.getWidth(), 15)*/
-				rect.LowerRightCorner - sdim,
-				sdim
-			);
+		core::rect<s32> rect2(
+			/*rect.UpperLeftCorner,
+			core::dimension2d<u32>(rect.getWidth(), 15)*/
+			rect.LowerRightCorner - sdim,
+			sdim
+		);
 
-			video::SColor bgcolor(128,0,0,0);
-			driver->draw2DRectangle(bgcolor, rect2, clip);
-			
-			font->draw(text.c_str(), rect2,
-					video::SColor(255,255,255,255), false, false,
-					clip);
-		}
+		video::SColor bgcolor(128,0,0,0);
+		driver->draw2DRectangle(bgcolor, rect2, clip);
+
+		video::SColor color(255,255,255,255);
+		font->draw(text.c_str(), rect2, color, false, false, clip);
 	}
 }
 
@@ -90,15 +117,13 @@ GUIInventoryMenu::GUIInventoryMenu(gui::IGUIEnvironment* env,
 		gui::IGUIElement* parent, s32 id,
 		IMenuManager *menumgr,
 		v2s16 menu_size,
-		InventoryContext *c,
 		InventoryManager *invmgr,
-		ITextureSource *tsrc
+		IGameDef *gamedef
 		):
 	GUIModalMenu(env, parent, id, menumgr),
 	m_menu_size(menu_size),
-	m_c(c),
 	m_invmgr(invmgr),
-	m_tsrc(tsrc)
+	m_gamedef(gamedef)
 {
 	m_selected_item = NULL;
 }
@@ -214,15 +239,15 @@ GUIInventoryMenu::ItemSpec GUIInventoryMenu::getItemAtPos(v2s32 p) const
 			core::rect<s32> rect = imgrect + s.pos + p0;
 			if(rect.isPointInside(p))
 			{
-				return ItemSpec(s.inventoryname, s.listname, i);
+				return ItemSpec(s.inventoryloc, s.listname, i);
 			}
 		}
 	}
 
-	return ItemSpec("", "", -1);
+	return ItemSpec(InventoryLocation(), "", -1);
 }
 
-void GUIInventoryMenu::drawList(const ListDrawSpec &s, ITextureSource *tsrc)
+void GUIInventoryMenu::drawList(const ListDrawSpec &s)
 {
 	video::IVideoDriver* driver = Environment->getVideoDriver();
 
@@ -232,7 +257,7 @@ void GUIInventoryMenu::drawList(const ListDrawSpec &s, ITextureSource *tsrc)
 	if (skin)
 		font = skin->getFont();
 	
-	Inventory *inv = m_invmgr->getInventory(m_c, s.inventoryname);
+	Inventory *inv = m_invmgr->getInventory(s.inventoryloc);
 	assert(inv);
 	InventoryList *ilist = inv->getList(s.listname);
 	
@@ -244,7 +269,7 @@ void GUIInventoryMenu::drawList(const ListDrawSpec &s, ITextureSource *tsrc)
 		s32 y = (i/s.geom.X) * spacing.Y;
 		v2s32 p(x,y);
 		core::rect<s32> rect = imgrect + s.pos + p;
-		InventoryItem *item = NULL;
+		ItemStack item;
 		if(ilist)
 			item = ilist->getItem(i);
 
@@ -278,10 +303,10 @@ void GUIInventoryMenu::drawList(const ListDrawSpec &s, ITextureSource *tsrc)
 		    driver->draw2DRectangle(bgcolor, rect, &AbsoluteClippingRect);
 		}
 
-		if(item)
+		if(!item.empty())
 		{
-			drawInventoryItem(driver, font, item,
-					rect, &AbsoluteClippingRect, tsrc);
+			drawItemStack(driver, font, item,
+					rect, &AbsoluteClippingRect, m_gamedef);
 		}
 
 	}
@@ -303,8 +328,7 @@ void GUIInventoryMenu::drawMenu()
 	
 	for(u32 i=0; i<m_draw_spec.size(); i++)
 	{
-		ListDrawSpec &s = m_draw_spec[i];
-		drawList(s, m_tsrc);
+		drawList(m_draw_spec[i]);
 	}
 
 	/*
@@ -352,14 +376,14 @@ bool GUIInventoryMenu::OnEvent(const SEvent& event)
 			//infostream<<"Mouse action at p=("<<p.X<<","<<p.Y<<")"<<std::endl;
 			if(s.isValid())
 			{
-				infostream<<"Mouse action on "<<s.inventoryname
+				infostream<<"Mouse action on "<<s.inventoryloc.dump()
 						<<"/"<<s.listname<<" "<<s.i<<std::endl;
 				if(m_selected_item)
 				{
-					Inventory *inv_from = m_invmgr->getInventory(m_c,
-							m_selected_item->inventoryname);
-					Inventory *inv_to = m_invmgr->getInventory(m_c,
-							s.inventoryname);
+					Inventory *inv_from = m_invmgr->getInventory(
+							m_selected_item->inventoryloc);
+					Inventory *inv_to = m_invmgr->getInventory(
+							s.inventoryloc);
 					assert(inv_from);
 					assert(inv_to);
 					InventoryList *list_from =
@@ -373,21 +397,21 @@ bool GUIInventoryMenu::OnEvent(const SEvent& event)
 					// Indicates whether source slot completely empties
 					bool source_empties = false;
 					if(list_from && list_to
-							&& list_from->getItem(m_selected_item->i) != NULL)
+							&& !list_from->getItem(m_selected_item->i).empty())
 					{
 						infostream<<"Handing IACTION_MOVE to manager"<<std::endl;
 						IMoveAction *a = new IMoveAction();
 						a->count = amount;
-						a->from_inv = m_selected_item->inventoryname;
+						a->from_inv = m_selected_item->inventoryloc;
 						a->from_list = m_selected_item->listname;
 						a->from_i = m_selected_item->i;
-						a->to_inv = s.inventoryname;
+						a->to_inv = s.inventoryloc;
 						a->to_list = s.listname;
 						a->to_i = s.i;
 						//ispec.actions->push_back(a);
 						m_invmgr->inventoryAction(a);
 						
-						if(list_from->getItem(m_selected_item->i)->getCount()<=amount)
+						if(list_from->getItem(m_selected_item->i).count<=amount)
 							source_empties = true;
 					}
 					// Remove selection if target was left-clicked or source
@@ -401,13 +425,13 @@ bool GUIInventoryMenu::OnEvent(const SEvent& event)
 				else
 				{
 					/*
-						Select if non-NULL
+						Select if nonempty
 					*/
-					Inventory *inv = m_invmgr->getInventory(m_c,
-							s.inventoryname);
+					Inventory *inv = m_invmgr->getInventory(
+							s.inventoryloc);
 					assert(inv);
 					InventoryList *list = inv->getList(s.listname);
-					if(list->getItem(s.i) != NULL)
+					if(!list->getItem(s.i).empty())
 					{
 						m_selected_item = new ItemSpec(s);
 					}
@@ -489,7 +513,7 @@ bool GUIInventoryMenu::OnEvent(const SEvent& event)
 v2s16 GUIInventoryMenu::makeDrawSpecArrayFromString(
 		core::array<GUIInventoryMenu::DrawSpec> &draw_spec,
 		const std::string &data,
-		const std::string &current_name)
+		const InventoryLocation &current_location)
 {
 	v2s16 invsize(8,9);
 	Strfnd f(data);
@@ -500,8 +524,11 @@ v2s16 GUIInventoryMenu::makeDrawSpecArrayFromString(
 		if(type == "list")
 		{
 			std::string name = f.next(";");
+			InventoryLocation loc;
 			if(name == "current_name")
-				name = current_name;
+				loc = current_location;
+			else
+				loc.deSerialize(name);
 			std::string subname = f.next(";");
 			s32 pos_x = stoi(f.next(","));
 			s32 pos_y = stoi(f.next(";"));
@@ -512,7 +539,7 @@ v2s16 GUIInventoryMenu::makeDrawSpecArrayFromString(
 					<<", geom=("<<geom_x<<","<<geom_y<<")"
 					<<std::endl;
 			draw_spec.push_back(GUIInventoryMenu::DrawSpec(
-					type, name, subname,
+					type, loc, subname,
 					v2s32(pos_x,pos_y),v2s32(geom_x,geom_y)));
 			f.next("]");
 		}

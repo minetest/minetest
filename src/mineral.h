@@ -38,19 +38,10 @@ void init_mineral();
 
 #define MINERAL_COUNT 3
 
-std::string mineral_block_texture(u8 mineral);
-
 class IGameDef;
 
-inline CraftItem * getDiggedMineralItem(u8 mineral, IGameDef *gamedef)
-{
-	if(mineral == MINERAL_COAL)
-		return new CraftItem(gamedef, "lump_of_coal", 1);
-	else if(mineral == MINERAL_IRON)
-		return new CraftItem(gamedef, "lump_of_iron", 1);
-
-	return NULL;
-}
+std::string mineral_block_texture(u8 mineral);
+ItemStack getDiggedMineralItem(u8 mineral, IGameDef *gamedef);
 
 #endif
 

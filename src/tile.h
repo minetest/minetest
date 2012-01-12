@@ -110,6 +110,8 @@ public:
 		{return AtlasPointer(0);}
 	virtual video::ITexture* getTextureRaw(const std::string &name)
 		{return NULL;}
+	virtual IrrlichtDevice* getDevice()
+		{return NULL;}
 	virtual void updateAP(AtlasPointer &ap){};
 };
 
@@ -125,6 +127,8 @@ public:
 	virtual AtlasPointer getTexture(const std::string &name)
 		{return AtlasPointer(0);}
 	virtual video::ITexture* getTextureRaw(const std::string &name)
+		{return NULL;}
+	virtual IrrlichtDevice* getDevice()
 		{return NULL;}
 	virtual void updateAP(AtlasPointer &ap){};
 

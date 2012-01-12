@@ -1694,6 +1694,12 @@ inline std::string deSerializeLongString(std::istream &is)
 	return s;
 }
 
+// Creates a string encoded in JSON format (almost equivalent to a C string literal)
+std::string serializeJsonString(const std::string &plain);
+
+// Reads a string encoded in JSON format
+std::string deSerializeJsonString(std::istream &is);
+
 //
 
 inline u32 time_to_daynight_ratio(u32 time_of_day)

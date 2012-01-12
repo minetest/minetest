@@ -18,6 +18,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 */
 
 #include "mineral.h"
+#include "gamedef.h"
 
 
 const char *mineral_filenames[MINERAL_COUNT] =
@@ -45,6 +46,16 @@ std::string mineral_block_texture(u8 mineral)
 		return "";
 	
 	return mineral_textures[mineral];
+}
+
+ItemStack getDiggedMineralItem(u8 mineral, IGameDef *gamedef)
+{
+	if(mineral == MINERAL_COAL)
+		return ItemStack("default:coal_lump", 1, 0, "", gamedef->idef());
+	else if(mineral == MINERAL_IRON)
+		return ItemStack("default:iron_lump", 1, 0, "", gamedef->idef());
+	else
+		return ItemStack();
 }
 
 

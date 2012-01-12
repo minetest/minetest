@@ -39,9 +39,14 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 		Make players to be handled mostly as ActiveObjects
 	PROTOCOL_VERSION 6:
 		Only non-cached textures are sent
+	PROTOCOL_VERSION 7:
+		Add TOCLIENT_ITEMDEF
+		Obsolete TOCLIENT_TOOLDEF
+		Obsolete TOCLIENT_CRAFTITEMDEF
+		Compress the contents of TOCLIENT_ITEMDEF and TOCLIENT_NODEDEF
 */
 
-#define PROTOCOL_VERSION 6
+#define PROTOCOL_VERSION 7
 
 #define PROTOCOL_ID 0x4f457403
 
@@ -252,6 +257,14 @@ enum ToClientCommand
 			string sha1_digest
 		}
 	*/
+
+	TOCLIENT_ITEMDEF = 0x3d,
+	/*
+		u16 command
+		u32 length of next item
+		serialized ItemDefManager
+	*/
+
 };
 
 enum ToServerCommand

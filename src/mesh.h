@@ -21,6 +21,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #define MESH_HEADER
 
 #include "common_irrlicht.h"
+#include <string>
 
 /*
 	Create a new cube mesh.
@@ -48,6 +49,11 @@ scene::IAnimatedMesh* createExtrudedMesh(video::ITexture *texture,
 void scaleMesh(scene::IMesh *mesh, v3f scale);
 
 /*
+	Translate each vertex coordinate by the specified vector.
+*/
+void translateMesh(scene::IMesh *mesh, v3f vec);
+
+/*
 	Set a constant color for all vertices in the mesh
 */
 void setMeshColor(scene::IMesh *mesh, const video::SColor &color);
@@ -62,5 +68,21 @@ void setMeshColorByNormalXYZ(scene::IMesh *mesh,
 		const video::SColor &colorX,
 		const video::SColor &colorY,
 		const video::SColor &colorZ);
+
+/*
+	Render a mesh to a texture.
+	Returns NULL if render-to-texture failed.
+*/
+video::ITexture *generateTextureFromMesh(scene::IMesh *mesh,
+		IrrlichtDevice *device,
+		core::dimension2d<u32> dim,
+		std::string texture_name,
+		v3f camera_position,
+		v3f camera_lookat,
+		core::CMatrix4<f32> camera_projection_matrix,
+		video::SColorf ambient_light,
+		v3f light_position,
+		video::SColorf light_color,
+		f32 light_radius);
 
 #endif

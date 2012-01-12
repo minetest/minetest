@@ -40,7 +40,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "settings.h"
 #include "profiler.h"
 #include "mainmenumanager.h"
-#include "craftitemdef.h"
 #include "gettext.h"
 #include "log.h"
 #include "filesys.h"
@@ -48,7 +47,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "nodedef.h"
 #include "nodemetadata.h"
 #include "main.h" // For g_settings
-#include "tooldef.h"
+#include "itemdef.h"
 #include "tile.h" // For TextureSource
 #include "logoutputbuffer.h"
 
@@ -78,15 +77,6 @@ struct ChatLine
 	float age;
 	std::wstring text;
 };
-
-/*
-	Inventory stuff
-*/
-
-// Inventory actions from the menu are buffered here before sending
-Queue<InventoryAction*> inventory_action_queue;
-// This is a copy of the inventory that the client's environment has
-Inventory local_inventory;
 
 /*
 	Text input system
@@ -156,7 +146,7 @@ private:
 	Hotbar draw routine
 */
 void draw_hotbar(video::IVideoDriver *driver, gui::IGUIFont *font,
-		ITextureSource *tsrc,
+		IGameDef *gamedef,
 		v2s32 centerlowerpos, s32 imgsize, s32 itemcount,
 		Inventory *inventory, s32 halfheartcount, u16 playeritem)
 {
@@ -184,7 +174,7 @@ void draw_hotbar(video::IVideoDriver *driver, gui::IGUIFont *font,
 
 	for(s32 i=0; i<itemcount; i++)
 	{
-		InventoryItem *item = mainlist->getItem(i);
+		const ItemStack &item = mainlist->getItem(i);
 		
 		core::rect<s32> rect = imgrect + pos
 				+ v2s32(padding+i*(imgsize+padding*2), padding);
@@ -245,17 +235,14 @@ void draw_hotbar(video::IVideoDriver *driver, gui::IGUIFont *font,
 
 		video::SColor bgcolor2(128,0,0,0);
 		driver->draw2DRectangle(bgcolor2, rect, NULL);
-
-		if(item != NULL)
-		{
-			drawInventoryItem(driver, font, item, rect, NULL, tsrc);
-		}
+		drawItemStack(driver, font, item, rect, NULL, gamedef);
 	}
 	
 	/*
 		Draw hearts
 	*/
-	video::ITexture *heart_texture = tsrc->getTextureRaw("heart.png");
+	video::ITexture *heart_texture =
+		gamedef->getTextureSource()->getTextureRaw("heart.png");
 	if(heart_texture)
 	{
 		v2s32 p = pos + v2s32(0, -20);
@@ -691,12 +678,10 @@ void the_game(
 	IWritableTextureSource *tsrc = createTextureSource(device);
 	
 	// These will be filled by data received from the server
-	// Create tool definition manager
-	IWritableToolDefManager *tooldef = createToolDefManager();
+	// Create item definition manager
+	IWritableItemDefManager *itemdef = createItemDefManager();
 	// Create node definition manager
 	IWritableNodeDefManager *nodedef = createNodeDefManager();
-	// Create CraftItem definition manager
-	IWritableCraftItemDefManager *craftitemdef = createCraftItemDefManager();
 
 	// Add chat log output for errors to be shown in chat
 	LogOutputBuffer chat_log_error_buf(LMT_ERROR);
@@ -725,7 +710,7 @@ void the_game(
 	MapDrawControl draw_control;
 
 	Client client(device, playername.c_str(), password, draw_control,
-			tsrc, tooldef, nodedef, craftitemdef);
+			tsrc, itemdef, nodedef);
 	
 	// Client acts as our GameDef
 	IGameDef *gamedef = &client;
@@ -835,9 +820,8 @@ void the_game(
 			
 			// End condition
 			if(client.texturesReceived() &&
-					client.tooldefReceived() &&
-					client.nodedefReceived() &&
-					client.craftitemdefReceived()){
+					client.itemdefReceived() &&
+					client.nodedefReceived()){
 				got_content = true;
 				break;
 			}
@@ -853,12 +837,10 @@ void the_game(
 			ss<<(int)(timeout - time_counter + 1.0);
 			ss<<L" seconds)\n";
 
-			ss<<(client.tooldefReceived()?L"[X]":L"[  ]");
-			ss<<L" Tool definitions\n";
+			ss<<(client.itemdefReceived()?L"[X]":L"[  ]");
+			ss<<L" Item definitions\n";
 			ss<<(client.nodedefReceived()?L"[X]":L"[  ]");
 			ss<<L" Node definitions\n";
-			ss<<(client.craftitemdefReceived()?L"[X]":L"[  ]");
-			ss<<L" Item definitions\n";
 			//ss<<(client.texturesReceived()?L"[X]":L"[  ]");
 			ss<<L"["<<(int)(client.textureReceiveProgress()*100+0.5)<<L"%] ";
 			ss<<L" Textures\n";
@@ -870,6 +852,12 @@ void the_game(
 			time_counter += frametime;
 		}
 	}
+
+	/*
+		After all content has been received:
+		Update cached textures, meshes and materials
+	*/
+	client.afterContentReceived();
 
 	/*
 		Create skybox
@@ -909,6 +897,11 @@ void the_game(
 	{
 		farmesh = new FarMesh(smgr->getRootSceneNode(), smgr, -1, client.getMapSeed(), &client);
 	}
+
+	/*
+		A copy of the local inventory
+	*/
+	Inventory local_inventory(itemdef);
 
 	/*
 		Move into game
@@ -1289,7 +1282,7 @@ void the_game(
 			// drop selected item
 			IDropAction *a = new IDropAction();
 			a->count = 0;
-			a->from_inv = "current_player";
+			a->from_inv.setCurrentPlayer();
 			a->from_list = "main";
 			a->from_i = client.getPlayerItem();
 			client.inventoryAction(a);
@@ -1302,18 +1295,20 @@ void the_game(
 			GUIInventoryMenu *menu =
 				new GUIInventoryMenu(guienv, guiroot, -1,
 					&g_menumgr, v2s16(8,7),
-					client.getInventoryContext(),
-					&client, tsrc);
+					&client, gamedef);
+
+			InventoryLocation inventoryloc;
+			inventoryloc.setCurrentPlayer();
 
 			core::array<GUIInventoryMenu::DrawSpec> draw_spec;
 			draw_spec.push_back(GUIInventoryMenu::DrawSpec(
-					"list", "current_player", "main",
+					"list", inventoryloc, "main",
 					v2s32(0, 3), v2s32(8, 4)));
 			draw_spec.push_back(GUIInventoryMenu::DrawSpec(
-					"list", "current_player", "craft",
+					"list", inventoryloc, "craft",
 					v2s32(3, 0), v2s32(3, 3)));
 			draw_spec.push_back(GUIInventoryMenu::DrawSpec(
-					"list", "current_player", "craftresult",
+					"list", inventoryloc, "craftresult",
 					v2s32(7, 1), v2s32(1, 1)));
 
 			menu->setDrawSpec(draw_spec);
@@ -1691,31 +1686,20 @@ void the_game(
 
 		/*
 			For interaction purposes, get info about the held item
-			- Is it a tool, and what is the toolname?
+			- What item is it?
 			- Is it a usable item?
 			- Can it point to liquids?
 		*/
-		std::string playeritem_toolname = "";
+		ItemStack playeritem;
 		bool playeritem_usable = false;
 		bool playeritem_liquids_pointable = false;
 		{
 			InventoryList *mlist = local_inventory.getList("main");
 			if(mlist != NULL)
 			{
-				InventoryItem *item = mlist->getItem(client.getPlayerItem());
-				if(item)
-				{
-					if((std::string)item->getName() == "ToolItem")
-					{
-						ToolItem *titem = (ToolItem*)item;
-						playeritem_toolname = titem->getToolName();
-					}
-
-					playeritem_usable = item->isUsable();
-
-					playeritem_liquids_pointable =
-						item->areLiquidsPointable();
-				}
+				playeritem = mlist->getItem(client.getPlayerItem());
+				playeritem_usable = playeritem.getDefinition(itemdef).usable;
+				playeritem_liquids_pointable = playeritem.getDefinition(itemdef).liquids_pointable;
 			}
 		}
 
@@ -1845,7 +1829,7 @@ void the_game(
 				// Get digging properties for material and tool
 				content_t material = n.getContent();
 				ToolDiggingProperties tp =
-						tooldef->getDiggingProperties(playeritem_toolname);
+						playeritem.getToolDiggingProperties(itemdef);
 				DiggingProperties prop =
 						getDiggingProperties(material, &tp, nodedef);
 
@@ -1853,9 +1837,6 @@ void the_game(
 
 				if(prop.diggable == false)
 				{
-					/*infostream<<"Material "<<(int)material
-							<<" not diggable with \""
-							<<playeritem_toolname<<"\""<<std::endl;*/
 					// I guess nobody will wait for this long
 					dig_time_complete = 10000000.0;
 				}
@@ -1922,17 +1903,11 @@ void the_game(
 				if(meta && meta->getInventoryDrawSpecString() != "" && !random_input)
 				{
 					infostream<<"Launching custom inventory view"<<std::endl;
-					/*
-						Construct the unique identification string of the node
-					*/
-					std::string current_name;
-					current_name += "nodemeta:";
-					current_name += itos(nodepos.X);
-					current_name += ",";
-					current_name += itos(nodepos.Y);
-					current_name += ",";
-					current_name += itos(nodepos.Z);
+
+					InventoryLocation inventoryloc;
+					inventoryloc.setNodeMeta(nodepos);
 					
+
 					/*
 						Create menu
 					*/
@@ -1942,13 +1917,12 @@ void the_game(
 						GUIInventoryMenu::makeDrawSpecArrayFromString(
 							draw_spec,
 							meta->getInventoryDrawSpecString(),
-							current_name);
+							inventoryloc);
 
 					GUIInventoryMenu *menu =
 						new GUIInventoryMenu(guienv, guiroot, -1,
 							&g_menumgr, invsize,
-							client.getInventoryContext(),
-							&client, tsrc);
+							&client, gamedef);
 					menu->setDrawSpec(draw_spec);
 					menu->drop();
 				}
@@ -2001,7 +1975,7 @@ void the_game(
                 		        v3f objpos = selected_object->getPosition();
 		                        v3f dir = (objpos - player_position).normalize();
 
-					bool disable_send = selected_object->directReportPunch(playeritem_toolname, dir);
+					bool disable_send = selected_object->directReportPunch(playeritem.name, dir);
 					if(!disable_send)
 						client.interact(0, pointed);
 				}
@@ -2285,24 +2259,12 @@ void the_game(
 			update_wielded_item_trigger = false;
 			// Update wielded tool
 			InventoryList *mlist = local_inventory.getList("main");
-			InventoryItem *item = NULL;
+			ItemStack item;
 			if(mlist != NULL)
 				item = mlist->getItem(client.getPlayerItem());
 			camera.wield(item, gamedef);
 		}
 		
-		/*
-			Send actions returned by the inventory menu
-		*/
-		while(inventory_action_queue.size() != 0)
-		{
-			InventoryAction *a = inventory_action_queue.pop_front();
-
-			client.sendInventoryAction(a);
-			// Eat it
-			delete a;
-		}
-
 		/*
 			Drawing begins
 		*/
@@ -2411,7 +2373,7 @@ void the_game(
 			Draw hotbar
 		*/
 		{
-			draw_hotbar(driver, font, tsrc,
+			draw_hotbar(driver, font, gamedef,
 					v2s32(displaycenter.X, screensize.Y),
 					hotbar_imagesize, hotbar_itemcount, &local_inventory,
 					client.getHP(), client.getPlayerItem());
@@ -2482,9 +2444,9 @@ void the_game(
 
 	} // Client scope (must be destructed before destructing *def and tsrc
 
-	delete tooldef;
 	delete tsrc;
 	delete nodedef;
+	delete itemdef;
 }
 
 

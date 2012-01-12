@@ -22,7 +22,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "common_irrlicht.h"
 #include "inventory.h"
-#include "collision.h"
 
 #define PLAYERNAME_SIZE 20
 
@@ -31,6 +30,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 class Map;
 class IGameDef;
+class CollisionInfo;
 
 class Player
 {
@@ -117,16 +117,7 @@ public:
 		snprintf(m_name, PLAYERNAME_SIZE, "%s", name);
 	}
 
-	virtual void wieldItem(u16 item);
-	virtual const InventoryItem *getWieldItem() const
-	{
-		const InventoryList *list = inventory.getList("main");
-		if (list)
-			return list->getItem(m_selected_item);
-		return NULL;
-	}
-
-	const char * getName()
+	const char * getName() const
 	{
 		return m_name;
 	}
@@ -174,7 +165,6 @@ protected:
 	IGameDef *m_gamedef;
 
 	char m_name[PLAYERNAME_SIZE];
-	u16 m_selected_item;
 	f32 m_pitch;
 	f32 m_yaw;
 	v3f m_speed;
