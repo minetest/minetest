@@ -68,7 +68,7 @@ void drawItemStack(video::IVideoDriver *driver,
 
 		// Shrink progressrect by amount of tool damage
 		float wear = item.wear / 65535.0;
-		progressrect.LowerRightCorner.X =
+		int progressmid =
 			wear * progressrect.UpperLeftCorner.X +
 			(1-wear) * progressrect.LowerRightCorner.X;
 
@@ -77,14 +77,21 @@ void drawItemStack(video::IVideoDriver *driver,
 		//   wear = 0.5: yellow
 		//   wear = 1.0: red
 		video::SColor color(255,255,255,255);
-		int wear_i = floor(wear * 511);
+		int wear_i = MYMIN(floor(wear * 600), 511);
 		wear_i = MYMIN(wear_i + 10, 511);
 		if(wear_i <= 255)
 			color.set(255, wear_i, 255, 0);
 		else
 			color.set(255, 255, 511-wear_i, 0);
 
-		driver->draw2DRectangle(color, progressrect, clip);
+		core::rect<s32> progressrect2 = progressrect;
+		progressrect2.LowerRightCorner.X = progressmid;
+		driver->draw2DRectangle(color, progressrect2, clip);
+
+		color = video::SColor(255,0,0,0);
+		progressrect2 = progressrect;
+		progressrect2.UpperLeftCorner.X = progressmid;
+		driver->draw2DRectangle(color, progressrect2, clip);
 	}
 
 	if(font != NULL && item.count >= 2)
