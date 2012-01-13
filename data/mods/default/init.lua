@@ -1284,7 +1284,7 @@ minetest.register_node("default:rail", {
 })
 
 minetest.register_node("default:ladder", {
-	dsecription = "Ladder",
+	description = "Ladder",
 	drawtype = "signlike",
 	tile_images = {"default_ladder.png"},
 	inventory_image = "default_ladder.png",

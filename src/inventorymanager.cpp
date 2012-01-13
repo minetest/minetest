@@ -302,18 +302,28 @@ void IDropAction::apply(InventoryManager *mgr, ServerActiveObject *player)
 		return;
 	}
 
-	/*
-		Drop the item
-	*/
-	ItemStack item = list_from->getItem(from_i);
-	if(scriptapi_item_on_drop(player->getEnv()->getLua(), item, player,
+	// Take item from source list
+	ItemStack item1;
+	if(count == 0)
+		item1 = list_from->changeItem(from_i, ItemStack());
+	else
+		item1 = list_from->takeItem(from_i, count);
+
+	// Drop the item and apply the returned ItemStack
+	ItemStack item2 = item1;
+	if(scriptapi_item_on_drop(player->getEnv()->getLua(), item2, player,
 				player->getBasePosition() + v3f(0,1,0)))
 	{
-		// Apply returned ItemStack
-		if(g_settings->getBool("creative_mode") == false
-				|| from_inv.type != InventoryLocation::PLAYER)
-			list_from->changeItem(from_i, item);
-		mgr->setInventoryModified(from_inv);
+		if(g_settings->getBool("creative_mode") == true
+				&& from_inv.type == InventoryLocation::PLAYER)
+			item2 = item1;  // creative mode
+
+		list_from->addItem(from_i, item2);
+
+		// Unless we have put the same amount back as we took in the first place,
+		// set inventory modified flag
+		if(item2.count != item1.count)
+			mgr->setInventoryModified(from_inv);
 	}
 
 	infostream<<"IDropAction::apply(): dropped "

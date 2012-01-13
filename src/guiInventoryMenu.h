@@ -136,7 +136,7 @@ public:
 	void regenerateGui(v2u32 screensize);
 	
 	ItemSpec getItemAtPos(v2s32 p) const;
-	void drawList(const ListDrawSpec &s);
+	void drawList(const ListDrawSpec &s, int phase);
 	void drawMenu();
 
 	bool OnEvent(const SEvent& event);
@@ -161,6 +161,7 @@ protected:
 
 	ItemSpec *m_selected_item;
 	v2s32 m_pointer;
+	gui::IGUIStaticText *m_tooltip_element;
 };
 
 #endif
