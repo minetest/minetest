@@ -46,6 +46,7 @@ ServerRemotePlayer::ServerRemotePlayer(ServerEnvironment *env, v3f pos_, u16 pee
 	ServerActiveObject(env, pos_),
 	m_last_good_position(0,0,0),
 	m_last_good_position_age(0),
+	m_wield_index(0),
 	m_inventory_not_sent(false),
 	m_hp_not_sent(false),
 	m_is_in_environment(false),
