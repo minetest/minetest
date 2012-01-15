@@ -115,6 +115,7 @@ set(common_SRCS
 	collision.cpp
 	nodemetadata.cpp
 	serverobject.cpp
+	serverlinkableobject.cpp
 	noise.cpp
 	mineral.cpp
 	porting.cpp
@@ -168,6 +169,7 @@ set(minetest_SRCS
 	camera.cpp
 	clouds.cpp
 	clientobject.cpp
+	clientlinkableobject.cpp
 	guiMainMenu.cpp
 	guiKeyChangeMenu.cpp
 	guiMessageMenu.cpp

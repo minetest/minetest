@@ -46,6 +46,7 @@ extern "C" {
 #include "mapblock.h" // For getNodeBlockPos
 #include "content_nodemeta.h"
 #include "utility.h"
+#include "serverlinkableobject.h"
 
 static void stackDump(lua_State *L, std::ostream &o)
 {
@@ -1753,7 +1754,7 @@ private:
 			get_server(L)->SendMovePlayer(player);
 		return 0;
 	}
-	
+
 	// moveto(self, pos, continuous=false)
 	static int l_moveto(lua_State *L)
 	{
@@ -2173,6 +2174,62 @@ private:
 		return 1;
 	}
 
+	// link(parent, offset)
+	static int l_link(lua_State *L)
+	{
+		ObjectRef *ref_child  = checkobject(L, 1);
+		ObjectRef *ref_parent =  checkobject(L, 2);
+		v3f            offset = checkFloatPos(L, 3);
+
+		ServerActiveObject *child  = getobject(ref_child);
+		ServerActiveObject *parent = getobject(ref_parent);
+
+		if ((child == NULL) || (parent == NULL)) {
+			errorstream << "LUA: link(): invalid parameters" << std::endl;
+			return 0;
+		}
+
+
+		ServerLinkableObject* child_lua  = dynamic_cast<ServerLinkableObject*>(child);
+		ServerLinkableObject* parent_lua = dynamic_cast<ServerLinkableObject*>(parent);
+
+		if (child_lua == NULL)  return 0;
+		if (parent_lua == NULL) return 0;
+
+		if (child_lua->linkEntity(parent,offset)) {
+			lua_pushboolean(L, true);
+			return 1;
+		}
+		else {
+			return 0;
+		}
+	}
+
+	// unlink()
+	static int l_unlink(lua_State *L)
+	{
+		ObjectRef *ref = checkobject(L, 1);
+
+		ServerActiveObject *obj = getobject(ref);
+
+		if (obj == NULL) {
+			errorstream << "LUA: unlink(): invalid parameters" << std::endl;
+			return 0;
+		}
+
+		ServerLinkableObject* tolink = dynamic_cast<ServerLinkableObject*>(obj);
+
+		if (tolink == NULL) return 0;
+
+		if (tolink->unlinkEntity()) {
+			lua_pushboolean(L, true);
+			return 1;
+		}
+		else {
+			return 0;
+		}
+	}
+
 public:
 	ObjectRef(ServerActiveObject *object):
 		m_object(object)
@@ -2270,6 +2327,8 @@ const luaL_reg ObjectRef::methods[] = {
 	method(ObjectRef, get_look_dir),
 	method(ObjectRef, get_look_pitch),
 	method(ObjectRef, get_look_yaw),
+	method(ObjectRef, link),
+	method(ObjectRef, unlink),
 	{0,0}
 };
 
