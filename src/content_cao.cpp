@@ -1805,6 +1805,15 @@ public:
 			m_meshnode->setScale(v3f(1));
 			// Will be shown when we know the brightness
 			m_meshnode->setVisible(false);
+		} else if (m_prop->visual == "plant") {
+			infostream<<"LuaEntityCAO::addToScene(): plant"<<std::endl;
+			scene::IMesh *mesh = createPlantMesh(v3f(BS,BS,BS));
+			m_meshnode = smgr->addMeshSceneNode(mesh, NULL);
+			mesh->drop();
+
+			m_meshnode->setScale(v3f(1));
+			// Will be shown when we know the brightness
+			m_meshnode->setVisible(false);
 		} else {
 			infostream<<"LuaEntityCAO::addToScene(): \""<<m_prop->visual
 					<<"\" not supported"<<std::endl;
@@ -1957,26 +1966,51 @@ public:
 					tsrc->getTextureRaw(texturestring));
 		}
 		if(m_meshnode){
-			for (u32 i = 0; i < 6; ++i)
-			{
-				std::string texturestring = "unknown_block.png";
-				if(m_prop->textures.size() > i)
-					texturestring = m_prop->textures[i];
-				texturestring += mod;
-				AtlasPointer ap = tsrc->getTexture(texturestring);
+			if (m_prop->visual == "plant") {
+				for (u32 i = 0; i < 4; ++i)	{
+					std::string texturestring = "unknown_block.png";
+					if(m_prop->textures.size() > 0)
+						texturestring = m_prop->textures[0];
+					texturestring += mod;
+					AtlasPointer ap = tsrc->getTexture(texturestring);
 
-				// Get the tile texture and atlas transformation
-				video::ITexture* atlas = ap.atlas;
-				v2f pos = ap.pos;
-				v2f size = ap.size;
+					// Get the tile texture and atlas transformation
+					video::ITexture* atlas = ap.atlas;
+					v2f pos = ap.pos;
+					v2f size = ap.size;
 
-				// Set material flags and texture
-				video::SMaterial& material = m_meshnode->getMaterial(i);
-				material.setFlag(video::EMF_LIGHTING, false);
-				material.setFlag(video::EMF_BILINEAR_FILTER, false);
-				material.setTexture(0, atlas);
-				material.getTextureMatrix(0).setTextureTranslate(pos.X, pos.Y);
-				material.getTextureMatrix(0).setTextureScale(size.X, size.Y);
+					// Set material flags and texture
+					video::SMaterial& material = m_meshnode->getMaterial(i);
+					material.setFlag(video::EMF_LIGHTING, false);
+					material.setFlag(video::EMF_BILINEAR_FILTER, false);
+					material.setTexture(0, atlas);
+					material.getTextureMatrix(0).setTextureTranslate(pos.X, pos.Y);
+					material.getTextureMatrix(0).setTextureScale(size.X, size.Y);
+					material.MaterialType = video::EMT_TRANSPARENT_ALPHA_CHANNEL;
+				}
+			}
+			else {
+				for (u32 i = 0; i < 6; ++i)	{
+					std::string texturestring = "unknown_block.png";
+					if(m_prop->textures.size() > i)
+						texturestring = m_prop->textures[i];
+					texturestring += mod;
+					AtlasPointer ap = tsrc->getTexture(texturestring);
+
+					// Get the tile texture and atlas transformation
+					video::ITexture* atlas = ap.atlas;
+					v2f pos = ap.pos;
+					v2f size = ap.size;
+
+					// Set material flags and texture
+					video::SMaterial& material = m_meshnode->getMaterial(i);
+					material.setFlag(video::EMF_LIGHTING, false);
+					material.setFlag(video::EMF_BILINEAR_FILTER, false);
+					material.setTexture(0, atlas);
+					material.getTextureMatrix(0).setTextureTranslate(pos.X, pos.Y);
+					material.getTextureMatrix(0).setTextureScale(size.X, size.Y);
+					material.MaterialType = video::EMT_TRANSPARENT_ALPHA_CHANNEL;
+				}
 			}
 		}
 	}

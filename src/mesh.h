@@ -41,6 +41,16 @@ scene::IAnimatedMesh* createCubeMesh(v3f scale);
 scene::IAnimatedMesh* createExtrudedMesh(video::ITexture *texture,
 		video::IVideoDriver *driver, v3f scale);
 
+
+/*
+	Create a new cube mesh.
+	Vertices are at (+-scale.X/2, +-scale.Y/2, +-scale.Z/2).
+
+	The resulting mesh has 6 materials (up, down, right, left, back, front)
+	which must be defined by the caller.
+*/
+scene::IAnimatedMesh* createPlantMesh(v3f scale);
+
 /*
 	Multiplies each vertex coordinate by the specified scaling factors
 	(componentwise vector multiplication).

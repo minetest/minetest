@@ -82,6 +82,52 @@ scene::IAnimatedMesh* createCubeMesh(v3f scale)
 	return anim_mesh;
 }
 
+scene::IAnimatedMesh* createPlantMesh(v3f scale)
+{
+	video::SColor c(255,255,255,255);
+	video::S3DVertex vertices[16] =
+	{
+			// Plane 1 Front
+			video::S3DVertex(-0.5,-0.5,-0.5, 0.5,0,-0.5, c, 0,1),
+			video::S3DVertex(-0.5,+0.5,-0.5, 0.5,0,-0.5, c, 0,0),
+			video::S3DVertex(+0.5,+0.5,+0.5, 0.5,0,-0.5, c, 1,0),
+			video::S3DVertex(+0.5,-0.5,+0.5, 0.5,0,-0.5, c, 1,1),
+			// Plane 1 Back
+			video::S3DVertex(+0.5,-0.5,+0.5, -0.5,0,0.5, c, 1,1),
+			video::S3DVertex(+0.5,+0.5,+0.5, -0.5,0,0.5, c, 1,0),
+			video::S3DVertex(-0.5,+0.5,-0.5, -0.5,0,0.5, c, 0,0),
+			video::S3DVertex(-0.5,-0.5,-0.5, -0.5,0,0.5, c, 0,1),
+
+			// Plane 2 Front
+			video::S3DVertex(-0.5,-0.5,+0.5, -0.5,0,-0.5, c, 1,1),
+			video::S3DVertex(-0.5,+0.5,+0.5, -0.5,0,-0.5, c, 1,0),
+			video::S3DVertex(+0.5,+0.5,-0.5, -0.5,0,-0.5, c, 0,0),
+			video::S3DVertex(+0.5,-0.5,-0.5, -0.5,0,-0.5, c, 0,1),
+
+			// Plane 2 Back
+			video::S3DVertex(+0.5,-0.5,-0.5, 0.5,0,0.5, c, 0,1),
+			video::S3DVertex(+0.5,+0.5,-0.5, 0.5,0,0.5, c, 0,0),
+			video::S3DVertex(-0.5,+0.5,+0.5, 0.5,0,0.5, c, 1,0),
+			video::S3DVertex(-0.5,-0.5,+0.5, 0.5,0,0.5, c, 1,1)
+
+	};
+
+	u16 indices[6] = {0,1,2,2,3,0};
+
+	scene::SMesh *mesh = new scene::SMesh();
+	for (u32 i=0; i<4; ++i)
+	{
+		scene::IMeshBuffer *buf = new scene::SMeshBuffer();
+		buf->append(vertices + 4 * i, 4, indices, 6);
+		mesh->addMeshBuffer(buf);
+		buf->drop();
+	}
+	scene::SAnimatedMesh *anim_mesh = new scene::SAnimatedMesh(mesh);
+	mesh->drop();
+	scaleMesh(anim_mesh, scale);  // also recalculates bounding box
+	return anim_mesh;
+}
+
 static scene::IAnimatedMesh* extrudeARGB(u32 twidth, u32 theight, u8 *data)
 {
 	const s32 argb_wstep = 4 * twidth;
