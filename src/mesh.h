@@ -32,6 +32,15 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 scene::IAnimatedMesh* createCubeMesh(v3f scale);
 
 /*
+	Create a new cube mesh not linked to mapnode size.
+	Vertices are defined by given box.
+
+	The resulting mesh has 6 materials (up, down, right, left, back, front)
+	which must be defined by the caller.
+*/
+scene::IAnimatedMesh* createCubeMesh(v3f scale,core::aabbox3d<f32> box);
+
+/*
 	Create a new extruded mesh from a texture.
 	Maximum bounding box is (+-scale.X/2, +-scale.Y/2, +-scale.Z).
 	Thickness is in Z direction.

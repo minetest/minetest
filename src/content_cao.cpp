@@ -1814,6 +1814,15 @@ public:
 			m_meshnode->setScale(v3f(1));
 			// Will be shown when we know the brightness
 			m_meshnode->setVisible(false);
+		} else if (m_prop->visual == "cube_disorted") {
+			infostream<<"LuaEntityCAO::addToScene(): irregular_cube"<<std::endl;
+			scene::IMesh *mesh = createCubeMesh(v3f(BS,BS,BS), m_prop->collisionbox);
+			m_meshnode = smgr->addMeshSceneNode(mesh, NULL);
+			mesh->drop();
+
+			m_meshnode->setScale(v3f(1));
+			// Will be shown when we know the brightness
+			m_meshnode->setVisible(false);
 		} else {
 			infostream<<"LuaEntityCAO::addToScene(): \""<<m_prop->visual
 					<<"\" not supported"<<std::endl;
