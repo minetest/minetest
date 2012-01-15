@@ -101,13 +101,17 @@ void ServerRemotePlayer::step(float dtime, bool send_recommended)
 	if(send_recommended == false)
 		return;
 	
+	if(isLinked())
+		return;
+
+
 	if(m_position_not_sent)
 	{
 		m_position_not_sent = false;
 
 		std::ostringstream os(std::ios::binary);
 		// command (0 = update position)
-		writeU8(os, 0);
+		writeU8(os,AO_Message_type::SetPosition );
 		// pos
 		writeV3F1000(os, getPosition());
 		// yaw
@@ -173,7 +177,7 @@ void ServerRemotePlayer::punch(ServerActiveObject *puncher,
 	{
 		std::ostringstream os(std::ios::binary);
 		// command (1 = punched)
-		writeU8(os, 1);
+		writeU8(os, AO_Message_type::Punched);
 		// damage
 		writeS16(os, hitprop.hp);
 		// create message and add to list
@@ -323,4 +327,24 @@ s16 ServerRemotePlayer::getHP()
 	return hp;
 }
 
+bool ServerRemotePlayer::sendLinkMsg(ServerActiveObject* parent,v3f offset) {
+	std::ostringstream os(std::ios::binary);
+	writeU8(os, AO_Message_type::Link);
+	// parameters
+	writeU16(os, parent->getId());
+	writeV3F1000(os, offset);
+	// create message and add to list
+	ActiveObjectMessage aom(getId(), true, os.str());
+	m_messages_out.push_back(aom);
+	return true;
+}
+
+bool ServerRemotePlayer::sendUnlinkMsg() {
+	std::ostringstream os(std::ios::binary);
+	writeU8(os, AO_Message_type::UnLink);
+	// create message and add to list
+	ActiveObjectMessage aom(getId(), true, os.str());
+	m_messages_out.push_back(aom);
+	return true;
+}
 

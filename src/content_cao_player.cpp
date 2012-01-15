@@ -18,12 +18,13 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 */
 
 #include "content_cao.h"
+#include "clientlinkableobject.h"
 
 /*
 	PlayerCAO
 */
 
-class PlayerCAO : public ClientActiveObject
+class PlayerCAO : public ClientActiveObject, public ClientLinkableObject
 {
 private:
 	core::aabbox3d<f32> m_selection_box;
@@ -212,8 +213,10 @@ public:
 
 	void step(float dtime, ClientEnvironment *env)
 		{
-			pos_translator.translate(dtime);
-			updateNodePos();
+			if(!isLinked()) {
+				pos_translator.translate(dtime);
+				updateNodePos();
+			}
 
 			if(m_damage_visual_timer > 0){
 				m_damage_visual_timer -= dtime;
@@ -252,6 +255,11 @@ public:
 				m_damage_visual_timer = 0.5;
 				updateTextures("^[brighten");
 			}
+			else if (handleLinkUnlinkMessages(cmd,&is,this->m_env))
+			{
+				//Link unlink already done in handleLinkUnlinkMessages!
+			}
+
 		}
 
 	void updateTextures(const std::string &mod)
@@ -277,6 +285,27 @@ public:
 				}
 			}
 		}
+	void setPosition(v3f toset, float dtime){
+		if (isLinked()) {
+			this->m_position = toset + this->m_linkOffset;
+			pos_translator.update(this->m_position,false);
+			updateNodePos();
+
+			if(m_is_local_player) {
+				m_local_player->setPosition(this->m_position);
+			}
+		}
+		else {
+			errorstream<<"Got linked position update but not linked"<< std::endl;
+		}
+	}
+
+	void updateLinkState(bool value) {
+		if(m_is_local_player) {
+			m_local_player->Link(value);
+		}
+	}
+
 
 	inline v3f getPosition() 	{	return m_position;	}
 

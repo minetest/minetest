@@ -22,13 +22,14 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "player.h"
 #include "serverobject.h"
+#include "serverlinkableobject.h"
 #include "content_object.h" // Object type IDs
 
 /*
 	Player on the server
 */
 
-class ServerRemotePlayer : public Player, public ServerActiveObject
+class ServerRemotePlayer : public Player, public ServerActiveObject, public ServerLinkableObject
 {
 public:
 	ServerRemotePlayer(ServerEnvironment *env);
@@ -96,6 +97,9 @@ public:
 	bool m_is_in_environment;
 	// Incremented by step(), read and reset by Server
 	float m_time_from_last_punch;
+
+	bool sendLinkMsg(ServerActiveObject* parent,v3f offset);
+	bool sendUnlinkMsg();
 
 private:
 	bool m_position_not_sent;

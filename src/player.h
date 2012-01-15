@@ -251,6 +251,13 @@ public:
 	
 	PlayerControl control;
 
+
+	inline void Link(bool value) {
+		m_linked = value;
+	}
+
+	bool m_linked;
+
 private:
 	// This is used for determining the sneaking range
 	v3s16 m_sneak_node;
