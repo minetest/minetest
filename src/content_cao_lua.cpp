@@ -19,8 +19,9 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <list>
 #include "content_cao.h"
 #include "luaentity_common.h"
+#include "clientlinkableobject.h"
 
-class LuaEntityCAO : public ClientActiveObject
+class LuaEntityCAO : public ClientActiveObject, public ClientLinkableObject
 {
 private:
 	core::aabbox3d<f32> m_selection_box;
@@ -223,34 +224,39 @@ public:
 
 	void step(float dtime, ClientEnvironment *env)
 	{
-		if(m_prop->physical){
-			core::aabbox3d<f32> box = m_prop->collisionbox;
-			box.MinEdge *= BS;
-			box.MaxEdge *= BS;
-			collisionMoveResult moveresult;
-			f32 pos_max_d = BS*0.25; // Distance per iteration
-			v3f p_pos = m_position;
-			v3f p_velocity = m_velocity;
-			IGameDef *gamedef = env->getGameDef();
-			moveresult = collisionMovePrecise(&env->getMap(), gamedef,
-					pos_max_d, box, dtime, p_pos, p_velocity);
-			// Apply results
-			m_position = p_pos;
-			m_velocity = p_velocity;
+		//if liked movement is handled by parent entity
+		if(!this->isLinked()) {
+			if(m_prop->physical){
+				core::aabbox3d<f32> box = m_prop->collisionbox;
+				box.MinEdge *= BS;
+				box.MaxEdge *= BS;
+				collisionMoveResult moveresult;
+				f32 pos_max_d = BS*0.25; // Distance per iteration
+				v3f p_pos = m_position;
+				v3f p_velocity = m_velocity;
+				IGameDef *gamedef = env->getGameDef();
+				moveresult = collisionMovePrecise(&env->getMap(), gamedef,
+						pos_max_d, box, dtime, p_pos, p_velocity);
+				// Apply results
+				m_position = p_pos;
+				m_velocity = p_velocity;
 
-			bool is_end_position = moveresult.collides;
-			pos_translator.update(m_position, is_end_position, dtime);
-			pos_translator.translate(dtime);
-			updateNodePos();
+				bool is_end_position = moveresult.collides;
+				pos_translator.update(m_position, is_end_position, dtime);
+				pos_translator.translate(dtime);
+				updateNodePos();
 
-			m_velocity += dtime * m_acceleration;
-		} else {
-			m_position += dtime * m_velocity + 0.5 * dtime * dtime * m_acceleration;
-			m_velocity += dtime * m_acceleration;
-			pos_translator.update(m_position, pos_translator.aim_is_end, pos_translator.anim_time);
-			pos_translator.translate(dtime);
-			updateNodePos();
+				m_velocity += dtime * m_acceleration;
+			} else {
+				m_position += dtime * m_velocity + 0.5 * dtime * dtime * m_acceleration;
+				m_velocity += dtime * m_acceleration;
+				pos_translator.update(m_position, pos_translator.aim_is_end, pos_translator.anim_time);
+				pos_translator.translate(dtime);
+				updateNodePos();
+			}
 		}
+
+		stepLinkedObjects(this->m_position,dtime);
 
 		m_anim_timer += dtime;
 		if(m_anim_timer >= m_anim_framelength){
@@ -397,7 +403,23 @@ public:
 
 			updateTexturePos();
 		}
+		else if (handleLinkUnlinkMessages(cmd,&is,this->m_env))
+		{
+			//Link unlink already done in handleLinkUnlinkMessages!
+		}
 	}
+
+	void setPosition(v3f toset, float dtime){
+		if (this->isLinked()) {
+			this->m_position = toset + this->m_linkOffset;
+
+			pos_translator.update(m_position, pos_translator.aim_is_end, pos_translator.anim_time);
+			pos_translator.translate(dtime);
+			updateNodePos();
+		}
+	}
+
+	void updateLinkState(bool value) {}
 };
 
 // Prototype

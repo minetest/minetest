@@ -319,5 +319,26 @@ void LuaEntitySAO::sendPosition(bool do_interpolate, bool is_movement_end)
 	m_messages_out.push_back(aom);
 }
 
+bool LuaEntitySAO::sendLinkMsg(ServerActiveObject* parent,v3f offset) {
+	std::ostringstream os(std::ios::binary);
+	writeU8(os, AO_Message_type::Link);
+	// parameters
+	writeU16(os, parent->getId());
+	writeV3F1000(os, offset);
+	// create message and add to list
+	ActiveObjectMessage aom(getId(), false, os.str());
+	m_messages_out.push_back(aom);
+	return true;
+}
+
+bool LuaEntitySAO::sendUnlinkMsg() {
+	std::ostringstream os(std::ios::binary);
+	writeU8(os, AO_Message_type::UnLink);
+	// create message and add to list
+	ActiveObjectMessage aom(getId(), false, os.str());
+	m_messages_out.push_back(aom);
+	return true;
+}
+
 // Prototype
 LuaEntitySAO proto_LuaEntitySAO(NULL, v3f(0,0,0), "_prototype", "");

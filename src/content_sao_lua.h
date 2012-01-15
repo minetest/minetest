@@ -25,7 +25,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "scriptapi.h"
 #include "luaentity_common.h"
 
-class LuaEntitySAO : public ServerActiveObject
+class LuaEntitySAO : public ServerActiveObject, public ServerLinkableObject
 {
 public:
 	LuaEntitySAO(ServerEnvironment *env, v3f pos,
@@ -55,6 +55,8 @@ public:
 	void setSprite(v2s16 p, int num_frames, float framelength,
 			bool select_horiz_by_yawpitch);
 	std::string getName();
+	bool sendLinkMsg(ServerActiveObject* parent,v3f offset);
+	bool sendUnlinkMsg();
 
 private:
 	void sendPosition(bool do_interpolate, bool is_movement_end);
