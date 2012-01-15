@@ -200,14 +200,17 @@ protected:
 	typedef ServerActiveObject* (*Factory)
 			(ServerEnvironment *env, v3f pos,
 			const std::string &data);
-	static void registerType(u16 type, Factory f);
+	static void registerType(u8 type, Factory f);
 
 	ServerEnvironment *m_env;
 	v3f m_base_position;
 
 private:
-	// Used for creating objects based on type
-	static core::map<u16, Factory> m_types;
+    static core::map<u8, Factory>& getTypes()
+    {
+        static core::map<u8, Factory> types;
+        return types;
+    }
 };
 
 #endif

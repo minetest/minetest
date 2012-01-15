@@ -43,8 +43,8 @@ ServerActiveObject* ServerActiveObject::create(u8 type,
 		const std::string &data)
 {
 	// Find factory function
-	core::map<u16, Factory>::Node *n;
-	n = m_types.find(type);
+	core::map<u8, Factory>::Node *n;
+	n = ServerActiveObject::getTypes().find(type);
 	if(n == NULL)
 	{
 		// If factory is not found, just return.
@@ -58,13 +58,13 @@ ServerActiveObject* ServerActiveObject::create(u8 type,
 	return object;
 }
 
-void ServerActiveObject::registerType(u16 type, Factory f)
+void ServerActiveObject::registerType(u8 type, Factory f)
 {
-	core::map<u16, Factory>::Node *n;
-	n = m_types.find(type);
+	core::map<u8, Factory>::Node *n;
+	n = ServerActiveObject::getTypes().find(type);
 	if(n)
 		return;
-	m_types.insert(type, f);
+	ServerActiveObject::getTypes().insert(type, f);
 }
 
 void ServerActiveObject::getWieldDiggingProperties(ToolDiggingProperties *dst)
