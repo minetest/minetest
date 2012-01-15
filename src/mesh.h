@@ -43,10 +43,10 @@ scene::IAnimatedMesh* createExtrudedMesh(video::ITexture *texture,
 
 
 /*
-	Create a new cube mesh.
+	Create a new plant style mesh.
 	Vertices are at (+-scale.X/2, +-scale.Y/2, +-scale.Z/2).
 
-	The resulting mesh has 6 materials (up, down, right, left, back, front)
+	The resulting mesh has 4 materials (right, left, back, front)
 	which must be defined by the caller.
 */
 scene::IAnimatedMesh* createPlantMesh(v3f scale);
