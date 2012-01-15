@@ -107,6 +107,13 @@ set(common_SRCS
 	scriptapi.cpp
 	script.cpp
 	log.cpp
+	content_sao_firefly.cpp
+	content_sao_item.cpp
+	content_sao_lua.cpp
+	content_sao_mobv2.cpp
+	content_sao_oerkki1.cpp
+	content_sao_rat.cpp
+	content_sao_test.cpp
 	content_sao.cpp
 	mapgen.cpp
 	content_nodemeta.cpp

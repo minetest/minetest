@@ -20,17 +20,27 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #ifndef CONTENT_OBJECT_HEADER
 #define CONTENT_OBJECT_HEADER
 
-#define ACTIVEOBJECT_TYPE_TEST 1
-#define ACTIVEOBJECT_TYPE_ITEM 2
-#define ACTIVEOBJECT_TYPE_RAT 3
-#define ACTIVEOBJECT_TYPE_OERKKI1 4
-#define ACTIVEOBJECT_TYPE_FIREFLY 5
-#define ACTIVEOBJECT_TYPE_MOBV2 6
-
-#define ACTIVEOBJECT_TYPE_LUAENTITY 7
+#define ACTIVEOBJECT_TYPE_TEST		0x01
+#define ACTIVEOBJECT_TYPE_ITEM		0x02
+#define ACTIVEOBJECT_TYPE_RAT		0x03
+#define ACTIVEOBJECT_TYPE_OERKKI1	0x04
+#define ACTIVEOBJECT_TYPE_FIREFLY	0x05
+#define ACTIVEOBJECT_TYPE_MOBV2		0x06
+#define ACTIVEOBJECT_TYPE_LUAENTITY 0x07
 
 // Special type, not stored as a static object
-#define ACTIVEOBJECT_TYPE_PLAYER 100
+#define ACTIVEOBJECT_TYPE_PLAYER    0x64
+
+struct AO_Message_type {
+	static const u8 SetPosition      = 0x00;
+	static const u8 SetTextureMod    = 0x01;
+	static const u8 SetSprite        = 0x02;
+	static const u8 Punched          = 0x03;
+	static const u8 TakeDamage       = 0x04;
+	static const u8 Shoot            = 0x05;
+	static const u8 Link             = 0x06;
+	static const u8 UnLink           = 0x07;
+};
 
 #endif
 

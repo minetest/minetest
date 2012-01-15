@@ -35,7 +35,11 @@ extern "C" {
 #include "script.h"
 //#include "luna.h"
 #include "luaentity_common.h"
-#include "content_sao.h" // For LuaEntitySAO
+#include "content_sao.h"
+#include "content_sao_lua.h" // For LuaEntitySAO
+#include "content_sao_item.h"
+#include "content_sao_rat.h"
+#include "content_sao_firefly.h"
 #include "tooldef.h"
 #include "nodedef.h"
 #include "craftdef.h"

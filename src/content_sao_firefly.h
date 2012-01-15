@@ -1,7 +1,6 @@
 /*
 Minetest-c55
 Copyright (C) 2010-2012 celeron55, Perttu Ahola <celeron55@gmail.com>
-Copyright (C) 2012 sapier sapier at gmx dot net
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -18,32 +17,33 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
-#ifndef SERVERLINKABLEOBJECT_H_
-#define SERVERLINKABLEOBJECT_H_
+#ifndef CONTENT_SOA_FIREFLY_H_
+#define CONTENT_SOA_FIREFLY_H_
 
-#include <sstream>
-#include <irrlichttypes.h>
-#include "serverobject.h"
-#include "content_object.h"
-#include "log.h"
+#include "content_sao.h"
 
-class ServerLinkableObject {
-	public:
-		ServerLinkableObject();
-		~ServerLinkableObject();
-
-		bool linkEntity(ServerActiveObject* parent,v3f offset);
-		bool unlinkEntity();
-
-		virtual bool sendLinkMsg(ServerActiveObject* parent,v3f offset) = 0;
-		virtual bool sendUnlinkMsg() = 0;
-
-	protected:
-		inline bool isLinked() { return m_Linked; }
-
-	private:
-		bool m_Linked;
-
+class FireflySAO : public ServerActiveObject
+{
+public:
+	FireflySAO(ServerEnvironment *env, v3f pos);
+	u8 getType() const
+		{return ACTIVEOBJECT_TYPE_FIREFLY;}
+	static ServerActiveObject* create(ServerEnvironment *env, v3f pos,
+			const std::string &data);
+	void step(float dtime, bool send_recommended);
+	std::string getClientInitializationData();
+	std::string getStaticData();
+private:
+	bool m_is_active;
+	IntervalLimiter m_inactive_interval;
+	v3f m_speed_f;
+	v3f m_oldpos;
+	v3f m_last_sent_position;
+	float m_yaw;
+	float m_counter1;
+	float m_counter2;
+	float m_age;
+	bool m_touching_ground;
 };
 
-#endif /* SERVERLINKABLEOBJECT_H_ */
+#endif /* CONTENT_SOA_FIREFLY_H_ */

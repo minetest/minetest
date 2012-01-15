@@ -23,6 +23,9 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "gamedef.h"
 #include "nodedef.h"
 #include "content_sao.h"
+#include "content_sao_rat.h"
+#include "content_sao_mobv2.h"
+#include "content_sao_oerkki1.h"
 #include "settings.h"
 #include "mapblock.h" // For getNodeBlockPos
 #include "mapgen.h" // For mapgen::make_tree

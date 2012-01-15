@@ -26,6 +26,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "serverobject.h"
 #include "content_mapnode.h"
 #include "content_sao.h"
+#include "content_sao_item.h"
 #include "environment.h"
 #include "mapblock.h"
 #include "player.h"
