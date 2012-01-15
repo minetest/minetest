@@ -270,6 +270,9 @@ public:
 		-------------------------------------------
 	*/
 	
+	// Find all nodes inside a radius around a point
+	core::list<MapNode> getNodesInsideRadius(v3s16 pos, float radius);
+
 	// Find all active objects inside a radius around a point
 	std::set<u16> getObjectsInsideRadius(v3f pos, float radius);
 	

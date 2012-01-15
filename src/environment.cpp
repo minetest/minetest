@@ -765,6 +765,21 @@ void ServerEnvironment::activateBlock(MapBlock *block, u32 additional_dtime)
 	abmhandler.apply(block);
 }
 
+core::list<MapNode> ServerEnvironment::getNodesInsideRadius(v3s16 pos, float radius)
+{
+	core::list<MapNode> nodes;
+	for (int i = pos.X - radius; i < pos.X + radius; i ++)
+	for (int j = pos.Y - radius; j < pos.Y + radius; j ++)
+	for (int k = pos.Z - radius; k < pos.Z + radius; k ++) {
+		v3s16 current_pos = v3s16(i,j,k);
+		if (current_pos.getDistanceFrom(pos) < radius) {
+			MapNode n = m_map->getNodeNoEx(current_pos);
+			nodes.push_back(n);
+			}
+		}
+	return nodes;
+}
+
 void ServerEnvironment::addActiveBlockModifier(ActiveBlockModifier *abm)
 {
 	m_abms.push_back(ABMWithState(abm));
