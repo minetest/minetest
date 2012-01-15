@@ -162,6 +162,14 @@ set(minetest_SRCS
 	${common_SRCS}
 	content_mapblock.cpp
 	content_cao.cpp
+	content_cao_player.cpp
+	content_cao_item.cpp
+	content_cao_lua.cpp
+	content_cao_rat.cpp
+	content_cao_oerkki1.cpp
+	content_cao_firefly.cpp
+	content_cao_mobv2.cpp
+	content_cao_test.cpp
 	mesh.cpp
 	mapblock_mesh.cpp
 	farmesh.cpp

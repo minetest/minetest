@@ -1,6 +1,6 @@
 /*
 Minetest-c55
-Copyright (C) 2010-2011 celeron55, Perttu Ahola <celeron55@gmail.com>
+Copyright (C) 2010-2012 celeron55, Perttu Ahola <celeron55@gmail.com>
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -81,12 +81,16 @@ public:
 protected:
 	// Used for creating objects based on type
 	typedef ClientActiveObject* (*Factory)(IGameDef *gamedef, ClientEnvironment *env);
-	static void registerType(u16 type, Factory f);
+	static void registerType(u8 type, Factory f);
+
 	IGameDef *m_gamedef;
 	ClientEnvironment *m_env;
 private:
-	// Used for creating objects based on type
-	static core::map<u16, Factory> m_types;
+    static core::map<u8, Factory>& getTypes()
+    {
+        static core::map<u8, Factory> types;
+        return types;
+    }
 };
 
 struct DistanceSortedActiveObject

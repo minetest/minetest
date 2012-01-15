@@ -43,8 +43,8 @@ ClientActiveObject* ClientActiveObject::create(u8 type, IGameDef *gamedef,
 		ClientEnvironment *env)
 {
 	// Find factory function
-	core::map<u16, Factory>::Node *n;
-	n = m_types.find(type);
+	core::map<u8, Factory>::Node *n;
+	n = ClientActiveObject::getTypes().find(type);
 	if(n == NULL)
 	{
 		// If factory is not found, just return.
@@ -58,13 +58,13 @@ ClientActiveObject* ClientActiveObject::create(u8 type, IGameDef *gamedef,
 	return object;
 }
 
-void ClientActiveObject::registerType(u16 type, Factory f)
+void ClientActiveObject::registerType(u8 type, Factory f)
 {
-	core::map<u16, Factory>::Node *n;
-	n = m_types.find(type);
+	core::map<u8, Factory>::Node *n;
+	n = ClientActiveObject::getTypes().find(type);
 	if(n)
 		return;
-	m_types.insert(type, f);
+	ClientActiveObject::getTypes().insert(type, f);
 }
 
 
