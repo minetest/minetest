@@ -27,8 +27,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "materials.h" // For MaterialProperties
 #include "tooldef.h" // ToolDiggingProperties
 
-core::map<u16, ServerActiveObject::Factory> ServerActiveObject::m_types;
-
 /* Some helper functions */
 
 // Y is copied, X and Z change is limited
