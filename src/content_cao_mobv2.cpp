@@ -283,7 +283,7 @@ public:
 		u8 cmd = readU8(is);
 
 		// Move
-		if(cmd == 0)
+		if(cmd == AO_Message_type::SetPosition)
 		{
 			// pos
 			m_position = readV3F1000(is);
@@ -297,7 +297,7 @@ public:
 			updateNodePos();
 		}
 		// Damage
-		else if(cmd == 1)
+		else if(cmd == AO_Message_type::TakeDamage)
 		{
 			//u16 damage = readU16(is);
 
@@ -313,7 +313,7 @@ public:
 			m_damage_visual_timer = 0.2;*/
 		}
 		// Trigger shooting
-		else if(cmd == 2)
+		else if(cmd == AO_Message_type::Shoot)
 		{
 			// length
 			m_shooting_unset_timer = readF1000(is);

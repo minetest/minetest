@@ -125,7 +125,7 @@ public:
 		std::istringstream is(data, std::ios::binary);
 		u16 cmd;
 		is>>cmd;
-		if(cmd == 0)
+		if(cmd == AO_Message_type::SetPosition)
 		{
 			v3f newpos;
 			is>>newpos.X;

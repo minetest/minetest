@@ -215,7 +215,7 @@ public:
 		std::istringstream is(data, std::ios::binary);
 		// command
 		u8 cmd = readU8(is);
-		if(cmd == 0)
+		if(cmd == AO_Message_type::SetPosition)
 		{
 			// pos
 			m_position = readV3F1000(is);
@@ -224,7 +224,7 @@ public:
 			m_yaw = readF1000(is);
 			updateNodePos();
 		}
-		else if(cmd == 1)
+		else if(cmd == AO_Message_type::TakeDamage)
 		{
 			//u16 damage = readU8(is);
 			m_damage_visual_timer = 1.0;

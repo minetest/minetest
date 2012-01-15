@@ -353,7 +353,7 @@ public:
 		std::istringstream is(data, std::ios::binary);
 		// command
 		u8 cmd = readU8(is);
-		if(cmd == 0) // update position
+		if(cmd == AO_Message_type::SetPosition) // update position
 		{
 			// do_interpolate
 			bool do_interpolate = readU8(is);
@@ -378,12 +378,12 @@ public:
 			}
 			updateNodePos();
 		}
-		else if(cmd == 1) // set texture modification
+		else if(cmd == AO_Message_type::SetTextureMod) // set texture modification
 		{
 			std::string mod = deSerializeString(is);
 			updateTextures(mod);
 		}
-		else if(cmd == 2) // set sprite
+		else if(cmd == AO_Message_type::SetSprite) // set sprite
 		{
 			v2s16 p = readV2S16(is);
 			int num_frames = readU16(is);

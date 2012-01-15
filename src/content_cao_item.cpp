@@ -175,7 +175,7 @@ public:
 		std::istringstream is(data, std::ios::binary);
 		// command
 		u8 cmd = readU8(is);
-		if(cmd == 0)
+		if(cmd == AO_Message_type::SetPosition)
 		{
 			// pos
 			m_position = readV3F1000(is);

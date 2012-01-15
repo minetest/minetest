@@ -230,7 +230,7 @@ public:
 			std::istringstream is(data, std::ios::binary);
 			// command
 			u8 cmd = readU8(is);
-			if(cmd == 0) // update position
+			if(cmd == AO_Message_type::SetPosition) // update position
 			{
 				// pos
 				m_position = readV3F1000(is);
@@ -241,7 +241,7 @@ public:
 
 				updateNodePos();
 			}
-			else if(cmd == 1) // punched
+			else if(cmd == AO_Message_type::Punched) // punched
 			{
 				// damage
 				s16 damage = readS16(is);
