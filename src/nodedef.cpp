@@ -127,6 +127,7 @@ void ContentFeatures::reset()
 	alpha = 255;
 	post_effect_color = video::SColor(0, 0, 0, 0);
 	param_type = CPT_NONE;
+	param_type_2 = CPT2_NONE;
 	is_ground_content = false;
 	light_propagates = false;
 	sunlight_propagates = false;
@@ -135,10 +136,6 @@ void ContentFeatures::reset()
 	diggable = true;
 	climbable = false;
 	buildable_to = false;
-	wall_mounted = false;
-	dug_item = "";
-	extra_dug_item = "";
-	extra_dug_item_rarity = 2;
 	metadata_name = "";
 	liquid_type = LIQUID_NONE;
 	liquid_alternative_flowing = "";
@@ -151,6 +148,8 @@ void ContentFeatures::reset()
 	// Make unknown blocks diggable
 	material.diggability = DIGGABLE_CONSTANT;
 	material.constant_time = 0.5;
+	legacy_facedir_simple = false;
+	legacy_wallmounted = false;
 }
 
 void ContentFeatures::serialize(std::ostream &os)
@@ -172,6 +171,7 @@ void ContentFeatures::serialize(std::ostream &os)
 	writeU8(os, post_effect_color.getGreen());
 	writeU8(os, post_effect_color.getBlue());
 	writeU8(os, param_type);
+	writeU8(os, param_type_2);
 	writeU8(os, is_ground_content);
 	writeU8(os, light_propagates);
 	writeU8(os, sunlight_propagates);
@@ -180,10 +180,6 @@ void ContentFeatures::serialize(std::ostream &os)
 	writeU8(os, diggable);
 	writeU8(os, climbable);
 	writeU8(os, buildable_to);
-	writeU8(os, wall_mounted);
-	os<<serializeString(dug_item);
-	os<<serializeString(extra_dug_item);
-	writeS32(os, extra_dug_item_rarity);
 	os<<serializeString(metadata_name);
 	writeU8(os, liquid_type);
 	os<<serializeString(liquid_alternative_flowing);
@@ -193,6 +189,8 @@ void ContentFeatures::serialize(std::ostream &os)
 	writeU32(os, damage_per_second);
 	selection_box.serialize(os);
 	material.serialize(os);
+	writeU8(os, legacy_facedir_simple);
+	writeU8(os, legacy_wallmounted);
 }
 
 void ContentFeatures::deSerialize(std::istream &is)
@@ -218,6 +216,7 @@ void ContentFeatures::deSerialize(std::istream &is)
 	post_effect_color.setGreen(readU8(is));
 	post_effect_color.setBlue(readU8(is));
 	param_type = (enum ContentParamType)readU8(is);
+	param_type_2 = (enum ContentParamType2)readU8(is);
 	is_ground_content = readU8(is);
 	light_propagates = readU8(is);
 	sunlight_propagates = readU8(is);
@@ -226,10 +225,6 @@ void ContentFeatures::deSerialize(std::istream &is)
 	diggable = readU8(is);
 	climbable = readU8(is);
 	buildable_to = readU8(is);
-	wall_mounted = readU8(is);
-	dug_item = deSerializeString(is);
-	extra_dug_item = deSerializeString(is);
-	extra_dug_item_rarity = readS32(is);
 	metadata_name = deSerializeString(is);
 	liquid_type = (enum LiquidType)readU8(is);
 	liquid_alternative_flowing = deSerializeString(is);
@@ -239,6 +234,8 @@ void ContentFeatures::deSerialize(std::istream &is)
 	damage_per_second = readU32(is);
 	selection_box.deSerialize(is);
 	material.deSerialize(is);
+	legacy_facedir_simple = readU8(is);
+	legacy_wallmounted = readU8(is);
 }
 
 /*
@@ -298,7 +295,7 @@ public:
 	// CONTENT_IGNORE = not found
 	content_t getFreeId(bool require_full_param2)
 	{
-		// If allowed, first search in the large 4-byte-param2 pool
+		// If allowed, first search in the large 4-bit-param2 pool
 		if(!require_full_param2){
 			for(u16 i=0x800; i<=0xfff; i++){
 				const ContentFeatures &f = m_content_features[i];
@@ -306,7 +303,7 @@ public:
 					return i;
 			}
 		}
-		// Then search from the small 8-byte-param2 pool
+		// Then search from the small 8-bit-param2 pool
 		for(u16 i=0; i<=125; i++){
 			const ContentFeatures &f = m_content_features[i];
 			if(f.name == "")
@@ -394,13 +391,9 @@ public:
 		if(!found){
 			// Determine if full param2 is required
 			bool require_full_param2 = (
-				def.liquid_type == LIQUID_FLOWING
+				def.param_type_2 == CPT2_FULL
 				||
-				def.drawtype == NDT_FLOWINGLIQUID
-				||
-				def.drawtype == NDT_TORCHLIKE
-				||
-				def.drawtype == NDT_SIGNLIKE
+				def.param_type_2 == CPT2_FLOWINGLIQUID
 			);
 			// Get some id
 			id = getFreeId(require_full_param2);

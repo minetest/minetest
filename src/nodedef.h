@@ -37,9 +37,19 @@ enum ContentParamType
 {
 	CPT_NONE,
 	CPT_LIGHT,
-	CPT_MINERAL,
+};
+
+enum ContentParamType2
+{
+	CPT2_NONE,
+	// Need 8-bit param2
+	CPT2_FULL,
+	// Flowing liquid properties
+	CPT2_FLOWINGLIQUID,
 	// Direction for chests and furnaces and such
-	CPT_FACEDIR_SIMPLE
+	CPT2_FACEDIR,
+	// Direction for signs, torches and such
+	CPT2_WALLMOUNTED,
 };
 
 enum LiquidType
@@ -53,7 +63,7 @@ enum NodeBoxType
 {
 	NODEBOX_REGULAR, // Regular block; allows buildable_to
 	NODEBOX_FIXED, // Static separately defined box
-	NODEBOX_WALLMOUNTED, // Box for wall_mounted nodes; (top, bottom, side)
+	NODEBOX_WALLMOUNTED, // Box for wall mounted nodes; (top, bottom, side)
 };
 
 struct NodeBox
@@ -151,6 +161,8 @@ struct ContentFeatures
 	video::SColor post_effect_color;
 	// Type of MapNode::param1
 	ContentParamType param_type;
+	// Type of MapNode::param2
+	ContentParamType2 param_type_2;
 	// True for all ground-like things like stone and mud, false for eg. trees
 	bool is_ground_content;
 	bool light_propagates;
@@ -166,16 +178,6 @@ struct ContentFeatures
 	bool climbable;
 	// Player can build on these
 	bool buildable_to;
-	// If true, param2 is set to direction when placed. Used for torches.
-	// NOTE: the direction format is quite inefficient and should be changed
-	bool wall_mounted;
-	// Inventory item string as which the node appears in inventory when dug.
-	// Mineral overrides this.
-	std::string dug_item;
-	// Extra dug item and its rarity
-	std::string extra_dug_item;
-	// Usual get interval for extra dug item
-	s32 extra_dug_item_rarity;
 	// Metadata name of node (eg. "furnace")
 	std::string metadata_name;
 	// Whether the node is non-liquid, source liquid or flowing liquid
@@ -193,6 +195,11 @@ struct ContentFeatures
 	u32 damage_per_second;
 	NodeBox selection_box;
 	MaterialProperties material;
+	// Compatibility with old maps
+	// Set to true if paramtype used to be 'facedir_simple'
+	bool legacy_facedir_simple;
+	// Set to true if wall_mounted used to be set to true
+	bool legacy_wallmounted;
 
 	/*
 		Methods

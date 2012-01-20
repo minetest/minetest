@@ -26,7 +26,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 class IItemDefManager;
 class INodeDefManager;
 class ICraftDefManager;
-// Mineral too?
 class ITextureSource;
 
 /*

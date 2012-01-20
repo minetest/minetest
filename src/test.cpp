@@ -76,9 +76,7 @@ void define_some_nodes(IWritableItemDefManager *idef, IWritableNodeDefManager *n
 	f.name = itemdef.name;
 	for(int i = 0; i < 6; i++)
 		f.tname_tiles[i] = "default_stone.png";
-	f.param_type = CPT_MINERAL;
 	f.is_ground_content = true;
-	f.dug_item = itemdef.name;
 	f.material.diggability = DIGGABLE_NORMAL;
 	f.material.weight = 5.0;
 	f.material.crackiness = 1.0;
@@ -106,7 +104,6 @@ void define_some_nodes(IWritableItemDefManager *idef, IWritableNodeDefManager *n
 	for(int i = 2; i < 6; i++)
 		f.tname_tiles[i] = "default_dirt.png^default_grass_side.png";
 	f.is_ground_content = true;
-	f.dug_item = itemdef.name;
 	f.material.diggability = DIGGABLE_NORMAL;
 	f.material.weight = 1.2;
 	f.material.crackiness = 0.0;

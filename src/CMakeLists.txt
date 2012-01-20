@@ -115,7 +115,6 @@ set(common_SRCS
 	nodemetadata.cpp
 	serverobject.cpp
 	noise.cpp
-	mineral.cpp
 	porting.cpp
 	materials.cpp
 	defaultsettings.cpp

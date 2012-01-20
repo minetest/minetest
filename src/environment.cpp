@@ -2057,7 +2057,9 @@ void ClientEnvironment::step(float dtime)
 			MapNode n = m_map->getNode(p);
 			light = n.getLightBlend(getDayNightRatio(), m_gamedef->ndef());
 		}
-		catch(InvalidPositionException &e) {}
+		catch(InvalidPositionException &e){
+			light = blend_light(getDayNightRatio(), LIGHT_SUN, 0);
+		}
 		player->updateLight(light);
 
 		/*
@@ -2104,7 +2106,6 @@ void ClientEnvironment::step(float dtime)
 		if(m_active_object_light_update_interval.step(dtime, 0.21))
 		{
 			// Update lighting
-			//u8 light = LIGHT_MAX;
 			u8 light = 0;
 			try{
 				// Get node at head
@@ -2112,7 +2113,9 @@ void ClientEnvironment::step(float dtime)
 				MapNode n = m_map->getNode(p);
 				light = n.getLightBlend(getDayNightRatio(), m_gamedef->ndef());
 			}
-			catch(InvalidPositionException &e) {}
+			catch(InvalidPositionException &e){
+				light = blend_light(getDayNightRatio(), LIGHT_SUN, 0);
+			}
 			obj->updateLight(light);
 		}
 	}
@@ -2203,7 +2206,9 @@ u16 ClientEnvironment::addActiveObject(ClientActiveObject *object)
 			MapNode n = m_map->getNode(p);
 			light = n.getLightBlend(getDayNightRatio(), m_gamedef->ndef());
 		}
-		catch(InvalidPositionException &e) {}
+		catch(InvalidPositionException &e){
+			light = blend_light(getDayNightRatio(), LIGHT_SUN, 0);
+		}
 		object->updateLight(light);
 	}
 	return object->getId();

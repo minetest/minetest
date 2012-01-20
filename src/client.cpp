@@ -899,7 +899,7 @@ void Client::ProcessData(u8 *data, u32 datasize, u16 sender_peer_id)
 				Update an existing block
 			*/
 			//infostream<<"Updating"<<std::endl;
-			block->deSerialize(istr, ser_version);
+			block->deSerialize(istr, ser_version, false);
 		}
 		else
 		{
@@ -908,7 +908,7 @@ void Client::ProcessData(u8 *data, u32 datasize, u16 sender_peer_id)
 			*/
 			//infostream<<"Creating new"<<std::endl;
 			block = new MapBlock(&m_env.getMap(), p, this);
-			block->deSerialize(istr, ser_version);
+			block->deSerialize(istr, ser_version, false);
 			sector->insertBlock(block);
 		}
 
@@ -1816,8 +1816,7 @@ void Client::addNode(v3s16 p, MapNode n)
 	try
 	{
 		//TimeTaker timer3("Client::addNode(): addNodeAndUpdate");
-		std::string st = std::string("");
-		m_env.getMap().addNodeAndUpdate(p, n, modified_blocks, st);
+		m_env.getMap().addNodeAndUpdate(p, n, modified_blocks);
 	}
 	catch(InvalidPositionException &e)
 	{}

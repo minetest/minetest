@@ -6,6 +6,8 @@
 --
 
 minetest.register_alias("stone", "default:stone")
+minetest.register_alias("stone_with_coal", "default:stone_with_coal")
+minetest.register_alias("stone_with_iron", "default:stone_with_iron")
 minetest.register_alias("dirt_with_grass", "default:dirt_with_grass")
 minetest.register_alias("dirt_with_grass_footsteps", "default:dirt_with_grass_footsteps")
 minetest.register_alias("dirt", "default:dirt")

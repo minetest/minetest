@@ -49,15 +49,6 @@ bool scriptapi_on_chat_message(lua_State *L, const std::string &name,
 /* environment */
 // On environment step
 void scriptapi_environment_step(lua_State *L, float dtime);
-// After adding node
-void scriptapi_environment_on_placenode(lua_State *L, v3s16 p, MapNode newnode,
-		ServerActiveObject *placer);
-// After removing node
-void scriptapi_environment_on_dignode(lua_State *L, v3s16 p, MapNode oldnode,
-		ServerActiveObject *digger);
-// When punching node
-void scriptapi_environment_on_punchnode(lua_State *L, v3s16 p, MapNode node,
-		ServerActiveObject *puncher);
 // After generating a piece of map
 void scriptapi_environment_on_generated(lua_State *L, v3s16 minp, v3s16 maxp);
 
@@ -74,6 +65,12 @@ bool scriptapi_item_on_place(lua_State *L, ItemStack &item,
 		ServerActiveObject *placer, const PointedThing &pointed);
 bool scriptapi_item_on_use(lua_State *L, ItemStack &item,
 		ServerActiveObject *user, const PointedThing &pointed);
+
+/* node callbacks */
+bool scriptapi_node_on_punch(lua_State *L, v3s16 p, MapNode node,
+		ServerActiveObject *puncher);
+bool scriptapi_node_on_dig(lua_State *L, v3s16 p, MapNode node,
+		ServerActiveObject *digger);
 
 /* luaentity */
 // Returns true if succesfully added into Lua; false otherwise.

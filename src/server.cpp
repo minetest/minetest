@@ -28,7 +28,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "constants.h"
 #include "voxel.h"
 #include "materials.h"
-#include "mineral.h"
 #include "config.h"
 #include "servercommand.h"
 #include "filesys.h"
@@ -2899,13 +2898,12 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 		/*
 			Make sure the player is allowed to do it
 		*/
-		bool interact_priv = (getPlayerPrivs(player) & PRIV_INTERACT) != 0;
-		if(!interact_priv)
+		if((getPlayerPrivs(player) & PRIV_INTERACT) == 0)
 		{
 			infostream<<"Ignoring interaction from player "<<player->getName()
 					<<" because privileges are "<<getPlayerPrivs(player)
 					<<std::endl;
-			// NOTE: no return; here, fall through
+			return;
 		}
 
 		/*
@@ -2919,10 +2917,7 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 					NOTE: This can be used in the future to check if
 					somebody is cheating, by checking the timing.
 				*/
-				bool cannot_punch_node = !interact_priv;
-
 				MapNode n(CONTENT_IGNORE);
-
 				try
 				{
 					n = m_env->getMap().getNode(p_under);
@@ -2934,22 +2929,12 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 							<<std::endl;
 					m_emerge_queue.addBlock(peer_id,
 							getNodeBlockPos(p_above), BLOCK_EMERGE_FLAG_FROMDISK);
-					cannot_punch_node = true;
 				}
-
-				if(cannot_punch_node)
-					return;
-
-				/*
-					Run script hook
-				*/
-				scriptapi_environment_on_punchnode(m_lua, p_under, n, srp);
+				if(n.getContent() != CONTENT_IGNORE)
+					scriptapi_node_on_punch(m_lua, p_under, n, srp);
 			}
 			else if(pointed.type == POINTEDTHING_OBJECT)
 			{
-				if(!interact_priv)
-					return;
-
 				// Skip if object has been removed
 				if(pointed_object->m_removed)
 					return;
@@ -2977,190 +2962,24 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 		else if(action == 2)
 		{
 			// Only complete digging of nodes
-			if(pointed.type != POINTEDTHING_NODE)
-				return;
-
-			// Mandatory parameter; actually used for nothing
-			core::map<v3s16, MapBlock*> modified_blocks;
-
-			content_t material = CONTENT_IGNORE;
-			u8 mineral = MINERAL_NONE;
-
-			bool cannot_remove_node = !interact_priv;
-			
-			MapNode n(CONTENT_IGNORE);
-			try
+			if(pointed.type == POINTEDTHING_NODE)
 			{
-				n = m_env->getMap().getNode(p_under);
-				// Get mineral
-				mineral = n.getMineral(m_nodedef);
-				// Get material at position
-				material = n.getContent();
-				// If not yet cancelled
-				if(cannot_remove_node == false)
+				MapNode n(CONTENT_IGNORE);
+				try
 				{
-					// If it's not diggable, do nothing
-					if(m_nodedef->get(material).diggable == false)
-					{
-						infostream<<"Server: Not finishing digging: "
-								<<"Node not diggable"
-								<<std::endl;
-						cannot_remove_node = true;
-					}
+					n = m_env->getMap().getNode(p_under);
 				}
-				// If not yet cancelled
-				if(cannot_remove_node == false)
+				catch(InvalidPositionException &e)
 				{
-					// Get node metadata
-					NodeMetadata *meta = m_env->getMap().getNodeMetadata(p_under);
-					if(meta && meta->nodeRemovalDisabled() == true)
-					{
-						infostream<<"Server: Not finishing digging: "
-								<<"Node metadata disables removal"
-								<<std::endl;
-						cannot_remove_node = true;
-					}
+					infostream<<"Server: Not finishing digging: Node not found."
+							<<" Adding block to emerge queue."
+							<<std::endl;
+					m_emerge_queue.addBlock(peer_id,
+							getNodeBlockPos(p_above), BLOCK_EMERGE_FLAG_FROMDISK);
 				}
+				if(n.getContent() != CONTENT_IGNORE)
+					scriptapi_node_on_dig(m_lua, p_under, n, srp);
 			}
-			catch(InvalidPositionException &e)
-			{
-				infostream<<"Server: Not finishing digging: Node not found."
-						<<" Adding block to emerge queue."
-						<<std::endl;
-				m_emerge_queue.addBlock(peer_id,
-						getNodeBlockPos(p_above), BLOCK_EMERGE_FLAG_FROMDISK);
-				cannot_remove_node = true;
-			}
-
-			/*
-				If node can't be removed, set block to be re-sent to
-				client and quit.
-			*/
-			if(cannot_remove_node)
-			{
-				infostream<<"Server: Not finishing digging."<<std::endl;
-
-				// Client probably has wrong data.
-				// Set block not sent, so that client will get
-				// a valid one.
-				infostream<<"Client "<<peer_id<<" tried to dig "
-						<<"node; but node cannot be removed."
-						<<" setting MapBlock not sent."<<std::endl;
-				RemoteClient *client = getClient(peer_id);
-				v3s16 blockpos = getNodeBlockPos(p_under);
-				client->SetBlockNotSent(blockpos);
-					
-				return;
-			}
-			
-			actionstream<<player->getName()<<" digs "<<PP(p_under)
-					<<", gets material "<<(int)material<<", mineral "
-					<<(int)mineral<<std::endl;
-			
-			/*
-				Send the removal to all close-by players.
-				- If other player is close, send REMOVENODE
-				- Otherwise set blocks not sent
-			*/
-			core::list<u16> far_players;
-			sendRemoveNode(p_under, peer_id, &far_players, 30);
-			
-			/*
-				Update and send inventory
-			*/
-
-			if(g_settings->getBool("creative_mode") == false)
-			{
-				/*
-					Wear out tool
-				*/
-				InventoryList *mlist = player->inventory.getList("main");
-				if(mlist != NULL)
-				{
-					ItemStack &item = mlist->getItem(item_i);
-
-					// Get digging properties for material and tool
-					ToolDiggingProperties tp =
-							item.getToolDiggingProperties(m_itemdef);
-					DiggingProperties prop =
-							getDiggingProperties(material, &tp, m_nodedef);
-					item.addWear(prop.wear, m_itemdef);
-					srp->m_inventory_not_sent = true;
-				}
-
-				/*
-					Add dug item to inventory
-				*/
-
-				ItemStack item;
-
-				if(mineral != MINERAL_NONE)
-					item = getDiggedMineralItem(mineral, this);
-				
-				// If not mineral
-				if(item.empty())
-				{
-					const std::string &dug_s = m_nodedef->get(material).dug_item;
-					if(dug_s != "")
-					{
-						item.deSerialize(dug_s, m_itemdef);
-					}
-				}
-				
-				if(!item.empty())
-				{
-					// Add a item to inventory
-					player->inventory.addItem("main", item);
-					srp->m_inventory_not_sent = true;
-				}
-
-				item.clear();
-				
-				{
-					const std::string &extra_dug_s = m_nodedef->get(material).extra_dug_item;
-					s32 extra_rarity = m_nodedef->get(material).extra_dug_item_rarity;
-					if(extra_dug_s != "" && extra_rarity != 0
-					   && myrand() % extra_rarity == 0)
-					{
-						item.deSerialize(extra_dug_s, m_itemdef);
-					}
-				}
-			
-				if(!item.empty())
-				{
-					// Add a item to inventory
-					player->inventory.addItem("main", item);
-					srp->m_inventory_not_sent = true;
-				}
-			}
-
-			/*
-				Remove the node
-				(this takes some time so it is done after the quick stuff)
-			*/
-			{
-				MapEditEventIgnorer ign(&m_ignore_map_edit_events);
-
-				m_env->getMap().removeNodeAndUpdate(p_under, modified_blocks);
-			}
-			/*
-				Set blocks not sent to far players
-			*/
-			for(core::list<u16>::Iterator
-					i = far_players.begin();
-					i != far_players.end(); i++)
-			{
-				u16 peer_id = *i;
-				RemoteClient *client = getClient(peer_id);
-				if(client==NULL)
-					continue;
-				client->SetBlocksNotSent(modified_blocks);
-			}
-
-			/*
-				Run script hook
-			*/
-			scriptapi_environment_on_dignode(m_lua, p_under, n, srp);
 		} // action == 2
 		
 		/*
@@ -3168,15 +2987,12 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 		*/
 		else if(action == 3)
 		{
-			if(!interact_priv)
-			{
-				infostream<<"Not allowing player "
-					<<player->getName()<<" to place item: "
-					<<"no interact privileges"<<std::endl;
-				return;
-			}
-
 			ItemStack item = srp->getWieldedItem();
+
+			// Reset build time counter
+			if(pointed.type == POINTEDTHING_NODE &&
+					item.getDefinition(m_itemdef).type == ITEM_NODE)
+				getClient(peer_id)->m_time_from_building = 0.0;
 
 			if(pointed.type == POINTEDTHING_OBJECT)
 			{
@@ -3201,123 +3017,6 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 				if(g_settings->getBool("creative_mode") == false)
 					srp->setWieldedItem(item);
 			}
-			else if(pointed.type == POINTEDTHING_NODE &&
-					item.getDefinition(m_itemdef).type == ITEM_NODE)
-			{
-				bool cannot_place_node = !interact_priv;
-
-				try{
-					// Don't add a node if this is not a free space
-					MapNode n2 = m_env->getMap().getNode(p_above);
-					if(m_nodedef->get(n2).buildable_to == false)
-					{
-						infostream<<"Client "<<peer_id<<" tried to place"
-								<<" node in invalid position."<<std::endl;
-						cannot_place_node = true;
-					}
-				}
-				catch(InvalidPositionException &e)
-				{
-					infostream<<"Server: Ignoring ADDNODE: Node not found"
-							<<" Adding block to emerge queue."
-							<<std::endl;
-					m_emerge_queue.addBlock(peer_id,
-							getNodeBlockPos(p_above), BLOCK_EMERGE_FLAG_FROMDISK);
-					cannot_place_node = true;
-				}
-
-				if(cannot_place_node)
-				{
-					// Client probably has wrong data.
-					// Set block not sent, so that client will get
-					// a valid one.
-					RemoteClient *client = getClient(peer_id);
-					v3s16 blockpos = getNodeBlockPos(p_above);
-					client->SetBlockNotSent(blockpos);
-					return;
-				}
-
-				// Reset build time counter
-				getClient(peer_id)->m_time_from_building = 0.0;
-
-				// Create node data
-				MapNode n(m_nodedef, item.name, 0, 0);
-
-				actionstream<<player->getName()<<" places material "
-						<<item.name
-						<<" at "<<PP(p_under)<<std::endl;
-
-				// Calculate direction for wall mounted stuff
-				if(m_nodedef->get(n).wall_mounted)
-					n.param2 = packDir(p_under - p_above);
-
-				// Calculate the direction for furnaces and chests and stuff
-				if(m_nodedef->get(n).param_type == CPT_FACEDIR_SIMPLE)
-				{
-					v3f playerpos = player->getPosition();
-					v3f blockpos = intToFloat(p_above, BS) - playerpos;
-					blockpos = blockpos.normalize();
-					n.param1 = 0;
-					if (fabs(blockpos.X) > fabs(blockpos.Z)) {
-						if (blockpos.X < 0)
-							n.param1 = 3;
-						else
-							n.param1 = 1;
-					} else {
-						if (blockpos.Z < 0)
-							n.param1 = 2;
-						else
-							n.param1 = 0;
-					}
-				}
-
-				/*
-					Send to all close-by players
-				*/
-				core::list<u16> far_players;
-				sendAddNode(p_above, n, 0, &far_players, 30);
-				
-				/*
-					Handle inventory
-				*/
-				if(g_settings->getBool("creative_mode") == false)
-				{
-					// Remove from inventory and send inventory
-					item.remove(1);
-					srp->setWieldedItem(item);
-				}
-
-				/*
-					Add node.
-
-					This takes some time so it is done after the quick stuff
-				*/
-				core::map<v3s16, MapBlock*> modified_blocks;
-				{
-					MapEditEventIgnorer ign(&m_ignore_map_edit_events);
-
-					std::string p_name = std::string(player->getName());
-					m_env->getMap().addNodeAndUpdate(p_above, n, modified_blocks, p_name);
-				}
-				/*
-					Set blocks not sent to far players
-				*/
-				for(core::list<u16>::Iterator
-						i = far_players.begin();
-						i != far_players.end(); i++)
-				{
-					u16 peer_id = *i;
-					RemoteClient *client = getClient(peer_id);
-					if(client==NULL)
-						continue;
-					client->SetBlocksNotSent(modified_blocks);
-				}
-
-				/*
-					Run script hook
-				*/
-				scriptapi_environment_on_placenode(m_lua, p_above, n, srp);
-			}
 
 		} // action == 3
 
@@ -3326,14 +3025,6 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 		*/
 		else if(action == 4)
 		{
-			// Requires interact privs
-			if(!interact_priv)
-			{
-				infostream<<"Not allowing player to use item: "
-						"no interact privileges"<<std::endl;
-				return;
-			}
-
 			ItemStack item = srp->getWieldedItem();
 
 			actionstream<<player->getName()<<" uses "<<item.name
@@ -3949,7 +3640,7 @@ void Server::SendBlockNoLock(u16 peer_id, MapBlock *block, u8 ver)
 	*/
 	
 	std::ostringstream os(std::ios_base::binary);
-	block->serialize(os, ver);
+	block->serialize(os, ver, false);
 	std::string s = os.str();
 	SharedBuffer<u8> blockdata((u8*)s.c_str(), s.size());
 

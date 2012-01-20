@@ -83,7 +83,7 @@ end
 -- Item definition helpers
 --
 
-minetest.inventorycube = function(img1, img2, img3)
+function minetest.inventorycube(img1, img2, img3)
 	img2 = img2 or img1
 	img3 = img3 or img1
 	return "[inventorycube"
@@ -92,7 +92,11 @@ minetest.inventorycube = function(img1, img2, img3)
 			.. "{" .. img3:gsub("%^", "&")
 end
 
-minetest.get_pointed_thing_position = function(pointed_thing, above)
+function minetest.pos_to_string(pos)
+	return "(" .. pos.x .. "," .. pos.y .. "," .. pos.z .. ")"
+end
+
+function minetest.get_pointed_thing_position(pointed_thing, above)
 	if pointed_thing.type == "node" then
 		if above then
 			-- The position where a node would be placed
@@ -113,15 +117,162 @@ minetest.get_pointed_thing_position = function(pointed_thing, above)
 	end
 end
 
-function minetest.item_place(itemstack, placer, pointed_thing)
-	pos = minetest.get_pointed_thing_position(pointed_thing, true)
-	if pos ~= nil then
-		item = itemstack:take_item()
-		if item ~= nil then
-			minetest.env:add_item(pos, item)
+function minetest.dir_to_facedir(dir)
+	if math.abs(dir.x) > math.abs(dir.z) then
+		if dir.x < 0 then
+			return 3
+		else
+			return 1
+		end
+	else
+		if dir.z < 0 then
+			return 2
+		else
+			return 0
 		end
 	end
+end
+
+function minetest.dir_to_wallmounted(dir)
+	if math.abs(dir.y) > math.max(math.abs(dir.x), math.abs(dir.z)) then
+		if dir.y < 0 then
+			return 1
+		else
+			return 0
+		end
+	elseif math.abs(dir.x) > math.abs(dir.z) then
+		if dir.x < 0 then
+			return 3
+		else
+			return 2
+		end
+	else
+		if dir.z < 0 then
+			return 5
+		else
+			return 4
+		end
+	end
+end
+
+function minetest.get_node_drops(nodename, toolname)
+	local drop = ItemStack({name=nodename}):get_definition().drop
+	if drop == nil then
+		-- default drop
+		print("default drop: " .. nodename)
+		return {ItemStack({name=nodename})}
+	elseif type(drop) == "string" then
+		-- itemstring drop
+		return {ItemStack(drop)}
+	elseif drop.items == nil then
+		-- drop = {} to disable default drop
+		return {}
+	end
+
+	-- Extended drop table
+	local got_items = {}
+	local got_count = 0
+	local _, item, tool
+	for _, item in ipairs(drop.items) do
+		local good_rarity = true
+		local good_tool = true
+		if item.rarity ~= nil then
+			good_rarity = item.rarity < 1 or math.random(item.rarity) == 1
+		end
+		if item.tools ~= nil then
+			good_tool = false
+			for _, tool in ipairs(item.tools) do
+				if tool:sub(1, 1) == '~' then
+					good_tool = toolname:find(tool:sub(2)) ~= nil
+				else
+					good_tool = toolname == tool
+				end
+				if good_tool then
+					break
+				end
+			end
+        	end
+		if good_rarity and good_tool then
+			got_count = got_count + 1
+			for _, add_item in ipairs(item.items) do
+				got_items[#got_items+1] = add_item
+			end
+			if drop.max_items ~= nil and got_count == drop.max_items then
+				break
+			end
+		end
+	end
+	return got_items
+end
+
+function minetest.item_place_node(itemstack, placer, pointed_thing)
+	local item = itemstack:peek_item()
+	local def = itemstack:get_definition()
+	if def.type == "node" and pointed_thing.type == "node" then
+		local pos = pointed_thing.above
+		local oldnode = minetest.env:get_node(pos)
+		local olddef = ItemStack({name=oldnode.name}):get_definition()
+
+		if not olddef.buildable_to then
+			minetest.log("info", placer:get_player_name() .. " tried to place"
+				.. " node in invalid position " .. minetest.pos_to_string(pos)
+				.. ", replacing " .. oldnode.name)
+			return
+		end
+
+		minetest.log("action", placer:get_player_name() .. " places node "
+			.. def.name .. " at " .. minetest.pos_to_string(pos))
+
+		local newnode = {name = def.name, param1 = 0, param2 = 0}
+
+		-- Calculate direction for wall mounted stuff like torches and signs
+		if def.paramtype2 == 'wallmounted' then
+			local under = pointed_thing.under
+			local above = pointed_thing.above
+			local dir = {x = under.x - above.x, y = under.y - above.y, z = under.z - above.z}
+			newnode.param2 = minetest.dir_to_wallmounted(dir)
+		-- Calculate the direction for furnaces and chests and stuff
+		elseif def.paramtype2 == 'facedir' then
+			local playerpos = placer:getpos()
+			local dir = {x = pos.x - playerpos.x, y = pos.y - playerpos.y, z = pos.z - playerpos.z}
+			newnode.param2 = minetest.dir_to_facedir(dir)
+			minetest.log("action", "facedir: " .. newnode.param2)
+		end
+
+		-- Add node and update
+		minetest.env:add_node(pos, newnode)
+
+		-- Set metadata owner
+		if def.metadata_name ~= "" then
+			minetest.env:get_meta(pos):set_owner(placer:get_player_name())
+		end
+
+		-- Run script hook
+		local _, callback
+		for _, callback in ipairs(minetest.registered_on_placenodes) do
+			callback(pos, newnode, placer)
+		end
+
+		itemstack:take_item()
+	end
 	return itemstack
+end
+
+function minetest.item_place_object(itemstack, placer, pointed_thing)
+	local pos = minetest.get_pointed_thing_position(pointed_thing, true)
+	if pos ~= nil then
+		local item = itemstack:take_item()
+		minetest.env:add_item(pos, item)
+	end
+	return itemstack
+end
+
+function minetest.item_place(itemstack, placer, pointed_thing)
+	if itemstack:get_definition().type == "node" then
+		return minetest.item_place_node(itemstack, placer, pointed_thing)
+	else
+		return minetest.item_place_object(itemstack, placer, pointed_thing)
+	end
 end
 
 function minetest.item_drop(itemstack, dropper, pos)
@@ -129,12 +280,74 @@ function minetest.item_drop(itemstack, dropper, pos)
 	return ""
 end
 
-function minetest.item_eat(hp_change)
+function minetest.item_eat(hp_change, replace_with_item)
 	return function(itemstack, user, pointed_thing)  -- closure
 		if itemstack:take_item() ~= nil then
 			user:set_hp(user:get_hp() + hp_change)
+			itemstack:add_item(replace_with_item) -- note: replace_with_item is optional
 		end
 		return itemstack
+	end
+end
+
+function minetest.node_punch(pos, node, puncher)
+	-- Run script hook
+	local _, callback
+	for _, callback in ipairs(minetest.registered_on_punchnodes) do
+		callback(pos, node, puncher)
+	end
+
+end
+
+function minetest.node_dig(pos, node, digger)
+	minetest.debug("node_dig")
+
+	local def = ItemStack({name=node.name}):get_definition()
+	if not def.diggable then
+		minetest.debug("not diggable")
+		minetest.log("info", digger:get_player_name() .. " tried to dig "
+			.. node.name .. " which is not diggable "
+			.. minetest.pos_to_string(pos))
+		return
+	end
+
+	local meta = minetest.env:get_meta(pos)
+	if meta ~= nil and not meta:get_allow_removal() then
+		minetest.debug("dig prevented by metadata")
+		minetest.log("info", digger:get_player_name() .. " tried to dig "
+			.. node.name .. ", but removal is disabled by metadata "
+			.. minetest.pos_to_string(pos))
+		return
+	end
+
+	minetest.log('action', digger:get_player_name() .. " digs "
+		.. node.name .. " at " .. minetest.pos_to_string(pos))
+
+	if not minetest.setting_getbool("creative_mode") then
+		local wielded = digger:get_wielded_item()
+		local drops = minetest.get_node_drops(node.name, wielded:get_name())
+
+		-- Wear out tool
+		mp = def.material
+		tp = wielded:get_tool_digging_properties()
+		dp = minetest.get_digging_properties(mp, tp)
+		wielded:add_wear(dp.wear)
+		digger:set_wielded_item(wielded)
+
+		-- Add dropped items
+		local _, dropped_item
+		for _, dropped_item in ipairs(drops) do
+			digger:get_inventory():add_item("main", dropped_item)
+		end
+	end
+
+	-- Remove node and update
+	minetest.env:remove_node(pos)
+
+	-- Run script hook
+	local _, callback
+	for _, callback in ipairs(minetest.registered_on_dignodes) do
+		callback(pos, node, digger)
 	end
 end
 
@@ -151,15 +364,17 @@ minetest.nodedef_default = {
 	wield_image = "",
 	wield_scale = {x=1,y=1,z=1},
 	stack_max = 99,
-	dropcount = -1,
 	usable = false,
 	liquids_pointable = false,
 	tool_digging_properties = nil,
 
 	-- Interaction callbacks
-	on_place = nil, -- let C handle node placement for now
+	on_place = minetest.item_place,
 	on_drop = minetest.item_drop,
 	on_use = nil,
+
+	on_punch = minetest.node_punch,
+	on_dig = minetest.node_dig,
 
 	-- Node properties
 	drawtype = "normal",
@@ -172,6 +387,7 @@ minetest.nodedef_default = {
 	alpha = 255,
 	post_effect_color = {a=0, r=0, g=0, b=0},
 	paramtype = "none",
+	paramtype2 = "none",
 	is_ground_content = false,
 	sunlight_propagates = false,
 	walkable = true,
@@ -179,10 +395,6 @@ minetest.nodedef_default = {
 	diggable = true,
 	climbable = false,
 	buildable_to = false,
-	wall_mounted = false,
-	--dug_item intentionally not defined here
-	extra_dug_item = "",
-	extra_dug_item_rarity = 2,
 	metadata_name = "",
 	liquidtype = "none",
 	liquid_alternative_flowing = "",
@@ -199,6 +411,8 @@ minetest.nodedef_default = {
 		cuttability = 0,
 		flammability = 0,
 	},
+	legacy_facedir_simple = false,
+	legacy_wallmounted = false,
 }
 
 minetest.craftitemdef_default = {
@@ -369,12 +583,12 @@ function minetest.register_item(name, itemdef)
 		error("Unable to register item: Type is invalid: " .. dump(itemdef))
 	end
 
-	-- Default dug item
-	if itemdef.type == "node" and itemdef.dug_item == nil then
-		itemdef.dug_item = ItemStack({name=itemdef.name}):to_string()
+	-- Flowing liquid uses param2
+	if itemdef.type == "node" and itemdef.liquidtype == "flowing" then
+		itemdef.paramtype2 = "flowingliquid"
 	end
 
-	-- Legacy stuff
+	-- BEGIN Legacy stuff
 	if itemdef.cookresult_itemstring ~= nil and itemdef.cookresult_itemstring ~= "" then
 		minetest.register_craft({
 			type="cooking",
@@ -390,6 +604,7 @@ function minetest.register_item(name, itemdef)
 			burntime=itemdef.furnace_burntime
 		})
 	end
+	-- END Legacy stuff
 
 	-- Disable all further modifications
 	getmetatable(itemdef).__newindex = {}
@@ -408,10 +623,11 @@ end
 function minetest.register_craftitem(name, craftitemdef)
 	craftitemdef.type = "craft"
 
-	-- Legacy stuff
+	-- BEGIN Legacy stuff
 	if craftitemdef.inventory_image == nil and craftitemdef.image ~= nil then
 		craftitemdef.inventory_image = craftitemdef.image
 	end
+	-- END Legacy stuff
 
 	minetest.register_item(name, craftitemdef)
 end
@@ -420,7 +636,7 @@ function minetest.register_tool(name, tooldef)
 	tooldef.type = "tool"
 	tooldef.stack_max = 1
 
-	-- Legacy stuff
+	-- BEGIN Legacy stuff
 	if tooldef.inventory_image == nil and tooldef.image ~= nil then
 		tooldef.inventory_image = tooldef.image
 	end
@@ -450,6 +666,7 @@ function minetest.register_tool(name, tooldef)
 			dd_cuttability = tooldef.dd_cuttability,
 		}
 	end
+	-- END Legacy stuff
 
 	minetest.register_item(name, tooldef)
 end
@@ -642,5 +859,11 @@ minetest.registered_on_generateds, minetest.register_on_generated = make_registr
 minetest.registered_on_newplayers, minetest.register_on_newplayer = make_registration()
 minetest.registered_on_dieplayers, minetest.register_on_dieplayer = make_registration()
 minetest.registered_on_respawnplayers, minetest.register_on_respawnplayer = make_registration()
+
+--
+-- Set random seed
+--
+
+math.randomseed(os.time())
 
 -- END

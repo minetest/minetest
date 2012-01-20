@@ -176,6 +176,7 @@
 -- - set_text(text) -- eg. set the text of a sign
 -- - get_text()
 -- - get_owner()
+-- - set_owner(string)
 -- Generic node metadata specific:
 -- - set_infotext(infotext)
 -- - get_inventory() -> InvRef
@@ -302,7 +303,7 @@
 --     myvariable = whatever,
 -- }
 --
--- Item definition:
+-- Item definition options (register_node, register_craftitem, register_tool)
 -- {
 --     description = "Steel Axe",
 --     inventory_image = "default_tool_steelaxe.png",
@@ -328,9 +329,9 @@
 --     on_use = func(item, user, pointed_thing),
 -- }
 --
--- Node definition options:
+-- Node definition options (register_node):
 -- {
---     <all fields from item definitions>,
+--     <all fields allowed in item definitions>,
 --     drawtype = "normal",
 --     visual_scale = 1.0,
 --     tile_images = {"default_unknown_block.png"},
@@ -341,6 +342,7 @@
 --     alpha = 255,
 --     post_effect_color = {a=0, r=0, g=0, b=0},
 --     paramtype = "none",
+--     paramtype2 = "none",
 --     is_ground_content = false,
 --     sunlight_propagates = false,
 --     walkable = true,
@@ -348,10 +350,8 @@
 --     diggable = true,
 --     climbable = false,
 --     buildable_to = false,
---     wall_mounted = false,
---     dug_item = "",
---     extra_dug_item = "",
---     extra_dug_item_rarity = 2,
+--     drop = "",
+--     -- alternatively drop = { max_items = ..., items = { ... } }
 --     metadata_name = "",
 --     liquidtype = "none",
 --     liquid_alternative_flowing = "",
@@ -368,23 +368,10 @@
 --         cuttability = 0,
 --         flammability = 0,
 --     },
---     on_drop = func(item, dropper),
---     on_place = func(item, placer, pointed_thing),
---     on_use = func(item, user, pointed_thing),
+--     legacy_facedir_simple = false, -- Support maps made in and before January 2012
+--     legacy_wallmounted = false, -- Support maps made in and before January 2012
 -- }
 --
--- Craftitem definition options:
--- {
---     description = <tooltip text>,
---     inventory_image = "default_unknown_block.png",
---     wield_image = "",
---     stack_max = <maximum number of items in stack>,
---     liquids_pointable = <whether can point liquids>,
---     on_drop = func(item, dropper),
---     on_place = func(item, placer, pointed_thing),
---     on_use = func(item, user, pointed_thing),
--- }
--- 
 -- Recipe:
 -- {
 --     output = 'default:pick_stone',
@@ -1111,10 +1098,26 @@ minetest.register_craft({
 minetest.register_node("default:stone", {
 	description = "Stone",
 	tile_images = {"default_stone.png"},
-	paramtype = "mineral",
 	is_ground_content = true,
 	material = minetest.digprop_stonelike(1.0),
-	dug_item = 'node "default:cobble" 1',
+	drop = 'default:cobble',
+	legacy_mineral = true,
+})
+
+minetest.register_node("default:stone_with_coal", {
+	description = "Stone with coal",
+	tile_images = {"default_stone.png^default_mineral_coal.png"},
+	is_ground_content = true,
+	material = minetest.digprop_stonelike(1.0),
+	drop = 'default:coal_lump',
+})
+
+minetest.register_node("default:stone_with_iron", {
+	description = "Stone with iron",
+	tile_images = {"default_stone.png^default_mineral_iron.png"},
+	is_ground_content = true,
+	material = minetest.digprop_stonelike(1.0),
+	drop = 'default:iron_lump',
 })
 
 minetest.register_node("default:dirt_with_grass", {
@@ -1122,7 +1125,7 @@ minetest.register_node("default:dirt_with_grass", {
 	tile_images = {"default_grass.png", "default_dirt.png", "default_dirt.png^default_grass_side.png"},
 	is_ground_content = true,
 	material = minetest.digprop_dirtlike(1.0),
-	dug_item = 'node "default:dirt" 1',
+	drop = 'default:dirt',
 })
 
 minetest.register_node("default:dirt_with_grass_footsteps", {
@@ -1130,7 +1133,7 @@ minetest.register_node("default:dirt_with_grass_footsteps", {
 	tile_images = {"default_grass_footsteps.png", "default_dirt.png", "default_dirt.png^default_grass_side.png"},
 	is_ground_content = true,
 	material = minetest.digprop_dirtlike(1.0),
-	dug_item = 'node "default:dirt" 1',
+	drop = 'default:dirt',
 })
 
 minetest.register_node("default:dirt", {
@@ -1159,7 +1162,7 @@ minetest.register_node("default:sandstone", {
 	tile_images = {"default_sandstone.png"},
 	is_ground_content = true,
 	material = minetest.digprop_dirtlike(1.0),  -- FIXME should this be stonelike?
-	dug_item = 'node "default:sand" 1',  -- FIXME is this intentional?
+	drop = 'default:sand',
 })
 
 minetest.register_node("default:clay", {
@@ -1167,7 +1170,7 @@ minetest.register_node("default:clay", {
 	tile_images = {"default_clay.png"},
 	is_ground_content = true,
 	material = minetest.digprop_dirtlike(1.0),
-	dug_item = 'craft "default:clay_lump" 4',
+	drop = 'default:clay_lump 4',
 })
 
 minetest.register_node("default:brick", {
@@ -1175,7 +1178,7 @@ minetest.register_node("default:brick", {
 	tile_images = {"default_brick.png"},
 	is_ground_content = true,
 	material = minetest.digprop_stonelike(1.0),
-	dug_item = 'craft "default:clay_brick" 4',
+	drop = 'default:clay_brick 4',
 })
 
 minetest.register_node("default:tree", {
@@ -1211,8 +1214,21 @@ minetest.register_node("default:leaves", {
 	tile_images = {"default_leaves.png"},
 	paramtype = "light",
 	material = minetest.digprop_leaveslike(1.0),
-	extra_dug_item = 'node "default:sapling" 1',
-	extra_dug_item_rarity = 20,
+	drop = {
+		max_items = 1,
+		items = {
+			{
+				-- player will get sapling with 1/20 chance
+				items = {'default:sapling'},
+				rarity = 20,
+			},
+			{
+				-- player will get leaves only if he get no saplings,
+				-- this is because max_items is 1
+				items = {'default:leaves'},
+			}
+		}
+	},
 })
 
 minetest.register_node("default:cactus", {
@@ -1290,8 +1306,8 @@ minetest.register_node("default:ladder", {
 	inventory_image = "default_ladder.png",
 	wield_image = "default_ladder.png",
 	paramtype = "light",
+	paramtype2 = "wallmounted",
 	is_ground_content = true,
-	wall_mounted = true,
 	walkable = false,
 	climbable = true,
 	selection_box = {
@@ -1301,6 +1317,7 @@ minetest.register_node("default:ladder", {
 		--wall_side = = <default>
 	},
 	material = minetest.digprop_woodlike(0.5),
+	legacy_wallmounted = true,
 })
 
 minetest.register_node("default:wood", {
@@ -1420,9 +1437,9 @@ minetest.register_node("default:torch", {
 	inventory_image = "default_torch_on_floor.png",
 	wield_image = "default_torch_on_floor.png",
 	paramtype = "light",
+	paramtype2 = "wallmounted",
 	sunlight_propagates = true,
 	walkable = false,
-	wall_mounted = true,
 	light_source = LIGHT_MAX-1,
 	selection_box = {
 		type = "wallmounted",
@@ -1431,6 +1448,7 @@ minetest.register_node("default:torch", {
 		wall_side = {-0.5, -0.3, -0.1, -0.5+0.3, 0.3, 0.1},
 	},
 	material = minetest.digprop_constanttime(0.0),
+	legacy_wallmounted = true,
 })
 
 minetest.register_node("default:sign_wall", {
@@ -1440,9 +1458,9 @@ minetest.register_node("default:sign_wall", {
 	inventory_image = "default_sign_wall.png",
 	wield_image = "default_sign_wall.png",
 	paramtype = "light",
+	paramtype2 = "wallmounted",
 	sunlight_propagates = true,
 	walkable = false,
-	wall_mounted = true,
 	metadata_name = "sign",
 	selection_box = {
 		type = "wallmounted",
@@ -1451,33 +1469,37 @@ minetest.register_node("default:sign_wall", {
 		--wall_side = <default>
 	},
 	material = minetest.digprop_constanttime(0.5),
+	legacy_wallmounted = true,
 })
 
 minetest.register_node("default:chest", {
 	description = "Chest",
 	tile_images = {"default_chest_top.png", "default_chest_top.png", "default_chest_side.png",
 		"default_chest_side.png", "default_chest_side.png", "default_chest_front.png"},
-	paramtype = "facedir_simple",
+	paramtype2 = "facedir",
 	metadata_name = "chest",
 	material = minetest.digprop_woodlike(1.0),
+	legacy_facedir_simple = true,
 })
 
 minetest.register_node("default:chest_locked", {
 	description = "Locked Chest",
 	tile_images = {"default_chest_top.png", "default_chest_top.png", "default_chest_side.png",
 		"default_chest_side.png", "default_chest_side.png", "default_chest_lock.png"},
-	paramtype = "facedir_simple",
+	paramtype2 = "facedir",
 	metadata_name = "locked_chest",
 	material = minetest.digprop_woodlike(1.0),
+	legacy_facedir_simple = true,
 })
 
 minetest.register_node("default:furnace", {
 	description = "Furnace",
 	tile_images = {"default_furnace_side.png", "default_furnace_side.png", "default_furnace_side.png",
 		"default_furnace_side.png", "default_furnace_side.png", "default_furnace_front.png"},
-	paramtype = "facedir_simple",
+	paramtype2 = "facedir",
 	metadata_name = "furnace",
 	material = minetest.digprop_stonelike(3.0),
+	legacy_facedir_simple = true,
 })
 
 minetest.register_node("default:cobble", {
@@ -1506,8 +1528,9 @@ minetest.register_node("default:nyancat", {
 	tile_images = {"default_nc_side.png", "default_nc_side.png", "default_nc_side.png",
 		"default_nc_side.png", "default_nc_back.png", "default_nc_front.png"},
 	inventory_image = "default_nc_front.png",
-	paramtype = "facedir_simple",
+	paramtype2 = "facedir",
 	material = minetest.digprop_stonelike(3.0),
+	legacy_facedir_simple = true,
 })
 
 minetest.register_node("default:nyancat_rainbow", {

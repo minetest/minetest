@@ -303,6 +303,8 @@ PointedThing getPointedThing(Client *client, v3f player_position,
 	should_show_hilightbox = false;
 	selected_object = NULL;
 
+	INodeDefManager *nodedef = client->getNodeDefManager();
+
 	// First try to find a pointed at active object
 	if(look_for_object)
 	{
@@ -378,7 +380,7 @@ PointedThing getPointedThing(Client *client, v3f player_position,
 			v3s16(-1,0,0), // left
 		};
 		
-		const ContentFeatures &f = client->getNodeDefManager()->get(n);
+		const ContentFeatures &f = nodedef->get(n);
 		
 		if(f.selection_box.type == NODEBOX_FIXED)
 		{
@@ -447,7 +449,7 @@ PointedThing getPointedThing(Client *client, v3f player_position,
 		}
 		else if(f.selection_box.type == NODEBOX_WALLMOUNTED)
 		{
-			v3s16 dir = unpackDir(n.param2);
+			v3s16 dir = n.getWallMountedDir(nodedef);
 			v3f dir_f = v3f(dir.X, dir.Y, dir.Z);
 			dir_f *= BS/2 - BS/6 - BS/20;
 			v3f cpf = npf + dir_f;
@@ -1827,11 +1829,10 @@ void the_game(
 				MapNode n = client.getNode(nodepos);
 
 				// Get digging properties for material and tool
-				content_t material = n.getContent();
+				MaterialProperties mp = nodedef->get(n.getContent()).material;
 				ToolDiggingProperties tp =
 						playeritem.getToolDiggingProperties(itemdef);
-				DiggingProperties prop =
-						getDiggingProperties(material, &tp, nodedef);
+				DiggingProperties prop = getDiggingProperties(&mp, &tp);
 
 				float dig_time_complete = 0.0;
 

@@ -85,15 +85,15 @@ void makeCuboid(MeshCollector *collector, const aabb3f &box,
 		video::S3DVertex(min.X,min.Y,min.Z, -1,0,0, c, txc[14],txc[15]),
 		video::S3DVertex(min.X,min.Y,max.Z, -1,0,0, c, txc[12],txc[15]),
 		// back
-		video::S3DVertex(min.X,max.Y,min.Z, 0,0,-1, c, txc[16],txc[17]),
-		video::S3DVertex(max.X,max.Y,min.Z, 0,0,-1, c, txc[18],txc[17]),
-		video::S3DVertex(max.X,min.Y,min.Z, 0,0,-1, c, txc[18],txc[19]),
-		video::S3DVertex(min.X,min.Y,min.Z, 0,0,-1, c, txc[16],txc[19]),
+		video::S3DVertex(max.X,max.Y,max.Z, 0,0,1, c, txc[16],txc[17]),
+		video::S3DVertex(min.X,max.Y,max.Z, 0,0,1, c, txc[18],txc[17]),
+		video::S3DVertex(min.X,min.Y,max.Z, 0,0,1, c, txc[18],txc[19]),
+		video::S3DVertex(max.X,min.Y,max.Z, 0,0,1, c, txc[16],txc[19]),
 		// front
-		video::S3DVertex(max.X,max.Y,max.Z, 0,0,1, c, txc[20],txc[21]),
-		video::S3DVertex(min.X,max.Y,max.Z, 0,0,1, c, txc[22],txc[21]),
-		video::S3DVertex(min.X,min.Y,max.Z, 0,0,1, c, txc[22],txc[23]),
-		video::S3DVertex(max.X,min.Y,max.Z, 0,0,1, c, txc[20],txc[23]),
+		video::S3DVertex(min.X,max.Y,min.Z, 0,0,-1, c, txc[20],txc[21]),
+		video::S3DVertex(max.X,max.Y,min.Z, 0,0,-1, c, txc[22],txc[21]),
+		video::S3DVertex(max.X,min.Y,min.Z, 0,0,-1, c, txc[22],txc[23]),
+		video::S3DVertex(min.X,min.Y,min.Z, 0,0,-1, c, txc[20],txc[23]),
 	};
 
 	for(s32 j=0; j<24; j++)
@@ -602,7 +602,7 @@ void mapblock_mesh_generate_special(MeshMakeData *data,
 			break;
 		case NDT_TORCHLIKE:
 		{
-			v3s16 dir = unpackDir(n.param2);
+			v3s16 dir = n.getWallMountedDir(nodedef);
 			
 			AtlasPointer ap(0);
 			if(dir == v3s16(0,-1,0)){
@@ -694,7 +694,7 @@ void mapblock_mesh_generate_special(MeshMakeData *data,
 						ap.x0(), ap.y1()),
 			};
 
-			v3s16 dir = unpackDir(n.param2);
+			v3s16 dir = n.getWallMountedDir(nodedef);
 
 			for(s32 i=0; i<4; i++)
 			{

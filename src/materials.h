@@ -110,16 +110,11 @@ struct DiggingProperties
 	{}
 };
 
-class INodeDefManager;
-
 DiggingProperties getDiggingProperties(const MaterialProperties *mp,
 		const ToolDiggingProperties *tp, float time_from_last_punch);
 
 DiggingProperties getDiggingProperties(const MaterialProperties *mp,
 		const ToolDiggingProperties *tp);
-
-DiggingProperties getDiggingProperties(u16 content,
-		const ToolDiggingProperties *tp, INodeDefManager *nodemgr);
 
 struct HittingProperties
 {
@@ -134,6 +129,9 @@ struct HittingProperties
 
 HittingProperties getHittingProperties(const MaterialProperties *mp,
 		const ToolDiggingProperties *tp, float time_from_last_punch);
+
+HittingProperties getHittingProperties(const MaterialProperties *mp,
+		const ToolDiggingProperties *tp);
 
 #endif
 

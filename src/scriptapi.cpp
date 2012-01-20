@@ -314,10 +314,28 @@ static int getenumfield(lua_State *L, int table,
 	return result;
 }
 
+static void setintfield(lua_State *L, int table,
+		const char *fieldname, int value)
+{
+	lua_pushinteger(L, value);
+	if(table < 0)
+		table -= 1;
+	lua_setfield(L, table, fieldname);
+}
+
 static void setfloatfield(lua_State *L, int table,
 		const char *fieldname, float value)
 {
 	lua_pushnumber(L, value);
+	if(table < 0)
+		table -= 1;
+	lua_setfield(L, table, fieldname);
+}
+
+static void setboolfield(lua_State *L, int table,
+		const char *fieldname, bool value)
+{
+	lua_pushboolean(L, value);
 	if(table < 0)
 		table -= 1;
 	lua_setfield(L, table, fieldname);
@@ -369,8 +387,16 @@ struct EnumString es_ContentParamType[] =
 {
 	{CPT_NONE, "none"},
 	{CPT_LIGHT, "light"},
-	{CPT_MINERAL, "mineral"},
-	{CPT_FACEDIR_SIMPLE, "facedir_simple"},
+	{0, NULL},
+};
+
+struct EnumString es_ContentParamType2[] =
+{
+	{CPT2_NONE, "none"},
+	{CPT2_FULL, "full"},
+	{CPT2_FLOWINGLIQUID, "flowingliquid"},
+	{CPT2_FACEDIR, "facedir"},
+	{CPT2_WALLMOUNTED, "wallmounted"},
 	{0, NULL},
 };
 
@@ -587,6 +613,25 @@ static core::aabbox3d<f32> read_aabbox3df32(lua_State *L, int index, f32 scale)
 }
 
 /*
+	MaterialProperties
+*/
+
+static MaterialProperties read_material_properties(
+		lua_State *L, int table)
+{
+	MaterialProperties prop;
+	prop.diggability = (Diggability)getenumfield(L, -1, "diggability",
+			es_Diggability, DIGGABLE_NORMAL);
+	getfloatfield(L, -1, "constant_time", prop.constant_time);
+	getfloatfield(L, -1, "weight", prop.weight);
+	getfloatfield(L, -1, "crackiness", prop.crackiness);
+	getfloatfield(L, -1, "crumbliness", prop.crumbliness);
+	getfloatfield(L, -1, "cuttability", prop.cuttability);
+	getfloatfield(L, -1, "flammability", prop.flammability);
+	return prop;
+}
+
+/*
 	ToolDiggingProperties
 */
 
@@ -629,6 +674,43 @@ static void push_tool_digging_properties(lua_State *L,
 {
 	lua_newtable(L);
 	set_tool_digging_properties(L, -1, prop);
+}
+
+/*
+	DiggingProperties
+*/
+
+static void set_digging_properties(lua_State *L, int table,
+		const DiggingProperties &prop)
+{
+	setboolfield(L, table, "diggable", prop.diggable);
+	setfloatfield(L, table, "time", prop.time);
+	setintfield(L, table, "wear", prop.wear);
+}
+
+static void push_digging_properties(lua_State *L,
+		const DiggingProperties &prop)
+{
+	lua_newtable(L);
+	set_digging_properties(L, -1, prop);
+}
+
+/*
+	HittingProperties
+*/
+
+static void set_hitting_properties(lua_State *L, int table,
+		const HittingProperties &prop)
+{
+	setintfield(L, table, "hp", prop.hp);
+	setintfield(L, table, "wear", prop.wear);
+}
+
+static void push_hitting_properties(lua_State *L,
+		const HittingProperties &prop)
+{
+	lua_newtable(L);
+	set_hitting_properties(L, -1, prop);
 }
 
 /*
@@ -797,12 +879,24 @@ static ContentFeatures read_content_features(lua_State *L, int index)
 
 	f.param_type = (ContentParamType)getenumfield(L, index, "paramtype",
 			es_ContentParamType, CPT_NONE);
+	f.param_type_2 = (ContentParamType2)getenumfield(L, index, "paramtype2",
+			es_ContentParamType2, CPT2_NONE);
+
+	// Warn about some deprecated fields
+	warn_if_field_exists(L, index, "wall_mounted",
+			"deprecated: use paramtype2 = 'wallmounted'");
+	warn_if_field_exists(L, index, "light_propagates",
+			"deprecated: determined from paramtype");
+	warn_if_field_exists(L, index, "dug_item",
+			"deprecated: use 'drops' field");
+	warn_if_field_exists(L, index, "extra_dug_item",
+			"deprecated: use 'drops' field");
+	warn_if_field_exists(L, index, "extra_dug_item_rarity",
+			"deprecated: use 'drops' field");
 	
 	// True for all ground-like things like stone and mud, false for eg. trees
 	getboolfield(L, index, "is_ground_content", f.is_ground_content);
 	f.light_propagates = (f.param_type == CPT_LIGHT);
-	warn_if_field_exists(L, index, "light_propagates",
-			"deprecated: determined from paramtype");
 	getboolfield(L, index, "sunlight_propagates", f.sunlight_propagates);
 	// This is used for collision detection.
 	// Also for general solidness queries.
@@ -815,16 +909,6 @@ static ContentFeatures read_content_features(lua_State *L, int index)
 	getboolfield(L, index, "climbable", f.climbable);
 	// Player can build on these
 	getboolfield(L, index, "buildable_to", f.buildable_to);
-	// If true, param2 is set to direction when placed. Used for torches.
-	// NOTE: the direction format is quite inefficient and should be changed
-	getboolfield(L, index, "wall_mounted", f.wall_mounted);
-	// Inventory item string as which the node appears in inventory when dug.
-	// Mineral overrides this.
-	getstringfield(L, index, "dug_item", f.dug_item);
-	// Extra dug item and its rarity
-	getstringfield(L, index, "extra_dug_item", f.extra_dug_item);
-	// Usual get interval for extra dug item
-	getintfield(L, index, "extra_dug_item_rarity", f.extra_dug_item_rarity);
 	// Metadata name of node (eg. "furnace")
 	getstringfield(L, index, "metadata_name", f.metadata_name);
 	// Whether the node is non-liquid, source liquid or flowing liquid
@@ -876,17 +960,14 @@ static ContentFeatures read_content_features(lua_State *L, int index)
 
 	lua_getfield(L, index, "material");
 	if(lua_istable(L, -1)){
-		f.material.diggability = (Diggability)getenumfield(L, -1, "diggability",
-				es_Diggability, DIGGABLE_NORMAL);
-		
-		getfloatfield(L, -1, "constant_time", f.material.constant_time);
-		getfloatfield(L, -1, "weight", f.material.weight);
-		getfloatfield(L, -1, "crackiness", f.material.crackiness);
-		getfloatfield(L, -1, "crumbliness", f.material.crumbliness);
-		getfloatfield(L, -1, "cuttability", f.material.cuttability);
-		getfloatfield(L, -1, "flammability", f.material.flammability);
+		f.material = read_material_properties(L, -1);
 	}
 	lua_pop(L, 1);
+
+	// Set to true if paramtype used to be 'facedir_simple'
+	getboolfield(L, index, "legacy_facedir_simple", f.legacy_facedir_simple);
+	// Set to true if wall_mounted used to be set to true
+	getboolfield(L, index, "legacy_wallmounted", f.legacy_wallmounted);
 
 	return f;
 }
@@ -1774,6 +1855,33 @@ private:
 		return 1;
 	}
 
+	// set_owner(self, string)
+	static int l_set_owner(lua_State *L)
+	{
+		NodeMetaRef *ref = checkobject(L, 1);
+		NodeMetadata *meta = getmeta(ref);
+		if(meta == NULL) return 0;
+		// Do it
+		std::string owner = luaL_checkstring(L, 2);
+		meta->setOwner(owner);
+		reportMetadataChange(ref);
+		return 1;
+	}
+
+	// get_allow_removal(self)
+	static int l_get_allow_removal(lua_State *L)
+	{
+		NodeMetaRef *ref = checkobject(L, 1);
+		NodeMetadata *meta = getmeta(ref);
+		if(meta == NULL){
+			lua_pushboolean(L, true);
+			return 1;
+		}
+		// Do it
+		lua_pushboolean(L, !meta->nodeRemovalDisabled());
+		return 1;
+	}
+
 	/* IGenericNodeMetadata interface */
 	
 	// set_infotext(self, text)
@@ -1984,6 +2092,8 @@ const luaL_reg NodeMetaRef::methods[] = {
 	method(NodeMetaRef, set_text),
 	method(NodeMetaRef, get_text),
 	method(NodeMetaRef, get_owner),
+	method(NodeMetaRef, set_owner),
+	method(NodeMetaRef, get_allow_removal),
 	method(NodeMetaRef, set_infotext),
 	method(NodeMetaRef, get_inventory),
 	method(NodeMetaRef, set_inventory_draw_spec),
@@ -3369,6 +3479,32 @@ static int l_get_inventory(lua_State *L)
 	return 1;
 }
 
+// get_digging_properties(material_properties, tool_digging_properties[, time_from_last_punch])
+static int l_get_digging_properties(lua_State *L)
+{
+	MaterialProperties mp = read_material_properties(L, 1);
+	ToolDiggingProperties tp = read_tool_digging_properties(L, 2);
+	if(lua_isnoneornil(L, 3))
+		push_digging_properties(L, getDiggingProperties(&mp, &tp));
+	else
+		push_digging_properties(L, getDiggingProperties(&mp, &tp,
+					luaL_checknumber(L, 3)));
+	return 1;
+}
+
+// get_hitting_properties(material_properties, tool_digging_properties[, time_from_last_punch])
+static int l_get_hitting_properties(lua_State *L)
+{
+	MaterialProperties mp = read_material_properties(L, 1);
+	ToolDiggingProperties tp = read_tool_digging_properties(L, 2);
+	if(lua_isnoneornil(L, 3))
+		push_hitting_properties(L, getHittingProperties(&mp, &tp));
+	else
+		push_hitting_properties(L, getHittingProperties(&mp, &tp,
+					luaL_checknumber(L, 3)));
+	return 1;
+}
+
 // get_current_modname()
 static int l_get_current_modname(lua_State *L)
 {
@@ -3402,6 +3538,8 @@ static const struct luaL_Reg minetest_f [] = {
 	{"chat_send_player", l_chat_send_player},
 	{"get_player_privs", l_get_player_privs},
 	{"get_inventory", l_get_inventory},
+	{"get_digging_properties", l_get_digging_properties},
+	{"get_hitting_properties", l_get_hitting_properties},
 	{"get_current_modname", l_get_current_modname},
 	{"get_modpath", l_get_modpath},
 	{NULL, NULL}
@@ -3719,6 +3857,8 @@ bool scriptapi_on_respawnplayer(lua_State *L, ServerActiveObject *player)
 	assert(lua_checkstack(L, 20));
 	StackUnroller stack_unroller(L);
 
+	dstream<<"player: "<<player<<"   id: "<<player->getId()<<std::endl;
+
 	bool positioning_handled_by_some = false;
 
 	// Get minetest.registered_on_respawnplayers
@@ -3754,7 +3894,7 @@ void scriptapi_get_creative_inventory(lua_State *L, ServerRemotePlayer *player)
 }
 
 /*
-	item callbacks
+	item callbacks and node callbacks
 */
 
 // Retrieves minetest.registered_items[name][callbackname]
@@ -3864,6 +4004,50 @@ bool scriptapi_item_on_use(lua_State *L, ItemStack &item,
 	return true;
 }
 
+bool scriptapi_node_on_punch(lua_State *L, v3s16 pos, MapNode node,
+		ServerActiveObject *puncher)
+{
+	realitycheck(L);
+	assert(lua_checkstack(L, 20));
+	StackUnroller stack_unroller(L);
+
+	INodeDefManager *ndef = get_server(L)->ndef();
+
+	// Push callback function on stack
+	if(!get_item_callback(L, ndef->get(node).name.c_str(), "on_punch"))
+		return false;
+
+	// Call function
+	push_v3s16(L, pos);
+	pushnode(L, node, ndef);
+	objectref_get_or_create(L, puncher);
+	if(lua_pcall(L, 3, 0, 0))
+		script_error(L, "error: %s", lua_tostring(L, -1));
+	return true;
+}
+
+bool scriptapi_node_on_dig(lua_State *L, v3s16 pos, MapNode node,
+		ServerActiveObject *digger)
+{
+	realitycheck(L);
+	assert(lua_checkstack(L, 20));
+	StackUnroller stack_unroller(L);
+
+	INodeDefManager *ndef = get_server(L)->ndef();
+
+	// Push callback function on stack
+	if(!get_item_callback(L, ndef->get(node).name.c_str(), "on_dig"))
+		return false;
+
+	// Call function
+	push_v3s16(L, pos);
+	pushnode(L, node, ndef);
+	objectref_get_or_create(L, digger);
+	if(lua_pcall(L, 3, 0, 0))
+		script_error(L, "error: %s", lua_tostring(L, -1));
+	return true;
+}
+
 /*
 	environment
 */
@@ -3888,102 +4072,6 @@ void scriptapi_environment_step(lua_State *L, float dtime)
 		// Call function
 		lua_pushnumber(L, dtime);
 		if(lua_pcall(L, 1, 0, 0))
-			script_error(L, "error: %s", lua_tostring(L, -1));
-		// value removed, keep key for next iteration
-	}
-}
-
-void scriptapi_environment_on_placenode(lua_State *L, v3s16 p, MapNode newnode,
-		ServerActiveObject *placer)
-{
-	realitycheck(L);
-	assert(lua_checkstack(L, 20));
-	//infostream<<"scriptapi_environment_on_placenode"<<std::endl;
-	StackUnroller stack_unroller(L);
-
-	// Get the writable node definition manager from the server
-	IWritableNodeDefManager *ndef =
-			get_server(L)->getWritableNodeDefManager();
-	
-	// Get minetest.registered_on_placenodes
-	lua_getglobal(L, "minetest");
-	lua_getfield(L, -1, "registered_on_placenodes");
-	luaL_checktype(L, -1, LUA_TTABLE);
-	int table = lua_gettop(L);
-	// Foreach
-	lua_pushnil(L);
-	while(lua_next(L, table) != 0){
-		// key at index -2 and value at index -1
-		luaL_checktype(L, -1, LUA_TFUNCTION);
-		// Call function
-		push_v3s16(L, p);
-		pushnode(L, newnode, ndef);
-		objectref_get_or_create(L, placer);
-		if(lua_pcall(L, 3, 0, 0))
-			script_error(L, "error: %s", lua_tostring(L, -1));
-		// value removed, keep key for next iteration
-	}
-}
-
-void scriptapi_environment_on_dignode(lua_State *L, v3s16 p, MapNode oldnode,
-		ServerActiveObject *digger)
-{
-	realitycheck(L);
-	assert(lua_checkstack(L, 20));
-	//infostream<<"scriptapi_environment_on_dignode"<<std::endl;
-	StackUnroller stack_unroller(L);
-
-	// Get the writable node definition manager from the server
-	IWritableNodeDefManager *ndef =
-			get_server(L)->getWritableNodeDefManager();
-	
-	// Get minetest.registered_on_dignodes
-	lua_getglobal(L, "minetest");
-	lua_getfield(L, -1, "registered_on_dignodes");
-	luaL_checktype(L, -1, LUA_TTABLE);
-	int table = lua_gettop(L);
-	// Foreach
-	lua_pushnil(L);
-	while(lua_next(L, table) != 0){
-		// key at index -2 and value at index -1
-		luaL_checktype(L, -1, LUA_TFUNCTION);
-		// Call function
-		push_v3s16(L, p);
-		pushnode(L, oldnode, ndef);
-		objectref_get_or_create(L, digger);
-		if(lua_pcall(L, 3, 0, 0))
-			script_error(L, "error: %s", lua_tostring(L, -1));
-		// value removed, keep key for next iteration
-	}
-}
-
-void scriptapi_environment_on_punchnode(lua_State *L, v3s16 p, MapNode node,
-		ServerActiveObject *puncher)
-{
-	realitycheck(L);
-	assert(lua_checkstack(L, 20));
-	//infostream<<"scriptapi_environment_on_punchnode"<<std::endl;
-	StackUnroller stack_unroller(L);
-
-	// Get the writable node definition manager from the server
-	IWritableNodeDefManager *ndef =
-			get_server(L)->getWritableNodeDefManager();
-	
-	// Get minetest.registered_on_punchnodes
-	lua_getglobal(L, "minetest");
-	lua_getfield(L, -1, "registered_on_punchnodes");
-	luaL_checktype(L, -1, LUA_TTABLE);
-	int table = lua_gettop(L);
-	// Foreach
-	lua_pushnil(L);
-	while(lua_next(L, table) != 0){
-		// key at index -2 and value at index -1
-		luaL_checktype(L, -1, LUA_TFUNCTION);
-		// Call function
-		push_v3s16(L, p);
-		pushnode(L, node, ndef);
-		objectref_get_or_create(L, puncher);
-		if(lua_pcall(L, 3, 0, 0))
 			script_error(L, "error: %s", lua_tostring(L, -1));
 		// value removed, keep key for next iteration
 	}

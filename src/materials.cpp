@@ -18,8 +18,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 */
 
 #include "materials.h"
-#include "mapnode.h"
-#include "nodedef.h"
 #include "utility.h"
 
 void MaterialProperties::serialize(std::ostream &os)
@@ -139,13 +137,6 @@ DiggingProperties getDiggingProperties(const MaterialProperties *mp,
 	return getDiggingProperties(mp, tp, 1000000);
 }
 
-DiggingProperties getDiggingProperties(u16 content,
-		const ToolDiggingProperties *tp, INodeDefManager *nodemgr)
-{
-	const MaterialProperties &mp = nodemgr->get(content).material;
-	return getDiggingProperties(&mp, tp);
-}
-
 HittingProperties getHittingProperties(const MaterialProperties *mp,
 		const ToolDiggingProperties *tp, float time_from_last_punch)
 {
@@ -158,5 +149,11 @@ HittingProperties getHittingProperties(const MaterialProperties *mp,
 	s16 wear = (float)digprop.wear;
 
 	return HittingProperties(hp, wear);
+}
+
+HittingProperties getHittingProperties(const MaterialProperties *mp,
+		const ToolDiggingProperties *tp)
+{
+	return getHittingProperties(mp, tp, 1000000);
 }
 

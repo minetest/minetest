@@ -70,6 +70,9 @@ public:
 		result = i->second;
 		return true;
 	}
+	u16 size() const{
+		return m_id_to_name.size();
+	}
 private:
 	std::map<u16, std::string> m_id_to_name;
 	std::map<std::string, u16> m_name_to_id;

@@ -27,7 +27,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <ICameraSceneNode.h>
 #include "log.h"
 #include "mapnode.h" // For texture atlas making
-#include "mineral.h" // For texture atlas making
 #include "nodedef.h" // For texture atlas making
 #include "gamedef.h"
 
@@ -299,8 +298,8 @@ public:
 		Example names:
 		"stone.png"
 		"stone.png^crack2"
-		"stone.png^blit:mineral_coal.png"
-		"stone.png^blit:mineral_coal.png^crack1"
+		"stone.png^mineral_coal.png"
+		"stone.png^mineral_coal.png^crack1"
 
 		- If texture specified by name is found from cache, return the
 		  cached id.
@@ -824,14 +823,6 @@ void TextureSource::buildMainAtlas(class IGameDef *gamedef)
 		{
 			std::string name = f.tname_tiles[i];
 			sourcelist[name] = true;
-
-			if(f.param_type == CPT_MINERAL){
-				for(int k=1; k<MINERAL_COUNT; k++){
-					std::string mineraltexture = mineral_block_texture(k);
-					std::string fulltexture = name + "^" + mineraltexture;
-					sourcelist[fulltexture] = true;
-				}
-			}
 		}
 	}
 	

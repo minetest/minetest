@@ -31,7 +31,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 	Ranges:
 	0x000...0x07f (0...127): param2 is fully usable
 	126 and 127 are reserved (CONTENT_AIR and CONTENT_IGNORE).
-	0x800...0xfff (2048...4095): higher 4 bytes of param2 are not usable
+	0x800...0xfff (2048...4095): higher 4 bits of param2 are not usable
 */
 #define CONTENT_STONE 0
 #define CONTENT_WATER 2
