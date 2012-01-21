@@ -1010,6 +1010,8 @@ void Map::addNodeAndUpdate(v3s16 p, MapNode n,
 		if(!meta){
 			errorstream<<"Failed to create node metadata \""
 					<<metadata_name<<"\""<<std::endl;
+		} else {
+			setNodeMetadata(p, meta);
 		}
 	}
 
