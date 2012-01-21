@@ -1310,7 +1310,7 @@ void the_game(
 					"list", inventoryloc, "craft",
 					v2s32(3, 0), v2s32(3, 3)));
 			draw_spec.push_back(GUIInventoryMenu::DrawSpec(
-					"list", inventoryloc, "craftresult",
+					"list", inventoryloc, "craftpreview",
 					v2s32(7, 1), v2s32(1, 1)));
 
 			menu->setDrawSpec(draw_spec);

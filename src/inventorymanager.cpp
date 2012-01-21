@@ -25,6 +25,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "main.h"  // for g_settings
 #include "settings.h"
 #include "utility.h"
+#include "craftdef.h"
 
 /*
 	InventoryLocation
@@ -124,6 +125,10 @@ InventoryAction * InventoryAction::deSerialize(std::istream &is)
 	{
 		a = new IDropAction(is);
 	}
+	else if(type == "Craft")
+	{
+		a = new ICraftAction(is);
+	}
 
 	return a;
 }
@@ -152,7 +157,7 @@ IMoveAction::IMoveAction(std::istream &is)
 	to_i = stoi(ts);
 }
 
-void IMoveAction::apply(InventoryManager *mgr, ServerActiveObject *player)
+void IMoveAction::apply(InventoryManager *mgr, ServerActiveObject *player, IGameDef *gamedef)
 {
 	Inventory *inv_from = mgr->getInventory(from_inv);
 	Inventory *inv_to = mgr->getInventory(to_inv);
@@ -273,7 +278,7 @@ IDropAction::IDropAction(std::istream &is)
 	from_i = stoi(ts);
 }
 
-void IDropAction::apply(InventoryManager *mgr, ServerActiveObject *player)
+void IDropAction::apply(InventoryManager *mgr, ServerActiveObject *player, IGameDef *gamedef)
 {
 	Inventory *inv_from = mgr->getInventory(from_inv);
 	
@@ -332,3 +337,120 @@ void IDropAction::apply(InventoryManager *mgr, ServerActiveObject *player)
 			<<" i="<<from_i
 			<<std::endl;
 }
+
+ICraftAction::ICraftAction(std::istream &is)
+{
+	std::string ts;
+
+	std::getline(is, ts, ' ');
+	count = stoi(ts);
+
+	std::getline(is, ts, ' ');
+	craft_inv.deSerialize(ts);
+}
+
+void ICraftAction::apply(InventoryManager *mgr, ServerActiveObject *player, IGameDef *gamedef)
+{
+	Inventory *inv_craft = mgr->getInventory(craft_inv);
+	
+	if(!inv_craft){
+		infostream<<"ICraftAction::apply(): FAIL: inventory not found: "
+				<<"craft_inv=\""<<craft_inv.dump()<<"\""<<std::endl;
+		return;
+	}
+
+	InventoryList *list_craft = inv_craft->getList("craft");
+	InventoryList *list_craftresult = inv_craft->getList("craftresult");
+
+	/*
+		If a list doesn't exist or the source item doesn't exist
+	*/
+	if(!list_craft){
+		infostream<<"ICraftAction::apply(): FAIL: craft list not found: "
+				<<"craft_inv=\""<<craft_inv.dump()<<"\""<<std::endl;
+		return;
+	}
+	if(!list_craftresult){
+		infostream<<"ICraftAction::apply(): FAIL: craftresult list not found: "
+				<<"craft_inv=\""<<craft_inv.dump()<<"\""<<std::endl;
+		return;
+	}
+	if(list_craftresult->getSize() < 1){
+		infostream<<"ICraftAction::apply(): FAIL: craftresult list too short: "
+				<<"craft_inv=\""<<craft_inv.dump()<<"\""<<std::endl;
+		return;
+	}
+
+	ItemStack crafted;
+	int count_remaining = count;
+	bool found = getCraftingResult(inv_craft, crafted, false, gamedef);
+
+	while(found && list_craftresult->itemFits(0, crafted))
+	{
+		// Decrement input and add crafting output
+		getCraftingResult(inv_craft, crafted, true, gamedef);
+		list_craftresult->addItem(0, crafted);
+		mgr->setInventoryModified(craft_inv);
+
+		actionstream<<player->getDescription()
+				<<" crafts "
+				<<crafted.getItemString()
+				<<std::endl;
+
+		// Decrement counter
+		if(count_remaining == 1)
+			break;
+		else if(count_remaining > 1)
+			count_remaining--;
+
+		// Get next crafting result
+		found = getCraftingResult(inv_craft, crafted, false, gamedef);
+	}
+
+	infostream<<"ICraftAction::apply(): crafted "
+			<<" craft_inv=\""<<craft_inv.dump()<<"\""
+			<<std::endl;
+}
+
+
+// Crafting helper
+bool getCraftingResult(Inventory *inv, ItemStack& result,
+		bool decrementInput, IGameDef *gamedef)
+{
+	DSTACK(__FUNCTION_NAME);
+	
+	result.clear();
+
+	// TODO: Allow different sizes of crafting grids
+
+	// Get the InventoryList in which we will operate
+	InventoryList *clist = inv->getList("craft");
+	if(!clist || clist->getSize() != 9)
+		return false;
+
+	// Mangle crafting grid to an another format
+	CraftInput ci;
+	ci.method = CRAFT_METHOD_NORMAL;
+	ci.width = 3;
+	for(u16 i=0; i<9; i++)
+		ci.items.push_back(clist->getItem(i));
+
+	// Find out what is crafted and add it to result item slot
+	CraftOutput co;
+	bool found = gamedef->getCraftDefManager()->getCraftResult(
+			ci, co, decrementInput, gamedef);
+	if(found)
+		result.deSerialize(co.item, gamedef->getItemDefManager());
+
+	if(found && decrementInput)
+	{
+		// CraftInput has been changed, apply changes in clist
+		for(u16 i=0; i<9; i++)
+		{
+			clist->changeItem(i, ci.items[i]);
+		}
+	}
+
+	return found;
+}
+

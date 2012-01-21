@@ -40,7 +40,6 @@ Player::Player(IGameDef *gamedef):
 	swimming_up(false),
 	inventory(gamedef->idef()),
 	inventory_backup(NULL),
-	craftresult_is_preview(true),
 	hp(20),
 	peer_id(PEER_ID_INEXISTENT),
 // protected
@@ -64,6 +63,7 @@ void Player::resetInventory()
 	inventory.clear();
 	inventory.addList("main", PLAYER_INVENTORY_SIZE);
 	inventory.addList("craft", 9);
+	inventory.addList("craftpreview", 1);
 	inventory.addList("craftresult", 1);
 }
 
@@ -119,7 +119,6 @@ void Player::serialize(std::ostream &os)
 	args.setFloat("pitch", m_pitch);
 	args.setFloat("yaw", m_yaw);
 	args.setV3F("position", m_position);
-	args.setBool("craftresult_is_preview", craftresult_is_preview);
 	args.setS32("hp", hp);
 
 	args.writeLines(os);
@@ -157,11 +156,10 @@ void Player::deSerialize(std::istream &is)
 	setPitch(args.getFloat("pitch"));
 	setYaw(args.getFloat("yaw"));
 	setPosition(args.getV3F("position"));
+	bool craftresult_is_preview = true;
 	try{
 		craftresult_is_preview = args.getBool("craftresult_is_preview");
-	}catch(SettingNotFoundException &e){
-		craftresult_is_preview = true;
-	}
+	}catch(SettingNotFoundException &e){}
 	try{
 		hp = args.getS32("hp");
 	}catch(SettingNotFoundException &e){
@@ -169,6 +167,18 @@ void Player::deSerialize(std::istream &is)
 	}
 
 	inventory.deSerialize(is);
+
+	if(inventory.getList("craftpreview") == NULL)
+	{
+		// Convert players without craftpreview
+		inventory.addList("craftpreview", 1);
+
+		if(craftresult_is_preview)
+		{
+			// Clear craftresult
+			inventory.getList("craftresult")->changeItem(0, ItemStack());
+		}
+	}
 }
 
 #ifndef SERVER

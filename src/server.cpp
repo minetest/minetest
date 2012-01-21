@@ -2377,13 +2377,6 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 		*/
 		if(a->getType() == IACTION_MOVE)
 		{
-			InventoryList *rlist = player->inventory.getList("craftresult");
-			assert(rlist);
-			InventoryList *clist = player->inventory.getList("craft");
-			assert(clist);
-			InventoryList *mlist = player->inventory.getList("main");
-			assert(mlist);
-
 			IMoveAction *ma = (IMoveAction*)a;
 
 			ma->from_inv.applyCurrentPlayer(player->getName());
@@ -2398,98 +2391,36 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 				(ma->to_inv.name == player->getName());
 
 			/*
-				Disable moving items into craftresult from elsewhere
+				Disable moving items out of craftpreview
 			*/
-			if(to_inv_is_current_player
-					&& ma->to_list == "craftresult"
-					&& (!from_inv_is_current_player
-					|| ma->from_list != "craftresult"))
+			if(ma->from_list == "craftpreview")
 			{
 				infostream<<"Ignoring IMoveAction from "
 						<<(ma->from_inv.dump())<<":"<<ma->from_list
 						<<" to "<<(ma->to_inv.dump())<<":"<<ma->to_list
-						<<" because dst is craftresult"
-						<<" and src isn't craftresult"<<std::endl;
+						<<" because src is "<<ma->from_list<<std::endl;
 				delete a;
 				return;
 			}
 
 			/*
-				Handle crafting (source is craftresult, which is preview)
+				Disable moving items into craftresult and craftpreview
 			*/
-			if(from_inv_is_current_player
-					&& ma->from_list == "craftresult"
-					&& player->craftresult_is_preview
-					&& g_settings->getBool("creative_mode") == false)
+			if(ma->to_list == "craftpreview" || ma->to_list == "craftresult")
 			{
-				ItemStack crafting_result;
-				bool crafting_possible = GetCraftingResult(peer_id,
-						crafting_result, false);
-
-				/*
-					If the craftresult is placed on itself,
-					crafting takes place and result is moved
-					into main list.
-				*/
-				if(crafting_possible
-						&& to_inv_is_current_player
-						&& ma->to_list == "craftresult")
-				{
-					if(mlist->roomForItem(crafting_result))
-					{
-						actionstream<<player->getName()
-							<<" crafts "
-							<<crafting_result.getItemString()
-							<<std::endl;
-
-						// Decrement crafting materials
-						GetCraftingResult(peer_id, crafting_result, true);
-						mlist->addItem(crafting_result);
-						rlist->clearItems();
-						player->craftresult_is_preview = true;
-						srp->m_inventory_not_sent = true;
-					}
-
-				}
-				/*
-				 	Otherwise, if the destination is part of
-					the same player's inventory, crafting
-					takes place normally.
-				*/
-				else if(crafting_possible
-						&& to_inv_is_current_player)
-				{
-					InventoryList *list = player->inventory.getList(ma->to_list);
-					if(list && list->itemFits(ma->to_i, crafting_result))
-					{
-						actionstream<<player->getName()
-							<<" crafts "
-							<<crafting_result.getItemString()
-							<<std::endl;
-
-						// Decrement crafting materials
-						GetCraftingResult(peer_id, crafting_result, true);
-						list->addItem(ma->to_i, crafting_result);
-						rlist->clearItems();
-						player->craftresult_is_preview = true;
-						srp->m_inventory_not_sent = true;
-					}
-				}
-
-				// Do not apply the action normally.
+				infostream<<"Ignoring IMoveAction from "
+						<<(ma->from_inv.dump())<<":"<<ma->from_list
+						<<" to "<<(ma->to_inv.dump())<<":"<<ma->to_list
+						<<" because dst is "<<ma->to_list<<std::endl;
 				delete a;
 				return;
 			}
 
-			/*
-				Non-crafting move
-			*/
-			
 			// Disallow moving items in elsewhere than player's inventory
 			// if not allowed to interact
 			if((getPlayerPrivs(player) & PRIV_INTERACT) == 0
-					&& (from_inv_is_current_player
-					|| to_inv_is_current_player))
+					&& (!from_inv_is_current_player
+					|| !to_inv_is_current_player))
 			{
 				infostream<<"Cannot move outside of player's inventory: "
 						<<"No interact privilege"<<std::endl;
@@ -2550,9 +2481,45 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 				}
 			}
 		}
+		/*
+			Handle restrictions and special cases of the craft action
+		*/
+		else if(a->getType() == IACTION_CRAFT)
+		{
+			ICraftAction *ca = (ICraftAction*)a;
+
+			ca->craft_inv.applyCurrentPlayer(player->getName());
+
+			//bool craft_inv_is_current_player =
+			//	(ca->craft_inv.type == InventoryLocation::PLAYER) &&
+			//	(ca->craft_inv.name == player->getName());
+
+			// Disallow crafting if not allowed to interact
+			if((getPlayerPrivs(player) & PRIV_INTERACT) == 0)
+			{
+				infostream<<"Cannot craft: "
+						<<"No interact privilege"<<std::endl;
+				delete a;
+				return;
+			}
+
+			// If player is not an admin, check for ownership of inventory
+			if((getPlayerPrivs(player) & PRIV_SERVER) == 0)
+			{
+				std::string owner_craft = getInventoryOwner(ca->craft_inv);
+				if(owner_craft != "" && owner_craft != player->getName())
+				{
+					infostream<<"WARNING: "<<player->getName()
+						<<" tried to access an inventory that"
+						<<" belongs to "<<owner_craft<<std::endl;
+					delete a;
+					return;
+				}
+			}
+		}
 		
 		// Do the action
-		a->apply(this, srp);
+		a->apply(this, srp, this);
 		// Eat the action
 		delete a;
 	}
@@ -4049,95 +4016,24 @@ void Server::RespawnPlayer(Player *player)
 	SendPlayerHP(player);
 }
 
-bool Server::GetCraftingResult(u16 peer_id, ItemStack &result, bool decrementInput)
-{
-	DSTACK(__FUNCTION_NAME);
-	
-	Player* player = m_env->getPlayer(peer_id);
-	assert(player);
-
-	// Get the crafting InventoryList of the player in which we will operate
-	InventoryList *clist = player->inventory.getList("craft");
-	assert(clist);
-
-	// Mangle crafting grid to an another format
-	CraftInput ci;
-	ci.method = CRAFT_METHOD_NORMAL;
-	ci.width = 3;
-	for(u16 i=0; i<9; i++)
-	{
-		ci.items.push_back(clist->getItem(i));
-	}
-
-	// Find out what is crafted and add it to result item slot
-	CraftOutput co;
-	bool found = m_craftdef->getCraftResult(ci, co, decrementInput, this);
-	if(found)
-		result.deSerialize(co.item, m_itemdef);
-
-	if(decrementInput)
-	{
-		// CraftInput has been changed, apply changes in clist
-		for(u16 i=0; i<9; i++)
-		{
-			clist->changeItem(i, ci.items[i]);
-		}
-	}
-
-	return found;
-}
-
 void Server::UpdateCrafting(u16 peer_id)
 {
 	DSTACK(__FUNCTION_NAME);
 	
 	Player* player = m_env->getPlayer(peer_id);
 	assert(player);
-	ServerRemotePlayer *srp = static_cast<ServerRemotePlayer*>(player);
 
+	// Get a preview for crafting
+	ItemStack preview;
 	// No crafting in creative mode
-	if(g_settings->getBool("creative_mode"))
-		return;
-	
-	// Get the InventoryLists of the player in which we will operate
-	InventoryList *clist = player->inventory.getList("craft");
-	assert(clist);
-	InventoryList *rlist = player->inventory.getList("craftresult");
-	assert(rlist);
-	InventoryList *mlist = player->inventory.getList("main");
-	assert(mlist);
+	if(g_settings->getBool("creative_mode") == false)
+		getCraftingResult(&player->inventory, preview, false, this);
 
-	// If the result list is not a preview and is not empty, try to
-	// throw the item into main list
-	if(!player->craftresult_is_preview && rlist->getUsedSlots() != 0)
-	{
-		// Grab item out of craftresult
-		ItemStack item = rlist->changeItem(0, ItemStack());
-		// Try to put in main
-		ItemStack leftover = mlist->addItem(item);
-		// If there are leftovers, put them back to craftresult
-		rlist->addItem(leftover);
-		// Inventory was modified
-		srp->m_inventory_not_sent = true;
-	}
-	
-	// If result list is empty, we will make it preview what would be
-	// crafted
-	if(rlist->getUsedSlots() == 0)
-		player->craftresult_is_preview = true;
-	
-	// If it is a preview, find out what is the crafting result
-	// and put it in
-	if(player->craftresult_is_preview)
-	{
-		// Clear the possible old preview in it
-		rlist->clearItems();
-
-		// Put the new preview in
-		ItemStack crafting_result;
-		if(GetCraftingResult(peer_id, crafting_result, false))
-			rlist->addItem(crafting_result);
-	}
+	// Put the new preview in
+	InventoryList *plist = player->inventory.getList("craftpreview");
+	assert(plist);
+	assert(plist->getSize() >= 1);
+	plist->changeItem(0, preview);
 }
 
 RemoteClient* Server::getClient(u16 peer_id)

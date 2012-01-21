@@ -155,8 +155,6 @@ public:
 	// Actual inventory is backed up here when creative mode is used
 	Inventory *inventory_backup;
 
-	bool craftresult_is_preview;
-
 	u16 hp;
 
 	u16 peer_id;

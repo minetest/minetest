@@ -137,7 +137,9 @@ public:
 	
 	ItemSpec getItemAtPos(v2s32 p) const;
 	void drawList(const ListDrawSpec &s, int phase);
+	void drawSelectedItem();
 	void drawMenu();
+	void updateSelectedItem();
 
 	bool OnEvent(const SEvent& event);
 	
@@ -160,6 +162,9 @@ protected:
 	core::array<ListDrawSpec> m_draw_spec;
 
 	ItemSpec *m_selected_item;
+	u32 m_selected_amount;
+	bool m_selected_dragging;
+
 	v2s32 m_pointer;
 	gui::IGUIStaticText *m_tooltip_element;
 };

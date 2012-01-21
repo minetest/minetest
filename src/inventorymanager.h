@@ -92,6 +92,7 @@ public:
 
 #define IACTION_MOVE 0
 #define IACTION_DROP 1
+#define IACTION_CRAFT 2
 
 struct InventoryAction
 {
@@ -99,7 +100,8 @@ struct InventoryAction
 	
 	virtual u16 getType() const = 0;
 	virtual void serialize(std::ostream &os) const = 0;
-	virtual void apply(InventoryManager *mgr, ServerActiveObject *player) = 0;
+	virtual void apply(InventoryManager *mgr, ServerActiveObject *player,
+			IGameDef *gamedef) = 0;
 };
 
 struct IMoveAction : public InventoryAction
@@ -139,7 +141,7 @@ struct IMoveAction : public InventoryAction
 		os<<to_i;
 	}
 
-	void apply(InventoryManager *mgr, ServerActiveObject *player);
+	void apply(InventoryManager *mgr, ServerActiveObject *player, IGameDef *gamedef);
 };
 
 struct IDropAction : public InventoryAction
@@ -172,8 +174,40 @@ struct IDropAction : public InventoryAction
 		os<<from_i;
 	}
 
-	void apply(InventoryManager *mgr, ServerActiveObject *player);
+	void apply(InventoryManager *mgr, ServerActiveObject *player, IGameDef *gamedef);
 };
+
+struct ICraftAction : public InventoryAction
+{
+	// count=0 means "everything"
+	u16 count;
+	InventoryLocation craft_inv;
+	
+	ICraftAction()
+	{
+		count = 0;
+	}
+	
+	ICraftAction(std::istream &is);
+
+	u16 getType() const
+	{
+		return IACTION_CRAFT;
+	}
+
+	void serialize(std::ostream &os) const
+	{
+		os<<"Craft ";
+		os<<count<<" ";
+		os<<craft_inv.dump()<<" ";
+	}
+
+	void apply(InventoryManager *mgr, ServerActiveObject *player, IGameDef *gamedef);
+};
+
+// Crafting helper
+bool getCraftingResult(Inventory *inv, ItemStack& result,
+		bool decrementInput, IGameDef *gamedef);
 
 #endif
 
