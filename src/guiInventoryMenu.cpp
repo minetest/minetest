@@ -537,6 +537,11 @@ bool GUIInventoryMenu::OnEvent(const SEvent& event)
 				s.i = -1;  // make it invalid again
 		}
 
+		bool identical = (m_selected_item != NULL) && s.isValid() &&
+			(inv_selected == inv_s) &&
+			(m_selected_item->listname == s.listname) &&
+			(m_selected_item->i == s.i);
+
 		// buttons: 0 = left, 1 = right, 2 = middle
 		// up/down: 0 = down (press), 1 = up (release), 2 = unknown event
 		int button = 0;
@@ -602,13 +607,26 @@ bool GUIInventoryMenu::OnEvent(const SEvent& event)
 
 				if(s.isValid())
 				{
-					// Clicked another slot: move
+					// Clicked a slot: move
 					if(button == 1)  // right
 						move_amount = 1;
 					else if(button == 2)  // middle
 						move_amount = MYMIN(m_selected_amount, 10);
 					else  // left
 						move_amount = m_selected_amount;
+					dstream << "move_amount=" << move_amount<<"\n";
+					dstream << "m_selected_amount=" << m_selected_amount<<"\n";
+
+					if(identical)
+					{
+						if(move_amount >= m_selected_amount)
+							m_selected_amount = 0;
+						else
+							m_selected_amount -= move_amount;
+						move_amount = 0;
+					}
+					dstream << "move_amount=" << move_amount<<"\n";
+					dstream << "m_selected_amount=" << m_selected_amount<<"\n";
 				}
 				else if(getAbsoluteClippingRect().isPointInside(m_pointer))
 				{
@@ -636,9 +654,7 @@ bool GUIInventoryMenu::OnEvent(const SEvent& event)
 
 			if(m_selected_item != NULL && m_selected_dragging && s.isValid())
 			{
-				if((inv_selected != inv_s) ||
-					(m_selected_item->listname != s.listname) ||
-					(m_selected_item->i != s.i))
+				if(!identical)
 				{
 					// Dragged to different slot: move all selected
 					move_amount = m_selected_amount;
@@ -675,18 +691,19 @@ bool GUIInventoryMenu::OnEvent(const SEvent& event)
 			if(leftover.count == stack_from.count)
 			{
 				// Swap the stacks
+				m_selected_amount -= stack_to.count;
 			}
 			else if(leftover.empty())
 			{
 				// Item fits
+				m_selected_amount -= move_amount;
 			}
 			else
 			{
 				// Item only fits partially
 				move_amount -= leftover.count;
+				m_selected_amount -= move_amount;
 			}
-			assert(move_amount > 0 && move_amount <= m_selected_amount);
-			m_selected_amount -= move_amount;
 
 			infostream<<"Handing IACTION_MOVE to manager"<<std::endl;
 			IMoveAction *a = new IMoveAction();
@@ -741,6 +758,7 @@ bool GUIInventoryMenu::OnEvent(const SEvent& event)
 		{
 			delete m_selected_item;
 			m_selected_item = NULL;
+			m_selected_amount = 0;
 			m_selected_dragging = false;
 		}
 	}

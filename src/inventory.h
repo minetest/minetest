@@ -233,6 +233,10 @@ public:
 	// Similar to takeItem, but keeps the slot intact.
 	ItemStack peekItem(u32 i, u32 peekcount) const;
 
+	// Move an item to a different list (or a different stack in the same list)
+	// count is the maximum number of items to move (0 for everything)
+	void moveItem(u32 i, InventoryList *dest, u32 dest_i, u32 count = 0);
+
 private:
 	std::vector<ItemStack> m_items;
 	u32 m_size;

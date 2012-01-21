@@ -102,6 +102,7 @@ struct InventoryAction
 	virtual void serialize(std::ostream &os) const = 0;
 	virtual void apply(InventoryManager *mgr, ServerActiveObject *player,
 			IGameDef *gamedef) = 0;
+	virtual void clientApply(InventoryManager *mgr, IGameDef *gamedef) = 0;
 };
 
 struct IMoveAction : public InventoryAction
@@ -142,6 +143,8 @@ struct IMoveAction : public InventoryAction
 	}
 
 	void apply(InventoryManager *mgr, ServerActiveObject *player, IGameDef *gamedef);
+
+	void clientApply(InventoryManager *mgr, IGameDef *gamedef);
 };
 
 struct IDropAction : public InventoryAction
@@ -175,6 +178,8 @@ struct IDropAction : public InventoryAction
 	}
 
 	void apply(InventoryManager *mgr, ServerActiveObject *player, IGameDef *gamedef);
+
+	void clientApply(InventoryManager *mgr, IGameDef *gamedef);
 };
 
 struct ICraftAction : public InventoryAction
@@ -203,6 +208,8 @@ struct ICraftAction : public InventoryAction
 	}
 
 	void apply(InventoryManager *mgr, ServerActiveObject *player, IGameDef *gamedef);
+
+	void clientApply(InventoryManager *mgr, IGameDef *gamedef);
 };
 
 // Crafting helper

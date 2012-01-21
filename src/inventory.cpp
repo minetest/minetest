@@ -733,6 +733,49 @@ ItemStack InventoryList::peekItem(u32 i, u32 peekcount) const
 	return m_items[i].peekItem(peekcount);
 }
 
+void InventoryList::moveItem(u32 i, InventoryList *dest, u32 dest_i, u32 count)
+{
+	if(this == dest && i == dest_i)
+		return;
+
+	// Take item from source list
+	ItemStack item1;
+	if(count == 0)
+		item1 = changeItem(i, ItemStack());
+	else
+		item1 = takeItem(i, count);
+
+	if(item1.empty())
+		return;
+
+	// Try to add the item to destination list
+	u32 oldcount = item1.count;
+	item1 = dest->addItem(dest_i, item1);
+
+	// If something is returned, the item was not fully added
+	if(!item1.empty())
+	{
+		// If olditem is returned, nothing was added.
+		bool nothing_added = (item1.count == oldcount);
+
+		// If something else is returned, part of the item was left unadded.
+		// Add the other part back to the source item
+		addItem(i, item1);
+
+		// If olditem is returned, nothing was added.
+		// Swap the items
+		if(nothing_added)
+		{
+			// Take item from source list
+			item1 = changeItem(i, ItemStack());
+			// Adding was not possible, swap the items.
+			ItemStack item2 = dest->changeItem(dest_i, item1);
+			// Put item from destination list to the source list
+			changeItem(i, item2);
+		}
+	}
+}
+
 /*
 	Inventory
 */

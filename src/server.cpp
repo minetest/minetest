@@ -2373,6 +2373,11 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 		}
 
 		/*
+			Note: Always set inventory not sent, to repair cases
+			where the client made a bad prediction.
+		*/
+
+		/*
 			Handle restrictions and special cases of the move action
 		*/
 		if(a->getType() == IACTION_MOVE)
@@ -2381,6 +2386,9 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 
 			ma->from_inv.applyCurrentPlayer(player->getName());
 			ma->to_inv.applyCurrentPlayer(player->getName());
+
+			setInventoryModified(ma->from_inv);
+			setInventoryModified(ma->to_inv);
 
 			bool from_inv_is_current_player =
 				(ma->from_inv.type == InventoryLocation::PLAYER) &&
@@ -2461,6 +2469,8 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 
 			da->from_inv.applyCurrentPlayer(player->getName());
 
+			setInventoryModified(da->from_inv);
+
 			// Disallow dropping items if not allowed to interact
 			if((getPlayerPrivs(player) & PRIV_INTERACT) == 0)
 			{
@@ -2489,6 +2499,8 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 			ICraftAction *ca = (ICraftAction*)a;
 
 			ca->craft_inv.applyCurrentPlayer(player->getName());
+
+			setInventoryModified(ca->craft_inv);
 
 			//bool craft_inv_is_current_player =
 			//	(ca->craft_inv.type == InventoryLocation::PLAYER) &&

@@ -367,6 +367,8 @@ private:
 	u8 m_server_ser_ver;
 	u16 m_playeritem;
 	bool m_inventory_updated;
+	Inventory *m_inventory_from_server;
+	float m_inventory_from_server_age;
 	core::map<v3s16, bool> m_active_blocks;
 	PacketCounter m_packetcounter;
 	// Received from the server. 0-23999

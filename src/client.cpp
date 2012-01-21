@@ -225,6 +225,8 @@ Client::Client(
 	m_server_ser_ver(SER_FMT_VER_INVALID),
 	m_playeritem(0),
 	m_inventory_updated(false),
+	m_inventory_from_server(NULL),
+	m_inventory_from_server_age(0.0),
 	m_time_of_day(0),
 	m_map_seed(0),
 	m_password(password),
@@ -269,6 +271,8 @@ Client::~Client()
 	m_mesh_update_thread.setRun(false);
 	while(m_mesh_update_thread.IsRunning())
 		sleep_ms(100);
+
+	delete m_inventory_from_server;
 }
 
 void Client::connect(Address address)
@@ -657,6 +661,30 @@ void Client::step(float dtime)
 			}
 		}
 	}
+
+	/*
+		If the server didn't update the inventory in a while, revert
+		the local inventory (so the player notices the lag problem
+		and knows something is wrong).
+	*/
+	if(m_inventory_from_server)
+	{
+		float interval = 10.0;
+		float count_before = floor(m_inventory_from_server_age / interval);
+
+		m_inventory_from_server_age += dtime;
+
+		float count_after = floor(m_inventory_from_server_age / interval);
+
+		if(count_after != count_before)
+		{
+			// Do this every <interval> seconds after TOCLIENT_INVENTORY
+			// Reset the locally changed inventory to the authoritative inventory
+			Player *player = m_env.getLocalPlayer();
+			player->inventory = *m_inventory_from_server;
+			m_inventory_updated = true;
+		}
+	}
 }
 
 // Virtual methods from con::PeerHandler
@@ -974,6 +1002,10 @@ void Client::ProcessData(u8 *data, u32 datasize, u16 sender_peer_id)
 			//t1.stop();
 
 			m_inventory_updated = true;
+
+			delete m_inventory_from_server;
+			m_inventory_from_server = new Inventory(player->inventory);
+			m_inventory_from_server_age = 0.0;
 
 			//infostream<<"Client got player inventory:"<<std::endl;
 			//player->inventory.print(infostream);
@@ -1931,7 +1963,15 @@ Inventory* Client::getInventory(const InventoryLocation &loc)
 }
 void Client::inventoryAction(InventoryAction *a)
 {
+	/*
+		Send it to the server
+	*/
 	sendInventoryAction(a);
+
+	/*
+		Predict some local inventory changes
+	*/
+	a->clientApply(this, this);
 }
 
 ClientActiveObject * Client::getSelectedActiveObject(

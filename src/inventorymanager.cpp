@@ -133,6 +133,10 @@ InventoryAction * InventoryAction::deSerialize(std::istream &is)
 	return a;
 }
 
+/*
+	IMoveAction
+*/
+
 IMoveAction::IMoveAction(std::istream &is)
 {
 	std::string ts;
@@ -193,59 +197,13 @@ void IMoveAction::apply(InventoryManager *mgr, ServerActiveObject *player, IGame
 				<<", to_list=\""<<to_list<<"\""<<std::endl;
 		return;
 	}
-	if(list_from->getItem(from_i).empty())
-	{
-		infostream<<"IMoveAction::apply(): FAIL: source item not found: "
-				<<"from_inv=\""<<from_inv.dump()<<"\""
-				<<", from_list=\""<<from_list<<"\""
-				<<" from_i="<<from_i<<std::endl;
-		return;
-	}
 	/*
-		If the source and the destination slots are the same
+		This performs the actual movement
+
+		If something is wrong (source item is empty, destination is the
+		same as source), nothing happens
 	*/
-	if(inv_from == inv_to && list_from == list_to && from_i == to_i)
-	{
-		infostream<<"IMoveAction::apply(): FAIL: source and destination slots "
-				<<"are the same: inv=\""<<from_inv.dump()
-				<<"\" list=\""<<from_list
-				<<"\" i="<<from_i<<std::endl;
-		return;
-	}
-	
-	// Take item from source list
-	ItemStack item1;
-	if(count == 0)
-		item1 = list_from->changeItem(from_i, ItemStack());
-	else
-		item1 = list_from->takeItem(from_i, count);
-
-	// Try to add the item to destination list
-	int oldcount = item1.count;
-	item1 = list_to->addItem(to_i, item1);
-
-	// If something is returned, the item was not fully added
-	if(!item1.empty())
-	{
-		// If olditem is returned, nothing was added.
-		bool nothing_added = (item1.count == oldcount);
-		
-		// If something else is returned, part of the item was left unadded.
-		// Add the other part back to the source item
-		list_from->addItem(from_i, item1);
-
-		// If olditem is returned, nothing was added.
-		// Swap the items
-		if(nothing_added)
-		{
-			// Take item from source list
-			item1 = list_from->changeItem(from_i, ItemStack());
-			// Adding was not possible, swap the items.
-			ItemStack item2 = list_to->changeItem(to_i, item1);
-			// Put item from destination list to the source list
-			list_from->changeItem(from_i, item2);
-		}
-	}
+	list_from->moveItem(from_i, list_to, to_i, count);
 
 	mgr->setInventoryModified(from_inv);
 	if(inv_from != inv_to)
@@ -261,6 +219,38 @@ void IMoveAction::apply(InventoryManager *mgr, ServerActiveObject *player, IGame
 			<<" i="<<to_i
 			<<std::endl;
 }
+
+void IMoveAction::clientApply(InventoryManager *mgr, IGameDef *gamedef)
+{
+	// Optional InventoryAction operation that is run on the client
+	// to make lag less apparent.
+
+	Inventory *inv_from = mgr->getInventory(from_inv);
+	Inventory *inv_to = mgr->getInventory(to_inv);
+	if(!inv_from || !inv_to)
+		return;
+
+	InventoryLocation current_player;
+	current_player.setCurrentPlayer();
+	Inventory *inv_player = mgr->getInventory(current_player);
+	if(inv_from != inv_player || inv_to != inv_player)
+		return;
+
+	InventoryList *list_from = inv_from->getList(from_list);
+	InventoryList *list_to = inv_to->getList(to_list);
+	if(!list_from || !list_to)
+		return;
+
+	list_from->moveItem(from_i, list_to, to_i, count);
+
+	mgr->setInventoryModified(from_inv);
+	if(inv_from != inv_to)
+		mgr->setInventoryModified(to_inv);
+}
+
+/*
+	IDropAction
+*/
 
 IDropAction::IDropAction(std::istream &is)
 {
@@ -338,6 +328,37 @@ void IDropAction::apply(InventoryManager *mgr, ServerActiveObject *player, IGame
 			<<std::endl;
 }
 
+void IDropAction::clientApply(InventoryManager *mgr, IGameDef *gamedef)
+{
+	// Optional InventoryAction operation that is run on the client
+	// to make lag less apparent.
+
+	Inventory *inv_from = mgr->getInventory(from_inv);
+	if(!inv_from)
+		return;
+
+	InventoryLocation current_player;
+	current_player.setCurrentPlayer();
+	Inventory *inv_player = mgr->getInventory(current_player);
+	if(inv_from != inv_player)
+		return;
+
+	InventoryList *list_from = inv_from->getList(from_list);
+	if(!list_from)
+		return;
+
+	if(count == 0)
+		list_from->changeItem(from_i, ItemStack());
+	else
+		list_from->takeItem(from_i, count);
+
+	mgr->setInventoryModified(from_inv);
+}
+
+/*
+	ICraftAction
+*/
+
 ICraftAction::ICraftAction(std::istream &is)
 {
 	std::string ts;
@@ -410,6 +431,12 @@ void ICraftAction::apply(InventoryManager *mgr, ServerActiveObject *player, IGam
 	infostream<<"ICraftAction::apply(): crafted "
 			<<" craft_inv=\""<<craft_inv.dump()<<"\""
 			<<std::endl;
+}
+
+void ICraftAction::clientApply(InventoryManager *mgr, IGameDef *gamedef)
+{
+	// Optional InventoryAction operation that is run on the client
+	// to make lag less apparent.
 }
 
 
