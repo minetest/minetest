@@ -64,11 +64,18 @@ elseif(UNIX) # Linux, BSD etc
 	set(BINDIR "bin")
 	set(DOCDIR "share/doc/${PROJECT_NAME}")
 	set(EXAMPLE_CONF_DIR "share/doc/${PROJECT_NAME}")
+	set(XDG_APPS_DIR "share/applications")
+	set(ICONDIR "share/icons")
 endif()
 
 install(FILES "README.txt" DESTINATION "${DOCDIR}")
 install(FILES "doc/changelog.txt" DESTINATION "${DOCDIR}")
 install(FILES "minetest.conf.example" DESTINATION "${DOCDIR}")
+
+if(UNIX)
+	install(FILES "misc/minetest.desktop" DESTINATION "${XDG_APPS_DIR}")
+	install(FILES "minetest-icon.svg" DESTINATION "${ICONDIR}/hicolor/scalable/apps")
+endif()
 
 #
 # Subdirectories
