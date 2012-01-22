@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2012-01-14 09:32+0200\n"
-"PO-Revision-Date: 2012-01-19 09:05+0200\n"
+"PO-Revision-Date: 2012-01-22 18:25+0200\n"
 "Last-Translator: Juhani Numminen <juhaninumminen0@gmail.com>\n"
 "Language-Team: Finnish\n"
 "Language: fi\n"
@@ -63,11 +63,11 @@ msgstr "Pudota"
 
 #: src/guiKeyChangeMenu.cpp:224
 msgid "Inventory"
-msgstr ""
+msgstr "Inventory"
 
 #: src/guiKeyChangeMenu.cpp:240
 msgid "Chat"
-msgstr ""
+msgstr "Chat"
 
 #: src/guiKeyChangeMenu.cpp:254
 msgid "Command"
@@ -212,8 +212,8 @@ msgid ""
 msgstr ""
 "Oletusnäppäimet:\n"
 "- WASD: kävele\n"
-"- Hiiren vasen painike: kaiva/iske\n"
-"- Hiiren oikea painike: aseta/käytä\n"
+"- Hiiri vasen: kaiva/iske\n"
+"- Hiiri oikea: aseta/käytä\n"
 "- Hiiren rulla: valitse tavara\n"
 "- 0...9: valitse tavara\n"
 "- Shift: hiivi\n"
@@ -248,11 +248,11 @@ msgstr "Tyhjennä"
 
 #: src/keycode.cpp:222
 msgid "Return"
-msgstr ""
+msgstr "Enter"
 
 #: src/keycode.cpp:222
 msgid "Tab"
-msgstr ""
+msgstr "Tab"
 
 #: src/keycode.cpp:222
 msgid "X Button 2"
@@ -260,7 +260,7 @@ msgstr ""
 
 #: src/keycode.cpp:223
 msgid "Capital"
-msgstr ""
+msgstr "Caps Lock"
 
 #: src/keycode.cpp:223
 msgid "Control"
@@ -324,11 +324,11 @@ msgstr ""
 
 #: src/keycode.cpp:225
 msgid "Next"
-msgstr ""
+msgstr "Page Up"
 
 #: src/keycode.cpp:225
 msgid "Prior"
-msgstr ""
+msgstr "Page Down"
 
 #: src/keycode.cpp:225
 msgid "Space"
@@ -455,7 +455,6 @@ msgid "Left Shift"
 msgstr "Vasen Shift"
 
 #: src/keycode.cpp:238
-#, fuzzy
 msgid "Right Shift"
 msgstr "Oikea Shift"
 
@@ -465,7 +464,7 @@ msgstr "Vasen Control"
 
 #: src/keycode.cpp:239
 msgid "Left Menu"
-msgstr ""
+msgstr "Vasen Menu"
 
 #: src/keycode.cpp:239
 msgid "Right Control"
@@ -473,7 +472,7 @@ msgstr "Oikea Control"
 
 #: src/keycode.cpp:239
 msgid "Right Menu"
-msgstr ""
+msgstr "Oikea Menu"
 
 #: src/keycode.cpp:241
 msgid "Comma"
