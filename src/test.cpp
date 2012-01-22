@@ -215,6 +215,8 @@ struct TestSerialization
 			mkstr("\1\0") + teststring2_w_encoded);
 		assert(serializeLongString(teststring2) ==
 			mkstr("\0\0\1\0") + teststring2);
+		// MSVC fails when directly using "\\\\"
+		std::string backslash = "\\";
 		assert(serializeJsonString(teststring2) ==
 			mkstr("\"") +
 			"\\u0000\\u0001\\u0002\\u0003\\u0004\\u0005\\u0006\\u0007" +
@@ -223,7 +225,7 @@ struct TestSerialization
 			"\\u0018\\u0019\\u001a\\u001b\\u001c\\u001d\\u001e\\u001f" +
 			" !\\\"" + teststring2.substr(0x23, 0x2f-0x23) +
 			"\\/" + teststring2.substr(0x30, 0x5c-0x30) +
-			"\\\\" + teststring2.substr(0x5d, 0x7f-0x5d) + "\\u007f" +
+			backslash + backslash + teststring2.substr(0x5d, 0x7f-0x5d) + "\\u007f" +
 			"\\u0080\\u0081\\u0082\\u0083\\u0084\\u0085\\u0086\\u0087" +
 			"\\u0088\\u0089\\u008a\\u008b\\u008c\\u008d\\u008e\\u008f" +
 			"\\u0090\\u0091\\u0092\\u0093\\u0094\\u0095\\u0096\\u0097" +
