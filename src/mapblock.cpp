@@ -1157,28 +1157,24 @@ void MapBlock::deSerialize_pre22(std::istream &is, u8 version, bool disk)
 		if(nodedef->getId("default:stone") == data[i].getContent()
 				&& data[i].getParam1() == 1)
 		{
-			//dstream << "legacy coal\n";
 			data[i].setContent(nodedef->getId("default:stone_with_coal"));
 			data[i].setParam1(0);
 		}
 		else if(nodedef->getId("default:stone") == data[i].getContent()
 				&& data[i].getParam1() == 2)
 		{
-			//dstream << "legacy iron\n";
 			data[i].setContent(nodedef->getId("default:stone_with_iron"));
 			data[i].setParam1(0);
 		}
 		// facedir_simple
 		if(f.legacy_facedir_simple)
 		{
-			dstream << "legacy_facedir_simple\n";
 			data[i].setParam2(data[i].getParam1());
 			data[i].setParam1(0);
 		}
 		// wall_mounted
 		if(f.legacy_wallmounted)
 		{
-			dstream << "legacy_wallmounted\n";
 			u8 wallmounted_new_to_old[8] = {0x04, 0x08, 0x01, 0x02, 0x10, 0x20, 0, 0};
 			u8 dir_old_format = data[i].getParam2();
 			u8 dir_new_format = 0;

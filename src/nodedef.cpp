@@ -394,6 +394,8 @@ public:
 				def.param_type_2 == CPT2_FULL
 				||
 				def.param_type_2 == CPT2_FLOWINGLIQUID
+				||
+				def.legacy_wallmounted
 			);
 			// Get some id
 			id = getFreeId(require_full_param2);

@@ -291,31 +291,31 @@ void MapNode::serialize_pre22(u8 *dest, u8 version)
 	// Translate to wanted version
 	MapNode n_foreign = mapnode_translate_from_internal(*this, version);
 
-	u16 actual_content = n_foreign.param0;
+	u8 actual_param0 = n_foreign.param0;
 
 	// Convert special values from new version to old
 	if(version <= 18)
 	{
 		// In these versions, CONTENT_IGNORE and CONTENT_AIR
 		// are 255 and 254
-		if(actual_content == CONTENT_IGNORE)
-			actual_content = 255;
-		else if(actual_content == CONTENT_AIR)
-			actual_content = 254;
+		if(actual_param0 == CONTENT_IGNORE)
+			actual_param0 = 255;
+		else if(actual_param0 == CONTENT_AIR)
+			actual_param0 = 254;
 	}
 
 	if(version == 0)
 	{
-		dest[0] = actual_content;
+		dest[0] = actual_param0;
 	}
 	else if(version <= 9)
 	{
-		dest[0] = actual_content;
+		dest[0] = actual_param0;
 		dest[1] = n_foreign.param1;
 	}
 	else
 	{
-		dest[0] = actual_content;
+		dest[0] = actual_param0;
 		dest[1] = n_foreign.param1;
 		dest[2] = n_foreign.param2;
 	}
