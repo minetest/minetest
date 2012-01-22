@@ -251,6 +251,7 @@ void ItemStack::deSerialize(std::istream &is, IItemDefManager *itemdef)
 		count = 1;
 		// Then read wear
 		fnd.skip_over(" ");
+		name = itemdef->getAlias(name);
 		wear = stoi(trim(fnd.next("")));
 	}
 	else
