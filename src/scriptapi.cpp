@@ -888,11 +888,11 @@ static ContentFeatures read_content_features(lua_State *L, int index)
 	warn_if_field_exists(L, index, "light_propagates",
 			"deprecated: determined from paramtype");
 	warn_if_field_exists(L, index, "dug_item",
-			"deprecated: use 'drops' field");
+			"deprecated: use 'drop' field");
 	warn_if_field_exists(L, index, "extra_dug_item",
-			"deprecated: use 'drops' field");
+			"deprecated: use 'drop' field");
 	warn_if_field_exists(L, index, "extra_dug_item_rarity",
-			"deprecated: use 'drops' field");
+			"deprecated: use 'drop' field");
 	
 	// True for all ground-like things like stone and mud, false for eg. trees
 	getboolfield(L, index, "is_ground_content", f.is_ground_content);
