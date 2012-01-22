@@ -614,8 +614,6 @@ bool GUIInventoryMenu::OnEvent(const SEvent& event)
 						move_amount = MYMIN(m_selected_amount, 10);
 					else  // left
 						move_amount = m_selected_amount;
-					dstream << "move_amount=" << move_amount<<"\n";
-					dstream << "m_selected_amount=" << m_selected_amount<<"\n";
 
 					if(identical)
 					{
@@ -625,8 +623,6 @@ bool GUIInventoryMenu::OnEvent(const SEvent& event)
 							m_selected_amount -= move_amount;
 						move_amount = 0;
 					}
-					dstream << "move_amount=" << move_amount<<"\n";
-					dstream << "m_selected_amount=" << m_selected_amount<<"\n";
 				}
 				else if(getAbsoluteClippingRect().isPointInside(m_pointer))
 				{
