@@ -156,10 +156,6 @@ void Player::deSerialize(std::istream &is)
 	setPitch(args.getFloat("pitch"));
 	setYaw(args.getFloat("yaw"));
 	setPosition(args.getV3F("position"));
-	bool craftresult_is_preview = true;
-	try{
-		craftresult_is_preview = args.getBool("craftresult_is_preview");
-	}catch(SettingNotFoundException &e){}
 	try{
 		hp = args.getS32("hp");
 	}catch(SettingNotFoundException &e){
@@ -173,6 +169,9 @@ void Player::deSerialize(std::istream &is)
 		// Convert players without craftpreview
 		inventory.addList("craftpreview", 1);
 
+		bool craftresult_is_preview = true;
+		if(args.exists("craftresult_is_preview"))
+			craftresult_is_preview = args.getBool("craftresult_is_preview");
 		if(craftresult_is_preview)
 		{
 			// Clear craftresult

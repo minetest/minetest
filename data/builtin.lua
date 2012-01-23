@@ -159,7 +159,6 @@ function minetest.get_node_drops(nodename, toolname)
 	local drop = ItemStack({name=nodename}):get_definition().drop
 	if drop == nil then
 		-- default drop
-		print("default drop: " .. nodename)
 		return {ItemStack({name=nodename})}
 	elseif type(drop) == "string" then
 		-- itemstring drop
