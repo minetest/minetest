@@ -34,7 +34,6 @@ ServerRemotePlayer::ServerRemotePlayer(ServerEnvironment *env):
 	m_wield_index(0),
 	m_inventory_not_sent(false),
 	m_hp_not_sent(false),
-	m_respawn_active(false),
 	m_is_in_environment(false),
 	m_time_from_last_punch(0),
 	m_position_not_sent(false)
@@ -159,6 +158,8 @@ std::string ServerRemotePlayer::getClientInitializationData()
 	writeV3F1000(os, getPosition());
 	// yaw
 	writeF1000(os, getYaw());
+	// dead
+	writeU8(os, getHP() == 0);
 	return os.str();
 }
 
@@ -247,6 +248,19 @@ void ServerRemotePlayer::setHP(s16 hp_)
 
 	if(hp != oldhp)
 		m_hp_not_sent = true;
+
+	// On death or reincarnation send an active object message
+	if((hp == 0) != (oldhp == 0))
+	{
+		std::ostringstream os(std::ios::binary);
+		// command (2 = update death state)
+		writeU8(os, 2);
+		// dead?
+		writeU8(os, hp == 0);
+		// create message and add to list
+		ActiveObjectMessage aom(getId(), false, os.str());
+		m_messages_out.push_back(aom);
+	}
 }
 s16 ServerRemotePlayer::getHP()
 {

@@ -713,14 +713,17 @@ void LocalPlayer::applyControl(float dtime)
 		}
 		else if(touching_ground)
 		{
-			v3f speed = getSpeed();
 			/*
 				NOTE: The d value in move() affects jump height by
 				raising the height at which the jump speed is kept
 				at its starting value
 			*/
-			speed.Y = 6.5*BS;
-			setSpeed(speed);
+			v3f speed = getSpeed();
+			if(speed.Y >= -0.5*BS)
+			{
+				speed.Y = 6.5*BS;
+				setSpeed(speed);
+			}
 		}
 		// Use the oscillating value for getting out of water
 		// (so that the player doesn't fly on the surface)

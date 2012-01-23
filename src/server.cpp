@@ -1270,7 +1270,8 @@ void Server::AsyncRunStep()
 			/*
 				Handle player HPs (die if hp=0)
 			*/
-			HandlePlayerHP(player, 0);
+			if(player->hp == 0 && player->m_hp_not_sent)
+				DiePlayer(player);
 
 			/*
 				Send player inventories and HPs if necessary
@@ -1284,9 +1285,9 @@ void Server::AsyncRunStep()
 			}
 
 			/*
-				Add to environment if is not in respawn screen
+				Add to environment
 			*/
-			if(!player->m_is_in_environment && !player->m_respawn_active){
+			if(!player->m_is_in_environment){
 				player->m_removed = false;
 				player->setId(0);
 				m_env->addActiveObject(player);
@@ -2129,6 +2130,10 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 		// Send HP
 		SendPlayerHP(player);
 		
+		// Show death screen if necessary
+		if(player->hp == 0)
+			SendDeathscreen(m_con, player->peer_id, false, v3f(0,0,0));
+
 		// Send time of day
 		{
 			SharedBuffer<u8> data = makePacket_TOCLIENT_TIME_OF_DAY(
@@ -2158,11 +2163,6 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 		{
 			SendChatMessage(peer_id, L"# Server: WARNING: YOUR CLIENT IS OLD AND MAY WORK PROPERLY WITH THIS SERVER");
 		}
-
-		/*
-			Check HP, respawn if necessary
-		*/
-		HandlePlayerHP(player, 0);
 
 		/*
 			Print out action
@@ -2662,16 +2662,25 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 		std::istringstream is(datastring, std::ios_base::binary);
 		u8 damage = readU8(is);
 
+		ServerRemotePlayer *srp = static_cast<ServerRemotePlayer*>(player);
+
 		if(g_settings->getBool("enable_damage"))
 		{
 			actionstream<<player->getName()<<" damaged by "
 					<<(int)damage<<" hp at "<<PP(player->getPosition()/BS)
 					<<std::endl;
-				
-			HandlePlayerHP(player, damage);
+
+			srp->setHP(srp->getHP() - damage);
+
+			if(srp->getHP() == 0 && srp->m_hp_not_sent)
+				DiePlayer(srp);
+
+			if(srp->m_hp_not_sent)
+				SendPlayerHP(player);
 		}
 		else
 		{
+			// Force send (to correct the client's predicted HP)
 			SendPlayerHP(player);
 		}
 	}
@@ -2751,8 +2760,6 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 		if(player->hp != 0)
 			return;
 		
-		srp->m_respawn_active = false;
-
 		RespawnPlayer(player);
 		
 		actionstream<<player->getName()<<" respawns at "
@@ -2810,6 +2817,13 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 		pointed.deSerialize(tmp_is);
 
 		infostream<<"TOSERVER_INTERACT: action="<<(int)action<<", item="<<item_i<<", pointed="<<pointed.dump()<<std::endl;
+
+		if(player->hp == 0)
+		{
+			infostream<<"TOSERVER_INTERACT: "<<srp->getName()
+				<<" tried to interact, but is dead!"<<std::endl;
+			return;
+		}
 
 		v3f player_pos = srp->m_last_good_position;
 
@@ -3968,26 +3982,14 @@ void Server::SendTexturesRequested(u16 peer_id,core::list<TextureRequest> tosend
 	Something random
 */
 
-void Server::HandlePlayerHP(Player *player, s16 damage)
+void Server::DiePlayer(Player *player)
 {
 	ServerRemotePlayer *srp = static_cast<ServerRemotePlayer*>(player);
 
-	if(srp->m_respawn_active)
-		return;
-	
-	if(player->hp > damage)
-	{
-		if(damage != 0){
-			player->hp -= damage;
-			SendPlayerHP(player);
-		}
-		return;
-	}
-
-	infostream<<"Server::HandlePlayerHP(): Player "
+	infostream<<"Server::DiePlayer(): Player "
 			<<player->getName()<<" dies"<<std::endl;
 	
-	player->hp = 0;
+	srp->setHP(0);
 	
 	// Trigger scripted stuff
 	scriptapi_on_dieplayer(m_lua, srp);
@@ -3999,24 +4001,13 @@ void Server::HandlePlayerHP(Player *player, s16 damage)
 	}
 
 	SendPlayerHP(player);
-	
-	RemoteClient *client = getClient(player->peer_id);
-	if(client->net_proto_version >= 3)
-	{
-		SendDeathscreen(m_con, player->peer_id, false, v3f(0,0,0));
-		srp->m_removed = true;
-		srp->m_respawn_active = true;
-	}
-	else
-	{
-		RespawnPlayer(player);
-	}
+	SendDeathscreen(m_con, player->peer_id, false, v3f(0,0,0));
 }
 
 void Server::RespawnPlayer(Player *player)
 {
-	player->hp = 20;
 	ServerRemotePlayer *srp = static_cast<ServerRemotePlayer*>(player);
+	srp->setHP(20);
 	bool repositioned = scriptapi_on_respawnplayer(m_lua, srp);
 	if(!repositioned){
 		v3f pos = findSpawnPos(m_env->getServerMap());
@@ -4268,6 +4259,14 @@ ServerRemotePlayer *Server::emergePlayer(const char *name, u16 peer_id)
 		// Got one.
 		player->peer_id = peer_id;
 		
+		// Re-add player to environment
+		if(player->m_removed)
+		{
+			player->m_removed = false;
+			player->setId(0);
+			m_env->addActiveObject(player);
+		}
+
 		// Reset inventory to creative if in creative mode
 		if(g_settings->getBool("creative_mode"))
 		{
@@ -4305,12 +4304,13 @@ ServerRemotePlayer *Server::emergePlayer(const char *name, u16 peer_id)
 		v3f pos = findSpawnPos(m_env->getServerMap());
 
 		player = new ServerRemotePlayer(m_env, pos, peer_id, name);
+		ServerRemotePlayer *srp = static_cast<ServerRemotePlayer*>(player);
 
 		/* Add player to environment */
 		m_env->addPlayer(player);
+		m_env->addActiveObject(srp);
 
 		/* Run scripts */
-		ServerRemotePlayer *srp = static_cast<ServerRemotePlayer*>(player);
 		scriptapi_on_newplayer(m_lua, srp);
 
 		/* Add stuff to inventory */

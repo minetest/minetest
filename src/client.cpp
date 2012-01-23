@@ -1171,8 +1171,18 @@ void Client::ProcessData(u8 *data, u32 datasize, u16 sender_peer_id)
 		std::istringstream is(datastring, std::ios_base::binary);
 		Player *player = m_env.getLocalPlayer();
 		assert(player != NULL);
+		u8 oldhp = player->hp;
 		u8 hp = readU8(is);
 		player->hp = hp;
+
+		if(hp < oldhp)
+		{
+			// Add to ClientEvent queue
+			ClientEvent event;
+			event.type = CE_PLAYER_DAMAGE;
+			event.player_damage.amount = oldhp - hp;
+			m_client_event_queue.push_back(event);
+		}
 	}
 	else if(command == TOCLIENT_MOVE_PLAYER)
 	{

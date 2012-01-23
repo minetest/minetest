@@ -2067,6 +2067,7 @@ private:
 	bool m_is_local_player;
 	LocalPlayer *m_local_player;
 	float m_damage_visual_timer;
+	bool m_dead;
 
 public:
 	PlayerCAO(IGameDef *gamedef, ClientEnvironment *env):
@@ -2078,7 +2079,8 @@ public:
 		m_yaw(0),
 		m_is_local_player(false),
 		m_local_player(NULL),
-		m_damage_visual_timer(0)
+		m_damage_visual_timer(0),
+		m_dead(false)
 	{
 		if(gamedef == NULL)
 			ClientActiveObject::registerType(getType(), create);
@@ -2100,6 +2102,8 @@ public:
 		m_position = readV3F1000(is);
 		// yaw
 		m_yaw = readF1000(is);
+		// dead
+		m_dead = readU8(is);
 
 		pos_translator.init(m_position);
 
@@ -2128,6 +2132,8 @@ public:
 	core::aabbox3d<f32>* getSelectionBox()
 	{
 		if(m_is_local_player)
+			return NULL;
+		if(m_dead)
 			return NULL;
 		return &m_selection_box;
 	}
@@ -2204,6 +2210,7 @@ public:
 		m_text->setPosition(v3f(0, (f32)BS*2.1, 0));
 		
 		updateTextures("");
+		updateVisibility();
 		updateNodePos();
 	}
 
@@ -2221,16 +2228,24 @@ public:
 		if(m_node == NULL)
 			return;
 		
-		m_node->setVisible(true);
-
 		u8 li = decode_light(light_at_pos);
 		video::SColor color(255,li,li,li);
 		setMeshColor(m_node->getMesh(), color);
+
+		updateVisibility();
 	}
 
 	v3s16 getLightPosition()
 	{
 		return floatToInt(m_position+v3f(0,BS*1.5,0), BS);
+	}
+
+	void updateVisibility()
+	{
+		if(m_node == NULL)
+			return;
+
+		m_node->setVisible(!m_dead);
 	}
 
 	void updateNodePos()
@@ -2248,6 +2263,7 @@ public:
 	void step(float dtime, ClientEnvironment *env)
 	{
 		pos_translator.translate(dtime);
+		updateVisibility();
 		updateNodePos();
 
 		if(m_damage_visual_timer > 0){
@@ -2279,12 +2295,15 @@ public:
 		{
 			// damage
 			s16 damage = readS16(is);
-			
-			if(m_is_local_player)
-				m_env->damageLocalPlayer(damage, false);
-			
-			m_damage_visual_timer = 0.5;
+			m_damage_visual_timer = 0.05;
+			if(damage >= 2)
+				m_damage_visual_timer += 0.05 * damage;
 			updateTextures("^[brighten");
+		}
+		else if(cmd == 2) // died or respawned
+		{
+			m_dead = readU8(is);
+			updateVisibility();
 		}
 	}
 

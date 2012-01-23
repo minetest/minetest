@@ -90,7 +90,6 @@ public:
 	int m_wield_index;
 	bool m_inventory_not_sent;
 	bool m_hp_not_sent;
-	bool m_respawn_active;
 	bool m_is_in_environment;
 	// Incremented by step(), read and reset by Server
 	float m_time_from_last_punch;

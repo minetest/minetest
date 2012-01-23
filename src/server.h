@@ -592,7 +592,7 @@ private:
 		Something random
 	*/
 	
-	void HandlePlayerHP(Player *player, s16 damage);
+	void DiePlayer(Player *player);
 	void RespawnPlayer(Player *player);
 	
 	void UpdateCrafting(u16 peer_id);
