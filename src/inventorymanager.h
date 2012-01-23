@@ -103,6 +103,7 @@ struct InventoryAction
 	virtual void apply(InventoryManager *mgr, ServerActiveObject *player,
 			IGameDef *gamedef) = 0;
 	virtual void clientApply(InventoryManager *mgr, IGameDef *gamedef) = 0;
+	virtual ~InventoryAction() {};
 };
 
 struct IMoveAction : public InventoryAction

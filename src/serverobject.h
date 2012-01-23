@@ -42,7 +42,7 @@ Some planning
 */
 
 class ServerEnvironment;
-class ItemStack;
+struct ItemStack;
 class Player;
 struct ToolDiggingProperties;
 

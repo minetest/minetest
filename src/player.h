@@ -30,7 +30,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 class Map;
 class IGameDef;
-class CollisionInfo;
+struct CollisionInfo;
 
 class Player
 {

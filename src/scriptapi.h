@@ -30,7 +30,7 @@ class ServerActiveObject;
 class ServerRemotePlayer;
 typedef struct lua_State lua_State;
 struct LuaEntityProperties;
-class ItemStack;
+struct ItemStack;
 struct PointedThing;
 //class IGameDef;
 
