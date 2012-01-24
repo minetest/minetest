@@ -1201,7 +1201,7 @@ struct TestConnection
 			
 			server.Send(peer_id_client, 0, data1, true);
 
-			sleep_ms(3000);
+			//sleep_ms(3000);
 			
 			SharedBuffer<u8> recvdata;
 			infostream<<"** running client.Receive()"<<std::endl;
@@ -1210,7 +1210,7 @@ struct TestConnection
 			bool received = false;
 			u32 timems0 = porting::getTimeMs();
 			for(;;){
-				if(porting::getTimeMs() - timems0 > 5000)
+				if(porting::getTimeMs() - timems0 > 5000 || received)
 					break;
 				try{
 					size = client.Receive(peer_id, recvdata);
