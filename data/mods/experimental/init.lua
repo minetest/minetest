@@ -4,6 +4,8 @@
 
 -- For testing random stuff
 
+experimental = {}
+
 function on_step(dtime)
 	-- print("experimental on_step")
 	--[[
@@ -18,6 +20,26 @@ function on_step(dtime)
 		else
 			print("Some object at "..dump(obj:getpos()))
 		end
+	end
+	--]]
+	--[[
+	if experimental.t1 == nil then
+		experimental.t1 = 0
+	end
+	experimental.t1 = experimental.t1 + dtime
+	if experimental.t1 >= 2 then
+		experimental.t1 = experimental.t1 - 2
+		minetest.log("time of day is "..minetest.env:get_timeofday())
+		if experimental.day then
+			minetest.log("forcing day->night")
+			experimental.day = false
+			minetest.env:set_timeofday(0.0)
+		else
+			minetest.log("forcing night->day")
+			experimental.day = true
+			minetest.env:set_timeofday(0.5)
+		end
+		minetest.log("time of day is "..minetest.env:get_timeofday())
 	end
 	--]]
 end

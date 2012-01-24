@@ -2913,6 +2913,38 @@ private:
 		return 1;
 	}
 
+	// EnvRef:set_timeofday(val)
+	// val = 0...1
+	static int l_set_timeofday(lua_State *L)
+	{
+		EnvRef *o = checkobject(L, 1);
+		ServerEnvironment *env = o->m_env;
+		if(env == NULL) return 0;
+		// Do it
+		float timeofday_f = luaL_checknumber(L, 2);
+		assert(timeofday_f >= 0.0 && timeofday_f <= 1.0);
+		int timeofday_mh = (int)(timeofday_f * 24000.0);
+		// This should be set directly in the environment but currently
+		// such changes aren't immediately sent to the clients, so call
+		// the server instead.
+		//env->setTimeOfDay(timeofday_mh);
+		get_server(L)->setTimeOfDay(timeofday_mh);
+		return 0;
+	}
+
+	// EnvRef:get_timeofday() -> 0...1
+	static int l_get_timeofday(lua_State *L)
+	{
+		EnvRef *o = checkobject(L, 1);
+		ServerEnvironment *env = o->m_env;
+		if(env == NULL) return 0;
+		// Do it
+		int timeofday_mh = env->getTimeOfDay();
+		float timeofday_f = (float)timeofday_mh / 24000.0;
+		lua_pushnumber(L, timeofday_f);
+		return 1;
+	}
+
 	static int gc_object(lua_State *L) {
 		EnvRef *o = *(EnvRef **)(lua_touserdata(L, 1));
 		delete o;
@@ -2990,6 +3022,8 @@ const luaL_reg EnvRef::methods[] = {
 	method(EnvRef, get_meta),
 	method(EnvRef, get_player_by_name),
 	method(EnvRef, get_objects_inside_radius),
+	method(EnvRef, set_timeofday),
+	method(EnvRef, get_timeofday),
 	{0,0}
 };
 

@@ -114,10 +114,10 @@
 -- minetest.chat_send_player(name, text)
 -- minetest.get_player_privs(name) -> set of privs
 -- minetest.get_inventory(location) -> InvRef
--- minetest.get_current_modname() -> string
--- minetest.get_modpath(modname) -> eg. "/home/user/.minetest/usermods/modname"
 -- ^ location = eg. {type="player", name="celeron55"}
 --                  {type="node", pos={x=, y=, z=}}
+-- minetest.get_current_modname() -> string
+-- minetest.get_modpath(modname) -> eg. "/home/user/.minetest/usermods/modname"
 --
 -- minetest.debug(line)
 -- ^ Goes to dstream
@@ -169,6 +169,8 @@
 -- - get_meta(pos) -- Get a NodeMetaRef at that position
 -- - get_player_by_name(name) -- Get an ObjectRef to a player
 -- - get_objects_inside_radius(pos, radius)
+-- - set_timeofday(val): val: 0...1; 0 = midnight, 0.5 = midday
+-- - get_timeofday()
 --
 -- NodeMetaRef (this stuff is subject to change in a future version)
 -- - get_type()
