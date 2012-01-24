@@ -84,7 +84,7 @@ void set_default_settings(Settings *settings)
 	// Server stuff
 	// "map-dir" doesn't exist by default.
 	settings->setDefault("motd", "");
-	settings->setDefault("max_users", "20");
+	settings->setDefault("max_users", "100");
 	settings->setDefault("strict_protocol_version_checking", "true");
 	settings->setDefault("creative_mode", "false");
 	settings->setDefault("enable_damage", "true");
