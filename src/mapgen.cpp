@@ -1491,23 +1491,34 @@ void make_block(BlockMakeData *data)
 
 	assert(data->vmanip);
 	assert(data->nodedef);
+	assert(data->blockpos_requested.X >= data->blockpos_min.X &&
+			data->blockpos_requested.Y >= data->blockpos_min.Y &&
+			data->blockpos_requested.Z >= data->blockpos_min.Z);
+	assert(data->blockpos_requested.X <= data->blockpos_max.X &&
+			data->blockpos_requested.Y <= data->blockpos_max.Y &&
+			data->blockpos_requested.Z <= data->blockpos_max.Z);
 
 	INodeDefManager *ndef = data->nodedef;
 
-	v3s16 blockpos = data->blockpos;
+	// Hack: use minimum block coordinates for old code that assumes
+	// a single block
+	v3s16 blockpos = data->blockpos_min;
 	
 	/*dstream<<"makeBlock(): ("<<blockpos.X<<","<<blockpos.Y<<","
 			<<blockpos.Z<<")"<<std::endl;*/
 
+	v3s16 blockpos_min = data->blockpos_min;
+	v3s16 blockpos_max = data->blockpos_max;
+	v3s16 blockpos_full_min = blockpos_min - v3s16(1,1,1);
+	v3s16 blockpos_full_max = blockpos_max + v3s16(1,1,1);
+	
 	ManualMapVoxelManipulator &vmanip = *(data->vmanip);
-	v3s16 blockpos_min = blockpos - v3s16(1,1,1);
-	v3s16 blockpos_max = blockpos + v3s16(1,1,1);
 	// Area of center block
-	v3s16 node_min = blockpos*MAP_BLOCKSIZE;
-	v3s16 node_max = (blockpos+v3s16(1,1,1))*MAP_BLOCKSIZE-v3s16(1,1,1);
+	v3s16 node_min = blockpos_min*MAP_BLOCKSIZE;
+	v3s16 node_max = (blockpos_max+v3s16(1,1,1))*MAP_BLOCKSIZE-v3s16(1,1,1);
 	// Full allocated area
-	v3s16 full_node_min = (blockpos-1)*MAP_BLOCKSIZE;
-	v3s16 full_node_max = (blockpos+2)*MAP_BLOCKSIZE-v3s16(1,1,1);
+	v3s16 full_node_min = (blockpos_min-1)*MAP_BLOCKSIZE;
+	v3s16 full_node_max = (blockpos_max+2)*MAP_BLOCKSIZE-v3s16(1,1,1);
 	// Area of a block
 	double block_area_nodes = MAP_BLOCKSIZE*MAP_BLOCKSIZE;
 

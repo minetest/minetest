@@ -690,6 +690,9 @@ void Map::updateLighting(enum LightBank bank,
 	core::map<v3s16, bool> light_sources;
 
 	core::map<v3s16, u8> unlight_from;
+	
+	{
+	//TimeTaker t("first stuff");
 
 	core::map<v3s16, MapBlock*>::Iterator i;
 	i = a_blocks.getIterator();
@@ -704,6 +707,7 @@ void Map::updateLighting(enum LightBank bank,
 				break;
 
 			v3s16 pos = block->getPos();
+			v3s16 posnodes = block->getPosRelative();
 			modified_blocks.insert(pos, block);
 
 			blocks_to_update.insert(pos, block);
@@ -718,20 +722,17 @@ void Map::updateLighting(enum LightBank bank,
 
 				try{
 					v3s16 p(x,y,z);
-					MapNode n = block->getNode(v3s16(x,y,z));
+					MapNode n = block->getNode(p);
 					u8 oldlight = n.getLight(bank, nodemgr);
 					n.setLight(bank, 0, nodemgr);
-					block->setNode(v3s16(x,y,z), n);
+					block->setNode(p, n);
 
 					// Collect borders for unlighting
 					if(x==0 || x == MAP_BLOCKSIZE-1
 					|| y==0 || y == MAP_BLOCKSIZE-1
 					|| z==0 || z == MAP_BLOCKSIZE-1)
 					{
-						v3s16 p_map = p + v3s16(
-								MAP_BLOCKSIZE*pos.X,
-								MAP_BLOCKSIZE*pos.Y,
-								MAP_BLOCKSIZE*pos.Z);
+						v3s16 p_map = p + posnodes;
 						unlight_from.insert(p_map, oldlight);
 					}
 				}
@@ -782,6 +783,8 @@ void Map::updateLighting(enum LightBank bank,
 			}
 
 		}
+	}
+
 	}
 	
 	/*
@@ -2048,12 +2051,19 @@ void ServerMap::initBlockMake(mapgen::BlockMakeData *data, v3s16 blockpos)
 {
 	bool enable_mapgen_debug_info = g_settings->getBool("enable_mapgen_debug_info");
 	if(enable_mapgen_debug_info)
-		infostream<<"initBlockMake(): ("<<blockpos.X<<","<<blockpos.Y<<","
-				<<blockpos.Z<<")"<<std::endl;
+		infostream<<"initBlockMake(): "
+				<<"("<<blockpos.X<<","<<blockpos.Y<<","<<blockpos.Z<<") - "
+				<<"("<<blockpos.X<<","<<blockpos.Y<<","<<blockpos.Z<<")"
+				<<std::endl;
+	
+	s16 chunksize = 3;
+	v3s16 blockpos_div = getContainerPos(blockpos, chunksize);
+	v3s16 blockpos_min = blockpos_div * chunksize;
+	v3s16 blockpos_max = blockpos_div * chunksize + v3s16(1,1,1)*(chunksize-1);
 	
 	// Do nothing if not inside limits (+-1 because of neighbors)
-	if(blockpos_over_limit(blockpos - v3s16(1,1,1)) ||
-		blockpos_over_limit(blockpos + v3s16(1,1,1)))
+	if(blockpos_over_limit(blockpos_min - v3s16(1,1,1)) ||
+		blockpos_over_limit(blockpos_max + v3s16(1,1,1)))
 	{
 		data->no_op = true;
 		return;
@@ -2061,7 +2071,9 @@ void ServerMap::initBlockMake(mapgen::BlockMakeData *data, v3s16 blockpos)
 	
 	data->no_op = false;
 	data->seed = m_seed;
-	data->blockpos = blockpos;
+	data->blockpos_min = blockpos_min;
+	data->blockpos_max = blockpos_max;
+	data->blockpos_requested = blockpos;
 	data->nodedef = m_gamedef->ndef();
 
 	/*
@@ -2070,17 +2082,17 @@ void ServerMap::initBlockMake(mapgen::BlockMakeData *data, v3s16 blockpos)
 	{
 		//TimeTaker timer("initBlockMake() create area");
 		
-		for(s16 x=-1; x<=1; x++)
-		for(s16 z=-1; z<=1; z++)
+		for(s16 x=blockpos_min.X-1; x<=blockpos_max.X+1; x++)
+		for(s16 z=blockpos_min.Z-1; z<=blockpos_max.Z+1; z++)
 		{
-			v2s16 sectorpos(blockpos.X+x, blockpos.Z+z);
+			v2s16 sectorpos(x, z);
 			// Sector metadata is loaded from disk if not already loaded.
 			ServerMapSector *sector = createSector(sectorpos);
 			assert(sector);
 
-			for(s16 y=-1; y<=1; y++)
+			for(s16 y=blockpos_min.Y-1; y<=blockpos_max.Y+1; y++)
 			{
-				v3s16 p(blockpos.X+x, blockpos.Y+y, blockpos.Z+z);
+				v3s16 p(x,y,z);
 				//MapBlock *block = createBlock(p);
 				// 1) get from memory, 2) load from disk
 				MapBlock *block = emergeBlock(p, false);
@@ -2114,8 +2126,8 @@ void ServerMap::initBlockMake(mapgen::BlockMakeData *data, v3s16 blockpos)
 	*/
 	
 	// The area that contains this block and it's neighbors
-	v3s16 bigarea_blocks_min = blockpos - v3s16(1,1,1);
-	v3s16 bigarea_blocks_max = blockpos + v3s16(1,1,1);
+	v3s16 bigarea_blocks_min = blockpos_min - v3s16(1,1,1);
+	v3s16 bigarea_blocks_max = blockpos_max + v3s16(1,1,1);
 	
 	data->vmanip = new ManualMapVoxelManipulator(this);
 	//data->vmanip->setMap(this);
@@ -2132,9 +2144,12 @@ void ServerMap::initBlockMake(mapgen::BlockMakeData *data, v3s16 blockpos)
 MapBlock* ServerMap::finishBlockMake(mapgen::BlockMakeData *data,
 		core::map<v3s16, MapBlock*> &changed_blocks)
 {
-	v3s16 blockpos = data->blockpos;
-	/*infostream<<"finishBlockMake(): ("<<blockpos.X<<","<<blockpos.Y<<","
-			<<blockpos.Z<<")"<<std::endl;*/
+	v3s16 blockpos_min = data->blockpos_min;
+	v3s16 blockpos_max = data->blockpos_max;
+	v3s16 blockpos_requested = data->blockpos_requested;
+	/*infostream<<"finishBlockMake(): ("<<blockpos_requested.X<<","
+			<<blockpos_requested.Y<<","
+			<<blockpos_requested.Z<<")"<<std::endl;*/
 
 	if(data->no_op)
 	{
@@ -2148,11 +2163,11 @@ MapBlock* ServerMap::finishBlockMake(mapgen::BlockMakeData *data,
 	data->vmanip.print(infostream);*/
 
 	// Make sure affected blocks are loaded
-	for(s16 x=-1; x<=1; x++)
-	for(s16 z=-1; z<=1; z++)
-	for(s16 y=-1; y<=1; y++)
+	for(s16 x=blockpos_min.X-1; x<=blockpos_max.X+1; x++)
+	for(s16 z=blockpos_min.Z-1; z<=blockpos_max.Z+1; z++)
+	for(s16 y=blockpos_min.Y-1; y<=blockpos_max.Y+1; y++)
 	{
-		v3s16 p(blockpos.X+x, blockpos.Y+y, blockpos.Z+z);
+		v3s16 p(x, y, z);
 		// Load from disk if not already in memory
 		emergeBlock(p, false);
 	}
@@ -2179,83 +2194,30 @@ MapBlock* ServerMap::finishBlockMake(mapgen::BlockMakeData *data,
 		v3s16 p = data->transforming_liquid.pop_front();
 		m_transforming_liquid.push_back(p);
 	}
-	
-	/*
-		Get central block
-	*/
-	MapBlock *block = getBlockNoCreateNoEx(data->blockpos);
-	assert(block);
 
 	/*
-		Set is_underground flag for lighting with sunlight.
-
-		Refer to map generator heuristics.
-
-		NOTE: This is done in initChunkMake
-	*/
-	//block->setIsUnderground(mapgen::block_is_underground(data->seed, blockpos));
-
-
-	/*
-		Add sunlight to central block.
-		This makes in-dark-spawning monsters to not flood the whole thing.
-		Do not spread the light, though.
-	*/
-	/*core::map<v3s16, bool> light_sources;
-	bool black_air_left = false;
-	block->propagateSunlight(light_sources, true, &black_air_left);*/
-
-	/*
-		NOTE: Lighting and object adding shouldn't really be here, but
-		lighting is a bit tricky to move properly to makeBlock.
-		TODO: Do this the right way anyway, that is, move it to makeBlock.
-		      - There needs to be some way for makeBlock to report back if
-			    the lighting update is going further down because of the
-				new block blocking light
+		Do stuff in central blocks
 	*/
 
 	/*
 		Update lighting
-		NOTE: This takes ~60ms, TODO: Investigate why
 	*/
 	{
 		TimeTaker t("finishBlockMake lighting update");
 
 		core::map<v3s16, MapBlock*> lighting_update_blocks;
-#if 1
-		// Center block
-		lighting_update_blocks.insert(block->getPos(), block);
-
-		/*{
-			s16 x = 0;
-			s16 z = 0;
-			v3s16 p = block->getPos()+v3s16(x,1,z);
-			lighting_update_blocks[p] = getBlockNoCreateNoEx(p);
-		}*/
-#endif
-#if 0
-		// All modified blocks
-		// NOTE: Should this be done? If this is not done, then the lighting
-		// of the others will be updated in a different place, one by one, i
-		// think... or they might not? Well, at least they are left marked as
-		// "lighting expired"; it seems that is not handled at all anywhere,
-		// so enabling this will slow it down A LOT because otherwise it
-		// would not do this at all. This causes the black trees.
-		for(core::map<v3s16, MapBlock*>::Iterator
-				i = changed_blocks.getIterator();
-				i.atEnd() == false; i++)
+		
+		// Center blocks
+		for(s16 x=blockpos_min.X; x<=blockpos_max.X; x++)
+		for(s16 z=blockpos_min.Z; z<=blockpos_max.Z; z++)
+		for(s16 y=blockpos_min.Y; y<=blockpos_max.Y; y++)
 		{
-			lighting_update_blocks.insert(i.getNode()->getKey(),
-					i.getNode()->getValue());
+			v3s16 p(x, y, z);
+			MapBlock *block = getBlockNoCreateNoEx(p);
+			assert(block);
+			lighting_update_blocks.insert(block->getPos(), block);
 		}
-		/*// Also force-add all the upmost blocks for proper sunlight
-		for(s16 x=-1; x<=1; x++)
-		for(s16 z=-1; z<=1; z++)
-		{
-			v3s16 p = block->getPos()+v3s16(x,1,z);
-			lighting_update_blocks[p] = getBlockNoCreateNoEx(p);
-		}*/
-#endif
+
 		updateLighting(lighting_update_blocks, changed_blocks);
 		
 		/*
@@ -2263,11 +2225,11 @@ MapBlock* ServerMap::finishBlockMake(mapgen::BlockMakeData *data,
 			This is cheating, but it is not fast enough if all of them
 			would actually be updated.
 		*/
-		for(s16 x=-1; x<=1; x++)
-		for(s16 y=-1; y<=1; y++)
-		for(s16 z=-1; z<=1; z++)
+		for(s16 x=blockpos_min.X-1; x<=blockpos_max.X+1; x++)
+		for(s16 z=blockpos_min.Z-1; z<=blockpos_max.Z+1; z++)
+		for(s16 y=blockpos_min.Y-1; y<=blockpos_max.Y+1; y++)
 		{
-			v3s16 p = block->getPos()+v3s16(x,y,z);
+			v3s16 p(x, y, z);
 			getBlockNoCreateNoEx(p)->setLightingExpired(false);
 		}
 
@@ -2275,11 +2237,21 @@ MapBlock* ServerMap::finishBlockMake(mapgen::BlockMakeData *data,
 			t.stop(true); // Hide output
 	}
 
-	/*
-		Add random objects to block
-	*/
-	mapgen::add_random_objects(block);
+	// Center blocks
+	for(s16 x=blockpos_min.X; x<=blockpos_max.X; x++)
+	for(s16 z=blockpos_min.Z; z<=blockpos_max.Z; z++)
+	for(s16 y=blockpos_min.Y; y<=blockpos_max.Y; y++)
+	{
+		v3s16 p(x, y, z);
+		MapBlock *block = getBlockNoCreateNoEx(p);
+		assert(block);
 
+		/*
+			Add random objects to block
+		*/
+		mapgen::add_random_objects(block);
+	}
+	
 	/*
 		Go through changed blocks
 	*/
@@ -2300,9 +2272,17 @@ MapBlock* ServerMap::finishBlockMake(mapgen::BlockMakeData *data,
 	}
 
 	/*
-		Set central block as generated
+		Set central blocks as generated
 	*/
-	block->setGenerated(true);
+	for(s16 x=blockpos_min.X; x<=blockpos_max.X; x++)
+	for(s16 z=blockpos_min.Z; z<=blockpos_max.Z; z++)
+	for(s16 y=blockpos_min.Y; y<=blockpos_max.Y; y++)
+	{
+		v3s16 p(x, y, z);
+		MapBlock *block = getBlockNoCreateNoEx(p);
+		assert(block);
+		block->setGenerated(true);
+	}
 	
 	/*
 		Save changed parts of map
@@ -2310,19 +2290,23 @@ MapBlock* ServerMap::finishBlockMake(mapgen::BlockMakeData *data,
 	*/
 	//save(MOD_STATE_WRITE_AT_UNLOAD);
 
-	/*infostream<<"finishBlockMake() done for ("<<blockpos.X<<","<<blockpos.Y<<","
-			<<blockpos.Z<<")"<<std::endl;*/
+	/*infostream<<"finishBlockMake() done for ("<<blockpos_requested.X
+			<<","<<blockpos_requested.Y<<","
+			<<blockpos_requested.Z<<")"<<std::endl;*/
 #if 0
 	if(enable_mapgen_debug_info)
 	{
 		/*
 			Analyze resulting blocks
 		*/
-		for(s16 x=-1; x<=1; x++)
-		for(s16 y=-1; y<=1; y++)
-		for(s16 z=-1; z<=1; z++)
+		/*for(s16 x=blockpos_min.X-1; x<=blockpos_max.X+1; x++)
+		for(s16 z=blockpos_min.Z-1; z<=blockpos_max.Z+1; z++)
+		for(s16 y=blockpos_min.Y-1; y<=blockpos_max.Y+1; y++)*/
+		for(s16 x=blockpos_min.X-0; x<=blockpos_max.X+0; x++)
+		for(s16 z=blockpos_min.Z-0; z<=blockpos_max.Z+0; z++)
+		for(s16 y=blockpos_min.Y-0; y<=blockpos_max.Y+0; y++)
 		{
-			v3s16 p = block->getPos()+v3s16(x,y,z);
+			v3s16 p = v3s16(x,y,z);
 			MapBlock *block = getBlockNoCreateNoEx(p);
 			char spos[20];
 			snprintf(spos, 20, "(%2d,%2d,%2d)", x, y, z);
@@ -2331,6 +2315,9 @@ MapBlock* ServerMap::finishBlockMake(mapgen::BlockMakeData *data,
 		}
 	}
 #endif
+
+	MapBlock *block = getBlockNoCreateNoEx(blockpos_requested);
+	assert(block);
 
 	return block;
 }

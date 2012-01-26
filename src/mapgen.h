@@ -58,7 +58,9 @@ namespace mapgen
 		bool no_op;
 		ManualMapVoxelManipulator *vmanip; // Destructor deletes
 		u64 seed;
-		v3s16 blockpos;
+		v3s16 blockpos_min;
+		v3s16 blockpos_max;
+		v3s16 blockpos_requested;
 		UniqueQueue<v3s16> transforming_liquid;
 		INodeDefManager *nodedef;
 
