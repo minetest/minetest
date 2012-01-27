@@ -2076,10 +2076,13 @@ void ServerMap::initBlockMake(mapgen::BlockMakeData *data, v3s16 blockpos)
 				<<"("<<blockpos.X<<","<<blockpos.Y<<","<<blockpos.Z<<")"
 				<<std::endl;
 	
-	s16 chunksize = 2;
-	v3s16 blockpos_div = getContainerPos(blockpos, chunksize);
+	s16 chunksize = 3;
+	v3s16 chunk_offset(-1,-1,-1);
+	v3s16 blockpos_div = getContainerPos(blockpos - chunk_offset, chunksize);
 	v3s16 blockpos_min = blockpos_div * chunksize;
 	v3s16 blockpos_max = blockpos_div * chunksize + v3s16(1,1,1)*(chunksize-1);
+	blockpos_min += chunk_offset;
+	blockpos_max += chunk_offset;
 	
 	// Do nothing if not inside limits (+-1 because of neighbors)
 	if(blockpos_over_limit(blockpos_min - v3s16(1,1,1)) ||
@@ -2223,6 +2226,7 @@ MapBlock* ServerMap::finishBlockMake(mapgen::BlockMakeData *data,
 		Update lighting
 	*/
 	{
+#if 0
 		TimeTaker t("finishBlockMake lighting update");
 
 		core::map<v3s16, MapBlock*> lighting_update_blocks;
@@ -2239,6 +2243,7 @@ MapBlock* ServerMap::finishBlockMake(mapgen::BlockMakeData *data,
 		}
 
 		updateLighting(lighting_update_blocks, changed_blocks);
+#endif
 		
 		/*
 			Set lighting to non-expired state in all of them.
@@ -2253,8 +2258,10 @@ MapBlock* ServerMap::finishBlockMake(mapgen::BlockMakeData *data,
 			getBlockNoCreateNoEx(p)->setLightingExpired(false);
 		}
 
+#if 0
 		if(enable_mapgen_debug_info == false)
 			t.stop(true); // Hide output
+#endif
 	}
 
 	// Center blocks

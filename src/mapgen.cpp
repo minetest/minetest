@@ -27,6 +27,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "nodedef.h"
 #include "content_mapnode.h" // For content_mapnode_get_new_name
 #include "voxelalgorithms.h"
+#include "profiler.h"
+#include "main.h" // For g_profiler
 
 namespace mapgen
 {
@@ -2339,7 +2341,33 @@ void make_block(BlockMakeData *data)
 	/*
 		Calculate lighting
 	*/
+	{
+	ScopeProfiler sp(g_profiler, "EmergeThread: mapgen lighting update",
+			SPT_AVG);
+	VoxelArea a(node_min, node_max);
+	enum LightBank banks[2] = {LIGHTBANK_DAY, LIGHTBANK_NIGHT};
+	for(int i=0; i<2; i++)
+	{
+		enum LightBank bank = banks[i];
 
+		core::map<v3s16, bool> light_sources;
+		core::map<v3s16, u8> unlight_from;
+
+		voxalgo::clearLightAndCollectSources(vmanip, a, bank, ndef,
+				light_sources, unlight_from);
+		
+		// TODO: Get this from elsewhere
+		bool inexistent_top_provides_sunlight = true;
+		voxalgo::SunlightPropagateResult res = voxalgo::propagateSunlight(
+				vmanip, a, inexistent_top_provides_sunlight,
+				light_sources, ndef);
+		// TODO: Do stuff according to bottom_sunlight_valid
+
+		vmanip.unspreadLight(bank, unlight_from, light_sources, ndef);
+
+		vmanip.spreadLight(bank, light_sources, ndef);
+	}
+	}
 }
 
 BlockMakeData::BlockMakeData():
