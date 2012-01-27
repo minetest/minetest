@@ -203,14 +203,20 @@ int main(int argc, char *argv[])
 	
 	// List all allowed options
 	core::map<std::string, ValueSpec> allowed_options;
-	allowed_options.insert("help", ValueSpec(VALUETYPE_FLAG));
+	allowed_options.insert("help", ValueSpec(VALUETYPE_FLAG,
+			"Show allowed options"));
 	allowed_options.insert("config", ValueSpec(VALUETYPE_STRING,
 			"Load configuration from specified file"));
-	allowed_options.insert("port", ValueSpec(VALUETYPE_STRING));
-	allowed_options.insert("disable-unittests", ValueSpec(VALUETYPE_FLAG));
-	allowed_options.insert("enable-unittests", ValueSpec(VALUETYPE_FLAG));
-	allowed_options.insert("map-dir", ValueSpec(VALUETYPE_STRING));
-	allowed_options.insert("info-on-stderr", ValueSpec(VALUETYPE_FLAG));
+	allowed_options.insert("port", ValueSpec(VALUETYPE_STRING,
+			"Set network port (UDP) to use"));
+	allowed_options.insert("disable-unittests", ValueSpec(VALUETYPE_FLAG,
+			"Disable unit tests"));
+	allowed_options.insert("enable-unittests", ValueSpec(VALUETYPE_FLAG,
+			"Enable unit tests"));
+	allowed_options.insert("map-dir", ValueSpec(VALUETYPE_STRING,
+			"Map directory (where everything in the world is stored)"));
+	allowed_options.insert("info-on-stderr", ValueSpec(VALUETYPE_FLAG,
+			"Print debug information to console"));
 
 	Settings cmd_args;
 	

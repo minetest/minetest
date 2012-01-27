@@ -1085,22 +1085,31 @@ int main(int argc, char *argv[])
 	
 	// List all allowed options
 	core::map<std::string, ValueSpec> allowed_options;
-	allowed_options.insert("help", ValueSpec(VALUETYPE_FLAG));
+	allowed_options.insert("help", ValueSpec(VALUETYPE_FLAG,
+			"Show allowed options"));
 	allowed_options.insert("server", ValueSpec(VALUETYPE_FLAG,
 			"Run server directly"));
 	allowed_options.insert("config", ValueSpec(VALUETYPE_STRING,
 			"Load configuration from specified file"));
-	allowed_options.insert("port", ValueSpec(VALUETYPE_STRING));
-	allowed_options.insert("address", ValueSpec(VALUETYPE_STRING));
-	allowed_options.insert("random-input", ValueSpec(VALUETYPE_FLAG));
-	allowed_options.insert("disable-unittests", ValueSpec(VALUETYPE_FLAG));
-	allowed_options.insert("enable-unittests", ValueSpec(VALUETYPE_FLAG));
-	allowed_options.insert("map-dir", ValueSpec(VALUETYPE_STRING));
+	allowed_options.insert("port", ValueSpec(VALUETYPE_STRING,
+			"Set network port to connect to"));
+	allowed_options.insert("address", ValueSpec(VALUETYPE_STRING,
+			"Address to connect to"));
+	allowed_options.insert("random-input", ValueSpec(VALUETYPE_FLAG,
+			"Enable random user input, for testing"));
+	allowed_options.insert("disable-unittests", ValueSpec(VALUETYPE_FLAG,
+			"Disable unit tests"));
+	allowed_options.insert("enable-unittests", ValueSpec(VALUETYPE_FLAG,
+			"Enable unit tests"));
+	allowed_options.insert("map-dir", ValueSpec(VALUETYPE_STRING,
+			"Map directory (where everything in the world is stored)"));
 #ifdef _WIN32
 	allowed_options.insert("dstream-on-stderr", ValueSpec(VALUETYPE_FLAG));
 #endif
-	allowed_options.insert("speedtests", ValueSpec(VALUETYPE_FLAG));
-	allowed_options.insert("info-on-stderr", ValueSpec(VALUETYPE_FLAG));
+	allowed_options.insert("speedtests", ValueSpec(VALUETYPE_FLAG,
+			"Run speed tests"));
+	allowed_options.insert("info-on-stderr", ValueSpec(VALUETYPE_FLAG,
+			"Print debug information to console"));
 
 	Settings cmd_args;
 	
