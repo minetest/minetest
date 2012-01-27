@@ -694,7 +694,7 @@ void Map::updateLighting(enum LightBank bank,
 	int num_bottom_invalid = 0;
 	
 	{
-	TimeTaker t("first stuff");
+	//TimeTaker t("first stuff");
 
 	core::map<v3s16, MapBlock*>::Iterator i;
 	i = a_blocks.getIterator();
@@ -798,8 +798,6 @@ void Map::updateLighting(enum LightBank bank,
 
 	}
 
-	infostream<<"num_bottom_invalid="<<num_bottom_invalid<<std::endl;
-	
 	/*
 		Enable this to disable proper lighting for speeding up map
 		generation for testing or whatever
