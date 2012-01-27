@@ -727,10 +727,16 @@ void Map::updateLighting(enum LightBank bank,
 					n.setLight(bank, 0, nodemgr);
 					block->setNode(p, n);
 
+					// If node sources light, add to list
+					u8 source = nodemgr->get(n).light_source;
+					if(source != 0)
+						light_sources[p + posnodes] = true;
+
 					// Collect borders for unlighting
-					if(x==0 || x == MAP_BLOCKSIZE-1
+					if((x==0 || x == MAP_BLOCKSIZE-1
 					|| y==0 || y == MAP_BLOCKSIZE-1
 					|| z==0 || z == MAP_BLOCKSIZE-1)
+					&& oldlight != 0)
 					{
 						v3s16 p_map = p + posnodes;
 						unlight_from.insert(p_map, oldlight);
@@ -806,38 +812,43 @@ void Map::updateLighting(enum LightBank bank,
 	}
 #endif
 
-#if 0
+#if 1
 	{
-		TimeTaker timer("unspreadLight");
+		//TimeTaker timer("unspreadLight");
 		unspreadLight(bank, unlight_from, light_sources, modified_blocks);
 	}
 
-	if(debug)
+	/*if(debug)
 	{
 		u32 diff = modified_blocks.size() - count_was;
 		count_was = modified_blocks.size();
 		infostream<<"unspreadLight modified "<<diff<<std::endl;
-	}
+	}*/
 
 	{
-		TimeTaker timer("spreadLight");
+		//TimeTaker timer("spreadLight");
 		spreadLight(bank, light_sources, modified_blocks);
 	}
 
-	if(debug)
+	/*if(debug)
 	{
 		u32 diff = modified_blocks.size() - count_was;
 		count_was = modified_blocks.size();
 		infostream<<"spreadLight modified "<<diff<<std::endl;
-	}
+	}*/
 #endif
 
+#if 0
 	{
 		//MapVoxelManipulator vmanip(this);
-
+		
 		// Make a manual voxel manipulator and load all the blocks
 		// that touch the requested blocks
 		ManualMapVoxelManipulator vmanip(this);
+
+		{
+		//TimeTaker timer("initialEmerge");
+
 		core::map<v3s16, MapBlock*>::Iterator i;
 		i = blocks_to_update.getIterator();
 		for(; i.atEnd() == false; i++)
@@ -871,22 +882,24 @@ void Map::updateLighting(enum LightBank bank,
 			// Lighting of block will be updated completely
 			block->setLightingExpired(false);
 		}
+		}
 
 		{
-			//TimeTaker timer("unSpreadLight");
+			TimeTaker timer("unSpreadLight");
 			vmanip.unspreadLight(bank, unlight_from, light_sources, nodemgr);
 		}
 		{
-			//TimeTaker timer("spreadLight");
+			TimeTaker timer("spreadLight");
 			vmanip.spreadLight(bank, light_sources, nodemgr);
 		}
 		{
-			//TimeTaker timer("blitBack");
+			TimeTaker timer("blitBack");
 			vmanip.blitBack(modified_blocks);
 		}
 		/*infostream<<"emerge_time="<<emerge_time<<std::endl;
 		emerge_time = 0;*/
 	}
+#endif
 
 	//m_dout<<"Done ("<<getTimestamp()<<")"<<std::endl;
 }
@@ -2056,7 +2069,7 @@ void ServerMap::initBlockMake(mapgen::BlockMakeData *data, v3s16 blockpos)
 				<<"("<<blockpos.X<<","<<blockpos.Y<<","<<blockpos.Z<<")"
 				<<std::endl;
 	
-	s16 chunksize = 3;
+	s16 chunksize = 2;
 	v3s16 blockpos_div = getContainerPos(blockpos, chunksize);
 	v3s16 blockpos_min = blockpos_div * chunksize;
 	v3s16 blockpos_max = blockpos_div * chunksize + v3s16(1,1,1)*(chunksize-1);
