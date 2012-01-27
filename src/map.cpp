@@ -690,9 +690,11 @@ void Map::updateLighting(enum LightBank bank,
 	core::map<v3s16, bool> light_sources;
 
 	core::map<v3s16, u8> unlight_from;
+
+	int num_bottom_invalid = 0;
 	
 	{
-	//TimeTaker t("first stuff");
+	TimeTaker t("first stuff");
 
 	core::map<v3s16, MapBlock*>::Iterator i;
 	i = a_blocks.getIterator();
@@ -758,6 +760,9 @@ void Map::updateLighting(enum LightBank bank,
 			{
 				bool bottom_valid = block->propagateSunlight(light_sources);
 
+				if(!bottom_valid)
+					num_bottom_invalid++;
+
 				// If bottom is valid, we're done.
 				if(bottom_valid)
 					break;
@@ -792,6 +797,8 @@ void Map::updateLighting(enum LightBank bank,
 	}
 
 	}
+
+	infostream<<"num_bottom_invalid="<<num_bottom_invalid<<std::endl;
 	
 	/*
 		Enable this to disable proper lighting for speeding up map
@@ -885,15 +892,15 @@ void Map::updateLighting(enum LightBank bank,
 		}
 
 		{
-			TimeTaker timer("unSpreadLight");
+			//TimeTaker timer("unSpreadLight");
 			vmanip.unspreadLight(bank, unlight_from, light_sources, nodemgr);
 		}
 		{
-			TimeTaker timer("spreadLight");
+			//TimeTaker timer("spreadLight");
 			vmanip.spreadLight(bank, light_sources, nodemgr);
 		}
 		{
-			TimeTaker timer("blitBack");
+			//TimeTaker timer("blitBack");
 			vmanip.blitBack(modified_blocks);
 		}
 		/*infostream<<"emerge_time="<<emerge_time<<std::endl;

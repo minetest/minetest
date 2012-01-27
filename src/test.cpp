@@ -55,6 +55,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #define CONTENT_STONE 0
 #define CONTENT_GRASS 0x800
+#define CONTENT_TORCH 100
 
 void define_some_nodes(IWritableItemDefManager *idef, IWritableNodeDefManager *ndef)
 {
@@ -103,6 +104,22 @@ void define_some_nodes(IWritableItemDefManager *idef, IWritableNodeDefManager *n
 	for(int i = 2; i < 6; i++)
 		f.tname_tiles[i] = "default_dirt.png^default_grass_side.png";
 	f.is_ground_content = true;
+	idef->registerItem(itemdef);
+	ndef->set(i, f);
+
+	/*
+		Torch (minimal definition for lighting tests)
+	*/
+	i = CONTENT_TORCH;
+	itemdef = ItemDefinition();
+	itemdef.type = ITEM_NODE;
+	itemdef.name = "default:torch";
+	f = ContentFeatures();
+	f.name = itemdef.name;
+	f.param_type = CPT_LIGHT;
+	f.light_propagates = true;
+	f.sunlight_propagates = true;
+	f.light_source = LIGHT_MAX-1;
 	idef->registerItem(itemdef);
 	ndef->set(i, f);
 }
@@ -488,6 +505,9 @@ struct TestVoxelAlgorithms
 {
 	void Run(INodeDefManager *ndef)
 	{
+		/*
+			voxalgo::propagateSunlight
+		*/
 		{
 			VoxelManipulator v;
 			for(u16 z=0; z<3; z++)
@@ -591,6 +611,40 @@ struct TestVoxelAlgorithms
 				voxalgo::SunlightPropagateResult res = voxalgo::propagateSunlight(
 						v, a, true, light_sources, ndef);
 				assert(res.bottom_sunlight_valid == true);
+			}
+		}
+		/*
+			voxalgo::clearLightAndCollectSources
+		*/
+		{
+			VoxelManipulator v;
+			for(u16 z=0; z<3; z++)
+			for(u16 y=0; y<3; y++)
+			for(u16 x=0; x<3; x++)
+			{
+				v3s16 p(x,y,z);
+				v.setNode(p, MapNode(CONTENT_AIR));
+			}
+			VoxelArea a(v3s16(0,0,0), v3s16(2,2,2));
+			v.setNodeNoRef(v3s16(0,0,0), MapNode(CONTENT_STONE));
+			v.setNodeNoRef(v3s16(1,1,1), MapNode(CONTENT_TORCH));
+			{
+				MapNode n(CONTENT_AIR);
+				n.setLight(LIGHTBANK_DAY, 1, ndef);
+				v.setNode(v3s16(1,1,2), n);
+			}
+			{
+				core::map<v3s16, bool> light_sources;
+				core::map<v3s16, u8> unlight_from;
+				voxalgo::clearLightAndCollectSources(v, a, LIGHTBANK_DAY,
+						ndef, light_sources, unlight_from);
+				//v.print(dstream, ndef, VOXELPRINT_LIGHT_DAY);
+				assert(v.getNode(v3s16(0,1,1)).getLight(LIGHTBANK_DAY, ndef)
+						== 0);
+				assert(light_sources.find(v3s16(1,1,1)) != NULL);
+				assert(light_sources.size() == 1);
+				assert(unlight_from.find(v3s16(1,1,2)) != NULL);
+				assert(unlight_from.size() == 1);
 			}
 		}
 	}

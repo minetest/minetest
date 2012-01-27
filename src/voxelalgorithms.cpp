@@ -37,6 +37,42 @@ void setLight(VoxelManipulator &v, VoxelArea a, u8 light,
 	}
 }
 
+void clearLightAndCollectSources(VoxelManipulator &v, VoxelArea a,
+		enum LightBank bank, INodeDefManager *ndef,
+		core::map<v3s16, bool> & light_sources,
+		core::map<v3s16, u8> & unlight_from)
+{
+	// The full area we shall touch
+	VoxelArea required_a = a;
+	required_a.pad(v3s16(0,0,0));
+	// Make sure we have access to it
+	v.emerge(a);
+
+	for(s32 x=a.MinEdge.X; x<=a.MaxEdge.X; x++)
+	for(s32 z=a.MinEdge.Z; z<=a.MaxEdge.Z; z++)
+	for(s32 y=a.MinEdge.Y; y<=a.MaxEdge.Y; y++)
+	{
+		v3s16 p(x,y,z);
+		MapNode &n = v.getNodeRefUnsafe(p);
+		u8 oldlight = n.getLight(bank, ndef);
+		n.setLight(bank, 0, ndef);
+
+		// If node sources light, add to list
+		u8 source = ndef->get(n).light_source;
+		if(source != 0)
+			light_sources[p] = true;
+
+		// Collect borders for unlighting
+		if((x==a.MinEdge.X || x == a.MaxEdge.X
+		|| y==a.MinEdge.Y || y == a.MaxEdge.Y
+		|| z==a.MinEdge.Z || z == a.MaxEdge.Z)
+		&& oldlight != 0)
+		{
+			unlight_from.insert(p, oldlight);
+		}
+	}
+}
+
 SunlightPropagateResult propagateSunlight(VoxelManipulator &v, VoxelArea a,
 		bool inexistent_top_provides_sunlight,
 		core::map<v3s16, bool> & light_sources,
@@ -68,11 +104,6 @@ SunlightPropagateResult propagateSunlight(VoxelManipulator &v, VoxelArea a,
 		else
 			overtop_has_sunlight = (v.getNodeRefUnsafe(p_overtop).getLight(
 					LIGHTBANK_DAY, ndef) == LIGHT_SUN);
-
-		dstream<<"inexistent_top_provides_sunlight="
-				<<inexistent_top_provides_sunlight<<std::endl;
-		dstream<<"v.exists(p_overtop)="
-				<<v.exists(p_overtop)<<std::endl;
 
 		// Copy overtop's sunlight all over the place
 		u8 incoming_light = overtop_has_sunlight ? LIGHT_SUN : 0;

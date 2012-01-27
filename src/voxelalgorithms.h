@@ -21,6 +21,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #define VOXELALGORITHMS_HEADER
 
 #include "voxel.h"
+#include "mapnode.h"
 
 namespace voxalgo
 {
@@ -29,6 +30,11 @@ namespace voxalgo
 
 void setLight(VoxelManipulator &v, VoxelArea a, u8 light,
 		INodeDefManager *ndef);
+
+void clearLightAndCollectSources(VoxelManipulator &v, VoxelArea a,
+		enum LightBank bank, INodeDefManager *ndef,
+		core::map<v3s16, bool> & light_sources,
+		core::map<v3s16, u8> & unlight_from);
 
 struct SunlightPropagateResult
 {
