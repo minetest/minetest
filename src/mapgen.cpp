@@ -1505,7 +1505,7 @@ void make_block(BlockMakeData *data)
 
 	// Hack: use minimum block coordinates for old code that assumes
 	// a single block
-	v3s16 blockpos = data->blockpos_min;
+	v3s16 blockpos = data->blockpos_requested;
 	
 	/*dstream<<"makeBlock(): ("<<blockpos.X<<","<<blockpos.Y<<","
 			<<blockpos.Z<<")"<<std::endl;*/
@@ -1534,6 +1534,8 @@ void make_block(BlockMakeData *data)
 
 	/*
 		Get average ground level from noise
+		TODO: These are currently crap because they assume we are
+		      dealing with a single MapBlock only. Fix them.
 	*/
 	
 	s16 approx_groundlevel = (s16)get_sector_average_ground_level(
@@ -1551,42 +1553,11 @@ void make_block(BlockMakeData *data)
 			data->seed, v2s16(blockpos.X, blockpos.Z), 1);
 	// Maximum amount of ground above the bottom of the central block
 	s16 maximum_ground_depth = maximum_groundlevel - node_min.Y;
-
-	#if 1
-	/*
-		Special case for high air or water: Just fill with air and water.
-	*/
-	if(maximum_ground_depth < -20)
-	{
-		for(s16 x=node_min.X; x<=node_max.X; x++)
-		for(s16 z=node_min.Z; z<=node_max.Z; z++)
-		{
-			// Node position
-			v2s16 p2d(x,z);
-			{
-				// Use fast index incrementing
-				v3s16 em = vmanip.m_area.getExtent();
-				u32 i = vmanip.m_area.index(v3s16(p2d.X, node_min.Y, p2d.Y));
-				for(s16 y=node_min.Y; y<=node_max.Y; y++)
-				{
-					// Only modify places that have no content
-					if(vmanip.m_data[i].getContent() == CONTENT_IGNORE)
-					{
-						if(y <= WATER_LEVEL)
-							vmanip.m_data[i] = MapNode(LEGN(ndef, "CONTENT_WATERSOURCE"));
-						else
-							vmanip.m_data[i] = MapNode(CONTENT_AIR);
-					}
-				
-					data->vmanip->m_area.add_y(em, i, 1);
-				}
-			}
-		}
-		
-		// We're done
-		return;
-	}
-	#endif
+	
+	// Horribly wrong heuristic, but better than nothing
+	bool block_is_underground = (minimum_ground_depth > 
+			MAP_BLOCKSIZE * (data->blockpos_max.X
+					- data->blockpos_min.X + 1) / 2);
 
 	/*
 		If block is deep underground, this is set to true and ground
@@ -2356,8 +2327,7 @@ void make_block(BlockMakeData *data)
 		voxalgo::clearLightAndCollectSources(vmanip, a, bank, ndef,
 				light_sources, unlight_from);
 		
-		// TODO: Get this from elsewhere
-		bool inexistent_top_provides_sunlight = true;
+		bool inexistent_top_provides_sunlight = !block_is_underground;
 		voxalgo::SunlightPropagateResult res = voxalgo::propagateSunlight(
 				vmanip, a, inexistent_top_provides_sunlight,
 				light_sources, ndef);
