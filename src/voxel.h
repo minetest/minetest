@@ -20,7 +20,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #ifndef VOXEL_HEADER
 #define VOXEL_HEADER
 
-#include "common_irrlicht.h"
+#include "irrlichttypes.h"
 #include <iostream>
 #include "debug.h"
 #include "mapnode.h"
@@ -333,6 +333,7 @@ enum VoxelPrintMode
 	VOXELPRINT_NOTHING,
 	VOXELPRINT_MATERIAL,
 	VOXELPRINT_WATERPRESSURE,
+	VOXELPRINT_LIGHT_DAY,
 };
 
 class VoxelManipulator /*: public NodeContainer*/
@@ -394,24 +395,37 @@ public:
 			return MapNode(CONTENT_IGNORE);
 		return m_data[m_area.index(p)];
 	}
+	// Stuff explodes if non-emerged area is touched with this.
+	// Emerge first, and check VOXELFLAG_INEXISTENT if appropriate.
+	MapNode & getNodeRefUnsafe(v3s16 p)
+	{
+		return m_data[m_area.index(p)];
+	}
+	u8 & getFlagsRefUnsafe(v3s16 p)
+	{
+		return m_flags[m_area.index(p)];
+	}
+	bool exists(v3s16 p)
+	{
+		return m_area.contains(p) &&
+			!(getFlagsRefUnsafe(p) & VOXELFLAG_INEXISTENT);
+	}
 	MapNode & getNodeRef(v3s16 p)
 	{
 		emerge(p);
-
-		if(m_flags[m_area.index(p)] & VOXELFLAG_INEXISTENT)
+		if(getFlagsRefUnsafe(p) & VOXELFLAG_INEXISTENT)
 		{
 			/*dstream<<"EXCEPT: VoxelManipulator::getNode(): "
 					<<"p=("<<p.X<<","<<p.Y<<","<<p.Z<<")"
 					<<", index="<<m_area.index(p)
-					<<", flags="<<(int)m_flags[m_area.index(p)]
+					<<", flags="<<(int)getFlagsRefUnsafe(p)
 					<<" is inexistent"<<std::endl;*/
 			throw InvalidPositionException
 			("VoxelManipulator: getNode: inexistent");
 		}
-
-		return m_data[m_area.index(p)];
+		return getNodeRefUnsafe(p);
 	}
-	void setNode(v3s16 p, MapNode &n)
+	void setNode(v3s16 p, const MapNode &n)
 	{
 		emerge(p);
 		
@@ -419,7 +433,8 @@ public:
 		m_flags[m_area.index(p)] &= ~VOXELFLAG_INEXISTENT;
 		m_flags[m_area.index(p)] &= ~VOXELFLAG_NOT_LOADED;
 	}
-	void setNodeNoRef(v3s16 p, MapNode n)
+	// TODO: Should be removed and replaced with setNode
+	void setNodeNoRef(v3s16 p, const MapNode &n)
 	{
 		setNode(p, n);
 	}
@@ -498,7 +513,9 @@ public:
 	*/
 
 	void clearFlag(u8 flag);
-	
+
+	// TODO: Move to voxelalgorithms.h
+
 	void unspreadLight(enum LightBank bank, v3s16 p, u8 oldlight,
 			core::map<v3s16, bool> & light_sources, INodeDefManager *nodemgr);
 	void unspreadLight(enum LightBank bank,

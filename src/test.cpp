@@ -36,6 +36,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "settings.h"
 #include "log.h"
 #include "utility_string.h"
+#include "voxelalgorithms.h"
 
 /*
 	Asserts that the exception occurs
@@ -480,6 +481,118 @@ struct TestVoxelManipulator
 
 		assert(v.getNode(v3s16(-1,0,-1)).getContent() == CONTENT_GRASS);
 		EXCEPTION_CHECK(InvalidPositionException, v.getNode(v3s16(0,1,1)));
+	}
+};
+
+struct TestVoxelAlgorithms
+{
+	void Run(INodeDefManager *ndef)
+	{
+		{
+			VoxelManipulator v;
+			for(u16 z=0; z<3; z++)
+			for(u16 y=0; y<3; y++)
+			for(u16 x=0; x<3; x++)
+			{
+				v3s16 p(x,y,z);
+				v.setNodeNoRef(p, MapNode(CONTENT_AIR));
+			}
+			VoxelArea a(v3s16(0,0,0), v3s16(2,2,2));
+			{
+				core::map<v3s16, bool> light_sources;
+				voxalgo::setLight(v, a, 0, ndef);
+				voxalgo::SunlightPropagateResult res = voxalgo::propagateSunlight(
+						v, a, true, light_sources, ndef);
+				//v.print(dstream, ndef, VOXELPRINT_LIGHT_DAY);
+				assert(res.bottom_sunlight_valid == true);
+				assert(v.getNode(v3s16(1,1,1)).getLight(LIGHTBANK_DAY, ndef)
+						== LIGHT_SUN);
+			}
+			v.setNodeNoRef(v3s16(0,0,0), MapNode(CONTENT_STONE));
+			{
+				core::map<v3s16, bool> light_sources;
+				voxalgo::setLight(v, a, 0, ndef);
+				voxalgo::SunlightPropagateResult res = voxalgo::propagateSunlight(
+						v, a, true, light_sources, ndef);
+				assert(res.bottom_sunlight_valid == true);
+				assert(v.getNode(v3s16(1,1,1)).getLight(LIGHTBANK_DAY, ndef)
+						== LIGHT_SUN);
+			}
+			{
+				core::map<v3s16, bool> light_sources;
+				voxalgo::setLight(v, a, 0, ndef);
+				voxalgo::SunlightPropagateResult res = voxalgo::propagateSunlight(
+						v, a, false, light_sources, ndef);
+				assert(res.bottom_sunlight_valid == true);
+				assert(v.getNode(v3s16(2,0,2)).getLight(LIGHTBANK_DAY, ndef)
+						== 0);
+			}
+			v.setNodeNoRef(v3s16(1,3,2), MapNode(CONTENT_STONE));
+			{
+				core::map<v3s16, bool> light_sources;
+				voxalgo::setLight(v, a, 0, ndef);
+				voxalgo::SunlightPropagateResult res = voxalgo::propagateSunlight(
+						v, a, true, light_sources, ndef);
+				assert(res.bottom_sunlight_valid == true);
+				assert(v.getNode(v3s16(1,1,2)).getLight(LIGHTBANK_DAY, ndef)
+						== 0);
+			}
+			{
+				core::map<v3s16, bool> light_sources;
+				voxalgo::setLight(v, a, 0, ndef);
+				voxalgo::SunlightPropagateResult res = voxalgo::propagateSunlight(
+						v, a, false, light_sources, ndef);
+				assert(res.bottom_sunlight_valid == true);
+				assert(v.getNode(v3s16(1,0,2)).getLight(LIGHTBANK_DAY, ndef)
+						== 0);
+			}
+			{
+				MapNode n(CONTENT_AIR);
+				n.setLight(LIGHTBANK_DAY, 10, ndef);
+				v.setNodeNoRef(v3s16(1,-1,2), n);
+			}
+			{
+				core::map<v3s16, bool> light_sources;
+				voxalgo::setLight(v, a, 0, ndef);
+				voxalgo::SunlightPropagateResult res = voxalgo::propagateSunlight(
+						v, a, true, light_sources, ndef);
+				assert(res.bottom_sunlight_valid == true);
+			}
+			{
+				core::map<v3s16, bool> light_sources;
+				voxalgo::setLight(v, a, 0, ndef);
+				voxalgo::SunlightPropagateResult res = voxalgo::propagateSunlight(
+						v, a, false, light_sources, ndef);
+				assert(res.bottom_sunlight_valid == true);
+			}
+			{
+				MapNode n(CONTENT_AIR);
+				n.setLight(LIGHTBANK_DAY, LIGHT_SUN, ndef);
+				v.setNodeNoRef(v3s16(1,-1,2), n);
+			}
+			{
+				core::map<v3s16, bool> light_sources;
+				voxalgo::setLight(v, a, 0, ndef);
+				voxalgo::SunlightPropagateResult res = voxalgo::propagateSunlight(
+						v, a, true, light_sources, ndef);
+				assert(res.bottom_sunlight_valid == false);
+			}
+			{
+				core::map<v3s16, bool> light_sources;
+				voxalgo::setLight(v, a, 0, ndef);
+				voxalgo::SunlightPropagateResult res = voxalgo::propagateSunlight(
+						v, a, false, light_sources, ndef);
+				assert(res.bottom_sunlight_valid == false);
+			}
+			v.setNodeNoRef(v3s16(1,3,2), MapNode(CONTENT_IGNORE));
+			{
+				core::map<v3s16, bool> light_sources;
+				voxalgo::setLight(v, a, 0, ndef);
+				voxalgo::SunlightPropagateResult res = voxalgo::propagateSunlight(
+						v, a, true, light_sources, ndef);
+				assert(res.bottom_sunlight_valid == true);
+			}
+		}
 	}
 };
 
@@ -1279,6 +1392,7 @@ void run_tests()
 	TEST(TestSerialization);
 	TESTPARAMS(TestMapNode, ndef);
 	TESTPARAMS(TestVoxelManipulator, ndef);
+	TESTPARAMS(TestVoxelAlgorithms, ndef);
 	//TEST(TestMapBlock);
 	//TEST(TestMapSector);
 	if(INTERNET_SIMULATOR == false){

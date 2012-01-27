@@ -63,7 +63,7 @@ void VoxelManipulator::clear()
 	m_flags = NULL;
 }
 
-void VoxelManipulator::print(std::ostream &o, INodeDefManager *nodemgr,
+void VoxelManipulator::print(std::ostream &o, INodeDefManager *ndef,
 		VoxelPrintMode mode)
 {
 	v3s16 em = m_area.getExtent();
@@ -94,8 +94,9 @@ void VoxelManipulator::print(std::ostream &o, INodeDefManager *nodemgr,
 				else
 				{
 					c = 'X';
-					content_t m = m_data[m_area.index(x,y,z)].getContent();
-					u8 pr = m_data[m_area.index(x,y,z)].param2;
+					MapNode n = m_data[m_area.index(x,y,z)];
+					content_t m = n.getContent();
+					u8 pr = n.param2;
 					if(mode == VOXELPRINT_MATERIAL)
 					{
 						if(m <= 9)
@@ -103,7 +104,7 @@ void VoxelManipulator::print(std::ostream &o, INodeDefManager *nodemgr,
 					}
 					else if(mode == VOXELPRINT_WATERPRESSURE)
 					{
-						if(nodemgr->get(m).isLiquid())
+						if(ndef->get(m).isLiquid())
 						{
 							c = 'w';
 							if(pr <= 9)
@@ -116,6 +117,21 @@ void VoxelManipulator::print(std::ostream &o, INodeDefManager *nodemgr,
 						else
 						{
 							c = '#';
+						}
+					}
+					else if(mode == VOXELPRINT_LIGHT_DAY)
+					{
+						if(ndef->get(m).light_source != 0)
+							c = 'S';
+						else if(ndef->get(m).light_propagates == false)
+							c = 'X';
+						else
+						{
+							u8 light = n.getLight(LIGHTBANK_DAY, ndef);
+							if(light < 10)
+								c = '0' + light;
+							else
+								c = 'a' + (light-10);
 						}
 					}
 				}
