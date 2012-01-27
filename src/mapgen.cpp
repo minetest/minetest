@@ -1519,10 +1519,15 @@ void make_block(BlockMakeData *data)
 	// Full allocated area
 	v3s16 full_node_min = (blockpos_min-1)*MAP_BLOCKSIZE;
 	v3s16 full_node_max = (blockpos_max+2)*MAP_BLOCKSIZE-v3s16(1,1,1);
-	// Area of a block
-	double block_area_nodes = MAP_BLOCKSIZE*MAP_BLOCKSIZE;
 
 	v2s16 p2d_center(node_min.X+MAP_BLOCKSIZE/2, node_min.Z+MAP_BLOCKSIZE/2);
+
+	int rel_volume = (blockpos_max.X - blockpos_min.X + 1)
+			* (blockpos_max.Y - blockpos_min.Y + 1)
+			* (blockpos_max.Z - blockpos_max.Z + 1);
+	
+	// Area of the block we are generating
+	double gen_area_nodes = MAP_BLOCKSIZE*MAP_BLOCKSIZE * rel_volume;
 
 	/*
 		Get average ground level from noise
@@ -1998,7 +2003,7 @@ void make_block(BlockMakeData *data)
 		float surface_humidity = surface_humidity_2d(data->seed, p2d_center);
 		bool is_jungle = surface_humidity > 0.75;
 		// Amount of trees
-		u32 tree_count = block_area_nodes * tree_amount_2d(data->seed, p2d_center);
+		u32 tree_count = gen_area_nodes * tree_amount_2d(data->seed, p2d_center);
 		if(is_jungle)
 			tree_count *= 5;
 
@@ -2132,7 +2137,7 @@ void make_block(BlockMakeData *data)
 			Add some kind of random stones
 		*/
 		
-		u32 random_stone_count = block_area_nodes *
+		u32 random_stone_count = gen_area_nodes *
 				randomstone_amount_2d(data->seed, p2d_center);
 		// Put in random places on part of division
 		for(u32 i=0; i<random_stone_count; i++)
@@ -2166,7 +2171,7 @@ void make_block(BlockMakeData *data)
 			Add larger stones
 		*/
 		
-		u32 large_stone_count = block_area_nodes *
+		u32 large_stone_count = gen_area_nodes *
 				largestone_amount_2d(data->seed, p2d_center);
 		//u32 large_stone_count = 1;
 		// Put in random places on part of division
