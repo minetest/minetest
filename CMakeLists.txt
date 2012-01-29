@@ -63,12 +63,19 @@ elseif(UNIX) # Linux, BSD etc
 	set(DATADIR "share/${PROJECT_NAME}")
 	set(BINDIR "bin")
 	set(DOCDIR "share/doc/${PROJECT_NAME}")
+	set(MANDIR "share/man")
 	set(EXAMPLE_CONF_DIR "share/doc/${PROJECT_NAME}")
 endif()
 
 install(FILES "README.txt" DESTINATION "${DOCDIR}")
 install(FILES "doc/changelog.txt" DESTINATION "${DOCDIR}")
 install(FILES "minetest.conf.example" DESTINATION "${DOCDIR}")
+
+if(UNIX)
+	install(FILES "doc/minetest.6" "doc/minetestserver.6" DESTINATION "${MANDIR}/man6")
+	install(FILES "misc/minetest.desktop" DESTINATION "${XDG_APPS_DIR}")
+	install(FILES "minetest-icon.svg" DESTINATION "${ICONDIR}")
+endif()
 
 #
 # Subdirectories
