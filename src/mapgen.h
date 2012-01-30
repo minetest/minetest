@@ -39,9 +39,6 @@ namespace mapgen
 	// Main map generation routine
 	void make_block(BlockMakeData *data);
 	
-	// Add objects according to block content
-	void add_random_objects(MapBlock *block);
-
 	// Add a tree
 	void make_tree(ManualMapVoxelManipulator &vmanip, v3s16 p0,
 			bool is_apple_tree, INodeDefManager *ndef);
@@ -51,7 +48,6 @@ namespace mapgen
 	*/
 	bool get_have_sand(u64 seed, v2s16 p2d);
 	double tree_amount_2d(u64 seed, v2s16 p);
-	
 
 	struct BlockMakeData
 	{
