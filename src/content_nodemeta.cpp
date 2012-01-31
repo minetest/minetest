@@ -441,6 +441,10 @@ bool FurnaceNodeMetadata::step(float dtime)
 {
 	if(dtime > 60.0)
 		infostream<<"Furnace stepping a long time ("<<dtime<<")"<<std::endl;
+
+	InventoryList *dst_list = m_inventory->getList("dst");
+	assert(dst_list);
+
 	// Update at a fixed frequency
 	const float interval = 2.0;
 	m_step_accumulator += dtime;
@@ -452,8 +456,7 @@ bool FurnaceNodeMetadata::step(float dtime)
 
 		//infostream<<"Furnace step dtime="<<dtime<<std::endl;
 
-		InventoryList *dst_list = m_inventory->getList("dst");
-		assert(dst_list);
+		bool changed_this_loop = false;
 
 		// Check
 		// 1. if the source item is cookable
@@ -473,7 +476,7 @@ bool FurnaceNodeMetadata::step(float dtime)
 		bool burning = (m_fuel_time < m_fuel_totaltime);
 		if(burning)
 		{
-			changed = true;
+			changed_this_loop = true;
 			m_fuel_time += dtime;
 		}
 
@@ -483,7 +486,7 @@ bool FurnaceNodeMetadata::step(float dtime)
 			float burntime;
 			if(burning)
 			{
-				changed = true;
+				changed_this_loop = true;
 				m_src_time += dtime;
 				m_src_totaltime = cooktime;
 				infotext = "Furnace is cooking";
@@ -491,7 +494,7 @@ bool FurnaceNodeMetadata::step(float dtime)
 			else if(getBurnResult(true, burntime))
 			{
 				// Fuel inserted
-				changed = true;
+				changed_this_loop = true;
 				m_fuel_time = 0;
 				m_fuel_totaltime = burntime;
 				//m_src_time += dtime;
@@ -507,7 +510,7 @@ bool FurnaceNodeMetadata::step(float dtime)
 			if(m_src_totaltime > 0.001 && m_src_time >= m_src_totaltime)
 			{
 				// One item fully cooked
-				changed = true;
+				changed_this_loop = true;
 				dst_list->addItem(cookresult_item);
 				getCookResult(true, cookresult, cooktime); // decrement source
 				m_src_totaltime = 0;
@@ -541,7 +544,7 @@ bool FurnaceNodeMetadata::step(float dtime)
 		if(infotext != m_infotext)
 		{
 			m_infotext = infotext;
-			changed = true;
+			changed_this_loop = true;
 		}
 
 		if(burning && m_fuel_time >= m_fuel_totaltime)
@@ -550,7 +553,11 @@ bool FurnaceNodeMetadata::step(float dtime)
 			m_fuel_totaltime = 0;
 		}
 
-		if(!changed)
+		if(changed_this_loop)
+		{
+			changed = true;
+		}
+		else
 		{
 			m_step_accumulator = 0;
 			break;
