@@ -124,7 +124,7 @@ void set_default_settings(Settings *settings)
 	settings->setDefault("max_simultaneous_block_sends_per_client", "4");
 	settings->setDefault("max_simultaneous_block_sends_server_total", "20");
 	settings->setDefault("max_block_send_distance", "10");
-	settings->setDefault("max_block_generate_distance", "6");
+	settings->setDefault("max_block_generate_distance", "7");
 	settings->setDefault("time_send_interval", "5");
 	settings->setDefault("time_speed", "96");
 	settings->setDefault("server_unload_unused_data_timeout", "29");
