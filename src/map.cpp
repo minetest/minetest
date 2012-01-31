@@ -2262,21 +2262,6 @@ MapBlock* ServerMap::finishBlockMake(mapgen::BlockMakeData *data,
 #endif
 	}
 
-	// Center blocks
-	for(s16 x=blockpos_min.X; x<=blockpos_max.X; x++)
-	for(s16 z=blockpos_min.Z; z<=blockpos_max.Z; z++)
-	for(s16 y=blockpos_min.Y; y<=blockpos_max.Y; y++)
-	{
-		v3s16 p(x, y, z);
-		MapBlock *block = getBlockNoCreateNoEx(p);
-		assert(block);
-
-		/*
-			Add random objects to block
-		*/
-		mapgen::add_random_objects(block);
-	}
-	
 	/*
 		Go through changed blocks
 	*/
