@@ -634,6 +634,36 @@ void draw_load_screen(const std::wstring &text,
 	//return guitext;
 }
 
+/* Profiler display */
+
+void update_profiler_gui(gui::IGUIStaticText *guitext_profiler,
+		gui::IGUIFont *font, u32 text_height,
+		u32 show_profiler, u32 show_profiler_max)
+{
+	if(show_profiler == 0)
+	{
+		guitext_profiler->setVisible(false);
+	}
+	else
+	{
+
+		std::ostringstream os(std::ios_base::binary);
+		g_profiler->printPage(os, show_profiler, show_profiler_max);
+		std::wstring text = narrow_to_wide(os.str());
+		guitext_profiler->setText(text.c_str());
+		guitext_profiler->setVisible(true);
+
+		s32 w = font->getDimension(text.c_str()).Width;
+		if(w < 400)
+			w = 400;
+		core::rect<s32> rect(6, 4+(text_height+5)*2, 12+w,
+				8+(text_height+5)*2 +
+				font->getDimension(text.c_str()).Height);
+		guitext_profiler->setRelativePosition(rect);
+		guitext_profiler->setVisible(true);
+	}
+}
+
 void the_game(
 	bool &kill,
 	bool random_input,
@@ -932,6 +962,16 @@ void the_game(
 			core::rect<s32>(0,0,400,text_height+5) + v2s32(100,200),
 			false, false);
 	
+	// Status text (displays info when showing and hiding GUI stuff, etc.)
+	gui::IGUIStaticText *guitext_status = guienv->addStaticText(
+			L"<Status>",
+			core::rect<s32>(0,0,0,0),
+			false, false);
+	guitext_status->setVisible(false);
+	
+	std::wstring statustext;
+	float statustext_time = 0;
+	
 	// Chat text
 	gui::IGUIStaticText *guitext_chat = guienv->addStaticText(
 			L"",
@@ -944,8 +984,7 @@ void the_game(
 	// Profiler text (size is updated when text is updated)
 	gui::IGUIStaticText *guitext_profiler = guienv->addStaticText(
 			L"<Profiler>",
-			core::rect<s32>(6, 4+(text_height+5)*2, 400,
-			(text_height+5)*2 + text_height*35),
+			core::rect<s32>(0,0,0,0),
 			false, false);
 	guitext_profiler->setBackgroundColor(video::SColor(80,0,0,0));
 	guitext_profiler->setVisible(false);
@@ -968,11 +1007,6 @@ void the_game(
 	(new GUIPauseMenu(guienv, guiroot, -1, g_gamecallback,
 			&g_menumgr))->drop();
 	
-	// Enable texts
-	/*guitext2->setVisible(true);
-	guitext_info->setVisible(true);
-	guitext_chat->setVisible(true);*/
-
 	//s32 guitext_chat_pad_bottom = 70;
 
 	/*
@@ -1008,9 +1042,14 @@ void the_game(
 	bool respawn_menu_active = false;
 	bool update_wielded_item_trigger = false;
 
-	bool show_profiler = false;
+	bool show_hud = true;
+	bool show_chat = true;
 	bool force_fog_off = false;
 	bool disable_camera_update = false;
+	bool show_debug = g_settings->getBool("show_debug");
+	bool show_debug_frametime = false;
+	u32 show_profiler = 0;
+	u32 show_profiler_max = 3;  // Number of pages
 
 	/*
 		Main loop
@@ -1247,20 +1286,10 @@ void the_game(
 				g_profiler->print(infostream);
 			}
 
-			std::ostringstream os(std::ios_base::binary);
-			g_profiler->print(os);
-			std::wstring text = narrow_to_wide(os.str());
-			guitext_profiler->setText(text.c_str());
+			update_profiler_gui(guitext_profiler, font, text_height,
+					show_profiler, show_profiler_max);
 
 			g_profiler->clear();
-			
-			s32 w = font->getDimension(text.c_str()).Width;
-			if(w < 400)
-				w = 400;
-			core::rect<s32> rect(6, 4+(text_height+5)*2, 12+w,
-					8+(text_height+5)*2 +
-					font->getDimension(text.c_str()).Height);
-			guitext_profiler->setRelativePosition(rect);
 		}
 
 		/*
@@ -1349,12 +1378,14 @@ void the_game(
 			if(g_settings->getBool("free_move"))
 			{
 				g_settings->set("free_move","false");
-				chat_lines.push_back(ChatLine(L"free_move disabled"));
+				statustext = L"free_move disabled";
+				statustext_time = 0;
 			}
 			else
 			{
 				g_settings->set("free_move","true");
-				chat_lines.push_back(ChatLine(L"free_move enabled"));
+				statustext = L"free_move enabled";
+				statustext_time = 0;
 			}
 		}
 		else if(input->wasKeyDown(getKeySetting("keymap_fastmove")))
@@ -1362,25 +1393,14 @@ void the_game(
 			if(g_settings->getBool("fast_move"))
 			{
 				g_settings->set("fast_move","false");
-				chat_lines.push_back(ChatLine(L"fast_move disabled"));
+				statustext = L"fast_move disabled";
+				statustext_time = 0;
 			}
 			else
 			{
 				g_settings->set("fast_move","true");
-				chat_lines.push_back(ChatLine(L"fast_move enabled"));
-			}
-		}
-		else if(input->wasKeyDown(getKeySetting("keymap_frametime_graph")))
-		{
-			if(g_settings->getBool("frametime_graph"))
-			{
-				g_settings->set("frametime_graph","false");
-				chat_lines.push_back(ChatLine(L"frametime_graph disabled"));
-			}
-			else
-			{
-				g_settings->set("frametime_graph","true");
-				chat_lines.push_back(ChatLine(L"frametime_graph enabled"));
+				statustext = L"fast_move enabled";
+				statustext_time = 0;
 			}
 		}
 		else if(input->wasKeyDown(getKeySetting("keymap_screenshot")))
@@ -1395,37 +1415,97 @@ void the_game(
 					std::wstringstream sstr;
 					sstr<<"Saved screenshot to '"<<filename<<"'";
 					infostream<<"Saved screenshot to '"<<filename<<"'"<<std::endl;
-					chat_lines.push_back(ChatLine(sstr.str()));
+					statustext = sstr.str();
+					statustext_time = 0;
 				} else{
 					infostream<<"Failed to save screenshot '"<<filename<<"'"<<std::endl;
 				}
 				image->drop(); 
 			}			 
 		}
-		else if(input->wasKeyDown(getKeySetting("keymap_toggle_profiler")))
+		else if(input->wasKeyDown(getKeySetting("keymap_toggle_hud")))
 		{
-			show_profiler = !show_profiler;
-			guitext_profiler->setVisible(show_profiler);
-			if(show_profiler)
-				chat_lines.push_back(ChatLine(L"Profiler disabled"));
+			show_hud = !show_hud;
+			if(show_hud)
+				statustext = L"HUD shown";
 			else
-				chat_lines.push_back(ChatLine(L"Profiler enabled"));
+				statustext = L"HUD hidden";
+			statustext_time = 0;
+		}
+		else if(input->wasKeyDown(getKeySetting("keymap_toggle_chat")))
+		{
+			show_chat = !show_chat;
+			if(show_chat)
+				statustext = L"Chat shown";
+			else
+				statustext = L"Chat hidden";
+			statustext_time = 0;
 		}
 		else if(input->wasKeyDown(getKeySetting("keymap_toggle_force_fog_off")))
 		{
 			force_fog_off = !force_fog_off;
 			if(force_fog_off)
-				chat_lines.push_back(ChatLine(L"Fog disabled"));
+				statustext = L"Fog disabled";
 			else
-				chat_lines.push_back(ChatLine(L"Fog enabled"));
+				statustext = L"Fog enabled";
+			statustext_time = 0;
 		}
 		else if(input->wasKeyDown(getKeySetting("keymap_toggle_update_camera")))
 		{
 			disable_camera_update = !disable_camera_update;
 			if(disable_camera_update)
-				chat_lines.push_back(ChatLine(L"Camera update disabled"));
+				statustext = L"Camera update disabled";
 			else
-				chat_lines.push_back(ChatLine(L"Camera update enabled"));
+				statustext = L"Camera update enabled";
+			statustext_time = 0;
+		}
+		else if(input->wasKeyDown(getKeySetting("keymap_toggle_debug")))
+		{
+			// Initial / 3x toggle: Chat only
+			// 1x toggle: Debug text with chat
+			// 2x toggle: Debug text with frametime
+			if(!show_debug)
+			{
+				show_debug = true;
+				show_debug_frametime = false;
+				statustext = L"Debug info shown";
+				statustext_time = 0;
+			}
+			else if(show_debug_frametime)
+			{
+				show_debug = false;
+				show_debug_frametime = false;
+				statustext = L"Debug info and frametime graph hidden";
+				statustext_time = 0;
+			}
+			else
+			{
+				show_debug_frametime = true;
+				statustext = L"Frametime graph shown";
+				statustext_time = 0;
+			}
+		}
+		else if(input->wasKeyDown(getKeySetting("keymap_toggle_profiler")))
+		{
+			show_profiler = (show_profiler + 1) % (show_profiler_max + 1);
+
+			// FIXME: This updates the profiler with incomplete values
+			update_profiler_gui(guitext_profiler, font, text_height,
+					show_profiler, show_profiler_max);
+
+			if(show_profiler != 0)
+			{
+				std::wstringstream sstr;
+				sstr<<"Profiler shown (page "<<show_profiler
+					<<" of "<<show_profiler_max<<")";
+				statustext = sstr.str();
+				statustext_time = 0;
+			}
+			else
+			{
+				statustext = L"Profiler hidden";
+				statustext_time = 0;
+			}
 		}
 
 		// Item selection with mouse wheel
@@ -1470,15 +1550,18 @@ void the_game(
 		// Viewing range selection
 		if(input->wasKeyDown(getKeySetting("keymap_rangeselect")))
 		{
+			draw_control.range_all = !draw_control.range_all;
 			if(draw_control.range_all)
 			{
-				draw_control.range_all = false;
-				infostream<<"Disabled full viewing range"<<std::endl;
+				infostream<<"Enabled full viewing range"<<std::endl;
+				statustext = L"Enabled full viewing range";
+				statustext_time = 0;
 			}
 			else
 			{
-				draw_control.range_all = true;
-				infostream<<"Enabled full viewing range"<<std::endl;
+				infostream<<"Disabled full viewing range"<<std::endl;
+				statustext = L"Disabled full viewing range";
+				statustext_time = 0;
 			}
 		}
 
@@ -2105,55 +2188,110 @@ void the_game(
 
 		//TimeTaker guiupdatetimer("Gui updating");
 		
+		const char program_name_and_version[] =
+			"Minetest-c55 " VERSION_STRING;
+
+		if(show_debug)
 		{
 			static float drawtime_avg = 0;
 			drawtime_avg = drawtime_avg * 0.95 + (float)drawtime*0.05;
-			static float beginscenetime_avg = 0;
+			/*static float beginscenetime_avg = 0;
 			beginscenetime_avg = beginscenetime_avg * 0.95 + (float)beginscenetime*0.05;
 			static float scenetime_avg = 0;
 			scenetime_avg = scenetime_avg * 0.95 + (float)scenetime*0.05;
 			static float endscenetime_avg = 0;
-			endscenetime_avg = endscenetime_avg * 0.95 + (float)endscenetime*0.05;
+			endscenetime_avg = endscenetime_avg * 0.95 + (float)endscenetime*0.05;*/
 			
 			char temptext[300];
-			snprintf(temptext, 300, "Minetest-c55 %s ("
+			snprintf(temptext, 300, "%s ("
 					"R: range_all=%i"
 					")"
-					" drawtime=%.0f, beginscenetime=%.0f"
-					", scenetime=%.0f, endscenetime=%.0f",
-					VERSION_STRING,
+					" drawtime=%.0f, dtime_jitter = % .1f %%"
+					", v_range = %.1f, RTT = %.3f",
+					program_name_and_version,
 					draw_control.range_all,
 					drawtime_avg,
-					beginscenetime_avg,
-					scenetime_avg,
-					endscenetime_avg
-					);
-			
-			guitext->setText(narrow_to_wide(temptext).c_str());
-		}
-		
-		{
-			char temptext[300];
-			snprintf(temptext, 300,
-					"(% .1f, % .1f, % .1f)"
-					" (% .3f < btime_jitter < % .3f"
-					", dtime_jitter = % .1f %%"
-					", v_range = %.1f, RTT = %.3f)",
-					player_position.X/BS,
-					player_position.Y/BS,
-					player_position.Z/BS,
-					busytime_jitter1_min_sample,
-					busytime_jitter1_max_sample,
 					dtime_jitter1_max_fraction * 100.0,
 					draw_control.wanted_range,
 					client.getRTT()
 					);
+			
+			guitext->setText(narrow_to_wide(temptext).c_str());
+			guitext->setVisible(true);
+		}
+		else if(show_hud)
+		{
+			guitext->setText(narrow_to_wide(program_name_and_version).c_str());
+			guitext->setVisible(true);
+		}
+		else
+		{
+			guitext->setVisible(false);
+		}
+		
+		if(show_debug)
+		{
+			char temptext[300];
+			snprintf(temptext, 300,
+					"(% .1f, % .1f, % .1f)"
+					" (yaw = %.1f)",
+					player_position.X/BS,
+					player_position.Y/BS,
+					player_position.Z/BS,
+					wrapDegrees_0_360(camera_yaw));
 
 			guitext2->setText(narrow_to_wide(temptext).c_str());
+			guitext2->setVisible(true);
+		}
+		else
+		{
+			guitext2->setVisible(false);
 		}
 		
 		{
 			guitext_info->setText(infotext.c_str());
+			guitext_info->setVisible(show_hud);
+		}
+
+		{
+			float statustext_time_max = 3.0;
+			if(!statustext.empty())
+			{
+				statustext_time += dtime;
+				if(statustext_time >= statustext_time_max)
+				{
+					statustext = L"";
+					statustext_time = 0;
+				}
+			}
+			guitext_status->setText(statustext.c_str());
+			guitext_status->setVisible(!statustext.empty());
+
+			if(!statustext.empty())
+			{
+				s32 status_y = screensize.Y - 130;
+				core::rect<s32> rect(
+						10,
+						status_y - guitext_status->getTextHeight(),
+						screensize.X - 10,
+						status_y
+				);
+				guitext_status->setRelativePosition(rect);
+
+				// Fade out
+				video::SColor initial_color(255,0,0,0);
+				if(guienv->getSkin())
+					initial_color = guienv->getSkin()->getColor(gui::EGDC_BUTTON_TEXT);
+				video::SColor final_color = initial_color;
+				final_color.setAlpha(0);
+				video::SColor fade_color =
+					initial_color.getInterpolated_quadratic(
+						initial_color,
+						final_color,
+						statustext_time / (float) statustext_time_max);
+				guitext_status->setOverrideColor(fade_color);
+				guitext_status->enableOverrideColor(true);
+			}
 		}
 		
 		/*
@@ -2224,20 +2362,22 @@ void the_game(
 					screensize.X - 10,
 					screensize.Y - guitext_chat_pad_bottom
 			);*/
+
+			s32 chat_y = 5+(text_height+5);
+			if(show_debug)
+				chat_y += (text_height+5);
 			core::rect<s32> rect(
 					10,
-					50,
+					chat_y,
 					screensize.X - 10,
-					50 + guitext_chat->getTextHeight()
+					chat_y + guitext_chat->getTextHeight()
 			);
 
 			guitext_chat->setRelativePosition(rect);
 
-			// Don't show chat if empty or profiler is enabled
-			if(chat_lines.size() == 0 || show_profiler)
-				guitext_chat->setVisible(false);
-			else
-				guitext_chat->setVisible(true);
+			// Don't show chat if empty or profiler or debug is enabled
+			guitext_chat->setVisible(chat_lines.size() != 0
+					&& show_chat && show_profiler == 0);
 		}
 
 		/*
@@ -2275,7 +2415,7 @@ void the_game(
 		
 		{
 			TimeTaker timer("beginScene");
-			driver->beginScene(true, true, bgcolor);
+			driver->beginScene(false, true, bgcolor);
 			//driver->beginScene(false, true, bgcolor);
 			beginscenetime = timer.stop(true);
 		}
@@ -2305,20 +2445,24 @@ void the_game(
 
 		driver->setTransform(video::ETS_WORLD, core::IdentityMatrix);
 
-		for(core::list< core::aabbox3d<f32> >::Iterator i=hilightboxes.begin();
-				i != hilightboxes.end(); i++)
+		if(show_hud)
 		{
-			/*infostream<<"hilightbox min="
-					<<"("<<i->MinEdge.X<<","<<i->MinEdge.Y<<","<<i->MinEdge.Z<<")"
-					<<" max="
-					<<"("<<i->MaxEdge.X<<","<<i->MaxEdge.Y<<","<<i->MaxEdge.Z<<")"
-					<<std::endl;*/
-			driver->draw3DBox(*i, video::SColor(255,0,0,0));
+			for(core::list<aabb3f>::Iterator i=hilightboxes.begin();
+					i != hilightboxes.end(); i++)
+			{
+				/*infostream<<"hilightbox min="
+						<<"("<<i->MinEdge.X<<","<<i->MinEdge.Y<<","<<i->MinEdge.Z<<")"
+						<<" max="
+						<<"("<<i->MaxEdge.X<<","<<i->MaxEdge.Y<<","<<i->MaxEdge.Z<<")"
+						<<std::endl;*/
+				driver->draw3DBox(*i, video::SColor(255,0,0,0));
+			}
 		}
 
 		/*
 			Wielded tool
 		*/
+		if(show_hud)
 		{
 			// Warning: This clears the Z buffer.
 			camera.drawWieldedTool();
@@ -2334,16 +2478,17 @@ void the_game(
 		/*
 			Frametime log
 		*/
-		if(g_settings->getBool("frametime_graph") == true)
+		if(show_debug_frametime)
 		{
 			s32 x = 10;
+			s32 y = screensize.Y - 10;
 			for(core::list<float>::Iterator
 					i = frametime_log.begin();
 					i != frametime_log.end();
 					i++)
 			{
-				driver->draw2DLine(v2s32(x,50),
-						v2s32(x,50+(*i)*1000),
+				driver->draw2DLine(v2s32(x,y),
+						v2s32(x,y-(*i)*1000),
 						video::SColor(255,255,255,255));
 				x++;
 			}
@@ -2352,12 +2497,15 @@ void the_game(
 		/*
 			Draw crosshair
 		*/
-		driver->draw2DLine(displaycenter - core::vector2d<s32>(10,0),
-				displaycenter + core::vector2d<s32>(10,0),
-				video::SColor(255,255,255,255));
-		driver->draw2DLine(displaycenter - core::vector2d<s32>(0,10),
-				displaycenter + core::vector2d<s32>(0,10),
-				video::SColor(255,255,255,255));
+		if(show_hud)
+		{
+			driver->draw2DLine(displaycenter - core::vector2d<s32>(10,0),
+					displaycenter + core::vector2d<s32>(10,0),
+					video::SColor(255,255,255,255));
+			driver->draw2DLine(displaycenter - core::vector2d<s32>(0,10),
+					displaycenter + core::vector2d<s32>(0,10),
+					video::SColor(255,255,255,255));
+		}
 
 		} // timer
 
@@ -2373,6 +2521,7 @@ void the_game(
 		/*
 			Draw hotbar
 		*/
+		if(show_hud)
 		{
 			draw_hotbar(driver, font, gamedef,
 					v2s32(displaycenter.X, screensize.Y),
