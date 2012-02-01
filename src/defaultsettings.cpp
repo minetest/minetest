@@ -50,6 +50,8 @@ void set_default_settings(Settings *settings)
 	settings->setDefault("keymap_toggle_update_camera", "KEY_F4");
 	settings->setDefault("keymap_toggle_debug", "KEY_F5");
 	settings->setDefault("keymap_toggle_profiler", "KEY_F6");
+	settings->setDefault("keymap_increase_viewing_range_min", "KEY_PRIOR");
+	settings->setDefault("keymap_decrease_viewing_range_min", "KEY_NEXT");
 	// Some (temporary) keys for debugging
 	settings->setDefault("keymap_print_debug_stacks", "KEY_KEY_P");
 
