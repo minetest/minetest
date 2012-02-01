@@ -1513,29 +1513,22 @@ void the_game(
 			s16 range_new = range + 10;
 			g_settings->set("viewing_range_nodes_min", itos(range_new));
 			statustext = narrow_to_wide(
-					"Minimum viewing range changed from "
-					+ itos(range) + " to " + itos(range_new));
+					"Minimum viewing range changed to "
+					+ itos(range_new));
 			statustext_time = 0;
 		}
 		else if(input->wasKeyDown(getKeySetting("keymap_decrease_viewing_range_min")))
 		{
 			s16 range = g_settings->getS16("viewing_range_nodes_min");
 			s16 range_new = range - 10;
-			if(range_new >= 0)
-			{
-				g_settings->set("viewing_range_nodes_min",
-						itos(range_new));
-				statustext = narrow_to_wide(
-						"Minimum viewing range changed from "
-						+ itos(range) + " to "
-						+ itos(range_new));
-				statustext_time = 0;
-			}
-			else
-			{
-				statustext = L"Minimum viewing range already at minimum";
-				statustext_time = 0;
-			}
+			if(range_new < 0)
+				range_new = range;
+			g_settings->set("viewing_range_nodes_min",
+					itos(range_new));
+			statustext = narrow_to_wide(
+					"Minimum viewing range changed to "
+					+ itos(range_new));
+			statustext_time = 0;
 		}
 
 		// Item selection with mouse wheel
