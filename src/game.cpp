@@ -2219,7 +2219,7 @@ void the_game(
 			guitext->setText(narrow_to_wide(temptext).c_str());
 			guitext->setVisible(true);
 		}
-		else if(show_hud)
+		else if(show_hud || show_chat)
 		{
 			guitext->setText(narrow_to_wide(program_name_and_version).c_str());
 			guitext->setVisible(true);
