@@ -1,6 +1,10 @@
 # Look for jthread, use our own if not found
 
-FIND_PATH(JTHREAD_INCLUDE_DIR jthread.h)
+FIND_PACKAGE(PkgConfig)
+pkg_check_modules(PC_JTHREAD QUIET jthread)
+
+FIND_PATH(JTHREAD_INCLUDE_DIR jthread.h
+	  HINTS ${PC_JTHREAD_INCLUDEDIR} ${PC_JTHREAD_INCLUDE_DIRS})
 
 FIND_LIBRARY(JTHREAD_LIBRARY NAMES jthread)
 

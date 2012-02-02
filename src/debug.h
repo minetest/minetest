@@ -39,6 +39,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #else
 #endif
 
+using namespace jthread;
+
 /*
 	Debug output
 */

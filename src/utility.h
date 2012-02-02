@@ -36,6 +36,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "porting.h"
 #include "strfnd.h" // For trim()
 
+using namespace jthread;
+
 extern const v3s16 g_6dirs[6];
 
 extern const v3s16 g_26dirs[26];

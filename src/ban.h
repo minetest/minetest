@@ -27,6 +27,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "common_irrlicht.h"
 #include "exceptions.h"
 
+using namespace jthread;
+
 class BanManager
 {
 public:
