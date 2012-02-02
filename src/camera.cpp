@@ -40,8 +40,6 @@ Camera::Camera(scene::ISceneManager* smgr, MapDrawControl& draw_control):
 	m_wieldlight(0),
 
 	m_draw_control(draw_control),
-	m_viewing_range_min(5.0),
-	m_viewing_range_max(5.0),
 
 	m_camera_position(0,0,0),
 	m_camera_direction(0,0,0),
@@ -50,7 +48,6 @@ Camera::Camera(scene::ISceneManager* smgr, MapDrawControl& draw_control):
 	m_fov_x(1.0),
 	m_fov_y(1.0),
 
-	m_wanted_frametime(0.0),
 	m_added_frametime(0),
 	m_added_frames(0),
 	m_range_old(0),
@@ -79,8 +76,6 @@ Camera::Camera(scene::ISceneManager* smgr, MapDrawControl& draw_control):
 	m_wieldmgr = smgr->createNewSceneManager();
 	m_wieldmgr->addCameraSceneNode();
 	m_wieldnode = m_wieldmgr->addMeshSceneNode(createCubeMesh(v3f(1,1,1)), NULL);  // need a dummy mesh
-
-	updateSettings();
 }
 
 Camera::~Camera()
@@ -259,14 +254,17 @@ void Camera::update(LocalPlayer* player, f32 frametime, v2u32 screensize)
 	// *100.0 helps in large map coordinates
 	m_cameranode->setTarget(m_camera_position + 100 * m_camera_direction);
 
-	// FOV and and aspect ratio
+	// Get FOV setting
+	f32 fov_degrees = g_settings->getFloat("fov");
+	fov_degrees = MYMAX(fov_degrees, 10.0);
+	fov_degrees = MYMIN(fov_degrees, 170.0);
+
+	// FOV and aspect ratio
 	m_aspect = (f32)screensize.X / (f32) screensize.Y;
+	m_fov_y = fov_degrees * PI / 180.0;
 	m_fov_x = 2 * atan(0.5 * m_aspect * tan(m_fov_y));
 	m_cameranode->setAspectRatio(m_aspect);
 	m_cameranode->setFOV(m_fov_y);
-	// Just so big a value that everything rendered is visible
-	// Some more allowance that m_viewing_range_max * BS because of active objects etc.
-	m_cameranode->setFarValue(m_viewing_range_max * BS * 10);
 
 	// Position the wielded item
 	v3f wield_position = v3f(45, -35, 65);
@@ -343,7 +341,18 @@ void Camera::updateViewingRange(f32 frametime_in)
 			<<m_draw_control.blocks_would_have_drawn
 			<<std::endl;*/
 
-	m_draw_control.wanted_min_range = m_viewing_range_min;
+	// Get current viewing range and FPS settings
+	f32 viewing_range_min = g_settings->getS16("viewing_range_nodes_min");
+	viewing_range_min = MYMAX(5.0, viewing_range_min);
+
+	f32 viewing_range_max = g_settings->getS16("viewing_range_nodes_max");
+	viewing_range_max = MYMAX(viewing_range_min, viewing_range_max);
+
+	f32 wanted_fps = g_settings->getFloat("wanted_fps");
+	wanted_fps = MYMAX(wanted_fps, 1.0);
+	f32 wanted_frametime = 1.0 / wanted_fps;
+
+	m_draw_control.wanted_min_range = viewing_range_min;
 	m_draw_control.wanted_max_blocks = (2.0*m_draw_control.blocks_would_have_drawn)+1;
 	if (m_draw_control.wanted_max_blocks < 10)
 		m_draw_control.wanted_max_blocks = 10;
@@ -362,13 +371,13 @@ void Camera::updateViewingRange(f32 frametime_in)
 	m_added_frametime = 0.0;
 	m_added_frames = 0;
 
-	f32 wanted_frametime_change = m_wanted_frametime - frametime;
+	f32 wanted_frametime_change = wanted_frametime - frametime;
 	//dstream<<"wanted_frametime_change="<<wanted_frametime_change<<std::endl;
 
 	// If needed frametime change is small, just return
 	// This value was 0.4 for many months until 2011-10-18 by c55;
 	// Let's see how this works out.
-	if (fabs(wanted_frametime_change) < m_wanted_frametime*0.33)
+	if (fabs(wanted_frametime_change) < wanted_frametime*0.33)
 	{
 		//dstream<<"ignoring small wanted_frametime_change"<<std::endl;
 		return;
@@ -421,8 +430,8 @@ void Camera::updateViewingRange(f32 frametime_in)
 	new_range += wanted_range_change;
 	
 	//f32 new_range_unclamped = new_range;
-	new_range = MYMAX(new_range, m_viewing_range_min);
-	new_range = MYMIN(new_range, m_viewing_range_max);
+	new_range = MYMAX(new_range, viewing_range_min);
+	new_range = MYMIN(new_range, viewing_range_max);
 	/*dstream<<"new_range="<<new_range_unclamped
 			<<", clamped to "<<new_range<<std::endl;*/
 
@@ -430,24 +439,11 @@ void Camera::updateViewingRange(f32 frametime_in)
 
 	m_range_old = new_range;
 	m_frametime_old = frametime;
-}
 
-void Camera::updateSettings()
-{
-	m_viewing_range_min = g_settings->getS16("viewing_range_nodes_min");
-	m_viewing_range_min = MYMAX(5.0, m_viewing_range_min);
+	// Just so big a value that everything rendered is visible
+	// Some more allowance than viewing_range_max * BS because of active objects etc.
+	m_cameranode->setFarValue(viewing_range_max * BS * 10);
 
-	m_viewing_range_max = g_settings->getS16("viewing_range_nodes_max");
-	m_viewing_range_max = MYMAX(m_viewing_range_min, m_viewing_range_max);
-
-	f32 fov_degrees = g_settings->getFloat("fov");
-	fov_degrees = MYMAX(fov_degrees, 10.0);
-	fov_degrees = MYMIN(fov_degrees, 170.0);
-	m_fov_y = fov_degrees * PI / 180.0;
-
-	f32 wanted_fps = g_settings->getFloat("wanted_fps");
-	wanted_fps = MYMAX(wanted_fps, 1.0);
-	m_wanted_frametime = 1.0 / wanted_fps;
 }
 
 void Camera::setDigging(s32 button)

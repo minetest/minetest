@@ -110,9 +110,6 @@ public:
 	// Render distance feedback loop
 	void updateViewingRange(f32 frametime_in);
 
-	// Update settings from g_settings
-	void updateSettings();
-
 	// Start digging animation
 	// Pass 0 for left click, 1 for right click
 	void setDigging(s32 button);
@@ -139,11 +136,6 @@ private:
 	// draw control
 	MapDrawControl& m_draw_control;
 
-	// viewing_range_min_nodes setting
-	f32 m_viewing_range_min;
-	// viewing_range_max_nodes setting
-	f32 m_viewing_range_max;
-
 	// Absolute camera position
 	v3f m_camera_position;
 	// Absolute camera direction
@@ -155,7 +147,6 @@ private:
 	f32 m_fov_y;
 
 	// Stuff for viewing range calculations
-	f32 m_wanted_frametime;
 	f32 m_added_frametime;
 	s16 m_added_frames;
 	f32 m_range_old;

@@ -43,13 +43,24 @@ void set_default_settings(Settings *settings)
 	settings->setDefault("keymap_rangeselect", "KEY_KEY_R");
 	settings->setDefault("keymap_freemove", "KEY_KEY_K");
 	settings->setDefault("keymap_fastmove", "KEY_KEY_J");
-	settings->setDefault("keymap_frametime_graph", "KEY_F1");
 	settings->setDefault("keymap_screenshot", "KEY_F12");
-	settings->setDefault("keymap_toggle_profiler", "KEY_F2");
+	settings->setDefault("keymap_toggle_hud", "KEY_F1");
+	settings->setDefault("keymap_toggle_chat", "KEY_F2");
 	settings->setDefault("keymap_toggle_force_fog_off", "KEY_F3");
 	settings->setDefault("keymap_toggle_update_camera", "KEY_F4");
+	settings->setDefault("keymap_toggle_debug", "KEY_F5");
+	settings->setDefault("keymap_toggle_profiler", "KEY_F6");
+	settings->setDefault("keymap_increase_viewing_range_min", "KEY_PRIOR");
+	settings->setDefault("keymap_decrease_viewing_range_min", "KEY_NEXT");
 	// Some (temporary) keys for debugging
 	settings->setDefault("keymap_print_debug_stacks", "KEY_KEY_P");
+
+	// Show debug info by default?
+	#ifdef NDEBUG
+	settings->setDefault("show_debug", "false");
+	#else
+	settings->setDefault("show_debug", "true");
+	#endif
 
 	settings->setDefault("wanted_fps", "30");
 	settings->setDefault("fps_max", "60");
@@ -66,7 +77,6 @@ void set_default_settings(Settings *settings)
 	settings->setDefault("new_style_water", "false");
 	settings->setDefault("new_style_leaves", "false");
 	settings->setDefault("smooth_lighting", "true");
-	settings->setDefault("frametime_graph", "false");
 	settings->setDefault("enable_texture_atlas", "true");
 	settings->setDefault("texture_path", "");
 	settings->setDefault("video_driver", "opengl");
