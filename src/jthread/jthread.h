@@ -3,7 +3,7 @@
     This file is a part of the JThread package, which contains some object-
     oriented thread wrappers for different thread implementations.
 
-    Copyright (c) 2000-2006  Jori Liesenborgs (jori.liesenborgs@gmail.com)
+    Copyright (c) 2000-2011  Jori Liesenborgs (jori.liesenborgs@gmail.com)
 
     Permission is hereby granted, free of charge, to any person obtaining a
     copy of this software and associated documentation files (the "Software"),
@@ -25,10 +25,11 @@
 
 */
 
-#ifndef JTHREAD_H
+#ifndef JTHREAD_JTHREAD_H
 
-#define JTHREAD_H
+#define JTHREAD_JTHREAD_H
 
+#include "jthreadconfig.h"
 #include "jmutex.h"
 
 #define ERR_JTHREAD_CANTINITMUTEX						-1
@@ -37,7 +38,10 @@
 #define ERR_JTHREAD_NOTRUNNING							-4
 #define ERR_JTHREAD_ALREADYRUNNING						-5
 
-class JThread
+namespace jthread
+{
+
+class JTHREAD_IMPORTEXPORT JThread
 {
 public:
 	JThread();
@@ -51,7 +55,7 @@ protected:
 	void ThreadStarted();
 private:
 
-#if (defined(WIN32) || defined(_WIN32_WCE))
+#ifdef JTHREAD_CONFIG_WIN32THREADS
 #ifdef _WIN32_WCE
 	DWORD threadid;
 	static DWORD WINAPI TheThread(void *param);
@@ -64,7 +68,7 @@ private:
 	static void *TheThread(void *param);
 	
 	pthread_t threadid;
-#endif // WIN32
+#endif // JTHREAD_CONFIG_WIN32THREADS
 	void *retval;
 	bool running;
 	
@@ -73,5 +77,7 @@ private:
 	bool mutexinit;
 };
 
-#endif // JTHREAD_H
+} // end namespace
+
+#endif // JTHREAD_JTHREAD_H
 

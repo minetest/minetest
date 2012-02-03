@@ -3,7 +3,7 @@
     This file is a part of the JThread package, which contains some object-
     oriented thread wrappers for different thread implementations.
 
-    Copyright (c) 2000-2006  Jori Liesenborgs (jori.liesenborgs@gmail.com)
+    Copyright (c) 2000-2011  Jori Liesenborgs (jori.liesenborgs@gmail.com)
 
     Permission is hereby granted, free of charge, to any person obtaining a
     copy of this software and associated documentation files (the "Software"),
@@ -25,27 +25,29 @@
 
 */
 
-#ifndef JMUTEX_H
+#ifndef JTHREAD_JMUTEX_H
 
-#define JMUTEX_H
+#define JTHREAD_JMUTEX_H
 
-#if (defined(WIN32) || defined(_WIN32_WCE))
+#include "jthreadconfig.h"
+#ifdef JTHREAD_CONFIG_WIN32THREADS
 	#ifndef _WIN32_WCE
 		#include <process.h>
 	#endif // _WIN32_WCE
 	#include <winsock2.h>
 	#include <windows.h>
-	// CriticalSection is way faster than the alternative
-	#define JMUTEX_CRITICALSECTION
 #else // using pthread
 	#include <pthread.h>
-#endif // WIN32
+#endif // JTHREAD_CONFIG_WIN32THREADS
 
 #define ERR_JMUTEX_ALREADYINIT						-1
 #define ERR_JMUTEX_NOTINIT						-2
 #define ERR_JMUTEX_CANTCREATEMUTEX					-3
 
-class JMutex
+namespace jthread
+{
+
+class JTHREAD_IMPORTEXPORT JMutex
 {
 public:
 	JMutex();
@@ -55,16 +57,19 @@ public:
 	int Unlock();
 	bool IsInitialized() 						{ return initialized; }
 private:
-#if (defined(WIN32) || defined(_WIN32_WCE))
-#ifdef JMUTEX_CRITICALSECTION
+#ifdef JTHREAD_CONFIG_WIN32THREADS
+#ifdef JTHREAD_CONFIG_JMUTEXCRITICALSECTION
 	CRITICAL_SECTION mutex;
 #else // Use standard mutex
 	HANDLE mutex;
-#endif // JMUTEX_CRITICALSECTION
+#endif // JTHREAD_CONFIG_JMUTEXCRITICALSECTION
 #else // pthread mutex
 	pthread_mutex_t mutex;
-#endif // WIN32
+#endif // JTHREAD_CONFIG_WIN32THREADS
 	bool initialized;
 };
 
-#endif // JMUTEX_H
+} // end namespace
+
+#endif // JTHREAD_JMUTEX_H
+
