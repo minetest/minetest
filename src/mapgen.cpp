@@ -70,13 +70,14 @@ static s16 find_ground_level_clever(VoxelManipulator &vmanip, v2s16 p2d,
 	s16 y_nodes_min = vmanip.m_area.MinEdge.Y;
 	u32 i = vmanip.m_area.index(v3s16(p2d.X, y_nodes_max, p2d.Y));
 	s16 y;
+	content_t c_tree = LEGN(ndef, "CONTENT_TREE");
+	content_t c_leaves = LEGN(ndef, "CONTENT_LEAVES");
 	for(y=y_nodes_max; y>=y_nodes_min; y--)
 	{
 		MapNode &n = vmanip.m_data[i];
 		if(ndef->get(n).walkable
-				// TODO: Cache LEGN values
-				&& n.getContent() != LEGN(ndef, "CONTENT_TREE")
-				&& n.getContent() != LEGN(ndef, "CONTENT_LEAVES"))
+				&& n.getContent() != c_tree
+				&& n.getContent() != c_leaves)
 			break;
 
 		vmanip.m_area.add_y(em, i, -1);
@@ -1200,9 +1201,9 @@ double base_rock_level_2d(u64 seed, v2s16 p)
 		base = base2;*/
 #if 1
 	// Higher ground level
-	double higher = (double)WATER_LEVEL + 20. + 10. * noise2d_perlin(
-			0.5+(float)p.X/250., 0.5+(float)p.Y/250.,
-			seed+85039, 4, 0.6);
+	double higher = (double)WATER_LEVEL + 20. + 16. * noise2d_perlin(
+			0.5+(float)p.X/500., 0.5+(float)p.Y/500.,
+			seed+85039, 5, 0.6);
 	//higher = 30; // For debugging
 
 	// Limit higher to at least base
@@ -1214,11 +1215,19 @@ double base_rock_level_2d(u64 seed, v2s16 p)
 			0.5+(float)p.X/125., 0.5+(float)p.Y/125.,
 			seed-932, 5, 0.7);
 	b = rangelim(b, 0.0, 1000.0);
-	b = pow(b, 8);
+	b = pow(b, 7);
 	b *= 5;
-	b = rangelim(b, 3.0, 1000.0);
+	b = rangelim(b, 0.5, 1000.0);
+	// Values 1.5...100 give quite horrible looking slopes
+	if(b > 1.5 && b < 100.0){
+		if(b < 10.0)
+			b = 1.5;
+		else
+			b = 100.0;
+	}
 	//dstream<<"b="<<b<<std::endl;
 	//double b = 20;
+	//b = 0.25;
 
 	// Offset to more low
 	double a_off = -0.20;
@@ -1542,6 +1551,7 @@ void make_block(BlockMakeData *data)
 		);
 
 		MapNode airnode(CONTENT_AIR);
+		MapNode waternode(c_water_source);
 		
 		/*
 			Generate some tunnel starting from orp
@@ -1567,7 +1577,7 @@ void make_block(BlockMakeData *data)
 			v3s16 maxlen;
 			if(bruise_surface)
 			{
-				maxlen = v3s16(rs*7,rs*7,rs*7);
+				maxlen = v3s16(rs*7,rs*2,rs*7);
 			}
 			else
 			{
@@ -1593,6 +1603,14 @@ void make_block(BlockMakeData *data)
 				);
 			}
 			
+			if(bruise_surface){
+				v3f p = orp + vec;
+				s16 h = find_ground_level_clever(vmanip,
+						v2s16(p.X, p.Z), ndef);
+				route_y_min = h - rs/3;
+				route_y_max = h + rs;
+			}
+
 			vec += main_direction;
 
 			v3f rp = orp + vec;
@@ -1613,14 +1631,16 @@ void make_block(BlockMakeData *data)
 			for(float f=0; f<1.0; f+=1.0/vec.getLength())
 			{
 				v3f fp = orp + vec * f;
+				fp.X += 0.1*myrand_range(-10,10);
+				fp.Z += 0.1*myrand_range(-10,10);
 				v3s16 cp(fp.X, fp.Y, fp.Z);
 
 				s16 d0 = -rs/2;
 				s16 d1 = d0 + rs - 1;
 				for(s16 z0=d0; z0<=d1; z0++)
 				{
-					//s16 si = rs - MYMAX(0, abs(z0)-rs/4);
-					s16 si = rs - MYMAX(0, abs(z0)-rs/7);
+					s16 si = rs - MYMAX(0, abs(z0)-rs/4);
+					//s16 si = rs - MYMAX(0, abs(z0)-rs/7);
 					for(s16 x0=-si; x0<=si-1; x0++)
 					{
 						s16 maxabsxz = MYMAX(abs(x0), abs(z0));
@@ -1657,7 +1677,14 @@ void make_block(BlockMakeData *data)
 							// Just set it to air, it will be changed to
 							// water afterwards
 							u32 i = vmanip.m_area.index(p);
-							vmanip.m_data[i] = airnode;
+							if(bruise_surface){
+								if(p.Y <= WATER_LEVEL)
+									vmanip.m_data[i] = waternode;
+								else
+									vmanip.m_data[i] = airnode;
+							} else {
+								vmanip.m_data[i] = airnode;
+							}
 
 							if(bruise_surface == false)
 							{
@@ -1692,8 +1719,15 @@ void make_block(BlockMakeData *data)
 		// Node position in 2d
 		v2s16 p2d = v2s16(x,z);
 		
+		MapNode addnode(c_dirt);
+
 		// Randomize mud amount
 		s16 mud_add_amount = get_mud_add_amount(data->seed, p2d) / 2.0;
+
+		if(mud_add_amount <= 0){
+			mud_add_amount = 1 - mud_add_amount;
+			addnode = MapNode(c_gravel);
+		}
 
 		// Find ground level
 		s16 surface_y = find_stone_level(vmanip, p2d, ndef);
@@ -1727,7 +1761,7 @@ void make_block(BlockMakeData *data)
 					break;
 					
 				MapNode &n = vmanip.m_data[i];
-				n = MapNode(c_dirt);
+				n = addnode;
 				mudcount++;
 
 				vmanip.m_area.add_y(em, i, 1);
