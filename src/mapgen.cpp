@@ -1461,12 +1461,10 @@ void make_block(BlockMakeData *data)
 	u32 bruises_count = volume_nodes * stone_surface_max_y / 40000000;
 	if(stone_surface_max_y < WATER_LEVEL - 20)
 		bruises_count = 0;
-	/*u32 caves_count = 0;
-	u32 bruises_count = 0;*/
 	for(u32 jj=0; jj<caves_count+bruises_count; jj++)
 	{
 		s16 min_tunnel_diameter = 2;
-		s16 max_tunnel_diameter = 5;
+		s16 max_tunnel_diameter = myrand_range(4,5);
 		u16 tunnel_routepoints = 20;
 		
 		v3f main_direction(0,0,0);
