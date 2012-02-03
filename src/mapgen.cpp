@@ -1416,12 +1416,14 @@ void make_block(BlockMakeData *data)
 			u32 i = vmanip.m_area.index(v3s16(p2d.X, node_min.Y, p2d.Y));
 			for(s16 y=node_min.Y; y<=node_max.Y; y++)
 			{
-				if(y <= surface_y)
-					vmanip.m_data[i] = MapNode(c_stone);
-				else if(y <= WATER_LEVEL)
+				if(y <= surface_y){
+					if(vmanip.m_data[i].getContent() == CONTENT_IGNORE)
+						vmanip.m_data[i] = MapNode(c_stone);
+				} else if(y <= WATER_LEVEL){
 					vmanip.m_data[i] = MapNode(c_water_source);
-				else
+				} else {
 					vmanip.m_data[i] = MapNode(c_air);
+				}
 
 				vmanip.m_area.add_y(em, i, 1);
 			}
