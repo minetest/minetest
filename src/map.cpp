@@ -2074,17 +2074,24 @@ void ServerMap::initBlockMake(mapgen::BlockMakeData *data, v3s16 blockpos)
 				<<"("<<blockpos.X<<","<<blockpos.Y<<","<<blockpos.Z<<")"
 				<<std::endl;
 	
-	s16 chunksize = 3;
-	v3s16 chunk_offset(-1,-1,-1);
+	//s16 chunksize = 3;
+	//v3s16 chunk_offset(-1,-1,-1);
+	//s16 chunksize = 4;
+	//v3s16 chunk_offset(-1,-1,-1);
+	s16 chunksize = 5;
+	v3s16 chunk_offset(-2,-2,-2);
 	v3s16 blockpos_div = getContainerPos(blockpos - chunk_offset, chunksize);
 	v3s16 blockpos_min = blockpos_div * chunksize;
 	v3s16 blockpos_max = blockpos_div * chunksize + v3s16(1,1,1)*(chunksize-1);
 	blockpos_min += chunk_offset;
 	blockpos_max += chunk_offset;
-	
+
+	//v3s16 extra_borders(1,1,1);
+	v3s16 extra_borders(1,1,1);
+
 	// Do nothing if not inside limits (+-1 because of neighbors)
-	if(blockpos_over_limit(blockpos_min - v3s16(1,1,1)) ||
-		blockpos_over_limit(blockpos_max + v3s16(1,1,1)))
+	if(blockpos_over_limit(blockpos_min - extra_borders) ||
+		blockpos_over_limit(blockpos_max + extra_borders))
 	{
 		data->no_op = true;
 		return;
@@ -2103,15 +2110,18 @@ void ServerMap::initBlockMake(mapgen::BlockMakeData *data, v3s16 blockpos)
 	{
 		//TimeTaker timer("initBlockMake() create area");
 		
-		for(s16 x=blockpos_min.X-1; x<=blockpos_max.X+1; x++)
-		for(s16 z=blockpos_min.Z-1; z<=blockpos_max.Z+1; z++)
+		for(s16 x=blockpos_min.X-extra_borders.X;
+				x<=blockpos_max.X+extra_borders.X; x++)
+		for(s16 z=blockpos_min.Z-extra_borders.Z;
+				z<=blockpos_max.Z+extra_borders.Z; z++)
 		{
 			v2s16 sectorpos(x, z);
 			// Sector metadata is loaded from disk if not already loaded.
 			ServerMapSector *sector = createSector(sectorpos);
 			assert(sector);
 
-			for(s16 y=blockpos_min.Y-1; y<=blockpos_max.Y+1; y++)
+			for(s16 y=blockpos_min.Y-extra_borders.Y;
+					y<=blockpos_max.Y+extra_borders.Y; y++)
 			{
 				v3s16 p(x,y,z);
 				//MapBlock *block = createBlock(p);
@@ -2147,8 +2157,8 @@ void ServerMap::initBlockMake(mapgen::BlockMakeData *data, v3s16 blockpos)
 	*/
 	
 	// The area that contains this block and it's neighbors
-	v3s16 bigarea_blocks_min = blockpos_min - v3s16(1,1,1);
-	v3s16 bigarea_blocks_max = blockpos_max + v3s16(1,1,1);
+	v3s16 bigarea_blocks_min = blockpos_min - extra_borders;
+	v3s16 bigarea_blocks_max = blockpos_max + extra_borders;
 	
 	data->vmanip = new ManualMapVoxelManipulator(this);
 	//data->vmanip->setMap(this);
@@ -2172,6 +2182,8 @@ MapBlock* ServerMap::finishBlockMake(mapgen::BlockMakeData *data,
 			<<blockpos_requested.Y<<","
 			<<blockpos_requested.Z<<")"<<std::endl;*/
 
+	v3s16 extra_borders(1,1,1);
+
 	if(data->no_op)
 	{
 		//infostream<<"finishBlockMake(): no-op"<<std::endl;
@@ -2184,9 +2196,12 @@ MapBlock* ServerMap::finishBlockMake(mapgen::BlockMakeData *data,
 	data->vmanip.print(infostream);*/
 
 	// Make sure affected blocks are loaded
-	for(s16 x=blockpos_min.X-1; x<=blockpos_max.X+1; x++)
-	for(s16 z=blockpos_min.Z-1; z<=blockpos_max.Z+1; z++)
-	for(s16 y=blockpos_min.Y-1; y<=blockpos_max.Y+1; y++)
+	for(s16 x=blockpos_min.X-extra_borders.X;
+			x<=blockpos_max.X+extra_borders.X; x++)
+	for(s16 z=blockpos_min.Z-extra_borders.Z;
+			z<=blockpos_max.Z+extra_borders.Z; z++)
+	for(s16 y=blockpos_min.Y-extra_borders.Y;
+			y<=blockpos_max.Y+extra_borders.Y; y++)
 	{
 		v3s16 p(x, y, z);
 		// Load from disk if not already in memory
@@ -2230,9 +2245,12 @@ MapBlock* ServerMap::finishBlockMake(mapgen::BlockMakeData *data,
 		core::map<v3s16, MapBlock*> lighting_update_blocks;
 		
 		// Center blocks
-		for(s16 x=blockpos_min.X; x<=blockpos_max.X; x++)
-		for(s16 z=blockpos_min.Z; z<=blockpos_max.Z; z++)
-		for(s16 y=blockpos_min.Y; y<=blockpos_max.Y; y++)
+		for(s16 x=blockpos_min.X-extra_borders.X;
+				x<=blockpos_max.X+extra_borders.X; x++)
+		for(s16 z=blockpos_min.Z-extra_borders.Z;
+				z<=blockpos_max.Z+extra_borders.Z; z++)
+		for(s16 y=blockpos_min.Y-extra_borders.Y;
+				y<=blockpos_max.Y+extra_borders.Y; y++)
 		{
 			v3s16 p(x, y, z);
 			MapBlock *block = getBlockNoCreateNoEx(p);
@@ -2248,9 +2266,12 @@ MapBlock* ServerMap::finishBlockMake(mapgen::BlockMakeData *data,
 			This is cheating, but it is not fast enough if all of them
 			would actually be updated.
 		*/
-		for(s16 x=blockpos_min.X-1; x<=blockpos_max.X+1; x++)
-		for(s16 z=blockpos_min.Z-1; z<=blockpos_max.Z+1; z++)
-		for(s16 y=blockpos_min.Y-1; y<=blockpos_max.Y+1; y++)
+		for(s16 x=blockpos_min.X-extra_borders.X;
+				x<=blockpos_max.X+extra_borders.X; x++)
+		for(s16 z=blockpos_min.Z-extra_borders.Z;
+				z<=blockpos_max.Z+extra_borders.Z; z++)
+		for(s16 y=blockpos_min.Y-extra_borders.Y;
+				y<=blockpos_max.Y+extra_borders.Y; y++)
 		{
 			v3s16 p(x, y, z);
 			getBlockNoCreateNoEx(p)->setLightingExpired(false);
