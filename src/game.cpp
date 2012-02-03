@@ -574,7 +574,7 @@ void update_skybox(video::IVideoDriver* driver, ITextureSource *tsrc,
 	if(g_settings->getBool("enable_farmesh"))
 		return;*/
 	
-	if(brightness >= 0.5)
+	if(brightness >= 0.7)
 	{
 		skybox = smgr->addSkyBoxSceneNode(
 			tsrc->getTextureRaw("skybox2.png"),
@@ -2117,14 +2117,21 @@ void the_game(
 		u32 daynight_ratio = client.getDayNightRatio();
 		u8 light8 = decode_light((daynight_ratio * LIGHT_SUN) / 1000);
 		brightness = (float)light8/255.0;
-		video::SColor bgcolor = video::SColor(
-				255,
-				bgcolor_bright.getRed() * brightness,
-				bgcolor_bright.getGreen() * brightness,
-				bgcolor_bright.getBlue() * brightness);
-				/*skycolor.getRed() * brightness,
-				skycolor.getGreen() * brightness,
-				skycolor.getBlue() * brightness);*/
+		// Make night look good
+		brightness = brightness * 1.15 - 0.15;
+		video::SColor bgcolor;
+		if(brightness >= 0.2 && brightness < 0.7)
+			bgcolor = video::SColor(
+					255,
+					bgcolor_bright.getRed() * brightness,
+					bgcolor_bright.getGreen() * brightness*0.7,
+					bgcolor_bright.getBlue() * brightness*0.5);
+		else
+			bgcolor = video::SColor(
+					255,
+					bgcolor_bright.getRed() * brightness,
+					bgcolor_bright.getGreen() * brightness,
+					bgcolor_bright.getBlue() * brightness);
 
 		/*
 			Update skybox
@@ -2139,7 +2146,7 @@ void the_game(
 		{
 			clouds->step(dtime);
 			clouds->update(v2f(player_position.X, player_position.Z),
-					0.05+brightness*0.95);
+					brightness);
 		}
 		
 		/*
@@ -2155,7 +2162,7 @@ void the_game(
 
 			farmesh->step(dtime);
 			farmesh->update(v2f(player_position.X, player_position.Z),
-					0.05+brightness*0.95, farmesh_range);
+					brightness, farmesh_range);
 		}
 		
 		// Store brightness value
