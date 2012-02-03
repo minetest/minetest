@@ -687,7 +687,7 @@ void RemoteClient::GetNextBlocks(Server *server, float dtime,
 				u32 max_emerge = 5;
 				// Make it more responsive when needing to generate stuff
 				if(surely_not_found_on_disk)
-					max_emerge = 2;
+					max_emerge = 1;
 				if(server->m_emerge_queue.peerItemCount(peer_id) < max_emerge)
 				{
 					//infostream<<"Adding block to emerge queue"<<std::endl;
