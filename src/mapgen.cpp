@@ -1328,9 +1328,7 @@ void make_block(BlockMakeData *data)
 	//double gen_area_nodes = MAP_BLOCKSIZE*MAP_BLOCKSIZE * rel_volume;
 
 	// Horribly wrong heuristic, but better than nothing
-	bool block_is_underground = (WATER_LEVEL /* local minimum ground level */ > 
-			MAP_BLOCKSIZE * (data->blockpos_max.X
-					- data->blockpos_min.X + 1) / 2);
+	bool block_is_underground = (WATER_LEVEL > node_max.Y);
 
 	/*
 		Create a block-specific seed
