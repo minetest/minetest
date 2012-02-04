@@ -1818,6 +1818,15 @@ public:
 			m_meshnode->setScale(v3f(1));
 			// Will be shown when we know the brightness
 			m_meshnode->setVisible(false);
+		} else if(m_prop->visual == "cube_allfaces"){
+			infostream<<"LuaEntityCAO::addToScene(): cube_allfaces"<<std::endl;
+			scene::IMesh *mesh = createCubeMesh(v3f(BS,BS,BS),true);
+			m_meshnode = smgr->addMeshSceneNode(mesh, NULL);
+			mesh->drop();
+
+			m_meshnode->setScale(v3f(1));
+			// Will be shown when we know the brightness
+			m_meshnode->setVisible(false);
 		} else if (m_prop->visual == "plant") {
 			infostream<<"LuaEntityCAO::addToScene(): plant"<<std::endl;
 			scene::IMesh *mesh = createPlantMesh(v3f(BS,BS,BS));

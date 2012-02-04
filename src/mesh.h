@@ -30,7 +30,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 	The resulting mesh has 6 materials (up, down, right, left, back, front)
 	which must be defined by the caller.
 */
-scene::IAnimatedMesh* createCubeMesh(v3f scale);
+scene::IAnimatedMesh* createCubeMesh(v3f scale, bool allfaces=false);
 
 /*
 	Create a new cube mesh not linked to mapnode size.
