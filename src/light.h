@@ -75,15 +75,26 @@ inline u8 undiminish_light(u8 light)
 
 extern u8 light_decode_table[LIGHT_MAX+1];
 
+// 0 <= light <= LIGHT_SUN
+// 0 <= return value <= 255
 inline u8 decode_light(u8 light)
 {
-	if(light == LIGHT_SUN)
-		return light_decode_table[LIGHT_MAX];
-	
 	if(light > LIGHT_MAX)
 		light = LIGHT_MAX;
 	
 	return light_decode_table[light];
+}
+
+// 0 <= daylight_factor <= 1000
+// 0 <= lightday, lightnight <= LIGHT_SUN
+// 0 <= return value <= LIGHT_SUN
+inline u8 blend_light(u32 daylight_factor, u8 lightday, u8 lightnight)
+{
+	u32 c = 1000;
+	u32 l = ((daylight_factor * lightday + (c-daylight_factor) * lightnight))/c;
+	if(l > LIGHT_SUN)
+		l = LIGHT_SUN;
+	return l;
 }
 
 #endif

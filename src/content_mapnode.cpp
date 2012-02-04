@@ -27,80 +27,11 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <map>
 
 /*
-	Legacy node definitions
-*/
-
-#define WATER_ALPHA 160
-
-#define WATER_VISC 1
-#define LAVA_VISC 7
-
-void setConstantMaterialProperties(MaterialProperties &mprop, float time)
-{
-	mprop.diggability = DIGGABLE_CONSTANT;
-	mprop.constant_time = time;
-}
-
-void setStoneLikeMaterialProperties(MaterialProperties &mprop, float toughness)
-{
-	mprop.diggability = DIGGABLE_NORMAL;
-	mprop.weight = 5.0 * toughness;
-	mprop.crackiness = 1.0;
-	mprop.crumbliness = -0.1;
-	mprop.cuttability = -0.2;
-}
-
-void setDirtLikeMaterialProperties(MaterialProperties &mprop, float toughness)
-{
-	mprop.diggability = DIGGABLE_NORMAL;
-	mprop.weight = toughness * 1.2;
-	mprop.crackiness = 0;
-	mprop.crumbliness = 1.2;
-	mprop.cuttability = -0.4;
-}
-
-void setGravelLikeMaterialProperties(MaterialProperties &mprop, float toughness)
-{
-	mprop.diggability = DIGGABLE_NORMAL;
-	mprop.weight = toughness * 2.0;
-	mprop.crackiness = 0.2;
-	mprop.crumbliness = 1.5;
-	mprop.cuttability = -1.0;
-}
-
-void setWoodLikeMaterialProperties(MaterialProperties &mprop, float toughness)
-{
-	mprop.diggability = DIGGABLE_NORMAL;
-	mprop.weight = toughness * 1.0;
-	mprop.crackiness = 0.75;
-	mprop.crumbliness = -1.0;
-	mprop.cuttability = 1.5;
-}
-
-void setLeavesLikeMaterialProperties(MaterialProperties &mprop, float toughness)
-{
-	mprop.diggability = DIGGABLE_NORMAL;
-	mprop.weight = -0.5 * toughness;
-	mprop.crackiness = 0;
-	mprop.crumbliness = 0;
-	mprop.cuttability = 2.0;
-}
-
-void setGlassLikeMaterialProperties(MaterialProperties &mprop, float toughness)
-{
-	mprop.diggability = DIGGABLE_NORMAL;
-	mprop.weight = 0.1 * toughness;
-	mprop.crackiness = 2.0;
-	mprop.crumbliness = -1.0;
-	mprop.cuttability = -1.0;
-}
-
-/*
 	Legacy node content type IDs
 	Ranges:
 	0x000...0x07f (0...127): param2 is fully usable
 	126 and 127 are reserved (CONTENT_AIR and CONTENT_IGNORE).
-	0x800...0xfff (2048...4095): higher 4 bytes of param2 are not usable
+	0x800...0xfff (2048...4095): higher 4 bits of param2 are not usable
 */
 #define CONTENT_STONE 0
 #define CONTENT_WATER 2
@@ -209,46 +140,46 @@ MapNode mapnode_translate_to_internal(MapNode n_from, u8 version)
 
 void content_mapnode_get_name_id_mapping(NameIdMapping *nimap)
 {
-	nimap->set(0, "stone");
-	nimap->set(2, "water_flowing");
-	nimap->set(3, "torch");
-	nimap->set(9, "water_source");
-	nimap->set(14, "sign_wall");
-	nimap->set(15, "chest");
-	nimap->set(16, "furnace");
-	nimap->set(17, "locked_chest");
-	nimap->set(21, "wooden_fence");
-	nimap->set(30, "rail");
-	nimap->set(31, "ladder");
-	nimap->set(32, "lava_flowing");
-	nimap->set(33, "lava_source");
-	nimap->set(0x800, "dirt_with_grass");
-	nimap->set(0x801, "tree");
-	nimap->set(0x802, "leaves");
-	nimap->set(0x803, "dirt_with_grass_footsteps");
-	nimap->set(0x804, "mese");
-	nimap->set(0x805, "dirt");
-	nimap->set(0x806, "cloud");
-	nimap->set(0x807, "coalstone");
-	nimap->set(0x808, "wood");
-	nimap->set(0x809, "sand");
-	nimap->set(0x80a, "cobble");
-	nimap->set(0x80b, "steel");
-	nimap->set(0x80c, "glass");
-	nimap->set(0x80d, "mossycobble");
-	nimap->set(0x80e, "gravel");
-	nimap->set(0x80f, "sandstone");
-	nimap->set(0x810, "cactus");
-	nimap->set(0x811, "brick");
-	nimap->set(0x812, "clay");
-	nimap->set(0x813, "papyrus");
-	nimap->set(0x814, "bookshelf");
-	nimap->set(0x815, "jungletree");
-	nimap->set(0x816, "junglegrass");
-	nimap->set(0x817, "nyancat");
-	nimap->set(0x818, "nyancat_rainbow");
-	nimap->set(0x819, "apple");
-	nimap->set(0x820, "sapling");
+	nimap->set(0, "default:stone");
+	nimap->set(2, "default:water_flowing");
+	nimap->set(3, "default:torch");
+	nimap->set(9, "default:water_source");
+	nimap->set(14, "default:sign_wall");
+	nimap->set(15, "default:chest");
+	nimap->set(16, "default:furnace");
+	nimap->set(17, "default:chest_locked");
+	nimap->set(21, "default:fence_wood");
+	nimap->set(30, "default:rail");
+	nimap->set(31, "default:ladder");
+	nimap->set(32, "default:lava_flowing");
+	nimap->set(33, "default:lava_source");
+	nimap->set(0x800, "default:dirt_with_grass");
+	nimap->set(0x801, "default:tree");
+	nimap->set(0x802, "default:leaves");
+	nimap->set(0x803, "default:dirt_with_grass_footsteps");
+	nimap->set(0x804, "default:mese");
+	nimap->set(0x805, "default:dirt");
+	nimap->set(0x806, "default:cloud");
+	nimap->set(0x807, "default:coalstone");
+	nimap->set(0x808, "default:wood");
+	nimap->set(0x809, "default:sand");
+	nimap->set(0x80a, "default:cobble");
+	nimap->set(0x80b, "default:steelblock");
+	nimap->set(0x80c, "default:glass");
+	nimap->set(0x80d, "default:mossycobble");
+	nimap->set(0x80e, "default:gravel");
+	nimap->set(0x80f, "default:sandstone");
+	nimap->set(0x810, "default:cactus");
+	nimap->set(0x811, "default:brick");
+	nimap->set(0x812, "default:clay");
+	nimap->set(0x813, "default:papyrus");
+	nimap->set(0x814, "default:bookshelf");
+	nimap->set(0x815, "default:jungletree");
+	nimap->set(0x816, "default:junglegrass");
+	nimap->set(0x817, "default:nyancat");
+	nimap->set(0x818, "default:nyancat_rainbow");
+	nimap->set(0x819, "default:apple");
+	nimap->set(0x820, "default:sapling");
 	// Static types
 	nimap->set(CONTENT_IGNORE, "ignore");
 	nimap->set(CONTENT_AIR, "air");
@@ -259,46 +190,46 @@ class NewNameGetter
 public:
 	NewNameGetter()
 	{
-		old_to_new["CONTENT_STONE"] = "stone";
-		old_to_new["CONTENT_WATER"] = "water_flowing";
-		old_to_new["CONTENT_TORCH"] = "torch";
-		old_to_new["CONTENT_WATERSOURCE"] = "water_source";
-		old_to_new["CONTENT_SIGN_WALL"] = "sign_wall";
-		old_to_new["CONTENT_CHEST"] = "chest";
-		old_to_new["CONTENT_FURNACE"] = "furnace";
-		old_to_new["CONTENT_LOCKABLE_CHEST"] = "locked_chest";
-		old_to_new["CONTENT_FENCE"] = "wooden_fence";
-		old_to_new["CONTENT_RAIL"] = "rail";
-		old_to_new["CONTENT_LADDER"] = "ladder";
-		old_to_new["CONTENT_LAVA"] = "lava_flowing";
-		old_to_new["CONTENT_LAVASOURCE"] = "lava_source";
-		old_to_new["CONTENT_GRASS"] = "dirt_with_grass";
-		old_to_new["CONTENT_TREE"] = "tree";
-		old_to_new["CONTENT_LEAVES"] = "leaves";
-		old_to_new["CONTENT_GRASS_FOOTSTEPS"] = "dirt_with_grass_footsteps";
-		old_to_new["CONTENT_MESE"] = "mese";
-		old_to_new["CONTENT_MUD"] = "dirt";
-		old_to_new["CONTENT_CLOUD"] = "cloud";
-		old_to_new["CONTENT_COALSTONE"] = "coalstone";
-		old_to_new["CONTENT_WOOD"] = "wood";
-		old_to_new["CONTENT_SAND"] = "sand";
-		old_to_new["CONTENT_COBBLE"] = "cobble";
-		old_to_new["CONTENT_STEEL"] = "steel";
-		old_to_new["CONTENT_GLASS"] = "glass";
-		old_to_new["CONTENT_MOSSYCOBBLE"] = "mossycobble";
-		old_to_new["CONTENT_GRAVEL"] = "gravel";
-		old_to_new["CONTENT_SANDSTONE"] = "sandstone";
-		old_to_new["CONTENT_CACTUS"] = "cactus";
-		old_to_new["CONTENT_BRICK"] = "brick";
-		old_to_new["CONTENT_CLAY"] = "clay";
-		old_to_new["CONTENT_PAPYRUS"] = "papyrus";
-		old_to_new["CONTENT_BOOKSHELF"] = "bookshelf";
-		old_to_new["CONTENT_JUNGLETREE"] = "jungletree";
-		old_to_new["CONTENT_JUNGLEGRASS"] = "junglegrass";
-		old_to_new["CONTENT_NC"] = "nyancat";
-		old_to_new["CONTENT_NC_RB"] = "nyancat_rainbow";
-		old_to_new["CONTENT_APPLE"] = "apple";
-		old_to_new["CONTENT_SAPLING"] = "sapling";
+		old_to_new["CONTENT_STONE"] = "default:stone";
+		old_to_new["CONTENT_WATER"] = "default:water_flowing";
+		old_to_new["CONTENT_TORCH"] = "default:torch";
+		old_to_new["CONTENT_WATERSOURCE"] = "default:water_source";
+		old_to_new["CONTENT_SIGN_WALL"] = "default:sign_wall";
+		old_to_new["CONTENT_CHEST"] = "default:chest";
+		old_to_new["CONTENT_FURNACE"] = "default:furnace";
+		old_to_new["CONTENT_LOCKABLE_CHEST"] = "default:locked_chest";
+		old_to_new["CONTENT_FENCE"] = "default:wooden_fence";
+		old_to_new["CONTENT_RAIL"] = "default:rail";
+		old_to_new["CONTENT_LADDER"] = "default:ladder";
+		old_to_new["CONTENT_LAVA"] = "default:lava_flowing";
+		old_to_new["CONTENT_LAVASOURCE"] = "default:lava_source";
+		old_to_new["CONTENT_GRASS"] = "default:dirt_with_grass";
+		old_to_new["CONTENT_TREE"] = "default:tree";
+		old_to_new["CONTENT_LEAVES"] = "default:leaves";
+		old_to_new["CONTENT_GRASS_FOOTSTEPS"] = "default:dirt_with_grass_footsteps";
+		old_to_new["CONTENT_MESE"] = "default:mese";
+		old_to_new["CONTENT_MUD"] = "default:dirt";
+		old_to_new["CONTENT_CLOUD"] = "default:cloud";
+		old_to_new["CONTENT_COALSTONE"] = "default:coalstone";
+		old_to_new["CONTENT_WOOD"] = "default:wood";
+		old_to_new["CONTENT_SAND"] = "default:sand";
+		old_to_new["CONTENT_COBBLE"] = "default:cobble";
+		old_to_new["CONTENT_STEEL"] = "default:steel";
+		old_to_new["CONTENT_GLASS"] = "default:glass";
+		old_to_new["CONTENT_MOSSYCOBBLE"] = "default:mossycobble";
+		old_to_new["CONTENT_GRAVEL"] = "default:gravel";
+		old_to_new["CONTENT_SANDSTONE"] = "default:sandstone";
+		old_to_new["CONTENT_CACTUS"] = "default:cactus";
+		old_to_new["CONTENT_BRICK"] = "default:brick";
+		old_to_new["CONTENT_CLAY"] = "default:clay";
+		old_to_new["CONTENT_PAPYRUS"] = "default:papyrus";
+		old_to_new["CONTENT_BOOKSHELF"] = "default:bookshelf";
+		old_to_new["CONTENT_JUNGLETREE"] = "default:jungletree";
+		old_to_new["CONTENT_JUNGLEGRASS"] = "default:junglegrass";
+		old_to_new["CONTENT_NC"] = "default:nyancat";
+		old_to_new["CONTENT_NC_RB"] = "default:nyancat_rainbow";
+		old_to_new["CONTENT_APPLE"] = "default:apple";
+		old_to_new["CONTENT_SAPLING"] = "default:sapling";
 		// Just in case
 		old_to_new["CONTENT_IGNORE"] = "ignore";
 		old_to_new["CONTENT_AIR"] = "air";
@@ -333,606 +264,4 @@ content_t legacy_get_id(const std::string &oldname, INodeDefManager *ndef)
 		return CONTENT_IGNORE;
 	return id;
 }
-
-// Initialize default (legacy) node definitions
-void content_mapnode_init(IWritableNodeDefManager *nodemgr)
-{
-	content_t i;
-	ContentFeatures f;
-
-	i = CONTENT_STONE;
-	f = ContentFeatures();
-	f.name = "stone";
-	f.setAllTextures("stone.png");
-	f.setInventoryTextureCube("stone.png", "stone.png", "stone.png");
-	f.param_type = CPT_MINERAL;
-	f.is_ground_content = true;
-	f.often_contains_mineral = true;
-	f.dug_item = std::string("MaterialItem2 ")+itos(CONTENT_COBBLE)+" 1";
-	setStoneLikeMaterialProperties(f.material, 1.0);
-	nodemgr->set(i, f);
-
-	i = CONTENT_GRASS;
-	f = ContentFeatures();
-	f.name = "dirt_with_grass";
-	f.setAllTextures("mud.png^grass_side.png");
-	f.setTexture(0, "grass.png");
-	f.setTexture(1, "mud.png");
-	f.param_type = CPT_MINERAL;
-	f.is_ground_content = true;
-	f.dug_item = std::string("MaterialItem2 ")+itos(CONTENT_MUD)+" 1";
-	setDirtLikeMaterialProperties(f.material, 1.0);
-	nodemgr->set(i, f);
-
-	i = CONTENT_GRASS_FOOTSTEPS;
-	f = ContentFeatures();
-	f.name = "dirt_with_grass_footsteps";
-	f.setAllTextures("mud.png^grass_side.png");
-	f.setTexture(0, "grass_footsteps.png");
-	f.setTexture(1, "mud.png");
-	f.param_type = CPT_MINERAL;
-	f.is_ground_content = true;
-	f.dug_item = std::string("MaterialItem2 ")+itos(CONTENT_MUD)+" 1";
-	setDirtLikeMaterialProperties(f.material, 1.0);
-	nodemgr->set(i, f);
-
-	i = CONTENT_MUD;
-	f = ContentFeatures();
-	f.name = "dirt";
-	f.setAllTextures("mud.png");
-	f.setInventoryTextureCube("mud.png", "mud.png", "mud.png");
-	f.param_type = CPT_MINERAL;
-	f.is_ground_content = true;
-	f.dug_item = std::string("MaterialItem2 ")+itos(i)+" 1";
-	setDirtLikeMaterialProperties(f.material, 1.0);
-	nodemgr->set(i, f);
-
-	i = CONTENT_SAND;
-	f = ContentFeatures();
-	f.name = "sand";
-	f.setAllTextures("sand.png");
-	f.setInventoryTextureCube("sand.png", "sand.png", "sand.png");
-	f.param_type = CPT_MINERAL;
-	f.is_ground_content = true;
-	f.dug_item = std::string("MaterialItem2 ")+itos(i)+" 1";
-	f.cookresult_item = std::string("MaterialItem2 ")+itos(CONTENT_GLASS)+" 1";
-	setDirtLikeMaterialProperties(f.material, 1.0);
-	nodemgr->set(i, f);
-
-	i = CONTENT_GRAVEL;
-	f = ContentFeatures();
-	f.name = "gravel";
-	f.setAllTextures("gravel.png");
-	f.setInventoryTextureCube("gravel.png", "gravel.png", "gravel.png");
-	f.param_type = CPT_MINERAL;
-	f.is_ground_content = true;
-	f.dug_item = std::string("MaterialItem2 ")+itos(i)+" 1";
-	setGravelLikeMaterialProperties(f.material, 1.0);
-	nodemgr->set(i, f);
-
-	i = CONTENT_SANDSTONE;
-	f = ContentFeatures();
-	f.name = "sandstone";
-	f.setAllTextures("sandstone.png");
-	f.setInventoryTextureCube("sandstone.png", "sandstone.png", "sandstone.png");
-	f.param_type = CPT_MINERAL;
-	f.is_ground_content = true;
-	f.dug_item = std::string("MaterialItem2 ")+itos(CONTENT_SAND)+" 1";
-	setDirtLikeMaterialProperties(f.material, 1.0);
-	nodemgr->set(i, f);
-
-	i = CONTENT_CLAY;
-	f = ContentFeatures();
-	f.name = "clay";
-	f.setAllTextures("clay.png");
-	f.setInventoryTextureCube("clay.png", "clay.png", "clay.png");
-	f.param_type = CPT_MINERAL;
-	f.is_ground_content = true;
-	f.dug_item = std::string("CraftItem lump_of_clay 4");
-	setDirtLikeMaterialProperties(f.material, 1.0);
-	nodemgr->set(i, f);
-
-	i = CONTENT_BRICK;
-	f = ContentFeatures();
-	f.name = "brick";
-	f.setAllTextures("brick.png");
-	f.setInventoryTextureCube("brick.png", "brick.png", "brick.png");
-	f.param_type = CPT_MINERAL;
-	f.is_ground_content = true;
-	f.dug_item = std::string("CraftItem clay_brick 4");
-	setStoneLikeMaterialProperties(f.material, 1.0);
-	nodemgr->set(i, f);
-
-	i = CONTENT_TREE;
-	f = ContentFeatures();
-	f.name = "tree";
-	f.setAllTextures("tree.png");
-	f.setTexture(0, "tree_top.png");
-	f.setTexture(1, "tree_top.png");
-	f.param_type = CPT_MINERAL;
-	f.is_ground_content = true;
-	f.dug_item = std::string("MaterialItem2 ")+itos(i)+" 1";
-	f.cookresult_item = "CraftItem lump_of_coal 1";
-	f.furnace_burntime = 30;
-	setWoodLikeMaterialProperties(f.material, 1.0);
-	nodemgr->set(i, f);
-
-	i = CONTENT_JUNGLETREE;
-	f = ContentFeatures();
-	f.name = "jungletree";
-	f.setAllTextures("jungletree.png");
-	f.setTexture(0, "jungletree_top.png");
-	f.setTexture(1, "jungletree_top.png");
-	f.param_type = CPT_MINERAL;
-	f.dug_item = std::string("MaterialItem2 ")+itos(i)+" 1";
-	f.furnace_burntime = 30;
-	setWoodLikeMaterialProperties(f.material, 1.0);
-	nodemgr->set(i, f);
-
-	i = CONTENT_JUNGLEGRASS;
-	f = ContentFeatures();
-	f.name = "junglegrass";
-	f.drawtype = NDT_PLANTLIKE;
-	f.visual_scale = 1.3;
-	f.setAllTextures("junglegrass.png");
-	f.setInventoryTexture("junglegrass.png");
-	f.light_propagates = true;
-	f.param_type = CPT_LIGHT;
-	f.dug_item = std::string("MaterialItem2 ")+itos(i)+" 1";
-	f.walkable = false;
-	setLeavesLikeMaterialProperties(f.material, 1.0);
-	f.furnace_burntime = 2;
-	nodemgr->set(i, f);
-
-	i = CONTENT_LEAVES;
-	f = ContentFeatures();
-	f.name = "leaves";
-	f.drawtype = NDT_ALLFACES_OPTIONAL;
-	f.setAllTextures("leaves.png");
-	//f.setAllTextures("[noalpha:leaves.png");
-	f.light_propagates = true;
-	f.param_type = CPT_LIGHT;
-	f.extra_dug_item = std::string("MaterialItem2 ")+itos(CONTENT_SAPLING)+" 1";
-	f.extra_dug_item_rarity = 20;
-	f.dug_item = std::string("MaterialItem2 ")+itos(i)+" 1";
-	setLeavesLikeMaterialProperties(f.material, 1.0);
-	f.furnace_burntime = 1.0;
-	nodemgr->set(i, f);
-
-	i = CONTENT_CACTUS;
-	f = ContentFeatures();
-	f.name = "cactus";
-	f.setAllTextures("cactus_side.png");
-	f.setTexture(0, "cactus_top.png");
-	f.setTexture(1, "cactus_top.png");
-	f.setInventoryTextureCube("cactus_top.png", "cactus_side.png", "cactus_side.png");
-	f.param_type = CPT_MINERAL;
-	f.is_ground_content = true;
-	f.dug_item = std::string("MaterialItem2 ")+itos(i)+" 1";
-	setWoodLikeMaterialProperties(f.material, 0.75);
-	f.furnace_burntime = 15;
-	nodemgr->set(i, f);
-
-	i = CONTENT_PAPYRUS;
-	f = ContentFeatures();
-	f.name = "papyrus";
-	f.drawtype = NDT_PLANTLIKE;
-	f.setAllTextures("papyrus.png");
-	f.setInventoryTexture("papyrus.png");
-	f.light_propagates = true;
-	f.param_type = CPT_LIGHT;
-	f.is_ground_content = true;
-	f.dug_item = std::string("MaterialItem2 ")+itos(i)+" 1";
-	f.walkable = false;
-	setLeavesLikeMaterialProperties(f.material, 0.5);
-	f.furnace_burntime = 1;
-	nodemgr->set(i, f);
-
-	i = CONTENT_BOOKSHELF;
-	f = ContentFeatures();
-	f.name = "bookshelf";
-	f.setAllTextures("bookshelf.png");
-	f.setTexture(0, "wood.png");
-	f.setTexture(1, "wood.png");
-	// FIXME: setInventoryTextureCube() only cares for the first texture
-	f.setInventoryTextureCube("bookshelf.png", "bookshelf.png", "bookshelf.png");
-	//f.setInventoryTextureCube("wood.png", "bookshelf.png", "bookshelf.png");
-	f.param_type = CPT_MINERAL;
-	f.is_ground_content = true;
-	setWoodLikeMaterialProperties(f.material, 0.75);
-	f.furnace_burntime = 30;
-	nodemgr->set(i, f);
-
-	i = CONTENT_GLASS;
-	f = ContentFeatures();
-	f.name = "glass";
-	f.drawtype = NDT_GLASSLIKE;
-	f.setAllTextures("glass.png");
-	f.light_propagates = true;
-	f.sunlight_propagates = true;
-	f.param_type = CPT_LIGHT;
-	f.is_ground_content = true;
-	f.dug_item = std::string("MaterialItem2 ")+itos(i)+" 1";
-	f.setInventoryTextureCube("glass.png", "glass.png", "glass.png");
-	setGlassLikeMaterialProperties(f.material, 1.0);
-	nodemgr->set(i, f);
-
-	i = CONTENT_FENCE;
-	f = ContentFeatures();
-	f.name = "wooden_fence";
-	f.drawtype = NDT_FENCELIKE;
-	f.setInventoryTexture("fence.png");
-	f.setTexture(0, "wood.png");
-	f.light_propagates = true;
-	f.param_type = CPT_LIGHT;
-	f.is_ground_content = true;
-	f.dug_item = std::string("MaterialItem2 ")+itos(i)+" 1";
-	f.selection_box.type = NODEBOX_FIXED;
-	f.selection_box.fixed = core::aabbox3d<f32>(
-			-BS/7, -BS/2, -BS/7, BS/7, BS/2, BS/7);
-	f.furnace_burntime = 30/2;
-	setWoodLikeMaterialProperties(f.material, 0.75);
-	nodemgr->set(i, f);
-
-	i = CONTENT_RAIL;
-	f = ContentFeatures();
-	f.name = "rail";
-	f.drawtype = NDT_RAILLIKE;
-	f.setInventoryTexture("rail.png");
-	f.setTexture(0, "rail.png");
-	f.setTexture(1, "rail_curved.png");
-	f.setTexture(2, "rail_t_junction.png");
-	f.setTexture(3, "rail_crossing.png");
-	f.light_propagates = true;
-	f.param_type = CPT_LIGHT;
-	f.is_ground_content = true;
-	f.dug_item = std::string("MaterialItem2 ")+itos(i)+" 1";
-	f.walkable = false;
-	f.selection_box.type = NODEBOX_FIXED;
-	f.furnace_burntime = 5;
-	setDirtLikeMaterialProperties(f.material, 0.75);
-	nodemgr->set(i, f);
-
-	i = CONTENT_LADDER;
-	f = ContentFeatures();
-	f.name = "ladder";
-	f.drawtype = NDT_SIGNLIKE;
-	f.setAllTextures("ladder.png");
-	f.setInventoryTexture("ladder.png");
-	f.light_propagates = true;
-	f.param_type = CPT_LIGHT;
-	f.is_ground_content = true;
-	f.dug_item = std::string("MaterialItem ")+itos(i)+" 1";
-	f.wall_mounted = true;
-	f.walkable = false;
-	f.climbable = true;
-	f.selection_box.type = NODEBOX_WALLMOUNTED;
-	f.furnace_burntime = 5;
-	setWoodLikeMaterialProperties(f.material, 0.5);
-
-	nodemgr->set(i, f);
-
-	i = CONTENT_COALSTONE;
-	f = ContentFeatures();
-	f.name = "coalstone";
-	f.setAllTextures("stone.png^mineral_coal.png");
-	f.is_ground_content = true;
-	setStoneLikeMaterialProperties(f.material, 1.5);
-	nodemgr->set(i, f);
-
-	i = CONTENT_WOOD;
-	f = ContentFeatures();
-	f.name = "wood";
-	f.setAllTextures("wood.png");
-	f.setInventoryTextureCube("wood.png", "wood.png", "wood.png");
-	f.is_ground_content = true;
-	f.dug_item = std::string("MaterialItem2 ")+itos(i)+" 1";
-	f.furnace_burntime = 30/4;
-	setWoodLikeMaterialProperties(f.material, 0.75);
-	nodemgr->set(i, f);
-
-	i = CONTENT_MESE;
-	f = ContentFeatures();
-	f.name = "mese";
-	f.setAllTextures("mese.png");
-	f.setInventoryTextureCube("mese.png", "mese.png", "mese.png");
-	f.is_ground_content = true;
-	f.dug_item = std::string("MaterialItem2 ")+itos(i)+" 1";
-	f.furnace_burntime = 30;
-	setStoneLikeMaterialProperties(f.material, 0.5);
-	nodemgr->set(i, f);
-
-	i = CONTENT_CLOUD;
-	f = ContentFeatures();
-	f.name = "cloud";
-	f.setAllTextures("cloud.png");
-	f.setInventoryTextureCube("cloud.png", "cloud.png", "cloud.png");
-	f.is_ground_content = true;
-	f.dug_item = std::string("MaterialItem2 ")+itos(i)+" 1";
-	nodemgr->set(i, f);
-
-	i = CONTENT_AIR;
-	f = ContentFeatures();
-	f.name = "air";
-	f.param_type = CPT_LIGHT;
-	f.light_propagates = true;
-	f.sunlight_propagates = true;
-	f.walkable = false;
-	f.pointable = false;
-	f.diggable = false;
-	f.buildable_to = true;
-	nodemgr->set(i, f);
-
-	i = CONTENT_WATER;
-	f = ContentFeatures();
-	f.name = "water_flowing";
-	f.drawtype = NDT_FLOWINGLIQUID;
-	f.setAllTextures("water.png");
-	f.alpha = WATER_ALPHA;
-	f.setInventoryTextureCube("water.png", "water.png", "water.png");
-	f.param_type = CPT_LIGHT;
-	f.light_propagates = true;
-	f.walkable = false;
-	f.pointable = false;
-	f.diggable = false;
-	f.buildable_to = true;
-	f.liquid_type = LIQUID_FLOWING;
-	f.liquid_alternative_flowing = "water_flowing";
-	f.liquid_alternative_source = "water_source";
-	f.liquid_viscosity = WATER_VISC;
-	f.post_effect_color = video::SColor(64, 100, 100, 200);
-	f.setSpecialMaterial(0, MaterialSpec("water.png", false));
-	f.setSpecialMaterial(1, MaterialSpec("water.png", true));
-	nodemgr->set(i, f);
-
-	i = CONTENT_WATERSOURCE;
-	f = ContentFeatures();
-	f.name = "water_source";
-	f.drawtype = NDT_LIQUID;
-	f.setAllTextures("water.png");
-	f.alpha = WATER_ALPHA;
-	f.setInventoryTextureCube("water.png", "water.png", "water.png");
-	f.param_type = CPT_LIGHT;
-	f.light_propagates = true;
-	f.walkable = false;
-	f.pointable = false;
-	f.diggable = false;
-	f.buildable_to = true;
-	f.liquid_type = LIQUID_SOURCE;
-	f.dug_item = std::string("MaterialItem2 ")+itos(i)+" 1";
-	f.liquid_alternative_flowing = "water_flowing";
-	f.liquid_alternative_source = "water_source";
-	f.liquid_viscosity = WATER_VISC;
-	f.post_effect_color = video::SColor(64, 100, 100, 200);
-	// New-style water source material (mostly unused)
-	f.setSpecialMaterial(0, MaterialSpec("water.png", false));
-	nodemgr->set(i, f);
-
-	i = CONTENT_LAVA;
-	f = ContentFeatures();
-	f.name = "lava_flowing";
-	f.drawtype = NDT_FLOWINGLIQUID;
-	f.setAllTextures("lava.png");
-	f.setInventoryTextureCube("lava.png", "lava.png", "lava.png");
-	f.param_type = CPT_LIGHT;
-	f.light_propagates = false;
-	f.light_source = LIGHT_MAX-1;
-	f.walkable = false;
-	f.pointable = false;
-	f.diggable = false;
-	f.buildable_to = true;
-	f.liquid_type = LIQUID_FLOWING;
-	f.liquid_alternative_flowing = "lava_flowing";
-	f.liquid_alternative_source = "lava_source";
-	f.liquid_viscosity = LAVA_VISC;
-	f.damage_per_second = 4*2;
-	f.post_effect_color = video::SColor(192, 255, 64, 0);
-	f.setSpecialMaterial(0, MaterialSpec("lava.png", false));
-	f.setSpecialMaterial(1, MaterialSpec("lava.png", true));
-	nodemgr->set(i, f);
-
-	i = CONTENT_LAVASOURCE;
-	f = ContentFeatures();
-	f.name = "lava_source";
-	f.drawtype = NDT_LIQUID;
-	f.setAllTextures("lava.png");
-	f.setInventoryTextureCube("lava.png", "lava.png", "lava.png");
-	f.param_type = CPT_LIGHT;
-	f.light_propagates = false;
-	f.light_source = LIGHT_MAX-1;
-	f.walkable = false;
-	f.pointable = false;
-	f.diggable = false;
-	f.buildable_to = true;
-	f.liquid_type = LIQUID_SOURCE;
-	f.dug_item = std::string("MaterialItem2 ")+itos(i)+" 1";
-	f.liquid_alternative_flowing = "lava_flowing";
-	f.liquid_alternative_source = "lava_source";
-	f.liquid_viscosity = LAVA_VISC;
-	f.damage_per_second = 4*2;
-	f.post_effect_color = video::SColor(192, 255, 64, 0);
-	// New-style lava source material (mostly unused)
-	f.setSpecialMaterial(0, MaterialSpec("lava.png", false));
-	f.furnace_burntime = 60;
-	nodemgr->set(i, f);
-
-	i = CONTENT_TORCH;
-	f = ContentFeatures();
-	f.name = "torch";
-	f.drawtype = NDT_TORCHLIKE;
-	f.setTexture(0, "torch_on_floor.png");
-	f.setTexture(1, "torch_on_ceiling.png");
-	f.setTexture(2, "torch.png");
-	f.setInventoryTexture("torch_on_floor.png");
-	f.param_type = CPT_LIGHT;
-	f.light_propagates = true;
-	f.sunlight_propagates = true;
-	f.walkable = false;
-	f.wall_mounted = true;
-	f.dug_item = std::string("MaterialItem2 ")+itos(i)+" 1";
-	f.light_source = LIGHT_MAX-1;
-	f.selection_box.type = NODEBOX_WALLMOUNTED;
-	f.selection_box.wall_top = core::aabbox3d<f32>(
-			-BS/10, BS/2-BS/3.333*2, -BS/10, BS/10, BS/2, BS/10);
-	f.selection_box.wall_bottom = core::aabbox3d<f32>(
-			-BS/10, -BS/2, -BS/10, BS/10, -BS/2+BS/3.333*2, BS/10);
-	f.selection_box.wall_side = core::aabbox3d<f32>(
-			-BS/2, -BS/3.333, -BS/10, -BS/2+BS/3.333, BS/3.333, BS/10);
-	setConstantMaterialProperties(f.material, 0.0);
-	f.furnace_burntime = 4;
-	nodemgr->set(i, f);
-
-	i = CONTENT_SIGN_WALL;
-	f = ContentFeatures();
-	f.name = "sign_wall";
-	f.drawtype = NDT_SIGNLIKE;
-	f.setAllTextures("sign_wall.png");
-	f.setInventoryTexture("sign_wall.png");
-	f.param_type = CPT_LIGHT;
-	f.light_propagates = true;
-	f.sunlight_propagates = true;
-	f.walkable = false;
-	f.wall_mounted = true;
-	f.dug_item = std::string("MaterialItem2 ")+itos(i)+" 1";
-	f.metadata_name = "sign";
-	setConstantMaterialProperties(f.material, 0.5);
-	f.selection_box.type = NODEBOX_WALLMOUNTED;
-	f.furnace_burntime = 10;
-	nodemgr->set(i, f);
-
-	i = CONTENT_CHEST;
-	f = ContentFeatures();
-	f.name = "chest";
-	f.param_type = CPT_FACEDIR_SIMPLE;
-	f.setAllTextures("chest_side.png");
-	f.setTexture(0, "chest_top.png");
-	f.setTexture(1, "chest_top.png");
-	f.setTexture(5, "chest_front.png"); // Z-
-	f.setInventoryTexture("chest_top.png");
-	//f.setInventoryTextureCube("chest_top.png", "chest_side.png", "chest_side.png");
-	f.dug_item = std::string("MaterialItem2 ")+itos(i)+" 1";
-	f.metadata_name = "chest";
-	setWoodLikeMaterialProperties(f.material, 1.0);
-	f.furnace_burntime = 30;
-	nodemgr->set(i, f);
-
-	i = CONTENT_LOCKABLE_CHEST;
-	f = ContentFeatures();
-	f.name = "locked_chest";
-	f.param_type = CPT_FACEDIR_SIMPLE;
-	f.setAllTextures("chest_side.png");
-	f.setTexture(0, "chest_top.png");
-	f.setTexture(1, "chest_top.png");
-	f.setTexture(5, "chest_lock.png"); // Z-
-	f.setInventoryTexture("chest_lock.png");
-	//f.setInventoryTextureCube("chest_top.png", "chest_side.png", "chest_side.png");
-	f.dug_item = std::string("MaterialItem2 ")+itos(i)+" 1";
-	f.metadata_name = "locked_chest";
-	setWoodLikeMaterialProperties(f.material, 1.0);
-	f.furnace_burntime = 30;
-	nodemgr->set(i, f);
-
-	i = CONTENT_FURNACE;
-	f = ContentFeatures();
-	f.name = "furnace";
-	f.param_type = CPT_FACEDIR_SIMPLE;
-	f.setAllTextures("furnace_side.png");
-	f.setTexture(5, "furnace_front.png"); // Z-
-	f.setInventoryTexture("furnace_front.png");
-	//f.dug_item = std::string("MaterialItem2 ")+itos(i)+" 1";
-	f.dug_item = std::string("MaterialItem2 ")+itos(CONTENT_COBBLE)+" 6";
-	f.metadata_name = "furnace";
-	setStoneLikeMaterialProperties(f.material, 3.0);
-	nodemgr->set(i, f);
-
-	i = CONTENT_COBBLE;
-	f = ContentFeatures();
-	f.name = "cobble";
-	f.setAllTextures("cobble.png");
-	f.setInventoryTextureCube("cobble.png", "cobble.png", "cobble.png");
-	f.param_type = CPT_NONE;
-	f.is_ground_content = true;
-	f.dug_item = std::string("MaterialItem2 ")+itos(i)+" 1";
-	f.cookresult_item = std::string("MaterialItem2 ")+itos(CONTENT_STONE)+" 1";
-	setStoneLikeMaterialProperties(f.material, 0.9);
-	nodemgr->set(i, f);
-
-	i = CONTENT_MOSSYCOBBLE;
-	f = ContentFeatures();
-	f.name = "mossycobble";
-	f.setAllTextures("mossycobble.png");
-	f.setInventoryTextureCube("mossycobble.png", "mossycobble.png", "mossycobble.png");
-	f.param_type = CPT_NONE;
-	f.is_ground_content = true;
-	f.dug_item = std::string("MaterialItem2 ")+itos(i)+" 1";
-	setStoneLikeMaterialProperties(f.material, 0.8);
-	nodemgr->set(i, f);
-
-	i = CONTENT_STEEL;
-	f = ContentFeatures();
-	f.name = "steelblock";
-	f.setAllTextures("steel_block.png");
-	f.setInventoryTextureCube("steel_block.png", "steel_block.png",
-			"steel_block.png");
-	f.param_type = CPT_NONE;
-	f.is_ground_content = true;
-	f.dug_item = std::string("MaterialItem2 ")+itos(i)+" 1";
-	setStoneLikeMaterialProperties(f.material, 5.0);
-	nodemgr->set(i, f);
-
-	i = CONTENT_NC;
-	f = ContentFeatures();
-	f.name = "nyancat";
-	f.param_type = CPT_FACEDIR_SIMPLE;
-	f.setAllTextures("nc_side.png");
-	f.setTexture(5, "nc_front.png"); // Z-
-	f.setTexture(4, "nc_back.png"); // Z+
-	f.setInventoryTexture("nc_front.png");
-	f.dug_item = std::string("MaterialItem2 ")+itos(i)+" 1";
-	setStoneLikeMaterialProperties(f.material, 3.0);
-	f.furnace_burntime = 1;
-	nodemgr->set(i, f);
-
-	i = CONTENT_NC_RB;
-	f = ContentFeatures();
-	f.name = "nyancat_rainbow";
-	f.setAllTextures("nc_rb.png");
-	f.setInventoryTexture("nc_rb.png");
-	f.dug_item = std::string("MaterialItem2 ")+itos(i)+" 1";
-	setStoneLikeMaterialProperties(f.material, 3.0);
-	f.furnace_burntime = 1;
-	nodemgr->set(i, f);
-
-	i = CONTENT_SAPLING;
-	f = ContentFeatures();
-	f.name = "sapling";
-	f.drawtype = NDT_PLANTLIKE;
-	f.visual_scale = 1.0;
-	f.setAllTextures("sapling.png");
-	f.setInventoryTexture("sapling.png");
-	f.param_type = CPT_LIGHT;
-	f.dug_item = std::string("MaterialItem2 ")+itos(i)+" 1";
-	f.light_propagates = true;
-	f.walkable = false;
-	setConstantMaterialProperties(f.material, 0.0);
-	f.furnace_burntime = 10;
-	nodemgr->set(i, f);
-
-	i = CONTENT_APPLE;
-	f = ContentFeatures();
-	f.name = "apple";
-	f.drawtype = NDT_PLANTLIKE;
-	f.visual_scale = 1.0;
-	f.setAllTextures("apple.png");
-	f.setInventoryTexture("apple.png");
-	f.param_type = CPT_LIGHT;
-	f.light_propagates = true;
-	f.sunlight_propagates = true;
-	f.walkable = false;
-	f.dug_item = std::string("CraftItem apple 1");
-	setConstantMaterialProperties(f.material, 0.0);
-	f.furnace_burntime = 3;
-	nodemgr->set(i, f);
-}
-
 

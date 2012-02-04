@@ -47,6 +47,72 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 	assert(exception_thrown);\
 }
 
+/*
+	A few item and node definitions for those tests that need them
+*/
+
+#define CONTENT_STONE 0
+#define CONTENT_GRASS 0x800
+
+void define_some_nodes(IWritableItemDefManager *idef, IWritableNodeDefManager *ndef)
+{
+	content_t i;
+	ItemDefinition itemdef;
+	ContentFeatures f;
+
+	/*
+		Stone
+	*/
+	i = CONTENT_STONE;
+	itemdef = ItemDefinition();
+	itemdef.type = ITEM_NODE;
+	itemdef.name = "default:stone";
+	itemdef.description = "Stone";
+	itemdef.inventory_image = "[inventorycube"
+		"{default_stone.png"
+		"{default_stone.png"
+		"{default_stone.png";
+	f = ContentFeatures();
+	f.name = itemdef.name;
+	for(int i = 0; i < 6; i++)
+		f.tname_tiles[i] = "default_stone.png";
+	f.is_ground_content = true;
+	f.material.diggability = DIGGABLE_NORMAL;
+	f.material.weight = 5.0;
+	f.material.crackiness = 1.0;
+	f.material.crumbliness = -0.1;
+	f.material.cuttability = -0.2;
+	idef->registerItem(itemdef);
+	ndef->set(i, f);
+
+	/*
+		Grass
+	*/
+	i = CONTENT_GRASS;
+	itemdef = ItemDefinition();
+	itemdef.type = ITEM_NODE;
+	itemdef.name = "default:dirt_with_grass";
+	itemdef.description = "Dirt with grass";
+	itemdef.inventory_image = "[inventorycube"
+		"{default_grass.png"
+		"{default_dirt.png&default_grass_side.png"
+		"{default_dirt.png&default_grass_side.png";
+	f = ContentFeatures();
+	f.name = itemdef.name;
+	f.tname_tiles[0] = "default_grass.png";
+	f.tname_tiles[1] = "default_dirt.png";
+	for(int i = 2; i < 6; i++)
+		f.tname_tiles[i] = "default_dirt.png^default_grass_side.png";
+	f.is_ground_content = true;
+	f.material.diggability = DIGGABLE_NORMAL;
+	f.material.weight = 1.2;
+	f.material.crackiness = 0.0;
+	f.material.crumbliness = 1.2;
+	f.material.cuttability = -0.4;
+	idef->registerItem(itemdef);
+	ndef->set(i, f);
+}
+
 struct TestUtilities
 {
 	void Run()
@@ -96,7 +162,120 @@ struct TestSettings
 		assert(fabs(s.getV3F("coord2").Z - 3.3) < 0.001);
 	}
 };
+
+struct TestSerialization
+{
+	// To be used like this:
+	//   mkstr("Some\0string\0with\0embedded\0nuls")
+	// since std::string("...") doesn't work as expected in that case.
+	template<size_t N> std::string mkstr(const char (&s)[N])
+	{
+		return std::string(s, N - 1);
+	}
+
+	void Run()
+	{
+		// Tests some serialization primitives
+
+		assert(serializeString("") == mkstr("\0\0"));
+		assert(serializeWideString(L"") == mkstr("\0\0"));
+		assert(serializeLongString("") == mkstr("\0\0\0\0"));
+		assert(serializeJsonString("") == "\"\"");
 		
+		std::string teststring = "Hello world!";
+		assert(serializeString(teststring) ==
+			mkstr("\0\14Hello world!"));
+		assert(serializeWideString(narrow_to_wide(teststring)) ==
+			mkstr("\0\14\0H\0e\0l\0l\0o\0 \0w\0o\0r\0l\0d\0!"));
+		assert(serializeLongString(teststring) ==
+			mkstr("\0\0\0\14Hello world!"));
+		assert(serializeJsonString(teststring) ==
+			"\"Hello world!\"");
+
+		std::string teststring2;
+		std::wstring teststring2_w;
+		std::string teststring2_w_encoded;
+		{
+			std::ostringstream tmp_os;
+			std::wostringstream tmp_os_w;
+			std::ostringstream tmp_os_w_encoded;
+			for(int i = 0; i < 256; i++)
+			{
+				tmp_os<<(char)i;
+				tmp_os_w<<(wchar_t)i;
+				tmp_os_w_encoded<<(char)0<<(char)i;
+			}
+			teststring2 = tmp_os.str();
+			teststring2_w = tmp_os_w.str();
+			teststring2_w_encoded = tmp_os_w_encoded.str();
+		}
+		assert(serializeString(teststring2) ==
+			mkstr("\1\0") + teststring2);
+		assert(serializeWideString(teststring2_w) ==
+			mkstr("\1\0") + teststring2_w_encoded);
+		assert(serializeLongString(teststring2) ==
+			mkstr("\0\0\1\0") + teststring2);
+		// MSVC fails when directly using "\\\\"
+		std::string backslash = "\\";
+		assert(serializeJsonString(teststring2) ==
+			mkstr("\"") +
+			"\\u0000\\u0001\\u0002\\u0003\\u0004\\u0005\\u0006\\u0007" +
+			"\\b\\t\\n\\u000b\\f\\r\\u000e\\u000f" +
+			"\\u0010\\u0011\\u0012\\u0013\\u0014\\u0015\\u0016\\u0017" +
+			"\\u0018\\u0019\\u001a\\u001b\\u001c\\u001d\\u001e\\u001f" +
+			" !\\\"" + teststring2.substr(0x23, 0x2f-0x23) +
+			"\\/" + teststring2.substr(0x30, 0x5c-0x30) +
+			backslash + backslash + teststring2.substr(0x5d, 0x7f-0x5d) + "\\u007f" +
+			"\\u0080\\u0081\\u0082\\u0083\\u0084\\u0085\\u0086\\u0087" +
+			"\\u0088\\u0089\\u008a\\u008b\\u008c\\u008d\\u008e\\u008f" +
+			"\\u0090\\u0091\\u0092\\u0093\\u0094\\u0095\\u0096\\u0097" +
+			"\\u0098\\u0099\\u009a\\u009b\\u009c\\u009d\\u009e\\u009f" +
+			"\\u00a0\\u00a1\\u00a2\\u00a3\\u00a4\\u00a5\\u00a6\\u00a7" +
+			"\\u00a8\\u00a9\\u00aa\\u00ab\\u00ac\\u00ad\\u00ae\\u00af" +
+			"\\u00b0\\u00b1\\u00b2\\u00b3\\u00b4\\u00b5\\u00b6\\u00b7" +
+			"\\u00b8\\u00b9\\u00ba\\u00bb\\u00bc\\u00bd\\u00be\\u00bf" +
+			"\\u00c0\\u00c1\\u00c2\\u00c3\\u00c4\\u00c5\\u00c6\\u00c7" +
+			"\\u00c8\\u00c9\\u00ca\\u00cb\\u00cc\\u00cd\\u00ce\\u00cf" +
+			"\\u00d0\\u00d1\\u00d2\\u00d3\\u00d4\\u00d5\\u00d6\\u00d7" +
+			"\\u00d8\\u00d9\\u00da\\u00db\\u00dc\\u00dd\\u00de\\u00df" +
+			"\\u00e0\\u00e1\\u00e2\\u00e3\\u00e4\\u00e5\\u00e6\\u00e7" +
+			"\\u00e8\\u00e9\\u00ea\\u00eb\\u00ec\\u00ed\\u00ee\\u00ef" +
+			"\\u00f0\\u00f1\\u00f2\\u00f3\\u00f4\\u00f5\\u00f6\\u00f7" +
+			"\\u00f8\\u00f9\\u00fa\\u00fb\\u00fc\\u00fd\\u00fe\\u00ff" +
+			"\"");
+
+		{
+			std::istringstream is(serializeString(teststring2), std::ios::binary);
+			assert(deSerializeString(is) == teststring2);
+			assert(!is.eof());
+			is.get();
+			assert(is.eof());
+		}
+		{
+			std::istringstream is(serializeWideString(teststring2_w), std::ios::binary);
+			assert(deSerializeWideString(is) == teststring2_w);
+			assert(!is.eof());
+			is.get();
+			assert(is.eof());
+		}
+		{
+			std::istringstream is(serializeLongString(teststring2), std::ios::binary);
+			assert(deSerializeLongString(is) == teststring2);
+			assert(!is.eof());
+			is.get();
+			assert(is.eof());
+		}
+		{
+			std::istringstream is(serializeJsonString(teststring2), std::ios::binary);
+			//dstream<<serializeJsonString(deSerializeJsonString(is));
+			assert(deSerializeJsonString(is) == teststring2);
+			assert(!is.eof());
+			is.get();
+			assert(is.eof());
+		}
+	}
+};
+
 struct TestCompress
 {
 	void Run()
@@ -283,11 +462,11 @@ struct TestVoxelManipulator
 
 		infostream<<"*** Setting (-1,0,-1)=2 ***"<<std::endl;
 		
-		v.setNodeNoRef(v3s16(-1,0,-1), MapNode(2));
+		v.setNodeNoRef(v3s16(-1,0,-1), MapNode(CONTENT_GRASS));
 
 		v.print(infostream, nodedef);
 
- 		assert(v.getNode(v3s16(-1,0,-1)).getContent() == 2);
+ 		assert(v.getNode(v3s16(-1,0,-1)).getContent() == CONTENT_GRASS);
 
 		infostream<<"*** Reading from inexistent (0,0,-1) ***"<<std::endl;
 
@@ -301,7 +480,7 @@ struct TestVoxelManipulator
 		
 		v.print(infostream, nodedef);
 
-		assert(v.getNode(v3s16(-1,0,-1)).getContent() == 2);
+		assert(v.getNode(v3s16(-1,0,-1)).getContent() == CONTENT_GRASS);
 		EXCEPTION_CHECK(InvalidPositionException, v.getNode(v3s16(0,1,1)));
 	}
 };
@@ -1022,7 +1201,7 @@ struct TestConnection
 			
 			server.Send(peer_id_client, 0, data1, true);
 
-			sleep_ms(3000);
+			//sleep_ms(3000);
 			
 			SharedBuffer<u8> recvdata;
 			infostream<<"** running client.Receive()"<<std::endl;
@@ -1031,7 +1210,7 @@ struct TestConnection
 			bool received = false;
 			u32 timems0 = porting::getTimeMs();
 			for(;;){
-				if(porting::getTimeMs() - timems0 > 5000)
+				if(porting::getTimeMs() - timems0 > 5000 || received)
 					break;
 				try{
 					size = client.Receive(peer_id, recvdata);
@@ -1086,16 +1265,18 @@ void run_tests()
 {
 	DSTACK(__FUNCTION_NAME);
 	
-	// Create node definitions
-	IWritableNodeDefManager *nodedef = createNodeDefManager();
-	content_mapnode_init(nodedef);
+	// Create item and node definitions
+	IWritableItemDefManager *idef = createItemDefManager();
+	IWritableNodeDefManager *ndef = createNodeDefManager();
+	define_some_nodes(idef, ndef);
 
 	infostream<<"run_tests() started"<<std::endl;
 	TEST(TestUtilities);
 	TEST(TestSettings);
 	TEST(TestCompress);
-	TESTPARAMS(TestMapNode, nodedef);
-	TESTPARAMS(TestVoxelManipulator, nodedef);
+	TEST(TestSerialization);
+	TESTPARAMS(TestMapNode, ndef);
+	TESTPARAMS(TestVoxelManipulator, ndef);
 	//TEST(TestMapBlock);
 	//TEST(TestMapSector);
 	if(INTERNET_SIMULATOR == false){

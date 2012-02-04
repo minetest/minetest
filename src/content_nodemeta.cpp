@@ -23,6 +23,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "inventory.h"
 #include "log.h"
 #include "utility.h"
+#include "craftdef.h"
+#include "gamedef.h"
 
 class Inventory;
 
@@ -125,9 +127,14 @@ public:
 	virtual bool step(float dtime);
 	virtual bool nodeRemovalDisabled();
 	virtual std::string getInventoryDrawSpecString();
+	
+protected:
+	bool getCookResult(bool remove, std::string &cookresult, float &cooktime);
+	bool getBurnResult(bool remove, float &burntime);
 
 private:
 	Inventory *m_inventory;
+	std::string m_infotext;
 	float m_step_accumulator;
 	float m_fuel_totaltime;
 	float m_fuel_time;
@@ -185,9 +192,7 @@ ChestNodeMetadata::ChestNodeMetadata(IGameDef *gamedef):
 	NodeMetadata(gamedef)
 {
 	NodeMetadata::registerType(typeId(), typeName(), create, create);
-	
-	m_inventory = new Inventory();
-	m_inventory->addList("0", 8*4);
+	m_inventory = NULL;
 }
 ChestNodeMetadata::~ChestNodeMetadata()
 {
@@ -200,18 +205,21 @@ u16 ChestNodeMetadata::typeId() const
 NodeMetadata* ChestNodeMetadata::create(std::istream &is, IGameDef *gamedef)
 {
 	ChestNodeMetadata *d = new ChestNodeMetadata(gamedef);
-	d->m_inventory->deSerialize(is, gamedef);
+	d->m_inventory = new Inventory(gamedef->idef());
+	d->m_inventory->deSerialize(is);
 	return d;
 }
 NodeMetadata* ChestNodeMetadata::create(IGameDef *gamedef)
 {
 	ChestNodeMetadata *d = new ChestNodeMetadata(gamedef);
+	d->m_inventory = new Inventory(gamedef->idef());
+	d->m_inventory->addList("0", 8*4);
 	return d;
 }
 NodeMetadata* ChestNodeMetadata::clone(IGameDef *gamedef)
 {
 	ChestNodeMetadata *d = new ChestNodeMetadata(gamedef);
-	*d->m_inventory = *m_inventory;
+	d->m_inventory = new Inventory(*m_inventory);
 	return d;
 }
 void ChestNodeMetadata::serializeBody(std::ostream &os)
@@ -253,9 +261,7 @@ LockingChestNodeMetadata::LockingChestNodeMetadata(IGameDef *gamedef):
 	NodeMetadata(gamedef)
 {
 	NodeMetadata::registerType(typeId(), typeName(), create, create);
-
-	m_inventory = new Inventory();
-	m_inventory->addList("0", 8*4);
+	m_inventory = NULL;
 }
 LockingChestNodeMetadata::~LockingChestNodeMetadata()
 {
@@ -269,18 +275,21 @@ NodeMetadata* LockingChestNodeMetadata::create(std::istream &is, IGameDef *gamed
 {
 	LockingChestNodeMetadata *d = new LockingChestNodeMetadata(gamedef);
 	d->setOwner(deSerializeString(is));
-	d->m_inventory->deSerialize(is, gamedef);
+	d->m_inventory = new Inventory(gamedef->idef());
+	d->m_inventory->deSerialize(is);
 	return d;
 }
 NodeMetadata* LockingChestNodeMetadata::create(IGameDef *gamedef)
 {
 	LockingChestNodeMetadata *d = new LockingChestNodeMetadata(gamedef);
+	d->m_inventory = new Inventory(gamedef->idef());
+	d->m_inventory->addList("0", 8*4);
 	return d;
 }
 NodeMetadata* LockingChestNodeMetadata::clone(IGameDef *gamedef)
 {
 	LockingChestNodeMetadata *d = new LockingChestNodeMetadata(gamedef);
-	*d->m_inventory = *m_inventory;
+	d->m_inventory = new Inventory(*m_inventory);
 	return d;
 }
 void LockingChestNodeMetadata::serializeBody(std::ostream &os)
@@ -324,10 +333,9 @@ FurnaceNodeMetadata::FurnaceNodeMetadata(IGameDef *gamedef):
 {
 	NodeMetadata::registerType(typeId(), typeName(), create, create);
 	
-	m_inventory = new Inventory();
-	m_inventory->addList("fuel", 1);
-	m_inventory->addList("src", 1);
-	m_inventory->addList("dst", 4);
+	m_inventory = NULL;
+
+	m_infotext = "Furnace is inactive";
 
 	m_step_accumulator = 0;
 	m_fuel_totaltime = 0;
@@ -346,26 +354,52 @@ u16 FurnaceNodeMetadata::typeId() const
 NodeMetadata* FurnaceNodeMetadata::clone(IGameDef *gamedef)
 {
 	FurnaceNodeMetadata *d = new FurnaceNodeMetadata(m_gamedef);
-	*d->m_inventory = *m_inventory;
+	d->m_inventory = new Inventory(*m_inventory);
 	return d;
 }
 NodeMetadata* FurnaceNodeMetadata::create(std::istream &is, IGameDef *gamedef)
 {
 	FurnaceNodeMetadata *d = new FurnaceNodeMetadata(gamedef);
 
-	d->m_inventory->deSerialize(is, gamedef);
+	d->m_inventory = new Inventory(gamedef->idef());
+	d->m_inventory->deSerialize(is);
 
-	int temp;
+	int temp = 0;
 	is>>temp;
 	d->m_fuel_totaltime = (float)temp/10;
+	temp = 0;
 	is>>temp;
 	d->m_fuel_time = (float)temp/10;
+	temp = 0;
+	is>>temp;
+	d->m_src_totaltime = (float)temp/10;
+	temp = 0;
+	is>>temp;
+	d->m_src_time = (float)temp/10;
+
+	if(is.eof())
+	{
+		// Old furnaces didn't serialize src_totaltime and src_time
+		d->m_src_totaltime = 0;
+		d->m_src_time = 0;
+		d->m_infotext = "";
+	}
+	else
+	{
+		// New furnaces also serialize the infotext (so that the
+		// client doesn't need to have the list of cooking recipes).
+		d->m_infotext = deSerializeJsonString(is);
+	}
 
 	return d;
 }
 NodeMetadata* FurnaceNodeMetadata::create(IGameDef *gamedef)
 {
 	FurnaceNodeMetadata *d = new FurnaceNodeMetadata(gamedef);
+	d->m_inventory = new Inventory(gamedef->idef());
+	d->m_inventory->addList("fuel", 1);
+	d->m_inventory->addList("src", 1);
+	d->m_inventory->addList("dst", 4);
 	return d;
 }
 void FurnaceNodeMetadata::serializeBody(std::ostream &os)
@@ -373,36 +407,13 @@ void FurnaceNodeMetadata::serializeBody(std::ostream &os)
 	m_inventory->serialize(os);
 	os<<itos(m_fuel_totaltime*10)<<" ";
 	os<<itos(m_fuel_time*10)<<" ";
+	os<<itos(m_src_totaltime*10)<<" ";
+	os<<itos(m_src_time*10)<<" ";
+	os<<serializeJsonString(m_infotext);
 }
 std::string FurnaceNodeMetadata::infoText()
 {
-	//return "Furnace";
-	if(m_fuel_time >= m_fuel_totaltime)
-	{
-		const InventoryList *src_list = m_inventory->getList("src");
-		assert(src_list);
-		const InventoryItem *src_item = src_list->getItem(0);
-
-		if(src_item && src_item->isCookable()) {
-			InventoryList *dst_list = m_inventory->getList("dst");
-			if(!dst_list->roomForCookedItem(src_item))
-				return "Furnace is overloaded";
-			return "Furnace is out of fuel";
-		}
-		else
-			return "Furnace is inactive";
-	}
-	else
-	{
-		std::string s = "Furnace is active";
-		// Do this so it doesn't always show (0%) for weak fuel
-		if(m_fuel_totaltime > 3) {
-			s += " (";
-			s += itos(m_fuel_time/m_fuel_totaltime*100);
-			s += "%)";
-		}
-		return s;
-	}
+	return m_infotext;
 }
 bool FurnaceNodeMetadata::nodeRemovalDisabled()
 {
@@ -430,6 +441,10 @@ bool FurnaceNodeMetadata::step(float dtime)
 {
 	if(dtime > 60.0)
 		infostream<<"Furnace stepping a long time ("<<dtime<<")"<<std::endl;
+
+	InventoryList *dst_list = m_inventory->getList("dst");
+	assert(dst_list);
+
 	// Update at a fixed frequency
 	const float interval = 2.0;
 	m_step_accumulator += dtime;
@@ -440,86 +455,110 @@ bool FurnaceNodeMetadata::step(float dtime)
 		dtime = interval;
 
 		//infostream<<"Furnace step dtime="<<dtime<<std::endl;
-		
-		InventoryList *dst_list = m_inventory->getList("dst");
-		assert(dst_list);
 
-		InventoryList *src_list = m_inventory->getList("src");
-		assert(src_list);
-		InventoryItem *src_item = src_list->getItem(0);
-		
+		bool changed_this_loop = false;
+
+		// Check
+		// 1. if the source item is cookable
+		// 2. if there is room for the cooked item
+		std::string cookresult;
+		float cooktime;
+		bool cookable = getCookResult(false, cookresult, cooktime);
+		ItemStack cookresult_item;
 		bool room_available = false;
-		
-		if(src_item && src_item->isCookable())
-			room_available = dst_list->roomForCookedItem(src_item);
-		
-		// Start only if there are free slots in dst, so that it can
-		// accomodate any result item
+		if(cookable)
+		{
+			cookresult_item.deSerialize(cookresult, m_gamedef->idef());
+			room_available = dst_list->roomForItem(cookresult_item);
+		}
+
+		// Step fuel time
+		bool burning = (m_fuel_time < m_fuel_totaltime);
+		if(burning)
+		{
+			changed_this_loop = true;
+			m_fuel_time += dtime;
+		}
+
+		std::string infotext;
 		if(room_available)
 		{
-			m_src_totaltime = src_item->getCookTime();
+			float burntime;
+			if(burning)
+			{
+				changed_this_loop = true;
+				m_src_time += dtime;
+				m_src_totaltime = cooktime;
+				infotext = "Furnace is cooking";
+			}
+			else if(getBurnResult(true, burntime))
+			{
+				// Fuel inserted
+				changed_this_loop = true;
+				m_fuel_time = 0;
+				m_fuel_totaltime = burntime;
+				//m_src_time += dtime;
+				//m_src_totaltime = cooktime;
+				infotext = "Furnace is cooking";
+			}
+			else
+			{
+				m_src_time = 0;
+				m_src_totaltime = 0;
+				infotext = "Furnace is out of fuel";
+			}
+			if(m_src_totaltime > 0.001 && m_src_time >= m_src_totaltime)
+			{
+				// One item fully cooked
+				changed_this_loop = true;
+				dst_list->addItem(cookresult_item);
+				getCookResult(true, cookresult, cooktime); // decrement source
+				m_src_totaltime = 0;
+				m_src_time = 0;
+			}
 		}
 		else
 		{
-			m_src_time = 0;
+			// Not cookable or no room available
 			m_src_totaltime = 0;
-		}
-		
-		/*
-			If fuel is burning, increment the burn counters.
-			If item finishes cooking, move it to result.
-		*/
-		if(m_fuel_time < m_fuel_totaltime)
-		{
-			//infostream<<"Furnace is active"<<std::endl;
-			m_fuel_time += dtime;
-			m_src_time += dtime;
-			if(m_src_time >= m_src_totaltime && m_src_totaltime > 0.001
-					&& src_item)
+			m_src_time = 0;
+			if(cookable)
+				infotext = "Furnace is overloaded";
+			else if(burning)
+				infotext = "Furnace is active";
+			else
 			{
-				InventoryItem *cookresult = src_item->createCookResult();
-				dst_list->addItem(cookresult);
-				src_list->decrementMaterials(1);
-				m_src_time = 0;
-				m_src_totaltime = 0;
+				infotext = "Furnace is inactive";
+				m_fuel_totaltime = 0;
+				m_fuel_time = 0;
 			}
-			changed = true;
-			
-			// If the fuel was not used up this step, just keep burning it
-			if(m_fuel_time < m_fuel_totaltime)
-				continue;
 		}
-		
-		/*
-			Get the source again in case it has all burned
-		*/
-		src_item = src_list->getItem(0);
-		
-		/*
-			If there is no source item, or the source item is not cookable,
-			or the furnace is still cooking, or the furnace became overloaded, stop loop.
-		*/
-		if(src_item == NULL || !room_available || m_fuel_time < m_fuel_totaltime ||
-			dst_list->roomForCookedItem(src_item) == false)
+
+		// Do this so it doesn't always show (0%) for weak fuel
+		if(m_fuel_totaltime > 3) {
+			infotext += " (";
+			infotext += itos(m_fuel_time/m_fuel_totaltime*100);
+			infotext += "%)";
+		}
+
+		if(infotext != m_infotext)
 		{
-			m_step_accumulator = 0;
-			break;
+			m_infotext = infotext;
+			changed_this_loop = true;
 		}
-		
-		//infostream<<"Furnace is out of fuel"<<std::endl;
 
-		InventoryList *fuel_list = m_inventory->getList("fuel");
-		assert(fuel_list);
-		const InventoryItem *fuel_item = fuel_list->getItem(0);
-
-		if(fuel_item && fuel_item->getBurnTime() >= 0){
-			m_fuel_totaltime = fuel_item->getBurnTime();
+		if(burning && m_fuel_time >= m_fuel_totaltime)
+		{
 			m_fuel_time = 0;
-			fuel_list->decrementMaterials(1);
+			m_fuel_totaltime = 0;
+		}
+
+		if(changed_this_loop)
+		{
 			changed = true;
-		} else {
-			//infostream<<"No fuel found"<<std::endl;
-			// No fuel, stop loop.
+		}
+		else
+		{
 			m_step_accumulator = 0;
 			break;
 		}
@@ -535,6 +574,43 @@ std::string FurnaceNodeMetadata::getInventoryDrawSpecString()
 		"list[current_name;dst;5,1;2,2;]"
 		"list[current_player;main;0,5;8,4;]";
 }
+bool FurnaceNodeMetadata::getCookResult(bool remove,
+		std::string &cookresult, float &cooktime)
+{
+	std::vector<ItemStack> items;
+	InventoryList *src_list = m_inventory->getList("src");
+	assert(src_list);
+	items.push_back(src_list->getItem(0));
+
+	CraftInput ci(CRAFT_METHOD_COOKING, 1, items);
+	CraftOutput co;
+	bool found = m_gamedef->getCraftDefManager()->getCraftResult(
+			ci, co, remove, m_gamedef);
+	if(remove)
+		src_list->changeItem(0, ci.items[0]);
+
+	cookresult = co.item;
+	cooktime = co.time;
+	return found;
+}
+bool FurnaceNodeMetadata::getBurnResult(bool remove, float &burntime)
+{
+	std::vector<ItemStack> items;
+	InventoryList *fuel_list = m_inventory->getList("fuel");
+	assert(fuel_list);
+	items.push_back(fuel_list->getItem(0));
+
+	CraftInput ci(CRAFT_METHOD_FUEL, 1, items);
+	CraftOutput co;
+	bool found = m_gamedef->getCraftDefManager()->getCraftResult(
+			ci, co, remove, m_gamedef);
+	if(remove)
+		fuel_list->changeItem(0, ci.items[0]);
+
+	burntime = co.time;
+	return found;
+}
+
 
 /*
 	GenericNodeMetadata
@@ -571,7 +647,7 @@ public:
 	GenericNodeMetadata(IGameDef *gamedef):
 		NodeMetadata(gamedef),
 
-		m_inventory(new Inventory()),
+		m_inventory(NULL),
 		m_text(""),
 		m_owner(""),
 
@@ -594,7 +670,7 @@ public:
 	{
 		GenericNodeMetadata *d = new GenericNodeMetadata(m_gamedef);
 
-		*d->m_inventory = *m_inventory;
+		d->m_inventory = new Inventory(*m_inventory);
 		d->m_text = m_text;
 		d->m_owner = m_owner;
 
@@ -610,13 +686,15 @@ public:
 	static NodeMetadata* create(IGameDef *gamedef)
 	{
 		GenericNodeMetadata *d = new GenericNodeMetadata(gamedef);
+		d->m_inventory = new Inventory(gamedef->idef());
 		return d;
 	}
 	static NodeMetadata* create(std::istream &is, IGameDef *gamedef)
 	{
 		GenericNodeMetadata *d = new GenericNodeMetadata(gamedef);
 		
-		d->m_inventory->deSerialize(is, gamedef);
+		d->m_inventory = new Inventory(gamedef->idef());
+		d->m_inventory->deSerialize(is);
 		d->m_text = deSerializeLongString(is);
 		d->m_owner = deSerializeString(is);
 		

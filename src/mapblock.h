@@ -32,9 +32,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "voxel.h"
 #include "staticobject.h"
 #include "mapblock_nodemod.h"
-#ifndef SERVER
-	#include "mapblock_mesh.h"
-#endif
 #include "modifiedstate.h"
 
 class Map;
@@ -366,17 +363,8 @@ public:
 		Graphics-related methods
 	*/
 	
-	/*// A quick version with nodes passed as parameters
-	u8 getFaceLight(u32 daynight_ratio, MapNode n, MapNode n2,
-			v3s16 face_dir);*/
-	/*// A more convenient version
-	u8 getFaceLight(u32 daynight_ratio, v3s16 p, v3s16 face_dir)
-	{
-		return getFaceLight(daynight_ratio,
-				getNodeParentNoEx(p),
-				getNodeParentNoEx(p + face_dir),
-				face_dir);
-	}*/
+#ifndef SERVER // Only on client
+
 	u8 getFaceLight2(u32 daynight_ratio, v3s16 p, v3s16 face_dir,
 			INodeDefManager *nodemgr)
 	{
@@ -386,8 +374,6 @@ public:
 				face_dir, nodemgr);
 	}
 	
-#ifndef SERVER // Only on client
-
 #if 1
 	/*
 		Thread-safely updates the whole mesh of the mapblock.
@@ -527,19 +513,19 @@ public:
 	*/
 	
 	// These don't write or read version by itself
-	void serialize(std::ostream &os, u8 version);
-	void deSerialize(std::istream &is, u8 version);
-
-	// Used after the basic ones when writing on disk (serverside)
-	void serializeDiskExtra(std::ostream &os, u8 version);
-	// In addition to doing other things, will add unknown blocks from
-	// id-name mapping to wndef
-	void deSerializeDiskExtra(std::istream &is, u8 version);
+	// Set disk to true for on-disk format, false for over-the-network format
+	void serialize(std::ostream &os, u8 version, bool disk);
+	// If disk == true: In addition to doing other things, will add
+	// unknown blocks from id-name mapping to wndef
+	void deSerialize(std::istream &is, u8 version, bool disk);
 
 private:
 	/*
 		Private methods
 	*/
+
+	void serialize_pre22(std::ostream &os, u8 version, bool disk);
+	void deSerialize_pre22(std::istream &is, u8 version, bool disk);
 
 	/*
 		Used only internally, because changes can't be tracked

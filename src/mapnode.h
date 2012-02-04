@@ -32,8 +32,8 @@ class INodeDefManager;
 	- Tile = TileSpec at some side of a node of some content type
 
 	Content ranges:
-		0x000...0x07f: param2 is fully usable
-		0x800...0xfff: param2 lower 4 bytes are free
+	  0x000...0x07f: param2 is fully usable
+	  0x800...0xfff: param2 lower 4 bits are free
 */
 typedef u16 content_t;
 #define MAX_CONTENT 0xfff
@@ -55,36 +55,6 @@ typedef u16 content_t;
 	is transparent to light
 */
 #define CONTENT_AIR 126
-
-#ifndef SERVER
-/*
-	Nodes make a face if contents differ and solidness differs.
-	Return value:
-		0: No face
-		1: Face uses m1's content
-		2: Face uses m2's content
-	equivalent: Whether the blocks share the same face (eg. water and glass)
-*/
-u8 face_contents(content_t m1, content_t m2, bool *equivalent,
-		INodeDefManager *nodemgr);
-#endif
-
-/*
-	Packs directions like (1,0,0), (1,-1,0) in six bits.
-	NOTE: This wastes way too much space for most purposes.
-*/
-u8 packDir(v3s16 dir);
-v3s16 unpackDir(u8 b);
-
-/*
-	facedir: CPT_FACEDIR_SIMPLE param1 value
-	dir: The face for which stuff is wanted
-	return value: The face from which the stuff is actually found
-
-	NOTE: Currently this uses 2 bits for Z-,X-,Z+,X+, should there be Y+
-	      and Y- too?
-*/
-v3s16 facedir_rotate(u8 facedir, v3s16 dir);
 
 enum LightBank
 {
@@ -122,7 +92,6 @@ struct MapNode
 		  stored logarithmically from 0 to LIGHT_MAX.
 		  Sunlight is LIGHT_SUN, which is LIGHT_MAX+1.
 		  - Contains 2 values, day- and night lighting. Each takes 4 bits.
-		- Mineral content (should be removed from here)
 		- Uhh... well, most blocks have light or nothing in here.
 	*/
 	u8 param1;
@@ -210,40 +179,22 @@ struct MapNode
 	
 	void setLight(enum LightBank bank, u8 a_light, INodeDefManager *nodemgr);
 	u8 getLight(enum LightBank bank, INodeDefManager *nodemgr) const;
-	u8 getLightBanksWithSource(INodeDefManager *nodemgr) const;
+	bool getLightBanks(u8 &lightday, u8 &lightnight, INodeDefManager *nodemgr) const;
 	
 	// 0 <= daylight_factor <= 1000
 	// 0 <= return value <= LIGHT_SUN
 	u8 getLightBlend(u32 daylight_factor, INodeDefManager *nodemgr) const
 	{
-		u8 l = ((daylight_factor * getLight(LIGHTBANK_DAY, nodemgr)
-			+ (1000-daylight_factor) * getLight(LIGHTBANK_NIGHT, nodemgr))
-			)/1000;
-		u8 max = LIGHT_MAX;
-		if(getLight(LIGHTBANK_DAY, nodemgr) == LIGHT_SUN)
-			max = LIGHT_SUN;
-		if(l > max)
-			l = max;
-		return l;
+		u8 lightday = 0;
+		u8 lightnight = 0;
+		getLightBanks(lightday, lightnight, nodemgr);
+		return blend_light(daylight_factor, lightday, lightnight);
 	}
-	/*// 0 <= daylight_factor <= 1000
-	// 0 <= return value <= 255
-	u8 getLightBlend(u32 daylight_factor, INodeDefManager *nodemgr)
-	{
-		u8 daylight = decode_light(getLight(LIGHTBANK_DAY, nodemgr));
-		u8 nightlight = decode_light(getLight(LIGHTBANK_NIGHT, nodemgr));
-		u8 mix = ((daylight_factor * daylight
-			+ (1000-daylight_factor) * nightlight)
-			)/1000;
-		return mix;
-	}*/
 
-	/*
-		Gets mineral content of node, if there is any.
-		MINERAL_NONE if doesn't contain or isn't able to contain mineral.
-	*/
-	u8 getMineral(INodeDefManager *nodemgr) const;
-	
+	u8 getFaceDir(INodeDefManager *nodemgr) const;
+	u8 getWallMounted(INodeDefManager *nodemgr) const;
+	v3s16 getWallMountedDir(INodeDefManager *nodemgr) const;
+
 	/*
 		Serialization functions
 	*/
@@ -252,7 +203,43 @@ struct MapNode
 	void serialize(u8 *dest, u8 version);
 	void deSerialize(u8 *source, u8 version);
 	
+	// Serializes or deserializes a list of nodes in bulk format (first the
+	// content of all nodes, then the param1 of all nodes, then the param2
+	// of all nodes).
+	//   version = serialization version. Must be >= 22
+	//   content_width = the number of bytes of content per node
+	//   params_width = the number of bytes of params per node
+	//   compressed = true to zlib-compress output
+	static void serializeBulk(std::ostream &os, int version,
+			const MapNode *nodes, u32 nodecount,
+			u8 content_width, u8 params_width, bool compressed);
+	static void deSerializeBulk(std::istream &is, int version,
+			MapNode *nodes, u32 nodecount,
+			u8 content_width, u8 params_width, bool compressed);
+
+private:
+	// Deprecated serialization methods
+	void serialize_pre22(u8 *dest, u8 version);
+	void deSerialize_pre22(u8 *source, u8 version);
 };
+
+
+/*
+	MapNode helpers for mesh making stuff
+*/
+
+#ifndef SERVER
+
+/*
+	Nodes make a face if contents differ and solidness differs.
+	Return value:
+		0: No face
+		1: Face uses m1's content
+		2: Face uses m2's content
+	equivalent: Whether the blocks share the same face (eg. water and glass)
+*/
+u8 face_contents(content_t m1, content_t m2, bool *equivalent,
+		INodeDefManager *nodemgr);
 
 /*
 	Gets lighting value at face of node
@@ -272,6 +259,9 @@ struct MapNode
 */
 u8 getFaceLight(u32 daynight_ratio, MapNode n, MapNode n2,
 		v3s16 face_dir, INodeDefManager *nodemgr);
+
+#endif
+
 
 #endif
 

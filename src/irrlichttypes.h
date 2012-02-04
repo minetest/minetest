@@ -39,6 +39,8 @@ typedef core::vector2d<s32> v2s32;
 typedef core::vector2d<u32> v2u32;
 typedef core::vector2d<f32> v2f32;
 
+typedef core::aabbox3d<f32> aabb3f;
+
 #ifdef _MSC_VER
 	// Windows
 	typedef unsigned long long u64;

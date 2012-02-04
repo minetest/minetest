@@ -26,12 +26,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 	Legacy node definitions
 */
 
-class IWritableNodeDefManager;
-
-// Initialize legacy node definitions
-// Not used used anywhere else than in test.cpp (and SHALL NOT BE)
-void content_mapnode_init(IWritableNodeDefManager *nodemgr);
-
 // Backwards compatibility for non-extended content types in v19
 extern content_t trans_table_19[21][2];
 MapNode mapnode_translate_from_internal(MapNode n_from, u8 version);

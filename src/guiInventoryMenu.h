@@ -23,18 +23,19 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "common_irrlicht.h"
 #include "inventory.h"
+#include "inventorymanager.h"
 #include "utility.h"
 #include "modalMenu.h"
 
-class ITextureSource;
-class InventoryContext;
+class IGameDef;
 class InventoryManager;
 
-void drawInventoryItem(video::IVideoDriver *driver,
+void drawItemStack(video::IVideoDriver *driver,
 		gui::IGUIFont *font,
-		InventoryItem *item, core::rect<s32> rect,
+		const ItemStack &item,
+		const core::rect<s32> &rect,
 		const core::rect<s32> *clip,
-		ITextureSource *tsrc);
+		IGameDef *gamedef);
 
 class GUIInventoryMenu : public GUIModalMenu
 {
@@ -44,11 +45,11 @@ class GUIInventoryMenu : public GUIModalMenu
 		{
 			i = -1;
 		}
-		ItemSpec(const std::string &a_inventoryname,
+		ItemSpec(const InventoryLocation &a_inventoryloc,
 				const std::string &a_listname,
 				s32 a_i)
 		{
-			inventoryname = a_inventoryname;
+			inventoryloc = a_inventoryloc;
 			listname = a_listname;
 			i = a_i;
 		}
@@ -57,7 +58,7 @@ class GUIInventoryMenu : public GUIModalMenu
 			return i != -1;
 		}
 
-		std::string inventoryname;
+		InventoryLocation inventoryloc;
 		std::string listname;
 		s32 i;
 	};
@@ -67,17 +68,17 @@ class GUIInventoryMenu : public GUIModalMenu
 		ListDrawSpec()
 		{
 		}
-		ListDrawSpec(const std::string &a_inventoryname,
+		ListDrawSpec(const InventoryLocation &a_inventoryloc,
 				const std::string &a_listname,
 				v2s32 a_pos, v2s32 a_geom)
 		{
-			inventoryname = a_inventoryname;
+			inventoryloc = a_inventoryloc;
 			listname = a_listname;
 			pos = a_pos;
 			geom = a_geom;
 		}
 
-		std::string inventoryname;
+		InventoryLocation inventoryloc;
 		std::string listname;
 		v2s32 pos;
 		v2s32 geom;
@@ -89,7 +90,7 @@ public:
 		{
 		}
 		DrawSpec(const std::string &a_type,
-				const std::string &a_name,
+				const InventoryLocation &a_name,
 				const std::string &a_subname,
 				v2s32 a_pos,
 				v2s32 a_geom)
@@ -102,7 +103,7 @@ public:
 		}
 
 		std::string type;
-		std::string name;
+		InventoryLocation name;
 		std::string subname;
 		v2s32 pos;
 		v2s32 geom;
@@ -112,15 +113,14 @@ public:
 	static v2s16 makeDrawSpecArrayFromString(
 			core::array<GUIInventoryMenu::DrawSpec> &draw_spec,
 			const std::string &data,
-			const std::string &current_name);
+			const InventoryLocation &current_location);
 
 	GUIInventoryMenu(gui::IGUIEnvironment* env,
 			gui::IGUIElement* parent, s32 id,
 			IMenuManager *menumgr,
 			v2s16 menu_size,
-			InventoryContext *c,
 			InventoryManager *invmgr,
-			ITextureSource *tsrc
+			IGameDef *gamedef
 			);
 	~GUIInventoryMenu();
 
@@ -136,8 +136,10 @@ public:
 	void regenerateGui(v2u32 screensize);
 	
 	ItemSpec getItemAtPos(v2s32 p) const;
-	void drawList(const ListDrawSpec &s, ITextureSource *tsrc);
+	void drawList(const ListDrawSpec &s, int phase);
+	void drawSelectedItem();
 	void drawMenu();
+	void updateSelectedItem();
 
 	bool OnEvent(const SEvent& event);
 	
@@ -153,15 +155,18 @@ protected:
 	v2s32 spacing;
 	v2s32 imgsize;
 	
-	InventoryContext *m_c;
 	InventoryManager *m_invmgr;
-	ITextureSource *m_tsrc;
+	IGameDef *m_gamedef;
 
 	core::array<DrawSpec> m_init_draw_spec;
 	core::array<ListDrawSpec> m_draw_spec;
 
 	ItemSpec *m_selected_item;
+	u32 m_selected_amount;
+	bool m_selected_dragging;
+
 	v2s32 m_pointer;
+	gui::IGUIStaticText *m_tooltip_element;
 };
 
 #endif

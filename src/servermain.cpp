@@ -68,7 +68,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "porting.h"
 #include "materials.h"
 #include "config.h"
-#include "mineral.h"
 #include "filesys.h"
 #include "defaultsettings.h"
 #include "settings.h"
@@ -300,10 +299,6 @@ int main(int argc, char *argv[])
 	// Initialize random seed
 	srand(time(0));
 	mysrand(time(0));
-
-	// Initialize stuff
-	
-	init_mineral();
 
 	/*
 		Run unit tests

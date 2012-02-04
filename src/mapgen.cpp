@@ -22,7 +22,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "noise.h"
 #include "mapblock.h"
 #include "map.h"
-#include "mineral.h"
 //#include "serverobject.h"
 #include "content_sao.h"
 #include "nodedef.h"
@@ -1652,15 +1651,20 @@ void make_block(BlockMakeData *data)
 	MapNode n_##name(c_##name);
 
 	CONTENT_VARIABLE(ndef, stone);
-	CONTENT_VARIABLE(ndef, water_source);
 	CONTENT_VARIABLE(ndef, air);
+	CONTENT_VARIABLE(ndef, water_source);
 	CONTENT_VARIABLE(ndef, dirt);
 	CONTENT_VARIABLE(ndef, sand);
 	CONTENT_VARIABLE(ndef, gravel);
+	CONTENT_VARIABLE(ndef, clay);
 	CONTENT_VARIABLE(ndef, lava_source);
 	CONTENT_VARIABLE(ndef, cobble);
 	CONTENT_VARIABLE(ndef, mossycobble);
 	CONTENT_VARIABLE(ndef, dirt_with_grass);
+	CONTENT_VARIABLE(ndef, junglegrass);
+	CONTENT_VARIABLE(ndef, stone_with_coal);
+	CONTENT_VARIABLE(ndef, stone_with_iron);
+	CONTENT_VARIABLE(ndef, mese);
 
 	/*
 		Make base ground level
@@ -1698,139 +1702,6 @@ void make_block(BlockMakeData *data)
 				}
 			
 				data->vmanip->m_area.add_y(em, i, 1);
-			}
-		}
-	}
-
-	/*
-		Add minerals
-	*/
-
-	{
-		PseudoRandom mineralrandom(blockseed);
-
-		/*
-			Add meseblocks
-		*/
-		for(s16 i=0; i<approx_ground_depth/4; i++)
-		{
-			if(mineralrandom.next()%50 == 0)
-			{
-				s16 x = mineralrandom.range(node_min.X+1, node_max.X-1);
-				s16 y = mineralrandom.range(node_min.Y+1, node_max.Y-1);
-				s16 z = mineralrandom.range(node_min.Z+1, node_max.Z-1);
-				for(u16 i=0; i<27; i++)
-				{
-					v3s16 p = v3s16(x,y,z) + g_27dirs[i];
-					u32 vi = vmanip.m_area.index(p);
-					if(vmanip.m_data[vi].getContent() == c_stone)
-						if(mineralrandom.next()%8 == 0)
-							vmanip.m_data[vi] = MapNode(LEGN(ndef, "CONTENT_MESE"));
-				}
-					
-			}
-		}
-		/*
-			Add others
-		*/
-		{
-			u16 a = mineralrandom.range(0,15);
-			a = a*a*a;
-			u16 amount = 20 * a/1000;
-			for(s16 i=0; i<amount; i++)
-			{
-				s16 x = mineralrandom.range(node_min.X+1, node_max.X-1);
-				s16 y = mineralrandom.range(node_min.Y+1, node_max.Y-1);
-				s16 z = mineralrandom.range(node_min.Z+1, node_max.Z-1);
-
-				u8 base_content = LEGN(ndef, "CONTENT_STONE");
-				MapNode new_content(CONTENT_IGNORE);
-				u32 sparseness = 6;
-
-				if(noisebuf_ground_crumbleness.get(x,y+5,z) < -0.1)
-				{
-					new_content = MapNode(LEGN(ndef, "CONTENT_STONE"), MINERAL_COAL);
-				}
-				else
-				{
-					if(noisebuf_ground_wetness.get(x,y+5,z) > 0.0)
-						new_content = MapNode(LEGN(ndef, "CONTENT_STONE"), MINERAL_IRON);
-					/*if(noisebuf_ground_wetness.get(x,y,z) > 0.0)
-						vmanip.m_data[i] = MapNode(LEGN(ndef, "CONTENT_MUD"));
-					else
-						vmanip.m_data[i] = MapNode(LEGN(ndef, "CONTENT_SAND"));*/
-				}
-				/*else if(noisebuf_ground_crumbleness.get(x,y,z) > 0.1)
-				{
-				}*/
-
-				if(new_content.getContent() != CONTENT_IGNORE)
-				{
-					for(u16 i=0; i<27; i++)
-					{
-						v3s16 p = v3s16(x,y,z) + g_27dirs[i];
-						u32 vi = vmanip.m_area.index(p);
-						if(vmanip.m_data[vi].getContent() == base_content)
-						{
-							if(mineralrandom.next()%sparseness == 0)
-								vmanip.m_data[vi] = new_content;
-						}
-					}
-				}
-			}
-		}
-		/*
-			Add coal
-		*/
-		//for(s16 i=0; i < MYMAX(0, 50 - abs(node_min.Y+8 - (-30))); i++)
-		//for(s16 i=0; i<50; i++)
-		u16 coal_amount = 30;
-		u16 coal_rareness = 60 / coal_amount;
-		if(coal_rareness == 0)
-			coal_rareness = 1;
-		if(mineralrandom.next()%coal_rareness == 0)
-		{
-			u16 a = mineralrandom.next() % 16;
-			u16 amount = coal_amount * a*a*a / 1000;
-			for(s16 i=0; i<amount; i++)
-			{
-				s16 x = mineralrandom.range(node_min.X+1, node_max.X-1);
-				s16 y = mineralrandom.range(node_min.Y+1, node_max.Y-1);
-				s16 z = mineralrandom.range(node_min.Z+1, node_max.Z-1);
-				for(u16 i=0; i<27; i++)
-				{
-					v3s16 p = v3s16(x,y,z) + g_27dirs[i];
-					u32 vi = vmanip.m_area.index(p);
-					if(vmanip.m_data[vi].getContent() == c_stone)
-						if(mineralrandom.next()%8 == 0)
-							vmanip.m_data[vi] = MapNode(LEGN(ndef, "CONTENT_STONE"), MINERAL_COAL);
-				}
-			}
-		}
-		/*
-			Add iron
-		*/
-		u16 iron_amount = 8;
-		u16 iron_rareness = 60 / iron_amount;
-		if(iron_rareness == 0)
-			iron_rareness = 1;
-		if(mineralrandom.next()%iron_rareness == 0)
-		{
-			u16 a = mineralrandom.next() % 16;
-			u16 amount = iron_amount * a*a*a / 1000;
-			for(s16 i=0; i<amount; i++)
-			{
-				s16 x = mineralrandom.range(node_min.X+1, node_max.X-1);
-				s16 y = mineralrandom.range(node_min.Y+1, node_max.Y-1);
-				s16 z = mineralrandom.range(node_min.Z+1, node_max.Z-1);
-				for(u16 i=0; i<27; i++)
-				{
-					v3s16 p = v3s16(x,y,z) + g_27dirs[i];
-					u32 vi = vmanip.m_area.index(p);
-					if(vmanip.m_data[vi].getContent() == c_stone)
-						if(mineralrandom.next()%8 == 0)
-							vmanip.m_data[vi] = MapNode(LEGN(ndef, "CONTENT_STONE"), MINERAL_IRON);
-				}
 			}
 		}
 	}
@@ -1955,7 +1826,7 @@ void make_block(BlockMakeData *data)
 					/*else if(vmanip.m_flags[i] & VMANIP_FLAG_DUNGEON_INSIDE)
 					{
 						if(wetness > 1.2)
-							vmanip.m_data[i].setContent(LEGN(ndef, "CONTENT_MUD"));
+							vmanip.m_data[i].setContent(c_dirt);
 					}*/
 					data->vmanip->m_area.add_y(em, i, -1);
 				}
@@ -2077,23 +1948,23 @@ void make_block(BlockMakeData *data)
 									((claynoise > 0) && (claynoise < 0.12) && (current_depth == 1))
 									);
 								if (have_clay)
-									vmanip.m_data[i] = MapNode(LEGN(ndef, "CONTENT_CLAY"));
+									vmanip.m_data[i] = MapNode(c_clay);
 								else
-									vmanip.m_data[i] = MapNode(LEGN(ndef, "CONTENT_SAND"));
+									vmanip.m_data[i] = MapNode(c_sand);
 							}
 							#if 1
 							else if(current_depth==0 && !water_detected
 									&& y >= WATER_LEVEL && air_detected)
-								vmanip.m_data[i] = MapNode(LEGN(ndef, "CONTENT_GRASS"));
+								vmanip.m_data[i] = MapNode(c_dirt_with_grass);
 							#endif
 							else
-								vmanip.m_data[i] = MapNode(LEGN(ndef, "CONTENT_MUD"));
+								vmanip.m_data[i] = MapNode(c_dirt);
 						}
 						else
 						{
-							if(vmanip.m_data[i].getContent() == LEGN(ndef, "CONTENT_MUD")
-								|| vmanip.m_data[i].getContent() == LEGN(ndef, "CONTENT_GRASS"))
-								vmanip.m_data[i] = MapNode(LEGN(ndef, "CONTENT_STONE"));
+							if(vmanip.m_data[i].getContent() == c_dirt
+								|| vmanip.m_data[i].getContent() == c_dirt_with_grass)
+								vmanip.m_data[i] = MapNode(c_stone);
 						}
 
 						current_depth++;
@@ -2171,7 +2042,7 @@ void make_block(BlockMakeData *data)
 					make_papyrus(vmanip, p, ndef);
 				}
 				// Trees grow only on mud and grass, on land
-				else if((n->getContent() == c_dirt || n->getContent() == LEGN(ndef, "CONTENT_GRASS")) && y > WATER_LEVEL + 2)
+				else if((n->getContent() == c_dirt || n->getContent() == c_dirt_with_grass) && y > WATER_LEVEL + 2)
 				{
 					p.Y++;
 					//if(surface_humidity_2d(data->seed, v2s16(x, y)) < 0.5)
@@ -2238,10 +2109,10 @@ void make_block(BlockMakeData *data)
 					continue;
 				/*p.Y--;
 				if(vmanip.m_area.contains(p))
-					vmanip.m_data[vmanip.m_area.index(p)] = LEGN(ndef, "CONTENT_MUD");
+					vmanip.m_data[vmanip.m_area.index(p)] = c_dirt;
 				p.Y++;*/
 				if(vmanip.m_area.contains(p))
-					vmanip.m_data[vmanip.m_area.index(p)] = LEGN(ndef, "CONTENT_JUNGLEGRASS");
+					vmanip.m_data[vmanip.m_area.index(p)] = c_junglegrass;
 			}
 		}
 
@@ -2269,7 +2140,7 @@ void make_block(BlockMakeData *data)
 			/*{
 				u32 i = data->vmanip->m_area.index(v3s16(p));
 				MapNode *n = &data->vmanip->m_data[i];
-				if(n->getContent() != LEGN(ndef, "CONTENT_MUD") && n->getContent() != LEGN(ndef, "CONTENT_GRASS"))
+				if(n->getContent() != c_dirt && n->getContent() != c_dirt_with_grass)
 					continue;
 			}*/
 			// Will be placed one higher
@@ -2304,7 +2175,7 @@ void make_block(BlockMakeData *data)
 			/*{
 				u32 i = data->vmanip->m_area.index(v3s16(p));
 				MapNode *n = &data->vmanip->m_data[i];
-				if(n->getContent() != LEGN(ndef, "CONTENT_MUD") && n->getContent() != LEGN(ndef, "CONTENT_GRASS"))
+				if(n->getContent() != c_dirt && n->getContent() != c_dirt_with_grass)
 					continue;
 			}*/
 			// Will be placed one lower
@@ -2313,6 +2184,139 @@ void make_block(BlockMakeData *data)
 			make_largestone(data->vmanip, p);
 		}
 #endif
+	}
+
+	/*
+		Add minerals
+	*/
+
+	{
+		PseudoRandom mineralrandom(blockseed);
+
+		/*
+			Add meseblocks
+		*/
+		for(s16 i=0; i<approx_ground_depth/4; i++)
+		{
+			if(mineralrandom.next()%50 == 0)
+			{
+				s16 x = mineralrandom.range(node_min.X+1, node_max.X-1);
+				s16 y = mineralrandom.range(node_min.Y+1, node_max.Y-1);
+				s16 z = mineralrandom.range(node_min.Z+1, node_max.Z-1);
+				for(u16 i=0; i<27; i++)
+				{
+					v3s16 p = v3s16(x,y,z) + g_27dirs[i];
+					u32 vi = vmanip.m_area.index(p);
+					if(vmanip.m_data[vi].getContent() == c_stone)
+						if(mineralrandom.next()%8 == 0)
+							vmanip.m_data[vi] = MapNode(c_mese);
+				}
+					
+			}
+		}
+		/*
+			Add others
+		*/
+		{
+			u16 a = mineralrandom.range(0,15);
+			a = a*a*a;
+			u16 amount = 20 * a/1000;
+			for(s16 i=0; i<amount; i++)
+			{
+				s16 x = mineralrandom.range(node_min.X+1, node_max.X-1);
+				s16 y = mineralrandom.range(node_min.Y+1, node_max.Y-1);
+				s16 z = mineralrandom.range(node_min.Z+1, node_max.Z-1);
+
+				u8 base_content = c_stone;
+				MapNode new_content(CONTENT_IGNORE);
+				u32 sparseness = 6;
+
+				if(noisebuf_ground_crumbleness.get(x,y+5,z) < -0.1)
+				{
+					new_content = MapNode(c_stone_with_coal);
+				}
+				else
+				{
+					if(noisebuf_ground_wetness.get(x,y+5,z) > 0.0)
+						new_content = MapNode(c_stone_with_iron);
+					/*if(noisebuf_ground_wetness.get(x,y,z) > 0.0)
+						vmanip.m_data[i] = MapNode(c_dirt);
+					else
+						vmanip.m_data[i] = MapNode(c_sand);*/
+				}
+				/*else if(noisebuf_ground_crumbleness.get(x,y,z) > 0.1)
+				{
+				}*/
+
+				if(new_content.getContent() != CONTENT_IGNORE)
+				{
+					for(u16 i=0; i<27; i++)
+					{
+						v3s16 p = v3s16(x,y,z) + g_27dirs[i];
+						u32 vi = vmanip.m_area.index(p);
+						if(vmanip.m_data[vi].getContent() == base_content)
+						{
+							if(mineralrandom.next()%sparseness == 0)
+								vmanip.m_data[vi] = new_content;
+						}
+					}
+				}
+			}
+		}
+		/*
+			Add coal
+		*/
+		//for(s16 i=0; i < MYMAX(0, 50 - abs(node_min.Y+8 - (-30))); i++)
+		//for(s16 i=0; i<50; i++)
+		u16 coal_amount = 30;
+		u16 coal_rareness = 60 / coal_amount;
+		if(coal_rareness == 0)
+			coal_rareness = 1;
+		if(mineralrandom.next()%coal_rareness == 0)
+		{
+			u16 a = mineralrandom.next() % 16;
+			u16 amount = coal_amount * a*a*a / 1000;
+			for(s16 i=0; i<amount; i++)
+			{
+				s16 x = mineralrandom.range(node_min.X+1, node_max.X-1);
+				s16 y = mineralrandom.range(node_min.Y+1, node_max.Y-1);
+				s16 z = mineralrandom.range(node_min.Z+1, node_max.Z-1);
+				for(u16 i=0; i<27; i++)
+				{
+					v3s16 p = v3s16(x,y,z) + g_27dirs[i];
+					u32 vi = vmanip.m_area.index(p);
+					if(vmanip.m_data[vi].getContent() == c_stone)
+						if(mineralrandom.next()%8 == 0)
+							vmanip.m_data[vi] = MapNode(c_stone_with_coal);
+				}
+			}
+		}
+		/*
+			Add iron
+		*/
+		u16 iron_amount = 8;
+		u16 iron_rareness = 60 / iron_amount;
+		if(iron_rareness == 0)
+			iron_rareness = 1;
+		if(mineralrandom.next()%iron_rareness == 0)
+		{
+			u16 a = mineralrandom.next() % 16;
+			u16 amount = iron_amount * a*a*a / 1000;
+			for(s16 i=0; i<amount; i++)
+			{
+				s16 x = mineralrandom.range(node_min.X+1, node_max.X-1);
+				s16 y = mineralrandom.range(node_min.Y+1, node_max.Y-1);
+				s16 z = mineralrandom.range(node_min.Z+1, node_max.Z-1);
+				for(u16 i=0; i<27; i++)
+				{
+					v3s16 p = v3s16(x,y,z) + g_27dirs[i];
+					u32 vi = vmanip.m_area.index(p);
+					if(vmanip.m_data[vi].getContent() == c_stone)
+						if(mineralrandom.next()%8 == 0)
+							vmanip.m_data[vi] = MapNode(c_stone_with_iron);
+				}
+			}
+		}
 	}
 
 }

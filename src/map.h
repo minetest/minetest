@@ -212,7 +212,7 @@ public:
 		These handle lighting but not faces.
 	*/
 	void addNodeAndUpdate(v3s16 p, MapNode n,
-			core::map<v3s16, MapBlock*> &modified_blocks, std::string &player_name);
+			core::map<v3s16, MapBlock*> &modified_blocks);
 	void removeNodeAndUpdate(v3s16 p,
 			core::map<v3s16, MapBlock*> &modified_blocks);
 

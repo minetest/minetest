@@ -40,8 +40,7 @@ private:
 class ItemSAO : public ServerActiveObject
 {
 public:
-	ItemSAO(ServerEnvironment *env, v3f pos,
-			const std::string inventorystring);
+	ItemSAO(ServerEnvironment *env, v3f pos, const std::string itemstring);
 	u8 getType() const
 		{return ACTIVEOBJECT_TYPE_ITEM;}
 	static ServerActiveObject* create(ServerEnvironment *env, v3f pos,
@@ -49,11 +48,12 @@ public:
 	void step(float dtime, bool send_recommended);
 	std::string getClientInitializationData();
 	std::string getStaticData();
-	InventoryItem* createInventoryItem();
+	ItemStack createItemStack();
 	void punch(ServerActiveObject *puncher, float time_from_last_punch);
 	float getMinimumSavedMovement(){ return 0.1*BS; }
 private:
-	std::string m_inventorystring;
+	std::string m_itemstring;
+	bool m_itemstring_changed;
 	v3f m_speed_f;
 	v3f m_last_sent_position;
 	IntervalLimiter m_move_interval;

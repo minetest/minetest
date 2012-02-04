@@ -20,6 +20,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "guiInventoryMenu.h"
 #include "constants.h"
+#include "gamedef.h"
 #include "keycode.h"
 #include "strfnd.h"
 #include <IGUICheckBox.h>
@@ -28,20 +29,21 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <IGUIStaticText.h>
 #include <IGUIFont.h>
 #include "log.h"
-#include "inventorymanager.h"
 
-void drawInventoryItem(video::IVideoDriver *driver,
+void drawItemStack(video::IVideoDriver *driver,
 		gui::IGUIFont *font,
-		InventoryItem *item, core::rect<s32> rect,
+		const ItemStack &item,
+		const core::rect<s32> &rect,
 		const core::rect<s32> *clip,
-		ITextureSource *tsrc)
+		IGameDef *gamedef)
 {
-	if(item == NULL)
+	if(item.empty())
 		return;
 	
-	video::ITexture *texture = NULL;
-	texture = item->getImage();
+	const ItemDefinition &def = item.getDefinition(gamedef->idef());
+	video::ITexture *texture = def.inventory_texture;
 
+	// Draw the inventory texture
 	if(texture != NULL)
 	{
 		const video::SColor color(255,255,255,255);
@@ -51,34 +53,66 @@ void drawInventoryItem(video::IVideoDriver *driver,
 			core::dimension2di(texture->getOriginalSize())),
 			clip, colors, true);
 	}
-	else
+
+	if(def.type == ITEM_TOOL && item.wear != 0)
 	{
-		video::SColor bgcolor(255,50,50,128);
-		driver->draw2DRectangle(bgcolor, rect, clip);
+		// Draw a progressbar
+		float barheight = rect.getHeight()/16;
+		float barpad_x = rect.getWidth()/16;
+		float barpad_y = rect.getHeight()/16;
+		core::rect<s32> progressrect(
+			rect.UpperLeftCorner.X + barpad_x,
+			rect.LowerRightCorner.Y - barpad_y - barheight,
+			rect.LowerRightCorner.X - barpad_x,
+			rect.LowerRightCorner.Y - barpad_y);
+
+		// Shrink progressrect by amount of tool damage
+		float wear = item.wear / 65535.0;
+		int progressmid =
+			wear * progressrect.UpperLeftCorner.X +
+			(1-wear) * progressrect.LowerRightCorner.X;
+
+		// Compute progressbar color
+		//   wear = 0.0: green
+		//   wear = 0.5: yellow
+		//   wear = 1.0: red
+		video::SColor color(255,255,255,255);
+		int wear_i = MYMIN(floor(wear * 600), 511);
+		wear_i = MYMIN(wear_i + 10, 511);
+		if(wear_i <= 255)
+			color.set(255, wear_i, 255, 0);
+		else
+			color.set(255, 255, 511-wear_i, 0);
+
+		core::rect<s32> progressrect2 = progressrect;
+		progressrect2.LowerRightCorner.X = progressmid;
+		driver->draw2DRectangle(color, progressrect2, clip);
+
+		color = video::SColor(255,0,0,0);
+		progressrect2 = progressrect;
+		progressrect2.UpperLeftCorner.X = progressmid;
+		driver->draw2DRectangle(color, progressrect2, clip);
 	}
 
-	if(font != NULL)
+	if(font != NULL && item.count >= 2)
 	{
-		std::string text = item->getText();
-		if(font && text != "")
-		{
-			v2u32 dim = font->getDimension(narrow_to_wide(text).c_str());
-			v2s32 sdim(dim.X,dim.Y);
+		// Get the item count as a string
+		std::string text = itos(item.count);
+		v2u32 dim = font->getDimension(narrow_to_wide(text).c_str());
+		v2s32 sdim(dim.X,dim.Y);
 
-			core::rect<s32> rect2(
-				/*rect.UpperLeftCorner,
-				core::dimension2d<u32>(rect.getWidth(), 15)*/
-				rect.LowerRightCorner - sdim,
-				sdim
-			);
+		core::rect<s32> rect2(
+			/*rect.UpperLeftCorner,
+			core::dimension2d<u32>(rect.getWidth(), 15)*/
+			rect.LowerRightCorner - sdim,
+			sdim
+		);
 
-			video::SColor bgcolor(128,0,0,0);
-			driver->draw2DRectangle(bgcolor, rect2, clip);
-			
-			font->draw(text.c_str(), rect2,
-					video::SColor(255,255,255,255), false, false,
-					clip);
-		}
+		video::SColor bgcolor(128,0,0,0);
+		driver->draw2DRectangle(bgcolor, rect2, clip);
+
+		video::SColor color(255,255,255,255);
+		font->draw(text.c_str(), rect2, color, false, false, clip);
 	}
 }
 
@@ -90,17 +124,18 @@ GUIInventoryMenu::GUIInventoryMenu(gui::IGUIEnvironment* env,
 		gui::IGUIElement* parent, s32 id,
 		IMenuManager *menumgr,
 		v2s16 menu_size,
-		InventoryContext *c,
 		InventoryManager *invmgr,
-		ITextureSource *tsrc
+		IGameDef *gamedef
 		):
 	GUIModalMenu(env, parent, id, menumgr),
 	m_menu_size(menu_size),
-	m_c(c),
 	m_invmgr(invmgr),
-	m_tsrc(tsrc)
+	m_gamedef(gamedef)
 {
 	m_selected_item = NULL;
+	m_selected_amount = 0;
+	m_selected_dragging = false;
+	m_tooltip_element = NULL;
 }
 
 GUIInventoryMenu::~GUIInventoryMenu()
@@ -131,6 +166,11 @@ void GUIInventoryMenu::removeChildren()
 		if(e != NULL)
 			e->remove();
 	}*/
+	if(m_tooltip_element)
+	{
+		m_tooltip_element->remove();
+		m_tooltip_element = NULL;
+	}
 }
 
 void GUIInventoryMenu::regenerateGui(v2u32 screensize)
@@ -195,6 +235,17 @@ void GUIInventoryMenu::regenerateGui(v2u32 screensize)
 		const wchar_t *text =
 		L"Left click: Move all items, Right click: Move single item";
 		Environment->addStaticText(text, rect, false, true, this, 256);
+
+		// Add tooltip
+		// Note: parent != this so that the tooltip isn't clipped by the menu rectangle
+		m_tooltip_element = Environment->addStaticText(L"",core::rect<s32>(0,0,110,18));
+		m_tooltip_element->enableOverrideColor(true);
+		m_tooltip_element->setBackgroundColor(video::SColor(255,110,130,60));
+		m_tooltip_element->setDrawBackground(true);
+		m_tooltip_element->setDrawBorder(true);
+		m_tooltip_element->setOverrideColor(video::SColor(255,255,255,255));
+		m_tooltip_element->setTextAlignment(gui::EGUIA_CENTER, gui::EGUIA_CENTER);
+		m_tooltip_element->setWordWrap(false);
 	}
 }
 
@@ -214,15 +265,15 @@ GUIInventoryMenu::ItemSpec GUIInventoryMenu::getItemAtPos(v2s32 p) const
 			core::rect<s32> rect = imgrect + s.pos + p0;
 			if(rect.isPointInside(p))
 			{
-				return ItemSpec(s.inventoryname, s.listname, i);
+				return ItemSpec(s.inventoryloc, s.listname, i);
 			}
 		}
 	}
 
-	return ItemSpec("", "", -1);
+	return ItemSpec(InventoryLocation(), "", -1);
 }
 
-void GUIInventoryMenu::drawList(const ListDrawSpec &s, ITextureSource *tsrc)
+void GUIInventoryMenu::drawList(const ListDrawSpec &s, int phase)
 {
 	video::IVideoDriver* driver = Environment->getVideoDriver();
 
@@ -232,7 +283,7 @@ void GUIInventoryMenu::drawList(const ListDrawSpec &s, ITextureSource *tsrc)
 	if (skin)
 		font = skin->getFont();
 	
-	Inventory *inv = m_invmgr->getInventory(m_c, s.inventoryname);
+	Inventory *inv = m_invmgr->getInventory(s.inventoryloc);
 	assert(inv);
 	InventoryList *ilist = inv->getList(s.listname);
 	
@@ -244,51 +295,93 @@ void GUIInventoryMenu::drawList(const ListDrawSpec &s, ITextureSource *tsrc)
 		s32 y = (i/s.geom.X) * spacing.Y;
 		v2s32 p(x,y);
 		core::rect<s32> rect = imgrect + s.pos + p;
-		InventoryItem *item = NULL;
+		ItemStack item;
 		if(ilist)
 			item = ilist->getItem(i);
 
-		if(m_selected_item != NULL && m_selected_item->listname == s.listname
-				&& m_selected_item->i == i)
+		bool selected = m_selected_item
+			&& m_invmgr->getInventory(m_selected_item->inventoryloc) == inv
+			&& m_selected_item->listname == s.listname
+			&& m_selected_item->i == i;
+		bool hovering = rect.isPointInside(m_pointer);
+
+		if(phase == 0)
 		{
-			/*s32 border = imgsize.X/12;
-			driver->draw2DRectangle(video::SColor(255,192,192,192),
-					core::rect<s32>(rect.UpperLeftCorner - v2s32(1,1)*border,
-							rect.LowerRightCorner + v2s32(1,1)*border),
-					NULL);
-			driver->draw2DRectangle(video::SColor(255,0,0,0),
-					core::rect<s32>(rect.UpperLeftCorner - v2s32(1,1)*((border+1)/2),
-							rect.LowerRightCorner + v2s32(1,1)*((border+1)/2)),
-					NULL);*/
-			s32 border = 2;
-			driver->draw2DRectangle(video::SColor(255,255,0,0),
-					core::rect<s32>(rect.UpperLeftCorner - v2s32(1,1)*border,
-							rect.LowerRightCorner + v2s32(1,1)*border),
-					&AbsoluteClippingRect);
-		}
-		
-		if(rect.isPointInside(m_pointer) && m_selected_item)
-		{
-		    video::SColor bgcolor(255,192,192,192);
-		    driver->draw2DRectangle(bgcolor, rect, &AbsoluteClippingRect);
-		}
-		else
-		{
-		    video::SColor bgcolor(255,128,128,128);
-		    driver->draw2DRectangle(bgcolor, rect, &AbsoluteClippingRect);
+			if(hovering && m_selected_item)
+			{
+				video::SColor bgcolor(255,192,192,192);
+				driver->draw2DRectangle(bgcolor, rect, &AbsoluteClippingRect);
+			}
+			else
+			{
+				video::SColor bgcolor(255,128,128,128);
+				driver->draw2DRectangle(bgcolor, rect, &AbsoluteClippingRect);
+			}
 		}
 
-		if(item)
+		if(phase == 1)
 		{
-			drawInventoryItem(driver, font, item,
-					rect, &AbsoluteClippingRect, tsrc);
-		}
+			// Draw item stack
+			if(selected)
+			{
+				item.takeItem(m_selected_amount);
+			}
+			if(!item.empty())
+			{
+				drawItemStack(driver, font, item,
+						rect, &AbsoluteClippingRect, m_gamedef);
+			}
 
+			// Draw tooltip
+			std::string tooltip_text = "";
+			if(hovering && !m_selected_item)
+				tooltip_text = item.getDefinition(m_gamedef->idef()).description;
+			if(tooltip_text != "")
+			{
+				m_tooltip_element->setVisible(true);
+				this->bringToFront(m_tooltip_element);
+				m_tooltip_element->setText(narrow_to_wide(tooltip_text).c_str());
+				s32 tooltip_x = m_pointer.X + 15;
+				s32 tooltip_y = m_pointer.Y + 15;
+				s32 tooltip_width = m_tooltip_element->getTextWidth() + 15;
+				s32 tooltip_height = m_tooltip_element->getTextHeight() + 5;
+				m_tooltip_element->setRelativePosition(core::rect<s32>(
+						core::position2d<s32>(tooltip_x, tooltip_y),
+						core::dimension2d<s32>(tooltip_width, tooltip_height)));
+			}
+		}
 	}
+}
+
+void GUIInventoryMenu::drawSelectedItem()
+{
+	if(!m_selected_item)
+		return;
+
+	video::IVideoDriver* driver = Environment->getVideoDriver();
+
+	// Get font
+	gui::IGUIFont *font = NULL;
+	gui::IGUISkin* skin = Environment->getSkin();
+	if (skin)
+		font = skin->getFont();
+	
+	Inventory *inv = m_invmgr->getInventory(m_selected_item->inventoryloc);
+	assert(inv);
+	InventoryList *list = inv->getList(m_selected_item->listname);
+	assert(list);
+	ItemStack stack = list->getItem(m_selected_item->i);
+	stack.count = m_selected_amount;
+
+	core::rect<s32> imgrect(0,0,imgsize.X,imgsize.Y);
+	core::rect<s32> rect = imgrect + (m_pointer - imgrect.getCenter());
+	drawItemStack(driver, font, stack, rect, NULL, m_gamedef);
 }
 
 void GUIInventoryMenu::drawMenu()
 {
+	updateSelectedItem();
+
 	gui::IGUISkin* skin = Environment->getSkin();
 	if (!skin)
 		return;
@@ -297,20 +390,96 @@ void GUIInventoryMenu::drawMenu()
 	video::SColor bgcolor(140,0,0,0);
 	driver->draw2DRectangle(bgcolor, AbsoluteRect, &AbsoluteClippingRect);
 
+	m_tooltip_element->setVisible(false);
+
 	/*
 		Draw items
+		Phase 0: Item slot rectangles
+		Phase 1: Item images; prepare tooltip
 	*/
 	
+	for(int phase=0; phase<=1; phase++)
 	for(u32 i=0; i<m_draw_spec.size(); i++)
 	{
-		ListDrawSpec &s = m_draw_spec[i];
-		drawList(s, m_tsrc);
+		drawList(m_draw_spec[i], phase);
 	}
+
+	/*
+		Draw dragged item stack
+	*/
+	drawSelectedItem();
 
 	/*
 		Call base class
 	*/
 	gui::IGUIElement::draw();
+}
+
+void GUIInventoryMenu::updateSelectedItem()
+{
+	// If the selected stack has become empty for some reason, deselect it.
+	// If the selected stack has become smaller, adjust m_selected_amount.
+	if(m_selected_item)
+	{
+		bool selection_valid = false;
+		if(m_selected_item->isValid())
+		{
+			Inventory *inv = m_invmgr->getInventory(m_selected_item->inventoryloc);
+			if(inv)
+			{
+				InventoryList *list = inv->getList(m_selected_item->listname);
+				if(list && (u32) m_selected_item->i < list->getSize())
+				{
+					ItemStack stack = list->getItem(m_selected_item->i);
+					if(m_selected_amount > stack.count)
+						m_selected_amount = stack.count;
+					if(!stack.empty())
+						selection_valid = true;
+				}
+			}
+		}
+		if(!selection_valid)
+		{
+			delete m_selected_item;
+			m_selected_item = NULL;
+			m_selected_amount = 0;
+			m_selected_dragging = false;
+		}
+	}
+
+	// If craftresult is nonempty and nothing else is selected, select it now.
+	if(!m_selected_item)
+	{
+		for(u32 i=0; i<m_draw_spec.size(); i++)
+		{
+			const ListDrawSpec &s = m_draw_spec[i];
+			if(s.listname == "craftpreview")
+			{
+				Inventory *inv = m_invmgr->getInventory(s.inventoryloc);
+				InventoryList *list = inv->getList("craftresult");
+				if(list && list->getSize() >= 1 && !list->getItem(0).empty())
+				{
+					m_selected_item = new ItemSpec;
+					m_selected_item->inventoryloc = s.inventoryloc;
+					m_selected_item->listname = "craftresult";
+					m_selected_item->i = 0;
+					m_selected_amount = 0;
+					m_selected_dragging = false;
+					break;
+				}
+			}
+		}
+	}
+
+	// If craftresult is selected, keep the whole stack selected
+	if(m_selected_item && m_selected_item->listname == "craftresult")
+	{
+		Inventory *inv = m_invmgr->getInventory(m_selected_item->inventoryloc);
+		assert(inv);
+		InventoryList *list = inv->getList(m_selected_item->listname);
+		assert(list);
+		m_selected_amount = list->getItem(m_selected_item->i).count;
+	}
 }
 
 bool GUIInventoryMenu::OnEvent(const SEvent& event)
@@ -325,102 +494,268 @@ bool GUIInventoryMenu::OnEvent(const SEvent& event)
 			return true;
 		}
 	}
-	if(event.EventType==EET_MOUSE_INPUT_EVENT)
+	if(event.EventType==EET_MOUSE_INPUT_EVENT
+			&& event.MouseInput.Event == EMIE_MOUSE_MOVED)
 	{
-		char amount = -1;
+		// Mouse moved
+		m_pointer = v2s32(event.MouseInput.X, event.MouseInput.Y);
+	}
+	if(event.EventType==EET_MOUSE_INPUT_EVENT
+			&& event.MouseInput.Event != EMIE_MOUSE_MOVED)
+	{
+		// Mouse event other than movement
 
 		v2s32 p(event.MouseInput.X, event.MouseInput.Y);
+		m_pointer = p;
+
+		// Get selected item and hovered/clicked item (s)
+
+		updateSelectedItem();
 		ItemSpec s = getItemAtPos(p);
 
-		if(event.MouseInput.Event==EMIE_MOUSE_MOVED)
-		    m_pointer = v2s32(event.MouseInput.X, event.MouseInput.Y);
-		else if(event.MouseInput.Event == EMIE_LMOUSE_PRESSED_DOWN)
-			amount = 0;
-		else if(event.MouseInput.Event == EMIE_RMOUSE_PRESSED_DOWN)
-			amount = 1;
-		else if(event.MouseInput.Event == EMIE_MMOUSE_PRESSED_DOWN)
-			amount = 10;
-		else if(event.MouseInput.Event == EMIE_LMOUSE_LEFT_UP &&
-				m_selected_item &&
-				(m_selected_item->listname != s.listname
-					|| m_selected_item->i != s.i))
-			amount = 0;
-			
-		
-		if(amount >= 0)
+		Inventory *inv_selected = NULL;
+		Inventory *inv_s = NULL;
+
+		if(m_selected_item)
 		{
-			//infostream<<"Mouse action at p=("<<p.X<<","<<p.Y<<")"<<std::endl;
-			if(s.isValid())
+			inv_selected = m_invmgr->getInventory(m_selected_item->inventoryloc);
+			assert(inv_selected);
+			assert(inv_selected->getList(m_selected_item->listname) != NULL);
+		}
+
+		u32 s_count = 0;
+
+		if(s.isValid())
+		{
+			inv_s = m_invmgr->getInventory(s.inventoryloc);
+			assert(inv_s);
+
+			InventoryList *list = inv_s->getList(s.listname);
+			if(list != NULL && (u32) s.i < list->getSize())
+				s_count = list->getItem(s.i).count;
+			else
+				s.i = -1;  // make it invalid again
+		}
+
+		bool identical = (m_selected_item != NULL) && s.isValid() &&
+			(inv_selected == inv_s) &&
+			(m_selected_item->listname == s.listname) &&
+			(m_selected_item->i == s.i);
+
+		// buttons: 0 = left, 1 = right, 2 = middle
+		// up/down: 0 = down (press), 1 = up (release), 2 = unknown event
+		int button = 0;
+		int updown = 2;
+		if(event.MouseInput.Event == EMIE_LMOUSE_PRESSED_DOWN)
+			{ button = 0; updown = 0; }
+		else if(event.MouseInput.Event == EMIE_RMOUSE_PRESSED_DOWN)
+			{ button = 1; updown = 0; }
+		else if(event.MouseInput.Event == EMIE_MMOUSE_PRESSED_DOWN)
+			{ button = 2; updown = 0; }
+		else if(event.MouseInput.Event == EMIE_LMOUSE_LEFT_UP)
+			{ button = 0; updown = 1; }
+		else if(event.MouseInput.Event == EMIE_RMOUSE_LEFT_UP)
+			{ button = 1; updown = 1; }
+		else if(event.MouseInput.Event == EMIE_MMOUSE_LEFT_UP)
+			{ button = 2; updown = 1; }
+
+		// Set this number to a positive value to generate a move action
+		// from m_selected_item to s.
+		u32 move_amount = 0;
+
+		// Set this number to a positive value to generate a drop action
+		// from m_selected_item.
+		u32 drop_amount = 0;
+
+		// Set this number to a positive value to generate a craft action at s.
+		u32 craft_amount = 0;
+
+		if(updown == 0)
+		{
+			// Some mouse button has been pressed
+
+			//infostream<<"Mouse button "<<button<<" pressed at p=("
+			//	<<p.X<<","<<p.Y<<")"<<std::endl;
+
+			m_selected_dragging = false;
+
+			if(s.isValid() && s.listname == "craftpreview")
 			{
-				infostream<<"Mouse action on "<<s.inventoryname
-						<<"/"<<s.listname<<" "<<s.i<<std::endl;
-				if(m_selected_item)
+				// Craft preview has been clicked: craft
+				craft_amount = (button == 2 ? 10 : 1);
+			}
+			else if(m_selected_item == NULL)
+			{
+				if(s_count != 0)
 				{
-					Inventory *inv_from = m_invmgr->getInventory(m_c,
-							m_selected_item->inventoryname);
-					Inventory *inv_to = m_invmgr->getInventory(m_c,
-							s.inventoryname);
-					assert(inv_from);
-					assert(inv_to);
-					InventoryList *list_from =
-							inv_from->getList(m_selected_item->listname);
-					InventoryList *list_to =
-							inv_to->getList(s.listname);
-					if(list_from == NULL)
-						infostream<<"from list doesn't exist"<<std::endl;
-					if(list_to == NULL)
-						infostream<<"to list doesn't exist"<<std::endl;
-					// Indicates whether source slot completely empties
-					bool source_empties = false;
-					if(list_from && list_to
-							&& list_from->getItem(m_selected_item->i) != NULL)
+					// Non-empty stack has been clicked: select it
+					m_selected_item = new ItemSpec(s);
+
+					if(button == 1)  // right
+						m_selected_amount = (s_count + 1) / 2;
+					else if(button == 2)  // middle
+						m_selected_amount = MYMIN(s_count, 10);
+					else  // left
+						m_selected_amount = s_count;
+
+					m_selected_dragging = true;
+				}
+			}
+			else  // m_selected_item != NULL
+			{
+				assert(m_selected_amount >= 1);
+
+				if(s.isValid())
+				{
+					// Clicked a slot: move
+					if(button == 1)  // right
+						move_amount = 1;
+					else if(button == 2)  // middle
+						move_amount = MYMIN(m_selected_amount, 10);
+					else  // left
+						move_amount = m_selected_amount;
+
+					if(identical)
 					{
-						infostream<<"Handing IACTION_MOVE to manager"<<std::endl;
-						IMoveAction *a = new IMoveAction();
-						a->count = amount;
-						a->from_inv = m_selected_item->inventoryname;
-						a->from_list = m_selected_item->listname;
-						a->from_i = m_selected_item->i;
-						a->to_inv = s.inventoryname;
-						a->to_list = s.listname;
-						a->to_i = s.i;
-						//ispec.actions->push_back(a);
-						m_invmgr->inventoryAction(a);
-						
-						if(list_from->getItem(m_selected_item->i)->getCount()<=amount)
-							source_empties = true;
+						if(move_amount >= m_selected_amount)
+							m_selected_amount = 0;
+						else
+							m_selected_amount -= move_amount;
+						move_amount = 0;
 					}
-					// Remove selection if target was left-clicked or source
-					// slot was emptied
-					if(amount == 0 || source_empties)
-					{
-						delete m_selected_item;
-						m_selected_item = NULL;
-					}
+				}
+				else if(getAbsoluteClippingRect().isPointInside(m_pointer))
+				{
+					// Clicked somewhere else: deselect
+					m_selected_amount = 0;
 				}
 				else
 				{
-					/*
-						Select if non-NULL
-					*/
-					Inventory *inv = m_invmgr->getInventory(m_c,
-							s.inventoryname);
-					assert(inv);
-					InventoryList *list = inv->getList(s.listname);
-					if(list->getItem(s.i) != NULL)
-					{
-						m_selected_item = new ItemSpec(s);
-					}
+					// Clicked outside of the window: drop
+					if(button == 1)  // right
+						drop_amount = 1;
+					else if(button == 2)  // middle
+						drop_amount = MYMIN(m_selected_amount, 10);
+					else  // left
+						drop_amount = m_selected_amount;
 				}
+			}
+		}
+		else if(updown == 1)
+		{
+			// Some mouse button has been released
+
+			//infostream<<"Mouse button "<<button<<" released at p=("
+			//	<<p.X<<","<<p.Y<<")"<<std::endl;
+
+			if(m_selected_item != NULL && m_selected_dragging && s.isValid())
+			{
+				if(!identical)
+				{
+					// Dragged to different slot: move all selected
+					move_amount = m_selected_amount;
+				}
+			}
+			else if(m_selected_item != NULL && m_selected_dragging &&
+				!(getAbsoluteClippingRect().isPointInside(m_pointer)))
+			{
+				// Dragged outside of window: drop all selected
+				drop_amount = m_selected_amount;
+			}
+
+			m_selected_dragging = false;
+		}
+
+		// Possibly send inventory action to server
+		if(move_amount > 0)
+		{
+			// Send IACTION_MOVE
+
+			assert(m_selected_item && m_selected_item->isValid());
+			assert(s.isValid());
+
+			assert(inv_selected && inv_s);
+			InventoryList *list_from = inv_selected->getList(m_selected_item->listname);
+			InventoryList *list_to = inv_s->getList(s.listname);
+			assert(list_from && list_to);
+			ItemStack stack_from = list_from->getItem(m_selected_item->i);
+			ItemStack stack_to = list_to->getItem(s.i);
+
+			// Check how many items can be moved
+			move_amount = stack_from.count = MYMIN(move_amount, stack_from.count);
+			ItemStack leftover = stack_to.addItem(stack_from, m_gamedef->idef());
+			if(leftover.count == stack_from.count)
+			{
+				// Swap the stacks
+				m_selected_amount -= stack_to.count;
+			}
+			else if(leftover.empty())
+			{
+				// Item fits
+				m_selected_amount -= move_amount;
 			}
 			else
 			{
-				if(m_selected_item)
-				{
-					delete m_selected_item;
-					m_selected_item = NULL;
-				}
+				// Item only fits partially
+				move_amount -= leftover.count;
+				m_selected_amount -= move_amount;
 			}
+
+			infostream<<"Handing IACTION_MOVE to manager"<<std::endl;
+			IMoveAction *a = new IMoveAction();
+			a->count = move_amount;
+			a->from_inv = m_selected_item->inventoryloc;
+			a->from_list = m_selected_item->listname;
+			a->from_i = m_selected_item->i;
+			a->to_inv = s.inventoryloc;
+			a->to_list = s.listname;
+			a->to_i = s.i;
+			m_invmgr->inventoryAction(a);
+		}
+		else if(drop_amount > 0)
+		{
+			// Send IACTION_DROP
+
+			assert(m_selected_item && m_selected_item->isValid());
+			assert(inv_selected);
+			InventoryList *list_from = inv_selected->getList(m_selected_item->listname);
+			assert(list_from);
+			ItemStack stack_from = list_from->getItem(m_selected_item->i);
+
+			// Check how many items can be dropped
+			drop_amount = stack_from.count = MYMIN(drop_amount, stack_from.count);
+			assert(drop_amount > 0 && drop_amount <= m_selected_amount);
+			m_selected_amount -= drop_amount;
+
+			infostream<<"Handing IACTION_DROP to manager"<<std::endl;
+			IDropAction *a = new IDropAction();
+			a->count = drop_amount;
+			a->from_inv = m_selected_item->inventoryloc;
+			a->from_list = m_selected_item->listname;
+			a->from_i = m_selected_item->i;
+			m_invmgr->inventoryAction(a);
+		}
+		else if(craft_amount > 0)
+		{
+			// Send IACTION_CRAFT
+
+			assert(s.isValid());
+			assert(inv_s);
+
+			infostream<<"Handing IACTION_CRAFT to manager"<<std::endl;
+			ICraftAction *a = new ICraftAction();
+			a->count = craft_amount;
+			a->craft_inv = s.inventoryloc;
+			m_invmgr->inventoryAction(a);
+		}
+
+		// If m_selected_amount has been decreased to zero, deselect
+		if(m_selected_amount == 0)
+		{
+			delete m_selected_item;
+			m_selected_item = NULL;
+			m_selected_amount = 0;
+			m_selected_dragging = false;
 		}
 	}
 	if(event.EventType==EET_GUI_EVENT)
@@ -489,7 +824,7 @@ bool GUIInventoryMenu::OnEvent(const SEvent& event)
 v2s16 GUIInventoryMenu::makeDrawSpecArrayFromString(
 		core::array<GUIInventoryMenu::DrawSpec> &draw_spec,
 		const std::string &data,
-		const std::string &current_name)
+		const InventoryLocation &current_location)
 {
 	v2s16 invsize(8,9);
 	Strfnd f(data);
@@ -500,8 +835,11 @@ v2s16 GUIInventoryMenu::makeDrawSpecArrayFromString(
 		if(type == "list")
 		{
 			std::string name = f.next(";");
+			InventoryLocation loc;
 			if(name == "current_name")
-				name = current_name;
+				loc = current_location;
+			else
+				loc.deSerialize(name);
 			std::string subname = f.next(";");
 			s32 pos_x = stoi(f.next(","));
 			s32 pos_y = stoi(f.next(";"));
@@ -512,7 +850,7 @@ v2s16 GUIInventoryMenu::makeDrawSpecArrayFromString(
 					<<", geom=("<<geom_x<<","<<geom_y<<")"
 					<<std::endl;
 			draw_spec.push_back(GUIInventoryMenu::DrawSpec(
-					type, name, subname,
+					type, loc, subname,
 					v2s32(pos_x,pos_y),v2s32(geom_x,geom_y)));
 			f.next("]");
 		}

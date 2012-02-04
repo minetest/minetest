@@ -36,10 +36,9 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 struct MeshMakeData;
 class IGameDef;
 class IWritableTextureSource;
-class IWritableToolDefManager;
+class IWritableItemDefManager;
 class IWritableNodeDefManager;
 //class IWritableCraftDefManager;
-class IWritableCraftItemDefManager;
 
 class ClientNotReadyException : public BaseException
 {
@@ -167,9 +166,8 @@ public:
 			std::string password,
 			MapDrawControl &control,
 			IWritableTextureSource *tsrc,
-			IWritableToolDefManager *tooldef,
-			IWritableNodeDefManager *nodedef,
-			IWritableCraftItemDefManager *craftitemdef
+			IWritableItemDefManager *itemdef,
+			IWritableNodeDefManager *nodedef
 	);
 	
 	~Client();
@@ -245,11 +243,8 @@ public:
 	// Copies the inventory of the local player to parameter
 	void getLocalInventory(Inventory &dst);
 	
-	InventoryContext *getInventoryContext();
-
 	/* InventoryManager interface */
 	Inventory* getInventory(const InventoryLocation &loc);
-	//Inventory* getInventory(InventoryContext *c, std::string id);
 	void inventoryAction(InventoryAction *a);
 
 	// Gets closest object pointed by the shootline
@@ -323,20 +318,19 @@ public:
 
 	bool texturesReceived()
 	{ return m_textures_received; }
-	bool tooldefReceived()
-	{ return m_tooldef_received; }
+	bool itemdefReceived()
+	{ return m_itemdef_received; }
 	bool nodedefReceived()
 	{ return m_nodedef_received; }
-	bool craftitemdefReceived()
-	{ return m_craftitemdef_received; }
 	
+	void afterContentReceived();
+
 	float getRTT(void);
 
 	// IGameDef interface
-	virtual IToolDefManager* getToolDefManager();
+	virtual IItemDefManager* getItemDefManager();
 	virtual INodeDefManager* getNodeDefManager();
 	virtual ICraftDefManager* getCraftDefManager();
-	virtual ICraftItemDefManager* getCraftItemDefManager();
 	virtual ITextureSource* getTextureSource();
 	virtual u16 allocateUnknownNodeId(const std::string &name);
 
@@ -363,9 +357,8 @@ private:
 	IntervalLimiter m_map_timer_and_unload_interval;
 
 	IWritableTextureSource *m_tsrc;
-	IWritableToolDefManager *m_tooldef;
+	IWritableItemDefManager *m_itemdef;
 	IWritableNodeDefManager *m_nodedef;
-	IWritableCraftItemDefManager *m_craftitemdef;
 	MeshUpdateThread m_mesh_update_thread;
 	ClientEnvironment m_env;
 	con::Connection m_con;
@@ -374,6 +367,8 @@ private:
 	u8 m_server_ser_ver;
 	u16 m_playeritem;
 	bool m_inventory_updated;
+	Inventory *m_inventory_from_server;
+	float m_inventory_from_server_age;
 	core::map<v3s16, bool> m_active_blocks;
 	PacketCounter m_packetcounter;
 	// Received from the server. 0-23999
@@ -387,13 +382,11 @@ private:
 	std::string m_password;
 	bool m_access_denied;
 	std::wstring m_access_denied_reason;
-	InventoryContext m_inventory_context;
 	Queue<ClientEvent> m_client_event_queue;
 	float m_texture_receive_progress;
 	bool m_textures_received;
-	bool m_tooldef_received;
+	bool m_itemdef_received;
 	bool m_nodedef_received;
-	bool m_craftitemdef_received;
 	friend class FarMesh;
 };
 

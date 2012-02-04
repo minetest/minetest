@@ -57,11 +57,12 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 	19: new content type handling
 	20: many existing content types translated to extended ones
 	21: dynamic content type allocation
+	22: full 16-bit content types, minerals removed, facedir & wallmounted changed
 */
 // This represents an uninitialized or invalid format
 #define SER_FMT_VER_INVALID 255
 // Highest supported serialization version
-#define SER_FMT_VER_HIGHEST 21
+#define SER_FMT_VER_HIGHEST 22
 // Lowest supported serialization version
 #define SER_FMT_VER_LOWEST 0
 

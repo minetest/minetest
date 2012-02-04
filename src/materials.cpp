@@ -18,9 +18,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 */
 
 #include "materials.h"
-#include "mapnode.h"
-#include "nodedef.h"
-#include "tooldef.h"
 #include "utility.h"
 
 void MaterialProperties::serialize(std::ostream &os)
@@ -47,6 +44,56 @@ void MaterialProperties::deSerialize(std::istream &is)
 	crumbliness = readF1000(is);
 	cuttability = readF1000(is);
 	flammability = readF1000(is);
+}
+
+ToolDiggingProperties::ToolDiggingProperties(float full_punch_interval_,
+		float a, float b, float c, float d, float e,
+		float f, float g, float h, float i, float j):
+	full_punch_interval(full_punch_interval_),
+	basetime(a),
+	dt_weight(b),
+	dt_crackiness(c),
+	dt_crumbliness(d),
+	dt_cuttability(e),
+	basedurability(f),
+	dd_weight(g),
+	dd_crackiness(h),
+	dd_crumbliness(i),
+	dd_cuttability(j)
+{}
+
+void ToolDiggingProperties::serialize(std::ostream &os)
+{
+	writeU8(os, 0); // version
+	writeF1000(os, full_punch_interval);
+	writeF1000(os, basetime);
+	writeF1000(os, dt_weight);
+	writeF1000(os, dt_crackiness);
+	writeF1000(os, dt_crumbliness);
+	writeF1000(os, dt_cuttability);
+	writeF1000(os, basedurability);
+	writeF1000(os, dd_weight);
+	writeF1000(os, dd_crackiness);
+	writeF1000(os, dd_crumbliness);
+	writeF1000(os, dd_cuttability);
+}
+
+void ToolDiggingProperties::deSerialize(std::istream &is)
+{
+	int version = readU8(is);
+	if(version != 0) throw SerializationError(
+			"unsupported ToolDiggingProperties version");
+	full_punch_interval = readF1000(is);
+	basetime = readF1000(is);
+	dt_weight = readF1000(is);
+	dt_crackiness = readF1000(is);
+	dt_crumbliness = readF1000(is);
+	dt_cuttability = readF1000(is);
+	basedurability = readF1000(is);
+	dd_weight = readF1000(is);
+	dd_crackiness = readF1000(is);
+	dd_crumbliness = readF1000(is);
+	dd_cuttability = readF1000(is);
 }
 
 DiggingProperties getDiggingProperties(const MaterialProperties *mp,
@@ -90,13 +137,6 @@ DiggingProperties getDiggingProperties(const MaterialProperties *mp,
 	return getDiggingProperties(mp, tp, 1000000);
 }
 
-DiggingProperties getDiggingProperties(u16 content,
-		const ToolDiggingProperties *tp, INodeDefManager *nodemgr)
-{
-	const MaterialProperties &mp = nodemgr->get(content).material;
-	return getDiggingProperties(&mp, tp);
-}
-
 HittingProperties getHittingProperties(const MaterialProperties *mp,
 		const ToolDiggingProperties *tp, float time_from_last_punch)
 {
@@ -109,5 +149,11 @@ HittingProperties getHittingProperties(const MaterialProperties *mp,
 	s16 wear = (float)digprop.wear;
 
 	return HittingProperties(hp, wear);
+}
+
+HittingProperties getHittingProperties(const MaterialProperties *mp,
+		const ToolDiggingProperties *tp)
+{
+	return getHittingProperties(mp, tp, 1000000);
 }
 

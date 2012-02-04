@@ -23,460 +23,225 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <iostream>
 #include <sstream>
 #include <string>
+#include <vector>
 #include "common_irrlicht.h"
 #include "debug.h"
-#include "mapnode.h" // For content_t
+#include "itemdef.h"
 
-#define QUANTITY_ITEM_MAX_COUNT 99
+struct ToolDiggingProperties;
 
-class ServerActiveObject;
-class ServerEnvironment;
-struct PointedThing;
-class ITextureSource;
-class IGameDef;
-
-class InventoryItem
+struct ItemStack
 {
-public:
-	InventoryItem(IGameDef *gamedef, u16 count);
-	virtual ~InventoryItem();
-	
-	static InventoryItem* deSerialize(std::istream &is, IGameDef *gamedef);
-	static InventoryItem* deSerialize(const std::string &str,
-			IGameDef *gamedef);
-	
-	virtual const char* getName() const = 0;
-	// Shall write the name and the parameters
-	virtual void serialize(std::ostream &os) const = 0;
-	// Shall make an exact clone of the item
-	virtual InventoryItem* clone() = 0;
-	// Return the name of the image for this item
-	virtual std::string getImageBasename() const { return ""; }
-#ifndef SERVER
-	// Shall return an image of the item (or NULL)
-	virtual video::ITexture * getImage() const
-		{ return NULL; }
-	// Shall return an image of the item without embellishments (or NULL)
-	virtual video::ITexture * getImageRaw() const
-		{ return getImage(); }
-#endif
-	// Shall return a text to show in the GUI
-	virtual std::string getText() { return ""; }
+	ItemStack(): name(""), count(0), wear(0), metadata("") {}
+	ItemStack(std::string name_, u16 count_,
+			u16 wear, std::string metadata_,
+			IItemDefManager *itemdef);
+	~ItemStack() {}
+
+	// Serialization
+	void serialize(std::ostream &os) const;
+	void deSerialize(std::istream &is, IItemDefManager *itemdef);
+	void deSerialize(const std::string &s, IItemDefManager *itemdef);
+
 	// Returns the string used for inventory
-	virtual std::string getItemString();
-	
-	// Shall return false if item is not known and cannot be used
-	virtual bool isKnown() const { return true; }
+	std::string getItemString() const;
 
 	/*
 		Quantity methods
 	*/
 
-	// Return true if the item can be add()ed to the other
-	virtual bool addableTo(const InventoryItem *other) const
-	{ return false; }
-	// Return true if the other item contains this item
-	virtual bool isSubsetOf(const InventoryItem *other) const
-	{ return false; }
-	// Remove the other item from this one if possible and return true
-	// Return false if not possible
-	virtual bool removeOther(const InventoryItem *other)
-	{ return false; }
-	
-	u16 getCount() const
-	{ return m_count; }
-	void setCount(u16 count)
-	{ m_count = count; }
-
-	u16 freeSpace() const
+	bool empty() const
 	{
-		u16 max = getStackMax();
-		if(m_count > max)
-			return 0;
-		return max - m_count;
+		return count == 0;
 	}
 
-	void add(u16 count)
+	void clear()
 	{
-		m_count += count;
-	}
-	void remove(u16 count)
-	{
-		assert(m_count >= count);
-		m_count -= count;
+		name = "";
+		count = 0;
+		wear = 0;
+		metadata = "";
 	}
 
-	/*
-		Other properties
-	*/
+	void add(u16 n)
+	{
+		count += n;
+	}
+
+	void remove(u16 n)
+	{
+		assert(count >= n);
+		count -= n;
+		if(count == 0)
+			clear(); // reset name, wear and metadata too
+	}
 
 	// Maximum size of a stack
-	virtual u16 getStackMax() const {return 1;}
-	// Whether it can be used
-	virtual bool isUsable() const {return false;}
-	// Whether it can be cooked
-	virtual bool isCookable() const {return false;}
-	// Result of cooking (can randomize)
-	virtual InventoryItem *createCookResult() const {return NULL;}
-	// Time of cooking
-	virtual float getCookTime() const {return 3.0;}
-	// Whether it can be burned (<0 = cannot be burned)
-	virtual float getBurnTime() const {return -1;}
-	// Gets amount of items that dropping one ItemSAO will decrement
-	// -1 means as many as possible
-	virtual s16 getDropCount() const { return -1; }
-	// Whether this item can point to liquids
-	virtual bool areLiquidsPointable() const { return false; }
-
-	// Creates an object from the item and places it in the world.
-	// If return value is true, item should be removed.
-	virtual bool dropOrPlace(ServerEnvironment *env,
-			ServerActiveObject *dropper,
-			v3f pos, bool place, s16 count);
-
-	// Eat, press, activate, whatever.
-	// Called when item is left-clicked while in hand.
-	// If returns true, item shall be deleted.
-	virtual bool use(ServerEnvironment *env,
-			ServerActiveObject *user,
-			const PointedThing& pointed){return false;}
-
-protected:
-	IGameDef *m_gamedef;
-	u16 m_count;
-};
-
-class MaterialItem : public InventoryItem
-{
-public:
-	MaterialItem(IGameDef *gamedef, std::string nodename, u16 count);
-	// Legacy constructor
-	MaterialItem(IGameDef *gamedef, content_t content, u16 count);
-	/*
-		Implementation interface
-	*/
-	virtual const char* getName() const
+	u16 getStackMax(IItemDefManager *itemdef) const
 	{
-		return "MaterialItem";
-	}
-	virtual void serialize(std::ostream &os) const
-	{
-		os<<"node";
-		os<<" \"";
-		os<<m_nodename;
-		os<<"\" ";
-		os<<m_count;
-	}
-	virtual InventoryItem* clone()
-	{
-		return new MaterialItem(m_gamedef, m_nodename, m_count);
-	}
-#ifndef SERVER
-	video::ITexture * getImage() const;
-#endif
-	std::string getText()
-	{
-		std::ostringstream os;
-		os<<m_count;
-		return os.str();
+		s16 max = itemdef->get(name).stack_max;
+		return (max >= 0) ? max : 0;
 	}
 
-	virtual bool addableTo(const InventoryItem *other) const
+	// Number of items that can be added to this stack
+	u16 freeSpace(IItemDefManager *itemdef) const
 	{
-		if(std::string(other->getName()) != "MaterialItem")
-			return false;
-		MaterialItem *m = (MaterialItem*)other;
-		if(m->m_nodename != m_nodename)
-			return false;
-		return true;
-	}
-	virtual bool isSubsetOf(const InventoryItem *other) const
-	{
-		if(std::string(other->getName()) != "MaterialItem")
-			return false;
-		MaterialItem *m = (MaterialItem*)other;
-		if(m->m_nodename != m_nodename)
-			return false;
-		return m_count <= m->m_count;
-	}
-	virtual bool removeOther(const InventoryItem *other)
-	{
-		if(!other->isSubsetOf(this))
-			return false;
-		MaterialItem *m = (MaterialItem*)other;
-		m_count += m->m_count;
-		return true;
+		u16 max = getStackMax(itemdef);
+		if(count > max)
+			return 0;
+		return max - count;
 	}
 
-	u16 getStackMax() const
+	// Returns false if item is not known and cannot be used
+	bool isKnown(IItemDefManager *itemdef) const
 	{
-		return QUANTITY_ITEM_MAX_COUNT;
+		return itemdef->isKnown(name);
 	}
 
-	/*
-		Other properties
-	*/
-	bool isCookable() const;
-	InventoryItem *createCookResult() const;
-	float getCookTime() const;
-	float getBurnTime() const;
-	/*
-		Special properties (not part of virtual interface)
-	*/
-	std::string getNodeName() const
-	{ return m_nodename; }
-	content_t getMaterial() const;
-private:
-	std::string m_nodename;
-};
-
-/*
-	An item that is used as a mid-product when crafting.
-	Subnames:
-	- Stick
-*/
-class CraftItem : public InventoryItem
-{
-public:
-	CraftItem(IGameDef *gamedef, std::string subname, u16 count);
-	/*
-		Implementation interface
-	*/
-	virtual const char* getName() const
+	// Returns a pointer to the item definition struct,
+	// or a fallback one (name="unknown") if the item is unknown.
+	const ItemDefinition& getDefinition(
+			IItemDefManager *itemdef) const
 	{
-		return "CraftItem";
-	}
-	virtual void serialize(std::ostream &os) const
-	{
-		os<<"craft";
-		os<<" \"";
-		os<<m_subname;
-		os<<"\" ";
-		os<<m_count;
-	}
-	virtual InventoryItem* clone()
-	{
-		return new CraftItem(m_gamedef, m_subname, m_count);
-	}
-#ifndef SERVER
-	video::ITexture * getImage() const;
-#endif
-	std::string getText()
-	{
-		std::ostringstream os;
-		os<<m_count;
-		return os.str();
+		return itemdef->get(name);
 	}
 
-	virtual bool isKnown() const;
-
-	virtual bool addableTo(const InventoryItem *other) const
+	// Get tool digging properties, or those of the hand if not a tool
+	const ToolDiggingProperties& getToolDiggingProperties(
+			IItemDefManager *itemdef) const
 	{
-		if(std::string(other->getName()) != "CraftItem")
-			return false;
-		CraftItem *m = (CraftItem*)other;
-		if(m->m_subname != m_subname)
-			return false;
-		return true;
-	}
-	virtual bool isSubsetOf(const InventoryItem *other) const
-	{
-		if(std::string(other->getName()) != "CraftItem")
-			return false;
-		CraftItem *m = (CraftItem*)other;
-		if(m->m_subname != m_subname)
-			return false;
-		return m_count <= m->m_count;
-	}
-	virtual bool removeOther(const InventoryItem *other)
-	{
-		if(!other->isSubsetOf(this))
-			return false;
-		CraftItem *m = (CraftItem*)other;
-		m_count += m->m_count;
-		return true;
+		ToolDiggingProperties *prop;
+		prop = itemdef->get(name).tool_digging_properties;
+		if(prop == NULL)
+			prop = itemdef->get("").tool_digging_properties;
+		assert(prop != NULL);
+		return *prop;
 	}
 
-	/*
-		Other properties
-	*/
-
-	u16 getStackMax() const;
-	bool isUsable() const;
-	bool isCookable() const;
-	InventoryItem *createCookResult() const;
-	float getCookTime() const;
-	float getBurnTime() const;
-	s16 getDropCount() const;
-	bool areLiquidsPointable() const;
-
-	bool dropOrPlace(ServerEnvironment *env,
-			ServerActiveObject *dropper,
-			v3f pos, bool place, s16 count);
-	bool use(ServerEnvironment *env,
-			ServerActiveObject *user,
-			const PointedThing& pointed);
-
-	/*
-		Special methods
-	*/
-	std::string getSubName()
+	// Wear out (only tools)
+	// Returns true if the item is (was) a tool
+	bool addWear(s32 amount, IItemDefManager *itemdef)
 	{
-		return m_subname;
-	}
-private:
-	std::string m_subname;
-};
-
-class ToolItem : public InventoryItem
-{
-public:
-	ToolItem(IGameDef *gamedef, std::string toolname, u16 wear);
-	/*
-		Implementation interface
-	*/
-	virtual const char* getName() const
-	{
-		return "ToolItem";
-	}
-	virtual void serialize(std::ostream &os) const
-	{
-		os<<"tool";
-		os<<" \"";
-		os<<m_toolname;
-		os<<"\" ";
-		os<<m_wear;
-	}
-	virtual InventoryItem* clone()
-	{
-		return new ToolItem(m_gamedef, m_toolname, m_wear);
-	}
-
-	std::string getImageBasename() const;
-#ifndef SERVER
-	video::ITexture * getImage() const;
-	video::ITexture * getImageRaw() const;
-#endif
-
-	std::string getText()
-	{
-		return "";
-	}
-	
-	virtual bool isKnown() const;
-
-	virtual bool isSubsetOf(const InventoryItem *other) const
-	{
-		if(std::string(other->getName()) != "ToolItem")
-			return false;
-		ToolItem *m = (ToolItem*)other;
-		if(m->m_toolname != m_toolname)
-			return false;
-		return m_wear <= m->m_wear;
-	}
-	virtual bool removeOther(const InventoryItem *other)
-	{
-		if(!other->isSubsetOf(this))
-			return false;
-		ToolItem *m = (ToolItem*)other;
-		m_wear -= m->m_wear;
-		return true;
-	}
-
-	/*
-		Special methods
-	*/
-	std::string getToolName()
-	{
-		return m_toolname;
-	}
-	u16 getWear()
-	{
-		return m_wear;
-	}
-	// Returns true if weared out
-	bool addWear(u16 add)
-	{
-		if(m_wear >= 65535 - add)
+		if(getDefinition(itemdef).type == ITEM_TOOL)
 		{
-			m_wear = 65535;
+			if(amount > 65535 - wear)
+				clear();
+			else if(amount < -wear)
+				wear = 0;
+			else
+				wear += amount;
 			return true;
 		}
 		else
 		{
-			m_wear += add;
 			return false;
 		}
 	}
-private:
-	std::string m_toolname;
-	u16 m_wear;
+
+	// If possible, adds newitem to this item.
+	// If cannot be added at all, returns the item back.
+	// If can be added partly, decremented item is returned back.
+	// If can be added fully, empty item is returned.
+	ItemStack addItem(const ItemStack &newitem,
+			IItemDefManager *itemdef);
+
+	// Checks whether newitem could be added.
+	// If restitem is non-NULL, it receives the part of newitem that
+	// would be left over after adding.
+	bool itemFits(const ItemStack &newitem,
+			ItemStack *restitem,  // may be NULL
+			IItemDefManager *itemdef) const;
+
+	// Takes some items.
+	// If there are not enough, takes as many as it can.
+	// Returns empty item if couldn't take any.
+	ItemStack takeItem(u32 takecount);
+
+	// Similar to takeItem, but keeps this ItemStack intact.
+	ItemStack peekItem(u32 peekcount) const;
+
+	/*
+		Properties
+	*/
+	std::string name;
+	u16 count;
+	u16 wear;
+	std::string metadata;
 };
 
 class InventoryList
 {
 public:
-	InventoryList(std::string name, u32 size);
+	InventoryList(std::string name, u32 size, IItemDefManager *itemdef);
 	~InventoryList();
 	void clearItems();
 	void setSize(u32 newsize);
 	void serialize(std::ostream &os) const;
-	void deSerialize(std::istream &is, IGameDef *gamedef);
+	void deSerialize(std::istream &is);
 
 	InventoryList(const InventoryList &other);
 	InventoryList & operator = (const InventoryList &other);
 
 	const std::string &getName() const;
-	u32 getSize();
+	u32 getSize() const;
 	// Count used slots
-	u32 getUsedSlots();
-	u32 getFreeSlots();
+	u32 getUsedSlots() const;
+	u32 getFreeSlots() const;
 
-	/*bool getDirty(){ return m_dirty; }
-	void setDirty(bool dirty=true){ m_dirty = dirty; }*/
-	
-	// Get pointer to item
-	const InventoryItem * getItem(u32 i) const;
-	InventoryItem * getItem(u32 i);
-	// Returns old item (or NULL). Parameter can be NULL.
-	InventoryItem * changeItem(u32 i, InventoryItem *newitem);
+	// Get reference to item
+	const ItemStack& getItem(u32 i) const;
+	ItemStack& getItem(u32 i);
+	// Returns old item. Parameter can be an empty item.
+	ItemStack changeItem(u32 i, const ItemStack &newitem);
 	// Delete item
 	void deleteItem(u32 i);
 
-	// Adds an item to a suitable place. Returns leftover item.
-	// If all went into the list, returns NULL.
-	InventoryItem * addItem(InventoryItem *newitem);
+	// Adds an item to a suitable place. Returns leftover item (possibly empty).
+	ItemStack addItem(const ItemStack &newitem);
 
 	// If possible, adds item to given slot.
 	// If cannot be added at all, returns the item back.
 	// If can be added partly, decremented item is returned back.
-	// If can be added fully, NULL is returned.
-	InventoryItem * addItem(u32 i, InventoryItem *newitem);
+	// If can be added fully, empty item is returned.
+	ItemStack addItem(u32 i, const ItemStack &newitem);
 
 	// Checks whether the item could be added to the given slot
-	bool itemFits(const u32 i, const InventoryItem *newitem);
+	// If restitem is non-NULL, it receives the part of newitem that
+	// would be left over after adding.
+	bool itemFits(const u32 i, const ItemStack &newitem,
+			ItemStack *restitem = NULL) const;
 
 	// Checks whether there is room for a given item
-	bool roomForItem(const InventoryItem *item);
+	bool roomForItem(const ItemStack &item) const;
 
-	// Checks whether there is room for a given item aftr it has been cooked
-	bool roomForCookedItem(const InventoryItem *item);
+	// Checks whether the given count of the given item name
+	// exists in this inventory list.
+	bool containsItem(const ItemStack &item) const;
+
+	// Removes the given count of the given item name from
+	// this inventory list. Walks the list in reverse order.
+	// If not as many items exist as requested, removes as
+	// many as possible.
+	// Returns the items that were actually removed.
+	ItemStack removeItem(const ItemStack &item);
 
 	// Takes some items from a slot.
 	// If there are not enough, takes as many as it can.
-	// Returns NULL if couldn't take any.
-	InventoryItem * takeItem(u32 i, u32 count);
+	// Returns empty item if couldn't take any.
+	ItemStack takeItem(u32 i, u32 takecount);
 
-	// Decrements amount of every material item
-	void decrementMaterials(u16 count);
+	// Similar to takeItem, but keeps the slot intact.
+	ItemStack peekItem(u32 i, u32 peekcount) const;
 
-	void print(std::ostream &o);
-	
+	// Move an item to a different list (or a different stack in the same list)
+	// count is the maximum number of items to move (0 for everything)
+	void moveItem(u32 i, InventoryList *dest, u32 dest_i, u32 count = 0);
+
 private:
-	core::array<InventoryItem*> m_items;
+	std::vector<ItemStack> m_items;
 	u32 m_size;
 	std::string m_name;
-	//bool m_dirty;
+	IItemDefManager *m_itemdef;
 };
 
 class Inventory
@@ -486,20 +251,19 @@ public:
 
 	void clear();
 
-	Inventory();
+	Inventory(IItemDefManager *itemdef);
 	Inventory(const Inventory &other);
 	Inventory & operator = (const Inventory &other);
 	
 	void serialize(std::ostream &os) const;
-	void deSerialize(std::istream &is, IGameDef *gamedef);
+	void deSerialize(std::istream &is);
 
 	InventoryList * addList(const std::string &name, u32 size);
 	InventoryList * getList(const std::string &name);
 	const InventoryList * getList(const std::string &name) const;
 	bool deleteList(const std::string &name);
-	// A shorthand for adding items.
-	// Returns NULL if the item was fully added, leftover otherwise.
-	InventoryItem * addItem(const std::string &listname, InventoryItem *newitem)
+	// A shorthand for adding items. Returns leftover item (possibly empty).
+	ItemStack addItem(const std::string &listname, const ItemStack &newitem)
 	{
 		InventoryList *list = getList(listname);
 		if(list == NULL)
@@ -511,7 +275,8 @@ private:
 	// -1 if not found
 	const s32 getListIndex(const std::string &name) const;
 
-	core::array<InventoryList*> m_lists;
+	std::vector<InventoryList*> m_lists;
+	IItemDefManager *m_itemdef;
 };
 
 #endif

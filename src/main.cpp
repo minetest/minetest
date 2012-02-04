@@ -54,24 +54,6 @@ A list of "active blocks" in which stuff happens. (+=done)
 	  	+ This was left to be done by the old system and it sends only the
 		  nearest ones.
 
-Vim conversion regexpes for moving to extended content type storage:
-%s/\(\.\|->\)d \([!=]=\)/\1getContent() \2/g
-%s/content_features(\([^.]*\)\.d)/content_features(\1)/g
-%s/\(\.\|->\)d = \([^;]*\);/\1setContent(\2);/g
-%s/\(getNodeNoExNoEmerge([^)]*)\)\.d/\1.getContent()/g
-%s/\(getNodeNoExNoEmerge(.*)\)\.d/\1.getContent()/g
-%s/\.d;/.getContent();/g
-%s/\(content_liquid\|content_flowing_liquid\|make_liquid_flowing\|content_pointable\)(\([^.]*\).d)/\1(\2.getContent())/g
-Other things to note:
-- node.d = node.param0 (only in raw serialization; use getContent() otherwise)
-- node.param = node.param1
-- node.dir = node.param2
-- content_walkable(node.d) etc should be changed to
-  content_features(node).walkable etc
-- Also check for lines that store the result of getContent to a 8-bit
-  variable and fix them (result of getContent() must be stored in
-  content_t, which is 16-bit)
-
 NOTE: Seeds in 1260:6c77e7dbfd29:
 5721858502589302589:
 	Spawns you on a small sand island with a surface dungeon
@@ -351,8 +333,6 @@ TODO: Block cube placement around player's head
 TODO: Protocol version field
 TODO: Think about using same bits for material for fences and doors, for
 	  example
-TODO: Move mineral to param2, increment map serialization version, add
-      conversion
 
 SUGG: Restart irrlicht completely when coming back to main menu from game.
 	- This gets rid of everything that is stored in irrlicht's caches.
@@ -419,7 +399,6 @@ Doing currently:
 #include "filesys.h"
 #include "config.h"
 #include "guiMainMenu.h"
-#include "mineral.h"
 #include "materials.h"
 #include "game.h"
 #include "keycode.h"
@@ -1259,16 +1238,6 @@ int main(int argc, char *argv[])
 	// Initialize random seed
 	srand(time(0));
 	mysrand(time(0));
-
-	/*
-		Pre-initialize some stuff with a dummy irrlicht wrapper.
-
-		These are needed for unit tests at least.
-	*/
-	
-	// Must be called before texturesource is created
-	// (for texture atlas making)
-	init_mineral();
 
 	/*
 		Run unit tests
