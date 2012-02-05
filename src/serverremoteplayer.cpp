@@ -262,9 +262,20 @@ void ServerRemotePlayer::setHP(s16 hp_)
 		m_messages_out.push_back(aom);
 	}
 }
+
 s16 ServerRemotePlayer::getHP()
 {
 	return hp;
+}
+
+aabb3f* ServerRemotePlayer::getCollisionBox() {
+	m_collisionbox.MinEdge = aabb3f(-BS/3.,0.0,-BS/3., BS/3.,BS*2.0,BS/3.).MinEdge;
+	m_collisionbox.MaxEdge = aabb3f(-BS/3.,0.0,-BS/3., BS/3.,BS*2.0,BS/3.).MaxEdge;
+
+	m_collisionbox.MinEdge += m_position;
+	m_collisionbox.MaxEdge += m_position;
+
+	return &m_collisionbox;
 }
 
 

@@ -165,8 +165,7 @@ void ItemSAO::step(float dtime, bool send_recommended)
 	v3f pos_f_old = pos_f;
 	v3f accel_f = v3f(0,0,0);
 	f32 stepheight = 0;
-	IGameDef *gamedef = m_env->getGameDef();
-	moveresult = collisionMoveSimple(&m_env->getMap(), gamedef,
+	moveresult = collisionMoveSimple(m_env,
 			pos_max_d, box, stepheight, dtime,
 			pos_f, m_speed_f, accel_f);
 	
@@ -409,8 +408,7 @@ void RatSAO::step(float dtime, bool send_recommended)
 	v3f pos_f_old = pos_f;
 	v3f accel_f = v3f(0,0,0);
 	f32 stepheight = 0;
-	IGameDef *gamedef = m_env->getGameDef();
-	moveresult = collisionMoveSimple(&m_env->getMap(), gamedef,
+	moveresult = collisionMoveSimple(m_env,
 			pos_max_d, box, stepheight, dtime,
 			pos_f, m_speed_f, accel_f);
 	m_touching_ground = moveresult.touching_ground;
@@ -660,8 +658,7 @@ void Oerkki1SAO::step(float dtime, bool send_recommended)
 	v3f pos_f_old = pos_f;
 	v3f accel_f = v3f(0,0,0);
 	f32 stepheight = 0;
-	IGameDef *gamedef = m_env->getGameDef();
-	moveresult = collisionMovePrecise(&m_env->getMap(), gamedef,
+	moveresult = collisionMovePrecise(m_env,
 			pos_max_d, box, stepheight, dtime,
 			pos_f, m_speed_f, accel_f);
 	m_touching_ground = moveresult.touching_ground;
@@ -910,8 +907,7 @@ void FireflySAO::step(float dtime, bool send_recommended)
 	v3f pos_f_old = pos_f;
 	v3f accel_f = v3f(0,0,0);
 	f32 stepheight = 0;
-	IGameDef *gamedef = m_env->getGameDef();
-	moveresult = collisionMoveSimple(&m_env->getMap(), gamedef,
+	moveresult = collisionMoveSimple(m_env,
 			pos_max_d, box, stepheight, dtime,
 			pos_f, m_speed_f, accel_f);
 	m_touching_ground = moveresult.touching_ground;
@@ -1634,8 +1630,7 @@ void LuaEntitySAO::step(float dtime, bool send_recommended)
 		v3f p_pos = m_base_position;
 		v3f p_velocity = m_velocity;
 		v3f p_acceleration = m_acceleration;
-		IGameDef *gamedef = m_env->getGameDef();
-		moveresult = collisionMovePrecise(&m_env->getMap(), gamedef,
+		moveresult = collisionMovePrecise(m_env,
 				pos_max_d, box, stepheight, dtime,
 				p_pos, p_velocity, p_acceleration);
 		// Apply results
@@ -1842,5 +1837,20 @@ void LuaEntitySAO::sendPosition(bool do_interpolate, bool is_movement_end)
 	// create message and add to list
 	ActiveObjectMessage aom(getId(), false, os.str());
 	m_messages_out.push_back(aom);
+}
+
+aabb3f* LuaEntitySAO::getCollisionBox() {
+	if (m_prop->physical) {
+		//update collision box
+		m_collisionbox.MinEdge = m_prop->collisionbox.MinEdge * BS;
+		m_collisionbox.MaxEdge = m_prop->collisionbox.MaxEdge * BS;
+
+		m_collisionbox.MinEdge += m_base_position;
+		m_collisionbox.MaxEdge += m_base_position;
+
+		return &m_collisionbox;
+	}
+
+	return NULL;
 }
 

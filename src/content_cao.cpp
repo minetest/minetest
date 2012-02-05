@@ -1701,6 +1701,7 @@ private:
 	int m_anim_num_frames;
 	float m_anim_framelength;
 	float m_anim_timer;
+	aabb3f m_collisionbox;
 
 public:
 	LuaEntityCAO(IGameDef *gamedef, ClientEnvironment *env):
@@ -1879,8 +1880,7 @@ public:
 			v3f p_pos = m_position;
 			v3f p_velocity = m_velocity;
 			v3f p_acceleration = m_acceleration;
-			IGameDef *gamedef = env->getGameDef();
-			moveresult = collisionMovePrecise(&env->getMap(), gamedef,
+			moveresult = collisionMovePrecise(env,
 					pos_max_d, box, stepheight, dtime,
 					p_pos, p_velocity, p_acceleration);
 			// Apply results
@@ -2047,6 +2047,21 @@ public:
 			updateTexturePos();
 		}
 	}
+
+	aabb3f* getCollisionBox() {
+		if (m_prop->physical) {
+			//update collision box
+			m_collisionbox.MinEdge = m_prop->collisionbox.MinEdge * BS;
+			m_collisionbox.MaxEdge = m_prop->collisionbox.MaxEdge * BS;
+
+			m_collisionbox.MinEdge += m_position;
+			m_collisionbox.MaxEdge += m_position;
+
+			return &m_collisionbox;
+		}
+
+		return NULL;
+	}
 };
 
 // Prototype
@@ -2070,6 +2085,7 @@ private:
 	LocalPlayer *m_local_player;
 	float m_damage_visual_timer;
 	bool m_dead;
+	aabb3f m_collisionbox;
 
 public:
 	PlayerCAO(IGameDef *gamedef, ClientEnvironment *env):
@@ -2114,6 +2130,17 @@ public:
 			m_is_local_player = true;
 			m_local_player = (LocalPlayer*)player;
 		}
+	}
+
+	aabb3f* getCollisionBox() {
+		//update collision box
+		m_collisionbox.MinEdge = m_selection_box.MinEdge;
+		m_collisionbox.MaxEdge = m_selection_box.MaxEdge;
+
+		m_collisionbox.MinEdge += m_position;
+		m_collisionbox.MaxEdge += m_position;
+
+		return &m_collisionbox;
 	}
 
 	~PlayerCAO()

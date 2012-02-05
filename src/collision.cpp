@@ -22,8 +22,10 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "map.h"
 #include "nodedef.h"
 #include "gamedef.h"
+#include "environment.h"
 #include "log.h"
 #include <vector>
+#include <list>
 
 // Helper function:
 // Checks for collision of a moving aabbox with a static aabbox
@@ -183,11 +185,14 @@ bool wouldCollideWithCeiling(
 }
 
 
-collisionMoveResult collisionMoveSimple(Map *map, IGameDef *gamedef,
+collisionMoveResult collisionMoveSimple(Environment* env,
 		f32 pos_max_d, const aabb3f &box_0,
 		f32 stepheight, f32 dtime,
 		v3f &pos_f, v3f &speed_f, v3f &accel_f)
 {
+	Map 		* map 		= &env->getMap();
+	IGameDef 	* gamedef 	= env->getGameDef();
+
 	TimeTaker tt("collisionMoveSimple");
 
 	collisionMoveResult result;
@@ -252,6 +257,27 @@ collisionMoveResult collisionMoveSimple(Map *map, IGameDef *gamedef,
 	assert(cboxes.size() == is_unloaded.size());
 	assert(cboxes.size() == is_step_up.size());
 
+	{
+		TimeTaker tt3("collisionMoveSimple collect object boxes");
+
+		/* add object boxes to cboxes */
+		core::list<ActiveObject*> objects = env->getActiveObjects();
+
+		for (core::list<ActiveObject*>::Iterator iter = objects.begin();
+				iter != objects.end(); iter++)
+		{
+			aabb3f* object_collisionbox = (*iter)->getCollisionBox();
+			//TODO do we need to check if it's really near enough?
+			if (object_collisionbox != NULL)
+			{
+				cboxes.push_back(*object_collisionbox);
+				is_unloaded.push_back(false);
+				is_step_up.push_back(false);
+			}
+		}
+	} //tt3
+
+
 	/*
 		Collision detection
 	*/
@@ -277,7 +303,8 @@ collisionMoveResult collisionMoveSimple(Map *map, IGameDef *gamedef,
 		loopcount++;
 		if(loopcount >= 100)
 		{
-			infostream<<"collisionMoveSimple: WARNING: Loop count exceeded, aborting to avoid infiniite loop"<<std::endl;
+			infostream<<"collisionMoveSimple: WARNING: Loop count exceeded, "
+					"aborting to avoid infiniite loop"<<std::endl;
 			dtime = 0;
 			break;
 		}
@@ -422,7 +449,7 @@ collisionMoveResult collisionMoveSimple(Map *map, IGameDef *gamedef,
 	return result;
 }
 
-collisionMoveResult collisionMovePrecise(Map *map, IGameDef *gamedef,
+collisionMoveResult collisionMovePrecise(Environment* env,
 		f32 pos_max_d, const aabb3f &box_0,
 		f32 stepheight, f32 dtime,
 		v3f &pos_f, v3f &speed_f, v3f &accel_f)
@@ -470,7 +497,7 @@ collisionMoveResult collisionMovePrecise(Map *map, IGameDef *gamedef,
 			dtime_downcount = 0;
 		}
 
-		collisionMoveResult result = collisionMoveSimple(map, gamedef,
+		collisionMoveResult result = collisionMoveSimple(env,
 				pos_max_d, box_0, stepheight, dtime_part,
 				pos_f, speed_f, accel_f);
 

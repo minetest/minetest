@@ -40,7 +40,7 @@ public:
 	virtual bool isLocal() const
 	{ return false; }
 
-	virtual void move(f32 dtime, Map &map, f32 pos_max_d)
+	virtual void move(f32 dtime, Environment* env, f32 pos_max_d)
 	{
 	}
 	
@@ -93,9 +93,10 @@ public:
 	bool m_is_in_environment;
 	// Incremented by step(), read and reset by Server
 	float m_time_from_last_punch;
-
+	aabb3f* getCollisionBox();
 private:
 	bool m_position_not_sent;
+	aabb3f m_collisionbox;
 };
 
 #endif

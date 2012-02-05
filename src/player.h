@@ -31,6 +31,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 class Map;
 class IGameDef;
 struct CollisionInfo;
+class Environment;
 
 class Player
 {
@@ -42,7 +43,7 @@ public:
 	void resetInventory();
 
 	//void move(f32 dtime, Map &map);
-	virtual void move(f32 dtime, Map &map, f32 pos_max_d) = 0;
+	virtual void move(f32 dtime, Environment* env, f32 pos_max_d) = 0;
 
 	v3f getSpeed()
 	{
@@ -231,9 +232,9 @@ public:
 		return true;
 	}
 	
-	void move(f32 dtime, Map &map, f32 pos_max_d,
+	void move(f32 dtime, Environment* env, f32 pos_max_d,
 			core::list<CollisionInfo> *collision_info);
-	void move(f32 dtime, Map &map, f32 pos_max_d);
+	void move(f32 dtime, Environment* env, f32 pos_max_d);
 
 	void applyControl(float dtime);
 	

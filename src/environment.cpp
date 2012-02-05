@@ -920,7 +920,7 @@ void ServerEnvironment::step(float dtime)
 			v3f playerpos = player->getPosition();
 			
 			// Move
-			player->move(dtime, *m_map, 100*BS);
+			player->move(dtime, this, 100*BS);
 			
 			/*
 				Add footsteps to grass
@@ -1803,6 +1803,22 @@ void ServerEnvironment::deactivateFarObjects(bool force_delete)
 	}
 }
 
+//get a list of all active objects
+core::list<ActiveObject*> ServerEnvironment::getActiveObjects() {
+	core::list<ActiveObject*> retval;
+
+	if (m_active_objects.size() > 0 )
+	{
+		for (core::map<u16, ServerActiveObject*>::Iterator iter=m_active_objects.getIterator();
+				iter.atEnd()==false; iter++) {
+
+			retval.push_back(iter.getNode()->getValue());
+		}
+	}
+
+	return retval;
+}
+
 
 #ifndef SERVER
 
@@ -1963,7 +1979,7 @@ void ClientEnvironment::step(float dtime)
 				Move the lplayer.
 				This also does collision detection.
 			*/
-			lplayer->move(dtime_part, *m_map, position_max_increment,
+			lplayer->move(dtime_part, this, position_max_increment,
 					&player_collisions);
 		}
 	}
@@ -2034,7 +2050,7 @@ void ClientEnvironment::step(float dtime)
 		if(player->isLocal() == false)
 		{
 			// Move
-			player->move(dtime, *m_map, 100*BS);
+			player->move(dtime, this, 100*BS);
 
 		}
 		
@@ -2309,6 +2325,21 @@ ClientEnvEvent ClientEnvironment::getClientEvent()
 		return event;
 	}
 	return m_client_event_queue.pop_front();
+}
+
+//get a list of all active objects
+core::list<ActiveObject*> ClientEnvironment::getActiveObjects() {
+	core::list<ActiveObject*> retval;
+
+	if (m_active_objects.size() > 0 )
+	{
+		for (core::map<u16, ClientActiveObject*>::Iterator iter=m_active_objects.getIterator();
+					iter.atEnd()==false; iter++)
+			{
+			retval.push_back(iter.getNode()->getValue());
+			}
+	}
+	return retval;
 }
 
 #endif // #ifndef SERVER

@@ -199,9 +199,10 @@ LocalPlayer::~LocalPlayer()
 {
 }
 
-void LocalPlayer::move(f32 dtime, Map &map, f32 pos_max_d,
+void LocalPlayer::move(f32 dtime, Environment* env, f32 pos_max_d,
 		core::list<CollisionInfo> *collision_info)
 {
+	Map& map = env->getMap();
 	INodeDefManager *nodemgr = m_gamedef->ndef();
 
 	v3f position = getPosition();
@@ -312,7 +313,7 @@ void LocalPlayer::move(f32 dtime, Map &map, f32 pos_max_d,
 
 	v3f accel_f = v3f(0,0,0);
 
-	collisionMoveResult result = collisionMoveSimple(&map, m_gamedef,
+	collisionMoveResult result = collisionMoveSimple(env,
 			pos_max_d, playerbox, player_stepheight, dtime,
 			position, m_speed, accel_f);
 
@@ -420,9 +421,9 @@ void LocalPlayer::move(f32 dtime, Map &map, f32 pos_max_d,
 	}
 }
 
-void LocalPlayer::move(f32 dtime, Map &map, f32 pos_max_d)
+void LocalPlayer::move(f32 dtime,Environment* env, f32 pos_max_d)
 {
-	move(dtime, map, pos_max_d, NULL);
+	move(dtime, env, pos_max_d, NULL);
 }
 
 void LocalPlayer::applyControl(float dtime)
