@@ -87,6 +87,9 @@ public:
 		return m_time_of_day;
 	}
 
+	virtual IGameDef *getGameDef() = 0;
+	virtual core::list<ActiveObject*> getActiveObjects() = 0;
+
 protected:
 	// peer_ids in here should be unique, except that there may be many 0s
 	core::list<Player*> m_players;
@@ -283,6 +286,8 @@ public:
 	// This makes stuff happen
 	void step(f32 dtime);
 	
+	//get a list of all active objects
+	core::list<ActiveObject*> getActiveObjects();
 private:
 
 	/*
@@ -465,6 +470,9 @@ public:
 	// Get event from queue. CEE_NONE is returned if queue is empty.
 	ClientEnvEvent getClientEvent();
 	
+
+	//get a list of all active objects
+	core::list<ActiveObject*> getActiveObjects();
 private:
 	ClientMap *m_map;
 	scene::ISceneManager *m_smgr;

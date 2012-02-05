@@ -812,6 +812,8 @@ void ServerEnvironment::clearAllObjects()
 			i.atEnd()==false; i++)
 	{
 		ServerActiveObject* obj = i.getNode()->getValue();
+		if(obj->getType() == ACTIVEOBJECT_TYPE_PLAYER)
+			continue;
 		u16 id = i.getNode()->getKey();		
 		v3f objectpos = obj->getBasePosition();	
 		// Delete static object if block is loaded
@@ -933,7 +935,7 @@ void ServerEnvironment::step(float dtime)
 			v3f playerpos = player->getPosition();
 			
 			// Move
-			player->move(dtime, *m_map, 100*BS);
+			player->move(dtime, this, 100*BS);
 			
 			/*
 				Add footsteps to grass
@@ -1816,6 +1818,22 @@ void ServerEnvironment::deactivateFarObjects(bool force_delete)
 	}
 }
 
+//get a list of all active objects
+core::list<ActiveObject*> ServerEnvironment::getActiveObjects() {
+	core::list<ActiveObject*> retval;
+
+	if (m_active_objects.size() > 0 )
+	{
+		for (core::map<u16, ServerActiveObject*>::Iterator iter=m_active_objects.getIterator();
+				iter.atEnd()==false; iter++) {
+
+			retval.push_back(iter.getNode()->getValue());
+		}
+	}
+
+	return retval;
+}
+
 
 #ifndef SERVER
 
@@ -1976,7 +1994,7 @@ void ClientEnvironment::step(float dtime)
 				Move the lplayer.
 				This also does collision detection.
 			*/
-			lplayer->move(dtime_part, *m_map, position_max_increment,
+			lplayer->move(dtime_part, this, position_max_increment,
 					&player_collisions);
 		}
 	}
@@ -1998,16 +2016,7 @@ void ClientEnvironment::step(float dtime)
 			{
 				f32 damage_f = (info.speed - tolerance)/BS*factor;
 				u16 damage = (u16)(damage_f+0.5);
-				if(lplayer->hp > damage)
-					lplayer->hp -= damage;
-				else
-					lplayer->hp = 0;
-
-				ClientEnvEvent event;
-				event.type = CEE_PLAYER_DAMAGE;
-				event.player_damage.amount = damage;
-				event.player_damage.send_to_server = true;
-				m_client_event_queue.push_back(event);
+				damageLocalPlayer(damage, true);
 			}
 		}
 	}
@@ -2037,11 +2046,7 @@ void ClientEnvironment::step(float dtime)
 		
 		if(damage_per_second != 0)
 		{
-			ClientEnvEvent event;
-			event.type = CEE_PLAYER_DAMAGE;
-			event.player_damage.amount = damage_per_second;
-			event.player_damage.send_to_server = true;
-			m_client_event_queue.push_back(event);
+			damageLocalPlayer(damage_per_second, true);
 		}
 	}
 	
@@ -2060,7 +2065,7 @@ void ClientEnvironment::step(float dtime)
 		if(player->isLocal() == false)
 		{
 			// Move
-			player->move(dtime, *m_map, 100*BS);
+			player->move(dtime, this, 100*BS);
 
 		}
 		
@@ -2335,6 +2340,21 @@ ClientEnvEvent ClientEnvironment::getClientEvent()
 		return event;
 	}
 	return m_client_event_queue.pop_front();
+}
+
+//get a list of all active objects
+core::list<ActiveObject*> ClientEnvironment::getActiveObjects() {
+	core::list<ActiveObject*> retval;
+
+	if (m_active_objects.size() > 0 )
+	{
+		for (core::map<u16, ClientActiveObject*>::Iterator iter=m_active_objects.getIterator();
+					iter.atEnd()==false; iter++)
+			{
+			retval.push_back(iter.getNode()->getValue());
+			}
+	}
+	return retval;
 }
 
 #endif // #ifndef SERVER

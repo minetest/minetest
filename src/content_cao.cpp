@@ -1701,6 +1701,7 @@ private:
 	int m_anim_num_frames;
 	float m_anim_framelength;
 	float m_anim_timer;
+	aabb3f m_collisionbox;
 
 public:
 	LuaEntityCAO(IGameDef *gamedef, ClientEnvironment *env):
@@ -1901,22 +1902,23 @@ public:
 			box.MinEdge *= BS;
 			box.MaxEdge *= BS;
 			collisionMoveResult moveresult;
-			f32 pos_max_d = BS*0.25; // Distance per iteration
+			f32 pos_max_d = BS*0.125; // Distance per iteration
+			f32 stepheight = 0;
 			v3f p_pos = m_position;
 			v3f p_velocity = m_velocity;
-			IGameDef *gamedef = env->getGameDef();
-			moveresult = collisionMovePrecise(&env->getMap(), gamedef,
-					pos_max_d, box, dtime, p_pos, p_velocity);
+			v3f p_acceleration = m_acceleration;
+			moveresult = collisionMovePrecise(env,
+					pos_max_d, box, stepheight, dtime,
+					p_pos, p_velocity, p_acceleration);
 			// Apply results
 			m_position = p_pos;
 			m_velocity = p_velocity;
+			m_acceleration = p_acceleration;
 			
 			bool is_end_position = moveresult.collides;
 			pos_translator.update(m_position, is_end_position, dtime);
 			pos_translator.translate(dtime);
 			updateNodePos();
-
-			m_velocity += dtime * m_acceleration;
 		} else {
 			m_position += dtime * m_velocity + 0.5 * dtime * dtime * m_acceleration;
 			m_velocity += dtime * m_acceleration;
@@ -2097,6 +2099,21 @@ public:
 			updateTexturePos();
 		}
 	}
+
+	aabb3f* getCollisionBox() {
+		if (m_prop->physical) {
+			//update collision box
+			m_collisionbox.MinEdge = m_prop->collisionbox.MinEdge * BS;
+			m_collisionbox.MaxEdge = m_prop->collisionbox.MaxEdge * BS;
+
+			m_collisionbox.MinEdge += m_position;
+			m_collisionbox.MaxEdge += m_position;
+
+			return &m_collisionbox;
+		}
+
+		return NULL;
+	}
 };
 
 // Prototype
@@ -2119,6 +2136,8 @@ private:
 	bool m_is_local_player;
 	LocalPlayer *m_local_player;
 	float m_damage_visual_timer;
+	bool m_dead;
+	aabb3f m_collisionbox;
 
 public:
 	PlayerCAO(IGameDef *gamedef, ClientEnvironment *env):
@@ -2130,7 +2149,8 @@ public:
 		m_yaw(0),
 		m_is_local_player(false),
 		m_local_player(NULL),
-		m_damage_visual_timer(0)
+		m_damage_visual_timer(0),
+		m_dead(false)
 	{
 		if(gamedef == NULL)
 			ClientActiveObject::registerType(getType(), create);
@@ -2152,6 +2172,8 @@ public:
 		m_position = readV3F1000(is);
 		// yaw
 		m_yaw = readF1000(is);
+		// dead
+		m_dead = readU8(is);
 
 		pos_translator.init(m_position);
 
@@ -2160,6 +2182,17 @@ public:
 			m_is_local_player = true;
 			m_local_player = (LocalPlayer*)player;
 		}
+	}
+
+	aabb3f* getCollisionBox() {
+		//update collision box
+		m_collisionbox.MinEdge = m_selection_box.MinEdge;
+		m_collisionbox.MaxEdge = m_selection_box.MaxEdge;
+
+		m_collisionbox.MinEdge += m_position;
+		m_collisionbox.MaxEdge += m_position;
+
+		return &m_collisionbox;
 	}
 
 	~PlayerCAO()
@@ -2180,6 +2213,8 @@ public:
 	core::aabbox3d<f32>* getSelectionBox()
 	{
 		if(m_is_local_player)
+			return NULL;
+		if(m_dead)
 			return NULL;
 		return &m_selection_box;
 	}
@@ -2256,6 +2291,7 @@ public:
 		m_text->setPosition(v3f(0, (f32)BS*2.1, 0));
 		
 		updateTextures("");
+		updateVisibility();
 		updateNodePos();
 	}
 
@@ -2273,16 +2309,24 @@ public:
 		if(m_node == NULL)
 			return;
 		
-		m_node->setVisible(true);
-
 		u8 li = decode_light(light_at_pos);
 		video::SColor color(255,li,li,li);
 		setMeshColor(m_node->getMesh(), color);
+
+		updateVisibility();
 	}
 
 	v3s16 getLightPosition()
 	{
 		return floatToInt(m_position+v3f(0,BS*1.5,0), BS);
+	}
+
+	void updateVisibility()
+	{
+		if(m_node == NULL)
+			return;
+
+		m_node->setVisible(!m_dead);
 	}
 
 	void updateNodePos()
@@ -2300,6 +2344,7 @@ public:
 	void step(float dtime, ClientEnvironment *env)
 	{
 		pos_translator.translate(dtime);
+		updateVisibility();
 		updateNodePos();
 
 		if(m_damage_visual_timer > 0){
@@ -2331,12 +2376,15 @@ public:
 		{
 			// damage
 			s16 damage = readS16(is);
-			
-			if(m_is_local_player)
-				m_env->damageLocalPlayer(damage, false);
-			
-			m_damage_visual_timer = 0.5;
+			m_damage_visual_timer = 0.05;
+			if(damage >= 2)
+				m_damage_visual_timer += 0.05 * damage;
 			updateTextures("^[brighten");
+		}
+		else if(cmd == 2) // died or respawned
+		{
+			m_dead = readU8(is);
+			updateVisibility();
 		}
 	}
 

@@ -32,6 +32,7 @@ public:
 	static ServerActiveObject* create(ServerEnvironment *env, v3f pos,
 			const std::string &data);
 	void step(float dtime, bool send_recommended);
+	inline aabb3f* getCollisionBox() { return NULL; }
 private:
 	float m_timer1;
 	float m_age;
@@ -51,6 +52,7 @@ public:
 	ItemStack createItemStack();
 	void punch(ServerActiveObject *puncher, float time_from_last_punch);
 	float getMinimumSavedMovement(){ return 0.1*BS; }
+	inline aabb3f* getCollisionBox() { return NULL; }
 private:
 	std::string m_itemstring;
 	bool m_itemstring_changed;
@@ -71,6 +73,7 @@ public:
 	std::string getClientInitializationData();
 	std::string getStaticData();
 	void punch(ServerActiveObject *puncher, float time_from_last_punch);
+	inline aabb3f* getCollisionBox() { return NULL; }
 private:
 	bool m_is_active;
 	IntervalLimiter m_inactive_interval;
@@ -97,6 +100,7 @@ public:
 	std::string getStaticData();
 	void punch(ServerActiveObject *puncher, float time_from_last_punch);
 	bool isPeaceful(){return false;}
+	inline aabb3f* getCollisionBox() { return NULL; }
 private:
 	void doDamage(u16 d);
 
@@ -125,6 +129,7 @@ public:
 	void step(float dtime, bool send_recommended);
 	std::string getClientInitializationData();
 	std::string getStaticData();
+	inline aabb3f* getCollisionBox() { return NULL; }
 private:
 	bool m_is_active;
 	IntervalLimiter m_inactive_interval;
@@ -155,6 +160,7 @@ public:
 	void step(float dtime, bool send_recommended);
 	void punch(ServerActiveObject *puncher, float time_from_last_punch);
 	bool isPeaceful();
+	inline aabb3f* getCollisionBox() { return NULL; }
 private:
 	void sendPosition();
 	void setPropertyDefaults();
@@ -222,6 +228,7 @@ public:
 	void setSprite(v2s16 p, int num_frames, float framelength,
 			bool select_horiz_by_yawpitch);
 	std::string getName();
+	aabb3f* getCollisionBox();
 private:
 	void sendPosition(bool do_interpolate, bool is_movement_end);
 
@@ -238,6 +245,7 @@ private:
 	v3f m_last_sent_velocity;
 	float m_last_sent_position_timer;
 	float m_last_sent_move_precision;
+	aabb3f m_collisionbox;
 };
 
 #endif

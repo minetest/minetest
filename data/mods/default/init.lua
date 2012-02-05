@@ -308,6 +308,12 @@
 -- Item definition options (register_node, register_craftitem, register_tool)
 -- {
 --     description = "Steel Axe",
+--     groups = {}, -- key=name, value=rating; rating=1..3.
+--                     if rating not applicable, use 1.
+--                     eg. {wool=1, fluffy=3}
+--                         {soil=2, outerspace=1, crumbly=1}
+--                         {hard=3, brittle=3, spikes=2
+--                         {hard=1, metal=1, spikes=1}
 --     inventory_image = "default_tool_steelaxe.png",
 --     wield_image = "",
 --     wield_scale = {x=1,y=1,z=1},
