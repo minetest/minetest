@@ -21,7 +21,9 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #if 1
 /*
-Made using this and adding 230 as the second last one:
+Made using this and:
+- adding 220 as the second last one
+- replacing the third last one (212) with 195
 
 #!/usr/bin/python
 
@@ -63,8 +65,8 @@ u8 light_decode_table[LIGHT_MAX+1] =
 121,
 146,
 176,
-212,
-230,
+195,
+220,
 255,
 };
 #endif
