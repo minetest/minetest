@@ -504,7 +504,7 @@ void Camera::drawWieldedTool()
 	// Draw the wielded node (in a separate scene manager)
 	scene::ICameraSceneNode* cam = m_wieldmgr->getActiveCamera();
 	cam->setAspectRatio(m_cameranode->getAspectRatio());
-	cam->setFOV(m_cameranode->getFOV());
+	cam->setFOV(72.0*PI/180.0);
 	cam->setNearValue(0.1);
 	cam->setFarValue(100);
 	m_wieldmgr->drawAll();
