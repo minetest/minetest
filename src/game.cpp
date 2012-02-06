@@ -2174,7 +2174,7 @@ void the_game(
 			}
 			else
 			{
-				range = draw_control.wanted_range*BS + MAP_BLOCKSIZE*BS*1.5;
+				range = draw_control.wanted_range*BS + 0.0*MAP_BLOCKSIZE*BS;
 				range *= 0.9;
 				if(draw_control.range_all)
 					range = 100000*BS;

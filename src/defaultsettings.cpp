@@ -65,7 +65,7 @@ void set_default_settings(Settings *settings)
 	settings->setDefault("wanted_fps", "30");
 	settings->setDefault("fps_max", "60");
 	settings->setDefault("viewing_range_nodes_max", "300");
-	settings->setDefault("viewing_range_nodes_min", "15");
+	settings->setDefault("viewing_range_nodes_min", "35");
 	settings->setDefault("screenW", "800");
 	settings->setDefault("screenH", "600");
 	settings->setDefault("address", "");
