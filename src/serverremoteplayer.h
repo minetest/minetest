@@ -22,13 +22,14 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "player.h"
 #include "serverobject.h"
+#include "collidableobject.h"
 #include "content_object.h" // Object type IDs
 
 /*
 	Player on the server
 */
 
-class ServerRemotePlayer : public Player, public ServerActiveObject
+class ServerRemotePlayer : public Player, public ServerActiveObject , public CollidableObject
 {
 public:
 	ServerRemotePlayer(ServerEnvironment *env);
@@ -96,7 +97,6 @@ public:
 	aabb3f* getCollisionBox();
 private:
 	bool m_position_not_sent;
-	aabb3f m_collisionbox;
 };
 
 #endif

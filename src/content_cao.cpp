@@ -21,6 +21,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "tile.h"
 #include "environment.h"
 #include "collision.h"
+#include "collidableobject.h"
 #include "settings.h"
 #include <ICameraSceneNode.h>
 #include <ITextSceneNode.h>
@@ -1681,7 +1682,7 @@ void MobV2CAO::setLooks(const std::string &looks)
 
 #include "luaentity_common.h"
 
-class LuaEntityCAO : public ClientActiveObject
+class LuaEntityCAO : public ClientActiveObject , public CollidableObject
 {
 private:
 	core::aabbox3d<f32> m_selection_box;
@@ -1701,7 +1702,6 @@ private:
 	int m_anim_num_frames;
 	float m_anim_framelength;
 	float m_anim_timer;
-	aabb3f m_collisionbox;
 
 public:
 	LuaEntityCAO(IGameDef *gamedef, ClientEnvironment *env):
@@ -2071,7 +2071,7 @@ LuaEntityCAO proto_LuaEntityCAO(NULL, NULL);
 	PlayerCAO
 */
 
-class PlayerCAO : public ClientActiveObject
+class PlayerCAO : public ClientActiveObject, public CollidableObject
 {
 private:
 	core::aabbox3d<f32> m_selection_box;
@@ -2085,7 +2085,6 @@ private:
 	LocalPlayer *m_local_player;
 	float m_damage_visual_timer;
 	bool m_dead;
-	aabb3f m_collisionbox;
 
 public:
 	PlayerCAO(IGameDef *gamedef, ClientEnvironment *env):
