@@ -18,6 +18,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 */
 
 #include "collision.h"
+#include "collidableobject.h"
 #include "mapblock.h"
 #include "map.h"
 #include "nodedef.h"
@@ -266,13 +267,18 @@ collisionMoveResult collisionMoveSimple(Environment* env,
 		for (core::list<ActiveObject*>::Iterator iter = objects.begin();
 				iter != objects.end(); iter++)
 		{
-			aabb3f* object_collisionbox = (*iter)->getCollisionBox();
-			//TODO do we need to check if it's really near enough?
-			if (object_collisionbox != NULL)
+			CollidableObject* object = dynamic_cast<CollidableObject*>(*iter);
+
+			if (object != NULL)
 			{
-				cboxes.push_back(*object_collisionbox);
-				is_unloaded.push_back(false);
-				is_step_up.push_back(false);
+				aabb3f* object_collisionbox = object->getCollisionBox();
+				//TODO do we need to check if it's really near enough?
+				if (object_collisionbox != NULL)
+				{
+					cboxes.push_back(*object_collisionbox);
+					is_unloaded.push_back(false);
+					is_step_up.push_back(false);
+				}
 			}
 		}
 	} //tt3
