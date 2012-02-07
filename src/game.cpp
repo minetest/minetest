@@ -362,15 +362,6 @@ PointedThing getPointedThing(Client *client, v3f player_position,
 		if(!isPointableNode(n, client, liquids_pointable))
 			continue;
 
-		v3s16 facedirs[6] = {
-			v3s16(-1,0,0),
-			v3s16(1,0,0),
-			v3s16(0,-1,0),
-			v3s16(0,1,0),
-			v3s16(0,0,-1),
-			v3s16(0,0,1),
-		};
-
 		std::vector<aabb3f> boxes = n.getSelectionBoxes(client->ndef());
 
 		v3s16 np(x,y,z);
@@ -384,52 +375,37 @@ PointedThing getPointedThing(Client *client, v3f player_position,
 			box.MinEdge += npf;
 			box.MaxEdge += npf;
 
-			f32 d = 0.001*BS;
-			aabb3f faceboxes[6] = {
-				// X-
-				aabb3f(
-					box.MinEdge.X, box.MinEdge.Y, box.MinEdge.Z,
-					box.MinEdge.X+d, box.MaxEdge.Y, box.MaxEdge.Z
-				),
-				// X+
-				aabb3f(
-					box.MaxEdge.X-d, box.MinEdge.Y, box.MinEdge.Z,
-					box.MaxEdge.X, box.MaxEdge.Y, box.MaxEdge.Z
-				),
-				// Y-
-				aabb3f(
-					box.MinEdge.X, box.MinEdge.Y, box.MinEdge.Z,
-					box.MaxEdge.X, box.MinEdge.Y+d, box.MaxEdge.Z
-				),
-				// Y+
-				aabb3f(
-					box.MinEdge.X, box.MaxEdge.Y-d, box.MinEdge.Z,
-					box.MaxEdge.X, box.MaxEdge.Y, box.MaxEdge.Z
-				),
-				// Z-
-				aabb3f(
-					box.MinEdge.X, box.MinEdge.Y, box.MinEdge.Z,
-					box.MaxEdge.X, box.MaxEdge.Y, box.MinEdge.Z+d
-				),
-				// Z+
-				aabb3f(
-					box.MinEdge.X, box.MinEdge.Y, box.MaxEdge.Z-d,
-					box.MaxEdge.X, box.MaxEdge.Y, box.MaxEdge.Z
-				),
-			};
-
 			for(u16 j=0; j<6; j++)
 			{
-				v3f centerpoint = faceboxes[j].getCenter();
+				v3s16 facedir = g_6dirs[j];
+				aabb3f facebox = box;
+
+				f32 d = 0.001*BS;
+				if(facedir.X > 0)
+					facebox.MinEdge.X = facebox.MaxEdge.X-d;
+				else if(facedir.X < 0)
+					facebox.MaxEdge.X = facebox.MinEdge.X+d;
+				else if(facedir.Y > 0)
+					facebox.MinEdge.Y = facebox.MaxEdge.Y-d;
+				else if(facedir.Y < 0)
+					facebox.MaxEdge.Y = facebox.MinEdge.Y+d;
+				else if(facedir.Z > 0)
+					facebox.MinEdge.Z = facebox.MaxEdge.Z-d;
+				else if(facedir.Z < 0)
+					facebox.MaxEdge.Z = facebox.MinEdge.Z+d;
+
+				v3f centerpoint = facebox.getCenter();
 				f32 distance = (centerpoint - camera_position).getLength();
 				if(distance >= mindistance)
 					continue;
-				if(!faceboxes[j].intersectsWithLine(shootline))
+				if(!facebox.intersectsWithLine(shootline))
 					continue;
+
+				v3s16 np_above = floatToInt(centerpoint + intToFloat(facedir, d), BS);
 
 				result.type = POINTEDTHING_NODE;
 				result.node_undersurface = np;
-				result.node_abovesurface = np+facedirs[j];
+				result.node_abovesurface = np_above;
 				mindistance = distance;
 
 				hilightboxes.clear();
