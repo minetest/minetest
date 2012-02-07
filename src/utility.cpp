@@ -208,7 +208,7 @@ bool isBlockInSight(v3s16 blockpos_b, v3f camera_pos, v3f camera_dir,
 		return true;
 
 	// If block is far away, it's not in sight
-	if(d > range * BS)
+	if(d > range)
 		return false;
 
 	// Maximum radius of a block
