@@ -1302,7 +1302,7 @@ minetest.register_node("default:rail", {
 	walkable = false,
 	selection_box = {
 		type = "fixed",
-		--fixed = <default>
+		fixed = {-1/2, -1/2, -1/2, 1/2, -1/2+1/16, 1/2},
 	},
 	material = minetest.digprop_dirtlike(0.75),
 })
