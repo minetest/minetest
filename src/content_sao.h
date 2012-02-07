@@ -23,6 +23,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "serverobject.h"
 #include "content_object.h"
 #include "collidableobject.h"
+#include "serverlinkableobject.h"
 
 class TestSAO : public ServerActiveObject
 {
@@ -193,7 +194,7 @@ private:
 
 struct LuaEntityProperties;
 
-class LuaEntitySAO : public ServerActiveObject, public CollidableObject
+class LuaEntitySAO : public ServerActiveObject, public CollidableObject , public ServerLinkableObject
 {
 public:
 	LuaEntitySAO(ServerEnvironment *env, v3f pos,
@@ -224,6 +225,8 @@ public:
 			bool select_horiz_by_yawpitch);
 	std::string getName();
 	aabb3f* getCollisionBox();
+	bool sendLinkMsg(ServerActiveObject* parent,v3f offset);
+	bool sendUnlinkMsg();
 private:
 	void sendPosition(bool do_interpolate, bool is_movement_end);
 

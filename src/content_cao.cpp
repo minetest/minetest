@@ -17,11 +17,11 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
-#include "content_cao.h"
 #include "tile.h"
 #include "environment.h"
 #include "collision.h"
 #include "collidableobject.h"
+#include "clientlinkableobject.h"
 #include "settings.h"
 #include <ICameraSceneNode.h>
 #include <ITextSceneNode.h>
@@ -1682,7 +1682,7 @@ void MobV2CAO::setLooks(const std::string &looks)
 
 #include "luaentity_common.h"
 
-class LuaEntityCAO : public ClientActiveObject , public CollidableObject
+class LuaEntityCAO : public ClientActiveObject , public CollidableObject , public ClientLinkableObject
 {
 private:
 	core::aabbox3d<f32> m_selection_box;
@@ -1897,35 +1897,39 @@ public:
 
 	void step(float dtime, ClientEnvironment *env)
 	{
-		if(m_prop->physical){
-			core::aabbox3d<f32> box = m_prop->collisionbox;
-			box.MinEdge *= BS;
-			box.MaxEdge *= BS;
-			collisionMoveResult moveresult;
-			f32 pos_max_d = BS*0.125; // Distance per iteration
-			f32 stepheight = 0;
-			v3f p_pos = m_position;
-			v3f p_velocity = m_velocity;
-			v3f p_acceleration = m_acceleration;
-			moveresult = collisionMovePrecise(env,
-					pos_max_d, box, stepheight, dtime,
-					p_pos, p_velocity, p_acceleration);
-			// Apply results
-			m_position = p_pos;
-			m_velocity = p_velocity;
-			m_acceleration = p_acceleration;
-			
-			bool is_end_position = moveresult.collides;
-			pos_translator.update(m_position, is_end_position, dtime);
-			pos_translator.translate(dtime);
-			updateNodePos();
-		} else {
-			m_position += dtime * m_velocity + 0.5 * dtime * dtime * m_acceleration;
-			m_velocity += dtime * m_acceleration;
-			pos_translator.update(m_position, pos_translator.aim_is_end, pos_translator.anim_time);
-			pos_translator.translate(dtime);
-			updateNodePos();
+		if(!this->isLinked()) {
+			if(m_prop->physical){
+				core::aabbox3d<f32> box = m_prop->collisionbox;
+				box.MinEdge *= BS;
+				box.MaxEdge *= BS;
+				collisionMoveResult moveresult;
+				f32 pos_max_d = BS*0.125; // Distance per iteration
+				f32 stepheight = 0;
+				v3f p_pos = m_position;
+				v3f p_velocity = m_velocity;
+				v3f p_acceleration = m_acceleration;
+				moveresult = collisionMovePrecise(env,
+						pos_max_d, box, stepheight, dtime,
+						p_pos, p_velocity, p_acceleration);
+				// Apply results
+				m_position = p_pos;
+				m_velocity = p_velocity;
+				m_acceleration = p_acceleration;
+
+				bool is_end_position = moveresult.collides;
+				pos_translator.update(m_position, is_end_position, dtime);
+				pos_translator.translate(dtime);
+				updateNodePos();
+			} else {
+				m_position += dtime * m_velocity + 0.5 * dtime * dtime * m_acceleration;
+				m_velocity += dtime * m_acceleration;
+				pos_translator.update(m_position, pos_translator.aim_is_end, pos_translator.anim_time);
+				pos_translator.translate(dtime);
+				updateNodePos();
+			}
 		}
+
+		stepLinkedObjects(this->m_position,dtime);
 
 		m_anim_timer += dtime;
 		if(m_anim_timer >= m_anim_framelength){
@@ -2098,6 +2102,10 @@ public:
 
 			updateTexturePos();
 		}
+		else if (handleLinkUnlinkMessages(cmd,&is,this->m_env))
+		{
+			//Link unlink already done in handleLinkUnlinkMessages!
+		}
 	}
 
 	aabb3f* getCollisionBox() {
@@ -2114,6 +2122,17 @@ public:
 
 		return NULL;
 	}
+
+	void setPosition(v3f toset, float dtime){
+		if (this->isLinked()) {
+			this->m_position = toset + this->m_linkOffset;
+			pos_translator.update(m_position, pos_translator.aim_is_end, pos_translator.anim_time);
+			pos_translator.translate(dtime);
+			updateNodePos();
+		}
+	}
+
+	void updateLinkState(bool value) {}
 };
 
 // Prototype
@@ -2123,7 +2142,7 @@ LuaEntityCAO proto_LuaEntityCAO(NULL, NULL);
 	PlayerCAO
 */
 
-class PlayerCAO : public ClientActiveObject, public CollidableObject
+class PlayerCAO : public ClientActiveObject, public CollidableObject , public ClientLinkableObject
 {
 private:
 	core::aabbox3d<f32> m_selection_box;
@@ -2342,9 +2361,12 @@ public:
 
 	void step(float dtime, ClientEnvironment *env)
 	{
-		pos_translator.translate(dtime);
+		if(!isLinked()) {
+			pos_translator.translate(dtime);
+			updateNodePos();
+		}
+
 		updateVisibility();
-		updateNodePos();
 
 		if(m_damage_visual_timer > 0){
 			m_damage_visual_timer -= dtime;
@@ -2385,6 +2407,10 @@ public:
 			m_dead = readU8(is);
 			updateVisibility();
 		}
+		else if (handleLinkUnlinkMessages(cmd,&is,this->m_env))
+		{
+			//Link unlink already done in handleLinkUnlinkMessages!
+		}
 	}
 
 	void updateTextures(const std::string &mod)
@@ -2408,6 +2434,26 @@ public:
 				buf->getMaterial().setTexture(0,
 						tsrc->getTextureRaw(tname));
 			}
+		}
+	}
+	void setPosition(v3f toset, float dtime){
+		if (isLinked()) {
+			this->m_position = toset + this->m_linkOffset;
+			pos_translator.update(this->m_position,false);
+			updateNodePos();
+
+			if(m_is_local_player) {
+				m_local_player->setPosition(this->m_position);
+			}
+		}
+		else {
+			errorstream<<"Got linked position update but not linked"<< std::endl;
+		}
+	}
+
+	void updateLinkState(bool value) {
+		if(m_is_local_player) {
+			m_local_player->Link(value);
 		}
 	}
 };

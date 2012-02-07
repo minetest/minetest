@@ -1852,3 +1852,24 @@ aabb3f* LuaEntitySAO::getCollisionBox() {
 	return NULL;
 }
 
+bool LuaEntitySAO::sendLinkMsg(ServerActiveObject* parent,v3f offset) {
+	std::ostringstream os(std::ios::binary);
+	writeU8(os, 3);
+	// parameters
+	writeU16(os, parent->getId());
+	writeV3F1000(os, offset);
+	// create message and add to list
+	ActiveObjectMessage aom(getId(), false, os.str());
+	m_messages_out.push_back(aom);
+	return true;
+}
+
+bool LuaEntitySAO::sendUnlinkMsg() {
+	std::ostringstream os(std::ios::binary);
+	writeU8(os, 4);
+	// create message and add to list
+	ActiveObjectMessage aom(getId(), false, os.str());
+	m_messages_out.push_back(aom);
+	return true;
+}
+

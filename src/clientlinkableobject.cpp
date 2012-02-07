@@ -49,7 +49,7 @@ void ClientLinkableObject::stepLinkedObjects(v3f pos,float dtime) {
 }
 
 bool ClientLinkableObject::handleLinkUnlinkMessages(u8 cmd,std::istringstream* is,ClientEnvironment *m_env) {
-	if(cmd == AO_Message_type::Link) // Link entity
+	if(cmd == 3) // Link entity
 		{
 			//Object to link entity to
 			u16 object_id = readU16(*is);
@@ -69,7 +69,7 @@ bool ClientLinkableObject::handleLinkUnlinkMessages(u8 cmd,std::istringstream* i
 			return true;
 
 		}
-	else if(cmd == AO_Message_type::UnLink) // UnLink entity
+	else if(cmd == 4) // UnLink entity
 		{
 			if (this->m_Parent == NULL) {
 				errorstream << "Unlinking object not linked!" << std::endl;

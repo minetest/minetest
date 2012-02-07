@@ -23,13 +23,14 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "player.h"
 #include "serverobject.h"
 #include "collidableobject.h"
+#include "serverlinkableobject.h"
 #include "content_object.h" // Object type IDs
 
 /*
 	Player on the server
 */
 
-class ServerRemotePlayer : public Player, public ServerActiveObject , public CollidableObject
+class ServerRemotePlayer : public Player, public ServerActiveObject , public CollidableObject , public ServerLinkableObject
 {
 public:
 	ServerRemotePlayer(ServerEnvironment *env);
@@ -95,6 +96,8 @@ public:
 	// Incremented by step(), read and reset by Server
 	float m_time_from_last_punch;
 	aabb3f* getCollisionBox();
+	bool sendLinkMsg(ServerActiveObject* parent,v3f offset);
+	bool sendUnlinkMsg();
 private:
 	bool m_position_not_sent;
 };

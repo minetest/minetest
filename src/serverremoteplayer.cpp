@@ -130,6 +130,9 @@ void ServerRemotePlayer::step(float dtime, bool send_recommended)
 	if(send_recommended == false)
 		return;
 	
+	if(isLinked())
+		return;
+
 	if(m_position_not_sent)
 	{
 		m_position_not_sent = false;
@@ -278,4 +281,24 @@ aabb3f* ServerRemotePlayer::getCollisionBox() {
 	return &m_collisionbox;
 }
 
+bool ServerRemotePlayer::sendLinkMsg(ServerActiveObject* parent,v3f offset) {
+	std::ostringstream os(std::ios::binary);
+	writeU8(os, 3);
+	// parameters
+	writeU16(os, parent->getId());
+	writeV3F1000(os, offset);
+	// create message and add to list
+	ActiveObjectMessage aom(getId(), true, os.str());
+	m_messages_out.push_back(aom);
+	return true;
+}
+
+bool ServerRemotePlayer::sendUnlinkMsg() {
+	std::ostringstream os(std::ios::binary);
+	writeU8(os, 4);
+	// create message and add to list
+	ActiveObjectMessage aom(getId(), true, os.str());
+	m_messages_out.push_back(aom);
+	return true;
+}
 

@@ -1908,6 +1908,7 @@ void ClientEnvironment::step(float dtime)
 		Get the speed the player is going
 	*/
 	bool is_climbing = lplayer->is_climbing;
+	bool linked      = lplayer->m_linked;
 	
 	f32 player_speed = lplayer->getSpeed().getLength();
 	
@@ -1936,90 +1937,91 @@ void ClientEnvironment::step(float dtime)
 	/*
 		Stuff that has a maximum time increment
 	*/
+	 if (!linked) {
+		u32 loopcount = 0;
+		do
+		{
+			loopcount++;
 
-	u32 loopcount = 0;
-	do
-	{
-		loopcount++;
-
-		f32 dtime_part;
-		if(dtime_downcount > dtime_max_increment)
-		{
-			dtime_part = dtime_max_increment;
-			dtime_downcount -= dtime_part;
-		}
-		else
-		{
-			dtime_part = dtime_downcount;
-			/*
-				Setting this to 0 (no -=dtime_part) disables an infinite loop
-				when dtime_part is so small that dtime_downcount -= dtime_part
-				does nothing
-			*/
-			dtime_downcount = 0;
-		}
-		
-		/*
-			Handle local player
-		*/
-		
-		{
-			v3f lplayerpos = lplayer->getPosition();
-			
-			// Apply physics
-			if(free_move == false && is_climbing == false)
+			f32 dtime_part;
+			if(dtime_downcount > dtime_max_increment)
 			{
-				// Gravity
-				v3f speed = lplayer->getSpeed();
-				if(lplayer->swimming_up == false)
-					speed.Y -= 9.81 * BS * dtime_part * 2;
+				dtime_part = dtime_max_increment;
+				dtime_downcount -= dtime_part;
+			}
+			else
+			{
+				dtime_part = dtime_downcount;
+				/*
+					Setting this to 0 (no -=dtime_part) disables an infinite loop
+					when dtime_part is so small that dtime_downcount -= dtime_part
+					does nothing
+				*/
+				dtime_downcount = 0;
+			}
 
-				// Water resistance
-				if(lplayer->in_water_stable || lplayer->in_water)
+			/*
+				Handle local player
+			*/
+			
+			{
+				v3f lplayerpos = lplayer->getPosition();
+
+				// Apply physics
+				if(free_move == false && is_climbing == false)
 				{
-					f32 max_down = 2.0*BS;
-					if(speed.Y < -max_down) speed.Y = -max_down;
+					// Gravity
+					v3f speed = lplayer->getSpeed();
+					if(lplayer->swimming_up == false)
+						speed.Y -= 9.81 * BS * dtime_part * 2;
 
-					f32 max = 2.5*BS;
-					if(speed.getLength() > max)
+					// Water resistance
+					if(lplayer->in_water_stable || lplayer->in_water)
 					{
-						speed = speed / speed.getLength() * max;
+						f32 max_down = 2.0*BS;
+						if(speed.Y < -max_down) speed.Y = -max_down;
+
+						f32 max = 2.5*BS;
+						if(speed.getLength() > max)
+						{
+							speed = speed / speed.getLength() * max;
+						}
 					}
+
+					lplayer->setSpeed(speed);
 				}
 
-				lplayer->setSpeed(speed);
+				/*
+					Move the lplayer.
+					This also does collision detection.
+				*/
+				lplayer->move(dtime_part, this, position_max_increment,
+						&player_collisions);
 			}
+		}
+		while(dtime_downcount > 0.001);
 
-			/*
-				Move the lplayer.
-				This also does collision detection.
-			*/
-			lplayer->move(dtime_part, this, position_max_increment,
-					&player_collisions);
-		}
-	}
-	while(dtime_downcount > 0.001);
+		//std::cout<<"Looped "<<loopcount<<" times."<<std::endl;
 		
-	//std::cout<<"Looped "<<loopcount<<" times."<<std::endl;
-	
-	for(core::list<CollisionInfo>::Iterator
-			i = player_collisions.begin();
-			i != player_collisions.end(); i++)
-	{
-		CollisionInfo &info = *i;
-		if(info.t == COLLISION_FALL)
+		for(core::list<CollisionInfo>::Iterator
+				i = player_collisions.begin();
+				i != player_collisions.end(); i++)
 		{
-			//f32 tolerance = BS*10; // 2 without damage
-			f32 tolerance = BS*12; // 3 without damage
-			f32 factor = 1;
-			if(info.speed > tolerance)
+			CollisionInfo &info = *i;
+			if(info.t == COLLISION_FALL)
 			{
-				f32 damage_f = (info.speed - tolerance)/BS*factor;
-				u16 damage = (u16)(damage_f+0.5);
-				damageLocalPlayer(damage, true);
+				//f32 tolerance = BS*10; // 2 without damage
+				f32 tolerance = BS*12; // 3 without damage
+				f32 factor = 1;
+				if(info.speed > tolerance)
+				{
+					f32 damage_f = (info.speed - tolerance)/BS*factor;
+					u16 damage = (u16)(damage_f+0.5);
+					damageLocalPlayer(damage, true);
+				}
 			}
 		}
-	}
+	 }
 	
 	/*
 		A quick draft of lava damage

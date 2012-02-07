@@ -30,21 +30,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "utility.h"
 #include "log.h"
 
-
-//this ain't the right place to define this but until cao/sao split
-//is decided it'll have to stay here
-struct AO_Message_type {
-	static const u8 SetPosition      = 0x00;
-	static const u8 SetTextureMod    = 0x01;
-	static const u8 SetSprite        = 0x02;
-	static const u8 Punched          = 0x03;
-	static const u8 TakeDamage       = 0x04;
-	static const u8 Shoot            = 0x05;
-	static const u8 Link             = 0x06;
-	static const u8 UnLink           = 0x07;
-};
-
-
 class ClientLinkableObject {
 	public:
 		ClientLinkableObject();
