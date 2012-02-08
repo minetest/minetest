@@ -1483,8 +1483,6 @@ bool generate_image(std::string part_of_name, video::IImage *& baseimg,
 			
 			if(rtt == NULL)
 			{
-				errorstream<<"generate_image(): render to texture failed."
-						" Creating fallback image"<<std::endl;
 				baseimg = generate_image_from_scratch(
 						imagename_top, device, sourcecache);
 				return true;
