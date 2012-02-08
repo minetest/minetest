@@ -422,8 +422,13 @@ video::ITexture *generateTextureFromMesh(scene::IMesh *mesh,
 	video::IVideoDriver *driver = device->getVideoDriver();
 	if(driver->queryFeature(video::EVDF_RENDER_TO_TARGET) == false)
 	{
-		errorstream<<"generateTextureFromMesh(): EVDF_RENDER_TO_TARGET"
-				" not supported."<<std::endl;
+		static bool warned = false;
+		if(!warned)
+		{
+			errorstream<<"generateTextureFromMesh(): EVDF_RENDER_TO_TARGET"
+					" not supported."<<std::endl;
+			warned = true;
+		}
 		return NULL;
 	}
 
