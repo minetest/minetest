@@ -34,6 +34,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "gamedef.h"
 #include "inventorymanager.h"
 #include "filesys.h"
+#include "filecache.h"
 
 struct MeshMakeData;
 class MapBlockMesh;
@@ -366,6 +367,10 @@ private:
 	bool m_access_denied;
 	std::wstring m_access_denied_reason;
 	Queue<ClientEvent> m_client_event_queue;
+	FileCache m_texture_cache;
+	// a map of the name and SHA1 checksum of each texture;
+	// cleared after content has been recieved
+	core::map<std::string, std::string> m_texture_name_sha1_map;
 	float m_texture_receive_progress;
 	bool m_textures_received;
 	bool m_itemdef_received;

@@ -38,6 +38,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "sha1.h"
 #include "base64.h"
 #include "clientmap.h"
+#include "filecache.h"
 #include "sound.h"
 
 static std::string getTextureCacheDir()
@@ -255,6 +256,7 @@ Client::Client(
 	m_map_seed(0),
 	m_password(password),
 	m_access_denied(false),
+	m_texture_cache(getTextureCacheDir()),
 	m_texture_receive_progress(0),
 	m_textures_received(false),
 	m_itemdef_received(false),
@@ -1412,7 +1414,7 @@ void Client::ProcessData(u8 *data, u32 datasize, u16 sender_peer_id)
 			//read texture from cache
 			std::string name = deSerializeString(is);
 			std::string sha1_texture = deSerializeString(is);
-			
+
 			// if name contains illegal characters, ignore the texture
 			if(!string_allowed(name, TEXTURENAME_ALLOWED_CHARS)){
 				errorstream<<"Client: ignoring illegal texture name "
@@ -1420,74 +1422,50 @@ void Client::ProcessData(u8 *data, u32 datasize, u16 sender_peer_id)
 				continue;
 			}
 
-			std::string tpath = getTextureCacheDir() + DIR_DELIM + name;
-			// Read data
-			std::ifstream fis(tpath.c_str(), std::ios_base::binary);
+			std::string sha1_decoded = base64_decode(sha1_texture);
+			std::ostringstream tmp_os(std::ios_base::binary);
+			bool tex_in_cache = m_texture_cache.loadByChecksum(name,
+					tmp_os, sha1_decoded);
+			m_texture_name_sha1_map.set(name, sha1_decoded);
 
+			if(tex_in_cache) {
 
-			if(fis.good() == false){
-				infostream<<"Client::Texture not found in cache: "
-						<<name << " expected it at: "<<tpath<<std::endl;
-			}
-			else
-			{
-				std::ostringstream tmp_os(std::ios_base::binary);
-				bool bad = false;
-				for(;;){
-					char buf[1024];
-					fis.read(buf, 1024);
-					std::streamsize len = fis.gcount();
-					tmp_os.write(buf, len);
-					if(fis.eof())
-						break;
-					if(!fis.good()){
-						bad = true;
-						break;
-					}
-				}
-				if(bad){
-					infostream<<"Client: Failed to read texture from cache\""
-							<<name<<"\""<<std::endl;
-				}
-				else {
+				SHA1 sha1;
+				sha1.addBytes(tmp_os.str().c_str(), tmp_os.str().length());
 
-					SHA1 sha1;
-					sha1.addBytes(tmp_os.str().c_str(), tmp_os.str().length());
+				unsigned char *digest = sha1.getDigest();
 
-					unsigned char *digest = sha1.getDigest();
+				std::string digest_string = base64_encode(digest, 20);
 
-					std::string digest_string = base64_encode(digest, 20);
+				if (digest_string == sha1_texture) {
+					// Silly irrlicht's const-incorrectness
+					Buffer<char> data_rw(tmp_os.str().c_str(), tmp_os.str().size());
 
-					if (digest_string == sha1_texture) {
-						// Silly irrlicht's const-incorrectness
-						Buffer<char> data_rw(tmp_os.str().c_str(), tmp_os.str().size());
-
-						// Create an irrlicht memory file
-						io::IReadFile *rfile = irrfs->createMemoryReadFile(
-								*data_rw,  tmp_os.str().size(), "_tempreadfile");
-						assert(rfile);
-						// Read image
-						video::IImage *img = vdrv->createImageFromFile(rfile);
-						if(!img){
-							infostream<<"Client: Cannot create image from data of "
-									<<"received texture \""<<name<<"\""<<std::endl;
-							rfile->drop();
-						}
-						else {
-							m_tsrc->insertSourceImage(name, img);
-							img->drop();
-							rfile->drop();
-
-							texture_found = true;
-						}
+					// Create an irrlicht memory file
+					io::IReadFile *rfile = irrfs->createMemoryReadFile(
+							*data_rw,  tmp_os.str().size(), "_tempreadfile");
+					assert(rfile);
+					// Read image
+					video::IImage *img = vdrv->createImageFromFile(rfile);
+					if(!img){
+						infostream<<"Client: Cannot create image from data of "
+								<<"received texture \""<<name<<"\""<<std::endl;
+						rfile->drop();
 					}
 					else {
-						infostream<<"Client::Texture cached sha1 hash not matching server hash: "
-								<<name << ": server ->"<<sha1_texture <<" client -> "<<digest_string<<std::endl;
-					}
+						m_tsrc->insertSourceImage(name, img);
+						img->drop();
+						rfile->drop();
 
-					free(digest);
+						texture_found = true;
+					}
 				}
+				else {
+					infostream<<"Client::Texture cached sha1 hash not matching server hash: "
+							<<name << ": server ->"<<sha1_texture <<" client -> "<<digest_string<<std::endl;
+				}
+
+				free(digest);
 			}
 
 			//add texture request
@@ -1598,15 +1576,15 @@ void Client::ProcessData(u8 *data, u32 datasize, u16 sender_peer_id)
 
 			fs::CreateAllDirs(getTextureCacheDir());
 
-			std::string filename = getTextureCacheDir() + DIR_DELIM + name;
-			std::ofstream outfile(filename.c_str(), std::ios_base::binary | std::ios_base::trunc);
-
-			if (outfile.good()) {
-				outfile.write(data.c_str(),data.length());
-				outfile.close();
-			}
-			else {
-				errorstream<<"Client: Unable to open cached texture file "<< filename <<std::endl;
+			{
+				core::map<std::string, std::string>::Node *n;
+				n = m_texture_name_sha1_map.find(name);
+				if(n == NULL)
+					errorstream<<"The server sent a texture that has not been announced."
+						<<std::endl;
+				else
+					m_texture_cache.updateByChecksum(name,
+							data, n->getValue());
 			}
 
 			m_tsrc->insertSourceImage(name, img);
@@ -2381,6 +2359,10 @@ void Client::afterContentReceived()
 	assert(m_itemdef_received);
 	assert(m_nodedef_received);
 	assert(m_textures_received);
+
+	// remove the information about which checksum each texture
+	// ought to have
+	m_texture_name_sha1_map.clear();
 
 	// Rebuild inherited images and recreate textures
 	m_tsrc->rebuildImagesAndTextures();

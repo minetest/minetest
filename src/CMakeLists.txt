@@ -238,6 +238,7 @@ set(minetest_SRCS
 	guiCreateWorld.cpp
 	guiConfirmMenu.cpp
 	client.cpp
+	filecache.cpp
 	tile.cpp
 	game.cpp
 	main.cpp
