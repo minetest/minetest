@@ -1778,6 +1778,9 @@ local function handle_give_command(cmd, giver, receiver, stackstring)
 	else
 		partiality = "partially "
 	end
+	-- The actual item stack string may be different from what the "giver"
+	-- entered (e.g. big numbers are always interpreted as 2^16-1).
+	stackstring = itemstack:to_string()
 	if giver == receiver then
 		minetest.chat_send_player(giver, '"'..stackstring
 			..'" '..partiality..'added to inventory.');
