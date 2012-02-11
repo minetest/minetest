@@ -260,6 +260,7 @@ std::string CraftOutput::dump() const
 /*
 	CraftReplacements
 */
+
 std::string CraftReplacements::dump() const
 {
 	std::ostringstream os(std::ios::binary);
@@ -276,6 +277,27 @@ std::string CraftReplacements::dump() const
 	return os.str();
 }
 
+void CraftReplacements::serialize(std::ostream &os) const
+{
+	writeU16(os, pairs.size());
+	for(u32 i=0; i<pairs.size(); i++)
+	{
+		os<<serializeString(pairs[i].first);
+		os<<serializeString(pairs[i].second);
+	}
+}
+
+void CraftReplacements::deSerialize(std::istream &is)
+{
+	pairs.clear();
+	u32 count = readU16(is);
+	for(u32 i=0; i<count; i++)
+	{
+		std::string first = deSerializeString(is);
+		std::string second = deSerializeString(is);
+		pairs.push_back(std::make_pair(first, second));
+	}
+}
 
 /*
 	CraftDefinition
@@ -418,12 +440,7 @@ void CraftDefinitionShaped::serializeBody(std::ostream &os) const
 	writeU16(os, recipe.size());
 	for(u32 i=0; i<recipe.size(); i++)
 		os<<serializeString(recipe[i]);
-	writeU16(os, replacements.pairs.size());
-	for(u32 i=0; i<replacements.pairs.size(); i++)
-	{
-		os<<serializeString(replacements.pairs[i].first);
-		os<<serializeString(replacements.pairs[i].second);
-	}
+	replacements.serialize(os);
 }
 
 void CraftDefinitionShaped::deSerializeBody(std::istream &is, int version)
@@ -436,14 +453,7 @@ void CraftDefinitionShaped::deSerializeBody(std::istream &is, int version)
 	u32 count = readU16(is);
 	for(u32 i=0; i<count; i++)
 		recipe.push_back(deSerializeString(is));
-	replacements.pairs.clear();
-	count = readU16(is);
-	for(u32 i=0; i<count; i++)
-	{
-		std::string first = deSerializeString(is);
-		std::string second = deSerializeString(is);
-		replacements.pairs.push_back(std::make_pair(first, second));
-	}
+	replacements.deSerialize(is);
 }
 
 /*
@@ -497,12 +507,7 @@ void CraftDefinitionShapeless::serializeBody(std::ostream &os) const
 	writeU16(os, recipe.size());
 	for(u32 i=0; i<recipe.size(); i++)
 		os<<serializeString(recipe[i]);
-	writeU16(os, replacements.pairs.size());
-	for(u32 i=0; i<replacements.pairs.size(); i++)
-	{
-		os<<serializeString(replacements.pairs[i].first);
-		os<<serializeString(replacements.pairs[i].second);
-	}
+	replacements.serialize(os);
 }
 
 void CraftDefinitionShapeless::deSerializeBody(std::istream &is, int version)
@@ -514,14 +519,7 @@ void CraftDefinitionShapeless::deSerializeBody(std::istream &is, int version)
 	u32 count = readU16(is);
 	for(u32 i=0; i<count; i++)
 		recipe.push_back(deSerializeString(is));
-	replacements.pairs.clear();
-	count = readU16(is);
-	for(u32 i=0; i<count; i++)
-	{
-		std::string first = deSerializeString(is);
-		std::string second = deSerializeString(is);
-		replacements.pairs.push_back(std::make_pair(first, second));
-	}
+	replacements.deSerialize(is);
 }
 
 /*
@@ -664,7 +662,7 @@ CraftOutput CraftDefinitionCooking::getOutput(const CraftInput &input, IGameDef 
 
 void CraftDefinitionCooking::decrementInput(CraftInput &input, IGameDef *gamedef) const
 {
-	craftDecrementInput(input, gamedef);
+	craftDecrementOrReplaceInput(input, replacements, gamedef);
 }
 
 std::string CraftDefinitionCooking::dump() const
@@ -672,7 +670,8 @@ std::string CraftDefinitionCooking::dump() const
 	std::ostringstream os(std::ios::binary);
 	os<<"(cooking, output=\""<<output
 		<<"\", recipe=\""<<recipe
-		<<"\", cooktime="<<cooktime<<")";
+		<<"\", cooktime="<<cooktime<<")"
+		<<", replacements="<<replacements.dump()<<")";
 	return os.str();
 }
 
@@ -681,6 +680,7 @@ void CraftDefinitionCooking::serializeBody(std::ostream &os) const
 	os<<serializeString(output);
 	os<<serializeString(recipe);
 	writeF1000(os, cooktime);
+	replacements.serialize(os);
 }
 
 void CraftDefinitionCooking::deSerializeBody(std::istream &is, int version)
@@ -690,6 +690,7 @@ void CraftDefinitionCooking::deSerializeBody(std::istream &is, int version)
 	output = deSerializeString(is);
 	recipe = deSerializeString(is);
 	cooktime = readF1000(is);
+	replacements.deSerialize(is);
 }
 
 /*
@@ -725,14 +726,15 @@ CraftOutput CraftDefinitionFuel::getOutput(const CraftInput &input, IGameDef *ga
 
 void CraftDefinitionFuel::decrementInput(CraftInput &input, IGameDef *gamedef) const
 {
-	craftDecrementInput(input, gamedef);
+	craftDecrementOrReplaceInput(input, replacements, gamedef);
 }
 
 std::string CraftDefinitionFuel::dump() const
 {
 	std::ostringstream os(std::ios::binary);
 	os<<"(fuel, recipe=\""<<recipe
-		<<"\", burntime="<<burntime<<")";
+		<<"\", burntime="<<burntime<<")"
+		<<", replacements="<<replacements.dump()<<")";
 	return os.str();
 }
 
@@ -740,6 +742,7 @@ void CraftDefinitionFuel::serializeBody(std::ostream &os) const
 {
 	os<<serializeString(recipe);
 	writeF1000(os, burntime);
+	replacements.serialize(os);
 }
 
 void CraftDefinitionFuel::deSerializeBody(std::istream &is, int version)
@@ -748,6 +751,7 @@ void CraftDefinitionFuel::deSerializeBody(std::istream &is, int version)
 			"unsupported CraftDefinitionFuel version");
 	recipe = deSerializeString(is);
 	burntime = readF1000(is);
+	replacements.deSerialize(is);
 }
 
 /*

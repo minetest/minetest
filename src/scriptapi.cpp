@@ -4129,8 +4129,17 @@ static int l_register_craft(lua_State *L)
 
 		float cooktime = getfloatfield_default(L, table, "cooktime", 3.0);
 
+		CraftReplacements replacements;
+		lua_getfield(L, table, "replacements");
+		if(!lua_isnil(L, -1))
+		{
+			if(!read_craft_replacements(L, -1, replacements))
+				throw LuaError(L, "Invalid replacements"
+						" (cooking output=\"" + output + "\")");
+		}
+
 		CraftDefinition *def = new CraftDefinitionCooking(
-				output, recipe, cooktime);
+				output, recipe, cooktime, replacements);
 		craftdef->registerCraft(def);
 	}
 	/*
@@ -4144,8 +4153,17 @@ static int l_register_craft(lua_State *L)
 
 		float burntime = getfloatfield_default(L, table, "burntime", 1.0);
 
+		CraftReplacements replacements;
+		lua_getfield(L, table, "replacements");
+		if(!lua_isnil(L, -1))
+		{
+			if(!read_craft_replacements(L, -1, replacements))
+				throw LuaError(L, "Invalid replacements"
+						" (fuel recipe=\"" + recipe + "\")");
+		}
+
 		CraftDefinition *def = new CraftDefinitionFuel(
-				recipe, burntime);
+				recipe, burntime, replacements);
 		craftdef->registerCraft(def);
 	}
 	else

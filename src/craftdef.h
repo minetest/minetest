@@ -106,6 +106,8 @@ struct CraftReplacements
 		pairs(pairs_)
 	{}
 	std::string dump() const;
+	void serialize(std::ostream &os) const;
+	void deSerialize(std::istream &is);
 };
 
 /*
@@ -270,8 +272,9 @@ public:
 	CraftDefinitionCooking(
 			const std::string &output_,
 			const std::string &recipe_,
-			float cooktime_):
-		output(output_), recipe(recipe_), cooktime(cooktime_)
+			float cooktime_,
+			const CraftReplacements &replacements_):
+		output(output_), recipe(recipe_), cooktime(cooktime_), replacements(replacements_)
 	{}
 	virtual ~CraftDefinitionCooking(){}
 
@@ -293,6 +296,8 @@ private:
 	std::string recipe;
 	// Time in seconds
 	float cooktime;
+	// Replacement items for decrementInput()
+	CraftReplacements replacements;
 };
 
 /*
@@ -305,8 +310,10 @@ public:
 	CraftDefinitionFuel():
 		recipe(""), burntime()
 	{}
-	CraftDefinitionFuel(std::string recipe_, float burntime_):
-		recipe(recipe_), burntime(burntime_)
+	CraftDefinitionFuel(std::string recipe_,
+			float burntime_,
+			const CraftReplacements &replacements_):
+		recipe(recipe_), burntime(burntime_), replacements(replacements_)
 	{}
 	virtual ~CraftDefinitionFuel(){}
 
@@ -326,6 +333,8 @@ private:
 	std::string recipe;
 	// Time in seconds
 	float burntime;
+	// Replacement items for decrementInput()
+	CraftReplacements replacements;
 };
 
 /*
