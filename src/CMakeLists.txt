@@ -61,6 +61,9 @@ else()
 		find_package(JPEG REQUIRED)
 		find_package(BZip2 REQUIRED)
 		find_package(PNG REQUIRED)
+		# Sound library
+		find_package(OpenAL REQUIRED)
+		find_package(ALUT REQUIRED)
 		if(APPLE)
 			FIND_LIBRARY(CARBON_LIB Carbon)
 			FIND_LIBRARY(COCOA_LIB Cocoa)
@@ -178,6 +181,7 @@ set(minetest_SRCS
 	tile.cpp
 	game.cpp
 	main.cpp
+	audio.cpp
 )
 
 # Server sources
@@ -217,6 +221,8 @@ if(BUILD_CLIENT)
 		${LUA_LIBRARY}
 		${PLATFORM_LIBS}
 		${CLIENT_PLATFORM_LIBS}
+		${ALUT_LIBRARY}
+		${VORBIS_LIBRARIES}
 	)
 endif(BUILD_CLIENT)
 
@@ -280,8 +286,8 @@ else()
 		set(ARCH i386)
 	endif()
 
-	set(CMAKE_CXX_FLAGS_RELEASE "-DNDEBUG ${RELEASE_WARNING_FLAGS} ${WARNING_FLAGS} -O3 -ffast-math -Wall -fomit-frame-pointer -pipe -funroll-loops")
-	set(CMAKE_CXX_FLAGS_DEBUG "-g -O1 -Wall ${WARNING_FLAGS}")
+	set(CMAKE_CXX_FLAGS_RELEASE "-DNDEBUG ${RELEASE_WARNING_FLAGS} ${WARNING_FLAGS} -O3 -ffast-math -Wall -fomit-frame-pointer -pipe -funroll-loops -lalut -lopenal -lvorbisfile")
+	set(CMAKE_CXX_FLAGS_DEBUG "-g -O1 -Wall ${WARNING_FLAGS} -lalut -lopenal -lvorbisfile")
 
 	if(USE_GPROF)
 		set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -pg")

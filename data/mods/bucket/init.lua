@@ -67,7 +67,7 @@ minetest.register_craftitem("bucket:bucket_empty", {
 		-- Check if pointing to a liquid source
 		n = minetest.env:get_node(pointed_thing.under)
 		liquiddef = bucket.liquids[n.name]
-		if liquiddef ~= nil and liquiddef.source == n.name and liquiddef.itemname ~= nil then
+		if liquiddef ~= nil and liquiddef.itemname ~= nil then
 			minetest.env:add_node(pointed_thing.under, {name="air"})
 			return {name=liquiddef.itemname}
 		end
