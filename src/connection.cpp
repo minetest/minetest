@@ -666,7 +666,7 @@ void Connection::send(float dtime)
 // Receive packets from the network and buffers and create ConnectionEvents
 void Connection::receive()
 {
-	u32 datasize = 100000;
+	u32 datasize = m_max_packet_size * 2;  // Double it just to be safe
 	// TODO: We can not know how many layers of header there are.
 	// For now, just assume there are no other than the base headers.
 	u32 packet_maxsize = datasize + BASE_HEADER_SIZE;
@@ -853,10 +853,6 @@ void Connection::receive()
 			PrintInfo();
 			dout_con<<"ProcessPacket returned data of size "
 					<<resultdata.getSize()<<std::endl;
-			
-			if(datasize < resultdata.getSize())
-				throw InvalidIncomingDataException
-						("Buffer too small for received data");
 			
 			ConnectionEvent e;
 			e.dataReceived(peer_id, resultdata);

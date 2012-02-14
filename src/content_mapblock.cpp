@@ -20,112 +20,105 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "content_mapblock.h"
 
 #include "main.h" // For g_settings
-#include "mineral.h"
-#include "mapblock_mesh.h" // For MapBlock_LightColor()
+#include "mapblock_mesh.h" // For MapBlock_LightColor() and MeshCollector
 #include "settings.h"
 #include "nodedef.h"
+#include "tile.h"
 #include "gamedef.h"
 
-#ifndef SERVER
 // Create a cuboid.
-//  material  - the material to use (for all 6 faces)
 //  collector - the MeshCollector for the resulting polygons
-//  pa        - texture atlas pointer for the material
+//  box       - the position and size of the box
+//  materials - the materials to use (for all 6 faces)
+//  pa        - texture atlas pointers for the materials
+//  matcount  - number of entries in "materials" and "pa", 1<=matcount<=6
 //  c         - vertex colour - used for all
-//  pos       - the position of the centre of the cuboid
-//  rz,ry,rz  - the radius of the cuboid in each dimension
 //  txc       - texture coordinates - this is a list of texture coordinates
 //              for the opposite corners of each face - therefore, there
 //              should be (2+2)*6=24 values in the list. Alternatively, pass
 //              NULL to use the entire texture for each face. The order of
-//              the faces in the list is top-backi-right-front-left-bottom
-//              If you specified 0,0,1,1 for each face, that would be the
-//              same as passing NULL.
-void makeCuboid(video::SMaterial &material, MeshCollector *collector,
-	AtlasPointer* pa, video::SColor &c,
-	v3f &pos, f32 rx, f32 ry, f32 rz, f32* txc)
+//              the faces in the list is up-down-right-left-back-front
+//              (compatible with ContentFeatures). If you specified 0,0,1,1
+//              for each face, that would be the same as passing NULL.
+void makeCuboid(MeshCollector *collector, const aabb3f &box,
+	const video::SMaterial *materials, const AtlasPointer *pa, int matcount,	
+	video::SColor &c, const f32* txc)
 {
-	f32 tu0=pa->x0();
-	f32 tu1=pa->x1();
-	f32 tv0=pa->y0();
-	f32 tv1=pa->y1();
-	f32 txus=tu1-tu0;
-	f32 txvs=tv1-tv0;
+	assert(matcount >= 1);
 
-	video::S3DVertex v[4] =
+	v3f min = box.MinEdge;
+	v3f max = box.MaxEdge;
+
+	if(txc == NULL)
 	{
-		video::S3DVertex(0,0,0, 0,0,0, c, tu0, tv1),
-		video::S3DVertex(0,0,0, 0,0,0, c, tu1, tv1),
-		video::S3DVertex(0,0,0, 0,0,0, c, tu1, tv0),
-		video::S3DVertex(0,0,0, 0,0,0, c, tu0, tv0)
-	};
-
-	for(int i=0;i<6;i++)
-	{
-		switch(i)
-		{
-			case 0:	// top
-				v[0].Pos.X=-rx; v[0].Pos.Y= ry; v[0].Pos.Z=-rz;
-				v[1].Pos.X=-rx; v[1].Pos.Y= ry; v[1].Pos.Z= rz;
-				v[2].Pos.X= rx; v[2].Pos.Y= ry; v[2].Pos.Z= rz;
-				v[3].Pos.X= rx; v[3].Pos.Y= ry, v[3].Pos.Z=-rz;
-				break;
-			case 1: // back
-				v[0].Pos.X=-rx; v[0].Pos.Y= ry; v[0].Pos.Z=-rz;
-				v[1].Pos.X= rx; v[1].Pos.Y= ry; v[1].Pos.Z=-rz;
-				v[2].Pos.X= rx; v[2].Pos.Y=-ry; v[2].Pos.Z=-rz;
-				v[3].Pos.X=-rx; v[3].Pos.Y=-ry, v[3].Pos.Z=-rz;
-				break;
-			case 2: //right
-				v[0].Pos.X= rx; v[0].Pos.Y= ry; v[0].Pos.Z=-rz;
-				v[1].Pos.X= rx; v[1].Pos.Y= ry; v[1].Pos.Z= rz;
-				v[2].Pos.X= rx; v[2].Pos.Y=-ry; v[2].Pos.Z= rz;
-				v[3].Pos.X= rx; v[3].Pos.Y=-ry, v[3].Pos.Z=-rz;
-				break;
-			case 3: // front
-				v[0].Pos.X= rx; v[0].Pos.Y= ry; v[0].Pos.Z= rz;
-				v[1].Pos.X=-rx; v[1].Pos.Y= ry; v[1].Pos.Z= rz;
-				v[2].Pos.X=-rx; v[2].Pos.Y=-ry; v[2].Pos.Z= rz;
-				v[3].Pos.X= rx; v[3].Pos.Y=-ry, v[3].Pos.Z= rz;
-				break;
-			case 4: // left
-				v[0].Pos.X=-rx; v[0].Pos.Y= ry; v[0].Pos.Z= rz;
-				v[1].Pos.X=-rx; v[1].Pos.Y= ry; v[1].Pos.Z=-rz;
-				v[2].Pos.X=-rx; v[2].Pos.Y=-ry; v[2].Pos.Z=-rz;
-				v[3].Pos.X=-rx; v[3].Pos.Y=-ry, v[3].Pos.Z= rz;
-				break;
-			case 5: // bottom
-				v[0].Pos.X= rx; v[0].Pos.Y=-ry; v[0].Pos.Z= rz;
-				v[1].Pos.X=-rx; v[1].Pos.Y=-ry; v[1].Pos.Z= rz;
-				v[2].Pos.X=-rx; v[2].Pos.Y=-ry; v[2].Pos.Z=-rz;
-				v[3].Pos.X= rx; v[3].Pos.Y=-ry, v[3].Pos.Z=-rz;
-				break;
-		}
-
-		if(txc!=NULL)
-		{
-			v[0].TCoords.X=tu0+txus*txc[0]; v[0].TCoords.Y=tv0+txvs*txc[3];
-			v[1].TCoords.X=tu0+txus*txc[2]; v[1].TCoords.Y=tv0+txvs*txc[3];
-			v[2].TCoords.X=tu0+txus*txc[2]; v[2].TCoords.Y=tv0+txvs*txc[1];
-			v[3].TCoords.X=tu0+txus*txc[0]; v[3].TCoords.Y=tv0+txvs*txc[1];
-			txc+=4;
-		}
-
-		for(u16 i=0; i<4; i++)
-			v[i].Pos += pos;
-		u16 indices[] = {0,1,2,2,3,0};
-		collector->append(material, v, 4, indices, 6);
-
+		static const f32 txc_default[24] = {
+			0,0,1,1,
+			0,0,1,1,
+			0,0,1,1,
+			0,0,1,1,
+			0,0,1,1,
+			0,0,1,1
+		};
+		txc = txc_default;
 	}
 
-}
-#endif
+	video::S3DVertex vertices[24] =
+	{
+		// up
+		video::S3DVertex(min.X,max.Y,max.Z, 0,1,0, c, txc[0],txc[1]),
+		video::S3DVertex(max.X,max.Y,max.Z, 0,1,0, c, txc[2],txc[1]),
+		video::S3DVertex(max.X,max.Y,min.Z, 0,1,0, c, txc[2],txc[3]),
+		video::S3DVertex(min.X,max.Y,min.Z, 0,1,0, c, txc[0],txc[3]),
+		// down
+		video::S3DVertex(min.X,min.Y,min.Z, 0,-1,0, c, txc[4],txc[5]),
+		video::S3DVertex(max.X,min.Y,min.Z, 0,-1,0, c, txc[6],txc[5]),
+		video::S3DVertex(max.X,min.Y,max.Z, 0,-1,0, c, txc[6],txc[7]),
+		video::S3DVertex(min.X,min.Y,max.Z, 0,-1,0, c, txc[4],txc[7]),
+		// right
+		video::S3DVertex(max.X,max.Y,min.Z, 1,0,0, c, txc[ 8],txc[9]),
+		video::S3DVertex(max.X,max.Y,max.Z, 1,0,0, c, txc[10],txc[9]),
+		video::S3DVertex(max.X,min.Y,max.Z, 1,0,0, c, txc[10],txc[11]),
+		video::S3DVertex(max.X,min.Y,min.Z, 1,0,0, c, txc[ 8],txc[11]),
+		// left
+		video::S3DVertex(min.X,max.Y,max.Z, -1,0,0, c, txc[12],txc[13]),
+		video::S3DVertex(min.X,max.Y,min.Z, -1,0,0, c, txc[14],txc[13]),
+		video::S3DVertex(min.X,min.Y,min.Z, -1,0,0, c, txc[14],txc[15]),
+		video::S3DVertex(min.X,min.Y,max.Z, -1,0,0, c, txc[12],txc[15]),
+		// back
+		video::S3DVertex(max.X,max.Y,max.Z, 0,0,1, c, txc[16],txc[17]),
+		video::S3DVertex(min.X,max.Y,max.Z, 0,0,1, c, txc[18],txc[17]),
+		video::S3DVertex(min.X,min.Y,max.Z, 0,0,1, c, txc[18],txc[19]),
+		video::S3DVertex(max.X,min.Y,max.Z, 0,0,1, c, txc[16],txc[19]),
+		// front
+		video::S3DVertex(min.X,max.Y,min.Z, 0,0,-1, c, txc[20],txc[21]),
+		video::S3DVertex(max.X,max.Y,min.Z, 0,0,-1, c, txc[22],txc[21]),
+		video::S3DVertex(max.X,min.Y,min.Z, 0,0,-1, c, txc[22],txc[23]),
+		video::S3DVertex(min.X,min.Y,min.Z, 0,0,-1, c, txc[20],txc[23]),
+	};
 
-#ifndef SERVER
+	for(s32 j=0; j<24; j++)
+	{
+		int matindex = MYMIN(j/4, matcount-1);
+		vertices[j].TCoords *= pa[matindex].size;
+		vertices[j].TCoords += pa[matindex].pos;
+	}
+
+	u16 indices[] = {0,1,2,2,3,0};
+
+	// Add to mesh collector
+	for(s32 j=0; j<24; j+=4)
+	{
+		int matindex = MYMIN(j/4, matcount-1);
+		collector->append(materials[matindex],
+				vertices+j, 4, indices, 6);
+	}
+}
+
 void mapblock_mesh_generate_special(MeshMakeData *data,
 		MeshCollector &collector, IGameDef *gamedef)
 {
 	INodeDefManager *nodedef = gamedef->ndef();
+	ITextureSource *tsrc = gamedef->getTextureSource();
 
 	// 0ms
 	//TimeTaker timer("mapblock_mesh_generate_special()");
@@ -521,7 +514,9 @@ void mapblock_mesh_generate_special(MeshMakeData *data,
 			material_glass.setFlag(video::EMF_BILINEAR_FILTER, false);
 			material_glass.setFlag(video::EMF_FOG_ENABLE, true);
 			material_glass.MaterialType = video::EMT_TRANSPARENT_ALPHA_CHANNEL_REF;
-			AtlasPointer pa_glass = f.tiles[0].texture;
+			TileSpec tile_glass = getNodeTile(n, p, v3s16(0,0,0),
+					&data->m_temp_mods, tsrc, nodedef);
+			AtlasPointer pa_glass = tile_glass.texture;
 			material_glass.setTexture(0, pa_glass.atlas);
 
 			u8 l = decode_light(undiminish_light(n.getLightBlend(data->m_daynight_ratio, nodedef)));
@@ -585,54 +580,21 @@ void mapblock_mesh_generate_special(MeshMakeData *data,
 			material_leaves1.setFlag(video::EMF_BILINEAR_FILTER, false);
 			material_leaves1.setFlag(video::EMF_FOG_ENABLE, true);
 			material_leaves1.MaterialType = video::EMT_TRANSPARENT_ALPHA_CHANNEL_REF;
-			AtlasPointer pa_leaves1 = f.tiles[0].texture;
+			TileSpec tile_leaves1 = getNodeTile(n, p, v3s16(0,0,0),
+					&data->m_temp_mods, tsrc, nodedef);
+			AtlasPointer pa_leaves1 = tile_leaves1.texture;
 			material_leaves1.setTexture(0, pa_leaves1.atlas);
 
 			u8 l = decode_light(undiminish_light(n.getLightBlend(data->m_daynight_ratio, nodedef)));
 			video::SColor c = MapBlock_LightColor(255, l);
 
-			for(u32 j=0; j<6; j++)
-			{
-				video::S3DVertex vertices[4] =
-				{
-					video::S3DVertex(-BS/2,-BS/2,BS/2, 0,0,0, c,
-						pa_leaves1.x0(), pa_leaves1.y1()),
-					video::S3DVertex(BS/2,-BS/2,BS/2, 0,0,0, c,
-						pa_leaves1.x1(), pa_leaves1.y1()),
-					video::S3DVertex(BS/2,BS/2,BS/2, 0,0,0, c,
-						pa_leaves1.x1(), pa_leaves1.y0()),
-					video::S3DVertex(-BS/2,BS/2,BS/2, 0,0,0, c,
-						pa_leaves1.x0(), pa_leaves1.y0()),
-				};
-
-				// Rotations in the g_6dirs format
-				if(j == 0) // Z+
-					for(u16 i=0; i<4; i++)
-						vertices[i].Pos.rotateXZBy(0);
-				else if(j == 1) // Y+
-					for(u16 i=0; i<4; i++)
-						vertices[i].Pos.rotateYZBy(-90);
-				else if(j == 2) // X+
-					for(u16 i=0; i<4; i++)
-						vertices[i].Pos.rotateXZBy(-90);
-				else if(j == 3) // Z-
-					for(u16 i=0; i<4; i++)
-						vertices[i].Pos.rotateXZBy(180);
-				else if(j == 4) // Y-
-					for(u16 i=0; i<4; i++)
-						vertices[i].Pos.rotateYZBy(90);
-				else if(j == 5) // X-
-					for(u16 i=0; i<4; i++)
-						vertices[i].Pos.rotateXZBy(90);
-
-				for(u16 i=0; i<4; i++){
-					vertices[i].Pos += intToFloat(p + blockpos_nodes, BS);
-				}
-
-				u16 indices[] = {0,1,2,2,3,0};
-				// Add to mesh collector
-				collector.append(material_leaves1, vertices, 4, indices, 6);
-			}
+			v3f pos = intToFloat(p+blockpos_nodes, BS);
+			aabb3f box(-BS/2,-BS/2,-BS/2,BS/2,BS/2,BS/2);
+			box.MinEdge += pos;
+			box.MaxEdge += pos;
+			makeCuboid(&collector, box,
+					&material_leaves1, &pa_leaves1, 1,
+					c, NULL);
 		break;}
 		case NDT_ALLFACES_OPTIONAL:
 			// This is always pre-converted to something else
@@ -640,7 +602,7 @@ void mapblock_mesh_generate_special(MeshMakeData *data,
 			break;
 		case NDT_TORCHLIKE:
 		{
-			v3s16 dir = unpackDir(n.param2);
+			v3s16 dir = n.getWallMountedDir(nodedef);
 			
 			AtlasPointer ap(0);
 			if(dir == v3s16(0,-1,0)){
@@ -732,7 +694,7 @@ void mapblock_mesh_generate_special(MeshMakeData *data,
 						ap.x0(), ap.y1()),
 			};
 
-			v3s16 dir = unpackDir(n.param2);
+			v3s16 dir = n.getWallMountedDir(nodedef);
 
 			for(s32 i=0; i<4; i++)
 			{
@@ -824,8 +786,21 @@ void mapblock_mesh_generate_special(MeshMakeData *data,
 			material_wood.setFlag(video::EMF_BILINEAR_FILTER, false);
 			material_wood.setFlag(video::EMF_FOG_ENABLE, true);
 			material_wood.MaterialType = video::EMT_TRANSPARENT_ALPHA_CHANNEL_REF;
-			AtlasPointer pa_wood = f.tiles[0].texture;
+			TileSpec tile_wood = getNodeTile(n, p, v3s16(0,0,0),
+					&data->m_temp_mods, tsrc, nodedef);
+			AtlasPointer pa_wood = tile_wood.texture;
 			material_wood.setTexture(0, pa_wood.atlas);
+
+			video::SMaterial material_wood_nomod;
+			material_wood_nomod.setFlag(video::EMF_LIGHTING, false);
+			material_wood_nomod.setFlag(video::EMF_BILINEAR_FILTER, false);
+			material_wood_nomod.setFlag(video::EMF_FOG_ENABLE, true);
+			material_wood_nomod.MaterialType = video::EMT_TRANSPARENT_ALPHA_CHANNEL_REF;
+
+			TileSpec tile_wood_nomod = getNodeTile(n, p, v3s16(0,0,0),
+					NULL, tsrc, nodedef);
+			AtlasPointer pa_wood_nomod = tile_wood_nomod.texture;
+			material_wood_nomod.setTexture(0, pa_wood_nomod.atlas);
 
 			u8 l = decode_light(undiminish_light(n.getLightBlend(data->m_daynight_ratio, nodedef)));
 			video::SColor c = MapBlock_LightColor(255, l);
@@ -834,18 +809,21 @@ void mapblock_mesh_generate_special(MeshMakeData *data,
 			const f32 bar_rad=(f32)BS/20;
 			const f32 bar_len=(f32)(BS/2)-post_rad;
 
-			// The post - always present
 			v3f pos = intToFloat(p+blockpos_nodes, BS);
+
+			// The post - always present
+			aabb3f post(-post_rad,-BS/2,-post_rad,post_rad,BS/2,post_rad);
+			post.MinEdge += pos;
+			post.MaxEdge += pos;
 			f32 postuv[24]={
+					0.4,0.4,0.6,0.6,
 					0.4,0.4,0.6,0.6,
 					0.35,0,0.65,1,
 					0.35,0,0.65,1,
 					0.35,0,0.65,1,
-					0.35,0,0.65,1,
-					0.4,0.4,0.6,0.6};
-			makeCuboid(material_wood, &collector,
-				&pa_wood, c, pos,
-				post_rad,BS/2,post_rad, postuv);
+					0.35,0,0.65,1};
+			makeCuboid(&collector, post, &material_wood,
+					&pa_wood, 1, c, postuv);
 
 			// Now a section of fence, +X, if there's a post there
 			v3s16 p2 = p;
@@ -854,9 +832,10 @@ void mapblock_mesh_generate_special(MeshMakeData *data,
 			const ContentFeatures *f2 = &nodedef->get(n2);
 			if(f2->drawtype == NDT_FENCELIKE)
 			{
-				pos = intToFloat(p+blockpos_nodes, BS);
-				pos.X += BS/2;
-				pos.Y += BS/4;
+				aabb3f bar(-bar_len+BS/2,-bar_rad+BS/4,-bar_rad,
+						bar_len+BS/2,bar_rad+BS/4,bar_rad);
+				bar.MinEdge += pos;
+				bar.MaxEdge += pos;
 				f32 xrailuv[24]={
 					0,0.4,1,0.6,
 					0,0.4,1,0.6,
@@ -864,14 +843,12 @@ void mapblock_mesh_generate_special(MeshMakeData *data,
 					0,0.4,1,0.6,
 					0,0.4,1,0.6,
 					0,0.4,1,0.6};
-				makeCuboid(material_wood, &collector,
-					&pa_wood, c, pos,
-					bar_len,bar_rad,bar_rad, xrailuv);
-
-				pos.Y -= BS/2;
-				makeCuboid(material_wood, &collector,
-					&pa_wood, c, pos,
-					bar_len,bar_rad,bar_rad, xrailuv);
+				makeCuboid(&collector, bar, &material_wood_nomod,
+						&pa_wood_nomod, 1, c, xrailuv);
+				bar.MinEdge.Y -= BS/2;
+				bar.MaxEdge.Y -= BS/2;
+				makeCuboid(&collector, bar, &material_wood_nomod,
+						&pa_wood_nomod, 1, c, xrailuv);
 			}
 
 			// Now a section of fence, +Z, if there's a post there
@@ -881,9 +858,10 @@ void mapblock_mesh_generate_special(MeshMakeData *data,
 			f2 = &nodedef->get(n2);
 			if(f2->drawtype == NDT_FENCELIKE)
 			{
-				pos = intToFloat(p+blockpos_nodes, BS);
-				pos.Z += BS/2;
-				pos.Y += BS/4;
+				aabb3f bar(-bar_rad,-bar_rad+BS/4,-bar_len+BS/2,
+						bar_rad,bar_rad+BS/4,bar_len+BS/2);
+				bar.MinEdge += pos;
+				bar.MaxEdge += pos;
 				f32 zrailuv[24]={
 					0,0.4,1,0.6,
 					0,0.4,1,0.6,
@@ -891,14 +869,13 @@ void mapblock_mesh_generate_special(MeshMakeData *data,
 					0,0.4,1,0.6,
 					0,0.4,1,0.6,
 					0,0.4,1,0.6};
-				makeCuboid(material_wood, &collector,
-					&pa_wood, c, pos,
-					bar_rad,bar_rad,bar_len, zrailuv);
-				pos.Y -= BS/2;
-				makeCuboid(material_wood, &collector,
-					&pa_wood, c, pos,
-					bar_rad,bar_rad,bar_len, zrailuv);
 
+				makeCuboid(&collector, bar, &material_wood_nomod,
+						&pa_wood_nomod, 1, c, zrailuv);
+				bar.MinEdge.Y -= BS/2;
+				bar.MaxEdge.Y -= BS/2;
+				makeCuboid(&collector, bar, &material_wood_nomod,
+						&pa_wood_nomod, 1, c, zrailuv);
 			}
 		break;}
 		case NDT_RAILLIKE:
@@ -1011,5 +988,4 @@ void mapblock_mesh_generate_special(MeshMakeData *data,
 		}
 	}
 }
-#endif
 

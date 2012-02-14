@@ -22,7 +22,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "settings.h"
 #include "log.h"
 #include "gamedef.h"
-#include "tooldef.h"
+#include "inventory.h"
 #include "environment.h"
 #include "materials.h"
 
@@ -31,9 +31,9 @@ ServerRemotePlayer::ServerRemotePlayer(ServerEnvironment *env):
 	ServerActiveObject(env, v3f(0,0,0)),
 	m_last_good_position(0,0,0),
 	m_last_good_position_age(0),
+	m_wield_index(0),
 	m_inventory_not_sent(false),
 	m_hp_not_sent(false),
-	m_respawn_active(false),
 	m_is_in_environment(false),
 	m_time_from_last_punch(0),
 	m_position_not_sent(false)
@@ -45,6 +45,7 @@ ServerRemotePlayer::ServerRemotePlayer(ServerEnvironment *env, v3f pos_, u16 pee
 	ServerActiveObject(env, pos_),
 	m_last_good_position(0,0,0),
 	m_last_good_position_age(0),
+	m_wield_index(0),
 	m_inventory_not_sent(false),
 	m_hp_not_sent(false),
 	m_is_in_environment(false),
@@ -57,7 +58,6 @@ ServerRemotePlayer::ServerRemotePlayer(ServerEnvironment *env, v3f pos_, u16 pee
 }
 ServerRemotePlayer::~ServerRemotePlayer()
 {
-	clearAddToInventoryLater();
 }
 
 void ServerRemotePlayer::setPosition(const v3f &position)
@@ -67,12 +67,41 @@ void ServerRemotePlayer::setPosition(const v3f &position)
 	m_position_not_sent = true;
 }
 
-InventoryItem* ServerRemotePlayer::getWieldedItem()
+Inventory* ServerRemotePlayer::getInventory()
 {
-	InventoryList *list = inventory.getList("main");
-	if (list)
-		return list->getItem(m_selected_item);
-	return NULL;
+	return &inventory;
+}
+
+const Inventory* ServerRemotePlayer::getInventory() const
+{
+	return &inventory;
+}
+
+InventoryLocation ServerRemotePlayer::getInventoryLocation() const
+{
+	InventoryLocation loc;
+	loc.setPlayer(getName());
+	return loc;
+}
+
+void ServerRemotePlayer::setInventoryModified()
+{
+	m_inventory_not_sent = true;
+}
+
+std::string ServerRemotePlayer::getWieldList() const
+{
+	return "main";
+}
+
+int ServerRemotePlayer::getWieldIndex() const
+{
+	return m_wield_index;
+}
+
+void ServerRemotePlayer::setWieldIndex(int i)
+{
+	m_wield_index = i;
 }
 
 /* ServerActiveObject interface */
@@ -129,6 +158,8 @@ std::string ServerRemotePlayer::getClientInitializationData()
 	writeV3F1000(os, getPosition());
 	// yaw
 	writeF1000(os, getYaw());
+	// dead
+	writeU8(os, getHP() == 0);
 	return os.str();
 }
 
@@ -156,8 +187,10 @@ void ServerRemotePlayer::punch(ServerActiveObject *puncher,
 	mp.crackiness = -0.5;
 	mp.cuttability = 0.5;
 
-	ToolDiggingProperties tp;
-	puncher->getWieldDiggingProperties(&tp);
+	IItemDefManager *idef = m_env->getGameDef()->idef();
+	ItemStack punchitem = puncher->getWieldedItem();
+	ToolDiggingProperties tp =
+		punchitem.getToolDiggingProperties(idef);
 
 	HittingProperties hitprop = getHittingProperties(&mp, &tp,
 			time_from_last_punch);
@@ -167,7 +200,8 @@ void ServerRemotePlayer::punch(ServerActiveObject *puncher,
 			<<" HP"<<std::endl;
 	
 	setHP(getHP() - hitprop.hp);
-	puncher->damageWieldedItem(hitprop.wear);
+	punchitem.addWear(hitprop.wear, idef);
+	puncher->setWieldedItem(punchitem);
 	
 	if(hitprop.hp != 0)
 	{
@@ -201,109 +235,6 @@ void ServerRemotePlayer::moveTo(v3f pos, bool continuous)
 	m_last_good_position_age = 0;
 }
 
-void ServerRemotePlayer::getWieldDiggingProperties(ToolDiggingProperties *dst)
-{
-	IGameDef *gamedef = m_env->getGameDef();
-	IToolDefManager *tdef = gamedef->tdef();
-
-	InventoryItem *item = getWieldedItem();
-	if(item == NULL || std::string(item->getName()) != "ToolItem"){
-		*dst = ToolDiggingProperties();
-		return;
-	}
-	ToolItem *titem = (ToolItem*)item;
-	*dst = tdef->getDiggingProperties(titem->getToolName());
-}
-
-void ServerRemotePlayer::damageWieldedItem(u16 amount)
-{
-	infostream<<"Damaging "<<getName()<<"'s wielded item for amount="
-			<<amount<<std::endl;
-	InventoryList *list = inventory.getList("main");
-	if(!list)
-		return;
-	InventoryItem *item = list->getItem(m_selected_item);
-	if(item && (std::string)item->getName() == "ToolItem"){
-		ToolItem *titem = (ToolItem*)item;
-		bool weared_out = titem->addWear(amount);
-		if(weared_out)
-			list->deleteItem(m_selected_item);
-	}
-}
-bool ServerRemotePlayer::addToInventory(InventoryItem *item)
-{
-	infostream<<"Adding "<<item->getName()<<" into "<<getName()
-			<<"'s inventory"<<std::endl;
-	
-	InventoryList *ilist = inventory.getList("main");
-	if(ilist == NULL)
-		return false;
-	
-	// In creative mode, just delete the item
-	if(g_settings->getBool("creative_mode")){
-		return false;
-	}
-
-	// Skip if inventory has no free space
-	if(ilist->roomForItem(item) == false)
-	{
-		infostream<<"Player inventory has no free space"<<std::endl;
-		return false;
-	}
-
-	// Add to inventory
-	InventoryItem *leftover = ilist->addItem(item);
-	assert(!leftover);
-	
-	m_inventory_not_sent = true;
-
-	return true;
-}
-void ServerRemotePlayer::addToInventoryLater(InventoryItem *item)
-{
-	infostream<<"Adding (later) "<<item->getName()<<" into "<<getName()
-			<<"'s inventory"<<std::endl;
-	m_additional_items.push_back(item);
-}
-void ServerRemotePlayer::clearAddToInventoryLater()
-{
-	for (std::vector<InventoryItem*>::iterator
-			i = m_additional_items.begin();
-			i != m_additional_items.end(); i++)
-	{
-		delete *i;
-	}
-	m_additional_items.clear();
-}
-void ServerRemotePlayer::completeAddToInventoryLater(u16 preferred_index)
-{
-	InventoryList *ilist = inventory.getList("main");
-	if(ilist == NULL)
-	{
-		clearAddToInventoryLater();
-		return;
-	}
-	
-	// In creative mode, just delete the items
-	if(g_settings->getBool("creative_mode"))
-	{
-		clearAddToInventoryLater();
-		return;
-	}
-	
-	for (std::vector<InventoryItem*>::iterator
-			i = m_additional_items.begin();
-			i != m_additional_items.end(); i++)
-	{
-		InventoryItem *item = *i;
-		InventoryItem *leftover = item;
-		leftover = ilist->addItem(preferred_index, leftover);
-		leftover = ilist->addItem(leftover);
-		delete leftover;
-	}
-	m_additional_items.clear();
-	m_inventory_not_sent = true;
-}
 void ServerRemotePlayer::setHP(s16 hp_)
 {
 	s16 oldhp = hp;
@@ -317,6 +248,19 @@ void ServerRemotePlayer::setHP(s16 hp_)
 
 	if(hp != oldhp)
 		m_hp_not_sent = true;
+
+	// On death or reincarnation send an active object message
+	if((hp == 0) != (oldhp == 0))
+	{
+		std::ostringstream os(std::ios::binary);
+		// command (2 = update death state)
+		writeU8(os, 2);
+		// dead?
+		writeU8(os, hp == 0);
+		// create message and add to list
+		ActiveObjectMessage aom(getId(), false, os.str());
+		m_messages_out.push_back(aom);
+	}
 }
 s16 ServerRemotePlayer::getHP()
 {

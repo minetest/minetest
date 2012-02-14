@@ -40,7 +40,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "settings.h"
 #include "profiler.h"
 #include "mainmenumanager.h"
-#include "craftitemdef.h"
 #include "gettext.h"
 #include "log.h"
 #include "filesys.h"
@@ -48,7 +47,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "nodedef.h"
 #include "nodemetadata.h"
 #include "main.h" // For g_settings
-#include "tooldef.h"
+#include "itemdef.h"
 #include "tile.h" // For TextureSource
 #include "logoutputbuffer.h"
 
@@ -78,15 +77,6 @@ struct ChatLine
 	float age;
 	std::wstring text;
 };
-
-/*
-	Inventory stuff
-*/
-
-// Inventory actions from the menu are buffered here before sending
-Queue<InventoryAction*> inventory_action_queue;
-// This is a copy of the inventory that the client's environment has
-Inventory local_inventory;
 
 /*
 	Text input system
@@ -156,7 +146,7 @@ private:
 	Hotbar draw routine
 */
 void draw_hotbar(video::IVideoDriver *driver, gui::IGUIFont *font,
-		ITextureSource *tsrc,
+		IGameDef *gamedef,
 		v2s32 centerlowerpos, s32 imgsize, s32 itemcount,
 		Inventory *inventory, s32 halfheartcount, u16 playeritem)
 {
@@ -184,7 +174,7 @@ void draw_hotbar(video::IVideoDriver *driver, gui::IGUIFont *font,
 
 	for(s32 i=0; i<itemcount; i++)
 	{
-		InventoryItem *item = mainlist->getItem(i);
+		const ItemStack &item = mainlist->getItem(i);
 		
 		core::rect<s32> rect = imgrect + pos
 				+ v2s32(padding+i*(imgsize+padding*2), padding);
@@ -245,17 +235,14 @@ void draw_hotbar(video::IVideoDriver *driver, gui::IGUIFont *font,
 
 		video::SColor bgcolor2(128,0,0,0);
 		driver->draw2DRectangle(bgcolor2, rect, NULL);
-
-		if(item != NULL)
-		{
-			drawInventoryItem(driver, font, item, rect, NULL, tsrc);
-		}
+		drawItemStack(driver, font, item, rect, NULL, gamedef);
 	}
 	
 	/*
 		Draw hearts
 	*/
-	video::ITexture *heart_texture = tsrc->getTextureRaw("heart.png");
+	video::ITexture *heart_texture =
+		gamedef->getTextureSource()->getTextureRaw("heart.png");
 	if(heart_texture)
 	{
 		v2s32 p = pos + v2s32(0, -20);
@@ -315,6 +302,8 @@ PointedThing getPointedThing(Client *client, v3f player_position,
 	hilightbox = core::aabbox3d<f32>(0,0,0,0,0,0);
 	should_show_hilightbox = false;
 	selected_object = NULL;
+
+	INodeDefManager *nodedef = client->getNodeDefManager();
 
 	// First try to find a pointed at active object
 	if(look_for_object)
@@ -391,7 +380,7 @@ PointedThing getPointedThing(Client *client, v3f player_position,
 			v3s16(-1,0,0), // left
 		};
 		
-		const ContentFeatures &f = client->getNodeDefManager()->get(n);
+		const ContentFeatures &f = nodedef->get(n);
 		
 		if(f.selection_box.type == NODEBOX_FIXED)
 		{
@@ -460,7 +449,7 @@ PointedThing getPointedThing(Client *client, v3f player_position,
 		}
 		else if(f.selection_box.type == NODEBOX_WALLMOUNTED)
 		{
-			v3s16 dir = unpackDir(n.param2);
+			v3s16 dir = n.getWallMountedDir(nodedef);
 			v3f dir_f = v3f(dir.X, dir.Y, dir.Z);
 			dir_f *= BS/2 - BS/6 - BS/20;
 			v3f cpf = npf + dir_f;
@@ -585,7 +574,7 @@ void update_skybox(video::IVideoDriver* driver, ITextureSource *tsrc,
 	if(g_settings->getBool("enable_farmesh"))
 		return;*/
 	
-	if(brightness >= 0.5)
+	if(brightness >= 0.7)
 	{
 		skybox = smgr->addSkyBoxSceneNode(
 			tsrc->getTextureRaw("skybox2.png"),
@@ -645,6 +634,36 @@ void draw_load_screen(const std::wstring &text,
 	//return guitext;
 }
 
+/* Profiler display */
+
+void update_profiler_gui(gui::IGUIStaticText *guitext_profiler,
+		gui::IGUIFont *font, u32 text_height,
+		u32 show_profiler, u32 show_profiler_max)
+{
+	if(show_profiler == 0)
+	{
+		guitext_profiler->setVisible(false);
+	}
+	else
+	{
+
+		std::ostringstream os(std::ios_base::binary);
+		g_profiler->printPage(os, show_profiler, show_profiler_max);
+		std::wstring text = narrow_to_wide(os.str());
+		guitext_profiler->setText(text.c_str());
+		guitext_profiler->setVisible(true);
+
+		s32 w = font->getDimension(text.c_str()).Width;
+		if(w < 400)
+			w = 400;
+		core::rect<s32> rect(6, 4+(text_height+5)*2, 12+w,
+				8+(text_height+5)*2 +
+				font->getDimension(text.c_str()).Height);
+		guitext_profiler->setRelativePosition(rect);
+		guitext_profiler->setVisible(true);
+	}
+}
+
 void the_game(
 	bool &kill,
 	bool random_input,
@@ -691,12 +710,10 @@ void the_game(
 	IWritableTextureSource *tsrc = createTextureSource(device);
 	
 	// These will be filled by data received from the server
-	// Create tool definition manager
-	IWritableToolDefManager *tooldef = createToolDefManager();
+	// Create item definition manager
+	IWritableItemDefManager *itemdef = createItemDefManager();
 	// Create node definition manager
 	IWritableNodeDefManager *nodedef = createNodeDefManager();
-	// Create CraftItem definition manager
-	IWritableCraftItemDefManager *craftitemdef = createCraftItemDefManager();
 
 	// Add chat log output for errors to be shown in chat
 	LogOutputBuffer chat_log_error_buf(LMT_ERROR);
@@ -725,7 +742,7 @@ void the_game(
 	MapDrawControl draw_control;
 
 	Client client(device, playername.c_str(), password, draw_control,
-			tsrc, tooldef, nodedef, craftitemdef);
+			tsrc, itemdef, nodedef);
 	
 	// Client acts as our GameDef
 	IGameDef *gamedef = &client;
@@ -835,9 +852,8 @@ void the_game(
 			
 			// End condition
 			if(client.texturesReceived() &&
-					client.tooldefReceived() &&
-					client.nodedefReceived() &&
-					client.craftitemdefReceived()){
+					client.itemdefReceived() &&
+					client.nodedefReceived()){
 				got_content = true;
 				break;
 			}
@@ -853,12 +869,10 @@ void the_game(
 			ss<<(int)(timeout - time_counter + 1.0);
 			ss<<L" seconds)\n";
 
-			ss<<(client.tooldefReceived()?L"[X]":L"[  ]");
-			ss<<L" Tool definitions\n";
+			ss<<(client.itemdefReceived()?L"[X]":L"[  ]");
+			ss<<L" Item definitions\n";
 			ss<<(client.nodedefReceived()?L"[X]":L"[  ]");
 			ss<<L" Node definitions\n";
-			ss<<(client.craftitemdefReceived()?L"[X]":L"[  ]");
-			ss<<L" Item definitions\n";
 			//ss<<(client.texturesReceived()?L"[X]":L"[  ]");
 			ss<<L"["<<(int)(client.textureReceiveProgress()*100+0.5)<<L"%] ";
 			ss<<L" Textures\n";
@@ -870,6 +884,12 @@ void the_game(
 			time_counter += frametime;
 		}
 	}
+
+	/*
+		After all content has been received:
+		Update cached textures, meshes and materials
+	*/
+	client.afterContentReceived();
 
 	/*
 		Create skybox
@@ -911,6 +931,11 @@ void the_game(
 	}
 
 	/*
+		A copy of the local inventory
+	*/
+	Inventory local_inventory(itemdef);
+
+	/*
 		Move into game
 	*/
 	
@@ -937,6 +962,16 @@ void the_game(
 			core::rect<s32>(0,0,400,text_height+5) + v2s32(100,200),
 			false, false);
 	
+	// Status text (displays info when showing and hiding GUI stuff, etc.)
+	gui::IGUIStaticText *guitext_status = guienv->addStaticText(
+			L"<Status>",
+			core::rect<s32>(0,0,0,0),
+			false, false);
+	guitext_status->setVisible(false);
+	
+	std::wstring statustext;
+	float statustext_time = 0;
+	
 	// Chat text
 	gui::IGUIStaticText *guitext_chat = guienv->addStaticText(
 			L"",
@@ -949,8 +984,7 @@ void the_game(
 	// Profiler text (size is updated when text is updated)
 	gui::IGUIStaticText *guitext_profiler = guienv->addStaticText(
 			L"<Profiler>",
-			core::rect<s32>(6, 4+(text_height+5)*2, 400,
-			(text_height+5)*2 + text_height*35),
+			core::rect<s32>(0,0,0,0),
 			false, false);
 	guitext_profiler->setBackgroundColor(video::SColor(80,0,0,0));
 	guitext_profiler->setVisible(false);
@@ -973,11 +1007,6 @@ void the_game(
 	(new GUIPauseMenu(guienv, guiroot, -1, g_gamecallback,
 			&g_menumgr))->drop();
 	
-	// Enable texts
-	/*guitext2->setVisible(true);
-	guitext_info->setVisible(true);
-	guitext_chat->setVisible(true);*/
-
 	//s32 guitext_chat_pad_bottom = 70;
 
 	/*
@@ -1013,9 +1042,14 @@ void the_game(
 	bool respawn_menu_active = false;
 	bool update_wielded_item_trigger = false;
 
-	bool show_profiler = false;
+	bool show_hud = true;
+	bool show_chat = true;
 	bool force_fog_off = false;
 	bool disable_camera_update = false;
+	bool show_debug = g_settings->getBool("show_debug");
+	bool show_debug_frametime = false;
+	u32 show_profiler = 0;
+	u32 show_profiler_max = 3;  // Number of pages
 
 	/*
 		Main loop
@@ -1252,20 +1286,10 @@ void the_game(
 				g_profiler->print(infostream);
 			}
 
-			std::ostringstream os(std::ios_base::binary);
-			g_profiler->print(os);
-			std::wstring text = narrow_to_wide(os.str());
-			guitext_profiler->setText(text.c_str());
+			update_profiler_gui(guitext_profiler, font, text_height,
+					show_profiler, show_profiler_max);
 
 			g_profiler->clear();
-			
-			s32 w = font->getDimension(text.c_str()).Width;
-			if(w < 400)
-				w = 400;
-			core::rect<s32> rect(6, 4+(text_height+5)*2, 12+w,
-					8+(text_height+5)*2 +
-					font->getDimension(text.c_str()).Height);
-			guitext_profiler->setRelativePosition(rect);
 		}
 
 		/*
@@ -1289,7 +1313,7 @@ void the_game(
 			// drop selected item
 			IDropAction *a = new IDropAction();
 			a->count = 0;
-			a->from_inv = "current_player";
+			a->from_inv.setCurrentPlayer();
 			a->from_list = "main";
 			a->from_i = client.getPlayerItem();
 			client.inventoryAction(a);
@@ -1302,18 +1326,20 @@ void the_game(
 			GUIInventoryMenu *menu =
 				new GUIInventoryMenu(guienv, guiroot, -1,
 					&g_menumgr, v2s16(8,7),
-					client.getInventoryContext(),
-					&client, tsrc);
+					&client, gamedef);
+
+			InventoryLocation inventoryloc;
+			inventoryloc.setCurrentPlayer();
 
 			core::array<GUIInventoryMenu::DrawSpec> draw_spec;
 			draw_spec.push_back(GUIInventoryMenu::DrawSpec(
-					"list", "current_player", "main",
+					"list", inventoryloc, "main",
 					v2s32(0, 3), v2s32(8, 4)));
 			draw_spec.push_back(GUIInventoryMenu::DrawSpec(
-					"list", "current_player", "craft",
+					"list", inventoryloc, "craft",
 					v2s32(3, 0), v2s32(3, 3)));
 			draw_spec.push_back(GUIInventoryMenu::DrawSpec(
-					"list", "current_player", "craftresult",
+					"list", inventoryloc, "craftpreview",
 					v2s32(7, 1), v2s32(1, 1)));
 
 			menu->setDrawSpec(draw_spec);
@@ -1352,12 +1378,14 @@ void the_game(
 			if(g_settings->getBool("free_move"))
 			{
 				g_settings->set("free_move","false");
-				chat_lines.push_back(ChatLine(L"free_move disabled"));
+				statustext = L"free_move disabled";
+				statustext_time = 0;
 			}
 			else
 			{
 				g_settings->set("free_move","true");
-				chat_lines.push_back(ChatLine(L"free_move enabled"));
+				statustext = L"free_move enabled";
+				statustext_time = 0;
 			}
 		}
 		else if(input->wasKeyDown(getKeySetting("keymap_fastmove")))
@@ -1365,25 +1393,14 @@ void the_game(
 			if(g_settings->getBool("fast_move"))
 			{
 				g_settings->set("fast_move","false");
-				chat_lines.push_back(ChatLine(L"fast_move disabled"));
+				statustext = L"fast_move disabled";
+				statustext_time = 0;
 			}
 			else
 			{
 				g_settings->set("fast_move","true");
-				chat_lines.push_back(ChatLine(L"fast_move enabled"));
-			}
-		}
-		else if(input->wasKeyDown(getKeySetting("keymap_frametime_graph")))
-		{
-			if(g_settings->getBool("frametime_graph"))
-			{
-				g_settings->set("frametime_graph","false");
-				chat_lines.push_back(ChatLine(L"frametime_graph disabled"));
-			}
-			else
-			{
-				g_settings->set("frametime_graph","true");
-				chat_lines.push_back(ChatLine(L"frametime_graph enabled"));
+				statustext = L"fast_move enabled";
+				statustext_time = 0;
 			}
 		}
 		else if(input->wasKeyDown(getKeySetting("keymap_screenshot")))
@@ -1398,37 +1415,120 @@ void the_game(
 					std::wstringstream sstr;
 					sstr<<"Saved screenshot to '"<<filename<<"'";
 					infostream<<"Saved screenshot to '"<<filename<<"'"<<std::endl;
-					chat_lines.push_back(ChatLine(sstr.str()));
+					statustext = sstr.str();
+					statustext_time = 0;
 				} else{
 					infostream<<"Failed to save screenshot '"<<filename<<"'"<<std::endl;
 				}
 				image->drop(); 
 			}			 
 		}
-		else if(input->wasKeyDown(getKeySetting("keymap_toggle_profiler")))
+		else if(input->wasKeyDown(getKeySetting("keymap_toggle_hud")))
 		{
-			show_profiler = !show_profiler;
-			guitext_profiler->setVisible(show_profiler);
-			if(show_profiler)
-				chat_lines.push_back(ChatLine(L"Profiler disabled"));
+			show_hud = !show_hud;
+			if(show_hud)
+				statustext = L"HUD shown";
 			else
-				chat_lines.push_back(ChatLine(L"Profiler enabled"));
+				statustext = L"HUD hidden";
+			statustext_time = 0;
+		}
+		else if(input->wasKeyDown(getKeySetting("keymap_toggle_chat")))
+		{
+			show_chat = !show_chat;
+			if(show_chat)
+				statustext = L"Chat shown";
+			else
+				statustext = L"Chat hidden";
+			statustext_time = 0;
 		}
 		else if(input->wasKeyDown(getKeySetting("keymap_toggle_force_fog_off")))
 		{
 			force_fog_off = !force_fog_off;
 			if(force_fog_off)
-				chat_lines.push_back(ChatLine(L"Fog disabled"));
+				statustext = L"Fog disabled";
 			else
-				chat_lines.push_back(ChatLine(L"Fog enabled"));
+				statustext = L"Fog enabled";
+			statustext_time = 0;
 		}
 		else if(input->wasKeyDown(getKeySetting("keymap_toggle_update_camera")))
 		{
 			disable_camera_update = !disable_camera_update;
 			if(disable_camera_update)
-				chat_lines.push_back(ChatLine(L"Camera update disabled"));
+				statustext = L"Camera update disabled";
 			else
-				chat_lines.push_back(ChatLine(L"Camera update enabled"));
+				statustext = L"Camera update enabled";
+			statustext_time = 0;
+		}
+		else if(input->wasKeyDown(getKeySetting("keymap_toggle_debug")))
+		{
+			// Initial / 3x toggle: Chat only
+			// 1x toggle: Debug text with chat
+			// 2x toggle: Debug text with frametime
+			if(!show_debug)
+			{
+				show_debug = true;
+				show_debug_frametime = false;
+				statustext = L"Debug info shown";
+				statustext_time = 0;
+			}
+			else if(show_debug_frametime)
+			{
+				show_debug = false;
+				show_debug_frametime = false;
+				statustext = L"Debug info and frametime graph hidden";
+				statustext_time = 0;
+			}
+			else
+			{
+				show_debug_frametime = true;
+				statustext = L"Frametime graph shown";
+				statustext_time = 0;
+			}
+		}
+		else if(input->wasKeyDown(getKeySetting("keymap_toggle_profiler")))
+		{
+			show_profiler = (show_profiler + 1) % (show_profiler_max + 1);
+
+			// FIXME: This updates the profiler with incomplete values
+			update_profiler_gui(guitext_profiler, font, text_height,
+					show_profiler, show_profiler_max);
+
+			if(show_profiler != 0)
+			{
+				std::wstringstream sstr;
+				sstr<<"Profiler shown (page "<<show_profiler
+					<<" of "<<show_profiler_max<<")";
+				statustext = sstr.str();
+				statustext_time = 0;
+			}
+			else
+			{
+				statustext = L"Profiler hidden";
+				statustext_time = 0;
+			}
+		}
+		else if(input->wasKeyDown(getKeySetting("keymap_increase_viewing_range_min")))
+		{
+			s16 range = g_settings->getS16("viewing_range_nodes_min");
+			s16 range_new = range + 10;
+			g_settings->set("viewing_range_nodes_min", itos(range_new));
+			statustext = narrow_to_wide(
+					"Minimum viewing range changed to "
+					+ itos(range_new));
+			statustext_time = 0;
+		}
+		else if(input->wasKeyDown(getKeySetting("keymap_decrease_viewing_range_min")))
+		{
+			s16 range = g_settings->getS16("viewing_range_nodes_min");
+			s16 range_new = range - 10;
+			if(range_new < 0)
+				range_new = range;
+			g_settings->set("viewing_range_nodes_min",
+					itos(range_new));
+			statustext = narrow_to_wide(
+					"Minimum viewing range changed to "
+					+ itos(range_new));
+			statustext_time = 0;
 		}
 
 		// Item selection with mouse wheel
@@ -1473,15 +1573,18 @@ void the_game(
 		// Viewing range selection
 		if(input->wasKeyDown(getKeySetting("keymap_rangeselect")))
 		{
+			draw_control.range_all = !draw_control.range_all;
 			if(draw_control.range_all)
 			{
-				draw_control.range_all = false;
-				infostream<<"Disabled full viewing range"<<std::endl;
+				infostream<<"Enabled full viewing range"<<std::endl;
+				statustext = L"Enabled full viewing range";
+				statustext_time = 0;
 			}
 			else
 			{
-				draw_control.range_all = true;
-				infostream<<"Enabled full viewing range"<<std::endl;
+				infostream<<"Disabled full viewing range"<<std::endl;
+				statustext = L"Disabled full viewing range";
+				statustext_time = 0;
 			}
 		}
 
@@ -1691,31 +1794,20 @@ void the_game(
 
 		/*
 			For interaction purposes, get info about the held item
-			- Is it a tool, and what is the toolname?
+			- What item is it?
 			- Is it a usable item?
 			- Can it point to liquids?
 		*/
-		std::string playeritem_toolname = "";
+		ItemStack playeritem;
 		bool playeritem_usable = false;
 		bool playeritem_liquids_pointable = false;
 		{
 			InventoryList *mlist = local_inventory.getList("main");
 			if(mlist != NULL)
 			{
-				InventoryItem *item = mlist->getItem(client.getPlayerItem());
-				if(item)
-				{
-					if((std::string)item->getName() == "ToolItem")
-					{
-						ToolItem *titem = (ToolItem*)item;
-						playeritem_toolname = titem->getToolName();
-					}
-
-					playeritem_usable = item->isUsable();
-
-					playeritem_liquids_pointable =
-						item->areLiquidsPointable();
-				}
+				playeritem = mlist->getItem(client.getPlayerItem());
+				playeritem_usable = playeritem.getDefinition(itemdef).usable;
+				playeritem_liquids_pointable = playeritem.getDefinition(itemdef).liquids_pointable;
 			}
 		}
 
@@ -1843,19 +1935,15 @@ void the_game(
 				MapNode n = client.getNode(nodepos);
 
 				// Get digging properties for material and tool
-				content_t material = n.getContent();
+				MaterialProperties mp = nodedef->get(n.getContent()).material;
 				ToolDiggingProperties tp =
-						tooldef->getDiggingProperties(playeritem_toolname);
-				DiggingProperties prop =
-						getDiggingProperties(material, &tp, nodedef);
+						playeritem.getToolDiggingProperties(itemdef);
+				DiggingProperties prop = getDiggingProperties(&mp, &tp);
 
 				float dig_time_complete = 0.0;
 
 				if(prop.diggable == false)
 				{
-					/*infostream<<"Material "<<(int)material
-							<<" not diggable with \""
-							<<playeritem_toolname<<"\""<<std::endl;*/
 					// I guess nobody will wait for this long
 					dig_time_complete = 10000000.0;
 				}
@@ -1922,17 +2010,11 @@ void the_game(
 				if(meta && meta->getInventoryDrawSpecString() != "" && !random_input)
 				{
 					infostream<<"Launching custom inventory view"<<std::endl;
-					/*
-						Construct the unique identification string of the node
-					*/
-					std::string current_name;
-					current_name += "nodemeta:";
-					current_name += itos(nodepos.X);
-					current_name += ",";
-					current_name += itos(nodepos.Y);
-					current_name += ",";
-					current_name += itos(nodepos.Z);
+
+					InventoryLocation inventoryloc;
+					inventoryloc.setNodeMeta(nodepos);
 					
+
 					/*
 						Create menu
 					*/
@@ -1942,13 +2024,12 @@ void the_game(
 						GUIInventoryMenu::makeDrawSpecArrayFromString(
 							draw_spec,
 							meta->getInventoryDrawSpecString(),
-							current_name);
+							inventoryloc);
 
 					GUIInventoryMenu *menu =
 						new GUIInventoryMenu(guienv, guiroot, -1,
 							&g_menumgr, invsize,
-							client.getInventoryContext(),
-							&client, tsrc);
+							&client, gamedef);
 					menu->setDrawSpec(draw_spec);
 					menu->drop();
 				}
@@ -2001,7 +2082,7 @@ void the_game(
                 		        v3f objpos = selected_object->getPosition();
 		                        v3f dir = (objpos - player_position).normalize();
 
-					bool disable_send = selected_object->directReportPunch(playeritem_toolname, dir);
+					bool disable_send = selected_object->directReportPunch(playeritem.name, dir);
 					if(!disable_send)
 						client.interact(0, pointed);
 				}
@@ -2036,14 +2117,21 @@ void the_game(
 		u32 daynight_ratio = client.getDayNightRatio();
 		u8 light8 = decode_light((daynight_ratio * LIGHT_SUN) / 1000);
 		brightness = (float)light8/255.0;
-		video::SColor bgcolor = video::SColor(
-				255,
-				bgcolor_bright.getRed() * brightness,
-				bgcolor_bright.getGreen() * brightness,
-				bgcolor_bright.getBlue() * brightness);
-				/*skycolor.getRed() * brightness,
-				skycolor.getGreen() * brightness,
-				skycolor.getBlue() * brightness);*/
+		// Make night look good
+		brightness = brightness * 1.15 - 0.15;
+		video::SColor bgcolor;
+		if(brightness >= 0.2 && brightness < 0.7)
+			bgcolor = video::SColor(
+					255,
+					bgcolor_bright.getRed() * brightness,
+					bgcolor_bright.getGreen() * brightness*0.7,
+					bgcolor_bright.getBlue() * brightness*0.5);
+		else
+			bgcolor = video::SColor(
+					255,
+					bgcolor_bright.getRed() * brightness,
+					bgcolor_bright.getGreen() * brightness,
+					bgcolor_bright.getBlue() * brightness);
 
 		/*
 			Update skybox
@@ -2058,7 +2146,7 @@ void the_game(
 		{
 			clouds->step(dtime);
 			clouds->update(v2f(player_position.X, player_position.Z),
-					0.05+brightness*0.95);
+					brightness);
 		}
 		
 		/*
@@ -2074,7 +2162,7 @@ void the_game(
 
 			farmesh->step(dtime);
 			farmesh->update(v2f(player_position.X, player_position.Z),
-					0.05+brightness*0.95, farmesh_range);
+					brightness, farmesh_range);
 		}
 		
 		// Store brightness value
@@ -2093,7 +2181,7 @@ void the_game(
 			}
 			else
 			{
-				range = draw_control.wanted_range*BS + MAP_BLOCKSIZE*BS*1.5;
+				range = draw_control.wanted_range*BS + 0.0*MAP_BLOCKSIZE*BS;
 				range *= 0.9;
 				if(draw_control.range_all)
 					range = 100000*BS;
@@ -2130,55 +2218,110 @@ void the_game(
 
 		//TimeTaker guiupdatetimer("Gui updating");
 		
+		const char program_name_and_version[] =
+			"Minetest-c55 " VERSION_STRING;
+
+		if(show_debug)
 		{
 			static float drawtime_avg = 0;
 			drawtime_avg = drawtime_avg * 0.95 + (float)drawtime*0.05;
-			static float beginscenetime_avg = 0;
+			/*static float beginscenetime_avg = 0;
 			beginscenetime_avg = beginscenetime_avg * 0.95 + (float)beginscenetime*0.05;
 			static float scenetime_avg = 0;
 			scenetime_avg = scenetime_avg * 0.95 + (float)scenetime*0.05;
 			static float endscenetime_avg = 0;
-			endscenetime_avg = endscenetime_avg * 0.95 + (float)endscenetime*0.05;
+			endscenetime_avg = endscenetime_avg * 0.95 + (float)endscenetime*0.05;*/
 			
 			char temptext[300];
-			snprintf(temptext, 300, "Minetest-c55 %s ("
+			snprintf(temptext, 300, "%s ("
 					"R: range_all=%i"
 					")"
-					" drawtime=%.0f, beginscenetime=%.0f"
-					", scenetime=%.0f, endscenetime=%.0f",
-					VERSION_STRING,
+					" drawtime=%.0f, dtime_jitter = % .1f %%"
+					", v_range = %.1f, RTT = %.3f",
+					program_name_and_version,
 					draw_control.range_all,
 					drawtime_avg,
-					beginscenetime_avg,
-					scenetime_avg,
-					endscenetime_avg
-					);
-			
-			guitext->setText(narrow_to_wide(temptext).c_str());
-		}
-		
-		{
-			char temptext[300];
-			snprintf(temptext, 300,
-					"(% .1f, % .1f, % .1f)"
-					" (% .3f < btime_jitter < % .3f"
-					", dtime_jitter = % .1f %%"
-					", v_range = %.1f, RTT = %.3f)",
-					player_position.X/BS,
-					player_position.Y/BS,
-					player_position.Z/BS,
-					busytime_jitter1_min_sample,
-					busytime_jitter1_max_sample,
 					dtime_jitter1_max_fraction * 100.0,
 					draw_control.wanted_range,
 					client.getRTT()
 					);
+			
+			guitext->setText(narrow_to_wide(temptext).c_str());
+			guitext->setVisible(true);
+		}
+		else if(show_hud || show_chat)
+		{
+			guitext->setText(narrow_to_wide(program_name_and_version).c_str());
+			guitext->setVisible(true);
+		}
+		else
+		{
+			guitext->setVisible(false);
+		}
+		
+		if(show_debug)
+		{
+			char temptext[300];
+			snprintf(temptext, 300,
+					"(% .1f, % .1f, % .1f)"
+					" (yaw = %.1f)",
+					player_position.X/BS,
+					player_position.Y/BS,
+					player_position.Z/BS,
+					wrapDegrees_0_360(camera_yaw));
 
 			guitext2->setText(narrow_to_wide(temptext).c_str());
+			guitext2->setVisible(true);
+		}
+		else
+		{
+			guitext2->setVisible(false);
 		}
 		
 		{
 			guitext_info->setText(infotext.c_str());
+			guitext_info->setVisible(show_hud);
+		}
+
+		{
+			float statustext_time_max = 3.0;
+			if(!statustext.empty())
+			{
+				statustext_time += dtime;
+				if(statustext_time >= statustext_time_max)
+				{
+					statustext = L"";
+					statustext_time = 0;
+				}
+			}
+			guitext_status->setText(statustext.c_str());
+			guitext_status->setVisible(!statustext.empty());
+
+			if(!statustext.empty())
+			{
+				s32 status_y = screensize.Y - 130;
+				core::rect<s32> rect(
+						10,
+						status_y - guitext_status->getTextHeight(),
+						screensize.X - 10,
+						status_y
+				);
+				guitext_status->setRelativePosition(rect);
+
+				// Fade out
+				video::SColor initial_color(255,0,0,0);
+				if(guienv->getSkin())
+					initial_color = guienv->getSkin()->getColor(gui::EGDC_BUTTON_TEXT);
+				video::SColor final_color = initial_color;
+				final_color.setAlpha(0);
+				video::SColor fade_color =
+					initial_color.getInterpolated_quadratic(
+						initial_color,
+						final_color,
+						statustext_time / (float) statustext_time_max);
+				guitext_status->setOverrideColor(fade_color);
+				guitext_status->enableOverrideColor(true);
+			}
 		}
 		
 		/*
@@ -2249,20 +2392,22 @@ void the_game(
 					screensize.X - 10,
 					screensize.Y - guitext_chat_pad_bottom
 			);*/
+
+			s32 chat_y = 5+(text_height+5);
+			if(show_debug)
+				chat_y += (text_height+5);
 			core::rect<s32> rect(
 					10,
-					50,
+					chat_y,
 					screensize.X - 10,
-					50 + guitext_chat->getTextHeight()
+					chat_y + guitext_chat->getTextHeight()
 			);
 
 			guitext_chat->setRelativePosition(rect);
 
-			// Don't show chat if empty or profiler is enabled
-			if(chat_lines.size() == 0 || show_profiler)
-				guitext_chat->setVisible(false);
-			else
-				guitext_chat->setVisible(true);
+			// Don't show chat if empty or profiler or debug is enabled
+			guitext_chat->setVisible(chat_lines.size() != 0
+					&& show_chat && show_profiler == 0);
 		}
 
 		/*
@@ -2285,24 +2430,12 @@ void the_game(
 			update_wielded_item_trigger = false;
 			// Update wielded tool
 			InventoryList *mlist = local_inventory.getList("main");
-			InventoryItem *item = NULL;
+			ItemStack item;
 			if(mlist != NULL)
 				item = mlist->getItem(client.getPlayerItem());
 			camera.wield(item, gamedef);
 		}
 		
-		/*
-			Send actions returned by the inventory menu
-		*/
-		while(inventory_action_queue.size() != 0)
-		{
-			InventoryAction *a = inventory_action_queue.pop_front();
-
-			client.sendInventoryAction(a);
-			// Eat it
-			delete a;
-		}
-
 		/*
 			Drawing begins
 		*/
@@ -2312,7 +2445,7 @@ void the_game(
 		
 		{
 			TimeTaker timer("beginScene");
-			driver->beginScene(true, true, bgcolor);
+			driver->beginScene(false, true, bgcolor);
 			//driver->beginScene(false, true, bgcolor);
 			beginscenetime = timer.stop(true);
 		}
@@ -2342,20 +2475,24 @@ void the_game(
 
 		driver->setTransform(video::ETS_WORLD, core::IdentityMatrix);
 
-		for(core::list< core::aabbox3d<f32> >::Iterator i=hilightboxes.begin();
-				i != hilightboxes.end(); i++)
+		if(show_hud)
 		{
-			/*infostream<<"hilightbox min="
-					<<"("<<i->MinEdge.X<<","<<i->MinEdge.Y<<","<<i->MinEdge.Z<<")"
-					<<" max="
-					<<"("<<i->MaxEdge.X<<","<<i->MaxEdge.Y<<","<<i->MaxEdge.Z<<")"
-					<<std::endl;*/
-			driver->draw3DBox(*i, video::SColor(255,0,0,0));
+			for(core::list<aabb3f>::Iterator i=hilightboxes.begin();
+					i != hilightboxes.end(); i++)
+			{
+				/*infostream<<"hilightbox min="
+						<<"("<<i->MinEdge.X<<","<<i->MinEdge.Y<<","<<i->MinEdge.Z<<")"
+						<<" max="
+						<<"("<<i->MaxEdge.X<<","<<i->MaxEdge.Y<<","<<i->MaxEdge.Z<<")"
+						<<std::endl;*/
+				driver->draw3DBox(*i, video::SColor(255,0,0,0));
+			}
 		}
 
 		/*
 			Wielded tool
 		*/
+		if(show_hud)
 		{
 			// Warning: This clears the Z buffer.
 			camera.drawWieldedTool();
@@ -2371,16 +2508,17 @@ void the_game(
 		/*
 			Frametime log
 		*/
-		if(g_settings->getBool("frametime_graph") == true)
+		if(show_debug_frametime)
 		{
 			s32 x = 10;
+			s32 y = screensize.Y - 10;
 			for(core::list<float>::Iterator
 					i = frametime_log.begin();
 					i != frametime_log.end();
 					i++)
 			{
-				driver->draw2DLine(v2s32(x,50),
-						v2s32(x,50+(*i)*1000),
+				driver->draw2DLine(v2s32(x,y),
+						v2s32(x,y-(*i)*1000),
 						video::SColor(255,255,255,255));
 				x++;
 			}
@@ -2389,12 +2527,15 @@ void the_game(
 		/*
 			Draw crosshair
 		*/
-		driver->draw2DLine(displaycenter - core::vector2d<s32>(10,0),
-				displaycenter + core::vector2d<s32>(10,0),
-				video::SColor(255,255,255,255));
-		driver->draw2DLine(displaycenter - core::vector2d<s32>(0,10),
-				displaycenter + core::vector2d<s32>(0,10),
-				video::SColor(255,255,255,255));
+		if(show_hud)
+		{
+			driver->draw2DLine(displaycenter - core::vector2d<s32>(10,0),
+					displaycenter + core::vector2d<s32>(10,0),
+					video::SColor(255,255,255,255));
+			driver->draw2DLine(displaycenter - core::vector2d<s32>(0,10),
+					displaycenter + core::vector2d<s32>(0,10),
+					video::SColor(255,255,255,255));
+		}
 
 		} // timer
 
@@ -2410,8 +2551,9 @@ void the_game(
 		/*
 			Draw hotbar
 		*/
+		if(show_hud)
 		{
-			draw_hotbar(driver, font, tsrc,
+			draw_hotbar(driver, font, gamedef,
 					v2s32(displaycenter.X, screensize.Y),
 					hotbar_imagesize, hotbar_itemcount, &local_inventory,
 					client.getHP(), client.getPlayerItem());
@@ -2482,9 +2624,9 @@ void the_game(
 
 	} // Client scope (must be destructed before destructing *def and tsrc
 
-	delete tooldef;
 	delete tsrc;
 	delete nodedef;
+	delete itemdef;
 }
 
 

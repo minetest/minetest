@@ -20,6 +20,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "content_cao.h"
 #include "tile.h"
 #include "environment.h"
+#include "collision.h"
 #include "settings.h"
 #include <ICameraSceneNode.h>
 #include <ITextSceneNode.h>
@@ -172,6 +173,8 @@ public:
 	void updateLight(u8 light_at_pos);
 	v3s16 getLightPosition();
 	void updateNodePos();
+	void updateInfoText();
+	void updateTexture();
 
 	void step(float dtime, ClientEnvironment *env);
 
@@ -191,7 +194,7 @@ private:
 	core::aabbox3d<f32> m_selection_box;
 	scene::IMeshSceneNode *m_node;
 	v3f m_position;
-	std::string m_inventorystring;
+	std::string m_itemstring;
 	std::string m_infotext;
 };
 
@@ -595,39 +598,13 @@ void ItemCAO::addToScene(scene::ISceneManager *smgr, ITextureSource *tsrc,
 	buf->drop();
 	m_node = smgr->addMeshSceneNode(mesh, NULL);
 	mesh->drop();
-	// Set it to use the materials of the meshbuffers directly.
-	// This is needed for changing the texture in the future
-	m_node->setReadOnlyMaterials(true);
 	updateNodePos();
 
 	/*
 		Update image of node
 	*/
 
-	// Create an inventory item to see what is its image
-	std::istringstream is(m_inventorystring, std::ios_base::binary);
-	video::ITexture *texture = NULL;
-	try{
-		InventoryItem *item = NULL;
-		item = InventoryItem::deSerialize(is, m_gamedef);
-		infostream<<__FUNCTION_NAME<<": m_inventorystring=\""
-				<<m_inventorystring<<"\" -> item="<<item
-				<<std::endl;
-		if(item)
-		{
-			texture = item->getImage();
-			delete item;
-		}
-	}
-	catch(SerializationError &e)
-	{
-		infostream<<"WARNING: "<<__FUNCTION_NAME
-				<<": error deSerializing inventorystring \""
-				<<m_inventorystring<<"\""<<std::endl;
-	}
-	
-	// Set meshbuffer texture
-	buf->getMaterial().setTexture(0, texture);
+	updateTexture();
 }
 
 void ItemCAO::removeFromScene()
@@ -662,6 +639,51 @@ void ItemCAO::updateNodePos()
 	m_node->setPosition(m_position);
 }
 
+void ItemCAO::updateInfoText()
+{
+	try{
+		IItemDefManager *idef = m_gamedef->idef();
+		ItemStack item;
+		item.deSerialize(m_itemstring, idef);
+		if(item.isKnown(idef))
+			m_infotext = item.getDefinition(idef).description;
+		else
+			m_infotext = "Unknown item: '" + m_itemstring + "'";
+		if(item.count >= 2)
+			m_infotext += " (" + itos(item.count) + ")";
+	}
+	catch(SerializationError &e)
+	{
+		m_infotext = "Unknown item: '" + m_itemstring + "'";
+	}
+}
+
+void ItemCAO::updateTexture()
+{
+	if(m_node == NULL)
+		return;
+
+	// Create an inventory item to see what is its image
+	std::istringstream is(m_itemstring, std::ios_base::binary);
+	video::ITexture *texture = NULL;
+	try{
+		IItemDefManager *idef = m_gamedef->idef();
+		ItemStack item;
+		item.deSerialize(is, idef);
+		texture = item.getDefinition(idef).inventory_texture;
+	}
+	catch(SerializationError &e)
+	{
+		infostream<<"WARNING: "<<__FUNCTION_NAME
+				<<": error deSerializing itemstring \""
+				<<m_itemstring<<std::endl;
+	}
+	
+	// Set meshbuffer texture
+	m_node->getMaterial(0).setTexture(0, texture);
+}
+
+
 void ItemCAO::step(float dtime, ClientEnvironment *env)
 {
 	if(m_node)
@@ -689,6 +711,13 @@ void ItemCAO::processMessage(const std::string &data)
 		m_position = readV3F1000(is);
 		updateNodePos();
 	}
+	if(cmd == 1)
+	{
+		// itemstring
+		m_itemstring = deSerializeString(is);
+		updateInfoText();
+		updateTexture();
+	}
 }
 
 void ItemCAO::initialize(const std::string &data)
@@ -704,28 +733,12 @@ void ItemCAO::initialize(const std::string &data)
 			return;
 		// pos
 		m_position = readV3F1000(is);
-		// inventorystring
-		m_inventorystring = deSerializeString(is);
+		// itemstring
+		m_itemstring = deSerializeString(is);
 	}
 	
 	updateNodePos();
-	
-	/*
-		Set infotext to item name if item cannot be deserialized
-	*/
-	try{
-		InventoryItem *item = NULL;
-		item = InventoryItem::deSerialize(m_inventorystring, m_gamedef);
-		if(item){
-			if(!item->isKnown())
-				m_infotext = "Unknown item: '" + m_inventorystring + "'";
-		}
-		delete item;
-	}
-	catch(SerializationError &e)
-	{
-		m_infotext = "Unknown item: '" + m_inventorystring + "'";
-	}
+	updateInfoText();
 }
 
 /*
@@ -2054,6 +2067,7 @@ private:
 	bool m_is_local_player;
 	LocalPlayer *m_local_player;
 	float m_damage_visual_timer;
+	bool m_dead;
 
 public:
 	PlayerCAO(IGameDef *gamedef, ClientEnvironment *env):
@@ -2065,7 +2079,8 @@ public:
 		m_yaw(0),
 		m_is_local_player(false),
 		m_local_player(NULL),
-		m_damage_visual_timer(0)
+		m_damage_visual_timer(0),
+		m_dead(false)
 	{
 		if(gamedef == NULL)
 			ClientActiveObject::registerType(getType(), create);
@@ -2087,6 +2102,8 @@ public:
 		m_position = readV3F1000(is);
 		// yaw
 		m_yaw = readF1000(is);
+		// dead
+		m_dead = readU8(is);
 
 		pos_translator.init(m_position);
 
@@ -2115,6 +2132,8 @@ public:
 	core::aabbox3d<f32>* getSelectionBox()
 	{
 		if(m_is_local_player)
+			return NULL;
+		if(m_dead)
 			return NULL;
 		return &m_selection_box;
 	}
@@ -2191,6 +2210,7 @@ public:
 		m_text->setPosition(v3f(0, (f32)BS*2.1, 0));
 		
 		updateTextures("");
+		updateVisibility();
 		updateNodePos();
 	}
 
@@ -2208,16 +2228,24 @@ public:
 		if(m_node == NULL)
 			return;
 		
-		m_node->setVisible(true);
-
 		u8 li = decode_light(light_at_pos);
 		video::SColor color(255,li,li,li);
 		setMeshColor(m_node->getMesh(), color);
+
+		updateVisibility();
 	}
 
 	v3s16 getLightPosition()
 	{
 		return floatToInt(m_position+v3f(0,BS*1.5,0), BS);
+	}
+
+	void updateVisibility()
+	{
+		if(m_node == NULL)
+			return;
+
+		m_node->setVisible(!m_dead);
 	}
 
 	void updateNodePos()
@@ -2235,6 +2263,7 @@ public:
 	void step(float dtime, ClientEnvironment *env)
 	{
 		pos_translator.translate(dtime);
+		updateVisibility();
 		updateNodePos();
 
 		if(m_damage_visual_timer > 0){
@@ -2266,12 +2295,15 @@ public:
 		{
 			// damage
 			s16 damage = readS16(is);
-			
-			if(m_is_local_player)
-				m_env->damageLocalPlayer(damage, false);
-			
-			m_damage_visual_timer = 0.5;
+			m_damage_visual_timer = 0.05;
+			if(damage >= 2)
+				m_damage_visual_timer += 0.05 * damage;
 			updateTextures("^[brighten");
+		}
+		else if(cmd == 2) // died or respawned
+		{
+			m_dead = readU8(is);
+			updateVisibility();
 		}
 	}
 

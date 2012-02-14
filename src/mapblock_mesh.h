@@ -22,6 +22,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "common_irrlicht.h"
 #include "mapblock_nodemod.h"
+#include "tile.h"
 #include "voxel.h"
 
 class IGameDef;
@@ -125,6 +126,8 @@ private:
 
 // Helper functions
 video::SColor MapBlock_LightColor(u8 alpha, u8 light);
+TileSpec getNodeTile(MapNode mn, v3s16 p, v3s16 face_dir,
+		NodeModMap *temp_mods, ITextureSource *tsrc, INodeDefManager *ndef);
 
 class MapBlock;
 
@@ -140,6 +143,11 @@ struct MeshMakeData
 		parent of block.
 	*/
 	void fill(u32 daynight_ratio, MapBlock *block);
+
+	/*
+		Set up with only a single node at (1,1,1)
+	*/
+	void fillSingleNode(u32 daynight_ratio, MapNode *node);
 };
 
 // This is the highest-level function in here

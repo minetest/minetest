@@ -36,10 +36,9 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "inventorymanager.h"
 struct LuaState;
 typedef struct lua_State lua_State;
-class IWritableToolDefManager;
+class IWritableItemDefManager;
 class IWritableNodeDefManager;
 class IWritableCraftDefManager;
-class IWritableCraftItemDefManager;
 
 /*
 	Some random functions
@@ -437,6 +436,7 @@ public:
 		Shall be called with the environment and the connection locked.
 	*/
 	Inventory* getInventory(const InventoryLocation &loc);
+	std::string getInventoryOwner(const InventoryLocation &loc);
 	void setInventoryModified(const InventoryLocation &loc);
 
 	// Connection must be locked when called
@@ -514,17 +514,15 @@ public:
 	
 	// IGameDef interface
 	// Under envlock
-	virtual IToolDefManager* getToolDefManager();
+	virtual IItemDefManager* getItemDefManager();
 	virtual INodeDefManager* getNodeDefManager();
 	virtual ICraftDefManager* getCraftDefManager();
-	virtual ICraftItemDefManager* getCraftItemDefManager();
 	virtual ITextureSource* getTextureSource();
 	virtual u16 allocateUnknownNodeId(const std::string &name);
 	
-	IWritableToolDefManager* getWritableToolDefManager();
+	IWritableItemDefManager* getWritableItemDefManager();
 	IWritableNodeDefManager* getWritableNodeDefManager();
 	IWritableCraftDefManager* getWritableCraftDefManager();
-	IWritableCraftItemDefManager* getWritableCraftItemDefManager();
 
 	const ModSpec* getModSpec(const std::string &modname);
 
@@ -545,12 +543,10 @@ private:
 			const std::wstring &reason);
 	static void SendDeathscreen(con::Connection &con, u16 peer_id,
 			bool set_camera_point_target, v3f camera_point_target);
-	static void SendToolDef(con::Connection &con, u16 peer_id,
-			IToolDefManager *tooldef);
+	static void SendItemDef(con::Connection &con, u16 peer_id,
+			IItemDefManager *itemdef);
 	static void SendNodeDef(con::Connection &con, u16 peer_id,
 			INodeDefManager *nodedef);
-	static void SendCraftItemDef(con::Connection &con, u16 peer_id,
-			ICraftItemDefManager *nodedef);
 	
 	/*
 		Non-static send methods.
@@ -562,7 +558,7 @@ private:
 	// Envlock and conlock should be locked when calling these
 	void SendInventory(u16 peer_id);
 	// send wielded item info about player to all
-	void SendWieldedItem(const Player *player);
+	void SendWieldedItem(const ServerRemotePlayer *srp);
 	// send wielded item info about all players to all players
 	void SendPlayerItems();
 	void SendChatMessage(u16 peer_id, const std::wstring &message);
@@ -596,7 +592,7 @@ private:
 		Something random
 	*/
 	
-	void HandlePlayerHP(Player *player, s16 damage);
+	void DiePlayer(Player *player);
 	void RespawnPlayer(Player *player);
 	
 	void UpdateCrafting(u16 peer_id);
@@ -664,17 +660,14 @@ private:
 	// Envlock and conlock should be locked when using Lua
 	lua_State *m_lua;
 
-	// Tool definition manager
-	IWritableToolDefManager *m_toolmgr;
+	// Item definition manager
+	IWritableItemDefManager *m_itemdef;
 	
 	// Node definition manager
 	IWritableNodeDefManager *m_nodedef;
 	
 	// Craft definition manager
 	IWritableCraftDefManager *m_craftdef;
-	
-	// CraftItem definition manager
-	IWritableCraftItemDefManager *m_craftitemdef;
 	
 	// Mods
 	core::list<ModSpec> m_mods;
@@ -740,7 +733,7 @@ private:
 	core::list<std::string> m_modspaths;
 
 	bool m_shutdown_requested;
-	
+
 	/*
 		Map edit event queue. Automatically receives all map edits.
 		The constructor of this class registers us to receive them through

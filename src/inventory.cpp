@@ -22,38 +22,17 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "utility.h"
 #include "debug.h"
 #include <sstream>
-#include "main.h" // For tsrc, g_toolmanager
-#include "serverobject.h"
-#include "content_mapnode.h"
-#include "content_sao.h"
-#include "environment.h"
-#include "mapblock.h"
-#include "player.h"
 #include "log.h"
-#include "nodedef.h"
-#include "tooldef.h"
-#include "craftitemdef.h"
-#include "gamedef.h"
-#include "scriptapi.h"
+#include "itemdef.h"
 #include "strfnd.h"
+#include "content_mapnode.h" // For loading legacy MaterialItems
 #include "nameidmapping.h" // For loading legacy MaterialItems
 
 /*
-	InventoryItem
+	ItemStack
 */
 
-InventoryItem::InventoryItem(IGameDef *gamedef, u16 count):
-	m_gamedef(gamedef),
-	m_count(count)
-{
-	assert(m_gamedef);
-}
-
-InventoryItem::~InventoryItem()
-{
-}
-
-content_t content_translate_from_19_to_internal(content_t c_from)
+static content_t content_translate_from_19_to_internal(content_t c_from)
 {
 	for(u32 i=0; i<sizeof(trans_table_19)/sizeof(trans_table_19[0]); i++)
 	{
@@ -65,502 +44,408 @@ content_t content_translate_from_19_to_internal(content_t c_from)
 	return c_from;
 }
 
-InventoryItem* InventoryItem::deSerialize(std::istream &is, IGameDef *gamedef)
+// If the string contains spaces, quotes or control characters, encodes as JSON.
+// Else returns the string unmodified.
+static std::string serializeJsonStringIfNeeded(const std::string &s)
+{
+	for(size_t i = 0; i < s.size(); ++i)
+	{
+		if(s[i] <= 0x1f || s[i] >= 0x7f || s[i] == ' ' || s[i] == '\"')
+			return serializeJsonString(s);
+	}
+	return s;
+}
+
+// Parses a string serialized by serializeJsonStringIfNeeded.
+static std::string deSerializeJsonStringIfNeeded(std::istream &is)
+{
+	std::ostringstream tmp_os;
+	bool expect_initial_quote = true;
+	bool is_json = false;
+	bool was_backslash = false;
+	for(;;)
+	{
+		char c = is.get();
+		if(is.eof())
+			break;
+		if(expect_initial_quote && c == '"')
+		{
+			tmp_os << c;
+			is_json = true;
+		}
+		else if(is_json)
+		{
+			tmp_os << c;
+			if(was_backslash)
+				was_backslash = false;
+			else if(c == '\\')
+				was_backslash = true;
+			else if(c == '"')
+				break; // Found end of string
+		}
+		else
+		{
+			if(c == ' ')
+			{
+				// Found end of word
+				is.unget();
+				break;
+			}
+			else
+			{
+				tmp_os << c;
+			}
+		}
+		expect_initial_quote = false;
+	}
+	if(is_json)
+	{
+		std::istringstream tmp_is(tmp_os.str(), std::ios::binary);
+		return deSerializeJsonString(tmp_is);
+	}
+	else
+		return tmp_os.str();
+}
+
+
+ItemStack::ItemStack(std::string name_, u16 count_,
+		u16 wear_, std::string metadata_,
+		IItemDefManager *itemdef)
+{
+	name = itemdef->getAlias(name_);
+	count = count_;
+	wear = wear_;
+	metadata = metadata_;
+
+	if(name.empty() || count == 0)
+		clear();
+	else if(itemdef->get(name).type == ITEM_TOOL)
+		count = 1;
+}
+
+void ItemStack::serialize(std::ostream &os) const
 {
 	DSTACK(__FUNCTION_NAME);
 
-	//is.imbue(std::locale("C"));
+	if(empty())
+		return;
+
+	// Check how many parts of the itemstring are needed
+	int parts = 1;
+	if(count != 1)
+		parts = 2;
+	if(wear != 0)
+		parts = 3;
+	if(metadata != "")
+		parts = 4;
+
+	os<<serializeJsonStringIfNeeded(name);
+	if(parts >= 2)
+		os<<" "<<count;
+	if(parts >= 3)
+		os<<" "<<wear;
+	if(parts >= 4)
+		os<<" "<<serializeJsonStringIfNeeded(metadata);
+}
+
+void ItemStack::deSerialize(std::istream &is, IItemDefManager *itemdef)
+{
+	DSTACK(__FUNCTION_NAME);
+
+	clear();
+
 	// Read name
-	std::string name;
-	std::getline(is, name, ' ');
+	name = deSerializeJsonStringIfNeeded(is);
+
+	// Skip space
+	std::string tmp;
+	std::getline(is, tmp, ' ');
+	if(!tmp.empty())
+		throw SerializationError("Unexpected text after item name");
 	
 	if(name == "MaterialItem")
 	{
-		// u16 reads directly as a number (u8 doesn't)
+		// Obsoleted on 2011-07-30
+
 		u16 material;
 		is>>material;
-		u16 count;
-		is>>count;
+		u16 materialcount;
+		is>>materialcount;
 		// Convert old materials
 		if(material <= 0xff)
 			material = content_translate_from_19_to_internal(material);
 		if(material > MAX_CONTENT)
 			throw SerializationError("Too large material number");
-		return new MaterialItem(gamedef, material, count);
+		// Convert old id to name
+		NameIdMapping legacy_nimap;
+		content_mapnode_get_name_id_mapping(&legacy_nimap);
+		legacy_nimap.getName(material, name);
+		if(name == "")
+			name = "unknown_block";
+		name = itemdef->getAlias(name);
+		count = materialcount;
 	}
 	else if(name == "MaterialItem2")
 	{
+		// Obsoleted on 2011-11-16
+
 		u16 material;
 		is>>material;
-		u16 count;
-		is>>count;
+		u16 materialcount;
+		is>>materialcount;
 		if(material > MAX_CONTENT)
 			throw SerializationError("Too large material number");
-		return new MaterialItem(gamedef, material, count);
+		// Convert old id to name
+		NameIdMapping legacy_nimap;
+		content_mapnode_get_name_id_mapping(&legacy_nimap);
+		legacy_nimap.getName(material, name);
+		if(name == "")
+			name = "unknown_block";
+		name = itemdef->getAlias(name);
+		count = materialcount;
 	}
-	else if(name == "node" || name == "NodeItem" || name == "MaterialItem3")
+	else if(name == "node" || name == "NodeItem" || name == "MaterialItem3"
+			|| name == "craft" || name == "CraftItem")
 	{
+		// Obsoleted on 2012-01-07
+
 		std::string all;
 		std::getline(is, all, '\n');
-		std::string nodename;
 		// First attempt to read inside ""
 		Strfnd fnd(all);
 		fnd.next("\"");
 		// If didn't skip to end, we have ""s
 		if(!fnd.atend()){
-			nodename = fnd.next("\"");
+			name = fnd.next("\"");
 		} else { // No luck, just read a word then
 			fnd.start(all);
-			nodename = fnd.next(" ");
+			name = fnd.next(" ");
 		}
 		fnd.skip_over(" ");
-		u16 count = stoi(trim(fnd.next("")));
+		name = itemdef->getAlias(name);
+		count = stoi(trim(fnd.next("")));
 		if(count == 0)
 			count = 1;
-		return new MaterialItem(gamedef, nodename, count);
 	}
 	else if(name == "MBOItem")
 	{
-		std::string inventorystring;
-		std::getline(is, inventorystring, '|');
+		// Obsoleted on 2011-10-14
 		throw SerializationError("MBOItem not supported anymore");
-	}
-	else if(name == "craft" || name == "CraftItem")
-	{
-		std::string all;
-		std::getline(is, all, '\n');
-		std::string subname;
-		// First attempt to read inside ""
-		Strfnd fnd(all);
-		fnd.next("\"");
-		// If didn't skip to end, we have ""s
-		if(!fnd.atend()){
-			subname = fnd.next("\"");
-		} else { // No luck, just read a word then
-			fnd.start(all);
-			subname = fnd.next(" ");
-		}
-		// Then read count
-		fnd.skip_over(" ");
-		u16 count = stoi(trim(fnd.next("")));
-		if(count == 0)
-			count = 1;
-		return new CraftItem(gamedef, subname, count);
 	}
 	else if(name == "tool" || name == "ToolItem")
 	{
+		// Obsoleted on 2012-01-07
+
 		std::string all;
 		std::getline(is, all, '\n');
-		std::string toolname;
 		// First attempt to read inside ""
 		Strfnd fnd(all);
 		fnd.next("\"");
 		// If didn't skip to end, we have ""s
 		if(!fnd.atend()){
-			toolname = fnd.next("\"");
+			name = fnd.next("\"");
 		} else { // No luck, just read a word then
 			fnd.start(all);
-			toolname = fnd.next(" ");
+			name = fnd.next(" ");
 		}
+		count = 1;
 		// Then read wear
 		fnd.skip_over(" ");
-		u16 wear = stoi(trim(fnd.next("")));
-		return new ToolItem(gamedef, toolname, wear);
+		name = itemdef->getAlias(name);
+		wear = stoi(trim(fnd.next("")));
 	}
 	else
 	{
-		infostream<<"Unknown InventoryItem name=\""<<name<<"\""<<std::endl;
-		throw SerializationError("Unknown InventoryItem name");
+		do  // This loop is just to allow "break;"
+		{
+			// The real thing
+
+			// Apply item aliases
+			name = itemdef->getAlias(name);
+
+			// Read the count
+			std::string count_str;
+			std::getline(is, count_str, ' ');
+			if(count_str.empty())
+			{
+				count = 1;
+				break;
+			}
+			else
+				count = stoi(count_str);
+
+			// Read the wear
+			std::string wear_str;
+			std::getline(is, wear_str, ' ');
+			if(wear_str.empty())
+				break;
+			else
+				wear = stoi(wear_str);
+
+			// Read metadata
+			metadata = deSerializeJsonStringIfNeeded(is);
+
+			// In case fields are added after metadata, skip space here:
+			//std::getline(is, tmp, ' ');
+			//if(!tmp.empty())
+			//	throw SerializationError("Unexpected text after metadata");
+
+		} while(false);
 	}
+
+	if(name.empty() || count == 0)
+		clear();
+	else if(itemdef->get(name).type == ITEM_TOOL)
+		count = 1;
 }
 
-InventoryItem* InventoryItem::deSerialize(const std::string &str,
-		IGameDef *gamedef)
+void ItemStack::deSerialize(const std::string &str, IItemDefManager *itemdef)
 {
-	std::istringstream is(str, std::ios_base::binary);
-	return deSerialize(is, gamedef);
+	std::istringstream is(str, std::ios::binary);
+	deSerialize(is, itemdef);
 }
 
-std::string InventoryItem::getItemString() {
+std::string ItemStack::getItemString() const
+{
 	// Get item string
-	std::ostringstream os(std::ios_base::binary);
+	std::ostringstream os(std::ios::binary);
 	serialize(os);
 	return os.str();
 }
 
-bool InventoryItem::dropOrPlace(ServerEnvironment *env,
-		ServerActiveObject *dropper,
-		v3f pos, bool place, s16 count)
+ItemStack ItemStack::addItem(const ItemStack &newitem_,
+		IItemDefManager *itemdef)
 {
-	/*
-		Ensure that the block is loaded so that the item
-		can properly be added to the static list too
-	*/
-	v3s16 blockpos = getNodeBlockPos(floatToInt(pos, BS));
-	MapBlock *block = env->getMap().emergeBlock(blockpos, false);
-	if(block==NULL)
+	ItemStack newitem = newitem_;
+
+	// If the item is empty or the position invalid, bail out
+	if(newitem.empty())
 	{
-		infostream<<"InventoryItem::dropOrPlace(): FAIL: block not found: "
-				<<blockpos.X<<","<<blockpos.Y<<","<<blockpos.Z
-				<<std::endl;
-		return false;
+		// nothing can be added trivially
+	}
+	// If this is an empty item, it's an easy job.
+	else if(empty())
+	{
+		*this = newitem;
+		newitem.clear();
+	}
+	// If item name differs, bail out
+	else if(name != newitem.name)
+	{
+		// cannot be added
+	}
+	// If the item fits fully, add counter and delete it
+	else if(newitem.count <= freeSpace(itemdef))
+	{
+		add(newitem.count);
+		newitem.clear();
+	}
+	// Else the item does not fit fully. Add all that fits and return
+	// the rest.
+	else
+	{
+		u16 freespace = freeSpace(itemdef);
+		add(freespace);
+		newitem.remove(freespace);
 	}
 
-	/*
-		Take specified number of items,
-		but limit to getDropCount().
-	*/
-	s16 dropcount = getDropCount();
-	if(count < 0 || count > dropcount)
-		count = dropcount;
-	if(count < 0 || count > getCount())
-		count = getCount();
-	if(count > 0)
-	{
-		/*
-			Create an ItemSAO
-		*/
-		pos.Y -= BS*0.25; // let it drop a bit
-		// Randomize a bit
-		//pos.X += BS*0.2*(float)myrand_range(-1000,1000)/1000.0;
-		//pos.Z += BS*0.2*(float)myrand_range(-1000,1000)/1000.0;
-		// Create object
-		ServerActiveObject *obj = new ItemSAO(env, pos, getItemString());
-		// Add the object to the environment
-		env->addActiveObject(obj);
-		infostream<<"Dropped item"<<std::endl;
+	return newitem;
+}
 
-		setCount(getCount() - count);
+bool ItemStack::itemFits(const ItemStack &newitem_,
+		ItemStack *restitem,
+		IItemDefManager *itemdef) const
+{
+	ItemStack newitem = newitem_;
+
+	// If the item is empty or the position invalid, bail out
+	if(newitem.empty())
+	{
+		// nothing can be added trivially
+	}
+	// If this is an empty item, it's an easy job.
+	else if(empty())
+	{
+		newitem.clear();
+	}
+	// If item name differs, bail out
+	else if(name != newitem.name)
+	{
+		// cannot be added
+	}
+	// If the item fits fully, delete it
+	else if(newitem.count <= freeSpace(itemdef))
+	{
+		newitem.clear();
+	}
+	// Else the item does not fit fully. Return the rest.
+	// the rest.
+	else
+	{
+		u16 freespace = freeSpace(itemdef);
+		newitem.remove(freespace);
 	}
 
-	return getCount() < 1; // delete the item?
+	if(restitem)
+		*restitem = newitem;
+	return newitem.empty();
 }
 
-/*
-	MaterialItem
-*/
-
-MaterialItem::MaterialItem(IGameDef *gamedef, std::string nodename, u16 count):
-	InventoryItem(gamedef, count)
+ItemStack ItemStack::takeItem(u32 takecount)
 {
-	if(nodename == "")
-		nodename = "unknown_block";
+	if(takecount == 0 || count == 0)
+		return ItemStack();
 
-	// Convert directly to the correct name through aliases
-	m_nodename = gamedef->ndef()->getAlias(nodename);
-}
-// Legacy constructor
-MaterialItem::MaterialItem(IGameDef *gamedef, content_t content, u16 count):
-	InventoryItem(gamedef, count)
-{
-	NameIdMapping legacy_nimap;
-	content_mapnode_get_name_id_mapping(&legacy_nimap);
-	std::string nodename;
-	legacy_nimap.getName(content, nodename);
-	if(nodename == "")
-		nodename = "unknown_block";
-	m_nodename = nodename;
-}
-
-#ifndef SERVER
-video::ITexture * MaterialItem::getImage() const
-{
-	return m_gamedef->getNodeDefManager()->get(m_nodename).inventory_texture;
-}
-#endif
-
-bool MaterialItem::isCookable() const
-{
-	INodeDefManager *ndef = m_gamedef->ndef();
-	const ContentFeatures &f = ndef->get(m_nodename);
-	return (f.cookresult_item != "");
-}
-
-InventoryItem *MaterialItem::createCookResult() const
-{
-	INodeDefManager *ndef = m_gamedef->ndef();
-	const ContentFeatures &f = ndef->get(m_nodename);
-	std::istringstream is(f.cookresult_item, std::ios::binary);
-	return InventoryItem::deSerialize(is, m_gamedef);
-}
-
-float MaterialItem::getCookTime() const
-{
-	INodeDefManager *ndef = m_gamedef->ndef();
-	const ContentFeatures &f = ndef->get(m_nodename);
-	return f.furnace_cooktime;
-}
-
-float MaterialItem::getBurnTime() const
-{
-	INodeDefManager *ndef = m_gamedef->ndef();
-	const ContentFeatures &f = ndef->get(m_nodename);
-	return f.furnace_burntime;
-}
-
-content_t MaterialItem::getMaterial() const
-{
-	INodeDefManager *ndef = m_gamedef->ndef();
-	content_t id = CONTENT_IGNORE;
-	ndef->getId(m_nodename, id);
-	return id;
-}
-
-/*
-	ToolItem
-*/
-
-ToolItem::ToolItem(IGameDef *gamedef, std::string toolname, u16 wear):
-	InventoryItem(gamedef, 1)
-{
-	// Convert directly to the correct name through aliases
-	m_toolname = gamedef->tdef()->getAlias(toolname);
-	
-	m_wear = wear;
-}
-
-std::string ToolItem::getImageBasename() const
-{
-	return m_gamedef->getToolDefManager()->getImagename(m_toolname);
-}
-
-#ifndef SERVER
-video::ITexture * ToolItem::getImage() const
-{
-	ITextureSource *tsrc = m_gamedef->tsrc();
-
-	std::string basename = getImageBasename();
-	
-	/*
-		Calculate a progress value with sane amount of
-		maximum states
-	*/
-	u32 maxprogress = 30;
-	u32 toolprogress = (65535-m_wear)/(65535/maxprogress);
-	
-	float value_f = (float)toolprogress / (float)maxprogress;
-	std::ostringstream os;
-	os<<basename<<"^[progressbar"<<value_f;
-
-	return tsrc->getTextureRaw(os.str());
-}
-
-video::ITexture * ToolItem::getImageRaw() const
-{
-	ITextureSource *tsrc = m_gamedef->tsrc();
-	
-	return tsrc->getTextureRaw(getImageBasename());
-}
-#endif
-
-bool ToolItem::isKnown() const
-{
-	IToolDefManager *tdef = m_gamedef->tdef();
-	const ToolDefinition *def = tdef->getToolDefinition(m_toolname);
-	return (def != NULL);
-}
-
-/*
-	CraftItem
-*/
-
-CraftItem::CraftItem(IGameDef *gamedef, std::string subname, u16 count):
-	InventoryItem(gamedef, count)
-{
-	// Convert directly to the correct name through aliases
-	m_subname = gamedef->cidef()->getAlias(subname);
-}
-
-#ifndef SERVER
-video::ITexture * CraftItem::getImage() const
-{
-	ICraftItemDefManager *cidef = m_gamedef->cidef();
-	ITextureSource *tsrc = m_gamedef->tsrc();
-	std::string imagename = cidef->getImagename(m_subname);
-	return tsrc->getTextureRaw(imagename);
-}
-#endif
-
-bool CraftItem::isKnown() const
-{
-	ICraftItemDefManager *cidef = m_gamedef->cidef();
-	const CraftItemDefinition *def = cidef->getCraftItemDefinition(m_subname);
-	return (def != NULL);
-}
-
-u16 CraftItem::getStackMax() const
-{
-	ICraftItemDefManager *cidef = m_gamedef->cidef();
-	const CraftItemDefinition *def = cidef->getCraftItemDefinition(m_subname);
-	if(def == NULL)
-		return InventoryItem::getStackMax();
-	return def->stack_max;
-}
-
-bool CraftItem::isUsable() const
-{
-	ICraftItemDefManager *cidef = m_gamedef->cidef();
-	const CraftItemDefinition *def = cidef->getCraftItemDefinition(m_subname);
-	return def != NULL && def->usable;
-}
-
-bool CraftItem::isCookable() const
-{
-	ICraftItemDefManager *cidef = m_gamedef->cidef();
-	const CraftItemDefinition *def = cidef->getCraftItemDefinition(m_subname);
-	return def != NULL && def->cookresult_item != "";
-}
-
-InventoryItem *CraftItem::createCookResult() const
-{
-	ICraftItemDefManager *cidef = m_gamedef->cidef();
-	const CraftItemDefinition *def = cidef->getCraftItemDefinition(m_subname);
-	if(def == NULL)
-		return InventoryItem::createCookResult();
-	std::istringstream is(def->cookresult_item, std::ios::binary);
-	return InventoryItem::deSerialize(is, m_gamedef);
-}
-
-float CraftItem::getCookTime() const
-{
-	ICraftItemDefManager *cidef = m_gamedef->cidef();
-	const CraftItemDefinition *def = cidef->getCraftItemDefinition(m_subname);
-	if (def == NULL)
-		return InventoryItem::getCookTime();
-	return def->furnace_cooktime;
-}
-
-float CraftItem::getBurnTime() const
-{
-	ICraftItemDefManager *cidef = m_gamedef->cidef();
-	const CraftItemDefinition *def = cidef->getCraftItemDefinition(m_subname);
-	if (def == NULL)
-		return InventoryItem::getBurnTime();
-	return def->furnace_burntime;
-}
-
-s16 CraftItem::getDropCount() const
-{
-	// Special cases
-	ICraftItemDefManager *cidef = m_gamedef->cidef();
-	const CraftItemDefinition *def = cidef->getCraftItemDefinition(m_subname);
-	if(def != NULL && def->dropcount >= 0)
-		return def->dropcount;
-	// Default
-	return InventoryItem::getDropCount();
-}
-
-bool CraftItem::areLiquidsPointable() const
-{
-	ICraftItemDefManager *cidef = m_gamedef->cidef();
-	const CraftItemDefinition *def = cidef->getCraftItemDefinition(m_subname);
-	return def != NULL && def->liquids_pointable;
-}
-
-bool CraftItem::dropOrPlace(ServerEnvironment *env,
-		ServerActiveObject *dropper,
-		v3f pos, bool place, s16 count)
-{
-	if(count == 0)
-		return false;
-
-	bool callback_exists = false;
-	bool result = false;
-
-	if(place)
+	ItemStack result = *this;
+	if(takecount >= count)
 	{
-		result = scriptapi_craftitem_on_place_on_ground(
-				env->getLua(),
-				m_subname.c_str(), dropper, pos,
-				callback_exists);
-	}
-
-	// note: on_drop is fallback for on_place_on_ground
-
-	if(!callback_exists)
-	{
-		result = scriptapi_craftitem_on_drop(
-				env->getLua(),
-				m_subname.c_str(), dropper, pos,
-				callback_exists);
-	}
-
-	if(callback_exists)
-	{
-		// If the callback returned true, drop one item
-		if(result)
-			setCount(getCount() - 1);
-		return getCount() < 1;
+		// Take all
+		clear();
 	}
 	else
 	{
-		// If neither on_place_on_ground (if place==true)
-		// nor on_drop exists, call the base implementation
-		return InventoryItem::dropOrPlace(env, dropper, pos, place, count);
+		// Take part
+		remove(takecount);
+		result.count = takecount;
 	}
+	return result;
 }
 
-bool CraftItem::use(ServerEnvironment *env,
-		ServerActiveObject *user,
-		const PointedThing& pointed)
+ItemStack ItemStack::peekItem(u32 peekcount) const
 {
-	bool callback_exists = false;
-	bool result = false;
+	if(peekcount == 0 || count == 0)
+		return ItemStack();
 
-	result = scriptapi_craftitem_on_use(
-			env->getLua(),
-			m_subname.c_str(), user, pointed,
-			callback_exists);
-
-	if(callback_exists)
-	{
-		// If the callback returned true, drop one item
-		if(result)
-			setCount(getCount() - 1);
-		return getCount() < 1;
-	}
-	else
-	{
-		// If neither on_place_on_ground (if place==true)
-		// nor on_drop exists, call the base implementation
-		return InventoryItem::use(env, user, pointed);
-	}
+	ItemStack result = *this;
+	if(peekcount < count)
+		result.count = peekcount;
+	return result;
 }
 
 /*
 	Inventory
 */
 
-InventoryList::InventoryList(std::string name, u32 size)
+InventoryList::InventoryList(std::string name, u32 size, IItemDefManager *itemdef)
 {
 	m_name = name;
 	m_size = size;
+	m_itemdef = itemdef;
 	clearItems();
 	//m_dirty = false;
 }
 
 InventoryList::~InventoryList()
 {
-	for(u32 i=0; i<m_items.size(); i++)
-	{
-		if(m_items[i])
-			delete m_items[i];
-	}
 }
 
 void InventoryList::clearItems()
 {
-	for(u32 i=0; i<m_items.size(); i++)
-	{
-		if(m_items[i])
-			delete m_items[i];
-	}
-
 	m_items.clear();
 
 	for(u32 i=0; i<m_size; i++)
 	{
-		m_items.push_back(NULL);
+		m_items.push_back(ItemStack());
 	}
 
 	//setDirty(true);
@@ -568,17 +453,8 @@ void InventoryList::clearItems()
 
 void InventoryList::setSize(u32 newsize)
 {
-	if(newsize < m_items.size()){
-		for(u32 i=newsize; i<m_items.size(); i++){
-			if(m_items[i])
-				delete m_items[i];
-		}
-		m_items.erase(newsize, m_items.size() - newsize);
-	} else {
-		for(u32 i=m_items.size(); i<newsize; i++){
-			m_items.push_back(NULL);
-		}
-	}
+	if(newsize != m_items.size())
+		m_items.resize(newsize);
 	m_size = newsize;
 }
 
@@ -588,15 +464,15 @@ void InventoryList::serialize(std::ostream &os) const
 	
 	for(u32 i=0; i<m_items.size(); i++)
 	{
-		InventoryItem *item = m_items[i];
-		if(item != NULL)
+		const ItemStack &item = m_items[i];
+		if(item.empty())
 		{
-			os<<"Item ";
-			item->serialize(os);
+			os<<"Empty";
 		}
 		else
 		{
-			os<<"Empty";
+			os<<"Item ";
+			item.serialize(os);
 		}
 		os<<"\n";
 	}
@@ -604,7 +480,7 @@ void InventoryList::serialize(std::ostream &os) const
 	os<<"EndInventoryList\n";
 }
 
-void InventoryList::deSerialize(std::istream &is, IGameDef *gamedef)
+void InventoryList::deSerialize(std::istream &is)
 {
 	//is.imbue(std::locale("C"));
 
@@ -635,14 +511,15 @@ void InventoryList::deSerialize(std::istream &is, IGameDef *gamedef)
 		{
 			if(item_i > getSize() - 1)
 				throw SerializationError("too many items");
-			InventoryItem *item = InventoryItem::deSerialize(iss, gamedef);
+			ItemStack item;
+			item.deSerialize(iss, m_itemdef);
 			m_items[item_i++] = item;
 		}
 		else if(name == "Empty")
 		{
 			if(item_i > getSize() - 1)
 				throw SerializationError("too many items");
-			m_items[item_i++] = NULL;
+			m_items[item_i++].clear();
 		}
 		else
 		{
@@ -653,26 +530,15 @@ void InventoryList::deSerialize(std::istream &is, IGameDef *gamedef)
 
 InventoryList::InventoryList(const InventoryList &other)
 {
-	/*
-		Do this so that the items get cloned. Otherwise the pointers
-		in the array will just get copied.
-	*/
 	*this = other;
 }
 
 InventoryList & InventoryList::operator = (const InventoryList &other)
 {
-	m_name = other.m_name;
+	m_items = other.m_items;
 	m_size = other.m_size;
-	clearItems();
-	for(u32 i=0; i<other.m_items.size(); i++)
-	{
-		InventoryItem *item = other.m_items[i];
-		if(item != NULL)
-		{
-			m_items[i] = item->clone();
-		}
-	}
+	m_name = other.m_name;
+	m_itemdef = other.m_itemdef;
 	//setDirty(true);
 
 	return *this;
@@ -683,48 +549,45 @@ const std::string &InventoryList::getName() const
 	return m_name;
 }
 
-u32 InventoryList::getSize()
+u32 InventoryList::getSize() const
 {
 	return m_items.size();
 }
 
-u32 InventoryList::getUsedSlots()
+u32 InventoryList::getUsedSlots() const
 {
 	u32 num = 0;
 	for(u32 i=0; i<m_items.size(); i++)
 	{
-		InventoryItem *item = m_items[i];
-		if(item != NULL)
+		if(!m_items[i].empty())
 			num++;
 	}
 	return num;
 }
 
-u32 InventoryList::getFreeSlots()
+u32 InventoryList::getFreeSlots() const
 {
 	return getSize() - getUsedSlots();
 }
 
-const InventoryItem * InventoryList::getItem(u32 i) const
+const ItemStack& InventoryList::getItem(u32 i) const
 {
-	if(i >= m_items.size())
-		return NULL;
+	assert(i < m_size);
 	return m_items[i];
 }
 
-InventoryItem * InventoryList::getItem(u32 i)
+ItemStack& InventoryList::getItem(u32 i)
 {
-	if(i >= m_items.size())
-		return NULL;
+	assert(i < m_size);
 	return m_items[i];
 }
 
-InventoryItem * InventoryList::changeItem(u32 i, InventoryItem *newitem)
+ItemStack InventoryList::changeItem(u32 i, const ItemStack &newitem)
 {
 	if(i >= m_items.size())
 		return newitem;
 
-	InventoryItem *olditem = m_items[i];
+	ItemStack olditem = m_items[i];
 	m_items[i] = newitem;
 	//setDirty(true);
 	return olditem;
@@ -733,15 +596,15 @@ InventoryItem * InventoryList::changeItem(u32 i, InventoryItem *newitem)
 void InventoryList::deleteItem(u32 i)
 {
 	assert(i < m_items.size());
-	InventoryItem *item = changeItem(i, NULL);
-	if(item)
-		delete item;
+	m_items[i].clear();
 }
 
-InventoryItem * InventoryList::addItem(InventoryItem *newitem)
+ItemStack InventoryList::addItem(const ItemStack &newitem_)
 {
-	if(newitem == NULL)
-		return NULL;
+	ItemStack newitem = newitem_;
+
+	if(newitem.empty())
+		return newitem;
 	
 	/*
 		First try to find if it could be added to some existing items
@@ -749,12 +612,12 @@ InventoryItem * InventoryList::addItem(InventoryItem *newitem)
 	for(u32 i=0; i<m_items.size(); i++)
 	{
 		// Ignore empty slots
-		if(m_items[i] == NULL)
+		if(m_items[i].empty())
 			continue;
 		// Try adding
 		newitem = addItem(i, newitem);
-		if(newitem == NULL)
-			return NULL; // All was eaten
+		if(newitem.empty())
+			return newitem; // All was eaten
 	}
 
 	/*
@@ -763,148 +626,153 @@ InventoryItem * InventoryList::addItem(InventoryItem *newitem)
 	for(u32 i=0; i<m_items.size(); i++)
 	{
 		// Ignore unempty slots
-		if(m_items[i] != NULL)
+		if(!m_items[i].empty())
 			continue;
 		// Try adding
 		newitem = addItem(i, newitem);
-		if(newitem == NULL)
-			return NULL; // All was eaten
+		if(newitem.empty())
+			return newitem; // All was eaten
 	}
 
 	// Return leftover
 	return newitem;
 }
 
-InventoryItem * InventoryList::addItem(u32 i, InventoryItem *newitem)
+ItemStack InventoryList::addItem(u32 i, const ItemStack &newitem)
 {
-	if(newitem == NULL)
-		return NULL;
 	if(i >= m_items.size())
 		return newitem;
-	
-	//setDirty(true);
-	
-	// If it is an empty position, it's an easy job.
-	InventoryItem *to_item = getItem(i);
-	if(to_item == NULL)
-	{
-		m_items[i] = newitem;
-		return NULL;
-	}
-	
-	// If not addable, return the item
-	if(newitem->addableTo(to_item) == false)
-		return newitem;
-	
-	// If the item fits fully in the slot, add counter and delete it
-	if(newitem->getCount() <= to_item->freeSpace())
-	{
-		to_item->add(newitem->getCount());
-		delete newitem;
-		return NULL;
-	}
-	// Else the item does not fit fully. Add all that fits and return
-	// the rest.
-	else
-	{
-		u16 freespace = to_item->freeSpace();
-		to_item->add(freespace);
-		newitem->remove(freespace);
-		return newitem;
-	}
+
+	ItemStack leftover = m_items[i].addItem(newitem, m_itemdef);
+	//if(leftover != newitem)
+	//	setDirty(true);
+	return leftover;
 }
 
-bool InventoryList::itemFits(const u32 i, const InventoryItem *newitem)
+bool InventoryList::itemFits(const u32 i, const ItemStack &newitem,
+		ItemStack *restitem) const
 {
-	// If it is an empty position, it's an easy job.
-	const InventoryItem *to_item = getItem(i);
-	if(to_item == NULL)
+	if(i >= m_items.size())
 	{
-		return true;
-	}
-	
-	// If not addable, fail
-	if(newitem->addableTo(to_item) == false)
+		if(restitem)
+			*restitem = newitem;
 		return false;
-	
-	// If the item fits fully in the slot, pass
-	if(newitem->getCount() <= to_item->freeSpace())
-	{
-		return true;
 	}
 
-	return false;
+	return m_items[i].itemFits(newitem, restitem, m_itemdef);
 }
 
-bool InventoryList::roomForItem(const InventoryItem *item)
+bool InventoryList::roomForItem(const ItemStack &item_) const
 {
+	ItemStack item = item_;
+	ItemStack leftover;
 	for(u32 i=0; i<m_items.size(); i++)
-		if(itemFits(i, item))
+	{
+		if(itemFits(i, item, &leftover))
 			return true;
+		item = leftover;
+	}
 	return false;
 }
 
-bool InventoryList::roomForCookedItem(const InventoryItem *item)
+bool InventoryList::containsItem(const ItemStack &item) const
 {
-	if(!item)
-		return false;
-	const InventoryItem *cook = item->createCookResult();
-	if(!cook)
-		return false;
-	bool room = roomForItem(cook);
-	delete cook;
-	return room;
-}
-
-InventoryItem * InventoryList::takeItem(u32 i, u32 count)
-{
+	u32 count = item.count;
 	if(count == 0)
-		return NULL;
-	
-	//setDirty(true);
-
-	InventoryItem *item = getItem(i);
-	// If it is an empty position, return NULL
-	if(item == NULL)
-		return NULL;
-	
-	if(count >= item->getCount())
+		return true;
+	for(std::vector<ItemStack>::const_reverse_iterator
+			i = m_items.rbegin();
+			i != m_items.rend(); i++)
 	{
-		// Get the item by swapping NULL to its place
-		return changeItem(i, NULL);
+		if(count == 0)
+			break;
+		if(i->name == item.name)
+		{
+			if(i->count >= count)
+				return true;
+			else
+				count -= i->count;
+		}
 	}
-	else
-	{
-		InventoryItem *item2 = item->clone();
-		item->remove(count);
-		item2->setCount(count);
-		return item2;
-	}
-	
 	return false;
 }
 
-void InventoryList::decrementMaterials(u16 count)
+ItemStack InventoryList::removeItem(const ItemStack &item)
 {
-	for(u32 i=0; i<m_items.size(); i++)
+	ItemStack removed;
+	for(std::vector<ItemStack>::reverse_iterator
+			i = m_items.rbegin();
+			i != m_items.rend(); i++)
 	{
-		InventoryItem *item = takeItem(i, count);
-		if(item)
-			delete item;
+		if(i->name == item.name)
+		{
+			u32 still_to_remove = item.count - removed.count;
+			removed.addItem(i->takeItem(still_to_remove), m_itemdef);
+			if(removed.count == item.count)
+				break;
+		}
 	}
+	return removed;
 }
 
-void InventoryList::print(std::ostream &o)
+ItemStack InventoryList::takeItem(u32 i, u32 takecount)
 {
-	o<<"InventoryList:"<<std::endl;
-	for(u32 i=0; i<m_items.size(); i++)
+	if(i >= m_items.size())
+		return ItemStack();
+
+	ItemStack taken = m_items[i].takeItem(takecount);
+	//if(!taken.empty())
+	//	setDirty(true);
+	return taken;
+}
+
+ItemStack InventoryList::peekItem(u32 i, u32 peekcount) const
+{
+	if(i >= m_items.size())
+		return ItemStack();
+
+	return m_items[i].peekItem(peekcount);
+}
+
+void InventoryList::moveItem(u32 i, InventoryList *dest, u32 dest_i, u32 count)
+{
+	if(this == dest && i == dest_i)
+		return;
+
+	// Take item from source list
+	ItemStack item1;
+	if(count == 0)
+		item1 = changeItem(i, ItemStack());
+	else
+		item1 = takeItem(i, count);
+
+	if(item1.empty())
+		return;
+
+	// Try to add the item to destination list
+	u32 oldcount = item1.count;
+	item1 = dest->addItem(dest_i, item1);
+
+	// If something is returned, the item was not fully added
+	if(!item1.empty())
 	{
-		InventoryItem *item = m_items[i];
-		if(item != NULL)
+		// If olditem is returned, nothing was added.
+		bool nothing_added = (item1.count == oldcount);
+
+		// If something else is returned, part of the item was left unadded.
+		// Add the other part back to the source item
+		addItem(i, item1);
+
+		// If olditem is returned, nothing was added.
+		// Swap the items
+		if(nothing_added)
 		{
-			o<<i<<": ";
-			item->serialize(o);
-			o<<"\n";
+			// Take item from source list
+			item1 = changeItem(i, ItemStack());
+			// Adding was not possible, swap the items.
+			ItemStack item2 = dest->changeItem(dest_i, item1);
+			// Put item from destination list to the source list
+			changeItem(i, item2);
 		}
 	}
 }
@@ -927,8 +795,9 @@ void Inventory::clear()
 	m_lists.clear();
 }
 
-Inventory::Inventory()
+Inventory::Inventory(IItemDefManager *itemdef)
 {
+	m_itemdef = itemdef;
 }
 
 Inventory::Inventory(const Inventory &other)
@@ -938,10 +807,15 @@ Inventory::Inventory(const Inventory &other)
 
 Inventory & Inventory::operator = (const Inventory &other)
 {
-	clear();
-	for(u32 i=0; i<other.m_lists.size(); i++)
+	// Gracefully handle self assignment
+	if(this != &other)
 	{
-		m_lists.push_back(new InventoryList(*other.m_lists[i]));
+		clear();
+		m_itemdef = other.m_itemdef;
+		for(u32 i=0; i<other.m_lists.size(); i++)
+		{
+			m_lists.push_back(new InventoryList(*other.m_lists[i]));
+		}
 	}
 	return *this;
 }
@@ -958,7 +832,7 @@ void Inventory::serialize(std::ostream &os) const
 	os<<"EndInventory\n";
 }
 
-void Inventory::deSerialize(std::istream &is, IGameDef *gamedef)
+void Inventory::deSerialize(std::istream &is)
 {
 	clear();
 
@@ -989,8 +863,8 @@ void Inventory::deSerialize(std::istream &is, IGameDef *gamedef)
 			std::getline(iss, listname, ' ');
 			iss>>listsize;
 
-			InventoryList *list = new InventoryList(listname, listsize);
-			list->deSerialize(is, gamedef);
+			InventoryList *list = new InventoryList(listname, listsize, m_itemdef);
+			list->deSerialize(is);
 
 			m_lists.push_back(list);
 		}
@@ -1009,14 +883,15 @@ InventoryList * Inventory::addList(const std::string &name, u32 size)
 		if(m_lists[i]->getSize() != size)
 		{
 			delete m_lists[i];
-			m_lists[i] = new InventoryList(name, size);
+			m_lists[i] = new InventoryList(name, size, m_itemdef);
 		}
 		return m_lists[i];
 	}
 	else
 	{
-		m_lists.push_back(new InventoryList(name, size));
-		return m_lists.getLast();
+		InventoryList *list = new InventoryList(name, size, m_itemdef);
+		m_lists.push_back(list);
+		return list;
 	}
 }
 
@@ -1034,7 +909,7 @@ bool Inventory::deleteList(const std::string &name)
 	if(i == -1)
 		return false;
 	delete m_lists[i];
-	m_lists.erase(i);
+	m_lists.erase(m_lists.begin() + i);
 	return true;
 }
 

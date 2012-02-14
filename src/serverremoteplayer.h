@@ -46,9 +46,6 @@ public:
 	
 	virtual void setPosition(const v3f &position);
 	
-	// Returns a reference
-	virtual InventoryItem* getWieldedItem();
-	
 	/* ServerActiveObject interface */
 
 	u8 getType() const
@@ -77,22 +74,22 @@ public:
 	virtual std::string getDescription()
 	{return std::string("player ")+getName();}
 
-	virtual void getWieldDiggingProperties(ToolDiggingProperties *dst);
-	virtual void damageWieldedItem(u16 amount);
-	// If all fits, eats item and returns true. Otherwise returns false.
-	virtual bool addToInventory(InventoryItem *item);
-	virtual void addToInventoryLater(InventoryItem *item);
-	void clearAddToInventoryLater();
-	void completeAddToInventoryLater(u16 preferred_index);
+	virtual Inventory* getInventory();
+	virtual const Inventory* getInventory() const;
+	virtual InventoryLocation getInventoryLocation() const;
+	virtual void setInventoryModified();
+	virtual std::string getWieldList() const;
+	virtual int getWieldIndex() const;
+	virtual void setWieldIndex(int i);
+
 	virtual void setHP(s16 hp_);
 	virtual s16 getHP();
 	
 	v3f m_last_good_position;
 	float m_last_good_position_age;
-	std::vector<InventoryItem*> m_additional_items;
+	int m_wield_index;
 	bool m_inventory_not_sent;
 	bool m_hp_not_sent;
-	bool m_respawn_active;
 	bool m_is_in_environment;
 	// Incremented by step(), read and reset by Server
 	float m_time_from_last_punch;

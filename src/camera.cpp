@@ -27,7 +27,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "tile.h"
 #include <cmath>
 #include "settings.h"
-#include "nodedef.h" // For wield visualization
+#include "itemdef.h" // For wield visualization
 
 Camera::Camera(scene::ISceneManager* smgr, MapDrawControl& draw_control):
 	m_smgr(smgr),
@@ -37,10 +37,9 @@ Camera::Camera(scene::ISceneManager* smgr, MapDrawControl& draw_control):
 
 	m_wieldmgr(NULL),
 	m_wieldnode(NULL),
+	m_wieldlight(0),
 
 	m_draw_control(draw_control),
-	m_viewing_range_min(5.0),
-	m_viewing_range_max(5.0),
 
 	m_camera_position(0,0,0),
 	m_camera_direction(0,0,0),
@@ -49,7 +48,6 @@ Camera::Camera(scene::ISceneManager* smgr, MapDrawControl& draw_control):
 	m_fov_x(1.0),
 	m_fov_y(1.0),
 
-	m_wanted_frametime(0.0),
 	m_added_frametime(0),
 	m_added_frames(0),
 	m_range_old(0),
@@ -77,15 +75,13 @@ Camera::Camera(scene::ISceneManager* smgr, MapDrawControl& draw_control):
 	// all other 3D scene nodes and before the GUI.
 	m_wieldmgr = smgr->createNewSceneManager();
 	m_wieldmgr->addCameraSceneNode();
-	m_wieldnode = new ExtrudedSpriteSceneNode(m_wieldmgr->getRootSceneNode(), m_wieldmgr);
-
-	updateSettings();
+	m_wieldnode = m_wieldmgr->addMeshSceneNode(createCubeMesh(v3f(1,1,1)), NULL);  // need a dummy mesh
 }
 
 Camera::~Camera()
 {
+	m_wieldnode->setMesh(NULL);
 	m_wieldmgr->drop();
-	m_wieldnode->drop();
 }
 
 bool Camera::successfullyCreated(std::wstring& error_message)
@@ -258,14 +254,17 @@ void Camera::update(LocalPlayer* player, f32 frametime, v2u32 screensize)
 	// *100.0 helps in large map coordinates
 	m_cameranode->setTarget(m_camera_position + 100 * m_camera_direction);
 
-	// FOV and and aspect ratio
+	// Get FOV setting
+	f32 fov_degrees = g_settings->getFloat("fov");
+	fov_degrees = MYMAX(fov_degrees, 10.0);
+	fov_degrees = MYMIN(fov_degrees, 170.0);
+
+	// FOV and aspect ratio
 	m_aspect = (f32)screensize.X / (f32) screensize.Y;
+	m_fov_y = fov_degrees * PI / 180.0;
 	m_fov_x = 2 * atan(0.5 * m_aspect * tan(m_fov_y));
 	m_cameranode->setAspectRatio(m_aspect);
 	m_cameranode->setFOV(m_fov_y);
-	// Just so big a value that everything rendered is visible
-	// Some more allowance that m_viewing_range_max * BS because of active objects etc.
-	m_cameranode->setFarValue(m_viewing_range_max * BS * 10);
 
 	// Position the wielded item
 	v3f wield_position = v3f(45, -35, 65);
@@ -292,7 +291,7 @@ void Camera::update(LocalPlayer* player, f32 frametime, v2u32 screensize)
 	}
 	m_wieldnode->setPosition(wield_position);
 	m_wieldnode->setRotation(wield_rotation);
-	m_wieldnode->updateLight(player->light);
+	m_wieldlight = player->light;
 
 	// Render distance feedback loop
 	updateViewingRange(frametime);
@@ -342,7 +341,18 @@ void Camera::updateViewingRange(f32 frametime_in)
 			<<m_draw_control.blocks_would_have_drawn
 			<<std::endl;*/
 
-	m_draw_control.wanted_min_range = m_viewing_range_min;
+	// Get current viewing range and FPS settings
+	f32 viewing_range_min = g_settings->getS16("viewing_range_nodes_min");
+	viewing_range_min = MYMAX(5.0, viewing_range_min);
+
+	f32 viewing_range_max = g_settings->getS16("viewing_range_nodes_max");
+	viewing_range_max = MYMAX(viewing_range_min, viewing_range_max);
+
+	f32 wanted_fps = g_settings->getFloat("wanted_fps");
+	wanted_fps = MYMAX(wanted_fps, 1.0);
+	f32 wanted_frametime = 1.0 / wanted_fps;
+
+	m_draw_control.wanted_min_range = viewing_range_min;
 	m_draw_control.wanted_max_blocks = (2.0*m_draw_control.blocks_would_have_drawn)+1;
 	if (m_draw_control.wanted_max_blocks < 10)
 		m_draw_control.wanted_max_blocks = 10;
@@ -361,13 +371,13 @@ void Camera::updateViewingRange(f32 frametime_in)
 	m_added_frametime = 0.0;
 	m_added_frames = 0;
 
-	f32 wanted_frametime_change = m_wanted_frametime - frametime;
+	f32 wanted_frametime_change = wanted_frametime - frametime;
 	//dstream<<"wanted_frametime_change="<<wanted_frametime_change<<std::endl;
 
 	// If needed frametime change is small, just return
 	// This value was 0.4 for many months until 2011-10-18 by c55;
 	// Let's see how this works out.
-	if (fabs(wanted_frametime_change) < m_wanted_frametime*0.33)
+	if (fabs(wanted_frametime_change) < wanted_frametime*0.33)
 	{
 		//dstream<<"ignoring small wanted_frametime_change"<<std::endl;
 		return;
@@ -420,8 +430,8 @@ void Camera::updateViewingRange(f32 frametime_in)
 	new_range += wanted_range_change;
 	
 	//f32 new_range_unclamped = new_range;
-	new_range = MYMAX(new_range, m_viewing_range_min);
-	new_range = MYMIN(new_range, m_viewing_range_max);
+	new_range = MYMAX(new_range, viewing_range_min);
+	new_range = MYMIN(new_range, viewing_range_max);
 	/*dstream<<"new_range="<<new_range_unclamped
 			<<", clamped to "<<new_range<<std::endl;*/
 
@@ -429,70 +439,11 @@ void Camera::updateViewingRange(f32 frametime_in)
 
 	m_range_old = new_range;
 	m_frametime_old = frametime;
-}
 
-void Camera::updateSettings()
-{
-	m_viewing_range_min = g_settings->getS16("viewing_range_nodes_min");
-	m_viewing_range_min = MYMAX(5.0, m_viewing_range_min);
+	// Just so big a value that everything rendered is visible
+	// Some more allowance than viewing_range_max * BS because of active objects etc.
+	m_cameranode->setFarValue(viewing_range_max * BS * 10);
 
-	m_viewing_range_max = g_settings->getS16("viewing_range_nodes_max");
-	m_viewing_range_max = MYMAX(m_viewing_range_min, m_viewing_range_max);
-
-	f32 fov_degrees = g_settings->getFloat("fov");
-	fov_degrees = MYMAX(fov_degrees, 10.0);
-	fov_degrees = MYMIN(fov_degrees, 170.0);
-	m_fov_y = fov_degrees * PI / 180.0;
-
-	f32 wanted_fps = g_settings->getFloat("wanted_fps");
-	wanted_fps = MYMAX(wanted_fps, 1.0);
-	m_wanted_frametime = 1.0 / wanted_fps;
-}
-
-void Camera::wield(const InventoryItem* item, IGameDef *gamedef)
-{
-	//ITextureSource *tsrc = gamedef->tsrc();
-	INodeDefManager *ndef = gamedef->ndef();
-
-	if (item != NULL)
-	{
-		bool isCube = false;
-
-		// Try to make a MaterialItem cube.
-		if (std::string(item->getName()) == "MaterialItem")
-		{
-			// A block-type material
-			MaterialItem* mat_item = (MaterialItem*) item;
-			content_t content = mat_item->getMaterial();
-			switch(ndef->get(content).drawtype){
-			case NDT_NORMAL:
-			case NDT_LIQUID:
-			case NDT_FLOWINGLIQUID:
-			case NDT_GLASSLIKE:
-			case NDT_ALLFACES:
-			case NDT_ALLFACES_OPTIONAL:
-				m_wieldnode->setCube(ndef->get(content).tiles);
-				isCube = true;
-				break;
-			default:
-				break;
-			}
-		}
-
-		// If that failed, make an extruded sprite.
-		if (!isCube)
-		{
-			m_wieldnode->setSprite(item->getImageRaw());
-		}
-
-		m_wieldnode->setVisible(true);
-	}
-	else
-	{
-		// Bare hands
-		m_wieldnode->setSprite(gamedef->tsrc()->getTextureRaw("wieldhand.png"));
-		m_wieldnode->setVisible(true);
-	}
 }
 
 void Camera::setDigging(s32 button)
@@ -501,156 +452,36 @@ void Camera::setDigging(s32 button)
 		m_digging_button = button;
 }
 
+void Camera::wield(const ItemStack &item, IGameDef *gamedef)
+{
+	IItemDefManager *idef = gamedef->idef();
+	scene::IMesh *wield_mesh = item.getDefinition(idef).wield_mesh;
+	if(wield_mesh)
+	{
+		m_wieldnode->setMesh(wield_mesh);
+		m_wieldnode->setVisible(true);
+	}
+	else
+	{
+		m_wieldnode->setVisible(false);
+	}
+}
+
 void Camera::drawWieldedTool()
 {
+	// Set vertex colors of wield mesh according to light level
+	u8 li = decode_light(m_wieldlight);
+	video::SColor color(255,li,li,li);
+	setMeshColor(m_wieldnode->getMesh(), color);
+
+	// Clear Z buffer
 	m_wieldmgr->getVideoDriver()->clearZBuffer();
 
+	// Draw the wielded node (in a separate scene manager)
 	scene::ICameraSceneNode* cam = m_wieldmgr->getActiveCamera();
 	cam->setAspectRatio(m_cameranode->getAspectRatio());
 	cam->setFOV(m_cameranode->getFOV());
 	cam->setNearValue(0.1);
 	cam->setFarValue(100);
 	m_wieldmgr->drawAll();
-}
-
-
-ExtrudedSpriteSceneNode::ExtrudedSpriteSceneNode(
-	scene::ISceneNode* parent,
-	scene::ISceneManager* mgr,
-	s32 id,
-	const v3f& position,
-	const v3f& rotation,
-	const v3f& scale
-):
-	ISceneNode(parent, mgr, id, position, rotation, scale)
-{
-	m_meshnode = mgr->addMeshSceneNode(NULL, this, -1, v3f(0,0,0), v3f(0,0,0), v3f(1,1,1), true);
-	m_cubemesh = NULL;
-	m_is_cube = false;
-	m_light = LIGHT_MAX;
-}
-
-ExtrudedSpriteSceneNode::~ExtrudedSpriteSceneNode()
-{
-	removeChild(m_meshnode);
-	if (m_cubemesh)
-		m_cubemesh->drop();
-}
-
-void ExtrudedSpriteSceneNode::setSprite(video::ITexture* texture)
-{
-	const v3f sprite_scale(40.0, 40.0, 4.0); // width, height, thickness
-
-	if (texture == NULL)
-	{
-		m_meshnode->setVisible(false);
-		return;
-	}
-
-	io::path name = getExtrudedName(texture);
-	scene::IMeshCache* cache = SceneManager->getMeshCache();
-	scene::IAnimatedMesh* mesh = cache->getMeshByName(name);
-	if (mesh != NULL)
-	{
-		// Extruded texture has been found in cache.
-		m_meshnode->setMesh(mesh);
-	}
-	else
-	{
-		// Texture was not yet extruded, do it now and save in cache
-		mesh = createExtrudedMesh(texture,
-				SceneManager->getVideoDriver(),
-				sprite_scale);
-		if (mesh == NULL)
-		{
-			dstream << "Warning: failed to extrude sprite" << std::endl;
-			m_meshnode->setVisible(false);
-			return;
-		}
-		cache->addMesh(name, mesh);
-		m_meshnode->setMesh(mesh);
-		mesh->drop();
-	}
-
-	m_meshnode->getMaterial(0).setTexture(0, texture);
-	m_meshnode->getMaterial(0).setFlag(video::EMF_LIGHTING, false);
-	m_meshnode->getMaterial(0).setFlag(video::EMF_BILINEAR_FILTER, false);
-	m_meshnode->getMaterial(0).MaterialType = video::EMT_TRANSPARENT_ALPHA_CHANNEL_REF;
-	m_meshnode->setVisible(true);
-	m_is_cube = false;
-	updateLight(m_light);
-}
-
-void ExtrudedSpriteSceneNode::setCube(const TileSpec tiles[6])
-{
-	const v3f cube_scale(30.0, 30.0, 30.0);
-
-	if (m_cubemesh == NULL)
-	{
-		m_cubemesh = createCubeMesh(cube_scale);
-	}
-
-	m_meshnode->setMesh(m_cubemesh);
-	for (int i = 0; i < 6; ++i)
-	{
-		// Get the tile texture and atlas transformation
-		video::ITexture* atlas = tiles[i].texture.atlas;
-		v2f pos = tiles[i].texture.pos;
-		v2f size = tiles[i].texture.size;
-
-		// Set material flags and texture
-		video::SMaterial& material = m_meshnode->getMaterial(i);
-		material.setFlag(video::EMF_LIGHTING, false);
-		material.setFlag(video::EMF_BILINEAR_FILTER, false);
-		tiles[i].applyMaterialOptions(material);
-		material.setTexture(0, atlas);
-		material.getTextureMatrix(0).setTextureTranslate(pos.X, pos.Y);
-		material.getTextureMatrix(0).setTextureScale(size.X, size.Y);
-	}
-	m_meshnode->setVisible(true);
-	m_is_cube = true;
-	updateLight(m_light);
-}
-
-void ExtrudedSpriteSceneNode::updateLight(u8 light)
-{
-	m_light = light;
-
-	u8 li = decode_light(light);
-	// Set brightness one lower than incoming light
-	diminish_light(li);
-	video::SColor color(255,li,li,li);
-	setMeshColor(m_meshnode->getMesh(), color);
-}
-
-void ExtrudedSpriteSceneNode::removeSpriteFromCache(video::ITexture* texture)
-{
-	scene::IMeshCache* cache = SceneManager->getMeshCache();
-	scene::IAnimatedMesh* mesh = cache->getMeshByName(getExtrudedName(texture));
-	if (mesh != NULL)
-		cache->removeMesh(mesh);
-}
-
-const core::aabbox3d<f32>& ExtrudedSpriteSceneNode::getBoundingBox() const
-{
-	return m_meshnode->getBoundingBox();
-}
-
-void ExtrudedSpriteSceneNode::OnRegisterSceneNode()
-{
-	if (IsVisible)
-		SceneManager->registerNodeForRendering(this);
-	ISceneNode::OnRegisterSceneNode();
-}
-
-void ExtrudedSpriteSceneNode::render()
-{
-	// do nothing
-}
-
-io::path ExtrudedSpriteSceneNode::getExtrudedName(video::ITexture* texture)
-{
-	io::path path = texture->getName();
-	path.append("/[extruded]");
-	return path;
 }

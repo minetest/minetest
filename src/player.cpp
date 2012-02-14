@@ -28,6 +28,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "main.h" // For g_settings
 #include "settings.h"
 #include "nodedef.h"
+#include "collision.h"
 #include "environment.h"
 #include "gamedef.h"
 
@@ -37,13 +38,12 @@ Player::Player(IGameDef *gamedef):
 	in_water_stable(false),
 	is_climbing(false),
 	swimming_up(false),
+	inventory(gamedef->idef()),
 	inventory_backup(NULL),
-	craftresult_is_preview(true),
 	hp(20),
 	peer_id(PEER_ID_INEXISTENT),
 // protected
 	m_gamedef(gamedef),
-	m_selected_item(0),
 	m_pitch(0),
 	m_yaw(0),
 	m_speed(0,0,0),
@@ -58,16 +58,12 @@ Player::~Player()
 	delete inventory_backup;
 }
 
-void Player::wieldItem(u16 item)
-{
-	m_selected_item = item;
-}
-
 void Player::resetInventory()
 {
 	inventory.clear();
 	inventory.addList("main", PLAYER_INVENTORY_SIZE);
 	inventory.addList("craft", 9);
+	inventory.addList("craftpreview", 1);
 	inventory.addList("craftresult", 1);
 }
 
@@ -123,7 +119,6 @@ void Player::serialize(std::ostream &os)
 	args.setFloat("pitch", m_pitch);
 	args.setFloat("yaw", m_yaw);
 	args.setV3F("position", m_position);
-	args.setBool("craftresult_is_preview", craftresult_is_preview);
 	args.setS32("hp", hp);
 
 	args.writeLines(os);
@@ -162,17 +157,27 @@ void Player::deSerialize(std::istream &is)
 	setYaw(args.getFloat("yaw"));
 	setPosition(args.getV3F("position"));
 	try{
-		craftresult_is_preview = args.getBool("craftresult_is_preview");
-	}catch(SettingNotFoundException &e){
-		craftresult_is_preview = true;
-	}
-	try{
 		hp = args.getS32("hp");
 	}catch(SettingNotFoundException &e){
 		hp = 20;
 	}
 
-	inventory.deSerialize(is, m_gamedef);
+	inventory.deSerialize(is);
+
+	if(inventory.getList("craftpreview") == NULL)
+	{
+		// Convert players without craftpreview
+		inventory.addList("craftpreview", 1);
+
+		bool craftresult_is_preview = true;
+		if(args.exists("craftresult_is_preview"))
+			craftresult_is_preview = args.getBool("craftresult_is_preview");
+		if(craftresult_is_preview)
+		{
+			// Clear craftresult
+			inventory.getList("craftresult")->changeItem(0, ItemStack());
+		}
+	}
 }
 
 #ifndef SERVER
@@ -708,14 +713,17 @@ void LocalPlayer::applyControl(float dtime)
 		}
 		else if(touching_ground)
 		{
-			v3f speed = getSpeed();
 			/*
 				NOTE: The d value in move() affects jump height by
 				raising the height at which the jump speed is kept
 				at its starting value
 			*/
-			speed.Y = 6.5*BS;
-			setSpeed(speed);
+			v3f speed = getSpeed();
+			if(speed.Y >= -0.5*BS)
+			{
+				speed.Y = 6.5*BS;
+				setSpeed(speed);
+			}
 		}
 		// Use the oscillating value for getting out of water
 		// (so that the player doesn't fly on the surface)

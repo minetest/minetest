@@ -39,6 +39,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "activeobject.h"
 
 class Server;
+class ServerEnvironment;
 class ActiveBlockModifier;
 class ServerActiveObject;
 typedef struct lua_State lua_State;

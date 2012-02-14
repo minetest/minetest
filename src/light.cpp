@@ -20,6 +20,58 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "light.h"
 
 #if 1
+/*
+Made using this and:
+- adding 220 as the second last one
+- replacing the third last one (212) with 195
+
+#!/usr/bin/python
+
+from math import *
+from sys import stdout
+
+# We want 0 at light=0 and 255 at light=LIGHT_MAX
+LIGHT_MAX = 14
+#FACTOR = 0.69
+#FACTOR = 0.75
+FACTOR = 0.83
+START_FROM_ZERO = False
+
+L = []
+if START_FROM_ZERO:
+    for i in range(1,LIGHT_MAX+1):
+        L.append(int(round(255.0 * FACTOR ** (i-1))))
+    L.append(0)
+else:
+    for i in range(1,LIGHT_MAX+1):
+        L.append(int(round(255.0 * FACTOR ** (i-1))))
+    L.append(255)
+
+L.reverse()
+for i in L:
+    stdout.write(str(i)+",\n")
+*/
+u8 light_decode_table[LIGHT_MAX+1] = 
+{
+23,
+27,
+33,
+40,
+48,
+57,
+69,
+83,
+100,
+121,
+146,
+176,
+195,
+220,
+255,
+};
+#endif
+
+#if 0
 // This is good
 // a_n+1 = a_n * 0.786
 // Length of LIGHT_MAX+1 means LIGHT_MAX is the last value.
@@ -42,7 +94,9 @@ u8 light_decode_table[LIGHT_MAX+1] =
 200,
 255,
 };
-#else
+#endif
+
+#if 0
 // Use for debugging in dark
 u8 light_decode_table[LIGHT_MAX+1] = 
 {

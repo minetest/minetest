@@ -26,6 +26,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "sha1.h"
 #include "base64.h"
 #include "log.h"
+#include <iomanip>
 
 TimeTaker::TimeTaker(const char *name, u32 *result)
 {
@@ -207,7 +208,7 @@ bool isBlockInSight(v3s16 blockpos_b, v3f camera_pos, v3f camera_dir,
 		return true;
 
 	// If block is far away, it's not in sight
-	if(d > range * BS)
+	if(d > range)
 		return false;
 
 	// Maximum radius of a block
@@ -232,6 +233,100 @@ bool isBlockInSight(v3s16 blockpos_b, v3f camera_pos, v3f camera_dir,
 		return false;
 
 	return true;
+}
+
+// Creates a string encoded in JSON format (almost equivalent to a C string literal)
+std::string serializeJsonString(const std::string &plain)
+{
+	std::ostringstream os(std::ios::binary);
+	os<<"\"";
+	for(size_t i = 0; i < plain.size(); i++)
+	{
+		char c = plain[i];
+		switch(c)
+		{
+			case '"': os<<"\\\""; break;
+			case '\\': os<<"\\\\"; break;
+			case '/': os<<"\\/"; break;
+			case '\b': os<<"\\b"; break;
+			case '\f': os<<"\\f"; break;
+			case '\n': os<<"\\n"; break;
+			case '\r': os<<"\\r"; break;
+			case '\t': os<<"\\t"; break;
+			default:
+			{
+				if(c >= 32 && c <= 126)
+				{
+					os<<c;
+				}
+				else
+				{
+					u32 cnum = (u32) (u8) c;
+					os<<"\\u"<<std::hex<<std::setw(4)<<std::setfill('0')<<cnum;
+				}
+				break;
+			}
+		}
+	}
+	os<<"\"";
+	return os.str();
+}
+
+// Reads a string encoded in JSON format
+std::string deSerializeJsonString(std::istream &is)
+{
+	std::ostringstream os(std::ios::binary);
+	char c, c2;
+
+	// Parse initial doublequote
+	is >> c;
+	if(c != '"')
+		throw SerializationError("JSON string must start with doublequote");
+
+	// Parse characters
+	for(;;)
+	{
+		c = is.get();
+		if(is.eof())
+			throw SerializationError("JSON string ended prematurely");
+		if(c == '"')
+		{
+			return os.str();
+		}
+		else if(c == '\\')
+		{
+			c2 = is.get();
+			if(is.eof())
+				throw SerializationError("JSON string ended prematurely");
+			switch(c2)
+			{
+				default:  os<<c2; break;
+				case 'b': os<<'\b'; break;
+				case 'f': os<<'\f'; break;
+				case 'n': os<<'\n'; break;
+				case 'r': os<<'\r'; break;
+				case 't': os<<'\t'; break;
+				case 'u':
+				{
+					char hexdigits[4+1];
+					is.read(hexdigits, 4);
+					if(is.eof())
+						throw SerializationError("JSON string ended prematurely");
+					hexdigits[4] = 0;
+					std::istringstream tmp_is(hexdigits, std::ios::binary);
+					int hexnumber;
+					tmp_is >> std::hex >> hexnumber;
+					os<<((char)hexnumber);
+					break;
+				}
+			}
+		}
+		else
+		{
+			os<<c;
+		}
+	}
+	return os.str();
 }
 
 // Get an sha-1 hash of the player's name combined with

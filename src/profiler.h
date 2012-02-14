@@ -100,11 +100,30 @@ public:
 
 	void print(std::ostream &o)
 	{
+		printPage(o, 1, 1);
+	}
+
+	void printPage(std::ostream &o, u32 page, u32 pagecount)
+	{
 		JMutexAutoLock lock(m_mutex);
+
+		u32 minindex, maxindex;
+		paging(m_data.size(), page, pagecount, minindex, maxindex);
+
 		for(core::map<std::string, float>::Iterator
 				i = m_data.getIterator();
 				i.atEnd() == false; i++)
 		{
+			if(maxindex == 0)
+				break;
+			maxindex--;
+
+			if(minindex != 0)
+			{
+				minindex--;
+				continue;
+			}
+
 			std::string name = i.getNode()->getKey();
 			int avgcount = 1;
 			core::map<std::string, int>::Node *n = m_avgcounts.find(name);

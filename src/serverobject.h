@@ -23,6 +23,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "irrlichttypes.h"
 #include "activeobject.h"
 #include "utility.h"
+#include "inventorymanager.h"
 
 /*
 
@@ -41,7 +42,7 @@ Some planning
 */
 
 class ServerEnvironment;
-class InventoryItem;
+struct ItemStack;
 class Player;
 struct ToolDiggingProperties;
 
@@ -138,18 +139,26 @@ public:
 	{}
 	virtual void rightClick(ServerActiveObject *clicker)
 	{}
-	virtual void getWieldDiggingProperties(ToolDiggingProperties *dst);
-	virtual void damageWieldedItem(u16 amount)
-	{}
-	// If all fits, eats item and returns true. Otherwise returns false.
-	virtual bool addToInventory(InventoryItem *item)
-	{ return false; }
-	virtual void addToInventoryLater(InventoryItem *item)
-	{}
 	virtual void setHP(s16 hp)
 	{}
 	virtual s16 getHP()
 	{ return 0; }
+
+	// Inventory and wielded item
+	virtual Inventory* getInventory()
+	{ return NULL; }
+	virtual const Inventory* getInventory() const
+	{ return NULL; }
+	virtual InventoryLocation getInventoryLocation() const
+	{ return InventoryLocation(); }
+	virtual void setInventoryModified()
+	{}
+	virtual std::string getWieldList() const
+	{ return ""; }
+	virtual int getWieldIndex() const
+	{ return 0; }
+	virtual ItemStack getWieldedItem() const;
+	virtual bool setWieldedItem(const ItemStack &item);
 
 	/*
 		Number of players which know about this object. Object won't be

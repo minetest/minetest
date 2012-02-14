@@ -29,6 +29,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "tile.h"
 #endif
 #include "materials.h" // MaterialProperties
+class IItemDefManager;
 class ITextureSource;
 class IGameDef;
 
@@ -36,9 +37,19 @@ enum ContentParamType
 {
 	CPT_NONE,
 	CPT_LIGHT,
-	CPT_MINERAL,
+};
+
+enum ContentParamType2
+{
+	CPT2_NONE,
+	// Need 8-bit param2
+	CPT2_FULL,
+	// Flowing liquid properties
+	CPT2_FLOWINGLIQUID,
 	// Direction for chests and furnaces and such
-	CPT_FACEDIR_SIMPLE
+	CPT2_FACEDIR,
+	// Direction for signs, torches and such
+	CPT2_WALLMOUNTED,
 };
 
 enum LiquidType
@@ -52,7 +63,7 @@ enum NodeBoxType
 {
 	NODEBOX_REGULAR, // Regular block; allows buildable_to
 	NODEBOX_FIXED, // Static separately defined box
-	NODEBOX_WALLMOUNTED, // Box for wall_mounted nodes; (top, bottom, side)
+	NODEBOX_WALLMOUNTED, // Box for wall mounted nodes; (top, bottom, side)
 };
 
 struct NodeBox
@@ -124,7 +135,6 @@ struct ContentFeatures
 	// 0     1     2     3     4     5
 	// up    down  right left  back  front 
 	TileSpec tiles[6];
-	video::ITexture *inventory_texture;
 	// Special material/texture
 	// - Currently used for flowing liquids
 	video::SMaterial *special_materials[CF_SPECIAL_COUNT];
@@ -133,11 +143,7 @@ struct ContentFeatures
 	u8 visual_solidness; // When solidness=0, this tells how it looks like
 	bool backface_culling;
 #endif
-	
-	// List of textures that are used and are wanted to be included in
-	// the texture atlas
-	std::set<std::string> used_texturenames;
-	
+
 	/*
 		Actual data
 	*/
@@ -148,7 +154,6 @@ struct ContentFeatures
 	enum NodeDrawType drawtype;
 	float visual_scale; // Misc. scale parameter
 	std::string tname_tiles[6];
-	std::string tname_inventory;
 	MaterialSpec mspec_special[CF_SPECIAL_COUNT]; // Use setter methods
 	u8 alpha;
 
@@ -156,6 +161,8 @@ struct ContentFeatures
 	video::SColor post_effect_color;
 	// Type of MapNode::param1
 	ContentParamType param_type;
+	// Type of MapNode::param2
+	ContentParamType2 param_type_2;
 	// True for all ground-like things like stone and mud, false for eg. trees
 	bool is_ground_content;
 	bool light_propagates;
@@ -171,20 +178,6 @@ struct ContentFeatures
 	bool climbable;
 	// Player can build on these
 	bool buildable_to;
-	// If true, param2 is set to direction when placed. Used for torches.
-	// NOTE: the direction format is quite inefficient and should be changed
-	bool wall_mounted;
-	// Whether this content type often contains mineral.
-	// Used for texture atlas creation.
-	// Currently only enabled for CONTENT_STONE.
-	bool often_contains_mineral;
-	// Inventory item string as which the node appears in inventory when dug.
-	// Mineral overrides this.
-	std::string dug_item;
-	// Extra dug item and its rarity
-	std::string extra_dug_item;
-	// Usual get interval for extra dug item
-	s32 extra_dug_item_rarity;
 	// Metadata name of node (eg. "furnace")
 	std::string metadata_name;
 	// Whether the node is non-liquid, source liquid or flowing liquid
@@ -202,9 +195,11 @@ struct ContentFeatures
 	u32 damage_per_second;
 	NodeBox selection_box;
 	MaterialProperties material;
-	std::string cookresult_item;
-	float furnace_cooktime;
-	float furnace_burntime;
+	// Compatibility with old maps
+	// Set to true if paramtype used to be 'facedir_simple'
+	bool legacy_facedir_simple;
+	// Set to true if wall_mounted used to be set to true
+	bool legacy_wallmounted;
 
 	/*
 		Methods
@@ -214,22 +209,8 @@ struct ContentFeatures
 	~ContentFeatures();
 	void reset();
 	void serialize(std::ostream &os);
-	void deSerialize(std::istream &is, IGameDef *gamedef);
+	void deSerialize(std::istream &is);
 
-	/*
-		Texture setters.
-		
-	*/
-	
-	// Texture setters. They also add stuff to used_texturenames.
-	void setTexture(u16 i, std::string name);
-	void setAllTextures(std::string name);
-	void setSpecialMaterial(u16 i, const MaterialSpec &mspec);
-
-	void setInventoryTexture(std::string imgname);
-	void setInventoryTextureCube(std::string top,
-			std::string left, std::string right);
-	
 	/*
 		Some handy methods
 	*/
@@ -253,7 +234,6 @@ public:
 	virtual bool getId(const std::string &name, content_t &result) const=0;
 	virtual content_t getId(const std::string &name) const=0;
 	virtual const ContentFeatures& get(const std::string &name) const=0;
-	virtual std::string getAlias(const std::string &name) const =0;
 	
 	virtual void serialize(std::ostream &os)=0;
 };
@@ -271,8 +251,7 @@ public:
 	virtual content_t getId(const std::string &name) const=0;
 	// If not found, returns the features of CONTENT_IGNORE
 	virtual const ContentFeatures& get(const std::string &name) const=0;
-	virtual std::string getAlias(const std::string &name) const =0;
-		
+
 	// Register node definition
 	virtual void set(content_t c, const ContentFeatures &def)=0;
 	// Register node definition by name (allocate an id)
@@ -281,11 +260,12 @@ public:
 			const ContentFeatures &def)=0;
 	// If returns CONTENT_IGNORE, could not allocate id
 	virtual content_t allocateDummy(const std::string &name)=0;
-	// Set an alias so that nodes named <name> will load as <convert_to>.
-	// Alias is not set if <name> has already been defined.
-	// Alias will be removed if <name> is defined at a later point of time.
-	virtual void setAlias(const std::string &name,
-			const std::string &convert_to)=0;
+
+	/*
+		Update item alias mapping.
+		Call after updating item definitions.
+	*/
+	virtual void updateAliases(IItemDefManager *idef)=0;
 
 	/*
 		Update tile textures to latest return values of TextueSource.
@@ -294,7 +274,7 @@ public:
 	virtual void updateTextures(ITextureSource *tsrc)=0;
 
 	virtual void serialize(std::ostream &os)=0;
-	virtual void deSerialize(std::istream &is, IGameDef *gamedef)=0;
+	virtual void deSerialize(std::istream &is)=0;
 };
 
 IWritableNodeDefManager* createNodeDefManager();

@@ -21,12 +21,11 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #define GAMEDEF_HEADER
 
 #include <string>
+#include "irrlichttypes.h"
 
-class IToolDefManager;
+class IItemDefManager;
 class INodeDefManager;
 class ICraftDefManager;
-class ICraftItemDefManager;
-// Mineral too?
 class ITextureSource;
 
 /*
@@ -39,10 +38,9 @@ class IGameDef
 public:
 	// These are thread-safe IF they are not edited while running threads.
 	// Thus, first they are set up and then they are only read.
-	virtual IToolDefManager* getToolDefManager()=0;
+	virtual IItemDefManager* getItemDefManager()=0;
 	virtual INodeDefManager* getNodeDefManager()=0;
 	virtual ICraftDefManager* getCraftDefManager()=0;
-	virtual ICraftItemDefManager* getCraftItemDefManager()=0;
 
 	// This is always thread-safe, but referencing the irrlicht texture
 	// pointers in other threads than main thread will make things explode.
@@ -52,10 +50,9 @@ public:
 	virtual u16 allocateUnknownNodeId(const std::string &name)=0;
 
 	// Shorthands
-	IToolDefManager* tdef(){return getToolDefManager();}
+	IItemDefManager* idef(){return getItemDefManager();}
 	INodeDefManager* ndef(){return getNodeDefManager();}
 	ICraftDefManager* cdef(){return getCraftDefManager();}
-	ICraftItemDefManager* cidef(){return getCraftItemDefManager();}
 	ITextureSource* tsrc(){return getTextureSource();}
 };
 

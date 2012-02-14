@@ -27,7 +27,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <ICameraSceneNode.h>
 #include "log.h"
 #include "mapnode.h" // For texture atlas making
-#include "mineral.h" // For texture atlas making
 #include "nodedef.h" // For texture atlas making
 #include "gamedef.h"
 
@@ -299,8 +298,8 @@ public:
 		Example names:
 		"stone.png"
 		"stone.png^crack2"
-		"stone.png^blit:mineral_coal.png"
-		"stone.png^blit:mineral_coal.png^crack1"
+		"stone.png^mineral_coal.png"
+		"stone.png^mineral_coal.png^crack1"
 
 		- If texture specified by name is found from cache, return the
 		  cached id.
@@ -335,6 +334,12 @@ public:
 	{
 		AtlasPointer ap = getTexture(name + "^[forcesingle");
 		return ap.atlas;
+	}
+
+	// Returns a pointer to the irrlicht device
+	virtual IrrlichtDevice* getDevice()
+	{
+		return m_device;
 	}
 
 	// Update new texture pointer and texture coordinates to an
@@ -469,8 +474,6 @@ u32 TextureSource::getTextureId(const std::string &name)
 	return 0;
 }
 
-// Draw a progress bar on the image
-void make_progressbar(float value, video::IImage *image);
 // Brighten image
 void brighten(video::IImage *image);
 
@@ -816,20 +819,10 @@ void TextureSource::buildMainAtlas(class IGameDef *gamedef)
 		if(j == CONTENT_IGNORE || j == CONTENT_AIR)
 			continue;
 		const ContentFeatures &f = ndef->get(j);
-		for(std::set<std::string>::const_iterator
-				i = f.used_texturenames.begin();
-				i != f.used_texturenames.end(); i++)
+		for(u32 i=0; i<6; i++)
 		{
-			std::string name = *i;
+			std::string name = f.tname_tiles[i];
 			sourcelist[name] = true;
-
-			if(f.often_contains_mineral){
-				for(int k=1; k<MINERAL_COUNT; k++){
-					std::string mineraltexture = mineral_block_texture(k);
-					std::string fulltexture = name + "^" + mineraltexture;
-					sourcelist[fulltexture] = true;
-				}
-			}
 		}
 	}
 	
@@ -1317,23 +1310,6 @@ bool generate_image(std::string part_of_name, video::IImage *& baseimg,
 			}
 		}
 		/*
-			[progressbarN
-			Adds a progress bar, 0.0 <= N <= 1.0
-		*/
-		else if(part_of_name.substr(0,12) == "[progressbar")
-		{
-			if(baseimg == NULL)
-			{
-				errorstream<<"generate_image(): baseimg==NULL "
-						<<"for part_of_name=\""<<part_of_name
-						<<"\", cancelling."<<std::endl;
-				return false;
-			}
-
-			float value = stof(part_of_name.substr(12));
-			make_progressbar(value, baseimg);
-		}
-		/*
 			"[brighten"
 		*/
 		else if(part_of_name.substr(0,9) == "[brighten")
@@ -1442,23 +1418,6 @@ bool generate_image(std::string part_of_name, video::IImage *& baseimg,
 			std::string imagename_left = sf.next("{");
 			std::string imagename_right = sf.next("{");
 
-#if 1
-			// TODO: Create cube with different textures on different sides
-
-			if(driver->queryFeature(video::EVDF_RENDER_TO_TARGET) == false)
-			{
-				errorstream<<"generate_image(): EVDF_RENDER_TO_TARGET"
-						" not supported. Creating fallback image"<<std::endl;
-				baseimg = generate_image_from_scratch(
-						imagename_top, device, sourcecache);
-				return true;
-			}
-			
-			u32 w0 = 64;
-			u32 h0 = 64;
-			//infostream<<"inventorycube w="<<w0<<" h="<<h0<<std::endl;
-			core::dimension2d<u32> dim(w0,h0);
-			
 			// Generate images for the faces of the cube
 			video::IImage *img_top = generate_image_from_scratch(
 					imagename_top, device, sourcecache);
@@ -1482,84 +1441,65 @@ bool generate_image(std::string part_of_name, video::IImage *& baseimg,
 			img_left->drop();
 			img_right->drop();
 			
-			// Create render target texture
-			video::ITexture *rtt = NULL;
-			std::string rtt_name = part_of_name + "_RTT";
-			rtt = driver->addRenderTargetTexture(dim, rtt_name.c_str(),
-					video::ECF_A8R8G8B8);
-			assert(rtt);
-			
-			// Set render target
-			driver->setRenderTarget(rtt, true, true,
-					video::SColor(0,0,0,0));
-			
-			// Get a scene manager
-			scene::ISceneManager *smgr_main = device->getSceneManager();
-			assert(smgr_main);
-			scene::ISceneManager *smgr = smgr_main->createNewSceneManager();
-			assert(smgr);
-			
 			/*
-				Create scene:
-				- An unit cube is centered at 0,0,0
-				- Camera looks at cube from Y+, Z- towards Y-, Z+
+				Draw a cube mesh into a render target texture
 			*/
-
 			scene::IMesh* cube = createCubeMesh(v3f(1, 1, 1));
 			setMeshColor(cube, video::SColor(255, 255, 255, 255));
+			cube->getMeshBuffer(0)->getMaterial().setTexture(0, texture_top);
+			cube->getMeshBuffer(1)->getMaterial().setTexture(0, texture_top);
+			cube->getMeshBuffer(2)->getMaterial().setTexture(0, texture_right);
+			cube->getMeshBuffer(3)->getMaterial().setTexture(0, texture_right);
+			cube->getMeshBuffer(4)->getMaterial().setTexture(0, texture_left);
+			cube->getMeshBuffer(5)->getMaterial().setTexture(0, texture_left);
 
-			scene::IMeshSceneNode* cubenode = smgr->addMeshSceneNode(cube, NULL, -1, v3f(0,0,0), v3f(0,45,0), v3f(1,1,1), true);
-			cube->drop();
+			core::dimension2d<u32> dim(64,64);
+			std::string rtt_texture_name = part_of_name + "_RTT";
 
-			// Set texture of cube
-			cubenode->getMaterial(0).setTexture(0, texture_top);
-			cubenode->getMaterial(1).setTexture(0, texture_top);
-			cubenode->getMaterial(2).setTexture(0, texture_right);
-			cubenode->getMaterial(3).setTexture(0, texture_right);
-			cubenode->getMaterial(4).setTexture(0, texture_left);
-			cubenode->getMaterial(5).setTexture(0, texture_left);
-			cubenode->setMaterialFlag(video::EMF_LIGHTING, true);
-			cubenode->setMaterialFlag(video::EMF_ANTI_ALIASING, true);
-			cubenode->setMaterialFlag(video::EMF_BILINEAR_FILTER, true);
-
-			scene::ICameraSceneNode* camera = smgr->addCameraSceneNode(0,
-					v3f(0, 1.0, -1.5), v3f(0, 0, 0));
+			v3f camera_position(0, 1.0, -1.5);
+			camera_position.rotateXZBy(45);
+			v3f camera_lookat(0, 0, 0);
+			core::CMatrix4<f32> camera_projection_matrix;
 			// Set orthogonal projection
-			core::CMatrix4<f32> pm;
-			pm.buildProjectionMatrixOrthoLH(1.65, 1.65, 0, 100);
-			camera->setProjectionMatrix(pm, true);
+			camera_projection_matrix.buildProjectionMatrixOrthoLH(
+					1.65, 1.65, 0, 100);
 
-			/*scene::ILightSceneNode *light =*/ smgr->addLightSceneNode(0,
-					v3f(-50, 100, -75), video::SColorf(0.5,0.5,0.5), 1000);
+			video::SColorf ambient_light(0.2,0.2,0.2);
+			v3f light_position(10, 100, -50);
+			video::SColorf light_color(0.5,0.5,0.5);
+			f32 light_radius = 1000;
 
-			smgr->setAmbientLight(video::SColorf(0.2,0.2,0.2));
-
-			// Render scene
-			driver->beginScene(true, true, video::SColor(0,0,0,0));
-			smgr->drawAll();
-			driver->endScene();
+			video::ITexture *rtt = generateTextureFromMesh(
+					cube, device, dim, rtt_texture_name,
+					camera_position,
+					camera_lookat,
+					camera_projection_matrix,
+					ambient_light,
+					light_position,
+					light_color,
+					light_radius);
 			
-			// NOTE: The scene nodes should not be dropped, otherwise
-			//       smgr->drop() segfaults
-			/*cube->drop();
-			camera->drop();
-			light->drop();*/
-			// Drop scene manager
-			smgr->drop();
-			
-			// Unset render target
-			driver->setRenderTarget(0, true, true, 0);
+			// Drop mesh
+			cube->drop();
 
 			// Free textures of images
 			driver->removeTexture(texture_top);
 			driver->removeTexture(texture_left);
 			driver->removeTexture(texture_right);
 			
+			if(rtt == NULL)
+			{
+				errorstream<<"generate_image(): render to texture failed."
+						" Creating fallback image"<<std::endl;
+				baseimg = generate_image_from_scratch(
+						imagename_top, device, sourcecache);
+				return true;
+			}
+
 			// Create image of render target
 			video::IImage *image = driver->createImage(rtt, v2s32(0,0), dim);
-
 			assert(image);
-			
+
 			baseimg = driver->createImage(video::ECF_A8R8G8B8, dim);
 
 			if(image)
@@ -1567,7 +1507,6 @@ bool generate_image(std::string part_of_name, video::IImage *& baseimg,
 				image->copyTo(baseimg);
 				image->drop();
 			}
-#endif
 		}
 		else
 		{
@@ -1577,38 +1516,6 @@ bool generate_image(std::string part_of_name, video::IImage *& baseimg,
 	}
 
 	return true;
-}
-
-void make_progressbar(float value, video::IImage *image)
-{
-	if(image == NULL)
-		return;
-	
-	core::dimension2d<u32> size = image->getDimension();
-
-	u32 barheight = size.Height/16;
-	u32 barpad_x = size.Width/16;
-	u32 barpad_y = size.Height/16;
-	u32 barwidth = size.Width - barpad_x*2;
-	v2u32 barpos(barpad_x, size.Height - barheight - barpad_y);
-
-	u32 barvalue_i = (u32)(((float)barwidth * value) + 0.5);
-
-	video::SColor active(255,255,0,0);
-	video::SColor inactive(255,0,0,0);
-	for(u32 x0=0; x0<barwidth; x0++)
-	{
-		video::SColor *c;
-		if(x0 < barvalue_i)
-			c = &active;
-		else
-			c = &inactive;
-		u32 x = x0 + barpos.X;
-		for(u32 y=barpos.Y; y<barpos.Y+barheight; y++)
-		{
-			image->setPixel(x,y, *c);
-		}
-	}
 }
 
 void brighten(video::IImage *image)
