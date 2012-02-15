@@ -1169,7 +1169,7 @@ minetest.register_node("default:sandstone", {
 	description = "Sandstone",
 	tile_images = {"default_sandstone.png"},
 	is_ground_content = true,
-	material = minetest.digprop_dirtlike(1.0),  -- FIXME should this be stonelike?
+	material = minetest.digprop_stonelike(1.0),  -- Fixed by Jordach to stonelike.
 	drop = 'default:sand',
 })
 
@@ -1226,9 +1226,9 @@ minetest.register_node("default:leaves", {
 		max_items = 1,
 		items = {
 			{
-				-- player will get sapling with 1/20 chance
+				-- player will get sapling with 1/15 chance
 				items = {'default:sapling'},
-				rarity = 20,
+				rarity = 15,
 			},
 			{
 				-- player will get leaves only if he get no saplings,
@@ -1656,7 +1656,8 @@ minetest.add_to_creative_inventory('default:sign_wall')
 minetest.add_to_creative_inventory('default:water_source')
 minetest.add_to_creative_inventory('default:lava_source')
 minetest.add_to_creative_inventory('default:ladder')
-
+minetest.add_to_creative_inventory('default:nyancat')  --Added by Jordach
+minetest.add_to_creative_inventory('default:nyancat_rainbow') -- Added by Jordach
 --
 -- Some common functions
 --
