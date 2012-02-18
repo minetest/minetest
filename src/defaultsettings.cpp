@@ -53,7 +53,7 @@ void set_default_settings(Settings *settings)
 	settings->setDefault("keymap_increase_viewing_range_min", "KEY_PRIOR");
 	settings->setDefault("keymap_decrease_viewing_range_min", "KEY_NEXT");
 	settings->setDefault("anaglyph", "false");
-	settings->setDefault("anaglyph_strength", "0.01");
+	settings->setDefault("anaglyph_strength", "0.1");
 
 	// Some (temporary) keys for debugging
 	settings->setDefault("keymap_print_debug_stacks", "KEY_KEY_P");
