@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: 0.0.0\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2012-02-26 17:38+0100\n"
-"PO-Revision-Date: 2011-08-02 11:54+0100\n"
+"PO-Revision-Date: 2012-02-26 17:41+0100\n"
 "Last-Translator: Constantin Wenger <constantin.wenger@googlemail.com>\n"
 "Language-Team: Deutsch <>\n"
 "MIME-Version: 1.0\n"
@@ -19,11 +19,11 @@ msgstr ""
 
 #: src/guiDeathScreen.cpp:96
 msgid "You died."
-msgstr ""
+msgstr "Du bist gestorben"
 
 #: src/guiDeathScreen.cpp:104
 msgid "Respawn"
-msgstr ""
+msgstr "Neu einsteigen"
 
 #: src/guiKeyChangeMenu.cpp:89
 msgid "KEYBINDINGS"
@@ -59,7 +59,7 @@ msgstr "Springen"
 
 #: src/guiKeyChangeMenu.cpp:209
 msgid "Drop"
-msgstr ""
+msgstr "Ablegen"
 
 #: src/guiKeyChangeMenu.cpp:224
 msgid "Inventory"
@@ -131,11 +131,11 @@ msgstr "Besseres Licht"
 
 #: src/guiMainMenu.cpp:277
 msgid "3D Clouds"
-msgstr ""
+msgstr "3D Wolken"
 
 #: src/guiMainMenu.cpp:283
 msgid "Opaque water"
-msgstr ""
+msgstr "Undurchsichtiges Wasser"
 
 #: src/guiMainMenu.cpp:291
 msgid "Start Game / Connect"
@@ -378,7 +378,7 @@ msgstr "Win links"
 
 #: src/keycode.cpp:231
 msgid "Apps"
-msgstr ""
+msgstr "Menü"
 
 #: src/keycode.cpp:231
 msgid "Numpad 0"
