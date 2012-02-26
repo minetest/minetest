@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: 0.0.0\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2012-02-26 17:38+0100\n"
-"PO-Revision-Date: 2012-02-26 17:41+0100\n"
+"PO-Revision-Date: 2012-02-26 18:46+0100\n"
 "Last-Translator: Constantin Wenger <constantin.wenger@googlemail.com>\n"
 "Language-Team: Deutsch <>\n"
 "MIME-Version: 1.0\n"
@@ -70,7 +70,6 @@ msgid "Chat"
 msgstr "Chat"
 
 #: src/guiKeyChangeMenu.cpp:254
-#, fuzzy
 msgid "Command"
 msgstr "Komma"
 
@@ -198,7 +197,6 @@ msgid "Exit to OS"
 msgstr "Programm beenden"
 
 #: src/guiPauseMenu.cpp:144
-#, fuzzy
 msgid ""
 "Default Controls:\n"
 "- WASD: Walk\n"
@@ -328,7 +326,6 @@ msgid "Next"
 msgstr "Bild runter"
 
 #: src/keycode.cpp:225
-#, fuzzy
 msgid "Prior"
 msgstr "Bild hoch"
 
@@ -457,7 +454,6 @@ msgid "Left Shift"
 msgstr "Umsch. links"
 
 #: src/keycode.cpp:238
-#, fuzzy
 msgid "Right Shift"
 msgstr "Umsch. rechts"
 
