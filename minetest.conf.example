@@ -139,14 +139,18 @@
 # Profiler data print interval. #0 = disable.
 #profiler_print_interval = 0
 #enable_mapgen_debug_info = false
+# from how far client knows about objects
 #active_object_send_range_blocks = 3
+# how large area of blocks are subject to the active block stuff (active = objects are loaded and ABMs run)
 #active_block_range = 2
+# how many blocks are flying in the wire simultaneously per client
 #max_simultaneous_block_sends_per_client = 2
+# how many blocks are flying in the wire simultaneously per server
 #max_simultaneous_block_sends_server_total = 8
 #max_block_send_distance = 7
 #max_block_generate_distance = 5
 #time_send_interval = 20
-# Length of day/night cycle. 72=20min, 360=4min, 1=24hour
+# Length of day/night cycle. 72=20min, 360=4min, 1=24hour, 0=day/night/whatever stays unchanged
 #time_speed = 72
 #server_unload_unused_data_timeout = 29
 #server_map_save_interval = 5.3
