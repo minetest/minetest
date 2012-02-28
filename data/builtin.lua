@@ -106,7 +106,7 @@ function minetest.get_pointed_thing_position(pointed_thing, above)
 			return pointed_thing.under
 		end
 	elseif pointed_thing.type == "object" then
-		obj = pointed.thing.ref
+		obj = pointed_thing.ref
 		if obj ~= nil then
 			return obj:getpos()
 		else
