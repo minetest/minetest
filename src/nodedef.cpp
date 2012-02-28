@@ -118,6 +118,7 @@ void ContentFeatures::reset()
 		      in builtin.lua
 	*/
 	name = "";
+	groups.clear();
 	drawtype = NDT_NORMAL;
 	visual_scale = 1.0;
 	for(u32 i=0; i<6; i++)
@@ -144,18 +145,20 @@ void ContentFeatures::reset()
 	light_source = 0;
 	damage_per_second = 0;
 	selection_box = NodeBox();
-	material = MaterialProperties();
-	// Make unknown blocks diggable
-	material.diggability = DIGGABLE_CONSTANT;
-	material.constant_time = 0.5;
 	legacy_facedir_simple = false;
 	legacy_wallmounted = false;
 }
 
 void ContentFeatures::serialize(std::ostream &os)
 {
-	writeU8(os, 1); // version
+	writeU8(os, 2); // version
 	os<<serializeString(name);
+	writeU16(os, groups.size());
+	for(std::map<std::string, int>::const_iterator
+			i = groups.begin(); i != groups.end(); i++){
+		os<<serializeString(i->first);
+		writeS16(os, i->second);
+	}
 	writeU8(os, drawtype);
 	writeF1000(os, visual_scale);
 	writeU8(os, 6);
@@ -188,7 +191,6 @@ void ContentFeatures::serialize(std::ostream &os)
 	writeU8(os, light_source);
 	writeU32(os, damage_per_second);
 	selection_box.serialize(os);
-	material.serialize(os);
 	writeU8(os, legacy_facedir_simple);
 	writeU8(os, legacy_wallmounted);
 }
@@ -196,9 +198,16 @@ void ContentFeatures::serialize(std::ostream &os)
 void ContentFeatures::deSerialize(std::istream &is)
 {
 	int version = readU8(is);
-	if(version != 1)
+	if(version != 2)
 		throw SerializationError("unsupported ContentFeatures version");
 	name = deSerializeString(is);
+	groups.clear();
+	u32 groups_size = readU16(is);
+	for(u32 i=0; i<groups_size; i++){
+		std::string name = deSerializeString(is);
+		int value = readS16(is);
+		groups[name] = value;
+	}
 	drawtype = (enum NodeDrawType)readU8(is);
 	visual_scale = readF1000(is);
 	if(readU8(is) != 6)
@@ -233,7 +242,6 @@ void ContentFeatures::deSerialize(std::istream &is)
 	light_source = readU8(is);
 	damage_per_second = readU32(is);
 	selection_box.deSerialize(is);
-	material.deSerialize(is);
 	legacy_facedir_simple = readU8(is);
 	legacy_wallmounted = readU8(is);
 }
@@ -412,9 +420,6 @@ public:
 		assert(name != "");
 		ContentFeatures f;
 		f.name = name;
-		// Make unknown blocks diggable
-		f.material.diggability = DIGGABLE_CONSTANT;
-		f.material.constant_time = 0.5;
 		return set(name, f);
 	}
 	virtual void updateAliases(IItemDefManager *idef)

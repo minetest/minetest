@@ -23,12 +23,11 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "common_irrlicht.h"
 #include <string>
 #include <iostream>
-#include <set>
+#include <map>
 #include "mapnode.h"
 #ifndef SERVER
 #include "tile.h"
 #endif
-#include "materials.h" // MaterialProperties
 class IItemDefManager;
 class ITextureSource;
 class IGameDef;
@@ -149,6 +148,7 @@ struct ContentFeatures
 	*/
 
 	std::string name; // "" = undefined node
+	std::map<std::string, int> groups; // Same as in itemdef
 
 	// Visual definition
 	enum NodeDrawType drawtype;
@@ -194,7 +194,6 @@ struct ContentFeatures
 	u8 light_source;
 	u32 damage_per_second;
 	NodeBox selection_box;
-	MaterialProperties material;
 	// Compatibility with old maps
 	// Set to true if paramtype used to be 'facedir_simple'
 	bool legacy_facedir_simple;

@@ -31,7 +31,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "guiInventoryMenu.h"
 #include "guiTextInputMenu.h"
 #include "guiDeathScreen.h"
-#include "materials.h"
+#include "tool.h"
 #include "config.h"
 #include "clouds.h"
 #include "camera.h"
@@ -1935,21 +1935,26 @@ void the_game(
 				MapNode n = client.getNode(nodepos);
 
 				// Get digging properties for material and tool
-				MaterialProperties mp = nodedef->get(n.getContent()).material;
-				ToolDiggingProperties tp =
-						playeritem.getToolDiggingProperties(itemdef);
-				DiggingProperties prop = getDiggingProperties(&mp, &tp);
+				ToolCapabilities tp = playeritem.getToolCapabilities(itemdef);
+				DigParams params = getDigParams(nodedef->get(n).groups, &tp);
+				// If can't dig, try hand
+				if(!params.diggable){
+					const ItemDefinition &hand = itemdef->get("");
+					const ToolCapabilities *tp = hand.tool_capabilities;
+					if(tp)
+						params = getDigParams(nodedef->get(n).groups, tp);
+				}
 
 				float dig_time_complete = 0.0;
 
-				if(prop.diggable == false)
+				if(params.diggable == false)
 				{
 					// I guess nobody will wait for this long
 					dig_time_complete = 10000000.0;
 				}
 				else
 				{
-					dig_time_complete = prop.time;
+					dig_time_complete = params.time;
 				}
 
 				if(dig_time_complete >= 0.001)

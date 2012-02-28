@@ -263,7 +263,7 @@
 -- - get_free_space(): returns get_stack_max() - get_count()
 -- - is_known(): returns true if the item name refers to a defined item type
 -- - get_definition(): returns the item definition table
--- - get_tool_digging_properties(): returns the digging properties of the item,
+-- - get_tool_capabilities(): returns the digging properties of the item,
 --   ^ or those of the hand if none are defined for this item type
 -- - add_wear(amount): increases wear by amount if the item is a tool
 -- - add_item(item): put some item or stack onto this stack,
@@ -322,7 +322,7 @@
 --     wield_scale = {x=1,y=1,z=1},
 --     stack_max = 99,
 --     liquids_pointable = false,
---     tool_digging_properties = {
+--     tool_capabilities = {
 --         full_punch_interval = 1.0,
 --         basetime = 1.0,
 --         dt_weight = 0.5,
@@ -371,14 +371,6 @@
 --     light_source = 0,
 --     damage_per_second = 0,
 --     selection_box = {type="regular"},
---     material = {
---         diggablity = "normal",
---         weight = 0,
---         crackiness = 0,
---         crumbliness = 0,
---         cuttability = 0,
---         flammability = 0,
---     },
 --     legacy_facedir_simple = false, -- Support maps made in and before January 2012
 --     legacy_wallmounted = false, -- Support maps made in and before January 2012
 -- }
@@ -455,209 +447,145 @@ default = {}
 minetest.register_tool("default:pick_wood", {
 	description = "Wooden Pickaxe",
 	inventory_image = "default_tool_woodpick.png",
-	tool_digging_properties = {
-		basetime = 2.0,
-		dt_weight = 0,
-		dt_crackiness = -0.5,
-		dt_crumbliness = 2,
-		dt_cuttability = 0,
-		basedurability = 30,
-		dd_weight = 0,
-		dd_crackiness = 0,
-		dd_crumbliness = 0,
-		dd_cuttability = 0,
+	tool_capabilities = {
+		max_drop_level=0,
+		groupcaps={
+			cracky={times={[2]=1.50, [3]=0.80}, maxwear=0.1, maxlevel=1}
+		}
 	},
 })
 minetest.register_tool("default:pick_stone", {
 	description = "Stone Pickaxe",
 	inventory_image = "default_tool_stonepick.png",
-	tool_digging_properties = {
-		basetime = 1.5,
-		dt_weight = 0,
-		dt_crackiness = -0.5,
-		dt_crumbliness = 2,
-		dt_cuttability = 0,
-		basedurability = 100,
-		dd_weight = 0,
-		dd_crackiness = 0,
-		dd_crumbliness = 0,
-		dd_cuttability = 0,
+	tool_capabilities = {
+		max_drop_level=0,
+		groupcaps={
+			cracky={times={[1]=1.50, [2]=0.80, [3]=0.60}, maxwear=0.05, maxlevel=1}
+		}
 	},
 })
 minetest.register_tool("default:pick_steel", {
 	description = "Steel Pickaxe",
 	inventory_image = "default_tool_steelpick.png",
-	tool_digging_properties = {
-		basetime = 1.0,
-		dt_weight = 0,
-		dt_crackiness = -0.5,
-		dt_crumbliness = 2,
-		dt_cuttability = 0,
-		basedurability = 333,
-		dd_weight = 0,
-		dd_crackiness = 0,
-		dd_crumbliness = 0,
-		dd_cuttability = 0,
+	tool_capabilities = {
+		max_drop_level=1,
+		groupcaps={
+			cracky={times={[1]=1.00, [2]=0.60, [3]=0.40}, maxwear=0.1, maxlevel=2}
+		}
 	},
 })
 minetest.register_tool("default:pick_mese", {
 	description = "Mese Pickaxe",
 	inventory_image = "default_tool_mesepick.png",
-	tool_digging_properties = {
-		basetime = 0,
-		dt_weight = 0,
-		dt_crackiness = 0,
-		dt_crumbliness = 0,
-		dt_cuttability = 0,
-		basedurability = 1337,
-		dd_weight = 0,
-		dd_crackiness = 0,
-		dd_crumbliness = 0,
-		dd_cuttability = 0,
+	tool_capabilities = {
+		max_drop_level=3,
+		groupcaps={
+			cracky={times={[1]=0.2, [2]=0.2, [3]=0.2}, maxwear=0.05, maxlevel=3},
+			crumbly={times={[1]=0.2, [2]=0.2, [3]=0.2}, maxwear=0.05, maxlevel=3},
+			snappy={times={[1]=0.2, [2]=0.2, [3]=0.2}, maxwear=0.05, maxlevel=3}
+		}
 	},
 })
 minetest.register_tool("default:shovel_wood", {
 	description = "Wooden Shovel",
 	inventory_image = "default_tool_woodshovel.png",
-	tool_digging_properties = {
-		basetime = 2.0,
-		dt_weight = 0.5,
-		dt_crackiness = 2,
-		dt_crumbliness = -1.5,
-		dt_cuttability = 0.3,
-		basedurability = 30,
-		dd_weight = 0,
-		dd_crackiness = 0,
-		dd_crumbliness = 0,
-		dd_cuttability = 0,
+	tool_capabilities = {
+		max_drop_level=0,
+		groupcaps={
+			crumbly={times={[1]=1.50, [2]=0.80, [3]=0.50}, maxwear=0.1, maxlevel=1}
+		}
 	},
 })
 minetest.register_tool("default:shovel_stone", {
 	description = "Stone Shovel",
 	inventory_image = "default_tool_stoneshovel.png",
-	tool_digging_properties = {
-		basetime = 1.5,
-		dt_weight = 0.5,
-		dt_crackiness = 2,
-		dt_crumbliness = -1.5,
-		dt_cuttability = 0.1,
-		basedurability = 100,
-		dd_weight = 0,
-		dd_crackiness = 0,
-		dd_crumbliness = 0,
-		dd_cuttability = 0,
+	tool_capabilities = {
+		max_drop_level=0,
+		groupcaps={
+			crumbly={times={[1]=0.80, [2]=0.50, [3]=0.30}, maxwear=0.05, maxlevel=1}
+		}
 	},
 })
 minetest.register_tool("default:shovel_steel", {
 	description = "Steel Shovel",
 	inventory_image = "default_tool_steelshovel.png",
-	tool_digging_properties = {
-		basetime = 1.0,
-		dt_weight = 0.5,
-		dt_crackiness = 2,
-		dt_crumbliness = -1.5,
-		dt_cuttability = 0.0,
-		basedurability = 330,
-		dd_weight = 0,
-		dd_crackiness = 0,
-		dd_crumbliness = 0,
-		dd_cuttability = 0,
+	tool_capabilities = {
+		max_drop_level=1,
+		groupcaps={
+			crumbly={times={[1]=0.50, [2]=0.35, [3]=0.30}, maxwear=0.1, maxlevel=2}
+		}
 	},
 })
 minetest.register_tool("default:axe_wood", {
 	description = "Wooden Axe",
 	inventory_image = "default_tool_woodaxe.png",
-	tool_digging_properties = {
-		basetime = 2.0,
-		dt_weight = 0.5,
-		dt_crackiness = -0.2,
-		dt_crumbliness = 1,
-		dt_cuttability = -0.5,
-		basedurability = 30,
-		dd_weight = 0,
-		dd_crackiness = 0,
-		dd_crumbliness = 0,
-		dd_cuttability = 0,
+	tool_capabilities = {
+		max_drop_level=0,
+		groupcaps={
+			choppy={times={[2]=1.50, [3]=0.80}, maxwear=0.1, maxlevel=1},
+			fleshy={times={[2]=1.50, [3]=0.80}, maxwear=0.1, maxlevel=1}
+		}
 	},
 })
 minetest.register_tool("default:axe_stone", {
 	description = "Stone Axe",
 	inventory_image = "default_tool_stoneaxe.png",
-	tool_digging_properties = {
-		basetime = 1.5,
-		dt_weight = 0.5,
-		dt_crackiness = -0.2,
-		dt_crumbliness = 1,
-		dt_cuttability = -0.5,
-		basedurability = 100,
-		dd_weight = 0,
-		dd_crackiness = 0,
-		dd_crumbliness = 0,
-		dd_cuttability = 0,
+	tool_capabilities = {
+		max_drop_level=0,
+		groupcaps={
+			choppy={times={[1]=1.50, [2]=1.00, [3]=0.60}, maxwear=0.05, maxlevel=1},
+			fleshy={times={[2]=1.30, [3]=0.70}, maxwear=0.05, maxlevel=1}
+		}
 	},
 })
 minetest.register_tool("default:axe_steel", {
 	description = "Steel Axe",
 	inventory_image = "default_tool_steelaxe.png",
-	tool_digging_properties = {
-		basetime = 1.0,
-		dt_weight = 0.5,
-		dt_crackiness = -0.2,
-		dt_crumbliness = 1,
-		dt_cuttability = -0.5,
-		basedurability = 330,
-		dd_weight = 0,
-		dd_crackiness = 0,
-		dd_crumbliness = 0,
-		dd_cuttability = 0,
+	tool_capabilities = {
+		max_drop_level=1,
+		groupcaps={
+			choppy={times={[1]=1.00, [2]=0.80, [3]=0.50}, maxwear=0.1, maxlevel=2},
+			fleshy={times={[2]=1.10, [3]=0.60}, maxwear=0.03, maxlevel=1}
+		}
 	},
 })
 minetest.register_tool("default:sword_wood", {
 	description = "Wooden Sword",
 	inventory_image = "default_tool_woodsword.png",
-	tool_digging_properties = {
-		basetime = 3.0,
-		dt_weight = 3,
-		dt_crackiness = 0,
-		dt_crumbliness = 1,
-		dt_cuttability = -1,
-		basedurability = 30,
-		dd_weight = 0,
-		dd_crackiness = 0,
-		dd_crumbliness = 0,
-		dd_cuttability = 0,
+	tool_capabilities = {
+		full_punch_interval = 2.0,
+		max_drop_level=0,
+		groupcaps={
+			fleshy={times={[2]=1.10, [3]=0.60}, maxwear=0.1, maxlevel=1},
+			snappy={times={[2]=1.00, [3]=0.50}, maxwear=0.1, maxlevel=1},
+			choppy={times={[3]=1.00}, maxwear=0.05, maxlevel=0}
+		}
 	}
 })
 minetest.register_tool("default:sword_stone", {
 	description = "Stone Sword",
 	inventory_image = "default_tool_stonesword.png",
-	tool_digging_properties = {
-		basetime = 2.5,
-		dt_weight = 3,
-		dt_crackiness = 0,
-		dt_crumbliness = 1,
-		dt_cuttability = -1,
-		basedurability = 100,
-		dd_weight = 0,
-		dd_crackiness = 0,
-		dd_crumbliness = 0,
-		dd_cuttability = 0,
+	tool_capabilities = {
+		full_punch_interval = 2.0,
+		max_drop_level=0,
+		groupcaps={
+			fleshy={times={[2]=0.80, [3]=0.40}, maxwear=0.05, maxlevel=1},
+			snappy={times={[2]=0.80, [3]=0.40}, maxwear=0.05, maxlevel=1},
+			choppy={times={[3]=0.90}, maxwear=0.05, maxlevel=0}
+		}
 	}
 })
 minetest.register_tool("default:sword_steel", {
 	description = "Steel Sword",
 	inventory_image = "default_tool_steelsword.png",
-	tool_digging_properties = {
-		basetime = 2.0,
-		dt_weight = 3,
-		dt_crackiness = 0,
-		dt_crumbliness = 1,
-		dt_cuttability = -1,
-		basedurability = 330,
-		dd_weight = 0,
-		dd_crackiness = 0,
-		dd_crumbliness = 0,
-		dd_cuttability = 0,
+	tool_capabilities = {
+		full_punch_interval = 2.0,
+		max_drop_level=1,
+		groupcaps={
+			fleshy={times={[1]=1.00, [2]=0.40, [3]=0.20}, maxwear=0.1, maxlevel=2},
+			snappy={times={[2]=0.70, [3]=0.30}, maxwear=0.03, maxlevel=1},
+			choppy={times={[3]=0.70}, maxwear=0.03, maxlevel=0}
+		}
 	}
 })
 
@@ -1110,7 +1038,7 @@ minetest.register_node("default:stone", {
 	description = "Stone",
 	tile_images = {"default_stone.png"},
 	is_ground_content = true,
-	material = minetest.digprop_stonelike(1.0),
+	groups = {cracky=3},
 	drop = 'default:cobble',
 	legacy_mineral = true,
 })
@@ -1119,7 +1047,7 @@ minetest.register_node("default:stone_with_coal", {
 	description = "Stone with coal",
 	tile_images = {"default_stone.png^default_mineral_coal.png"},
 	is_ground_content = true,
-	material = minetest.digprop_stonelike(1.0),
+	groups = {cracky=3},
 	drop = 'default:coal_lump',
 })
 
@@ -1127,7 +1055,7 @@ minetest.register_node("default:stone_with_iron", {
 	description = "Stone with iron",
 	tile_images = {"default_stone.png^default_mineral_iron.png"},
 	is_ground_content = true,
-	material = minetest.digprop_stonelike(1.0),
+	groups = {cracky=3},
 	drop = 'default:iron_lump',
 })
 
@@ -1135,7 +1063,7 @@ minetest.register_node("default:dirt_with_grass", {
 	description = "Dirt with grass",
 	tile_images = {"default_grass.png", "default_dirt.png", "default_dirt.png^default_grass_side.png"},
 	is_ground_content = true,
-	material = minetest.digprop_dirtlike(1.0),
+	groups = {crumbly=3},
 	drop = 'default:dirt',
 })
 
@@ -1143,7 +1071,7 @@ minetest.register_node("default:dirt_with_grass_footsteps", {
 	description = "Dirt with grass and footsteps",
 	tile_images = {"default_grass_footsteps.png", "default_dirt.png", "default_dirt.png^default_grass_side.png"},
 	is_ground_content = true,
-	material = minetest.digprop_dirtlike(1.0),
+	groups = {crumbly=3},
 	drop = 'default:dirt',
 })
 
@@ -1151,28 +1079,28 @@ minetest.register_node("default:dirt", {
 	description = "Dirt",
 	tile_images = {"default_dirt.png"},
 	is_ground_content = true,
-	material = minetest.digprop_dirtlike(1.0),
+	groups = {crumbly=3},
 })
 
 minetest.register_node("default:sand", {
 	description = "Sand",
 	tile_images = {"default_sand.png"},
 	is_ground_content = true,
-	material = minetest.digprop_dirtlike(1.0),
+	groups = {crumbly=3},
 })
 
 minetest.register_node("default:gravel", {
 	description = "Gravel",
 	tile_images = {"default_gravel.png"},
 	is_ground_content = true,
-	material = minetest.digprop_gravellike(1.0),
+	groups = {crumbly=2},
 })
 
 minetest.register_node("default:sandstone", {
 	description = "Sandstone",
 	tile_images = {"default_sandstone.png"},
 	is_ground_content = true,
-	material = minetest.digprop_dirtlike(1.0),  -- FIXME should this be stonelike?
+	groups = {crumbly=2,cracky=2},
 	drop = 'default:sand',
 })
 
@@ -1180,7 +1108,7 @@ minetest.register_node("default:clay", {
 	description = "Clay",
 	tile_images = {"default_clay.png"},
 	is_ground_content = true,
-	material = minetest.digprop_dirtlike(1.0),
+	groups = {crumbly=3},
 	drop = 'default:clay_lump 4',
 })
 
@@ -1188,7 +1116,7 @@ minetest.register_node("default:brick", {
 	description = "Brick",
 	tile_images = {"default_brick.png"},
 	is_ground_content = true,
-	material = minetest.digprop_stonelike(1.0),
+	groups = {cracky=3},
 	drop = 'default:clay_brick 4',
 })
 
@@ -1196,14 +1124,14 @@ minetest.register_node("default:tree", {
 	description = "Tree",
 	tile_images = {"default_tree_top.png", "default_tree_top.png", "default_tree.png"},
 	is_ground_content = true,
-	material = minetest.digprop_woodlike(1.0),
+	groups = {snappy=2},
 })
 
 minetest.register_node("default:jungletree", {
 	description = "Jungle Tree",
 	tile_images = {"default_jungletree_top.png", "default_jungletree_top.png", "default_jungletree.png"},
 	is_ground_content = true,
-	material = minetest.digprop_woodlike(1.0),
+	groups = {snappy=2},
 })
 
 minetest.register_node("default:junglegrass", {
@@ -1215,7 +1143,7 @@ minetest.register_node("default:junglegrass", {
 	wield_image = "default_junglegrass.png",
 	paramtype = "light",
 	walkable = false,
-	material = minetest.digprop_leaveslike(1.0),
+	groups = {snappy=3},
 })
 
 minetest.register_node("default:leaves", {
@@ -1224,7 +1152,7 @@ minetest.register_node("default:leaves", {
 	visual_scale = 1.3,
 	tile_images = {"default_leaves.png"},
 	paramtype = "light",
-	material = minetest.digprop_leaveslike(1.0),
+	groups = {snappy=3},
 	drop = {
 		max_items = 1,
 		items = {
@@ -1246,7 +1174,7 @@ minetest.register_node("default:cactus", {
 	description = "Cactus",
 	tile_images = {"default_cactus_top.png", "default_cactus_top.png", "default_cactus_side.png"},
 	is_ground_content = true,
-	material = minetest.digprop_woodlike(0.75),
+	groups = {snappy=2},
 })
 
 minetest.register_node("default:papyrus", {
@@ -1258,14 +1186,14 @@ minetest.register_node("default:papyrus", {
 	paramtype = "light",
 	is_ground_content = true,
 	walkable = false,
-	material = minetest.digprop_leaveslike(0.5),
+	groups = {snappy=3},
 })
 
 minetest.register_node("default:bookshelf", {
 	description = "Bookshelf",
 	tile_images = {"default_wood.png", "default_wood.png", "default_bookshelf.png"},
 	is_ground_content = true,
-	material = minetest.digprop_woodlike(0.75),
+	groups = {snappy=2},
 })
 
 minetest.register_node("default:glass", {
@@ -1276,7 +1204,7 @@ minetest.register_node("default:glass", {
 	paramtype = "light",
 	sunlight_propagates = true,
 	is_ground_content = true,
-	material = minetest.digprop_glasslike(1.0),
+	groups = {snappy=2,cracky=3},
 })
 
 minetest.register_node("default:fence_wood", {
@@ -1291,7 +1219,7 @@ minetest.register_node("default:fence_wood", {
 		type = "fixed",
 		fixed = {-1/7, -1/2, -1/7, 1/7, 1/2, 1/7},
 	},
-	material = minetest.digprop_woodlike(0.75),
+	groups = {snappy=2},
 })
 
 minetest.register_node("default:rail", {
@@ -1307,7 +1235,7 @@ minetest.register_node("default:rail", {
 		type = "fixed",
 		--fixed = <default>
 	},
-	material = minetest.digprop_dirtlike(0.75),
+	groups = {bendy=2,snappy=1},
 })
 
 minetest.register_node("default:ladder", {
@@ -1327,7 +1255,7 @@ minetest.register_node("default:ladder", {
 		--wall_bottom = = <default>
 		--wall_side = = <default>
 	},
-	material = minetest.digprop_woodlike(0.5),
+	groups = {snappy=2},
 	legacy_wallmounted = true,
 })
 
@@ -1335,14 +1263,14 @@ minetest.register_node("default:wood", {
 	description = "Wood",
 	tile_images = {"default_wood.png"},
 	is_ground_content = true,
-	material = minetest.digprop_woodlike(0.75),
+	groups = {snappy=2},
 })
 
 minetest.register_node("default:mese", {
 	description = "Mese",
 	tile_images = {"default_mese.png"},
 	is_ground_content = true,
-	material = minetest.digprop_stonelike(0.5),
+	groups = {cracky=1},
 })
 
 minetest.register_node("default:cloud", {
@@ -1371,6 +1299,7 @@ minetest.register_node("default:water_flowing", {
 		{image="default_water.png", backface_culling=false},
 		{image="default_water.png", backface_culling=true},
 	},
+	groups = {water=3, liquid=3},
 })
 
 minetest.register_node("default:water_source", {
@@ -1393,6 +1322,7 @@ minetest.register_node("default:water_source", {
 		-- New-style water source material (mostly unused)
 		{image="default_water.png", backface_culling=false},
 	},
+	groups = {water=3, liquid=3},
 })
 
 minetest.register_node("default:lava_flowing", {
@@ -1416,6 +1346,7 @@ minetest.register_node("default:lava_flowing", {
 		{image="default_lava.png", backface_culling=false},
 		{image="default_lava.png", backface_culling=true},
 	},
+	groups = {lava=3, liquid=2, hot=3},
 })
 
 minetest.register_node("default:lava_source", {
@@ -1439,6 +1370,7 @@ minetest.register_node("default:lava_source", {
 		-- New-style lava source material (mostly unused)
 		{image="default_lava.png", backface_culling=false},
 	},
+	groups = {lava=3, liquid=2, hot=3},
 })
 
 minetest.register_node("default:torch", {
@@ -1458,7 +1390,7 @@ minetest.register_node("default:torch", {
 		wall_bottom = {-0.1, -0.5, -0.1, 0.1, -0.5+0.6, 0.1},
 		wall_side = {-0.5, -0.3, -0.1, -0.5+0.3, 0.3, 0.1},
 	},
-	material = minetest.digprop_constanttime(0.0),
+	groups = {dig_immediate=1},
 	legacy_wallmounted = true,
 })
 
@@ -1479,7 +1411,7 @@ minetest.register_node("default:sign_wall", {
 		--wall_bottom = <default>
 		--wall_side = <default>
 	},
-	material = minetest.digprop_constanttime(0.5),
+	groups = {dig_immediate=2},
 	legacy_wallmounted = true,
 })
 
@@ -1489,7 +1421,7 @@ minetest.register_node("default:chest", {
 		"default_chest_side.png", "default_chest_side.png", "default_chest_front.png"},
 	paramtype2 = "facedir",
 	metadata_name = "chest",
-	material = minetest.digprop_woodlike(1.0),
+	groups = {snappy=2},
 	legacy_facedir_simple = true,
 })
 
@@ -1499,7 +1431,7 @@ minetest.register_node("default:chest_locked", {
 		"default_chest_side.png", "default_chest_side.png", "default_chest_lock.png"},
 	paramtype2 = "facedir",
 	metadata_name = "locked_chest",
-	material = minetest.digprop_woodlike(1.0),
+	groups = {snappy=2},
 	legacy_facedir_simple = true,
 })
 
@@ -1509,7 +1441,7 @@ minetest.register_node("default:furnace", {
 		"default_furnace_side.png", "default_furnace_side.png", "default_furnace_front.png"},
 	paramtype2 = "facedir",
 	metadata_name = "furnace",
-	material = minetest.digprop_stonelike(3.0),
+	groups = {cracky=2},
 	legacy_facedir_simple = true,
 })
 
@@ -1517,21 +1449,21 @@ minetest.register_node("default:cobble", {
 	description = "Cobble",
 	tile_images = {"default_cobble.png"},
 	is_ground_content = true,
-	material = minetest.digprop_stonelike(0.9),
+	groups = {cracky=3},
 })
 
 minetest.register_node("default:mossycobble", {
 	description = "Mossy Cobble",
 	tile_images = {"default_mossycobble.png"},
 	is_ground_content = true,
-	material = minetest.digprop_stonelike(0.8),
+	groups = {cracky=3},
 })
 
 minetest.register_node("default:steelblock", {
 	description = "Steel Block",
 	tile_images = {"default_steel_block.png"},
 	is_ground_content = true,
-	material = minetest.digprop_stonelike(5.0),
+	groups = {snappy=1,bendy=2},
 })
 
 minetest.register_node("default:nyancat", {
@@ -1540,7 +1472,7 @@ minetest.register_node("default:nyancat", {
 		"default_nc_side.png", "default_nc_back.png", "default_nc_front.png"},
 	inventory_image = "default_nc_front.png",
 	paramtype2 = "facedir",
-	material = minetest.digprop_stonelike(3.0),
+	groups = {cracky=2},
 	legacy_facedir_simple = true,
 })
 
@@ -1548,7 +1480,7 @@ minetest.register_node("default:nyancat_rainbow", {
 	description = "Nyancat Rainbow",
 	tile_images = {"default_nc_rb.png"},
 	inventory_image = "default_nc_rb.png",
-	material = minetest.digprop_stonelike(3.0),
+	groups = {cracky=2},
 })
 
 minetest.register_node("default:sapling", {
@@ -1560,7 +1492,7 @@ minetest.register_node("default:sapling", {
 	wield_image = "default_sapling.png",
 	paramtype = "light",
 	walkable = false,
-	material = minetest.digprop_constanttime(0.0),
+	groups = {dig_immediate=1},
 })
 
 minetest.register_node("default:apple", {
@@ -1572,7 +1504,7 @@ minetest.register_node("default:apple", {
 	paramtype = "light",
 	sunlight_propagates = true,
 	walkable = false,
-	material = minetest.digprop_constanttime(0.0),
+	groups = {dig_immediate=1},
 	on_use = minetest.item_eat(4),
 })
 

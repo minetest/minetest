@@ -327,9 +327,8 @@ function minetest.node_dig(pos, node, digger)
 		local drops = minetest.get_node_drops(node.name, wielded:get_name())
 
 		-- Wear out tool
-		mp = def.material
-		tp = wielded:get_tool_digging_properties()
-		dp = minetest.get_digging_properties(mp, tp)
+		tp = wielded:get_tool_capabilities()
+		dp = minetest.get_dig_params(def.groups, tp)
 		wielded:add_wear(dp.wear)
 		digger:set_wielded_item(wielded)
 
@@ -366,7 +365,7 @@ minetest.nodedef_default = {
 	stack_max = 99,
 	usable = false,
 	liquids_pointable = false,
-	tool_digging_properties = nil,
+	tool_capabilities = nil,
 
 	-- Interaction callbacks
 	on_place = minetest.item_place,
@@ -425,7 +424,7 @@ minetest.craftitemdef_default = {
 	wield_scale = {x=1,y=1,z=1},
 	stack_max = 99,
 	liquids_pointable = false,
-	tool_digging_properties = nil,
+	tool_capabilities = nil,
 
 	-- Interaction callbacks
 	on_place = minetest.item_place,
@@ -443,7 +442,7 @@ minetest.tooldef_default = {
 	wield_scale = {x=1,y=1,z=1},
 	stack_max = 1,
 	liquids_pointable = false,
-	tool_digging_properties = nil,
+	tool_capabilities = nil,
 
 	-- Interaction callbacks
 	on_place = minetest.item_place,
@@ -461,7 +460,7 @@ minetest.noneitemdef_default = {  -- This is used for the hand and unknown items
 	wield_scale = {x=1,y=1,z=1},
 	stack_max = 99,
 	liquids_pointable = false,
-	tool_digging_properties = nil,
+	tool_capabilities = nil,
 
 	-- Interaction callbacks
 	on_place = nil,
@@ -643,7 +642,7 @@ function minetest.register_tool(name, tooldef)
 	if tooldef.inventory_image == nil and tooldef.image ~= nil then
 		tooldef.inventory_image = tooldef.image
 	end
-	if tooldef.tool_digging_properties == nil and
+	if tooldef.tool_capabilities == nil and
 	   (tooldef.full_punch_interval ~= nil or
 	    tooldef.basetime ~= nil or
 	    tooldef.dt_weight ~= nil or
@@ -655,7 +654,7 @@ function minetest.register_tool(name, tooldef)
 	    tooldef.dd_crackiness ~= nil or
 	    tooldef.dd_crumbliness ~= nil or
 	    tooldef.dd_cuttability ~= nil) then
-		tooldef.tool_digging_properties = {
+		tooldef.tool_capabilities = {
 			full_punch_interval = tooldef.full_punch_interval,
 			basetime = tooldef.basetime,
 			dt_weight = tooldef.dt_weight,
@@ -711,18 +710,14 @@ minetest.register_item(":", {
 	type = "none",
 	wield_image = "wieldhand.png",
 	wield_scale = {x=1,y=1,z=2.5},
-	tool_digging_properties = {
+	tool_capabilities = {
 		full_punch_interval = 2.0,
-		basetime = 0.5,
-		dt_weight = 1,
-		dt_crackiness = 0,
-		dt_crumbliness = -1,
-		dt_cuttability = 0,
-		basedurability = 50,
-		dd_weight = 0,
-		dd_crackiness = 0,
-		dd_crumbliness = 0,
-		dd_cuttability = 0,
+		max_drop_level = 0,
+		groupcaps = {
+			fleshy = {times={[2]=2.00, [3]=1.00}, maxwear=0, maxlevel=1},
+			crumbly = {times={[3]=0.70}, maxwear=0, maxlevel=1},
+			snappy = {times={[3]=0.70}, maxwear=0, maxlevel=1},
+		}
 	}
 })
 

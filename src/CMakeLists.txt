@@ -116,7 +116,7 @@ set(common_SRCS
 	serverobject.cpp
 	noise.cpp
 	porting.cpp
-	materials.cpp
+	tool.cpp
 	defaultsettings.cpp
 	mapnode.cpp
 	voxel.cpp

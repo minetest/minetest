@@ -1,0 +1,153 @@
+/*
+Minetest-c55
+Copyright (C) 2011 celeron55, Perttu Ahola <celeron55@gmail.com>
+
+This program is free software; you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation; either version 2 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License along
+with this program; if not, write to the Free Software Foundation, Inc.,
+51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+*/
+
+#include "tool.h"
+#include "utility.h"
+#include "itemdef.h" // For itemgroup_get()
+#include "log.h"
+
+void ToolCapabilities::serialize(std::ostream &os) const
+{
+	writeU8(os, 0); // version
+	writeF1000(os, full_punch_interval);
+	writeS16(os, max_drop_level);
+	writeU32(os, groupcaps.size());
+	for(std::map<std::string, ToolGroupCap>::const_iterator
+			i = groupcaps.begin(); i != groupcaps.end(); i++){
+		const std::string *name = &i->first;
+		const ToolGroupCap *cap = &i->second;
+		os<<serializeString(*name);
+		writeF1000(os, cap->maxwear);
+		writeF1000(os, cap->maxlevel);
+		writeU32(os, cap->times.size());
+		for(std::map<int, float>::const_iterator
+				i = cap->times.begin(); i != cap->times.end(); i++){
+			writeS16(os, i->first);
+			writeF1000(os, i->second);
+		}
+	}
+}
+
+void ToolCapabilities::deSerialize(std::istream &is)
+{
+	int version = readU8(is);
+	if(version != 0) throw SerializationError(
+			"unsupported ToolCapabilities version");
+	full_punch_interval = readF1000(is);
+	max_drop_level = readS16(is);
+	groupcaps.clear();
+	u32 groupcaps_size = readU32(is);
+	for(u32 i=0; i<groupcaps_size; i++){
+		std::string name = deSerializeString(is);
+		ToolGroupCap cap;
+		cap.maxwear = readF1000(is);
+		cap.maxlevel = readF1000(is);
+		u32 times_size = readU32(is);
+		for(u32 i=0; i<times_size; i++){
+			int level = readS16(is);
+			float time = readF1000(is);
+			cap.times[level] = time;
+		}
+		groupcaps[name] = cap;
+	}
+}
+
+DigParams getDigParams(const std::map<std::string, int> &groups,
+		const ToolCapabilities *tp, float time_from_last_punch)
+{
+	//infostream<<"getDigParams"<<std::endl;
+	/* Check group dig_immediate */
+	switch(itemgroup_get(groups, "dig_immediate")){
+	case 1:
+		//infostream<<"dig_immediate=1"<<std::endl;
+		return DigParams(true, 0.0, 0);
+	case 2:
+		//infostream<<"dig_immediate=2"<<std::endl;
+		return DigParams(true, 1.0, 0);
+	default:
+		break;
+	}
+	
+	// Values to be returned (with a bit of conversion)
+	bool result_diggable = false;
+	float result_time = 0.0;
+	float result_wear = 0.0;
+
+	int level = itemgroup_get(groups, "level");
+	//infostream<<"level="<<level<<std::endl;
+	for(std::map<std::string, ToolGroupCap>::const_iterator
+			i = tp->groupcaps.begin(); i != tp->groupcaps.end(); i++){
+		const std::string &name = i->first;
+		//infostream<<"group="<<name<<std::endl;
+		const ToolGroupCap &cap = i->second;
+		int rating = itemgroup_get(groups, name);
+		float time = 0;
+		bool time_exists = cap.getTime(rating, &time);
+		if(!result_diggable || time < result_time){
+			if(cap.maxlevel > level && time_exists){
+				result_diggable = true;
+				result_time = time;
+				int leveldiff = cap.maxlevel - level;
+				result_wear = cap.maxwear / pow(4.0, (double)leveldiff);
+			}
+		}
+	}
+	//infostream<<"result_diggable="<<result_diggable<<std::endl;
+	//infostream<<"result_time="<<result_time<<std::endl;
+	//infostream<<"result_wear="<<result_wear<<std::endl;
+
+	if(time_from_last_punch < tp->full_punch_interval){
+		float f = time_from_last_punch / tp->full_punch_interval;
+		//infostream<<"f="<<f<<std::endl;
+		result_time /= f;
+		result_wear /= f;
+	}
+
+	u16 wear_i = 65535.*result_wear;
+	return DigParams(result_diggable, result_time, wear_i);
+}
+
+DigParams getDigParams(const std::map<std::string, int> &groups,
+		const ToolCapabilities *tp)
+{
+	return getDigParams(groups, tp, 1000000);
+}
+
+HitParams getHitParams(const std::map<std::string, int> &groups,
+		const ToolCapabilities *tp, float time_from_last_punch)
+{
+	DigParams digprop = getDigParams(groups, tp,
+			time_from_last_punch);
+	
+	// If digging time would be 1 second, 8 half-hearts go in 1 second.
+	s16 hp = 0;
+	if(digprop.diggable)
+		hp = 8.0 / digprop.time;
+	// Wear is the same as for digging a single node
+	s16 wear = (float)digprop.wear;
+
+	return HitParams(hp, wear);
+}
+
+HitParams getHitParams(const std::map<std::string, int> &groups,
+		const ToolCapabilities *tp)
+{
+	return getHitParams(groups, tp, 1000000);
+}
+

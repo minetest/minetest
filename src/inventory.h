@@ -28,7 +28,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "debug.h"
 #include "itemdef.h"
 
-struct ToolDiggingProperties;
+struct ToolCapabilities;
 
 struct ItemStack
 {
@@ -107,15 +107,15 @@ struct ItemStack
 	}
 
 	// Get tool digging properties, or those of the hand if not a tool
-	const ToolDiggingProperties& getToolDiggingProperties(
+	const ToolCapabilities& getToolCapabilities(
 			IItemDefManager *itemdef) const
 	{
-		ToolDiggingProperties *prop;
-		prop = itemdef->get(name).tool_digging_properties;
-		if(prop == NULL)
-			prop = itemdef->get("").tool_digging_properties;
-		assert(prop != NULL);
-		return *prop;
+		ToolCapabilities *cap;
+		cap = itemdef->get(name).tool_capabilities;
+		if(cap == NULL)
+			cap = itemdef->get("").tool_capabilities;
+		assert(cap != NULL);
+		return *cap;
 	}
 
 	// Wear out (only tools)

@@ -44,9 +44,11 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 		Obsolete TOCLIENT_TOOLDEF
 		Obsolete TOCLIENT_CRAFTITEMDEF
 		Compress the contents of TOCLIENT_ITEMDEF and TOCLIENT_NODEDEF
+	PROTOCOL_VERSION 8:
+		Digging based on item groups
 */
 
-#define PROTOCOL_VERSION 7
+#define PROTOCOL_VERSION 8
 
 #define PROTOCOL_ID 0x4f457403
 

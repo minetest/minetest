@@ -399,7 +399,6 @@ Doing currently:
 #include "filesys.h"
 #include "config.h"
 #include "guiMainMenu.h"
-#include "materials.h"
 #include "game.h"
 #include "keycode.h"
 #include "tile.h"

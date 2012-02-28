@@ -68,6 +68,7 @@ void define_some_nodes(IWritableItemDefManager *idef, IWritableNodeDefManager *n
 	itemdef.type = ITEM_NODE;
 	itemdef.name = "default:stone";
 	itemdef.description = "Stone";
+	itemdef.groups["cracky"] = 3;
 	itemdef.inventory_image = "[inventorycube"
 		"{default_stone.png"
 		"{default_stone.png"
@@ -77,11 +78,6 @@ void define_some_nodes(IWritableItemDefManager *idef, IWritableNodeDefManager *n
 	for(int i = 0; i < 6; i++)
 		f.tname_tiles[i] = "default_stone.png";
 	f.is_ground_content = true;
-	f.material.diggability = DIGGABLE_NORMAL;
-	f.material.weight = 5.0;
-	f.material.crackiness = 1.0;
-	f.material.crumbliness = -0.1;
-	f.material.cuttability = -0.2;
 	idef->registerItem(itemdef);
 	ndef->set(i, f);
 
@@ -93,6 +89,7 @@ void define_some_nodes(IWritableItemDefManager *idef, IWritableNodeDefManager *n
 	itemdef.type = ITEM_NODE;
 	itemdef.name = "default:dirt_with_grass";
 	itemdef.description = "Dirt with grass";
+	itemdef.groups["crumbly"] = 3;
 	itemdef.inventory_image = "[inventorycube"
 		"{default_grass.png"
 		"{default_dirt.png&default_grass_side.png"
@@ -104,11 +101,6 @@ void define_some_nodes(IWritableItemDefManager *idef, IWritableNodeDefManager *n
 	for(int i = 2; i < 6; i++)
 		f.tname_tiles[i] = "default_dirt.png^default_grass_side.png";
 	f.is_ground_content = true;
-	f.material.diggability = DIGGABLE_NORMAL;
-	f.material.weight = 1.2;
-	f.material.crackiness = 0.0;
-	f.material.crumbliness = 1.2;
-	f.material.cuttability = -0.4;
 	idef->registerItem(itemdef);
 	ndef->set(i, f);
 }

@@ -22,7 +22,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "gamedef.h"
 #include "nodedef.h"
-#include "materials.h"
+#include "tool.h"
 #include "inventory.h"
 #ifndef SERVER
 #include "mapblock_mesh.h"
@@ -64,11 +64,12 @@ ItemDefinition& ItemDefinition::operator=(const ItemDefinition &def)
 	stack_max = def.stack_max;
 	usable = def.usable;
 	liquids_pointable = def.liquids_pointable;
-	if(def.tool_digging_properties)
+	if(def.tool_capabilities)
 	{
-		tool_digging_properties = new ToolDiggingProperties(
-				*def.tool_digging_properties);
+		tool_capabilities = new ToolCapabilities(
+				*def.tool_capabilities);
 	}
+	groups = def.groups;
 #ifndef SERVER
 	inventory_texture = def.inventory_texture;
 	if(def.wield_mesh)
@@ -88,7 +89,7 @@ ItemDefinition::~ItemDefinition()
 void ItemDefinition::resetInitial()
 {
 	// Initialize pointers to NULL so reset() does not delete undefined pointers
-	tool_digging_properties = NULL;
+	tool_capabilities = NULL;
 #ifndef SERVER
 	inventory_texture = NULL;
 	wield_mesh = NULL;
@@ -107,11 +108,12 @@ void ItemDefinition::reset()
 	stack_max = 99;
 	usable = false;
 	liquids_pointable = false;
-	if(tool_digging_properties)
+	if(tool_capabilities)
 	{
-		delete tool_digging_properties;
-		tool_digging_properties = NULL;
+		delete tool_capabilities;
+		tool_capabilities = NULL;
 	}
+	groups.clear();
 
 #ifndef SERVER
 	inventory_texture = NULL;
@@ -125,7 +127,7 @@ void ItemDefinition::reset()
 
 void ItemDefinition::serialize(std::ostream &os) const
 {
-	writeU8(os, 0); // version
+	writeU8(os, 1); // version
 	writeU8(os, type);
 	os<<serializeString(name);
 	os<<serializeString(description);
@@ -135,14 +137,19 @@ void ItemDefinition::serialize(std::ostream &os) const
 	writeS16(os, stack_max);
 	writeU8(os, usable);
 	writeU8(os, liquids_pointable);
-	std::string tool_digging_properties_s = "";
-	if(tool_digging_properties)
-	{
+	std::string tool_capabilities_s = "";
+	if(tool_capabilities){
 		std::ostringstream tmp_os(std::ios::binary);
-		tool_digging_properties->serialize(tmp_os);
-		tool_digging_properties_s = tmp_os.str();
+		tool_capabilities->serialize(tmp_os);
+		tool_capabilities_s = tmp_os.str();
 	}
-	os<<serializeString(tool_digging_properties_s);
+	os<<serializeString(tool_capabilities_s);
+	writeU16(os, groups.size());
+	for(std::map<std::string, int>::const_iterator
+			i = groups.begin(); i != groups.end(); i++){
+		os<<serializeString(i->first);
+		writeS16(os, i->second);
+	}
 }
 
 void ItemDefinition::deSerialize(std::istream &is)
@@ -152,7 +159,7 @@ void ItemDefinition::deSerialize(std::istream &is)
 
 	// Deserialize
 	int version = readU8(is);
-	if(version != 0)
+	if(version != 1)
 		throw SerializationError("unsupported ItemDefinition version");
 	type = (enum ItemType)readU8(is);
 	name = deSerializeString(is);
@@ -163,12 +170,19 @@ void ItemDefinition::deSerialize(std::istream &is)
 	stack_max = readS16(is);
 	usable = readU8(is);
 	liquids_pointable = readU8(is);
-	std::string tool_digging_properties_s = deSerializeString(is);
-	if(!tool_digging_properties_s.empty())
+	std::string tool_capabilities_s = deSerializeString(is);
+	if(!tool_capabilities_s.empty())
 	{
-		std::istringstream tmp_is(tool_digging_properties_s, std::ios::binary);
-		tool_digging_properties = new ToolDiggingProperties;
-		tool_digging_properties->deSerialize(tmp_is);
+		std::istringstream tmp_is(tool_capabilities_s, std::ios::binary);
+		tool_capabilities = new ToolCapabilities;
+		tool_capabilities->deSerialize(tmp_is);
+	}
+	groups.clear();
+	u32 groups_size = readU16(is);
+	for(u32 i=0; i<groups_size; i++){
+		std::string name = deSerializeString(is);
+		int value = readS16(is);
+		groups[name] = value;
 	}
 }
 
@@ -253,7 +267,7 @@ public:
 		ItemDefinition* hand_def = new ItemDefinition;
 		hand_def->name = "";
 		hand_def->wield_image = "wieldhand.png";
-		hand_def->tool_digging_properties = new ToolDiggingProperties;
+		hand_def->tool_capabilities = new ToolCapabilities;
 		m_item_definitions.insert(std::make_pair("", hand_def));
 
 		ItemDefinition* unknown_def = new ItemDefinition;
@@ -273,9 +287,9 @@ public:
 	virtual void registerItem(const ItemDefinition &def)
 	{
 		infostream<<"ItemDefManager: registering \""<<def.name<<"\""<<std::endl;
-		// Ensure that the "" item (the hand) always has ToolDiggingProperties
+		// Ensure that the "" item (the hand) always has ToolCapabilities
 		if(def.name == "")
-			assert(def.tool_digging_properties != NULL);
+			assert(def.tool_capabilities != NULL);
 
 		m_item_definitions[def.name] = new ItemDefinition(def);
 

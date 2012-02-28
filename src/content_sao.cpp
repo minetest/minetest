@@ -24,7 +24,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "main.h" // For g_profiler
 #include "profiler.h"
 #include "serialization.h" // For compressZlib
-#include "materials.h" // For MaterialProperties and ToolDiggingProperties
+#include "tool.h" // For ToolCapabilities
 #include "gamedef.h"
 
 core::map<u16, ServerActiveObject::Factory> ServerActiveObject::m_types;
@@ -723,24 +723,23 @@ void Oerkki1SAO::punch(ServerActiveObject *puncher, float time_from_last_punch)
 	v3f dir = (getBasePosition() - puncher->getBasePosition()).normalize();
 	m_speed_f += dir*12*BS;
 
-	// "Material" properties of an oerkki
-	MaterialProperties mp;
-	mp.diggability = DIGGABLE_NORMAL;
-	mp.crackiness = -1.0;
-	mp.cuttability = 1.0;
+	// "Material" groups of the object
+	std::map<std::string, int> groups;
+	groups["snappy"] = 1;
+	groups["choppy"] = 1;
+	groups["fleshy"] = 3;
 
 	IItemDefManager *idef = m_env->getGameDef()->idef();
-        ItemStack punchitem = puncher->getWieldedItem();
-        ToolDiggingProperties tp =
-	                punchitem.getToolDiggingProperties(idef);
+	ItemStack punchitem = puncher->getWieldedItem();
+	ToolCapabilities tp = punchitem.getToolCapabilities(idef);
 
-	HittingProperties hitprop = getHittingProperties(&mp, &tp,
+	HitParams hit_params = getHitParams(groups, &tp,
 			time_from_last_punch);
 
-	doDamage(hitprop.hp);
+	doDamage(hit_params.hp);
 	if(g_settings->getBool("creative_mode") == false)
 	{
-		punchitem.addWear(hitprop.wear, idef);
+		punchitem.addWear(hit_params.wear, idef);
 		puncher->setWieldedItem(punchitem);
 	}
 }
@@ -1419,24 +1418,23 @@ void MobV2SAO::punch(ServerActiveObject *puncher, float time_from_last_punch)
 	sendPosition();
 	
 
-	// "Material" properties of the MobV2
-	MaterialProperties mp;
-	mp.diggability = DIGGABLE_NORMAL;
-	mp.crackiness = -1.0;
-	mp.cuttability = 1.0;
+	// "Material" groups of the object
+	std::map<std::string, int> groups;
+	groups["snappy"] = 1;
+	groups["choppy"] = 1;
+	groups["fleshy"] = 3;
 
 	IItemDefManager *idef = m_env->getGameDef()->idef();
-        ItemStack punchitem = puncher->getWieldedItem();
-        ToolDiggingProperties tp =
-	                punchitem.getToolDiggingProperties(idef);
+	ItemStack punchitem = puncher->getWieldedItem();
+	ToolCapabilities tp = punchitem.getToolCapabilities(idef);
 
-	HittingProperties hitprop = getHittingProperties(&mp, &tp,
+	HitParams hit_params = getHitParams(groups, &tp,
 			time_from_last_punch);
 
-	doDamage(hitprop.hp);
+	doDamage(hit_params.hp);
 	if(g_settings->getBool("creative_mode") == false)
 	{
-		punchitem.addWear(hitprop.wear, idef);
+		punchitem.addWear(hit_params.wear, idef);
 		puncher->setWieldedItem(punchitem);
 	}
 }
@@ -1504,7 +1502,8 @@ void MobV2SAO::updateProperties()
 
 void MobV2SAO::doDamage(u16 d)
 {
-	infostream<<"MobV2 hp="<<m_hp<<" damage="<<d<<std::endl;
+	if(d > 0)
+		actionstream<<"MobV2 ("<<m_hp<<"hp) takes "<<d<<"hp of damage"<<std::endl;
 	
 	if(d < m_hp)
 	{
