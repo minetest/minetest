@@ -3560,6 +3560,14 @@ static int l_get_modpath(lua_State *L)
 	return 1;
 }
 
+// get_worldpath()
+static int l_get_worldpath(lua_State *L)
+{
+	std::string worldpath = get_server(L)->getWorldPath();
+	lua_pushstring(L, worldpath.c_str());
+	return 1;
+}
+
 static const struct luaL_Reg minetest_f [] = {
 	{"debug", l_debug},
 	{"log", l_log},
@@ -3576,6 +3584,7 @@ static const struct luaL_Reg minetest_f [] = {
 	{"get_hitting_properties", l_get_hitting_properties},
 	{"get_current_modname", l_get_current_modname},
 	{"get_modpath", l_get_modpath},
+	{"get_worldpath", l_get_worldpath},
 	{NULL, NULL}
 };
 

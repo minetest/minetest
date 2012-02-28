@@ -118,6 +118,9 @@
 --                  {type="node", pos={x=, y=, z=}}
 -- minetest.get_current_modname() -> string
 -- minetest.get_modpath(modname) -> eg. "/home/user/.minetest/usermods/modname"
+-- ^ Useful for loading additional .lua modules or static data from mod
+-- minetest.get_worldpath(modname) -> eg. "/home/user/.minetest/world"
+-- ^ Useful for storing custom data
 --
 -- minetest.debug(line)
 -- ^ Goes to dstream

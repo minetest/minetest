@@ -540,5 +540,6 @@ minetest.register_abm({
 
 print("experimental modname="..dump(minetest.get_current_modname()))
 print("experimental modpath="..dump(minetest.get_modpath("experimental")))
+print("experimental worldpath="..dump(minetest.get_worldpath()))
 
 -- END
