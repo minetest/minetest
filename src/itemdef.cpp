@@ -417,7 +417,13 @@ public:
 						light_position,
 						light_color,
 						light_radius);
-					// Note: might have returned NULL
+
+					// render-to-target didn't work
+					if(def->inventory_texture == NULL)
+					{
+						def->inventory_texture =
+							tsrc->getTextureRaw(f.tname_tiles[0]);
+					}
 				}
 
 				/*

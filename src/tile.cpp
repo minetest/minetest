@@ -1023,15 +1023,9 @@ video::IImage* generate_image_from_scratch(std::string name,
 	char separator = '^';
 
 	// Find last meta separator in name
-	s32 last_separator_position = -1;
-	for(s32 i=name.size()-1; i>=0; i--)
-	{
-		if(name[i] == separator)
-		{
-			last_separator_position = i;
-			break;
-		}
-	}
+	s32 last_separator_position = name.find_last_of(separator);
+	//if(last_separator_position == std::npos)
+	//	last_separator_position = -1;
 
 	/*infostream<<"generate_image_from_scratch(): "
 			<<"last_separator_position="<<last_separator_position
@@ -1489,8 +1483,6 @@ bool generate_image(std::string part_of_name, video::IImage *& baseimg,
 			
 			if(rtt == NULL)
 			{
-				errorstream<<"generate_image(): render to texture failed."
-						" Creating fallback image"<<std::endl;
 				baseimg = generate_image_from_scratch(
 						imagename_top, device, sourcecache);
 				return true;
