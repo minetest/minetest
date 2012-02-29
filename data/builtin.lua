@@ -402,14 +402,6 @@ minetest.nodedef_default = {
 	light_source = 0,
 	damage_per_second = 0,
 	selection_box = {type="regular"},
-	material = {
-		diggablity = "normal",
-		weight = 0,
-		crackiness = 0,
-		crumbliness = 0,
-		cuttability = 0,
-		flammability = 0,
-	},
 	legacy_facedir_simple = false,
 	legacy_wallmounted = false,
 }
