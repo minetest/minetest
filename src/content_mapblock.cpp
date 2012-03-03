@@ -980,10 +980,6 @@ void mapblock_mesh_generate_special(MeshMakeData *data,
 			};
 
 
-			// n_*_*_minus_y must not play a role in the vertices, but texture needs to be changed
-			//if (g==-1)
-			//	adjacencies+=is_rail_x_minus_y[0]+is_rail_z_minus_y[1]+is_rail_x_minus_y[0]+is_rail_x_minus_y[1];
-
 			// Rotate textures
 			int angle = 0;
 
