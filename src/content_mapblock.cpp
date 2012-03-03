@@ -902,34 +902,42 @@ void mapblock_mesh_generate_special(MeshMakeData *data,
 			content_t thiscontent = n.getContent();
 			if(n_minus_x.getContent() == thiscontent || n_minus_x_plus_y.getContent() == thiscontent)
 				is_rail_x[0] = true;
-				if (n_minus_x_minus_y.getContent() == thiscontent)
-					is_rail_x_minus_y[0] = true;
+			if (n_minus_x_minus_y.getContent() == thiscontent)
+				is_rail_x_minus_y[0] = true;
 
 			if(n_plus_x.getContent() == thiscontent || n_plus_x_plus_y.getContent() == thiscontent)
 				is_rail_x[1] = true;
-				if (n_plus_x_minus_y.getContent() == thiscontent)
-					is_rail_x_minus_y[1] = true;
+			if (n_plus_x_minus_y.getContent() == thiscontent)
+				is_rail_x_minus_y[1] = true;
 
 			if(n_minus_z.getContent() == thiscontent || n_minus_z_plus_y.getContent() == thiscontent)
 				is_rail_z[0] = true;
-				if (n_minus_z_minus_y.getContent() == thiscontent)
-					is_rail_z_minus_y[0] = true;
+			if (n_minus_z_minus_y.getContent() == thiscontent)
+				is_rail_z_minus_y[0] = true;
 
 			if(n_plus_z.getContent() == thiscontent  || n_plus_z_plus_y.getContent() == thiscontent)
 				is_rail_z[1] = true;
-				if (n_minus_z_plus_y.getContent() == thiscontent)
-					is_rail_z_minus_y[1] = true;
+			if (n_plus_z_minus_y.getContent() == thiscontent)
+				is_rail_z_minus_y[1] = true;
 
-			int adjacencies = is_rail_x[0] + is_rail_x[1] + is_rail_z[0] + is_rail_z[1];
-			//int adjacencies_withlower = (is_rail_x[0] || is_rail_x_minus_y[0]) + (is_rail_x[1] || is_rail_x_minus_y[1]) + (is_rail_z[0] || is_rail_z_minus_y[0]) + (is_rail_z[1] || is_rail_z_minus_y[1]);
-			//adjacencies = adjacencies_withlower;
+
+			bool is_rail_x_all[] = {false, false};
+			bool is_rail_z_all[] = {false, false};
+			is_rail_x_all[0]=is_rail_x[0] || is_rail_x_minus_y[0];
+			is_rail_x_all[1]=is_rail_x[1] || is_rail_x_minus_y[1];
+			is_rail_z_all[0]=is_rail_z[0] || is_rail_z_minus_y[0];
+			is_rail_z_all[1]=is_rail_z[1] || is_rail_z_minus_y[1];
+
+			bool is_straight = ((is_rail_x_all[0] && is_rail_x_all[1]) || (is_rail_z_all[0] && is_rail_z_all[1]));
+			int adjacencies = is_rail_x_all[0] + is_rail_x_all[1] + is_rail_z_all[0] + is_rail_z_all[1];
+
 			// Assign textures
 			AtlasPointer ap = f.tiles[0].texture; // straight
 			if(adjacencies < 2)
 				ap = f.tiles[0].texture; // straight
 			else if(adjacencies == 2)
 			{
-				if((is_rail_x[0] && is_rail_x[1]) || (is_rail_z[0] && is_rail_z[1]))
+				if(is_straight)
 					ap = f.tiles[0].texture; // straight
 				else
 					ap = f.tiles[1].texture; // curved
@@ -956,7 +964,7 @@ void mapblock_mesh_generate_special(MeshMakeData *data,
 			char g=-1;
 			if ((n_minus_x_plus_y.getContent() == thiscontent || n_plus_x_plus_y.getContent() == thiscontent 
 			|| n_minus_z_plus_y.getContent() == thiscontent || n_plus_z_plus_y.getContent() == thiscontent)
-			&& (adjacencies < 2 || (adjacencies==2 && ((is_rail_x[0] && is_rail_x[1]) || (is_rail_z[0] && is_rail_z[1])))))
+			&& (adjacencies < 2 || (adjacencies==2 && (is_straight))))
 				g=1; //Object is at a slope
 
 			video::S3DVertex vertices[4] =
@@ -973,19 +981,12 @@ void mapblock_mesh_generate_special(MeshMakeData *data,
 
 
 			// n_*_*_minus_y must not play a role in the vertices, but texture needs to be changed
-			 //if (g==-1)
+			//if (g==-1)
 			//	adjacencies+=is_rail_x_minus_y[0]+is_rail_z_minus_y[1]+is_rail_x_minus_y[0]+is_rail_x_minus_y[1];
 
 			// Rotate textures
 			int angle = 0;
 
-			if(adjacencies == 0)
-			{
-				if(is_rail_x_minus_y[0])
-					angle = -90;
-				if(is_rail_x_minus_y[1])
-					angle = 90;
-			}
 			if(adjacencies == 1)
 			{
 				if(is_rail_x[1])
@@ -994,36 +995,39 @@ void mapblock_mesh_generate_special(MeshMakeData *data,
 					angle = 90;
 				if(is_rail_z[0])
 					angle = 180;
+				if(is_rail_x_minus_y[0])
+					angle = -90;
+				if(is_rail_x_minus_y[1])
+					angle = 90;
 			}
 			if(adjacencies == 2)
 			{
-				if(is_rail_x[0] && is_rail_x[1])
+				if(is_rail_x_all[0] && is_rail_x_all[1])
 				{
 					angle = 90;
 					if (n_minus_x_plus_y.getContent() == thiscontent) angle = 90;
 					if (n_plus_x_plus_y.getContent() == thiscontent) angle = -90;
 				}
-				if(is_rail_z[0] && is_rail_z[1])
+				if(is_rail_z_all[0] && is_rail_z_all[1])
 				{
 					if (n_minus_z_plus_y.getContent() == thiscontent) angle = 180;
-					//if (n_plus_x_plus_y.getContent() == thiscontent) angle = -90;
 				}
-				else if(is_rail_x[0] && is_rail_z[0])
+				else if(is_rail_x_all[0] && is_rail_z_all[0])
 					angle = 270;
-				else if(is_rail_x[0] && is_rail_z[1])
+				else if(is_rail_x_all[0] && is_rail_z_all[1])
 					angle = 180;
-				else if(is_rail_x[1] && is_rail_z[1])
+				else if(is_rail_x_all[1] && is_rail_z_all[1])
 					angle = 90;
 			}
 			if(adjacencies == 3)
 			{
-				if(!is_rail_x[0])
+				if(!is_rail_x_all[0])
 					angle=0;
-				if(!is_rail_x[1])
+				if(!is_rail_x_all[1])
 					angle=180;
-				if(!is_rail_z[0])
+				if(!is_rail_z_all[0])
 					angle=90;
-				if(!is_rail_z[1])
+				if(!is_rail_z_all[1])
 					angle=270;
 			}
 
