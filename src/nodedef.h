@@ -28,6 +28,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #ifndef SERVER
 #include "tile.h"
 #endif
+#include "itemgroup.h"
 class IItemDefManager;
 class ITextureSource;
 class IGameDef;
@@ -148,7 +149,7 @@ struct ContentFeatures
 	*/
 
 	std::string name; // "" = undefined node
-	std::map<std::string, int> groups; // Same as in itemdef
+	ItemGroupList groups; // Same as in itemdef
 
 	// Visual definition
 	enum NodeDrawType drawtype;

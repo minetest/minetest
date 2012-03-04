@@ -24,6 +24,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <string>
 #include <iostream>
 #include <map>
+#include "itemgroup.h"
 
 struct ToolGroupCap
 {
@@ -84,10 +85,10 @@ struct DigParams
 	{}
 };
 
-DigParams getDigParams(const std::map<std::string, int> &groups,
+DigParams getDigParams(const ItemGroupList &groups,
 		const ToolCapabilities *tp, float time_from_last_punch);
 
-DigParams getDigParams(const std::map<std::string, int> &groups,
+DigParams getDigParams(const ItemGroupList &groups,
 		const ToolCapabilities *tp);
 
 struct HitParams
@@ -101,10 +102,10 @@ struct HitParams
 	{}
 };
 
-HitParams getHitParams(const std::map<std::string, int> &groups,
+HitParams getHitParams(const ItemGroupList &groups,
 		const ToolCapabilities *tp, float time_from_last_punch);
 
-HitParams getHitParams(const std::map<std::string, int> &groups,
+HitParams getHitParams(const ItemGroupList &groups,
 		const ToolCapabilities *tp);
 
 #endif

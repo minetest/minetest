@@ -182,7 +182,7 @@ void ServerRemotePlayer::punch(ServerActiveObject *puncher,
 	}
 	
 	// "Material" groups of the player
-	std::map<std::string, int> groups;
+	ItemGroupList groups;
 	groups["choppy"] = 2;
 	groups["fleshy"] = 3;
 

@@ -724,7 +724,7 @@ void Oerkki1SAO::punch(ServerActiveObject *puncher, float time_from_last_punch)
 	m_speed_f += dir*12*BS;
 
 	// "Material" groups of the object
-	std::map<std::string, int> groups;
+	ItemGroupList groups;
 	groups["snappy"] = 1;
 	groups["choppy"] = 1;
 	groups["fleshy"] = 3;
@@ -1419,7 +1419,7 @@ void MobV2SAO::punch(ServerActiveObject *puncher, float time_from_last_punch)
 	
 
 	// "Material" groups of the object
-	std::map<std::string, int> groups;
+	ItemGroupList groups;
 	groups["snappy"] = 1;
 	groups["choppy"] = 1;
 	groups["fleshy"] = 3;

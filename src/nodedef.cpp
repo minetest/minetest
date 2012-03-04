@@ -154,7 +154,7 @@ void ContentFeatures::serialize(std::ostream &os)
 	writeU8(os, 2); // version
 	os<<serializeString(name);
 	writeU16(os, groups.size());
-	for(std::map<std::string, int>::const_iterator
+	for(ItemGroupList::const_iterator
 			i = groups.begin(); i != groups.end(); i++){
 		os<<serializeString(i->first);
 		writeS16(os, i->second);

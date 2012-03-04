@@ -68,7 +68,7 @@ void ToolCapabilities::deSerialize(std::istream &is)
 	}
 }
 
-DigParams getDigParams(const std::map<std::string, int> &groups,
+DigParams getDigParams(const ItemGroupList &groups,
 		const ToolCapabilities *tp, float time_from_last_punch)
 {
 	//infostream<<"getDigParams"<<std::endl;
@@ -123,13 +123,13 @@ DigParams getDigParams(const std::map<std::string, int> &groups,
 	return DigParams(result_diggable, result_time, wear_i);
 }
 
-DigParams getDigParams(const std::map<std::string, int> &groups,
+DigParams getDigParams(const ItemGroupList &groups,
 		const ToolCapabilities *tp)
 {
 	return getDigParams(groups, tp, 1000000);
 }
 
-HitParams getHitParams(const std::map<std::string, int> &groups,
+HitParams getHitParams(const ItemGroupList &groups,
 		const ToolCapabilities *tp, float time_from_last_punch)
 {
 	DigParams digprop = getDigParams(groups, tp,
@@ -145,7 +145,7 @@ HitParams getHitParams(const std::map<std::string, int> &groups,
 	return HitParams(hp, wear);
 }
 
-HitParams getHitParams(const std::map<std::string, int> &groups,
+HitParams getHitParams(const ItemGroupList &groups,
 		const ToolCapabilities *tp)
 {
 	return getHitParams(groups, tp, 1000000);

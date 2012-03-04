@@ -25,22 +25,9 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <string>
 #include <iostream>
 #include <set>
-#include <map>
+#include "itemgroup.h"
 class IGameDef;
 struct ToolCapabilities;
-
-/*
-	Some helpers
-*/
-
-static inline int itemgroup_get(const std::map<std::string, int> &groups,
-		const std::string &name)
-{
-	std::map<std::string, int>::const_iterator i = groups.find(name);
-	if(i == groups.end())
-		return 0;
-	return i->second;
-}
 
 /*
 	Base item definition
@@ -78,7 +65,7 @@ struct ItemDefinition
 	bool liquids_pointable;
 	// May be NULL. If non-NULL, deleted by destructor
 	ToolCapabilities *tool_capabilities;
-	std::map<std::string, int> groups;
+	ItemGroupList groups;
 
 	/*
 		Cached stuff
