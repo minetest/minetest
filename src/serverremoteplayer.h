@@ -67,7 +67,10 @@ public:
 	void step(float dtime, bool send_recommended);
 	std::string getClientInitializationData();
 	std::string getStaticData();
-	void punch(ServerActiveObject *puncher, float time_from_last_punch);
+	int punch(v3f dir,
+			const ToolCapabilities *toolcap,
+			ServerActiveObject *puncher,
+			float time_from_last_punch);
 	void rightClick(ServerActiveObject *clicker);
 	void setPos(v3f pos);
 	void moveTo(v3f pos, bool continuous);

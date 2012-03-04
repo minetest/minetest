@@ -44,7 +44,7 @@ Some planning
 class ServerEnvironment;
 struct ItemStack;
 class Player;
-struct ToolDiggingProperties;
+struct ToolCapabilities;
 
 class ServerActiveObject : public ActiveObject
 {
@@ -133,10 +133,12 @@ public:
 	virtual bool isStaticAllowed() const
 	{return true;}
 	
-	// time_from_last_punch is used for lessening damage if punching fast
-	virtual void punch(ServerActiveObject *puncher,
+	// Returns tool wear
+	virtual int punch(v3f dir,
+			const ToolCapabilities *toolcap=NULL,
+			ServerActiveObject *puncher=NULL,
 			float time_from_last_punch=1000000)
-	{}
+	{ return 0; }
 	virtual void rightClick(ServerActiveObject *clicker)
 	{}
 	virtual void setHP(s16 hp)

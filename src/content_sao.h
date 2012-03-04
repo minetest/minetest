@@ -22,173 +22,16 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "serverobject.h"
 #include "content_object.h"
+#include "itemgroup.h"
 
-class TestSAO : public ServerActiveObject
-{
-public:
-	TestSAO(ServerEnvironment *env, v3f pos);
-	u8 getType() const
-		{return ACTIVEOBJECT_TYPE_TEST;}
-	static ServerActiveObject* create(ServerEnvironment *env, v3f pos,
-			const std::string &data);
-	void step(float dtime, bool send_recommended);
-private:
-	float m_timer1;
-	float m_age;
-};
+ServerActiveObject* createItemSAO(ServerEnvironment *env, v3f pos,
+		const std::string itemstring);
 
-class ItemSAO : public ServerActiveObject
-{
-public:
-	ItemSAO(ServerEnvironment *env, v3f pos, const std::string itemstring);
-	u8 getType() const
-		{return ACTIVEOBJECT_TYPE_ITEM;}
-	static ServerActiveObject* create(ServerEnvironment *env, v3f pos,
-			const std::string &data);
-	void step(float dtime, bool send_recommended);
-	std::string getClientInitializationData();
-	std::string getStaticData();
-	ItemStack createItemStack();
-	void punch(ServerActiveObject *puncher, float time_from_last_punch);
-	float getMinimumSavedMovement(){ return 0.1*BS; }
-private:
-	std::string m_itemstring;
-	bool m_itemstring_changed;
-	v3f m_speed_f;
-	v3f m_last_sent_position;
-	IntervalLimiter m_move_interval;
-};
-
-class RatSAO : public ServerActiveObject
-{
-public:
-	RatSAO(ServerEnvironment *env, v3f pos);
-	u8 getType() const
-		{return ACTIVEOBJECT_TYPE_RAT;}
-	static ServerActiveObject* create(ServerEnvironment *env, v3f pos,
-			const std::string &data);
-	void step(float dtime, bool send_recommended);
-	std::string getClientInitializationData();
-	std::string getStaticData();
-	void punch(ServerActiveObject *puncher, float time_from_last_punch);
-private:
-	bool m_is_active;
-	IntervalLimiter m_inactive_interval;
-	v3f m_speed_f;
-	v3f m_oldpos;
-	v3f m_last_sent_position;
-	float m_yaw;
-	float m_counter1;
-	float m_counter2;
-	float m_age;
-	bool m_touching_ground;
-};
-
-class Oerkki1SAO : public ServerActiveObject
-{
-public:
-	Oerkki1SAO(ServerEnvironment *env, v3f pos);
-	u8 getType() const
-		{return ACTIVEOBJECT_TYPE_OERKKI1;}
-	static ServerActiveObject* create(ServerEnvironment *env, v3f pos,
-			const std::string &data);
-	void step(float dtime, bool send_recommended);
-	std::string getClientInitializationData();
-	std::string getStaticData();
-	void punch(ServerActiveObject *puncher, float time_from_last_punch);
-	bool isPeaceful(){return false;}
-private:
-	void doDamage(u16 d);
-
-	bool m_is_active;
-	IntervalLimiter m_inactive_interval;
-	v3f m_speed_f;
-	v3f m_oldpos;
-	v3f m_last_sent_position;
-	float m_yaw;
-	float m_counter1;
-	float m_counter2;
-	float m_age;
-	bool m_touching_ground;
-	u8 m_hp;
-	float m_after_jump_timer;
-};
-
-class FireflySAO : public ServerActiveObject
-{
-public:
-	FireflySAO(ServerEnvironment *env, v3f pos);
-	u8 getType() const
-		{return ACTIVEOBJECT_TYPE_FIREFLY;}
-	static ServerActiveObject* create(ServerEnvironment *env, v3f pos,
-			const std::string &data);
-	void step(float dtime, bool send_recommended);
-	std::string getClientInitializationData();
-	std::string getStaticData();
-private:
-	bool m_is_active;
-	IntervalLimiter m_inactive_interval;
-	v3f m_speed_f;
-	v3f m_oldpos;
-	v3f m_last_sent_position;
-	float m_yaw;
-	float m_counter1;
-	float m_counter2;
-	float m_age;
-	bool m_touching_ground;
-};
-
-class Settings;
-
-class MobV2SAO : public ServerActiveObject
-{
-public:
-	MobV2SAO(ServerEnvironment *env, v3f pos,
-			Settings *init_properties);
-	virtual ~MobV2SAO();
-	u8 getType() const
-		{return ACTIVEOBJECT_TYPE_MOBV2;}
-	static ServerActiveObject* create(ServerEnvironment *env, v3f pos,
-			const std::string &data);
-	std::string getStaticData();
-	std::string getClientInitializationData();
-	void step(float dtime, bool send_recommended);
-	void punch(ServerActiveObject *puncher, float time_from_last_punch);
-	bool isPeaceful();
-private:
-	void sendPosition();
-	void setPropertyDefaults();
-	void readProperties();
-	void updateProperties();
-	void doDamage(u16 d);
+/*
+	LuaEntitySAO
 	
-	std::string m_move_type;
-	v3f m_speed;
-	v3f m_last_sent_position;
-	v3f m_oldpos;
-	float m_yaw;
-	float m_counter1;
-	float m_counter2;
-	float m_age;
-	bool m_touching_ground;
-	int m_hp;
-	bool m_walk_around;
-	float m_walk_around_timer;
-	bool m_next_pos_exists;
-	v3s16 m_next_pos_i;
-	float m_shoot_reload_timer;
-	bool m_shooting;
-	float m_shooting_timer;
-	float m_die_age;
-	v2f m_size;
-	bool m_falling;
-	float m_disturb_timer;
-	std::string m_disturbing_player;
-	float m_random_disturb_timer;
-	float m_shoot_y;
-	
-	Settings *m_properties;
-};
+	This is the only SAO that needs to have a bunch of it's internals exposed.
+*/
 
 struct LuaEntityProperties;
 
@@ -206,11 +49,17 @@ public:
 	void step(float dtime, bool send_recommended);
 	std::string getClientInitializationData();
 	std::string getStaticData();
-	void punch(ServerActiveObject *puncher, float time_from_last_punch);
+	int punch(v3f dir,
+			const ToolCapabilities *toolcap=NULL,
+			ServerActiveObject *puncher=NULL,
+			float time_from_last_punch=1000000);
 	void rightClick(ServerActiveObject *clicker);
 	void setPos(v3f pos);
 	void moveTo(v3f pos, bool continuous);
 	float getMinimumSavedMovement();
+	std::string getDescription();
+	void setHP(s16 hp);
+	s16 getHP();
 	/* LuaEntitySAO-specific */
 	void setVelocity(v3f velocity);
 	v3f getVelocity();
@@ -230,9 +79,12 @@ private:
 	bool m_registered;
 	struct LuaEntityProperties *m_prop;
 	
+	s16 m_hp;
 	v3f m_velocity;
 	v3f m_acceleration;
 	float m_yaw;
+	ItemGroupList m_armor_groups;
+
 	float m_last_sent_yaw;
 	v3f m_last_sent_position;
 	v3f m_last_sent_velocity;

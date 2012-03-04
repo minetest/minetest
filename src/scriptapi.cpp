@@ -2297,17 +2297,22 @@ private:
 		return 0;
 	}
 
-	// punch(self, puncher); puncher = an another ObjectRef
+	// punch(self, puncher, tool_capabilities, direction, time_from_last_punch)
 	static int l_punch(lua_State *L)
 	{
 		ObjectRef *ref = checkobject(L, 1);
-		ObjectRef *ref2 = checkobject(L, 2);
+		ObjectRef *puncher_ref = checkobject(L, 2);
 		ServerActiveObject *co = getobject(ref);
-		ServerActiveObject *co2 = getobject(ref2);
+		ServerActiveObject *puncher = getobject(puncher_ref);
 		if(co == NULL) return 0;
-		if(co2 == NULL) return 0;
+		if(puncher == NULL) return 0;
+		ToolCapabilities toolcap = read_tool_capabilities(L, 3);
+		v3f dir = read_v3f(L, 4);
+		float time_from_last_punch = 1000000;
+		if(lua_isnumber(L, 5))
+			time_from_last_punch = lua_tonumber(L, 5);
 		// Do it
-		co->punch(co2);
+		puncher->punch(dir, &toolcap, puncher, time_from_last_punch);
 		return 0;
 	}
 
@@ -2878,7 +2883,7 @@ private:
 		if(item.empty() || !item.isKnown(get_server(L)->idef()))
 			return 0;
 		// Do it
-		ServerActiveObject *obj = new ItemSAO(env, pos, item.getItemString());
+		ServerActiveObject *obj = createItemSAO(env, pos, item.getItemString());
 		int objectid = env->addActiveObject(obj);
 		// If failed to add, return nothing (reads as nil)
 		if(objectid == 0)
@@ -2892,15 +2897,8 @@ private:
 	// pos = {x=num, y=num, z=num}
 	static int l_add_rat(lua_State *L)
 	{
-		infostream<<"EnvRef::l_add_rat()"<<std::endl;
-		EnvRef *o = checkobject(L, 1);
-		ServerEnvironment *env = o->m_env;
-		if(env == NULL) return 0;
-		// pos
-		v3f pos = checkFloatPos(L, 2);
-		// Do it
-		ServerActiveObject *obj = new RatSAO(env, pos);
-		env->addActiveObject(obj);
+		infostream<<"EnvRef::l_add_rat(): C++ mobs have been removed."
+				<<" Doing nothing."<<std::endl;
 		return 0;
 	}
 
@@ -2908,15 +2906,8 @@ private:
 	// pos = {x=num, y=num, z=num}
 	static int l_add_firefly(lua_State *L)
 	{
-		infostream<<"EnvRef::l_add_firefly()"<<std::endl;
-		EnvRef *o = checkobject(L, 1);
-		ServerEnvironment *env = o->m_env;
-		if(env == NULL) return 0;
-		// pos
-		v3f pos = checkFloatPos(L, 2);
-		// Do it
-		ServerActiveObject *obj = new FireflySAO(env, pos);
-		env->addActiveObject(obj);
+		infostream<<"EnvRef::l_add_firefly(): C++ mobs have been removed."
+				<<" Doing nothing."<<std::endl;
 		return 0;
 	}
 
@@ -4348,6 +4339,8 @@ void scriptapi_luaentity_get_properties(lua_State *L, u16 id,
 
 	/* Read stuff */
 	
+	prop->hp_max = getintfield_default(L, -1, "hp_max", 10);
+
 	getboolfield(L, -1, "physical", prop->physical);
 
 	getfloatfield(L, -1, "weight", prop->weight);
@@ -4415,9 +4408,11 @@ void scriptapi_luaentity_step(lua_State *L, u16 id, float dtime)
 		script_error(L, "error running function 'on_step': %s\n", lua_tostring(L, -1));
 }
 
-// Calls entity:on_punch(ObjectRef puncher, time_from_last_punch)
+// Calls entity:on_punch(ObjectRef puncher, time_from_last_punch,
+//                       tool_capabilities, direction)
 void scriptapi_luaentity_punch(lua_State *L, u16 id,
-		ServerActiveObject *puncher, float time_from_last_punch)
+		ServerActiveObject *puncher, float time_from_last_punch,
+		const ToolCapabilities *toolcap, v3f dir)
 {
 	realitycheck(L);
 	assert(lua_checkstack(L, 20));
@@ -4436,8 +4431,10 @@ void scriptapi_luaentity_punch(lua_State *L, u16 id,
 	lua_pushvalue(L, object); // self
 	objectref_get_or_create(L, puncher); // Clicker reference
 	lua_pushnumber(L, time_from_last_punch);
-	// Call with 2 arguments, 0 results
-	if(lua_pcall(L, 3, 0, 0))
+	push_tool_capabilities(L, *toolcap);
+	push_v3f(L, dir);
+	// Call with 5 arguments, 0 results
+	if(lua_pcall(L, 5, 0, 0))
 		script_error(L, "error running function 'on_punch': %s\n", lua_tostring(L, -1));
 }
 

@@ -169,16 +169,18 @@ std::string ServerRemotePlayer::getStaticData()
 	return "";
 }
 
-void ServerRemotePlayer::punch(ServerActiveObject *puncher,
+int ServerRemotePlayer::punch(v3f dir,
+		const ToolCapabilities *toolcap,
+		ServerActiveObject *puncher,
 		float time_from_last_punch)
 {
-	if(!puncher)
-		return;
+	if(!toolcap)
+		return 0;
 	
 	// No effect if PvP disabled
 	if(g_settings->getBool("enable_pvp") == false){
 		if(puncher->getType() == ACTIVEOBJECT_TYPE_PLAYER)
-			return;
+			return 0;
 	}
 	
 	// "Material" groups of the player
@@ -186,19 +188,13 @@ void ServerRemotePlayer::punch(ServerActiveObject *puncher,
 	groups["choppy"] = 2;
 	groups["fleshy"] = 3;
 
-	IItemDefManager *idef = m_env->getGameDef()->idef();
-	ItemStack punchitem = puncher->getWieldedItem();
-	ToolCapabilities tp = punchitem.getToolCapabilities(idef);
-
-	HitParams hitparams = getHitParams(groups, &tp, time_from_last_punch);
+	HitParams hitparams = getHitParams(groups, toolcap, time_from_last_punch);
 	
 	actionstream<<"Player "<<getName()<<" punched by "
 			<<puncher->getDescription()<<", damage "<<hitparams.hp
 			<<" HP"<<std::endl;
 	
 	setHP(getHP() - hitparams.hp);
-	punchitem.addWear(hitparams.wear, idef);
-	puncher->setWieldedItem(punchitem);
 	
 	if(hitparams.hp != 0)
 	{
@@ -211,6 +207,8 @@ void ServerRemotePlayer::punch(ServerActiveObject *puncher,
 		ActiveObjectMessage aom(getId(), false, os.str());
 		m_messages_out.push_back(aom);
 	}
+
+	return hitparams.wear;
 }
 
 void ServerRemotePlayer::rightClick(ServerActiveObject *clicker)

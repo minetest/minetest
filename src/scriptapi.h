@@ -33,6 +33,7 @@ struct LuaEntityProperties;
 struct ItemStack;
 struct PointedThing;
 //class IGameDef;
+struct ToolCapabilities;
 
 void scriptapi_export(lua_State *L, Server *server);
 bool scriptapi_loadmod(lua_State *L, const std::string &scriptpath,
@@ -82,7 +83,8 @@ void scriptapi_luaentity_get_properties(lua_State *L, u16 id,
 		LuaEntityProperties *prop);
 void scriptapi_luaentity_step(lua_State *L, u16 id, float dtime);
 void scriptapi_luaentity_punch(lua_State *L, u16 id,
-		ServerActiveObject *puncher, float time_from_last_punch);
+		ServerActiveObject *puncher, float time_from_last_punch,
+		const ToolCapabilities *toolcap, v3f dir);
 void scriptapi_luaentity_rightclick(lua_State *L, u16 id,
 		ServerActiveObject *clicker);
 

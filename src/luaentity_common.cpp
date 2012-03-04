@@ -25,6 +25,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #define PP2(x) "("<<(x).X<<","<<(x).Y<<")"
 
 LuaEntityProperties::LuaEntityProperties():
+	hp_max(1),
 	physical(false),
 	weight(5),
 	collisionbox(-0.5,-0.5,-0.5, 0.5,0.5,0.5),
@@ -39,7 +40,8 @@ LuaEntityProperties::LuaEntityProperties():
 std::string LuaEntityProperties::dump()
 {
 	std::ostringstream os(std::ios::binary);
-	os<<"physical="<<physical;
+	os<<"hp_max="<<hp_max;
+	os<<", physical="<<physical;
 	os<<", weight="<<weight;
 	os<<", collisionbox="<<PP(collisionbox.MinEdge)<<","<<PP(collisionbox.MaxEdge);
 	os<<", visual="<<visual;
@@ -56,7 +58,8 @@ std::string LuaEntityProperties::dump()
 
 void LuaEntityProperties::serialize(std::ostream &os)
 {
-	writeU8(os, 0); // version
+	writeU8(os, 1); // version
+	writeS16(os, hp_max);
 	writeU8(os, physical);
 	writeF1000(os, weight);
 	writeV3F1000(os, collisionbox.MinEdge);
@@ -74,8 +77,9 @@ void LuaEntityProperties::serialize(std::ostream &os)
 void LuaEntityProperties::deSerialize(std::istream &is)
 {
 	int version = readU8(is);
-	if(version != 0) throw SerializationError(
+	if(version != 1) throw SerializationError(
 			"unsupported LuaEntityProperties version");
+	hp_max = readS16(is);
 	physical = readU8(is);
 	weight = readF1000(is);
 	collisionbox.MinEdge = readV3F1000(is);

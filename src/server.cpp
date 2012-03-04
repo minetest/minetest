@@ -47,6 +47,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "mods.h"
 #include "sha1.h"
 #include "base64.h"
+#include "tool.h"
 
 #define PP(x) "("<<(x).X<<","<<(x).Y<<","<<(x).Z<<")"
 
@@ -1244,7 +1245,7 @@ void Server::AsyncRunStep()
 				explosion.
 			*/
 			player->m_last_good_position_age += dtime;
-			if(player->m_last_good_position_age >= 2.0){
+			if(player->m_last_good_position_age >= 1.0){
 				float age = player->m_last_good_position_age;
 				v3f diff = (player->getPosition() - player->m_last_good_position);
 				float d_vert = diff.Y;
@@ -2870,7 +2871,7 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 		if(action == 0 || action == 2 || action == 3)
 		{
 			float d = player_pos.getDistanceFrom(pointed_pos_under);
-			float max_d = BS * 10; // Just some large enough value
+			float max_d = BS * 14; // Just some large enough value
 			if(d > max_d){
 				actionstream<<"Player "<<player->getName()
 						<<" tried to access "<<pointed.dump()
@@ -2933,8 +2934,14 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 				actionstream<<player->getName()<<" punches object "
 					<<pointed.object_id<<std::endl;
 
-				// Do stuff
-				pointed_object->punch(srp, srp->m_time_from_last_punch);
+				ItemStack punchitem = srp->getWieldedItem();
+				ToolCapabilities toolcap =
+						punchitem.getToolCapabilities(m_itemdef);
+				v3f dir = (pointed_object->getBasePosition() -
+						(srp->getPosition() + srp->getEyeOffset())
+							).normalize();
+				pointed_object->punch(dir, &toolcap, srp,
+						srp->m_time_from_last_punch);
 				srp->m_time_from_last_punch = 0;
 			}
 
