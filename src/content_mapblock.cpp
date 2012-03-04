@@ -883,8 +883,10 @@ void mapblock_mesh_generate_special(MeshMakeData *data,
 			bool is_rail_x [] = { false, false };  /* x-1, x+1 */
 			bool is_rail_z [] = { false, false };  /* z-1, z+1 */
 
-			bool is_rail_z_minus_y [] = { false, false };  /* z-1, y-1 */
-			bool is_rail_x_minus_y [] = { false, false };  /* x-1, y-1 */
+			bool is_rail_z_minus_y [] = { false, false };  /* z-1, z+1; y-1 */
+			bool is_rail_x_minus_y [] = { false, false };  /* x-1, z+1; y-1 */
+			bool is_rail_z_plus_y [] = { false, false };  /* z-1, z+1; y+1 */
+			bool is_rail_x_plus_y [] = { false, false };  /* x-1, x+1; y+1 */
 
 			MapNode n_minus_x = data->m_vmanip.getNodeNoEx(blockpos_nodes + v3s16(x-1,y,z));
 			MapNode n_plus_x = data->m_vmanip.getNodeNoEx(blockpos_nodes + v3s16(x+1,y,z));
@@ -900,36 +902,50 @@ void mapblock_mesh_generate_special(MeshMakeData *data,
 			MapNode n_minus_z_minus_y = data->m_vmanip.getNodeNoEx(blockpos_nodes + v3s16(x, y-1, z-1));
 			
 			content_t thiscontent = n.getContent();
-			if(n_minus_x.getContent() == thiscontent || n_minus_x_plus_y.getContent() == thiscontent)
+			if(n_minus_x.getContent() == thiscontent)
 				is_rail_x[0] = true;
 			if (n_minus_x_minus_y.getContent() == thiscontent)
 				is_rail_x_minus_y[0] = true;
+			if(n_minus_x_plus_y.getContent() == thiscontent)
+				is_rail_x_plus_y[0] = true;
 
-			if(n_plus_x.getContent() == thiscontent || n_plus_x_plus_y.getContent() == thiscontent)
+			if(n_plus_x.getContent() == thiscontent)
 				is_rail_x[1] = true;
 			if (n_plus_x_minus_y.getContent() == thiscontent)
 				is_rail_x_minus_y[1] = true;
+			if(n_plus_x_plus_y.getContent() == thiscontent)
+				is_rail_x_plus_y[1] = true;
 
-			if(n_minus_z.getContent() == thiscontent || n_minus_z_plus_y.getContent() == thiscontent)
+			if(n_minus_z.getContent() == thiscontent)
 				is_rail_z[0] = true;
 			if (n_minus_z_minus_y.getContent() == thiscontent)
 				is_rail_z_minus_y[0] = true;
+			if(n_minus_z_plus_y.getContent() == thiscontent)
+				is_rail_z_plus_y[0] = true;
 
-			if(n_plus_z.getContent() == thiscontent  || n_plus_z_plus_y.getContent() == thiscontent)
+			if(n_plus_z.getContent() == thiscontent)
 				is_rail_z[1] = true;
 			if (n_plus_z_minus_y.getContent() == thiscontent)
 				is_rail_z_minus_y[1] = true;
+			if(n_plus_z_plus_y.getContent() == thiscontent)
+				is_rail_z_plus_y[1] = true;
 
 
 			bool is_rail_x_all[] = {false, false};
 			bool is_rail_z_all[] = {false, false};
-			is_rail_x_all[0]=is_rail_x[0] || is_rail_x_minus_y[0];
-			is_rail_x_all[1]=is_rail_x[1] || is_rail_x_minus_y[1];
-			is_rail_z_all[0]=is_rail_z[0] || is_rail_z_minus_y[0];
-			is_rail_z_all[1]=is_rail_z[1] || is_rail_z_minus_y[1];
+			is_rail_x_all[0]=is_rail_x[0] || is_rail_x_minus_y[0] || is_rail_x_plus_y[0];
+			is_rail_x_all[1]=is_rail_x[1] || is_rail_x_minus_y[1] || is_rail_x_plus_y[1];
+			is_rail_z_all[0]=is_rail_z[0] || is_rail_z_minus_y[0] || is_rail_z_plus_y[0];
+			is_rail_z_all[1]=is_rail_z[1] || is_rail_z_minus_y[1] || is_rail_z_plus_y[1];
 
-			bool is_straight = ((is_rail_x_all[0] && is_rail_x_all[1]) || (is_rail_z_all[0] && is_rail_z_all[1]));
+			bool is_straight = (is_rail_x_all[0] && is_rail_x_all[1]) || (is_rail_z_all[0] && is_rail_z_all[1]);//is really straight, rails on both sides
 			int adjacencies = is_rail_x_all[0] + is_rail_x_all[1] + is_rail_z_all[0] + is_rail_z_all[1];
+
+			if (is_rail_x_plus_y[0] || is_rail_x_plus_y[1] || is_rail_z_plus_y[0] || is_rail_z_plus_y[1]) //is straight because sloped
+			{
+				adjacencies = 5; //5 means sloped
+				is_straight = true;
+			}
 
 			// Assign textures
 			AtlasPointer ap = f.tiles[0].texture; // straight
@@ -962,9 +978,7 @@ void mapblock_mesh_generate_special(MeshMakeData *data,
 			float d = (float)BS/64;
 			
 			char g=-1;
-			if ((n_minus_x_plus_y.getContent() == thiscontent || n_plus_x_plus_y.getContent() == thiscontent 
-			|| n_minus_z_plus_y.getContent() == thiscontent || n_plus_z_plus_y.getContent() == thiscontent)
-			&& (adjacencies < 2 || (adjacencies==2 && (is_straight))))
+			if (is_rail_x_plus_y[0] || is_rail_x_plus_y[1] || is_rail_z_plus_y[0] || is_rail_z_plus_y[1])
 				g=1; //Object is at a slope
 
 			video::S3DVertex vertices[4] =
@@ -985,15 +999,7 @@ void mapblock_mesh_generate_special(MeshMakeData *data,
 
 			if(adjacencies == 1)
 			{
-				if(is_rail_x[1])
-					angle = -90;
-				if(is_rail_x[0])
-					angle = 90;
-				if(is_rail_z[0])
-					angle = 180;
-				if(is_rail_x_minus_y[0])
-					angle = -90;
-				if(is_rail_x_minus_y[1])
+				if(is_rail_x_all[0] or is_rail_x_all[1])
 					angle = 90;
 			}
 			if(adjacencies == 2)
@@ -1001,8 +1007,6 @@ void mapblock_mesh_generate_special(MeshMakeData *data,
 				if(is_rail_x_all[0] && is_rail_x_all[1])
 				{
 					angle = 90;
-					if (n_minus_x_plus_y.getContent() == thiscontent) angle = 90;
-					if (n_plus_x_plus_y.getContent() == thiscontent) angle = -90;
 				}
 				if(is_rail_z_all[0] && is_rail_z_all[1])
 				{
@@ -1025,6 +1029,16 @@ void mapblock_mesh_generate_special(MeshMakeData *data,
 					angle=90;
 				if(!is_rail_z_all[1])
 					angle=270;
+			}
+			//adjacencies 4: Crossing
+			if(adjacencies == 5) //sloped
+			{
+				if(is_rail_z_plus_y[0])
+					angle = 180;
+				if(is_rail_x_plus_y[0])
+					angle = 90;
+				if(is_rail_x_plus_y[1])
+					angle = -90;
 			}
 
 			if(angle != 0) {
