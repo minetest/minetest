@@ -38,6 +38,8 @@ Some planning
 class ClientEnvironment;
 class ITextureSource;
 class IGameDef;
+class LocalPlayer;
+struct ItemStack;
 
 class ClientActiveObject : public ActiveObject
 {
@@ -75,7 +77,8 @@ public:
 			ClientEnvironment *env);
 
 	// If returns true, punch will not be sent to the server
-	virtual bool directReportPunch(const std::string &toolname, v3f dir)
+	virtual bool directReportPunch(v3f dir, const ItemStack *punchitem=NULL,
+			float time_from_last_punch=1000000)
 	{ return false; }
 
 protected:

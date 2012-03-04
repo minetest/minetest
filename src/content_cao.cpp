@@ -31,7 +31,10 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "content_object.h"
 #include "mesh.h"
 #include "utility.h" // For IntervalLimiter
+#include "itemdef.h"
+#include "tool.h"
 class Settings;
+struct ToolCapabilities;
 
 core::map<u16, ClientActiveObject::Factory> ClientActiveObject::m_types;
 
@@ -585,12 +588,40 @@ public:
 		}
 		else if(cmd == LUAENTITY_CMD_PUNCHED)
 		{
-			s16 damage = readS16(is);
+			/*s16 damage =*/ readS16(is);
 			s16 result_hp = readS16(is);
 			
 			m_hp = result_hp;
 			// TODO: Execute defined fast response
 		}
+	}
+	
+	bool directReportPunch(v3f dir, const ItemStack *punchitem=NULL,
+			float time_from_last_punch=1000000)
+	{
+		// TODO: Transfer this from the server
+		ItemGroupList m_armor_groups;
+		
+		assert(punchitem);
+		const ToolCapabilities *toolcap =
+				&punchitem->getToolCapabilities(m_gamedef->idef());
+		PunchDamageResult result = getPunchDamage(
+				m_armor_groups,
+				toolcap,
+				punchitem,
+				time_from_last_punch);
+		
+		if(result.did_punch)
+		{
+			// TODO: Decrease hp by 
+			if(result.damage < m_hp)
+				m_hp -= result.damage;
+			else
+				m_hp = 0;
+			// TODO: Execute defined fast response
+		}
+		
+		return false;
 	}
 };
 

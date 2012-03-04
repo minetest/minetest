@@ -21,6 +21,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "utility.h"
 #include "itemdef.h" // For itemgroup_get()
 #include "log.h"
+#include "inventory.h"
 
 void ToolCapabilities::serialize(std::ostream &os) const
 {
@@ -152,4 +153,37 @@ HitParams getHitParams(const ItemGroupList &groups,
 {
 	return getHitParams(groups, tp, 1000000);
 }
+
+PunchDamageResult getPunchDamage(
+		const ItemGroupList &armor_groups,
+		const ToolCapabilities *toolcap,
+		const ItemStack *punchitem,
+		float time_from_last_punch
+){
+	bool do_hit = true;
+	{
+		if(do_hit && punchitem){
+			if(itemgroup_get(armor_groups, "punch_operable") &&
+					(toolcap == NULL || punchitem->name == ""))
+				do_hit = false;
+		}
+		if(do_hit){
+			if(itemgroup_get(armor_groups, "immortal"))
+				do_hit = false;
+		}
+	}
+	
+	PunchDamageResult result;
+	if(do_hit)
+	{
+		HitParams hitparams = getHitParams(armor_groups, toolcap,
+				time_from_last_punch);
+		result.did_punch = true;
+		result.wear = hitparams.wear;
+		result.damage = hitparams.hp;
+	}
+
+	return result;
+}
+
 

@@ -2088,10 +2088,13 @@ void the_game(
 				}
 				if(do_punch_damage){
 					// Report direct punch
-                		        v3f objpos = selected_object->getPosition();
-		                        v3f dir = (objpos - player_position).normalize();
-
-					bool disable_send = selected_object->directReportPunch(playeritem.name, dir);
+					v3f objpos = selected_object->getPosition();
+					v3f dir = (objpos - player_position).normalize();
+					
+					// TODO: Get time_from_last_punch from somewhere
+					float time_from_last_punch = 1000000;
+					bool disable_send = selected_object->directReportPunch(
+							dir, &playeritem, time_from_last_punch);
 					if(!disable_send)
 						client.interact(0, pointed);
 				}

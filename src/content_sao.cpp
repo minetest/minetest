@@ -531,33 +531,47 @@ int LuaEntitySAO::punch(v3f dir,
 		m_removed = true;
 		return 0;
 	}
+	
+	ItemStack *punchitem = NULL;
+	ItemStack punchitem_static;
+	if(puncher){
+		punchitem_static = puncher->getWieldedItem();
+		punchitem = &punchitem_static;
+	}
+
+	PunchDamageResult result = getPunchDamage(
+			m_armor_groups,
+			toolcap,
+			punchitem,
+			time_from_last_punch);
+	
+	if(result.did_punch)
+	{
+		actionstream<<getDescription()<<" punched by "
+				<<puncher->getDescription()<<", damage "<<result.damage
+				<<" HP"<<std::endl;
+		
+		setHP(getHP() - result.damage);
+		
+		{
+			std::ostringstream os(std::ios::binary);
+			// command 
+			writeU8(os, LUAENTITY_CMD_PUNCHED);
+			// damage
+			writeS16(os, result.damage);
+			// result_hp
+			writeS16(os, getHP());
+			// create message and add to list
+			ActiveObjectMessage aom(getId(), true, os.str());
+			m_messages_out.push_back(aom);
+		}
+	}
+
 	lua_State *L = m_env->getLua();
 	scriptapi_luaentity_punch(L, m_id, puncher,
 			time_from_last_punch, toolcap, dir);
 
-	HitParams hitparams = getHitParams(m_armor_groups, toolcap,
-			time_from_last_punch);
-	
-	actionstream<<getDescription()<<" punched by "
-			<<puncher->getDescription()<<", damage "<<hitparams.hp
-			<<" HP"<<std::endl;
-	
-	setHP(getHP() - hitparams.hp);
-	
-	{
-		std::ostringstream os(std::ios::binary);
-		// command 
-		writeU8(os, LUAENTITY_CMD_PUNCHED);
-		// damage
-		writeS16(os, hitparams.hp);
-		// result_hp
-		writeS16(os, getHP());
-		// create message and add to list
-		ActiveObjectMessage aom(getId(), true, os.str());
-		m_messages_out.push_back(aom);
-	}
-
-	return hitparams.wear;
+	return result.wear;
 }
 
 void LuaEntitySAO::rightClick(ServerActiveObject *clicker)

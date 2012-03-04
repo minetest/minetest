@@ -108,5 +108,27 @@ HitParams getHitParams(const ItemGroupList &groups,
 HitParams getHitParams(const ItemGroupList &groups,
 		const ToolCapabilities *tp);
 
+struct PunchDamageResult
+{
+	bool did_punch;
+	int damage;
+	int wear;
+
+	PunchDamageResult():
+		did_punch(false),
+		damage(0),
+		wear(0)
+	{}
+};
+
+struct ItemStack;
+
+PunchDamageResult getPunchDamage(
+		const ItemGroupList &armor_groups,
+		const ToolCapabilities *toolcap,
+		const ItemStack *punchitem,
+		float time_from_last_punch
+);
+
 #endif
 
