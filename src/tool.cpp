@@ -135,6 +135,8 @@ HitParams getHitParams(const ItemGroupList &groups,
 	DigParams digprop = getDigParams(groups, tp,
 			time_from_last_punch);
 	
+	if(time_from_last_punch > tp->full_punch_interval)
+		time_from_last_punch = tp->full_punch_interval;
 	// Damage in hp is equivalent to nodes dug in time_from_last_punch
 	s16 hp = 0;
 	if(digprop.diggable)
