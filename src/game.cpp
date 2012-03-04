@@ -1967,8 +1967,12 @@ void the_game(
 				{
 					dig_index = CRACK_ANIMATION_LENGTH;
 				}
-
-				if(dig_index < CRACK_ANIMATION_LENGTH)
+				
+				// Don't show cracks if not diggable
+				if(dig_time_complete >= 100000.0)
+				{
+				}
+				else if(dig_index < CRACK_ANIMATION_LENGTH)
 				{
 					//TimeTaker timer("client.setTempMod");
 					//infostream<<"dig_index="<<dig_index<<std::endl;
