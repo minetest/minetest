@@ -183,8 +183,8 @@ void ServerRemotePlayer::punch(ServerActiveObject *puncher,
 	
 	// "Material" groups of the player
 	std::map<std::string, int> groups;
-	groups["snappy"] = 1;
 	groups["choppy"] = 2;
+	groups["fleshy"] = 3;
 
 	IItemDefManager *idef = m_env->getGameDef()->idef();
 	ItemStack punchitem = puncher->getWieldedItem();

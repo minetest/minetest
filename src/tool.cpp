@@ -135,10 +135,10 @@ HitParams getHitParams(const std::map<std::string, int> &groups,
 	DigParams digprop = getDigParams(groups, tp,
 			time_from_last_punch);
 	
-	// If digging time would be 1 second, 8 half-hearts go in 1 second.
+	// Damage in hp is equivalent to nodes dug in time_from_last_punch
 	s16 hp = 0;
 	if(digprop.diggable)
-		hp = 8.0 / digprop.time;
+		hp = time_from_last_punch / digprop.time;
 	// Wear is the same as for digging a single node
 	s16 wear = (float)digprop.wear;
 
