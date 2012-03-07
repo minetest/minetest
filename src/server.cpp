@@ -1108,7 +1108,6 @@ void Server::AsyncRunStep()
 	}
 	
 	{
-		ScopeProfiler sp(g_profiler, "Server: sel and send blocks to clients");
 		// Send blocks to clients
 		SendBlocks(dtime);
 	}
@@ -1788,6 +1787,7 @@ void Server::AsyncRunStep()
 		if(counter >= g_settings->getFloat("server_map_save_interval"))
 		{
 			counter = 0.0;
+			JMutexAutoLock lock(m_env_mutex);
 
 			ScopeProfiler sp(g_profiler, "Server: saving stuff");
 
@@ -1795,13 +1795,10 @@ void Server::AsyncRunStep()
 			if(m_authmanager.isModified())
 				m_authmanager.save();
 
-			//Bann stuff
+			//Ban stuff
 			if(m_banmanager.isModified())
 				m_banmanager.save();
 			
-			// Map
-			JMutexAutoLock lock(m_env_mutex);
-
 			// Save changed parts of map
 			m_env->getMap().save(MOD_STATE_WRITE_NEEDED);
 
@@ -1861,6 +1858,8 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 	// Environment is locked first.
 	JMutexAutoLock envlock(m_env_mutex);
 	JMutexAutoLock conlock(m_con_mutex);
+	
+	ScopeProfiler sp(g_profiler, "Server::ProcessData");
 	
 	try{
 		Address address = m_con.GetPeerAddress(peer_id);
@@ -3661,7 +3660,7 @@ void Server::SendBlocks(float dtime)
 	JMutexAutoLock envlock(m_env_mutex);
 	JMutexAutoLock conlock(m_con_mutex);
 
-	//TimeTaker timer("Server::SendBlocks");
+	ScopeProfiler sp(g_profiler, "Server: sel and send blocks to clients");
 
 	core::array<PrioritySortedBlockTransfer> queue;
 
