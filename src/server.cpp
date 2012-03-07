@@ -4500,13 +4500,14 @@ void dedicated_server_loop(Server &server, bool &kill)
 
 	for(;;)
 	{
+		float steplen = g_settings->getFloat("dedicated_server_step");
 		// This is kind of a hack but can be done like this
 		// because server.step() is very light
 		{
 			ScopeProfiler sp(g_profiler, "dedicated server sleep");
-			sleep_ms(30);
+			sleep_ms((int)(steplen*1000.0));
 		}
-		server.step(0.030);
+		server.step(steplen);
 
 		if(server.getShutdownRequested() || kill)
 		{
@@ -4521,7 +4522,7 @@ void dedicated_server_loop(Server &server, bool &kill)
 				g_settings->getFloat("profiler_print_interval");
 		if(profiler_print_interval != 0)
 		{
-			if(m_profiler_interval.step(0.030, profiler_print_interval))
+			if(m_profiler_interval.step(steplen, profiler_print_interval))
 			{
 				infostream<<"Profiler:"<<std::endl;
 				g_profiler->print(infostream);
