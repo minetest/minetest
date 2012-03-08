@@ -331,6 +331,9 @@ bool UDPSocket::WaitData(int timeout_ms)
 				<<timeout_ms<<")"<<std::endl;*/
 		return false;
 	}
+	else if(result < 0 && errno == EINTR){
+		return false;
+	}
 	else if(result < 0){
 		// Error
 #ifndef DISABLE_ERRNO
