@@ -66,7 +66,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "constants.h"
 #include "strfnd.h"
 #include "porting.h"
-#include "materials.h"
 #include "config.h"
 #include "filesys.h"
 #include "defaultsettings.h"
