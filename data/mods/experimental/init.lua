@@ -330,6 +330,7 @@ function TNT:on_activate(staticdata)
 	self.object:setvelocity({x=0, y=4, z=0})
 	self.object:setacceleration({x=0, y=-10, z=0})
 	self.object:settexturemod("^[brighten")
+	self.object:set_armor_groups({foo=1,bar=2})
 end
 
 -- Called periodically
@@ -355,7 +356,7 @@ function TNT:on_punch(hitter)
 	if self.health <= 0 then
 		self.object:remove()
 		hitter:get_inventory():add_item("main", "experimental:tnt")
-		hitter:set_hp(hitter:get_hp() - 1)
+		--hitter:set_hp(hitter:get_hp() - 1)
 	end
 end
 

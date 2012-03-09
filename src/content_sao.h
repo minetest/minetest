@@ -71,6 +71,7 @@ public:
 	void setSprite(v2s16 p, int num_frames, float framelength,
 			bool select_horiz_by_yawpitch);
 	std::string getName();
+	void setArmorGroups(const ItemGroupList &armor_groups);
 private:
 	void sendPosition(bool do_interpolate, bool is_movement_end);
 
@@ -90,6 +91,7 @@ private:
 	v3f m_last_sent_velocity;
 	float m_last_sent_position_timer;
 	float m_last_sent_move_precision;
+	bool m_armor_groups_sent;
 };
 
 #endif

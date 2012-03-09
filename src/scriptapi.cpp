@@ -2538,6 +2538,19 @@ private:
 		return 0;
 	}
 
+	// set_armor_groups(self, groups)
+	static int l_set_armor_groups(lua_State *L)
+	{
+		ObjectRef *ref = checkobject(L, 1);
+		LuaEntitySAO *co = getluaobject(ref);
+		if(co == NULL) return 0;
+		// Do it
+		ItemGroupList groups;
+		read_groups(L, 2, groups);
+		co->setArmorGroups(groups);
+		return 0;
+	}
+
 	// DEPRECATED
 	// get_entity_name(self)
 	static int l_get_entity_name(lua_State *L)
@@ -2700,6 +2713,7 @@ const luaL_reg ObjectRef::methods[] = {
 	method(ObjectRef, getyaw),
 	method(ObjectRef, settexturemod),
 	method(ObjectRef, setsprite),
+	method(ObjectRef, set_armor_groups),
 	method(ObjectRef, get_entity_name),
 	method(ObjectRef, get_luaentity),
 	// Player-only

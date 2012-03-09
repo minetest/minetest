@@ -354,7 +354,8 @@ LuaEntitySAO::LuaEntitySAO(ServerEnvironment *env, v3f pos,
 	m_last_sent_position(0,0,0),
 	m_last_sent_velocity(0,0,0),
 	m_last_sent_position_timer(0),
-	m_last_sent_move_precision(0)
+	m_last_sent_move_precision(0),
+	m_armor_groups_sent(false)
 {
 	// Only register type if no environment supplied
 	if(env == NULL){
@@ -474,6 +475,21 @@ void LuaEntitySAO::step(float dtime, bool send_recommended)
 	if(move_d > minchange || vel_d > minchange ||
 			fabs(m_yaw - m_last_sent_yaw) > 1.0){
 		sendPosition(true, false);
+	}
+
+	if(m_armor_groups_sent == false){
+		m_armor_groups_sent = true;
+		std::ostringstream os(std::ios::binary);
+		writeU8(os, LUAENTITY_CMD_UPDATE_ARMOR_GROUPS);
+		writeU16(os, m_armor_groups.size());
+		for(ItemGroupList::const_iterator i = m_armor_groups.begin();
+				i != m_armor_groups.end(); i++){
+			os<<serializeString(i->first);
+			writeS16(os, i->second);
+		}
+		// create message and add to list
+		ActiveObjectMessage aom(getId(), true, os.str());
+		m_messages_out.push_back(aom);
 	}
 }
 
@@ -683,6 +699,12 @@ void LuaEntitySAO::setSprite(v2s16 p, int num_frames, float framelength,
 std::string LuaEntitySAO::getName()
 {
 	return m_init_name;
+}
+
+void LuaEntitySAO::setArmorGroups(const ItemGroupList &armor_groups)
+{
+	m_armor_groups = armor_groups;
+	m_armor_groups_sent = false;
 }
 
 void LuaEntitySAO::sendPosition(bool do_interpolate, bool is_movement_end)

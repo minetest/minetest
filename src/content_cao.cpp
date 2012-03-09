@@ -240,6 +240,7 @@ private:
 	int m_anim_num_frames;
 	float m_anim_framelength;
 	float m_anim_timer;
+	ItemGroupList m_armor_groups;
 
 public:
 	LuaEntityCAO(IGameDef *gamedef, ClientEnvironment *env):
@@ -594,14 +595,21 @@ public:
 			m_hp = result_hp;
 			// TODO: Execute defined fast response
 		}
+		else if(cmd == LUAENTITY_CMD_UPDATE_ARMOR_GROUPS)
+		{
+			m_armor_groups.clear();
+			int armor_groups_size = readU16(is);
+			for(int i=0; i<armor_groups_size; i++){
+				std::string name = deSerializeString(is);
+				int rating = readS16(is);
+				m_armor_groups[name] = rating;
+			}
+		}
 	}
 	
 	bool directReportPunch(v3f dir, const ItemStack *punchitem=NULL,
 			float time_from_last_punch=1000000)
 	{
-		// TODO: Transfer this from the server
-		ItemGroupList m_armor_groups;
-		
 		assert(punchitem);
 		const ToolCapabilities *toolcap =
 				&punchitem->getToolCapabilities(m_gamedef->idef());
@@ -613,7 +621,6 @@ public:
 		
 		if(result.did_punch)
 		{
-			// TODO: Decrease hp by 
 			if(result.damage < m_hp)
 				m_hp -= result.damage;
 			else
@@ -622,6 +629,19 @@ public:
 		}
 		
 		return false;
+	}
+	
+	std::string debugInfoText()
+	{
+		std::ostringstream os(std::ios::binary);
+		os<<"LuaEntityCAO \n";
+		os<<"armor={";
+		for(ItemGroupList::const_iterator i = m_armor_groups.begin();
+				i != m_armor_groups.end(); i++){
+			os<<i->first<<"="<<i->second<<", ";
+		}
+		os<<"}";
+		return os.str();
 	}
 };
 
