@@ -4226,8 +4226,7 @@ void scriptapi_environment_on_generated(lua_State *L, v3s16 minp, v3s16 maxp)
 	luaentity
 */
 
-bool scriptapi_luaentity_add(lua_State *L, u16 id, const char *name,
-		const std::string &staticdata)
+bool scriptapi_luaentity_add(lua_State *L, u16 id, const char *name)
 {
 	realitycheck(L);
 	assert(lua_checkstack(L, 20));
@@ -4274,6 +4273,21 @@ bool scriptapi_luaentity_add(lua_State *L, u16 id, const char *name,
 	lua_pushvalue(L, object); // Copy object to top of stack
 	lua_settable(L, -3);
 	
+	return true;
+}
+
+void scriptapi_luaentity_activate(lua_State *L, u16 id,
+		const std::string &staticdata)
+{
+	realitycheck(L);
+	assert(lua_checkstack(L, 20));
+	infostream<<"scriptapi_luaentity_activate: id="<<id<<std::endl;
+	StackUnroller stack_unroller(L);
+	
+	// Get minetest.luaentities[id]
+	luaentity_get(L, id);
+	int object = lua_gettop(L);
+	
 	// Get on_activate function
 	lua_pushvalue(L, object);
 	lua_getfield(L, -1, "on_activate");
@@ -4283,11 +4297,9 @@ bool scriptapi_luaentity_add(lua_State *L, u16 id, const char *name,
 		lua_pushlstring(L, staticdata.c_str(), staticdata.size());
 		// Call with 2 arguments, 0 results
 		if(lua_pcall(L, 2, 0, 0))
-			script_error(L, "error running function %s:on_activate: %s\n",
-					name, lua_tostring(L, -1));
+			script_error(L, "error running function on_activate: %s\n",
+					lua_tostring(L, -1));
 	}
-	
-	return true;
 }
 
 void scriptapi_luaentity_rm(lua_State *L, u16 id)

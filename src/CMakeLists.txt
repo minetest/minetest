@@ -157,6 +157,7 @@ endif()
 # Client sources
 set(minetest_SRCS
 	${common_SRCS}
+	content_cso.cpp
 	content_mapblock.cpp
 	content_cao.cpp
 	mesh.cpp

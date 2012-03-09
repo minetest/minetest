@@ -33,6 +33,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "utility.h" // For IntervalLimiter
 #include "itemdef.h"
 #include "tool.h"
+#include "content_cso.h"
 class Settings;
 struct ToolCapabilities;
 
@@ -538,6 +539,7 @@ void ItemCAO::initialize(const std::string &data)
 class LuaEntityCAO : public ClientActiveObject
 {
 private:
+	scene::ISceneManager *m_smgr;
 	core::aabbox3d<f32> m_selection_box;
 	scene::IMeshSceneNode *m_meshnode;
 	scene::IBillboardSceneNode *m_spritenode;
@@ -562,6 +564,7 @@ private:
 public:
 	LuaEntityCAO(IGameDef *gamedef, ClientEnvironment *env):
 		ClientActiveObject(0, gamedef, env),
+		m_smgr(NULL),
 		m_selection_box(-BS/3.,-BS/3.,-BS/3., BS/3.,BS/3.,BS/3.),
 		m_meshnode(NULL),
 		m_spritenode(NULL),
@@ -646,6 +649,8 @@ public:
 	void addToScene(scene::ISceneManager *smgr, ITextureSource *tsrc,
 			IrrlichtDevice *irr)
 	{
+		m_smgr = smgr;
+
 		if(m_meshnode != NULL || m_spritenode != NULL)
 			return;
 		
@@ -701,15 +706,16 @@ public:
 
 	void updateLight(u8 light_at_pos)
 	{
+		bool is_visible = (m_hp != 0);
 		u8 li = decode_light(light_at_pos);
 		video::SColor color(255,li,li,li);
 		if(m_meshnode){
 			setMeshColor(m_meshnode->getMesh(), color);
-			m_meshnode->setVisible(true);
+			m_meshnode->setVisible(is_visible);
 		}
 		if(m_spritenode){
 			m_spritenode->setColor(color);
-			m_spritenode->setVisible(true);
+			m_spritenode->setVisible(is_visible);
 		}
 	}
 
@@ -947,12 +953,19 @@ public:
 		
 		if(result.did_punch && result.damage != 0)
 		{
-			if(result.damage < m_hp)
+			if(result.damage < m_hp){
 				m_hp -= result.damage;
-			else
+			} else {
 				m_hp = 0;
+				// TODO: Execute defined fast response
+				// As there is no definition, make a smoke puff
+				ClientSimpleObject *simple = createSmokePuff(
+						m_smgr, m_env, m_position,
+						m_prop->visual_size * BS);
+				m_env->addSimpleObject(simple);
+			}
 			// TODO: Execute defined fast response
-			// I guess flashing is fine as of now
+			// Flashing shall suffice as there is no definition
 			updateTextures("^[brighten");
 			m_reset_textures_timer = 0.1;
 		}

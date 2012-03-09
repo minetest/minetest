@@ -381,42 +381,45 @@ void LuaEntitySAO::addedToEnvironment()
 {
 	ServerActiveObject::addedToEnvironment();
 	
-	// Create entity from name and state
+	// Create entity from name
 	lua_State *L = m_env->getLua();
-	m_registered = scriptapi_luaentity_add(L, m_id, m_init_name.c_str(),
-			m_init_state.c_str());
+	m_registered = scriptapi_luaentity_add(L, m_id, m_init_name.c_str());
 	
 	if(m_registered){
 		// Get properties
 		scriptapi_luaentity_get_properties(L, m_id, m_prop);
+		// Initialize HP from properties
+		m_hp = m_prop->hp_max;
 	}
+	
+	// Activate entity, supplying serialized state
+	scriptapi_luaentity_activate(L, m_id, m_init_state.c_str());
 }
 
 ServerActiveObject* LuaEntitySAO::create(ServerEnvironment *env, v3f pos,
 		const std::string &data)
 {
-	std::istringstream is(data, std::ios::binary);
-	// read version
-	u8 version = readU8(is);
 	std::string name;
 	std::string state;
 	s16 hp = 1;
 	v3f velocity;
 	float yaw = 0;
-	// check if version is supported
-	if(version == 0){
-		name = deSerializeString(is);
-		state = deSerializeLongString(is);
-	}
-	else if(version == 1){
-		name = deSerializeString(is);
-		state = deSerializeLongString(is);
-		hp = readS16(is);
-		velocity = readV3F1000(is);
-		yaw = readF1000(is);
-	}
-	else{
-		return NULL;
+	if(data != ""){
+		std::istringstream is(data, std::ios::binary);
+		// read version
+		u8 version = readU8(is);
+		// check if version is supported
+		if(version == 0){
+			name = deSerializeString(is);
+			state = deSerializeLongString(is);
+		}
+		else if(version == 1){
+			name = deSerializeString(is);
+			state = deSerializeLongString(is);
+			hp = readS16(is);
+			velocity = readV3F1000(is);
+			yaw = readF1000(is);
+		}
 	}
 	// create object
 	infostream<<"LuaEntitySAO::create(name=\""<<name<<"\" state=\""
@@ -581,6 +584,9 @@ int LuaEntitySAO::punch(v3f dir,
 			ActiveObjectMessage aom(getId(), true, os.str());
 			m_messages_out.push_back(aom);
 		}
+
+		if(getHP() == 0)
+			m_removed = true;
 	}
 
 	lua_State *L = m_env->getLua();

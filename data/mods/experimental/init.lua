@@ -378,10 +378,9 @@ minetest.register_alias("TNT", "experimental:tnt")
 -- The dummyball!
 --
 
-minetest.register_alias("dummyball", "experimental:dummyball")
-
 minetest.register_entity("experimental:dummyball", {
 	-- Static definition
+	hp_max = 20,
 	physical = false,
 	collisionbox = {-0.4,-0.4,-0.4, 0.4,0.4,0.4},
 	visual = "sprite",
@@ -418,6 +417,32 @@ minetest.register_entity("experimental:dummyball", {
 	on_punch = function(self, hitter)
 	end,
 })
+
+minetest.register_on_chat_message(function(name, message)
+	local cmd = "/dummyball"
+	if message:sub(0, #cmd) == cmd then
+		if not minetest.get_player_privs(name)["give"] then
+			minetest.chat_send_player(name, "you don't have permission to spawn (give)")
+			return true -- Handled chat message
+		end
+		if not minetest.get_player_privs(name)["interact"] then
+			minetest.chat_send_player(name, "you don't have permission to interact")
+			return true -- Handled chat message
+		end
+		local player = minetest.env:get_player_by_name(name)
+		if player == nil then
+			print("Unable to spawn entity, player is nil")
+			return true -- Handled chat message
+		end
+		local entityname = "experimental:dummyball"
+		local p = player:getpos()
+		p.y = p.y + 1
+		minetest.env:add_entity(p, entityname)
+		minetest.chat_send_player(name, '"'..entityname
+				..'" spawned.');
+		return true -- Handled chat message
+	end
+end)
 
 --
 -- A test entity for testing animated and yaw-modulated sprites

@@ -1806,6 +1806,8 @@ void ServerEnvironment::deactivateFarObjects(bool force_delete)
 
 #ifndef SERVER
 
+#include "clientsimpleobject.h"
+
 /*
 	ClientEnvironment
 */
@@ -1829,6 +1831,12 @@ ClientEnvironment::~ClientEnvironment()
 			i.atEnd()==false; i++)
 	{
 		delete i.getNode()->getValue();
+	}
+
+	for(core::list<ClientSimpleObject*>::Iterator
+			i = m_simple_objects.begin(); i != m_simple_objects.end(); i++)
+	{
+		delete *i;
 	}
 
 	// Drop/delete map
@@ -2108,6 +2116,22 @@ void ClientEnvironment::step(float dtime)
 			obj->updateLight(light);
 		}
 	}
+
+	/*
+		Step and handle simple objects
+	*/
+	for(core::list<ClientSimpleObject*>::Iterator
+			i = m_simple_objects.begin(); i != m_simple_objects.end();)
+	{
+		ClientSimpleObject *simple = *i;
+		core::list<ClientSimpleObject*>::Iterator cur = i;
+		i++;
+		simple->step(dtime);
+		if(simple->m_to_be_removed){
+			delete simple;
+			m_simple_objects.erase(cur);
+		}
+	}
 }
 
 void ClientEnvironment::updateMeshes(v3s16 blockpos)
@@ -2118,6 +2142,11 @@ void ClientEnvironment::updateMeshes(v3s16 blockpos)
 void ClientEnvironment::expireMeshes(bool only_daynight_diffed)
 {
 	m_map->expireMeshes(only_daynight_diffed);
+}
+	
+void ClientEnvironment::addSimpleObject(ClientSimpleObject *simple)
+{
+	m_simple_objects.push_back(simple);
 }
 
 ClientActiveObject* ClientEnvironment::getActiveObject(u16 id)

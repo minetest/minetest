@@ -75,7 +75,8 @@ bool scriptapi_node_on_dig(lua_State *L, v3s16 p, MapNode node,
 
 /* luaentity */
 // Returns true if succesfully added into Lua; false otherwise.
-bool scriptapi_luaentity_add(lua_State *L, u16 id, const char *name,
+bool scriptapi_luaentity_add(lua_State *L, u16 id, const char *name);
+void scriptapi_luaentity_activate(lua_State *L, u16 id,
 		const std::string &staticdata);
 void scriptapi_luaentity_rm(lua_State *L, u16 id);
 std::string scriptapi_luaentity_get_staticdata(lua_State *L, u16 id);
