@@ -56,7 +56,7 @@ struct ToolCapabilities
 	std::map<std::string, ToolGroupCap> groupcaps;
 
 	ToolCapabilities(
-			float full_punch_interval_=3.0,
+			float full_punch_interval_=1.4,
 			int max_drop_level_=1,
 			std::map<std::string, ToolGroupCap> groupcaps_ =
 					std::map<std::string, ToolGroupCap>()

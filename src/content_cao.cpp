@@ -165,6 +165,116 @@ private:
 	v3f m_position;
 };
 
+// Prototype
+TestCAO proto_TestCAO(NULL, NULL);
+
+TestCAO::TestCAO(IGameDef *gamedef, ClientEnvironment *env):
+	ClientActiveObject(0, gamedef, env),
+	m_node(NULL),
+	m_position(v3f(0,10*BS,0))
+{
+	ClientActiveObject::registerType(getType(), create);
+}
+
+TestCAO::~TestCAO()
+{
+}
+
+ClientActiveObject* TestCAO::create(IGameDef *gamedef, ClientEnvironment *env)
+{
+	return new TestCAO(gamedef, env);
+}
+
+void TestCAO::addToScene(scene::ISceneManager *smgr, ITextureSource *tsrc,
+			IrrlichtDevice *irr)
+{
+	if(m_node != NULL)
+		return;
+	
+	//video::IVideoDriver* driver = smgr->getVideoDriver();
+	
+	scene::SMesh *mesh = new scene::SMesh();
+	scene::IMeshBuffer *buf = new scene::SMeshBuffer();
+	video::SColor c(255,255,255,255);
+	video::S3DVertex vertices[4] =
+	{
+		video::S3DVertex(-BS/2,-BS/4,0, 0,0,0, c, 0,1),
+		video::S3DVertex(BS/2,-BS/4,0, 0,0,0, c, 1,1),
+		video::S3DVertex(BS/2,BS/4,0, 0,0,0, c, 1,0),
+		video::S3DVertex(-BS/2,BS/4,0, 0,0,0, c, 0,0),
+	};
+	u16 indices[] = {0,1,2,2,3,0};
+	buf->append(vertices, 4, indices, 6);
+	// Set material
+	buf->getMaterial().setFlag(video::EMF_LIGHTING, false);
+	buf->getMaterial().setFlag(video::EMF_BACK_FACE_CULLING, false);
+	buf->getMaterial().setTexture(0, tsrc->getTextureRaw("rat.png"));
+	buf->getMaterial().setFlag(video::EMF_BILINEAR_FILTER, false);
+	buf->getMaterial().setFlag(video::EMF_FOG_ENABLE, true);
+	buf->getMaterial().MaterialType = video::EMT_TRANSPARENT_ALPHA_CHANNEL;
+	// Add to mesh
+	mesh->addMeshBuffer(buf);
+	buf->drop();
+	m_node = smgr->addMeshSceneNode(mesh, NULL);
+	mesh->drop();
+	updateNodePos();
+}
+
+void TestCAO::removeFromScene()
+{
+	if(m_node == NULL)
+		return;
+
+	m_node->remove();
+	m_node = NULL;
+}
+
+void TestCAO::updateLight(u8 light_at_pos)
+{
+}
+
+v3s16 TestCAO::getLightPosition()
+{
+	return floatToInt(m_position, BS);
+}
+
+void TestCAO::updateNodePos()
+{
+	if(m_node == NULL)
+		return;
+
+	m_node->setPosition(m_position);
+	//m_node->setRotation(v3f(0, 45, 0));
+}
+
+void TestCAO::step(float dtime, ClientEnvironment *env)
+{
+	if(m_node)
+	{
+		v3f rot = m_node->getRotation();
+		//infostream<<"dtime="<<dtime<<", rot.Y="<<rot.Y<<std::endl;
+		rot.Y += dtime * 180;
+		m_node->setRotation(rot);
+	}
+}
+
+void TestCAO::processMessage(const std::string &data)
+{
+	infostream<<"TestCAO: Got data: "<<data<<std::endl;
+	std::istringstream is(data, std::ios::binary);
+	u16 cmd;
+	is>>cmd;
+	if(cmd == 0)
+	{
+		v3f newpos;
+		is>>newpos.X;
+		is>>newpos.Y;
+		is>>newpos.Z;
+		m_position = newpos;
+		updateNodePos();
+	}
+}
+
 /*
 	ItemCAO
 */
@@ -213,6 +323,212 @@ private:
 	std::string m_infotext;
 };
 
+#include "inventory.h"
+
+// Prototype
+ItemCAO proto_ItemCAO(NULL, NULL);
+
+ItemCAO::ItemCAO(IGameDef *gamedef, ClientEnvironment *env):
+	ClientActiveObject(0, gamedef, env),
+	m_selection_box(-BS/3.,0.0,-BS/3., BS/3.,BS*2./3.,BS/3.),
+	m_node(NULL),
+	m_position(v3f(0,10*BS,0))
+{
+	if(!gamedef && !env)
+	{
+		ClientActiveObject::registerType(getType(), create);
+	}
+}
+
+ItemCAO::~ItemCAO()
+{
+}
+
+ClientActiveObject* ItemCAO::create(IGameDef *gamedef, ClientEnvironment *env)
+{
+	return new ItemCAO(gamedef, env);
+}
+
+void ItemCAO::addToScene(scene::ISceneManager *smgr, ITextureSource *tsrc,
+			IrrlichtDevice *irr)
+{
+	if(m_node != NULL)
+		return;
+	
+	//video::IVideoDriver* driver = smgr->getVideoDriver();
+	
+	scene::SMesh *mesh = new scene::SMesh();
+	scene::IMeshBuffer *buf = new scene::SMeshBuffer();
+	video::SColor c(255,255,255,255);
+	video::S3DVertex vertices[4] =
+	{
+		/*video::S3DVertex(-BS/2,-BS/4,0, 0,0,0, c, 0,1),
+		video::S3DVertex(BS/2,-BS/4,0, 0,0,0, c, 1,1),
+		video::S3DVertex(BS/2,BS/4,0, 0,0,0, c, 1,0),
+		video::S3DVertex(-BS/2,BS/4,0, 0,0,0, c, 0,0),*/
+		video::S3DVertex(BS/3.,0,0, 0,0,0, c, 0,1),
+		video::S3DVertex(-BS/3.,0,0, 0,0,0, c, 1,1),
+		video::S3DVertex(-BS/3.,0+BS*2./3.,0, 0,0,0, c, 1,0),
+		video::S3DVertex(BS/3.,0+BS*2./3.,0, 0,0,0, c, 0,0),
+	};
+	u16 indices[] = {0,1,2,2,3,0};
+	buf->append(vertices, 4, indices, 6);
+	// Set material
+	buf->getMaterial().setFlag(video::EMF_LIGHTING, false);
+	buf->getMaterial().setFlag(video::EMF_BACK_FACE_CULLING, false);
+	// Initialize with a generated placeholder texture
+	buf->getMaterial().setTexture(0, tsrc->getTextureRaw(""));
+	buf->getMaterial().setFlag(video::EMF_BILINEAR_FILTER, false);
+	buf->getMaterial().setFlag(video::EMF_FOG_ENABLE, true);
+	buf->getMaterial().MaterialType = video::EMT_TRANSPARENT_ALPHA_CHANNEL;
+	// Add to mesh
+	mesh->addMeshBuffer(buf);
+	buf->drop();
+	m_node = smgr->addMeshSceneNode(mesh, NULL);
+	mesh->drop();
+	updateNodePos();
+
+	/*
+		Update image of node
+	*/
+
+	updateTexture();
+}
+
+void ItemCAO::removeFromScene()
+{
+	if(m_node == NULL)
+		return;
+
+	m_node->remove();
+	m_node = NULL;
+}
+
+void ItemCAO::updateLight(u8 light_at_pos)
+{
+	if(m_node == NULL)
+		return;
+
+	u8 li = decode_light(light_at_pos);
+	video::SColor color(255,li,li,li);
+	setMeshColor(m_node->getMesh(), color);
+}
+
+v3s16 ItemCAO::getLightPosition()
+{
+	return floatToInt(m_position + v3f(0,0.5*BS,0), BS);
+}
+
+void ItemCAO::updateNodePos()
+{
+	if(m_node == NULL)
+		return;
+
+	m_node->setPosition(m_position);
+}
+
+void ItemCAO::updateInfoText()
+{
+	try{
+		IItemDefManager *idef = m_gamedef->idef();
+		ItemStack item;
+		item.deSerialize(m_itemstring, idef);
+		if(item.isKnown(idef))
+			m_infotext = item.getDefinition(idef).description;
+		else
+			m_infotext = "Unknown item: '" + m_itemstring + "'";
+		if(item.count >= 2)
+			m_infotext += " (" + itos(item.count) + ")";
+	}
+	catch(SerializationError &e)
+	{
+		m_infotext = "Unknown item: '" + m_itemstring + "'";
+	}
+}
+
+void ItemCAO::updateTexture()
+{
+	if(m_node == NULL)
+		return;
+
+	// Create an inventory item to see what is its image
+	std::istringstream is(m_itemstring, std::ios_base::binary);
+	video::ITexture *texture = NULL;
+	try{
+		IItemDefManager *idef = m_gamedef->idef();
+		ItemStack item;
+		item.deSerialize(is, idef);
+		texture = item.getDefinition(idef).inventory_texture;
+	}
+	catch(SerializationError &e)
+	{
+		infostream<<"WARNING: "<<__FUNCTION_NAME
+				<<": error deSerializing itemstring \""
+				<<m_itemstring<<std::endl;
+	}
+	
+	// Set meshbuffer texture
+	m_node->getMaterial(0).setTexture(0, texture);
+}
+
+
+void ItemCAO::step(float dtime, ClientEnvironment *env)
+{
+	if(m_node)
+	{
+		/*v3f rot = m_node->getRotation();
+		rot.Y += dtime * 120;
+		m_node->setRotation(rot);*/
+		LocalPlayer *player = env->getLocalPlayer();
+		assert(player);
+		v3f rot = m_node->getRotation();
+		rot.Y = 180.0 - (player->getYaw());
+		m_node->setRotation(rot);
+	}
+}
+
+void ItemCAO::processMessage(const std::string &data)
+{
+	//infostream<<"ItemCAO: Got message"<<std::endl;
+	std::istringstream is(data, std::ios::binary);
+	// command
+	u8 cmd = readU8(is);
+	if(cmd == 0)
+	{
+		// pos
+		m_position = readV3F1000(is);
+		updateNodePos();
+	}
+	if(cmd == 1)
+	{
+		// itemstring
+		m_itemstring = deSerializeString(is);
+		updateInfoText();
+		updateTexture();
+	}
+}
+
+void ItemCAO::initialize(const std::string &data)
+{
+	infostream<<"ItemCAO: Got init data"<<std::endl;
+	
+	{
+		std::istringstream is(data, std::ios::binary);
+		// version
+		u8 version = readU8(is);
+		// check version
+		if(version != 0)
+			return;
+		// pos
+		m_position = readV3F1000(is);
+		// itemstring
+		m_itemstring = deSerializeString(is);
+	}
+	
+	updateNodePos();
+	updateInfoText();
+}
+
 /*
 	LuaEntityCAO
 */
@@ -241,6 +557,7 @@ private:
 	float m_anim_framelength;
 	float m_anim_timer;
 	ItemGroupList m_armor_groups;
+	float m_reset_textures_timer;
 
 public:
 	LuaEntityCAO(IGameDef *gamedef, ClientEnvironment *env):
@@ -260,7 +577,8 @@ public:
 		m_anim_frame(0),
 		m_anim_num_frames(1),
 		m_anim_framelength(0.2),
-		m_anim_timer(0)
+		m_anim_timer(0),
+		m_reset_textures_timer(-1)
 	{
 		if(gamedef == NULL)
 			ClientActiveObject::registerType(getType(), create);
@@ -450,6 +768,14 @@ public:
 		}
 
 		updateTexturePos();
+
+		if(m_reset_textures_timer >= 0){
+			m_reset_textures_timer -= dtime;
+			if(m_reset_textures_timer <= 0){
+				m_reset_textures_timer = -1;
+				updateTextures("");
+			}
+		}
 	}
 
 	void updateTexturePos()
@@ -619,13 +945,16 @@ public:
 				punchitem,
 				time_from_last_punch);
 		
-		if(result.did_punch)
+		if(result.did_punch && result.damage != 0)
 		{
 			if(result.damage < m_hp)
 				m_hp -= result.damage;
 			else
 				m_hp = 0;
 			// TODO: Execute defined fast response
+			// I guess flashing is fine as of now
+			updateTextures("^[brighten");
+			m_reset_textures_timer = 0.1;
 		}
 		
 		return false;
@@ -634,7 +963,7 @@ public:
 	std::string debugInfoText()
 	{
 		std::ostringstream os(std::ios::binary);
-		os<<"LuaEntityCAO \n";
+		os<<"LuaEntityCAO hp="<<m_hp<<"\n";
 		os<<"armor={";
 		for(ItemGroupList::const_iterator i = m_armor_groups.begin();
 				i != m_armor_groups.end(); i++){

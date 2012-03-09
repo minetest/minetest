@@ -28,6 +28,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <cmath>
 #include "settings.h"
 #include "itemdef.h" // For wield visualization
+#include "noise.h" // easeCurve
 
 Camera::Camera(scene::ISceneManager* smgr, MapDrawControl& draw_control):
 	m_smgr(smgr),
@@ -182,7 +183,8 @@ void Camera::step(f32 dtime)
 	}
 }
 
-void Camera::update(LocalPlayer* player, f32 frametime, v2u32 screensize)
+void Camera::update(LocalPlayer* player, f32 frametime, v2u32 screensize,
+		f32 tool_reload_ratio)
 {
 	// Set player node transformation
 	m_playernode->setPosition(player->getPosition());
@@ -267,8 +269,25 @@ void Camera::update(LocalPlayer* player, f32 frametime, v2u32 screensize)
 	m_cameranode->setFOV(m_fov_y);
 
 	// Position the wielded item
-	v3f wield_position = v3f(45, -35, 65);
+	//v3f wield_position = v3f(45, -35, 65);
+	v3f wield_position = v3f(55, -35, 65);
+	//v3f wield_rotation = v3f(-100, 120, -100);
 	v3f wield_rotation = v3f(-100, 120, -100);
+	if(m_digging_anim < 0.05 || m_digging_anim > 0.5){
+		f32 frac = 1.0;
+		if(m_digging_anim > 0.5)
+			frac = 2.0 * (m_digging_anim - 0.5);
+		// This value starts from 1 and settles to 0
+		f32 ratiothing = pow((1.0 - tool_reload_ratio), 0.5);
+		//f32 ratiothing2 = pow(ratiothing, 0.5);
+		f32 ratiothing2 = (easeCurve(ratiothing*0.5))*2.0;
+		wield_position.Y -= frac * 25.0 * pow(ratiothing2, 1.7);
+		//wield_position.Z += frac * 5.0 * ratiothing2;
+		wield_position.X -= frac * 35.0 * pow(ratiothing2, 1.1);
+		wield_rotation.Y += frac * 70.0 * pow(ratiothing2, 1.4);
+		//wield_rotation.X -= frac * 15.0 * pow(ratiothing2, 1.4);
+		//wield_rotation.Z += frac * 15.0 * pow(ratiothing2, 1.0);
+	}
 	if (m_digging_button != -1)
 	{
 		f32 digfrac = m_digging_anim;

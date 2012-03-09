@@ -563,11 +563,11 @@ int LuaEntitySAO::punch(v3f dir,
 	
 	if(result.did_punch)
 	{
+		setHP(getHP() - result.damage);
+		
 		actionstream<<getDescription()<<" punched by "
 				<<puncher->getDescription()<<", damage "<<result.damage
-				<<" HP"<<std::endl;
-		
-		setHP(getHP() - result.damage);
+				<<" hp, health now "<<getHP()<<" hp"<<std::endl;
 		
 		{
 			std::ostringstream os(std::ios::binary);

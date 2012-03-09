@@ -445,6 +445,22 @@ default = {}
 -- Tool definition
 --
 
+-- The hand
+minetest.register_item(":", {
+	type = "none",
+	wield_image = "wieldhand.png",
+	wield_scale = {x=1,y=1,z=2.5},
+	tool_capabilities = {
+		full_punch_interval = 1.0,
+		max_drop_level = 0,
+		groupcaps = {
+			fleshy = {times={[2]=2.00, [3]=1.00}, maxwear=0, maxlevel=1},
+			crumbly = {times={[3]=0.70}, maxwear=0, maxlevel=1},
+			snappy = {times={[3]=0.70}, maxwear=0, maxlevel=1},
+		}
+	}
+})
+
 minetest.register_tool("default:pick_wood", {
 	description = "Wooden Pickaxe",
 	inventory_image = "default_tool_woodpick.png",
@@ -554,7 +570,7 @@ minetest.register_tool("default:sword_wood", {
 	description = "Wooden Sword",
 	inventory_image = "default_tool_woodsword.png",
 	tool_capabilities = {
-		full_punch_interval = 2.0,
+		full_punch_interval = 1.0,
 		max_drop_level=0,
 		groupcaps={
 			fleshy={times={[2]=1.10, [3]=0.60}, maxwear=0.1, maxlevel=1},
@@ -567,7 +583,7 @@ minetest.register_tool("default:sword_stone", {
 	description = "Stone Sword",
 	inventory_image = "default_tool_stonesword.png",
 	tool_capabilities = {
-		full_punch_interval = 2.0,
+		full_punch_interval = 1.0,
 		max_drop_level=0,
 		groupcaps={
 			fleshy={times={[2]=0.80, [3]=0.40}, maxwear=0.05, maxlevel=1},
@@ -580,7 +596,7 @@ minetest.register_tool("default:sword_steel", {
 	description = "Steel Sword",
 	inventory_image = "default_tool_steelsword.png",
 	tool_capabilities = {
-		full_punch_interval = 2.0,
+		full_punch_interval = 1.0,
 		max_drop_level=1,
 		groupcaps={
 			fleshy={times={[1]=1.00, [2]=0.40, [3]=0.20}, maxwear=0.1, maxlevel=2},

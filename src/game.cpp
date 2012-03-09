@@ -1036,6 +1036,7 @@ void the_game(
 
 	const float object_hit_delay = 0.2;
 	float object_hit_delay_timer = 0.0;
+	float time_from_last_punch = 10;
 	
 	bool invert_mouse = g_settings->getBool("invert_mouse");
 
@@ -1181,6 +1182,7 @@ void the_game(
 			nodig_delay_timer -= dtime;
 		if(object_hit_delay_timer >= 0)
 			object_hit_delay_timer -= dtime;
+		time_from_last_punch += dtime;
 
 		g_profiler->add("Elapsed time", dtime);
 		g_profiler->avg("FPS", 1./dtime);
@@ -1775,23 +1777,6 @@ void the_game(
 		
 		//TimeTaker //timer2("//timer2");
 
-		LocalPlayer* player = client.getLocalPlayer();
-		camera.update(player, busytime, screensize);
-		camera.step(dtime);
-
-		v3f player_position = player->getPosition();
-		v3f camera_position = camera.getPosition();
-		v3f camera_direction = camera.getDirection();
-		f32 camera_fov = camera.getFovMax();
-		
-		if(!disable_camera_update){
-			client.updateCamera(camera_position,
-				camera_direction, camera_fov);
-		}
-
-		//timer2.stop();
-		//TimeTaker //timer3("//timer3");
-
 		/*
 			For interaction purposes, get info about the held item
 			- What item is it?
@@ -1810,6 +1795,32 @@ void the_game(
 				playeritem_liquids_pointable = playeritem.getDefinition(itemdef).liquids_pointable;
 			}
 		}
+		ToolCapabilities playeritem_toolcap =
+				playeritem.getToolCapabilities(itemdef);
+		
+		/*
+			Update camera
+		*/
+
+		LocalPlayer* player = client.getLocalPlayer();
+		float full_punch_interval = playeritem_toolcap.full_punch_interval;
+		float tool_reload_ratio = time_from_last_punch / full_punch_interval;
+		tool_reload_ratio = MYMIN(tool_reload_ratio, 1.0);
+		camera.update(player, busytime, screensize, tool_reload_ratio);
+		camera.step(dtime);
+
+		v3f player_position = player->getPosition();
+		v3f camera_position = camera.getPosition();
+		v3f camera_direction = camera.getDirection();
+		f32 camera_fov = camera.getFovMax();
+		
+		if(!disable_camera_update){
+			client.updateCamera(camera_position,
+				camera_direction, camera_fov);
+		}
+
+		//timer2.stop();
+		//TimeTaker //timer3("//timer3");
 
 		/*
 			Calculate what block is the crosshair pointing to
@@ -1934,9 +1945,9 @@ void the_game(
 				}
 				MapNode n = client.getNode(nodepos);
 
-				// Get digging properties for material and tool
-				ToolCapabilities tp = playeritem.getToolCapabilities(itemdef);
-				DigParams params = getDigParams(nodedef->get(n).groups, &tp);
+				// Get digging parameters
+				DigParams params = getDigParams(nodedef->get(n).groups,
+						&playeritem_toolcap);
 				// If can't dig, try hand
 				if(!params.diggable){
 					const ItemDefinition &hand = itemdef->get("");
@@ -2095,10 +2106,9 @@ void the_game(
 					v3f objpos = selected_object->getPosition();
 					v3f dir = (objpos - player_position).normalize();
 					
-					// TODO: Get time_from_last_punch from somewhere
-					float time_from_last_punch = 1000000;
 					bool disable_send = selected_object->directReportPunch(
 							dir, &playeritem, time_from_last_punch);
+					time_from_last_punch = 0;
 					if(!disable_send)
 						client.interact(0, pointed);
 				}

@@ -105,7 +105,8 @@ public:
 
 	// Update the camera from the local player's position.
 	// frametime is used to adjust the viewing range.
-	void update(LocalPlayer* player, f32 frametime, v2u32 screensize);
+	void update(LocalPlayer* player, f32 frametime, v2u32 screensize,
+			f32 tool_reload_ratio);
 
 	// Render distance feedback loop
 	void updateViewingRange(f32 frametime_in);
