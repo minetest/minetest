@@ -959,7 +959,7 @@ void the_game(
 	// Object infos are shown in this
 	gui::IGUIStaticText *guitext_info = guienv->addStaticText(
 			L"",
-			core::rect<s32>(0,0,400,text_height+5) + v2s32(100,200),
+			core::rect<s32>(0,0,400,text_height*5+5) + v2s32(100,200),
 			false, false);
 	
 	// Status text (displays info when showing and hiding GUI stuff, etc.)
@@ -2069,6 +2069,10 @@ void the_game(
 		{
 			infotext = narrow_to_wide(selected_object->infoText());
 
+			if(infotext == L"" && show_debug){
+				infotext = narrow_to_wide(selected_object->debugInfoText());
+			}
+
 			//if(input->getLeftClicked())
 			if(input->getLeftState())
 			{
@@ -2292,7 +2296,7 @@ void the_game(
 		
 		{
 			guitext_info->setText(infotext.c_str());
-			guitext_info->setVisible(show_hud);
+			guitext_info->setVisible(show_hud && g_menumgr.menuCount() == 0);
 		}
 
 		{

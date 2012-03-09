@@ -65,6 +65,7 @@ public:
 	virtual void processMessage(const std::string &data){}
 
 	virtual std::string infoText() {return "";}
+	virtual std::string debugInfoText() {return "";}
 	
 	/*
 		This takes the return value of
