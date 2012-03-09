@@ -330,7 +330,7 @@ function TNT:on_activate(staticdata)
 	self.object:setvelocity({x=0, y=4, z=0})
 	self.object:setacceleration({x=0, y=-10, z=0})
 	self.object:settexturemod("^[brighten")
-	self.object:set_armor_groups({foo=1,bar=2})
+	self.object:set_armor_groups({immortal=1})
 end
 
 -- Called periodically
