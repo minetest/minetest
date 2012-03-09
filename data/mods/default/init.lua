@@ -429,6 +429,18 @@
 --     chance = 1, -- (chance of trigger is 1.0/this)
 --     action = func(pos, node, active_object_count, active_object_count_wider),
 -- }
+--
+-- Item groups:
+-- - Groups always have a rating associated with them. If there is no
+--   useful meaning for a rating for a given group, it shall be 1.
+-- - When not defined, the rating of a group defaults to 0.
+--
+-- Special groups:
+-- - dig_immediate:
+--   - 2: node is removed without tool wear after 1 second or so
+--   - 3: node is removed without tool wear immediately (like a torch)
+-- - level: Can be used to give an additional sense of progression in the game.
+--   - 0 is something that is directly accessible at the start of gameplay
 
 WATER_ALPHA = 160
 WATER_VISC = 1
