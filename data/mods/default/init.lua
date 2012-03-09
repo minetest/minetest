@@ -316,7 +316,7 @@
 --                     if rating not applicable, use 1.
 --                     eg. {wool=1, fluffy=3}
 --                         {soil=2, outerspace=1, crumbly=1}
---                         {hard=3, brittle=3, spikes=2
+--                         {bendy=2, snappy=1},
 --                         {hard=1, metal=1, spikes=1}
 --     inventory_image = "default_tool_steelaxe.png",
 --     wield_image = "",
@@ -325,16 +325,13 @@
 --     liquids_pointable = false,
 --     tool_capabilities = {
 --         full_punch_interval = 1.0,
---         basetime = 1.0,
---         dt_weight = 0.5,
---         dt_crackiness = -0.2,
---         dt_crumbliness = 1,
---         dt_cuttability = -0.5,
---         basedurability = 330,
---         dd_weight = 0,
---         dd_crackiness = 0,
---         dd_crumbliness = 0,
---         dd_cuttability = 0,
+--         max_drop_level=0,
+--         groupcaps={
+--             -- For example:
+--             fleshy={times={[2]=0.80, [3]=0.40}, maxwear=0.05, maxlevel=1},
+--             snappy={times={[2]=0.80, [3]=0.40}, maxwear=0.05, maxlevel=1},
+--             choppy={times={[3]=0.90}, maxwear=0.05, maxlevel=0}
+--         }
 --     }
 --     on_drop = func(item, dropper, pos),
 --     on_place = func(item, placer, pointed_thing),
