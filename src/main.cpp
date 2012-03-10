@@ -1323,14 +1323,14 @@ int main(int argc, char *argv[])
 		server.start(port);
 		
 		// ASCII art for the win!
-		dstream<<std::endl
+		actionstream
 		<<"        .__               __                   __   "<<std::endl
 		<<"  _____ |__| ____   _____/  |_  ____   _______/  |_ "<<std::endl
 		<<" /     \\|  |/    \\_/ __ \\   __\\/ __ \\ /  ___/\\   __\\"<<std::endl
 		<<"|  Y Y  \\  |   |  \\  ___/|  | \\  ___/ \\___ \\  |  |  "<<std::endl
 		<<"|__|_|  /__|___|  /\\___  >__|  \\___  >____  > |__|  "<<std::endl
-		<<"      \\/        \\/     \\/          \\/     \\/        "<<std::endl
-		<<std::endl;
+		<<"      \\/        \\/     \\/          \\/     \\/        "<<std::endl;
+		actionstream<<"Listening at port "<<port<<"."<<std::endl;
 	
 		// Run server
 		dedicated_server_loop(server, kill);

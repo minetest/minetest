@@ -4525,8 +4525,7 @@ void dedicated_server_loop(Server &server, bool &kill)
 {
 	DSTACK(__FUNCTION_NAME);
 	
-	infostream<<"Running dedicated server"<<std::endl;
-	infostream<<"========================"<<std::endl;
+	infostream<<"dedicated_server_loop()"<<std::endl;
 
 	IntervalLimiter m_profiler_interval;
 
