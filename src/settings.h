@@ -145,11 +145,7 @@ public:
 	{
 		std::ifstream is(filename);
 		if(is.good() == false)
-		{
-			errorstream<<"Error opening configuration file \""
-					<<filename<<"\""<<std::endl;
 			return false;
-		}
 
 		infostream<<"Parsing configuration file: \""
 				<<filename<<"\""<<std::endl;
