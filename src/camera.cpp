@@ -366,6 +366,16 @@ void Camera::updateViewingRange(f32 frametime_in)
 
 	f32 viewing_range_max = g_settings->getS16("viewing_range_nodes_max");
 	viewing_range_max = MYMAX(viewing_range_min, viewing_range_max);
+	
+	// Immediately apply hard limits
+	if(m_draw_control.wanted_range < viewing_range_min)
+		m_draw_control.wanted_range = viewing_range_min;
+	if(m_draw_control.wanted_range > viewing_range_max)
+		m_draw_control.wanted_range = viewing_range_max;
+
+	// Just so big a value that everything rendered is visible
+	// Some more allowance than viewing_range_max * BS because of active objects etc.
+	m_cameranode->setFarValue(viewing_range_max * BS * 10);
 
 	f32 wanted_fps = g_settings->getFloat("wanted_fps");
 	wanted_fps = MYMAX(wanted_fps, 1.0);
@@ -458,11 +468,6 @@ void Camera::updateViewingRange(f32 frametime_in)
 
 	m_range_old = new_range;
 	m_frametime_old = frametime;
-
-	// Just so big a value that everything rendered is visible
-	// Some more allowance than viewing_range_max * BS because of active objects etc.
-	m_cameranode->setFarValue(viewing_range_max * BS * 10);
-
 }
 
 void Camera::setDigging(s32 button)
