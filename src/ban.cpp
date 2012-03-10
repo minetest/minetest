@@ -23,7 +23,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <sstream>
 #include <set>
 #include "strfnd.h"
-#include "debug.h"
+#include "log.h"
 
 BanManager::BanManager(const std::string &banfilepath):
 		m_banfilepath(banfilepath),
@@ -35,7 +35,7 @@ BanManager::BanManager(const std::string &banfilepath):
 	}
 	catch(SerializationError &e)
 	{
-		dstream<<"WARNING: BanManager: creating "
+		infostream<<"WARNING: BanManager: creating "
 				<<m_banfilepath<<std::endl;
 	}
 }
@@ -48,11 +48,11 @@ BanManager::~BanManager()
 void BanManager::load()
 {
 	JMutexAutoLock lock(m_mutex);
-	dstream<<"BanManager: loading from "<<m_banfilepath<<std::endl;
+	infostream<<"BanManager: loading from "<<m_banfilepath<<std::endl;
 	std::ifstream is(m_banfilepath.c_str(), std::ios::binary);
 	if(is.good() == false)
 	{
-		dstream<<"BanManager: failed loading from "<<m_banfilepath<<std::endl;
+		infostream<<"BanManager: failed loading from "<<m_banfilepath<<std::endl;
 		throw SerializationError("BanManager::load(): Couldn't open file");
 	}
 	
@@ -75,12 +75,12 @@ void BanManager::load()
 void BanManager::save()
 {
 	JMutexAutoLock lock(m_mutex);
-	dstream<<"BanManager: saving to "<<m_banfilepath<<std::endl;
+	infostream<<"BanManager: saving to "<<m_banfilepath<<std::endl;
 	std::ofstream os(m_banfilepath.c_str(), std::ios::binary);
 	
 	if(os.good() == false)
 	{
-		dstream<<"BanManager: failed loading from "<<m_banfilepath<<std::endl;
+		infostream<<"BanManager: failed loading from "<<m_banfilepath<<std::endl;
 		throw SerializationError("BanManager::load(): Couldn't open file");
 	}
 

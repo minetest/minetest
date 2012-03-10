@@ -23,7 +23,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 //#include "main.h" // for g_settings
 #include <sstream>
 #include "strfnd.h"
-#include "debug.h"
+#include "log.h"
 
 std::set<std::string> privsToSet(u64 privs)
 {
@@ -123,7 +123,7 @@ AuthManager::AuthManager(const std::string &authfilepath):
 	}
 	catch(SerializationError &e)
 	{
-		dstream<<"WARNING: AuthManager: creating "
+		infostream<<"WARNING: AuthManager: creating "
 				<<m_authfilepath<<std::endl;
 	}
 }
@@ -137,11 +137,11 @@ void AuthManager::load()
 {
 	JMutexAutoLock lock(m_mutex);
 	
-	dstream<<"AuthManager: loading from "<<m_authfilepath<<std::endl;
+	infostream<<"AuthManager: loading from "<<m_authfilepath<<std::endl;
 	std::ifstream is(m_authfilepath.c_str(), std::ios::binary);
 	if(is.good() == false)
 	{
-		dstream<<"AuthManager: failed loading from "<<m_authfilepath<<std::endl;
+		infostream<<"AuthManager: failed loading from "<<m_authfilepath<<std::endl;
 		throw SerializationError("AuthManager::load(): Couldn't open file");
 	}
 
@@ -183,11 +183,11 @@ void AuthManager::save()
 {
 	JMutexAutoLock lock(m_mutex);
 	
-	dstream<<"AuthManager: saving to "<<m_authfilepath<<std::endl;
+	infostream<<"AuthManager: saving to "<<m_authfilepath<<std::endl;
 	std::ofstream os(m_authfilepath.c_str(), std::ios::binary);
 	if(os.good() == false)
 	{
-		dstream<<"AuthManager: failed saving to "<<m_authfilepath<<std::endl;
+		infostream<<"AuthManager: failed saving to "<<m_authfilepath<<std::endl;
 		throw SerializationError("AuthManager::save(): Couldn't open file");
 	}
 	
