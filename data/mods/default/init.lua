@@ -1416,7 +1416,7 @@ minetest.register_node("default:torch", {
 		wall_bottom = {-0.1, -0.5, -0.1, 0.1, -0.5+0.6, 0.1},
 		wall_side = {-0.5, -0.3, -0.1, -0.5+0.3, 0.3, 0.1},
 	},
-	groups = {dig_immediate=1},
+	groups = {dig_immediate=3},
 	legacy_wallmounted = true,
 })
 
@@ -1518,7 +1518,7 @@ minetest.register_node("default:sapling", {
 	wield_image = "default_sapling.png",
 	paramtype = "light",
 	walkable = false,
-	groups = {dig_immediate=1},
+	groups = {dig_immediate=3},
 })
 
 minetest.register_node("default:apple", {
@@ -1530,7 +1530,7 @@ minetest.register_node("default:apple", {
 	paramtype = "light",
 	sunlight_propagates = true,
 	walkable = false,
-	groups = {dig_immediate=1},
+	groups = {dig_immediate=3},
 	on_use = minetest.item_eat(4),
 })
 
