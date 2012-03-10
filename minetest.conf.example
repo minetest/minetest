@@ -160,6 +160,8 @@
 #time_speed = 72
 #server_unload_unused_data_timeout = 29
 #server_map_save_interval = 5.3
+# To reduce lag, block transfers are slowed down when a player is building something.
+# This determines how long they are slowed down after placing or removing a node.
 #full_block_send_enable_min_time_from_building = 2.0
 # Set to true to enable experimental features or stuff that is tested
 # (varies from version to version, usually not useful at all)
