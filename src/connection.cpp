@@ -463,7 +463,7 @@ void Peer::reportRTT(float rtt)
 {
 	if(rtt >= 0.0){
 		if(rtt < 0.01){
-			if(m_max_packets_per_second < 100)
+			if(m_max_packets_per_second < 400)
 				m_max_packets_per_second += 10;
 		} else if(rtt < 0.2){
 			if(m_max_packets_per_second < 100)
