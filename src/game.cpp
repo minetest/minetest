@@ -726,7 +726,7 @@ void the_game(
 	if(address == ""){
 		draw_load_screen(L"Creating server...", driver, font);
 		infostream<<"Creating server"<<std::endl;
-		server = new Server(map_dir, configpath);
+		server = new Server(map_dir, configpath, "mesetint");
 		server->start(port);
 	}
 

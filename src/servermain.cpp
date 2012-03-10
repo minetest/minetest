@@ -163,17 +163,16 @@ int main(int argc, char *argv[])
 	porting::signal_handler_init();
 	bool &kill = *porting::signal_handler_killstatus();
 	
-	// Initialize porting::path_data and porting::path_userdata
 	porting::initializePaths();
 
 	// Create user data directory
-	fs::CreateDir(porting::path_userdata);
+	fs::CreateDir(porting::path_user);
 	
 	// Initialize debug streams
 #ifdef RUN_IN_PLACE
 	std::string debugfile = DEBUGFILE;
 #else
-	std::string debugfile = porting::path_userdata+DIR_DELIM+DEBUGFILE;
+	std::string debugfile = porting::path_user+DIR_DELIM+DEBUGFILE;
 #endif
 	debugstreams_init(disable_stderr, debugfile.c_str());
 	// Initialize debug stacks
@@ -283,10 +282,12 @@ int main(int argc, char *argv[])
 	else
 	{
 		core::array<std::string> filenames;
-		filenames.push_back(porting::path_userdata +
+		filenames.push_back(porting::path_user +
 				DIR_DELIM + "minetest.conf");
 #ifdef RUN_IN_PLACE
-		filenames.push_back(porting::path_userdata +
+		// Try also from a lower level (to aid having the same configuration
+		// for many RUN_IN_PLACE installs)
+		filenames.push_back(porting::path_user +
 				DIR_DELIM + ".." + DIR_DELIM + "minetest.conf");
 #endif
 
@@ -334,28 +335,31 @@ int main(int argc, char *argv[])
 	// Port?
 	u16 port = 30000;
 	if(cmd_args.exists("port") && cmd_args.getU16("port") != 0)
-	{
 		port = cmd_args.getU16("port");
-	}
 	else if(g_settings->exists("port") && g_settings->getU16("port") != 0)
-	{
 		port = g_settings->getU16("port");
-	}
-	else
-	{
-		dstream<<"Please specify port (in config or on command line)"
-				<<std::endl;
-	}
 	
-	// Figure out path to map
-	std::string map_dir = porting::path_userdata+DIR_DELIM+"world";
+	// Map directory
+	std::string map_dir = porting::path_user + DIR_DELIM + "server" + DIR_DELIM + "worlds" + DIR_DELIM + "world";
 	if(cmd_args.exists("map-dir"))
 		map_dir = cmd_args.get("map-dir");
 	else if(g_settings->exists("map-dir"))
 		map_dir = g_settings->get("map-dir");
+	else{
+		// No map-dir option was specified.
+		// Check if the world is found from the default directory, and if
+		// not, see if the legacy world directory exists.
+		std::string legacy_map_dir = porting::path_user+DIR_DELIM+".."+DIR_DELIM+"world";
+		if(!fs::PathExists(map_dir) && fs::PathExists(legacy_map_dir)){
+			errorstream<<"Warning: Using legacy world directory \""
+					<<legacy_map_dir<<"\""<<std::endl;
+			map_dir = legacy_map_dir;
+		}
+	}
+	
 	
 	// Create server
-	Server server(map_dir.c_str(), configpath);
+	Server server(map_dir, configpath, "mesetint");
 	server.start(port);
 
 	// Run server

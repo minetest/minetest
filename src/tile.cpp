@@ -132,8 +132,9 @@ std::string getTexturePath(const std::string &filename)
 	*/
 	if(fullpath == "")
 	{
-		std::string rel_path = std::string("clienttextures")+DIR_DELIM+filename;
-		std::string testpath = porting::path_data + DIR_DELIM + rel_path;
+		std::string rel_path = std::string("client")
+				+ DIR_DELIM + "textures" + DIR_DELIM + filename;
+		std::string testpath = porting::path_share + DIR_DELIM + rel_path;
 		// Check all filename extensions. Returns "" if not found.
 		fullpath = getImagePath(testpath);
 	}
@@ -997,7 +998,7 @@ void TextureSource::buildMainAtlas(class IGameDef *gamedef)
 	/*
 		Write image to file so that it can be inspected
 	*/
-	/*std::string atlaspath = porting::path_userdata
+	/*std::string atlaspath = porting::path_user
 			+ DIR_DELIM + "generated_texture_atlas.png";
 	infostream<<"Removing and writing texture atlas for inspection to "
 			<<atlaspath<<std::endl;

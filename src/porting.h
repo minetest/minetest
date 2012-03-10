@@ -59,7 +59,7 @@ bool * signal_handler_killstatus(void);
 /*
 	Path of static data directory.
 */
-extern std::string path_data;
+extern std::string path_share;
 
 /*
 	Directory for storing user data. Examples:
@@ -67,7 +67,7 @@ extern std::string path_data;
 	Linux: "~/.<PROJECT_NAME>"
 	Mac: "~/Library/Application Support/<PROJECT_NAME>"
 */
-extern std::string path_userdata;
+extern std::string path_user;
 
 /*
 	Get full path of stuff in data directory.
@@ -76,7 +76,7 @@ extern std::string path_userdata;
 std::string getDataPath(const char *subpath);
 
 /*
-	Initialize path_data and path_userdata.
+	Initialize path_share and path_user.
 */
 void initializePaths();
 

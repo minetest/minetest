@@ -392,6 +392,7 @@ public:
 	*/
 
 	Server(
+		std::string gamename,
 		std::string mapsavedir,
 		std::string configpath
 	);
@@ -526,7 +527,7 @@ public:
 
 	const ModSpec* getModSpec(const std::string &modname);
 	
-	std::string getWorldPath(){ return m_mapsavedir; }
+	std::string getWorldPath(){ return m_path_world; }
 
 private:
 
@@ -631,6 +632,21 @@ private:
 		Variables
 	*/
 	
+	// Game name
+	std::string m_gamename;
+	// World directory
+	std::string m_path_world;
+	// Path to user's configuration file ("" = no configuration file)
+	std::string m_path_config;
+
+	// Equivalent of /usr/share/minetest/server
+	std::string m_path_share;
+	// Equivalent of /usr/share/minetest/server/games/gamename
+	std::string m_path_game;
+	// Equivalent of /usr/share/minetest/server/addons/gamename
+	// and ~/.minetest/server/addons/gamename
+	std::set<std::string> m_path_addons;
+	
 	// Some timers
 	float m_liquid_transform_timer;
 	float m_print_info_timer;
@@ -724,12 +740,6 @@ private:
 	/*
 		Random stuff
 	*/
-
-	// Map directory
-	std::string m_mapsavedir;
-
-	// Configuration path ("" = no configuration file)
-	std::string m_configpath;
 	
 	// Mod parent directory paths
 	core::list<std::string> m_modspaths;

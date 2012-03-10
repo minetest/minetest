@@ -174,7 +174,7 @@ void GUIPauseMenu::regenerateGui(v2u32 screensize)
 				SWPRINTF_CHARSTRING
 				,
 				BUILD_INFO,
-				porting::path_userdata.c_str()
+				porting::path_user.c_str()
 		);*/
 
 		std::ostringstream os;
@@ -182,7 +182,7 @@ void GUIPauseMenu::regenerateGui(v2u32 screensize)
 		os<<"by Perttu Ahola and contributors\n";
 		os<<"celeron55@gmail.com\n";
 		os<<BUILD_INFO<<"\n";
-		os<<"ud_path = "<<wrap_rows(porting::path_userdata, 20)<<"\n";
+		os<<"path_user = "<<wrap_rows(porting::path_user, 20)<<"\n";
 	
 		Environment->addStaticText(narrow_to_wide(os.str()).c_str(), rect, false, true, this, 259);
 	}

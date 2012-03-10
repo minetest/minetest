@@ -40,7 +40,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 static std::string getTextureCacheDir()
 {
-	return porting::path_userdata + DIR_DELIM + "cache" + DIR_DELIM + "texture";
+	return porting::path_user + DIR_DELIM + "cache" + DIR_DELIM + "textures";
 }
 
 struct TextureRequest

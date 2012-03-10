@@ -843,13 +843,17 @@ u32 PIChecksum(core::list<PlayerInfo> &l)
 */
 
 Server::Server(
-		std::string mapsavedir,
-		std::string configpath
+		std::string path_world,
+		std::string path_config,
+		std::string gamename
 	):
+	m_gamename(gamename),
+	m_path_world(path_world),
+	m_path_config(path_config),
 	m_env(NULL),
 	m_con(PROTOCOL_ID, 512, CONNECTION_TIMEOUT, this),
-	m_authmanager(mapsavedir+DIR_DELIM+"auth.txt"),
-	m_banmanager(mapsavedir+DIR_DELIM+"ipban.txt"),
+	m_authmanager(path_world+DIR_DELIM+"auth.txt"),
+	m_banmanager(path_world+DIR_DELIM+"ipban.txt"),
 	m_lua(NULL),
 	m_itemdef(createItemDefManager()),
 	m_nodedef(createNodeDefManager()),
@@ -859,12 +863,15 @@ Server::Server(
 	m_time_counter(0),
 	m_time_of_day_send_timer(0),
 	m_uptime(0),
-	m_mapsavedir(mapsavedir),
-	m_configpath(configpath),
 	m_shutdown_requested(false),
 	m_ignore_map_edit_events(false),
 	m_ignore_map_edit_events_peer_id(0)
 {
+	infostream<<"Server created."<<std::endl;
+	infostream<<"- path_world  = "<<path_world<<std::endl;
+	infostream<<"- path_config = "<<path_config<<std::endl;
+	infostream<<"- gamename    = "<<gamename<<std::endl;
+
 	m_liquid_transform_timer = 0.0;
 	m_print_info_timer = 0.0;
 	m_objectdata_timer = 0.0;
@@ -876,27 +883,35 @@ Server::Server(
 	m_step_dtime_mutex.Init();
 	m_step_dtime = 0.0;
 
-	JMutexAutoLock envlock(m_env_mutex);
-	JMutexAutoLock conlock(m_con_mutex);
+	// Figure out some paths
+	m_path_share = porting::path_share + DIR_DELIM + "server";
+	m_path_game = m_path_share + DIR_DELIM + "games" + DIR_DELIM + m_gamename;
 
 	// Path to builtin.lua
-	std::string builtinpath = porting::path_data + DIR_DELIM + "builtin.lua";
+	std::string builtinpath = m_path_share + DIR_DELIM + "builtin.lua";
 
 	// Add default global mod search path
-	m_modspaths.push_front(porting::path_data + DIR_DELIM + "mods");
+	m_modspaths.push_front(m_path_game + DIR_DELIM "mods");
 	// Add world mod search path
-	m_modspaths.push_front(mapsavedir + DIR_DELIM + "worldmods");
-	// Add user mod search path
-	m_modspaths.push_front(porting::path_userdata + DIR_DELIM + "usermods");
+	m_modspaths.push_front(m_path_world + DIR_DELIM + "worldmods");
+	// Add addon mod search path
+	for(std::set<std::string>::const_iterator i = m_path_addons.begin();
+			i != m_path_addons.end(); i++){
+		m_modspaths.push_front((*i) + DIR_DELIM + "mods");
+	}
 	
 	// Print out mod search paths
-	infostream<<"Mod search paths:"<<std::endl;
+	infostream<<"- mod search paths:"<<std::endl;
 	for(core::list<std::string>::Iterator i = m_modspaths.begin();
 			i != m_modspaths.end(); i++){
 		std::string modspath = *i;
 		infostream<<"    "<<modspath<<std::endl;
 	}
 	
+	// Lock environment
+	JMutexAutoLock envlock(m_env_mutex);
+	JMutexAutoLock conlock(m_con_mutex);
+
 	// Initialize scripting
 	
 	infostream<<"Server: Initializing scripting"<<std::endl;
@@ -936,7 +951,7 @@ Server::Server(
 
 	// Initialize Environment
 	
-	m_env = new ServerEnvironment(new ServerMap(mapsavedir, this), m_lua,
+	m_env = new ServerEnvironment(new ServerMap(path_world, this), m_lua,
 			this, this);
 
 	// Give environment reference to scripting api
@@ -946,15 +961,15 @@ Server::Server(
 	m_env->getMap().addEventReceiver(this);
 
 	// If file exists, load environment metadata
-	if(fs::PathExists(m_mapsavedir+DIR_DELIM+"env_meta.txt"))
+	if(fs::PathExists(m_path_world+DIR_DELIM+"env_meta.txt"))
 	{
 		infostream<<"Server: Loading environment metadata"<<std::endl;
-		m_env->loadMeta(m_mapsavedir);
+		m_env->loadMeta(m_path_world);
 	}
 
 	// Load players
 	infostream<<"Server: Loading players"<<std::endl;
-	m_env->deSerializePlayers(m_mapsavedir);
+	m_env->deSerializePlayers(m_path_world);
 
 	/*
 		Add some test ActiveBlockModifiers to environment
@@ -1002,13 +1017,13 @@ Server::~Server()
 			Save players
 		*/
 		infostream<<"Server: Saving players"<<std::endl;
-		m_env->serializePlayers(m_mapsavedir);
+		m_env->serializePlayers(m_path_world);
 
 		/*
 			Save environment metadata
 		*/
 		infostream<<"Server: Saving environment metadata"<<std::endl;
-		m_env->saveMeta(m_mapsavedir);
+		m_env->saveMeta(m_path_world);
 	}
 		
 	/*
@@ -1065,7 +1080,7 @@ void Server::start(unsigned short port)
 	m_thread.setRun(true);
 	m_thread.Start();
 	
-	infostream<<"Server: Started on port "<<port<<std::endl;
+	infostream<<"Server started on port "<<port<<"."<<std::endl;
 }
 
 void Server::stop()
@@ -1803,10 +1818,10 @@ void Server::AsyncRunStep()
 			m_env->getMap().save(MOD_STATE_WRITE_NEEDED);
 
 			// Save players
-			m_env->serializePlayers(m_mapsavedir);
+			m_env->serializePlayers(m_path_world);
 			
 			// Save environment metadata
-			m_env->saveMeta(m_mapsavedir);
+			m_env->saveMeta(m_path_world);
 		}
 	}
 }
@@ -4110,8 +4125,8 @@ void Server::setPlayerPassword(const std::string &name, const std::wstring &pass
 // Saves g_settings to configpath given at initialization
 void Server::saveConfig()
 {
-	if(m_configpath != "")
-		g_settings->updateConfigFile(m_configpath.c_str());
+	if(m_path_config != "")
+		g_settings->updateConfigFile(m_path_config.c_str());
 }
 
 void Server::notifyPlayer(const char *name, const std::wstring msg)
