@@ -172,7 +172,8 @@ public:
 	*/
 	bool getUpdatedConfigObject(std::istream &is,
 			core::list<std::string> &dst,
-			core::map<std::string, bool> &updated)
+			core::map<std::string, bool> &updated,
+			bool &value_changed)
 	{
 		JMutexAutoLock lock(m_mutex);
 		
@@ -219,6 +220,7 @@ public:
 				infostream<<"Changing value of \""<<name<<"\" = \""
 						<<value<<"\" -> \""<<newvalue<<"\""
 						<<std::endl;
+				value_changed = true;
 			}
 
 			dst.push_back(name + " = " + newvalue + line_end);
@@ -241,6 +243,7 @@ public:
 		
 		core::list<std::string> objects;
 		core::map<std::string, bool> updated;
+		bool something_actually_changed = false;
 		
 		// Read and modify stuff
 		{
@@ -254,11 +257,33 @@ public:
 			}
 			else
 			{
-				while(getUpdatedConfigObject(is, objects, updated));
+				while(getUpdatedConfigObject(is, objects, updated,
+						something_actually_changed));
 			}
 		}
 		
 		JMutexAutoLock lock(m_mutex);
+		
+		// If something not yet determined to have been changed, check if
+		// any new stuff was added
+		if(!something_actually_changed){
+			for(core::map<std::string, std::string>::Iterator
+					i = m_settings.getIterator();
+					i.atEnd() == false; i++)
+			{
+				if(updated.find(i.getNode()->getKey()))
+					continue;
+				something_actually_changed = true;
+				break;
+			}
+		}
+		
+		// If nothing was actually changed, skip writing the file
+		if(!something_actually_changed){
+			infostream<<"Skipping writing of "<<filename
+					<<" because content wouldn't be modified"<<std::endl;
+			return true;
+		}
 		
 		// Write stuff back
 		{

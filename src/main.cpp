@@ -1708,6 +1708,10 @@ int main(int argc, char *argv[])
 
 #endif // !SERVER
 	
+	// Update configuration file
+	if(configpath != "")
+		g_settings->updateConfigFile(configpath.c_str());
+
 	END_DEBUG_EXCEPTION_HANDLER(errorstream)
 	
 	debugstreams_deinit();
