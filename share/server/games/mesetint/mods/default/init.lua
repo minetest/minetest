@@ -1261,7 +1261,7 @@ minetest.register_node("default:rail", {
 		type = "fixed",
 		--fixed = <default>
 	},
-	groups = {bendy=2,snappy=1},
+	groups = {bendy=2,snappy=1,dig_immediate=2},
 })
 
 minetest.register_node("default:ladder", {
