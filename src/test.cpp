@@ -1184,8 +1184,10 @@ struct TestConnection
 
 			infostream<<"Sending data (size="<<datasize<<"):";
 			for(int i=0; i<datasize && i<20; i++){
-				if(i%2==0) DEBUGPRINT(" ");
-				DEBUGPRINT("%.2X", ((int)((const char*)*data1)[i])&0xff);
+				if(i%2==0) infostream<<" ";
+				char buf[10];
+				snprintf(buf, 10, "%.2X", ((int)((const char*)*data1)[i])&0xff);
+				infostream<<buf;
 			}
 			if(datasize>20)
 				infostream<<"...";
@@ -1216,10 +1218,12 @@ struct TestConnection
 					<<", size="<<size
 					<<std::endl;
 
-			infostream<<"Received data (size="<<size<<"):";
+			infostream<<"Received data (size="<<size<<"): ";
 			for(int i=0; i<size && i<20; i++){
-				if(i%2==0) DEBUGPRINT(" ");
-				DEBUGPRINT("%.2X", ((int)(recvdata[i]))&0xff);
+				if(i%2==0) infostream<<" ";
+				char buf[10];
+				snprintf(buf, 10, "%.2X", ((int)(recvdata[i]))&0xff);
+				infostream<<buf;
 			}
 			if(size>20)
 				infostream<<"...";
