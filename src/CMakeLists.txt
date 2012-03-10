@@ -184,7 +184,7 @@ set(minetest_SRCS
 # Server sources
 set(minetestserver_SRCS
 	${common_SRCS}
-	servermain.cpp
+	main.cpp
 )
 
 include_directories(

@@ -373,12 +373,13 @@ Doing currently:
 #endif
 
 #ifdef _MSC_VER
+#ifndef SERVER // Dedicated server isn't linked with Irrlicht
 	#pragma comment(lib, "Irrlicht.lib")
-	//#pragma comment(lib, "jthread.lib")
-	#pragma comment(lib, "zlibwapi.lib")
-	#pragma comment(lib, "Shell32.lib")
 	// This would get rid of the console window
 	//#pragma comment(linker, "/subsystem:windows /ENTRY:mainCRTStartup")
+#endif
+	#pragma comment(lib, "zlibwapi.lib")
+	#pragma comment(lib, "Shell32.lib")
 #endif
 
 #include "irrlicht.h" // createDevice
@@ -421,26 +422,6 @@ Profiler main_profiler;
 Profiler *g_profiler = &main_profiler;
 
 /*
-	Random stuff
-*/
-
-/*
-	mainmenumanager.h
-*/
-
-gui::IGUIEnvironment* guienv = NULL;
-gui::IGUIStaticText *guiroot = NULL;
-MainMenuManager g_menumgr;
-
-bool noMenuActive()
-{
-	return (g_menumgr.menuCount() == 0);
-}
-
-// Passed to menus to allow disconnecting and exiting
-MainGameCallback *g_gamecallback = NULL;
-
-/*
 	Debug streams
 */
 
@@ -458,9 +439,39 @@ std::ostream *derr_server_ptr = &errorstream;
 std::ostream *dout_client_ptr = &infostream;
 std::ostream *derr_client_ptr = &errorstream;
 
+#ifndef SERVER
+/*
+	Random stuff
+*/
+
+/* mainmenumanager.h */
+
+gui::IGUIEnvironment* guienv = NULL;
+gui::IGUIStaticText *guiroot = NULL;
+MainMenuManager g_menumgr;
+
+bool noMenuActive()
+{
+	return (g_menumgr.menuCount() == 0);
+}
+
+// Passed to menus to allow disconnecting and exiting
+MainGameCallback *g_gamecallback = NULL;
+#endif
+
 /*
 	gettime.h implementation
 */
+
+#ifdef SERVER
+
+u32 getTimeMs()
+{
+	/* Use imprecise system calls directly (from porting.h) */
+	return porting::getTimeMs();
+}
+
+#else
 
 // A small helper class
 class TimeGetter
@@ -505,6 +516,30 @@ u32 getTimeMs()
 		return 0;
 	return g_timegetter->getTime();
 }
+
+#endif
+
+class StderrLogOutput: public ILogOutput
+{
+public:
+	/* line: Full line with timestamp, level and thread */
+	void printLog(const std::string &line)
+	{
+		std::cerr<<line<<std::endl;
+	}
+} main_stderr_log_out;
+
+class DstreamNoStderrLogOutput: public ILogOutput
+{
+public:
+	/* line: Full line with timestamp, level and thread */
+	void printLog(const std::string &line)
+	{
+		dstream_no_stderr<<line<<std::endl;
+	}
+} main_dstream_no_stderr_log_out;
+
+#ifndef SERVER
 
 /*
 	Event handler for Irrlicht
@@ -897,104 +932,6 @@ private:
 	bool rightreleased;
 };
 
-// These are defined global so that they're not optimized too much.
-// Can't change them to volatile.
-s16 temp16;
-f32 tempf;
-v3f tempv3f1;
-v3f tempv3f2;
-std::string tempstring;
-std::string tempstring2;
-
-void SpeedTests()
-{
-	{
-		dstream<<"The following test should take around 20ms."<<std::endl;
-		TimeTaker timer("Testing std::string speed");
-		const u32 jj = 10000;
-		for(u32 j=0; j<jj; j++)
-		{
-			tempstring = "";
-			tempstring2 = "";
-			const u32 ii = 10;
-			for(u32 i=0; i<ii; i++){
-				tempstring2 += "asd";
-			}
-			for(u32 i=0; i<ii+1; i++){
-				tempstring += "asd";
-				if(tempstring == tempstring2)
-					break;
-			}
-		}
-	}
-	
-	dstream<<"All of the following tests should take around 100ms each."
-			<<std::endl;
-
-	{
-		TimeTaker timer("Testing floating-point conversion speed");
-		tempf = 0.001;
-		for(u32 i=0; i<4000000; i++){
-			temp16 += tempf;
-			tempf += 0.001;
-		}
-	}
-	
-	{
-		TimeTaker timer("Testing floating-point vector speed");
-
-		tempv3f1 = v3f(1,2,3);
-		tempv3f2 = v3f(4,5,6);
-		for(u32 i=0; i<10000000; i++){
-			tempf += tempv3f1.dotProduct(tempv3f2);
-			tempv3f2 += v3f(7,8,9);
-		}
-	}
-
-	{
-		TimeTaker timer("Testing core::map speed");
-		
-		core::map<v2s16, f32> map1;
-		tempf = -324;
-		const s16 ii=300;
-		for(s16 y=0; y<ii; y++){
-			for(s16 x=0; x<ii; x++){
-				map1.insert(v2s16(x,y), tempf);
-				tempf += 1;
-			}
-		}
-		for(s16 y=ii-1; y>=0; y--){
-			for(s16 x=0; x<ii; x++){
-				tempf = map1[v2s16(x,y)];
-			}
-		}
-	}
-
-	{
-		dstream<<"Around 5000/ms should do well here."<<std::endl;
-		TimeTaker timer("Testing mutex speed");
-		
-		JMutex m;
-		m.Init();
-		u32 n = 0;
-		u32 i = 0;
-		do{
-			n += 10000;
-			for(; i<n; i++){
-				m.Lock();
-				m.Unlock();
-			}
-		}
-		// Do at least 10ms
-		while(timer.getTime() < 10);
-
-		u32 dtime = timer.stop();
-		u32 per_ms = n / dtime;
-		dstream<<"Done. "<<dtime<<"ms, "
-				<<per_ms<<"/ms"<<std::endl;
-	}
-}
-
 void drawMenuBackground(video::IVideoDriver* driver)
 {
 	core::dimension2d<u32> screensize = driver->getScreenSize();
@@ -1042,25 +979,105 @@ void drawMenuBackground(video::IVideoDriver* driver)
 	}
 }
 
-class StderrLogOutput: public ILogOutput
-{
-public:
-	/* line: Full line with timestamp, level and thread */
-	void printLog(const std::string &line)
-	{
-		std::cerr<<line<<std::endl;
-	}
-} main_stderr_log_out;
+#endif
 
-class DstreamNoStderrLogOutput: public ILogOutput
+// These are defined global so that they're not optimized too much.
+// Can't change them to volatile.
+s16 temp16;
+f32 tempf;
+v3f tempv3f1;
+v3f tempv3f2;
+std::string tempstring;
+std::string tempstring2;
+
+void SpeedTests()
 {
-public:
-	/* line: Full line with timestamp, level and thread */
-	void printLog(const std::string &line)
 	{
-		dstream_no_stderr<<line<<std::endl;
+		infostream<<"The following test should take around 20ms."<<std::endl;
+		TimeTaker timer("Testing std::string speed");
+		const u32 jj = 10000;
+		for(u32 j=0; j<jj; j++)
+		{
+			tempstring = "";
+			tempstring2 = "";
+			const u32 ii = 10;
+			for(u32 i=0; i<ii; i++){
+				tempstring2 += "asd";
+			}
+			for(u32 i=0; i<ii+1; i++){
+				tempstring += "asd";
+				if(tempstring == tempstring2)
+					break;
+			}
+		}
 	}
-} main_dstream_no_stderr_log_out;
+	
+	infostream<<"All of the following tests should take around 100ms each."
+			<<std::endl;
+
+	{
+		TimeTaker timer("Testing floating-point conversion speed");
+		tempf = 0.001;
+		for(u32 i=0; i<4000000; i++){
+			temp16 += tempf;
+			tempf += 0.001;
+		}
+	}
+	
+	{
+		TimeTaker timer("Testing floating-point vector speed");
+
+		tempv3f1 = v3f(1,2,3);
+		tempv3f2 = v3f(4,5,6);
+		for(u32 i=0; i<10000000; i++){
+			tempf += tempv3f1.dotProduct(tempv3f2);
+			tempv3f2 += v3f(7,8,9);
+		}
+	}
+
+	{
+		TimeTaker timer("Testing core::map speed");
+		
+		core::map<v2s16, f32> map1;
+		tempf = -324;
+		const s16 ii=300;
+		for(s16 y=0; y<ii; y++){
+			for(s16 x=0; x<ii; x++){
+				map1.insert(v2s16(x,y), tempf);
+				tempf += 1;
+			}
+		}
+		for(s16 y=ii-1; y>=0; y--){
+			for(s16 x=0; x<ii; x++){
+				tempf = map1[v2s16(x,y)];
+			}
+		}
+	}
+
+	{
+		infostream<<"Around 5000/ms should do well here."<<std::endl;
+		TimeTaker timer("Testing mutex speed");
+		
+		JMutex m;
+		m.Init();
+		u32 n = 0;
+		u32 i = 0;
+		do{
+			n += 10000;
+			for(; i<n; i++){
+				m.Lock();
+				m.Unlock();
+			}
+		}
+		// Do at least 10ms
+		while(timer.getTime() < 10);
+
+		u32 dtime = timer.stop();
+		u32 per_ms = n / dtime;
+		infostream<<"Done. "<<dtime<<"ms, "
+				<<per_ms<<"/ms"<<std::endl;
+	}
+}
 
 int main(int argc, char *argv[])
 {
@@ -1086,29 +1103,28 @@ int main(int argc, char *argv[])
 	core::map<std::string, ValueSpec> allowed_options;
 	allowed_options.insert("help", ValueSpec(VALUETYPE_FLAG,
 			"Show allowed options"));
-	allowed_options.insert("server", ValueSpec(VALUETYPE_FLAG,
-			"Run server directly"));
 	allowed_options.insert("config", ValueSpec(VALUETYPE_STRING,
 			"Load configuration from specified file"));
 	allowed_options.insert("port", ValueSpec(VALUETYPE_STRING,
-			"Set network port to connect to"));
-	allowed_options.insert("address", ValueSpec(VALUETYPE_STRING,
-			"Address to connect to"));
-	allowed_options.insert("random-input", ValueSpec(VALUETYPE_FLAG,
-			"Enable random user input, for testing"));
+			"Set network port (UDP) to use"));
 	allowed_options.insert("disable-unittests", ValueSpec(VALUETYPE_FLAG,
 			"Disable unit tests"));
 	allowed_options.insert("enable-unittests", ValueSpec(VALUETYPE_FLAG,
 			"Enable unit tests"));
 	allowed_options.insert("map-dir", ValueSpec(VALUETYPE_STRING,
 			"Map directory (where everything in the world is stored)"));
-#ifdef _WIN32
-	allowed_options.insert("dstream-on-stderr", ValueSpec(VALUETYPE_FLAG));
-#endif
-	allowed_options.insert("speedtests", ValueSpec(VALUETYPE_FLAG,
-			"Run speed tests"));
 	allowed_options.insert("info-on-stderr", ValueSpec(VALUETYPE_FLAG,
 			"Print debug information to console"));
+#ifndef SERVER
+	allowed_options.insert("speedtests", ValueSpec(VALUETYPE_FLAG,
+			"Run speed tests"));
+	allowed_options.insert("address", ValueSpec(VALUETYPE_STRING,
+			"Address to connect to"));
+	allowed_options.insert("random-input", ValueSpec(VALUETYPE_FLAG,
+			"Enable random user input, for testing"));
+	allowed_options.insert("server", ValueSpec(VALUETYPE_FLAG,
+			"Run server directly"));
+#endif
 
 	Settings cmd_args;
 	
@@ -1145,13 +1161,7 @@ int main(int argc, char *argv[])
 		Low-level initialization
 	*/
 
-	bool disable_stderr = false;
-#ifdef _WIN32
-	if(cmd_args.getFlag("dstream-on-stderr") == false)
-		disable_stderr = true;
-#endif
-	
-	if(cmd_args.getFlag("info-on-stderr"))
+	if(cmd_args.getFlag("info-on-stderr") || cmd_args.getFlag("speedtests"))
 		log_add_output(&main_stderr_log_out, LMT_INFO);
 
 	porting::signal_handler_init();
@@ -1170,6 +1180,7 @@ int main(int argc, char *argv[])
 #else
 	std::string debugfile = porting::path_user+DIR_DELIM+DEBUGFILE;
 #endif
+	bool disable_stderr = false;
 	debugstreams_init(disable_stderr, debugfile.c_str());
 	// Initialize debug stacks
 	debug_stacks_init();
@@ -1261,13 +1272,6 @@ int main(int argc, char *argv[])
 		run_tests();
 	}
 	
-	/*for(s16 y=-100; y<100; y++)
-	for(s16 x=-100; x<100; x++)
-	{
-		std::cout<<noise2d_gradient((double)x/10,(double)y/10, 32415)<<std::endl;
-	}
-	return 0;*/
-	
 	/*
 		Game parameters
 	*/
@@ -1298,25 +1302,43 @@ int main(int argc, char *argv[])
 			map_dir = legacy_map_dir;
 		}
 	}
-	
-	// Run dedicated server if asked to
-	if(cmd_args.getFlag("server"))
+
+	// Run dedicated server if asked to or no other option
+#ifdef SERVER
+	bool run_dedicated_server = true;
+#else
+	bool run_dedicated_server = cmd_args.getFlag("server");
+#endif
+	if(run_dedicated_server)
 	{
 		DSTACK("Dedicated server branch");
 
-		// Create time getter
+		// Create time getter if built with Irrlicht
+#ifndef SERVER
 		g_timegetter = new SimpleTimeGetter();
+#endif
 		
 		// Create server
 		Server server(map_dir, configpath, "mesetint");
 		server.start(port);
 		
+		// ASCII art for the win!
+		dstream<<std::endl
+		<<"        .__               __                   __   "<<std::endl
+		<<"  _____ |__| ____   _____/  |_  ____   _______/  |_ "<<std::endl
+		<<" /     \\|  |/    \\_/ __ \\   __\\/ __ \\ /  ___/\\   __\\"<<std::endl
+		<<"|  Y Y  \\  |   |  \\  ___/|  | \\  ___/ \\___ \\  |  |  "<<std::endl
+		<<"|__|_|  /__|___|  /\\___  >__|  \\___  >____  > |__|  "<<std::endl
+		<<"      \\/        \\/     \\/          \\/     \\/        "<<std::endl
+		<<std::endl;
+	
 		// Run server
 		dedicated_server_loop(server, kill);
 
 		return 0;
 	}
 
+#ifndef SERVER // Exclude from dedicated server build
 
 	/*
 		More parameters
@@ -1679,6 +1701,8 @@ int main(int argc, char *argv[])
 		In the end, delete the Irrlicht device.
 	*/
 	device->drop();
+
+#endif // !SERVER
 	
 	END_DEBUG_EXCEPTION_HANDLER(errorstream)
 	
