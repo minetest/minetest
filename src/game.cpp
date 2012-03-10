@@ -1004,8 +1004,8 @@ void the_game(
 	menu->drop();*/
 	
 	// Launch pause menu
-	(new GUIPauseMenu(guienv, guiroot, -1, g_gamecallback,
-			&g_menumgr))->drop();
+	/*(new GUIPauseMenu(guienv, guiroot, -1, g_gamecallback,
+			&g_menumgr))->drop();*/
 	
 	//s32 guitext_chat_pad_bottom = 70;
 
