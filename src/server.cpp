@@ -886,6 +886,10 @@ Server::Server(
 	// Figure out some paths
 	m_path_share = porting::path_share + DIR_DELIM + "server";
 	m_path_game = m_path_share + DIR_DELIM + "games" + DIR_DELIM + m_gamename;
+	m_path_addons.insert(m_path_share + DIR_DELIM + "addons"
+			+ DIR_DELIM + m_gamename);
+	m_path_addons.insert(porting::path_user + DIR_DELIM + "server"
+			+ DIR_DELIM + "addons" + DIR_DELIM + m_gamename);
 
 	// Path to builtin.lua
 	std::string builtinpath = m_path_share + DIR_DELIM + "builtin.lua";

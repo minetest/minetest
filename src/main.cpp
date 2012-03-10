@@ -1222,11 +1222,14 @@ int main(int argc, char *argv[])
 		core::array<std::string> filenames;
 		filenames.push_back(porting::path_user +
 				DIR_DELIM + "minetest.conf");
+		// Legacy configuration file location
+		filenames.push_back(porting::path_user +
+				DIR_DELIM + ".." + DIR_DELIM + "minetest.conf");
 #ifdef RUN_IN_PLACE
 		// Try also from a lower level (to aid having the same configuration
 		// for many RUN_IN_PLACE installs)
 		filenames.push_back(porting::path_user +
-				DIR_DELIM + ".." + DIR_DELIM + "minetest.conf");
+				DIR_DELIM + ".." + DIR_DELIM + ".." + DIR_DELIM + "minetest.conf");
 #endif
 
 		for(u32 i=0; i<filenames.size(); i++)
