@@ -1938,6 +1938,8 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 		
 		if(deployed == SER_FMT_VER_INVALID)
 		{
+			actionstream<<"Server: A mismatched client tried to connect."
+					<<std::endl;
 			infostream<<"Server: Cannot negotiate "
 					"serialization version with peer "
 					<<peer_id<<std::endl;
@@ -1963,6 +1965,8 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 
 		if(net_proto_version == 0)
 		{
+			actionstream<<"Server: An old tried to connect."
+					<<std::endl;
 			SendAccessDenied(m_con, peer_id, std::wstring(
 					L"Your client's version is not supported.\n"
 					L"Server version is ")
@@ -1975,6 +1979,8 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 		{
 			if(net_proto_version != PROTOCOL_VERSION)
 			{
+				actionstream<<"Server: A mismatched client tried to connect."
+						<<std::endl;
 				SendAccessDenied(m_con, peer_id, std::wstring(
 						L"Your client's version is not supported.\n"
 						L"Server version is ")
@@ -2002,7 +2008,8 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 		
 		if(playername[0]=='\0')
 		{
-			infostream<<"Server: Player has empty name"<<std::endl;
+			actionstream<<"Server: Player with an empty name "
+					<<"tried to connect."<<std::endl;
 			SendAccessDenied(m_con, peer_id,
 					L"Empty name");
 			return;
@@ -2010,7 +2017,8 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 
 		if(string_allowed(playername, PLAYERNAME_ALLOWED_CHARS)==false)
 		{
-			infostream<<"Server: Player has invalid name"<<std::endl;
+			actionstream<<"Server: Player with an invalid name "
+					<<"tried to connect."<<std::endl;
 			SendAccessDenied(m_con, peer_id,
 					L"Name contains unallowed characters");
 			return;
@@ -2025,11 +2033,11 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 		}
 		else
 		{
-				for(u32 i=0; i<PASSWORD_SIZE-1; i++)
-				{
-					password[i] = data[23+i];
-				}
-				password[PASSWORD_SIZE-1] = 0;
+			for(u32 i=0; i<PASSWORD_SIZE-1; i++)
+			{
+				password[i] = data[23+i];
+			}
+			password[PASSWORD_SIZE-1] = 0;
 		}
 		
 		// Add player to auth manager
@@ -2074,6 +2082,9 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 					& (PRIV_SERVER|PRIV_BAN|PRIV_PRIVS|PRIV_PASSWORD)) == 0 &&
 				playername != g_settings->get("name"))
 		{
+			actionstream<<"Server: "<<playername<<" tried to join, but there"
+					<<" are already max_users="
+					<<g_settings->getU16("max_users")<<" players."<<std::endl;
 			SendAccessDenied(m_con, peer_id, L"Too many users.");
 			return;
 		}
@@ -2084,7 +2095,7 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 		// If failed, cancel
 		if(player == NULL)
 		{
-			infostream<<"Server: peer_id="<<peer_id
+			errorstream<<"Server: peer_id="<<peer_id
 					<<": failed to emerge player"<<std::endl;
 			return;
 		}
@@ -4514,11 +4525,8 @@ void dedicated_server_loop(Server &server, bool &kill)
 {
 	DSTACK(__FUNCTION_NAME);
 	
-	infostream<<DTIME<<std::endl;
-	infostream<<"========================"<<std::endl;
 	infostream<<"Running dedicated server"<<std::endl;
 	infostream<<"========================"<<std::endl;
-	infostream<<std::endl;
 
 	IntervalLimiter m_profiler_interval;
 
