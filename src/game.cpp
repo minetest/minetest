@@ -709,7 +709,7 @@ void the_game(
 		server->start(port);
 	}
 
-	{ // Client scope
+	do{ // Client scope (breakable do-while(0))
 	
 	/*
 		Create client
@@ -738,10 +738,9 @@ void the_game(
 	catch(ResolveError &e)
 	{
 		errorstream<<"Couldn't resolve address"<<std::endl;
-		//return 0;
 		error_message = L"Couldn't resolve address";
-		//gui_loadingtext->remove();
-		return;
+		// Break out of client scope
+		break;
 	}
 
 	/*
@@ -757,11 +756,12 @@ void the_game(
 		Wait for server to accept connection
 	*/
 	bool could_connect = false;
+	bool connect_aborted = false;
 	try{
 		float frametime = 0.033;
-		const float timeout = 10.0;
 		float time_counter = 0.0;
-		for(;;)
+		input->clear();
+		while(device->run())
 		{
 			// Update client and server
 			client.step(frametime);
@@ -774,16 +774,21 @@ void the_game(
 				break;
 			}
 			// Break conditions
-			if(client.accessDenied())
+			if(client.accessDenied()){
+				error_message = L"Access denied. Reason: "
+						+client.accessDeniedReason();
 				break;
-			if(time_counter >= timeout)
+			}
+			if(input->wasKeyDown(EscapeKey)){
+				connect_aborted = true;
 				break;
+			}
 			
 			// Display status
 			std::wostringstream ss;
-			ss<<L"Connecting to server... (timeout in ";
-			ss<<(int)(timeout - time_counter + 1.0);
-			ss<<L" seconds)";
+			ss<<L"Connecting to server... (press Escape to cancel)\n";
+			std::wstring animation = L"/-\\|";
+			ss<<animation[(int)(time_counter/0.2)%4];
 			draw_load_screen(ss.str(), driver, font);
 			
 			// Delay a bit
@@ -797,32 +802,23 @@ void the_game(
 	/*
 		Handle failure to connect
 	*/
-	if(could_connect == false)
-	{
-		if(client.accessDenied())
-		{
-			error_message = L"Access denied. Reason: "
-					+client.accessDeniedReason();
-			errorstream<<wide_to_narrow(error_message)<<std::endl;
-		}
-		else
-		{
-			error_message = L"Connection timed out.";
-			errorstream<<"Timed out."<<std::endl;
-		}
-		//gui_loadingtext->remove();
-		return;
+	if(!could_connect){
+		if(error_message == L"" && !connect_aborted)
+			error_message = L"Connection failed";
+		// Break out of client scope
+		break;
 	}
 	
 	/*
 		Wait until content has been received
 	*/
 	bool got_content = false;
+	bool content_aborted = false;
 	{
 		float frametime = 0.033;
-		const float timeout = 30.0;
 		float time_counter = 0.0;
-		for(;;)
+		input->clear();
+		while(device->run())
 		{
 			// Update client and server
 			client.step(frametime);
@@ -837,16 +833,18 @@ void the_game(
 				break;
 			}
 			// Break conditions
-			if(!client.connectedAndInitialized())
+			if(!client.connectedAndInitialized()){
+				error_message = L"Client disconnected";
 				break;
-			if(time_counter >= timeout)
+			}
+			if(input->wasKeyDown(EscapeKey)){
+				content_aborted = true;
 				break;
+			}
 			
 			// Display status
 			std::wostringstream ss;
-			ss<<L"Waiting content... (continuing anyway in ";
-			ss<<(int)(timeout - time_counter + 1.0);
-			ss<<L" seconds)\n";
+			ss<<L"Waiting content... (press Escape to cancel)\n";
 
 			ss<<(client.itemdefReceived()?L"[X]":L"[  ]");
 			ss<<L" Item definitions\n";
@@ -862,6 +860,13 @@ void the_game(
 			sleep_ms(1000*frametime);
 			time_counter += frametime;
 		}
+	}
+
+	if(!got_content){
+		if(error_message == L"" && !content_aborted)
+			error_message = L"Something failed";
+		// Break out of client scope
+		break;
 	}
 
 	/*
@@ -2585,7 +2590,8 @@ void the_game(
 	chat_backend.addMessage(L"", L"# Disconnected.");
 	chat_backend.addMessage(L"", L"");
 
-	} // Client scope (must be destructed before destructing *def and tsrc
+	// Client scope (client is destructed before destructing *def and tsrc)
+	}while(0);
 
 	delete tsrc;
 	delete nodedef;
