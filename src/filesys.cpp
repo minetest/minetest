@@ -327,11 +327,12 @@ bool CreateAllDirs(std::string path)
 		tocreate.push_back(basepath);
 		pos = basepath.rfind(DIR_DELIM_C);
 		if(pos == std::string::npos)
-			return false;
+			break;
 		basepath = basepath.substr(0,pos);
 	}
 	for(int i=tocreate.size()-1;i>=0;i--)
-		CreateDir(tocreate[i]);
+		if(!CreateDir(tocreate[i]))
+			return false;
 	return true;
 }
 
