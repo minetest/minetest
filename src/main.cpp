@@ -1279,7 +1279,9 @@ int main(int argc, char *argv[])
 					menudata.selected_world = -1;
 				// If a world was commanded, append and select it
 				if(commanded_world != ""){
-					std::string gameid = getWorldGameId(commanded_world);
+					std::string gameid = getWorldGameId(commanded_world, true);
+					if(gameid == "")
+						gameid = g_settings->get("default_game");
 					WorldSpec spec(commanded_world, "[commanded world]", gameid);
 					worldspecs.push_back(spec);
 					menudata.worlds.push_back(narrow_to_wide(spec.name)
