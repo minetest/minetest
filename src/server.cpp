@@ -867,7 +867,7 @@ Server::Server(
 
 	if(!gamespec.isValid())
 		throw ServerError("Supplied invalid gamespec");
-
+	
 	// Figure out some paths
 	// share/server
 	m_path_share = porting::path_share + DIR_DELIM + "server";
@@ -899,6 +899,15 @@ Server::Server(
 		infostream<<"- mods:   "<<modspath<<std::endl;
 	}
 	
+	// Create world.mt if does not already exist
+	std::string worldmt_path = m_path_world + DIR_DELIM + "world.mt";
+	if(!fs::PathExists(worldmt_path)){
+		infostream<<"Creating world.mt ("<<worldmt_path<<")"<<std::endl;
+		fs::CreateAllDirs(m_path_world);
+		std::ofstream of(worldmt_path.c_str(), std::ios::binary);
+		of<<"gameid = "<<m_gamespec.id<<"\n";
+	}
+
 	// Lock environment
 	JMutexAutoLock envlock(m_env_mutex);
 	JMutexAutoLock conlock(m_con_mutex);
