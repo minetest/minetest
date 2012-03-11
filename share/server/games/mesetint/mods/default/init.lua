@@ -504,6 +504,7 @@ minetest.register_tool("default:pick_mese", {
 	description = "Mese Pickaxe",
 	inventory_image = "default_tool_mesepick.png",
 	tool_capabilities = {
+		full_punch_interval = 1.0,
 		max_drop_level=3,
 		groupcaps={
 			cracky={times={[1]=0.2, [2]=0.2, [3]=0.2}, maxwear=0.05, maxlevel=3},
