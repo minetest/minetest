@@ -2240,7 +2240,7 @@ private:
 		ObjectRef *ref = checkobject(L, 1);
 		ServerActiveObject *co = getobject(ref);
 		if(co == NULL) return 0;
-		infostream<<"ObjectRef::l_remove(): id="<<co->getId()<<std::endl;
+		verbosestream<<"ObjectRef::l_remove(): id="<<co->getId()<<std::endl;
 		co->m_removed = true;
 		return 0;
 	}
@@ -2340,8 +2340,8 @@ private:
 		ServerActiveObject *co = getobject(ref);
 		if(co == NULL) return 0;
 		int hp = lua_tonumber(L, 2);
-		infostream<<"ObjectRef::l_set_hp(): id="<<co->getId()
-				<<" hp="<<hp<<std::endl;
+		/*infostream<<"ObjectRef::l_set_hp(): id="<<co->getId()
+				<<" hp="<<hp<<std::endl;*/
 		// Do it
 		co->setHP(hp);
 		// Return
@@ -2357,8 +2357,8 @@ private:
 		ServerActiveObject *co = getobject(ref);
 		if(co == NULL) return 0;
 		int hp = co->getHP();
-		infostream<<"ObjectRef::l_get_hp(): id="<<co->getId()
-				<<" hp="<<hp<<std::endl;
+		/*infostream<<"ObjectRef::l_get_hp(): id="<<co->getId()
+				<<" hp="<<hp<<std::endl;*/
 		// Return
 		lua_pushnumber(L, hp);
 		return 1;
@@ -3029,12 +3029,12 @@ public:
 	EnvRef(ServerEnvironment *env):
 		m_env(env)
 	{
-		infostream<<"EnvRef created"<<std::endl;
+		//infostream<<"EnvRef created"<<std::endl;
 	}
 
 	~EnvRef()
 	{
-		infostream<<"EnvRef destructing"<<std::endl;
+		//infostream<<"EnvRef destructing"<<std::endl;
 	}
 
 	// Creates an EnvRef and leaves it on top of stack
@@ -3230,7 +3230,7 @@ static int l_register_item_raw(lua_State *L)
 	lua_getfield(L, table, "name");
 	if(lua_isstring(L, -1)){
 		std::string name = lua_tostring(L, -1);
-		infostream<<"register_item_raw: "<<name<<std::endl;
+		verbosestream<<"register_item_raw: "<<name<<std::endl;
 	} else {
 		throw LuaError(L, "register_item_raw: name is not defined or not a string");
 	}
@@ -3672,7 +3672,7 @@ void scriptapi_export(lua_State *L, Server *server)
 {
 	realitycheck(L);
 	assert(lua_checkstack(L, 20));
-	infostream<<"scriptapi_export"<<std::endl;
+	verbosestream<<"scriptapi_export()"<<std::endl;
 	StackUnroller stack_unroller(L);
 
 	// Store server as light userdata in registry
@@ -3732,7 +3732,7 @@ void scriptapi_add_environment(lua_State *L, ServerEnvironment *env)
 {
 	realitycheck(L);
 	assert(lua_checkstack(L, 20));
-	infostream<<"scriptapi_add_environment"<<std::endl;
+	verbosestream<<"scriptapi_add_environment"<<std::endl;
 	StackUnroller stack_unroller(L);
 
 	// Create EnvRef on stack
@@ -4230,7 +4230,7 @@ bool scriptapi_luaentity_add(lua_State *L, u16 id, const char *name)
 {
 	realitycheck(L);
 	assert(lua_checkstack(L, 20));
-	infostream<<"scriptapi_luaentity_add: id="<<id<<" name=\""
+	verbosestream<<"scriptapi_luaentity_add: id="<<id<<" name=\""
 			<<name<<"\""<<std::endl;
 	StackUnroller stack_unroller(L);
 	
@@ -4281,7 +4281,7 @@ void scriptapi_luaentity_activate(lua_State *L, u16 id,
 {
 	realitycheck(L);
 	assert(lua_checkstack(L, 20));
-	infostream<<"scriptapi_luaentity_activate: id="<<id<<std::endl;
+	verbosestream<<"scriptapi_luaentity_activate: id="<<id<<std::endl;
 	StackUnroller stack_unroller(L);
 	
 	// Get minetest.luaentities[id]
@@ -4306,7 +4306,7 @@ void scriptapi_luaentity_rm(lua_State *L, u16 id)
 {
 	realitycheck(L);
 	assert(lua_checkstack(L, 20));
-	infostream<<"scriptapi_luaentity_rm: id="<<id<<std::endl;
+	verbosestream<<"scriptapi_luaentity_rm: id="<<id<<std::endl;
 
 	// Get minetest.luaentities table
 	lua_getglobal(L, "minetest");
@@ -4326,7 +4326,7 @@ std::string scriptapi_luaentity_get_staticdata(lua_State *L, u16 id)
 {
 	realitycheck(L);
 	assert(lua_checkstack(L, 20));
-	infostream<<"scriptapi_luaentity_get_staticdata: id="<<id<<std::endl;
+	//infostream<<"scriptapi_luaentity_get_staticdata: id="<<id<<std::endl;
 	StackUnroller stack_unroller(L);
 
 	// Get minetest.luaentities[id]
@@ -4356,7 +4356,7 @@ void scriptapi_luaentity_get_properties(lua_State *L, u16 id,
 {
 	realitycheck(L);
 	assert(lua_checkstack(L, 20));
-	infostream<<"scriptapi_luaentity_get_properties: id="<<id<<std::endl;
+	//infostream<<"scriptapi_luaentity_get_properties: id="<<id<<std::endl;
 	StackUnroller stack_unroller(L);
 
 	// Get minetest.luaentities[id]

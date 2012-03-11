@@ -40,6 +40,23 @@ class IWritableItemDefManager;
 class IWritableNodeDefManager;
 class IWritableCraftDefManager;
 
+class ServerError : public std::exception
+{
+public:
+	ServerError(const std::string &s)
+	{
+		m_s = "ServerError: ";
+		m_s += s;
+	}
+	virtual ~ServerError() throw()
+	{}
+	virtual const char * what() const throw()
+	{
+		return m_s.c_str();
+	}
+	std::string m_s;
+};
+
 /*
 	Some random functions
 */
@@ -210,8 +227,6 @@ struct PlayerInfo
 	PlayerInfo();
 	void PrintLine(std::ostream *s);
 };
-
-u32 PIChecksum(core::list<PlayerInfo> &l);
 
 /*
 	Used for queueing and sorting block transfers in containers
@@ -608,7 +623,7 @@ private:
 	{
 		Player *player = m_env->getPlayer(peer_id);
 		if(player == NULL)
-			return "[id="+itos(peer_id);
+			return "[id="+itos(peer_id)+"]";
 		return player->getName();
 	}
 

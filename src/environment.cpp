@@ -454,7 +454,7 @@ void ServerEnvironment::deSerializePlayers(const std::string &savedir)
 		// Full path to this file
 		std::string path = players_path + "/" + player_files[i].name;
 
-		infostream<<"Checking player file "<<path<<std::endl;
+		//infostream<<"Checking player file "<<path<<std::endl;
 
 		// Load player to see what is its name
 		ServerRemotePlayer testplayer(this);
@@ -475,8 +475,8 @@ void ServerEnvironment::deSerializePlayers(const std::string &savedir)
 					<<testplayer.getName()<<std::endl;
 		}
 
-		infostream<<"Loaded test player with name "<<testplayer.getName()
-				<<std::endl;
+		/*infostream<<"Loaded test player with name "<<testplayer.getName()
+				<<std::endl;*/
 		
 		// Search for the player
 		std::string playername = testplayer.getName();
@@ -484,7 +484,7 @@ void ServerEnvironment::deSerializePlayers(const std::string &savedir)
 		bool newplayer = false;
 		if(player == NULL)
 		{
-			infostream<<"Is a new player"<<std::endl;
+			//infostream<<"Is a new player"<<std::endl;
 			player = new ServerRemotePlayer(this);
 			newplayer = true;
 		}
@@ -493,7 +493,7 @@ void ServerEnvironment::deSerializePlayers(const std::string &savedir)
 
 		// Load player
 		{
-			infostream<<"Reading player "<<testplayer.getName()<<" from "
+			verbosestream<<"Reading player "<<testplayer.getName()<<" from "
 					<<path<<std::endl;
 			// Open file and deserialize
 			std::ifstream is(path.c_str(), std::ios_base::binary);
@@ -2254,7 +2254,7 @@ void ClientEnvironment::addActiveObject(u16 id, u8 type,
 
 void ClientEnvironment::removeActiveObject(u16 id)
 {
-	infostream<<"ClientEnvironment::removeActiveObject(): "
+	verbosestream<<"ClientEnvironment::removeActiveObject(): "
 			<<"id="<<id<<std::endl;
 	ClientActiveObject* obj = getActiveObject(id);
 	if(obj == NULL)

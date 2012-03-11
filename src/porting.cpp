@@ -71,7 +71,6 @@ void sigint_handler(int sig)
 
 void signal_handler_init(void)
 {
-	dstream<<"signal_handler_init()"<<std::endl;
 	(void)signal(SIGINT, sigint_handler);
 }
 
@@ -114,7 +113,6 @@ void signal_handler_init(void)
 	
 void signal_handler_init(void)
 {
-	dstream<<"signal_handler_init()"<<std::endl;
 	SetConsoleCtrlHandler( (PHANDLER_ROUTINE)event_handler,TRUE);
 }
 
@@ -288,9 +286,6 @@ void initializePaths()
 	#endif
 
 #endif // RUN_IN_PLACE
-
-	dstream<<"path_share = "<<path_share<<std::endl;
-	dstream<<"path_user = "<<path_user<<std::endl;
 }
 
 } //namespace porting

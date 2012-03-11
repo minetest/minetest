@@ -517,7 +517,7 @@ std::string LuaEntitySAO::getClientInitializationData()
 
 std::string LuaEntitySAO::getStaticData()
 {
-	infostream<<__FUNCTION_NAME<<std::endl;
+	verbosestream<<__FUNCTION_NAME<<std::endl;
 	std::ostringstream os(std::ios::binary);
 	// version
 	writeU8(os, 1);
@@ -641,7 +641,7 @@ std::string LuaEntitySAO::getDescription()
 	os<<(m_base_position.Y/BS)<<",";
 	os<<(m_base_position.Z/BS);
 	os<<")";
-	return std::string("LuaEntitySAO");
+	return os.str();
 }
 
 void LuaEntitySAO::setVelocity(v3f velocity)

@@ -1916,7 +1916,7 @@ ServerMap::ServerMap(std::string savedir, IGameDef *gamedef):
 	m_database_read(NULL),
 	m_database_write(NULL)
 {
-	infostream<<__FUNCTION_NAME<<std::endl;
+	verbosestream<<__FUNCTION_NAME<<std::endl;
 
 	//m_chunksize = 8; // Takes a few seconds
 
@@ -1954,7 +1954,7 @@ ServerMap::ServerMap(std::string savedir, IGameDef *gamedef):
 			// If directory is empty, it is safe to save into it.
 			if(fs::GetDirListing(m_savedir).size() == 0)
 			{
-				infostream<<"Server: Empty save directory is valid."
+				infostream<<"ServerMap: Empty save directory is valid."
 						<<std::endl;
 				m_map_saving_enabled = true;
 			}
@@ -1971,25 +1971,10 @@ ServerMap::ServerMap(std::string savedir, IGameDef *gamedef):
 					//m_chunksize = 0;
 				}
 
-				/*try{
-					// Load chunk metadata
-					loadChunkMeta();
-				}
-				catch(FileNotGoodException &e){
-					infostream<<"WARNING: Could not load chunk metadata."
-							<<" Disabling chunk-based generator."
-							<<std::endl;
-					m_chunksize = 0;
-				}*/
-
-				/*infostream<<"Server: Successfully loaded chunk "
-						"metadata and sector (0,0) from "<<savedir<<
-						", assuming valid save directory."
-						<<std::endl;*/
-
-				infostream<<"Server: Successfully loaded map "
-						<<"and chunk metadata from "<<savedir
+				infostream<<"ServerMap: Successfully loaded map "
+						<<"metadata from "<<savedir
 						<<", assuming valid save directory."
+						<<" seed="<<m_seed<<"."
 						<<std::endl;
 
 				m_map_saving_enabled = true;
@@ -2004,7 +1989,7 @@ ServerMap::ServerMap(std::string savedir, IGameDef *gamedef):
 	}
 	catch(std::exception &e)
 	{
-		infostream<<"WARNING: Server: Failed to load map from "<<savedir
+		infostream<<"WARNING: ServerMap: Failed to load map from "<<savedir
 				<<", exception: "<<e.what()<<std::endl;
 		infostream<<"Please remove the map or fix it."<<std::endl;
 		infostream<<"WARNING: Map saving will be disabled."<<std::endl;
@@ -2021,7 +2006,7 @@ ServerMap::ServerMap(std::string savedir, IGameDef *gamedef):
 
 ServerMap::~ServerMap()
 {
-	infostream<<__FUNCTION_NAME<<std::endl;
+	verbosestream<<__FUNCTION_NAME<<std::endl;
 
 	try
 	{
@@ -2029,16 +2014,16 @@ ServerMap::~ServerMap()
 		{
 			// Save only changed parts
 			save(MOD_STATE_WRITE_AT_UNLOAD);
-			infostream<<"Server: saved map to "<<m_savedir<<std::endl;
+			infostream<<"ServerMap: Saved map to "<<m_savedir<<std::endl;
 		}
 		else
 		{
-			infostream<<"Server: map not saved"<<std::endl;
+			infostream<<"ServerMap: Map not saved"<<std::endl;
 		}
 	}
 	catch(std::exception &e)
 	{
-		infostream<<"Server: Failed to save map to "<<m_savedir
+		infostream<<"ServerMap: Failed to save map to "<<m_savedir
 				<<", exception: "<<e.what()<<std::endl;
 	}
 
@@ -2693,7 +2678,7 @@ void ServerMap::createDatabase() {
 	if(e == SQLITE_ABORT)
 		throw FileNotGoodException("Could not create database structure");
 	else
-		infostream<<"Server: Database structure was created";
+		infostream<<"ServerMap: Database structure was created";
 }
 
 void ServerMap::verifyDatabase() {
@@ -2741,7 +2726,7 @@ void ServerMap::verifyDatabase() {
 			throw FileNotGoodException("Cannot prepare read statement");
 		}
 		
-		infostream<<"Server: Database opened"<<std::endl;
+		infostream<<"ServerMap: Database opened"<<std::endl;
 	}
 }
 
@@ -2977,9 +2962,9 @@ void ServerMap::saveMapMeta()
 {
 	DSTACK(__FUNCTION_NAME);
 	
-	infostream<<"ServerMap::saveMapMeta(): "
+	/*infostream<<"ServerMap::saveMapMeta(): "
 			<<"seed="<<m_seed
-			<<std::endl;
+			<<std::endl;*/
 
 	createDirs(m_savedir);
 	
@@ -3006,8 +2991,8 @@ void ServerMap::loadMapMeta()
 {
 	DSTACK(__FUNCTION_NAME);
 	
-	infostream<<"ServerMap::loadMapMeta(): Loading map metadata"
-			<<std::endl;
+	/*infostream<<"ServerMap::loadMapMeta(): Loading map metadata"
+			<<std::endl;*/
 
 	std::string fullpath = m_savedir + DIR_DELIM + "map_meta.txt";
 	std::ifstream is(fullpath.c_str(), std::ios_base::binary);
@@ -3035,7 +3020,7 @@ void ServerMap::loadMapMeta()
 
 	m_seed = params.getU64("seed");
 
-	infostream<<"ServerMap::loadMapMeta(): "<<"seed="<<m_seed<<std::endl;
+	verbosestream<<"ServerMap::loadMapMeta(): "<<"seed="<<m_seed<<std::endl;
 }
 
 void ServerMap::saveSectorMeta(ServerMapSector *sector)

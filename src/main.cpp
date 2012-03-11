@@ -1188,8 +1188,8 @@ int main(int argc, char *argv[])
 
 	DSTACK(__FUNCTION_NAME);
 
-	// Init material properties table
-	//initializeMaterialProperties();
+	dstream<<"path_share = "<<porting::path_share<<std::endl;
+	dstream<<"path_user  = "<<porting::path_user<<std::endl;
 
 	// Debug handler
 	BEGIN_DEBUG_EXCEPTION_HANDLER
@@ -1323,16 +1323,6 @@ int main(int argc, char *argv[])
 		Server server(map_dir, configpath, "mesetint");
 		server.start(port);
 		
-		// ASCII art for the win!
-		actionstream
-		<<"        .__               __                   __   "<<std::endl
-		<<"  _____ |__| ____   _____/  |_  ____   _______/  |_ "<<std::endl
-		<<" /     \\|  |/    \\_/ __ \\   __\\/ __ \\ /  ___/\\   __\\"<<std::endl
-		<<"|  Y Y  \\  |   |  \\  ___/|  | \\  ___/ \\___ \\  |  |  "<<std::endl
-		<<"|__|_|  /__|___|  /\\___  >__|  \\___  >____  > |__|  "<<std::endl
-		<<"      \\/        \\/     \\/          \\/     \\/        "<<std::endl;
-		actionstream<<"Listening at port "<<port<<"."<<std::endl;
-	
 		// Run server
 		dedicated_server_loop(server, kill);
 

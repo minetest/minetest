@@ -45,8 +45,8 @@ void debugstreams_init(bool disable_stderr, const char *filename)
 		fprintf(g_debugstreams[1],     "-------------\n\n");
 	}
 	
-	DEBUGPRINT("Debug streams initialized, disable_stderr=%d\n",
-			disable_stderr);
+	DEBUGPRINT("Debug streams initialized, %s\n",
+			disable_stderr?"not printing on stderr":"using stderr");
 }
 
 void debugstreams_deinit()

@@ -368,7 +368,7 @@ public:
 	// IWritableNodeDefManager
 	virtual void set(content_t c, const ContentFeatures &def)
 	{
-		infostream<<"registerNode: registering content id \""<<c
+		verbosestream<<"registerNode: registering content id \""<<c
 				<<"\": name=\""<<def.name<<"\""<<std::endl;
 		assert(c <= MAX_CONTENT);
 		// Don't allow redefining CONTENT_IGNORE (but allow air)

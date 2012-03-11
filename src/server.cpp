@@ -824,18 +824,11 @@ void PlayerInfo::PrintLine(std::ostream *s)
 	(*s)<<std::endl;
 }
 
-u32 PIChecksum(core::list<PlayerInfo> &l)
+static std::string padStringRight(std::string s, size_t len)
 {
-	core::list<PlayerInfo>::Iterator i;
-	u32 checksum = 1;
-	u32 a = 10;
-	for(i=l.begin(); i!=l.end(); i++)
-	{
-		checksum += a * (i->id+1);
-		checksum ^= 0x435aafcd;
-		a *= 10;
-	}
-	return checksum;
+	if(len > s.size())
+		s.insert(s.end(), len - s.size(), ' ');
+	return s;
 }
 
 /*
@@ -867,11 +860,6 @@ Server::Server(
 	m_ignore_map_edit_events(false),
 	m_ignore_map_edit_events_peer_id(0)
 {
-	infostream<<"Server created."<<std::endl;
-	infostream<<"- path_world  = "<<path_world<<std::endl;
-	infostream<<"- path_config = "<<path_config<<std::endl;
-	infostream<<"- gamename    = "<<gamename<<std::endl;
-
 	m_liquid_transform_timer = 0.0;
 	m_print_info_timer = 0.0;
 	m_objectdata_timer = 0.0;
@@ -884,12 +872,35 @@ Server::Server(
 	m_step_dtime = 0.0;
 
 	// Figure out some paths
+	// share/server
 	m_path_share = porting::path_share + DIR_DELIM + "server";
-	m_path_game = m_path_share + DIR_DELIM + "games" + DIR_DELIM + m_gamename;
-	m_path_addons.insert(m_path_share + DIR_DELIM + "addons"
-			+ DIR_DELIM + m_gamename);
+	// game
+	m_path_game = porting::path_user + DIR_DELIM + "server" + DIR_DELIM
+			+ "games" + DIR_DELIM + m_gamename;
+	bool user_game = true; // Game is in user's directory
+	if(!fs::PathExists(m_path_game)){
+		m_path_game = m_path_share + DIR_DELIM + "games" + DIR_DELIM
+				+ m_gamename;
+		user_game = false;
+	}
+	if(!fs::PathExists(m_path_game)){
+		throw ServerError("Could not find game files for game \""
+				+gamename+"\"");
+	}
+	// addons
+	if(!user_game)
+		m_path_addons.insert(m_path_share + DIR_DELIM + "addons"
+				+ DIR_DELIM + m_gamename);
 	m_path_addons.insert(porting::path_user + DIR_DELIM + "server"
 			+ DIR_DELIM + "addons" + DIR_DELIM + m_gamename);
+
+	infostream<<"Server created for gamename=\""<<gamename<<"\""<<std::endl;
+	infostream<<"- path_world  = "<<m_path_world<<std::endl;
+	infostream<<"- path_config = "<<m_path_config<<std::endl;
+	infostream<<"- path_game   = "<<m_path_game<<std::endl;
+	for(std::set<std::string>::const_iterator i = m_path_addons.begin();
+			i != m_path_addons.end(); i++)
+		infostream<<"- path_addons+= "<<(*i)<<std::endl;
 
 	// Path to builtin.lua
 	std::string builtinpath = m_path_share + DIR_DELIM + "builtin.lua";
@@ -903,13 +914,12 @@ Server::Server(
 			i != m_path_addons.end(); i++){
 		m_modspaths.push_front((*i) + DIR_DELIM + "mods");
 	}
-	
+
 	// Print out mod search paths
-	infostream<<"- mod search paths:"<<std::endl;
 	for(core::list<std::string>::Iterator i = m_modspaths.begin();
 			i != m_modspaths.end(); i++){
 		std::string modspath = *i;
-		infostream<<"    "<<modspath<<std::endl;
+		infostream<<"- modspath   += "<<modspath<<std::endl;
 	}
 	
 	// Lock environment
@@ -918,27 +928,37 @@ Server::Server(
 
 	// Initialize scripting
 	
-	infostream<<"Server: Initializing scripting"<<std::endl;
+	infostream<<"Server: Initializing Lua"<<std::endl;
 	m_lua = script_init();
 	assert(m_lua);
 	// Export API
 	scriptapi_export(m_lua, this);
 	// Load and run builtin.lua
-	infostream<<"Server: Loading builtin Lua stuff from \""<<builtinpath
-			<<"\""<<std::endl;
+	infostream<<"Server: Loading builtin.lua [\""
+			<<builtinpath<<"\"]"<<std::endl;
 	bool success = scriptapi_loadmod(m_lua, builtinpath, "__builtin");
 	if(!success){
 		errorstream<<"Server: Failed to load and run "
 				<<builtinpath<<std::endl;
 		throw ModError("Failed to load and run "+builtinpath);
 	}
-	// Load and run "mod" scripts
+	// Find mods in mod search paths
 	m_mods = getMods(m_modspaths);
+	// Print 'em
+	infostream<<"Server: Loading mods: ";
 	for(core::list<ModSpec>::Iterator i = m_mods.begin();
 			i != m_mods.end(); i++){
 		const ModSpec &mod = *i;
-		infostream<<"Server: Loading mod \""<<mod.name<<"\""<<std::endl;
+		infostream<<mod.name<<" ";
+	}
+	infostream<<std::endl;
+	// Load and run "mod" scripts
+	for(core::list<ModSpec>::Iterator i = m_mods.begin();
+			i != m_mods.end(); i++){
+		const ModSpec &mod = *i;
 		std::string scriptpath = mod.path + DIR_DELIM + "init.lua";
+		infostream<<"  ["<<padStringRight(mod.name, 12)<<"] [\""
+				<<scriptpath<<"\"]"<<std::endl;
 		bool success = scriptapi_loadmod(m_lua, scriptpath, mod.name);
 		if(!success){
 			errorstream<<"Server: Failed to load and run "
@@ -983,7 +1003,7 @@ Server::Server(
 
 Server::~Server()
 {
-	infostream<<"Server::~Server()"<<std::endl;
+	infostream<<"Server destructing"<<std::endl;
 
 	/*
 		Send shutdown message
@@ -1084,7 +1104,15 @@ void Server::start(unsigned short port)
 	m_thread.setRun(true);
 	m_thread.Start();
 	
-	infostream<<"Server started on port "<<port<<"."<<std::endl;
+	// ASCII art for the win!
+	actionstream
+	<<"        .__               __                   __   "<<std::endl
+	<<"  _____ |__| ____   _____/  |_  ____   _______/  |_ "<<std::endl
+	<<" /     \\|  |/    \\_/ __ \\   __\\/ __ \\ /  ___/\\   __\\"<<std::endl
+	<<"|  Y Y  \\  |   |  \\  ___/|  | \\  ___/ \\___ \\  |  |  "<<std::endl
+	<<"|__|_|  /__|___|  /\\___  >__|  \\___  >____  > |__|  "<<std::endl
+	<<"      \\/        \\/     \\/          \\/     \\/        "<<std::endl;
+	actionstream<<"Server listening on port "<<port<<"."<<std::endl;
 }
 
 void Server::stop()
@@ -1514,7 +1542,7 @@ void Server::AsyncRunStep()
 			// Send as reliable
 			m_con.Send(client->peer_id, 0, reply, true);
 
-			infostream<<"Server: Sent object remove/add: "
+			verbosestream<<"Server: Sent object remove/add: "
 					<<removed_objects.size()<<" removed, "
 					<<added_objects.size()<<" added, "
 					<<"packet size is "<<reply.getSize()<<std::endl;
@@ -1677,15 +1705,13 @@ void Server::AsyncRunStep()
 		if(m_unsent_map_edit_queue.size() >= 4)
 			disable_single_change_sending = true;
 
-		bool got_any_events = false;
+		int event_count = m_unsent_map_edit_queue.size();
 
 		// We'll log the amount of each
 		Profiler prof;
 
 		while(m_unsent_map_edit_queue.size() != 0)
 		{
-			got_any_events = true;
-
 			MapEditEvent* event = m_unsent_map_edit_queue.pop_front();
 			
 			// Players far away from the change are stored here.
@@ -1776,10 +1802,12 @@ void Server::AsyncRunStep()
 				break;*/
 		}
 
-		if(got_any_events)
-		{
+		if(event_count >= 5){
 			infostream<<"Server: MapEditEvents:"<<std::endl;
 			prof.print(infostream);
+		} else if(event_count != 0){
+			verbosestream<<"Server: MapEditEvents:"<<std::endl;
+			prof.print(verbosestream);
 		}
 		
 	}
@@ -1899,6 +1927,8 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 				<<peer_id<<" not found"<<std::endl;
 		return;
 	}
+	
+	std::string addr_s = m_con.GetPeerAddress(peer_id).serializeString();
 
 	u8 peer_ser_ver = getClient(peer_id)->serialization_version;
 
@@ -1920,7 +1950,7 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 		if(datasize < 2+1+PLAYERNAME_SIZE)
 			return;
 
-		infostream<<"Server: Got TOSERVER_INIT from "
+		verbosestream<<"Server: Got TOSERVER_INIT from "
 				<<peer_id<<std::endl;
 
 		// First byte after command is maximum supported
@@ -1938,8 +1968,8 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 		
 		if(deployed == SER_FMT_VER_INVALID)
 		{
-			actionstream<<"Server: A mismatched client tried to connect."
-					<<std::endl;
+			actionstream<<"Server: A mismatched client tried to connect from "
+					<<addr_s<<std::endl;
 			infostream<<"Server: Cannot negotiate "
 					"serialization version with peer "
 					<<peer_id<<std::endl;
@@ -1965,7 +1995,7 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 
 		if(net_proto_version == 0)
 		{
-			actionstream<<"Server: An old tried to connect."
+			actionstream<<"Server: An old tried to connect from "<<addr_s
 					<<std::endl;
 			SendAccessDenied(m_con, peer_id, std::wstring(
 					L"Your client's version is not supported.\n"
@@ -1979,8 +2009,8 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 		{
 			if(net_proto_version != PROTOCOL_VERSION)
 			{
-				actionstream<<"Server: A mismatched client tried to connect."
-						<<std::endl;
+				actionstream<<"Server: A mismatched client tried to connect"
+						<<" from "<<addr_s<<std::endl;
 				SendAccessDenied(m_con, peer_id, std::wstring(
 						L"Your client's version is not supported.\n"
 						L"Server version is ")
@@ -2009,7 +2039,7 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 		if(playername[0]=='\0')
 		{
 			actionstream<<"Server: Player with an empty name "
-					<<"tried to connect."<<std::endl;
+					<<"tried to connect from "<<addr_s<<std::endl;
 			SendAccessDenied(m_con, peer_id,
 					L"Empty name");
 			return;
@@ -2018,11 +2048,14 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 		if(string_allowed(playername, PLAYERNAME_ALLOWED_CHARS)==false)
 		{
 			actionstream<<"Server: Player with an invalid name "
-					<<"tried to connect."<<std::endl;
+					<<"tried to connect from "<<addr_s<<std::endl;
 			SendAccessDenied(m_con, peer_id,
 					L"Name contains unallowed characters");
 			return;
 		}
+
+		infostream<<"Server: New connection: \""<<playername<<"\" from "
+				<<m_con.GetPeerAddress(peer_id).serializeString()<<std::endl;
 
 		// Get password
 		char password[PASSWORD_SIZE];
@@ -2124,7 +2157,7 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 
 	if(command == TOSERVER_INIT2)
 	{
-		infostream<<"Server: Got TOSERVER_INIT2 from "
+		verbosestream<<"Server: Got TOSERVER_INIT2 from "
 				<<peer_id<<std::endl;
 
 
@@ -2134,6 +2167,9 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 		/*
 			Send some initialization data
 		*/
+
+		infostream<<"Server: Sending content to "
+				<<getPlayerName(peer_id)<<std::endl;
 
 		// Send item definitions
 		SendItemDef(m_con, peer_id, m_itemdef);
@@ -2389,7 +2425,7 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 	{
 		// Strip command and create a stream
 		std::string datastring((char*)&data[2], datasize-2);
-		infostream<<"TOSERVER_INVENTORY_ACTION: data="<<datastring<<std::endl;
+		verbosestream<<"TOSERVER_INVENTORY_ACTION: data="<<datastring<<std::endl;
 		std::istringstream is(datastring, std::ios_base::binary);
 		// Create an action
 		InventoryAction *a = InventoryAction::deSerialize(is);
@@ -2800,19 +2836,20 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 	else if(command == TOSERVER_REQUEST_TEXTURES) {
 		std::string datastring((char*)&data[2], datasize-2);
 		std::istringstream is(datastring, std::ios_base::binary);
-
-		infostream<<"TOSERVER_REQUEST_TEXTURES: "<<std::endl;
-
+		
+		
 		core::list<TextureRequest> tosend;
-
 		u16 numtextures = readU16(is);
 
+		infostream<<"Sending "<<numtextures<<" textures to "
+				<<getPlayerName(peer_id)<<std::endl;
+		verbosestream<<"TOSERVER_REQUEST_TEXTURES: "<<std::endl;
+
 		for(int i = 0; i < numtextures; i++) {
-
 			std::string name = deSerializeString(is);
-
 			tosend.push_back(TextureRequest(name));
-			infostream<<"TOSERVER_REQUEST_TEXTURES: requested texture " << name <<std::endl;
+			verbosestream<<"TOSERVER_REQUEST_TEXTURES: requested texture "
+					<<name<<std::endl;
 		}
 
 		SendTexturesRequested(peer_id, tosend);
@@ -2845,11 +2882,12 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 		PointedThing pointed;
 		pointed.deSerialize(tmp_is);
 
-		infostream<<"TOSERVER_INTERACT: action="<<(int)action<<", item="<<item_i<<", pointed="<<pointed.dump()<<std::endl;
+		verbosestream<<"TOSERVER_INTERACT: action="<<(int)action<<", item="
+				<<item_i<<", pointed="<<pointed.dump()<<std::endl;
 
 		if(player->hp == 0)
 		{
-			infostream<<"TOSERVER_INTERACT: "<<srp->getName()
+			verbosestream<<"TOSERVER_INTERACT: "<<srp->getName()
 				<<" tried to interact, but is dead!"<<std::endl;
 			return;
 		}
@@ -2874,7 +2912,7 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 			pointed_object = m_env->getActiveObject(pointed.object_id);
 			if(pointed_object == NULL)
 			{
-				infostream<<"TOSERVER_INTERACT: "
+				verbosestream<<"TOSERVER_INTERACT: "
 					"pointed object is NULL"<<std::endl;
 				return;
 			}
@@ -2962,7 +3000,8 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 					return;
 
 				actionstream<<player->getName()<<" punches object "
-					<<pointed.object_id<<std::endl;
+						<<pointed.object_id<<": "
+						<<pointed_object->getDescription()<<std::endl;
 
 				ItemStack punchitem = srp->getWieldedItem();
 				ToolCapabilities toolcap =
@@ -3031,7 +3070,8 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 					return;
 
 				actionstream<<player->getName()<<" right-clicks object "
-					<<pointed.object_id<<std::endl;
+						<<pointed.object_id<<": "
+						<<pointed_object->getDescription()<<std::endl;
 
 				// Do stuff
 				pointed_object->rightClick(srp);
@@ -3238,7 +3278,7 @@ core::list<PlayerInfo> Server::getPlayerInfo()
 void Server::peerAdded(con::Peer *peer)
 {
 	DSTACK(__FUNCTION_NAME);
-	infostream<<"Server::peerAdded(): peer->id="
+	verbosestream<<"Server::peerAdded(): peer->id="
 			<<peer->id<<std::endl;
 	
 	PeerChange c;
@@ -3251,7 +3291,7 @@ void Server::peerAdded(con::Peer *peer)
 void Server::deletingPeer(con::Peer *peer, bool timeout)
 {
 	DSTACK(__FUNCTION_NAME);
-	infostream<<"Server::deletingPeer(): peer->id="
+	verbosestream<<"Server::deletingPeer(): peer->id="
 			<<peer->id<<", timeout="<<timeout<<std::endl;
 	
 	PeerChange c;
@@ -3333,8 +3373,8 @@ void Server::SendItemDef(con::Connection &con, u16 peer_id,
 
 	// Make data buffer
 	std::string s = os.str();
-	infostream<<"Server::SendItemDef(): Sending item definitions: size="
-			<<s.size()<<std::endl;
+	verbosestream<<"Server: Sending item definitions to id("<<peer_id
+			<<"): size="<<s.size()<<std::endl;
 	SharedBuffer<u8> data((u8*)s.c_str(), s.size());
 	// Send as reliable
 	con.Send(peer_id, 0, data, true);
@@ -3360,8 +3400,8 @@ void Server::SendNodeDef(con::Connection &con, u16 peer_id,
 
 	// Make data buffer
 	std::string s = os.str();
-	infostream<<"Server::SendNodeDef(): Sending node definitions: size="
-			<<s.size()<<std::endl;
+	verbosestream<<"Server: Sending node definitions to id("<<peer_id
+			<<"): size="<<s.size()<<std::endl;
 	SharedBuffer<u8> data((u8*)s.c_str(), s.size());
 	// Send as reliable
 	con.Send(peer_id, 0, data, true);
@@ -3512,7 +3552,7 @@ void Server::SendMovePlayer(Player *player)
 		v3f pos = player->getPosition();
 		f32 pitch = player->getPitch();
 		f32 yaw = player->getYaw();
-		infostream<<"Server sending TOCLIENT_MOVE_PLAYER"
+		verbosestream<<"Server: Sending TOCLIENT_MOVE_PLAYER"
 				<<" pos=("<<pos.X<<","<<pos.Y<<","<<pos.Z<<")"
 				<<" pitch="<<pitch
 				<<" yaw="<<yaw
@@ -3760,71 +3800,72 @@ void Server::SendBlocks(float dtime)
 	}
 }
 
-void Server::PrepareTextures() {
+void Server::PrepareTextures()
+{
 	DSTACK(__FUNCTION_NAME);
 
-	infostream<<"Server::PrepareTextures(): Calculate sha1 sums of textures"<<std::endl;
+	infostream<<"Server: Calculating texture checksums"<<std::endl;
 
 	for(core::list<ModSpec>::Iterator i = m_mods.begin();
-					i != m_mods.end(); i++){
-			const ModSpec &mod = *i;
-			std::string texturepath = mod.path + DIR_DELIM + "textures";
-			std::vector<fs::DirListNode> dirlist = fs::GetDirListing(texturepath);
-			for(u32 j=0; j<dirlist.size(); j++){
-				if(dirlist[j].dir) // Ignode dirs
-					continue;
-				std::string tname = dirlist[j].name;
-				// if name contains illegal characters, ignore the texture
-				if(!string_allowed(tname, TEXTURENAME_ALLOWED_CHARS)){
-					errorstream<<"Server: ignoring illegal texture name: \""
-							<<tname<<"\""<<std::endl;
-					continue;
-				}
-				std::string tpath = texturepath + DIR_DELIM + tname;
-				// Read data
-				std::ifstream fis(tpath.c_str(), std::ios_base::binary);
-				if(fis.good() == false){
-					errorstream<<"Server::PrepareTextures(): Could not open \""
-							<<tname<<"\" for reading"<<std::endl;
-					continue;
-				}
-				std::ostringstream tmp_os(std::ios_base::binary);
-				bool bad = false;
-				for(;;){
-					char buf[1024];
-					fis.read(buf, 1024);
-					std::streamsize len = fis.gcount();
-					tmp_os.write(buf, len);
-					if(fis.eof())
-						break;
-					if(!fis.good()){
-						bad = true;
-						break;
-					}
-				}
-				if(bad){
-					errorstream<<"Server::PrepareTextures(): Failed to read \""
-							<<tname<<"\""<<std::endl;
-					continue;
-				}
-				if(tmp_os.str().length() == 0){
-					errorstream<<"Server::PrepareTextures(): Empty file \""
-							<<tpath<<"\""<<std::endl;
-					continue;
-				}
-
-				SHA1 sha1;
-				sha1.addBytes(tmp_os.str().c_str(), tmp_os.str().length());
-
-				unsigned char *digest = sha1.getDigest();
-				std::string digest_string = base64_encode(digest, 20);
-
-				free(digest);
-
-				// Put in list
-				this->m_Textures[tname] = TextureInformation(tpath,digest_string);
-				infostream<<"Server::PrepareTextures(): added sha1 for "<< tname <<std::endl;
+			i != m_mods.end(); i++){
+		const ModSpec &mod = *i;
+		std::string texturepath = mod.path + DIR_DELIM + "textures";
+		std::vector<fs::DirListNode> dirlist = fs::GetDirListing(texturepath);
+		for(u32 j=0; j<dirlist.size(); j++){
+			if(dirlist[j].dir) // Ignode dirs
+				continue;
+			std::string tname = dirlist[j].name;
+			// if name contains illegal characters, ignore the texture
+			if(!string_allowed(tname, TEXTURENAME_ALLOWED_CHARS)){
+				errorstream<<"Server: ignoring illegal texture name: \""
+						<<tname<<"\""<<std::endl;
+				continue;
 			}
+			std::string tpath = texturepath + DIR_DELIM + tname;
+			// Read data
+			std::ifstream fis(tpath.c_str(), std::ios_base::binary);
+			if(fis.good() == false){
+				errorstream<<"Server::PrepareTextures(): Could not open \""
+						<<tname<<"\" for reading"<<std::endl;
+				continue;
+			}
+			std::ostringstream tmp_os(std::ios_base::binary);
+			bool bad = false;
+			for(;;){
+				char buf[1024];
+				fis.read(buf, 1024);
+				std::streamsize len = fis.gcount();
+				tmp_os.write(buf, len);
+				if(fis.eof())
+					break;
+				if(!fis.good()){
+					bad = true;
+					break;
+				}
+			}
+			if(bad){
+				errorstream<<"Server::PrepareTextures(): Failed to read \""
+						<<tname<<"\""<<std::endl;
+				continue;
+			}
+			if(tmp_os.str().length() == 0){
+				errorstream<<"Server::PrepareTextures(): Empty file \""
+						<<tpath<<"\""<<std::endl;
+				continue;
+			}
+
+			SHA1 sha1;
+			sha1.addBytes(tmp_os.str().c_str(), tmp_os.str().length());
+
+			unsigned char *digest = sha1.getDigest();
+			std::string digest_string = base64_encode(digest, 20);
+
+			free(digest);
+
+			// Put in list
+			this->m_Textures[tname] = TextureInformation(tpath,digest_string);
+			verbosestream<<"Server: sha1 for "<<tname<<"\tis "<<std::endl;
+		}
 	}
 }
 
@@ -3844,7 +3885,8 @@ struct SendableTextureAnnouncement
 void Server::SendTextureAnnouncement(u16 peer_id){
 	DSTACK(__FUNCTION_NAME);
 
-	infostream<<"Server::SendTextureAnnouncement()"<<std::endl;
+	verbosestream<<"Server: Announcing textures to id("<<peer_id<<")"
+			<<std::endl;
 
 	core::list<SendableTextureAnnouncement> texture_announcements;
 
@@ -3881,7 +3923,6 @@ void Server::SendTextureAnnouncement(u16 peer_id){
 
 	// Make data buffer
 	std::string s = os.str();
-	infostream<<"Server::SendTextureAnnouncement(): Send to client"<<std::endl;
 	SharedBuffer<u8> data((u8*)s.c_str(), s.size());
 
 	// Send as reliable
@@ -3906,7 +3947,8 @@ struct SendableTexture
 void Server::SendTexturesRequested(u16 peer_id,core::list<TextureRequest> tosend) {
 	DSTACK(__FUNCTION_NAME);
 
-	infostream<<"Server::SendTexturesRequested(): Sending textures to client"<<std::endl;
+	verbosestream<<"Server::SendTexturesRequested(): "
+			<<"Sending textures to client"<<std::endl;
 
 	/* Read textures */
 
@@ -4002,7 +4044,8 @@ void Server::SendTexturesRequested(u16 peer_id,core::list<TextureRequest> tosend
 
 			// Make data buffer
 			std::string s = os.str();
-			infostream<<"Server::SendTexturesRequested(): bunch "<<i<<"/"<<num_bunches
+			verbosestream<<"Server::SendTexturesRequested(): bunch "
+					<<i<<"/"<<num_bunches
 					<<" textures="<<texture_bunches[i].size()
 					<<" size=" <<s.size()<<std::endl;
 			SharedBuffer<u8> data((u8*)s.c_str(), s.size());
@@ -4496,7 +4539,7 @@ void Server::handlePeerChanges()
 	{
 		PeerChange c = m_peer_change_queue.pop_front();
 
-		infostream<<"Server: Handling peer change: "
+		verbosestream<<"Server: Handling peer change: "
 				<<"id="<<c.peer_id<<", timeout="<<c.timeout
 				<<std::endl;
 
@@ -4525,7 +4568,7 @@ void dedicated_server_loop(Server &server, bool &kill)
 {
 	DSTACK(__FUNCTION_NAME);
 	
-	infostream<<"dedicated_server_loop()"<<std::endl;
+	verbosestream<<"dedicated_server_loop()"<<std::endl;
 
 	IntervalLimiter m_profiler_interval;
 
@@ -4542,7 +4585,7 @@ void dedicated_server_loop(Server &server, bool &kill)
 
 		if(server.getShutdownRequested() || kill)
 		{
-			infostream<<DTIME<<" dedicated_server_loop(): Quitting."<<std::endl;
+			infostream<<"Dedicated server quitting"<<std::endl;
 			break;
 		}
 
@@ -4559,30 +4602,6 @@ void dedicated_server_loop(Server &server, bool &kill)
 				g_profiler->print(infostream);
 				g_profiler->clear();
 			}
-		}
-		
-		/*
-			Player info
-		*/
-		static int counter = 0;
-		counter--;
-		if(counter <= 0)
-		{
-			counter = 10;
-
-			core::list<PlayerInfo> list = server.getPlayerInfo();
-			core::list<PlayerInfo>::Iterator i;
-			static u32 sum_old = 0;
-			u32 sum = PIChecksum(list);
-			if(sum != sum_old)
-			{
-				infostream<<DTIME<<"Player info:"<<std::endl;
-				for(i=list.begin(); i!=list.end(); i++)
-				{
-					i->PrintLine(&infostream);
-				}
-			}
-			sum_old = sum;
 		}
 	}
 }

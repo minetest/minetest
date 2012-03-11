@@ -609,8 +609,8 @@ minetest.register_abm({
     end,
 })--]]
 
-print("experimental modname="..dump(minetest.get_current_modname()))
-print("experimental modpath="..dump(minetest.get_modpath("experimental")))
-print("experimental worldpath="..dump(minetest.get_worldpath()))
+minetest.log("experimental modname="..dump(minetest.get_current_modname()))
+minetest.log("experimental modpath="..dump(minetest.get_modpath("experimental")))
+minetest.log("experimental worldpath="..dump(minetest.get_worldpath()))
 
 -- END

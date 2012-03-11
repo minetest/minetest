@@ -827,7 +827,7 @@ public:
 	}
 	virtual void registerCraft(CraftDefinition *def)
 	{
-		infostream<<"registerCraft: registering craft definition: "
+		verbosestream<<"registerCraft: registering craft definition: "
 				<<def->dump()<<std::endl;
 		m_craft_definitions.push_back(def);
 	}

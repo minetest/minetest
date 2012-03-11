@@ -286,7 +286,7 @@ public:
 	}
 	virtual void registerItem(const ItemDefinition &def)
 	{
-		infostream<<"ItemDefManager: registering \""<<def.name<<"\""<<std::endl;
+		verbosestream<<"ItemDefManager: registering \""<<def.name<<"\""<<std::endl;
 		// Ensure that the "" item (the hand) always has ToolCapabilities
 		if(def.name == "")
 			assert(def.tool_capabilities != NULL);
@@ -304,7 +304,7 @@ public:
 	{
 		if(m_item_definitions.find(name) == m_item_definitions.end())
 		{
-			infostream<<"ItemDefManager: setting alias "<<name
+			verbosestream<<"ItemDefManager: setting alias "<<name
 				<<" -> "<<convert_to<<std::endl;
 			m_aliases[name] = convert_to;
 		}

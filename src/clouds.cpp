@@ -38,8 +38,6 @@ Clouds::Clouds(
 	m_camera_pos(0,0),
 	m_time(0)
 {
-	dstream<<__FUNCTION_NAME<<std::endl;
-
 	m_material.setFlag(video::EMF_LIGHTING, false);
 	m_material.setFlag(video::EMF_BACK_FACE_CULLING, false);
 	m_material.setFlag(video::EMF_BILINEAR_FILTER, false);
@@ -54,7 +52,6 @@ Clouds::Clouds(
 
 Clouds::~Clouds()
 {
-	dstream<<__FUNCTION_NAME<<std::endl;
 }
 
 void Clouds::OnRegisterSceneNode()

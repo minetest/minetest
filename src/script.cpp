@@ -89,7 +89,7 @@ int luaErrorHandler(lua_State *L) {
 
 bool script_load(lua_State *L, const char *path)
 {
-	infostream<<"Loading and running script from "<<path<<std::endl;
+	verbosestream<<"Loading and running script from "<<path<<std::endl;
 
 	lua_pushcfunction(L, luaErrorHandler);
 	int errorhandler = lua_gettop(L);
