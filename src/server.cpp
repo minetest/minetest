@@ -1098,6 +1098,7 @@ void Server::start(unsigned short port)
 	<<"|  Y Y  \\  |   |  \\  ___/|  | \\  ___/ \\___ \\  |  |  "<<std::endl
 	<<"|__|_|  /__|___|  /\\___  >__|  \\___  >____  > |__|  "<<std::endl
 	<<"      \\/        \\/     \\/          \\/     \\/        "<<std::endl;
+	actionstream<<"World at ["<<m_path_world<<"]"<<std::endl;
 	actionstream<<"Server for gameid=\""<<m_gamespec.id
 			<<"\" listening on port "<<port<<"."<<std::endl;
 }
