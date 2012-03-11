@@ -1889,7 +1889,6 @@ void the_game(
 		}
 
 		bool left_punch = false;
-		bool left_punch_muted = false;
 
 		if(playeritem_usable && input->getLeftState())
 		{
@@ -2109,10 +2108,15 @@ void the_game(
 				client.interact(3, pointed);  // place
 			}
 		}
+		else if(input->getLeftState())
+		{
+			// When button is held down in air, show continuous animation
+			left_punch = true;
+		}
 
 		pointed_old = pointed;
 		
-		if(left_punch || (input->getLeftClicked() && !left_punch_muted))
+		if(left_punch || input->getLeftClicked())
 		{
 			camera.setDigging(0); // left click animation
 		}
