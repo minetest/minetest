@@ -69,6 +69,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "log.h"
 #include "mods.h"
 #include "utility_string.h"
+#include "subgame.h"
 
 /*
 	Settings.
@@ -781,6 +782,8 @@ int main(int argc, char *argv[])
 			"Print more information to console"));
 	allowed_options.insert("logfile", ValueSpec(VALUETYPE_STRING,
 			"Set logfile path (debug.txt)"));
+	allowed_options.insert("gameid", ValueSpec(VALUETYPE_STRING,
+			"Set gameid"));
 #ifndef SERVER
 	allowed_options.insert("speedtests", ValueSpec(VALUETYPE_FLAG,
 			"Run speed tests"));
@@ -958,21 +961,62 @@ int main(int argc, char *argv[])
 		port = 30000;
 	
 	// Map directory
-	std::string map_dir = porting::path_user + DIR_DELIM + "server" + DIR_DELIM + "worlds" + DIR_DELIM + "world";
-	if(cmd_args.exists("map-dir"))
-		map_dir = cmd_args.get("map-dir");
+	std::string world_path = porting::path_user + DIR_DELIM + "server" + DIR_DELIM + "worlds" + DIR_DELIM + "world";
+	if(cmd_args.exists("world"))
+		world_path = cmd_args.get("world");
+	else if(cmd_args.exists("map-dir"))
+		world_path = cmd_args.get("map-dir");
 	else if(g_settings->exists("map-dir"))
-		map_dir = g_settings->get("map-dir");
+		world_path = g_settings->get("map-dir");
 	else{
 		// No map-dir option was specified.
 		// Check if the world is found from the default directory, and if
 		// not, see if the legacy world directory exists.
-		std::string legacy_map_dir = porting::path_user+DIR_DELIM+".."+DIR_DELIM+"world";
-		if(!fs::PathExists(map_dir) && fs::PathExists(legacy_map_dir)){
+		std::string legacy_world_path = porting::path_user+DIR_DELIM+".."+DIR_DELIM+"world";
+		if(!fs::PathExists(world_path) && fs::PathExists(legacy_world_path)){
 			errorstream<<"Warning: Using legacy world directory \""
-					<<legacy_map_dir<<"\""<<std::endl;
-			map_dir = legacy_map_dir;
+					<<legacy_world_path<<"\""<<std::endl;
+			world_path = legacy_world_path;
 		}
+	}
+	
+	// Determine gameid
+	std::string gameid = "";
+	if(cmd_args.exists("gameid"))
+		gameid = cmd_args.get("gameid");
+	std::string world_gameid = getWorldGameId(world_path);
+	if(world_gameid == ""){
+		if(gameid != "")
+			world_gameid = gameid;
+		else{
+			world_gameid = "mesetint";
+		}
+	}
+	if(gameid == "")
+		gameid = world_gameid;
+	else if(world_gameid != ""){
+		if(world_gameid != gameid){
+			errorstream<<"World gameid mismatch"<<std::endl;
+			return 1;
+		}
+	}
+	if(gameid == ""){
+		errorstream<<"No gameid supplied or detected"<<std::endl;
+		return 1;
+	}
+	
+	infostream<<"Using gameid \""<<gameid<<"\""<<std::endl;
+
+	SubgameSpec gamespec = findSubgame(gameid);
+	if(!gamespec.isValid()){
+		errorstream<<"Game \""<<gameid<<"\" not found"<<std::endl;
+		std::set<std::string> gameids = getAvailableGameIds();
+		infostream<<"Available gameids: ";
+		for(std::set<std::string>::const_iterator i = gameids.begin();
+				i != gameids.end(); i++)
+			infostream<<(*i)<<" ";
+		infostream<<std::endl;
+		return 1;
 	}
 
 	// Run dedicated server if asked to or no other option
@@ -991,7 +1035,7 @@ int main(int argc, char *argv[])
 #endif
 		
 		// Create server
-		Server server(map_dir, configpath, "mesetint");
+		Server server(world_path, configpath, gamespec);
 		server.start(port);
 		
 		// Run server
@@ -1080,9 +1124,6 @@ int main(int argc, char *argv[])
 	*/
 	//driver->setMinHardwareBufferVertexCount(50);
 
-	// Set the window caption
-	device->setWindowCaption(L"Minetest [Main Menu]");
-	
 	// Create time getter
 	g_timegetter = new IrrlichtTimeGetter(device);
 	
@@ -1154,6 +1195,8 @@ int main(int argc, char *argv[])
 	*/
 	while(device->run() && kill == false)
 	{
+		// Set the window caption
+		device->setWindowCaption(L"Minetest [Main Menu]");
 
 		// This is used for catching disconnects
 		try
@@ -1257,7 +1300,7 @@ int main(int argc, char *argv[])
 					// Delete map if requested
 					if(menudata.delete_map)
 					{
-						bool r = fs::RecursiveDeleteContent(map_dir);
+						bool r = fs::RecursiveDeleteContent(world_path);
 						if(r == false)
 							error_message = L"Delete failed";
 						continue;
@@ -1303,14 +1346,15 @@ int main(int argc, char *argv[])
 				input,
 				device,
 				font,
-				map_dir,
+				world_path,
 				playername,
 				password,
 				address,
 				port,
 				error_message,
 				configpath,
-				chat_backend
+				chat_backend,
+				gamespec
 			);
 
 		} //try

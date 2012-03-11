@@ -830,13 +830,13 @@ void PlayerInfo::PrintLine(std::ostream *s)
 */
 
 Server::Server(
-		std::string path_world,
-		std::string path_config,
-		std::string gamename
+		const std::string &path_world,
+		const std::string &path_config,
+		const SubgameSpec &gamespec
 	):
-	m_gamename(gamename),
 	m_path_world(path_world),
 	m_path_config(path_config),
+	m_gamespec(gamespec),
 	m_env(NULL),
 	m_con(PROTOCOL_ID, 512, CONNECTION_TIMEOUT, this),
 	m_authmanager(path_world+DIR_DELIM+"auth.txt"),
@@ -865,55 +865,38 @@ Server::Server(
 	m_step_dtime_mutex.Init();
 	m_step_dtime = 0.0;
 
+	if(!gamespec.isValid())
+		throw ServerError("Supplied invalid gamespec");
+
 	// Figure out some paths
 	// share/server
 	m_path_share = porting::path_share + DIR_DELIM + "server";
-	// game
-	m_path_game = porting::path_user + DIR_DELIM + "server" + DIR_DELIM
-			+ "games" + DIR_DELIM + m_gamename;
-	bool user_game = true; // Game is in user's directory
-	if(!fs::PathExists(m_path_game)){
-		m_path_game = m_path_share + DIR_DELIM + "games" + DIR_DELIM
-				+ m_gamename;
-		user_game = false;
-	}
-	if(!fs::PathExists(m_path_game)){
-		throw ServerError("Could not find game files for game \""
-				+gamename+"\"");
-	}
-	// addons
-	if(!user_game)
-		m_path_addons.insert(m_path_share + DIR_DELIM + "addons"
-				+ DIR_DELIM + m_gamename);
-	m_path_addons.insert(porting::path_user + DIR_DELIM + "server"
-			+ DIR_DELIM + "addons" + DIR_DELIM + m_gamename);
 
-	infostream<<"Server created for gamename=\""<<gamename<<"\""<<std::endl;
-	infostream<<"- path_world  = "<<m_path_world<<std::endl;
-	infostream<<"- path_config = "<<m_path_config<<std::endl;
-	infostream<<"- path_game   = "<<m_path_game<<std::endl;
-	for(std::set<std::string>::const_iterator i = m_path_addons.begin();
-			i != m_path_addons.end(); i++)
-		infostream<<"- path_addons+= "<<(*i)<<std::endl;
+	infostream<<"Server created for gameid \""<<m_gamespec.id<<"\""<<std::endl;
+	infostream<<"- world:  "<<m_path_world<<std::endl;
+	infostream<<"- config: "<<m_path_config<<std::endl;
+	infostream<<"- game:   "<<m_gamespec.path<<std::endl;
+	for(std::set<std::string>::const_iterator i = m_gamespec.addon_paths.begin();
+			i != m_gamespec.addon_paths.end(); i++)
+		infostream<<"- addons: "<<(*i)<<std::endl;
 
 	// Path to builtin.lua
 	std::string builtinpath = m_path_share + DIR_DELIM + "builtin.lua";
 
 	// Add default global mod search path
-	m_modspaths.push_front(m_path_game + DIR_DELIM "mods");
+	m_modspaths.push_front(m_gamespec.path + DIR_DELIM "mods");
 	// Add world mod search path
 	m_modspaths.push_front(m_path_world + DIR_DELIM + "worldmods");
 	// Add addon mod search path
-	for(std::set<std::string>::const_iterator i = m_path_addons.begin();
-			i != m_path_addons.end(); i++){
+	for(std::set<std::string>::const_iterator i = m_gamespec.addon_paths.begin();
+			i != m_gamespec.addon_paths.end(); i++)
 		m_modspaths.push_front((*i) + DIR_DELIM + "mods");
-	}
 
 	// Print out mod search paths
 	for(core::list<std::string>::Iterator i = m_modspaths.begin();
 			i != m_modspaths.end(); i++){
 		std::string modspath = *i;
-		infostream<<"- modspath   += "<<modspath<<std::endl;
+		infostream<<"- mods:   "<<modspath<<std::endl;
 	}
 	
 	// Lock environment
@@ -1106,7 +1089,8 @@ void Server::start(unsigned short port)
 	<<"|  Y Y  \\  |   |  \\  ___/|  | \\  ___/ \\___ \\  |  |  "<<std::endl
 	<<"|__|_|  /__|___|  /\\___  >__|  \\___  >____  > |__|  "<<std::endl
 	<<"      \\/        \\/     \\/          \\/     \\/        "<<std::endl;
-	actionstream<<"Server listening on port "<<port<<"."<<std::endl;
+	actionstream<<"Server for gameid=\""<<m_gamespec.id
+			<<"\" listening on port "<<port<<"."<<std::endl;
 }
 
 void Server::stop()

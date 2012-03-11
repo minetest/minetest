@@ -34,6 +34,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "serverremoteplayer.h"
 #include "mods.h"
 #include "inventorymanager.h"
+#include "subgame.h"
 struct LuaState;
 typedef struct lua_State lua_State;
 class IWritableItemDefManager;
@@ -405,11 +406,11 @@ public:
 	/*
 		NOTE: Every public method should be thread-safe
 	*/
-
+	
 	Server(
-		std::string gamename,
-		std::string mapsavedir,
-		std::string configpath
+		const std::string &path_world,
+		const std::string &path_config,
+		const SubgameSpec &gamespec
 	);
 	~Server();
 	void start(unsigned short port);
@@ -647,20 +648,15 @@ private:
 		Variables
 	*/
 	
-	// Game name
-	std::string m_gamename;
 	// World directory
 	std::string m_path_world;
 	// Path to user's configuration file ("" = no configuration file)
 	std::string m_path_config;
+	// Subgame specification
+	SubgameSpec m_gamespec;
 
 	// Equivalent of /usr/share/minetest/server
 	std::string m_path_share;
-	// Equivalent of /usr/share/minetest/server/games/gamename
-	std::string m_path_game;
-	// Equivalent of /usr/share/minetest/server/addons/gamename
-	// and ~/.minetest/server/addons/gamename
-	std::set<std::string> m_path_addons;
 	
 	// Some timers
 	float m_liquid_transform_timer;

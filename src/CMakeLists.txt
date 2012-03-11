@@ -94,6 +94,7 @@ configure_file(
 )
 
 set(common_SRCS
+	subgame.cpp
 	inventorymanager.cpp
 	mods.cpp
 	serverremoteplayer.cpp

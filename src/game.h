@@ -22,7 +22,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "common_irrlicht.h"
 #include <string>
-
 #include "keycode.h"
 
 class KeyList : protected core::list<KeyPress>
@@ -123,6 +122,7 @@ public:
 };
 
 class ChatBackend;  /* to avoid having to include chat.h */
+struct SubgameSpec;
 
 void the_game(
 	bool &kill,
@@ -133,11 +133,12 @@ void the_game(
 	std::string map_dir,
 	std::string playername,
 	std::string password,
-	std::string address,
+	std::string address, // If "", local server is used
 	u16 port,
 	std::wstring &error_message,
 	std::string configpath,
-	ChatBackend &chat_backend
+	ChatBackend &chat_backend,
+	const SubgameSpec &gamespec // Used for local game
 );
 
 #endif

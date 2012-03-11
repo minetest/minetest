@@ -51,6 +51,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "itemdef.h"
 #include "tile.h" // For TextureSource
 #include "logoutputbuffer.h"
+#include "subgame.h"
 
 /*
 	Setting this to 1 enables a special camera mode that forces
@@ -651,11 +652,12 @@ void the_game(
 	std::string map_dir,
 	std::string playername,
 	std::string password,
-	std::string address,
+	std::string address, // If "", local server is used
 	u16 port,
 	std::wstring &error_message,
 	std::string configpath,
-	ChatBackend &chat_backend
+	ChatBackend &chat_backend,
+	const SubgameSpec &gamespec // Used for local game
 )
 {
 	video::IVideoDriver* driver = device->getVideoDriver();
@@ -705,7 +707,7 @@ void the_game(
 	if(address == ""){
 		draw_load_screen(L"Creating server...", driver, font);
 		infostream<<"Creating server"<<std::endl;
-		server = new Server(map_dir, configpath, "mesetint");
+		server = new Server(map_dir, configpath, gamespec);
 		server->start(port);
 	}
 
