@@ -27,6 +27,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "config.h"
 #include "debug.h"
 #include "filesys.h"
+#include "log.h"
 
 #ifdef __APPLE__
 	#include "CoreFoundation/CoreFoundation.h"
@@ -149,7 +150,7 @@ void initializePaths()
 		Use relative paths if RUN_IN_PLACE
 	*/
 
-	dstream<<"Using relative paths (RUN_IN_PLACE)"<<std::endl;
+	infostream<<"Using relative paths (RUN_IN_PLACE)"<<std::endl;
 
 	/*
 		Windows
@@ -204,7 +205,7 @@ void initializePaths()
 		Use platform-specific paths otherwise
 	*/
 
-	dstream<<"Using system-wide paths (NOT RUN_IN_PLACE)"<<std::endl;
+	infostream<<"Using system-wide paths (NOT RUN_IN_PLACE)"<<std::endl;
 
 	/*
 		Windows

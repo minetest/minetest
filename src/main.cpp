@@ -861,9 +861,9 @@ int main(int argc, char *argv[])
 
 	DSTACK(__FUNCTION_NAME);
 
-	dstream<<"logfile    = "<<logfile<<std::endl;
-	dstream<<"path_share = "<<porting::path_share<<std::endl;
-	dstream<<"path_user  = "<<porting::path_user<<std::endl;
+	infostream<<"logfile    = "<<logfile<<std::endl;
+	infostream<<"path_share = "<<porting::path_share<<std::endl;
+	infostream<<"path_user  = "<<porting::path_user<<std::endl;
 
 	// Debug handler
 	BEGIN_DEBUG_EXCEPTION_HANDLER
