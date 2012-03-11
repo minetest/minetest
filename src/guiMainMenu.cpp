@@ -317,12 +317,12 @@ void GUIMainMenu::regenerateGui(v2u32 screensize)
 		Environment->addCheckBox(enable_damage, rect, this, GUI_ID_DAMAGE_CB,
 			wgettext("Enable Damage"));
 	}
-	// Map delete button
+	// Delete world button
 	{
 		core::rect<s32> rect(0, 0, 130, 30);
 		rect += topleft_server + v2s32(20+250+20, 90);
-		Environment->addButton(rect, this, GUI_ID_DELETE_MAP_BUTTON,
-			  wgettext("Delete map"));
+		Environment->addButton(rect, this, GUI_ID_DELETE_WORLD_BUTTON,
+			  wgettext("Delete world"));
 	}
 	// World selection listbox
 	{
@@ -472,7 +472,7 @@ bool GUIMainMenu::OnEvent(const SEvent& event)
 				kmenu->drop();
 				return true;
 			}
-			case GUI_ID_DELETE_MAP_BUTTON: // Delete map
+			case GUI_ID_DELETE_WORLD_BUTTON: // Delete world
 				acceptInput();
 				m_data->delete_world = true;
 				quitMenu();
