@@ -741,6 +741,8 @@ void SpeedTests()
 
 int main(int argc, char *argv[])
 {
+	int retval = 0;
+
 	/*
 		Initialization
 	*/
@@ -766,26 +768,34 @@ int main(int argc, char *argv[])
 	allowed_options.insert("config", ValueSpec(VALUETYPE_STRING,
 			"Load configuration from specified file"));
 	allowed_options.insert("port", ValueSpec(VALUETYPE_STRING,
-			"Set network port (UDP) to use"));
+			"Set network port (UDP)"));
 	allowed_options.insert("disable-unittests", ValueSpec(VALUETYPE_FLAG,
 			"Disable unit tests"));
 	allowed_options.insert("enable-unittests", ValueSpec(VALUETYPE_FLAG,
 			"Enable unit tests"));
 	allowed_options.insert("map-dir", ValueSpec(VALUETYPE_STRING,
-			"Map directory (where everything in the world is stored)"));
-	allowed_options.insert("info-on-stderr", ValueSpec(VALUETYPE_FLAG,
-			"Print more information to console (deprecated; use --verbose)"));
+			"Same as --world (deprecated)"));
+	allowed_options.insert("world", ValueSpec(VALUETYPE_STRING,
+			"Set world path"));
 	allowed_options.insert("verbose", ValueSpec(VALUETYPE_FLAG,
 			"Print more information to console"));
+	allowed_options.insert("logfile", ValueSpec(VALUETYPE_STRING,
+			"Set logfile path (debug.txt)"));
 #ifndef SERVER
 	allowed_options.insert("speedtests", ValueSpec(VALUETYPE_FLAG,
 			"Run speed tests"));
 	allowed_options.insert("address", ValueSpec(VALUETYPE_STRING,
-			"Address to connect to"));
+			"Address to connect to. ('' = local game)"));
 	allowed_options.insert("random-input", ValueSpec(VALUETYPE_FLAG,
 			"Enable random user input, for testing"));
 	allowed_options.insert("server", ValueSpec(VALUETYPE_FLAG,
-			"Run server directly"));
+			"Run dedicated server"));
+	allowed_options.insert("name", ValueSpec(VALUETYPE_STRING,
+			"Set player name"));
+	allowed_options.insert("password", ValueSpec(VALUETYPE_STRING,
+			"Set password"));
+	allowed_options.insert("go", ValueSpec(VALUETYPE_FLAG,
+			"Disable main menu"));
 #endif
 
 	Settings cmd_args;
@@ -818,10 +828,9 @@ int main(int argc, char *argv[])
 	/*
 		Low-level initialization
 	*/
-
-	if(cmd_args.getFlag("verbose") ||
-			cmd_args.getFlag("info-on-stderr") ||
-			cmd_args.getFlag("speedtests"))
+	
+	// In certain cases, output info level on stderr
+	if(cmd_args.getFlag("verbose") || cmd_args.getFlag("speedtests"))
 		log_add_output(&main_stderr_log_out, LMT_INFO);
 
 	porting::signal_handler_init();
@@ -836,17 +845,20 @@ int main(int argc, char *argv[])
 	
 	// Initialize debug streams
 #ifdef RUN_IN_PLACE
-	std::string debugfile = DEBUGFILE;
+	std::string logfile = DEBUGFILE;
 #else
-	std::string debugfile = porting::path_user+DIR_DELIM+DEBUGFILE;
+	std::string logfile = porting::path_user+DIR_DELIM+DEBUGFILE;
 #endif
+	if(cmd_args.exists("logfile"))
+		logfile = cmd_args.get("logfile");
 	bool disable_stderr = false;
-	debugstreams_init(disable_stderr, debugfile.c_str());
+	debugstreams_init(disable_stderr, logfile.c_str());
 	// Initialize debug stacks
 	debug_stacks_init();
 
 	DSTACK(__FUNCTION_NAME);
 
+	dstream<<"logfile    = "<<logfile<<std::endl;
 	dstream<<"path_share = "<<porting::path_share<<std::endl;
 	dstream<<"path_user  = "<<porting::path_user<<std::endl;
 
@@ -994,19 +1006,15 @@ int main(int argc, char *argv[])
 		More parameters
 	*/
 	
-	// Address to connect to
-	std::string address = "";
-	
+	std::string address = g_settings->get("address");
 	if(cmd_args.exists("address"))
-	{
 		address = cmd_args.get("address");
-	}
-	else
-	{
-		address = g_settings->get("address");
-	}
 	
 	std::string playername = g_settings->get("name");
+	if(cmd_args.exists("name"))
+		playername = cmd_args.get("name");
+	
+	bool skip_main_menu = cmd_args.getFlag("go");
 
 	/*
 		Device initialization
@@ -1193,98 +1201,84 @@ int main(int argc, char *argv[])
 				menudata.opaque_water = g_settings->getBool("opaque_water");
 				menudata.creative_mode = g_settings->getBool("creative_mode");
 				menudata.enable_damage = g_settings->getBool("enable_damage");
+				if(cmd_args.exists("password"))
+					menudata.password = narrow_to_wide(cmd_args.get("password"));
 
-				GUIMainMenu *menu =
-						new GUIMainMenu(guienv, guiroot, -1, 
-							&g_menumgr, &menudata, g_gamecallback);
-				menu->allowFocusRemoval(true);
-
-				if(error_message != L"")
+				if(skip_main_menu == false)
 				{
-					errorstream<<"error_message = "
-							<<wide_to_narrow(error_message)<<std::endl;
+					GUIMainMenu *menu =
+							new GUIMainMenu(guienv, guiroot, -1, 
+								&g_menumgr, &menudata, g_gamecallback);
+					menu->allowFocusRemoval(true);
 
-					GUIMessageMenu *menu2 =
-							new GUIMessageMenu(guienv, guiroot, -1, 
-								&g_menumgr, error_message.c_str());
-					menu2->drop();
-					error_message = L"";
-				}
+					if(error_message != L"")
+					{
+						verbosestream<<"error_message = "
+								<<wide_to_narrow(error_message)<<std::endl;
 
-				video::IVideoDriver* driver = device->getVideoDriver();
-				
-				infostream<<"Created main menu"<<std::endl;
+						GUIMessageMenu *menu2 =
+								new GUIMessageMenu(guienv, guiroot, -1, 
+									&g_menumgr, error_message.c_str());
+						menu2->drop();
+						error_message = L"";
+					}
 
-				while(device->run() && kill == false)
-				{
-					if(menu->getStatus() == true)
+					video::IVideoDriver* driver = device->getVideoDriver();
+					
+					infostream<<"Created main menu"<<std::endl;
+
+					while(device->run() && kill == false)
+					{
+						if(menu->getStatus() == true)
+							break;
+
+						//driver->beginScene(true, true, video::SColor(255,0,0,0));
+						driver->beginScene(true, true, video::SColor(255,128,128,128));
+
+						drawMenuBackground(driver);
+
+						guienv->drawAll();
+						
+						driver->endScene();
+						
+						// On some computers framerate doesn't seem to be
+						// automatically limited
+						sleep_ms(25);
+					}
+					
+					// Break out of menu-game loop to shut down cleanly
+					if(device->run() == false || kill == true)
 						break;
-
-					//driver->beginScene(true, true, video::SColor(255,0,0,0));
-					driver->beginScene(true, true, video::SColor(255,128,128,128));
-
-					drawMenuBackground(driver);
-
-					guienv->drawAll();
 					
-					driver->endScene();
-					
-					// On some computers framerate doesn't seem to be
-					// automatically limited
-					sleep_ms(25);
-				}
-				
-				// Break out of menu-game loop to shut down cleanly
-				if(device->run() == false || kill == true)
-					break;
-				
-				infostream<<"Dropping main menu"<<std::endl;
+					infostream<<"Dropping main menu"<<std::endl;
 
-				menu->drop();
-				
-				// Delete map if requested
-				if(menudata.delete_map)
-				{
-					bool r = fs::RecursiveDeleteContent(map_dir);
-					if(r == false)
-						error_message = L"Delete failed";
-					continue;
+					menu->drop();
+					
+					// Delete map if requested
+					if(menudata.delete_map)
+					{
+						bool r = fs::RecursiveDeleteContent(map_dir);
+						if(r == false)
+							error_message = L"Delete failed";
+						continue;
+					}
 				}
 
 				playername = wide_to_narrow(menudata.name);
-
 				password = translatePassword(playername, menudata.password);
-
 				//infostream<<"Main: password hash: '"<<password<<"'"<<std::endl;
 
 				address = wide_to_narrow(menudata.address);
 				int newport = stoi(wide_to_narrow(menudata.port));
 				if(newport != 0)
 					port = newport;
+				// Save settings
 				g_settings->set("new_style_leaves", itos(menudata.fancy_trees));
 				g_settings->set("smooth_lighting", itos(menudata.smooth_lighting));
 				g_settings->set("enable_3d_clouds", itos(menudata.clouds_3d));
 				g_settings->set("opaque_water", itos(menudata.opaque_water));
 				g_settings->set("creative_mode", itos(menudata.creative_mode));
 				g_settings->set("enable_damage", itos(menudata.enable_damage));
-				
-				// NOTE: These are now checked server side; no need to do it
-				//       here, so let's not do it here.
-				/*// Check for valid parameters, restart menu if invalid.
-				if(playername == "")
-				{
-					error_message = L"Name required.";
-					continue;
-				}
-				// Check that name has only valid chars
-				if(string_allowed(playername, PLAYERNAME_ALLOWED_CHARS)==false)
-				{
-					error_message = L"Characters allowed: "
-							+narrow_to_wide(PLAYERNAME_ALLOWED_CHARS);
-					continue;
-				}*/
-
-				// Save settings
 				g_settings->set("name", playername);
 				g_settings->set("address", address);
 				g_settings->set("port", itos(port));
@@ -1346,6 +1340,16 @@ int main(int argc, char *argv[])
 		}
 #endif
 
+		// If no main menu, show error and exit
+		if(skip_main_menu)
+		{
+			if(error_message != L""){
+				verbosestream<<"error_message = "
+						<<wide_to_narrow(error_message)<<std::endl;
+				retval = 1;
+			}
+			break;
+		}
 	} // Menu-game loop
 	
 	delete input;
@@ -1365,7 +1369,7 @@ int main(int argc, char *argv[])
 	
 	debugstreams_deinit();
 	
-	return 0;
+	return retval;
 }
 
 //END

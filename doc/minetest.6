@@ -1,5 +1,5 @@
 .\" Minetest man page
-.TH minetest 6 "29 January 2012" "" ""
+.TH minetest 6 "11 March 2012" "" ""
 
 .SH NAME
 minetest \- Multiplayer infinite-world block sandbox
@@ -28,26 +28,41 @@ Disable unit tests
 \-\-enable\-unittests
 Enable unit tests
 .TP
+\-\-go
+Disable main menu
+.TP
 \-\-help
 Show allowed options
 .TP
-\-\-info\-on\-stderr
-Print debug information to console
+\-\-logfile <value>
+Set logfile path (debug.txt)
 .TP
 \-\-map\-dir <value>
-Map directory (where everything in the world is stored)
+Same as --world (deprecated)
+.TP
+\-\-name <value>
+Set player name
+.TP
+\-\-password <value>
+Set password
 .TP
 \-\-port <value>
-Set network port to connect to
+Set network port (UDP) to use
 .TP
 \-\-random\-input
 Enable random user input, for testing
 .TP
 \-\-server
-Run server directly
+Run dedicated server
 .TP
 \-\-speedtests
 Run speed tests
+.TP
+\-\-verbose
+Print more information to console
+.TP
+\-\-world <value>
+Set world path
 
 .SH BUGS
 Please report all bugs to Perttu Ahola <celeron55@gmail.com>.
@@ -57,7 +72,7 @@ Please report all bugs to Perttu Ahola <celeron55@gmail.com>.
 Perttu Ahola <celeron55@gmail.com>
 and contributors.
 .PP
-This man page was written by
+This man page was originally written by
 Juhani Numminen <juhaninumminen0@gmail.com>.
 
 .SH WWW

@@ -737,8 +737,8 @@ void the_game(
 	}
 	catch(ResolveError &e)
 	{
-		errorstream<<"Couldn't resolve address"<<std::endl;
 		error_message = L"Couldn't resolve address";
+		errorstream<<wide_to_narrow(error_message)<<std::endl;
 		// Break out of client scope
 		break;
 	}
@@ -777,10 +777,12 @@ void the_game(
 			if(client.accessDenied()){
 				error_message = L"Access denied. Reason: "
 						+client.accessDeniedReason();
+				errorstream<<wide_to_narrow(error_message)<<std::endl;
 				break;
 			}
 			if(input->wasKeyDown(EscapeKey)){
 				connect_aborted = true;
+				infostream<<"Connect aborted [Escape]"<<std::endl;
 				break;
 			}
 			
@@ -803,8 +805,10 @@ void the_game(
 		Handle failure to connect
 	*/
 	if(!could_connect){
-		if(error_message == L"" && !connect_aborted)
+		if(error_message == L"" && !connect_aborted){
 			error_message = L"Connection failed";
+			errorstream<<wide_to_narrow(error_message)<<std::endl;
+		}
 		// Break out of client scope
 		break;
 	}
@@ -835,10 +839,12 @@ void the_game(
 			// Break conditions
 			if(!client.connectedAndInitialized()){
 				error_message = L"Client disconnected";
+				errorstream<<wide_to_narrow(error_message)<<std::endl;
 				break;
 			}
 			if(input->wasKeyDown(EscapeKey)){
 				content_aborted = true;
+				infostream<<"Connect aborted [Escape]"<<std::endl;
 				break;
 			}
 			
@@ -863,8 +869,10 @@ void the_game(
 	}
 
 	if(!got_content){
-		if(error_message == L"" && !content_aborted)
+		if(error_message == L"" && !content_aborted){
 			error_message = L"Something failed";
+			errorstream<<wide_to_narrow(error_message)<<std::endl;
+		}
 		// Break out of client scope
 		break;
 	}
