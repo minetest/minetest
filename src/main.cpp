@@ -777,7 +777,7 @@ int main(int argc, char *argv[])
 	allowed_options.insert("map-dir", ValueSpec(VALUETYPE_STRING,
 			"Same as --world (deprecated)"));
 	allowed_options.insert("world", ValueSpec(VALUETYPE_STRING,
-			"Set world path"));
+			"Set world path (implies local game)"));
 	allowed_options.insert("verbose", ValueSpec(VALUETYPE_FLAG,
 			"Print more information to console"));
 	allowed_options.insert("logfile", ValueSpec(VALUETYPE_STRING,
@@ -1059,6 +1059,8 @@ int main(int argc, char *argv[])
 	std::string address = g_settings->get("address");
 	if(cmd_args.exists("address"))
 		address = cmd_args.get("address");
+	else if(cmd_args.exists("world"))
+		address = "";
 	
 	std::string playername = g_settings->get("name");
 	if(cmd_args.exists("name"))
