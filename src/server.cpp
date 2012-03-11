@@ -109,6 +109,10 @@ void * ServerThread::Thread()
 		{
 			infostream<<"Server: PeerNotFoundException"<<std::endl;
 		}
+		catch(con::ConnectionBindFailed &e)
+		{
+			m_server->setAsyncFatalError(e.what());
+		}
 	}
 	
 	END_DEBUG_EXCEPTION_HANDLER(errorstream)
@@ -837,6 +841,7 @@ Server::Server(
 	m_path_world(path_world),
 	m_path_config(path_config),
 	m_gamespec(gamespec),
+	m_async_fatal_error(""),
 	m_env(NULL),
 	m_con(PROTOCOL_ID, 512, CONNECTION_TIMEOUT, this),
 	m_authmanager(path_world+DIR_DELIM+"auth.txt"),
@@ -865,6 +870,9 @@ Server::Server(
 	m_step_dtime_mutex.Init();
 	m_step_dtime = 0.0;
 
+	if(path_world == "")
+		throw ServerError("Supplied empty world path");
+	
 	if(!gamespec.isValid())
 		throw ServerError("Supplied invalid gamespec");
 	
@@ -1079,6 +1087,8 @@ Server::~Server()
 void Server::start(unsigned short port)
 {
 	DSTACK(__FUNCTION_NAME);
+	infostream<<"Starting server on port "<<port<<"..."<<std::endl;
+
 	// Stop thread if already running
 	m_thread.stop();
 	
@@ -1127,6 +1137,11 @@ void Server::step(float dtime)
 	{
 		JMutexAutoLock lock(m_step_dtime_mutex);
 		m_step_dtime += dtime;
+	}
+	// Throw if fatal error occurred in thread
+	std::string async_err = m_async_fatal_error.get();
+	if(async_err != ""){
+		throw ServerError(async_err);
 	}
 }
 

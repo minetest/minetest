@@ -59,6 +59,14 @@ public:
 	{}
 };
 
+class ConnectionBindFailed : public BaseException
+{
+public:
+	ConnectionBindFailed(const char *s):
+		BaseException(s)
+	{}
+};
+
 /*class ThrottlingException : public BaseException
 {
 public:
@@ -424,6 +432,7 @@ enum ConnectionEventType{
 	CONNEVENT_DATA_RECEIVED,
 	CONNEVENT_PEER_ADDED,
 	CONNEVENT_PEER_REMOVED,
+	CONNEVENT_BIND_FAILED,
 };
 
 struct ConnectionEvent
@@ -447,6 +456,8 @@ struct ConnectionEvent
 			return "CONNEVENT_PEER_ADDED";
 		case CONNEVENT_PEER_REMOVED: 
 			return "CONNEVENT_PEER_REMOVED";
+		case CONNEVENT_BIND_FAILED: 
+			return "CONNEVENT_BIND_FAILED";
 		}
 		return "Invalid ConnectionEvent";
 	}
@@ -469,6 +480,10 @@ struct ConnectionEvent
 		peer_id = peer_id_;
 		timeout = timeout_;
 		address = address_;
+	}
+	void bindFailed()
+	{
+		type = CONNEVENT_BIND_FAILED;
 	}
 };
 

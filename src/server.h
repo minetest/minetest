@@ -545,6 +545,11 @@ public:
 	
 	std::string getWorldPath(){ return m_path_world; }
 
+	void setAsyncFatalError(const std::string &error)
+	{
+		m_async_fatal_error.set(error);
+	}
+
 private:
 
 	// con::PeerHandler implementation.
@@ -657,6 +662,9 @@ private:
 
 	// Equivalent of /usr/share/minetest/server
 	std::string m_path_share;
+	
+	// Thread can set; step() will throw as ServerError
+	MutexedVariable<std::string> m_async_fatal_error;
 	
 	// Some timers
 	float m_liquid_transform_timer;

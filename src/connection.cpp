@@ -986,8 +986,16 @@ nextpeer:
 void Connection::serve(u16 port)
 {
 	dout_con<<getDesc()<<" serving at port "<<port<<std::endl;
-	m_socket.Bind(port);
-	m_peer_id = PEER_ID_SERVER;
+	try{
+		m_socket.Bind(port);
+		m_peer_id = PEER_ID_SERVER;
+	}
+	catch(SocketException &e){
+		// Create event
+		ConnectionEvent e;
+		e.bindFailed();
+		putEvent(e);
+	}
 }
 
 void Connection::connect(Address address)
@@ -1597,6 +1605,9 @@ u32 Connection::Receive(u16 &peer_id, SharedBuffer<u8> &data)
 			if(m_bc_peerhandler)
 				m_bc_peerhandler->deletingPeer(&tmp, e.timeout);
 			continue; }
+		case CONNEVENT_BIND_FAILED:
+			throw ConnectionBindFailed("Failed to bind socket "
+					"(port already in use?)");
 		}
 	}
 	throw NoIncomingDataException("No incoming data");
