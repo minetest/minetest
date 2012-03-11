@@ -1031,6 +1031,8 @@ void the_game(
 	const float object_hit_delay = 0.2;
 	float object_hit_delay_timer = 0.0;
 	float time_from_last_punch = 10;
+
+	float crack_update_timer = 0.0;
 	
 	bool invert_mouse = g_settings->getBool("invert_mouse");
 
@@ -1177,6 +1179,7 @@ void the_game(
 		if(object_hit_delay_timer >= 0)
 			object_hit_delay_timer -= dtime;
 		time_from_last_punch += dtime;
+		crack_update_timer += dtime;
 
 		g_profiler->add("Elapsed time", dtime);
 		g_profiler->avg("FPS", 1./dtime);
@@ -1974,9 +1977,14 @@ void the_game(
 				}
 				else if(dig_index < CRACK_ANIMATION_LENGTH)
 				{
-					//TimeTaker timer("client.setTempMod");
-					//infostream<<"dig_index="<<dig_index<<std::endl;
-					client.setTempMod(nodepos, NodeMod(NODEMOD_CRACK, dig_index));
+					// Limit crack update speed
+					if(crack_update_timer >= 0.1){
+						crack_update_timer = 0.0;
+						//infostream<<"dig_index="<<dig_index<<std::endl;
+						//TimeTaker timer("client.setTempMod");
+						client.setTempMod(nodepos,
+								NodeMod(NODEMOD_CRACK, dig_index));
+					}
 				}
 				else
 				{
