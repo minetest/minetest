@@ -5,6 +5,16 @@
 -- before loading and running any mods.
 --
 
+--
+-- Override some Lua library functions
+--
+
+print = minetest.debug
+
+--
+--
+--
+
 function basic_dump2(o)
 	if type(o) == "number" then
 		return tostring(o)
