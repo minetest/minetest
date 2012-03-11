@@ -781,7 +781,7 @@ int main(int argc, char *argv[])
 	allowed_options.insert("verbose", ValueSpec(VALUETYPE_FLAG,
 			"Print more information to console"));
 	allowed_options.insert("logfile", ValueSpec(VALUETYPE_STRING,
-			"Set logfile path (debug.txt)"));
+			"Set logfile path ('' = no logging)"));
 	allowed_options.insert("gameid", ValueSpec(VALUETYPE_STRING,
 			"Set gameid (\"--gameid list\" prints available ones)"));
 #ifndef SERVER
@@ -854,16 +854,18 @@ int main(int argc, char *argv[])
 #endif
 	if(cmd_args.exists("logfile"))
 		logfile = cmd_args.get("logfile");
-	bool disable_stderr = false;
-	debugstreams_init(disable_stderr, logfile.c_str());
-	// Initialize debug stacks
-	debug_stacks_init();
-
-	DSTACK(__FUNCTION_NAME);
+	if(logfile != "")
+		debugstreams_init(false, logfile.c_str());
+	else
+		debugstreams_init(false, NULL);
 
 	infostream<<"logfile    = "<<logfile<<std::endl;
 	infostream<<"path_share = "<<porting::path_share<<std::endl;
 	infostream<<"path_user  = "<<porting::path_user<<std::endl;
+
+	// Initialize debug stacks
+	debug_stacks_init();
+	DSTACK(__FUNCTION_NAME);
 
 	// Debug handler
 	BEGIN_DEBUG_EXCEPTION_HANDLER
