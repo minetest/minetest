@@ -80,7 +80,7 @@ void BanManager::save()
 	
 	if(os.good() == false)
 	{
-		infostream<<"BanManager: failed loading from "<<m_banfilepath<<std::endl;
+		infostream<<"BanManager: failed saving to "<<m_banfilepath<<std::endl;
 		throw SerializationError("BanManager::load(): Couldn't open file");
 	}
 
