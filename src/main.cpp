@@ -783,7 +783,7 @@ int main(int argc, char *argv[])
 	allowed_options.insert("logfile", ValueSpec(VALUETYPE_STRING,
 			"Set logfile path (debug.txt)"));
 	allowed_options.insert("gameid", ValueSpec(VALUETYPE_STRING,
-			"Set gameid"));
+			"Set gameid (\"--gameid list\" prints available ones)"));
 #ifndef SERVER
 	allowed_options.insert("speedtests", ValueSpec(VALUETYPE_FLAG,
 			"Run speed tests"));
@@ -867,7 +867,17 @@ int main(int argc, char *argv[])
 
 	// Debug handler
 	BEGIN_DEBUG_EXCEPTION_HANDLER
-
+	
+	// List gameids if requested
+	if(cmd_args.exists("gameid") && cmd_args.get("gameid") == "list")
+	{
+		std::set<std::string> gameids = getAvailableGameIds();
+		for(std::set<std::string>::const_iterator i = gameids.begin();
+				i != gameids.end(); i++)
+			dstream<<(*i)<<std::endl;
+		return 0;
+	}
+	
 	// Print startup message
 	actionstream<<PROJECT_NAME<<
 			" with SER_FMT_VER_HIGHEST="<<(int)SER_FMT_VER_HIGHEST
@@ -1010,12 +1020,6 @@ int main(int argc, char *argv[])
 	SubgameSpec gamespec = findSubgame(gameid);
 	if(!gamespec.isValid()){
 		errorstream<<"Game \""<<gameid<<"\" not found"<<std::endl;
-		std::set<std::string> gameids = getAvailableGameIds();
-		infostream<<"Available gameids: ";
-		for(std::set<std::string>::const_iterator i = gameids.begin();
-				i != gameids.end(); i++)
-			infostream<<(*i)<<" ";
-		infostream<<std::endl;
 		return 1;
 	}
 
