@@ -1115,7 +1115,9 @@ int main(int argc, char *argv[])
 	allowed_options.insert("map-dir", ValueSpec(VALUETYPE_STRING,
 			"Map directory (where everything in the world is stored)"));
 	allowed_options.insert("info-on-stderr", ValueSpec(VALUETYPE_FLAG,
-			"Print debug information to console"));
+			"Print more information to console (deprecated; use --verbose)"));
+	allowed_options.insert("verbose", ValueSpec(VALUETYPE_FLAG,
+			"Print more information to console"));
 #ifndef SERVER
 	allowed_options.insert("speedtests", ValueSpec(VALUETYPE_FLAG,
 			"Run speed tests"));
@@ -1162,7 +1164,9 @@ int main(int argc, char *argv[])
 		Low-level initialization
 	*/
 
-	if(cmd_args.getFlag("info-on-stderr") || cmd_args.getFlag("speedtests"))
+	if(cmd_args.getFlag("verbose") ||
+			cmd_args.getFlag("info-on-stderr") ||
+			cmd_args.getFlag("speedtests"))
 		log_add_output(&main_stderr_log_out, LMT_INFO);
 
 	porting::signal_handler_init();
