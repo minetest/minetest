@@ -83,10 +83,10 @@ void GUIKeyChangeMenu::regenerateGui(v2u32 screensize)
 	v2s32 topleft(0, 0);
 	changeCtype("");
 	{
-		core::rect < s32 > rect(0, 0, 125, 20);
+		core::rect < s32 > rect(0, 0, 500, 20);
 		rect += topleft + v2s32(25, 3);
 		//gui::IGUIStaticText *t =
-		Environment->addStaticText(wgettext("KEYBINDINGS"),
+		Environment->addStaticText(wgettext("KEYBINDINGS (If this menu screws up, see minetest.conf)"),
 				rect, false, true, this, -1);
 		//t->setTextAlignment(gui::EGUIA_CENTER, gui::EGUIA_UPPERLEFT);
 	}
