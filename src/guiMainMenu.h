@@ -99,6 +99,8 @@ public:
 
 	void drawMenu();
 
+	void readInput(MainMenuData *dst);
+
 	void acceptInput();
 
 	bool getStatus()

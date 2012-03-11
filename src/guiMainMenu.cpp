@@ -74,71 +74,11 @@ void GUIMainMenu::removeChildren()
 
 void GUIMainMenu::regenerateGui(v2u32 screensize)
 {
-	std::wstring text_name = m_data->name;
-	std::wstring text_address = m_data->address;
-	std::wstring text_port = m_data->port;
-	bool creative_mode = m_data->creative_mode;
-	bool enable_damage = m_data->enable_damage;
-	bool fancy_trees = m_data->fancy_trees;
-	bool smooth_lighting = m_data->smooth_lighting;
-	bool clouds_3d = m_data->clouds_3d;
-	bool opaque_water = m_data->opaque_water;
-	int selected_world = m_data->selected_world;
+	/*
+		Read stuff from elements into m_data
+	*/
+	readInput(m_data);
 	
-	// Client options
-	{
-		gui::IGUIElement *e = getElementFromId(GUI_ID_NAME_INPUT);
-		if(e != NULL)
-			text_name = e->getText();
-	}
-	{
-		gui::IGUIElement *e = getElementFromId(GUI_ID_ADDRESS_INPUT);
-		if(e != NULL)
-			text_address = e->getText();
-	}
-	{
-		gui::IGUIElement *e = getElementFromId(GUI_ID_PORT_INPUT);
-		if(e != NULL)
-			text_port = e->getText();
-	}
-	{
-		gui::IGUIElement *e = getElementFromId(GUI_ID_FANCYTREE_CB);
-		if(e != NULL && e->getType() == gui::EGUIET_CHECK_BOX)
-			fancy_trees = ((gui::IGUICheckBox*)e)->isChecked();
-	}
-	{
-		gui::IGUIElement *e = getElementFromId(GUI_ID_SMOOTH_LIGHTING_CB);
-		if(e != NULL && e->getType() == gui::EGUIET_CHECK_BOX)
-			smooth_lighting = ((gui::IGUICheckBox*)e)->isChecked();
-	}
-	{
-		gui::IGUIElement *e = getElementFromId(GUI_ID_3D_CLOUDS_CB);
-		if(e != NULL && e->getType() == gui::EGUIET_CHECK_BOX)
-			clouds_3d = ((gui::IGUICheckBox*)e)->isChecked();
-	}
-	{
-		gui::IGUIElement *e = getElementFromId(GUI_ID_OPAQUE_WATER_CB);
-		if(e != NULL && e->getType() == gui::EGUIET_CHECK_BOX)
-			opaque_water = ((gui::IGUICheckBox*)e)->isChecked();
-	}
-	
-	// Server options
-	{
-		gui::IGUIElement *e = getElementFromId(GUI_ID_CREATIVE_CB);
-		if(e != NULL && e->getType() == gui::EGUIET_CHECK_BOX)
-			creative_mode = ((gui::IGUICheckBox*)e)->isChecked();
-	}
-	{
-		gui::IGUIElement *e = getElementFromId(GUI_ID_DAMAGE_CB);
-		if(e != NULL && e->getType() == gui::EGUIET_CHECK_BOX)
-			enable_damage = ((gui::IGUICheckBox*)e)->isChecked();
-	}
-	{
-		gui::IGUIElement *e = getElementFromId(GUI_ID_WORLD_LISTBOX);
-		if(e != NULL && e->getType() == gui::EGUIET_LIST_BOX)
-			selected_world = ((gui::IGUIListBox*)e)->getSelected();
-	}
-
 	/*
 		Remove stuff
 	*/
@@ -203,8 +143,8 @@ void GUIMainMenu::regenerateGui(v2u32 screensize)
 		core::rect<s32> rect(0, 0, 230, 30);
 		rect += topleft_client + v2s32(160, 50);
 		gui::IGUIElement *e = 
-		Environment->addEditBox(text_name.c_str(), rect, true, this, GUI_ID_NAME_INPUT);
-		if(text_name == L"")
+		Environment->addEditBox(m_data->name.c_str(), rect, true, this, GUI_ID_NAME_INPUT);
+		if(m_data->name == L"")
 			Environment->setFocus(e);
 	}
 	{
@@ -213,7 +153,7 @@ void GUIMainMenu::regenerateGui(v2u32 screensize)
 		gui::IGUIEditBox *e =
 		Environment->addEditBox(L"", rect, true, this, 264);
 		e->setPasswordBox(true);
-		if(text_name != L"" && text_address != L"")
+		if(m_data->name != L"" && m_data->address != L"")
 			Environment->setFocus(e);
 
 	}
@@ -230,15 +170,15 @@ void GUIMainMenu::regenerateGui(v2u32 screensize)
 		core::rect<s32> rect(0, 0, 230, 30);
 		rect += topleft_client + v2s32(160, 100);
 		gui::IGUIElement *e = 
-		Environment->addEditBox(text_address.c_str(), rect, true, this, GUI_ID_ADDRESS_INPUT);
-		if(text_name != L"" && text_address == L"")
+		Environment->addEditBox(m_data->address.c_str(), rect, true, this, GUI_ID_ADDRESS_INPUT);
+		if(m_data->name != L"" && m_data->address == L"")
 			Environment->setFocus(e);
 	}
 	{
 		core::rect<s32> rect(0, 0, 120, 30);
 		//rect += topleft_client + v2s32(160+250+20, 125);
 		rect += topleft_client + v2s32(size_client.X-60-100, 100);
-		Environment->addEditBox(text_port.c_str(), rect, true, this, GUI_ID_PORT_INPUT);
+		Environment->addEditBox(m_data->port.c_str(), rect, true, this, GUI_ID_PORT_INPUT);
 	}
 	changeCtype("");
 	{
@@ -250,25 +190,25 @@ void GUIMainMenu::regenerateGui(v2u32 screensize)
 	{
 		core::rect<s32> rect(0, 0, 250, 30);
 		rect += topleft_client + v2s32(35, 150);
-		Environment->addCheckBox(fancy_trees, rect, this, GUI_ID_FANCYTREE_CB,
+		Environment->addCheckBox(m_data->fancy_trees, rect, this, GUI_ID_FANCYTREE_CB,
 			wgettext("Fancy trees")); 
 	}
 	{
 		core::rect<s32> rect(0, 0, 250, 30);
 		rect += topleft_client + v2s32(35, 150+20);
-		Environment->addCheckBox(smooth_lighting, rect, this, GUI_ID_SMOOTH_LIGHTING_CB,
+		Environment->addCheckBox(m_data->smooth_lighting, rect, this, GUI_ID_SMOOTH_LIGHTING_CB,
 				wgettext("Smooth Lighting"));
 	}
 	{
 		core::rect<s32> rect(0, 0, 250, 30);
 		rect += topleft_client + v2s32(35, 150+40);
-		Environment->addCheckBox(clouds_3d, rect, this, GUI_ID_3D_CLOUDS_CB,
+		Environment->addCheckBox(m_data->clouds_3d, rect, this, GUI_ID_3D_CLOUDS_CB,
 				wgettext("3D Clouds"));
 	}
 	{
 		core::rect<s32> rect(0, 0, 250, 30);
 		rect += topleft_client + v2s32(35, 150+60);
-		Environment->addCheckBox(opaque_water, rect, this, GUI_ID_OPAQUE_WATER_CB,
+		Environment->addCheckBox(m_data->opaque_water, rect, this, GUI_ID_OPAQUE_WATER_CB,
 				wgettext("Opaque water"));
 	}
 	// Start game button
@@ -308,13 +248,13 @@ void GUIMainMenu::regenerateGui(v2u32 screensize)
 	{
 		core::rect<s32> rect(0, 0, 250, 30);
 		rect += topleft_server + v2s32(20+250+20, 20);
-		Environment->addCheckBox(creative_mode, rect, this, GUI_ID_CREATIVE_CB,
+		Environment->addCheckBox(m_data->creative_mode, rect, this, GUI_ID_CREATIVE_CB,
 			wgettext("Creative Mode"));
 	}
 	{
 		core::rect<s32> rect(0, 0, 250, 30);
 		rect += topleft_server + v2s32(20+250+20, 40);
-		Environment->addCheckBox(enable_damage, rect, this, GUI_ID_DAMAGE_CB,
+		Environment->addCheckBox(m_data->enable_damage, rect, this, GUI_ID_DAMAGE_CB,
 			wgettext("Enable Damage"));
 	}
 	// Delete world button
@@ -335,7 +275,7 @@ void GUIMainMenu::regenerateGui(v2u32 screensize)
 				i != m_data->worlds.end(); i++){
 			e->addItem(i->c_str());
 		}
-		e->setSelected(selected_world);
+		e->setSelected(m_data->selected_world);
 	}
 	changeCtype("C");
 }
@@ -367,65 +307,69 @@ void GUIMainMenu::drawMenu()
 	gui::IGUIElement::draw();
 }
 
-void GUIMainMenu::acceptInput()
+void GUIMainMenu::readInput(MainMenuData *dst)
 {
 	{
 		gui::IGUIElement *e = getElementFromId(GUI_ID_NAME_INPUT);
 		if(e != NULL)
-			m_data->name = e->getText();
+			dst->name = e->getText();
 	}
 	{
 		gui::IGUIElement *e = getElementFromId(264);
 		if(e != NULL)
-			m_data->password = e->getText();
+			dst->password = e->getText();
 	}
 	{
 		gui::IGUIElement *e = getElementFromId(GUI_ID_ADDRESS_INPUT);
 		if(e != NULL)
-			m_data->address = e->getText();
+			dst->address = e->getText();
 	}
 	{
 		gui::IGUIElement *e = getElementFromId(GUI_ID_PORT_INPUT);
 		if(e != NULL)
-			m_data->port = e->getText();
+			dst->port = e->getText();
 	}
 	{
 		gui::IGUIElement *e = getElementFromId(GUI_ID_CREATIVE_CB);
 		if(e != NULL && e->getType() == gui::EGUIET_CHECK_BOX)
-			m_data->creative_mode = ((gui::IGUICheckBox*)e)->isChecked();
+			dst->creative_mode = ((gui::IGUICheckBox*)e)->isChecked();
 	}
 	{
 		gui::IGUIElement *e = getElementFromId(GUI_ID_DAMAGE_CB);
 		if(e != NULL && e->getType() == gui::EGUIET_CHECK_BOX)
-			m_data->enable_damage = ((gui::IGUICheckBox*)e)->isChecked();
+			dst->enable_damage = ((gui::IGUICheckBox*)e)->isChecked();
 	}
 	{
 		gui::IGUIElement *e = getElementFromId(GUI_ID_FANCYTREE_CB);
 		if(e != NULL && e->getType() == gui::EGUIET_CHECK_BOX)
-			m_data->fancy_trees = ((gui::IGUICheckBox*)e)->isChecked();
+			dst->fancy_trees = ((gui::IGUICheckBox*)e)->isChecked();
 	}
 	{
 		gui::IGUIElement *e = getElementFromId(GUI_ID_SMOOTH_LIGHTING_CB);
 		if(e != NULL && e->getType() == gui::EGUIET_CHECK_BOX)
-			m_data->smooth_lighting = ((gui::IGUICheckBox*)e)->isChecked();
+			dst->smooth_lighting = ((gui::IGUICheckBox*)e)->isChecked();
 	}
 	{
 		gui::IGUIElement *e = getElementFromId(GUI_ID_3D_CLOUDS_CB);
 		if(e != NULL && e->getType() == gui::EGUIET_CHECK_BOX)
-			m_data->clouds_3d = ((gui::IGUICheckBox*)e)->isChecked();
+			dst->clouds_3d = ((gui::IGUICheckBox*)e)->isChecked();
 	}
 	{
 		gui::IGUIElement *e = getElementFromId(GUI_ID_OPAQUE_WATER_CB);
 		if(e != NULL && e->getType() == gui::EGUIET_CHECK_BOX)
-			m_data->opaque_water = ((gui::IGUICheckBox*)e)->isChecked();
+			dst->opaque_water = ((gui::IGUICheckBox*)e)->isChecked();
 	}
 
 	{
 		gui::IGUIElement *e = getElementFromId(GUI_ID_WORLD_LISTBOX);
 		if(e != NULL && e->getType() == gui::EGUIET_LIST_BOX)
-			m_data->selected_world = ((gui::IGUIListBox*)e)->getSelected();
+			dst->selected_world = ((gui::IGUIListBox*)e)->getSelected();
 	}
-	
+}
+
+void GUIMainMenu::acceptInput()
+{
+	readInput(m_data);
 	m_accepted = true;
 }
 
