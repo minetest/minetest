@@ -1207,6 +1207,8 @@ int main(int argc, char *argv[])
 	// The password entered during the menu screen,
 	std::string password;
 
+	bool first_loop = true;
+
 	/*
 		Menu-game loop
 	*/
@@ -1242,16 +1244,18 @@ int main(int argc, char *argv[])
 			*/
 			while(kill == false)
 			{
+				// If skip_main_menu, only go through here once
+				if(skip_main_menu && !first_loop){
+					kill = true;
+					break;
+				}
+				first_loop = false;
+				
 				// Cursor can be non-visible when coming from the game
 				device->getCursorControl()->setVisible(true);
 				// Some stuff are left to scene manager when coming from the game
 				// (map at least?)
 				smgr->clear();
-				// Reset or hide the debug gui texts
-				/*guitext->setText(L"Minetest-c55");
-				guitext2->setVisible(false);
-				guitext_info->setVisible(false);
-				guitext_chat->setVisible(false);*/
 				
 				// Initialize menu data
 				MainMenuData menudata;
