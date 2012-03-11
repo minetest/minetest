@@ -48,6 +48,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "sha1.h"
 #include "base64.h"
 #include "tool.h"
+#include "utility_string.h"
 
 #define PP(x) "("<<(x).X<<","<<(x).Y<<","<<(x).Z<<")"
 
@@ -822,13 +823,6 @@ void PlayerInfo::PrintLine(std::ostream *s)
 	address.print(s);
 	(*s)<<" avg_rtt="<<avg_rtt;
 	(*s)<<std::endl;
-}
-
-static std::string padStringRight(std::string s, size_t len)
-{
-	if(len > s.size())
-		s.insert(s.end(), len - s.size(), ' ');
-	return s;
 }
 
 /*

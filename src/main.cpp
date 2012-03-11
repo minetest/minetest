@@ -68,6 +68,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "profiler.h"
 #include "log.h"
 #include "mods.h"
+#include "utility_string.h"
 
 /*
 	Settings.
@@ -798,21 +799,17 @@ int main(int argc, char *argv[])
 				i = allowed_options.getIterator();
 				i.atEnd() == false; i++)
 		{
-			dstream<<"  --"<<i.getNode()->getKey();
+			std::ostringstream os1(std::ios::binary);
+			os1<<"  --"<<i.getNode()->getKey();
 			if(i.getNode()->getValue().type == VALUETYPE_FLAG)
-			{
-			}
+				{}
 			else
-			{
-				dstream<<" <value>";
-			}
-			dstream<<std::endl;
+				os1<<" <value>";
+			dstream<<padStringRight(os1.str(), 24);
 
 			if(i.getNode()->getValue().help != NULL)
-			{
-				dstream<<"      "<<i.getNode()->getValue().help
-						<<std::endl;
-			}
+				dstream<<i.getNode()->getValue().help;
+			dstream<<std::endl;
 		}
 
 		return cmd_args.getFlag("help") ? 0 : 1;
