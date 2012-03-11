@@ -13,6 +13,7 @@ src/jthread/cmake_install.cmake
 .*.swp
 minetest.conf
 bin/
+cache/
 CMakeCache.txt
 CPackConfig.cmake
 CPackSourceConfig.cmake
