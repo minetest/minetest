@@ -972,60 +972,29 @@ int main(int argc, char *argv[])
 	if(port == 0)
 		port = 30000;
 	
-	// Map directory
-	std::string world_path = porting::path_user + DIR_DELIM + "server" + DIR_DELIM + "worlds" + DIR_DELIM + "world";
+	// World directory
+	std::string commanded_world = "";
 	if(cmd_args.exists("world"))
-		world_path = cmd_args.get("world");
+		commanded_world = cmd_args.get("world");
 	else if(cmd_args.exists("map-dir"))
-		world_path = cmd_args.get("map-dir");
+		commanded_world = cmd_args.get("map-dir");
 	else if(g_settings->exists("map-dir"))
-		world_path = g_settings->get("map-dir");
-	else{
-		// No map-dir option was specified.
-		// Check if the world is found from the default directory, and if
-		// not, see if the legacy world directory exists.
-		std::string legacy_world_path = porting::path_user+DIR_DELIM+".."+DIR_DELIM+"world";
-		if(!fs::PathExists(world_path) && fs::PathExists(legacy_world_path)){
-			errorstream<<"Warning: Using legacy world directory \""
-					<<legacy_world_path<<"\""<<std::endl;
-			world_path = legacy_world_path;
-		}
-	}
+		commanded_world = g_settings->get("map-dir");
 	
-	// Determine gameid
-	std::string gameid = "";
-	if(cmd_args.exists("gameid"))
-		gameid = cmd_args.get("gameid");
-	std::string world_gameid = getWorldGameId(world_path);
-	if(world_gameid == ""){
-		if(gameid != "")
-			world_gameid = gameid;
-		else{
-			world_gameid = "mesetint";
-		}
-	}
-	if(gameid == "")
-		gameid = world_gameid;
-	else if(world_gameid != ""){
-		if(world_gameid != gameid){
-			errorstream<<"World gameid mismatch"<<std::endl;
+	// Gamespec
+	SubgameSpec commanded_gamespec;
+	if(cmd_args.exists("gameid")){
+		std::string gameid = cmd_args.get("gameid");
+		commanded_gamespec = findSubgame(gameid);
+		if(!commanded_gamespec.isValid()){
+			errorstream<<"Game \""<<gameid<<"\" not found"<<std::endl;
 			return 1;
 		}
 	}
-	if(gameid == ""){
-		errorstream<<"No gameid supplied or detected"<<std::endl;
-		return 1;
-	}
-	
-	infostream<<"Using gameid \""<<gameid<<"\""<<std::endl;
 
-	SubgameSpec gamespec = findSubgame(gameid);
-	if(!gamespec.isValid()){
-		errorstream<<"Game \""<<gameid<<"\" not found"<<std::endl;
-		return 1;
-	}
-
-	// Run dedicated server if asked to or no other option
+	/*
+		Run dedicated server if asked to or no other option
+	*/
 #ifdef SERVER
 	bool run_dedicated_server = true;
 #else
@@ -1034,12 +1003,50 @@ int main(int argc, char *argv[])
 	if(run_dedicated_server)
 	{
 		DSTACK("Dedicated server branch");
-
 		// Create time getter if built with Irrlicht
 #ifndef SERVER
 		g_timegetter = new SimpleTimeGetter();
 #endif
+
+		// World directory
+		std::string world_path;
+		bool is_legacy_world = false;
+		if(commanded_world != ""){
+			world_path = commanded_world;
+		}
+		else{
+			// No specific world was commanded
+			// Check if the world is found from the default directory, and if
+			// not, see if the legacy world directory exists.
+			world_path = porting::path_user + DIR_DELIM + "server" + DIR_DELIM + "worlds" + DIR_DELIM + "world";
+			std::string legacy_world_path = porting::path_user+DIR_DELIM+".."+DIR_DELIM+"world";
+			if(!fs::PathExists(world_path) && fs::PathExists(legacy_world_path)){
+				errorstream<<"Warning: Using legacy world directory \""
+						<<legacy_world_path<<"\""<<std::endl;
+				world_path = legacy_world_path;
+				is_legacy_world = true;
+			}
+		}
+
+		// Gamespec
+		std::string world_gameid = getWorldGameId(world_path, is_legacy_world);
+		SubgameSpec gamespec = findSubgame(world_gameid);
+		if(commanded_gamespec.isValid() &&
+				commanded_gamespec.id != world_gameid){
+			errorstream<<"WARNING: Overriding gameid from \""
+					<<world_gameid<<"\" to \""
+					<<commanded_gamespec.id<<"\""<<std::endl;
+			gamespec = commanded_gamespec;
+		}
+
+		if(!gamespec.isValid()){
+			errorstream<<"Invalid gamespec. (world_gameid="
+					<<world_gameid<<")"<<std::endl;
+			return 1;
+		}
 		
+		infostream<<"Using gamespec \""<<gamespec.id<<"\""<<std::endl;
+
 		// Create server
 		Server server(world_path, configpath, gamespec);
 		server.start(port);
@@ -1181,6 +1188,8 @@ int main(int argc, char *argv[])
 	//skin->setColor(gui::EGDC_3D_SHADOW, video::SColor(0,0,0,0));
 	skin->setColor(gui::EGDC_3D_HIGH_LIGHT, video::SColor(255,0,0,0));
 	skin->setColor(gui::EGDC_3D_SHADOW, video::SColor(255,0,0,0));
+	skin->setColor(gui::EGDC_HIGH_LIGHT, video::SColor(255,70,100,50));
+	skin->setColor(gui::EGDC_HIGH_LIGHT_TEXT, video::SColor(255,255,255,255));
 	
 	/*
 		GUI stuff
@@ -1223,6 +1232,9 @@ int main(int argc, char *argv[])
 			guiroot = guienv->addStaticText(L"",
 					core::rect<s32>(0, 0, 10000, 10000));
 			
+			SubgameSpec gamespec;
+			WorldSpec worldspec;
+
 			/*
 				Out-of-game menu loop.
 
@@ -1246,14 +1258,34 @@ int main(int argc, char *argv[])
 				menudata.address = narrow_to_wide(address);
 				menudata.name = narrow_to_wide(playername);
 				menudata.port = narrow_to_wide(itos(port));
+				if(cmd_args.exists("password"))
+					menudata.password = narrow_to_wide(cmd_args.get("password"));
 				menudata.fancy_trees = g_settings->getBool("new_style_leaves");
 				menudata.smooth_lighting = g_settings->getBool("smooth_lighting");
 				menudata.clouds_3d = g_settings->getBool("enable_3d_clouds");
 				menudata.opaque_water = g_settings->getBool("opaque_water");
 				menudata.creative_mode = g_settings->getBool("creative_mode");
 				menudata.enable_damage = g_settings->getBool("enable_damage");
-				if(cmd_args.exists("password"))
-					menudata.password = narrow_to_wide(cmd_args.get("password"));
+				// Get world listing for the menu
+				std::vector<WorldSpec> worldspecs = getAvailableWorlds();
+				for(std::vector<WorldSpec>::const_iterator i = worldspecs.begin();
+						i != worldspecs.end(); i++)
+					menudata.worlds.push_back(narrow_to_wide(
+							i->name + " [" + i->gameid + "]"));
+				// Select if there is only one
+				if(worldspecs.size() == 1)
+					menudata.selected_world = 0;
+				else
+					menudata.selected_world = -1;
+				// If a world was commanded, append and select it
+				if(commanded_world != ""){
+					std::string gameid = getWorldGameId(commanded_world);
+					WorldSpec spec(commanded_world, "[commanded world]", gameid);
+					worldspecs.push_back(spec);
+					menudata.worlds.push_back(narrow_to_wide(spec.name)
+							+L" ["+narrow_to_wide(spec.gameid)+L"]");
+					menudata.selected_world = menudata.worlds.size()-1;
+				}
 
 				if(skip_main_menu == false)
 				{
@@ -1304,15 +1336,33 @@ int main(int argc, char *argv[])
 					infostream<<"Dropping main menu"<<std::endl;
 
 					menu->drop();
-					
-					// Delete map if requested
-					if(menudata.delete_map)
-					{
-						bool r = fs::RecursiveDeleteContent(world_path);
-						if(r == false)
-							error_message = L"Delete failed";
+				}
+
+				// Set world path to selected one
+				if(menudata.selected_world != -1){
+					worldspec = worldspecs[menudata.selected_world];
+					infostream<<"Selected world: "<<worldspec.name
+							<<" ["<<worldspec.path<<"]"<<std::endl;
+				}
+				
+				// Delete map if requested
+				if(menudata.delete_world)
+				{
+					if(menudata.selected_world == -1){
+						error_message = L"Cannot delete world: "
+								L"no world selected";
+						errorstream<<wide_to_narrow(error_message)<<std::endl;
 						continue;
 					}
+					/*bool r = fs::RecursiveDeleteContent(worldspec.path);
+					if(r == false){
+						error_message = L"World delete failed";
+						errorstream<<wide_to_narrow(error_message)<<std::endl;
+					}*/
+					// TODO: Some kind of a yes/no dialog is needed.
+					error_message = L"This doesn't do anything currently.";
+					errorstream<<wide_to_narrow(error_message)<<std::endl;
+					continue;
 				}
 
 				playername = wide_to_narrow(menudata.name);
@@ -1336,7 +1386,40 @@ int main(int argc, char *argv[])
 				// Update configuration file
 				if(configpath != "")
 					g_settings->updateConfigFile(configpath.c_str());
-			
+				
+				// If local game
+				if(address == "")
+				{
+					if(menudata.selected_world == -1){
+						error_message = L"No world selected and no address "
+								L"provided. Nothing to do.";
+						errorstream<<wide_to_narrow(error_message)<<std::endl;
+						continue;
+					}
+					// Load gamespec for required game
+					gamespec = findSubgame(worldspec.gameid);
+					if(!gamespec.isValid() && !commanded_gamespec.isValid()){
+						error_message = L"Could not find or load game \""
+								+ narrow_to_wide(worldspec.gameid) + L"\"";
+						errorstream<<wide_to_narrow(error_message)<<std::endl;
+						continue;
+					}
+					if(commanded_gamespec.isValid() &&
+							commanded_gamespec.id != worldspec.gameid){
+						errorstream<<"WARNING: Overriding gamespec from \""
+								<<worldspec.gameid<<"\" to \""
+								<<commanded_gamespec.id<<"\""<<std::endl;
+						gamespec = commanded_gamespec;
+					}
+
+					if(!gamespec.isValid()){
+						error_message = L"Invalid gamespec. (world_gameid="
+								+narrow_to_wide(worldspec.gameid)+L")";
+						errorstream<<wide_to_narrow(error_message)<<std::endl;
+						continue;
+					}
+				}
+
 				// Continue to game
 				break;
 			}
@@ -1354,7 +1437,7 @@ int main(int argc, char *argv[])
 				input,
 				device,
 				font,
-				world_path,
+				worldspec.path,
 				playername,
 				password,
 				address,
@@ -1368,13 +1451,13 @@ int main(int argc, char *argv[])
 		} //try
 		catch(con::PeerNotFoundException &e)
 		{
-			errorstream<<"Connection error (timed out?)"<<std::endl;
 			error_message = L"Connection error (timed out?)";
+			errorstream<<wide_to_narrow(error_message)<<std::endl;
 		}
-		catch(SocketException &e)
+		catch(ServerError &e)
 		{
-			errorstream<<"Socket error (port already in use?)"<<std::endl;
-			error_message = L"Socket error (port already in use?)";
+			error_message = narrow_to_wide(e.what());
+			errorstream<<wide_to_narrow(error_message)<<std::endl;
 		}
 		catch(ModError &e)
 		{

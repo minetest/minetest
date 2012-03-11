@@ -26,6 +26,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <string>
 // For IGameCallback
 #include "guiPauseMenu.h"
+#include <list>
 
 enum
 {
@@ -41,7 +42,8 @@ enum
 	GUI_ID_CREATIVE_CB,
 	GUI_ID_JOIN_GAME_BUTTON,
 	GUI_ID_CHANGE_KEYS_BUTTON,
-	GUI_ID_DELETE_MAP_BUTTON
+	GUI_ID_DELETE_MAP_BUTTON,
+	GUI_ID_WORLD_LISTBOX,
 };
 
 struct MainMenuData
@@ -53,8 +55,9 @@ struct MainMenuData
 		// Server opts
 		creative_mode(false),
 		enable_damage(false),
+		selected_world(0),
 		// Actions
-		delete_map(false)
+		delete_world(false)
 	{}
 
 	// These are in the native format of the gui elements
@@ -71,8 +74,11 @@ struct MainMenuData
 	// Server options
 	bool creative_mode;
 	bool enable_damage;
+	int selected_world;
 	// If map deletion is requested, this is set to true
-	bool delete_map;
+	bool delete_world;
+
+	std::list<std::wstring> worlds;
 };
 
 class GUIMainMenu : public GUIModalMenu

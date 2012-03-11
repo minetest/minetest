@@ -21,6 +21,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "porting.h"
 #include "filesys.h"
 #include "settings.h"
+#include "log.h"
 
 SubgameSpec findSubgame(const std::string &id)
 {
@@ -68,15 +69,67 @@ std::set<std::string> getAvailableGameIds()
 	return gameids;
 }
 
-std::string getWorldGameId(const std::string &world_path)
+#define LEGACY_GAMEID "mesetint"
+
+std::string getWorldGameId(const std::string &world_path, bool can_be_legacy)
 {
 	std::string conf_path = world_path + DIR_DELIM + "world.mt";
 	Settings conf;
 	bool succeeded = conf.readConfigFile(conf_path.c_str());
-	if(!succeeded)
+	if(!succeeded){
+		if(can_be_legacy){
+			// If map_meta.txt exists, it is probably an old minetest world
+			if(fs::PathExists(world_path + DIR_DELIM + "map_meta.txt"))
+				return LEGACY_GAMEID;
+		}
 		return "";
+	}
 	if(!conf.exists("gameid"))
 		return "";
 	return conf.get("gameid");
 }
+
+std::vector<WorldSpec> getAvailableWorlds()
+{
+	std::vector<WorldSpec> worlds;
+	std::set<std::string> worldspaths;
+	worldspaths.insert(porting::path_user + DIR_DELIM + "server"
+			+ DIR_DELIM + "worlds");
+	infostream<<"Searching worlds..."<<std::endl;
+	for(std::set<std::string>::const_iterator i = worldspaths.begin();
+			i != worldspaths.end(); i++){
+		infostream<<"  In "<<(*i)<<": "<<std::endl;
+		std::vector<fs::DirListNode> dirvector = fs::GetDirListing(*i);
+		for(u32 j=0; j<dirvector.size(); j++){
+			if(!dirvector[j].dir)
+				continue;
+			std::string fullpath = *i + DIR_DELIM + dirvector[j].name;
+			std::string name = dirvector[j].name;
+			std::string gameid = getWorldGameId(fullpath);
+			WorldSpec spec(fullpath, name, gameid);
+			if(!spec.isValid()){
+				infostream<<"(invalid: "<<name<<") ";
+			} else {
+				infostream<<name<<" ";
+				worlds.push_back(spec);
+			}
+		}
+		infostream<<std::endl;
+	}
+	// Check old world location
+	do{
+		std::string fullpath = porting::path_user + DIR_DELIM + ".."
+				+ DIR_DELIM + "world";
+		if(!fs::PathExists(fullpath))
+			break;
+		std::string name = "Old World";
+		std::string gameid = getWorldGameId(fullpath, true);
+		WorldSpec spec(fullpath, name, gameid);
+		infostream<<"Old world found."<<std::endl;
+		worlds.push_back(spec);
+	}while(0);
+	infostream<<worlds.size()<<" found."<<std::endl;
+	return worlds;
+}
+
 

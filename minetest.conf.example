@@ -115,6 +115,8 @@
 # Server stuff
 #
 
+# Default game (default when creating a new world)
+#default_game = mesetint
 # Map directory (everything in the world is stored here)
 #map-dir = /custom/map
 # Message of the Day

@@ -27,6 +27,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <IGUIButton.h>
 #include <IGUIStaticText.h>
 #include <IGUIFont.h>
+#include <IGUIListBox.h>
 
 
 #include "gettext.h"
@@ -73,65 +74,52 @@ void GUIMainMenu::removeChildren()
 
 void GUIMainMenu::regenerateGui(v2u32 screensize)
 {
-	std::wstring text_name;
-	std::wstring text_address;
-	std::wstring text_port;
-	bool creative_mode;
-	bool enable_damage;
-	bool fancy_trees;
-	bool smooth_lighting;
-	bool clouds_3d;
-	bool opaque_water;
+	std::wstring text_name = m_data->name;
+	std::wstring text_address = m_data->address;
+	std::wstring text_port = m_data->port;
+	bool creative_mode = m_data->creative_mode;
+	bool enable_damage = m_data->enable_damage;
+	bool fancy_trees = m_data->fancy_trees;
+	bool smooth_lighting = m_data->smooth_lighting;
+	bool clouds_3d = m_data->clouds_3d;
+	bool opaque_water = m_data->opaque_water;
+	int selected_world = m_data->selected_world;
 	
 	// Client options
 	{
 		gui::IGUIElement *e = getElementFromId(GUI_ID_NAME_INPUT);
 		if(e != NULL)
 			text_name = e->getText();
-		else
-			text_name = m_data->name;
 	}
 	{
 		gui::IGUIElement *e = getElementFromId(GUI_ID_ADDRESS_INPUT);
 		if(e != NULL)
 			text_address = e->getText();
-		else
-			text_address = m_data->address;
 	}
 	{
 		gui::IGUIElement *e = getElementFromId(GUI_ID_PORT_INPUT);
 		if(e != NULL)
 			text_port = e->getText();
-		else
-			text_port = m_data->port;
 	}
 	{
 		gui::IGUIElement *e = getElementFromId(GUI_ID_FANCYTREE_CB);
 		if(e != NULL && e->getType() == gui::EGUIET_CHECK_BOX)
 			fancy_trees = ((gui::IGUICheckBox*)e)->isChecked();
-		else
-			fancy_trees = m_data->fancy_trees;
 	}
 	{
 		gui::IGUIElement *e = getElementFromId(GUI_ID_SMOOTH_LIGHTING_CB);
 		if(e != NULL && e->getType() == gui::EGUIET_CHECK_BOX)
 			smooth_lighting = ((gui::IGUICheckBox*)e)->isChecked();
-		else
-			smooth_lighting = m_data->smooth_lighting;
 	}
 	{
 		gui::IGUIElement *e = getElementFromId(GUI_ID_3D_CLOUDS_CB);
 		if(e != NULL && e->getType() == gui::EGUIET_CHECK_BOX)
 			clouds_3d = ((gui::IGUICheckBox*)e)->isChecked();
-		else
-			clouds_3d = m_data->clouds_3d;
 	}
 	{
 		gui::IGUIElement *e = getElementFromId(GUI_ID_OPAQUE_WATER_CB);
 		if(e != NULL && e->getType() == gui::EGUIET_CHECK_BOX)
 			opaque_water = ((gui::IGUICheckBox*)e)->isChecked();
-		else
-			opaque_water = m_data->opaque_water;
 	}
 	
 	// Server options
@@ -139,15 +127,16 @@ void GUIMainMenu::regenerateGui(v2u32 screensize)
 		gui::IGUIElement *e = getElementFromId(GUI_ID_CREATIVE_CB);
 		if(e != NULL && e->getType() == gui::EGUIET_CHECK_BOX)
 			creative_mode = ((gui::IGUICheckBox*)e)->isChecked();
-		else
-			creative_mode = m_data->creative_mode;
 	}
 	{
 		gui::IGUIElement *e = getElementFromId(GUI_ID_DAMAGE_CB);
 		if(e != NULL && e->getType() == gui::EGUIET_CHECK_BOX)
 			enable_damage = ((gui::IGUICheckBox*)e)->isChecked();
-		else
-			enable_damage = m_data->enable_damage;
+	}
+	{
+		gui::IGUIElement *e = getElementFromId(GUI_ID_WORLD_LISTBOX);
+		if(e != NULL && e->getType() == gui::EGUIET_LIST_BOX)
+			selected_world = ((gui::IGUIListBox*)e)->getSelected();
 	}
 
 	/*
@@ -318,23 +307,35 @@ void GUIMainMenu::regenerateGui(v2u32 screensize)
 	// Server parameters
 	{
 		core::rect<s32> rect(0, 0, 250, 30);
-		rect += topleft_server + v2s32(35, 20);
+		rect += topleft_server + v2s32(20+250+20, 20);
 		Environment->addCheckBox(creative_mode, rect, this, GUI_ID_CREATIVE_CB,
 			wgettext("Creative Mode"));
 	}
 	{
 		core::rect<s32> rect(0, 0, 250, 30);
-		rect += topleft_server + v2s32(35, 40);
+		rect += topleft_server + v2s32(20+250+20, 40);
 		Environment->addCheckBox(enable_damage, rect, this, GUI_ID_DAMAGE_CB,
 			wgettext("Enable Damage"));
 	}
 	// Map delete button
 	{
 		core::rect<s32> rect(0, 0, 130, 30);
-		//rect += topleft_server + v2s32(size_server.X-40-130, 100+25);
-		rect += topleft_server + v2s32(40, 90);
+		rect += topleft_server + v2s32(20+250+20, 90);
 		Environment->addButton(rect, this, GUI_ID_DELETE_MAP_BUTTON,
 			  wgettext("Delete map"));
+	}
+	// World selection listbox
+	{
+		core::rect<s32> rect(0, 0, 250, 120);
+		rect += topleft_server + v2s32(20, 10);
+		gui::IGUIListBox *e = Environment->addListBox(rect, this,
+				GUI_ID_WORLD_LISTBOX);
+		e->setDrawBackground(true);
+		for(std::list<std::wstring>::const_iterator i = m_data->worlds.begin();
+				i != m_data->worlds.end(); i++){
+			e->addItem(i->c_str());
+		}
+		e->setSelected(selected_world);
 	}
 	changeCtype("C");
 }
@@ -418,6 +419,12 @@ void GUIMainMenu::acceptInput()
 		if(e != NULL && e->getType() == gui::EGUIET_CHECK_BOX)
 			m_data->opaque_water = ((gui::IGUICheckBox*)e)->isChecked();
 	}
+
+	{
+		gui::IGUIElement *e = getElementFromId(GUI_ID_WORLD_LISTBOX);
+		if(e != NULL && e->getType() == gui::EGUIET_LIST_BOX)
+			m_data->selected_world = ((gui::IGUIListBox*)e)->getSelected();
+	}
 	
 	m_accepted = true;
 }
@@ -466,9 +473,8 @@ bool GUIMainMenu::OnEvent(const SEvent& event)
 				return true;
 			}
 			case GUI_ID_DELETE_MAP_BUTTON: // Delete map
-				// Don't accept input data, just set deletion request
-				m_data->delete_map = true;
-				m_accepted = true;
+				acceptInput();
+				m_data->delete_world = true;
 				quitMenu();
 				return true;
 			}
@@ -479,6 +485,17 @@ bool GUIMainMenu::OnEvent(const SEvent& event)
 			{
 				case GUI_ID_ADDRESS_INPUT: case GUI_ID_PORT_INPUT: case GUI_ID_NAME_INPUT: case 264:
 				acceptInput();
+				quitMenu();
+				return true;
+			}
+		}
+		if(event.GUIEvent.EventType==gui::EGET_LISTBOX_SELECTED_AGAIN)
+		{
+			switch(event.GUIEvent.Caller->getID())
+			{
+				case GUI_ID_WORLD_LISTBOX:
+				acceptInput();
+				m_data->address = L""; // Force local game
 				quitMenu();
 				return true;
 			}

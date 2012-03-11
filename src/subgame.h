@@ -22,6 +22,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include <string>
 #include <set>
+#include <vector>
 
 struct SubgameSpec
 {
@@ -47,7 +48,32 @@ SubgameSpec findSubgame(const std::string &id);
 
 std::set<std::string> getAvailableGameIds();
 
-std::string getWorldGameId(const std::string &world_path);
+std::string getWorldGameId(const std::string &world_path,
+		bool can_be_legacy=false);
+
+struct WorldSpec
+{
+	std::string path;
+	std::string name;
+	std::string gameid;
+
+	WorldSpec(
+		const std::string &path_="",
+		const std::string &name_="",
+		const std::string &gameid_=""
+	):
+		path(path_),
+		name(name_),
+		gameid(gameid_)
+	{}
+
+	bool isValid() const
+	{
+		return (name != "" && path != "" && gameid != "");
+	}
+};
+
+std::vector<WorldSpec> getAvailableWorlds();
 
 #endif
 

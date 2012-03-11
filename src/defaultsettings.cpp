@@ -94,8 +94,10 @@ void set_default_settings(Settings *settings)
 	settings->setDefault("opaque_water", "false");
 	settings->setDefault("console_color", "(0,0,0)");
 	settings->setDefault("console_alpha", "200");
+
 	// Server stuff
 	// "map-dir" doesn't exist by default.
+	settings->setDefault("default_game", "mesetint");
 	settings->setDefault("motd", "");
 	settings->setDefault("max_users", "100");
 	settings->setDefault("strict_protocol_version_checking", "true");
