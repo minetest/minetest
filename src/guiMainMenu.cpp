@@ -266,7 +266,7 @@ void GUIMainMenu::regenerateGui(v2u32 screensize)
 	{
 		core::rect<s32> rect(0, 0, 180, 30);
 		//rect += topleft_client + v2s32(size_client.X/2-180/2, 225-30/2);
-		rect += topleft_client + v2s32(size_client.X-180-40, 150+25);
+		rect += topleft_client + v2s32(size_client.X-180-40, 150+25+25);
 		Environment->addButton(rect, this, GUI_ID_JOIN_GAME_BUTTON,
 			wgettext("Start Game / Connect"));
 	}
@@ -275,7 +275,7 @@ void GUIMainMenu::regenerateGui(v2u32 screensize)
 	{
 		core::rect<s32> rect(0, 0, 100, 30);
 		//rect += topleft_client + v2s32(size_client.X/2-180/2, 225-30/2);
-		rect += topleft_client + v2s32(size_client.X-180-40-100-20, 150+25);
+		rect += topleft_client + v2s32(size_client.X-180-40-100-20, 150+25+25);
 		Environment->addButton(rect, this, GUI_ID_CHANGE_KEYS_BUTTON,
 			wgettext("Change keys"));
 	}
