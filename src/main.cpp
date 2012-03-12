@@ -1308,10 +1308,12 @@ int main(int argc, char *argv[])
 				// If a world was commanded, append and select it
 				if(commanded_world != ""){
 					std::string gameid = getWorldGameId(commanded_world, true);
-					if(gameid == "")
+					std::string name = "[--world parameter]";
+					if(gameid == ""){
 						gameid = g_settings->get("default_game");
-					WorldSpec spec(commanded_world, "[--world parameter]",
-							gameid);
+						name += " [new]";
+					}
+					WorldSpec spec(commanded_world, name, gameid);
 					worldspecs.push_back(spec);
 					menudata.selected_world = worldspecs.size()-1;
 				}
