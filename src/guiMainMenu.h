@@ -1,6 +1,6 @@
 /*
 Minetest-c55
-Copyright (C) 2010 celeron55, Perttu Ahola <celeron55@gmail.com>
+Copyright (C) 2010-2012 celeron55, Perttu Ahola <celeron55@gmail.com>
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -22,46 +22,14 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "common_irrlicht.h"
 #include "modalMenu.h"
-#include "utility.h"
 #include <string>
-// For IGameCallback
-#include "guiPauseMenu.h"
 #include <list>
-
-enum
-{
-	GUI_ID_QUIT_BUTTON = 101,
-	GUI_ID_NAME_INPUT,
-	GUI_ID_ADDRESS_INPUT,
-	GUI_ID_PORT_INPUT,
-	GUI_ID_FANCYTREE_CB,
-	GUI_ID_SMOOTH_LIGHTING_CB,
-	GUI_ID_3D_CLOUDS_CB,
-	GUI_ID_OPAQUE_WATER_CB,
-	GUI_ID_DAMAGE_CB,
-	GUI_ID_CREATIVE_CB,
-	GUI_ID_JOIN_GAME_BUTTON,
-	GUI_ID_CHANGE_KEYS_BUTTON,
-	GUI_ID_DELETE_WORLD_BUTTON,
-	GUI_ID_WORLD_LISTBOX,
-};
+#include "subgame.h"
+class IGameCallback;
 
 struct MainMenuData
 {
-	MainMenuData():
-		// Client opts
-		fancy_trees(false),
-		smooth_lighting(false),
-		// Server opts
-		creative_mode(false),
-		enable_damage(false),
-		selected_world(0),
-		// Actions
-		delete_world(false)
-	{}
-
 	// These are in the native format of the gui elements
-	
 	// Client options
 	std::wstring address;
 	std::wstring port;
@@ -75,10 +43,25 @@ struct MainMenuData
 	bool creative_mode;
 	bool enable_damage;
 	int selected_world;
-	// If map deletion is requested, this is set to true
+	// Actions
 	bool delete_world;
+	std::wstring create_world_name;
+	std::string create_world_gameid;
 
 	std::list<std::wstring> worlds;
+	std::vector<SubgameSpec> games;
+
+	MainMenuData():
+		// Client opts
+		fancy_trees(false),
+		smooth_lighting(false),
+		// Server opts
+		creative_mode(false),
+		enable_damage(false),
+		selected_world(0),
+		// Actions
+		delete_world(false)
+	{}
 };
 
 class GUIMainMenu : public GUIModalMenu
@@ -92,23 +75,15 @@ public:
 	~GUIMainMenu();
 	
 	void removeChildren();
-	/*
-		Remove and re-add (or reposition) stuff
-	*/
+	// Remove and re-add (or reposition) stuff
 	void regenerateGui(v2u32 screensize);
-
 	void drawMenu();
-
 	void readInput(MainMenuData *dst);
-
 	void acceptInput();
-
 	bool getStatus()
-	{
-		return m_accepted;
-	}
-
+	{ return m_accepted; }
 	bool OnEvent(const SEvent& event);
+	void createNewWorld(std::wstring name, std::string gameid);
 	
 private:
 	MainMenuData *m_data;

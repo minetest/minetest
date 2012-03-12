@@ -179,6 +179,7 @@ set(minetest_SRCS
 	guiPasswordChange.cpp
 	guiDeathScreen.cpp
 	guiChatConsole.cpp
+	guiCreateWorld.cpp
 	client.cpp
 	tile.cpp
 	game.cpp

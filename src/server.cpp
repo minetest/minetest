@@ -907,14 +907,9 @@ Server::Server(
 		infostream<<"- mods:   "<<modspath<<std::endl;
 	}
 	
-	// Create world.mt if does not already exist
-	std::string worldmt_path = m_path_world + DIR_DELIM + "world.mt";
-	if(!fs::PathExists(worldmt_path)){
-		infostream<<"Creating world.mt ("<<worldmt_path<<")"<<std::endl;
-		fs::CreateAllDirs(m_path_world);
-		std::ofstream of(worldmt_path.c_str(), std::ios::binary);
-		of<<"gameid = "<<m_gamespec.id<<"\n";
-	}
+	// Create world if it doesn't exist
+	if(!initializeWorld(m_path_world, m_gamespec.id))
+		throw ServerError("Failed to initialize world");
 
 	// Lock environment
 	JMutexAutoLock envlock(m_env_mutex);

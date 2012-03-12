@@ -1298,7 +1298,7 @@ int main(int argc, char *argv[])
 					std::string gameid = getWorldGameId(commanded_world, true);
 					if(gameid == "")
 						gameid = g_settings->get("default_game");
-					WorldSpec spec(commanded_world, "[commanded world]", gameid);
+					WorldSpec spec(commanded_world, "--world", gameid);
 					worldspecs.push_back(spec);
 					menudata.worlds.push_back(narrow_to_wide(spec.name)
 							+L" ["+narrow_to_wide(spec.gameid)+L"]");
@@ -1363,7 +1363,7 @@ int main(int argc, char *argv[])
 							<<" ["<<worldspec.path<<"]"<<std::endl;
 				}
 				
-				// Delete map if requested
+				// Delete world if requested
 				if(menudata.delete_world)
 				{
 					if(menudata.selected_world == -1){
@@ -1380,6 +1380,22 @@ int main(int argc, char *argv[])
 					// TODO: Some kind of a yes/no dialog is needed.
 					error_message = L"This doesn't do anything currently.";
 					errorstream<<wide_to_narrow(error_message)<<std::endl;
+					continue;
+				}
+
+				// Create new world if requested
+				if(menudata.create_world_name != L"")
+				{
+					std::string path = porting::path_user + DIR_DELIM
+							+ "server" + DIR_DELIM + "worlds" + DIR_DELIM
+							+ wide_to_narrow(menudata.create_world_name);
+					// Create world if it doesn't exist
+					if(!initializeWorld(path, menudata.create_world_gameid)){
+						error_message = L"Failed to initialize world";
+						errorstream<<wide_to_narrow(error_message)<<std::endl;
+						continue;
+					}
+					g_settings->set("selected_world_path", path);
 					continue;
 				}
 

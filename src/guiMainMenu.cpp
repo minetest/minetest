@@ -1,6 +1,6 @@
 /*
 Minetest-c55
-Copyright (C) 2010 celeron55, Perttu Ahola <celeron55@gmail.com>
+Copyright (C) 2010-12 celeron55, Perttu Ahola <celeron55@gmail.com>
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -19,6 +19,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "guiMainMenu.h"
 #include "guiKeyChangeMenu.h"
+#include "guiCreateWorld.h"
+#include "guiMessageMenu.h"
 #include "debug.h"
 #include "serialization.h"
 #include <string>
@@ -28,9 +30,41 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <IGUIStaticText.h>
 #include <IGUIFont.h>
 #include <IGUIListBox.h>
-
-
+// For IGameCallback
+#include "guiPauseMenu.h"
 #include "gettext.h"
+#include "utility.h"
+
+struct CreateWorldDestMainMenu : public CreateWorldDest
+{
+	CreateWorldDestMainMenu(GUIMainMenu *menu):
+		m_menu(menu)
+	{}
+	void accepted(std::wstring name, std::string gameid)
+	{
+		m_menu->createNewWorld(name, gameid);
+	}
+	GUIMainMenu *m_menu;
+};
+
+enum
+{
+	GUI_ID_QUIT_BUTTON = 101,
+	GUI_ID_NAME_INPUT,
+	GUI_ID_ADDRESS_INPUT,
+	GUI_ID_PORT_INPUT,
+	GUI_ID_FANCYTREE_CB,
+	GUI_ID_SMOOTH_LIGHTING_CB,
+	GUI_ID_3D_CLOUDS_CB,
+	GUI_ID_OPAQUE_WATER_CB,
+	GUI_ID_DAMAGE_CB,
+	GUI_ID_CREATIVE_CB,
+	GUI_ID_JOIN_GAME_BUTTON,
+	GUI_ID_CHANGE_KEYS_BUTTON,
+	GUI_ID_DELETE_WORLD_BUTTON,
+	GUI_ID_CREATE_WORLD_BUTTON,
+	GUI_ID_WORLD_LISTBOX,
+};
 
 GUIMainMenu::GUIMainMenu(gui::IGUIEnvironment* env,
 		gui::IGUIElement* parent, s32 id,
@@ -264,6 +298,13 @@ void GUIMainMenu::regenerateGui(v2u32 screensize)
 		Environment->addButton(rect, this, GUI_ID_DELETE_WORLD_BUTTON,
 			  wgettext("Delete world"));
 	}
+	// Create world button
+	{
+		core::rect<s32> rect(0, 0, 130, 30);
+		rect += topleft_server + v2s32(20+250+20+140, 90);
+		Environment->addButton(rect, this, GUI_ID_CREATE_WORLD_BUTTON,
+			  wgettext("Create world"));
+	}
 	// World selection listbox
 	{
 		core::rect<s32> rect(0, 0, 250, 120);
@@ -407,7 +448,7 @@ bool GUIMainMenu::OnEvent(const SEvent& event)
 		{
 			switch(event.GUIEvent.Caller->getID())
 			{
-			case GUI_ID_JOIN_GAME_BUTTON: // Start game
+			case GUI_ID_JOIN_GAME_BUTTON:
 				acceptInput();
 				quitMenu();
 				return true;
@@ -416,11 +457,27 @@ bool GUIMainMenu::OnEvent(const SEvent& event)
 				kmenu->drop();
 				return true;
 			}
-			case GUI_ID_DELETE_WORLD_BUTTON: // Delete world
+			case GUI_ID_DELETE_WORLD_BUTTON: {
 				acceptInput();
 				m_data->delete_world = true;
 				quitMenu();
 				return true;
+			}
+			case GUI_ID_CREATE_WORLD_BUTTON: {
+				std::vector<SubgameSpec> games = getAvailableGames();
+				if(games.size() == 0){
+					GUIMessageMenu *menu = new GUIMessageMenu(env, parent,
+							-1, menumgr,
+							wgettext("Cannot create world: No games found"));
+					menu->drop();
+				} else {
+					CreateWorldDest *dest = new CreateWorldDestMainMenu(this);
+					GUICreateWorld *menu = new GUICreateWorld(env, parent, -1,
+							menumgr, dest, games);
+					menu->drop();
+				}
+				return true;
+			}
 			}
 		}
 		if(event.GUIEvent.EventType==gui::EGET_EDITBOX_ENTER)
@@ -447,5 +504,15 @@ bool GUIMainMenu::OnEvent(const SEvent& event)
 	}
 
 	return Parent ? Parent->OnEvent(event) : false;
+}
+
+void GUIMainMenu::createNewWorld(std::wstring name, std::string gameid)
+{
+	if(name == L"")
+		return;
+	acceptInput();
+	m_data->create_world_name = name;
+	m_data->create_world_gameid = gameid;
+	quitMenu();
 }
 

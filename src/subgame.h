@@ -29,13 +29,16 @@ struct SubgameSpec
 	std::string id; // "" = game does not exist
 	std::string path;
 	std::set<std::string> addon_paths;
+	std::string name;
 
 	SubgameSpec(const std::string &id_="",
 			const std::string &path_="",
-			const std::set<std::string> &addon_paths_=std::set<std::string>()):
+			const std::set<std::string> &addon_paths_=std::set<std::string>(),
+			const std::string &name_=""):
 		id(id_),
 		path(path_),
-		addon_paths(addon_paths_)
+		addon_paths(addon_paths_),
+		name(name_)
 	{}
 
 	bool isValid() const
@@ -47,6 +50,7 @@ struct SubgameSpec
 SubgameSpec findSubgame(const std::string &id);
 
 std::set<std::string> getAvailableGameIds();
+std::vector<SubgameSpec> getAvailableGames();
 
 std::string getWorldGameId(const std::string &world_path,
 		bool can_be_legacy=false);
@@ -74,6 +78,9 @@ struct WorldSpec
 };
 
 std::vector<WorldSpec> getAvailableWorlds();
+
+// Create world directory and world.mt if they don't exist
+bool initializeWorld(const std::string &path, const std::string &gameid);
 
 #endif
 

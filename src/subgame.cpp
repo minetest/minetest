@@ -46,7 +46,9 @@ SubgameSpec findSubgame(const std::string &id)
 				+ DIR_DELIM + id);
 	addon_paths.insert(user_server + DIR_DELIM + "addons"
 			+ DIR_DELIM + id);
-	return SubgameSpec(id, game_path, addon_paths);
+	// TODO: Read proper name from game_path/game.conf
+	std::string game_name = id;
+	return SubgameSpec(id, game_path, addon_paths, game_name);
 }
 
 std::set<std::string> getAvailableGameIds()
@@ -67,6 +69,16 @@ std::set<std::string> getAvailableGameIds()
 		}
 	}
 	return gameids;
+}
+
+std::vector<SubgameSpec> getAvailableGames()
+{
+	std::vector<SubgameSpec> specs;
+	std::set<std::string> gameids = getAvailableGameIds();
+	for(std::set<std::string>::const_iterator i = gameids.begin();
+			i != gameids.end(); i++)
+		specs.push_back(findSubgame(*i));
+	return specs;
 }
 
 #define LEGACY_GAMEID "mesetint"
@@ -130,6 +142,20 @@ std::vector<WorldSpec> getAvailableWorlds()
 	}while(0);
 	infostream<<worlds.size()<<" found."<<std::endl;
 	return worlds;
+}
+
+bool initializeWorld(const std::string &path, const std::string &gameid)
+{
+	infostream<<"Initializing world at "<<path<<std::endl;
+	// Create world.mt if does not already exist
+	std::string worldmt_path = path + DIR_DELIM + "world.mt";
+	if(!fs::PathExists(worldmt_path)){
+		infostream<<"Creating world.mt ("<<worldmt_path<<")"<<std::endl;
+		fs::CreateAllDirs(path);
+		std::ofstream of(worldmt_path.c_str(), std::ios::binary);
+		of<<"gameid = "<<gameid<<"\n";
+	}
+	return true;
 }
 
 
