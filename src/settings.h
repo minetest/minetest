@@ -330,6 +330,7 @@ public:
 	bool parseCommandLine(int argc, char *argv[],
 			core::map<std::string, ValueSpec> &allowed_options)
 	{
+		int nonopt_index = 0;
 		int i=1;
 		for(;;)
 		{
@@ -338,6 +339,15 @@ public:
 			std::string argname = argv[i];
 			if(argname.substr(0, 2) != "--")
 			{
+				// If option doesn't start with -, read it in as nonoptX
+				if(argname[0] != '-'){
+					std::string name = "nonopt";
+					name += itos(nonopt_index);
+					set(name, argname);
+					nonopt_index++;
+					i++;
+					continue;
+				}
 				errorstream<<"Invalid command-line parameter \""
 						<<argname<<"\": --<option> expected."<<std::endl;
 				return false;

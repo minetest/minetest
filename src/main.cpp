@@ -806,7 +806,7 @@ int main(int argc, char *argv[])
 	
 	bool ret = cmd_args.parseCommandLine(argc, argv, allowed_options);
 
-	if(ret == false || cmd_args.getFlag("help"))
+	if(ret == false || cmd_args.getFlag("help") || cmd_args.exists("nonopt1"))
 	{
 		dstream<<"Allowed options:"<<std::endl;
 		for(core::map<std::string, ValueSpec>::Iterator
@@ -979,8 +979,22 @@ int main(int argc, char *argv[])
 		commanded_world = cmd_args.get("world");
 	else if(cmd_args.exists("map-dir"))
 		commanded_world = cmd_args.get("map-dir");
+	else if(cmd_args.exists("nonopt0"))
+		commanded_world = cmd_args.get("nonopt0");
 	else if(g_settings->exists("map-dir"))
 		commanded_world = g_settings->get("map-dir");
+	
+	// Strip world.mt from commanded_world
+	{
+		std::string worldmt = "world.mt";
+		if(commanded_world.size() > worldmt.size() &&
+				commanded_world.substr(commanded_world.size()-worldmt.size())
+				== worldmt){
+			dstream<<"Supplied world.mt file - stripping it off."<<std::endl;
+			commanded_world = commanded_world.substr(
+					0, commanded_world.size()-worldmt.size());
+		}
+	}
 	
 	// Gamespec
 	SubgameSpec commanded_gamespec;
@@ -1065,7 +1079,9 @@ int main(int argc, char *argv[])
 	*/
 	
 	std::string address = g_settings->get("address");
-	if(cmd_args.exists("address"))
+	if(commanded_world != "")
+		address = "";
+	else if(cmd_args.exists("address"))
 		address = cmd_args.get("address");
 	else if(cmd_args.exists("world"))
 		address = "";
@@ -1294,9 +1310,10 @@ int main(int argc, char *argv[])
 					std::string gameid = getWorldGameId(commanded_world, true);
 					if(gameid == "")
 						gameid = g_settings->get("default_game");
-					WorldSpec spec(commanded_world, "--world", gameid);
+					WorldSpec spec(commanded_world, "[--world parameter]",
+							gameid);
 					worldspecs.push_back(spec);
-					menudata.selected_world = menudata.worlds.size()-1;
+					menudata.selected_world = worldspecs.size()-1;
 				}
 				// Copy worldspecs to menu
 				menudata.worlds = worldspecs;
