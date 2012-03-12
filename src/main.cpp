@@ -70,6 +70,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "mods.h"
 #include "utility_string.h"
 #include "subgame.h"
+#include "quicktune.h"
 
 /*
 	Settings.
@@ -1505,6 +1506,22 @@ int main(int argc, char *argv[])
 	// Update configuration file
 	if(configpath != "")
 		g_settings->updateConfigFile(configpath.c_str());
+	
+	// Print modified quicktune values
+	{
+		bool header_printed = false;
+		std::vector<std::string> names = getQuicktuneNames();
+		for(u32 i=0; i<names.size(); i++){
+			QuicktuneValue val = getQuicktuneValue(names[i]);
+			if(!val.modified)
+				continue;
+			if(!header_printed){
+				dstream<<"Modified quicktune values:"<<std::endl;
+				header_printed = true;
+			}
+			dstream<<names[i]<<" = "<<val.getString()<<std::endl;
+		}
+	}
 
 	END_DEBUG_EXCEPTION_HANDLER(errorstream)
 	

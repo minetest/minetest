@@ -17,6 +17,35 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
+/*
+	Used for tuning constants when developing.
+
+	Eg. if you have this constant somewhere that you just can't get right
+	by changing it and recompiling all over again:
+		v3f wield_position = v3f(55, -35, 65);
+	
+	Make it look like this:
+		v3f wield_position = v3f(55, -35, 65);
+		QUICKTUNE_AUTONAME(QVT_FLOAT, wield_position.X, 0, 100);
+		QUICKTUNE_AUTONAME(QVT_FLOAT, wield_position.Y, -80, 20);
+		QUICKTUNE_AUTONAME(QVT_FLOAT, wield_position.Z, 0, 100);
+
+	Then you can modify the values at runtime, using the keys
+		keymap_quicktune_prev
+		keymap_quicktune_next
+		keymap_quicktune_dec
+		keymap_quicktune_inc
+	
+	Once you have modified the values at runtime and then quit, the game
+	will print out all the modified values at the end:
+		Modified quicktune values:
+		wield_position.X = 60
+		wield_position.Y = -30
+		wield_position.Z = 65
+	
+	The QUICKTUNE macros shouldn't generally be left in committed code.
+*/
+
 #ifndef QUICKTUNE_HEADER
 #define QUICKTUNE_HEADER
 
@@ -24,11 +53,10 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <string>
 #include <map>
 #include <vector>
-#include "utility.h"
 
 enum QuicktuneValueType{
-	QUICKTUNE_NONE,
-	QUICKTUNE_FLOAT
+	QVT_NONE,
+	QVT_FLOAT
 };
 struct QuicktuneValue
 {
@@ -38,111 +66,40 @@ struct QuicktuneValue
 			float current;
 			float min;
 			float max;
-		} value_float;
+		} value_QVT_FLOAT;
 	};
+	bool modified;
+
+	QuicktuneValue():
+		type(QVT_NONE),
+		modified(false)
+	{}
+	std::string getString();
+	void relativeAdd(float amount);
 };
 
 std::vector<std::string> getQuicktuneNames();
-//std::map<std::string, QuicktuneValue> getQuicktuneNames();
 QuicktuneValue getQuicktuneValue(const std::string &name);
 void setQuicktuneValue(const std::string &name, const QuicktuneValue &val);
-
-class QuicktuneShortcutter
-{
-private:
-	std::vector<std::string> m_names;
-	u32 m_selected_i;
-	std::string m_message;
-public:
-	std::string getMessage()
-	{
-		std::string s = m_message;
-		m_message = "";
-		return s;
-	}
-	std::string getSelectedName()
-	{
-		if(m_selected_i < m_names.size())
-			return m_names[m_selected_i];
-		return "";
-	}
-	void next()
-	{
-		m_names = getQuicktuneNames();
-		if(m_selected_i < m_names.size()-1)
-			m_selected_i++;
-		else
-			m_selected_i = 0;
-		m_message = std::string("Selected \"")+getSelectedName()+"\"";
-	}
-	void prev()
-	{
-		m_names = getQuicktuneNames();
-		if(m_selected_i > 0)
-			m_selected_i--;
-		else
-			m_selected_i = m_names.size()-1;
-		m_message = std::string("Selected \"")+getSelectedName()+"\"";
-	}
-	void inc()
-	{
-		QuicktuneValue val = getQuicktuneValue(getSelectedName());
-		switch(val.type){
-		case QUICKTUNE_NONE:
-			break;
-		case QUICKTUNE_FLOAT:
-			val.value_float.current += 0.05 * (val.value_float.max - val.value_float.min);
-			if(val.value_float.current > val.value_float.max)
-				val.value_float.current = val.value_float.max;
-			m_message = std::string("\"")+getSelectedName()
-					+"\" = "+ftos(val.value_float.current);
-			break;
-		default:
-			m_message = std::string("\"")+getSelectedName()
-					+"\" has unknown value type";
-		}
-		setQuicktuneValue(getSelectedName(), val);
-	}
-	void dec()
-	{
-		QuicktuneValue val = getQuicktuneValue(getSelectedName());
-		switch(val.type){
-		case QUICKTUNE_NONE:
-			break;
-		case QUICKTUNE_FLOAT:
-			val.value_float.current -= 0.05 * (val.value_float.max - val.value_float.min);
-			if(val.value_float.current < val.value_float.max)
-				val.value_float.current = val.value_float.max;
-			m_message = std::string("\"")+getSelectedName()
-					+"\" = "+ftos(val.value_float.current);
-			break;
-		default:
-			m_message = std::string("\"")+getSelectedName()
-					+"\" has unknown value type";
-		}
-		setQuicktuneValue(getSelectedName(), val);
-	}
-};
 
 void updateQuicktuneValue(const std::string &name, QuicktuneValue &val);
 
 #ifndef NDEBUG
-
-#define QUICKTUNE_FLOAT(var, min, max, name){\
-	QuicktuneValue qv;\
-	qv.type = QUICKTUNE_FLOAT;\
-	qv.value_float.current = var;\
-	qv.value_float.min = min;\
-	qv.value_float.min = max;\
-	updateQuicktune(name, qv);\
-	var = qv.value_float.current;\
-}
-
+	#define QUICKTUNE(type_, var, min_, max_, name){\
+		QuicktuneValue qv;\
+		qv.type = type_;\
+		qv.value_##type_.current = var;\
+		qv.value_##type_.min = min_;\
+		qv.value_##type_.max = max_;\
+		updateQuicktuneValue(name, qv);\
+		var = qv.value_##type_.current;\
+	}
 #else // NDEBUG
-
-#define QUICKTUNE_FLOAT(var, min, max, name){}
-
+	#define QUICKTUNE(type, var, min_, max_, name){}
 #endif
+
+#define QUICKTUNE_AUTONAME(type_, var, min_, max_)\
+	QUICKTUNE(type_, var, min_, max_, #var)
 
 #endif
 

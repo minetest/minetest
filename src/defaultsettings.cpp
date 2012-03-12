@@ -51,10 +51,14 @@ void set_default_settings(Settings *settings)
 	settings->setDefault("keymap_toggle_update_camera", "KEY_F4");
 	settings->setDefault("keymap_toggle_debug", "KEY_F5");
 	settings->setDefault("keymap_toggle_profiler", "KEY_F6");
-	settings->setDefault("keymap_increase_viewing_range_min", "KEY_PRIOR");
-	settings->setDefault("keymap_decrease_viewing_range_min", "KEY_NEXT");
+	settings->setDefault("keymap_increase_viewing_range_min", "+");
+	settings->setDefault("keymap_decrease_viewing_range_min", "-");
 	// Some (temporary) keys for debugging
 	settings->setDefault("keymap_print_debug_stacks", "KEY_KEY_P");
+	settings->setDefault("keymap_quicktune_prev", "KEY_HOME");
+	settings->setDefault("keymap_quicktune_next", "KEY_END");
+	settings->setDefault("keymap_quicktune_dec", "KEY_NEXT");
+	settings->setDefault("keymap_quicktune_inc", "KEY_PRIOR");
 
 	// Show debug info by default?
 	#ifdef NDEBUG

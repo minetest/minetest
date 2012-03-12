@@ -20,6 +20,32 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "quicktune.h"
 #include <jmutex.h>
 #include <jmutexautolock.h>
+#include "utility.h"
+
+std::string QuicktuneValue::getString()
+{
+	switch(type){
+	case QVT_NONE:
+		return "(none)";
+	case QVT_FLOAT:
+		return ftos(value_QVT_FLOAT.current);
+	}
+	return "<invalid type>";
+}
+void QuicktuneValue::relativeAdd(float amount)
+{
+	switch(type){
+	case QVT_NONE:
+		break;
+	case QVT_FLOAT:
+		value_QVT_FLOAT.current += amount * (value_QVT_FLOAT.max - value_QVT_FLOAT.min);
+		if(value_QVT_FLOAT.current > value_QVT_FLOAT.max)
+			value_QVT_FLOAT.current = value_QVT_FLOAT.max;
+		if(value_QVT_FLOAT.current < value_QVT_FLOAT.min)
+			value_QVT_FLOAT.current = value_QVT_FLOAT.min;
+		break;
+	}
+}
 
 static std::map<std::string, QuicktuneValue> g_values;
 static std::vector<std::string> g_names;
@@ -38,13 +64,6 @@ std::vector<std::string> getQuicktuneNames()
 	return g_names;
 }
 
-/*std::map<std::string, QuicktuneValue> getQuicktuneValues()
-{
-	makeMutex();
-	JMutexAutoLock lock(*g_mutex);
-	return g_values;
-}*/
-
 QuicktuneValue getQuicktuneValue(const std::string &name)
 {
 	makeMutex();
@@ -52,7 +71,7 @@ QuicktuneValue getQuicktuneValue(const std::string &name)
 	std::map<std::string, QuicktuneValue>::iterator i = g_values.find(name);
 	if(i == g_values.end()){
 		QuicktuneValue val;
-		val.type = QUICKTUNE_NONE;
+		val.type = QVT_NONE;
 		return val;
 	}
 	return i->second;
@@ -63,6 +82,7 @@ void setQuicktuneValue(const std::string &name, const QuicktuneValue &val)
 	makeMutex();
 	JMutexAutoLock lock(*g_mutex);
 	g_values[name] = val;
+	g_values[name].modified = true;
 }
 
 void updateQuicktuneValue(const std::string &name, QuicktuneValue &val)
@@ -76,12 +96,11 @@ void updateQuicktuneValue(const std::string &name, QuicktuneValue &val)
 		return;
 	}
 	QuicktuneValue &ref = i->second;
-	switch(val.type){
-	case QUICKTUNE_NONE:
-		break;
-	case QUICKTUNE_FLOAT:
-		val.value_float.current = ref.value_float.current;
-		break;
+	if(ref.modified)
+		val = ref;
+	else{
+		ref = val;
+		ref.modified = false;
 	}
 }
 

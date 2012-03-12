@@ -52,6 +52,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "tile.h" // For TextureSource
 #include "logoutputbuffer.h"
 #include "subgame.h"
+#include "quicktune_shortcutter.h"
 
 /*
 	Setting this to 1 enables a special camera mode that forces
@@ -676,9 +677,7 @@ void the_game(
 	s32 hotbar_imagesize = 48;
 	
 	// The color of the sky
-
 	//video::SColor skycolor = video::SColor(255,140,186,250);
-
 	video::SColor bgcolor_bright = video::SColor(255,170,200,230);
 
 	/*
@@ -698,6 +697,9 @@ void the_game(
 
 	// Add chat log output for errors to be shown in chat
 	LogOutputBuffer chat_log_error_buf(LMT_ERROR);
+
+	// Create UI for modifying quicktune values
+	QuicktuneShortcutter quicktune;
 
 	/*
 		Create server.
@@ -1541,6 +1543,23 @@ void the_game(
 					"Minimum viewing range changed to "
 					+ itos(range_new));
 			statustext_time = 0;
+		}
+		
+		// Handle QuicktuneShortcutter
+		if(input->wasKeyDown(getKeySetting("keymap_quicktune_next")))
+			quicktune.next();
+		if(input->wasKeyDown(getKeySetting("keymap_quicktune_prev")))
+			quicktune.prev();
+		if(input->wasKeyDown(getKeySetting("keymap_quicktune_inc")))
+			quicktune.inc();
+		if(input->wasKeyDown(getKeySetting("keymap_quicktune_dec")))
+			quicktune.dec();
+		{
+			std::string msg = quicktune.getMessage();
+			if(msg != ""){
+				statustext = narrow_to_wide(msg);
+				statustext_time = 0;
+			}
 		}
 
 		// Item selection with mouse wheel
