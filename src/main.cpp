@@ -1277,11 +1277,22 @@ int main(int argc, char *argv[])
 						i != worldspecs.end(); i++)
 					menudata.worlds.push_back(narrow_to_wide(
 							i->name + " [" + i->gameid + "]"));
-				// Select if there is only one
-				if(worldspecs.size() == 1)
+				// Default to selecting nothing
+				menudata.selected_world = -1;
+				// If there is only one world, select it
+				if(worldspecs.size() == 1){
 					menudata.selected_world = 0;
-				else
-					menudata.selected_world = -1;
+				}
+				// Otherwise try to select according to selected_world_path
+				else if(g_settings->exists("selected_world_path")){
+					std::string trypath = g_settings->get("selected_world_path");
+					for(u32 i=0; i<worldspecs.size(); i++){
+						if(worldspecs[i].path == trypath){
+							menudata.selected_world = i;
+							break;
+						}
+					}
+				}
 				// If a world was commanded, append and select it
 				if(commanded_world != ""){
 					std::string gameid = getWorldGameId(commanded_world, true);
@@ -1390,6 +1401,9 @@ int main(int argc, char *argv[])
 				g_settings->set("name", playername);
 				g_settings->set("address", address);
 				g_settings->set("port", itos(port));
+				if(menudata.selected_world != -1)
+					g_settings->set("selected_world_path",
+							worldspecs[menudata.selected_world].path);
 				// Update configuration file
 				if(configpath != "")
 					g_settings->updateConfigFile(configpath.c_str());
