@@ -1271,14 +1271,10 @@ int main(int argc, char *argv[])
 				menudata.opaque_water = g_settings->getBool("opaque_water");
 				menudata.creative_mode = g_settings->getBool("creative_mode");
 				menudata.enable_damage = g_settings->getBool("enable_damage");
-				// Get world listing for the menu
-				std::vector<WorldSpec> worldspecs = getAvailableWorlds();
-				for(std::vector<WorldSpec>::const_iterator i = worldspecs.begin();
-						i != worldspecs.end(); i++)
-					menudata.worlds.push_back(narrow_to_wide(
-							i->name + " [" + i->gameid + "]"));
 				// Default to selecting nothing
 				menudata.selected_world = -1;
+				// Get world listing for the menu
+				std::vector<WorldSpec> worldspecs = getAvailableWorlds();
 				// If there is only one world, select it
 				if(worldspecs.size() == 1){
 					menudata.selected_world = 0;
@@ -1300,10 +1296,10 @@ int main(int argc, char *argv[])
 						gameid = g_settings->get("default_game");
 					WorldSpec spec(commanded_world, "--world", gameid);
 					worldspecs.push_back(spec);
-					menudata.worlds.push_back(narrow_to_wide(spec.name)
-							+L" ["+narrow_to_wide(spec.gameid)+L"]");
 					menudata.selected_world = menudata.worlds.size()-1;
 				}
+				// Copy worldspecs to menu
+				menudata.worlds = worldspecs;
 
 				if(skip_main_menu == false)
 				{
@@ -1364,22 +1360,14 @@ int main(int argc, char *argv[])
 				}
 				
 				// Delete world if requested
-				if(menudata.delete_world)
+				if(menudata.delete_world_spec.isValid())
 				{
-					if(menudata.selected_world == -1){
-						error_message = L"Cannot delete world: "
-								L"no world selected";
-						errorstream<<wide_to_narrow(error_message)<<std::endl;
-						continue;
-					}
-					/*bool r = fs::RecursiveDeleteContent(worldspec.path);
+					bool r = fs::RecursiveDeleteContent(
+							menudata.delete_world_spec.path);
 					if(r == false){
 						error_message = L"World delete failed";
 						errorstream<<wide_to_narrow(error_message)<<std::endl;
-					}*/
-					// TODO: Some kind of a yes/no dialog is needed.
-					error_message = L"This doesn't do anything currently.";
-					errorstream<<wide_to_narrow(error_message)<<std::endl;
+					}
 					continue;
 				}
 

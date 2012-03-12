@@ -180,6 +180,7 @@ set(minetest_SRCS
 	guiDeathScreen.cpp
 	guiChatConsole.cpp
 	guiCreateWorld.cpp
+	guiConfirmMenu.cpp
 	client.cpp
 	tile.cpp
 	game.cpp

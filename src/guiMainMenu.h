@@ -44,11 +44,11 @@ struct MainMenuData
 	bool enable_damage;
 	int selected_world;
 	// Actions
-	bool delete_world;
+	WorldSpec delete_world_spec;
 	std::wstring create_world_name;
 	std::string create_world_gameid;
 
-	std::list<std::wstring> worlds;
+	std::vector<WorldSpec> worlds;
 	std::vector<SubgameSpec> games;
 
 	MainMenuData():
@@ -58,9 +58,7 @@ struct MainMenuData
 		// Server opts
 		creative_mode(false),
 		enable_damage(false),
-		selected_world(0),
-		// Actions
-		delete_world(false)
+		selected_world(0)
 	{}
 };
 
@@ -84,6 +82,7 @@ public:
 	{ return m_accepted; }
 	bool OnEvent(const SEvent& event);
 	void createNewWorld(std::wstring name, std::string gameid);
+	void deleteWorld(WorldSpec spec);
 	
 private:
 	MainMenuData *m_data;

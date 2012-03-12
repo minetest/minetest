@@ -21,6 +21,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "guiKeyChangeMenu.h"
 #include "guiCreateWorld.h"
 #include "guiMessageMenu.h"
+#include "guiConfirmMenu.h"
 #include "debug.h"
 #include "serialization.h"
 #include <string>
@@ -44,6 +45,22 @@ struct CreateWorldDestMainMenu : public CreateWorldDest
 	{
 		m_menu->createNewWorld(name, gameid);
 	}
+	GUIMainMenu *m_menu;
+};
+
+struct ConfirmDestDeleteWorld : public ConfirmDest
+{
+	ConfirmDestDeleteWorld(WorldSpec spec, GUIMainMenu *menu):
+		m_spec(spec),
+		m_menu(menu)
+	{}
+	void answer(bool answer)
+	{
+		if(answer == false)
+			return;
+		m_menu->deleteWorld(m_spec);
+	}
+	WorldSpec m_spec;
 	GUIMainMenu *m_menu;
 };
 
@@ -312,9 +329,9 @@ void GUIMainMenu::regenerateGui(v2u32 screensize)
 		gui::IGUIListBox *e = Environment->addListBox(rect, this,
 				GUI_ID_WORLD_LISTBOX);
 		e->setDrawBackground(true);
-		for(std::list<std::wstring>::const_iterator i = m_data->worlds.begin();
+		for(std::vector<WorldSpec>::const_iterator i = m_data->worlds.begin();
 				i != m_data->worlds.end(); i++){
-			e->addItem(i->c_str());
+			e->addItem(narrow_to_wide(i->name+" ["+i->gameid+"]").c_str());
 		}
 		e->setSelected(m_data->selected_world);
 	}
@@ -458,9 +475,21 @@ bool GUIMainMenu::OnEvent(const SEvent& event)
 				return true;
 			}
 			case GUI_ID_DELETE_WORLD_BUTTON: {
-				acceptInput();
-				m_data->delete_world = true;
-				quitMenu();
+				MainMenuData cur;
+				readInput(&cur);
+				if(cur.selected_world == -1){
+					(new GUIMessageMenu(env, parent, -1, menumgr,
+							wgettext("Cannot delete world: Nothing selected"))
+							)->drop();
+				} else {
+					WorldSpec spec = m_data->worlds[cur.selected_world];
+					ConfirmDestDeleteWorld *dest = new
+							ConfirmDestDeleteWorld(spec, this);
+					(new GUIConfirmMenu(env, parent, -1, menumgr, dest,
+							(std::wstring(wgettext("Delete world "))
+							+L"\""+narrow_to_wide(spec.name)+L"\"?").c_str()
+							))->drop();
+				}
 				return true;
 			}
 			case GUI_ID_CREATE_WORLD_BUTTON: {
@@ -513,6 +542,15 @@ void GUIMainMenu::createNewWorld(std::wstring name, std::string gameid)
 	acceptInput();
 	m_data->create_world_name = name;
 	m_data->create_world_gameid = gameid;
+	quitMenu();
+}
+
+void GUIMainMenu::deleteWorld(WorldSpec spec)
+{
+	if(!spec.isValid())
+		return;
+	acceptInput();
+	m_data->delete_world_spec = spec;
 	quitMenu();
 }
 
