@@ -184,11 +184,20 @@ void GUICreateWorld::acceptInput()
 {
 	if(m_dest)
 	{
-		gui::IGUIElement *e = getElementFromId(GUI_ID_NAME_INPUT);
-		if(e != NULL)
+		int selected = -1;
 		{
-			m_dest->accepted(e->getText(), m_games[0].id);
+			gui::IGUIElement *e = getElementFromId(GUI_ID_GAME_LISTBOX);
+			if(e != NULL && e->getType() == gui::EGUIET_LIST_BOX)
+				selected = ((gui::IGUIListBox*)e)->getSelected();
 		}
+		std::wstring name;
+		{
+			gui::IGUIElement *e = getElementFromId(GUI_ID_NAME_INPUT);
+			if(e != NULL)
+				name = e->getText();
+		}
+		if(selected != -1 && name != L"")
+			m_dest->accepted(name, m_games[selected].id);
 		delete m_dest;
 		m_dest = NULL;
 	}
