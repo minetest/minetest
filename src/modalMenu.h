@@ -125,12 +125,12 @@ public:
 
 protected:
 	//bool m_force_regenerate_gui;
+	v2u32 m_screensize_old;
 private:
 	IMenuManager *m_menumgr;
 	// This might be necessary to expose to the implementation if it
 	// wants to launch other menus
 	bool m_allow_focus_removal;
-	v2u32 m_screensize_old;
 };
 
 

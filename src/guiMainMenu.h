@@ -83,6 +83,7 @@ public:
 	bool OnEvent(const SEvent& event);
 	void createNewWorld(std::wstring name, std::string gameid);
 	void deleteWorld(WorldSpec spec);
+	int getTab();
 	
 private:
 	MainMenuData *m_data;
@@ -93,6 +94,8 @@ private:
 	gui::IGUIElement* parent;
 	s32 id;
 	IMenuManager *menumgr;
+	
+	bool m_is_regenerating;
 };
 
 #endif
