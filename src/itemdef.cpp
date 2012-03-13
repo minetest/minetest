@@ -381,17 +381,20 @@ public:
 				content_t id = nodedef->getId(def->name);
 				const ContentFeatures &f = nodedef->get(id);
 
+				u8 param1 = 0;
+				if(f.param_type == CPT_LIGHT)
+					param1 = 0xee;
+
 				/*
 				 	Make a mesh from the node
 				*/
-				MeshMakeData mesh_make_data;
-				MapNode mesh_make_node(
-					id,
-					(f.param_type == CPT_LIGHT) ? 0xee : 0,
-					0);
-				mesh_make_data.fillSingleNode(1000, &mesh_make_node);
-				scene::IMesh *node_mesh =
-					makeMapBlockMesh(&mesh_make_data, gamedef);
+				MeshMakeData mesh_make_data(gamedef);
+				MapNode mesh_make_node(id, param1, 0);
+				mesh_make_data.fillSingleNode(&mesh_make_node);
+				MapBlockMesh mapblock_mesh(&mesh_make_data);
+
+				scene::IMesh *node_mesh = mapblock_mesh.getMesh();
+				assert(node_mesh);
 				setMeshColor(node_mesh, video::SColor(255, 255, 255, 255));
 
 				/*
@@ -404,7 +407,7 @@ public:
 				/*
 					Draw node mesh into a render target texture
 				*/
-				if(def->inventory_texture == NULL && node_mesh != NULL)
+				if(def->inventory_texture == NULL)
 				{
 					core::dimension2d<u32> dim(64,64);
 					std::string rtt_texture_name = "INVENTORY_"
@@ -443,7 +446,7 @@ public:
 				/*
 					Use the node mesh as the wield mesh
 				*/
-				if(def->wield_mesh == NULL && node_mesh != NULL)
+				if(def->wield_mesh == NULL)
 				{
 					// Scale to proper wield mesh proportions
 					scaleMesh(node_mesh, v3f(30.0, 30.0, 30.0)
@@ -452,9 +455,7 @@ public:
 					def->wield_mesh->grab();
 				}
 
-
-				if(node_mesh != NULL)
-					node_mesh->drop();
+				// falling outside of here deletes node_mesh
 			}
 		}
 #endif

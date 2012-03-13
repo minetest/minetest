@@ -1038,8 +1038,6 @@ void the_game(
 	float object_hit_delay_timer = 0.0;
 	float time_from_last_punch = 10;
 
-	float crack_update_timer = 0.0;
-	
 	bool invert_mouse = g_settings->getBool("invert_mouse");
 
 	bool respawn_menu_active = false;
@@ -1185,7 +1183,6 @@ void the_game(
 		if(object_hit_delay_timer >= 0)
 			object_hit_delay_timer -= dtime;
 		time_from_last_punch += dtime;
-		crack_update_timer += dtime;
 
 		g_profiler->add("Elapsed time", dtime);
 		g_profiler->avg("FPS", 1./dtime);
@@ -1908,7 +1905,7 @@ void the_game(
 			if(!digging)
 			{
 				client.interact(1, pointed_old);
-				client.clearTempMod(pointed_old.node_undersurface);
+				client.setCrack(-1, v3s16(0,0,0));
 				dig_time = 0.0;
 			}
 		}
@@ -2003,20 +2000,15 @@ void the_game(
 				}
 				else if(dig_index < CRACK_ANIMATION_LENGTH)
 				{
-					// Limit crack update speed
-					if(crack_update_timer >= 0.1){
-						crack_update_timer = 0.0;
-						//infostream<<"dig_index="<<dig_index<<std::endl;
-						//TimeTaker timer("client.setTempMod");
-						client.setTempMod(nodepos,
-								NodeMod(NODEMOD_CRACK, dig_index));
-					}
+					//TimeTaker timer("client.setTempMod");
+					//infostream<<"dig_index="<<dig_index<<std::endl;
+					client.setCrack(dig_index, nodepos);
 				}
 				else
 				{
 					infostream<<"Digging completed"<<std::endl;
 					client.interact(2, pointed);
-					client.clearTempMod(nodepos);
+					client.setCrack(-1, v3s16(0,0,0));
 					client.removeNode(nodepos);
 
 					dig_time = 0;
@@ -2171,8 +2163,6 @@ void the_game(
 		u32 daynight_ratio = client.getDayNightRatio();
 		u8 light8 = decode_light((daynight_ratio * LIGHT_SUN) / 1000);
 		brightness = (float)light8/255.0;
-		// Make night look good
-		brightness = brightness * 1.15 - 0.15;
 		video::SColor bgcolor;
 		if(brightness >= 0.2 && brightness < 0.7)
 			bgcolor = video::SColor(

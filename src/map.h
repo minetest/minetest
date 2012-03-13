@@ -28,7 +28,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "common_irrlicht.h"
 #include "mapnode.h"
-#include "mapblock_nodemod.h"
 #include "constants.h"
 #include "voxel.h"
 #include "utility.h" // Needed for UniqueQueue, a member of Map
@@ -569,33 +568,6 @@ public:
 	void renderMap(video::IVideoDriver* driver, s32 pass);
 
 	void renderPostFx();
-
-	/*
-		Methods for setting temporary modifications to nodes for
-		drawing.
-
-		Returns true if something changed.
-		
-		All blocks whose mesh could have been changed are inserted
-		to affected_blocks.
-	*/
-	bool setTempMod(v3s16 p, NodeMod mod,
-			core::map<v3s16, MapBlock*> *affected_blocks=NULL);
-	bool clearTempMod(v3s16 p,
-			core::map<v3s16, MapBlock*> *affected_blocks=NULL);
-	// Efficient implementation needs a cache of TempMods
-	//void clearTempMods();
-
-	void expireMeshes(bool only_daynight_diffed);
-	
-	/*
-		Update the faces of the given block and blocks on the
-		leading edge, without threading. Rarely used.
-	*/
-	void updateMeshes(v3s16 blockpos, u32 daynight_ratio);
-	
-	// Update meshes that touch the node
-	//void updateNodeMeshes(v3s16 nodepos, u32 daynight_ratio);
 
 	// For debug printing
 	virtual void PrintInfo(std::ostream &out);

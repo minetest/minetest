@@ -135,10 +135,9 @@ struct ContentFeatures
 	// 0     1     2     3     4     5
 	// up    down  right left  back  front 
 	TileSpec tiles[6];
-	// Special material/texture
+	// Special tiles
 	// - Currently used for flowing liquids
-	video::SMaterial *special_materials[CF_SPECIAL_COUNT];
-	AtlasPointer *special_aps[CF_SPECIAL_COUNT];
+	TileSpec special_tiles[CF_SPECIAL_COUNT];
 	u8 solidness; // Used when choosing which face is drawn
 	u8 visual_solidness; // When solidness=0, this tells how it looks like
 	bool backface_culling;

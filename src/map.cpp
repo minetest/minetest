@@ -21,23 +21,22 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "mapsector.h"
 #include "mapblock.h"
 #include "main.h"
-#ifndef SERVER
-#include "client.h"
-#endif
 #include "filesys.h"
 #include "utility.h"
 #include "voxel.h"
 #include "porting.h"
 #include "mapgen.h"
 #include "nodemetadata.h"
-#ifndef SERVER
-#include <IMaterialRenderer.h>
-#endif
 #include "settings.h"
 #include "log.h"
 #include "profiler.h"
 #include "nodedef.h"
 #include "gamedef.h"
+#ifndef SERVER
+#include "client.h"
+#include "mapblock_mesh.h"
+#include <IMaterialRenderer.h>
+#endif
 
 #define PP(x) "("<<(x).X<<","<<(x).Y<<","<<(x).Z<<")"
 
@@ -3676,7 +3675,12 @@ void ClientMap::renderMap(video::IVideoDriver* driver, s32 pass)
 	*/
 	int time1 = time(0);
 
-	//u32 daynight_ratio = m_client->getDayNightRatio();
+	/*
+		Get animation parameters
+	*/
+	float animation_time = m_client->getAnimationTime();
+	int crack = m_client->getCrackLevel();
+	u32 daynight_ratio = m_client->getDayNightRatio();
 
 	m_camera_mutex.Lock();
 	v3f camera_position = m_camera_position;
@@ -3709,8 +3713,9 @@ void ClientMap::renderMap(video::IVideoDriver* driver, s32 pass)
 	u32 vertex_count = 0;
 	u32 meshbuffer_count = 0;
 	
-	// For limiting number of mesh updates per frame
-	u32 mesh_update_count = 0;
+	// For limiting number of mesh animations per frame
+	u32 mesh_animate_count = 0;
+	u32 mesh_animate_count_far = 0;
 	
 	// Number of blocks in rendering range
 	u32 blocks_in_range = 0;
@@ -3791,56 +3796,17 @@ void ClientMap::renderMap(video::IVideoDriver* driver, s32 pass)
 
 			blocks_in_range++;
 			
-#if 1
 			/*
-				Update expired mesh (used for day/night change)
-
-				It doesn't work exactly like it should now with the
-				tasked mesh update but whatever.
+				Ignore if mesh doesn't exist
 			*/
-
-			bool mesh_expired = false;
-			
 			{
-				JMutexAutoLock lock(block->mesh_mutex);
+				//JMutexAutoLock lock(block->mesh_mutex);
 
-				mesh_expired = block->getMeshExpired();
-
-				// Mesh has not been expired and there is no mesh:
-				// block has no content
-				if(block->mesh == NULL && mesh_expired == false){
+				if(block->mesh == NULL){
 					blocks_in_range_without_mesh++;
 					continue;
 				}
 			}
-
-			f32 faraway = BS*50;
-			//f32 faraway = m_control.wanted_range * BS;
-			
-			/*
-				This has to be done with the mesh_mutex unlocked
-			*/
-			// Pretty random but this should work somewhat nicely
-			if(mesh_expired && (
-					(mesh_update_count < 3
-						&& (d < faraway || mesh_update_count < 2)
-					)
-					|| 
-					(m_control.range_all && mesh_update_count < 20)
-				)
-			)
-			/*if(mesh_expired && mesh_update_count < 6
-					&& (d < faraway || mesh_update_count < 3))*/
-			{
-				mesh_update_count++;
-
-				// Mesh has been expired: generate new mesh
-				//block->updateMesh(daynight_ratio);
-				m_client->addUpdateMeshTask(block->getPos());
-
-				mesh_expired = false;
-			}
-#endif
 
 			/*
 				Occlusion culling
@@ -3883,27 +3849,40 @@ void ClientMap::renderMap(video::IVideoDriver* driver, s32 pass)
 			// This block is in range. Reset usage timer.
 			block->resetUsageTimer();
 
-			/*
-				Ignore if mesh doesn't exist
-			*/
-			{
-				JMutexAutoLock lock(block->mesh_mutex);
-
-				scene::SMesh *mesh = block->mesh;
-				
-				if(mesh == NULL){
-					blocks_in_range_without_mesh++;
-					continue;
-				}
-			}
-			
 			// Limit block count in case of a sudden increase
 			blocks_would_have_drawn++;
 			if(blocks_drawn >= m_control.wanted_max_blocks
 					&& m_control.range_all == false
 					&& d > m_control.wanted_min_range * BS)
 				continue;
-			
+
+			// Mesh animation
+			{
+				//JMutexAutoLock lock(block->mesh_mutex);
+				MapBlockMesh *mapBlockMesh = block->mesh;
+				// Pretty random but this should work somewhat nicely
+				bool faraway = d >= BS*50;
+				//bool faraway = d >= m_control.wanted_range * BS;
+				if(mapBlockMesh->isAnimationForced() ||
+						!faraway ||
+						mesh_animate_count_far < (m_control.range_all ? 200 : 50))
+				{
+					bool animated = mapBlockMesh->animate(
+							faraway,
+							animation_time,
+							crack,
+							daynight_ratio);
+					if(animated)
+						mesh_animate_count++;
+					if(animated && faraway)
+						mesh_animate_count_far++;
+				}
+				else
+				{
+					mapBlockMesh->decreaseAnimationForceTimer();
+				}
+			}
+
 			// Add to set
 			drawset[block->getPos()] = block;
 			
@@ -3951,11 +3930,14 @@ void ClientMap::renderMap(video::IVideoDriver* driver, s32 pass)
 			Draw the faces of the block
 		*/
 		{
-			JMutexAutoLock lock(block->mesh_mutex);
+			//JMutexAutoLock lock(block->mesh_mutex);
 
-			scene::SMesh *mesh = block->mesh;
+			MapBlockMesh *mapBlockMesh = block->mesh;
+			assert(mapBlockMesh);
+
+			scene::SMesh *mesh = mapBlockMesh->getMesh();
 			assert(mesh);
-			
+
 			u32 c = mesh->getMeshBufferCount();
 			bool stuff_actually_drawn = false;
 			for(u32 i=0; i<c; i++)
@@ -3999,6 +3981,8 @@ void ClientMap::renderMap(video::IVideoDriver* driver, s32 pass)
 			g_profiler->avg("CM: blocks in range without mesh (frac)",
 					(float)blocks_in_range_without_mesh/blocks_in_range);
 		g_profiler->avg("CM: blocks drawn", blocks_drawn);
+		g_profiler->avg("CM: animated meshes", mesh_animate_count);
+		g_profiler->avg("CM: animated meshes (far)", mesh_animate_count_far);
 	}
 	
 	g_profiler->avg(prefix+"vertices drawn", vertex_count);
@@ -4046,205 +4030,6 @@ void ClientMap::renderPostFx()
 		driver->draw2DRectangle(post_effect_color, rect);
 	}
 }
-
-bool ClientMap::setTempMod(v3s16 p, NodeMod mod,
-		core::map<v3s16, MapBlock*> *affected_blocks)
-{
-	bool changed = false;
-	/*
-		Add it to all blocks touching it
-	*/
-	v3s16 dirs[7] = {
-		v3s16(0,0,0), // this
-		v3s16(0,0,1), // back
-		v3s16(0,1,0), // top
-		v3s16(1,0,0), // right
-		v3s16(0,0,-1), // front
-		v3s16(0,-1,0), // bottom
-		v3s16(-1,0,0), // left
-	};
-	for(u16 i=0; i<7; i++)
-	{
-		v3s16 p2 = p + dirs[i];
-		// Block position of neighbor (or requested) node
-		v3s16 blockpos = getNodeBlockPos(p2);
-		MapBlock * blockref = getBlockNoCreateNoEx(blockpos);
-		if(blockref == NULL)
-			continue;
-		// Relative position of requested node
-		v3s16 relpos = p - blockpos*MAP_BLOCKSIZE;
-		if(blockref->setTempMod(relpos, mod))
-		{
-			changed = true;
-		}
-	}
-	if(changed && affected_blocks!=NULL)
-	{
-		for(u16 i=0; i<7; i++)
-		{
-			v3s16 p2 = p + dirs[i];
-			// Block position of neighbor (or requested) node
-			v3s16 blockpos = getNodeBlockPos(p2);
-			MapBlock * blockref = getBlockNoCreateNoEx(blockpos);
-			if(blockref == NULL)
-				continue;
-			affected_blocks->insert(blockpos, blockref);
-		}
-	}
-	return changed;
-}
-
-bool ClientMap::clearTempMod(v3s16 p,
-		core::map<v3s16, MapBlock*> *affected_blocks)
-{
-	bool changed = false;
-	v3s16 dirs[7] = {
-		v3s16(0,0,0), // this
-		v3s16(0,0,1), // back
-		v3s16(0,1,0), // top
-		v3s16(1,0,0), // right
-		v3s16(0,0,-1), // front
-		v3s16(0,-1,0), // bottom
-		v3s16(-1,0,0), // left
-	};
-	for(u16 i=0; i<7; i++)
-	{
-		v3s16 p2 = p + dirs[i];
-		// Block position of neighbor (or requested) node
-		v3s16 blockpos = getNodeBlockPos(p2);
-		MapBlock * blockref = getBlockNoCreateNoEx(blockpos);
-		if(blockref == NULL)
-			continue;
-		// Relative position of requested node
-		v3s16 relpos = p - blockpos*MAP_BLOCKSIZE;
-		if(blockref->clearTempMod(relpos))
-		{
-			changed = true;
-		}
-	}
-	if(changed && affected_blocks!=NULL)
-	{
-		for(u16 i=0; i<7; i++)
-		{
-			v3s16 p2 = p + dirs[i];
-			// Block position of neighbor (or requested) node
-			v3s16 blockpos = getNodeBlockPos(p2);
-			MapBlock * blockref = getBlockNoCreateNoEx(blockpos);
-			if(blockref == NULL)
-				continue;
-			affected_blocks->insert(blockpos, blockref);
-		}
-	}
-	return changed;
-}
-
-void ClientMap::expireMeshes(bool only_daynight_diffed)
-{
-	TimeTaker timer("expireMeshes()");
-
-	core::map<v2s16, MapSector*>::Iterator si;
-	si = m_sectors.getIterator();
-	for(; si.atEnd() == false; si++)
-	{
-		MapSector *sector = si.getNode()->getValue();
-
-		core::list< MapBlock * > sectorblocks;
-		sector->getBlocks(sectorblocks);
-		
-		core::list< MapBlock * >::Iterator i;
-		for(i=sectorblocks.begin(); i!=sectorblocks.end(); i++)
-		{
-			MapBlock *block = *i;
-
-			if(only_daynight_diffed && dayNightDiffed(block->getPos()) == false)
-			{
-				continue;
-			}
-			
-			{
-				JMutexAutoLock lock(block->mesh_mutex);
-				if(block->mesh != NULL)
-				{
-					/*block->mesh->drop();
-					block->mesh = NULL;*/
-					block->setMeshExpired(true);
-				}
-			}
-		}
-	}
-}
-
-void ClientMap::updateMeshes(v3s16 blockpos, u32 daynight_ratio)
-{
-	assert(mapType() == MAPTYPE_CLIENT);
-
-	try{
-		v3s16 p = blockpos + v3s16(0,0,0);
-		MapBlock *b = getBlockNoCreate(p);
-		b->updateMesh(daynight_ratio);
-		//b->setMeshExpired(true);
-	}
-	catch(InvalidPositionException &e){}
-	// Leading edge
-	try{
-		v3s16 p = blockpos + v3s16(-1,0,0);
-		MapBlock *b = getBlockNoCreate(p);
-		b->updateMesh(daynight_ratio);
-		//b->setMeshExpired(true);
-	}
-	catch(InvalidPositionException &e){}
-	try{
-		v3s16 p = blockpos + v3s16(0,-1,0);
-		MapBlock *b = getBlockNoCreate(p);
-		b->updateMesh(daynight_ratio);
-		//b->setMeshExpired(true);
-	}
-	catch(InvalidPositionException &e){}
-	try{
-		v3s16 p = blockpos + v3s16(0,0,-1);
-		MapBlock *b = getBlockNoCreate(p);
-		b->updateMesh(daynight_ratio);
-		//b->setMeshExpired(true);
-	}
-	catch(InvalidPositionException &e){}
-}
-
-#if 0
-/*
-	Update mesh of block in which the node is, and if the node is at the
-	leading edge, update the appropriate leading blocks too.
-*/
-void ClientMap::updateNodeMeshes(v3s16 nodepos, u32 daynight_ratio)
-{
-	v3s16 dirs[4] = {
-		v3s16(0,0,0),
-		v3s16(-1,0,0),
-		v3s16(0,-1,0),
-		v3s16(0,0,-1),
-	};
-	v3s16 blockposes[4];
-	for(u32 i=0; i<4; i++)
-	{
-		v3s16 np = nodepos + dirs[i];
-		blockposes[i] = getNodeBlockPos(np);
-		// Don't update mesh of block if it has been done already
-		bool already_updated = false;
-		for(u32 j=0; j<i; j++)
-		{
-			if(blockposes[j] == blockposes[i])
-			{
-				already_updated = true;
-				break;
-			}
-		}
-		if(already_updated)
-			continue;
-		// Update mesh
-		MapBlock *b = getBlockNoCreate(blockposes[i]);
-		b->updateMesh(daynight_ratio);
-	}
-}
-#endif
 
 void ClientMap::PrintInfo(std::ostream &out)
 {

@@ -890,9 +890,6 @@ void ServerEnvironment::step(float dtime)
 	
 	//TimeTaker timer("ServerEnv step");
 
-	// Get some settings
-	bool footprints = g_settings->getBool("footprints");
-
 	/*
 		Increment game time
 	*/
@@ -921,26 +918,6 @@ void ServerEnvironment::step(float dtime)
 			
 			// Move
 			player->move(dtime, *m_map, 100*BS);
-			
-			/*
-				Add footsteps to grass
-			*/
-			if(footprints)
-			{
-				// Get node that is at BS/4 under player
-				v3s16 bottompos = floatToInt(playerpos + v3f(0,-BS/4,0), BS);
-				try{
-					MapNode n = m_map->getNode(bottompos);
-					if(n.getContent() == LEGN(m_gamedef->ndef(), "CONTENT_GRASS"))
-					{
-						n.setContent(LEGN(m_gamedef->ndef(), "CONTENT_GRASS_FOOTSTEPS"));
-						m_map->setNode(bottompos, n);
-					}
-				}
-				catch(InvalidPositionException &e)
-				{
-				}
-			}
 		}
 	}
 
@@ -1873,7 +1850,6 @@ void ClientEnvironment::step(float dtime)
 
 	// Get some settings
 	bool free_move = g_settings->getBool("free_move");
-	bool footprints = g_settings->getBool("footprints");
 
 	// Get local player
 	LocalPlayer *lplayer = getLocalPlayer();
@@ -2058,34 +2034,6 @@ void ClientEnvironment::step(float dtime)
 			light = blend_light(getDayNightRatio(), LIGHT_SUN, 0);
 		}
 		player->updateLight(light);
-
-		/*
-			Add footsteps to grass
-		*/
-		if(footprints)
-		{
-			// Get node that is at BS/4 under player
-			v3s16 bottompos = floatToInt(playerpos + v3f(0,-BS/4,0), BS);
-			try{
-				MapNode n = m_map->getNode(bottompos);
-				if(n.getContent() == LEGN(m_gamedef->ndef(), "CONTENT_GRASS"))
-				{
-					n.setContent(LEGN(m_gamedef->ndef(), "CONTENT_GRASS_FOOTSTEPS"));
-					m_map->setNode(bottompos, n);
-					// Update mesh on client
-					if(m_map->mapType() == MAPTYPE_CLIENT)
-					{
-						v3s16 p_blocks = getNodeBlockPos(bottompos);
-						MapBlock *b = m_map->getBlockNoCreate(p_blocks);
-						//b->updateMesh(getDayNightRatio());
-						b->setMeshExpired(true);
-					}
-				}
-			}
-			catch(InvalidPositionException &e)
-			{
-			}
-		}
 	}
 	
 	/*
@@ -2132,16 +2080,6 @@ void ClientEnvironment::step(float dtime)
 			m_simple_objects.erase(cur);
 		}
 	}
-}
-
-void ClientEnvironment::updateMeshes(v3s16 blockpos)
-{
-	m_map->updateMeshes(blockpos, getDayNightRatio());
-}
-
-void ClientEnvironment::expireMeshes(bool only_daynight_diffed)
-{
-	m_map->expireMeshes(only_daynight_diffed);
 }
 	
 void ClientEnvironment::addSimpleObject(ClientSimpleObject *simple)

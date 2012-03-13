@@ -82,8 +82,9 @@ MeshUpdateQueue::~MeshUpdateQueue()
 {
 	JMutexAutoLock lock(m_mutex);
 
-	core::list<QueuedMeshUpdate*>::Iterator i;
-	for(i=m_queue.begin(); i!=m_queue.end(); i++)
+	for(std::vector<QueuedMeshUpdate*>::iterator
+			i = m_queue.begin();
+			i != m_queue.end(); i++)
 	{
 		QueuedMeshUpdate *q = *i;
 		delete q;
@@ -93,7 +94,7 @@ MeshUpdateQueue::~MeshUpdateQueue()
 /*
 	peer_id=0 adds with nobody to send to
 */
-void MeshUpdateQueue::addBlock(v3s16 p, MeshMakeData *data, bool ack_block_to_server)
+void MeshUpdateQueue::addBlock(v3s16 p, MeshMakeData *data, bool ack_block_to_server, bool urgent)
 {
 	DSTACK(__FUNCTION_NAME);
 
@@ -101,12 +102,16 @@ void MeshUpdateQueue::addBlock(v3s16 p, MeshMakeData *data, bool ack_block_to_se
 
 	JMutexAutoLock lock(m_mutex);
 
+	if(urgent)
+		m_urgents.insert(p);
+
 	/*
 		Find if block is already in queue.
 		If it is, update the data and quit.
 	*/
-	core::list<QueuedMeshUpdate*>::Iterator i;
-	for(i=m_queue.begin(); i!=m_queue.end(); i++)
+	for(std::vector<QueuedMeshUpdate*>::iterator
+			i = m_queue.begin();
+			i != m_queue.end(); i++)
 	{
 		QueuedMeshUpdate *q = *i;
 		if(q->p == p)
@@ -136,12 +141,19 @@ QueuedMeshUpdate * MeshUpdateQueue::pop()
 {
 	JMutexAutoLock lock(m_mutex);
 
-	core::list<QueuedMeshUpdate*>::Iterator i = m_queue.begin();
-	if(i == m_queue.end())
-		return NULL;
-	QueuedMeshUpdate *q = *i;
-	m_queue.erase(i);
-	return q;
+	bool must_be_urgent = !m_urgents.empty();
+	for(std::vector<QueuedMeshUpdate*>::iterator
+			i = m_queue.begin();
+			i != m_queue.end(); i++)
+	{
+		QueuedMeshUpdate *q = *i;
+		if(must_be_urgent && m_urgents.count(q->p) == 0)
+			continue;
+		m_queue.erase(i);
+		m_urgents.erase(q->p);
+		return q;
+	}
+	return NULL;
 }
 
 /*
@@ -178,8 +190,12 @@ void * MeshUpdateThread::Thread()
 
 		ScopeProfiler sp(g_profiler, "Client: Mesh making");
 
-		scene::SMesh *mesh_new = NULL;
-		mesh_new = makeMapBlockMesh(q->data, m_gamedef);
+		MapBlockMesh *mesh_new = new MapBlockMesh(q->data);
+		if(mesh_new->getMesh()->getMeshBufferCount() == 0)
+		{
+			delete mesh_new;
+			mesh_new = NULL;
+		}
 
 		MeshUpdateResult r;
 		r.p = q->p;
@@ -227,6 +243,9 @@ Client::Client(
 	m_inventory_updated(false),
 	m_inventory_from_server(NULL),
 	m_inventory_from_server_age(0.0),
+	m_animation_time(0),
+	m_crack_level(-1),
+	m_crack_pos(0,0,0),
 	m_time_of_day(0),
 	m_map_seed(0),
 	m_password(password),
@@ -309,6 +328,10 @@ void Client::step(float dtime)
 	else
 		m_ignore_damage_timer = 0.0;
 	
+	m_animation_time += dtime;
+	if(m_animation_time > 60.0)
+		m_animation_time -= 60.0;
+
 	//infostream<<"Client steps "<<dtime<<std::endl;
 
 	{
@@ -635,7 +658,18 @@ void Client::step(float dtime)
 			MapBlock *block = m_env.getMap().getBlockNoCreateNoEx(r.p);
 			if(block)
 			{
-				block->replaceMesh(r.mesh);
+				//JMutexAutoLock lock(block->mesh_mutex);
+
+				// Delete the old mesh
+				if(block->mesh != NULL)
+				{
+					// TODO: Remove hardware buffers of meshbuffers of block->mesh
+					delete block->mesh;
+					block->mesh = NULL;
+				}
+
+				// Replace with the new mesh
+				block->mesh = r.mesh;
 			}
 			if(r.ack_block_to_server)
 			{
@@ -868,9 +902,6 @@ void Client::ProcessData(u8 *data, u32 datasize, u16 sender_peer_id)
 		
 		//TimeTaker t1("TOCLIENT_REMOVENODE");
 		
-		// This will clear the cracking animation after digging
-		((ClientMap&)m_env.getMap()).clearTempMod(p);
-
 		removeNode(p);
 	}
 	else if(command == TOCLIENT_ADDNODE)
@@ -960,13 +991,6 @@ void Client::ProcessData(u8 *data, u32 datasize, u16 sender_peer_id)
 		m_con.Send(PEER_ID_SERVER, 1, reply, true);
 #endif
 
-		/*
-			Update Mesh of this block and blocks at x-, y- and z-.
-			Environment should not be locked as it interlocks with the
-			main thread, from which is will want to retrieve textures.
-		*/
-
-		//m_env.getClientMap().updateMeshes(block->getPos(), getDayNightRatio());
 		/*
 			Add it to mesh update queue and set it to be acknowledged after update.
 		*/
@@ -1837,12 +1861,14 @@ void Client::removeNode(v3s16 p)
 	{
 	}
 	
+	// add urgent task to update the modified node
+	addUpdateMeshTaskForNode(p, false, true);
+
 	for(core::map<v3s16, MapBlock * >::Iterator
 			i = modified_blocks.getIterator();
 			i.atEnd() == false; i++)
 	{
 		v3s16 p = i.getNode()->getKey();
-		//m_env.getClientMap().updateMeshes(p, m_env.getDayNightRatio());
 		addUpdateMeshTaskWithEdge(p);
 	}
 }
@@ -1863,14 +1889,13 @@ void Client::addNode(v3s16 p, MapNode n)
 	catch(InvalidPositionException &e)
 	{}
 	
-	//TimeTaker timer2("Client::addNode(): updateMeshes");
+	//TimeTaker timer2("Client::addNode(): addUpdateMeshTaskWithEdge");
 
 	for(core::map<v3s16, MapBlock * >::Iterator
 			i = modified_blocks.getIterator();
 			i.atEnd() == false; i++)
 	{
 		v3s16 p = i.getNode()->getKey();
-		//m_env.getClientMap().updateMeshes(p, m_env.getDayNightRatio());
 		addUpdateMeshTaskWithEdge(p);
 	}
 }
@@ -2051,6 +2076,36 @@ core::list<std::wstring> Client::getConnectedPlayerNames()
 	return playerNames;
 }
 
+float Client::getAnimationTime()
+{
+	return m_animation_time;
+}
+
+int Client::getCrackLevel()
+{
+	return m_crack_level;
+}
+
+void Client::setCrack(int level, v3s16 pos)
+{
+	int old_crack_level = m_crack_level;
+	v3s16 old_crack_pos = m_crack_pos;
+
+	m_crack_level = level;
+	m_crack_pos = pos;
+
+	if(old_crack_level >= 0 && (level < 0 || pos != old_crack_pos))
+	{
+		// remove old crack
+		addUpdateMeshTaskForNode(old_crack_pos, false, true);
+	}
+	if(level >= 0 && (old_crack_level < 0 || pos != old_crack_pos))
+	{
+		// add new crack
+		addUpdateMeshTaskForNode(pos, false, true);
+	}
+}
+
 u32 Client::getDayNightRatio()
 {
 	//JMutexAutoLock envlock(m_env_mutex); //bulk comment-out
@@ -2062,40 +2117,6 @@ u16 Client::getHP()
 	Player *player = m_env.getLocalPlayer();
 	assert(player != NULL);
 	return player->hp;
-}
-
-void Client::setTempMod(v3s16 p, NodeMod mod)
-{
-	//JMutexAutoLock envlock(m_env_mutex); //bulk comment-out
-	assert(m_env.getMap().mapType() == MAPTYPE_CLIENT);
-
-	core::map<v3s16, MapBlock*> affected_blocks;
-	((ClientMap&)m_env.getMap()).setTempMod(p, mod,
-			&affected_blocks);
-
-	for(core::map<v3s16, MapBlock*>::Iterator
-			i = affected_blocks.getIterator();
-			i.atEnd() == false; i++)
-	{
-		i.getNode()->getValue()->updateMesh(m_env.getDayNightRatio());
-	}
-}
-
-void Client::clearTempMod(v3s16 p)
-{
-	//JMutexAutoLock envlock(m_env_mutex); //bulk comment-out
-	assert(m_env.getMap().mapType() == MAPTYPE_CLIENT);
-
-	core::map<v3s16, MapBlock*> affected_blocks;
-	((ClientMap&)m_env.getMap()).clearTempMod(p,
-			&affected_blocks);
-
-	for(core::map<v3s16, MapBlock*>::Iterator
-			i = affected_blocks.getIterator();
-			i.atEnd() == false; i++)
-	{
-		i.getNode()->getValue()->updateMesh(m_env.getDayNightRatio());
-	}
 }
 
 bool Client::getChatMessage(std::wstring &message)
@@ -2131,10 +2152,12 @@ void Client::typeChatMessage(const std::wstring &message)
 	}
 }
 
-void Client::addUpdateMeshTask(v3s16 p, bool ack_to_server)
+void Client::addUpdateMeshTask(v3s16 p, bool ack_to_server, bool urgent)
 {
 	/*infostream<<"Client::addUpdateMeshTask(): "
 			<<"("<<p.X<<","<<p.Y<<","<<p.Z<<")"
+			<<" ack_to_server="<<ack_to_server
+			<<" urgent="<<urgent
 			<<std::endl;*/
 
 	MapBlock *b = m_env.getMap().getBlockNoCreateNoEx(p);
@@ -2145,45 +2168,29 @@ void Client::addUpdateMeshTask(v3s16 p, bool ack_to_server)
 		Create a task to update the mesh of the block
 	*/
 	
-	MeshMakeData *data = new MeshMakeData;
+	MeshMakeData *data = new MeshMakeData(this);
 	
 	{
 		//TimeTaker timer("data fill");
 		// Release: ~0ms
 		// Debug: 1-6ms, avg=2ms
-		data->fill(getDayNightRatio(), b);
+		data->fill(b);
+		data->setCrack(m_crack_level, m_crack_pos);
+		data->setSmoothLighting(g_settings->getBool("smooth_lighting"));
 	}
 
 	// Debug wait
 	//while(m_mesh_update_thread.m_queue_in.size() > 0) sleep_ms(10);
 	
 	// Add task to queue
-	m_mesh_update_thread.m_queue_in.addBlock(p, data, ack_to_server);
+	m_mesh_update_thread.m_queue_in.addBlock(p, data, ack_to_server, urgent);
 
 	/*infostream<<"Mesh update input queue size is "
 			<<m_mesh_update_thread.m_queue_in.size()
 			<<std::endl;*/
-	
-#if 0
-	// Temporary test: make mesh directly in here
-	{
-		//TimeTaker timer("make mesh");
-		// 10ms
-		scene::SMesh *mesh_new = NULL;
-		mesh_new = makeMapBlockMesh(data);
-		b->replaceMesh(mesh_new);
-		delete data;
-	}
-#endif
-
-	/*
-		Mark mesh as non-expired at this point so that it can already
-		be marked as expired again if the data changes
-	*/
-	b->setMeshExpired(false);
 }
 
-void Client::addUpdateMeshTaskWithEdge(v3s16 blockpos, bool ack_to_server)
+void Client::addUpdateMeshTaskWithEdge(v3s16 blockpos, bool ack_to_server, bool urgent)
 {
 	/*{
 		v3s16 p = blockpos;
@@ -2195,25 +2202,66 @@ void Client::addUpdateMeshTaskWithEdge(v3s16 blockpos, bool ack_to_server)
 	try{
 		v3s16 p = blockpos + v3s16(0,0,0);
 		//MapBlock *b = m_env.getMap().getBlockNoCreate(p);
-		addUpdateMeshTask(p, ack_to_server);
+		addUpdateMeshTask(p, ack_to_server, urgent);
 	}
 	catch(InvalidPositionException &e){}
 	// Leading edge
 	try{
 		v3s16 p = blockpos + v3s16(-1,0,0);
-		addUpdateMeshTask(p);
+		addUpdateMeshTask(p, false, urgent);
 	}
 	catch(InvalidPositionException &e){}
 	try{
 		v3s16 p = blockpos + v3s16(0,-1,0);
-		addUpdateMeshTask(p);
+		addUpdateMeshTask(p, false, urgent);
 	}
 	catch(InvalidPositionException &e){}
 	try{
 		v3s16 p = blockpos + v3s16(0,0,-1);
-		addUpdateMeshTask(p);
+		addUpdateMeshTask(p, false, urgent);
 	}
 	catch(InvalidPositionException &e){}
+}
+
+void Client::addUpdateMeshTaskForNode(v3s16 nodepos, bool ack_to_server, bool urgent)
+{
+	{
+		v3s16 p = nodepos;
+		infostream<<"Client::addUpdateMeshTaskForNode(): "
+				<<"("<<p.X<<","<<p.Y<<","<<p.Z<<")"
+				<<std::endl;
+	}
+
+	v3s16 blockpos = getNodeBlockPos(nodepos);
+	v3s16 blockpos_relative = blockpos * MAP_BLOCKSIZE;
+
+	try{
+		v3s16 p = blockpos + v3s16(0,0,0);
+		addUpdateMeshTask(p, ack_to_server, urgent);
+	}
+	catch(InvalidPositionException &e){}
+	// Leading edge
+	if(nodepos.X == blockpos_relative.X){
+		try{
+			v3s16 p = blockpos + v3s16(-1,0,0);
+			addUpdateMeshTask(p, false, urgent);
+		}
+		catch(InvalidPositionException &e){}
+	}
+	if(nodepos.Y == blockpos_relative.Y){
+		try{
+			v3s16 p = blockpos + v3s16(0,-1,0);
+			addUpdateMeshTask(p, false, urgent);
+		}
+		catch(InvalidPositionException &e){}
+	}
+	if(nodepos.Z == blockpos_relative.Z){
+		try{
+			v3s16 p = blockpos + v3s16(0,0,-1);
+			addUpdateMeshTask(p, false, urgent);
+		}
+		catch(InvalidPositionException &e){}
+	}
 }
 
 ClientEvent Client::getClientEvent()

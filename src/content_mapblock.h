@@ -20,13 +20,10 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #ifndef CONTENT_MAPBLOCK_HEADER
 #define CONTENT_MAPBLOCK_HEADER
 
-#ifndef SERVER
-	#include "mapblock_mesh.h"
-	#include "utility.h"
-class IGameDef;
+struct MeshMakeData;
+struct MeshCollector;
 void mapblock_mesh_generate_special(MeshMakeData *data,
-		MeshCollector &collector, IGameDef *gamedef);
-#endif
+		MeshCollector &collector);
 
 #endif
 

@@ -73,7 +73,7 @@ struct AtlasPointer
 	{
 	}
 
-	bool operator==(const AtlasPointer &other)
+	bool operator==(const AtlasPointer &other) const
 	{
 		return (
 			id == other.id
@@ -85,6 +85,11 @@ struct AtlasPointer
 			size == other.size &&
 			tiled == other.tiled
 		);*/
+	}
+
+	bool operator!=(const AtlasPointer &other) const
+	{
+		return !(*this == other);
 	}
 
 	float x0(){ return pos.X; }
@@ -110,6 +115,8 @@ public:
 		{return AtlasPointer(0);}
 	virtual video::ITexture* getTextureRaw(const std::string &name)
 		{return NULL;}
+	virtual AtlasPointer getTextureRawAP(const AtlasPointer &ap)
+		{return AtlasPointer(0);}
 	virtual IrrlichtDevice* getDevice()
 		{return NULL;}
 	virtual void updateAP(AtlasPointer &ap){};
@@ -148,7 +155,13 @@ enum MaterialType{
 };
 
 // Material flags
+// Should backface culling be enabled?
 #define MATERIAL_FLAG_BACKFACE_CULLING 0x01
+// Should a crack be drawn?
+#define MATERIAL_FLAG_CRACK 0x02
+// Should the crack be drawn on transparent pixels (unset) or not (set)?
+// Ignored if MATERIAL_FLAG_CRACK is not set.
+#define MATERIAL_FLAG_CRACK_OVERLAY 0x04
 
 /*
 	This fully defines the looks of a tile.
@@ -169,7 +182,7 @@ struct TileSpec
 	{
 	}
 
-	bool operator==(TileSpec &other)
+	bool operator==(const TileSpec &other) const
 	{
 		return (
 			texture == other.texture &&
@@ -177,6 +190,11 @@ struct TileSpec
 			material_type == other.material_type &&
 			material_flags == other.material_flags
 		);
+	}
+
+	bool operator!=(const TileSpec &other) const
+	{
+		return !(*this == other);
 	}
 	
 	// Sets everything else except the texture in the material

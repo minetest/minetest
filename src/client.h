@@ -27,6 +27,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "common_irrlicht.h"
 #include "jmutex.h"
 #include <ostream>
+#include <set>
+#include <vector>
 #include "clientobject.h"
 #include "utility.h" // For IntervalLimiter
 #include "gamedef.h"
@@ -34,6 +36,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "filesys.h"
 
 struct MeshMakeData;
+class MapBlockMesh;
 class IGameDef;
 class IWritableTextureSource;
 class IWritableItemDefManager;
@@ -71,7 +74,8 @@ public:
 	/*
 		peer_id=0 adds with nobody to send to
 	*/
-	void addBlock(v3s16 p, MeshMakeData *data, bool ack_block_to_server);
+	void addBlock(v3s16 p, MeshMakeData *data,
+			bool ack_block_to_server, bool urgent);
 
 	// Returned pointer must be deleted
 	// Returns NULL if queue is empty
@@ -84,14 +88,15 @@ public:
 	}
 	
 private:
-	core::list<QueuedMeshUpdate*> m_queue;
+	std::vector<QueuedMeshUpdate*> m_queue;
+	std::set<v3s16> m_urgents;
 	JMutex m_mutex;
 };
 
 struct MeshUpdateResult
 {
 	v3s16 p;
-	scene::SMesh *mesh;
+	MapBlockMesh *mesh;
 	bool ack_block_to_server;
 
 	MeshUpdateResult():
@@ -260,12 +265,14 @@ public:
 
 	core::list<std::wstring> getConnectedPlayerNames();
 
+	float getAnimationTime();
+
+	int getCrackLevel();
+	void setCrack(int level, v3s16 pos);
+
 	u32 getDayNightRatio();
 
 	u16 getHP();
-
-	void setTempMod(v3s16 p, NodeMod mod);
-	void clearTempMod(v3s16 p);
 
 	float getAvgRtt()
 	{
@@ -281,9 +288,10 @@ public:
 
 	u64 getMapSeed(){ return m_map_seed; }
 
-	void addUpdateMeshTask(v3s16 blockpos, bool ack_to_server=false);
+	void addUpdateMeshTask(v3s16 blockpos, bool ack_to_server=false, bool urgent=false);
 	// Including blocks at appropriate edges
-	void addUpdateMeshTaskWithEdge(v3s16 blockpos, bool ack_to_server=false);
+	void addUpdateMeshTaskWithEdge(v3s16 blockpos, bool ack_to_server=false, bool urgent=false);
+	void addUpdateMeshTaskForNode(v3s16 nodepos, bool ack_to_server=false, bool urgent=false);
 
 	// Get event from queue. CE_NONE is returned if queue is empty.
 	ClientEvent getClientEvent();
@@ -352,6 +360,10 @@ private:
 	float m_inventory_from_server_age;
 	core::map<v3s16, bool> m_active_blocks;
 	PacketCounter m_packetcounter;
+	// Block mesh animation parameters
+	float m_animation_time;
+	int m_crack_level;
+	v3s16 m_crack_pos;
 	// Received from the server. 0-23999
 	u32 m_time_of_day;
 	// 0 <= m_daynight_i < DAYNIGHT_CACHE_COUNT

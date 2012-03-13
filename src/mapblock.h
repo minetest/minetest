@@ -31,13 +31,12 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "constants.h"
 #include "voxel.h"
 #include "staticobject.h"
-#include "mapblock_nodemod.h"
 #include "modifiedstate.h"
 
 class Map;
 class NodeMetadataList;
 class IGameDef;
-class IWritableNodeDefManager;
+class MapBlockMesh;
 
 #define BLOCK_TIMESTAMP_UNDEFINED 0xffffffff
 
@@ -193,18 +192,6 @@ public:
 		raiseModified(MOD_STATE_WRITE_NEEDED, "setIsUnderground");
 	}
 
-#ifndef SERVER
-	void setMeshExpired(bool expired)
-	{
-		m_mesh_expired = expired;
-	}
-	
-	bool getMeshExpired()
-	{
-		return m_mesh_expired;
-	}
-#endif
-
 	void setLightingExpired(bool expired)
 	{
 		if(expired != m_lighting_expired){
@@ -359,33 +346,6 @@ public:
 					setNode(x0+x, y0+y, z0+z, node);
 	}
 
-	/*
-		Graphics-related methods
-	*/
-	
-#ifndef SERVER // Only on client
-
-	u8 getFaceLight2(u32 daynight_ratio, v3s16 p, v3s16 face_dir,
-			INodeDefManager *nodemgr)
-	{
-		return getFaceLight(daynight_ratio,
-				getNodeParentNoEx(p),
-				getNodeParentNoEx(p + face_dir),
-				face_dir, nodemgr);
-	}
-	
-#if 1
-	/*
-		Thread-safely updates the whole mesh of the mapblock.
-		NOTE: Prefer generating the mesh separately and then using
-		replaceMesh().
-	*/
-	void updateMesh(u32 daynight_ratio);
-#endif
-	// Replace the mesh with a new one
-	void replaceMesh(scene::SMesh *mesh_new);
-#endif
-	
 	// See comments in mapblock.cpp
 	bool propagateSunlight(core::map<v3s16, bool> & light_sources,
 			bool remove_light=false, bool *black_air_left=NULL);
@@ -395,59 +355,10 @@ public:
 	// Copies data from VoxelManipulator getPosRelative()
 	void copyFrom(VoxelManipulator &dst);
 
-#ifndef SERVER // Only on client
-	/*
-		Methods for setting temporary modifications to nodes for
-		drawing
-
-		returns true if the mod was different last time
-	*/
-	bool setTempMod(v3s16 p, const NodeMod &mod)
-	{
-		/*dstream<<"setTempMod called on block"
-				<<" ("<<p.X<<","<<p.Y<<","<<p.Z<<")"
-				<<", mod.type="<<mod.type
-				<<", mod.param="<<mod.param
-				<<std::endl;*/
-		JMutexAutoLock lock(m_temp_mods_mutex);
-
-		return m_temp_mods.set(p, mod);
-	}
-	// Returns true if there was one
-	bool getTempMod(v3s16 p, NodeMod *mod)
-	{
-		JMutexAutoLock lock(m_temp_mods_mutex);
-
-		return m_temp_mods.get(p, mod);
-	}
-	bool clearTempMod(v3s16 p)
-	{
-		JMutexAutoLock lock(m_temp_mods_mutex);
-
-		return m_temp_mods.clear(p);
-	}
-	bool clearTempMods()
-	{
-		JMutexAutoLock lock(m_temp_mods_mutex);
-		
-		return m_temp_mods.clear();
-	}
-	void copyTempMods(NodeModMap &dst)
-	{
-		JMutexAutoLock lock(m_temp_mods_mutex);
-		m_temp_mods.copy(dst);
-	}
-#endif
-
 	/*
 		Update day-night lighting difference flag.
-		
 		Sets m_day_night_differs to appropriate value.
-		
 		These methods don't care about neighboring blocks.
-		It means that to know if a block really doesn't need a mesh
-		update between day and night, the neighboring blocks have
-		to be taken into account. Use Map::dayNightDiffed().
 	*/
 	void updateDayNightDiff();
 
@@ -551,8 +462,8 @@ public:
 	*/
 
 #ifndef SERVER // Only on client
-	scene::SMesh *mesh;
-	JMutex mesh_mutex;
+	MapBlockMesh *mesh;
+	//JMutex mesh_mutex;
 #endif
 	
 	NodeMetadataList *m_node_metadata;
@@ -608,20 +519,6 @@ private:
 	bool m_day_night_differs;
 
 	bool m_generated;
-	
-#ifndef SERVER // Only on client
-	/*
-		Set to true if the mesh has been ordered to be updated
-		sometime in the background.
-		In practice this is set when the day/night lighting switches.
-	*/
-	bool m_mesh_expired;
-	
-	// Temporary modifications to nodes
-	// These are only used when drawing
-	NodeModMap m_temp_mods;
-	JMutex m_temp_mods_mutex;
-#endif
 	
 	/*
 		When block is removed from active blocks, this is set to gametime.

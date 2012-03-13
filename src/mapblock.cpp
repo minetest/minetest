@@ -59,10 +59,8 @@ MapBlock::MapBlock(Map *parent, v3s16 pos, IGameDef *gamedef, bool dummy):
 		reallocate();
 	
 #ifndef SERVER
-	m_mesh_expired = false;
-	mesh_mutex.Init();
+	//mesh_mutex.Init();
 	mesh = NULL;
-	m_temp_mods_mutex.Init();
 #endif
 }
 
@@ -70,11 +68,11 @@ MapBlock::~MapBlock()
 {
 #ifndef SERVER
 	{
-		JMutexAutoLock lock(mesh_mutex);
+		//JMutexAutoLock lock(mesh_mutex);
 		
 		if(mesh)
 		{
-			mesh->drop();
+			delete mesh;
 			mesh = NULL;
 		}
 	}
@@ -146,78 +144,6 @@ MapNode MapBlock::getNodeParentNoEx(v3s16 p)
 		return data[p.Z*MAP_BLOCKSIZE*MAP_BLOCKSIZE + p.Y*MAP_BLOCKSIZE + p.X];
 	}
 }
-
-#ifndef SERVER
-
-#if 1
-void MapBlock::updateMesh(u32 daynight_ratio)
-{
-#if 0
-	/*
-		DEBUG: If mesh has been generated, don't generate it again
-	*/
-	{
-		JMutexAutoLock meshlock(mesh_mutex);
-		if(mesh != NULL)
-			return;
-	}
-#endif
-
-	MeshMakeData data;
-	data.fill(daynight_ratio, this);
-	
-	scene::SMesh *mesh_new = makeMapBlockMesh(&data, m_gamedef);
-	
-	/*
-		Replace the mesh
-	*/
-
-	replaceMesh(mesh_new);
-
-}
-#endif
-
-void MapBlock::replaceMesh(scene::SMesh *mesh_new)
-{
-	mesh_mutex.Lock();
-
-	//scene::SMesh *mesh_old = mesh[daynight_i];
-	//mesh[daynight_i] = mesh_new;
-
-	scene::SMesh *mesh_old = mesh;
-	mesh = mesh_new;
-	setMeshExpired(false);
-	
-	if(mesh_old != NULL)
-	{
-		// Remove hardware buffers of meshbuffers of mesh
-		// NOTE: No way, this runs in a different thread and everything
-		/*u32 c = mesh_old->getMeshBufferCount();
-		for(u32 i=0; i<c; i++)
-		{
-			IMeshBuffer *buf = mesh_old->getMeshBuffer(i);
-		}*/
-		
-		/*infostream<<"mesh_old->getReferenceCount()="
-				<<mesh_old->getReferenceCount()<<std::endl;
-		u32 c = mesh_old->getMeshBufferCount();
-		for(u32 i=0; i<c; i++)
-		{
-			scene::IMeshBuffer *buf = mesh_old->getMeshBuffer(i);
-			infostream<<"buf->getReferenceCount()="
-					<<buf->getReferenceCount()<<std::endl;
-		}*/
-
-		// Drop the mesh
-		mesh_old->drop();
-
-		//delete mesh_old;
-	}
-
-	mesh_mutex.Unlock();
-}
-	
-#endif // !SERVER
 
 /*
 	Propagates sunlight down through the block.
@@ -1231,13 +1157,6 @@ std::string analyze_block(MapBlock *block)
 		desc<<"is_ug [X], ";
 	else
 		desc<<"is_ug [ ], ";
-
-#ifndef SERVER
-	if(block->getMeshExpired())
-		desc<<"mesh_exp [X], ";
-	else
-		desc<<"mesh_exp [ ], ";
-#endif
 
 	if(block->getLightingExpired())
 		desc<<"lighting_exp [X], ";

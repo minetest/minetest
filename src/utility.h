@@ -1753,18 +1753,17 @@ std::string deSerializeJsonString(std::istream &is);
 
 inline u32 time_to_daynight_ratio(u32 time_of_day)
 {
-	const s32 daylength = 16;
-	const s32 nightlength = 6;
-	const s32 daytimelength = 8;
-	s32 d = daylength;
-	s32 t = (((time_of_day)%24000)/(24000/d));
-	if(t < nightlength/2 || t >= d - nightlength/2)
-		//return 300;
+	s32 t = time_of_day%24000;
+	if(t < 4500 || t >= 19500)
+		return 150;
+	else if(t < 5000 || t >= 19000)
 		return 350;
-	else if(t >= d/2 - daytimelength/2 && t < d/2 + daytimelength/2)
-		return 1000;
-	else
+	else if(t < 5500 || t >= 18500)
+		return 500;
+	else if(t < 6000 || t >= 18000)
 		return 750;
+	else
+		return 1000;
 }
 
 // Random helper. Usually d=BS

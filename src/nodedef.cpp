@@ -89,12 +89,6 @@ ContentFeatures::ContentFeatures()
 
 ContentFeatures::~ContentFeatures()
 {
-#ifndef SERVER
-	for(u16 j=0; j<CF_SPECIAL_COUNT; j++){
-		delete special_materials[j];
-		delete special_aps[j];
-	}
-#endif
 }
 
 void ContentFeatures::reset()
@@ -103,10 +97,6 @@ void ContentFeatures::reset()
 		Cached stuff
 	*/
 #ifndef SERVER
-	for(u16 j=0; j<CF_SPECIAL_COUNT; j++){
-		special_materials[j] = NULL;
-		special_aps[j] = NULL;
-	}
 	solidness = 2;
 	visual_solidness = 0;
 	backface_culling = true;
@@ -526,38 +516,21 @@ public:
 					f->tiles[j].material_type = MATERIAL_ALPHA_SIMPLE;
 				else
 					f->tiles[j].material_type = MATERIAL_ALPHA_VERTEX;
+				f->tiles[j].material_flags = 0;
 				if(f->backface_culling)
 					f->tiles[j].material_flags |= MATERIAL_FLAG_BACKFACE_CULLING;
-				else
-					f->tiles[j].material_flags &= ~MATERIAL_FLAG_BACKFACE_CULLING;
 			}
-			// Special textures
+			// Special tiles
 			for(u16 j=0; j<CF_SPECIAL_COUNT; j++){
-				// Remove all stuff
-				if(f->special_aps[j]){
-					delete f->special_aps[j];
-					f->special_aps[j] = NULL;
-				}
-				if(f->special_materials[j]){
-					delete f->special_materials[j];
-					f->special_materials[j] = NULL;
-				}
-				// Skip if should not exist
-				if(f->mspec_special[j].tname == "")
-					continue;
-				// Create all stuff
-				f->special_aps[j] = new AtlasPointer(
-						tsrc->getTexture(f->mspec_special[j].tname));
-				f->special_materials[j] = new video::SMaterial;
-				f->special_materials[j]->setFlag(video::EMF_LIGHTING, false);
-				f->special_materials[j]->setFlag(video::EMF_BACK_FACE_CULLING,
-						f->mspec_special[j].backface_culling);
-				f->special_materials[j]->setFlag(video::EMF_BILINEAR_FILTER, false);
-				f->special_materials[j]->setFlag(video::EMF_FOG_ENABLE, true);
-				f->special_materials[j]->setTexture(0, f->special_aps[j]->atlas);
-				if(f->alpha != 255)
-					f->special_materials[j]->MaterialType =
-							video::EMT_TRANSPARENT_VERTEX_ALPHA;
+				f->special_tiles[j].texture = tsrc->getTexture(f->mspec_special[j].tname);
+				f->special_tiles[j].alpha = f->alpha;
+				if(f->alpha == 255)
+					f->special_tiles[j].material_type = MATERIAL_ALPHA_SIMPLE;
+				else
+					f->special_tiles[j].material_type = MATERIAL_ALPHA_VERTEX;
+				f->special_tiles[j].material_flags = 0;
+				if(f->mspec_special[j].backface_culling)
+					f->special_tiles[j].material_flags |= MATERIAL_FLAG_BACKFACE_CULLING;
 			}
 		}
 #endif

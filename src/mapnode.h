@@ -223,45 +223,5 @@ private:
 	void deSerialize_pre22(u8 *source, u8 version);
 };
 
-
-/*
-	MapNode helpers for mesh making stuff
-*/
-
-#ifndef SERVER
-
-/*
-	Nodes make a face if contents differ and solidness differs.
-	Return value:
-		0: No face
-		1: Face uses m1's content
-		2: Face uses m2's content
-	equivalent: Whether the blocks share the same face (eg. water and glass)
-*/
-u8 face_contents(content_t m1, content_t m2, bool *equivalent,
-		INodeDefManager *nodemgr);
-
-/*
-	Gets lighting value at face of node
-	
-	Parameters must consist of air and !air.
-	Order doesn't matter.
-
-	If either of the nodes doesn't exist, light is 0.
-	
-	parameters:
-		daynight_ratio: 0...1000
-		n: getNode(p) (uses only the lighting value)
-		n2: getNode(p + face_dir) (uses only the lighting value)
-		face_dir: axis oriented unit vector from p to p2
-	
-	returns encoded light value.
-*/
-u8 getFaceLight(u32 daynight_ratio, MapNode n, MapNode n2,
-		v3s16 face_dir, INodeDefManager *nodemgr);
-
-#endif
-
-
 #endif
 

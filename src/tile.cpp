@@ -279,12 +279,14 @@ public:
 		Example case #2:
 		- Assume a texture with the id 1 exists, and has the name
 		  "stone.png^mineral1" and is specified as a part of some atlas.
-		- Now MapBlock::getNodeTile() stumbles upon a node which uses
-		  texture id 1, and finds out that NODEMOD_CRACK must be applied
-		  with progression=0
-		- It finds out the name of the texture with getTextureName(1),
+		- Now getNodeTile() stumbles upon a node which uses
+		  texture id 1, and determines that MATERIAL_FLAG_CRACK
+		  must be applied to the tile
+		- MapBlockMesh::animate() finds the MATERIAL_FLAG_CRACK and
+		  has received the current crack level 0 from the client. It
+		  finds out the name of the texture with getTextureName(1),
 		  appends "^crack0" to it and gets a new texture id with
-		  getTextureId("stone.png^mineral1^crack0")
+		  getTextureId("stone.png^mineral1^crack0").
 
 	*/
 	
@@ -335,6 +337,12 @@ public:
 	{
 		AtlasPointer ap = getTexture(name + "^[forcesingle");
 		return ap.atlas;
+	}
+
+	// Gets a separate texture atlas pointer
+	AtlasPointer getTextureRawAP(const AtlasPointer &ap)
+	{
+		return getTexture(getTextureName(ap.id) + "^[forcesingle");
 	}
 
 	// Returns a pointer to the irrlicht device
@@ -474,6 +482,9 @@ u32 TextureSource::getTextureId(const std::string &name)
 
 	return 0;
 }
+
+// Overlay image on top of another image (used for cracks)
+void overlay(video::IImage *image, video::IImage *overlay);
 
 // Brighten image
 void brighten(video::IImage *image);
@@ -1183,8 +1194,19 @@ bool generate_image(std::string part_of_name, video::IImage *& baseimg,
 				return false;
 			}
 			
-			// Crack image number
-			u16 progression = stoi(part_of_name.substr(6));
+			// Crack image number and overlay option
+			s32 progression = 0;
+			bool use_overlay = false;
+			if(part_of_name.substr(6,1) == "o")
+			{
+				progression = stoi(part_of_name.substr(7));
+				use_overlay = true;
+			}
+			else
+			{
+				progression = stoi(part_of_name.substr(6));
+				use_overlay = false;
+			}
 
 			// Size of the base image
 			core::dimension2d<u32> dim_base = baseimg->getDimension();
@@ -1197,65 +1219,56 @@ bool generate_image(std::string part_of_name, video::IImage *& baseimg,
 			*/
 			video::IImage *img_crack = sourcecache->getOrLoad("crack.png", device);
 		
-			if(img_crack)
+			if(img_crack && progression >= 0)
 			{
 				// Dimension of original image
 				core::dimension2d<u32> dim_crack
 						= img_crack->getDimension();
 				// Count of crack stages
-				u32 crack_count = dim_crack.Height / dim_crack.Width;
+				s32 crack_count = dim_crack.Height / dim_crack.Width;
 				// Limit progression
 				if(progression > crack_count-1)
 					progression = crack_count-1;
-				// Dimension of a single scaled crack stage
-				core::dimension2d<u32> dim_crack_scaled_single(
-					dim_base.Width,
-					dim_base.Height
+				// Dimension of a single crack stage
+				core::dimension2d<u32> dim_crack_cropped(
+					dim_crack.Width,
+					dim_crack.Width
 				);
-				// Dimension of scaled size
-				core::dimension2d<u32> dim_crack_scaled(
-					dim_crack_scaled_single.Width,
-					dim_crack_scaled_single.Height * crack_count
-				);
-				// Create scaled crack image
+				// Create cropped and scaled crack images
+				video::IImage *img_crack_cropped = driver->createImage(
+						video::ECF_A8R8G8B8, dim_crack_cropped);
 				video::IImage *img_crack_scaled = driver->createImage(
-						video::ECF_A8R8G8B8, dim_crack_scaled);
-				if(img_crack_scaled)
-				{
-					// Scale crack image by copying
-					img_crack->copyToScaling(img_crack_scaled);
-					
-					// Position to copy the crack from
-					core::position2d<s32> pos_crack_scaled(
-						0,
-						dim_crack_scaled_single.Height * progression
-					);
-					
-					// This tiling does nothing currently but is useful
-					for(u32 y0=0; y0<dim_base.Height
-							/ dim_crack_scaled_single.Height; y0++)
-					for(u32 x0=0; x0<dim_base.Width
-							/ dim_crack_scaled_single.Width; x0++)
-					{
-						// Position to copy the crack to in the base image
-						core::position2d<s32> pos_base(
-							x0*dim_crack_scaled_single.Width,
-							y0*dim_crack_scaled_single.Height
-						);
-						// Rectangle to copy the crack from on the scaled image
-						core::rect<s32> rect_crack_scaled(
-							pos_crack_scaled,
-							dim_crack_scaled_single
-						);
-						// Copy it
-						img_crack_scaled->copyToWithAlpha(baseimg, pos_base,
-								rect_crack_scaled,
-								video::SColor(255,255,255,255),
-								NULL);
-					}
+						video::ECF_A8R8G8B8, dim_base);
 
-					img_crack_scaled->drop();
+				if(img_crack_cropped && img_crack_scaled)
+				{
+					// Crop crack image
+					v2s32 pos_crack(0, progression*dim_crack.Width);
+					img_crack->copyTo(img_crack_cropped,
+							v2s32(0,0),
+							core::rect<s32>(pos_crack, dim_crack_cropped));
+					// Scale crack image by copying
+					img_crack_cropped->copyToScaling(img_crack_scaled);
+					// Copy or overlay crack image
+					if(use_overlay)
+					{
+						overlay(baseimg, img_crack_scaled);
+					}
+					else
+					{
+						img_crack_scaled->copyToWithAlpha(
+								baseimg,
+								v2s32(0,0),
+								core::rect<s32>(v2s32(0,0), dim_base),
+								video::SColor(255,255,255,255));
+					}
 				}
+
+				if(img_crack_scaled)
+					img_crack_scaled->drop();
+
+				if(img_crack_cropped)
+					img_crack_cropped->drop();
 				
 				img_crack->drop();
 			}
@@ -1509,6 +1522,37 @@ bool generate_image(std::string part_of_name, video::IImage *& baseimg,
 	}
 
 	return true;
+}
+
+void overlay(video::IImage *image, video::IImage *overlay)
+{
+	/*
+		Copy overlay to image, taking alpha into account.
+		Where image is transparent, don't copy from overlay.
+		Images sizes must be identical.
+	*/
+	if(image == NULL || overlay == NULL)
+		return;
+	
+	core::dimension2d<u32> dim = image->getDimension();
+	core::dimension2d<u32> dim_overlay = overlay->getDimension();
+	assert(dim == dim_overlay);
+
+	for(u32 y=0; y<dim.Height; y++)
+	for(u32 x=0; x<dim.Width; x++)
+	{
+		video::SColor c1 = image->getPixel(x,y);
+		video::SColor c2 = overlay->getPixel(x,y);
+		u32 a1 = c1.getAlpha();
+		u32 a2 = c2.getAlpha();
+		if(a1 == 255 && a2 != 0)
+		{
+			c1.setRed((c1.getRed()*(255-a2) + c2.getRed()*a2)/255);
+			c1.setGreen((c1.getGreen()*(255-a2) + c2.getGreen()*a2)/255);
+			c1.setBlue((c1.getBlue()*(255-a2) + c2.getBlue()*a2)/255);
+		}
+		image->setPixel(x,y,c1);
+	}
 }
 
 void brighten(video::IImage *image)

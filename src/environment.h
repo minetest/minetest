@@ -407,24 +407,6 @@ public:
 	virtual void addPlayer(Player *player);
 	LocalPlayer * getLocalPlayer();
 	
-	// Slightly deprecated
-	void updateMeshes(v3s16 blockpos);
-	void expireMeshes(bool only_daynight_diffed);
-
-	void setTimeOfDay(u32 time)
-	{
-		u32 old_dr = getDayNightRatio();
-
-		Environment::setTimeOfDay(time);
-
-		if(getDayNightRatio() != old_dr)
-		{
-			/*infostream<<"ClientEnvironment: DayNightRatio changed"
-					<<" -> expiring meshes"<<std::endl;*/
-			expireMeshes(true);
-		}
-	}
-
 	/*
 		ClientSimpleObjects
 	*/
