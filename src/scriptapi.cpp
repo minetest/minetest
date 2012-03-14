@@ -2504,6 +2504,42 @@ private:
 		return 1;
 	}
 	
+	// get_respawn_pos(self)
+	// returns: {x=num, y=num, z=num}
+	static int l_get_respawn_pos(lua_State *L)
+	{
+		ObjectRef *ref = checkobject(L, 1);
+		ServerRemotePlayer *player = getplayer(ref);
+		if(player == NULL){
+			lua_pushnil(L);
+			return 1;
+		}
+
+		v3f pos = player->getRespawnPosition() / BS;
+		lua_newtable(L);
+		lua_pushnumber(L, pos.X);
+		lua_setfield(L, -2, "x");
+		lua_pushnumber(L, pos.Y);
+		lua_setfield(L, -2, "y");
+		lua_pushnumber(L, pos.Z);
+		lua_setfield(L, -2, "z");
+		return 1;
+	}
+
+
+	// set_respawn_pos(self, pos)
+	static int l_set_respawn_pos(lua_State *L)
+	{
+		ObjectRef *ref = checkobject(L, 1);
+		ServerRemotePlayer *player = getplayer(ref);
+		if(player == NULL)
+			return 0;
+
+		v3f pos = checkFloatPos(L, 2);
+		player->setRespawnPosition(pos);
+		return 0;
+	}
+
 	// get_look_dir(self)
 	static int l_get_look_dir(lua_State *L)
 	{
@@ -2630,6 +2666,8 @@ const luaL_reg ObjectRef::methods[] = {
 	method(ObjectRef, get_luaentity),
 	// Player-only
 	method(ObjectRef, get_player_name),
+	method(ObjectRef, get_respawn_pos),
+	method(ObjectRef, set_respawn_pos),
 	method(ObjectRef, get_look_dir),
 	method(ObjectRef, get_look_pitch),
 	method(ObjectRef, get_look_yaw),

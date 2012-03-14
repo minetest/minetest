@@ -229,6 +229,8 @@
 -- - get_luaentity()
 -- Player-only: (no-op for other objects)
 -- - get_player_name(): will return nil if is not a player
+-- - get_respawn_pos(): returns the player's respawn position
+-- - set_respawn_pos(pos): pos={x=num, y=num, z=num}
 -- - get_look_dir(): get camera direction as a unit vector
 -- - get_look_pitch(): pitch in radians
 -- - get_look_yaw(): yaw in radians (wraps around pretty randomly as of now)
@@ -1753,6 +1755,17 @@ function on_punchnode(p, node)
 end
 minetest.register_on_punchnode(on_punchnode)
 
+function on_respawnplayer(player)
+	local pos = player:get_respawn_pos()
+	-- only use the respawn position if set, i.e. ~= (0,0,0)
+	if (pos.x ~= 0 or pos.y ~= 0 or pos.z ~= 0) then
+		player:setpos(pos)
+		return true
+	end
+	return false
+end
+minetest.register_on_respawnplayer(on_respawnplayer)
+
 local function handle_give_command(cmd, giver, receiver, stackstring)
 	if not minetest.get_player_privs(giver)["give"] then
 		minetest.chat_send_player(giver, "error: you don't have permission to give")
@@ -1857,6 +1870,16 @@ minetest.register_on_chat_message(function(name, message)
 		else
 			player:set_wielded_item(nil)
 			minetest.chat_send_player(name, 'An item was pulverized.')
+		end
+		return true
+	end
+	local cmd = "/sethome"
+	if message:sub(0, #cmd) == cmd then
+		local player = minetest.env:get_player_by_name(name)
+		if player ~= nil then
+			local pos = player:getpos()
+			player:set_respawn_pos(pos)
+			minetest.chat_send_player(name, 'Respawn position set.')
 		end
 		return true
 	end
