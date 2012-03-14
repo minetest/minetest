@@ -1091,6 +1091,12 @@ void the_game(
 			g_gamecallback->changepassword_requested = false;
 		}
 
+		if(g_gamecallback->changerespawnpos_requested)
+		{
+			client.sendRespawnPosition();
+			g_gamecallback->changerespawnpos_requested = false;
+		}
+
 		/*
 			Process TextureSource's queue
 		*/

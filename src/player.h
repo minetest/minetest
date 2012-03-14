@@ -82,6 +82,16 @@ public:
 		m_position = position;
 	}
 
+	v3f getRespawnPosition()
+	{
+		return m_respawn_pos;
+	}
+
+	virtual void setRespawnPosition(const v3f &pos)
+	{
+		m_respawn_pos = pos;
+	}
+
 	void setPitch(f32 pitch)
 	{
 		m_pitch = pitch;
@@ -167,6 +177,7 @@ protected:
 	f32 m_yaw;
 	v3f m_speed;
 	v3f m_position;
+	v3f m_respawn_pos;
 
 public:
 

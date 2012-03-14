@@ -77,6 +77,11 @@ void GUIPauseMenu::removeChildren()
 		if(e != NULL)
 			e->remove();
 	}
+	{
+		gui::IGUIElement *e = getElementFromId(262);
+		if(e != NULL)
+			e->remove();
+	}
 }
 
 void GUIPauseMenu::regenerateGui(v2u32 screensize)
@@ -106,7 +111,7 @@ void GUIPauseMenu::regenerateGui(v2u32 screensize)
 	*/
 	const s32 btn_height = 30;
 	const s32 btn_gap = 20;
-	const s32 btn_num = 4;
+	const s32 btn_num = 5;
 	s32 btn_y = size.Y/2-((btn_num*btn_height+(btn_num-1)*btn_gap))/2;
 	changeCtype("");
 	{
@@ -121,6 +126,13 @@ void GUIPauseMenu::regenerateGui(v2u32 screensize)
 		rect = rect + v2s32(size.X/2-140/2, btn_y);
 		Environment->addButton(rect, this, 261,
 			wgettext("Change Password"));
+	}
+	btn_y += btn_height + btn_gap;
+	{
+		core::rect<s32> rect(0, 0, 140, btn_height);
+		rect = rect + v2s32(size.X/2-140/2, btn_y);
+		Environment->addButton(rect, this, 262,
+			wgettext("Set Respawn Position"));
 	}
 	btn_y += btn_height + btn_gap;
 	{
@@ -245,6 +257,10 @@ bool GUIPauseMenu::OnEvent(const SEvent& event)
 			case 261:
 				quitMenu();
 				m_gamecallback->changePassword();
+				return true;
+			case 262:
+				m_gamecallback->changeRespawnPosition();
+				quitMenu();
 				return true;
 			case 260: // disconnect
 				m_gamecallback->disconnect();

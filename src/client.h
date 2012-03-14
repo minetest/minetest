@@ -214,6 +214,8 @@ public:
 		const std::wstring newpassword);
 	void sendDamage(u8 damage);
 	void sendRespawn();
+	// Set the user's new preferred respawn position
+	void sendRespawnPosition();
 	
 	// locks envlock
 	void removeNode(v3s16 p);

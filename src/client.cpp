@@ -1753,6 +1753,14 @@ void Client::sendRespawn()
 	Send(0, data, true);
 }
 
+void Client::sendRespawnPosition()
+{
+	SharedBuffer<u8> data(2);
+	writeU16(&data[0], TOSERVER_SEND_RESPAWN_POS);
+	// Send as reliable
+	Send(0, data, true);
+}
+
 void Client::sendPlayerPos()
 {
 	//JMutexAutoLock envlock(m_env_mutex); //bulk comment-out

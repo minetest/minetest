@@ -47,7 +47,8 @@ Player::Player(IGameDef *gamedef):
 	m_pitch(0),
 	m_yaw(0),
 	m_speed(0,0,0),
-	m_position(0,0,0)
+	m_position(0,0,0),
+	m_respawn_pos(0,0,0)
 {
 	updateName("<not set>");
 	resetInventory();
@@ -119,6 +120,7 @@ void Player::serialize(std::ostream &os)
 	args.setFloat("pitch", m_pitch);
 	args.setFloat("yaw", m_yaw);
 	args.setV3F("position", m_position);
+	args.setV3F("respawn_pos", m_respawn_pos);
 	args.setS32("hp", hp);
 
 	args.writeLines(os);
@@ -156,6 +158,7 @@ void Player::deSerialize(std::istream &is)
 	setPitch(args.getFloat("pitch"));
 	setYaw(args.getFloat("yaw"));
 	setPosition(args.getV3F("position"));
+	setRespawnPosition(args.getV3F("respawn_pos"));
 	try{
 		hp = args.getS32("hp");
 	}catch(SettingNotFoundException &e){
