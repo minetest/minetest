@@ -3041,6 +3041,11 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 					<<action<<std::endl;
 		}
 	}
+	if(command == TOSERVER_SEND_RESPAWN_POS)
+	{
+		v3f pos = player->getPosition();
+		player->setRespawnPosition(pos);
+	}
 	else
 	{
 		infostream<<"Server::ProcessData(): Ignoring "

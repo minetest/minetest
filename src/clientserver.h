@@ -449,6 +449,11 @@ enum ToServerCommand
 			}
 	 */
 
+	TOSERVER_SEND_RESPAWN_POS = 0x41,
+	/*
+		u16 TOSERVER_SEND_RESPAWN_POS
+	*/
+
 };
 
 inline SharedBuffer<u8> makePacket_TOCLIENT_TIME_OF_DAY(u16 time)
