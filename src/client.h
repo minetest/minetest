@@ -42,6 +42,7 @@ class IWritableTextureSource;
 class IWritableItemDefManager;
 class IWritableNodeDefManager;
 //class IWritableCraftDefManager;
+class ClientEnvironment;
 
 class ClientNotReadyException : public BaseException
 {
@@ -197,18 +198,11 @@ public:
 	*/
 	void step(float dtime);
 
-	// Called from updater thread
-	// Returns dtime
-	//float asyncStep();
-
 	void ProcessData(u8 *data, u32 datasize, u16 sender_peer_id);
 	// Returns true if something was received
 	bool AsyncProcessPacket();
 	bool AsyncProcessData();
 	void Send(u16 channelnum, SharedBuffer<u8> data, bool reliable);
-
-	// Pops out a packet from the packet queue
-	//IncomingPacket getPacket();
 
 	void interact(u8 action, const PointedThing& pointed);
 
@@ -219,23 +213,14 @@ public:
 		const std::wstring newpassword);
 	void sendDamage(u8 damage);
 	void sendRespawn();
+
+	ClientEnvironment& getEnv()
+	{ return m_env; }
 	
-	// locks envlock
+	// Causes urgent mesh updates (unlike Map::add/removeNodeWithEvent)
 	void removeNode(v3s16 p);
-	// locks envlock
 	void addNode(v3s16 p, MapNode n);
 	
-	void updateCamera(v3f pos, v3f dir, f32 fov);
-	
-	void renderPostFx();
-	
-	// Returns InvalidPositionException if not found
-	MapNode getNode(v3s16 p);
-	// Wrapper to Map
-	NodeMetadata* getNodeMetadata(v3s16 p);
-
-	LocalPlayer* getLocalPlayer();
-
 	void setPlayerControl(PlayerControl &control);
 
 	void selectPlayerItem(u16 item);

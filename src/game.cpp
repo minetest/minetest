@@ -284,6 +284,7 @@ PointedThing getPointedThing(Client *client, v3f player_position,
 	selected_object = NULL;
 
 	INodeDefManager *nodedef = client->getNodeDefManager();
+	ClientMap &map = client->getEnv().getClientMap();
 
 	// First try to find a pointed at active object
 	if(look_for_object)
@@ -337,7 +338,7 @@ PointedThing getPointedThing(Client *client, v3f player_position,
 		MapNode n;
 		try
 		{
-			n = client->getNode(v3s16(x,y,z));
+			n = map.getNode(v3s16(x,y,z));
 		}
 		catch(InvalidPositionException &e)
 		{
@@ -1818,7 +1819,7 @@ void the_game(
 			Update camera
 		*/
 
-		LocalPlayer* player = client.getLocalPlayer();
+		LocalPlayer* player = client.getEnv().getLocalPlayer();
 		float full_punch_interval = playeritem_toolcap.full_punch_interval;
 		float tool_reload_ratio = time_from_last_punch / full_punch_interval;
 		tool_reload_ratio = MYMIN(tool_reload_ratio, 1.0);
@@ -1831,7 +1832,7 @@ void the_game(
 		f32 camera_fov = camera.getFovMax();
 		
 		if(!disable_camera_update){
-			client.updateCamera(camera_position,
+			client.getEnv().getClientMap().updateCamera(camera_position,
 				camera_direction, camera_fov);
 		}
 
@@ -1929,15 +1930,13 @@ void the_game(
 			/*
 				Check information text of node
 			*/
-
-			NodeMetadata *meta = client.getNodeMetadata(nodepos);
-			if(meta)
-			{
+			
+			ClientMap &map = client.getEnv().getClientMap();
+			NodeMetadata *meta = map.getNodeMetadata(nodepos);
+			if(meta){
 				infotext = narrow_to_wide(meta->infoText());
-			}
-			else
-			{
-				MapNode n = client.getNode(nodepos);
+			} else {
+				MapNode n = map.getNode(nodepos);
 				if(nodedef->get(n).tname_tiles[0] == "unknown_block.png"){
 					infotext = L"Unknown node: ";
 					infotext += narrow_to_wide(nodedef->get(n).name);
@@ -1948,7 +1947,6 @@ void the_game(
 				Handle digging
 			*/
 			
-			
 			if(nodig_delay_timer <= 0.0 && input->getLeftState())
 			{
 				if(!digging)
@@ -1958,7 +1956,7 @@ void the_game(
 					digging = true;
 					ldown_for_dig = true;
 				}
-				MapNode n = client.getNode(nodepos);
+				MapNode n = client.getEnv().getClientMap().getNode(nodepos);
 
 				// Get digging parameters
 				DigParams params = getDigParams(nodedef->get(n).groups,
@@ -2501,7 +2499,7 @@ void the_game(
 			Post effects
 		*/
 		{
-			client.renderPostFx();
+			client.getEnv().getClientMap().renderPostFx();
 		}
 
 		/*

@@ -1848,8 +1848,6 @@ void Client::sendPlayerItem(u16 item)
 
 void Client::removeNode(v3s16 p)
 {
-	//JMutexAutoLock envlock(m_env_mutex); //bulk comment-out
-	
 	core::map<v3s16, MapBlock*> modified_blocks;
 
 	try
@@ -1875,8 +1873,6 @@ void Client::removeNode(v3s16 p)
 
 void Client::addNode(v3s16 p, MapNode n)
 {
-	//JMutexAutoLock envlock(m_env_mutex); //bulk comment-out
-
 	TimeTaker timer1("Client::addNode()");
 
 	core::map<v3s16, MapBlock*> modified_blocks;
@@ -1889,8 +1885,6 @@ void Client::addNode(v3s16 p, MapNode n)
 	catch(InvalidPositionException &e)
 	{}
 	
-	//TimeTaker timer2("Client::addNode(): addUpdateMeshTaskWithEdge");
-
 	for(core::map<v3s16, MapBlock * >::Iterator
 			i = modified_blocks.getIterator();
 			i.atEnd() == false; i++)
@@ -1900,32 +1894,6 @@ void Client::addNode(v3s16 p, MapNode n)
 	}
 }
 	
-void Client::updateCamera(v3f pos, v3f dir, f32 fov)
-{
-	m_env.getClientMap().updateCamera(pos, dir, fov);
-}
-
-void Client::renderPostFx()
-{
-	m_env.getClientMap().renderPostFx();
-}
-
-MapNode Client::getNode(v3s16 p)
-{
-	//JMutexAutoLock envlock(m_env_mutex); //bulk comment-out
-	return m_env.getMap().getNode(p);
-}
-
-NodeMetadata* Client::getNodeMetadata(v3s16 p)
-{
-	return m_env.getMap().getNodeMetadata(p);
-}
-
-LocalPlayer* Client::getLocalPlayer()
-{
-	return m_env.getLocalPlayer();
-}
-
 void Client::setPlayerControl(PlayerControl &control)
 {
 	//JMutexAutoLock envlock(m_env_mutex); //bulk comment-out
