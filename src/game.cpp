@@ -1362,7 +1362,10 @@ void the_game(
 					&g_menumgr, simple_singleplayer_mode))->drop();
 
 			// Move mouse cursor on top of the disconnect button
-			input->setMousePos(displaycenter.X, displaycenter.Y+25);
+			if(simple_singleplayer_mode)
+				input->setMousePos(displaycenter.X, displaycenter.Y+0);
+			else
+				input->setMousePos(displaycenter.X, displaycenter.Y+25);
 		}
 		else if(input->wasKeyDown(getKeySetting("keymap_chat")))
 		{
