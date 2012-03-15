@@ -300,41 +300,41 @@ void GUIMainMenu::regenerateGui(v2u32 screensize)
 					GUI_ID_JOIN_GAME_BUTTON, wgettext("Play"));
 		}
 		// Options
-		//s32 option_x = 450;
 		s32 option_x = 50;
 		s32 option_y = 30;
+		u32 option_w = 150;
 		{
-			core::rect<s32> rect(0, 0, 250, 30);
+			core::rect<s32> rect(0, 0, option_w, 30);
 			rect += m_topleft_client + v2s32(option_x, option_y);
 			Environment->addCheckBox(m_data->fancy_trees, rect, this,
 					GUI_ID_FANCYTREE_CB, wgettext("Fancy trees")); 
 		}
 		{
-			core::rect<s32> rect(0, 0, 250, 30);
+			core::rect<s32> rect(0, 0, option_w, 30);
 			rect += m_topleft_client + v2s32(option_x, option_y+20);
 			Environment->addCheckBox(m_data->smooth_lighting, rect, this,
 					GUI_ID_SMOOTH_LIGHTING_CB, wgettext("Smooth Lighting"));
 		}
 		{
-			core::rect<s32> rect(0, 0, 250, 30);
+			core::rect<s32> rect(0, 0, option_w, 30);
 			rect += m_topleft_client + v2s32(option_x, option_y+20*2);
 			Environment->addCheckBox(m_data->clouds_3d, rect, this,
 					GUI_ID_3D_CLOUDS_CB, wgettext("3D Clouds"));
 		}
 		{
-			core::rect<s32> rect(0, 0, 250, 30);
+			core::rect<s32> rect(0, 0, option_w, 30);
 			rect += m_topleft_client + v2s32(option_x, option_y+20*3);
 			Environment->addCheckBox(m_data->opaque_water, rect, this,
 					GUI_ID_OPAQUE_WATER_CB, wgettext("Opaque water"));
 		}
 		{
-			core::rect<s32> rect(0, 0, 250, 30);
+			core::rect<s32> rect(0, 0, option_w, 30);
 			rect += m_topleft_client + v2s32(option_x, option_y+20*4);
 			Environment->addCheckBox(m_data->creative_mode, rect, this,
 					GUI_ID_CREATIVE_CB, wgettext("Creative Mode"));
 		}
 		{
-			core::rect<s32> rect(0, 0, 250, 30);
+			core::rect<s32> rect(0, 0, option_w, 30);
 			rect += m_topleft_client + v2s32(option_x, option_y+20*5);
 			Environment->addCheckBox(m_data->enable_damage, rect, this,
 					GUI_ID_DAMAGE_CB, wgettext("Enable Damage"));
