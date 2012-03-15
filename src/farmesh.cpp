@@ -30,6 +30,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "map.h"
 #include "client.h"
 #include "tile.h" // ITextureSource
+#include "clientmap.h"
 
 #include "mapgen.h" // Shouldn't really be done this way
 

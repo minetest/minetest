@@ -43,6 +43,7 @@ class IWritableItemDefManager;
 class IWritableNodeDefManager;
 //class IWritableCraftDefManager;
 class ClientEnvironment;
+struct MapDrawControl;
 
 class ClientNotReadyException : public BaseException
 {

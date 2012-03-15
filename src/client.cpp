@@ -37,6 +37,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <IFileSystem.h>
 #include "sha1.h"
 #include "base64.h"
+#include "clientmap.h"
 
 static std::string getTextureCacheDir()
 {

@@ -45,6 +45,7 @@ class ServerActiveObject;
 typedef struct lua_State lua_State;
 class ITextureSource;
 class IGameDef;
+class ClientMap;
 
 class Environment
 {
@@ -393,11 +394,8 @@ public:
 			IrrlichtDevice *device);
 	~ClientEnvironment();
 
-	Map & getMap()
-	{ return *m_map; }
-
-	ClientMap & getClientMap()
-	{ return *m_map; }
+	Map & getMap();
+	ClientMap & getClientMap();
 
 	IGameDef *getGameDef()
 	{ return m_gamedef; }

@@ -53,6 +53,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "logoutputbuffer.h"
 #include "subgame.h"
 #include "quicktune_shortcutter.h"
+#include "clientmap.h"
 
 /*
 	Setting this to 1 enables a special camera mode that forces

@@ -38,6 +38,9 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "main.h" // For g_settings, g_profiler
 #include "gamedef.h"
 #include "serverremoteplayer.h"
+#ifndef SERVER
+#include "clientmap.h"
+#endif
 
 #define PP(x) "("<<(x).X<<","<<(x).Y<<","<<(x).Z<<")"
 
@@ -1818,6 +1821,16 @@ ClientEnvironment::~ClientEnvironment()
 
 	// Drop/delete map
 	m_map->drop();
+}
+
+Map & ClientEnvironment::getMap()
+{
+	return *m_map;
+}
+
+ClientMap & ClientEnvironment::getClientMap()
+{
+	return *m_map;
 }
 
 void ClientEnvironment::addPlayer(Player *player)

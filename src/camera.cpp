@@ -22,6 +22,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "client.h"
 #include "main.h" // for g_settings
 #include "map.h"
+#include "clientmap.h" // MapDrawControl
 #include "mesh.h"
 #include "player.h"
 #include "tile.h"
