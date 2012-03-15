@@ -106,15 +106,15 @@ void GUIConfirmMenu::regenerateGui(v2u32 screensize)
 	int bw = 100;
 	{
 		core::rect<s32> rect(0, 0, bw, 30);
-		rect = rect + v2s32(size.X/2-bw/2-bw/2-5, size.Y/2-30/2+25);
-		Environment->addButton(rect, this, GUI_ID_NO,
-			wgettext("No"));
+		rect = rect + v2s32(size.X/2-bw/2-(bw/2+5), size.Y/2-30/2+25);
+		Environment->addButton(rect, this, GUI_ID_YES,
+			wgettext("Yes"));
 	}
 	{
 		core::rect<s32> rect(0, 0, bw, 30);
-		rect = rect + v2s32(size.X/2-bw/2+bw/2+5, size.Y/2-30/2+25);
-		Environment->addButton(rect, this, GUI_ID_YES,
-			wgettext("Yes"));
+		rect = rect + v2s32(size.X/2-bw/2+(bw/2+5), size.Y/2-30/2+25);
+		Environment->addButton(rect, this, GUI_ID_NO,
+			wgettext("No"));
 	}
 	changeCtype("C");
 }

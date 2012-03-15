@@ -155,14 +155,14 @@ void GUICreateWorld::regenerateGui(v2u32 screensize)
 	{
 		core::rect<s32> rect(0, 0, 120, 30);
 		rect = rect + v2s32(170, 140) + topleft;
-		Environment->addButton(rect, this, GUI_ID_CANCEL,
-			wgettext("Cancel"));
+		Environment->addButton(rect, this, GUI_ID_CREATE,
+			wgettext("Create"));
 	}
 	{
 		core::rect<s32> rect(0, 0, 120, 30);
 		rect = rect + v2s32(300, 140) + topleft;
-		Environment->addButton(rect, this, GUI_ID_CREATE,
-			wgettext("Create"));
+		Environment->addButton(rect, this, GUI_ID_CANCEL,
+			wgettext("Cancel"));
 	}
 	changeCtype("C");
 }
