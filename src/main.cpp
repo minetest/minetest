@@ -1276,6 +1276,8 @@ int main(int argc, char *argv[])
 				
 				// Initialize menu data
 				MainMenuData menudata;
+				if(g_settings->exists("selected_mainmenu_tab"))
+					menudata.selected_tab = g_settings->getS32("selected_mainmenu_tab");
 				menudata.address = narrow_to_wide(address);
 				menudata.name = narrow_to_wide(playername);
 				menudata.port = narrow_to_wide(itos(port));
@@ -1362,15 +1364,41 @@ int main(int argc, char *argv[])
 						sleep_ms(25);
 					}
 					
-					// Break out of menu-game loop to shut down cleanly
-					if(device->run() == false || kill == true)
-						break;
-					
 					infostream<<"Dropping main menu"<<std::endl;
 
 					menu->drop();
 				}
 
+				playername = wide_to_narrow(menudata.name);
+				password = translatePassword(playername, menudata.password);
+				//infostream<<"Main: password hash: '"<<password<<"'"<<std::endl;
+
+				address = wide_to_narrow(menudata.address);
+				int newport = stoi(wide_to_narrow(menudata.port));
+				if(newport != 0)
+					port = newport;
+				// Save settings
+				g_settings->setS32("selected_mainmenu_tab", menudata.selected_tab);
+				g_settings->set("new_style_leaves", itos(menudata.fancy_trees));
+				g_settings->set("smooth_lighting", itos(menudata.smooth_lighting));
+				g_settings->set("enable_3d_clouds", itos(menudata.clouds_3d));
+				g_settings->set("opaque_water", itos(menudata.opaque_water));
+				g_settings->set("creative_mode", itos(menudata.creative_mode));
+				g_settings->set("enable_damage", itos(menudata.enable_damage));
+				g_settings->set("name", playername);
+				g_settings->set("address", address);
+				g_settings->set("port", itos(port));
+				if(menudata.selected_world != -1)
+					g_settings->set("selected_world_path",
+							worldspecs[menudata.selected_world].path);
+				/*// Update configuration file
+				if(configpath != "")
+					g_settings->updateConfigFile(configpath.c_str());*/
+				
+				// Break out of menu-game loop to shut down cleanly
+				if(device->run() == false || kill == true)
+					break;
+				
 				// Set world path to selected one
 				if(menudata.selected_world != -1){
 					worldspec = worldspecs[menudata.selected_world];
@@ -1406,31 +1434,6 @@ int main(int argc, char *argv[])
 					continue;
 				}
 
-				playername = wide_to_narrow(menudata.name);
-				password = translatePassword(playername, menudata.password);
-				//infostream<<"Main: password hash: '"<<password<<"'"<<std::endl;
-
-				address = wide_to_narrow(menudata.address);
-				int newport = stoi(wide_to_narrow(menudata.port));
-				if(newport != 0)
-					port = newport;
-				// Save settings
-				g_settings->set("new_style_leaves", itos(menudata.fancy_trees));
-				g_settings->set("smooth_lighting", itos(menudata.smooth_lighting));
-				g_settings->set("enable_3d_clouds", itos(menudata.clouds_3d));
-				g_settings->set("opaque_water", itos(menudata.opaque_water));
-				g_settings->set("creative_mode", itos(menudata.creative_mode));
-				g_settings->set("enable_damage", itos(menudata.enable_damage));
-				g_settings->set("name", playername);
-				g_settings->set("address", address);
-				g_settings->set("port", itos(port));
-				if(menudata.selected_world != -1)
-					g_settings->set("selected_world_path",
-							worldspecs[menudata.selected_world].path);
-				// Update configuration file
-				if(configpath != "")
-					g_settings->updateConfigFile(configpath.c_str());
-				
 				// If local game
 				if(address == "")
 				{

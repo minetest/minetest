@@ -145,8 +145,6 @@ void GUIMainMenu::regenerateGui(v2u32 screensize)
 	*/
 	readInput(m_data);
 
-	int active_tab = getTab();
-	
 	/*
 		Remove stuff
 	*/
@@ -177,7 +175,7 @@ void GUIMainMenu::regenerateGui(v2u32 screensize)
 	changeCtype("");
 
 	// Version
-	if(active_tab != TAB_CREDITS)
+	if(m_data->selected_tab != TAB_CREDITS)
 	{
 		core::rect<s32> rect(0, 0, size.X, 40);
 		rect += v2s32(4, 0);
@@ -195,7 +193,7 @@ void GUIMainMenu::regenerateGui(v2u32 screensize)
 	m_topleft_server = c800 + v2s32(90, 70+30+50+290);
 	m_size_server = v2s32(620, 140);
 	
-	if(active_tab == TAB_ADVANCED)
+	if(m_data->selected_tab == TAB_ADVANCED)
 	{
 		m_topleft_client = c800 + v2s32(90, 20+50+30);
 		m_size_client = v2s32(620, 270);
@@ -215,11 +213,11 @@ void GUIMainMenu::regenerateGui(v2u32 screensize)
 		e->addTab(L"Multiplayer");
 		e->addTab(L"Advanced");
 		e->addTab(L"Credits");
-		e->setActiveTab(active_tab);
+		e->setActiveTab(m_data->selected_tab);
 	}
 #endif
 	
-	if(active_tab == TAB_SINGLEPLAYER)
+	if(m_data->selected_tab == TAB_SINGLEPLAYER)
 	{
 		// HYBRID
 		{
@@ -262,6 +260,7 @@ void GUIMainMenu::regenerateGui(v2u32 screensize)
 				e->addItem(narrow_to_wide(i->name+" ["+i->gameid+"]").c_str());
 			}
 			e->setSelected(m_data->selected_world);
+			Environment->setFocus(e);
 		}
 		// Delete world button
 		{
@@ -351,7 +350,7 @@ void GUIMainMenu::regenerateGui(v2u32 screensize)
 		}
 		changeCtype("C");
 	}
-	else if(active_tab == TAB_MULTIPLAYER)
+	else if(m_data->selected_tab == TAB_MULTIPLAYER)
 	{
 		changeCtype("");
 		// CLIENT
@@ -456,7 +455,7 @@ void GUIMainMenu::regenerateGui(v2u32 screensize)
 		}
 		changeCtype("C");
 	}
-	else if(active_tab == TAB_ADVANCED)
+	else if(m_data->selected_tab == TAB_ADVANCED)
 	{
 		changeCtype("");
 		// CLIENT
@@ -619,7 +618,7 @@ void GUIMainMenu::regenerateGui(v2u32 screensize)
 		}
 		changeCtype("C");
 	}
-	else if(active_tab == TAB_CREDITS)
+	else if(m_data->selected_tab == TAB_CREDITS)
 	{
 		// CREDITS
 		{
@@ -716,6 +715,11 @@ void GUIMainMenu::drawMenu()
 
 void GUIMainMenu::readInput(MainMenuData *dst)
 {
+	{
+		gui::IGUIElement *e = getElementFromId(GUI_ID_TAB_CONTROL);
+		if(e != NULL && e->getType() == gui::EGUIET_TAB_CONTROL)
+			dst->selected_tab = ((gui::IGUITabControl*)e)->getActiveTab();
+	}
 	if(getTab() == TAB_SINGLEPLAYER)
 	{
 		dst->name = L"singleplayer";
@@ -940,7 +944,6 @@ int GUIMainMenu::getTab()
 	gui::IGUIElement *e = getElementFromId(GUI_ID_TAB_CONTROL);
 	if(e != NULL && e->getType() == gui::EGUIET_TAB_CONTROL)
 		return ((gui::IGUITabControl*)e)->getActiveTab();
-	//return TAB_ADVANCED; // Default
 	return TAB_SINGLEPLAYER; // Default
 }
 

@@ -30,6 +30,8 @@ class IGameCallback;
 struct MainMenuData
 {
 	// These are in the native format of the gui elements
+	// Generic
+	int selected_tab;
 	// Client options
 	std::wstring address;
 	std::wstring port;
@@ -52,6 +54,8 @@ struct MainMenuData
 	std::vector<SubgameSpec> games;
 
 	MainMenuData():
+		// Generic
+		selected_tab(0),
 		// Client opts
 		fancy_trees(false),
 		smooth_lighting(false),
