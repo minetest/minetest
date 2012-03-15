@@ -93,6 +93,7 @@ enum
 	TAB_SINGLEPLAYER=0,
 	TAB_MULTIPLAYER,
 	TAB_ADVANCED,
+	TAB_SETTINGS,
 	TAB_CREDITS
 };
 
@@ -212,6 +213,7 @@ void GUIMainMenu::regenerateGui(v2u32 screensize)
 		e->addTab(L"Singleplayer");
 		e->addTab(L"Multiplayer");
 		e->addTab(L"Advanced");
+		e->addTab(L"Settings");
 		e->addTab(L"Credits");
 		e->setActiveTab(m_data->selected_tab);
 	}
@@ -305,48 +307,15 @@ void GUIMainMenu::regenerateGui(v2u32 screensize)
 		u32 option_w = 150;
 		{
 			core::rect<s32> rect(0, 0, option_w, 30);
-			rect += m_topleft_client + v2s32(option_x, option_y);
-			Environment->addCheckBox(m_data->fancy_trees, rect, this,
-					GUI_ID_FANCYTREE_CB, wgettext("Fancy trees")); 
-		}
-		{
-			core::rect<s32> rect(0, 0, option_w, 30);
-			rect += m_topleft_client + v2s32(option_x, option_y+20);
-			Environment->addCheckBox(m_data->smooth_lighting, rect, this,
-					GUI_ID_SMOOTH_LIGHTING_CB, wgettext("Smooth Lighting"));
-		}
-		{
-			core::rect<s32> rect(0, 0, option_w, 30);
-			rect += m_topleft_client + v2s32(option_x, option_y+20*2);
-			Environment->addCheckBox(m_data->clouds_3d, rect, this,
-					GUI_ID_3D_CLOUDS_CB, wgettext("3D Clouds"));
-		}
-		{
-			core::rect<s32> rect(0, 0, option_w, 30);
-			rect += m_topleft_client + v2s32(option_x, option_y+20*3);
-			Environment->addCheckBox(m_data->opaque_water, rect, this,
-					GUI_ID_OPAQUE_WATER_CB, wgettext("Opaque water"));
-		}
-		{
-			core::rect<s32> rect(0, 0, option_w, 30);
-			rect += m_topleft_client + v2s32(option_x, option_y+20*4);
+			rect += m_topleft_client + v2s32(option_x, option_y+20*0);
 			Environment->addCheckBox(m_data->creative_mode, rect, this,
 					GUI_ID_CREATIVE_CB, wgettext("Creative Mode"));
 		}
 		{
 			core::rect<s32> rect(0, 0, option_w, 30);
-			rect += m_topleft_client + v2s32(option_x, option_y+20*5);
+			rect += m_topleft_client + v2s32(option_x, option_y+20*1);
 			Environment->addCheckBox(m_data->enable_damage, rect, this,
 					GUI_ID_DAMAGE_CB, wgettext("Enable Damage"));
-		}
-		// Key change button
-		{
-			core::rect<s32> rect(0, 0, 120, 30);
-			/*rect += m_topleft_client + v2s32(m_size_client.X-120-30,
-					m_size_client.Y-30-20);*/
-			rect += m_topleft_client + v2s32(option_x, option_y+20*6+20);
-			Environment->addButton(rect, this,
-					GUI_ID_CHANGE_KEYS_BUTTON, wgettext("Change keys"));
 		}
 		changeCtype("C");
 	}
@@ -413,38 +382,6 @@ void GUIMainMenu::regenerateGui(v2u32 screensize)
 					this, GUI_ID_PORT_INPUT);
 		}
 		changeCtype("");
-		{
-			core::rect<s32> rect(0, 0, 250, 30);
-			rect += m_topleft_client + v2s32(35+30, 150);
-			Environment->addCheckBox(m_data->fancy_trees, rect, this, GUI_ID_FANCYTREE_CB,
-				wgettext("Fancy trees")); 
-		}
-		{
-			core::rect<s32> rect(0, 0, 250, 30);
-			rect += m_topleft_client + v2s32(35+30, 150+20);
-			Environment->addCheckBox(m_data->smooth_lighting, rect, this, GUI_ID_SMOOTH_LIGHTING_CB,
-					wgettext("Smooth Lighting"));
-		}
-		{
-			core::rect<s32> rect(0, 0, 250, 30);
-			rect += m_topleft_client + v2s32(35+30, 150+40);
-			Environment->addCheckBox(m_data->clouds_3d, rect, this, GUI_ID_3D_CLOUDS_CB,
-					wgettext("3D Clouds"));
-		}
-		{
-			core::rect<s32> rect(0, 0, 250, 30);
-			rect += m_topleft_client + v2s32(35+30, 150+60);
-			Environment->addCheckBox(m_data->opaque_water, rect, this, GUI_ID_OPAQUE_WATER_CB,
-					wgettext("Opaque water"));
-		}
-		// Key change button
-		{
-			core::rect<s32> rect(0, 0, 120, 30);
-			rect += m_topleft_client + v2s32(m_size_client.X-180-30-120-20,
-					m_size_client.Y-30-20);
-			Environment->addButton(rect, this, GUI_ID_CHANGE_KEYS_BUTTON,
-				wgettext("Change keys"));
-		}
 		// Start game button
 		{
 			core::rect<s32> rect(0, 0, 180, 30);
@@ -524,38 +461,6 @@ void GUIMainMenu::regenerateGui(v2u32 screensize)
 			Environment->addStaticText(wgettext("Leave address blank to start a local server."),
 				rect, false, true, this, -1);
 		}
-		{
-			core::rect<s32> rect(0, 0, 250, 30);
-			rect += m_topleft_client + v2s32(35+30, 150);
-			Environment->addCheckBox(m_data->fancy_trees, rect, this, GUI_ID_FANCYTREE_CB,
-				wgettext("Fancy trees")); 
-		}
-		{
-			core::rect<s32> rect(0, 0, 250, 30);
-			rect += m_topleft_client + v2s32(35+30, 150+20);
-			Environment->addCheckBox(m_data->smooth_lighting, rect, this, GUI_ID_SMOOTH_LIGHTING_CB,
-					wgettext("Smooth Lighting"));
-		}
-		{
-			core::rect<s32> rect(0, 0, 250, 30);
-			rect += m_topleft_client + v2s32(35+30, 150+40);
-			Environment->addCheckBox(m_data->clouds_3d, rect, this, GUI_ID_3D_CLOUDS_CB,
-					wgettext("3D Clouds"));
-		}
-		{
-			core::rect<s32> rect(0, 0, 250, 30);
-			rect += m_topleft_client + v2s32(35+30, 150+60);
-			Environment->addCheckBox(m_data->opaque_water, rect, this, GUI_ID_OPAQUE_WATER_CB,
-					wgettext("Opaque water"));
-		}
-		// Key change button
-		{
-			core::rect<s32> rect(0, 0, 120, 30);
-			rect += m_topleft_client + v2s32(m_size_client.X-180-30-120-20,
-					m_size_client.Y-30-20);
-			Environment->addButton(rect, this, GUI_ID_CHANGE_KEYS_BUTTON,
-				wgettext("Change keys"));
-		}
 		// Start game button
 		{
 			core::rect<s32> rect(0, 0, 180, 30);
@@ -615,6 +520,54 @@ void GUIMainMenu::regenerateGui(v2u32 screensize)
 				e->addItem(narrow_to_wide(i->name+" ["+i->gameid+"]").c_str());
 			}
 			e->setSelected(m_data->selected_world);
+		}
+		changeCtype("C");
+	}
+	else if(m_data->selected_tab == TAB_SETTINGS)
+	{
+		{
+			core::rect<s32> rect(0, 0, 20, 300);
+			rect += m_topleft_client + v2s32(15, 50);
+			const wchar_t *text = L"S\nE\nT\nT\nI\nN\nG\nS";
+			//gui::IGUIStaticText *t =
+			Environment->addStaticText(text, rect, false, true, this, -1);
+			//t->setTextAlignment(gui::EGUIA_CENTER, gui::EGUIA_UPPERLEFT);
+		}
+		s32 option_x = 70;
+		s32 option_y = 50;
+		u32 option_w = 150;
+		{
+			core::rect<s32> rect(0, 0, option_w, 30);
+			rect += m_topleft_client + v2s32(option_x, option_y);
+			Environment->addCheckBox(m_data->fancy_trees, rect, this,
+					GUI_ID_FANCYTREE_CB, wgettext("Fancy trees")); 
+		}
+		{
+			core::rect<s32> rect(0, 0, option_w, 30);
+			rect += m_topleft_client + v2s32(option_x, option_y+20);
+			Environment->addCheckBox(m_data->smooth_lighting, rect, this,
+					GUI_ID_SMOOTH_LIGHTING_CB, wgettext("Smooth Lighting"));
+		}
+		{
+			core::rect<s32> rect(0, 0, option_w, 30);
+			rect += m_topleft_client + v2s32(option_x, option_y+20*2);
+			Environment->addCheckBox(m_data->clouds_3d, rect, this,
+					GUI_ID_3D_CLOUDS_CB, wgettext("3D Clouds"));
+		}
+		{
+			core::rect<s32> rect(0, 0, option_w, 30);
+			rect += m_topleft_client + v2s32(option_x, option_y+20*3);
+			Environment->addCheckBox(m_data->opaque_water, rect, this,
+					GUI_ID_OPAQUE_WATER_CB, wgettext("Opaque water"));
+		}
+		// Key change button
+		{
+			core::rect<s32> rect(0, 0, 120, 30);
+			/*rect += m_topleft_client + v2s32(m_size_client.X-120-30,
+					m_size_client.Y-30-20);*/
+			rect += m_topleft_client + v2s32(option_x, option_y+120);
+			Environment->addButton(rect, this,
+					GUI_ID_CHANGE_KEYS_BUTTON, wgettext("Change keys"));
 		}
 		changeCtype("C");
 	}
@@ -683,6 +636,14 @@ void GUIMainMenu::drawMenu()
 		{
 			core::rect<s32> rect(0, 0, m_size_server.X, m_size_server.Y);
 			rect += AbsoluteRect.UpperLeftCorner + m_topleft_server;
+			driver->draw2DRectangle(bgcolor, rect, &AbsoluteClippingRect);
+		}
+	}
+	else if(getTab() == TAB_SETTINGS)
+	{
+		{
+			core::rect<s32> rect(0, 0, m_size_client.X, m_size_client.Y);
+			rect += AbsoluteRect.UpperLeftCorner + m_topleft_client;
 			driver->draw2DRectangle(bgcolor, rect, &AbsoluteClippingRect);
 		}
 	}

@@ -1043,6 +1043,11 @@ int main(int argc, char *argv[])
 			}
 		}
 
+		if(world_path == ""){
+			errorstream<<"No world path specified or found."<<std::endl;
+			return 1;
+		}
+
 		// Gamespec
 		std::string world_gameid = getWorldGameId(world_path, is_legacy_world);
 		SubgameSpec gamespec = findSubgame(world_gameid);
