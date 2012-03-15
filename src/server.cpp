@@ -836,11 +836,13 @@ void PlayerInfo::PrintLine(std::ostream *s)
 Server::Server(
 		const std::string &path_world,
 		const std::string &path_config,
-		const SubgameSpec &gamespec
+		const SubgameSpec &gamespec,
+		bool simple_singleplayer_mode
 	):
 	m_path_world(path_world),
 	m_path_config(path_config),
 	m_gamespec(gamespec),
+	m_simple_singleplayer_mode(simple_singleplayer_mode),
 	m_async_fatal_error(""),
 	m_env(NULL),
 	m_con(PROTOCOL_ID, 512, CONNECTION_TIMEOUT, this),
@@ -880,7 +882,11 @@ Server::Server(
 	// share/server
 	m_path_share = porting::path_share + DIR_DELIM + "server";
 
-	infostream<<"Server created for gameid \""<<m_gamespec.id<<"\""<<std::endl;
+	infostream<<"Server created for gameid \""<<m_gamespec.id<<"\"";
+	if(m_simple_singleplayer_mode)
+		infostream<<" in simple singleplayer mode"<<std::endl;
+	else
+		infostream<<std::endl;
 	infostream<<"- world:  "<<m_path_world<<std::endl;
 	infostream<<"- config: "<<m_path_config<<std::endl;
 	infostream<<"- game:   "<<m_gamespec.path<<std::endl;
@@ -2105,6 +2111,16 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 			SendAccessDenied(m_con, peer_id, L"Invalid password");
 			return;
 		}
+
+		// Do not allow multiple players in simple singleplayer mode.
+		// This isn't a perfect way to do it, but will suffice for now.
+		if(m_simple_singleplayer_mode && m_clients.size() > 1){
+			infostream<<"Server: Not allowing another client to connect in"
+					<<" simple singleplayer mode"<<std::endl;
+			SendAccessDenied(m_con, peer_id,
+					L"Running in simple singleplayer mode.");
+			return;
+		}
 		
 		// Enforce user limit.
 		// Don't enforce for users that have some admin right
@@ -2204,21 +2220,25 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 			m_con.Send(peer_id, 0, data, true);
 		}
 		
-		// Send information about server to player in chat
-		SendChatMessage(peer_id, getStatusString());
-		
-		// Send information about joining in chat
+		// Note things in chat if not in simple singleplayer mode
+		if(!m_simple_singleplayer_mode)
 		{
-			std::wstring name = L"unknown";
-			Player *player = m_env->getPlayer(peer_id);
-			if(player != NULL)
-				name = narrow_to_wide(player->getName());
+			// Send information about server to player in chat
+			SendChatMessage(peer_id, getStatusString());
 			
-			std::wstring message;
-			message += L"*** ";
-			message += name;
-			message += L" joined game";
-			BroadcastChatMessage(message);
+			// Send information about joining in chat
+			{
+				std::wstring name = L"unknown";
+				Player *player = m_env->getPlayer(peer_id);
+				if(player != NULL)
+					name = narrow_to_wide(player->getName());
+				
+				std::wstring message;
+				message += L"*** ";
+				message += name;
+				message += L" joined game";
+				BroadcastChatMessage(message);
+			}
 		}
 		
 		// Warnings about protocol version can be issued here

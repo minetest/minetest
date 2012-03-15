@@ -1063,7 +1063,7 @@ int main(int argc, char *argv[])
 		infostream<<"Using gamespec \""<<gamespec.id<<"\""<<std::endl;
 
 		// Create server
-		Server server(world_path, configpath, gamespec);
+		Server server(world_path, configpath, gamespec, false);
 		server.start(port);
 		
 		// Run server
@@ -1253,6 +1253,13 @@ int main(int argc, char *argv[])
 			
 			SubgameSpec gamespec;
 			WorldSpec worldspec;
+			bool simple_singleplayer_mode = false;
+
+			// These are set up based on the menu and other things
+			std::string current_playername = "inv£lid";
+			std::string current_password = "";
+			std::string current_address = "does-not-exist";
+			int current_port = 0;
 
 			/*
 				Out-of-game menu loop.
@@ -1377,6 +1384,7 @@ int main(int argc, char *argv[])
 				int newport = stoi(wide_to_narrow(menudata.port));
 				if(newport != 0)
 					port = newport;
+				simple_singleplayer_mode = menudata.simple_singleplayer_mode;
 				// Save settings
 				g_settings->setS32("selected_mainmenu_tab", menudata.selected_tab);
 				g_settings->set("new_style_leaves", itos(menudata.fancy_trees));
@@ -1391,13 +1399,23 @@ int main(int argc, char *argv[])
 				if(menudata.selected_world != -1)
 					g_settings->set("selected_world_path",
 							worldspecs[menudata.selected_world].path);
-				/*// Update configuration file
-				if(configpath != "")
-					g_settings->updateConfigFile(configpath.c_str());*/
 				
 				// Break out of menu-game loop to shut down cleanly
 				if(device->run() == false || kill == true)
 					break;
+				
+				current_playername = playername;
+				current_password = password;
+				current_address = address;
+				current_port = port;
+
+				// If using simple singleplayer mode, override
+				if(simple_singleplayer_mode){
+					current_playername = "singleplayer";
+					current_password = "";
+					current_address = "";
+					current_port = 30011;
+				}
 				
 				// Set world path to selected one
 				if(menudata.selected_world != -1){
@@ -1435,7 +1453,7 @@ int main(int argc, char *argv[])
 				}
 
 				// If local game
-				if(address == "")
+				if(current_address == "")
 				{
 					if(menudata.selected_world == -1){
 						error_message = L"No world selected and no address "
@@ -1474,7 +1492,7 @@ int main(int argc, char *argv[])
 			// Break out of menu-game loop to shut down cleanly
 			if(device->run() == false || kill == true)
 				break;
-			
+
 			/*
 				Run game
 			*/
@@ -1485,14 +1503,15 @@ int main(int argc, char *argv[])
 				device,
 				font,
 				worldspec.path,
-				playername,
-				password,
-				address,
-				port,
+				current_playername,
+				current_password,
+				current_address,
+				current_port,
 				error_message,
 				configpath,
 				chat_backend,
-				gamespec
+				gamespec,
+				simple_singleplayer_mode
 			);
 
 		} //try

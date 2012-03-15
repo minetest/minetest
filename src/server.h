@@ -410,7 +410,8 @@ public:
 	Server(
 		const std::string &path_world,
 		const std::string &path_config,
-		const SubgameSpec &gamespec
+		const SubgameSpec &gamespec,
+		bool simple_singleplayer_mode
 	);
 	~Server();
 	void start(unsigned short port);
@@ -659,6 +660,9 @@ private:
 	std::string m_path_config;
 	// Subgame specification
 	SubgameSpec m_gamespec;
+	// If true, do not allow multiple players and hide some multiplayer
+	// functionality
+	bool m_simple_singleplayer_mode;
 
 	// Equivalent of /usr/share/minetest/server
 	std::string m_path_share;

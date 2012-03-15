@@ -720,15 +720,13 @@ void GUIMainMenu::readInput(MainMenuData *dst)
 		if(e != NULL && e->getType() == gui::EGUIET_TAB_CONTROL)
 			dst->selected_tab = ((gui::IGUITabControl*)e)->getActiveTab();
 	}
-	if(getTab() == TAB_SINGLEPLAYER)
+	if(dst->selected_tab == TAB_SINGLEPLAYER)
 	{
-		dst->name = L"singleplayer";
-		dst->password = L"";
-		dst->address = L"";
-		dst->port = 30000;
+		dst->simple_singleplayer_mode = true;
 	}
 	else
 	{
+		dst->simple_singleplayer_mode = false;
 		{
 			gui::IGUIElement *e = getElementFromId(GUI_ID_NAME_INPUT);
 			if(e != NULL)

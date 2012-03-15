@@ -658,7 +658,8 @@ void the_game(
 	std::wstring &error_message,
 	std::string configpath,
 	ChatBackend &chat_backend,
-	const SubgameSpec &gamespec // Used for local game
+	const SubgameSpec &gamespec, // Used for local game,
+	bool simple_singleplayer_mode
 )
 {
 	video::IVideoDriver* driver = device->getVideoDriver();
@@ -709,7 +710,8 @@ void the_game(
 	if(address == ""){
 		draw_load_screen(L"Creating server...", driver, font);
 		infostream<<"Creating server"<<std::endl;
-		server = new Server(map_dir, configpath, gamespec);
+		server = new Server(map_dir, configpath, gamespec,
+				simple_singleplayer_mode);
 		server->start(port);
 	}
 
@@ -1357,7 +1359,7 @@ void the_game(
 					<<"Launching pause menu"<<std::endl;
 			// It will delete itself by itself
 			(new GUIPauseMenu(guienv, guiroot, -1, g_gamecallback,
-					&g_menumgr))->drop();
+					&g_menumgr, simple_singleplayer_mode))->drop();
 
 			// Move mouse cursor on top of the disconnect button
 			input->setMousePos(displaycenter.X, displaycenter.Y+25);

@@ -45,6 +45,7 @@ struct MainMenuData
 	bool creative_mode;
 	bool enable_damage;
 	int selected_world;
+	bool simple_singleplayer_mode;
 	// Actions
 	WorldSpec delete_world_spec;
 	std::wstring create_world_name;
@@ -62,7 +63,8 @@ struct MainMenuData
 		// Server opts
 		creative_mode(false),
 		enable_damage(false),
-		selected_world(0)
+		selected_world(0),
+		simple_singleplayer_mode(false)
 	{}
 };
 

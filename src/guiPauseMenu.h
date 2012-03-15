@@ -37,7 +37,8 @@ public:
 	GUIPauseMenu(gui::IGUIEnvironment* env,
 			gui::IGUIElement* parent, s32 id,
 			IGameCallback *gamecallback,
-			IMenuManager *menumgr);
+			IMenuManager *menumgr,
+			bool simple_singleplayer_mode);
 	~GUIPauseMenu();
 	
 	void removeChildren();
@@ -52,6 +53,7 @@ public:
 	
 private:
 	IGameCallback *m_gamecallback;
+	bool m_simple_singleplayer_mode;
 };
 
 #endif
