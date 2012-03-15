@@ -96,6 +96,10 @@ private:
 	IMenuManager *menumgr;
 	
 	bool m_is_regenerating;
+	v2s32 m_topleft_client;
+	v2s32 m_size_client;
+	v2s32 m_topleft_server;
+	v2s32 m_size_server;
 };
 
 #endif
