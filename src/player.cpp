@@ -622,7 +622,7 @@ void LocalPlayer::applyControl(float dtime)
 
 	// Random constants
 	f32 walk_acceleration = 4.0 * BS;
-	f32 walkspeed_max = 5.0 * BS;
+	f32 walkspeed_max = 4.0 * BS;
 	
 	setPitch(control.pitch);
 	setYaw(control.yaw);
