@@ -176,7 +176,7 @@ void GUIMainMenu::regenerateGui(v2u32 screensize)
 	changeCtype("");
 
 	// Version
-	if(m_data->selected_tab != TAB_CREDITS)
+	//if(m_data->selected_tab != TAB_CREDITS)
 	{
 		core::rect<s32> rect(0, 0, size.X, 40);
 		rect += v2s32(4, 0);
@@ -191,18 +191,18 @@ void GUIMainMenu::regenerateGui(v2u32 screensize)
 	m_topleft_client = c800 + v2s32(90, 70+50+30);
 	m_size_client = v2s32(620, 270);
 
-	m_topleft_server = c800 + v2s32(90, 70+30+50+290);
 	m_size_server = v2s32(620, 140);
-	
+
 	if(m_data->selected_tab == TAB_ADVANCED)
 	{
-		m_topleft_client = c800 + v2s32(90, 20+50+30);
-		m_size_client = v2s32(620, 270);
+		m_topleft_client = c800 + v2s32(90, 70+50+30);
+		m_size_client = v2s32(620, 200);
 
-		m_topleft_server = c800 + v2s32(90, 20+30+50+290);
 		m_size_server = v2s32(620, 140);
 	}
 
+	m_topleft_server = m_topleft_client + v2s32(0, m_size_client.Y+20);
+	
 	// Tabs
 #if 1
 	{
@@ -223,15 +223,13 @@ void GUIMainMenu::regenerateGui(v2u32 screensize)
 	{
 		// HYBRID
 		{
-			/*core::rect<s32> rect(0, 0, 20, 125);
-			rect += m_topleft_client + v2s32(15, 80);
-			const wchar_t *text = L"H\nY\nB\nR\nI\nD";*/
-			core::rect<s32> rect(0, 0, 20, 300);
-			rect += m_topleft_client + v2s32(15, 15);
+			core::rect<s32> rect(0, 0, 10, m_size_client.Y);
+			rect += m_topleft_client + v2s32(15, 0);
+			//const wchar_t *text = L"H\nY\nB\nR\nI\nD";
 			const wchar_t *text = L"T\nA\nP\nE\n\nA\nN\nD\n\nG\nL\nU\nE";
-			//gui::IGUIStaticText *t =
+			gui::IGUIStaticText *t =
 			Environment->addStaticText(text, rect, false, true, this, -1);
-			//t->setTextAlignment(gui::EGUIA_CENTER, gui::EGUIA_UPPERLEFT);
+			t->setTextAlignment(gui::EGUIA_CENTER, gui::EGUIA_CENTER);
 		}
 		u32 bs = 5;
 		// World selection listbox
@@ -288,13 +286,13 @@ void GUIMainMenu::regenerateGui(v2u32 screensize)
 		}
 		// Start game button
 		{
-			/*core::rect<s32> rect(0, 0, 120, 30);
-			rect += m_topleft_client + v2s32(m_size_client.X-120-30,
-					m_size_client.Y-30-20-30-5);*/
 			/*core::rect<s32> rect(0, 0, world_button_w, 30);
 			rect += m_topleft_client + v2s32(world_sel_x+(world_button_w+bs)*3,
 					world_sel_y+world_sel_h+0);*/
 			u32 bw = 160;
+			/*core::rect<s32> rect(0, 0, bw, 30);
+			rect += m_topleft_client + v2s32(m_size_client.X-bw-30,
+					m_size_client.Y-30-15);*/
 			core::rect<s32> rect(0, 0, bw, 30);
 			rect += m_topleft_client + v2s32(world_sel_x+world_sel_w-bw,
 					world_sel_y+world_sel_h+30+bs);
@@ -303,6 +301,7 @@ void GUIMainMenu::regenerateGui(v2u32 screensize)
 		}
 		// Options
 		s32 option_x = 50;
+		//s32 option_x = 50+world_sel_w+20;
 		s32 option_y = 30;
 		u32 option_w = 150;
 		{
@@ -324,12 +323,12 @@ void GUIMainMenu::regenerateGui(v2u32 screensize)
 		changeCtype("");
 		// CLIENT
 		{
-			core::rect<s32> rect(0, 0, 20, 125);
-			rect += m_topleft_client + v2s32(15, 80);
+			core::rect<s32> rect(0, 0, 10, m_size_client.Y);
+			rect += m_topleft_client + v2s32(15, 0);
 			const wchar_t *text = L"C\nL\nI\nE\nN\nT";
-			//gui::IGUIStaticText *t =
+			gui::IGUIStaticText *t =
 			Environment->addStaticText(text, rect, false, true, this, -1);
-			//t->setTextAlignment(gui::EGUIA_CENTER, gui::EGUIA_UPPERLEFT);
+			t->setTextAlignment(gui::EGUIA_CENTER, gui::EGUIA_CENTER);
 		}
 		// Nickname + password
 		{
@@ -386,7 +385,7 @@ void GUIMainMenu::regenerateGui(v2u32 screensize)
 		{
 			core::rect<s32> rect(0, 0, 180, 30);
 			rect += m_topleft_client + v2s32(m_size_client.X-180-30,
-					m_size_client.Y-30-20);
+					m_size_client.Y-30-15);
 			Environment->addButton(rect, this, GUI_ID_JOIN_GAME_BUTTON,
 				wgettext("Start Game / Connect"));
 		}
@@ -397,24 +396,24 @@ void GUIMainMenu::regenerateGui(v2u32 screensize)
 		changeCtype("");
 		// CLIENT
 		{
-			core::rect<s32> rect(0, 0, 20, 125);
-			rect += m_topleft_client + v2s32(15, 80);
+			core::rect<s32> rect(0, 0, 10, m_size_client.Y);
+			rect += m_topleft_client + v2s32(15, 0);
 			const wchar_t *text = L"C\nL\nI\nE\nN\nT";
-			//gui::IGUIStaticText *t =
+			gui::IGUIStaticText *t =
 			Environment->addStaticText(text, rect, false, true, this, -1);
-			//t->setTextAlignment(gui::EGUIA_CENTER, gui::EGUIA_UPPERLEFT);
+			t->setTextAlignment(gui::EGUIA_CENTER, gui::EGUIA_CENTER);
 		}
 		// Nickname + password
 		{
 			core::rect<s32> rect(0, 0, 110, 20);
-			rect += m_topleft_client + v2s32(35+30, 50+6);
+			rect += m_topleft_client + v2s32(35+30, 35+6);
 			Environment->addStaticText(wgettext("Name/Password"), 
 				rect, false, true, this, -1);
 		}
 		changeCtype("C");
 		{
 			core::rect<s32> rect(0, 0, 230, 30);
-			rect += m_topleft_client + v2s32(160+30, 50);
+			rect += m_topleft_client + v2s32(160+30, 35);
 			gui::IGUIElement *e = 
 			Environment->addEditBox(m_data->name.c_str(), rect, true, this, GUI_ID_NAME_INPUT);
 			if(m_data->name == L"")
@@ -422,7 +421,7 @@ void GUIMainMenu::regenerateGui(v2u32 screensize)
 		}
 		{
 			core::rect<s32> rect(0, 0, 120, 30);
-			rect += m_topleft_client + v2s32(m_size_client.X-60-100, 50);
+			rect += m_topleft_client + v2s32(m_size_client.X-60-100, 35);
 			gui::IGUIEditBox *e =
 			Environment->addEditBox(L"", rect, true, this, 264);
 			e->setPasswordBox(true);
@@ -434,14 +433,14 @@ void GUIMainMenu::regenerateGui(v2u32 screensize)
 		// Address + port
 		{
 			core::rect<s32> rect(0, 0, 110, 20);
-			rect += m_topleft_client + v2s32(35+30, 100+6);
+			rect += m_topleft_client + v2s32(35+30, 75+6);
 			Environment->addStaticText(wgettext("Address/Port"),
 				rect, false, true, this, -1);
 		}
 		changeCtype("C");
 		{
 			core::rect<s32> rect(0, 0, 230, 30);
-			rect += m_topleft_client + v2s32(160+30, 100);
+			rect += m_topleft_client + v2s32(160+30, 75);
 			gui::IGUIElement *e = 
 			Environment->addEditBox(m_data->address.c_str(), rect, true,
 					this, GUI_ID_ADDRESS_INPUT);
@@ -450,14 +449,14 @@ void GUIMainMenu::regenerateGui(v2u32 screensize)
 		}
 		{
 			core::rect<s32> rect(0, 0, 120, 30);
-			rect += m_topleft_client + v2s32(m_size_client.X-60-100, 100);
+			rect += m_topleft_client + v2s32(m_size_client.X-60-100, 75);
 			Environment->addEditBox(m_data->port.c_str(), rect, true,
 					this, GUI_ID_PORT_INPUT);
 		}
 		changeCtype("");
 		{
 			core::rect<s32> rect(0, 0, 400, 20);
-			rect += m_topleft_client + v2s32(160+30, 100+35);
+			rect += m_topleft_client + v2s32(160+30, 75+35);
 			Environment->addStaticText(wgettext("Leave address blank to start a local server."),
 				rect, false, true, this, -1);
 		}
@@ -474,12 +473,12 @@ void GUIMainMenu::regenerateGui(v2u32 screensize)
 		*/
 		// SERVER
 		{
-			core::rect<s32> rect(0, 0, 20, 125);
-			rect += m_topleft_server + v2s32(15, 15);
+			core::rect<s32> rect(0, 0, 10, m_size_server.Y);
+			rect += m_topleft_server + v2s32(15, 0);
 			const wchar_t *text = L"S\nE\nR\nV\nE\nR";
-			//gui::IGUIStaticText *t =
+			gui::IGUIStaticText *t =
 			Environment->addStaticText(text, rect, false, true, this, -1);
-			//t->setTextAlignment(gui::EGUIA_CENTER, gui::EGUIA_UPPERLEFT);
+			t->setTextAlignment(gui::EGUIA_CENTER, gui::EGUIA_CENTER);
 		}
 		// Server parameters
 		{
@@ -526,12 +525,12 @@ void GUIMainMenu::regenerateGui(v2u32 screensize)
 	else if(m_data->selected_tab == TAB_SETTINGS)
 	{
 		{
-			core::rect<s32> rect(0, 0, 20, 300);
-			rect += m_topleft_client + v2s32(15, 50);
+			core::rect<s32> rect(0, 0, 10, m_size_client.Y);
+			rect += m_topleft_client + v2s32(15, 0);
 			const wchar_t *text = L"S\nE\nT\nT\nI\nN\nG\nS";
-			//gui::IGUIStaticText *t =
+			gui::IGUIStaticText *t =
 			Environment->addStaticText(text, rect, false, true, this, -1);
-			//t->setTextAlignment(gui::EGUIA_CENTER, gui::EGUIA_UPPERLEFT);
+			t->setTextAlignment(gui::EGUIA_CENTER, gui::EGUIA_CENTER);
 		}
 		s32 option_x = 70;
 		s32 option_y = 50;
@@ -575,16 +574,16 @@ void GUIMainMenu::regenerateGui(v2u32 screensize)
 	{
 		// CREDITS
 		{
-			core::rect<s32> rect(0, 0, 20, 200);
-			rect += m_topleft_client + v2s32(15, 60);
+			core::rect<s32> rect(0, 0, 10, m_size_client.Y);
+			rect += m_topleft_client + v2s32(15, 0);
 			const wchar_t *text = L"C\nR\nE\nD\nI\nT\nS";
-			//gui::IGUIStaticText *t =
+			gui::IGUIStaticText *t =
 			Environment->addStaticText(text, rect, false, true, this, -1);
-			//t->setTextAlignment(gui::EGUIA_CENTER, gui::EGUIA_UPPERLEFT);
+			t->setTextAlignment(gui::EGUIA_CENTER, gui::EGUIA_CENTER);
 		}
 		{
 			core::rect<s32> rect(0, 0, 620, 250);
-			rect += m_topleft_client + v2s32(150+14, 50+35);
+			rect += m_topleft_client + v2s32(130+14, 50+35);
 			Environment->addStaticText(narrow_to_wide(
 			"Minetest-c55 " VERSION_STRING "\n"
 			"http://c55.me/minetest/\n"
@@ -663,7 +662,7 @@ void GUIMainMenu::drawMenu()
 			logosize *= 2;
 			core::rect<s32> rect(0,0,logosize.X,logosize.Y);
 			rect += AbsoluteRect.UpperLeftCorner + m_topleft_client;
-			rect += v2s32(150, 50);
+			rect += v2s32(130, 50);
 			driver->draw2DImage(logotexture, rect,
 				core::rect<s32>(core::position2d<s32>(0,0),
 				core::dimension2di(logotexture->getSize())),
