@@ -4182,6 +4182,40 @@ std::wstring Server::getStatusString()
 	return os.str();
 }
 
+u64 Server::getPlayerAuthPrivs(const std::string &name)
+{
+	try{
+		return m_authmanager.getPrivs(name);
+	}
+	catch(AuthNotFoundException &e)
+	{
+		dstream<<"WARNING: Auth not found for "<<name<<std::endl;
+		return 0;
+	}
+}
+
+void Server::setPlayerAuthPrivs(const std::string &name, u64 privs)
+{
+	try{
+		return m_authmanager.setPrivs(name, privs);
+	}
+	catch(AuthNotFoundException &e)
+	{
+		dstream<<"WARNING: Auth not found for "<<name<<std::endl;
+	}
+}
+
+u64 Server::getPlayerEffectivePrivs(const std::string &name)
+{
+	// Local player gets all privileges regardless of
+	// what's set on their account.
+	if(m_simple_singleplayer_mode)
+		return PRIV_ALL;
+	if(name == g_settings->get("name"))
+		return PRIV_ALL;
+	return getPlayerAuthPrivs(name);
+}
+
 void Server::setPlayerPassword(const std::string &name, const std::wstring &password)
 {
 	// Add player to auth manager
@@ -4570,16 +4604,7 @@ u64 Server::getPlayerPrivs(Player *player)
 	if(player==NULL)
 		return 0;
 	std::string playername = player->getName();
-	// Local player gets all privileges regardless of
-	// what's set on their account.
-	if(g_settings->get("name") == playername)
-	{
-		return PRIV_ALL;
-	}
-	else
-	{
-		return getPlayerAuthPrivs(playername);
-	}
+	return getPlayerEffectivePrivs(playername);
 }
 
 void dedicated_server_loop(Server &server, bool &kill)

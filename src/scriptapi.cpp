@@ -3551,10 +3551,7 @@ static int l_get_player_privs(lua_State *L)
 	// Do it
 	lua_newtable(L);
 	int table = lua_gettop(L);
-	u64 privs_i = server->getPlayerAuthPrivs(name);
-	// Special case for the "name" setting (local player / server owner)
-	if(name == g_settings->get("name"))
-		privs_i = PRIV_ALL;
+	u64 privs_i = server->getPlayerEffectivePrivs(name);
 	std::set<std::string> privs_s = privsToSet(privs_i);
 	for(std::set<std::string>::const_iterator
 			i = privs_s.begin(); i != privs_s.end(); i++){

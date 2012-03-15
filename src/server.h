@@ -465,32 +465,13 @@ public:
 		m_shutdown_requested = true;
 	}
 
-
 	// Envlock and conlock should be locked when calling this
 	void SendMovePlayer(Player *player);
 	
-	u64 getPlayerAuthPrivs(const std::string &name)
-	{
-		try{
-			return m_authmanager.getPrivs(name);
-		}
-		catch(AuthNotFoundException &e)
-		{
-			dstream<<"WARNING: Auth not found for "<<name<<std::endl;
-			return 0;
-		}
-	}
-
-	void setPlayerAuthPrivs(const std::string &name, u64 privs)
-	{
-		try{
-			return m_authmanager.setPrivs(name, privs);
-		}
-		catch(AuthNotFoundException &e)
-		{
-			dstream<<"WARNING: Auth not found for "<<name<<std::endl;
-		}
-	}
+	// Thread-safe
+	u64 getPlayerAuthPrivs(const std::string &name);
+	void setPlayerAuthPrivs(const std::string &name, u64 privs);
+	u64 getPlayerEffectivePrivs(const std::string &name);
 
 	// Changes a player's password, password must be given as plaintext
 	// If the player doesn't exist, a new entry is added to the auth manager
