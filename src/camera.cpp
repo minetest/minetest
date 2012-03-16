@@ -375,8 +375,12 @@ void Camera::updateViewingRange(f32 frametime_in)
 		m_draw_control.wanted_range = viewing_range_max;
 
 	// Just so big a value that everything rendered is visible
-	// Some more allowance than viewing_range_max * BS because of active objects etc.
-	m_cameranode->setFarValue(viewing_range_max * BS * 10);
+	// Some more allowance than viewing_range_max * BS because of clouds,
+	// active objects, etc.
+	if(viewing_range_max < 200*BS)
+		m_cameranode->setFarValue(200 * BS * 10);
+	else
+		m_cameranode->setFarValue(viewing_range_max * BS * 10);
 
 	f32 wanted_fps = g_settings->getFloat("wanted_fps");
 	wanted_fps = MYMAX(wanted_fps, 1.0);

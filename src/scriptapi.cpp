@@ -46,6 +46,7 @@ extern "C" {
 #include "content_nodemeta.h"
 #include "utility.h"
 #include "tool.h"
+#include "daynightratio.h"
 
 static void stackDump(lua_State *L, std::ostream &o)
 {

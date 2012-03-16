@@ -135,6 +135,8 @@ enum ToClientCommand
 	/*
 		u16 command
 		u16 time (0-23999)
+		Added in a later version:
+		f1000 time_speed
 	*/
 
 	// (oops, there is some gap here)
@@ -453,11 +455,12 @@ enum ToServerCommand
 
 };
 
-inline SharedBuffer<u8> makePacket_TOCLIENT_TIME_OF_DAY(u16 time)
+inline SharedBuffer<u8> makePacket_TOCLIENT_TIME_OF_DAY(u16 time, float time_speed)
 {
-	SharedBuffer<u8> data(2+2);
+	SharedBuffer<u8> data(2+2+4);
 	writeU16(&data[0], TOCLIENT_TIME_OF_DAY);
 	writeU16(&data[2], time);
+	writeF1000(&data[4], time_speed);
 	return data;
 }
 

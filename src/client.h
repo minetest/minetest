@@ -256,8 +256,6 @@ public:
 	int getCrackLevel();
 	void setCrack(int level, v3s16 pos);
 
-	u32 getDayNightRatio();
-
 	u16 getHP();
 
 	float getAvgRtt()
@@ -350,8 +348,6 @@ private:
 	float m_animation_time;
 	int m_crack_level;
 	v3s16 m_crack_pos;
-	// Received from the server. 0-23999
-	u32 m_time_of_day;
 	// 0 <= m_daynight_i < DAYNIGHT_CACHE_COUNT
 	//s32 m_daynight_i;
 	//u32 m_daynight_ratio;
@@ -367,6 +363,11 @@ private:
 	bool m_itemdef_received;
 	bool m_nodedef_received;
 	friend class FarMesh;
+
+	// time_of_day speed approximation for old protocol
+	bool m_time_of_day_set;
+	float m_last_time_of_day_f;
+	float m_time_of_day_update_timer;
 };
 
 #endif // !SERVER

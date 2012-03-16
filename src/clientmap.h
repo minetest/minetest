@@ -116,6 +116,9 @@ public:
 
 	void renderMap(video::IVideoDriver* driver, s32 pass);
 
+	int getBackgroundBrightness(float max_d, u32 daylight_factor,
+			int oldvalue, bool *sunlight_seen_result);
+
 	void renderPostFx();
 
 	// For debug printing

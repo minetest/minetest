@@ -426,11 +426,6 @@ public:
 
 	core::list<PlayerInfo> getPlayerInfo();
 
-	/*u32 getDayNightRatio()
-	{
-		return time_to_daynight_ratio(m_time_of_day.get());
-	}*/
-	
 	// Environment must be locked when called
 	void setTimeOfDay(u32 time)
 	{
@@ -714,10 +709,6 @@ private:
 		Time related stuff
 	*/
 
-	// 0-23999
-	//MutexedVariable<u32> m_time_of_day;
-	// Used to buffer dtime for adding to m_time_of_day
-	float m_time_counter;
 	// Timer for sending time of day over network
 	float m_time_of_day_send_timer;
 	// Uptime of server in seconds

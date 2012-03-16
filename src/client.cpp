@@ -247,14 +247,16 @@ Client::Client(
 	m_animation_time(0),
 	m_crack_level(-1),
 	m_crack_pos(0,0,0),
-	m_time_of_day(0),
 	m_map_seed(0),
 	m_password(password),
 	m_access_denied(false),
 	m_texture_receive_progress(0),
 	m_textures_received(false),
 	m_itemdef_received(false),
-	m_nodedef_received(false)
+	m_nodedef_received(false),
+	m_time_of_day_set(false),
+	m_last_time_of_day_f(-1),
+	m_time_of_day_update_timer(0)
 {
 	m_packetcounter_timer = 0.0;
 	//m_delete_unused_sectors_timer = 0.0;
@@ -333,6 +335,8 @@ void Client::step(float dtime)
 	if(m_animation_time > 60.0)
 		m_animation_time -= 60.0;
 
+	m_time_of_day_update_timer += dtime;
+	
 	//infostream<<"Client steps "<<dtime<<std::endl;
 
 	{
@@ -1044,22 +1048,37 @@ void Client::ProcessData(u8 *data, u32 datasize, u16 sender_peer_id)
 		u16 time_of_day = readU16(&data[2]);
 		time_of_day = time_of_day % 24000;
 		//infostream<<"Client: time_of_day="<<time_of_day<<std::endl;
-		
-		/*
-			time_of_day:
-			0 = midnight
-			12000 = midday
-		*/
-		{
-			m_env.setTimeOfDay(time_of_day);
-
-			u32 dr = m_env.getDayNightRatio();
-
-			infostream<<"Client: time_of_day="<<time_of_day
-					<<", dr="<<dr
-					<<std::endl;
+		float time_speed = 0;
+		if(datasize >= 2 + 2 + 4){
+			time_speed = readF1000(&data[4]);
+		} else {
+			// Old message; try to approximate speed of time by ourselves
+			float time_of_day_f = (float)time_of_day / 24000.0;
+			float tod_diff_f = 0;
+			if(time_of_day_f < 0.2 && m_last_time_of_day_f > 0.8)
+				tod_diff_f = time_of_day_f - m_last_time_of_day_f + 1.0;
+			else
+				tod_diff_f = time_of_day_f - m_last_time_of_day_f;
+			m_last_time_of_day_f = time_of_day_f;
+			float time_diff = m_time_of_day_update_timer;
+			m_time_of_day_update_timer = 0;
+			if(m_time_of_day_set){
+				time_speed = 3600.0*24.0 * tod_diff_f / time_diff;
+				infostream<<"Client: Measured time_of_day speed (old format): "
+						<<time_speed<<" tod_diff_f="<<tod_diff_f
+						<<" time_diff="<<time_diff<<std::endl;
+			}
 		}
+		
+		// Update environment
+		m_env.setTimeOfDay(time_of_day);
+		m_env.setTimeOfDaySpeed(time_speed);
+		m_time_of_day_set = true;
 
+		u32 dr = m_env.getDayNightRatio();
+		verbosestream<<"Client: time_of_day="<<time_of_day
+				<<" time_speed="<<time_speed
+				<<" dr="<<dr<<std::endl;
 	}
 	else if(command == TOCLIENT_CHAT_MESSAGE)
 	{
@@ -2073,12 +2092,6 @@ void Client::setCrack(int level, v3s16 pos)
 		// add new crack
 		addUpdateMeshTaskForNode(pos, false, true);
 	}
-}
-
-u32 Client::getDayNightRatio()
-{
-	//JMutexAutoLock envlock(m_env_mutex); //bulk comment-out
-	return m_env.getDayNightRatio();
 }
 
 u16 Client::getHP()

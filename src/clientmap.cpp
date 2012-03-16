@@ -21,6 +21,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "client.h"
 #include "mapblock_mesh.h"
 #include <IMaterialRenderer.h>
+#include <matrix4.h>
 #include "log.h"
 #include "mapsector.h"
 #include "main.h" // dout_client, g_settings
@@ -28,6 +29,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "mapblock.h"
 #include "profiler.h"
 #include "settings.h"
+
+#define PP(x) "("<<(x).X<<","<<(x).Y<<","<<(x).Z<<")"
 
 ClientMap::ClientMap(
 		Client *client,
@@ -189,7 +192,7 @@ void ClientMap::renderMap(video::IVideoDriver* driver, s32 pass)
 	*/
 	float animation_time = m_client->getAnimationTime();
 	int crack = m_client->getCrackLevel();
-	u32 daynight_ratio = m_client->getDayNightRatio();
+	u32 daynight_ratio = m_client->getEnv().getDayNightRatio();
 
 	m_camera_mutex.Lock();
 	v3f camera_position = m_camera_position;
@@ -507,6 +510,182 @@ void ClientMap::renderMap(video::IVideoDriver* driver, s32 pass)
 
 	/*infostream<<"renderMap(): is_transparent_pass="<<is_transparent_pass
 			<<", rendered "<<vertex_count<<" vertices."<<std::endl;*/
+}
+
+static bool getVisibleBrightness(Map *map, v3f p0, v3f dir, float step,
+		float step_multiplier, float start_distance, float end_distance,
+		INodeDefManager *ndef, u32 daylight_factor, float sunlight_min_d,
+		int *result, bool *sunlight_seen)
+{
+	int brightness_sum = 0;
+	int brightness_count = 0;
+	float distance = start_distance;
+	dir.normalize();
+	v3f pf = p0;
+	pf += dir * distance;
+	int noncount = 0;
+	bool nonlight_seen = false;
+	bool allow_allowing_non_sunlight_propagates = false;
+	bool allow_non_sunlight_propagates = false;
+	// Check content nearly at camera position
+	{
+		v3s16 p = floatToInt(p0 /*+ dir * 3*BS*/, BS);
+		MapNode n = map->getNodeNoEx(p);
+		if(ndef->get(n).param_type == CPT_LIGHT &&
+				!ndef->get(n).sunlight_propagates)
+			allow_allowing_non_sunlight_propagates = true;
+	}
+	// If would start at CONTENT_IGNORE, start closer
+	{
+		v3s16 p = floatToInt(pf, BS);
+		MapNode n = map->getNodeNoEx(p);
+		if(n.getContent() == CONTENT_IGNORE){
+			float newd = 2*BS;
+			pf = p0 + dir * 2*newd;
+			distance = newd;
+		}
+	}
+	for(int i=0; distance < end_distance; i++){
+		pf += dir * step;
+		distance += step;
+		step *= step_multiplier;
+		
+		v3s16 p = floatToInt(pf, BS);
+		MapNode n = map->getNodeNoEx(p);
+		if(allow_allowing_non_sunlight_propagates && i == 0 &&
+				ndef->get(n).param_type == CPT_LIGHT &&
+				!ndef->get(n).sunlight_propagates){
+			allow_non_sunlight_propagates = true;
+		}
+		if(ndef->get(n).param_type != CPT_LIGHT ||
+				(!ndef->get(n).sunlight_propagates &&
+					!allow_non_sunlight_propagates)){
+			nonlight_seen = true;
+			noncount++;
+			if(noncount >= 4)
+				break;
+			continue;
+		}
+		if(distance >= sunlight_min_d && *sunlight_seen == false
+				&& nonlight_seen == false)
+			if(n.getLight(LIGHTBANK_DAY, ndef) == LIGHT_SUN)
+				*sunlight_seen = true;
+		noncount = 0;
+		brightness_sum += decode_light(n.getLightBlend(daylight_factor, ndef));
+		brightness_count++;
+	}
+	*result = 0;
+	if(brightness_count == 0)
+		return false;
+	*result = brightness_sum / brightness_count;
+	/*std::cerr<<"Sampled "<<brightness_count<<" points; result="
+			<<(*result)<<std::endl;*/
+	return true;
+}
+
+int ClientMap::getBackgroundBrightness(float max_d, u32 daylight_factor,
+		int oldvalue, bool *sunlight_seen_result)
+{
+	const bool debugprint = false;
+	INodeDefManager *ndef = m_gamedef->ndef();
+	static v3f z_directions[50] = {
+		v3f(-100, 0, 0)
+	};
+	static f32 z_offsets[sizeof(z_directions)/sizeof(*z_directions)] = {
+		-1000,
+	};
+	if(z_directions[0].X < -99){
+		for(u32 i=0; i<sizeof(z_directions)/sizeof(*z_directions); i++){
+			z_directions[i] = v3f(
+				0.01 * myrand_range(-80, 80),
+				1.0,
+				0.01 * myrand_range(-80, 80)
+			);
+			z_offsets[i] = 0.01 * myrand_range(0,100);
+		}
+	}
+	if(debugprint)
+		std::cerr<<"In goes "<<PP(m_camera_direction)<<", out comes ";
+	int sunlight_seen_count = 0;
+	float sunlight_min_d = max_d*0.8;
+	if(sunlight_min_d > 35*BS)
+		sunlight_min_d = 35*BS;
+	core::array<int> values;
+	for(u32 i=0; i<sizeof(z_directions)/sizeof(*z_directions); i++){
+		v3f z_dir = z_directions[i];
+		z_dir.normalize();
+		core::CMatrix4<f32> a;
+		a.buildRotateFromTo(v3f(0,1,0), z_dir);
+		v3f dir = m_camera_direction;
+		a.rotateVect(dir);
+		int br = 0;
+		float step = BS*1.5;
+		if(max_d > 35*BS)
+			step = max_d / 35 * 1.5;
+		float off = step * z_offsets[i];
+		bool sunlight_seen_now = false;
+		bool ok = getVisibleBrightness(this, m_camera_position, dir,
+				step, 1.0, max_d*0.6+off, max_d, ndef, daylight_factor,
+				sunlight_min_d,
+				&br, &sunlight_seen_now);
+		if(sunlight_seen_now)
+			sunlight_seen_count++;
+		if(!ok)
+			continue;
+		values.push_back(br);
+		// Don't try too much if being in the sun is clear
+		if(sunlight_seen_count >= 20)
+			break;
+	}
+	int brightness_sum = 0;
+	int brightness_count = 0;
+	values.sort();
+	u32 num_values_to_use = values.size();
+	if(num_values_to_use >= 10)
+		num_values_to_use -= num_values_to_use/2;
+	else if(num_values_to_use >= 7)
+		num_values_to_use -= num_values_to_use/3;
+	u32 first_value_i = (values.size() - num_values_to_use) / 2;
+	if(debugprint){
+		for(u32 i=0; i < first_value_i; i++)
+			std::cerr<<values[i]<<" ";
+		std::cerr<<"[";
+	}
+	for(u32 i=first_value_i; i < first_value_i+num_values_to_use; i++){
+		if(debugprint)
+			std::cerr<<values[i]<<" ";
+		brightness_sum += values[i];
+		brightness_count++;
+	}
+	if(debugprint){
+		std::cerr<<"]";
+		for(u32 i=first_value_i+num_values_to_use; i < values.size(); i++)
+			std::cerr<<values[i]<<" ";
+	}
+	int ret = 0;
+	if(brightness_count == 0){
+		MapNode n = getNodeNoEx(floatToInt(m_camera_position, BS));
+		if(ndef->get(n).param_type == CPT_LIGHT){
+			ret = decode_light(n.getLightBlend(daylight_factor, ndef));
+		} else {
+			ret = oldvalue;
+			//ret = blend_light(255, 0, daylight_factor);
+		}
+	} else {
+		/*float pre = (float)brightness_sum / (float)brightness_count;
+		float tmp = pre;
+		const float d = 0.2;
+		pre *= 1.0 + d*2;
+		pre -= tmp * d;
+		int preint = pre;
+		ret = MYMAX(0, MYMIN(255, preint));*/
+		ret = brightness_sum / brightness_count;
+	}
+	if(debugprint)
+		std::cerr<<"Result: "<<ret<<" sunlight_seen_count="
+				<<sunlight_seen_count<<std::endl;
+	*sunlight_seen_result = (sunlight_seen_count > 0);
+	return ret;
 }
 
 void ClientMap::renderPostFx()

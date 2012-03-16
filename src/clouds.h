@@ -30,7 +30,6 @@ public:
 			scene::ISceneNode* parent,
 			scene::ISceneManager* mgr,
 			s32 id,
-			float cloud_y,
 			u32 seed
 	);
 
@@ -65,13 +64,14 @@ public:
 
 	void step(float dtime);
 
-	void update(v2f camera_p, float brightness);
+	void update(v2f camera_p, video::SColorf color);
 
 private:
 	video::SMaterial m_material;
 	core::aabbox3d<f32> m_box;
 	float m_cloud_y;
 	float m_brightness;
+	video::SColorf m_color;
 	u32 m_seed;
 	v2f m_camera_pos;
 	float m_time;

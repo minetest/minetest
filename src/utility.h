@@ -1751,21 +1751,6 @@ std::string deSerializeJsonString(std::istream &is);
 
 //
 
-inline u32 time_to_daynight_ratio(u32 time_of_day)
-{
-	s32 t = time_of_day%24000;
-	if(t < 4500 || t >= 19500)
-		return 150;
-	else if(t < 5000 || t >= 19000)
-		return 350;
-	else if(t < 5500 || t >= 18500)
-		return 500;
-	else if(t < 6000 || t >= 18000)
-		return 750;
-	else
-		return 1000;
-}
-
 // Random helper. Usually d=BS
 inline core::aabbox3d<f32> getNodeBox(v3s16 p, float d)
 {

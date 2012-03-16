@@ -159,6 +159,7 @@ endif()
 # Client sources
 set(minetest_SRCS
 	${common_SRCS}
+	sky.cpp
 	clientmap.cpp
 	content_cso.cpp
 	content_mapblock.cpp

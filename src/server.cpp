@@ -854,7 +854,6 @@ Server::Server(
 	m_craftdef(createCraftDefManager()),
 	m_thread(this),
 	m_emergethread(this),
-	m_time_counter(0),
 	m_time_of_day_send_timer(0),
 	m_uptime(0),
 	m_shutdown_requested(false),
@@ -1197,19 +1196,12 @@ void Server::AsyncRunStep()
 	}
 
 	/*
-		Update m_time_of_day and overall game time
+		Update time of day and overall game time
 	*/
 	{
 		JMutexAutoLock envlock(m_env_mutex);
 
-		m_time_counter += dtime;
-		f32 speed = g_settings->getFloat("time_speed") * 24000./(24.*3600);
-		u32 units = (u32)(m_time_counter*speed);
-		m_time_counter -= (f32)units / speed;
-		
-		m_env->setTimeOfDay((m_env->getTimeOfDay() + units) % 24000);
-		
-		//infostream<<"Server: m_time_of_day = "<<m_time_of_day.get()<<std::endl;
+		m_env->setTimeOfDaySpeed(g_settings->getFloat("time_speed"));
 
 		/*
 			Send to clients at constant intervals
@@ -1231,7 +1223,7 @@ void Server::AsyncRunStep()
 				//Player *player = m_env->getPlayer(client->peer_id);
 				
 				SharedBuffer<u8> data = makePacket_TOCLIENT_TIME_OF_DAY(
-						m_env->getTimeOfDay());
+						m_env->getTimeOfDay(), g_settings->getFloat("time_speed"));
 				// Send as reliable
 				m_con.Send(client->peer_id, 0, data, true);
 			}
@@ -2216,7 +2208,7 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 		// Send time of day
 		{
 			SharedBuffer<u8> data = makePacket_TOCLIENT_TIME_OF_DAY(
-					m_env->getTimeOfDay());
+					m_env->getTimeOfDay(), g_settings->getFloat("time_speed"));
 			m_con.Send(peer_id, 0, data, true);
 		}
 		
