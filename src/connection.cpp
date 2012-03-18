@@ -992,9 +992,9 @@ void Connection::serve(u16 port)
 	}
 	catch(SocketException &e){
 		// Create event
-		ConnectionEvent e;
-		e.bindFailed();
-		putEvent(e);
+		ConnectionEvent ce;
+		ce.bindFailed();
+		putEvent(ce);
 	}
 }
 

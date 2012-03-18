@@ -279,15 +279,15 @@ void Camera::update(LocalPlayer* player, f32 frametime, v2u32 screensize,
 		if(m_digging_anim > 0.5)
 			frac = 2.0 * (m_digging_anim - 0.5);
 		// This value starts from 1 and settles to 0
-		f32 ratiothing = pow((1.0 - tool_reload_ratio), 0.5);
-		//f32 ratiothing2 = pow(ratiothing, 0.5);
+		f32 ratiothing = pow((1.0f - tool_reload_ratio), 0.5f);
+		//f32 ratiothing2 = pow(ratiothing, 0.5f);
 		f32 ratiothing2 = (easeCurve(ratiothing*0.5))*2.0;
-		wield_position.Y -= frac * 25.0 * pow(ratiothing2, 1.7);
+		wield_position.Y -= frac * 25.0 * pow(ratiothing2, 1.7f);
 		//wield_position.Z += frac * 5.0 * ratiothing2;
-		wield_position.X -= frac * 35.0 * pow(ratiothing2, 1.1);
-		wield_rotation.Y += frac * 70.0 * pow(ratiothing2, 1.4);
-		//wield_rotation.X -= frac * 15.0 * pow(ratiothing2, 1.4);
-		//wield_rotation.Z += frac * 15.0 * pow(ratiothing2, 1.0);
+		wield_position.X -= frac * 35.0 * pow(ratiothing2, 1.1f);
+		wield_rotation.Y += frac * 70.0 * pow(ratiothing2, 1.4f);
+		//wield_rotation.X -= frac * 15.0 * pow(ratiothing2, 1.4f);
+		//wield_rotation.Z += frac * 15.0 * pow(ratiothing2, 1.0f);
 	}
 	if (m_digging_button != -1)
 	{
