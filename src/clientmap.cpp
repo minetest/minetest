@@ -543,6 +543,7 @@ static bool getVisibleBrightness(Map *map, v3f p0, v3f dir, float step,
 			float newd = 2*BS;
 			pf = p0 + dir * 2*newd;
 			distance = newd;
+			sunlight_min_d = 0;
 		}
 	}
 	for(int i=0; distance < end_distance; i++){
