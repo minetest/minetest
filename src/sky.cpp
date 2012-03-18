@@ -272,7 +272,8 @@ void Sky::render()
 					(0.285 - fabs(wicked_time_of_day < 0.5 ?
 					wicked_time_of_day : (1.0 - wicked_time_of_day))) * 10));
 			float f = starbrightness;
-			video::SColor starcolor(255, f*120,f*120,f*120);
+			float d = 0.007;
+			video::SColor starcolor(255, f*90,f*90,f*90);
 			if(starcolor.getBlue() < m_skycolor.getBlue())
 				break;
 			u16 indices[SKY_STAR_COUNT*4];
@@ -284,14 +285,13 @@ void Sky::render()
 				indices[i*4+3] = i*4+3;
 				v3f p = m_stars[i];
 				core::CMatrix4<f32> a;
-				float d = 0.005;
-				a.buildRotateFromTo(v3f(0,1,0), v3f(d,1,0));
+				a.buildRotateFromTo(v3f(0,1,0), v3f(d,1+d/2,0));
 				v3f p1 = p;
 				a.rotateVect(p1);
-				a.buildRotateFromTo(v3f(0,1,0), v3f(d,1+d/2,d));
+				a.buildRotateFromTo(v3f(0,1,0), v3f(d,1,d));
 				v3f p2 = p;
 				a.rotateVect(p2);
-				a.buildRotateFromTo(v3f(0,1,0), v3f(0,1,d));
+				a.buildRotateFromTo(v3f(0,1,0), v3f(0,1-d/2,d));
 				v3f p3 = p;
 				a.rotateVect(p3);
 				p.rotateXYBy(wicked_time_of_day * 360 - 90);
