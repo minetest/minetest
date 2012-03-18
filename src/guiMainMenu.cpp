@@ -866,9 +866,10 @@ bool GUIMainMenu::OnEvent(const SEvent& event)
 		{
 			switch(event.GUIEvent.Caller->getID())
 			{
-				case GUI_ID_WORLD_LISTBOX:
+			case GUI_ID_WORLD_LISTBOX:
 				acceptInput();
-				m_data->address = L""; // Force local game
+				if(getTab() != TAB_SINGLEPLAYER)
+					m_data->address = L""; // Force local game
 				quitMenu();
 				return true;
 			}
