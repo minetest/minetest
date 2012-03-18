@@ -465,7 +465,8 @@ minetest.register_item(":", {
 		groupcaps = {
 			fleshy = {times={[2]=2.00, [3]=1.00}, maxwear=0, maxlevel=1},
 			crumbly = {times={[3]=0.70}, maxwear=0, maxlevel=1},
-			snappy = {times={[3]=0.70}, maxwear=0, maxlevel=1},
+			snappy = {times={[3]=0.40}, maxwear=0, maxlevel=1},
+			oddly_breakable_by_hand = {times={[1]=1.50,[2]=1.00,[3]=0.70}, maxwear=0, maxlevel=3},
 		}
 	}
 })
@@ -1151,14 +1152,14 @@ minetest.register_node("default:tree", {
 	description = "Tree",
 	tile_images = {"default_tree_top.png", "default_tree_top.png", "default_tree.png"},
 	is_ground_content = true,
-	groups = {snappy=2,choppy=2},
+	groups = {snappy=2,choppy=2,oddly_breakable_by_hand=2},
 })
 
 minetest.register_node("default:jungletree", {
 	description = "Jungle Tree",
 	tile_images = {"default_jungletree_top.png", "default_jungletree_top.png", "default_jungletree.png"},
 	is_ground_content = true,
-	groups = {snappy=2,choppy=2},
+	groups = {snappy=2,choppy=2,oddly_breakable_by_hand=2},
 })
 
 minetest.register_node("default:junglegrass", {
@@ -1220,7 +1221,7 @@ minetest.register_node("default:bookshelf", {
 	description = "Bookshelf",
 	tile_images = {"default_wood.png", "default_wood.png", "default_bookshelf.png"},
 	is_ground_content = true,
-	groups = {snappy=2,choppy=3},
+	groups = {snappy=2,choppy=3,oddly_breakable_by_hand=3},
 })
 
 minetest.register_node("default:glass", {
@@ -1231,7 +1232,7 @@ minetest.register_node("default:glass", {
 	paramtype = "light",
 	sunlight_propagates = true,
 	is_ground_content = true,
-	groups = {snappy=2,cracky=3},
+	groups = {snappy=2,cracky=3,oddly_breakable_by_hand=3},
 })
 
 minetest.register_node("default:fence_wood", {
@@ -1246,7 +1247,7 @@ minetest.register_node("default:fence_wood", {
 		type = "fixed",
 		fixed = {-1/7, -1/2, -1/7, 1/7, 1/2, 1/7},
 	},
-	groups = {snappy=2,choppy=2},
+	groups = {snappy=2,choppy=2,oddly_breakable_by_hand=3},
 })
 
 minetest.register_node("default:rail", {
@@ -1282,7 +1283,7 @@ minetest.register_node("default:ladder", {
 		--wall_bottom = = <default>
 		--wall_side = = <default>
 	},
-	groups = {snappy=2,choppy=2},
+	groups = {snappy=2,choppy=2,oddly_breakable_by_hand=3},
 	legacy_wallmounted = true,
 })
 
@@ -1290,7 +1291,7 @@ minetest.register_node("default:wood", {
 	description = "Wood",
 	tile_images = {"default_wood.png"},
 	is_ground_content = true,
-	groups = {snappy=2,choppy=2},
+	groups = {snappy=2,choppy=2,oddly_breakable_by_hand=3},
 })
 
 minetest.register_node("default:mese", {
@@ -1417,7 +1418,7 @@ minetest.register_node("default:torch", {
 		wall_bottom = {-0.1, -0.5, -0.1, 0.1, -0.5+0.6, 0.1},
 		wall_side = {-0.5, -0.3, -0.1, -0.5+0.3, 0.3, 0.1},
 	},
-	groups = {dig_immediate=3},
+	groups = {choppy=2,dig_immediate=3},
 	legacy_wallmounted = true,
 })
 
@@ -1438,7 +1439,7 @@ minetest.register_node("default:sign_wall", {
 		--wall_bottom = <default>
 		--wall_side = <default>
 	},
-	groups = {dig_immediate=2},
+	groups = {choppy=2,dig_immediate=2},
 	legacy_wallmounted = true,
 })
 
@@ -1448,7 +1449,7 @@ minetest.register_node("default:chest", {
 		"default_chest_side.png", "default_chest_side.png", "default_chest_front.png"},
 	paramtype2 = "facedir",
 	metadata_name = "chest",
-	groups = {snappy=2,choppy=2},
+	groups = {snappy=2,choppy=2,oddly_breakable_by_hand=2},
 	legacy_facedir_simple = true,
 })
 
@@ -1458,7 +1459,7 @@ minetest.register_node("default:chest_locked", {
 		"default_chest_side.png", "default_chest_side.png", "default_chest_lock.png"},
 	paramtype2 = "facedir",
 	metadata_name = "locked_chest",
-	groups = {snappy=2,choppy=2},
+	groups = {snappy=2,choppy=2,oddly_breakable_by_hand=2},
 	legacy_facedir_simple = true,
 })
 
@@ -1519,7 +1520,7 @@ minetest.register_node("default:sapling", {
 	wield_image = "default_sapling.png",
 	paramtype = "light",
 	walkable = false,
-	groups = {dig_immediate=3},
+	groups = {snappy=2,dig_immediate=3},
 })
 
 minetest.register_node("default:apple", {
@@ -1531,7 +1532,7 @@ minetest.register_node("default:apple", {
 	paramtype = "light",
 	sunlight_propagates = true,
 	walkable = false,
-	groups = {dig_immediate=3},
+	groups = {fleshy=3,dig_immediate=3},
 	on_use = minetest.item_eat(4),
 })
 
