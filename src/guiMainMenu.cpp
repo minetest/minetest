@@ -228,7 +228,7 @@ void GUIMainMenu::regenerateGui(v2u32 screensize)
 			//const wchar_t *text = L"H\nY\nB\nR\nI\nD";
 			const wchar_t *text = L"T\nA\nP\nE\n\nA\nN\nD\n\nG\nL\nU\nE";
 			gui::IGUIStaticText *t =
-			Environment->addStaticText(text, rect, false, true, this, -1);
+			Environment->addStaticText(text, rect, false, false, this, -1);
 			t->setTextAlignment(gui::EGUIA_CENTER, gui::EGUIA_CENTER);
 		}
 		u32 bs = 5;
@@ -327,7 +327,7 @@ void GUIMainMenu::regenerateGui(v2u32 screensize)
 			rect += m_topleft_client + v2s32(15, 0);
 			const wchar_t *text = L"C\nL\nI\nE\nN\nT";
 			gui::IGUIStaticText *t =
-			Environment->addStaticText(text, rect, false, true, this, -1);
+			Environment->addStaticText(text, rect, false, false, this, -1);
 			t->setTextAlignment(gui::EGUIA_CENTER, gui::EGUIA_CENTER);
 		}
 		// Nickname + password
@@ -400,7 +400,7 @@ void GUIMainMenu::regenerateGui(v2u32 screensize)
 			rect += m_topleft_client + v2s32(15, 0);
 			const wchar_t *text = L"C\nL\nI\nE\nN\nT";
 			gui::IGUIStaticText *t =
-			Environment->addStaticText(text, rect, false, true, this, -1);
+			Environment->addStaticText(text, rect, false, false, this, -1);
 			t->setTextAlignment(gui::EGUIA_CENTER, gui::EGUIA_CENTER);
 		}
 		// Nickname + password
@@ -477,7 +477,7 @@ void GUIMainMenu::regenerateGui(v2u32 screensize)
 			rect += m_topleft_server + v2s32(15, 0);
 			const wchar_t *text = L"S\nE\nR\nV\nE\nR";
 			gui::IGUIStaticText *t =
-			Environment->addStaticText(text, rect, false, true, this, -1);
+			Environment->addStaticText(text, rect, false, false, this, -1);
 			t->setTextAlignment(gui::EGUIA_CENTER, gui::EGUIA_CENTER);
 		}
 		// Server parameters
@@ -529,7 +529,7 @@ void GUIMainMenu::regenerateGui(v2u32 screensize)
 			rect += m_topleft_client + v2s32(15, 0);
 			const wchar_t *text = L"S\nE\nT\nT\nI\nN\nG\nS";
 			gui::IGUIStaticText *t =
-			Environment->addStaticText(text, rect, false, true, this, -1);
+			Environment->addStaticText(text, rect, false, false, this, -1);
 			t->setTextAlignment(gui::EGUIA_CENTER, gui::EGUIA_CENTER);
 		}
 		s32 option_x = 70;
@@ -578,7 +578,7 @@ void GUIMainMenu::regenerateGui(v2u32 screensize)
 			rect += m_topleft_client + v2s32(15, 0);
 			const wchar_t *text = L"C\nR\nE\nD\nI\nT\nS";
 			gui::IGUIStaticText *t =
-			Environment->addStaticText(text, rect, false, true, this, -1);
+			Environment->addStaticText(text, rect, false, false, this, -1);
 			t->setTextAlignment(gui::EGUIA_CENTER, gui::EGUIA_CENTER);
 		}
 		{
