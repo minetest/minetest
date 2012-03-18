@@ -1,7 +1,7 @@
 Minetest-c55
 ---------------
 An InfiniMiner/Minecraft inspired game.
-Copyright (c) 2010-2011 Perttu Ahola <celeron55@gmail.com>
+Copyright (c) 2010-2012 Perttu Ahola <celeron55@gmail.com>
 (see source files for other contributors)
 
 Further documentation:
@@ -100,6 +100,7 @@ Compiling on Windows:
 	- Make sure you have CMake and a compiler installed.
 	- Download all the other stuff to DIR and extract them into there.
 	  ("extract here", not "extract to packagename/")
+	  NOTE: zlib125dll.zip needs to be extracted into zlib125dll
 	- All those packages contain a nice base directory in them, which
 	  should end up being the direct subdirectories of DIR.
 	- You will end up with a directory structure like this (+=dir, -=file):
@@ -176,6 +177,8 @@ Compiling on Windows:
 	If using MinGW:
 		- Using the command line, browse to the build directory and run 'make'
 		  (or mingw32-make or whatever it happens to be)
+		- You may need to copy some of the downloaded DLLs into bin/, see what
+		  running the produced executable tells you it doesn't have.
 		- You should now have a working game with the executable in
 			DIR/minetest/bin/minetest.exe
 
