@@ -310,18 +310,10 @@ endif()
 # Installation
 #
 
-# Example configuration file
-# NOTE: Install is handled elsewhere
-#install(FILES "${CMAKE_CURRENT_SOURCE_DIR}/../minetest.conf.example" DESTINATION ${EXAMPLE_CONF_DIR})
-
 if(BUILD_CLIENT)
 	install(TARGETS ${PROJECT_NAME} DESTINATION ${BINDIR})
 
-	#file(GLOB images "${CMAKE_CURRENT_SOURCE_DIR}/../data/textures/*.png")
-	#install(FILES ${images} DESTINATION ${DATADIR}/textures)
-	#file(GLOB datasubstuff "${CMAKE_CURRENT_SOURCE_DIR}/../data/*")
-	#install(DIRECTORY "${datasubstuff}" DESTINATION ${DATADIR})
-	install(DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/../data/" DESTINATION ${DATADIR})
+	install(DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/../share/" DESTINATION ${SHAREDIR})
 
 	if(USE_GETTEXT)
 		foreach(LOCALE ${GETTEXT_AVAILABLE_LOCALES})
