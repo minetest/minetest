@@ -922,7 +922,7 @@ void mapblock_mesh_generate_special(MeshMakeData *data,
 
 			if(adjacencies == 1)
 			{
-				if(is_rail_x_all[0] or is_rail_x_all[1])
+				if(is_rail_x_all[0] || is_rail_x_all[1])
 					angle = 90;
 			}
 			if(adjacencies == 2)
