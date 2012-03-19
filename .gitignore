@@ -1,6 +1,26 @@
+## Generic ignorable patterns and files
 *~
-map/*
-world/*
+.*.swp
+*bak*
+tags
+*.vim
+
+## Non-static Minetest directories
+bin/
+games/
+!games/mesetint
+cache/
+textures/
+sounds/
+mods/
+worlds/
+world/
+
+## Configuration/log files
+minetest.conf
+debug.txt
+
+## Build files
 CMakeFiles/*
 src/CMakeFiles/*
 src/Makefile
@@ -10,19 +30,13 @@ src/jthread/CMakeFiles/*
 src/jthread/Makefile
 src/jthread/cmake_config.h
 src/jthread/cmake_install.cmake
-.*.swp
-minetest.conf
-bin/
+src/jthread/libjthread.a
+src/lua/build/
+src/lua/CMakeFiles/
 CMakeCache.txt
 CPackConfig.cmake
 CPackSourceConfig.cmake
 Makefile
 cmake_install.cmake
-src/jthread/libjthread.a
-debug.txt
-bin/debug.txt
-minetestmapper/map.png
 locale/
-src/lua/build/
-src/lua/CMakeFiles/
-*bak*
+

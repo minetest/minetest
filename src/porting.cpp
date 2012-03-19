@@ -123,8 +123,9 @@ void signal_handler_init(void)
 	Path mangler
 */
 
-std::string path_share = ".." DIR_DELIM "share";
-std::string path_user = ".." DIR_DELIM "user";
+// Default to RUN_IN_PLACE style relative paths
+std::string path_share = "..";
+std::string path_user = "..";
 
 std::string getDataPath(const char *subpath)
 {
@@ -167,8 +168,8 @@ void initializePaths()
 	assert(len < buflen);
 	pathRemoveFile(buf, '\\');
 
-	path_share = std::string(buf) + "\\..\\share";
-	path_user = std::string(buf) + "\\..\\user";
+	path_share = std::string(buf) + "\\..";
+	path_user = std::string(buf) + "\\..";
 
 	/*
 		Linux
@@ -183,8 +184,8 @@ void initializePaths()
 	
 	pathRemoveFile(buf, '/');
 
-	path_share = std::string(buf) + "/../share";
-	path_user = std::string(buf) + "/../user";
+	path_share = std::string(buf) + "/..";
+	path_user = std::string(buf) + "/..";
 	
 	/*
 		OS X
@@ -194,8 +195,8 @@ void initializePaths()
 	//TODO: Get path of executable. This assumes working directory is bin/
 	dstream<<"WARNING: Relative path not properly supported on OS X and FreeBSD"
 			<<std::endl;
-	path_share = std::string("../share");
-	path_user = std::string("../user");
+	path_share = std::string("..");
+	path_user = std::string("..");
 
 	#endif
 
@@ -222,8 +223,8 @@ void initializePaths()
 	assert(len < buflen);
 	pathRemoveFile(buf, '\\');
 	
-	// Use ".\bin\..\share"
-	path_share = std::string(buf) + "\\..\\share";
+	// Use ".\bin\.."
+	path_share = std::string(buf) + "\\..";
 		
 	// Use "C:\Documents and Settings\user\Application Data\<PROJECT_NAME>"
 	len = GetEnvironmentVariable("APPDATA", buf, buflen);
@@ -247,7 +248,7 @@ void initializePaths()
 	//path_share = std::string(INSTALL_PREFIX) + "/share/" + PROJECT_NAME;
 	if (!fs::PathExists(path_share)) {
 		dstream<<"WARNING: system-wide share not found at \""<<path_share<<"\"";
-		path_share = std::string(buf) + "/../share";
+		path_share = std::string(buf) + "/..";
 		dstream<<"WARNING: Using \""<<path_share<<"\" instead."<<std::endl;
 	}
 	

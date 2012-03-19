@@ -1034,12 +1034,7 @@ int main(int argc, char *argv[])
 			// Check if the world is found from the default directory, and if
 			// not, see if the legacy world directory exists.
 			world_path = porting::path_user + DIR_DELIM + "worlds" + DIR_DELIM + "world";
-#ifdef RUN_IN_PLACE
-			std::string legacy_world_path = porting::path_user + DIR_DELIM +
-					".." + DIR_DELIM + "world";
-#else
 			std::string legacy_world_path = porting::path_user + DIR_DELIM + "world";
-#endif
 			if(!fs::PathExists(world_path) && fs::PathExists(legacy_world_path)){
 				errorstream<<"Warning: Using legacy world directory \""
 						<<legacy_world_path<<"\""<<std::endl;

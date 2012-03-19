@@ -124,12 +124,7 @@ std::vector<WorldSpec> getAvailableWorlds()
 	}
 	// Check old world location
 	do{
-#ifdef RUN_IN_PLACE
-		std::string fullpath = porting::path_user + DIR_DELIM + ".."
-				+ DIR_DELIM + "world";
-#else
 		std::string fullpath = porting::path_user + DIR_DELIM + "world";
-#endif
 		if(!fs::PathExists(fullpath))
 			break;
 		std::string name = "Old World";
