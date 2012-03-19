@@ -640,9 +640,6 @@ private:
 	// functionality
 	bool m_simple_singleplayer_mode;
 
-	// Equivalent of /usr/share/minetest/server
-	std::string m_path_share;
-	
 	// Thread can set; step() will throw as ServerError
 	MutexedVariable<std::string> m_async_fatal_error;
 	

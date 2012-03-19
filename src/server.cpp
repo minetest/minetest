@@ -877,10 +877,6 @@ Server::Server(
 	if(!gamespec.isValid())
 		throw ServerError("Supplied invalid gamespec");
 	
-	// Figure out some paths
-	// share/server
-	m_path_share = porting::path_share + DIR_DELIM + "server";
-
 	infostream<<"Server created for gameid \""<<m_gamespec.id<<"\"";
 	if(m_simple_singleplayer_mode)
 		infostream<<" in simple singleplayer mode"<<std::endl;
@@ -894,7 +890,7 @@ Server::Server(
 		infostream<<"- addons: "<<(*i)<<std::endl;
 
 	// Path to builtin.lua
-	std::string builtinpath = m_path_share + DIR_DELIM + "builtin.lua";
+	std::string builtinpath = porting::path_share + DIR_DELIM + "builtin.lua";
 
 	// Add default global mod search path
 	m_modspaths.push_front(m_gamespec.path + DIR_DELIM "mods");

@@ -27,14 +27,13 @@ SubgameSpec findSubgame(const std::string &id)
 {
 	if(id == "")
 		return SubgameSpec();
-	std::string share_server = porting::path_share + DIR_DELIM + "server";
-	std::string user_server = porting::path_user + DIR_DELIM + "server";
+	std::string share = porting::path_share;
+	std::string user = porting::path_user;
 	// Find game directory
-	std::string game_path =
-			user_server + DIR_DELIM + "games" + DIR_DELIM + id;
+	std::string game_path = user + DIR_DELIM + "games" + DIR_DELIM + id;
 	bool user_game = true; // Game is in user's directory
 	if(!fs::PathExists(game_path)){
-		game_path = share_server + DIR_DELIM + "games" + DIR_DELIM + id;
+		game_path = share + DIR_DELIM + "games" + DIR_DELIM + id;
 		user_game = false;
 	}
 	if(!fs::PathExists(game_path))
@@ -42,10 +41,8 @@ SubgameSpec findSubgame(const std::string &id)
 	// Find addon directories
 	std::set<std::string> addon_paths;
 	if(!user_game)
-		addon_paths.insert(share_server + DIR_DELIM + "addons"
-				+ DIR_DELIM + id);
-	addon_paths.insert(user_server + DIR_DELIM + "addons"
-			+ DIR_DELIM + id);
+		addon_paths.insert(share + DIR_DELIM + "addons" + DIR_DELIM + id);
+	addon_paths.insert(user + DIR_DELIM + "addons" + DIR_DELIM + id);
 	// TODO: Read proper name from game_path/game.conf
 	std::string game_name = id;
 	return SubgameSpec(id, game_path, addon_paths, game_name);
@@ -55,10 +52,8 @@ std::set<std::string> getAvailableGameIds()
 {
 	std::set<std::string> gameids;
 	std::set<std::string> gamespaths;
-	gamespaths.insert(porting::path_share + DIR_DELIM + "server"
-			+ DIR_DELIM + "games");
-	gamespaths.insert(porting::path_user + DIR_DELIM + "server"
-			+ DIR_DELIM + "games");
+	gamespaths.insert(porting::path_share + DIR_DELIM + "games");
+	gamespaths.insert(porting::path_user + DIR_DELIM + "games");
 	for(std::set<std::string>::const_iterator i = gamespaths.begin();
 			i != gamespaths.end(); i++){
 		std::vector<fs::DirListNode> dirlist = fs::GetDirListing(*i);
@@ -105,8 +100,7 @@ std::vector<WorldSpec> getAvailableWorlds()
 {
 	std::vector<WorldSpec> worlds;
 	std::set<std::string> worldspaths;
-	worldspaths.insert(porting::path_user + DIR_DELIM + "server"
-			+ DIR_DELIM + "worlds");
+	worldspaths.insert(porting::path_user + DIR_DELIM + "worlds");
 	infostream<<"Searching worlds..."<<std::endl;
 	for(std::set<std::string>::const_iterator i = worldspaths.begin();
 			i != worldspaths.end(); i++){

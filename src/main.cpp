@@ -1033,8 +1033,13 @@ int main(int argc, char *argv[])
 			// No specific world was commanded
 			// Check if the world is found from the default directory, and if
 			// not, see if the legacy world directory exists.
-			world_path = porting::path_user + DIR_DELIM + "server" + DIR_DELIM + "worlds" + DIR_DELIM + "world";
-			std::string legacy_world_path = porting::path_user+DIR_DELIM+".."+DIR_DELIM+"world";
+			world_path = porting::path_user + DIR_DELIM + "worlds" + DIR_DELIM + "world";
+#ifdef RUN_IN_PLACE
+			std::string legacy_world_path = porting::path_user + DIR_DELIM +
+					".." + DIR_DELIM + "world";
+#else
+			std::string legacy_world_path = porting::path_user + DIR_DELIM + "world";
+#endif
 			if(!fs::PathExists(world_path) && fs::PathExists(legacy_world_path)){
 				errorstream<<"Warning: Using legacy world directory \""
 						<<legacy_world_path<<"\""<<std::endl;
@@ -1445,7 +1450,7 @@ int main(int argc, char *argv[])
 				if(menudata.create_world_name != L"")
 				{
 					std::string path = porting::path_user + DIR_DELIM
-							+ "server" + DIR_DELIM + "worlds" + DIR_DELIM
+							"worlds" + DIR_DELIM
 							+ wide_to_narrow(menudata.create_world_name);
 					// Create world if it doesn't exist
 					if(!initializeWorld(path, menudata.create_world_gameid)){
