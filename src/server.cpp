@@ -4429,14 +4429,13 @@ ServerRemotePlayer *Server::emergePlayer(const char *name, u16 peer_id)
 		v3f pos = findSpawnPos(m_env->getServerMap());
 
 		player = new ServerRemotePlayer(m_env, pos, peer_id, name);
-		ServerRemotePlayer *srp = static_cast<ServerRemotePlayer*>(player);
 
 		/* Add player to environment */
 		m_env->addPlayer(player);
-		m_env->addActiveObject(srp);
+		m_env->addActiveObject(player);
 
 		/* Run scripts */
-		scriptapi_on_newplayer(m_lua, srp);
+		scriptapi_on_newplayer(m_lua, player);
 
 		/* Add stuff to inventory */
 		if(g_settings->getBool("creative_mode"))
