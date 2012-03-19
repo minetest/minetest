@@ -313,9 +313,6 @@ endif()
 if(BUILD_CLIENT)
 	install(TARGETS ${PROJECT_NAME} DESTINATION ${BINDIR})
 
-	#install(DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/../sounds/base/pack" DESTINATION "${SHAREDIR}/sounds/base/")
-	install(DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/../textures/base/pack" DESTINATION "${SHAREDIR}/textures/base/")
-
 	if(USE_GETTEXT)
 		foreach(LOCALE ${GETTEXT_AVAILABLE_LOCALES})
 			set_mo_paths(MO_BUILD_PATH MO_DEST_PATH ${LOCALE})

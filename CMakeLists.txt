@@ -84,8 +84,12 @@ elseif(UNIX) # Linux, BSD etc
 	endif()
 endif()
 
-install(DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/builtin" DESTINATION "${SHAREDIR}/")
-install(DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/games/mesetint" DESTINATION "${SHAREDIR}/games/")
+install(DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/builtin" DESTINATION "${SHAREDIR}")
+install(DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/games/mesetint" DESTINATION "${SHAREDIR}/games")
+if(BUILD_CLIENT)
+	#install(DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/sounds/base/pack" DESTINATION "${SHAREDIR}/sounds/base")
+	install(DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/textures/base/pack" DESTINATION "${SHAREDIR}/textures/base")
+endif()
 
 install(FILES "README.txt" DESTINATION "${DOCDIR}")
 install(FILES "minetest.conf.example" DESTINATION "${EXAMPLE_CONF_DIR}")
