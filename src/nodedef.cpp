@@ -145,7 +145,6 @@ void ContentFeatures::reset()
 	diggable = true;
 	climbable = false;
 	buildable_to = false;
-	metadata_name = "";
 	liquid_type = LIQUID_NONE;
 	liquid_alternative_flowing = "";
 	liquid_alternative_source = "";
@@ -194,7 +193,7 @@ void ContentFeatures::serialize(std::ostream &os)
 	writeU8(os, diggable);
 	writeU8(os, climbable);
 	writeU8(os, buildable_to);
-	os<<serializeString(metadata_name);
+	os<<serializeString(""); // legacy: used to be metadata_name
 	writeU8(os, liquid_type);
 	os<<serializeString(liquid_alternative_flowing);
 	os<<serializeString(liquid_alternative_source);
@@ -248,7 +247,7 @@ void ContentFeatures::deSerialize(std::istream &is)
 	diggable = readU8(is);
 	climbable = readU8(is);
 	buildable_to = readU8(is);
-	metadata_name = deSerializeString(is);
+	deSerializeString(is); // legacy: used to be metadata_name
 	liquid_type = (enum LiquidType)readU8(is);
 	liquid_alternative_flowing = deSerializeString(is);
 	liquid_alternative_source = deSerializeString(is);

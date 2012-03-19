@@ -1080,6 +1080,8 @@ static ContentFeatures read_content_features(lua_State *L, int index)
 			"deprecated: use 'drop' field");
 	warn_if_field_exists(L, index, "extra_dug_item_rarity",
 			"deprecated: use 'drop' field");
+	warn_if_field_exists(L, index, "metadata_name",
+			"deprecated: use on_add and metadata callbacks");
 	
 	// True for all ground-like things like stone and mud, false for eg. trees
 	getboolfield(L, index, "is_ground_content", f.is_ground_content);
@@ -1096,8 +1098,6 @@ static ContentFeatures read_content_features(lua_State *L, int index)
 	getboolfield(L, index, "climbable", f.climbable);
 	// Player can build on these
 	getboolfield(L, index, "buildable_to", f.buildable_to);
-	// Metadata name of node (eg. "furnace")
-	getstringfield(L, index, "metadata_name", f.metadata_name);
 	// Whether the node is non-liquid, source liquid or flowing liquid
 	f.liquid_type = (LiquidType)getenumfield(L, index, "liquidtype",
 			es_LiquidType, LIQUID_NONE);
@@ -1947,21 +1947,16 @@ private:
 		return *(NodeMetaRef**)ud;  // unbox pointer
 	}
 	
-	static NodeMetadata* getmeta(NodeMetaRef *ref)
+	static NodeMetadata* getmeta(NodeMetaRef *ref, bool auto_create)
 	{
 		NodeMetadata *meta = ref->m_env->getMap().getNodeMetadata(ref->m_p);
+		if(meta == NULL && auto_create)
+		{
+			meta = new NodeMetadata(ref->m_env->getGameDef());
+			ref->m_env->getMap().setNodeMetadata(ref->m_p, meta);
+		}
 		return meta;
 	}
-
-	/*static IGenericNodeMetadata* getgenericmeta(NodeMetaRef *ref)
-	{
-		NodeMetadata *meta = getmeta(ref);
-		if(meta == NULL)
-			return NULL;
-		if(meta->typeId() != NODEMETA_GENERIC)
-			return NULL;
-		return (IGenericNodeMetadata*)meta;
-	}*/
 
 	static void reportMetadataChange(NodeMetaRef *ref)
 	{
@@ -1987,106 +1982,99 @@ private:
 		return 0;
 	}
 
-	// get_type(self)
-	static int l_get_type(lua_State *L)
+	// get_string(self, name)
+	static int l_get_string(lua_State *L)
 	{
 		NodeMetaRef *ref = checkobject(L, 1);
-		NodeMetadata *meta = getmeta(ref);
+		std::string name = luaL_checkstring(L, 2);
+
+		NodeMetadata *meta = getmeta(ref, false);
 		if(meta == NULL){
-			lua_pushnil(L);
+			lua_pushlstring(L, "", 0);
 			return 1;
 		}
-		// Do it
-		lua_pushstring(L, meta->typeName());
+		std::string str = meta->getString(name);
+		lua_pushlstring(L, str.c_str(), str.size());
 		return 1;
 	}
 
-	// allows_text_input(self)
-	static int l_allows_text_input(lua_State *L)
+	// set_string(self, name, var)
+	static int l_set_string(lua_State *L)
 	{
 		NodeMetaRef *ref = checkobject(L, 1);
-		NodeMetadata *meta = getmeta(ref);
-		if(meta == NULL) return 0;
-		// Do it
-		lua_pushboolean(L, meta->allowsTextInput());
-		return 1;
-	}
+		std::string name = luaL_checkstring(L, 2);
+		size_t len = 0;
+		const char *s = lua_tolstring(L, 3, &len);
+		std::string str(s, len);
 
-	// set_text(self, text)
-	static int l_set_text(lua_State *L)
-	{
-		NodeMetaRef *ref = checkobject(L, 1);
-		NodeMetadata *meta = getmeta(ref);
-		if(meta == NULL) return 0;
-		// Do it
-		std::string text = luaL_checkstring(L, 2);
-		meta->setText(text);
+		NodeMetadata *meta = getmeta(ref, !str.empty());
+		if(meta == NULL || str == meta->getString(name))
+			return 0;
+		meta->setString(name, str);
 		reportMetadataChange(ref);
 		return 0;
 	}
 
-	// get_text(self)
-	static int l_get_text(lua_State *L)
+	// get_int(self, name)
+	static int l_get_int(lua_State *L)
 	{
 		NodeMetaRef *ref = checkobject(L, 1);
-		NodeMetadata *meta = getmeta(ref);
-		if(meta == NULL) return 0;
-		// Do it
-		std::string text = meta->getText();
-		lua_pushstring(L, text.c_str());
-		return 1;
-	}
+		std::string name = lua_tostring(L, 2);
 
-	// get_owner(self)
-	static int l_get_owner(lua_State *L)
-	{
-		NodeMetaRef *ref = checkobject(L, 1);
-		NodeMetadata *meta = getmeta(ref);
-		if(meta == NULL) return 0;
-		// Do it
-		std::string owner = meta->getOwner();
-		lua_pushstring(L, owner.c_str());
-		return 1;
-	}
-
-	// set_owner(self, string)
-	static int l_set_owner(lua_State *L)
-	{
-		NodeMetaRef *ref = checkobject(L, 1);
-		NodeMetadata *meta = getmeta(ref);
-		if(meta == NULL) return 0;
-		// Do it
-		std::string owner = luaL_checkstring(L, 2);
-		meta->setOwner(owner);
-		reportMetadataChange(ref);
-		return 1;
-	}
-
-	// get_allow_removal(self)
-	static int l_get_allow_removal(lua_State *L)
-	{
-		NodeMetaRef *ref = checkobject(L, 1);
-		NodeMetadata *meta = getmeta(ref);
+		NodeMetadata *meta = getmeta(ref, false);
 		if(meta == NULL){
-			lua_pushboolean(L, true);
+			lua_pushnumber(L, 0);
 			return 1;
 		}
-		// Do it
-		lua_pushboolean(L, !meta->nodeRemovalDisabled());
+		std::string str = meta->getString(name);
+		lua_pushnumber(L, stoi(str));
 		return 1;
 	}
 
-	/* IGenericNodeMetadata interface */
-	
-	// set_infotext(self, text)
-	static int l_set_infotext(lua_State *L)
+	// set_int(self, name, var)
+	static int l_set_int(lua_State *L)
 	{
 		NodeMetaRef *ref = checkobject(L, 1);
-		NodeMetadata *meta = getmeta(ref);
-		if(meta == NULL) return 0;
-		// Do it
-		std::string text = luaL_checkstring(L, 2);
-		meta->setInfoText(text);
+		std::string name = lua_tostring(L, 2);
+		int a = lua_tointeger(L, 3);
+		std::string str = itos(a);
+
+		NodeMetadata *meta = getmeta(ref, true);
+		if(meta == NULL || str == meta->getString(name))
+			return 0;
+		meta->setString(name, str);
+		reportMetadataChange(ref);
+		return 0;
+	}
+
+	// get_float(self, name)
+	static int l_get_float(lua_State *L)
+	{
+		NodeMetaRef *ref = checkobject(L, 1);
+		std::string name = lua_tostring(L, 2);
+
+		NodeMetadata *meta = getmeta(ref, false);
+		if(meta == NULL){
+			lua_pushnumber(L, 0);
+			return 1;
+		}
+		std::string str = meta->getString(name);
+		lua_pushnumber(L, stof(str));
+		return 1;
+	}
+
+	// set_float(self, name, var)
+	static int l_set_float(lua_State *L)
+	{
+		NodeMetaRef *ref = checkobject(L, 1);
+		std::string name = lua_tostring(L, 2);
+		float a = lua_tonumber(L, 3);
+		std::string str = ftos(a);
+
+		NodeMetadata *meta = getmeta(ref, true);
+		if(meta == NULL || str == meta->getString(name))
+			return 0;
+		meta->setString(name, str);
 		reportMetadataChange(ref);
 		return 0;
 	}
@@ -2095,10 +2083,23 @@ private:
 	static int l_get_inventory(lua_State *L)
 	{
 		NodeMetaRef *ref = checkobject(L, 1);
-		NodeMetadata *meta = getmeta(ref);
-		if(meta == NULL) return 0;
-		// Do it
+		getmeta(ref, true);  // try to ensure the metadata exists
 		InvRef::createNodeMeta(L, ref->m_p);
+		return 1;
+	}
+
+	// get_inventory_draw_spec(self)
+	static int l_get_inventory_draw_spec(lua_State *L)
+	{
+		NodeMetaRef *ref = checkobject(L, 1);
+
+		NodeMetadata *meta = getmeta(ref, false);
+		if(meta == NULL){
+			lua_pushlstring(L, "", 0);
+			return 1;
+		}
+		std::string str = meta->getInventoryDrawSpec();
+		lua_pushlstring(L, str.c_str(), str.size());
 		return 1;
 	}
 
@@ -2106,127 +2107,106 @@ private:
 	static int l_set_inventory_draw_spec(lua_State *L)
 	{
 		NodeMetaRef *ref = checkobject(L, 1);
-		NodeMetadata *meta = getmeta(ref);
-		if(meta == NULL) return 0;
-		// Do it
-		std::string text = luaL_checkstring(L, 2);
-		meta->setInventoryDrawSpec(text);
+		size_t len = 0;
+		const char *s = lua_tolstring(L, 2, &len);
+		std::string str(s, len);
+
+		NodeMetadata *meta = getmeta(ref, !str.empty());
+		if(meta == NULL || str == meta->getInventoryDrawSpec())
+			return 0;
+		meta->setInventoryDrawSpec(str);
 		reportMetadataChange(ref);
 		return 0;
 	}
 
-	// set_allow_text_input(self, text)
-	static int l_set_allow_text_input(lua_State *L)
+	// get_form_spec(self)
+	static int l_get_form_spec(lua_State *L)
 	{
 		NodeMetaRef *ref = checkobject(L, 1);
-		NodeMetadata *meta = getmeta(ref);
-		if(meta == NULL) return 0;
-		// Do it
-		bool b = lua_toboolean(L, 2);
-		meta->setAllowTextInput(b);
+
+		NodeMetadata *meta = getmeta(ref, false);
+		if(meta == NULL){
+			lua_pushlstring(L, "", 0);
+			return 1;
+		}
+		std::string str = meta->getFormSpec();
+		lua_pushlstring(L, str.c_str(), str.size());
+		return 1;
+	}
+
+	// set_form_spec(self, text)
+	static int l_set_form_spec(lua_State *L)
+	{
+		NodeMetaRef *ref = checkobject(L, 1);
+		size_t len = 0;
+		const char *s = lua_tolstring(L, 2, &len);
+		std::string str(s, len);
+
+		NodeMetadata *meta = getmeta(ref, !str.empty());
+		if(meta == NULL || str == meta->getFormSpec())
+			return 0;
+		meta->setFormSpec(str);
 		reportMetadataChange(ref);
 		return 0;
 	}
 
-	// set_allow_removal(self, text)
+	// get_infotext(self)
+	static int l_get_infotext(lua_State *L)
+	{
+		NodeMetaRef *ref = checkobject(L, 1);
+
+		NodeMetadata *meta = getmeta(ref, false);
+		if(meta == NULL){
+			lua_pushlstring(L, "", 0);
+			return 1;
+		}
+		std::string str = meta->getInfoText();
+		lua_pushlstring(L, str.c_str(), str.size());
+		return 1;
+	}
+
+	// set_infotext(self, text)
+	static int l_set_infotext(lua_State *L)
+	{
+		NodeMetaRef *ref = checkobject(L, 1);
+		size_t len = 0;
+		const char *s = lua_tolstring(L, 2, &len);
+		std::string str(s, len);
+
+		NodeMetadata *meta = getmeta(ref, !str.empty());
+		if(meta == NULL || str == meta->getInfoText())
+			return 0;
+		meta->setInfoText(str);
+		reportMetadataChange(ref);
+		return 0;
+	}
+
+	// get_allow_removal(self)
+	static int l_get_allow_removal(lua_State *L)
+	{
+		NodeMetaRef *ref = checkobject(L, 1);
+
+		NodeMetadata *meta = getmeta(ref, false);
+		if(meta == NULL){
+			lua_pushboolean(L, true);
+			return 1;
+		}
+		lua_pushboolean(L, meta->getAllowRemoval());
+		return 1;
+	}
+
+	// set_allow_removal(self, flag)
 	static int l_set_allow_removal(lua_State *L)
 	{
 		NodeMetaRef *ref = checkobject(L, 1);
-		NodeMetadata *meta = getmeta(ref);
-		if(meta == NULL) return 0;
-		// Do it
-		bool b = lua_toboolean(L, 2);
-		meta->setRemovalDisabled(!b);
+		bool flag = lua_toboolean(L, 2);
+
+		NodeMetadata *meta = getmeta(ref, flag != true);
+		if(meta == NULL || flag == meta->getAllowRemoval())
+			return 0;
+		meta->setAllowRemoval(flag);
 		reportMetadataChange(ref);
 		return 0;
-	}
-
-	// set_enforce_owner(self, text)
-	static int l_set_enforce_owner(lua_State *L)
-	{
-		NodeMetaRef *ref = checkobject(L, 1);
-		NodeMetadata *meta = getmeta(ref);
-		if(meta == NULL) return 0;
-		// Do it
-		bool b = lua_toboolean(L, 2);
-		meta->setEnforceOwner(b);
-		reportMetadataChange(ref);
-		return 0;
-	}
-
-	// is_inventory_modified(self)
-	static int l_is_inventory_modified(lua_State *L)
-	{
-		NodeMetaRef *ref = checkobject(L, 1);
-		NodeMetadata *meta = getmeta(ref);
-		if(meta == NULL) return 0;
-		// Do it
-		lua_pushboolean(L, meta->isInventoryModified());
-		return 1;
-	}
-
-	// reset_inventory_modified(self)
-	static int l_reset_inventory_modified(lua_State *L)
-	{
-		NodeMetaRef *ref = checkobject(L, 1);
-		NodeMetadata *meta = getmeta(ref);
-		if(meta == NULL) return 0;
-		// Do it
-		meta->resetInventoryModified();
-		reportMetadataChange(ref);
-		return 0;
-	}
-
-	// is_text_modified(self)
-	static int l_is_text_modified(lua_State *L)
-	{
-		NodeMetaRef *ref = checkobject(L, 1);
-		NodeMetadata *meta = getmeta(ref);
-		if(meta == NULL) return 0;
-		// Do it
-		lua_pushboolean(L, meta->isTextModified());
-		return 1;
-	}
-
-	// reset_text_modified(self)
-	static int l_reset_text_modified(lua_State *L)
-	{
-		NodeMetaRef *ref = checkobject(L, 1);
-		NodeMetadata *meta = getmeta(ref);
-		if(meta == NULL) return 0;
-		// Do it
-		meta->resetTextModified();
-		reportMetadataChange(ref);
-		return 0;
-	}
-
-	// set_string(self, name, var)
-	static int l_set_string(lua_State *L)
-	{
-		NodeMetaRef *ref = checkobject(L, 1);
-		NodeMetadata *meta = getmeta(ref);
-		if(meta == NULL) return 0;
-		// Do it
-		std::string name = luaL_checkstring(L, 2);
-		size_t len = 0;
-		const char *s = lua_tolstring(L, 3, &len);
-		std::string str(s, len);
-		meta->setString(name, str);
-		reportMetadataChange(ref);
-		return 0;
-	}
-
-	// get_string(self, name)
-	static int l_get_string(lua_State *L)
-	{
-		NodeMetaRef *ref = checkobject(L, 1);
-		NodeMetadata *meta = getmeta(ref);
-		if(meta == NULL) return 0;
-		// Do it
-		std::string name = luaL_checkstring(L, 2);
-		std::string str = meta->getString(name);
-		lua_pushlstring(L, str.c_str(), str.size());
-		return 1;
 	}
 
 public:
@@ -2281,25 +2261,21 @@ public:
 };
 const char NodeMetaRef::className[] = "NodeMetaRef";
 const luaL_reg NodeMetaRef::methods[] = {
-	method(NodeMetaRef, get_type),
-	method(NodeMetaRef, allows_text_input),
-	method(NodeMetaRef, set_text),
-	method(NodeMetaRef, get_text),
-	method(NodeMetaRef, get_owner),
-	method(NodeMetaRef, set_owner),
-	method(NodeMetaRef, get_allow_removal),
-	method(NodeMetaRef, set_infotext),
-	method(NodeMetaRef, get_inventory),
-	method(NodeMetaRef, set_inventory_draw_spec),
-	method(NodeMetaRef, set_allow_text_input),
-	method(NodeMetaRef, set_allow_removal),
-	method(NodeMetaRef, set_enforce_owner),
-	method(NodeMetaRef, is_inventory_modified),
-	method(NodeMetaRef, reset_inventory_modified),
-	method(NodeMetaRef, is_text_modified),
-	method(NodeMetaRef, reset_text_modified),
-	method(NodeMetaRef, set_string),
 	method(NodeMetaRef, get_string),
+	method(NodeMetaRef, set_string),
+	method(NodeMetaRef, get_int),
+	method(NodeMetaRef, set_int),
+	method(NodeMetaRef, get_float),
+	method(NodeMetaRef, set_float),
+	method(NodeMetaRef, get_inventory),
+	method(NodeMetaRef, get_inventory_draw_spec),
+	method(NodeMetaRef, set_inventory_draw_spec),
+	method(NodeMetaRef, get_form_spec),
+	method(NodeMetaRef, set_form_spec),
+	method(NodeMetaRef, get_infotext),
+	method(NodeMetaRef, set_infotext),
+	method(NodeMetaRef, get_allow_removal),
+	method(NodeMetaRef, set_allow_removal),
 	{0,0}
 };
 

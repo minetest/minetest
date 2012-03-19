@@ -1016,21 +1016,6 @@ void Map::addNodeAndUpdate(v3s16 p, MapNode n,
 	setNode(p, n);
 
 	/*
-		Add intial metadata
-	*/
-	
-	std::string metadata_name = nodemgr->get(n).metadata_name;
-	if(metadata_name != ""){
-		NodeMetadata *meta = NodeMetadata::create(metadata_name, m_gamedef);
-		if(!meta){
-			errorstream<<"Failed to create node metadata \""
-					<<metadata_name<<"\""<<std::endl;
-		} else {
-			setNodeMetadata(p, meta);
-		}
-	}
-
-	/*
 		If node is under sunlight and doesn't let sunlight through,
 		take all sunlighted nodes under it and clear light from them
 		and from where the light has been spread.
@@ -1853,7 +1838,7 @@ NodeMetadata* Map::getNodeMetadata(v3s16 p)
 				<<std::endl;
 		return NULL;
 	}
-	NodeMetadata *meta = block->m_node_metadata->get(p_rel);
+	NodeMetadata *meta = block->m_node_metadata.get(p_rel);
 	return meta;
 }
 
@@ -1873,7 +1858,7 @@ void Map::setNodeMetadata(v3s16 p, NodeMetadata *meta)
 				<<std::endl;
 		return;
 	}
-	block->m_node_metadata->set(p_rel, meta);
+	block->m_node_metadata.set(p_rel, meta);
 }
 
 void Map::removeNodeMetadata(v3s16 p)
@@ -1887,36 +1872,7 @@ void Map::removeNodeMetadata(v3s16 p)
 				<<std::endl;
 		return;
 	}
-	block->m_node_metadata->remove(p_rel);
-}
-
-void Map::nodeMetadataStep(float dtime,
-		core::map<v3s16, MapBlock*> &changed_blocks)
-{
-	/*
-		NOTE:
-		Currently there is no way to ensure that all the necessary
-		blocks are loaded when this is run. (They might get unloaded)
-		NOTE: ^- Actually, that might not be so. In a quick test it
-		reloaded a block with a furnace when I walked back to it from
-		a distance.
-	*/
-	core::map<v2s16, MapSector*>::Iterator si;
-	si = m_sectors.getIterator();
-	for(; si.atEnd() == false; si++)
-	{
-		MapSector *sector = si.getNode()->getValue();
-		core::list< MapBlock * > sectorblocks;
-		sector->getBlocks(sectorblocks);
-		core::list< MapBlock * >::Iterator i;
-		for(i=sectorblocks.begin(); i!=sectorblocks.end(); i++)
-		{
-			MapBlock *block = *i;
-			bool changed = block->m_node_metadata->step(dtime);
-			if(changed)
-				changed_blocks[block->getPos()] = block;
-		}
-	}
+	block->m_node_metadata.remove(p_rel);
 }
 
 /*

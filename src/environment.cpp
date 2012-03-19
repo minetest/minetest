@@ -773,18 +773,11 @@ void ServerEnvironment::activateBlock(MapBlock *block, u32 additional_dtime)
 	// Activate stored objects
 	activateObjects(block);
 
-	// Run node metadata
-	bool changed = block->m_node_metadata->step((float)dtime_s);
-	if(changed)
-	{
-		MapEditEvent event;
-		event.type = MEET_BLOCK_NODE_METADATA_CHANGED;
-		event.p = block->getPos();
-		m_map->dispatchEvent(&event);
-
-		block->raiseModified(MOD_STATE_WRITE_NEEDED,
-				"node metadata modified in activateBlock");
-	}
+	// Run node timers
+	std::map<v3s16, f32> elapsed_timers =
+		block->m_node_timers.step((float)dtime_s);
+	if(!elapsed_timers.empty())
+		errorstream<<"Node timers don't work yet!"<<std::endl;
 
 	/* Handle ActiveBlockModifiers */
 	ABMHandler abmhandler(m_abms, dtime_s, this, false);
@@ -1064,18 +1057,11 @@ void ServerEnvironment::step(float dtime)
 				block->raiseModified(MOD_STATE_WRITE_AT_UNLOAD,
 						"Timestamp older than 60s (step)");
 
-			// Run node metadata
-			bool changed = block->m_node_metadata->step(dtime);
-			if(changed)
-			{
-				MapEditEvent event;
-				event.type = MEET_BLOCK_NODE_METADATA_CHANGED;
-				event.p = p;
-				m_map->dispatchEvent(&event);
-
-				block->raiseModified(MOD_STATE_WRITE_NEEDED,
-						"node metadata modified in step");
-			}
+			// Run node timers
+			std::map<v3s16, f32> elapsed_timers =
+				block->m_node_timers.step(dtime);
+			if(!elapsed_timers.empty())
+				errorstream<<"Node timers don't work yet!"<<std::endl;
 		}
 	}
 	

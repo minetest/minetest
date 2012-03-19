@@ -2417,47 +2417,9 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 	}
 	else if(command == TOSERVER_SIGNNODETEXT)
 	{
-		if(!checkPriv(player->getName(), "interact"))
-			return;
-		/*
-			u16 command
-			v3s16 p
-			u16 textlen
-			textdata
-		*/
-		std::string datastring((char*)&data[2], datasize-2);
-		std::istringstream is(datastring, std::ios_base::binary);
-		u8 buf[6];
-		// Read stuff
-		is.read((char*)buf, 6);
-		v3s16 p = readV3S16(buf);
-		is.read((char*)buf, 2);
-		u16 textlen = readU16(buf);
-		std::string text;
-		for(u16 i=0; i<textlen; i++)
-		{
-			is.read((char*)buf, 1);
-			text += (char)buf[0];
-		}
-
-		NodeMetadata *meta = m_env->getMap().getNodeMetadata(p);
-		if(!meta)
-			return;
-
-		meta->setText(text);
-		
-		actionstream<<player->getName()<<" writes \""<<text<<"\" to sign"
-				<<" at "<<PP(p)<<std::endl;
-				
-		v3s16 blockpos = getNodeBlockPos(p);
-		MapBlock *block = m_env->getMap().getBlockNoCreateNoEx(blockpos);
-		if(block)
-		{
-			block->raiseModified(MOD_STATE_WRITE_NEEDED,
-					"sign node text");
-		}
-
-		setBlockNotSent(blockpos);
+		infostream<<"Server: SIGNNODETEXT not supported anymore"
+				<<std::endl;
+		return;
 	}
 	else if(command == TOSERVER_INVENTORY_ACTION)
 	{
@@ -2540,7 +2502,7 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 			}
 
 			// If player is not an admin, check for ownership of src and dst
-			if(!checkPriv(player->getName(), "server"))
+			/*if(!checkPriv(player->getName(), "server"))
 			{
 				std::string owner_from = getInventoryOwner(ma->from_inv);
 				if(owner_from != "" && owner_from != player->getName())
@@ -2561,7 +2523,7 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 					delete a;
 					return;
 				}
-			}
+			}*/
 		}
 		/*
 			Handle restrictions and special cases of the drop action
@@ -2581,7 +2543,7 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 				return;
 			}
 			// If player is not an admin, check for ownership
-			else if(!checkPriv(player->getName(), "server"))
+			/*else if(!checkPriv(player->getName(), "server"))
 			{
 				std::string owner_from = getInventoryOwner(da->from_inv);
 				if(owner_from != "" && owner_from != player->getName())
@@ -2592,7 +2554,7 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 					delete a;
 					return;
 				}
-			}
+			}*/
 		}
 		/*
 			Handle restrictions and special cases of the craft action
@@ -2619,7 +2581,7 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 			}
 
 			// If player is not an admin, check for ownership of inventory
-			if(!checkPriv(player->getName(), "server"))
+			/*if(!checkPriv(player->getName(), "server"))
 			{
 				std::string owner_craft = getInventoryOwner(ca->craft_inv);
 				if(owner_craft != "" && owner_craft != player->getName())
@@ -2630,7 +2592,7 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 					delete a;
 					return;
 				}
-			}
+			}*/
 		}
 		
 		// Do the action
@@ -3223,33 +3185,6 @@ Inventory* Server::getInventory(const InventoryLocation &loc)
 	}
 	return NULL;
 }
-std::string Server::getInventoryOwner(const InventoryLocation &loc)
-{
-	switch(loc.type){
-	case InventoryLocation::UNDEFINED:
-	{}
-	break;
-	case InventoryLocation::CURRENT_PLAYER:
-	{}
-	break;
-	case InventoryLocation::PLAYER:
-	{
-		return loc.name;
-	}
-	break;
-	case InventoryLocation::NODEMETA:
-	{
-		NodeMetadata *meta = m_env->getMap().getNodeMetadata(loc.p);
-		if(!meta)
-			return "";
-		return meta->getOwner();
-	}
-	break;
-	default:
-		assert(0);
-	}
-	return "";
-}
 void Server::setInventoryModified(const InventoryLocation &loc)
 {
 	switch(loc.type){
@@ -3272,10 +3207,6 @@ void Server::setInventoryModified(const InventoryLocation &loc)
 	{
 		v3s16 blockpos = getNodeBlockPos(loc.p);
 
-		NodeMetadata *meta = m_env->getMap().getNodeMetadata(loc.p);
-		if(meta)
-			meta->inventoryModified();
-		
 		MapBlock *block = m_env->getMap().getBlockNoCreateNoEx(blockpos);
 		if(block)
 			block->raiseModified(MOD_STATE_WRITE_NEEDED);

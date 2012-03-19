@@ -179,8 +179,6 @@ struct ContentFeatures
 	bool climbable;
 	// Player can build on these
 	bool buildable_to;
-	// Metadata name of node (eg. "furnace")
-	std::string metadata_name;
 	// Whether the node is non-liquid, source liquid or flowing liquid
 	enum LiquidType liquid_type;
 	// If the content is liquid, this is the flowing version of the liquid.

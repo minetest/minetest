@@ -2195,7 +2195,7 @@ void the_game(
 			ClientMap &map = client.getEnv().getClientMap();
 			NodeMetadata *meta = map.getNodeMetadata(nodepos);
 			if(meta){
-				infotext = narrow_to_wide(meta->infoText());
+				infotext = narrow_to_wide(meta->getInfoText());
 			} else {
 				MapNode n = map.getNode(nodepos);
 				if(nodedef->get(n).tname_tiles[0] == "unknown_block.png"){
@@ -2321,6 +2321,8 @@ void the_game(
 				infostream<<"Ground right-clicked"<<std::endl;
 				
 				// If metadata provides an inventory view, activate it
+				errorstream<<"Need to implement metadata formspecs"<<std::endl;
+				#if 0
 				if(meta && meta->getInventoryDrawSpecString() != "" && !random_input)
 				{
 					infostream<<"Launching custom inventory view"<<std::endl;
@@ -2362,6 +2364,9 @@ void the_game(
 							&g_menumgr, dest,
 							wtext))->drop();
 				}
+				#else
+				if(0) /* do nothing */;
+				#endif
 				// Otherwise report right click to server
 				else
 				{

@@ -19,11 +19,10 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "nodemetadata.h"
 #include "utility.h"
-#include "mapnode.h"
 #include "exceptions.h"
+#include "gamedef.h"
 #include "inventory.h"
 #include <sstream>
-#include "content_mapnode.h"
 #include "log.h"
 
 /*
@@ -31,161 +30,120 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 */
 
 NodeMetadata::NodeMetadata(IGameDef *gamedef):
-	m_gamedef(gamedef)
+	m_stringvars(),
+	m_inventory(new Inventory(gamedef->idef())),
+	m_inventorydrawspec(""),
+	m_formspec(""),
+	m_infotext(""),
+	m_allow_removal(true)
 {
 }
 
 NodeMetadata::~NodeMetadata()
 {
+	delete m_inventory;
 }
 
-NodeMetadata* NodeMetadata::create(const std::string &name, IGameDef *gamedef)
+void NodeMetadata::serialize(std::ostream &os) const
 {
-	// Find factory function
-	core::map<std::string, Factory2>::Node *n;
-	n = m_names.find(name);
-	if(n == NULL)
-	{
-		// If factory is not found, just return.
-		errorstream<<"WARNING: NodeMetadata: No factory for name=\""
-				<<name<<"\""<<std::endl;
-		return NULL;
+	int num_vars = m_stringvars.size();
+	writeU32(os, num_vars);
+	for(std::map<std::string, std::string>::const_iterator
+			i = m_stringvars.begin(); i != m_stringvars.end(); i++){
+		os<<serializeString(i->first);
+		os<<serializeLongString(i->second);
 	}
-	
-	// Try to load the metadata. If it fails, just return.
-	try
-	{
-		Factory2 f2 = n->getValue();
-		NodeMetadata *meta = (*f2)(gamedef);
-		return meta;
-	}
-	catch(SerializationError &e)
-	{
-		errorstream<<"NodeMetadata: SerializationError "
-				<<"while creating name=\""<<name<<"\""<<std::endl;
-		return NULL;
-	}
+
+	m_inventory->serialize(os);
+	os<<serializeString(m_inventorydrawspec);
+	os<<serializeString(m_formspec);
+	os<<serializeString(m_infotext);
+	writeU8(os, m_allow_removal);
 }
 
-NodeMetadata* NodeMetadata::deSerialize(std::istream &is, IGameDef *gamedef)
+void NodeMetadata::deSerialize(std::istream &is)
 {
-	// Read id
-	u8 buf[2];
-	is.read((char*)buf, 2);
-	s16 id = readS16(buf);
-	
-	// Read data
-	std::string data = deSerializeString(is);
-	
-	// Find factory function
-	core::map<u16, Factory>::Node *n;
-	n = m_types.find(id);
-	if(n == NULL)
-	{
-		// If factory is not found, just return.
-		infostream<<"WARNING: NodeMetadata: No factory for typeId="
-				<<id<<std::endl;
-		return NULL;
+	m_stringvars.clear();
+	int num_vars = readU32(is);
+	for(int i=0; i<num_vars; i++){
+		std::string name = deSerializeString(is);
+		std::string var = deSerializeLongString(is);
+		m_stringvars[name] = var;
 	}
-	
-	// Try to load the metadata. If it fails, just return.
-	try
-	{
-		std::istringstream iss(data, std::ios_base::binary);
-		
-		Factory f = n->getValue();
-		NodeMetadata *meta = (*f)(iss, gamedef);
-		return meta;
-	}
-	catch(SerializationError &e)
-	{
-		infostream<<"WARNING: NodeMetadata: ignoring SerializationError"<<std::endl;
-		return NULL;
-	}
+
+	m_inventory->deSerialize(is);
+	m_inventorydrawspec = deSerializeString(is);
+	m_formspec = deSerializeString(is);
+	m_infotext = deSerializeString(is);
+	m_allow_removal = readU8(is);
 }
 
-void NodeMetadata::serialize(std::ostream &os)
+void NodeMetadata::clear()
 {
-	u8 buf[2];
-	writeU16(buf, typeId());
-	os.write((char*)buf, 2);
-	
-	std::ostringstream oss(std::ios_base::binary);
-	serializeBody(oss);
-	os<<serializeString(oss.str());
-}
-
-void NodeMetadata::registerType(u16 id, const std::string &name, Factory f,
-		Factory2 f2)
-{
-	{ // typeId
-		core::map<u16, Factory>::Node *n;
-		n = m_types.find(id);
-		if(!n)
-			m_types.insert(id, f);
-	}
-	{ // typeName
-		core::map<std::string, Factory2>::Node *n;
-		n = m_names.find(name);
-		if(!n)
-			m_names.insert(name, f2);
-	}
+	m_stringvars.clear();
+	m_inventory->clear();
+	m_inventorydrawspec = "";
+	m_formspec = "";
+	m_infotext = "";
+	m_allow_removal = true;
 }
 
 /*
 	NodeMetadataList
 */
 
-void NodeMetadataList::serialize(std::ostream &os)
+void NodeMetadataList::serialize(std::ostream &os) const
 {
-	u8 buf[6];
-	
-	u16 version = 1;
-	writeU16(buf, version);
-	os.write((char*)buf, 2);
+	/*
+		Version 0 is a placeholder for "nothing to see here; go away."
+	*/
+
+	if(m_data.size() == 0){
+		writeU8(os, 0); // version
+		return;
+	}
+
+	writeU8(os, 1); // version
 
 	u16 count = m_data.size();
-	writeU16(buf, count);
-	os.write((char*)buf, 2);
+	writeU16(os, count);
 
-	for(core::map<v3s16, NodeMetadata*>::Iterator
-			i = m_data.getIterator();
-			i.atEnd()==false; i++)
+	for(std::map<v3s16, NodeMetadata*>::const_iterator
+			i = m_data.begin();
+			i != m_data.end(); i++)
 	{
-		v3s16 p = i.getNode()->getKey();
-		NodeMetadata *data = i.getNode()->getValue();
-		
+		v3s16 p = i->first;
+		NodeMetadata *data = i->second;
+
 		u16 p16 = p.Z*MAP_BLOCKSIZE*MAP_BLOCKSIZE + p.Y*MAP_BLOCKSIZE + p.X;
-		writeU16(buf, p16);
-		os.write((char*)buf, 2);
+		writeU16(os, p16);
 
 		data->serialize(os);
 	}
-	
 }
+
 void NodeMetadataList::deSerialize(std::istream &is, IGameDef *gamedef)
 {
 	m_data.clear();
 
-	u8 buf[6];
+	u8 version = readU8(is);
 	
-	is.read((char*)buf, 2);
-	u16 version = readU16(buf);
+	if(version == 0){
+		// Nothing
+		return;
+	}
 
-	if(version > 1)
-	{
+	if(version != 1){
 		infostream<<__FUNCTION_NAME<<": version "<<version<<" not supported"
 				<<std::endl;
 		throw SerializationError("NodeMetadataList::deSerialize");
 	}
-	
-	is.read((char*)buf, 2);
-	u16 count = readU16(buf);
-	
+
+	u16 count = readU16(is);
+
 	for(u16 i=0; i<count; i++)
 	{
-		is.read((char*)buf, 2);
-		u16 p16 = readU16(buf);
+		u16 p16 = readU16(is);
 
 		v3s16 p(0,0,0);
 		p.Z += p16 / MAP_BLOCKSIZE / MAP_BLOCKSIZE;
@@ -193,43 +151,33 @@ void NodeMetadataList::deSerialize(std::istream &is, IGameDef *gamedef)
 		p.Y += p16 / MAP_BLOCKSIZE;
 		p16 -= p.Y * MAP_BLOCKSIZE;
 		p.X += p16;
-		
-		NodeMetadata *data = NodeMetadata::deSerialize(is, gamedef);
 
-		if(data == NULL)
-			continue;
-		
-		if(m_data.find(p))
+		if(m_data.find(p) != m_data.end())
 		{
 			infostream<<"WARNING: NodeMetadataList::deSerialize(): "
 					<<"already set data at position"
 					<<"("<<p.X<<","<<p.Y<<","<<p.Z<<"): Ignoring."
 					<<std::endl;
-			delete data;
 			continue;
 		}
 
-		m_data.insert(p, data);
+		NodeMetadata *data = new NodeMetadata(gamedef);
+		data->deSerialize(is);
+		m_data[p] = data;
 	}
 }
-	
+
 NodeMetadataList::~NodeMetadataList()
 {
-	for(core::map<v3s16, NodeMetadata*>::Iterator
-			i = m_data.getIterator();
-			i.atEnd()==false; i++)
-	{
-		delete i.getNode()->getValue();
-	}
+	clear();
 }
 
 NodeMetadata* NodeMetadataList::get(v3s16 p)
 {
-	core::map<v3s16, NodeMetadata*>::Node *n;
-	n = m_data.find(p);
-	if(n == NULL)
+	std::map<v3s16, NodeMetadata*>::const_iterator n = m_data.find(p);
+	if(n == m_data.end())
 		return NULL;
-	return n->getValue();
+	return n->second;
 }
 
 void NodeMetadataList::remove(v3s16 p)
@@ -238,29 +186,23 @@ void NodeMetadataList::remove(v3s16 p)
 	if(olddata)
 	{
 		delete olddata;
-		m_data.remove(p);
+		m_data.erase(p);
 	}
 }
 
 void NodeMetadataList::set(v3s16 p, NodeMetadata *d)
 {
 	remove(p);
-	m_data.insert(p, d);
+	m_data.insert(std::make_pair(p, d));
 }
 
-bool NodeMetadataList::step(float dtime)
+void NodeMetadataList::clear()
 {
-	bool something_changed = false;
-	for(core::map<v3s16, NodeMetadata*>::Iterator
-			i = m_data.getIterator();
-			i.atEnd()==false; i++)
+	for(std::map<v3s16, NodeMetadata*>::iterator
+			i = m_data.begin();
+			i != m_data.end(); i++)
 	{
-		v3s16 p = i.getNode()->getKey();
-		NodeMetadata *meta = i.getNode()->getValue();
-		bool changed = meta->step(dtime);
-		if(changed)
-			something_changed = true;
+		delete i->second;
 	}
-	return something_changed;
+	m_data.clear();
 }
-

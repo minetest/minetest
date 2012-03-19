@@ -177,6 +177,7 @@ set(common_SRCS
 	content_mapnode.cpp
 	collision.cpp
 	nodemetadata.cpp
+	nodetimer.cpp
 	serverobject.cpp
 	noise.cpp
 	porting.cpp

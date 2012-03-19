@@ -23,6 +23,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "irrlichttypes.h"
 #include <string>
 #include <iostream>
+#include <map>
 
 /*
 	NodeMetadata stores arbitary amounts of data for special blocks.
@@ -39,76 +40,88 @@ class IGameDef;
 class NodeMetadata
 {
 public:
-	typedef NodeMetadata* (*Factory)(std::istream&, IGameDef *gamedef);
-	typedef NodeMetadata* (*Factory2)(IGameDef *gamedef);
-
 	NodeMetadata(IGameDef *gamedef);
-	virtual ~NodeMetadata();
+	~NodeMetadata();
 	
-	static NodeMetadata* create(const std::string &name, IGameDef *gamedef);
-	static NodeMetadata* deSerialize(std::istream &is, IGameDef *gamedef);
-	void serialize(std::ostream &os);
+	void serialize(std::ostream &os) const;
+	void deSerialize(std::istream &is);
 	
-	virtual u16 typeId() const = 0;
-	virtual const char* typeName() const = 0;
-	virtual NodeMetadata* clone(IGameDef *gamedef) = 0;
-	virtual void serializeBody(std::ostream &os) = 0;
+	void clear();
 
-	// Called on client-side; shown on screen when pointed at
-	virtual std::string infoText() {return "";}
+	// Generic key/value store
+	std::string getString(const std::string &name) const
+	{
+		std::map<std::string, std::string>::const_iterator i;
+		i = m_stringvars.find(name);
+		if(i == m_stringvars.end())
+			return "";
+		return i->second;
+	}
+	void setString(const std::string &name, const std::string &var)
+	{
+		if(var.empty())
+			m_stringvars.erase(name);
+		else
+			m_stringvars[name] = var;
+	}
+
+	// The inventory
+	Inventory* getInventory()
+	{
+		return m_inventory;
+	}
 	
-	//
-	virtual Inventory* getInventory() {return NULL;}
-	// Called always after the inventory is modified, before the changes
-	// are copied elsewhere
-	virtual void inventoryModified(){}
-
-	// A step in time. Shall return true if metadata changed.
-	virtual bool step(float dtime) {return false;}
-
-	// Whether the related node and this metadata cannot be removed
-	virtual bool nodeRemovalDisabled(){return false;}
 	// If non-empty, player can interact by using an inventory view
 	// See format in guiInventoryMenu.cpp.
-	virtual std::string getInventoryDrawSpecString(){return "";}
+	std::string getInventoryDrawSpec() const
+	{
+		return m_inventorydrawspec;
+	}
+	void setInventoryDrawSpec(const std::string &text)
+	{
+		m_inventorydrawspec = text;
+	}
+	
+	// If non-empty, player can interact by using an form view
+	// See format in guiFormMenu.cpp.
+	std::string getFormSpec() const
+	{
+		return m_formspec;
+	}
+	void setFormSpec(const std::string &text)
+	{
+		m_formspec = text;
+	}
+	
+	// Called on client-side; shown on screen when pointed at
+	std::string getInfoText() const
+	{
+		return m_infotext;
+	}
+	void setInfoText(const std::string &text)
+	{
+		m_infotext = text;
+	}
+	
+	// Whether the related node and this metadata can be removed
+	bool getAllowRemoval() const
+	{
+		return m_allow_removal;
+	}
+	void setAllowRemoval(bool b)
+	{
+		m_allow_removal = b;
+	}
 
-	// If true, player can interact by writing text
-	virtual bool allowsTextInput(){ return false; }
-	// Get old text for player interaction
-	virtual std::string getText(){ return ""; }
-	// Set player-written text
-	virtual void setText(const std::string &t){}
-
-	// If returns non-empty, only given player can modify text/inventory
-	virtual std::string getOwner(){ return std::string(""); }
-	// The name of the player who placed the node
-	virtual void setOwner(std::string t){}
-
-	/* Interface for GenericNodeMetadata */
-
-	virtual void setInfoText(const std::string &text){};
-	virtual void setInventoryDrawSpec(const std::string &text){};
-	virtual void setAllowTextInput(bool b){};
-
-	virtual void setRemovalDisabled(bool b){};
-	virtual void setEnforceOwner(bool b){};
-
-	virtual bool isInventoryModified(){return false;};
-	virtual void resetInventoryModified(){};
-	virtual bool isTextModified(){return false;};
-	virtual void resetTextModified(){};
-
-	virtual void setString(const std::string &name, const std::string &var){}
-	virtual std::string getString(const std::string &name){return "";}
-
-protected:
-	static void registerType(u16 id, const std::string &name, Factory f,
-			Factory2 f2);
-	IGameDef *m_gamedef;
 private:
-	static core::map<u16, Factory> m_types;
-	static core::map<std::string, Factory2> m_names;
+	std::map<std::string, std::string> m_stringvars;
+	Inventory *m_inventory;
+	std::string m_inventorydrawspec;
+	std::string m_formspec;
+	std::string m_infotext;
+	bool m_allow_removal;
 };
+
 
 /*
 	List of metadata of all the nodes of a block
@@ -119,7 +132,7 @@ class NodeMetadataList
 public:
 	~NodeMetadataList();
 
-	void serialize(std::ostream &os);
+	void serialize(std::ostream &os) const;
 	void deSerialize(std::istream &is, IGameDef *gamedef);
 	
 	// Get pointer to data
@@ -128,12 +141,11 @@ public:
 	void remove(v3s16 p);
 	// Deletes old data and sets a new one
 	void set(v3s16 p, NodeMetadata *d);
+	// Deletes all
+	void clear();
 	
-	// A step in time. Returns true if something changed.
-	bool step(float dtime);
-
 private:
-	core::map<v3s16, NodeMetadata*> m_data;
+	std::map<v3s16, NodeMetadata*> m_data;
 };
 
 #endif

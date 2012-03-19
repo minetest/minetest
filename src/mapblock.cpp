@@ -30,6 +30,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "log.h"
 #include "nameidmapping.h"
 #include "content_mapnode.h" // For legacy name-id mapping
+#include "content_nodemeta.h" // For legacy deserialization
 #ifndef SERVER
 #include "mapblock_mesh.h"
 #endif
@@ -39,7 +40,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 */
 
 MapBlock::MapBlock(Map *parent, v3s16 pos, IGameDef *gamedef, bool dummy):
-		m_node_metadata(new NodeMetadataList),
 		m_parent(parent),
 		m_pos(pos),
 		m_gamedef(gamedef),
@@ -78,8 +78,6 @@ MapBlock::~MapBlock()
 		}
 	}
 #endif
-
-	delete m_node_metadata;
 
 	if(data)
 		delete[] data;
@@ -605,7 +603,10 @@ void MapBlock::serialize(std::ostream &os, u8 version, bool disk)
 		Node metadata
 	*/
 	std::ostringstream oss(std::ios_base::binary);
-	m_node_metadata->serialize(oss);
+	if(version >= 23)
+		m_node_metadata.serialize(oss);
+	else
+		content_nodemeta_serialize_legacy(oss, &m_node_metadata);
 	compressZlib(oss.str(), os);
 
 	/*
@@ -613,6 +614,10 @@ void MapBlock::serialize(std::ostream &os, u8 version, bool disk)
 	*/
 	if(disk)
 	{
+		// Node timers
+		if(version >= 23)
+			m_node_timers.serialize(os);
+
 		// Static objects
 		m_static_objects.serialize(os);
 
@@ -665,12 +670,17 @@ void MapBlock::deSerialize(std::istream &is, u8 version, bool disk)
 		std::ostringstream oss(std::ios_base::binary);
 		decompressZlib(is, oss);
 		std::istringstream iss(oss.str(), std::ios_base::binary);
-		m_node_metadata->deSerialize(iss, m_gamedef);
+		if(version >= 23)
+			m_node_metadata.deSerialize(iss, m_gamedef);
+		else
+			content_nodemeta_deserialize_legacy(iss,
+					&m_node_metadata, &m_node_timers,
+					m_gamedef);
 	}
 	catch(SerializationError &e)
 	{
 		errorstream<<"WARNING: MapBlock::deSerialize(): Ignoring an error"
-				<<" while deserializing node metadata"<<std::endl;
+				<<" while deserializing node metadata: "<<e.what()<<std::endl;
 	}
 
 	/*
@@ -678,6 +688,10 @@ void MapBlock::deSerialize(std::istream &is, u8 version, bool disk)
 	*/
 	if(disk)
 	{
+		// Node timers
+		if(version >= 23)
+			m_node_timers.deSerialize(is);
+
 		// Static objects
 		m_static_objects.deSerialize(is);
 		
@@ -857,7 +871,7 @@ void MapBlock::serialize_pre22(std::ostream &os, u8 version, bool disk)
 			{
 				try{
 					std::ostringstream oss(std::ios_base::binary);
-					m_node_metadata->serialize(oss);
+					content_nodemeta_serialize_legacy(oss, &m_node_metadata);
 					os<<serializeString(oss.str());
 				}
 				// This will happen if the string is longer than 65535
@@ -870,7 +884,7 @@ void MapBlock::serialize_pre22(std::ostream &os, u8 version, bool disk)
 			else
 			{
 				std::ostringstream oss(std::ios_base::binary);
-				m_node_metadata->serialize(oss);
+				content_nodemeta_serialize_legacy(oss, &m_node_metadata);
 				compressZlib(oss.str(), os);
 				//os<<serializeLongString(oss.str());
 			}
@@ -1024,7 +1038,9 @@ void MapBlock::deSerialize_pre22(std::istream &is, u8 version, bool disk)
 				{
 					std::string data = deSerializeString(is);
 					std::istringstream iss(data, std::ios_base::binary);
-					m_node_metadata->deSerialize(iss, m_gamedef);
+					content_nodemeta_deserialize_legacy(iss,
+							&m_node_metadata, &m_node_timers,
+							m_gamedef);
 				}
 				else
 				{
@@ -1032,7 +1048,9 @@ void MapBlock::deSerialize_pre22(std::istream &is, u8 version, bool disk)
 					std::ostringstream oss(std::ios_base::binary);
 					decompressZlib(is, oss);
 					std::istringstream iss(oss.str(), std::ios_base::binary);
-					m_node_metadata->deSerialize(iss, m_gamedef);
+					content_nodemeta_deserialize_legacy(iss,
+							&m_node_metadata, &m_node_timers,
+							m_gamedef);
 				}
 			}
 			catch(SerializationError &e)

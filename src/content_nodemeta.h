@@ -21,6 +21,17 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #define CONTENT_NODEMETA_HEADER
 
 #include "nodemetadata.h"
+#include "nodetimer.h"
+
+/*
+	Legacy nodemeta definitions
+*/
+
+void content_nodemeta_deserialize_legacy(std::istream &is,
+		NodeMetadataList *meta, NodeTimerList *timers,
+		IGameDef *gamedef);
+
+void content_nodemeta_serialize_legacy(std::ostream &os, NodeMetadataList *meta);
 
 #endif
 

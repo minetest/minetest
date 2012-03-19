@@ -31,6 +31,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "constants.h"
 #include "voxel.h"
 #include "staticobject.h"
+#include "nodemetadata.h"
+#include "nodetimer.h"
 #include "modifiedstate.h"
 
 class Map;
@@ -473,7 +475,8 @@ public:
 	//JMutex mesh_mutex;
 #endif
 	
-	NodeMetadataList *m_node_metadata;
+	NodeMetadataList m_node_metadata;
+	NodeTimerList m_node_timers;
 	StaticObjectList m_static_objects;
 	
 private:
