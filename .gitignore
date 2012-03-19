@@ -13,6 +13,7 @@ cache/
 textures/
 sounds/
 mods/
+!mods/mesetint/mods_here.txt
 worlds/
 world/
 
