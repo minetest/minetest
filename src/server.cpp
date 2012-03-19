@@ -885,25 +885,13 @@ Server::Server(
 	infostream<<"- world:  "<<m_path_world<<std::endl;
 	infostream<<"- config: "<<m_path_config<<std::endl;
 	infostream<<"- game:   "<<m_gamespec.path<<std::endl;
-	for(std::set<std::string>::const_iterator i = m_gamespec.addon_paths.begin();
-			i != m_gamespec.addon_paths.end(); i++)
-		infostream<<"- addons: "<<(*i)<<std::endl;
 
-	// Path to builtin.lua
-	std::string builtinpath = porting::path_share + DIR_DELIM + "builtin"
-			+ DIR_DELIM + "builtin.lua";
-
-	// Add default global mod search path
-	m_modspaths.push_front(m_gamespec.path + DIR_DELIM "mods");
 	// Add world mod search path
 	m_modspaths.push_front(m_path_world + DIR_DELIM + "worldmods");
 	// Add addon mod search path
-	for(std::set<std::string>::const_iterator i = m_gamespec.addon_paths.begin();
-			i != m_gamespec.addon_paths.end(); i++)
-		m_modspaths.push_front((*i) + DIR_DELIM + "mods");
-	// Add simple user mod search path
-	m_modspaths.push_front(porting::path_user + DIR_DELIM + "mods"
-			+ DIR_DELIM + m_gamespec.id);
+	for(std::set<std::string>::const_iterator i = m_gamespec.mods_paths.begin();
+			i != m_gamespec.mods_paths.end(); i++)
+		m_modspaths.push_front((*i));
 
 	// Print out mod search paths
 	for(core::list<std::string>::Iterator i = m_modspaths.begin();
@@ -912,6 +900,10 @@ Server::Server(
 		infostream<<"- mods:   "<<modspath<<std::endl;
 	}
 	
+	// Path to builtin.lua
+	std::string builtinpath = porting::path_share + DIR_DELIM + "builtin"
+			+ DIR_DELIM + "builtin.lua";
+
 	// Create world if it doesn't exist
 	if(!initializeWorld(m_path_world, m_gamespec.id))
 		throw ServerError("Failed to initialize world");

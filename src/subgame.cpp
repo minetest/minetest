@@ -38,14 +38,16 @@ SubgameSpec findSubgame(const std::string &id)
 	}
 	if(!fs::PathExists(game_path))
 		return SubgameSpec();
-	// Find addon directories
-	std::set<std::string> addon_paths;
+	// Find mod directories
+	std::set<std::string> mods_paths;
+	mods_paths.insert(game_path + DIR_DELIM + "mods");
 	if(!user_game)
-		addon_paths.insert(share + DIR_DELIM + "addons" + DIR_DELIM + id);
-	addon_paths.insert(user + DIR_DELIM + "addons" + DIR_DELIM + id);
+		mods_paths.insert(share + DIR_DELIM + "mods" + DIR_DELIM + id);
+	if(user != share || user_game)
+		mods_paths.insert(user + DIR_DELIM + "mods" + DIR_DELIM + id);
 	// TODO: Read proper name from game_path/game.conf
 	std::string game_name = id;
-	return SubgameSpec(id, game_path, addon_paths, game_name);
+	return SubgameSpec(id, game_path, mods_paths, game_name);
 }
 
 std::set<std::string> getAvailableGameIds()

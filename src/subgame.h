@@ -28,16 +28,16 @@ struct SubgameSpec
 {
 	std::string id; // "" = game does not exist
 	std::string path;
-	std::set<std::string> addon_paths;
+	std::set<std::string> mods_paths;
 	std::string name;
 
 	SubgameSpec(const std::string &id_="",
 			const std::string &path_="",
-			const std::set<std::string> &addon_paths_=std::set<std::string>(),
+			const std::set<std::string> &mods_paths_=std::set<std::string>(),
 			const std::string &name_=""):
 		id(id_),
 		path(path_),
-		addon_paths(addon_paths_),
+		mods_paths(mods_paths_),
 		name(name_)
 	{}
 
