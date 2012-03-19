@@ -185,18 +185,29 @@ Compiling on Windows:
 Windows releases of minetest are built using a bat script like this:
 --------------------------------------------------------------------
 
+set sourcedir=%CD%
 set installpath="C:\tmp\minetest_install"
 set irrlichtpath="C:\tmp\irrlicht-1.7.2"
 
-set sourcedir=%CD%
 set builddir=%sourcedir%\bvc10
 mkdir %builddir%
 pushd %builddir%
 cmake %sourcedir% -G "Visual Studio 10" -DIRRLICHT_SOURCE_DIR=%irrlichtpath% -DRUN_IN_PLACE=1 -DCMAKE_INSTALL_PREFIX=%installpath%
+if %errorlevel% neq 0 goto fail
 "C:\WINDOWS\Microsoft.NET\Framework\v4.0.30319\MSBuild.exe" ALL_BUILD.vcxproj /p:Configuration=Release
+if %errorlevel% neq 0 goto fail
 "C:\WINDOWS\Microsoft.NET\Framework\v4.0.30319\MSBuild.exe" INSTALL.vcxproj /p:Configuration=Release
+if %errorlevel% neq 0 goto fail
 "C:\WINDOWS\Microsoft.NET\Framework\v4.0.30319\MSBuild.exe" PACKAGE.vcxproj /p:Configuration=Release
+if %errorlevel% neq 0 goto fail
 popd
+echo Finished.
+exit /b 0
+
+:fail
+popd
+echo Failed.
+exit /b 1
 
 License of Minetest-c55 textures and sounds
 -------------------------------------------
