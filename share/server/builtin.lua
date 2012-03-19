@@ -753,7 +753,8 @@ minetest.register_item(":", {
 -- Default material types
 --
 function digprop_err()
-	error("The minetest.digprop_* functions are obsolete and need to be replaced by item groups.")
+	minetest.log("info", debug.traceback())
+	minetest.log("info", "WARNING: The minetest.digprop_* functions are obsolete and need to be replaced by item groups.")
 end
 
 minetest.digprop_constanttime = digprop_err
