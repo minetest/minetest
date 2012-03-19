@@ -466,7 +466,7 @@ minetest.register_item(":", {
 			fleshy = {times={[2]=2.00, [3]=1.00}, maxwear=0, maxlevel=1},
 			crumbly = {times={[3]=0.70}, maxwear=0, maxlevel=1},
 			snappy = {times={[3]=0.40}, maxwear=0, maxlevel=1},
-			oddly_breakable_by_hand = {times={[1]=1.50,[2]=1.00,[3]=0.70}, maxwear=0, maxlevel=3},
+			oddly_breakable_by_hand = {times={[1]=3.50,[2]=2.00,[3]=0.70}, maxwear=0, maxlevel=3},
 		}
 	}
 })
@@ -550,7 +550,7 @@ minetest.register_tool("default:axe_wood", {
 	tool_capabilities = {
 		max_drop_level=0,
 		groupcaps={
-			choppy={times={[2]=1.50, [3]=0.80}, maxwear=0.1, maxlevel=1},
+			choppy={times={[2]=1.40, [3]=0.80}, maxwear=0.1, maxlevel=1},
 			fleshy={times={[2]=1.50, [3]=0.80}, maxwear=0.1, maxlevel=1}
 		}
 	},
@@ -1152,14 +1152,14 @@ minetest.register_node("default:tree", {
 	description = "Tree",
 	tile_images = {"default_tree_top.png", "default_tree_top.png", "default_tree.png"},
 	is_ground_content = true,
-	groups = {snappy=2,choppy=2,oddly_breakable_by_hand=2},
+	groups = {snappy=2,choppy=2,oddly_breakable_by_hand=1},
 })
 
 minetest.register_node("default:jungletree", {
 	description = "Jungle Tree",
 	tile_images = {"default_jungletree_top.png", "default_jungletree_top.png", "default_jungletree.png"},
 	is_ground_content = true,
-	groups = {snappy=2,choppy=2,oddly_breakable_by_hand=2},
+	groups = {snappy=2,choppy=2,oddly_breakable_by_hand=1},
 })
 
 minetest.register_node("default:junglegrass", {
@@ -1221,7 +1221,7 @@ minetest.register_node("default:bookshelf", {
 	description = "Bookshelf",
 	tile_images = {"default_wood.png", "default_wood.png", "default_bookshelf.png"},
 	is_ground_content = true,
-	groups = {snappy=2,choppy=3,oddly_breakable_by_hand=3},
+	groups = {snappy=2,choppy=3,oddly_breakable_by_hand=2},
 })
 
 minetest.register_node("default:glass", {
@@ -1247,7 +1247,7 @@ minetest.register_node("default:fence_wood", {
 		type = "fixed",
 		fixed = {-1/7, -1/2, -1/7, 1/7, 1/2, 1/7},
 	},
-	groups = {snappy=2,choppy=2,oddly_breakable_by_hand=3},
+	groups = {snappy=2,choppy=2,oddly_breakable_by_hand=2},
 })
 
 minetest.register_node("default:rail", {
@@ -1291,7 +1291,7 @@ minetest.register_node("default:wood", {
 	description = "Wood",
 	tile_images = {"default_wood.png"},
 	is_ground_content = true,
-	groups = {snappy=2,choppy=2,oddly_breakable_by_hand=3},
+	groups = {snappy=2,choppy=2,oddly_breakable_by_hand=2},
 })
 
 minetest.register_node("default:mese", {
