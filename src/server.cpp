@@ -890,7 +890,8 @@ Server::Server(
 		infostream<<"- addons: "<<(*i)<<std::endl;
 
 	// Path to builtin.lua
-	std::string builtinpath = porting::path_share + DIR_DELIM + "builtin.lua";
+	std::string builtinpath = porting::path_share + DIR_DELIM + "builtin"
+			+ DIR_DELIM + "builtin.lua";
 
 	// Add default global mod search path
 	m_modspaths.push_front(m_gamespec.path + DIR_DELIM "mods");
