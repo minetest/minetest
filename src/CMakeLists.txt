@@ -159,7 +159,6 @@ set(common_SRCS
 	subgame.cpp
 	inventorymanager.cpp
 	mods.cpp
-	serverremoteplayer.cpp
 	content_abm.cpp
 	craftdef.cpp
 	nameidmapping.cpp

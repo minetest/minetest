@@ -200,7 +200,7 @@ enum ToClientCommand
 		wstring reason
 	*/
 
-	TOCLIENT_PLAYERITEM = 0x36,
+	TOCLIENT_PLAYERITEM = 0x36, // Obsolete
 	/*
 		u16 command
 		u16 count of player items

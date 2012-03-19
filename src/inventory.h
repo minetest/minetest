@@ -250,6 +250,7 @@ public:
 	~Inventory();
 
 	void clear();
+	void clearContents();
 
 	Inventory(IItemDefManager *itemdef);
 	Inventory(const Inventory &other);

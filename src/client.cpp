@@ -1397,45 +1397,7 @@ void Client::ProcessData(u8 *data, u32 datasize, u16 sender_peer_id)
 	}
 	else if(command == TOCLIENT_PLAYERITEM)
 	{
-		std::string datastring((char*)&data[2], datasize-2);
-		std::istringstream is(datastring, std::ios_base::binary);
-
-		u16 count = readU16(is);
-
-		for (u16 i = 0; i < count; ++i) {
-			u16 peer_id = readU16(is);
-			Player *player = m_env.getPlayer(peer_id);
-
-			if (player == NULL)
-			{
-				infostream<<"Client: ignoring player item "
-					<< deSerializeString(is)
-					<< " for non-existing peer id " << peer_id
-					<< std::endl;
-				continue;
-			} else if (player->isLocal()) {
-				infostream<<"Client: ignoring player item "
-					<< deSerializeString(is)
-					<< " for local player" << std::endl;
-				continue;
-			} else {
-				InventoryList *inv = player->inventory.getList("main");
-				std::string itemstring(deSerializeString(is));
-				ItemStack item;
-				item.deSerialize(itemstring, m_itemdef);
-				inv->changeItem(0, item);
-				if(itemstring.empty())
-				{
-					infostream<<"Client: empty player item for peer "
-						<<peer_id<<std::endl;
-				}
-				else
-				{
-					infostream<<"Client: player item for peer "
-						<<peer_id<<": "<<itemstring<<std::endl;
-				}
-			}
-		}
+		infostream<<"Client: WARNING: Ignoring TOCLIENT_PLAYERITEM"<<std::endl;
 	}
 	else if(command == TOCLIENT_DEATHSCREEN)
 	{

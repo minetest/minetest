@@ -795,6 +795,18 @@ void Inventory::clear()
 	m_lists.clear();
 }
 
+void Inventory::clearContents()
+{
+	for(u32 i=0; i<m_lists.size(); i++)
+	{
+		InventoryList *list = m_lists[i];
+		for(u32 j=0; j<list->getSize(); j++)
+		{
+			list->deleteItem(j);
+		}
+	}
+}
+
 Inventory::Inventory(IItemDefManager *itemdef)
 {
 	m_itemdef = itemdef;

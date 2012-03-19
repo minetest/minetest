@@ -26,6 +26,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "serialization.h" // For compressZlib
 #include "tool.h" // For ToolCapabilities
 #include "gamedef.h"
+#include "player.h"
+#include "scriptapi.h"
 
 core::map<u16, ServerActiveObject::Factory> ServerActiveObject::m_types;
 
@@ -333,7 +335,6 @@ ServerActiveObject* createItemSAO(ServerEnvironment *env, v3f pos,
 	LuaEntitySAO
 */
 
-#include "scriptapi.h"
 #include "luaentity_common.h"
 
 // Prototype (registers item for deserialization)
@@ -610,7 +611,7 @@ void LuaEntitySAO::setHP(s16 hp)
 	m_hp = hp;
 }
 
-s16 LuaEntitySAO::getHP()
+s16 LuaEntitySAO::getHP() const
 {
 	return m_hp;
 }
@@ -747,5 +748,347 @@ void LuaEntitySAO::sendPosition(bool do_interpolate, bool is_movement_end)
 	// create message and add to list
 	ActiveObjectMessage aom(getId(), false, os.str());
 	m_messages_out.push_back(aom);
+}
+
+/*
+	PlayerSAO
+*/
+
+// No prototype, PlayerSAO does not need to be deserialized
+
+PlayerSAO::PlayerSAO(ServerEnvironment *env_, Player *player_, u16 peer_id_):
+	ServerActiveObject(env_, v3f(0,0,0)),
+	m_player(player_),
+	m_peer_id(peer_id_),
+	m_inventory(NULL),
+	m_last_good_position(0,0,0),
+	m_last_good_position_age(0),
+	m_time_from_last_punch(0),
+	m_wield_index(0),
+	m_position_not_sent(false),
+	m_teleported(false),
+	m_inventory_not_sent(false),
+	m_hp_not_sent(false),
+	m_wielded_item_not_sent(false)
+{
+	assert(m_player);
+	assert(m_peer_id != 0);
+	setBasePosition(m_player->getPosition());
+	m_inventory = &m_player->inventory;
+}
+
+PlayerSAO::~PlayerSAO()
+{
+	if(m_inventory != &m_player->inventory)
+		delete m_inventory;
+
+}
+
+std::string PlayerSAO::getDescription()
+{
+	return std::string("player ") + m_player->getName();
+}
+
+// Called after id has been set and has been inserted in environment
+void PlayerSAO::addedToEnvironment()
+{
+	ServerActiveObject::addedToEnvironment();
+	ServerActiveObject::setBasePosition(m_player->getPosition());
+	m_player->setPlayerSAO(this);
+	m_player->peer_id = m_peer_id;
+	m_last_good_position = m_player->getPosition();
+	m_last_good_position_age = 0.0;
+}
+
+// Called before removing from environment
+void PlayerSAO::removingFromEnvironment()
+{
+	ServerActiveObject::removingFromEnvironment();
+	if(m_player->getPlayerSAO() == this)
+	{
+		m_player->setPlayerSAO(NULL);
+		m_player->peer_id = 0;
+	}
+}
+
+bool PlayerSAO::isStaticAllowed() const
+{
+	return false;
+}
+
+bool PlayerSAO::unlimitedTransferDistance() const
+{
+	return g_settings->getBool("unlimited_player_transfer_distance");
+}
+
+std::string PlayerSAO::getClientInitializationData()
+{
+	std::ostringstream os(std::ios::binary);
+	// version
+	writeU8(os, 0);
+	// name
+	os<<serializeString(m_player->getName());
+	// pos
+	writeV3F1000(os, m_player->getPosition());
+	// yaw
+	writeF1000(os, m_player->getYaw());
+	// dead
+	writeU8(os, getHP() == 0);
+	// wielded item
+	os<<serializeString(getWieldedItem().getItemString());
+	return os.str();
+}
+
+std::string PlayerSAO::getStaticData()
+{
+	assert(0);
+	return "";
+}
+
+void PlayerSAO::step(float dtime, bool send_recommended)
+{
+	m_time_from_last_punch += dtime;
+
+	/*
+		Check player movements
+
+		NOTE: Actually the server should handle player physics like the
+		client does and compare player's position to what is calculated
+		on our side. This is required when eg. players fly due to an
+		explosion.
+	*/
+
+	//float player_max_speed = BS * 4.0; // Normal speed
+	float player_max_speed = BS * 20; // Fast speed
+	float player_max_speed_up = BS * 20;
+	player_max_speed *= 2.5; // Tolerance
+	player_max_speed_up *= 2.5;
+
+	m_last_good_position_age += dtime;
+	if(m_last_good_position_age >= 1.0){
+		float age = m_last_good_position_age;
+		v3f diff = (m_player->getPosition() - m_last_good_position);
+		float d_vert = diff.Y;
+		diff.Y = 0;
+		float d_horiz = diff.getLength();
+		/*infostream<<m_player->getName()<<"'s horizontal speed is "
+				<<(d_horiz/age)<<std::endl;*/
+		if(d_horiz <= age * player_max_speed &&
+				(d_vert < 0 || d_vert < age * player_max_speed_up)){
+			m_last_good_position = m_player->getPosition();
+		} else {
+			actionstream<<"Player "<<m_player->getName()
+					<<" moved too fast; resetting position"
+					<<std::endl;
+			m_player->setPosition(m_last_good_position);
+			m_teleported = true;
+		}
+		m_last_good_position_age = 0;
+	}
+
+	if(send_recommended == false)
+		return;
+
+	if(m_position_not_sent)
+	{
+		m_position_not_sent = false;
+
+		std::ostringstream os(std::ios::binary);
+		// command (0 = update position)
+		writeU8(os, 0);
+		// pos
+		writeV3F1000(os, m_player->getPosition());
+		// yaw
+		writeF1000(os, m_player->getYaw());
+		// create message and add to list
+		ActiveObjectMessage aom(getId(), false, os.str());
+		m_messages_out.push_back(aom);
+	}
+
+	if(m_wielded_item_not_sent)
+	{
+		m_wielded_item_not_sent = false;
+
+		std::ostringstream os(std::ios::binary);
+		// command (3 = wielded item)
+		writeU8(os, 3);
+		// wielded item
+		os<<serializeString(getWieldedItem().getItemString());
+		// create message and add to list
+		ActiveObjectMessage aom(getId(), false, os.str());
+		m_messages_out.push_back(aom);
+	}
+}
+
+void PlayerSAO::setBasePosition(const v3f &position)
+{
+	ServerActiveObject::setBasePosition(position);
+	m_position_not_sent = true;
+}
+
+void PlayerSAO::setPos(v3f pos)
+{
+	m_player->setPosition(pos);
+	// Movement caused by this command is always valid
+	m_last_good_position = pos;
+	m_last_good_position_age = 0;
+	// Force position change on client
+	m_teleported = true;
+}
+
+void PlayerSAO::moveTo(v3f pos, bool continuous)
+{
+	m_player->setPosition(pos);
+	// Movement caused by this command is always valid
+	m_last_good_position = pos;
+	m_last_good_position_age = 0;
+	// Force position change on client
+	m_teleported = true;
+}
+
+int PlayerSAO::punch(v3f dir,
+	const ToolCapabilities *toolcap,
+	ServerActiveObject *puncher,
+	float time_from_last_punch)
+{
+	if(!toolcap)
+		return 0;
+
+	// No effect if PvP disabled
+	if(g_settings->getBool("enable_pvp") == false){
+		if(puncher->getType() == ACTIVEOBJECT_TYPE_PLAYER)
+			return 0;
+	}
+
+	// "Material" groups of the player
+	ItemGroupList groups;
+	groups["choppy"] = 2;
+	groups["fleshy"] = 3;
+
+	HitParams hitparams = getHitParams(groups, toolcap, time_from_last_punch);
+
+	actionstream<<"Player "<<m_player->getName()<<" punched by "
+			<<puncher->getDescription()<<", damage "<<hitparams.hp
+			<<" HP"<<std::endl;
+
+	setHP(getHP() - hitparams.hp);
+
+	if(hitparams.hp != 0)
+	{
+		std::ostringstream os(std::ios::binary);
+		// command (1 = punched)
+		writeU8(os, 1);
+		// damage
+		writeS16(os, hitparams.hp);
+		// create message and add to list
+		ActiveObjectMessage aom(getId(), false, os.str());
+		m_messages_out.push_back(aom);
+	}
+
+	return hitparams.wear;
+}
+
+void PlayerSAO::rightClick(ServerActiveObject *clicker)
+{
+}
+
+s16 PlayerSAO::getHP() const
+{
+	return m_player->hp;
+}
+
+void PlayerSAO::setHP(s16 hp)
+{
+	s16 oldhp = m_player->hp;
+
+	if(hp < 0)
+		hp = 0;
+	else if(hp > PLAYER_MAX_HP)
+		hp = PLAYER_MAX_HP;
+
+	if(hp < oldhp && g_settings->getBool("enable_damage") == false)
+	{
+		m_hp_not_sent = true; // fix wrong prediction on client
+		return;
+	}
+
+	m_player->hp = hp;
+
+	if(hp != oldhp)
+		m_hp_not_sent = true;
+
+	// On death or reincarnation send an active object message
+	if((hp == 0) != (oldhp == 0))
+	{
+		std::ostringstream os(std::ios::binary);
+		// command (2 = update death state)
+		writeU8(os, 2);
+		// dead?
+		writeU8(os, hp == 0);
+		// create message and add to list
+		ActiveObjectMessage aom(getId(), false, os.str());
+		m_messages_out.push_back(aom);
+	}
+}
+
+Inventory* PlayerSAO::getInventory()
+{
+	return m_inventory;
+}
+const Inventory* PlayerSAO::getInventory() const
+{
+	return m_inventory;
+}
+
+InventoryLocation PlayerSAO::getInventoryLocation() const
+{
+	InventoryLocation loc;
+	loc.setPlayer(m_player->getName());
+	return loc;
+}
+
+void PlayerSAO::setInventoryModified()
+{
+	m_inventory_not_sent = true;
+}
+
+std::string PlayerSAO::getWieldList() const
+{
+	return "main";
+}
+
+int PlayerSAO::getWieldIndex() const
+{
+	return m_wield_index;
+}
+
+void PlayerSAO::setWieldIndex(int i)
+{
+	if(i != m_wield_index)
+	{
+		m_wield_index = i;
+		m_wielded_item_not_sent = true;
+	}
+}
+
+void PlayerSAO::disconnected()
+{
+	m_peer_id = 0;
+	m_removed = true;
+	if(m_player->getPlayerSAO() == this)
+	{
+		m_player->setPlayerSAO(NULL);
+		m_player->peer_id = 0;
+	}
+}
+
+void PlayerSAO::createCreativeInventory()
+{
+	if(m_inventory != &m_player->inventory)
+		delete m_inventory;
+
+	m_inventory = new Inventory(m_player->inventory);
+	m_inventory->clearContents();
+	scriptapi_get_creative_inventory(m_env->getLua(), this);
 }
 

@@ -20,6 +20,7 @@ OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 #include "utility.h"
 #include "settings.h"
 #include "main.h" // For g_settings
+#include "content_sao.h"
 
 #define PP(x) "("<<(x).X<<","<<(x).Y<<","<<(x).Z<<")"
 
@@ -216,20 +217,26 @@ void cmd_teleport(std::wostringstream &os,
 		return;
 	}
 
-	v3f dest(stoi(coords[0])*10, stoi(coords[1])*10, stoi(coords[2])*10);
+	v3f dest(stoi(coords[0])*BS, stoi(coords[1])*BS, stoi(coords[2])*BS);
 
 	actionstream<<ctx->player->getName()<<" teleports from "
 			<<PP(ctx->player->getPosition()/BS)<<" to "
 			<<PP(dest/BS)<<std::endl;
 
-	//ctx->player->setPosition(dest);
-
-	// Use the ServerActiveObject interface of ServerRemotePlayer
-	ServerRemotePlayer *srp = static_cast<ServerRemotePlayer*>(ctx->player);
-	srp->setPos(dest);
-	ctx->server->SendMovePlayer(ctx->player);
-
-	os<< L"-!- Teleported.";
+	// Use the ServerActiveObject interface of RemotePlayer
+	// This forces a position change on the client
+	ServerActiveObject *sao = ctx->player->getPlayerSAO();
+	if(sao)
+	{
+		sao->setPos(dest);
+		os<< L"-!- Teleported.";
+	}
+	else
+	{
+		errorstream<<"Teleport failed, player object not found!"
+			<<std::endl;
+		os<< L"-!- Teleport failed.";
+	}
 }
 
 void cmd_banunban(std::wostringstream &os, ServerCommandContext *ctx)

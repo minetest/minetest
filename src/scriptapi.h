@@ -27,7 +27,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 class Server;
 class ServerEnvironment;
 class ServerActiveObject;
-class ServerRemotePlayer;
 typedef struct lua_State lua_State;
 struct LuaEntityProperties;
 struct ItemStack;
@@ -58,7 +57,7 @@ void scriptapi_environment_on_generated(lua_State *L, v3s16 minp, v3s16 maxp,
 void scriptapi_on_newplayer(lua_State *L, ServerActiveObject *player);
 void scriptapi_on_dieplayer(lua_State *L, ServerActiveObject *player);
 bool scriptapi_on_respawnplayer(lua_State *L, ServerActiveObject *player);
-void scriptapi_get_creative_inventory(lua_State *L, ServerRemotePlayer *player);
+void scriptapi_get_creative_inventory(lua_State *L, ServerActiveObject *player);
 
 /* item callbacks */
 bool scriptapi_item_on_drop(lua_State *L, ItemStack &item,

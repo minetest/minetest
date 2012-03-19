@@ -31,18 +31,17 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 class Map;
 class IGameDef;
 struct CollisionInfo;
+class PlayerSAO;
 
 class Player
 {
 public:
 
 	Player(IGameDef *gamedef);
-	virtual ~Player();
+	virtual ~Player() = 0;
 
-	void resetInventory();
-
-	//void move(f32 dtime, Map &map);
-	virtual void move(f32 dtime, Map &map, f32 pos_max_d) = 0;
+	virtual void move(f32 dtime, Map &map, f32 pos_max_d)
+	{}
 
 	v3f getSpeed()
 	{
@@ -112,7 +111,7 @@ public:
 		return (m_yaw + 90.) * core::DEGTORAD;
 	}
 
-	virtual void updateName(const char *name)
+	void updateName(const char *name)
 	{
 		snprintf(m_name, PLAYERNAME_SIZE, "%s", name);
 	}
@@ -122,17 +121,13 @@ public:
 		return m_name;
 	}
 
-	virtual bool isLocal() const = 0;
+	virtual bool isLocal() const
+	{ return false; }
+	virtual PlayerSAO *getPlayerSAO()
+	{ return NULL; }
+	virtual void setPlayerSAO(PlayerSAO *sao)
+	{ assert(0); }
 
-	virtual void updateLight(u8 light_at_pos)
-	{
-		light = light_at_pos;
-	}
-	
-	// NOTE: Use peer_id == 0 for disconnected
-	/*virtual bool isClientConnected() { return false; }
-	virtual void setClientConnected(bool) {}*/
-	
 	/*
 		serialize() writes a bunch of text that can contain
 		any characters except a '\0', and such an ending that
@@ -151,9 +146,8 @@ public:
 	
 	u8 light;
 
+	// In creative mode, this is the invisible backup inventory
 	Inventory inventory;
-	// Actual inventory is backed up here when creative mode is used
-	Inventory *inventory_backup;
 
 	u16 hp;
 
@@ -167,9 +161,6 @@ protected:
 	f32 m_yaw;
 	v3f m_speed;
 	v3f m_position;
-
-public:
-
 };
 
 #ifndef SERVER
@@ -248,6 +239,25 @@ private:
 	bool m_sneak_node_exists;
 };
 #endif // !SERVER
+
+/*
+	Player on the server
+*/
+class RemotePlayer : public Player
+{
+public:
+	RemotePlayer(IGameDef *gamedef): Player(gamedef), m_sao(0) {}
+	virtual ~RemotePlayer() {}
+
+	PlayerSAO *getPlayerSAO()
+	{ return m_sao; }
+	void setPlayerSAO(PlayerSAO *sao)
+	{ m_sao = sao; }
+	void setPosition(const v3f &position);
+
+private:
+	PlayerSAO *m_sao;
+};
 
 #endif
 

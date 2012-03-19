@@ -99,9 +99,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 // Length of cracking animation in count of images
 #define CRACK_ANIMATION_LENGTH 5
 
-// Some stuff needed by old code moved to here from heightmap.h
-#define GROUNDHEIGHT_NOTFOUND_SETVALUE (-10e6)
-#define GROUNDHEIGHT_VALID_MINVALUE    ( -9e6)
+// Maximum hit points of a player
+#define PLAYER_MAX_HP 20
 
 #endif
 

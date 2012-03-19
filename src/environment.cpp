@@ -37,7 +37,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "nodemetadata.h"
 #include "main.h" // For g_settings, g_profiler
 #include "gamedef.h"
-#include "serverremoteplayer.h"
 #ifndef SERVER
 #include "clientmap.h"
 #endif
@@ -368,7 +367,7 @@ void ServerEnvironment::serializePlayers(const std::string &savedir)
 		//infostream<<"Checking player file "<<path<<std::endl;
 
 		// Load player to see what is its name
-		ServerRemotePlayer testplayer(this);
+		RemotePlayer testplayer(m_gamedef);
 		{
 			// Open file and deserialize
 			std::ifstream is(path.c_str(), std::ios_base::binary);
@@ -482,7 +481,7 @@ void ServerEnvironment::deSerializePlayers(const std::string &savedir)
 		//infostream<<"Checking player file "<<path<<std::endl;
 
 		// Load player to see what is its name
-		ServerRemotePlayer testplayer(this);
+		RemotePlayer testplayer(m_gamedef);
 		{
 			// Open file and deserialize
 			std::ifstream is(path.c_str(), std::ios_base::binary);
@@ -510,11 +509,9 @@ void ServerEnvironment::deSerializePlayers(const std::string &savedir)
 		if(player == NULL)
 		{
 			//infostream<<"Is a new player"<<std::endl;
-			player = new ServerRemotePlayer(this);
+			player = new RemotePlayer(m_gamedef);
 			newplayer = true;
 		}
-
-		ServerRemotePlayer *srp = static_cast<ServerRemotePlayer*>(player);
 
 		// Load player
 		{
@@ -527,9 +524,7 @@ void ServerEnvironment::deSerializePlayers(const std::string &savedir)
 				infostream<<"Failed to read "<<path<<std::endl;
 				continue;
 			}
-			srp->deSerialize(is);
-			srp->m_last_good_position = srp->getBasePosition();
-			srp->m_last_good_position_age = 0;
+			player->deSerialize(is);
 		}
 
 		if(newplayer)
@@ -2074,7 +2069,7 @@ void ClientEnvironment::step(float dtime)
 		catch(InvalidPositionException &e){
 			light = blend_light(getDayNightRatio(), LIGHT_SUN, 0);
 		}
-		player->updateLight(light);
+		player->light = light;
 	}
 	
 	/*
@@ -2226,8 +2221,19 @@ void ClientEnvironment::addActiveObject(u16 id, u8 type,
 	
 	obj->setId(id);
 
-	obj->initialize(init_data);
-	
+	try
+	{
+		obj->initialize(init_data);
+	}
+	catch(SerializationError &e)
+	{
+		errorstream<<"ClientEnvironment::addActiveObject():"
+				<<" id="<<id<<" type="<<type
+				<<": SerializationError in initialize(),"
+				<<" init_data="<<serializeJsonString(init_data)
+				<<std::endl;
+	}
+
 	addActiveObject(obj);
 }
 
@@ -2258,7 +2264,18 @@ void ClientEnvironment::processActiveObjectMessage(u16 id,
 				<<std::endl;
 		return;
 	}
-	obj->processMessage(data);
+	try
+	{
+		obj->processMessage(data);
+	}
+	catch(SerializationError &e)
+	{
+		errorstream<<"ClientEnvironment::processActiveObjectMessage():"
+				<<" id="<<id<<" type="<<obj->getType()
+				<<" SerializationError in processMessage(),"
+				<<" message="<<serializeJsonString(data)
+				<<std::endl;
+	}
 }
 
 /*

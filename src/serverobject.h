@@ -143,7 +143,7 @@ public:
 	{}
 	virtual void setHP(s16 hp)
 	{}
-	virtual s16 getHP()
+	virtual s16 getHP() const
 	{ return 0; }
 
 	// Inventory and wielded item

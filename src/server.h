@@ -31,7 +31,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "ban.h"
 #include "gamedef.h"
 #include "serialization.h" // For SER_FMT_VER_INVALID
-#include "serverremoteplayer.h"
 #include "mods.h"
 #include "inventorymanager.h"
 #include "subgame.h"
@@ -42,6 +41,7 @@ class IWritableItemDefManager;
 class IWritableNodeDefManager;
 class IWritableCraftDefManager;
 class EventManager;
+class PlayerSAO;
 
 class ServerError : public std::exception
 {
@@ -299,26 +299,7 @@ struct ServerSoundParams
 		loop(false)
 	{}
 	
-	v3f getPos(ServerEnvironment *env, bool *pos_exists) const
-	{
-		if(pos_exists) *pos_exists = false;
-		switch(type){
-		case SSP_LOCAL:
-			return v3f(0,0,0);
-		case SSP_POSITIONAL:
-			if(pos_exists) *pos_exists = true;
-			return pos;
-		case SSP_OBJECT: {
-			if(object == 0)
-				return v3f(0,0,0);
-			ServerActiveObject *sao = env->getActiveObject(object);
-			if(!sao)
-				return v3f(0,0,0);
-			if(pos_exists) *pos_exists = true;
-			return sao->getBasePosition(); }
-		}
-		return v3f(0,0,0);
-	}
+	v3f getPos(ServerEnvironment *env, bool *pos_exists) const;
 };
 
 struct ServerPlayingSound
@@ -514,9 +495,6 @@ public:
 		m_shutdown_requested = true;
 	}
 
-	// Envlock and conlock should be locked when calling this
-	void SendMovePlayer(Player *player);
-	
 	// Returns -1 if failed, sound handle on success
 	// Envlock + conlock
 	s32 playSound(const SimpleSoundSpec &spec, const ServerSoundParams &params);
@@ -620,14 +598,11 @@ private:
 	*/
 
 	// Envlock and conlock should be locked when calling these
+	void SendMovePlayer(u16 peer_id);
 	void SendInventory(u16 peer_id);
-	// send wielded item info about player to all
-	void SendWieldedItem(const ServerRemotePlayer *srp);
-	// send wielded item info about all players to all players
-	void SendPlayerItems();
 	void SendChatMessage(u16 peer_id, const std::wstring &message);
 	void BroadcastChatMessage(const std::wstring &message);
-	void SendPlayerHP(Player *player);
+	void SendPlayerHP(u16 peer_id);
 	/*
 		Send a node removal/addition event to all clients except ignore_id.
 		Additionally, if far_players!=NULL, players further away than
@@ -655,8 +630,8 @@ private:
 		Something random
 	*/
 	
-	void DiePlayer(Player *player);
-	void RespawnPlayer(Player *player);
+	void DiePlayer(u16 peer_id);
+	void RespawnPlayer(u16 peer_id);
 	
 	void UpdateCrafting(u16 peer_id);
 	
@@ -672,6 +647,15 @@ private:
 		return player->getName();
 	}
 
+	// When called, environment mutex should be locked
+	PlayerSAO* getPlayerSAO(u16 peer_id)
+	{
+		Player *player = m_env->getPlayer(peer_id);
+		if(player == NULL)
+			return NULL;
+		return player->getPlayerSAO();
+	}
+
 	/*
 		Get a player from memory or creates one.
 		If player is already connected, return NULL
@@ -679,7 +663,7 @@ private:
 
 		Call with env and con locked.
 	*/
-	ServerRemotePlayer *emergePlayer(const char *name, u16 peer_id);
+	PlayerSAO *emergePlayer(const char *name, u16 peer_id);
 	
 	// Locks environment and connection by its own
 	struct PeerChange;

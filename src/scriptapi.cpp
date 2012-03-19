@@ -35,7 +35,7 @@ extern "C" {
 #include "script.h"
 //#include "luna.h"
 #include "luaentity_common.h"
-#include "content_sao.h" // For LuaEntitySAO
+#include "content_sao.h" // For LuaEntitySAO and PlayerSAO
 #include "itemdef.h"
 #include "nodedef.h"
 #include "craftdef.h"
@@ -1095,7 +1095,6 @@ static ItemStack read_item(lua_State *L, int index);
 static void inventory_set_list_from_lua(Inventory *inv, const char *name,
 		lua_State *L, int tableindex, int forcesize=-1)
 {
-	dstream<<"inventory_set_list_from_lua\n";
 	if(tableindex < 0)
 		tableindex = lua_gettop(L) + 1 + tableindex;
 	// If nil, delete list
@@ -1127,7 +1126,6 @@ static void inventory_set_list_from_lua(Inventory *inv, const char *name,
 		invlist->deleteItem(index);
 		index++;
 	}
-	dstream<<"inventory_set_list_from_lua done\n";
 }
 
 static void inventory_get_list_to_lua(Inventory *inv, const char *name,
@@ -2259,14 +2257,22 @@ private:
 		return (LuaEntitySAO*)obj;
 	}
 	
-	static ServerRemotePlayer* getplayer(ObjectRef *ref)
+	static PlayerSAO* getplayersao(ObjectRef *ref)
 	{
 		ServerActiveObject *obj = getobject(ref);
 		if(obj == NULL)
 			return NULL;
 		if(obj->getType() != ACTIVEOBJECT_TYPE_PLAYER)
 			return NULL;
-		return static_cast<ServerRemotePlayer*>(obj);
+		return (PlayerSAO*)obj;
+	}
+	
+	static Player* getplayer(ObjectRef *ref)
+	{
+		PlayerSAO *playersao = getplayersao(ref);
+		if(playersao == NULL)
+			return NULL;
+		return playersao->getPlayer();
 	}
 	
 	// Exported functions
@@ -2319,10 +2325,6 @@ private:
 		v3f pos = checkFloatPos(L, 2);
 		// Do it
 		co->setPos(pos);
-		// Move player if applicable
-		ServerRemotePlayer *player = getplayer(ref);
-		if(player != NULL)
-			get_server(L)->SendMovePlayer(player);
 		return 0;
 	}
 	
@@ -2626,7 +2628,7 @@ private:
 	static int l_get_player_name(lua_State *L)
 	{
 		ObjectRef *ref = checkobject(L, 1);
-		ServerRemotePlayer *player = getplayer(ref);
+		Player *player = getplayer(ref);
 		if(player == NULL){
 			lua_pushnil(L);
 			return 1;
@@ -2640,7 +2642,7 @@ private:
 	static int l_get_look_dir(lua_State *L)
 	{
 		ObjectRef *ref = checkobject(L, 1);
-		ServerRemotePlayer *player = getplayer(ref);
+		Player *player = getplayer(ref);
 		if(player == NULL) return 0;
 		// Do it
 		float pitch = player->getRadPitch();
@@ -2654,7 +2656,7 @@ private:
 	static int l_get_look_pitch(lua_State *L)
 	{
 		ObjectRef *ref = checkobject(L, 1);
-		ServerRemotePlayer *player = getplayer(ref);
+		Player *player = getplayer(ref);
 		if(player == NULL) return 0;
 		// Do it
 		lua_pushnumber(L, player->getRadPitch());
@@ -2665,7 +2667,7 @@ private:
 	static int l_get_look_yaw(lua_State *L)
 	{
 		ObjectRef *ref = checkobject(L, 1);
-		ServerRemotePlayer *player = getplayer(ref);
+		Player *player = getplayer(ref);
 		if(player == NULL) return 0;
 		// Do it
 		lua_pushnumber(L, player->getRadYaw());
@@ -2996,14 +2998,18 @@ private:
 		if(env == NULL) return 0;
 		// Do it
 		const char *name = luaL_checkstring(L, 2);
-		ServerRemotePlayer *player =
-				static_cast<ServerRemotePlayer*>(env->getPlayer(name));
+		Player *player = env->getPlayer(name);
 		if(player == NULL){
 			lua_pushnil(L);
 			return 1;
 		}
+		PlayerSAO *sao = player->getPlayerSAO();
+		if(sao == NULL){
+			lua_pushnil(L);
+			return 1;
+		}
 		// Put player on stack
-		objectref_get_or_create(L, player);
+		objectref_get_or_create(L, sao);
 		return 1;
 	}
 
@@ -4211,8 +4217,6 @@ bool scriptapi_on_respawnplayer(lua_State *L, ServerActiveObject *player)
 	assert(lua_checkstack(L, 20));
 	StackUnroller stack_unroller(L);
 
-	dstream<<"player: "<<player<<"   id: "<<player->getId()<<std::endl;
-
 	bool positioning_handled_by_some = false;
 
 	// Get minetest.registered_on_respawnplayers
@@ -4238,13 +4242,15 @@ bool scriptapi_on_respawnplayer(lua_State *L, ServerActiveObject *player)
 	return positioning_handled_by_some;
 }
 
-void scriptapi_get_creative_inventory(lua_State *L, ServerRemotePlayer *player)
+void scriptapi_get_creative_inventory(lua_State *L, ServerActiveObject *player)
 {
+	Inventory *inv = player->getInventory();
+	assert(inv);
+
 	lua_getglobal(L, "minetest");
 	lua_getfield(L, -1, "creative_inventory");
 	luaL_checktype(L, -1, LUA_TTABLE);
-	inventory_set_list_from_lua(&player->inventory, "main", L, -1,
-			PLAYER_INVENTORY_SIZE);
+	inventory_set_list_from_lua(inv, "main", L, -1, PLAYER_INVENTORY_SIZE);
 }
 
 /*

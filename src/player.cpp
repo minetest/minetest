@@ -32,6 +32,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "environment.h"
 #include "gamedef.h"
 #include "event.h"
+#include "content_sao.h"
 
 Player::Player(IGameDef *gamedef):
 	touching_ground(false),
@@ -40,8 +41,7 @@ Player::Player(IGameDef *gamedef):
 	is_climbing(false),
 	swimming_up(false),
 	inventory(gamedef->idef()),
-	inventory_backup(NULL),
-	hp(20),
+	hp(PLAYER_MAX_HP),
 	peer_id(PEER_ID_INEXISTENT),
 // protected
 	m_gamedef(gamedef),
@@ -51,21 +51,15 @@ Player::Player(IGameDef *gamedef):
 	m_position(0,0,0)
 {
 	updateName("<not set>");
-	resetInventory();
-}
-
-Player::~Player()
-{
-	delete inventory_backup;
-}
-
-void Player::resetInventory()
-{
 	inventory.clear();
 	inventory.addList("main", PLAYER_INVENTORY_SIZE);
 	inventory.addList("craft", 9);
 	inventory.addList("craftpreview", 1);
 	inventory.addList("craftresult", 1);
+}
+
+Player::~Player()
+{
 }
 
 // Y direction is ignored
@@ -126,12 +120,7 @@ void Player::serialize(std::ostream &os)
 
 	os<<"PlayerArgsEnd\n";
 	
-	// If actual inventory is backed up due to creative mode, save it
-	// instead of the dummy creative mode inventory
-	if(inventory_backup)
-		inventory_backup->serialize(os);
-	else
-		inventory.serialize(os);
+	inventory.serialize(os);
 }
 
 void Player::deSerialize(std::istream &is)
@@ -779,3 +768,13 @@ v3s16 LocalPlayer::getStandingNodePos()
 
 #endif
 
+/*
+	RemotePlayer
+*/
+
+void RemotePlayer::setPosition(const v3f &position)
+{
+	Player::setPosition(position);
+	if(m_sao)
+		m_sao->setBasePosition(position);
+}

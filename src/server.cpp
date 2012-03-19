@@ -30,8 +30,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "config.h"
 #include "servercommand.h"
 #include "filesys.h"
-#include "content_mapnode.h"
-#include "content_nodemeta.h"
 #include "mapblock.h"
 #include "serverobject.h"
 #include "settings.h"
@@ -43,7 +41,10 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "itemdef.h"
 #include "craftdef.h"
 #include "mapgen.h"
+#include "content_mapnode.h"
+#include "content_nodemeta.h"
 #include "content_abm.h"
+#include "content_sao.h"
 #include "mods.h"
 #include "sha1.h"
 #include "base64.h"
@@ -377,6 +378,27 @@ void * EmergeThread::Thread()
 	log_deregister_thread();
 
 	return NULL;
+}
+
+v3f ServerSoundParams::getPos(ServerEnvironment *env, bool *pos_exists) const
+{
+	if(pos_exists) *pos_exists = false;
+	switch(type){
+	case SSP_LOCAL:
+		return v3f(0,0,0);
+	case SSP_POSITIONAL:
+		if(pos_exists) *pos_exists = true;
+		return pos;
+	case SSP_OBJECT: {
+		if(object == 0)
+			return v3f(0,0,0);
+		ServerActiveObject *sao = env->getActiveObject(object);
+		if(!sao)
+			return v3f(0,0,0);
+		if(pos_exists) *pos_exists = true;
+		return sao->getBasePosition(); }
+	}
+	return v3f(0,0,0);
 }
 
 void RemoteClient::GetNextBlocks(Server *server, float dtime,
@@ -1250,8 +1272,6 @@ void Server::AsyncRunStep()
 				i.atEnd() == false; i++)
 			{
 				RemoteClient *client = i.getNode()->getValue();
-				//Player *player = m_env->getPlayer(client->peer_id);
-				
 				SharedBuffer<u8> data = makePacket_TOCLIENT_TIME_OF_DAY(
 						m_env->getTimeOfDay(), g_settings->getFloat("time_speed"));
 				// Send as reliable
@@ -1291,78 +1311,36 @@ void Server::AsyncRunStep()
 
 		ScopeProfiler sp(g_profiler, "Server: handle players");
 
-		//float player_max_speed = BS * 4.0; // Normal speed
-		float player_max_speed = BS * 20; // Fast speed
-		float player_max_speed_up = BS * 20;
-		
-		player_max_speed *= 2.5; // Tolerance
-		player_max_speed_up *= 2.5;
-
 		for(core::map<u16, RemoteClient*>::Iterator
 			i = m_clients.getIterator();
 			i.atEnd() == false; i++)
 		{
 			RemoteClient *client = i.getNode()->getValue();
-			ServerRemotePlayer *player =
-					static_cast<ServerRemotePlayer*>
-					(m_env->getPlayer(client->peer_id));
-			if(player==NULL)
+			PlayerSAO *playersao = getPlayerSAO(client->peer_id);
+			if(playersao == NULL){
+				errorstream<<"Handling client without PlayerSAO, peer_id="<<client->peer_id<<std::endl;
 				continue;
-			
-			/*
-				Check player movements
-
-				NOTE: Actually the server should handle player physics like the
-				client does and compare player's position to what is calculated
-				on our side. This is required when eg. players fly due to an
-				explosion.
-			*/
-			player->m_last_good_position_age += dtime;
-			if(player->m_last_good_position_age >= 1.0){
-				float age = player->m_last_good_position_age;
-				v3f diff = (player->getPosition() - player->m_last_good_position);
-				float d_vert = diff.Y;
-				diff.Y = 0;
-				float d_horiz = diff.getLength();
-				/*infostream<<player->getName()<<"'s horizontal speed is "
-						<<(d_horiz/age)<<std::endl;*/
-				if(d_horiz <= age * player_max_speed &&
-						(d_vert < 0 || d_vert < age * player_max_speed_up)){
-					player->m_last_good_position = player->getPosition();
-				} else {
-					actionstream<<"Player "<<player->getName()
-							<<" moved too fast; resetting position"
-							<<std::endl;
-					player->setPosition(player->m_last_good_position);
-					SendMovePlayer(player);
-				}
-				player->m_last_good_position_age = 0;
 			}
 
 			/*
 				Handle player HPs (die if hp=0)
 			*/
-			if(player->hp == 0 && player->m_hp_not_sent)
-				DiePlayer(player);
+			if(playersao->getHP() == 0 && playersao->m_hp_not_sent)
+				DiePlayer(client->peer_id);
 
 			/*
 				Send player inventories and HPs if necessary
 			*/
-			if(player->m_inventory_not_sent){
-				UpdateCrafting(player->peer_id);
-				SendInventory(player->peer_id);
+			if(playersao->m_teleported){
+				SendMovePlayer(client->peer_id);
+				playersao->m_teleported = false;
 			}
-			if(player->m_hp_not_sent){
-				SendPlayerHP(player);
+			if(playersao->m_inventory_not_sent){
+				UpdateCrafting(client->peer_id);
+				SendInventory(client->peer_id);
 			}
-
-			/*
-				Add to environment
-			*/
-			if(!player->m_is_in_environment){
-				player->m_removed = false;
-				player->setId(0);
-				m_env->addActiveObject(player);
+			if(playersao->m_hp_not_sent){
+				SendPlayerHP(client->peer_id);
 			}
 		}
 	}
@@ -2167,10 +2145,10 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 		}
 
 		// Get player
-		ServerRemotePlayer *player = emergePlayer(playername, peer_id);
+		PlayerSAO *playersao = emergePlayer(playername, peer_id);
 
 		// If failed, cancel
-		if(player == NULL)
+		if(playersao == NULL)
 		{
 			errorstream<<"Server: peer_id="<<peer_id
 					<<": failed to emerge player"<<std::endl;
@@ -2184,7 +2162,7 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 			SharedBuffer<u8> reply(2+1+6+8);
 			writeU16(&reply[0], TOCLIENT_INIT);
 			writeU8(&reply[2], deployed);
-			writeV3S16(&reply[2+1], floatToInt(player->getPosition()+v3f(0,BS/2,0), BS));
+			writeV3S16(&reply[2+1], floatToInt(playersao->getPlayer()->getPosition()+v3f(0,BS/2,0), BS));
 			writeU64(&reply[2+1+6], m_env->getServerMap().getSeed());
 			
 			// Send as reliable
@@ -2194,7 +2172,7 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 		/*
 			Send complete position information
 		*/
-		SendMovePlayer(player);
+		SendMovePlayer(peer_id);
 
 		return;
 	}
@@ -2231,17 +2209,14 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 		UpdateCrafting(peer_id);
 		SendInventory(peer_id);
 		
-		// Send player items to all players
-		SendPlayerItems();
-
 		Player *player = m_env->getPlayer(peer_id);
 
 		// Send HP
-		SendPlayerHP(player);
+		SendPlayerHP(peer_id);
 		
 		// Show death screen if necessary
 		if(player->hp == 0)
-			SendDeathscreen(m_con, player->peer_id, false, v3f(0,0,0));
+			SendDeathscreen(m_con, peer_id, false, v3f(0,0,0));
 
 		// Send time of day
 		{
@@ -2314,14 +2289,21 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 	}
 	
 	Player *player = m_env->getPlayer(peer_id);
-	ServerRemotePlayer *srp = static_cast<ServerRemotePlayer*>(player);
-
 	if(player == NULL){
 		infostream<<"Server::ProcessData(): Cancelling: "
 				"No player for peer_id="<<peer_id
 				<<std::endl;
 		return;
 	}
+
+	PlayerSAO *playersao = player->getPlayerSAO();
+	if(playersao == NULL){
+		infostream<<"Server::ProcessData(): Cancelling: "
+				"No player object for peer_id="<<peer_id
+				<<std::endl;
+		return;
+	}
+
 	if(command == TOSERVER_PLAYERPOS)
 	{
 		if(datasize < 2+12+12+4+4)
@@ -2644,7 +2626,7 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 		}
 		
 		// Do the action
-		a->apply(this, srp, this);
+		a->apply(this, playersao, this);
 		// Eat the action
 		delete a;
 	}
@@ -2775,27 +2757,17 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 		std::istringstream is(datastring, std::ios_base::binary);
 		u8 damage = readU8(is);
 
-		ServerRemotePlayer *srp = static_cast<ServerRemotePlayer*>(player);
+		actionstream<<player->getName()<<" damaged by "
+				<<(int)damage<<" hp at "<<PP(player->getPosition()/BS)
+				<<std::endl;
 
-		if(g_settings->getBool("enable_damage"))
-		{
-			actionstream<<player->getName()<<" damaged by "
-					<<(int)damage<<" hp at "<<PP(player->getPosition()/BS)
-					<<std::endl;
+		playersao->setHP(playersao->getHP() - damage);
 
-			srp->setHP(srp->getHP() - damage);
+		if(playersao->getHP() == 0 && playersao->m_hp_not_sent)
+			DiePlayer(peer_id);
 
-			if(srp->getHP() == 0 && srp->m_hp_not_sent)
-				DiePlayer(srp);
-
-			if(srp->m_hp_not_sent)
-				SendPlayerHP(player);
-		}
-		else
-		{
-			// Force send (to correct the client's predicted HP)
-			SendPlayerHP(player);
-		}
+		if(playersao->m_hp_not_sent)
+			SendPlayerHP(peer_id);
 	}
 	else if(command == TOSERVER_PASSWORD)
 	{
@@ -2865,15 +2837,14 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 			return;
 
 		u16 item = readU16(&data[2]);
-		srp->setWieldIndex(item);
-		SendWieldedItem(srp);
+		playersao->setWieldIndex(item);
 	}
 	else if(command == TOSERVER_RESPAWN)
 	{
 		if(player->hp != 0)
 			return;
 		
-		RespawnPlayer(player);
+		RespawnPlayer(peer_id);
 		
 		actionstream<<player->getName()<<" respawns at "
 				<<PP(player->getPosition()/BS)<<std::endl;
@@ -2934,19 +2905,15 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 
 		if(player->hp == 0)
 		{
-			verbosestream<<"TOSERVER_INTERACT: "<<srp->getName()
+			verbosestream<<"TOSERVER_INTERACT: "<<player->getName()
 				<<" tried to interact, but is dead!"<<std::endl;
 			return;
 		}
 
-		v3f player_pos = srp->m_last_good_position;
+		v3f player_pos = playersao->getLastGoodPosition();
 
 		// Update wielded item
-		if(srp->getWieldIndex() != item_i)
-		{
-			srp->setWieldIndex(item_i);
-			SendWieldedItem(srp);
-		}
+		playersao->setWieldIndex(item_i);
 
 		// Get pointed to node (undefined if not POINTEDTYPE_NODE)
 		v3s16 p_under = pointed.node_undersurface;
@@ -3038,7 +3005,7 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 							getNodeBlockPos(p_above), BLOCK_EMERGE_FLAG_FROMDISK);
 				}
 				if(n.getContent() != CONTENT_IGNORE)
-					scriptapi_node_on_punch(m_lua, p_under, n, srp);
+					scriptapi_node_on_punch(m_lua, p_under, n, playersao);
 			}
 			else if(pointed.type == POINTEDTHING_OBJECT)
 			{
@@ -3050,15 +3017,16 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 						<<pointed.object_id<<": "
 						<<pointed_object->getDescription()<<std::endl;
 
-				ItemStack punchitem = srp->getWieldedItem();
+				ItemStack punchitem = playersao->getWieldedItem();
 				ToolCapabilities toolcap =
 						punchitem.getToolCapabilities(m_itemdef);
 				v3f dir = (pointed_object->getBasePosition() -
-						(srp->getPosition() + srp->getEyeOffset())
+						(player->getPosition() + player->getEyeOffset())
 							).normalize();
-				pointed_object->punch(dir, &toolcap, srp,
-						srp->m_time_from_last_punch);
-				srp->m_time_from_last_punch = 0;
+				float time_from_last_punch =
+					playersao->resetTimeFromLastPunch();
+				pointed_object->punch(dir, &toolcap, playersao,
+						time_from_last_punch);
 			}
 
 		} // action == 0
@@ -3092,7 +3060,7 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 							getNodeBlockPos(p_above), BLOCK_EMERGE_FLAG_FROMDISK);
 				}
 				if(n.getContent() != CONTENT_IGNORE)
-					scriptapi_node_on_dig(m_lua, p_under, n, srp);
+					scriptapi_node_on_dig(m_lua, p_under, n, playersao);
 			}
 		} // action == 2
 		
@@ -3101,7 +3069,7 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 		*/
 		else if(action == 3)
 		{
-			ItemStack item = srp->getWieldedItem();
+			ItemStack item = playersao->getWieldedItem();
 
 			// Reset build time counter
 			if(pointed.type == POINTEDTHING_NODE &&
@@ -3121,16 +3089,16 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 						<<pointed_object->getDescription()<<std::endl;
 
 				// Do stuff
-				pointed_object->rightClick(srp);
+				pointed_object->rightClick(playersao);
 			}
 			else if(scriptapi_item_on_place(m_lua,
-					item, srp, pointed))
+					item, playersao, pointed))
 			{
 				// Placement was handled in lua
 
 				// Apply returned ItemStack
 				if(g_settings->getBool("creative_mode") == false)
-					srp->setWieldedItem(item);
+					playersao->setWieldedItem(item);
 			}
 
 		} // action == 3
@@ -3140,17 +3108,17 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 		*/
 		else if(action == 4)
 		{
-			ItemStack item = srp->getWieldedItem();
+			ItemStack item = playersao->getWieldedItem();
 
 			actionstream<<player->getName()<<" uses "<<item.name
 					<<", pointing at "<<pointed.dump()<<std::endl;
 
 			if(scriptapi_item_on_use(m_lua,
-					item, srp, pointed))
+					item, playersao, pointed))
 			{
 				// Apply returned ItemStack
 				if(g_settings->getBool("creative_mode") == false)
-					srp->setWieldedItem(item);
+					playersao->setWieldedItem(item);
 			}
 
 		} // action == 4
@@ -3222,7 +3190,10 @@ Inventory* Server::getInventory(const InventoryLocation &loc)
 		Player *player = m_env->getPlayer(loc.name.c_str());
 		if(!player)
 			return NULL;
-		return &player->inventory;
+		PlayerSAO *playersao = player->getPlayerSAO();
+		if(!playersao)
+			return NULL;
+		return playersao->getInventory();
 	}
 	break;
 	case InventoryLocation::NODEMETA:
@@ -3273,11 +3244,14 @@ void Server::setInventoryModified(const InventoryLocation &loc)
 	break;
 	case InventoryLocation::PLAYER:
 	{
-		ServerRemotePlayer *srp = static_cast<ServerRemotePlayer*>
-				(m_env->getPlayer(loc.name.c_str()));
-		if(!srp)
+		Player *player = m_env->getPlayer(loc.name.c_str());
+		if(!player)
 			return;
-		srp->m_inventory_not_sent = true;
+		PlayerSAO *playersao = player->getPlayerSAO();
+		if(!playersao)
+			return;
+		playersao->m_inventory_not_sent = true;
+		playersao->m_wielded_item_not_sent = true;
 	}
 	break;
 	case InventoryLocation::NODEMETA:
@@ -3482,20 +3456,17 @@ void Server::SendInventory(u16 peer_id)
 {
 	DSTACK(__FUNCTION_NAME);
 	
-	ServerRemotePlayer* player =
-			static_cast<ServerRemotePlayer*>(m_env->getPlayer(peer_id));
-	assert(player);
+	PlayerSAO *playersao = getPlayerSAO(peer_id);
+	assert(playersao);
 
-	player->m_inventory_not_sent = false;
+	playersao->m_inventory_not_sent = false;
 
 	/*
 		Serialize it
 	*/
 
 	std::ostringstream os;
-	//os.imbue(std::locale("C"));
-
-	player->inventory.serialize(os);
+	playersao->getInventory()->serialize(os);
 
 	std::string s = os.str();
 	
@@ -3505,52 +3476,6 @@ void Server::SendInventory(u16 peer_id)
 	
 	// Send as reliable
 	m_con.Send(peer_id, 0, data, true);
-}
-
-void Server::SendWieldedItem(const ServerRemotePlayer* srp)
-{
-	DSTACK(__FUNCTION_NAME);
-
-	assert(srp);
-
-	std::ostringstream os(std::ios_base::binary);
-
-	writeU16(os, TOCLIENT_PLAYERITEM);
-	writeU16(os, 1);
-	writeU16(os, srp->peer_id);
-	os<<serializeString(srp->getWieldedItem().getItemString());
-
-	// Make data buffer
-	std::string s = os.str();
-	SharedBuffer<u8> data((u8*)s.c_str(), s.size());
-
-	m_con.SendToAll(0, data, true);
-}
-
-void Server::SendPlayerItems()
-{
-	DSTACK(__FUNCTION_NAME);
-
-	std::ostringstream os(std::ios_base::binary);
-	core::list<Player *> players = m_env->getPlayers(true);
-
-	writeU16(os, TOCLIENT_PLAYERITEM);
-	writeU16(os, players.size());
-	core::list<Player *>::Iterator i;
-	for(i = players.begin(); i != players.end(); ++i)
-	{
-		Player *p = *i;
-		ServerRemotePlayer *srp =
-			static_cast<ServerRemotePlayer*>(p);
-		writeU16(os, p->peer_id);
-		os<<serializeString(srp->getWieldedItem().getItemString());
-	}
-
-	// Make data buffer
-	std::string s = os.str();
-	SharedBuffer<u8> data((u8*)s.c_str(), s.size());
-
-	m_con.SendToAll(0, data, true);
 }
 
 void Server::SendChatMessage(u16 peer_id, const std::wstring &message)
@@ -3599,17 +3524,22 @@ void Server::BroadcastChatMessage(const std::wstring &message)
 	}
 }
 
-void Server::SendPlayerHP(Player *player)
-{
-	SendHP(m_con, player->peer_id, player->hp);
-	static_cast<ServerRemotePlayer*>(player)->m_hp_not_sent = false;
-}
-
-void Server::SendMovePlayer(Player *player)
+void Server::SendPlayerHP(u16 peer_id)
 {
 	DSTACK(__FUNCTION_NAME);
-	std::ostringstream os(std::ios_base::binary);
+	PlayerSAO *playersao = getPlayerSAO(peer_id);
+	assert(playersao);
+	playersao->m_hp_not_sent = false;
+	SendHP(m_con, peer_id, playersao->getHP());
+}
 
+void Server::SendMovePlayer(u16 peer_id)
+{
+	DSTACK(__FUNCTION_NAME);
+	Player *player = m_env->getPlayer(peer_id);
+	assert(player);
+
+	std::ostringstream os(std::ios_base::binary);
 	writeU16(os, TOCLIENT_MOVE_PLAYER);
 	writeV3F1000(os, player->getPosition());
 	writeF1000(os, player->getPitch());
@@ -3630,7 +3560,7 @@ void Server::SendMovePlayer(Player *player)
 	std::string s = os.str();
 	SharedBuffer<u8> data((u8*)s.c_str(), s.size());
 	// Send as reliable
-	m_con.Send(player->peer_id, 0, data, true);
+	m_con.Send(peer_id, 0, data, true);
 }
 
 s32 Server::playSound(const SimpleSoundSpec &spec,
@@ -4242,41 +4172,44 @@ void Server::sendRequestedMedia(u16 peer_id,
 	Something random
 */
 
-void Server::DiePlayer(Player *player)
+void Server::DiePlayer(u16 peer_id)
 {
-	ServerRemotePlayer *srp = static_cast<ServerRemotePlayer*>(player);
+	DSTACK(__FUNCTION_NAME);
+	
+	PlayerSAO *playersao = getPlayerSAO(peer_id);
+	assert(playersao);
 
 	infostream<<"Server::DiePlayer(): Player "
-			<<player->getName()<<" dies"<<std::endl;
-	
-	srp->setHP(0);
-	
-	// Trigger scripted stuff
-	scriptapi_on_dieplayer(m_lua, srp);
-	
-	// Handle players that are not connected
-	if(player->peer_id == PEER_ID_INEXISTENT){
-		RespawnPlayer(player);
-		return;
-	}
+			<<playersao->getPlayer()->getName()
+			<<" dies"<<std::endl;
 
-	SendPlayerHP(player);
-	SendDeathscreen(m_con, player->peer_id, false, v3f(0,0,0));
+	playersao->setHP(0);
+
+	// Trigger scripted stuff
+	scriptapi_on_dieplayer(m_lua, playersao);
+
+	SendPlayerHP(peer_id);
+	SendDeathscreen(m_con, peer_id, false, v3f(0,0,0));
 }
 
-void Server::RespawnPlayer(Player *player)
+void Server::RespawnPlayer(u16 peer_id)
 {
-	ServerRemotePlayer *srp = static_cast<ServerRemotePlayer*>(player);
-	srp->setHP(20);
-	bool repositioned = scriptapi_on_respawnplayer(m_lua, srp);
+	DSTACK(__FUNCTION_NAME);
+
+	PlayerSAO *playersao = getPlayerSAO(peer_id);
+	assert(playersao);
+
+	infostream<<"Server::RespawnPlayer(): Player "
+			<<playersao->getPlayer()->getName()
+			<<" respawns"<<std::endl;
+
+	playersao->setHP(PLAYER_MAX_HP);
+
+	bool repositioned = scriptapi_on_respawnplayer(m_lua, playersao);
 	if(!repositioned){
 		v3f pos = findSpawnPos(m_env->getServerMap());
-		player->setPosition(pos);
-		srp->m_last_good_position = pos;
-		srp->m_last_good_position_age = 0;
+		playersao->setPos(pos);
 	}
-	SendMovePlayer(player);
-	SendPlayerHP(player);
 }
 
 void Server::UpdateCrafting(u16 peer_id)
@@ -4542,46 +4475,21 @@ v3f findSpawnPos(ServerMap &map)
 	return intToFloat(nodepos, BS);
 }
 
-ServerRemotePlayer *Server::emergePlayer(const char *name, u16 peer_id)
+PlayerSAO* Server::emergePlayer(const char *name, u16 peer_id)
 {
+	RemotePlayer *player = NULL;
+	bool newplayer = false;
+
 	/*
 		Try to get an existing player
 	*/
-	ServerRemotePlayer *player =
-			static_cast<ServerRemotePlayer*>(m_env->getPlayer(name));
-	if(player != NULL)
+	player = static_cast<RemotePlayer*>(m_env->getPlayer(name));
+
+	// If player is already connected, cancel
+	if(player != NULL && player->peer_id != 0)
 	{
-		// If player is already connected, cancel
-		if(player->peer_id != 0)
-		{
-			infostream<<"emergePlayer(): Player already connected"<<std::endl;
-			return NULL;
-		}
-
-		// Got one.
-		player->peer_id = peer_id;
-		
-		// Re-add player to environment
-		if(player->m_removed)
-		{
-			player->m_removed = false;
-			player->setId(0);
-			m_env->addActiveObject(player);
-		}
-
-		// Reset inventory to creative if in creative mode
-		if(g_settings->getBool("creative_mode"))
-		{
-			// Warning: double code below
-			// Backup actual inventory
-			player->inventory_backup = new Inventory(m_itemdef);
-			*(player->inventory_backup) = player->inventory;
-			// Set creative inventory
-			player->resetInventory();
-			scriptapi_get_creative_inventory(m_lua, player);
-		}
-
-		return player;
+		infostream<<"emergePlayer(): Player already connected"<<std::endl;
+		return NULL;
 	}
 
 	/*
@@ -4593,43 +4501,43 @@ ServerRemotePlayer *Server::emergePlayer(const char *name, u16 peer_id)
 				" peer_id already exists"<<std::endl;
 		return NULL;
 	}
-	
+
 	/*
-		Create a new player
+		Create a new player if it doesn't exist yet
 	*/
+	if(player == NULL)
 	{
+		newplayer = true;
+		player = new RemotePlayer(this);
+		player->updateName(name);
+
 		/* Set player position */
-		
 		infostream<<"Server: Finding spawn place for player \""
 				<<name<<"\""<<std::endl;
-
 		v3f pos = findSpawnPos(m_env->getServerMap());
-
-		player = new ServerRemotePlayer(m_env, pos, peer_id, name);
-		ServerRemotePlayer *srp = static_cast<ServerRemotePlayer*>(player);
+		player->setPosition(pos);
 
 		/* Add player to environment */
 		m_env->addPlayer(player);
-		m_env->addActiveObject(srp);
+	}
 
-		/* Run scripts */
-		scriptapi_on_newplayer(m_lua, srp);
+	/*
+		Create a new player active object
+	*/
+	PlayerSAO *playersao = new PlayerSAO(m_env, player, peer_id);
 
-		/* Add stuff to inventory */
-		if(g_settings->getBool("creative_mode"))
-		{
-			// Warning: double code above
-			// Backup actual inventory
-			player->inventory_backup = new Inventory(m_itemdef);
-			*(player->inventory_backup) = player->inventory;
-			// Set creative inventory
-			player->resetInventory();
-			scriptapi_get_creative_inventory(m_lua, player);
-		}
+	/* Add object to environment */
+	m_env->addActiveObject(playersao);
 
-		return player;
-		
-	} // create new player
+	/* Run scripts */
+	if(newplayer)
+		scriptapi_on_newplayer(m_lua, playersao);
+
+	/* Creative mode */
+	if(g_settings->getBool("creative_mode"))
+		playersao->createCreativeInventory();
+
+	return playersao;
 }
 
 void Server::handlePeerChange(PeerChange &c)
@@ -4699,8 +4607,7 @@ void Server::handlePeerChange(PeerChange &c)
 				i++;
 		}
 
-		ServerRemotePlayer* player =
-				static_cast<ServerRemotePlayer*>(m_env->getPlayer(c.peer_id));
+		Player *player = m_env->getPlayer(c.peer_id);
 
 		// Collect information about leaving in chat
 		std::wstring message;
@@ -4717,12 +4624,8 @@ void Server::handlePeerChange(PeerChange &c)
 		}
 		
 		// Remove from environment
-		if(player != NULL)
-			player->m_removed = true;
-		
-		// Set player client disconnected
-		if(player != NULL)
-			player->peer_id = 0;
+		if(player->getPlayerSAO())
+			player->getPlayerSAO()->disconnected();
 	
 		/*
 			Print out action

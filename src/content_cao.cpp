@@ -1011,6 +1011,7 @@ private:
 	float m_damage_visual_timer;
 	bool m_dead;
 	float m_step_distance_counter;
+	std::string m_wielded_item;
 
 public:
 	PlayerCAO(IGameDef *gamedef, ClientEnvironment *env):
@@ -1024,7 +1025,8 @@ public:
 		m_local_player(NULL),
 		m_damage_visual_timer(0),
 		m_dead(false),
-		m_step_distance_counter(0)
+		m_step_distance_counter(0),
+		m_wielded_item("")
 	{
 		if(gamedef == NULL)
 			ClientActiveObject::registerType(getType(), create);
@@ -1048,6 +1050,11 @@ public:
 		m_yaw = readF1000(is);
 		// dead
 		m_dead = readU8(is);
+		// wielded item
+		try{
+			m_wielded_item = deSerializeString(is);
+		}
+		catch(SerializationError &e){}
 
 		pos_translator.init(m_position);
 
@@ -1263,6 +1270,11 @@ public:
 			m_dead = readU8(is);
 			updateVisibility();
 		}
+		else if(cmd == 3) // wielded item
+		{
+			m_wielded_item = deSerializeString(is);
+			updateWieldedItem();
+		}
 	}
 
 	void updateTextures(const std::string &mod)
@@ -1288,6 +1300,50 @@ public:
 			}
 		}
 	}
+
+	void updateWieldedItem()
+	{
+		if(m_is_local_player)
+		{
+			// ignoring player item for local player
+			return;
+		}
+
+		ItemStack item;
+		try
+		{
+			item.deSerialize(m_wielded_item, m_gamedef->idef());
+		}
+		catch(SerializationError &e)
+		{
+			errorstream<<"PlayerCAO: SerializationError "
+				"while reading wielded item: "
+				<<m_wielded_item<<std::endl;
+			return;
+		}
+
+		// do something with the item, for example:
+		Player *player = m_env->getPlayer(m_name.c_str());
+		if(player)
+		{
+			InventoryList *inv = player->inventory.getList("main");
+			assert(inv);
+			inv->changeItem(0, item);
+		}
+
+		if(item.empty())
+		{
+			infostream<<"PlayerCAO: empty player item for player "
+					<<m_name<<std::endl;
+		}
+		else
+		{
+			infostream<<"PlayerCAO: player item for player "
+					<<m_name<<": "
+					<<item.getItemString()<<std::endl;
+		}
+	}
+
 };
 
 // Prototype
