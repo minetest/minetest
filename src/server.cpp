@@ -904,6 +904,9 @@ Server::Server(
 	for(std::set<std::string>::const_iterator i = m_gamespec.addon_paths.begin();
 			i != m_gamespec.addon_paths.end(); i++)
 		m_modspaths.push_front((*i) + DIR_DELIM + "mods");
+	// Add simple user mod search path
+	m_modspaths.push_front(porting::path_user + DIR_DELIM + "mods"
+			+ DIR_DELIM + m_gamespec.id);
 
 	// Print out mod search paths
 	for(core::list<std::string>::Iterator i = m_modspaths.begin();
