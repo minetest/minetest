@@ -2,5 +2,5 @@
 #include <commctrl.h>
 #include <richedit.h>
 LANGUAGE 0, SUBLANG_NEUTRAL
-130        ICON         "..\\minetest-icon.ico"
-//131        BITMAP         "..\\minetest-icon.bmp"
+130        ICON         "..\\misc\\minetest-icon.ico"
+//131        BITMAP         "..\\misc\\minetest-icon.bmp"
