@@ -61,6 +61,14 @@ struct AtlasPointer
 	v2f size; // Size in atlas
 	u16 tiled; // X-wise tiling count. If 0, width of atlas is width of image.
 
+	AtlasPointer():
+		id(0),
+		atlas(NULL),
+		pos(0,0),
+		size(1,1),
+		tiled(1)
+	{}
+
 	AtlasPointer(
 			u16 id_,
 			video::ITexture *atlas_=NULL,

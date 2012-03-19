@@ -134,7 +134,98 @@ v3s16 MapNode::getWallMountedDir(INodeDefManager *nodemgr) const
 	}
 }
 
+static std::vector<aabb3f> transformNodeBox(const MapNode &n,
+		const NodeBox &nodebox, INodeDefManager *nodemgr)
+{
+	std::vector<aabb3f> boxes;
+	if(nodebox.type == NODEBOX_FIXED)
+	{
+		const std::vector<aabb3f> &fixed = nodebox.fixed;
+		int facedir = n.getFaceDir(nodemgr);
+		for(std::vector<aabb3f>::const_iterator
+				i = fixed.begin();
+				i != fixed.end(); i++)
+		{
+			aabb3f box = *i;
+			if(facedir == 1)
+			{
+				box.MinEdge.rotateXZBy(-90);
+				box.MaxEdge.rotateXZBy(-90);
+				box.repair();
+			}
+			else if(facedir == 2)
+			{
+				box.MinEdge.rotateXZBy(180);
+				box.MaxEdge.rotateXZBy(180);
+				box.repair();
+			}
+			else if(facedir == 3)
+			{
+				box.MinEdge.rotateXZBy(90);
+				box.MaxEdge.rotateXZBy(90);
+				box.repair();
+			}
+			boxes.push_back(box);
+		}
+	}
+	else if(nodebox.type == NODEBOX_WALLMOUNTED)
+	{
+		v3s16 dir = n.getWallMountedDir(nodemgr);
 
+		// top
+		if(dir == v3s16(0,1,0))
+		{
+			boxes.push_back(nodebox.wall_top);
+		}
+		// bottom
+		else if(dir == v3s16(0,-1,0))
+		{
+			boxes.push_back(nodebox.wall_bottom);
+		}
+		// side
+		else
+		{
+			v3f vertices[2] =
+			{
+				nodebox.wall_side.MinEdge,
+				nodebox.wall_side.MaxEdge
+			};
+
+			for(s32 i=0; i<2; i++)
+			{
+				if(dir == v3s16(-1,0,0))
+					vertices[i].rotateXZBy(0);
+				if(dir == v3s16(1,0,0))
+					vertices[i].rotateXZBy(180);
+				if(dir == v3s16(0,0,-1))
+					vertices[i].rotateXZBy(90);
+				if(dir == v3s16(0,0,1))
+					vertices[i].rotateXZBy(-90);
+			}
+
+			aabb3f box = aabb3f(vertices[0]);
+			box.addInternalPoint(vertices[1]);
+			boxes.push_back(box);
+		}
+	}
+	else // NODEBOX_REGULAR
+	{
+		boxes.push_back(aabb3f(-BS/2,-BS/2,-BS/2,BS/2,BS/2,BS/2));
+	}
+	return boxes;
+}
+
+std::vector<aabb3f> MapNode::getNodeBoxes(INodeDefManager *nodemgr) const
+{
+	const ContentFeatures &f = nodemgr->get(*this);
+	return transformNodeBox(*this, f.node_box, nodemgr);
+}
+
+std::vector<aabb3f> MapNode::getSelectionBoxes(INodeDefManager *nodemgr) const
+{
+	const ContentFeatures &f = nodemgr->get(*this);
+	return transformNodeBox(*this, f.selection_box, nodemgr);
+}
 
 u32 MapNode::serializedLength(u8 version)
 {

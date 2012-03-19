@@ -382,6 +382,7 @@ struct EnumString es_DrawType[] =
 	{NDT_PLANTLIKE, "plantlike"},
 	{NDT_FENCELIKE, "fencelike"},
 	{NDT_RAILLIKE, "raillike"},
+	{NDT_NODEBOX, "nodebox"},
 	{0, NULL},
 };
 
@@ -595,52 +596,89 @@ static video::SColor readARGB8(lua_State *L, int index)
 	return color;
 }
 
-static core::aabbox3d<f32> read_aabbox3df32(lua_State *L, int index, f32 scale)
+static aabb3f read_aabb3f(lua_State *L, int index, f32 scale)
 {
-	core::aabbox3d<f32> box;
-	if(lua_istable(L, -1)){
-		lua_rawgeti(L, -1, 1);
+	aabb3f box;
+	if(lua_istable(L, index)){
+		lua_rawgeti(L, index, 1);
 		box.MinEdge.X = lua_tonumber(L, -1) * scale;
 		lua_pop(L, 1);
-		lua_rawgeti(L, -1, 2);
+		lua_rawgeti(L, index, 2);
 		box.MinEdge.Y = lua_tonumber(L, -1) * scale;
 		lua_pop(L, 1);
-		lua_rawgeti(L, -1, 3);
+		lua_rawgeti(L, index, 3);
 		box.MinEdge.Z = lua_tonumber(L, -1) * scale;
 		lua_pop(L, 1);
-		lua_rawgeti(L, -1, 4);
+		lua_rawgeti(L, index, 4);
 		box.MaxEdge.X = lua_tonumber(L, -1) * scale;
 		lua_pop(L, 1);
-		lua_rawgeti(L, -1, 5);
+		lua_rawgeti(L, index, 5);
 		box.MaxEdge.Y = lua_tonumber(L, -1) * scale;
 		lua_pop(L, 1);
-		lua_rawgeti(L, -1, 6);
+		lua_rawgeti(L, index, 6);
 		box.MaxEdge.Z = lua_tonumber(L, -1) * scale;
 		lua_pop(L, 1);
 	}
 	return box;
 }
 
-#if 0
-/*
-	MaterialProperties
-*/
-
-static MaterialProperties read_material_properties(
-		lua_State *L, int table)
+static std::vector<aabb3f> read_aabb3f_vector(lua_State *L, int index, f32 scale)
 {
-	MaterialProperties prop;
-	prop.diggability = (Diggability)getenumfield(L, -1, "diggability",
-			es_Diggability, DIGGABLE_NORMAL);
-	getfloatfield(L, -1, "constant_time", prop.constant_time);
-	getfloatfield(L, -1, "weight", prop.weight);
-	getfloatfield(L, -1, "crackiness", prop.crackiness);
-	getfloatfield(L, -1, "crumbliness", prop.crumbliness);
-	getfloatfield(L, -1, "cuttability", prop.cuttability);
-	getfloatfield(L, -1, "flammability", prop.flammability);
-	return prop;
+	std::vector<aabb3f> boxes;
+	if(lua_istable(L, index)){
+		int n = lua_objlen(L, index);
+		// Check if it's a single box or a list of boxes
+		bool possibly_single_box = (n == 6);
+		for(int i = 1; i <= n && possibly_single_box; i++){
+			lua_rawgeti(L, index, i);
+			if(!lua_isnumber(L, -1))
+				possibly_single_box = false;
+			lua_pop(L, 1);
+		}
+		if(possibly_single_box){
+			// Read a single box
+			boxes.push_back(read_aabb3f(L, index, scale));
+		} else {
+			// Read a list of boxes
+			for(int i = 1; i <= n; i++){
+				lua_rawgeti(L, index, i);
+				boxes.push_back(read_aabb3f(L, -1, scale));
+				lua_pop(L, 1);
+			}
+		}
+	}
+	return boxes;
 }
-#endif
+
+static NodeBox read_nodebox(lua_State *L, int index)
+{
+	NodeBox nodebox;
+	if(lua_istable(L, -1)){
+		nodebox.type = (NodeBoxType)getenumfield(L, index, "type",
+				es_NodeBoxType, NODEBOX_REGULAR);
+
+		lua_getfield(L, index, "fixed");
+		if(lua_istable(L, -1))
+			nodebox.fixed = read_aabb3f_vector(L, -1, BS);
+		lua_pop(L, 1);
+
+		lua_getfield(L, index, "wall_top");
+		if(lua_istable(L, -1))
+			nodebox.wall_top = read_aabb3f(L, -1, BS);
+		lua_pop(L, 1);
+
+		lua_getfield(L, index, "wall_bottom");
+		if(lua_istable(L, -1))
+			nodebox.wall_bottom = read_aabb3f(L, -1, BS);
+		lua_pop(L, 1);
+
+		lua_getfield(L, index, "wall_side");
+		if(lua_istable(L, -1))
+			nodebox.wall_side = read_aabb3f(L, -1, BS);
+		lua_pop(L, 1);
+	}
+	return nodebox;
+}
 
 /*
 	Groups
@@ -891,7 +929,7 @@ static void read_object_properties(lua_State *L, int index,
 
 	lua_getfield(L, -1, "collisionbox");
 	if(lua_istable(L, -1))
-		prop->collisionbox = read_aabbox3df32(L, -1, 1.0);
+		prop->collisionbox = read_aabb3f(L, -1, 1.0);
 	lua_pop(L, 1);
 
 	getstringfield(L, -1, "visual", prop->visual);
@@ -1203,32 +1241,15 @@ static ContentFeatures read_content_features(lua_State *L, int index)
 	f.damage_per_second = getintfield_default(L, index,
 			"damage_per_second", f.damage_per_second);
 	
-	lua_getfield(L, index, "selection_box");
-	if(lua_istable(L, -1)){
-		f.selection_box.type = (NodeBoxType)getenumfield(L, -1, "type",
-				es_NodeBoxType, NODEBOX_REGULAR);
-
-		lua_getfield(L, -1, "fixed");
-		if(lua_istable(L, -1))
-			f.selection_box.fixed = read_aabbox3df32(L, -1, BS);
-		lua_pop(L, 1);
-
-		lua_getfield(L, -1, "wall_top");
-		if(lua_istable(L, -1))
-			f.selection_box.wall_top = read_aabbox3df32(L, -1, BS);
-		lua_pop(L, 1);
-
-		lua_getfield(L, -1, "wall_bottom");
-		if(lua_istable(L, -1))
-			f.selection_box.wall_bottom = read_aabbox3df32(L, -1, BS);
-		lua_pop(L, 1);
-
-		lua_getfield(L, -1, "wall_side");
-		if(lua_istable(L, -1))
-			f.selection_box.wall_side = read_aabbox3df32(L, -1, BS);
-		lua_pop(L, 1);
-	}
+	lua_getfield(L, index, "node_box");
+	if(lua_istable(L, -1))
+		f.node_box = read_nodebox(L, -1);
 	lua_pop(L, 1);
+
+	lua_getfield(L, index, "selection_box");
+	if(lua_istable(L, -1))
+		f.selection_box = read_nodebox(L, -1);
+ 	lua_pop(L, 1);
 
 	// Set to true if paramtype used to be 'facedir_simple'
 	getboolfield(L, index, "legacy_facedir_simple", f.legacy_facedir_simple);
@@ -5603,6 +5624,21 @@ void scriptapi_luaentity_get_properties(lua_State *L, u16 id,
 
 	// Set default values that differ from ObjectProperties defaults
 	prop->hp_max = 10;
+	
+	/* Read stuff */
+	
+	prop->hp_max = getintfield_default(L, -1, "hp_max", 10);
+
+	getboolfield(L, -1, "physical", prop->physical);
+
+	getfloatfield(L, -1, "weight", prop->weight);
+
+	lua_getfield(L, -1, "collisionbox");
+	if(lua_istable(L, -1))
+		prop->collisionbox = read_aabb3f(L, -1, 1.0);
+	lua_pop(L, 1);
+
+	getstringfield(L, -1, "visual", prop->visual);
 	
 	// Deprecated: read object properties directly
 	read_object_properties(L, -1, prop);

@@ -213,8 +213,22 @@ void Camera::step(f32 dtime)
 void Camera::update(LocalPlayer* player, f32 frametime, v2u32 screensize,
 		f32 tool_reload_ratio)
 {
+	// Get player position
+	// Smooth the movement when walking up stairs
+	v3f old_player_position = m_playernode->getPosition();
+	v3f player_position = player->getPosition();
+	//if(player->touching_ground && player_position.Y > old_player_position.Y)
+	if(player->touching_ground &&
+			player_position.Y > old_player_position.Y)
+	{
+		f32 oldy = old_player_position.Y;
+		f32 newy = player_position.Y;
+		f32 t = exp(-23*frametime);
+		player_position.Y = oldy * t + newy * (1-t);
+	}
+
 	// Set player node transformation
-	m_playernode->setPosition(player->getPosition());
+	m_playernode->setPosition(player_position);
 	m_playernode->setRotation(v3f(0, -1 * player->getYaw(), 0));
 	m_playernode->updateAbsolutePosition();
 

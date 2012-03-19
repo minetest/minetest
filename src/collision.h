@@ -21,6 +21,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #define COLLISION_HEADER
 
 #include "irrlichttypes_bloated.h"
+#include <vector>
 
 class Map;
 class IGameDef;
@@ -29,22 +30,47 @@ struct collisionMoveResult
 {
 	bool touching_ground;
 	bool collides;
+	bool collides_xz;
+	bool standing_on_unloaded;
 
 	collisionMoveResult():
 		touching_ground(false),
-		collides(false)
+		collides(false),
+		collides_xz(false),
+		standing_on_unloaded(false)
 	{}
 };
 
 // Moves using a single iteration; speed should not exceed pos_max_d/dtime
 collisionMoveResult collisionMoveSimple(Map *map, IGameDef *gamedef,
-		f32 pos_max_d, const core::aabbox3d<f32> &box_0,
-		f32 dtime, v3f &pos_f, v3f &speed_f);
+		f32 pos_max_d, const aabb3f &box_0,
+		f32 stepheight, f32 dtime,
+		v3f &pos_f, v3f &speed_f, v3f &accel_f);
 
+#if 0
+// This doesn't seem to work and isn't used
 // Moves using as many iterations as needed
 collisionMoveResult collisionMovePrecise(Map *map, IGameDef *gamedef,
-		f32 pos_max_d, const core::aabbox3d<f32> &box_0,
-		f32 dtime, v3f &pos_f, v3f &speed_f);
+		f32 pos_max_d, const aabb3f &box_0,
+		f32 stepheight, f32 dtime,
+		v3f &pos_f, v3f &speed_f, v3f &accel_f);
+#endif
+
+// Helper function:
+// Checks for collision of a moving aabbox with a static aabbox
+// Returns -1 if no collision, 0 if X collision, 1 if Y collision, 2 if Z collision
+// dtime receives time until first collision, invalid if -1 is returned
+int axisAlignedCollision(
+		const aabb3f &staticbox, const aabb3f &movingbox,
+		const v3f &speed, f32 d, f32 &dtime);
+
+// Helper function:
+// Checks if moving the movingbox up by the given distance would hit a ceiling.
+bool wouldCollideWithCeiling(
+		const std::vector<aabb3f> &staticboxes,
+		const aabb3f &movingbox,
+		f32 y_increase, f32 d);
+
 
 enum CollisionType
 {

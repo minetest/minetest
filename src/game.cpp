@@ -61,6 +61,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #endif
 #include "event_manager.h"
 #include <list>
+#include "util/directiontables.h"
 
 /*
 	Text input system
@@ -294,14 +295,12 @@ PointedThing getPointedThing(Client *client, v3f player_position,
 		core::line3d<f32> shootline, f32 d,
 		bool liquids_pointable,
 		bool look_for_object,
-		core::aabbox3d<f32> &hilightbox,
-		bool &should_show_hilightbox,
+		std::vector<aabb3f> &hilightboxes,
 		ClientActiveObject *&selected_object)
 {
 	PointedThing result;
 
-	hilightbox = core::aabbox3d<f32>(0,0,0,0,0,0);
-	should_show_hilightbox = false;
+	hilightboxes.clear();
 	selected_object = NULL;
 
 	INodeDefManager *nodedef = client->getNodeDefManager();
@@ -312,27 +311,27 @@ PointedThing getPointedThing(Client *client, v3f player_position,
 	{
 		selected_object = client->getSelectedActiveObject(d*BS,
 				camera_position, shootline);
-	}
-	if(selected_object != NULL)
-	{
-		core::aabbox3d<f32> *selection_box
-			= selected_object->getSelectionBox();
-		// Box should exist because object was returned in the
-		// first place
-		assert(selection_box);
 
-		v3f pos = selected_object->getPosition();
+		if(selected_object != NULL)
+		{
+			if(selected_object->doShowSelectionBox())
+			{
+				aabb3f *selection_box = selected_object->getSelectionBox();
+				// Box should exist because object was
+				// returned in the first place
+				assert(selection_box);
 
-		hilightbox = core::aabbox3d<f32>(
-				selection_box->MinEdge + pos,
-				selection_box->MaxEdge + pos
-		);
+				v3f pos = selected_object->getPosition();
+				hilightboxes.push_back(aabb3f(
+						selection_box->MinEdge + pos,
+						selection_box->MaxEdge + pos));
+			}
 
-		should_show_hilightbox = selected_object->doShowSelectionBox();
 
-		result.type = POINTEDTHING_OBJECT;
-		result.object_id = selected_object->getId();
-		return result;
+			result.type = POINTEDTHING_OBJECT;
+			result.object_id = selected_object->getId();
+			return result;
+		}
 	}
 
 	// That didn't work, try to find a pointed at node
@@ -368,196 +367,64 @@ PointedThing getPointedThing(Client *client, v3f player_position,
 		if(!isPointableNode(n, client, liquids_pointable))
 			continue;
 
+		std::vector<aabb3f> boxes = n.getSelectionBoxes(nodedef);
+
 		v3s16 np(x,y,z);
 		v3f npf = intToFloat(np, BS);
-		
-		f32 d = 0.01;
-		
-		v3s16 dirs[6] = {
-			v3s16(0,0,1), // back
-			v3s16(0,1,0), // top
-			v3s16(1,0,0), // right
-			v3s16(0,0,-1), // front
-			v3s16(0,-1,0), // bottom
-			v3s16(-1,0,0), // left
-		};
-		
-		const ContentFeatures &f = nodedef->get(n);
-		
-		if(f.selection_box.type == NODEBOX_FIXED)
+
+		for(std::vector<aabb3f>::const_iterator
+				i = boxes.begin();
+				i != boxes.end(); i++)
 		{
-			core::aabbox3d<f32> box = f.selection_box.fixed;
+			aabb3f box = *i;
 			box.MinEdge += npf;
 			box.MaxEdge += npf;
 
-			v3s16 facedirs[6] = {
-				v3s16(-1,0,0),
-				v3s16(1,0,0),
-				v3s16(0,-1,0),
-				v3s16(0,1,0),
-				v3s16(0,0,-1),
-				v3s16(0,0,1),
-			};
-
-			core::aabbox3d<f32> faceboxes[6] = {
-				// X-
-				core::aabbox3d<f32>(
-					box.MinEdge.X, box.MinEdge.Y, box.MinEdge.Z,
-					box.MinEdge.X+d, box.MaxEdge.Y, box.MaxEdge.Z
-				),
-				// X+
-				core::aabbox3d<f32>(
-					box.MaxEdge.X-d, box.MinEdge.Y, box.MinEdge.Z,
-					box.MaxEdge.X, box.MaxEdge.Y, box.MaxEdge.Z
-				),
-				// Y-
-				core::aabbox3d<f32>(
-					box.MinEdge.X, box.MinEdge.Y, box.MinEdge.Z,
-					box.MaxEdge.X, box.MinEdge.Y+d, box.MaxEdge.Z
-				),
-				// Y+
-				core::aabbox3d<f32>(
-					box.MinEdge.X, box.MaxEdge.Y-d, box.MinEdge.Z,
-					box.MaxEdge.X, box.MaxEdge.Y, box.MaxEdge.Z
-				),
-				// Z-
-				core::aabbox3d<f32>(
-					box.MinEdge.X, box.MinEdge.Y, box.MinEdge.Z,
-					box.MaxEdge.X, box.MaxEdge.Y, box.MinEdge.Z+d
-				),
-				// Z+
-				core::aabbox3d<f32>(
-					box.MinEdge.X, box.MinEdge.Y, box.MaxEdge.Z-d,
-					box.MaxEdge.X, box.MaxEdge.Y, box.MaxEdge.Z
-				),
-			};
-
-			for(u16 i=0; i<6; i++)
+			for(u16 j=0; j<6; j++)
 			{
-				v3f facedir_f(facedirs[i].X, facedirs[i].Y, facedirs[i].Z);
-				v3f centerpoint = npf + facedir_f * BS/2;
+				v3s16 facedir = g_6dirs[j];
+				aabb3f facebox = box;
+
+				f32 d = 0.001*BS;
+				if(facedir.X > 0)
+					facebox.MinEdge.X = facebox.MaxEdge.X-d;
+				else if(facedir.X < 0)
+					facebox.MaxEdge.X = facebox.MinEdge.X+d;
+				else if(facedir.Y > 0)
+					facebox.MinEdge.Y = facebox.MaxEdge.Y-d;
+				else if(facedir.Y < 0)
+					facebox.MaxEdge.Y = facebox.MinEdge.Y+d;
+				else if(facedir.Z > 0)
+					facebox.MinEdge.Z = facebox.MaxEdge.Z-d;
+				else if(facedir.Z < 0)
+					facebox.MaxEdge.Z = facebox.MinEdge.Z+d;
+
+				v3f centerpoint = facebox.getCenter();
 				f32 distance = (centerpoint - camera_position).getLength();
 				if(distance >= mindistance)
 					continue;
-				if(!faceboxes[i].intersectsWithLine(shootline))
+				if(!facebox.intersectsWithLine(shootline))
 					continue;
+
+				v3s16 np_above = np + facedir;
+
 				result.type = POINTEDTHING_NODE;
 				result.node_undersurface = np;
-				result.node_abovesurface = np+facedirs[i];
+				result.node_abovesurface = np_above;
 				mindistance = distance;
-				hilightbox = box;
-				should_show_hilightbox = true;
-			}
-		}
-		else if(f.selection_box.type == NODEBOX_WALLMOUNTED)
-		{
-			v3s16 dir = n.getWallMountedDir(nodedef);
-			v3f dir_f = v3f(dir.X, dir.Y, dir.Z);
-			dir_f *= BS/2 - BS/6 - BS/20;
-			v3f cpf = npf + dir_f;
-			f32 distance = (cpf - camera_position).getLength();
 
-			core::aabbox3d<f32> box;
-			
-			// top
-			if(dir == v3s16(0,1,0)){
-				box = f.selection_box.wall_top;
-			}
-			// bottom
-			else if(dir == v3s16(0,-1,0)){
-				box = f.selection_box.wall_bottom;
-			}
-			// side
-			else{
-				v3f vertices[2] =
+				hilightboxes.clear();
+				for(std::vector<aabb3f>::const_iterator
+						i2 = boxes.begin();
+						i2 != boxes.end(); i2++)
 				{
-					f.selection_box.wall_side.MinEdge,
-					f.selection_box.wall_side.MaxEdge
-				};
-
-				for(s32 i=0; i<2; i++)
-				{
-					if(dir == v3s16(-1,0,0))
-						vertices[i].rotateXZBy(0);
-					if(dir == v3s16(1,0,0))
-						vertices[i].rotateXZBy(180);
-					if(dir == v3s16(0,0,-1))
-						vertices[i].rotateXZBy(90);
-					if(dir == v3s16(0,0,1))
-						vertices[i].rotateXZBy(-90);
-				}
-
-				box = core::aabbox3d<f32>(vertices[0]);
-				box.addInternalPoint(vertices[1]);
-			}
-
-			box.MinEdge += npf;
-			box.MaxEdge += npf;
-			
-			if(distance < mindistance)
-			{
-				if(box.intersectsWithLine(shootline))
-				{
-					result.type = POINTEDTHING_NODE;
-					result.node_undersurface = np;
-					result.node_abovesurface = np;
-					mindistance = distance;
-					hilightbox = box;
-					should_show_hilightbox = true;
+					aabb3f box = *i2;
+					box.MinEdge += npf + v3f(-d,-d,-d);
+					box.MaxEdge += npf + v3f(d,d,d);
+					hilightboxes.push_back(box);
 				}
 			}
 		}
-		else // NODEBOX_REGULAR
-		{
-			for(u16 i=0; i<6; i++)
-			{
-				v3f dir_f = v3f(dirs[i].X,
-						dirs[i].Y, dirs[i].Z);
-				v3f centerpoint = npf + dir_f * BS/2;
-				f32 distance =
-						(centerpoint - camera_position).getLength();
-				
-				if(distance < mindistance)
-				{
-					core::CMatrix4<f32> m;
-					m.buildRotateFromTo(v3f(0,0,1), dir_f);
-
-					// This is the back face
-					v3f corners[2] = {
-						v3f(BS/2, BS/2, BS/2),
-						v3f(-BS/2, -BS/2, BS/2+d)
-					};
-					
-					for(u16 j=0; j<2; j++)
-					{
-						m.rotateVect(corners[j]);
-						corners[j] += npf;
-					}
-
-					core::aabbox3d<f32> facebox(corners[0]);
-					facebox.addInternalPoint(corners[1]);
-
-					if(facebox.intersectsWithLine(shootline))
-					{
-						result.type = POINTEDTHING_NODE;
-						result.node_undersurface = np;
-						result.node_abovesurface = np + dirs[i];
-						mindistance = distance;
-
-						//hilightbox = facebox;
-
-						const float d = 0.502;
-						core::aabbox3d<f32> nodebox
-								(-BS*d, -BS*d, -BS*d, BS*d, BS*d, BS*d);
-						v3f nodepos_f = intToFloat(np, BS);
-						nodebox.MinEdge += nodepos_f;
-						nodebox.MaxEdge += nodepos_f;
-						hilightbox = nodebox;
-						should_show_hilightbox = true;
-					}
-				} // if distance < mindistance
-			} // for dirs
-		} // regular block
 	} // for coords
 
 	return result;
@@ -1514,7 +1381,7 @@ void the_game(
 			hotbar_imagesize = 64;
 		
 		// Hilight boxes collected during the loop and displayed
-		core::list< core::aabbox3d<f32> > hilightboxes;
+		std::vector<aabb3f> hilightboxes;
 		
 		// Info text
 		std::wstring infotext;
@@ -2127,8 +1994,6 @@ void the_game(
 		core::line3d<f32> shootline(camera_position,
 				camera_position + camera_direction * BS * (d+1));
 
-		core::aabbox3d<f32> hilightbox;
-		bool should_show_hilightbox = false;
 		ClientActiveObject *selected_object = NULL;
 
 		PointedThing pointed = getPointedThing(
@@ -2137,7 +2002,7 @@ void the_game(
 				camera_position, shootline, d,
 				playeritem_liquids_pointable, !ldown_for_dig,
 				// output
-				hilightbox, should_show_hilightbox,
+				hilightboxes,
 				selected_object);
 
 		if(pointed != pointed_old)
@@ -2145,12 +2010,6 @@ void the_game(
 			infostream<<"Pointing at "<<pointed.dump()<<std::endl;
 			//dstream<<"Pointing at "<<pointed.dump()<<std::endl;
 		}
-
-		/*
-			Visualize selection
-		*/
-		if(should_show_hilightbox)
-			hilightboxes.push_back(hilightbox);
 
 		/*
 			Stop digging when
@@ -2818,9 +2677,10 @@ void the_game(
 
 		if(show_hud)
 		{
-			for(core::list<aabb3f>::Iterator i=hilightboxes.begin();
-					i != hilightboxes.end(); i++)
-			{
+			for(std::vector<aabb3f>::const_iterator
+					i = hilightboxes.begin();
+ 					i != hilightboxes.end(); i++)
+	 		{
 				/*infostream<<"hilightbox min="
 						<<"("<<i->MinEdge.X<<","<<i->MinEdge.Y<<","<<i->MinEdge.Z<<")"
 						<<" max="

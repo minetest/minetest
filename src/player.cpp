@@ -166,6 +166,10 @@ void Player::deSerialize(std::istream &is)
 	RemotePlayer
 */
 
+
+
+
+
 void RemotePlayer::setPosition(const v3f &position)
 {
 	Player::setPosition(position);

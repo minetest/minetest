@@ -33,34 +33,74 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 	NodeBox
 */
 
+void NodeBox::reset()
+{
+	type = NODEBOX_REGULAR;
+	// default is empty
+	fixed.clear();
+	// default is sign/ladder-like
+	wall_top = aabb3f(-BS/2, BS/2-BS/16., -BS/2, BS/2, BS/2, BS/2);
+	wall_bottom = aabb3f(-BS/2, -BS/2, -BS/2, BS/2, -BS/2+BS/16., BS/2);
+	wall_side = aabb3f(-BS/2, -BS/2, -BS/2, -BS/2+BS/16., BS/2, BS/2);
+}
+
 void NodeBox::serialize(std::ostream &os) const
 {
-	writeU8(os, 0); // version
+	writeU8(os, 1); // version
 	writeU8(os, type);
-	writeV3F1000(os, fixed.MinEdge);
-	writeV3F1000(os, fixed.MaxEdge);
-	writeV3F1000(os, wall_top.MinEdge);
-	writeV3F1000(os, wall_top.MaxEdge);
-	writeV3F1000(os, wall_bottom.MinEdge);
-	writeV3F1000(os, wall_bottom.MaxEdge);
-	writeV3F1000(os, wall_side.MinEdge);
-	writeV3F1000(os, wall_side.MaxEdge);
+
+	if(type == NODEBOX_FIXED)
+	{
+		writeU16(os, fixed.size());
+		for(std::vector<aabb3f>::const_iterator
+				i = fixed.begin();
+				i != fixed.end(); i++)
+		{
+			writeV3F1000(os, i->MinEdge);
+			writeV3F1000(os, i->MaxEdge);
+		}
+	}
+	else if(type == NODEBOX_WALLMOUNTED)
+	{
+		writeV3F1000(os, wall_top.MinEdge);
+		writeV3F1000(os, wall_top.MaxEdge);
+		writeV3F1000(os, wall_bottom.MinEdge);
+		writeV3F1000(os, wall_bottom.MaxEdge);
+		writeV3F1000(os, wall_side.MinEdge);
+		writeV3F1000(os, wall_side.MaxEdge);
+	}
 }
 
 void NodeBox::deSerialize(std::istream &is)
 {
 	int version = readU8(is);
-	if(version != 0)
+	if(version != 1)
 		throw SerializationError("unsupported NodeBox version");
+
+	reset();
+
 	type = (enum NodeBoxType)readU8(is);
-	fixed.MinEdge = readV3F1000(is);
-	fixed.MaxEdge = readV3F1000(is);
-	wall_top.MinEdge = readV3F1000(is);
-	wall_top.MaxEdge = readV3F1000(is);
-	wall_bottom.MinEdge = readV3F1000(is);
-	wall_bottom.MaxEdge = readV3F1000(is);
-	wall_side.MinEdge = readV3F1000(is);
-	wall_side.MaxEdge = readV3F1000(is);
+
+	if(type == NODEBOX_FIXED)
+	{
+		u16 fixed_count = readU16(is);
+		while(fixed_count--)
+		{
+			aabb3f box;
+			box.MinEdge = readV3F1000(is);
+			box.MaxEdge = readV3F1000(is);
+			fixed.push_back(box);
+		}
+	}
+	else if(type == NODEBOX_WALLMOUNTED)
+	{
+		wall_top.MinEdge = readV3F1000(is);
+		wall_top.MaxEdge = readV3F1000(is);
+		wall_bottom.MinEdge = readV3F1000(is);
+		wall_bottom.MaxEdge = readV3F1000(is);
+		wall_side.MinEdge = readV3F1000(is);
+		wall_side.MaxEdge = readV3F1000(is);
+	}
 }
 
 /*
@@ -165,6 +205,7 @@ void ContentFeatures::reset()
 	liquid_viscosity = 0;
 	light_source = 0;
 	damage_per_second = 0;
+	node_box = NodeBox();
 	selection_box = NodeBox();
 	legacy_facedir_simple = false;
 	legacy_wallmounted = false;
@@ -214,6 +255,7 @@ void ContentFeatures::serialize(std::ostream &os)
 	writeU8(os, liquid_viscosity);
 	writeU8(os, light_source);
 	writeU32(os, damage_per_second);
+	node_box.serialize(os);
 	selection_box.serialize(os);
 	writeU8(os, legacy_facedir_simple);
 	writeU8(os, legacy_wallmounted);
@@ -277,6 +319,7 @@ void ContentFeatures::deSerialize(std::istream &is)
 	liquid_viscosity = readU8(is);
 	light_source = readU8(is);
 	damage_per_second = readU32(is);
+	node_box.deSerialize(is);
 	selection_box.deSerialize(is);
 	legacy_facedir_simple = readU8(is);
 	legacy_wallmounted = readU8(is);
@@ -577,6 +620,7 @@ public:
 			case NDT_PLANTLIKE:
 			case NDT_FENCELIKE:
 			case NDT_RAILLIKE:
+			case NDT_NODEBOX:
 				f->solidness = 0;
 				break;
 			}

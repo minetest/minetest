@@ -22,7 +22,9 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "irrlichttypes.h"
 #include "irr_v3d.h"
+#include "irr_aabb3d.h"
 #include "light.h"
+#include <vector>
 
 class INodeDefManager;
 
@@ -195,6 +197,17 @@ struct MapNode
 	u8 getFaceDir(INodeDefManager *nodemgr) const;
 	u8 getWallMounted(INodeDefManager *nodemgr) const;
 	v3s16 getWallMountedDir(INodeDefManager *nodemgr) const;
+
+	/*
+		Gets list of node boxes (used for rendering (NDT_NODEBOX)
+		and collision)
+	*/
+	std::vector<aabb3f> getNodeBoxes(INodeDefManager *nodemgr) const;
+
+	/*
+		Gets list of selection boxes
+	*/
+	std::vector<aabb3f> getSelectionBoxes(INodeDefManager *nodemgr) const;
 
 	/*
 		Serialization functions

@@ -1027,6 +1027,53 @@ void mapblock_mesh_generate_special(MeshMakeData *data,
 			u16 indices[] = {0,1,2,2,3,0};
 			collector.append(tile, vertices, 4, indices, 6);
 		break;}
+		case NDT_NODEBOX:
+		{
+			TileSpec tiles[6];
+			for(int i = 0; i < 6; i++)
+			{
+				tiles[i] = getNodeTileN(n, p, i, data);
+			}
+
+			u16 l = getInteriorLight(n, 0, data);
+			video::SColor c = MapBlock_LightColor(255, l);
+
+			v3f pos = intToFloat(p, BS);
+
+			std::vector<aabb3f> boxes = n.getNodeBoxes(nodedef);
+			for(std::vector<aabb3f>::iterator
+					i = boxes.begin();
+					i != boxes.end(); i++)
+			{
+				aabb3f box = *i;
+				box.MinEdge += pos;
+				box.MaxEdge += pos;
+
+				// Compute texture coords
+				f32 tx1 = (i->MinEdge.X/BS)+0.5;
+				f32 ty1 = (i->MinEdge.Y/BS)+0.5;
+				f32 tz1 = (i->MinEdge.Z/BS)+0.5;
+				f32 tx2 = (i->MaxEdge.X/BS)+0.5;
+				f32 ty2 = (i->MaxEdge.Y/BS)+0.5;
+				f32 tz2 = (i->MaxEdge.Z/BS)+0.5;
+				f32 txc[24] = {
+					// up
+					tx1, 1-tz2, tx2, 1-tz1,
+					// down
+					tx1, tz1, tx2, tz2,
+					// right
+					tz1, 1-ty2, tz2, 1-ty1,
+					// left
+					1-tz2, 1-ty2, 1-tz1, 1-ty1,
+					// back
+					1-tx2, 1-ty2, 1-tx1, 1-ty1,
+					// front
+					tx1, 1-ty2, tx2, 1-ty1,
+				};
+
+				makeCuboid(&collector, box, tiles, 6, c, txc);
+			}
+		break;}
 		}
 	}
 }
