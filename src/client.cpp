@@ -33,6 +33,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "nodemetadata.h"
 #include "nodedef.h"
 #include "itemdef.h"
+#include "shader.h"
 #include <IFileSystem.h>
 #include "sha1.h"
 #include "base64.h"
@@ -228,12 +229,14 @@ Client::Client(
 		std::string password,
 		MapDrawControl &control,
 		IWritableTextureSource *tsrc,
+		IWritableShaderSource *shsrc,
 		IWritableItemDefManager *itemdef,
 		IWritableNodeDefManager *nodedef,
 		ISoundManager *sound,
 		MtEventManager *event
 ):
 	m_tsrc(tsrc),
+	m_shsrc(shsrc),
 	m_itemdef(itemdef),
 	m_nodedef(nodedef),
 	m_sound(sound),
@@ -2456,6 +2459,9 @@ void Client::afterContentReceived()
 	if(g_settings->getBool("enable_texture_atlas"))
 		m_tsrc->buildMainAtlas(this);
 
+	// Rebuild shaders
+	m_shsrc->rebuildShaders();
+
 	// Update node aliases
 	infostream<<"- Updating node aliases"<<std::endl;
 	m_nodedef->updateAliases(m_itemdef);
@@ -2511,6 +2517,10 @@ ICraftDefManager* Client::getCraftDefManager()
 ITextureSource* Client::getTextureSource()
 {
 	return m_tsrc;
+}
+IShaderSource* Client::getShaderSource()
+{
+	return m_shsrc;
 }
 u16 Client::allocateUnknownNodeId(const std::string &name)
 {

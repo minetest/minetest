@@ -560,6 +560,7 @@ public:
 	virtual INodeDefManager* getNodeDefManager();
 	virtual ICraftDefManager* getCraftDefManager();
 	virtual ITextureSource* getTextureSource();
+	virtual IShaderSource* getShaderSource();
 	virtual u16 allocateUnknownNodeId(const std::string &name);
 	virtual ISoundManager* getSoundManager();
 	virtual MtEventManager* getEventManager();

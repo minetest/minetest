@@ -28,6 +28,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "mesh.h"
 #include "content_mapblock.h"
 #include "noise.h"
+#include "shader.h"
 #include "settings.h"
 #include "util/directiontables.h"
 
@@ -1011,6 +1012,8 @@ MapBlockMesh::MapBlockMesh(MeshMakeData *data):
 		Convert MeshCollector to SMesh
 		Also store animation info
 	*/
+	video::E_MATERIAL_TYPE shadermat = m_gamedef->getShaderSource()->
+			getShader("the_darkness_of_light").material;
 	for(u32 i = 0; i < collector.prebuffers.size(); i++)
 	{
 		PreMeshBuffer &p = collector.prebuffers[i];
@@ -1076,6 +1079,9 @@ MapBlockMesh::MapBlockMesh(MeshMakeData *data):
 				= video::EMT_TRANSPARENT_ALPHA_CHANNEL_REF;
 		material.setTexture(0, p.tile.texture.atlas);
 		p.tile.applyMaterialOptions(material);
+
+		//if(material.MaterialType == video::EMT_TRANSPARENT_ALPHA_CHANNEL_REF)
+			material.MaterialType = shadermat;
 
 		// Create meshbuffer
 

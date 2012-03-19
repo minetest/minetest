@@ -92,6 +92,7 @@ void set_default_settings(Settings *settings)
 	settings->setDefault("smooth_lighting", "true");
 	settings->setDefault("enable_texture_atlas", "true");
 	settings->setDefault("texture_path", "");
+	settings->setDefault("shader_path", "");
 	settings->setDefault("video_driver", "opengl");
 	settings->setDefault("free_move", "false");
 	settings->setDefault("continuous_forward", "false");
@@ -103,6 +104,7 @@ void set_default_settings(Settings *settings)
 	settings->setDefault("view_bobbing_amount", "1.0");
 	settings->setDefault("enable_3d_clouds", "true");
 	settings->setDefault("opaque_water", "false");
+	settings->setDefault("enable_shaders", "2");
 	settings->setDefault("console_color", "(0,0,0)");
 	settings->setDefault("console_alpha", "200");
 	settings->setDefault("enable_sound", "true");

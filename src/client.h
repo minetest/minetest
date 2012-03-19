@@ -39,6 +39,7 @@ struct MeshMakeData;
 class MapBlockMesh;
 class IGameDef;
 class IWritableTextureSource;
+class IWritableShaderSource;
 class IWritableItemDefManager;
 class IWritableNodeDefManager;
 //class IWritableCraftDefManager;
@@ -174,6 +175,7 @@ public:
 			std::string password,
 			MapDrawControl &control,
 			IWritableTextureSource *tsrc,
+			IWritableShaderSource *shsrc,
 			IWritableItemDefManager *itemdef,
 			IWritableNodeDefManager *nodedef,
 			ISoundManager *sound,
@@ -305,6 +307,7 @@ public:
 	virtual INodeDefManager* getNodeDefManager();
 	virtual ICraftDefManager* getCraftDefManager();
 	virtual ITextureSource* getTextureSource();
+	virtual IShaderSource* getShaderSource();
 	virtual u16 allocateUnknownNodeId(const std::string &name);
 	virtual ISoundManager* getSoundManager();
 	virtual MtEventManager* getEventManager();
@@ -337,6 +340,7 @@ private:
 	IntervalLimiter m_map_timer_and_unload_interval;
 
 	IWritableTextureSource *m_tsrc;
+	IWritableShaderSource *m_shsrc;
 	IWritableItemDefManager *m_itemdef;
 	IWritableNodeDefManager *m_nodedef;
 	ISoundManager *m_sound;
