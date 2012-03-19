@@ -109,6 +109,8 @@ void ContentFeatures::reset()
 	*/
 	name = "";
 	groups.clear();
+	// Unknown nodes can be dug
+	groups["dig_immediate"] = 2;
 	drawtype = NDT_NORMAL;
 	visual_scale = 1.0;
 	for(u32 i=0; i<6; i++)
