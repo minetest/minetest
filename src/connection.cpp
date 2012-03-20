@@ -537,6 +537,14 @@ Connection::Connection(u32 protocol_id, u32 max_packet_size, float timeout,
 Connection::~Connection()
 {
 	stop();
+	// Delete peers
+	for(core::map<u16, Peer*>::Iterator
+			j = m_peers.getIterator();
+			j.atEnd() == false; j++)
+	{
+		Peer *peer = j.getNode()->getValue();
+		delete peer;
+	}
 }
 
 /* Internal stuff */

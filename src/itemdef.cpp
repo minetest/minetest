@@ -290,8 +290,11 @@ public:
 		// Ensure that the "" item (the hand) always has ToolCapabilities
 		if(def.name == "")
 			assert(def.tool_capabilities != NULL);
-
-		m_item_definitions[def.name] = new ItemDefinition(def);
+		
+		if(m_item_definitions.count(def.name) == 0)
+			m_item_definitions[def.name] = new ItemDefinition(def);
+		else
+			*(m_item_definitions[def.name]) = def;
 
 		// Remove conflicting alias if it exists
 		bool alias_removed = (m_aliases.erase(def.name) != 0);
