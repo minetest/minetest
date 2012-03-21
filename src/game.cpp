@@ -724,6 +724,11 @@ public:
 					core::rect<s32>(textx, y - graphh/2 - texth/2,
 					textx2, y - graphh/2 + texth/2),
 					meta.color);
+			s32 graph1y = y;
+			s32 graph1h = graphh;
+			bool relativegraph = (show_min != 0 && show_min != show_max);
+			float lastscaledvalue = 0.0;
+			bool lastscaledvalue_exists = false;
 			for(std::list<Piece>::const_iterator j = m_log.begin();
 					j != m_log.end(); j++)
 			{
@@ -738,6 +743,7 @@ public:
 				}
 				if(!value_exists){
 					x++;
+					lastscaledvalue_exists = false;
 					continue;
 				}
 				float scaledvalue = 1.0;
@@ -745,12 +751,23 @@ public:
 					scaledvalue = (value - show_min) / (show_max - show_min);
 				if(scaledvalue == 1.0 && value == 0){
 					x++;
+					lastscaledvalue_exists = false;
 					continue;
 				}
-				s32 ivalue = scaledvalue * graphh;
-				driver->draw2DLine(v2s32(x, y),
-						v2s32(x, y - ivalue),
-						meta.color);
+				if(relativegraph){
+					if(lastscaledvalue_exists){
+						s32 ivalue1 = lastscaledvalue * graph1h;
+						s32 ivalue2 = scaledvalue * graph1h;
+						driver->draw2DLine(v2s32(x-1, graph1y - ivalue1),
+								v2s32(x, graph1y - ivalue2), meta.color);
+					}
+					lastscaledvalue = scaledvalue;
+					lastscaledvalue_exists = true;
+				} else{
+					s32 ivalue = scaledvalue * graph1h;
+					driver->draw2DLine(v2s32(x, graph1y),
+							v2s32(x, graph1y - ivalue), meta.color);
+				}
 				x++;
 			}
 			meta_i++;
@@ -1102,6 +1119,9 @@ void the_game(
 	float recent_turn_speed = 0.0;
 	
 	ProfilerGraph graph;
+	// Initially clear the profiler
+	Profiler::GraphValues dummyvalues;
+	g_profiler->graphGet(dummyvalues);
 
 	float nodig_delay_timer = 0.0;
 	float dig_time = 0.0;
