@@ -1040,12 +1040,6 @@ void the_game(
 	Inventory local_inventory(itemdef);
 
 	/*
-		Move into game
-	*/
-	
-	//gui_loadingtext->remove();
-
-	/*
 		Add some gui stuff
 	*/
 
@@ -1095,26 +1089,6 @@ void the_game(
 	guitext_profiler->setBackgroundColor(video::SColor(120,0,0,0));
 	guitext_profiler->setVisible(false);
 	
-	/*GUIQuickInventory *quick_inventory = new GUIQuickInventory
-			(guienv, NULL, v2s32(10, 70), 5, &local_inventory);*/
-	/*GUIQuickInventory *quick_inventory = new GUIQuickInventory
-			(guienv, NULL, v2s32(0, 0), quickinv_itemcount, &local_inventory);*/
-	
-	// Test the text input system
-	/*(new GUITextInputMenu(guienv, guiroot, -1, &g_menumgr,
-			NULL))->drop();*/
-	/*GUIMessageMenu *menu =
-			new GUIMessageMenu(guienv, guiroot, -1, 
-				&g_menumgr,
-				L"Asd");
-	menu->drop();*/
-	
-	// Launch pause menu
-	/*(new GUIPauseMenu(guienv, guiroot, -1, g_gamecallback,
-			&g_menumgr))->drop();*/
-	
-	//s32 guitext_chat_pad_bottom = 70;
-
 	/*
 		Some statistics are collected in these
 	*/
@@ -1122,11 +1096,7 @@ void the_game(
 	u32 beginscenetime = 0;
 	u32 scenetime = 0;
 	u32 endscenetime = 0;
-	u32 alltime = 0;
 	
-	// A test
-	//throw con::PeerNotFoundException("lol");
-
 	float recent_turn_speed = 0.0;
 	
 	ProfilerGraph graph;
@@ -1179,68 +1149,9 @@ void the_game(
 
 	for(;;)
 	{
-		TimeTaker tt_all("mainloop: all");
-
 		if(device->run() == false || kill == true)
 			break;
 
-		if(client.accessDenied())
-		{
-			error_message = L"Access denied. Reason: "
-					+client.accessDeniedReason();
-			errorstream<<wide_to_narrow(error_message)<<std::endl;
-			break;
-		}
-
-		if(g_gamecallback->disconnect_requested)
-		{
-			g_gamecallback->disconnect_requested = false;
-			break;
-		}
-
-		if(g_gamecallback->changepassword_requested)
-		{
-			(new GUIPasswordChange(guienv, guiroot, -1,
-				&g_menumgr, &client))->drop();
-			g_gamecallback->changepassword_requested = false;
-		}
-
-		/*
-			Process TextureSource's queue
-		*/
-		tsrc->processQueue();
-
-		/*
-			Random calculations
-		*/
-		last_screensize = screensize;
-		screensize = driver->getScreenSize();
-		v2s32 displaycenter(screensize.X/2,screensize.Y/2);
-		//bool screensize_changed = screensize != last_screensize;
-
-		// Resize hotbar
-		if(screensize.Y <= 800)
-			hotbar_imagesize = 32;
-		else if(screensize.Y <= 1280)
-			hotbar_imagesize = 48;
-		else
-			hotbar_imagesize = 64;
-		
-		// Hilight boxes collected during the loop and displayed
-		core::list< core::aabbox3d<f32> > hilightboxes;
-		
-		// Info text
-		std::wstring infotext;
-
-		// When screen size changes, update positions and sizes of stuff
-		/*if(screensize_changed)
-		{
-			v2s32 pos(displaycenter.X-((quickinv_itemcount-1)*quickinv_spacing+quickinv_size)/2, screensize.Y-quickinv_spacing);
-			quick_inventory->updatePosition(pos);
-		}*/
-
-		//TimeTaker //timer1("//timer1");
-		
 		// Time of frame without fps limit
 		float busytime;
 		u32 busytime_u32;
@@ -1253,9 +1164,9 @@ void the_game(
 				busytime_u32 = 0;
 			busytime = busytime_u32 / 1000.0;
 		}
+		
+		g_profiler->graphAdd("mainloop_other", busytime - (float)drawtime/1000.0f);
 
-		//infostream<<"busytime_u32="<<busytime_u32<<std::endl;
-	
 		// Necessary for device->getTimer()->getTime()
 		device->run();
 
@@ -1271,6 +1182,7 @@ void the_game(
 			{
 				u32 sleeptime = frametime_min - busytime_u32;
 				device->sleep(sleeptime);
+				g_profiler->graphAdd("mainloop_sleep", (float)sleeptime/1000.0f);
 			}
 		}
 
@@ -1299,13 +1211,6 @@ void the_game(
 
 		g_profiler->add("Elapsed time", dtime);
 		g_profiler->avg("FPS", 1./dtime);
-
-		/*
-			Visualize frametime in terminal
-		*/
-		/*for(u32 i=0; i<dtime*400; i++)
-			infostream<<"X";
-		infostream<<std::endl;*/
 
 		/*
 			Time average and jitter calculation
@@ -1360,7 +1265,59 @@ void the_game(
 				jitter1_min = 0.0;
 			}
 		}
+
+		/*
+			Handle miscellaneous stuff
+		*/
 		
+		if(client.accessDenied())
+		{
+			error_message = L"Access denied. Reason: "
+					+client.accessDeniedReason();
+			errorstream<<wide_to_narrow(error_message)<<std::endl;
+			break;
+		}
+
+		if(g_gamecallback->disconnect_requested)
+		{
+			g_gamecallback->disconnect_requested = false;
+			break;
+		}
+
+		if(g_gamecallback->changepassword_requested)
+		{
+			(new GUIPasswordChange(guienv, guiroot, -1,
+				&g_menumgr, &client))->drop();
+			g_gamecallback->changepassword_requested = false;
+		}
+
+		/*
+			Process TextureSource's queue
+		*/
+		tsrc->processQueue();
+
+		/*
+			Random calculations
+		*/
+		last_screensize = screensize;
+		screensize = driver->getScreenSize();
+		v2s32 displaycenter(screensize.X/2,screensize.Y/2);
+		//bool screensize_changed = screensize != last_screensize;
+
+		// Resize hotbar
+		if(screensize.Y <= 800)
+			hotbar_imagesize = 32;
+		else if(screensize.Y <= 1280)
+			hotbar_imagesize = 48;
+		else
+			hotbar_imagesize = 64;
+		
+		// Hilight boxes collected during the loop and displayed
+		core::list< core::aabbox3d<f32> > hilightboxes;
+		
+		// Info text
+		std::wstring infotext;
+
 		/*
 			Debug info for client
 		*/
@@ -2717,9 +2674,6 @@ void the_game(
 			device->setWindowCaption(str.c_str());
 			lastFPS = fps;
 		}
-
-		alltime = tt_all.stop(true);
-		g_profiler->graphAdd("mainloop_other", (float)(alltime-drawtime)/1000.0f);
 
 		/*
 			Log times and stuff for visualization
