@@ -25,6 +25,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "utility.h"
 #include <jmutex.h>
 #include <jmutexautolock.h>
+#include <map>
 
 /*
 	Time profiler
@@ -146,10 +147,30 @@ public:
 		}
 	}
 
+	typedef std::map<std::string, float> GraphValues;
+
+	void graphAdd(const std::string &id, float value)
+	{
+		JMutexAutoLock lock(m_mutex);
+		std::map<std::string, float>::iterator i =
+				m_graphvalues.find(id);
+		if(i == m_graphvalues.end())
+			m_graphvalues[id] = value;
+		else
+			i->second += value;
+	}
+	void graphGet(GraphValues &result)
+	{
+		JMutexAutoLock lock(m_mutex);
+		result = m_graphvalues;
+		m_graphvalues.clear();
+	}
+
 private:
 	JMutex m_mutex;
 	core::map<std::string, float> m_data;
 	core::map<std::string, int> m_avgcounts;
+	std::map<std::string, float> m_graphvalues;
 };
 
 enum ScopeProfilerType{

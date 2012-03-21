@@ -656,9 +656,11 @@ void Client::step(float dtime)
 		/*infostream<<"Mesh update result queue size is "
 				<<m_mesh_update_thread.m_queue_out.size()
 				<<std::endl;*/
-
+		
+		int num_processed_meshes = 0;
 		while(m_mesh_update_thread.m_queue_out.size() > 0)
 		{
+			num_processed_meshes++;
 			MeshUpdateResult r = m_mesh_update_thread.m_queue_out.pop_front();
 			MapBlock *block = m_env.getMap().getBlockNoCreateNoEx(r.p);
 			if(block)
@@ -699,6 +701,8 @@ void Client::step(float dtime)
 				m_con.Send(PEER_ID_SERVER, 1, reply, true);
 			}
 		}
+		if(num_processed_meshes > 0)
+			g_profiler->graphAdd("num_processed_meshes", num_processed_meshes);
 	}
 
 	/*
@@ -752,6 +756,7 @@ void Client::ReceiveAll()
 		
 		try{
 			Receive();
+			g_profiler->graphAdd("client_received_packets", 1);
 		}
 		catch(con::NoIncomingDataException &e)
 		{

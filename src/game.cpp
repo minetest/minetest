@@ -55,6 +55,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "quicktune_shortcutter.h"
 #include "clientmap.h"
 #include "sky.h"
+#include <list>
 
 /*
 	Setting this to 1 enables a special camera mode that forces
@@ -602,6 +603,159 @@ void update_profiler_gui(gui::IGUIStaticText *guitext_profiler,
 	}
 }
 
+class ProfilerGraph
+{
+private:
+	struct Piece{
+		Profiler::GraphValues values;
+	};
+	struct Meta{
+		float min;
+		float max;
+		video::SColor color;
+		Meta(float initial=0, video::SColor color=
+				video::SColor(255,255,255,255)):
+			min(initial),
+			max(initial),
+			color(color)
+		{}
+	};
+	std::list<Piece> m_log;
+public:
+	u32 m_log_max_size;
+
+	ProfilerGraph():
+		m_log_max_size(200)
+	{}
+
+	void put(const Profiler::GraphValues &values)
+	{
+		Piece piece;
+		piece.values = values;
+		m_log.push_back(piece);
+		while(m_log.size() > m_log_max_size)
+			m_log.erase(m_log.begin());
+	}
+	
+	void draw(s32 x_left, s32 y_bottom, video::IVideoDriver *driver,
+			gui::IGUIFont* font) const
+	{
+		std::map<std::string, Meta> m_meta;
+		for(std::list<Piece>::const_iterator k = m_log.begin();
+				k != m_log.end(); k++)
+		{
+			const Piece &piece = *k;
+			for(Profiler::GraphValues::const_iterator i = piece.values.begin();
+					i != piece.values.end(); i++){
+				const std::string &id = i->first;
+				const float &value = i->second;
+				std::map<std::string, Meta>::iterator j =
+						m_meta.find(id);
+				if(j == m_meta.end()){
+					m_meta[id] = Meta(value);
+					continue;
+				}
+				if(value < j->second.min)
+					j->second.min = value;
+				if(value > j->second.max)
+					j->second.max = value;
+			}
+		}
+
+		// Assign colors
+		static const video::SColor usable_colors[] = {
+			video::SColor(255,255,100,100),
+			video::SColor(255,90,225,90),
+			video::SColor(255,100,100,255)
+		};
+		static const u32 usable_colors_count =
+				sizeof(usable_colors) / sizeof(*usable_colors);
+		u32 next_color_i = 0;
+		for(std::map<std::string, Meta>::iterator i = m_meta.begin();
+				i != m_meta.end(); i++){
+			Meta &meta = i->second;
+			video::SColor color(255,200,200,200);
+			if(next_color_i < usable_colors_count)
+				color = usable_colors[next_color_i++];
+			meta.color = color;
+		}
+
+		s32 graphh = 50;
+		s32 textx = x_left + m_log_max_size + 15;
+		s32 textx2 = textx + 200 - 15;
+		
+		// Draw background
+		/*{
+			u32 num_graphs = m_meta.size();
+			core::rect<s32> rect(x_left, y_bottom - num_graphs*graphh,
+					textx2, y_bottom);
+			video::SColor bgcolor(120,0,0,0);
+			driver->draw2DRectangle(bgcolor, rect, NULL);
+		}*/
+		
+		s32 meta_i = 0;
+		for(std::map<std::string, Meta>::const_iterator i = m_meta.begin();
+				i != m_meta.end(); i++){
+			const std::string &id = i->first;
+			const Meta &meta = i->second;
+			s32 x = x_left;
+			s32 y = y_bottom - meta_i * 50;
+			float show_min = meta.min;
+			float show_max = meta.max;
+			if(show_min >= 0 && show_max >= 0){
+				if(show_min <= show_max * 0.5)
+					show_min = 0;
+			}
+			s32 texth = 15;
+			char buf[10];
+			snprintf(buf, 10, "%.3g", show_max);
+			font->draw(narrow_to_wide(buf).c_str(),
+					core::rect<s32>(textx, y - graphh,
+					textx2, y - graphh + texth),
+					meta.color);
+			snprintf(buf, 10, "%.3g", show_min);
+			font->draw(narrow_to_wide(buf).c_str(),
+					core::rect<s32>(textx, y - texth,
+					textx2, y),
+					meta.color);
+			font->draw(narrow_to_wide(id).c_str(),
+					core::rect<s32>(textx, y - graphh/2 - texth/2,
+					textx2, y - graphh/2 + texth/2),
+					meta.color);
+			for(std::list<Piece>::const_iterator j = m_log.begin();
+					j != m_log.end(); j++)
+			{
+				const Piece &piece = *j;
+				float value = 0;
+				bool value_exists = false;
+				Profiler::GraphValues::const_iterator k =
+						piece.values.find(id);
+				if(k != piece.values.end()){
+					value = k->second;
+					value_exists = true;
+				}
+				if(!value_exists){
+					x++;
+					continue;
+				}
+				float scaledvalue = 1.0;
+				if(show_max != show_min)
+					scaledvalue = (value - show_min) / (show_max - show_min);
+				if(scaledvalue == 1.0 && value == 0){
+					x++;
+					continue;
+				}
+				s32 ivalue = scaledvalue * graphh;
+				driver->draw2DLine(v2s32(x, y),
+						v2s32(x, y - ivalue),
+						meta.color);
+				x++;
+			}
+			meta_i++;
+		}
+	}
+};
+
 void the_game(
 	bool &kill,
 	bool random_input,
@@ -938,7 +1092,7 @@ void the_game(
 			L"<Profiler>",
 			core::rect<s32>(0,0,0,0),
 			false, false);
-	guitext_profiler->setBackgroundColor(video::SColor(80,0,0,0));
+	guitext_profiler->setBackgroundColor(video::SColor(120,0,0,0));
 	guitext_profiler->setVisible(false);
 	
 	/*GUIQuickInventory *quick_inventory = new GUIQuickInventory
@@ -968,13 +1122,14 @@ void the_game(
 	u32 beginscenetime = 0;
 	u32 scenetime = 0;
 	u32 endscenetime = 0;
+	u32 alltime = 0;
 	
 	// A test
 	//throw con::PeerNotFoundException("lol");
 
 	float recent_turn_speed = 0.0;
-
-	core::list<float> frametime_log;
+	
+	ProfilerGraph graph;
 
 	float nodig_delay_timer = 0.0;
 	float dig_time = 0.0;
@@ -1000,7 +1155,7 @@ void the_game(
 	bool force_fog_off = false;
 	bool disable_camera_update = false;
 	bool show_debug = g_settings->getBool("show_debug");
-	bool show_debug_frametime = false;
+	bool show_profiler_graph = false;
 	u32 show_profiler = 0;
 	u32 show_profiler_max = 3;  // Number of pages
 
@@ -1022,9 +1177,12 @@ void the_game(
 	// NOTE: So we have to use getTime() and call run()s between them
 	u32 lasttime = device->getTimer()->getTime();
 
-	while(device->run() && kill == false)
+	for(;;)
 	{
-		//std::cerr<<"frame"<<std::endl;
+		TimeTaker tt_all("mainloop: all");
+
+		if(device->run() == false || kill == true)
+			break;
 
 		if(client.accessDenied())
 		{
@@ -1141,16 +1299,6 @@ void the_game(
 
 		g_profiler->add("Elapsed time", dtime);
 		g_profiler->avg("FPS", 1./dtime);
-
-		/*
-			Log frametime for visualization
-		*/
-		frametime_log.push_back(dtime);
-		if(frametime_log.size() > 100)
-		{
-			core::list<float>::Iterator i = frametime_log.begin();
-			frametime_log.erase(i);
-		}
 
 		/*
 			Visualize frametime in terminal
@@ -1434,25 +1582,25 @@ void the_game(
 		{
 			// Initial / 3x toggle: Chat only
 			// 1x toggle: Debug text with chat
-			// 2x toggle: Debug text with frametime
+			// 2x toggle: Debug text with profiler graph
 			if(!show_debug)
 			{
 				show_debug = true;
-				show_debug_frametime = false;
+				show_profiler_graph = false;
 				statustext = L"Debug info shown";
 				statustext_time = 0;
 			}
-			else if(show_debug_frametime)
+			else if(show_profiler_graph)
 			{
 				show_debug = false;
-				show_debug_frametime = false;
-				statustext = L"Debug info and frametime graph hidden";
+				show_profiler_graph = false;
+				statustext = L"Debug info and profiler graph hidden";
 				statustext_time = 0;
 			}
 			else
 			{
-				show_debug_frametime = true;
-				statustext = L"Frametime graph shown";
+				show_profiler_graph = true;
+				statustext = L"Profiler graph shown";
 				statustext_time = 0;
 			}
 		}
@@ -2413,7 +2561,7 @@ void the_game(
 			Drawing begins
 		*/
 
-		TimeTaker drawtimer("Drawing");
+		TimeTaker tt_draw("mainloop: draw");
 
 		
 		{
@@ -2479,22 +2627,11 @@ void the_game(
 		}
 
 		/*
-			Frametime log
+			Profiler graph
 		*/
-		if(show_debug_frametime)
+		if(show_profiler_graph)
 		{
-			s32 x = 10;
-			s32 y = screensize.Y - 10;
-			for(core::list<float>::Iterator
-					i = frametime_log.begin();
-					i != frametime_log.end();
-					i++)
-			{
-				driver->draw2DLine(v2s32(x,y),
-						v2s32(x,y-(*i)*1000),
-						video::SColor(255,255,255,255));
-				x++;
-			}
+			graph.draw(10, screensize.Y - 10, driver, font);
 		}
 
 		/*
@@ -2559,7 +2696,8 @@ void the_game(
 			endscenetime = timer.stop(true);
 		}
 
-		drawtime = drawtimer.stop(true);
+		drawtime = tt_draw.stop(true);
+		g_profiler->graphAdd("mainloop_draw", (float)drawtime/1000.0f);
 
 		/*
 			End of drawing
@@ -2579,6 +2717,16 @@ void the_game(
 			device->setWindowCaption(str.c_str());
 			lastFPS = fps;
 		}
+
+		alltime = tt_all.stop(true);
+		g_profiler->graphAdd("mainloop_other", (float)(alltime-drawtime)/1000.0f);
+
+		/*
+			Log times and stuff for visualization
+		*/
+		Profiler::GraphValues values;
+		g_profiler->graphGet(values);
+		graph.put(values);
 	}
 
 	/*
