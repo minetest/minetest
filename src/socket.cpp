@@ -325,7 +325,7 @@ bool UDPSocket::WaitData(int timeout_ms)
 	// select()
 	result = select(m_handle+1, &readset, NULL, NULL, &tv);
 
-	if(result == 0){
+	if(result == 0  || errno == EINTR){
 		// Timeout
 		/*dstream<<"Select timed out (timeout_ms="
 				<<timeout_ms<<")"<<std::endl;*/
