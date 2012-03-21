@@ -1049,22 +1049,25 @@ inline s32 mystoi(const std::string &s, s32 min, s32 max)
 // MSVC2010 includes it's own versions of these
 //#if !defined(_MSC_VER) || _MSC_VER < 1600
 
-inline s32 mystoi(std::string s)
+inline s32 mystoi(const std::string &s)
 {
 	return atoi(s.c_str());
 }
 
-inline s32 mystoi(std::wstring s)
+inline s32 mystoi(const std::wstring &s)
 {
 	return atoi(wide_to_narrow(s).c_str());
 }
 
-inline float mystof(std::string s)
+inline float mystof(const std::string &s)
 {
-	float f;
+	// This crap causes a segfault in certain cases on MinGW
+	/*float f;
 	std::istringstream ss(s);
 	ss>>f;
-	return f;
+	return f;*/
+	// This works in that case
+	return atof(s.c_str());
 }
 
 //#endif
