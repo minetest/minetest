@@ -175,7 +175,8 @@ private:
 
 enum ScopeProfilerType{
 	SPT_ADD,
-	SPT_AVG
+	SPT_AVG,
+	SPT_GRAPH_ADD
 };
 
 class ScopeProfiler
@@ -215,6 +216,9 @@ public:
 					break;
 				case SPT_AVG:
 					m_profiler->avg(m_name, duration);
+					break;
+				case SPT_GRAPH_ADD:
+					m_profiler->graphAdd(m_name, duration);
 					break;
 				}
 			}
