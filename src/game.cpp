@@ -666,7 +666,9 @@ public:
 		static const video::SColor usable_colors[] = {
 			video::SColor(255,255,100,100),
 			video::SColor(255,90,225,90),
-			video::SColor(255,100,100,255)
+			video::SColor(255,100,100,255),
+			video::SColor(255,255,150,50),
+			video::SColor(255,220,220,100)
 		};
 		static const u32 usable_colors_count =
 				sizeof(usable_colors) / sizeof(*usable_colors);
@@ -702,7 +704,7 @@ public:
 			s32 y = y_bottom - meta_i * 50;
 			float show_min = meta.min;
 			float show_max = meta.max;
-			if(show_min >= 0 && show_max >= 0){
+			if(show_min >= -0.0001 && show_max >= -0.0001){
 				if(show_min <= show_max * 0.5)
 					show_min = 0;
 			}
@@ -1200,6 +1202,8 @@ void the_game(
 		else
 			dtime = 0;
 		lasttime = time;
+
+		g_profiler->graphAdd("mainloop_dtime", dtime);
 
 		/* Run timers */
 
@@ -2407,7 +2411,7 @@ void the_game(
 		}
 
 		{
-			float statustext_time_max = 3.0;
+			float statustext_time_max = 1.5;
 			if(!statustext.empty())
 			{
 				statustext_time += dtime;
@@ -2441,7 +2445,7 @@ void the_game(
 					initial_color.getInterpolated_quadratic(
 						initial_color,
 						final_color,
-						statustext_time / (float) statustext_time_max);
+						pow(statustext_time / (float)statustext_time_max, 2.0));
 				guitext_status->setOverrideColor(fade_color);
 				guitext_status->enableOverrideColor(true);
 			}
