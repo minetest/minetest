@@ -2465,7 +2465,7 @@ void the_game(
 					initial_color.getInterpolated_quadratic(
 						initial_color,
 						final_color,
-						pow(statustext_time / (float)statustext_time_max, 2.0));
+						pow(statustext_time / (float)statustext_time_max, 2.0f));
 				guitext_status->setOverrideColor(fade_color);
 				guitext_status->enableOverrideColor(true);
 			}
