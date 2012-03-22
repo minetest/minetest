@@ -2663,11 +2663,6 @@ void the_game(
 					NULL);
 		}
 
-		// Clear Z buffer
-		driver->clearZBuffer();
-		// Draw some sky things
-		//draw_horizon(driver, camera.getCameraNode());
-		
 		/*
 			End scene
 		*/
