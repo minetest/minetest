@@ -271,6 +271,7 @@ zlib-compressed node data:
   u8[4096]: param0 fields
   u8[4096]: param1 fields
   u8[4096]: param2 fields
+- The location of a node in each of those arrays is (z*16*16 + y*16 + x).
 
 zlib-compressed node metadata list
 - content:
@@ -315,6 +316,22 @@ foreach num_name_id_mappings
   u8[name_len] name
 
 EOF.
+
+Format of nodes
+----------------
+A node is composed of the u8 fields param0, param1 and param2.
+
+The content id of a node is determined as so:
+- If param0 < 0x80,
+    content_id = param0
+- Otherwise
+    content_id = (param0<<4) + (param2>>4)
+
+The purpose of param1 and param2 depend on the definition of the node.
+
+The name-id-mapping
+--------------------
+The mapping maps node content ids to node names.
 
 Node metadata format
 ---------------------
