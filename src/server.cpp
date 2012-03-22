@@ -1898,13 +1898,17 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 	
 	try{
 		Address address = m_con.GetPeerAddress(peer_id);
+		std::string addr_s = address.serializeString();
 
 		// drop player if is ip is banned
-		if(m_banmanager.isIpBanned(address.serializeString())){
+		if(m_banmanager.isIpBanned(addr_s)){
+			infostream<<"Server: A banned client tried to connect from "
+					<<addr_s<<"; banned name was "
+					<<m_banmanager.getBanName(addr_s)<<std::endl;
+			// This actually doesn't seem to transfer to the client
 			SendAccessDenied(m_con, peer_id,
 					L"Your ip is banned. Banned name was "
-					+narrow_to_wide(m_banmanager.getBanName(
-						address.serializeString())));
+					+narrow_to_wide(m_banmanager.getBanName(addr_s)));
 			m_con.DeletePeer(peer_id);
 			return;
 		}
