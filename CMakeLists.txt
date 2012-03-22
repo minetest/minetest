@@ -95,6 +95,8 @@ if(RUN_IN_PLACE)
 endif()
 
 install(FILES "README.txt" DESTINATION "${DOCDIR}")
+install(FILES "doc/lua_api.txt" DESTINATION "${DOCDIR}")
+install(FILES "doc/mapformat.txt" DESTINATION "${DOCDIR}")
 install(FILES "minetest.conf.example" DESTINATION "${EXAMPLE_CONF_DIR}")
 
 if(UNIX)
