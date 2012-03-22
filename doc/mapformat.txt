@@ -1,11 +1,11 @@
-===============================================
-Minetest World Format used as of 0.4.dev-120322
-===============================================
+=================================================
+Minetest World Format used as of 0.4.dev-20120322
+=================================================
 
 This applies to a world format carrying the block serialization version 22
-which is used at least in version 0.4.dev-120322.
+which is used at least in version 0.4.dev-20120322.
 
-The map data serialization version used is 22. It does not fully specify every
+The block serialization version used is 22. It does not fully specify every
 aspect of this format; if compliance with this format is to be checked, it
 needs to be done by detecting if the files and data indeed follows it.
 
@@ -370,6 +370,50 @@ Node metadata format
   u16 len
   u8[len] owner
   serialized inventory
+
+Static objects
+---------------
+Static objects are persistent freely moving objects in the world.
+
+Object types:
+1: Test object
+2: Item
+3: Rat (deprecated)
+4: Oerkki (deprecated)
+5: Firefly (deprecated)
+6: MobV2 (deprecated)
+7: LuaEntity
+
+1: Item:
+  u8 version
+  version 0:
+    u16 len
+    u8[len] itemstring
+
+7: LuaEntity:
+  u8 version
+  version 1:
+    u16 len
+    u8[len] entity name
+    u32 len
+    u8[len] static data
+    s16 hp
+    s32 velocity.x * 10000
+    s32 velocity.y * 10000
+    s32 velocity.z * 10000
+    s32 yaw * 1000
+
+Itemstring format
+------------------
+eg. 'default:dirt 5'
+eg. 'default:pick_wood 21323'
+eg. '"default:apple" 2'
+eg. 'default:apple'
+- The wear value in tools is 0...65535
+- There are also a number of older formats that you might stumble upon:
+eg. 'node "default:dirt" 5'
+eg. 'NodeItem default:dirt 5'
+eg. 'ToolItem WPick 21323'
 
 Inventory serialization format
 -------------------------------

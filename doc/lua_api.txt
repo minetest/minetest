@@ -145,13 +145,13 @@ Currently the API does not provide any helper functions for addition,
 subtraction and whatever; you can define those that you need yourself.
 
 stackstring/itemstring: A stack of items in serialized format.
-eg. 'node "default:dirt" 5'
-eg. 'tool "default:pick_wood" 21323'
-eg. 'craft "default:apple" 2'
+eg. 'default:dirt 5'
+eg. 'default:pick_wood 21323'
+eg. 'default:apple'
 
 item: A stack of items in Lua table format.
-eg. {name="default:dirt", count=1, wear=0, metadata=""} 
-    ^ a single dirt node
+eg. {name="default:dirt", count=5, wear=0, metadata=""} 
+    ^ 5 dirt nodes
 eg. {name="default:pick_wood", count=1, wear=21323, metadata=""}
     ^ a wooden pick about 1/3 weared out
 eg. {name="default:apple", count=1, wear=0, metadata=""}
