@@ -49,18 +49,20 @@ struct ToolGroupCap
 	}
 };
 
+
+typedef std::map<std::string, struct ToolGroupCap> ToolGCMap;
+
 struct ToolCapabilities
 {
 	float full_punch_interval;
 	int max_drop_level;
-	std::map<std::string, ToolGroupCap> groupcaps;
+	ToolGCMap groupcaps;
 
 	ToolCapabilities(
 			float full_punch_interval_=1.4,
 			int max_drop_level_=1,
-			std::map<std::string, ToolGroupCap> groupcaps_ =
-					std::map<std::string, ToolGroupCap>()
-	):
+			ToolGCMap groupcaps_=ToolGCMap()
+	) :
 		full_punch_interval(full_punch_interval_),
 		max_drop_level(max_drop_level_),
 		groupcaps(groupcaps_)
