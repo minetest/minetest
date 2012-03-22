@@ -1,7 +1,72 @@
-I'll try to quickly document the newest block format in here (might contain
-errors). Refer to the mapgen or minetestmapper script for the directory
-structure and file naming. There are two sector namings possible,
-sector/XXXXZZZZ and sector/XXX/ZZZ.
+=========================================
+         Minetest World Format
+=========================================
+
+Format used as of 0.4.dev-120322
+==================================
+
+This applies to a world format carrying the serialization version 22 which
+is used at least in version 0.4.dev-120322.
+
+The serialization version used is 22. It does not fully specify every aspect
+of this format; if compliance with this format is to be checked, it needs to
+be done by detecting if the files and data indeed follows it.
+
+Legacy stuff:
+-------------
+Data can, in theory, be contained in the flat file directory structure
+described below in Version 17, but it is not officially supported.
+
+Files:
+------
+Everything is contained in a directory, the name of which is freeform, but
+often serves as the name of the world.
+
+Currently the authentication and ban data is stored on a per-world basis. It
+can be copied over from an old world to a newly created world.
+
+World
+|-- auth.txt ----- Authentication data
+|-- env_meta.txt - Environment metadata
+|-- ipban.txt ---- Banned ips/users
+|-- map_meta.txt - Map metadata
+|-- map.sqlite --- Map data
+|-- players ------ Player directory
+|   |-- player1 -- Player file
+|   '-- player2 -- Player file
+`-- world.mt ----- World metadata
+
+auth.txt
+---------
+Contains authentication data, player per line.
+<name>:<password hash as <name><password> SHA1 base64>:<privilege1,...>
+Example lines:
+Player "celeron55", no password, privileges "interact" and "shout":
+celeron55::interact,shout
+Player "Foo", password "bar", privileges "interact" and "shout":
+foo:iEPX+SQWIR3p67lj/0zigSWTKHg:interact,shout
+
+env_meta.txt
+-------------
+--- Example content ---
+game_time = 73471
+time_of_day = 19118
+EnvArgsEnd
+-----------------------
+
+ipban.txt
+----------
+
+
+Format used as of 2011-05 or so
+================================
+
+Map data serialization format version 17.
+
+Directory structure:
+sectors/XXXXZZZZ or sectors2/XXX/ZZZ
+XXXX, ZZZZ, XXX and ZZZ being the hexadecimal X and Z coordinates.
+Under these, the block files are stored, called YYYY.
 
 There also exists files map_meta.txt and chunk_meta, that are used by the
 generator. If they are not found or invalid, the generator will currently
