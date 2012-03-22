@@ -1,0 +1,666 @@
+Minetest Lua Modding API Reference 0.4.dev
+==========================================
+
+Programming in Lua
+-------------------
+If you have any difficulty in understanding this, please read:
+  http://www.lua.org/pil/
+
+Helper functions
+-----------------
+dump2(obj, name="_", dumped={})
+^ Return object serialized as a string, handles reference loops
+dump(obj, dumped={})
+^ Return object serialized as a string
+
+Mod load path
+-------------
+Generic:
+  $path_share/games/gameid/mods/
+  $path_share/mods/gameid/
+  $path_user/games/gameid/mods/
+  $path_user/mods/gameid/ <-- User-installed mods
+  $worldpath/worldmods/
+
+In a run-in-place version (eg. the distributed windows version):
+  minetest-0.4.x/games/gameid/mods/
+  minetest-0.4.x/mods/gameid/ <-- User-installed mods
+  minetest-0.4.x/worlds/worldname/worldmods/
+
+On an installed version on linux:
+  /usr/share/minetest/games/gameid/mods/
+  ~/.minetest/mods/gameid/ <-- User-installed mods
+  ~/.minetest/worlds/worldname/worldmods
+
+Naming convention for registered textual names
+----------------------------------------------
+"modname:<whatever>" (<whatever> can have characters a-zA-Z0-9_)
+
+This is to prevent conflicting names from corrupting maps and is
+enforced by the mod loader.
+
+Example: mod "experimental", ideal item/node/entity name "tnt":
+         -> the name should be "experimental:tnt".
+
+Enforcement can be overridden by prefixing the name with ":". This can
+be used for overriding the registrations of some other mod.
+
+Example: Any mod can redefine experimental:tnt by using the name
+         ":experimental:tnt" when registering it.
+(also that mod is required to have "experimental" as a dependency)
+
+The ":" prefix can be used for maintaining backwards compatibility.
+
+Aliases
+-------
+Aliases can be added by using minetest.register_alias(name, convert_to)
+
+This can be used for maintaining backwards compatibility.
+
+This can be also used for setting quick access names for things, eg. if
+you have an item called epiclylongmodname:stuff, you could do
+  minetest.register_alias("stuff", "epiclylongmodname:stuff")
+and be able to use "/giveme stuff".
+
+Textures
+--------
+Mods should generally prefix their textures with modname_, eg. given
+the mod name "foomod", a texture could be called
+  "foomod_foothing.png"
+
+Representations of simple things
+--------------------------------
+MapNode representation:
+  {name="name", param1=num, param2=num}
+
+MapNodes do not directly have any other data associated with them.
+If you want to access the definition of the node, you access
+  minetest.registered_nodes[node.name]
+
+param1 and param2 are 8 bit and 4 bit integers, respectively. They
+are reserved for certain automated functions. If you don't use these
+functions, you can use them to store arbitrary values.
+
+param1 is reserved for the engine when:
+  paramtype != "none"
+param2 is reserved for the engine when any of these are used:
+  liquidtype == "flowing"
+  drawtype == "flowingliquid"
+  drawtype == "torchlike"
+  drawtype == "signlike"
+
+Position/vector:
+  {x=num, y=num, z=num}
+Currently the API does not provide any helper functions for addition,
+subtraction and whatever; you can define those that you need yourself.
+
+stackstring/itemstring: A stack of items in serialized format.
+eg. 'node "default:dirt" 5'
+eg. 'tool "default:pick_wood" 21323'
+eg. 'craft "default:apple" 2'
+
+item: A stack of items in Lua table format.
+eg. {name="default:dirt", count=1, wear=0, metadata=""} 
+    ^ a single dirt node
+eg. {name="default:pick_wood", count=1, wear=21323, metadata=""}
+    ^ a wooden pick about 1/3 weared out
+eg. {name="default:apple", count=1, wear=0, metadata=""}
+    ^ an apple.
+
+Any time an item must be passed to a function, it can be an
+ItemStack (see below), an itemstring or a table in the above format.
+
+Items
+------
+Node (register_node):
+  A node from the world
+Tool (register_tool):
+  A tool/weapon that can dig and damage things according to tool_capabilities
+Craftitem (register_craftitem):
+  A miscellaneous item
+
+Groups
+-------
+In a number of places, there is a group table. Groups define the
+properties of a thing (item, node, armor of entity, capabilities of
+tool) in such a way that the engine and other mods can can interact with
+the thing without actually knowing what the thing is.
+
+Usage:
+- Groups are stored in a table, having the group names with keys and the
+  group ratings as values. For example:
+    groups = {crumbly=3, soil=1}
+    ^ Default dirt (soil group actually currently not defined; TODO)
+    groups = {crumbly=2, soil=1, level=2, outerspace=1}
+    ^ A more special dirt-kind of thing
+- Groups always have a rating associated with them. If there is no
+  useful meaning for a rating for an enabled group, it shall be 1.
+- When not defined, the rating of a group defaults to 0. Thus when you
+  read groups, you must interpret nil and 0 as the same value, 0.
+
+Groups of items
+----------------
+Groups of items can define what kind of an item it is (eg. wool).
+
+Groups of nodes
+----------------
+In addition to the general item things, whether a node is diggable and how
+long it takes is defined by using groups.
+
+Groups of entities
+-------------------
+For entities, groups are, as of now, used only for calculating damage.
+
+object.get_armor_groups() -> a group-rating table (eg. {fleshy=3})
+object.set_armor_groups({level=2, fleshy=2, cracky=2})
+
+Groups of tools
+----------------
+Groups in tools define which groups of nodes and entities they are
+effective towards.
+
+Groups in crafting recipes
+---------------------------
+- Not implemented yet. (TODO)
+- Will probably look like this:
+{
+    output = 'food:meat_soup_raw',
+    recipe = {
+        {'group:meat'},
+        {'group:water'},
+        {'group:bowl'},
+    },
+	preserve = {'group:bowl'},
+}
+
+Special groups
+---------------
+- immortal: Disables the group damage system for an entity
+- level: Can be used to give an additional sense of progression in the game.
+  - A larger level will cause eg. a weapon of a lower level make much less
+    damage, and get weared out much faster, or not be able to get drops
+	from destroyed nodes.
+  - 0 is something that is directly accessible at the start of gameplay
+- dig_immediate: (player can always pick up node without tool wear)
+  - 2: node is removed without tool wear after 0.5 seconds or so
+       (rail, sign)
+  - 3: node is removed without tool wear immediately (torch)
+
+Known damage and digging time defining groups
+----------------------------------------------
+- crumbly: dirt, sand
+- cracky: tough but crackable stuff like stone.
+- snappy: something that can be cut using fine tools; eg. leaves, small
+          plants, wire, sheets of metal
+- choppy: something that can be cut using force; eg. trees, wooden planks
+- fleshy: Living things like animals and the player. This could imply
+          some blood effects when hitting.
+- explody: Especially prone to explosions
+- oddly_breakable_by_hand:
+   Can be added to nodes that shouldn't logically be breakable by the
+   hand but are. Somewhat similar to dig_immediate, but times are more
+   like {[1]=3.50,[2]=2.00,[3]=0.70} and this does not override the
+   speed of a tool if the tool can dig at a larger speed than this
+   suggests for the hand.
+
+Examples of custom groups
+--------------------------
+Item groups are often used for defining, well, //groups of items//.
+- meat: any meat-kind of a thing (rating might define the size or healing
+  ability or be irrelevant - it is not defined as of yet)
+- eatable: anything that can be eaten. Rating might define HP gain in half
+  hearts.
+- flammable: can be set on fire. Rating might define the intensity of the
+  fire, affecting eg. the speed of the spreading of an open fire.
+- wool: any wool (any origin, any color)
+- metal: any metal
+- weapon: any weapon
+- heavy: anything considerably heavy
+
+Digging time calculation specifics
+-----------------------------------
+Groups such as **crumbly**, **cracky** and **snappy** are used for this
+purpose. Rating is 1, 2 or 3. A higher rating for such a group implies
+faster digging time.
+
+Also, the **level** group is used.
+
+Tools define their properties by a list of parameters for groups. They
+cannot dig other groups; thus it is important to use a standard bunch of
+groups to enable interaction with tools.
+
+**Example definition of the digging capabilities of a tool:**
+tool_capabilities = {
+	full_punch_interval=1.5,
+	max_drop_level=1,
+	groupcaps={
+		crumbly={maxwear=0.01, maxlevel=2, times={[1]=0.80, [2]=0.60, [3]=0.40}}
+	}
+}
+
+**Tools define:**
+  * Full punch interval Maximum drop level For an arbitrary list of groups:
+  * Maximum level (usually 0, 1, 2 or 3) Maximum wear (0...1) Digging times
+
+**Full punch interval**: When used as a weapon, the tool will do full
+damage if this time is spent between punches. If eg. half the time is
+spent, the tool will do half damage.
+
+**Maximum drop level** suggests the maximum level of node, when dug with
+the tool, that will drop it's useful item. (eg. iron ore to drop a lump of
+iron).
+
+**Maximum level** tells what is the maximum level of a node of this group
+that the tool will be able to dig.
+
+**Maximum wear** determines how much the tool wears out when it is used for
+digging a node, of this group, of the maximum level. For lower leveled
+tools, the wear is divided by //4// to the exponent //level difference//.
+This means for a maximum wear of 0.1, a level difference 1 will result in
+wear=0.1/4=0.025, and a level difference of 2 will result in
+wear=0.1/(4*4)=0.00625.
+
+**Digging times** is basically a list of digging times for different
+ratings of the group. It also determines the damage done to entities, based
+on their "armor groups".
+  * For example, as a lua table, ''times={2=2.00, 3=0.70}''. This would
+  * result the tool to be able to dig nodes that have a rating of 2 or 3
+  * for this group, and unable to dig the rating 1, which is the toughest.
+  * Unless there is a matching group that enables digging otherwise.  For
+  * entities, damage equals the amount of nodes dug in the time spent
+  * between hits, with a maximum of ''full_punch_interval''.
+
+Entity damage mechanism
+------------------------
+Client predicts damage based on damage groups. Because of this, it is able to
+give an immediate response when an entity is damaged or dies; the response is
+pre-defined somehow (eg. by defining a sprite animation) (not implemented;
+TODO).
+
+The group **immortal** will completely disable normal damage.
+
+Entities can define a special armor group, which is **punch_operable**. This
+group will disable the regular damage mechanism for players punching it by hand
+or a non-tool item.
+
+On the Lua side, every punch calls ''entity:on_punch(puncher,
+time_from_last_punch, tool_capabilities, direction)''. This should never be
+called directly, because damage is usually not handled by the entity itself.
+  * ''puncher'' is the object performing the punch. Can be nil. Should never be
+    accessed unless absolutely required.
+  * ''time_from_last_punch'' is time from last punch (by puncher) or nil.
+  * ''tool_capabilities'' can be nil.
+  * ''direction'' is a unit vector, pointing from the source of the punch to
+    the punched object.
+
+To punch an entity/object in Lua, call ''object:punch(puncher, time_from_last_punch, tool_capabilities, direction)''.
+  * Return value is tool wear.
+  * Parameters are equal to the above callback.
+  * If ''direction'' is nil and ''puncher'' is not nil, ''direction'' will be
+    automatically filled in based on the location of ''puncher''.
+
+minetest namespace reference
+-----------------------------
+minetest.register_entity(name, prototype table)
+minetest.register_abm(abm definition)
+minetest.register_node(name, node definition)
+minetest.register_tool(name, item definition)
+minetest.register_craftitem(name, item definition)
+minetest.register_alias(name, convert_to)
+minetest.register_craft(recipe)
+minetest.register_globalstep(func(dtime))
+minetest.register_on_placenode(func(pos, newnode, placer))
+minetest.register_on_dignode(func(pos, oldnode, digger))
+minetest.register_on_punchnode(func(pos, node, puncher))
+minetest.register_on_generated(func(minp, maxp))
+minetest.register_on_newplayer(func(ObjectRef))
+minetest.register_on_dieplayer(func(ObjectRef))
+minetest.register_on_respawnplayer(func(ObjectRef))
+^ return true in func to disable regular player placement
+^ currently called _before_ repositioning of player occurs
+minetest.register_on_chat_message(func(name, message))
+minetest.add_to_creative_inventory(itemstring)
+minetest.setting_get(name) -> string or nil
+minetest.setting_getbool(name) -> boolean value or nil
+minetest.chat_send_all(text)
+minetest.chat_send_player(name, text)
+minetest.get_player_privs(name) -> set of privs
+minetest.get_inventory(location) -> InvRef
+^ location = eg. {type="player", name="celeron55"}
+                 {type="node", pos={x=, y=, z=}}
+minetest.get_current_modname() -> string
+minetest.get_modpath(modname) -> eg. "/home/user/.minetest/usermods/modname"
+^ Useful for loading additional .lua modules or static data from mod
+minetest.get_worldpath(modname) -> eg. "/home/user/.minetest/world"
+^ Useful for storing custom data
+
+minetest.debug(line)
+^ Goes to dstream
+minetest.log(line)
+minetest.log(loglevel, line)
+^ loglevel one of "error", "action", "info", "verbose"
+
+Global objects:
+minetest.env - environment reference
+
+Global tables:
+minetest.registered_items
+^ List of registered items, indexed by name
+minetest.registered_nodes
+^ List of registered node definitions, indexed by name
+minetest.registered_craftitems
+^ List of registered craft item definitions, indexed by name
+minetest.registered_tools
+^ List of registered tool definitions, indexed by name
+minetest.registered_entities
+^ List of registered entity prototypes, indexed by name
+minetest.object_refs
+^ List of object references, indexed by active object id
+minetest.luaentities
+^ List of lua entities, indexed by active object id
+
+Deprecated but defined for backwards compatibility:
+minetest.digprop_constanttime(time)
+minetest.digprop_stonelike(toughness)
+minetest.digprop_dirtlike(toughness)
+minetest.digprop_gravellike(toughness)
+minetest.digprop_woodlike(toughness)
+minetest.digprop_leaveslike(toughness)
+minetest.digprop_glasslike(toughness)
+
+Class reference
+----------------
+EnvRef: basically ServerEnvironment and ServerMap combined.
+methods:
+- add_node(pos, node)
+- remove_node(pos)
+- get_node(pos)
+  ^ Returns {name="ignore", ...} for unloaded area
+- get_node_or_nil(pos)
+  ^ Returns nil for unloaded area
+- get_node_light(pos, timeofday) -> 0...15 or nil
+  ^ timeofday: nil = current time, 0 = night, 0.5 = day
+- add_entity(pos, name): Returns ObjectRef or nil if failed
+- add_item(pos, itemstring)
+- add_rat(pos)
+- add_firefly(pos)
+- get_meta(pos) -- Get a NodeMetaRef at that position
+- get_player_by_name(name) -- Get an ObjectRef to a player
+- get_objects_inside_radius(pos, radius)
+- set_timeofday(val): val: 0...1; 0 = midnight, 0.5 = midday
+- get_timeofday()
+
+NodeMetaRef (this stuff is subject to change in a future version)
+methods:
+- get_type()
+- allows_text_input()
+- set_text(text) -- eg. set the text of a sign
+- get_text()
+- get_owner()
+- set_owner(string)
+Generic node metadata specific:
+- set_infotext(infotext)
+- get_inventory() -> InvRef
+- set_inventory_draw_spec(string)
+- set_allow_text_input(bool)
+- set_allow_removal(bool)
+- set_enforce_owner(bool)
+- is_inventory_modified()
+- reset_inventory_modified()
+- is_text_modified()
+- reset_text_modified()
+- set_string(name, value)
+- get_string(name)
+
+ObjectRef: Moving things in the game are generally these
+(basically reference to a C++ ServerActiveObject)
+methods:
+- remove(): remove object (after returning from Lua)
+- getpos() -> {x=num, y=num, z=num}
+- setpos(pos); pos={x=num, y=num, z=num}
+- moveto(pos, continuous=false): interpolated move
+- punch(puncher, time_from_last_punch, tool_capabilities, direction)
+  ^ puncher = an another ObjectRef,
+  ^ time_from_last_punch = time since last punch action of the puncher
+- right_click(clicker); clicker = an another ObjectRef
+- get_hp(): returns number of hitpoints (2 * number of hearts)
+- set_hp(hp): set number of hitpoints (2 * number of hearts)
+- get_inventory() -> InvRef
+- get_wield_list(): returns the name of the inventory list the wielded item is in
+- get_wield_index(): returns the index of the wielded item
+- get_wielded_item() -> ItemStack
+- set_wielded_item(item): replaces the wielded item, returns true if successful
+LuaEntitySAO-only: (no-op for other objects)
+- setvelocity({x=num, y=num, z=num})
+- getvelocity() -> {x=num, y=num, z=num}
+- setacceleration({x=num, y=num, z=num})
+- getacceleration() -> {x=num, y=num, z=num}
+- setyaw(radians)
+- getyaw() -> radians
+- settexturemod(mod)
+- setsprite(p={x=0,y=0}, num_frames=1, framelength=0.2,
+-           select_horiz_by_yawpitch=false)
+- ^ Select sprite from spritesheet with optional animation and DM-style
+-   texture selection based on yaw relative to camera
+- set_armor_groups({group1=rating, group2=rating, ...})
+- get_entity_name() (DEPRECATED: Will be removed in a future version)
+- get_luaentity()
+Player-only: (no-op for other objects)
+- get_player_name(): will return nil if is not a player
+- get_look_dir(): get camera direction as a unit vector
+- get_look_pitch(): pitch in radians
+- get_look_yaw(): yaw in radians (wraps around pretty randomly as of now)
+
+InvRef: Reference to an inventory
+methods:
+- get_size(listname): get size of a list
+- set_size(listname, size): set size of a list
+- get_stack(listname, i): get a copy of stack index i in list
+- set_stack(listname, i, stack): copy stack to index i in list
+- get_list(listname): return full list
+- set_list(listname, list): set full list (size will not change)
+- add_item(listname, stack): add item somewhere in list, returns leftover ItemStack
+- room_for_item(listname, stack): returns true if the stack of items
+    can be fully added to the list
+- contains_item(listname, stack): returns true if the stack of items
+    can be fully taken from the list
+  remove_item(listname, stack): take as many items as specified from the list,
+    returns the items that were actually removed (as an ItemStack)
+
+ItemStack: A stack of items.
+methods:
+- is_empty(): return true if stack is empty
+- get_name(): returns item name (e.g. "default:stone")
+- get_count(): returns number of items on the stack
+- get_wear(): returns tool wear (0-65535), 0 for non-tools
+- get_metadata(): returns metadata (a string attached to an item stack)
+- clear(): removes all items from the stack, making it empty
+- replace(item): replace the contents of this stack (item can also
+    be an itemstring or table)
+- to_string(): returns the stack in itemstring form
+- to_table(): returns the stack in Lua table form
+- get_stack_max(): returns the maximum size of the stack (depends on the item)
+- get_free_space(): returns get_stack_max() - get_count()
+- is_known(): returns true if the item name refers to a defined item type
+- get_definition(): returns the item definition table
+- get_tool_capabilities(): returns the digging properties of the item,
+  ^ or those of the hand if none are defined for this item type
+- add_wear(amount): increases wear by amount if the item is a tool
+- add_item(item): put some item or stack onto this stack,
+  ^ returns leftover ItemStack
+- item_fits(item): returns true if item or stack can be fully added to this one
+- take_item(n): take (and remove) up to n items from this stack
+  ^ returns taken ItemStack
+  ^ if n is omitted, n=1 is used
+- peek_item(n): copy (don't remove) up to n items from this stack
+  ^ returns copied ItemStack
+  ^ if n is omitted, n=1 is used
+
+Registered entities
+--------------------
+- Functions receive a "luaentity" as self:
+  - It has the member .name, which is the registered name ("mod:thing")
+  - It has the member .object, which is an ObjectRef pointing to the object
+  - The original prototype stuff is visible directly via a metatable
+- Callbacks:
+  - on_activate(self, staticdata)
+    ^ Called when the object is instantiated.
+  - on_step(self, dtime)
+    ^ Called on every server tick (dtime is usually 0.05 seconds)
+  - on_punch(self, puncher, time_from_last_punch, tool_capabilities, dir)
+    ^ Called when somebody punches the object.
+    ^ Note that you probably want to handle most punches using the
+      automatic armor group system.
+    ^ puncher: ObjectRef (can be nil)
+    ^ time_from_last_punch: Meant for disallowing spamming of clicks (can be nil)
+    ^ tool_capabilities: capability table of used tool (can be nil)
+	^ dir: unit vector of direction of punch. Always defined. Points from
+	       the puncher to the punched.
+  - on_rightclick(self, clicker)
+  - get_staticdata(self)
+    ^ Should return a string that will be passed to on_activate when
+      the object is instantiated the next time.
+
+Definition tables
+------------------
+
+Entity definition (register_entity)
+{
+    physical = true,
+    collisionbox = {-0.5,-0.5,-0.5, 0.5,0.5,0.5},
+    visual = "cube"/"sprite",
+    visual_size = {x=1, y=1},
+    textures = {texture,texture,texture,texture,texture,texture},
+    spritediv = {x=1, y=1},
+    initial_sprite_basepos = {x=0, y=0},
+    on_activate = function(self, staticdata),
+    on_step = function(self, dtime),
+    on_punch = function(self, hitter),
+    on_rightclick = function(self, clicker),
+    get_staticdata = function(self),
+    # Also you can define arbitrary member variables here
+    myvariable = whatever,
+}
+
+ABM (ActiveBlockModifier) definition (register_abm)
+{
+    nodenames = {"default:lava_source"},
+    neighbors = {"default:water_source", "default:water_flowing"}, -- (any of these)
+     ^ If left out or empty, any neighbor will do
+    interval = 1.0, -- (operation interval)
+    chance = 1, -- (chance of trigger is 1.0/this)
+    action = func(pos, node, active_object_count, active_object_count_wider),
+}
+
+Item definition (register_node, register_craftitem, register_tool)
+{
+    description = "Steel Axe",
+    groups = {}, -- key=name, value=rating; rating=1..3.
+                    if rating not applicable, use 1.
+                    eg. {wool=1, fluffy=3}
+                        {soil=2, outerspace=1, crumbly=1}
+                        {bendy=2, snappy=1},
+                        {hard=1, metal=1, spikes=1}
+    inventory_image = "default_tool_steelaxe.png",
+    wield_image = "",
+    wield_scale = {x=1,y=1,z=1},
+    stack_max = 99,
+    liquids_pointable = false,
+    tool_capabilities = {
+        full_punch_interval = 1.0,
+        max_drop_level=0,
+        groupcaps={
+            -- For example:
+            fleshy={times={[2]=0.80, [3]=0.40}, maxwear=0.05, maxlevel=1},
+            snappy={times={[2]=0.80, [3]=0.40}, maxwear=0.05, maxlevel=1},
+            choppy={times={[3]=0.90}, maxwear=0.05, maxlevel=0}
+        }
+    }
+    on_drop = func(item, dropper, pos),
+    on_place = func(item, placer, pointed_thing),
+    on_use = func(item, user, pointed_thing),
+}
+
+Node definition (register_node)
+{
+    <all fields allowed in item definitions>,
+
+    drawtype = "normal",
+    visual_scale = 1.0,
+    tile_images = {"default_unknown_block.png"},
+    special_materials = {
+        {image="", backface_culling=true},
+        {image="", backface_culling=true},
+    },
+    alpha = 255,
+    post_effect_color = {a=0, r=0, g=0, b=0},
+    paramtype = "none",
+    paramtype2 = "none",
+    is_ground_content = false,
+    sunlight_propagates = false,
+    walkable = true,
+    pointable = true,
+    diggable = true,
+    climbable = false,
+    buildable_to = false,
+    drop = "",
+    -- alternatively drop = { max_items = ..., items = { ... } }
+    metadata_name = "",
+    liquidtype = "none",
+    liquid_alternative_flowing = "",
+    liquid_alternative_source = "",
+    liquid_viscosity = 0,
+    light_source = 0,
+    damage_per_second = 0,
+    selection_box = {type="regular"},
+    legacy_facedir_simple = false, -- Support maps made in and before January 2012
+    legacy_wallmounted = false, -- Support maps made in and before January 2012
+}
+
+Recipe: (register_craft)
+{
+    output = 'default:pick_stone',
+    recipe = {
+        {'default:cobble', 'default:cobble', 'default:cobble'},
+        {'', 'default:stick', ''},
+        {'', 'default:stick', ''},
+    },
+    replacements = <optional list of item pairs,
+                    replace one input item with another item on crafting>
+}
+
+Recipe (shapeless):
+{
+    type = "shapeless",
+    output = 'mushrooms:mushroom_stew',
+    recipe = {
+        "mushrooms:bowl",
+        "mushrooms:mushroom_brown",
+        "mushrooms:mushroom_red",
+    },
+    replacements = <optional list of item pairs,
+                    replace one input item with another item on crafting>
+}
+
+Recipe (tool repair):
+{
+    type = "toolrepair",
+    additional_wear = -0.02,
+}
+
+Recipe (cooking):
+{
+    type = "cooking",
+    output = "default:glass",
+    recipe = "default:sand",
+    cooktime = 3,
+}
+
+Recipe (furnace fuel):
+{
+    type = "fuel",
+    recipe = "default:leaves",
+    burntime = 1,
+}
+
+
