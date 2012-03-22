@@ -1,17 +1,31 @@
 Minetest Lua Modding API Reference 0.4.dev
 ==========================================
+More information at http://c55.me/minetest/
+
+Introduction
+-------------
+Content and functionality can be added to Minetest 0.4 by using Lua
+scripting in run-time loaded mods.
+
+A mod is a self-contained bunch of scripts, textures and other related
+things that is loaded by and interfaces with Minetest.
+
+Mods are contained and ran solely on the server side. Definitions and media
+files are automatically transferred to the client.
+
+If you see a deficiency in the API, feel free to attempt to add the
+functionality in the engine and API. You can send such improvements as
+source code patches to <celeron55@gmail.com>.
 
 Programming in Lua
 -------------------
 If you have any difficulty in understanding this, please read:
   http://www.lua.org/pil/
 
-Helper functions
------------------
-dump2(obj, name="_", dumped={})
-^ Return object serialized as a string, handles reference loops
-dump(obj, dumped={})
-^ Return object serialized as a string
+Startup
+--------
+Mods are loaded during server startup from the mod load paths by running
+the init.lua scripts.
 
 Mod load path
 -------------
@@ -32,9 +46,42 @@ On an installed version on linux:
   ~/.minetest/mods/gameid/ <-- User-installed mods
   ~/.minetest/worlds/worldname/worldmods
 
+Mod directory structure
+------------------------
+mods
+|-- modname
+|   |-- depends.txt
+|   |-- init.lua
+|   |-- textures
+|   |   |-- modname_stuff.png
+|   |   `-- modname_something_else.png
+|   `-- <custom data>
+`-- another
+
+modname:
+  The location of this directory can be fetched by using
+  minetest.get_modpath(modname)
+
+depends.txt:
+  List of mods that have to be loaded before loading this mod.
+  A single line contains a single modname.
+
+init.lua:
+  The main Lua script. Running this script should register everything it
+  wants to register. Subsequent execution depends on minetest calling the
+  registered callbacks.
+
+  minetest.setting_get(name) and minetest.setting_getbool(name) can be used
+  to read custom or existing settings at load time, if necessary.
+
+textures:
+  These textures will be transferred to the client and can be referred to
+  by the mod.
+
 Naming convention for registered textual names
 ----------------------------------------------
-"modname:<whatever>" (<whatever> can have characters a-zA-Z0-9_)
+Registered names should generally be in this format:
+  "modname:<whatever>" (<whatever> can have characters a-zA-Z0-9_)
 
 This is to prevent conflicting names from corrupting maps and is
 enforced by the mod loader.
@@ -49,11 +96,14 @@ Example: Any mod can redefine experimental:tnt by using the name
          ":experimental:tnt" when registering it.
 (also that mod is required to have "experimental" as a dependency)
 
-The ":" prefix can be used for maintaining backwards compatibility.
+The ":" prefix can also be used for maintaining backwards compatibility.
 
 Aliases
 -------
 Aliases can be added by using minetest.register_alias(name, convert_to)
+
+This will make Minetest to convert things called name to things called
+convert_to.
 
 This can be used for maintaining backwards compatibility.
 
@@ -298,6 +348,13 @@ To punch an entity/object in Lua, call ''object:punch(puncher, time_from_last_pu
   * Parameters are equal to the above callback.
   * If ''direction'' is nil and ''puncher'' is not nil, ''direction'' will be
     automatically filled in based on the location of ''puncher''.
+
+Helper functions
+-----------------
+dump2(obj, name="_", dumped={})
+^ Return object serialized as a string, handles reference loops
+dump(obj, dumped={})
+^ Return object serialized as a string
 
 minetest namespace reference
 -----------------------------
