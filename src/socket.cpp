@@ -227,7 +227,8 @@ void UDPSocket::Send(const Address & destination, const void * data, int size)
 		dstream<<", size="<<size<<", data=";
 		for(int i=0; i<size && i<20; i++){
 			if(i%2==0) DEBUGPRINT(" ");
-			DEBUGPRINT("%.2X", ((int)((const char*)data)[i])&0xff);
+			unsigned int a = ((const unsigned char*)data)[i];
+			DEBUGPRINT("%.2X", a);
 		}
 		if(size>20)
 			dstream<<"...";
@@ -289,7 +290,8 @@ int UDPSocket::Receive(Address & sender, void * data, int size)
 		dstream<<", size="<<received<<", data=";
 		for(int i=0; i<received && i<20; i++){
 			if(i%2==0) DEBUGPRINT(" ");
-			DEBUGPRINT("%.2X", ((int)((const char*)data)[i])&0xff);
+			unsigned int a = ((const unsigned char*)data)[i];
+			DEBUGPRINT("%.2X", a);
 		}
 		if(received>20)
 			dstream<<"...";
