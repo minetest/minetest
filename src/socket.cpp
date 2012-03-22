@@ -52,9 +52,8 @@ typedef int socket_t;
 #include <errno.h>
 #include "utility.h"
 
-// Debug printing options
-// Set to 1 for debug output
-#define DP 0
+bool socket_enable_debug_output = false;
+#define DP socket_enable_debug_output
 // This is prepended to everything printed here
 #define DPS ""
 

@@ -23,6 +23,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <ostream>
 #include "exceptions.h"
 
+extern bool socket_enable_debug_output;
+
 class SocketException : public BaseException
 {
 public:

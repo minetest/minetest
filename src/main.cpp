@@ -90,8 +90,6 @@ Profiler *g_profiler = &main_profiler;
 // Connection
 std::ostream *dout_con_ptr = &dummyout;
 std::ostream *derr_con_ptr = &verbosestream;
-//std::ostream *dout_con_ptr = &infostream;
-//std::ostream *derr_con_ptr = &errorstream;
 
 // Server
 std::ostream *dout_server_ptr = &infostream;
@@ -779,8 +777,12 @@ int main(int argc, char *argv[])
 			"Same as --world (deprecated)"));
 	allowed_options.insert("world", ValueSpec(VALUETYPE_STRING,
 			"Set world path (implies local game)"));
-	allowed_options.insert("verbose", ValueSpec(VALUETYPE_FLAG,
+	allowed_options.insert("info", ValueSpec(VALUETYPE_FLAG,
 			"Print more information to console"));
+	allowed_options.insert("verbose", ValueSpec(VALUETYPE_FLAG,
+			"Print even more information to console"));
+	allowed_options.insert("trace", ValueSpec(VALUETYPE_FLAG,
+			"Print enormous amounts of information to log and console"));
 	allowed_options.insert("logfile", ValueSpec(VALUETYPE_STRING,
 			"Set logfile path ('' = no logging)"));
 	allowed_options.insert("gameid", ValueSpec(VALUETYPE_STRING,
@@ -833,9 +835,19 @@ int main(int argc, char *argv[])
 		Low-level initialization
 	*/
 	
+	// If trace is enabled, enable logging of certain things
+	if(cmd_args.getFlag("trace")){
+		dstream<<"Enabling trace level debug output"<<std::endl;
+		dout_con_ptr = &verbosestream;
+		socket_enable_debug_output = true;
+	}
 	// In certain cases, output info level on stderr
-	if(cmd_args.getFlag("verbose") || cmd_args.getFlag("speedtests"))
+	if(cmd_args.getFlag("info") || cmd_args.getFlag("verbose") ||
+			cmd_args.getFlag("trace") || cmd_args.getFlag("speedtests"))
 		log_add_output(&main_stderr_log_out, LMT_INFO);
+	// In certain cases, output verbose level on stderr
+	if(cmd_args.getFlag("verbose") || cmd_args.getFlag("trace"))
+		log_add_output(&main_stderr_log_out, LMT_VERBOSE);
 
 	porting::signal_handler_init();
 	bool &kill = *porting::signal_handler_killstatus();
