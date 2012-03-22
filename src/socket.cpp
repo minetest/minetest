@@ -18,6 +18,33 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 */
 
 #include "socket.h"
+
+#ifdef _WIN32
+	#define WIN32_LEAN_AND_MEAN
+	// Without this some of the network functions are not found on mingw
+	#ifndef _WIN32_WINNT
+		#define _WIN32_WINNT 0x0501
+	#endif
+	#include <windows.h>
+	#include <winsock2.h>
+	#include <ws2tcpip.h>
+	#ifdef _MSC_VER
+		#pragma comment(lib, "ws2_32.lib")
+	#endif
+typedef SOCKET socket_t;
+typedef int socklen_t;
+#else
+	#include <sys/types.h>
+	#include <sys/socket.h>
+	#include <netinet/in.h>
+	#include <fcntl.h>
+	#include <netdb.h>
+	#include <unistd.h>
+	#include <arpa/inet.h>
+typedef int socket_t;
+#endif
+
+#include "constants.h"
 #include "debug.h"
 #include <stdio.h>
 #include <iostream>
