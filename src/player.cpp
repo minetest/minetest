@@ -31,6 +31,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "collision.h"
 #include "environment.h"
 #include "gamedef.h"
+#include "event.h"
 
 Player::Player(IGameDef *gamedef):
 	touching_ground(false),
@@ -367,6 +368,7 @@ void LocalPlayer::move(f32 dtime, Map &map, f32 pos_max_d,
 
 		Player is allowed to jump when this is true.
 	*/
+	bool touching_ground_was = touching_ground;
 	touching_ground = false;
 
 	/*std::cout<<"Checking collisions for ("
@@ -608,6 +610,11 @@ void LocalPlayer::move(f32 dtime, Map &map, f32 pos_max_d,
 			collision_info->push_back(info);
 		}
 	}
+
+	if(!touching_ground_was && touching_ground){
+		MtEvent *e = new SimpleTriggerEvent("PlayerRegainGround");
+		m_gamedef->event()->put(e);
+	}
 }
 
 void LocalPlayer::move(f32 dtime, Map &map, f32 pos_max_d)
@@ -723,6 +730,9 @@ void LocalPlayer::applyControl(float dtime)
 			{
 				speed.Y = 6.5*BS;
 				setSpeed(speed);
+				
+				MtEvent *e = new SimpleTriggerEvent("PlayerJump");
+				m_gamedef->event()->put(e);
 			}
 		}
 		// Use the oscillating value for getting out of water

@@ -32,6 +32,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "noise.h" // easeCurve
 #include "gamedef.h"
 #include "sound.h"
+#include "event.h"
 
 Camera::Camera(scene::ISceneManager* smgr, MapDrawControl& draw_control,
 		IGameDef *gamedef):
@@ -177,8 +178,10 @@ void Camera::step(f32 dtime)
 			bool step = (was == 0 ||
 					(was < 0.5f && m_view_bobbing_anim >= 0.5f) ||
 					(was > 0.5f && m_view_bobbing_anim <= 0.5f));
-			if(step)
-				m_gamedef->sound()->playSound("default_grass_walk", false, 1.0);
+			if(step){
+				MtEvent *e = new SimpleTriggerEvent("ViewBobbingStep");
+				m_gamedef->event()->put(e);
+			}
 		}
 	}
 
@@ -190,7 +193,8 @@ void Camera::step(f32 dtime)
 		{
 			m_digging_anim = 0;
 			m_digging_button = -1;
-			m_gamedef->sound()->playSound("dig", false, 1.0);
+			MtEvent *e = new SimpleTriggerEvent("CameraDig");
+			m_gamedef->event()->put(e);
 		}
 	}
 }

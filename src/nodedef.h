@@ -20,7 +20,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #ifndef NODEDEF_HEADER
 #define NODEDEF_HEADER
 
-#include "common_irrlicht.h"
+#include "irrlichttypes.h"
 #include <string>
 #include <iostream>
 #include <map>
@@ -29,6 +29,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "tile.h"
 #endif
 #include "itemgroup.h"
+#include "sound.h" // SimpleSoundSpec
 class IItemDefManager;
 class ITextureSource;
 class IGameDef;
@@ -199,6 +200,9 @@ struct ContentFeatures
 	bool legacy_facedir_simple;
 	// Set to true if wall_mounted used to be set to true
 	bool legacy_wallmounted;
+
+	// Sound properties
+	SimpleSoundSpec sound_footstep;
 
 	/*
 		Methods

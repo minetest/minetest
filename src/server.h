@@ -40,6 +40,7 @@ typedef struct lua_State lua_State;
 class IWritableItemDefManager;
 class IWritableNodeDefManager;
 class IWritableCraftDefManager;
+class EventManager;
 
 class ServerError : public std::exception
 {
@@ -514,6 +515,7 @@ public:
 	virtual ITextureSource* getTextureSource();
 	virtual u16 allocateUnknownNodeId(const std::string &name);
 	virtual ISoundManager* getSoundManager();
+	virtual MtEventManager* getEventManager();
 	
 	IWritableItemDefManager* getWritableItemDefManager();
 	IWritableNodeDefManager* getWritableNodeDefManager();
@@ -683,6 +685,9 @@ private:
 	
 	// Craft definition manager
 	IWritableCraftDefManager *m_craftdef;
+	
+	// Event manager
+	EventManager *m_event;
 	
 	// Mods
 	core::list<ModSpec> m_mods;

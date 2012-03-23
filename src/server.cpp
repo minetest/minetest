@@ -50,6 +50,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "tool.h"
 #include "utility_string.h"
 #include "sound.h" // dummySoundManager
+#include "event_manager.h"
 
 #define PP(x) "("<<(x).X<<","<<(x).Y<<","<<(x).Z<<")"
 
@@ -853,6 +854,7 @@ Server::Server(
 	m_itemdef(createItemDefManager()),
 	m_nodedef(createNodeDefManager()),
 	m_craftdef(createCraftDefManager()),
+	m_event(new EventManager()),
 	m_thread(this),
 	m_emergethread(this),
 	m_time_of_day_send_timer(0),
@@ -1064,10 +1066,10 @@ Server::~Server()
 			delete i.getNode()->getValue();
 		}
 	}
-
-	// Delete Environment
+	
+	// Delete things in the reverse order of creation
 	delete m_env;
-
+	delete m_event;
 	delete m_itemdef;
 	delete m_nodedef;
 	delete m_craftdef;
@@ -4274,6 +4276,10 @@ u16 Server::allocateUnknownNodeId(const std::string &name)
 ISoundManager* Server::getSoundManager()
 {
 	return &dummySoundManager;
+}
+MtEventManager* Server::getEventManager()
+{
+	return m_event;
 }
 
 IWritableItemDefManager* Server::getWritableItemDefManager()

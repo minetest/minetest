@@ -33,6 +33,18 @@ public:
 			std::set<std::vector<char> > &dst_datas) = 0;
 };
 
+struct SimpleSoundSpec
+{
+	std::string name;
+	float gain;
+	SimpleSoundSpec(std::string name="", float gain=1.0):
+		name(name),
+		gain(gain)
+	{}
+	bool exists() {return name != "";}
+	// Serialization intentionally left out
+};
+
 class ISoundManager
 {
 public:
@@ -47,6 +59,7 @@ public:
 			const std::vector<char> &filedata) = 0;
 
 	virtual void updateListener(v3f pos, v3f vel, v3f at, v3f up) = 0;
+
 	// playSound functions return -1 on failure, otherwise a handle to the
 	// sound
 	virtual int playSound(const std::string &name, bool loop,
@@ -54,6 +67,11 @@ public:
 	virtual int playSoundAt(const std::string &name, bool loop,
 			float volume, v3f pos) = 0;
 	virtual void stopSound(int sound) = 0;
+
+	int playSound(const SimpleSoundSpec &spec, bool loop)
+		{ return playSound(spec.name, loop, spec.gain); }
+	int playSoundAt(const SimpleSoundSpec &spec, bool loop, v3f pos)
+		{ return playSoundAt(spec.name, loop, spec.gain, pos); }
 };
 
 class DummySoundManager: public ISoundManager

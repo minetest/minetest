@@ -79,6 +79,22 @@ void MaterialSpec::deSerialize(std::istream &is)
 }
 
 /*
+	SimpleSoundSpec serialization
+*/
+
+static void serializeSimpleSoundSpec(const SimpleSoundSpec &ss,
+		std::ostream &os)
+{
+	os<<serializeString(ss.name);
+	writeF1000(os, ss.gain);
+}
+static void deSerializeSimpleSoundSpec(SimpleSoundSpec &ss, std::istream &is)
+{
+	ss.name = deSerializeString(is);
+	ss.gain = readF1000(is);
+}
+
+/*
 	ContentFeatures
 */
 
@@ -139,6 +155,7 @@ void ContentFeatures::reset()
 	selection_box = NodeBox();
 	legacy_facedir_simple = false;
 	legacy_wallmounted = false;
+	sound_footstep = SimpleSoundSpec();
 }
 
 void ContentFeatures::serialize(std::ostream &os)
@@ -185,6 +202,7 @@ void ContentFeatures::serialize(std::ostream &os)
 	selection_box.serialize(os);
 	writeU8(os, legacy_facedir_simple);
 	writeU8(os, legacy_wallmounted);
+	serializeSimpleSoundSpec(sound_footstep, os);
 }
 
 void ContentFeatures::deSerialize(std::istream &is)
@@ -236,6 +254,9 @@ void ContentFeatures::deSerialize(std::istream &is)
 	selection_box.deSerialize(is);
 	legacy_facedir_simple = readU8(is);
 	legacy_wallmounted = readU8(is);
+	try{
+		deSerializeSimpleSoundSpec(sound_footstep, is);
+	}catch(SerializationError &e) {};
 }
 
 /*

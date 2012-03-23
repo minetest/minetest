@@ -808,6 +808,25 @@ static void push_pointed_thing(lua_State *L, const PointedThing& pointed)
 }
 
 /*
+	SimpleSoundSpec
+*/
+
+static SimpleSoundSpec read_soundspec(lua_State *L, int index)
+{
+	if(index < 0)
+		index = lua_gettop(L) + 1 + index;
+	SimpleSoundSpec spec;
+	if(lua_isnil(L, index)){
+	} else if(lua_istable(L, index)){
+		getstringfield(L, index, "name", spec.name);
+		getfloatfield(L, index, "gain", spec.gain);
+	} else if(lua_isstring(L, index)){
+		spec.name = lua_tostring(L, index);
+	}
+	return spec;
+}
+
+/*
 	ItemDefinition
 */
 
@@ -1038,6 +1057,15 @@ static ContentFeatures read_content_features(lua_State *L, int index)
 	getboolfield(L, index, "legacy_facedir_simple", f.legacy_facedir_simple);
 	// Set to true if wall_mounted used to be set to true
 	getboolfield(L, index, "legacy_wallmounted", f.legacy_wallmounted);
+	
+	// Sound table
+	lua_getfield(L, index, "sounds");
+	if(lua_istable(L, -1)){
+		lua_getfield(L, -1, "footstep");
+		f.sound_footstep = read_soundspec(L, -1);
+		lua_pop(L, 1);
+	}
+	lua_pop(L, 1);
 
 	return f;
 }

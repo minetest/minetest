@@ -59,6 +59,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #if USE_AUDIO
 	#include "sound_openal.h"
 #endif
+#include "event_manager.h"
 #include <list>
 
 /*
@@ -779,6 +780,58 @@ public:
 	}
 };
 
+class SoundMaker
+{
+public:
+	ISoundManager *m_sound;
+
+	SimpleSoundSpec m_player_step_sound;
+	float m_player_step_timer;
+
+	SoundMaker(ISoundManager *sound):
+		m_sound(sound),
+		m_player_step_sound("default_grass_walk"),
+		m_player_step_timer(0)
+	{
+	}
+
+	void playPlayerStep()
+	{
+		if(m_player_step_timer <= 0 && m_player_step_sound.exists()){
+			m_player_step_timer = 0.03;
+			m_sound->playSound(m_player_step_sound, false);
+		}
+	}
+
+	static void viewBobbingStep(MtEvent *e, void *data)
+	{
+		SoundMaker *sm = (SoundMaker*)data;
+		sm->playPlayerStep();
+	}
+
+	static void playerRegainGround(MtEvent *e, void *data)
+	{
+		SoundMaker *sm = (SoundMaker*)data;
+		sm->playPlayerStep();
+	}
+
+	static void playerJump(MtEvent *e, void *data)
+	{
+	}
+
+	void registerReceiver(MtEventManager *mgr)
+	{
+		mgr->reg("ViewBobbingStep", SoundMaker::viewBobbingStep, this);
+		mgr->reg("PlayerRegainGround", SoundMaker::playerRegainGround, this);
+		mgr->reg("PlayerJump", SoundMaker::playerJump, this);
+	}
+
+	void step(float dtime)
+	{
+		m_player_step_timer -= dtime;
+	}
+};
+
 void the_game(
 	bool &kill,
 	bool random_input,
@@ -841,10 +894,19 @@ void the_game(
 		sound = &dummySoundManager;
 		sound_is_dummy = true;
 	}
+
+	// Event manager
+	EventManager eventmgr;
+
+	// Sound maker
+	SoundMaker soundmaker(sound);
+	soundmaker.registerReceiver(&eventmgr);
 	
 	// Test sounds
-	sound->loadSound("default_grass_walk", porting::path_share + DIR_DELIM
+	sound->loadSound("default_grass_footstep", porting::path_share + DIR_DELIM
 			+ "sounds" + DIR_DELIM + "default_grass_walk3_mono.ogg");
+	sound->loadSound("default_grass_footstep", porting::path_share + DIR_DELIM
+			+ "sounds" + DIR_DELIM + "default_grass_walk4_mono.ogg");
 	//sound->playSound("default_grass_walk", false, 1.0);
 	//sound->playSoundAt("default_grass_walk", true, 1.0, v3f(0,10,0)*BS);
 
@@ -879,7 +941,7 @@ void the_game(
 	MapDrawControl draw_control;
 
 	Client client(device, playername.c_str(), password, draw_control,
-			tsrc, itemdef, nodedef, sound);
+			tsrc, itemdef, nodedef, sound, &eventmgr);
 	
 	// Client acts as our GameDef
 	IGameDef *gamedef = &client;
@@ -1257,7 +1319,7 @@ void the_game(
 		if(object_hit_delay_timer >= 0)
 			object_hit_delay_timer -= dtime;
 		time_from_last_punch += dtime;
-
+		
 		g_profiler->add("Elapsed time", dtime);
 		g_profiler->avg("FPS", 1./dtime);
 
@@ -1953,6 +2015,17 @@ void the_game(
 				v3f(0,0,0), // velocity
 				camera.getCameraNode()->getTarget(),
 				camera.getCameraNode()->getUpVector());
+
+		/*
+			Update sound maker
+		*/
+		{
+			soundmaker.step(dtime);
+			
+			ClientMap &map = client.getEnv().getClientMap();
+			MapNode n = map.getNodeNoEx(player->getStandingNodePos());
+			soundmaker.m_player_step_sound = nodedef->get(n).sound_footstep;
+		}
 
 		/*
 			Calculate what block is the crosshair pointing to

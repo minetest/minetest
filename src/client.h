@@ -44,6 +44,7 @@ class IWritableNodeDefManager;
 //class IWritableCraftDefManager;
 class ClientEnvironment;
 struct MapDrawControl;
+class MtEventManager;
 
 class ClientNotReadyException : public BaseException
 {
@@ -175,7 +176,8 @@ public:
 			IWritableTextureSource *tsrc,
 			IWritableItemDefManager *itemdef,
 			IWritableNodeDefManager *nodedef,
-			ISoundManager *sound
+			ISoundManager *sound,
+			MtEventManager *event
 	);
 	
 	~Client();
@@ -308,6 +310,7 @@ public:
 	virtual ITextureSource* getTextureSource();
 	virtual u16 allocateUnknownNodeId(const std::string &name);
 	virtual ISoundManager* getSoundManager();
+	virtual MtEventManager* getEventManager();
 
 private:
 	
@@ -335,6 +338,8 @@ private:
 	IWritableItemDefManager *m_itemdef;
 	IWritableNodeDefManager *m_nodedef;
 	ISoundManager *m_sound;
+	MtEventManager *m_event;
+
 	MeshUpdateThread m_mesh_update_thread;
 	ClientEnvironment m_env;
 	con::Connection m_con;
