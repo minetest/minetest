@@ -82,11 +82,14 @@ struct DigParams
 	float time;
 	// Caused wear
 	u16 wear;
+	std::string main_group;
 
-	DigParams(bool a_diggable=false, float a_time=0, u16 a_wear=0):
+	DigParams(bool a_diggable=false, float a_time=0, u16 a_wear=0,
+			std::string a_main_group=""):
 		diggable(a_diggable),
 		time(a_time),
-		wear(a_wear)
+		wear(a_wear),
+		main_group(a_main_group)
 	{}
 };
 
@@ -100,10 +103,12 @@ struct HitParams
 {
 	s16 hp;
 	s16 wear;
+	std::string main_group;
 
-	HitParams(s16 hp_=0, s16 wear_=0):
+	HitParams(s16 hp_=0, s16 wear_=0, std::string main_group_=""):
 		hp(hp_),
-		wear(wear_)
+		wear(wear_),
+		main_group(main_group_)
 	{}
 };
 
@@ -118,6 +123,7 @@ struct PunchDamageResult
 	bool did_punch;
 	int damage;
 	int wear;
+	std::string main_group;
 
 	PunchDamageResult():
 		did_punch(false),

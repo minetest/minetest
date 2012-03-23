@@ -77,10 +77,10 @@ DigParams getDigParams(const ItemGroupList &groups,
 	switch(itemgroup_get(groups, "dig_immediate")){
 	case 2:
 		//infostream<<"dig_immediate=2"<<std::endl;
-		return DigParams(true, 0.5, 0);
+		return DigParams(true, 0.5, 0, "dig_immediate");
 	case 3:
 		//infostream<<"dig_immediate=3"<<std::endl;
-		return DigParams(true, 0.0, 0);
+		return DigParams(true, 0.0, 0, "dig_immediate");
 	default:
 		break;
 	}
@@ -89,6 +89,7 @@ DigParams getDigParams(const ItemGroupList &groups,
 	bool result_diggable = false;
 	float result_time = 0.0;
 	float result_wear = 0.0;
+	std::string result_main_group = "";
 
 	int level = itemgroup_get(groups, "level");
 	//infostream<<"level="<<level<<std::endl;
@@ -106,6 +107,7 @@ DigParams getDigParams(const ItemGroupList &groups,
 				result_time = time;
 				int leveldiff = cap.maxlevel - level;
 				result_wear = cap.maxwear / pow(4.0, (double)leveldiff);
+				result_main_group = name;
 			}
 		}
 	}
@@ -121,7 +123,7 @@ DigParams getDigParams(const ItemGroupList &groups,
 	}
 
 	u16 wear_i = 65535.*result_wear;
-	return DigParams(result_diggable, result_time, wear_i);
+	return DigParams(result_diggable, result_time, wear_i, result_main_group);
 }
 
 DigParams getDigParams(const ItemGroupList &groups,
@@ -145,7 +147,7 @@ HitParams getHitParams(const ItemGroupList &groups,
 	// Wear is the same as for digging a single node
 	s16 wear = (float)digprop.wear;
 
-	return HitParams(hp, wear);
+	return HitParams(hp, wear, digprop.main_group);
 }
 
 HitParams getHitParams(const ItemGroupList &groups,
@@ -181,6 +183,7 @@ PunchDamageResult getPunchDamage(
 		result.did_punch = true;
 		result.wear = hitparams.wear;
 		result.damage = hitparams.hp;
+		result.main_group = hitparams.main_group;
 	}
 
 	return result;

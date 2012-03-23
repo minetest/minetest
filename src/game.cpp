@@ -784,13 +784,15 @@ class SoundMaker
 {
 public:
 	ISoundManager *m_sound;
+	
+	float m_player_step_timer;
 
 	SimpleSoundSpec m_player_step_sound;
-	float m_player_step_timer;
+	SimpleSoundSpec m_player_leftpunch_sound;
+	SimpleSoundSpec m_player_rightpunch_sound;
 
 	SoundMaker(ISoundManager *sound):
 		m_sound(sound),
-		m_player_step_sound("default_grass_walk"),
 		m_player_step_timer(0)
 	{
 	}
@@ -800,6 +802,20 @@ public:
 		if(m_player_step_timer <= 0 && m_player_step_sound.exists()){
 			m_player_step_timer = 0.03;
 			m_sound->playSound(m_player_step_sound, false);
+		}
+	}
+
+	void playPlayerLeftPunch()
+	{
+		if(m_player_leftpunch_sound.exists()){
+			m_sound->playSound(m_player_leftpunch_sound, false);
+		}
+	}
+
+	void playPlayerRightPunch()
+	{
+		if(m_player_rightpunch_sound.exists()){
+			m_sound->playSound(m_player_rightpunch_sound, false);
 		}
 	}
 
@@ -817,6 +833,19 @@ public:
 
 	static void playerJump(MtEvent *e, void *data)
 	{
+		//SoundMaker *sm = (SoundMaker*)data;
+	}
+
+	static void cameraPunchLeft(MtEvent *e, void *data)
+	{
+		SoundMaker *sm = (SoundMaker*)data;
+		sm->playPlayerLeftPunch();
+	}
+
+	static void cameraPunchRight(MtEvent *e, void *data)
+	{
+		SoundMaker *sm = (SoundMaker*)data;
+		sm->playPlayerRightPunch();
 	}
 
 	void registerReceiver(MtEventManager *mgr)
@@ -824,6 +853,8 @@ public:
 		mgr->reg("ViewBobbingStep", SoundMaker::viewBobbingStep, this);
 		mgr->reg("PlayerRegainGround", SoundMaker::playerRegainGround, this);
 		mgr->reg("PlayerJump", SoundMaker::playerJump, this);
+		mgr->reg("CameraPunchLeft", SoundMaker::cameraPunchLeft, this);
+		mgr->reg("CameraPunchRight", SoundMaker::cameraPunchRight, this);
 	}
 
 	void step(float dtime)
@@ -904,11 +935,26 @@ void the_game(
 	
 	// Test sounds
 	sound->loadSound("default_grass_footstep", porting::path_share + DIR_DELIM
-			+ "sounds" + DIR_DELIM + "default_grass_walk3_mono.ogg");
+			+ "sounds" + DIR_DELIM + "default_grass_walk1.ogg");
 	sound->loadSound("default_grass_footstep", porting::path_share + DIR_DELIM
-			+ "sounds" + DIR_DELIM + "default_grass_walk4_mono.ogg");
-	//sound->playSound("default_grass_walk", false, 1.0);
-	//sound->playSoundAt("default_grass_walk", true, 1.0, v3f(0,10,0)*BS);
+			+ "sounds" + DIR_DELIM + "default_grass_walk2.ogg");
+	sound->loadSound("default_grass_footstep", porting::path_share + DIR_DELIM
+			+ "sounds" + DIR_DELIM + "default_grass_walk3.ogg");
+	
+	sound->loadSound("default_dig_crumbly", porting::path_share + DIR_DELIM
+			+ "sounds" + DIR_DELIM + "default_dig_crumbly1.ogg");
+	sound->loadSound("default_dig_crumbly", porting::path_share + DIR_DELIM
+			+ "sounds" + DIR_DELIM + "default_dig_crumbly2.ogg");
+	
+	sound->loadSound("default_dig_cracky", porting::path_share + DIR_DELIM
+			+ "sounds" + DIR_DELIM + "default_dig_cracky1.ogg");
+	
+	sound->loadSound("default_place_node", porting::path_share + DIR_DELIM
+			+ "sounds" + DIR_DELIM + "default_place_node1.ogg");
+	sound->loadSound("default_place_node", porting::path_share + DIR_DELIM
+			+ "sounds" + DIR_DELIM + "default_place_node2.ogg");
+	sound->loadSound("default_place_node", porting::path_share + DIR_DELIM
+			+ "sounds" + DIR_DELIM + "default_place_node3.ogg");
 
 	// Add chat log output for errors to be shown in chat
 	LogOutputBuffer chat_log_error_buf(LMT_ERROR);
@@ -2131,6 +2177,11 @@ void the_game(
 				}
 			}
 			
+			// We can't actually know, but assume the sound of right-clicking
+			// to be the sound of placing a node
+			soundmaker.m_player_rightpunch_sound.gain = 0.5;
+			soundmaker.m_player_rightpunch_sound.name = "default_place_node";
+			
 			/*
 				Handle digging
 			*/
@@ -2156,6 +2207,16 @@ void the_game(
 					if(tp)
 						params = getDigParams(nodedef->get(n).groups, tp);
 				}
+				
+				soundmaker.m_player_leftpunch_sound.gain = 0.5;
+				if(params.main_group == "crumbly")
+					soundmaker.m_player_leftpunch_sound.name =
+							"default_dig_crumbly";
+				else if(params.main_group == "cracky")
+					soundmaker.m_player_leftpunch_sound.name =
+							"default_dig_cracky";
+				else
+					soundmaker.m_player_leftpunch_sound.name = "";
 
 				float dig_time_complete = 0.0;
 
