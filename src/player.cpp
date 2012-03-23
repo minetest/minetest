@@ -759,5 +759,13 @@ void LocalPlayer::applyControl(float dtime)
 	// Accelerate to target speed with maximum increment
 	accelerate(speed, inc);
 }
+
+v3s16 LocalPlayer::getStandingNodePos()
+{
+	if(m_sneak_node_exists)
+		return m_sneak_node;
+	return floatToInt(getPosition(), BS);
+}
+
 #endif
 

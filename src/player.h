@@ -236,6 +236,8 @@ public:
 	void move(f32 dtime, Map &map, f32 pos_max_d);
 
 	void applyControl(float dtime);
+
+	v3s16 getStandingNodePos();
 	
 	PlayerControl control;
 
