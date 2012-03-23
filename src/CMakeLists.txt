@@ -42,7 +42,7 @@ if(ENABLE_AUDIO)
 		find_package(Vorbis)
 		if (VORBIS_FOUND)
 			set(USE_AUDIO 1)
-			set(audio_SRCS sound.cpp sound_openal.cpp)
+			set(audio_SRCS sound_openal.cpp)
 			set(AUDIO_INCLUDE_DIRS
 				${OPENAL_INCLUDE_DIR}
 				${VORBIS_INCLUDE_DIR}
@@ -125,6 +125,7 @@ configure_file(
 )
 
 set(common_SRCS
+	sound.cpp
 	quicktune.cpp
 	subgame.cpp
 	inventorymanager.cpp
@@ -234,7 +235,7 @@ include_directories(
 	${CMAKE_BUILD_TYPE}
 	${PNG_INCLUDE_DIR}
 	${GETTEXT_INCLUDE_DIR}
-	${AUDIO_INLCUDE_DIR}
+	${AUDIO_INLCUDE_DIRS}
 	${JTHREAD_INCLUDE_DIR}
 	${SQLITE3_INCLUDE_DIR}
 	${LUA_INCLUDE_DIR}

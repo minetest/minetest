@@ -225,11 +225,13 @@ Client::Client(
 		MapDrawControl &control,
 		IWritableTextureSource *tsrc,
 		IWritableItemDefManager *itemdef,
-		IWritableNodeDefManager *nodedef
+		IWritableNodeDefManager *nodedef,
+		ISoundManager *sound
 ):
 	m_tsrc(tsrc),
 	m_itemdef(itemdef),
 	m_nodedef(nodedef),
+	m_sound(sound),
 	m_mesh_update_thread(this),
 	m_env(
 		new ClientMap(this, this, control,
@@ -2326,6 +2328,6 @@ u16 Client::allocateUnknownNodeId(const std::string &name)
 }
 ISoundManager* Client::getSoundManager()
 {
-	return &dummySoundManager;
+	return m_sound;
 }
 

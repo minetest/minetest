@@ -30,8 +30,11 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "settings.h"
 #include "itemdef.h" // For wield visualization
 #include "noise.h" // easeCurve
+#include "gamedef.h"
+#include "sound.h"
 
-Camera::Camera(scene::ISceneManager* smgr, MapDrawControl& draw_control):
+Camera::Camera(scene::ISceneManager* smgr, MapDrawControl& draw_control,
+		IGameDef *gamedef):
 	m_smgr(smgr),
 	m_playernode(NULL),
 	m_headnode(NULL),
@@ -42,6 +45,7 @@ Camera::Camera(scene::ISceneManager* smgr, MapDrawControl& draw_control):
 	m_wieldlight(0),
 
 	m_draw_control(draw_control),
+	m_gamedef(gamedef),
 
 	m_camera_position(0,0,0),
 	m_camera_direction(0,0,0),
@@ -168,7 +172,13 @@ void Camera::step(f32 dtime)
 		}
 		else
 		{
+			float was = m_view_bobbing_anim;
 			m_view_bobbing_anim = my_modf(m_view_bobbing_anim + offset);
+			bool step = (was == 0 ||
+					(was < 0.5f && m_view_bobbing_anim >= 0.5f) ||
+					(was > 0.5f && m_view_bobbing_anim <= 0.5f));
+			if(step)
+				m_gamedef->sound()->playSound("default_grass_walk", false, 1.0);
 		}
 	}
 
@@ -180,6 +190,7 @@ void Camera::step(f32 dtime)
 		{
 			m_digging_anim = 0;
 			m_digging_button = -1;
+			m_gamedef->sound()->playSound("dig", false, 1.0);
 		}
 	}
 }
@@ -481,9 +492,9 @@ void Camera::setDigging(s32 button)
 		m_digging_button = button;
 }
 
-void Camera::wield(const ItemStack &item, IGameDef *gamedef)
+void Camera::wield(const ItemStack &item)
 {
-	IItemDefManager *idef = gamedef->idef();
+	IItemDefManager *idef = m_gamedef->idef();
 	scene::IMesh *wield_mesh = item.getDefinition(idef).wield_mesh;
 	if(wield_mesh)
 	{

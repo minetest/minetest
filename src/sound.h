@@ -28,8 +28,9 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 class OnDemandSoundFetcher
 {
 public:
-	virtual void getSoundFilenames(const std::string &name,
-			std::set<std::string> &dst);
+	virtual void fetchSounds(const std::string &name,
+			std::set<std::string> &dst_paths,
+			std::set<std::vector<char> > &dst_datas) = 0;
 };
 
 class ISoundManager
@@ -48,10 +49,10 @@ public:
 	virtual void updateListener(v3f pos, v3f vel, v3f at, v3f up) = 0;
 	// playSound functions return -1 on failure, otherwise a handle to the
 	// sound
-	virtual int playSound(const std::string &name, int loopcount,
+	virtual int playSound(const std::string &name, bool loop,
 			float volume) = 0;
-	virtual int playSoundAt(const std::string &name, int loopcount,
-			v3f pos, float volume) = 0;
+	virtual int playSoundAt(const std::string &name, bool loop,
+			float volume, v3f pos) = 0;
 	virtual void stopSound(int sound) = 0;
 };
 
@@ -63,10 +64,10 @@ public:
 	virtual bool loadSound(const std::string &name,
 			const std::vector<char> &filedata) {return true;}
 	void updateListener(v3f pos, v3f vel, v3f at, v3f up) {}
-	int playSound(const std::string &name, int loopcount,
+	int playSound(const std::string &name, bool loop,
 			float volume) {return 0;}
-	int playSoundAt(const std::string &name, int loopcount,
-			v3f pos, float volume) {return 0;}
+	int playSoundAt(const std::string &name, bool loop,
+			float volume, v3f pos) {return 0;}
 	void stopSound(int sound) {}
 };
 

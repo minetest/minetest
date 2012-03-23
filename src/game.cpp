@@ -56,6 +56,9 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "clientmap.h"
 #include "sky.h"
 #include "sound.h"
+#if USE_AUDIO
+	#include "sound_openal.h"
+#endif
 #include <list>
 
 /*
@@ -823,6 +826,27 @@ void the_game(
 	IWritableItemDefManager *itemdef = createItemDefManager();
 	// Create node definition manager
 	IWritableNodeDefManager *nodedef = createNodeDefManager();
+	
+	// Sound manager
+	ISoundManager *sound = NULL;
+	bool sound_is_dummy = false;
+#if USE_AUDIO
+	infostream<<"Attempting to use OpenAL audio"<<std::endl;
+	sound = createOpenALSoundManager(NULL);
+	if(!sound)
+		infostream<<"Failed to initialize OpenAL audio"<<std::endl;
+#endif
+	if(!sound){
+		infostream<<"Using dummy audio."<<std::endl;
+		sound = &dummySoundManager;
+		sound_is_dummy = true;
+	}
+	
+	// Test sounds
+	sound->loadSound("default_grass_walk", porting::path_share + DIR_DELIM
+			+ "sounds" + DIR_DELIM + "default_grass_walk3_mono.ogg");
+	//sound->playSound("default_grass_walk", false, 1.0);
+	//sound->playSoundAt("default_grass_walk", true, 1.0, v3f(0,10,0)*BS);
 
 	// Add chat log output for errors to be shown in chat
 	LogOutputBuffer chat_log_error_buf(LMT_ERROR);
@@ -855,7 +879,7 @@ void the_game(
 	MapDrawControl draw_control;
 
 	Client client(device, playername.c_str(), password, draw_control,
-			tsrc, itemdef, nodedef);
+			tsrc, itemdef, nodedef, sound);
 	
 	// Client acts as our GameDef
 	IGameDef *gamedef = &client;
@@ -1020,7 +1044,7 @@ void the_game(
 	/*
 		Create the camera node
 	*/
-	Camera camera(smgr, draw_control);
+	Camera camera(smgr, draw_control, gamedef);
 	if (!camera.successfullyCreated(error_message))
 		return;
 
@@ -1923,9 +1947,12 @@ void the_game(
 			client.getEnv().getClientMap().updateCamera(camera_position,
 				camera_direction, camera_fov);
 		}
-
-		//timer2.stop();
-		//TimeTaker //timer3("//timer3");
+		
+		// Update sound listener
+		sound->updateListener(camera.getCameraNode()->getPosition(),
+				v3f(0,0,0), // velocity
+				camera.getCameraNode()->getTarget(),
+				camera.getCameraNode()->getUpVector());
 
 		/*
 			Calculate what block is the crosshair pointing to
@@ -2536,7 +2563,7 @@ void the_game(
 			ItemStack item;
 			if(mlist != NULL)
 				item = mlist->getItem(client.getPlayerItem());
-			camera.wield(item, gamedef);
+			camera.wield(item);
 		}
 		
 		/*
@@ -2729,10 +2756,12 @@ void the_game(
 
 	// Client scope (client is destructed before destructing *def and tsrc)
 	}while(0);
-
-	delete tsrc;
+	
+	if(!sound_is_dummy)
+		delete sound;
 	delete nodedef;
 	delete itemdef;
+	delete tsrc;
 }
 
 

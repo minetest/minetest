@@ -84,6 +84,14 @@ static const char *alErrorString(ALenum err)
 	}
 }
 
+static ALenum warn_if_error(ALenum err, const char *desc)
+{
+	if(err == AL_NO_ERROR)
+		return err;
+	errorstream<<"WARNING: "<<desc<<": "<<alErrorString(err)<<std::endl;
+	return err;
+}
+
 void f3_set(ALfloat *f3, v3f v)
 {
 	f3[0] = v.X;
@@ -93,9 +101,9 @@ void f3_set(ALfloat *f3, v3f v)
 
 struct SoundBuffer
 {
-	ALenum	format;
-	ALsizei	freq;
-	ALuint	bufferID;
+	ALenum format;
+	ALsizei freq;
+	ALuint buffer_id;
 	std::vector<char> buffer;
 };
 
@@ -146,8 +154,8 @@ SoundBuffer* loadOggFile(const std::string &filepath)
 		snd->buffer.insert(snd->buffer.end(), array, array + bytes);
 	} while (bytes > 0);
 
-	alGenBuffers(1, &snd->bufferID);
-	alBufferData(snd->bufferID, snd->format,
+	alGenBuffers(1, &snd->buffer_id);
+	alBufferData(snd->buffer_id, snd->format,
 			&(snd->buffer[0]), snd->buffer.size(),
 			snd->freq);
 
@@ -168,19 +176,24 @@ SoundBuffer* loadOggFile(const std::string &filepath)
 
 struct PlayingSound
 {
+	ALuint source_id;
+	bool loop;
 };
 
 class OpenALSoundManager: public ISoundManager
 {
 private:
+	OnDemandSoundFetcher *m_fetcher;
 	ALCdevice *m_device;
 	ALCcontext *m_context;
 	bool m_can_vorbis;
 	int m_next_id;
 	std::map<std::string, std::vector<SoundBuffer*> > m_buffers;
 	std::map<int, PlayingSound*> m_sounds_playing;
+	v3f m_listener_pos;
 public:
-	OpenALSoundManager():
+	OpenALSoundManager(OnDemandSoundFetcher *fetcher):
+		m_fetcher(fetcher),
 		m_device(NULL),
 		m_context(NULL),
 		m_can_vorbis(false),
@@ -258,6 +271,7 @@ public:
 		}
 		std::vector<SoundBuffer*> bufs;
 		bufs.push_back(buf);
+		m_buffers[name] = bufs;
 		return;
 	}
 
@@ -272,18 +286,6 @@ public:
 		return bufs[j];
 	}
 
-	void updateListener(v3f pos, v3f vel, v3f at, v3f up)
-	{
-		ALfloat f[6];
-		f3_set(f, pos);
-		alListenerfv(AL_POSITION, f);
-		f3_set(f, vel);
-		alListenerfv(AL_VELOCITY, f);
-		f3_set(f, at);
-		f3_set(f+3, up);
-		alListenerfv(AL_ORIENTATION, f);
-	}
-	
 	bool loadSound(const std::string &name,
 			const std::string &filepath)
 	{
@@ -300,23 +302,186 @@ public:
 		return false;
 	}
 
-	int playSound(const std::string &name, int loopcount,
+	PlayingSound* createPlayingSound(SoundBuffer *buf, bool loop,
 			float volume)
 	{
-		return -1;
+		infostream<<"OpenALSoundManager: Creating playing sound"<<std::endl;
+		assert(buf);
+		PlayingSound *sound = new PlayingSound;
+		assert(sound);
+		warn_if_error(alGetError(), "before createPlayingSound");
+		alGenSources(1, &sound->source_id);
+		alSourcei(sound->source_id, AL_BUFFER, buf->buffer_id);
+		alSourcei(sound->source_id, AL_SOURCE_RELATIVE, true);
+		alSource3f(sound->source_id, AL_POSITION, 0, 0, 0);
+		alSource3f(sound->source_id, AL_VELOCITY, 0, 0, 0);
+		alSourcei(sound->source_id, AL_LOOPING, loop ? AL_TRUE : AL_FALSE);
+		volume = MYMAX(0.0, volume);
+		alSourcef(sound->source_id, AL_GAIN, volume);
+		alSourcePlay(sound->source_id);
+		warn_if_error(alGetError(), "createPlayingSound");
+		return sound;
 	}
-	int playSoundAt(const std::string &name, int loopcount,
-			v3f pos, float volume)
+
+	PlayingSound* createPlayingSoundAt(SoundBuffer *buf, bool loop,
+			float volume, v3f pos)
 	{
-		return -1;
+		infostream<<"OpenALSoundManager: Creating positional playing sound"
+				<<std::endl;
+		assert(buf);
+		PlayingSound *sound = new PlayingSound;
+		assert(sound);
+		warn_if_error(alGetError(), "before createPlayingSoundAt");
+		alGenSources(1, &sound->source_id);
+		alSourcei(sound->source_id, AL_BUFFER, buf->buffer_id);
+		alSourcei(sound->source_id, AL_SOURCE_RELATIVE, false);
+		alSource3f(sound->source_id, AL_POSITION, pos.X, pos.Y, pos.Z);
+		alSource3f(sound->source_id, AL_VELOCITY, 0, 0, 0);
+		//alSourcef(sound->source_id, AL_ROLLOFF_FACTOR, 0.7);
+		alSourcef(sound->source_id, AL_REFERENCE_DISTANCE, 30.0);
+		alSourcei(sound->source_id, AL_LOOPING, loop ? AL_TRUE : AL_FALSE);
+		volume = MYMAX(0.0, volume);
+		alSourcef(sound->source_id, AL_GAIN, volume);
+		alSourcePlay(sound->source_id);
+		warn_if_error(alGetError(), "createPlayingSoundAt");
+		return sound;
+	}
+
+	int playSoundRaw(SoundBuffer *buf, bool loop, float volume)
+	{
+		assert(buf);
+		PlayingSound *sound = createPlayingSound(buf, loop, volume);
+		if(!sound)
+			return -1;
+		int id = m_next_id++;
+		m_sounds_playing[id] = sound;
+		return id;
+	}
+
+	int playSoundRawAt(SoundBuffer *buf, bool loop, float volume, v3f pos)
+	{
+		assert(buf);
+		PlayingSound *sound = createPlayingSoundAt(buf, loop, volume, pos);
+		if(!sound)
+			return -1;
+		int id = m_next_id++;
+		m_sounds_playing[id] = sound;
+		return id;
+	}
+	
+	void deleteSound(int id)
+	{
+		std::map<int, PlayingSound*>::iterator i =
+				m_sounds_playing.find(id);
+		if(i == m_sounds_playing.end())
+			return;
+		PlayingSound *sound = i->second;
+		
+		alDeleteSources(1, &sound->source_id);
+
+		delete sound;
+		m_sounds_playing.erase(id);
+	}
+
+	/* If buffer does not exist, consult the fetcher */
+	SoundBuffer* getFetchBuffer(const std::string name)
+	{
+		SoundBuffer *buf = getBuffer(name);
+		if(buf)
+			return buf;
+		if(!m_fetcher)
+			return NULL;
+		std::set<std::string> paths;
+		std::set<std::vector<char> > datas;
+		m_fetcher->fetchSounds(name, paths, datas);
+		for(std::set<std::string>::iterator i = paths.begin();
+				i != paths.end(); i++){
+			loadSound(name, *i);
+		}
+		for(std::set<std::vector<char> >::iterator i = datas.begin();
+				i != datas.end(); i++){
+			loadSound(name, *i);
+		}
+		return getBuffer(name);
+	}
+	
+	// Remove stopped sounds
+	void maintain()
+	{
+		verbosestream<<"OpenALSoundManager::maintain(): "
+				<<m_sounds_playing.size()<<" playing sounds, "
+				<<m_buffers.size()<<" sound names loaded"<<std::endl;
+		std::set<int> del_list;
+		for(std::map<int, PlayingSound*>::iterator
+				i = m_sounds_playing.begin();
+				i != m_sounds_playing.end(); i++)
+		{
+			int id = i->first;
+			PlayingSound *sound = i->second;
+			// If not playing, remove it
+			{
+				ALint state;
+				alGetSourcei(sound->source_id, AL_SOURCE_STATE, &state);
+				if(state != AL_PLAYING){
+					del_list.insert(id);
+				}
+			}
+		}
+		if(del_list.size() != 0)
+			verbosestream<<"OpenALSoundManager::maintain(): deleting "
+					<<del_list.size()<<" playing sounds"<<std::endl;
+		for(std::set<int>::iterator i = del_list.begin();
+				i != del_list.end(); i++)
+		{
+			deleteSound(*i);
+		}
+	}
+
+	/* Interface */
+
+	void updateListener(v3f pos, v3f vel, v3f at, v3f up)
+	{
+		m_listener_pos = pos;
+		alListener3f(AL_POSITION, pos.X, pos.Y, pos.Z);
+		alListener3f(AL_VELOCITY, vel.X, vel.Y, vel.Z);
+		ALfloat f[6];
+		f3_set(f, at);
+		f3_set(f+3, up);
+		alListenerfv(AL_ORIENTATION, f);
+		warn_if_error(alGetError(), "updateListener");
+	}
+
+	int playSound(const std::string &name, bool loop, float volume)
+	{
+		maintain();
+		SoundBuffer *buf = getFetchBuffer(name);
+		if(!buf){
+			infostream<<"OpenALSoundManager: \""<<name<<"\" not found."
+					<<std::endl;
+			return -1;
+		}
+		return playSoundRaw(buf, loop, volume);
+	}
+	int playSoundAt(const std::string &name, bool loop, float volume, v3f pos)
+	{
+		maintain();
+		SoundBuffer *buf = getFetchBuffer(name);
+		if(!buf){
+			infostream<<"OpenALSoundManager: \""<<name<<"\" not found."
+					<<std::endl;
+			return -1;
+		}
+		return playSoundRawAt(buf, loop, volume, pos);
 	}
 	void stopSound(int sound)
 	{
+		maintain();
+		deleteSound(sound);
 	}
 };
 
-ISoundManager *createSoundManager()
+ISoundManager *createOpenALSoundManager(OnDemandSoundFetcher *fetcher)
 {
-	return new OpenALSoundManager();
+	return new OpenALSoundManager(fetcher);
 };
 

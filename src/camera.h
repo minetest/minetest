@@ -39,7 +39,8 @@ class IGameDef;
 class Camera
 {
 public:
-	Camera(scene::ISceneManager* smgr, MapDrawControl& draw_control);
+	Camera(scene::ISceneManager* smgr, MapDrawControl& draw_control,
+			IGameDef *gamedef);
 	~Camera();
 
 	// Get player scene node.
@@ -116,7 +117,7 @@ public:
 	void setDigging(s32 button);
 
 	// Replace the wielded item mesh
-	void wield(const ItemStack &item, IGameDef *gamedef);
+	void wield(const ItemStack &item);
 
 	// Draw the wielded tool.
 	// This has to happen *after* the main scene is drawn.
@@ -136,6 +137,8 @@ private:
 
 	// draw control
 	MapDrawControl& m_draw_control;
+	
+	IGameDef *m_gamedef;
 
 	// Absolute camera position
 	v3f m_camera_position;

@@ -174,7 +174,8 @@ public:
 			MapDrawControl &control,
 			IWritableTextureSource *tsrc,
 			IWritableItemDefManager *itemdef,
-			IWritableNodeDefManager *nodedef
+			IWritableNodeDefManager *nodedef,
+			ISoundManager *sound
 	);
 	
 	~Client();
@@ -333,6 +334,7 @@ private:
 	IWritableTextureSource *m_tsrc;
 	IWritableItemDefManager *m_itemdef;
 	IWritableNodeDefManager *m_nodedef;
+	ISoundManager *m_sound;
 	MeshUpdateThread m_mesh_update_thread;
 	ClientEnvironment m_env;
 	con::Connection m_con;
