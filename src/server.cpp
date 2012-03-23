@@ -49,6 +49,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "base64.h"
 #include "tool.h"
 #include "utility_string.h"
+#include "sound.h" // dummySoundManager
 
 #define PP(x) "("<<(x).X<<","<<(x).Y<<","<<(x).Z<<")"
 
@@ -4269,6 +4270,10 @@ ITextureSource* Server::getTextureSource()
 u16 Server::allocateUnknownNodeId(const std::string &name)
 {
 	return m_nodedef->allocateDummy(name);
+}
+ISoundManager* Server::getSoundManager()
+{
+	return &dummySoundManager;
 }
 
 IWritableItemDefManager* Server::getWritableItemDefManager()

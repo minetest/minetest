@@ -55,6 +55,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "quicktune_shortcutter.h"
 #include "clientmap.h"
 #include "sky.h"
+#include "sound.h"
 #include <list>
 
 /*

@@ -29,6 +29,37 @@ else(GETTEXT_FOUND AND ENABLE_GETTEXT)
 	message(STATUS "GetText disabled")
 endif(GETTEXT_FOUND AND ENABLE_GETTEXT)
 
+# user visible option to enable/disable audio
+OPTION(ENABLE_AUDIO "Enable audio" ON)
+
+# this is only set to 1 if audio is enabled _and_ available
+set(USE_AUDIO 0)
+
+if(ENABLE_AUDIO)
+	# Sound libraries
+	find_package(OpenAL)
+	if (OPENAL_FOUND)
+		find_package(Vorbis)
+		if (VORBIS_FOUND)
+			set(USE_AUDIO 1)
+			set(audio_SRCS sound.cpp sound_openal.cpp)
+			set(AUDIO_INCLUDE_DIRS
+				${OPENAL_INCLUDE_DIR}
+				${VORBIS_INCLUDE_DIR}
+				)
+			set(AUDIO_LIBRARIES
+				${OPENAL_LIBRARY}
+				${VORBIS_LIBRARIES}
+				)
+			message(STATUS "Sound enabled")
+		else(VORBIS_FOUND)
+			message(FATAL_ERROR "Sound enabled, but Vorbis libraries not found!")
+		endif(VORBIS_FOUND)
+	else(OPENAL_FOUND)
+		message(FATAL_ERROR "Sound enabled, but OpenAL not found!")
+	endif(OPENAL_FOUND)
+endif(ENABLE_AUDIO)
+
 if(NOT MSVC)
 	set(USE_GPROF 0 CACHE BOOL "Use -pg flag for g++")
 endif()
@@ -159,6 +190,7 @@ endif()
 # Client sources
 set(minetest_SRCS
 	${common_SRCS}
+	${audio_SRCS}
 	sky.cpp
 	clientmap.cpp
 	content_cso.cpp
@@ -202,6 +234,7 @@ include_directories(
 	${CMAKE_BUILD_TYPE}
 	${PNG_INCLUDE_DIR}
 	${GETTEXT_INCLUDE_DIR}
+	${AUDIO_INLCUDE_DIR}
 	${JTHREAD_INCLUDE_DIR}
 	${SQLITE3_INCLUDE_DIR}
 	${LUA_INCLUDE_DIR}
@@ -221,6 +254,7 @@ if(BUILD_CLIENT)
 		${PNG_LIBRARIES}
 		${X11_LIBRARIES}
 		${GETTEXT_LIBRARY}
+		${AUDIO_LIBRARIES}
 		${JTHREAD_LIBRARY}
 		${SQLITE3_LIBRARY}
 		${LUA_LIBRARY}

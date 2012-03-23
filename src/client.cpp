@@ -38,6 +38,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "sha1.h"
 #include "base64.h"
 #include "clientmap.h"
+#include "sound.h"
 
 static std::string getTextureCacheDir()
 {
@@ -2322,5 +2323,9 @@ u16 Client::allocateUnknownNodeId(const std::string &name)
 			<<"Client cannot allocate node IDs"<<std::endl;
 	assert(0);
 	return CONTENT_IGNORE;
+}
+ISoundManager* Client::getSoundManager()
+{
+	return &dummySoundManager;
 }
 

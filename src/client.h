@@ -306,6 +306,7 @@ public:
 	virtual ICraftDefManager* getCraftDefManager();
 	virtual ITextureSource* getTextureSource();
 	virtual u16 allocateUnknownNodeId(const std::string &name);
+	virtual ISoundManager* getSoundManager();
 
 private:
 	
