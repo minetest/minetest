@@ -780,19 +780,34 @@ public:
 	}
 };
 
-class SoundMaker
+class NodeDugEvent: public MtEvent
 {
 public:
-	ISoundManager *m_sound;
+	v3s16 p;
+	MapNode n;
 	
+	NodeDugEvent(v3s16 p, MapNode n):
+		p(p),
+		n(n)
+	{}
+	const char* getType() const
+	{return "NodeDug";}
+};
+
+class SoundMaker
+{
+	ISoundManager *m_sound;
+	INodeDefManager *m_ndef;
+public:
 	float m_player_step_timer;
 
 	SimpleSoundSpec m_player_step_sound;
 	SimpleSoundSpec m_player_leftpunch_sound;
 	SimpleSoundSpec m_player_rightpunch_sound;
 
-	SoundMaker(ISoundManager *sound):
+	SoundMaker(ISoundManager *sound, INodeDefManager *ndef):
 		m_sound(sound),
+		m_ndef(ndef),
 		m_player_step_timer(0)
 	{
 	}
@@ -802,20 +817,6 @@ public:
 		if(m_player_step_timer <= 0 && m_player_step_sound.exists()){
 			m_player_step_timer = 0.03;
 			m_sound->playSound(m_player_step_sound, false);
-		}
-	}
-
-	void playPlayerLeftPunch()
-	{
-		if(m_player_leftpunch_sound.exists()){
-			m_sound->playSound(m_player_leftpunch_sound, false);
-		}
-	}
-
-	void playPlayerRightPunch()
-	{
-		if(m_player_rightpunch_sound.exists()){
-			m_sound->playSound(m_player_rightpunch_sound, false);
 		}
 	}
 
@@ -839,13 +840,20 @@ public:
 	static void cameraPunchLeft(MtEvent *e, void *data)
 	{
 		SoundMaker *sm = (SoundMaker*)data;
-		sm->playPlayerLeftPunch();
+		sm->m_sound->playSound(sm->m_player_leftpunch_sound, false);
 	}
 
 	static void cameraPunchRight(MtEvent *e, void *data)
 	{
 		SoundMaker *sm = (SoundMaker*)data;
-		sm->playPlayerRightPunch();
+		sm->m_sound->playSound(sm->m_player_rightpunch_sound, false);
+	}
+
+	static void nodeDug(MtEvent *e, void *data)
+	{
+		SoundMaker *sm = (SoundMaker*)data;
+		NodeDugEvent *nde = (NodeDugEvent*)e;
+		sm->m_sound->playSound(sm->m_ndef->get(nde->n).sound_dug, false);
 	}
 
 	void registerReceiver(MtEventManager *mgr)
@@ -855,11 +863,39 @@ public:
 		mgr->reg("PlayerJump", SoundMaker::playerJump, this);
 		mgr->reg("CameraPunchLeft", SoundMaker::cameraPunchLeft, this);
 		mgr->reg("CameraPunchRight", SoundMaker::cameraPunchRight, this);
+		mgr->reg("NodeDug", SoundMaker::nodeDug, this);
 	}
 
 	void step(float dtime)
 	{
 		m_player_step_timer -= dtime;
+	}
+};
+
+// Locally stored sounds don't need to be preloaded because of this
+class GameOnDemandSoundFetcher: public OnDemandSoundFetcher
+{
+	std::set<std::string> m_fetched;
+public:
+
+	void fetchSounds(const std::string &name,
+			std::set<std::string> &dst_paths,
+			std::set<std::vector<char> > &dst_datas)
+	{
+		if(m_fetched.count(name))
+			return;
+		m_fetched.insert(name);
+		std::string base = porting::path_share + DIR_DELIM + "testsounds";
+		dst_paths.insert(base + DIR_DELIM + name + ".ogg");
+		dst_paths.insert(base + DIR_DELIM + name + "1.ogg");
+		dst_paths.insert(base + DIR_DELIM + name + "2.ogg");
+		dst_paths.insert(base + DIR_DELIM + name + "3.ogg");
+		dst_paths.insert(base + DIR_DELIM + name + "4.ogg");
+		dst_paths.insert(base + DIR_DELIM + name + "5.ogg");
+		dst_paths.insert(base + DIR_DELIM + name + "6.ogg");
+		dst_paths.insert(base + DIR_DELIM + name + "7.ogg");
+		dst_paths.insert(base + DIR_DELIM + name + "8.ogg");
+		dst_paths.insert(base + DIR_DELIM + name + "9.ogg");
 	}
 };
 
@@ -911,12 +947,15 @@ void the_game(
 	// Create node definition manager
 	IWritableNodeDefManager *nodedef = createNodeDefManager();
 	
+	// Sound fetcher (useful when testing)
+	GameOnDemandSoundFetcher soundfetcher;
+
 	// Sound manager
 	ISoundManager *sound = NULL;
 	bool sound_is_dummy = false;
 #if USE_AUDIO
 	infostream<<"Attempting to use OpenAL audio"<<std::endl;
-	sound = createOpenALSoundManager(NULL);
+	sound = createOpenALSoundManager(&soundfetcher);
 	if(!sound)
 		infostream<<"Failed to initialize OpenAL audio"<<std::endl;
 #endif
@@ -930,10 +969,11 @@ void the_game(
 	EventManager eventmgr;
 
 	// Sound maker
-	SoundMaker soundmaker(sound);
+	SoundMaker soundmaker(sound, nodedef);
 	soundmaker.registerReceiver(&eventmgr);
 	
-	// Test sounds
+	// Preload sounds
+#if 0
 	sound->loadSound("default_grass_footstep", porting::path_share + DIR_DELIM
 			+ "sounds" + DIR_DELIM + "default_grass_walk1.ogg");
 	sound->loadSound("default_grass_footstep", porting::path_share + DIR_DELIM
@@ -955,6 +995,7 @@ void the_game(
 			+ "sounds" + DIR_DELIM + "default_place_node2.ogg");
 	sound->loadSound("default_place_node", porting::path_share + DIR_DELIM
 			+ "sounds" + DIR_DELIM + "default_place_node3.ogg");
+#endif
 
 	// Add chat log output for errors to be shown in chat
 	LogOutputBuffer chat_log_error_buf(LMT_ERROR);
@@ -2150,6 +2191,7 @@ void the_game(
 		}
 
 		bool left_punch = false;
+		soundmaker.m_player_leftpunch_sound.name = "";
 
 		if(playeritem_usable && input->getLeftState())
 		{
@@ -2208,15 +2250,11 @@ void the_game(
 						params = getDigParams(nodedef->get(n).groups, tp);
 				}
 				
-				soundmaker.m_player_leftpunch_sound.gain = 0.5;
-				if(params.main_group == "crumbly")
+				if(params.main_group != ""){
+					soundmaker.m_player_leftpunch_sound.gain = 0.5;
 					soundmaker.m_player_leftpunch_sound.name =
-							"default_dig_crumbly";
-				else if(params.main_group == "cracky")
-					soundmaker.m_player_leftpunch_sound.name =
-							"default_dig_cracky";
-				else
-					soundmaker.m_player_leftpunch_sound.name = "";
+							std::string("default_dig_") + params.main_group;
+				}
 
 				float dig_time_complete = 0.0;
 
@@ -2256,6 +2294,7 @@ void the_game(
 					infostream<<"Digging completed"<<std::endl;
 					client.interact(2, pointed);
 					client.setCrack(-1, v3s16(0,0,0));
+					MapNode wasnode = map.getNode(nodepos);
 					client.removeNode(nodepos);
 
 					dig_time = 0;
@@ -2266,17 +2305,17 @@ void the_game(
 
 					// We don't want a corresponding delay to
 					// very time consuming nodes
-					if(nodig_delay_timer > 0.5)
-					{
-						nodig_delay_timer = 0.5;
-					}
+					if(nodig_delay_timer > 0.3)
+						nodig_delay_timer = 0.3;
 					// We want a slight delay to very little
 					// time consuming nodes
 					float mindelay = 0.15;
 					if(nodig_delay_timer < mindelay)
-					{
 						nodig_delay_timer = mindelay;
-					}
+					
+					// Send event to trigger sound
+					MtEvent *e = new NodeDugEvent(nodepos, wasnode);
+					gamedef->event()->put(e);
 				}
 
 				dig_time += dtime;

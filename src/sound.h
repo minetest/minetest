@@ -61,7 +61,7 @@ public:
 	virtual void updateListener(v3f pos, v3f vel, v3f at, v3f up) = 0;
 
 	// playSound functions return -1 on failure, otherwise a handle to the
-	// sound
+	// sound. If name=="", call should be ignored without error.
 	virtual int playSound(const std::string &name, bool loop,
 			float volume) = 0;
 	virtual int playSoundAt(const std::string &name, bool loop,

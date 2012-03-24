@@ -156,6 +156,7 @@ void ContentFeatures::reset()
 	legacy_facedir_simple = false;
 	legacy_wallmounted = false;
 	sound_footstep = SimpleSoundSpec();
+	sound_dug = SimpleSoundSpec();
 }
 
 void ContentFeatures::serialize(std::ostream &os)
@@ -203,6 +204,7 @@ void ContentFeatures::serialize(std::ostream &os)
 	writeU8(os, legacy_facedir_simple);
 	writeU8(os, legacy_wallmounted);
 	serializeSimpleSoundSpec(sound_footstep, os);
+	serializeSimpleSoundSpec(sound_dug, os);
 }
 
 void ContentFeatures::deSerialize(std::istream &is)
@@ -256,6 +258,7 @@ void ContentFeatures::deSerialize(std::istream &is)
 	legacy_wallmounted = readU8(is);
 	try{
 		deSerializeSimpleSoundSpec(sound_footstep, is);
+		deSerializeSimpleSoundSpec(sound_dug, is);
 	}catch(SerializationError &e) {};
 }
 

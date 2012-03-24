@@ -811,11 +811,10 @@ static void push_pointed_thing(lua_State *L, const PointedThing& pointed)
 	SimpleSoundSpec
 */
 
-static SimpleSoundSpec read_soundspec(lua_State *L, int index)
+static void read_soundspec(lua_State *L, int index, SimpleSoundSpec &spec)
 {
 	if(index < 0)
 		index = lua_gettop(L) + 1 + index;
-	SimpleSoundSpec spec;
 	if(lua_isnil(L, index)){
 	} else if(lua_istable(L, index)){
 		getstringfield(L, index, "name", spec.name);
@@ -823,7 +822,6 @@ static SimpleSoundSpec read_soundspec(lua_State *L, int index)
 	} else if(lua_isstring(L, index)){
 		spec.name = lua_tostring(L, index);
 	}
-	return spec;
 }
 
 /*
@@ -1062,7 +1060,10 @@ static ContentFeatures read_content_features(lua_State *L, int index)
 	lua_getfield(L, index, "sounds");
 	if(lua_istable(L, -1)){
 		lua_getfield(L, -1, "footstep");
-		f.sound_footstep = read_soundspec(L, -1);
+		read_soundspec(L, -1, f.sound_footstep);
+		lua_pop(L, 1);
+		lua_getfield(L, -1, "dug");
+		read_soundspec(L, -1, f.sound_dug);
 		lua_pop(L, 1);
 	}
 	lua_pop(L, 1);

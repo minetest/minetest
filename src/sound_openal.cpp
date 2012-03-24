@@ -454,6 +454,8 @@ public:
 	int playSound(const std::string &name, bool loop, float volume)
 	{
 		maintain();
+		if(name == "")
+			return 0;
 		SoundBuffer *buf = getFetchBuffer(name);
 		if(!buf){
 			infostream<<"OpenALSoundManager: \""<<name<<"\" not found."
@@ -465,6 +467,8 @@ public:
 	int playSoundAt(const std::string &name, bool loop, float volume, v3f pos)
 	{
 		maintain();
+		if(name == "")
+			return 0;
 		SoundBuffer *buf = getFetchBuffer(name);
 		if(!buf){
 			infostream<<"OpenALSoundManager: \""<<name<<"\" not found."
