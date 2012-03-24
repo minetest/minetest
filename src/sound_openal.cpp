@@ -23,10 +23,10 @@ with this program; ifnot, write to the Free Software Foundation, Inc.,
 
 #include "sound_openal.h"
 
-#if defined(_MSC_VER)
+#if defined(_WIN32)
 	#include <al.h>
 	#include <alc.h>
-	#include <alext.h>
+	//#include <alext.h>
 #elif defined(__APPLE__)
 	#include <OpenAL/al.h>
 	#include <OpenAL/alc.h>
