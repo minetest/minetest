@@ -160,6 +160,13 @@ eg. {name="default:apple", count=1, wear=0, metadata=""}
 Any time an item must be passed to a function, it can be an
 ItemStack (see below), an itemstring or a table in the above format.
 
+SimpleSoundSpec:
+eg. ""
+eg. "default_place_node"
+eg. {}
+eg. {name="default_place_node"}
+eg. {name="default_place_node", gain=1.0}
+
 Items
 ------
 Node (register_node):
@@ -672,6 +679,10 @@ Node definition (register_node)
     selection_box = {type="regular"},
     legacy_facedir_simple = false, -- Support maps made in and before January 2012
     legacy_wallmounted = false, -- Support maps made in and before January 2012
+    sounds = {
+        footstep = <SimpleSoundSpec>,
+        dug = <SimpleSoundSpec>,
+    },
 }
 
 Recipe: (register_craft)
