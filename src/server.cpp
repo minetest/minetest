@@ -1317,10 +1317,8 @@ void Server::AsyncRunStep()
 		{
 			RemoteClient *client = i.getNode()->getValue();
 			PlayerSAO *playersao = getPlayerSAO(client->peer_id);
-			if(playersao == NULL){
-				errorstream<<"Handling client without PlayerSAO, peer_id="<<client->peer_id<<std::endl;
+			if(playersao == NULL)
 				continue;
-			}
 
 			/*
 				Handle player HPs (die if hp=0)
@@ -4533,6 +4531,8 @@ PlayerSAO* Server::emergePlayer(const char *name, u16 peer_id)
 	if(newplayer)
 		scriptapi_on_newplayer(m_lua, playersao);
 
+	scriptapi_on_joinplayer(m_lua, playersao);
+
 	/* Creative mode */
 	if(g_settings->getBool("creative_mode"))
 		playersao->createCreativeInventory();
@@ -4623,10 +4623,19 @@ void Server::handlePeerChange(PeerChange &c)
 			}
 		}
 		
-		// Remove from environment
-		if(player->getPlayerSAO())
-			player->getPlayerSAO()->disconnected();
-	
+		/* Run scripts and remove from environment */
+		{
+			if(player != NULL)
+			{
+				PlayerSAO *playersao = player->getPlayerSAO();
+				assert(playersao);
+
+				scriptapi_on_leaveplayer(m_lua, playersao);
+
+				playersao->disconnected();
+			}
+		}
+
 		/*
 			Print out action
 		*/

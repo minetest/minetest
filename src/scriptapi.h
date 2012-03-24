@@ -57,6 +57,8 @@ void scriptapi_environment_on_generated(lua_State *L, v3s16 minp, v3s16 maxp,
 void scriptapi_on_newplayer(lua_State *L, ServerActiveObject *player);
 void scriptapi_on_dieplayer(lua_State *L, ServerActiveObject *player);
 bool scriptapi_on_respawnplayer(lua_State *L, ServerActiveObject *player);
+void scriptapi_on_joinplayer(lua_State *L, ServerActiveObject *player);
+void scriptapi_on_leaveplayer(lua_State *L, ServerActiveObject *player);
 void scriptapi_get_creative_inventory(lua_State *L, ServerActiveObject *player);
 
 /* item callbacks */

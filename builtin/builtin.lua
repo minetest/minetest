@@ -794,6 +794,8 @@ minetest.registered_on_generateds, minetest.register_on_generated = make_registr
 minetest.registered_on_newplayers, minetest.register_on_newplayer = make_registration()
 minetest.registered_on_dieplayers, minetest.register_on_dieplayer = make_registration()
 minetest.registered_on_respawnplayers, minetest.register_on_respawnplayer = make_registration()
+minetest.registered_on_joinplayers, minetest.register_on_joinplayer = make_registration()
+minetest.registered_on_leaveplayers, minetest.register_on_leaveplayer = make_registration()
 
 --
 -- Misc. API functions

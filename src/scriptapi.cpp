@@ -4127,6 +4127,135 @@ void scriptapi_rm_object_reference(lua_State *L, ServerActiveObject *cobj)
 	lua_settable(L, objectstable);
 }
 
+/*
+	misc
+*/
+
+// What scriptapi_run_callbacks does with the return values of callbacks.
+// Regardless of the mode, if only one callback is defined,
+// its return value is the total return value.
+// Modes only affect the case where 0 or >= 2 callbacks are defined.
+enum RunCallbacksMode
+{
+	// Returns the return value of the first callback
+	// Returns nil if list of callbacks is empty
+	RUN_CALLBACKS_MODE_FIRST,
+	// Returns the return value of the last callback
+	// Returns nil if list of callbacks is empty
+	RUN_CALLBACKS_MODE_LAST,
+	// If any callback returns a false value, the first such is returned
+	// Otherwise, the first callback's return value (trueish) is returned
+	// Returns true if list of callbacks is empty
+	RUN_CALLBACKS_MODE_AND,
+	// Like above, but stops calling callbacks (short circuit)
+	// after seeing the first false value
+	RUN_CALLBACKS_MODE_AND_SC,
+	// If any callback returns a true value, the first such is returned
+	// Otherwise, the first callback's return value (falseish) is returned
+	// Returns false if list of callbacks is empty
+	RUN_CALLBACKS_MODE_OR,
+	// Like above, but stops calling callbacks (short circuit)
+	// after seeing the first true value
+	RUN_CALLBACKS_MODE_OR_SC,
+	// Note: "a true value" and "a false value" refer to values that
+	// are converted by lua_toboolean to true or false, respectively.
+};
+
+// Push the list of callbacks (a lua table).
+// Then push nargs arguments.
+// Then call this function, which
+// - runs the callbacks
+// - removes the table and arguments from the lua stack
+// - pushes the return value, computed depending on mode
+static void scriptapi_run_callbacks(lua_State *L, int nargs,
+		RunCallbacksMode mode)
+{
+	// Insert the return value into the lua stack, below the table
+	assert(lua_gettop(L) >= nargs + 1);
+	lua_pushnil(L);
+	lua_insert(L, -(nargs + 1) - 1);
+	// Stack now looks like this:
+	// ... <return value = nil> <table> <arg#1> <arg#2> ... <arg#n>
+
+	int rv = lua_gettop(L) - nargs - 1;
+	int table = rv + 1;
+	int arg = table + 1;
+
+	luaL_checktype(L, table, LUA_TTABLE);
+
+	// Foreach
+	lua_pushnil(L);
+	bool first_loop = true;
+	while(lua_next(L, table) != 0){
+		// key at index -2 and value at index -1
+		luaL_checktype(L, -1, LUA_TFUNCTION);
+		// Call function
+		for(int i = 0; i < nargs; i++)
+			lua_pushvalue(L, arg+i);
+		if(lua_pcall(L, nargs, 1, 0))
+			script_error(L, "error: %s", lua_tostring(L, -1));
+
+		// Move return value to designated space in stack
+		// Or pop it
+		if(first_loop){
+			// Result of first callback is always moved
+			lua_replace(L, rv);
+			first_loop = false;
+		} else {
+			// Otherwise, what happens depends on the mode
+			if(mode == RUN_CALLBACKS_MODE_FIRST)
+				lua_pop(L, 1);
+			else if(mode == RUN_CALLBACKS_MODE_LAST)
+				lua_replace(L, rv);
+			else if(mode == RUN_CALLBACKS_MODE_AND ||
+					mode == RUN_CALLBACKS_MODE_AND_SC){
+				if(lua_toboolean(L, rv) == true &&
+						lua_toboolean(L, -1) == false)
+					lua_replace(L, rv);
+				else
+					lua_pop(L, 1);
+			}
+			else if(mode == RUN_CALLBACKS_MODE_OR ||
+					mode == RUN_CALLBACKS_MODE_OR_SC){
+				if(lua_toboolean(L, rv) == false &&
+						lua_toboolean(L, -1) == true)
+					lua_replace(L, rv);
+				else
+					lua_pop(L, 1);
+			}
+			else
+				assert(0);
+		}
+
+		// Handle short circuit modes
+		if(mode == RUN_CALLBACKS_MODE_AND_SC &&
+				lua_toboolean(L, rv) == false)
+			break;
+		else if(mode == RUN_CALLBACKS_MODE_OR_SC &&
+				lua_toboolean(L, rv) == true)
+			break;
+
+		// value removed, keep key for next iteration
+	}
+
+	// Remove stuff from stack, leaving only the return value
+	lua_settop(L, rv);
+
+	// Fix return value in case no callbacks were called
+	if(first_loop){
+		if(mode == RUN_CALLBACKS_MODE_AND ||
+				mode == RUN_CALLBACKS_MODE_AND_SC){
+			lua_pop(L, 1);
+			lua_pushboolean(L, true);
+		}
+		else if(mode == RUN_CALLBACKS_MODE_OR ||
+				mode == RUN_CALLBACKS_MODE_OR_SC){
+			lua_pop(L, 1);
+			lua_pushboolean(L, false);
+		}
+	}
+}
+
 bool scriptapi_on_chat_message(lua_State *L, const std::string &name,
 		const std::string &message)
 {
@@ -4137,30 +4266,13 @@ bool scriptapi_on_chat_message(lua_State *L, const std::string &name,
 	// Get minetest.registered_on_chat_messages
 	lua_getglobal(L, "minetest");
 	lua_getfield(L, -1, "registered_on_chat_messages");
-	luaL_checktype(L, -1, LUA_TTABLE);
-	int table = lua_gettop(L);
-	// Foreach
-	lua_pushnil(L);
-	while(lua_next(L, table) != 0){
-		// key at index -2 and value at index -1
-		luaL_checktype(L, -1, LUA_TFUNCTION);
-		// Call function
-		lua_pushstring(L, name.c_str());
-		lua_pushstring(L, message.c_str());
-		if(lua_pcall(L, 2, 1, 0))
-			script_error(L, "error: %s", lua_tostring(L, -1));
-		bool ate = lua_toboolean(L, -1);
-		lua_pop(L, 1);
-		if(ate)
-			return true;
-		// value removed, keep key for next iteration
-	}
-	return false;
+	// Call callbacks
+	lua_pushstring(L, name.c_str());
+	lua_pushstring(L, message.c_str());
+	scriptapi_run_callbacks(L, 2, RUN_CALLBACKS_MODE_OR_SC);
+	bool ate = lua_toboolean(L, -1);
+	return ate;
 }
-
-/*
-	misc
-*/
 
 void scriptapi_on_newplayer(lua_State *L, ServerActiveObject *player)
 {
@@ -4171,45 +4283,24 @@ void scriptapi_on_newplayer(lua_State *L, ServerActiveObject *player)
 	// Get minetest.registered_on_newplayers
 	lua_getglobal(L, "minetest");
 	lua_getfield(L, -1, "registered_on_newplayers");
-	luaL_checktype(L, -1, LUA_TTABLE);
-	int table = lua_gettop(L);
-	// Foreach
-	lua_pushnil(L);
-	while(lua_next(L, table) != 0){
-		// key at index -2 and value at index -1
-		luaL_checktype(L, -1, LUA_TFUNCTION);
-		// Call function
-		objectref_get_or_create(L, player);
-		if(lua_pcall(L, 1, 0, 0))
-			script_error(L, "error: %s", lua_tostring(L, -1));
-		// value removed, keep key for next iteration
-	}
+	// Call callbacks
+	objectref_get_or_create(L, player);
+	scriptapi_run_callbacks(L, 1, RUN_CALLBACKS_MODE_FIRST);
 }
 
 void scriptapi_on_dieplayer(lua_State *L, ServerActiveObject *player)
 {
-    realitycheck(L);
-    assert(lua_checkstack(L, 20));
-    StackUnroller stack_unroller(L);
-    
-    // Get minetest.registered_on_dieplayers
-    lua_getglobal(L, "minetest");
-    lua_getfield(L, -1, "registered_on_dieplayers");
-    luaL_checktype(L, -1, LUA_TTABLE);
-    int table = lua_gettop(L);
-    // Foreach
-    lua_pushnil(L);
-    while(lua_next(L, table) != 0){
-        // key at index -2 and value at index -1
-       luaL_checktype(L, -1, LUA_TFUNCTION);
-        // Call function
-       objectref_get_or_create(L, player);
-        if(lua_pcall(L, 1, 0, 0))
-            script_error(L, "error: %s", lua_tostring(L, -1));
-        // value removed, keep key for next iteration
-    }
-}
+	realitycheck(L);
+	assert(lua_checkstack(L, 20));
+	StackUnroller stack_unroller(L);
 
+	// Get minetest.registered_on_dieplayers
+	lua_getglobal(L, "minetest");
+	lua_getfield(L, -1, "registered_on_dieplayers");
+	// Call callbacks
+	objectref_get_or_create(L, player);
+	scriptapi_run_callbacks(L, 1, RUN_CALLBACKS_MODE_FIRST);
+}
 
 bool scriptapi_on_respawnplayer(lua_State *L, ServerActiveObject *player)
 {
@@ -4217,29 +4308,42 @@ bool scriptapi_on_respawnplayer(lua_State *L, ServerActiveObject *player)
 	assert(lua_checkstack(L, 20));
 	StackUnroller stack_unroller(L);
 
-	bool positioning_handled_by_some = false;
-
 	// Get minetest.registered_on_respawnplayers
 	lua_getglobal(L, "minetest");
 	lua_getfield(L, -1, "registered_on_respawnplayers");
-	luaL_checktype(L, -1, LUA_TTABLE);
-	int table = lua_gettop(L);
-	// Foreach
-	lua_pushnil(L);
-	while(lua_next(L, table) != 0){
-		// key at index -2 and value at index -1
-		luaL_checktype(L, -1, LUA_TFUNCTION);
-		// Call function
-		objectref_get_or_create(L, player);
-		if(lua_pcall(L, 1, 1, 0))
-			script_error(L, "error: %s", lua_tostring(L, -1));
-		bool positioning_handled = lua_toboolean(L, -1);
-		lua_pop(L, 1);
-		if(positioning_handled)
-			positioning_handled_by_some = true;
-		// value removed, keep key for next iteration
-	}
+	// Call callbacks
+	objectref_get_or_create(L, player);
+	scriptapi_run_callbacks(L, 1, RUN_CALLBACKS_MODE_OR);
+	bool positioning_handled_by_some = lua_toboolean(L, -1);
 	return positioning_handled_by_some;
+}
+
+void scriptapi_on_joinplayer(lua_State *L, ServerActiveObject *player)
+{
+	realitycheck(L);
+	assert(lua_checkstack(L, 20));
+	StackUnroller stack_unroller(L);
+
+	// Get minetest.registered_on_joinplayers
+	lua_getglobal(L, "minetest");
+	lua_getfield(L, -1, "registered_on_joinplayers");
+	// Call callbacks
+	objectref_get_or_create(L, player);
+	scriptapi_run_callbacks(L, 1, RUN_CALLBACKS_MODE_FIRST);
+}
+
+void scriptapi_on_leaveplayer(lua_State *L, ServerActiveObject *player)
+{
+	realitycheck(L);
+	assert(lua_checkstack(L, 20));
+	StackUnroller stack_unroller(L);
+
+	// Get minetest.registered_on_leaveplayers
+	lua_getglobal(L, "minetest");
+	lua_getfield(L, -1, "registered_on_leaveplayers");
+	// Call callbacks
+	objectref_get_or_create(L, player);
+	scriptapi_run_callbacks(L, 1, RUN_CALLBACKS_MODE_FIRST);
 }
 
 void scriptapi_get_creative_inventory(lua_State *L, ServerActiveObject *player)
@@ -4422,19 +4526,9 @@ void scriptapi_environment_step(lua_State *L, float dtime)
 	// Get minetest.registered_globalsteps
 	lua_getglobal(L, "minetest");
 	lua_getfield(L, -1, "registered_globalsteps");
-	luaL_checktype(L, -1, LUA_TTABLE);
-	int table = lua_gettop(L);
-	// Foreach
-	lua_pushnil(L);
-	while(lua_next(L, table) != 0){
-		// key at index -2 and value at index -1
-		luaL_checktype(L, -1, LUA_TFUNCTION);
-		// Call function
-		lua_pushnumber(L, dtime);
-		if(lua_pcall(L, 1, 0, 0))
-			script_error(L, "error: %s", lua_tostring(L, -1));
-		// value removed, keep key for next iteration
-	}
+	// Call callbacks
+	lua_pushnumber(L, dtime);
+	scriptapi_run_callbacks(L, 1, RUN_CALLBACKS_MODE_FIRST);
 }
 
 void scriptapi_environment_on_generated(lua_State *L, v3s16 minp, v3s16 maxp,
@@ -4448,21 +4542,11 @@ void scriptapi_environment_on_generated(lua_State *L, v3s16 minp, v3s16 maxp,
 	// Get minetest.registered_on_generateds
 	lua_getglobal(L, "minetest");
 	lua_getfield(L, -1, "registered_on_generateds");
-	luaL_checktype(L, -1, LUA_TTABLE);
-	int table = lua_gettop(L);
-	// Foreach
-	lua_pushnil(L);
-	while(lua_next(L, table) != 0){
-		// key at index -2 and value at index -1
-		luaL_checktype(L, -1, LUA_TFUNCTION);
-		// Call function
-		push_v3s16(L, minp);
-		push_v3s16(L, maxp);
-		lua_pushnumber(L, blockseed);
-		if(lua_pcall(L, 3, 0, 0))
-			script_error(L, "error: %s", lua_tostring(L, -1));
-		// value removed, keep key for next iteration
-	}
+	// Call callbacks
+	push_v3s16(L, minp);
+	push_v3s16(L, maxp);
+	lua_pushnumber(L, blockseed);
+	scriptapi_run_callbacks(L, 3, RUN_CALLBACKS_MODE_FIRST);
 }
 
 /*
