@@ -203,6 +203,7 @@ struct ContentFeatures
 
 	// Sound properties
 	SimpleSoundSpec sound_footstep;
+	SimpleSoundSpec sound_dig;
 	SimpleSoundSpec sound_dug;
 
 	/*

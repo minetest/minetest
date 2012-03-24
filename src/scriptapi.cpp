@@ -1062,6 +1062,9 @@ static ContentFeatures read_content_features(lua_State *L, int index)
 		lua_getfield(L, -1, "footstep");
 		read_soundspec(L, -1, f.sound_footstep);
 		lua_pop(L, 1);
+		lua_getfield(L, -1, "dig");
+		read_soundspec(L, -1, f.sound_dig);
+		lua_pop(L, 1);
 		lua_getfield(L, -1, "dug");
 		read_soundspec(L, -1, f.sound_dug);
 		lua_pop(L, 1);

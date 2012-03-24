@@ -656,8 +656,10 @@ function default.node_sound_sand_defaults(table)
 	table = table or {}
 	table.footstep = table.footstep or
 			{name="default_grass_footstep", gain=0.25}
+	--table.dug = table.dug or
+	--		{name="default_dirt_break", gain=0.25}
 	table.dug = table.dug or
-			{name="default_dirt_break", gain=0.25}
+			{name="", gain=0.25}
 	default.node_sound_defaults(table)
 	return table
 end
@@ -674,6 +676,8 @@ function default.node_sound_leaves_defaults(table)
 	table = table or {}
 	table.footstep = table.footstep or
 			{name="default_grass_footstep", gain=0.25}
+	table.dig = table.dig or
+			{name="default_dig_crumbly", gain=0.4}
 	table.dug = table.dug or
 			{name="", gain=1.0}
 	default.node_sound_defaults(table)
@@ -727,7 +731,7 @@ minetest.register_node("default:dirt_with_grass", {
 	groups = {crumbly=3},
 	drop = 'default:dirt',
 	sounds = default.node_sound_dirt_defaults({
-		footstep = {name="default_grass_footstep", gain=0.5},
+		footstep = {name="default_grass_footstep", gain=0.4},
 	}),
 })
 
@@ -738,7 +742,7 @@ minetest.register_node("default:dirt_with_grass_footsteps", {
 	groups = {crumbly=3},
 	drop = 'default:dirt',
 	sounds = default.node_sound_dirt_defaults({
-		footstep = {name="default_grass_footstep", gain=0.5},
+		footstep = {name="default_grass_footstep", gain=0.4},
 	}),
 })
 
@@ -763,8 +767,8 @@ minetest.register_node("default:gravel", {
 	tile_images = {"default_gravel.png"},
 	is_ground_content = true,
 	groups = {crumbly=2},
-	sounds = default.node_sound_sand_defaults({
-		footstep = {name="default_gravel_footstep", gain=0.5}
+	sounds = default.node_sound_dirt_defaults({
+		footstep = {name="default_gravel_footstep", gain=0.45},
 	}),
 })
 
