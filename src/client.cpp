@@ -261,7 +261,8 @@ Client::Client(
 	m_nodedef_received(false),
 	m_time_of_day_set(false),
 	m_last_time_of_day_f(-1),
-	m_time_of_day_update_timer(0)
+	m_time_of_day_update_timer(0),
+	m_removed_sounds_check_timer(0)
 {
 	m_packetcounter_timer = 0.0;
 	//m_delete_unused_sectors_timer = 0.0;
@@ -731,6 +732,63 @@ void Client::step(float dtime)
 			Player *player = m_env.getLocalPlayer();
 			player->inventory = *m_inventory_from_server;
 			m_inventory_updated = true;
+		}
+	}
+
+	/*
+		Update positions of sounds attached to objects
+	*/
+	{
+		for(std::map<int, u16>::iterator
+				i = m_sounds_to_objects.begin();
+				i != m_sounds_to_objects.end(); i++)
+		{
+			int client_id = i->first;
+			u16 object_id = i->second;
+			ClientActiveObject *cao = m_env.getActiveObject(object_id);
+			if(!cao)
+				continue;
+			v3f pos = cao->getPosition();
+			m_sound->updateSoundPosition(client_id, pos);
+		}
+	}
+	
+	/*
+		Handle removed remotely initiated sounds
+	*/
+	m_removed_sounds_check_timer += dtime;
+	if(m_removed_sounds_check_timer >= 2.32)
+	{
+		m_removed_sounds_check_timer = 0;
+		// Find removed sounds and clear references to them
+		std::set<s32> removed_server_ids;
+		for(std::map<s32, int>::iterator
+				i = m_sounds_server_to_client.begin();
+				i != m_sounds_server_to_client.end();)
+		{
+			s32 server_id = i->first;
+			int client_id = i->second;
+			i++;
+			if(!m_sound->soundExists(client_id)){
+				m_sounds_server_to_client.erase(server_id);
+				m_sounds_client_to_server.erase(client_id);
+				m_sounds_to_objects.erase(client_id);
+				removed_server_ids.insert(server_id);
+			}
+		}
+		// Sync to server
+		if(removed_server_ids.size() != 0)
+		{
+			std::ostringstream os(std::ios_base::binary);
+			writeU16(os, TOSERVER_REMOVED_SOUNDS);
+			writeU16(os, removed_server_ids.size());
+			for(std::set<s32>::iterator i = removed_server_ids.begin();
+					i != removed_server_ids.end(); i++)
+				writeS32(os, *i);
+			std::string s = os.str();
+			SharedBuffer<u8> data((u8*)s.c_str(), s.size());
+			// Send as reliable
+			Send(0, data, true);
 		}
 	}
 }
@@ -1609,6 +1667,57 @@ void Client::ProcessData(u8 *data, u32 datasize, u16 sender_peer_id)
 		std::istringstream tmp_is2(tmp_os.str());
 		m_itemdef->deSerialize(tmp_is2);
 		m_itemdef_received = true;
+	}
+	else if(command == TOCLIENT_PLAY_SOUND)
+	{
+		std::string datastring((char*)&data[2], datasize-2);
+		std::istringstream is(datastring, std::ios_base::binary);
+
+		s32 server_id = readS32(is);
+		std::string name = deSerializeString(is);
+		float gain = readF1000(is);
+		int type = readU8(is); // 0=local, 1=positional, 2=object
+		v3f pos = readV3F1000(is);
+		u16 object_id = readU16(is);
+		bool loop = readU8(is);
+		// Start playing
+		int client_id = -1;
+		switch(type){
+		case 0: // local
+			client_id = m_sound->playSound(name, false, gain);
+			break;
+		case 1: // positional
+			client_id = m_sound->playSoundAt(name, false, gain, pos);
+			break;
+		case 2: { // object
+			ClientActiveObject *cao = m_env.getActiveObject(object_id);
+			if(cao)
+				pos = cao->getPosition();
+			client_id = m_sound->playSoundAt(name, loop, gain, pos);
+			// TODO: Set up sound to move with object
+			break; }
+		default:
+			break;
+		}
+		if(client_id != -1){
+			m_sounds_server_to_client[server_id] = client_id;
+			m_sounds_client_to_server[client_id] = server_id;
+			if(object_id != 0)
+				m_sounds_to_objects[client_id] = object_id;
+		}
+	}
+	else if(command == TOCLIENT_STOP_SOUND)
+	{
+		std::string datastring((char*)&data[2], datasize-2);
+		std::istringstream is(datastring, std::ios_base::binary);
+
+		s32 server_id = readS32(is);
+		std::map<s32, int>::iterator i =
+				m_sounds_server_to_client.find(server_id);
+		if(i != m_sounds_server_to_client.end()){
+			int client_id = i->second;
+			m_sound->stopSound(client_id);
+		}
 	}
 	else
 	{

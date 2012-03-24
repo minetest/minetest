@@ -363,8 +363,40 @@ dump2(obj, name="_", dumped={})
 dump(obj, dumped={})
 ^ Return object serialized as a string
 
+Sounds
+-------
+Examples of sound parameter tables:
+-- Play locationless on all clients
+{
+	gain = 1.0, -- default
+}
+-- Play locationless to a player
+{
+	to_player = name,
+	gain = 1.0, -- default
+}
+-- Play in a location
+{
+	pos = {x=1,y=2,z=3},
+	gain = 1.0, -- default
+	max_hear_distance = 32, -- default
+}
+-- Play connected to an object, looped
+{
+    object = <an ObjectRef>,
+	gain = 1.0, -- default
+	max_hear_distance = 32, -- default
+    loop = true, -- only sounds connected to objects can be looped
+}
+
 minetest namespace reference
 -----------------------------
+minetest.get_current_modname() -> string
+minetest.get_modpath(modname) -> eg. "/home/user/.minetest/usermods/modname"
+^ Useful for loading additional .lua modules or static data from mod
+minetest.get_worldpath(modname) -> eg. "/home/user/.minetest/world"
+^ Useful for storing custom data
+
 minetest.register_entity(name, prototype table)
 minetest.register_abm(abm definition)
 minetest.register_node(name, node definition)
@@ -372,6 +404,7 @@ minetest.register_tool(name, item definition)
 minetest.register_craftitem(name, item definition)
 minetest.register_alias(name, convert_to)
 minetest.register_craft(recipe)
+
 minetest.register_globalstep(func(dtime))
 minetest.register_on_placenode(func(pos, newnode, placer))
 minetest.register_on_dignode(func(pos, oldnode, digger))
@@ -383,20 +416,22 @@ minetest.register_on_respawnplayer(func(ObjectRef))
 ^ return true in func to disable regular player placement
 ^ currently called _before_ repositioning of player occurs
 minetest.register_on_chat_message(func(name, message))
+
 minetest.add_to_creative_inventory(itemstring)
 minetest.setting_get(name) -> string or nil
 minetest.setting_getbool(name) -> boolean value or nil
+
 minetest.chat_send_all(text)
 minetest.chat_send_player(name, text)
 minetest.get_player_privs(name) -> set of privs
 minetest.get_inventory(location) -> InvRef
 ^ location = eg. {type="player", name="celeron55"}
                  {type="node", pos={x=, y=, z=}}
-minetest.get_current_modname() -> string
-minetest.get_modpath(modname) -> eg. "/home/user/.minetest/usermods/modname"
-^ Useful for loading additional .lua modules or static data from mod
-minetest.get_worldpath(modname) -> eg. "/home/user/.minetest/world"
-^ Useful for storing custom data
+
+minetest.sound_play(spec, parameters) -> handle
+^ spec = SimpleSoundSpec
+^ parameters = sound parameter table
+minetest.sound_stop(handle)
 
 minetest.debug(line)
 ^ Goes to dstream
@@ -681,6 +716,7 @@ Node definition (register_node)
     legacy_wallmounted = false, -- Support maps made in and before January 2012
     sounds = {
         footstep = <SimpleSoundSpec>,
+        dig = <SimpleSoundSpec>, -- "__group" = group-based sound (default)
         dug = <SimpleSoundSpec>,
     },
 }

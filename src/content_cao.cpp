@@ -34,6 +34,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "itemdef.h"
 #include "tool.h"
 #include "content_cso.h"
+#include "sound.h"
+#include "nodedef.h"
 class Settings;
 struct ToolCapabilities;
 
@@ -1008,6 +1010,7 @@ private:
 	LocalPlayer *m_local_player;
 	float m_damage_visual_timer;
 	bool m_dead;
+	float m_step_distance_counter;
 
 public:
 	PlayerCAO(IGameDef *gamedef, ClientEnvironment *env):
@@ -1020,7 +1023,8 @@ public:
 		m_is_local_player(false),
 		m_local_player(NULL),
 		m_damage_visual_timer(0),
-		m_dead(false)
+		m_dead(false),
+		m_step_distance_counter(0)
 	{
 		if(gamedef == NULL)
 			ClientActiveObject::registerType(getType(), create);
@@ -1202,7 +1206,9 @@ public:
 
 	void step(float dtime, ClientEnvironment *env)
 	{
+		v3f lastpos = pos_translator.vect_show;
 		pos_translator.translate(dtime);
+		float moved = lastpos.getDistanceFrom(pos_translator.vect_show);
 		updateVisibility();
 		updateNodePos();
 
@@ -1210,6 +1216,18 @@ public:
 			m_damage_visual_timer -= dtime;
 			if(m_damage_visual_timer <= 0){
 				updateTextures("");
+			}
+		}
+		
+		m_step_distance_counter += moved;
+		if(m_step_distance_counter > 1.5*BS){
+			m_step_distance_counter = 0;
+			if(!m_is_local_player){
+				INodeDefManager *ndef = m_gamedef->ndef();
+				v3s16 p = floatToInt(getPosition()+v3f(0,-0.5*BS, 0), BS);
+				MapNode n = m_env->getMap().getNodeNoEx(p);
+				SimpleSoundSpec spec = ndef->get(n).sound_footstep;
+				m_gamedef->sound()->playSoundAt(spec, false, getPosition());
 			}
 		}
 	}

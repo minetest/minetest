@@ -2222,7 +2222,7 @@ private:
 
 	static const char className[];
 	static const luaL_reg methods[];
-
+public:
 	static ObjectRef *checkobject(lua_State *L, int narg)
 	{
 		luaL_checktype(L, narg, LUA_TUSERDATA);
@@ -2236,7 +2236,7 @@ private:
 		ServerActiveObject *co = ref->m_object;
 		return co;
 	}
-	
+private:
 	static LuaEntitySAO* getluaobject(ObjectRef *ref)
 	{
 		ServerActiveObject *obj = getobject(ref);
@@ -3134,10 +3134,6 @@ const luaL_reg EnvRef::methods[] = {
 	{0,0}
 };
 
-/*
-	Global functions
-*/
-
 class LuaABM : public ActiveBlockModifier
 {
 private:
@@ -3210,6 +3206,47 @@ public:
 			script_error(L, "error: %s", lua_tostring(L, -1));
 	}
 };
+
+/*
+	ServerSoundParams
+*/
+
+static void read_server_sound_params(lua_State *L, int index,
+		ServerSoundParams &params)
+{
+	if(index < 0)
+		index = lua_gettop(L) + 1 + index;
+	// Clear
+	params = ServerSoundParams();
+	if(lua_istable(L, index)){
+		getfloatfield(L, index, "gain", params.gain);
+		getstringfield(L, index, "to_player", params.to_player);
+		lua_getfield(L, index, "pos");
+		if(!lua_isnil(L, -1)){
+			v3f p = read_v3f(L, -1)*BS;
+			params.pos = p;
+			params.type = ServerSoundParams::SSP_POSITIONAL;
+		}
+		lua_pop(L, 1);
+		lua_getfield(L, index, "object");
+		if(!lua_isnil(L, -1)){
+			ObjectRef *ref = ObjectRef::checkobject(L, -1);
+			ServerActiveObject *sao = ObjectRef::getobject(ref);
+			if(sao){
+				params.object = sao->getId();
+				params.type = ServerSoundParams::SSP_OBJECT;
+			}
+		}
+		lua_pop(L, 1);
+		params.max_hear_distance = BS*getfloatfield_default(L, index,
+				"max_hear_distance", params.max_hear_distance/BS);
+		getboolfield(L, index, "loop", params.loop);
+	}
+}
+
+/*
+	Global functions
+*/
 
 // debug(text)
 // Writes a line to dstream
@@ -3674,6 +3711,26 @@ static int l_get_worldpath(lua_State *L)
 	return 1;
 }
 
+// sound_play(spec, parameters)
+static int l_sound_play(lua_State *L)
+{
+	SimpleSoundSpec spec;
+	read_soundspec(L, 1, spec);
+	ServerSoundParams params;
+	read_server_sound_params(L, 2, params);
+	s32 handle = get_server(L)->playSound(spec, params);
+	lua_pushinteger(L, handle);
+	return 1;
+}
+
+// sound_stop(handle)
+static int l_sound_stop(lua_State *L)
+{
+	int handle = luaL_checkinteger(L, 1);
+	get_server(L)->stopSound(handle);
+	return 0;
+}
+
 static const struct luaL_Reg minetest_f [] = {
 	{"debug", l_debug},
 	{"log", l_log},
@@ -3691,6 +3748,8 @@ static const struct luaL_Reg minetest_f [] = {
 	{"get_current_modname", l_get_current_modname},
 	{"get_modpath", l_get_modpath},
 	{"get_worldpath", l_get_worldpath},
+	{"sound_play", l_sound_play},
+	{"sound_stop", l_sound_stop},
 	{NULL, NULL}
 };
 

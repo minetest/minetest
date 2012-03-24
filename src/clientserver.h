@@ -46,6 +46,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 		Compress the contents of TOCLIENT_ITEMDEF and TOCLIENT_NODEDEF
 	PROTOCOL_VERSION 8:
 		Digging based on item groups
+		Many things
 */
 
 #define PROTOCOL_VERSION 8
@@ -268,7 +269,25 @@ enum ToClientCommand
 		u32 length of next item
 		serialized ItemDefManager
 	*/
+	
+	TOCLIENT_PLAY_SOUND = 0x3f,
+	/*
+		u16 command
+		s32 sound_id
+		u16 len
+		u8[len] sound name
+		s32 gain*1000
+		u8 type (0=local, 1=positional, 2=object)
+		s32[3] pos_nodes*10000
+		u16 object_id
+		u8 loop (bool)
+	*/
 
+	TOCLIENT_STOP_SOUND = 0x40,
+	/*
+		u16 command
+		s32 sound_id
+	*/
 };
 
 enum ToServerCommand
@@ -442,15 +461,21 @@ enum ToServerCommand
 		(Obsoletes TOSERVER_GROUND_ACTION and TOSERVER_CLICK_ACTIVEOBJECT.)
 	*/
 	
-	TOSERVER_REQUEST_TEXTURES = 0x40,
-
+	TOSERVER_REMOVED_SOUNDS = 0x3a,
 	/*
-			u16 command
-			u16 number of textures requested
-			for each texture {
-				u16 length of name
-				string name
-			}
+		u16 command
+		u16 len
+		s32[len] sound_id
+	*/
+
+	TOSERVER_REQUEST_TEXTURES = 0x40,
+	/*
+		u16 command
+		u16 number of textures requested
+		for each texture {
+			u16 length of name
+			string name
+		}
 	 */
 
 };

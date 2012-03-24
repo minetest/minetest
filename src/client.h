@@ -376,6 +376,15 @@ private:
 	bool m_time_of_day_set;
 	float m_last_time_of_day_f;
 	float m_time_of_day_update_timer;
+
+	// Sounds
+	float m_removed_sounds_check_timer;
+	// Mapping from server sound ids to our sound ids
+	std::map<s32, int> m_sounds_server_to_client;
+	// And the other way!
+	std::map<int, s32> m_sounds_client_to_server;
+	// And relations to objects
+	std::map<int, u16> m_sounds_to_objects;
 };
 
 #endif // !SERVER

@@ -35,6 +35,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "mods.h"
 #include "inventorymanager.h"
 #include "subgame.h"
+#include "sound.h"
 struct LuaState;
 typedef struct lua_State lua_State;
 class IWritableItemDefManager;
@@ -274,6 +275,58 @@ struct TextureInformation
 	}
 };
 
+struct ServerSoundParams
+{
+	float gain;
+	std::string to_player;
+	enum Type{
+		SSP_LOCAL=0,
+		SSP_POSITIONAL=1,
+		SSP_OBJECT=2
+	} type;
+	v3f pos;
+	u16 object;
+	float max_hear_distance;
+	bool loop;
+
+	ServerSoundParams():
+		gain(1.0),
+		to_player(""),
+		type(SSP_LOCAL),
+		pos(0,0,0),
+		object(0),
+		max_hear_distance(32*BS),
+		loop(false)
+	{}
+	
+	v3f getPos(ServerEnvironment *env, bool *pos_exists) const
+	{
+		if(pos_exists) *pos_exists = false;
+		switch(type){
+		case SSP_LOCAL:
+			return v3f(0,0,0);
+		case SSP_POSITIONAL:
+			if(pos_exists) *pos_exists = true;
+			return pos;
+		case SSP_OBJECT: {
+			if(object == 0)
+				return v3f(0,0,0);
+			ServerActiveObject *sao = env->getActiveObject(object);
+			if(!sao)
+				return v3f(0,0,0);
+			if(pos_exists) *pos_exists = true;
+			return sao->getBasePosition(); }
+		}
+		return v3f(0,0,0);
+	}
+};
+
+struct ServerPlayingSound
+{
+	ServerSoundParams params;
+	std::set<u16> clients; // peer ids
+};
+
 class RemoteClient
 {
 public:
@@ -463,6 +516,11 @@ public:
 
 	// Envlock and conlock should be locked when calling this
 	void SendMovePlayer(Player *player);
+	
+	// Returns -1 if failed, sound handle on success
+	// Envlock + conlock
+	s32 playSound(const SimpleSoundSpec &spec, const ServerSoundParams &params);
+	void stopSound(s32 handle);
 	
 	// Thread-safe
 	u64 getPlayerAuthPrivs(const std::string &name);
@@ -775,6 +833,12 @@ private:
 	friend class RemoteClient;
 
 	std::map<std::string,TextureInformation> m_Textures;
+
+	/*
+		Sounds
+	*/
+	std::map<s32, ServerPlayingSound> m_playing_sounds;
+	s32 m_next_sound_id;
 };
 
 /*

@@ -6,6 +6,42 @@
 
 experimental = {}
 
+timers_to_add = {}
+timers = {}
+minetest.register_globalstep(function(dtime)
+  for indes, timer in ipairs(timers_to_add) do
+    table.insert(timers, timer)
+  end
+  timers_to_add = {}
+  for index, timer in ipairs(timers) do
+    timer.time = timer.time - dtime
+    if timer.time <= 0 then
+      timer.func()
+      timers[index] = nil
+    end
+  end
+end)
+
+after = function(time, func)
+  table.insert(timers_to_add, {time=time, func=func})
+end
+
+--[[
+stepsound = -1
+function test_sound()
+	print("test_sound")
+	stepsound = minetest.sound_play("default_grass_footstep", {gain=1.0})
+	after(2.0, test_sound)
+	--after(0.1, test_sound_stop)
+end
+function test_sound_stop()
+	print("test_sound_stop")
+	minetest.sound_stop(stepsound)
+	after(2.0, test_sound)
+end
+test_sound()
+--]]
+
 function on_step(dtime)
 	-- print("experimental on_step")
 	--[[

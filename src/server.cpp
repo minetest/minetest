@@ -3126,6 +3126,24 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 					<<action<<std::endl;
 		}
 	}
+	else if(command == TOSERVER_REMOVED_SOUNDS)
+	{
+		std::string datastring((char*)&data[2], datasize-2);
+		std::istringstream is(datastring, std::ios_base::binary);
+
+		int num = readU16(is);
+		for(int k=0; k<num; k++){
+			s32 id = readS32(is);
+			std::map<s32, ServerPlayingSound>::iterator i =
+					m_playing_sounds.find(id);
+			if(i == m_playing_sounds.end())
+				continue;
+			ServerPlayingSound &psound = i->second;
+			psound.clients.erase(peer_id);
+			if(psound.clients.size() == 0)
+				m_playing_sounds.erase(i++);
+		}
+	}
 	else
 	{
 		infostream<<"Server::ProcessData(): Ignoring "
@@ -3573,6 +3591,107 @@ void Server::SendMovePlayer(Player *player)
 	SharedBuffer<u8> data((u8*)s.c_str(), s.size());
 	// Send as reliable
 	m_con.Send(player->peer_id, 0, data, true);
+}
+
+s32 Server::playSound(const SimpleSoundSpec &spec,
+		const ServerSoundParams &params)
+{
+	// Find out initial position of sound
+	bool pos_exists = false;
+	v3f pos = params.getPos(m_env, &pos_exists);
+	// If position is not found while it should be, cancel sound
+	if(pos_exists != (params.type != ServerSoundParams::SSP_LOCAL))
+		return -1;
+	// Filter destination clients
+	std::set<RemoteClient*> dst_clients;
+	if(params.to_player != "")
+	{
+		Player *player = m_env->getPlayer(params.to_player.c_str());
+		if(!player){
+			infostream<<"Server::playSound: Player \""<<params.to_player
+					<<"\" not found"<<std::endl;
+			return -1;
+		}
+		if(player->peer_id == PEER_ID_INEXISTENT){
+			infostream<<"Server::playSound: Player \""<<params.to_player
+					<<"\" not connected"<<std::endl;
+			return -1;
+		}
+		RemoteClient *client = getClient(player->peer_id);
+		dst_clients.insert(client);
+	}
+	else
+	{
+		for(core::map<u16, RemoteClient*>::Iterator
+				i = m_clients.getIterator(); i.atEnd() == false; i++)
+		{
+			RemoteClient *client = i.getNode()->getValue();
+			Player *player = m_env->getPlayer(client->peer_id);
+			if(!player)
+				continue;
+			if(pos_exists){
+				if(player->getPosition().getDistanceFrom(pos) >
+						params.max_hear_distance)
+					continue;
+			}
+			dst_clients.insert(client);
+		}
+	}
+	if(dst_clients.size() == 0)
+		return -1;
+	// Create the sound
+	s32 id = m_next_sound_id++;
+	// The sound will exist as a reference in m_playing_sounds
+	m_playing_sounds[id] = ServerPlayingSound();
+	ServerPlayingSound &psound = m_playing_sounds[id];
+	psound.params = params;
+	for(std::set<RemoteClient*>::iterator i = dst_clients.begin();
+			i != dst_clients.end(); i++)
+		psound.clients.insert((*i)->peer_id);
+	// Create packet
+	std::ostringstream os(std::ios_base::binary);
+	writeU16(os, TOCLIENT_PLAY_SOUND);
+	writeS32(os, id);
+	os<<serializeString(spec.name);
+	writeF1000(os, spec.gain * params.gain);
+	writeU8(os, params.type);
+	writeV3F1000(os, pos);
+	writeU16(os, params.object);
+	writeU8(os, params.loop);
+	// Make data buffer
+	std::string s = os.str();
+	SharedBuffer<u8> data((u8*)s.c_str(), s.size());
+	// Send
+	for(std::set<RemoteClient*>::iterator i = dst_clients.begin();
+			i != dst_clients.end(); i++){
+		// Send as reliable
+		m_con.Send((*i)->peer_id, 0, data, true);
+	}
+	return id;
+}
+void Server::stopSound(s32 handle)
+{
+	// Get sound reference
+	std::map<s32, ServerPlayingSound>::iterator i =
+			m_playing_sounds.find(handle);
+	if(i == m_playing_sounds.end())
+		return;
+	ServerPlayingSound &psound = i->second;
+	// Create packet
+	std::ostringstream os(std::ios_base::binary);
+	writeU16(os, TOCLIENT_STOP_SOUND);
+	writeS32(os, handle);
+	// Make data buffer
+	std::string s = os.str();
+	SharedBuffer<u8> data((u8*)s.c_str(), s.size());
+	// Send
+	for(std::set<u16>::iterator i = psound.clients.begin();
+			i != psound.clients.end(); i++){
+		// Send as reliable
+		m_con.Send(*i, 0, data, true);
+	}
+	// Remove sound reference
+	m_playing_sounds.erase(i);
 }
 
 void Server::sendRemoveNode(v3s16 p, u16 ignore_id,
@@ -4509,6 +4628,21 @@ void Server::handlePeerChange(PeerChange &c)
 			
 			if(obj && obj->m_known_by_count > 0)
 				obj->m_known_by_count--;
+		}
+
+		/*
+			Clear references to playing sounds
+		*/
+		for(std::map<s32, ServerPlayingSound>::iterator
+				i = m_playing_sounds.begin();
+				i != m_playing_sounds.end();)
+		{
+			ServerPlayingSound &psound = i->second;
+			psound.clients.erase(c.peer_id);
+			if(psound.clients.size() == 0)
+				m_playing_sounds.erase(i++);
+			else
+				i++;
 		}
 
 		ServerRemotePlayer* player =
