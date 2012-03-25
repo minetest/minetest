@@ -887,15 +887,16 @@ public:
 		m_fetched.insert(name);
 		std::string base = porting::path_share + DIR_DELIM + "testsounds";
 		dst_paths.insert(base + DIR_DELIM + name + ".ogg");
-		dst_paths.insert(base + DIR_DELIM + name + "1.ogg");
-		dst_paths.insert(base + DIR_DELIM + name + "2.ogg");
-		dst_paths.insert(base + DIR_DELIM + name + "3.ogg");
-		dst_paths.insert(base + DIR_DELIM + name + "4.ogg");
-		dst_paths.insert(base + DIR_DELIM + name + "5.ogg");
-		dst_paths.insert(base + DIR_DELIM + name + "6.ogg");
-		dst_paths.insert(base + DIR_DELIM + name + "7.ogg");
-		dst_paths.insert(base + DIR_DELIM + name + "8.ogg");
-		dst_paths.insert(base + DIR_DELIM + name + "9.ogg");
+		dst_paths.insert(base + DIR_DELIM + name + ".0.ogg");
+		dst_paths.insert(base + DIR_DELIM + name + ".1.ogg");
+		dst_paths.insert(base + DIR_DELIM + name + ".2.ogg");
+		dst_paths.insert(base + DIR_DELIM + name + ".3.ogg");
+		dst_paths.insert(base + DIR_DELIM + name + ".4.ogg");
+		dst_paths.insert(base + DIR_DELIM + name + ".5.ogg");
+		dst_paths.insert(base + DIR_DELIM + name + ".6.ogg");
+		dst_paths.insert(base + DIR_DELIM + name + ".7.ogg");
+		dst_paths.insert(base + DIR_DELIM + name + ".8.ogg");
+		dst_paths.insert(base + DIR_DELIM + name + ".9.ogg");
 	}
 };
 
