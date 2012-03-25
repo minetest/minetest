@@ -85,13 +85,13 @@ elseif(UNIX) # Linux, BSD etc
 endif()
 
 install(DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/builtin" DESTINATION "${SHAREDIR}")
-install(DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/games/mesetint" DESTINATION "${SHAREDIR}/games")
+install(DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/games/minetest" DESTINATION "${SHAREDIR}/games")
 if(BUILD_CLIENT)
 	#install(DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/sounds/base/pack" DESTINATION "${SHAREDIR}/sounds/base")
 	install(DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/textures/base/pack" DESTINATION "${SHAREDIR}/textures/base")
 endif()
 if(RUN_IN_PLACE)
-	install(FILES "${CMAKE_CURRENT_SOURCE_DIR}/mods/mesetint/mods_here.txt" DESTINATION "${SHAREDIR}/mods/mesetint")
+	install(FILES "${CMAKE_CURRENT_SOURCE_DIR}/mods/minetest/mods_here.txt" DESTINATION "${SHAREDIR}/mods/minetest")
 endif()
 
 install(FILES "README.txt" DESTINATION "${DOCDIR}")
