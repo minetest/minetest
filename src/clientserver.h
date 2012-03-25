@@ -47,9 +47,12 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 	PROTOCOL_VERSION 8:
 		Digging based on item groups
 		Many things
+	PROTOCOL_VERSION 9:
+		ContentFeatures and NodeDefManager use a different serialization
+		    format; better for future version cross-compatibility
 */
 
-#define PROTOCOL_VERSION 8
+#define PROTOCOL_VERSION 9
 
 #define PROTOCOL_ID 0x4f457403
 
