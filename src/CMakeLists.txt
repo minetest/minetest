@@ -45,7 +45,7 @@ OPTION(ENABLE_SOUND "Enable sound" ON)
 set(USE_SOUND 0)
 set(SOUND_PROBLEM 0)
 
-if(ENABLE_SOUND)
+if(ENABLE_SOUND AND BUILD_CLIENT)
 	# Sound libraries
 	find_package(OpenAL)
 	find_package(Vorbis)
@@ -63,7 +63,7 @@ if(ENABLE_SOUND)
 		set(USE_SOUND 1)
 		message(STATUS "Sound enabled")
 	endif()
-endif(ENABLE_SOUND)
+endif(ENABLE_SOUND AND BUILD_CLIENT)
 
 if(SOUND_PROBLEM)
 	message(FATAL_ERROR "Sound enabled, but cannot be used.\n"
