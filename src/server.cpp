@@ -3931,29 +3931,40 @@ void Server::fillMediaCache()
 {
 	DSTACK(__FUNCTION_NAME);
 
-	infostream<<"Server: Calculating file checksums"<<std::endl;
-
+	infostream<<"Server: Calculating media file checksums"<<std::endl;
+	
+	// Collect all media file paths
+	std::list<std::string> paths;
 	for(core::list<ModSpec>::Iterator i = m_mods.begin();
 			i != m_mods.end(); i++){
 		const ModSpec &mod = *i;
-		std::string filepath = mod.path + DIR_DELIM + "textures";
-		std::vector<fs::DirListNode> dirlist = fs::GetDirListing(filepath);
+		paths.push_back(mod.path + DIR_DELIM + "textures");
+		paths.push_back(mod.path + DIR_DELIM + "sounds");
+		paths.push_back(mod.path + DIR_DELIM + "media");
+	}
+	
+	// Collect media file information from paths into cache
+	for(std::list<std::string>::iterator i = paths.begin();
+			i != paths.end(); i++)
+	{
+		std::string mediapath = *i;
+		std::vector<fs::DirListNode> dirlist = fs::GetDirListing(mediapath);
 		for(u32 j=0; j<dirlist.size(); j++){
 			if(dirlist[j].dir) // Ignode dirs
 				continue;
-			std::string tname = dirlist[j].name;
+			std::string filename = dirlist[j].name;
 			// if name contains illegal characters, ignore the file
-			if(!string_allowed(tname, TEXTURENAME_ALLOWED_CHARS)){
+			if(!string_allowed(filename, TEXTURENAME_ALLOWED_CHARS)){
 				errorstream<<"Server: ignoring illegal file name: \""
-						<<tname<<"\""<<std::endl;
+						<<filename<<"\""<<std::endl;
 				continue;
 			}
-			std::string tpath = filepath + DIR_DELIM + tname;
+			std::string filepath = mediapath + DIR_DELIM + filename;
 			// Read data
-			std::ifstream fis(tpath.c_str(), std::ios_base::binary);
+			std::ifstream fis(filepath.c_str(), std::ios_base::binary);
 			if(fis.good() == false){
 				errorstream<<"Server::fillMediaCache(): Could not open \""
-						<<tname<<"\" for reading"<<std::endl;
+						<<filename<<"\" for reading"<<std::endl;
 				continue;
 			}
 			std::ostringstream tmp_os(std::ios_base::binary);
@@ -3972,12 +3983,12 @@ void Server::fillMediaCache()
 			}
 			if(bad){
 				errorstream<<"Server::fillMediaCache(): Failed to read \""
-						<<tname<<"\""<<std::endl;
+						<<filename<<"\""<<std::endl;
 				continue;
 			}
 			if(tmp_os.str().length() == 0){
 				errorstream<<"Server::fillMediaCache(): Empty file \""
-						<<tpath<<"\""<<std::endl;
+						<<filepath<<"\""<<std::endl;
 				continue;
 			}
 
@@ -3990,8 +4001,9 @@ void Server::fillMediaCache()
 			free(digest);
 
 			// Put in list
-			this->m_media[tname] = MediaInfo(tpath,digest_string);
-			verbosestream<<"Server: sha1 for "<<tname<<"\tis "<<std::endl;
+			this->m_media[filename] = MediaInfo(filepath, digest_string);
+			verbosestream<<"Server: sha1 for "<<filename<<"\tis "
+					<<digest_string<<std::endl;
 		}
 	}
 }
