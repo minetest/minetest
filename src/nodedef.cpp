@@ -162,7 +162,7 @@ void ContentFeatures::reset()
 
 void ContentFeatures::serialize(std::ostream &os)
 {
-	writeU8(os, 2); // version
+	writeU8(os, 3); // version
 	os<<serializeString(name);
 	writeU16(os, groups.size());
 	for(ItemGroupList::const_iterator
@@ -212,7 +212,7 @@ void ContentFeatures::serialize(std::ostream &os)
 void ContentFeatures::deSerialize(std::istream &is)
 {
 	int version = readU8(is);
-	if(version != 2)
+	if(version != 3)
 		throw SerializationError("unsupported ContentFeatures version");
 	name = deSerializeString(is);
 	groups.clear();
@@ -258,6 +258,8 @@ void ContentFeatures::deSerialize(std::istream &is)
 	selection_box.deSerialize(is);
 	legacy_facedir_simple = readU8(is);
 	legacy_wallmounted = readU8(is);
+	// If you add anything here, insert it primarily inside the try-catch
+	// block to not need to increase the version.
 	try{
 		deSerializeSimpleSoundSpec(sound_footstep, is);
 		deSerializeSimpleSoundSpec(sound_dig, is);
@@ -566,8 +568,9 @@ public:
 	}
 	void serialize(std::ostream &os)
 	{
+		writeU8(os, 1); // version
 		u16 count = 0;
-		std::ostringstream tmp_os(std::ios::binary);
+		std::ostringstream os2(std::ios::binary);
 		for(u16 i=0; i<=MAX_CONTENT; i++)
 		{
 			if(i == CONTENT_IGNORE || i == CONTENT_AIR)
@@ -575,20 +578,27 @@ public:
 			ContentFeatures *f = &m_content_features[i];
 			if(f->name == "")
 				continue;
-			writeU16(tmp_os, i);
-			f->serialize(tmp_os);
+			writeU16(os2, i);
+			// Wrap it in a string to allow different lengths without
+			// strict version incompatibilities
+			std::ostringstream wrapper_os(std::ios::binary);
+			f->serialize(wrapper_os);
+			os2<<serializeString(wrapper_os.str());
 			count++;
 		}
 		writeU16(os, count);
-		os<<serializeLongString(tmp_os.str());
+		os<<serializeLongString(os2.str());
 	}
 	void deSerialize(std::istream &is)
 	{
 		clear();
+		int version = readU8(is);
+		if(version != 1)
+			throw SerializationError("unsupported NodeDefinitionManager version");
 		u16 count = readU16(is);
-		std::istringstream tmp_is(deSerializeLongString(is), std::ios::binary);
+		std::istringstream is2(deSerializeLongString(is), std::ios::binary);
 		for(u16 n=0; n<count; n++){
-			u16 i = readU16(tmp_is);
+			u16 i = readU16(is2);
 			if(i > MAX_CONTENT){
 				errorstream<<"ContentFeatures::deSerialize(): "
 						<<"Too large content id: "<<i<<std::endl;
@@ -598,7 +608,10 @@ public:
 			if(i == CONTENT_IGNORE || i == CONTENT_AIR)
 				continue;*/
 			ContentFeatures *f = &m_content_features[i];
-			f->deSerialize(tmp_is);
+			// Read it from the string wrapper
+			std::string wrapper = deSerializeString(is2);
+			std::istringstream wrapper_is(wrapper, std::ios::binary);
+			f->deSerialize(wrapper_is);
 			if(f->name != "")
 				addNameIdMapping(i, f->name);
 		}

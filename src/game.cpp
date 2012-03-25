@@ -991,6 +991,7 @@ void the_game(
 		server->start(port);
 	}
 
+	try{
 	do{ // Client scope (breakable do-while(0))
 	
 	/*
@@ -2911,6 +2912,14 @@ void the_game(
 
 	// Client scope (client is destructed before destructing *def and tsrc)
 	}while(0);
+	} // try-catch
+	catch(SerializationError &e)
+	{
+		error_message = L"A serialization error occurred:\n"
+				+ narrow_to_wide(e.what()) + L"\n\nThe server is probably "
+				L" running a different version of Minetest.";
+		errorstream<<wide_to_narrow(error_message)<<std::endl;
+	}
 	
 	if(!sound_is_dummy)
 		delete sound;
