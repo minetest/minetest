@@ -138,30 +138,73 @@ bool PathExists(std::string path)
 	return (GetFileAttributes(path.c_str()) != INVALID_FILE_ATTRIBUTES);
 }
 
+bool IsDir(std::string path)
+{
+	DWORD attr = GetFileAttributes(path.c_str());
+	return (attr != INVALID_FILE_ATTRIBUTES &&
+			(attr & FILE_ATTRIBUTE_DIRECTORY));
+}
+
 bool RecursiveDelete(std::string path)
 {
-	infostream<<"Removing \""<<path<<"\""<<std::endl;
+	infostream<<"Recursively deleting \""<<path<<"\""<<std::endl;
 
-	//return false;
-	
-	// This silly function needs a double-null terminated string...
-	// Well, we'll just make sure it has at least two, then.
-	path += "\0\0";
-
-	SHFILEOPSTRUCT sfo;
-	sfo.hwnd = NULL;
-	sfo.wFunc = FO_DELETE;
-	sfo.pFrom = path.c_str();
-	sfo.pTo = NULL;
-	sfo.fFlags = FOF_SILENT | FOF_NOCONFIRMATION | FOF_NOCONFIRMMKDIR;
-	
-	int r = SHFileOperation(&sfo);
-
-	if(r != 0)
-		errorstream<<"SHFileOperation returned "<<r<<std::endl;
-
-	//return (r == 0);
+	DWORD attr = GetFileAttributes(path.c_str());
+	bool is_directory = (attr != INVALID_FILE_ATTRIBUTES &&
+			(attr & FILE_ATTRIBUTE_DIRECTORY));
+	if(!is_directory)
+	{
+		infostream<<"RecursiveDelete: Deleting file "<<path<<std::endl;
+		//bool did = DeleteFile(path.c_str());
+		bool did = true;
+		if(!did){
+			errorstream<<"RecursiveDelete: Failed to delete file "
+					<<path<<std::endl;
+			return false;
+		}
+	}
+	else
+	{
+		infostream<<"RecursiveDelete: Deleting content of directory "
+				<<path<<std::endl;
+		std::vector<DirListNode> content = GetDirListing(path);
+		for(int i=0; i<content.size(); i++){
+			const DirListNode &n = content[i];
+			std::string fullpath = path + DIR_DELIM + n.name;
+			bool did = RecursiveDelete(fullpath);
+			if(!did){
+				errorstream<<"RecursiveDelete: Failed to recurse to "
+						<<fullpath<<std::endl;
+				return false;
+			}
+		}
+		infostream<<"RecursiveDelete: Deleting directory "<<path<<std::endl;
+		//bool did = RemoveDirectory(path.c_str();
+		bool did = true;
+		if(!did){
+			errorstream<<"Failed to recursively delete directory "
+					<<path<<std::endl;
+			return false;
+		}
+	}
 	return true;
+}
+
+bool DeleteSingleFileOrEmptyDirectory(std::string path)
+{
+	DWORD attr = GetFileAttributes(path.c_str());
+	bool is_directory = (attr != INVALID_FILE_ATTRIBUTES &&
+			(attr & FILE_ATTRIBUTE_DIRECTORY));
+	if(!is_directory)
+	{
+		bool did = DeleteFile(path.c_str());
+		return did;
+	}
+	else
+	{
+		bool did = RemoveDirectory(path.c_str());
+		return did;
+	}
 }
 
 #else // POSIX
@@ -249,6 +292,14 @@ bool PathExists(std::string path)
 	return (stat(path.c_str(),&st) == 0);
 }
 
+bool IsDir(std::string path)
+{
+	struct stat statbuf;
+	if(stat(path.c_str(), &statbuf))
+		return false; // Actually error; but certainly not a directory
+	return ((statbuf.st_mode & S_IFDIR) == S_IFDIR);
+}
+
 bool RecursiveDelete(std::string path)
 {
 	/*
@@ -295,7 +346,50 @@ bool RecursiveDelete(std::string path)
 	}
 }
 
+bool DeleteSingleFileOrEmptyDirectory(std::string path)
+{
+	if(IsDir(path)){
+		bool did = (rmdir(path.c_str()) == 0);
+		if(!did)
+			errorstream<<"rmdir errno: "<<errno<<": "<<strerror(errno)
+					<<std::endl;
+		return did;
+	} else {
+		bool did = (unlink(path.c_str()) == 0);
+		if(!did)
+			errorstream<<"unlink errno: "<<errno<<": "<<strerror(errno)
+					<<std::endl;
+		return did;
+	}
+}
+
 #endif
+
+void GetRecursiveSubPaths(std::string path, std::vector<std::string> &dst)
+{
+	std::vector<DirListNode> content = GetDirListing(path);
+	for(unsigned int  i=0; i<content.size(); i++){
+		const DirListNode &n = content[i];
+		std::string fullpath = path + DIR_DELIM + n.name;
+		dst.push_back(fullpath);
+		GetRecursiveSubPaths(fullpath, dst);
+	}
+}
+
+bool DeletePaths(const std::vector<std::string> &paths)
+{
+	bool success = true;
+	// Go backwards to succesfully delete the output of GetRecursiveSubPaths
+	for(int i=paths.size()-1; i>=0; i--){
+		const std::string &path = paths[i];
+		bool did = DeleteSingleFileOrEmptyDirectory(path);
+		if(!did){
+			errorstream<<"Failed to delete "<<path<<std::endl;
+			success = false;
+		}
+	}
+	return success;
+}
 
 bool RecursiveDeleteContent(std::string path)
 {

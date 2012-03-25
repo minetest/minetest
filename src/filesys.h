@@ -40,23 +40,34 @@ struct DirListNode
 	std::string name;
 	bool dir;
 };
-
 std::vector<DirListNode> GetDirListing(std::string path);
 
 // Returns true if already exists
 bool CreateDir(std::string path);
 
-// Create all directories on the given path that don't already exist.
-bool CreateAllDirs(std::string path);
-
 bool PathExists(std::string path);
+
+bool IsDir(std::string path);
 
 // Only pass full paths to this one. True on success.
 // NOTE: The WIN32 version returns always true.
 bool RecursiveDelete(std::string path);
 
+bool DeleteSingleFileOrEmptyDirectory(std::string path);
+
+/* Multiplatform */
+
+// The path itself not included
+void GetRecursiveSubPaths(std::string path, std::vector<std::string> &dst);
+
+// Tries to delete all, returns false if any failed
+bool DeletePaths(const std::vector<std::string> &paths);
+
 // Only pass full paths to this one. True on success.
 bool RecursiveDeleteContent(std::string path);
+
+// Create all directories on the given path that don't already exist.
+bool CreateAllDirs(std::string path);
 
 }//fs
 
