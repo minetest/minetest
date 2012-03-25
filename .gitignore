@@ -6,16 +6,18 @@ tags
 *.vim
 
 ## Non-static Minetest directories
-bin/
-games/
-!games/mesetint
-cache/
-textures/
-sounds/
-mods/
-!mods/mesetint/mods_here.txt
-worlds/
-world/
+/bin/
+/games/*
+!/games/mesetint/
+/cache/
+/textures/
+/sounds/
+/mods/*
+!/mods/mesetint/
+/mods/mesetint/*
+!/mods/mesetint/mods_here.txt
+/worlds/
+/world/
 
 ## Configuration/log files
 minetest.conf
