@@ -24,7 +24,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 static const char hex_chars[] = "0123456789abcdef";
 
-static std::string hex_encode(const char *data, unsigned int data_size)
+static inline std::string hex_encode(const char *data, unsigned int data_size)
 {
 	std::string ret;
 	char buf2[3];
@@ -39,6 +39,11 @@ static std::string hex_encode(const char *data, unsigned int data_size)
 	}
 
 	return ret;
+}
+
+static inline std::string hex_encode(const std::string &data)
+{
+    return hex_encode(data.c_str(), data.size());
 }
 
 #endif
