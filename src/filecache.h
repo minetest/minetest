@@ -52,28 +52,21 @@ public:
 		Loads a file based on a check sum, which may be any kind of
 		rather unique byte sequence. Returns true, if the file could
 		be written into os, false otherwise.
-		A file name is required to give the disk file a name that
-		has the right file name extension (e.g. ".png").
 	*/
-	bool loadByChecksum(const std::string &name, std::ostream &os,
-			const std::string &checksum);
+	bool loadByChecksum(const std::string &checksum, std::ostream &os);
 
 	/*
 		Stores a file in the cache based on its checksum.
 		Returns true on success, false otherwise.
 	*/
-	bool updateByChecksum(const std::string &name, const std::string &data,
-			const std::string &checksum);
+	bool updateByChecksum(const std::string &checksum, const std::string &data);
 
 private:
 	std::string m_dir;
 
-	bool loadByPath(const std::string &name, std::ostream &os,
-			const std::string &path);
-	bool updateByPath(const std::string &name, const std::string &data,
-			const std::string &path);
-	std::string getPathFromChecksum(const std::string &name,
-			const std::string &checksum);
+	bool loadByPath(const std::string &path, std::ostream &os);
+	bool updateByPath(const std::string &path, const std::string &data);
+	std::string getPathFromChecksum(const std::string &checksum);
 };
 
 #endif

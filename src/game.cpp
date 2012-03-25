@@ -56,7 +56,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "clientmap.h"
 #include "sky.h"
 #include "sound.h"
-#if USE_AUDIO
+#if USE_SOUND
 	#include "sound_openal.h"
 #endif
 #include "event_manager.h"
@@ -953,7 +953,7 @@ void the_game(
 	// Sound manager
 	ISoundManager *sound = NULL;
 	bool sound_is_dummy = false;
-#if USE_AUDIO
+#if USE_SOUND
 	infostream<<"Attempting to use OpenAL audio"<<std::endl;
 	sound = createOpenALSoundManager(&soundfetcher);
 	if(!sound)
@@ -1163,9 +1163,8 @@ void the_game(
 			ss<<L" Item definitions\n";
 			ss<<(client.nodedefReceived()?L"[X]":L"[  ]");
 			ss<<L" Node definitions\n";
-			//ss<<(client.texturesReceived()?L"[X]":L"[  ]");
-			ss<<L"["<<(int)(client.textureReceiveProgress()*100+0.5)<<L"%] ";
-			ss<<L" Textures\n";
+			ss<<L"["<<(int)(client.mediaReceiveProgress()*100+0.5)<<L"%] ";
+			ss<<L" Media\n";
 
 			draw_load_screen(ss.str(), driver, font);
 			

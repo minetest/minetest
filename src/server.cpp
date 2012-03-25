@@ -957,7 +957,7 @@ Server::Server(
 	}
 	
 	// Read Textures and calculate sha1 sums
-	PrepareTextures();
+	fillMediaCache();
 
 	// Apply item aliases in the node definition manager
 	m_nodedef->updateAliases(m_itemdef);
@@ -2183,7 +2183,7 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 		SendNodeDef(m_con, peer_id, m_nodedef);
 		
 		// Send texture announcement
-		SendTextureAnnouncement(peer_id);
+		sendMediaAnnouncement(peer_id);
 		
 		// Send player info to all players
 		//SendPlayerInfos();
@@ -2842,29 +2842,28 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 		// ActiveObject is added to environment in AsyncRunStep after
 		// the previous addition has been succesfully removed
 	}
-	else if(command == TOSERVER_REQUEST_TEXTURES) {
+	else if(command == TOSERVER_REQUEST_MEDIA) {
 		std::string datastring((char*)&data[2], datasize-2);
 		std::istringstream is(datastring, std::ios_base::binary);
 		
-		
-		core::list<TextureRequest> tosend;
-		u16 numtextures = readU16(is);
+		core::list<MediaRequest> tosend;
+		u16 numfiles = readU16(is);
 
-		infostream<<"Sending "<<numtextures<<" textures to "
+		infostream<<"Sending "<<numfiles<<" files to "
 				<<getPlayerName(peer_id)<<std::endl;
-		verbosestream<<"TOSERVER_REQUEST_TEXTURES: "<<std::endl;
+		verbosestream<<"TOSERVER_REQUEST_MEDIA: "<<std::endl;
 
-		for(int i = 0; i < numtextures; i++) {
+		for(int i = 0; i < numfiles; i++) {
 			std::string name = deSerializeString(is);
-			tosend.push_back(TextureRequest(name));
-			verbosestream<<"TOSERVER_REQUEST_TEXTURES: requested texture "
+			tosend.push_back(MediaRequest(name));
+			verbosestream<<"TOSERVER_REQUEST_MEDIA: requested file "
 					<<name<<std::endl;
 		}
 
-		SendTexturesRequested(peer_id, tosend);
+		sendRequestedMedia(peer_id, tosend);
 
 		// Now the client should know about everything
-		// (definitions and textures)
+		// (definitions and files)
 		getClient(peer_id)->definitions_sent = true;
 	}
 	else if(command == TOSERVER_INTERACT)
@@ -3928,32 +3927,32 @@ void Server::SendBlocks(float dtime)
 	}
 }
 
-void Server::PrepareTextures()
+void Server::fillMediaCache()
 {
 	DSTACK(__FUNCTION_NAME);
 
-	infostream<<"Server: Calculating texture checksums"<<std::endl;
+	infostream<<"Server: Calculating file checksums"<<std::endl;
 
 	for(core::list<ModSpec>::Iterator i = m_mods.begin();
 			i != m_mods.end(); i++){
 		const ModSpec &mod = *i;
-		std::string texturepath = mod.path + DIR_DELIM + "textures";
-		std::vector<fs::DirListNode> dirlist = fs::GetDirListing(texturepath);
+		std::string filepath = mod.path + DIR_DELIM + "textures";
+		std::vector<fs::DirListNode> dirlist = fs::GetDirListing(filepath);
 		for(u32 j=0; j<dirlist.size(); j++){
 			if(dirlist[j].dir) // Ignode dirs
 				continue;
 			std::string tname = dirlist[j].name;
-			// if name contains illegal characters, ignore the texture
+			// if name contains illegal characters, ignore the file
 			if(!string_allowed(tname, TEXTURENAME_ALLOWED_CHARS)){
-				errorstream<<"Server: ignoring illegal texture name: \""
+				errorstream<<"Server: ignoring illegal file name: \""
 						<<tname<<"\""<<std::endl;
 				continue;
 			}
-			std::string tpath = texturepath + DIR_DELIM + tname;
+			std::string tpath = filepath + DIR_DELIM + tname;
 			// Read data
 			std::ifstream fis(tpath.c_str(), std::ios_base::binary);
 			if(fis.good() == false){
-				errorstream<<"Server::PrepareTextures(): Could not open \""
+				errorstream<<"Server::fillMediaCache(): Could not open \""
 						<<tname<<"\" for reading"<<std::endl;
 				continue;
 			}
@@ -3972,12 +3971,12 @@ void Server::PrepareTextures()
 				}
 			}
 			if(bad){
-				errorstream<<"Server::PrepareTextures(): Failed to read \""
+				errorstream<<"Server::fillMediaCache(): Failed to read \""
 						<<tname<<"\""<<std::endl;
 				continue;
 			}
 			if(tmp_os.str().length() == 0){
-				errorstream<<"Server::PrepareTextures(): Empty file \""
+				errorstream<<"Server::fillMediaCache(): Empty file \""
 						<<tpath<<"\""<<std::endl;
 				continue;
 			}
@@ -3991,60 +3990,60 @@ void Server::PrepareTextures()
 			free(digest);
 
 			// Put in list
-			this->m_Textures[tname] = TextureInformation(tpath,digest_string);
+			this->m_media[tname] = MediaInfo(tpath,digest_string);
 			verbosestream<<"Server: sha1 for "<<tname<<"\tis "<<std::endl;
 		}
 	}
 }
 
-struct SendableTextureAnnouncement
-	{
-		std::string name;
-		std::string sha1_digest;
+struct SendableMediaAnnouncement
+{
+	std::string name;
+	std::string sha1_digest;
 
-		SendableTextureAnnouncement(const std::string name_="",
-				const std::string sha1_digest_=""):
-			name(name_),
-			sha1_digest(sha1_digest_)
-		{
-		}
-	};
+	SendableMediaAnnouncement(const std::string name_="",
+			const std::string sha1_digest_=""):
+		name(name_),
+		sha1_digest(sha1_digest_)
+	{}
+};
 
-void Server::SendTextureAnnouncement(u16 peer_id){
+void Server::sendMediaAnnouncement(u16 peer_id)
+{
 	DSTACK(__FUNCTION_NAME);
 
-	verbosestream<<"Server: Announcing textures to id("<<peer_id<<")"
+	verbosestream<<"Server: Announcing files to id("<<peer_id<<")"
 			<<std::endl;
 
-	core::list<SendableTextureAnnouncement> texture_announcements;
+	core::list<SendableMediaAnnouncement> file_announcements;
 
-	for (std::map<std::string,TextureInformation>::iterator i = m_Textures.begin();i != m_Textures.end(); i++ ) {
-
+	for(std::map<std::string, MediaInfo>::iterator i = m_media.begin();
+			i != m_media.end(); i++){
 		// Put in list
-		texture_announcements.push_back(
-				SendableTextureAnnouncement(i->first, i->second.sha1_digest));
+		file_announcements.push_back(
+				SendableMediaAnnouncement(i->first, i->second.sha1_digest));
 	}
 
-	//send announcements
+	// Make packet
+	std::ostringstream os(std::ios_base::binary);
 
 	/*
 		u16 command
-		u32 number of textures
+		u32 number of files
 		for each texture {
 			u16 length of name
 			string name
-			u16 length of digest string
+			u16 length of sha1_digest
 			string sha1_digest
 		}
 	*/
-	std::ostringstream os(std::ios_base::binary);
+	
+	writeU16(os, TOCLIENT_ANNOUNCE_MEDIA);
+	writeU16(os, file_announcements.size());
 
-	writeU16(os, 	TOCLIENT_ANNOUNCE_TEXTURES);
-	writeU16(os, texture_announcements.size());
-
-	for(core::list<SendableTextureAnnouncement>::Iterator
-			j = texture_announcements.begin();
-			j != texture_announcements.end(); j++){
+	for(core::list<SendableMediaAnnouncement>::Iterator
+			j = file_announcements.begin();
+			j != file_announcements.end(); j++){
 		os<<serializeString(j->name);
 		os<<serializeString(j->sha1_digest);
 	}
@@ -4058,13 +4057,13 @@ void Server::SendTextureAnnouncement(u16 peer_id){
 
 }
 
-struct SendableTexture
+struct SendableMedia
 {
 	std::string name;
 	std::string path;
 	std::string data;
 
-	SendableTexture(const std::string &name_="", const std::string path_="",
+	SendableMedia(const std::string &name_="", const std::string path_="",
 			const std::string &data_=""):
 		name(name_),
 		path(path_),
@@ -4072,36 +4071,40 @@ struct SendableTexture
 	{}
 };
 
-void Server::SendTexturesRequested(u16 peer_id,core::list<TextureRequest> tosend) {
+void Server::sendRequestedMedia(u16 peer_id,
+		const core::list<MediaRequest> &tosend)
+{
 	DSTACK(__FUNCTION_NAME);
 
-	verbosestream<<"Server::SendTexturesRequested(): "
-			<<"Sending textures to client"<<std::endl;
+	verbosestream<<"Server::sendRequestedMedia(): "
+			<<"Sending files to client"<<std::endl;
 
-	/* Read textures */
+	/* Read files */
 
 	// Put 5kB in one bunch (this is not accurate)
 	u32 bytes_per_bunch = 5000;
 
-	core::array< core::list<SendableTexture> > texture_bunches;
-	texture_bunches.push_back(core::list<SendableTexture>());
+	core::array< core::list<SendableMedia> > file_bunches;
+	file_bunches.push_back(core::list<SendableMedia>());
 
-	u32 texture_size_bunch_total = 0;
+	u32 file_size_bunch_total = 0;
 
-	for(core::list<TextureRequest>::Iterator i = tosend.begin(); i != tosend.end(); i++) {
-		if(m_Textures.find(i->name) == m_Textures.end()){
-			errorstream<<"Server::SendTexturesRequested(): Client asked for "
-					<<"unknown texture \""<<(i->name)<<"\""<<std::endl;
+	for(core::list<MediaRequest>::ConstIterator i = tosend.begin();
+			i != tosend.end(); i++)
+	{
+		if(m_media.find(i->name) == m_media.end()){
+			errorstream<<"Server::sendRequestedMedia(): Client asked for "
+					<<"unknown file \""<<(i->name)<<"\""<<std::endl;
 			continue;
 		}
 
 		//TODO get path + name
-		std::string tpath = m_Textures[(*i).name].path;
+		std::string tpath = m_media[(*i).name].path;
 
 		// Read data
 		std::ifstream fis(tpath.c_str(), std::ios_base::binary);
 		if(fis.good() == false){
-			errorstream<<"Server::SendTexturesRequested(): Could not open \""
+			errorstream<<"Server::sendRequestedMedia(): Could not open \""
 					<<tpath<<"\" for reading"<<std::endl;
 			continue;
 		}
@@ -4112,7 +4115,7 @@ void Server::SendTexturesRequested(u16 peer_id,core::list<TextureRequest> tosend
 			fis.read(buf, 1024);
 			std::streamsize len = fis.gcount();
 			tmp_os.write(buf, len);
-			texture_size_bunch_total += len;
+			file_size_bunch_total += len;
 			if(fis.eof())
 				break;
 			if(!fis.good()){
@@ -4121,67 +4124,66 @@ void Server::SendTexturesRequested(u16 peer_id,core::list<TextureRequest> tosend
 			}
 		}
 		if(bad){
-			errorstream<<"Server::SendTexturesRequested(): Failed to read \""
+			errorstream<<"Server::sendRequestedMedia(): Failed to read \""
 					<<(*i).name<<"\""<<std::endl;
 			continue;
 		}
-		/*infostream<<"Server::SendTexturesRequested(): Loaded \""
+		/*infostream<<"Server::sendRequestedMedia(): Loaded \""
 				<<tname<<"\""<<std::endl;*/
 		// Put in list
-		texture_bunches[texture_bunches.size()-1].push_back(
-				SendableTexture((*i).name, tpath, tmp_os.str()));
+		file_bunches[file_bunches.size()-1].push_back(
+				SendableMedia((*i).name, tpath, tmp_os.str()));
 
 		// Start next bunch if got enough data
-		if(texture_size_bunch_total >= bytes_per_bunch){
-			texture_bunches.push_back(core::list<SendableTexture>());
-			texture_size_bunch_total = 0;
+		if(file_size_bunch_total >= bytes_per_bunch){
+			file_bunches.push_back(core::list<SendableMedia>());
+			file_size_bunch_total = 0;
 		}
 
 	}
 
 	/* Create and send packets */
 
-		u32 num_bunches = texture_bunches.size();
-		for(u32 i=0; i<num_bunches; i++)
-		{
-			/*
-				u16 command
-				u16 total number of texture bunches
-				u16 index of this bunch
-				u32 number of textures in this bunch
-				for each texture {
-					u16 length of name
-					string name
-					u32 length of data
-					data
-				}
-			*/
-			std::ostringstream os(std::ios_base::binary);
+	u32 num_bunches = file_bunches.size();
+	for(u32 i=0; i<num_bunches; i++)
+	{
+		std::ostringstream os(std::ios_base::binary);
 
-			writeU16(os, TOCLIENT_TEXTURES);
-			writeU16(os, num_bunches);
-			writeU16(os, i);
-			writeU32(os, texture_bunches[i].size());
-
-			for(core::list<SendableTexture>::Iterator
-					j = texture_bunches[i].begin();
-					j != texture_bunches[i].end(); j++){
-				os<<serializeString(j->name);
-				os<<serializeLongString(j->data);
+		/*
+			u16 command
+			u16 total number of texture bunches
+			u16 index of this bunch
+			u32 number of files in this bunch
+			for each file {
+				u16 length of name
+				string name
+				u32 length of data
+				data
 			}
+		*/
 
-			// Make data buffer
-			std::string s = os.str();
-			verbosestream<<"Server::SendTexturesRequested(): bunch "
-					<<i<<"/"<<num_bunches
-					<<" textures="<<texture_bunches[i].size()
-					<<" size=" <<s.size()<<std::endl;
-			SharedBuffer<u8> data((u8*)s.c_str(), s.size());
-			// Send as reliable
-			m_con.Send(peer_id, 0, data, true);
+		writeU16(os, TOCLIENT_MEDIA);
+		writeU16(os, num_bunches);
+		writeU16(os, i);
+		writeU32(os, file_bunches[i].size());
+
+		for(core::list<SendableMedia>::Iterator
+				j = file_bunches[i].begin();
+				j != file_bunches[i].end(); j++){
+			os<<serializeString(j->name);
+			os<<serializeLongString(j->data);
 		}
 
-
+		// Make data buffer
+		std::string s = os.str();
+		verbosestream<<"Server::sendRequestedMedia(): bunch "
+				<<i<<"/"<<num_bunches
+				<<" files="<<file_bunches[i].size()
+				<<" size=" <<s.size()<<std::endl;
+		SharedBuffer<u8> data((u8*)s.c_str(), s.size());
+		// Send as reliable
+		m_con.Send(peer_id, 0, data, true);
+	}
 }
 
 /*

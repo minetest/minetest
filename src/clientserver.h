@@ -28,7 +28,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 	PROTOCOL_VERSION 3:
 		Base for writing changes here
 	PROTOCOL_VERSION 4:
-		Add TOCLIENT_TEXTURES
+		Add TOCLIENT_MEDIA
 		Add TOCLIENT_TOOLDEF
 		Add TOCLIENT_NODEDEF
 		Add TOCLIENT_CRAFTITEMDEF
@@ -215,13 +215,13 @@ enum ToClientCommand
 		v3f1000 camera point target (to point the death cause or whatever)
 	*/
 
-	TOCLIENT_TEXTURES = 0x38,
+	TOCLIENT_MEDIA = 0x38,
 	/*
 		u16 command
 		u16 total number of texture bunches
 		u16 index of this bunch
-		u32 number of textures in this bunch
-		for each texture {
+		u32 number of files in this bunch
+		for each file {
 			u16 length of name
 			string name
 			u32 length of data
@@ -250,11 +250,11 @@ enum ToClientCommand
 		serialized CraftiItemDefManager
 	*/
 
-	TOCLIENT_ANNOUNCE_TEXTURES = 0x3c,
+	TOCLIENT_ANNOUNCE_MEDIA = 0x3c,
 
 	/*
 		u16 command
-		u32 number of textures
+		u32 number of files
 		for each texture {
 			u16 length of name
 			string name
@@ -468,11 +468,11 @@ enum ToServerCommand
 		s32[len] sound_id
 	*/
 
-	TOSERVER_REQUEST_TEXTURES = 0x40,
+	TOSERVER_REQUEST_MEDIA = 0x40,
 	/*
 		u16 command
-		u16 number of textures requested
-		for each texture {
+		u16 number of files requested
+		for each file {
 			u16 length of name
 			string name
 		}

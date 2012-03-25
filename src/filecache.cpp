@@ -28,14 +28,13 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <string>
 #include <iostream>
 
-bool FileCache::loadByPath(const std::string &name, std::ostream &os,
-		const std::string &path)
+bool FileCache::loadByPath(const std::string &path, std::ostream &os)
 {
 	std::ifstream fis(path.c_str(), std::ios_base::binary);
 
 	if(!fis.good()){
-		infostream<<"FileCache: File not found in cache: "
-			<<name << " expected it at: "<<path<<std::endl;
+		verbosestream<<"FileCache: File not found in cache: "
+    			<<path<<std::endl;
 		return false;
 	}
 
@@ -53,15 +52,14 @@ bool FileCache::loadByPath(const std::string &name, std::ostream &os,
 		}
 	}
 	if(bad){
-		infostream<<"FileCache: Failed to read file from cache: \""
-			<<path<<"\""<<std::endl;
+		errorstream<<"FileCache: Failed to read file from cache: \""
+		    	<<path<<"\""<<std::endl;
 	}
 
 	return !bad;
 }
 
-bool FileCache::updateByPath(const std::string &name, const std::string &data,
-		const std::string &path)
+bool FileCache::updateByPath(const std::string &path, const std::string &data)
 {
 	std::ofstream file(path.c_str(), std::ios_base::binary |
 			std::ios_base::trunc);
@@ -69,7 +67,7 @@ bool FileCache::updateByPath(const std::string &name, const std::string &data,
 	if(!file.good())
 	{
 		errorstream<<"FileCache: Can't write to file at "
-			<<path<<std::endl;
+    			<<path<<std::endl;
 		return false;
 	}
 
@@ -82,36 +80,31 @@ bool FileCache::updateByPath(const std::string &name, const std::string &data,
 bool FileCache::loadByName(const std::string &name, std::ostream &os)
 {
 	std::string path = m_dir + DIR_DELIM + name;
-	return loadByPath(name, os, path);
+	return loadByPath(path, os);
 }
 
 
 bool FileCache::updateByName(const std::string &name, const std::string &data)
 {
 	std::string path = m_dir + DIR_DELIM + name;
-	return updateByPath(name, data, path);
+	return updateByPath(path, data);
 }
 
-std::string FileCache::getPathFromChecksum(const std::string &name,
-		const std::string &checksum)
+std::string FileCache::getPathFromChecksum(const std::string &checksum)
 {
 	std::string checksum_hex = hex_encode(checksum.c_str(), checksum.length());
-	size_t dot = name.find_last_of('.');;
-	std::string ext = (dot == std::string::npos)? "" :
-		name.substr(dot, std::string::npos);
-	return m_dir + DIR_DELIM + checksum_hex + ext;
+	return m_dir + DIR_DELIM + checksum_hex;
 }
 
-bool FileCache::loadByChecksum(const std::string &name, std::ostream &os,
-		const std::string &checksum)
+bool FileCache::loadByChecksum(const std::string &checksum, std::ostream &os)
 {
-	std::string path = getPathFromChecksum(name, checksum);
-	return loadByPath(name, os, path);
+	std::string path = getPathFromChecksum(checksum);
+	return loadByPath(path, os);
 }
 
-bool FileCache::updateByChecksum(const std::string &name,
-		const std::string &data, const std::string &checksum)
+bool FileCache::updateByChecksum(const std::string &checksum,
+		const std::string &data)
 {
-	std::string path = getPathFromChecksum(name, checksum);
-	return updateByPath(name, data, path);
+	std::string path = getPathFromChecksum(checksum);
+	return updateByPath(path, data);
 }

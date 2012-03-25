@@ -290,11 +290,11 @@ public:
 	std::wstring accessDeniedReason()
 	{ return m_access_denied_reason; }
 
-	float textureReceiveProgress()
-	{ return m_texture_receive_progress; }
+	float mediaReceiveProgress()
+	{ return m_media_receive_progress; }
 
 	bool texturesReceived()
-	{ return m_textures_received; }
+	{ return m_media_received; }
 	bool itemdefReceived()
 	{ return m_itemdef_received; }
 	bool nodedefReceived()
@@ -367,12 +367,11 @@ private:
 	bool m_access_denied;
 	std::wstring m_access_denied_reason;
 	Queue<ClientEvent> m_client_event_queue;
-	FileCache m_texture_cache;
-	// a map of the name and SHA1 checksum of each texture;
-	// cleared after content has been recieved
-	core::map<std::string, std::string> m_texture_name_sha1_map;
-	float m_texture_receive_progress;
-	bool m_textures_received;
+	FileCache m_media_cache;
+	// Mapping from media file name to SHA1 checksum
+	core::map<std::string, std::string> m_media_name_sha1_map;
+	float m_media_receive_progress;
+	bool m_media_received;
 	bool m_itemdef_received;
 	bool m_nodedef_received;
 	friend class FarMesh;

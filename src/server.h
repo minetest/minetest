@@ -253,21 +253,21 @@ struct PrioritySortedBlockTransfer
 	u16 peer_id;
 };
 
-struct TextureRequest
+struct MediaRequest
 {
 	std::string name;
 
-	TextureRequest(const std::string &name_=""):
+	MediaRequest(const std::string &name_=""):
 		name(name_)
 	{}
 };
 
-struct TextureInformation
+struct MediaInfo
 {
 	std::string path;
 	std::string sha1_digest;
 
-	TextureInformation(const std::string path_="",
+	MediaInfo(const std::string path_="",
 			const std::string sha1_digest_=""):
 		path(path_),
 		sha1_digest(sha1_digest_)
@@ -644,11 +644,10 @@ private:
 	// Sends blocks to clients (locks env and con on its own)
 	void SendBlocks(float dtime);
 	
-	void PrepareTextures();
-
-	void SendTextureAnnouncement(u16 peer_id);
-
-	void SendTexturesRequested(u16 peer_id,core::list<TextureRequest> tosend);
+	void fillMediaCache();
+	void sendMediaAnnouncement(u16 peer_id);
+	void sendRequestedMedia(u16 peer_id,
+			const core::list<MediaRequest> &tosend);
 
 	/*
 		Something random
@@ -832,7 +831,7 @@ private:
 	friend class EmergeThread;
 	friend class RemoteClient;
 
-	std::map<std::string,TextureInformation> m_Textures;
+	std::map<std::string,MediaInfo> m_media;
 
 	/*
 		Sounds
