@@ -41,6 +41,7 @@ with this program; ifnot, write to the Free Software Foundation, Inc.,
 #include <map>
 #include <vector>
 #include "utility.h" // myrand()
+#include "filesys.h"
 
 #define BUFFER_SIZE 30000
 
@@ -434,9 +435,18 @@ public:
 	bool loadSoundData(const std::string &name,
 			const std::string &filedata)
 	{
-		errorstream<<"OpenALSoundManager: Loading from filedata not"
-				" implemented"<<std::endl;
-		return false;
+		// The vorbis API sucks; just write it to a file and use vorbisfile
+		// TODO: Actually load it directly from memory
+		std::string basepath = porting::path_user + DIR_DELIM + "cache" +
+				DIR_DELIM + "tmp";
+		std::string path = basepath + DIR_DELIM + "tmp.ogg";
+		verbosestream<<"OpenALSoundManager::loadSoundData(): Writing "
+				<<"temporary file to ["<<path<<"]"<<std::endl;
+		fs::CreateAllDirs(basepath);
+		std::ofstream of(path.c_str(), std::ios::binary);
+		of.write(filedata.c_str(), filedata.size());
+		of.close();
+		return loadSoundFile(name, path);
 	}
 
 	void updateListener(v3f pos, v3f vel, v3f at, v3f up)

@@ -972,31 +972,6 @@ void the_game(
 	SoundMaker soundmaker(sound, nodedef);
 	soundmaker.registerReceiver(&eventmgr);
 	
-	// Preload sounds
-#if 0
-	sound->loadSound("default_grass_footstep", porting::path_share + DIR_DELIM
-			+ "sounds" + DIR_DELIM + "default_grass_walk1.ogg");
-	sound->loadSound("default_grass_footstep", porting::path_share + DIR_DELIM
-			+ "sounds" + DIR_DELIM + "default_grass_walk2.ogg");
-	sound->loadSound("default_grass_footstep", porting::path_share + DIR_DELIM
-			+ "sounds" + DIR_DELIM + "default_grass_walk3.ogg");
-	
-	sound->loadSound("default_dig_crumbly", porting::path_share + DIR_DELIM
-			+ "sounds" + DIR_DELIM + "default_dig_crumbly1.ogg");
-	sound->loadSound("default_dig_crumbly", porting::path_share + DIR_DELIM
-			+ "sounds" + DIR_DELIM + "default_dig_crumbly2.ogg");
-	
-	sound->loadSound("default_dig_cracky", porting::path_share + DIR_DELIM
-			+ "sounds" + DIR_DELIM + "default_dig_cracky1.ogg");
-	
-	sound->loadSound("default_place_node", porting::path_share + DIR_DELIM
-			+ "sounds" + DIR_DELIM + "default_place_node1.ogg");
-	sound->loadSound("default_place_node", porting::path_share + DIR_DELIM
-			+ "sounds" + DIR_DELIM + "default_place_node2.ogg");
-	sound->loadSound("default_place_node", porting::path_share + DIR_DELIM
-			+ "sounds" + DIR_DELIM + "default_place_node3.ogg");
-#endif
-
 	// Add chat log output for errors to be shown in chat
 	LogOutputBuffer chat_log_error_buf(LMT_ERROR);
 
