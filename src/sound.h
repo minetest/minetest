@@ -22,7 +22,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "irrlichttypes.h"
 #include <string>
-#include <vector>
 #include <set>
 
 class OnDemandSoundFetcher
@@ -30,7 +29,7 @@ class OnDemandSoundFetcher
 public:
 	virtual void fetchSounds(const std::string &name,
 			std::set<std::string> &dst_paths,
-			std::set<std::vector<char> > &dst_datas) = 0;
+			std::set<std::string> &dst_datas) = 0;
 };
 
 struct SimpleSoundSpec
@@ -53,10 +52,10 @@ public:
 	// Multiple sounds can be loaded per name; when played, the sound
 	// should be chosen randomly from alternatives
 	// Return value determines success/failure
-	virtual bool loadSound(const std::string &name,
+	virtual bool loadSoundFile(const std::string &name,
 			const std::string &filepath) = 0;
-	virtual bool loadSound(const std::string &name,
-			const std::vector<char> &filedata) = 0;
+	virtual bool loadSoundData(const std::string &name,
+			const std::string &filedata) = 0;
 
 	virtual void updateListener(v3f pos, v3f vel, v3f at, v3f up) = 0;
 
@@ -79,10 +78,10 @@ public:
 class DummySoundManager: public ISoundManager
 {
 public:
-	virtual bool loadSound(const std::string &name,
+	virtual bool loadSoundFile(const std::string &name,
 			const std::string &filepath) {return true;}
-	virtual bool loadSound(const std::string &name,
-			const std::vector<char> &filedata) {return true;}
+	virtual bool loadSoundData(const std::string &name,
+			const std::string &filedata) {return true;}
 	void updateListener(v3f pos, v3f vel, v3f at, v3f up) {}
 	int playSound(const std::string &name, bool loop,
 			float volume) {return 0;}

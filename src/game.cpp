@@ -880,7 +880,7 @@ public:
 
 	void fetchSounds(const std::string &name,
 			std::set<std::string> &dst_paths,
-			std::set<std::vector<char> > &dst_datas)
+			std::set<std::string> &dst_datas)
 	{
 		if(m_fetched.count(name))
 			return;

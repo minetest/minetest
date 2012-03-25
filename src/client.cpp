@@ -40,6 +40,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "clientmap.h"
 #include "filecache.h"
 #include "sound.h"
+#include "utility_string.h"
+#include "hex.h"
 
 static std::string getMediaCacheDir()
 {
@@ -795,6 +797,66 @@ void Client::step(float dtime)
 	}
 }
 
+bool Client::loadMedia(const std::string &data, const std::string &filename)
+{
+	// Silly irrlicht's const-incorrectness
+	Buffer<char> data_rw(data.c_str(), data.size());
+	
+	std::string name;
+
+	const char *image_ext[] = {
+		".png", ".jpg", ".bmp", ".tga",
+		".pcx", ".ppm", ".psd", ".wal", ".rgb",
+		NULL
+	};
+	name = removeStringEnd(filename, image_ext);
+	if(name != "")
+	{
+		verbosestream<<"Client: Attempting to load image "
+				<<"file \""<<filename<<"\""<<std::endl;
+
+		io::IFileSystem *irrfs = m_device->getFileSystem();
+		video::IVideoDriver *vdrv = m_device->getVideoDriver();
+
+		// Create an irrlicht memory file
+		io::IReadFile *rfile = irrfs->createMemoryReadFile(
+				*data_rw, data_rw.getSize(), "_tempreadfile");
+		assert(rfile);
+		// Read image
+		video::IImage *img = vdrv->createImageFromFile(rfile);
+		if(!img){
+			errorstream<<"Client: Cannot create image from data of "
+					<<"file \""<<filename<<"\""<<std::endl;
+			rfile->drop();
+			return false;
+		}
+		else {
+			m_tsrc->insertSourceImage(filename, img);
+			img->drop();
+			rfile->drop();
+			return true;
+		}
+	}
+
+	const char *sound_ext[] = {
+		"0.ogg", "1.ogg", "2.ogg", "3.ogg", "4.ogg",
+		"5.ogg", "6.ogg", "7.ogg", "8.ogg", "9.ogg",
+		".ogg", NULL
+	};
+	name = removeStringEnd(filename, sound_ext);
+	if(name != "")
+	{
+		verbosestream<<"Client: Attempting to load sound "
+				<<"file \""<<filename<<"\""<<std::endl;
+		m_sound->loadSoundData(name, data);
+		return true;
+	}
+
+	errorstream<<"Client: Don't know how to load file \""
+			<<filename<<"\""<<std::endl;
+	return false;
+}
+
 // Virtual methods from con::PeerHandler
 void Client::peerAdded(con::Peer *peer)
 {
@@ -1393,9 +1455,6 @@ void Client::ProcessData(u8 *data, u32 datasize, u16 sender_peer_id)
 	}
 	else if(command == TOCLIENT_ANNOUNCE_MEDIA)
 	{
-		io::IFileSystem *irrfs = m_device->getFileSystem();
-		video::IVideoDriver *vdrv = m_device->getVideoDriver();
-
 		std::string datastring((char*)&data[2], datasize-2);
 		std::istringstream is(datastring, std::ios_base::binary);
 
@@ -1410,13 +1469,11 @@ void Client::ProcessData(u8 *data, u32 datasize, u16 sender_peer_id)
 
 		core::list<MediaRequest> file_requests;
 
-		for(int i=0; i<num_files; i++){
-
-			bool file_found = false;
-
+		for(int i=0; i<num_files; i++)
+		{
 			//read file from cache
 			std::string name = deSerializeString(is);
-			std::string sha1_file = deSerializeString(is);
+			std::string sha1_base64 = deSerializeString(is);
 
 			// if name contains illegal characters, ignore the file
 			if(!string_allowed(name, TEXTURENAME_ALLOWED_CHARS)){
@@ -1425,86 +1482,46 @@ void Client::ProcessData(u8 *data, u32 datasize, u16 sender_peer_id)
 				continue;
 			}
 
-			std::string sha1_decoded = base64_decode(sha1_file);
+			std::string sha1_raw = base64_decode(sha1_base64);
+			std::string sha1_hex = hex_encode(sha1_raw);
 			std::ostringstream tmp_os(std::ios_base::binary);
-			bool file_in_cache = m_media_cache.loadByChecksum(sha1_decoded,
-					tmp_os);
-			m_media_name_sha1_map.set(name, sha1_decoded);
+			bool found_in_cache = m_media_cache.load_sha1(sha1_raw, tmp_os);
+			m_media_name_sha1_map.set(name, sha1_raw);
 
-			if(file_in_cache)
+			// If found in cache, try to load it from there
+			if(found_in_cache)
 			{
-				SHA1 sha1;
-				sha1.addBytes(tmp_os.str().c_str(), tmp_os.str().length());
-
-				unsigned char *digest = sha1.getDigest();
-
-				std::string digest_string = base64_encode(digest, 20);
-
-				if (digest_string == sha1_file) {
-					// Silly irrlicht's const-incorrectness
-					Buffer<char> data_rw(tmp_os.str().c_str(), tmp_os.str().size());
-
-					// Create an irrlicht memory file
-					io::IReadFile *rfile = irrfs->createMemoryReadFile(
-							*data_rw,  tmp_os.str().size(), "_tempreadfile");
-					assert(rfile);
-					// Read image
-					video::IImage *img = vdrv->createImageFromFile(rfile);
-					if(!img){
-						infostream<<"Client: Cannot create image from data of "
-								<<"received file \""<<name<<"\""<<std::endl;
-						rfile->drop();
-					}
-					else {
-						m_tsrc->insertSourceImage(name, img);
-						img->drop();
-						rfile->drop();
-
-						file_found = true;
-					}
+				bool success = loadMedia(tmp_os.str(), name);
+				if(success){
+					verbosestream<<"Client: Loaded cached media: "
+							<<sha1_hex<<" \""<<name<<"\""<<std::endl;
+					continue;
+				} else{
+					infostream<<"Client: Failed to load cached media: "
+							<<sha1_hex<<" \""<<name<<"\""<<std::endl;
 				}
-				else {
-					infostream<<"Client::Media cached sha1 hash not matching server hash: "
-							<<name << ": server ->"<<sha1_file <<" client -> "<<digest_string<<std::endl;
-				}
-
-				free(digest);
 			}
-
-			//add file request
-			if (!file_found) {
-				infostream<<"Client: Adding file to request list: \""
-						<<name<<"\""<<std::endl;
-				file_requests.push_back(MediaRequest(name));
-			}
-
+			// Didn't load from cache; queue it to be requested
+			verbosestream<<"Client: Adding file to request list: \""
+					<<sha1_hex<<" \""<<name<<"\""<<std::endl;
+			file_requests.push_back(MediaRequest(name));
 		}
 
 		ClientEvent event;
 		event.type = CE_TEXTURES_UPDATED;
 		m_client_event_queue.push_back(event);
 
-
-		//send Media request
 		/*
-				u16 command
-				u16 number of files requested
-				for each file {
-					u16 length of name
-					string name
-				}
-		 */
+			u16 command
+			u16 number of files requested
+			for each file {
+				u16 length of name
+				string name
+			}
+		*/
 		std::ostringstream os(std::ios_base::binary);
-		u8 buf[12];
-
-
-		// Write command
-		writeU16(buf, TOSERVER_REQUEST_MEDIA);
-		os.write((char*)buf, 2);
-
-		writeU16(buf,file_requests.size());
-		os.write((char*)buf, 2);
-
+		writeU16(os, TOSERVER_REQUEST_MEDIA);
+		writeU16(os, file_requests.size());
 
 		for(core::list<MediaRequest>::Iterator i = file_requests.begin();
 				i != file_requests.end(); i++) {
@@ -1521,11 +1538,6 @@ void Client::ProcessData(u8 *data, u32 datasize, u16 sender_peer_id)
 	}
 	else if(command == TOCLIENT_MEDIA)
 	{
-		verbosestream<<"Client received TOCLIENT_MEDIA"<<std::endl;
-
-		io::IFileSystem *irrfs = m_device->getFileSystem();
-		video::IVideoDriver *vdrv = m_device->getVideoDriver();
-
 		std::string datastring((char*)&data[2], datasize-2);
 		std::istringstream is(datastring, std::ios_base::binary);
 
@@ -1547,7 +1559,10 @@ void Client::ProcessData(u8 *data, u32 datasize, u16 sender_peer_id)
 		*/
 		int num_bunches = readU16(is);
 		int bunch_i = readU16(is);
-		m_media_receive_progress = (float)bunch_i / (float)(num_bunches - 1);
+		if(num_bunches >= 2)
+			m_media_receive_progress = (float)bunch_i / (float)(num_bunches - 1);
+		else
+			m_media_receive_progress = 1.0;
 		if(bunch_i == num_bunches - 1)
 			m_media_received = true;
 		int num_files = readU32(is);
@@ -1564,19 +1579,14 @@ void Client::ProcessData(u8 *data, u32 datasize, u16 sender_peer_id)
 						<<"sent by server: \""<<name<<"\""<<std::endl;
 				continue;
 			}
-
-			// Silly irrlicht's const-incorrectness
-			Buffer<char> data_rw(data.c_str(), data.size());
-			// Create an irrlicht memory file
-			io::IReadFile *rfile = irrfs->createMemoryReadFile(
-					*data_rw, data.size(), "_tempreadfile");
-			assert(rfile);
-			// Read image
-			video::IImage *img = vdrv->createImageFromFile(rfile);
-			if(!img){
-				errorstream<<"Client: Cannot create image from data of "
-						<<"received file \""<<name<<"\""<<std::endl;
-				rfile->drop();
+			
+			bool success = loadMedia(data, name);
+			if(success){
+				verbosestream<<"Client: Loaded received media: "
+						<<"\""<<name<<"\". Caching."<<std::endl;
+			} else{
+				infostream<<"Client: Failed to load received media: "
+						<<"\""<<name<<"\". Not caching."<<std::endl;
 				continue;
 			}
 
@@ -1591,14 +1601,10 @@ void Client::ProcessData(u8 *data, u32 datasize, u16 sender_peer_id)
 				n = m_media_name_sha1_map.find(name);
 				if(n == NULL)
 					errorstream<<"The server sent a file that has not "
-						<<"been announced."<<std::endl;
+							<<"been announced."<<std::endl;
 				else
-					m_media_cache.updateByChecksum(n->getValue(), data);
+					m_media_cache.update_sha1(data);
 			}
-
-			m_tsrc->insertSourceImage(name, img);
-			img->drop();
-			rfile->drop();
 		}
 
 		ClientEvent event;

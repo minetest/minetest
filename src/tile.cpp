@@ -29,6 +29,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "mapnode.h" // For texture atlas making
 #include "nodedef.h" // For texture atlas making
 #include "gamedef.h"
+#include "utility_string.h"
 
 /*
 	A cache from texture name to texture path
@@ -82,7 +83,10 @@ static std::string getImagePath(std::string path)
 		"pcx", "ppm", "psd", "wal", "rgb",
 		NULL
 	};
-
+	// If there is no extension, add one
+	if(removeStringEnd(path, extensions) == "")
+		path = path + ".png";
+	// Check paths until something is found to exist
 	const char **ext = extensions;
 	do{
 		bool r = replace_ext(path, *ext);

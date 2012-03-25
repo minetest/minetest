@@ -286,22 +286,6 @@ public:
 		return bufs[j];
 	}
 
-	bool loadSound(const std::string &name,
-			const std::string &filepath)
-	{
-		SoundBuffer *buf = loadOggFile(filepath);
-		if(buf)
-			addBuffer(name, buf);
-		return false;
-	}
-	bool loadSound(const std::string &name,
-			const std::vector<char> &filedata)
-	{
-		errorstream<<"OpenALSoundManager: Loading from filedata not"
-				" implemented"<<std::endl;
-		return false;
-	}
-
 	PlayingSound* createPlayingSound(SoundBuffer *buf, bool loop,
 			float volume)
 	{
@@ -392,15 +376,15 @@ public:
 		if(!m_fetcher)
 			return NULL;
 		std::set<std::string> paths;
-		std::set<std::vector<char> > datas;
+		std::set<std::string> datas;
 		m_fetcher->fetchSounds(name, paths, datas);
 		for(std::set<std::string>::iterator i = paths.begin();
 				i != paths.end(); i++){
-			loadSound(name, *i);
+			loadSoundFile(name, *i);
 		}
-		for(std::set<std::vector<char> >::iterator i = datas.begin();
+		for(std::set<std::string>::iterator i = datas.begin();
 				i != datas.end(); i++){
-			loadSound(name, *i);
+			loadSoundData(name, *i);
 		}
 		return getBuffer(name);
 	}
@@ -438,6 +422,22 @@ public:
 	}
 
 	/* Interface */
+
+	bool loadSoundFile(const std::string &name,
+			const std::string &filepath)
+	{
+		SoundBuffer *buf = loadOggFile(filepath);
+		if(buf)
+			addBuffer(name, buf);
+		return false;
+	}
+	bool loadSoundData(const std::string &name,
+			const std::string &filedata)
+	{
+		errorstream<<"OpenALSoundManager: Loading from filedata not"
+				" implemented"<<std::endl;
+		return false;
+	}
 
 	void updateListener(v3f pos, v3f vel, v3f at, v3f up)
 	{

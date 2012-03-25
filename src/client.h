@@ -315,6 +315,9 @@ public:
 
 private:
 	
+	// Insert a media file appropriately into the appropriate manager
+	bool loadMedia(const std::string &data, const std::string &filename);
+	
 	// Virtual methods from con::PeerHandler
 	void peerAdded(con::Peer *peer);
 	void deletingPeer(con::Peer *peer, bool timeout);

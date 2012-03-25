@@ -51,6 +51,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "utility_string.h"
 #include "sound.h" // dummySoundManager
 #include "event_manager.h"
+#include "hex.h"
 
 #define PP(x) "("<<(x).X<<","<<(x).Y<<","<<(x).Z<<")"
 
@@ -3996,14 +3997,13 @@ void Server::fillMediaCache()
 			sha1.addBytes(tmp_os.str().c_str(), tmp_os.str().length());
 
 			unsigned char *digest = sha1.getDigest();
-			std::string digest_string = base64_encode(digest, 20);
-
+			std::string sha1_base64 = base64_encode(digest, 20);
+			std::string sha1_hex = hex_encode((char*)digest, 20);
 			free(digest);
 
 			// Put in list
-			this->m_media[filename] = MediaInfo(filepath, digest_string);
-			verbosestream<<"Server: sha1 for "<<filename<<"\tis "
-					<<digest_string<<std::endl;
+			this->m_media[filename] = MediaInfo(filepath, sha1_base64);
+			verbosestream<<"Server: "<<sha1_hex<<" is "<<filename<<std::endl;
 		}
 	}
 }

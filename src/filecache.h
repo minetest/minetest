@@ -34,39 +34,16 @@ public:
 		m_dir(dir)
 	{
 	}
-
-	/*
-		Searches the cache for a file with a given name.
-		If the file is found, lookup copies it into 'os' and
-		returns true. Otherwise false is returned.
-	*/
-	bool loadByName(const std::string &name, std::ostream &os);
-
-	/*
-		Stores a file in the cache based on its name.
-		Returns true on success, false otherwise.
-	*/
-	bool updateByName(const std::string &name, const std::string &data);
-
-	/*
-		Loads a file based on a check sum, which may be any kind of
-		rather unique byte sequence. Returns true, if the file could
-		be written into os, false otherwise.
-	*/
-	bool loadByChecksum(const std::string &checksum, std::ostream &os);
-
-	/*
-		Stores a file in the cache based on its checksum.
-		Returns true on success, false otherwise.
-	*/
-	bool updateByChecksum(const std::string &checksum, const std::string &data);
-
+	
+	bool update(const std::string &name, const std::string &data);
+	bool update_sha1(const std::string &data);
+	bool load(const std::string &name, std::ostream &os);
+	bool load_sha1(const std::string &sha1_raw, std::ostream &os);
 private:
 	std::string m_dir;
 
 	bool loadByPath(const std::string &path, std::ostream &os);
 	bool updateByPath(const std::string &path, const std::string &data);
-	std::string getPathFromChecksum(const std::string &checksum);
 };
 
 #endif
