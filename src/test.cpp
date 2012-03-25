@@ -35,6 +35,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "mapsector.h"
 #include "settings.h"
 #include "log.h"
+#include "utility_string.h"
 
 /*
 	Asserts that the exception occurs
@@ -120,6 +121,11 @@ struct TestUtilities
 		assert(is_yes("YeS") == true);
 		assert(is_yes("") == false);
 		assert(is_yes("FAlse") == false);
+		const char *ends[] = {"abc", "c", "bc", NULL};
+		assert(removeStringEnd("abc", ends) == "");
+		assert(removeStringEnd("bc", ends) == "b");
+		assert(removeStringEnd("12c", ends) == "12");
+		assert(removeStringEnd("foo", ends) == "");
 	}
 };
 
