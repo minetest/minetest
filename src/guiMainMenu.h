@@ -47,9 +47,9 @@ struct MainMenuData
 	int selected_world;
 	bool simple_singleplayer_mode;
 	// Actions
-	WorldSpec delete_world_spec;
 	std::wstring create_world_name;
 	std::string create_world_gameid;
+	bool only_refresh;
 
 	std::vector<WorldSpec> worlds;
 	std::vector<SubgameSpec> games;
@@ -64,7 +64,9 @@ struct MainMenuData
 		creative_mode(false),
 		enable_damage(false),
 		selected_world(0),
-		simple_singleplayer_mode(false)
+		simple_singleplayer_mode(false),
+		// Actions
+		only_refresh(false)
 	{}
 };
 
@@ -88,7 +90,7 @@ public:
 	{ return m_accepted; }
 	bool OnEvent(const SEvent& event);
 	void createNewWorld(std::wstring name, std::string gameid);
-	void deleteWorld(WorldSpec spec);
+	void deleteWorld(const std::vector<std::string> &paths);
 	int getTab();
 	
 private:

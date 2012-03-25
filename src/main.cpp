@@ -1446,6 +1446,24 @@ int main(int argc, char *argv[])
 
 				if(skip_main_menu == false)
 				{
+					video::IVideoDriver* driver = device->getVideoDriver();
+					
+					infostream<<"Waiting for other menus"<<std::endl;
+					while(device->run() && kill == false)
+					{
+						if(noMenuActive())
+							break;
+						driver->beginScene(true, true,
+								video::SColor(255,128,128,128));
+						drawMenuBackground(driver);
+						guienv->drawAll();
+						driver->endScene();
+						// On some computers framerate doesn't seem to be
+						// automatically limited
+						sleep_ms(25);
+					}
+					infostream<<"Waited for other menus"<<std::endl;
+
 					GUIMainMenu *menu =
 							new GUIMainMenu(guienv, guiroot, -1, 
 								&g_menumgr, &menudata, g_gamecallback);
@@ -1463,8 +1481,6 @@ int main(int argc, char *argv[])
 						error_message = L"";
 					}
 
-					video::IVideoDriver* driver = device->getVideoDriver();
-					
 					infostream<<"Created main menu"<<std::endl;
 
 					while(device->run() && kill == false)
@@ -1538,19 +1554,13 @@ int main(int argc, char *argv[])
 					infostream<<"Selected world: "<<worldspec.name
 							<<" ["<<worldspec.path<<"]"<<std::endl;
 				}
-				
-				// Delete world if requested
-				if(menudata.delete_world_spec.isValid())
-				{
-					bool r = fs::RecursiveDeleteContent(
-							menudata.delete_world_spec.path);
-					if(r == false){
-						error_message = L"World delete failed";
-						errorstream<<wide_to_narrow(error_message)<<std::endl;
-					}
+
+				// Only refresh if so requested
+				if(menudata.only_refresh){
+					infostream<<"Refreshing menu"<<std::endl;
 					continue;
 				}
-
+				
 				// Create new world if requested
 				if(menudata.create_world_name != L"")
 				{

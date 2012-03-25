@@ -38,6 +38,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "gettext.h"
 #include "utility.h"
 #include "tile.h" // getTexturePath
+#include "filesys.h"
 
 struct CreateWorldDestMainMenu : public CreateWorldDest
 {
@@ -53,18 +54,21 @@ struct CreateWorldDestMainMenu : public CreateWorldDest
 
 struct ConfirmDestDeleteWorld : public ConfirmDest
 {
-	ConfirmDestDeleteWorld(WorldSpec spec, GUIMainMenu *menu):
+	ConfirmDestDeleteWorld(WorldSpec spec, GUIMainMenu *menu,
+			const std::vector<std::string> &paths):
 		m_spec(spec),
-		m_menu(menu)
+		m_menu(menu),
+		m_paths(paths)
 	{}
 	void answer(bool answer)
 	{
 		if(answer == false)
 			return;
-		m_menu->deleteWorld(m_spec);
+		m_menu->deleteWorld(m_paths);
 	}
 	WorldSpec m_spec;
 	GUIMainMenu *m_menu;
+	std::vector<std::string> m_paths;
 };
 
 enum
@@ -819,12 +823,25 @@ bool GUIMainMenu::OnEvent(const SEvent& event)
 							)->drop();
 				} else {
 					WorldSpec spec = m_data->worlds[cur.selected_world];
+					// Get files and directories involved
+					std::vector<std::string> paths;
+					paths.push_back(spec.path);
+					fs::GetRecursiveSubPaths(spec.path, paths);
+					// Launch confirmation dialog
 					ConfirmDestDeleteWorld *dest = new
-							ConfirmDestDeleteWorld(spec, this);
+							ConfirmDestDeleteWorld(spec, this, paths);
+					std::wstring text = wgettext("Delete world");
+					text += L" \"";
+					text += narrow_to_wide(spec.name);
+					text += L"\"?\n\n";
+					text += wgettext("Files to be deleted");
+					text += L":\n";
+					for(u32 i=0; i<paths.size(); i++){
+						if(i == 3){ text += L"..."; break; }
+						text += narrow_to_wide(paths[i]) + L"\n";
+					}
 					(new GUIConfirmMenu(env, parent, -1, menumgr, dest,
-							(std::wstring(wgettext("Delete world "))
-							+L"\""+narrow_to_wide(spec.name)+L"\"?").c_str()
-							))->drop();
+							text.c_str()))->drop();
 				}
 				return true;
 			}
@@ -889,12 +906,18 @@ void GUIMainMenu::createNewWorld(std::wstring name, std::string gameid)
 	quitMenu();
 }
 
-void GUIMainMenu::deleteWorld(WorldSpec spec)
+void GUIMainMenu::deleteWorld(const std::vector<std::string> &paths)
 {
-	if(!spec.isValid())
-		return;
+	// Delete files
+	bool did = fs::DeletePaths(paths);
+	if(!did){
+		GUIMessageMenu *menu = new GUIMessageMenu(env, parent,
+				-1, menumgr, wgettext("Failed to delete all world files"));
+		menu->drop();
+	}
+	// Quit menu to refresh it
 	acceptInput();
-	m_data->delete_world_spec = spec;
+	m_data->only_refresh = true;
 	quitMenu();
 }
 	
