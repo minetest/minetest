@@ -2,6 +2,7 @@
 # Find the native vorbis includes and libraries
 #
 #  VORBIS_INCLUDE_DIR - where to find vorbis.h, etc.
+#  OGG_INCLUDE_DIR    - where to find ogg/ogg.h, etc.
 #  VORBIS_LIBRARIES   - List of libraries when using vorbis(file).
 #  VORBIS_FOUND       - True if vorbis found.
 
