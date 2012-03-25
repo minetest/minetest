@@ -77,26 +77,26 @@ public:
 			std::map<std::string, Dest>::iterator i = m_dest.find(type);
 			if(i != m_dest.end()){
 				std::list<FuncSpec> &funcs = i->second.funcs;
-				std::list<FuncSpec>::iterator i = funcs.begin();
-				while(i != funcs.end()){
-					bool remove = (i->f == f && (!data || i->d == data));
+				std::list<FuncSpec>::iterator j = funcs.begin();
+				while(j != funcs.end()){
+					bool remove = (j->f == f && (!data || j->d == data));
 					if(remove)
-						funcs.erase(i++);
+						funcs.erase(j++);
 					else
-						i++;
+						j++;
 				}
 			}
 		} else{
 			for(std::map<std::string, Dest>::iterator
 					i = m_dest.begin(); i != m_dest.end(); i++){
 				std::list<FuncSpec> &funcs = i->second.funcs;
-				std::list<FuncSpec>::iterator i = funcs.begin();
-				while(i != funcs.end()){
-					bool remove = (i->f == f && (!data || i->d == data));
+				std::list<FuncSpec>::iterator j = funcs.begin();
+				while(j != funcs.end()){
+					bool remove = (j->f == f && (!data || j->d == data));
 					if(remove)
-						funcs.erase(i++);
+						funcs.erase(j++);
 					else
-						i++;
+						j++;
 				}
 			}
 		}
