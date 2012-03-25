@@ -74,9 +74,8 @@ std::vector<DirListNode> GetDirListing(std::string pathstring)
 
 	if (hFind == INVALID_HANDLE_VALUE) 
 	{
-	  errorstream<<"GetDirListing: Invalid file handle. Error is "
-	  		<<GetLastError()<<std::endl;
-	  retval = (-1);
+		retval = (-1);
+		goto Cleanup;
 	} 
 	else 
 	{
