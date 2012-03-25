@@ -55,6 +55,8 @@ mods
 |   |-- textures
 |   |   |-- modname_stuff.png
 |   |   `-- modname_something_else.png
+|   |-- sounds
+|   |-- media
 |   `-- <custom data>
 `-- another
 
@@ -74,9 +76,9 @@ init.lua:
   minetest.setting_get(name) and minetest.setting_getbool(name) can be used
   to read custom or existing settings at load time, if necessary.
 
-textures:
-  These textures will be transferred to the client and can be referred to
-  by the mod.
+textures, sounds, media:
+  Media files (textures, sounds, whatever) that will be transferred to the
+  client and will be available for use by the mod.
 
 Naming convention for registered textual names
 ----------------------------------------------
@@ -117,6 +119,58 @@ Textures
 Mods should generally prefix their textures with modname_, eg. given
 the mod name "foomod", a texture could be called
   "foomod_foothing.png"
+
+Textures are referred to by their complete name, or alternatively by
+stripping out the file extension:
+  eg. foomod_foothing.png
+  eg. foomod_foothing
+
+Sounds
+-------
+Only OGG files are supported.
+
+For positional playing of sounds, only single-channel (mono) files are
+supported. Otherwise OpenAL will play them non-positionally.
+
+Mods should generally prefix their sounds with modname_, eg. given
+the mod name "foomod", a sound could be called
+  "foomod_foosound.ogg"
+
+Sounds are referred to by their name with a dot, a single digit and the
+file extension stripped out.  When a sound is played, the actual sound file
+is chosen randomly from the matching sounds.
+
+When playing the sound "foomod_foosound", the sound is chosen randomly
+from the available ones of the following files:
+  foomod_foosound.ogg
+  foomod_foosound.0.ogg
+  foomod_foosound.1.ogg
+  ...
+  foomod_foosound.9.ogg
+
+Examples of sound parameter tables:
+-- Play locationless on all clients
+{
+	gain = 1.0, -- default
+}
+-- Play locationless to a player
+{
+	to_player = name,
+	gain = 1.0, -- default
+}
+-- Play in a location
+{
+	pos = {x=1,y=2,z=3},
+	gain = 1.0, -- default
+	max_hear_distance = 32, -- default
+}
+-- Play connected to an object, looped
+{
+    object = <an ObjectRef>,
+	gain = 1.0, -- default
+	max_hear_distance = 32, -- default
+    loop = true, -- only sounds connected to objects can be looped
+}
 
 Representations of simple things
 --------------------------------
@@ -362,32 +416,6 @@ dump2(obj, name="_", dumped={})
 ^ Return object serialized as a string, handles reference loops
 dump(obj, dumped={})
 ^ Return object serialized as a string
-
-Sounds
--------
-Examples of sound parameter tables:
--- Play locationless on all clients
-{
-	gain = 1.0, -- default
-}
--- Play locationless to a player
-{
-	to_player = name,
-	gain = 1.0, -- default
-}
--- Play in a location
-{
-	pos = {x=1,y=2,z=3},
-	gain = 1.0, -- default
-	max_hear_distance = 32, -- default
-}
--- Play connected to an object, looped
-{
-    object = <an ObjectRef>,
-	gain = 1.0, -- default
-	max_hear_distance = 32, -- default
-    loop = true, -- only sounds connected to objects can be looped
-}
 
 minetest namespace reference
 -----------------------------
