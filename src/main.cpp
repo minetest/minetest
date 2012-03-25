@@ -739,6 +739,20 @@ void SpeedTests()
 	}
 }
 
+static void print_worldspecs(const std::vector<WorldSpec> &worldspecs,
+		std::ostream &os)
+{
+	for(u32 i=0; i<worldspecs.size(); i++){
+		std::string name = worldspecs[i].name;
+		std::string path = worldspecs[i].path;
+		if(name.find(" ") != std::string::npos)
+			name = std::string("'") + name + "'";
+		path = std::string("'") + path + "'";
+		name = padStringRight(name, 14);
+		os<<"  "<<name<<" "<<path<<std::endl;
+	}
+}
+
 int main(int argc, char *argv[])
 {
 	int retval = 0;
@@ -777,6 +791,8 @@ int main(int argc, char *argv[])
 			"Same as --world (deprecated)"));
 	allowed_options.insert("world", ValueSpec(VALUETYPE_STRING,
 			"Set world path (implies local game)"));
+	allowed_options.insert("worldname", ValueSpec(VALUETYPE_STRING,
+			"Set world by name (implies local game)"));
 	allowed_options.insert("info", ValueSpec(VALUETYPE_FLAG,
 			"Print more information to console"));
 	allowed_options.insert("verbose", ValueSpec(VALUETYPE_FLAG,
@@ -894,7 +910,7 @@ int main(int argc, char *argv[])
 	}
 	
 	// Print startup message
-	actionstream<<PROJECT_NAME<<
+	infostream<<PROJECT_NAME<<
 			" with SER_FMT_VER_HIGHEST="<<(int)SER_FMT_VER_HIGHEST
 			<<", "<<BUILD_INFO
 			<<std::endl;
@@ -991,10 +1007,15 @@ int main(int argc, char *argv[])
 		commanded_world = cmd_args.get("world");
 	else if(cmd_args.exists("map-dir"))
 		commanded_world = cmd_args.get("map-dir");
-	else if(cmd_args.exists("nonopt0"))
+	else if(cmd_args.exists("nonopt0")) // First nameless argument
 		commanded_world = cmd_args.get("nonopt0");
 	else if(g_settings->exists("map-dir"))
 		commanded_world = g_settings->get("map-dir");
+	
+	// World name
+	std::string commanded_worldname = "";
+	if(cmd_args.exists("worldname"))
+		commanded_worldname = cmd_args.get("worldname");
 	
 	// Strip world.mt from commanded_world
 	{
@@ -1037,21 +1058,74 @@ int main(int argc, char *argv[])
 
 		// World directory
 		std::string world_path;
+		verbosestream<<"Determining world path"<<std::endl;
 		bool is_legacy_world = false;
+		// If a world was commanded, use it
 		if(commanded_world != ""){
 			world_path = commanded_world;
+			infostream<<"Using commanded world path ["<<world_path<<"]"
+					<<std::endl;
 		}
-		else{
-			// No specific world was commanded
-			// Check if the world is found from the default directory, and if
-			// not, see if the legacy world directory exists.
-			world_path = porting::path_user + DIR_DELIM + "worlds" + DIR_DELIM + "world";
-			std::string legacy_world_path = porting::path_user + DIR_DELIM + "world";
-			if(!fs::PathExists(world_path) && fs::PathExists(legacy_world_path)){
-				errorstream<<"Warning: Using legacy world directory \""
-						<<legacy_world_path<<"\""<<std::endl;
-				world_path = legacy_world_path;
-				is_legacy_world = true;
+		// If a world name was specified, select it
+		else if(commanded_worldname != ""){
+			// Get information about available worlds
+			std::vector<WorldSpec> worldspecs = getAvailableWorlds();
+			world_path = "";
+			for(u32 i=0; i<worldspecs.size(); i++){
+				std::string name = worldspecs[i].name;
+				if(name == commanded_worldname){
+					world_path = worldspecs[i].path;
+					break;
+				}
+			}
+			if(world_path == ""){
+				dstream<<"World '"<<commanded_worldname<<"' not "
+						<<"available. Available worlds:"<<std::endl;
+				print_worldspecs(worldspecs, dstream);
+				return 1;
+			}
+		}
+		// No world was specified; try to select it automatically
+		else
+		{
+			// Get information about available worlds
+			std::vector<WorldSpec> worldspecs = getAvailableWorlds();
+			// If a world name was specified, select it
+			if(commanded_worldname != ""){
+				world_path = "";
+				for(u32 i=0; i<worldspecs.size(); i++){
+					std::string name = worldspecs[i].name;
+					if(name == commanded_worldname){
+						world_path = worldspecs[i].path;
+						break;
+					}
+				}
+				if(world_path == ""){
+					dstream<<"World '"<<commanded_worldname<<"' not "
+							<<"available. Available worlds:"<<std::endl;
+					print_worldspecs(worldspecs, dstream);
+					return 1;
+				}
+			}
+			// If there is only a single world, use it
+			if(worldspecs.size() == 1){
+				world_path = worldspecs[0].path;
+				dstream<<"Automatically selecting world at ["
+						<<world_path<<"]"<<std::endl;
+			// If there are multiple worlds, list them
+			} else if(worldspecs.size() > 1){
+				dstream<<"Multiple worlds are available."<<std::endl;
+				dstream<<"Please select one using --worldname <name>"
+						<<" or --world <path>"<<std::endl;
+				print_worldspecs(worldspecs, dstream);
+				return 1;
+			// If there are no worlds, automatically create a new one
+			} else {
+				// This is the ultimate default world path
+				world_path = porting::path_user + DIR_DELIM + "worlds" +
+						DIR_DELIM + "world";
+				infostream<<"Creating default world at ["
+						<<world_path<<"]"<<std::endl;
 			}
 		}
 
@@ -1059,25 +1133,49 @@ int main(int argc, char *argv[])
 			errorstream<<"No world path specified or found."<<std::endl;
 			return 1;
 		}
+		verbosestream<<"Using world path ["<<world_path<<"]"<<std::endl;
 
-		// Gamespec
-		std::string world_gameid = getWorldGameId(world_path, is_legacy_world);
-		SubgameSpec gamespec = findSubgame(world_gameid);
-		if(commanded_gamespec.isValid() &&
-				commanded_gamespec.id != world_gameid){
-			errorstream<<"WARNING: Overriding gameid from \""
-					<<world_gameid<<"\" to \""
-					<<commanded_gamespec.id<<"\""<<std::endl;
-			gamespec = commanded_gamespec;
+		// We need a gameid.
+		std::string gameid;
+		verbosestream<<"Determining gameid"<<std::endl;
+		// If world doesn't exist
+		if(!getWorldExists(world_path))
+		{
+			// Try to take gamespec from command line
+			if(commanded_gamespec.isValid()){
+				gameid = commanded_gamespec.id;
+				infostream<<"Using commanded gameid ["<<gameid<<"]"<<std::endl;
+			}
+			// Otherwise we will be using "minetest"
+			else{
+				gameid = g_settings->get("default_game");
+				infostream<<"Using default gameid ["<<gameid<<"]"<<std::endl;
+			}
 		}
-
+		// If world exists
+		else
+		{
+			// Otherwise read from the world
+			std::string world_gameid = getWorldGameId(world_path, is_legacy_world);
+			gameid = world_gameid;
+			if(commanded_gamespec.isValid() &&
+					commanded_gamespec.id != world_gameid){
+				gameid = commanded_gamespec.id;
+				errorstream<<"WARNING: Using commanded gameid ["<<gameid<<"]"
+						<<" instead of world gameid ["<<world_gameid
+						<<"]"<<std::endl;
+			} else{
+				infostream<<"Using world gameid ["<<gameid<<"]"<<std::endl;
+			}
+		}
+		verbosestream<<"Finding subgame ["<<gameid<<"]"<<std::endl;
+		SubgameSpec gamespec = findSubgame(gameid);
 		if(!gamespec.isValid()){
-			errorstream<<"Invalid gamespec. (world_gameid="
-					<<world_gameid<<")"<<std::endl;
+			errorstream<<"Subgame ["<<gameid<<"] could not be found."
+					<<std::endl;
 			return 1;
 		}
-		
-		infostream<<"Using gamespec \""<<gamespec.id<<"\""<<std::endl;
+		verbosestream<<"Using gameid ["<<gamespec.id<<"]"<<std::endl;
 
 		// Create server
 		Server server(world_path, configpath, gamespec, false);

@@ -52,6 +52,7 @@ SubgameSpec findSubgame(const std::string &id);
 std::set<std::string> getAvailableGameIds();
 std::vector<SubgameSpec> getAvailableGames();
 
+bool getWorldExists(const std::string &world_path);
 std::string getWorldGameId(const std::string &world_path,
 		bool can_be_legacy=false);
 

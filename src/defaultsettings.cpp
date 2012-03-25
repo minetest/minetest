@@ -101,7 +101,7 @@ void set_default_settings(Settings *settings)
 
 	// Server stuff
 	// "map-dir" doesn't exist by default.
-	settings->setDefault("default_game", "mesetint");
+	settings->setDefault("default_game", "minetest");
 	settings->setDefault("motd", "");
 	settings->setDefault("max_users", "100");
 	settings->setDefault("strict_protocol_version_checking", "true");

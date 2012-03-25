@@ -78,7 +78,13 @@ std::vector<SubgameSpec> getAvailableGames()
 	return specs;
 }
 
-#define LEGACY_GAMEID "mesetint"
+#define LEGACY_GAMEID "minetest"
+
+bool getWorldExists(const std::string &world_path)
+{
+	return (fs::PathExists(world_path + DIR_DELIM + "map_meta.txt") ||
+			fs::PathExists(world_path + DIR_DELIM + "world.mt"));
+}
 
 std::string getWorldGameId(const std::string &world_path, bool can_be_legacy)
 {
@@ -95,6 +101,9 @@ std::string getWorldGameId(const std::string &world_path, bool can_be_legacy)
 	}
 	if(!conf.exists("gameid"))
 		return "";
+	// The "mesetint" gameid has been discarded
+	if(conf.get("gameid") == "mesetint")
+		return "minetest";
 	return conf.get("gameid");
 }
 
@@ -113,7 +122,9 @@ std::vector<WorldSpec> getAvailableWorlds()
 				continue;
 			std::string fullpath = *i + DIR_DELIM + dirvector[j].name;
 			std::string name = dirvector[j].name;
-			std::string gameid = getWorldGameId(fullpath);
+			// Just allow filling in the gameid always for now
+			bool can_be_legacy = true;
+			std::string gameid = getWorldGameId(fullpath, can_be_legacy);
 			WorldSpec spec(fullpath, name, gameid);
 			if(!spec.isValid()){
 				infostream<<"(invalid: "<<name<<") ";
