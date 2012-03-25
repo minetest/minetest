@@ -5,13 +5,22 @@ if(RUN_IN_PLACE)
 	add_definitions ( -DRUN_IN_PLACE )
 endif(RUN_IN_PLACE)
 
+# Set some random things default to not being visible in the GUI
+mark_as_advanced(EXECUTABLE_OUTPUT_PATH LIBRARY_OUTPUT_PATH)
+mark_as_advanced(JTHREAD_INCLUDE_DIR JTHREAD_LIBRARY)
+mark_as_advanced(SQLITE3_INCLUDE_DIR SQLITE3_LIBRARY)
+
 # user-visible option to enable/disable gettext usage
-OPTION(ENABLE_GETTEXT "Use GetText for internationalization" ON)
+OPTION(ENABLE_GETTEXT "Use GetText for internationalization" 0)
 
 # this is only set to 1 if gettext is enabled _and_ available
 set(USE_GETTEXT 0)
 
-find_package(GettextLib)
+if(ENABLE_GETTEXT)
+	find_package(GettextLib)
+else()
+	MARK_AS_ADVANCED(GETTEXT_ICONV_DLL GETTEXT_INCLUDE_DIR GETTEXT_LIBRARY GETTEXT_MSGFMT)
+endif()
 
 if(GETTEXT_FOUND AND ENABLE_GETTEXT)
 	message(STATUS "gettext include path: ${GETTEXT_INCLUDE_DIR}")
@@ -29,36 +38,48 @@ else(GETTEXT_FOUND AND ENABLE_GETTEXT)
 	message(STATUS "GetText disabled")
 endif(GETTEXT_FOUND AND ENABLE_GETTEXT)
 
-# user visible option to enable/disable audio
-OPTION(ENABLE_AUDIO "Enable audio" ON)
+# user visible option to enable/disable sound
+OPTION(ENABLE_SOUND "Enable sound" ON)
 
-# this is only set to 1 if audio is enabled _and_ available
-set(USE_AUDIO 0)
+# this is only set to 1 if sound is enabled _and_ available
+set(USE_SOUND 0)
+set(SOUND_PROBLEM 0)
 
-if(ENABLE_AUDIO)
+if(ENABLE_SOUND)
 	# Sound libraries
 	find_package(OpenAL)
-	if (OPENAL_FOUND)
-		find_package(Vorbis)
-		if (VORBIS_FOUND)
-			set(USE_AUDIO 1)
-			set(audio_SRCS sound_openal.cpp)
-			set(AUDIO_INCLUDE_DIRS
-				${OPENAL_INCLUDE_DIR}
-				${VORBIS_INCLUDE_DIR}
-				)
-			set(AUDIO_LIBRARIES
-				${OPENAL_LIBRARY}
-				${VORBIS_LIBRARIES}
-				)
-			message(STATUS "Sound enabled")
-		else(VORBIS_FOUND)
-			message(FATAL_ERROR "Sound enabled, but Vorbis libraries not found!")
-		endif(VORBIS_FOUND)
-	else(OPENAL_FOUND)
-		message(FATAL_ERROR "Sound enabled, but OpenAL not found!")
-	endif(OPENAL_FOUND)
-endif(ENABLE_AUDIO)
+	find_package(Vorbis)
+	if(NOT OPENAL_FOUND)
+		message(STATUS "Sound enabled, but OpenAL not found!")
+		set(SOUND_PROBLEM 1)
+		MARK_AS_ADVANCED(CLEAR OPENAL_LIBRARY OPENAL_INCLUDE_DIR)
+	endif()
+	if(NOT VORBIS_FOUND)
+		message(STATUS "Sound enabled, but Vorbis libraries not found!")
+		set(SOUND_PROBLEM 1)
+		MARK_AS_ADVANCED(CLEAR OGG_INCLUDE_DIR VORBIS_INCLUDE_DIR OGG_LIBRARY VORBIS_LIBRARY VORBISFILE_LIBRARY)
+	endif()
+	if(OPENAL_FOUND AND VORBIS_FOUND)
+		set(USE_SOUND 1)
+		message(STATUS "Sound enabled")
+	endif()
+endif(ENABLE_SOUND)
+
+if(SOUND_PROBLEM)
+	message(FATAL_ERROR "Sound enabled, but cannot be used.\n"
+		"To continue, either fill in the required paths or disable sound.")
+endif()
+if(USE_SOUND)
+	set(sound_SRCS sound_openal.cpp)
+	set(SOUND_INCLUDE_DIRS
+		${OPENAL_INCLUDE_DIR}
+		${VORBIS_INCLUDE_DIR}
+		)
+	set(SOUND_LIBRARIES
+		${OPENAL_LIBRARY}
+		${VORBIS_LIBRARIES}
+		)
+endif()
 
 if(NOT MSVC)
 	set(USE_GPROF 0 CACHE BOOL "Use -pg flag for g++")
@@ -191,7 +212,7 @@ endif()
 # Client sources
 set(minetest_SRCS
 	${common_SRCS}
-	${audio_SRCS}
+	${sound_SRCS}
 	sky.cpp
 	clientmap.cpp
 	content_cso.cpp
@@ -235,7 +256,7 @@ include_directories(
 	${CMAKE_BUILD_TYPE}
 	${PNG_INCLUDE_DIR}
 	${GETTEXT_INCLUDE_DIR}
-	${AUDIO_INCLUDE_DIRS}
+	${SOUND_INCLUDE_DIRS}
 	${JTHREAD_INCLUDE_DIR}
 	${SQLITE3_INCLUDE_DIR}
 	${LUA_INCLUDE_DIR}
@@ -255,7 +276,7 @@ if(BUILD_CLIENT)
 		${PNG_LIBRARIES}
 		${X11_LIBRARIES}
 		${GETTEXT_LIBRARY}
-		${AUDIO_LIBRARIES}
+		${SOUND_LIBRARIES}
 		${JTHREAD_LIBRARY}
 		${SQLITE3_LIBRARY}
 		${LUA_LIBRARY}

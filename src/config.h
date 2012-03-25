@@ -10,7 +10,7 @@
 #define VERSION_STRING "unknown"
 #define BUILD_TYPE "unknown"
 #define USE_GETTEXT 0
-#define USE_AUDIO 0
+#define USE_SOUND 0
 #define BUILD_INFO "non-cmake"
 
 #ifdef USE_CMAKE_CONFIG_H
@@ -23,8 +23,8 @@
 	#define BUILD_INFO CMAKE_BUILD_INFO
 	#undef USE_GETTEXT
 	#define USE_GETTEXT CMAKE_USE_GETTEXT
-	#undef USE_AUDIO
-	#define USE_AUDIO CMAKE_USE_AUDIO
+	#undef USE_SOUND
+	#define USE_SOUND CMAKE_USE_SOUND
 	#undef BUILD_INFO
 	#define BUILD_INFO CMAKE_BUILD_INFO
 #endif
