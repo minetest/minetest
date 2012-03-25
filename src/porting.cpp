@@ -28,6 +28,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "debug.h"
 #include "filesys.h"
 #include "log.h"
+#include "utility_string.h"
 
 #ifdef __APPLE__
 	#include "CoreFoundation/CoreFoundation.h"
@@ -144,6 +145,13 @@ void pathRemoveFile(char *path, char delim)
 	path[i] = 0;
 }
 
+bool detectMSVCBuildDir(char *c_path)
+{
+	std::string path(c_path);
+	const char *ends[] = {"bin\\Release", "bin\\Build", NULL};
+	return (removeStringEnd(path, ends) != "");
+}
+
 void initializePaths()
 {
 #ifdef RUN_IN_PLACE
@@ -167,9 +175,16 @@ void initializePaths()
 	len = GetModuleFileName(GetModuleHandle(NULL), buf, buflen);
 	assert(len < buflen);
 	pathRemoveFile(buf, '\\');
-
-	path_share = std::string(buf) + "\\..";
-	path_user = std::string(buf) + "\\..";
+	
+	if(detectMSVCBuildDir(buf)){
+		infostream<<"MSVC build directory detected"<<std::endl;
+		path_share = std::string(buf) + "\\..\\..";
+		path_user = std::string(buf) + "\\..\\..";
+	}
+	else{
+		path_share = std::string(buf) + "\\..";
+		path_user = std::string(buf) + "\\..";
+	}
 
 	/*
 		Linux
