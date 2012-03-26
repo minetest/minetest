@@ -116,9 +116,14 @@ SoundBuffer* loadOggFile(const std::string &filepath)
 	char array[BUFFER_SIZE]; // Local fixed size array
 	vorbis_info *pInfo;
 	OggVorbis_File oggFile;
-
+	
+	// Do a dumb-ass static string copy for old versions of ov_fopen
+	// because they expect a non-const char*
+	char nonconst[10000];
+	snprintf(nonconst, 10000, "%s", filepath.c_str());
 	// Try opening the given file
-	if(ov_fopen(filepath.c_str(), &oggFile) != 0)
+	//if(ov_fopen(filepath.c_str(), &oggFile) != 0)
+	if(ov_fopen(nonconst, &oggFile) != 0)
 	{
 		infostream<<"Audio: Error opening "<<filepath<<" for decoding"<<std::endl;
 		return NULL;
