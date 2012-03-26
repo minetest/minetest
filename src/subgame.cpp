@@ -23,6 +23,18 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "settings.h"
 #include "log.h"
 
+std::string getGameName(const std::string &game_path)
+{
+	std::string conf_path = game_path + DIR_DELIM + "game.conf";
+	Settings conf;
+	bool succeeded = conf.readConfigFile(conf_path.c_str());
+	if(!succeeded)
+		return "";
+	if(!conf.exists("name"))
+		return "";
+	return conf.get("name");
+}
+
 SubgameSpec findSubgame(const std::string &id)
 {
 	if(id == "")
@@ -46,7 +58,9 @@ SubgameSpec findSubgame(const std::string &id)
 	if(user != share || user_game)
 		mods_paths.insert(user + DIR_DELIM + "mods" + DIR_DELIM + id);
 	// TODO: Read proper name from game_path/game.conf
-	std::string game_name = id;
+	std::string game_name = getGameName(game_path);
+	if(game_name == "")
+		game_name = id;
 	return SubgameSpec(id, game_path, mods_paths, game_name);
 }
 
