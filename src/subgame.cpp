@@ -54,13 +54,13 @@ SubgameSpec findSubgame(const std::string &id)
 	std::string user = porting::path_user;
 	std::vector<GameFindPath> find_paths;
 	find_paths.push_back(GameFindPath(
-			user + DIR_DELIM + "games" + DIR_DELIM + id, true));
-	find_paths.push_back(GameFindPath(
 			user + DIR_DELIM + "games" + DIR_DELIM + id + "_game", true));
 	find_paths.push_back(GameFindPath(
-			share + DIR_DELIM + "games" + DIR_DELIM + id, false));
+			user + DIR_DELIM + "games" + DIR_DELIM + id, true));
 	find_paths.push_back(GameFindPath(
 			share + DIR_DELIM + "games" + DIR_DELIM + id + "_game", false));
+	find_paths.push_back(GameFindPath(
+			share + DIR_DELIM + "games" + DIR_DELIM + id, false));
 	// Find game directory
 	std::string game_path;
 	bool user_game = true; // Game is in user's directory
