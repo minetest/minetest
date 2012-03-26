@@ -8,14 +8,14 @@ tags
 ## Non-static Minetest directories
 /bin/
 /games/*
-!/games/mesetint/
+!/games/minimal/
 /cache/
 /textures/
 /sounds/
 /mods/*
-!/mods/mesetint/
-/mods/mesetint/*
-!/mods/mesetint/mods_here.txt
+!/mods/minetest/
+/mods/minetest/*
+!/mods/minetest/mods_here.txt
 /worlds/
 /world/
 

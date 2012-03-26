@@ -1,50 +1,75 @@
 Minetest-c55
----------------
-An InfiniMiner/Minecraft inspired game.
-Copyright (c) 2010-2012 Perttu Ahola <celeron55@gmail.com>
-(see source files for other contributors)
+============
 
-Further documentation:
+An InfiniMiner/Minecraft inspired game.
+
+Copyright (c) 2010-2012 Perttu Ahola <celeron55@gmail.com>
+and ther contributors (see source file comments and the version control log)
+
+In case you downloaded the source code:
+---------------------------------------
+If you downloaded the Minetest Engine source code in which this file is
+contained, you probably want to download the minetest_game project too:
+  https://github.com/celeron55/minetest_game/
+See the README.txt in it.
+
+Further documentation
 ----------------------
-- Website: http://celeron.55.lt/~celeron55/minetest/
-- Wiki: http://celeron.55.lt/~celeron55/minetest/wiki/
-- Forum: http://celeron.55.lt/~celeron55/minetest/forum/
+- Website: http://c55.me/minetest/
+- Wiki: http://c55.me/minetest/wiki/
+- Forum: http://c55.me/minetest/forum/
+- Github: https://github.com/celeron55/minetest/
 - doc/ directory of source distribution
 
-This game is not finished:
+This game is not finished
 --------------------------
 - Don't expect it to work as well as a finished game will.
-- Please report any bugs to me. debug.txt is useful.
+- Please report any bugs. When doing that, debug.txt is useful.
 
-Controls:
----------
-- See the in-game pause menu
+Default Controls
+-----------------
+- WASD: Move
+- Space: Jump
+- E: Go down
+- Shift: Sneak
+- Q: Drop item
+- I: Open inventory
+- Mouse: Turn/look
 - Settable in the configuration file, see the section below.
 
-Map directory:
---------------
-- Map is stored in a directory, which can be removed to generate a new map.
-- There is a command-line option for it: --map-dir
-- For a RUN_IN_PLACE build, it is located in:
-		../world
-- Otherwise something like this:
-	Windows: C:\Documents and Settings\user\Application Data\minetest\world
-	Linux: ~/.minetest/world
-	OS X: ~/Library/Application Support/minetest/world
+Paths
+------
+$bin   - Compiled binaries
+$share - Cistributed read-only data
+$user  - User-created modifiable data
+
+Windows .zip / RUN_IN_PLACE source:
+$bin   = bin
+$share = .
+$user  = .
+
+Linux installed:
+$bin   = /usr/bin
+$share = /usr/share/minetest
+$user  = ~/.minetest
+
+OS X:
+$bin   = ?
+$share = ?
+$user  = ~/Library/Application Support/minetest
+
+World directory
+----------------
+- Worlds can be found as separate folders in:
+    $user/worlds/
 
 Configuration file:
 -------------------
-- An optional configuration file can be used. See minetest.conf.example.
-- Path to file can be passed as a parameter to the executable:
+- Default location:
+    $user/minetest.conf
+- It is created by Minetest when it is ran the first time.
+- A specific file can be specified on the command line:
 	--config <path-to-file>
-- Defaults:
-	- If built with -DRUN_IN_PLACE=1:
-		../minetest.conf
-		../../minetest.conf
-	- Otherwise something like this:
-		Windows: C:\Documents and Settings\user\Application Data\minetest\minetest.conf
-		Linux: ~/.minetest/minetest.conf
-		OS X: ~/Library/Application Support/minetest.conf
 
 Command-line options:
 ---------------------
@@ -94,7 +119,7 @@ Compiling on Windows:
 		http://gnuwin32.sourceforge.net/downlinks/gettext.php
 		- This is used for other UI languages. Feel free to leave it out.
 	* And, of course, Minetest-c55:
-		http://celeron.55.lt/~celeron55/minetest/download
+		http://c55.me/minetest/download
 - Steps:
 	- Select a directory called DIR hereafter in which you will operate.
 	- Make sure you have CMake and a compiler installed.
