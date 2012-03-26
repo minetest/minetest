@@ -796,6 +796,30 @@ minetest.registered_on_dieplayers, minetest.register_on_dieplayer = make_registr
 minetest.registered_on_respawnplayers, minetest.register_on_respawnplayer = make_registration()
 
 --
+-- Misc. API functions
+--
+
+minetest.timers_to_add = {}
+minetest.timers = {}
+minetest.register_globalstep(function(dtime)
+  for indes, timer in ipairs(minetest.timers_to_add) do
+    table.insert(minetest.timers, timer)
+  end
+  minetest.timers_to_add = {}
+  for index, timer in ipairs(minetest.timers) do
+    timer.time = timer.time - dtime
+    if timer.time <= 0 then
+      timer.func()
+      minetest.timers[index] = nil
+    end
+  end
+end)
+
+function minetest.after(time, func)
+  table.insert(minetest.timers_to_add, {time=time, func=func})
+end
+
+--
 -- Set random seed
 --
 

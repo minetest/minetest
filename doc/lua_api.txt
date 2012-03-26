@@ -425,6 +425,12 @@ minetest.get_modpath(modname) -> eg. "/home/user/.minetest/usermods/modname"
 minetest.get_worldpath(modname) -> eg. "/home/user/.minetest/world"
 ^ Useful for storing custom data
 
+minetest.debug(line)
+^ Goes to dstream
+minetest.log(line)
+minetest.log(loglevel, line)
+^ loglevel one of "error", "action", "info", "verbose"
+
 minetest.register_entity(name, prototype table)
 minetest.register_abm(abm definition)
 minetest.register_node(name, node definition)
@@ -461,11 +467,8 @@ minetest.sound_play(spec, parameters) -> handle
 ^ parameters = sound parameter table
 minetest.sound_stop(handle)
 
-minetest.debug(line)
-^ Goes to dstream
-minetest.log(line)
-minetest.log(loglevel, line)
-^ loglevel one of "error", "action", "info", "verbose"
+minetest.after(time, func)
+^ Call function after time seconds
 
 Global objects:
 minetest.env - environment reference
