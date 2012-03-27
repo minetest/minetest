@@ -802,21 +802,21 @@ minetest.registered_on_respawnplayers, minetest.register_on_respawnplayer = make
 minetest.timers_to_add = {}
 minetest.timers = {}
 minetest.register_globalstep(function(dtime)
-  for indes, timer in ipairs(minetest.timers_to_add) do
-    table.insert(minetest.timers, timer)
-  end
-  minetest.timers_to_add = {}
-  for index, timer in ipairs(minetest.timers) do
-    timer.time = timer.time - dtime
-    if timer.time <= 0 then
-      timer.func()
-      minetest.timers[index] = nil
-    end
-  end
+	for _, timer in ipairs(minetest.timers_to_add) do
+		table.insert(minetest.timers, timer)
+	end
+	minetest.timers_to_add = {}
+	for index, timer in ipairs(minetest.timers) do
+		timer.time = timer.time - dtime
+		if timer.time <= 0 then
+			timer.func(timer.param)
+			table.remove(minetest.timers,index)
+		end
+	end
 end)
 
-function minetest.after(time, func)
-  table.insert(minetest.timers_to_add, {time=time, func=func})
+function minetest.after(time, func, param)
+		table.insert(minetest.timers_to_add, {time=time, func=func, param=param})
 end
 
 --

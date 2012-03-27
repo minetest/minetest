@@ -467,8 +467,9 @@ minetest.sound_play(spec, parameters) -> handle
 ^ parameters = sound parameter table
 minetest.sound_stop(handle)
 
-minetest.after(time, func)
+minetest.after(time, func, param)
 ^ Call function after time seconds
+^ param is optional; to pass multiple parameters, pass a table.
 
 Global objects:
 minetest.env - environment reference
