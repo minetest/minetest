@@ -598,9 +598,9 @@ int ClientMap::getBackgroundBrightness(float max_d, u32 daylight_factor,
 	if(z_directions[0].X < -99){
 		for(u32 i=0; i<sizeof(z_directions)/sizeof(*z_directions); i++){
 			z_directions[i] = v3f(
-				0.01 * myrand_range(-80, 80),
+				0.01 * myrand_range(-100, 100),
 				1.0,
-				0.01 * myrand_range(-80, 80)
+				0.01 * myrand_range(-100, 100)
 			);
 			z_offsets[i] = 0.01 * myrand_range(0,100);
 		}
