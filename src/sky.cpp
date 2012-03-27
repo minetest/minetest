@@ -91,7 +91,7 @@ void Sky::render()
 	scale.setScale(core::vector3df(viewDistance, viewDistance, viewDistance));
 
 	driver->setTransform(video::ETS_WORLD, translate * scale);
-	
+
 	if(m_sunlight_seen)
 	{
 		float sunsize = 0.07;
@@ -108,7 +108,7 @@ void Sky::render()
 		video::SColorf mooncolor_f(0.50, 0.57, 0.65, 1);
 		video::SColorf mooncolor2_f(0.85, 0.875, 0.9, 1);
 		
-		float nightlength = 0.41;
+		float nightlength = 0.415;
 		float wn = nightlength / 2;
 		float wicked_time_of_day = 0;
 		if(m_time_of_day > wn && m_time_of_day < 1.0 - wn)
@@ -129,8 +129,63 @@ void Sky::render()
 		const f32 o = 0.0f;
 		static const u16 indices[4] = {0,1,2,3};
 		video::S3DVertex vertices[4];
+		
+		driver->setMaterial(m_materials[1]);
+		
+		//video::SColor cloudyfogcolor(255,255,255,255);
+		video::SColor cloudyfogcolor = m_bgcolor;
+		//video::SColor cloudyfogcolor = m_bgcolor.getInterpolated(m_skycolor, 0.5);
+		
+		// Draw far cloudy fog thing
+		for(u32 j=0; j<4; j++)
+		{
+			video::SColor c = cloudyfogcolor.getInterpolated(m_skycolor, 0.45);
+			vertices[0] = video::S3DVertex(-1, 0.08,-1, 0,0,1, c, t, t);
+			vertices[1] = video::S3DVertex( 1, 0.08,-1, 0,0,1, c, o, t);
+			vertices[2] = video::S3DVertex( 1, 0.12,-1, 0,0,1, c, o, o);
+			vertices[3] = video::S3DVertex(-1, 0.12,-1, 0,0,1, c, t, o);
+			for(u32 i=0; i<4; i++){
+				if(j==0)
+					// Don't switch
+					{}
+				else if(j==1)
+					// Switch from -Z (south) to +X (east)
+					vertices[i].Pos.rotateXZBy(90);
+				else if(j==2)
+					// Switch from -Z (south) to -X (west)
+					vertices[i].Pos.rotateXZBy(-90);
+				else
+					// Switch from -Z (south) to -Z (north)
+					vertices[i].Pos.rotateXZBy(-180);
+			}
+			driver->drawIndexedTriangleFan(&vertices[0], 4, indices, 2);
+		}
+		for(u32 j=0; j<4; j++)
+		{
+			video::SColor c = cloudyfogcolor;
+			vertices[0] = video::S3DVertex(-1,-1.0,-1, 0,0,1, c, t, t);
+			vertices[1] = video::S3DVertex( 1,-1.0,-1, 0,0,1, c, o, t);
+			vertices[2] = video::S3DVertex( 1, 0.08,-1, 0,0,1, c, o, o);
+			vertices[3] = video::S3DVertex(-1, 0.08,-1, 0,0,1, c, t, o);
+			for(u32 i=0; i<4; i++){
+				if(j==0)
+					// Don't switch
+					{}
+				else if(j==1)
+					// Switch from -Z (south) to +X (east)
+					vertices[i].Pos.rotateXZBy(90);
+				else if(j==2)
+					// Switch from -Z (south) to -X (west)
+					vertices[i].Pos.rotateXZBy(-90);
+				else
+					// Switch from -Z (south) to -Z (north)
+					vertices[i].Pos.rotateXZBy(-180);
+			}
+			driver->drawIndexedTriangleFan(&vertices[0], 4, indices, 2);
+		}
 
 		driver->setMaterial(m_materials[2]);
+
 		{
 			float mid1 = 0.25;
 			float mid = (wicked_time_of_day < 0.5 ? mid1 : (1.0 - mid1));
@@ -314,10 +369,12 @@ void Sky::render()
 		
 		for(u32 j=0; j<2; j++)
 		{
-			vertices[0] = video::S3DVertex(-1,-1.0,-1, 0,0,1, m_skycolor, t, t);
-			vertices[1] = video::S3DVertex( 1,-1.0,-1, 0,0,1, m_skycolor, o, t);
-			vertices[2] = video::S3DVertex( 1,-0.02,-1, 0,0,1, m_skycolor, o, o);
-			vertices[3] = video::S3DVertex(-1,-0.02,-1, 0,0,1, m_skycolor, t, o);
+			//video::SColor c = m_skycolor;
+			video::SColor c = cloudyfogcolor;
+			vertices[0] = video::S3DVertex(-1,-1.0,-1, 0,0,1, c, t, t);
+			vertices[1] = video::S3DVertex( 1,-1.0,-1, 0,0,1, c, o, t);
+			vertices[2] = video::S3DVertex( 1,-0.02,-1, 0,0,1, c, o, o);
+			vertices[3] = video::S3DVertex(-1,-0.02,-1, 0,0,1, c, t, o);
 			for(u32 i=0; i<4; i++){
 				//if(wicked_time_of_day < 0.5)
 				if(j==0)
@@ -353,14 +410,17 @@ void Sky::update(float time_of_day, float time_brightness,
 	m_time_brightness = time_brightness;
 	m_sunlight_seen = sunlight_seen;
 	
-	bool is_dawn = (time_brightness >= 0.20 && time_brightness < 0.50);
+	bool is_dawn = (time_brightness >= 0.20 && time_brightness < 0.35);
 
-	video::SColorf bgcolor_bright_normal_f(170./255,200./255,230./255, 1.0);
+	//video::SColorf bgcolor_bright_normal_f(170./255,200./255,230./255, 1.0);
+	video::SColorf bgcolor_bright_normal_f(155./255,193./255,240./255, 1.0);
 	video::SColorf bgcolor_bright_indoor_f(100./255,100./255,100./255, 1.0);
 	//video::SColorf bgcolor_bright_dawn_f(0.666,200./255*0.7,230./255*0.5,1.0);
 	//video::SColorf bgcolor_bright_dawn_f(0.666,0.549,0.220,1.0);
 	//video::SColorf bgcolor_bright_dawn_f(0.666*1.2,0.549*1.0,0.220*1.0, 1.0);
-	video::SColorf bgcolor_bright_dawn_f(0.666*1.2,0.549*1.0,0.220*1.2,1.0);
+	//video::SColorf bgcolor_bright_dawn_f(0.666*1.2,0.549*1.0,0.220*1.2,1.0);
+	video::SColorf bgcolor_bright_dawn_f
+			(155./255*1.2,193./255,240./255, 1.0);
 
 	video::SColorf skycolor_bright_normal_f =
 			video::SColor(255, 140, 186, 250);
