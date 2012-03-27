@@ -70,8 +70,8 @@ static s16 find_ground_level_clever(VoxelManipulator &vmanip, v2s16 p2d,
 	s16 y_nodes_min = vmanip.m_area.MinEdge.Y;
 	u32 i = vmanip.m_area.index(v3s16(p2d.X, y_nodes_max, p2d.Y));
 	s16 y;
-	content_t c_tree = LEGN(ndef, "CONTENT_TREE");
-	content_t c_leaves = LEGN(ndef, "CONTENT_LEAVES");
+	content_t c_tree = ndef->getId("mapgen_tree");
+	content_t c_leaves = ndef->getId("mapgen_leaves");
 	for(y=y_nodes_max; y>=y_nodes_min; y--)
 	{
 		MapNode &n = vmanip.m_data[i];
@@ -97,7 +97,7 @@ static s16 find_stone_level(VoxelManipulator &vmanip, v2s16 p2d,
 	s16 y_nodes_min = vmanip.m_area.MinEdge.Y;
 	u32 i = vmanip.m_area.index(v3s16(p2d.X, y_nodes_max, p2d.Y));
 	s16 y;
-	content_t c_stone = LEGN(ndef, "CONTENT_STONE");
+	content_t c_stone = ndef->getId("mapgen_stone");
 	for(y=y_nodes_max; y>=y_nodes_min; y--)
 	{
 		MapNode &n = vmanip.m_data[i];
@@ -116,9 +116,9 @@ static s16 find_stone_level(VoxelManipulator &vmanip, v2s16 p2d,
 void make_tree(ManualMapVoxelManipulator &vmanip, v3s16 p0,
 		bool is_apple_tree, INodeDefManager *ndef)
 {
-	MapNode treenode(LEGN(ndef, "CONTENT_TREE"));
-	MapNode leavesnode(LEGN(ndef, "CONTENT_LEAVES"));
-	MapNode applenode(LEGN(ndef, "CONTENT_APPLE"));
+	MapNode treenode(ndef->getId("mapgen_tree"));
+	MapNode leavesnode(ndef->getId("mapgen_leaves"));
+	MapNode applenode(ndef->getId("mapgen_apple"));
 	
 	s16 trunk_h = myrand_range(4, 5);
 	v3s16 p1 = p0;
@@ -196,8 +196,8 @@ void make_tree(ManualMapVoxelManipulator &vmanip, v3s16 p0,
 static void make_jungletree(VoxelManipulator &vmanip, v3s16 p0,
 		INodeDefManager *ndef)
 {
-	MapNode treenode(LEGN(ndef, "CONTENT_JUNGLETREE"));
-	MapNode leavesnode(LEGN(ndef, "CONTENT_LEAVES"));
+	MapNode treenode(ndef->getId("mapgen_jungletree"));
+	MapNode leavesnode(ndef->getId("mapgen_leaves"));
 
 	for(s16 x=-1; x<=1; x++)
 	for(s16 z=-1; z<=1; z++)
@@ -283,7 +283,7 @@ static void make_jungletree(VoxelManipulator &vmanip, v3s16 p0,
 void make_papyrus(VoxelManipulator &vmanip, v3s16 p0,
 		INodeDefManager *ndef)
 {
-	MapNode papyrusnode(LEGN(ndef, "CONTENT_PAPYRUS"));
+	MapNode papyrusnode(ndef->getId("mapgen_papyrus"));
 
 	s16 trunk_h = myrand_range(2, 3);
 	v3s16 p1 = p0;
@@ -298,7 +298,7 @@ void make_papyrus(VoxelManipulator &vmanip, v3s16 p0,
 void make_cactus(VoxelManipulator &vmanip, v3s16 p0,
 		INodeDefManager *ndef)
 {
-	MapNode cactusnode(LEGN(ndef, "CONTENT_CACTUS"));
+	MapNode cactusnode(ndef->getId("mapgen_cactus"));
 
 	s16 trunk_h = 3;
 	v3s16 p1 = p0;
@@ -333,7 +333,7 @@ static void make_room1(VoxelManipulator &vmanip, v3s16 roomsize, v3s16 roomplace
 			u32 vi = vmanip.m_area.index(p);
 			if(vmanip.m_flags[vi] & VMANIP_FLAG_DUNGEON_UNTOUCHABLE)
 				continue;
-			vmanip.m_data[vi] = MapNode(LEGN(ndef, "CONTENT_COBBLE"));
+			vmanip.m_data[vi] = MapNode(ndef->getId("mapgen_cobble"));
 		}
 		{
 			v3s16 p = roomplace + v3s16(roomsize.X-1,y,z);
@@ -342,7 +342,7 @@ static void make_room1(VoxelManipulator &vmanip, v3s16 roomsize, v3s16 roomplace
 			u32 vi = vmanip.m_area.index(p);
 			if(vmanip.m_flags[vi] & VMANIP_FLAG_DUNGEON_UNTOUCHABLE)
 				continue;
-			vmanip.m_data[vi] = MapNode(LEGN(ndef, "CONTENT_COBBLE"));
+			vmanip.m_data[vi] = MapNode(ndef->getId("mapgen_cobble"));
 		}
 	}
 	
@@ -357,7 +357,7 @@ static void make_room1(VoxelManipulator &vmanip, v3s16 roomsize, v3s16 roomplace
 			u32 vi = vmanip.m_area.index(p);
 			if(vmanip.m_flags[vi] & VMANIP_FLAG_DUNGEON_UNTOUCHABLE)
 				continue;
-			vmanip.m_data[vi] = MapNode(LEGN(ndef, "CONTENT_COBBLE"));
+			vmanip.m_data[vi] = MapNode(ndef->getId("mapgen_cobble"));
 		}
 		{
 			v3s16 p = roomplace + v3s16(x,y,roomsize.Z-1);
@@ -366,7 +366,7 @@ static void make_room1(VoxelManipulator &vmanip, v3s16 roomsize, v3s16 roomplace
 			u32 vi = vmanip.m_area.index(p);
 			if(vmanip.m_flags[vi] & VMANIP_FLAG_DUNGEON_UNTOUCHABLE)
 				continue;
-			vmanip.m_data[vi] = MapNode(LEGN(ndef, "CONTENT_COBBLE"));
+			vmanip.m_data[vi] = MapNode(ndef->getId("mapgen_cobble"));
 		}
 	}
 	
@@ -381,7 +381,7 @@ static void make_room1(VoxelManipulator &vmanip, v3s16 roomsize, v3s16 roomplace
 			u32 vi = vmanip.m_area.index(p);
 			if(vmanip.m_flags[vi] & VMANIP_FLAG_DUNGEON_UNTOUCHABLE)
 				continue;
-			vmanip.m_data[vi] = MapNode(LEGN(ndef, "CONTENT_COBBLE"));
+			vmanip.m_data[vi] = MapNode(ndef->getId("mapgen_cobble"));
 		}
 		{
 			v3s16 p = roomplace + v3s16(x,roomsize.Y-1,z);
@@ -390,7 +390,7 @@ static void make_room1(VoxelManipulator &vmanip, v3s16 roomsize, v3s16 roomplace
 			u32 vi = vmanip.m_area.index(p);
 			if(vmanip.m_flags[vi] & VMANIP_FLAG_DUNGEON_UNTOUCHABLE)
 				continue;
-			vmanip.m_data[vi] = MapNode(LEGN(ndef, "CONTENT_COBBLE"));
+			vmanip.m_data[vi] = MapNode(ndef->getId("mapgen_cobble"));
 		}
 	}
 	
@@ -438,7 +438,7 @@ static void make_door1(VoxelManipulator &vmanip, v3s16 doorplace, v3s16 doordir,
 {
 	make_hole1(vmanip, doorplace, ndef);
 	// Place torch (for testing)
-	//vmanip.m_data[vmanip.m_area.index(doorplace)] = MapNode(LEGN(ndef, "CONTENT_TORCH"));
+	//vmanip.m_data[vmanip.m_area.index(doorplace)] = MapNode(ndef->getId("mapgen_torch"));
 }
 
 static v3s16 rand_ortho_dir(PseudoRandom &random)
@@ -525,7 +525,7 @@ static void make_corridor(VoxelManipulator &vmanip, v3s16 doorplace,
 			if(make_stairs)
 			{
 				make_fill(vmanip, p+v3s16(-1,-1,-1), v3s16(3,5,3),
-						VMANIP_FLAG_DUNGEON_UNTOUCHABLE, MapNode(LEGN(ndef, "CONTENT_COBBLE")), 0);
+						VMANIP_FLAG_DUNGEON_UNTOUCHABLE, MapNode(ndef->getId("mapgen_cobble")), 0);
 				make_fill(vmanip, p, v3s16(1,2,1), 0, MapNode(CONTENT_AIR),
 						VMANIP_FLAG_DUNGEON_INSIDE);
 				make_fill(vmanip, p-dir, v3s16(1,2,1), 0, MapNode(CONTENT_AIR),
@@ -534,7 +534,7 @@ static void make_corridor(VoxelManipulator &vmanip, v3s16 doorplace,
 			else
 			{
 				make_fill(vmanip, p+v3s16(-1,-1,-1), v3s16(3,4,3),
-						VMANIP_FLAG_DUNGEON_UNTOUCHABLE, MapNode(LEGN(ndef, "CONTENT_COBBLE")), 0);
+						VMANIP_FLAG_DUNGEON_UNTOUCHABLE, MapNode(ndef->getId("mapgen_cobble")), 0);
 				make_hole1(vmanip, p, ndef);
 				/*make_fill(vmanip, p, v3s16(1,2,1), 0, MapNode(CONTENT_AIR),
 						VMANIP_FLAG_DUNGEON_INSIDE);*/
@@ -613,9 +613,9 @@ public:
 				continue;
 			}
 			if(vmanip.getNodeNoExNoEmerge(p).getContent()
-					== LEGN(m_ndef, "CONTENT_COBBLE")
+					== m_ndef->getId("mapgen_cobble")
 			&& vmanip.getNodeNoExNoEmerge(p1).getContent()
-					== LEGN(m_ndef, "CONTENT_COBBLE"))
+					== m_ndef->getId("mapgen_cobble"))
 			{
 				// Found wall, this is a good place!
 				result_place = p;
@@ -629,25 +629,25 @@ public:
 			*/
 			// Jump one up if the actual space is there
 			if(vmanip.getNodeNoExNoEmerge(p+v3s16(0,0,0)).getContent()
-					== LEGN(m_ndef, "CONTENT_COBBLE")
+					== m_ndef->getId("mapgen_cobble")
 			&& vmanip.getNodeNoExNoEmerge(p+v3s16(0,1,0)).getContent()
-					== LEGN(m_ndef, "CONTENT_AIR")
+					== CONTENT_AIR
 			&& vmanip.getNodeNoExNoEmerge(p+v3s16(0,2,0)).getContent()
-					== LEGN(m_ndef, "CONTENT_AIR"))
+					== CONTENT_AIR)
 				p += v3s16(0,1,0);
 			// Jump one down if the actual space is there
 			if(vmanip.getNodeNoExNoEmerge(p+v3s16(0,1,0)).getContent()
-					== LEGN(m_ndef, "CONTENT_COBBLE")
+					== m_ndef->getId("mapgen_cobble")
 			&& vmanip.getNodeNoExNoEmerge(p+v3s16(0,0,0)).getContent()
-					== LEGN(m_ndef, "CONTENT_AIR")
+					== CONTENT_AIR
 			&& vmanip.getNodeNoExNoEmerge(p+v3s16(0,-1,0)).getContent()
-					== LEGN(m_ndef, "CONTENT_AIR"))
+					== CONTENT_AIR)
 				p += v3s16(0,-1,0);
 			// Check if walking is now possible
 			if(vmanip.getNodeNoExNoEmerge(p).getContent()
-					!= LEGN(m_ndef, "CONTENT_AIR")
+					!= CONTENT_AIR
 			|| vmanip.getNodeNoExNoEmerge(p+v3s16(0,1,0)).getContent()
-					!= LEGN(m_ndef, "CONTENT_AIR"))
+					!= CONTENT_AIR)
 			{
 				// Cannot continue walking here
 				randomizeDir();
@@ -799,7 +799,7 @@ static void make_dungeon1(VoxelManipulator &vmanip, PseudoRandom &random,
 		v3s16 room_center = roomplace + v3s16(roomsize.X/2,1,roomsize.Z/2);
 
 		// Place torch at room center (for testing)
-		//vmanip.m_data[vmanip.m_area.index(room_center)] = MapNode(LEGN(ndef, "CONTENT_TORCH"));
+		//vmanip.m_data[vmanip.m_area.index(room_center)] = MapNode(ndef->getId("mapgen_torch"));
 
 		// Quit if last room
 		if(i == room_count-1)
@@ -888,12 +888,12 @@ static void make_nc(VoxelManipulator &vmanip, PseudoRandom &random,
 			16+random.range(0,15),
 			16+random.range(0,15),
 			16+random.range(0,15));
-	vmanip.m_data[vmanip.m_area.index(p)] = MapNode(LEGN(ndef, "CONTENT_NC"), facedir_i);
+	vmanip.m_data[vmanip.m_area.index(p)] = MapNode(ndef->getId("mapgen_nyancat"), facedir_i);
 	u32 length = random.range(3,15);
 	for(u32 j=0; j<length; j++)
 	{
 		p -= dir;
-		vmanip.m_data[vmanip.m_area.index(p)] = MapNode(LEGN(ndef, "CONTENT_NC_RB"));
+		vmanip.m_data[vmanip.m_area.index(p)] = MapNode(ndef->getId("mapgen_nyancat_rainbow"));
 	}
 }
 
@@ -1342,7 +1342,7 @@ void make_block(BlockMakeData *data)
 
 // Creates variables c_name=id and n_name=node
 #define CONTENT_VARIABLE(ndef, name)\
-	content_t c_##name = ndef->getId(#name);\
+	content_t c_##name = ndef->getId("mapgen_" #name);\
 	MapNode n_##name(c_##name);
 
 	CONTENT_VARIABLE(ndef, stone);
