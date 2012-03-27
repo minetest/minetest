@@ -47,7 +47,6 @@
 #keymap_rangeselect = KEY_KEY_R
 #keymap_freemove = KEY_KEY_K
 #keymap_fastmove = KEY_KEY_J
-#keymap_frametime_graph = KEY_F1
 #keymap_screenshot = KEY_F12
 # Some (temporary) keys for debugging
 #keymap_print_debug_stacks = KEY_KEY_P
@@ -58,8 +57,8 @@
 # (to not waste CPU power for no benefit)
 #fps_max = 60
 # The allowed adjustment range for the automatic rendering range adjustment
-#viewing_range_nodes_max = 300
-#viewing_range_nodes_min = 25
+#viewing_range_nodes_max = 160
+#viewing_range_nodes_min = 35
 # Initial window size
 #screenW = 800
 #screenH = 600
@@ -78,8 +77,6 @@
 # Enable smooth lighting with simple ambient occlusion;
 # disable for speed or for different looks.
 #smooth_lighting = true
-# Whether to draw a frametime graph (for debugging frametime)
-#frametime_graph = false
 # Enable combining mainly used textures to a bigger one for improved speed
 # disable if it causes graphics glitches.
 #enable_texture_atlas = true
@@ -116,13 +113,13 @@
 #
 
 # Default game (default when creating a new world)
-#default_game = mesetint
-# Map directory (everything in the world is stored here)
-#map-dir = /custom/map
+#default_game = minetest
+# World directory (everything in the world is stored here)
+#map-dir = /custom/world
 # Message of the Day
 #motd = Welcome to this awesome Minetest server!
 # Maximum number of players connected simultaneously
-#max_users = 20
+#max_users = 100
 # Set to false to allow old clients to connect
 #strict_protocol_version_checking = true
 # Set to true to enable creative mode (unlimited inventory)
@@ -139,7 +136,7 @@
 #default_password = 
 # Available privileges: build, teleport, settime, privs, shout
 #default_privs = build, shout
-# Whether players are transferred to client without any range limit
+# Whether players are shown to clients without any range limit
 #unlimited_player_transfer_distance = true
 # Whether to enable players killing each other
 #enable_pvp = true
@@ -155,17 +152,14 @@
 #max_simultaneous_block_sends_per_client = 2
 # how many blocks are flying in the wire simultaneously per server
 #max_simultaneous_block_sends_server_total = 8
-#max_block_send_distance = 7
-#max_block_generate_distance = 5
-#time_send_interval = 20
+#max_block_send_distance = 10
+#max_block_generate_distance = 6
+#time_send_interval = 5
 # Length of day/night cycle. 72=20min, 360=4min, 1=24hour, 0=day/night/whatever stays unchanged
-#time_speed = 72
+#time_speed = 96
 #server_unload_unused_data_timeout = 29
 #server_map_save_interval = 5.3
 # To reduce lag, block transfers are slowed down when a player is building something.
 # This determines how long they are slowed down after placing or removing a node.
 #full_block_send_enable_min_time_from_building = 2.0
-# Set to true to enable experimental features or stuff that is tested
-# (varies from version to version, usually not useful at all)
-#enable_experimental = false
 
