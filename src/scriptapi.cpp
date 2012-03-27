@@ -47,6 +47,7 @@ extern "C" {
 #include "utility.h"
 #include "tool.h"
 #include "daynightratio.h"
+#include "noise.h" // PseudoRandom for LuaPseudoRandom
 
 static void stackDump(lua_State *L, std::ostream &o)
 {
@@ -3134,6 +3135,114 @@ const luaL_reg EnvRef::methods[] = {
 	{0,0}
 };
 
+/*
+	LuaPseudoRandom
+*/
+
+class LuaPseudoRandom
+{
+private:
+	PseudoRandom m_pseudo;
+
+	static const char className[];
+	static const luaL_reg methods[];
+
+	// Exported functions
+	
+	// garbage collector
+	static int gc_object(lua_State *L)
+	{
+		LuaPseudoRandom *o = *(LuaPseudoRandom **)(lua_touserdata(L, 1));
+		delete o;
+		return 0;
+	}
+
+	// next(self) -> get next value
+	static int l_next(lua_State *L)
+	{
+		LuaPseudoRandom *o = checkobject(L, 1);
+		PseudoRandom &pseudo = o->m_pseudo;
+		lua_pushinteger(L, pseudo.next());
+		return 1;
+	}
+
+public:
+	LuaPseudoRandom(int seed):
+		m_pseudo(seed)
+	{
+	}
+
+	~LuaPseudoRandom()
+	{
+	}
+
+	const PseudoRandom& getItem() const
+	{
+		return m_pseudo;
+	}
+	PseudoRandom& getItem()
+	{
+		return m_pseudo;
+	}
+	
+	// LuaPseudoRandom(seed)
+	// Creates an LuaPseudoRandom and leaves it on top of stack
+	static int create_object(lua_State *L)
+	{
+		int seed = luaL_checknumber(L, 1);
+		LuaPseudoRandom *o = new LuaPseudoRandom(seed);
+		*(void **)(lua_newuserdata(L, sizeof(void *))) = o;
+		luaL_getmetatable(L, className);
+		lua_setmetatable(L, -2);
+		return 1;
+	}
+
+	static LuaPseudoRandom* checkobject(lua_State *L, int narg)
+	{
+		luaL_checktype(L, narg, LUA_TUSERDATA);
+		void *ud = luaL_checkudata(L, narg, className);
+		if(!ud) luaL_typerror(L, narg, className);
+		return *(LuaPseudoRandom**)ud;  // unbox pointer
+	}
+
+	static void Register(lua_State *L)
+	{
+		lua_newtable(L);
+		int methodtable = lua_gettop(L);
+		luaL_newmetatable(L, className);
+		int metatable = lua_gettop(L);
+
+		lua_pushliteral(L, "__metatable");
+		lua_pushvalue(L, methodtable);
+		lua_settable(L, metatable);  // hide metatable from Lua getmetatable()
+
+		lua_pushliteral(L, "__index");
+		lua_pushvalue(L, methodtable);
+		lua_settable(L, metatable);
+
+		lua_pushliteral(L, "__gc");
+		lua_pushcfunction(L, gc_object);
+		lua_settable(L, metatable);
+
+		lua_pop(L, 1);  // drop metatable
+
+		luaL_openlib(L, 0, methods, 0);  // fill methodtable
+		lua_pop(L, 1);  // drop methodtable
+
+		// Can be created from Lua (LuaPseudoRandom(seed))
+		lua_register(L, className, create_object);
+	}
+};
+const char LuaPseudoRandom::className[] = "PseudoRandom";
+const luaL_reg LuaPseudoRandom::methods[] = {
+	method(LuaPseudoRandom, next),
+	{0,0}
+};
+
+/*
+	LuaABM
+*/
+
 class LuaABM : public ActiveBlockModifier
 {
 private:
@@ -3789,6 +3898,7 @@ void scriptapi_export(lua_State *L, Server *server)
 	NodeMetaRef::Register(L);
 	ObjectRef::Register(L);
 	EnvRef::Register(L);
+	LuaPseudoRandom::Register(L);
 }
 
 bool scriptapi_loadmod(lua_State *L, const std::string &scriptpath,

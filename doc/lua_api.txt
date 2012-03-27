@@ -599,6 +599,7 @@ methods:
     returns the items that were actually removed (as an ItemStack)
 
 ItemStack: A stack of items.
+- Can be created via ItemStack(itemstack or itemstring or table or nil)
 methods:
 - is_empty(): return true if stack is empty
 - get_name(): returns item name (e.g. "default:stone")
@@ -626,6 +627,11 @@ methods:
 - peek_item(n): copy (don't remove) up to n items from this stack
   ^ returns copied ItemStack
   ^ if n is omitted, n=1 is used
+
+PseudoRandom: A pseudorandom number generator
+- Can be created via PseudoRandom(seed)
+methods:
+- next(): return next random number [0...32767]
 
 Registered entities
 --------------------
