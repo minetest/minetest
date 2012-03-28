@@ -36,6 +36,9 @@ namespace mapgen
 	// Find out if block is completely underground
 	bool block_is_underground(u64 seed, v3s16 blockpos);
 
+	// Get a pseudorandom seed for a position on the map
+	u32 get_blockseed(u64 seed, v3s16 p);
+
 	// Main map generation routine
 	void make_block(BlockMakeData *data);
 	

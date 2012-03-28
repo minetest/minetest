@@ -193,6 +193,7 @@ void make_tree(ManualMapVoxelManipulator &vmanip, v3s16 p0,
 	}
 }
 
+#if 0
 static void make_jungletree(VoxelManipulator &vmanip, v3s16 p0,
 		INodeDefManager *ndef)
 {
@@ -280,7 +281,7 @@ static void make_jungletree(VoxelManipulator &vmanip, v3s16 p0,
 	}
 }
 
-void make_papyrus(VoxelManipulator &vmanip, v3s16 p0,
+static void make_papyrus(VoxelManipulator &vmanip, v3s16 p0,
 		INodeDefManager *ndef)
 {
 	MapNode papyrusnode(ndef->getId("mapgen_papyrus"));
@@ -295,7 +296,7 @@ void make_papyrus(VoxelManipulator &vmanip, v3s16 p0,
 	}
 }
 
-void make_cactus(VoxelManipulator &vmanip, v3s16 p0,
+static void make_cactus(VoxelManipulator &vmanip, v3s16 p0,
 		INodeDefManager *ndef)
 {
 	MapNode cactusnode(ndef->getId("mapgen_cactus"));
@@ -309,7 +310,9 @@ void make_cactus(VoxelManipulator &vmanip, v3s16 p0,
 		p1.Y++;
 	}
 }
+#endif
 
+#if 0
 /*
 	Dungeon making routines
 */
@@ -861,7 +864,9 @@ static void make_dungeon1(VoxelManipulator &vmanip, PseudoRandom &random,
 		
 	}
 }
+#endif
 
+#if 0
 static void make_nc(VoxelManipulator &vmanip, PseudoRandom &random,
 		INodeDefManager *ndef)
 {
@@ -896,6 +901,7 @@ static void make_nc(VoxelManipulator &vmanip, PseudoRandom &random,
 		vmanip.m_data[vmanip.m_area.index(p)] = MapNode(ndef->getId("mapgen_nyancat_rainbow"));
 	}
 }
+#endif
 
 /*
 	Noise functions. Make sure seed is mangled differently in each one.
@@ -1270,6 +1276,12 @@ bool get_have_sand(u64 seed, v2s16 p2d)
 			seed+59420, 3, 0.50);
 
 	return (sandnoise > -0.15);
+}
+
+u32 get_blockseed(u64 seed, v3s16 p)
+{
+	s32 x=p.X, y=p.Y, z=p.Z;
+	return (u32)(seed%0x100000000ULL) + z*38134234 + y*42123 + x*23;
 }
 
 #define VMANIP_FLAG_CAVE VOXELFLAG_CHECKED1

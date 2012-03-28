@@ -51,7 +51,8 @@ bool scriptapi_on_chat_message(lua_State *L, const std::string &name,
 // On environment step
 void scriptapi_environment_step(lua_State *L, float dtime);
 // After generating a piece of map
-void scriptapi_environment_on_generated(lua_State *L, v3s16 minp, v3s16 maxp);
+void scriptapi_environment_on_generated(lua_State *L, v3s16 minp, v3s16 maxp,
+		u32 blockseed);
 
 /* misc */
 void scriptapi_on_newplayer(lua_State *L, ServerActiveObject *player);

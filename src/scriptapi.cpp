@@ -4403,7 +4403,8 @@ void scriptapi_environment_step(lua_State *L, float dtime)
 	}
 }
 
-void scriptapi_environment_on_generated(lua_State *L, v3s16 minp, v3s16 maxp)
+void scriptapi_environment_on_generated(lua_State *L, v3s16 minp, v3s16 maxp,
+		u32 blockseed)
 {
 	realitycheck(L);
 	assert(lua_checkstack(L, 20));
@@ -4423,7 +4424,8 @@ void scriptapi_environment_on_generated(lua_State *L, v3s16 minp, v3s16 maxp)
 		// Call function
 		push_v3s16(L, minp);
 		push_v3s16(L, maxp);
-		if(lua_pcall(L, 2, 0, 0))
+		lua_pushnumber(L, blockseed);
+		if(lua_pcall(L, 3, 0, 0))
 			script_error(L, "error: %s", lua_tostring(L, -1));
 		// value removed, keep key for next iteration
 	}
