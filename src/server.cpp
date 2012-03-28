@@ -280,8 +280,9 @@ void * EmergeThread::Thread()
 					Do some post-generate stuff
 				*/
 				
-				v3s16 minp = block->getPos()*MAP_BLOCKSIZE;
-				v3s16 maxp = minp + v3s16(1,1,1)*(MAP_BLOCKSIZE-1);
+				v3s16 minp = data.blockpos_min*MAP_BLOCKSIZE;
+				v3s16 maxp = data.blockpos_max*MAP_BLOCKSIZE +
+						v3s16(1,1,1)*(MAP_BLOCKSIZE-1);
 				scriptapi_environment_on_generated(m_server->m_lua,
 						minp, maxp, mapgen::get_blockseed(data.seed, minp));
 				
