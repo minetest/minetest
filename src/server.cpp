@@ -659,7 +659,7 @@ void RemoteClient::GetNextBlocks(Server *server, float dtime,
 				*/
 				if(d >= 4)
 				{
-					if(block->dayNightDiffed() == false)
+					if(block->getDayNightDiff() == false)
 						continue;
 				}
 #endif

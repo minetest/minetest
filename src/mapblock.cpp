@@ -49,6 +49,7 @@ MapBlock::MapBlock(Map *parent, v3s16 pos, IGameDef *gamedef, bool dummy):
 		is_underground(false),
 		m_lighting_expired(true),
 		m_day_night_differs(false),
+		m_day_night_differs_expired(true),
 		m_generated(false),
 		m_timestamp(BLOCK_TIMESTAMP_UNDEFINED),
 		m_disk_timestamp(BLOCK_TIMESTAMP_UNDEFINED),
@@ -355,9 +356,11 @@ void MapBlock::copyFrom(VoxelManipulator &dst)
 			getPosRelative(), data_size);
 }
 
-void MapBlock::updateDayNightDiff()
+void MapBlock::actuallyUpdateDayNightDiff()
 {
 	INodeDefManager *nodemgr = m_gamedef->ndef();
+	// Running this function un-expires m_day_night_differs
+	m_day_night_differs_expired = false;
 
 	if(data == NULL)
 	{
@@ -402,6 +405,19 @@ void MapBlock::updateDayNightDiff()
 
 	// Set member variable
 	m_day_night_differs = differs;
+}
+
+void MapBlock::expireDayNightDiff()
+{
+	INodeDefManager *nodemgr = m_gamedef->ndef();
+
+	if(data == NULL){
+		m_day_night_differs = false;
+		m_day_night_differs_expired = false;
+		return;
+	}
+
+	m_day_night_differs_expired = true;
 }
 
 s16 MapBlock::getGroundLevel(v2s16 p2d)
@@ -545,7 +561,7 @@ void MapBlock::serialize(std::ostream &os, u8 version, bool disk)
 	u8 flags = 0;
 	if(is_underground)
 		flags |= 0x01;
-	if(m_day_night_differs)
+	if(getDayNightDiff())
 		flags |= 0x02;
 	if(m_lighting_expired)
 		flags |= 0x04;
@@ -613,6 +629,8 @@ void MapBlock::deSerialize(std::istream &is, u8 version, bool disk)
 {
 	if(!ser_ver_supported(version))
 		throw VersionMismatchException("ERROR: MapBlock format not supported");
+
+	m_day_night_differs_expired = false;
 
 	if(version <= 21)
 	{
@@ -800,7 +818,7 @@ void MapBlock::serialize_pre22(std::ostream &os, u8 version, bool disk)
 		u8 flags = 0;
 		if(is_underground)
 			flags |= 0x01;
-		if(m_day_night_differs)
+		if(getDayNightDiff())
 			flags |= 0x02;
 		if(m_lighting_expired)
 			flags |= 0x04;

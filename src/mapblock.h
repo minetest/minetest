@@ -360,10 +360,17 @@ public:
 		Sets m_day_night_differs to appropriate value.
 		These methods don't care about neighboring blocks.
 	*/
-	void updateDayNightDiff();
+	void actuallyUpdateDayNightDiff();
+	/*
+		Call this to schedule what the previous function does to be done
+		when the value is actually needed.
+	*/
+	void expireDayNightDiff();
 
-	bool dayNightDiffed()
+	bool getDayNightDiff()
 	{
+		if(m_day_night_differs_expired)
+			actuallyUpdateDayNightDiff();
 		return m_day_night_differs;
 	}
 
@@ -517,6 +524,7 @@ private:
 	
 	// Whether day and night lighting differs
 	bool m_day_night_differs;
+	bool m_day_night_differs_expired;
 
 	bool m_generated;
 	

@@ -226,7 +226,7 @@ public:
 	/*
 		Takes the blocks at the edges into account
 	*/
-	bool dayNightDiffed(v3s16 blockpos);
+	bool getDayNightDiff(v3s16 blockpos);
 
 	//core::aabbox3d<s16> getDisplayedBlockArea();
 

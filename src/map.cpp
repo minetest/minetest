@@ -923,7 +923,7 @@ void Map::updateLighting(core::map<v3s16, MapBlock*> & a_blocks,
 			i.atEnd() == false; i++)
 	{
 		MapBlock *block = i.getNode()->getValue();
-		block->updateDayNightDiff();
+		block->expireDayNightDiff();
 	}
 }
 
@@ -1084,7 +1084,7 @@ void Map::addNodeAndUpdate(v3s16 p, MapNode n,
 			i.atEnd() == false; i++)
 	{
 		MapBlock *block = i.getNode()->getValue();
-		block->updateDayNightDiff();
+		block->expireDayNightDiff();
 	}
 
 	/*
@@ -1260,7 +1260,7 @@ void Map::removeNodeAndUpdate(v3s16 p,
 			i.atEnd() == false; i++)
 	{
 		MapBlock *block = i.getNode()->getValue();
-		block->updateDayNightDiff();
+		block->expireDayNightDiff();
 	}
 
 	/*
@@ -1297,6 +1297,7 @@ void Map::removeNodeAndUpdate(v3s16 p,
 
 bool Map::addNodeWithEvent(v3s16 p, MapNode n)
 {
+	ScopeProfiler sp(g_profiler, "Map::addNodeWithEvent", SPT_AVG);
 	MapEditEvent event;
 	event.type = MEET_ADDNODE;
 	event.p = p;
@@ -1352,12 +1353,12 @@ bool Map::removeNodeWithEvent(v3s16 p)
 	return succeeded;
 }
 
-bool Map::dayNightDiffed(v3s16 blockpos)
+bool Map::getDayNightDiff(v3s16 blockpos)
 {
 	try{
 		v3s16 p = blockpos + v3s16(0,0,0);
 		MapBlock *b = getBlockNoCreate(p);
-		if(b->dayNightDiffed())
+		if(b->getDayNightDiff())
 			return true;
 	}
 	catch(InvalidPositionException &e){}
@@ -1365,21 +1366,21 @@ bool Map::dayNightDiffed(v3s16 blockpos)
 	try{
 		v3s16 p = blockpos + v3s16(-1,0,0);
 		MapBlock *b = getBlockNoCreate(p);
-		if(b->dayNightDiffed())
+		if(b->getDayNightDiff())
 			return true;
 	}
 	catch(InvalidPositionException &e){}
 	try{
 		v3s16 p = blockpos + v3s16(0,-1,0);
 		MapBlock *b = getBlockNoCreate(p);
-		if(b->dayNightDiffed())
+		if(b->getDayNightDiff())
 			return true;
 	}
 	catch(InvalidPositionException &e){}
 	try{
 		v3s16 p = blockpos + v3s16(0,0,-1);
 		MapBlock *b = getBlockNoCreate(p);
-		if(b->dayNightDiffed())
+		if(b->getDayNightDiff())
 			return true;
 	}
 	catch(InvalidPositionException &e){}
@@ -1387,21 +1388,21 @@ bool Map::dayNightDiffed(v3s16 blockpos)
 	try{
 		v3s16 p = blockpos + v3s16(1,0,0);
 		MapBlock *b = getBlockNoCreate(p);
-		if(b->dayNightDiffed())
+		if(b->getDayNightDiff())
 			return true;
 	}
 	catch(InvalidPositionException &e){}
 	try{
 		v3s16 p = blockpos + v3s16(0,1,0);
 		MapBlock *b = getBlockNoCreate(p);
-		if(b->dayNightDiffed())
+		if(b->getDayNightDiff())
 			return true;
 	}
 	catch(InvalidPositionException &e){}
 	try{
 		v3s16 p = blockpos + v3s16(0,0,1);
 		MapBlock *b = getBlockNoCreate(p);
-		if(b->dayNightDiffed())
+		if(b->getDayNightDiff())
 			return true;
 	}
 	catch(InvalidPositionException &e){}
@@ -2294,12 +2295,12 @@ MapBlock* ServerMap::finishBlockMake(mapgen::BlockMakeData *data,
 		/*
 			Update day/night difference cache of the MapBlocks
 		*/
-		block->updateDayNightDiff();
+		block->expireDayNightDiff();
 		/*
 			Set block as modified
 		*/
 		block->raiseModified(MOD_STATE_WRITE_NEEDED,
-				"finishBlockMake updateDayNightDiff");
+				"finishBlockMake expireDayNightDiff");
 	}
 
 	/*
