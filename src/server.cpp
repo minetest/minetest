@@ -1689,6 +1689,10 @@ void Server::AsyncRunStep()
 		Send queued-for-sending map edit events.
 	*/
 	{
+		// We will be accessing the environment and the connection
+		JMutexAutoLock lock(m_env_mutex);
+		JMutexAutoLock conlock(m_con_mutex);
+
 		// Don't send too many at a time
 		//u32 count = 0;
 
