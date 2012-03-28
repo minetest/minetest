@@ -504,8 +504,9 @@ Class reference
 ----------------
 EnvRef: basically ServerEnvironment and ServerMap combined.
 methods:
-- add_node(pos, node)
-- remove_node(pos)
+- set_node(pos, node)
+- add_node(pos, node): alias set_node(pos, node)
+- remove_node(pos): equivalent to set_node(pos, "air")
 - get_node(pos)
   ^ Returns {name="ignore", ...} for unloaded area
 - get_node_or_nil(pos)

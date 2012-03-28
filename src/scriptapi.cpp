@@ -2791,11 +2791,11 @@ private:
 	
 	// Exported functions
 
-	// EnvRef:add_node(pos, node)
+	// EnvRef:set_node(pos, node)
 	// pos = {x=num, y=num, z=num}
-	static int l_add_node(lua_State *L)
+	static int l_set_node(lua_State *L)
 	{
-		//infostream<<"EnvRef::l_add_node()"<<std::endl;
+		//infostream<<"EnvRef::l_set_node()"<<std::endl;
 		EnvRef *o = checkobject(L, 1);
 		ServerEnvironment *env = o->m_env;
 		if(env == NULL) return 0;
@@ -2807,6 +2807,11 @@ private:
 		bool succeeded = env->getMap().addNodeWithEvent(pos, n);
 		lua_pushboolean(L, succeeded);
 		return 1;
+	}
+
+	static int l_add_node(lua_State *L)
+	{
+		return l_set_node(L);
 	}
 
 	// EnvRef:remove_node(pos)
@@ -3118,6 +3123,7 @@ public:
 };
 const char EnvRef::className[] = "EnvRef";
 const luaL_reg EnvRef::methods[] = {
+	method(EnvRef, set_node),
 	method(EnvRef, add_node),
 	method(EnvRef, remove_node),
 	method(EnvRef, get_node),
