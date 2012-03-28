@@ -81,7 +81,7 @@ void set_default_settings(Settings *settings)
 	settings->setDefault("fov", "72");
 	settings->setDefault("view_bobbing", "true");
 	settings->setDefault("new_style_water", "false");
-	settings->setDefault("new_style_leaves", "false");
+	settings->setDefault("new_style_leaves", "true");
 	settings->setDefault("smooth_lighting", "true");
 	settings->setDefault("enable_texture_atlas", "true");
 	settings->setDefault("texture_path", "");
@@ -94,7 +94,7 @@ void set_default_settings(Settings *settings)
 	settings->setDefault("enable_clouds", "true");
 	settings->setDefault("screenshot_path", ".");
 	settings->setDefault("view_bobbing_amount", "1.0");
-	settings->setDefault("enable_3d_clouds", "false");
+	settings->setDefault("enable_3d_clouds", "true");
 	settings->setDefault("opaque_water", "false");
 	settings->setDefault("console_color", "(0,0,0)");
 	settings->setDefault("console_alpha", "200");
