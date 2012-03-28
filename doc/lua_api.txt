@@ -632,7 +632,10 @@ methods:
 PseudoRandom: A pseudorandom number generator
 - Can be created via PseudoRandom(seed)
 methods:
-- next(): return next random number [0...32767]
+- next(): return next integer random number [0...32767]
+- next(min, max): return next integer random number [min...max]
+                  (max - min) must be 32767 or <= 6553 due to the simple
+                  implementation making bad distribution otherwise.
 
 Registered entities
 --------------------
