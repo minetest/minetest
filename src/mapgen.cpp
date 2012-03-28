@@ -1345,8 +1345,7 @@ void make_block(BlockMakeData *data)
 	/*
 		Create a block-specific seed
 	*/
-	/*u32 blockseed = (u32)(data->seed%0x100000000ULL) + full_node_min.Z*38134234
-			+ full_node_min.Y*42123 + full_node_min.X*23;*/
+	u32 blockseed = get_blockseed(data->seed, full_node_min);
 	
 	/*
 		Cache some ground type values for speed
@@ -1444,6 +1443,42 @@ void make_block(BlockMakeData *data)
 #endif
 	
 	}//timer1
+	
+	/*
+		Add blobs of dirt and gravel underground
+	*/
+	{
+	PseudoRandom pr(blockseed+983);
+	for(int i=0; i<volume_nodes/12/12/12; i++){
+		v3s16 size(
+			pr.range(1, 6),
+			pr.range(1, 6),
+			pr.range(1, 6)
+		);
+		v3s16 p0(
+			pr.range(node_min.X, node_max.X)-size.X/2,
+			pr.range(node_min.Y, node_max.Y)-size.Y/2,
+			pr.range(node_min.Z, node_max.Z)-size.Z/2
+		);
+		MapNode n1;
+		if(p0.Y > -32 && pr.range(0,1) == 0)
+			n1 = MapNode(c_dirt);
+		else
+			n1 = MapNode(c_gravel);
+		for(int x1=0; x1<size.X; x1++)
+		for(int y1=0; y1<size.Y; y1++)
+		for(int z1=0; z1<size.Z; z1++)
+		{
+			v3s16 p = p0 + v3s16(x1,y1,z1);
+			u32 i = vmanip.m_area.index(p);
+			if(!vmanip.m_area.contains(i))
+				continue;
+			if(vmanip.m_data[i].getContent() != c_stone)
+				continue;
+			vmanip.m_data[i] = n1;
+		}
+	}
+	}
 
 	// Limit dirt flow area by 1 because mud is flown into neighbors.
 	assert(central_area_size.X == central_area_size.Z);
