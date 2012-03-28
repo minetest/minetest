@@ -424,6 +424,7 @@ minetest.get_modpath(modname) -> eg. "/home/user/.minetest/usermods/modname"
 ^ Useful for loading additional .lua modules or static data from mod
 minetest.get_worldpath() -> eg. "/home/user/.minetest/world"
 ^ Useful for storing custom data
+minetest.is_singleplayer()
 
 minetest.debug(line)
 ^ Goes to dstream

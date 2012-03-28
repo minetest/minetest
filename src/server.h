@@ -583,6 +583,8 @@ public:
 	
 	std::string getWorldPath(){ return m_path_world; }
 
+	bool isSingleplayer(){ return m_simple_singleplayer_mode; }
+
 	void setAsyncFatalError(const std::string &error)
 	{
 		m_async_fatal_error.set(error);

@@ -3840,6 +3840,13 @@ static int l_sound_stop(lua_State *L)
 	return 0;
 }
 
+// is_singleplayer()
+static int l_is_singleplayer(lua_State *L)
+{
+	lua_pushboolean(L, get_server(L)->isSingleplayer());
+	return 1;
+}
+
 static const struct luaL_Reg minetest_f [] = {
 	{"debug", l_debug},
 	{"log", l_log},
@@ -3859,6 +3866,7 @@ static const struct luaL_Reg minetest_f [] = {
 	{"get_worldpath", l_get_worldpath},
 	{"sound_play", l_sound_play},
 	{"sound_stop", l_sound_stop},
+	{"is_singleplayer", l_is_singleplayer},
 	{NULL, NULL}
 };
 
