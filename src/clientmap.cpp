@@ -324,6 +324,16 @@ void ClientMap::renderMap(video::IVideoDriver* driver, s32 pass)
 				Occlusion culling
 			*/
 
+			// No occlusion culling when free_move is on and camera is
+			// inside ground
+			bool occlusion_culling_enabled = true;
+			if(g_settings->getBool("free_move")){
+				MapNode n = getNodeNoEx(cam_pos_nodes);
+				if(n.getContent() == CONTENT_IGNORE ||
+						nodemgr->get(n).solidness == 2)
+					occlusion_culling_enabled = false;
+			}
+
 			v3s16 cpn = block->getPos() * MAP_BLOCKSIZE;
 			cpn += v3s16(MAP_BLOCKSIZE/2, MAP_BLOCKSIZE/2, MAP_BLOCKSIZE/2);
 			float step = BS*1;
@@ -334,6 +344,7 @@ void ClientMap::renderMap(video::IVideoDriver* driver, s32 pass)
 			s16 bs2 = MAP_BLOCKSIZE/2 + 1;
 			u32 needed_count = 1;
 			if(
+				occlusion_culling_enabled &&
 				isOccluded(this, spn, cpn + v3s16(0,0,0),
 					step, stepfac, startoff, endoff, needed_count, nodemgr) &&
 				isOccluded(this, spn, cpn + v3s16(bs2,bs2,bs2),
