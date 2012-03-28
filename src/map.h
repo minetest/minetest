@@ -98,6 +98,38 @@ struct MapEditEvent
 		}
 		return event;
 	}
+
+	VoxelArea getArea()
+	{
+		switch(type){
+		case MEET_ADDNODE:
+			return VoxelArea(p);
+		case MEET_REMOVENODE:
+			return VoxelArea(p);
+		case MEET_BLOCK_NODE_METADATA_CHANGED:
+		{
+			v3s16 np1 = p*MAP_BLOCKSIZE;
+			v3s16 np2 = np1 + v3s16(1,1,1)*MAP_BLOCKSIZE - v3s16(1,1,1);
+			return VoxelArea(np1, np2);
+		}
+		case MEET_OTHER:
+		{
+			VoxelArea a;
+			for(core::map<v3s16, bool>::Iterator
+					i = modified_blocks.getIterator();
+					i.atEnd()==false; i++)
+			{
+				v3s16 p = i.getNode()->getKey();
+				v3s16 np1 = p*MAP_BLOCKSIZE;
+				v3s16 np2 = np1 + v3s16(1,1,1)*MAP_BLOCKSIZE - v3s16(1,1,1);
+				a.addPoint(np1);
+				a.addPoint(np2);
+			}
+			return a;
+		}
+		}
+		return VoxelArea();
+	}
 };
 
 class MapEventReceiver

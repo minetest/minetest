@@ -824,6 +824,13 @@ private:
 	*/
 	bool m_ignore_map_edit_events;
 	/*
+		If a non-empty area, map edit events contained within are left
+		unsent. Done at map generation time to speed up editing of the
+		generated area, as it will be sent anyway.
+		This is behind m_env_mutex
+	*/
+	VoxelArea m_ignore_map_edit_events_area;
+	/*
 		If set to !=0, the incoming MapEditEvents are modified to have
 		this peed id as the disabled recipient
 		This is behind m_env_mutex

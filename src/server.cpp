@@ -82,6 +82,31 @@ private:
 	bool *m_flag;
 };
 
+class MapEditEventAreaIgnorer
+{
+public:
+	MapEditEventAreaIgnorer(VoxelArea *ignorevariable, const VoxelArea &a):
+		m_ignorevariable(ignorevariable)
+	{
+		if(m_ignorevariable->getVolume() == 0)
+			*m_ignorevariable = a;
+		else
+			m_ignorevariable = NULL;
+	}
+
+	~MapEditEventAreaIgnorer()
+	{
+		if(m_ignorevariable)
+		{
+			assert(m_ignorevariable->getVolume() != 0);
+			*m_ignorevariable = VoxelArea();
+		}
+	}
+	
+private:
+	VoxelArea *m_ignorevariable;
+};
+
 void * ServerThread::Thread()
 {
 	ThreadStarted();
@@ -279,24 +304,32 @@ void * EmergeThread::Thread()
 				/*
 					Do some post-generate stuff
 				*/
-				
+
 				v3s16 minp = data.blockpos_min*MAP_BLOCKSIZE;
 				v3s16 maxp = data.blockpos_max*MAP_BLOCKSIZE +
 						v3s16(1,1,1)*(MAP_BLOCKSIZE-1);
-				scriptapi_environment_on_generated(m_server->m_lua,
-						minp, maxp, mapgen::get_blockseed(data.seed, minp));
 				
-				if(enable_mapgen_debug_info)
-					infostream<<"EmergeThread: ended up with: "
-							<<analyze_block(block)<<std::endl;
-
 				/*
 					Ignore map edit events, they will not need to be
 					sent to anybody because the block hasn't been sent
 					to anybody
 				*/
-				MapEditEventIgnorer ign(&m_server->m_ignore_map_edit_events);
+				//MapEditEventIgnorer ign(&m_server->m_ignore_map_edit_events);
+				MapEditEventAreaIgnorer ign(
+						&m_server->m_ignore_map_edit_events_area,
+						VoxelArea(minp, maxp));
+				{
+					TimeTaker timer("on_generated");
+					scriptapi_environment_on_generated(m_server->m_lua,
+							minp, maxp, mapgen::get_blockseed(data.seed, minp));
+					int t = timer.stop(true);
+					dstream<<"on_generated took "<<t<<"ms"<<std::endl;
+				}
 				
+				if(enable_mapgen_debug_info)
+					infostream<<"EmergeThread: ended up with: "
+							<<analyze_block(block)<<std::endl;
+
 				// Activate objects and stuff
 				m_server->m_env->activateBlock(block, 0);
 			}while(false);
@@ -3168,6 +3201,8 @@ void Server::onMapEditEvent(MapEditEvent *event)
 {
 	//infostream<<"Server::onMapEditEvent()"<<std::endl;
 	if(m_ignore_map_edit_events)
+		return;
+	if(m_ignore_map_edit_events_area.contains(event->getArea()))
 		return;
 	MapEditEvent *e = event->clone();
 	m_unsent_map_edit_queue.push_back(e);
