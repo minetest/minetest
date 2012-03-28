@@ -1297,7 +1297,6 @@ void Map::removeNodeAndUpdate(v3s16 p,
 
 bool Map::addNodeWithEvent(v3s16 p, MapNode n)
 {
-	ScopeProfiler sp(g_profiler, "Map::addNodeWithEvent", SPT_AVG);
 	MapEditEvent event;
 	event.type = MEET_ADDNODE;
 	event.p = p;

@@ -322,8 +322,8 @@ void * EmergeThread::Thread()
 					TimeTaker timer("on_generated");
 					scriptapi_environment_on_generated(m_server->m_lua,
 							minp, maxp, mapgen::get_blockseed(data.seed, minp));
-					int t = timer.stop(true);
-					dstream<<"on_generated took "<<t<<"ms"<<std::endl;
+					/*int t = timer.stop(true);
+					dstream<<"on_generated took "<<t<<"ms"<<std::endl;*/
 				}
 				
 				if(enable_mapgen_debug_info)
