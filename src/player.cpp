@@ -40,6 +40,7 @@ Player::Player(IGameDef *gamedef):
 	in_water_stable(false),
 	is_climbing(false),
 	swimming_up(false),
+	camera_barely_in_ceiling(false),
 	inventory(gamedef->idef()),
 	hp(PLAYER_MAX_HP),
 	peer_id(PEER_ID_INEXISTENT),
@@ -603,6 +604,17 @@ void LocalPlayer::move(f32 dtime, Map &map, f32 pos_max_d,
 	if(!touching_ground_was && touching_ground){
 		MtEvent *e = new SimpleTriggerEvent("PlayerRegainGround");
 		m_gamedef->event()->put(e);
+	}
+
+	{
+		camera_barely_in_ceiling = false;
+		v3s16 camera_np = floatToInt(getEyePosition(), BS);
+		MapNode n = map.getNodeNoEx(camera_np);
+		if(n.getContent() != CONTENT_IGNORE){
+			if(nodemgr->get(n).walkable){
+				camera_barely_in_ceiling = true;
+			}
+		}
 	}
 }
 

@@ -66,9 +66,12 @@ public:
 	v3f getEyeOffset()
 	{
 		// This is at the height of the eyes of the current figure
-		// return v3f(0, BS+BS/2, 0);
+		// return v3f(0, BS*1.5, 0);
 		// This is more like in minecraft
-		return v3f(0,BS+(5*BS)/8,0);
+		if(camera_barely_in_ceiling)
+			return v3f(0,BS*1.5,0);
+		else
+			return v3f(0,BS*1.625,0);
 	}
 
 	v3f getEyePosition()
@@ -143,6 +146,7 @@ public:
 	bool in_water_stable;
 	bool is_climbing;
 	bool swimming_up;
+	bool camera_barely_in_ceiling;
 	
 	u8 light;
 
