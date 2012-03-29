@@ -25,7 +25,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 void ToolCapabilities::serialize(std::ostream &os) const
 {
-	writeU8(os, 0); // version
+	writeU8(os, 1); // version
 	writeF1000(os, full_punch_interval);
 	writeS16(os, max_drop_level);
 	writeU32(os, groupcaps.size());
@@ -34,8 +34,8 @@ void ToolCapabilities::serialize(std::ostream &os) const
 		const std::string *name = &i->first;
 		const ToolGroupCap *cap = &i->second;
 		os<<serializeString(*name);
-		writeF1000(os, cap->maxwear);
-		writeF1000(os, cap->maxlevel);
+		writeS16(os, cap->uses);
+		writeS16(os, cap->maxlevel);
 		writeU32(os, cap->times.size());
 		for(std::map<int, float>::const_iterator
 				i = cap->times.begin(); i != cap->times.end(); i++){
@@ -48,7 +48,7 @@ void ToolCapabilities::serialize(std::ostream &os) const
 void ToolCapabilities::deSerialize(std::istream &is)
 {
 	int version = readU8(is);
-	if(version != 0) throw SerializationError(
+	if(version != 1) throw SerializationError(
 			"unsupported ToolCapabilities version");
 	full_punch_interval = readF1000(is);
 	max_drop_level = readS16(is);
@@ -57,8 +57,8 @@ void ToolCapabilities::deSerialize(std::istream &is)
 	for(u32 i=0; i<groupcaps_size; i++){
 		std::string name = deSerializeString(is);
 		ToolGroupCap cap;
-		cap.maxwear = readF1000(is);
-		cap.maxlevel = readF1000(is);
+		cap.uses = readS16(is);
+		cap.maxlevel = readS16(is);
 		u32 times_size = readU32(is);
 		for(u32 i=0; i<times_size; i++){
 			int level = readS16(is);
@@ -102,11 +102,14 @@ DigParams getDigParams(const ItemGroupList &groups,
 		float time = 0;
 		bool time_exists = cap.getTime(rating, &time);
 		if(!result_diggable || time < result_time){
-			if(cap.maxlevel > level && time_exists){
+			if(cap.maxlevel >= level && time_exists){
 				result_diggable = true;
-				result_time = time;
 				int leveldiff = cap.maxlevel - level;
-				result_wear = cap.maxwear / pow(4.0, (double)leveldiff);
+				result_time = time / MYMAX(1, leveldiff);
+				if(cap.uses != 0)
+					result_wear = 1.0 / cap.uses / pow(3.0, (double)leveldiff);
+				else
+					result_wear = 0;
 				result_main_group = name;
 			}
 		}

@@ -255,8 +255,8 @@ Groups of items can define what kind of an item it is (eg. wool).
 
 Groups of nodes
 ----------------
-In addition to the general item things, whether a node is diggable and how
-long it takes is defined by using groups.
+In addition to the general item things, groups are used to define whether
+a node is destroyable and how long it takes to destroy by a tool.
 
 Groups of entities
 -------------------
@@ -292,6 +292,7 @@ Special groups
     damage, and get weared out much faster, or not be able to get drops
 	from destroyed nodes.
   - 0 is something that is directly accessible at the start of gameplay
+  - There is no upper limit
 - dig_immediate: (player can always pick up node without tool wear)
   - 2: node is removed without tool wear after 0.5 seconds or so
        (rail, sign)
@@ -299,6 +300,7 @@ Special groups
 
 Known damage and digging time defining groups
 ----------------------------------------------
+Valid ratings for these are 0, 1, 2 and 3, unless otherwise stated.
 - crumbly: dirt, sand
 - cracky: tough but crackable stuff like stone.
 - snappy: something that can be cut using fine tools; eg. leaves, small
@@ -334,59 +336,105 @@ Groups such as **crumbly**, **cracky** and **snappy** are used for this
 purpose. Rating is 1, 2 or 3. A higher rating for such a group implies
 faster digging time.
 
-Also, the **level** group is used.
+The **level** group is used to limit the toughness of nodes a tool can dig
+and to scale the digging times / damage to a greater extent.
+
+^ PLEASE DO UNDERSTAND THIS, otherwise you cannot use the system to it's
+  full potential.
 
 Tools define their properties by a list of parameters for groups. They
 cannot dig other groups; thus it is important to use a standard bunch of
 groups to enable interaction with tools.
 
-**Example definition of the digging capabilities of a tool:**
+**Tools define:**
+  * Full punch interval
+  * Maximum drop level
+  * For an arbitrary list of groups:
+    * Uses (until the tool breaks)
+    * Maximum level (usually 0, 1, 2 or 3)
+    * Digging times
+
+**Full punch interval**:
+When used as a weapon, the tool will do full damage if this time is spent
+between punches. If eg. half the time is spent, the tool will do half
+damage.
+
+**Maximum drop level**
+Suggests the maximum level of node, when dug with the tool, that will drop
+it's useful item. (eg. iron ore to drop a lump of iron).
+- This is not automated; it is the responsibility of the node definition
+  to implement this
+
+**Uses**
+Determines how many uses the tool has when it is used for digging a node,
+of this group, of the maximum level. For lower leveled nodes, the use count
+is multiplied by 3^leveldiff.
+- uses=10, leveldiff=0 -> actual_uses=10
+- uses=10, leveldiff=1 -> actual_uses=30
+- uses=10, leveldiff=2 -> actual_uses=90
+
+**Maximum level**
+Tells what is the maximum level of a node of this group that the tool will
+be able to dig.
+
+**Digging times**
+List of digging times for different ratings of the group, for nodes of the
+maximum level.
+  * For example, as a lua table, ''times={2=2.00, 3=0.70}''. This would
+    result the tool to be able to dig nodes that have a rating of 2 or 3
+    for this group, and unable to dig the rating 1, which is the toughest.
+    Unless there is a matching group that enables digging otherwise.
+  * For entities, damage equals the amount of nodes dug in the time spent
+    between hits, with a maximum time of ''full_punch_interval''.
+
+Example definition of the capabilities of a tool
+-------------------------------------------------
 tool_capabilities = {
 	full_punch_interval=1.5,
 	max_drop_level=1,
 	groupcaps={
-		crumbly={maxwear=0.01, maxlevel=2, times={[1]=0.80, [2]=0.60, [3]=0.40}}
+		crumbly={maxlevel=2, uses=20, times={[1]=1.60, [2]=1.20, [3]=0.80}}
 	}
 }
 
-**Tools define:**
-  * Full punch interval Maximum drop level For an arbitrary list of groups:
-  * Maximum level (usually 0, 1, 2 or 3) Maximum wear (0...1) Digging times
+This makes the tool be able to dig nodes that fullfill both of these:
+- Have the **crumbly** group
+- Have a **level** group less or equal to 2
 
-**Full punch interval**: When used as a weapon, the tool will do full
-damage if this time is spent between punches. If eg. half the time is
-spent, the tool will do half damage.
+Table of resulting digging times:
+crumbly        0     1     2     3     4  <- level
+     ->  0     -     -     -     -     -
+         1  0.80  1.60  1.60     -     -
+         2  0.60  1.20  1.20     -     -
+         3  0.40  0.80  0.80     -     -
 
-**Maximum drop level** suggests the maximum level of node, when dug with
-the tool, that will drop it's useful item. (eg. iron ore to drop a lump of
-iron).
+level diff:    2     1     0    -1    -2
 
-**Maximum level** tells what is the maximum level of a node of this group
-that the tool will be able to dig.
+Table of resulting tool uses:
+     ->  0     -     -     -     -     -
+         1   180    60    20     -     -
+         2   180    60    20     -     -
+         3   180    60    20     -     -
 
-**Maximum wear** determines how much the tool wears out when it is used for
-digging a node, of this group, of the maximum level. For lower leveled
-tools, the wear is divided by //4// to the exponent //level difference//.
-This means for a maximum wear of 0.1, a level difference 1 will result in
-wear=0.1/4=0.025, and a level difference of 2 will result in
-wear=0.1/(4*4)=0.00625.
-
-**Digging times** is basically a list of digging times for different
-ratings of the group. It also determines the damage done to entities, based
-on their "armor groups".
-  * For example, as a lua table, ''times={2=2.00, 3=0.70}''. This would
-  * result the tool to be able to dig nodes that have a rating of 2 or 3
-  * for this group, and unable to dig the rating 1, which is the toughest.
-  * Unless there is a matching group that enables digging otherwise.  For
-  * entities, damage equals the amount of nodes dug in the time spent
-  * between hits, with a maximum of ''full_punch_interval''.
+Notes:
+- At crumbly=0, the node is not diggable.
+- At crumbly=3, the level difference digging time divider kicks in and makes
+  easy nodes to be quickly breakable.
+- At level > 2, the node is not diggable, because it's level > maxlevel
 
 Entity damage mechanism
 ------------------------
+Damage calculation:
+- Take the time spent after the last hit
+- Limit time to full_punch_interval
+- Take the damage groups, assume a node has them
+- Damage in HP is the amount of nodes destroyed in this time.
+
 Client predicts damage based on damage groups. Because of this, it is able to
 give an immediate response when an entity is damaged or dies; the response is
 pre-defined somehow (eg. by defining a sprite animation) (not implemented;
 TODO).
+- Currently a smoke puff will appear when an entity dies.
 
 The group **immortal** will completely disable normal damage.
 

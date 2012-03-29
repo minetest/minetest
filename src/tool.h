@@ -29,12 +29,12 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 struct ToolGroupCap
 {
 	std::map<int, float> times;
-	float maxwear;
 	int maxlevel;
+	int uses;
 
 	ToolGroupCap():
-		maxwear(0.05),
-		maxlevel(1)
+		maxlevel(1),
+		uses(20)
 	{}
 
 	bool getTime(int rating, float *time) const

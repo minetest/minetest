@@ -670,8 +670,19 @@ static ToolCapabilities read_tool_capabilities(
 				// This will be created
 				ToolGroupCap groupcap;
 				// Read simple parameters
-				getfloatfield(L, table_groupcap, "maxwear", groupcap.maxwear);
 				getintfield(L, table_groupcap, "maxlevel", groupcap.maxlevel);
+				getintfield(L, table_groupcap, "uses", groupcap.uses);
+				// DEPRECATED: maxwear
+				float maxwear = 0;
+				if(getfloatfield(L, table_groupcap, "maxwear", maxwear)){
+					if(maxwear != 0)
+						groupcap.uses = 1.0/maxwear;
+					else
+						groupcap.uses = 0;
+					infostream<<script_get_backtrace(L)<<std::endl;
+					infostream<<"WARNING: field \"maxwear\" is deprecated; "
+							<<"should replace with uses=1/maxwear"<<std::endl;
+				}
 				// Read "times" table
 				lua_getfield(L, table_groupcap, "times");
 				if(lua_istable(L, -1)){
@@ -725,8 +736,8 @@ static void set_tool_capabilities(lua_State *L, int table,
 		// Set subtable "times"
 		lua_setfield(L, -2, "times");
 		// Set simple parameters
-		setfloatfield(L, -1, "maxwear", groupcap.maxwear);
 		setintfield(L, -1, "maxlevel", groupcap.maxlevel);
+		setintfield(L, -1, "uses", groupcap.uses);
 		// Insert groupcap table into groupcaps table
 		lua_setfield(L, -2, name.c_str());
 	}
