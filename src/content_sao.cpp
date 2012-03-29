@@ -28,6 +28,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "gamedef.h"
 #include "player.h"
 #include "scriptapi.h"
+#include "genericobject.h"
 
 core::map<u16, ServerActiveObject::Factory> ServerActiveObject::m_types;
 
@@ -351,6 +352,7 @@ LuaEntitySAO::LuaEntitySAO(ServerEnvironment *env, v3f pos,
 	m_velocity(0,0,0),
 	m_acceleration(0,0,0),
 	m_yaw(0),
+	m_properties_sent(true),
 	m_last_sent_yaw(0),
 	m_last_sent_position(0,0,0),
 	m_last_sent_velocity(0,0,0),
@@ -434,6 +436,15 @@ ServerActiveObject* LuaEntitySAO::create(ServerEnvironment *env, v3f pos,
 
 void LuaEntitySAO::step(float dtime, bool send_recommended)
 {
+	if(!m_properties_sent)
+	{
+		m_properties_sent = true;
+		std::string str = getPropertyPacket();
+		// create message and add to list
+		ActiveObjectMessage aom(getId(), true, str);
+		m_messages_out.push_back(aom);
+	}
+
 	m_last_sent_position_timer += dtime;
 	
 	if(m_prop->physical){
@@ -483,16 +494,10 @@ void LuaEntitySAO::step(float dtime, bool send_recommended)
 
 	if(m_armor_groups_sent == false){
 		m_armor_groups_sent = true;
-		std::ostringstream os(std::ios::binary);
-		writeU8(os, LUAENTITY_CMD_UPDATE_ARMOR_GROUPS);
-		writeU16(os, m_armor_groups.size());
-		for(ItemGroupList::const_iterator i = m_armor_groups.begin();
-				i != m_armor_groups.end(); i++){
-			os<<serializeString(i->first);
-			writeS16(os, i->second);
-		}
+		std::string str = gob_cmd_update_armor_groups(
+				m_armor_groups);
 		// create message and add to list
-		ActiveObjectMessage aom(getId(), true, os.str());
+		ActiveObjectMessage aom(getId(), true, str);
 		m_messages_out.push_back(aom);
 	}
 }
@@ -500,18 +505,19 @@ void LuaEntitySAO::step(float dtime, bool send_recommended)
 std::string LuaEntitySAO::getClientInitializationData()
 {
 	std::ostringstream os(std::ios::binary);
-	// version
-	writeU8(os, 1);
-	// pos
+	writeU8(os, 0); // version
+	os<<serializeString(""); // name
+	writeU8(os, 0); // is_player
 	writeV3F1000(os, m_base_position);
-	// yaw
 	writeF1000(os, m_yaw);
-	// hp
 	writeS16(os, m_hp);
-	// properties
-	std::ostringstream prop_os(std::ios::binary);
-	m_prop->serialize(prop_os);
-	os<<serializeLongString(prop_os.str());
+	writeU8(os, 3); // number of messages stuffed in here
+	os<<serializeLongString(getPropertyPacket()); // message 1
+	os<<serializeLongString(gob_cmd_update_armor_groups(m_armor_groups)); // 2
+	os<<serializeLongString(gob_cmd_set_sprite( // 3
+		m_prop->initial_sprite_basepos,
+		1, 1.0, false
+	));
 	// return result
 	return os.str();
 }
@@ -574,15 +580,9 @@ int LuaEntitySAO::punch(v3f dir,
 				<<" hp, health now "<<getHP()<<" hp"<<std::endl;
 		
 		{
-			std::ostringstream os(std::ios::binary);
-			// command 
-			writeU8(os, LUAENTITY_CMD_PUNCHED);
-			// damage
-			writeS16(os, result.damage);
-			// result_hp
-			writeS16(os, getHP());
+			std::string str = gob_cmd_punched(result.damage, getHP());
 			// create message and add to list
-			ActiveObjectMessage aom(getId(), true, os.str());
+			ActiveObjectMessage aom(getId(), true, str);
 			m_messages_out.push_back(aom);
 		}
 
@@ -683,35 +683,45 @@ float LuaEntitySAO::getYaw()
 
 void LuaEntitySAO::setTextureMod(const std::string &mod)
 {
-	std::ostringstream os(std::ios::binary);
-	// command 
-	writeU8(os, LUAENTITY_CMD_SET_TEXTURE_MOD);
-	// parameters
-	os<<serializeString(mod);
+	std::string str = gob_cmd_set_texture_mod(mod);
 	// create message and add to list
-	ActiveObjectMessage aom(getId(), false, os.str());
+	ActiveObjectMessage aom(getId(), true, str);
 	m_messages_out.push_back(aom);
 }
 
 void LuaEntitySAO::setSprite(v2s16 p, int num_frames, float framelength,
 		bool select_horiz_by_yawpitch)
 {
-	std::ostringstream os(std::ios::binary);
-	// command
-	writeU8(os, LUAENTITY_CMD_SET_SPRITE);
-	// parameters
-	writeV2S16(os, p);
-	writeU16(os, num_frames);
-	writeF1000(os, framelength);
-	writeU8(os, select_horiz_by_yawpitch);
+	std::string str = gob_cmd_set_sprite(
+		p,
+		num_frames,
+		framelength,
+		select_horiz_by_yawpitch
+	);
 	// create message and add to list
-	ActiveObjectMessage aom(getId(), false, os.str());
+	ActiveObjectMessage aom(getId(), true, str);
 	m_messages_out.push_back(aom);
 }
 
 std::string LuaEntitySAO::getName()
 {
 	return m_init_name;
+}
+
+std::string LuaEntitySAO::getPropertyPacket()
+{
+	return gob_cmd_set_properties(
+		m_prop->hp_max,
+		m_prop->physical,
+		m_prop->weight,
+		m_prop->collisionbox,
+		m_prop->visual,
+		m_prop->visual_size,
+		m_prop->textures,
+		m_prop->spritediv,
+		true, // is_visible
+		false // makes_footstep_sound
+	);
 }
 
 void LuaEntitySAO::sendPosition(bool do_interpolate, bool is_movement_end)
@@ -726,28 +736,17 @@ void LuaEntitySAO::sendPosition(bool do_interpolate, bool is_movement_end)
 
 	float update_interval = m_env->getSendRecommendedInterval();
 
-	std::ostringstream os(std::ios::binary);
-	// command
-	writeU8(os, LUAENTITY_CMD_UPDATE_POSITION);
-
-	// do_interpolate
-	writeU8(os, do_interpolate);
-	// pos
-	writeV3F1000(os, m_base_position);
-	// velocity
-	writeV3F1000(os, m_velocity);
-	// acceleration
-	writeV3F1000(os, m_acceleration);
-	// yaw
-	writeF1000(os, m_yaw);
-	// is_end_position (for interpolation)
-	writeU8(os, is_movement_end);
-	// update_interval (for interpolation)
-	writeF1000(os, update_interval);
-
+	std::string str = gob_cmd_update_position(
+		m_base_position,
+		m_velocity,
+		m_acceleration,
+		m_yaw,
+		do_interpolate,
+		is_movement_end,
+		update_interval
+	);
 	// create message and add to list
-	ActiveObjectMessage aom(getId(), false, os.str());
-	m_messages_out.push_back(aom);
+	ActiveObjectMessage aom(getId(), false, str);
 }
 
 /*
@@ -767,6 +766,7 @@ PlayerSAO::PlayerSAO(ServerEnvironment *env_, Player *player_, u16 peer_id_):
 	m_wield_index(0),
 	m_position_not_sent(false),
 	m_armor_groups_sent(false),
+	m_properties_sent(true),
 	m_teleported(false),
 	m_inventory_not_sent(false),
 	m_hp_not_sent(false),
@@ -827,18 +827,15 @@ bool PlayerSAO::unlimitedTransferDistance() const
 std::string PlayerSAO::getClientInitializationData()
 {
 	std::ostringstream os(std::ios::binary);
-	// version
-	writeU8(os, 0);
-	// name
-	os<<serializeString(m_player->getName());
-	// pos
-	writeV3F1000(os, m_player->getPosition());
-	// yaw
+	writeU8(os, 0); // version
+	os<<serializeString(m_player->getName()); // name
+	writeU8(os, 1); // is_player
+	writeV3F1000(os, m_player->getPosition() + v3f(0,BS*1,0));
 	writeF1000(os, m_player->getYaw());
-	// dead
-	writeU8(os, getHP() == 0);
-	// wielded item
-	os<<serializeString(getWieldedItem().getItemString());
+	writeS16(os, getHP());
+	writeU8(os, 2); // number of messages stuffed in here
+	os<<serializeLongString(getPropertyPacket()); // message 1
+	os<<serializeLongString(gob_cmd_update_armor_groups(m_armor_groups)); // 2
 	return os.str();
 }
 
@@ -850,6 +847,15 @@ std::string PlayerSAO::getStaticData()
 
 void PlayerSAO::step(float dtime, bool send_recommended)
 {
+	if(!m_properties_sent)
+	{
+		m_properties_sent = true;
+		std::string str = getPropertyPacket();
+		// create message and add to list
+		ActiveObjectMessage aom(getId(), true, str);
+		m_messages_out.push_back(aom);
+	}
+
 	m_time_from_last_punch += dtime;
 
 	/*
@@ -895,30 +901,33 @@ void PlayerSAO::step(float dtime, bool send_recommended)
 	if(m_position_not_sent)
 	{
 		m_position_not_sent = false;
-
-		std::ostringstream os(std::ios::binary);
-		// command (0 = update position)
-		writeU8(os, 0);
-		// pos
-		writeV3F1000(os, m_player->getPosition());
-		// yaw
-		writeF1000(os, m_player->getYaw());
+		float update_interval = m_env->getSendRecommendedInterval();
+		std::string str = gob_cmd_update_position(
+			m_player->getPosition() + v3f(0,BS*1,0),
+			v3f(0,0,0),
+			v3f(0,0,0),
+			m_player->getYaw(),
+			true,
+			false,
+			update_interval
+		);
 		// create message and add to list
-		ActiveObjectMessage aom(getId(), false, os.str());
+		ActiveObjectMessage aom(getId(), false, str);
 		m_messages_out.push_back(aom);
 	}
 
 	if(m_wielded_item_not_sent)
 	{
 		m_wielded_item_not_sent = false;
+		// GenericCAO has no special way to show this
+	}
 
-		std::ostringstream os(std::ios::binary);
-		// command (3 = wielded item)
-		writeU8(os, 3);
-		// wielded item
-		os<<serializeString(getWieldedItem().getItemString());
+	if(m_armor_groups_sent == false){
+		m_armor_groups_sent = true;
+		std::string str = gob_cmd_update_armor_groups(
+				m_armor_groups);
 		// create message and add to list
-		ActiveObjectMessage aom(getId(), false, os.str());
+		ActiveObjectMessage aom(getId(), true, str);
 		m_messages_out.push_back(aom);
 	}
 }
@@ -959,8 +968,13 @@ int PlayerSAO::punch(v3f dir,
 
 	// No effect if PvP disabled
 	if(g_settings->getBool("enable_pvp") == false){
-		if(puncher->getType() == ACTIVEOBJECT_TYPE_PLAYER)
+		if(puncher->getType() == ACTIVEOBJECT_TYPE_PLAYER){
+			std::string str = gob_cmd_punched(0, getHP());
+			// create message and add to list
+			ActiveObjectMessage aom(getId(), true, str);
+			m_messages_out.push_back(aom);
 			return 0;
+		}
 	}
 
 	HitParams hitparams = getHitParams(m_armor_groups, toolcap,
@@ -974,13 +988,9 @@ int PlayerSAO::punch(v3f dir,
 
 	if(hitparams.hp != 0)
 	{
-		std::ostringstream os(std::ios::binary);
-		// command (1 = punched)
-		writeU8(os, 1);
-		// damage
-		writeS16(os, hitparams.hp);
+		std::string str = gob_cmd_punched(hitparams.hp, getHP());
 		// create message and add to list
-		ActiveObjectMessage aom(getId(), false, os.str());
+		ActiveObjectMessage aom(getId(), true, str);
 		m_messages_out.push_back(aom);
 	}
 
@@ -1019,13 +1029,11 @@ void PlayerSAO::setHP(s16 hp)
 	// On death or reincarnation send an active object message
 	if((hp == 0) != (oldhp == 0))
 	{
-		std::ostringstream os(std::ios::binary);
-		// command (2 = update death state)
-		writeU8(os, 2);
-		// dead?
-		writeU8(os, hp == 0);
-		// create message and add to list
-		ActiveObjectMessage aom(getId(), false, os.str());
+		// Will send new is_visible value based on (getHP()!=0)
+		m_properties_sent = false;
+		// Send new HP
+		std::string str = gob_cmd_punched(0, getHP());
+		ActiveObjectMessage aom(getId(), true, str);
 		m_messages_out.push_back(aom);
 	}
 }
@@ -1095,5 +1103,24 @@ void PlayerSAO::createCreativeInventory()
 	m_inventory = new Inventory(m_player->inventory);
 	m_inventory->clearContents();
 	scriptapi_get_creative_inventory(m_env->getLua(), this);
+}
+
+std::string PlayerSAO::getPropertyPacket()
+{
+	core::array<std::string> textures;
+	textures.push_back("player.png");
+	textures.push_back("player_back.png");
+	return gob_cmd_set_properties(
+		PLAYER_MAX_HP,
+		false,
+		75,
+		core::aabbox3d<f32>(-1/3.,-1.0,-1/3., 1/3.,1.0,1/3.),
+		"upright_sprite",
+		v2f(1, 2),
+		textures,
+		v2s16(1,1),
+		(getHP() != 0), // is_visible
+		true // makes_footstep_sound
+	);
 }
 

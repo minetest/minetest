@@ -611,6 +611,7 @@ methods:
 - get_wield_index(): returns the index of the wielded item
 - get_wielded_item() -> ItemStack
 - set_wielded_item(item): replaces the wielded item, returns true if successful
+- set_armor_groups({group1=rating, group2=rating, ...})
 LuaEntitySAO-only: (no-op for other objects)
 - setvelocity({x=num, y=num, z=num})
 - getvelocity() -> {x=num, y=num, z=num}
@@ -623,7 +624,6 @@ LuaEntitySAO-only: (no-op for other objects)
 -           select_horiz_by_yawpitch=false)
 - ^ Select sprite from spritesheet with optional animation and DM-style
 -   texture selection based on yaw relative to camera
-- set_armor_groups({group1=rating, group2=rating, ...})
 - get_entity_name() (DEPRECATED: Will be removed in a future version)
 - get_luaentity()
 Player-only: (no-op for other objects)

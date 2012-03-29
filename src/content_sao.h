@@ -41,7 +41,9 @@ public:
 			const std::string &name, const std::string &state);
 	~LuaEntitySAO();
 	u8 getType() const
-		{return ACTIVEOBJECT_TYPE_LUAENTITY;}
+	{ return ACTIVEOBJECT_TYPE_LUAENTITY; }
+	u8 getSendType() const
+	{ return ACTIVEOBJECT_TYPE_GENERIC; }
 	virtual void addedToEnvironment();
 	static ServerActiveObject* create(ServerEnvironment *env, v3f pos,
 			const std::string &data);
@@ -72,6 +74,7 @@ public:
 			bool select_horiz_by_yawpitch);
 	std::string getName();
 private:
+	std::string getPropertyPacket();
 	void sendPosition(bool do_interpolate, bool is_movement_end);
 
 	std::string m_init_name;
@@ -84,7 +87,8 @@ private:
 	v3f m_acceleration;
 	float m_yaw;
 	ItemGroupList m_armor_groups;
-
+	
+	bool m_properties_sent;
 	float m_last_sent_yaw;
 	v3f m_last_sent_position;
 	v3f m_last_sent_velocity;
@@ -103,7 +107,9 @@ public:
 	PlayerSAO(ServerEnvironment *env_, Player *player_, u16 peer_id_);
 	~PlayerSAO();
 	u8 getType() const
-		{return ACTIVEOBJECT_TYPE_PLAYER;}
+	{ return ACTIVEOBJECT_TYPE_PLAYER; }
+	u8 getSendType() const
+	{ return ACTIVEOBJECT_TYPE_GENERIC; }
 	std::string getDescription();
 
 	/*
@@ -174,6 +180,8 @@ public:
 	}
 
 private:
+	std::string getPropertyPacket();
+	
 	Player *m_player;
 	u16 m_peer_id;
 	Inventory *m_inventory;
@@ -184,6 +192,7 @@ private:
 	bool m_position_not_sent;
 	ItemGroupList m_armor_groups;
 	bool m_armor_groups_sent;
+	bool m_properties_sent;
 
 public:
 	// Some flags used by Server
