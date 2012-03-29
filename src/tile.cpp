@@ -492,6 +492,12 @@ void overlay(video::IImage *image, video::IImage *overlay);
 
 // Brighten image
 void brighten(video::IImage *image);
+// Parse a transform name
+u32 parseImageTransform(const std::string& s);
+// Apply transform to image dimension
+core::dimension2d<u32> imageTransformDimension(u32 transform, core::dimension2d<u32> dim);
+// Apply transform to image data
+void imageTransform(u32 transform, video::IImage *src, video::IImage *dst);
 
 /*
 	Generate image based on a string like "stone.png" or "[crack0".
@@ -1406,6 +1412,46 @@ bool generate_image(std::string part_of_name, video::IImage *& baseimg,
 			}
 		}
 		/*
+			"[transformN"
+			Rotates and/or flips the image.
+
+			N can be a number (between 0 and 7) or a transform name.
+			Rotations are counter-clockwise.
+			0  I      identity
+			1  R90    rotate by 90 degrees
+			2  R180   rotate by 180 degrees
+			3  R270   rotate by 270 degrees
+			4  FX     flip X
+			5  FXR90  flip X then rotate by 90 degrees
+			6  FY     flip Y
+			7  FYR90  flip Y then rotate by 90 degrees
+
+			Note: Transform names can be concatenated to produce
+			their product (applies the first then the second).
+			The resulting transform will be equivalent to one of the
+			eight existing ones, though (see: dihedral group).
+		*/
+		else if(part_of_name.substr(0,10) == "[transform")
+		{
+			if(baseimg == NULL)
+			{
+				errorstream<<"generate_image(): baseimg==NULL "
+						<<"for part_of_name=\""<<part_of_name
+						<<"\", cancelling."<<std::endl;
+				return false;
+			}
+
+			u32 transform = parseImageTransform(part_of_name.substr(10));
+			core::dimension2d<u32> dim = imageTransformDimension(
+					transform, baseimg->getDimension());
+			video::IImage *image = driver->createImage(
+					baseimg->getColorFormat(), dim);
+			assert(image);
+			imageTransform(transform, baseimg, image);
+			baseimg->drop();
+			baseimg = image;
+		}
+		/*
 			[inventorycube{topimage{leftimage{rightimage
 			In every subimage, replace ^ with &.
 			Create an "inventory cube".
@@ -1577,3 +1623,106 @@ void brighten(video::IImage *image)
 	}
 }
 
+u32 parseImageTransform(const std::string& s)
+{
+	int total_transform = 0;
+
+	std::string transform_names[8];
+	transform_names[0] = "i";
+	transform_names[1] = "r90";
+	transform_names[2] = "r180";
+	transform_names[3] = "r270";
+	transform_names[4] = "fx";
+	transform_names[6] = "fy";
+
+	std::size_t pos = 0;
+	while(pos < s.size())
+	{
+		int transform = -1;
+		for(int i = 0; i <= 7; ++i)
+		{
+			const std::string &name_i = transform_names[i];
+
+			if(s[pos] == ('0' + i))
+			{
+				transform = i;
+				pos++;
+				break;
+			}
+			else if(!(name_i.empty()) &&
+				lowercase(s.substr(pos, name_i.size())) == name_i)
+			{
+				transform = i;
+				pos += name_i.size();
+				break;
+			}
+		}
+		if(transform < 0)
+			break;
+
+		// Multiply total_transform and transform in the group D4
+		int new_total = 0;
+		if(transform < 4)
+			new_total = (transform + total_transform) % 4;
+		else
+			new_total = (transform - total_transform + 8) % 4;
+		if((transform >= 4) ^ (total_transform >= 4))
+			new_total += 4;
+
+		total_transform = new_total;
+	}
+	return total_transform;
+}
+
+core::dimension2d<u32> imageTransformDimension(u32 transform, core::dimension2d<u32> dim)
+{
+	if(transform % 2 == 0)
+		return dim;
+	else
+		return core::dimension2d<u32>(dim.Height, dim.Width);
+}
+
+void imageTransform(u32 transform, video::IImage *src, video::IImage *dst)
+{
+	if(src == NULL || dst == NULL)
+		return;
+	
+	core::dimension2d<u32> srcdim = src->getDimension();
+	core::dimension2d<u32> dstdim = dst->getDimension();
+
+	assert(dstdim == imageTransformDimension(transform, srcdim));
+	assert(transform >= 0 && transform <= 7);
+
+	/*
+		Compute the transformation from source coordinates (sx,sy)
+		to destination coordinates (dx,dy).
+	*/
+	int sxn = 0;
+	int syn = 2;
+	if(transform == 0)         // identity
+		sxn = 0, syn = 2;  //   sx = dx, sy = dy
+	else if(transform == 1)    // rotate by 90 degrees ccw
+		sxn = 3, syn = 0;  //   sx = (H-1) - dy, sy = dx
+	else if(transform == 2)    // rotate by 180 degrees
+		sxn = 1, syn = 3;  //   sx = (W-1) - dx, sy = (H-1) - dy
+	else if(transform == 3)    // rotate by 270 degrees ccw
+		sxn = 2, syn = 1;  //   sx = dy, sy = (W-1) - dx
+	else if(transform == 4)    // flip x
+		sxn = 1, syn = 2;  //   sx = (W-1) - dx, sy = dy
+	else if(transform == 5)    // flip x then rotate by 90 degrees ccw
+		sxn = 2, syn = 0;  //   sx = dy, sy = dx
+	else if(transform == 6)    // flip y
+		sxn = 0, syn = 3;  //   sx = dx, sy = (H-1) - dy
+	else if(transform == 7)    // flip y then rotate by 90 degrees ccw
+		sxn = 3, syn = 1;  //   sx = (H-1) - dy, sy = (W-1) - dx
+
+	for(u32 dy=0; dy<dstdim.Height; dy++)
+	for(u32 dx=0; dx<dstdim.Width; dx++)
+	{
+		u32 entries[4] = {dx, dstdim.Width-1-dx, dy, dstdim.Height-1-dy};
+		u32 sx = entries[sxn];
+		u32 sy = entries[syn];
+		video::SColor c = src->getPixel(sx,sy);
+		dst->setPixel(dx,dy,c);
+	}
+}
