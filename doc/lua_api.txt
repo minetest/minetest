@@ -499,6 +499,7 @@ minetest.register_on_respawnplayer(func(ObjectRef))
 ^ return true in func to disable regular player placement
 ^ currently called _before_ repositioning of player occurs
 minetest.register_on_chat_message(func(name, message))
+minetest.register_chatcommand(cmd, chatcommand definition)
 
 minetest.add_to_creative_inventory(itemstring)
 minetest.setting_get(name) -> string or nil
@@ -507,6 +508,7 @@ minetest.setting_getbool(name) -> boolean value or nil
 minetest.chat_send_all(text)
 minetest.chat_send_player(name, text)
 minetest.get_player_privs(name) -> set of privs
+minetest.check_player_privs(name, {priv1=true,...}) -> bool, missing_privs
 minetest.get_inventory(location) -> InvRef
 ^ location = eg. {type="player", name="celeron55"}
                  {type="node", pos={x=, y=, z=}}
@@ -858,4 +860,11 @@ Recipe (furnace fuel):
     burntime = 1,
 }
 
+Chatcommand definition (register_chatcommand)
+{
+    params = "<name> <privilege>", -- short parameter description
+    description = "Remove privilege from player", -- full description
+    privs = {privs=true}}, -- require the "privs" privilege to run
+    func = function(name, param), -- called when command is run
+}
 

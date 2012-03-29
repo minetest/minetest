@@ -376,26 +376,7 @@ std::wstring processServerCommand(ServerCommandContext *ctx)
 	std::wostringstream os(std::ios_base::binary);
 	ctx->flags = SEND_TO_SENDER;	// Default, unless we change it.
 
-	u64 privs = ctx->privs;
-
-	if(ctx->parms.size() == 0 || ctx->parms[0] == L"help")
-	{
-		os<<L"-!- Available commands: ";
-		os<<L"me status privs";
-		if(privs & PRIV_SERVER)
-			os<<L" shutdown setting clearobjects";
-		if(privs & PRIV_SETTIME)
-			os<<L" time";
-		if(privs & PRIV_TELEPORT)
-			os<<L" teleport";
-		if(privs & PRIV_PRIVS)
-			os<<L" grant revoke";
-		if(privs & PRIV_BAN)
-			os<<L" ban unban";
-		if(privs & PRIV_PASSWORD)
-			os<<L" setpassword clearpassword";
-	}
-	else if(ctx->parms[0] == L"status")
+	if(ctx->parms[0] == L"status")
 		cmd_status(os, ctx);
 	else if(ctx->parms[0] == L"privs")
 		cmd_privs(os, ctx);

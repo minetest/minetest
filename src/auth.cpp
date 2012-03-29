@@ -36,6 +36,8 @@ std::set<std::string> privsToSet(u64 privs)
 		s.insert("settime");
 	if(privs & PRIV_PRIVS)
 		s.insert("privs");
+	if(privs & PRIV_SERVER)
+		s.insert("server");
 	if(privs & PRIV_SHOUT)
 		s.insert("shout");
 	if(privs & PRIV_BAN)
@@ -60,6 +62,8 @@ std::string privsToString(u64 privs)
 		os<<"settime,";
 	if(privs & PRIV_PRIVS)
 		os<<"privs,";
+	if(privs & PRIV_SERVER)
+		os<<"server,";
 	if(privs & PRIV_SHOUT)
 		os<<"shout,";
 	if(privs & PRIV_BAN)
@@ -98,6 +102,8 @@ u64 stringToPrivs(std::string str)
 			privs |= PRIV_SETTIME;
 		else if(s == "privs")
 			privs |= PRIV_PRIVS;
+		else if(s == "server")
+			privs |= PRIV_SERVER;
 		else if(s == "shout")
 			privs |= PRIV_SHOUT;
 		else if(s == "ban")
