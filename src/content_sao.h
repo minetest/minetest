@@ -59,6 +59,7 @@ public:
 	std::string getDescription();
 	void setHP(s16 hp);
 	s16 getHP() const;
+	void setArmorGroups(const ItemGroupList &armor_groups);
 	/* LuaEntitySAO-specific */
 	void setVelocity(v3f velocity);
 	v3f getVelocity();
@@ -70,7 +71,6 @@ public:
 	void setSprite(v2s16 p, int num_frames, float framelength,
 			bool select_horiz_by_yawpitch);
 	std::string getName();
-	void setArmorGroups(const ItemGroupList &armor_groups);
 private:
 	void sendPosition(bool do_interpolate, bool is_movement_end);
 
@@ -132,6 +132,7 @@ public:
 	void rightClick(ServerActiveObject *clicker);
 	s16 getHP() const;
 	void setHP(s16 hp);
+	void setArmorGroups(const ItemGroupList &armor_groups);
 
 	/*
 		Inventory interface
@@ -181,6 +182,8 @@ private:
 	float m_time_from_last_punch;
 	int m_wield_index;
 	bool m_position_not_sent;
+	ItemGroupList m_armor_groups;
+	bool m_armor_groups_sent;
 
 public:
 	// Some flags used by Server

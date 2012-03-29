@@ -153,6 +153,7 @@ configure_file(
 )
 
 set(common_SRCS
+	genericobject.cpp
 	voxelalgorithms.cpp
 	sound.cpp
 	quicktune.cpp

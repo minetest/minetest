@@ -32,5 +32,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 // Special type, not stored as a static object
 #define ACTIVEOBJECT_TYPE_PLAYER 100
 
+// Special type, only exists as CAO
+#define ACTIVEOBJECT_TYPE_GENERIC 101
+
 #endif
 

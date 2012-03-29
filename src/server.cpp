@@ -1515,7 +1515,7 @@ void Server::AsyncRunStep()
 					infostream<<"WARNING: "<<__FUNCTION_NAME
 							<<": NULL object"<<std::endl;
 				else
-					type = obj->getType();
+					type = obj->getSendType();
 
 				// Add to data buffer for sending
 				writeU16((u8*)buf, id);

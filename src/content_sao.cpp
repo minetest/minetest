@@ -605,17 +605,6 @@ void LuaEntitySAO::rightClick(ServerActiveObject *clicker)
 	scriptapi_luaentity_rightclick(L, m_id, clicker);
 }
 
-void LuaEntitySAO::setHP(s16 hp)
-{
-	if(hp < 0) hp = 0;
-	m_hp = hp;
-}
-
-s16 LuaEntitySAO::getHP() const
-{
-	return m_hp;
-}
-
 void LuaEntitySAO::setPos(v3f pos)
 {
 	m_base_position = pos;
@@ -643,6 +632,23 @@ std::string LuaEntitySAO::getDescription()
 	os<<(m_base_position.Z/BS);
 	os<<")";
 	return os.str();
+}
+
+void LuaEntitySAO::setHP(s16 hp)
+{
+	if(hp < 0) hp = 0;
+	m_hp = hp;
+}
+
+s16 LuaEntitySAO::getHP() const
+{
+	return m_hp;
+}
+
+void LuaEntitySAO::setArmorGroups(const ItemGroupList &armor_groups)
+{
+	m_armor_groups = armor_groups;
+	m_armor_groups_sent = false;
 }
 
 void LuaEntitySAO::setVelocity(v3f velocity)
@@ -708,12 +714,6 @@ std::string LuaEntitySAO::getName()
 	return m_init_name;
 }
 
-void LuaEntitySAO::setArmorGroups(const ItemGroupList &armor_groups)
-{
-	m_armor_groups = armor_groups;
-	m_armor_groups_sent = false;
-}
-
 void LuaEntitySAO::sendPosition(bool do_interpolate, bool is_movement_end)
 {
 	m_last_sent_move_precision = m_base_position.getDistanceFrom(
@@ -766,6 +766,7 @@ PlayerSAO::PlayerSAO(ServerEnvironment *env_, Player *player_, u16 peer_id_):
 	m_time_from_last_punch(0),
 	m_wield_index(0),
 	m_position_not_sent(false),
+	m_armor_groups_sent(false),
 	m_teleported(false),
 	m_inventory_not_sent(false),
 	m_hp_not_sent(false),
@@ -775,6 +776,8 @@ PlayerSAO::PlayerSAO(ServerEnvironment *env_, Player *player_, u16 peer_id_):
 	assert(m_peer_id != 0);
 	setBasePosition(m_player->getPosition());
 	m_inventory = &m_player->inventory;
+	m_armor_groups["choppy"] = 2;
+	m_armor_groups["fleshy"] = 3;
 }
 
 PlayerSAO::~PlayerSAO()
@@ -960,12 +963,8 @@ int PlayerSAO::punch(v3f dir,
 			return 0;
 	}
 
-	// "Material" groups of the player
-	ItemGroupList groups;
-	groups["choppy"] = 2;
-	groups["fleshy"] = 3;
-
-	HitParams hitparams = getHitParams(groups, toolcap, time_from_last_punch);
+	HitParams hitparams = getHitParams(m_armor_groups, toolcap,
+			time_from_last_punch);
 
 	actionstream<<"Player "<<m_player->getName()<<" punched by "
 			<<puncher->getDescription()<<", damage "<<hitparams.hp
@@ -1029,6 +1028,12 @@ void PlayerSAO::setHP(s16 hp)
 		ActiveObjectMessage aom(getId(), false, os.str());
 		m_messages_out.push_back(aom);
 	}
+}
+
+void PlayerSAO::setArmorGroups(const ItemGroupList &armor_groups)
+{
+	m_armor_groups = armor_groups;
+	m_armor_groups_sent = false;
 }
 
 Inventory* PlayerSAO::getInventory()

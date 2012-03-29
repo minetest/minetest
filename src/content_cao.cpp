@@ -1349,4 +1349,492 @@ public:
 // Prototype
 PlayerCAO proto_PlayerCAO(NULL, NULL);
 
+/*
+	GenericCAO
+*/
+
+#include "genericobject.h"
+
+class GenericCAO : public ClientActiveObject
+{
+private:
+	// Property-ish things
+	s16 m_hp_max;
+	bool m_physical;
+	float m_weight;
+	core::aabbox3d<f32> m_collisionbox;
+	std::string m_visual;
+	v2f m_visual_size;
+	core::array<std::string> m_textures;
+	v2s16 m_spritediv;
+	//
+	scene::ISceneManager *m_smgr;
+	core::aabbox3d<f32> m_selection_box;
+	scene::IMeshSceneNode *m_meshnode;
+	scene::IBillboardSceneNode *m_spritenode;
+	v3f m_position;
+	v3f m_velocity;
+	v3f m_acceleration;
+	float m_yaw;
+	s16 m_hp;
+	SmoothTranslator pos_translator;
+	// Spritesheet/animation stuff
+	v2f m_tx_size;
+	v2s16 m_tx_basepos;
+	bool m_tx_select_horiz_by_yawpitch;
+	int m_anim_frame;
+	int m_anim_num_frames;
+	float m_anim_framelength;
+	float m_anim_timer;
+	ItemGroupList m_armor_groups;
+	float m_reset_textures_timer;
+
+public:
+	GenericCAO(IGameDef *gamedef, ClientEnvironment *env):
+		ClientActiveObject(0, gamedef, env),
+		//
+		m_hp_max(1),
+		m_physical(false),
+		m_weight(5),
+		m_collisionbox(-0.5,-0.5,-0.5, 0.5,0.5,0.5),
+		m_visual("sprite"),
+		m_visual_size(1,1),
+		m_spritediv(1,1),
+		//
+		m_smgr(NULL),
+		m_selection_box(-BS/3.,-BS/3.,-BS/3., BS/3.,BS/3.,BS/3.),
+		m_meshnode(NULL),
+		m_spritenode(NULL),
+		m_position(v3f(0,10*BS,0)),
+		m_velocity(v3f(0,0,0)),
+		m_acceleration(v3f(0,0,0)),
+		m_yaw(0),
+		m_hp(1),
+		m_tx_size(1,1),
+		m_tx_basepos(0,0),
+		m_tx_select_horiz_by_yawpitch(false),
+		m_anim_frame(0),
+		m_anim_num_frames(1),
+		m_anim_framelength(0.2),
+		m_anim_timer(0),
+		m_reset_textures_timer(-1)
+	{
+		m_textures.push_back("unknown_object.png");
+		if(gamedef == NULL)
+			ClientActiveObject::registerType(getType(), create);
+	}
+
+	void initialize(const std::string &data)
+	{
+		infostream<<"GenericCAO: Got init data"<<std::endl;
+		
+		std::istringstream is(data, std::ios::binary);
+		// version
+		u8 version = readU8(is);
+		// check version
+		if(version != 1)
+			return;
+		// pos
+		m_position = readV3F1000(is);
+		// yaw
+		m_yaw = readF1000(is);
+		// hp
+		m_hp = readS16(is);
+
+		pos_translator.init(m_position);
+
+		updateNodePos();
+	}
+
+	~GenericCAO()
+	{
+	}
+
+	static ClientActiveObject* create(IGameDef *gamedef, ClientEnvironment *env)
+	{
+		return new GenericCAO(gamedef, env);
+	}
+
+	u8 getType() const
+	{
+		return ACTIVEOBJECT_TYPE_GENERIC;
+	}
+	core::aabbox3d<f32>* getSelectionBox()
+	{
+		return &m_selection_box;
+	}
+	v3f getPosition()
+	{
+		return pos_translator.vect_show;
+	}
+
+	void removeFromScene()
+	{
+		if(m_meshnode){
+			m_meshnode->remove();
+			m_meshnode = NULL;
+		}
+		if(m_spritenode){
+			m_spritenode->remove();
+			m_spritenode = NULL;
+		}
+	}
+
+	void addToScene(scene::ISceneManager *smgr, ITextureSource *tsrc,
+			IrrlichtDevice *irr)
+	{
+		m_smgr = smgr;
+
+		if(m_meshnode != NULL || m_spritenode != NULL)
+			return;
+		
+		//video::IVideoDriver* driver = smgr->getVideoDriver();
+
+		if(m_visual == "sprite"){
+			infostream<<"GenericCAO::addToScene(): single_sprite"<<std::endl;
+			m_spritenode = smgr->addBillboardSceneNode(
+					NULL, v2f(1, 1), v3f(0,0,0), -1);
+			m_spritenode->setMaterialTexture(0,
+					tsrc->getTextureRaw("unknown_block.png"));
+			m_spritenode->setMaterialFlag(video::EMF_LIGHTING, false);
+			m_spritenode->setMaterialFlag(video::EMF_BILINEAR_FILTER, false);
+			m_spritenode->setMaterialType(video::EMT_TRANSPARENT_ALPHA_CHANNEL_REF);
+			m_spritenode->setMaterialFlag(video::EMF_FOG_ENABLE, true);
+			m_spritenode->setColor(video::SColor(255,0,0,0));
+			m_spritenode->setVisible(false); /* Set visible when brightness is known */
+			m_spritenode->setSize(m_visual_size*BS);
+			{
+				const float txs = 1.0 / 1;
+				const float tys = 1.0 / 1;
+				setBillboardTextureMatrix(m_spritenode,
+						txs, tys, 0, 0);
+			}
+		} else if(m_visual == "cube"){
+			infostream<<"GenericCAO::addToScene(): cube"<<std::endl;
+			scene::IMesh *mesh = createCubeMesh(v3f(BS,BS,BS));
+			m_meshnode = smgr->addMeshSceneNode(mesh, NULL);
+			mesh->drop();
+			
+			m_meshnode->setScale(v3f(1));
+			// Will be shown when we know the brightness
+			m_meshnode->setVisible(false);
+		} else {
+			infostream<<"GenericCAO::addToScene(): \""<<m_visual
+					<<"\" not supported"<<std::endl;
+		}
+		updateTextures("");
+		updateNodePos();
+	}
+
+	void updateVisuals()
+	{
+		removeFromScene();
+		// We haven't got any IrrlichtDevices but it isn't actually needed
+		addToScene(m_smgr, m_gamedef->tsrc(), NULL);
+	}
+		
+	void updateLight(u8 light_at_pos)
+	{
+		bool is_visible = (m_hp != 0);
+		u8 li = decode_light(light_at_pos);
+		video::SColor color(255,li,li,li);
+		if(m_meshnode){
+			setMeshColor(m_meshnode->getMesh(), color);
+			m_meshnode->setVisible(is_visible);
+		}
+		if(m_spritenode){
+			m_spritenode->setColor(color);
+			m_spritenode->setVisible(is_visible);
+		}
+	}
+
+	v3s16 getLightPosition()
+	{
+		return floatToInt(m_position, BS);
+	}
+
+	void updateNodePos()
+	{
+		if(m_meshnode){
+			m_meshnode->setPosition(pos_translator.vect_show);
+		}
+		if(m_spritenode){
+			m_spritenode->setPosition(pos_translator.vect_show);
+		}
+	}
+
+	void step(float dtime, ClientEnvironment *env)
+	{
+		if(m_physical){
+			core::aabbox3d<f32> box = m_collisionbox;
+			box.MinEdge *= BS;
+			box.MaxEdge *= BS;
+			collisionMoveResult moveresult;
+			f32 pos_max_d = BS*0.25; // Distance per iteration
+			v3f p_pos = m_position;
+			v3f p_velocity = m_velocity;
+			IGameDef *gamedef = env->getGameDef();
+			moveresult = collisionMovePrecise(&env->getMap(), gamedef,
+					pos_max_d, box, dtime, p_pos, p_velocity);
+			// Apply results
+			m_position = p_pos;
+			m_velocity = p_velocity;
+			
+			bool is_end_position = moveresult.collides;
+			pos_translator.update(m_position, is_end_position, dtime);
+			pos_translator.translate(dtime);
+			updateNodePos();
+
+			m_velocity += dtime * m_acceleration;
+		} else {
+			m_position += dtime * m_velocity + 0.5 * dtime * dtime * m_acceleration;
+			m_velocity += dtime * m_acceleration;
+			pos_translator.update(m_position, pos_translator.aim_is_end, pos_translator.anim_time);
+			pos_translator.translate(dtime);
+			updateNodePos();
+		}
+
+		m_anim_timer += dtime;
+		if(m_anim_timer >= m_anim_framelength){
+			m_anim_timer -= m_anim_framelength;
+			m_anim_frame++;
+			if(m_anim_frame >= m_anim_num_frames)
+				m_anim_frame = 0;
+		}
+
+		updateTexturePos();
+
+		if(m_reset_textures_timer >= 0){
+			m_reset_textures_timer -= dtime;
+			if(m_reset_textures_timer <= 0){
+				m_reset_textures_timer = -1;
+				updateTextures("");
+			}
+		}
+	}
+
+	void updateTexturePos()
+	{
+		if(m_spritenode){
+			scene::ICameraSceneNode* camera =
+					m_spritenode->getSceneManager()->getActiveCamera();
+			if(!camera)
+				return;
+			v3f cam_to_entity = m_spritenode->getAbsolutePosition()
+					- camera->getAbsolutePosition();
+			cam_to_entity.normalize();
+
+			int row = m_tx_basepos.Y;
+			int col = m_tx_basepos.X;
+			
+			if(m_tx_select_horiz_by_yawpitch)
+			{
+				if(cam_to_entity.Y > 0.75)
+					col += 5;
+				else if(cam_to_entity.Y < -0.75)
+					col += 4;
+				else{
+					float mob_dir = atan2(cam_to_entity.Z, cam_to_entity.X) / PI * 180.;
+					float dir = mob_dir - m_yaw;
+					dir = wrapDegrees_180(dir);
+					//infostream<<"id="<<m_id<<" dir="<<dir<<std::endl;
+					if(fabs(wrapDegrees_180(dir - 0)) <= 45.1)
+						col += 2;
+					else if(fabs(wrapDegrees_180(dir - 90)) <= 45.1)
+						col += 3;
+					else if(fabs(wrapDegrees_180(dir - 180)) <= 45.1)
+						col += 0;
+					else if(fabs(wrapDegrees_180(dir + 90)) <= 45.1)
+						col += 1;
+					else
+						col += 4;
+				}
+			}
+			
+			// Animation goes downwards
+			row += m_anim_frame;
+
+			float txs = m_tx_size.X;
+			float tys = m_tx_size.Y;
+			setBillboardTextureMatrix(m_spritenode,
+					txs, tys, col, row);
+		}
+	}
+
+	void updateTextures(const std::string &mod)
+	{
+		ITextureSource *tsrc = m_gamedef->tsrc();
+
+		if(m_spritenode){
+			std::string texturestring = "unknown_block.png";
+			if(m_textures.size() >= 1)
+				texturestring = m_textures[0];
+			texturestring += mod;
+			m_spritenode->setMaterialTexture(0,
+					tsrc->getTextureRaw(texturestring));
+		}
+		if(m_meshnode){
+			for (u32 i = 0; i < 6; ++i)
+			{
+				std::string texturestring = "unknown_block.png";
+				if(m_textures.size() > i)
+					texturestring = m_textures[i];
+				texturestring += mod;
+				AtlasPointer ap = tsrc->getTexture(texturestring);
+
+				// Get the tile texture and atlas transformation
+				video::ITexture* atlas = ap.atlas;
+				v2f pos = ap.pos;
+				v2f size = ap.size;
+
+				// Set material flags and texture
+				video::SMaterial& material = m_meshnode->getMaterial(i);
+				material.setFlag(video::EMF_LIGHTING, false);
+				material.setFlag(video::EMF_BILINEAR_FILTER, false);
+				material.setTexture(0, atlas);
+				material.getTextureMatrix(0).setTextureTranslate(pos.X, pos.Y);
+				material.getTextureMatrix(0).setTextureScale(size.X, size.Y);
+			}
+		}
+	}
+
+	void processMessage(const std::string &data)
+	{
+		//infostream<<"GenericCAO: Got message"<<std::endl;
+		std::istringstream is(data, std::ios::binary);
+		// command
+		u8 cmd = readU8(is);
+		if(cmd == GENERIC_CMD_SET_PROPERTIES)
+		{
+			m_hp_max = readS16(is);
+			m_physical = readU8(is);
+			m_weight = readF1000(is);
+			m_collisionbox.MinEdge = readV3F1000(is);
+			m_collisionbox.MaxEdge = readV3F1000(is);
+			m_visual = deSerializeString(is);
+			m_visual_size = readV2F1000(is);
+			m_textures.clear();
+			u32 texture_count = readU16(is);
+			for(u32 i=0; i<texture_count; i++){
+				m_textures.push_back(deSerializeString(is));
+			}
+			m_spritediv = readV2S16(is);
+			
+			m_selection_box = m_collisionbox;
+			m_selection_box.MinEdge *= BS;
+			m_selection_box.MaxEdge *= BS;
+				
+			m_tx_size.X = 1.0 / m_spritediv.X;
+			m_tx_size.Y = 1.0 / m_spritediv.Y;
+			
+			updateVisuals();
+		}
+		else if(cmd == GENERIC_CMD_UPDATE_POSITION)
+		{
+			m_position = readV3F1000(is);
+			m_velocity = readV3F1000(is);
+			m_acceleration = readV3F1000(is);
+			m_yaw = readF1000(is);
+			bool do_interpolate = readU8(is);
+			bool is_end_position = readU8(is);
+			float update_interval = readF1000(is);
+			
+			if(do_interpolate){
+				if(!m_physical)
+					pos_translator.update(m_position, is_end_position, update_interval);
+			} else {
+				pos_translator.init(m_position);
+			}
+			updateNodePos();
+		}
+		else if(cmd == GENERIC_CMD_SET_TEXTURE_MOD)
+		{
+			std::string mod = deSerializeString(is);
+			updateTextures(mod);
+		}
+		else if(cmd == GENERIC_CMD_SET_SPRITE)
+		{
+			v2s16 p = readV2S16(is);
+			int num_frames = readU16(is);
+			float framelength = readF1000(is);
+			bool select_horiz_by_yawpitch = readU8(is);
+			
+			m_tx_basepos = p;
+			m_anim_num_frames = num_frames;
+			m_anim_framelength = framelength;
+			m_tx_select_horiz_by_yawpitch = select_horiz_by_yawpitch;
+
+			updateTexturePos();
+		}
+		else if(cmd == GENERIC_CMD_PUNCHED)
+		{
+			/*s16 damage =*/ readS16(is);
+			s16 result_hp = readS16(is);
+			
+			m_hp = result_hp;
+			// TODO: Execute defined fast response
+		}
+		else if(cmd == GENERIC_CMD_UPDATE_ARMOR_GROUPS)
+		{
+			m_armor_groups.clear();
+			int armor_groups_size = readU16(is);
+			for(int i=0; i<armor_groups_size; i++){
+				std::string name = deSerializeString(is);
+				int rating = readS16(is);
+				m_armor_groups[name] = rating;
+			}
+		}
+	}
+	
+	bool directReportPunch(v3f dir, const ItemStack *punchitem=NULL,
+			float time_from_last_punch=1000000)
+	{
+		assert(punchitem);
+		const ToolCapabilities *toolcap =
+				&punchitem->getToolCapabilities(m_gamedef->idef());
+		PunchDamageResult result = getPunchDamage(
+				m_armor_groups,
+				toolcap,
+				punchitem,
+				time_from_last_punch);
+		
+		if(result.did_punch && result.damage != 0)
+		{
+			if(result.damage < m_hp){
+				m_hp -= result.damage;
+			} else {
+				m_hp = 0;
+				// TODO: Execute defined fast response
+				// As there is no definition, make a smoke puff
+				ClientSimpleObject *simple = createSmokePuff(
+						m_smgr, m_env, m_position,
+						m_visual_size * BS);
+				m_env->addSimpleObject(simple);
+			}
+			// TODO: Execute defined fast response
+			// Flashing shall suffice as there is no definition
+			updateTextures("^[brighten");
+			m_reset_textures_timer = 0.1;
+		}
+		
+		return false;
+	}
+	
+	std::string debugInfoText()
+	{
+		std::ostringstream os(std::ios::binary);
+		os<<"GenericCAO hp="<<m_hp<<"\n";
+		os<<"armor={";
+		for(ItemGroupList::const_iterator i = m_armor_groups.begin();
+				i != m_armor_groups.end(); i++){
+			os<<i->first<<"="<<i->second<<", ";
+		}
+		os<<"}";
+		return os.str();
+	}
+};
+
+// Prototype
+GenericCAO proto_GenericCAO(NULL, NULL);
+
 
