@@ -727,12 +727,18 @@ void mapblock_mesh_generate_special(MeshMakeData *data,
 			TileSpec tile = getNodeTile(n, p, v3s16(0,0,0), data);
 			TileSpec tile_nocrack = tile;
 			tile_nocrack.material_flags &= ~MATERIAL_FLAG_CRACK;
-
+			
+			// A hack to put wood the right way around in the posts
+			ITextureSource *tsrc = data->m_gamedef->tsrc();
+			TileSpec tile_rot = tile;
+			tile_rot.texture = tsrc->getTexture(tsrc->getTextureName(
+					tile.texture.id) + "^[transformR90");
+					
 			u16 l = getInteriorLight(n, 1, data);
 			video::SColor c = MapBlock_LightColor(255, l);
 
-			const f32 post_rad=(f32)BS/10;
-			const f32 bar_rad=(f32)BS/20;
+			const f32 post_rad=(f32)BS/8;
+			const f32 bar_rad=(f32)BS/16;
 			const f32 bar_len=(f32)(BS/2)-post_rad;
 
 			v3f pos = intToFloat(p, BS);
@@ -742,13 +748,13 @@ void mapblock_mesh_generate_special(MeshMakeData *data,
 			post.MinEdge += pos;
 			post.MaxEdge += pos;
 			f32 postuv[24]={
-					0.4,0.4,0.6,0.6,
-					0.4,0.4,0.6,0.6,
-					0.35,0,0.65,1,
-					0.35,0,0.65,1,
-					0.35,0,0.65,1,
-					0.35,0,0.65,1};
-			makeCuboid(&collector, post, &tile, 1, c, postuv);
+					6/16.,6/16.,10/16.,10/16.,
+					6/16.,6/16.,10/16.,10/16.,
+					0/16.,0,4/16.,1,
+					4/16.,0,8/16.,1,
+					8/16.,0,12/16.,1,
+					12/16.,0,16/16.,1};
+			makeCuboid(&collector, post, &tile_rot, 1, c, postuv);
 
 			// Now a section of fence, +X, if there's a post there
 			v3s16 p2 = p;
@@ -762,17 +768,16 @@ void mapblock_mesh_generate_special(MeshMakeData *data,
 				bar.MinEdge += pos;
 				bar.MaxEdge += pos;
 				f32 xrailuv[24]={
-					0,0.4,1,0.6,
-					0,0.4,1,0.6,
-					0,0.4,1,0.6,
-					0,0.4,1,0.6,
-					0,0.4,1,0.6,
-					0,0.4,1,0.6};
+					0/16.,2/16.,16/16.,4/16.,
+					0/16.,4/16.,16/16.,6/16.,
+					6/16.,6/16.,8/16.,8/16.,
+					10/16.,10/16.,12/16.,12/16.,
+					0/16.,8/16.,16/16.,10/16.,
+					0/16.,14/16.,16/16.,16/16.};
 				makeCuboid(&collector, bar, &tile_nocrack, 1,
 						c, xrailuv);
 				bar.MinEdge.Y -= BS/2;
 				bar.MaxEdge.Y -= BS/2;
-				// TODO: no crack
 				makeCuboid(&collector, bar, &tile_nocrack, 1,
 						c, xrailuv);
 			}
@@ -789,13 +794,12 @@ void mapblock_mesh_generate_special(MeshMakeData *data,
 				bar.MinEdge += pos;
 				bar.MaxEdge += pos;
 				f32 zrailuv[24]={
-					0,0.4,1,0.6,
-					0,0.4,1,0.6,
-					0,0.4,1,0.6,
-					0,0.4,1,0.6,
-					0,0.4,1,0.6,
-					0,0.4,1,0.6};
-
+					3/16.,1/16.,5/16.,5/16., // cannot rotate; stretch
+					4/16.,1/16.,6/16.,5/16., // for wood texture instead
+					0/16.,9/16.,16/16.,11/16.,
+					0/16.,6/16.,16/16.,8/16.,
+					6/16.,6/16.,8/16.,8/16.,
+					10/16.,10/16.,12/16.,12/16.};
 				makeCuboid(&collector, bar, &tile_nocrack, 1,
 						c, zrailuv);
 				bar.MinEdge.Y -= BS/2;
