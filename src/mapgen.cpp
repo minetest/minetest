@@ -1268,14 +1268,14 @@ double get_mud_add_amount(u64 seed, v2s16 p)
 			seed+91013, 3, 0.55));
 }
 
-bool get_have_sand(u64 seed, v2s16 p2d)
+bool get_have_beach(u64 seed, v2s16 p2d)
 {
 	// Determine whether to have sand here
 	double sandnoise = noise2d_perlin(
 			0.5+(float)p2d.X/500, 0.5+(float)p2d.Y/500,
 			seed+59420, 3, 0.50);
 
-	return (sandnoise > -0.15);
+	return (sandnoise > 0.15);
 }
 
 u32 get_blockseed(u64 seed, v3s16 p)
@@ -1769,16 +1769,19 @@ void make_block(BlockMakeData *data)
 		// Randomize mud amount
 		s16 mud_add_amount = get_mud_add_amount(data->seed, p2d) / 2.0;
 
-		if(mud_add_amount <= 0){
-			mud_add_amount = 1 - mud_add_amount;
-			addnode = MapNode(c_gravel);
-		}
-
 		// Find ground level
 		s16 surface_y = find_stone_level(vmanip, p2d, ndef);
 		// Handle area not found
 		if(surface_y == vmanip.m_area.MinEdge.Y - 1)
 			continue;
+
+		if(mud_add_amount <= 0){
+			mud_add_amount = 1 - mud_add_amount;
+			addnode = MapNode(c_gravel);
+		} else if(get_have_beach(data->seed, p2d) &&
+				surface_y + mud_add_amount <= WATER_LEVEL+2){
+			addnode = MapNode(c_sand);
+		}
 
 		/*
 			If topmost node is grass, change it to mud.
@@ -2367,7 +2370,7 @@ void make_block(BlockMakeData *data)
 			// Node position
 			v2s16 p2d(x,z);
 			{
-				bool possibly_have_sand = get_have_sand(data->seed, p2d);
+				bool possibly_have_sand = get_have_beach(data->seed, p2d);
 				bool have_sand = false;
 				u32 current_depth = 0;
 				bool air_detected = false;

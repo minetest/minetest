@@ -125,7 +125,7 @@ HeightPoint ground_height(u64 seed, v2s16 p2d)
 	hp.ma = (4)*BS;
 	/*hp.gh = BS*base_rock_level_2d(seed, p2d);
 	hp.ma = BS*get_mud_add_amount(seed, p2d);*/
-	hp.have_sand = mapgen::get_have_sand(seed, p2d);
+	hp.have_sand = mapgen::get_have_beach(seed, p2d);
 	if(hp.gh > BS*WATER_LEVEL)
 		hp.tree_amount = mapgen::tree_amount_2d(seed, p2d);
 	else

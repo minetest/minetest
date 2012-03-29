@@ -49,7 +49,7 @@ namespace mapgen
 	/*
 		These are used by FarMesh
 	*/
-	bool get_have_sand(u64 seed, v2s16 p2d);
+	bool get_have_beach(u64 seed, v2s16 p2d);
 	double tree_amount_2d(u64 seed, v2s16 p);
 
 	struct BlockMakeData
