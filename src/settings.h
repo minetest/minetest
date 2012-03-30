@@ -50,6 +50,8 @@ struct ValueSpec
 	const char *help;
 };
 
+using namespace jthread;
+
 class Settings
 {
 public:

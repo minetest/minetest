@@ -25,49 +25,21 @@
 
 */
 
-#include "jmutex.h"
+#ifndef JTHREADCONFIG_H
 
-namespace jthread
-{
+#define JTHREADCONFIG_H
 
-JMutex::JMutex()
-{
-	initialized = false;
-}
+#define JTHREAD_IMPORT ${JTHREAD_IMPORT}
+#define JTHREAD_EXPORT ${JTHREAD_EXPORT}
+#ifdef JTHREAD_COMPILING
+	#define JTHREAD_IMPORTEXPORT JTHREAD_EXPORT
+#else
+	#define JTHREAD_IMPORTEXPORT JTHREAD_IMPORT
+#endif // JTHREAD_COMPILING
 
-JMutex::~JMutex()
-{
-	if (initialized)
-		pthread_mutex_destroy(&mutex);
-}
+${JTHREAD_CONFIG_WIN32THREADS}
 
-int JMutex::Init()
-{
-	if (initialized)
-		return ERR_JMUTEX_ALREADYINIT;
-	
-	pthread_mutex_init(&mutex,NULL);
-	initialized = true;
-	return 0;	
-}
+${JTHREAD_CONFIG_JMUTEXCRITICALSECTION}
 
-int JMutex::Lock()
-{
-	if (!initialized)
-		return ERR_JMUTEX_NOTINIT;
-		
-	pthread_mutex_lock(&mutex);
-	return 0;
-}
-
-int JMutex::Unlock()
-{
-	if (!initialized)
-		return ERR_JMUTEX_NOTINIT;
-	
-	pthread_mutex_unlock(&mutex);
-	return 0;
-}
-
-} // end namespace
+#endif // JTHREADCONFIG_H
 

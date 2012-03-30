@@ -33,6 +33,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "utility.h" // Needed for UniqueQueue, a member of Map
 #include "modifiedstate.h"
 
+using namespace jthread;
+
 extern "C" {
 	#include "sqlite3.h"
 }

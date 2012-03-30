@@ -3,7 +3,7 @@
     This file is a part of the JThread package, which contains some object-
     oriented thread wrappers for different thread implementations.
 
-    Copyright (c) 2000-2006  Jori Liesenborgs (jori.liesenborgs@gmail.com)
+    Copyright (c) 2000-2011  Jori Liesenborgs (jori.liesenborgs@gmail.com)
 
     Permission is hereby granted, free of charge, to any person obtaining a
     copy of this software and associated documentation files (the "Software"),
@@ -26,10 +26,14 @@
 */
 
 #include "jthread.h"
+#include "jmutexautolock.h"
 
 #ifndef _WIN32_WCE
 	#include <process.h>
 #endif // _WIN32_WCE
+
+namespace jthread
+{
 
 JThread::JThread()
 {
@@ -130,14 +134,13 @@ bool JThread::IsRunning()
 
 void *JThread::GetReturnValue()
 {
+	JMutexAutoLock autolock(runningmutex);
 	void *val;
 	
-	runningmutex.Lock();
 	if (running)
 		val = NULL;
 	else
 		val = retval;
-	runningmutex.Unlock();
 	return val;
 }
 
@@ -174,4 +177,6 @@ void JThread::ThreadStarted()
 {
 	continuemutex2.Unlock();
 }
+
+} // end namespace
 

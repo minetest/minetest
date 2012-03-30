@@ -3,7 +3,7 @@
     This file is a part of the JThread package, which contains some object-
     oriented thread wrappers for different thread implementations.
 
-    Copyright (c) 2000-2006  Jori Liesenborgs (jori.liesenborgs@gmail.com)
+    Copyright (c) 2000-2011  Jori Liesenborgs (jori.liesenborgs@gmail.com)
 
     Permission is hereby granted, free of charge, to any person obtaining a
     copy of this software and associated documentation files (the "Software"),
@@ -27,6 +27,9 @@
 
 #include "jmutex.h"
 
+namespace jthread
+{
+
 JMutex::JMutex()
 {
 	initialized = false;
@@ -35,24 +38,24 @@ JMutex::JMutex()
 JMutex::~JMutex()
 {
 	if (initialized)
-#ifdef JMUTEX_CRITICALSECTION
+#ifdef JTHREAD_CONFIG_JMUTEXCRITICALSECTION
 		DeleteCriticalSection(&mutex);
 #else
 		CloseHandle(mutex);
-#endif // JMUTEX_CRITICALSECTION
+#endif // JTHREAD_CONFIG_JMUTEXCRITICALSECTION
 }
 
 int JMutex::Init()
 {
 	if (initialized)
 		return ERR_JMUTEX_ALREADYINIT;
-#ifdef JMUTEX_CRITICALSECTION
+#ifdef JTHREAD_CONFIG_JMUTEXCRITICALSECTION
 	InitializeCriticalSection(&mutex);
 #else
 	mutex = CreateMutex(NULL,FALSE,NULL);
 	if (mutex == NULL)
 		return ERR_JMUTEX_CANTCREATEMUTEX;
-#endif // JMUTEX_CRITICALSECTION
+#endif // JTHREAD_CONFIG_JMUTEXCRITICALSECTION
 	initialized = true;
 	return 0;
 }
@@ -61,11 +64,11 @@ int JMutex::Lock()
 {
 	if (!initialized)
 		return ERR_JMUTEX_NOTINIT;
-#ifdef JMUTEX_CRITICALSECTION
+#ifdef JTHREAD_CONFIG_JMUTEXCRITICALSECTION
 	EnterCriticalSection(&mutex);
 #else
 	WaitForSingleObject(mutex,INFINITE);
-#endif // JMUTEX_CRITICALSECTION
+#endif // JTHREAD_CONFIG_JMUTEXCRITICALSECTION
 	return 0;
 }
 
@@ -73,11 +76,12 @@ int JMutex::Unlock()
 {
 	if (!initialized)
 		return ERR_JMUTEX_NOTINIT;
-#ifdef JMUTEX_CRITICALSECTION
+#ifdef JTHREAD_CONFIG_JMUTEXCRITICALSECTION
 	LeaveCriticalSection(&mutex);
 #else
 	ReleaseMutex(mutex);
-#endif // JMUTEX_CRITICALSECTION
+#endif // JTHREAD_CONFIG_JMUTEXCRITICALSECTION
 	return 0;
 }
 
+} // end namespace

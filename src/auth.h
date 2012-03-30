@@ -27,6 +27,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "irrlichttypes.h"
 #include "exceptions.h"
 
+using namespace jthread;
+
 // Player privileges. These form a bitmask stored in the privs field
 // of the player, and define things they're allowed to do. See also
 // the static methods Player::privsToString and stringToPrivs that
