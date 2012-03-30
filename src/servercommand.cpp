@@ -103,50 +103,6 @@ void cmd_setting(std::wostringstream &os,
 	os<< L"-!- Setting changed and configuration saved.";
 }
 
-void cmd_teleport(std::wostringstream &os,
-	ServerCommandContext *ctx)
-{
-	if(!ctx->server->checkPriv(ctx->player->getName(), "teleport"))
-	{
-		os<<L"-!- You don't have permission to do that";
-		return;
-	}
-
-	if(ctx->parms.size() != 2)
-	{
-		os<<L"-!- Missing parameter";
-		return;
-	}
-
-	std::vector<std::wstring> coords = str_split(ctx->parms[1], L',');
-	if(coords.size() != 3)
-	{
-		os<<L"-!- You can only specify coordinates currently";
-		return;
-	}
-
-	v3f dest(stoi(coords[0])*BS, stoi(coords[1])*BS, stoi(coords[2])*BS);
-
-	actionstream<<ctx->player->getName()<<" teleports from "
-			<<PP(ctx->player->getPosition()/BS)<<" to "
-			<<PP(dest/BS)<<std::endl;
-
-	// Use the ServerActiveObject interface of RemotePlayer
-	// This forces a position change on the client
-	ServerActiveObject *sao = ctx->player->getPlayerSAO();
-	if(sao)
-	{
-		sao->setPos(dest);
-		os<< L"-!- Teleported.";
-	}
-	else
-	{
-		errorstream<<"Teleport failed, player object not found!"
-			<<std::endl;
-		os<< L"-!- Teleport failed.";
-	}
-}
-
 void cmd_banunban(std::wostringstream &os, ServerCommandContext *ctx)
 {
 	if(!ctx->server->checkPriv(ctx->player->getName(), "ban"))
@@ -240,8 +196,6 @@ std::wstring processServerCommand(ServerCommandContext *ctx)
 		cmd_shutdown(os, ctx);
 	else if(ctx->parms[0] == L"setting")
 		cmd_setting(os, ctx);
-	else if(ctx->parms[0] == L"teleport")
-		cmd_teleport(os, ctx);
 	else if(ctx->parms[0] == L"ban" || ctx->parms[0] == L"unban")
 		cmd_banunban(os, ctx);
 	else if(ctx->parms[0] == L"me")

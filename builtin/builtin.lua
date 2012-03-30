@@ -868,6 +868,7 @@ end
 
 minetest.register_privilege("interact", "Can interact with things and modify the world")
 minetest.register_privilege("teleport", "Can use /teleport command")
+minetest.register_privilege("bring", "Can teleport other players")
 minetest.register_privilege("settime", "Can use /time")
 minetest.register_privilege("privs", "Can modify privileges")
 minetest.register_privilege("server", "Can do server maintenance stuff")
@@ -892,8 +893,8 @@ end
 -- Register the help command
 minetest.register_chatcommand("help", {
 	privs = {},
-	params = "(nothing)/all/<cmd>",
-	description = "Get help for commands",
+	params = "(nothing)/all/privs/<cmd>",
+	description = "Get help for commands or list privileges",
 	func = function(name, param)
 		local format_help_line = function(cmd, def)
 			local msg = "/"..cmd
@@ -918,6 +919,11 @@ minetest.register_chatcommand("help", {
 					minetest.chat_send_player(name, format_help_line(cmd, def))
 				end
 			end
+		elseif param == "privs" then
+			minetest.chat_send_player(name, "Available privileges:")
+			for priv, desc in pairs(minetest.registered_privileges) do
+				minetest.chat_send_player(name, priv..": "..desc)
+			end
 		else
 			local cmd = param
 			def = minetest.chatcommands[cmd]
@@ -937,7 +943,6 @@ minetest.register_chatcommand("shutdown", {params = "", description = "shutdown 
 minetest.register_chatcommand("setting", {params = "<name> = <value>", description = "set line in configuration file", privs = {server=true}})
 minetest.register_chatcommand("clearobjects", {params = "", description = "clear all objects in world", privs = {server=true}})
 minetest.register_chatcommand("time", {params = "<0...24000>", description = "set time of day", privs = {settime=true}})
-minetest.register_chatcommand("teleport", {params = "<X>,<Y>,<Z>", description = "teleport to given position", privs = {teleport=true}})
 minetest.register_chatcommand("ban", {params = "<name>", description = "ban IP of player", privs = {ban=true}})
 minetest.register_chatcommand("unban", {params = "<name/ip>", description = "remove IP ban", privs = {ban=true}})
 
@@ -1006,6 +1011,7 @@ minetest.register_chatcommand("setpassword", {
 			return
 		end
 		minetest.set_player_password(name, param)
+		minetest.chat_send_player(name, "Password set")
 	end,
 })
 minetest.register_chatcommand("clearpassword", {
@@ -1014,6 +1020,99 @@ minetest.register_chatcommand("clearpassword", {
 	privs = {password=true},
 	func = function(name, param)
 		minetest.set_player_password(name, '')
+		minetest.chat_send_player(name, "Password cleared")
+	end,
+})
+
+minetest.register_chatcommand("teleport", {
+	params = "<X>,<Y>,<Z> | <to_name> | <name> <X>,<Y>,<Z> | <name> <to_name>",
+	description = "teleport to given position",
+	privs = {teleport=true},
+	func = function(name, param)
+		-- Returns (pos, true) if found, otherwise (pos, false)
+		local function find_free_position_near(pos)
+			local tries = {
+				{x=1,y=0,z=0},
+				{x=-1,y=0,z=0},
+				{x=0,y=0,z=1},
+				{x=0,y=0,z=-1},
+			}
+			for _, d in ipairs(tries) do
+				local p = {x = pos.x+d.x, y = pos.y+d.y, z = pos.z+d.z}
+				local n = minetest.env:get_node(p)
+				if not minetest.registered_nodes[n.name].walkable then
+					return p, true
+				end
+			end
+			return pos, false
+		end
+
+		local teleportee = nil
+		local p = {}
+		p.x, p.y, p.z = string.match(param, "^([%d.-]+)[, ] *([%d.-]+)[, ] *([%d.-]+)$")
+		teleportee = minetest.env:get_player_by_name(name)
+		if teleportee and p.x and p.y and p.z then
+			minetest.chat_send_player(name, "Teleporting to ("..p.x..", "..p.y..", "..p.z..")")
+			teleportee:setpos(p)
+			return
+		end
+		
+		local teleportee = nil
+		local p = nil
+		local target_name = nil
+		target_name = string.match(param, "^([^ ]+)$")
+		teleportee = minetest.env:get_player_by_name(name)
+		if target_name then
+			local target = minetest.env:get_player_by_name(target_name)
+			if target then
+				p = target:getpos()
+			end
+		end
+		if teleportee and p then
+			p = find_free_position_near(p)
+			minetest.chat_send_player(name, "Teleporting to "..target_name.." at ("..p.x..", "..p.y..", "..p.z..")")
+			teleportee:setpos(p)
+			return
+		end
+		
+		if minetest.check_player_privs(name, {bring=true}) then
+			local teleportee = nil
+			local p = {}
+			local teleportee_name = nil
+			teleportee_name, p.x, p.y, p.z = string.match(param, "^([^ ]+) +([%d.-]+)[, ] *([%d.-]+)[, ] *([%d.-]+)$")
+			if teleportee_name then
+				teleportee = minetest.env:get_player_by_name(teleportee_name)
+			end
+			if teleportee and p.x and p.y and p.z then
+				minetest.chat_send_player(name, "Teleporting "..teleportee_name.." to ("..p.x..", "..p.y..", "..p.z..")")
+				teleportee:setpos(p)
+				return
+			end
+			
+			local teleportee = nil
+			local p = nil
+			local teleportee_name = nil
+			local target_name = nil
+			teleportee_name, target_name = string.match(param, "^([^ ]+) +([^ ]+)$")
+			if teleportee_name then
+				teleportee = minetest.env:get_player_by_name(teleportee_name)
+			end
+			if target_name then
+				local target = minetest.env:get_player_by_name(target_name)
+				if target then
+					p = target:getpos()
+				end
+			end
+			if teleportee and p then
+				p = find_free_position_near(p)
+				minetest.chat_send_player(name, "Teleporting "..teleportee_name.." to "..target_name.." at ("..p.x..", "..p.y..", "..p.z..")")
+				teleportee:setpos(p)
+				return
+			end
+		end
+
+		minetest.chat_send_player(name, "Invalid parameters (\""..param.."\") or player not found (see /help teleport)")
+		return
 	end,
 })
 
