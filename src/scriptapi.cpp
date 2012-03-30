@@ -836,6 +836,67 @@ static void read_soundspec(lua_State *L, int index, SimpleSoundSpec &spec)
 }
 
 /*
+	ObjectProperties
+*/
+
+static void read_object_properties(lua_State *L, int index,
+		ObjectProperties *prop)
+{
+	if(index < 0)
+		index = lua_gettop(L) + 1 + index;
+	if(!lua_istable(L, index))
+		return;
+
+	prop->hp_max = getintfield_default(L, -1, "hp_max", 10);
+
+	getboolfield(L, -1, "physical", prop->physical);
+
+	getfloatfield(L, -1, "weight", prop->weight);
+
+	lua_getfield(L, -1, "collisionbox");
+	if(lua_istable(L, -1))
+		prop->collisionbox = read_aabbox3df32(L, -1, 1.0);
+	lua_pop(L, 1);
+
+	getstringfield(L, -1, "visual", prop->visual);
+	
+	lua_getfield(L, -1, "visual_size");
+	if(lua_istable(L, -1))
+		prop->visual_size = read_v2f(L, -1);
+	lua_pop(L, 1);
+
+	lua_getfield(L, -1, "textures");
+	if(lua_istable(L, -1)){
+		prop->textures.clear();
+		int table = lua_gettop(L);
+		lua_pushnil(L);
+		while(lua_next(L, table) != 0){
+			// key at index -2 and value at index -1
+			if(lua_isstring(L, -1))
+				prop->textures.push_back(lua_tostring(L, -1));
+			else
+				prop->textures.push_back("");
+			// removes value, keeps key for next iteration
+			lua_pop(L, 1);
+		}
+	}
+	lua_pop(L, 1);
+	
+	lua_getfield(L, -1, "spritediv");
+	if(lua_istable(L, -1))
+		prop->spritediv = read_v2s16(L, -1);
+	lua_pop(L, 1);
+
+	lua_getfield(L, -1, "initial_sprite_basepos");
+	if(lua_istable(L, -1))
+		prop->initial_sprite_basepos = read_v2s16(L, -1);
+	lua_pop(L, 1);
+	
+	getboolfield(L, -1, "is_visible", prop->is_visible);
+	getboolfield(L, -1, "makes_footstep_sound", prop->makes_footstep_sound);
+}
+
+/*
 	ItemDefinition
 */
 
@@ -2471,6 +2532,33 @@ private:
 		return 1;
 	}
 
+	// set_armor_groups(self, groups)
+	static int l_set_armor_groups(lua_State *L)
+	{
+		ObjectRef *ref = checkobject(L, 1);
+		ServerActiveObject *co = getobject(ref);
+		if(co == NULL) return 0;
+		// Do it
+		ItemGroupList groups;
+		read_groups(L, 2, groups);
+		co->setArmorGroups(groups);
+		return 0;
+	}
+
+	// set_properties(self, properties)
+	static int l_set_properties(lua_State *L)
+	{
+		ObjectRef *ref = checkobject(L, 1);
+		ServerActiveObject *co = getobject(ref);
+		if(co == NULL) return 0;
+		ObjectProperties *prop = co->accessObjectProperties();
+		if(!prop)
+			return 0;
+		read_object_properties(L, 2, prop);
+		co->notifyObjectPropertiesModified();
+		return 0;
+	}
+
 	/* LuaEntitySAO-only */
 
 	// setvelocity(self, {x=num, y=num, z=num})
@@ -2479,7 +2567,6 @@ private:
 		ObjectRef *ref = checkobject(L, 1);
 		LuaEntitySAO *co = getluaobject(ref);
 		if(co == NULL) return 0;
-		// pos
 		v3f pos = checkFloatPos(L, 2);
 		// Do it
 		co->setVelocity(pos);
@@ -2529,7 +2616,6 @@ private:
 		ObjectRef *ref = checkobject(L, 1);
 		LuaEntitySAO *co = getluaobject(ref);
 		if(co == NULL) return 0;
-		// pos
 		float yaw = luaL_checknumber(L, 2) * core::RADTODEG;
 		// Do it
 		co->setYaw(yaw);
@@ -2581,19 +2667,6 @@ private:
 		if(!lua_isnil(L, 5))
 			select_horiz_by_yawpitch = lua_toboolean(L, 5);
 		co->setSprite(p, num_frames, framelength, select_horiz_by_yawpitch);
-		return 0;
-	}
-
-	// set_armor_groups(self, groups)
-	static int l_set_armor_groups(lua_State *L)
-	{
-		ObjectRef *ref = checkobject(L, 1);
-		LuaEntitySAO *co = getluaobject(ref);
-		if(co == NULL) return 0;
-		// Do it
-		ItemGroupList groups;
-		read_groups(L, 2, groups);
-		co->setArmorGroups(groups);
 		return 0;
 	}
 
@@ -2750,6 +2823,8 @@ const luaL_reg ObjectRef::methods[] = {
 	method(ObjectRef, get_wield_index),
 	method(ObjectRef, get_wielded_item),
 	method(ObjectRef, set_wielded_item),
+	method(ObjectRef, set_armor_groups),
+	method(ObjectRef, set_properties),
 	// LuaEntitySAO-only
 	method(ObjectRef, setvelocity),
 	method(ObjectRef, getvelocity),
@@ -2759,7 +2834,6 @@ const luaL_reg ObjectRef::methods[] = {
 	method(ObjectRef, getyaw),
 	method(ObjectRef, settexturemod),
 	method(ObjectRef, setsprite),
-	method(ObjectRef, set_armor_groups),
 	method(ObjectRef, get_entity_name),
 	method(ObjectRef, get_luaentity),
 	// Player-only
@@ -4689,52 +4763,11 @@ void scriptapi_luaentity_get_properties(lua_State *L, u16 id,
 	luaentity_get(L, id);
 	//int object = lua_gettop(L);
 
-	/* Read stuff */
+	// Set default values that differ from ObjectProperties defaults
+	prop->hp_max = 10;
 	
-	prop->hp_max = getintfield_default(L, -1, "hp_max", 10);
-
-	getboolfield(L, -1, "physical", prop->physical);
-
-	getfloatfield(L, -1, "weight", prop->weight);
-
-	lua_getfield(L, -1, "collisionbox");
-	if(lua_istable(L, -1))
-		prop->collisionbox = read_aabbox3df32(L, -1, 1.0);
-	lua_pop(L, 1);
-
-	getstringfield(L, -1, "visual", prop->visual);
-	
-	lua_getfield(L, -1, "visual_size");
-	if(lua_istable(L, -1))
-		prop->visual_size = read_v2f(L, -1);
-	lua_pop(L, 1);
-
-	lua_getfield(L, -1, "textures");
-	if(lua_istable(L, -1)){
-		prop->textures.clear();
-		int table = lua_gettop(L);
-		lua_pushnil(L);
-		while(lua_next(L, table) != 0){
-			// key at index -2 and value at index -1
-			if(lua_isstring(L, -1))
-				prop->textures.push_back(lua_tostring(L, -1));
-			else
-				prop->textures.push_back("");
-			// removes value, keeps key for next iteration
-			lua_pop(L, 1);
-		}
-	}
-	lua_pop(L, 1);
-	
-	lua_getfield(L, -1, "spritediv");
-	if(lua_istable(L, -1))
-		prop->spritediv = read_v2s16(L, -1);
-	lua_pop(L, 1);
-
-	lua_getfield(L, -1, "initial_sprite_basepos");
-	if(lua_istable(L, -1))
-		prop->initial_sprite_basepos = read_v2s16(L, -1);
-	lua_pop(L, 1);
+	// Read stuff
+	read_object_properties(L, -1, prop);
 }
 
 void scriptapi_luaentity_step(lua_State *L, u16 id, float dtime)

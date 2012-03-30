@@ -61,6 +61,8 @@ public:
 	void setHP(s16 hp);
 	s16 getHP() const;
 	void setArmorGroups(const ItemGroupList &armor_groups);
+	ObjectProperties* accessObjectProperties();
+	void notifyObjectPropertiesModified();
 	/* LuaEntitySAO-specific */
 	void setVelocity(v3f velocity);
 	v3f getVelocity();
@@ -137,7 +139,10 @@ public:
 	void rightClick(ServerActiveObject *clicker);
 	s16 getHP() const;
 	void setHP(s16 hp);
+	
 	void setArmorGroups(const ItemGroupList &armor_groups);
+	ObjectProperties* accessObjectProperties();
+	void notifyObjectPropertiesModified();
 
 	/*
 		Inventory interface

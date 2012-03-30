@@ -46,6 +46,7 @@ class ServerEnvironment;
 struct ItemStack;
 class Player;
 struct ToolCapabilities;
+struct ObjectProperties;
 
 class ServerActiveObject : public ActiveObject
 {
@@ -151,6 +152,10 @@ public:
 	{ return 0; }
 
 	virtual void setArmorGroups(const ItemGroupList &armor_groups)
+	{}
+	virtual ObjectProperties* accessObjectProperties()
+	{ return NULL; }
+	virtual void notifyObjectPropertiesModified()
 	{}
 
 	// Inventory and wielded item

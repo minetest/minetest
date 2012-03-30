@@ -614,6 +614,7 @@ methods:
 - get_wielded_item() -> ItemStack
 - set_wielded_item(item): replaces the wielded item, returns true if successful
 - set_armor_groups({group1=rating, group2=rating, ...})
+- set_properties(object property table)
 LuaEntitySAO-only: (no-op for other objects)
 - setvelocity({x=num, y=num, z=num})
 - getvelocity() -> {x=num, y=num, z=num}
@@ -716,20 +717,30 @@ Registered entities
 Definition tables
 ------------------
 
-Entity definition (register_entity)
+Object Properties
 {
     physical = true,
     collisionbox = {-0.5,-0.5,-0.5, 0.5,0.5,0.5},
-    visual = "cube"/"sprite",
+    visual = "cube"/"sprite"/"upright_sprite",
     visual_size = {x=1, y=1},
-    textures = {texture,texture,texture,texture,texture,texture},
+    textures = {}, -- number of required textures depends on visual
     spritediv = {x=1, y=1},
     initial_sprite_basepos = {x=0, y=0},
+    is_visible = true,
+    makes_footstep_sound = false,
+}
+
+Entity definition (register_entity)
+{
+    Everything from object properties,
+    -- entity specific --
     on_activate = function(self, staticdata),
     on_step = function(self, dtime),
     on_punch = function(self, hitter),
     on_rightclick = function(self, clicker),
     get_staticdata = function(self),
+    ^ Called sometimes; the string returned is passed to on_activate when
+      the entity is re-activated from static state
     # Also you can define arbitrary member variables here
     myvariable = whatever,
 }

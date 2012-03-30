@@ -643,6 +643,16 @@ void LuaEntitySAO::setArmorGroups(const ItemGroupList &armor_groups)
 	m_armor_groups_sent = false;
 }
 
+ObjectProperties* LuaEntitySAO::accessObjectProperties()
+{
+	return &m_prop;
+}
+
+void LuaEntitySAO::notifyObjectPropertiesModified()
+{
+	m_properties_sent = false;
+}
+
 void LuaEntitySAO::setVelocity(v3f velocity)
 {
 	m_velocity = velocity;
@@ -1036,6 +1046,16 @@ void PlayerSAO::setArmorGroups(const ItemGroupList &armor_groups)
 {
 	m_armor_groups = armor_groups;
 	m_armor_groups_sent = false;
+}
+
+ObjectProperties* PlayerSAO::accessObjectProperties()
+{
+	return &m_prop;
+}
+
+void PlayerSAO::notifyObjectPropertiesModified()
+{
+	m_properties_sent = false;
 }
 
 Inventory* PlayerSAO::getInventory()
