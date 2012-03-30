@@ -1222,13 +1222,20 @@ minetest.builtin_auth_handler = {
 		if not minetest.auth_table[name] then
 			minetest.builtin_auth_handler.create_auth(name, minetest.get_password_hash(name, minetest.setting_get("default_password")))
 		end
-		if minetest.is_singleplayer() or name == minetest.setting_get("name") then
+		if minetest.is_singleplayer() then
 			return {
 				password = "",
 				privileges = minetest.registered_privileges
 			}
 		else
-			return minetest.auth_table[name]
+			if minetest.auth_table[name] and name == minetest.setting_get("name") then
+				return {
+					password = minetest.auth_table[name].password,
+					privileges = minetest.registered_privileges
+				}
+			else
+				return minetest.auth_table[name]
+			end
 		end
 	end,
 	create_auth = function(name, password)
