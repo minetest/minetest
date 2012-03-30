@@ -90,6 +90,11 @@ if(LUA_ANSI)
 endif(LUA_ANSI)
 
 #
+# COMMON_CFLAGS has no effect without this line
+#
+set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${COMMON_CFLAGS}")
+
+#
 # standard flags to use for each build type.
 #
 if(CMAKE_COMPILER_IS_GNUCC)
