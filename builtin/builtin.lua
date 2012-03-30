@@ -1177,7 +1177,8 @@ local function read_auth_file()
 	local newtable = {}
 	local file, errmsg = io.open(minetest.auth_file_path, 'rb')
 	if not file then
-		error(minetest.auth_file_path.." could not be opened for reading: "..errmsg)
+		minetest.log("info", minetest.auth_file_path.." could not be opened for reading ("..errmsg.."); assuming new world")
+		return
 	end
 	for line in file:lines() do
 		if line ~= "" then
