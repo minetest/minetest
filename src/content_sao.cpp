@@ -738,6 +738,7 @@ void LuaEntitySAO::sendPosition(bool do_interpolate, bool is_movement_end)
 	);
 	// create message and add to list
 	ActiveObjectMessage aom(getId(), false, str);
+	m_messages_out.push_back(aom);
 }
 
 /*
