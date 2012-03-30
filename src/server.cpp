@@ -3905,12 +3905,25 @@ void Server::fillMediaCache()
 			if(dirlist[j].dir) // Ignode dirs
 				continue;
 			std::string filename = dirlist[j].name;
-			// if name contains illegal characters, ignore the file
+			// If name contains illegal characters, ignore the file
 			if(!string_allowed(filename, TEXTURENAME_ALLOWED_CHARS)){
-				errorstream<<"Server: ignoring illegal file name: \""
+				infostream<<"Server: ignoring illegal file name: \""
 						<<filename<<"\""<<std::endl;
 				continue;
 			}
+			// If name is not in a supported format, ignore it
+			const char *supported_ext[] = {
+				".png", ".jpg", ".bmp", ".tga",
+				".pcx", ".ppm", ".psd", ".wal", ".rgb",
+				".ogg",
+				NULL
+			};
+			if(removeStringEnd(filename, supported_ext) == ""){
+				infostream<<"Server: ignoring unsupported file extension: \""
+						<<filename<<"\""<<std::endl;
+				continue;
+			}
+			// Ok, attempt to load the file and add to cache
 			std::string filepath = mediapath + DIR_DELIM + filename;
 			// Read data
 			std::ifstream fis(filepath.c_str(), std::ios_base::binary);
