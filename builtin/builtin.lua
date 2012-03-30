@@ -837,6 +837,17 @@ function minetest.check_player_privs(name, privs)
 	return true, ""
 end
 
+function minetest.get_connected_players()
+	-- This could be optimized a bit, but leave that for later
+	local list = {}
+	for _, obj in pairs(minetest.env:get_objects_inside_radius({x=0,y=0,z=0}, 1000000)) do
+		if obj:get_player_name() then
+			table.insert(list, obj)
+		end
+	end
+	return list
+end
+
 --
 -- Chat commands
 --

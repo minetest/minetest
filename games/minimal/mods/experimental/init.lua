@@ -8,13 +8,11 @@ experimental = {}
 
 experimental.player_visual_index = 0
 function switch_player_visual()
-	for _, obj in pairs(minetest.env:get_objects_inside_radius({x=0,y=0,z=0}, 1000000)) do
-		if obj:get_player_name() then
-			if experimental.player_visual_index == 0 then
-				obj:set_properties({visual="upright_sprite"})
-			else
-				obj:set_properties({visual="cube"})
-			end
+	for _, obj in pairs(minetest.get_connected_players()) do
+		if experimental.player_visual_index == 0 then
+			obj:set_properties({visual="upright_sprite"})
+		else
+			obj:set_properties({visual="cube"})
 		end
 	end
 	experimental.player_visual_index = (experimental.player_visual_index + 1) % 2
