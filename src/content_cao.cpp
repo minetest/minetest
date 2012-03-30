@@ -575,6 +575,7 @@ private:
 	float m_reset_textures_timer;
 	bool m_visuals_expired;
 	float m_step_distance_counter;
+	u8 m_last_light;
 
 public:
 	GenericCAO(IGameDef *gamedef, ClientEnvironment *env):
@@ -604,7 +605,8 @@ public:
 		m_anim_timer(0),
 		m_reset_textures_timer(-1),
 		m_visuals_expired(false),
-		m_step_distance_counter(0)
+		m_step_distance_counter(0),
+		m_last_light(255)
 	{
 		if(gamedef == NULL)
 			ClientActiveObject::registerType(getType(), create);
@@ -707,8 +709,8 @@ public:
 			m_spritenode->setMaterialFlag(video::EMF_BILINEAR_FILTER, false);
 			m_spritenode->setMaterialType(video::EMT_TRANSPARENT_ALPHA_CHANNEL_REF);
 			m_spritenode->setMaterialFlag(video::EMF_FOG_ENABLE, true);
-			m_spritenode->setColor(video::SColor(255,0,0,0));
-			m_spritenode->setVisible(false); /* Set visible when brightness is known */
+			u8 li = m_last_light;
+			m_spritenode->setColor(video::SColor(255,li,li,li));
 			m_spritenode->setSize(m_prop.visual_size*BS);
 			{
 				const float txs = 1.0 / 1;
@@ -724,7 +726,8 @@ public:
 			double dy = BS*m_prop.visual_size.Y/2;
 			{ // Front
 			scene::IMeshBuffer *buf = new scene::SMeshBuffer();
-			video::SColor c(255,255,255,255);
+			u8 li = m_last_light;
+			video::SColor c(255,li,li,li);
 			video::S3DVertex vertices[4] =
 			{
 				video::S3DVertex(-dx,-dy,0, 0,0,0, c, 0,1),
@@ -745,7 +748,8 @@ public:
 			}
 			{ // Back
 			scene::IMeshBuffer *buf = new scene::SMeshBuffer();
-			video::SColor c(255,255,255,255);
+			u8 li = m_last_light;
+			video::SColor c(255,li,li,li);
 			video::S3DVertex vertices[4] =
 			{
 				video::S3DVertex(dx,-dy,0, 0,0,0, c, 1,1),
@@ -777,8 +781,8 @@ public:
 			mesh->drop();
 			
 			m_meshnode->setScale(v3f(1));
-			// Will be shown when we know the brightness
-			m_meshnode->setVisible(false);
+			u8 li = m_last_light;
+			setMeshColor(m_meshnode->getMesh(), video::SColor(255,li,li,li));
 		} else {
 			infostream<<"GenericCAO::addToScene(): \""<<m_prop.visual
 					<<"\" not supported"<<std::endl;
@@ -811,6 +815,7 @@ public:
 	{
 		bool is_visible = (m_hp != 0);
 		u8 li = decode_light(light_at_pos);
+		m_last_light = li;
 		video::SColor color(255,li,li,li);
 		if(m_meshnode){
 			setMeshColor(m_meshnode->getMesh(), color);
