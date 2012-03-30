@@ -1,6 +1,6 @@
 /*
 Minetest-c55
-Copyright (C) 2011 celeron55, Perttu Ahola <celeron55@gmail.com>
+Copyright (C) 2012 celeron55, Perttu Ahola <celeron55@gmail.com>
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -17,14 +17,13 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
-#include "luaentity_common.h"
-
+#include "object_properties.h"
 #include "utility.h"
 
 #define PP(x) "("<<(x).X<<","<<(x).Y<<","<<(x).Z<<")"
 #define PP2(x) "("<<(x).X<<","<<(x).Y<<")"
 
-LuaEntityProperties::LuaEntityProperties():
+ObjectProperties::ObjectProperties():
 	hp_max(1),
 	physical(false),
 	weight(5),
@@ -32,12 +31,14 @@ LuaEntityProperties::LuaEntityProperties():
 	visual("sprite"),
 	visual_size(1,1),
 	spritediv(1,1),
-	initial_sprite_basepos(0,0)
+	initial_sprite_basepos(0,0),
+	is_visible(true),
+	makes_footstep_sound(false)
 {
 	textures.push_back("unknown_object.png");
 }
 
-std::string LuaEntityProperties::dump()
+std::string ObjectProperties::dump()
 {
 	std::ostringstream os(std::ios::binary);
 	os<<"hp_max="<<hp_max;
@@ -53,10 +54,12 @@ std::string LuaEntityProperties::dump()
 	os<<"]";
 	os<<", spritediv="<<PP2(spritediv);
 	os<<", initial_sprite_basepos="<<PP2(initial_sprite_basepos);
+	os<<", is_visible"<<is_visible;
+	os<<", makes_footstep_sound="<<makes_footstep_sound;
 	return os.str();
 }
 
-void LuaEntityProperties::serialize(std::ostream &os)
+void ObjectProperties::serialize(std::ostream &os)
 {
 	writeU8(os, 1); // version
 	writeS16(os, hp_max);
@@ -72,13 +75,15 @@ void LuaEntityProperties::serialize(std::ostream &os)
 	}
 	writeV2S16(os, spritediv);
 	writeV2S16(os, initial_sprite_basepos);
+	writeU8(os, is_visible);
+	writeU8(os, makes_footstep_sound);
 }
 
-void LuaEntityProperties::deSerialize(std::istream &is)
+void ObjectProperties::deSerialize(std::istream &is)
 {
 	int version = readU8(is);
 	if(version != 1) throw SerializationError(
-			"unsupported LuaEntityProperties version");
+			"unsupported ObjectProperties version");
 	hp_max = readS16(is);
 	physical = readU8(is);
 	weight = readF1000(is);
@@ -93,6 +98,8 @@ void LuaEntityProperties::deSerialize(std::istream &is)
 	}
 	spritediv = readV2S16(is);
 	initial_sprite_basepos = readV2S16(is);
+	is_visible = readU8(is);
+	makes_footstep_sound = readU8(is);
 }
 
 

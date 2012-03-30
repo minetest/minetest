@@ -24,6 +24,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "content_object.h"
 #include "itemgroup.h"
 #include "player.h"
+#include "object_properties.h"
 
 ServerActiveObject* createItemSAO(ServerEnvironment *env, v3f pos,
 		const std::string itemstring);
@@ -31,8 +32,6 @@ ServerActiveObject* createItemSAO(ServerEnvironment *env, v3f pos,
 /*
 	LuaEntitySAO needs some internals exposed.
 */
-
-struct LuaEntityProperties;
 
 class LuaEntitySAO : public ServerActiveObject
 {
@@ -80,7 +79,7 @@ private:
 	std::string m_init_name;
 	std::string m_init_state;
 	bool m_registered;
-	struct LuaEntityProperties *m_prop;
+	struct ObjectProperties m_prop;
 	
 	s16 m_hp;
 	v3f m_velocity;
@@ -193,6 +192,7 @@ private:
 	ItemGroupList m_armor_groups;
 	bool m_armor_groups_sent;
 	bool m_properties_sent;
+	struct ObjectProperties m_prop;
 
 public:
 	// Some flags used by Server

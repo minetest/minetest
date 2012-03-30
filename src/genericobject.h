@@ -22,6 +22,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include <string>
 #include "irrlichttypes.h"
+#include <iostream>
 
 #define GENERIC_CMD_SET_PROPERTIES 0
 #define GENERIC_CMD_UPDATE_POSITION 1
@@ -30,18 +31,9 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #define GENERIC_CMD_PUNCHED 4
 #define GENERIC_CMD_UPDATE_ARMOR_GROUPS 5
 
-std::string gob_cmd_set_properties(
-	s16 hp_max,
-	bool physical,
-	float weight,
-	core::aabbox3d<f32> collisionbox,
-	std::string visual,
-	v2f visual_size,
-	core::array<std::string> textures,
-	v2s16 spritediv,
-	bool is_visible,
-	bool makes_footstep_sound
-);
+#include "object_properties.h"
+std::string gob_cmd_set_properties(const ObjectProperties &prop);
+ObjectProperties gob_read_set_properties(std::istream &is);
 
 std::string gob_cmd_update_position(
 	v3f position,

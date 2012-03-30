@@ -21,35 +21,48 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "utility.h"
 #include <sstream>
 
-std::string gob_cmd_set_properties(
-	s16 hp_max,
-	bool physical,
-	float weight,
-	core::aabbox3d<f32> collisionbox,
-	std::string visual,
-	v2f visual_size,
-	core::array<std::string> textures,
-	v2s16 spritediv,
-	bool is_visible,
-	bool makes_footstep_sound
-){
+std::string gob_cmd_set_properties(const ObjectProperties &prop)
+{
 	std::ostringstream os(std::ios::binary);
 	writeU8(os, GENERIC_CMD_SET_PROPERTIES);
-	writeS16(os, hp_max);
-	writeU8(os, physical);
-	writeF1000(os, weight);
-	writeV3F1000(os, collisionbox.MinEdge);
-	writeV3F1000(os, collisionbox.MaxEdge);
-	os<<serializeString(visual);
-	writeV2F1000(os, visual_size);
-	writeU16(os, textures.size());
-	for(u32 i=0; i<textures.size(); i++){
-		os<<serializeString(textures[i]);
+	writeS16(os, prop.hp_max);
+	writeU8(os, prop.physical);
+	writeF1000(os, prop.weight);
+	writeV3F1000(os, prop.collisionbox.MinEdge);
+	writeV3F1000(os, prop.collisionbox.MaxEdge);
+	os<<serializeString(prop.visual);
+	writeV2F1000(os, prop.visual_size);
+	writeU16(os, prop.textures.size());
+	for(u32 i=0; i<prop.textures.size(); i++){
+		os<<serializeString(prop.textures[i]);
 	}
-	writeV2S16(os, spritediv);
-	writeU8(os, is_visible);
-	writeU8(os, makes_footstep_sound);
+	writeV2S16(os, prop.spritediv);
+	writeV2S16(os, prop.initial_sprite_basepos);
+	writeU8(os, prop.is_visible);
+	writeU8(os, prop.makes_footstep_sound);
 	return os.str();
+}
+
+ObjectProperties gob_read_set_properties(std::istream &is)
+{
+	ObjectProperties prop;
+	prop.hp_max = readS16(is);
+	prop.physical = readU8(is);
+	prop.weight = readF1000(is);
+	prop.collisionbox.MinEdge = readV3F1000(is);
+	prop.collisionbox.MaxEdge = readV3F1000(is);
+	prop.visual = deSerializeString(is);
+	prop.visual_size = readV2F1000(is);
+	prop.textures.clear();
+	u32 texture_count = readU16(is);
+	for(u32 i=0; i<texture_count; i++){
+		prop.textures.push_back(deSerializeString(is));
+	}
+	prop.spritediv = readV2S16(is);
+	prop.initial_sprite_basepos = readV2S16(is);
+	prop.is_visible = readU8(is);
+	prop.makes_footstep_sound = readU8(is);
+	return prop;
 }
 
 std::string gob_cmd_update_position(

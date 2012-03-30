@@ -336,8 +336,6 @@ ServerActiveObject* createItemSAO(ServerEnvironment *env, v3f pos,
 	LuaEntitySAO
 */
 
-#include "luaentity_common.h"
-
 // Prototype (registers item for deserialization)
 LuaEntitySAO proto_LuaEntitySAO(NULL, v3f(0,0,0), "_prototype", "");
 
@@ -347,7 +345,6 @@ LuaEntitySAO::LuaEntitySAO(ServerEnvironment *env, v3f pos,
 	m_init_name(name),
 	m_init_state(state),
 	m_registered(false),
-	m_prop(new LuaEntityProperties),
 	m_hp(-1),
 	m_velocity(0,0,0),
 	m_acceleration(0,0,0),
@@ -377,7 +374,6 @@ LuaEntitySAO::~LuaEntitySAO()
 		lua_State *L = m_env->getLua();
 		scriptapi_luaentity_rm(L, m_id);
 	}
-	delete m_prop;
 }
 
 void LuaEntitySAO::addedToEnvironment()
@@ -390,9 +386,9 @@ void LuaEntitySAO::addedToEnvironment()
 	
 	if(m_registered){
 		// Get properties
-		scriptapi_luaentity_get_properties(L, m_id, m_prop);
+		scriptapi_luaentity_get_properties(L, m_id, &m_prop);
 		// Initialize HP from properties
-		m_hp = m_prop->hp_max;
+		m_hp = m_prop.hp_max;
 	}
 	
 	// Activate entity, supplying serialized state
@@ -447,8 +443,8 @@ void LuaEntitySAO::step(float dtime, bool send_recommended)
 
 	m_last_sent_position_timer += dtime;
 	
-	if(m_prop->physical){
-		core::aabbox3d<f32> box = m_prop->collisionbox;
+	if(m_prop.physical){
+		core::aabbox3d<f32> box = m_prop.collisionbox;
 		box.MinEdge *= BS;
 		box.MaxEdge *= BS;
 		collisionMoveResult moveresult;
@@ -511,13 +507,9 @@ std::string LuaEntitySAO::getClientInitializationData()
 	writeV3F1000(os, m_base_position);
 	writeF1000(os, m_yaw);
 	writeS16(os, m_hp);
-	writeU8(os, 3); // number of messages stuffed in here
+	writeU8(os, 2); // number of messages stuffed in here
 	os<<serializeLongString(getPropertyPacket()); // message 1
 	os<<serializeLongString(gob_cmd_update_armor_groups(m_armor_groups)); // 2
-	os<<serializeLongString(gob_cmd_set_sprite( // 3
-		m_prop->initial_sprite_basepos,
-		1, 1.0, false
-	));
 	// return result
 	return os.str();
 }
@@ -710,18 +702,7 @@ std::string LuaEntitySAO::getName()
 
 std::string LuaEntitySAO::getPropertyPacket()
 {
-	return gob_cmd_set_properties(
-		m_prop->hp_max,
-		m_prop->physical,
-		m_prop->weight,
-		m_prop->collisionbox,
-		m_prop->visual,
-		m_prop->visual_size,
-		m_prop->textures,
-		m_prop->spritediv,
-		true, // is_visible
-		false // makes_footstep_sound
-	);
+	return gob_cmd_set_properties(m_prop);
 }
 
 void LuaEntitySAO::sendPosition(bool do_interpolate, bool is_movement_end)
@@ -778,6 +759,19 @@ PlayerSAO::PlayerSAO(ServerEnvironment *env_, Player *player_, u16 peer_id_):
 	m_inventory = &m_player->inventory;
 	m_armor_groups["choppy"] = 2;
 	m_armor_groups["fleshy"] = 3;
+
+	m_prop.hp_max = PLAYER_MAX_HP;
+	m_prop.physical = false;
+	m_prop.weight = 75;
+	m_prop.collisionbox = core::aabbox3d<f32>(-1/3.,-1.0,-1/3., 1/3.,1.0,1/3.);
+	m_prop.visual = "upright_sprite";
+	m_prop.visual_size = v2f(1, 2);
+	m_prop.textures.clear();
+	m_prop.textures.push_back("player.png");
+	m_prop.textures.push_back("player_back.png");
+	m_prop.spritediv = v2s16(1,1);
+	m_prop.is_visible = (getHP() != 0);
+	m_prop.makes_footstep_sound = true;
 }
 
 PlayerSAO::~PlayerSAO()
@@ -1107,20 +1101,7 @@ void PlayerSAO::createCreativeInventory()
 
 std::string PlayerSAO::getPropertyPacket()
 {
-	core::array<std::string> textures;
-	textures.push_back("player.png");
-	textures.push_back("player_back.png");
-	return gob_cmd_set_properties(
-		PLAYER_MAX_HP,
-		false,
-		75,
-		core::aabbox3d<f32>(-1/3.,-1.0,-1/3., 1/3.,1.0,1/3.),
-		"upright_sprite",
-		v2f(1, 2),
-		textures,
-		v2s16(1,1),
-		(getHP() != 0), // is_visible
-		true // makes_footstep_sound
-	);
+	m_prop.is_visible = (getHP() != 0);
+	return gob_cmd_set_properties(m_prop);
 }
 

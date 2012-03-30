@@ -548,16 +548,7 @@ private:
 	bool m_is_player;
 	bool m_is_local_player; // determined locally
 	// Property-ish things
-	s16 m_hp_max;
-	bool m_physical;
-	float m_weight;
-	core::aabbox3d<f32> m_collisionbox;
-	std::string m_visual;
-	v2f m_visual_size;
-	core::array<std::string> m_textures;
-	v2s16 m_spritediv;
-	bool m_is_visible;
-	bool m_makes_footstep_sound;
+	ObjectProperties m_prop;
 	//
 	scene::ISceneManager *m_smgr;
 	IrrlichtDevice *m_irr;
@@ -574,6 +565,7 @@ private:
 	// Spritesheet/animation stuff
 	v2f m_tx_size;
 	v2s16 m_tx_basepos;
+	bool m_initial_tx_basepos_set;
 	bool m_tx_select_horiz_by_yawpitch;
 	int m_anim_frame;
 	int m_anim_num_frames;
@@ -591,16 +583,6 @@ public:
 		m_is_player(false),
 		m_is_local_player(false),
 		//
-		m_hp_max(1),
-		m_physical(false),
-		m_weight(5),
-		m_collisionbox(-0.5,-0.5,-0.5, 0.5,0.5,0.5),
-		m_visual("sprite"),
-		m_visual_size(1,1),
-		m_spritediv(1,1),
-		m_is_visible(true),
-		m_makes_footstep_sound(false),
-		//
 		m_smgr(NULL),
 		m_irr(NULL),
 		m_selection_box(-BS/3.,-BS/3.,-BS/3., BS/3.,BS/3.,BS/3.),
@@ -614,6 +596,7 @@ public:
 		m_hp(1),
 		m_tx_size(1,1),
 		m_tx_basepos(0,0),
+		m_initial_tx_basepos_set(false),
 		m_tx_select_horiz_by_yawpitch(false),
 		m_anim_frame(0),
 		m_anim_num_frames(1),
@@ -623,7 +606,6 @@ public:
 		m_visuals_expired(false),
 		m_step_distance_counter(0)
 	{
-		m_textures.push_back("unknown_object.png");
 		if(gamedef == NULL)
 			ClientActiveObject::registerType(getType(), create);
 	}
@@ -678,7 +660,7 @@ public:
 	}
 	core::aabbox3d<f32>* getSelectionBox()
 	{
-		if(!m_is_visible || m_is_local_player)
+		if(!m_prop.is_visible || m_is_local_player)
 			return NULL;
 		return &m_selection_box;
 	}
@@ -710,12 +692,12 @@ public:
 		
 		m_visuals_expired = false;
 
-		if(!m_is_visible || m_is_local_player)
+		if(!m_prop.is_visible || m_is_local_player)
 			return;
 	
 		//video::IVideoDriver* driver = smgr->getVideoDriver();
 
-		if(m_visual == "sprite"){
+		if(m_prop.visual == "sprite"){
 			infostream<<"GenericCAO::addToScene(): single_sprite"<<std::endl;
 			m_spritenode = smgr->addBillboardSceneNode(
 					NULL, v2f(1, 1), v3f(0,0,0), -1);
@@ -727,7 +709,7 @@ public:
 			m_spritenode->setMaterialFlag(video::EMF_FOG_ENABLE, true);
 			m_spritenode->setColor(video::SColor(255,0,0,0));
 			m_spritenode->setVisible(false); /* Set visible when brightness is known */
-			m_spritenode->setSize(m_visual_size*BS);
+			m_spritenode->setSize(m_prop.visual_size*BS);
 			{
 				const float txs = 1.0 / 1;
 				const float tys = 1.0 / 1;
@@ -735,11 +717,11 @@ public:
 						txs, tys, 0, 0);
 			}
 		}
-		else if(m_visual == "upright_sprite")
+		else if(m_prop.visual == "upright_sprite")
 		{
 			scene::SMesh *mesh = new scene::SMesh();
-			double dx = BS*m_visual_size.X/2;
-			double dy = BS*m_visual_size.Y/2;
+			double dx = BS*m_prop.visual_size.X/2;
+			double dy = BS*m_prop.visual_size.Y/2;
 			{ // Front
 			scene::IMeshBuffer *buf = new scene::SMeshBuffer();
 			video::SColor c(255,255,255,255);
@@ -788,7 +770,7 @@ public:
 			// This is needed for changing the texture in the future
 			m_meshnode->setReadOnlyMaterials(true);
 		}
-		else if(m_visual == "cube"){
+		else if(m_prop.visual == "cube"){
 			infostream<<"GenericCAO::addToScene(): cube"<<std::endl;
 			scene::IMesh *mesh = createCubeMesh(v3f(BS,BS,BS));
 			m_meshnode = smgr->addMeshSceneNode(mesh, NULL);
@@ -798,7 +780,7 @@ public:
 			// Will be shown when we know the brightness
 			m_meshnode->setVisible(false);
 		} else {
-			infostream<<"GenericCAO::addToScene(): \""<<m_visual
+			infostream<<"GenericCAO::addToScene(): \""<<m_prop.visual
 					<<"\" not supported"<<std::endl;
 		}
 		updateTextures("");
@@ -868,8 +850,8 @@ public:
 			addToScene(m_smgr, m_gamedef->tsrc(), m_irr);
 		}
 
-		if(m_physical){
-			core::aabbox3d<f32> box = m_collisionbox;
+		if(m_prop.physical){
+			core::aabbox3d<f32> box = m_prop.collisionbox;
 			box.MinEdge *= BS;
 			box.MaxEdge *= BS;
 			collisionMoveResult moveresult;
@@ -901,7 +883,7 @@ public:
 		m_step_distance_counter += moved;
 		if(m_step_distance_counter > 1.5*BS){
 			m_step_distance_counter = 0;
-			if(!m_is_local_player && m_makes_footstep_sound){
+			if(!m_is_local_player && m_prop.makes_footstep_sound){
 				INodeDefManager *ndef = m_gamedef->ndef();
 				v3s16 p = floatToInt(getPosition()+v3f(0,-0.5*BS, 0), BS);
 				MapNode n = m_env->getMap().getNodeNoEx(p);
@@ -983,11 +965,11 @@ public:
 
 		if(m_spritenode)
 		{
-			if(m_visual == "sprite")
+			if(m_prop.visual == "sprite")
 			{
 				std::string texturestring = "unknown_block.png";
-				if(m_textures.size() >= 1)
-					texturestring = m_textures[0];
+				if(m_prop.textures.size() >= 1)
+					texturestring = m_prop.textures[0];
 				texturestring += mod;
 				m_spritenode->setMaterialTexture(0,
 						tsrc->getTextureRaw(texturestring));
@@ -995,13 +977,13 @@ public:
 		}
 		if(m_meshnode)
 		{
-			if(m_visual == "cube")
+			if(m_prop.visual == "cube")
 			{
 				for (u32 i = 0; i < 6; ++i)
 				{
 					std::string texturestring = "unknown_block.png";
-					if(m_textures.size() > i)
-						texturestring = m_textures[i];
+					if(m_prop.textures.size() > i)
+						texturestring = m_prop.textures[i];
 					texturestring += mod;
 					AtlasPointer ap = tsrc->getTexture(texturestring);
 
@@ -1019,13 +1001,13 @@ public:
 					material.getTextureMatrix(0).setTextureScale(size.X, size.Y);
 				}
 			}
-			else if(m_visual == "upright_sprite")
+			else if(m_prop.visual == "upright_sprite")
 			{
 				scene::IMesh *mesh = m_meshnode->getMesh();
 				{
 					std::string tname = "unknown_object.png";
-					if(m_textures.size() >= 1)
-						tname = m_textures[0];
+					if(m_prop.textures.size() >= 1)
+						tname = m_prop.textures[0];
 					tname += mod;
 					scene::IMeshBuffer *buf = mesh->getMeshBuffer(0);
 					buf->getMaterial().setTexture(0,
@@ -1033,10 +1015,10 @@ public:
 				}
 				{
 					std::string tname = "unknown_object.png";
-					if(m_textures.size() >= 2)
-						tname = m_textures[1];
-					else if(m_textures.size() >= 1)
-						tname = m_textures[0];
+					if(m_prop.textures.size() >= 2)
+						tname = m_prop.textures[1];
+					else if(m_prop.textures.size() >= 1)
+						tname = m_prop.textures[0];
 					tname += mod;
 					scene::IMeshBuffer *buf = mesh->getMeshBuffer(1);
 					buf->getMaterial().setTexture(0,
@@ -1054,28 +1036,19 @@ public:
 		u8 cmd = readU8(is);
 		if(cmd == GENERIC_CMD_SET_PROPERTIES)
 		{
-			m_hp_max = readS16(is);
-			m_physical = readU8(is);
-			m_weight = readF1000(is);
-			m_collisionbox.MinEdge = readV3F1000(is);
-			m_collisionbox.MaxEdge = readV3F1000(is);
-			m_visual = deSerializeString(is);
-			m_visual_size = readV2F1000(is);
-			m_textures.clear();
-			u32 texture_count = readU16(is);
-			for(u32 i=0; i<texture_count; i++){
-				m_textures.push_back(deSerializeString(is));
-			}
-			m_spritediv = readV2S16(is);
-			m_is_visible = readU8(is);
-			m_makes_footstep_sound = readU8(is);
+			m_prop = gob_read_set_properties(is);
 
-			m_selection_box = m_collisionbox;
+			m_selection_box = m_prop.collisionbox;
 			m_selection_box.MinEdge *= BS;
 			m_selection_box.MaxEdge *= BS;
 				
-			m_tx_size.X = 1.0 / m_spritediv.X;
-			m_tx_size.Y = 1.0 / m_spritediv.Y;
+			m_tx_size.X = 1.0 / m_prop.spritediv.X;
+			m_tx_size.Y = 1.0 / m_prop.spritediv.Y;
+
+			if(!m_initial_tx_basepos_set){
+				m_initial_tx_basepos_set = true;
+				m_tx_basepos = m_prop.initial_sprite_basepos;
+			}
 			
 			expireVisuals();
 		}
@@ -1090,7 +1063,7 @@ public:
 			float update_interval = readF1000(is);
 			
 			if(do_interpolate){
-				if(!m_physical)
+				if(!m_prop.physical)
 					pos_translator.update(m_position, is_end_position, update_interval);
 			} else {
 				pos_translator.init(m_position);
@@ -1147,8 +1120,6 @@ public:
 				punchitem,
 				time_from_last_punch);
 
-		dstream<<"Directly did_punch="<<result.did_punch<<" result.damage="<<result.damage<<std::endl;
-		
 		if(result.did_punch && result.damage != 0)
 		{
 			if(result.damage < m_hp){
@@ -1159,7 +1130,7 @@ public:
 				// As there is no definition, make a smoke puff
 				ClientSimpleObject *simple = createSmokePuff(
 						m_smgr, m_env, m_position,
-						m_visual_size * BS);
+						m_prop.visual_size * BS);
 				m_env->addSimpleObject(simple);
 			}
 			// TODO: Execute defined fast response

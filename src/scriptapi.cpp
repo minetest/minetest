@@ -33,8 +33,7 @@ extern "C" {
 #include "filesys.h"
 #include "serverobject.h"
 #include "script.h"
-//#include "luna.h"
-#include "luaentity_common.h"
+#include "object_properties.h"
 #include "content_sao.h" // For LuaEntitySAO and PlayerSAO
 #include "itemdef.h"
 #include "nodedef.h"
@@ -4679,7 +4678,7 @@ std::string scriptapi_luaentity_get_staticdata(lua_State *L, u16 id)
 }
 
 void scriptapi_luaentity_get_properties(lua_State *L, u16 id,
-		LuaEntityProperties *prop)
+		ObjectProperties *prop)
 {
 	realitycheck(L);
 	assert(lua_checkstack(L, 20));

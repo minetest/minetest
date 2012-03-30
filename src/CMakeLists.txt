@@ -165,7 +165,7 @@ set(common_SRCS
 	nameidmapping.cpp
 	itemdef.cpp
 	nodedef.cpp
-	luaentity_common.cpp
+	object_properties.cpp
 	scriptapi.cpp
 	script.cpp
 	log.cpp
