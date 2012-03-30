@@ -141,14 +141,14 @@ static Server* get_server(lua_State *L)
 	return server;
 }
 
-static ServerEnvironment* get_env(lua_State *L)
+/*static ServerEnvironment* get_env(lua_State *L)
 {
 	// Get environment from registry
 	lua_getfield(L, LUA_REGISTRYINDEX, "minetest_env");
 	ServerEnvironment *env = (ServerEnvironment*)lua_touserdata(L, -1);
 	lua_pop(L, 1);
 	return env;
-}
+}*/
 
 static void objectref_get(lua_State *L, u16 id)
 {
@@ -642,6 +642,27 @@ static void read_groups(lua_State *L, int index,
 		std::string name = luaL_checkstring(L, -2);
 		int rating = luaL_checkinteger(L, -1);
 		result[name] = rating;
+		// removes value, keeps key for next iteration
+		lua_pop(L, 1);
+	}
+}
+
+/*
+	Privileges
+*/
+static void read_privileges(lua_State *L, int index,
+		std::set<std::string> &result)
+{
+	result.clear();
+	lua_pushnil(L);
+	if(index < 0)
+		index -= 1;
+	while(lua_next(L, index) != 0){
+		// key at index -2 and value at index -1
+		std::string key = luaL_checkstring(L, -2);
+		bool value = lua_toboolean(L, -1);
+		if(value)
+			result.insert(key);
 		// removes value, keeps key for next iteration
 		lua_pop(L, 1);
 	}
@@ -3837,8 +3858,7 @@ static int l_get_player_privs(lua_State *L)
 	// Do it
 	lua_newtable(L);
 	int table = lua_gettop(L);
-	u64 privs_i = server->getPlayerEffectivePrivs(name);
-	std::set<std::string> privs_s = privsToSet(privs_i);
+	std::set<std::string> privs_s = server->getPlayerEffectivePrivs(name);
 	for(std::set<std::string>::const_iterator
 			i = privs_s.begin(); i != privs_s.end(); i++){
 		lua_pushboolean(L, true);
@@ -3954,6 +3974,17 @@ static int l_is_singleplayer(lua_State *L)
 	return 1;
 }
 
+// get_password_hash(name, raw_password)
+static int l_get_password_hash(lua_State *L)
+{
+	std::string name = luaL_checkstring(L, 1);
+	std::string raw_password = luaL_checkstring(L, 2);
+	std::string hash = translatePassword(name,
+			narrow_to_wide(raw_password));
+	lua_pushstring(L, hash.c_str());
+	return 1;
+}
+
 static const struct luaL_Reg minetest_f [] = {
 	{"debug", l_debug},
 	{"log", l_log},
@@ -3974,6 +4005,7 @@ static const struct luaL_Reg minetest_f [] = {
 	{"sound_play", l_sound_play},
 	{"sound_stop", l_sound_stop},
 	{"is_singleplayer", l_is_singleplayer},
+	{"get_password_hash", l_get_password_hash},
 	{NULL, NULL}
 };
 
@@ -4421,6 +4453,10 @@ void scriptapi_on_leaveplayer(lua_State *L, ServerActiveObject *player)
 
 void scriptapi_get_creative_inventory(lua_State *L, ServerActiveObject *player)
 {
+	realitycheck(L);
+	assert(lua_checkstack(L, 20));
+	StackUnroller stack_unroller(L);
+	
 	Inventory *inv = player->getInventory();
 	assert(inv);
 
@@ -4428,6 +4464,91 @@ void scriptapi_get_creative_inventory(lua_State *L, ServerActiveObject *player)
 	lua_getfield(L, -1, "creative_inventory");
 	luaL_checktype(L, -1, LUA_TTABLE);
 	inventory_set_list_from_lua(inv, "main", L, -1, PLAYER_INVENTORY_SIZE);
+}
+
+static void get_auth_handler(lua_State *L)
+{
+	lua_getglobal(L, "minetest");
+	lua_getfield(L, -1, "registered_auth_handler");
+	if(lua_isnil(L, -1)){
+		lua_pop(L, 1);
+		lua_getfield(L, -1, "builtin_auth_handler");
+	}
+	if(lua_type(L, -1) != LUA_TTABLE)
+		throw LuaError(L, "Authentication handler table not valid");
+}
+
+bool scriptapi_get_auth(lua_State *L, const std::string &playername,
+		std::string *dst_password, std::set<std::string> *dst_privs)
+{
+	realitycheck(L);
+	assert(lua_checkstack(L, 20));
+	StackUnroller stack_unroller(L);
+	
+	get_auth_handler(L);
+	lua_getfield(L, -1, "get_auth");
+	if(lua_type(L, -1) != LUA_TFUNCTION)
+		throw LuaError(L, "Authentication handler missing get_auth");
+	lua_pushstring(L, playername.c_str());
+	if(lua_pcall(L, 1, 1, 0))
+		script_error(L, "error: %s", lua_tostring(L, -1));
+	
+	// nil = login not allowed
+	if(lua_isnil(L, -1))
+		return false;
+	luaL_checktype(L, -1, LUA_TTABLE);
+	
+	std::string password;
+	bool found = getstringfield(L, -1, "password", password);
+	if(!found)
+		throw LuaError(L, "Authentication handler didn't return password");
+	if(dst_password)
+		*dst_password = password;
+
+	lua_getfield(L, -1, "privileges");
+	if(!lua_istable(L, -1))
+		throw LuaError(L,
+				"Authentication handler didn't return privilege table");
+	if(dst_privs)
+		read_privileges(L, -1, *dst_privs);
+	lua_pop(L, 1);
+	
+	return true;
+}
+
+void scriptapi_create_auth(lua_State *L, const std::string &playername,
+		const std::string &password)
+{
+	realitycheck(L);
+	assert(lua_checkstack(L, 20));
+	StackUnroller stack_unroller(L);
+	
+	get_auth_handler(L);
+	lua_getfield(L, -1, "create_auth");
+	if(lua_type(L, -1) != LUA_TFUNCTION)
+		throw LuaError(L, "Authentication handler missing create_auth");
+	lua_pushstring(L, playername.c_str());
+	lua_pushstring(L, password.c_str());
+	if(lua_pcall(L, 2, 0, 0))
+		script_error(L, "error: %s", lua_tostring(L, -1));
+}
+
+bool scriptapi_set_password(lua_State *L, const std::string &playername,
+		const std::string &password)
+{
+	realitycheck(L);
+	assert(lua_checkstack(L, 20));
+	StackUnroller stack_unroller(L);
+	
+	get_auth_handler(L);
+	lua_getfield(L, -1, "set_password");
+	if(lua_type(L, -1) != LUA_TFUNCTION)
+		throw LuaError(L, "Authentication handler missing set_password");
+	lua_pushstring(L, playername.c_str());
+	lua_pushstring(L, password.c_str());
+	if(lua_pcall(L, 2, 1, 0))
+		script_error(L, "error: %s", lua_tostring(L, -1));
+	return lua_toboolean(L, -1);
 }
 
 /*

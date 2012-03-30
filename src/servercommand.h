@@ -36,9 +36,6 @@ struct ServerCommandContext
 	Server* server;
 	ServerEnvironment *env;
 	Player* player;
-	// Effective privs for the player, which may be different to their
-	// stored ones - e.g. if they are named in the config as an admin.
-	u64 privs;
 	u32 flags;
 
 	ServerCommandContext(
@@ -46,10 +43,9 @@ struct ServerCommandContext
 		std::wstring paramstring,
 		Server* server,
 		ServerEnvironment *env,
-		Player* player,
-		u64 privs)
+		Player* player)
 		: parms(parms), paramstring(paramstring),
-		server(server), env(env), player(player), privs(privs)
+		server(server), env(env), player(player)
 	{
 	}
 

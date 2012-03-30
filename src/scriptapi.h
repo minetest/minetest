@@ -23,6 +23,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "irrlichttypes.h"
 #include <string>
 #include "mapnode.h"
+#include <set>
 
 class Server;
 class ServerEnvironment;
@@ -60,6 +61,12 @@ bool scriptapi_on_respawnplayer(lua_State *L, ServerActiveObject *player);
 void scriptapi_on_joinplayer(lua_State *L, ServerActiveObject *player);
 void scriptapi_on_leaveplayer(lua_State *L, ServerActiveObject *player);
 void scriptapi_get_creative_inventory(lua_State *L, ServerActiveObject *player);
+bool scriptapi_get_auth(lua_State *L, const std::string &playername,
+		std::string *dst_password, std::set<std::string> *dst_privs);
+void scriptapi_create_auth(lua_State *L, const std::string &playername,
+		const std::string &password);
+bool scriptapi_set_password(lua_State *L, const std::string &playername,
+		const std::string &password);
 
 /* item callbacks */
 bool scriptapi_item_on_drop(lua_State *L, ItemStack &item,

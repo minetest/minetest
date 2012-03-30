@@ -38,98 +38,6 @@ void cmd_me(std::wostringstream &os,
 	ctx->flags |= SEND_TO_OTHERS | SEND_NO_PREFIX;
 }
 
-void cmd_privs(std::wostringstream &os,
-	ServerCommandContext *ctx)
-{
-	if(ctx->parms.size() == 1)
-	{
-		// Show our own real privs, without any adjustments
-		// made for admin status
-		os<<L"-!- " + narrow_to_wide(privsToString(
-				ctx->server->getPlayerAuthPrivs(ctx->player->getName())));
-		return;
-	}
-
-	if((ctx->privs & PRIV_PRIVS) == 0)
-	{
-		os<<L"-!- You don't have permission to do that";
-		return;
-	}
-		
-	Player *tp = ctx->env->getPlayer(wide_to_narrow(ctx->parms[1]).c_str());
-	if(tp == NULL)
-	{
-		os<<L"-!- No such player";
-		return;
-	}
-	
-	os<<L"-!- " + narrow_to_wide(privsToString(ctx->server->getPlayerAuthPrivs(tp->getName())));
-}
-
-void cmd_grantrevoke(std::wostringstream &os,
-	ServerCommandContext *ctx)
-{
-	if(ctx->parms.size() != 3)
-	{
-		os<<L"-!- Missing parameter";
-		return;
-	}
-
-	if((ctx->privs & PRIV_PRIVS) == 0)
-	{
-		os<<L"-!- You don't have permission to do that";
-		return;
-	}
-
-	u64 newprivs = stringToPrivs(wide_to_narrow(ctx->parms[2]));
-	if(newprivs == PRIV_INVALID)
-	{
-		os<<L"-!- Invalid privileges specified";
-		return;
-	}
-
-	Player *tp = ctx->env->getPlayer(wide_to_narrow(ctx->parms[1]).c_str());
-	if(tp == NULL)
-	{
-		os<<L"-!- No such player";
-		return;
-	}
-	
-	std::string playername = wide_to_narrow(ctx->parms[1]);
-	u64 privs = ctx->server->getPlayerAuthPrivs(playername);
-
-	if(ctx->parms[0] == L"grant"){
-		privs |= newprivs;
-		actionstream<<ctx->player->getName()<<" grants "
-				<<wide_to_narrow(ctx->parms[2])<<" to "
-				<<playername<<std::endl;
-
-		std::wstring msg;
-		msg += narrow_to_wide(ctx->player->getName());
-		msg += L" granted you the privilege \"";
-		msg += ctx->parms[2];
-		msg += L"\"";
-		ctx->server->notifyPlayer(playername.c_str(), msg);
-	} else {
-		privs &= ~newprivs;
-		actionstream<<ctx->player->getName()<<" revokes "
-				<<wide_to_narrow(ctx->parms[2])<<" from "
-				<<playername<<std::endl;
-
-		std::wstring msg;
-		msg += narrow_to_wide(ctx->player->getName());
-		msg += L" revoked from you the privilege \"";
-		msg += ctx->parms[2];
-		msg += L"\"";
-		ctx->server->notifyPlayer(playername.c_str(), msg);
-	}
-	
-	ctx->server->setPlayerAuthPrivs(playername, privs);
-	
-	os<<L"-!- Privileges change to ";
-	os<<narrow_to_wide(privsToString(privs));
-}
-
 void cmd_time(std::wostringstream &os,
 	ServerCommandContext *ctx)
 {
@@ -138,8 +46,8 @@ void cmd_time(std::wostringstream &os,
 		os<<L"-!- Missing parameter";
 		return;
 	}
-
-	if((ctx->privs & PRIV_SETTIME) ==0)
+	
+	if(!ctx->server->checkPriv(ctx->player->getName(), "settime"))
 	{
 		os<<L"-!- You don't have permission to do that";
 		return;
@@ -156,7 +64,7 @@ void cmd_time(std::wostringstream &os,
 void cmd_shutdown(std::wostringstream &os,
 	ServerCommandContext *ctx)
 {
-	if((ctx->privs & PRIV_SERVER) ==0)
+	if(!ctx->server->checkPriv(ctx->player->getName(), "server"))
 	{
 		os<<L"-!- You don't have permission to do that";
 		return;
@@ -174,7 +82,7 @@ void cmd_shutdown(std::wostringstream &os,
 void cmd_setting(std::wostringstream &os,
 	ServerCommandContext *ctx)
 {
-	if((ctx->privs & PRIV_SERVER) ==0)
+	if(!ctx->server->checkPriv(ctx->player->getName(), "server"))
 	{
 		os<<L"-!- You don't have permission to do that";
 		return;
@@ -198,7 +106,7 @@ void cmd_setting(std::wostringstream &os,
 void cmd_teleport(std::wostringstream &os,
 	ServerCommandContext *ctx)
 {
-	if((ctx->privs & PRIV_TELEPORT) ==0)
+	if(!ctx->server->checkPriv(ctx->player->getName(), "teleport"))
 	{
 		os<<L"-!- You don't have permission to do that";
 		return;
@@ -241,7 +149,7 @@ void cmd_teleport(std::wostringstream &os,
 
 void cmd_banunban(std::wostringstream &os, ServerCommandContext *ctx)
 {
-	if((ctx->privs & PRIV_BAN) == 0)
+	if(!ctx->server->checkPriv(ctx->player->getName(), "ban"))
 	{
 		os<<L"-!- You don't have permission to do that";
 		return;
@@ -288,62 +196,10 @@ void cmd_banunban(std::wostringstream &os, ServerCommandContext *ctx)
 	}
 }
 
-void cmd_setclearpassword(std::wostringstream &os,
-	ServerCommandContext *ctx)
-{
-	if((ctx->privs & PRIV_PASSWORD) == 0)
-	{
-		os<<L"-!- You don't have permission to do that";
-		return;
-	}
-
-	std::string playername;
-	std::wstring password;
-
-	if(ctx->parms[0] == L"setpassword")
-	{
-		if(ctx->parms.size() != 3)
-		{
-			os<<L"-!- Missing parameter";
-			return;
-		}
-
-		playername = wide_to_narrow(ctx->parms[1]);
-		password = ctx->parms[2];
-
-		actionstream<<ctx->player->getName()<<" sets password of "
-			<<playername<<std::endl;
-	}
-	else
-	{
-		// clearpassword
-
-		if(ctx->parms.size() != 2)
-		{
-			os<<L"-!- Missing parameter";
-			return;
-		}
-
-		playername = wide_to_narrow(ctx->parms[1]);
-		password = L"";
-
-		actionstream<<ctx->player->getName()<<" clears password of"
-			<<playername<<std::endl;
-	}
-
-	ctx->server->setPlayerPassword(playername, password);
-
-	std::wostringstream msg;
-	msg<<ctx->player->getName()<<L" changed your password";
-	ctx->server->notifyPlayer(playername.c_str(), msg.str());
-
-	os<<L"-!- Password change for "<<narrow_to_wide(playername)<<" successful";
-}
-
 void cmd_clearobjects(std::wostringstream &os,
 	ServerCommandContext *ctx)
 {
-	if((ctx->privs & PRIV_SERVER) ==0)
+	if(!ctx->server->checkPriv(ctx->player->getName(), "server"))
 	{
 		os<<L"-!- You don't have permission to do that";
 		return;
@@ -378,10 +234,6 @@ std::wstring processServerCommand(ServerCommandContext *ctx)
 
 	if(ctx->parms[0] == L"status")
 		cmd_status(os, ctx);
-	else if(ctx->parms[0] == L"privs")
-		cmd_privs(os, ctx);
-	else if(ctx->parms[0] == L"grant" || ctx->parms[0] == L"revoke")
-		cmd_grantrevoke(os, ctx);
 	else if(ctx->parms[0] == L"time")
 		cmd_time(os, ctx);
 	else if(ctx->parms[0] == L"shutdown")
@@ -392,8 +244,6 @@ std::wstring processServerCommand(ServerCommandContext *ctx)
 		cmd_teleport(os, ctx);
 	else if(ctx->parms[0] == L"ban" || ctx->parms[0] == L"unban")
 		cmd_banunban(os, ctx);
-	else if(ctx->parms[0] == L"setpassword" || ctx->parms[0] == L"clearpassword")
-		cmd_setclearpassword(os, ctx);
 	else if(ctx->parms[0] == L"me")
 		cmd_me(os, ctx);
 	else if(ctx->parms[0] == L"clearobjects")

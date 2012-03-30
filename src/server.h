@@ -27,7 +27,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "porting.h"
 #include "map.h"
 #include "inventory.h"
-#include "auth.h"
 #include "ban.h"
 #include "gamedef.h"
 #include "serialization.h" // For SER_FMT_VER_INVALID
@@ -500,15 +499,10 @@ public:
 	s32 playSound(const SimpleSoundSpec &spec, const ServerSoundParams &params);
 	void stopSound(s32 handle);
 	
-	// Thread-safe
-	u64 getPlayerAuthPrivs(const std::string &name);
-	void setPlayerAuthPrivs(const std::string &name, u64 privs);
-	u64 getPlayerEffectivePrivs(const std::string &name);
+	// Envlock + conlock
+	std::set<std::string> getPlayerEffectivePrivs(const std::string &name);
+	bool checkPriv(const std::string &name, const std::string &priv);
 
-	// Changes a player's password, password must be given as plaintext
-	// If the player doesn't exist, a new entry is added to the auth manager
-	void setPlayerPassword(const std::string &name, const std::wstring &password);
-	
 	// Saves g_settings to configpath given at initialization
 	void saveConfig();
 
@@ -670,8 +664,6 @@ private:
 	void handlePeerChange(PeerChange &c);
 	void handlePeerChanges();
 
-	u64 getPlayerPrivs(Player *player);
-
 	/*
 		Variables
 	*/
@@ -709,9 +701,6 @@ private:
 	JMutex m_con_mutex;
 	// Connected clients (behind the con mutex)
 	core::map<u16, RemoteClient*> m_clients;
-
-	// User authentication
-	AuthManager m_authmanager;
 
 	// Bann checking
 	BanManager m_banmanager;

@@ -142,6 +142,10 @@ void * ServerThread::Thread()
 		{
 			m_server->setAsyncFatalError(e.what());
 		}
+		catch(LuaError &e)
+		{
+			m_server->setAsyncFatalError(e.what());
+		}
 	}
 	
 	END_DEBUG_EXCEPTION_HANDLER(errorstream)
@@ -905,7 +909,6 @@ Server::Server(
 	m_async_fatal_error(""),
 	m_env(NULL),
 	m_con(PROTOCOL_ID, 512, CONNECTION_TIMEOUT, this),
-	m_authmanager(path_world+DIR_DELIM+"auth.txt"),
 	m_banmanager(path_world+DIR_DELIM+"ipban.txt"),
 	m_lua(NULL),
 	m_itemdef(createItemDefManager()),
@@ -1844,10 +1847,6 @@ void Server::AsyncRunStep()
 
 			ScopeProfiler sp(g_profiler, "Server: saving stuff");
 
-			// Auth stuff
-			if(m_authmanager.isModified())
-				m_authmanager.save();
-
 			//Ban stuff
 			if(m_banmanager.isModified())
 				m_banmanager.save();
@@ -2083,34 +2082,30 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 			password[PASSWORD_SIZE-1] = 0;
 		}
 		
-		// Add player to auth manager
-		if(m_authmanager.exists(playername) == false)
-		{
-			std::wstring default_password =
+		std::string checkpwd;
+		bool has_auth = scriptapi_get_auth(m_lua, playername, &checkpwd, NULL);
+		
+		if(!has_auth){
+			std::wstring raw_default_password =
 				narrow_to_wide(g_settings->get("default_password"));
-			std::string translated_default_password =
-				translatePassword(playername, default_password);
+			std::string use_password =
+				translatePassword(playername, raw_default_password);
 
 			// If default_password is empty, allow any initial password
-			if (default_password.length() == 0)
-				translated_default_password = password;
+			if (raw_default_password.length() == 0)
+				use_password = password;
 
-			infostream<<"Server: adding player "<<playername
-					<<" to auth manager"<<std::endl;
-			m_authmanager.add(playername);
-			m_authmanager.setPassword(playername, translated_default_password);
-			m_authmanager.setPrivs(playername,
-					stringToPrivs(g_settings->get("default_privs")));
-			m_authmanager.save();
+			scriptapi_create_auth(m_lua, playername, use_password);
+		}
+		
+		has_auth = scriptapi_get_auth(m_lua, playername, &checkpwd, NULL);
+
+		if(!has_auth){
+			SendAccessDenied(m_con, peer_id, L"Not allowed to login");
+			return;
 		}
 
-		std::string checkpwd = m_authmanager.getPassword(playername);
-
-		/*infostream<<"Server: Client gave password '"<<password
-				<<"', the correct one is '"<<checkpwd<<"'"<<std::endl;*/
-
-		if(password != checkpwd)
-		{
+		if(password != checkpwd){
 			infostream<<"Server: peer_id="<<peer_id
 					<<": supplied invalid password for "
 					<<playername<<std::endl;
@@ -2131,8 +2126,10 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 		// Enforce user limit.
 		// Don't enforce for users that have some admin right
 		if(m_clients.size() >= g_settings->getU16("max_users") &&
-				(m_authmanager.getPrivs(playername)
-					& (PRIV_SERVER|PRIV_BAN|PRIV_PRIVS|PRIV_PASSWORD)) == 0 &&
+				!checkPriv(playername, "server") &&
+				!checkPriv(playername, "ban") &&
+				!checkPriv(playername, "privs") &&
+				!checkPriv(playername, "password") &&
 				playername != g_settings->get("name"))
 		{
 			actionstream<<"Server: "<<playername<<" tried to join, but there"
@@ -2407,7 +2404,7 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 	}
 	else if(command == TOSERVER_SIGNNODETEXT)
 	{
-		if((getPlayerPrivs(player) & PRIV_INTERACT) == 0)
+		if(!checkPriv(player->getName(), "interact"))
 			return;
 		/*
 			u16 command
@@ -2519,9 +2516,9 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 
 			// Disallow moving items in elsewhere than player's inventory
 			// if not allowed to interact
-			if((getPlayerPrivs(player) & PRIV_INTERACT) == 0
-					&& (!from_inv_is_current_player
-					|| !to_inv_is_current_player))
+			if(!checkPriv(player->getName(), "interact") &&
+					(!from_inv_is_current_player ||
+					!to_inv_is_current_player))
 			{
 				infostream<<"Cannot move outside of player's inventory: "
 						<<"No interact privilege"<<std::endl;
@@ -2530,7 +2527,7 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 			}
 
 			// If player is not an admin, check for ownership of src and dst
-			if((getPlayerPrivs(player) & PRIV_SERVER) == 0)
+			if(!checkPriv(player->getName(), "server"))
 			{
 				std::string owner_from = getInventoryOwner(ma->from_inv);
 				if(owner_from != "" && owner_from != player->getName())
@@ -2565,13 +2562,13 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 			setInventoryModified(da->from_inv);
 
 			// Disallow dropping items if not allowed to interact
-			if((getPlayerPrivs(player) & PRIV_INTERACT) == 0)
+			if(!checkPriv(player->getName(), "interact"))
 			{
 				delete a;
 				return;
 			}
 			// If player is not an admin, check for ownership
-			else if((getPlayerPrivs(player) & PRIV_SERVER) == 0)
+			else if(!checkPriv(player->getName(), "server"))
 			{
 				std::string owner_from = getInventoryOwner(da->from_inv);
 				if(owner_from != "" && owner_from != player->getName())
@@ -2600,7 +2597,7 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 			//	(ca->craft_inv.name == player->getName());
 
 			// Disallow crafting if not allowed to interact
-			if((getPlayerPrivs(player) & PRIV_INTERACT) == 0)
+			if(!checkPriv(player->getName(), "interact"))
 			{
 				infostream<<"Cannot craft: "
 						<<"No interact privilege"<<std::endl;
@@ -2609,7 +2606,7 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 			}
 
 			// If player is not an admin, check for ownership of inventory
-			if((getPlayerPrivs(player) & PRIV_SERVER) == 0)
+			if(!checkPriv(player->getName(), "server"))
 			{
 				std::string owner_craft = getInventoryOwner(ca->craft_inv);
 				if(owner_craft != "" && owner_craft != player->getName())
@@ -2667,10 +2664,6 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 		// Whether to send to other players
 		bool send_to_others = false;
 		
-		// Local player gets all privileges regardless of
-		// what's set on their account.
-		u64 privs = getPlayerPrivs(player);
-
 		// Parse commands
 		if(message[0] == L'/')
 		{
@@ -2688,8 +2681,7 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 				paramstring,
 				this,
 				m_env,
-				player,
-				privs);
+				player);
 
 			std::wstring reply(processServerCommand(ctx));
 			send_to_sender = ctx->flags & SEND_TO_SENDER;
@@ -2705,16 +2697,13 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 		}
 		else
 		{
-			if(privs & PRIV_SHOUT)
-			{
+			if(checkPriv(player->getName(), "shout")){
 				line += L"<";
 				line += name;
 				line += L"> ";
 				line += message;
 				send_to_others = true;
-			}
-			else
-			{
+			} else {
 				line += L"Server: You are not allowed to shout";
 				send_to_sender = true;
 			}
@@ -2803,15 +2792,8 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 
 		std::string playername = player->getName();
 
-		if(m_authmanager.exists(playername) == false)
-		{
-			infostream<<"Server: playername not found in authmanager"<<std::endl;
-			// Wrong old password supplied!!
-			SendChatMessage(peer_id, L"playername not found in authmanager");
-			return;
-		}
-
-		std::string checkpwd = m_authmanager.getPassword(playername);
+		std::string checkpwd;
+		scriptapi_get_auth(m_lua, playername, &checkpwd, NULL);
 
 		if(oldpwd != checkpwd)
 		{
@@ -2821,13 +2803,15 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 			return;
 		}
 
-		actionstream<<player->getName()<<" changes password"<<std::endl;
-
-		m_authmanager.setPassword(playername, newpwd);
-		
-		infostream<<"Server: password change successful for "<<playername
-				<<std::endl;
-		SendChatMessage(peer_id, L"Password change successful");
+		bool success = scriptapi_set_password(m_lua, playername, newpwd);
+		if(success){
+			actionstream<<player->getName()<<" changes password"<<std::endl;
+			SendChatMessage(peer_id, L"Password change successful");
+		} else {
+			actionstream<<player->getName()<<" tries to change password but "
+					<<"it fails"<<std::endl;
+			SendChatMessage(peer_id, L"Password change failed or inavailable");
+		}
 	}
 	else if(command == TOSERVER_PLAYERITEM)
 	{
@@ -2970,11 +2954,10 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 		/*
 			Make sure the player is allowed to do it
 		*/
-		if((getPlayerPrivs(player) & PRIV_INTERACT) == 0)
+		if(!checkPriv(player->getName(), "interact"))
 		{
 			infostream<<"Ignoring interaction from player "<<player->getName()
-					<<" because privileges are "<<getPlayerPrivs(player)
-					<<std::endl;
+					<<" (no interact privilege)"<<std::endl;
 			return;
 		}
 
@@ -4277,54 +4260,17 @@ std::wstring Server::getStatusString()
 	return os.str();
 }
 
-u64 Server::getPlayerAuthPrivs(const std::string &name)
+std::set<std::string> Server::getPlayerEffectivePrivs(const std::string &name)
 {
-	try{
-		return m_authmanager.getPrivs(name);
-	}
-	catch(AuthNotFoundException &e)
-	{
-		dstream<<"WARNING: Auth not found for "<<name<<std::endl;
-		return 0;
-	}
+	std::set<std::string> privs;
+	scriptapi_get_auth(m_lua, name, NULL, &privs);
+	return privs;
 }
 
-void Server::setPlayerAuthPrivs(const std::string &name, u64 privs)
+bool Server::checkPriv(const std::string &name, const std::string &priv)
 {
-	try{
-		return m_authmanager.setPrivs(name, privs);
-	}
-	catch(AuthNotFoundException &e)
-	{
-		dstream<<"WARNING: Auth not found for "<<name<<std::endl;
-	}
-}
-
-u64 Server::getPlayerEffectivePrivs(const std::string &name)
-{
-	// Local player gets all privileges regardless of
-	// what's set on their account.
-	if(m_simple_singleplayer_mode)
-		return PRIV_ALL;
-	if(name == g_settings->get("name"))
-		return PRIV_ALL;
-	return getPlayerAuthPrivs(name);
-}
-
-void Server::setPlayerPassword(const std::string &name, const std::wstring &password)
-{
-	// Add player to auth manager
-	if(m_authmanager.exists(name) == false)
-	{
-		infostream<<"Server: adding player "<<name
-				<<" to auth manager"<<std::endl;
-		m_authmanager.add(name);
-		m_authmanager.setPrivs(name,
-			stringToPrivs(g_settings->get("default_privs")));
-	}
-	// Change password and save
-	m_authmanager.setPassword(name, translatePassword(name, password));
-	m_authmanager.save();
+	std::set<std::string> privs = getPlayerEffectivePrivs(name);
+	return (privs.count(priv) != 0);
 }
 
 // Saves g_settings to configpath given at initialization
@@ -4696,14 +4642,6 @@ void Server::handlePeerChanges()
 
 		handlePeerChange(c);
 	}
-}
-
-u64 Server::getPlayerPrivs(Player *player)
-{
-	if(player==NULL)
-		return 0;
-	std::string playername = player->getName();
-	return getPlayerEffectivePrivs(playername);
 }
 
 void dedicated_server_loop(Server &server, bool &kill)

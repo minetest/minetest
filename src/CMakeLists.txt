@@ -173,7 +173,6 @@ set(common_SRCS
 	mapgen.cpp
 	content_nodemeta.cpp
 	content_mapnode.cpp
-	auth.cpp
 	collision.cpp
 	nodemetadata.cpp
 	serverobject.cpp

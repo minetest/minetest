@@ -464,6 +464,8 @@ dump2(obj, name="_", dumped={})
 ^ Return object serialized as a string, handles reference loops
 dump(obj, dumped={})
 ^ Return object serialized as a string
+string:split(separator)
+string:trim()
 
 minetest namespace reference
 -----------------------------
@@ -480,6 +482,7 @@ minetest.log(line)
 minetest.log(loglevel, line)
 ^ loglevel one of "error", "action", "info", "verbose"
 
+Registration functions: (Call these only at load time)
 minetest.register_entity(name, prototype table)
 minetest.register_abm(abm definition)
 minetest.register_node(name, node definition)
@@ -487,7 +490,6 @@ minetest.register_tool(name, item definition)
 minetest.register_craftitem(name, item definition)
 minetest.register_alias(name, convert_to)
 minetest.register_craft(recipe)
-
 minetest.register_globalstep(func(dtime))
 minetest.register_on_placenode(func(pos, newnode, placer))
 minetest.register_on_dignode(func(pos, oldnode, digger))
@@ -500,24 +502,40 @@ minetest.register_on_respawnplayer(func(ObjectRef))
 ^ currently called _before_ repositioning of player occurs
 minetest.register_on_chat_message(func(name, message))
 minetest.register_chatcommand(cmd, chatcommand definition)
+minetest.register_privilege(name, description)
+minetest.register_authentication_handler(handler)
+^ See minetest.builtin_auth_handler in builtin.lua for reference
 
-minetest.add_to_creative_inventory(itemstring)
+Setting-related:
 minetest.setting_get(name) -> string or nil
 minetest.setting_getbool(name) -> boolean value or nil
+minetest.add_to_creative_inventory(itemstring)
 
+Authentication:
+minetest.get_password_hash(name, raw_password)
+minetest.set_player_password(name, password_hash)
+minetest.string_to_privs(str) -> {priv1=true,...}
+minetest.privs_to_string(privs) -> "priv1,priv2,..."
+minetest.set_player_privs(name, {priv1=true,...})
+minetest.get_player_privs(name) -> {priv1=true,...}
+minetest.check_player_privs(name, {priv1=true,...}) -> bool, missing_privs
+
+Chat:
 minetest.chat_send_all(text)
 minetest.chat_send_player(name, text)
-minetest.get_player_privs(name) -> set of privs
-minetest.check_player_privs(name, {priv1=true,...}) -> bool, missing_privs
+
+Inventory:
 minetest.get_inventory(location) -> InvRef
 ^ location = eg. {type="player", name="celeron55"}
                  {type="node", pos={x=, y=, z=}}
 
+Sounds:
 minetest.sound_play(spec, parameters) -> handle
 ^ spec = SimpleSoundSpec
 ^ parameters = sound parameter table
 minetest.sound_stop(handle)
 
+Timing:
 minetest.after(time, func, param)
 ^ Call function after time seconds
 ^ param is optional; to pass multiple parameters, pass a table.
