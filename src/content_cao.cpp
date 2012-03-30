@@ -885,7 +885,8 @@ public:
 			m_step_distance_counter = 0;
 			if(!m_is_local_player && m_prop.makes_footstep_sound){
 				INodeDefManager *ndef = m_gamedef->ndef();
-				v3s16 p = floatToInt(getPosition()+v3f(0,-0.5*BS, 0), BS);
+				v3s16 p = floatToInt(getPosition() + v3f(0,
+						(m_prop.collisionbox.MinEdge.Y-0.5)*BS, 0), BS);
 				MapNode n = m_env->getMap().getNodeNoEx(p);
 				SimpleSoundSpec spec = ndef->get(n).sound_footstep;
 				m_gamedef->sound()->playSoundAt(spec, false, getPosition());
