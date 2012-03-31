@@ -50,9 +50,14 @@ public:
 	
 	// Used for keeping track of names/ids of unknown nodes
 	virtual u16 allocateUnknownNodeId(const std::string &name)=0;
-
+	
+	// Only usable on the client
 	virtual ISoundManager* getSoundManager()=0;
 	virtual MtEventManager* getEventManager()=0;
+	
+	// Used on the client
+	virtual bool checkLocalPrivilege(const std::string &priv)
+	{ return false; }
 	
 	// Shorthands
 	IItemDefManager* idef(){return getItemDefManager();}

@@ -2194,13 +2194,13 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 		// Send node definitions
 		SendNodeDef(m_con, peer_id, m_nodedef);
 		
-		// Send texture announcement
+		// Send media announcement
 		sendMediaAnnouncement(peer_id);
 		
-		// Send player info to all players
-		//SendPlayerInfos();
-
-		// Send inventory to player
+		// Send privileges
+		SendPlayerPrivileges(peer_id);
+		
+		// Send inventory
 		UpdateCrafting(peer_id);
 		SendInventory(peer_id);
 		
@@ -3544,6 +3544,28 @@ void Server::SendMovePlayer(u16 peer_id)
 	m_con.Send(peer_id, 0, data, true);
 }
 
+void Server::SendPlayerPrivileges(u16 peer_id)
+{
+	Player *player = m_env->getPlayer(peer_id);
+	assert(player);
+	std::set<std::string> privs;
+	scriptapi_get_auth(m_lua, player->getName(), NULL, &privs);
+	
+	std::ostringstream os(std::ios_base::binary);
+	writeU16(os, TOCLIENT_PRIVILEGES);
+	writeU16(os, privs.size());
+	for(std::set<std::string>::const_iterator i = privs.begin();
+			i != privs.end(); i++){
+		os<<serializeString(*i);
+	}
+
+	// Make data buffer
+	std::string s = os.str();
+	SharedBuffer<u8> data((u8*)s.c_str(), s.size());
+	// Send as reliable
+	m_con.Send(peer_id, 0, data, true);
+}
+
 s32 Server::playSound(const SimpleSoundSpec &spec,
 		const ServerSoundParams &params)
 {
@@ -4284,6 +4306,23 @@ bool Server::checkPriv(const std::string &name, const std::string &priv)
 {
 	std::set<std::string> privs = getPlayerEffectivePrivs(name);
 	return (privs.count(priv) != 0);
+}
+
+void Server::reportPrivsModified(const std::string &name)
+{
+	if(name == ""){
+		for(core::map<u16, RemoteClient*>::Iterator
+				i = m_clients.getIterator();
+				i.atEnd() == false; i++){
+			RemoteClient *client = i.getNode()->getValue();
+			SendPlayerPrivileges(client->peer_id);
+		}
+	} else {
+		Player *player = m_env->getPlayer(name.c_str());
+		if(!player)
+			return;
+		SendPlayerPrivileges(player->peer_id);
+	}
 }
 
 // Saves g_settings to configpath given at initialization

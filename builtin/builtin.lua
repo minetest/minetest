@@ -870,8 +870,24 @@ end
 --
 
 minetest.registered_privileges = {}
-function minetest.register_privilege(name, description)
-	minetest.registered_privileges[name] = description
+
+function minetest.register_privilege(name, param)
+	local function fill_defaults(def)
+		if def.give_to_singleplayer == nil then
+			def.give_to_singleplayer = true
+		end
+		if def.description == nil then
+			def.description = "(no description)"
+		end
+	end
+	local def = {}
+	if type(param) == "table" then
+		def = param
+	else
+		def = {description = param}
+	end
+	fill_defaults(def)
+	minetest.registered_privileges[name] = def
 end
 
 minetest.register_privilege("interact", "Can interact with things and modify the world")
@@ -884,6 +900,14 @@ minetest.register_privilege("shout", "Can speak in chat")
 minetest.register_privilege("ban", "Can ban and unban players")
 minetest.register_privilege("give", "Can use /give and /giveme")
 minetest.register_privilege("password", "Can use /setpassword and /clearpassword")
+minetest.register_privilege("fly", {
+	description = "Can fly using the free_move mode",
+	give_to_singleplayer = false,
+})
+minetest.register_privilege("fast", {
+	description = "Can walk fast using the fast_move mode",
+	give_to_singleplayer = false,
+})
 
 --
 -- Chat commands
@@ -929,8 +953,8 @@ minetest.register_chatcommand("help", {
 			end
 		elseif param == "privs" then
 			minetest.chat_send_player(name, "Available privileges:")
-			for priv, desc in pairs(minetest.registered_privileges) do
-				minetest.chat_send_player(name, priv..": "..desc)
+			for priv, def in pairs(minetest.registered_privileges) do
+				minetest.chat_send_player(name, priv..": "..def.description)
 			end
 		else
 			local cmd = param
@@ -1004,7 +1028,7 @@ minetest.register_chatcommand("revoke", {
 		local revokeprivs = minetest.string_to_privs(revokeprivstr)
 		local privs = minetest.get_player_privs(revokename)
 		for priv, _ in pairs(revokeprivs) do
-			table.remove(privs, priv)
+			privs[priv] = nil
 		end
 		minetest.set_player_privs(revokename, privs)
 	end,
@@ -1200,6 +1224,7 @@ local function read_auth_file()
 	end
 	io.close(file)
 	minetest.auth_table = newtable
+	minetest.notify_authentication_modified()
 end
 
 local function save_auth_file()
@@ -1228,24 +1253,41 @@ read_auth_file()
 minetest.builtin_auth_handler = {
 	get_auth = function(name)
 		assert(type(name) == "string")
+		-- Figure out what password to use for a new player (singleplayer
+		-- always has an empty password, otherwise use default, which is
+		-- usually empty too)
+		local new_password_hash = ""
+		if not minetest.is_singleplayer() then
+			new_password_hash = minetest.get_password_hash(name, minetest.setting_get("default_password"))
+		end
+		-- Add player to authentication table if not there already
 		if not minetest.auth_table[name] then
 			minetest.builtin_auth_handler.create_auth(name, minetest.get_password_hash(name, minetest.setting_get("default_password")))
 		end
+		-- Figure out what privileges the player should have.
+		-- Take a copy of the privilege table
+		local privileges = {}
+		for priv, _ in pairs(minetest.auth_table[name].privileges) do
+			privileges[priv] = true
+		end
+		-- If singleplayer, give all privileges except those marked as give_to_singleplayer = false
 		if minetest.is_singleplayer() then
-			return {
-				password = "",
-				privileges = minetest.registered_privileges
-			}
-		else
-			if minetest.auth_table[name] and name == minetest.setting_get("name") then
-				return {
-					password = minetest.auth_table[name].password,
-					privileges = minetest.registered_privileges
-				}
-			else
-				return minetest.auth_table[name]
+			for priv, def in pairs(minetest.registered_privileges) do
+				if def.give_to_singleplayer then
+					privileges[priv] = true
+				end
+			end
+		-- For the admin, give everything
+		elseif name == minetest.setting_get("name") then
+			for priv, def in pairs(minetest.registered_privileges) do
+				privileges[priv] = true
 			end
 		end
+		-- All done
+		return {
+			password = minetest.auth_table[name].password,
+			privileges = privileges,
+		}
 	end,
 	create_auth = function(name, password)
 		assert(type(name) == "string")
@@ -1275,6 +1317,7 @@ minetest.builtin_auth_handler = {
 			minetest.builtin_auth_handler.create_auth(name, minetest.get_password_hash(name, minetest.setting_get("default_password")))
 		end
 		minetest.auth_table[name].privileges = privileges
+		minetest.notify_authentication_modified(name)
 		save_auth_file()
 	end
 }

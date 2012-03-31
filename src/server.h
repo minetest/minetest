@@ -502,6 +502,7 @@ public:
 	// Envlock + conlock
 	std::set<std::string> getPlayerEffectivePrivs(const std::string &name);
 	bool checkPriv(const std::string &name, const std::string &priv);
+	void reportPrivsModified(const std::string &name=""); // ""=all
 
 	// Saves g_settings to configpath given at initialization
 	void saveConfig();
@@ -592,11 +593,12 @@ private:
 	*/
 
 	// Envlock and conlock should be locked when calling these
-	void SendMovePlayer(u16 peer_id);
 	void SendInventory(u16 peer_id);
 	void SendChatMessage(u16 peer_id, const std::wstring &message);
 	void BroadcastChatMessage(const std::wstring &message);
 	void SendPlayerHP(u16 peer_id);
+	void SendMovePlayer(u16 peer_id);
+	void SendPlayerPrivileges(u16 peer_id);
 	/*
 		Send a node removal/addition event to all clients except ignore_id.
 		Additionally, if far_players!=NULL, players further away than

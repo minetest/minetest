@@ -20,8 +20,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #ifndef CLIENT_HEADER
 #define CLIENT_HEADER
 
-#ifndef SERVER
-
 #include "connection.h"
 #include "environment.h"
 #include "common_irrlicht.h"
@@ -35,6 +33,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "inventorymanager.h"
 #include "filesys.h"
 #include "filecache.h"
+#include "localplayer.h"
 
 struct MeshMakeData;
 class MapBlockMesh;
@@ -262,14 +261,8 @@ public:
 
 	u16 getHP();
 
-	float getAvgRtt()
-	{
-		try{
-			return m_con.GetPeerAvgRTT(PEER_ID_SERVER);
-		} catch(con::PeerNotFoundException){
-			return 1337;
-		}
-	}
+	bool checkPrivilege(const std::string &priv)
+	{ return (m_privileges.count(priv) != 0); }
 
 	bool getChatMessage(std::wstring &message);
 	void typeChatMessage(const std::wstring& message);
@@ -312,6 +305,8 @@ public:
 	virtual u16 allocateUnknownNodeId(const std::string &name);
 	virtual ISoundManager* getSoundManager();
 	virtual MtEventManager* getEventManager();
+	virtual bool checkLocalPrivilege(const std::string &priv)
+	{ return checkPrivilege(priv); }
 
 private:
 	
@@ -392,9 +387,10 @@ private:
 	std::map<int, s32> m_sounds_client_to_server;
 	// And relations to objects
 	std::map<int, u16> m_sounds_to_objects;
-};
 
-#endif // !SERVER
+	// Privileges
+	std::set<std::string> m_privileges;
+};
 
 #endif // !CLIENT_HEADER
 

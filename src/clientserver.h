@@ -50,9 +50,13 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 	PROTOCOL_VERSION 9:
 		ContentFeatures and NodeDefManager use a different serialization
 		    format; better for future version cross-compatibility
+		Many things
+	PROTOCOL_VERSION 10:
+		TOCLIENT_PRIVILEGES
+		Version raised to force 'fly' and 'fast' privileges into effect.
 */
 
-#define PROTOCOL_VERSION 9
+#define PROTOCOL_VERSION 10
 
 #define PROTOCOL_ID 0x4f457403
 
@@ -290,6 +294,15 @@ enum ToClientCommand
 	/*
 		u16 command
 		s32 sound_id
+	*/
+
+	TOCLIENT_PRIVILEGES = 0x41,
+	/*
+		u16 command
+		u16 number of privileges
+		for each privilege
+			u16 len
+			u8[len] privilege
 	*/
 };
 

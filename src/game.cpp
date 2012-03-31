@@ -1636,6 +1636,8 @@ void the_game(
 				g_settings->set("free_move","true");
 				statustext = L"free_move enabled";
 				statustext_time = 0;
+				if(!client.checkPrivilege("fly"))
+					statustext += L" (note: no 'fly' privilege)";
 			}
 		}
 		else if(input->wasKeyDown(getKeySetting("keymap_fastmove")))
@@ -1651,6 +1653,8 @@ void the_game(
 				g_settings->set("fast_move","true");
 				statustext = L"fast_move enabled";
 				statustext_time = 0;
+				if(!client.checkPrivilege("fast"))
+					statustext += L" (note: no 'fast' privilege)";
 			}
 		}
 		else if(input->wasKeyDown(getKeySetting("keymap_screenshot")))

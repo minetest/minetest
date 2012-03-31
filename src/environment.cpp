@@ -39,6 +39,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "gamedef.h"
 #ifndef SERVER
 #include "clientmap.h"
+#include "localplayer.h"
 #endif
 #include "daynightratio.h"
 
@@ -1888,7 +1889,8 @@ void ClientEnvironment::step(float dtime)
 	stepTimeOfDay(dtime);
 
 	// Get some settings
-	bool free_move = g_settings->getBool("free_move");
+	bool fly_allowed = m_gamedef->checkLocalPrivilege("fly");
+	bool free_move = fly_allowed && g_settings->getBool("free_move");
 
 	// Get local player
 	LocalPlayer *lplayer = getLocalPlayer();

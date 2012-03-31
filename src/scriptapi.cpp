@@ -3985,6 +3985,16 @@ static int l_get_password_hash(lua_State *L)
 	return 1;
 }
 
+// notify_authentication_modified(name)
+static int l_notify_authentication_modified(lua_State *L)
+{
+	std::string name = "";
+	if(lua_isstring(L, 1))
+		name = lua_tostring(L, 1);
+	get_server(L)->reportPrivsModified(name);
+	return 0;
+}
+
 static const struct luaL_Reg minetest_f [] = {
 	{"debug", l_debug},
 	{"log", l_log},
@@ -4006,6 +4016,7 @@ static const struct luaL_Reg minetest_f [] = {
 	{"sound_stop", l_sound_stop},
 	{"is_singleplayer", l_is_singleplayer},
 	{"get_password_hash", l_get_password_hash},
+	{"notify_authentication_modified", l_notify_authentication_modified},
 	{NULL, NULL}
 };
 

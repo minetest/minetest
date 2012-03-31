@@ -506,7 +506,12 @@ minetest.register_on_respawnplayer(func(ObjectRef))
 ^ currently called _before_ repositioning of player occurs
 minetest.register_on_chat_message(func(name, message))
 minetest.register_chatcommand(cmd, chatcommand definition)
-minetest.register_privilege(name, description)
+minetest.register_privilege(name, definition)
+^ definition: "description text"
+^ definition: {
+      description = "description text",
+      give_to_singleplayer = boolean, -- default: true
+  }
 minetest.register_authentication_handler(handler)
 ^ See minetest.builtin_auth_handler in builtin.lua for reference
 
@@ -516,13 +521,20 @@ minetest.setting_getbool(name) -> boolean value or nil
 minetest.add_to_creative_inventory(itemstring)
 
 Authentication:
+minetest.notify_authentication_modified(name)
+^ Should be called by the authentication handler if privileges change.
+^ To report everybody, set name=nil.
 minetest.get_password_hash(name, raw_password)
-minetest.set_player_password(name, password_hash)
+^ Convert a name-password pair to a password hash that minetest can use
 minetest.string_to_privs(str) -> {priv1=true,...}
 minetest.privs_to_string(privs) -> "priv1,priv2,..."
+^ Convert between two privilege representations
+minetest.set_player_password(name, password_hash)
 minetest.set_player_privs(name, {priv1=true,...})
 minetest.get_player_privs(name) -> {priv1=true,...}
+^ These call the authentication handler
 minetest.check_player_privs(name, {priv1=true,...}) -> bool, missing_privs
+^ A quickhand for checking privileges
 
 Chat:
 minetest.chat_send_all(text)

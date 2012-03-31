@@ -1674,6 +1674,21 @@ void Client::ProcessData(u8 *data, u32 datasize, u16 sender_peer_id)
 			m_sound->stopSound(client_id);
 		}
 	}
+	else if(command == TOCLIENT_PRIVILEGES)
+	{
+		std::string datastring((char*)&data[2], datasize-2);
+		std::istringstream is(datastring, std::ios_base::binary);
+		
+		m_privileges.clear();
+		infostream<<"Client: Privileges updated: ";
+		u16 num_privileges = readU16(is);
+		for(u16 i=0; i<num_privileges; i++){
+			std::string priv = deSerializeString(is);
+			m_privileges.insert(priv);
+			infostream<<priv<<" ";
+		}
+		infostream<<std::endl;
+	}
 	else
 	{
 		infostream<<"Client: Ignoring unknown command "

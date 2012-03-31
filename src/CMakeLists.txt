@@ -220,6 +220,7 @@ endif()
 set(minetest_SRCS
 	${common_SRCS}
 	${sound_SRCS}
+	localplayer.cpp
 	sky.cpp
 	clientmap.cpp
 	content_cso.cpp
