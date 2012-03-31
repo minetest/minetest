@@ -105,7 +105,8 @@ private:
 class PlayerSAO : public ServerActiveObject
 {
 public:
-	PlayerSAO(ServerEnvironment *env_, Player *player_, u16 peer_id_);
+	PlayerSAO(ServerEnvironment *env_, Player *player_, u16 peer_id_,
+			const std::set<std::string> &privs);
 	~PlayerSAO();
 	u8 getType() const
 	{ return ACTIVEOBJECT_TYPE_PLAYER; }
@@ -182,6 +183,10 @@ public:
 		m_time_from_last_punch = 0.0;
 		return r;
 	}
+	void updatePrivileges(const std::set<std::string> &privs)
+	{
+		m_privs = privs;
+	}
 
 private:
 	std::string getPropertyPacket();
@@ -198,6 +203,8 @@ private:
 	bool m_armor_groups_sent;
 	bool m_properties_sent;
 	struct ObjectProperties m_prop;
+	// Cached privileges for enforcement
+	std::set<std::string> m_privs;
 
 public:
 	// Some flags used by Server

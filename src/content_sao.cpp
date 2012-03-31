@@ -747,7 +747,8 @@ void LuaEntitySAO::sendPosition(bool do_interpolate, bool is_movement_end)
 
 // No prototype, PlayerSAO does not need to be deserialized
 
-PlayerSAO::PlayerSAO(ServerEnvironment *env_, Player *player_, u16 peer_id_):
+PlayerSAO::PlayerSAO(ServerEnvironment *env_, Player *player_, u16 peer_id_,
+		const std::set<std::string> &privs):
 	ServerActiveObject(env_, v3f(0,0,0)),
 	m_player(player_),
 	m_peer_id(peer_id_),
@@ -759,6 +760,8 @@ PlayerSAO::PlayerSAO(ServerEnvironment *env_, Player *player_, u16 peer_id_):
 	m_position_not_sent(false),
 	m_armor_groups_sent(false),
 	m_properties_sent(true),
+	m_privs(privs),
+	// public
 	m_teleported(false),
 	m_inventory_not_sent(false),
 	m_hp_not_sent(false),
@@ -872,10 +875,19 @@ void PlayerSAO::step(float dtime, bool send_recommended)
 		explosion.
 	*/
 
-	//float player_max_speed = BS * 4.0; // Normal speed
-	float player_max_speed = BS * 20; // Fast speed
-	float player_max_speed_up = BS * 20;
-	player_max_speed *= 2.5; // Tolerance
+	float player_max_speed = 0;
+	float player_max_speed_up = 0;
+	if(m_privs.count("fast") != 0){
+		// Fast speed
+		player_max_speed = BS * 20;
+		player_max_speed_up = BS * 20;
+	} else {
+		// Normal speed
+		player_max_speed = BS * 4.0;
+		player_max_speed_up = BS * 4.0;
+	}
+	// Tolerance
+	player_max_speed *= 2.5;
 	player_max_speed_up *= 2.5;
 
 	m_last_good_position_age += dtime;

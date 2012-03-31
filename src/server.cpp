@@ -4315,13 +4315,16 @@ void Server::reportPrivsModified(const std::string &name)
 				i = m_clients.getIterator();
 				i.atEnd() == false; i++){
 			RemoteClient *client = i.getNode()->getValue();
-			SendPlayerPrivileges(client->peer_id);
+			Player *player = m_env->getPlayer(client->peer_id);
+			reportPrivsModified(player->getName());
 		}
 	} else {
 		Player *player = m_env->getPlayer(name.c_str());
 		if(!player)
 			return;
 		SendPlayerPrivileges(player->peer_id);
+		player->getPlayerSAO()->updatePrivileges(
+				getPlayerEffectivePrivs(name));
 	}
 }
 
@@ -4520,7 +4523,8 @@ PlayerSAO* Server::emergePlayer(const char *name, u16 peer_id)
 	/*
 		Create a new player active object
 	*/
-	PlayerSAO *playersao = new PlayerSAO(m_env, player, peer_id);
+	PlayerSAO *playersao = new PlayerSAO(m_env, player, peer_id,
+			getPlayerEffectivePrivs(player->getName()));
 
 	/* Add object to environment */
 	m_env->addActiveObject(playersao);
