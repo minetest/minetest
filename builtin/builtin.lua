@@ -1329,6 +1329,7 @@ minetest.builtin_auth_handler = {
 			minetest.auth_table[name].password = password
 			save_auth_file()
 		end
+		return true
 	end,
 	set_privileges = function(name, privileges)
 		assert(type(name) == "string")
