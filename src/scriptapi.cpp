@@ -4887,8 +4887,13 @@ void scriptapi_luaentity_get_properties(lua_State *L, u16 id,
 	// Set default values that differ from ObjectProperties defaults
 	prop->hp_max = 10;
 	
-	// Read stuff
+	// Deprecated: read object properties directly
 	read_object_properties(L, -1, prop);
+	
+	// Read initial_properties
+	lua_getfield(L, -1, "initial_properties");
+	read_object_properties(L, -1, prop);
+	lua_pop(L, 1);
 }
 
 void scriptapi_luaentity_step(lua_State *L, u16 id, float dtime)

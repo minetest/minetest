@@ -792,8 +792,10 @@ Object Properties
 
 Entity definition (register_entity)
 {
-    Everything from object properties,
-    -- entity specific --
+    (Deprecated: Everything in object properties is read directly from here)
+    
+    initial_properties = <initial object properties>,
+
     on_activate = function(self, staticdata),
     on_step = function(self, dtime),
     on_punch = function(self, hitter),
@@ -801,6 +803,7 @@ Entity definition (register_entity)
     get_staticdata = function(self),
     ^ Called sometimes; the string returned is passed to on_activate when
       the entity is re-activated from static state
+    
     # Also you can define arbitrary member variables here
     myvariable = whatever,
 }

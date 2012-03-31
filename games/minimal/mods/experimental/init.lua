@@ -409,16 +409,17 @@ minetest.register_alias("TNT", "experimental:tnt")
 --
 
 minetest.register_entity("experimental:dummyball", {
-	-- Static definition
-	hp_max = 20,
-	physical = false,
-	collisionbox = {-0.4,-0.4,-0.4, 0.4,0.4,0.4},
-	visual = "sprite",
-	visual_size = {x=1, y=1},
-	textures = {"experimental_dummyball.png"},
-	spritediv = {x=1, y=3},
-	initial_sprite_basepos = {x=0, y=0},
-	-- Dynamic variables
+	initial_properties = {
+		hp_max = 20,
+		physical = false,
+		collisionbox = {-0.4,-0.4,-0.4, 0.4,0.4,0.4},
+		visual = "sprite",
+		visual_size = {x=1, y=1},
+		textures = {"experimental_dummyball.png"},
+		spritediv = {x=1, y=3},
+		initial_sprite_basepos = {x=0, y=0},
+	},
+
 	phase = 0,
 	phasetimer = 0,
 
