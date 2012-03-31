@@ -861,6 +861,14 @@ function minetest.get_connected_players()
 	return list
 end
 
+function minetest.hash_node_position(pos)
+	return (pos.z+32768)*65536*65536 + (pos.y+32768)*65536 + pos.x+32768
+end
+
+--
+-- Privileges
+--
+
 minetest.registered_privileges = {}
 function minetest.register_privilege(name, description)
 	minetest.registered_privileges[name] = description

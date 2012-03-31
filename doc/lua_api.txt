@@ -542,6 +542,8 @@ minetest.after(time, func, param)
 
 Random:
 minetest.get_connected_players() -> list of ObjectRefs
+minetest.hash_node_position({x=,y=,z=}) -> 48-bit integer
+^ Gives a unique hash number for a node position (16+16+16=48bit)
 
 Global objects:
 minetest.env - environment reference
@@ -768,6 +770,7 @@ Entity definition (register_entity)
 
 ABM (ActiveBlockModifier) definition (register_abm)
 {
+    -- In the following two fields, also group:groupname will work.
     nodenames = {"default:lava_source"},
     neighbors = {"default:water_source", "default:water_flowing"}, -- (any of these)
      ^ If left out or empty, any neighbor will do

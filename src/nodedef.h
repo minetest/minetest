@@ -238,6 +238,9 @@ public:
 	virtual const ContentFeatures& get(const MapNode &n) const=0;
 	virtual bool getId(const std::string &name, content_t &result) const=0;
 	virtual content_t getId(const std::string &name) const=0;
+	// Allows "group:name" in addition to regular node names
+	virtual void getIds(const std::string &name, std::set<content_t> &result)
+			const=0;
 	virtual const ContentFeatures& get(const std::string &name) const=0;
 	
 	virtual void serialize(std::ostream &os)=0;
@@ -254,6 +257,9 @@ public:
 	virtual const ContentFeatures& get(const MapNode &n) const=0;
 	virtual bool getId(const std::string &name, content_t &result) const=0;
 	virtual content_t getId(const std::string &name) const=0;
+	// Allows "group:name" in addition to regular node names
+	virtual void getIds(const std::string &name, std::set<content_t> &result)
+			const=0;
 	// If not found, returns the features of CONTENT_IGNORE
 	virtual const ContentFeatures& get(const std::string &name) const=0;
 

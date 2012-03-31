@@ -380,6 +380,25 @@ public:
 		getId(name, id);
 		return id;
 	}
+	virtual void getIds(const std::string &name, std::set<content_t> &result)
+			const
+	{
+		if(name.substr(0,6) != "group:"){
+			content_t id = CONTENT_IGNORE;
+			if(getId(name, id))
+				result.insert(id);
+			return;
+		}
+		std::string group = name.substr(6);
+		for(u16 id=0; id<=MAX_CONTENT; id++)
+		{
+			const ContentFeatures &f = m_content_features[id];
+			if(f.name == "") // Quickly discard undefined nodes
+				continue;
+			if(itemgroup_get(f.groups, group) != 0)
+				result.insert(id);
+		}
+	}
 	virtual const ContentFeatures& get(const std::string &name) const
 	{
 		content_t id = CONTENT_IGNORE;
