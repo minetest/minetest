@@ -994,7 +994,7 @@ minetest.register_chatcommand("privs", {
 	end,
 })
 minetest.register_chatcommand("grant", {
-	params = "<name> <privilege>",
+	params = "<name> <privilege>|all",
 	description = "Give privilege to player",
 	privs = {privs=true},
 	func = function(name, param)
@@ -1004,6 +1004,9 @@ minetest.register_chatcommand("grant", {
 			return
 		end
 		local grantprivs = minetest.string_to_privs(grantprivstr)
+		if grantprivstr == "all" then
+			grantprivs = minetest.registered_privileges
+		end
 		local privs = minetest.get_player_privs(grantname)
 		for priv, _ in pairs(grantprivs) do
 			privs[priv] = true
@@ -1016,7 +1019,7 @@ minetest.register_chatcommand("grant", {
 	end,
 })
 minetest.register_chatcommand("revoke", {
-	params = "<name> <privilege>",
+	params = "<name> <privilege>|all",
 	description = "Remove privilege from player",
 	privs = {privs=true},
 	func = function(name, param)
@@ -1027,8 +1030,12 @@ minetest.register_chatcommand("revoke", {
 		end
 		local revokeprivs = minetest.string_to_privs(revokeprivstr)
 		local privs = minetest.get_player_privs(revokename)
-		for priv, _ in pairs(revokeprivs) do
-			privs[priv] = nil
+		if revokeprivstr == "all" then
+			privs = {}
+		else
+			for priv, _ in pairs(revokeprivs) do
+				privs[priv] = nil
+			end
 		end
 		minetest.set_player_privs(revokename, privs)
 		minetest.chat_send_player(name, "Privileges of "..revokename..": "..minetest.privs_to_string(minetest.get_player_privs(revokename), ' '))
