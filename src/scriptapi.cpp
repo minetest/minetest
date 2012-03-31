@@ -2877,6 +2877,120 @@ static void objectref_get_or_create(lua_State *L,
 	}
 }
 
+
+/*
+  PerlinNoise
+ */
+
+class LuaPerlinNoise
+{
+private:
+	int seed;
+	int octaves;
+	double persistence;
+	double scale;
+	static const char className[];
+	static const luaL_reg methods[];
+
+	// Exported functions
+
+	// garbage collector
+	static int gc_object(lua_State *L)
+	{
+		LuaPerlinNoise *o = *(LuaPerlinNoise **)(lua_touserdata(L, 1));
+		delete o;
+		return 0;
+	}
+
+	static int l_get2d(lua_State *L)
+	{
+		LuaPerlinNoise *o = checkobject(L, 1);
+		v2f pos2d = read_v2f(L,2);
+		lua_Number val = noise2d_perlin(pos2d.X/o->scale, pos2d.Y/o->scale, o->seed, o->octaves, o->persistence);
+		lua_pushnumber(L, val);
+		return 1;
+	}
+	static int l_get3d(lua_State *L)
+	{
+		LuaPerlinNoise *o = checkobject(L, 1);
+		v3f pos3d = read_v3f(L,2);
+		lua_Number val = noise3d_perlin(pos3d.X/o->scale, pos3d.Y/o->scale, pos3d.Z/o->scale, o->seed, o->octaves, o->persistence);
+		lua_pushnumber(L, val);
+		return 1;
+	}
+
+public:
+	LuaPerlinNoise(int a_seed, int a_octaves, double a_persistence,
+			double a_scale):
+		seed(a_seed),
+		octaves(a_octaves),
+		persistence(a_persistence),
+		scale(a_scale)
+	{
+	}
+
+	~LuaPerlinNoise()
+	{
+	}
+
+	// LuaPerlinNoise(seed, octaves, persistence, scale)
+	// Creates an LuaPerlinNoise and leaves it on top of stack
+	static int create_object(lua_State *L)
+	{
+		int seed = luaL_checkint(L, 1);
+		int octaves = luaL_checkint(L, 2);
+		double persistence = luaL_checknumber(L, 3);
+		double scale = luaL_checknumber(L, 4);
+		LuaPerlinNoise *o = new LuaPerlinNoise(seed, octaves, persistence, scale);
+		*(void **)(lua_newuserdata(L, sizeof(void *))) = o;
+		luaL_getmetatable(L, className);
+		lua_setmetatable(L, -2);
+		return 1;
+	}
+
+	static LuaPerlinNoise* checkobject(lua_State *L, int narg)
+	{
+		luaL_checktype(L, narg, LUA_TUSERDATA);
+		void *ud = luaL_checkudata(L, narg, className);
+		if(!ud) luaL_typerror(L, narg, className);
+		return *(LuaPerlinNoise**)ud;  // unbox pointer
+	}
+
+	static void Register(lua_State *L)
+	{
+		lua_newtable(L);
+		int methodtable = lua_gettop(L);
+		luaL_newmetatable(L, className);
+		int metatable = lua_gettop(L);
+
+		lua_pushliteral(L, "__metatable");
+		lua_pushvalue(L, methodtable);
+		lua_settable(L, metatable);  // hide metatable from Lua getmetatable()
+
+		lua_pushliteral(L, "__index");
+		lua_pushvalue(L, methodtable);
+		lua_settable(L, metatable);
+
+		lua_pushliteral(L, "__gc");
+		lua_pushcfunction(L, gc_object);
+		lua_settable(L, metatable);
+
+		lua_pop(L, 1);  // drop metatable
+
+		luaL_openlib(L, 0, methods, 0);  // fill methodtable
+		lua_pop(L, 1);  // drop methodtable
+
+		// Can be created from Lua (PerlinNoise(seed, octaves, persistence)
+		lua_register(L, className, create_object);
+	}
+};
+const char LuaPerlinNoise::className[] = "PerlinNoise";
+const luaL_reg LuaPerlinNoise::methods[] = {
+	method(LuaPerlinNoise, get2d),
+	method(LuaPerlinNoise, get3d),
+	{0,0}
+};
+
 /*
 	EnvRef
 */
@@ -3190,6 +3304,7 @@ private:
 		return 1;
 	}
 
+
 	// EnvRef:find_node_near(pos, radius, nodenames) -> pos or nil
 	// nodenames: eg. {"ignore", "group:tree"} or "default:dirt"
 	static int l_find_node_near(lua_State *L)
@@ -3229,6 +3344,26 @@ private:
 			}
 		}
 		return 0;
+	}
+
+	//	EnvRef:get_perlin(seeddiff, octaves, persistence, scale)
+	//  returns world-specific PerlinNoise
+	static int l_get_perlin(lua_State *L)
+	{
+		EnvRef *o = checkobject(L, 1);
+		ServerEnvironment *env = o->m_env;
+		if(env == NULL) return 0;
+
+		int seeddiff = luaL_checkint(L, 2);
+		int octaves = luaL_checkint(L, 3);
+		double persistence = luaL_checknumber(L, 4);
+		double scale = luaL_checknumber(L, 5);
+
+		LuaPerlinNoise *n = new LuaPerlinNoise(seeddiff + int(env->getServerMap().getSeed()), octaves, persistence, scale);
+		*(void **)(lua_newuserdata(L, sizeof(void *))) = n;
+		luaL_getmetatable(L, "PerlinNoise");
+		lua_setmetatable(L, -2);
+		return 1;
 	}
 
 public:
@@ -3306,12 +3441,14 @@ const luaL_reg EnvRef::methods[] = {
 	method(EnvRef, set_timeofday),
 	method(EnvRef, get_timeofday),
 	method(EnvRef, find_node_near),
+	method(EnvRef, get_perlin),
 	{0,0}
 };
 
 /*
 	LuaPseudoRandom
 */
+
 
 class LuaPseudoRandom
 {
@@ -3423,6 +3560,8 @@ const luaL_reg LuaPseudoRandom::methods[] = {
 	method(LuaPseudoRandom, next),
 	{0,0}
 };
+
+
 
 /*
 	LuaABM
@@ -4129,6 +4268,7 @@ void scriptapi_export(lua_State *L, Server *server)
 	ObjectRef::Register(L);
 	EnvRef::Register(L);
 	LuaPseudoRandom::Register(L);
+	LuaPerlinNoise::Register(L);
 }
 
 bool scriptapi_loadmod(lua_State *L, const std::string &scriptpath,

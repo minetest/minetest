@@ -648,6 +648,8 @@ methods:
 - get_timeofday()
 - find_node_near(pos, radius, nodenames) -> pos or nil
   ^ nodenames: eg. {"ignore", "group:tree"} or "default:dirt"
+- get_perlin(seeddiff, octaves, persistence, scale)
+  ^ Return world-specific perlin noise (int(worldseed)+seeddiff)
 Deprecated:
 - add_rat(pos): Add C++ rat object (no-op)
 - add_firefly(pos): Add C++ firefly object (no-op)
@@ -767,6 +769,13 @@ methods:
 - next(min, max): return next integer random number [min...max]
                   (max - min) must be 32767 or <= 6553 due to the simple
                   implementation making bad distribution otherwise.
+
+PerlinNoise: A perlin noise generator
+- Can be created via PerlinNoise(seed, octaves, persistence, scale)
+- Also minetest.env:get_perlin(seeddiff, octaves, persistence, scale)
+methods:
+- get2d(pos) -> 2d noise value at pos={x=,y=}
+- get3d(pos) -> 3d noise value at pos={x=,y=,z=}
 
 Registered entities
 --------------------
