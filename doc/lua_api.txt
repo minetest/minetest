@@ -532,6 +532,7 @@ minetest.privs_to_string(privs) -> "priv1,priv2,..."
 minetest.set_player_password(name, password_hash)
 minetest.set_player_privs(name, {priv1=true,...})
 minetest.get_player_privs(name) -> {priv1=true,...}
+minetest.auth_reload()
 ^ These call the authentication handler
 minetest.check_player_privs(name, {priv1=true,...}) -> bool, missing_privs
 ^ A quickhand for checking privileges

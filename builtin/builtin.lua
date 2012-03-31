@@ -990,11 +990,7 @@ minetest.register_chatcommand("privs", {
 				minetest.chat_send_player(name, "Privileges of "..param.." are hidden from you.")
 			end
 		end
-		privs = {}
-		for priv, _ in pairs(minetest.get_player_privs(param)) do
-			table.insert(privs, priv)
-		end
-		minetest.chat_send_player(name, "Privileges of "..param..": "..table.concat(privs, " "))
+		minetest.chat_send_player(name, "Privileges of "..param..": "..minetest.privs_to_string(minetest.get_player_privs(param), ' '))
 	end,
 })
 minetest.register_chatcommand("grant", {
@@ -1013,6 +1009,10 @@ minetest.register_chatcommand("grant", {
 			privs[priv] = true
 		end
 		minetest.set_player_privs(grantname, privs)
+		minetest.chat_send_player(name, "Privileges of "..grantname..": "..minetest.privs_to_string(minetest.get_player_privs(grantname), ' '))
+		if grantname ~= name then
+			minetest.chat_send_player(grantname, name.." granted you privileges: "..minetest.privs_to_string(grantprivs, ' '))
+		end
 	end,
 })
 minetest.register_chatcommand("revoke", {
@@ -1031,6 +1031,10 @@ minetest.register_chatcommand("revoke", {
 			privs[priv] = nil
 		end
 		minetest.set_player_privs(revokename, privs)
+		minetest.chat_send_player(name, "Privileges of "..revokename..": "..minetest.privs_to_string(minetest.get_player_privs(revokename), ' '))
+		if revokename ~= name then
+			minetest.chat_send_player(revokename, name.." revoked privileges from you: "..minetest.privs_to_string(revokeprivs, ' '))
+		end
 	end,
 })
 minetest.register_chatcommand("setpassword", {
@@ -1053,6 +1057,20 @@ minetest.register_chatcommand("clearpassword", {
 	func = function(name, param)
 		minetest.set_player_password(name, '')
 		minetest.chat_send_player(name, "Password cleared")
+	end,
+})
+
+minetest.register_chatcommand("auth_reload", {
+	params = "",
+	description = "reload authentication data",
+	privs = {server=true},
+	func = function(name, param)
+		local done = minetest.auth_reload()
+		if done then
+			minetest.chat_send_player(name, "Done.")
+		else
+			minetest.chat_send_player(name, "Failed.")
+		end
 	end,
 })
 
@@ -1179,24 +1197,26 @@ end)
 -- Authentication handler
 --
 
-function minetest.string_to_privs(str)
+function minetest.string_to_privs(str, delim)
 	assert(type(str) == "string")
+	delim = delim or ','
 	privs = {}
-	for _, priv in pairs(string.split(str, ',')) do
+	for _, priv in pairs(string.split(str, delim)) do
 		privs[priv:trim()] = true
 	end
 	return privs
 end
 
-function minetest.privs_to_string(privs)
+function minetest.privs_to_string(privs, delim)
 	assert(type(privs) == "table")
+	delim = delim or ','
 	list = {}
 	for priv, bool in pairs(privs) do
 		if bool then
 			table.insert(list, priv)
 		end
 	end
-	return table.concat(list, ',')
+	return table.concat(list, delim)
 end
 
 assert(minetest.string_to_privs("a,b").b == true)
@@ -1319,7 +1339,11 @@ minetest.builtin_auth_handler = {
 		minetest.auth_table[name].privileges = privileges
 		minetest.notify_authentication_modified(name)
 		save_auth_file()
-	end
+	end,
+	reload = function()
+		read_auth_file()
+		return true
+	end,
 }
 
 function minetest.register_authentication_handler(handler)
@@ -1338,11 +1362,22 @@ function minetest.get_auth_handler()
 end
 
 function minetest.set_player_password(name, password)
-	minetest.get_auth_handler().set_password(name, password)
+	if minetest.get_auth_handler().set_password then
+		minetest.get_auth_handler().set_password(name, password)
+	end
 end
 
 function minetest.set_player_privs(name, privs)
-	minetest.get_auth_handler().set_privileges(name, privs)
+	if minetest.get_auth_handler().set_privileges then
+		minetest.get_auth_handler().set_privileges(name, privs)
+	end
+end
+
+function minetest.auth_reload()
+	if minetest.get_auth_handler().reload then
+		return minetest.get_auth_handler().reload()
+	end
+	return false
 end
 
 --
