@@ -543,7 +543,7 @@ minetest.dir_to_facedir(dir)
 minetest.dir_to_wallmounted(dir)
 ^ Convert a vector to a wallmounted value, used for paramtype2="wallmounted"
 minetest.get_node_drops(nodename, toolname)
-^ Get list of ItemStacks.
+^ Returns list of item names.
 ^ Note: This will be removed or modified in a future version.
 
 Defaults for the on_* item definition functions:
@@ -944,7 +944,7 @@ Chatcommand definition (register_chatcommand)
 {
     params = "<name> <privilege>", -- short parameter description
     description = "Remove privilege from player", -- full description
-    privs = {privs=true}}, -- require the "privs" privilege to run
+    privs = {privs=true}, -- require the "privs" privilege to run
     func = function(name, param), -- called when command is run
 }
 
