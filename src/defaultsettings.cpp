@@ -111,7 +111,7 @@ void set_default_settings(Settings *settings)
 	settings->setDefault("fixed_map_seed", "");
 	settings->setDefault("give_initial_stuff", "false");
 	settings->setDefault("default_password", "");
-	settings->setDefault("default_privs", "build, shout");
+	settings->setDefault("default_privs", "interact, shout");
 	settings->setDefault("unlimited_player_transfer_distance", "true");
 	settings->setDefault("enable_pvp", "true");
 
