@@ -100,7 +100,11 @@ function string:trim()
 	return (self:gsub("^%s*(.-)%s*$", "%1"))
 end
 
-assert(string.trim("\n \t\tfoo\t ") == "foo")
+assert(string.trim("\n \t\tfoo bar\t ") == "foo bar")
+
+function minetest.pos_to_string(pos)
+	return "(" .. pos.x .. "," .. pos.y .. "," .. pos.z .. ")"
+end
 
 --
 -- Item definition helpers
@@ -113,10 +117,6 @@ function minetest.inventorycube(img1, img2, img3)
 			.. "{" .. img1:gsub("%^", "&")
 			.. "{" .. img2:gsub("%^", "&")
 			.. "{" .. img3:gsub("%^", "&")
-end
-
-function minetest.pos_to_string(pos)
-	return "(" .. pos.x .. "," .. pos.y .. "," .. pos.z .. ")"
 end
 
 function minetest.get_pointed_thing_position(pointed_thing, above)

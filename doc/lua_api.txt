@@ -465,7 +465,11 @@ dump2(obj, name="_", dumped={})
 dump(obj, dumped={})
 ^ Return object serialized as a string
 string:split(separator)
+^ eg. string:split("a,b", ",") == {"a","b"}
 string:trim()
+^ eg. string.trim("\n \t\tfoo bar\t ") == "foo bar"
+minetest.pos_to_string({x=X,y=Y,z=Z}) -> "(X,Y,Z)"
+^ Convert position to a printable string
 
 minetest namespace reference
 -----------------------------
@@ -528,6 +532,39 @@ Inventory:
 minetest.get_inventory(location) -> InvRef
 ^ location = eg. {type="player", name="celeron55"}
                  {type="node", pos={x=, y=, z=}}
+
+Item handling:
+minetest.inventorycube(img1, img2, img3)
+^ Returns a string for making an image of a cube (useful as an item image)
+minetest.get_pointed_thing_position(pointed_thing, above)
+^ Get position of a pointed_thing (that you can get from somewhere)
+minetest.dir_to_facedir(dir)
+^ Convert a vector to a facedir value, used in param2 for paramtype2="facedir"
+minetest.dir_to_wallmounted(dir)
+^ Convert a vector to a wallmounted value, used for paramtype2="wallmounted"
+minetest.get_node_drops(nodename, toolname)
+^ Get list of ItemStacks.
+^ Note: This will be removed or modified in a future version.
+
+Defaults for the on_* item definition functions:
+(These return the leftover itemstack)
+minetest.item_place_node(itemstack, placer, pointed_thing)
+^ Place item as a node
+minetest.item_place_object(itemstack, placer, pointed_thing)
+^ Place item as-is
+minetest.item_place(itemstack, placer, pointed_thing)
+^ Use one of the above based on what the item is.
+minetest.item_drop(itemstack, dropper, pos)
+^ Drop the item
+minetest.item_eat(hp_change, replace_with_item)
+^ Eat the item. replace_with_item can be nil.
+
+Defaults for the on_punch and on_dig node definition callbacks:
+minetest.node_punch(pos, node, puncher)
+^ Calls functions registered by minetest.register_on_punchnode()
+minetest.node_dig(pos, node, digger)
+^ Checks if node can be dug, puts item into inventory, removes node
+^ Calls functions registered by minetest.registered_on_dignodes()
 
 Sounds:
 minetest.sound_play(spec, parameters) -> handle
@@ -803,9 +840,14 @@ Item definition (register_node, register_craftitem, register_tool)
             choppy={times={[3]=0.90}, maxwear=0.05, maxlevel=0}
         }
     }
-    on_drop = func(item, dropper, pos),
-    on_place = func(item, placer, pointed_thing),
-    on_use = func(item, user, pointed_thing),
+    on_drop = func(itemstack, dropper, pos),
+    on_place = func(itemstack, placer, pointed_thing),
+    on_use = func(itemstack, user, pointed_thing),
+    ^ Function must return either nil if no item shall be removed from
+      inventory, or an itemstack to replace the original itemstack.
+        eg. itemstack:take_item(); return itemstack
+    ^ Otherwise, the function is free to do what it wants.
+    ^ The default functions handle regular use cases.
 }
 
 Node definition (register_node)
