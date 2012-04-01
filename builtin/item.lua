@@ -192,7 +192,17 @@ function minetest.item_place(itemstack, placer, pointed_thing)
 end
 
 function minetest.item_drop(itemstack, dropper, pos)
-	minetest.env:add_item(pos, itemstack)
+	if dropper.get_player_name then
+		local v = dropper:get_look_dir()
+		local p = {x=pos.x+v.x, y=pos.y+1.5+v.y, z=pos.z+v.z}
+		local obj = minetest.env:add_item(p, itemstack)
+		v.x = v.x*2
+		v.y = v.y*2 + 1
+		v.z = v.z*2
+		obj:setvelocity(v)
+	else
+		minetest.env:add_item(pos, itemstack)
+	end
 	return ""
 end
 
@@ -376,5 +386,4 @@ minetest.noneitemdef_default = {  -- This is used for the hand and unknown items
 	on_drop = nil,
 	on_use = nil,
 }
-
 

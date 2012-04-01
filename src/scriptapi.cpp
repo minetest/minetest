@@ -3042,7 +3042,21 @@ private:
 		ItemStack item = read_item(L, 3);
 		if(item.empty() || !item.isKnown(get_server(L)->idef()))
 			return 0;
-		// Do it
+		// Use minetest.spawn_item to spawn a __builtin:item
+		lua_getglobal(L, "minetest");
+		lua_getfield(L, -1, "spawn_item");
+		if(lua_isnil(L, -1))
+			return 0;
+		lua_pushvalue(L, 2);
+		lua_pushstring(L, item.getItemString().c_str());
+		if(lua_pcall(L, 2, 1, 0))
+			script_error(L, "error: %s", lua_tostring(L, -1));
+		return 1;
+		/*lua_pushvalue(L, 1);
+		lua_pushstring(L, "__builtin:item");
+		lua_pushstring(L, item.getItemString().c_str());
+		return l_add_entity(L);*/
+		/*// Do it
 		ServerActiveObject *obj = createItemSAO(env, pos, item.getItemString());
 		int objectid = env->addActiveObject(obj);
 		// If failed to add, return nothing (reads as nil)
@@ -3050,7 +3064,7 @@ private:
 			return 0;
 		// Return ObjectRef
 		objectref_get_or_create(L, obj);
-		return 1;
+		return 1;*/
 	}
 
 	// EnvRef:add_rat(pos)

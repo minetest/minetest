@@ -637,15 +637,18 @@ methods:
   ^ Returns nil for unloaded area
 - get_node_light(pos, timeofday) -> 0...15 or nil
   ^ timeofday: nil = current time, 0 = night, 0.5 = day
-- add_entity(pos, name): Returns ObjectRef or nil if failed
-- add_item(pos, itemstring)
-- add_rat(pos)
-- add_firefly(pos)
+- add_entity(pos, name): Spawn Lua-defined entity at position
+  ^ Returns ObjectRef, or nil if failed
+- add_item(pos, itemstring): Spawn item
+  ^ Returns ObjectRef, or nil if failed
 - get_meta(pos) -- Get a NodeMetaRef at that position
 - get_player_by_name(name) -- Get an ObjectRef to a player
 - get_objects_inside_radius(pos, radius)
 - set_timeofday(val): val: 0...1; 0 = midnight, 0.5 = midday
 - get_timeofday()
+Deprecated:
+- add_rat(pos): Add C++ rat object (no-op)
+- add_firefly(pos): Add C++ firefly object (no-op)
 
 NodeMetaRef (this stuff is subject to change in a future version)
 methods:

@@ -1068,6 +1068,11 @@ public:
 			bool do_interpolate = readU8(is);
 			bool is_end_position = readU8(is);
 			float update_interval = readF1000(is);
+
+			// Place us a bit higher if we're physical, to not sink into
+			// the ground due to sucky collision detection...
+			if(m_prop.physical)
+				m_position += v3f(0,0.002,0);
 			
 			if(do_interpolate){
 				if(!m_prop.physical)
