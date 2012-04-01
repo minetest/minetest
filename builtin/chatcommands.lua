@@ -99,8 +99,16 @@ minetest.register_chatcommand("grant", {
 			grantprivs = minetest.registered_privileges
 		end
 		local privs = minetest.get_player_privs(grantname)
+		local privs_known = true
 		for priv, _ in pairs(grantprivs) do
+			if not minetest.registered_privileges[priv] then
+				minetest.chat_send_player(name, "Unknown privilege: "..priv)
+				privs_known = false
+			end
 			privs[priv] = true
+		end
+		if not privs_known then
+			return
 		end
 		minetest.set_player_privs(grantname, privs)
 		minetest.chat_send_player(name, "Privileges of "..grantname..": "..minetest.privs_to_string(minetest.get_player_privs(grantname), ' '))
