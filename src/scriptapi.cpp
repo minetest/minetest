@@ -3928,8 +3928,13 @@ static int l_get_current_modname(lua_State *L)
 // get_modpath(modname)
 static int l_get_modpath(lua_State *L)
 {
-	const char *modname = luaL_checkstring(L, 1);
+	std::string modname = luaL_checkstring(L, 1);
 	// Do it
+	if(modname == "__builtin"){
+		std::string path = get_server(L)->getBuiltinLuaPath();
+		lua_pushstring(L, path.c_str());
+		return 1;
+	}
 	const ModSpec *mod = get_server(L)->getModSpec(modname);
 	if(!mod){
 		lua_pushnil(L);

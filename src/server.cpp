@@ -964,8 +964,7 @@ Server::Server(
 	}
 	
 	// Path to builtin.lua
-	std::string builtinpath = porting::path_share + DIR_DELIM + "builtin"
-			+ DIR_DELIM + "builtin.lua";
+	std::string builtinpath = getBuiltinLuaPath() + DIR_DELIM + "builtin.lua";
 
 	// Create world if it doesn't exist
 	if(!initializeWorld(m_path_world, m_gamespec.id))
@@ -4409,6 +4408,10 @@ const ModSpec* Server::getModSpec(const std::string &modname)
 			return &mod;
 	}
 	return NULL;
+}
+std::string Server::getBuiltinLuaPath()
+{
+	return porting::path_share + DIR_DELIM + "builtin";
 }
 
 v3f findSpawnPos(ServerMap &map)
