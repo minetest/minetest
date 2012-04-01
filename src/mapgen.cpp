@@ -1472,42 +1472,35 @@ void make_block(BlockMakeData *data)
 	/*
 		Make caves (this code is relatively horrible)
 	*/
-	double cave_amount = noise2d_perlin(
+	double cave_amount = 6.0 + 6.0 * noise2d_perlin(
 			0.5+(double)node_min.X/250, 0.5+(double)node_min.Y/250,
 			data->seed+34329, 3, 0.50);
-	cave_amount = MYMAX(0.0, 4.0*cave_amount+2.0);
-	u32 caves_count = cave_amount * volume_nodes / 100000;
-	u32 bruises_count = cave_amount * volume_nodes / 400000;
-	bruises_count *= MYMAX(1, -node_max.Y/100);
-	if(stone_surface_max_y < WATER_LEVEL - 20)
-		bruises_count = 0;
+	cave_amount = MYMAX(0.0, cave_amount);
+	u32 caves_count = cave_amount * volume_nodes / 50000;
+	u32 bruises_count = 1;
+	PseudoRandom ps(blockseed+21343);
+	if(ps.range(1, 4) == 1)
+		bruises_count = ps.range(0, ps.range(0, 2));
 	for(u32 jj=0; jj<caves_count+bruises_count; jj++)
 	{
+		bool large_cave = (jj >= caves_count);
 		s16 min_tunnel_diameter = 2;
-		s16 max_tunnel_diameter = myrand_range(3,5);
-		u16 tunnel_routepoints = myrand_range(5,25);
-		int dswitchint = myrand_range(1,14);
-		int part_max_length_rs = myrand_range(2,11);
+		s16 max_tunnel_diameter = ps.range(2,5);
+		int dswitchint = ps.range(1,14);
+		u16 tunnel_routepoints = 0;
+		int part_max_length_rs = 0;
+		if(large_cave){
+			part_max_length_rs = ps.range(2,4);
+			tunnel_routepoints = ps.range(5, ps.range(15,30));
+			min_tunnel_diameter = 5;
+			max_tunnel_diameter = ps.range(7, ps.range(8,24));
+		} else {
+			part_max_length_rs = ps.range(2,9);
+			tunnel_routepoints = ps.range(10, ps.range(15,30));
+		}
+		bool large_cave_is_flat = (ps.range(0,1) == 0);
 		
 		v3f main_direction(0,0,0);
-
-		bool bruise_surface = (jj > caves_count);
-
-		if(bruise_surface)
-		{
-			min_tunnel_diameter = 5;
-			max_tunnel_diameter = myrand_range(10, myrand_range(20,40));
-			/*min_tunnel_diameter = MYMAX(0, stone_surface_max_y/6);
-			max_tunnel_diameter = myrand_range(MYMAX(0, stone_surface_max_y/6), MYMAX(0, stone_surface_max_y/2));*/
-			
-			/*s16 tunnel_rou = rangelim(25*(0.5+1.0*noise2d(data->seed+42,
-					data->sectorpos_base.X, data->sectorpos_base.Y)), 0, 15);*/
-
-			tunnel_routepoints = 5;
-		}
-		else
-		{
-		}
 
 		// Allowed route area size in nodes
 		v3s16 ar = central_area_size;
@@ -1528,13 +1521,13 @@ void make_block(BlockMakeData *data)
 		s16 route_y_max = -of.Y + stone_surface_max_y + max_tunnel_diameter/2 + 7;
 
 		/*// If caves, don't go through surface too often
-		if(bruise_surface == false)
-			route_y_max -= myrand_range(0, max_tunnel_diameter*2);*/
+		if(large_cave == false)
+			route_y_max -= ps.range(0, max_tunnel_diameter*2);*/
 
 		// Limit maximum to area
 		route_y_max = rangelim(route_y_max, 0, ar.Y-1);
 
-		if(bruise_surface)
+		if(large_cave)
 		{
 			/*// Minimum is at y=0
 			route_y_min = -of.Y - 0;*/
@@ -1543,7 +1536,12 @@ void make_block(BlockMakeData *data)
 			//s16 min = -of.Y + max_tunnel_diameter/4;
 			//s16 min = -of.Y + 0;
 			s16 min = 0;
-			route_y_min = myrand_range(min, min + max_tunnel_diameter);
+			if(node_min.Y < WATER_LEVEL && node_max.Y > WATER_LEVEL)
+			{
+				min = WATER_LEVEL - max_tunnel_diameter/3 - of.Y;
+				route_y_max = WATER_LEVEL + max_tunnel_diameter/3 - of.Y;
+			}
+			route_y_min = ps.range(min, min + max_tunnel_diameter);
 			route_y_min = rangelim(route_y_min, 0, route_y_max);
 		}
 
@@ -1556,7 +1554,7 @@ void make_block(BlockMakeData *data)
 		// Start every 4th cave from surface when applicable
 		/*bool coming_from_surface = false;
 		if(node_min.Y <= 0 && node_max.Y >= 0){
-			coming_from_surface = (jj % 4 == 0 && bruise_surface == false);
+			coming_from_surface = (jj % 4 == 0 && large_cave == false);
 			if(coming_from_surface)
 				route_start_y_min = -of.Y + stone_surface_max_y + 10;
 		}*/
@@ -1566,9 +1564,9 @@ void make_block(BlockMakeData *data)
 
 		// Randomize starting position
 		v3f orp(
-			(float)(myrand()%ar.X)+0.5,
-			(float)(myrand_range(route_start_y_min, route_start_y_max))+0.5,
-			(float)(myrand()%ar.Z)+0.5
+			(float)(ps.next()%ar.X)+0.5,
+			(float)(ps.range(route_start_y_min, route_start_y_max))+0.5,
+			(float)(ps.next()%ar.Z)+0.5
 		);
 
 		v3s16 startp(orp.X, orp.Y, orp.Z);
@@ -1584,50 +1582,58 @@ void make_block(BlockMakeData *data)
 		
 		for(u16 j=0; j<tunnel_routepoints; j++)
 		{
-			if(j%dswitchint==0 && bruise_surface == false)
+			if(j%dswitchint==0 && large_cave == false)
 			{
 				main_direction = v3f(
-					((float)(myrand()%20)-(float)10)/10,
-					((float)(myrand()%20)-(float)10)/30,
-					((float)(myrand()%20)-(float)10)/10
+					((float)(ps.next()%20)-(float)10)/10,
+					((float)(ps.next()%20)-(float)10)/30,
+					((float)(ps.next()%20)-(float)10)/10
 				);
-				main_direction *= (float)myrand_range(0, 10)/10;
+				main_direction *= (float)ps.range(0, 10)/10;
 			}
 
 			// Randomize size
 			s16 min_d = min_tunnel_diameter;
 			s16 max_d = max_tunnel_diameter;
-			s16 rs = myrand_range(min_d, max_d);
+			s16 rs = ps.range(min_d, max_d);
 			
 			v3s16 maxlen;
-			if(bruise_surface)
+			if(large_cave)
 			{
-				maxlen = v3s16(rs*part_max_length_rs,rs*part_max_length_rs/3,rs*part_max_length_rs);
+				maxlen = v3s16(
+					rs*part_max_length_rs,
+					rs*part_max_length_rs/2,
+					rs*part_max_length_rs
+				);
 			}
 			else
 			{
-				maxlen = v3s16(rs*part_max_length_rs, myrand_range(1, rs*part_max_length_rs), rs*part_max_length_rs);
+				maxlen = v3s16(
+					rs*part_max_length_rs,
+					ps.range(1, rs*part_max_length_rs),
+					rs*part_max_length_rs
+				);
 			}
 
 			v3f vec;
 			
 			vec = v3f(
-				(float)(myrand()%(maxlen.X*1))-(float)maxlen.X/2,
-				(float)(myrand()%(maxlen.Y*1))-(float)maxlen.Y/2,
-				(float)(myrand()%(maxlen.Z*1))-(float)maxlen.Z/2
+				(float)(ps.next()%(maxlen.X*1))-(float)maxlen.X/2,
+				(float)(ps.next()%(maxlen.Y*1))-(float)maxlen.Y/2,
+				(float)(ps.next()%(maxlen.Z*1))-(float)maxlen.Z/2
 			);
 		
 			// Jump downward sometimes
-			if(!bruise_surface && myrand_range(0,12) == 0)
+			if(!large_cave && ps.range(0,12) == 0)
 			{
 				vec = v3f(
-					(float)(myrand()%(maxlen.X*1))-(float)maxlen.X/2,
-					(float)(myrand()%(maxlen.Y*2))-(float)maxlen.Y*2/2,
-					(float)(myrand()%(maxlen.Z*1))-(float)maxlen.Z/2
+					(float)(ps.next()%(maxlen.X*1))-(float)maxlen.X/2,
+					(float)(ps.next()%(maxlen.Y*2))-(float)maxlen.Y*2/2,
+					(float)(ps.next()%(maxlen.Z*1))-(float)maxlen.Z/2
 				);
 			}
 			
-			/*if(bruise_surface){
+			/*if(large_cave){
 				v3f p = orp + vec;
 				s16 h = find_ground_level_clever(vmanip,
 						v2s16(p.X, p.Z), ndef);
@@ -1655,48 +1661,42 @@ void make_block(BlockMakeData *data)
 			for(float f=0; f<1.0; f+=1.0/vec.getLength())
 			{
 				v3f fp = orp + vec * f;
-				fp.X += 0.1*myrand_range(-10,10);
-				fp.Z += 0.1*myrand_range(-10,10);
+				fp.X += 0.1*ps.range(-10,10);
+				fp.Z += 0.1*ps.range(-10,10);
 				v3s16 cp(fp.X, fp.Y, fp.Z);
 
-				s16 d0 = -rs/2;
-				s16 d1 = d0 + rs - 1;
+				s16 d0 = -rs/2 + ps.range(-1,1);
+				s16 d1 = d0 + rs + ps.range(-1,1);
 				for(s16 z0=d0; z0<=d1; z0++)
 				{
-					s16 si = rs - MYMAX(0, abs(z0)-rs/7);
-					//s16 si = rs - MYMAX(0, abs(z0)-rs/7);
-					for(s16 x0=-si; x0<=si-1; x0++)
+					s16 si = rs/2 - MYMAX(0, abs(z0)-rs/7-1);
+					for(s16 x0=-si-ps.range(0,1); x0<=si-1+ps.range(0,1); x0++)
 					{
 						s16 maxabsxz = MYMAX(abs(x0), abs(z0));
-						//s16 si2 = rs - MYMAX(0, maxabsxz-rs/4);
-						s16 si2 = rs - MYMAX(0, maxabsxz-rs/7);
-						//s16 si2 = rs - abs(x0);
-						for(s16 y0=-si2; y0<=si2-1; y0++)
+						s16 si2 = rs/2 - MYMAX(0, maxabsxz-rs/7-1);
+						for(s16 y0=-si2; y0<=si2; y0++)
 						{
-							// Make better floors in small caves
-							if(y0 < -rs + 1 && si<=7)
-								continue;
-							bool is_bottomish = (y0 <= -si2 + 1);
+							/*// Make better floors in small caves
+							if(y0 <= -rs/2 && rs<=7)
+								continue;*/
+							if(large_cave_is_flat){
+								// Make large caves not so tall
+								if(rs > 7 && abs(y0) >= rs/3)
+									continue;
+							}
 
 							s16 z = cp.Z + z0;
 							s16 y = cp.Y + y0;
 							s16 x = cp.X + x0;
 							v3s16 p(x,y,z);
-							/*if(isInArea(p, ar) == false)
-								continue;*/
-							// Check only height
-							if(y < 0 || y >= ar.Y)
-								continue;
 							p += of;
 							
 							if(vmanip.m_area.contains(p) == false)
 								continue;
 							
-							// Just set it to air, it will be changed to
-							// water afterwards
 							u32 i = vmanip.m_area.index(p);
 							
-							if(bruise_surface)
+							if(large_cave)
 							{
 								if(full_node_min.Y < WATER_LEVEL &&
 									full_node_max.Y > WATER_LEVEL){
@@ -1705,9 +1705,7 @@ void make_block(BlockMakeData *data)
 									else
 										vmanip.m_data[i] = airnode;
 								} else if(full_node_max.Y < WATER_LEVEL){
-									if(is_bottomish)
-										vmanip.m_data[i] = MapNode(c_stone);
-									else if(p.Y < startp.Y - 2)
+									if(p.Y < startp.Y - 2)
 										vmanip.m_data[i] = lavanode;
 									else
 										vmanip.m_data[i] = airnode;
@@ -1720,11 +1718,9 @@ void make_block(BlockMakeData *data)
 								vmanip.m_data[i].getContent() == c_water_source ||
 								vmanip.m_data[i].getContent() == c_lava_source)
 									continue;
+								
 								vmanip.m_data[i] = airnode;
-							}
 
-							if(bruise_surface == false)
-							{
 								// Set tunnel flag
 								vmanip.m_flags[i] |= VMANIP_FLAG_CAVE;
 							}
@@ -1885,6 +1881,9 @@ void make_block(BlockMakeData *data)
 		u32 i = vmanip.m_area.index(v3s16(p2d.X, node_max.Y, p2d.Y));
 		s16 y=node_max.Y;
 
+		while(y >= node_min.Y)
+		{
+
 		for(;; y--)
 		{
 			MapNode *n = NULL;
@@ -2012,6 +2011,7 @@ void make_block(BlockMakeData *data)
 				// Done
 				break;
 			}
+		}
 		}
 	}
 	
