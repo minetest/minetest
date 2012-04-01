@@ -106,7 +106,7 @@ class PlayerSAO : public ServerActiveObject
 {
 public:
 	PlayerSAO(ServerEnvironment *env_, Player *player_, u16 peer_id_,
-			const std::set<std::string> &privs);
+			const std::set<std::string> &privs, bool is_singleplayer);
 	~PlayerSAO();
 	u8 getType() const
 	{ return ACTIVEOBJECT_TYPE_PLAYER; }
@@ -183,9 +183,11 @@ public:
 		m_time_from_last_punch = 0.0;
 		return r;
 	}
-	void updatePrivileges(const std::set<std::string> &privs)
+	void updatePrivileges(const std::set<std::string> &privs,
+			bool is_singleplayer)
 	{
 		m_privs = privs;
+		m_is_singleplayer = is_singleplayer;
 	}
 
 private:
@@ -205,6 +207,7 @@ private:
 	struct ObjectProperties m_prop;
 	// Cached privileges for enforcement
 	std::set<std::string> m_privs;
+	bool m_is_singleplayer;
 
 public:
 	// Some flags used by Server

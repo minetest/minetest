@@ -4323,7 +4323,8 @@ void Server::reportPrivsModified(const std::string &name)
 			return;
 		SendPlayerPrivileges(player->peer_id);
 		player->getPlayerSAO()->updatePrivileges(
-				getPlayerEffectivePrivs(name));
+				getPlayerEffectivePrivs(name),
+				isSingleplayer());
 	}
 }
 
@@ -4527,7 +4528,8 @@ PlayerSAO* Server::emergePlayer(const char *name, u16 peer_id)
 		Create a new player active object
 	*/
 	PlayerSAO *playersao = new PlayerSAO(m_env, player, peer_id,
-			getPlayerEffectivePrivs(player->getName()));
+			getPlayerEffectivePrivs(player->getName()),
+			isSingleplayer());
 
 	/* Add object to environment */
 	m_env->addActiveObject(playersao);

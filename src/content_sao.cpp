@@ -748,7 +748,7 @@ void LuaEntitySAO::sendPosition(bool do_interpolate, bool is_movement_end)
 // No prototype, PlayerSAO does not need to be deserialized
 
 PlayerSAO::PlayerSAO(ServerEnvironment *env_, Player *player_, u16 peer_id_,
-		const std::set<std::string> &privs):
+		const std::set<std::string> &privs, bool is_singleplayer):
 	ServerActiveObject(env_, v3f(0,0,0)),
 	m_player(player_),
 	m_peer_id(peer_id_),
@@ -761,6 +761,7 @@ PlayerSAO::PlayerSAO(ServerEnvironment *env_, Player *player_, u16 peer_id_,
 	m_armor_groups_sent(false),
 	m_properties_sent(true),
 	m_privs(privs),
+	m_is_singleplayer(is_singleplayer),
 	// public
 	m_teleported(false),
 	m_inventory_not_sent(false),
@@ -865,51 +866,54 @@ void PlayerSAO::step(float dtime, bool send_recommended)
 	}
 
 	m_time_from_last_punch += dtime;
+	
+	if(!m_is_singleplayer)
+	{
+		/*
+			Check player movements
 
-	/*
-		Check player movements
+			NOTE: Actually the server should handle player physics like the
+			client does and compare player's position to what is calculated
+			on our side. This is required when eg. players fly due to an
+			explosion.
+		*/
 
-		NOTE: Actually the server should handle player physics like the
-		client does and compare player's position to what is calculated
-		on our side. This is required when eg. players fly due to an
-		explosion.
-	*/
-
-	float player_max_speed = 0;
-	float player_max_speed_up = 0;
-	if(m_privs.count("fast") != 0){
-		// Fast speed
-		player_max_speed = BS * 20;
-		player_max_speed_up = BS * 20;
-	} else {
-		// Normal speed
-		player_max_speed = BS * 4.0;
-		player_max_speed_up = BS * 4.0;
-	}
-	// Tolerance
-	player_max_speed *= 2.5;
-	player_max_speed_up *= 2.5;
-
-	m_last_good_position_age += dtime;
-	if(m_last_good_position_age >= 1.0){
-		float age = m_last_good_position_age;
-		v3f diff = (m_player->getPosition() - m_last_good_position);
-		float d_vert = diff.Y;
-		diff.Y = 0;
-		float d_horiz = diff.getLength();
-		/*infostream<<m_player->getName()<<"'s horizontal speed is "
-				<<(d_horiz/age)<<std::endl;*/
-		if(d_horiz <= age * player_max_speed &&
-				(d_vert < 0 || d_vert < age * player_max_speed_up)){
-			m_last_good_position = m_player->getPosition();
+		float player_max_speed = 0;
+		float player_max_speed_up = 0;
+		if(m_privs.count("fast") != 0){
+			// Fast speed
+			player_max_speed = BS * 20;
+			player_max_speed_up = BS * 20;
 		} else {
-			actionstream<<"Player "<<m_player->getName()
-					<<" moved too fast; resetting position"
-					<<std::endl;
-			m_player->setPosition(m_last_good_position);
-			m_teleported = true;
+			// Normal speed
+			player_max_speed = BS * 4.0;
+			player_max_speed_up = BS * 4.0;
 		}
-		m_last_good_position_age = 0;
+		// Tolerance
+		player_max_speed *= 2.5;
+		player_max_speed_up *= 2.5;
+
+		m_last_good_position_age += dtime;
+		if(m_last_good_position_age >= 1.0){
+			float age = m_last_good_position_age;
+			v3f diff = (m_player->getPosition() - m_last_good_position);
+			float d_vert = diff.Y;
+			diff.Y = 0;
+			float d_horiz = diff.getLength();
+			/*infostream<<m_player->getName()<<"'s horizontal speed is "
+					<<(d_horiz/age)<<std::endl;*/
+			if(d_horiz <= age * player_max_speed &&
+					(d_vert < 0 || d_vert < age * player_max_speed_up)){
+				m_last_good_position = m_player->getPosition();
+			} else {
+				actionstream<<"Player "<<m_player->getName()
+						<<" moved too fast; resetting position"
+						<<std::endl;
+				m_player->setPosition(m_last_good_position);
+				m_teleported = true;
+			}
+			m_last_good_position_age = 0;
+		}
 	}
 
 	if(send_recommended == false)
