@@ -3800,6 +3800,15 @@ static int l_register_craft(lua_State *L)
 	return 0; /* number of results */
 }
 
+// setting_set(name, value)
+static int l_setting_set(lua_State *L)
+{
+	const char *name = luaL_checkstring(L, 1);
+	const char *value = luaL_checkstring(L, 2);
+	g_settings->set(name, value);
+	return 0;
+}
+
 // setting_get(name)
 static int l_setting_get(lua_State *L)
 {
@@ -4006,6 +4015,7 @@ static const struct luaL_Reg minetest_f [] = {
 	{"register_item_raw", l_register_item_raw},
 	{"register_alias_raw", l_register_alias_raw},
 	{"register_craft", l_register_craft},
+	{"setting_set", l_setting_set},
 	{"setting_get", l_setting_get},
 	{"setting_getbool", l_setting_getbool},
 	{"chat_send_all", l_chat_send_all},

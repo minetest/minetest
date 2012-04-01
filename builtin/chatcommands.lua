@@ -1,7 +1,7 @@
 -- Minetest: builtin/chatcommands.lua
 
 --
--- Chat commands
+-- Chat command handler
 --
 
 minetest.chatcommands = {}
@@ -13,7 +13,43 @@ function minetest.register_chatcommand(cmd, def)
 	minetest.chatcommands[cmd] = def
 end
 
--- Register the help command
+minetest.register_on_chat_message(function(name, message)
+	local cmd, param = string.match(message, "/([^ ]+) *(.*)")
+	if not param then
+		param = ""
+	end
+	local cmd_def = minetest.chatcommands[cmd]
+	if cmd_def then
+		if not cmd_def.func then
+			-- This is a C++ command
+			return false
+		else
+			local has_privs, missing_privs = minetest.check_player_privs(name, cmd_def.privs)
+			if has_privs then
+				cmd_def.func(name, param)
+			else
+				minetest.chat_send_player(name, "You don't have permission to run this command (missing privileges: "..table.concat(missing_privs, ", ")..")")
+			end
+			return true -- handled chat message
+		end
+	end
+	return false
+end)
+
+--
+-- Chat commands
+--
+
+-- Register C++ commands without functions
+minetest.register_chatcommand("me", {params = nil, description = "chat action (eg. /me orders a pizza)"})
+minetest.register_chatcommand("status", {description = "print server status line"})
+minetest.register_chatcommand("shutdown", {params = "", description = "shutdown server", privs = {server=true}})
+minetest.register_chatcommand("clearobjects", {params = "", description = "clear all objects in world", privs = {server=true}})
+minetest.register_chatcommand("time", {params = "<0...24000>", description = "set time of day", privs = {settime=true}})
+minetest.register_chatcommand("ban", {params = "<name>", description = "ban IP of player", privs = {ban=true}})
+minetest.register_chatcommand("unban", {params = "<name/ip>", description = "remove IP ban", privs = {ban=true}})
+
+-- Register other commands
 minetest.register_chatcommand("help", {
 	privs = {},
 	params = "(nothing)/all/privs/<cmd>",
@@ -58,18 +94,6 @@ minetest.register_chatcommand("help", {
 		end
 	end,
 })
-
--- Register C++ commands without functions
-minetest.register_chatcommand("me", {params = nil, description = "chat action (eg. /me orders a pizza)"})
-minetest.register_chatcommand("status", {description = "print server status line"})
-minetest.register_chatcommand("shutdown", {params = "", description = "shutdown server", privs = {server=true}})
-minetest.register_chatcommand("setting", {params = "<name> = <value>", description = "set line in configuration file", privs = {server=true}})
-minetest.register_chatcommand("clearobjects", {params = "", description = "clear all objects in world", privs = {server=true}})
-minetest.register_chatcommand("time", {params = "<0...24000>", description = "set time of day", privs = {settime=true}})
-minetest.register_chatcommand("ban", {params = "<name>", description = "ban IP of player", privs = {ban=true}})
-minetest.register_chatcommand("unban", {params = "<name/ip>", description = "remove IP ban", privs = {ban=true}})
-
--- Register some other commands
 minetest.register_chatcommand("privs", {
 	params = "<name>",
 	description = "print out privileges of player",
@@ -272,31 +296,37 @@ minetest.register_chatcommand("teleport", {
 	end,
 })
 
---
--- Builtin chat handler
---
-
-minetest.register_on_chat_message(function(name, message)
-	local cmd, param = string.match(message, "/([^ ]+) *(.*)")
-	if not param then
-		param = ""
-	end
-	local cmd_def = minetest.chatcommands[cmd]
-	if cmd_def then
-		if not cmd_def.func then
-			-- This is a C++ command
-			return false
-		else
-			local has_privs, missing_privs = minetest.check_player_privs(name, cmd_def.privs)
-			if has_privs then
-				cmd_def.func(name, param)
-			else
-				minetest.chat_send_player(name, "You don't have permission to run this command (missing privileges: "..table.concat(missing_privs, ", ")..")")
-			end
-			return true -- handled chat message
+minetest.register_chatcommand("set", {
+	params = "[-n] <name> <value> | <name>",
+	description = "set or read server configuration setting",
+	privs = {server=true},
+	func = function(name, param)
+		local arg, setname, setvalue = string.match(param, "(-[n]) ([^ ]+) (.+)")
+		if arg and arg == "n" and setname and setvalue then
+			minetest.setting_set(setname, setvalue)
+			minetest.chat_send_player(name, setname.." = "..setvalue)
+			return
 		end
-	end
-	return false
-end)
-
+		local setname, setvalue = string.match(param, "([^ ]+) (.+)")
+		if setname and setvalue then
+			if not minetest.setting_get(setname) then
+				minetest.chat_send_player(name, "Failed. Use '/set -n <name> <value>' to create a new setting.")
+				return
+			end
+			minetest.setting_set(setname, setvalue)
+			minetest.chat_send_player(name, setname.." = "..setvalue)
+			return
+		end
+		local setname = string.match(param, "([^ ]+)")
+		if setname then
+			local setvalue = minetest.setting_get(setname)
+			if not setvalue then
+				setvalue = "<not set>"
+			end
+			minetest.chat_send_player(name, setname.." = "..setvalue)
+			return
+		end
+		minetest.chat_send_player(name, "Invalid parameters (see /help set)")
+	end,
+})
 
