@@ -1476,7 +1476,7 @@ void make_block(BlockMakeData *data)
 			0.5+(double)node_min.X/250, 0.5+(double)node_min.Y/250,
 			data->seed+34329, 3, 0.50);
 	cave_amount = MYMAX(0.0, cave_amount);
-	u32 caves_count = cave_amount * volume_nodes / 50000;
+	u32 caves_count = cave_amount * volume_nodes / 20000;
 	u32 bruises_count = 1;
 	PseudoRandom ps(blockseed+21343);
 	if(ps.range(1, 4) == 1)
