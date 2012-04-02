@@ -67,7 +67,7 @@ endif(ENABLE_SOUND AND BUILD_CLIENT)
 
 if(SOUND_PROBLEM)
 	message(FATAL_ERROR "Sound enabled, but cannot be used.\n"
-		"To continue, either fill in the required paths or disable sound.")
+		"To continue, either fill in the required paths or disable sound. (-DENABLE_SOUND=0)")
 endif()
 if(USE_SOUND)
 	set(sound_SRCS sound_openal.cpp)
@@ -205,14 +205,19 @@ set(common_SRCS
 
 # This gives us the icon
 if(WIN32)
+	set(WINRESOURCE_FILE ${CMAKE_CURRENT_SOURCE_DIR}/../misc/winresource.rc)
 	if(MINGW)
+		if(NOT CMAKE_RC_COMPILER)
+			set(CMAKE_RC_COMPILER "windres.exe")
+		endif()
 		ADD_CUSTOM_COMMAND(OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/winresource_rc.o
-			COMMAND windres.exe -I${CMAKE_CURRENT_SOURCE_DIR}
-			-i${CMAKE_CURRENT_SOURCE_DIR}/winresource.rc
-			-o ${CMAKE_CURRENT_BINARY_DIR}/winresource_rc.o)
+			COMMAND ${CMAKE_RC_COMPILER} -I${CMAKE_CURRENT_SOURCE_DIR}
+			-i${WINRESOURCE_FILE}
+			-o ${CMAKE_CURRENT_BINARY_DIR}/winresource_rc.o
+			WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR})
 		SET(common_SRCS ${common_SRCS} ${CMAKE_CURRENT_BINARY_DIR}/winresource_rc.o)
 	else(MINGW) # Probably MSVC
-		set(common_SRCS ${common_SRCS} winresource.rc)
+		set(common_SRCS ${common_SRCS} ${WINRESOURCE_FILE})
 	endif(MINGW)
 endif()
 
@@ -348,14 +353,18 @@ else()
 			set(WARNING_FLAGS "${WARNING_FLAGS} -Wno-unused-but-set-variable")
 		endif(HAS_UNUSED_BUT_SET_VARIABLE_WARNING)
 	endif()
-	
+
+	if(MINGW)
+		set(OTHER_FLAGS "-mthreads -fexceptions")
+	endif()
+
 	if(APPLE)
 		set(CMAKE_OSX_ARCHITECTURES i386 CACHE STRING "do not build for 64-bit" FORCE)
 		set(ARCH i386)
 	endif()
 
-	set(CMAKE_CXX_FLAGS_RELEASE "-DNDEBUG ${RELEASE_WARNING_FLAGS} ${WARNING_FLAGS} -O3 -ffast-math -Wall -fomit-frame-pointer -pipe -funroll-loops")
-	set(CMAKE_CXX_FLAGS_DEBUG "-g -O1 -Wall ${WARNING_FLAGS}")
+	set(CMAKE_CXX_FLAGS_RELEASE "-DNDEBUG ${RELEASE_WARNING_FLAGS} ${WARNING_FLAGS} ${OTHER_FLAGS} -O3 -ffast-math -Wall -fomit-frame-pointer -pipe -funroll-loops")
+	set(CMAKE_CXX_FLAGS_DEBUG "-g -O1 -Wall ${WARNING_FLAGS} ${OTHER_FLAGS}")
 
 	if(USE_GPROF)
 		set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -pg")
