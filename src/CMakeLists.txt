@@ -106,6 +106,8 @@ if(WIN32)
 			CACHE FILEPATH "Path to zlibwapi.dll (for installation)")
 	set(IRRLICHT_SOURCE_DIR "${PROJECT_SOURCE_DIR}/../../irrlicht-1.7.2"
 			CACHE PATH "irrlicht dir")
+	set(MINGWM10_DLL ""
+			CACHE FILEPATH "Path to mingwm10.dll (for installation)")
 	if(ENABLE_SOUND)
 		set(OPENAL_DLL "" CACHE FILEPATH "Path to OpenAL32.dll for installation (optional)")
 		set(OGG_DLL "" CACHE FILEPATH "Path to libogg.dll for installation (optional)")
@@ -384,6 +386,9 @@ endif()
 # Installation
 #
 if(WIN32)
+	if(MIGWM10_DLL)
+		install(FILES ${MINGWM10_DLL} DESTINATION ${BINDIR})
+	endif()
 	if(DEFINED ZLIB_DLL)
 		install(FILES ${ZLIB_DLL} DESTINATION ${BINDIR})
 	endif()
