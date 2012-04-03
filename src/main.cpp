@@ -1213,9 +1213,15 @@ int main(int argc, char *argv[])
 
 	// Resolution selection
 	
-	bool fullscreen = false;
+	bool fullscreen = g_settings->getBool("fullscreen");
 	u16 screenW = g_settings->getU16("screenW");
 	u16 screenH = g_settings->getU16("screenH");
+
+	// bpp, fsaa, vsync
+
+	bool vsync = g_settings->getBool("vsync");
+	u16 bits = g_settings->getU16("fullscreen_bpp");
+	u16 fsaa = g_settings->getU16("fsaa");
 
 	// Determine driver
 
@@ -1249,9 +1255,18 @@ int main(int argc, char *argv[])
 	MyEventReceiver receiver;
 
 	IrrlichtDevice *device;
-	device = createDevice(driverType,
-			core::dimension2d<u32>(screenW, screenH),
-			16, fullscreen, false, false, &receiver);
+
+	SIrrlichtCreationParameters params = SIrrlichtCreationParameters();
+	params.DriverType    = driverType;
+	params.WindowSize    = core::dimension2d<u32>(screenW, screenH);
+	params.Bits          = bits;
+	params.AntiAlias     = fsaa;
+	params.Fullscreen    = fullscreen;
+	params.Stencilbuffer = false;
+	params.Vsync         = vsync;
+	params.EventReceiver = &receiver;
+
+	device = createDeviceEx(params);
 
 	if (device == 0)
 		return 1; // could not create selected driver.

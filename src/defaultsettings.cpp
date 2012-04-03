@@ -74,6 +74,10 @@ void set_default_settings(Settings *settings)
 	settings->setDefault("viewing_range_nodes_min", "35");
 	settings->setDefault("screenW", "800");
 	settings->setDefault("screenH", "600");
+	settings->setDefault("fullscreen", "false");
+	settings->setDefault("fullscreen_bpp", "24");
+	settings->setDefault("fsaa", "0");
+	settings->setDefault("vsync", "false");
 	settings->setDefault("address", "");
 	settings->setDefault("random_input", "false");
 	settings->setDefault("client_unload_unused_data_timeout", "600");
