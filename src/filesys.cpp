@@ -21,6 +21,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "strfnd.h"
 #include <iostream>
 #include <string.h>
+#include <unistd.h>
 #include "log.h"
 
 namespace fs
