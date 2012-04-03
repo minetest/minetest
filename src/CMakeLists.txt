@@ -386,7 +386,7 @@ endif()
 # Installation
 #
 if(WIN32)
-	if(MIGWM10_DLL)
+	if(MINGWM10_DLL)
 		install(FILES ${MINGWM10_DLL} DESTINATION ${BINDIR})
 	endif()
 	if(DEFINED ZLIB_DLL)

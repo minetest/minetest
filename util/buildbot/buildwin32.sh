@@ -32,29 +32,27 @@ mkdir -p $libdir
 
 cd $builddir
 
-if [ "$DONT_FETCH" -ne "1" ]; then
-	# Get stuff
-	wget http://downloads.sourceforge.net/irrlicht/irrlicht-$irrlicht_version.zip \
-		-c -O $packagedir/irrlicht-$irrlicht_version.zip || exit 1
-	wget http://www.winimage.com/zLibDll/zlib125.zip \
-		-c -O $packagedir/zlib125.zip || exit 1
-	wget http://www.winimage.com/zLibDll/zlib125dll.zip \
-		-c -O $packagedir/zlib125dll.zip || exit 1
-	wget http://switch.dl.sourceforge.net/project/winlibs/libogg/libogg-$ogg_version-dev.7z \
-		-c -O $packagedir/libogg-$ogg_version-dev.7z || exit 1
-	wget http://switch.dl.sourceforge.net/project/winlibs/libogg/libogg-$ogg_version-dll.7z \
-		-c -O $packagedir/libogg-$ogg_version-dll.7z || exit 1
-	wget http://switch.dl.sourceforge.net/project/winlibs/libvorbis/libvorbis-$vorbis_version-dev.7z \
-		-c -O $packagedir/libvorbis-$vorbis_version-dev.7z || exit 1
-	wget http://switch.dl.sourceforge.net/project/winlibs/libvorbis/libvorbis-$vorbis_version-dll.7z \
-		-c -O $packagedir/libvorbis-$vorbis_version-dll.7z || exit 1
-	wget http://github.com/celeron55/minetest/zipball/master \
-		-c -O $packagedir/minetest.zip || exit 1
-	cp $openal_stripped_file $packagedir/openal_stripped.zip || exit 1
-	cp $mingwm10_dll_file $packagedir/mingwm10.dll || exit 1
-	wget http://github.com/celeron55/minetest_game/zipball/master \
-		-c -O $packagedir/minetest_game.zip || exit 1
-fi
+# Get stuff
+wget http://downloads.sourceforge.net/irrlicht/irrlicht-$irrlicht_version.zip \
+	-c -O $packagedir/irrlicht-$irrlicht_version.zip || exit 1
+wget http://www.winimage.com/zLibDll/zlib125.zip \
+	-c -O $packagedir/zlib125.zip || exit 1
+wget http://www.winimage.com/zLibDll/zlib125dll.zip \
+	-c -O $packagedir/zlib125dll.zip || exit 1
+wget http://switch.dl.sourceforge.net/project/winlibs/libogg/libogg-$ogg_version-dev.7z \
+	-c -O $packagedir/libogg-$ogg_version-dev.7z || exit 1
+wget http://switch.dl.sourceforge.net/project/winlibs/libogg/libogg-$ogg_version-dll.7z \
+	-c -O $packagedir/libogg-$ogg_version-dll.7z || exit 1
+wget http://switch.dl.sourceforge.net/project/winlibs/libvorbis/libvorbis-$vorbis_version-dev.7z \
+	-c -O $packagedir/libvorbis-$vorbis_version-dev.7z || exit 1
+wget http://switch.dl.sourceforge.net/project/winlibs/libvorbis/libvorbis-$vorbis_version-dll.7z \
+	-c -O $packagedir/libvorbis-$vorbis_version-dll.7z || exit 1
+wget http://github.com/celeron55/minetest/zipball/master \
+	-c -O $packagedir/minetest.zip || exit 1
+cp $openal_stripped_file $packagedir/openal_stripped.zip || exit 1
+cp $mingwm10_dll_file $packagedir/mingwm10.dll || exit 1
+wget http://github.com/celeron55/minetest_game/zipball/master \
+	-c -O $packagedir/minetest_game.zip || exit 1
 
 # Figure out some path names from the packages
 minetestdirname=`unzip -l $packagedir/minetest.zip | head -n 7 | tail -n 1 | sed -e 's/^[^c]*//' -e 's/\/.*$//'`
@@ -62,20 +60,18 @@ minetestdir=$builddir/$minetestdirname || exit 1
 git_hash=`echo $minetestdirname | sed -e 's/celeron55-minetest-//'`
 minetest_gamedirname=`unzip -l $packagedir/minetest_game.zip | head -n 7 | tail -n 1 | sed -e 's/^[^c]*//' -e 's/\/.*$//'`
 
-if [ "$DONT_FETCH" -ne "1" ]; then
-	# Extract stuff
-	cd $libdir || exit 1
-	unzip -o $packagedir/irrlicht-$irrlicht_version.zip || exit 1
-	unzip -o $packagedir/zlib125.zip || exit 1
-	unzip -o $packagedir/zlib125dll.zip -d zlib125dll || exit 1
-	7z x -y -olibogg $packagedir/libogg-$ogg_version-dev.7z || exit 1
-	7z x -y -olibogg $packagedir/libogg-$ogg_version-dll.7z || exit 1
-	7z x -y -olibvorbis $packagedir/libvorbis-$vorbis_version-dev.7z || exit 1
-	7z x -y -olibvorbis $packagedir/libvorbis-$vorbis_version-dll.7z || exit 1
-	unzip -o $packagedir/openal_stripped.zip || exit 1
-	cd $builddir || exit 1
-	unzip -o $packagedir/minetest.zip || exit 1
-fi
+# Extract stuff
+cd $libdir || exit 1
+unzip -o $packagedir/irrlicht-$irrlicht_version.zip || exit 1
+unzip -o $packagedir/zlib125.zip || exit 1
+unzip -o $packagedir/zlib125dll.zip -d zlib125dll || exit 1
+7z x -y -olibogg $packagedir/libogg-$ogg_version-dev.7z || exit 1
+7z x -y -olibogg $packagedir/libogg-$ogg_version-dll.7z || exit 1
+7z x -y -olibvorbis $packagedir/libvorbis-$vorbis_version-dev.7z || exit 1
+7z x -y -olibvorbis $packagedir/libvorbis-$vorbis_version-dll.7z || exit 1
+unzip -o $packagedir/openal_stripped.zip || exit 1
+cd $builddir || exit 1
+unzip -o $packagedir/minetest.zip || exit 1
 
 # Symlink minetestdir
 rm -rf $builddir/minetest
