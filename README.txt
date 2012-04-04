@@ -86,6 +86,13 @@ $ wget https://github.com/celeron55/minetest/tarball/master -O master.tar.gz
 $ tar xf master.tar.gz
 $ cd celeron55-minetest-286edd4 (or similar)
 
+Download minetest_game (otherwise only the "Minimal development test" game is available)
+$ cd games/
+$ wget https://github.com/celeron55/minetest_game/tarball/master -O master.tar.gz
+$ tar xf master.tar.gz
+$ mv celeron55-minetest_game-* minetest_game
+$ cd ..
+
 Build a version that runs directly from the source directory:
 $ cmake . -DRUN_IN_PLACE=1
 $ make -j2
@@ -102,6 +109,9 @@ $ ./minetest
 
 Compiling on Windows:
 ---------------------
+- This section is outdated. In addition to what is described here:
+  - In addition to minetest, you need to download minetest_game.
+  - If you wish to have sound support, you need libogg, libvorbis and libopenal
 
 - You need:
 	* CMake:
