@@ -46,6 +46,7 @@ minetest.register_entity("__builtin:item", {
 		if item_texture and item_texture ~= "" then
 			prop.visual = "sprite"
 			prop.textures = {item_texture}
+			prop.visual_size = {x=0.50, y=0.50}
 		else
 			prop.visual = "wielditem"
 			prop.textures = {itemname}
