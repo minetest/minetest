@@ -33,7 +33,8 @@ ObjectProperties::ObjectProperties():
 	spritediv(1,1),
 	initial_sprite_basepos(0,0),
 	is_visible(true),
-	makes_footstep_sound(false)
+	makes_footstep_sound(false),
+	automatic_rotate(0)
 {
 	textures.push_back("unknown_object.png");
 }
@@ -54,12 +55,13 @@ std::string ObjectProperties::dump()
 	os<<"]";
 	os<<", spritediv="<<PP2(spritediv);
 	os<<", initial_sprite_basepos="<<PP2(initial_sprite_basepos);
-	os<<", is_visible"<<is_visible;
+	os<<", is_visible="<<is_visible;
 	os<<", makes_footstep_sound="<<makes_footstep_sound;
+	os<<", automatic_rotate="<<automatic_rotate;
 	return os.str();
 }
 
-void ObjectProperties::serialize(std::ostream &os)
+void ObjectProperties::serialize(std::ostream &os) const
 {
 	writeU8(os, 1); // version
 	writeS16(os, hp_max);
@@ -77,6 +79,7 @@ void ObjectProperties::serialize(std::ostream &os)
 	writeV2S16(os, initial_sprite_basepos);
 	writeU8(os, is_visible);
 	writeU8(os, makes_footstep_sound);
+	writeF1000(os, automatic_rotate);
 }
 
 void ObjectProperties::deSerialize(std::istream &is)
@@ -100,6 +103,9 @@ void ObjectProperties::deSerialize(std::istream &is)
 	initial_sprite_basepos = readV2S16(is);
 	is_visible = readU8(is);
 	makes_footstep_sound = readU8(is);
+	try{
+		automatic_rotate = readF1000(is);
+	}catch(SerializationError &e){}
 }
 
 

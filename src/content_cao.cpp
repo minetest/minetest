@@ -781,9 +781,27 @@ public:
 			m_meshnode = smgr->addMeshSceneNode(mesh, NULL);
 			mesh->drop();
 			
-			m_meshnode->setScale(v3f(1));
+			m_meshnode->setScale(v3f(m_prop.visual_size.X/2,
+					m_prop.visual_size.Y/2,
+					m_prop.visual_size.X/2));
 			u8 li = m_last_light;
 			setMeshColor(m_meshnode->getMesh(), video::SColor(255,li,li,li));
+		} else if(m_prop.visual == "wielditem"){
+			infostream<<"GenericCAO::addToScene(): node"<<std::endl;
+			infostream<<"textures: "<<m_prop.textures.size()<<std::endl;
+			if(m_prop.textures.size() >= 1){
+				infostream<<"textures[0]: "<<m_prop.textures[0]<<std::endl;
+				IItemDefManager *idef = m_gamedef->idef();
+				ItemStack item(m_prop.textures[0], 1, 0, "", idef);
+				scene::IMesh *mesh = item.getDefinition(idef).wield_mesh;
+				m_meshnode = smgr->addMeshSceneNode(mesh, NULL);
+				
+				m_meshnode->setScale(v3f(m_prop.visual_size.X/2,
+						m_prop.visual_size.Y/2,
+						m_prop.visual_size.X/2));
+				u8 li = m_last_light;
+				setMeshColor(m_meshnode->getMesh(), video::SColor(255,li,li,li));
+			}
 		} else {
 			infostream<<"GenericCAO::addToScene(): \""<<m_prop.visual
 					<<"\" not supported"<<std::endl;
@@ -915,6 +933,10 @@ public:
 				m_reset_textures_timer = -1;
 				updateTextures("");
 			}
+		}
+		if(fabs(m_prop.automatic_rotate > 0.001)){
+			m_yaw += dtime * m_prop.automatic_rotate * 180 / PI;
+			updateNodePos();
 		}
 	}
 
@@ -1064,7 +1086,8 @@ public:
 			m_position = readV3F1000(is);
 			m_velocity = readV3F1000(is);
 			m_acceleration = readV3F1000(is);
-			m_yaw = readF1000(is);
+			if(fabs(m_prop.automatic_rotate < 0.001))
+				m_yaw = readF1000(is);
 			bool do_interpolate = readU8(is);
 			bool is_end_position = readU8(is);
 			float update_interval = readF1000(is);

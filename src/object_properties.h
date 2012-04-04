@@ -38,10 +38,11 @@ struct ObjectProperties
 	v2s16 initial_sprite_basepos;
 	bool is_visible;
 	bool makes_footstep_sound;
+	float automatic_rotate;
 
 	ObjectProperties();
 	std::string dump();
-	void serialize(std::ostream &os);
+	void serialize(std::ostream &os) const;
 	void deSerialize(std::istream &is);
 };
 
