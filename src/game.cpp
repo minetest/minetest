@@ -2080,7 +2080,7 @@ void the_game(
 		// Update sound listener
 		sound->updateListener(camera.getCameraNode()->getPosition(),
 				v3f(0,0,0), // velocity
-				camera.getCameraNode()->getTarget(),
+				camera.getDirection(),
 				camera.getCameraNode()->getUpVector());
 
 		/*

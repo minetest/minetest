@@ -25,43 +25,14 @@ std::string gob_cmd_set_properties(const ObjectProperties &prop)
 {
 	std::ostringstream os(std::ios::binary);
 	writeU8(os, GENERIC_CMD_SET_PROPERTIES);
-	writeS16(os, prop.hp_max);
-	writeU8(os, prop.physical);
-	writeF1000(os, prop.weight);
-	writeV3F1000(os, prop.collisionbox.MinEdge);
-	writeV3F1000(os, prop.collisionbox.MaxEdge);
-	os<<serializeString(prop.visual);
-	writeV2F1000(os, prop.visual_size);
-	writeU16(os, prop.textures.size());
-	for(u32 i=0; i<prop.textures.size(); i++){
-		os<<serializeString(prop.textures[i]);
-	}
-	writeV2S16(os, prop.spritediv);
-	writeV2S16(os, prop.initial_sprite_basepos);
-	writeU8(os, prop.is_visible);
-	writeU8(os, prop.makes_footstep_sound);
+	prop.serialize(os);
 	return os.str();
 }
 
 ObjectProperties gob_read_set_properties(std::istream &is)
 {
 	ObjectProperties prop;
-	prop.hp_max = readS16(is);
-	prop.physical = readU8(is);
-	prop.weight = readF1000(is);
-	prop.collisionbox.MinEdge = readV3F1000(is);
-	prop.collisionbox.MaxEdge = readV3F1000(is);
-	prop.visual = deSerializeString(is);
-	prop.visual_size = readV2F1000(is);
-	prop.textures.clear();
-	u32 texture_count = readU16(is);
-	for(u32 i=0; i<texture_count; i++){
-		prop.textures.push_back(deSerializeString(is));
-	}
-	prop.spritediv = readV2S16(is);
-	prop.initial_sprite_basepos = readV2S16(is);
-	prop.is_visible = readU8(is);
-	prop.makes_footstep_sound = readU8(is);
+	prop.deSerialize(is);
 	return prop;
 }
 

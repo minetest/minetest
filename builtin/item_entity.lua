@@ -12,7 +12,7 @@ minetest.register_entity("__builtin:item", {
 	initial_properties = {
 		hp_max = 1,
 		physical = true,
-		collisionbox = {-0.25,-0.25,-0.25, 0.25,0.25,0.25},
+		collisionbox = {-0.17,-0.17,-0.17, 0.17,0.17,0.17},
 		visual = "sprite",
 		visual_size = {x=0.5, y=0.5},
 		textures = {""},
@@ -33,14 +33,26 @@ minetest.register_entity("__builtin:item", {
 			itemname = stack:to_table().name
 		end
 		local item_texture = nil
+		local item_type = ""
 		if minetest.registered_items[itemname] then
 			item_texture = minetest.registered_items[itemname].inventory_image
+			item_type = minetest.registered_items[itemname].type
 		end
-		item_texture = item_texture or "unknown_item.png"
-		self.object:set_properties({
-			textures = {item_texture},
+		prop = {
 			is_visible = true,
-		})
+			visual = "sprite",
+			textures = {"unknown_item.png"}
+		}
+		if item_texture and item_texture ~= "" then
+			prop.visual = "sprite"
+			prop.textures = {item_texture}
+		else
+			prop.visual = "wielditem"
+			prop.textures = {itemname}
+			prop.visual_size = {x=0.20, y=0.20}
+			prop.automatic_rotate = math.pi * 0.25
+		end
+		self.object:set_properties(prop)
 	end,
 
 	get_staticdata = function(self)
