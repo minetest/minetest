@@ -160,11 +160,12 @@ void cmd_clearobjects(std::wostringstream &os,
 
 std::wstring processServerCommand(ServerCommandContext *ctx)
 {
-
 	std::wostringstream os(std::ios_base::binary);
 	ctx->flags = SEND_TO_SENDER;	// Default, unless we change it.
 
-	if(ctx->parms[0] == L"status")
+	if(ctx->parms.size() == 0)
+		os<<L"-!- Empty command";
+	else if(ctx->parms[0] == L"status")
 		cmd_status(os, ctx);
 	else if(ctx->parms[0] == L"time")
 		cmd_time(os, ctx);
