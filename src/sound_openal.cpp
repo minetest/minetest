@@ -461,7 +461,7 @@ public:
 		alListener3f(AL_VELOCITY, vel.X, vel.Y, vel.Z);
 		ALfloat f[6];
 		f3_set(f, at);
-		f3_set(f+3, up);
+		f3_set(f+3, -up);
 		alListenerfv(AL_ORIENTATION, f);
 		warn_if_error(alGetError(), "updateListener");
 	}
