@@ -11,6 +11,9 @@ LIGHT_MAX = 14
 -- Definitions made by this mod that other mods can use too
 default = {}
 
+-- Load other files
+dofile(minetest.get_modpath("default").."/mapgen.lua")
+
 --
 -- Tool definition
 --

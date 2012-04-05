@@ -6,6 +6,7 @@
 
 experimental = {}
 
+--[[
 experimental.player_visual_index = 0
 function switch_player_visual()
 	for _, obj in pairs(minetest.get_connected_players()) do
@@ -19,6 +20,7 @@ function switch_player_visual()
 	minetest.after(1.0, switch_player_visual)
 end
 minetest.after(1.0, switch_player_visual)
+]]
 
 minetest.register_node("experimental:soundblock", {
 	tile_images = {"unknown_block.png", "default_tnt_bottom.png",
