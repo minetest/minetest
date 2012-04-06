@@ -28,6 +28,7 @@ minetest.register_node("experimental:soundblock", {
 			"default_tnt_side.png", "default_tnt_side.png"},
 	inventory_image = minetest.inventorycube("unknown_block.png",
 			"default_tnt_side.png", "default_tnt_side.png"),
+	groups = {dig_immediate=3},
 })
 
 minetest.register_alias("sb", "experimental:soundblock")
