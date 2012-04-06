@@ -107,6 +107,9 @@
 #console_color = (0,0,0)
 # In-game chat console background alpha (opaqueness, between 0 and 255)
 #console_alpha = 200
+# Sound settings
+#enable_sound = true
+#sound_volume = 0.7
 
 #
 # Server stuff

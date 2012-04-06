@@ -198,12 +198,14 @@ private:
 	std::map<int, PlayingSound*> m_sounds_playing;
 	v3f m_listener_pos;
 public:
+	bool m_is_initialized;
 	OpenALSoundManager(OnDemandSoundFetcher *fetcher):
 		m_fetcher(fetcher),
 		m_device(NULL),
 		m_context(NULL),
 		m_can_vorbis(false),
-		m_next_id(1)
+		m_next_id(1),
+		m_is_initialized(false)
 	{
 		ALCenum error = ALC_NO_ERROR;
 		
@@ -252,6 +254,8 @@ public:
 		infostream<<"Audio: Initialized: OpenAL "<<alGetString(AL_VERSION)
 				<<", using "<<alcGetString(m_device, ALC_DEVICE_SPECIFIER)
 				<<std::endl;
+
+		m_is_initialized = true;
 	}
 
 	~OpenALSoundManager()
@@ -465,6 +469,11 @@ public:
 		alListenerfv(AL_ORIENTATION, f);
 		warn_if_error(alGetError(), "updateListener");
 	}
+	
+	void setListenerGain(float gain)
+	{
+		alListenerf(AL_GAIN, gain);
+	}
 
 	int playSound(const std::string &name, bool loop, float volume)
 	{
@@ -519,6 +528,10 @@ public:
 
 ISoundManager *createOpenALSoundManager(OnDemandSoundFetcher *fetcher)
 {
-	return new OpenALSoundManager(fetcher);
+	OpenALSoundManager *m = new OpenALSoundManager(fetcher);
+	if(m->m_is_initialized)
+		return m;
+	delete m;
+	return NULL;
 };
 

@@ -955,10 +955,14 @@ void the_game(
 	ISoundManager *sound = NULL;
 	bool sound_is_dummy = false;
 #if USE_SOUND
-	infostream<<"Attempting to use OpenAL audio"<<std::endl;
-	sound = createOpenALSoundManager(&soundfetcher);
-	if(!sound)
-		infostream<<"Failed to initialize OpenAL audio"<<std::endl;
+	if(g_settings->getBool("enable_sound")){
+		infostream<<"Attempting to use OpenAL audio"<<std::endl;
+		sound = createOpenALSoundManager(&soundfetcher);
+		if(!sound)
+			infostream<<"Failed to initialize OpenAL audio"<<std::endl;
+	} else {
+		infostream<<"Sound disabled."<<std::endl;
+	}
 #endif
 	if(!sound){
 		infostream<<"Using dummy audio."<<std::endl;
@@ -2082,6 +2086,7 @@ void the_game(
 				v3f(0,0,0), // velocity
 				camera.getDirection(),
 				camera.getCameraNode()->getUpVector());
+		sound->setListenerGain(g_settings->getFloat("sound_volume"));
 
 		/*
 			Update sound maker

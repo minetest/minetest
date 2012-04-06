@@ -58,6 +58,7 @@ public:
 			const std::string &filedata) = 0;
 
 	virtual void updateListener(v3f pos, v3f vel, v3f at, v3f up) = 0;
+	virtual void setListenerGain(float gain) = 0;
 
 	// playSound functions return -1 on failure, otherwise a handle to the
 	// sound. If name=="", call should be ignored without error.
@@ -83,6 +84,7 @@ public:
 	virtual bool loadSoundData(const std::string &name,
 			const std::string &filedata) {return true;}
 	void updateListener(v3f pos, v3f vel, v3f at, v3f up) {}
+	void setListenerGain(float gain) {}
 	int playSound(const std::string &name, bool loop,
 			float volume) {return 0;}
 	int playSoundAt(const std::string &name, bool loop,

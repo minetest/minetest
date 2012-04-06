@@ -98,6 +98,8 @@ void set_default_settings(Settings *settings)
 	settings->setDefault("opaque_water", "false");
 	settings->setDefault("console_color", "(0,0,0)");
 	settings->setDefault("console_alpha", "200");
+	settings->setDefault("enable_sound", "true");
+	settings->setDefault("sound_volume", "0.8");
 
 	// Server stuff
 	// "map-dir" doesn't exist by default.
