@@ -214,6 +214,7 @@ bool DeleteSingleFileOrEmptyDirectory(std::string path)
 #include <errno.h>
 #include <sys/stat.h>
 #include <sys/wait.h>
+#include <unistd.h>
 
 std::vector<DirListNode> GetDirListing(std::string pathstring)
 {
