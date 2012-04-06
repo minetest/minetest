@@ -2889,6 +2889,12 @@ private:
 	static const char className[];
 	static const luaL_reg methods[];
 
+	static int gc_object(lua_State *L) {
+		EnvRef *o = *(EnvRef **)(lua_touserdata(L, 1));
+		delete o;
+		return 0;
+	}
+
 	static EnvRef *checkobject(lua_State *L, int narg)
 	{
 		luaL_checktype(L, narg, LUA_TUSERDATA);
@@ -3184,9 +3190,44 @@ private:
 		return 1;
 	}
 
-	static int gc_object(lua_State *L) {
-		EnvRef *o = *(EnvRef **)(lua_touserdata(L, 1));
-		delete o;
+	// EnvRef:find_node_near(pos, radius, nodenames) -> pos or nil
+	// nodenames: eg. {"ignore", "group:tree"} or "default:dirt"
+	static int l_find_node_near(lua_State *L)
+	{
+		EnvRef *o = checkobject(L, 1);
+		ServerEnvironment *env = o->m_env;
+		if(env == NULL) return 0;
+		INodeDefManager *ndef = get_server(L)->ndef();
+		v3s16 pos = read_v3s16(L, 2);
+		int radius = luaL_checkinteger(L, 3);
+		std::set<content_t> filter;
+		if(lua_istable(L, 4)){
+			int table = 4;
+			lua_pushnil(L);
+			while(lua_next(L, table) != 0){
+				// key at index -2 and value at index -1
+				luaL_checktype(L, -1, LUA_TSTRING);
+				ndef->getIds(lua_tostring(L, -1), filter);
+				// removes value, keeps key for next iteration
+				lua_pop(L, 1);
+			}
+		} else if(lua_isstring(L, 4)){
+			ndef->getIds(lua_tostring(L, 4), filter);
+		}
+
+		for(int d=1; d<=radius; d++){
+			core::list<v3s16> list;
+			getFacePositions(list, d);
+			for(core::list<v3s16>::Iterator i = list.begin();
+					i != list.end(); i++){
+				v3s16 p = pos + (*i);
+				content_t c = env->getMap().getNodeNoEx(p).getContent();
+				if(filter.count(c) != 0){
+					push_v3s16(L, p);
+					return 1;
+				}
+			}
+		}
 		return 0;
 	}
 
@@ -3264,6 +3305,7 @@ const luaL_reg EnvRef::methods[] = {
 	method(EnvRef, get_objects_inside_radius),
 	method(EnvRef, set_timeofday),
 	method(EnvRef, get_timeofday),
+	method(EnvRef, find_node_near),
 	{0,0}
 };
 

@@ -646,6 +646,8 @@ methods:
 - get_objects_inside_radius(pos, radius)
 - set_timeofday(val): val: 0...1; 0 = midnight, 0.5 = midday
 - get_timeofday()
+- find_node_near(pos, radius, nodenames) -> pos or nil
+  ^ nodenames: eg. {"ignore", "group:tree"} or "default:dirt"
 Deprecated:
 - add_rat(pos): Add C++ rat object (no-op)
 - add_firefly(pos): Add C++ firefly object (no-op)
