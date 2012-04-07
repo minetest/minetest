@@ -29,6 +29,10 @@ collisionMoveResult collisionMoveSimple(Map *map, IGameDef *gamedef,
 {
 	collisionMoveResult result;
 
+	// If there is no speed, there are no collisions
+	if(speed_f.getLength() == 0)
+		return result;
+
 	v3f oldpos_f = pos_f;
 	v3s16 oldpos_i = floatToInt(oldpos_f, BS);
 
@@ -196,6 +200,10 @@ collisionMoveResult collisionMovePrecise(Map *map, IGameDef *gamedef,
 		f32 dtime, v3f &pos_f, v3f &speed_f)
 {
 	collisionMoveResult final_result;
+	
+	// If there is no speed, there are no collisions
+	if(speed_f.getLength() == 0)
+		return final_result;
 
 	// Maximum time increment (for collision detection etc)
 	// time = distance / speed
