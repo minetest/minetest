@@ -830,7 +830,10 @@ void TextureSource::buildMainAtlas(class IGameDef *gamedef)
 	JMutexAutoLock lock(m_atlaspointer_cache_mutex);
 
 	// Create an image of the right size
-	core::dimension2d<u32> atlas_dim(1024,1024);
+	core::dimension2d<u32> max_dim = driver->getMaxTextureSize();
+	core::dimension2d<u32> atlas_dim(2048,2048);
+	atlas_dim.Width  = MYMIN(atlas_dim.Width,  max_dim.Width);
+	atlas_dim.Height = MYMIN(atlas_dim.Height, max_dim.Height);
 	video::IImage *atlas_img =
 			driver->createImage(video::ECF_A8R8G8B8, atlas_dim);
 	//assert(atlas_img);
@@ -871,16 +874,17 @@ void TextureSource::buildMainAtlas(class IGameDef *gamedef)
 	infostream<<std::endl;
 
 	// Padding to disallow texture bleeding
+	// (16 needed if mipmapping is used; otherwise less will work too)
 	s32 padding = 16;
-
-	s32 column_width = 256;
 	s32 column_padding = 16;
+	s32 column_width = 256; // Space for 16 pieces of 16x16 textures
 
 	/*
 		First pass: generate almost everything
 	*/
 	core::position2d<s32> pos_in_atlas(0,0);
 	
+	pos_in_atlas.X = column_padding;
 	pos_in_atlas.Y = padding;
 
 	for(core::map<std::string, bool>::Iterator
@@ -901,8 +905,8 @@ void TextureSource::buildMainAtlas(class IGameDef *gamedef)
 
 		core::dimension2d<u32> dim = img2->getDimension();
 
-		// Don't add to atlas if image is large
-		core::dimension2d<u32> max_size_in_atlas(32,32);
+		// Don't add to atlas if image is too large
+		core::dimension2d<u32> max_size_in_atlas(64,64);
 		if(dim.Width > max_size_in_atlas.Width
 		|| dim.Height > max_size_in_atlas.Height)
 		{
@@ -914,14 +918,14 @@ void TextureSource::buildMainAtlas(class IGameDef *gamedef)
 		// Wrap columns and stop making atlas if atlas is full
 		if(pos_in_atlas.Y + dim.Height > atlas_dim.Height)
 		{
-			if(pos_in_atlas.X > (s32)atlas_dim.Width - 256 - padding){
+			if(pos_in_atlas.X > (s32)atlas_dim.Width - column_width - column_padding){
 				errorstream<<"TextureSource::buildMainAtlas(): "
 						<<"Atlas is full, not adding more textures."
 						<<std::endl;
 				break;
 			}
 			pos_in_atlas.Y = padding;
-			pos_in_atlas.X += column_width + column_padding;
+			pos_in_atlas.X += column_width + column_padding*2;
 		}
 		
 		/*infostream<<"TextureSource::buildMainAtlas(): Adding \""<<name
@@ -965,6 +969,29 @@ void TextureSource::buildMainAtlas(class IGameDef *gamedef)
 			s32 x = x0 + pos_in_atlas.X;
 			video::SColor c = atlas_img->getPixel(x, src_y);
 			atlas_img->setPixel(x,dst_y,c);
+		}
+
+		for(u32 side=0; side<2; side++) // left and right
+		for(s32 x0=0; x0<column_padding; x0++)
+		for(s32 y0=-padding; y0<(s32)dim.Height+padding; y0++)
+		{
+			s32 dst_x;
+			s32 src_x;
+			if(side==0)
+			{
+				dst_x = x0 + pos_in_atlas.X + dim.Width*xwise_tiling;
+				src_x = pos_in_atlas.X + dim.Width*xwise_tiling - 1;
+			}
+			else
+			{
+				dst_x = -x0 + pos_in_atlas.X-1;
+				src_x = pos_in_atlas.X;
+			}
+			s32 y = y0 + pos_in_atlas.Y;
+			s32 src_y = MYMAX(pos_in_atlas.Y, MYMIN(pos_in_atlas.Y + dim.Height - 1, y));
+			s32 dst_y = y;
+			video::SColor c = atlas_img->getPixel(src_x, src_y);
+			atlas_img->setPixel(dst_x,dst_y,c);
 		}
 
 		img2->drop();
