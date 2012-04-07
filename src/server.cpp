@@ -4322,7 +4322,10 @@ void Server::reportPrivsModified(const std::string &name)
 		if(!player)
 			return;
 		SendPlayerPrivileges(player->peer_id);
-		player->getPlayerSAO()->updatePrivileges(
+		PlayerSAO *sao = player->getPlayerSAO();
+		if(!sao)
+			return;
+		sao->updatePrivileges(
 				getPlayerEffectivePrivs(name),
 				isSingleplayer());
 	}
