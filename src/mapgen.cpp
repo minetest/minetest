@@ -102,10 +102,13 @@ static s16 find_stone_level(VoxelManipulator &vmanip, v2s16 p2d,
 	u32 i = vmanip.m_area.index(v3s16(p2d.X, y_nodes_max, p2d.Y));
 	s16 y;
 	content_t c_stone = ndef->getId("mapgen_stone");
+	content_t c_desert_stone = ndef->getId("mapgen_desert_stone");
 	for(y=y_nodes_max; y>=y_nodes_min; y--)
 	{
 		MapNode &n = vmanip.m_data[i];
-		if(n.getContent() == c_stone)
+		content_t c = n.getContent();
+		if(c != CONTENT_IGNORE && (
+				c == c_stone || c == c_desert_stone))
 			break;
 
 		vmanip.m_area.add_y(em, i, -1);
@@ -1282,6 +1285,23 @@ bool get_have_beach(u64 seed, v2s16 p2d)
 	return (sandnoise > 0.15);
 }
 
+enum BiomeType
+{
+	BT_NORMAL,
+	BT_DESERT
+};
+
+BiomeType get_biome(u64 seed, v2s16 p2d)
+{
+	// Just do something very simple as for now
+	double d = noise2d_perlin(
+			0.6+(float)p2d.X/250, 0.2+(float)p2d.Y/250,
+			seed+9130, 3, 0.50);
+	if(d > 0.2)
+		return BT_DESERT;
+	return BT_NORMAL;
+};
+
 u32 get_blockseed(u64 seed, v3s16 p)
 {
 	s32 x=p.X, y=p.Y, z=p.Z;
@@ -1359,6 +1379,12 @@ void make_block(BlockMakeData *data)
 #define CONTENT_VARIABLE(ndef, name)\
 	content_t c_##name = ndef->getId("mapgen_" #name);\
 	MapNode n_##name(c_##name);
+// Default to something else if was CONTENT_IGNORE
+#define CONTENT_VARIABLE_FALLBACK(name, dname)\
+	if(c_##name == CONTENT_IGNORE){\
+		c_##name = c_##dname;\
+		n_##name = n_##dname;\
+	}
 
 	CONTENT_VARIABLE(ndef, stone);
 	CONTENT_VARIABLE(ndef, air);
@@ -1375,6 +1401,10 @@ void make_block(BlockMakeData *data)
 	CONTENT_VARIABLE(ndef, stone_with_coal);
 	CONTENT_VARIABLE(ndef, stone_with_iron);
 	CONTENT_VARIABLE(ndef, mese);
+	CONTENT_VARIABLE(ndef, desert_sand);
+	CONTENT_VARIABLE_FALLBACK(desert_sand, sand);
+	CONTENT_VARIABLE(ndef, desert_stone);
+	CONTENT_VARIABLE_FALLBACK(desert_stone, stone);
 
 	// Maximum height of the stone surface and obstacles.
 	// This is used to guide the cave generation
@@ -1422,6 +1452,7 @@ void make_block(BlockMakeData *data)
 		if(surface_y > stone_surface_max_y)
 			stone_surface_max_y = surface_y;
 
+		BiomeType bt = get_biome(data->seed, p2d);
 		/*
 			Fill ground with stone
 		*/
@@ -1431,15 +1462,18 @@ void make_block(BlockMakeData *data)
 			u32 i = vmanip.m_area.index(v3s16(p2d.X, node_min.Y, p2d.Y));
 			for(s16 y=node_min.Y; y<=node_max.Y; y++)
 			{
-				if(y <= surface_y){
-					if(vmanip.m_data[i].getContent() == CONTENT_IGNORE)
-						vmanip.m_data[i] = MapNode(c_stone);
-				} else if(y <= WATER_LEVEL){
-					vmanip.m_data[i] = MapNode(c_water_source);
-				} else {
-					vmanip.m_data[i] = MapNode(c_air);
+				if(vmanip.m_data[i].getContent() == CONTENT_IGNORE){
+					if(y <= surface_y){
+						if(y > WATER_LEVEL && bt == BT_DESERT)
+							vmanip.m_data[i] = n_desert_stone;
+						else
+							vmanip.m_data[i] = n_stone;
+					} else if(y <= WATER_LEVEL){
+						vmanip.m_data[i] = MapNode(c_water_source);
+					} else {
+						vmanip.m_data[i] = MapNode(c_air);
+					}
 				}
-
 				vmanip.m_area.add_y(em, i, 1);
 			}
 		}
@@ -1481,6 +1515,10 @@ void make_block(BlockMakeData *data)
 	PseudoRandom ps(blockseed+21343);
 	if(ps.range(1, 4) == 1)
 		bruises_count = ps.range(0, ps.range(0, 2));
+	if(get_biome(data->seed, v2s16(node_min.X, node_min.Y)) == BT_DESERT){
+		caves_count /= 3;
+		bruises_count /= 3;
+	}
 	for(u32 jj=0; jj<caves_count+bruises_count; jj++)
 	{
 		bool large_cave = (jj >= caves_count);
@@ -1753,6 +1791,9 @@ void make_block(BlockMakeData *data)
 		v2s16 p2d = v2s16(x,z);
 		
 		MapNode addnode(c_dirt);
+		BiomeType bt = get_biome(data->seed, p2d);
+		if(bt == BT_DESERT)
+			addnode = MapNode(c_desert_sand);
 
 		// Randomize mud amount
 		s16 mud_add_amount = get_mud_add_amount(data->seed, p2d) / 2.0 + 0.5;
@@ -1766,9 +1807,15 @@ void make_block(BlockMakeData *data)
 		if(mud_add_amount <= 0){
 			mud_add_amount = 1 - mud_add_amount;
 			addnode = MapNode(c_gravel);
-		} else if(get_have_beach(data->seed, p2d) &&
+		} else if(bt == BT_NORMAL && get_have_beach(data->seed, p2d) &&
 				surface_y + mud_add_amount <= WATER_LEVEL+2){
 			addnode = MapNode(c_sand);
+		}
+		
+		if(bt == BT_DESERT){
+			if(surface_y > 20){
+				mud_add_amount = MYMAX(0, mud_add_amount - (surface_y - 20)/5);
+			}
 		}
 
 		/*
@@ -1812,6 +1859,7 @@ void make_block(BlockMakeData *data)
 	/*
 		Add blobs of dirt and gravel underground
 	*/
+	if(get_biome(data->seed, v2s16(node_min.X, node_min.Y)) == BT_NORMAL)
 	{
 	PseudoRandom pr(blockseed+983);
 	for(int i=0; i<volume_nodes/10/10/10; i++)
