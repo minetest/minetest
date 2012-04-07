@@ -1276,7 +1276,7 @@ bool get_have_beach(u64 seed, v2s16 p2d)
 {
 	// Determine whether to have sand here
 	double sandnoise = noise2d_perlin(
-			0.5+(float)p2d.X/500, 0.5+(float)p2d.Y/500,
+			0.2+(float)p2d.X/250, 0.7+(float)p2d.Y/250,
 			seed+59420, 3, 0.50);
 
 	return (sandnoise > 0.15);
@@ -1755,7 +1755,7 @@ void make_block(BlockMakeData *data)
 		MapNode addnode(c_dirt);
 
 		// Randomize mud amount
-		s16 mud_add_amount = get_mud_add_amount(data->seed, p2d) / 2.0;
+		s16 mud_add_amount = get_mud_add_amount(data->seed, p2d) / 2.0 + 0.5;
 
 		// Find ground level
 		s16 surface_y = find_stone_level(vmanip, p2d, ndef);
