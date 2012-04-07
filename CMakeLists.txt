@@ -104,6 +104,7 @@ if(BUILD_CLIENT)
 endif()
 if(RUN_IN_PLACE)
 	install(FILES "${CMAKE_CURRENT_SOURCE_DIR}/mods/minetest/mods_here.txt" DESTINATION "${SHAREDIR}/mods/minetest")
+	install(FILES "${CMAKE_CURRENT_SOURCE_DIR}/textures/all/textures_here.txt" DESTINATION "${SHAREDIR}/textures/all")
 endif()
 
 install(FILES "README.txt" DESTINATION "${DOCDIR}")

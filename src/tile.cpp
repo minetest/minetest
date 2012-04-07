@@ -132,6 +132,18 @@ std::string getTexturePath(const std::string &filename)
 	}
 	
 	/*
+		Check from $user/textures/all
+	*/
+	if(fullpath == "")
+	{
+		std::string texture_path = porting::path_user + DIR_DELIM
+				+ "textures" + DIR_DELIM + "all";
+		std::string testpath = texture_path + DIR_DELIM + filename;
+		// Check all filename extensions. Returns "" if not found.
+		fullpath = getImagePath(testpath);
+	}
+
+	/*
 		Check from default data directory
 	*/
 	if(fullpath == "")
