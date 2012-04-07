@@ -1297,7 +1297,7 @@ BiomeType get_biome(u64 seed, v2s16 p2d)
 	double d = noise2d_perlin(
 			0.6+(float)p2d.X/250, 0.2+(float)p2d.Y/250,
 			seed+9130, 3, 0.50);
-	if(d > 0.2)
+	if(d > 0.35)
 		return BT_DESERT;
 	return BT_NORMAL;
 };
@@ -1510,10 +1510,11 @@ void make_block(BlockMakeData *data)
 			0.5+(double)node_min.X/250, 0.5+(double)node_min.Y/250,
 			data->seed+34329, 3, 0.50);
 	cave_amount = MYMAX(0.0, cave_amount);
-	u32 caves_count = cave_amount * volume_nodes / 20000;
+	u32 caves_count = cave_amount * volume_nodes / 50000;
 	u32 bruises_count = 1;
 	PseudoRandom ps(blockseed+21343);
-	if(ps.range(1, 4) == 1)
+	PseudoRandom ps2(blockseed+1032);
+	if(ps.range(1, 6) == 1)
 		bruises_count = ps.range(0, ps.range(0, 2));
 	if(get_biome(data->seed, v2s16(node_min.X, node_min.Y)) == BT_DESERT){
 		caves_count /= 3;
@@ -1523,7 +1524,7 @@ void make_block(BlockMakeData *data)
 	{
 		bool large_cave = (jj >= caves_count);
 		s16 min_tunnel_diameter = 2;
-		s16 max_tunnel_diameter = ps.range(2,5);
+		s16 max_tunnel_diameter = ps.range(2,6);
 		int dswitchint = ps.range(1,14);
 		u16 tunnel_routepoints = 0;
 		int part_max_length_rs = 0;
@@ -1629,12 +1630,15 @@ void make_block(BlockMakeData *data)
 				);
 				main_direction *= (float)ps.range(0, 10)/10;
 			}
-
+			
 			// Randomize size
 			s16 min_d = min_tunnel_diameter;
 			s16 max_d = max_tunnel_diameter;
 			s16 rs = ps.range(min_d, max_d);
 			
+			// Every second section is rough
+			bool randomize_xz = (ps2.range(1,2) == 1);
+
 			v3s16 maxlen;
 			if(large_cave)
 			{
@@ -1703,8 +1707,12 @@ void make_block(BlockMakeData *data)
 				fp.Z += 0.1*ps.range(-10,10);
 				v3s16 cp(fp.X, fp.Y, fp.Z);
 
-				s16 d0 = -rs/2 + ps.range(-1,1);
-				s16 d1 = d0 + rs + ps.range(-1,1);
+				s16 d0 = -rs/2;
+				s16 d1 = d0 + rs;
+				if(randomize_xz){
+					d0 += ps.range(-1,1);
+					d1 += ps.range(-1,1);
+				}
 				for(s16 z0=d0; z0<=d1; z0++)
 				{
 					s16 si = rs/2 - MYMAX(0, abs(z0)-rs/7-1);
