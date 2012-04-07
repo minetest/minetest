@@ -172,27 +172,47 @@ Examples of sound parameter tables:
     loop = true, -- only sounds connected to objects can be looped
 }
 
-Representations of simple things
---------------------------------
-MapNode representation:
-  {name="name", param1=num, param2=num}
+Nodes
+------
+Nodes are the bulk data of the world: cubes and other things that take the
+space of a cube. Huge amounts of them are handled efficiently, but they
+are quite static.
 
-MapNodes do not directly have any other data associated with them.
-If you want to access the definition of the node, you access
+The definition of a node is stored and can be accessed by name in
   minetest.registered_nodes[node.name]
 
-param1 and param2 are 8 bit and 4 bit integers, respectively. They
-are reserved for certain automated functions. If you don't use these
+Please note that for unknown nodes (eg. a node of an uninstalled mod) the
+minetest.registered_nodes field for the node is nil.
+
+Nodes are passed by value in Lua. They are represented by a table:
+  {name="name", param1=num, param2=num}
+
+param1 and param2 are 8 bit and 4 bit integers, respectively. The engine
+uses them for certain automated functions. If you don't use these
 functions, you can use them to store arbitrary values.
 
-param1 is reserved for the engine when:
-  paramtype != "none"
+The functions of param1 and param2 are determined by certain fields in the
+node definition:
+param1 is reserved for the engine when paramtype != "none":
+  paramtype = "light"
+  ^ The value stores light with and without sun in it's
+    upper and lower 4 bits.
 param2 is reserved for the engine when any of these are used:
   liquidtype == "flowing"
+  ^ The level and some flags of the liquid is stored in param2
   drawtype == "flowingliquid"
+  ^ The drawn liquid level is read from param2
   drawtype == "torchlike"
   drawtype == "signlike"
+  paramtype2 == "wallmounted"
+  ^ The rotation of the node is stored in param2. You can make this value
+    by using minetest.dir_to_wallmounted().
+  paramtype2 == "facedir"
+  ^ The rotation of the node is stored in param2. Furnaces and chests are
+    rotated this way. Can be made by using minetest.dir_to_facedir().
 
+Representations of simple things
+--------------------------------
 Position/vector:
   {x=num, y=num, z=num}
 Currently the API does not provide any helper functions for addition,
