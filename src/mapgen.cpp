@@ -1790,11 +1790,6 @@ void make_block(BlockMakeData *data)
 		// Node position in 2d
 		v2s16 p2d = v2s16(x,z);
 		
-		MapNode addnode(c_dirt);
-		BiomeType bt = get_biome(data->seed, p2d);
-		if(bt == BT_DESERT)
-			addnode = MapNode(c_desert_sand);
-
 		// Randomize mud amount
 		s16 mud_add_amount = get_mud_add_amount(data->seed, p2d) / 2.0 + 0.5;
 
@@ -1804,7 +1799,15 @@ void make_block(BlockMakeData *data)
 		if(surface_y == vmanip.m_area.MinEdge.Y - 1)
 			continue;
 
-		if(mud_add_amount <= 0){
+		MapNode addnode(c_dirt);
+		BiomeType bt = get_biome(data->seed, p2d);
+
+		if(bt == BT_DESERT)
+			addnode = MapNode(c_desert_sand);
+
+		if(bt == BT_DESERT && surface_y + mud_add_amount <= WATER_LEVEL+1){
+			addnode = MapNode(c_sand);
+		} else if(mud_add_amount <= 0){
 			mud_add_amount = 1 - mud_add_amount;
 			addnode = MapNode(c_gravel);
 		} else if(bt == BT_NORMAL && get_have_beach(data->seed, p2d) &&
