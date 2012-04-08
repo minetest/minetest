@@ -55,4 +55,11 @@ function minetest.hash_node_position(pos)
 	return (pos.z+32768)*65536*65536 + (pos.y+32768)*65536 + pos.x+32768
 end
 
+function minetest.get_node_group(name, group)
+	if not minetest.registered_nodes[name] or not
+			minetest.registered_nodes[name].groups[group] then
+		return 0
+	end
+	return minetest.registered_nodes[name].groups[group]
+end
 
