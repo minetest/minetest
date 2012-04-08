@@ -1639,10 +1639,10 @@ void Client::ProcessData(u8 *data, u32 datasize, u16 sender_peer_id)
 		int client_id = -1;
 		switch(type){
 		case 0: // local
-			client_id = m_sound->playSound(name, false, gain);
+			client_id = m_sound->playSound(name, loop, gain);
 			break;
 		case 1: // positional
-			client_id = m_sound->playSoundAt(name, false, gain, pos);
+			client_id = m_sound->playSoundAt(name, loop, gain, pos);
 			break;
 		case 2: { // object
 			ClientActiveObject *cao = m_env.getActiveObject(object_id);
