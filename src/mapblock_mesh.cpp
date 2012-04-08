@@ -183,6 +183,15 @@ static u8 getFaceLight(enum LightBank bank, MapNode n, MapNode n2,
 	else
 		light = l2;
 
+	// Boost light level for light sources
+	u8 light_source = MYMAX(ndef->get(n).light_source,
+			ndef->get(n2).light_source);
+	//if(light_source >= light)
+		//return decode_light(undiminish_light(light_source));
+	if(light_source > light)
+		//return decode_light(light_source);
+		light = light_source;
+
 	// Make some nice difference to different sides
 
 	// This makes light come from a corner
@@ -233,10 +242,13 @@ static u8 getSmoothLight(enum LightBank bank, v3s16 p, MeshMakeData *data)
 	u16 ambient_occlusion = 0;
 	u16 light = 0;
 	u16 light_count = 0;
+	u8 light_source_max = 0;
 	for(u32 i=0; i<8; i++)
 	{
 		MapNode n = data->m_vmanip.getNodeNoEx(p - dirs8[i]);
 		const ContentFeatures &f = ndef->get(n);
+		if(f.light_source > light_source_max)
+			light_source_max = f.light_source;
 		// Check f.solidness because fast-style leaves look
 		// better this way
 		if(f.param_type == CPT_LIGHT && f.solidness != 2)
@@ -254,6 +266,11 @@ static u8 getSmoothLight(enum LightBank bank, v3s16 p, MeshMakeData *data)
 		return 255;
 	
 	light /= light_count;
+
+	// Boost brightness around light sources
+	if(decode_light(light_source_max) >= light)
+		//return decode_light(undiminish_light(light_source_max));
+		return decode_light(light_source_max);
 
 	if(ambient_occlusion > 4)
 	{

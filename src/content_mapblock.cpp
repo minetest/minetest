@@ -210,8 +210,16 @@ void mapblock_mesh_generate_special(MeshMakeData *data,
 				top_is_same_liquid = true;
 			
 			u16 l = 0;
+			// If this liquid emits light and doesn't contain light, draw
+			// it at what it emits, for an increased effect
+			u8 light_source = nodedef->get(n).light_source;
+			if(light_source != 0){
+				//l = decode_light(undiminish_light(light_source));
+				l = decode_light(light_source);
+				l = l | (l<<8);
+			}
 			// Use the light of the node on top if possible
-			if(nodedef->get(ntop).param_type == CPT_LIGHT)
+			else if(nodedef->get(ntop).param_type == CPT_LIGHT)
 				l = getInteriorLight(ntop, 0, data);
 			// Otherwise use the light of this node (the liquid)
 			else
