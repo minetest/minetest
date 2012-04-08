@@ -46,6 +46,19 @@ On an installed version on linux:
   ~/.minetest/mods/gameid/ <-- User-installed mods
   ~/.minetest/worlds/worldname/worldmods
 
+Mod load path for world-specific games
+--------------------------------------
+It is possible to include a game in a world; in this case, no mods or
+games are loaded or checked from anywhere else.
+
+This is useful for eg. adventure worlds.
+
+This happens if the following directory exists:
+  $world/game/
+
+Mods should be then be placed in:
+  $world/game/mods/
+
 Mod directory structure
 ------------------------
 mods
