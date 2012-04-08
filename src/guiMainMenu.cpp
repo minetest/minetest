@@ -590,7 +590,7 @@ void GUIMainMenu::regenerateGui(v2u32 screensize)
 			rect += m_topleft_client + v2s32(130+14, 50+35);
 			Environment->addStaticText(narrow_to_wide(
 			"Minetest-c55 " VERSION_STRING "\n"
-			"http://c55.me/minetest/\n"
+			"http://minetest.net/\n"
 			"\n"
 			"by Perttu Ahola <celeron55@gmail.com>\n"
 			"and contributors"
