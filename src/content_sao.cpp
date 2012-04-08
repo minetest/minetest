@@ -389,10 +389,9 @@ void LuaEntitySAO::addedToEnvironment()
 		scriptapi_luaentity_get_properties(L, m_id, &m_prop);
 		// Initialize HP from properties
 		m_hp = m_prop.hp_max;
+		// Activate entity, supplying serialized state
+		scriptapi_luaentity_activate(L, m_id, m_init_state.c_str());
 	}
-	
-	// Activate entity, supplying serialized state
-	scriptapi_luaentity_activate(L, m_id, m_init_state.c_str());
 }
 
 ServerActiveObject* LuaEntitySAO::create(ServerEnvironment *env, v3f pos,
