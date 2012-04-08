@@ -87,6 +87,24 @@ SubgameSpec findSubgame(const std::string &id)
 	return SubgameSpec(id, game_path, mods_paths, game_name);
 }
 
+SubgameSpec findWorldSubgame(const std::string &world_path)
+{
+	std::string world_gameid = getWorldGameId(world_path, true);
+	// See if world contains an embedded game; if so, use it.
+	std::string world_gamepath = world_path + DIR_DELIM + "game";
+	if(fs::PathExists(world_gamepath)){
+		SubgameSpec gamespec;
+		gamespec.id = world_gameid;
+		gamespec.path = world_gamepath;
+		gamespec.mods_paths.insert(world_gamepath + DIR_DELIM + "mods");
+		gamespec.name = getGameName(world_gamepath);
+		if(gamespec.name == "")
+			gamespec.name = "unknown";
+		return gamespec;
+	}
+	return findSubgame(world_gameid);
+}
+
 std::set<std::string> getAvailableGameIds()
 {
 	std::set<std::string> gameids;

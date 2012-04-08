@@ -1135,43 +1135,44 @@ int main(int argc, char *argv[])
 		}
 		verbosestream<<"Using world path ["<<world_path<<"]"<<std::endl;
 
-		// We need a gameid.
-		std::string gameid;
-		verbosestream<<"Determining gameid"<<std::endl;
+		// We need a gamespec.
+		SubgameSpec gamespec;
+		verbosestream<<"Determining gameid/gamespec"<<std::endl;
 		// If world doesn't exist
 		if(!getWorldExists(world_path))
 		{
 			// Try to take gamespec from command line
 			if(commanded_gamespec.isValid()){
-				gameid = commanded_gamespec.id;
-				infostream<<"Using commanded gameid ["<<gameid<<"]"<<std::endl;
+				gamespec = commanded_gamespec;
+				infostream<<"Using commanded gameid ["<<gamespec.id<<"]"<<std::endl;
 			}
 			// Otherwise we will be using "minetest"
 			else{
-				gameid = g_settings->get("default_game");
-				infostream<<"Using default gameid ["<<gameid<<"]"<<std::endl;
+				gamespec = findSubgame(g_settings->get("default_game"));
+				infostream<<"Using default gameid ["<<gamespec.id<<"]"<<std::endl;
 			}
 		}
-		// If world exists
+		// World exists
 		else
 		{
-			// Otherwise read from the world
 			std::string world_gameid = getWorldGameId(world_path, is_legacy_world);
-			gameid = world_gameid;
-			if(commanded_gamespec.isValid() &&
-					commanded_gamespec.id != world_gameid){
-				gameid = commanded_gamespec.id;
-				errorstream<<"WARNING: Using commanded gameid ["<<gameid<<"]"
-						<<" instead of world gameid ["<<world_gameid
-						<<"]"<<std::endl;
+			// If commanded to use a gameid, do so
+			if(commanded_gamespec.isValid()){
+				gamespec = commanded_gamespec;
+				if(commanded_gamespec.id != world_gameid){
+					errorstream<<"WARNING: Using commanded gameid ["
+							<<gamespec.id<<"]"<<" instead of world gameid ["
+							<<world_gameid<<"]"<<std::endl;
+				}
 			} else{
-				infostream<<"Using world gameid ["<<gameid<<"]"<<std::endl;
+				// If world contains an embedded game, use it;
+				// Otherwise find world from local system.
+				gamespec = findWorldSubgame(world_path);
+				infostream<<"Using world gameid ["<<gamespec.id<<"]"<<std::endl;
 			}
 		}
-		verbosestream<<"Finding subgame ["<<gameid<<"]"<<std::endl;
-		SubgameSpec gamespec = findSubgame(gameid);
 		if(!gamespec.isValid()){
-			errorstream<<"Subgame ["<<gameid<<"] could not be found."
+			errorstream<<"Subgame ["<<gamespec.id<<"] could not be found."
 					<<std::endl;
 			return 1;
 		}
@@ -1602,7 +1603,7 @@ int main(int argc, char *argv[])
 						continue;
 					}
 					// Load gamespec for required game
-					gamespec = findSubgame(worldspec.gameid);
+					gamespec = findWorldSubgame(worldspec.path);
 					if(!gamespec.isValid() && !commanded_gamespec.isValid()){
 						error_message = L"Could not find or load game \""
 								+ narrow_to_wide(worldspec.gameid) + L"\"";
