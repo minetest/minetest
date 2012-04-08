@@ -668,6 +668,8 @@ methods:
 - get_timeofday()
 - find_node_near(pos, radius, nodenames) -> pos or nil
   ^ nodenames: eg. {"ignore", "group:tree"} or "default:dirt"
+- find_nodes_in_area(minp, maxp, nodenames) -> list of positions
+  ^ nodenames: eg. {"ignore", "group:tree"} or "default:dirt"
 - get_perlin(seeddiff, octaves, persistence, scale)
   ^ Return world-specific perlin noise (int(worldseed)+seeddiff)
 Deprecated:

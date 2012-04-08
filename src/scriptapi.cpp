@@ -3346,6 +3346,55 @@ private:
 		return 0;
 	}
 
+	// EnvRef:find_nodes_in_area(minp, maxp, nodenames) -> list of positions
+	// nodenames: eg. {"ignore", "group:tree"} or "default:dirt"
+	static int l_find_nodes_in_area(lua_State *L)
+	{
+		EnvRef *o = checkobject(L, 1);
+		ServerEnvironment *env = o->m_env;
+		if(env == NULL) return 0;
+		INodeDefManager *ndef = get_server(L)->ndef();
+		v3s16 minp = read_v3s16(L, 2);
+		v3s16 maxp = read_v3s16(L, 3);
+		std::set<content_t> filter;
+		if(lua_istable(L, 4)){
+			int table = 4;
+			lua_pushnil(L);
+			while(lua_next(L, table) != 0){
+				// key at index -2 and value at index -1
+				luaL_checktype(L, -1, LUA_TSTRING);
+				ndef->getIds(lua_tostring(L, -1), filter);
+				// removes value, keeps key for next iteration
+				lua_pop(L, 1);
+			}
+		} else if(lua_isstring(L, 4)){
+			ndef->getIds(lua_tostring(L, 4), filter);
+		}
+
+		// Get the table insert function
+		lua_getglobal(L, "table");
+		lua_getfield(L, -1, "insert");
+		int table_insert = lua_gettop(L);
+		
+		lua_newtable(L);
+		int table = lua_gettop(L);
+		for(s16 x=minp.X; x<=maxp.X; x++)
+		for(s16 y=minp.Y; y<=maxp.Y; y++)
+		for(s16 z=minp.Z; z<=maxp.Z; z++)
+		{
+			v3s16 p(x,y,z);
+			content_t c = env->getMap().getNodeNoEx(p).getContent();
+			if(filter.count(c) != 0){
+				lua_pushvalue(L, table_insert);
+				lua_pushvalue(L, table);
+				push_v3s16(L, p);
+				if(lua_pcall(L, 2, 0, 0))
+					script_error(L, "error: %s", lua_tostring(L, -1));
+			}
+		}
+		return 1;
+	}
+
 	//	EnvRef:get_perlin(seeddiff, octaves, persistence, scale)
 	//  returns world-specific PerlinNoise
 	static int l_get_perlin(lua_State *L)
@@ -3441,6 +3490,7 @@ const luaL_reg EnvRef::methods[] = {
 	method(EnvRef, set_timeofday),
 	method(EnvRef, get_timeofday),
 	method(EnvRef, find_node_near),
+	method(EnvRef, find_nodes_in_area),
 	method(EnvRef, get_perlin),
 	{0,0}
 };
