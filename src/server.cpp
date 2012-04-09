@@ -2955,8 +2955,13 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 		*/
 		if(!checkPriv(player->getName(), "interact"))
 		{
-			infostream<<"Ignoring interaction from player "<<player->getName()
-					<<" (no interact privilege)"<<std::endl;
+			actionstream<<player->getName()<<" attempted to interact with "
+					<<pointed.dump()<<" without 'interact' privilege"
+					<<std::endl;
+			// Re-send block to revert change on client-side
+			RemoteClient *client = getClient(peer_id);
+			v3s16 blockpos = getNodeBlockPos(floatToInt(pointed_pos_under, BS));
+			client->SetBlockNotSent(blockpos);
 			return;
 		}
 
@@ -3041,6 +3046,14 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 				}
 				if(n.getContent() != CONTENT_IGNORE)
 					scriptapi_node_on_dig(m_lua, p_under, n, playersao);
+
+				if (m_env->getMap().getNode(p_under).getContent() != CONTENT_AIR)
+				{
+					// Re-send block to revert change on client-side
+					RemoteClient *client = getClient(peer_id);
+					v3s16 blockpos = getNodeBlockPos(floatToInt(pointed_pos_under, BS));
+					client->SetBlockNotSent(blockpos);
+				}
 			}
 		} // action == 2
 		
