@@ -111,8 +111,13 @@ minetest.register_chatcommand("privs", {
 minetest.register_chatcommand("grant", {
 	params = "<name> <privilege>|all",
 	description = "Give privilege to player",
-	privs = {privs=true},
+	privs = {},
 	func = function(name, param)
+		if not minetest.check_player_privs(name, {privs=true}) and 
+				not minetest.check_player_privs(name, {basic_privs=true}) then
+			minetest.chat_send_player(name, "Your privileges are insufficient.")
+			return
+		end
 		local grantname, grantprivstr = string.match(param, "([^ ]+) (.+)")
 		if not grantname or not grantprivstr then
 			minetest.chat_send_player(name, "Invalid parameters (see /help grant)")
@@ -125,6 +130,10 @@ minetest.register_chatcommand("grant", {
 		local privs = minetest.get_player_privs(grantname)
 		local privs_known = true
 		for priv, _ in pairs(grantprivs) do
+			if priv ~= "interact" and priv ~= "shout" and not minetest.check_player_privs(name, {privs=true}) then
+				minetest.chat_send_player(name, "Your privileges are insufficient.")
+				return
+			end
 			if not minetest.registered_privileges[priv] then
 				minetest.chat_send_player(name, "Unknown privilege: "..priv)
 				privs_known = false
@@ -144,8 +153,13 @@ minetest.register_chatcommand("grant", {
 minetest.register_chatcommand("revoke", {
 	params = "<name> <privilege>|all",
 	description = "Remove privilege from player",
-	privs = {privs=true},
+	privs = {},
 	func = function(name, param)
+		if not minetest.check_player_privs(name, {privs=true}) and 
+				not minetest.check_player_privs(name, {basic_privs=true}) then
+			minetest.chat_send_player(name, "Your privileges are insufficient.")
+			return
+		end
 		local revokename, revokeprivstr = string.match(param, "([^ ]+) (.+)")
 		if not revokename or not revokeprivstr then
 			minetest.chat_send_player(name, "Invalid parameters (see /help revoke)")
@@ -153,6 +167,12 @@ minetest.register_chatcommand("revoke", {
 		end
 		local revokeprivs = minetest.string_to_privs(revokeprivstr)
 		local privs = minetest.get_player_privs(revokename)
+		for priv, _ in pairs(revokeprivs) do
+			if priv ~= "interact" and priv ~= "shout" and not minetest.check_player_privs(name, {privs=true}) then
+				minetest.chat_send_player(name, "Your privileges are insufficient.")
+				return
+			end
+		end
 		if revokeprivstr == "all" then
 			privs = {}
 		else
