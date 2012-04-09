@@ -130,7 +130,7 @@ minetest.register_chatcommand("grant", {
 		local privs = minetest.get_player_privs(grantname)
 		local privs_known = true
 		for priv, _ in pairs(grantprivs) do
-			if priv ~= "interact" and priv ~= "shout" and not minetest.check_player_privs(name, {privs=true}) then
+			if priv ~= "interact" and priv ~= "shout" and priv ~= "interact_extra" and not minetest.check_player_privs(name, {privs=true}) then
 				minetest.chat_send_player(name, "Your privileges are insufficient.")
 				return
 			end
@@ -168,7 +168,7 @@ minetest.register_chatcommand("revoke", {
 		local revokeprivs = minetest.string_to_privs(revokeprivstr)
 		local privs = minetest.get_player_privs(revokename)
 		for priv, _ in pairs(revokeprivs) do
-			if priv ~= "interact" and priv ~= "shout" and not minetest.check_player_privs(name, {privs=true}) then
+			if priv ~= "interact" and priv ~= "shout" and priv ~= "interact_extra" and not minetest.check_player_privs(name, {privs=true}) then
 				minetest.chat_send_player(name, "Your privileges are insufficient.")
 				return
 			end
