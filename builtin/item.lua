@@ -276,6 +276,13 @@ function minetest.node_dig(pos, node, digger)
 	end
 end
 
+-- This is used to allow mods to redefine minetest.item_place and so on
+local function redef_wrapper(table, name)
+	return function(...)
+		return table[name](...)
+	end
+end
+
 --
 -- Item definition defaults
 --
@@ -295,12 +302,12 @@ minetest.nodedef_default = {
 	tool_capabilities = nil,
 
 	-- Interaction callbacks
-	on_place = minetest.item_place,
-	on_drop = minetest.item_drop,
+	on_place = redef_wrapper(minetest, 'item_place'), -- minetest.item_place
+	on_drop = redef_wrapper(minetest, 'item_drop'), -- minetest.item_drop
 	on_use = nil,
 
-	on_punch = minetest.node_punch,
-	on_dig = minetest.node_dig,
+	on_punch = redef_wrapper(minetest, 'node_punch'), -- minetest.node_punch
+	on_dig = redef_wrapper(minetest, 'node_dig'), -- minetest.node_dig
 
 	-- Node properties
 	drawtype = "normal",
@@ -346,8 +353,8 @@ minetest.craftitemdef_default = {
 	tool_capabilities = nil,
 
 	-- Interaction callbacks
-	on_place = minetest.item_place,
-	on_drop = minetest.item_drop,
+	on_place = redef_wrapper(minetest, 'item_place'), -- minetest.item_place
+	on_drop = redef_wrapper(minetest, 'item_drop'), -- minetest.item_drop
 	on_use = nil,
 }
 
@@ -364,8 +371,8 @@ minetest.tooldef_default = {
 	tool_capabilities = nil,
 
 	-- Interaction callbacks
-	on_place = minetest.item_place,
-	on_drop = minetest.item_drop,
+	on_place = redef_wrapper(minetest, 'item_place'), -- minetest.item_place
+	on_drop = redef_wrapper(minetest, 'item_drop'), -- minetest.item_drop
 	on_use = nil,
 }
 
