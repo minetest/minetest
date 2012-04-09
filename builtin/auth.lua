@@ -84,12 +84,9 @@ minetest.builtin_auth_handler = {
 		-- always has an empty password, otherwise use default, which is
 		-- usually empty too)
 		local new_password_hash = ""
-		if not minetest.is_singleplayer() then
-			new_password_hash = minetest.get_password_hash(name, minetest.setting_get("default_password"))
-		end
-		-- Add player to authentication table if not there already
+		-- If not in authentication table, return nil
 		if not minetest.auth_table[name] then
-			minetest.builtin_auth_handler.create_auth(name, minetest.get_password_hash(name, minetest.setting_get("default_password")))
+			return nil
 		end
 		-- Figure out what privileges the player should have.
 		-- Take a copy of the privilege table
