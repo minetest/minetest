@@ -67,3 +67,35 @@ function minetest.get_node_group(name, group)
 	return minetest.get_item_group(name, group)
 end
 
+function minetest.string_to_pos(value)
+	local p = {}
+	p.x, p.y, p.z = string.match(value, "^([%d.-]+)[, ] *([%d.-]+)[, ] *([%d.-]+)$")
+	if p.x and p.y and p.z then
+		p.x = tonumber(p.x)
+		p.y = tonumber(p.y)
+		p.z = tonumber(p.z)
+		return p
+	end
+	local p = {}
+	p.x, p.y, p.z = string.match(value, "^%( *([%d.-]+)[, ] *([%d.-]+)[, ] *([%d.-]+) *%)$")
+	if p.x and p.y and p.z then
+		p.x = tonumber(p.x)
+		p.y = tonumber(p.y)
+		p.z = tonumber(p.z)
+		return p
+	end
+	return nil
+end
+
+assert(minetest.string_to_pos("10.0, 5, -2").x == 10)
+assert(minetest.string_to_pos("( 10.0, 5, -2)").z == -2)
+assert(minetest.string_to_pos("asd, 5, -2)") == nil)
+
+function minetest.setting_get_pos(name)
+	local value = minetest.setting_get(name)
+	if not value then
+		return nil
+	end
+	return minetest.string_to_pos(value)
+end
+

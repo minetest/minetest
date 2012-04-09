@@ -514,6 +514,7 @@ string:trim()
 ^ eg. string.trim("\n \t\tfoo bar\t ") == "foo bar"
 minetest.pos_to_string({x=X,y=Y,z=Z}) -> "(X,Y,Z)"
 ^ Convert position to a printable string
+minetest.string_to_pos(string) -> position
 
 minetest namespace reference
 -----------------------------
@@ -576,6 +577,7 @@ Setting-related:
 minetest.setting_set(name, value)
 minetest.setting_get(name) -> string or nil
 minetest.setting_getbool(name) -> boolean value or nil
+minetest.setting_get_pos(name) -> position or nil
 minetest.add_to_creative_inventory(itemstring)
 
 Authentication:

@@ -322,7 +322,7 @@ minetest.register_chatcommand("set", {
 	privs = {server=true},
 	func = function(name, param)
 		local arg, setname, setvalue = string.match(param, "(-[n]) ([^ ]+) (.+)")
-		if arg and arg == "n" and setname and setvalue then
+		if arg and arg == "-n" and setname and setvalue then
 			minetest.setting_set(setname, setvalue)
 			minetest.chat_send_player(name, setname.." = "..setvalue)
 			return
