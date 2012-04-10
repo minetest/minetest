@@ -1,0 +1,7 @@
+## Generic ignorable patterns and files
+*~
+.*.swp
+*bak*
+tags
+*.vim
+
