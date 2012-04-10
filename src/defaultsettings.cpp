@@ -26,6 +26,7 @@ void set_default_settings(Settings *settings)
 	settings->setDefault("port", "");
 	settings->setDefault("name", "");
 	settings->setDefault("footprints", "false");
+	settings->setDefault("server_map_save_interval", "180");
 
 	// Client stuff
 
