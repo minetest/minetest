@@ -1347,9 +1347,9 @@ void Server::AsyncRunStep()
 	
 	/* Transform liquids */
 	m_liquid_transform_timer += dtime;
-	if(m_liquid_transform_timer >= 1.00)
+	if(m_liquid_transform_timer >= 0.44)
 	{
-		m_liquid_transform_timer -= 1.00;
+		m_liquid_transform_timer -= 0.44;
 		
 		JMutexAutoLock lock(m_env_mutex);
 
