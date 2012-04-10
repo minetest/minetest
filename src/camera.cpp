@@ -133,7 +133,7 @@ void Camera::step(f32 dtime)
 	if (m_view_bobbing_state != 0)
 	{
 		//f32 offset = dtime * m_view_bobbing_speed * 0.035;
-		f32 offset = dtime * m_view_bobbing_speed * 0.030;
+		f32 offset = dtime * m_view_bobbing_speed * 0.04;
 		if (m_view_bobbing_state == 2)
 		{
 #if 0
