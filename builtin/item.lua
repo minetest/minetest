@@ -205,6 +205,18 @@ function minetest.item_drop(itemstack, dropper, pos)
 	end
 	return ""
 end
+---Below is a new dropping thingy (idk how i figured this out)
+function minetest.item_drop1(itemstack, dropper, pos)
+	if dropper.get_player_name then
+		local v = {x=math.random(-2,2), y=2, z=math.random(-2,2)}
+		local p = {x=pos.x, y=pos.y, z=pos.z}
+		local obj = minetest.env:add_item(p, itemstack)
+		obj:setvelocity(v)
+	else
+		minetest.env:add_item(pos, itemstack)
+	end
+	return ""
+end
 
 function minetest.item_eat(hp_change, replace_with_item)
 	return function(itemstack, user, pointed_thing)  -- closure
@@ -262,7 +274,7 @@ function minetest.node_dig(pos, node, digger)
 		-- Add dropped items
 		local _, dropped_item
 		for _, dropped_item in ipairs(drops) do
-			digger:get_inventory():add_item("main", dropped_item)
+			minetest.item_drop1(dropped_item, digger, pos)
 		end
 	end
 
