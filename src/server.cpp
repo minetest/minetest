@@ -3047,7 +3047,7 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 				if(n.getContent() != CONTENT_IGNORE)
 					scriptapi_node_on_dig(m_lua, p_under, n, playersao);
 
-				if (m_env->getMap().getNode(p_under).getContent() != CONTENT_AIR)
+				if (m_env->getMap().getNodeNoEx(p_under).getContent() != CONTENT_AIR)
 				{
 					// Re-send block to revert change on client-side
 					RemoteClient *client = getClient(peer_id);
