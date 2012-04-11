@@ -13,7 +13,12 @@ function activate_if_tnt(nname, np, tnt_np, tntr)
       gop2 = "nuke:mese_tnt2"
       local e = minetest.env:add_entity(np, gop2)
       e:setvelocity({x=(np.x - tnt_np.x)*1+(tntr / 4), y=(np.y - tnt_np.y)*1+(tntr / 3), z=(np.z - tnt_np.z)*1+(tntr / 4)})
+    else if nname == "nuke:tnt" then
+     gop2 = "nuke:tnt2"
+     local e = minetest.env:add_entity(np, gop2)
+     e:setvelocity({x=(np.x - tnt_np.x)*1+(tntr / 4), y=(np.y - tnt_np.y)*1+(tntr / 3), z=(np.z - tnt_np.z)*1+(tntr / 4)})
     end
+end
 end
 end
 end
@@ -24,7 +29,7 @@ function do_tnt_physics(tnt_np,tntr)
         local oname = obj:get_entity_name()
         local v = obj:getvelocity()
         local p = obj:getpos()
-        if oname == "experimental:tnt" or oname == "nuke:iron_tnt" or oname == "nuke:mese_tnt" or oname == "nuke:hardcore_iron_tnt" or oname == "nuke:hardcore_mese_tnt" then
+        if oname == "nuke:tnt" or oname == "nuke:iron_tnt" or oname == "nuke:mese_tnt" or oname == "nuke:hardcore_iron_tnt" or oname == "nuke:hardcore_mese_tnt" then
             obj:setvelocity({x=(p.x - tnt_np.x) + (tntr / 2) + v.x, y=(p.y - tnt_np.y) + tntr + v.y, z=(p.z - tnt_np.z) + (tntr / 2) + v.z})
         else
             if v ~= nil then
@@ -37,6 +42,185 @@ function do_tnt_physics(tnt_np,tntr)
         end
     end
 end
+
+-- Normal TNT
+
+minetest.register_node("nuke:tnt", {
+	tile_images = {"tnt_top.png", "tnt_bottom.png",
+			"tnt_side.png", "tnt_side.png",
+			"tnt_side.png", "tnt_side.png"},
+	inventory_image = minetest.inventorycube("tnt_top.png",
+			"tnt_side.png", "tnt_side.png"),
+	dug_item = '', -- Get nothing
+	material = {
+		diggability = "not",
+	},
+	description = "Iron TNT",
+})
+
+minetest.register_on_punchnode(function(p, node)
+	if node.name == "nuke:tnt" then
+		minetest.env:remove_node(p)
+		minetest.env:add_entity(p, "nuke:tnt")	
+			end
+		--minetest.env:add_entity(p, "nuke:iron_tnt2") <-in case you forget
+		nodeupdate(p)
+end)
+
+local TNT_RANGE = 4
+local TNT = {
+	-- Static definition
+	physical = true, -- Collides with things
+	-- weight = 5,
+	collisionbox = {-0.5,-0.5,-0.5, 0.5,0.5,0.5},
+	visual = "cube",
+	textures = {"tnt_top.png", "tnt_bottom.png",
+			"tnt_side.png", "tnt_side.png",
+			"tnt_side.png", "tnt_side.png"},
+	-- Initial value for our timer
+	timer = 0,
+	-- Number of punches required to defuse
+	health = 1,
+	blinktimer = 0,
+	blinkstatus = true,
+}
+function TNT:on_activate(staticdata)
+	self.object:setvelocity({x=0, y=4, z=0})
+	self.object:setacceleration({x=0, y=-10, z=0})
+	self.object:settexturemod("^[brighten")
+	
+end
+
+function TNT:on_step(dtime)
+	self.timer = self.timer + dtime
+	self.blinktimer = self.blinktimer + dtime
+    if self.timer>5 then
+        self.blinktimer = self.blinktimer + dtime
+        if self.timer>8 then
+            self.blinktimer = self.blinktimer + dtime
+            self.blinktimer = self.blinktimer + dtime
+        end
+    end
+	if self.blinktimer > 0.5 then
+		self.blinktimer = self.blinktimer - 0.5
+		if self.blinkstatus then
+			self.object:settexturemod("")
+		else
+			self.object:settexturemod("^[brighten")
+		end
+		self.blinkstatus = not self.blinkstatus
+	end
+	if self.timer > 10 then
+		local pos = self.object:getpos()
+        pos.x = math.floor(pos.x+0.5)
+        pos.y = math.floor(pos.y+0.5)
+        pos.z = math.floor(pos.z+0.5)
+        do_tnt_physics(pos, TNT_RANGE)
+        if minetest.env:get_node(pos).name == "default:water_source" or minetest.env:get_node(pos).name == "default:water_flowing" then
+            -- Cancel the Explosion
+            self.object:remove()
+            return
+        end
+        for x=-TNT_RANGE,TNT_RANGE do
+        for y=-TNT_RANGE,TNT_RANGE do
+        for z=-TNT_RANGE,TNT_RANGE do
+            if x*x+y*y+z*z <= (TNT_RANGE + math.floor(math.random(mrmin,mrmax))) * (TNT_RANGE + math.floor(math.random(mrmin,mrmax))) + (TNT_RANGE + math.floor(math.random(mrmin,mrmax))) then
+                local np={x=pos.x+x,y=pos.y+y,z=pos.z+z}
+                local n = minetest.env:get_node(np)
+                if n.name ~= "air" then
+                    minetest.env:remove_node(np)
+                end
+                activate_if_tnt(n.name, np, pos, TNT_RANGE)
+            end
+        end
+        end
+        end
+		self.object:remove()
+	end
+end
+
+function TNT:on_punch(hitter)
+	self.health = self.health - 1
+	if self.health <= 0 then
+		self.object:remove()
+		hitter:get_inventory():add_item("main", "nuke:tnt")
+	end
+end
+minetest.register_entity("nuke:tnt", TNT)
+
+----- ACTIVATED BY OTHER TNT
+local TNT2_RANGE = 6
+local TNT2 = {
+	-- Static definition
+	physical = true, -- Collides with things
+	-- weight = 5,
+	collisionbox = {-0.5,-0.5,-0.5, 0.5,0.5,0.5},
+	visual = "cube",
+	textures = {"tnt_top.png", "tnt_bottom.png",
+			"tnt_side.png", "tnt_side.png",
+			"tnt_side.png", "tnt_side.png"},
+	-- Initial value for our timer
+	timer = 9,
+	-- Number of punches required to defuse
+	health = 1,
+	blinktimer = 9,
+	blinkstatus = true,
+}
+function TNT2:on_activate(staticdata)
+	self.object:setvelocity({x=0, y=4, z=0})
+	self.object:setacceleration({x=0, y=-10, z=0})
+	self.object:settexturemod("^[brighten")
+	
+end
+
+function TNT2:on_step(dtime)
+	self.timer = self.timer + dtime
+	self.blinktimer = self.blinktimer + dtime
+    if self.timer>5 then
+        self.blinktimer = self.blinktimer + dtime
+        if self.timer>8 then
+            self.blinktimer = self.blinktimer + dtime
+            self.blinktimer = self.blinktimer + dtime
+        end
+    end
+	if self.blinktimer > 0.5 then
+		self.blinktimer = self.blinktimer - 0.5
+		if self.blinkstatus then
+			self.object:settexturemod("")
+		else
+			self.object:settexturemod("^[brighten")
+		end
+		self.blinkstatus = not self.blinkstatus
+	end
+	if self.timer > 10 then
+		local pos = self.object:getpos()
+        pos.x = math.floor(pos.x+0.5)
+        pos.y = math.floor(pos.y+0.5)
+        pos.z = math.floor(pos.z+0.5)
+        do_tnt_physics(pos, TNT_RANGE)
+        if minetest.env:get_node(pos).name == "default:water_source" or minetest.env:get_node(pos).name == "default:water_flowing" then
+            -- Cancel the Explosion
+            self.object:remove()
+            return
+        end
+        for x=-TNT_RANGE,TNT_RANGE do
+        for y=-TNT_RANGE,TNT_RANGE do
+        for z=-TNT_RANGE,TNT_RANGE do
+            if x*x+y*y+z*z <= (TNT_RANGE + math.floor(math.random(mrmin,mrmax))) * (TNT_RANGE + math.floor(math.random(mrmin,mrmax))) + (TNT_RANGE + math.floor(math.random(mrmin,mrmax))) then
+                local np={x=pos.x+x,y=pos.y+y,z=pos.z+z}
+                local n = minetest.env:get_node(np)
+                if n.name ~= "air" then
+                    minetest.env:remove_node(np)
+                end
+                activate_if_tnt(n.name, np, pos, TNT_RANGE)
+            end
+        end
+        end
+        end
+		self.object:remove()
+	end
+end
+minetest.register_entity("nuke:tnt2", TNT2)
 
 -- Iron TNT
 
