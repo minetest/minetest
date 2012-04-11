@@ -21,7 +21,8 @@ minetest.register_entity("__builtin:item", {
        
         itemstring = '',
         physical_state = true,
-        dontbugme = false,
+        dontbugme = true,
+        hasplayer = false,
  
         set_item = function(self, itemstring)
                 self.itemstring = itemstring
@@ -60,13 +61,11 @@ minetest.register_entity("__builtin:item", {
         end,
  
         on_activate = function(self, staticdata)
-                dontbugme = true
                 self.itemstring = staticdata
                 self.object:set_armor_groups({immortal=1})
-                self.object:setvelocity({x=0, y=2, z=0})
+                self.object:setvelocity({x=0, y=5, z=0})
                 self.object:setacceleration({x=0, y=-10, z=0})
                 self:set_item(self.itemstring)
-                dontbugme = false
         end,
  
         on_step = function(self, dtime)
@@ -81,6 +80,7 @@ minetest.register_entity("__builtin:item", {
                                 self.object:set_properties({
                                         physical = false
                                 })
+                                self.dontbugme = false
                         end
                 else
                         if not self.physical_state then
@@ -90,16 +90,15 @@ minetest.register_entity("__builtin:item", {
                                 self.object:set_properties({
                                         physical = true
                                 })
+                                self.dontbugme = true
                         end
                 end
                 local pos = p
-                local outercircle = 2
+                local outercircle = 1.5
                 local maxaccell = 1
-                local innercircle = 0.3
+                local innercircle = .5
                 local objs = minetest.env:get_objects_inside_radius(pos, innercircle)
                 local objs2 = minetest.env:get_objects_inside_radius(pos, outercircle)
-                isplayerin = false
-                isplayerin2 = false
                 for k, obj in pairs(objs) do
                         local objpos=obj:getpos()
                         if objpos.y>pos.y-1 and objpos.y<pos.y+0.5 then
@@ -108,12 +107,12 @@ minetest.register_entity("__builtin:item", {
                                                 obj:get_inventory():add_item("main", self.itemstring)
                                         end
                                         self.object:remove()
-                                        isplayerin = true
                                 end
                         end
                 end
-                if not dontbugme then
+                if self.dontbugme == false then
                         for k, obj in pairs(objs2) do
+                                local objpos=obj:getpos()
                                 if obj:get_player_name() ~= nil then
                                         print(obj:get_player_name())
                                         isplayerin2 = true
@@ -129,9 +128,6 @@ minetest.register_entity("__builtin:item", {
                                         return
                                 end
                         end
-                end
-                if isplayerin2 == true then
-                        print("OH YEAH")
                 end
         end,
  
