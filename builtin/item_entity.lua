@@ -124,6 +124,7 @@ minetest.register_entity("__builtin:item", {
                                         fix = fix * -1
                                         local fiz = maxaccell - fz
                                         fiz = fiz * -1
+                                        self.object:setacceleration({x=0, y=0, z=0})
                                         self.object:setvelocity({x=fx * 5, y=fy * 5, z=fz * 5})
                                         return
                                 end
