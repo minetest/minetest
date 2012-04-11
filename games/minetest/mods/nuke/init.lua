@@ -67,7 +67,7 @@ minetest.register_on_punchnode(function(p, node)
 		nodeupdate(p)
 end)
 
-local TNT_RANGE = 4
+local TNT_RANGE = 8
 local TNT = {
 	-- Static definition
 	physical = true, -- Collides with things
@@ -149,7 +149,7 @@ end
 minetest.register_entity("nuke:tnt", TNT)
 
 ----- ACTIVATED BY OTHER TNT
-local TNT2_RANGE = 6
+local TNT2_RANGE = 8
 local TNT2 = {
 	-- Static definition
 	physical = true, -- Collides with things
@@ -254,7 +254,7 @@ minetest.register_on_punchnode(function(p, node)
 	end
 end)
 
-local IRON_TNT_RANGE = 6
+local IRON_TNT_RANGE = 14
 local IRON_TNT = {
 	-- Static definition
 	physical = true, -- Collides with things
@@ -372,7 +372,7 @@ end)
 
 
 
-local IRON_TNT2_RANGE = 7
+local IRON_TNT2_RANGE = 14
 local IRON_TNT2 = {
 	-- Static definition
 	physical = true, -- Collides with things
@@ -459,7 +459,7 @@ minetest.register_entity("nuke:iron_tnt2", IRON_TNT2)
 
 
 
-local MESE_TNT_RANGE = 12
+local MESE_TNT_RANGE = 24
 local MESE_TNT = {
 	-- Static definition
 	physical = true, -- Collides with things
@@ -547,7 +547,7 @@ minetest.register_entity("nuke:mese_tnt", MESE_TNT)
 
 
 
-local MESE_TNT2_RANGE = 14
+local MESE_TNT2_RANGE = 24
 local MESE_TNT2 = {
 	-- Static definition
 	physical = true, -- Collides with things
