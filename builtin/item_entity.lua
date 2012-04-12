@@ -22,7 +22,9 @@ minetest.register_entity("__builtin:item", {
         itemstring = '',
         physical_state = true,
         dontbugme = true,
-        hasplayer = false,
+        outercircle = 1.5,
+        innercircle = 0.5,
+        gravity = true,
  
         set_item = function(self, itemstring)
                 self.itemstring = itemstring
@@ -63,7 +65,7 @@ minetest.register_entity("__builtin:item", {
         on_activate = function(self, staticdata)
                 self.itemstring = staticdata
                 self.object:set_armor_groups({immortal=1})
-                self.object:setvelocity({x=0, y=5, z=0})
+                self.object:setvelocity({x=0, y=2, z=0})
                 self.object:setacceleration({x=0, y=-10, z=0})
                 self:set_item(self.itemstring)
         end,
@@ -84,8 +86,10 @@ minetest.register_entity("__builtin:item", {
                         end
                 else
                         if not self.physical_state then
-                                self.object:setvelocity({x=0,y=0,z=0})
-                                self.object:setacceleration({x=0, y=-10, z=0})
+                                if gravity == true then
+                                        self.object:setvelocity({x=0,y=0,z=0})
+                                        self.object:setacceleration({x=0, y=-10, z=0})
+                                end
                                 self.physical_state = true
                                 self.object:set_properties({
                                         physical = true
@@ -94,11 +98,8 @@ minetest.register_entity("__builtin:item", {
                         end
                 end
                 local pos = p
-                local outercircle = 1.5
-                local maxaccell = 1
-                local innercircle = .5
-                local objs = minetest.env:get_objects_inside_radius(pos, innercircle)
-                local objs2 = minetest.env:get_objects_inside_radius(pos, outercircle)
+                local objs = minetest.env:get_objects_inside_radius(pos, self.innercircle)
+                local objs2 = minetest.env:get_objects_inside_radius(pos, self.outercircle)
                 for k, obj in pairs(objs) do
                         local objpos=obj:getpos()
                         if objpos.y>pos.y-1 and objpos.y<pos.y+0.5 then
@@ -111,23 +112,20 @@ minetest.register_entity("__builtin:item", {
                         end
                 end
                 if self.dontbugme == false then
+                        local playerfound = false
                         for k, obj in pairs(objs2) do
                                 local objpos=obj:getpos()
                                 if obj:get_player_name() ~= nil then
-                                        print(obj:get_player_name())
-                                        isplayerin2 = true
-                                        playerobj2 = obj
+                                        playerfound = true
                                         local fx = obj:getpos().x - pos.x
                                         local fy = obj:getpos().y - pos.y
                                         local fz = obj:getpos().z - pos.z
-                                        local fix = maxaccell - fx
-                                        fix = fix * -1
-                                        local fiz = maxaccell - fz
-                                        fiz = fiz * -1
-                                        self.object:setacceleration({x=0, y=0, z=0})
+                                        self.gravity = false
                                         self.object:setvelocity({x=fx * 5, y=fy * 5, z=fz * 5})
-                                        return
                                 end
+                        end
+                        if playerfound == false then
+                                self.gravity = true
                         end
                 end
         end,
