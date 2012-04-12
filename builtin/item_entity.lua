@@ -67,7 +67,7 @@
             on_activate = function(self, staticdata)
                     self.itemstring = staticdata
                     self.object:set_armor_groups({immortal=1})
-                    self.object:setvelocity({x=math.random(-2,2), y=0, z=math.random(-2,2)})
+                    self.object:setvelocity({x=math.random(-1.5,1.5), y=0, z=math.random(-1.5,1.5)})
                     self.object:setacceleration({x=0, y=-10, z=0})
                     self:set_item(self.itemstring)
             end,
