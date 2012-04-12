@@ -89,6 +89,7 @@ minetest.register_on_generated(function(minp, maxp, seed)
 	generate_ore("default:stone_with_iron", "default:stone", minp, maxp, seed+1, 1/16/16/16, 5,   -5,   7)
 	generate_ore("default:stone_with_iron", "default:stone", minp, maxp, seed+2, 1/12/12/12, 5, -16,   -5)
 	generate_ore("default:stone_with_iron", "default:stone", minp, maxp, seed+3, 1/9/9/9,    5, -31000, -17)
+	generate_ore("gun_powder:gun_stone", "default:stone", minp, maxp, seed+4, 1/9/9/9,    5, -31000, 64)
 	if maxp.y >= 2 and minp.y <= 0 then
 		-- Generate clay
 		-- Assume X and Z lengths are equal
