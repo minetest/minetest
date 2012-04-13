@@ -44,7 +44,14 @@ function do_tnt_physics(tnt_np,tntr)
 end
 
 -- Normal TNT
-
+minetest.register_craft({
+	output = 'node "nuke:tnt" 4',
+	recipe = {
+		{'craft "gun_powder:gun_powder" 1','node "default:sand" 1','craft "gun_powder:gun_powder" 1'},
+		{'node "default:sand" 1','craft "gun_powder:gun_powder" 1','node "default:sand" 1'},
+		{'craft "gun_powder:gun_powder" 1','node "default:sand" 1','craft "gun_powder:gun_powder" 1'}
+	}
+})
 minetest.register_node("nuke:tnt", {
 	tile_images = {"tnt_top.png", "tnt_bottom.png",
 			"tnt_side.png", "tnt_side.png",
@@ -231,9 +238,9 @@ minetest.register_entity("nuke:tnt2", TNT2)
 minetest.register_craft({
 	output = 'node "nuke:iron_tnt" 4',
 	recipe = {
-		{'','node "default:wood" 1',''},
-		{'craft "default:steel_ingot" 1','craft "default:coal_lump" 1','craft "default:steel_ingot" 1'},
-		{'','node "default:wood" 1',''}
+		{'','node "default:steel_ingot" 1',''},
+		{'craft "default:steel_ingot" 1','craft "nuke:tnt" 1','craft "default:steel_ingot" 1'},
+		{'','node "default:steel_ingot" 1',''}
 	}
 })
 minetest.register_node("nuke:iron_tnt", {
@@ -347,28 +354,6 @@ end
 
 minetest.register_entity("nuke:iron_tnt", IRON_TNT)
 
--- Mese TNT
-
-minetest.register_craft({
-	output = 'node "nuke:mese_tnt" 4',
-	recipe = {
-		{'','node "default:wood" 1',''},
-		{'node "default:mese" 1','craft "default:coal_lump" 1','node "default:mese" 1'},
-		{'','node "default:wood" 1',''}
-	}
-})
-minetest.register_node("nuke:mese_tnt", {
-	tile_images = {"nuke_mese_tnt_top.png", "nuke_mese_tnt_bottom.png",
-			"nuke_mese_tnt_side.png", "nuke_mese_tnt_side.png",
-			"nuke_mese_tnt_side.png", "nuke_mese_tnt_side.png"},
-	inventory_image = minetest.inventorycube("nuke_mese_tnt_top.png",
-			"nuke_mese_tnt_side.png", "nuke_mese_tnt_side.png"),
-	dug_item = '', -- Get nothing
-	material = {
-		diggability = "not",
-	},
-	description = "Mese TNT",
-})
 
 minetest.register_on_punchnode(function(p, node)
 	if node.name == "nuke:mese_tnt" then
@@ -457,19 +442,6 @@ function IRON_TNT2:on_step(dtime)
 	end
 end
 minetest.register_entity("nuke:iron_tnt2", IRON_TNT2)
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 local MESE_TNT_RANGE = 24
@@ -561,11 +533,28 @@ end
 
 minetest.register_entity("nuke:mese_tnt", MESE_TNT)
 
+-- Mese TNT
 
-
-
-
-
+minetest.register_craft({
+	output = 'node "nuke:mese_tnt" 4',
+	recipe = {
+		{'','node "default:mese" 1',''},
+		{'craft "default:mese" 1','craft "nuke:tnt" 1','craft "default:mese" 1'},
+		{'','node "default:mese" 1',''}
+	}
+})
+minetest.register_node("nuke:mese_tnt", {
+	tile_images = {"nuke_mese_tnt_top.png", "nuke_mese_tnt_bottom.png",
+			"nuke_mese_tnt_side.png", "nuke_mese_tnt_side.png",
+			"nuke_mese_tnt_side.png", "nuke_mese_tnt_side.png"},
+	inventory_image = minetest.inventorycube("nuke_mese_tnt_top.png",
+			"nuke_mese_tnt_side.png", "nuke_mese_tnt_side.png"),
+	dug_item = '', -- Get nothing
+	material = {
+		diggability = "not",
+	},
+	description = "Mese TNT",
+})
 
 local MESE_TNT2_RANGE = 24
 local MESE_TNT2 = {
@@ -643,18 +632,14 @@ minetest.register_entity("nuke:mese_tnt2", MESE_TNT2)
 
 
 
-
-
-
-
 -- Hardcore Iron TNT
 
 minetest.register_craft({
 	output = 'node "nuke:hardcore_iron_tnt" 1',
 	recipe = {
-		{'','craft "default:coal_lump" 1',''},
-		{'craft "default:coal_lump" 1','node "nuke:iron_tnt" 1','craft "default:coal_lump" 1'},
-		{'','craft "default:coal_lump" 1',''}
+		{'craft "gun_powder:gun_powder" 1','craft "gun_powder:gun_powder" 1','craft "gun_powder:gun_powder" 1'},
+		{'craft "gun_powder:gun_powder" 1','node "nuke:iron_tnt" 1','craft "gun_powder:gun_powder" 1'},
+		{'craft "gun_powder:gun_powder" 1','craft "gun_powder:gun_powder" 1','craft "gun_powder:gun_powder" 1'}
 	}
 })
 minetest.register_node("nuke:hardcore_iron_tnt", {
@@ -759,9 +744,9 @@ minetest.register_entity("nuke:hardcore_iron_tnt", HARDCORE_IRON_TNT)
 minetest.register_craft({
 	output = 'node "nuke:hardcore_mese_tnt" 1',
 	recipe = {
-		{'','craft "default:coal_lump" 1',''},
-		{'craft "default:coal_lump" 1','node "nuke:mese_tnt" 1','craft "default:coal_lump" 1'},
-		{'','craft "default:coal_lump" 1',''}
+		{'craft "gun_powder:gun_powder" 1','craft "gun_powder:gun_powder" 1','craft "gun_powder:gun_powder" 1'},
+		{'craft "gun_powder:gun_powder" 1','node "nuke:mese_tnt" 1','craft "gun_powder:gun_powder" 1'},
+		{'craft "gun_powder:gun_powder" 1','craft "gun_powder:gun_powder" 1','craft "gun_powder:gun_powder" 1'}
 	}
 })
 minetest.register_node("nuke:hardcore_mese_tnt", {
