@@ -14,7 +14,7 @@ function minetest.register_chatcommand(cmd, def)
 end
 
 minetest.register_on_chat_message(function(name, message)
-	local cmd, param = string.match(message, "/([^ ]+) *(.*)")
+	local cmd, param = string.match(message, "^/([^ ]+) *(.*)")
 	if not param then
 		param = ""
 	end
