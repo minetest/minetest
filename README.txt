@@ -1,79 +1,39 @@
-Minetest-c55
-============
+Minetest++
 
-An InfiniMiner/Minecraft inspired game.
+A game built off of the best Minecraft clone, Minetest-C55.
 
 Copyright (c) 2010-2012 Perttu Ahola <celeron55@gmail.com>
 and ther contributors (see source file comments and the version control log)
 
-In case you downloaded the source code:
----------------------------------------
-If you downloaded the Minetest Engine source code in which this file is
-contained, you probably want to download the minetest_game project too:
-  https://github.com/celeron55/minetest_game/
-See the README.txt in it.
+This contains 2 different game modes, Minetest and Minimal.
+Game mode Minimal is just a test and will be taken out soon. Game mode Minetest has all the cool features.
 
 Further documentation
 ----------------------
-- Website: http://c55.me/minetest/
-- Wiki: http://c55.me/minetest/wiki/
-- Forum: http://c55.me/minetest/forum/
-- Github: https://github.com/celeron55/minetest/
-- doc/ directory of source distribution
+- Website: http://www.minetest.net
+- Wiki: http://wiki.minetest.com
+- Forum: http://www.minetest.net/forum
 
-This game is not finished
+This game is in alpha!
 --------------------------
 - Don't expect it to work as well as a finished game will.
-- Please report any bugs. When doing that, debug.txt is useful.
+- Please tell me about any bugs you come across. Just look in your debug.txt file. (/minetest/bin/debug.txt)
+- But other then that, have fun and expect new features :)
 
 Default Controls
 -----------------
 - WASD: Move
 - Space: Jump
-- E: Go down
+- E: 
+While walking: Run (need the fast privelage)
+While flying: Go down
 - Shift: Sneak
 - Q: Drop item
-- I: Open inventory
+- R: Open inventory
 - Mouse: Turn/look
+- C: Toggle fly (need fly privelage)
+- X: toggle fast (need fast Privelage)
 - Settable in the configuration file, see the section below.
-
-Paths
-------
-$bin   - Compiled binaries
-$share - Cistributed read-only data
-$user  - User-created modifiable data
-
-Windows .zip / RUN_IN_PLACE source:
-$bin   = bin
-$share = .
-$user  = .
-
-Linux installed:
-$bin   = /usr/bin
-$share = /usr/share/minetest
-$user  = ~/.minetest
-
-OS X:
-$bin   = ?
-$share = ?
-$user  = ~/Library/Application Support/minetest
-
-World directory
-----------------
-- Worlds can be found as separate folders in:
-    $user/worlds/
-
-Configuration file:
--------------------
-- Default location:
-    $user/minetest.conf
-- It is created by Minetest when it is ran the first time.
-- A specific file can be specified on the command line:
-	--config <path-to-file>
-
-Command-line options:
----------------------
-- Use --help
 
 Compiling on GNU/Linux:
 -----------------------
@@ -81,7 +41,7 @@ Compiling on GNU/Linux:
 Install dependencies. Here's an example for Debian/Ubuntu:
 $ apt-get install build-essential libirrlicht-dev cmake libbz2-dev libpng12-dev libjpeg8-dev libxxf86vm-dev libgl1-mesa-dev libsqlite3-dev libogg-dev libvorbis-dev libopenal-dev
 
-Download source, extract (this is the URL to the latest of source repository, which might not work at all times):
+Download source, extract:
 $ wget https://github.com/celeron55/minetest/tarball/master -O master.tar.gz
 $ tar xf master.tar.gz
 $ cd celeron55-minetest-286edd4 (or similar)
