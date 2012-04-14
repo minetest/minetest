@@ -63,6 +63,7 @@ nodename2color = {
 {"default:sign_wall","brown"},
 {"default:ladder","brown"},
 {"default:fence_wood","brown"},
+{"default:dry_shrub","brown"},
 --Red
 {"default:apple","red"},
 {"default:brick","red"},
