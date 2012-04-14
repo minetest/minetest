@@ -28,6 +28,7 @@ minetest.register_entity("__builtin:item", {
 	innercircle = 0.5,
 	gravity = true,
 	whocaresaboutnodes = false,
+	lastplayer = false,
 
 	set_item = function(self, itemstring)
 		self.itemstring = itemstring
@@ -110,6 +111,7 @@ minetest.register_entity("__builtin:item", {
 			if obj:get_player_name() ~= nil then
 				playerfound = true
 				if self.dontbugme == false then
+					self.lastplayer = true
 					local objpos=obj:getpos()
 					local fx = objpos.x - pos.x
 					local fy = objpos.y - pos.y
@@ -126,6 +128,11 @@ minetest.register_entity("__builtin:item", {
 			end
 		end
 		if playerfound == false then
+			if self.lastplayer == true then
+				self.lastplayer = false
+				self.object:setvelocity({x=0, y=0, z=0})
+				self.object:setacceleration({x=0, y=-10, z=0})
+			end
 			self.gravity = true
 			self.physical_state = true
 			self.object:set_properties({
