@@ -2176,6 +2176,12 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 		verbosestream<<"Server: Got TOSERVER_INIT2 from "
 				<<peer_id<<std::endl;
 
+		Player *player = m_env->getPlayer(peer_id);
+		if(!player){
+			verbosestream<<"Server: TOSERVER_INIT2: "
+					<<"Player not found; ignoring."<<std::endl;
+			return;
+		}
 
 		getClient(peer_id)->serialization_version
 				= getClient(peer_id)->pending_serialization_version;
@@ -2203,8 +2209,6 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 		UpdateCrafting(peer_id);
 		SendInventory(peer_id);
 		
-		Player *player = m_env->getPlayer(peer_id);
-
 		// Send HP
 		SendPlayerHP(peer_id);
 		
