@@ -11,3 +11,12 @@ minetest.register_node("gun_powder:gun_stone", {
 	drop = 'gun_powder:gun_powder',
 	sounds = default.node_sound_stone_defaults(),
 })
+
+function default.node_sound_stone_defaults(table)
+	table = table or {}
+	table.footstep = table.footstep or
+			{name="default_hard_footstep", gain=0.2}
+	default.node_sound_defaults(table)
+	return table
+end
+
