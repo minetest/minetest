@@ -8,6 +8,7 @@ tags
 ## Non-static Minetest directories
 /bin/
 /games/*
+!/games/minetest/
 !/games/minimal/
 /cache/
 /textures/
