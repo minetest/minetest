@@ -1,5 +1,5 @@
 minetest.register_craftitem("gun_powder:gun_powder", {
-	description = "Gun Powder"
+	description = "Gun Powder",
 	inventory_image = "gun_powder.png",
 })
 	
