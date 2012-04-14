@@ -96,7 +96,7 @@ minetest.register_entity("__builtin:item", {
 		local objs2 = minetest.env:get_objects_inside_radius(pos, self.outercircle)
 		for k, obj in pairs(objs) do
 			local objpos=obj:getpos()
-			if objpos.y>pos.y-1 and objpos.y<pos.y+0.5 then
+			if objpos.y>pos.y-1 and objpos.y<pos.y+1 then
 				if obj:get_player_name() ~= nil then
 					if self.itemstring ~= '' then
 						obj:get_inventory():add_item("main", self.itemstring)
