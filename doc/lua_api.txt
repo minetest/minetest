@@ -192,6 +192,48 @@ eg. {}
 eg. {name="default_place_node"}
 eg. {name="default_place_node", gain=1.0}
 
+Registered definitions of stuff
+--------------------------------
+Anything added using certain minetest.register_* functions get added to
+the global minetest.registered_* tables.
+
+minetest.register_entity(name, prototype table)
+ -> minetest.registered_entities[name]
+
+minetest.register_node(name, node definition)
+ -> minetest.registered_items[name]
+ -> minetest.registered_nodes[name]
+
+minetest.register_tool(name, item definition)
+ -> minetest.registered_items[name]
+
+minetest.register_craftitem(name, item definition)
+ -> minetest.registered_items[name]
+
+Note that in some cases you will stumble upon things that are not contained
+in these tables (eg. when a mod has been removed). Always check for
+existence before trying to access the fields.
+
+Example: If you want to check the drawtype of a node, you could do:
+
+local function get_nodedef_field(nodename, fieldname)
+    if not minetest.registered_nodes[nodename] then
+        return nil
+    end
+    return minetest.registered_nodes[nodename][fieldname]
+end
+local drawtype = get_nodedef_field(nodename, "drawtype")
+
+Example: minetest.get_item_group(name, group) has been implemented as:
+
+function minetest.get_item_group(name, group)
+	if not minetest.registered_items[name] or not
+			minetest.registered_items[name].groups[group] then
+		return 0
+	end
+	return minetest.registered_items[name].groups[group]
+end
+
 Nodes
 ------
 Nodes are the bulk data of the world: cubes and other things that take the
@@ -200,9 +242,7 @@ are quite static.
 
 The definition of a node is stored and can be accessed by name in
   minetest.registered_nodes[node.name]
-
-Please note that for unknown nodes (eg. a node of an uninstalled mod) the
-minetest.registered_nodes field for the node is nil.
+See "Registered definitions of stuff".
 
 Nodes are passed by value between Lua and the engine.
 They are represented by a table:
