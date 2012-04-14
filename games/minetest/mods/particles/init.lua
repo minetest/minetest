@@ -66,6 +66,7 @@ nodename2color = {
 --Red
 {"default:apple","red"},
 {"default:brick","red"},
+{"default:desert_stone","red"},
 --Green
 {"default:cactus","green"},
 {"default:junglegrass","green"},
@@ -89,6 +90,8 @@ nodename2color = {
 --Sandcolor
 {"default:sand","sandcolor"},
 {"default:sandstone","sandcolor"},
+-- Orange
+{"default:desert_sand","orange"},
 --Black
 {"default:gravel","black"},
 {"default:stone_with_coal","black"},
@@ -133,6 +136,8 @@ nodename2color = {
 {"mesecons_temperest:mesecon_plug", "black"},
 {"mesecons_movestones:movestone", "gray"},
 {"mesecons_movestones:sticky_movestone", "gray"},
+--=== Obsidian ===--
+{"obsidian:obsidian_block", "purple"},
 }
 
 reg_colors = {}
