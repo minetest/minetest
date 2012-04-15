@@ -106,8 +106,7 @@ Here's an example for Debian/Ubuntu:
 	  NOTE: zlib125dll.zip needs to be extracted into zlib125dll
 	- All those packages contain a nice base directory in them, which
 	  should end up being the direct subdirectories of DIR.
-	- You will end up with a directory structure like this (+=dir, -=file):
-	-----------------
+	- You will end up with a directory structure like this:
 	+ DIR
 		- zlib-1.2.5.tar.gz
 		- zlib125dll.zip
