@@ -1,0 +1,524 @@
+# Finnish translations for minetest package.
+# Copyright (C) 2012 celeron55
+# This file is distributed under the same license as the minetest package.
+# Juhani Numminen <juhaninumminen0@gmail.com>, 2012.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: \n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2012-01-14 09:32+0200\n"
+"PO-Revision-Date: 2012-01-19 09:05+0200\n"
+"Last-Translator: Juhani Numminen <juhaninumminen0@gmail.com>\n"
+"Language-Team: Finnish\n"
+"Language: fi\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+#: src/guiDeathScreen.cpp:96
+msgid "You died."
+msgstr "Kuolit."
+
+#: src/guiDeathScreen.cpp:104
+msgid "Respawn"
+msgstr "Herää henkiin"
+
+#: src/guiKeyChangeMenu.cpp:89
+msgid "KEYBINDINGS"
+msgstr "NÄPPÄINASETUKSET"
+
+#: src/guiKeyChangeMenu.cpp:99
+msgid "Forward"
+msgstr "Eteenpäin"
+
+#: src/guiKeyChangeMenu.cpp:116
+msgid "Backward"
+msgstr "Taaksepäin"
+
+#: src/guiKeyChangeMenu.cpp:132 src/keycode.cpp:226
+msgid "Left"
+msgstr "Vasemmalle"
+
+#: src/guiKeyChangeMenu.cpp:147 src/keycode.cpp:226
+msgid "Right"
+msgstr "Oikealle"
+
+#: src/guiKeyChangeMenu.cpp:163
+msgid "Use"
+msgstr "Käytä"
+
+#: src/guiKeyChangeMenu.cpp:178
+msgid "Sneak"
+msgstr "Hiivi"
+
+#: src/guiKeyChangeMenu.cpp:194
+msgid "Jump"
+msgstr "Hyppää"
+
+#: src/guiKeyChangeMenu.cpp:209
+msgid "Drop"
+msgstr "Pudota"
+
+#: src/guiKeyChangeMenu.cpp:224
+msgid "Inventory"
+msgstr ""
+
+#: src/guiKeyChangeMenu.cpp:240
+msgid "Chat"
+msgstr ""
+
+#: src/guiKeyChangeMenu.cpp:254
+msgid "Command"
+msgstr "Komento"
+
+#: src/guiKeyChangeMenu.cpp:271
+msgid "Toggle fly"
+msgstr "Lentotila"
+
+#: src/guiKeyChangeMenu.cpp:286
+msgid "Toggle fast"
+msgstr "Nopea tila"
+
+#: src/guiKeyChangeMenu.cpp:301
+msgid "Range select"
+msgstr ""
+
+#: src/guiKeyChangeMenu.cpp:318
+msgid "Print stacks"
+msgstr ""
+
+#: src/guiKeyChangeMenu.cpp:333
+msgid "Save"
+msgstr "Tallenna"
+
+#: src/guiKeyChangeMenu.cpp:339 src/keycode.cpp:221
+msgid "Cancel"
+msgstr "Peruuta"
+
+#: src/guiKeyChangeMenu.cpp:581 src/guiKeyChangeMenu.cpp:586
+#: src/guiKeyChangeMenu.cpp:591 src/guiKeyChangeMenu.cpp:596
+#: src/guiKeyChangeMenu.cpp:601 src/guiKeyChangeMenu.cpp:606
+#: src/guiKeyChangeMenu.cpp:611 src/guiKeyChangeMenu.cpp:616
+#: src/guiKeyChangeMenu.cpp:621 src/guiKeyChangeMenu.cpp:626
+#: src/guiKeyChangeMenu.cpp:631 src/guiKeyChangeMenu.cpp:636
+#: src/guiKeyChangeMenu.cpp:641 src/guiKeyChangeMenu.cpp:646
+#: src/guiKeyChangeMenu.cpp:651
+msgid "press Key"
+msgstr "paina jotakin"
+
+#: src/guiMainMenu.cpp:209
+msgid "Name/Password"
+msgstr "Nimi/salasana"
+
+#: src/guiMainMenu.cpp:236
+msgid "Address/Port"
+msgstr "Osoite/portti"
+
+#: src/guiMainMenu.cpp:258
+msgid "Leave address blank to start a local server."
+msgstr "Jätä osoite tyhjäksi käynnistääksesi paikallisen palvelimen."
+
+#: src/guiMainMenu.cpp:265
+msgid "Fancy trees"
+msgstr "Hienot puut"
+
+#: src/guiMainMenu.cpp:271
+msgid "Smooth Lighting"
+msgstr "Pehmeä valaistus"
+
+#: src/guiMainMenu.cpp:277
+msgid "3D Clouds"
+msgstr "3D-pilvet"
+
+#: src/guiMainMenu.cpp:283
+msgid "Opaque water"
+msgstr "Läpinäkymätön vesi"
+
+#: src/guiMainMenu.cpp:291
+msgid "Start Game / Connect"
+msgstr "Aloita peli / Yhdistä"
+
+#: src/guiMainMenu.cpp:300
+msgid "Change keys"
+msgstr "Näppäimet"
+
+#: src/guiMainMenu.cpp:323
+msgid "Creative Mode"
+msgstr "Luova tila"
+
+#: src/guiMainMenu.cpp:329
+msgid "Enable Damage"
+msgstr "Vahinko päälle"
+
+#: src/guiMainMenu.cpp:337
+msgid "Delete map"
+msgstr "Tuhoa kartta"
+
+#: src/guiMessageMenu.cpp:99 src/guiTextInputMenu.cpp:123
+msgid "Proceed"
+msgstr "Jatka"
+
+#: src/guiPasswordChange.cpp:108
+msgid "Old Password"
+msgstr "Vanha salasana"
+
+#: src/guiPasswordChange.cpp:125
+msgid "New Password"
+msgstr "Uusi salasana"
+
+#: src/guiPasswordChange.cpp:141
+msgid "Confirm Password"
+msgstr "Vahvista salasana"
+
+#: src/guiPasswordChange.cpp:158
+msgid "Change"
+msgstr "Vaihda"
+
+#: src/guiPasswordChange.cpp:167
+msgid "Passwords do not match!"
+msgstr "Salasanat eivät täsmää!"
+
+#: src/guiPauseMenu.cpp:116
+msgid "Continue"
+msgstr "Jatka"
+
+#: src/guiPauseMenu.cpp:123
+msgid "Change Password"
+msgstr "Vaihda salasanaa"
+
+#: src/guiPauseMenu.cpp:130
+msgid "Disconnect"
+msgstr "Katkaise yhteys"
+
+#: src/guiPauseMenu.cpp:137
+msgid "Exit to OS"
+msgstr "Poistu"
+
+#: src/guiPauseMenu.cpp:144
+msgid ""
+"Default Controls:\n"
+"- WASD: Walk\n"
+"- Mouse left: dig/hit\n"
+"- Mouse right: place/use\n"
+"- Mouse wheel: select item\n"
+"- 0...9: select item\n"
+"- Shift: sneak\n"
+"- R: Toggle viewing all loaded chunks\n"
+"- I: Inventory menu\n"
+"- ESC: This menu\n"
+"- T: Chat\n"
+msgstr ""
+"Oletusnäppäimet:\n"
+"- WASD: kävele\n"
+"- Hiiren vasen painike: kaiva/iske\n"
+"- Hiiren oikea painike: aseta/käytä\n"
+"- Hiiren rulla: valitse tavara\n"
+"- 0...9: valitse tavara\n"
+"- Shift: hiivi\n"
+"- R: näytä kaikki ladatut palikat\n"
+" -I: inventory\n"
+"- Esc: tämä valikko\n"
+"- T: chat\n"
+
+#: src/keycode.cpp:221
+msgid "Left Button"
+msgstr "Vasen painike"
+
+#: src/keycode.cpp:221
+msgid "Middle Button"
+msgstr "Keskipainike"
+
+#: src/keycode.cpp:221
+msgid "Right Button"
+msgstr "Oikea painike"
+
+#: src/keycode.cpp:221
+msgid "X Button 1"
+msgstr ""
+
+#: src/keycode.cpp:222
+msgid "Back"
+msgstr "Takaisin"
+
+#: src/keycode.cpp:222
+msgid "Clear"
+msgstr "Tyhjennä"
+
+#: src/keycode.cpp:222
+msgid "Return"
+msgstr ""
+
+#: src/keycode.cpp:222
+msgid "Tab"
+msgstr ""
+
+#: src/keycode.cpp:222
+msgid "X Button 2"
+msgstr ""
+
+#: src/keycode.cpp:223
+msgid "Capital"
+msgstr ""
+
+#: src/keycode.cpp:223
+msgid "Control"
+msgstr ""
+
+#: src/keycode.cpp:223
+msgid "Kana"
+msgstr ""
+
+#: src/keycode.cpp:223
+msgid "Menu"
+msgstr "Valikko"
+
+#: src/keycode.cpp:223
+msgid "Pause"
+msgstr "Tauko"
+
+#: src/keycode.cpp:223
+msgid "Shift"
+msgstr "Shift"
+
+#: src/keycode.cpp:224
+msgid "Convert"
+msgstr ""
+
+#: src/keycode.cpp:224
+msgid "Escape"
+msgstr "Escape"
+
+#: src/keycode.cpp:224
+msgid "Final"
+msgstr ""
+
+#: src/keycode.cpp:224
+msgid "Junja"
+msgstr ""
+
+#: src/keycode.cpp:224
+msgid "Kanji"
+msgstr ""
+
+#: src/keycode.cpp:224
+msgid "Nonconvert"
+msgstr ""
+
+#: src/keycode.cpp:225
+msgid "Accept"
+msgstr ""
+
+#: src/keycode.cpp:225
+msgid "End"
+msgstr "End"
+
+#: src/keycode.cpp:225
+msgid "Home"
+msgstr "Home"
+
+#: src/keycode.cpp:225
+msgid "Mode Change"
+msgstr ""
+
+#: src/keycode.cpp:225
+msgid "Next"
+msgstr ""
+
+#: src/keycode.cpp:225
+msgid "Prior"
+msgstr ""
+
+#: src/keycode.cpp:225
+msgid "Space"
+msgstr "Välilyönti"
+
+#: src/keycode.cpp:226
+msgid "Down"
+msgstr "Alas"
+
+#: src/keycode.cpp:226
+msgid "Execute"
+msgstr ""
+
+#: src/keycode.cpp:226
+msgid "Print"
+msgstr ""
+
+#: src/keycode.cpp:226
+msgid "Select"
+msgstr ""
+
+#: src/keycode.cpp:226
+msgid "Up"
+msgstr "Ylös"
+
+#: src/keycode.cpp:227
+msgid "Delete"
+msgstr ""
+
+#: src/keycode.cpp:227
+msgid "Help"
+msgstr ""
+
+#: src/keycode.cpp:227
+msgid "Insert"
+msgstr ""
+
+#: src/keycode.cpp:227
+msgid "Snapshot"
+msgstr ""
+
+#: src/keycode.cpp:230
+msgid "Left Windows"
+msgstr ""
+
+#: src/keycode.cpp:231
+msgid "Apps"
+msgstr ""
+
+#: src/keycode.cpp:231
+msgid "Numpad 0"
+msgstr ""
+
+#: src/keycode.cpp:231
+msgid "Numpad 1"
+msgstr ""
+
+#: src/keycode.cpp:231
+msgid "Right Windows"
+msgstr ""
+
+#: src/keycode.cpp:231
+msgid "Sleep"
+msgstr ""
+
+#: src/keycode.cpp:232
+msgid "Numpad 2"
+msgstr ""
+
+#: src/keycode.cpp:232
+msgid "Numpad 3"
+msgstr ""
+
+#: src/keycode.cpp:232
+msgid "Numpad 4"
+msgstr ""
+
+#: src/keycode.cpp:232
+msgid "Numpad 5"
+msgstr ""
+
+#: src/keycode.cpp:232
+msgid "Numpad 6"
+msgstr ""
+
+#: src/keycode.cpp:232
+msgid "Numpad 7"
+msgstr ""
+
+#: src/keycode.cpp:233
+msgid "Numpad *"
+msgstr ""
+
+#: src/keycode.cpp:233
+msgid "Numpad +"
+msgstr ""
+
+#: src/keycode.cpp:233
+msgid "Numpad -"
+msgstr ""
+
+#: src/keycode.cpp:233
+msgid "Numpad /"
+msgstr ""
+
+#: src/keycode.cpp:233
+msgid "Numpad 8"
+msgstr ""
+
+#: src/keycode.cpp:233
+msgid "Numpad 9"
+msgstr ""
+
+#: src/keycode.cpp:237
+msgid "Num Lock"
+msgstr "Num Lock"
+
+#: src/keycode.cpp:237
+msgid "Scroll Lock"
+msgstr "Scroll Lock"
+
+#: src/keycode.cpp:238
+msgid "Left Shift"
+msgstr "Vasen Shift"
+
+#: src/keycode.cpp:238
+#, fuzzy
+msgid "Right Shift"
+msgstr "Oikea Shift"
+
+#: src/keycode.cpp:239
+msgid "Left Control"
+msgstr "Vasen Control"
+
+#: src/keycode.cpp:239
+msgid "Left Menu"
+msgstr ""
+
+#: src/keycode.cpp:239
+msgid "Right Control"
+msgstr "Oikea Control"
+
+#: src/keycode.cpp:239
+msgid "Right Menu"
+msgstr ""
+
+#: src/keycode.cpp:241
+msgid "Comma"
+msgstr "Pilkku"
+
+#: src/keycode.cpp:241
+msgid "Minus"
+msgstr "Miinus"
+
+#: src/keycode.cpp:241
+msgid "Period"
+msgstr "Piste"
+
+#: src/keycode.cpp:241
+msgid "Plus"
+msgstr "Plus"
+
+#: src/keycode.cpp:245
+msgid "Attn"
+msgstr ""
+
+#: src/keycode.cpp:245
+msgid "CrSel"
+msgstr ""
+
+#: src/keycode.cpp:246
+msgid "Erase OEF"
+msgstr ""
+
+#: src/keycode.cpp:246
+msgid "ExSel"
+msgstr ""
+
+#: src/keycode.cpp:246
+msgid "OEM Clear"
+msgstr ""
+
+#: src/keycode.cpp:246
+msgid "PA1"
+msgstr ""
+
+#: src/keycode.cpp:246
+msgid "Play"
+msgstr ""
+
+#: src/keycode.cpp:246
+msgid "Zoom"
+msgstr "Zoom"
