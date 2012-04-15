@@ -132,8 +132,6 @@ Here's an example for Debian/Ubuntu:
 			+ src
 			+ doc
 			- CMakeLists.txt
-			...
-	-----------------
 	- Start up the CMake GUI
 	- Select "Browse Source..." and select DIR/minetest
 	- Now, if using MSVC:
@@ -143,24 +141,22 @@ Here's an example for Debian/Ubuntu:
 	- Select "Configure"
 	- Select your compiler
 	- It will warn about missing stuff, ignore that at this point. (later don't)
-	- Make sure the configuration is as follows
-	  (note that the versions may differ for you):
-	-----------------
-	BUILD_CLIENT             [X]
-	BUILD_SERVER             [ ]
-	CMAKE_BUILD_TYPE         Release
-	CMAKE_INSTALL_PREFIX     DIR/minetest-install
-	IRRLICHT_SOURCE_DIR      DIR/irrlicht-1.7.1
-	RUN_IN_PLACE             [X]
-	WARN_ALL                 [ ]
-	ZLIB_DLL                 DIR/zlib125dll/dll32/zlibwapi.dll
-	ZLIB_INCLUDE_DIR         DIR/zlib-1.2.5
-	ZLIB_LIBRARIES           DIR/zlib125dll/dll32/zlibwapi.lib
-	GETTEXT_BIN_DIR          DIR/gettext/bin
-	GETTEXT_INCLUDE_DIR      DIR/gettext/include
-	GETTEXT_LIBRARIES        DIR/gettext/lib/intl.lib
-	GETTEXT_MSGFMT           DIR/gettext/bin/msgfmt
-	-----------------
+	- Make sure the configuration is as follows (note that the versions may differ for you):</li><pre><code>-----------------
+    BUILD_CLIENT             [X]
+    BUILD_SERVER             [ ]
+    CMAKE_BUILD_TYPE         Release
+    CMAKE_INSTALL_PREFIX     DIR/minetest-install
+    IRRLICHT_SOURCE_DIR      DIR/irrlicht-1.7.1
+    RUN_IN_PLACE             [X]
+    WARN_ALL                 [ ]
+    ZLIB_DLL                 DIR/zlib125dll/dll32/zlibwapi.dll
+    ZLIB_INCLUDE_DIR         DIR/zlib-1.2.5
+    ZLIB_LIBRARIES           DIR/zlib125dll/dll32/zlibwapi.lib
+    GETTEXT_BIN_DIR          DIR/gettext/bin
+    GETTEXT_INCLUDE_DIR      DIR/gettext/include
+    GETTEXT_LIBRARIES        DIR/gettext/lib/intl.lib
+    GETTEXT_MSGFMT           DIR/gettext/bin/msgfmt
+    -----------------</code></pre>
 	- Hit "Configure"
 	- Hit "Configure" once again 8)
 	- If something is still coloured red, you have a problem.
