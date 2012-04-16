@@ -196,7 +196,6 @@ function minetest.item_drop(itemstack, dropper, pos)
 		local v = dropper:get_look_dir()
 		local p = {x=pos.x+v.x, y=pos.y+1.5+v.y, z=pos.z+v.z}
 		local obj = minetest.env:add_item(p, itemstack)
-		obj:setproperties({playerdropped = true})
 		v.x = v.x*2
 		v.y = v.y*2 + 2
 		v.z = v.z*2
