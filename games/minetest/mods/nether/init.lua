@@ -1,12 +1,14 @@
--- Nether Mod (based on Nyanland)
--- lkjoel (nyanland by Jeija)
+-- Nether Mod (based on Nyanland, Catapult and Livehouse)
+-- lkjoel (Nyanland by Jeija, Catapult by XYZ, Livehouse by neko259)
 
 --== EDITABLE OPTIONS ==--
 
 -- Depth of the nether
 NETHER_DEPTH = -100
 -- Height of the nether (bottom of the nether is NETHER_DEPTH - NETHER_HEIGHT)
-NETHER_HEIGHT = 20
+NETHER_HEIGHT = 30
+-- Maximum amount of randomness in the map generation
+NETHER_RANDOM = 2
 -- Frequency of lava (higher is less frequent)
 LAVA_FREQ = 500
 -- Maximum height of lava
@@ -25,135 +27,225 @@ HADES_THRONE_STARTPOS = {x=0, y=1, z=0}
 HADES_THRONE = {
 	-- Floor 1
 	{pos={x=0,y=0,z=0}, block="nether:netherrack"},
-	{pos={x=1,y=0,z=0}, block="nether:netherrack"},
-	{pos={x=2,y=0,z=0}, block="nether:netherrack"},
-	{pos={x=3,y=0,z=0}, block="nether:netherrack"},
-	{pos={x=4,y=0,z=0}, block="nether:netherrack"},
-	{pos={x=5,y=0,z=0}, block="nether:netherrack"},
-	{pos={x=5,y=0,z=1}, block="nether:netherrack"},
-	{pos={x=5,y=0,z=2}, block="nether:netherrack"},
-	{pos={x=5,y=0,z=3}, block="nether:netherrack"},
-	{pos={x=5,y=0,z=4}, block="nether:netherrack"},
-	{pos={x=5,y=0,z=5}, block="nether:netherrack"},
-	{pos={x=4,y=0,z=5}, block="nether:netherrack"},
-	{pos={x=3,y=0,z=5}, block="nether:netherrack"},
-	{pos={x=2,y=0,z=5}, block="nether:netherrack"},
-	{pos={x=1,y=0,z=5}, block="nether:netherrack"},
-	{pos={x=0,y=0,z=5}, block="nether:netherrack"},
-	{pos={x=0,y=0,z=4}, block="nether:netherrack"},
-	{pos={x=0,y=0,z=3}, block="nether:netherrack"},
-	{pos={x=0,y=0,z=2}, block="nether:netherrack"},
 	{pos={x=0,y=0,z=1}, block="nether:netherrack"},
+	{pos={x=0,y=0,z=2}, block="nether:netherrack"},
+	{pos={x=0,y=0,z=3}, block="nether:netherrack"},
+	{pos={x=0,y=0,z=4}, block="nether:netherrack"},
+	{pos={x=0,y=0,z=5}, block="nether:netherrack"},
+	{pos={x=1,y=0,z=5}, block="nether:netherrack"},
+	{pos={x=2,y=0,z=5}, block="nether:netherrack"},
+	{pos={x=3,y=0,z=5}, block="nether:netherrack"},
+	{pos={x=4,y=0,z=5}, block="nether:netherrack"},
+	{pos={x=5,y=0,z=5}, block="nether:netherrack"},
+	{pos={x=0,y=0,z=6}, block="nether:netherrack"},
+	{pos={x=1,y=0,z=6}, block="nether:netherrack"},
+	{pos={x=2,y=0,z=6}, block="nether:netherrack"},
+	{pos={x=3,y=0,z=6}, block="nether:netherrack"},
+	{pos={x=4,y=0,z=6}, block="nether:netherrack"},
+	{pos={x=5,y=0,z=6}, block="nether:netherrack"},
+	{pos={x=5,y=0,z=4}, block="nether:netherrack"},
+	{pos={x=5,y=0,z=3}, block="nether:netherrack"},
+	{pos={x=5,y=0,z=2}, block="nether:netherrack"},
+	{pos={x=5,y=0,z=1}, block="nether:netherrack"},
+	{pos={x=5,y=0,z=0}, block="nether:netherrack"},
+	{pos={x=4,y=0,z=0}, block="nether:netherrack"},
+	{pos={x=3,y=0,z=0}, block="nether:netherrack"},
+	{pos={x=2,y=0,z=0}, block="nether:netherrack"},
+	{pos={x=1,y=0,z=0}, block="nether:netherrack"},
 	-- Floor 2
 	{pos={x=0,y=1,z=0}, block="nether:netherrack"},
-	{pos={x=1,y=1,z=0}, block="nether:netherrack"},
-	{pos={x=2,y=1,z=0}, block="nether:netherrack"},
-	{pos={x=3,y=1,z=0}, block="nether:netherrack"},
-	{pos={x=4,y=1,z=0}, block="nether:netherrack"},
-	{pos={x=5,y=1,z=0}, block="nether:netherrack"},
-	{pos={x=5,y=1,z=1}, block="nether:netherrack"},
-	{pos={x=5,y=1,z=2}, block="nether:netherrack"},
-	{pos={x=5,y=1,z=3}, block="nether:netherrack"},
-	{pos={x=5,y=1,z=4}, block="nether:netherrack"},
-	{pos={x=5,y=1,z=5}, block="nether:netherrack"},
-	{pos={x=4,y=1,z=5}, block="nether:netherrack"},
-	{pos={x=3,y=1,z=5}, block="nether:netherrack"},
-	{pos={x=2,y=1,z=5}, block="nether:netherrack"},
-	{pos={x=1,y=1,z=5}, block="nether:netherrack"},
-	{pos={x=0,y=1,z=5}, block="nether:netherrack"},
-	{pos={x=0,y=1,z=4}, block="nether:netherrack"},
-	{pos={x=1,y=1,z=3}, block="nether:netherrack"},
-	{pos={x=1,y=1,z=2}, block="nether:netherrack"},
 	{pos={x=0,y=1,z=1}, block="nether:netherrack"},
+	{pos={x=0,y=1,z=2}, block="nether:netherrack"},
+	{pos={x=0,y=1,z=3}, block="nether:netherrack"},
+	{pos={x=0,y=1,z=4}, block="nether:netherrack"},
+	{pos={x=0,y=1,z=5}, block="nether:netherrack"},
+	{pos={x=1,y=1,z=5}, block="nether:netherrack"},
+	{pos={x=2,y=1,z=5}, block="nether:netherrack"},
+	{pos={x=3,y=1,z=5}, block="nether:netherrack"},
+	{pos={x=4,y=1,z=5}, block="nether:netherrack"},
+	{pos={x=5,y=1,z=5}, block="nether:netherrack"},
+	{pos={x=0,y=1,z=6}, block="nether:netherrack"},
+	{pos={x=1,y=1,z=6}, block="nether:netherrack"},
+	{pos={x=2,y=1,z=6}, block="nether:netherrack"},
+	{pos={x=3,y=1,z=6}, block="nether:netherrack"},
+	{pos={x=4,y=1,z=6}, block="nether:netherrack"},
+	{pos={x=5,y=1,z=6}, block="nether:netherrack"},
+	{pos={x=5,y=1,z=4}, block="nether:netherrack"},
+	{pos={x=5,y=1,z=3}, block="nether:netherrack"},
+	{pos={x=5,y=1,z=2}, block="nether:netherrack"},
+	{pos={x=5,y=1,z=1}, block="nether:netherrack"},
+	{pos={x=5,y=1,z=0}, block="nether:netherrack"},
+	{pos={x=4,y=1,z=0}, block="nether:netherrack"},
+	{pos={x=3,y=1,z=1}, block="nether:netherrack"},
+	{pos={x=2,y=1,z=1}, block="nether:netherrack"},
+	{pos={x=1,y=1,z=0}, block="nether:netherrack"},
 	{pos={x=1,y=1,z=1}, block="nether:netherrack"},
-	{pos={x=1,y=1,z=4}, block="nether:netherrack"},
+	{pos={x=4,y=1,z=1}, block="nether:netherrack"},
 	-- Floor 3
 	{pos={x=0,y=2,z=0}, block="nether:netherrack"},
-	{pos={x=1,y=2,z=0}, block="nether:netherrack"},
-	{pos={x=2,y=2,z=0}, block="nether:netherrack"},
-	{pos={x=3,y=2,z=0}, block="nether:netherrack"},
-	{pos={x=4,y=2,z=0}, block="nether:netherrack"},
-	{pos={x=5,y=2,z=0}, block="nether:netherrack"},
-	{pos={x=5,y=2,z=1}, block="nether:netherrack"},
-	{pos={x=5,y=2,z=2}, block="nether:netherrack"},
-	{pos={x=5,y=2,z=3}, block="nether:netherrack"},
-	{pos={x=5,y=2,z=4}, block="nether:netherrack"},
-	{pos={x=5,y=2,z=5}, block="nether:netherrack"},
-	{pos={x=4,y=2,z=5}, block="nether:netherrack"},
-	{pos={x=3,y=2,z=5}, block="nether:netherrack"},
-	{pos={x=2,y=2,z=5}, block="nether:netherrack"},
-	{pos={x=1,y=2,z=5}, block="nether:netherrack"},
-	{pos={x=0,y=2,z=5}, block="nether:netherrack"},
-	{pos={x=0,y=2,z=4}, block="nether:netherrack"},
-	{pos={x=2,y=2,z=3}, block="nether:netherrack"},
-	{pos={x=2,y=2,z=2}, block="nether:netherrack"},
 	{pos={x=0,y=2,z=1}, block="nether:netherrack"},
+	{pos={x=0,y=2,z=2}, block="nether:netherrack"},
+	{pos={x=0,y=2,z=3}, block="nether:netherrack"},
+	{pos={x=0,y=2,z=4}, block="nether:netherrack"},
+	{pos={x=0,y=2,z=5}, block="nether:netherrack"},
+	{pos={x=1,y=2,z=5}, block="nether:netherrack"},
+	{pos={x=2,y=2,z=5}, block="nether:netherrack"},
+	{pos={x=3,y=2,z=5}, block="nether:netherrack"},
+	{pos={x=4,y=2,z=5}, block="nether:netherrack"},
+	{pos={x=5,y=2,z=5}, block="nether:netherrack"},
+	{pos={x=0,y=2,z=6}, block="nether:netherrack"},
+	{pos={x=1,y=2,z=6}, block="nether:netherrack"},
+	{pos={x=2,y=2,z=6}, block="nether:netherrack"},
+	{pos={x=3,y=2,z=6}, block="nether:netherrack"},
+	{pos={x=4,y=2,z=6}, block="nether:netherrack"},
+	{pos={x=5,y=2,z=6}, block="nether:netherrack"},
+	{pos={x=5,y=2,z=4}, block="nether:netherrack"},
+	{pos={x=5,y=2,z=3}, block="nether:netherrack"},
+	{pos={x=5,y=2,z=2}, block="nether:netherrack"},
+	{pos={x=5,y=2,z=1}, block="nether:netherrack"},
+	{pos={x=5,y=2,z=0}, block="nether:netherrack"},
+	{pos={x=4,y=2,z=0}, block="nether:netherrack"},
+	{pos={x=3,y=2,z=2}, block="nether:netherrack"},
+	{pos={x=2,y=2,z=2}, block="nether:netherrack"},
+	{pos={x=1,y=2,z=0}, block="nether:netherrack"},
 	{pos={x=1,y=2,z=1}, block="nether:netherrack"},
-	{pos={x=1,y=2,z=4}, block="nether:netherrack"},
-	{pos={x=2,y=2,z=1}, block="nether:netherrack"},
-	{pos={x=2,y=2,z=4}, block="nether:netherrack"},
+	{pos={x=4,y=2,z=1}, block="nether:netherrack"},
+	{pos={x=1,y=2,z=2}, block="nether:netherrack"},
+	{pos={x=4,y=2,z=2}, block="nether:netherrack"},
 	-- Floor 4
 	{pos={x=0,y=3,z=0}, block="nether:netherrack"},
-	{pos={x=1,y=3,z=0}, block="nether:netherrack"},
-	{pos={x=2,y=3,z=0}, block="nether:netherrack"},
-	{pos={x=3,y=3,z=0}, block="nether:netherrack"},
-	{pos={x=4,y=3,z=0}, block="nether:netherrack"},
-	{pos={x=5,y=3,z=0}, block="nether:netherrack"},
-	{pos={x=5,y=3,z=1}, block="nether:netherrack"},
-	{pos={x=5,y=3,z=2}, block="nether:netherrack"},
-	{pos={x=5,y=3,z=3}, block="nether:netherrack"},
-	{pos={x=5,y=3,z=4}, block="nether:netherrack"},
-	{pos={x=5,y=3,z=5}, block="nether:netherrack"},
-	{pos={x=4,y=3,z=5}, block="nether:netherrack"},
-	{pos={x=3,y=3,z=5}, block="nether:netherrack"},
-	{pos={x=2,y=3,z=5}, block="nether:netherrack"},
-	{pos={x=1,y=3,z=5}, block="nether:netherrack"},
-	{pos={x=0,y=3,z=5}, block="nether:netherrack"},
-	{pos={x=0,y=3,z=4}, block="nether:netherrack"},
-	{pos={x=3,y=3,z=3}, block="nether:netherrack"},
-	{pos={x=3,y=3,z=2}, block="nether:netherrack"},
 	{pos={x=0,y=3,z=1}, block="nether:netherrack"},
-	{pos={x=1,y=3,z=1}, block="nether:netherrack"},
-	{pos={x=1,y=3,z=4}, block="nether:netherrack"},
-	{pos={x=2,y=3,z=1}, block="nether:netherrack"},
-	{pos={x=2,y=3,z=4}, block="nether:netherrack"},
-	{pos={x=3,y=3,z=1}, block="nether:netherrack"},
-	{pos={x=3,y=3,z=4}, block="nether:netherrack"},
-	{pos={x=4,y=3,z=1}, block="nether:netherrack"},
-	{pos={x=4,y=3,z=4}, block="nether:netherrack"},
-	{pos={x=4,y=3,z=2}, block="nether:netherrack"},
-	{pos={x=5,y=3,z=2}, block="nether:netherrack"},
-	{pos={x=4,y=3,z=3}, block="nether:netherrack"},
+	{pos={x=0,y=3,z=2}, block="nether:netherrack"},
+	{pos={x=0,y=3,z=3}, block="nether:netherrack"},
+	{pos={x=0,y=3,z=4}, block="nether:netherrack"},
+	{pos={x=0,y=3,z=5}, block="nether:netherrack"},
+	{pos={x=1,y=3,z=5}, block="nether:netherrack"},
+	{pos={x=2,y=3,z=5}, block="nether:netherrack"},
+	{pos={x=3,y=3,z=5}, block="nether:netherrack"},
+	{pos={x=4,y=3,z=5}, block="nether:netherrack"},
+	{pos={x=5,y=3,z=5}, block="nether:netherrack"},
+	{pos={x=0,y=3,z=6}, block="nether:netherrack"},
+	{pos={x=1,y=3,z=6}, block="nether:netherrack"},
+	{pos={x=2,y=3,z=6}, block="nether:netherrack"},
+	{pos={x=3,y=3,z=6}, block="nether:netherrack"},
+	{pos={x=4,y=3,z=6}, block="nether:netherrack"},
+	{pos={x=5,y=3,z=6}, block="nether:netherrack"},
+	{pos={x=5,y=3,z=4}, block="nether:netherrack"},
 	{pos={x=5,y=3,z=3}, block="nether:netherrack"},
+	{pos={x=5,y=3,z=2}, block="nether:netherrack"},
+	{pos={x=5,y=3,z=1}, block="nether:netherrack"},
+	{pos={x=5,y=3,z=0}, block="nether:netherrack"},
+	{pos={x=4,y=3,z=0}, block="nether:netherrack"},
+	{pos={x=3,y=3,z=3}, block="nether:netherrack"},
+	{pos={x=2,y=3,z=3}, block="nether:netherrack"},
+	{pos={x=1,y=3,z=0}, block="nether:netherrack"},
+	{pos={x=1,y=3,z=1}, block="nether:netherrack"},
+	{pos={x=4,y=3,z=1}, block="nether:netherrack"},
+	{pos={x=1,y=3,z=2}, block="nether:netherrack"},
+	{pos={x=4,y=3,z=2}, block="nether:netherrack"},
+	{pos={x=1,y=3,z=3}, block="nether:netherrack"},
+	{pos={x=4,y=3,z=3}, block="nether:netherrack"},
+	{pos={x=1,y=3,z=4}, block="nether:netherrack"},
+	{pos={x=4,y=3,z=4}, block="nether:netherrack"},
+	{pos={x=2,y=3,z=4}, block="nether:netherrack"},
+	{pos={x=2,y=3,z=5}, block="nether:netherrack"},
+	{pos={x=3,y=3,z=4}, block="nether:netherrack"},
+	{pos={x=3,y=3,z=5}, block="nether:netherrack"},
 	-- Floor 5
-	{pos={x=4,y=4,z=2}, block="nether:netherrack"},
-	{pos={x=5,y=4,z=2}, block="nether:netherrack"},
-	{pos={x=4,y=4,z=3}, block="nether:netherrack"},
-	{pos={x=5,y=4,z=3}, block="nether:netherrack"},
+	{pos={x=2,y=4,z=4}, block="nether:netherrack"},
+	{pos={x=2,y=4,z=5}, block="nether:netherrack"},
+	{pos={x=3,y=4,z=4}, block="nether:netherrack"},
+	{pos={x=3,y=4,z=5}, block="nether:netherrack"},
+	{pos={x=2,y=4,z=6}, block="nether:netherrack"},
+	{pos={x=3,y=4,z=6}, block="nether:netherrack"},
 	-- Torches on floor 5
-	{pos={x=4,y=4,z=0}, block="nether:nether_torch_bottom"},
-	{pos={x=4,y=4,z=1}, block="nether:nether_torch_bottom"},
-	{pos={x=5,y=4,z=0}, block="nether:nether_torch_bottom"},
-	{pos={x=5,y=4,z=1}, block="nether:nether_torch_bottom"},
+	{pos={x=0,y=4,z=4}, block="nether:nether_torch_bottom"},
+	{pos={x=1,y=4,z=4}, block="nether:nether_torch_bottom"},
+	{pos={x=0,y=4,z=5}, block="nether:nether_torch_bottom"},
+	{pos={x=1,y=4,z=5}, block="nether:nether_torch_bottom"},
 	{pos={x=4,y=4,z=4}, block="nether:nether_torch_bottom"},
-	{pos={x=4,y=4,z=5}, block="nether:nether_torch_bottom"},
 	{pos={x=5,y=4,z=4}, block="nether:nether_torch_bottom"},
+	{pos={x=4,y=4,z=5}, block="nether:nether_torch_bottom"},
 	{pos={x=5,y=4,z=5}, block="nether:nether_torch_bottom"},
 	{pos={x=0,y=4,z=0}, block="nether:nether_torch_bottom"},
-	{pos={x=0,y=4,z=1}, block="nether:nether_torch_bottom"},
 	{pos={x=1,y=4,z=0}, block="nether:nether_torch_bottom"},
+	{pos={x=0,y=4,z=1}, block="nether:nether_torch_bottom"},
 	{pos={x=1,y=4,z=1}, block="nether:nether_torch_bottom"},
-	{pos={x=0,y=4,z=4}, block="nether:nether_torch_bottom"},
-	{pos={x=0,y=4,z=5}, block="nether:nether_torch_bottom"},
-	{pos={x=1,y=4,z=4}, block="nether:nether_torch_bottom"},
-	{pos={x=1,y=4,z=5}, block="nether:nether_torch_bottom"},
+	{pos={x=4,y=4,z=0}, block="nether:nether_torch_bottom"},
+	{pos={x=5,y=4,z=0}, block="nether:nether_torch_bottom"},
+	{pos={x=4,y=4,z=1}, block="nether:nether_torch_bottom"},
+	{pos={x=5,y=4,z=1}, block="nether:nether_torch_bottom"},
+	{pos={x=0,y=4,z=2}, block="nether:nether_torch_bottom"},
+	{pos={x=1,y=4,z=2}, block="nether:nether_torch_bottom"},
+	{pos={x=0,y=4,z=3}, block="nether:nether_torch_bottom"},
+	{pos={x=1,y=4,z=3}, block="nether:nether_torch_bottom"},
+	{pos={x=4,y=4,z=2}, block="nether:nether_torch_bottom"},
+	{pos={x=5,y=4,z=2}, block="nether:nether_torch_bottom"},
+	{pos={x=4,y=4,z=3}, block="nether:nether_torch_bottom"},
+	{pos={x=5,y=4,z=3}, block="nether:nether_torch_bottom"},
+	{pos={x=4,y=4,z=6}, block="nether:nether_torch_bottom"},
+	{pos={x=5,y=4,z=6}, block="nether:nether_torch_bottom"},
 	-- Floor 6
-	{pos={x=6,y=5,z=2}, block="nether:netherrack"},
-	{pos={x=6,y=5,z=3}, block="nether:netherrack"},
-	-- Floor 7
-	{pos={x=6,y=6,z=2}, block="nether:netherrack"},
-	{pos={x=6,y=6,z=3}, block="nether:netherrack"},
+	{pos={x=1,y=5,z=6}, block="nether:nether_portal_creator"},
 }
+-- Structure of the nether portal (all is relative to the nether portal creator block)
+NETHER_PORTAL = {
+	-- Floor 1
+	{pos={x=0,y=0,z=0}, block="obsidian:obsidian_block"},
+	{pos={x=1,y=0,z=0}, block="obsidian:obsidian_block"},
+	{pos={x=2,y=0,z=0}, block="obsidian:obsidian_block"},
+	{pos={x=3,y=0,z=0}, block="obsidian:obsidian_block"},
+	{pos={x=0,y=0,z=1}, block="obsidian:obsidian_block"},
+	{pos={x=1,y=0,z=1}, block="obsidian:obsidian_block"},
+	{pos={x=2,y=0,z=1}, block="obsidian:obsidian_block"},
+	{pos={x=3,y=0,z=1}, block="obsidian:obsidian_block"},
+	{pos={x=0,y=0,z=-1}, block="obsidian:obsidian_block"},
+	{pos={x=1,y=0,z=-1}, block="obsidian:obsidian_block"},
+	{pos={x=2,y=0,z=-1}, block="obsidian:obsidian_block"},
+	{pos={x=3,y=0,z=-1}, block="obsidian:obsidian_block"},
+	-- Floor 2
+	{pos={x=0,y=1,z=0}, block="obsidian:obsidian_block"},
+	{pos={x=1,y=1,z=0}, block="nether:nether_portal"},
+	{pos={x=2,y=1,z=0}, block="nether:nether_portal"},
+	{pos={x=3,y=1,z=0}, block="obsidian:obsidian_block"},
+	{pos={x=0,y=1,z=1}, block="obsidian:obsidian_block"},
+	{pos={x=3,y=1,z=1}, block="obsidian:obsidian_block"},
+	{pos={x=0,y=1,z=-1}, block="obsidian:obsidian_block"},
+	{pos={x=3,y=1,z=-1}, block="obsidian:obsidian_block"},
+	-- Floor 3
+	{pos={x=0,y=2,z=0}, block="obsidian:obsidian_block"},
+	{pos={x=1,y=2,z=0}, block="nether:nether_portal"},
+	{pos={x=2,y=2,z=0}, block="nether:nether_portal"},
+	{pos={x=3,y=2,z=0}, block="obsidian:obsidian_block"},
+	{pos={x=0,y=2,z=1}, block="obsidian:obsidian_block"},
+	{pos={x=3,y=2,z=1}, block="obsidian:obsidian_block"},
+	{pos={x=0,y=2,z=-1}, block="obsidian:obsidian_block"},
+	{pos={x=3,y=2,z=-1}, block="obsidian:obsidian_block"},
+	-- Floor 4
+	{pos={x=0,y=3,z=0}, block="obsidian:obsidian_block"},
+	{pos={x=1,y=3,z=0}, block="nether:nether_portal"},
+	{pos={x=2,y=3,z=0}, block="nether:nether_portal"},
+	{pos={x=3,y=3,z=0}, block="obsidian:obsidian_block"},
+	{pos={x=0,y=3,z=1}, block="obsidian:obsidian_block"},
+	{pos={x=3,y=3,z=1}, block="obsidian:obsidian_block"},
+	{pos={x=0,y=3,z=-1}, block="obsidian:obsidian_block"},
+	{pos={x=3,y=3,z=-1}, block="obsidian:obsidian_block"},
+	-- Floor 5
+	{pos={x=0,y=4,z=0}, block="obsidian:obsidian_block"},
+	{pos={x=1,y=4,z=0}, block="obsidian:obsidian_block"},
+	{pos={x=2,y=4,z=0}, block="obsidian:obsidian_block"},
+	{pos={x=3,y=4,z=0}, block="obsidian:obsidian_block"},
+	{pos={x=0,y=4,z=1}, block="obsidian:obsidian_block"},
+	{pos={x=1,y=4,z=1}, block="obsidian:obsidian_block"},
+	{pos={x=2,y=4,z=1}, block="obsidian:obsidian_block"},
+	{pos={x=3,y=4,z=1}, block="obsidian:obsidian_block"},
+	{pos={x=0,y=4,z=-1}, block="obsidian:obsidian_block"},
+	{pos={x=1,y=4,z=-1}, block="obsidian:obsidian_block"},
+	{pos={x=2,y=4,z=-1}, block="obsidian:obsidian_block"},
+	{pos={x=3,y=4,z=-1}, block="obsidian:obsidian_block"},
+}
+-- Time to teleport a player to the nether or teleport the player to the overworld
+NETHER_PORTAL_SPEED = 5
 
 --== END OF EDITABLE OPTIONS ==--
 
@@ -162,13 +254,38 @@ NETHER_BOTTOM = (NETHER_DEPTH - NETHER_HEIGHT)
 HADES_THRONE_STARTPOS_ABS = {x=HADES_THRONE_STARTPOS.x, y=(NETHER_BOTTOM + HADES_THRONE_STARTPOS.y), z=HADES_THRONE_STARTPOS.z}
 LAVA_Y = (NETHER_BOTTOM + LAVA_HEIGHT)
 HADES_THRONE_ABS = {}
+HADES_THRONE_ENDPOS_ABS = {}
 for i,v in ipairs(HADES_THRONE) do
 	v.pos.x = v.pos.x + HADES_THRONE_STARTPOS_ABS.x
 	v.pos.y = v.pos.y + HADES_THRONE_STARTPOS_ABS.y
 	v.pos.z = v.pos.z + HADES_THRONE_STARTPOS_ABS.z
 	HADES_THRONE_ABS[i] = v
 end
+local htx = 0
+local hty = 0
+local htz = 0
+for i,v in ipairs(HADES_THRONE_ABS) do
+	if v.pos.x > htx then
+		htx = v.pos.x
+	end
+	if v.pos.y > hty then
+		hty = v.pos.y
+	end
+	if v.pos.z > htz then
+		htz = v.pos.z
+	end
+end
+HADES_THRONE_ENDPOS_ABS = {x=htx, y=hty, z=htz}
+print("HTY:" .. hty)
 local nether = {}
+
+-- Find if a position is inside the Nether
+function nether:inside_nether(pos)
+	if pos.y >= NETHER_BOTTOM and pos.y <= NETHER_DEPTH then
+		return true
+	end
+	return false
+end
 
 -- Netherrack
 minetest.register_node("nether:netherrack", {
@@ -274,7 +391,13 @@ minetest.register_on_generated(function(minp, maxp)
 			for y=minp.y, maxp.y, 1 do
 				for z=minp.z, maxp.z, 1 do
 					addpos = {x=x, y=y, z=z}
-					if y == NETHER_DEPTH or y == NETHER_BOTTOM then
+					if y == NETHER_DEPTH then
+						minetest.env:add_node(addpos, {name="nether:netherrack"})
+					elseif y == NETHER_BOTTOM then
+						minetest.env:add_node(addpos, {name="nether:netherrack"})
+					elseif (y == math.random((NETHER_DEPTH-NETHER_RANDOM), NETHER_DEPTH)) then
+						minetest.env:add_node(addpos, {name="nether:netherrack"})
+					elseif (y == math.random(NETHER_BOTTOM, (NETHER_BOTTOM+NETHER_RANDOM))) then
 						minetest.env:add_node(addpos, {name="nether:netherrack"})
 					elseif y <= NETHER_DEPTH and y >= NETHER_BOTTOM then
 						minetest.env:add_node(addpos, {name="air"})
@@ -297,9 +420,23 @@ minetest.register_on_generated(function(minp, maxp)
 				end
 			end
 		end
-		-- Pass 3: Throne of Hades
-		for i,v in ipairs(HADES_THRONE_ABS) do
-			minetest.env:add_node(v.pos, {name=v.block})
+		-- We don't want the Throne of Hades to get regenerated (especially since it will screw up portals)
+		if (minp.x <= HADES_THRONE_STARTPOS_ABS.x) and (maxp.x >= HADES_THRONE_STARTPOS_ABS.x) and (minp.y <= HADES_THRONE_STARTPOS_ABS.y) and (maxp.y >= HADES_THRONE_STARTPOS_ABS.y) and (minp.z <= HADES_THRONE_STARTPOS_ABS.z) and (maxp.z >= HADES_THRONE_STARTPOS_ABS.z)
+		then
+			-- Pass 3: Make way for the Throne of Hades!
+			for x=(HADES_THRONE_STARTPOS_ABS.x - 1), (HADES_THRONE_ENDPOS_ABS.x + 1), 1 do
+				for z=(HADES_THRONE_STARTPOS_ABS.z - 1), (HADES_THRONE_ENDPOS_ABS.z + 1), 1 do
+					-- Notice I did not put a -1 for the beginning. This is because we don't want the throne to float
+					for y=HADES_THRONE_STARTPOS_ABS.y, (HADES_THRONE_ENDPOS_ABS.y + 1), 1 do
+						addpos = {x=x, y=y, z=z}
+						minetest.env:add_node(addpos, {name="air"})
+					end
+				end
+			end
+			-- Pass 4: Throne of Hades
+			for i,v in ipairs(HADES_THRONE_ABS) do
+				minetest.env:add_node(v.pos, {name=v.block})
+			end
 		end
 		print("DONE")
 	end
@@ -317,9 +454,9 @@ function nether:grow_nethertree(pos)
 	--LEAVES
 	local leafpos={}
 	for x=(trunkpos.x-NETHER_TREESIZE), (trunkpos.x+NETHER_TREESIZE), 1 do
-       		for y=(trunkpos.y-NETHER_TREESIZE), (trunkpos.y+NETHER_TREESIZE), 1 do
-       			for z=(trunkpos.z-NETHER_TREESIZE), (trunkpos.z+NETHER_TREESIZE), 1 do
-		       		if (x-trunkpos.x)*(x-trunkpos.x)
+		for y=(trunkpos.y-NETHER_TREESIZE), (trunkpos.y+NETHER_TREESIZE), 1 do
+			for z=(trunkpos.z-NETHER_TREESIZE), (trunkpos.z+NETHER_TREESIZE), 1 do
+				if (x-trunkpos.x)*(x-trunkpos.x)
 				+(y-trunkpos.y)*(y-trunkpos.y)
 				+(z-trunkpos.z)*(z-trunkpos.z)
 				<= NETHER_TREESIZE*NETHER_TREESIZE + NETHER_TREESIZE then
@@ -340,5 +477,256 @@ function nether:grow_nethertree(pos)
 		end
 	end
 end
+
+-- == PORTAL RELATED STUFF ==
+NETHER_PORTALS_TO_NETHER = {}
+NETHER_PORTALS_FROM_NETHER = {}
+NETHER_PORTALS_TO_NETHER_FILE = minetest.get_worldpath() .. "/portalstonether.txt"
+NETHER_PORTALS_FROM_NETHER_FILE = minetest.get_worldpath() .. "/portalsfromnether.txt"
+
+-- Count the number of times something appears in a table
+function table_count(tt, item)
+	local count
+	count = 0
+	for ii,xx in pairs(tt) do
+		if item == xx then count = count + 1 end
+	end
+	return count
+end
+
+
+-- Remove duplicates from table
+function table_unique(tt)
+	local newtable
+	newtable = {}
+	for ii,xx in ipairs(tt) do
+		if(table_count(newtable, xx) == 0) then
+			newtable[#newtable+1] = xx
+		end
+	end
+	return newtable
+end
+
+-- Copied from neko259 with a few minor edits from lkjoel
+function split(pString, pPattern)
+	local Table = {}
+	local fpat = "(.-)" .. pPattern
+	local last_end = 1
+	local s, e, cap = pString:find(fpat, 1)
+	while s do
+		if s ~= 1 or cap ~= "" then
+			table.insert(Table,cap)
+		end
+		last_end = e+1
+		s, e, cap = pString:find(fpat, last_end)
+	end
+	if last_end <= #pString then
+		cap = pString:sub(last_end)
+		table.insert(Table, cap)
+	end
+	return Table
+end
+
+-- Save a portal to nether
+function nether:save_portal_to_nether(pos)
+	local file = io.open(NETHER_PORTALS_TO_NETHER_FILE, "a")
+	if file ~= nil then
+		file:write("x" .. pos.x .. "\ny" .. pos.y .. "\nz" .. pos.z .. "\np", "\n")
+	end
+end
+
+-- Save all nether portals
+function nether:save_portals_to_nether()
+	file = io.open(NETHER_PORTALS_TO_NETHER_FILE, "w")
+	file:write("")
+	file:close()
+	for i,v in ipairs(NETHER_PORTALS_TO_NETHER) do
+		nether:save_portal_to_nether(v)
+	end
+end
+
+-- Save a portal from nether
+function nether:save_portal_from_nether(pos)
+	local file = io.open(NETHER_PORTALS_FROM_NETHER_FILE, "a")
+	if file ~= nil then
+		file:write("x" .. pos.x .. "\ny" .. pos.y .. "\nz" .. pos.z .. "\np", "\n")
+	end
+end
+
+-- Save all portals from nether
+function nether:save_portals_from_nether()
+	file = io.open(NETHER_PORTALS_FROM_NETHER_FILE, "w")
+	file:write("")
+	file:close()
+	for i,v in ipairs(NETHER_PORTALS_FROM_NETHER) do
+		nether:save_portal_from_nether(v)
+	end
+end
+
+-- Read portals to nether
+function nether:read_portals_to_nether()
+	local array = {}
+	NETHER_PORTALS_TO_NETHER = {}
+	local file = io.open(NETHER_PORTALS_TO_NETHER_FILE, "r")
+	if file ~= nil then
+		for line in io.lines(NETHER_PORTALS_TO_NETHER_FILE) do
+			if not (line == "" or line == nil) then
+				if line:sub(1, 1) == "p" then
+					NETHER_PORTALS_TO_NETHER[table.getn(NETHER_PORTALS_TO_NETHER)+1] = array
+					print("X" .. array.x .. "Y" .. array.y .. "Z" .. array.z)
+				elseif line:sub(1, 1) == "x" then
+					array.x = tonumber(split(line, "x")[1])
+				elseif line:sub(1, 1) == "y" then
+					array.y = tonumber(split(line, "y")[1])
+				elseif line:sub(1, 1) == "z" then
+					array.z = tonumber(split(line, "z")[1])
+				end
+			end
+		end
+	else
+		file = io.open(NETHER_PORTALS_TO_NETHER_FILE, "w")
+		file:write("")
+		file:close()
+	end
+	table_unique(NETHER_PORTALS_TO_NETHER)
+end
+
+-- Read portals from nether
+function nether:read_portals_from_nether()
+	local array = {}
+	NETHER_PORTALS_FROM_NETHER = {}
+	local file = io.open(NETHER_PORTALS_FROM_NETHER_FILE, "r")
+	if file ~= nil then
+		for line in io.lines(NETHER_PORTALS_FROM_NETHER_FILE) do
+			if not (line == "" or line == nil) then
+				if line:sub(1, 1) == "p" then
+					NETHER_PORTALS_FROM_NETHER[table.getn(NETHER_PORTALS_FROM_NETHER)+1] = array
+				elseif line:sub(1, 1) == "x" then
+					array.x = tonumber(split(line, "x")[1])
+				elseif line:sub(1, 1) == "y" then
+					array.y = tonumber(split(line, "y")[1])
+				elseif line:sub(1, 1) == "z" then
+					array.z = tonumber(split(line, "z")[1])
+				end
+			end
+		end
+	else
+		file = io.open(NETHER_PORTALS_FROM_NETHER_FILE, "w")
+		file:write("")
+		file:close()
+	end
+	table_unique(NETHER_PORTALS_FROM_NETHER)
+end
+
+nether:read_portals_to_nether()
+nether:read_portals_from_nether()
+
+-- Teleport the player
+function nether:teleport_player(from_nether, player)
+	local randomportal = 1
+	local coin = math.floor(math.random(0, 1))
+	if coin == 0 then
+		coin = -1
+	else
+		coin = 1
+	end
+	local coin2 = math.floor(math.random(1, 2))
+	local num = 1
+	local forgetit = false
+	if from_nether == true then
+		num = table.getn(NETHER_PORTALS_TO_NETHER)
+		if num == 1 then
+			randomportal = 1
+		elseif num < 1 then
+			forgetit = true
+			teleportpos = {x=0, y=0, z=0}
+		else
+			randomportal = math.floor(math.random(1, num))
+		end
+		if forgetit == false then
+			portalpos = NETHER_PORTALS_TO_NETHER[randomportal]
+		end
+	else
+		num = table.getn(NETHER_PORTALS_FROM_NETHER)
+		if num == 1 then
+			randomportal = 1
+		elseif num < 1 then
+			forgetit = true
+			teleportpos = {x=0, y=NETHER_DEPTH - 5, z=0}
+		else
+			randomportal = math.floor(math.random(1, num))
+		end
+		if forgetit == false then
+			portalpos = NETHER_PORTALS_FROM_NETHER[randomportal]
+		end
+	end
+	if forgetit == false then
+		teleportpos = {x=portalpos.x + coin2, y=portalpos.y + 1, z=portalpos.z + coin}
+	end
+	player:setpos(teleportpos)
+end
+
+-- Portal Creator
+minetest.register_node("nether:nether_portal_creator", {
+	description = "Nether Portal Creator",
+	tile_images = "default_mese.png",
+	inventory_image = "default_mese.png",
+})
+minetest.register_abm({
+	nodenames = "nether:nether_portal_creator",
+	interval = 1.0,
+	chance = 1,
+	action = function(pos, node, active_object_count, active_object_count_wider)
+		for i,v in ipairs(NETHER_PORTAL) do
+			v.pos.x = v.pos.x + pos.x
+			v.pos.y = v.pos.y + pos.y
+			v.pos.z = v.pos.z + pos.z
+			minetest.env:add_node(v.pos, {name=v.block})
+		end
+		if nether:inside_nether(pos) then
+			NETHER_PORTALS_FROM_NETHER[table.getn(NETHER_PORTALS_FROM_NETHER)+1] = pos
+			nether:save_portals_from_nether()
+			nether:read_portals_from_nether()
+		else
+			NETHER_PORTALS_TO_NETHER[table.getn(NETHER_PORTALS_TO_NETHER)+1] = pos
+			nether:save_portals_to_nether()
+			nether:read_portals_from_nether()
+		end
+	end
+})
+
+-- Portal Stuff
+minetest.register_node("nether:nether_portal", {
+	description = "Nether Portal",
+	drawtype = "glasslike",
+	tile_images = {"nether_portal_stuff.png"},
+	inventory_image = "nether_portal_stuff.png",
+	wield_image = "nether_portal_stuff.png",
+	paramtype = "light",
+	sunlight_propagates = true,
+	walkable = false,
+	groups = {choppy=2,dig_immediate=3},
+	legacy_wallmounted = false,
+	buildable_to = true,
+	post_effect_color = {a=64, r=150, g=100, b=200},
+	metadata_name = "generic"
+})
+
+minetest.register_abm({
+	nodenames = {"nether:nether_portal"},
+	interval = 1.0,
+	chance = 1,
+	action = function(pos, node)
+		local objs = minetest.env:get_objects_inside_radius(pos, 1)
+		if objs[1] ~= nil then
+			for k, obj in pairs(objs) do
+				local objpos=obj:getpos()
+				if objpos.y>pos.y-1 and objpos.y<pos.y and obj:get_player_name() ~= nil and obj:get_player_name() ~= "" then
+					nether:teleport_player(nether:inside_nether(obj:getpos()), obj)
+				end
+			end
+		end
+	end,
+})
 
 print("Nether mod loaded!")
