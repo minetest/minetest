@@ -786,9 +786,14 @@ minetest.register_abm({
 		local objs = minetest.env:get_objects_inside_radius(pos, 1)
 		if objs[1] ~= nil then
 			for k, obj in pairs(objs) do
-				local objpos=obj:getpos()
+				local objpos = obj:getpos()
+				local objmeta = minetest.env:get_meta(objpos)
 				if objpos.y>pos.y-1 and objpos.y<pos.y and obj:get_player_name() ~= nil and obj:get_player_name() ~= "" then
-					nether:teleport_player(nether:inside_nether(obj:getpos()), obj)
+					if objmeta:get_string("teleporting") == "" or objmeta:get_string("teleporting") == nil then
+						objmeta:set_string("teleporting", "true")
+						nether:teleport_player(nether:inside_nether(obj:getpos()), obj)
+						objmeta:set_string("teleporting", "")
+					end
 				end
 			end
 		end
