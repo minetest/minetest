@@ -255,6 +255,7 @@ HADES_THRONE_STARTPOS_ABS = {x=HADES_THRONE_STARTPOS.x, y=(NETHER_BOTTOM + HADES
 LAVA_Y = (NETHER_BOTTOM + LAVA_HEIGHT)
 HADES_THRONE_ABS = {}
 HADES_THRONE_ENDPOS_ABS = {}
+HADES_THRONE_GENERATED = minetest.get_worldpath() .. "/netherhadesthrone.txt"
 for i,v in ipairs(HADES_THRONE) do
 	v.pos.x = v.pos.x + HADES_THRONE_STARTPOS_ABS.x
 	v.pos.y = v.pos.y + HADES_THRONE_STARTPOS_ABS.y
@@ -278,6 +279,26 @@ end
 HADES_THRONE_ENDPOS_ABS = {x=htx, y=hty, z=htz}
 print("HTY:" .. hty)
 local nether = {}
+
+-- Check if file exists
+function nether:fileexists(file)
+	file = io.open(file, "r")
+	if file ~= nil then
+		file:close()
+		return true
+	else
+		return false
+	end
+end
+
+-- Simple "touch" function
+function nether:touch(file)
+	if nether:fileexists(file) ~= true then
+		file = io.open(file, "w")
+		file:write("")
+		file:close()
+	end
+end
 
 -- Find if a position is inside the Nether
 function nether:inside_nether(pos)
@@ -421,8 +442,9 @@ minetest.register_on_generated(function(minp, maxp)
 			end
 		end
 		-- We don't want the Throne of Hades to get regenerated (especially since it will screw up portals)
-		if (minp.x <= HADES_THRONE_STARTPOS_ABS.x) and (maxp.x >= HADES_THRONE_STARTPOS_ABS.x) and (minp.y <= HADES_THRONE_STARTPOS_ABS.y) and (maxp.y >= HADES_THRONE_STARTPOS_ABS.y) and (minp.z <= HADES_THRONE_STARTPOS_ABS.z) and (maxp.z >= HADES_THRONE_STARTPOS_ABS.z)
+		if (minp.x <= HADES_THRONE_STARTPOS_ABS.x) and (maxp.x >= HADES_THRONE_STARTPOS_ABS.x) and (minp.y <= HADES_THRONE_STARTPOS_ABS.y) and (maxp.y >= HADES_THRONE_STARTPOS_ABS.y) and (minp.z <= HADES_THRONE_STARTPOS_ABS.z) and (maxp.z >= HADES_THRONE_STARTPOS_ABS.z) and (nether:fileexists(HADES_THRONE_GENERATED) == false)
 		then
+			print("RE:GENERATION")
 			-- Pass 3: Make way for the Throne of Hades!
 			for x=(HADES_THRONE_STARTPOS_ABS.x - 1), (HADES_THRONE_ENDPOS_ABS.x + 1), 1 do
 				for z=(HADES_THRONE_STARTPOS_ABS.z - 1), (HADES_THRONE_ENDPOS_ABS.z + 1), 1 do
@@ -437,6 +459,7 @@ minetest.register_on_generated(function(minp, maxp)
 			for i,v in ipairs(HADES_THRONE_ABS) do
 				minetest.env:add_node(v.pos, {name=v.block})
 			end
+			nether:touch(HADES_THRONE_GENERATED)
 		end
 		print("DONE")
 	end
@@ -717,6 +740,7 @@ minetest.register_abm({
 	interval = 1.0,
 	chance = 1,
 	action = function(pos, node)
+		local nodemeta = minetest.env:get_meta(pos)
 		local objs = minetest.env:get_objects_inside_radius(pos, 1)
 		if objs[1] ~= nil then
 			for k, obj in pairs(objs) do
