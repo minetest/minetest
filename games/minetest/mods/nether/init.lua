@@ -279,6 +279,8 @@ end
 HADES_THRONE_ENDPOS_ABS = {x=htx, y=hty, z=htz}
 local nether = {}
 
+-- == General Utility Functions ==
+
 -- Check if file exists
 function nether:fileexists(file)
 	file = io.open(file, "r")
@@ -300,6 +302,18 @@ function nether:touch(file)
 		end
 	end
 end
+
+-- Print a message
+function nether:printm(message)
+	print("[Nether] " .. message)
+end
+
+-- Print an error message
+function nether:printerror(message)
+	nether:printm("Error! " .. message)
+end
+
+-- == Nether related stuff ==
 
 -- Find if a position is inside the Nether
 function nether:inside_nether(pos)
@@ -505,18 +519,20 @@ NETHER_PORTALS_FROM_NETHER = {}
 NETHER_PORTALS_TO_NETHER_FILE = minetest.get_worldpath() .. "/portalstonether.txt"
 NETHER_PORTALS_FROM_NETHER_FILE = minetest.get_worldpath() .. "/portalsfromnether.txt"
 
--- Count the number of times something appears in a table
+-- Count the number of times a position appears in a table
 function table_count(tt, item)
 	local count
 	count = 0
 	for ii,xx in pairs(tt) do
-		if item == xx then count = count + 1 end
+		if (item.x == xx.x) and (item.y == xx.y) and (item.z == xx.z) then
+			count = count + 1
+		end
 	end
 	return count
 end
 
 
--- Remove duplicates from table
+-- Remove duplicate positions from table
 function table_unique(tt)
 	local newtable
 	newtable = {}
@@ -553,15 +569,22 @@ function nether:save_portal_to_nether(pos)
 	local file = io.open(NETHER_PORTALS_TO_NETHER_FILE, "a")
 	if file ~= nil then
 		file:write("x" .. pos.x .. "\ny" .. pos.y .. "\nz" .. pos.z .. "\np", "\n")
+		file:close()
+	else
+		nether:printerror("Cannot write portal to file!")
 	end
 end
 
 -- Save all nether portals
 function nether:save_portals_to_nether()
+	local array2 = NETHER_PORTALS_TO_NETHER
+	NETHER_PORTALS_TO_NETHER = table_unique(array2)
 	file = io.open(NETHER_PORTALS_TO_NETHER_FILE, "w")
 	if file ~= nil then
 		file:write("")
 		file:close()
+	else
+		nether:printerror("Cannot create portal file!")
 	end
 	for i,v in ipairs(NETHER_PORTALS_TO_NETHER) do
 		nether:save_portal_to_nether(v)
@@ -573,14 +596,23 @@ function nether:save_portal_from_nether(pos)
 	local file = io.open(NETHER_PORTALS_FROM_NETHER_FILE, "a")
 	if file ~= nil then
 		file:write("x" .. pos.x .. "\ny" .. pos.y .. "\nz" .. pos.z .. "\np", "\n")
+		file:close()
+	else
+		nether:printerror("Cannot write portal to file!")
 	end
 end
 
 -- Save all portals from nether
 function nether:save_portals_from_nether()
+	local array2 = NETHER_PORTALS_FROM_NETHER
+	NETHER_PORTALS_FROM_NETHER = table_unique(array2)
 	file = io.open(NETHER_PORTALS_FROM_NETHER_FILE, "w")
-	file:write("")
-	file:close()
+	if file ~= nil then
+		file:write("")
+		file:close()
+	else
+		nether:printerror("Cannot create portal file!")
+	end
 	for i,v in ipairs(NETHER_PORTALS_FROM_NETHER) do
 		nether:save_portal_from_nether(v)
 	end
@@ -610,6 +642,8 @@ function nether:read_portals_to_nether()
 		if file ~= nil then
 			file:write("")
 			file:close()
+		else
+			nether:printerror("Cannot create portal file!")
 		end
 	end
 	NETHER_PORTALS_TO_NETHER = table_unique(array2)
@@ -639,6 +673,8 @@ function nether:read_portals_from_nether()
 		if file ~= nil then
 			file:write("")
 			file:close()
+		else
+			nether:printerror("Cannot create portal file!")
 		end
 	end
 	NETHER_PORTALS_FROM_NETHER = table_unique(array2)
