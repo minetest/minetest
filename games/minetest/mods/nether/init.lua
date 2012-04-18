@@ -589,13 +589,13 @@ end
 -- Read portals to nether
 function nether:read_portals_to_nether()
 	local array = {}
-	NETHER_PORTALS_TO_NETHER = {}
+	local array2 = {}
 	local file = io.open(NETHER_PORTALS_TO_NETHER_FILE, "r")
 	if file ~= nil then
 		for line in io.lines(NETHER_PORTALS_TO_NETHER_FILE) do
 			if not (line == "" or line == nil) then
 				if line:sub(1, 1) == "p" then
-					NETHER_PORTALS_TO_NETHER[table.getn(NETHER_PORTALS_TO_NETHER)+1] = array
+					array2[table.getn(array2)+1] = array
 				elseif line:sub(1, 1) == "x" then
 					array.x = tonumber(split(line, "x")[1])
 				elseif line:sub(1, 1) == "y" then
@@ -612,19 +612,19 @@ function nether:read_portals_to_nether()
 			file:close()
 		end
 	end
-	table_unique(NETHER_PORTALS_TO_NETHER)
+	NETHER_PORTALS_TO_NETHER = table_unique(array2)
 end
 
 -- Read portals from nether
 function nether:read_portals_from_nether()
 	local array = {}
-	NETHER_PORTALS_FROM_NETHER = {}
+	local array2 = {}
 	local file = io.open(NETHER_PORTALS_FROM_NETHER_FILE, "r")
 	if file ~= nil then
 		for line in io.lines(NETHER_PORTALS_FROM_NETHER_FILE) do
 			if not (line == "" or line == nil) then
 				if line:sub(1, 1) == "p" then
-					NETHER_PORTALS_FROM_NETHER[table.getn(NETHER_PORTALS_FROM_NETHER)+1] = array
+					array2[table.getn(array2)+1] = array
 				elseif line:sub(1, 1) == "x" then
 					array.x = tonumber(split(line, "x")[1])
 				elseif line:sub(1, 1) == "y" then
@@ -641,7 +641,7 @@ function nether:read_portals_from_nether()
 			file:close()
 		end
 	end
-	table_unique(NETHER_PORTALS_FROM_NETHER)
+	NETHER_PORTALS_FROM_NETHER = table_unique(array2)
 end
 
 nether:read_portals_to_nether()
@@ -702,20 +702,24 @@ minetest.register_abm({
 	interval = 1.0,
 	chance = 1,
 	action = function(pos, node, active_object_count, active_object_count_wider)
-		for i,v in ipairs(NETHER_PORTAL) do
-			v.pos.x = v.pos.x + pos.x
-			v.pos.y = v.pos.y + pos.y
-			v.pos.z = v.pos.z + pos.z
-			minetest.env:add_node(v.pos, {name=v.block})
-		end
-		if nether:inside_nether(pos) then
-			NETHER_PORTALS_FROM_NETHER[table.getn(NETHER_PORTALS_FROM_NETHER)+1] = pos
-			nether:save_portals_from_nether()
-			nether:read_portals_from_nether()
-		else
-			NETHER_PORTALS_TO_NETHER[table.getn(NETHER_PORTALS_TO_NETHER)+1] = pos
-			nether:save_portals_to_nether()
-			nether:read_portals_from_nether()
+		local nodemeta = minetest.env:get_meta(pos)
+		if nodemeta:get_string("generatingportal") == "" or nodemeta:get_string("generatingportal") == nil then
+			nodemeta:set_string("generatingportal", "true")
+			for i,v in ipairs(NETHER_PORTAL) do
+				v.pos.x = v.pos.x + pos.x
+				v.pos.y = v.pos.y + pos.y
+				v.pos.z = v.pos.z + pos.z
+				minetest.env:add_node(v.pos, {name=v.block})
+			end
+			if nether:inside_nether(pos) then
+				NETHER_PORTALS_FROM_NETHER[table.getn(NETHER_PORTALS_FROM_NETHER)+1] = pos
+				nether:save_portals_from_nether()
+				nether:read_portals_from_nether()
+			else
+				NETHER_PORTALS_TO_NETHER[table.getn(NETHER_PORTALS_TO_NETHER)+1] = pos
+				nether:save_portals_to_nether()
+				nether:read_portals_from_nether()
+			end
 		end
 	end
 })
