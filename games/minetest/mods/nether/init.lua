@@ -277,7 +277,6 @@ for i,v in ipairs(HADES_THRONE_ABS) do
 	end
 end
 HADES_THRONE_ENDPOS_ABS = {x=htx, y=hty, z=htz}
-print("HTY:" .. hty)
 local nether = {}
 
 -- Check if file exists
@@ -407,7 +406,6 @@ minetest.register_node("nether:nether_torch_bottom", {
 minetest.register_on_generated(function(minp, maxp)
 	local addpos = {}
 	hadesthronecounter = 1
-	print("minp:" .. minp.y .. ", maxp:" .. maxp.y)
 	if ((maxp.y >= NETHER_BOTTOM) and (minp.y <= NETHER_DEPTH)) then
 		-- Pass 1: Terrain generation
 		for x=minp.x, maxp.x, 1 do
@@ -446,7 +444,6 @@ minetest.register_on_generated(function(minp, maxp)
 		-- We don't want the Throne of Hades to get regenerated (especially since it will screw up portals)
 		if (minp.x <= HADES_THRONE_STARTPOS_ABS.x) and (maxp.x >= HADES_THRONE_STARTPOS_ABS.x) and (minp.y <= HADES_THRONE_STARTPOS_ABS.y) and (maxp.y >= HADES_THRONE_STARTPOS_ABS.y) and (minp.z <= HADES_THRONE_STARTPOS_ABS.z) and (maxp.z >= HADES_THRONE_STARTPOS_ABS.z) and (nether:fileexists(HADES_THRONE_GENERATED) == false)
 		then
-			print("RE:GENERATION")
 			-- Pass 3: Make way for the Throne of Hades!
 			for x=(HADES_THRONE_STARTPOS_ABS.x - 1), (HADES_THRONE_ENDPOS_ABS.x + 1), 1 do
 				for z=(HADES_THRONE_STARTPOS_ABS.z - 1), (HADES_THRONE_ENDPOS_ABS.z + 1), 1 do
@@ -463,7 +460,6 @@ minetest.register_on_generated(function(minp, maxp)
 			end
 			nether:touch(HADES_THRONE_GENERATED)
 		end
-		print("DONE")
 	end
 end)
 
@@ -600,7 +596,6 @@ function nether:read_portals_to_nether()
 			if not (line == "" or line == nil) then
 				if line:sub(1, 1) == "p" then
 					NETHER_PORTALS_TO_NETHER[table.getn(NETHER_PORTALS_TO_NETHER)+1] = array
-					print("X" .. array.x .. "Y" .. array.y .. "Z" .. array.z)
 				elseif line:sub(1, 1) == "x" then
 					array.x = tonumber(split(line, "x")[1])
 				elseif line:sub(1, 1) == "y" then
@@ -758,6 +753,16 @@ minetest.register_abm({
 			end
 		end
 	end,
+})
+
+-- CRAFTING DEFINITIONS
+minetest.register_craft({
+	output = "nether:nether_portal_creator",
+	recipe = {
+		{"obsidian:obsidian_block", "obsidian:obsidian_block", "obsidian:obsidian_block"},
+		{"obsidian:obsidian_block", "default:mese", "obsidian:obsidian_block"},
+		{"obsidian:obsidian_block", "obsidian:obsidian_block", "obsidian:obsidian_block"},
+	}
 })
 
 print("Nether mod loaded!")
