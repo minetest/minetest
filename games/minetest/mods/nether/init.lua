@@ -10,9 +10,9 @@ NETHER_HEIGHT = 30
 -- Maximum amount of randomness in the map generation
 NETHER_RANDOM = 2
 -- Frequency of lava (higher is less frequent)
-LAVA_FREQ = 500
+LAVA_FREQ = 250
 -- Maximum height of lava
-LAVA_HEIGHT = 3
+LAVA_HEIGHT = 2
 -- Frequency of nether trees (higher is less frequent)
 NETHER_TREE_FREQ = 350
 -- Height of nether trees
