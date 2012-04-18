@@ -295,8 +295,10 @@ end
 function nether:touch(file)
 	if nether:fileexists(file) ~= true then
 		file = io.open(file, "w")
-		file:write("")
-		file:close()
+		if file ~= nil then
+			file:write("")
+			file:close()
+		end
 	end
 end
 
@@ -561,8 +563,10 @@ end
 -- Save all nether portals
 function nether:save_portals_to_nether()
 	file = io.open(NETHER_PORTALS_TO_NETHER_FILE, "w")
-	file:write("")
-	file:close()
+	if file ~= nil then
+		file:write("")
+		file:close()
+	end
 	for i,v in ipairs(NETHER_PORTALS_TO_NETHER) do
 		nether:save_portal_to_nether(v)
 	end
@@ -608,8 +612,10 @@ function nether:read_portals_to_nether()
 		end
 	else
 		file = io.open(NETHER_PORTALS_TO_NETHER_FILE, "w")
-		file:write("")
-		file:close()
+		if file ~= nil then
+			file:write("")
+			file:close()
+		end
 	end
 	table_unique(NETHER_PORTALS_TO_NETHER)
 end
@@ -635,8 +641,10 @@ function nether:read_portals_from_nether()
 		end
 	else
 		file = io.open(NETHER_PORTALS_FROM_NETHER_FILE, "w")
-		file:write("")
-		file:close()
+		if file ~= nil then
+			file:write("")
+			file:close()
+		end
 	end
 	table_unique(NETHER_PORTALS_FROM_NETHER)
 end
@@ -692,8 +700,7 @@ end
 -- Portal Creator
 minetest.register_node("nether:nether_portal_creator", {
 	description = "Nether Portal Creator",
-	tile_images = "default_mese.png",
-	inventory_image = "default_mese.png",
+	tile_images = {"nether_portal_creator.png"},
 })
 minetest.register_abm({
 	nodenames = "nether:nether_portal_creator",
