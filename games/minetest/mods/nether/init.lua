@@ -10,7 +10,7 @@ NETHER_HEIGHT = 30
 -- Maximum amount of randomness in the map generation
 NETHER_RANDOM = 2
 -- Frequency of lava (higher is less frequent)
-LAVA_FREQ = 250
+LAVA_FREQ = 200
 -- Maximum height of lava
 LAVA_HEIGHT = 2
 -- Frequency of nether trees (higher is less frequent)
@@ -27,6 +27,37 @@ HADES_THRONE_STARTPOS = {x=0, y=1, z=0}
 NETHER_SPAWNPOS = {x=0, y=5, z=0}
 -- Throne of Hades
 HADES_THRONE = {
+	-- Lava Moat
+	{pos={x=-1,y=-1,z=-1}, block="nether:lava_source"},
+	{pos={x=-1,y=-1,z=0}, block="nether:lava_source"},
+	{pos={x=-1,y=-1,z=1}, block="nether:lava_source"},
+	{pos={x=-1,y=-1,z=2}, block="nether:lava_source"},
+	{pos={x=-1,y=-1,z=3}, block="nether:lava_source"},
+	{pos={x=-1,y=-1,z=4}, block="nether:lava_source"},
+	{pos={x=-1,y=-1,z=5}, block="nether:lava_source"},
+	{pos={x=-1,y=-1,z=6}, block="nether:lava_source"},
+	{pos={x=-1,y=-1,z=7}, block="nether:lava_source"},
+	{pos={x=0,y=-1,z=7}, block="nether:lava_source"},
+	{pos={x=1,y=-1,z=7}, block="nether:lava_source"},
+	{pos={x=2,y=-1,z=7}, block="nether:lava_source"},
+	{pos={x=3,y=-1,z=7}, block="nether:lava_source"},
+	{pos={x=4,y=-1,z=7}, block="nether:lava_source"},
+	{pos={x=5,y=-1,z=7}, block="nether:lava_source"},
+	{pos={x=6,y=-1,z=7}, block="nether:lava_source"},
+	{pos={x=6,y=-1,z=6}, block="nether:lava_source"},
+	{pos={x=6,y=-1,z=5}, block="nether:lava_source"},
+	{pos={x=6,y=-1,z=4}, block="nether:lava_source"},
+	{pos={x=6,y=-1,z=3}, block="nether:lava_source"},
+	{pos={x=6,y=-1,z=2}, block="nether:lava_source"},
+	{pos={x=6,y=-1,z=1}, block="nether:lava_source"},
+	{pos={x=6,y=-1,z=0}, block="nether:lava_source"},
+	{pos={x=6,y=-1,z=-1}, block="nether:lava_source"},
+	{pos={x=5,y=-1,z=-1}, block="nether:lava_source"},
+	{pos={x=4,y=-1,z=-1}, block="nether:lava_source"},
+	{pos={x=3,y=-1,z=-1}, block="nether:lava_source"},
+	{pos={x=2,y=-1,z=-1}, block="nether:lava_source"},
+	{pos={x=1,y=-1,z=-1}, block="nether:lava_source"},
+	{pos={x=0,y=-1,z=-1}, block="nether:lava_source"},
 	-- Floor 1
 	{pos={x=0,y=0,z=0}, block="nether:netherrack"},
 	{pos={x=0,y=0,z=1}, block="nether:netherrack"},
@@ -326,12 +357,61 @@ function nether:inside_nether(pos)
 	return false
 end
 
+-- Nether Lava
+minetest.register_node("nether:lava_flowing", {
+	description = "Nether Lava (flowing)",
+	inventory_image = minetest.inventorycube("default_lava.png"),
+	drawtype = "flowingliquid",
+	tile_images = {"default_lava.png"},
+	paramtype = "light",
+	light_source = LIGHT_MAX - 1,
+	walkable = false,
+	pointable = false,
+	diggable = false,
+	buildable_to = true,
+	liquidtype = "flowing",
+	liquid_alternative_flowing = "nether:lava_flowing",
+	liquid_alternative_source = "nether:lava_source",
+	liquid_viscosity = LAVA_VISC,
+	damage_per_second = 4*2,
+	post_effect_color = {a=192, r=255, g=64, b=0},
+	special_materials = {
+		{image="default_lava.png", backface_culling=false},
+		{image="default_lava.png", backface_culling=true},
+	},
+	groups = {lava=3, liquid=2, hot=3},
+})
+
+minetest.register_node("nether:lava_source", {
+	description = "Nether Lava",
+	inventory_image = minetest.inventorycube("default_lava.png"),
+	drawtype = "liquid",
+	tile_images = {"default_lava.png"},
+	paramtype = "light",
+	light_source = LIGHT_MAX,
+	walkable = false,
+	pointable = false,
+	diggable = false,
+	buildable_to = true,
+	liquidtype = "source",
+	liquid_alternative_flowing = "nether:lava_flowing",
+	liquid_alternative_source = "nether:lava_source",
+	liquid_viscosity = LAVA_VISC,
+	damage_per_second = 4*2,
+	post_effect_color = {a=192, r=255, g=64, b=0},
+	special_materials = {
+		-- New-style lava source material (mostly unused)
+		{image="default_lava.png", backface_culling=false},
+	},
+	groups = {lava=3, liquid=2, hot=3},
+})
+
 -- Netherrack
 minetest.register_node("nether:netherrack", {
 	description = "Netherrack",
 	tile_images = {"nether_netherrack.png"},
 	is_ground_content = true,
-	groups = {cracky=3},
+	groups = {cracky=3, oddly_breakable_by_hand=3},
 	drop = "nether:netherrack",
 	sounds = default.node_sound_stone_defaults(),
 })
@@ -399,7 +479,7 @@ minetest.register_node("nether:nether_torch", {
 minetest.register_node("nether:nether_torch_bottom", {
 	description = "Nether Torch Bottom Side (you hacker!)",
 	drawtype = "torchlike",
-	tile_images = {"nether_torch_on_floor.png", "nether_torch_on_floor.png", "nether_torch_floor.png"},
+	tile_images = {"nether_torch_on_floor.png", "nether_torch_on_floor.png", "nether_torch_on_floor.png"},
 	inventory_image = "nether_torch_on_floor.png",
 	wield_image = "nether_torch_on_floor.png",
 	paramtype = "light",
@@ -462,7 +542,7 @@ minetest.register_on_generated(function(minp, maxp)
 						if math.random(NETHER_TREE_FREQ) == 1 and y == (NETHER_BOTTOM + 1) then
 							nether:grow_nethertree(addpos)
 						elseif math.random(LAVA_FREQ) == 1 and y <= LAVA_Y then
-							minetest.env:add_node(addpos, {name="default:lava_source"})
+							minetest.env:add_node(addpos, {name="nether:lava_source"})
 						end
 					end
 				end
@@ -596,11 +676,11 @@ function nether:save_portals_to_nether()
 	if file ~= nil then
 		file:write("")
 		file:close()
+		for i,v in ipairs(NETHER_PORTALS_TO_NETHER) do
+			nether:save_portal_to_nether(v)
+		end
 	else
 		nether:printerror("Cannot create portal file!")
-	end
-	for i,v in ipairs(NETHER_PORTALS_TO_NETHER) do
-		nether:save_portal_to_nether(v)
 	end
 end
 
@@ -623,11 +703,11 @@ function nether:save_portals_from_nether()
 	if file ~= nil then
 		file:write("")
 		file:close()
+		for i,v in ipairs(NETHER_PORTALS_FROM_NETHER) do
+			nether:save_portal_from_nether(v)
+		end
 	else
 		nether:printerror("Cannot create portal file!")
-	end
-	for i,v in ipairs(NETHER_PORTALS_FROM_NETHER) do
-		nether:save_portal_from_nether(v)
 	end
 end
 
@@ -768,7 +848,7 @@ minetest.register_abm({
 			else
 				NETHER_PORTALS_TO_NETHER[table.getn(NETHER_PORTALS_TO_NETHER)+1] = pos
 				nether:save_portals_to_nether()
-				nether:read_portals_from_nether()
+				nether:read_portals_to_nether()
 			end
 		end
 	end
@@ -781,6 +861,7 @@ minetest.register_node("nether:nether_portal", {
 	tile_images = {"nether_portal_stuff.png"},
 	inventory_image = "nether_portal_stuff.png",
 	wield_image = "nether_portal_stuff.png",
+	light_source = LIGHT_MAX - 2,
 	paramtype = "light",
 	sunlight_propagates = true,
 	walkable = false,
