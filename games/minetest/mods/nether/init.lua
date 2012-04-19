@@ -232,7 +232,9 @@ HADES_THRONE = {
 	{pos={x=5,y=4,z=3}, block="nether:nether_torch_bottom"},
 	{pos={x=4,y=4,z=6}, block="nether:nether_torch_bottom"},
 	{pos={x=5,y=4,z=6}, block="nether:nether_torch_bottom"},
-	-- Floor 6
+	{pos={x=0,y=4,z=6}, block="nether:nether_torch_bottom"},
+	{pos={x=1,y=4,z=6}, block="nether:nether_torch_bottom"},
+	-- Floor 6 (Nether Portal)
 	{pos={x=1,y=5,z=6}, block="nether:nether_portal_creator"},
 }
 -- Structure of the nether portal (all is relative to the nether portal creator block)
@@ -906,12 +908,10 @@ minetest.register_abm({
 			end
 			if nether:inside_nether(pos) then
 				NETHER_PORTALS_FROM_NETHER[table.getn(NETHER_PORTALS_FROM_NETHER)+1] = pos
-				nether:save_portals_from_nether()
-				nether:read_portals_from_nether()
+				nether:save_portal_from_nether(pos)
 			else
 				NETHER_PORTALS_TO_NETHER[table.getn(NETHER_PORTALS_TO_NETHER)+1] = pos
-				nether:save_portals_to_nether()
-				nether:read_portals_to_nether()
+				nether:save_portal_to_nether(pos)
 			end
 		end
 	end

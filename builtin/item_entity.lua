@@ -97,7 +97,7 @@ minetest.register_entity("__builtin:item", {
 		local objs2 = minetest.env:get_objects_inside_radius(pos, self.outercircle)
 		for k, obj in pairs(objs) do
 			local objpos=obj:getpos()
-			if objpos.y>pos.y-.5 and objpos.y<pos.y+.5 then
+			if objpos.y >= pos.y-1.5 and objpos.y <= pos.y+.5 then
 				if obj:get_player_name() ~= nil then
 					if self.itemstring ~= '' then
 						obj:get_inventory():add_item("main", self.itemstring)
@@ -108,11 +108,11 @@ minetest.register_entity("__builtin:item", {
 		end
 		local playerfound = false
 		for k, obj in pairs(objs2) do
-			if obj:get_player_name() ~= nil then
+			local objpos=obj:getpos()
+			if obj:get_player_name() ~= nil and objpos.y >= pos.y-1.25 and objpos.y <= pos.y+.25 then
 				playerfound = true
 				if self.dontbugme == false then
 					self.lastplayer = true
-					local objpos=obj:getpos()
 					local fx = objpos.x - pos.x
 					local fy = objpos.y - pos.y
 					local fz = objpos.z - pos.z
