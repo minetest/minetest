@@ -10,7 +10,7 @@ NETHER_HEIGHT = 30
 -- Maximum amount of randomness in the map generation
 NETHER_RANDOM = 2
 -- Frequency of lava (higher is less frequent)
-LAVA_FREQ = 100
+LAVA_FREQ = 250
 -- Maximum height of lava
 LAVA_HEIGHT = 2
 -- Frequency of nether trees (higher is less frequent)
@@ -332,7 +332,7 @@ minetest.register_node("nether:netherrack", {
 	tile_images = {"nether_netherrack.png"},
 	is_ground_content = true,
 	groups = {cracky=3},
-	drop = "nether_netherrack.png",
+	drop = "nether:netherrack",
 	sounds = default.node_sound_stone_defaults(),
 })
 
