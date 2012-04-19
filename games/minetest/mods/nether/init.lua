@@ -4,7 +4,7 @@
 --== EDITABLE OPTIONS ==--
 
 -- Depth of the nether
-NETHER_DEPTH = -100
+NETHER_DEPTH = -20000
 -- Height of the nether (bottom of the nether is NETHER_DEPTH - NETHER_HEIGHT)
 NETHER_HEIGHT = 30
 -- Maximum amount of randomness in the map generation
@@ -21,8 +21,10 @@ NETHER_TREESIZE = 2
 NETHER_APPLE_FREQ = 5
 -- Frequency of healing apples in a nether tree (higher is less frequent)
 NETHER_HEAL_APPLE_FREQ = 10
--- Start position for the throne of Hades (y is relative to the bottom of the nether)
+-- Start position for the Throne of Hades (y is relative to the bottom of the nether)
 HADES_THRONE_STARTPOS = {x=0, y=1, z=0}
+-- Spawn pos for when the nether hasn't been loaded yet (i.e. no portal in the nether) (y is relative to the bottom of the nether)
+NETHER_SPAWNPOS = {x=0, y=4, z=0}
 -- Throne of Hades
 HADES_THRONE = {
 	-- Floor 1
@@ -256,6 +258,7 @@ LAVA_Y = (NETHER_BOTTOM + LAVA_HEIGHT)
 HADES_THRONE_ABS = {}
 HADES_THRONE_ENDPOS_ABS = {}
 HADES_THRONE_GENERATED = minetest.get_worldpath() .. "/netherhadesthrone.txt"
+NETHER_SPAWNPOS_ABS = {x=NETHER_SPAWNPOS.x, y=(NETHER_BOTTOM + NETHER_SPAWNPOS.y), z=NETHER_SPAWNPOS.z}
 for i,v in ipairs(HADES_THRONE) do
 	v.pos.x = v.pos.x + HADES_THRONE_STARTPOS_ABS.x
 	v.pos.y = v.pos.y + HADES_THRONE_STARTPOS_ABS.y
@@ -701,7 +704,7 @@ function nether:teleport_player(from_nether, player)
 			randomportal = 1
 		elseif num < 1 then
 			forgetit = true
-			teleportpos = {x=0, y=0, z=0}
+			teleportpos = NETHER_SPAWNPOS_ABS
 		else
 			randomportal = math.floor(math.random(1, num))
 		end
@@ -714,7 +717,7 @@ function nether:teleport_player(from_nether, player)
 			randomportal = 1
 		elseif num < 1 then
 			forgetit = true
-			teleportpos = {x=0, y=NETHER_DEPTH - 5, z=0}
+			teleportpos = NETHER_SPAWNPOS_ABS
 		else
 			randomportal = math.floor(math.random(1, num))
 		end
