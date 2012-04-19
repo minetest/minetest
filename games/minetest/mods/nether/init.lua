@@ -24,7 +24,7 @@ NETHER_HEAL_APPLE_FREQ = 10
 -- Start position for the Throne of Hades (y is relative to the bottom of the nether)
 HADES_THRONE_STARTPOS = {x=0, y=1, z=0}
 -- Spawn pos for when the nether hasn't been loaded yet (i.e. no portal in the nether) (y is relative to the bottom of the nether)
-NETHER_SPAWNPOS = {x=0, y=4, z=0}
+NETHER_SPAWNPOS = {x=0, y=5, z=0}
 -- Throne of Hades
 HADES_THRONE = {
 	-- Floor 1
