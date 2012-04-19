@@ -419,6 +419,16 @@ minetest.register_node("nether:nether_torch_bottom", {
 	sounds = default.node_sound_defaults(),
 })
 
+-- Nether Pearl
+minetest.register_craftitem("nether:nether_pearl", {
+	description = "Nether Pearl",
+	wield_image = "nether_pearl.png",
+	inventory_image = "nether_pearl.png",
+	visual = "sprite",
+	physical = true,
+	textures = {"nether_pearl.png"},
+})
+
 -- Create the Nether
 minetest.register_on_generated(function(minp, maxp)
 	local addpos = {}
@@ -736,6 +746,7 @@ minetest.register_node("nether:nether_portal_creator", {
 	description = "Nether Portal Creator",
 	tile_images = {"nether_portal_creator.png"},
 })
+
 minetest.register_abm({
 	nodenames = "nether:nether_portal_creator",
 	interval = 1.0,
@@ -808,7 +819,7 @@ minetest.register_craft({
 	output = "nether:nether_portal_creator",
 	recipe = {
 		{"obsidian:obsidian_block", "obsidian:obsidian_block", "obsidian:obsidian_block"},
-		{"obsidian:obsidian_block", "default:mese", "obsidian:obsidian_block"},
+		{"obsidian:obsidian_block", "nether:nether_pearl", "obsidian:obsidian_block"},
 		{"obsidian:obsidian_block", "obsidian:obsidian_block", "obsidian:obsidian_block"},
 	}
 })
