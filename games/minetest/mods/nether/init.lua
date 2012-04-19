@@ -1,5 +1,15 @@
--- Nether Mod (based on Nyanland, Catapult and Livehouse)
--- lkjoel (Nyanland by Jeija, Catapult by XYZ, Livehouse by neko259)
+-- Nether Mod (based on Nyanland by Jeija, Catapult by XYZ, and Livehouse by neko259)
+-- lkjoel (main developer, code, ideas, textures)
+-- == CONTRIBUTERS ==
+-- jordan4ibanez (code, ideas, textures)
+-- Gilli (code, ideas, textures, mainly for the Glowstone)
+-- Death Dealer (code, ideas, textures)
+-- LolManKuba (ideas, textures)
+-- IPushButton2653 (ideas, textures)
+-- Menche (textures)
+-- sdzen (ideas)
+-- godkiller447 (ideas)
+-- If I didn't list you, please let me know!
 
 --== EDITABLE OPTIONS ==--
 
@@ -9,8 +19,12 @@ NETHER_DEPTH = -20000
 NETHER_HEIGHT = 30
 -- Maximum amount of randomness in the map generation
 NETHER_RANDOM = 2
+-- Frequency of Glowstone on the "roof" of the Nether (higher is less frequent)
+GLOWSTONE_FREQ_ROOF = 500
+-- Frequency of Glowstone on lava (higher is less frequent)
+GLOWSTONE_FREQ_LAVA = 2
 -- Frequency of lava (higher is less frequent)
-LAVA_FREQ = 200
+LAVA_FREQ = 100
 -- Maximum height of lava
 LAVA_HEIGHT = 2
 -- Frequency of nether trees (higher is less frequent)
@@ -277,13 +291,12 @@ NETHER_PORTAL = {
 	{pos={x=2,y=4,z=-1}, block="obsidian:obsidian_block"},
 	{pos={x=3,y=4,z=-1}, block="obsidian:obsidian_block"},
 }
--- Time to teleport a player to the nether or teleport the player to the overworld
-NETHER_PORTAL_SPEED = 5
 
 --== END OF EDITABLE OPTIONS ==--
 
 -- Generated variables
 NETHER_BOTTOM = (NETHER_DEPTH - NETHER_HEIGHT)
+NETHER_ROOF_ABS = (NETHER_DEPTH - NETHER_RANDOM)
 HADES_THRONE_STARTPOS_ABS = {x=HADES_THRONE_STARTPOS.x, y=(NETHER_BOTTOM + HADES_THRONE_STARTPOS.y), z=HADES_THRONE_STARTPOS.z}
 LAVA_Y = (NETHER_BOTTOM + LAVA_HEIGHT)
 HADES_THRONE_ABS = {}
@@ -388,7 +401,7 @@ minetest.register_node("nether:lava_source", {
 	drawtype = "liquid",
 	tile_images = {"default_lava.png"},
 	paramtype = "light",
-	light_source = LIGHT_MAX,
+	light_source = LIGHT_MAX - 1,
 	walkable = false,
 	pointable = false,
 	diggable = false,
@@ -509,6 +522,16 @@ minetest.register_craftitem("nether:nether_pearl", {
 	textures = {"nether_pearl.png"},
 })
 
+-- Nether Glowstone (Thanks to Gilli)
+minetest.register_node( "nether:glowstone", { 
+	description = "Nether Glowstone",
+	tile_images = {"nether_glowstone.png"},
+	light_source = 15, -- Like in Minecraft
+	inventory_inventory_image = minetest.inventorycube( "nether_glowstone.png" ),
+	is_ground_content = true,
+	groups = {snappy=2, choppy=2, oddly_breakable_by_hand = 1.5},
+})
+
 -- Create the Nether
 minetest.register_on_generated(function(minp, maxp)
 	local addpos = {}
@@ -523,9 +546,14 @@ minetest.register_on_generated(function(minp, maxp)
 						minetest.env:add_node(addpos, {name="nether:netherrack"})
 					elseif y == NETHER_BOTTOM then
 						minetest.env:add_node(addpos, {name="nether:netherrack"})
-					elseif (y == math.random((NETHER_DEPTH-NETHER_RANDOM), NETHER_DEPTH)) then
+					elseif (math.floor(math.random(0, GLOWSTONE_FREQ_ROOF)) == 1) and (y >= NETHER_ROOF_ABS-1) and (nether:can_add_sticky_node(addpos) == true) then
+						minetest.env:add_node(addpos, {name="nether:glowstone"})
+					--[[elseif (math.floor(math.random(0, GLOWSTONE_FREQ_LAVA)) == 1) and ((nether:nodebelow(addpos) == "nether:lava_source") or (nether:nodebelow(addpos) == "nether:lava_flowing")) then
+						minetest.env:add_node(addpos, {name="nether:glowstone"})
+						print("GLOWSTONE" .. "X:" .. addpos.x .. "Y:" .. addpos.y .. "Z:" .. addpos.z)]]
+					elseif (y == math.floor(math.random((NETHER_DEPTH-NETHER_RANDOM), NETHER_DEPTH))) and (nether:can_add_sticky_node(addpos) == true) then
 						minetest.env:add_node(addpos, {name="nether:netherrack"})
-					elseif (y == math.random(NETHER_BOTTOM, (NETHER_BOTTOM+NETHER_RANDOM))) then
+					elseif (y == math.floor(math.random(NETHER_BOTTOM, (NETHER_BOTTOM+NETHER_RANDOM)))) and (nether:can_add_sticky_node(addpos) == true) then
 						minetest.env:add_node(addpos, {name="nether:netherrack"})
 					elseif y <= NETHER_DEPTH and y >= NETHER_BOTTOM then
 						minetest.env:add_node(addpos, {name="air"})
@@ -569,6 +597,41 @@ minetest.register_on_generated(function(minp, maxp)
 		end
 	end
 end)
+
+-- Return the name of the node below a position
+function nether:nodebelow(pos)
+	return minetest.env:get_node({x=pos.x, y=(pos.y-1), z=pos.z}).name
+end
+
+-- Check if we can add a "sticky" node (i.e. it has to stick to something else, or else it won't be added)
+-- This is largely based on Gilli's code
+function nether:can_add_sticky_node(pos)
+	local nodehere = false
+	local objname
+	for x = -1, 1 do
+		for y = -1, 1 do
+			for z = -1, 1 do
+				local p = {x=pos.x+x, y=pos.y+y, z=pos.z+z}
+				local n = minetest.env:get_node(p)
+				objname = n.name
+				if objname ~= "air" and minetest.registered_nodes[objname].walkable == true then
+					nodehere = true
+				end
+			end
+		end
+	end
+	return nodehere
+end
+
+-- Add a "sticky" node
+function nether:add_sticky_node(pos, opts)
+	if nether:can_add_sticky_node(pos) == true then
+		minetest.env:add_node(pos, opts)
+		return true
+	else
+		return false
+	end
+end
 
 -- Create a nether tree
 function nether:grow_nethertree(pos)
