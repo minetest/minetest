@@ -234,8 +234,8 @@ HADES_THRONE = {
 	{pos={x=5,y=4,z=6}, block="nether:nether_torch_bottom"},
 	{pos={x=0,y=4,z=6}, block="nether:nether_torch_bottom"},
 	{pos={x=1,y=4,z=6}, block="nether:nether_torch_bottom"},
-	-- Floor 6 (Nether Portal)
-	{pos={x=1,y=5,z=6}, block="nether:nether_portal_creator"},
+	-- Nether Portal
+	{pos={x=1,y=5,z=6}, portalblock=true},
 }
 -- Structure of the nether portal (all is relative to the nether portal creator block)
 NETHER_PORTAL = {
@@ -593,7 +593,13 @@ minetest.register_on_generated(function(minp, maxp)
 			end
 			-- Pass 4: Throne of Hades
 			for i,v in ipairs(HADES_THRONE_ABS) do
-				minetest.env:add_node(v.pos, {name=v.block})
+				if v.portalblock == true then
+					NETHER_PORTALS_FROM_NETHER[table.getn(NETHER_PORTALS_FROM_NETHER)+1] = v.pos
+					nether:save_portal_from_nether(v.pos)
+					nether:createportal(v.pos)
+				else
+					minetest.env:add_node(v.pos, {name=v.block})
+				end
 			end
 			nether:touch(HADES_THRONE_GENERATED)
 		end
@@ -886,34 +892,47 @@ function nether:teleport_player(from_nether, player)
 	player:setpos(teleportpos)
 end
 
+-- Creates a portal
+function nether:createportal(pos)
+	local currx
+	local curry
+	local currz
+	local currpos = {}
+	for i,v in ipairs(NETHER_PORTAL) do
+		currx = v.pos.x + pos.x
+		curry = v.pos.y + pos.y
+		currz = v.pos.z + pos.z
+		currpos = {x=currx, y=curry, z=currz}
+		minetest.env:add_node(currpos, {name=v.block})
+	end
+end
+
 -- Portal Creator
 minetest.register_node("nether:nether_portal_creator", {
-	description = "Nether Portal Creator",
 	tile_images = {"nether_portal_creator.png"},
+	description = "Nether Portal Creator",
 })
+
+minetest.register_on_placenode(function(pos, node)
+	if node.name == "nether:nether_portal_creator" then
+		if nether:inside_nether(pos) then
+			NETHER_PORTALS_FROM_NETHER[table.getn(NETHER_PORTALS_FROM_NETHER)+1] = pos
+			nether:save_portal_from_nether(pos)
+		else
+			NETHER_PORTALS_TO_NETHER[table.getn(NETHER_PORTALS_TO_NETHER)+1] = pos
+			nether:save_portal_to_nether(pos)
+		end
+		nether:createportal(pos)
+	end
+	nodeupdate(pos)
+end)
 
 minetest.register_abm({
 	nodenames = "nether:nether_portal_creator",
 	interval = 1.0,
 	chance = 1,
-	action = function(pos, node, active_object_count, active_object_count_wider)
-		local nodemeta = minetest.env:get_meta(pos)
-		if nodemeta:get_string("generatingportal") == "" or nodemeta:get_string("generatingportal") == nil then
-			nodemeta:set_string("generatingportal", "true")
-			for i,v in ipairs(NETHER_PORTAL) do
-				v.pos.x = v.pos.x + pos.x
-				v.pos.y = v.pos.y + pos.y
-				v.pos.z = v.pos.z + pos.z
-				minetest.env:add_node(v.pos, {name=v.block})
-			end
-			if nether:inside_nether(pos) then
-				NETHER_PORTALS_FROM_NETHER[table.getn(NETHER_PORTALS_FROM_NETHER)+1] = pos
-				nether:save_portal_from_nether(pos)
-			else
-				NETHER_PORTALS_TO_NETHER[table.getn(NETHER_PORTALS_TO_NETHER)+1] = pos
-				nether:save_portal_to_nether(pos)
-			end
-		end
+	action = function(pos)
+		nether:createportal(pos)
 	end
 })
 
