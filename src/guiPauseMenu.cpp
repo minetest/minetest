@@ -182,14 +182,14 @@ void GUIPauseMenu::regenerateGui(v2u32 screensize)
 				porting::path_user.c_str()
 		);*/
 
-		std::ostringstream os;
-		os<<"Minetest\n";
-		os<<"by Perttu Ahola and contributors\n";
-		os<<"celeron55@gmail.com\n";
-		os<<BUILD_INFO<<"\n";
-		os<<"path_user = "<<wrap_rows(porting::path_user, 20)<<"\n";
+		//std::ostringstream os;
+		//os<<"Minetest\n";
+		//os<<"by Perttu Ahola and contributors\n";
+		//os<<"celeron55@gmail.com\n";
+		//os<<BUILD_INFO<<"\n";
+		//os<<"path_user = "<<wrap_rows(porting::path_user, 20)<<"\n";
 	
-		Environment->addStaticText(narrow_to_wide(os.str()).c_str(), rect, false, true, this, 259);
+		//Environment->addStaticText(narrow_to_wide(os.str()).c_str(), //rect, false, true, this, 259);
 	}
 	changeCtype("C");
 }
