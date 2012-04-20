@@ -782,7 +782,7 @@ minetest.register_node("default:gravel", {
 	description = "Gravel",
 	tile_images = {"default_gravel.png"},
 	is_ground_content = true,
-	groups = {crumbly=2, falling_node=1},
+	groups = {crumbly=3, falling_node=1},
 	drop = {
 	  max_items = 1,
 	    items = {
