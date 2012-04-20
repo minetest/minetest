@@ -141,6 +141,8 @@
 #fixed_map_seed =
 # Gives some stuff to players at the beginning
 #give_initial_stuff = false
+#  Gives players a full inventory of TNT
+#insanity = true
 # New users need to input this password
 #default_password = 
 # Available privileges: build, teleport, settime, privs, shout
