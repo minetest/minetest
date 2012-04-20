@@ -121,7 +121,7 @@ minetest.register_entity("__builtin:item", {
 					self.object:set_properties({
 						physical = false
 					})
-					self.object:setvelocity({x=fx, y=fy, z=fz})
+					self.object:setvelocity({x=fx * 5, y=fy * 5, z=fz * 5})
 					self.dontbugme = true
 					self.whocaresaboutnodes = true
 				end
