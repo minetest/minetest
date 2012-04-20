@@ -142,23 +142,23 @@ void GUIPauseMenu::regenerateGui(v2u32 screensize)
 			wgettext("Exit to OS"));
 	}
 
-	{
-		core::rect<s32> rect(0, 0, 180, 240);
-		rect = rect + v2s32(size.X/2 + 90, size.Y/2-rect.getHeight()/2);
-		Environment->addStaticText(chartowchar_t(gettext(
-		"Default Controls:\n"
-		"- WASD: Walk\n"
-		"- Mouse left: dig/hit\n"
-		"- Mouse right: place/use\n"
-		"- Mouse wheel: select item\n"
-		"- 0...9: select item\n"
-		"- Shift: sneak\n"
-		"- R: Toggle viewing all loaded chunks\n"
-		"- I: Inventory menu\n"
-		"- ESC: This menu\n"
-		"- T: Chat\n"
-		)), rect, false, true, this, 258);
-	}
+	//{
+		//core::rect<s32> rect(0, 0, 180, 240);
+		//rect = rect + v2s32(size.X/2 + 90, size.Y/2-rect.getHeight()/2);
+		//Environment->addStaticText(chartowchar_t(gettext(
+		//"Default Controls:\n"
+		//"- WASD: Walk\n"
+		//"- Mouse left: dig/hit\n"
+		//"- Mouse right: place/use\n"
+		//"- Mouse wheel: select item\n"
+		//"- 0...9: select item\n"
+		//"- Shift: sneak\n"
+		//"- R: Toggle viewing all loaded chunks\n"
+		//"- I: Inventory menu\n"
+		//"- ESC: This menu\n"
+		//"- T: Chat\n"
+		//)), rect, false, true, this, 258);
+	//}
 	{
 		core::rect<s32> rect(0, 0, 180, 220);
 		rect = rect + v2s32(size.X/2 - 90 - rect.getWidth(), size.Y/2-rect.getHeight()/2);
