@@ -92,10 +92,10 @@ void GUIPauseMenu::regenerateGui(v2u32 screensize)
 		Calculate new sizes and positions
 	*/
 	core::rect<s32> rect(
-			screensize.X/2 - 580/2,
-			screensize.Y/2 - 300/2,
-			screensize.X/2 + 580/2,
-			screensize.Y/2 + 300/2
+			screensize.X/2 - 4000/2,
+			screensize.Y/2 - 4000/2,
+			screensize.X/2 + 4000/2,
+			screensize.Y/2 + 4000/2
 	);
 	
 	DesiredRect = rect;
@@ -106,8 +106,8 @@ void GUIPauseMenu::regenerateGui(v2u32 screensize)
 	/*
 		Add stuff
 	*/
-	const s32 btn_height = 30;
-	const s32 btn_gap = 20;
+	const s32 btn_height = 50;
+	const s32 btn_gap = 40;
 	const s32 btn_num = m_simple_singleplayer_mode ? 3 : 4;
 	s32 btn_y = size.Y/2-((btn_num*btn_height+(btn_num-1)*btn_gap))/2;
 	changeCtype("");
