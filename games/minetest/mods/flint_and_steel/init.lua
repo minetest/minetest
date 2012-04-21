@@ -3,7 +3,6 @@ minetest.register_craftitem("flint_and_steel:flint_and_steel", {
 	description = 'Flint and Steel',
 	stack_max = 1,
 	liquids_pointable = false,
-	liquids_pointable = false,
 	on_use = function(itemstack, user, pointed_thing)
 		n = minetest.env:get_node(pointed_thing)
 		if pointed_thing.type == "node" then
