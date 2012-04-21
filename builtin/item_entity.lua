@@ -101,6 +101,8 @@ minetest.register_entity("__builtin:item", {
 				if obj:get_player_name() ~= nil then
 					if self.itemstring ~= '' then
 						obj:get_inventory():add_item("main", self.itemstring)
+						soundfile = "pop"
+						minetest.sound_play(soundfile, {gain=0.5})
 					end
 					self.object:remove()
 				end
@@ -140,13 +142,6 @@ minetest.register_entity("__builtin:item", {
 			})
 			self.whocaresaboutnodes = false
 		end
-	end,
-
-	on_punch = function(self, hitter)
-		if self.itemstring ~= '' then
-			hitter:get_inventory():add_item("main", self.itemstring)
-		end
-		self.object:remove()
 	end,
 })
 
