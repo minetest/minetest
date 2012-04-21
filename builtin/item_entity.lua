@@ -102,7 +102,7 @@ minetest.register_entity("__builtin:item", {
 					if self.itemstring ~= '' then
 						obj:get_inventory():add_item("main", self.itemstring)
 						soundfile = "pop"
-						minetest.sound_play(soundfile, {gain=0.5})
+						minetest.sound_play(soundfile, {gain=0.2})
 					end
 					self.object:remove()
 				end
