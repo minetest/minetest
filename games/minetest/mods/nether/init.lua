@@ -27,6 +27,10 @@ GLOWSTONE_FREQ_LAVA = 2
 LAVA_FREQ = 100
 -- Maximum height of lava
 LAVA_HEIGHT = 2
+-- Frequency of lava lakes (higher is less frequent)
+LAVALAKE_FREQ = 3
+-- Frequency of lava lakes at higher levels (this multiplies LAVALAKE_FREQ)
+LAVALAKE_FREQ_HIGHER = 2
 -- Frequency of nether trees (higher is less frequent)
 NETHER_TREE_FREQ = 350
 -- Height of nether trees
@@ -37,7 +41,7 @@ NETHER_APPLE_FREQ = 5
 NETHER_HEAL_APPLE_FREQ = 10
 -- Start position for the Throne of Hades (y is relative to the bottom of the nether)
 HADES_THRONE_STARTPOS = {x=0, y=1, z=0}
--- Spawn pos for when the nether hasn't been loaded yet (i.e. no portal in the nether) (y is relative to the bottom of the nether)
+-- Spawn pos for when the nether hasn't been loaded yet (i.e. no portal in the nether) (y is relative to the top of the mountain)
 NETHER_SPAWNPOS = {x=0, y=5, z=0}
 -- Throne of Hades
 HADES_THRONE = {
@@ -72,6 +76,9 @@ HADES_THRONE = {
 	{pos={x=2,y=-1,z=-1}, block="nether:lava_source"},
 	{pos={x=1,y=-1,z=-1}, block="nether:lava_source"},
 	{pos={x=0,y=-1,z=-1}, block="nether:lava_source"},
+	-- Bridge
+	{pos={x=3,y=0,z=-1}, block="nether:netherrack"},
+	{pos={x=2,y=0,z=-1}, block="nether:netherrack"},
 	-- Floor 1
 	{pos={x=0,y=0,z=0}, block="nether:netherrack"},
 	{pos={x=0,y=0,z=1}, block="nether:netherrack"},
@@ -293,28 +300,21 @@ NETHER_PORTAL = {
 	{pos={x=2,y=4,z=-1}, block="obsidian:obsidian_block"},
 	{pos={x=3,y=4,z=-1}, block="obsidian:obsidian_block"},
 }
+-- Base counter for the Y of the mountain of Hades
+HADES_MOUNTAIN_BASE_COUNTER = 8
+-- Margin for the top of the mountain of Hades
+HADES_MOUNTAIN_MARGIN = 1
+-- Margin for the bottom of the mountain of Hades
+HADES_MOUNTAIN_MARGIN_BOTTOM = 3
 
 --== END OF EDITABLE OPTIONS ==--
 
 -- Generated variables
 NETHER_BOTTOM = (NETHER_DEPTH - NETHER_HEIGHT)
-NETHER_ROOF_ABS = (NETHER_DEPTH - NETHER_RANDOM)
-HADES_THRONE_STARTPOS_ABS = {x=HADES_THRONE_STARTPOS.x, y=(NETHER_BOTTOM + HADES_THRONE_STARTPOS.y), z=HADES_THRONE_STARTPOS.z}
-LAVA_Y = (NETHER_BOTTOM + LAVA_HEIGHT)
-HADES_THRONE_ABS = {}
-HADES_THRONE_ENDPOS_ABS = {}
-HADES_THRONE_GENERATED = minetest.get_worldpath() .. "/netherhadesthrone.txt"
-NETHER_SPAWNPOS_ABS = {x=NETHER_SPAWNPOS.x, y=(NETHER_BOTTOM + NETHER_SPAWNPOS.y), z=NETHER_SPAWNPOS.z}
-for i,v in ipairs(HADES_THRONE) do
-	v.pos.x = v.pos.x + HADES_THRONE_STARTPOS_ABS.x
-	v.pos.y = v.pos.y + HADES_THRONE_STARTPOS_ABS.y
-	v.pos.z = v.pos.z + HADES_THRONE_STARTPOS_ABS.z
-	HADES_THRONE_ABS[i] = v
-end
 local htx = 0
 local hty = 0
 local htz = 0
-for i,v in ipairs(HADES_THRONE_ABS) do
+for i,v in ipairs(HADES_THRONE) do
 	if v.pos.x > htx then
 		htx = v.pos.x
 	end
@@ -325,7 +325,43 @@ for i,v in ipairs(HADES_THRONE_ABS) do
 		htz = v.pos.z
 	end
 end
-HADES_THRONE_ENDPOS_ABS = {x=htx, y=hty, z=htz}
+HADES_THRONE_ENDPOS = {x=htx, y=hty, z=htz}
+NETHER_ROOF_ABS = (NETHER_DEPTH - NETHER_RANDOM)
+HADES_MOUNTAIN_HEIGHT = math.floor((NETHER_HEIGHT - HADES_THRONE_ENDPOS.y) * .60)
+HADES_THRONE_STARTPOS_ABS = {x=HADES_THRONE_STARTPOS.x, y=(NETHER_BOTTOM + HADES_MOUNTAIN_HEIGHT + HADES_THRONE_STARTPOS.y), z=HADES_THRONE_STARTPOS.z}
+LAVA_Y = (NETHER_BOTTOM + LAVA_HEIGHT)
+HADES_THRONE_ABS = {}
+HADES_THRONE_ENDPOS_ABS = {}
+HADES_THRONE_GENERATED = minetest.get_worldpath() .. "/netherhadesthrone.txt"
+NETHER_SPAWNPOS_ABS = {x=NETHER_SPAWNPOS.x, y=(NETHER_BOTTOM + HADES_MOUNTAIN_HEIGHT + NETHER_SPAWNPOS.y), z=NETHER_SPAWNPOS.z}
+for i,v in ipairs(HADES_THRONE) do
+	v.pos.x = v.pos.x + HADES_THRONE_STARTPOS_ABS.x
+	v.pos.y = v.pos.y + HADES_THRONE_STARTPOS_ABS.y
+	v.pos.z = v.pos.z + HADES_THRONE_STARTPOS_ABS.z
+	HADES_THRONE_ABS[i] = v
+end
+HADES_THRONE_ENDPOS_ABS = {x=htx, y=(NETHER_BOTTOM + hty), z=htz}
+HADES_THRONE_WIDTH = HADES_THRONE_ENDPOS_ABS.x - HADES_THRONE_STARTPOS_ABS.x
+HADES_THRONE_BREADTH = HADES_THRONE_ENDPOS_ABS.z - HADES_THRONE_STARTPOS_ABS.z
+HMMA = (HADES_MOUNTAIN_MARGIN_BOTTOM * 2) + (HADES_MOUNTAIN_MARGIN * 2)
+HADES_MOUNTAIN_XZ = {x=HMMA + HADES_THRONE_WIDTH, z=HMMA + HADES_THRONE_BREADTH}
+HADES_MOUNTAIN_STARTPOS = {x=HADES_THRONE_STARTPOS_ABS.x-HADES_MOUNTAIN_MARGIN_BOTTOM, z=HADES_THRONE_STARTPOS_ABS.z-HADES_MOUNTAIN_MARGIN_BOTTOM}
+HADES_MOUNTAIN_ENDPOS = {x=HADES_THRONE_ENDPOS_ABS.x+HADES_MOUNTAIN_MARGIN_BOTTOM, z=HADES_THRONE_ENDPOS_ABS.z+HADES_MOUNTAIN_MARGIN_BOTTOM}
+HADES_MOUNTAIN_MIDDLE = {x=(HADES_MOUNTAIN_XZ.x - HADES_THRONE_WIDTH)/2, z=(HADES_MOUNTAIN_XZ.z - HADES_THRONE_BREADTH)/2}
+HADES_MOUNTAIN = {}
+local x
+local z
+local c = 1
+for x = HADES_MOUNTAIN_STARTPOS.x, HADES_MOUNTAIN_ENDPOS.x, 1 do
+	for z = HADES_MOUNTAIN_STARTPOS.z, HADES_MOUNTAIN_ENDPOS.z, 1 do
+		if x >= HADES_THRONE_STARTPOS_ABS.x and x <= HADES_THRONE_ENDPOS_ABS.x and z >= HADES_THRONE_STARTPOS_ABS.z and z <= HADES_THRONE_ENDPOS_ABS.z then
+			HADES_MOUNTAIN[table.getn(HADES_MOUNTAIN)+1] = {x=x, y=HADES_MOUNTAIN_HEIGHT, z=z}
+		else
+			HADES_MOUNTAIN[table.getn(HADES_MOUNTAIN)+1] = {x=x, y=(math.random(1, HADES_MOUNTAIN_HEIGHT)), z=z}
+		end
+	end
+end
+
 local nether = {}
 
 -- == General Utility Functions ==
@@ -557,7 +593,7 @@ minetest.register_on_generated(function(minp, maxp)
 						minetest.env:add_node(addpos, {name="nether:netherrack"})
 					elseif (y == math.floor(math.random(NETHER_BOTTOM, (NETHER_BOTTOM+NETHER_RANDOM)))) and (nether:can_add_sticky_node(addpos) == true) then
 						minetest.env:add_node(addpos, {name="nether:netherrack"})
-					elseif y <= NETHER_DEPTH and y >= NETHER_BOTTOM then
+					elseif y < NETHER_DEPTH and y > NETHER_BOTTOM then
 						minetest.env:add_node(addpos, {name="air"})
 					end
 				end
@@ -565,21 +601,25 @@ minetest.register_on_generated(function(minp, maxp)
 		end
 		-- Pass 2: Details
 		for x=minp.x, maxp.x, 1 do
+			local lavalakenow = LAVALAKE_FREQ
 			for y=minp.y, maxp.y, 1 do
 				for z=minp.z, maxp.z, 1 do
 					addpos = {x=x, y=y, z=z}
-					if y < NETHER_DEPTH and y > NETHER_BOTTOM then
+					if y < NETHER_DEPTH and y > NETHER_BOTTOM and nether:nodebelow(addpos) == "nether:netherrack" then
 						if math.random(NETHER_TREE_FREQ) == 1 and y == (NETHER_BOTTOM + 1) then
 							nether:grow_nethertree(addpos)
-						elseif math.random(LAVA_FREQ) == 1 and y <= LAVA_Y then
-							minetest.env:add_node(addpos, {name="nether:lava_source"})
 						end
+					elseif nether:checkclearing(addpos) == true and y <= LAVA_Y and math.random(0, lavalakenow) == 1 then
+						minetest.env:add_node(addpos, {name="nether:lava_source"})
 					end
+				end
+				if y <= NETHER_DEPTH and y >= NETHER_BOTTOM then
+					lavalakenow = lavalakenow * LAVALAKE_FREQ_HIGHER
 				end
 			end
 		end
 		-- We don't want the Throne of Hades to get regenerated (especially since it will screw up portals)
-		if (minp.x <= HADES_THRONE_STARTPOS_ABS.x) and (maxp.x >= HADES_THRONE_STARTPOS_ABS.x) and (minp.y <= HADES_THRONE_STARTPOS_ABS.y) and (maxp.y >= HADES_THRONE_STARTPOS_ABS.y) and (minp.z <= HADES_THRONE_STARTPOS_ABS.z) and (maxp.z >= HADES_THRONE_STARTPOS_ABS.z) and (nether:fileexists(HADES_THRONE_GENERATED) == false)
+		if --[[(minp.x <= HADES_THRONE_STARTPOS_ABS.x) and (maxp.x >= HADES_THRONE_STARTPOS_ABS.x) and (minp.y <= HADES_THRONE_STARTPOS_ABS.y) and (maxp.y >= HADES_THRONE_STARTPOS_ABS.y) and (minp.z <= HADES_THRONE_STARTPOS_ABS.z) and (maxp.z >= HADES_THRONE_STARTPOS_ABS.z) and]] (nether:fileexists(HADES_THRONE_GENERATED) == false)
 		then
 			-- Pass 3: Make way for the Throne of Hades!
 			for x=(HADES_THRONE_STARTPOS_ABS.x - 1), (HADES_THRONE_ENDPOS_ABS.x + 1), 1 do
@@ -591,7 +631,13 @@ minetest.register_on_generated(function(minp, maxp)
 					end
 				end
 			end
-			-- Pass 4: Throne of Hades
+			-- Pass 4: Mountain of Hades
+			for i,v in ipairs(HADES_MOUNTAIN) do
+				for y=0, v.y, 1 do
+					minetest.env:add_node({x=v.x, y=NETHER_BOTTOM + y, z=v.z}, {name="nether:netherrack"})
+				end
+			end
+			-- Pass 5: Throne of Hades
 			for i,v in ipairs(HADES_THRONE_ABS) do
 				if v.portalblock == true then
 					NETHER_PORTALS_FROM_NETHER[table.getn(NETHER_PORTALS_FROM_NETHER)+1] = v.pos
@@ -611,21 +657,61 @@ function nether:nodebelow(pos)
 	return minetest.env:get_node({x=pos.x, y=(pos.y-1), z=pos.z}).name
 end
 
--- Check if we can add a "sticky" node (i.e. it has to stick to something else, or else it won't be added)
--- This is largely based on Gilli's code
+-- Check if we are in a clearing
+-- As you can see, this code is super dirty. If anyone can fix this, it would be greatly appreciated :)
+function nether:checkclearing(pos)
+	local clearing = true
+	local nodes = {{x=pos.x+1, y=pos.y, z=pos.z}, {x=pos.x-1, y=pos.y, z=pos.z}, {x=pos.x, y=pos.y, z=pos.z+1}, {x=pos.x, y=pos.y, z=pos.z-1}, {x=pos.x+1, y=pos.y, z=pos.z+1}, {x=pos.x+1, y=pos.y, z=pos.z-1}, {x=pos.x-1, y=pos.y, z=pos.z+1}, {x=pos.x-1, y=pos.y, z=pos.z-1}}
+	local corners = {{pos1=1, pos2=3, pos3=5}, {pos1=2, pos2=4, pos3=8}, {pos1=3, pos2=2, pos3=7}, {pos1=4, pos2=1, pos3=6}}
+	local corners2 = {{pos1=2, pos2=4, pos3=8}, {pos1=1, pos2=3, pos3=5}, {pos1=4, pos2=1, pos3=6}, {pos1=3, pos2=2, pos3=7}}
+	local nodevalues = {}
+	local objname
+	local p
+	local n
+	local i
+	local v
+	local vi
+	for i,p in ipairs(nodes) do
+		n = minetest.env:get_node(p)
+		objname = n.name
+		if objname == "air" or minetest.registered_nodes[objname].walkable == false then
+			nodevalues[i] = true
+		else
+			nodevalues[i] = false
+		end
+	end
+	-- All sides are clear
+	for i,v in ipairs(nodevalues) do
+		if objname ~= "air" and minetest.registered_nodes[objname].walkable == true then
+			clearing = false
+		end
+	end
+	if clearing == true then
+		return clearing
+	end
+	-- Corner or channel
+	for i,n in ipairs(corners) do
+		v = corners[i]
+		vi = corners2[i]
+		if (nodes[v.pos1] == true or nodes[v.pos2] == true) then
+			clearing = true
+			return clearing
+		end
+	end
+	return clearing
+end
+
+-- Check if we can add a "sticky" node (i.e. it has to stick to something else)
 function nether:can_add_sticky_node(pos)
 	local nodehere = false
+	local p
+	local nodes = {{x=pos.x, y=pos.y+1, z=pos.z}, {x=pos.x, y=pos.y-1, z=pos.z}, {x=pos.x+1, y=pos.y, z=pos.z}, {x=pos.x-1, y=pos.y, z=pos.z}, {x=pos.x, y=pos.y, z=pos.z+1}, {x=pos.x, y=pos.y, z=pos.z-1}}
 	local objname
-	for x = -1, 1 do
-		for y = -1, 1 do
-			for z = -1, 1 do
-				local p = {x=pos.x+x, y=pos.y+y, z=pos.z+z}
-				local n = minetest.env:get_node(p)
-				objname = n.name
-				if objname ~= "air" and minetest.registered_nodes[objname].walkable == true then
-					nodehere = true
-				end
-			end
+	for i,p in ipairs(nodes) do
+		local n = minetest.env:get_node(p)
+		objname = n.name
+		if objname ~= "air" and minetest.registered_nodes[objname].walkable == true then
+			nodehere = true
 		end
 	end
 	return nodehere
@@ -947,7 +1033,7 @@ minetest.register_node("nether:nether_portal", {
 	paramtype = "light",
 	sunlight_propagates = true,
 	walkable = false,
-	groups = {choppy=2,dig_immediate=3},
+	-- No groups, as we don't want the person to dig this
 	legacy_wallmounted = false,
 	buildable_to = true,
 	post_effect_color = {a=64, r=150, g=100, b=200},
