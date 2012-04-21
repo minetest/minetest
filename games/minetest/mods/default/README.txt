@@ -26,6 +26,9 @@ Originating from work by kddekadenz/Dogers:
   default_grass_footstep.{1,2,3}.ogg
   default_dig_crumbly.{1,2}.ogg
 
+Popping sound:
+http://www.youtube.com/watch?v=vJ507XRaslc
+
 Cisoun's WTFPL texture pack:
   default_chest_front.png
   default_chest_lock.png
