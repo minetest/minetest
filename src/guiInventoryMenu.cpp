@@ -294,8 +294,6 @@ void GUIInventoryMenu::drawList(const ListDrawSpec &s, int phase)
 	// Borders
 	core::rect<s32> imgrect10(0,0,padding.X/4,imgsize.Y + padding.X/4 + padding.X/8);
 	core::rect<s32> imgrect01(0,0,imgsize.X  + padding.Y/4 + padding.Y/8,padding.Y/4);
-	core::rect<s32> imgrect11(0,0,padding.X/4,imgsize.Y  + padding.X/4 + padding.X/8);
-	core::rect<s32> imgrect02(0,0,imgsize.X  + padding.Y/4 + padding.Y/8,padding.Y/4);
 	// Corners
 	core::rect<s32> imgrect20(0,0,padding.X/4,padding.Y/4);
 	
@@ -320,8 +318,8 @@ void GUIInventoryMenu::drawList(const ListDrawSpec &s, int phase)
 		// Borders
 		core::rect<s32> rect10 = imgrect10 + s.pos + p10;
 		core::rect<s32> rect01 = imgrect01 + s.pos + p01;
-		core::rect<s32> rect11 = imgrect11 + s.pos + p11;
-		core::rect<s32> rect02 = imgrect02 + s.pos + p02;
+		core::rect<s32> rect11 = imgrect10 + s.pos + p11;
+		core::rect<s32> rect02 = imgrect01 + s.pos + p02;
 		// Corners
 		core::rect<s32> rect20 = imgrect20 + s.pos + p20;
 		core::rect<s32> rect21 = imgrect20 + s.pos + p21;

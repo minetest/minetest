@@ -1161,7 +1161,7 @@ minetest.register_node("default:chest_locked", {
 	sounds = default.node_sound_wood_defaults(),
 })
 
-minetest.register_node("default:furnace", {
+minetest.register_node("default:furnace_lua", {
 	description = "Furnace",
 	tile_images = {"default_furnace_side.png", "default_furnace_side.png", "default_furnace_side.png",
 		"default_furnace_side.png", "default_furnace_side.png", "default_furnace_front.png"},
@@ -1174,11 +1174,26 @@ minetest.register_node("default:furnace", {
 		if (dtime > 60) then
 			print("Furnace stepping a long time ("..dtime..")")
 		end
+		local dst_list = meta:inventory_get_list("dst")
+		local interval = 2
+		local step_accumulator = tonumber(meta:get_string("step_accumulator"))
+		step_accumulator = step_accumulator + dtime
+		meta:set_string("step_accumulator", tostring(step_accumulator))
+		local changed = false
+		while step_accumulator > interval do
+			step_accumulator = step_accumulator - interval
+			meta:set_string("step_accumulator", tostring(step_accumulator))
+			dtime = interval
+			local changed_this_loop = false
+			local cookresult
+			local cooktime
+			
+		end
 	end,
 })
 
 minetest.register_on_placenode(function(pos, newnode, placer)
-	if newnode.name == "default:furnace" then
+	if newnode.name == "default:furnace_lua" then
 		local meta = minetest.env:get_meta(pos)
 		meta:inventory_set_list("fuel", {""})
 		meta:inventory_set_list("src", {""})
@@ -1190,11 +1205,12 @@ minetest.register_on_placenode(function(pos, newnode, placer)
 			.."list[current_name;dst;5,1;2,2;]"
 			.."list[current_player;main;0,5;8,4;]"
 		)
-
-		meta:set_infotext("Combiner")
-		meta:set_string("timer", "-999")
-		meta:set_string("ings", "")
-		meta:set_string("pots", "")
+		meta:set_infotext("Furnace is inactive");
+		meta:set_string("step_accumulator", "0")
+		meta:set_string("fuel_totaltime", "0")
+		meta:set_string("fuel_time", "0")
+		meta:set_string("src_totaltime", "0")
+		meta:set_string("src_time", "0")
 	end
 end)
 
