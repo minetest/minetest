@@ -2016,8 +2016,8 @@ void the_game(
 							new MainRespawnInitiator(
 									&respawn_menu_active, &client);
 					GUIDeathScreen *menu =
-							new GUIDeathScreen(guienv, guiroot, -1, 
-								&g_menumgr, respawner);
+							new GUIDeathScreen(guienv, guiroot, -1,
+								g_gamecallback, &g_menumgr, respawner);
 					menu->drop();
 					
 					chat_backend.addMessage(L"", L"You died.");

@@ -98,13 +98,17 @@ void GUITextInputMenu::regenerateGui(v2u32 screensize)
 	recalculateAbsolutePosition(false);
 
 	v2s32 size = rect.getSize();
+	const s32 btn_height = 30;
+	const s32 btn_width = 140;
+	const s32 editbox_height = 30;
+	const s32 editbox_width = 380;
 
 	/*
 		Add stuff
 	*/
 	{
-		core::rect<s32> rect(0, 0, 300, 30);
-		rect = rect + v2s32(size.X/2-300/2, size.Y/2-30/2-25);
+		core::rect<s32> rect(0, 0, editbox_width, editbox_height);
+		rect = rect + v2s32(size.X/2-editbox_width/2, size.Y/2-editbox_height/2-25);
 		gui::IGUIElement *e = 
 		Environment->addEditBox(text.c_str(), rect, true, this, 256);
 		Environment->setFocus(e);
@@ -117,10 +121,10 @@ void GUITextInputMenu::regenerateGui(v2u32 screensize)
 	}
 	changeCtype("");
 	{
-		core::rect<s32> rect(0, 0, 140, 30);
-		rect = rect + v2s32(size.X/2-140/2, size.Y/2-30/2+25);
+		core::rect<s32> rect(0, 0, btn_width, btn_height);
+		rect = rect + v2s32(size.X/2-btn_width/2, size.Y/2-btn_height/2+25);
 		Environment->addButton(rect, this, 257,
-			wgettext("Proceed"));
+			wgettext("Enter"));
 	}
 	changeCtype("C");
 }

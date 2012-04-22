@@ -31,10 +31,12 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 GUIDeathScreen::GUIDeathScreen(gui::IGUIEnvironment* env,
 		gui::IGUIElement* parent, s32 id,
+		IGameCallback *gamecallback,
 		IMenuManager *menumgr, IRespawnInitiator *respawner
 ):
 	GUIModalMenu(env, parent, id, menumgr),
 	m_respawner(respawner),
+	m_gamecallback(gamecallback),
 	m_screensize(1,1)
 {
 }
@@ -85,6 +87,11 @@ void GUIDeathScreen::regenerateGui(v2u32 screensize)
 	recalculateAbsolutePosition(false);
 
 	v2s32 size = rect.getSize();
+	const s32 btn_height = 30;
+	const s32 btn_gap = 50;
+	const s32 btn_gap_hor = 50;
+	const s32 btn_num = 2;
+	const s32 btn_width = 140;
 
 	/*
 		Add stuff
@@ -93,16 +100,24 @@ void GUIDeathScreen::regenerateGui(v2u32 screensize)
 	{
 		core::rect<s32> rect(0, 0, 400, 50);
 		rect = rect + v2s32(size.X/2-400/2, size.Y/2-50/2-25);
+		gui::IGUIStaticText *e = 
 		Environment->addStaticText(wgettext("You died."), rect, false,
 				true, this, 256);
+		e->setTextAlignment(gui::EGUIA_CENTER, gui::EGUIA_CENTER);
 	}
 	{
-		core::rect<s32> rect(0, 0, 140, 30);
-		rect = rect + v2s32(size.X/2-140/2, size.Y/2-30/2+25);
+		core::rect<s32> rect(0, 0, btn_width, btn_height);
+		rect = rect + v2s32(size.X/2-btn_gap_hor/2-btn_width, size.Y/2-btn_height/2+25);
 		gui::IGUIElement *e = 
 		Environment->addButton(rect, this, 257,
 			wgettext("Respawn"));
 		Environment->setFocus(e);
+	}
+	{
+		core::rect<s32> rect(0, 0, btn_width, btn_height);
+		rect = rect + v2s32(size.X/2+btn_gap_hor/2, size.Y/2-btn_height/2+25);
+		Environment->addButton(rect, this, 258,
+			wgettext("Exit to Menu"));
 	}
 	changeCtype("C");
 }
@@ -161,8 +176,12 @@ bool GUIDeathScreen::OnEvent(const SEvent& event)
 		{
 			switch(event.GUIEvent.Caller->getID())
 			{
-			case 257:
+			case 257: // respawn
 				respawn();
+				quitMenu();
+				return true;
+			case 258: // disconnect
+				m_gamecallback->disconnect();
 				quitMenu();
 				return true;
 			}
