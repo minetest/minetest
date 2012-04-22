@@ -291,13 +291,51 @@ void GUIInventoryMenu::drawList(const ListDrawSpec &s, int phase)
 	InventoryList *ilist = inv->getList(s.listname);
 	
 	core::rect<s32> imgrect(0,0,imgsize.X,imgsize.Y);
+	// Borders
+	core::rect<s32> imgrect10(0,0,padding.X/4,imgsize.Y + padding.X/4 + padding.X/8);
+	core::rect<s32> imgrect01(0,0,imgsize.X  + padding.Y/4 + padding.Y/8,padding.Y/4);
+	core::rect<s32> imgrect11(0,0,padding.X/4,imgsize.Y  + padding.X/4 + padding.X/8);
+	core::rect<s32> imgrect02(0,0,imgsize.X  + padding.Y/4 + padding.Y/8,padding.Y/4);
+	// Corners
+	core::rect<s32> imgrect20(0,0,padding.X/4,padding.Y/4);
 	
 	for(s32 i=0; i<s.geom.X*s.geom.Y; i++)
 	{
 		s32 x = (i%s.geom.X) * spacing.X;
 		s32 y = (i/s.geom.X) * spacing.Y;
+		s32 x1 = x - padding.X/4;
+		s32 y1 = y - padding.Y/4;
+		s32 x2 = x + spacing.X - padding.X/2;
+		s32 y2 = y + spacing.Y - padding.Y/2;
 		v2s32 p(x,y);
+		// Borders
+		v2s32 p10(x1,y1);
+		v2s32 p01(x1,y1);
+		v2s32 p11(x2,y1);
+		v2s32 p02(x1,y2);
+		// Corners
+		v2s32 p20(x1,y2);
+		v2s32 p21(x2,y1);
 		core::rect<s32> rect = imgrect + s.pos + p;
+		// Borders
+		core::rect<s32> rect10 = imgrect10 + s.pos + p10;
+		core::rect<s32> rect01 = imgrect01 + s.pos + p01;
+		core::rect<s32> rect11 = imgrect11 + s.pos + p11;
+		core::rect<s32> rect02 = imgrect02 + s.pos + p02;
+		// Corners
+		core::rect<s32> rect20 = imgrect20 + s.pos + p20;
+		core::rect<s32> rect21 = imgrect20 + s.pos + p21;
+		video::SColor rect10color(255,55,55,55);
+		video::SColor rect01color(255,255,255,255);
+		video::SColor rect20color(255,174,174,174);
+		// Draw borders
+		driver->draw2DRectangle(rect10color, rect10, &AbsoluteClippingRect);
+		driver->draw2DRectangle(rect01color, rect11, &AbsoluteClippingRect);
+		driver->draw2DRectangle(rect10color, rect01, &AbsoluteClippingRect);
+		driver->draw2DRectangle(rect01color, rect02, &AbsoluteClippingRect);
+		// Draw corners
+		driver->draw2DRectangle(rect20color, rect20, &AbsoluteClippingRect);
+		driver->draw2DRectangle(rect20color, rect21, &AbsoluteClippingRect);
 		ItemStack item;
 		if(ilist)
 			item = ilist->getItem(i);
