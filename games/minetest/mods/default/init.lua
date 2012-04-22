@@ -1195,9 +1195,9 @@ minetest.register_node("default:furnace_lua", {
 minetest.register_on_placenode(function(pos, newnode, placer)
 	if newnode.name == "default:furnace_lua" then
 		local meta = minetest.env:get_meta(pos)
-		meta:inventory_set_list("fuel", {""})
-		meta:inventory_set_list("src", {""})
-		meta:inventory_set_list("dst", {"", "", "", ""})
+		meta:get_inventory():set_list("fuel", {""})
+		meta:get_inventory():set_list("src", {""})
+		meta:get_inventory():set_list("dst", {"", "", "", ""})
 		meta:set_inventory_draw_spec(
 			"invsize[8,9;]"
 			.."list[current_name;fuel;2,3;1,1;]"
