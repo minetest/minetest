@@ -24,6 +24,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "modalMenu.h"
 #include "utility.h"
 #include <string>
+#include "guiPauseMenu.h"
 
 class IRespawnInitiator
 {
@@ -37,6 +38,7 @@ class GUIDeathScreen : public GUIModalMenu
 public:
 	GUIDeathScreen(gui::IGUIEnvironment* env,
 			gui::IGUIElement* parent, s32 id,
+			IGameCallback *gamecallback,
 			IMenuManager *menumgr, IRespawnInitiator *respawner);
 	~GUIDeathScreen();
 	
@@ -54,6 +56,7 @@ public:
 
 private:
 	IRespawnInitiator *m_respawner;
+	IGameCallback *m_gamecallback;
 	v2u32 m_screensize;
 };
 
