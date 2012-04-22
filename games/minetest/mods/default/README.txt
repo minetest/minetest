@@ -30,9 +30,7 @@ Popping sound:
 http://www.youtube.com/watch?v=vJ507XRaslc
 
 Minecraft textures:
-http://www.minecraftwiki.net/wiki/Minecraft_Wiki
-Under liscence:
-http://creativecommons.org/licenses/by-nc-sa/3.0/
+http://minetest.net/forum/viewtopic.php?id=997
 
 Cisoun's WTFPL texture pack:
   default_chest_front.png
