@@ -30,6 +30,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <IGUIFont.h>
 #include "log.h"
 
+const video::SColor fontcolor(255,0,0,0);
+
 void drawItemStack(video::IVideoDriver *driver,
 		gui::IGUIFont *font,
 		const ItemStack &item,
@@ -183,7 +185,7 @@ void GUIInventoryMenu::regenerateGui(v2u32 screensize)
 	imgsize = v2s32(48,48);*/
 
 	padding = v2s32(screensize.Y/40, screensize.Y/40);
-	spacing = v2s32(screensize.Y/12, screensize.Y/13);
+	spacing = v2s32(screensize.Y/13, screensize.Y/13);
 	imgsize = v2s32(screensize.Y/15, screensize.Y/15);
 
 	s32 helptext_h = 15;
@@ -234,7 +236,8 @@ void GUIInventoryMenu::regenerateGui(v2u32 screensize)
 				size.Y-rect.getHeight()-15);
 		const wchar_t *text =
 		L"Left click: Move all items, Right click: Move single item";
-		Environment->addStaticText(text, rect, false, true, this, 256);
+		gui::IGUIStaticText *e = Environment->addStaticText(text, rect, false, true, this, 256);
+		e->setOverrideColor(fontcolor);
 
 		// Add tooltip
 		// Note: parent != this so that the tooltip isn't clipped by the menu rectangle
@@ -307,16 +310,16 @@ void GUIInventoryMenu::drawList(const ListDrawSpec &s, int phase)
 
 		if(phase == 0)
 		{
-			if(hovering && m_selected_item)
+			/*if(hovering && m_selected_item)
 			{
 				video::SColor bgcolor(255,192,192,192);
 				driver->draw2DRectangle(bgcolor, rect, &AbsoluteClippingRect);
 			}
 			else
-			{
-				video::SColor bgcolor(255,128,128,128);
+			{*/
+				video::SColor bgcolor(255,138,138,138);
 				driver->draw2DRectangle(bgcolor, rect, &AbsoluteClippingRect);
-			}
+			//}
 		}
 
 		if(phase == 1)
@@ -387,7 +390,8 @@ void GUIInventoryMenu::drawMenu()
 		return;
 	video::IVideoDriver* driver = Environment->getVideoDriver();
 	
-	video::SColor bgcolor(140,0,0,0);
+	//video::SColor bgcolor(140,0,0,0);
+	video::SColor bgcolor(255,198,198,198);
 	driver->draw2DRectangle(bgcolor, AbsoluteRect, &AbsoluteClippingRect);
 
 	m_tooltip_element->setVisible(false);

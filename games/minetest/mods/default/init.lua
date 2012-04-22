@@ -1170,7 +1170,33 @@ minetest.register_node("default:furnace", {
 	groups = {cracky=2},
 	legacy_facedir_simple = true,
 	sounds = default.node_sound_stone_defaults(),
+	on_step = function(dtime)
+		if (dtime > 60) then
+			print("Furnace stepping a long time ("..dtime..")")
+		end
+	end,
 })
+
+minetest.register_on_placenode(function(pos, newnode, placer)
+	if newnode.name == "default:furnace" then
+		local meta = minetest.env:get_meta(pos)
+		meta:inventory_set_list("fuel", {""})
+		meta:inventory_set_list("src", {""})
+		meta:inventory_set_list("dst", {"", "", "", ""})
+		meta:set_inventory_draw_spec(
+			"invsize[8,9;]"
+			.."list[current_name;fuel;2,3;1,1;]"
+			.."list[current_name;src;2,1;1,1;]"
+			.."list[current_name;dst;5,1;2,2;]"
+			.."list[current_player;main;0,5;8,4;]"
+		)
+
+		meta:set_infotext("Combiner")
+		meta:set_string("timer", "-999")
+		meta:set_string("ings", "")
+		meta:set_string("pots", "")
+	end
+end)
 
 minetest.register_node("default:cobble", {
 	description = "Cobble",
