@@ -29,6 +29,11 @@ Originating from work by kddekadenz/Dogers:
 Popping sound:
 http://www.youtube.com/watch?v=vJ507XRaslc
 
+Minecraft textures:
+http://www.minecraftwiki.net/wiki/Minecraft_Wiki
+Under liscence:
+http://creativecommons.org/licenses/by-nc-sa/3.0/
+
 Cisoun's WTFPL texture pack:
   default_chest_front.png
   default_chest_lock.png
