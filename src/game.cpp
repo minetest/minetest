@@ -231,6 +231,8 @@ void draw_hotbar(video::IVideoDriver *driver, gui::IGUIFont *font,
 	*/
 	video::ITexture *heart_texture =
 		gamedef->getTextureSource()->getTextureRaw("heart.png");
+	video::ITexture *heart_half_texture =
+		gamedef->getTextureSource()->getTextureRaw("heart_half.png");
 	if(heart_texture)
 	{
 		v2s32 p = pos + v2s32(0, -20);
@@ -250,13 +252,24 @@ void draw_hotbar(video::IVideoDriver *driver, gui::IGUIFont *font,
 		{
 			const video::SColor color(255,255,255,255);
 			const video::SColor colors[] = {color,color,color,color};
-			core::rect<s32> rect(0,0,16/2,16);
-			rect += p;
 			core::dimension2di srcd(heart_texture->getOriginalSize());
-			srcd.Width /= 2;
-			driver->draw2DImage(heart_texture, rect,
+			if (heart_half_texture == NULL)
+			{
+				core::rect<s32> rect(0,0,16/2,16);
+				rect += p;
+				srcd.Width /= 2;
+				driver->draw2DImage(heart_texture, rect,
 				core::rect<s32>(core::position2d<s32>(0,0), srcd),
 				NULL, colors, true);
+			}
+			else
+			{
+				core::rect<s32> rect(0,0,16,16);
+				rect += p;
+				driver->draw2DImage(heart_half_texture, rect,
+				core::rect<s32>(core::position2d<s32>(0,0), srcd),
+				NULL, colors, true);
+			}
 			p += v2s32(16,0);
 		}
 	}
