@@ -588,6 +588,7 @@ void GUIMainMenu::regenerateGui(v2u32 screensize)
 		{
 			core::rect<s32> rect(0, 0, 620, 250);
 			rect += m_topleft_client + v2s32(130+14, 50+35);
+			Environment->addStaticText(narrow_to_wide(
 			"Minetest++ " VERSION_STRING "\n"
 			"http://minetestpp.tk/\n"
 			"\n"

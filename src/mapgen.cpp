@@ -29,6 +29,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "voxelalgorithms.h"
 #include "profiler.h"
 #include "main.h" // For g_profiler
+#include <vector>
 
 namespace mapgen
 {
@@ -120,14 +121,20 @@ static s16 find_stone_level(VoxelManipulator &vmanip, v2s16 p2d,
 }
 #endif
 
-void make_tree(ManualMapVoxelManipulator &vmanip, v3s16 p0,
-		bool is_apple_tree, INodeDefManager *ndef)
+// Super dirty code to have both a mapnode and an integer
+struct mapnoderandom
 {
-	MapNode treenode(ndef->getId("mapgen_tree"));
-	MapNode leavesnode(ndef->getId("mapgen_leaves"));
-	MapNode applenode(ndef->getId("mapgen_apple"));
+	MapNode mapnode;
+	s32 random;
+};
+
+void make_custom_tree(ManualMapVoxelManipulator &vmanip, v3s16 p0,
+		bool is_fruit_tree, INodeDefManager *ndef, MapNode treenode,
+		MapNode leavesnode, mapnoderandom fruitnodes[],
+		size_t fruitnodessize, s16 minrange, s16 maxrange)
+{
 	
-	s16 trunk_h = myrand_range(4, 5);
+	s16 trunk_h = myrand_range(minrange, maxrange);
 	v3s16 p1 = p0;
 	for(s16 ii=0; ii<trunk_h; ii++)
 	{
@@ -190,17 +197,64 @@ void make_tree(ManualMapVoxelManipulator &vmanip, v3s16 p0,
 			continue;
 		u32 i = leaves_a.index(x,y,z);
 		if(leaves_d[i] == 1) {
-			bool is_apple = myrand_range(0,99) < 10;
-			if(is_apple_tree && is_apple) {
-				vmanip.m_data[vi] = applenode;
-			} else {
+			bool putleaves = true;
+			if(is_fruit_tree)
+			{
+				for(s16 r=0; r < fruitnodessize; r++)
+				{
+					bool is_this = myrand_range(0, fruitnodes[r].random) == 1;
+					if(is_this == true)
+					{
+						vmanip.m_data[vi] = fruitnodes[r].mapnode;
+						putleaves = false;
+						break;
+					}
+				}
+			}
+			if(putleaves == true)
+			{
 				vmanip.m_data[vi] = leavesnode;
 			}
 		}
 	}
 }
 
-#if 0
+void make_tree(ManualMapVoxelManipulator &vmanip, v3s16 p0,
+		bool is_apple_tree, INodeDefManager *ndef)
+{
+	MapNode treenode(ndef->getId("mapgen_tree"));
+	MapNode leavesnode(ndef->getId("mapgen_leaves"));
+	MapNode applenode(ndef->getId("mapgen_apple"));
+	mapnoderandom applestruct;
+	applestruct.mapnode = applenode;
+	applestruct.random = 10;
+	mapnoderandom apples[1];
+	apples[0] = applestruct;
+	make_custom_tree(vmanip, p0, is_apple_tree, ndef, treenode,
+		leavesnode, apples, 1, 4, 5);
+}
+
+void make_nether_tree(ManualMapVoxelManipulator &vmanip, v3s16 p0,
+		bool is_apple_tree, INodeDefManager *ndef)
+{
+	MapNode treenode(ndef->getId("mapgen_nether_tree"));
+	MapNode leavesnode(ndef->getId("mapgen_nether_leaves"));
+	MapNode applenode(ndef->getId("mapgen_nether_apple"));
+	mapnoderandom applestruct;
+	applestruct.mapnode = applenode;
+	applestruct.random = 10;
+	MapNode goodapplenode(ndef->getId("mapgen_apple"));
+	mapnoderandom goodapplestruct;
+	goodapplestruct.mapnode = goodapplenode;
+	goodapplestruct.random = 50;
+	mapnoderandom apples[2];
+	apples[0] = applestruct;
+	apples[1] = goodapplestruct;
+	make_custom_tree(vmanip, p0, is_apple_tree, ndef, treenode,
+		leavesnode, apples, 2, 5, 12);
+}
+
+#if 1
 static void make_jungletree(VoxelManipulator &vmanip, v3s16 p0,
 		INodeDefManager *ndef)
 {
@@ -287,7 +341,9 @@ static void make_jungletree(VoxelManipulator &vmanip, v3s16 p0,
 			vmanip.m_data[vi] = leavesnode;
 	}
 }
+#endif
 
+#if 0
 static void make_papyrus(VoxelManipulator &vmanip, v3s16 p0,
 		INodeDefManager *ndef)
 {
@@ -319,7 +375,7 @@ static void make_cactus(VoxelManipulator &vmanip, v3s16 p0,
 }
 #endif
 
-#if 0
+#if 1
 /*
 	Dungeon making routines
 */
@@ -695,7 +751,7 @@ public:
 				roomplace = doorplace +
 						v3s16(m_random.range(-roomsize.X+2,-2),-1,-roomsize.Z+1);
 #endif
-#if 0
+#if 1
 			if(doordir == v3s16(1,0,0)) // X+
 				roomplace = doorplace + v3s16(0,-1,-roomsize.Z/2);
 			if(doordir == v3s16(-1,0,0)) // X-
@@ -873,7 +929,7 @@ static void make_dungeon1(VoxelManipulator &vmanip, PseudoRandom &random,
 }
 #endif
 
-#if 0
+#if 1
 static void make_nc(VoxelManipulator &vmanip, PseudoRandom &random,
 		INodeDefManager *ndef)
 {
@@ -914,7 +970,7 @@ static void make_nc(VoxelManipulator &vmanip, PseudoRandom &random,
 	Noise functions. Make sure seed is mangled differently in each one.
 */
 
-#if 0
+#if 1
 /*
 	Scaling the output of the noise function affects the overdrive of the
 	contour function, which affects the shape of the output considerably.
@@ -1033,7 +1089,7 @@ double tree_amount_2d(u64 seed, v2s16 p)
 		return 0.04 * (noise-zeroval) / (1.0-zeroval);
 }
 
-#if 0
+#if 1
 double surface_humidity_2d(u64 seed, v2s16 p)
 {
 	double noise = noise2d_perlin(
@@ -1047,6 +1103,7 @@ double surface_humidity_2d(u64 seed, v2s16 p)
 	return noise;
 }
 
+#if 0
 /*
 	Incrementally find ground level from 3d noise
 */
@@ -1097,6 +1154,7 @@ s16 find_ground_level_from_noise(u64 seed, v2s16 p2d, s16 precision)
 
 	return level;
 }
+#endif
 
 double get_sector_average_ground_level(u64 seed, v2s16 sectorpos, double p=4);
 
@@ -2325,7 +2383,8 @@ void make_block(BlockMakeData *data)
 			}
 		}
 	}
-
+#endif
+#if 0
 	/*
 		Add dungeons
 	*/
@@ -2407,7 +2466,8 @@ void make_block(BlockMakeData *data)
 			}
 		}
 	}
-
+#endif
+#if 0
 	/*
 		Add NC
 	*/
@@ -2690,7 +2750,7 @@ void make_block(BlockMakeData *data)
 			}
 		}
 
-#if 0
+#if 1
 		/*
 			Add some kind of random stones
 		*/
@@ -2724,7 +2784,7 @@ void make_block(BlockMakeData *data)
 		}
 #endif
 
-#if 0
+#if 1
 		/*
 			Add larger stones
 		*/

@@ -24,6 +24,13 @@ minetest.register_alias("mapgen_stone_with_iron", "default:stone_with_iron")
 minetest.register_alias("mapgen_mese", "default:mese")
 minetest.register_alias("mapgen_desert_sand", "default:desert_sand")
 minetest.register_alias("mapgen_desert_stone", "default:desert_stone")
+-- Nether stuff
+minetest.register_alias("mapgen_netherrack", "nether:netherrack")
+minetest.register_alias("mapgen_nether_tree", "nether:nether_tree")
+minetest.register_alias("mapgen_nether_leaves", "nether:nether_leaves")
+minetest.register_alias("mapgen_nether_apple", "nether:nether_apple")
+minetest.register_alias("mapgen_nether_torch", "nether:nether_torch")
+minetest.register_alias("mapgen_nether_glowstone", "nether:nether_glowstone")
 
 --
 -- Ore generation
