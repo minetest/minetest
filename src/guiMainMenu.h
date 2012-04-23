@@ -41,6 +41,7 @@ struct MainMenuData
 	bool smooth_lighting;
 	bool clouds_3d;
 	bool opaque_water;
+	bool enable_sound;
 	// Server options
 	bool creative_mode;
 	bool enable_damage;

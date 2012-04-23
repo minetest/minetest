@@ -81,6 +81,7 @@ enum
 	GUI_ID_SMOOTH_LIGHTING_CB,
 	GUI_ID_3D_CLOUDS_CB,
 	GUI_ID_OPAQUE_WATER_CB,
+	GUI_ID_ENABLE_SOUND_CB,
 	GUI_ID_DAMAGE_CB,
 	GUI_ID_CREATIVE_CB,
 	GUI_ID_JOIN_GAME_BUTTON,
@@ -230,7 +231,7 @@ void GUIMainMenu::regenerateGui(v2u32 screensize)
 			core::rect<s32> rect(0, 0, 10, m_size_client.Y);
 			rect += m_topleft_client + v2s32(15, 0);
 			//const wchar_t *text = L"H\nY\nB\nR\nI\nD";
-			const wchar_t *text = L"T\nA\nP\nE\n\nA\nN\nD\n\nG\nL\nU\nE";
+			const wchar_t *text = L"S\nI\nG\nL\nE\nP\nL\nA\nY\nE\nR";
 			gui::IGUIStaticText *t =
 			Environment->addStaticText(text, rect, false, false, this, -1);
 			t->setTextAlignment(gui::EGUIA_CENTER, gui::EGUIA_CENTER);
@@ -563,6 +564,12 @@ void GUIMainMenu::regenerateGui(v2u32 screensize)
 			Environment->addCheckBox(m_data->opaque_water, rect, this,
 					GUI_ID_OPAQUE_WATER_CB, wgettext("Opaque water"));
 		}
+		{
+			core::rect<s32> rect(0, 0, option_w, 30);
+			rect += m_topleft_client + v2s32(option_x, option_y+20*4);
+			Environment->addCheckBox(m_data->enable_sound, rect, this,
+					GUI_ID_ENABLE_SOUND_CB, wgettext("Enable Sound"));
+		}
 		// Key change button
 		{
 			core::rect<s32> rect(0, 0, 120, 30);
@@ -745,6 +752,11 @@ void GUIMainMenu::readInput(MainMenuData *dst)
 		gui::IGUIElement *e = getElementFromId(GUI_ID_OPAQUE_WATER_CB);
 		if(e != NULL && e->getType() == gui::EGUIET_CHECK_BOX)
 			dst->opaque_water = ((gui::IGUICheckBox*)e)->isChecked();
+	}
+	{
+		gui::IGUIElement *e = getElementFromId(GUI_ID_ENABLE_SOUND_CB);
+		if(e != NULL && e->getType() == gui::EGUIET_CHECK_BOX)
+			dst->enable_sound = ((gui::IGUICheckBox*)e)->isChecked();
 	}
 
 	{
