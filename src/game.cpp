@@ -180,7 +180,7 @@ void draw_hotbar(video::IVideoDriver *driver, gui::IGUIFont *font,
 		{
 			// Black base borders
 			video::ITexture *hud_selection_texture = 
-				gamedef->getTextureSource()->getTextureRaw("hud_selection.png");
+				driver->getTexture(getTexturePath("hud_selection.png").c_str());
 			core::rect<s32> selectionSourceRect(core::rect<s32>(core::position2d<s32>(0,0), 
 				core::dimension2di(hud_selection_texture->getOriginalSize())));
 			driver->draw2DImage(hud_selection_texture, rect, selectionSourceRect, NULL, colors, true); 
