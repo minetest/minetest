@@ -588,12 +588,15 @@ void GUIMainMenu::regenerateGui(v2u32 screensize)
 		{
 			core::rect<s32> rect(0, 0, 620, 250);
 			rect += m_topleft_client + v2s32(130+14, 50+35);
-			Environment->addStaticText(narrow_to_wide(
-			"Minetest-c55 " VERSION_STRING "\n"
-			"http://minetest.net/\n"
+			"Minetest++ " VERSION_STRING "\n"
+			"http://minetestpp.tk/\n"
 			"\n"
-			"by Perttu Ahola <celeron55@gmail.com>\n"
-			"and contributors"
+			"By:\n"
+			"Perttu Ahola <celeron55@gmail.com>\n"
+			"Joel Leclerc <lkjoel@ubuntu.com>\n"
+			"Jordan Craige <jordan4girl3@gmail.com>\n"
+			"For a full list of contributors go here:\n"
+			"http://minetestpp.tk/contributors/"
 			).c_str(), rect, false, true, this, -1);
 		}
 	}
