@@ -1330,6 +1330,8 @@ public:
 			m_arm_r->setReadOnlyMaterials(true);
 			//updateNodePos();
 			}
+			m_meshnode = smgr->addMeshSceneNode(mesh, NULL);
+			mesh->drop();
 
 			//updateLegRot(dtime);
 			//updateNodePos();
@@ -1371,9 +1373,10 @@ public:
 		if(m_spritenode){
 			node = m_spritenode;
 		}
-		else if(m_meshnode)
+		else if(m_meshnode){
 			node = m_meshnode;
-		if(/*node &&*/ m_is_player && !m_is_local_player){
+		}
+		if(node && m_is_player && !m_is_local_player){
 			// Add a text node for showing the name
 			gui::IGUIEnvironment* gui = irr->getGUIEnvironment();
 			std::wstring wname = narrow_to_wide(m_name);
