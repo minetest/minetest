@@ -650,28 +650,32 @@ public:
 			if (m_body != NULL) {
 				v3f rot = m_body->getRotation();
 				rot.Y = -m_yaw;
-				m_body->setPosition(v3f(real_pos.X+0, real_pos.Y+13.3, real_pos.Z+0));
+				//m_body->setPosition(v3f(real_pos.X+0, real_pos.Y+13.3, real_pos.Z+0));
+				m_body->setPosition(v3f(real_pos.X+0, real_pos.Y+5.27, real_pos.Z+0));
 				m_body->setRotation(rot);
 			}
 			if (m_head != NULL) {
 				v3f rot = m_head->getRotation();
 				rot.Y = -m_yaw;
 				rot.X = head_pitch.X;
-				m_head->setPosition(v3f(real_pos.X+0, real_pos.Y+16.2, real_pos.Z+0));
+				//m_head->setPosition(v3f(real_pos.X+0, real_pos.Y+16.2, real_pos.Z+0));
+				m_head->setPosition(v3f(real_pos.X+0, real_pos.Y+8.17, real_pos.Z+0));
 				m_head->setRotation(rot);
 			}
 			if (m_leg_l != NULL) {
 				v3f rot = m_leg_l->getRotation();
 				rot.Y = -m_yaw;
 				rot.X = m_leg_rot-90;
-				m_leg_l->setPosition(v3f(real_pos.X+0, real_pos.Y+8.03, real_pos.Z+0));
+				//m_leg_l->setPosition(v3f(real_pos.X+0, real_pos.Y+8.03, real_pos.Z+0));
+				m_leg_l->setPosition(v3f(real_pos.X+0, real_pos.Y+0, real_pos.Z+0));
 				m_leg_l->setRotation(rot);
 			}
 			if (m_leg_r != NULL) {
 				v3f rot = m_leg_r->getRotation();
 				rot.Y = -m_yaw;
 				rot.X = -m_leg_rot-90;
-				m_leg_r->setPosition(v3f(real_pos.X+0, real_pos.Y+8.03, real_pos.Z+0));
+				//m_leg_r->setPosition(v3f(real_pos.X+0, real_pos.Y+8.03, real_pos.Z+0));
+				m_leg_r->setPosition(v3f(real_pos.X+0, real_pos.Y+0, real_pos.Z+0));
 				m_leg_r->setRotation(rot);
 			}
 			
@@ -679,14 +683,16 @@ public:
 				v3f rot = m_arm_l->getRotation();
 				rot.Y = -m_yaw;
 				rot.X = -m_leg_rot-90;
-				m_arm_l->setPosition(v3f(real_pos.X+0, real_pos.Y+15.5, real_pos.Z+0));
+				//m_arm_l->setPosition(v3f(real_pos.X+0, real_pos.Y+15.5, real_pos.Z+0));
+				m_arm_l->setPosition(v3f(real_pos.X+0, real_pos.Y+7.47, real_pos.Z+0));
 				m_arm_l->setRotation(rot);
 			}
 			if (m_arm_r != NULL) {
 				v3f rot = m_arm_r->getRotation();
 				rot.Y = -m_yaw;
 				rot.X = m_leg_rot-90;
-				m_arm_r->setPosition(v3f(real_pos.X+0, real_pos.Y+15.5, real_pos.Z+0));
+				//m_arm_r->setPosition(v3f(real_pos.X+0, real_pos.Y+15.5, real_pos.Z+0));
+				m_arm_r->setPosition(v3f(real_pos.X+0, real_pos.Y+7.47, real_pos.Z+0));
 				m_arm_r->setRotation(rot);
 			}
 		}
