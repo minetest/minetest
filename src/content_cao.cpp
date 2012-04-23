@@ -896,7 +896,7 @@ public:
 			// This is needed for changing the texture in the future
 			m_meshnode->setReadOnlyMaterials(true);
 		}
-		else if(m_prop.visual == "player"){
+		else if(m_prop.visual == "player") {
 			scene::SMesh *mesh = new scene::SMesh();
 			double dx = BS*m_prop.visual_size.X/2;
 			double dy = BS*m_prop.visual_size.Y/2;
@@ -990,7 +990,7 @@ public:
 			// Set it to use the materials of the meshbuffers directly.
 			// This is needed for changing the texture in the future
 			m_body->setReadOnlyMaterials(true);
-			updateNodePos();
+			//updateNodePos();
 			}
 
 			{ // Head
@@ -1060,7 +1060,7 @@ public:
 			// Set it to use the materials of the meshbuffers directly.
 			// This is needed for changing the texture in the future
 			m_head->setReadOnlyMaterials(true);
-			updateNodePos();
+			//updateNodePos();
 			}
 
 			{ // Leg-Left
@@ -1127,7 +1127,7 @@ public:
 			// Set it to use the materials of the meshbuffers directly.
 			// This is needed for changing the texture in the future
 			m_leg_l->setReadOnlyMaterials(true);
-			updateNodePos();
+			//updateNodePos();
 			}
 
 			{ // Leg-Right
@@ -1194,7 +1194,7 @@ public:
 			// Set it to use the materials of the meshbuffers directly.
 			// This is needed for changing the texture in the future
 			m_leg_r->setReadOnlyMaterials(true);
-			updateNodePos();
+			//updateNodePos();
 			}
 			
 			{ // Arm-Left
@@ -1261,7 +1261,7 @@ public:
 			// Set it to use the materials of the meshbuffers directly.
 			// This is needed for changing the texture in the future
 			m_arm_l->setReadOnlyMaterials(true);
-			updateNodePos();
+			//updateNodePos();
 			}
 			
 			{ // Arm-Right
@@ -1328,12 +1328,11 @@ public:
 			// Set it to use the materials of the meshbuffers directly.
 			// This is needed for changing the texture in the future
 			m_arm_r->setReadOnlyMaterials(true);
-			updateNodePos();
+			//updateNodePos();
 			}
 
-			updateTextures("");
 			//updateLegRot(dtime);
-			updateNodePos();
+			//updateNodePos();
 		}
 		else if(m_prop.visual == "cube"){
 			infostream<<"GenericCAO::addToScene(): cube"<<std::endl;
@@ -1369,11 +1368,12 @@ public:
 		updateTextures("");
 		
 		scene::ISceneNode *node = NULL;
-		if(m_spritenode)
+		if(m_spritenode){
 			node = m_spritenode;
+		}
 		else if(m_meshnode)
 			node = m_meshnode;
-		if(node && m_is_player && !m_is_local_player){
+		if(/*node &&*/ m_is_player && !m_is_local_player){
 			// Add a text node for showing the name
 			gui::IGUIEnvironment* gui = irr->getGUIEnvironment();
 			std::wstring wname = narrow_to_wide(m_name);
