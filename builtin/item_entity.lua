@@ -19,6 +19,7 @@ minetest.register_entity("__builtin:item", {
 		spritediv = {x=1, y=1},
 		initial_sprite_basepos = {x=0, y=0},
 		is_visible = false,
+		pointable = false,
 	},
 	
 	itemstring = '',
