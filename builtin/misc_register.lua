@@ -21,6 +21,7 @@ minetest.registered_nodes = {}
 minetest.registered_craftitems = {}
 minetest.registered_tools = {}
 minetest.registered_aliases = {}
+minetest.registered_crafts = {}
 
 -- For tables that are indexed by item name:
 -- If table[X] does not exist, default to table[minetest.registered_aliases[X]]

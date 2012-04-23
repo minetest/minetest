@@ -152,17 +152,18 @@ void draw_hotbar(video::IVideoDriver *driver, gui::IGUIFont *font,
 	// Position of upper left corner of bar
 	v2s32 pos = centerlowerpos - v2s32(width/2, imgsize+padding*2);
 
+	// Draw background color
+	core::rect<s32> barrect(0,0,width,height);
+	barrect += pos;
+	video::SColor bgcolor(255,198,198,198);
+	driver->draw2DRectangle(bgcolor, barrect, NULL);
 	
-	video::ITexture *hud_texture = 
-		driver->getTexture(getTexturePath("hud.png").c_str());
-	core::rect<s32> rect(0,0,16,16); 
-	core::rect<s32> destRect(core::position2d<s32>(pos), core::dimension2d<s32>(width, height));
-	core::rect<s32> sourceRect(core::rect<s32>(core::position2d<s32>(0,0), core::dimension2di(hud_texture->getOriginalSize())));
-	const video::SColor color(255,255,255,255);
-	const video::SColor colors[] = {color,color,color,color};
-
-	//Draw HUD background
-	driver->draw2DImage(hud_texture, destRect, sourceRect, NULL, colors, true);
+	core::rect<s32> imgrect(0,0,imgsize,imgsize);
+	// Borders
+	core::rect<s32> imgrect10(0,0,padding/2,imgsize + padding/2 + padding/4);
+	core::rect<s32> imgrect01(0,0,imgsize  + padding/2 + padding/4,padding/2);
+	// Corners
+	core::rect<s32> imgrect20(0,0,padding/2,padding/2);
 
 	//Draw Items
 	for(s32 i=0; i<itemcount; i++)
@@ -170,22 +171,78 @@ void draw_hotbar(video::IVideoDriver *driver, gui::IGUIFont *font,
 		core::rect<s32> imgrect(0,0,imgsize,imgsize);
 		const ItemStack &item = mainlist->getItem(i);
 
-		s32 x = padding+i*(imgsize+padding*2)+2;
-		s32 y = padding+2;
+		s32 x = padding+i*(imgsize+padding*2);
+		s32 y = padding;
+		s32 x1 = x - padding/4;
+		s32 y1 = y - padding/4;
+		s32 x2 = x + imgsize - padding/2;
+		s32 y2 = y + imgsize - padding/2;
 		v2s32 p(x, y);
-
+		// Borders
+		v2s32 p10(x1,y1);
+		v2s32 p01(x1,y1);
+		v2s32 p11(x2,y1);
+		v2s32 p02(x1,y2);
+		// Corners
+		v2s32 p20(x1,y2);
+		v2s32 p21(x2,y1);
 		core::rect<s32> rect = imgrect + pos + p;
+		// Borders
+		core::rect<s32> rect10 = imgrect10 + pos + p10;
+		core::rect<s32> rect01 = imgrect01 + pos + p01;
+		core::rect<s32> rect11 = imgrect10 + pos + p11;
+		core::rect<s32> rect02 = imgrect01 + pos + p02;
+		// Corners
+		core::rect<s32> rect20 = imgrect20 + pos + p20;
+		core::rect<s32> rect21 = imgrect20 + pos + p21;
 
-		if (playeritem ==i) 
+		// Colors
+		video::SColor rect10color(255,55,55,55);
+		video::SColor rect01color(255,255,255,255);
+		video::SColor rect20color(255,174,174,174);
+		// Draw borders
+		driver->draw2DRectangle(rect10color, rect10, NULL);
+		driver->draw2DRectangle(rect01color, rect11, NULL);
+		driver->draw2DRectangle(rect10color, rect01, NULL);
+		driver->draw2DRectangle(rect01color, rect02, NULL);
+		// Draw corners
+		driver->draw2DRectangle(rect20color, rect20, NULL);
+		driver->draw2DRectangle(rect20color, rect21, NULL);
+
+		if(playeritem == i)
 		{
+			video::SColor c_outside(255,255,0,0);
+			//video::SColor c_outside(255,55,55,55);
+			//video::SColor c_inside(255,255,255,255);
+			s32 x1 = rect.UpperLeftCorner.X;
+			s32 y1 = rect.UpperLeftCorner.Y;
+			s32 x2 = rect.LowerRightCorner.X;
+			s32 y2 = rect.LowerRightCorner.Y;
 			// Black base borders
-			video::ITexture *hud_selection_texture = 
-				gamedef->getTextureSource()->getTextureRaw("hud_selection.png");
-			core::rect<s32> selectionSourceRect(core::rect<s32>(core::position2d<s32>(0,0), 
-				core::dimension2di(hud_selection_texture->getOriginalSize())));
-			driver->draw2DImage(hud_selection_texture, rect, selectionSourceRect, NULL, colors, true); 
+			driver->draw2DRectangle(c_outside,
+				core::rect<s32>(
+					v2s32(x1 - padding, y1 - padding),
+					v2s32(x2 + padding, y1)
+				), NULL);
+			driver->draw2DRectangle(c_outside,
+				core::rect<s32>(
+					v2s32(x1 - padding, y2),
+					v2s32(x2 + padding, y2 + padding)
+				), NULL);
+			driver->draw2DRectangle(c_outside,
+				core::rect<s32>(
+					v2s32(x1 - padding, y1),
+					v2s32(x2, y1)
+				), NULL);
+			driver->draw2DRectangle(c_outside,
+				core::rect<s32>(
+					v2s32(x2, y1),
+					v2s32(x2 + padding, y2)
+				), NULL);
 		}
 
+		video::SColor bgcolor2(255,138,138,138);
+		driver->draw2DRectangle(bgcolor2, rect, NULL);
 		drawItemStack(driver, font, item, rect, NULL, gamedef);
 	}
 	

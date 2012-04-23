@@ -554,15 +554,22 @@ private:
 	scene::ISceneManager *m_smgr;
 	IrrlichtDevice *m_irr;
 	core::aabbox3d<f32> m_selection_box;
-	scene::IMeshSceneNode *m_meshnode;
+	scene::IMeshSceneNode *m_meshnode, *m_body, *m_head, *m_leg_l, *m_leg_r, *m_arm_l, *m_arm_r;
 	scene::IBillboardSceneNode *m_spritenode;
 	scene::ITextSceneNode* m_textnode;
 	v3f m_position;
+	v3f m_old_position;
+	float m_leg_rot;
+	float m_leg_rot_i;
+	float m_speed;
+	float m_pitch;
 	v3f m_velocity;
 	v3f m_acceleration;
 	float m_yaw;
 	s16 m_hp;
 	SmoothTranslator pos_translator;
+	SmoothTranslator old_pos_translator;
+	SmoothTranslator head_translator;
 	// Spritesheet/animation stuff
 	v2f m_tx_size;
 	v2s16 m_tx_basepos;
@@ -589,9 +596,21 @@ public:
 		m_irr(NULL),
 		m_selection_box(-BS/3.,-BS/3.,-BS/3., BS/3.,BS/3.,BS/3.),
 		m_meshnode(NULL),
+		m_body(NULL),
+		m_head(NULL),
+		m_leg_l(NULL),
+		m_leg_r(NULL),
+		m_arm_l(NULL),
+		m_arm_r(NULL),
 		m_spritenode(NULL),
 		m_textnode(NULL),
-		m_position(v3f(0,10*BS,0)),
+		//m_position(v3f(0,10*BS,0)),
+		m_position(v3f(0,0,0)),
+		m_old_position(v3f(0,0,0)),
+		m_leg_rot(0),
+		m_leg_rot_i(0),
+		m_speed(0),
+		m_pitch(0),
 		m_velocity(v3f(0,0,0)),
 		m_acceleration(v3f(0,0,0)),
 		m_yaw(0),
@@ -612,6 +631,66 @@ public:
 		if(gamedef == NULL)
 			ClientActiveObject::registerType(getType(), create);
 	}
+	
+	void updateNodePos()
+	{
+		if(m_meshnode){
+			m_meshnode->setPosition(pos_translator.vect_show);
+			v3f rot = m_meshnode->getRotation();
+			rot.Y = -m_yaw;
+			m_meshnode->setRotation(rot);
+		}
+		if(m_spritenode){
+			m_spritenode->setPosition(pos_translator.vect_show);
+		}
+		if(m_is_player){
+			v3f real_pos = pos_translator.vect_show;
+			v3f real_old_pos = old_pos_translator.vect_show;
+			v3f head_pitch = head_translator.vect_show;
+			if (m_body != NULL) {
+				v3f rot = m_body->getRotation();
+				rot.Y = -m_yaw;
+				m_body->setPosition(v3f(real_pos.X+0, real_pos.Y+13.3, real_pos.Z+0));
+				m_body->setRotation(rot);
+			}
+			if (m_head != NULL) {
+				v3f rot = m_head->getRotation();
+				rot.Y = -m_yaw;
+				rot.X = head_pitch.X;
+				m_head->setPosition(v3f(real_pos.X+0, real_pos.Y+16.2, real_pos.Z+0));
+				m_head->setRotation(rot);
+			}
+			if (m_leg_l != NULL) {
+				v3f rot = m_leg_l->getRotation();
+				rot.Y = -m_yaw;
+				rot.X = m_leg_rot-90;
+				m_leg_l->setPosition(v3f(real_pos.X+0, real_pos.Y+8.03, real_pos.Z+0));
+				m_leg_l->setRotation(rot);
+			}
+			if (m_leg_r != NULL) {
+				v3f rot = m_leg_r->getRotation();
+				rot.Y = -m_yaw;
+				rot.X = -m_leg_rot-90;
+				m_leg_r->setPosition(v3f(real_pos.X+0, real_pos.Y+8.03, real_pos.Z+0));
+				m_leg_r->setRotation(rot);
+			}
+			
+			if (m_arm_l != NULL) {
+				v3f rot = m_arm_l->getRotation();
+				rot.Y = -m_yaw;
+				rot.X = -m_leg_rot-90;
+				m_arm_l->setPosition(v3f(real_pos.X+0, real_pos.Y+15.5, real_pos.Z+0));
+				m_arm_l->setRotation(rot);
+			}
+			if (m_arm_r != NULL) {
+				v3f rot = m_arm_r->getRotation();
+				rot.Y = -m_yaw;
+				rot.X = m_leg_rot-90;
+				m_arm_r->setPosition(v3f(real_pos.X+0, real_pos.Y+15.5, real_pos.Z+0));
+				m_arm_r->setRotation(rot);
+			}
+		}
+	}
 
 	void initialize(const std::string &data)
 	{
@@ -625,10 +704,18 @@ public:
 					<<std::endl;
 			return;
 		}
+		// name
 		m_name = deSerializeString(is);
 		m_is_player = readU8(is);
+		// position
+		m_old_position = m_position;
 		m_position = readV3F1000(is);
+		// pitch
+		//m_pitch = readF1000(is);
+		//m_pitch = updateHeadPitch(m_pitch);
+		// yaw
 		m_yaw = readF1000(is);
+		// hp
 		m_hp = readS16(is);
 		
 		int num_messages = readU8(is);
@@ -638,6 +725,8 @@ public:
 		}
 
 		pos_translator.init(m_position);
+		old_pos_translator.init(m_old_position);
+		head_translator.init(v3f(m_pitch, 0, 0));
 		updateNodePos();
 		
 		if(m_is_player){
@@ -682,6 +771,30 @@ public:
 			m_spritenode->remove();
 			m_spritenode = NULL;
 		}
+		if(m_body){
+			m_body->remove();
+			m_body = NULL;
+		}
+		if(m_head){
+			m_head->remove();
+			m_head = NULL;
+		}
+		if(m_leg_l){
+			m_leg_l->remove();
+			m_leg_l = NULL;
+		}
+		if(m_leg_r){
+			m_leg_r->remove();
+			m_leg_r = NULL;
+		}
+		if(m_arm_l){
+			m_arm_l->remove();
+			m_arm_l = NULL;
+		}
+		if(m_arm_r){
+			m_arm_r->remove();
+			m_arm_r = NULL;
+		}
 	}
 
 	void addToScene(scene::ISceneManager *smgr, ITextureSource *tsrc,
@@ -691,6 +804,8 @@ public:
 		m_irr = irr;
 
 		if(m_meshnode != NULL || m_spritenode != NULL)
+			return;
+		if(m_is_player && (m_body != NULL || m_head != NULL || m_leg_l != NULL || m_leg_r != NULL || m_arm_l != NULL || m_arm_r != NULL))
 			return;
 		
 		m_visuals_expired = false;
@@ -731,10 +846,10 @@ public:
 			video::SColor c(255,li,li,li);
 			video::S3DVertex vertices[4] =
 			{
-				video::S3DVertex(-dx,-dy,0, 0,0,0, c, 0,1),
-				video::S3DVertex(dx,-dy,0, 0,0,0, c, 1,1),
-				video::S3DVertex(dx,dy,0, 0,0,0, c, 1,0),
-				video::S3DVertex(-dx,dy,0, 0,0,0, c, 0,0),
+				video::S3DVertex(-BS/2,0,0, 0,0,0, c, 0,1),
+				video::S3DVertex(BS/2,0,0, 0,0,0, c, 1,1),
+				video::S3DVertex(BS/2,BS*2,0, 0,0,0, c, 1,0),
+				video::S3DVertex(-BS/2,BS*2,0, 0,0,0, c, 0,0),
 			};
 			u16 indices[] = {0,1,2,2,3,0};
 			buf->append(vertices, 4, indices, 6);
@@ -774,6 +889,445 @@ public:
 			// Set it to use the materials of the meshbuffers directly.
 			// This is needed for changing the texture in the future
 			m_meshnode->setReadOnlyMaterials(true);
+		}
+		else if(m_prop.visual == "player"){
+			scene::SMesh *mesh = new scene::SMesh();
+			double dx = BS*m_prop.visual_size.X/2;
+			double dy = BS*m_prop.visual_size.Y/2;
+			{ // Body
+			scene::IMeshBuffer *buf = new scene::SMeshBuffer();
+			u8 li = m_last_light;
+			video::SColor c(255,li,li,li);
+			video::S3DVertex vertices[46] =
+			{
+				video::S3DVertex(1.125000, 0.750000, 2.125066, 1.000000, 0.000000, -0.000000,c, 0.815385, 0.714286),
+				video::S3DVertex(1.125001, 0.750000, 4.375066, 1.000000, 0.000000, -0.000000,c, 0.815385, 0.642857),
+				video::S3DVertex(1.125000, -0.750000, 2.125066, 1.000000, 0.000000, -0.000000,c, 0.769231, 0.714286),
+				video::S3DVertex(1.125001, 0.750000, 4.375066, 1.000000, -0.000001, 0.000000,c, 0.815385, 0.642857),
+				video::S3DVertex(1.124999, -0.750001, 4.375066, 1.000000, -0.000001, 0.000000,c, 0.769231, 0.642857),
+				video::S3DVertex(1.125000, -0.750000, 2.125066, 1.000000, -0.000001, 0.000000,c, 0.769231, 0.714286),
+				video::S3DVertex(1.125000, -0.750000, 2.125066, 0.000000, -1.000000, -0.000000,c, 0.753846, 0.714286),
+				video::S3DVertex(1.124999, -0.750001, 4.375066, 0.000000, -1.000000, -0.000000,c, 0.753846, 0.642857),
+				video::S3DVertex(-1.125000, -0.750000, 2.125066, 0.000000, -1.000000, -0.000000,c, 0.692308, 0.714286),
+				video::S3DVertex(1.124999, -0.750001, 4.375066, -0.000001, -1.000000, 0.000000,c, 0.753846, 0.642857),
+				video::S3DVertex(-1.125001, -0.749999, 4.375066, -0.000001, -1.000000, 0.000000,c, 0.692308, 0.642857),
+				video::S3DVertex(-1.125000, -0.750000, 2.125066, -0.000001, -1.000000, 0.000000,c, 0.692308, 0.714286),
+				video::S3DVertex(-1.125000, -0.750000, 2.125066, -1.000000, 0.000000, -0.000000,c, 0.876923, 0.714286),
+				video::S3DVertex(-1.125001, -0.749999, 4.375066, -1.000000, 0.000000, -0.000000,c, 0.876923, 0.642857),
+				video::S3DVertex(-1.125000, 0.750000, 4.375066, -1.000000, 0.000000, -0.000000,c, 0.830769, 0.642857),
+				video::S3DVertex(-1.125000, 0.750000, 2.125066, -1.000000, 0.000000, -0.000000,c, 0.830769, 0.714286),
+				video::S3DVertex(1.125001, 0.750000, 4.375066, 0.000000, 1.000000, 0.000000,c, 0.953846, 0.714286),
+				video::S3DVertex(1.125000, 0.750000, 2.125066, 0.000000, 1.000000, 0.000000,c, 0.953846, 0.642857),
+				video::S3DVertex(-1.125000, 0.750000, 2.125066, 0.000000, 1.000000, 0.000000,c, 0.892308, 0.642857),
+				video::S3DVertex(-1.125000, 0.750000, 4.375066, 0.000000, 1.000000, 0.000000,c, 0.892308, 0.714286),
+				video::S3DVertex(3.000002, 1.124999, 2.499885, 0.000000, 1.000000, 0.000000,c, 0.353846, 0.446429),
+				video::S3DVertex(3.000000, 1.125000, -5.000116, 0.000000, 1.000000, 0.000000,c, 0.353846, 0.714286),
+				video::S3DVertex(-2.999999, 1.125000, -5.000116, 0.000000, 1.000000, 0.000000,c, 0.507692, 0.714286),
+				video::S3DVertex(-3.000000, 1.124999, 2.499885, 0.000000, 1.000000, 0.000000,c, 0.507692, 0.446429),
+				video::S3DVertex(-3.000000, -1.125000, -5.000116, -1.000000, 0.000001, -0.000000,c, 0.338462, 0.714286),
+				video::S3DVertex(-3.000001, -1.124999, 2.499885, -1.000000, 0.000001, -0.000000,c, 0.338462, 0.446429),
+				video::S3DVertex(-3.000000, 1.124999, 2.499885, -1.000000, 0.000001, -0.000000,c, 0.261538, 0.446429),
+				video::S3DVertex(-2.999999, 1.125000, -5.000116, -1.000000, 0.000001, -0.000000,c, 0.261538, 0.714286),
+				video::S3DVertex(3.000000, -1.124999, -5.000116, 0.000000, -1.000000, -0.000000,c, 0.153846, 0.714286),
+				video::S3DVertex(2.999998, -1.125001, 2.499885, 0.000000, -1.000000, -0.000000,c, 0.153846, 0.446429),
+				video::S3DVertex(-3.000000, -1.125000, -5.000116, 0.000000, -1.000000, -0.000000,c, 0.000000, 0.714286),
+				video::S3DVertex(-3.000001, -1.124999, 2.499885, -0.000000, -1.000000, 0.000000,c, 0.000000, 0.446429),
+				video::S3DVertex(3.000000, 1.125000, -5.000116, 1.000000, -0.000000, -0.000000,c, 0.246154, 0.714286),
+				video::S3DVertex(3.000002, 1.124999, 2.499885, 1.000000, -0.000000, -0.000000,c, 0.246154, 0.446429),
+				video::S3DVertex(3.000000, -1.124999, -5.000116, 1.000000, -0.000000, -0.000000,c, 0.169231, 0.714286),
+				video::S3DVertex(3.000002, 1.124999, 2.499885, 1.000000, -0.000002, 0.000000,c, 0.246154, 0.446429),
+				video::S3DVertex(2.999998, -1.125001, 2.499885, 1.000000, -0.000002, 0.000000,c, 0.169231, 0.446429),
+				video::S3DVertex(3.000000, -1.124999, -5.000116, 1.000000, -0.000002, 0.000000,c, 0.169231, 0.714286),
+				video::S3DVertex(3.000002, 1.124999, 2.499885, -0.000000, -0.000000, 1.000000,c, 0.676923, 0.517857),
+				video::S3DVertex(-3.000000, 1.124999, 2.499885, -0.000000, -0.000000, 1.000000,c, 0.523077, 0.517857),
+				video::S3DVertex(2.999998, -1.125001, 2.499885, -0.000000, -0.000000, 1.000000,c, 0.676923, 0.607143),
+				video::S3DVertex(-3.000001, -1.124999, 2.499885, 0.000000, -0.000000, 1.000000,c, 0.523077, 0.607143),
+				video::S3DVertex(3.000000, 1.125000, -5.000116, 0.000000, 0.000000, -1.000000,c, 0.676923, 0.714286),
+				video::S3DVertex(3.000000, -1.124999, -5.000116, 0.000000, 0.000000, -1.000000,c, 0.676923, 0.625000),
+				video::S3DVertex(-2.999999, 1.125000, -5.000116, 0.000000, 0.000000, -1.000000,c, 0.523077, 0.714286),
+				video::S3DVertex(-3.000000, -1.125000, -5.000116, 0.000000, -0.000000, -1.000000,c, 0.523077, 0.625000),
+			};
+			u16 indices[] = {0, 1, 2, 
+						3, 4, 5, 
+						6, 7, 8, 
+						9, 10, 11, 
+						12, 13, 14, 
+						12, 14, 15, 
+						16, 17, 18, 
+						16, 18, 19, 
+						20, 21, 22, 
+						20, 22, 23, 
+						24, 25, 26, 
+						24, 26, 27, 
+						28, 29, 30, 
+						29, 31, 30, 
+						32, 33, 34, 
+						35, 36, 37, 
+						38, 39, 40, 
+						39, 41, 40, 
+						42, 43, 44, 
+						43, 45, 44};
+			buf->append(vertices, 46, indices, 60);
+			// Set material
+			buf->getMaterial().setFlag(video::EMF_LIGHTING, false);
+			buf->getMaterial().setFlag(video::EMF_BILINEAR_FILTER, false);
+			buf->getMaterial().setFlag(video::EMF_FOG_ENABLE, true);
+			//buf->getMaterial().MaterialType = video::EMT_TRANSPARENT_ALPHA_CHANNEL;
+			// Add to mesh
+			mesh->addMeshBuffer(buf);
+			buf->drop();
+			
+			m_body = smgr->addMeshSceneNode(mesh, NULL);
+			m_body->setPosition(v3f(0,0,0));
+			m_body->setRotation(v3f(-90,0,0));
+			
+			// Set it to use the materials of the meshbuffers directly.
+			// This is needed for changing the texture in the future
+			m_body->setReadOnlyMaterials(true);
+			updateNodePos();
+			}
+
+			{ // Head
+			scene::SMesh *mesh = new scene::SMesh();
+			scene::IMeshBuffer *buf = new scene::SMeshBuffer();
+			u8 li = m_last_light;
+			video::SColor c(255,li,li,li);
+			video::S3DVertex vertices[30] =
+			{
+				video::S3DVertex(2.250001, 1.499998, 3.774997, 0.000000, 1.000000, 0.000001,c, 0.353846, 0.000000),
+				video::S3DVertex(2.249999, 1.500000, 0.024998, 0.000000, 1.000000, 0.000001,c, 0.353846, 0.142857),
+				video::S3DVertex(-2.250000, 1.499999, 3.774997, 0.000000, 1.000000, 0.000001,c, 0.507638, -0.000000),
+				video::S3DVertex(2.249999, 1.500000, 0.024998, 0.000000, 1.000000, 0.000000,c, 0.353846, 0.142857),
+				video::S3DVertex(-2.250000, 1.500001, 0.024998, 0.000000, 1.000000, 0.000000,c, 0.507638, 0.142857),
+				video::S3DVertex(-2.250000, 1.499999, 3.774997, 0.000000, 1.000000, 0.000000,c, 0.507638, -0.000000),
+				video::S3DVertex(-2.250000, -1.500000, 0.024998, -1.000000, -0.000000, -0.000000,c, 0.338462, 0.142857),
+				video::S3DVertex(-2.250000, -1.499999, 3.774997, -1.000000, -0.000000, -0.000000,c, 0.338285, 0.000163),
+				video::S3DVertex(-2.250000, 1.499999, 3.774997, -1.000000, -0.000000, -0.000000,c, 0.261538, 0.000000),
+				video::S3DVertex(-2.250000, 1.500001, 0.024998, -1.000000, 0.000000, -0.000000,c, 0.261538, 0.142857),
+				video::S3DVertex(2.250001, -1.499999, 0.024998, 0.000000, -1.000000, -0.000001,c, 0.153846, 0.142857),
+				video::S3DVertex(2.249998, -1.500001, 3.774997, 0.000000, -1.000000, -0.000001,c, 0.153846, -0.000000),
+				video::S3DVertex(-2.250000, -1.500000, 0.024998, 0.000000, -1.000000, -0.000001,c, 0.000000, 0.142857),
+				video::S3DVertex(2.249998, -1.500001, 3.774997, -0.000001, -1.000000, 0.000000,c, 0.153846, -0.000000),
+				video::S3DVertex(-2.250000, -1.499999, 3.774997, -0.000001, -1.000000, 0.000000,c, 0.000000, 0.000000),
+				video::S3DVertex(-2.250000, -1.500000, 0.024998, -0.000001, -1.000000, 0.000000,c, 0.000000, 0.142857),
+				video::S3DVertex(2.249999, 1.500000, 0.024998, 1.000000, 0.000001, -0.000000,c, 0.246154, 0.142857),
+				video::S3DVertex(2.250001, 1.499998, 3.774997, 1.000000, 0.000001, -0.000000,c, 0.246154, 0.000000),
+				video::S3DVertex(2.250001, -1.499999, 0.024998, 1.000000, 0.000001, -0.000000,c, 0.169231, 0.142857),
+				video::S3DVertex(2.250001, 1.499998, 3.774997, 1.000000, -0.000001, 0.000001,c, 0.246154, 0.000000),
+				video::S3DVertex(2.249998, -1.500001, 3.774997, 1.000000, -0.000001, 0.000001,c, 0.169231, 0.000000),
+				video::S3DVertex(2.250001, -1.499999, 0.024998, 1.000000, -0.000001, 0.000001,c, 0.169231, 0.142857),
+				video::S3DVertex(2.250001, 1.499998, 3.774997, -0.000000, -0.000000, 1.000000,c, 0.523077, 0.142857),
+				video::S3DVertex(-2.250000, 1.499999, 3.774997, -0.000000, -0.000000, 1.000000,c, 0.676923, 0.142857),
+				video::S3DVertex(-2.250000, -1.499999, 3.774997, -0.000000, -0.000000, 1.000000,c, 0.676923, 0.053571),
+				video::S3DVertex(2.249998, -1.500001, 3.774997, 0.000000, -0.000000, 1.000000,c, 0.523077, 0.053571),
+				video::S3DVertex(2.249999, 1.500000, 0.024998, 0.000000, 0.000000, -1.000000,c, 0.692308, 0.053571),
+				video::S3DVertex(2.250001, -1.499999, 0.024998, 0.000000, 0.000000, -1.000000,c, 0.692308, 0.142857),
+				video::S3DVertex(-2.250000, -1.500000, 0.024998, 0.000000, 0.000000, -1.000000,c, 0.846154, 0.142857),
+				video::S3DVertex(-2.250000, 1.500001, 0.024998, 0.000000, 0.000000, -1.000000,c, 0.846154, 0.053571),
+			};
+			u16 indices[] = {0, 1, 2, 
+						3, 4, 5, 
+						6, 7, 8, 
+						6, 8, 9, 
+						10, 11, 12, 
+						13, 14, 15, 
+						16, 17, 18, 
+						19, 20, 21, 
+						22, 23, 24, 
+						22, 24, 25, 
+						26, 27, 28, 
+						26, 28, 29};
+			buf->append(vertices, 30, indices, 36);
+			// Set material
+			buf->getMaterial().setFlag(video::EMF_LIGHTING, false);
+			buf->getMaterial().setFlag(video::EMF_BILINEAR_FILTER, false);
+			buf->getMaterial().setFlag(video::EMF_FOG_ENABLE, true);
+			//buf->getMaterial().MaterialType = video::EMT_TRANSPARENT_ALPHA_CHANNEL;
+			// Add to mesh
+			mesh->addMeshBuffer(buf);
+			buf->drop();
+			
+			m_head = smgr->addMeshSceneNode(mesh, NULL);
+			m_head->setPosition(v3f(0,0,0));
+			m_head->setRotation(v3f(-90,0,0));
+
+			// Set it to use the materials of the meshbuffers directly.
+			// This is needed for changing the texture in the future
+			m_head->setReadOnlyMaterials(true);
+			updateNodePos();
+			}
+
+			{ // Leg-Left
+			scene::SMesh *mesh = new scene::SMesh();
+			scene::IMeshBuffer *buf = new scene::SMeshBuffer();
+			video::SColor c(255,255,255,255);
+			video::S3DVertex vertices[28] =
+			{
+				video::S3DVertex(-0.144449, 1.124999, 0.224998, 0.000000, 1.000000, 0.000000,c, 0.292308, 0.732143),
+				video::S3DVertex(-0.144450, 1.125000, -8.025005, 0.000000, 1.000000, 0.000000,c, 0.292308, 1.000000),
+				video::S3DVertex(-2.995950, 1.125000, -8.025005, 0.000000, 1.000000, 0.000000,c, 0.384615, 1.000000),
+				video::S3DVertex(-2.995950, 1.125000, 0.224998, 0.000000, 1.000000, 0.000000,c, 0.384615, 0.732143),
+				video::S3DVertex(-2.995950, -1.125000, -8.025005, -1.000000, 0.000000, -0.000000,c, 0.276923, 1.000000),
+				video::S3DVertex(-2.995950, -1.124999, 0.224998, -1.000000, 0.000000, -0.000000,c, 0.276923, 0.732143),
+				video::S3DVertex(-2.995950, 1.125000, -8.025005, -1.000000, 0.000000, -0.000000,c, 0.200000, 1.000000),
+				video::S3DVertex(-2.995950, 1.125000, 0.224998, -1.000000, 0.000000, -0.000000,c, 0.200000, 0.732143),
+				video::S3DVertex(-0.144450, -1.125000, -8.025005, -0.000001, -1.000000, -0.000000,c, 0.092308, 1.000000),
+				video::S3DVertex(-0.144451, -1.125001, 0.224998, -0.000001, -1.000000, -0.000000,c, 0.092308, 0.732143),
+				video::S3DVertex(-2.995950, -1.124999, 0.224998, -0.000001, -1.000000, -0.000000,c, 0.000000, 0.732143),
+				video::S3DVertex(-0.144450, -1.125000, -8.025005, -0.000000, -1.000000, 0.000000,c, 0.092308, 1.000000),
+				video::S3DVertex(-2.995950, -1.124999, 0.224998, -0.000000, -1.000000, 0.000000,c, 0.000000, 0.732143),
+				video::S3DVertex(-2.995950, -1.125000, -8.025005, -0.000000, -1.000000, 0.000000,c, 0.000000, 1.000000),
+				video::S3DVertex(-0.144450, 1.125000, -8.025005, 1.000000, -0.000000, -0.000000,c, 0.184615, 1.000000),
+				video::S3DVertex(-0.144449, 1.124999, 0.224998, 1.000000, -0.000000, -0.000000,c, 0.184615, 0.732143),
+				video::S3DVertex(-0.144450, -1.125000, -8.025005, 1.000000, -0.000000, -0.000000,c, 0.107692, 1.000000),
+				video::S3DVertex(-0.144449, 1.124999, 0.224998, 1.000000, -0.000001, 0.000000,c, 0.184615, 0.732143),
+				video::S3DVertex(-0.144451, -1.125001, 0.224998, 1.000000, -0.000001, 0.000000,c, 0.107692, 0.732143),
+				video::S3DVertex(-0.144450, -1.125000, -8.025005, 1.000000, -0.000001, 0.000000,c, 0.107692, 1.000000),
+				video::S3DVertex(-0.144449, 1.124999, 0.224998, -0.000000, 0.000000, 1.000000,c, 0.400000, 0.892857),
+				video::S3DVertex(-2.995950, 1.125000, 0.224998, -0.000000, 0.000000, 1.000000,c, 0.492308, 0.892857),
+				video::S3DVertex(-2.995950, -1.124999, 0.224998, -0.000000, 0.000000, 1.000000,c, 0.492308, 0.803656),
+				video::S3DVertex(-0.144451, -1.125001, 0.224998, 0.000000, -0.000000, 1.000000,c, 0.400000, 0.803656),
+				video::S3DVertex(-0.144450, 1.125000, -8.025005, 0.000000, 0.000000, -1.000000,c, 0.400000, 1.000000),
+				video::S3DVertex(-0.144450, -1.125000, -8.025005, 0.000000, 0.000000, -1.000000,c, 0.492308, 1.000000),
+				video::S3DVertex(-2.995950, -1.125000, -8.025005, 0.000000, 0.000000, -1.000000,c, 0.492308, 0.910714),
+				video::S3DVertex(-2.995950, 1.125000, -8.025005, 0.000000, -0.000000, -1.000000,c, 0.400000, 0.910714),
+			};
+			u16 indices[] = {0, 1, 2, 
+							0, 2, 3, 
+							4, 5, 6, 
+							5, 7, 6, 
+							8, 9, 10, 
+							11, 12, 13, 
+							14, 15, 16, 
+							17, 18, 19, 
+							20, 21, 22, 
+							20, 22, 23, 
+							24, 25, 26, 
+							24, 26, 27};
+			buf->append(vertices, 28, indices, 36);
+			// Set material
+			buf->getMaterial().setFlag(video::EMF_LIGHTING, false);
+			buf->getMaterial().setFlag(video::EMF_BILINEAR_FILTER, false);
+			buf->getMaterial().setFlag(video::EMF_FOG_ENABLE, true);
+			//buf->getMaterial().MaterialType = video::EMT_TRANSPARENT_ALPHA_CHANNEL;
+			// Add to mesh
+			mesh->addMeshBuffer(buf);
+			buf->drop();
+			
+			m_leg_l = smgr->addMeshSceneNode(mesh, NULL);
+			m_leg_l->setPosition(v3f(0,0,0));
+			m_leg_l->setRotation(v3f(-90,0,0));
+			
+			// Set it to use the materials of the meshbuffers directly.
+			// This is needed for changing the texture in the future
+			m_leg_l->setReadOnlyMaterials(true);
+			updateNodePos();
+			}
+
+			{ // Leg-Right
+			scene::SMesh *mesh = new scene::SMesh();
+			scene::IMeshBuffer *buf = new scene::SMeshBuffer();
+			video::SColor c(255,255,255,255);
+			video::S3DVertex vertices[28] =
+			{
+				video::S3DVertex(2.995751, 1.124999, 0.224998, 0.000000, 1.000000, 0.000000,c, 0.615385, 0.732143),
+				video::S3DVertex(2.995750, 1.125000, -8.025005, 0.000000, 1.000000, 0.000000,c, 0.615385, 1.000000),
+				video::S3DVertex(0.144250, 1.125000, -8.025005, 0.000000, 1.000000, 0.000000,c, 0.707692, 1.000000),
+				video::S3DVertex(0.144250, 1.125000, 0.224998, 0.000000, 1.000000, 0.000000,c, 0.707692, 0.732143),
+				video::S3DVertex(0.144249, -1.125000, -8.025005, -1.000000, 0.000000, -0.000000,c, 0.892308, 1.000000),
+				video::S3DVertex(0.144249, -1.124999, 0.224998, -1.000000, 0.000000, -0.000000,c, 0.892308, 0.732143),
+				video::S3DVertex(0.144250, 1.125000, -8.025005, -1.000000, 0.000000, -0.000000,c, 0.815385, 1.000000),
+				video::S3DVertex(0.144250, 1.125000, 0.224998, -1.000000, 0.000000, -0.000000,c, 0.815385, 0.732143),
+				video::S3DVertex(2.995750, -1.125000, -8.025005, -0.000001, -1.000000, -0.000000,c, 1.000000, 1.000000),
+				video::S3DVertex(2.995749, -1.125001, 0.224998, -0.000001, -1.000000, -0.000000,c, 1.000000, 0.732143),
+				video::S3DVertex(0.144249, -1.124999, 0.224998, -0.000001, -1.000000, -0.000000,c, 0.907692, 0.732143),
+				video::S3DVertex(2.995750, -1.125000, -8.025005, -0.000000, -1.000000, 0.000000,c, 1.000000, 1.000000),
+				video::S3DVertex(0.144249, -1.124999, 0.224998, -0.000000, -1.000000, 0.000000,c, 0.907692, 0.732143),
+				video::S3DVertex(0.144249, -1.125000, -8.025005, -0.000000, -1.000000, 0.000000,c, 0.907692, 1.000000),
+				video::S3DVertex(2.995750, 1.125000, -8.025005, 1.000000, 0.000000, -0.000000,c, 0.800022, 1.000000),
+				video::S3DVertex(2.995751, 1.124999, 0.224998, 1.000000, 0.000000, -0.000000,c, 0.800000, 0.732143),
+				video::S3DVertex(2.995750, -1.125000, -8.025005, 1.000000, 0.000000, -0.000000,c, 0.723055, 1.000000),
+				video::S3DVertex(2.995751, 1.124999, 0.224998, 1.000000, -0.000001, 0.000000,c, 0.800000, 0.732143),
+				video::S3DVertex(2.995749, -1.125001, 0.224998, 1.000000, -0.000001, 0.000000,c, 0.723055, 0.732143),
+				video::S3DVertex(2.995750, -1.125000, -8.025005, 1.000000, -0.000001, 0.000000,c, 0.723055, 1.000000),
+				video::S3DVertex(2.995751, 1.124999, 0.224998, -0.000000, 0.000000, 1.000000,c, 0.600000, 0.803571),
+				video::S3DVertex(0.144250, 1.125000, 0.224998, -0.000000, 0.000000, 1.000000,c, 0.507692, 0.803571),
+				video::S3DVertex(0.144249, -1.124999, 0.224998, -0.000000, 0.000000, 1.000000,c, 0.507692, 0.892857),
+				video::S3DVertex(2.995749, -1.125001, 0.224998, 0.000000, -0.000000, 1.000000,c, 0.600000, 0.892857),
+				video::S3DVertex(2.995750, 1.125000, -8.025005, 0.000000, 0.000000, -1.000000,c, 0.600000, 0.910714),
+				video::S3DVertex(2.995750, -1.125000, -8.025005, 0.000000, 0.000000, -1.000000,c, 0.507659, 0.910714),
+				video::S3DVertex(0.144249, -1.125000, -8.025005, 0.000000, 0.000000, -1.000000,c, 0.507659, 1.000000),
+				video::S3DVertex(0.144250, 1.125000, -8.025005, 0.000000, -0.000000, -1.000000,c, 0.600000, 1.000000),
+			};
+			u16 indices[] = {0, 1, 2, 
+							0, 2, 3, 
+							4, 5, 6, 
+							5, 7, 6, 
+							8, 9, 10, 
+							11, 12, 13, 
+							14, 15, 16, 
+							17, 18, 19, 
+							20, 21, 22, 
+							20, 22, 23, 
+							24, 25, 26, 
+							24, 26, 27};
+			buf->append(vertices, 28, indices, 36);
+			// Set material
+			buf->getMaterial().setFlag(video::EMF_LIGHTING, false);
+			buf->getMaterial().setFlag(video::EMF_BILINEAR_FILTER, false);
+			buf->getMaterial().setFlag(video::EMF_FOG_ENABLE, true);
+			//buf->getMaterial().MaterialType = video::EMT_TRANSPARENT_ALPHA_CHANNEL;
+			// Add to mesh
+			mesh->addMeshBuffer(buf);
+			buf->drop();
+			
+			m_leg_r = smgr->addMeshSceneNode(mesh, NULL);
+			m_leg_r->setPosition(v3f(0,0,0));
+			m_leg_r->setRotation(v3f(-90,0,0));
+			
+			// Set it to use the materials of the meshbuffers directly.
+			// This is needed for changing the texture in the future
+			m_leg_r->setReadOnlyMaterials(true);
+			updateNodePos();
+			}
+			
+			{ // Arm-Left
+			scene::SMesh *mesh = new scene::SMesh();
+			scene::IMeshBuffer *buf = new scene::SMeshBuffer();
+			video::SColor c(255,255,255,255);
+			video::S3DVertex vertices[28] =
+			{
+				video::S3DVertex(-3.049999, 1.124999, 0.300000, 0.000000, 1.000000, 0.000000,c, 0.261538, 0.160714),
+				video::S3DVertex(-3.049999, 1.125000, -7.200000, 0.000000, 1.000000, 0.000000,c, 0.261538, 0.428571),
+				video::S3DVertex(-4.849999, 1.125001, -7.200000, 0.000000, 1.000000, 0.000000,c, 0.323077, 0.428644),
+				video::S3DVertex(-3.049999, 1.124999, 0.300000, 0.000001, 1.000000, 0.000000,c, 0.261538, 0.160714),
+				video::S3DVertex(-4.849999, 1.125001, -7.200000, 0.000001, 1.000000, 0.000000,c, 0.323077, 0.428644),
+				video::S3DVertex(-4.849999, 1.125000, 0.300000, 0.000001, 1.000000, 0.000000,c, 0.323077, 0.160714),
+				video::S3DVertex(-4.849999, -1.125000, -7.200000, -1.000000, 0.000000, -0.000000,c, 0.246154, 0.428571),
+				video::S3DVertex(-4.850000, -1.124999, 0.300000, -1.000000, 0.000000, -0.000000,c, 0.246154, 0.160714),
+				video::S3DVertex(-4.849999, 1.125001, -7.200000, -1.000000, 0.000000, -0.000000,c, 0.169231, 0.428571),
+				video::S3DVertex(-4.849999, 1.125000, 0.300000, -1.000000, 0.000000, 0.000000,c, 0.169231, 0.160714),
+				video::S3DVertex(-3.049999, -1.125000, -7.200000, -0.000001, -1.000000, -0.000000,c, 0.061538, 0.428571),
+				video::S3DVertex(-3.050000, -1.125001, 0.300000, -0.000001, -1.000000, -0.000000,c, 0.061538, 0.160714),
+				video::S3DVertex(-4.850000, -1.124999, 0.300000, -0.000001, -1.000000, -0.000000,c, 0.000000, 0.160714),
+				video::S3DVertex(-3.049999, -1.125000, -7.200000, -0.000000, -1.000000, 0.000000,c, 0.061538, 0.428571),
+				video::S3DVertex(-4.850000, -1.124999, 0.300000, -0.000000, -1.000000, 0.000000,c, 0.000000, 0.160714),
+				video::S3DVertex(-4.849999, -1.125000, -7.200000, -0.000000, -1.000000, 0.000000,c, 0.000000, 0.428571),
+				video::S3DVertex(-3.049999, 1.125000, -7.200000, 1.000000, -0.000000, 0.000000,c, 0.153846, 0.428571),
+				video::S3DVertex(-3.049999, 1.124999, 0.300000, 1.000000, -0.000000, 0.000000,c, 0.153846, 0.160714),
+				video::S3DVertex(-3.049999, -1.125000, -7.200000, 1.000000, -0.000000, 0.000000,c, 0.076923, 0.428571),
+				video::S3DVertex(-3.050000, -1.125001, 0.300000, 1.000000, -0.000000, 0.000000,c, 0.076923, 0.160714),
+				video::S3DVertex(-3.049999, 1.124999, 0.300000, -0.000000, 0.000000, 1.000000,c, 0.400000, 0.232143),
+				video::S3DVertex(-4.849999, 1.125000, 0.300000, -0.000000, 0.000000, 1.000000,c, 0.338462, 0.232143),
+				video::S3DVertex(-4.850000, -1.124999, 0.300000, -0.000000, 0.000000, 1.000000,c, 0.338462, 0.321429),
+				video::S3DVertex(-3.050000, -1.125001, 0.300000, 0.000000, -0.000000, 1.000000,c, 0.400000, 0.321429),
+				video::S3DVertex(-3.049999, 1.125000, -7.200000, 0.000000, 0.000000, -1.000000,c, 0.400000, 0.428571),
+				video::S3DVertex(-3.049999, -1.125000, -7.200000, 0.000000, 0.000000, -1.000000,c, 0.400000, 0.339286),
+				video::S3DVertex(-4.849999, -1.125000, -7.200000, 0.000000, 0.000000, -1.000000,c, 0.338462, 0.339286),
+				video::S3DVertex(-4.849999, 1.125001, -7.200000, 0.000000, 0.000000, -1.000000,c, 0.338462, 0.428571),
+			};
+			u16 indices[] = {0, 1, 2, 
+							3, 4, 5, 
+							6, 7, 8, 
+							7, 9, 8, 
+							10, 11, 12, 
+							13, 14, 15, 
+							16, 17, 18, 
+							17, 19, 18, 
+							20, 21, 22, 
+							20, 22, 23, 
+							24, 25, 26, 
+							24, 26, 27};
+			buf->append(vertices, 28, indices, 36);
+			// Set material
+			buf->getMaterial().setFlag(video::EMF_LIGHTING, false);
+			buf->getMaterial().setFlag(video::EMF_BILINEAR_FILTER, false);
+			buf->getMaterial().setFlag(video::EMF_FOG_ENABLE, true);
+			//buf->getMaterial().MaterialType = video::EMT_TRANSPARENT_ALPHA_CHANNEL;
+			// Add to mesh
+			mesh->addMeshBuffer(buf);
+			buf->drop();
+			
+			m_arm_l = smgr->addMeshSceneNode(mesh, NULL);
+			m_arm_l->setPosition(v3f(0,0,0));
+			m_arm_l->setRotation(v3f(-90,0,0));
+			
+			// Set it to use the materials of the meshbuffers directly.
+			// This is needed for changing the texture in the future
+			m_arm_l->setReadOnlyMaterials(true);
+			updateNodePos();
+			}
+			
+			{ // Arm-Right
+			scene::SMesh *mesh = new scene::SMesh();
+			scene::IMeshBuffer *buf = new scene::SMeshBuffer();
+			video::SColor c(255,255,255,255);
+			video::S3DVertex vertices[28] =
+			{
+				video::S3DVertex(4.850001, 1.124999, 0.300000, 0.000000, 1.000000, 0.000000,c, 0.753846, 0.160714),
+				video::S3DVertex(4.850000, 1.125000, -7.200000, 0.000000, 1.000000, 0.000000,c, 0.753846, 0.428571),
+				video::S3DVertex(3.050001, 1.125000, -7.200000, 0.000000, 1.000000, 0.000000,c, 0.815385, 0.428571),
+				video::S3DVertex(4.850001, 1.124999, 0.300000, 0.000001, 1.000000, 0.000000,c, 0.753846, 0.160714),
+				video::S3DVertex(3.050001, 1.125000, -7.200000, 0.000001, 1.000000, 0.000000,c, 0.815385, 0.428571),
+				video::S3DVertex(3.050001, 1.125000, 0.300000, 0.000001, 1.000000, 0.000000,c, 0.815385, 0.160714),
+				video::S3DVertex(3.050000, -1.125000, -7.200000, -1.000000, 0.000000, -0.000000,c, 0.738462, 0.428571),
+				video::S3DVertex(3.050000, -1.124999, 0.300000, -1.000000, 0.000000, -0.000000,c, 0.738462, 0.160714),
+				video::S3DVertex(3.050001, 1.125000, -7.200000, -1.000000, 0.000000, -0.000000,c, 0.661538, 0.428571),
+				video::S3DVertex(3.050001, 1.125000, 0.300000, -1.000000, 0.000000, 0.000000,c, 0.661538, 0.160714),
+				video::S3DVertex(4.850000, -1.125000, -7.200000, -0.000001, -1.000000, -0.000000,c, 0.553846, 0.428571),
+				video::S3DVertex(4.850000, -1.125001, 0.300000, -0.000001, -1.000000, -0.000000,c, 0.553846, 0.160714),
+				video::S3DVertex(3.050000, -1.124999, 0.300000, -0.000001, -1.000000, -0.000000,c, 0.492308, 0.160714),
+				video::S3DVertex(4.850000, -1.125000, -7.200000, -0.000000, -1.000000, 0.000000,c, 0.553846, 0.428571),
+				video::S3DVertex(3.050000, -1.124999, 0.300000, -0.000000, -1.000000, 0.000000,c, 0.492308, 0.160714),
+				video::S3DVertex(3.050000, -1.125000, -7.200000, -0.000000, -1.000000, 0.000000,c, 0.492308, 0.428571),
+				video::S3DVertex(4.850000, 1.125000, -7.200000, 1.000000, 0.000000, -0.000000,c, 0.646154, 0.428571),
+				video::S3DVertex(4.850001, 1.124999, 0.300000, 1.000000, 0.000000, -0.000000,c, 0.646154, 0.160714),
+				video::S3DVertex(4.850000, -1.125000, -7.200000, 1.000000, 0.000000, -0.000000,c, 0.569231, 0.428571),
+				video::S3DVertex(4.850000, -1.125001, 0.300000, 1.000000, -0.000000, 0.000000,c, 0.569279, 0.160714),
+				video::S3DVertex(4.850001, 1.124999, 0.300000, -0.000000, 0.000000, 1.000000,c, 0.415385, 0.321429),
+				video::S3DVertex(3.050001, 1.125000, 0.300000, -0.000000, 0.000000, 1.000000,c, 0.476923, 0.321429),
+				video::S3DVertex(3.050000, -1.124999, 0.300000, -0.000000, 0.000000, 1.000000,c, 0.476923, 0.232143),
+				video::S3DVertex(4.850000, -1.125001, 0.300000, 0.000000, -0.000000, 1.000000,c, 0.415385, 0.232143),
+				video::S3DVertex(4.850000, 1.125000, -7.200000, 0.000000, 0.000000, -1.000000,c, 0.415385, 0.339286),
+				video::S3DVertex(4.850000, -1.125000, -7.200000, 0.000000, 0.000000, -1.000000,c, 0.415385, 0.428571),
+				video::S3DVertex(3.050000, -1.125000, -7.200000, 0.000000, 0.000000, -1.000000,c, 0.476923, 0.428571),
+				video::S3DVertex(3.050001, 1.125000, -7.200000, 0.000000, -0.000000, -1.000000,c, 0.476923, 0.339286),
+			};
+			u16 indices[] = {0, 1, 2, 
+							3, 4, 5, 
+							6, 7, 8, 
+							7, 9, 8, 
+							10, 11, 12, 
+							13, 14, 15, 
+							16, 17, 18, 
+							17, 19, 18, 
+							20, 21, 22, 
+							20, 22, 23, 
+							24, 25, 26, 
+							24, 26, 27};
+			buf->append(vertices, 28, indices, 36);
+			// Set material
+			buf->getMaterial().setFlag(video::EMF_LIGHTING, false);
+			buf->getMaterial().setFlag(video::EMF_BILINEAR_FILTER, false);
+			buf->getMaterial().setFlag(video::EMF_FOG_ENABLE, true);
+			//buf->getMaterial().MaterialType = video::EMT_TRANSPARENT_ALPHA_CHANNEL;
+			// Add to mesh
+			mesh->addMeshBuffer(buf);
+			buf->drop();
+			
+			m_arm_r = smgr->addMeshSceneNode(mesh, NULL);
+			m_arm_r->setPosition(v3f(0,0,0));
+			m_arm_r->setRotation(v3f(-90,0,0));
+			
+			// Set it to use the materials of the meshbuffers directly.
+			// This is needed for changing the texture in the future
+			m_arm_r->setReadOnlyMaterials(true);
+			updateNodePos();
+			}
+
+			updateTextures("");
+			//updateLegRot(dtime);
+			updateNodePos();
 		}
 		else if(m_prop.visual == "cube"){
 			infostream<<"GenericCAO::addToScene(): cube"<<std::endl;
@@ -818,8 +1372,8 @@ public:
 			gui::IGUIEnvironment* gui = irr->getGUIEnvironment();
 			std::wstring wname = narrow_to_wide(m_name);
 			m_textnode = smgr->addTextSceneNode(gui->getBuiltInFont(),
-					wname.c_str(), video::SColor(255,255,255,255), node);
-			m_textnode->setPosition(v3f(0, BS*1.1, 0));
+					wname.c_str(), video::SColor(255,255,255,255), m_head);
+			m_textnode->setPosition(v3f(0, 0, 5));
 		}
 		
 		updateNodePos();
@@ -844,6 +1398,82 @@ public:
 			m_spritenode->setColor(color);
 			m_spritenode->setVisible(is_visible);
 		}
+		if (m_body != NULL) {
+			m_body->setVisible(true);
+			setMeshColor(m_body->getMesh(), color);
+		}
+		if (m_head != NULL) {
+			m_head->setVisible(true);
+			setMeshColor(m_head->getMesh(), color);
+		}
+		
+		if (m_leg_l != NULL) {
+			m_leg_l->setVisible(true);
+			setMeshColor(m_leg_l->getMesh(), color);
+		}
+		
+		if (m_leg_r != NULL) {
+			m_leg_r->setVisible(true);
+			setMeshColor(m_leg_r->getMesh(), color);
+		}
+		
+		if (m_arm_l != NULL) {
+			m_arm_l->setVisible(true);
+			setMeshColor(m_arm_l->getMesh(), color);
+		}
+		
+		if (m_arm_r != NULL) {
+			m_arm_r->setVisible(true);
+			setMeshColor(m_arm_r->getMesh(), color);
+		}
+	}
+
+	float updateHeadPitch(float pitch) {
+		if (pitch > 75) {
+			return 75-90;
+		}
+		else if (pitch < -75) {
+			return -75-90;
+		}
+		else {
+			return pitch-90;
+		}
+		return false;
+	}
+
+	void updateLegRot(float dtime) {
+		v3f real_pos = pos_translator.vect_show;
+		v3f real_old_pos = old_pos_translator.vect_show;
+		
+		m_speed = (real_pos.X-real_old_pos.X+real_pos.Z-real_old_pos.Z)/2;
+		if (m_speed < 0) {
+			m_speed = -m_speed;
+		}
+		
+		if (m_speed > 0.5) {
+			m_leg_rot = sin(m_leg_rot_i)*25;
+			m_leg_rot_i += (m_speed*2.5)*dtime;
+		}
+		else {
+			if (m_leg_rot > 0) {
+				if (m_leg_rot-(50.0*dtime) < 0) {
+					m_leg_rot = 0;
+				}
+				else {
+					m_leg_rot -= 50.0*dtime;
+					m_leg_rot_i = 0;
+				}
+			}
+			else if (m_leg_rot < 0) {
+				if (m_leg_rot+(50.0*dtime) > 0) {
+					m_leg_rot = 0;
+				}
+				else {
+					m_leg_rot += 50.0*dtime;
+					m_leg_rot_i = 0;
+				}
+			}
+		}
 	}
 
 	v3s16 getLightPosition()
@@ -851,22 +1481,12 @@ public:
 		return floatToInt(m_position, BS);
 	}
 
-	void updateNodePos()
-	{
-		if(m_meshnode){
-			m_meshnode->setPosition(pos_translator.vect_show);
-			v3f rot = m_meshnode->getRotation();
-			rot.Y = -m_yaw;
-			m_meshnode->setRotation(rot);
-		}
-		if(m_spritenode){
-			m_spritenode->setPosition(pos_translator.vect_show);
-		}
-	}
-
 	void step(float dtime, ClientEnvironment *env)
 	{
 		v3f lastpos = pos_translator.vect_show;
+		old_pos_translator.translate(dtime);
+		head_translator.translate(dtime);
+		updateLegRot(dtime);
 
 		if(m_visuals_expired && m_smgr && m_irr){
 			m_visuals_expired = false;
@@ -1054,6 +1674,81 @@ public:
 							tsrc->getTextureRaw(tname));
 				}
 			}
+			else if(m_prop.visual == "player")
+			{
+				if(m_body) {
+					scene::IMesh *mesh = m_body->getMesh();
+					if(mesh){
+						{
+							std::string tname = "mt_player.png";
+							tname += mod;
+							scene::IMeshBuffer *buf = mesh->getMeshBuffer(0);
+							buf->getMaterial().setTexture(0,
+									tsrc->getTextureRaw(tname));
+						}
+					}
+				}
+				if(m_head) {
+					scene::IMesh *mesh = m_head->getMesh();
+					if(mesh){
+						{
+							std::string tname = "mt_player.png";
+							tname += mod;
+							scene::IMeshBuffer *buf = mesh->getMeshBuffer(0);
+							buf->getMaterial().setTexture(0,
+									tsrc->getTextureRaw(tname));
+						}
+					}
+				}
+				if(m_leg_l) {
+					scene::IMesh *mesh = m_leg_l->getMesh();
+					if(mesh){
+						{
+							std::string tname = "mt_player.png";
+							tname += mod;
+							scene::IMeshBuffer *buf = mesh->getMeshBuffer(0);
+							buf->getMaterial().setTexture(0,
+									tsrc->getTextureRaw(tname));
+						}
+					}
+				}
+				if(m_leg_r) {
+					scene::IMesh *mesh = m_leg_r->getMesh();
+					if(mesh){
+						{
+							std::string tname = "mt_player.png";
+							tname += mod;
+							scene::IMeshBuffer *buf = mesh->getMeshBuffer(0);
+							buf->getMaterial().setTexture(0,
+									tsrc->getTextureRaw(tname));
+						}
+					}
+				}
+				if(m_arm_l) {
+					scene::IMesh *mesh = m_arm_l->getMesh();
+					if(mesh){
+						{
+							std::string tname = "mt_player.png";
+							tname += mod;
+							scene::IMeshBuffer *buf = mesh->getMeshBuffer(0);
+							buf->getMaterial().setTexture(0,
+									tsrc->getTextureRaw(tname));
+						}
+					}
+				}
+				if(m_arm_r) {
+					scene::IMesh *mesh = m_arm_r->getMesh();
+					if(mesh){
+						{
+							std::string tname = "mt_player.png";
+							tname += mod;
+							scene::IMeshBuffer *buf = mesh->getMeshBuffer(0);
+							buf->getMaterial().setTexture(0,
+									tsrc->getTextureRaw(tname));
+						}
+					}
+				}
+			}
 		}
 	}
 
@@ -1083,11 +1778,18 @@ public:
 		}
 		else if(cmd == GENERIC_CMD_UPDATE_POSITION)
 		{
+			// pos
+			m_old_position = m_position; //old position
 			m_position = readV3F1000(is);
+			// pitch
+			//m_pitch = readF1000(is);
+			//m_pitch = updateHeadPitch(m_pitch);
 			m_velocity = readV3F1000(is);
 			m_acceleration = readV3F1000(is);
 			if(fabs(m_prop.automatic_rotate) < 0.001)
 				m_yaw = readF1000(is);
+			old_pos_translator.update(m_old_position);
+			head_translator.update(v3f(m_pitch, 0, 0));
 			bool do_interpolate = readU8(is);
 			bool is_end_position = readU8(is);
 			float update_interval = readF1000(is);
