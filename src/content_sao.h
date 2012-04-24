@@ -212,6 +212,7 @@ private:
 	// Cached privileges for enforcement
 	std::set<std::string> m_privs;
 	bool m_is_singleplayer;
+	std::string m_textures_mod;
 
 public:
 	// Some flags used by Server

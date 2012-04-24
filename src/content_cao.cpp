@@ -569,6 +569,7 @@ private:
 	v3f m_acceleration;
 	float m_yaw;
 	s16 m_hp;
+	std::string texmod;
 	SmoothTranslator pos_translator;
 	SmoothTranslator old_pos_translator;
 	SmoothTranslator head_translator;
@@ -617,6 +618,7 @@ public:
 		m_acceleration(v3f(0,0,0)),
 		m_yaw(0),
 		m_hp(1),
+		texmod(""),
 		m_tx_size(1,1),
 		m_tx_basepos(0,0),
 		m_initial_tx_basepos_set(false),
@@ -1701,9 +1703,10 @@ public:
 				scene::IMesh *mesh = m_body->getMesh();
 				if(mesh){
 					{
-						std::string tname = "mt_player.png";
+						std::string tname = "mt_player";
 						if(m_prop.textures_3d.size() >= 1)
 							tname = m_prop.textures_3d[0];
+						tname += texmod + ".png";
 						tname += mod;
 						scene::IMeshBuffer *buf = mesh->getMeshBuffer(0);
 						buf->getMaterial().setTexture(0,
@@ -1715,9 +1718,10 @@ public:
 				scene::IMesh *mesh = m_head->getMesh();
 				if(mesh){
 					{
-						std::string tname = "mt_player.png";
+						std::string tname = "mt_player";
 						if(m_prop.textures_3d.size() >= 1)
 							tname = m_prop.textures_3d[0];
+						tname += texmod + ".png";
 						tname += mod;
 						scene::IMeshBuffer *buf = mesh->getMeshBuffer(0);
 						buf->getMaterial().setTexture(0,
@@ -1729,9 +1733,10 @@ public:
 				scene::IMesh *mesh = m_leg_l->getMesh();
 				if(mesh){
 					{
-						std::string tname = "mt_player.png";
+						std::string tname = "mt_player";
 						if(m_prop.textures_3d.size() >= 1)
 							tname = m_prop.textures_3d[0];
+						tname += texmod + ".png";
 						tname += mod;
 						scene::IMeshBuffer *buf = mesh->getMeshBuffer(0);
 						buf->getMaterial().setTexture(0,
@@ -1743,9 +1748,10 @@ public:
 				scene::IMesh *mesh = m_leg_r->getMesh();
 				if(mesh){
 					{
-						std::string tname = "mt_player.png";
+						std::string tname = "mt_player";
 						if(m_prop.textures_3d.size() >= 1)
 							tname = m_prop.textures_3d[0];
+						tname += texmod + ".png";
 						tname += mod;
 						scene::IMeshBuffer *buf = mesh->getMeshBuffer(0);
 						buf->getMaterial().setTexture(0,
@@ -1757,9 +1763,10 @@ public:
 				scene::IMesh *mesh = m_arm_l->getMesh();
 				if(mesh){
 					{
-						std::string tname = "mt_player.png";
+						std::string tname = "mt_player";
 						if(m_prop.textures_3d.size() >= 1)
 							tname = m_prop.textures_3d[0];
+						tname += texmod + ".png";
 						tname += mod;
 						scene::IMeshBuffer *buf = mesh->getMeshBuffer(0);
 						buf->getMaterial().setTexture(0,
@@ -1771,9 +1778,10 @@ public:
 				scene::IMesh *mesh = m_arm_r->getMesh();
 				if(mesh){
 					{
-						std::string tname = "mt_player.png";
+						std::string tname = "mt_player";
 						if(m_prop.textures_3d.size() >= 1)
 							tname = m_prop.textures_3d[0];
+						tname += texmod + ".png";
 						tname += mod;
 						scene::IMeshBuffer *buf = mesh->getMeshBuffer(0);
 						buf->getMaterial().setTexture(0,
@@ -1825,20 +1833,6 @@ public:
 			bool do_interpolate = readU8(is);
 			bool is_end_position = readU8(is);
 			float update_interval = readF1000(is);
-			u32 texturessize = readU16(is);
-			if(texturessize > 0){
-				m_prop.textures.clear();
-				for (u32 i = 0; i < texturessize; i++) {
-					m_prop.textures.push_back(deSerializeString(is));
-				}
-			}
-			u32 texturessize_3d = readU16(is);
-			if(texturessize_3d > 0){
-				m_prop.textures_3d.clear();
-				for (u32 i = 0; i < texturessize_3d; i++) {
-					m_prop.textures_3d.push_back(deSerializeString(is));
-				}
-			}
 
 			// Place us a bit higher if we're physical, to not sink into
 			// the ground due to sucky collision detection...
@@ -1852,12 +1846,16 @@ public:
 				pos_translator.init(m_position);
 			}
 			updateNodePos();
-			updateTextures("");
 		}
 		else if(cmd == GENERIC_CMD_SET_TEXTURE_MOD)
 		{
 			std::string mod = deSerializeString(is);
 			updateTextures(mod);
+		}
+		else if(cmd == GENERIC_CMD_SET_TEXTURE)
+		{
+			texmod = deSerializeString(is);
+			updateTextures("");
 		}
 		else if(cmd == GENERIC_CMD_SET_SPRITE)
 		{

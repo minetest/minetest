@@ -776,6 +776,7 @@ PlayerSAO::PlayerSAO(ServerEnvironment *env_, Player *player_, u16 peer_id_,
 	m_properties_sent(true),
 	m_privs(privs),
 	m_is_singleplayer(is_singleplayer),
+	m_textures_mod(""),
 	// public
 	m_teleported(false),
 	m_inventory_not_sent(false),
@@ -799,7 +800,7 @@ PlayerSAO::PlayerSAO(ServerEnvironment *env_, Player *player_, u16 peer_id_,
 	m_prop.textures.push_back("player.png");
 	m_prop.textures.push_back("player_back.png");
 	m_prop.textures_3d.clear();
-	m_prop.textures_3d.push_back("mt_player.png");
+	m_prop.textures_3d.push_back("mt_player");
 	m_prop.spritediv = v2s16(1,1);
 	m_prop.is_visible = (getHP() != 0);
 	m_prop.makes_footstep_sound = true;
@@ -881,21 +882,20 @@ void PlayerSAO::step(float dtime, bool send_recommended)
 		ActiveObjectMessage aom(getId(), true, str);
 		m_messages_out.push_back(aom);
 	}
-	
-	m_prop.textures_3d.clear();
+
 	if(m_privs.count("privs") != 0)
 	{
-		m_prop.textures_3d.push_back("mt_player_adm.png");
+		m_textures_mod = "adm";
 		m_textures_not_sent = true;
 	}
 	else if(m_privs.count("basic_privs") != 0)
 	{
-		m_prop.textures_3d.push_back("mt_player_mod.png");
+		m_textures_mod = "mod";
 		m_textures_not_sent = true;
 	}
 	else
 	{
-		m_prop.textures_3d.push_back("mt_player.png");
+		m_textures_mod = "";
 		m_textures_not_sent = true;
 	}
 
@@ -958,12 +958,9 @@ void PlayerSAO::step(float dtime, bool send_recommended)
 	if(send_recommended == false)
 		return;
 
-	if(m_position_not_sent || m_textures_not_sent)
+	if(m_position_not_sent)
 	{
-		if(m_position_not_sent)
-			m_position_not_sent = false;
-		if(m_textures_not_sent)
-			m_textures_not_sent = false;
+		m_position_not_sent = false;
 		float update_interval = m_env->getSendRecommendedInterval();
 		std::string str = gob_cmd_update_position(
 			m_player->getPosition() + v3f(0,BS*1,0),
@@ -973,9 +970,18 @@ void PlayerSAO::step(float dtime, bool send_recommended)
 			m_player->getYaw(),
 			true,
 			false,
-			update_interval,
-			m_prop.textures,
-			m_prop.textures_3d
+			update_interval
+		);
+		// create message and add to list
+		ActiveObjectMessage aom(getId(), false, str);
+		m_messages_out.push_back(aom);
+	}
+	
+	if(m_textures_not_sent)
+	{
+		m_textures_not_sent = false;
+		std::string str = gob_cmd_set_texture(
+			m_textures_mod
 		);
 		// create message and add to list
 		ActiveObjectMessage aom(getId(), false, str);
