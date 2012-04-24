@@ -717,8 +717,9 @@ public:
 		m_old_position = m_position;
 		m_position = readV3F1000(is);
 		// pitch
+		m_pitch = 0;
 		//m_pitch = readF1000(is);
-		//m_pitch = updateHeadPitch(m_pitch);
+		m_pitch = updateHeadPitch(m_pitch);
 		// yaw
 		m_yaw = readF1000(is);
 		// hp
@@ -1330,9 +1331,7 @@ public:
 			m_arm_r->setReadOnlyMaterials(true);
 			//updateNodePos();
 			}
-			m_meshnode = smgr->addMeshSceneNode(mesh, NULL);
 			mesh->drop();
-			m_meshnode->setReadOnlyMaterials(true);
 
 			//updateLegRot(dtime);
 			//updateNodePos();
@@ -1377,7 +1376,7 @@ public:
 		else if(m_meshnode){
 			node = m_meshnode;
 		}
-		if(node && m_is_player && !m_is_local_player){
+		if(m_is_player && !m_is_local_player){
 			// Add a text node for showing the name
 			gui::IGUIEnvironment* gui = irr->getGUIEnvironment();
 			std::wstring wname = narrow_to_wide(m_name);
@@ -1443,7 +1442,7 @@ public:
 			return 75-90;
 		}
 		else if (pitch < -75) {
-			return -75-90;
+			return -75+90;
 		}
 		else {
 			return pitch-90;
@@ -1684,78 +1683,78 @@ public:
 							tsrc->getTextureRaw(tname));
 				}
 			}
-			else if(m_prop.visual == "player")
-			{
-				if(m_body) {
-					scene::IMesh *mesh = m_body->getMesh();
-					if(mesh){
-						{
-							std::string tname = "mt_player.png";
-							tname += mod;
-							scene::IMeshBuffer *buf = mesh->getMeshBuffer(0);
-							buf->getMaterial().setTexture(0,
-									tsrc->getTextureRaw(tname));
-						}
+		}
+		if(m_prop.visual == "player")
+		{
+			if(m_body) {
+				scene::IMesh *mesh = m_body->getMesh();
+				if(mesh){
+					{
+						std::string tname = "mt_player.png";
+						tname += mod;
+						scene::IMeshBuffer *buf = mesh->getMeshBuffer(0);
+						buf->getMaterial().setTexture(0,
+								tsrc->getTextureRaw(tname));
 					}
 				}
-				if(m_head) {
-					scene::IMesh *mesh = m_head->getMesh();
-					if(mesh){
-						{
-							std::string tname = "mt_player.png";
-							tname += mod;
-							scene::IMeshBuffer *buf = mesh->getMeshBuffer(0);
-							buf->getMaterial().setTexture(0,
-									tsrc->getTextureRaw(tname));
-						}
+			}
+			if(m_head) {
+				scene::IMesh *mesh = m_head->getMesh();
+				if(mesh){
+					{
+						std::string tname = "mt_player.png";
+						tname += mod;
+						scene::IMeshBuffer *buf = mesh->getMeshBuffer(0);
+						buf->getMaterial().setTexture(0,
+								tsrc->getTextureRaw(tname));
 					}
 				}
-				if(m_leg_l) {
-					scene::IMesh *mesh = m_leg_l->getMesh();
-					if(mesh){
-						{
-							std::string tname = "mt_player.png";
-							tname += mod;
-							scene::IMeshBuffer *buf = mesh->getMeshBuffer(0);
-							buf->getMaterial().setTexture(0,
-									tsrc->getTextureRaw(tname));
-						}
+			}
+			if(m_leg_l) {
+				scene::IMesh *mesh = m_leg_l->getMesh();
+				if(mesh){
+					{
+						std::string tname = "mt_player.png";
+						tname += mod;
+						scene::IMeshBuffer *buf = mesh->getMeshBuffer(0);
+						buf->getMaterial().setTexture(0,
+								tsrc->getTextureRaw(tname));
 					}
 				}
-				if(m_leg_r) {
-					scene::IMesh *mesh = m_leg_r->getMesh();
-					if(mesh){
-						{
-							std::string tname = "mt_player.png";
-							tname += mod;
-							scene::IMeshBuffer *buf = mesh->getMeshBuffer(0);
-							buf->getMaterial().setTexture(0,
-									tsrc->getTextureRaw(tname));
-						}
+			}
+			if(m_leg_r) {
+				scene::IMesh *mesh = m_leg_r->getMesh();
+				if(mesh){
+					{
+						std::string tname = "mt_player.png";
+						tname += mod;
+						scene::IMeshBuffer *buf = mesh->getMeshBuffer(0);
+						buf->getMaterial().setTexture(0,
+								tsrc->getTextureRaw(tname));
 					}
 				}
-				if(m_arm_l) {
-					scene::IMesh *mesh = m_arm_l->getMesh();
-					if(mesh){
-						{
-							std::string tname = "mt_player.png";
-							tname += mod;
-							scene::IMeshBuffer *buf = mesh->getMeshBuffer(0);
-							buf->getMaterial().setTexture(0,
-									tsrc->getTextureRaw(tname));
-						}
+			}
+			if(m_arm_l) {
+				scene::IMesh *mesh = m_arm_l->getMesh();
+				if(mesh){
+					{
+						std::string tname = "mt_player.png";
+						tname += mod;
+						scene::IMeshBuffer *buf = mesh->getMeshBuffer(0);
+						buf->getMaterial().setTexture(0,
+								tsrc->getTextureRaw(tname));
 					}
 				}
-				if(m_arm_r) {
-					scene::IMesh *mesh = m_arm_r->getMesh();
-					if(mesh){
-						{
-							std::string tname = "mt_player.png";
-							tname += mod;
-							scene::IMeshBuffer *buf = mesh->getMeshBuffer(0);
-							buf->getMaterial().setTexture(0,
-									tsrc->getTextureRaw(tname));
-						}
+			}
+			if(m_arm_r) {
+				scene::IMesh *mesh = m_arm_r->getMesh();
+				if(mesh){
+					{
+						std::string tname = "mt_player.png";
+						tname += mod;
+						scene::IMeshBuffer *buf = mesh->getMeshBuffer(0);
+						buf->getMaterial().setTexture(0,
+								tsrc->getTextureRaw(tname));
 					}
 				}
 			}
