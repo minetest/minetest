@@ -29,6 +29,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <IGUIStaticText.h>
 #include <IGUIFont.h>
 #include "log.h"
+#include "tile.h"
 
 const video::SColor fontcolor(255,0,0,0);
 
@@ -301,39 +302,8 @@ void GUIInventoryMenu::drawList(const ListDrawSpec &s, int phase)
 	{
 		s32 x = (i%s.geom.X) * spacing.X;
 		s32 y = (i/s.geom.X) * spacing.Y;
-		s32 x1 = x - padding.X/4;
-		s32 y1 = y - padding.Y/4;
-		s32 x2 = x + spacing.X - padding.X/2;
-		s32 y2 = y + spacing.Y - padding.Y/2;
 		v2s32 p(x,y);
-		// Borders
-		v2s32 p10(x1,y1);
-		v2s32 p01(x1,y1);
-		v2s32 p11(x2,y1);
-		v2s32 p02(x1,y2);
-		// Corners
-		v2s32 p20(x1,y2);
-		v2s32 p21(x2,y1);
 		core::rect<s32> rect = imgrect + s.pos + p;
-		// Borders
-		core::rect<s32> rect10 = imgrect10 + s.pos + p10;
-		core::rect<s32> rect01 = imgrect01 + s.pos + p01;
-		core::rect<s32> rect11 = imgrect10 + s.pos + p11;
-		core::rect<s32> rect02 = imgrect01 + s.pos + p02;
-		// Corners
-		core::rect<s32> rect20 = imgrect20 + s.pos + p20;
-		core::rect<s32> rect21 = imgrect20 + s.pos + p21;
-		video::SColor rect10color(255,55,55,55);
-		video::SColor rect01color(255,255,255,255);
-		video::SColor rect20color(255,174,174,174);
-		// Draw borders
-		driver->draw2DRectangle(rect10color, rect10, &AbsoluteClippingRect);
-		driver->draw2DRectangle(rect01color, rect11, &AbsoluteClippingRect);
-		driver->draw2DRectangle(rect10color, rect01, &AbsoluteClippingRect);
-		driver->draw2DRectangle(rect01color, rect02, &AbsoluteClippingRect);
-		// Draw corners
-		driver->draw2DRectangle(rect20color, rect20, &AbsoluteClippingRect);
-		driver->draw2DRectangle(rect20color, rect21, &AbsoluteClippingRect);
 		ItemStack item;
 		if(ilist)
 			item = ilist->getItem(i);
@@ -346,16 +316,26 @@ void GUIInventoryMenu::drawList(const ListDrawSpec &s, int phase)
 
 		if(phase == 0)
 		{
-			/*if(hovering && m_selected_item)
+				const video::SColor color(255,255,255,255);
+				const video::SColor colors[] = {color,color,color,color};
+				video::ITexture *inventory_slot_texture =
+					driver->getTexture(getTexturePath("inventory_slot.png").c_str());
+				video::ITexture *inventory_slot_hovering_texture =
+					driver->getTexture(getTexturePath("inventory_slot_hovering.png").c_str());
+			if(hovering && m_selected_item)
 			{
-				video::SColor bgcolor(255,192,192,192);
-				driver->draw2DRectangle(bgcolor, rect, &AbsoluteClippingRect);
+				driver->draw2DImage(inventory_slot_hovering_texture, rect,
+					core::rect<s32>(core::position2d<s32>(0,0), inventory_slot_hovering_texture->getOriginalSize()),
+					NULL, colors, true);
 			}
 			else
-			{*/
-				video::SColor bgcolor(255,138,138,138);
-				driver->draw2DRectangle(bgcolor, rect, &AbsoluteClippingRect);
-			//}
+			{
+				driver->draw2DImage(inventory_slot_texture, rect,
+				core::rect<s32>(core::position2d<s32>(0,0), inventory_slot_texture->getOriginalSize()),
+				NULL, colors, true);
+				//video::SColor bgcolor(255,138,138,138);
+				//driver->draw2DRectangle(bgcolor, rect, &AbsoluteClippingRect);
+			}
 		}
 
 		if(phase == 1)
@@ -425,10 +405,13 @@ void GUIInventoryMenu::drawMenu()
 	if (!skin)
 		return;
 	video::IVideoDriver* driver = Environment->getVideoDriver();
+
+	video::ITexture *inventory_background_texture =
+		driver->getTexture(getTexturePath("inventory_background.png").c_str());
+	driver->draw2DImage(inventory_background_texture, AbsoluteRect,
+		core::rect<s32>(core::position2d<s32>(0,0), inventory_background_texture->getOriginalSize()),
+		NULL, NULL, true);
 	
-	//video::SColor bgcolor(140,0,0,0);
-	video::SColor bgcolor(255,198,198,198);
-	driver->draw2DRectangle(bgcolor, AbsoluteRect, &AbsoluteClippingRect);
 
 	m_tooltip_element->setVisible(false);
 
