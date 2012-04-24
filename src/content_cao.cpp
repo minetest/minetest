@@ -650,28 +650,32 @@ public:
 			if (m_body != NULL) {
 				v3f rot = m_body->getRotation();
 				rot.Y = -m_yaw;
-				m_body->setPosition(v3f(real_pos.X+0, real_pos.Y+13.3, real_pos.Z+0));
+				//m_body->setPosition(v3f(real_pos.X+0, real_pos.Y+13.3, real_pos.Z+0));
+				m_body->setPosition(v3f(real_pos.X+0, real_pos.Y+5.3, real_pos.Z+0));
 				m_body->setRotation(rot);
 			}
 			if (m_head != NULL) {
 				v3f rot = m_head->getRotation();
 				rot.Y = -m_yaw;
 				rot.X = head_pitch.X;
-				m_head->setPosition(v3f(real_pos.X+0, real_pos.Y+16.2, real_pos.Z+0));
+				//m_head->setPosition(v3f(real_pos.X+0, real_pos.Y+16.2, real_pos.Z+0));
+				m_head->setPosition(v3f(real_pos.X+0, real_pos.Y+8.2, real_pos.Z+0));
 				m_head->setRotation(rot);
 			}
 			if (m_leg_l != NULL) {
 				v3f rot = m_leg_l->getRotation();
 				rot.Y = -m_yaw;
 				rot.X = m_leg_rot-90;
-				m_leg_l->setPosition(v3f(real_pos.X+0, real_pos.Y+8.03, real_pos.Z+0));
+				//m_leg_l->setPosition(v3f(real_pos.X+0, real_pos.Y+8.03, real_pos.Z+0));
+				m_leg_l->setPosition(v3f(real_pos.X+0, real_pos.Y+0.03, real_pos.Z+0));
 				m_leg_l->setRotation(rot);
 			}
 			if (m_leg_r != NULL) {
 				v3f rot = m_leg_r->getRotation();
 				rot.Y = -m_yaw;
 				rot.X = -m_leg_rot-90;
-				m_leg_r->setPosition(v3f(real_pos.X+0, real_pos.Y+8.03, real_pos.Z+0));
+				//m_leg_r->setPosition(v3f(real_pos.X+0, real_pos.Y+8.03, real_pos.Z+0));
+				m_leg_r->setPosition(v3f(real_pos.X+0, real_pos.Y+0.03, real_pos.Z+0));
 				m_leg_r->setRotation(rot);
 			}
 			
@@ -679,14 +683,16 @@ public:
 				v3f rot = m_arm_l->getRotation();
 				rot.Y = -m_yaw;
 				rot.X = -m_leg_rot-90;
-				m_arm_l->setPosition(v3f(real_pos.X+0, real_pos.Y+15.5, real_pos.Z+0));
+				//m_arm_l->setPosition(v3f(real_pos.X+0, real_pos.Y+15.5, real_pos.Z+0));
+				m_arm_l->setPosition(v3f(real_pos.X+0, real_pos.Y+7.5, real_pos.Z+0));
 				m_arm_l->setRotation(rot);
 			}
 			if (m_arm_r != NULL) {
 				v3f rot = m_arm_r->getRotation();
 				rot.Y = -m_yaw;
 				rot.X = m_leg_rot-90;
-				m_arm_r->setPosition(v3f(real_pos.X+0, real_pos.Y+15.5, real_pos.Z+0));
+				//m_arm_r->setPosition(v3f(real_pos.X+0, real_pos.Y+15.5, real_pos.Z+0));
+				m_arm_r->setPosition(v3f(real_pos.X+0, real_pos.Y+7.5, real_pos.Z+0));
 				m_arm_r->setRotation(rot);
 			}
 		}
@@ -890,7 +896,7 @@ public:
 			// This is needed for changing the texture in the future
 			m_meshnode->setReadOnlyMaterials(true);
 		}
-		else if(m_prop.visual == "player"){
+		else if(m_prop.visual == "player") {
 			scene::SMesh *mesh = new scene::SMesh();
 			double dx = BS*m_prop.visual_size.X/2;
 			double dy = BS*m_prop.visual_size.Y/2;
@@ -984,7 +990,7 @@ public:
 			// Set it to use the materials of the meshbuffers directly.
 			// This is needed for changing the texture in the future
 			m_body->setReadOnlyMaterials(true);
-			updateNodePos();
+			//updateNodePos();
 			}
 
 			{ // Head
@@ -1054,7 +1060,7 @@ public:
 			// Set it to use the materials of the meshbuffers directly.
 			// This is needed for changing the texture in the future
 			m_head->setReadOnlyMaterials(true);
-			updateNodePos();
+			//updateNodePos();
 			}
 
 			{ // Leg-Left
@@ -1121,7 +1127,7 @@ public:
 			// Set it to use the materials of the meshbuffers directly.
 			// This is needed for changing the texture in the future
 			m_leg_l->setReadOnlyMaterials(true);
-			updateNodePos();
+			//updateNodePos();
 			}
 
 			{ // Leg-Right
@@ -1188,7 +1194,7 @@ public:
 			// Set it to use the materials of the meshbuffers directly.
 			// This is needed for changing the texture in the future
 			m_leg_r->setReadOnlyMaterials(true);
-			updateNodePos();
+			//updateNodePos();
 			}
 			
 			{ // Arm-Left
@@ -1255,7 +1261,7 @@ public:
 			// Set it to use the materials of the meshbuffers directly.
 			// This is needed for changing the texture in the future
 			m_arm_l->setReadOnlyMaterials(true);
-			updateNodePos();
+			//updateNodePos();
 			}
 			
 			{ // Arm-Right
@@ -1322,12 +1328,14 @@ public:
 			// Set it to use the materials of the meshbuffers directly.
 			// This is needed for changing the texture in the future
 			m_arm_r->setReadOnlyMaterials(true);
-			updateNodePos();
+			//updateNodePos();
 			}
+			m_meshnode = smgr->addMeshSceneNode(mesh, NULL);
+			mesh->drop();
+			m_meshnode->setReadOnlyMaterials(true);
 
-			updateTextures("");
 			//updateLegRot(dtime);
-			updateNodePos();
+			//updateNodePos();
 		}
 		else if(m_prop.visual == "cube"){
 			infostream<<"GenericCAO::addToScene(): cube"<<std::endl;
@@ -1363,10 +1371,12 @@ public:
 		updateTextures("");
 		
 		scene::ISceneNode *node = NULL;
-		if(m_spritenode)
+		if(m_spritenode){
 			node = m_spritenode;
-		else if(m_meshnode)
+		}
+		else if(m_meshnode){
 			node = m_meshnode;
+		}
 		if(node && m_is_player && !m_is_local_player){
 			// Add a text node for showing the name
 			gui::IGUIEnvironment* gui = irr->getGUIEnvironment();
