@@ -111,7 +111,7 @@ minetest.register_node("mesecons:mesecon_off", {
 	selection_box = {
 		type = "fixed",
 	},
-	groups = {snappy=0},
+	groups = {dig_immediate=3},
     	description="Mesecons",
 })
 
