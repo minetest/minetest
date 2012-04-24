@@ -705,7 +705,7 @@ public:
 		// version
 		u8 version = readU8(is);
 		// check version
-		if(version != 0){
+		if(version != 0 && version != 1){
 			errorstream<<"GenericCAO: Unsupported init data version"
 					<<std::endl;
 			return;
@@ -718,7 +718,9 @@ public:
 		m_position = readV3F1000(is);
 		// pitch
 		m_pitch = 0;
-		//m_pitch = readF1000(is);
+		if (version == 1) {
+			m_pitch = readF1000(is);
+		}
 		m_pitch = updateHeadPitch(m_pitch);
 		// yaw
 		m_yaw = readF1000(is);

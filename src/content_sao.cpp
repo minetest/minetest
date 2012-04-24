@@ -849,10 +849,11 @@ bool PlayerSAO::unlimitedTransferDistance() const
 std::string PlayerSAO::getClientInitializationData()
 {
 	std::ostringstream os(std::ios::binary);
-	writeU8(os, 0); // version
+	writeU8(os, 1); // version
 	os<<serializeString(m_player->getName()); // name
 	writeU8(os, 1); // is_player
 	writeV3F1000(os, m_player->getPosition() + v3f(0,BS*1,0));
+	writeF1000(os, m_player->getPitch());
 	writeF1000(os, m_player->getYaw());
 	writeS16(os, getHP());
 	writeU8(os, 2); // number of messages stuffed in here
