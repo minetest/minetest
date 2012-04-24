@@ -717,8 +717,9 @@ public:
 		m_old_position = m_position;
 		m_position = readV3F1000(is);
 		// pitch
+		m_pitch = 0;
 		//m_pitch = readF1000(is);
-		//m_pitch = updateHeadPitch(m_pitch);
+		m_pitch = updateHeadPitch(m_pitch);
 		// yaw
 		m_yaw = readF1000(is);
 		// hp
@@ -1443,7 +1444,7 @@ public:
 			return 75-90;
 		}
 		else if (pitch < -75) {
-			return -75-90;
+			return -75+90;
 		}
 		else {
 			return pitch-90;
