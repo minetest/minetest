@@ -37,6 +37,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "sound.h"
 #include "nodedef.h"
 #include "localplayer.h"
+#include "settings.h"
+#include "main.h"
 class Settings;
 struct ToolCapabilities;
 
@@ -844,7 +846,7 @@ public:
 						txs, tys, 0, 0);
 			}
 		}
-		else if(m_prop.visual == "upright_sprite")
+		else if(m_prop.visual == "upright_sprite" || (m_is_player && g_settings->getBool("enable_3d_player") == false))
 		{
 			scene::SMesh *mesh = new scene::SMesh();
 			double dx = BS*m_prop.visual_size.X/2;
@@ -1382,12 +1384,12 @@ public:
 			// Add a text node for showing the name
 			gui::IGUIEnvironment* gui = irr->getGUIEnvironment();
 			std::wstring wname = narrow_to_wide(m_name);
-			if(m_prop.visual == "player" && m_head){
+			if((m_prop.visual == "player" || (m_is_player && g_settings->getBool("enable_3d_player") == true)) && m_head){
 				m_textnode = smgr->addTextSceneNode(gui->getBuiltInFont(),
 						wname.c_str(), video::SColor(255,255,255,255), m_head);
 				m_textnode->setPosition(v3f(0, 0, 5));
 			}
-			else if(m_prop.visual == "upright_sprite" && node){
+			else if((m_prop.visual == "upright_sprite" || (m_is_player && g_settings->getBool("enable_3d_player") == false)) && node){
 				m_textnode = smgr->addTextSceneNode(gui->getBuiltInFont(),
 						wname.c_str(), video::SColor(255,255,255,255), node);
 				m_textnode->setPosition(v3f(0, BS*1.1, 0));
@@ -1668,7 +1670,7 @@ public:
 					material.getTextureMatrix(0).setTextureScale(size.X, size.Y);
 				}
 			}
-			else if(m_prop.visual == "upright_sprite")
+			else if(m_prop.visual == "upright_sprite" || (m_is_player && g_settings->getBool("enable_3d_player") == false))
 			{
 				scene::IMesh *mesh = m_meshnode->getMesh();
 				{
