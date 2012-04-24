@@ -204,6 +204,7 @@ private:
 	float m_time_from_last_punch;
 	int m_wield_index;
 	bool m_position_not_sent;
+	bool m_textures_not_sent;
 	ItemGroupList m_armor_groups;
 	bool m_armor_groups_sent;
 	bool m_properties_sent;

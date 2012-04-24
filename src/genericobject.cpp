@@ -65,6 +65,58 @@ std::string gob_cmd_update_position(
 	writeU8(os, is_movement_end);
 	// update_interval (for interpolation)
 	writeF1000(os, update_interval);
+	// length of textures (0)
+	writeU16(os, 0);
+	// As the client doesn't try to figure out what is inside (for i=0;i<0;i++), we can skip writing strings
+	// length of 3D textures (0)
+	writeU16(os, 0);
+	// Same thing applies here
+	return os.str();
+}
+
+std::string gob_cmd_update_position(
+	v3f position,
+	v3f velocity,
+	v3f acceleration,
+	f32 pitch,
+	f32 yaw,
+	bool do_interpolate,
+	bool is_movement_end,
+	f32 update_interval,
+	core::array<std::string> textures,
+	core::array<std::string> textures_3d
+){
+	std::ostringstream os(std::ios::binary);
+	// command
+	writeU8(os, GENERIC_CMD_UPDATE_POSITION);
+	// pos
+	writeV3F1000(os, position);
+	// velocity
+	writeV3F1000(os, velocity);
+	// acceleration
+	writeV3F1000(os, acceleration);
+	// pitch
+	writeF1000(os, pitch);
+	// yaw
+	writeF1000(os, yaw);
+	// do_interpolate
+	writeU8(os, do_interpolate);
+	// is_end_position (for interpolation)
+	writeU8(os, is_movement_end);
+	// update_interval (for interpolation)
+	writeF1000(os, update_interval);
+	// length of textures
+	writeU16(os, textures.size());
+	// textures
+	for(u32 i=0; i<textures.size(); i++){
+		os<<serializeString(textures[i]);
+	}
+	// length of 3D textures
+	writeU16(os, textures_3d.size());
+	// 3D textures
+	for(u32 i=0; i<textures_3d.size(); i++){
+		os<<serializeString(textures_3d[i]);
+	}
 	return os.str();
 }
 

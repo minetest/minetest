@@ -46,6 +46,20 @@ std::string gob_cmd_update_position(
 	f32 update_interval
 );
 
+
+std::string gob_cmd_update_position(
+	v3f position,
+	v3f velocity,
+	v3f acceleration,
+	f32 pitch,
+	f32 yaw,
+	bool do_interpolate,
+	bool is_movement_end,
+	f32 update_interval,
+	core::array<std::string> textures,
+	core::array<std::string> textures_3d
+);
+
 std::string gob_cmd_set_texture_mod(const std::string &mod);
 
 std::string gob_cmd_set_sprite(

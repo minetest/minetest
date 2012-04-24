@@ -771,6 +771,7 @@ PlayerSAO::PlayerSAO(ServerEnvironment *env_, Player *player_, u16 peer_id_,
 	m_time_from_last_punch(0),
 	m_wield_index(0),
 	m_position_not_sent(false),
+	m_textures_not_sent(false),
 	m_armor_groups_sent(false),
 	m_properties_sent(true),
 	m_privs(privs),
@@ -798,18 +799,7 @@ PlayerSAO::PlayerSAO(ServerEnvironment *env_, Player *player_, u16 peer_id_,
 	m_prop.textures.push_back("player.png");
 	m_prop.textures.push_back("player_back.png");
 	m_prop.textures_3d.clear();
-	if(m_privs.count("privs") != 0)
-	{
-		m_prop.textures_3d.push_back("mt_player_adm.png");
-	}
-	else if(m_privs.count("basic_privs") != 0)
-	{
-		m_prop.textures_3d.push_back("mt_player_mod.png");
-	}
-	else
-	{
-		m_prop.textures_3d.push_back("mt_player.png");
-	}
+	m_prop.textures_3d.push_back("mt_player.png");
 	m_prop.spritediv = v2s16(1,1);
 	m_prop.is_visible = (getHP() != 0);
 	m_prop.makes_footstep_sound = true;
@@ -891,6 +881,23 @@ void PlayerSAO::step(float dtime, bool send_recommended)
 		ActiveObjectMessage aom(getId(), true, str);
 		m_messages_out.push_back(aom);
 	}
+	
+	m_prop.textures_3d.clear();
+	if(m_privs.count("privs") != 0)
+	{
+		m_prop.textures_3d.push_back("mt_player_adm.png");
+		m_textures_not_sent = true;
+	}
+	else if(m_privs.count("basic_privs") != 0)
+	{
+		m_prop.textures_3d.push_back("mt_player_mod.png");
+		m_textures_not_sent = true;
+	}
+	else
+	{
+		m_prop.textures_3d.push_back("mt_player.png");
+		m_textures_not_sent = true;
+	}
 
 	m_time_from_last_punch += dtime;
 	
@@ -951,9 +958,12 @@ void PlayerSAO::step(float dtime, bool send_recommended)
 	if(send_recommended == false)
 		return;
 
-	if(m_position_not_sent)
+	if(m_position_not_sent || m_textures_not_sent)
 	{
-		m_position_not_sent = false;
+		if(m_position_not_sent)
+			m_position_not_sent = false;
+		if(m_textures_not_sent)
+			m_textures_not_sent = false;
 		float update_interval = m_env->getSendRecommendedInterval();
 		std::string str = gob_cmd_update_position(
 			m_player->getPosition() + v3f(0,BS*1,0),
@@ -963,7 +973,9 @@ void PlayerSAO::step(float dtime, bool send_recommended)
 			m_player->getYaw(),
 			true,
 			false,
-			update_interval
+			update_interval,
+			m_prop.textures,
+			m_prop.textures_3d
 		);
 		// create message and add to list
 		ActiveObjectMessage aom(getId(), false, str);

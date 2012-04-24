@@ -1825,6 +1825,20 @@ public:
 			bool do_interpolate = readU8(is);
 			bool is_end_position = readU8(is);
 			float update_interval = readF1000(is);
+			u32 texturessize = readU16(is);
+			if(texturessize > 0){
+				m_prop.textures.clear();
+				for (u32 i = 0; i < texturessize; i++) {
+					m_prop.textures.push_back(deSerializeString(is));
+				}
+			}
+			u32 texturessize_3d = readU16(is);
+			if(texturessize_3d > 0){
+				m_prop.textures_3d.clear();
+				for (u32 i = 0; i < texturessize_3d; i++) {
+					m_prop.textures_3d.push_back(deSerializeString(is));
+				}
+			}
 
 			// Place us a bit higher if we're physical, to not sink into
 			// the ground due to sucky collision detection...
@@ -1838,6 +1852,7 @@ public:
 				pos_translator.init(m_position);
 			}
 			updateNodePos();
+			updateTextures("");
 		}
 		else if(cmd == GENERIC_CMD_SET_TEXTURE_MOD)
 		{
