@@ -1702,6 +1702,8 @@ public:
 				if(mesh){
 					{
 						std::string tname = "mt_player.png";
+						if(m_prop.textures_3d.size() >= 1)
+							tname = m_prop.textures_3d[0];
 						tname += mod;
 						scene::IMeshBuffer *buf = mesh->getMeshBuffer(0);
 						buf->getMaterial().setTexture(0,
@@ -1714,6 +1716,8 @@ public:
 				if(mesh){
 					{
 						std::string tname = "mt_player.png";
+						if(m_prop.textures_3d.size() >= 1)
+							tname = m_prop.textures_3d[0];
 						tname += mod;
 						scene::IMeshBuffer *buf = mesh->getMeshBuffer(0);
 						buf->getMaterial().setTexture(0,
@@ -1726,6 +1730,8 @@ public:
 				if(mesh){
 					{
 						std::string tname = "mt_player.png";
+						if(m_prop.textures_3d.size() >= 1)
+							tname = m_prop.textures_3d[0];
 						tname += mod;
 						scene::IMeshBuffer *buf = mesh->getMeshBuffer(0);
 						buf->getMaterial().setTexture(0,
@@ -1738,6 +1744,8 @@ public:
 				if(mesh){
 					{
 						std::string tname = "mt_player.png";
+						if(m_prop.textures_3d.size() >= 1)
+							tname = m_prop.textures_3d[0];
 						tname += mod;
 						scene::IMeshBuffer *buf = mesh->getMeshBuffer(0);
 						buf->getMaterial().setTexture(0,
@@ -1750,6 +1758,8 @@ public:
 				if(mesh){
 					{
 						std::string tname = "mt_player.png";
+						if(m_prop.textures_3d.size() >= 1)
+							tname = m_prop.textures_3d[0];
 						tname += mod;
 						scene::IMeshBuffer *buf = mesh->getMeshBuffer(0);
 						buf->getMaterial().setTexture(0,
@@ -1762,6 +1772,8 @@ public:
 				if(mesh){
 					{
 						std::string tname = "mt_player.png";
+						if(m_prop.textures_3d.size() >= 1)
+							tname = m_prop.textures_3d[0];
 						tname += mod;
 						scene::IMeshBuffer *buf = mesh->getMeshBuffer(0);
 						buf->getMaterial().setTexture(0,

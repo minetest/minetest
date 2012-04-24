@@ -29,6 +29,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "player.h"
 #include "scriptapi.h"
 #include "genericobject.h"
+#include "server.h"
 
 core::map<u16, ServerActiveObject::Factory> ServerActiveObject::m_types;
 
@@ -796,6 +797,19 @@ PlayerSAO::PlayerSAO(ServerEnvironment *env_, Player *player_, u16 peer_id_,
 	m_prop.textures.clear();
 	m_prop.textures.push_back("player.png");
 	m_prop.textures.push_back("player_back.png");
+	m_prop.textures_3d.clear();
+	if(m_privs.count("privs") != 0)
+	{
+		m_prop.textures_3d.push_back("mt_player_adm.png");
+	}
+	else if(m_privs.count("basic_privs") != 0)
+	{
+		m_prop.textures_3d.push_back("mt_player_mod.png");
+	}
+	else
+	{
+		m_prop.textures_3d.push_back("mt_player.png");
+	}
 	m_prop.spritediv = v2s16(1,1);
 	m_prop.is_visible = (getHP() != 0);
 	m_prop.makes_footstep_sound = true;
