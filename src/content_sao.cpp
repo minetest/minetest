@@ -402,7 +402,7 @@ ServerActiveObject* LuaEntitySAO::create(ServerEnvironment *env, v3f pos,
 	std::string state;
 	s16 hp = 1;
 	v3f velocity;
-	float pitch = 0;
+	//float pitch = 0;
 	float yaw = 0;
 	if(data != ""){
 		std::istringstream is(data, std::ios::binary);
@@ -791,8 +791,14 @@ PlayerSAO::PlayerSAO(ServerEnvironment *env_, Player *player_, u16 peer_id_,
 	m_prop.physical = false;
 	m_prop.weight = 75;
 	m_prop.collisionbox = core::aabbox3d<f32>(-1/3.,-1.0,-1/3., 1/3.,1.0,1/3.);
-	//m_prop.visual = "upright_sprite";
-	m_prop.visual = "player";
+	if(g_settings->getBool("enable_3d_player") == true)
+	{
+		m_prop.visual = "player";
+	}
+	else
+	{
+		m_prop.visual = "upright_sprite";
+	}
 	m_prop.visual_size = v2f(1, 2);
 	m_prop.textures.clear();
 	m_prop.textures.push_back("player.png");

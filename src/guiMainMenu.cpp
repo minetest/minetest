@@ -82,6 +82,7 @@ enum
 	GUI_ID_3D_CLOUDS_CB,
 	GUI_ID_OPAQUE_WATER_CB,
 	GUI_ID_ENABLE_SOUND_CB,
+	GUI_ID_3D_PLAYER_CB,
 	GUI_ID_DAMAGE_CB,
 	GUI_ID_CREATIVE_CB,
 	GUI_ID_JOIN_GAME_BUTTON,
@@ -570,12 +571,18 @@ void GUIMainMenu::regenerateGui(v2u32 screensize)
 			Environment->addCheckBox(m_data->enable_sound, rect, this,
 					GUI_ID_ENABLE_SOUND_CB, wgettext("Enable Sound"));
 		}
+		{
+			core::rect<s32> rect(0, 0, option_w, 30);
+			rect += m_topleft_client + v2s32(option_x, option_y+20*5);
+			Environment->addCheckBox(m_data->player_3d, rect, this,
+					GUI_ID_3D_PLAYER_CB, wgettext("3D Player"));
+		}
 		// Key change button
 		{
 			core::rect<s32> rect(0, 0, 120, 30);
 			/*rect += m_topleft_client + v2s32(m_size_client.X-120-30,
 					m_size_client.Y-30-20);*/
-			rect += m_topleft_client + v2s32(option_x, option_y+120);
+			rect += m_topleft_client + v2s32(option_x, option_y+140);
 			Environment->addButton(rect, this,
 					GUI_ID_CHANGE_KEYS_BUTTON, wgettext("Change keys"));
 		}
@@ -757,6 +764,11 @@ void GUIMainMenu::readInput(MainMenuData *dst)
 		gui::IGUIElement *e = getElementFromId(GUI_ID_ENABLE_SOUND_CB);
 		if(e != NULL && e->getType() == gui::EGUIET_CHECK_BOX)
 			dst->enable_sound = ((gui::IGUICheckBox*)e)->isChecked();
+	}
+	{
+		gui::IGUIElement *e = getElementFromId(GUI_ID_3D_PLAYER_CB);
+		if(e != NULL && e->getType() == gui::EGUIET_CHECK_BOX)
+			dst->player_3d = ((gui::IGUICheckBox*)e)->isChecked();
 	}
 
 	{

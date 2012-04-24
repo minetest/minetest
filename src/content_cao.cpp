@@ -855,10 +855,10 @@ public:
 			video::SColor c(255,li,li,li);
 			video::S3DVertex vertices[4] =
 			{
-				video::S3DVertex(-BS/2,0,0, 0,0,0, c, 0,1),
-				video::S3DVertex(BS/2,0,0, 0,0,0, c, 1,1),
-				video::S3DVertex(BS/2,BS*2,0, 0,0,0, c, 1,0),
-				video::S3DVertex(-BS/2,BS*2,0, 0,0,0, c, 0,0),
+				video::S3DVertex(-dx,-dy,0, 0,0,0, c, 0,1),
+				video::S3DVertex(dx,-dy,0, 0,0,0, c, 1,1),
+				video::S3DVertex(dx,dy,0, 0,0,0, c, 1,0),
+				video::S3DVertex(-dx,dy,0, 0,0,0, c, 0,0),
 			};
 			u16 indices[] = {0,1,2,2,3,0};
 			buf->append(vertices, 4, indices, 6);
@@ -1378,13 +1378,20 @@ public:
 		else if(m_meshnode){
 			node = m_meshnode;
 		}
-		if(m_is_player && !m_is_local_player){
+		if(m_is_player && !m_is_local_player && (m_head || node)){
 			// Add a text node for showing the name
 			gui::IGUIEnvironment* gui = irr->getGUIEnvironment();
 			std::wstring wname = narrow_to_wide(m_name);
-			m_textnode = smgr->addTextSceneNode(gui->getBuiltInFont(),
-					wname.c_str(), video::SColor(255,255,255,255), m_head);
-			m_textnode->setPosition(v3f(0, 0, 5));
+			if(m_prop.visual == "player" && m_head){
+				m_textnode = smgr->addTextSceneNode(gui->getBuiltInFont(),
+						wname.c_str(), video::SColor(255,255,255,255), m_head);
+				m_textnode->setPosition(v3f(0, 0, 5));
+			}
+			else if(m_prop.visual == "upright_sprite" && node){
+				m_textnode = smgr->addTextSceneNode(gui->getBuiltInFont(),
+						wname.c_str(), video::SColor(255,255,255,255), node);
+				m_textnode->setPosition(v3f(0, BS*1.1, 0));
+			}
 		}
 		
 		updateNodePos();
