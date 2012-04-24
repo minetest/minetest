@@ -1790,11 +1790,11 @@ public:
 			// pos
 			m_old_position = m_position; //old position
 			m_position = readV3F1000(is);
-			// pitch
-			//m_pitch = readF1000(is);
-			//m_pitch = updateHeadPitch(m_pitch);
 			m_velocity = readV3F1000(is);
 			m_acceleration = readV3F1000(is);
+			// pitch
+			m_pitch = readF1000(is);
+			m_pitch = updateHeadPitch(m_pitch);
 			if(fabs(m_prop.automatic_rotate) < 0.001)
 				m_yaw = readF1000(is);
 			old_pos_translator.update(m_old_position);

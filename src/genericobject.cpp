@@ -40,6 +40,7 @@ std::string gob_cmd_update_position(
 	v3f position,
 	v3f velocity,
 	v3f acceleration,
+	f32 pitch,
 	f32 yaw,
 	bool do_interpolate,
 	bool is_movement_end,
@@ -54,6 +55,8 @@ std::string gob_cmd_update_position(
 	writeV3F1000(os, velocity);
 	// acceleration
 	writeV3F1000(os, acceleration);
+	// pitch
+	writeF1000(os, pitch);
 	// yaw
 	writeF1000(os, yaw);
 	// do_interpolate

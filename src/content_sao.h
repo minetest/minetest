@@ -68,6 +68,8 @@ public:
 	v3f getVelocity();
 	void setAcceleration(v3f acceleration);
 	v3f getAcceleration();
+	void setPitch(float pitch);
+	float getPitch();
 	void setYaw(float yaw);
 	float getYaw();
 	void setTextureMod(const std::string &mod);
@@ -86,6 +88,7 @@ private:
 	s16 m_hp;
 	v3f m_velocity;
 	v3f m_acceleration;
+	float m_pitch;
 	float m_yaw;
 	ItemGroupList m_armor_groups;
 	

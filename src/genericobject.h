@@ -39,6 +39,7 @@ std::string gob_cmd_update_position(
 	v3f position,
 	v3f velocity,
 	v3f acceleration,
+	f32 pitch,
 	f32 yaw,
 	bool do_interpolate,
 	bool is_movement_end,

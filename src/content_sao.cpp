@@ -348,6 +348,7 @@ LuaEntitySAO::LuaEntitySAO(ServerEnvironment *env, v3f pos,
 	m_hp(-1),
 	m_velocity(0,0,0),
 	m_acceleration(0,0,0),
+	m_pitch(0),
 	m_yaw(0),
 	m_properties_sent(true),
 	m_last_sent_yaw(0),
@@ -401,6 +402,7 @@ ServerActiveObject* LuaEntitySAO::create(ServerEnvironment *env, v3f pos,
 	std::string state;
 	s16 hp = 1;
 	v3f velocity;
+	float pitch = 0;
 	float yaw = 0;
 	if(data != ""){
 		std::istringstream is(data, std::ios::binary);
@@ -672,6 +674,16 @@ v3f LuaEntitySAO::getAcceleration()
 	return m_acceleration;
 }
 
+void LuaEntitySAO::setPitch(float pitch)
+{
+	m_pitch = pitch;
+}
+
+float LuaEntitySAO::getPitch()
+{
+	return m_pitch;
+}
+
 void LuaEntitySAO::setYaw(float yaw)
 {
 	m_yaw = yaw;
@@ -730,6 +742,7 @@ void LuaEntitySAO::sendPosition(bool do_interpolate, bool is_movement_end)
 		m_base_position,
 		m_velocity,
 		m_acceleration,
+		m_pitch,
 		m_yaw,
 		do_interpolate,
 		is_movement_end,
@@ -932,6 +945,7 @@ void PlayerSAO::step(float dtime, bool send_recommended)
 			m_player->getPosition() + v3f(0,BS*1,0),
 			v3f(0,0,0),
 			v3f(0,0,0),
+			m_player->getPitch(),
 			m_player->getYaw(),
 			true,
 			false,
