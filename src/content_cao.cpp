@@ -1455,7 +1455,7 @@ public:
 			return 75-90;
 		}
 		else if (pitch < -75) {
-			return -75+90;
+			return -75-90;
 		}
 		else {
 			return pitch-90;
