@@ -304,6 +304,12 @@ enum ToClientCommand
 			u16 len
 			u8[len] privilege
 	*/
+
+	TOCLIENT_HUNGER = 0x42,
+	/*
+		u16 command
+		u8 hunger
+	*/
 };
 
 enum ToServerCommand

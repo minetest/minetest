@@ -154,6 +154,8 @@ public:
 
 	u16 hp;
 
+	u16 hunger;
+
 	u16 peer_id;
 
 protected:

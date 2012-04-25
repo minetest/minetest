@@ -2190,6 +2190,13 @@ u16 Client::getHP()
 	return player->hp;
 }
 
+u16 Client::getHunger()
+{
+	Player *player = m_env.getLocalPlayer();
+	assert(player != NULL);
+	return player->hunger;
+}
+
 bool Client::getChatMessage(std::wstring &message)
 {
 	if(m_chat_queue.size() == 0)

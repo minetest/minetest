@@ -131,7 +131,7 @@ struct mapnoderandom
 void make_custom_tree(ManualMapVoxelManipulator &vmanip, v3s16 p0,
 		bool is_fruit_tree, INodeDefManager *ndef, MapNode treenode,
 		MapNode leavesnode, mapnoderandom fruitnodes[],
-		size_t fruitnodessize, s16 minrange, s16 maxrange)
+		s16 fruitnodessize, s16 minrange, s16 maxrange)
 {
 	
 	s16 trunk_h = myrand_range(minrange, maxrange);
@@ -231,7 +231,7 @@ void make_tree(ManualMapVoxelManipulator &vmanip, v3s16 p0,
 	mapnoderandom apples[1];
 	apples[0] = applestruct;
 	make_custom_tree(vmanip, p0, is_apple_tree, ndef, treenode,
-		leavesnode, apples, 1, 4, 5);
+		leavesnode, apples, 1, 4, 6);
 }
 
 void make_nether_tree(ManualMapVoxelManipulator &vmanip, v3s16 p0,
@@ -2267,6 +2267,12 @@ void make_block(BlockMakeData *data)
 			);
 			// Amount of trees
 			u32 tree_count = area * tree_amount_2d(data->seed, p2d_center);
+			float surface_humidity = surface_humidity_2d(data->seed, p2d_center);
+			bool is_jungle = surface_humidity > 0.75;
+			if(is_jungle == true)
+			{
+				tree_count *= 5;
+			}
 			// Put trees in random places on part of division
 			for(u32 i=0; i<tree_count; i++)
 			{
@@ -2291,11 +2297,19 @@ void make_block(BlockMakeData *data)
 						continue;
 				}
 				p.Y++;
-				// Make a tree
-				make_tree(vmanip, p, true, ndef);
+				if(is_jungle == true)
+				{
+					make_jungletree(vmanip, p, ndef);
+				}
+				else
+				{
+					// Make a tree
+					make_tree(vmanip, p, true, ndef);
+				}
 			}
 		}
 	}
+	
 
 #if 0
 	/*
@@ -2521,7 +2535,8 @@ void make_block(BlockMakeData *data)
 			}
 		}
 	}
-
+#endif
+#if 0
 	/*
 		If close to ground level
 	*/
@@ -2529,6 +2544,8 @@ void make_block(BlockMakeData *data)
 	//if(abs(approx_ground_depth) < 30)
 	if(minimum_ground_depth < 5 && maximum_ground_depth > -5)
 	{
+#endif
+#if 0
 		/*
 			Add grass and mud
 		*/
@@ -2617,7 +2634,8 @@ void make_block(BlockMakeData *data)
 		/*
 			Calculate some stuff
 		*/
-		
+#endif
+#if 0
 		float surface_humidity = surface_humidity_2d(data->seed, p2d_center);
 		bool is_jungle = surface_humidity > 0.75;
 		// Amount of trees
@@ -2669,18 +2687,18 @@ void make_block(BlockMakeData *data)
 				if(n->getContent() != c_dirt && n->getContent() != c_dirt_with_grass && n->getContent() != c_sand)
 						continue;
 
-				// Papyrus grows only on mud and in water
+				/*// Papyrus grows only on mud and in water
 				if(n->getContent() == c_dirt && y <= WATER_LEVEL)
 				{
 					p.Y++;
 					make_papyrus(vmanip, p, ndef);
-				}
+				}*/
 				// Trees grow only on mud and grass, on land
 				else if((n->getContent() == c_dirt || n->getContent() == c_dirt_with_grass) && y > WATER_LEVEL + 2)
 				{
 					p.Y++;
 					//if(surface_humidity_2d(data->seed, v2s16(x, y)) < 0.5)
-					if(is_jungle == false)
+					/*if(is_jungle == true)
 					{
 						bool is_apple_tree;
 						if(myrand_range(0,4) != 0)
@@ -2691,15 +2709,18 @@ void make_block(BlockMakeData *data)
 									data->seed+342902, 3, 0.45) > 0.2;
 						make_tree(vmanip, p, is_apple_tree, ndef);
 					}
-					else
+					else*/
+					if(is_jungle == true)
+					{
 						make_jungletree(vmanip, p, ndef);
+					}
 				}
-				// Cactii grow only on sand, on land
+				/*// Cactii grow only on sand, on land
 				else if(n->getContent() == c_sand && y > WATER_LEVEL + 2)
 				{
 					p.Y++;
 					make_cactus(vmanip, p, ndef);
-				}
+				}*/
 			}
 		}
 
@@ -2749,8 +2770,8 @@ void make_block(BlockMakeData *data)
 					vmanip.m_data[vmanip.m_area.index(p)] = c_junglegrass;
 			}
 		}
-
-#if 1
+#endif
+#if 0
 		/*
 			Add some kind of random stones
 		*/
@@ -2784,7 +2805,7 @@ void make_block(BlockMakeData *data)
 		}
 #endif
 
-#if 1
+#if 0
 		/*
 			Add larger stones
 		*/
@@ -2818,6 +2839,7 @@ void make_block(BlockMakeData *data)
 			make_largestone(vmanip, p);
 		}
 #endif
+#if 0
 	}
 
 	/*

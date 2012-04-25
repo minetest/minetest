@@ -34,6 +34,7 @@ Player::Player(IGameDef *gamedef):
 	camera_barely_in_ceiling(false),
 	inventory(gamedef->idef()),
 	hp(PLAYER_MAX_HP),
+	hunger(PLAYER_MAX_HUNGER),
 	peer_id(PEER_ID_INEXISTENT),
 // protected
 	m_gamedef(gamedef),
@@ -107,6 +108,7 @@ void Player::serialize(std::ostream &os)
 	args.setFloat("yaw", m_yaw);
 	args.setV3F("position", m_position);
 	args.setS32("hp", hp);
+	args.setS32("hunger", hunger);
 
 	args.writeLines(os);
 
@@ -141,7 +143,12 @@ void Player::deSerialize(std::istream &is)
 	try{
 		hp = args.getS32("hp");
 	}catch(SettingNotFoundException &e){
-		hp = 20;
+		hp = PLAYER_MAX_HP;
+	}
+	try{
+		hunger = args.getS32("hunger");
+	}catch(SettingNotFoundException &e){
+		hunger = PLAYER_MAX_HUNGER;
 	}
 
 	inventory.deSerialize(is);

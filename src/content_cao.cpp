@@ -741,7 +741,7 @@ public:
 		old_pos_translator.init(m_old_position);
 		head_translator.init(v3f(m_pitch, 0, 0));
 		updateNodePos();
-		
+
 		if(m_is_player){
 			Player *player = m_env->getPlayer(m_name.c_str());
 			if(player && player->isLocal()){
@@ -903,10 +903,8 @@ public:
 			// This is needed for changing the texture in the future
 			m_meshnode->setReadOnlyMaterials(true);
 		}
-		else if(m_prop.visual == "player") {
+		else if(m_prop.visual == "player" || (m_is_player && g_settings->getBool("enable_3d_player") == true)) {
 			scene::SMesh *mesh = new scene::SMesh();
-			double dx = BS*m_prop.visual_size.X/2;
-			double dy = BS*m_prop.visual_size.Y/2;
 			{ // Body
 			scene::IMeshBuffer *buf = new scene::SMeshBuffer();
 			u8 li = m_last_light;
