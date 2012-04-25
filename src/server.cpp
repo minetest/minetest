@@ -1327,6 +1327,8 @@ void Server::AsyncRunStep()
 			*/
 			if(playersao->getHP() == 0 && playersao->m_hp_not_sent)
 				DiePlayer(client->peer_id);
+			if(playersao->getHunger() == 0 && playersao->m_hunger_not_sent)
+				StarvePlayer(client->peer_id);
 
 			/*
 				Send player inventories and HPs if necessary
@@ -1341,6 +1343,9 @@ void Server::AsyncRunStep()
 			}
 			if(playersao->m_hp_not_sent){
 				SendPlayerHP(client->peer_id);
+			}
+			if(playersao->m_hunger_not_sent){
+				SendPlayerHunger(client->peer_id);
 			}
 		}
 	}
@@ -3542,6 +3547,15 @@ void Server::SendPlayerHP(u16 peer_id)
 	SendHP(m_con, peer_id, playersao->getHP());
 }
 
+void Server::SendPlayerHunger(u16 peer_id)
+{
+	DSTACK(__FUNCTION_NAME);
+	PlayerSAO *playersao = getPlayerSAO(peer_id);
+	assert(playersao);
+	playersao->m_hunger_not_sent = false;
+	SendHunger(m_con, peer_id, playersao->getHunger());
+}
+
 void Server::SendMovePlayer(u16 peer_id)
 {
 	DSTACK(__FUNCTION_NAME);
@@ -4234,6 +4248,25 @@ void Server::DiePlayer(u16 peer_id)
 
 	SendPlayerHP(peer_id);
 	SendDeathscreen(m_con, peer_id, false, v3f(0,0,0));
+}
+
+void Server::StarvePlayer(u16 peer_id)
+{
+	DSTACK(__FUNCTION_NAME);
+	
+	PlayerSAO *playersao = getPlayerSAO(peer_id);
+	assert(playersao);
+
+	infostream<<"Server::StarvePlayer(): Player "
+			<<playersao->getPlayer()->getName()
+			<<" is starving"<<std::endl;
+
+	playersao->setHP(playersao->getHP() - 1);
+
+	// Trigger scripted stuff
+	//scriptapi_on_dieplayer(m_lua, playersao);
+
+	SendPlayerHunger(peer_id);
 }
 
 void Server::RespawnPlayer(u16 peer_id)

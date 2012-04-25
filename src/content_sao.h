@@ -142,7 +142,9 @@ public:
 		float time_from_last_punch);
 	void rightClick(ServerActiveObject *clicker);
 	s16 getHP() const;
+	s16 getHunger() const;
 	void setHP(s16 hp);
+	void setHunger(s16 hunger);
 	
 	void setArmorGroups(const ItemGroupList &armor_groups);
 	ObjectProperties* accessObjectProperties();
@@ -219,6 +221,7 @@ public:
 	bool m_teleported;
 	bool m_inventory_not_sent;
 	bool m_hp_not_sent;
+	bool m_hunger_not_sent;
 	bool m_wielded_item_not_sent;
 };
 

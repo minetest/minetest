@@ -1078,9 +1078,14 @@ s16 PlayerSAO::getHP() const
 	return m_player->hp;
 }
 
+s16 PlayerSAO::getHunger() const
+{
+	return m_player->hunger;
+}
+
 void PlayerSAO::setHP(s16 hp)
 {
-	s16 oldhp = m_player->hp;
+	s16 oldhp = getHP();
 
 	if(hp < 0)
 		hp = 0;
@@ -1108,6 +1113,38 @@ void PlayerSAO::setHP(s16 hp)
 		ActiveObjectMessage aom(getId(), true, str);
 		m_messages_out.push_back(aom);
 	}
+}
+
+void PlayerSAO::setHunger(s16 hunger)
+{
+	s16 oldhunger = getHunger();
+
+	if(hunger < 0)
+		hunger = 0;
+	else if(hunger > PLAYER_MAX_HUNGER)
+		hunger = PLAYER_MAX_HUNGER;
+
+	if(hunger < oldhunger && g_settings->getBool("enable_damage") == false)
+	{
+		m_hunger_not_sent = true; // fix wrong prediction on client
+		return;
+	}
+
+	m_player->hunger = hunger;
+
+	if(hunger != oldhunger)
+		m_hunger_not_sent = true;
+
+	// On death or reincarnation send an active object message
+	/*if((hunger == 0) != (oldhunger == 0))
+	{
+		// Will send new is_visible value based on (getHunger()!=0)
+		m_properties_sent = false;
+		// Send new Hunger
+		std::string str = gob_cmd_punched(0, getHunger());
+		ActiveObjectMessage aom(getId(), true, str);
+		m_messages_out.push_back(aom);
+	}*/
 }
 
 void PlayerSAO::setArmorGroups(const ItemGroupList &armor_groups)
