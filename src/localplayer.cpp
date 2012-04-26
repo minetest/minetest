@@ -501,13 +501,13 @@ void LocalPlayer::applyControl(float dtime)
 	bool fast_move = fast_allowed && g_settings->getBool("fast_move");
 	bool continuous_forward = g_settings->getBool("continuous_forward");
 	
-	if (!in_water_stable || in_water)
+	if (!in_water)
 	{
 		speed.X=speed.X*0.85;
 		speed.Z=speed.Z*0.85;
 	} else {
-		speed.X=speed.X*0.65;
-		speed.Z=speed.Z*0.65;
+		speed.X=speed.X*0.5;
+		speed.Z=speed.Z*0.5;
 	}
 	if (speed.X<0 && speed.X+0.1>0) {speed.X=0;}
 	if (speed.Z<0 && speed.Z+0.1>0) {speed.Z=0;}	
