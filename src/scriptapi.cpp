@@ -2492,6 +2492,40 @@ private:
 		lua_pushnumber(L, hp);
 		return 1;
 	}
+	
+	// set_hunger(self, hunger)
+	// hunger = number of hunger icons (2 * number of hunger icons)
+	// returns: nil
+	static int l_set_hunger(lua_State *L)
+	{
+		ObjectRef *ref = checkobject(L, 1);
+		luaL_checknumber(L, 2);
+		ServerActiveObject *co = getobject(ref);
+		if(co == NULL) return 0;
+		int hunger = lua_tonumber(L, 2);
+		/*infostream<<"ObjectRef::l_set_hunger(): id="<<co->getId()
+				<<" hp="<<hp<<std::endl;*/
+		// Do it
+		co->setHunger(hunger);
+		// Return
+		return 0;
+	}
+
+	// get_hunger(self)
+	// hunger = number of hunger icons (2 * number of hunger icons)
+	// 0 if not applicable to this type of object
+	static int l_get_hunger(lua_State *L)
+	{
+		ObjectRef *ref = checkobject(L, 1);
+		ServerActiveObject *co = getobject(ref);
+		if(co == NULL) return 0;
+		int hunger = co->getHunger();
+		/*infostream<<"ObjectRef::l_get_hunger(): id="<<co->getId()
+				<<" hp="<<hp<<std::endl;*/
+		// Return
+		lua_pushnumber(L, hunger);
+		return 1;
+	}
 
 	// get_inventory(self)
 	static int l_get_inventory(lua_State *L)
@@ -2840,6 +2874,8 @@ const luaL_reg ObjectRef::methods[] = {
 	method(ObjectRef, right_click),
 	method(ObjectRef, set_hp),
 	method(ObjectRef, get_hp),
+	method(ObjectRef, set_hunger),
+	method(ObjectRef, get_hunger),
 	method(ObjectRef, get_inventory),
 	method(ObjectRef, get_wield_list),
 	method(ObjectRef, get_wield_index),

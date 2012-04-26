@@ -206,10 +206,11 @@ function minetest.item_drop(itemstack, dropper, pos)
 	return ""
 end
 
-function minetest.item_eat(hp_change, replace_with_item)
+function minetest.item_eat(hp_change, hunger_change, replace_with_item)
 	return function(itemstack, user, pointed_thing)  -- closure
 		if itemstack:take_item() ~= nil then
 			user:set_hp(user:get_hp() + hp_change)
+			user:set_hunger(user:get_hunger() + hunger_change)
 			itemstack:add_item(replace_with_item) -- note: replace_with_item is optional
 		end
 		return itemstack

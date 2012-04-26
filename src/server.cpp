@@ -1334,7 +1334,7 @@ void Server::AsyncRunStep()
 				if(playersao->getHunger() <= 0)
 				{
 					playersao->setHungerHurtTimer(playersao->getHungerHurtTimer() + dtime);
-					if(playersao->getHungerTimer() >= 1)
+					if(playersao->getHungerHurtTimer() >= 4)
 					{
 						StarvePlayer(client->peer_id);
 						playersao->setHungerHurtTimer(0);
@@ -1343,7 +1343,7 @@ void Server::AsyncRunStep()
 			}
 			// Set hunger timer
 			playersao->setHungerTimer(playersao->getHungerTimer() + dtime);
-			if(playersao->getHungerTimer() >= 10)
+			if(playersao->getHungerTimer() >= 60)
 			{
 				playersao->setHunger(playersao->getHunger() - 1);
 				playersao->setHungerTimer(0);

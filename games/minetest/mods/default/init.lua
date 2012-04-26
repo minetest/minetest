@@ -1280,7 +1280,7 @@ minetest.register_node("default:apple", {
 	sunlight_propagates = true,
 	walkable = false,
 	groups = {fleshy=3,dig_immediate=3,flammable=2},
-	on_use = minetest.item_eat(4),
+	on_use = minetest.item_eat(4, 2),
 	sounds = default.node_sound_defaults(),
 })
 
