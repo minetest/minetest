@@ -57,43 +57,6 @@ Player::~Player()
 {
 }
 
-// Y direction is ignored
-void Player::accelerate(v3f target_speed, f32 max_increase)
-{
-	v3f d_wanted = target_speed - m_speed;
-	d_wanted.Y = 0;
-	f32 dl_wanted = d_wanted.getLength();
-	f32 dl = dl_wanted;
-	if(dl > max_increase)
-		dl = max_increase;
-	
-	v3f d = d_wanted.normalize() * dl;
-
-	m_speed.X += d.X;
-	m_speed.Z += d.Z;
-	//m_speed += d;
-
-#if 0 // old code
-	if(m_speed.X < target_speed.X - max_increase)
-		m_speed.X += max_increase;
-	else if(m_speed.X > target_speed.X + max_increase)
-		m_speed.X -= max_increase;
-	else if(m_speed.X < target_speed.X)
-		m_speed.X = target_speed.X;
-	else if(m_speed.X > target_speed.X)
-		m_speed.X = target_speed.X;
-
-	if(m_speed.Z < target_speed.Z - max_increase)
-		m_speed.Z += max_increase;
-	else if(m_speed.Z > target_speed.Z + max_increase)
-		m_speed.Z -= max_increase;
-	else if(m_speed.Z < target_speed.Z)
-		m_speed.Z = target_speed.Z;
-	else if(m_speed.Z > target_speed.Z)
-		m_speed.Z = target_speed.Z;
-#endif
-}
-
 v3s16 Player::getLightPosition() const
 {
 	return floatToInt(m_position + v3f(0,BS+BS/2,0), BS);

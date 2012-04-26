@@ -1970,19 +1970,6 @@ void ClientEnvironment::step(float dtime)
 				if(lplayer->swimming_up == false)
 					speed.Y -= 9.81 * BS * dtime_part * 2;
 
-				// Water resistance
-				if(lplayer->in_water_stable || lplayer->in_water)
-				{
-					f32 max_down = 2.0*BS;
-					if(speed.Y < -max_down) speed.Y = -max_down;
-
-					f32 max = 2.5*BS;
-					if(speed.getLength() > max)
-					{
-						speed = speed / speed.getLength() * max;
-					}
-				}
-
 				lplayer->setSpeed(speed);
 			}
 

@@ -51,9 +51,6 @@ public:
 	{
 		m_speed = speed;
 	}
-	
-	// Y direction is ignored
-	void accelerate(v3f target_speed, f32 max_increase);
 
 	v3f getPosition()
 	{
