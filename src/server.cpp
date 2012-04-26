@@ -1340,13 +1340,13 @@ void Server::AsyncRunStep()
 						playersao->setHungerHurtTimer(0);
 					}
 				}
-			}
-			// Set hunger timer
-			playersao->setHungerTimer(playersao->getHungerTimer() + dtime);
-			if(playersao->getHungerTimer() >= 60)
-			{
-				playersao->setHunger(playersao->getHunger() - 1);
-				playersao->setHungerTimer(0);
+				// Set hunger timer
+				playersao->setHungerTimer(playersao->getHungerTimer() + dtime);
+				if(playersao->getHungerTimer() >= 60)
+				{
+					playersao->setHunger(playersao->getHunger() - 1);
+					playersao->setHungerTimer(0);
+				}
 			}
 
 			/*
@@ -4301,6 +4301,7 @@ void Server::RespawnPlayer(u16 peer_id)
 			<<" respawns"<<std::endl;
 
 	playersao->setHP(PLAYER_MAX_HP);
+	playersao->setHunger(PLAYER_MAX_HUNGER);
 
 	bool repositioned = scriptapi_on_respawnplayer(m_lua, playersao);
 	if(!repositioned){
