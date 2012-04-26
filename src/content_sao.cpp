@@ -1147,6 +1147,26 @@ void PlayerSAO::setHunger(s16 hunger)
 	}*/
 }
 
+f32 PlayerSAO::getHungerTimer() const
+{
+	return m_player->hunger_timer;
+}
+
+void PlayerSAO::setHungerTimer(f32 ht)
+{
+	m_player->hunger_timer = ht;
+}
+
+f32 PlayerSAO::getHungerHurtTimer() const
+{
+	return m_player->hunger_hurt_timer;
+}
+
+void PlayerSAO::setHungerHurtTimer(f32 ht)
+{
+	m_player->hunger_hurt_timer = ht;
+}
+
 void PlayerSAO::setArmorGroups(const ItemGroupList &armor_groups)
 {
 	m_armor_groups = armor_groups;

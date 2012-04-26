@@ -1325,10 +1325,29 @@ void Server::AsyncRunStep()
 			/*
 				Handle player HPs (die if hp=0)
 			*/
-			if(playersao->getHP() == 0 && playersao->m_hp_not_sent)
+			if(playersao->getHP() <= 0 && playersao->m_hp_not_sent)
+			{
 				DiePlayer(client->peer_id);
-			if(playersao->getHunger() == 0 && playersao->m_hunger_not_sent)
-				StarvePlayer(client->peer_id);
+			}
+			else
+			{
+				if(playersao->getHunger() <= 0)
+				{
+					playersao->setHungerHurtTimer(playersao->getHungerHurtTimer() + dtime);
+					if(playersao->getHungerTimer() >= 1)
+					{
+						StarvePlayer(client->peer_id);
+						playersao->setHungerHurtTimer(0);
+					}
+				}
+			}
+			// Set hunger timer
+			playersao->setHungerTimer(playersao->getHungerTimer() + dtime);
+			if(playersao->getHungerTimer() >= 10)
+			{
+				playersao->setHunger(playersao->getHunger() - 1);
+				playersao->setHungerTimer(0);
+			}
 
 			/*
 				Send player inventories and HPs if necessary
@@ -4267,6 +4286,7 @@ void Server::StarvePlayer(u16 peer_id)
 	//scriptapi_on_dieplayer(m_lua, playersao);
 
 	SendPlayerHunger(peer_id);
+	SendPlayerHP(peer_id);
 }
 
 void Server::RespawnPlayer(u16 peer_id)

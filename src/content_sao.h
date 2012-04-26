@@ -145,6 +145,10 @@ public:
 	s16 getHunger() const;
 	void setHP(s16 hp);
 	void setHunger(s16 hunger);
+	f32 getHungerTimer() const;
+	void setHungerTimer(f32 ht);
+	f32 getHungerHurtTimer() const;
+	void setHungerHurtTimer(f32 ht);
 	
 	void setArmorGroups(const ItemGroupList &armor_groups);
 	ObjectProperties* accessObjectProperties();

@@ -938,13 +938,13 @@ void ServerEnvironment::step(float dtime)
 				i != m_players.end(); i++)
 		{
 			Player *player = *i;
-			
+
 			// Ignore disconnected players
 			if(player->peer_id == 0)
 				continue;
 
 			v3f playerpos = player->getPosition();
-			
+
 			// Move
 			player->move(dtime, *m_map, 100*BS);
 		}

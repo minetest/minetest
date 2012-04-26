@@ -156,6 +156,10 @@ public:
 
 	u16 hunger;
 
+	f32 hunger_timer;
+
+	f32 hunger_hurt_timer;
+
 	u16 peer_id;
 
 protected:
