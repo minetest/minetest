@@ -480,9 +480,6 @@ void LocalPlayer::move(f32 dtime, Map &map, f32 pos_max_d)
 
 void LocalPlayer::applyControl(float dtime)
 {
-	// Clear stuff
-	swimming_up = false;
-
 	// Random constants
 	f32 maxspeed = 33.0 * BS;
 	
@@ -565,8 +562,8 @@ void LocalPlayer::applyControl(float dtime)
 		// (so that the player doesn't fly on the surface)
 		if(in_water)
 		{
-			speed.Y = speed.Y*0.1+3*BS;
-			swimming_up = true;
+			speed.Y += 0.2*BS;
+			if (speed.Y > 0) speed.Y+=0.2*BS;
 		}
 		if(is_climbing)
 		{
@@ -602,7 +599,7 @@ void LocalPlayer::applyControl(float dtime)
 
 	if(in_water_stable || in_water)
 	{
-		speed.Y=speed.Y*0.85;
+		speed.Y=speed.Y*0.95-0.1*BS;
 	}
 
 	if(control.sneak)
