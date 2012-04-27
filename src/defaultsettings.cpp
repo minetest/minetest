@@ -27,6 +27,7 @@ void set_default_settings(Settings *settings)
 	settings->setDefault("name", "");
 	settings->setDefault("footprints", "false");
 	settings->setDefault("server_map_save_interval", "180");
+	settings->setDefault("unlimited_player_transfer_distance", "false");
 
 	// Client stuff
 
