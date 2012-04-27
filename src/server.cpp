@@ -1369,7 +1369,9 @@ void Server::AsyncRunStep()
 				SendInventory(client->peer_id);
 			}
 			if(playersao->m_hp_not_sent){
+				playersao->setExhaustion(playersao->getExhaustion() + 0.3);
 				SendPlayerHP(client->peer_id);
+				SendPlayerHunger(client->peer_id);
 			}
 			if(playersao->m_hunger_not_sent){
 				SendPlayerHunger(client->peer_id);
