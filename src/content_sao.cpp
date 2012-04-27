@@ -900,7 +900,9 @@ void PlayerSAO::step(float dtime, bool send_recommended)
 	}
 
 	m_time_from_last_punch += dtime;
-	
+
+	f32 exh = 0.01*((v3f)(m_player->getPosition() - m_last_good_position)).getLength();
+	m_player->exhaustion += exh;
 	if(m_is_singleplayer)
 	{
 		m_last_good_position = m_player->getPosition();
@@ -1081,6 +1083,16 @@ s16 PlayerSAO::getHP() const
 s16 PlayerSAO::getHunger() const
 {
 	return m_player->hunger;
+}
+
+f32 PlayerSAO::getExhaustion() const
+{
+	return m_player->exhaustion;
+}
+
+void PlayerSAO::setExhaustion(f32 ht)
+{
+	m_player->exhaustion = ht;
 }
 
 void PlayerSAO::setHP(s16 hp)

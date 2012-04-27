@@ -157,6 +157,8 @@ public:
 
 	f32 hunger_hurt_timer;
 
+	f32 exhaustion;
+
 	u16 peer_id;
 
 protected:

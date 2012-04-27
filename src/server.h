@@ -631,6 +631,7 @@ private:
 	
 	void DiePlayer(u16 peer_id);
 	void StarvePlayer(u16 peer_id);
+	void SatisfyPlayer(u16 peer_id);
 	void RespawnPlayer(u16 peer_id);
 	
 	void UpdateCrafting(u16 peer_id);

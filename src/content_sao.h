@@ -143,6 +143,8 @@ public:
 	void rightClick(ServerActiveObject *clicker);
 	s16 getHP() const;
 	s16 getHunger() const;
+	f32 getExhaustion() const;
+	void setExhaustion(f32 ht);
 	void setHP(s16 hp);
 	void setHunger(s16 hunger);
 	f32 getHungerTimer() const;

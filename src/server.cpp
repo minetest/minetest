@@ -1340,12 +1340,20 @@ void Server::AsyncRunStep()
 						playersao->setHungerHurtTimer(0);
 					}
 				}
-				// Set hunger timer
-				playersao->setHungerTimer(playersao->getHungerTimer() + dtime);
-				if(playersao->getHungerTimer() >= 60)
+				// Just in case PLAYER_MAX_HUNGER changes, we will set it to 90% (18/20)
+				if(playersao->getHunger() >= PLAYER_MAX_HUNGER*.9)
+				{
+					playersao->setHungerHurtTimer(playersao->getHungerHurtTimer() + dtime);
+					if(playersao->getHungerHurtTimer() >= 4)
+					{
+						SatisfyPlayer(client->peer_id);
+						playersao->setHungerHurtTimer(0);
+					}
+				}
+				if(playersao->getExhaustion() >= 4)
 				{
 					playersao->setHunger(playersao->getHunger() - 1);
-					playersao->setHungerTimer(0);
+					playersao->setExhaustion(0);
 				}
 			}
 
@@ -2232,6 +2240,9 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 		// Send HP
 		SendPlayerHP(peer_id);
 		
+		// Send Hunger
+		SendPlayerHunger(peer_id);
+		
 		// Show death screen if necessary
 		if(player->hp == 0)
 			SendDeathscreen(m_con, peer_id, false, v3f(0,0,0));
@@ -3069,7 +3080,10 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 							getNodeBlockPos(p_above), BLOCK_EMERGE_FLAG_FROMDISK);
 				}
 				if(n.getContent() != CONTENT_IGNORE)
+				{
 					scriptapi_node_on_dig(m_lua, p_under, n, playersao);
+					playersao->setExhaustion(playersao->getExhaustion() + 0.025);
+				}
 
 				if (m_env->getMap().getNode(p_under).getContent() != CONTENT_AIR)
 				{
@@ -4286,6 +4300,25 @@ void Server::StarvePlayer(u16 peer_id)
 	//scriptapi_on_dieplayer(m_lua, playersao);
 
 	SendPlayerHunger(peer_id);
+	SendPlayerHP(peer_id);
+}
+
+void Server::SatisfyPlayer(u16 peer_id)
+{
+	DSTACK(__FUNCTION_NAME);
+	
+	PlayerSAO *playersao = getPlayerSAO(peer_id);
+	assert(playersao);
+
+	infostream<<"Server::SatisfyPlayer(): Player "
+			<<playersao->getPlayer()->getName()
+			<<" is full"<<std::endl;
+
+	playersao->setHP(playersao->getHP() + 1);
+
+	// Trigger scripted stuff
+	//scriptapi_on_dieplayer(m_lua, playersao);
+
 	SendPlayerHP(peer_id);
 }
 
