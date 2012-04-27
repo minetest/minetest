@@ -3409,6 +3409,21 @@ void Server::SendHunger(con::Connection &con, u16 peer_id, u8 hunger)
 	con.Send(peer_id, 0, data, true);
 }
 
+void Server::SendOxygen(con::Connection &con, u16 peer_id, u8 oxygen)
+{
+	DSTACK(__FUNCTION_NAME);
+	std::ostringstream os(std::ios_base::binary);
+
+	writeU16(os, TOCLIENT_OXYGEN);
+	writeU8(os, oxygen);
+
+	// Make data buffer
+	std::string s = os.str();
+	SharedBuffer<u8> data((u8*)s.c_str(), s.size());
+	// Send as reliable
+	con.Send(peer_id, 0, data, true);
+}
+
 
 void Server::SendAccessDenied(con::Connection &con, u16 peer_id,
 		const std::wstring &reason)

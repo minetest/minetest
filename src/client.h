@@ -261,6 +261,9 @@ public:
 
 	u16 getHP();
 	u16 getHunger();
+	u16 getOxygen();
+
+	bool in_water();
 
 	bool checkPrivilege(const std::string &priv)
 	{ return (m_privileges.count(priv) != 0); }
