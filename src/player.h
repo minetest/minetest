@@ -157,7 +157,7 @@ public:
 
 	f32 hunger_timer;
 
-	f32 hunger_hurt_timer;
+	f32 hunger_hurt_heal_timer;
 
 	f32 exhaustion;
 

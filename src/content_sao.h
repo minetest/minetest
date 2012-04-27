@@ -151,8 +151,8 @@ public:
 	void setOxygen(s16 oxygen);
 	f32 getHungerTimer() const;
 	void setHungerTimer(f32 ht);
-	f32 getHungerHurtTimer() const;
-	void setHungerHurtTimer(f32 ht);
+	f32 getHungerHurtHealTimer() const;
+	void setHungerHurtHealTimer(f32 ht);
 	f32 getOxygenTimer() const;
 	void setOxygenTimer(f32 ht);
 	f32 getOxygenHurtTimer() const;

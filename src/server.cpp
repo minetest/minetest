@@ -1333,11 +1333,20 @@ void Server::AsyncRunStep()
 			{
 				if(playersao->getHunger() <= 0)
 				{
-					playersao->setHungerHurtTimer(playersao->getHungerHurtTimer() + dtime);
-					if(playersao->getHungerHurtTimer() >= 4)
+					playersao->setHungerHurtHealTimer(playersao->getHungerHurtHealTimer() + dtime);
+					if(playersao->getHungerHurtHealTimer() >= 4)
 					{
 						StarvePlayer(client->peer_id);
-						playersao->setHungerHurtTimer(0);
+						playersao->setHungerHurtHealTimer(0);
+					}
+				}
+				if(playersao->getHunger() >= PLAYER_MAX_HUNGER-1)
+				{
+					playersao->setHungerHurtHealTimer(playersao->getHungerHurtHealTimer() + dtime);
+					if(playersao->getHungerHurtHealTimer() >= 4)
+					{
+						SatisfyPlayer(client->peer_id);
+						playersao->setHungerHurtHealTimer(0);
 					}
 				}
 				if(playersao->in_water())
@@ -1368,11 +1377,11 @@ void Server::AsyncRunStep()
 				// Just in case PLAYER_MAX_HUNGER changes, we will set it to 90% (18/20)
 				if(playersao->getHunger() >= PLAYER_MAX_HUNGER*.9)
 				{
-					playersao->setHungerHurtTimer(playersao->getHungerHurtTimer() + dtime);
-					if(playersao->getHungerHurtTimer() >= 4)
+					playersao->setHungerHurtHealTimer(playersao->getHungerHurtHealTimer() + dtime);
+					if(playersao->getHungerHurtHealTimer() >= 4)
 					{
 						SatisfyPlayer(client->peer_id);
-						playersao->setHungerHurtTimer(0);
+						playersao->setHungerHurtHealTimer(0);
 					}
 				}
 				if(playersao->getExhaustion() >= 4)

@@ -1213,14 +1213,14 @@ void PlayerSAO::setHungerTimer(f32 ht)
 	m_player->hunger_timer = ht;
 }
 
-f32 PlayerSAO::getHungerHurtTimer() const
+f32 PlayerSAO::getHungerHurtHealTimer() const
 {
-	return m_player->hunger_hurt_timer;
+	return m_player->hunger_hurt_heal_timer;
 }
 
-void PlayerSAO::setHungerHurtTimer(f32 ht)
+void PlayerSAO::setHungerHurtHealTimer(f32 ht)
 {
-	m_player->hunger_hurt_timer = ht;
+	m_player->hunger_hurt_heal_timer = ht;
 }
 
 bool PlayerSAO::in_water()
