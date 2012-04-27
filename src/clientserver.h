@@ -310,6 +310,12 @@ enum ToClientCommand
 		u16 command
 		u8 hunger
 	*/
+
+	TOCLIENT_OXYGEN = 0x43,
+	/*
+		u16 command
+		u8 oxygen
+	*/
 };
 
 enum ToServerCommand

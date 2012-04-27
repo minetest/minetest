@@ -136,7 +136,8 @@ private:
 void draw_hotbar(video::IVideoDriver *driver, gui::IGUIFont *font,
 		IGameDef *gamedef,
 		v2s32 centerlowerpos, s32 imgsize, s32 itemcount,
-		Inventory *inventory, s32 halfheartcount, s32 halfhungercount, u16 playeritem)
+		Inventory *inventory, s32 halfheartcount, s32 halfhungercount,
+		s32 halfoxygencount, bool in_water, u16 playeritem)
 {
 	InventoryList *mainlist = inventory->getList("main");
 	if(mainlist == NULL)
@@ -278,6 +279,54 @@ void draw_hotbar(video::IVideoDriver *driver, gui::IGUIFont *font,
 				core::rect<s32> rect(0,0,16,16);
 				rect += p;
 				driver->draw2DImage(hunger_half_texture, rect,
+				core::rect<s32>(core::position2d<s32>(0,0), srcd),
+				NULL, colors, true);
+			}
+			p += v2s32(16,0);
+		}
+	}
+
+	/*
+		Draw oxygen bar
+	*/
+	video::ITexture *oxygen_texture =
+		gamedef->getTextureSource()->getTextureRaw("oxygen.png");
+	video::ITexture *oxygen_half_texture =
+		gamedef->getTextureSource()->getTextureRaw("oxygen_half.png");
+	if(oxygen_texture && in_water)
+	{
+		v2s32 p = pos + v2s32(0, -60);
+		for(s32 i=0; i<halfoxygencount/2; i++)
+		{
+			const video::SColor color(255,255,255,255);
+			const video::SColor colors[] = {color,color,color,color};
+			core::rect<s32> rect(0,0,16,16);
+			rect += p;
+			driver->draw2DImage(oxygen_texture, rect,
+				core::rect<s32>(core::position2d<s32>(0,0),
+				core::dimension2di(oxygen_texture->getOriginalSize())),
+				NULL, colors, true);
+			p += v2s32(16,0);
+		}
+		if(halfoxygencount % 2 == 1)
+		{
+			const video::SColor color(255,255,255,255);
+			const video::SColor colors[] = {color,color,color,color};
+			core::dimension2di srcd(oxygen_texture->getOriginalSize());
+			if (hunger_half_texture == NULL)
+			{
+				core::rect<s32> rect(0,0,16/2,16);
+				rect += p;
+				srcd.Width /= 2;
+				driver->draw2DImage(oxygen_texture, rect,
+				core::rect<s32>(core::position2d<s32>(0,0), srcd),
+				NULL, colors, true);
+			}
+			else
+			{
+				core::rect<s32> rect(0,0,16,16);
+				rect += p;
+				driver->draw2DImage(oxygen_half_texture, rect,
 				core::rect<s32>(core::position2d<s32>(0,0), srcd),
 				NULL, colors, true);
 			}
@@ -2866,7 +2915,8 @@ void the_game(
 			draw_hotbar(driver, font, gamedef,
 					v2s32(displaycenter.X, screensize.Y),
 					hotbar_imagesize, hotbar_itemcount, &local_inventory,
-					client.getHP(), client.getHunger(), client.getPlayerItem());
+					client.getHP(), client.getHunger(), client.getOxygen(),
+					client.in_water(), client.getPlayerItem());
 		}
 
 		/*

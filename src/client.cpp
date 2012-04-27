@@ -1369,6 +1369,15 @@ void Client::ProcessData(u8 *data, u32 datasize, u16 sender_peer_id)
 		u8 hunger = readU8(is);
 		player->hunger = hunger;
 	}
+	else if(command == TOCLIENT_OXYGEN)
+	{
+		std::string datastring((char*)&data[2], datasize-2);
+		std::istringstream is(datastring, std::ios_base::binary);
+		Player *player = m_env.getLocalPlayer();
+		assert(player != NULL);
+		u8 oxygen = readU8(is);
+		player->oxygen = oxygen;
+	}
 	else if(command == TOCLIENT_MOVE_PLAYER)
 	{
 		std::string datastring((char*)&data[2], datasize-2);
@@ -2204,6 +2213,23 @@ u16 Client::getHunger()
 	Player *player = m_env.getLocalPlayer();
 	assert(player != NULL);
 	return player->hunger;
+}
+
+u16 Client::getOxygen()
+{
+	Player *player = m_env.getLocalPlayer();
+	assert(player != NULL);
+	return player->oxygen;
+}
+
+bool Client::in_water()
+{
+	Player *player = m_env.getLocalPlayer();
+	assert(player != NULL);
+	v3f position = player->getPosition();
+	position.Y += 15;
+	v3s16 pp = floatToInt(position, BS);
+	return getNodeDefManager()->get(m_env.getMap().getNode(pp).getContent()).isLiquid();
 }
 
 bool Client::getChatMessage(std::wstring &message)

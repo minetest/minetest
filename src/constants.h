@@ -106,5 +106,9 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 // Max hunger as in full, not as in starving
 #define PLAYER_MAX_HUNGER 20
 
+// Maximum oxygen of a player
+// This gets depleted when the player is in water
+#define PLAYER_MAX_OXYGEN 20
+
 #endif
 

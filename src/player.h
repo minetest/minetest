@@ -159,6 +159,8 @@ public:
 
 	f32 exhaustion;
 
+	u16 oxygen;
+
 	u16 peer_id;
 
 protected:
