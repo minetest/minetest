@@ -901,7 +901,8 @@ void PlayerSAO::step(float dtime, bool send_recommended)
 
 	m_time_from_last_punch += dtime;
 
-	f32 exh = 0.01*((v3f)(m_player->getPosition() - m_last_good_position)).getLength();
+	// 3.2808399 is about the number of feet in a meter (close enough)
+	f32 exh = 0.01*(((v3f)(m_player->getPosition() - m_last_good_position)).getLength()/3.2808399);
 	m_player->exhaustion += exh;
 	if(m_is_singleplayer)
 	{
