@@ -902,9 +902,14 @@ void PlayerSAO::step(float dtime, bool send_recommended)
 
 	m_time_from_last_punch += dtime;
 
-	// 3.2808399 is about the number of feet in a meter (close enough)
-	f32 exh = 0.01*(((v3f)(m_player->getPosition() - m_last_good_position)).getLength()/3.2808399);
-	m_player->exhaustion += exh;
+	if(!m_player->is_flying)
+	{
+		std::cout << (m_player->is_sprinting ? "true" : "false") << std::endl;
+		f32 num = (m_player->is_sprinting ? 0.1 : 0.01);
+		// 3.2808399 is about the number of feet in a meter (close enough)
+		f32 exh = num*(((v3f)(m_player->getPosition() - m_last_good_position)).getLength()/3.2808399);
+		m_player->exhaustion += exh;
+	}
 	if(m_is_singleplayer)
 	{
 		m_last_good_position = m_player->getPosition();

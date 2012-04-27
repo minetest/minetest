@@ -141,6 +141,8 @@ public:
 	// This is more stable and defines the maximum speed of the player
 	bool in_water_stable;
 	bool is_climbing;
+	bool is_flying;
+	bool is_sprinting;
 	bool swimming_up;
 	bool camera_barely_in_ceiling;
 	

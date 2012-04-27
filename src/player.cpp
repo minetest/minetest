@@ -30,6 +30,8 @@ Player::Player(IGameDef *gamedef):
 	in_water(false),
 	in_water_stable(false),
 	is_climbing(false),
+	is_flying(false),
+	is_sprinting(false),
 	swimming_up(false),
 	camera_barely_in_ceiling(false),
 	inventory(gamedef->idef()),

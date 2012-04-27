@@ -66,6 +66,8 @@ void LocalPlayer::move(f32 dtime, Map &map, f32 pos_max_d,
 	// Skip collision detection if a special movement mode is used
 	bool fly_allowed = m_gamedef->checkLocalPrivilege("fly");
 	bool free_move = fly_allowed && g_settings->getBool("free_move");
+	bool fast_allowed = m_gamedef->checkLocalPrivilege("fast");
+	bool fast_move = fast_allowed && g_settings->getBool("fast_move");
 	//if(free_move)
 	//{
 	//	setPosition(position);
@@ -127,6 +129,9 @@ void LocalPlayer::move(f32 dtime, Map &map, f32 pos_max_d,
 	{
 		is_climbing = false;
 	}
+
+	is_flying = free_move;
+	is_sprinting = fast_move;
 
 	/*
 		Collision uncertainty radius
@@ -482,22 +487,22 @@ void LocalPlayer::applyControl(float dtime)
 {
 	// Random constants
 	f32 maxspeed = 33.0 * BS;
-	
+
 	setPitch(control.pitch);
 	setYaw(control.yaw);
 	
 	v3f move_direction = v3f(0,0,8);
 	move_direction.rotateXZBy(getYaw());
-	
+
 	v3f speed = getSpeed();
-	
+
 	bool fly_allowed = m_gamedef->checkLocalPrivilege("fly");
 	bool fast_allowed = m_gamedef->checkLocalPrivilege("fast");
 
 	bool free_move = fly_allowed && g_settings->getBool("free_move");
 	bool fast_move = fast_allowed && g_settings->getBool("fast_move");
 	bool continuous_forward = g_settings->getBool("continuous_forward");
-	
+
 	if (!in_water)
 	{
 		speed.X=speed.X*0.85;
@@ -507,14 +512,14 @@ void LocalPlayer::applyControl(float dtime)
 		speed.Z=speed.Z*0.5;
 	}
 	if (speed.X<0 && speed.X+0.1>0) {speed.X=0;}
-	if (speed.Z<0 && speed.Z+0.1>0) {speed.Z=0;}	
+	if (speed.Z<0 && speed.Z+0.1>0) {speed.Z=0;}
 
 	if (free_move || is_climbing)
 	{
 		speed.Y=speed.Y*0.85;
 		if (speed.Y<0 && speed.Y+0.1>0) {speed.Y=0;}
 	}
-	
+
 	// If free movement and fast movement, always move fast
 
 	if(continuous_forward)
