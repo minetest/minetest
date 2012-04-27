@@ -1967,7 +1967,7 @@ void ClientEnvironment::step(float dtime)
 			{
 				// Gravity
 				v3f speed = lplayer->getSpeed();
-				if(lplayer->swimming_up == false)
+				if(lplayer->in_water == false)
 					speed.Y -= 9.81 * BS * dtime_part * 2;
 
 				lplayer->setSpeed(speed);
