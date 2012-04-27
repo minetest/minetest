@@ -66,11 +66,11 @@ void LocalPlayer::move(f32 dtime, Map &map, f32 pos_max_d,
 	// Skip collision detection if a special movement mode is used
 	bool fly_allowed = m_gamedef->checkLocalPrivilege("fly");
 	bool free_move = fly_allowed && g_settings->getBool("free_move");
-	if(free_move)
-	{
-		setPosition(position);
-		return;
-	}
+	//if(free_move)
+	//{
+	//	setPosition(position);
+	//	return;
+	//}
 
 	/*
 		Collision detection
@@ -121,7 +121,7 @@ void LocalPlayer::move(f32 dtime, Map &map, f32 pos_max_d,
 		v3s16 pp = floatToInt(position + v3f(0,0.5*BS,0), BS);
 		v3s16 pp2 = floatToInt(position + v3f(0,-0.2*BS,0), BS);
 		is_climbing = ((nodemgr->get(map.getNode(pp).getContent()).climbable ||
-		nodemgr->get(map.getNode(pp2).getContent()).climbable) && !free_move);
+		nodemgr->get(map.getNode(pp2).getContent()).climbable));
 	}
 	catch(InvalidPositionException &e)
 	{
@@ -447,7 +447,7 @@ void LocalPlayer::move(f32 dtime, Map &map, f32 pos_max_d,
 	if(collision_info)
 	{
 		// Report fall collision
-		if(old_speed.Y < m_speed.Y - 0.1 && !standing_on_unloaded)
+		if(old_speed.Y < m_speed.Y - 0.1 && !standing_on_unloaded && !free_move)
 		{
 			CollisionInfo info;
 			info.t = COLLISION_FALL;
@@ -543,7 +543,7 @@ void LocalPlayer::applyControl(float dtime)
 		{
 			speed.Y = 10*BS;
 			if (fast_move)
-				speed.Y = 30*BS;
+				speed.Y = 15*BS;
 		}
 		if(touching_ground)
 		{
@@ -578,7 +578,7 @@ void LocalPlayer::applyControl(float dtime)
 		{
 			speed.Y = -10*BS;
 			if (fast_move)
-				speed.Y = -30*BS;
+				speed.Y = -15*BS;
 		}
 		if(is_climbing)
 		{
@@ -593,8 +593,8 @@ void LocalPlayer::applyControl(float dtime)
 
 	if(fast_move&&free_move)
 	{
-		speed.X=speed.X*1.15;
-		speed.Z=speed.Z*1.15;
+		speed.X=speed.X*1.1;
+		speed.Z=speed.Z*1.1;
 	}
 
 	if(in_water_stable || in_water)
