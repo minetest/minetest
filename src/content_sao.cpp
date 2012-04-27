@@ -1223,7 +1223,8 @@ bool PlayerSAO::in_water()
 	v3f position = m_player->getPosition();
 	position.Y += 15;
 	v3s16 pp = floatToInt(position, BS);
-	return m_env->getGameDef()->ndef()->get(m_env->getMap().getNode(pp).getContent()).isLiquid();
+	
+	return m_env->getGameDef()->ndef()->get(m_env->getMap().getNodeNoEx(pp).getContent()).isLiquid();
 }
 
 f32 PlayerSAO::getOxygenTimer() const
