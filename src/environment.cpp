@@ -1993,8 +1993,8 @@ void ClientEnvironment::step(float dtime)
 		if(info.t == COLLISION_FALL)
 		{
 			//f32 tolerance = BS*10; // 2 without damage
-			//f32 tolerance = BS*12; // 3 without damage
-			f32 tolerance = BS*14; // 5 without damage
+			f32 tolerance = BS*12; // 3 without damage
+			//f32 tolerance = BS*14; // 5 without damage
 			f32 factor = 1;
 			if(info.speed > tolerance)
 			{
