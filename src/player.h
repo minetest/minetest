@@ -161,6 +161,10 @@ public:
 
 	u16 oxygen;
 
+	f32 oxygen_timer;
+
+	f32 oxygen_hurt_timer;
+
 	u16 peer_id;
 
 protected:

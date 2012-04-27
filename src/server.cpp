@@ -1340,6 +1340,31 @@ void Server::AsyncRunStep()
 						playersao->setHungerHurtTimer(0);
 					}
 				}
+				if(playersao->in_water())
+				{
+					if(playersao->getOxygen() <= 0)
+					{
+						playersao->setOxygenHurtTimer(playersao->getOxygenHurtTimer() + dtime);
+						if(playersao->getOxygenHurtTimer() >= 1)
+						{
+							SuffocatePlayer(client->peer_id);
+							playersao->setOxygenHurtTimer(0);
+						}
+					}
+					else
+					{
+						playersao->setOxygenTimer(playersao->getOxygenTimer() + dtime);
+						if(playersao->getOxygenTimer() >= 1)
+						{
+							playersao->setOxygen(playersao->getOxygen() - 1);
+							playersao->setOxygenTimer(0);
+						}
+					}
+				}
+				else if(playersao->getOxygen() < PLAYER_MAX_OXYGEN)
+				{
+					playersao->setOxygen(PLAYER_MAX_OXYGEN);
+				}
 				// Just in case PLAYER_MAX_HUNGER changes, we will set it to 90% (18/20)
 				if(playersao->getHunger() >= PLAYER_MAX_HUNGER*.9)
 				{
@@ -1375,6 +1400,9 @@ void Server::AsyncRunStep()
 			}
 			if(playersao->m_hunger_not_sent){
 				SendPlayerHunger(client->peer_id);
+			}
+			if(playersao->m_oxygen_not_sent){
+				SendPlayerOxygen(client->peer_id);
 			}
 		}
 	}
@@ -2241,10 +2269,13 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 
 		// Send HP
 		SendPlayerHP(peer_id);
-		
+
 		// Send Hunger
 		SendPlayerHunger(peer_id);
-		
+
+		// Send Oxygen
+		SendPlayerOxygen(peer_id);
+
 		// Show death screen if necessary
 		if(player->hp == 0)
 			SendDeathscreen(m_con, peer_id, false, v3f(0,0,0));
@@ -3606,6 +3637,15 @@ void Server::SendPlayerHunger(u16 peer_id)
 	SendHunger(m_con, peer_id, playersao->getHunger());
 }
 
+void Server::SendPlayerOxygen(u16 peer_id)
+{
+	DSTACK(__FUNCTION_NAME);
+	PlayerSAO *playersao = getPlayerSAO(peer_id);
+	assert(playersao);
+	playersao->m_oxygen_not_sent = false;
+	SendOxygen(m_con, peer_id, playersao->getOxygen());
+}
+
 void Server::SendMovePlayer(u16 peer_id)
 {
 	DSTACK(__FUNCTION_NAME);
@@ -4320,6 +4360,26 @@ void Server::StarvePlayer(u16 peer_id)
 	SendPlayerHP(peer_id);
 }
 
+void Server::SuffocatePlayer(u16 peer_id)
+{
+	DSTACK(__FUNCTION_NAME);
+	
+	PlayerSAO *playersao = getPlayerSAO(peer_id);
+	assert(playersao);
+
+	infostream<<"Server::SuffocatePlayer(): Player "
+			<<playersao->getPlayer()->getName()
+			<<" is suffocating"<<std::endl;
+
+	playersao->setHP(playersao->getHP() - 1);
+
+	// Trigger scripted stuff
+	//scriptapi_on_dieplayer(m_lua, playersao);
+
+	SendPlayerOxygen(peer_id);
+	SendPlayerHP(peer_id);
+}
+
 void Server::SatisfyPlayer(u16 peer_id)
 {
 	DSTACK(__FUNCTION_NAME);
@@ -4352,6 +4412,7 @@ void Server::RespawnPlayer(u16 peer_id)
 
 	playersao->setHP(PLAYER_MAX_HP);
 	playersao->setHunger(PLAYER_MAX_HUNGER);
+	playersao->setOxygen(PLAYER_MAX_OXYGEN);
 
 	bool repositioned = scriptapi_on_respawnplayer(m_lua, playersao);
 	if(!repositioned){

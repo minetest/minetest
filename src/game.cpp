@@ -313,7 +313,7 @@ void draw_hotbar(video::IVideoDriver *driver, gui::IGUIFont *font,
 			const video::SColor color(255,255,255,255);
 			const video::SColor colors[] = {color,color,color,color};
 			core::dimension2di srcd(oxygen_texture->getOriginalSize());
-			if (hunger_half_texture == NULL)
+			if (oxygen_half_texture == NULL)
 			{
 				core::rect<s32> rect(0,0,16/2,16);
 				rect += p;

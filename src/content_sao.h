@@ -143,15 +143,23 @@ public:
 	void rightClick(ServerActiveObject *clicker);
 	s16 getHP() const;
 	s16 getHunger() const;
+	s16 getOxygen() const;
 	f32 getExhaustion() const;
 	void setExhaustion(f32 ht);
 	void setHP(s16 hp);
 	void setHunger(s16 hunger);
+	void setOxygen(s16 oxygen);
 	f32 getHungerTimer() const;
 	void setHungerTimer(f32 ht);
 	f32 getHungerHurtTimer() const;
 	void setHungerHurtTimer(f32 ht);
-	
+	f32 getOxygenTimer() const;
+	void setOxygenTimer(f32 ht);
+	f32 getOxygenHurtTimer() const;
+	void setOxygenHurtTimer(f32 ht);
+
+	bool in_water();
+
 	void setArmorGroups(const ItemGroupList &armor_groups);
 	ObjectProperties* accessObjectProperties();
 	void notifyObjectPropertiesModified();
@@ -228,6 +236,7 @@ public:
 	bool m_inventory_not_sent;
 	bool m_hp_not_sent;
 	bool m_hunger_not_sent;
+	bool m_oxygen_not_sent;
 	bool m_wielded_item_not_sent;
 };
 

@@ -39,6 +39,8 @@ Player::Player(IGameDef *gamedef):
 	hunger_hurt_timer(0.0),
 	exhaustion(0.0),
 	oxygen(PLAYER_MAX_OXYGEN),
+	oxygen_timer(0.0),
+	oxygen_hurt_timer(0.0),
 	peer_id(PEER_ID_INEXISTENT),
 // protected
 	m_gamedef(gamedef),
@@ -80,6 +82,8 @@ void Player::serialize(std::ostream &os)
 	args.setFloat("hunger_hurt_timer", hunger_hurt_timer);
 	args.setFloat("exhaustion", exhaustion);
 	args.setS32("oxygen", oxygen);
+	args.setFloat("oxygen_timer", oxygen_timer);
+	args.setFloat("oxygen_hurt_timer", oxygen_hurt_timer);
 
 	args.writeLines(os);
 
@@ -121,10 +125,16 @@ void Player::deSerialize(std::istream &is)
 	}catch(SettingNotFoundException &e){
 		hunger = PLAYER_MAX_HUNGER;
 	}
+	try{
+		oxygen = args.getS32("oxygen");
+	}catch(SettingNotFoundException &e){
+		oxygen = PLAYER_MAX_OXYGEN;
+	}
 	hunger_timer = args.getFloat("hunger_timer");
 	hunger_hurt_timer = args.getFloat("hunger_hurt_timer");
 	exhaustion = args.getFloat("exhaustion");
-	oxygen = args.getFloat("oxygen");
+	oxygen_timer = args.getFloat("oxygen_timer");
+	oxygen_hurt_timer = args.getFloat("oxygen_hurt_timer");
 
 	inventory.deSerialize(is);
 

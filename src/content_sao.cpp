@@ -26,6 +26,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "serialization.h" // For compressZlib
 #include "tool.h" // For ToolCapabilities
 #include "gamedef.h"
+#include "nodedef.h"
 #include "player.h"
 #include "scriptapi.h"
 #include "genericobject.h"
@@ -1086,6 +1087,11 @@ s16 PlayerSAO::getHunger() const
 	return m_player->hunger;
 }
 
+s16 PlayerSAO::getOxygen() const
+{
+	return m_player->oxygen;
+}
+
 f32 PlayerSAO::getExhaustion() const
 {
 	return m_player->exhaustion;
@@ -1160,6 +1166,38 @@ void PlayerSAO::setHunger(s16 hunger)
 	}*/
 }
 
+void PlayerSAO::setOxygen(s16 oxygen)
+{
+	s16 oldoxygen = getOxygen();
+
+	if(oxygen < 0)
+		oxygen = 0;
+	else if(oxygen > PLAYER_MAX_OXYGEN)
+		oxygen = PLAYER_MAX_OXYGEN;
+
+	if(oxygen < oldoxygen && g_settings->getBool("enable_damage") == false)
+	{
+		m_oxygen_not_sent = true; // fix wrong prediction on client
+		return;
+	}
+
+	m_player->oxygen = oxygen;
+
+	if(oxygen != oldoxygen)
+		m_oxygen_not_sent = true;
+
+	// On death or reincarnation send an active object message
+	/*if((oxygen == 0) != (oldoxygen == 0))
+	{
+		// Will send new is_visible value based on (getoxygen()!=0)
+		m_properties_sent = false;
+		// Send new Oxygen
+		std::string str = gob_cmd_punched(0, getOxygen());
+		ActiveObjectMessage aom(getId(), true, str);
+		m_messages_out.push_back(aom);
+	}*/
+}
+
 f32 PlayerSAO::getHungerTimer() const
 {
 	return m_player->hunger_timer;
@@ -1178,6 +1216,34 @@ f32 PlayerSAO::getHungerHurtTimer() const
 void PlayerSAO::setHungerHurtTimer(f32 ht)
 {
 	m_player->hunger_hurt_timer = ht;
+}
+
+bool PlayerSAO::in_water()
+{
+	v3f position = m_player->getPosition();
+	position.Y += 15;
+	v3s16 pp = floatToInt(position, BS);
+	return m_env->getGameDef()->ndef()->get(m_env->getMap().getNode(pp).getContent()).isLiquid();
+}
+
+f32 PlayerSAO::getOxygenTimer() const
+{
+	return m_player->oxygen_timer;
+}
+
+void PlayerSAO::setOxygenTimer(f32 ht)
+{
+	m_player->oxygen_timer = ht;
+}
+
+f32 PlayerSAO::getOxygenHurtTimer() const
+{
+	return m_player->oxygen_hurt_timer;
+}
+
+void PlayerSAO::setOxygenHurtTimer(f32 ht)
+{
+	m_player->oxygen_hurt_timer = ht;
 }
 
 void PlayerSAO::setArmorGroups(const ItemGroupList &armor_groups)
