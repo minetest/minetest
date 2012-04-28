@@ -913,6 +913,9 @@ void PlayerSAO::step(float dtime, bool send_recommended)
 		m_player->exhaustion += exh;
 	}
 
+	m_last_good_position = m_player->getPosition();
+	m_last_good_position_age = 0;
+
 	if(send_recommended == false)
 		return;
 
