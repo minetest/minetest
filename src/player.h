@@ -153,11 +153,15 @@ public:
 
 	u16 hp;
 
+	float hurt_tilt_timer;
+
+	float hurt_tilt_timer_max;
+
 	u16 hunger;
 
 	f32 hunger_timer;
 
-	f32 hunger_hurt_timer;
+	f32 hunger_hurt_heal_timer;
 
 	f32 exhaustion;
 

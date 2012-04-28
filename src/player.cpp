@@ -38,7 +38,7 @@ Player::Player(IGameDef *gamedef):
 	hp(PLAYER_MAX_HP),
 	hunger(PLAYER_MAX_HUNGER),
 	hunger_timer(0.0),
-	hunger_hurt_timer(0.0),
+	hunger_hurt_heal_timer(0.0),
 	exhaustion(0.0),
 	oxygen(PLAYER_MAX_OXYGEN),
 	oxygen_timer(0.0),
@@ -81,7 +81,7 @@ void Player::serialize(std::ostream &os)
 	args.setS32("hp", hp);
 	args.setS32("hunger", hunger);
 	args.setFloat("hunger_timer", hunger_timer);
-	args.setFloat("hunger_hurt_timer", hunger_hurt_timer);
+	args.setFloat("hunger_hurt_heal_timer", hunger_hurt_heal_timer);
 	args.setFloat("exhaustion", exhaustion);
 	args.setS32("oxygen", oxygen);
 	args.setFloat("oxygen_timer", oxygen_timer);
@@ -133,7 +133,7 @@ void Player::deSerialize(std::istream &is)
 		oxygen = PLAYER_MAX_OXYGEN;
 	}
 	hunger_timer = args.getFloat("hunger_timer");
-	hunger_hurt_timer = args.getFloat("hunger_hurt_timer");
+	hunger_hurt_heal_timer = args.getFloat("hunger_hurt_heal_timer");
 	exhaustion = args.getFloat("exhaustion");
 	oxygen_timer = args.getFloat("oxygen_timer");
 	oxygen_hurt_timer = args.getFloat("oxygen_hurt_timer");
