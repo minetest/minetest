@@ -1,0 +1,36 @@
+#IncludeRegexLine: ^[ 	]*#[ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+/home/florian/prgm/blockplanet/src/jthread/pthread/jmutex.cpp
+jmutex.h
+/home/florian/prgm/blockplanet/src/jthread/pthread/jmutex.h
+
+/home/florian/prgm/blockplanet/src/jthread/pthread/jthread.cpp
+jthread.h
+/home/florian/prgm/blockplanet/src/jthread/pthread/jthread.h
+sys/time.h
+-
+time.h
+-
+stdlib.h
+-
+
+src/jthread/jmutex.h
+process.h
+-
+winsock2.h
+-
+windows.h
+-
+pthread.h
+-
+
+src/jthread/jthread.h
+jmutex.h
+src/jthread/jmutex.h
+

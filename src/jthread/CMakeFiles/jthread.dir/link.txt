@@ -1,0 +1,2 @@
+/usr/bin/ar cr libjthread.a  CMakeFiles/jthread.dir/pthread/jmutex.cpp.o CMakeFiles/jthread.dir/pthread/jthread.cpp.o
+/usr/bin/ranlib libjthread.a
