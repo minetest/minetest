@@ -84,7 +84,7 @@ std::string gob_cmd_set_texture(const std::string &texmod)
 	// command 
 	writeU8(os, GENERIC_CMD_SET_TEXTURE);
 	// parameters
-	os<<serializeString(texture_type);
+	os<<serializeString(texmod);
 	return os.str();
 }
 

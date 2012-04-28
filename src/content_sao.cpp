@@ -803,7 +803,6 @@ PlayerSAO::PlayerSAO(ServerEnvironment *env_, Player *player_, u16 peer_id_,
 	m_prop.textures_3d.clear();
 	//m_prop.textures_3d.push_back("mt_player");
 	m_prop.textures_3d.push_back("http://i.imgur.com/Y6Vej");
-	m_prop.texture_type = "web";
 	m_prop.spritediv = v2s16(1,1);
 	m_prop.is_visible = (getHP() != 0);
 	m_prop.makes_footstep_sound = true;
@@ -908,7 +907,6 @@ void PlayerSAO::step(float dtime, bool send_recommended)
 
 	if(!m_player->is_flying)
 	{
-		std::cout << (m_player->is_sprinting ? "true" : "false") << std::endl;
 		f32 num = (m_player->is_sprinting ? 0.1 : 0.01);
 		// 3.2808399 is about the number of feet in a meter (close enough)
 		f32 exh = num*(((v3f)(m_player->getPosition() - m_last_good_position)).getLength()/3.2808399);
@@ -994,7 +992,7 @@ void PlayerSAO::step(float dtime, bool send_recommended)
 	{
 		m_textures_not_sent = false;
 		std::string str = gob_cmd_set_texture(
-			m_textures_mod,
+			m_textures_mod
 		);
 		// create message and add to list
 		ActiveObjectMessage aom(getId(), false, str);
