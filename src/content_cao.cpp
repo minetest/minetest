@@ -39,7 +39,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "localplayer.h"
 #include "settings.h"
 #include "main.h"
-#include <curl/curl.h>
+//#include <curl/curl.h>
 class Settings;
 struct ToolCapabilities;
 
