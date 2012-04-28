@@ -1384,7 +1384,7 @@ void Server::AsyncRunStep()
 						playersao->setHungerHurtHealTimer(0);
 					}
 				}
-				if(playersao->getExhaustion() >= 4)
+				if(playersao->getExhaustion() >= 4096)
 				{
 					playersao->setHunger(playersao->getHunger() - 1);
 					playersao->setExhaustion(0);

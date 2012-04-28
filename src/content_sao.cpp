@@ -912,59 +912,6 @@ void PlayerSAO::step(float dtime, bool send_recommended)
 		f32 exh = num*(((v3f)(m_player->getPosition() - m_last_good_position)).getLength()/3.2808399);
 		m_player->exhaustion += exh;
 	}
-	if(m_is_singleplayer)
-	{
-		m_last_good_position = m_player->getPosition();
-		m_last_good_position_age = 0;
-	}
-	else
-	{
-		/*
-			Check player movements
-
-			NOTE: Actually the server should handle player physics like the
-			client does and compare player's position to what is calculated
-			on our side. This is required when eg. players fly due to an
-			explosion.
-		*/
-
-		float player_max_speed = 0;
-		float player_max_speed_up = 0;
-		if(m_privs.count("fast") != 0){
-			// Fast speed
-			player_max_speed = BS * 20;
-			player_max_speed_up = BS * 20;
-		} else {
-			// Normal speed
-			player_max_speed = BS * 4.0;
-			player_max_speed_up = BS * 4.0;
-		}
-		// Tolerance
-		player_max_speed *= 2.5;
-		player_max_speed_up *= 2.5;
-
-		m_last_good_position_age += dtime;
-		if(m_last_good_position_age >= 1.0){
-			float age = m_last_good_position_age;
-			v3f diff = (m_player->getPosition() - m_last_good_position);
-			float d_vert = diff.Y;
-			diff.Y = 0;
-			float d_horiz = diff.getLength();
-			/*infostream<<m_player->getName()<<"'s horizontal speed is "
-					<<(d_horiz/age)<<std::endl;*/
-			if(d_horiz <= age * player_max_speed &&
-					(d_vert < 0 || d_vert < age * player_max_speed_up)){
-				m_last_good_position = m_player->getPosition();
-			} else {
-				actionstream<<"Player "<<m_player->getName()
-						<<" moved too fast; resetting position"
-						<<std::endl;
-				m_player->setPosition(m_last_good_position);
-				m_teleported = true;
-			}
-			m_last_good_position_age = 0;
-		}
-	}
 
 	if(send_recommended == false)
 		return;
