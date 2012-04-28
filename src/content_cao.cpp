@@ -39,6 +39,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "localplayer.h"
 #include "settings.h"
 #include "main.h"
+#include <curl/curl.h>
 class Settings;
 struct ToolCapabilities;
 
@@ -1697,15 +1698,15 @@ public:
 		}
 		if(m_prop.visual == "player")
 		{
+			std::string tname = "mt_player";
+			if(m_prop.textures_3d.size() >= 1)
+					tname = m_prop.textures_3d[0];
+			tname += texmod + ".png";
+			tname += mod;
 			if(m_body) {
 				scene::IMesh *mesh = m_body->getMesh();
 				if(mesh){
 					{
-						std::string tname = "mt_player";
-						if(m_prop.textures_3d.size() >= 1)
-							tname = m_prop.textures_3d[0];
-						tname += texmod + ".png";
-						tname += mod;
 						scene::IMeshBuffer *buf = mesh->getMeshBuffer(0);
 						buf->getMaterial().setTexture(0,
 								tsrc->getTextureRaw(tname));
@@ -1716,11 +1717,6 @@ public:
 				scene::IMesh *mesh = m_head->getMesh();
 				if(mesh){
 					{
-						std::string tname = "mt_player";
-						if(m_prop.textures_3d.size() >= 1)
-							tname = m_prop.textures_3d[0];
-						tname += texmod + ".png";
-						tname += mod;
 						scene::IMeshBuffer *buf = mesh->getMeshBuffer(0);
 						buf->getMaterial().setTexture(0,
 								tsrc->getTextureRaw(tname));
@@ -1731,11 +1727,6 @@ public:
 				scene::IMesh *mesh = m_leg_l->getMesh();
 				if(mesh){
 					{
-						std::string tname = "mt_player";
-						if(m_prop.textures_3d.size() >= 1)
-							tname = m_prop.textures_3d[0];
-						tname += texmod + ".png";
-						tname += mod;
 						scene::IMeshBuffer *buf = mesh->getMeshBuffer(0);
 						buf->getMaterial().setTexture(0,
 								tsrc->getTextureRaw(tname));
@@ -1746,11 +1737,6 @@ public:
 				scene::IMesh *mesh = m_leg_r->getMesh();
 				if(mesh){
 					{
-						std::string tname = "mt_player";
-						if(m_prop.textures_3d.size() >= 1)
-							tname = m_prop.textures_3d[0];
-						tname += texmod + ".png";
-						tname += mod;
 						scene::IMeshBuffer *buf = mesh->getMeshBuffer(0);
 						buf->getMaterial().setTexture(0,
 								tsrc->getTextureRaw(tname));
@@ -1761,11 +1747,6 @@ public:
 				scene::IMesh *mesh = m_arm_l->getMesh();
 				if(mesh){
 					{
-						std::string tname = "mt_player";
-						if(m_prop.textures_3d.size() >= 1)
-							tname = m_prop.textures_3d[0];
-						tname += texmod + ".png";
-						tname += mod;
 						scene::IMeshBuffer *buf = mesh->getMeshBuffer(0);
 						buf->getMaterial().setTexture(0,
 								tsrc->getTextureRaw(tname));
@@ -1776,11 +1757,6 @@ public:
 				scene::IMesh *mesh = m_arm_r->getMesh();
 				if(mesh){
 					{
-						std::string tname = "mt_player";
-						if(m_prop.textures_3d.size() >= 1)
-							tname = m_prop.textures_3d[0];
-						tname += texmod + ".png";
-						tname += mod;
 						scene::IMeshBuffer *buf = mesh->getMeshBuffer(0);
 						buf->getMaterial().setTexture(0,
 								tsrc->getTextureRaw(tname));

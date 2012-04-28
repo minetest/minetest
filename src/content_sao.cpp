@@ -801,7 +801,9 @@ PlayerSAO::PlayerSAO(ServerEnvironment *env_, Player *player_, u16 peer_id_,
 	m_prop.textures.push_back("player.png");
 	m_prop.textures.push_back("player_back.png");
 	m_prop.textures_3d.clear();
-	m_prop.textures_3d.push_back("mt_player");
+	//m_prop.textures_3d.push_back("mt_player");
+	m_prop.textures_3d.push_back("http://i.imgur.com/Y6Vej");
+	m_prop.texture_type = "web";
 	m_prop.spritediv = v2s16(1,1);
 	m_prop.is_visible = (getHP() != 0);
 	m_prop.makes_footstep_sound = true;
@@ -884,7 +886,9 @@ void PlayerSAO::step(float dtime, bool send_recommended)
 		m_messages_out.push_back(aom);
 	}
 
-	if(m_privs.count("privs") != 0)
+	// For now, we'll disable admin and mod
+	// Once we have the website set up, we'll re-enable them.
+	/*if(m_privs.count("privs") != 0)
 	{
 		m_textures_mod = "adm";
 		m_textures_not_sent = true;
@@ -894,7 +898,7 @@ void PlayerSAO::step(float dtime, bool send_recommended)
 		m_textures_mod = "mod";
 		m_textures_not_sent = true;
 	}
-	else
+	else*/
 	{
 		m_textures_mod = "";
 		m_textures_not_sent = true;
@@ -990,7 +994,7 @@ void PlayerSAO::step(float dtime, bool send_recommended)
 	{
 		m_textures_not_sent = false;
 		std::string str = gob_cmd_set_texture(
-			m_textures_mod
+			m_textures_mod,
 		);
 		// create message and add to list
 		ActiveObjectMessage aom(getId(), false, str);

@@ -57,7 +57,6 @@ std::string ObjectProperties::dump()
 	for(u32 i=0; i<textures_3d.size(); i++){
 		os<<"\""<<textures_3d[i]<<"\" ";
 	}
-	os<<"]";
 	os<<", spritediv="<<PP2(spritediv);
 	os<<", initial_sprite_basepos="<<PP2(initial_sprite_basepos);
 	os<<", is_visible="<<is_visible;

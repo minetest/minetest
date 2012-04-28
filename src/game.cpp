@@ -163,7 +163,7 @@ void draw_hotbar(video::IVideoDriver *driver, gui::IGUIFont *font,
 	
 	core::rect<s32> imgrect(0,0,imgsize,imgsize);
 
-	//Draw Items
+	// Draw Items
 	for(s32 i=0; i<itemcount; i++)
 	{
 		core::rect<s32> imgrect(0,0,imgsize,imgsize);
