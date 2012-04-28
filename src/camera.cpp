@@ -233,9 +233,12 @@ void Camera::update(LocalPlayer* player, f32 frametime, v2u32 screensize,
 	m_playernode->setRotation(v3f(0, -1 * player->getYaw(), 0));
 	m_playernode->updateAbsolutePosition();
 
+	//Get camera tilt timer (hurt animation)
+	float cameratilt = fabs(fabs(player->hurt_tilt_timer-0.75)-0.75);
+
 	// Set head node transformation
-	m_headnode->setPosition(player->getEyeOffset());
-	m_headnode->setRotation(v3f(player->getPitch(), 0, 0));
+	m_headnode->setPosition(player->getEyeOffset()+v3f(0,cameratilt*-player->hurt_tilt_strength,0));
+	m_headnode->setRotation(v3f(player->getPitch(), 0, cameratilt*player->hurt_tilt_strength));
 	m_headnode->updateAbsolutePosition();
 
 	// Compute relative camera position and target

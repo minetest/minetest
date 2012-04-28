@@ -1356,6 +1356,10 @@ void the_game(
 	// NOTE: So we have to use getTime() and call run()s between them
 	u32 lasttime = device->getTimer()->getTime();
 
+	LocalPlayer* player = client.getEnv().getLocalPlayer();
+	player->hurt_tilt_timer = 0;
+	player->hurt_tilt_strength = 0;
+
 	for(;;)
 	{
 		if(device->run() == false || kill == true)
@@ -2055,8 +2059,13 @@ void the_game(
 				{
 					//u16 damage = event.player_damage.amount;
 					//infostream<<"Player damage: "<<damage<<std::endl;
+
 					damage_flash += 100.0;
 					damage_flash += 8.0 * event.player_damage.amount;
+
+					player->hurt_tilt_timer = 1.5;
+					player->hurt_tilt_strength = event.player_damage.amount/2;
+					player->hurt_tilt_strength = rangelim(player->hurt_tilt_strength, 2.0, 10.0);
 				}
 				else if(event.type == CE_PLAYER_FORCE_MOVE)
 				{
@@ -2087,6 +2096,10 @@ void the_game(
 					/* Handle visualization */
 
 					damage_flash = 0;
+
+					LocalPlayer* player = client.getEnv().getLocalPlayer();
+					player->hurt_tilt_timer = 0;
+					player->hurt_tilt_strength = 0;
 
 					/*LocalPlayer* player = client.getLocalPlayer();
 					player->setPosition(player->getPosition() + v3f(0,-BS,0));
@@ -3055,6 +3068,16 @@ void the_game(
 					NULL);
 			
 			damage_flash -= 100.0*dtime;
+		}
+
+		/*
+			Damage camera tilt
+		*/
+		if(player->hurt_tilt_timer > 0.0)
+		{
+			player->hurt_tilt_timer -= dtime*5;
+			if(player->hurt_tilt_timer < 0)
+				player->hurt_tilt_strength = 0;
 		}
 
 		/*
