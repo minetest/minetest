@@ -1700,7 +1700,9 @@ public:
 		{
 			std::string tname = "mt_player";
 			if(m_prop.textures_3d.size() >= 1)
+			{
 					tname = m_prop.textures_3d[0];
+			}
 			tname += texmod + ".png";
 			tname += mod;
 			if(m_body) {
