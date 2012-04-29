@@ -16,6 +16,7 @@ mingwm10_dll_file=$dir/mingwm10.dll
 irrlicht_version=1.7.2
 ogg_version=1.2.1
 vorbis_version=1.3.2
+curl_verison=7.25.0
 
 # unzip -l $openal_stripped_file:
 #        0  2012-04-03 00:25   openal_stripped/
@@ -47,18 +48,17 @@ wget http://switch.dl.sourceforge.net/project/winlibs/libvorbis/libvorbis-$vorbi
 	-c -O $packagedir/libvorbis-$vorbis_version-dev.7z || exit 1
 wget http://switch.dl.sourceforge.net/project/winlibs/libvorbis/libvorbis-$vorbis_version-dll.7z \
 	-c -O $packagedir/libvorbis-$vorbis_version-dll.7z || exit 1
+wget http://curl.haxx.se/gknw.net/win32/curl-$curl_version-devel-mingw32.zip \
+	-c -O $packagedir/curl-$curl_version-devel-mingw32.zip || exit 1
 wget http://github.com/celeron55/minetest/zipball/master \
 	-c -O $packagedir/minetest.zip || exit 1
 cp $openal_stripped_file $packagedir/openal_stripped.zip || exit 1
 cp $mingwm10_dll_file $packagedir/mingwm10.dll || exit 1
-wget http://github.com/celeron55/minetest_game/zipball/master \
-	-c -O $packagedir/minetest_game.zip || exit 1
 
 # Figure out some path names from the packages
-minetestdirname=`unzip -l $packagedir/minetest.zip | head -n 7 | tail -n 1 | sed -e 's/^[^c]*//' -e 's/\/.*$//'`
+minetestdirname=`unzip -l $packagedir/minetest.zip | head -n 7 | tail -n 1 | sed -e 's/^[^j]*//' -e 's/\/.*$//'`
 minetestdir=$builddir/$minetestdirname || exit 1
-git_hash=`echo $minetestdirname | sed -e 's/celeron55-minetest-//'`
-minetest_gamedirname=`unzip -l $packagedir/minetest_game.zip | head -n 7 | tail -n 1 | sed -e 's/^[^c]*//' -e 's/\/.*$//'`
+git_hash=`echo $minetestdirname | sed -e 's/jordan4ibanez-minetest-//'`
 
 # Extract stuff
 cd $libdir || exit 1
@@ -70,19 +70,13 @@ unzip -o $packagedir/zlib125dll.zip -d zlib125dll || exit 1
 7z x -y -olibvorbis $packagedir/libvorbis-$vorbis_version-dev.7z || exit 1
 7z x -y -olibvorbis $packagedir/libvorbis-$vorbis_version-dll.7z || exit 1
 unzip -o $packagedir/openal_stripped.zip || exit 1
+unzip -o $packagedir/curl-$curl_version-devel-mingw32.zip || exit 1
 cd $builddir || exit 1
 unzip -o $packagedir/minetest.zip || exit 1
 
 # Symlink minetestdir
 rm -rf $builddir/minetest
 ln -s $minetestdir $builddir/minetest
-
-# Extract minetest_game
-cd $minetestdir/games || exit 1
-rm -rf minetest_game || exit 1
-unzip -o $packagedir/minetest_game.zip || exit 1
-minetest_gamedir=$minetestdir/games/$minetest_gamedirname || exit 1
-mv $minetest_gamedir $minetestdir/games/minetest_game || exit 1
 
 # Build the thing
 cd $minetestdir || exit 1
@@ -106,6 +100,9 @@ cmake $minetestdir -DCMAKE_TOOLCHAIN_FILE=$toolchain_file -DENABLE_SOUND=1 \
 	-DOPENAL_INCLUDE_DIR=$libdir/openal_stripped/include \
 	-DOPENAL_LIBRARY=$libdir/openal_stripped/lib/OpenAL32.lib \
 	-DOPENAL_DLL=$libdir/openal_stripped/bin/OpenAL32.dll \
+    -DCURL_INCLUDE_DIR=$libdir/curl-$curl_version-devel-mingw32/include \
+    -DCURL_LIBRARY=$libdir/curl-$curl_version-devel-mingw32/lib/libcurl.a \
+    -DCURL_DLL=$libdir/curl-$curl_version-devel-mingw32/bin/libcurl.dll \
 	-DMINGWM10_DLL=$packagedir/mingwm10.dll \
 	-DCMAKE_INSTALL_PREFIX=/tmp \
 	-DVERSION_EXTRA=$git_hash \
