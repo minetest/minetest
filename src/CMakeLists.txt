@@ -155,6 +155,7 @@ configure_file(
 )
 
 set(common_SRCS
+	settings.cpp
 	genericobject.cpp
 	voxelalgorithms.cpp
 	sound.cpp

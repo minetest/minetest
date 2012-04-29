@@ -154,7 +154,7 @@ bool Settings::readConfigFile(const char *filename)
 
 	Returns: False on EOF
 */
-bool getUpdatedConfigObject(std::istream &is,
+bool Settings::getUpdatedConfigObject(std::istream &is,
 		core::list<std::string> &dst,
 		core::map<std::string, bool> &updated,
 		bool &value_changed)
@@ -224,7 +224,7 @@ bool getUpdatedConfigObject(std::istream &is,
 
 	Returns: True on success
 */
-bool updateConfigFile(const char *filename)
+bool Settings::updateConfigFile(const char *filename)
 {
 	infostream<<"Updating configuration file: \""
 			<<filename<<"\""<<std::endl;
