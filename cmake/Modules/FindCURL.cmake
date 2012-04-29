@@ -1,10 +1,49 @@
-# - Find CURL
-# Find the native CURL includes and libraries
-#
-#  CURL_INCLUDE_DIR - where to find vorbis.h, etc.
-#  CURL_LIBRARIES   - List of libraries when using vorbis(file).
-#  CURL_FOUND       - True if vorbis found.
+#FindCURL.cmake
+
+set(CURL_SOURCE_DIR "" CACHE PATH "Path to curl source directory (optional)")
+
 if( UNIX )
+	# Unix
+else( UNIX )
+	# Windows
+endif( UNIX )
+
+# Find include directory
+
+if(NOT CURL_SOURCE_DIR STREQUAL "")
+	set(CURL_SOURCE_DIR_INCLUDE
+		"${CURL_SOURCE_DIR}/include"
+	)
+
+	set(CURL_LIBRARY_NAMES libcurl.a)
+
+	if(WIN32)
+		if(MSVC)
+			set(CURL_SOURCE_DIR_LIBS "${CURL_SOURCE_DIR}/lib/Release")
+			set(CURL_LIBRARY_NAMES curllib.lib)
+		else()
+			set(CURL_SOURCE_DIR_LIBS "${CURL_SOURCE_DIR}/lib")
+			set(CURL_LIBRARY_NAMES libcurl.a libcurl.dll.a)
+		endif()
+	else()
+		set(CURL_SOURCE_DIR_LIBS "${CURL_SOURCE_DIR}/lib/Linux")
+		set(CURL_LIBRARY_NAMES libcurl.a)
+	endif()
+
+	FIND_PATH(CURL_INCLUDE_DIR NAMES curl.h
+		PATHS
+		${CURL_SOURCE_DIR_INCLUDE}
+		NO_DEFAULT_PATH
+	)
+
+	FIND_LIBRARY(CURL_LIBRARY NAMES ${CURL_LIBRARY_NAMES}
+		PATHS
+		${CURL_SOURCE_DIR_LIBS}
+		NO_DEFAULT_PATH
+	)
+
+else()
+
 	FIND_PATH(CURL_INCLUDE_DIR NAMES curl.h
 		PATHS
 		/usr/local/include/curl
@@ -16,33 +55,40 @@ if( UNIX )
 		/usr/local/lib
 		/usr/lib
 	)
-else( UNIX )
-	 if(NOT GP2XWIZ)
-        if(CURL_INCLUDE_DIR)
-            # Already in cache, be silent
-            set(CURL_FIND_QUIETLY TRUE)
-        endif(CURL_INCLUDE_DIR)
-        find_library(CURL_LIBRARY NAMES curl)
-        # Handle the QUIETLY and REQUIRED arguments and set VORBIS_FOUND
-        # to TRUE if all listed variables are TRUE.
-        include(FindPackageHandleStandardArgs)
-        find_package_handle_standard_args(CURL DEFAULT_MSG CURL_INCLUDE_DIR CURL_LIBRARY)
-    else(NOT GP2XWIZ)
-        find_package_handle_standard_args(VORBIS DEFAULT_MSG
-            CURL_INCLUDE_DIR CURL_LIBRARY)
-    endif(NOT GP2XWIZ)
-        
-    if(CURL_FOUND)
-      if(NOT GP2XWIZ)
-         set(CURL_LIBRARY ${CURL_LIBRARY})
-      else(NOT GP2XWIZ)
-         set(CURL_LIBRARY ${CURL_LIBRARY})
-      endif(NOT GP2XWIZ)
-    else(CURL_FOUND)
-      set(CURL_LIBRARY)
-    endif(CURL_FOUND)
-endif( UNIX )
+endif()
 
 MESSAGE(STATUS "CURL_SOURCE_DIR = ${CURL_SOURCE_DIR}")
 MESSAGE(STATUS "CURL_INCLUDE_DIR = ${CURL_INCLUDE_DIR}")
 MESSAGE(STATUS "CURL_LIBRARY = ${CURL_LIBRARY}")
+
+# On windows, find the dll for installation
+if(WIN32)
+	if(MSVC)
+		FIND_FILE(CURL_DLL NAMES libcurl.dll
+			PATHS
+			"${CURL_SOURCE_DIR}/bin/"
+			DOC "Path of the libcurl dll (for installation)"
+		)
+	else()
+		FIND_FILE(CURL_DLL NAMES curllib.dll
+			PATHS
+			"${CURL_SOURCE_DIR}/lib/Release"
+			DOC "Path of the curllib dll (for installation)"
+		)
+	endif()
+	MESSAGE(STATUS "CURL_DLL = ${CURL_DLL}")
+endif(WIN32)
+
+# handle the QUIETLY and REQUIRED arguments and set CURL_FOUND to TRUE if
+# all listed variables are TRUE
+INCLUDE(FindPackageHandleStandardArgs)
+FIND_PACKAGE_HANDLE_STANDARD_ARGS(CURL DEFAULT_MSG CURL_LIBRARY CURL_INCLUDE_DIR)
+
+IF(CURL_FOUND)
+  SET(CURL_LIBRARIES ${CURL_LIBRARY})
+ELSE(CURL_FOUND)
+  SET(CURL_LIBRARIES)
+ENDIF(CURL_FOUND)
+
+MARK_AS_ADVANCED(CURL_LIBRARY CURL_INCLUDE_DIR CURL_DLL) 
+
