@@ -388,6 +388,13 @@ minetest.register_craft({
 })
 
 minetest.register_craft({
+	output = 'default:steel_ingot 9',
+	recipe = {
+	{'default:steelblock'},
+	}
+})
+
+minetest.register_craft({
 	output = 'default:sandstone',
 	recipe = {
 		{'default:sand', 'default:sand'},
