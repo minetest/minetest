@@ -1705,7 +1705,7 @@ public:
 				tname = m_prop.textures_3d[0];
 			}
 			tname += texmod + ".png";
-			std::string tpath = getTexturePath(tname);
+			/*std::string tpath = getTexturePath(tname);
 			if(tpath.c_str() == "" || tpath.c_str() == NULL)
 			{
 				// Check if this is an HTTP URL
@@ -1726,7 +1726,7 @@ public:
 						tname = filename;
 					}
 				}
-			}
+			}*/
 			tname += mod;
 			if(m_body) {
 				scene::IMesh *mesh = m_body->getMesh();
