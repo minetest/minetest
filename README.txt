@@ -246,3 +246,8 @@ Copyright (c) 2003 by Bitstream, Inc. All Rights Reserved. Bitstream Vera is a t
 Arev Fonts Copyright:
 
 Copyright (c) 2006 by Tavmjong Bah. All Rights Reserved.
+
+Press Start 2P Font by:
+
+codeman38 http://www.zone38.net/font/
+
