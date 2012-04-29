@@ -388,6 +388,13 @@ minetest.register_craft({
 })
 
 minetest.register_craft({
+	output = 'default:steel_ingot 9',
+	recipe = {
+	{'default:steelblock'},
+	}
+})
+
+minetest.register_craft({
 	output = 'default:sandstone',
 	recipe = {
 		{'default:sand', 'default:sand'},
@@ -635,7 +642,11 @@ end
 function default.node_sound_stone_defaults(table)
 	table = table or {}
 	table.footstep = table.footstep or
-			{name="default_hard_footstep", gain=0.2}
+			{name="wood", gain=0.25}
+	table.dig = table.dig or
+			{name="wood", gain=0.9}
+	table.dug = table.dug or
+			{name="wood", gain=1.5}
 	default.node_sound_defaults(table)
 	return table
 end
@@ -643,9 +654,11 @@ end
 function default.node_sound_dirt_defaults(table)
 	table = table or {}
 	table.footstep = table.footstep or
-			{name="", gain=0.5}
-	--table.dug = table.dug or
-	--		{name="default_dirt_break", gain=0.5}
+			{name="grass", gain=0.25}
+	table.dig = table.dig or
+			{name="grass", gain=0.9}
+	table.dug = table.dug or
+			{name="grass", gain=1.5}
 	default.node_sound_defaults(table)
 	return table
 end
@@ -665,7 +678,11 @@ end
 function default.node_sound_wood_defaults(table)
 	table = table or {}
 	table.footstep = table.footstep or
-			{name="default_hard_footstep", gain=0.3}
+			{name="wood", gain=0.25}
+	table.dig = table.dig or
+			{name="wood", gain=0.9}
+	table.dug = table.dug or
+			{name="wood", gain=1.5}
 	default.node_sound_defaults(table)
 	return table
 end
@@ -673,11 +690,11 @@ end
 function default.node_sound_leaves_defaults(table)
 	table = table or {}
 	table.footstep = table.footstep or
-			{name="default_grass_footstep", gain=0.25}
+			{name="grass", gain=0.25}
 	table.dig = table.dig or
-			{name="default_dig_crumbly", gain=0.4}
+			{name="grass", gain=0.9}
 	table.dug = table.dug or
-			{name="", gain=1.0}
+			{name="grass", gain=1.5}
 	default.node_sound_defaults(table)
 	return table
 end
@@ -738,9 +755,7 @@ minetest.register_node("default:dirt_with_grass", {
 	is_ground_content = true,
 	groups = {crumbly=3},
 	drop = 'default:dirt',
-	sounds = default.node_sound_dirt_defaults({
-		footstep = {name="default_grass_footstep", gain=0.4},
-	}),
+	sounds = default.node_sound_dirt_defaults(),
 })
 
 minetest.register_node("default:dirt_with_grass_footsteps", {
@@ -749,9 +764,7 @@ minetest.register_node("default:dirt_with_grass_footsteps", {
 	is_ground_content = true,
 	groups = {crumbly=3},
 	drop = 'default:dirt',
-	sounds = default.node_sound_dirt_defaults({
-		footstep = {name="default_grass_footstep", gain=0.4},
-	}),
+	sounds = default.node_sound_dirt_defaults(),
 })
 
 minetest.register_node("default:dirt", {
