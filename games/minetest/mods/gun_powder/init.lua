@@ -21,6 +21,6 @@ minetest.register_node("gun_powder:gun_stone", {
 	is_ground_content = true,
 	groups = {cracky=3},
 	drop = 'gun_powder:gun_powder',
-	sounds = gunpowder(),
+	sounds = default.node_sound_stone_defaults(),
 })
 
