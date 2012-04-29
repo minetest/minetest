@@ -40,6 +40,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "settings.h"
 #include "main.h"
 #include <curl/curl.h>
+#include "filesys.h"
 class Settings;
 struct ToolCapabilities;
 
@@ -1701,9 +1702,31 @@ public:
 			std::string tname = "mt_player";
 			if(m_prop.textures_3d.size() >= 1)
 			{
-					tname = m_prop.textures_3d[0];
+				tname = m_prop.textures_3d[0];
 			}
 			tname += texmod + ".png";
+			std::string tpath = getTexturePath(tname);
+			if(tpath.c_str() == "" || tpath.c_str() == NULL)
+			{
+				// Check if this is an HTTP URL
+				if(strncmp(tname.c_str(), "http://", strlen(tname.c_str())) == 0)
+				{
+					CURL *curl;
+					CURLcode res;
+					curl = curl_easy_init();
+					std::string filename = getMediaCacheDir() + DIR_DELIM + m_name + ".png";
+					FILE *ofile = fopen(filename.c_str(), "wb");
+					if(curl && ofile)
+					{
+						curl_easy_setopt(curl, CURLOPT_URL, tname.c_str());
+						curl_easy_setopt(curl, CURLOPT_WRITEDATA, ofile);
+						res = curl_easy_perform(curl);
+						curl_easy_cleanup(curl);
+						fclose(ofile);
+						tname = filename;
+					}
+				}
+			}
 			tname += mod;
 			if(m_body) {
 				scene::IMesh *mesh = m_body->getMesh();
