@@ -635,7 +635,11 @@ end
 function default.node_sound_stone_defaults(table)
 	table = table or {}
 	table.footstep = table.footstep or
-			{name="default_hard_footstep", gain=0.2}
+			{name="wood", gain=0.25}
+	table.dig = table.dig or
+			{name="wood", gain=0.9}
+	table.dug = table.dug or
+			{name="wood", gain=1.5}
 	default.node_sound_defaults(table)
 	return table
 end
