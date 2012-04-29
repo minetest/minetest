@@ -607,7 +607,10 @@ void LocalPlayer::applyControl(float dtime)
 	}
 
 	if(control.sneak)
-		speed = speed / 1.5;
+	{
+		speed.X = speed.X / 1.5;
+		speed.Z = speed.Z / 1.5;
+	}
 	
 
 	if(abs(speed.X)>maxspeed) {speed.X=maxspeed*(abs(speed.X)/speed.X);}
