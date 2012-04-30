@@ -298,6 +298,15 @@ minetest.register_craft({
 })
 
 minetest.register_craft({
+	output = 'default:axe_wood',
+	recipe = {
+		{'','default:wood', 'default:wood'},
+		{'','default:stick', 'default:wood'},
+		{'', 'default:stick', ''},
+	}
+})
+
+minetest.register_craft({
 	output = 'default:axe_stone',
 	recipe = {
 		{'default:cobble', 'default:cobble'},
@@ -307,11 +316,29 @@ minetest.register_craft({
 })
 
 minetest.register_craft({
+	output = 'default:axe_stone',
+	recipe = {
+		{'','default:cobble', 'default:cobble'},
+		{'','default:stick', 'default:cobble'},
+		{'', 'default:stick', ''},
+	}
+})
+
+minetest.register_craft({
 	output = 'default:axe_steel',
 	recipe = {
 		{'default:steel_ingot', 'default:steel_ingot'},
 		{'default:steel_ingot', 'default:stick'},
 		{'', 'default:stick'},
+	}
+})
+
+minetest.register_craft({
+	output = 'default:axe_steel',
+	recipe = {
+		{'','default:steel_ingot', 'default:steel_ingot'},
+		{'','default:stick', 'default:steel_ingot'},
+		{'', 'default:stick', ''},
 	}
 })
 
