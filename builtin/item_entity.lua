@@ -21,7 +21,6 @@ minetest.register_entity("__builtin:item", {
 		is_visible = false,
 		pointable = false,
 	},
-	
 	itemstring = '',
 	physical_state = true,
 	dontbugme = true,
@@ -30,6 +29,7 @@ minetest.register_entity("__builtin:item", {
 	gravity = true,
 	whocaresaboutnodes = false,
 	lastplayer = false,
+	timer = 0,
 
 	set_item = function(self, itemstring)
 		self.itemstring = itemstring
@@ -69,6 +69,10 @@ minetest.register_entity("__builtin:item", {
 	end,
 
 	on_step = function(self, dtime)
+		self.timer = self.timer + dtime
+		if (self.timer > 300) then
+			self.object:remove()
+		end
 		local p = self.object:getpos()
 		p.y = p.y - 0.3
 		local nn = minetest.env:get_node(p).name
