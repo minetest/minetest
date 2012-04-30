@@ -611,6 +611,7 @@ void GUIMainMenu::regenerateGui(v2u32 screensize)
 			"Joel Leclerc <lkjoel@ubuntu.com>\n"
 			"Jordan Craige <jordan4girl3@gmail.com>\n"
 			"sfan5 <sfan5@live.de>\n"
+			"Jeija <norrepli@gmail.com>\n"
 			"\n"
 			).c_str(), rect, false, true, this, -1);
 		}

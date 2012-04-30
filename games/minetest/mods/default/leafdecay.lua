@@ -75,7 +75,7 @@ minetest.register_abm({
 			-- Drop stuff other than the node itself
 			itemstacks = minetest.get_node_drops(n0.name)
 			for _, itemname in ipairs(itemstacks) do
-				if itemname ~= n0.name then
+				if itemname ~= n0.name or minetest.get_item_group(itemname, "leafdecay") == 2 then
 					local p_drop = {
 						x = p0.x - 0.5 + math.random(),
 						y = p0.y - 0.5 + math.random(),
