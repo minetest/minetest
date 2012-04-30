@@ -36,6 +36,17 @@ minetest.register_item(":", {
 	}
 })
 
+minetest.register_tool("default:shears", {
+	description = "Shears",
+	inventory_image = "shears.png",
+	tool_capabilities = {
+		max_drop_level=0,
+		groupcaps={
+			leafy={times={[1]=0.05}, uses=150, maxlevel=1}
+		}
+	},
+})
+
 minetest.register_tool("default:pick_wood", {
 	description = "Wooden Pickaxe",
 	inventory_image = "default_tool_woodpick.png",
@@ -185,6 +196,14 @@ minetest.register_tool("default:sword_steel", {
 --
 -- Crafting definition
 --
+
+minetest.register_craft({
+	output = 'default:shears',
+	recipe = {
+		{'','default:steel_ingot'},
+		{'default:steel_ingot',''},
+	}
+})
 
 minetest.register_craft({
 	output = 'default:wood 4',
@@ -904,7 +923,7 @@ minetest.register_node("default:leaves", {
 	visual_scale = 1.3,
 	tile_images = {"default_leaves.png"},
 	paramtype = "light",
-	groups = {snappy=3, leafdecay=3, flammable=2},
+	groups = {snappy=3, leafdecay=3, flammable=2,  leafy=1},
 	drop = {
 		max_items = 1,
 		items = {
@@ -940,7 +959,7 @@ minetest.register_node("default:papyrus", {
 	paramtype = "light",
 	is_ground_content = true,
 	walkable = false,
-	groups = {snappy=3,flammable=2},
+	groups = {snappy=3,flammable=2,  leafy=1},
 	sounds = default.node_sound_leaves_defaults(),
 })
 
@@ -1333,7 +1352,7 @@ minetest.register_node("default:dry_shrub", {
 	wield_image = "default_dry_shrub.png",
 	paramtype = "light",
 	walkable = false,
-	groups = {snappy=3,flammable=3},
+	groups = {snappy=3,flammable=3, leafy=1},
 	sounds = default.node_sound_leaves_defaults(),
 	selection_box = {
 		type = "fixed",
