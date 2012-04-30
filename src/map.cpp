@@ -2274,7 +2274,7 @@ MapBlock* ServerMap::finishBlockMake(mapgen::BlockMakeData *data,
 				y<=blockpos_max.Y+extra_borders.Y; y++)
 		{
 			v3s16 p(x, y, z);
-			getBlockNoCreateNoEx(p)->setLightingExpired(true);
+			getBlockNoCreateNoEx(p)->setLightingExpired(false);
 		}
 
 #if 0
