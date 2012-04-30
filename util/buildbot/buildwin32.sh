@@ -16,7 +16,7 @@ mingwm10_dll_file=$dir/mingwm10.dll
 irrlicht_version=1.7.2
 ogg_version=1.2.1
 vorbis_version=1.3.2
-curl_verison=7.25.0
+curl_version=7.25.0
 
 # unzip -l $openal_stripped_file:
 #        0  2012-04-03 00:25   openal_stripped/
