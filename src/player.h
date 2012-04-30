@@ -157,6 +157,8 @@ public:
 
 	float hurt_tilt_timer_max;
 
+	float enable_sprinting_timer;
+
 	u16 hunger;
 
 	f32 hunger_timer;
