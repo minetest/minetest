@@ -66,11 +66,11 @@ void LocalPlayer::move(f32 dtime, Map &map, f32 pos_max_d,
 	// Skip collision detection if a special movement mode is used
 	bool fly_allowed = m_gamedef->checkLocalPrivilege("fly");
 	bool free_move = fly_allowed && g_settings->getBool("free_move");
-	if(free_move)
-	{
-		setPosition(position);
-		return;
-	}
+	//if(free_move)
+	//{
+	//	setPosition(position);
+	//	return;
+	//}
 
 	/*
 		Collision detection
@@ -121,12 +121,14 @@ void LocalPlayer::move(f32 dtime, Map &map, f32 pos_max_d,
 		v3s16 pp = floatToInt(position + v3f(0,0.5*BS,0), BS);
 		v3s16 pp2 = floatToInt(position + v3f(0,-0.2*BS,0), BS);
 		is_climbing = ((nodemgr->get(map.getNode(pp).getContent()).climbable ||
-		nodemgr->get(map.getNode(pp2).getContent()).climbable) && !free_move);
+		nodemgr->get(map.getNode(pp2).getContent()).climbable));
 	}
 	catch(InvalidPositionException &e)
 	{
 		is_climbing = false;
 	}
+
+	is_flying = free_move;
 
 	/*
 		Collision uncertainty radius
@@ -447,7 +449,7 @@ void LocalPlayer::move(f32 dtime, Map &map, f32 pos_max_d,
 	if(collision_info)
 	{
 		// Report fall collision
-		if(old_speed.Y < m_speed.Y - 0.1 && !standing_on_unloaded)
+		if(old_speed.Y < m_speed.Y - 0.1 && !standing_on_unloaded && !free_move)
 		{
 			CollisionInfo info;
 			info.t = COLLISION_FALL;
@@ -480,21 +482,17 @@ void LocalPlayer::move(f32 dtime, Map &map, f32 pos_max_d)
 
 void LocalPlayer::applyControl(float dtime)
 {
-	// Clear stuff
-	swimming_up = false;
-
 	// Random constants
-	f32 walk_acceleration = 4.0 * BS;
-	f32 walkspeed_max = 4.0 * BS;
-	
+	f32 maxspeed = 33.0 * BS;
+
 	setPitch(control.pitch);
 	setYaw(control.yaw);
 	
-	v3f move_direction = v3f(0,0,1);
+	v3f move_direction = v3f(0,0,8);
 	move_direction.rotateXZBy(getYaw());
-	
-	v3f speed = v3f(0,0,0);
-	
+
+	v3f speed = getSpeed();
+
 	bool fly_allowed = m_gamedef->checkLocalPrivilege("fly");
 	bool fast_allowed = m_gamedef->checkLocalPrivilege("fast");
 
@@ -502,57 +500,33 @@ void LocalPlayer::applyControl(float dtime)
 	bool fast_move = fast_allowed && g_settings->getBool("fast_move");
 	bool continuous_forward = g_settings->getBool("continuous_forward");
 
-	if(free_move || is_climbing)
+	if (!in_water || free_move)
 	{
-		v3f speed = getSpeed();
-		speed.Y = 0;
-		setSpeed(speed);
+		speed.X=speed.X*0.85;
+		speed.Z=speed.Z*0.85;
+	} else {
+		speed.X=speed.X*0.5;
+		speed.Z=speed.Z*0.5;
+	}
+	if (speed.X<0 && speed.X+0.1>0) {speed.X=0;}
+	if (speed.Z<0 && speed.Z+0.1>0) {speed.Z=0;}
+
+	if (free_move || is_climbing)
+	{
+		speed.Y=speed.Y*0.85;
+		if (speed.Y<0 && speed.Y+0.1>0) {speed.Y=0;}
 	}
 
-	// Whether superspeed mode is used or not
-	bool superspeed = false;
-	
 	// If free movement and fast movement, always move fast
-	if(free_move && fast_move)
-		superspeed = true;
-	
-	// Auxiliary button 1 (E)
-	if(control.aux1)
-	{
-		if(free_move)
-		{
-			// In free movement mode, aux1 descends
-			v3f speed = getSpeed();
-			if(fast_move)
-				speed.Y = -20*BS;
-			else
-				speed.Y = -walkspeed_max;
-			setSpeed(speed);
-		}
-		else if(is_climbing)
-		{
-		        v3f speed = getSpeed();
-			speed.Y = -3*BS;
-			setSpeed(speed);
-		}
-		else
-		{
-			// If not free movement but fast is allowed, aux1 is
-			// "Turbo button"
-			if(fast_move)
-				superspeed = true;
-		}
-	}
 
 	if(continuous_forward)
 		speed += move_direction;
 
 	if(control.up)
 	{
-		if(continuous_forward)
-			superspeed = true;
-		else
-			speed += move_direction;
+		speed += move_direction;
+		if (is_sprinting)
+			speed += move_direction*0.5;
 	}
 	if(control.down)
 	{
@@ -566,29 +540,23 @@ void LocalPlayer::applyControl(float dtime)
 	{
 		speed += move_direction.crossProduct(v3f(0,-1,0));
 	}
+
 	if(control.jump)
 	{
 		if(free_move)
 		{
-			v3f speed = getSpeed();
-			if(fast_move)
-				speed.Y = 20*BS;
-			else
-				speed.Y = walkspeed_max;
-			setSpeed(speed);
+			speed.Y = 10*BS;
+			if (fast_move)
+				speed.Y = 15*BS;
 		}
-		else if(touching_ground)
+		if(touching_ground)
 		{
-			/*
-				NOTE: The d value in move() affects jump height by
-				raising the height at which the jump speed is kept
-				at its starting value
-			*/
-			v3f speed = getSpeed();
+				//NOTE: The d value in move() affects jump height by
+				//raising the height at which the jump speed is kept
+				//at its starting value
 			if(speed.Y >= -0.5*BS)
 			{
 				speed.Y = 6.5*BS;
-				setSpeed(speed);
 				
 				MtEvent *e = new SimpleTriggerEvent("PlayerJump");
 				m_gamedef->event()->put(e);
@@ -596,37 +564,59 @@ void LocalPlayer::applyControl(float dtime)
 		}
 		// Use the oscillating value for getting out of water
 		// (so that the player doesn't fly on the surface)
-		else if(in_water)
+		if(in_water)
 		{
-			v3f speed = getSpeed();
-			speed.Y = 1.5*BS;
-			setSpeed(speed);
-			swimming_up = true;
+			speed.Y += 0.2*BS;
+			if (speed.Y > 0) speed.Y+=0.2*BS;
 		}
-		else if(is_climbing)
+		if(is_climbing)
 		{
-	                v3f speed = getSpeed();
-			speed.Y = 3*BS;
-			setSpeed(speed);
+			speed.Y = 4*BS;
 		}
 	}
 
-	// The speed of the player (Y is ignored)
-	if(superspeed)
-		speed = speed.normalize() * walkspeed_max * 5.0;
-	else if(control.sneak)
-		speed = speed.normalize() * walkspeed_max / 3.0;
-	else
-		speed = speed.normalize() * walkspeed_max;
+	// Auxiliary button 1 (E)
+	if(control.aux1)
+	{
+		if(free_move)
+		{
+			speed.Y = -10*BS;
+			if (fast_move)
+				speed.Y = -15*BS;
+		}
+		if(is_climbing)
+		{
+			speed.Y = -3*BS;
+		}
+		if(fast_move && !free_move)
+		{
+			speed.X=speed.X*1.11;
+			speed.Z=speed.Z*1.11;
+		}
+	}
+
+	if(fast_move&&free_move)
+	{
+		speed.X=speed.X*1.1;
+		speed.Z=speed.Z*1.1;
+	}
+
+	if((in_water_stable || in_water) && !free_move)
+	{
+		speed.Y=speed.Y*0.95-0.1*BS;
+	}
+
+	if(control.sneak)
+	{
+		speed.X = speed.X / 1.5;
+		speed.Z = speed.Z / 1.5;
+	}
 	
-	f32 inc = walk_acceleration * BS * dtime;
-	
-	// Faster acceleration if fast and free movement
-	if(free_move && fast_move)
-		inc = walk_acceleration * BS * dtime * 10;
-	
-	// Accelerate to target speed with maximum increment
-	accelerate(speed, inc);
+
+	if(abs(speed.X)>maxspeed) {speed.X=maxspeed*(abs(speed.X)/speed.X);}
+	if(abs(speed.Y)>maxspeed) {speed.Y=maxspeed*(abs(speed.Y)/speed.Y);}
+	if(abs(speed.Z)>maxspeed) {speed.Z=maxspeed*(abs(speed.Z)/speed.Z);}
+	setSpeed(speed);
 }
 
 v3s16 LocalPlayer::getStandingNodePos()

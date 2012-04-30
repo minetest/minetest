@@ -30,10 +30,22 @@ Player::Player(IGameDef *gamedef):
 	in_water(false),
 	in_water_stable(false),
 	is_climbing(false),
+	is_flying(false),
+	is_sprinting(false),
 	swimming_up(false),
 	camera_barely_in_ceiling(false),
 	inventory(gamedef->idef()),
 	hp(PLAYER_MAX_HP),
+	hurt_tilt_timer(0),
+	hurt_tilt_timer_max(0),
+	enable_sprinting_timer(0),
+	hunger(PLAYER_MAX_HUNGER),
+	hunger_timer(0.0),
+	hunger_hurt_heal_timer(0.0),
+	exhaustion(0.0),
+	oxygen(PLAYER_MAX_OXYGEN),
+	oxygen_timer(0.0),
+	oxygen_hurt_timer(0.0),
 	peer_id(PEER_ID_INEXISTENT),
 // protected
 	m_gamedef(gamedef),
@@ -54,43 +66,6 @@ Player::~Player()
 {
 }
 
-// Y direction is ignored
-void Player::accelerate(v3f target_speed, f32 max_increase)
-{
-	v3f d_wanted = target_speed - m_speed;
-	d_wanted.Y = 0;
-	f32 dl_wanted = d_wanted.getLength();
-	f32 dl = dl_wanted;
-	if(dl > max_increase)
-		dl = max_increase;
-	
-	v3f d = d_wanted.normalize() * dl;
-
-	m_speed.X += d.X;
-	m_speed.Z += d.Z;
-	//m_speed += d;
-
-#if 0 // old code
-	if(m_speed.X < target_speed.X - max_increase)
-		m_speed.X += max_increase;
-	else if(m_speed.X > target_speed.X + max_increase)
-		m_speed.X -= max_increase;
-	else if(m_speed.X < target_speed.X)
-		m_speed.X = target_speed.X;
-	else if(m_speed.X > target_speed.X)
-		m_speed.X = target_speed.X;
-
-	if(m_speed.Z < target_speed.Z - max_increase)
-		m_speed.Z += max_increase;
-	else if(m_speed.Z > target_speed.Z + max_increase)
-		m_speed.Z -= max_increase;
-	else if(m_speed.Z < target_speed.Z)
-		m_speed.Z = target_speed.Z;
-	else if(m_speed.Z > target_speed.Z)
-		m_speed.Z = target_speed.Z;
-#endif
-}
-
 v3s16 Player::getLightPosition() const
 {
 	return floatToInt(m_position + v3f(0,BS+BS/2,0), BS);
@@ -107,6 +82,13 @@ void Player::serialize(std::ostream &os)
 	args.setFloat("yaw", m_yaw);
 	args.setV3F("position", m_position);
 	args.setS32("hp", hp);
+	args.setS32("hunger", hunger);
+	args.setFloat("hunger_timer", hunger_timer);
+	args.setFloat("hunger_hurt_heal_timer", hunger_hurt_heal_timer);
+	args.setFloat("exhaustion", exhaustion);
+	args.setS32("oxygen", oxygen);
+	args.setFloat("oxygen_timer", oxygen_timer);
+	args.setFloat("oxygen_hurt_timer", oxygen_hurt_timer);
 
 	args.writeLines(os);
 
@@ -141,8 +123,23 @@ void Player::deSerialize(std::istream &is)
 	try{
 		hp = args.getS32("hp");
 	}catch(SettingNotFoundException &e){
-		hp = 20;
+		hp = PLAYER_MAX_HP;
 	}
+	try{
+		hunger = args.getS32("hunger");
+	}catch(SettingNotFoundException &e){
+		hunger = PLAYER_MAX_HUNGER;
+	}
+	try{
+		oxygen = args.getS32("oxygen");
+	}catch(SettingNotFoundException &e){
+		oxygen = PLAYER_MAX_OXYGEN;
+	}
+	hunger_timer = args.getFloat("hunger_timer");
+	hunger_hurt_heal_timer = args.getFloat("hunger_hurt_heal_timer");
+	exhaustion = args.getFloat("exhaustion");
+	oxygen_timer = args.getFloat("oxygen_timer");
+	oxygen_hurt_timer = args.getFloat("oxygen_hurt_timer");
 
 	inventory.deSerialize(is);
 

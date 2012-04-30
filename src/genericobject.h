@@ -27,6 +27,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #define GENERIC_CMD_SET_PROPERTIES 0
 #define GENERIC_CMD_UPDATE_POSITION 1
 #define GENERIC_CMD_SET_TEXTURE_MOD 2
+#define GENERIC_CMD_SET_TEXTURE 6
 #define GENERIC_CMD_SET_SPRITE 3
 #define GENERIC_CMD_PUNCHED 4
 #define GENERIC_CMD_UPDATE_ARMOR_GROUPS 5
@@ -39,6 +40,7 @@ std::string gob_cmd_update_position(
 	v3f position,
 	v3f velocity,
 	v3f acceleration,
+	f32 pitch,
 	f32 yaw,
 	bool do_interpolate,
 	bool is_movement_end,
@@ -46,6 +48,8 @@ std::string gob_cmd_update_position(
 );
 
 std::string gob_cmd_set_texture_mod(const std::string &mod);
+
+std::string gob_cmd_set_texture(const std::string &texmod);
 
 std::string gob_cmd_set_sprite(
 	v2s16 p,

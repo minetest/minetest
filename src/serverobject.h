@@ -150,6 +150,14 @@ public:
 	{}
 	virtual s16 getHP() const
 	{ return 0; }
+	virtual void setHunger(s16 hunger)
+	{}
+	virtual s16 getHunger() const
+	{ return 0; }
+	virtual void setOxygen(s16 oxygen)
+	{}
+	virtual s16 getOxygen() const
+	{ return 0; }
 
 	virtual void setArmorGroups(const ItemGroupList &armor_groups)
 	{}

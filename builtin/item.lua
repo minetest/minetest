@@ -192,12 +192,12 @@ function minetest.item_place(itemstack, placer, pointed_thing)
 end
 
 function minetest.item_drop(itemstack, dropper, pos)
-	if dropper.get_player_name then
+	if dropper and dropper:get_player_name() ~= nil then
 		local v = dropper:get_look_dir()
 		local p = {x=pos.x+v.x, y=pos.y+1.5+v.y, z=pos.z+v.z}
 		local obj = minetest.env:add_item(p, itemstack)
 		v.x = v.x*2
-		v.y = v.y*2 + 1
+		v.y = v.y*2 + 2
 		v.z = v.z*2
 		obj:setvelocity(v)
 	else
@@ -206,10 +206,11 @@ function minetest.item_drop(itemstack, dropper, pos)
 	return ""
 end
 
-function minetest.item_eat(hp_change, replace_with_item)
+function minetest.item_eat(hp_change, hunger_change, replace_with_item)
 	return function(itemstack, user, pointed_thing)  -- closure
 		if itemstack:take_item() ~= nil then
 			user:set_hp(user:get_hp() + hp_change)
+			user:set_hunger(user:get_hunger() + hunger_change)
 			itemstack:add_item(replace_with_item) -- note: replace_with_item is optional
 		end
 		return itemstack
@@ -262,7 +263,7 @@ function minetest.node_dig(pos, node, digger)
 		-- Add dropped items
 		local _, dropped_item
 		for _, dropped_item in ipairs(drops) do
-			digger:get_inventory():add_item("main", dropped_item)
+			minetest.item_drop(dropped_item, nil, pos)
 		end
 	end
 

@@ -34,6 +34,7 @@ struct ObjectProperties
 	std::string visual;
 	v2f visual_size;
 	core::array<std::string> textures;
+	core::array<std::string> textures_3d;
 	v2s16 spritediv;
 	v2s16 initial_sprite_basepos;
 	bool is_visible;

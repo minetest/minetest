@@ -155,6 +155,7 @@ configure_file(
 )
 
 set(common_SRCS
+	settings.cpp
 	genericobject.cpp
 	voxelalgorithms.cpp
 	sound.cpp
@@ -268,6 +269,7 @@ set(minetestserver_SRCS
 include_directories(
 	${PROJECT_BINARY_DIR}
 	${IRRLICHT_INCLUDE_DIR}
+	${CURL_INCLUDE_DIR}
 	${ZLIB_INCLUDE_DIR}
 	${CMAKE_BUILD_TYPE}
 	${PNG_INCLUDE_DIR}
@@ -286,6 +288,7 @@ if(BUILD_CLIENT)
 		${PROJECT_NAME}
 		${ZLIB_LIBRARIES}
 		${IRRLICHT_LIBRARY}
+		curl
 		${OPENGL_LIBRARIES}
 		${JPEG_LIBRARIES}
 		${BZIP2_LIBRARIES}

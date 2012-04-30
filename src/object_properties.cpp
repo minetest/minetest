@@ -37,6 +37,7 @@ ObjectProperties::ObjectProperties():
 	automatic_rotate(0)
 {
 	textures.push_back("unknown_object.png");
+	textures_3d.push_back("unknown_object.png");
 }
 
 std::string ObjectProperties::dump()
@@ -52,7 +53,10 @@ std::string ObjectProperties::dump()
 	for(u32 i=0; i<textures.size(); i++){
 		os<<"\""<<textures[i]<<"\" ";
 	}
-	os<<"]";
+	os<<"], textures_3d=[";
+	for(u32 i=0; i<textures_3d.size(); i++){
+		os<<"\""<<textures_3d[i]<<"\" ";
+	}
 	os<<", spritediv="<<PP2(spritediv);
 	os<<", initial_sprite_basepos="<<PP2(initial_sprite_basepos);
 	os<<", is_visible="<<is_visible;
@@ -74,6 +78,10 @@ void ObjectProperties::serialize(std::ostream &os) const
 	writeU16(os, textures.size());
 	for(u32 i=0; i<textures.size(); i++){
 		os<<serializeString(textures[i]);
+	}
+	writeU16(os, textures_3d.size());
+	for(u32 i=0; i<textures_3d.size(); i++){
+		os<<serializeString(textures_3d[i]);
 	}
 	writeV2S16(os, spritediv);
 	writeV2S16(os, initial_sprite_basepos);
@@ -98,6 +106,11 @@ void ObjectProperties::deSerialize(std::istream &is)
 	u32 texture_count = readU16(is);
 	for(u32 i=0; i<texture_count; i++){
 		textures.push_back(deSerializeString(is));
+	}
+	textures_3d.clear();
+	u32 texture_3d_count = readU16(is);
+	for(u32 i=0; i<texture_3d_count; i++){
+		textures_3d.push_back(deSerializeString(is));
 	}
 	spritediv = readV2S16(is);
 	initial_sprite_basepos = readV2S16(is);

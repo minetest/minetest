@@ -81,6 +81,8 @@ enum
 	GUI_ID_SMOOTH_LIGHTING_CB,
 	GUI_ID_3D_CLOUDS_CB,
 	GUI_ID_OPAQUE_WATER_CB,
+	GUI_ID_ENABLE_SOUND_CB,
+	GUI_ID_3D_PLAYER_CB,
 	GUI_ID_DAMAGE_CB,
 	GUI_ID_CREATIVE_CB,
 	GUI_ID_JOIN_GAME_BUTTON,
@@ -230,7 +232,7 @@ void GUIMainMenu::regenerateGui(v2u32 screensize)
 			core::rect<s32> rect(0, 0, 10, m_size_client.Y);
 			rect += m_topleft_client + v2s32(15, 0);
 			//const wchar_t *text = L"H\nY\nB\nR\nI\nD";
-			const wchar_t *text = L"T\nA\nP\nE\n\nA\nN\nD\n\nG\nL\nU\nE";
+			const wchar_t *text = L"S\nI\nG\nL\nE\nP\nL\nA\nY\nE\nR";
 			gui::IGUIStaticText *t =
 			Environment->addStaticText(text, rect, false, false, this, -1);
 			t->setTextAlignment(gui::EGUIA_CENTER, gui::EGUIA_CENTER);
@@ -563,12 +565,24 @@ void GUIMainMenu::regenerateGui(v2u32 screensize)
 			Environment->addCheckBox(m_data->opaque_water, rect, this,
 					GUI_ID_OPAQUE_WATER_CB, wgettext("Opaque water"));
 		}
+		{
+			core::rect<s32> rect(0, 0, option_w, 30);
+			rect += m_topleft_client + v2s32(option_x, option_y+20*4);
+			Environment->addCheckBox(m_data->enable_sound, rect, this,
+					GUI_ID_ENABLE_SOUND_CB, wgettext("Enable Sound"));
+		}
+		{
+			core::rect<s32> rect(0, 0, option_w, 30);
+			rect += m_topleft_client + v2s32(option_x, option_y+20*5);
+			Environment->addCheckBox(m_data->player_3d, rect, this,
+					GUI_ID_3D_PLAYER_CB, wgettext("3D Player"));
+		}
 		// Key change button
 		{
 			core::rect<s32> rect(0, 0, 120, 30);
 			/*rect += m_topleft_client + v2s32(m_size_client.X-120-30,
 					m_size_client.Y-30-20);*/
-			rect += m_topleft_client + v2s32(option_x, option_y+120);
+			rect += m_topleft_client + v2s32(option_x, option_y+140);
 			Environment->addButton(rect, this,
 					GUI_ID_CHANGE_KEYS_BUTTON, wgettext("Change keys"));
 		}
@@ -589,11 +603,16 @@ void GUIMainMenu::regenerateGui(v2u32 screensize)
 			core::rect<s32> rect(0, 0, 620, 250);
 			rect += m_topleft_client + v2s32(130+14, 50+35);
 			Environment->addStaticText(narrow_to_wide(
-			"Minetest-c55 " VERSION_STRING "\n"
-			"http://minetest.net/\n"
+			"BlockPlanet " VERSION_STRING "\n"
+			"http://blockpla.net/\n"
 			"\n"
-			"by Perttu Ahola <celeron55@gmail.com>\n"
-			"and contributors"
+			"By:\n"
+			"Perttu Ahola <celeron55@gmail.com>\n"
+			"Joel Leclerc <lkjoel@ubuntu.com>\n"
+			"Jordan Craige <jordan4girl3@gmail.com>\n"
+			"sfan5 <sfan5@live.de>\n"
+			"Jeija <norrepli@gmail.com>\n"
+			"\n"
 			).c_str(), rect, false, true, this, -1);
 		}
 	}
@@ -741,6 +760,16 @@ void GUIMainMenu::readInput(MainMenuData *dst)
 		gui::IGUIElement *e = getElementFromId(GUI_ID_OPAQUE_WATER_CB);
 		if(e != NULL && e->getType() == gui::EGUIET_CHECK_BOX)
 			dst->opaque_water = ((gui::IGUICheckBox*)e)->isChecked();
+	}
+	{
+		gui::IGUIElement *e = getElementFromId(GUI_ID_ENABLE_SOUND_CB);
+		if(e != NULL && e->getType() == gui::EGUIET_CHECK_BOX)
+			dst->enable_sound = ((gui::IGUICheckBox*)e)->isChecked();
+	}
+	{
+		gui::IGUIElement *e = getElementFromId(GUI_ID_3D_PLAYER_CB);
+		if(e != NULL && e->getType() == gui::EGUIET_CHECK_BOX)
+			dst->player_3d = ((gui::IGUICheckBox*)e)->isChecked();
 	}
 
 	{

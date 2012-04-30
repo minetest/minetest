@@ -6,8 +6,10 @@ tags
 *.vim
 
 ## Non-static Minetest directories
+/build*
 /bin/
 /games/*
+!/games/minetest/
 !/games/minimal/
 /cache/
 /textures/

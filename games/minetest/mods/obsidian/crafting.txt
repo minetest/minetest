@@ -1,0 +1,81 @@
+Obsidian Crafting:   
+
+LEGEND: x=obsidian block
+	o=nothing
+	i=obsidian rod
+	S=obsidian shard
+	c=coal lump
+	m=mese (or mese ore if you use the default mod from my texture pack)
+	r=ruby gemstone
+	a=obsidian arrowhead
+	
+
+Sword:
+oxo
+oxo
+oio
+
+Axe:
+xxo
+xio
+oio
+
+Pick:
+xxx
+oio
+oio
+
+Shovel:
+oxo
+oio
+oio
+
+Knife:
+ooo
+oao
+oio
+
+Fence:
+ooo
+xxx
+xxx
+
+Ladder:
+xox
+xxx
+xox
+
+Torch:
+ooo
+oco
+oio
+
+Obsidian Rod:
+ooo
+ooo
+oox 
+
+Bucket:
+ooo
+xox
+oxo
+
+Door:
+xxo
+xxo
+xxo
+
+Obsidian Shelf(with gemstones mod):
+mrm
+xxx
+mxm
+
+Obsidian Shelf(without gemstones mod):
+mxm
+xxx
+mxm
+
+Obsidian Block (reformed from shards)
+sso
+sso
+ooo

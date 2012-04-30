@@ -938,13 +938,13 @@ void ServerEnvironment::step(float dtime)
 				i != m_players.end(); i++)
 		{
 			Player *player = *i;
-			
+
 			// Ignore disconnected players
 			if(player->peer_id == 0)
 				continue;
 
 			v3f playerpos = player->getPosition();
-			
+
 			// Move
 			player->move(dtime, *m_map, 100*BS);
 		}
@@ -1976,21 +1976,8 @@ void ClientEnvironment::step(float dtime)
 			{
 				// Gravity
 				v3f speed = lplayer->getSpeed();
-				if(lplayer->swimming_up == false)
+				if(lplayer->in_water == false)
 					speed.Y -= 9.81 * BS * dtime_part * 2;
-
-				// Water resistance
-				if(lplayer->in_water_stable || lplayer->in_water)
-				{
-					f32 max_down = 2.0*BS;
-					if(speed.Y < -max_down) speed.Y = -max_down;
-
-					f32 max = 2.5*BS;
-					if(speed.getLength() > max)
-					{
-						speed = speed / speed.getLength() * max;
-					}
-				}
 
 				lplayer->setSpeed(speed);
 			}
@@ -2015,8 +2002,8 @@ void ClientEnvironment::step(float dtime)
 		if(info.t == COLLISION_FALL)
 		{
 			//f32 tolerance = BS*10; // 2 without damage
-			//f32 tolerance = BS*12; // 3 without damage
-			f32 tolerance = BS*14; // 5 without damage
+			f32 tolerance = BS*12; // 3 without damage
+			//f32 tolerance = BS*14; // 5 without damage
 			f32 factor = 1;
 			if(info.speed > tolerance)
 			{

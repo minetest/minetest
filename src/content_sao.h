@@ -68,6 +68,8 @@ public:
 	v3f getVelocity();
 	void setAcceleration(v3f acceleration);
 	v3f getAcceleration();
+	void setPitch(float pitch);
+	float getPitch();
 	void setYaw(float yaw);
 	float getYaw();
 	void setTextureMod(const std::string &mod);
@@ -86,6 +88,7 @@ private:
 	s16 m_hp;
 	v3f m_velocity;
 	v3f m_acceleration;
+	float m_pitch;
 	float m_yaw;
 	ItemGroupList m_armor_groups;
 	
@@ -139,8 +142,24 @@ public:
 		float time_from_last_punch);
 	void rightClick(ServerActiveObject *clicker);
 	s16 getHP() const;
+	s16 getHunger() const;
+	s16 getOxygen() const;
+	f32 getExhaustion() const;
+	void setExhaustion(f32 ht);
 	void setHP(s16 hp);
-	
+	void setHunger(s16 hunger);
+	void setOxygen(s16 oxygen);
+	f32 getHungerTimer() const;
+	void setHungerTimer(f32 ht);
+	f32 getHungerHurtHealTimer() const;
+	void setHungerHurtHealTimer(f32 ht);
+	f32 getOxygenTimer() const;
+	void setOxygenTimer(f32 ht);
+	f32 getOxygenHurtTimer() const;
+	void setOxygenHurtTimer(f32 ht);
+
+	bool in_water();
+
 	void setArmorGroups(const ItemGroupList &armor_groups);
 	ObjectProperties* accessObjectProperties();
 	void notifyObjectPropertiesModified();
@@ -201,6 +220,7 @@ private:
 	float m_time_from_last_punch;
 	int m_wield_index;
 	bool m_position_not_sent;
+	bool m_textures_not_sent;
 	ItemGroupList m_armor_groups;
 	bool m_armor_groups_sent;
 	bool m_properties_sent;
@@ -208,12 +228,15 @@ private:
 	// Cached privileges for enforcement
 	std::set<std::string> m_privs;
 	bool m_is_singleplayer;
+	std::string m_textures_mod;
 
 public:
 	// Some flags used by Server
 	bool m_teleported;
 	bool m_inventory_not_sent;
 	bool m_hp_not_sent;
+	bool m_hunger_not_sent;
+	bool m_oxygen_not_sent;
 	bool m_wielded_item_not_sent;
 };
 

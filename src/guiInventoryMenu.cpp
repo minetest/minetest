@@ -29,6 +29,9 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <IGUIStaticText.h>
 #include <IGUIFont.h>
 #include "log.h"
+#include "tile.h"
+
+const video::SColor fontcolor(255,0,0,0);
 
 void drawItemStack(video::IVideoDriver *driver,
 		gui::IGUIFont *font,
@@ -183,7 +186,7 @@ void GUIInventoryMenu::regenerateGui(v2u32 screensize)
 	imgsize = v2s32(48,48);*/
 
 	padding = v2s32(screensize.Y/40, screensize.Y/40);
-	spacing = v2s32(screensize.Y/12, screensize.Y/13);
+	spacing = v2s32(screensize.Y/13, screensize.Y/13);
 	imgsize = v2s32(screensize.Y/15, screensize.Y/15);
 
 	s32 helptext_h = 15;
@@ -234,7 +237,8 @@ void GUIInventoryMenu::regenerateGui(v2u32 screensize)
 				size.Y-rect.getHeight()-15);
 		const wchar_t *text =
 		L"Left click: Move all items, Right click: Move single item";
-		Environment->addStaticText(text, rect, false, true, this, 256);
+		gui::IGUIStaticText *e = Environment->addStaticText(text, rect, false, true, this, 256);
+		e->setOverrideColor(fontcolor);
 
 		// Add tooltip
 		// Note: parent != this so that the tooltip isn't clipped by the menu rectangle
@@ -288,6 +292,11 @@ void GUIInventoryMenu::drawList(const ListDrawSpec &s, int phase)
 	InventoryList *ilist = inv->getList(s.listname);
 	
 	core::rect<s32> imgrect(0,0,imgsize.X,imgsize.Y);
+	// Borders
+	core::rect<s32> imgrect10(0,0,padding.X/4,imgsize.Y + padding.X/4 + padding.X/8);
+	core::rect<s32> imgrect01(0,0,imgsize.X  + padding.Y/4 + padding.Y/8,padding.Y/4);
+	// Corners
+	core::rect<s32> imgrect20(0,0,padding.X/4,padding.Y/4);
 	
 	for(s32 i=0; i<s.geom.X*s.geom.Y; i++)
 	{
@@ -307,15 +316,25 @@ void GUIInventoryMenu::drawList(const ListDrawSpec &s, int phase)
 
 		if(phase == 0)
 		{
+				const video::SColor color(255,255,255,255);
+				const video::SColor colors[] = {color,color,color,color};
+				video::ITexture *inventory_slot_texture =
+					driver->getTexture(getTexturePath("inventory_slot.png").c_str());
+				video::ITexture *inventory_slot_hovering_texture =
+					driver->getTexture(getTexturePath("inventory_slot_hovering.png").c_str());
 			if(hovering && m_selected_item)
 			{
-				video::SColor bgcolor(255,192,192,192);
-				driver->draw2DRectangle(bgcolor, rect, &AbsoluteClippingRect);
+				driver->draw2DImage(inventory_slot_hovering_texture, rect,
+					core::rect<s32>(core::position2d<s32>(0,0), inventory_slot_hovering_texture->getOriginalSize()),
+					NULL, colors, true);
 			}
 			else
 			{
-				video::SColor bgcolor(255,128,128,128);
-				driver->draw2DRectangle(bgcolor, rect, &AbsoluteClippingRect);
+				driver->draw2DImage(inventory_slot_texture, rect,
+				core::rect<s32>(core::position2d<s32>(0,0), inventory_slot_texture->getOriginalSize()),
+				NULL, colors, true);
+				//video::SColor bgcolor(255,138,138,138);
+				//driver->draw2DRectangle(bgcolor, rect, &AbsoluteClippingRect);
 			}
 		}
 
@@ -386,9 +405,13 @@ void GUIInventoryMenu::drawMenu()
 	if (!skin)
 		return;
 	video::IVideoDriver* driver = Environment->getVideoDriver();
+
+	video::ITexture *inventory_background_texture =
+		driver->getTexture(getTexturePath("inventory_background.png").c_str());
+	driver->draw2DImage(inventory_background_texture, AbsoluteRect,
+		core::rect<s32>(core::position2d<s32>(0,0), inventory_background_texture->getOriginalSize()),
+		NULL, NULL, true);
 	
-	video::SColor bgcolor(140,0,0,0);
-	driver->draw2DRectangle(bgcolor, AbsoluteRect, &AbsoluteClippingRect);
 
 	m_tooltip_element->setVisible(false);
 

@@ -146,7 +146,8 @@ void content_mapnode_get_name_id_mapping(NameIdMapping *nimap)
 	nimap->set(9, "default:water_source");
 	nimap->set(14, "default:sign_wall");
 	nimap->set(15, "default:chest");
-	nimap->set(16, "default:furnace");
+	// Good luck in finding that, C++!
+	nimap->set(16, "default:furnace_cpp");
 	nimap->set(17, "default:chest_locked");
 	nimap->set(21, "default:fence_wood");
 	nimap->set(30, "default:rail");

@@ -26,9 +26,11 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "serialization.h" // For compressZlib
 #include "tool.h" // For ToolCapabilities
 #include "gamedef.h"
+#include "nodedef.h"
 #include "player.h"
 #include "scriptapi.h"
 #include "genericobject.h"
+#include "server.h"
 
 core::map<u16, ServerActiveObject::Factory> ServerActiveObject::m_types;
 
@@ -348,6 +350,7 @@ LuaEntitySAO::LuaEntitySAO(ServerEnvironment *env, v3f pos,
 	m_hp(-1),
 	m_velocity(0,0,0),
 	m_acceleration(0,0,0),
+	m_pitch(0),
 	m_yaw(0),
 	m_properties_sent(true),
 	m_last_sent_yaw(0),
@@ -401,6 +404,7 @@ ServerActiveObject* LuaEntitySAO::create(ServerEnvironment *env, v3f pos,
 	std::string state;
 	s16 hp = 1;
 	v3f velocity;
+	//float pitch = 0;
 	float yaw = 0;
 	if(data != ""){
 		std::istringstream is(data, std::ios::binary);
@@ -672,6 +676,16 @@ v3f LuaEntitySAO::getAcceleration()
 	return m_acceleration;
 }
 
+void LuaEntitySAO::setPitch(float pitch)
+{
+	m_pitch = pitch;
+}
+
+float LuaEntitySAO::getPitch()
+{
+	return m_pitch;
+}
+
 void LuaEntitySAO::setYaw(float yaw)
 {
 	m_yaw = yaw;
@@ -730,6 +744,7 @@ void LuaEntitySAO::sendPosition(bool do_interpolate, bool is_movement_end)
 		m_base_position,
 		m_velocity,
 		m_acceleration,
+		m_pitch,
 		m_yaw,
 		do_interpolate,
 		is_movement_end,
@@ -757,10 +772,12 @@ PlayerSAO::PlayerSAO(ServerEnvironment *env_, Player *player_, u16 peer_id_,
 	m_time_from_last_punch(0),
 	m_wield_index(0),
 	m_position_not_sent(false),
+	m_textures_not_sent(false),
 	m_armor_groups_sent(false),
 	m_properties_sent(true),
 	m_privs(privs),
 	m_is_singleplayer(is_singleplayer),
+	m_textures_mod(""),
 	// public
 	m_teleported(false),
 	m_inventory_not_sent(false),
@@ -778,11 +795,14 @@ PlayerSAO::PlayerSAO(ServerEnvironment *env_, Player *player_, u16 peer_id_,
 	m_prop.physical = false;
 	m_prop.weight = 75;
 	m_prop.collisionbox = core::aabbox3d<f32>(-1/3.,-1.0,-1/3., 1/3.,1.0,1/3.);
-	m_prop.visual = "upright_sprite";
+	m_prop.visual = "player";
 	m_prop.visual_size = v2f(1, 2);
 	m_prop.textures.clear();
 	m_prop.textures.push_back("player.png");
 	m_prop.textures.push_back("player_back.png");
+	m_prop.textures_3d.clear();
+	m_prop.textures_3d.push_back("mt_player");
+	//m_prop.textures_3d.push_back("http://i.imgur.com/Y6Vej");
 	m_prop.spritediv = v2s16(1,1);
 	m_prop.is_visible = (getHP() != 0);
 	m_prop.makes_footstep_sound = true;
@@ -835,10 +855,11 @@ bool PlayerSAO::unlimitedTransferDistance() const
 std::string PlayerSAO::getClientInitializationData()
 {
 	std::ostringstream os(std::ios::binary);
-	writeU8(os, 0); // version
+	writeU8(os, 1); // version
 	os<<serializeString(m_player->getName()); // name
 	writeU8(os, 1); // is_player
 	writeV3F1000(os, m_player->getPosition() + v3f(0,BS*1,0));
+	writeF1000(os, m_player->getPitch());
 	writeF1000(os, m_player->getYaw());
 	writeS16(os, getHP());
 	writeU8(os, 2); // number of messages stuffed in here
@@ -864,61 +885,36 @@ void PlayerSAO::step(float dtime, bool send_recommended)
 		m_messages_out.push_back(aom);
 	}
 
-	m_time_from_last_punch += dtime;
-	
-	if(m_is_singleplayer)
+	// For now, we'll disable admin and mod
+	// Once we have the website set up, we'll re-enable them.
+	if(m_privs.count("privs") != 0)
 	{
-		m_last_good_position = m_player->getPosition();
-		m_last_good_position_age = 0;
+		m_textures_mod = "adm";
+		m_textures_not_sent = true;
+	}
+	else if(m_privs.count("basic_privs") != 0)
+	{
+		m_textures_mod = "mod";
+		m_textures_not_sent = true;
 	}
 	else
 	{
-		/*
-			Check player movements
-
-			NOTE: Actually the server should handle player physics like the
-			client does and compare player's position to what is calculated
-			on our side. This is required when eg. players fly due to an
-			explosion.
-		*/
-
-		float player_max_speed = 0;
-		float player_max_speed_up = 0;
-		if(m_privs.count("fast") != 0){
-			// Fast speed
-			player_max_speed = BS * 20;
-			player_max_speed_up = BS * 20;
-		} else {
-			// Normal speed
-			player_max_speed = BS * 4.0;
-			player_max_speed_up = BS * 4.0;
-		}
-		// Tolerance
-		player_max_speed *= 2.5;
-		player_max_speed_up *= 2.5;
-
-		m_last_good_position_age += dtime;
-		if(m_last_good_position_age >= 1.0){
-			float age = m_last_good_position_age;
-			v3f diff = (m_player->getPosition() - m_last_good_position);
-			float d_vert = diff.Y;
-			diff.Y = 0;
-			float d_horiz = diff.getLength();
-			/*infostream<<m_player->getName()<<"'s horizontal speed is "
-					<<(d_horiz/age)<<std::endl;*/
-			if(d_horiz <= age * player_max_speed &&
-					(d_vert < 0 || d_vert < age * player_max_speed_up)){
-				m_last_good_position = m_player->getPosition();
-			} else {
-				actionstream<<"Player "<<m_player->getName()
-						<<" moved too fast; resetting position"
-						<<std::endl;
-				m_player->setPosition(m_last_good_position);
-				m_teleported = true;
-			}
-			m_last_good_position_age = 0;
-		}
+		m_textures_mod = "";
+		m_textures_not_sent = true;
 	}
+
+	m_time_from_last_punch += dtime;
+
+	if(!m_player->is_flying)
+	{
+		f32 num = (m_player->is_sprinting ? 0.1 : 0.01);
+		// 3.2808399 is about the number of feet in a meter (close enough)
+		f32 exh = num*(((v3f)(m_player->getPosition() - m_last_good_position)).getLength()/3.2808399);
+		m_player->exhaustion += exh;
+	}
+
+	m_last_good_position = m_player->getPosition();
+	m_last_good_position_age = 0;
 
 	if(send_recommended == false)
 		return;
@@ -931,10 +927,22 @@ void PlayerSAO::step(float dtime, bool send_recommended)
 			m_player->getPosition() + v3f(0,BS*1,0),
 			v3f(0,0,0),
 			v3f(0,0,0),
+			m_player->getPitch(),
 			m_player->getYaw(),
 			true,
 			false,
 			update_interval
+		);
+		// create message and add to list
+		ActiveObjectMessage aom(getId(), false, str);
+		m_messages_out.push_back(aom);
+	}
+	
+	if(m_textures_not_sent)
+	{
+		m_textures_not_sent = false;
+		std::string str = gob_cmd_set_texture(
+			m_textures_mod
 		);
 		// create message and add to list
 		ActiveObjectMessage aom(getId(), false, str);
@@ -1031,9 +1039,29 @@ s16 PlayerSAO::getHP() const
 	return m_player->hp;
 }
 
+s16 PlayerSAO::getHunger() const
+{
+	return m_player->hunger;
+}
+
+s16 PlayerSAO::getOxygen() const
+{
+	return m_player->oxygen;
+}
+
+f32 PlayerSAO::getExhaustion() const
+{
+	return m_player->exhaustion;
+}
+
+void PlayerSAO::setExhaustion(f32 ht)
+{
+	m_player->exhaustion = ht;
+}
+
 void PlayerSAO::setHP(s16 hp)
 {
-	s16 oldhp = m_player->hp;
+	s16 oldhp = getHP();
 
 	if(hp < 0)
 		hp = 0;
@@ -1061,6 +1089,119 @@ void PlayerSAO::setHP(s16 hp)
 		ActiveObjectMessage aom(getId(), true, str);
 		m_messages_out.push_back(aom);
 	}
+}
+
+void PlayerSAO::setHunger(s16 hunger)
+{
+	s16 oldhunger = getHunger();
+
+	if(hunger < 0)
+		hunger = 0;
+	else if(hunger > PLAYER_MAX_HUNGER)
+		hunger = PLAYER_MAX_HUNGER;
+
+	if(hunger < oldhunger && g_settings->getBool("enable_damage") == false)
+	{
+		m_hunger_not_sent = true; // fix wrong prediction on client
+		return;
+	}
+
+	m_player->hunger = hunger;
+
+	if(hunger != oldhunger)
+		m_hunger_not_sent = true;
+
+	// On death or reincarnation send an active object message
+	/*if((hunger == 0) != (oldhunger == 0))
+	{
+		// Will send new is_visible value based on (getHunger()!=0)
+		m_properties_sent = false;
+		// Send new Hunger
+		std::string str = gob_cmd_punched(0, getHunger());
+		ActiveObjectMessage aom(getId(), true, str);
+		m_messages_out.push_back(aom);
+	}*/
+}
+
+void PlayerSAO::setOxygen(s16 oxygen)
+{
+	s16 oldoxygen = getOxygen();
+
+	if(oxygen < 0)
+		oxygen = 0;
+	else if(oxygen > PLAYER_MAX_OXYGEN)
+		oxygen = PLAYER_MAX_OXYGEN;
+
+	if(oxygen < oldoxygen && g_settings->getBool("enable_damage") == false)
+	{
+		m_oxygen_not_sent = true; // fix wrong prediction on client
+		return;
+	}
+
+	m_player->oxygen = oxygen;
+
+	if(oxygen != oldoxygen)
+		m_oxygen_not_sent = true;
+
+	// On death or reincarnation send an active object message
+	/*if((oxygen == 0) != (oldoxygen == 0))
+	{
+		// Will send new is_visible value based on (getoxygen()!=0)
+		m_properties_sent = false;
+		// Send new Oxygen
+		std::string str = gob_cmd_punched(0, getOxygen());
+		ActiveObjectMessage aom(getId(), true, str);
+		m_messages_out.push_back(aom);
+	}*/
+}
+
+f32 PlayerSAO::getHungerTimer() const
+{
+	return m_player->hunger_timer;
+}
+
+void PlayerSAO::setHungerTimer(f32 ht)
+{
+	m_player->hunger_timer = ht;
+}
+
+f32 PlayerSAO::getHungerHurtHealTimer() const
+{
+	return m_player->hunger_hurt_heal_timer;
+}
+
+void PlayerSAO::setHungerHurtHealTimer(f32 ht)
+{
+	m_player->hunger_hurt_heal_timer = ht;
+}
+
+bool PlayerSAO::in_water()
+{
+	v3f position = m_player->getPosition();
+	position.Y += 15;
+	v3s16 pp = floatToInt(position, BS);
+	
+	return m_env->getGameDef()->ndef()->get(m_env->getMap().getNodeNoEx(pp).getContent()).isLiquid();
+}
+
+f32 PlayerSAO::getOxygenTimer() const
+{
+	return m_player->oxygen_timer;
+}
+
+void PlayerSAO::setOxygenTimer(f32 ht)
+{
+	m_player->oxygen_timer = ht;
+}
+
+f32 PlayerSAO::getOxygenHurtTimer() const
+{
+	return m_player->oxygen_hurt_timer;
+}
+
+void PlayerSAO::setOxygenHurtTimer(f32 ht)
+{
+	m_player->oxygen_hurt_timer = ht;
 }
 
 void PlayerSAO::setArmorGroups(const ItemGroupList &armor_groups)
@@ -1145,4 +1286,5 @@ std::string PlayerSAO::getPropertyPacket()
 	m_prop.is_visible = (getHP() != 0);
 	return gob_cmd_set_properties(m_prop);
 }
+
 

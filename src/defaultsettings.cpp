@@ -26,6 +26,8 @@ void set_default_settings(Settings *settings)
 	settings->setDefault("port", "");
 	settings->setDefault("name", "");
 	settings->setDefault("footprints", "false");
+	settings->setDefault("server_map_save_interval", "180");
+	settings->setDefault("unlimited_player_transfer_distance", "false");
 
 	// Client stuff
 
@@ -36,14 +38,14 @@ void set_default_settings(Settings *settings)
 	settings->setDefault("keymap_jump", "KEY_SPACE");
 	settings->setDefault("keymap_sneak", "KEY_LSHIFT");
 	settings->setDefault("keymap_drop", "KEY_KEY_Q");
-	settings->setDefault("keymap_inventory", "KEY_KEY_I");
+	settings->setDefault("keymap_inventory", "KEY_KEY_R");
 	settings->setDefault("keymap_special1", "KEY_KEY_E");
 	settings->setDefault("keymap_chat", "KEY_KEY_T");
 	settings->setDefault("keymap_cmd", "/");
 	settings->setDefault("keymap_console", "KEY_F10");
-	settings->setDefault("keymap_rangeselect", "KEY_KEY_R");
-	settings->setDefault("keymap_freemove", "KEY_KEY_K");
-	settings->setDefault("keymap_fastmove", "KEY_KEY_J");
+	settings->setDefault("keymap_rangeselect", "KEY_F3");
+	settings->setDefault("keymap_freemove", "KEY_KEY_C");
+	settings->setDefault("keymap_fastmove", "KEY_KEY_X");
 	settings->setDefault("keymap_screenshot", "KEY_F12");
 	settings->setDefault("keymap_toggle_hud", "KEY_F1");
 	settings->setDefault("keymap_toggle_chat", "KEY_F2");
@@ -88,6 +90,7 @@ void set_default_settings(Settings *settings)
 	settings->setDefault("new_style_leaves", "true");
 	settings->setDefault("smooth_lighting", "true");
 	settings->setDefault("enable_texture_atlas", "true");
+	settings->setDefault("enable_3d_player", "true");
 	settings->setDefault("texture_path", "");
 	settings->setDefault("video_driver", "opengl");
 	settings->setDefault("free_move", "false");

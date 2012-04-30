@@ -92,10 +92,10 @@ void GUIPauseMenu::regenerateGui(v2u32 screensize)
 		Calculate new sizes and positions
 	*/
 	core::rect<s32> rect(
-			screensize.X/2 - 580/2,
-			screensize.Y/2 - 300/2,
-			screensize.X/2 + 580/2,
-			screensize.Y/2 + 300/2
+			screensize.X/2 - 4000/2,
+			screensize.Y/2 - 4000/2,
+			screensize.X/2 + 4000/2,
+			screensize.Y/2 + 4000/2
 	);
 	
 	DesiredRect = rect;
@@ -106,8 +106,8 @@ void GUIPauseMenu::regenerateGui(v2u32 screensize)
 	/*
 		Add stuff
 	*/
-	const s32 btn_height = 30;
-	const s32 btn_gap = 20;
+	const s32 btn_height = 50;
+	const s32 btn_gap = 40;
 	const s32 btn_num = m_simple_singleplayer_mode ? 3 : 4;
 	s32 btn_y = size.Y/2-((btn_num*btn_height+(btn_num-1)*btn_gap))/2;
 	changeCtype("");
@@ -139,26 +139,26 @@ void GUIPauseMenu::regenerateGui(v2u32 screensize)
 		core::rect<s32> rect(0, 0, 140, btn_height);
 		rect = rect + v2s32(size.X/2-140/2, btn_y);
 		Environment->addButton(rect, this, 257,
-			wgettext("Exit to OS"));
+			wgettext("Exit Minetest"));
 	}
 
-	{
-		core::rect<s32> rect(0, 0, 180, 240);
-		rect = rect + v2s32(size.X/2 + 90, size.Y/2-rect.getHeight()/2);
-		Environment->addStaticText(chartowchar_t(gettext(
-		"Default Controls:\n"
-		"- WASD: Walk\n"
-		"- Mouse left: dig/hit\n"
-		"- Mouse right: place/use\n"
-		"- Mouse wheel: select item\n"
-		"- 0...9: select item\n"
-		"- Shift: sneak\n"
-		"- R: Toggle viewing all loaded chunks\n"
-		"- I: Inventory menu\n"
-		"- ESC: This menu\n"
-		"- T: Chat\n"
-		)), rect, false, true, this, 258);
-	}
+	//{
+		//core::rect<s32> rect(0, 0, 180, 240);
+		//rect = rect + v2s32(size.X/2 + 90, size.Y/2-rect.getHeight()/2);
+		//Environment->addStaticText(chartowchar_t(gettext(
+		//"Default Controls:\n"
+		//"- WASD: Walk\n"
+		//"- Mouse left: dig/hit\n"
+		//"- Mouse right: place/use\n"
+		//"- Mouse wheel: select item\n"
+		//"- 0...9: select item\n"
+		//"- Shift: sneak\n"
+		//"- R: Toggle viewing all loaded chunks\n"
+		//"- I: Inventory menu\n"
+		//"- ESC: This menu\n"
+		//"- T: Chat\n"
+		//)), rect, false, true, this, 258);
+	//}
 	{
 		core::rect<s32> rect(0, 0, 180, 220);
 		rect = rect + v2s32(size.X/2 - 90 - rect.getWidth(), size.Y/2-rect.getHeight()/2);
@@ -182,14 +182,14 @@ void GUIPauseMenu::regenerateGui(v2u32 screensize)
 				porting::path_user.c_str()
 		);*/
 
-		std::ostringstream os;
-		os<<"Minetest\n";
-		os<<"by Perttu Ahola and contributors\n";
-		os<<"celeron55@gmail.com\n";
-		os<<BUILD_INFO<<"\n";
-		os<<"path_user = "<<wrap_rows(porting::path_user, 20)<<"\n";
+		//std::ostringstream os;
+		//os<<"Minetest\n";
+		//os<<"by Perttu Ahola and contributors\n";
+		//os<<"celeron55@gmail.com\n";
+		//os<<BUILD_INFO<<"\n";
+		//os<<"path_user = "<<wrap_rows(porting::path_user, 20)<<"\n";
 	
-		Environment->addStaticText(narrow_to_wide(os.str()).c_str(), rect, false, true, this, 259);
+		//Environment->addStaticText(narrow_to_wide(os.str()).c_str(), //rect, false, true, this, 259);
 	}
 	changeCtype("C");
 }

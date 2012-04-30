@@ -29,6 +29,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "voxelalgorithms.h"
 #include "profiler.h"
 #include "main.h" // For g_profiler
+#include <vector>
 
 namespace mapgen
 {
@@ -120,14 +121,20 @@ static s16 find_stone_level(VoxelManipulator &vmanip, v2s16 p2d,
 }
 #endif
 
-void make_tree(ManualMapVoxelManipulator &vmanip, v3s16 p0,
-		bool is_apple_tree, INodeDefManager *ndef)
+// Super dirty code to have both a mapnode and an integer
+struct mapnoderandom
 {
-	MapNode treenode(ndef->getId("mapgen_tree"));
-	MapNode leavesnode(ndef->getId("mapgen_leaves"));
-	MapNode applenode(ndef->getId("mapgen_apple"));
+	MapNode mapnode;
+	s32 random;
+};
+
+void make_custom_tree(ManualMapVoxelManipulator &vmanip, v3s16 p0,
+		bool is_fruit_tree, INodeDefManager *ndef, MapNode treenode,
+		MapNode leavesnode, mapnoderandom fruitnodes[],
+		s16 fruitnodessize, s16 minrange, s16 maxrange)
+{
 	
-	s16 trunk_h = myrand_range(4, 5);
+	s16 trunk_h = myrand_range(minrange, maxrange);
 	v3s16 p1 = p0;
 	for(s16 ii=0; ii<trunk_h; ii++)
 	{
@@ -190,17 +197,64 @@ void make_tree(ManualMapVoxelManipulator &vmanip, v3s16 p0,
 			continue;
 		u32 i = leaves_a.index(x,y,z);
 		if(leaves_d[i] == 1) {
-			bool is_apple = myrand_range(0,99) < 10;
-			if(is_apple_tree && is_apple) {
-				vmanip.m_data[vi] = applenode;
-			} else {
+			bool putleaves = true;
+			if(is_fruit_tree)
+			{
+				for(s16 r=0; r < fruitnodessize; r++)
+				{
+					bool is_this = myrand_range(0, fruitnodes[r].random) == 1;
+					if(is_this == true)
+					{
+						vmanip.m_data[vi] = fruitnodes[r].mapnode;
+						putleaves = false;
+						break;
+					}
+				}
+			}
+			if(putleaves == true)
+			{
 				vmanip.m_data[vi] = leavesnode;
 			}
 		}
 	}
 }
 
-#if 0
+void make_tree(ManualMapVoxelManipulator &vmanip, v3s16 p0,
+		bool is_apple_tree, INodeDefManager *ndef)
+{
+	MapNode treenode(ndef->getId("mapgen_tree"));
+	MapNode leavesnode(ndef->getId("mapgen_leaves"));
+	MapNode applenode(ndef->getId("mapgen_apple"));
+	mapnoderandom applestruct;
+	applestruct.mapnode = applenode;
+	applestruct.random = 10;
+	mapnoderandom apples[1];
+	apples[0] = applestruct;
+	make_custom_tree(vmanip, p0, is_apple_tree, ndef, treenode,
+		leavesnode, apples, 1, 4, 6);
+}
+
+void make_nether_tree(ManualMapVoxelManipulator &vmanip, v3s16 p0,
+		bool is_apple_tree, INodeDefManager *ndef)
+{
+	MapNode treenode(ndef->getId("mapgen_nether_tree"));
+	MapNode leavesnode(ndef->getId("mapgen_nether_leaves"));
+	MapNode applenode(ndef->getId("mapgen_nether_apple"));
+	mapnoderandom applestruct;
+	applestruct.mapnode = applenode;
+	applestruct.random = 10;
+	MapNode goodapplenode(ndef->getId("mapgen_apple"));
+	mapnoderandom goodapplestruct;
+	goodapplestruct.mapnode = goodapplenode;
+	goodapplestruct.random = 50;
+	mapnoderandom apples[2];
+	apples[0] = applestruct;
+	apples[1] = goodapplestruct;
+	make_custom_tree(vmanip, p0, is_apple_tree, ndef, treenode,
+		leavesnode, apples, 2, 5, 12);
+}
+
+#if 1
 static void make_jungletree(VoxelManipulator &vmanip, v3s16 p0,
 		INodeDefManager *ndef)
 {
@@ -287,7 +341,9 @@ static void make_jungletree(VoxelManipulator &vmanip, v3s16 p0,
 			vmanip.m_data[vi] = leavesnode;
 	}
 }
+#endif
 
+#if 0
 static void make_papyrus(VoxelManipulator &vmanip, v3s16 p0,
 		INodeDefManager *ndef)
 {
@@ -319,7 +375,7 @@ static void make_cactus(VoxelManipulator &vmanip, v3s16 p0,
 }
 #endif
 
-#if 0
+#if 1
 /*
 	Dungeon making routines
 */
@@ -695,7 +751,7 @@ public:
 				roomplace = doorplace +
 						v3s16(m_random.range(-roomsize.X+2,-2),-1,-roomsize.Z+1);
 #endif
-#if 0
+#if 1
 			if(doordir == v3s16(1,0,0)) // X+
 				roomplace = doorplace + v3s16(0,-1,-roomsize.Z/2);
 			if(doordir == v3s16(-1,0,0)) // X-
@@ -873,7 +929,7 @@ static void make_dungeon1(VoxelManipulator &vmanip, PseudoRandom &random,
 }
 #endif
 
-#if 0
+#if 1
 static void make_nc(VoxelManipulator &vmanip, PseudoRandom &random,
 		INodeDefManager *ndef)
 {
@@ -914,7 +970,7 @@ static void make_nc(VoxelManipulator &vmanip, PseudoRandom &random,
 	Noise functions. Make sure seed is mangled differently in each one.
 */
 
-#if 0
+#if 1
 /*
 	Scaling the output of the noise function affects the overdrive of the
 	contour function, which affects the shape of the output considerably.
@@ -1033,7 +1089,7 @@ double tree_amount_2d(u64 seed, v2s16 p)
 		return 0.04 * (noise-zeroval) / (1.0-zeroval);
 }
 
-#if 0
+#if 1
 double surface_humidity_2d(u64 seed, v2s16 p)
 {
 	double noise = noise2d_perlin(
@@ -1047,6 +1103,7 @@ double surface_humidity_2d(u64 seed, v2s16 p)
 	return noise;
 }
 
+#if 0
 /*
 	Incrementally find ground level from 3d noise
 */
@@ -1097,6 +1154,7 @@ s16 find_ground_level_from_noise(u64 seed, v2s16 p2d, s16 precision)
 
 	return level;
 }
+#endif
 
 double get_sector_average_ground_level(u64 seed, v2s16 sectorpos, double p=4);
 
@@ -1910,175 +1968,6 @@ void make_block(BlockMakeData *data)
 	}
 	}
 
-#if 1
-	{
-	// 340ms @cs=8
-	TimeTaker timer1("flow mud");
-
-	/*
-		Flow mud away from steep edges
-	*/
-	
-	// Iterate a few times
-	for(s16 k=0; k<3; k++)
-	{
-
-	for(s16 x=mudflow_minpos; x<=mudflow_maxpos; x++)
-	for(s16 z=mudflow_minpos; z<=mudflow_maxpos; z++)
-	{
-		// Invert coordinates every 2nd iteration
-		if(k%2 == 0)
-		{
-			x = mudflow_maxpos - (x-mudflow_minpos);
-			z = mudflow_maxpos - (z-mudflow_minpos);
-		}
-
-		// Node position in 2d
-		v2s16 p2d = v2s16(node_min.X, node_min.Z) + v2s16(x,z);
-		
-		v3s16 em = vmanip.m_area.getExtent();
-		u32 i = vmanip.m_area.index(v3s16(p2d.X, node_max.Y, p2d.Y));
-		s16 y=node_max.Y;
-
-		while(y >= node_min.Y)
-		{
-
-		for(;; y--)
-		{
-			MapNode *n = NULL;
-			// Find mud
-			for(; y>=node_min.Y; y--)
-			{
-				n = &vmanip.m_data[i];
-				//if(content_walkable(n->d))
-				//	break;
-				if(n->getContent() == c_dirt ||
-						n->getContent() == c_dirt_with_grass ||
-						n->getContent() == c_gravel)
-					break;
-					
-				vmanip.m_area.add_y(em, i, -1);
-			}
-
-			// Stop if out of area
-			//if(vmanip.m_area.contains(i) == false)
-			if(y < node_min.Y)
-				break;
-
-			/*// If not mud, do nothing to it
-			MapNode *n = &vmanip.m_data[i];
-			if(n->d != CONTENT_MUD && n->d != CONTENT_GRASS)
-				continue;*/
-
-			if(n->getContent() == c_dirt ||
-					n->getContent() == c_dirt_with_grass)
-			{
-				// Make it exactly mud
-				n->setContent(c_dirt);
-				
-				/*
-					Don't flow it if the stuff under it is not mud
-				*/
-				{
-					u32 i2 = i;
-					vmanip.m_area.add_y(em, i2, -1);
-					// Cancel if out of area
-					if(vmanip.m_area.contains(i2) == false)
-						continue;
-					MapNode *n2 = &vmanip.m_data[i2];
-					if(n2->getContent() != c_dirt &&
-							n2->getContent() != c_dirt_with_grass)
-						continue;
-				}
-			}
-
-			/*s16 recurse_count = 0;
-	mudflow_recurse:*/
-
-			v3s16 dirs4[4] = {
-				v3s16(0,0,1), // back
-				v3s16(1,0,0), // right
-				v3s16(0,0,-1), // front
-				v3s16(-1,0,0), // left
-			};
-
-			// Theck that upper is air or doesn't exist.
-			// Cancel dropping if upper keeps it in place
-			u32 i3 = i;
-			vmanip.m_area.add_y(em, i3, 1);
-			if(vmanip.m_area.contains(i3) == true
-					&& ndef->get(vmanip.m_data[i3]).walkable)
-			{
-				continue;
-			}
-
-			// Drop mud on side
-			
-			for(u32 di=0; di<4; di++)
-			{
-				v3s16 dirp = dirs4[di];
-				u32 i2 = i;
-				// Move to side
-				vmanip.m_area.add_p(em, i2, dirp);
-				// Fail if out of area
-				if(vmanip.m_area.contains(i2) == false)
-					continue;
-				// Check that side is air
-				MapNode *n2 = &vmanip.m_data[i2];
-				if(ndef->get(*n2).walkable)
-					continue;
-				// Check that under side is air
-				vmanip.m_area.add_y(em, i2, -1);
-				if(vmanip.m_area.contains(i2) == false)
-					continue;
-				n2 = &vmanip.m_data[i2];
-				if(ndef->get(*n2).walkable)
-					continue;
-				/*// Check that under that is air (need a drop of 2)
-				vmanip.m_area.add_y(em, i2, -1);
-				if(vmanip.m_area.contains(i2) == false)
-					continue;
-				n2 = &vmanip.m_data[i2];
-				if(content_walkable(n2->d))
-					continue;*/
-				// Loop further down until not air
-				bool dropped_to_unknown = false;
-				do{
-					vmanip.m_area.add_y(em, i2, -1);
-					n2 = &vmanip.m_data[i2];
-					// if out of known area
-					if(vmanip.m_area.contains(i2) == false
-							|| n2->getContent() == CONTENT_IGNORE){
-						dropped_to_unknown = true;
-						break;
-					}
-				}while(ndef->get(*n2).walkable == false);
-				// Loop one up so that we're in air
-				vmanip.m_area.add_y(em, i2, 1);
-				n2 = &vmanip.m_data[i2];
-				
-				bool old_is_water = (n->getContent() == c_water_source);
-				// Move mud to new place
-				if(!dropped_to_unknown)
-					*n2 = *n;
-				// Set old place to be air (or water)
-				if(old_is_water)
-					*n = MapNode(c_water_source);
-				else
-					*n = MapNode(CONTENT_AIR);
-
-				// Done
-				break;
-			}
-		}
-		}
-	}
-	
-	}
-
-	}//timer1
-#endif
-
 	} // Aging loop
 	/***********************
 		END OF AGING LOOP
@@ -2209,6 +2098,12 @@ void make_block(BlockMakeData *data)
 			);
 			// Amount of trees
 			u32 tree_count = area * tree_amount_2d(data->seed, p2d_center);
+			float surface_humidity = surface_humidity_2d(data->seed, p2d_center);
+			bool is_jungle = surface_humidity > 0.75;
+			if(is_jungle == true)
+			{
+				tree_count *= 5;
+			}
 			// Put trees in random places on part of division
 			for(u32 i=0; i<tree_count; i++)
 			{
@@ -2233,11 +2128,19 @@ void make_block(BlockMakeData *data)
 						continue;
 				}
 				p.Y++;
-				// Make a tree
-				make_tree(vmanip, p, false, ndef);
+				if(is_jungle == true)
+				{
+					make_jungletree(vmanip, p, ndef);
+				}
+				else
+				{
+					// Make a tree
+					make_tree(vmanip, p, true, ndef);
+				}
 			}
 		}
 	}
+	
 
 #if 0
 	/*
@@ -2325,7 +2228,8 @@ void make_block(BlockMakeData *data)
 			}
 		}
 	}
-
+#endif
+#if 0
 	/*
 		Add dungeons
 	*/
@@ -2407,7 +2311,8 @@ void make_block(BlockMakeData *data)
 			}
 		}
 	}
-
+#endif
+#if 0
 	/*
 		Add NC
 	*/
@@ -2461,7 +2366,8 @@ void make_block(BlockMakeData *data)
 			}
 		}
 	}
-
+#endif
+#if 0
 	/*
 		If close to ground level
 	*/
@@ -2469,6 +2375,8 @@ void make_block(BlockMakeData *data)
 	//if(abs(approx_ground_depth) < 30)
 	if(minimum_ground_depth < 5 && maximum_ground_depth > -5)
 	{
+#endif
+#if 0
 		/*
 			Add grass and mud
 		*/
@@ -2557,7 +2465,8 @@ void make_block(BlockMakeData *data)
 		/*
 			Calculate some stuff
 		*/
-		
+#endif
+#if 0
 		float surface_humidity = surface_humidity_2d(data->seed, p2d_center);
 		bool is_jungle = surface_humidity > 0.75;
 		// Amount of trees
@@ -2609,18 +2518,18 @@ void make_block(BlockMakeData *data)
 				if(n->getContent() != c_dirt && n->getContent() != c_dirt_with_grass && n->getContent() != c_sand)
 						continue;
 
-				// Papyrus grows only on mud and in water
+				/*// Papyrus grows only on mud and in water
 				if(n->getContent() == c_dirt && y <= WATER_LEVEL)
 				{
 					p.Y++;
 					make_papyrus(vmanip, p, ndef);
-				}
+				}*/
 				// Trees grow only on mud and grass, on land
 				else if((n->getContent() == c_dirt || n->getContent() == c_dirt_with_grass) && y > WATER_LEVEL + 2)
 				{
 					p.Y++;
 					//if(surface_humidity_2d(data->seed, v2s16(x, y)) < 0.5)
-					if(is_jungle == false)
+					/*if(is_jungle == true)
 					{
 						bool is_apple_tree;
 						if(myrand_range(0,4) != 0)
@@ -2631,15 +2540,18 @@ void make_block(BlockMakeData *data)
 									data->seed+342902, 3, 0.45) > 0.2;
 						make_tree(vmanip, p, is_apple_tree, ndef);
 					}
-					else
+					else*/
+					if(is_jungle == true)
+					{
 						make_jungletree(vmanip, p, ndef);
+					}
 				}
-				// Cactii grow only on sand, on land
+				/*// Cactii grow only on sand, on land
 				else if(n->getContent() == c_sand && y > WATER_LEVEL + 2)
 				{
 					p.Y++;
 					make_cactus(vmanip, p, ndef);
-				}
+				}*/
 			}
 		}
 
@@ -2689,7 +2601,7 @@ void make_block(BlockMakeData *data)
 					vmanip.m_data[vmanip.m_area.index(p)] = c_junglegrass;
 			}
 		}
-
+#endif
 #if 0
 		/*
 			Add some kind of random stones
@@ -2758,6 +2670,7 @@ void make_block(BlockMakeData *data)
 			make_largestone(vmanip, p);
 		}
 #endif
+#if 0
 	}
 
 	/*

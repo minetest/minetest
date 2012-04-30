@@ -51,9 +51,6 @@ public:
 	{
 		m_speed = speed;
 	}
-	
-	// Y direction is ignored
-	void accelerate(v3f target_speed, f32 max_increase);
 
 	v3f getPosition()
 	{
@@ -144,6 +141,8 @@ public:
 	// This is more stable and defines the maximum speed of the player
 	bool in_water_stable;
 	bool is_climbing;
+	bool is_flying;
+	bool is_sprinting;
 	bool swimming_up;
 	bool camera_barely_in_ceiling;
 	
@@ -153,6 +152,26 @@ public:
 	Inventory inventory;
 
 	u16 hp;
+
+	float hurt_tilt_timer;
+
+	float hurt_tilt_timer_max;
+
+	float enable_sprinting_timer;
+
+	u16 hunger;
+
+	f32 hunger_timer;
+
+	f32 hunger_hurt_heal_timer;
+
+	f32 exhaustion;
+
+	u16 oxygen;
+
+	f32 oxygen_timer;
+
+	f32 oxygen_hurt_timer;
 
 	u16 peer_id;
 

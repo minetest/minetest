@@ -577,6 +577,8 @@ private:
 	*/
 	
 	static void SendHP(con::Connection &con, u16 peer_id, u8 hp);
+	static void SendHunger(con::Connection &con, u16 peer_id, u8 hunger);
+	static void SendOxygen(con::Connection &con, u16 peer_id, u8 oxygen);
 	static void SendAccessDenied(con::Connection &con, u16 peer_id,
 			const std::wstring &reason);
 	static void SendDeathscreen(con::Connection &con, u16 peer_id,
@@ -598,6 +600,8 @@ private:
 	void SendChatMessage(u16 peer_id, const std::wstring &message);
 	void BroadcastChatMessage(const std::wstring &message);
 	void SendPlayerHP(u16 peer_id);
+	void SendPlayerHunger(u16 peer_id);
+	void SendPlayerOxygen(u16 peer_id);
 	void SendMovePlayer(u16 peer_id);
 	void SendPlayerPrivileges(u16 peer_id);
 	/*
@@ -628,6 +632,9 @@ private:
 	*/
 	
 	void DiePlayer(u16 peer_id);
+	void StarvePlayer(u16 peer_id);
+	void SuffocatePlayer(u16 peer_id);
+	void SatisfyPlayer(u16 peer_id);
 	void RespawnPlayer(u16 peer_id);
 	
 	void UpdateCrafting(u16 peer_id);

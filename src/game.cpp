@@ -136,7 +136,8 @@ private:
 void draw_hotbar(video::IVideoDriver *driver, gui::IGUIFont *font,
 		IGameDef *gamedef,
 		v2s32 centerlowerpos, s32 imgsize, s32 itemcount,
-		Inventory *inventory, s32 halfheartcount, u16 playeritem)
+		Inventory *inventory, s32 halfheartcount, s32 halfhungercount,
+		s32 halfoxygencount, bool in_water, u16 playeritem)
 {
 	InventoryList *mainlist = inventory->getList("main");
 	if(mainlist == NULL)
@@ -146,83 +147,46 @@ void draw_hotbar(video::IVideoDriver *driver, gui::IGUIFont *font,
 	}
 	
 	s32 padding = imgsize/12;
-	//s32 height = imgsize + padding*2;
+	s32 height = imgsize + padding*2;
 	s32 width = itemcount*(imgsize+padding*2);
 	
 	// Position of upper left corner of bar
 	v2s32 pos = centerlowerpos - v2s32(width/2, imgsize+padding*2);
-	
-	// Draw background color
-	/*core::rect<s32> barrect(0,0,width,height);
-	barrect += pos;
-	video::SColor bgcolor(255,128,128,128);
-	driver->draw2DRectangle(bgcolor, barrect, NULL);*/
 
+	// Draw background color
+	core::rect<s32> barrect(0,0,width,height);
+	barrect += pos;
+	video::ITexture *hotbar_background_texture =
+		driver->getTexture(getTexturePath("hotbar_background.png").c_str());
+	driver->draw2DImage(hotbar_background_texture, barrect,
+		core::rect<s32>(core::position2d<s32>(0,0), hotbar_background_texture->getOriginalSize()), NULL, NULL, true);
+	
 	core::rect<s32> imgrect(0,0,imgsize,imgsize);
 
+	// Draw Items
 	for(s32 i=0; i<itemcount; i++)
 	{
+		core::rect<s32> imgrect(0,0,imgsize,imgsize);
 		const ItemStack &item = mainlist->getItem(i);
-		
-		core::rect<s32> rect = imgrect + pos
-				+ v2s32(padding+i*(imgsize+padding*2), padding);
-		
+
+		s32 x = padding+i*(imgsize+padding*2);
+		s32 y = padding;
+		v2s32 p(x, y);
+		core::rect<s32> rect = imgrect + pos + p;
+
+		video::ITexture *hotbar_slot_texture =
+			driver->getTexture(getTexturePath("hotbar_slot.png").c_str());
+		driver->draw2DImage(hotbar_slot_texture, rect,
+			core::rect<s32>(core::position2d<s32>(0,0), hotbar_slot_texture->getOriginalSize()), NULL, NULL, true);
+
 		if(playeritem == i)
 		{
-			video::SColor c_outside(255,255,0,0);
-			//video::SColor c_outside(255,0,0,0);
-			//video::SColor c_inside(255,192,192,192);
-			s32 x1 = rect.UpperLeftCorner.X;
-			s32 y1 = rect.UpperLeftCorner.Y;
-			s32 x2 = rect.LowerRightCorner.X;
-			s32 y2 = rect.LowerRightCorner.Y;
-			// Black base borders
-			driver->draw2DRectangle(c_outside,
-					core::rect<s32>(
-						v2s32(x1 - padding, y1 - padding),
-						v2s32(x2 + padding, y1)
-					), NULL);
-			driver->draw2DRectangle(c_outside,
-					core::rect<s32>(
-						v2s32(x1 - padding, y2),
-						v2s32(x2 + padding, y2 + padding)
-					), NULL);
-			driver->draw2DRectangle(c_outside,
-					core::rect<s32>(
-						v2s32(x1 - padding, y1),
-						v2s32(x1, y2)
-					), NULL);
-			driver->draw2DRectangle(c_outside,
-					core::rect<s32>(
-						v2s32(x2, y1),
-						v2s32(x2 + padding, y2)
-					), NULL);
-			/*// Light inside borders
-			driver->draw2DRectangle(c_inside,
-					core::rect<s32>(
-						v2s32(x1 - padding/2, y1 - padding/2),
-						v2s32(x2 + padding/2, y1)
-					), NULL);
-			driver->draw2DRectangle(c_inside,
-					core::rect<s32>(
-						v2s32(x1 - padding/2, y2),
-						v2s32(x2 + padding/2, y2 + padding/2)
-					), NULL);
-			driver->draw2DRectangle(c_inside,
-					core::rect<s32>(
-						v2s32(x1 - padding/2, y1),
-						v2s32(x1, y2)
-					), NULL);
-			driver->draw2DRectangle(c_inside,
-					core::rect<s32>(
-						v2s32(x2, y1),
-						v2s32(x2 + padding/2, y2)
-					), NULL);
-			*/
+			video::ITexture *hotbar_selection_texture =
+				driver->getTexture(getTexturePath("hotbar_selection.png").c_str());
+			driver->draw2DImage(hotbar_selection_texture, rect,
+				core::rect<s32>(core::position2d<s32>(0,0), hotbar_selection_texture->getOriginalSize()), NULL, NULL, true);
 		}
 
-		video::SColor bgcolor2(128,0,0,0);
-		driver->draw2DRectangle(bgcolor2, rect, NULL);
 		drawItemStack(driver, font, item, rect, NULL, gamedef);
 	}
 	
@@ -231,6 +195,8 @@ void draw_hotbar(video::IVideoDriver *driver, gui::IGUIFont *font,
 	*/
 	video::ITexture *heart_texture =
 		gamedef->getTextureSource()->getTextureRaw("heart.png");
+	video::ITexture *heart_half_texture =
+		gamedef->getTextureSource()->getTextureRaw("heart_half.png");
 	if(heart_texture)
 	{
 		v2s32 p = pos + v2s32(0, -20);
@@ -250,13 +216,120 @@ void draw_hotbar(video::IVideoDriver *driver, gui::IGUIFont *font,
 		{
 			const video::SColor color(255,255,255,255);
 			const video::SColor colors[] = {color,color,color,color};
-			core::rect<s32> rect(0,0,16/2,16);
-			rect += p;
 			core::dimension2di srcd(heart_texture->getOriginalSize());
-			srcd.Width /= 2;
-			driver->draw2DImage(heart_texture, rect,
+			if (heart_half_texture == NULL)
+			{
+				core::rect<s32> rect(0,0,16/2,16);
+				rect += p;
+				srcd.Width /= 2;
+				driver->draw2DImage(heart_texture, rect,
 				core::rect<s32>(core::position2d<s32>(0,0), srcd),
 				NULL, colors, true);
+			}
+			else
+			{
+				core::rect<s32> rect(0,0,16,16);
+				rect += p;
+				driver->draw2DImage(heart_half_texture, rect,
+				core::rect<s32>(core::position2d<s32>(0,0), srcd),
+				NULL, colors, true);
+			}
+			p += v2s32(16,0);
+		}
+	}
+	
+	/*
+		Draw hunger bar
+	*/
+	video::ITexture *hunger_texture =
+		gamedef->getTextureSource()->getTextureRaw("hunger.png");
+	video::ITexture *hunger_half_texture =
+		gamedef->getTextureSource()->getTextureRaw("hunger_half.png");
+	if(hunger_texture)
+	{
+		v2s32 p = pos + v2s32(0, -40);
+		for(s32 i=0; i<halfhungercount/2; i++)
+		{
+			const video::SColor color(255,255,255,255);
+			const video::SColor colors[] = {color,color,color,color};
+			core::rect<s32> rect(0,0,16,16);
+			rect += p;
+			driver->draw2DImage(hunger_texture, rect,
+				core::rect<s32>(core::position2d<s32>(0,0),
+				core::dimension2di(hunger_texture->getOriginalSize())),
+				NULL, colors, true);
+			p += v2s32(16,0);
+		}
+		if(halfhungercount % 2 == 1)
+		{
+			const video::SColor color(255,255,255,255);
+			const video::SColor colors[] = {color,color,color,color};
+			core::dimension2di srcd(hunger_texture->getOriginalSize());
+			if (hunger_half_texture == NULL)
+			{
+				core::rect<s32> rect(0,0,16/2,16);
+				rect += p;
+				srcd.Width /= 2;
+				driver->draw2DImage(hunger_texture, rect,
+				core::rect<s32>(core::position2d<s32>(0,0), srcd),
+				NULL, colors, true);
+			}
+			else
+			{
+				core::rect<s32> rect(0,0,16,16);
+				rect += p;
+				driver->draw2DImage(hunger_half_texture, rect,
+				core::rect<s32>(core::position2d<s32>(0,0), srcd),
+				NULL, colors, true);
+			}
+			p += v2s32(16,0);
+		}
+	}
+
+	/*
+		Draw oxygen bar
+	*/
+	video::ITexture *oxygen_texture =
+		gamedef->getTextureSource()->getTextureRaw("oxygen.png");
+	video::ITexture *oxygen_half_texture =
+		gamedef->getTextureSource()->getTextureRaw("oxygen_half.png");
+	if(oxygen_texture && in_water)
+	{
+		v2s32 p = pos + v2s32(0, -60);
+		for(s32 i=0; i<halfoxygencount/2; i++)
+		{
+			const video::SColor color(255,255,255,255);
+			const video::SColor colors[] = {color,color,color,color};
+			core::rect<s32> rect(0,0,16,16);
+			rect += p;
+			driver->draw2DImage(oxygen_texture, rect,
+				core::rect<s32>(core::position2d<s32>(0,0),
+				core::dimension2di(oxygen_texture->getOriginalSize())),
+				NULL, colors, true);
+			p += v2s32(16,0);
+		}
+		if(halfoxygencount % 2 == 1)
+		{
+			const video::SColor color(255,255,255,255);
+			const video::SColor colors[] = {color,color,color,color};
+			core::dimension2di srcd(oxygen_texture->getOriginalSize());
+			if (oxygen_half_texture == NULL)
+			{
+				core::rect<s32> rect(0,0,16/2,16);
+				rect += p;
+				srcd.Width /= 2;
+				driver->draw2DImage(oxygen_texture, rect,
+				core::rect<s32>(core::position2d<s32>(0,0), srcd),
+				NULL, colors, true);
+			}
+			else
+			{
+				core::rect<s32> rect(0,0,16,16);
+				rect += p;
+				driver->draw2DImage(oxygen_half_texture, rect,
+				core::rect<s32>(core::position2d<s32>(0,0), srcd),
+				NULL, colors, true);
+			}
 			p += v2s32(16,0);
 		}
 	}
@@ -1284,7 +1357,6 @@ void the_game(
 	bool digging = false;
 	bool ldown_for_dig = false;
 
-	float damage_flash_timer = 0;
 	s16 farmesh_range = 20*MAP_BLOCKSIZE;
 
 	const float object_hit_delay = 0.2;
@@ -1308,6 +1380,7 @@ void the_game(
 	float time_of_day = 0;
 	float time_of_day_smooth = 0;
 
+
 	/*
 		Main loop
 	*/
@@ -1322,6 +1395,8 @@ void the_game(
 	// NOTE: getRealTime() causes strange problems in wine (imprecision?)
 	// NOTE: So we have to use getTime() and call run()s between them
 	u32 lasttime = device->getTimer()->getTime();
+
+	LocalPlayer* player = client.getEnv().getLocalPlayer();
 
 	for(;;)
 	{
@@ -1550,6 +1625,22 @@ void the_game(
 		/*
 			Launch menus and trigger stuff according to keys
 		*/
+		if(input->isKeyDown(getKeySetting("keymap_forward")))
+		{
+			if(player->enable_sprinting_timer > 0)
+				player->is_sprinting=true;
+			player->enable_sprinting_timer=-1;
+		}
+		else
+		{
+			if (player->is_sprinting)
+				player->is_sprinting=false;
+			if (player->enable_sprinting_timer==-1)
+			{
+				player->enable_sprinting_timer=0.2;
+			}
+		}
+
 		if(input->wasKeyDown(getKeySetting("keymap_drop")))
 		{
 			// drop selected item
@@ -1560,7 +1651,7 @@ void the_game(
 			a->from_i = client.getPlayerItem();
 			client.inventoryAction(a);
 		}
-		else if(input->wasKeyDown(getKeySetting("keymap_inventory")))
+		if(input->wasKeyDown(getKeySetting("keymap_inventory")))
 		{
 			infostream<<"the_game: "
 					<<"Launching inventory"<<std::endl;
@@ -1588,7 +1679,7 @@ void the_game(
 
 			menu->drop();
 		}
-		else if(input->wasKeyDown(EscapeKey))
+		if(input->wasKeyDown(EscapeKey))
 		{
 			infostream<<"the_game: "
 					<<"Launching pause menu"<<std::endl;
@@ -1602,7 +1693,7 @@ void the_game(
 			else
 				input->setMousePos(displaycenter.X, displaycenter.Y+25);
 		}
-		else if(input->wasKeyDown(getKeySetting("keymap_chat")))
+		if(input->wasKeyDown(getKeySetting("keymap_chat")))
 		{
 			TextDest *dest = new TextDestChat(&client);
 
@@ -1610,7 +1701,7 @@ void the_game(
 					&g_menumgr, dest,
 					L""))->drop();
 		}
-		else if(input->wasKeyDown(getKeySetting("keymap_cmd")))
+		if(input->wasKeyDown(getKeySetting("keymap_cmd")))
 		{
 			TextDest *dest = new TextDestChat(&client);
 
@@ -1618,7 +1709,7 @@ void the_game(
 					&g_menumgr, dest,
 					L"/"))->drop();
 		}
-		else if(input->wasKeyDown(getKeySetting("keymap_console")))
+		if(input->wasKeyDown(getKeySetting("keymap_console")))
 		{
 			if (!gui_chat_console->isOpenInhibited())
 			{
@@ -1627,7 +1718,7 @@ void the_game(
 				guienv->setFocus(gui_chat_console);
 			}
 		}
-		else if(input->wasKeyDown(getKeySetting("keymap_freemove")))
+		if(input->wasKeyDown(getKeySetting("keymap_freemove")))
 		{
 			if(g_settings->getBool("free_move"))
 			{
@@ -1644,7 +1735,7 @@ void the_game(
 					statustext += L" (note: no 'fly' privilege)";
 			}
 		}
-		else if(input->wasKeyDown(getKeySetting("keymap_fastmove")))
+		if(input->wasKeyDown(getKeySetting("keymap_fastmove")))
 		{
 			if(g_settings->getBool("fast_move"))
 			{
@@ -1661,7 +1752,7 @@ void the_game(
 					statustext += L" (note: no 'fast' privilege)";
 			}
 		}
-		else if(input->wasKeyDown(getKeySetting("keymap_screenshot")))
+		if(input->wasKeyDown(getKeySetting("keymap_screenshot")))
 		{
 			irr::video::IImage* const image = driver->createScreenShot(); 
 			if (image) { 
@@ -1681,7 +1772,7 @@ void the_game(
 				image->drop(); 
 			}			 
 		}
-		else if(input->wasKeyDown(getKeySetting("keymap_toggle_hud")))
+		if(input->wasKeyDown(getKeySetting("keymap_toggle_hud")))
 		{
 			show_hud = !show_hud;
 			if(show_hud)
@@ -1690,7 +1781,7 @@ void the_game(
 				statustext = L"HUD hidden";
 			statustext_time = 0;
 		}
-		else if(input->wasKeyDown(getKeySetting("keymap_toggle_chat")))
+		if(input->wasKeyDown(getKeySetting("keymap_toggle_chat")))
 		{
 			show_chat = !show_chat;
 			if(show_chat)
@@ -1699,7 +1790,7 @@ void the_game(
 				statustext = L"Chat hidden";
 			statustext_time = 0;
 		}
-		else if(input->wasKeyDown(getKeySetting("keymap_toggle_force_fog_off")))
+		if(input->wasKeyDown(getKeySetting("keymap_toggle_force_fog_off")))
 		{
 			force_fog_off = !force_fog_off;
 			if(force_fog_off)
@@ -1708,7 +1799,7 @@ void the_game(
 				statustext = L"Fog enabled";
 			statustext_time = 0;
 		}
-		else if(input->wasKeyDown(getKeySetting("keymap_toggle_update_camera")))
+		if(input->wasKeyDown(getKeySetting("keymap_toggle_update_camera")))
 		{
 			disable_camera_update = !disable_camera_update;
 			if(disable_camera_update)
@@ -1717,7 +1808,7 @@ void the_game(
 				statustext = L"Camera update enabled";
 			statustext_time = 0;
 		}
-		else if(input->wasKeyDown(getKeySetting("keymap_toggle_debug")))
+		if(input->wasKeyDown(getKeySetting("keymap_toggle_debug")))
 		{
 			// Initial / 3x toggle: Chat only
 			// 1x toggle: Debug text with chat
@@ -1743,7 +1834,7 @@ void the_game(
 				statustext_time = 0;
 			}
 		}
-		else if(input->wasKeyDown(getKeySetting("keymap_toggle_profiler")))
+		if(input->wasKeyDown(getKeySetting("keymap_toggle_profiler")))
 		{
 			show_profiler = (show_profiler + 1) % (show_profiler_max + 1);
 
@@ -1765,7 +1856,7 @@ void the_game(
 				statustext_time = 0;
 			}
 		}
-		else if(input->wasKeyDown(getKeySetting("keymap_increase_viewing_range_min")))
+		if(input->wasKeyDown(getKeySetting("keymap_increase_viewing_range_min")))
 		{
 			s16 range = g_settings->getS16("viewing_range_nodes_min");
 			s16 range_new = range + 10;
@@ -1775,7 +1866,7 @@ void the_game(
 					+ itos(range_new));
 			statustext_time = 0;
 		}
-		else if(input->wasKeyDown(getKeySetting("keymap_decrease_viewing_range_min")))
+		if(input->wasKeyDown(getKeySetting("keymap_decrease_viewing_range_min")))
 		{
 			s16 range = g_settings->getS16("viewing_range_nodes_min");
 			s16 range_new = range - 10;
@@ -1991,10 +2082,11 @@ void the_game(
 				{
 					//u16 damage = event.player_damage.amount;
 					//infostream<<"Player damage: "<<damage<<std::endl;
-					damage_flash_timer = 0.05;
+					player->hurt_tilt_timer = 0.5;
 					if(event.player_damage.amount >= 2){
-						damage_flash_timer += 0.05 * event.player_damage.amount;
+						player->hurt_tilt_timer += 0.1 * event.player_damage.amount;
 					}
+					player->hurt_tilt_timer_max=player->hurt_tilt_timer;
 				}
 				else if(event.type == CE_PLAYER_FORCE_MOVE)
 				{
@@ -2016,15 +2108,15 @@ void the_game(
 							new MainRespawnInitiator(
 									&respawn_menu_active, &client);
 					GUIDeathScreen *menu =
-							new GUIDeathScreen(guienv, guiroot, -1, 
-								&g_menumgr, respawner);
+							new GUIDeathScreen(guienv, guiroot, -1,
+								g_gamecallback, &g_menumgr, respawner);
 					menu->drop();
 					
 					chat_backend.addMessage(L"", L"You died.");
 
 					/* Handle visualization */
-
-					damage_flash_timer = 0;
+					player->hurt_tilt_timer = 0;
+					player->hurt_tilt_timer_max = 0;
 
 					/*LocalPlayer* player = client.getLocalPlayer();
 					player->setPosition(player->getPosition() + v3f(0,-BS,0));
@@ -2842,21 +2934,28 @@ void the_game(
 			draw_hotbar(driver, font, gamedef,
 					v2s32(displaycenter.X, screensize.Y),
 					hotbar_imagesize, hotbar_itemcount, &local_inventory,
-					client.getHP(), client.getPlayerItem());
+					client.getHP(), client.getHunger(), client.getOxygen(),
+					client.in_water(), client.getPlayerItem());
 		}
 
 		/*
-			Damage flash
+			Damage camera tilt
 		*/
-		if(damage_flash_timer > 0.0)
+		if(player->hurt_tilt_timer > 0.0)
 		{
-			damage_flash_timer -= dtime;
-			
-			video::SColor color(128,255,0,0);
-			driver->draw2DRectangle(color,
-					core::rect<s32>(0,0,screensize.X,screensize.Y),
-					NULL);
+			player->hurt_tilt_timer -= dtime*5;
+			if(player->hurt_tilt_timer < 0.0)
+			{
+				player->hurt_tilt_timer_max = 0;
+				player->hurt_tilt_timer = 0;
+			}
 		}
+
+		/*
+			Time that has to pass between key_forward presses to enable sprinting
+		*/
+		if(player->enable_sprinting_timer > 0.0)
+			player->enable_sprinting_timer -= dtime;
 
 		/*
 			End scene

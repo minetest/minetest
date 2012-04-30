@@ -133,7 +133,7 @@ void Camera::step(f32 dtime)
 	if (m_view_bobbing_state != 0)
 	{
 		//f32 offset = dtime * m_view_bobbing_speed * 0.035;
-		f32 offset = dtime * m_view_bobbing_speed * 0.030;
+		f32 offset = dtime * m_view_bobbing_speed * 0.04;
 		if (m_view_bobbing_state == 2)
 		{
 #if 0
@@ -217,9 +217,26 @@ void Camera::update(LocalPlayer* player, f32 frametime, v2u32 screensize,
 	m_playernode->setRotation(v3f(0, -1 * player->getYaw(), 0));
 	m_playernode->updateAbsolutePosition();
 
+	//Get camera tilt timer (hurt animation)
+	float cameratilt = fabs(fabs(-(player->hurt_tilt_timer_max/2)+player->hurt_tilt_timer)-player->hurt_tilt_timer_max/2)/5;
+
+	v3f campos(player->getEyeOffset());
+	v3f camrot(player->getPitch(), 0, 0);
+
+	m_headnode->updateAbsolutePosition();
+	if (cameratilt > 0)
+	{
+		campos += v3f(0, cameratilt * -13, 0);
+		camrot += v3f(0, 0, cameratilt * 13 * BS);
+	}
+	if(player->is_sprinting)
+	{
+		campos += v3f(0, 0, 0.3 * BS);
+	}
+
 	// Set head node transformation
-	m_headnode->setPosition(player->getEyeOffset());
-	m_headnode->setRotation(v3f(player->getPitch(), 0, 0));
+	m_headnode->setPosition(campos);
+	m_headnode->setRotation(camrot);
 	m_headnode->updateAbsolutePosition();
 
 	// Compute relative camera position and target
@@ -294,6 +311,11 @@ void Camera::update(LocalPlayer* player, f32 frametime, v2u32 screensize,
 	m_fov_y *= MYMAX(1.0, MYMIN(1.4, sqrt(16./10. / m_aspect)));
 	// WTF is this? It can't be right
 	m_fov_x = 2 * atan(0.5 * m_aspect * tan(m_fov_y));
+	if(player->is_sprinting)
+	{
+		m_fov_x += 0.3;
+		m_fov_y += 0.3;
+	}
 	m_cameranode->setAspectRatio(m_aspect);
 	m_cameranode->setFOV(m_fov_y);
 
@@ -320,13 +342,13 @@ void Camera::update(LocalPlayer* player, f32 frametime, v2u32 screensize,
 	if (m_digging_button != -1)
 	{
 		f32 digfrac = m_digging_anim;
-		wield_position.X -= 30 * sin(pow(digfrac, 0.8f) * PI);
-		wield_position.Y += 15 * sin(digfrac * 2 * PI);
-		wield_position.Z += 5 * digfrac;
+		wield_position.X -= 50 * sin(pow(digfrac, 0.7f) * PI);
+		wield_position.Y += 24 * sin(digfrac * 1.8 * PI);
+		wield_position.Z += 25 * 0.5;
 
 		// Euler angles are PURE EVIL, so why not use quaternions?
 		core::quaternion quat_begin(wield_rotation * core::DEGTORAD);
-		core::quaternion quat_end(v3f(90, -10, -130) * core::DEGTORAD);
+		core::quaternion quat_end(v3f(80, 30, 100) * core::DEGTORAD);
 		core::quaternion quat_slerp;
 		quat_slerp.slerp(quat_begin, quat_end, sin(digfrac * PI));
 		quat_slerp.toEuler(wield_rotation);

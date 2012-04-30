@@ -48,6 +48,7 @@ include(${CMAKE_SOURCE_DIR}/cmake/Modules/misc.cmake)
 
 # This is done here so that relative search paths are more reasnable
 find_package(Irrlicht)
+find_package(CURL)
 
 #
 # Installation
@@ -90,8 +91,8 @@ elseif(UNIX) # Linux, BSD etc
 endif()
 
 install(DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/builtin" DESTINATION "${SHAREDIR}")
-install(DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/games/minimal" DESTINATION "${SHAREDIR}/games")
-set(MINETEST_GAME_SOURCE "${CMAKE_CURRENT_SOURCE_DIR}/games/minetest_game")
+#install(DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/games/minimal" DESTINATION "${SHAREDIR}/games")
+set(MINETEST_GAME_SOURCE "${CMAKE_CURRENT_SOURCE_DIR}/games/minetest")
 if(EXISTS ${MINETEST_GAME_SOURCE} AND IS_DIRECTORY ${MINETEST_GAME_SOURCE})
 	install(FILES ${MINETEST_GAME_SOURCE}/game.conf DESTINATION "${SHAREDIR}/games/minetest_game/")
 	install(FILES ${MINETEST_GAME_SOURCE}/README.txt DESTINATION "${SHAREDIR}/games/minetest_game/")
@@ -106,7 +107,7 @@ if(RUN_IN_PLACE)
 	install(FILES "${CMAKE_CURRENT_SOURCE_DIR}/textures/all/textures_here.txt" DESTINATION "${SHAREDIR}/textures/all")
 endif()
 
-install(FILES "README.txt" DESTINATION "${DOCDIR}")
+install(FILES "README.md" DESTINATION "${DOCDIR}")
 install(FILES "doc/lua_api.txt" DESTINATION "${DOCDIR}")
 install(FILES "doc/mapformat.txt" DESTINATION "${DOCDIR}")
 install(FILES "minetest.conf.example" DESTINATION "${EXAMPLE_CONF_DIR}")
