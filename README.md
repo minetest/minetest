@@ -4,7 +4,7 @@ Minetest++
 A game built off of the best free and open source Minecraft clone, Minetest-C55.
 
 Copyright (c) 2010-2012 Perttu Ahola <celeron55@gmail.com>
-and ther contributors (see source file comments and the version control log)
+and their contributors (see source file comments and the version control log)
 
 This contains 2 different game modes, Minetest and Minimal.
 Game mode Minimal is just a test and will be taken out soon. Game mode Minetest has all the cool features.
