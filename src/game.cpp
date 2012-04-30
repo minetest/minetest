@@ -2945,7 +2945,10 @@ void the_game(
 		{
 			player->hurt_tilt_timer -= dtime*5;
 			if(player->hurt_tilt_timer < 0.0)
+			{
 				player->hurt_tilt_timer_max = 0;
+				player->hurt_tilt_timer = 0;
+			}
 		}
 
 		/*

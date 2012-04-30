@@ -218,11 +218,25 @@ void Camera::update(LocalPlayer* player, f32 frametime, v2u32 screensize,
 	m_playernode->updateAbsolutePosition();
 
 	//Get camera tilt timer (hurt animation)
-	float cameratilt = fabs(fabs(-(player->hurt_tilt_timer_max/2)+player->hurt_tilt_timer)-player->hurt_tilt_timer_max/2);
+	float cameratilt = fabs(fabs(-(player->hurt_tilt_timer_max/2)+player->hurt_tilt_timer)-player->hurt_tilt_timer_max/2)/5;
+
+	v3f campos(player->getEyeOffset());
+	v3f camrot(player->getPitch(), 0, 0);
+
+	m_headnode->updateAbsolutePosition();
+	if (cameratilt > 0)
+	{
+		campos += v3f(0, cameratilt * -13, 0);
+		camrot += v3f(0, 0, cameratilt * 13 * BS);
+	}
+	if(player->is_sprinting)
+	{
+		campos += v3f(0, 0, 0.3 * BS);
+	}
 
 	// Set head node transformation
-	m_headnode->setPosition(player->getEyeOffset()+v3f(0,cameratilt*-13,0));
-	m_headnode->setRotation(v3f(player->getPitch(), 0, cameratilt*13));
+	m_headnode->setPosition(campos);
+	m_headnode->setRotation(camrot);
 	m_headnode->updateAbsolutePosition();
 
 	// Compute relative camera position and target
@@ -297,6 +311,11 @@ void Camera::update(LocalPlayer* player, f32 frametime, v2u32 screensize,
 	m_fov_y *= MYMAX(1.0, MYMIN(1.4, sqrt(16./10. / m_aspect)));
 	// WTF is this? It can't be right
 	m_fov_x = 2 * atan(0.5 * m_aspect * tan(m_fov_y));
+	if(player->is_sprinting)
+	{
+		m_fov_x += 0.3;
+		m_fov_y += 0.3;
+	}
 	m_cameranode->setAspectRatio(m_aspect);
 	m_cameranode->setFOV(m_fov_y);
 
