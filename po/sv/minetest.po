@@ -1,4 +1,4 @@
-# Faroese translation for minetest-c55
+# Swedish translation for minetest-c55
 # Copyright (c) 2012 Rosetta Contributors and Canonical Ltd 2012
 # This file is distributed under the same license as the minetest-c55 package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, 2012.
@@ -8,9 +8,9 @@ msgstr ""
 "Project-Id-Version: minetest-c55\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
 "POT-Creation-Date: 2011-08-02 12:36+0200\n"
-"PO-Revision-Date: 2012-05-06 13:59+0000\n"
-"Last-Translator: Jógvan Olsen <jeggy@jebster.net>\n"
-"Language-Team: Faroese <fo@li.org>\n"
+"PO-Revision-Date: 2012-05-07 04:42+0000\n"
+"Last-Translator: Juhani Numminen <juhaninumminen0@gmail.com>\n"
+"Language-Team: Swedish <sv@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -23,31 +23,31 @@ msgstr ""
 
 #: src/guiKeyChangeMenu.cpp:94
 msgid "Forward"
-msgstr "Frameftir"
+msgstr "Gå vidare"
 
 #: src/guiKeyChangeMenu.cpp:111
 msgid "Backward"
-msgstr "Aftureftir"
+msgstr ""
 
 #: src/guiKeyChangeMenu.cpp:127 src/guiKeyChangeMenu.h:38
 msgid "Left"
-msgstr "Til vinstru"
+msgstr "Vänster"
 
 #: src/guiKeyChangeMenu.cpp:142 src/guiKeyChangeMenu.h:38
 msgid "Right"
-msgstr "Til høgru"
+msgstr "Höger"
 
 #: src/guiKeyChangeMenu.cpp:158
 msgid "Use"
-msgstr "Brúk"
+msgstr "Använd"
 
 #: src/guiKeyChangeMenu.cpp:173
 msgid "Sneak"
-msgstr "sníkja"
+msgstr ""
 
 #: src/guiKeyChangeMenu.cpp:189
 msgid "Jump"
-msgstr "hoppa"
+msgstr "Hoppa"
 
 #: src/guiKeyChangeMenu.cpp:204
 msgid "Inventory"
@@ -55,7 +55,7 @@ msgstr ""
 
 #: src/guiKeyChangeMenu.cpp:220
 msgid "Chat"
-msgstr "Kjatt"
+msgstr "Chat"
 
 #: src/guiKeyChangeMenu.cpp:236
 msgid "Toggle fly"
@@ -75,11 +75,11 @@ msgstr ""
 
 #: src/guiKeyChangeMenu.cpp:298
 msgid "Save"
-msgstr "Goym"
+msgstr "Spara"
 
 #: src/guiKeyChangeMenu.cpp:304 src/guiKeyChangeMenu.h:33
 msgid "Cancel"
-msgstr "Avlýs"
+msgstr "Avbryt"
 
 #: src/guiKeyChangeMenu.cpp:537 src/guiKeyChangeMenu.cpp:542
 #: src/guiKeyChangeMenu.cpp:547 src/guiKeyChangeMenu.cpp:552
@@ -93,27 +93,27 @@ msgstr ""
 
 #: src/guiKeyChangeMenu.h:33
 msgid "Left Button"
-msgstr ""
+msgstr "Vänsterknapp"
 
 #: src/guiKeyChangeMenu.h:33
 msgid "Middle Button"
-msgstr ""
+msgstr "Mittenknapp"
 
 #: src/guiKeyChangeMenu.h:33
 msgid "Right Button"
-msgstr ""
+msgstr "Högerknapp"
 
 #: src/guiKeyChangeMenu.h:33
 msgid "X Button 1"
-msgstr ""
+msgstr "X knapp 1"
 
 #: src/guiKeyChangeMenu.h:34
 msgid "Back"
-msgstr "Aftur"
+msgstr "Bakåt"
 
 #: src/guiKeyChangeMenu.h:34
 msgid "Clear"
-msgstr "Tómstilla"
+msgstr ""
 
 #: src/guiKeyChangeMenu.h:34
 msgid "Return"
@@ -129,11 +129,11 @@ msgstr ""
 
 #: src/guiKeyChangeMenu.h:35
 msgid "Capital"
-msgstr ""
+msgstr "Kapital"
 
 #: src/guiKeyChangeMenu.h:35
 msgid "Control"
-msgstr ""
+msgstr "Control"
 
 #: src/guiKeyChangeMenu.h:35
 msgid "Kana"
@@ -145,7 +145,7 @@ msgstr "Menu"
 
 #: src/guiKeyChangeMenu.h:35
 msgid "Pause"
-msgstr ""
+msgstr "Pausa"
 
 #: src/guiKeyChangeMenu.h:35
 msgid "Shift"
@@ -157,7 +157,7 @@ msgstr ""
 
 #: src/guiKeyChangeMenu.h:36
 msgid "Escape"
-msgstr ""
+msgstr "Escape"
 
 #: src/guiKeyChangeMenu.h:36
 msgid "Final"
@@ -165,11 +165,11 @@ msgstr ""
 
 #: src/guiKeyChangeMenu.h:36
 msgid "Junja"
-msgstr ""
+msgstr "Junja"
 
 #: src/guiKeyChangeMenu.h:36
 msgid "Kanji"
-msgstr ""
+msgstr "Kanji"
 
 #: src/guiKeyChangeMenu.h:36
 msgid "Nonconvert"

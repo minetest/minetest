@@ -8,14 +8,14 @@ msgstr ""
 "Project-Id-Version: 0.0.0\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2011-08-02 12:36+0200\n"
-"PO-Revision-Date: 2012-04-14 06:39+0000\n"
-"Last-Translator: Constantin Wenger <constantin.wenger@googlemail.com>\n"
+"PO-Revision-Date: 2012-05-07 18:25+0000\n"
+"Last-Translator: aviary-o2 <Unknown>\n"
 "Language-Team: Deutsch <>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2012-05-04 13:08+0000\n"
-"X-Generator: Launchpad (build 15195)\n"
+"X-Launchpad-Export-Date: 2012-05-11 11:20+0000\n"
+"X-Generator: Launchpad (build 15225)\n"
 "Language: de\n"
 
 #: src/guiKeyChangeMenu.cpp:84
@@ -106,7 +106,7 @@ msgstr ""
 
 #: src/guiKeyChangeMenu.h:33
 msgid "X Button 1"
-msgstr ""
+msgstr "X-Knopf 1"
 
 #: src/guiKeyChangeMenu.h:34
 msgid "Back"
@@ -126,7 +126,7 @@ msgstr "Tab"
 
 #: src/guiKeyChangeMenu.h:34
 msgid "X Button 2"
-msgstr ""
+msgstr "X-Knopf 2"
 
 #: src/guiKeyChangeMenu.h:35
 msgid "Capital"
@@ -154,7 +154,7 @@ msgstr "Umsch."
 
 #: src/guiKeyChangeMenu.h:36
 msgid "Convert"
-msgstr ""
+msgstr "Konvertieren"
 
 #: src/guiKeyChangeMenu.h:36
 msgid "Escape"
@@ -162,7 +162,7 @@ msgstr "Escape"
 
 #: src/guiKeyChangeMenu.h:36
 msgid "Final"
-msgstr ""
+msgstr "Endgültig"
 
 #: src/guiKeyChangeMenu.h:36
 msgid "Junja"
@@ -190,7 +190,7 @@ msgstr "Pos1"
 
 #: src/guiKeyChangeMenu.h:37
 msgid "Mode Change"
-msgstr ""
+msgstr "Modusänderung"
 
 #: src/guiKeyChangeMenu.h:37
 msgid "Next"
@@ -246,7 +246,7 @@ msgstr "Win links"
 
 #: src/guiKeyChangeMenu.h:43
 msgid "Apps"
-msgstr ""
+msgstr "Apps"
 
 #: src/guiKeyChangeMenu.h:43
 msgid "Numpad 0"
@@ -486,3 +486,14 @@ msgid ""
 "- ESC: This menu\n"
 "- T: Chat\n"
 msgstr ""
+"Standardsteuerung:\n"
+"- WASD: Gehen\n"
+"- Linke Maustaste: Graben/Schlagen\n"
+"- Rechte Maustaste: Platzieren/Benutzen\n"
+"- Mausrad: Item wählen\n"
+"- 0...9: Item wählen\n"
+"- Umschalttaste: Schleichen\n"
+"- R: Alle geladenen Chunks sehen ein-/ausschalten\n"
+"- I: Inventar\n"
+"- ESC: Dieses Menü\n"
+"- T: Chatten\n"

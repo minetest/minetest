@@ -1,4 +1,4 @@
-# Faroese translation for minetest-c55
+# Spanish translation for minetest-c55
 # Copyright (c) 2012 Rosetta Contributors and Canonical Ltd 2012
 # This file is distributed under the same license as the minetest-c55 package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, 2012.
@@ -8,9 +8,9 @@ msgstr ""
 "Project-Id-Version: minetest-c55\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
 "POT-Creation-Date: 2011-08-02 12:36+0200\n"
-"PO-Revision-Date: 2012-05-06 13:59+0000\n"
-"Last-Translator: Jógvan Olsen <jeggy@jebster.net>\n"
-"Language-Team: Faroese <fo@li.org>\n"
+"PO-Revision-Date: 2012-05-11 03:27+0000\n"
+"Last-Translator: Alejandro Autalán <alejandroautalan@gmail.com>\n"
+"Language-Team: Spanish <es@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -19,67 +19,67 @@ msgstr ""
 
 #: src/guiKeyChangeMenu.cpp:84
 msgid "KEYBINDINGS"
-msgstr ""
+msgstr "Combinación de teclas"
 
 #: src/guiKeyChangeMenu.cpp:94
 msgid "Forward"
-msgstr "Frameftir"
+msgstr "Avanzar"
 
 #: src/guiKeyChangeMenu.cpp:111
 msgid "Backward"
-msgstr "Aftureftir"
+msgstr "Retroceder"
 
 #: src/guiKeyChangeMenu.cpp:127 src/guiKeyChangeMenu.h:38
 msgid "Left"
-msgstr "Til vinstru"
+msgstr "Izquierda"
 
 #: src/guiKeyChangeMenu.cpp:142 src/guiKeyChangeMenu.h:38
 msgid "Right"
-msgstr "Til høgru"
+msgstr "Derecha"
 
 #: src/guiKeyChangeMenu.cpp:158
 msgid "Use"
-msgstr "Brúk"
+msgstr "Usar"
 
 #: src/guiKeyChangeMenu.cpp:173
 msgid "Sneak"
-msgstr "sníkja"
+msgstr "Furtivo"
 
 #: src/guiKeyChangeMenu.cpp:189
 msgid "Jump"
-msgstr "hoppa"
+msgstr "Saltar"
 
 #: src/guiKeyChangeMenu.cpp:204
 msgid "Inventory"
-msgstr ""
+msgstr "Inventario"
 
 #: src/guiKeyChangeMenu.cpp:220
 msgid "Chat"
-msgstr "Kjatt"
+msgstr "Charla"
 
 #: src/guiKeyChangeMenu.cpp:236
 msgid "Toggle fly"
-msgstr ""
+msgstr "A/D vuelo"
 
 #: src/guiKeyChangeMenu.cpp:251
 msgid "Toggle fast"
-msgstr ""
+msgstr "A/D rapidez"
 
 #: src/guiKeyChangeMenu.cpp:266
 msgid "Range select"
-msgstr ""
+msgstr "Rango visual"
 
 #: src/guiKeyChangeMenu.cpp:283
 msgid "Print stacks"
-msgstr ""
+msgstr "Imprimir stacks"
 
 #: src/guiKeyChangeMenu.cpp:298
 msgid "Save"
-msgstr "Goym"
+msgstr "Guardar"
 
 #: src/guiKeyChangeMenu.cpp:304 src/guiKeyChangeMenu.h:33
 msgid "Cancel"
-msgstr "Avlýs"
+msgstr "Cancelar"
 
 #: src/guiKeyChangeMenu.cpp:537 src/guiKeyChangeMenu.cpp:542
 #: src/guiKeyChangeMenu.cpp:547 src/guiKeyChangeMenu.cpp:552
@@ -89,19 +89,19 @@ msgstr "Avlýs"
 #: src/guiKeyChangeMenu.cpp:587 src/guiKeyChangeMenu.cpp:592
 #: src/guiKeyChangeMenu.cpp:597
 msgid "press Key"
-msgstr ""
+msgstr "presione una tecla"
 
 #: src/guiKeyChangeMenu.h:33
 msgid "Left Button"
-msgstr ""
+msgstr "Botón izquierdo"
 
 #: src/guiKeyChangeMenu.h:33
 msgid "Middle Button"
-msgstr ""
+msgstr "Botón central"
 
 #: src/guiKeyChangeMenu.h:33
 msgid "Right Button"
-msgstr ""
+msgstr "Botón derecho"
 
 #: src/guiKeyChangeMenu.h:33
 msgid "X Button 1"
@@ -109,19 +109,19 @@ msgstr ""
 
 #: src/guiKeyChangeMenu.h:34
 msgid "Back"
-msgstr "Aftur"
+msgstr "Retroceso"
 
 #: src/guiKeyChangeMenu.h:34
 msgid "Clear"
-msgstr "Tómstilla"
+msgstr "Clear"
 
 #: src/guiKeyChangeMenu.h:34
 msgid "Return"
-msgstr ""
+msgstr "Enter"
 
 #: src/guiKeyChangeMenu.h:34
 msgid "Tab"
-msgstr ""
+msgstr "Tab"
 
 #: src/guiKeyChangeMenu.h:34
 msgid "X Button 2"
@@ -133,7 +133,7 @@ msgstr ""
 
 #: src/guiKeyChangeMenu.h:35
 msgid "Control"
-msgstr ""
+msgstr "Ctrl"
 
 #: src/guiKeyChangeMenu.h:35
 msgid "Kana"
@@ -141,15 +141,15 @@ msgstr ""
 
 #: src/guiKeyChangeMenu.h:35
 msgid "Menu"
-msgstr "Menu"
+msgstr "Menú"
 
 #: src/guiKeyChangeMenu.h:35
 msgid "Pause"
-msgstr ""
+msgstr "Pausa"
 
 #: src/guiKeyChangeMenu.h:35
 msgid "Shift"
-msgstr ""
+msgstr "Shift"
 
 #: src/guiKeyChangeMenu.h:36
 msgid "Convert"
@@ -157,87 +157,87 @@ msgstr ""
 
 #: src/guiKeyChangeMenu.h:36
 msgid "Escape"
-msgstr ""
+msgstr "Esc"
 
 #: src/guiKeyChangeMenu.h:36
 msgid "Final"
-msgstr ""
+msgstr "Final"
 
 #: src/guiKeyChangeMenu.h:36
 msgid "Junja"
-msgstr ""
+msgstr "Junja"
 
 #: src/guiKeyChangeMenu.h:36
 msgid "Kanji"
-msgstr ""
+msgstr "Kanji"
 
 #: src/guiKeyChangeMenu.h:36
 msgid "Nonconvert"
-msgstr ""
+msgstr "Nonconvert"
 
 #: src/guiKeyChangeMenu.h:37
 msgid "Accept"
-msgstr ""
+msgstr "Aceptar"
 
 #: src/guiKeyChangeMenu.h:37
 msgid "End"
-msgstr ""
+msgstr "Fin"
 
 #: src/guiKeyChangeMenu.h:37
 msgid "Home"
-msgstr ""
+msgstr "Inicio"
 
 #: src/guiKeyChangeMenu.h:37
 msgid "Mode Change"
-msgstr ""
+msgstr "Mode Change"
 
 #: src/guiKeyChangeMenu.h:37
 msgid "Next"
-msgstr ""
+msgstr "AvPag"
 
 #: src/guiKeyChangeMenu.h:37
 msgid "Priot"
-msgstr ""
+msgstr "Priot"
 
 #: src/guiKeyChangeMenu.h:37
 msgid "Space"
-msgstr ""
+msgstr "Espacio"
 
 #: src/guiKeyChangeMenu.h:38
 msgid "Down"
-msgstr ""
+msgstr "Abajo"
 
 #: src/guiKeyChangeMenu.h:38
 msgid "Execute"
-msgstr ""
+msgstr "Execute"
 
 #: src/guiKeyChangeMenu.h:38
 msgid "Print"
-msgstr ""
+msgstr "Impr Pant"
 
 #: src/guiKeyChangeMenu.h:38
 msgid "Select"
-msgstr ""
+msgstr "Select"
 
 #: src/guiKeyChangeMenu.h:38
 msgid "Up"
-msgstr ""
+msgstr "Arriba"
 
 #: src/guiKeyChangeMenu.h:39
 msgid "Delete"
-msgstr ""
+msgstr "Suprimir"
 
 #: src/guiKeyChangeMenu.h:39
 msgid "Help"
-msgstr ""
+msgstr "Ayuda"
 
 #: src/guiKeyChangeMenu.h:39
 msgid "Insert"
-msgstr ""
+msgstr "Insert"
 
 #: src/guiKeyChangeMenu.h:39
 msgid "Snapshot"
-msgstr ""
+msgstr "Instantánea"
 
 #: src/guiKeyChangeMenu.h:42
 msgid "Left Windows"
@@ -249,11 +249,11 @@ msgstr ""
 
 #: src/guiKeyChangeMenu.h:43
 msgid "Numpad 0"
-msgstr ""
+msgstr "0 (teclado num)"
 
 #: src/guiKeyChangeMenu.h:43
 msgid "Numpad 1"
-msgstr ""
+msgstr "1 (teclado num)"
 
 #: src/guiKeyChangeMenu.h:43
 msgid "Right Windows"
@@ -261,67 +261,67 @@ msgstr ""
 
 #: src/guiKeyChangeMenu.h:43
 msgid "Sleep"
-msgstr ""
+msgstr "Suspender"
 
 #: src/guiKeyChangeMenu.h:44
 msgid "Numpad 2"
-msgstr ""
+msgstr "2 (teclado num)"
 
 #: src/guiKeyChangeMenu.h:44
 msgid "Numpad 3"
-msgstr ""
+msgstr "3 (teclado num)"
 
 #: src/guiKeyChangeMenu.h:44
 msgid "Numpad 4"
-msgstr ""
+msgstr "4 (teclado num)"
 
 #: src/guiKeyChangeMenu.h:44
 msgid "Numpad 5"
-msgstr ""
+msgstr "5 (teclado num)"
 
 #: src/guiKeyChangeMenu.h:44
 msgid "Numpad 6"
-msgstr ""
+msgstr "6 (teclado num)"
 
 #: src/guiKeyChangeMenu.h:44
 msgid "Numpad 7"
-msgstr ""
+msgstr "7 (teclado num)"
 
 #: src/guiKeyChangeMenu.h:45
 msgid "Numpad *"
-msgstr ""
+msgstr "* (teclado num)"
 
 #: src/guiKeyChangeMenu.h:45
 msgid "Numpad +"
-msgstr ""
+msgstr "+ (teclado num)"
 
 #: src/guiKeyChangeMenu.h:45
 msgid "Numpad -"
-msgstr ""
+msgstr "- (teclado num)"
 
 #: src/guiKeyChangeMenu.h:45
 msgid "Numpad /"
-msgstr ""
+msgstr "/ (teclado num)"
 
 #: src/guiKeyChangeMenu.h:45
 msgid "Numpad 8"
-msgstr ""
+msgstr "8 (teclado num)"
 
 #: src/guiKeyChangeMenu.h:45
 msgid "Numpad 9"
-msgstr ""
+msgstr "9 (teclado num)"
 
 #: src/guiKeyChangeMenu.h:49
 msgid "Num Lock"
-msgstr ""
+msgstr "Bloq Num"
 
 #: src/guiKeyChangeMenu.h:49
 msgid "Scroll Lock"
-msgstr ""
+msgstr "Bloq Despl"
 
 #: src/guiKeyChangeMenu.h:50
 msgid "Left Shift"
-msgstr ""
+msgstr "Mayús izquierda"
 
 #: src/guiKeyChangeMenu.h:50
 msgid "Right Shight"
@@ -329,35 +329,35 @@ msgstr ""
 
 #: src/guiKeyChangeMenu.h:51
 msgid "Left Control"
-msgstr ""
+msgstr "Ctrl izquierda"
 
 #: src/guiKeyChangeMenu.h:51
 msgid "Left Menu"
-msgstr ""
+msgstr "Menu izquierda"
 
 #: src/guiKeyChangeMenu.h:51
 msgid "Right Control"
-msgstr ""
+msgstr "Ctrl derecha"
 
 #: src/guiKeyChangeMenu.h:51
 msgid "Right Menu"
-msgstr ""
+msgstr "Menu derecha"
 
 #: src/guiKeyChangeMenu.h:53
 msgid "Comma"
-msgstr ""
+msgstr "Coma"
 
 #: src/guiKeyChangeMenu.h:53
 msgid "Minus"
-msgstr ""
+msgstr "Signo -"
 
 #: src/guiKeyChangeMenu.h:53
 msgid "Period"
-msgstr ""
+msgstr "Punto"
 
 #: src/guiKeyChangeMenu.h:53
 msgid "Plus"
-msgstr ""
+msgstr "Signo +"
 
 #: src/guiKeyChangeMenu.h:57
 msgid "Attn"
@@ -365,7 +365,7 @@ msgstr ""
 
 #: src/guiKeyChangeMenu.h:57
 msgid "CrSel"
-msgstr ""
+msgstr "CrSel"
 
 #: src/guiKeyChangeMenu.h:58
 msgid "Erase OEF"
@@ -385,91 +385,91 @@ msgstr ""
 
 #: src/guiKeyChangeMenu.h:58
 msgid "Play"
-msgstr ""
+msgstr "Jugar"
 
 #: src/guiKeyChangeMenu.h:58
 msgid "Zoom"
-msgstr ""
+msgstr "Zoom"
 
 #: src/guiMainMenu.cpp:181
 msgid "Name/Password"
-msgstr ""
+msgstr "Nombre/Contraseña"
 
 #: src/guiMainMenu.cpp:206
 msgid "Address/Port"
-msgstr ""
+msgstr "Dirección/Puerto"
 
 #: src/guiMainMenu.cpp:228
 msgid "Leave address blank to start a local server."
-msgstr ""
+msgstr "Dejar la dirección en blanco para iniciar un servidor local."
 
 #: src/guiMainMenu.cpp:235
 msgid "Fancy trees"
-msgstr ""
+msgstr "Árboles vistosos"
 
 #: src/guiMainMenu.cpp:241
 msgid "Smooth Lighting"
-msgstr ""
+msgstr "Iluminación suave"
 
 #: src/guiMainMenu.cpp:249
 msgid "Start Game / Connect"
-msgstr ""
+msgstr "Iniciar Juego / Conectar"
 
 #: src/guiMainMenu.cpp:258
 msgid "Change keys"
-msgstr ""
+msgstr "Cambiar Teclas"
 
 #: src/guiMainMenu.cpp:281
 msgid "Creative Mode"
-msgstr ""
+msgstr "Modo Creativo"
 
 #: src/guiMainMenu.cpp:287
 msgid "Enable Damage"
-msgstr ""
+msgstr "Activar Daño"
 
 #: src/guiMainMenu.cpp:295
 msgid "Delete map"
-msgstr ""
+msgstr "Borrar mapa"
 
 #: src/guiMessageMenu.cpp:94 src/guiTextInputMenu.cpp:112
 msgid "Proceed"
-msgstr ""
+msgstr "Continuar"
 
 #: src/guiPasswordChange.cpp:103
 msgid "Old Password"
-msgstr ""
+msgstr "Contraseña Anterior"
 
 #: src/guiPasswordChange.cpp:120
 msgid "New Password"
-msgstr ""
+msgstr "Contraseña nueva"
 
 #: src/guiPasswordChange.cpp:136
 msgid "Confirm Password"
-msgstr ""
+msgstr "Confirmar contraseña"
 
 #: src/guiPasswordChange.cpp:153
 msgid "Change"
-msgstr ""
+msgstr "Cambiar"
 
 #: src/guiPasswordChange.cpp:162
 msgid "Passwords do not match!"
-msgstr ""
+msgstr "¡Las contraseñas no coinciden!"
 
 #: src/guiPauseMenu.cpp:111
 msgid "Continue"
-msgstr ""
+msgstr "Continuar"
 
 #: src/guiPauseMenu.cpp:118
 msgid "Change Password"
-msgstr ""
+msgstr "Cambiar Contraseña"
 
 #: src/guiPauseMenu.cpp:125
 msgid "Disconnect"
-msgstr ""
+msgstr "Desconectar"
 
 #: src/guiPauseMenu.cpp:132
 msgid "Exit to OS"
-msgstr ""
+msgstr "Salir del juego"
 
 #: src/guiPauseMenu.cpp:139
 msgid ""
@@ -485,3 +485,14 @@ msgid ""
 "- ESC: This menu\n"
 "- T: Chat\n"
 msgstr ""
+"Controles por omisión:\n"
+"- WASD: Movimiento\n"
+"- Botón izquierdo: cavar/golpear\n"
+"- Botón derecho: colocar/usar\n"
+"- Rueda del ratón: selec. item\n"
+"- 0...9: selec. item\n"
+"- Shift: furtivo\n"
+"- R: Rango visual\n"
+"- I: Inventario\n"
+"- ESC: Este menu\n"
+"- T: Charla\n"
