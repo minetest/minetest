@@ -505,6 +505,7 @@ void craft_set_creative_inventory(Player *player)
 		CONTENT_CLAY,
 		CONTENT_BRICK,
 		CONTENT_TREE,
+		CONTENT_WOOD,
 		CONTENT_LEAVES,
 		CONTENT_CACTUS,
 		CONTENT_PAPYRUS,
