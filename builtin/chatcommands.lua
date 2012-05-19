@@ -101,9 +101,10 @@ minetest.register_chatcommand("privs", {
 		if param == "" then
 			param = name
 		else
-			if not minetest.check_player_privs(name, {privs=true}) then
+			--[[if not minetest.check_player_privs(name, {privs=true}) then
 				minetest.chat_send_player(name, "Privileges of "..param.." are hidden from you.")
-			end
+				return
+			end]]
 		end
 		minetest.chat_send_player(name, "Privileges of "..param..": "..minetest.privs_to_string(minetest.get_player_privs(param), ' '))
 	end,
