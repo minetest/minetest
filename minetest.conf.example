@@ -8,7 +8,7 @@
 # Uncomment settings by removing the preceding #.
 #
 # Further documentation:
-# http://celeron.55.lt/~celeron55/minetest/wiki/doku.php
+# http://c55.me/minetest/wiki/doku.php
 #
 # NOTE: This file might not be up-to-date, refer to the
 #       defaultsettings.cpp file for an up-to-date list:
@@ -16,6 +16,7 @@
 #
 # A vim command to convert most of defaultsettings.cpp to conf file format:
 # :'<,'>s/\tg_settings\.setDefault("\([^"]*\)", "\([^"]*\)");.*/#\1 = \2/g
+# Note: Some of the settings are implemented in Lua
 
 #
 # Client and server
@@ -149,6 +150,8 @@
 #unlimited_player_transfer_distance = true
 # Whether to enable players killing each other
 #enable_pvp = true
+# Set static spawnpoint
+#static_spawnpoint = 0, 10, 0
 
 # Profiler data print interval. #0 = disable.
 #profiler_print_interval = 0
@@ -161,12 +164,16 @@
 #max_simultaneous_block_sends_per_client = 2
 # how many blocks are flying in the wire simultaneously per server
 #max_simultaneous_block_sends_server_total = 8
+# From how far blocks are sent to clients (value * 16 nodes)
 #max_block_send_distance = 10
+# From how far blocks are generated for clients (value * 16 nodes)
 #max_block_generate_distance = 6
+# Interval of sending time of day to clients
 #time_send_interval = 5
 # Length of day/night cycle. 72=20min, 360=4min, 1=24hour, 0=day/night/whatever stays unchanged
 #time_speed = 96
 #server_unload_unused_data_timeout = 29
+# Interval of saving important changes in the world
 #server_map_save_interval = 5.3
 # To reduce lag, block transfers are slowed down when a player is building something.
 # This determines how long they are slowed down after placing or removing a node.
