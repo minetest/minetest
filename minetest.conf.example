@@ -150,7 +150,7 @@
 #unlimited_player_transfer_distance = true
 # Whether to enable players killing each other
 #enable_pvp = true
-# Set static spawnpoint
+# If this is set, players will always (re)spawn at the given position
 #static_spawnpoint = 0, 10, 0
 
 # Profiler data print interval. #0 = disable.
