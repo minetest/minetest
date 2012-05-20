@@ -274,8 +274,16 @@ static u8 getSmoothLight(enum LightBank bank, v3s16 p, MeshMakeData *data)
 
 	if(ambient_occlusion > 4)
 	{
-		ambient_occlusion -= 4;
-		light = (float)light / ((float)ambient_occlusion * 0.5 + 1.0);
+		//ambient_occlusion -= 4;
+		//light = (float)light / ((float)ambient_occlusion * 0.5 + 1.0);
+		float light_amount = (8 - ambient_occlusion) / 4.0;
+		float light_f = (float)light / 255.0;
+		light_f = pow(light_f, 2.2); // gamma -> linear space
+		light_f = light_f * light_amount;
+		light_f = pow(light_f, 1.0/2.2); // linear -> gamma space
+		if(light_f > 1.0)
+			light_f = 1.0;
+		light = 255.0 * light_f + 0.5;
 	}
 
 	return light;
