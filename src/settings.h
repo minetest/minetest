@@ -147,8 +147,8 @@ public:
 		if(is.good() == false)
 			return false;
 
-		infostream<<"Parsing configuration file: \""
-				<<filename<<"\""<<std::endl;
+		/*infostream<<"Parsing configuration file: \""
+				<<filename<<"\""<<std::endl;*/
 				
 		while(parseConfigObject(is));
 		
