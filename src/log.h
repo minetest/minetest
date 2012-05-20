@@ -69,5 +69,10 @@ extern std::ostream actionstream;
 extern std::ostream infostream;
 extern std::ostream verbosestream;
 
+extern bool log_trace_level_enabled;
+
+#define TRACESTREAM(x){ if(log_trace_level_enabled) verbosestream x; }
+#define TRACEDO(x){ if(log_trace_level_enabled){ x ;} }
+
 #endif
 

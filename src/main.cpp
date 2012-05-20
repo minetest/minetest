@@ -854,8 +854,9 @@ int main(int argc, char *argv[])
 	// If trace is enabled, enable logging of certain things
 	if(cmd_args.getFlag("trace")){
 		dstream<<"Enabling trace level debug output"<<std::endl;
-		dout_con_ptr = &verbosestream;
-		socket_enable_debug_output = true;
+		log_trace_level_enabled = true;
+		dout_con_ptr = &verbosestream; // this is somewhat old crap
+		socket_enable_debug_output = true; // socket doesn't use log.h
 	}
 	// In certain cases, output info level on stderr
 	if(cmd_args.getFlag("info") || cmd_args.getFlag("verbose") ||

@@ -159,4 +159,5 @@ std::ostream actionstream(&actionbuf);
 std::ostream infostream(&infobuf);
 std::ostream verbosestream(&verbosebuf);
 
+bool log_trace_level_enabled = false;
 
