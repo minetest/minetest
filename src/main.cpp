@@ -1037,6 +1037,31 @@ int main(int argc, char *argv[])
 		}
 	}
 	
+	// If a world name was specified, convert it to a path
+	if(commanded_worldname != ""){
+		// Get information about available worlds
+		std::vector<WorldSpec> worldspecs = getAvailableWorlds();
+		bool found = false;
+		for(u32 i=0; i<worldspecs.size(); i++){
+			std::string name = worldspecs[i].name;
+			if(name == commanded_worldname){
+				if(commanded_world != ""){
+					dstream<<"--worldname takes precedence over previously "
+							<<"selected world."<<std::endl;
+				}
+				commanded_world = worldspecs[i].path;
+				found = true;
+				break;
+			}
+		}
+		if(!found){
+			dstream<<"World '"<<commanded_worldname<<"' not "
+					<<"available. Available worlds:"<<std::endl;
+			print_worldspecs(worldspecs, dstream);
+			return 1;
+		}
+	}
+
 	// Gamespec
 	SubgameSpec commanded_gamespec;
 	if(cmd_args.exists("gameid")){
@@ -1073,25 +1098,6 @@ int main(int argc, char *argv[])
 			world_path = commanded_world;
 			infostream<<"Using commanded world path ["<<world_path<<"]"
 					<<std::endl;
-		}
-		// If a world name was specified, select it
-		else if(commanded_worldname != ""){
-			// Get information about available worlds
-			std::vector<WorldSpec> worldspecs = getAvailableWorlds();
-			world_path = "";
-			for(u32 i=0; i<worldspecs.size(); i++){
-				std::string name = worldspecs[i].name;
-				if(name == commanded_worldname){
-					world_path = worldspecs[i].path;
-					break;
-				}
-			}
-			if(world_path == ""){
-				dstream<<"World '"<<commanded_worldname<<"' not "
-						<<"available. Available worlds:"<<std::endl;
-				print_worldspecs(worldspecs, dstream);
-				return 1;
-			}
 		}
 		// No world was specified; try to select it automatically
 		else
@@ -1207,8 +1213,6 @@ int main(int argc, char *argv[])
 		address = "";
 	else if(cmd_args.exists("address"))
 		address = cmd_args.get("address");
-	else if(cmd_args.exists("world"))
-		address = "";
 	
 	std::string playername = g_settings->get("name");
 	if(cmd_args.exists("name"))
