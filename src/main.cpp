@@ -790,7 +790,7 @@ int main(int argc, char *argv[])
 	allowed_options.insert("map-dir", ValueSpec(VALUETYPE_STRING,
 			"Same as --world (deprecated)"));
 	allowed_options.insert("world", ValueSpec(VALUETYPE_STRING,
-			"Set world path (implies local game)"));
+			"Set world path (implies local game) ('list' lists all)"));
 	allowed_options.insert("worldname", ValueSpec(VALUETYPE_STRING,
 			"Set world by name (implies local game)"));
 	allowed_options.insert("info", ValueSpec(VALUETYPE_FLAG,
@@ -906,6 +906,14 @@ int main(int argc, char *argv[])
 		for(std::set<std::string>::const_iterator i = gameids.begin();
 				i != gameids.end(); i++)
 			dstream<<(*i)<<std::endl;
+		return 0;
+	}
+	
+	// List worlds if requested
+	if(cmd_args.exists("world") && cmd_args.get("world") == "list"){
+		dstream<<"Available worlds:"<<std::endl;
+		std::vector<WorldSpec> worldspecs = getAvailableWorlds();
+		print_worldspecs(worldspecs, dstream);
 		return 0;
 	}
 	
