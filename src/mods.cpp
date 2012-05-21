@@ -26,6 +26,64 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "strfnd.h"
 #include "log.h"
 
+static void collectMods(const std::string &modspath,
+		std::queue<ModSpec> &mods_satisfied,
+		core::list<ModSpec> &mods_unsorted,
+		std::map<std::string, std::string> &mod_names,
+		std::string indentation)
+{
+	TRACESTREAM(<<indentation<<"collectMods(\""<<modspath<<"\")"<<std::endl);
+	TRACEDO(indentation += "  ");
+	std::vector<fs::DirListNode> dirlist = fs::GetDirListing(modspath);
+	for(u32 j=0; j<dirlist.size(); j++){
+		if(!dirlist[j].dir)
+			continue;
+		std::string modname = dirlist[j].name;
+		std::string modpath = modspath + DIR_DELIM + modname;
+		TRACESTREAM(<<indentation<<"collectMods: "<<modname<<" at \""<<modpath<<"\""<<std::endl);
+		// Handle modpacks (defined by containing modpack.txt)
+		{
+			std::ifstream is((modpath+DIR_DELIM+"modpack.txt").c_str(),
+					std::ios_base::binary);
+			if(is.good()){
+				// Is a modpack
+				is.close(); // We don't actually need the file
+				// Recurse into it
+				collectMods(modpath, mods_satisfied, mods_unsorted, mod_names, indentation);
+				continue;
+			}
+		}
+		// Detect mod name conflicts
+		{
+			std::map<std::string, std::string>::const_iterator i;
+			i = mod_names.find(modname);
+			if(i != mod_names.end()){
+				std::string s;
+				infostream<<indentation<<"WARNING: Mod name conflict detected: "
+						<<std::endl
+						<<"Already loaded: "<<i->second<<std::endl
+						<<"Will not load: "<<modpath<<std::endl;
+				continue;
+			}
+		}
+		std::set<std::string> depends;
+		std::ifstream is((modpath+DIR_DELIM+"depends.txt").c_str(),
+				std::ios_base::binary);
+		while(is.good()){
+			std::string dep;
+			std::getline(is, dep);
+			dep = trim(dep);
+			if(dep != "")
+				depends.insert(dep);
+		}
+		ModSpec spec(modname, modpath, depends);
+		mods_unsorted.push_back(spec);
+		if(depends.empty())
+			mods_satisfied.push(spec);
+		mod_names[modname] = modpath;
+	}
+}
+
 // Get a dependency-sorted list of ModSpecs
 core::list<ModSpec> getMods(core::list<std::string> &modspaths)
 		throw(ModError)
@@ -38,41 +96,7 @@ core::list<ModSpec> getMods(core::list<std::string> &modspaths)
 	for(core::list<std::string>::Iterator i = modspaths.begin();
 			i != modspaths.end(); i++){
 		std::string modspath = *i;
-		std::vector<fs::DirListNode> dirlist = fs::GetDirListing(modspath);
-		for(u32 j=0; j<dirlist.size(); j++){
-			if(!dirlist[j].dir)
-				continue;
-			std::string modname = dirlist[j].name;
-			std::string modpath = modspath + DIR_DELIM + modname;
-			// Detect mod name conflicts
-			{
-				std::map<std::string, std::string>::const_iterator i;
-				i = mod_names.find(modname);
-				if(i != mod_names.end()){
-					std::string s;
-					infostream<<"WARNING: Mod name conflict detected: "
-							<<std::endl
-							<<"Already loaded: "<<i->second<<std::endl
-							<<"Will not load: "<<modpath<<std::endl;
-					continue;
-				}
-			}
-			std::set<std::string> depends;
-			std::ifstream is((modpath+DIR_DELIM+"depends.txt").c_str(),
-					std::ios_base::binary);
-			while(is.good()){
-				std::string dep;
-				std::getline(is, dep);
-				dep = trim(dep);
-				if(dep != "")
-					depends.insert(dep);
-			}
-			ModSpec spec(modname, modpath, depends);
-			mods_unsorted.push_back(spec);
-			if(depends.empty())
-				mods_satisfied.push(spec);
-			mod_names[modname] = modpath;
-		}
+		collectMods(modspath, mods_satisfied, mods_unsorted, mod_names, "");
 	}
 	// Sort by depencencies
 	while(!mods_satisfied.empty()){
@@ -107,8 +131,25 @@ core::list<ModSpec> getMods(core::list<std::string> &modspaths)
 		errs<<"."<<std::endl;
 		mods_sorted.push_back(mod);
 	}
+	// If an error occurred, throw an exception
 	if(errs.str().size() != 0){
 		throw ModError(errs.str());
+	}
+	// Print out some debug info
+	TRACESTREAM(<<"Detected mods in load order:"<<std::endl);
+	for(core::list<ModSpec>::Iterator i = mods_sorted.begin();
+			i != mods_sorted.end(); i++){
+		ModSpec &mod = *i;
+		TRACESTREAM(<<"name=\""<<mod.name<<"\" path=\""<<mod.path<<"\"");
+		TRACESTREAM(<<" depends=[");
+		for(std::set<std::string>::iterator i = mod.depends.begin();
+				i != mod.depends.end(); i++)
+			TRACESTREAM(<<" "<<(*i));
+		TRACESTREAM(<<" ] unsatisfied_depends=[");
+		for(std::set<std::string>::iterator i = mod.unsatisfied_depends.begin();
+				i != mod.unsatisfied_depends.end(); i++)
+			TRACESTREAM(<<" "<<(*i));
+		TRACESTREAM(<<" ]"<<std::endl);
 	}
 	return mods_sorted;
 }

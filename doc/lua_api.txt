@@ -59,6 +59,12 @@ This happens if the following directory exists:
 Mods should be then be placed in:
   $world/game/mods/
 
+Modpack support
+----------------
+Mods can be put in a subdirectory, if the parent directory, which otherwise
+should be a mod, contains a file named modpack.txt. This file shall be
+empty, except for lines starting with #, which are comments.
+
 Mod directory structure
 ------------------------
 mods
