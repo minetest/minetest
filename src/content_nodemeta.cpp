@@ -42,7 +42,7 @@ class SignNodeMetadata : public NodeMetadata
 public:
 	SignNodeMetadata(IGameDef *gamedef, std::string text);
 	//~SignNodeMetadata();
-	
+
 	virtual u16 typeId() const;
 	virtual const char* typeName() const
 	{ return "sign"; }
@@ -65,7 +65,7 @@ class ChestNodeMetadata : public NodeMetadata
 public:
 	ChestNodeMetadata(IGameDef *gamedef);
 	~ChestNodeMetadata();
-	
+
 	virtual u16 typeId() const;
 	virtual const char* typeName() const
 	{ return "chest"; }
@@ -77,7 +77,7 @@ public:
 	virtual Inventory* getInventory() {return m_inventory;}
 	virtual bool nodeRemovalDisabled();
 	virtual std::string getInventoryDrawSpecString();
-	
+
 private:
 	Inventory *m_inventory;
 };
@@ -113,11 +113,12 @@ class FurnaceNodeMetadata : public NodeMetadata
 public:
 	FurnaceNodeMetadata(IGameDef *gamedef);
 	~FurnaceNodeMetadata();
-	
+
 	virtual u16 typeId() const;
 	virtual const char* typeName() const
 	{ return "furnace"; }
 	virtual NodeMetadata* clone(IGameDef *gamedef);
+	void setState(float step_acc, float f_tot, float f_tm, float s_tot, float s_tm);
 	static NodeMetadata* create(std::istream &is, IGameDef *gamedef);
 	static NodeMetadata* create(IGameDef *gamedef);
 	virtual void serializeBody(std::ostream &os);
@@ -127,7 +128,7 @@ public:
 	virtual bool step(float dtime);
 	virtual bool nodeRemovalDisabled();
 	virtual std::string getInventoryDrawSpecString();
-	
+
 protected:
 	bool getCookResult(bool remove, std::string &cookresult, float &cooktime);
 	bool getBurnResult(bool remove, float &burntime);
@@ -332,7 +333,7 @@ FurnaceNodeMetadata::FurnaceNodeMetadata(IGameDef *gamedef):
 	NodeMetadata(gamedef)
 {
 	NodeMetadata::registerType(typeId(), typeName(), create, create);
-	
+
 	m_inventory = NULL;
 
 	m_infotext = "Furnace is inactive";
@@ -351,10 +352,19 @@ u16 FurnaceNodeMetadata::typeId() const
 {
 	return NODEMETA_FURNACE;
 }
+void FurnaceNodeMetadata::setState(float step_acc, float f_tot, float f_tm, float s_tot, float s_tm)
+{
+	m_step_accumulator = step_acc;
+	m_fuel_totaltime = f_tot;
+	m_fuel_time = f_tm;
+	m_src_totaltime = s_tot;
+	m_src_time = s_tm;
+}
 NodeMetadata* FurnaceNodeMetadata::clone(IGameDef *gamedef)
 {
 	FurnaceNodeMetadata *d = new FurnaceNodeMetadata(m_gamedef);
 	d->m_inventory = new Inventory(*m_inventory);
+	d->setState(m_step_accumulator,m_fuel_totaltime,m_fuel_time,m_src_totaltime,m_src_time);
 	return d;
 }
 NodeMetadata* FurnaceNodeMetadata::create(std::istream &is, IGameDef *gamedef)
@@ -422,7 +432,7 @@ bool FurnaceNodeMetadata::nodeRemovalDisabled()
 	*/
 	InventoryList *list[3] = {m_inventory->getList("src"),
 	m_inventory->getList("dst"), m_inventory->getList("fuel")};
-	
+
 	for(int i = 0; i < 3; i++) {
 		if(list[i] == NULL)
 			continue;
@@ -431,7 +441,7 @@ bool FurnaceNodeMetadata::nodeRemovalDisabled()
 		return true;
 	}
 	return false;
-	
+
 }
 void FurnaceNodeMetadata::inventoryModified()
 {
@@ -692,12 +702,12 @@ public:
 	static NodeMetadata* create(std::istream &is, IGameDef *gamedef)
 	{
 		GenericNodeMetadata *d = new GenericNodeMetadata(gamedef);
-		
+
 		d->m_inventory = new Inventory(gamedef->idef());
 		d->m_inventory->deSerialize(is);
 		d->m_text = deSerializeLongString(is);
 		d->m_owner = deSerializeString(is);
-		
+
 		d->m_infotext = deSerializeString(is);
 		d->m_inventorydrawspec = deSerializeString(is);
 		d->m_allow_text_input = readU8(is);
@@ -782,7 +792,7 @@ public:
 	{
 		m_owner = t;
 	}
-	
+
 	/* Interface for GenericNodeMetadata */
 
 	void setInfoText(const std::string &text)
