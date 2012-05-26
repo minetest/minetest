@@ -1,86 +1,88 @@
-# French translations for minetest-c55 package.
-# Copyright (C) 2011 celeron
+# Kirghiz translation for minetest-c55
+# Copyright (c) 2012 Rosetta Contributors and Canonical Ltd 2012
 # This file is distributed under the same license as the minetest-c55 package.
-# Cyriaque 'Cisoun' Skrapits <cysoun@gmail.com>, 2011
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2012.
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: 0.0.0\n"
-"Report-Msgid-Bugs-To: \n"
+"Project-Id-Version: minetest-c55\n"
+"Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
 "POT-Creation-Date: 2011-08-02 12:36+0200\n"
-"PO-Revision-Date: 2012-05-13 22:50+0000\n"
-"Last-Translator: max <pimpampoum8@gmail.com>\n"
-"Language-Team: Français <>\n"
+"PO-Revision-Date: 2012-05-20 17:34+0000\n"
+"Last-Translator: chingis <chingis091@gmail.com>\n"
+"Language-Team: Kyrgyz <chingis091@gmail.com>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "X-Launchpad-Export-Date: 2012-05-26 14:04+0000\n"
 "X-Generator: Launchpad (build 15288)\n"
-"Language: fr\n"
+"X-Poedit-Country: KYRGYZSTAN\n"
+"X-Poedit-Language: Kyrgyz\n"
+"X-Poedit-SourceCharset: utf-8\n"
 
 #: src/guiKeyChangeMenu.cpp:84
 msgid "KEYBINDINGS"
-msgstr "Raccourcis clavier"
+msgstr "БАСКЫЧБАЙЛООЛОРУ"
 
 #: src/guiKeyChangeMenu.cpp:94
 msgid "Forward"
-msgstr "Avancer"
+msgstr "Алга"
 
 #: src/guiKeyChangeMenu.cpp:111
 msgid "Backward"
-msgstr "Reculer"
+msgstr "Артка"
 
 #: src/guiKeyChangeMenu.cpp:127 src/guiKeyChangeMenu.h:38
 msgid "Left"
-msgstr "Vers la gauche"
+msgstr "Сол"
 
 #: src/guiKeyChangeMenu.cpp:142 src/guiKeyChangeMenu.h:38
 msgid "Right"
-msgstr "Vers la droite"
+msgstr "Оң"
 
 #: src/guiKeyChangeMenu.cpp:158
 msgid "Use"
-msgstr "Utiliser"
+msgstr "Колдонуу"
 
 #: src/guiKeyChangeMenu.cpp:173
 msgid "Sneak"
-msgstr "Discrétion"
+msgstr "Урдоо"
 
 #: src/guiKeyChangeMenu.cpp:189
 msgid "Jump"
-msgstr "Sauter"
+msgstr "Секирүү"
 
 #: src/guiKeyChangeMenu.cpp:204
 msgid "Inventory"
-msgstr "Inventaire"
+msgstr "Мүлк-шайман"
 
 #: src/guiKeyChangeMenu.cpp:220
 msgid "Chat"
-msgstr "Discussion"
+msgstr "Маек"
 
 #: src/guiKeyChangeMenu.cpp:236
 msgid "Toggle fly"
-msgstr "Basculer en mode 'Vol'"
+msgstr "Учууга которуу"
 
 #: src/guiKeyChangeMenu.cpp:251
 msgid "Toggle fast"
-msgstr "Basculer en mode 'Déplacement rapide'"
+msgstr "Батка которуу"
 
 #: src/guiKeyChangeMenu.cpp:266
 msgid "Range select"
-msgstr "Distance de vue"
+msgstr "Көлөм тандоосу"
 
 #: src/guiKeyChangeMenu.cpp:283
 msgid "Print stacks"
-msgstr ""
+msgstr "Үймөктөрдү басмалоо"
 
 #: src/guiKeyChangeMenu.cpp:298
 msgid "Save"
-msgstr "Enregistrer"
+msgstr "Сактоо"
 
 #: src/guiKeyChangeMenu.cpp:304 src/guiKeyChangeMenu.h:33
 msgid "Cancel"
-msgstr "Annuler"
+msgstr "Айнуу"
 
 #: src/guiKeyChangeMenu.cpp:537 src/guiKeyChangeMenu.cpp:542
 #: src/guiKeyChangeMenu.cpp:547 src/guiKeyChangeMenu.cpp:552
@@ -90,63 +92,63 @@ msgstr "Annuler"
 #: src/guiKeyChangeMenu.cpp:587 src/guiKeyChangeMenu.cpp:592
 #: src/guiKeyChangeMenu.cpp:597
 msgid "press Key"
-msgstr "Presser une touche"
+msgstr "Баскычты басыңыз"
 
 #: src/guiKeyChangeMenu.h:33
 msgid "Left Button"
-msgstr "Bouton gauche"
+msgstr "Сол баскыч"
 
 #: src/guiKeyChangeMenu.h:33
 msgid "Middle Button"
-msgstr "Bouton central"
+msgstr "Ортоңку баскыч"
 
 #: src/guiKeyChangeMenu.h:33
 msgid "Right Button"
-msgstr "Bouton droit"
+msgstr "Оң баскычы"
 
 #: src/guiKeyChangeMenu.h:33
 msgid "X Button 1"
-msgstr ""
+msgstr "X Баскыч 1"
 
 #: src/guiKeyChangeMenu.h:34
 msgid "Back"
-msgstr "Retour"
+msgstr "Артка"
 
 #: src/guiKeyChangeMenu.h:34
 msgid "Clear"
-msgstr "Effacer"
+msgstr "Тазалоо"
 
 #: src/guiKeyChangeMenu.h:34
 msgid "Return"
-msgstr "Entrée"
+msgstr "Кайтуу"
 
 #: src/guiKeyChangeMenu.h:34
 msgid "Tab"
-msgstr "Tab."
+msgstr "Tab"
 
 #: src/guiKeyChangeMenu.h:34
 msgid "X Button 2"
-msgstr ""
+msgstr "X Баскыч 2"
 
 #: src/guiKeyChangeMenu.h:35
 msgid "Capital"
-msgstr "Verr Maj"
+msgstr "Капитель"
 
 #: src/guiKeyChangeMenu.h:35
 msgid "Control"
-msgstr "Ctrl"
+msgstr "Башкаруу"
 
 #: src/guiKeyChangeMenu.h:35
 msgid "Kana"
-msgstr "Kana"
+msgstr "Кана"
 
 #: src/guiKeyChangeMenu.h:35
 msgid "Menu"
-msgstr "Menu"
+msgstr "Меню"
 
 #: src/guiKeyChangeMenu.h:35
 msgid "Pause"
-msgstr "Pause"
+msgstr "Тыныш"
 
 #: src/guiKeyChangeMenu.h:35
 msgid "Shift"
@@ -154,323 +156,323 @@ msgstr "Shift"
 
 #: src/guiKeyChangeMenu.h:36
 msgid "Convert"
-msgstr "Convertir"
+msgstr "Конверсия"
 
 #: src/guiKeyChangeMenu.h:36
 msgid "Escape"
-msgstr "Echap"
+msgstr "Escape"
 
 #: src/guiKeyChangeMenu.h:36
 msgid "Final"
-msgstr ""
+msgstr "Акыркы"
 
 #: src/guiKeyChangeMenu.h:36
 msgid "Junja"
-msgstr ""
+msgstr "Жунжа"
 
 #: src/guiKeyChangeMenu.h:36
 msgid "Kanji"
-msgstr ""
+msgstr "Канжи"
 
 #: src/guiKeyChangeMenu.h:36
 msgid "Nonconvert"
-msgstr ""
+msgstr "Конверсияланбаган"
 
 #: src/guiKeyChangeMenu.h:37
 msgid "Accept"
-msgstr "Accepter"
+msgstr "Кабыл алуу"
 
 #: src/guiKeyChangeMenu.h:37
 msgid "End"
-msgstr "Fin"
+msgstr "Соң"
 
 #: src/guiKeyChangeMenu.h:37
 msgid "Home"
-msgstr "Touche_Début"
+msgstr "Үй"
 
 #: src/guiKeyChangeMenu.h:37
 msgid "Mode Change"
-msgstr ""
+msgstr "Режим өзгөртүүсү"
 
 #: src/guiKeyChangeMenu.h:37
 msgid "Next"
-msgstr "Suivant"
+msgstr "Кийинки"
 
 #: src/guiKeyChangeMenu.h:37
 msgid "Priot"
-msgstr ""
+msgstr "Алдын ала"
 
 #: src/guiKeyChangeMenu.h:37
 msgid "Space"
-msgstr "Espace"
+msgstr "Space"
 
 #: src/guiKeyChangeMenu.h:38
 msgid "Down"
-msgstr "Bas"
+msgstr "Төмөн"
 
 #: src/guiKeyChangeMenu.h:38
 msgid "Execute"
-msgstr "Exécuter"
+msgstr "Аткаруу"
 
 #: src/guiKeyChangeMenu.h:38
 msgid "Print"
-msgstr "Imprimer"
+msgstr "Басма"
 
 #: src/guiKeyChangeMenu.h:38
 msgid "Select"
-msgstr "Sélectionner"
+msgstr "Тандоо"
 
 #: src/guiKeyChangeMenu.h:38
 msgid "Up"
-msgstr "Haut"
+msgstr "Жогору"
 
 #: src/guiKeyChangeMenu.h:39
 msgid "Delete"
-msgstr "Supprimer"
+msgstr "Өчүрүү"
 
 #: src/guiKeyChangeMenu.h:39
 msgid "Help"
-msgstr "Aide"
+msgstr "Жардам"
 
 #: src/guiKeyChangeMenu.h:39
 msgid "Insert"
-msgstr "Insérer"
+msgstr "Коюу"
 
 #: src/guiKeyChangeMenu.h:39
 msgid "Snapshot"
-msgstr "Capture d’écran"
+msgstr "Сүрөт"
 
 #: src/guiKeyChangeMenu.h:42
 msgid "Left Windows"
-msgstr ""
+msgstr "Сол терезелери"
 
 #: src/guiKeyChangeMenu.h:43
 msgid "Apps"
-msgstr ""
+msgstr "Тиркемелер"
 
 #: src/guiKeyChangeMenu.h:43
 msgid "Numpad 0"
-msgstr "Pavé numérique 0"
+msgstr "Numpad 0"
 
 #: src/guiKeyChangeMenu.h:43
 msgid "Numpad 1"
-msgstr "Pavé numérique 1"
+msgstr "Numpad 1"
 
 #: src/guiKeyChangeMenu.h:43
 msgid "Right Windows"
-msgstr ""
+msgstr "Оң терезелери"
 
 #: src/guiKeyChangeMenu.h:43
 msgid "Sleep"
-msgstr ""
+msgstr "Уктоо"
 
 #: src/guiKeyChangeMenu.h:44
 msgid "Numpad 2"
-msgstr "Pavé numérique 2"
+msgstr "Numpad 2"
 
 #: src/guiKeyChangeMenu.h:44
 msgid "Numpad 3"
-msgstr "Pavé numérique 3"
+msgstr "Numpad 3"
 
 #: src/guiKeyChangeMenu.h:44
 msgid "Numpad 4"
-msgstr "Pavé numérique 4"
+msgstr "Numpad 4"
 
 #: src/guiKeyChangeMenu.h:44
 msgid "Numpad 5"
-msgstr "Pavé numérique 5"
+msgstr "Numpad 5"
 
 #: src/guiKeyChangeMenu.h:44
 msgid "Numpad 6"
-msgstr "Pavé numérique 6"
+msgstr "Numpad 6"
 
 #: src/guiKeyChangeMenu.h:44
 msgid "Numpad 7"
-msgstr "Pavé numérique 7"
+msgstr "Numpad 7"
 
 #: src/guiKeyChangeMenu.h:45
 msgid "Numpad *"
-msgstr "Pavé numérique *"
+msgstr "Numpad *"
 
 #: src/guiKeyChangeMenu.h:45
 msgid "Numpad +"
-msgstr "Pavé numérique +"
+msgstr "Numpad +"
 
 #: src/guiKeyChangeMenu.h:45
 msgid "Numpad -"
-msgstr "Pavé numérique -"
+msgstr "Numpad -"
 
 #: src/guiKeyChangeMenu.h:45
 msgid "Numpad /"
-msgstr "Pavé numérique /"
+msgstr "Numpad /"
 
 #: src/guiKeyChangeMenu.h:45
 msgid "Numpad 8"
-msgstr "Pavé numérique 8"
+msgstr "Numpad 8"
 
 #: src/guiKeyChangeMenu.h:45
 msgid "Numpad 9"
-msgstr "Pavé numérique 9"
+msgstr "Numpad 9"
 
 #: src/guiKeyChangeMenu.h:49
 msgid "Num Lock"
-msgstr "Verr Num"
+msgstr "Num Lock"
 
 #: src/guiKeyChangeMenu.h:49
 msgid "Scroll Lock"
-msgstr "Arrêt défil"
+msgstr "Scroll Lock"
 
 #: src/guiKeyChangeMenu.h:50
 msgid "Left Shift"
-msgstr "Shift gauche"
+msgstr "Сол Shift"
 
 #: src/guiKeyChangeMenu.h:50
 msgid "Right Shight"
-msgstr "Shift droit"
+msgstr "Оң Shift"
 
 #: src/guiKeyChangeMenu.h:51
 msgid "Left Control"
-msgstr "Ctrl gauche"
+msgstr "Сол Control"
 
 #: src/guiKeyChangeMenu.h:51
 msgid "Left Menu"
-msgstr "Menu de gauche"
+msgstr "Сол меню"
 
 #: src/guiKeyChangeMenu.h:51
 msgid "Right Control"
-msgstr "Ctrl droit"
+msgstr "Оң Control"
 
 #: src/guiKeyChangeMenu.h:51
 msgid "Right Menu"
-msgstr "Menu de droite"
+msgstr "Оң меню"
 
 #: src/guiKeyChangeMenu.h:53
 msgid "Comma"
-msgstr "Virgule"
+msgstr "Үтүр"
 
 #: src/guiKeyChangeMenu.h:53
 msgid "Minus"
-msgstr ""
+msgstr "Минус"
 
 #: src/guiKeyChangeMenu.h:53
 msgid "Period"
-msgstr ""
+msgstr "Мөөнөт"
 
 #: src/guiKeyChangeMenu.h:53
 msgid "Plus"
-msgstr ""
+msgstr "Плюс"
 
 #: src/guiKeyChangeMenu.h:57
 msgid "Attn"
-msgstr ""
+msgstr "Attn"
 
 #: src/guiKeyChangeMenu.h:57
 msgid "CrSel"
-msgstr ""
+msgstr "CrSel"
 
 #: src/guiKeyChangeMenu.h:58
 msgid "Erase OEF"
-msgstr ""
+msgstr "OEF'ти сүртүү"
 
 #: src/guiKeyChangeMenu.h:58
 msgid "ExSel"
-msgstr ""
+msgstr "ExSel"
 
 #: src/guiKeyChangeMenu.h:58
 msgid "OEM Clear"
-msgstr ""
+msgstr "OEM тазалоосу"
 
 #: src/guiKeyChangeMenu.h:58
 msgid "PA1"
-msgstr ""
+msgstr "PA1"
 
 #: src/guiKeyChangeMenu.h:58
 msgid "Play"
-msgstr "Jouer"
+msgstr "Ойноо"
 
 #: src/guiKeyChangeMenu.h:58
 msgid "Zoom"
-msgstr "Zoom"
+msgstr "Чоңойтуу"
 
 #: src/guiMainMenu.cpp:181
 msgid "Name/Password"
-msgstr "Nom/Mot de passe"
+msgstr "Ат/Сырсөз"
 
 #: src/guiMainMenu.cpp:206
 msgid "Address/Port"
-msgstr "Adresse / Port"
+msgstr "Дарек/Порт"
 
 #: src/guiMainMenu.cpp:228
 msgid "Leave address blank to start a local server."
-msgstr "Laisser l'adresse vide pour lancer un serveur local."
+msgstr "Жердик серверди башташ үчүн даректи бош калтырыңыз."
 
 #: src/guiMainMenu.cpp:235
 msgid "Fancy trees"
-msgstr "Arbres spéciaux"
+msgstr "Укмуштуу бактар"
 
 #: src/guiMainMenu.cpp:241
 msgid "Smooth Lighting"
-msgstr "Lumière douce"
+msgstr "Тегиз жарык"
 
 #: src/guiMainMenu.cpp:249
 msgid "Start Game / Connect"
-msgstr "Démarrer / Connecter"
+msgstr "Оюнду баштоо / Байланышуу"
 
 #: src/guiMainMenu.cpp:258
 msgid "Change keys"
-msgstr "Changer touches"
+msgstr "Баскычтарды өзгөртүү"
 
 #: src/guiMainMenu.cpp:281
 msgid "Creative Mode"
-msgstr "Mode créatif"
+msgstr "Чыгармачылык режим"
 
 #: src/guiMainMenu.cpp:287
 msgid "Enable Damage"
-msgstr "Activer blessures"
+msgstr "Бузулууну колдонуу"
 
 #: src/guiMainMenu.cpp:295
 msgid "Delete map"
-msgstr "Supprimer carte"
+msgstr "Картаны өчүрүү"
 
 #: src/guiMessageMenu.cpp:94 src/guiTextInputMenu.cpp:112
 msgid "Proceed"
-msgstr "OK"
+msgstr "Өтүү"
 
 #: src/guiPasswordChange.cpp:103
 msgid "Old Password"
-msgstr "Ancien mot de passe"
+msgstr "Эски сырсөз"
 
 #: src/guiPasswordChange.cpp:120
 msgid "New Password"
-msgstr "Nouveau mot de passe"
+msgstr "Жаңы сырсөз"
 
 #: src/guiPasswordChange.cpp:136
 msgid "Confirm Password"
-msgstr "Confirmer mot de passe"
+msgstr "Сырсөздү ырастоо"
 
 #: src/guiPasswordChange.cpp:153
 msgid "Change"
-msgstr "Changer"
+msgstr "Өзгөртүү"
 
 #: src/guiPasswordChange.cpp:162
 msgid "Passwords do not match!"
-msgstr "Les mots de passe ne correspondent pas!"
+msgstr "Сырсөздөр дал келген жок!"
 
 #: src/guiPauseMenu.cpp:111
 msgid "Continue"
-msgstr "Continuer"
+msgstr "Улантуу"
 
 #: src/guiPauseMenu.cpp:118
 msgid "Change Password"
-msgstr "Changer mot de passe"
+msgstr "Сырсөздү өзгөртүү"
 
 #: src/guiPauseMenu.cpp:125
 msgid "Disconnect"
-msgstr "Déconnection"
+msgstr "Үзүү"
 
 #: src/guiPauseMenu.cpp:132
 msgid "Exit to OS"
-msgstr "Quitter le jeu"
+msgstr "ОТ'га чыгуу"
 
 #: src/guiPauseMenu.cpp:139
 msgid ""
@@ -486,3 +488,14 @@ msgid ""
 "- ESC: This menu\n"
 "- T: Chat\n"
 msgstr ""
+"Жарыяланбас башкаруулары:\n"
+"- WASD: Басуу\n"
+"- Чычкан сол: dig/hit\n"
+"- Чычкан оң: place/use\n"
+"- Чычкан дөңгөлөк: select item\n"
+"- 0...9: буюм тандоо\n"
+"- Shift: урдоо\n"
+"- R: Баардык жүктөлгөн тилкелерди көрүүгө которуу\n"
+"- I: Мүлк-шайман менюсу\n"
+"- ESC: Бул меню\n"
+"- T: Маек\n"

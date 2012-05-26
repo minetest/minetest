@@ -8,14 +8,14 @@ msgstr ""
 "Project-Id-Version: 0.0.0\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2011-08-02 12:36+0200\n"
-"PO-Revision-Date: 2012-05-07 18:25+0000\n"
+"PO-Revision-Date: 2012-05-11 15:36+0000\n"
 "Last-Translator: aviary-o2 <Unknown>\n"
 "Language-Team: Deutsch <>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2012-05-11 11:20+0000\n"
-"X-Generator: Launchpad (build 15225)\n"
+"X-Launchpad-Export-Date: 2012-05-26 14:04+0000\n"
+"X-Generator: Launchpad (build 15288)\n"
 "Language: de\n"
 
 #: src/guiKeyChangeMenu.cpp:84
@@ -98,11 +98,11 @@ msgstr "linke Taste"
 
 #: src/guiKeyChangeMenu.h:33
 msgid "Middle Button"
-msgstr ""
+msgstr "Mittlere Maustaste"
 
 #: src/guiKeyChangeMenu.h:33
 msgid "Right Button"
-msgstr ""
+msgstr "Rechte Maustaste"
 
 #: src/guiKeyChangeMenu.h:33
 msgid "X Button 1"

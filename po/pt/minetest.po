@@ -1,86 +1,85 @@
-# French translations for minetest-c55 package.
-# Copyright (C) 2011 celeron
+# Portuguese translation for minetest-c55
+# Copyright (c) 2012 Rosetta Contributors and Canonical Ltd 2012
 # This file is distributed under the same license as the minetest-c55 package.
-# Cyriaque 'Cisoun' Skrapits <cysoun@gmail.com>, 2011
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2012.
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: 0.0.0\n"
-"Report-Msgid-Bugs-To: \n"
+"Project-Id-Version: minetest-c55\n"
+"Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
 "POT-Creation-Date: 2011-08-02 12:36+0200\n"
-"PO-Revision-Date: 2012-05-13 22:50+0000\n"
-"Last-Translator: max <pimpampoum8@gmail.com>\n"
-"Language-Team: Français <>\n"
+"PO-Revision-Date: 2012-05-24 00:29+0000\n"
+"Last-Translator: João Matos <matosmeister@gmail.com>\n"
+"Language-Team: Portuguese <pt@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "X-Launchpad-Export-Date: 2012-05-26 14:04+0000\n"
 "X-Generator: Launchpad (build 15288)\n"
-"Language: fr\n"
 
 #: src/guiKeyChangeMenu.cpp:84
 msgid "KEYBINDINGS"
-msgstr "Raccourcis clavier"
+msgstr "TECLAS"
 
 #: src/guiKeyChangeMenu.cpp:94
 msgid "Forward"
-msgstr "Avancer"
+msgstr "Frente"
 
 #: src/guiKeyChangeMenu.cpp:111
 msgid "Backward"
-msgstr "Reculer"
+msgstr "Trás"
 
 #: src/guiKeyChangeMenu.cpp:127 src/guiKeyChangeMenu.h:38
 msgid "Left"
-msgstr "Vers la gauche"
+msgstr "Esquerda"
 
 #: src/guiKeyChangeMenu.cpp:142 src/guiKeyChangeMenu.h:38
 msgid "Right"
-msgstr "Vers la droite"
+msgstr "Direita"
 
 #: src/guiKeyChangeMenu.cpp:158
 msgid "Use"
-msgstr "Utiliser"
+msgstr "Usar"
 
 #: src/guiKeyChangeMenu.cpp:173
 msgid "Sneak"
-msgstr "Discrétion"
+msgstr "Andar silenciosamente"
 
 #: src/guiKeyChangeMenu.cpp:189
 msgid "Jump"
-msgstr "Sauter"
+msgstr "Saltar"
 
 #: src/guiKeyChangeMenu.cpp:204
 msgid "Inventory"
-msgstr "Inventaire"
+msgstr "Inventário"
 
 #: src/guiKeyChangeMenu.cpp:220
 msgid "Chat"
-msgstr "Discussion"
+msgstr "Chat"
 
 #: src/guiKeyChangeMenu.cpp:236
 msgid "Toggle fly"
-msgstr "Basculer en mode 'Vol'"
+msgstr "Ligar/desligar voo"
 
 #: src/guiKeyChangeMenu.cpp:251
 msgid "Toggle fast"
-msgstr "Basculer en mode 'Déplacement rapide'"
+msgstr "Ligar/desligar rápido"
 
 #: src/guiKeyChangeMenu.cpp:266
 msgid "Range select"
-msgstr "Distance de vue"
+msgstr "Seleccionar alcance"
 
 #: src/guiKeyChangeMenu.cpp:283
 msgid "Print stacks"
-msgstr ""
+msgstr "Imprimir stacks"
 
 #: src/guiKeyChangeMenu.cpp:298
 msgid "Save"
-msgstr "Enregistrer"
+msgstr "Gravar"
 
 #: src/guiKeyChangeMenu.cpp:304 src/guiKeyChangeMenu.h:33
 msgid "Cancel"
-msgstr "Annuler"
+msgstr "Cancelar"
 
 #: src/guiKeyChangeMenu.cpp:537 src/guiKeyChangeMenu.cpp:542
 #: src/guiKeyChangeMenu.cpp:547 src/guiKeyChangeMenu.cpp:552
@@ -90,51 +89,51 @@ msgstr "Annuler"
 #: src/guiKeyChangeMenu.cpp:587 src/guiKeyChangeMenu.cpp:592
 #: src/guiKeyChangeMenu.cpp:597
 msgid "press Key"
-msgstr "Presser une touche"
+msgstr "pressionar Tecla"
 
 #: src/guiKeyChangeMenu.h:33
 msgid "Left Button"
-msgstr "Bouton gauche"
+msgstr "Botão Esquerdo"
 
 #: src/guiKeyChangeMenu.h:33
 msgid "Middle Button"
-msgstr "Bouton central"
+msgstr "Botão do Meio"
 
 #: src/guiKeyChangeMenu.h:33
 msgid "Right Button"
-msgstr "Bouton droit"
+msgstr "Botão Direito"
 
 #: src/guiKeyChangeMenu.h:33
 msgid "X Button 1"
-msgstr ""
+msgstr "Botão X 1"
 
 #: src/guiKeyChangeMenu.h:34
 msgid "Back"
-msgstr "Retour"
+msgstr "Voltar"
 
 #: src/guiKeyChangeMenu.h:34
 msgid "Clear"
-msgstr "Effacer"
+msgstr "Limpar"
 
 #: src/guiKeyChangeMenu.h:34
 msgid "Return"
-msgstr "Entrée"
+msgstr "Voltar"
 
 #: src/guiKeyChangeMenu.h:34
 msgid "Tab"
-msgstr "Tab."
+msgstr "Tab"
 
 #: src/guiKeyChangeMenu.h:34
 msgid "X Button 2"
-msgstr ""
+msgstr "Botão X 2"
 
 #: src/guiKeyChangeMenu.h:35
 msgid "Capital"
-msgstr "Verr Maj"
+msgstr "Capital"
 
 #: src/guiKeyChangeMenu.h:35
 msgid "Control"
-msgstr "Ctrl"
+msgstr "Control"
 
 #: src/guiKeyChangeMenu.h:35
 msgid "Kana"
@@ -146,7 +145,7 @@ msgstr "Menu"
 
 #: src/guiKeyChangeMenu.h:35
 msgid "Pause"
-msgstr "Pause"
+msgstr "Pausa"
 
 #: src/guiKeyChangeMenu.h:35
 msgid "Shift"
@@ -154,239 +153,239 @@ msgstr "Shift"
 
 #: src/guiKeyChangeMenu.h:36
 msgid "Convert"
-msgstr "Convertir"
+msgstr "Converter"
 
 #: src/guiKeyChangeMenu.h:36
 msgid "Escape"
-msgstr "Echap"
+msgstr "Escape"
 
 #: src/guiKeyChangeMenu.h:36
 msgid "Final"
-msgstr ""
+msgstr "Final"
 
 #: src/guiKeyChangeMenu.h:36
 msgid "Junja"
-msgstr ""
+msgstr "Junja"
 
 #: src/guiKeyChangeMenu.h:36
 msgid "Kanji"
-msgstr ""
+msgstr "Kanji"
 
 #: src/guiKeyChangeMenu.h:36
 msgid "Nonconvert"
-msgstr ""
+msgstr "Nonconvert"
 
 #: src/guiKeyChangeMenu.h:37
 msgid "Accept"
-msgstr "Accepter"
+msgstr "Aceitar"
 
 #: src/guiKeyChangeMenu.h:37
 msgid "End"
-msgstr "Fin"
+msgstr "Fim"
 
 #: src/guiKeyChangeMenu.h:37
 msgid "Home"
-msgstr "Touche_Début"
+msgstr "Início"
 
 #: src/guiKeyChangeMenu.h:37
 msgid "Mode Change"
-msgstr ""
+msgstr "Mudar de modo"
 
 #: src/guiKeyChangeMenu.h:37
 msgid "Next"
-msgstr "Suivant"
+msgstr "Seguinte"
 
 #: src/guiKeyChangeMenu.h:37
 msgid "Priot"
-msgstr ""
+msgstr "Priot"
 
 #: src/guiKeyChangeMenu.h:37
 msgid "Space"
-msgstr "Espace"
+msgstr "Espaço"
 
 #: src/guiKeyChangeMenu.h:38
 msgid "Down"
-msgstr "Bas"
+msgstr "Para baixo"
 
 #: src/guiKeyChangeMenu.h:38
 msgid "Execute"
-msgstr "Exécuter"
+msgstr "Executar"
 
 #: src/guiKeyChangeMenu.h:38
 msgid "Print"
-msgstr "Imprimer"
+msgstr "Print"
 
 #: src/guiKeyChangeMenu.h:38
 msgid "Select"
-msgstr "Sélectionner"
+msgstr "Seleccionar"
 
 #: src/guiKeyChangeMenu.h:38
 msgid "Up"
-msgstr "Haut"
+msgstr "Cima"
 
 #: src/guiKeyChangeMenu.h:39
 msgid "Delete"
-msgstr "Supprimer"
+msgstr "Eliminar"
 
 #: src/guiKeyChangeMenu.h:39
 msgid "Help"
-msgstr "Aide"
+msgstr "Ajuda"
 
 #: src/guiKeyChangeMenu.h:39
 msgid "Insert"
-msgstr "Insérer"
+msgstr "Inserir"
 
 #: src/guiKeyChangeMenu.h:39
 msgid "Snapshot"
-msgstr "Capture d’écran"
+msgstr "Captura de ecrã"
 
 #: src/guiKeyChangeMenu.h:42
 msgid "Left Windows"
-msgstr ""
+msgstr "Janelas esquerdas"
 
 #: src/guiKeyChangeMenu.h:43
 msgid "Apps"
-msgstr ""
+msgstr "Aplicações"
 
 #: src/guiKeyChangeMenu.h:43
 msgid "Numpad 0"
-msgstr "Pavé numérique 0"
+msgstr "Teclado numérico 0"
 
 #: src/guiKeyChangeMenu.h:43
 msgid "Numpad 1"
-msgstr "Pavé numérique 1"
+msgstr "Teclado numérico 1"
 
 #: src/guiKeyChangeMenu.h:43
 msgid "Right Windows"
-msgstr ""
+msgstr "Janelas direitas"
 
 #: src/guiKeyChangeMenu.h:43
 msgid "Sleep"
-msgstr ""
+msgstr "Dormir"
 
 #: src/guiKeyChangeMenu.h:44
 msgid "Numpad 2"
-msgstr "Pavé numérique 2"
+msgstr "Teclado numérico 2"
 
 #: src/guiKeyChangeMenu.h:44
 msgid "Numpad 3"
-msgstr "Pavé numérique 3"
+msgstr "Teclado numérico 3"
 
 #: src/guiKeyChangeMenu.h:44
 msgid "Numpad 4"
-msgstr "Pavé numérique 4"
+msgstr "Teclado numérico 4"
 
 #: src/guiKeyChangeMenu.h:44
 msgid "Numpad 5"
-msgstr "Pavé numérique 5"
+msgstr "Teclado numérico 5"
 
 #: src/guiKeyChangeMenu.h:44
 msgid "Numpad 6"
-msgstr "Pavé numérique 6"
+msgstr "Teclado numérico 6"
 
 #: src/guiKeyChangeMenu.h:44
 msgid "Numpad 7"
-msgstr "Pavé numérique 7"
+msgstr "Teclado numérico 7"
 
 #: src/guiKeyChangeMenu.h:45
 msgid "Numpad *"
-msgstr "Pavé numérique *"
+msgstr "Teclado numérico *"
 
 #: src/guiKeyChangeMenu.h:45
 msgid "Numpad +"
-msgstr "Pavé numérique +"
+msgstr "Teclado numérico +"
 
 #: src/guiKeyChangeMenu.h:45
 msgid "Numpad -"
-msgstr "Pavé numérique -"
+msgstr "Teclado numérico -"
 
 #: src/guiKeyChangeMenu.h:45
 msgid "Numpad /"
-msgstr "Pavé numérique /"
+msgstr "Teclado numérico /"
 
 #: src/guiKeyChangeMenu.h:45
 msgid "Numpad 8"
-msgstr "Pavé numérique 8"
+msgstr "Teclado numérico 8"
 
 #: src/guiKeyChangeMenu.h:45
 msgid "Numpad 9"
-msgstr "Pavé numérique 9"
+msgstr "Teclado numérico 9"
 
 #: src/guiKeyChangeMenu.h:49
 msgid "Num Lock"
-msgstr "Verr Num"
+msgstr "Num Lock"
 
 #: src/guiKeyChangeMenu.h:49
 msgid "Scroll Lock"
-msgstr "Arrêt défil"
+msgstr "Scroll Lock"
 
 #: src/guiKeyChangeMenu.h:50
 msgid "Left Shift"
-msgstr "Shift gauche"
+msgstr "Shift Esquerdo"
 
 #: src/guiKeyChangeMenu.h:50
 msgid "Right Shight"
-msgstr "Shift droit"
+msgstr "Shift direito"
 
 #: src/guiKeyChangeMenu.h:51
 msgid "Left Control"
-msgstr "Ctrl gauche"
+msgstr "Control Esquerdo"
 
 #: src/guiKeyChangeMenu.h:51
 msgid "Left Menu"
-msgstr "Menu de gauche"
+msgstr "Menu esquerdo"
 
 #: src/guiKeyChangeMenu.h:51
 msgid "Right Control"
-msgstr "Ctrl droit"
+msgstr "Control Direito"
 
 #: src/guiKeyChangeMenu.h:51
 msgid "Right Menu"
-msgstr "Menu de droite"
+msgstr "Menu direito"
 
 #: src/guiKeyChangeMenu.h:53
 msgid "Comma"
-msgstr "Virgule"
+msgstr "Vírgula"
 
 #: src/guiKeyChangeMenu.h:53
 msgid "Minus"
-msgstr ""
+msgstr "Menos"
 
 #: src/guiKeyChangeMenu.h:53
 msgid "Period"
-msgstr ""
+msgstr "Ponto final"
 
 #: src/guiKeyChangeMenu.h:53
 msgid "Plus"
-msgstr ""
+msgstr "Mais"
 
 #: src/guiKeyChangeMenu.h:57
 msgid "Attn"
-msgstr ""
+msgstr "Attn"
 
 #: src/guiKeyChangeMenu.h:57
 msgid "CrSel"
-msgstr ""
+msgstr "CrSel"
 
 #: src/guiKeyChangeMenu.h:58
 msgid "Erase OEF"
-msgstr ""
+msgstr "Apagar OEF"
 
 #: src/guiKeyChangeMenu.h:58
 msgid "ExSel"
-msgstr ""
+msgstr "ExSel"
 
 #: src/guiKeyChangeMenu.h:58
 msgid "OEM Clear"
-msgstr ""
+msgstr "OEM Clear"
 
 #: src/guiKeyChangeMenu.h:58
 msgid "PA1"
-msgstr ""
+msgstr "PA1"
 
 #: src/guiKeyChangeMenu.h:58
 msgid "Play"
-msgstr "Jouer"
+msgstr "Jogar"
 
 #: src/guiKeyChangeMenu.h:58
 msgid "Zoom"
@@ -394,83 +393,83 @@ msgstr "Zoom"
 
 #: src/guiMainMenu.cpp:181
 msgid "Name/Password"
-msgstr "Nom/Mot de passe"
+msgstr "Nome/Palavra-passe"
 
 #: src/guiMainMenu.cpp:206
 msgid "Address/Port"
-msgstr "Adresse / Port"
+msgstr "Endereço/Porta"
 
 #: src/guiMainMenu.cpp:228
 msgid "Leave address blank to start a local server."
-msgstr "Laisser l'adresse vide pour lancer un serveur local."
+msgstr "Deixar o endereço em branco para começar um servidor local."
 
 #: src/guiMainMenu.cpp:235
 msgid "Fancy trees"
-msgstr "Arbres spéciaux"
+msgstr "Árvores melhoradas"
 
 #: src/guiMainMenu.cpp:241
 msgid "Smooth Lighting"
-msgstr "Lumière douce"
+msgstr "Iluminação Suave"
 
 #: src/guiMainMenu.cpp:249
 msgid "Start Game / Connect"
-msgstr "Démarrer / Connecter"
+msgstr "Iniciar jogo/ Ligar"
 
 #: src/guiMainMenu.cpp:258
 msgid "Change keys"
-msgstr "Changer touches"
+msgstr "Alterar teclas"
 
 #: src/guiMainMenu.cpp:281
 msgid "Creative Mode"
-msgstr "Mode créatif"
+msgstr "Modo Criativo"
 
 #: src/guiMainMenu.cpp:287
 msgid "Enable Damage"
-msgstr "Activer blessures"
+msgstr "Permitir Dano"
 
 #: src/guiMainMenu.cpp:295
 msgid "Delete map"
-msgstr "Supprimer carte"
+msgstr "Apagar mapa"
 
 #: src/guiMessageMenu.cpp:94 src/guiTextInputMenu.cpp:112
 msgid "Proceed"
-msgstr "OK"
+msgstr "Prosseguir"
 
 #: src/guiPasswordChange.cpp:103
 msgid "Old Password"
-msgstr "Ancien mot de passe"
+msgstr "Senha Antiga"
 
 #: src/guiPasswordChange.cpp:120
 msgid "New Password"
-msgstr "Nouveau mot de passe"
+msgstr "Nova senha"
 
 #: src/guiPasswordChange.cpp:136
 msgid "Confirm Password"
-msgstr "Confirmer mot de passe"
+msgstr "Confirmar Senha"
 
 #: src/guiPasswordChange.cpp:153
 msgid "Change"
-msgstr "Changer"
+msgstr "Alterar"
 
 #: src/guiPasswordChange.cpp:162
 msgid "Passwords do not match!"
-msgstr "Les mots de passe ne correspondent pas!"
+msgstr "As senhas não coincidem!"
 
 #: src/guiPauseMenu.cpp:111
 msgid "Continue"
-msgstr "Continuer"
+msgstr "Continuar"
 
 #: src/guiPauseMenu.cpp:118
 msgid "Change Password"
-msgstr "Changer mot de passe"
+msgstr "Mudar a Senha"
 
 #: src/guiPauseMenu.cpp:125
 msgid "Disconnect"
-msgstr "Déconnection"
+msgstr "Desconectar"
 
 #: src/guiPauseMenu.cpp:132
 msgid "Exit to OS"
-msgstr "Quitter le jeu"
+msgstr "Sair para o sistema operativo"
 
 #: src/guiPauseMenu.cpp:139
 msgid ""
@@ -486,3 +485,14 @@ msgid ""
 "- ESC: This menu\n"
 "- T: Chat\n"
 msgstr ""
+"Controlos por defeito:\n"
+"- WASD: Andar\n"
+"- tecla esquerda do rato: Escavar/Atingir\n"
+"- Tecla direita do rato: Colocar/Usar\n"
+"- Roda do rato: Seleccionar item\n"
+"- 0...9: Seleccionar item\n"
+"- Shift: Andar silenciosamente\n"
+"- R: Ligar/desligar visualizaçao de todos os chunks carregados\n"
+"- I: Inventário\n"
+"- ESC: Este Menu\n"
+"- T: Chat\n"
