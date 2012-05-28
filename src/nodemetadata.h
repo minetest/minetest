@@ -44,11 +44,12 @@ public:
 
 	NodeMetadata(IGameDef *gamedef);
 	virtual ~NodeMetadata();
-	
+
 	static NodeMetadata* create(const std::string &name, IGameDef *gamedef);
 	static NodeMetadata* deSerialize(std::istream &is, IGameDef *gamedef);
 	void serialize(std::ostream &os);
-	
+	virtual IGameDef *getGamedef() {return m_gamedef;}
+
 	virtual u16 typeId() const = 0;
 	virtual const char* typeName() const = 0;
 	virtual NodeMetadata* clone(IGameDef *gamedef) = 0;
@@ -56,7 +57,7 @@ public:
 
 	// Called on client-side; shown on screen when pointed at
 	virtual std::string infoText() {return "";}
-	
+
 	//
 	virtual Inventory* getInventory() {return NULL;}
 	// Called always after the inventory is modified, before the changes
@@ -121,14 +122,14 @@ public:
 
 	void serialize(std::ostream &os);
 	void deSerialize(std::istream &is, IGameDef *gamedef);
-	
+
 	// Get pointer to data
 	NodeMetadata* get(v3s16 p);
 	// Deletes data
 	void remove(v3s16 p);
 	// Deletes old data and sets a new one
 	void set(v3s16 p, NodeMetadata *d);
-	
+
 	// A step in time. Returns true if something changed.
 	bool step(float dtime);
 
