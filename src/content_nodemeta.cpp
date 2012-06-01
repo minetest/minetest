@@ -64,8 +64,17 @@ static bool content_nodemeta_deserialize_legacy_body(
 	else if(id == NODEMETA_CHEST) // ChestNodeMetadata
 	{
 		meta->getInventory()->deSerialize(is);
+
+		// Rename inventory list "0" to "main"
+		Inventory *inv = meta->getInventory();
+		if(!inv->getList("main") && inv->getList("0")){
+			inv->addList("main", 8*4);
+			*inv->getList("main") = *inv->getList("0");
+			inv->deleteList("0");
+		}
+
 		meta->setString("formspec","invsize[8,9;]"
-				"list[current_name;0;0,0;8,4;]"
+				"list[current_name;main;0,0;8,4;]"
 				"list[current_player;main;0,5;8,4;]");
 		return false;
 	}
@@ -73,8 +82,17 @@ static bool content_nodemeta_deserialize_legacy_body(
 	{
 		meta->setString("owner", deSerializeString(is));
 		meta->getInventory()->deSerialize(is);
+
+		// Rename inventory list "0" to "main"
+		Inventory *inv = meta->getInventory();
+		if(!inv->getList("main") && inv->getList("0")){
+			inv->addList("main", 8*4);
+			*inv->getList("main") = *inv->getList("0");
+			inv->deleteList("0");
+		}
+
 		meta->setString("formspec","invsize[8,9;]"
-				"list[current_name;0;0,0;8,4;]"
+				"list[current_name;main;0,0;8,4;]"
 				"list[current_player;main;0,5;8,4;]");
 		return false;
 	}
