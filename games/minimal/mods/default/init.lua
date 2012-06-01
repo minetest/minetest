@@ -1129,13 +1129,14 @@ minetest.register_node("default:chest", {
 	legacy_facedir_simple = true,
 	sounds = default.node_sound_wood_defaults(),
 	on_construct = function(pos)
-		--local n = minetest.env:get_node(pos)
 		local meta = minetest.env:get_meta(pos)
 		meta:set_string("formspec",
 				"invsize[8,9;]"..
-				"list[current_name;0;0,0;8,4;]"..
+				"list[current_name;main;0,0;8,4;]"..
 				"list[current_player;main;0,5;8,4;]")
 		meta:set_string("infotext", "Chest");
+		local inv = meta:get_inventory()
+		inv:set_size("main", 8*4)
 	end,
 })
 
@@ -1148,13 +1149,14 @@ minetest.register_node("default:chest_locked", {
 	legacy_facedir_simple = true,
 	sounds = default.node_sound_wood_defaults(),
 	on_construct = function(pos)
-		--local n = minetest.env:get_node(pos)
 		local meta = minetest.env:get_meta(pos)
 		meta:set_string("formspec",
 				"invsize[8,9;]"..
-				"list[current_name;0;0,0;8,4;]"..
+				"list[current_name;main;0,0;8,4;]"..
 				"list[current_player;main;0,5;8,4;]")
 		meta:set_string("infotext", "Locked Chest");
+		local inv = meta:get_inventory()
+		inv:set_size("main", 8*4)
 	end,
 })
 
@@ -1175,6 +1177,10 @@ minetest.register_node("default:furnace", {
 			"list[current_name;dst;5,1;2,2;]"..
 			"list[current_player;main;0,5;8,4;]")
 		meta:set_string("infotext", "Furnace");
+		local inv = meta:get_inventory()
+		inv:set_size("fuel", 1)
+		inv:set_size("src", 1)
+		inv:set_size("dst", 4)
 	end,
 })
 
