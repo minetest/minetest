@@ -532,12 +532,12 @@ bool GUIInventoryMenu::OnEvent(const SEvent& event)
 
 			InventoryList *list = inv_s->getList(s.listname);
 			if(list == NULL){
-				errorstream<<"InventoryMenu: The selected inventory list "
-						<<"does not exist"<<std::endl;
+				errorstream<<"InventoryMenu: The selected inventory list \""
+						<<s.listname<<"\" does not exist"<<std::endl;
 				s.i = -1;  // make it invalid again
 			} else if((u32)s.i >= list->getSize()){
-				errorstream<<"InventoryMenu: The selected inventory list "
-						<<"is too small (i="<<s.i<<", size="
+				errorstream<<"InventoryMenu: The selected inventory list \""
+						<<s.listname<<"\" is too small (i="<<s.i<<", size="
 						<<list->getSize()<<")"<<std::endl;
 				s.i = -1;  // make it invalid again
 			} else{
