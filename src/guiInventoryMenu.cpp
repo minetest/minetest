@@ -526,24 +526,35 @@ bool GUIInventoryMenu::OnEvent(const SEvent& event)
 		u32 s_count = 0;
 
 		if(s.isValid())
-		{
+		do{ // breakable
 			inv_s = m_invmgr->getInventory(s.inventoryloc);
-			assert(inv_s);
+
+			if(!inv_s){
+				errorstream<<"InventoryMenu: The selected inventory location "
+						<<"\""<<s.inventoryloc.dump()<<"\" doesn't exist"
+						<<std::endl;
+				s.i = -1;  // make it invalid again
+				break;
+			}
 
 			InventoryList *list = inv_s->getList(s.listname);
 			if(list == NULL){
 				errorstream<<"InventoryMenu: The selected inventory list \""
 						<<s.listname<<"\" does not exist"<<std::endl;
 				s.i = -1;  // make it invalid again
-			} else if((u32)s.i >= list->getSize()){
+				break;
+			}
+
+			if((u32)s.i >= list->getSize()){
 				errorstream<<"InventoryMenu: The selected inventory list \""
 						<<s.listname<<"\" is too small (i="<<s.i<<", size="
 						<<list->getSize()<<")"<<std::endl;
 				s.i = -1;  // make it invalid again
-			} else{
-				s_count = list->getItem(s.i).count;
+				break;
 			}
-		}
+
+			s_count = list->getItem(s.i).count;
+		}while(0);
 
 		bool identical = (m_selected_item != NULL) && s.isValid() &&
 			(inv_selected == inv_s) &&

@@ -1039,7 +1039,38 @@ Node definition (register_node)
 
     on_receive_fields = func(pos, formname, fields, sender),
     ^ fields = {name1 = value1, name2 = value2, ...}
+    ^ Called when an UI form (eg. sign text input) returns data
     ^ default: nil
+
+    on_metadata_inventory_move = func(pos, from_list, from_index,
+                                      to_list, to_index, count, player),
+    ^ Called when a player wants to move items inside the metadata
+    ^ Should move items, or some items, if permitted. If not, should do
+      nothing.
+    ^ The engine ensures the action is valid, i.e. the stack fits at the
+      given position
+    ^ default: minetest.node_metadata_inventory_move_allow_all
+
+    on_metadata_inventory_offer = func(pos, listname, index, stack, player),
+    ^ Called when a player wants to put something into the metadata
+      inventory
+    ^ Should check if the action is permitted (the engine ensures the
+      action is valid, i.e. the stack fits at the given position)
+      ^ If permitted, modify the metadata inventory and return the
+        "leftover" stack (normally nil).
+      ^ If not permitted, return itemstack.
+    ^ default: minetest.node_metadata_inventory_offer_allow_all
+
+    on_metadata_inventory_take = func(pos, listname, index, count, player),
+    ^ Called when a player wants to take something out of the metadata
+      inventory
+    ^ Should check if the action is permitted (the engine ensures the
+      action is valid, i.e. there's a stack of at least “count” items at
+      that position)
+      ^ If permitted, modify the metadata inventory and return the
+        stack of items
+      ^ If not permitted, return nil.
+    ^ default: minetest.node_metadata_inventory_take_allow_all
 }
 
 Recipe: (register_craft)

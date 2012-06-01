@@ -27,6 +27,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "utility.h"
 #include "craftdef.h"
 
+#define PP(x) "("<<(x).X<<","<<(x).Y<<","<<(x).Z<<")"
+
 /*
 	InventoryLocation
 */
@@ -197,27 +199,82 @@ void IMoveAction::apply(InventoryManager *mgr, ServerActiveObject *player, IGame
 				<<", to_list=\""<<to_list<<"\""<<std::endl;
 		return;
 	}
-	/*
-		This performs the actual movement
+	
+	// Handle node metadata move
+	if(from_inv.type == InventoryLocation::NODEMETA &&
+			to_inv.type == InventoryLocation::NODEMETA &&
+			from_inv.p == to_inv.p)
+	{
+		lua_State *L = player->getEnv()->getLua();
+		int count0 = count;
+		if(count0 == 0)
+			count0 = list_from->getItem(from_i).count;
+		infostream<<player->getDescription()<<" moving "<<count0
+				<<" items inside node at "<<PP(from_inv.p)<<std::endl;
+		scriptapi_node_on_metadata_inventory_move(L, from_inv.p,
+				from_list, from_i, to_list, to_i, count0, player);
+	}
+	// Handle node metadata take
+	else if(from_inv.type == InventoryLocation::NODEMETA)
+	{
+		lua_State *L = player->getEnv()->getLua();
+		int count0 = count;
+		if(count0 == 0)
+			count0 = list_from->getItem(from_i).count;
+		infostream<<player->getDescription()<<" taking "<<count0
+				<<" items from node at "<<PP(from_inv.p)<<std::endl;
+		ItemStack return_stack = scriptapi_node_on_metadata_inventory_take(
+				L, from_inv.p, from_list, from_i, count0, player);
+		if(return_stack.count == 0)
+			infostream<<"Node metadata gave no items"<<std::endl;
+		return_stack = list_to->addItem(to_i, return_stack);
+		list_to->addItem(return_stack); // Force return of everything
+	}
+	// Handle node metadata offer
+	else if(to_inv.type == InventoryLocation::NODEMETA)
+	{
+		lua_State *L = player->getEnv()->getLua();
+		int count0 = count;
+		if(count0 == 0)
+			count0 = list_from->getItem(from_i).count;
+		ItemStack offer_stack = list_from->takeItem(from_i, count0);
+		infostream<<player->getDescription()<<" offering "
+				<<offer_stack.count<<" items to node at "
+				<<PP(to_inv.p)<<std::endl;
+		ItemStack reject_stack = scriptapi_node_on_metadata_inventory_offer(
+				L, to_inv.p, to_list, to_i, offer_stack, player);
+		if(reject_stack.count == offer_stack.count)
+			infostream<<"Node metadata rejected all items"<<std::endl;
+		else if(reject_stack.count != 0)
+			infostream<<"Node metadata rejected some items"<<std::endl;
+		reject_stack = list_from->addItem(from_i, reject_stack);
+		list_from->addItem(reject_stack); // Force return of everything
+	}
+	// Handle regular move
+	else
+	{
+		/*
+			This performs the actual movement
 
-		If something is wrong (source item is empty, destination is the
-		same as source), nothing happens
-	*/
-	list_from->moveItem(from_i, list_to, to_i, count);
+			If something is wrong (source item is empty, destination is the
+			same as source), nothing happens
+		*/
+		list_from->moveItem(from_i, list_to, to_i, count);
+
+		infostream<<"IMoveAction::apply(): moved "
+				<<" count="<<count
+				<<" from inv=\""<<from_inv.dump()<<"\""
+				<<" list=\""<<from_list<<"\""
+				<<" i="<<from_i
+				<<" to inv=\""<<to_inv.dump()<<"\""
+				<<" list=\""<<to_list<<"\""
+				<<" i="<<to_i
+				<<std::endl;
+	}
 
 	mgr->setInventoryModified(from_inv);
 	if(inv_from != inv_to)
 		mgr->setInventoryModified(to_inv);
-	
-	infostream<<"IMoveAction::apply(): moved at "
-			<<" count="<<count<<"\""
-			<<" from inv=\""<<from_inv.dump()<<"\""
-			<<" list=\""<<from_list<<"\""
-			<<" i="<<from_i
-			<<" to inv=\""<<to_inv.dump()<<"\""
-			<<" list=\""<<to_list<<"\""
-			<<" i="<<to_i
-			<<std::endl;
 }
 
 void IMoveAction::clientApply(InventoryManager *mgr, IGameDef *gamedef)

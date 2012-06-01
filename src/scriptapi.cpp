@@ -1470,7 +1470,7 @@ private:
 		ItemStack &item = o->m_stack;
 		u32 takecount = 1;
 		if(!lua_isnone(L, 2))
-			takecount = lua_tointeger(L, 2);
+			takecount = luaL_checkinteger(L, 2);
 		ItemStack taken = item.takeItem(takecount);
 		create(L, taken);
 		return 1;
@@ -5012,6 +5012,101 @@ void scriptapi_node_on_receive_fields(lua_State *L, v3s16 p,
 	objectref_get_or_create(L, sender);
 	if(lua_pcall(L, 4, 0, 0))
 		script_error(L, "error: %s", lua_tostring(L, -1));
+}
+
+void scriptapi_node_on_metadata_inventory_move(lua_State *L, v3s16 p,
+		const std::string &from_list, int from_index,
+		const std::string &to_list, int to_index,
+		int count, ServerActiveObject *player)
+{
+	realitycheck(L);
+	assert(lua_checkstack(L, 20));
+	StackUnroller stack_unroller(L);
+
+	INodeDefManager *ndef = get_server(L)->ndef();
+
+	// If node doesn't exist, we don't know what callback to call
+	MapNode node = get_env(L)->getMap().getNodeNoEx(p);
+	if(node.getContent() == CONTENT_IGNORE)
+		return;
+
+	// Push callback function on stack
+	if(!get_item_callback(L, ndef->get(node).name.c_str(),
+			"on_metadata_inventory_move"))
+		return;
+
+	// function(pos, from_list, from_index, to_list, to_index, count, player)
+	push_v3s16(L, p);
+	lua_pushstring(L, from_list.c_str());
+	lua_pushinteger(L, from_index + 1);
+	lua_pushstring(L, to_list.c_str());
+	lua_pushinteger(L, to_index + 1);
+	lua_pushinteger(L, count);
+	objectref_get_or_create(L, player);
+	if(lua_pcall(L, 7, 0, 0))
+		script_error(L, "error: %s", lua_tostring(L, -1));
+}
+
+ItemStack scriptapi_node_on_metadata_inventory_offer(lua_State *L, v3s16 p,
+		const std::string &listname, int index, ItemStack &stack,
+		ServerActiveObject *player)
+{
+	realitycheck(L);
+	assert(lua_checkstack(L, 20));
+	StackUnroller stack_unroller(L);
+
+	INodeDefManager *ndef = get_server(L)->ndef();
+
+	// If node doesn't exist, we don't know what callback to call
+	MapNode node = get_env(L)->getMap().getNodeNoEx(p);
+	if(node.getContent() == CONTENT_IGNORE)
+		return stack;
+
+	// Push callback function on stack
+	if(!get_item_callback(L, ndef->get(node).name.c_str(),
+			"on_metadata_inventory_offer"))
+		return stack;
+
+	// Call function(pos, listname, index, stack, player)
+	push_v3s16(L, p);
+	lua_pushstring(L, listname.c_str());
+	lua_pushinteger(L, index + 1);
+	LuaItemStack::create(L, stack);
+	objectref_get_or_create(L, player);
+	if(lua_pcall(L, 5, 1, 0))
+		script_error(L, "error: %s", lua_tostring(L, -1));
+	return read_item(L, -1);
+}
+
+ItemStack scriptapi_node_on_metadata_inventory_take(lua_State *L, v3s16 p,
+		const std::string &listname, int index, int count,
+		ServerActiveObject *player)
+{
+	realitycheck(L);
+	assert(lua_checkstack(L, 20));
+	StackUnroller stack_unroller(L);
+
+	INodeDefManager *ndef = get_server(L)->ndef();
+
+	// If node doesn't exist, we don't know what callback to call
+	MapNode node = get_env(L)->getMap().getNodeNoEx(p);
+	if(node.getContent() == CONTENT_IGNORE)
+		return ItemStack();
+
+	// Push callback function on stack
+	if(!get_item_callback(L, ndef->get(node).name.c_str(),
+			"on_metadata_inventory_take"))
+		return ItemStack();
+
+	// Call function(pos, listname, index, count, player)
+	push_v3s16(L, p);
+	lua_pushstring(L, listname.c_str());
+	lua_pushinteger(L, index + 1);
+	lua_pushinteger(L, count);
+	objectref_get_or_create(L, player);
+	if(lua_pcall(L, 5, 1, 0))
+		script_error(L, "error: %s", lua_tostring(L, -1));
+	return read_item(L, -1);
 }
 
 /*

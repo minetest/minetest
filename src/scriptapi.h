@@ -82,12 +82,28 @@ bool scriptapi_node_on_punch(lua_State *L, v3s16 p, MapNode node,
 		ServerActiveObject *puncher);
 bool scriptapi_node_on_dig(lua_State *L, v3s16 p, MapNode node,
 		ServerActiveObject *digger);
+// Node constructor
 void scriptapi_node_on_construct(lua_State *L, v3s16 p, MapNode node);
+// Node destructor
 void scriptapi_node_on_destruct(lua_State *L, v3s16 p, MapNode node);
+// Called when a metadata form returns values
 void scriptapi_node_on_receive_fields(lua_State *L, v3s16 p,
 		const std::string &formname,
 		const std::map<std::string, std::string> &fields,
 		ServerActiveObject *sender);
+// Moves items
+void scriptapi_node_on_metadata_inventory_move(lua_State *L, v3s16 p,
+		const std::string &from_list, int from_index,
+		const std::string &to_list, int to_index,
+		int count, ServerActiveObject *player);
+// Inserts items, returns rejected items
+ItemStack scriptapi_node_on_metadata_inventory_offer(lua_State *L, v3s16 p,
+		const std::string &listname, int index, ItemStack &stack,
+		ServerActiveObject *player);
+// Takes items, returns taken items
+ItemStack scriptapi_node_on_metadata_inventory_take(lua_State *L, v3s16 p,
+		const std::string &listname, int index, int count,
+		ServerActiveObject *player);
 
 /* luaentity */
 // Returns true if succesfully added into Lua; false otherwise.
