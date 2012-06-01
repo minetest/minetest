@@ -768,13 +768,6 @@ Deprecated:
 
 NodeMetaRef (this stuff is subject to change in a future version)
 methods:
-- get_type()
-- allows_text_input()
-- set_text(text) -- eg. set the text of a sign
-- get_text()
-- get_owner()
-- set_owner(string)
-Generic node metadata specific:
 - set_string(name, value)
 - get_string(name)
 - set_int(name, value)

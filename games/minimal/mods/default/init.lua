@@ -1119,10 +1119,18 @@ minetest.register_node("default:chest", {
 	tile_images = {"default_chest_top.png", "default_chest_top.png", "default_chest_side.png",
 		"default_chest_side.png", "default_chest_side.png", "default_chest_front.png"},
 	paramtype2 = "facedir",
-	metadata_name = "chest",
 	groups = {snappy=2,choppy=2,oddly_breakable_by_hand=2},
 	legacy_facedir_simple = true,
 	sounds = default.node_sound_wood_defaults(),
+	on_construct = function(pos)
+		--local n = minetest.env:get_node(pos)
+		local meta = minetest.env:get_meta(pos)
+		meta:set_string("formspec",
+				"invsize[8,9;]"..
+				"list[current_name;0;0,0;8,4;]"..
+				"list[current_player;main;0,5;8,4;]")
+		meta:set_string("infotext", "Chest");
+	end,
 })
 
 minetest.register_node("default:chest_locked", {
@@ -1130,10 +1138,18 @@ minetest.register_node("default:chest_locked", {
 	tile_images = {"default_chest_top.png", "default_chest_top.png", "default_chest_side.png",
 		"default_chest_side.png", "default_chest_side.png", "default_chest_lock.png"},
 	paramtype2 = "facedir",
-	metadata_name = "locked_chest",
 	groups = {snappy=2,choppy=2,oddly_breakable_by_hand=2},
 	legacy_facedir_simple = true,
 	sounds = default.node_sound_wood_defaults(),
+	on_construct = function(pos)
+		--local n = minetest.env:get_node(pos)
+		local meta = minetest.env:get_meta(pos)
+		meta:set_string("formspec",
+				"invsize[8,9;]"..
+				"list[current_name;0;0,0;8,4;]"..
+				"list[current_player;main;0,5;8,4;]")
+		meta:set_string("infotext", "Locked Chest");
+	end,
 })
 
 minetest.register_node("default:furnace", {
@@ -1141,10 +1157,19 @@ minetest.register_node("default:furnace", {
 	tile_images = {"default_furnace_side.png", "default_furnace_side.png", "default_furnace_side.png",
 		"default_furnace_side.png", "default_furnace_side.png", "default_furnace_front.png"},
 	paramtype2 = "facedir",
-	metadata_name = "furnace",
 	groups = {cracky=2},
 	legacy_facedir_simple = true,
 	sounds = default.node_sound_stone_defaults(),
+	on_construct = function(pos)
+		local meta = minetest.env:get_meta(pos)
+		meta:set_string("formspec",
+			"invsize[8,9;]"..
+			"list[current_name;fuel;2,3;1,1;]"..
+			"list[current_name;src;2,1;1,1;]"..
+			"list[current_name;dst;5,1;2,2;]"..
+			"list[current_player;main;0,5;8,4;]")
+		meta:set_string("infotext", "Furnace");
+	end,
 })
 
 minetest.register_node("default:cobble", {

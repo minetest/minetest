@@ -237,15 +237,6 @@ function minetest.node_dig(pos, node, digger)
 		return
 	end
 
-	local meta = minetest.env:get_meta(pos)
-	if meta ~= nil and not meta:get_allow_removal() then
-		minetest.debug("dig prevented by metadata")
-		minetest.log("info", digger:get_player_name() .. " tried to dig "
-			.. node.name .. ", but removal is disabled by metadata "
-			.. minetest.pos_to_string(pos))
-		return
-	end
-
 	minetest.log('action', digger:get_player_name() .. " digs "
 		.. node.name .. " at " .. minetest.pos_to_string(pos))
 
