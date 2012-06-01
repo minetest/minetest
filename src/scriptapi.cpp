@@ -141,14 +141,14 @@ static Server* get_server(lua_State *L)
 	return server;
 }
 
-/*static ServerEnvironment* get_env(lua_State *L)
+static ServerEnvironment* get_env(lua_State *L)
 {
 	// Get environment from registry
 	lua_getfield(L, LUA_REGISTRYINDEX, "minetest_env");
 	ServerEnvironment *env = (ServerEnvironment*)lua_touserdata(L, -1);
 	lua_pop(L, 1);
 	return env;
-}*/
+}
 
 static void objectref_get(lua_State *L, u16 id)
 {
@@ -4970,6 +4970,47 @@ void scriptapi_node_on_destruct(lua_State *L, v3s16 p, MapNode node)
 	// Call function
 	push_v3s16(L, p);
 	if(lua_pcall(L, 1, 0, 0))
+		script_error(L, "error: %s", lua_tostring(L, -1));
+}
+
+void scriptapi_node_on_receive_fields(lua_State *L, v3s16 p,
+		const std::string &formname,
+		const std::map<std::string, std::string> &fields,
+		ServerActiveObject *sender)
+{
+	realitycheck(L);
+	assert(lua_checkstack(L, 20));
+	StackUnroller stack_unroller(L);
+
+	INodeDefManager *ndef = get_server(L)->ndef();
+	
+	// If node doesn't exist, we don't know what callback to call
+	MapNode node = get_env(L)->getMap().getNodeNoEx(p);
+	if(node.getContent() == CONTENT_IGNORE)
+		return;
+
+	// Push callback function on stack
+	if(!get_item_callback(L, ndef->get(node).name.c_str(), "on_receive_fields"))
+		return;
+
+	// Call function
+	// param 1
+	push_v3s16(L, p);
+	// param 2
+	lua_pushstring(L, formname.c_str());
+	// param 3
+	lua_newtable(L);
+	for(std::map<std::string, std::string>::const_iterator
+			i = fields.begin(); i != fields.end(); i++){
+		const std::string &name = i->first;
+		const std::string &value = i->second;
+		lua_pushstring(L, name.c_str());
+		lua_pushlstring(L, value.c_str(), value.size());
+		lua_settable(L, -3);
+	}
+	// param 4
+	objectref_get_or_create(L, sender);
+	if(lua_pcall(L, 4, 0, 0))
 		script_error(L, "error: %s", lua_tostring(L, -1));
 }
 

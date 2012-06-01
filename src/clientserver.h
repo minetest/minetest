@@ -415,7 +415,7 @@ enum ToServerCommand
 		wstring message
 	*/
 
-	TOSERVER_SIGNNODETEXT = 0x33,
+	TOSERVER_SIGNNODETEXT = 0x33, // obsolete
 	/*
 		u16 command
 		v3s16 p
@@ -482,6 +482,20 @@ enum ToServerCommand
 		u16 command
 		u16 len
 		s32[len] sound_id
+	*/
+
+	TOSERVER_NODEMETA_FIELDS = 0x3b,
+	/*
+		u16 command
+		v3s16 p
+		u16 len
+		u8[len] form name (reserved for future use)
+		u16 number of fields
+		for each field:
+			u16 len
+			u8[len] field name
+			u32 len
+			u8[len] field value
 	*/
 
 	TOSERVER_REQUEST_MEDIA = 0x40,

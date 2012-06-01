@@ -103,7 +103,9 @@ struct TextDestNodeMetadata : public TextDest
 		std::string ntext = wide_to_narrow(text);
 		infostream<<"Changing text of a sign node: "
 				<<ntext<<std::endl;
-		m_client->sendSignNodeText(m_p, ntext);
+		std::map<std::string, std::string> fields;
+		fields["text"] = ntext;
+		m_client->sendNodemetaFields(m_p, "", fields);
 	}
 
 	v3s16 m_p;

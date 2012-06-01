@@ -24,6 +24,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <string>
 #include "mapnode.h"
 #include <set>
+#include <map>
 
 class Server;
 class ServerEnvironment;
@@ -83,6 +84,10 @@ bool scriptapi_node_on_dig(lua_State *L, v3s16 p, MapNode node,
 		ServerActiveObject *digger);
 void scriptapi_node_on_construct(lua_State *L, v3s16 p, MapNode node);
 void scriptapi_node_on_destruct(lua_State *L, v3s16 p, MapNode node);
+void scriptapi_node_on_receive_fields(lua_State *L, v3s16 p,
+		const std::string &formname,
+		const std::map<std::string, std::string> &fields,
+		ServerActiveObject *sender);
 
 /* luaentity */
 // Returns true if succesfully added into Lua; false otherwise.

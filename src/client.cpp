@@ -1740,33 +1740,23 @@ void Client::interact(u8 action, const PointedThing& pointed)
 	Send(0, data, true);
 }
 
-void Client::sendSignNodeText(v3s16 p, std::string text)
+void Client::sendNodemetaFields(v3s16 p, const std::string &formname,
+		const std::map<std::string, std::string> &fields)
 {
-	/*
-		u16 command
-		v3s16 p
-		u16 textlen
-		textdata
-	*/
 	std::ostringstream os(std::ios_base::binary);
-	u8 buf[12];
-	
-	// Write command
-	writeU16(buf, TOSERVER_SIGNNODETEXT);
-	os.write((char*)buf, 2);
-	
-	// Write p
-	writeV3S16(buf, p);
-	os.write((char*)buf, 6);
 
-	u16 textlen = text.size();
-	// Write text length
-	writeS16(buf, textlen);
-	os.write((char*)buf, 2);
+	writeU16(os, TOSERVER_NODEMETA_FIELDS);
+	writeV3S16(os, p);
+	os<<serializeString(formname);
+	writeU16(os, fields.size());
+	for(std::map<std::string, std::string>::const_iterator
+			i = fields.begin(); i != fields.end(); i++){
+		const std::string &name = i->first;
+		const std::string &value = i->second;
+		os<<serializeString(name);
+		os<<serializeLongString(value);
+	}
 
-	// Write text
-	os.write((char*)text.c_str(), textlen);
-	
 	// Make data buffer
 	std::string s = os.str();
 	SharedBuffer<u8> data((u8*)s.c_str(), s.size());
