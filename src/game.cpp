@@ -2195,7 +2195,7 @@ void the_game(
 			ClientMap &map = client.getEnv().getClientMap();
 			NodeMetadata *meta = map.getNodeMetadata(nodepos);
 			if(meta){
-				infotext = narrow_to_wide(meta->getInfoText());
+				infotext = narrow_to_wide(meta->getString("infotext"));
 			} else {
 				MapNode n = map.getNode(nodepos);
 				if(nodedef->get(n).tname_tiles[0] == "unknown_block.png"){
@@ -2320,10 +2320,23 @@ void the_game(
 			{
 				infostream<<"Ground right-clicked"<<std::endl;
 				
+				// sign special case, at least until formspec is properly implemented
+				if(meta && meta->getString("formspec") == "hack:sign_text_input" && !random_input)
+				{
+					infostream<<"Launching metadata text input"<<std::endl;
+					
+					// Get a new text for it
+
+					TextDest *dest = new TextDestNodeMetadata(nodepos, &client);
+
+					std::wstring wtext = narrow_to_wide(meta->getString("text"));
+
+					(new GUITextInputMenu(guienv, guiroot, -1,
+							&g_menumgr, dest,
+							wtext))->drop();
+				}
 				// If metadata provides an inventory view, activate it
-				errorstream<<"Need to implement metadata formspecs"<<std::endl;
-				#if 0
-				if(meta && meta->getInventoryDrawSpecString() != "" && !random_input)
+				else if(meta && meta->getString("formspec") != "" && !random_input)
 				{
 					infostream<<"Launching custom inventory view"<<std::endl;
 
@@ -2339,7 +2352,7 @@ void the_game(
 					v2s16 invsize =
 						GUIInventoryMenu::makeDrawSpecArrayFromString(
 							draw_spec,
-							meta->getInventoryDrawSpecString(),
+							meta->getString("formspec"),
 							inventoryloc);
 
 					GUIInventoryMenu *menu =
@@ -2349,24 +2362,6 @@ void the_game(
 					menu->setDrawSpec(draw_spec);
 					menu->drop();
 				}
-				// If metadata provides text input, activate text input
-				else if(meta && meta->allowsTextInput() && !random_input)
-				{
-					infostream<<"Launching metadata text input"<<std::endl;
-					
-					// Get a new text for it
-
-					TextDest *dest = new TextDestNodeMetadata(nodepos, &client);
-
-					std::wstring wtext = narrow_to_wide(meta->getText());
-
-					(new GUITextInputMenu(guienv, guiroot, -1,
-							&g_menumgr, dest,
-							wtext))->drop();
-				}
-				#else
-				if(0) /* do nothing */;
-				#endif
 				// Otherwise report right click to server
 				else
 				{

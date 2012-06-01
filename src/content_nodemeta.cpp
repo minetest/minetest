@@ -40,10 +40,10 @@ static bool content_nodemeta_deserialize_legacy_body(
 		deSerializeLongString(is);  // m_text
 		deSerializeString(is);  // m_owner
 
-		meta->setInfoText(deSerializeString(is));
-		meta->setInventoryDrawSpec(deSerializeString(is));
+		meta->setString("infotext",deSerializeString(is));
+		meta->setString("formspec",deSerializeString(is));
 		readU8(is);  // m_allow_text_input
-		meta->setAllowRemoval(readU8(is) == 0);
+		readU8(is);  // m_allow_removal
 		readU8(is);  // m_enforce_owner
 
 		int num_vars = readU32(is);
@@ -57,14 +57,14 @@ static bool content_nodemeta_deserialize_legacy_body(
 	else if(id == NODEMETA_SIGN) // SignNodeMetadata
 	{
 		meta->setString("text", deSerializeLongString(is));
-		meta->setInfoText("\"${text}\"");
-		meta->setFormSpec("field[text;;${text}]");
+		meta->setString("infotext","\"${text}\"");
+		meta->setString("formspec","field[text;;${text}]");
 		return false;
 	}
 	else if(id == NODEMETA_CHEST) // ChestNodeMetadata
 	{
 		meta->getInventory()->deSerialize(is);
-		meta->setInventoryDrawSpec("invsize[8,9;]"
+		meta->setString("formspec","invsize[8,9;]"
 				"list[current_name;0;0,0;8,4;]"
 				"list[current_player;main;0,5;8,4;]");
 		return false;
@@ -73,7 +73,7 @@ static bool content_nodemeta_deserialize_legacy_body(
 	{
 		meta->setString("owner", deSerializeString(is));
 		meta->getInventory()->deSerialize(is);
-		meta->setInventoryDrawSpec("invsize[8,9;]"
+		meta->setString("formspec","invsize[8,9;]"
 				"list[current_name;0;0,0;8,4;]"
 				"list[current_player;main;0,5;8,4;]");
 		return false;
@@ -94,7 +94,7 @@ static bool content_nodemeta_deserialize_legacy_body(
 		is>>temp;
 		meta->setString("src_time", ftos((float)temp/10));
 
-		meta->setInventoryDrawSpec("invsize[8,9;]"
+		meta->setString("formspec","invsize[8,9;]"
 			"list[current_name;fuel;2,3;1,1;]"
 			"list[current_name;src;2,1;1,1;]"
 			"list[current_name;dst;5,1;2,2;]"

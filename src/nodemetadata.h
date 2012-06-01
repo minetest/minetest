@@ -70,56 +70,10 @@ public:
 	{
 		return m_inventory;
 	}
-	
-	// If non-empty, player can interact by using an inventory view
-	// See format in guiInventoryMenu.cpp.
-	std::string getInventoryDrawSpec() const
-	{
-		return m_inventorydrawspec;
-	}
-	void setInventoryDrawSpec(const std::string &text)
-	{
-		m_inventorydrawspec = text;
-	}
-	
-	// If non-empty, player can interact by using an form view
-	// See format in guiFormMenu.cpp.
-	std::string getFormSpec() const
-	{
-		return m_formspec;
-	}
-	void setFormSpec(const std::string &text)
-	{
-		m_formspec = text;
-	}
-	
-	// Called on client-side; shown on screen when pointed at
-	std::string getInfoText() const
-	{
-		return m_infotext;
-	}
-	void setInfoText(const std::string &text)
-	{
-		m_infotext = text;
-	}
-	
-	// Whether the related node and this metadata can be removed
-	bool getAllowRemoval() const
-	{
-		return m_allow_removal;
-	}
-	void setAllowRemoval(bool b)
-	{
-		m_allow_removal = b;
-	}
 
 private:
 	std::map<std::string, std::string> m_stringvars;
 	Inventory *m_inventory;
-	std::string m_inventorydrawspec;
-	std::string m_formspec;
-	std::string m_infotext;
-	bool m_allow_removal;
 };
 
 

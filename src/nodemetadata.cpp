@@ -31,11 +31,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 NodeMetadata::NodeMetadata(IGameDef *gamedef):
 	m_stringvars(),
-	m_inventory(new Inventory(gamedef->idef())),
-	m_inventorydrawspec(""),
-	m_formspec(""),
-	m_infotext(""),
-	m_allow_removal(true)
+	m_inventory(new Inventory(gamedef->idef()))
 {
 }
 
@@ -55,10 +51,6 @@ void NodeMetadata::serialize(std::ostream &os) const
 	}
 
 	m_inventory->serialize(os);
-	os<<serializeString(m_inventorydrawspec);
-	os<<serializeString(m_formspec);
-	os<<serializeString(m_infotext);
-	writeU8(os, m_allow_removal);
 }
 
 void NodeMetadata::deSerialize(std::istream &is)
@@ -72,20 +64,12 @@ void NodeMetadata::deSerialize(std::istream &is)
 	}
 
 	m_inventory->deSerialize(is);
-	m_inventorydrawspec = deSerializeString(is);
-	m_formspec = deSerializeString(is);
-	m_infotext = deSerializeString(is);
-	m_allow_removal = readU8(is);
 }
 
 void NodeMetadata::clear()
 {
 	m_stringvars.clear();
 	m_inventory->clear();
-	m_inventorydrawspec = "";
-	m_formspec = "";
-	m_infotext = "";
-	m_allow_removal = true;
 }
 
 /*

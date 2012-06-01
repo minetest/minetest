@@ -2098,7 +2098,7 @@ private:
 			lua_pushlstring(L, "", 0);
 			return 1;
 		}
-		std::string str = meta->getInventoryDrawSpec();
+		std::string str = meta->getString("formspec");
 		lua_pushlstring(L, str.c_str(), str.size());
 		return 1;
 	}
@@ -2112,9 +2112,9 @@ private:
 		std::string str(s, len);
 
 		NodeMetadata *meta = getmeta(ref, !str.empty());
-		if(meta == NULL || str == meta->getInventoryDrawSpec())
+		if(meta == NULL || str == meta->getString("formspec"))
 			return 0;
-		meta->setInventoryDrawSpec(str);
+		meta->setString("formspec",str);
 		reportMetadataChange(ref);
 		return 0;
 	}
@@ -2129,7 +2129,7 @@ private:
 			lua_pushlstring(L, "", 0);
 			return 1;
 		}
-		std::string str = meta->getFormSpec();
+		std::string str = meta->getString("formspec");
 		lua_pushlstring(L, str.c_str(), str.size());
 		return 1;
 	}
@@ -2143,9 +2143,9 @@ private:
 		std::string str(s, len);
 
 		NodeMetadata *meta = getmeta(ref, !str.empty());
-		if(meta == NULL || str == meta->getFormSpec())
+		if(meta == NULL || str == meta->getString("formspec"))
 			return 0;
-		meta->setFormSpec(str);
+		meta->setString("formspec",str);
 		reportMetadataChange(ref);
 		return 0;
 	}
@@ -2160,7 +2160,7 @@ private:
 			lua_pushlstring(L, "", 0);
 			return 1;
 		}
-		std::string str = meta->getInfoText();
+		std::string str = meta->getString("infotext");
 		lua_pushlstring(L, str.c_str(), str.size());
 		return 1;
 	}
@@ -2174,37 +2174,9 @@ private:
 		std::string str(s, len);
 
 		NodeMetadata *meta = getmeta(ref, !str.empty());
-		if(meta == NULL || str == meta->getInfoText())
+		if(meta == NULL || str == meta->getString("infotext"))
 			return 0;
-		meta->setInfoText(str);
-		reportMetadataChange(ref);
-		return 0;
-	}
-
-	// get_allow_removal(self)
-	static int l_get_allow_removal(lua_State *L)
-	{
-		NodeMetaRef *ref = checkobject(L, 1);
-
-		NodeMetadata *meta = getmeta(ref, false);
-		if(meta == NULL){
-			lua_pushboolean(L, true);
-			return 1;
-		}
-		lua_pushboolean(L, meta->getAllowRemoval());
-		return 1;
-	}
-
-	// set_allow_removal(self, flag)
-	static int l_set_allow_removal(lua_State *L)
-	{
-		NodeMetaRef *ref = checkobject(L, 1);
-		bool flag = lua_toboolean(L, 2);
-
-		NodeMetadata *meta = getmeta(ref, flag != true);
-		if(meta == NULL || flag == meta->getAllowRemoval())
-			return 0;
-		meta->setAllowRemoval(flag);
+		meta->setString("infotext",str);
 		reportMetadataChange(ref);
 		return 0;
 	}
@@ -2274,8 +2246,6 @@ const luaL_reg NodeMetaRef::methods[] = {
 	method(NodeMetaRef, set_form_spec),
 	method(NodeMetaRef, get_infotext),
 	method(NodeMetaRef, set_infotext),
-	method(NodeMetaRef, get_allow_removal),
-	method(NodeMetaRef, set_allow_removal),
 	{0,0}
 };
 
