@@ -81,6 +81,8 @@ bool scriptapi_node_on_punch(lua_State *L, v3s16 p, MapNode node,
 		ServerActiveObject *puncher);
 bool scriptapi_node_on_dig(lua_State *L, v3s16 p, MapNode node,
 		ServerActiveObject *digger);
+void scriptapi_node_on_construct(lua_State *L, v3s16 p, MapNode node);
+void scriptapi_node_on_destruct(lua_State *L, v3s16 p, MapNode node);
 
 /* luaentity */
 // Returns true if succesfully added into Lua; false otherwise.

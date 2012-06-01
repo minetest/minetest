@@ -775,18 +775,13 @@ methods:
 - get_owner()
 - set_owner(string)
 Generic node metadata specific:
-- set_infotext(infotext)
-- get_inventory() -> InvRef
-- set_inventory_draw_spec(string)
-- set_allow_text_input(bool)
-- set_allow_removal(bool)
-- set_enforce_owner(bool)
-- is_inventory_modified()
-- reset_inventory_modified()
-- is_text_modified()
-- reset_text_modified()
 - set_string(name, value)
 - get_string(name)
+- set_int(name, value)
+- get_int(name)
+- set_float(name, value)
+- get_float(name)
+- get_inventory() -> InvRef
 
 ObjectRef: Moving things in the game are generally these
 (basically reference to a C++ ServerActiveObject)
@@ -983,9 +978,13 @@ Item definition (register_node, register_craftitem, register_tool)
             choppy={times={[3]=0.90}, maxwear=0.05, maxlevel=0}
         }
     }
-    on_drop = func(itemstack, dropper, pos),
+
     on_place = func(itemstack, placer, pointed_thing),
+    ^ default: minetest.item_place
+    on_drop = func(itemstack, dropper, pos),
+    ^ default: minetest.item_drop
     on_use = func(itemstack, user, pointed_thing),
+    ^  default: nil
     ^ Function must return either nil if no item shall be removed from
       inventory, or an itemstack to replace the original itemstack.
         eg. itemstack:take_item(); return itemstack
@@ -1032,6 +1031,19 @@ Node definition (register_node)
         dig = <SimpleSoundSpec>, -- "__group" = group-based sound (default)
         dug = <SimpleSoundSpec>,
     },
+
+    on_construct = func(pos),
+    ^ Node constructor; always called after adding node
+    ^ Can set up metadata and stuff like that
+    on_destruct = func(pos),
+    ^ Node destructor; always called before removing node
+	
+    on_punch = func(pos, node, puncher),
+    ^ default: minetest.node_punch
+    ^ By default: does nothing
+	on_dig = func(pos, node, digger),
+    ^ default: minetest.node_dig
+    ^ By default: checks privileges, wears out tool and removes node
 }
 
 Recipe: (register_craft)

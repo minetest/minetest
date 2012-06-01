@@ -2978,8 +2978,15 @@ private:
 		// content
 		MapNode n = readnode(L, 3, env->getGameDef()->ndef());
 		// Do it
+		// Call destructor
+		MapNode n_old = env->getMap().getNodeNoEx(pos);
+		scriptapi_node_on_destruct(L, pos, n_old);
+		// Replace node
 		bool succeeded = env->getMap().addNodeWithEvent(pos, n);
 		lua_pushboolean(L, succeeded);
+		// Call constructor
+		if(succeeded)
+			scriptapi_node_on_construct(L, pos, n);
 		return 1;
 	}
 
@@ -2999,8 +3006,13 @@ private:
 		// pos
 		v3s16 pos = read_v3s16(L, 2);
 		// Do it
+		// Call destructor
+		MapNode n = env->getMap().getNodeNoEx(pos);
+		scriptapi_node_on_destruct(L, pos, n);
+		// Replace with air
 		bool succeeded = env->getMap().removeNodeWithEvent(pos);
 		lua_pushboolean(L, succeeded);
+		// Air doesn't require constructor
 		return 1;
 	}
 
@@ -4881,7 +4893,7 @@ bool scriptapi_item_on_use(lua_State *L, ItemStack &item,
 	return true;
 }
 
-bool scriptapi_node_on_punch(lua_State *L, v3s16 pos, MapNode node,
+bool scriptapi_node_on_punch(lua_State *L, v3s16 p, MapNode node,
 		ServerActiveObject *puncher)
 {
 	realitycheck(L);
@@ -4895,7 +4907,7 @@ bool scriptapi_node_on_punch(lua_State *L, v3s16 pos, MapNode node,
 		return false;
 
 	// Call function
-	push_v3s16(L, pos);
+	push_v3s16(L, p);
 	pushnode(L, node, ndef);
 	objectref_get_or_create(L, puncher);
 	if(lua_pcall(L, 3, 0, 0))
@@ -4903,7 +4915,7 @@ bool scriptapi_node_on_punch(lua_State *L, v3s16 pos, MapNode node,
 	return true;
 }
 
-bool scriptapi_node_on_dig(lua_State *L, v3s16 pos, MapNode node,
+bool scriptapi_node_on_dig(lua_State *L, v3s16 p, MapNode node,
 		ServerActiveObject *digger)
 {
 	realitycheck(L);
@@ -4917,12 +4929,48 @@ bool scriptapi_node_on_dig(lua_State *L, v3s16 pos, MapNode node,
 		return false;
 
 	// Call function
-	push_v3s16(L, pos);
+	push_v3s16(L, p);
 	pushnode(L, node, ndef);
 	objectref_get_or_create(L, digger);
 	if(lua_pcall(L, 3, 0, 0))
 		script_error(L, "error: %s", lua_tostring(L, -1));
 	return true;
+}
+
+void scriptapi_node_on_construct(lua_State *L, v3s16 p, MapNode node)
+{
+	realitycheck(L);
+	assert(lua_checkstack(L, 20));
+	StackUnroller stack_unroller(L);
+
+	INodeDefManager *ndef = get_server(L)->ndef();
+
+	// Push callback function on stack
+	if(!get_item_callback(L, ndef->get(node).name.c_str(), "on_construct"))
+		return;
+
+	// Call function
+	push_v3s16(L, p);
+	if(lua_pcall(L, 1, 0, 0))
+		script_error(L, "error: %s", lua_tostring(L, -1));
+}
+
+void scriptapi_node_on_destruct(lua_State *L, v3s16 p, MapNode node)
+{
+	realitycheck(L);
+	assert(lua_checkstack(L, 20));
+	StackUnroller stack_unroller(L);
+
+	INodeDefManager *ndef = get_server(L)->ndef();
+
+	// Push callback function on stack
+	if(!get_item_callback(L, ndef->get(node).name.c_str(), "on_destruct"))
+		return;
+
+	// Call function
+	push_v3s16(L, p);
+	if(lua_pcall(L, 1, 0, 0))
+		script_error(L, "error: %s", lua_tostring(L, -1));
 }
 
 /*
