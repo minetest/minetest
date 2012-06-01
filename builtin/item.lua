@@ -158,11 +158,6 @@ function minetest.item_place_node(itemstack, placer, pointed_thing)
 		-- Add node and update
 		minetest.env:add_node(pos, newnode)
 
-		-- Set metadata owner
-		if def.metadata_name ~= "" then
-			minetest.env:get_meta(pos):set_owner(placer:get_player_name())
-		end
-
 		-- Run script hook
 		local _, callback
 		for _, callback in ipairs(minetest.registered_on_placenodes) do
@@ -319,7 +314,6 @@ minetest.nodedef_default = {
 	diggable = true,
 	climbable = false,
 	buildable_to = false,
-	metadata_name = "",
 	liquidtype = "none",
 	liquid_alternative_flowing = "",
 	liquid_alternative_source = "",

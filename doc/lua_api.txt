@@ -1009,7 +1009,6 @@ Node definition (register_node)
     buildable_to = false,
     drop = "",
     -- alternatively drop = { max_items = ..., items = { ... } }
-    metadata_name = "",
     liquidtype = "none",
     liquid_alternative_flowing = "",
     liquid_alternative_source = "",

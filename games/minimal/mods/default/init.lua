@@ -1112,6 +1112,12 @@ minetest.register_node("default:sign_wall", {
 	groups = {choppy=2,dig_immediate=2},
 	legacy_wallmounted = true,
 	sounds = default.node_sound_defaults(),
+	on_construct = function(pos)
+		--local n = minetest.env:get_node(pos)
+		local meta = minetest.env:get_meta(pos)
+		meta:set_string("formspec", "hack:sign_text_input")
+		meta:set_string("infotext", "\"${text}\"")
+	end,
 })
 
 minetest.register_node("default:chest", {
