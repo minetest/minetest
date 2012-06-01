@@ -203,6 +203,14 @@ void IMoveAction::apply(InventoryManager *mgr, ServerActiveObject *player, IGame
 	// Handle node metadata move
 	if(from_inv.type == InventoryLocation::NODEMETA &&
 			to_inv.type == InventoryLocation::NODEMETA &&
+			from_inv.p != to_inv.p)
+	{
+		errorstream<<"Directly moving items between two nodes is "
+				<<"disallowed."<<std::endl;
+		return;
+	}
+	else if(from_inv.type == InventoryLocation::NODEMETA &&
+			to_inv.type == InventoryLocation::NODEMETA &&
 			from_inv.p == to_inv.p)
 	{
 		lua_State *L = player->getEnv()->getLua();
@@ -354,12 +362,31 @@ void IDropAction::apply(InventoryManager *mgr, ServerActiveObject *player, IGame
 		return;
 	}
 
-	// Take item from source list
 	ItemStack item1;
-	if(count == 0)
-		item1 = list_from->changeItem(from_i, ItemStack());
+
+	// Handle node metadata take
+	if(from_inv.type == InventoryLocation::NODEMETA)
+	{
+		lua_State *L = player->getEnv()->getLua();
+		int count0 = count;
+		if(count0 == 0)
+			count0 = list_from->getItem(from_i).count;
+		infostream<<player->getDescription()<<" dropping "<<count0
+				<<" items from node at "<<PP(from_inv.p)<<std::endl;
+		ItemStack return_stack = scriptapi_node_on_metadata_inventory_take(
+				L, from_inv.p, from_list, from_i, count0, player);
+		if(return_stack.count == 0)
+			infostream<<"Node metadata gave no items"<<std::endl;
+		item1 = return_stack;
+	}
 	else
-		item1 = list_from->takeItem(from_i, count);
+	{
+		// Take item from source list
+		if(count == 0)
+			item1 = list_from->changeItem(from_i, ItemStack());
+		else
+			item1 = list_from->takeItem(from_i, count);
+	}
 
 	// Drop the item and apply the returned ItemStack
 	ItemStack item2 = item1;
