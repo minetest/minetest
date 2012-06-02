@@ -284,8 +284,21 @@ void GUIInventoryMenu::drawList(const ListDrawSpec &s, int phase)
 		font = skin->getFont();
 	
 	Inventory *inv = m_invmgr->getInventory(s.inventoryloc);
-	assert(inv);
+	if(!inv){
+		infostream<<"GUIInventoryMenu::drawList(): WARNING: "
+				<<"The inventory location "
+				<<"\""<<s.inventoryloc.dump()<<"\" doesn't exist"
+				<<std::endl;
+		return;
+	}
 	InventoryList *ilist = inv->getList(s.listname);
+	if(!ilist){
+		infostream<<"GUIInventoryMenu::drawList(): WARNING: "
+				<<"The inventory list \""<<s.listname<<"\" @ \""
+				<<s.inventoryloc.dump()<<"\" doesn't exist"
+				<<std::endl;
+		return;
+	}
 	
 	core::rect<s32> imgrect(0,0,imgsize.X,imgsize.Y);
 	
