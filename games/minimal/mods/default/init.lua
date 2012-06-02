@@ -1341,7 +1341,7 @@ minetest.register_abm({
 			was_active = true
 			meta:set_float("fuel_time", meta:get_float("fuel_time") + 1)
 			meta:set_float("src_time", meta:get_float("src_time") + 1)
-			if cooked and cooked.item and meta:get_float("src_time") >= 3 then
+			if cooked and cooked.item and meta:get_float("src_time") >= cooked.time then
 				-- check if there's room for output in "dst" list
 				if inv:room_for_item("dst",cooked.item) then
 					-- Put result in "dst" list
