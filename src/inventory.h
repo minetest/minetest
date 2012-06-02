@@ -176,6 +176,7 @@ public:
 	~InventoryList();
 	void clearItems();
 	void setSize(u32 newsize);
+	void setName(const std::string &name);
 	void serialize(std::ostream &os) const;
 	void deSerialize(std::istream &is);
 

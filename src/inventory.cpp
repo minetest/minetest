@@ -458,6 +458,11 @@ void InventoryList::setSize(u32 newsize)
 	m_size = newsize;
 }
 
+void InventoryList::setName(const std::string &name)
+{
+	m_name = name;
+}
+
 void InventoryList::serialize(std::ostream &os) const
 {
 	//os.imbue(std::locale("C"));

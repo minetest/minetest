@@ -21,6 +21,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "inventory.h"
 #include "log.h"
 #include "utility.h"
+#include <sstream>
 
 #define NODEMETA_GENERIC 1
 #define NODEMETA_SIGN 14
@@ -70,11 +71,10 @@ static bool content_nodemeta_deserialize_legacy_body(
 		// Rename inventory list "0" to "main"
 		Inventory *inv = meta->getInventory();
 		if(!inv->getList("main") && inv->getList("0")){
-			inv->addList("main", 8*4);
-			*inv->getList("main") = *inv->getList("0");
-			inv->deleteList("0");
+			inv->getList("0")->setName("main");
 		}
-
+		assert(inv->getList("main") && !inv->getList("0"));
+		
 		meta->setString("formspec","invsize[8,9;]"
 				"list[current_name;main;0,0;8,4;]"
 				"list[current_player;main;0,5;8,4;]");
@@ -88,11 +88,10 @@ static bool content_nodemeta_deserialize_legacy_body(
 		// Rename inventory list "0" to "main"
 		Inventory *inv = meta->getInventory();
 		if(!inv->getList("main") && inv->getList("0")){
-			inv->addList("main", 8*4);
-			*inv->getList("main") = *inv->getList("0");
-			inv->deleteList("0");
+			inv->getList("0")->setName("main");
 		}
-
+		assert(inv->getList("main") && !inv->getList("0"));
+		
 		meta->setString("formspec","invsize[8,9;]"
 				"list[current_name;main;0,0;8,4;]"
 				"list[current_player;main;0,5;8,4;]");
