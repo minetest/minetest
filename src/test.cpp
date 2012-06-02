@@ -37,6 +37,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "log.h"
 #include "utility_string.h"
 #include "voxelalgorithms.h"
+#include "inventory.h"
 
 /*
 	Asserts that the exception occurs
@@ -647,6 +648,98 @@ struct TestVoxelAlgorithms
 				assert(unlight_from.size() == 1);
 			}
 		}
+	}
+};
+
+struct TestInventory
+{
+	void Run(IItemDefManager *idef)
+	{
+		std::string serialized_inventory =
+		"List 0 32\n"
+		"Empty\n"
+		"Empty\n"
+		"Empty\n"
+		"Empty\n"
+		"Empty\n"
+		"Empty\n"
+		"Empty\n"
+		"Empty\n"
+		"Empty\n"
+		"Item default:cobble 61\n"
+		"Empty\n"
+		"Empty\n"
+		"Empty\n"
+		"Empty\n"
+		"Empty\n"
+		"Empty\n"
+		"Item default:dirt 71\n"
+		"Empty\n"
+		"Empty\n"
+		"Empty\n"
+		"Empty\n"
+		"Empty\n"
+		"Empty\n"
+		"Empty\n"
+		"Item default:dirt 99\n"
+		"Item default:cobble 38\n"
+		"Empty\n"
+		"Empty\n"
+		"Empty\n"
+		"Empty\n"
+		"Empty\n"
+		"Empty\n"
+		"EndInventoryList\n"
+		"EndInventory\n";
+		
+		std::string serialized_inventory_2 =
+		"List main 32\n"
+		"Empty\n"
+		"Empty\n"
+		"Empty\n"
+		"Empty\n"
+		"Empty\n"
+		"Empty\n"
+		"Empty\n"
+		"Empty\n"
+		"Empty\n"
+		"Item default:cobble 61\n"
+		"Empty\n"
+		"Empty\n"
+		"Empty\n"
+		"Empty\n"
+		"Empty\n"
+		"Empty\n"
+		"Item default:dirt 71\n"
+		"Empty\n"
+		"Empty\n"
+		"Empty\n"
+		"Empty\n"
+		"Empty\n"
+		"Empty\n"
+		"Empty\n"
+		"Item default:dirt 99\n"
+		"Item default:cobble 38\n"
+		"Empty\n"
+		"Empty\n"
+		"Empty\n"
+		"Empty\n"
+		"Empty\n"
+		"Empty\n"
+		"EndInventoryList\n"
+		"EndInventory\n";
+		
+		Inventory inv(idef);
+		std::istringstream is(serialized_inventory, std::ios::binary);
+		inv.deSerialize(is);
+		assert(inv.getList("0"));
+		assert(!inv.getList("main"));
+		inv.getList("0")->setName("main");
+		assert(!inv.getList("0"));
+		assert(inv.getList("main"));
+		std::ostringstream inv_os(std::ios::binary);
+		inv.serialize(inv_os);
+		assert(inv_os.str() == serialized_inventory_2);
 	}
 };
 
@@ -1447,6 +1540,7 @@ void run_tests()
 	TESTPARAMS(TestMapNode, ndef);
 	TESTPARAMS(TestVoxelManipulator, ndef);
 	TESTPARAMS(TestVoxelAlgorithms, ndef);
+	TESTPARAMS(TestInventory, idef);
 	//TEST(TestMapBlock);
 	//TEST(TestMapSector);
 	if(INTERNET_SIMULATOR == false){
