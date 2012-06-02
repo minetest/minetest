@@ -678,8 +678,10 @@ minetest.register_globalstep(func(dtime))
 ^ Called every server step, usually interval of 0.05s
 minetest.register_on_placenode(func(pos, newnode, placer))
 ^ Called when a node has been placed
+^ Deprecated: Use on_construct or after_place_node in node definition instead
 minetest.register_on_dignode(func(pos, oldnode, digger))
 ^ Called when a node has been dug. digger can be nil.
+^ Deprecated: Use on_destruct or after_dig_node in node definition instead
 minetest.register_on_punchnode(func(pos, node, puncher))
 ^ Called when a node is punched
 minetest.register_on_generated(func(minp, maxp, blockseed))
@@ -1127,8 +1129,20 @@ Node definition (register_node)
     on_construct = func(pos),
     ^ Node constructor; always called after adding node
     ^ Can set up metadata and stuff like that
+    ^ default: nil
     on_destruct = func(pos),
     ^ Node destructor; always called before removing node
+    ^ default: nil
+
+    after_place_node = func(pos, placer),
+    ^ Called after constructing node when node was placed using
+      minetest.item_place_node
+    ^ default: nil
+    after_dig_node = func(pos, oldnode, oldmetadata, digger),
+    ^ oldmetadata is in table format
+    ^ Called after destructing node when node was dug using
+      minetest.node_dig
+    ^ default: nil
 	
     on_punch = func(pos, node, puncher),
     ^ default: minetest.node_punch

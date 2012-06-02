@@ -1143,11 +1143,37 @@ minetest.register_node("default:chest", {
 				"invsize[8,9;]"..
 				"list[current_name;main;0,0;8,4;]"..
 				"list[current_player;main;0,5;8,4;]")
-		meta:set_string("infotext", "Chest");
+		meta:set_string("infotext", "Chest")
 		local inv = meta:get_inventory()
 		inv:set_size("main", 8*4)
 	end,
+    on_metadata_inventory_move = function(pos, from_list, from_index,
+			to_list, to_index, count, player)
+		minetest.log("action", player:get_player_name()..
+				" moves stuff in chest at "..minetest.pos_to_string(pos))
+		return minetest.node_metadata_inventory_move_allow_all(
+				pos, from_list, from_index, to_list, to_index, count, player)
+	end,
+    on_metadata_inventory_offer = function(pos, listname, index, stack, player)
+		minetest.log("action", player:get_player_name()..
+				" moves stuff to chest at "..minetest.pos_to_string(pos))
+		return minetest.node_metadata_inventory_offer_allow_all(
+				pos, listname, index, stack, player)
+	end,
+    on_metadata_inventory_take = function(pos, listname, index, count, player)
+		minetest.log("action", player:get_player_name()..
+				" takes stuff from chest at "..minetest.pos_to_string(pos))
+		return minetest.node_metadata_inventory_take_allow_all(
+				pos, listname, index, count, player)
+	end,
 })
+
+local function has_locked_chest_privilege(meta, player)
+	if player:get_player_name() ~= meta:get_string("owner") then
+		return false
+	end
+	return true
+end
 
 minetest.register_node("default:chest_locked", {
 	description = "Locked Chest",
@@ -1157,15 +1183,65 @@ minetest.register_node("default:chest_locked", {
 	groups = {snappy=2,choppy=2,oddly_breakable_by_hand=2},
 	legacy_facedir_simple = true,
 	sounds = default.node_sound_wood_defaults(),
+	after_place_node = function(pos, placer)
+		local meta = minetest.env:get_meta(pos)
+		meta:set_string("owner", placer:get_player_name() or "")
+		meta:set_string("infotext", "Locked Chest (owned by "..
+				meta:get_string("owner")..")")
+	end,
 	on_construct = function(pos)
 		local meta = minetest.env:get_meta(pos)
 		meta:set_string("formspec",
 				"invsize[8,9;]"..
 				"list[current_name;main;0,0;8,4;]"..
 				"list[current_player;main;0,5;8,4;]")
-		meta:set_string("infotext", "Locked Chest");
+		meta:set_string("infotext", "Locked Chest")
+		meta:set_string("owner", "")
 		local inv = meta:get_inventory()
 		inv:set_size("main", 8*4)
+	end,
+    on_metadata_inventory_move = function(pos, from_list, from_index,
+			to_list, to_index, count, player)
+		local meta = minetest.env:get_meta(pos)
+		if not has_locked_chest_privilege(meta, player) then
+			minetest.log("action", player:get_player_name()..
+					" tried to access a locked chest belonging to "..
+					meta:get_string("owner").." at "..
+					minetest.pos_to_string(pos))
+			return
+		end
+		minetest.log("action", player:get_player_name()..
+				" moves stuff in locked chest at "..minetest.pos_to_string(pos))
+		return minetest.node_metadata_inventory_move_allow_all(
+				pos, from_list, from_index, to_list, to_index, count, player)
+	end,
+    on_metadata_inventory_offer = function(pos, listname, index, stack, player)
+		local meta = minetest.env:get_meta(pos)
+		if not has_locked_chest_privilege(meta, player) then
+			minetest.log("action", player:get_player_name()..
+					" tried to access a locked chest belonging to "..
+					meta:get_string("owner").." at "..
+					minetest.pos_to_string(pos))
+			return
+		end
+		minetest.log("action", player:get_player_name()..
+				" moves stuff to locked chest at "..minetest.pos_to_string(pos))
+		return minetest.node_metadata_inventory_offer_allow_all(
+				pos, listname, index, stack, player)
+	end,
+    on_metadata_inventory_take = function(pos, listname, index, count, player)
+		local meta = minetest.env:get_meta(pos)
+		if not has_locked_chest_privilege(meta, player) then
+			minetest.log("action", player:get_player_name()..
+					" tried to access a locked chest belonging to "..
+					meta:get_string("owner").." at "..
+					minetest.pos_to_string(pos))
+			return
+		end
+		minetest.log("action", player:get_player_name()..
+				" takes stuff from locked chest at "..minetest.pos_to_string(pos))
+		return minetest.node_metadata_inventory_take_allow_all(
+				pos, listname, index, count, player)
 	end,
 })
 
@@ -1185,7 +1261,7 @@ minetest.register_node("default:furnace", {
 			"list[current_name;src;2,1;1,1;]"..
 			"list[current_name;dst;5,1;2,2;]"..
 			"list[current_player;main;0,5;8,4;]")
-		meta:set_string("infotext", "Furnace");
+		meta:set_string("infotext", "Furnace")
 		local inv = meta:get_inventory()
 		inv:set_size("fuel", 1)
 		inv:set_size("src", 1)

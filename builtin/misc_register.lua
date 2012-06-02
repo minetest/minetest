@@ -301,8 +301,6 @@ end
 
 minetest.registered_on_chat_messages, minetest.register_on_chat_message = make_registration()
 minetest.registered_globalsteps, minetest.register_globalstep = make_registration()
-minetest.registered_on_placenodes, minetest.register_on_placenode = make_registration()
-minetest.registered_on_dignodes, minetest.register_on_dignode = make_registration()
 minetest.registered_on_punchnodes, minetest.register_on_punchnode = make_registration()
 minetest.registered_on_generateds, minetest.register_on_generated = make_registration()
 minetest.registered_on_newplayers, minetest.register_on_newplayer = make_registration()
@@ -311,4 +309,16 @@ minetest.registered_on_respawnplayers, minetest.register_on_respawnplayer = make
 minetest.registered_on_joinplayers, minetest.register_on_joinplayer = make_registration()
 minetest.registered_on_leaveplayers, minetest.register_on_leaveplayer = make_registration()
 
+minetest.registered_on_placenodes = {}
+minetest.register_on_placenode = function(callback)
+	minetest.log("info", debug.traceback())
+	minetest.log("info", "WARNING: minetest.register_on_placenode is deprecated. Use on_construct or after_place_node in node definition instead.")
+	table.insert(minetest.registered_on_placenodes, callback)
+end
+minetest.registered_on_dignodes = {}
+minetest.register_on_dignode = function(callback)
+	minetest.log("info", debug.traceback())
+	minetest.log("info", "WARNING: minetest.register_on_dignode is deprecated. Use on_destruct or after_dig_node in node definition instead.")
+	table.insert(minetest.registered_on_dignodes, callback)
+end
 

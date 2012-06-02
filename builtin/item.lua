@@ -158,7 +158,12 @@ function minetest.item_place_node(itemstack, placer, pointed_thing)
 		-- Add node and update
 		minetest.env:add_node(pos, newnode)
 
-		-- Run script hook
+		-- Run callback
+		if def.after_place_node then
+			def.after_place_node(pos, placer)
+		end
+
+		-- Run script hook (deprecated)
 		local _, callback
 		for _, callback in ipairs(minetest.registered_on_placenodes) do
 			callback(pos, newnode, placer)
@@ -251,11 +256,23 @@ function minetest.node_dig(pos, node, digger)
 			digger:get_inventory():add_item("main", dropped_item)
 		end
 	end
+	
+	local oldnode = nil
+	local oldmetadata = nil
+	if def.after_dig_node then
+		oldnode = node;
+		oldmetadata = minetest.env:get_meta(pos):to_table()
+	end
 
 	-- Remove node and update
 	minetest.env:remove_node(pos)
+	
+	-- Run callback
+	if def.after_dig_node then
+		def.after_dig_node(pos, oldnode, oldmetadata, digger)
+	end
 
-	-- Run script hook
+	-- Run script hook (deprecated)
 	local _, callback
 	for _, callback in ipairs(minetest.registered_on_dignodes) do
 		callback(pos, node, digger)
@@ -298,6 +315,8 @@ function minetest.node_metadata_inventory_take_allow_all(pos, listname, index, c
 end
 
 -- This is used to allow mods to redefine minetest.item_place and so on
+-- NOTE: This is not the preferred way. Preferred way is to provide enough
+--       callbacks to not require redefining global functions. -celeron55
 local function redef_wrapper(table, name)
 	return function(...)
 		return table[name](...)
