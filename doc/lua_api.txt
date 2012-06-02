@@ -913,7 +913,8 @@ LuaEntitySAO-only: (no-op for other objects)
 - get_entity_name() (DEPRECATED: Will be removed in a future version)
 - get_luaentity()
 Player-only: (no-op for other objects)
-- get_player_name(): will return nil if is not a player
+- is_player(): true for players, false for others
+- get_player_name(): returns "" if is not a player
 - get_look_dir(): get camera direction as a unit vector
 - get_look_pitch(): pitch in radians
 - get_look_yaw(): yaw in radians (wraps around pretty randomly as of now)

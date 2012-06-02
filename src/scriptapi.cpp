@@ -2683,6 +2683,15 @@ private:
 	}
 	
 	/* Player-only */
+
+	// is_player(self)
+	static int l_is_player(lua_State *L)
+	{
+		ObjectRef *ref = checkobject(L, 1);
+		Player *player = getplayer(ref);
+		lua_pushboolean(L, (player != NULL));
+		return 1;
+	}
 	
 	// get_player_name(self)
 	static int l_get_player_name(lua_State *L)
@@ -2690,7 +2699,7 @@ private:
 		ObjectRef *ref = checkobject(L, 1);
 		Player *player = getplayer(ref);
 		if(player == NULL){
-			lua_pushnil(L);
+			lua_pushlstring(L, "", 0);
 			return 1;
 		}
 		// Do it
