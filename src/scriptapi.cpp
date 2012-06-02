@@ -1233,6 +1233,8 @@ static void inventory_get_list_to_lua(Inventory *inv, const char *name,
 		if(lua_pcall(L, 2, 0, 0))
 			script_error(L, "error: %s", lua_tostring(L, -1));
 	}
+	lua_remove(L, -2); // Remove table
+	lua_remove(L, -2); // Remove insert
 }
 
 /*
@@ -2087,98 +2089,91 @@ private:
 		InvRef::createNodeMeta(L, ref->m_p);
 		return 1;
 	}
-
-	// get_inventory_draw_spec(self)
-	static int l_get_inventory_draw_spec(lua_State *L)
+	
+	// to_table(self)
+	static int l_to_table(lua_State *L)
 	{
 		NodeMetaRef *ref = checkobject(L, 1);
 
-		NodeMetadata *meta = getmeta(ref, false);
+		NodeMetadata *meta = getmeta(ref, true);
 		if(meta == NULL){
-			lua_pushlstring(L, "", 0);
+			lua_pushnil(L);
 			return 1;
 		}
-		std::string str = meta->getString("formspec");
-		lua_pushlstring(L, str.c_str(), str.size());
+		lua_newtable(L);
+		// fields
+		lua_newtable(L);
+		{
+			std::map<std::string, std::string> fields = meta->getStrings();
+			for(std::map<std::string, std::string>::const_iterator
+					i = fields.begin(); i != fields.end(); i++){
+				const std::string &name = i->first;
+				const std::string &value = i->second;
+				lua_pushlstring(L, name.c_str(), name.size());
+				lua_pushlstring(L, value.c_str(), value.size());
+				lua_settable(L, -3);
+			}
+		}
+		lua_setfield(L, -2, "fields");
+		// inventory
+		lua_newtable(L);
+		Inventory *inv = meta->getInventory();
+		if(inv){
+			std::vector<const InventoryList*> lists = inv->getLists();
+			for(std::vector<const InventoryList*>::const_iterator
+					i = lists.begin(); i != lists.end(); i++){
+				inventory_get_list_to_lua(inv, (*i)->getName().c_str(), L);
+				lua_setfield(L, -2, (*i)->getName().c_str());
+			}
+		}
+		lua_setfield(L, -2, "inventory");
 		return 1;
 	}
 
-	// set_inventory_draw_spec(self, text)
-	static int l_set_inventory_draw_spec(lua_State *L)
+	// from_table(self, table)
+	static int l_from_table(lua_State *L)
 	{
 		NodeMetaRef *ref = checkobject(L, 1);
-		size_t len = 0;
-		const char *s = lua_tolstring(L, 2, &len);
-		std::string str(s, len);
-
-		NodeMetadata *meta = getmeta(ref, !str.empty());
-		if(meta == NULL || str == meta->getString("formspec"))
-			return 0;
-		meta->setString("formspec",str);
-		reportMetadataChange(ref);
-		return 0;
-	}
-
-	// get_form_spec(self)
-	static int l_get_form_spec(lua_State *L)
-	{
-		NodeMetaRef *ref = checkobject(L, 1);
-
-		NodeMetadata *meta = getmeta(ref, false);
-		if(meta == NULL){
-			lua_pushlstring(L, "", 0);
+		int base = 2;
+		
+		if(lua_isnil(L, base)){
+			// No metadata
+			ref->m_env->getMap().removeNodeMetadata(ref->m_p);
+			lua_pushboolean(L, true);
 			return 1;
 		}
-		std::string str = meta->getString("formspec");
-		lua_pushlstring(L, str.c_str(), str.size());
-		return 1;
-	}
 
-	// set_form_spec(self, text)
-	static int l_set_form_spec(lua_State *L)
-	{
-		NodeMetaRef *ref = checkobject(L, 1);
-		size_t len = 0;
-		const char *s = lua_tolstring(L, 2, &len);
-		std::string str(s, len);
-
-		NodeMetadata *meta = getmeta(ref, !str.empty());
-		if(meta == NULL || str == meta->getString("formspec"))
-			return 0;
-		meta->setString("formspec",str);
-		reportMetadataChange(ref);
-		return 0;
-	}
-
-	// get_infotext(self)
-	static int l_get_infotext(lua_State *L)
-	{
-		NodeMetaRef *ref = checkobject(L, 1);
-
-		NodeMetadata *meta = getmeta(ref, false);
-		if(meta == NULL){
-			lua_pushlstring(L, "", 0);
-			return 1;
+		// Has metadata; clear old one first
+		ref->m_env->getMap().removeNodeMetadata(ref->m_p);
+		// Create new metadata
+		NodeMetadata *meta = getmeta(ref, true);
+		// Set fields
+		lua_getfield(L, base, "fields");
+		int fieldstable = lua_gettop(L);
+		lua_pushnil(L);
+		while(lua_next(L, fieldstable) != 0){
+			// key at index -2 and value at index -1
+			std::string name = lua_tostring(L, -2);
+			size_t cl;
+			const char *cs = lua_tolstring(L, -1, &cl);
+			std::string value(cs, cl);
+			meta->setString(name, value);
+			lua_pop(L, 1); // removes value, keeps key for next iteration
 		}
-		std::string str = meta->getString("infotext");
-		lua_pushlstring(L, str.c_str(), str.size());
-		return 1;
-	}
-
-	// set_infotext(self, text)
-	static int l_set_infotext(lua_State *L)
-	{
-		NodeMetaRef *ref = checkobject(L, 1);
-		size_t len = 0;
-		const char *s = lua_tolstring(L, 2, &len);
-		std::string str(s, len);
-
-		NodeMetadata *meta = getmeta(ref, !str.empty());
-		if(meta == NULL || str == meta->getString("infotext"))
-			return 0;
-		meta->setString("infotext",str);
+		// Set inventory
+		Inventory *inv = meta->getInventory();
+		lua_getfield(L, base, "inventory");
+		int inventorytable = lua_gettop(L);
+		lua_pushnil(L);
+		while(lua_next(L, inventorytable) != 0){
+			// key at index -2 and value at index -1
+			std::string name = lua_tostring(L, -2);
+			inventory_set_list_from_lua(inv, name.c_str(), L, -1);
+			lua_pop(L, 1); // removes value, keeps key for next iteration
+		}
 		reportMetadataChange(ref);
-		return 0;
+		lua_pushboolean(L, true);
+		return 1;
 	}
 
 public:
@@ -2240,12 +2235,8 @@ const luaL_reg NodeMetaRef::methods[] = {
 	method(NodeMetaRef, get_float),
 	method(NodeMetaRef, set_float),
 	method(NodeMetaRef, get_inventory),
-	method(NodeMetaRef, get_inventory_draw_spec),
-	method(NodeMetaRef, set_inventory_draw_spec),
-	method(NodeMetaRef, get_form_spec),
-	method(NodeMetaRef, set_form_spec),
-	method(NodeMetaRef, get_infotext),
-	method(NodeMetaRef, set_infotext),
+	method(NodeMetaRef, to_table),
+	method(NodeMetaRef, from_table),
 	{0,0}
 };
 

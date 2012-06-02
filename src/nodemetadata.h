@@ -64,6 +64,10 @@ public:
 		else
 			m_stringvars[name] = var;
 	}
+	std::map<std::string, std::string> getStrings() const
+	{
+		return m_stringvars;
+	}
 
 	// The inventory
 	Inventory* getInventory()

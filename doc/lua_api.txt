@@ -278,6 +278,8 @@ param2 is reserved for the engine when any of these are used:
   ^ The rotation of the node is stored in param2. Furnaces and chests are
     rotated this way. Can be made by using minetest.dir_to_facedir().
 
+Nodes can also contain extra data. See "Node Metadata".
+
 Representations of simple things
 --------------------------------
 Position/vector:
@@ -548,6 +550,91 @@ time_from_last_punch, tool_capabilities, direction)''.
   * If ''direction'' is nil and ''puncher'' is not nil, ''direction'' will be
     automatically filled in based on the location of ''puncher''.
 
+Node Metadata
+-------------
+The instance of a node in the world normally only contains the three values
+mentioned in "Nodes". However, it is possible to insert extra data into a
+node. It is called "node metadata"; See "NodeMetaRef".
+
+Metadata contains two things:
+- A key-value store
+- An inventory
+
+Some of the values in the key-value store are handled specially:
+- formspec: Defines a right-click inventory menu. See "Formspec".
+- infotext: Text shown on the screen when the node is pointed at
+
+Example stuff:
+
+local meta = minetest.env:get_meta(pos)
+meta:set_string("formspec",
+        "invsize[8,9;]"..
+        "list[current_name;main;0,0;8,4;]"..
+        "list[current_player;main;0,5;8,4;]")
+meta:set_string("infotext", "Chest");
+local inv = meta:get_inventory()
+inv:set_size("main", 8*4)
+print(dump(meta:to_table()))
+meta:from_table({
+    inventory = {
+        main = {[1] = "default:dirt", [2] = "", [3] = "", [4] = "", [5] = "", [6] = "", [7] = "", [8] = "", [9] = "", [10] = "", [11] = "", [12] = "", [13] = "", [14] = "default:cobble", [15] = "", [16] = "", [17] = "", [18] = "", [19] = "", [20] = "default:cobble", [21] = "", [22] = "", [23] = "", [24] = "", [25] = "", [26] = "", [27] = "", [28] = "", [29] = "", [30] = "", [31] = "", [32] = ""}
+    },
+    fields = {
+        formspec = "invsize[8,9;]list[current_name;main;0,0;8,4;]list[current_player;main;0,5;8,4;]",
+        infotext = "Chest"
+    }
+})
+
+Formspec
+--------
+Formspec defines a menu. Currently not much else than inventories are
+supported. It is a string, with a somewhat strange format.
+
+Spaces and newlines can be inserted between the blocks, as is used in the
+examples.
+
+Examples:
+- Chest:
+    invsize[8,9;]
+    list[current_name;main;0,0;8,4;]
+    list[current_player;main;0,5;8,4;]
+- Furnace:
+    invsize[8,9;]
+    list[current_name;fuel;2,3;1,1;]
+    list[current_name;src;2,1;1,1;]
+    list[current_name;dst;5,1;2,2;]
+    list[current_player;main;0,5;8,4;]
+
+Elements:
+
+invsize[<W>,<H>;]
+^ Define the size of the menu in inventory slots
+
+list[<inventory location>;<list name>;<X>,<Y>;<W>,<H>;]
+^ Show an inventory list
+
+image[<X>,<Y>;<W>,<H>;<texture name>]
+^ Show an image
+^ Position and size units are inventory slots
+^ Not implemented
+
+field[<X>,<Y>;<W>,<H>;<name>;<label>;<default>]
+^ Textual field; will be sent to server when a button is clicked
+^ Position and size units are inventory slots
+^ Not implemented
+
+button[<X>,<Y>;<W>,<H>;<name>;<label>]
+^ Clickable button. When clicked, fields will be sent.
+^ Button will be visible as a field, with the value "active".
+^ Position and size units are inventory slots
+^ Not implemented
+
+Inventory location:
+- "current_name": Selected node metadata
+- "current_player": Player to whom the menu is shown
+- "player:<name>": Any player
+- "nodemeta:<X>,<Y>,<Z>": Any node metadata
+
 Helper functions
 -----------------
 dump2(obj, name="_", dumped={})
@@ -766,7 +853,9 @@ Deprecated:
 - add_rat(pos): Add C++ rat object (no-op)
 - add_firefly(pos): Add C++ firefly object (no-op)
 
-NodeMetaRef (this stuff is subject to change in a future version)
+NodeMetaRef: Node metadata - reference extra data and functionality stored
+             in a node
+- Can be gotten via minetest.env:get_nodemeta(pos)
 methods:
 - set_string(name, value)
 - get_string(name)
@@ -775,6 +864,9 @@ methods:
 - set_float(name, value)
 - get_float(name)
 - get_inventory() -> InvRef
+- to_table() -> nil or {fields = {...}, inventory = {list1 = {}, ...}}
+- from_table(nil or {})
+  ^ See "Node Metadata"
 
 ObjectRef: Moving things in the game are generally these
 (basically reference to a C++ ServerActiveObject)

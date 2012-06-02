@@ -915,6 +915,17 @@ InventoryList * Inventory::getList(const std::string &name)
 	return m_lists[i];
 }
 
+std::vector<const InventoryList*> Inventory::getLists()
+{
+	std::vector<const InventoryList*> lists;
+	for(u32 i=0; i<m_lists.size(); i++)
+	{
+		InventoryList *list = m_lists[i];
+		lists.push_back(list);
+	}
+	return lists;
+}
+
 bool Inventory::deleteList(const std::string &name)
 {
 	s32 i = getListIndex(name);
