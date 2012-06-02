@@ -1573,6 +1573,57 @@ minetest.register_on_chat_message(function(name, message)
 end)
 
 --
+-- Test some things
+--
+
+local function test_get_craft_result()
+	print("test_get_craft_result()")
+	-- normal
+	local input = {
+		method = "normal",
+		width = 2,
+		items = {"", "default:coal_lump", "", "default:stick"}
+	}
+	print("torch crafting input: "..dump(input))
+	local output, decremented_input = minetest.get_craft_result(input)
+	print("torch crafting output: "..dump(output))
+	print("torch crafting decremented input: "..dump(decremented_input))
+	assert(output.item)
+	print("torch crafting output.item:to_table(): "..dump(output.item:to_table()))
+	assert(output.item:get_name() == "default:torch")
+	assert(output.item:get_count() == 4)
+	-- fuel
+	local input = {
+		method = "fuel",
+		width = 1,
+		items = {"default:coal_lump"}
+	}
+	print("coal fuel input: "..dump(input))
+	local output, decremented_input = minetest.get_craft_result(input)
+	print("coal fuel output: "..dump(output))
+	print("coal fuel decremented input: "..dump(decremented_input))
+	assert(output.time)
+	assert(output.time > 0)
+	-- cook
+	local input = {
+		method = "cooking",
+		width = 1,
+		items = {"default:cobble"}
+	}
+	print("cobble cooking input: "..dump(output))
+	local output, decremented_input = minetest.get_craft_result(input)
+	print("cobble cooking output: "..dump(output))
+	print("cobble cooking decremented input: "..dump(decremented_input))
+	assert(output.time)
+	assert(output.time > 0)
+	assert(output.item)
+	print("cobble cooking output.item:to_table(): "..dump(output.item:to_table()))
+	assert(output.item:get_name() == "default:stone")
+	assert(output.item:get_count() == 1)
+end
+test_get_craft_result()
+
+--
 -- Done, print some random stuff
 --
 

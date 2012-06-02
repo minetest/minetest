@@ -418,6 +418,14 @@ struct EnumString es_NodeBoxType[] =
 	{0, NULL},
 };
 
+struct EnumString es_CraftMethod[] =
+{
+	{CRAFT_METHOD_NORMAL, "normal"},
+	{CRAFT_METHOD_COOKING, "cooking"},
+	{CRAFT_METHOD_FUEL, "fuel"},
+	{0, NULL},
+};
+
 /*
 	C struct <-> Lua table converter functions
 */
@@ -1173,6 +1181,9 @@ static ContentFeatures read_content_features(lua_State *L, int index)
 */
 
 static ItemStack read_item(lua_State *L, int index);
+static std::vector<ItemStack> read_items(lua_State *L, int index);
+// creates a table of ItemStacks
+static void push_items(lua_State *L, const std::vector<ItemStack> &items);
 
 static void inventory_set_list_from_lua(Inventory *inv, const char *name,
 		lua_State *L, int tableindex, int forcesize=-1)
@@ -1185,15 +1196,7 @@ static void inventory_set_list_from_lua(Inventory *inv, const char *name,
 		return;
 	}
 	// Otherwise set list
-	std::vector<ItemStack> items;
-	luaL_checktype(L, tableindex, LUA_TTABLE);
-	lua_pushnil(L);
-	while(lua_next(L, tableindex) != 0){
-		// key at index -2 and value at index -1
-		items.push_back(read_item(L, -1));
-		// removes value, keeps key for next iteration
-		lua_pop(L, 1);
-	}
+	std::vector<ItemStack> items = read_items(L, tableindex);
 	int listsize = (forcesize != -1) ? forcesize : items.size();
 	InventoryList *invlist = inv->addList(name, listsize);
 	int index = 0;
@@ -1218,23 +1221,10 @@ static void inventory_get_list_to_lua(Inventory *inv, const char *name,
 		lua_pushnil(L);
 		return;
 	}
-	// Get the table insert function
-	lua_getglobal(L, "table");
-	lua_getfield(L, -1, "insert");
-	int table_insert = lua_gettop(L);
-	// Create and fill table
-	lua_newtable(L);
-	int table = lua_gettop(L);
-	for(u32 i=0; i<invlist->getSize(); i++){
-		ItemStack item = invlist->getItem(i);
-		lua_pushvalue(L, table_insert);
-		lua_pushvalue(L, table);
-		lua_pushstring(L, item.getItemString().c_str());
-		if(lua_pcall(L, 2, 0, 0))
-			script_error(L, "error: %s", lua_tostring(L, -1));
-	}
-	lua_remove(L, -2); // Remove table
-	lua_remove(L, -2); // Remove insert
+	std::vector<ItemStack> items;
+	for(u32 i=0; i<invlist->getSize(); i++)
+		items.push_back(invlist->getItem(i));
+	push_items(L, items);
 }
 
 /*
@@ -1638,6 +1628,45 @@ static ItemStack read_item(lua_State *L, int index)
 	{
 		throw LuaError(L, "Expecting itemstack, itemstring, table or nil");
 	}
+}
+
+static std::vector<ItemStack> read_items(lua_State *L, int index)
+{
+	if(index < 0)
+		index = lua_gettop(L) + 1 + index;
+
+	std::vector<ItemStack> items;
+	luaL_checktype(L, index, LUA_TTABLE);
+	lua_pushnil(L);
+	while(lua_next(L, index) != 0){
+		// key at index -2 and value at index -1
+		items.push_back(read_item(L, -1));
+		// removes value, keeps key for next iteration
+		lua_pop(L, 1);
+	}
+	return items;
+}
+
+// creates a table of ItemStacks
+static void push_items(lua_State *L, const std::vector<ItemStack> &items)
+{
+	// Get the table insert function
+	lua_getglobal(L, "table");
+	lua_getfield(L, -1, "insert");
+	int table_insert = lua_gettop(L);
+	// Create and fill table
+	lua_newtable(L);
+	int table = lua_gettop(L);
+	for(u32 i=0; i<items.size(); i++){
+		ItemStack item = items[i];
+		lua_pushvalue(L, table_insert);
+		lua_pushvalue(L, table);
+		LuaItemStack::create(L, item);
+		if(lua_pcall(L, 2, 0, 0))
+			script_error(L, "error: %s", lua_tostring(L, -1));
+	}
+	lua_remove(L, -2); // Remove table
+	lua_remove(L, -2); // Remove insert
 }
 
 /*
@@ -4204,6 +4233,49 @@ static int l_notify_authentication_modified(lua_State *L)
 	return 0;
 }
 
+// get_craft_result(input)
+static int l_get_craft_result(lua_State *L)
+{
+	int input_i = 1;
+	std::string method_s = getstringfield_default(L, input_i, "method", "normal");
+	enum CraftMethod method = (CraftMethod)getenumfield(L, input_i, "method",
+				es_CraftMethod, CRAFT_METHOD_NORMAL);
+	int width = 1;
+	lua_getfield(L, input_i, "width");
+	if(lua_isnumber(L, -1))
+		width = luaL_checkinteger(L, -1);
+	lua_pop(L, 1);
+	lua_getfield(L, input_i, "items");
+	std::vector<ItemStack> items = read_items(L, -1);
+	lua_pop(L, 1); // items
+	
+	IGameDef *gdef = get_server(L);
+	ICraftDefManager *cdef = gdef->cdef();
+	CraftInput input(method, width, items);
+	CraftOutput output;
+	bool got = cdef->getCraftResult(input, output, true, gdef);
+	lua_newtable(L); // output table
+	if(got){
+		ItemStack item;
+		item.deSerialize(output.item, gdef->idef());
+		LuaItemStack::create(L, item);
+		lua_setfield(L, -2, "item");
+		setintfield(L, -1, "time", output.time);
+	} else {
+		LuaItemStack::create(L, ItemStack());
+		lua_setfield(L, -2, "item");
+		setintfield(L, -1, "time", 0);
+	}
+	lua_newtable(L); // decremented input table
+	lua_pushstring(L, method_s.c_str());
+	lua_setfield(L, -2, "method");
+	lua_pushinteger(L, width);
+	lua_setfield(L, -2, "width");
+	push_items(L, input.items);
+	lua_setfield(L, -2, "items");
+	return 2;
+}
+
 static const struct luaL_Reg minetest_f [] = {
 	{"debug", l_debug},
 	{"log", l_log},
@@ -4227,6 +4299,7 @@ static const struct luaL_Reg minetest_f [] = {
 	{"is_singleplayer", l_is_singleplayer},
 	{"get_password_hash", l_get_password_hash},
 	{"notify_authentication_modified", l_notify_authentication_modified},
+	{"get_craft_result", l_get_craft_result},
 	{NULL, NULL}
 };
 
