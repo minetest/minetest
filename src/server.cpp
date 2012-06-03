@@ -2080,6 +2080,12 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 			}
 			password[PASSWORD_SIZE-1] = 0;
 		}
+
+		if(!base64_is_valid(password)){
+			infostream<<"Server: "<<playername<<" supplied invalid password hash"<<std::endl;
+			SendAccessDenied(m_con, peer_id, L"Invalid password hash");
+			return;
+		}
 		
 		std::string checkpwd;
 		bool has_auth = scriptapi_get_auth(m_lua, playername, &checkpwd, NULL);
@@ -2788,6 +2794,13 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 			if(c == 0)
 				break;
 			newpwd += c;
+		}
+
+		if(!base64_is_valid(newpwd)){
+			infostream<<"Server: "<<player->getName()<<" supplied invalid password hash"<<std::endl;
+			// Wrong old password supplied!!
+			SendChatMessage(peer_id, L"Invalid new password hash supplied. Password NOT changed.");
+			return;
 		}
 
 		infostream<<"Server: Client requests a password change from "
