@@ -1147,6 +1147,11 @@ minetest.register_node("default:chest", {
 		local inv = meta:get_inventory()
 		inv:set_size("main", 8*4)
 	end,
+	can_dig = function(pos,player)
+		local meta = minetest.env:get_meta(pos);
+		local inv = meta:get_inventory()
+		return inv:is_empty("main")
+	end,
     on_metadata_inventory_move = function(pos, from_list, from_index,
 			to_list, to_index, count, player)
 		minetest.log("action", player:get_player_name()..
@@ -1199,6 +1204,11 @@ minetest.register_node("default:chest_locked", {
 		meta:set_string("owner", "")
 		local inv = meta:get_inventory()
 		inv:set_size("main", 8*4)
+	end,
+	can_dig = function(pos,player)
+		local meta = minetest.env:get_meta(pos);
+		local inv = meta:get_inventory()
+		return inv:is_empty("main")
 	end,
     on_metadata_inventory_move = function(pos, from_list, from_index,
 			to_list, to_index, count, player)
@@ -1270,6 +1280,18 @@ minetest.register_node("default:furnace", {
 		inv:set_size("src", 1)
 		inv:set_size("dst", 4)
 	end,
+	can_dig = function(pos,player)
+		local meta = minetest.env:get_meta(pos);
+		local inv = meta:get_inventory()
+		if not inv:is_empty("fuel") then
+			return false
+		elseif not inv:is_empty("dst") then
+			return false
+		elseif not inv:is_empty("src") then
+			return false
+		end
+		return true
+	end,
 })
 
 minetest.register_node("default:furnace_active", {
@@ -1290,6 +1312,18 @@ minetest.register_node("default:furnace_active", {
 		inv:set_size("fuel", 1)
 		inv:set_size("src", 1)
 		inv:set_size("dst", 4)
+	end,
+	can_dig = function(pos,player)
+		local meta = minetest.env:get_meta(pos);
+		local inv = meta:get_inventory()
+		if not inv:is_empty("fuel") then
+			return false
+		elseif not inv:is_empty("dst") then
+			return false
+		elseif not inv:is_empty("src") then
+			return false
+		end
+		return true
 	end,
 })
 

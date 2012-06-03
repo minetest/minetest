@@ -1718,6 +1718,20 @@ private:
 		return 0;
 	}
 
+	// is_empty(self, listname) -> true/false
+	static int l_is_empty(lua_State *L)
+	{
+		InvRef *ref = checkobject(L, 1);
+		const char *listname = luaL_checkstring(L, 2);
+		InventoryList *list = getlist(L, ref, listname);
+		if(list && list->getUsedSlots() > 0){
+			lua_pushboolean(L, false);
+		} else {
+			lua_pushboolean(L, true);
+		}
+		return 1;
+	}
+
 	// get_size(self, listname)
 	static int l_get_size(lua_State *L)
 	{
@@ -1944,6 +1958,7 @@ public:
 };
 const char InvRef::className[] = "InvRef";
 const luaL_reg InvRef::methods[] = {
+	method(InvRef, is_empty),
 	method(InvRef, get_size),
 	method(InvRef, set_size),
 	method(InvRef, get_stack),

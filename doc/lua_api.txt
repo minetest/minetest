@@ -926,6 +926,7 @@ Player-only: (no-op for other objects)
 
 InvRef: Reference to an inventory
 methods:
+- is_empty(listname): return true if list is empty
 - get_size(listname): get size of a list
 - set_size(listname, size): set size of a list
 - get_stack(listname, i): get a copy of stack index i in list
