@@ -604,6 +604,12 @@ Examples:
     list[current_name;src;2,1;1,1;]
     list[current_name;dst;5,1;2,2;]
     list[current_player;main;0,5;8,4;]
+- Minecraft-like player inventory
+    invsize[8,7.5;]
+    image[1,0.6;1,2;player.png]
+    list[current_player;main;0,3.5;8,4;]
+    list[current_player;craft;3,0;3,3;]
+    list[current_player;craftpreview;7,1;1,1;]
 
 Elements:
 
@@ -616,7 +622,6 @@ list[<inventory location>;<list name>;<X>,<Y>;<W>,<H>;]
 image[<X>,<Y>;<W>,<H>;<texture name>]
 ^ Show an image
 ^ Position and size units are inventory slots
-^ Not implemented
 
 field[<X>,<Y>;<W>,<H>;<name>;<label>;<default>]
 ^ Textual field; will be sent to server when a button is clicked

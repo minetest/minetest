@@ -70,12 +70,12 @@ class GUIInventoryMenu : public GUIModalMenu
 		}
 		ListDrawSpec(const InventoryLocation &a_inventoryloc,
 				const std::string &a_listname,
-				v2s32 a_pos, v2s32 a_geom)
+				v2s32 a_pos, v2s32 a_geom):
+			inventoryloc(a_inventoryloc),
+			listname(a_listname),
+			pos(a_pos),
+			geom(a_geom)
 		{
-			inventoryloc = a_inventoryloc;
-			listname = a_listname;
-			pos = a_pos;
-			geom = a_geom;
 		}
 
 		InventoryLocation inventoryloc;
@@ -83,6 +83,24 @@ class GUIInventoryMenu : public GUIModalMenu
 		v2s32 pos;
 		v2s32 geom;
 	};
+
+	struct ImageDrawSpec
+	{
+		ImageDrawSpec()
+		{
+		}
+		ImageDrawSpec(const std::string &a_name,
+				v2s32 a_pos, v2s32 a_geom):
+			name(a_name),
+			pos(a_pos),
+			geom(a_geom)
+		{
+		}
+		std::string name;
+		v2s32 pos;
+		v2s32 geom;
+	};
+
 public:
 	GUIInventoryMenu(gui::IGUIEnvironment* env,
 			gui::IGUIElement* parent, s32 id,
@@ -129,7 +147,9 @@ protected:
 
 	std::string m_formspec_string;
 	InventoryLocation m_current_inventory_location;
-	core::array<ListDrawSpec> m_draw_spec;
+
+	core::array<ListDrawSpec> m_inventorylists;
+	core::array<ImageDrawSpec> m_images;
 
 	ItemSpec *m_selected_item;
 	u32 m_selected_amount;

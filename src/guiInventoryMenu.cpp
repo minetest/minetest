@@ -29,6 +29,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <IGUIStaticText.h>
 #include <IGUIFont.h>
 #include "log.h"
+#include "tile.h" // ITextureSource
 
 void drawItemStack(video::IVideoDriver *driver,
 		gui::IGUIFont *font,
@@ -181,9 +182,10 @@ void GUIInventoryMenu::regenerateGui(v2u32 screensize)
 	core::rect<s32> rect;
 	v2s32 basepos = getBasePos();
 	
-	/* Convert m_init_draw_spec to m_draw_spec */
+	/* Convert m_init_draw_spec to m_inventorylists */
 	
-	m_draw_spec.clear();
+	m_inventorylists.clear();
+	m_images.clear();
 
 	Strfnd f(m_formspec_string);
 	while(f.atend() == false)
@@ -191,9 +193,9 @@ void GUIInventoryMenu::regenerateGui(v2u32 screensize)
 		std::string type = trim(f.next("["));
 		if(type == "invsize")
 		{
-			v2s16 invsize;
-			invsize.X = stoi(f.next(","));
-			invsize.Y = stoi(f.next(";"));
+			v2f invsize;
+			invsize.X = stof(f.next(","));
+			invsize.Y = stof(f.next(";"));
 			infostream<<"invsize ("<<invsize.X<<","<<invsize.Y<<")"<<std::endl;
 			f.next("]");
 
@@ -201,8 +203,8 @@ void GUIInventoryMenu::regenerateGui(v2u32 screensize)
 			spacing = v2s32(screensize.Y/12, screensize.Y/13);
 			imgsize = v2s32(screensize.Y/15, screensize.Y/15);
 			size = v2s32(
-				padding.X*2+spacing.X*(invsize.X-1)+imgsize.X,
-				padding.Y*2+spacing.Y*(invsize.Y-1)+imgsize.Y + helptext_h
+				padding.X*2+spacing.X*(invsize.X-1.0)+imgsize.X,
+				padding.Y*2+spacing.Y*(invsize.Y-1.0)+imgsize.Y + (helptext_h-5)
 			);
 			rect = core::rect<s32>(
 					screensize.X/2 - size.X/2,
@@ -223,18 +225,35 @@ void GUIInventoryMenu::regenerateGui(v2u32 screensize)
 			else
 				loc.deSerialize(name);
 			std::string listname = f.next(";");
-			s32 pos_x = stoi(f.next(","));
-			s32 pos_y = stoi(f.next(";"));
-			s32 geom_w = stoi(f.next(","));
-			s32 geom_h = stoi(f.next(";"));
+			v2s32 pos = basepos;
+			pos.X += stof(f.next(",")) * (float)spacing.X;
+			pos.Y += stof(f.next(";")) * (float)spacing.Y;
+			v2s32 geom;
+			geom.X = stoi(f.next(","));
+			geom.Y = stoi(f.next(";"));
 			infostream<<"list inv="<<name<<", listname="<<listname
-					<<", pos=("<<pos_x<<","<<pos_y<<")"
-					<<", geom=("<<geom_w<<","<<geom_h<<")"
+					<<", pos=("<<pos.X<<","<<pos.Y<<")"
+					<<", geom=("<<geom.X<<","<<geom.Y<<")"
 					<<std::endl;
 			f.next("]");
-			m_draw_spec.push_back(ListDrawSpec(loc, listname,
-					basepos + v2s32(spacing.X*pos_x, spacing.Y*pos_y),
-					v2s32(geom_w,geom_h)));
+			m_inventorylists.push_back(ListDrawSpec(loc, listname, pos, geom));
+		}
+		else if(type == "image")
+		{
+			v2s32 pos = basepos;
+			pos.X += stof(f.next(",")) * (float)spacing.X;
+			pos.Y += stof(f.next(";")) * (float)spacing.Y;
+			v2s32 geom;
+			/*geom.X = imgsize.X + ((stoi(f.next(","))-1) * spacing.X);
+			geom.Y = imgsize.Y + ((stoi(f.next(";"))-1) * spacing.Y);*/
+			geom.X = stof(f.next(",")) * (float)imgsize.X;
+			geom.Y = stof(f.next(";")) * (float)imgsize.Y;
+			std::string name = f.next("]");
+			infostream<<"image name="<<name
+					<<", pos=("<<pos.X<<","<<pos.Y<<")"
+					<<", geom=("<<geom.X<<","<<geom.Y<<")"
+					<<std::endl;
+			m_images.push_back(ImageDrawSpec(name, pos, geom));
 		}
 		else
 		{
@@ -245,21 +264,11 @@ void GUIInventoryMenu::regenerateGui(v2u32 screensize)
 		}
 	}
 
-	/*
-	m_draw_spec.clear();
-	m_draw_spec.push_back(ListDrawSpec("main",
-			basepos + v2s32(spacing.X*0, spacing.Y*3), v2s32(8, 4)));
-	m_draw_spec.push_back(ListDrawSpec("craft",
-			basepos + v2s32(spacing.X*3, spacing.Y*0), v2s32(3, 3)));
-	m_draw_spec.push_back(ListDrawSpec("craftresult",
-			basepos + v2s32(spacing.X*7, spacing.Y*1), v2s32(1, 1)));
-	*/
-	
 	// Add children
 	{
 		core::rect<s32> rect(0, 0, size.X-padding.X*2, helptext_h);
 		rect = rect + v2s32(size.X/2 - rect.getWidth()/2,
-				size.Y-rect.getHeight()-15);
+				size.Y-rect.getHeight()-5);
 		const wchar_t *text =
 		L"Left click: Move all items, Right click: Move single item";
 		Environment->addStaticText(text, rect, false, true, this, 256);
@@ -281,9 +290,9 @@ GUIInventoryMenu::ItemSpec GUIInventoryMenu::getItemAtPos(v2s32 p) const
 {
 	core::rect<s32> imgrect(0,0,imgsize.X,imgsize.Y);
 	
-	for(u32 i=0; i<m_draw_spec.size(); i++)
+	for(u32 i=0; i<m_inventorylists.size(); i++)
 	{
-		const ListDrawSpec &s = m_draw_spec[i];
+		const ListDrawSpec &s = m_inventorylists[i];
 
 		for(s32 i=0; i<s.geom.X*s.geom.Y; i++)
 		{
@@ -440,9 +449,26 @@ void GUIInventoryMenu::drawMenu()
 	*/
 	
 	for(int phase=0; phase<=1; phase++)
-	for(u32 i=0; i<m_draw_spec.size(); i++)
+	for(u32 i=0; i<m_inventorylists.size(); i++)
 	{
-		drawList(m_draw_spec[i], phase);
+		drawList(m_inventorylists[i], phase);
+	}
+
+	for(u32 i=0; i<m_images.size(); i++)
+	{
+		const ImageDrawSpec &spec = m_images[i];
+		video::ITexture *texture =
+				m_gamedef->tsrc()->getTextureRaw(spec.name);
+		// Image size on screen
+		core::rect<s32> imgrect(0, 0, spec.geom.X, spec.geom.Y);
+		// Image rectangle on screen
+		core::rect<s32> rect = imgrect + spec.pos;
+		const video::SColor color(255,255,255,255);
+		const video::SColor colors[] = {color,color,color,color};
+		driver->draw2DImage(texture, rect,
+			core::rect<s32>(core::position2d<s32>(0,0),
+					core::dimension2di(texture->getOriginalSize())),
+			NULL/*&AbsoluteClippingRect*/, colors, true);
 	}
 
 	/*
@@ -491,9 +517,9 @@ void GUIInventoryMenu::updateSelectedItem()
 	// If craftresult is nonempty and nothing else is selected, select it now.
 	if(!m_selected_item)
 	{
-		for(u32 i=0; i<m_draw_spec.size(); i++)
+		for(u32 i=0; i<m_inventorylists.size(); i++)
 		{
-			const ListDrawSpec &s = m_draw_spec[i];
+			const ListDrawSpec &s = m_inventorylists[i];
 			if(s.listname == "craftpreview")
 			{
 				Inventory *inv = m_invmgr->getInventory(s.inventoryloc);
