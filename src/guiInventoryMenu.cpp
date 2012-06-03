@@ -126,23 +126,24 @@ GUIInventoryMenu::GUIInventoryMenu(gui::IGUIEnvironment* env,
 		IMenuManager *menumgr,
 		InventoryManager *invmgr,
 		IGameDef *gamedef
-		):
+):
 	GUIModalMenu(env, parent, id, menumgr),
 	m_invmgr(invmgr),
-	m_gamedef(gamedef)
+	m_gamedef(gamedef),
+	m_form_src(NULL),
+	m_selected_item(NULL),
+	m_selected_amount(0),
+	m_selected_dragging(false),
+	m_tooltip_element(NULL)
 {
-	m_selected_item = NULL;
-	m_selected_amount = 0;
-	m_selected_dragging = false;
-	m_tooltip_element = NULL;
 }
 
 GUIInventoryMenu::~GUIInventoryMenu()
 {
 	removeChildren();
 
-	if(m_selected_item)
-		delete m_selected_item;
+	delete m_selected_item;
+	delete m_form_src;
 }
 
 void GUIInventoryMenu::removeChildren()
@@ -244,8 +245,6 @@ void GUIInventoryMenu::regenerateGui(v2u32 screensize)
 			pos.X += stof(f.next(",")) * (float)spacing.X;
 			pos.Y += stof(f.next(";")) * (float)spacing.Y;
 			v2s32 geom;
-			/*geom.X = imgsize.X + ((stoi(f.next(","))-1) * spacing.X);
-			geom.Y = imgsize.Y + ((stoi(f.next(";"))-1) * spacing.Y);*/
 			geom.X = stof(f.next(",")) * (float)imgsize.X;
 			geom.Y = stof(f.next(";")) * (float)imgsize.Y;
 			std::string name = f.next("]");
@@ -430,6 +429,14 @@ void GUIInventoryMenu::drawSelectedItem()
 
 void GUIInventoryMenu::drawMenu()
 {
+	if(m_form_src){
+		std::string newform = m_form_src->getForm();
+		if(newform != m_formspec_string){
+			m_formspec_string = newform;
+			regenerateGui(m_screensize_old);
+		}
+	}
+
 	updateSelectedItem();
 
 	gui::IGUISkin* skin = Environment->getSkin();

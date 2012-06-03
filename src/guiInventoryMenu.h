@@ -30,6 +30,13 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 class IGameDef;
 class InventoryManager;
 
+class IFormSource
+{
+public:
+	virtual ~IFormSource(){}
+	virtual std::string getForm() = 0;
+};
+
 void drawItemStack(video::IVideoDriver *driver,
 		gui::IGUIFont *font,
 		const ItemStack &item,
@@ -117,6 +124,12 @@ public:
 		m_current_inventory_location = current_inventory_location;
 		regenerateGui(m_screensize_old);
 	}
+	
+	// form_src is deleted by this GUIInventoryMenu
+	void setFormSource(IFormSource *form_src)
+	{
+		m_form_src = form_src;
+	}
 
 	void removeChildren();
 	/*
@@ -147,6 +160,7 @@ protected:
 
 	std::string m_formspec_string;
 	InventoryLocation m_current_inventory_location;
+	IFormSource *m_form_src;
 
 	core::array<ListDrawSpec> m_inventorylists;
 	core::array<ImageDrawSpec> m_images;

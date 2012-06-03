@@ -132,6 +132,28 @@ private:
 	Client *m_client;
 };
 
+/* Form update callback */
+
+class NodeMetadataFormSource: public IFormSource
+{
+public:
+	NodeMetadataFormSource(ClientMap *map, v3s16 p):
+		m_map(map),
+		m_p(p)
+	{
+	}
+	std::string getForm()
+	{
+		NodeMetadata *meta = m_map->getNodeMetadata(m_p);
+		if(!meta)
+			return "";
+		return meta->getString("formspec");
+	}
+
+	ClientMap *m_map;
+	v3s16 m_p;
+};
+
 /*
 	Hotbar draw routine
 */
@@ -2348,6 +2370,8 @@ void the_game(
 							&client, gamedef);
 					menu->setFormSpec(meta->getString("formspec"),
 							inventoryloc);
+					menu->setFormSource(new NodeMetadataFormSource(
+							&client.getEnv().getClientMap(), nodepos));
 					menu->drop();
 				}
 				// Otherwise report right click to server
