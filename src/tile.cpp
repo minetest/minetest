@@ -1603,6 +1603,41 @@ bool generate_image(std::string part_of_name, video::IImage *& baseimg,
 				image->drop();
 			}
 		}
+		/*
+			[lowpart:percent:filename
+			Adds the lower part of a texture
+		*/
+		else if(part_of_name.substr(0,9) == "[lowpart:")
+		{
+			Strfnd sf(part_of_name);
+			sf.next(":");
+			u32 percent = stoi(sf.next(":"));
+			std::string filename = sf.next(":");
+			//infostream<<"power part "<<percent<<"%% of "<<filename<<std::endl;
+
+			if(baseimg == NULL)
+				baseimg = driver->createImage(video::ECF_A8R8G8B8, v2u32(16,16));
+			video::IImage *img = sourcecache->getOrLoad(filename, device);
+			if(img)
+			{
+				core::dimension2d<u32> dim = img->getDimension();
+				core::position2d<s32> pos_base(0, 0);
+				video::IImage *img2 =
+						driver->createImage(video::ECF_A8R8G8B8, dim);
+				img->copyTo(img2);
+				img->drop();
+				core::position2d<s32> clippos(0, 0);
+				clippos.Y = dim.Height * (100-percent) / 100;
+				core::dimension2d<u32> clipdim = dim;
+				clipdim.Height = clipdim.Height * percent / 100 + 1;
+				core::rect<s32> cliprect(clippos, clipdim);
+				img2->copyToWithAlpha(baseimg, pos_base,
+						core::rect<s32>(v2s32(0,0), dim),
+						video::SColor(255,255,255,255),
+						&cliprect);
+				img2->drop();
+			}
+		}
 		else
 		{
 			errorstream<<"generate_image(): Invalid "
