@@ -1149,6 +1149,9 @@ Node definition (register_node)
     ^ Called after destructing node when node was dug using
       minetest.node_dig
     ^ default: nil
+    can_dig = function(pos,player)
+    ^ returns true if node can be dug, or false if not
+    ^ default: nil
 	
     on_punch = func(pos, node, puncher),
     ^ default: minetest.node_punch

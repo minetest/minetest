@@ -229,7 +229,7 @@ function minetest.node_dig(pos, node, digger)
 	minetest.debug("node_dig")
 
 	local def = ItemStack({name=node.name}):get_definition()
-	if not def.diggable then
+	if not def.diggable or (def.can_dig and not def.can_dig(pos,digger)) then
 		minetest.debug("not diggable")
 		minetest.log("info", digger:get_player_name() .. " tried to dig "
 			.. node.name .. " which is not diggable "
@@ -345,6 +345,7 @@ minetest.nodedef_default = {
 	on_place = redef_wrapper(minetest, 'item_place'), -- minetest.item_place
 	on_drop = redef_wrapper(minetest, 'item_drop'), -- minetest.item_drop
 	on_use = nil,
+	can_dig = nil,
 
 	on_punch = redef_wrapper(minetest, 'node_punch'), -- minetest.node_punch
 	on_dig = redef_wrapper(minetest, 'node_dig'), -- minetest.node_dig
