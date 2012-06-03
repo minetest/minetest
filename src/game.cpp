@@ -1569,24 +1569,18 @@ void the_game(
 			
 			GUIInventoryMenu *menu =
 				new GUIInventoryMenu(guienv, guiroot, -1,
-					&g_menumgr, v2s16(8,7),
+					&g_menumgr,
 					&client, gamedef);
 
 			InventoryLocation inventoryloc;
 			inventoryloc.setCurrentPlayer();
 
-			core::array<GUIInventoryMenu::DrawSpec> draw_spec;
-			draw_spec.push_back(GUIInventoryMenu::DrawSpec(
-					"list", inventoryloc, "main",
-					v2s32(0, 3), v2s32(8, 4)));
-			draw_spec.push_back(GUIInventoryMenu::DrawSpec(
-					"list", inventoryloc, "craft",
-					v2s32(3, 0), v2s32(3, 3)));
-			draw_spec.push_back(GUIInventoryMenu::DrawSpec(
-					"list", inventoryloc, "craftpreview",
-					v2s32(7, 1), v2s32(1, 1)));
-
-			menu->setDrawSpec(draw_spec);
+			menu->setFormSpec(
+				"invsize[8,7;]"
+				"list[current_player;main;0,3;8,4;]"
+				"list[current_player;craft;3,0;3,3;]"
+				"list[current_player;craftpreview;7,1;1,1;]"
+				, inventoryloc);
 
 			menu->drop();
 		}
@@ -2345,23 +2339,14 @@ void the_game(
 					InventoryLocation inventoryloc;
 					inventoryloc.setNodeMeta(nodepos);
 					
-
-					/*
-						Create menu
-					*/
-
-					core::array<GUIInventoryMenu::DrawSpec> draw_spec;
-					v2s16 invsize =
-						GUIInventoryMenu::makeDrawSpecArrayFromString(
-							draw_spec,
-							meta->getString("formspec"),
-							inventoryloc);
+					/* Create menu */
 
 					GUIInventoryMenu *menu =
 						new GUIInventoryMenu(guienv, guiroot, -1,
-							&g_menumgr, invsize,
+							&g_menumgr,
 							&client, gamedef);
-					menu->setDrawSpec(draw_spec);
+					menu->setFormSpec(meta->getString("formspec"),
+							inventoryloc);
 					menu->drop();
 				}
 				// Otherwise report right click to server

@@ -630,7 +630,7 @@ button[<X>,<Y>;<W>,<H>;<name>;<label>]
 ^ Not implemented
 
 Inventory location:
-- "current_name": Selected node metadata
+- "context": Selected node metadata (deprecated: "current_name")
 - "current_player": Player to whom the menu is shown
 - "player:<name>": Any player
 - "nodemeta:<X>,<Y>,<Z>": Any node metadata

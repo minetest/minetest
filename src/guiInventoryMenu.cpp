@@ -123,12 +123,10 @@ void drawItemStack(video::IVideoDriver *driver,
 GUIInventoryMenu::GUIInventoryMenu(gui::IGUIEnvironment* env,
 		gui::IGUIElement* parent, s32 id,
 		IMenuManager *menumgr,
-		v2s16 menu_size,
 		InventoryManager *invmgr,
 		IGameDef *gamedef
 		):
 	GUIModalMenu(env, parent, id, menumgr),
-	m_menu_size(menu_size),
 	m_invmgr(invmgr),
 	m_gamedef(gamedef)
 {
@@ -178,42 +176,72 @@ void GUIInventoryMenu::regenerateGui(v2u32 screensize)
 	// Remove children
 	removeChildren();
 	
-	/*padding = v2s32(24,24);
-	spacing = v2s32(60,56);
-	imgsize = v2s32(48,48);*/
-
-	padding = v2s32(screensize.Y/40, screensize.Y/40);
-	spacing = v2s32(screensize.Y/12, screensize.Y/13);
-	imgsize = v2s32(screensize.Y/15, screensize.Y/15);
-
+	v2s32 size(100,100);
 	s32 helptext_h = 15;
-
-	v2s32 size(
-		padding.X*2+spacing.X*(m_menu_size.X-1)+imgsize.X,
-		padding.Y*2+spacing.Y*(m_menu_size.Y-1)+imgsize.Y + helptext_h
-	);
-
-	core::rect<s32> rect(
-			screensize.X/2 - size.X/2,
-			screensize.Y/2 - size.Y/2,
-			screensize.X/2 + size.X/2,
-			screensize.Y/2 + size.Y/2
-	);
-	
-	DesiredRect = rect;
-	recalculateAbsolutePosition(false);
-
+	core::rect<s32> rect;
 	v2s32 basepos = getBasePos();
 	
+	/* Convert m_init_draw_spec to m_draw_spec */
+	
 	m_draw_spec.clear();
-	for(u16 i=0; i<m_init_draw_spec.size(); i++)
+
+	Strfnd f(m_formspec_string);
+	while(f.atend() == false)
 	{
-		DrawSpec &s = m_init_draw_spec[i];
-		if(s.type == "list")
+		std::string type = trim(f.next("["));
+		if(type == "invsize")
 		{
-			m_draw_spec.push_back(ListDrawSpec(s.name, s.subname,
-					basepos + v2s32(spacing.X*s.pos.X, spacing.Y*s.pos.Y),
-					s.geom));
+			v2s16 invsize;
+			invsize.X = stoi(f.next(","));
+			invsize.Y = stoi(f.next(";"));
+			infostream<<"invsize ("<<invsize.X<<","<<invsize.Y<<")"<<std::endl;
+			f.next("]");
+
+			padding = v2s32(screensize.Y/40, screensize.Y/40);
+			spacing = v2s32(screensize.Y/12, screensize.Y/13);
+			imgsize = v2s32(screensize.Y/15, screensize.Y/15);
+			size = v2s32(
+				padding.X*2+spacing.X*(invsize.X-1)+imgsize.X,
+				padding.Y*2+spacing.Y*(invsize.Y-1)+imgsize.Y + helptext_h
+			);
+			rect = core::rect<s32>(
+					screensize.X/2 - size.X/2,
+					screensize.Y/2 - size.Y/2,
+					screensize.X/2 + size.X/2,
+					screensize.Y/2 + size.Y/2
+			);
+			DesiredRect = rect;
+			recalculateAbsolutePosition(false);
+			basepos = getBasePos();
+		}
+		else if(type == "list")
+		{
+			std::string name = f.next(";");
+			InventoryLocation loc;
+			if(name == "context" || name == "current_name")
+				loc = m_current_inventory_location;
+			else
+				loc.deSerialize(name);
+			std::string listname = f.next(";");
+			s32 pos_x = stoi(f.next(","));
+			s32 pos_y = stoi(f.next(";"));
+			s32 geom_w = stoi(f.next(","));
+			s32 geom_h = stoi(f.next(";"));
+			infostream<<"list inv="<<name<<", listname="<<listname
+					<<", pos=("<<pos_x<<","<<pos_y<<")"
+					<<", geom=("<<geom_w<<","<<geom_h<<")"
+					<<std::endl;
+			f.next("]");
+			m_draw_spec.push_back(ListDrawSpec(loc, listname,
+					basepos + v2s32(spacing.X*pos_x, spacing.Y*pos_y),
+					v2s32(geom_w,geom_h)));
+		}
+		else
+		{
+			// Ignore others
+			std::string ts = f.next("]");
+			infostream<<"Unknown DrawSpec: type="<<type<<", data=\""<<ts<<"\""
+					<<std::endl;
 		}
 	}
 
@@ -818,90 +846,5 @@ bool GUIInventoryMenu::OnEvent(const SEvent& event)
 	}
 
 	return Parent ? Parent->OnEvent(event) : false;
-}
-
-/*
-	Here is an example traditional set-up sequence for a DrawSpec list:
-
-	std::string furnace_inv_id = "nodemetadata:0,1,2";
-	core::array<GUIInventoryMenu::DrawSpec> draw_spec;
-	draw_spec.push_back(GUIInventoryMenu::DrawSpec(
-			"list", furnace_inv_id, "fuel",
-			v2s32(2, 3), v2s32(1, 1)));
-	draw_spec.push_back(GUIInventoryMenu::DrawSpec(
-			"list", furnace_inv_id, "src",
-			v2s32(2, 1), v2s32(1, 1)));
-	draw_spec.push_back(GUIInventoryMenu::DrawSpec(
-			"list", furnace_inv_id, "dst",
-			v2s32(5, 1), v2s32(2, 2)));
-	draw_spec.push_back(GUIInventoryMenu::DrawSpec(
-			"list", "current_player", "main",
-			v2s32(0, 5), v2s32(8, 4)));
-	setDrawSpec(draw_spec);
-
-	Here is the string for creating the same DrawSpec list (a single line,
-	spread to multiple lines here):
-	
-	GUIInventoryMenu::makeDrawSpecArrayFromString(
-			draw_spec,
-			"nodemetadata:0,1,2",
-			"invsize[8,9;]"
-			"list[current_name;fuel;2,3;1,1;]"
-			"list[current_name;src;2,1;1,1;]"
-			"list[current_name;dst;5,1;2,2;]"
-			"list[current_player;main;0,5;8,4;]");
-	
-	Returns inventory menu size defined by invsize[].
-*/
-v2s16 GUIInventoryMenu::makeDrawSpecArrayFromString(
-		core::array<GUIInventoryMenu::DrawSpec> &draw_spec,
-		const std::string &data,
-		const InventoryLocation &current_location)
-{
-	v2s16 invsize(8,9);
-	Strfnd f(data);
-	while(f.atend() == false)
-	{
-		std::string type = trim(f.next("["));
-		//infostream<<"type="<<type<<std::endl;
-		if(type == "list")
-		{
-			std::string name = f.next(";");
-			InventoryLocation loc;
-			if(name == "current_name")
-				loc = current_location;
-			else
-				loc.deSerialize(name);
-			std::string subname = f.next(";");
-			s32 pos_x = stoi(f.next(","));
-			s32 pos_y = stoi(f.next(";"));
-			s32 geom_x = stoi(f.next(","));
-			s32 geom_y = stoi(f.next(";"));
-			infostream<<"list name="<<name<<", subname="<<subname
-					<<", pos=("<<pos_x<<","<<pos_y<<")"
-					<<", geom=("<<geom_x<<","<<geom_y<<")"
-					<<std::endl;
-			draw_spec.push_back(GUIInventoryMenu::DrawSpec(
-					type, loc, subname,
-					v2s32(pos_x,pos_y),v2s32(geom_x,geom_y)));
-			f.next("]");
-		}
-		else if(type == "invsize")
-		{
-			invsize.X = stoi(f.next(","));
-			invsize.Y = stoi(f.next(";"));
-			infostream<<"invsize ("<<invsize.X<<","<<invsize.Y<<")"<<std::endl;
-			f.next("]");
-		}
-		else
-		{
-			// Ignore others
-			std::string ts = f.next("]");
-			infostream<<"Unknown DrawSpec: type="<<type<<", data=\""<<ts<<"\""
-					<<std::endl;
-		}
-	}
-
-	return invsize;
 }
 
