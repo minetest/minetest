@@ -172,7 +172,7 @@ void * EmergeThread::Thread()
 		After queue is empty, exit.
 	*/
 	while(getRun())
-	{
+	try{
 		QueuedBlockEmerge *qptr = m_server->m_emerge_queue.pop();
 		if(qptr == NULL)
 			break;
@@ -374,7 +374,11 @@ void * EmergeThread::Thread()
 				client->SetBlocksNotSent(modified_blocks);
 			}
 		}
-		
+	}
+	catch(VersionMismatchException &e)
+	{
+		m_server->setAsyncFatalError(std::string(
+				"World data version mismatch (server-side) (world probably saved by a newer version of Minetest): ")+e.what());
 	}
 
 	END_DEBUG_EXCEPTION_HANDLER(errorstream)
