@@ -1222,7 +1222,7 @@ minetest.register_node("default:chest_locked", {
 					" tried to access a locked chest belonging to "..
 					meta:get_string("owner").." at "..
 					minetest.pos_to_string(pos))
-			return
+			return stack
 		end
 		minetest.log("action", player:get_player_name()..
 				" moves stuff to locked chest at "..minetest.pos_to_string(pos))
