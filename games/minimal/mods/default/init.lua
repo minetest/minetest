@@ -1245,6 +1245,14 @@ minetest.register_node("default:chest_locked", {
 	end,
 })
 
+default.furnace_inactive_formspec =
+	"invsize[8,9;]"..
+	"image[2,2;1,1;default_furnace_fire_bg.png]"..
+	"list[current_name;fuel;2,3;1,1;]"..
+	"list[current_name;src;2,1;1,1;]"..
+	"list[current_name;dst;5,1;2,2;]"..
+	"list[current_player;main;0,5;8,4;]"
+
 minetest.register_node("default:furnace", {
 	description = "Furnace",
 	tile_images = {"default_furnace_side.png", "default_furnace_side.png", "default_furnace_side.png",
@@ -1255,12 +1263,7 @@ minetest.register_node("default:furnace", {
 	sounds = default.node_sound_stone_defaults(),
 	on_construct = function(pos)
 		local meta = minetest.env:get_meta(pos)
-		meta:set_string("formspec",
-			"invsize[8,9;]"..
-			"list[current_name;fuel;2,3;1,1;]"..
-			"list[current_name;src;2,1;1,1;]"..
-			"list[current_name;dst;5,1;2,2;]"..
-			"list[current_player;main;0,5;8,4;]")
+		meta:set_string("formspec", default.furnace_inactive_formspec)
 		meta:set_string("infotext", "Furnace")
 		local inv = meta:get_inventory()
 		inv:set_size("fuel", 1)
@@ -1281,12 +1284,7 @@ minetest.register_node("default:furnace_active", {
 	sounds = default.node_sound_stone_defaults(),
 	on_construct = function(pos)
 		local meta = minetest.env:get_meta(pos)
-		meta:set_string("formspec",
-			"invsize[8,9;]"..
-			"list[current_name;fuel;2,3;1,1;]"..
-			"list[current_name;src;2,1;1,1;]"..
-			"list[current_name;dst;5,1;2,2;]"..
-			"list[current_player;main;0,5;8,4;]")
+		meta:set_string("formspec", default.furnace_inactive_formspec)
 		meta:set_string("infotext", "Furnace");
 		local inv = meta:get_inventory()
 		inv:set_size("fuel", 1)
@@ -1358,8 +1356,18 @@ minetest.register_abm({
 		end
 		
 		if meta:get_float("fuel_time") < meta:get_float("fuel_totaltime") then
-			meta:set_string("infotext","Furnace active: "..(meta:get_float("fuel_time")/meta:get_float("fuel_totaltime")*100).."%")
+			local percent = math.floor(meta:get_float("fuel_time") /
+					meta:get_float("fuel_totaltime") * 100)
+			meta:set_string("infotext","Furnace active: "..percent.."%")
 			hacky_swap_node(pos,"default:furnace_active")
+			meta:set_string("formspec",
+				"invsize[8,9;]"..
+				"image[2,2;1,1;default_furnace_fire_bg.png^[lowpart:"..
+						(100-percent)..":default_furnace_fire_fg.png]"..
+				"list[current_name;fuel;2,3;1,1;]"..
+				"list[current_name;src;2,1;1,1;]"..
+				"list[current_name;dst;5,1;2,2;]"..
+				"list[current_player;main;0,5;8,4;]")
 			return
 		end
 
@@ -1378,6 +1386,7 @@ minetest.register_abm({
 		if fuel.time <= 0 then
 			meta:set_string("infotext","Furnace out of fuel")
 			hacky_swap_node(pos,"default:furnace")
+			meta:set_string("formspec", default.furnace_inactive_formspec)
 			return
 		end
 
@@ -1385,6 +1394,7 @@ minetest.register_abm({
 			if was_active then
 				meta:set_string("infotext","Furnace is empty")
 				hacky_swap_node(pos,"default:furnace")
+				meta:set_string("formspec", default.furnace_inactive_formspec)
 			end
 			return
 		end
