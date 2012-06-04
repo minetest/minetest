@@ -137,5 +137,6 @@ void set_default_settings(Settings *settings)
 	settings->setDefault("server_map_save_interval", "5.3");
 	settings->setDefault("full_block_send_enable_min_time_from_building", "2.0");
 	settings->setDefault("dedicated_server_step", "0.05");
+	settings->setDefault("ignore_world_load_errors", "false");
 }
 

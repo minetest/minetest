@@ -35,6 +35,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "mapblock_mesh.h"
 #endif
 
+#define PP(x) "("<<(x).X<<","<<(x).Y<<","<<(x).Z<<")"
+
 /*
 	MapBlock
 */
@@ -634,6 +636,8 @@ void MapBlock::deSerialize(std::istream &is, u8 version, bool disk)
 {
 	if(!ser_ver_supported(version))
 		throw VersionMismatchException("ERROR: MapBlock format not supported");
+	
+	TRACESTREAM(<<"MapBlock::deSerialize "<<PP(getPos())<<std::endl);
 
 	m_day_night_differs_expired = false;
 
@@ -652,6 +656,8 @@ void MapBlock::deSerialize(std::istream &is, u8 version, bool disk)
 	/*
 		Bulk node data
 	*/
+	TRACESTREAM(<<"MapBlock::deSerialize "<<PP(getPos())
+			<<": Bulk node data"<<std::endl);
 	u32 nodecount = MAP_BLOCKSIZE*MAP_BLOCKSIZE*MAP_BLOCKSIZE;
 	u8 content_width = readU8(is);
 	u8 params_width = readU8(is);
@@ -665,6 +671,8 @@ void MapBlock::deSerialize(std::istream &is, u8 version, bool disk)
 	/*
 		NodeMetadata
 	*/
+	TRACESTREAM(<<"MapBlock::deSerialize "<<PP(getPos())
+			<<": Node metadata"<<std::endl);
 	// Ignore errors
 	try{
 		std::ostringstream oss(std::ios_base::binary);
@@ -680,7 +688,8 @@ void MapBlock::deSerialize(std::istream &is, u8 version, bool disk)
 	catch(SerializationError &e)
 	{
 		errorstream<<"WARNING: MapBlock::deSerialize(): Ignoring an error"
-				<<" while deserializing node metadata: "<<e.what()<<std::endl;
+				<<" while deserializing node metadata at ("
+				<<PP(getPos())<<": "<<e.what()<<std::endl;
 	}
 
 	/*
@@ -689,21 +698,33 @@ void MapBlock::deSerialize(std::istream &is, u8 version, bool disk)
 	if(disk)
 	{
 		// Node timers
-		if(version >= 23)
+		if(version >= 23){
+			TRACESTREAM(<<"MapBlock::deSerialize "<<PP(getPos())
+					<<": Node timers"<<std::endl);
 			m_node_timers.deSerialize(is);
+		}
 
 		// Static objects
+		TRACESTREAM(<<"MapBlock::deSerialize "<<PP(getPos())
+				<<": Static objects"<<std::endl);
 		m_static_objects.deSerialize(is);
 		
 		// Timestamp
+		TRACESTREAM(<<"MapBlock::deSerialize "<<PP(getPos())
+				<<": Timestamp"<<std::endl);
 		setTimestamp(readU32(is));
 		m_disk_timestamp = m_timestamp;
 		
 		// Dynamically re-set ids based on node names
+		TRACESTREAM(<<"MapBlock::deSerialize "<<PP(getPos())
+				<<": NameIdMapping"<<std::endl);
 		NameIdMapping nimap;
 		nimap.deSerialize(is);
 		correctBlockNodeIds(&nimap, data, m_gamedef);
 	}
+		
+	TRACESTREAM(<<"MapBlock::deSerialize "<<PP(getPos())
+			<<": Done."<<std::endl);
 }
 
 /*

@@ -164,6 +164,8 @@ void * EmergeThread::Thread()
 	BEGIN_DEBUG_EXCEPTION_HANDLER
 
 	bool enable_mapgen_debug_info = g_settings->getBool("enable_mapgen_debug_info");
+
+	v3s16 last_tried_pos(-32768,-32768,-32768); // For error output
 	
 	/*
 		Get block info from queue, emerge them and send them
@@ -181,6 +183,8 @@ void * EmergeThread::Thread()
 
 		v3s16 &p = q->pos;
 		v2s16 p2d(p.X,p.Z);
+		
+		last_tried_pos = p;
 
 		/*
 			Do not generate over-limit
@@ -377,8 +381,23 @@ void * EmergeThread::Thread()
 	}
 	catch(VersionMismatchException &e)
 	{
-		m_server->setAsyncFatalError(std::string(
-				"World data version mismatch (server-side) (world probably saved by a newer version of Minetest): ")+e.what());
+		std::ostringstream err;
+		err<<"World data version mismatch in MapBlock "<<PP(last_tried_pos)<<std::endl;
+		err<<"----"<<std::endl;
+		err<<"\""<<e.what()<<"\""<<std::endl;
+		err<<"See debug.txt."<<std::endl;
+		err<<"World probably saved by a newer version of Minetest."<<std::endl;
+		m_server->setAsyncFatalError(err.str());
+	}
+	catch(SerializationError &e)
+	{
+		std::ostringstream err;
+		err<<"Invalid data in MapBlock "<<PP(last_tried_pos)<<std::endl;
+		err<<"----"<<std::endl;
+		err<<"\""<<e.what()<<"\""<<std::endl;
+		err<<"See debug.txt."<<std::endl;
+		err<<"You can ignore this using [ignore_world_load_errors = true]."<<std::endl;
+		m_server->setAsyncFatalError(err.str());
 	}
 
 	END_DEBUG_EXCEPTION_HANDLER(errorstream)

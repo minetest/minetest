@@ -3378,14 +3378,20 @@ void ServerMap::loadBlock(std::string *blob, v3s16 p3d, MapSector *sector, bool 
 	}
 	catch(SerializationError &e)
 	{
-		infostream<<"WARNING: Invalid block data in database "
-				<<" (SerializationError). "
-				<<"what()="<<e.what()
-				<<std::endl;
-				//" Ignoring. A new one will be generated.
-		assert(0);
+		errorstream<<"Invalid block data in database"
+				<<" ("<<p3d.X<<","<<p3d.Y<<","<<p3d.Z<<")"
+				<<" (SerializationError): "<<e.what()<<std::endl;
+		
+		// TODO: Block should be marked as invalid in memory so that it is
+		// not touched but the game can run
 
-		// TODO: Copy to a backup database.
+		if(g_settings->getBool("ignore_world_load_errors")){
+			errorstream<<"Ignoring block load error. Duck and cover! "
+					<<"(ignore_world_load_errors)"<<std::endl;
+		} else {
+			throw SerializationError("Invalid block data in database");
+			//assert(0);
+		}
 	}
 }
 

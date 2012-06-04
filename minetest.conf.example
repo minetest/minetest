@@ -178,4 +178,7 @@
 # To reduce lag, block transfers are slowed down when a player is building something.
 # This determines how long they are slowed down after placing or removing a node.
 #full_block_send_enable_min_time_from_building = 2.0
-
+# Length of a server tick in dedicated server
+#dedicated_server_step = 0.05
+# Can be set to true to disable shutting down on invalid world data
+#ignore_world_load_errors = false
