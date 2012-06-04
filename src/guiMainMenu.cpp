@@ -214,11 +214,11 @@ void GUIMainMenu::regenerateGui(v2u32 screensize)
 		rect += m_topleft_client + v2s32(0, -30);
 		gui::IGUITabControl *e = Environment->addTabControl(
 				rect, this, true, true, GUI_ID_TAB_CONTROL);
-		e->addTab(L"Singleplayer");
-		e->addTab(L"Multiplayer");
-		e->addTab(L"Advanced");
-		e->addTab(L"Settings");
-		e->addTab(L"Credits");
+		e->addTab(wgettext("Singleplayer"));
+		e->addTab(wgettext("Multiplayer"));
+		e->addTab(wgettext("Advanced"));
+		e->addTab(wgettext("Settings"));
+		e->addTab(wgettext("Credits"));
 		e->setActiveTab(m_data->selected_tab);
 	}
 #endif

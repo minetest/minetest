@@ -778,46 +778,46 @@ int main(int argc, char *argv[])
 	// List all allowed options
 	core::map<std::string, ValueSpec> allowed_options;
 	allowed_options.insert("help", ValueSpec(VALUETYPE_FLAG,
-			"Show allowed options"));
+			_("Show allowed options")));
 	allowed_options.insert("config", ValueSpec(VALUETYPE_STRING,
-			"Load configuration from specified file"));
+			_("Load configuration from specified file")));
 	allowed_options.insert("port", ValueSpec(VALUETYPE_STRING,
-			"Set network port (UDP)"));
+			_("Set network port (UDP)")));
 	allowed_options.insert("disable-unittests", ValueSpec(VALUETYPE_FLAG,
-			"Disable unit tests"));
+			_("Disable unit tests")));
 	allowed_options.insert("enable-unittests", ValueSpec(VALUETYPE_FLAG,
-			"Enable unit tests"));
+			_("Enable unit tests")));
 	allowed_options.insert("map-dir", ValueSpec(VALUETYPE_STRING,
-			"Same as --world (deprecated)"));
+			_("Same as --world (deprecated)")));
 	allowed_options.insert("world", ValueSpec(VALUETYPE_STRING,
-			"Set world path (implies local game) ('list' lists all)"));
+			_("Set world path (implies local game) ('list' lists all)")));
 	allowed_options.insert("worldname", ValueSpec(VALUETYPE_STRING,
-			"Set world by name (implies local game)"));
+			_("Set world by name (implies local game)")));
 	allowed_options.insert("info", ValueSpec(VALUETYPE_FLAG,
-			"Print more information to console"));
+			_("Print more information to console")));
 	allowed_options.insert("verbose", ValueSpec(VALUETYPE_FLAG,
-			"Print even more information to console"));
+			_("Print even more information to console")));
 	allowed_options.insert("trace", ValueSpec(VALUETYPE_FLAG,
-			"Print enormous amounts of information to log and console"));
+			_("Print enormous amounts of information to log and console")));
 	allowed_options.insert("logfile", ValueSpec(VALUETYPE_STRING,
-			"Set logfile path ('' = no logging)"));
+			_("Set logfile path ('' = no logging)")));
 	allowed_options.insert("gameid", ValueSpec(VALUETYPE_STRING,
-			"Set gameid (\"--gameid list\" prints available ones)"));
+			_("Set gameid (\"--gameid list\" prints available ones)")));
 #ifndef SERVER
 	allowed_options.insert("speedtests", ValueSpec(VALUETYPE_FLAG,
-			"Run speed tests"));
+			_("Run speed tests")));
 	allowed_options.insert("address", ValueSpec(VALUETYPE_STRING,
-			"Address to connect to. ('' = local game)"));
+			_("Address to connect to. ('' = local game)")));
 	allowed_options.insert("random-input", ValueSpec(VALUETYPE_FLAG,
-			"Enable random user input, for testing"));
+			_("Enable random user input, for testing")));
 	allowed_options.insert("server", ValueSpec(VALUETYPE_FLAG,
-			"Run dedicated server"));
+			_("Run dedicated server")));
 	allowed_options.insert("name", ValueSpec(VALUETYPE_STRING,
-			"Set player name"));
+			_("Set player name")));
 	allowed_options.insert("password", ValueSpec(VALUETYPE_STRING,
-			"Set password"));
+			_("Set password")));
 	allowed_options.insert("go", ValueSpec(VALUETYPE_FLAG,
-			"Disable main menu"));
+			_("Disable main menu")));
 #endif
 
 	Settings cmd_args;
@@ -826,7 +826,7 @@ int main(int argc, char *argv[])
 
 	if(ret == false || cmd_args.getFlag("help") || cmd_args.exists("nonopt1"))
 	{
-		dstream<<"Allowed options:"<<std::endl;
+		dstream<<_("Allowed options:")<<std::endl;
 		for(core::map<std::string, ValueSpec>::Iterator
 				i = allowed_options.getIterator();
 				i.atEnd() == false; i++)
@@ -836,7 +836,7 @@ int main(int argc, char *argv[])
 			if(i.getNode()->getValue().type == VALUETYPE_FLAG)
 				{}
 			else
-				os1<<" <value>";
+				os1<<_(" <value>");
 			dstream<<padStringRight(os1.str(), 24);
 
 			if(i.getNode()->getValue().help != NULL)
@@ -853,7 +853,7 @@ int main(int argc, char *argv[])
 	
 	// If trace is enabled, enable logging of certain things
 	if(cmd_args.getFlag("trace")){
-		dstream<<"Enabling trace level debug output"<<std::endl;
+		dstream<<_("Enabling trace level debug output")<<std::endl;
 		log_trace_level_enabled = true;
 		dout_con_ptr = &verbosestream; // this is somewhat old crap
 		socket_enable_debug_output = true; // socket doesn't use log.h
@@ -912,7 +912,7 @@ int main(int argc, char *argv[])
 	
 	// List worlds if requested
 	if(cmd_args.exists("world") && cmd_args.get("world") == "list"){
-		dstream<<"Available worlds:"<<std::endl;
+		dstream<<_("Available worlds:")<<std::endl;
 		std::vector<WorldSpec> worldspecs = getAvailableWorlds();
 		print_worldspecs(worldspecs, dstream);
 		return 0;
@@ -920,7 +920,7 @@ int main(int argc, char *argv[])
 	
 	// Print startup message
 	infostream<<PROJECT_NAME<<
-			" with SER_FMT_VER_HIGHEST="<<(int)SER_FMT_VER_HIGHEST
+			" "<<_("with")<<" SER_FMT_VER_HIGHEST="<<(int)SER_FMT_VER_HIGHEST
 			<<", "<<BUILD_INFO
 			<<std::endl;
 	
@@ -1032,7 +1032,7 @@ int main(int argc, char *argv[])
 		if(commanded_world.size() > worldmt.size() &&
 				commanded_world.substr(commanded_world.size()-worldmt.size())
 				== worldmt){
-			dstream<<"Supplied world.mt file - stripping it off."<<std::endl;
+			dstream<<_("Supplied world.mt file - stripping it off.")<<std::endl;
 			commanded_world = commanded_world.substr(
 					0, commanded_world.size()-worldmt.size());
 		}
@@ -1047,8 +1047,8 @@ int main(int argc, char *argv[])
 			std::string name = worldspecs[i].name;
 			if(name == commanded_worldname){
 				if(commanded_world != ""){
-					dstream<<"--worldname takes precedence over previously "
-							<<"selected world."<<std::endl;
+					dstream<<_("--worldname takes precedence over previously "
+							"selected world.")<<std::endl;
 				}
 				commanded_world = worldspecs[i].path;
 				found = true;
@@ -1056,8 +1056,8 @@ int main(int argc, char *argv[])
 			}
 		}
 		if(!found){
-			dstream<<"World '"<<commanded_worldname<<"' not "
-					<<"available. Available worlds:"<<std::endl;
+			dstream<<_("World")<<" '"<<commanded_worldname<<_("' not "
+					"available. Available worlds:")<<std::endl;
 			print_worldspecs(worldspecs, dstream);
 			return 1;
 		}
@@ -1092,7 +1092,7 @@ int main(int argc, char *argv[])
 
 		// World directory
 		std::string world_path;
-		verbosestream<<"Determining world path"<<std::endl;
+		verbosestream<<_("Determining world path")<<std::endl;
 		bool is_legacy_world = false;
 		// If a world was commanded, use it
 		if(commanded_world != ""){
@@ -1116,8 +1116,8 @@ int main(int argc, char *argv[])
 					}
 				}
 				if(world_path == ""){
-					dstream<<"World '"<<commanded_worldname<<"' not "
-							<<"available. Available worlds:"<<std::endl;
+					dstream<<_("World")<<" '"<<commanded_worldname<<"' "<<_("not "
+							"available. Available worlds:")<<std::endl;
 					print_worldspecs(worldspecs, dstream);
 					return 1;
 				}
@@ -1125,13 +1125,13 @@ int main(int argc, char *argv[])
 			// If there is only a single world, use it
 			if(worldspecs.size() == 1){
 				world_path = worldspecs[0].path;
-				dstream<<"Automatically selecting world at ["
+				dstream<<_("Automatically selecting world at")<<" ["
 						<<world_path<<"]"<<std::endl;
 			// If there are multiple worlds, list them
 			} else if(worldspecs.size() > 1){
-				dstream<<"Multiple worlds are available."<<std::endl;
-				dstream<<"Please select one using --worldname <name>"
-						<<" or --world <path>"<<std::endl;
+				dstream<<_("Multiple worlds are available.")<<std::endl;
+				dstream<<_("Please select one using --worldname <name>"
+						" or --world <path>")<<std::endl;
 				print_worldspecs(worldspecs, dstream);
 				return 1;
 			// If there are no worlds, automatically create a new one
@@ -1148,11 +1148,11 @@ int main(int argc, char *argv[])
 			errorstream<<"No world path specified or found."<<std::endl;
 			return 1;
 		}
-		verbosestream<<"Using world path ["<<world_path<<"]"<<std::endl;
+		verbosestream<<_("Using world path")<<" ["<<world_path<<"]"<<std::endl;
 
 		// We need a gamespec.
 		SubgameSpec gamespec;
-		verbosestream<<"Determining gameid/gamespec"<<std::endl;
+		verbosestream<<_("Determining gameid/gamespec")<<std::endl;
 		// If world doesn't exist
 		if(!getWorldExists(world_path))
 		{
@@ -1191,7 +1191,7 @@ int main(int argc, char *argv[])
 					<<std::endl;
 			return 1;
 		}
-		verbosestream<<"Using gameid ["<<gamespec.id<<"]"<<std::endl;
+		verbosestream<<_("Using gameid")<<" ["<<gamespec.id<<"]"<<std::endl;
 
 		// Create server
 		Server server(world_path, configpath, gamespec, false);
@@ -1376,7 +1376,7 @@ int main(int argc, char *argv[])
 	while(device->run() && kill == false)
 	{
 		// Set the window caption
-		device->setWindowCaption(L"Minetest [Main Menu]");
+		device->setWindowCaption((std::wstring(L"Minetest [")+wgettext("Main Menu")+L"]").c_str());
 
 		// This is used for catching disconnects
 		try
@@ -1461,7 +1461,7 @@ int main(int argc, char *argv[])
 				// If a world was commanded, append and select it
 				if(commanded_world != ""){
 					std::string gameid = getWorldGameId(commanded_world, true);
-					std::string name = "[--world parameter]";
+					std::string name = _("[--world parameter]");
 					if(gameid == ""){
 						gameid = g_settings->get("default_game");
 						name += " [new]";
@@ -1598,7 +1598,7 @@ int main(int argc, char *argv[])
 							+ wide_to_narrow(menudata.create_world_name);
 					// Create world if it doesn't exist
 					if(!initializeWorld(path, menudata.create_world_gameid)){
-						error_message = L"Failed to initialize world";
+						error_message = wgettext("Failed to initialize world");
 						errorstream<<wide_to_narrow(error_message)<<std::endl;
 						continue;
 					}
@@ -1610,15 +1610,15 @@ int main(int argc, char *argv[])
 				if(current_address == "")
 				{
 					if(menudata.selected_world == -1){
-						error_message = L"No world selected and no address "
-								L"provided. Nothing to do.";
+						error_message = wgettext("No world selected and no address "
+								"provided. Nothing to do.");
 						errorstream<<wide_to_narrow(error_message)<<std::endl;
 						continue;
 					}
 					// Load gamespec for required game
 					gamespec = findWorldSubgame(worldspec.path);
 					if(!gamespec.isValid() && !commanded_gamespec.isValid()){
-						error_message = L"Could not find or load game \""
+						error_message = wgettext("Could not find or load game \"")
 								+ narrow_to_wide(worldspec.gameid) + L"\"";
 						errorstream<<wide_to_narrow(error_message)<<std::endl;
 						continue;
@@ -1632,7 +1632,8 @@ int main(int argc, char *argv[])
 					}
 
 					if(!gamespec.isValid()){
-						error_message = L"Invalid gamespec. (world_gameid="
+						error_message = wgettext("Invalid gamespec.");
+						error_message += L" (world_gameid="
 								+narrow_to_wide(worldspec.gameid)+L")";
 						errorstream<<wide_to_narrow(error_message)<<std::endl;
 						continue;
@@ -1671,7 +1672,7 @@ int main(int argc, char *argv[])
 		} //try
 		catch(con::PeerNotFoundException &e)
 		{
-			error_message = L"Connection error (timed out?)";
+			error_message = wgettext("Connection error (timed out?)");
 			errorstream<<wide_to_narrow(error_message)<<std::endl;
 		}
 		catch(ServerError &e)
@@ -1682,12 +1683,12 @@ int main(int argc, char *argv[])
 		catch(ModError &e)
 		{
 			errorstream<<e.what()<<std::endl;
-			error_message = narrow_to_wide(e.what()) + L"\nCheck debug.txt for details.";
+			error_message = narrow_to_wide(e.what()) + wgettext("\nCheck debug.txt for details.");
 		}
 #ifdef NDEBUG
 		catch(std::exception &e)
 		{
-			std::string narrow_message = "Some exception, what()=\"";
+			std::string narrow_message = "Some exception: \"";
 			narrow_message += e.what();
 			narrow_message += "\"";
 			errorstream<<narrow_message<<std::endl;

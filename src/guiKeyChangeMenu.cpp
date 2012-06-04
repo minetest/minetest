@@ -105,14 +105,14 @@ void GUIKeyChangeMenu::regenerateGui(v2u32 screensize)
 	v2s32 topleft(0, 0);
 	changeCtype("");
 	{
-		core::rect < s32 > rect(0, 0, 500, 20);
+		core::rect < s32 > rect(0, 0, 600, 40);
 		rect += topleft + v2s32(25, 3);
 		//gui::IGUIStaticText *t =
-		Environment->addStaticText(wgettext("KEYBINDINGS (If this menu screws up, see minetest.conf)"),
+		Environment->addStaticText(wgettext("Keybindings. (If this menu screws up, remove stuff from minetest.conf)"),
 				rect, false, true, this, -1);
 		//t->setTextAlignment(gui::EGUIA_CENTER, gui::EGUIA_UPPERLEFT);
 	}
-	v2s32 offset(25, 40);
+	v2s32 offset(25, 60);
 	// buttons
 
 	{
@@ -299,7 +299,7 @@ void GUIKeyChangeMenu::regenerateGui(v2u32 screensize)
 	}
 
 	//next col
-	offset = v2s32(250, 40);
+	offset = v2s32(250, 60);
 	{
 		core::rect < s32 > rect(0, 0, 100, 20);
 		rect += topleft + v2s32(offset.X, offset.Y);
