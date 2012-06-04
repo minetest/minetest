@@ -57,11 +57,11 @@ static bool content_nodemeta_deserialize_legacy_body(
 	}
 	else if(id == NODEMETA_SIGN) // SignNodeMetadata
 	{
-		meta->setString("text", deSerializeLongString(is));
+		meta->setString("text", deSerializeString(is));
 		//meta->setString("infotext","\"${text}\"");
 		meta->setString("infotext",
 				std::string("\"") + meta->getString("text") + "\"");
-		meta->setString("formspec","field[text;;${text}]");
+		meta->setString("formspec","hack:sign_text_input");
 		return false;
 	}
 	else if(id == NODEMETA_CHEST) // ChestNodeMetadata
