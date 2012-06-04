@@ -353,9 +353,11 @@ SharedBuffer<u8> IncomingSplitBuffer::insert(BufferedPacket &p, bool reliable)
 				<<" != sp->reliable="<<sp->reliable
 				<<std::endl;
 
-	// If chunk already exists, cancel
+	// If chunk already exists, ignore it.
+	// Sometimes two identical packets may arrive when there is network
+	// lag and the server re-sends stuff.
 	if(sp->chunks.find(chunk_num) != NULL)
-		throw AlreadyExistsException("Chunk already in buffer");
+		return SharedBuffer<u8>();
 	
 	// Cut chunk data out of packet
 	u32 chunkdatasize = p.data.getSize() - headersize;
