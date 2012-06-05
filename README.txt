@@ -256,8 +256,6 @@ http://creativecommons.org/licenses/by-sa/3.0/
 License of Minetest-c55 source code
 -----------------------------------
 
-MOST of code:
--------------
 Minetest-c55
 Copyright (C) 2010-2011 celeron55, Perttu Ahola <celeron55@gmail.com>
 
@@ -274,14 +272,6 @@ GNU General Public License for more details.
 You should have received a copy of the GNU Lesser General Public License along
 with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
-
-Some code:
-----------
-Some code in
-- src/clouds.cpp
-is distributed under (GPLv2 OR later) OR (LGPLv3 OR LATER), at your opinion.
-The conflicting parts can be determined by looking at the version control history.
-These parts will be shortly rewritten to a reasonable extent.
 
 Irrlicht
 ---------------

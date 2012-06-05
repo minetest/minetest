@@ -3,16 +3,16 @@ Minetest-c55
 Copyright (C) 2010-2011 celeron55, Perttu Ahola <celeron55@gmail.com>
 
 This program is free software; you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation; either version 2 of the License, or
+it under the terms of the GNU Lesser General Public License as published by
+the Free Software Foundation; either version 2.1 of the License, or
 (at your option) any later version.
 
 This program is distributed in the hope that it will be useful,
 but WITHOUT ANY WARRANTY; without even the implied warranty of
 MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
+GNU Lesser General Public License for more details.
 
-You should have received a copy of the GNU General Public License along
+You should have received a copy of the GNU Lesser General Public License along
 with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
@@ -213,8 +213,7 @@ void Clouds::render()
 
 		v2f p0 = v2f(xi,zi)*cloud_size + world_center_of_drawing_in_noise_f;
 
-		video::S3DVertex v[4] =
-		{
+		video::S3DVertex v[4] = {
 			video::S3DVertex(0,0,0, 0,0,0, c_top, 0, 1),
 			video::S3DVertex(0,0,0, 0,0,0, c_top, 1, 1),
 			video::S3DVertex(0,0,0, 0,0,0, c_top, 1, 0),
@@ -236,88 +235,88 @@ void Clouds::render()
 		{
 			switch(i)
 			{
-				case 0:	// top
-					for(int j=0;j<4;j++){
-						v[j].Normal = v3f(0,1,0);
-					}
-					v[0].Pos.X=-rx; v[0].Pos.Y= ry; v[0].Pos.Z=-rz;
-					v[1].Pos.X=-rx; v[1].Pos.Y= ry; v[1].Pos.Z= rz;
-					v[2].Pos.X= rx; v[2].Pos.Y= ry; v[2].Pos.Z= rz;
-					v[3].Pos.X= rx; v[3].Pos.Y= ry, v[3].Pos.Z=-rz;
-					break;
-				case 1: // back
-					if(CONTAINS(xi, zi-1, cloud_radius_i)){
-						u32 j = GETINDEX(xi, zi-1, cloud_radius_i);
-						if(grid[j])
-							continue;
-					}
-					for(int j=0;j<4;j++){
-						v[j].Color=c_side_1;
-						v[j].Normal = v3f(0,0,-1);
-					}
-					v[0].Pos.X=-rx; v[0].Pos.Y= ry; v[0].Pos.Z=-rz;
-					v[1].Pos.X= rx; v[1].Pos.Y= ry; v[1].Pos.Z=-rz;
-					v[2].Pos.X= rx; v[2].Pos.Y=-ry; v[2].Pos.Z=-rz;
-					v[3].Pos.X=-rx; v[3].Pos.Y=-ry, v[3].Pos.Z=-rz;
-					break;
-				case 2: //right
-					if(CONTAINS(xi+1, zi, cloud_radius_i)){
-						u32 j = GETINDEX(xi+1, zi, cloud_radius_i);
-						if(grid[j])
-							continue;
-					}
-					for(int j=0;j<4;j++){
-						v[j].Color=c_side_2;
-						v[j].Normal = v3f(1,0,0);
-					}
-					v[0].Pos.X= rx; v[0].Pos.Y= ry; v[0].Pos.Z=-rz;
-					v[1].Pos.X= rx; v[1].Pos.Y= ry; v[1].Pos.Z= rz;
-					v[2].Pos.X= rx; v[2].Pos.Y=-ry; v[2].Pos.Z= rz;
-					v[3].Pos.X= rx; v[3].Pos.Y=-ry, v[3].Pos.Z=-rz;
-					break;
-				case 3: // front
-					if(CONTAINS(xi, zi+1, cloud_radius_i)){
-						u32 j = GETINDEX(xi, zi+1, cloud_radius_i);
-						if(grid[j])
-							continue;
-					}
-					for(int j=0;j<4;j++){
-						v[j].Color=c_side_1;
-						v[j].Normal = v3f(0,0,-1);
-					}
-					v[0].Pos.X= rx; v[0].Pos.Y= ry; v[0].Pos.Z= rz;
-					v[1].Pos.X=-rx; v[1].Pos.Y= ry; v[1].Pos.Z= rz;
-					v[2].Pos.X=-rx; v[2].Pos.Y=-ry; v[2].Pos.Z= rz;
-					v[3].Pos.X= rx; v[3].Pos.Y=-ry, v[3].Pos.Z= rz;
-					break;
-				case 4: // left
-					if(CONTAINS(xi-1, zi, cloud_radius_i)){
-						u32 j = GETINDEX(xi-1, zi, cloud_radius_i);
-						if(grid[j])
-							continue;
-					}
-					for(int j=0;j<4;j++){
-						v[j].Color=c_side_2;
-						v[j].Normal = v3f(-1,0,0);
-					}
-					v[0].Pos.X=-rx; v[0].Pos.Y= ry; v[0].Pos.Z= rz;
-					v[1].Pos.X=-rx; v[1].Pos.Y= ry; v[1].Pos.Z=-rz;
-					v[2].Pos.X=-rx; v[2].Pos.Y=-ry; v[2].Pos.Z=-rz;
-					v[3].Pos.X=-rx; v[3].Pos.Y=-ry, v[3].Pos.Z= rz;
-					break;
-				case 5: // bottom
-					for(int j=0;j<4;j++){
-						v[j].Color=c_bottom;
-						v[j].Normal = v3f(0,-1,0);
-					}
-					v[0].Pos.X= rx; v[0].Pos.Y=-ry; v[0].Pos.Z= rz;
-					v[1].Pos.X=-rx; v[1].Pos.Y=-ry; v[1].Pos.Z= rz;
-					v[2].Pos.X=-rx; v[2].Pos.Y=-ry; v[2].Pos.Z=-rz;
-					v[3].Pos.X= rx; v[3].Pos.Y=-ry, v[3].Pos.Z=-rz;
-					break;
+			case 0:	// top
+				for(int j=0;j<4;j++){
+					v[j].Normal.set(0,1,0);
+				}
+				v[0].Pos.set(-rx, ry,-rz);
+				v[1].Pos.set(-rx, ry, rz);
+				v[2].Pos.set( rx, ry, rz);
+				v[3].Pos.set( rx, ry,-rz);
+				break;
+			case 1: // back
+				if(CONTAINS(xi, zi-1, cloud_radius_i)){
+					u32 j = GETINDEX(xi, zi-1, cloud_radius_i);
+					if(grid[j])
+						continue;
+				}
+				for(int j=0;j<4;j++){
+					v[j].Color = c_side_1;
+					v[j].Normal.set(0,0,-1);
+				}
+				v[0].Pos.set(-rx, ry,-rz);
+				v[1].Pos.set( rx, ry,-rz);
+				v[2].Pos.set( rx,-ry,-rz);
+				v[3].Pos.set(-rx,-ry,-rz);
+				break;
+			case 2: //right
+				if(CONTAINS(xi+1, zi, cloud_radius_i)){
+					u32 j = GETINDEX(xi+1, zi, cloud_radius_i);
+					if(grid[j])
+						continue;
+				}
+				for(int j=0;j<4;j++){
+					v[j].Color = c_side_2;
+					v[j].Normal.set(1,0,0);
+				}
+				v[0].Pos.set( rx, ry,-rz);
+				v[1].Pos.set( rx, ry, rz);
+				v[2].Pos.set( rx,-ry, rz);
+				v[3].Pos.set( rx,-ry,-rz);
+				break;
+			case 3: // front
+				if(CONTAINS(xi, zi+1, cloud_radius_i)){
+					u32 j = GETINDEX(xi, zi+1, cloud_radius_i);
+					if(grid[j])
+						continue;
+				}
+				for(int j=0;j<4;j++){
+					v[j].Color = c_side_1;
+					v[j].Normal.set(0,0,-1);
+				}
+				v[0].Pos.set( rx, ry, rz);
+				v[1].Pos.set(-rx, ry, rz);
+				v[2].Pos.set(-rx,-ry, rz);
+				v[3].Pos.set( rx,-ry, rz);
+				break;
+			case 4: // left
+				if(CONTAINS(xi-1, zi, cloud_radius_i)){
+					u32 j = GETINDEX(xi-1, zi, cloud_radius_i);
+					if(grid[j])
+						continue;
+				}
+				for(int j=0;j<4;j++){
+					v[j].Color = c_side_2;
+					v[j].Normal.set(-1,0,0);
+				}
+				v[0].Pos.set(-rx, ry, rz);
+				v[1].Pos.set(-rx, ry,-rz);
+				v[2].Pos.set(-rx,-ry,-rz);
+				v[3].Pos.set(-rx,-ry, rz);
+				break;
+			case 5: // bottom
+				for(int j=0;j<4;j++){
+					v[j].Color = c_bottom;
+					v[j].Normal.set(0,-1,0);
+				}
+				v[0].Pos.set( rx,-ry, rz);
+				v[1].Pos.set(-rx,-ry, rz);
+				v[2].Pos.set(-rx,-ry,-rz);
+				v[3].Pos.set( rx,-ry,-rz);
+				break;
 			}
 
-			v3f pos = v3f(p0.X,m_cloud_y,p0.Y);
+			v3f pos(p0.X, m_cloud_y, p0.Y);
 
 			for(u16 i=0; i<4; i++)
 				v[i].Pos += pos;
