@@ -569,7 +569,7 @@ Example stuff:
 local meta = minetest.env:get_meta(pos)
 meta:set_string("formspec",
         "invsize[8,9;]"..
-        "list[current_name;main;0,0;8,4;]"..
+        "list[context;main;0,0;8,4;]"..
         "list[current_player;main;0,5;8,4;]")
 meta:set_string("infotext", "Chest");
 local inv = meta:get_inventory()
@@ -580,7 +580,7 @@ meta:from_table({
         main = {[1] = "default:dirt", [2] = "", [3] = "", [4] = "", [5] = "", [6] = "", [7] = "", [8] = "", [9] = "", [10] = "", [11] = "", [12] = "", [13] = "", [14] = "default:cobble", [15] = "", [16] = "", [17] = "", [18] = "", [19] = "", [20] = "default:cobble", [21] = "", [22] = "", [23] = "", [24] = "", [25] = "", [26] = "", [27] = "", [28] = "", [29] = "", [30] = "", [31] = "", [32] = ""}
     },
     fields = {
-        formspec = "invsize[8,9;]list[current_name;main;0,0;8,4;]list[current_player;main;0,5;8,4;]",
+        formspec = "invsize[8,9;]list[context;main;0,0;8,4;]list[current_player;main;0,5;8,4;]",
         infotext = "Chest"
     }
 })
@@ -596,13 +596,13 @@ examples.
 Examples:
 - Chest:
     invsize[8,9;]
-    list[current_name;main;0,0;8,4;]
+    list[context;main;0,0;8,4;]
     list[current_player;main;0,5;8,4;]
 - Furnace:
     invsize[8,9;]
-    list[current_name;fuel;2,3;1,1;]
-    list[current_name;src;2,1;1,1;]
-    list[current_name;dst;5,1;2,2;]
+    list[context;fuel;2,3;1,1;]
+    list[context;src;2,1;1,1;]
+    list[context;dst;5,1;2,2;]
     list[current_player;main;0,5;8,4;]
 - Minecraft-like player inventory
     invsize[8,7.5;]
@@ -861,7 +861,7 @@ methods:
 
 - add_entity(pos, name): Spawn Lua-defined entity at position
   ^ Returns ObjectRef, or nil if failed
-- add_item(pos, itemstring): Spawn item
+- add_item(pos, item): Spawn item
   ^ Returns ObjectRef, or nil if failed
 - get_meta(pos) -- Get a NodeMetaRef at that position
 - get_player_by_name(name) -- Get an ObjectRef to a player
