@@ -868,7 +868,6 @@ void mapblock_mesh_generate_special(MeshMakeData *data,
 			if(n_plus_z_plus_y.getContent() == thiscontent)
 				is_rail_z_plus_y[1] = true;
 
-
 			bool is_rail_x_all[] = {false, false};
 			bool is_rail_z_all[] = {false, false};
 			is_rail_x_all[0]=is_rail_x[0] || is_rail_x_minus_y[0] || is_rail_x_plus_y[0];
@@ -876,30 +875,68 @@ void mapblock_mesh_generate_special(MeshMakeData *data,
 			is_rail_z_all[0]=is_rail_z[0] || is_rail_z_minus_y[0] || is_rail_z_plus_y[0];
 			is_rail_z_all[1]=is_rail_z[1] || is_rail_z_minus_y[1] || is_rail_z_plus_y[1];
 
-			bool is_straight = (is_rail_x_all[0] && is_rail_x_all[1]) || (is_rail_z_all[0] && is_rail_z_all[1]);//is really straight, rails on both sides
-			int adjacencies = is_rail_x_all[0] + is_rail_x_all[1] + is_rail_z_all[0] + is_rail_z_all[1];
+			// reasonable default, flat straight unrotated rail
+			bool is_straight = true;
+			int adjacencies = 0;
+			int angle = 0;
+			u8 tileindex = 0;
 
-			if (is_rail_x_plus_y[0] || is_rail_x_plus_y[1] || is_rail_z_plus_y[0] || is_rail_z_plus_y[1]) //is straight because sloped
+			// check for sloped rail
+			if (is_rail_x_plus_y[0] || is_rail_x_plus_y[1] || is_rail_z_plus_y[0] || is_rail_z_plus_y[1])
 			{
 				adjacencies = 5; //5 means sloped
-				is_straight = true;
+				is_straight = true; // sloped is always straight
+			}
+			else
+			{
+				// is really straight, rails on both sides
+				is_straight = (is_rail_x_all[0] && is_rail_x_all[1]) || (is_rail_z_all[0] && is_rail_z_all[1]);
+				adjacencies = is_rail_x_all[0] + is_rail_x_all[1] + is_rail_z_all[0] + is_rail_z_all[1];
 			}
 
-			// Assign textures
-			u8 tileindex = 0; // straight
-			if(adjacencies < 2)
-				tileindex = 0; // straight
-			else if(adjacencies == 2)
-			{
-				if(is_straight)
-					tileindex = 0; // straight
-				else
+			switch (adjacencies) {
+			case 1:
+				if(is_rail_x_all[0] || is_rail_x_all[1])
+					angle = 90;
+				break;
+			case 2:
+				if(!is_straight)
 					tileindex = 1; // curved
-			}
-			else if(adjacencies == 3)
+				if(is_rail_x_all[0] && is_rail_x_all[1])
+					angle = 90;
+				if(is_rail_z_all[0] && is_rail_z_all[1]){
+					if (n_minus_z_plus_y.getContent() == thiscontent) angle = 180;
+				}
+				else if(is_rail_x_all[0] && is_rail_z_all[0])
+					angle = 270;
+				else if(is_rail_x_all[0] && is_rail_z_all[1])
+					angle = 180;
+				else if(is_rail_x_all[1] && is_rail_z_all[1])
+					angle = 90;
+				break;
+			case 3:
+				// here is where the potential to 'switch' a junction is, but not implemented at present
 				tileindex = 2; // t-junction
-			else if(adjacencies == 4)
+				if(!is_rail_x_all[1])
+					angle=180;
+				if(!is_rail_z_all[0])
+					angle=90;
+				if(!is_rail_z_all[1])
+					angle=270;
+				break;
+			case 4:
 				tileindex = 3; // crossing
+				break;
+			case 5: //sloped
+				if(is_rail_z_plus_y[0])
+					angle = 180;
+				if(is_rail_x_plus_y[0])
+					angle = 90;
+				if(is_rail_x_plus_y[1])
+					angle = -90;
+				break;
+			default:
+			}
 
 			TileSpec tile = getNodeTileN(n, p, tileindex, data);
 			tile.material_flags &= ~MATERIAL_FLAG_BACKFACE_CULLING;
@@ -928,61 +965,10 @@ void mapblock_mesh_generate_special(MeshMakeData *data,
 							ap.x0(), ap.y0()),
 			};
 
-
-			// Rotate textures
-			int angle = 0;
-
-			if(adjacencies == 1)
-			{
-				if(is_rail_x_all[0] || is_rail_x_all[1])
-					angle = 90;
-			}
-			if(adjacencies == 2)
-			{
-				if(is_rail_x_all[0] && is_rail_x_all[1])
-				{
-					angle = 90;
-				}
-				if(is_rail_z_all[0] && is_rail_z_all[1])
-				{
-					if (n_minus_z_plus_y.getContent() == thiscontent) angle = 180;
-				}
-				else if(is_rail_x_all[0] && is_rail_z_all[0])
-					angle = 270;
-				else if(is_rail_x_all[0] && is_rail_z_all[1])
-					angle = 180;
-				else if(is_rail_x_all[1] && is_rail_z_all[1])
-					angle = 90;
-			}
-			if(adjacencies == 3)
-			{
-				if(!is_rail_x_all[0])
-					angle=0;
-				if(!is_rail_x_all[1])
-					angle=180;
-				if(!is_rail_z_all[0])
-					angle=90;
-				if(!is_rail_z_all[1])
-					angle=270;
-			}
-			//adjacencies 4: Crossing
-			if(adjacencies == 5) //sloped
-			{
-				if(is_rail_z_plus_y[0])
-					angle = 180;
-				if(is_rail_x_plus_y[0])
-					angle = 90;
-				if(is_rail_x_plus_y[1])
-					angle = -90;
-			}
-
-			if(angle != 0) {
-				for(u16 i=0; i<4; i++)
-					vertices[i].Pos.rotateXZBy(angle);
-			}
-
 			for(s32 i=0; i<4; i++)
 			{
+				if(angle != 0)
+					vertices[i].Pos.rotateXZBy(angle);
 				vertices[i].Pos += intToFloat(p, BS);
 			}
 
