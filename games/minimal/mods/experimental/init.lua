@@ -6,6 +6,11 @@
 
 experimental = {}
 
+function experimental.print_to_everything(msg)
+	minetest.log("action", msg)
+	minetest.chat_send_all(msg)
+end
+
 --[[
 experimental.player_visual_index = 0
 function switch_player_visual()
@@ -97,234 +102,9 @@ function on_step(dtime)
 end
 minetest.register_globalstep(on_step)
 
--- An example furnace-thing implemented in Lua
-
---[[
-minetest.register_node("experimental:luafurnace", {
-	tile_images = {"default_lava.png", "default_furnace_side.png",
-		"default_furnace_side.png", "default_furnace_side.png",
-		"default_furnace_side.png", "default_furnace_front.png"},
-	--inventory_image = "furnace_front.png",
-	inventory_image = minetest.inventorycube("default_furnace_front.png"),
-	paramtype = "facedir_simple",
-	metadata_name = "generic",
-	material = minetest.digprop_stonelike(3.0),
-})
-
-minetest.register_on_placenode(function(pos, newnode, placer)
-	if newnode.name == "experimental:luafurnace" then
-		local meta = minetest.env:get_meta(pos)
-		meta:inventory_set_list("fuel", {""})
-		meta:inventory_set_list("src", {""})
-		meta:inventory_set_list("dst", {"","","",""})
-		meta:set_inventory_draw_spec(
-			"invsize[8,9;]"
-			.."list[current_name;fuel;2,3;1,1;]"
-			.."list[current_name;src;2,1;1,1;]"
-			.."list[current_name;dst;5,1;2,2;]"
-			.."list[current_player;main;0,5;8,4;]"
-		)
-		
-		local total_cooked = 0;
-		meta:set_string("total_cooked", total_cooked)
-		meta:set_infotext("Lua Furnace: total cooked: "..total_cooked)
-	end
-end)
-
-minetest.register_abm({
-	nodenames = {"experimental:luafurnace"},
-	interval = 1.0,
-	chance = 1,
-	action = function(pos, node, active_object_count, active_object_count_wider)
-		local meta = minetest.env:get_meta(pos)
-		for i, name in ipairs({
-				"fuel_totaltime",
-				"fuel_time",
-				"src_totaltime",
-				"src_time"
-		}) do
-			if not meta:get_string(name) then
-				meta:set_string(name, 0)
-			end
-		end
-
-		local inv = meta:get_inventory()
-		
-		local fuelitem = inv:get_stack("fuel", 1):peek_item()
-		local srcitem = inv:get_stack("src", 1):peek_item()
-		--print("fuelitem="..dump(fuelitem))
-		--print("srcitem="..dump(srcitem))
-		
-		local was_active = false
-
-		local src_cooktime = -1
-		local result_stackstring = nil
-		
-		if srcitem then
-			local prop = get_item_definition(srcitem)
-			if prop and prop.cookresult_itemstring ~= "" then
-				result_stackstring = prop.cookresult_itemstring
-				src_cooktime = prop.furnace_cooktime or 3
-			end
-		end
-
-		print("src_cooktime="..dump(src_cooktime))
-		print("result_stackstring="..dump(result_stackstring))
-
-		if tonumber(meta:get_string("fuel_time")) < tonumber(meta:get_string("fuel_totaltime")) then
-			was_active = true
-			meta:set_string("fuel_time", tonumber(meta:get_string("fuel_time")) + 1)
-			meta:set_string("src_time", tonumber(meta:get_string("src_time")) + 1)
-			--print("result_stackstring="..dump(result_stackstring))
-			--print('tonumber(meta:get_string("src_time"))='..dump(tonumber(meta:get_string("src_time"))))
-			--print("src_cooktime="..dump(src_cooktime))
-			if result_stackstring and tonumber(meta:get_string("src_time")) >= src_cooktime and src_cooktime >= 0 then
-				-- Put result in "dst" list
-				success = inv:autoinsert_stackstring("dst", result_stackstring)
-				if not success then
-					print("Could not autoinsert '"..result_stackstring.."'")
-				end
-				-- If succeeded, take stuff from "src" list
-				if success then
-					srcstack = inv:get_stack("src", 1)
-					srcstack:take_item()
-					inv:set_stack("src", 1, srcstack)
-				end
-				meta:set_string("src_time", 0)
-			end
-		end
-		
-		if tonumber(meta:get_string("fuel_time")) < tonumber(meta:get_string("fuel_totaltime")) then
-			meta:set_infotext("Furnace active: "..(tonumber(meta:get_string("fuel_time"))/tonumber(meta:get_string("fuel_totaltime"))*100).."%")
-			return
-		end
-
-		local srcitem = inv:get_stack("src", 1):peek_item()
-
-		local src_cooktime = 0
-		local result_stackstring = nil
-		
-		if srcitem then
-			local prop = get_item_definition(srcitem)
-			if prop and prop.cookresult_itemstring ~= "" then
-				result_stackstring = prop.cookresult_itemstring
-				src_cooktime = prop.furnace_cooktime or 3
-			end
-		end
-
-		local fuelitem = inv:get_stack("fuel", 1):peek_item()
-
-		if not result_stackstring or not fuelitem then
-			if was_active then
-				meta:set_infotext("Furnace is empty")
-			end
-			return
-		end
-
-		local burntime = -1
-		if fuelitem then
-			local prop = get_item_definition(fuelitem)
-			if prop then
-				burntime = prop.furnace_burntime or -1
-			end
-		end
-
-		if burntime <= 0 then
-			meta:set_infotext("Furnace out of fuel")
-			return
-		end
-
-		meta:set_string("fuel_totaltime", burntime)
-		meta:set_string("fuel_time", 0)
-		
-		local stack = inv:get_stack("fuel", 1)
-		stack:take_item()
-		inv:set_stack("fuel", 1, stack)
-	end,
-})
-minetest.register_abm({
-	nodenames = {"experimental:luafurnace"},
-	interval = 1.0,
-	chance = 1,
-	action = function(pos, node, active_object_count, active_object_count_wider)
-		local meta = minetest.env:get_meta(pos)
-		local fuellist = meta:inventory_get_list("fuel")
-		local srclist = meta:inventory_get_list("src")
-		local dstlist = meta:inventory_get_list("dst")
-		if fuellist == nil or srclist == nil or dstlist == nil then
-			return
-		end
-		_, srcitem = stackstring_take_item(srclist[1])
-		_, fuelitem = stackstring_take_item(fuellist[1])
-		if not srcitem or not fuelitem then return end
-		if fuelitem.type == "node" then
-			local prop = minetest.registered_nodes[fuelitem.name]
-			if prop == nil then return end
-			if prop.furnace_burntime < 0 then return end
-		else
-			return
-		end
-		local resultstack = nil
-		if srcitem.type == "node" then
-			local prop = minetest.registered_nodes[srcitem.name]
-			if prop == nil then return end
-			if prop.cookresult_item == "" then return end
-			resultstack = prop.cookresult_item
-		else
-			return
-		end
-
-		if resultstack == nil then
-			return
-		end
-
-		dstlist[1], success = stackstring_put_stackstring(dstlist[1], resultstack)
-		if not success then
-			return
-		end
-
-		fuellist[1], _ = stackstring_take_item(fuellist[1])
-		srclist[1], _ = stackstring_take_item(srclist[1])
-
-		meta:inventory_set_list("fuel", fuellist)
-		meta:inventory_set_list("src", srclist)
-		meta:inventory_set_list("dst", dstlist)
-
-		local total_cooked = meta:get_string("total_cooked")
-		total_cooked = tonumber(total_cooked) + 1
-		meta:set_string("total_cooked", total_cooked)
-		meta:set_infotext("Lua Furnace: total cooked: "..total_cooked)
-	end,
-})
-minetest.register_craft({
-	output = 'node "experimental:luafurnace" 1',
-	recipe = {
-		{'node "default:cobble"', 'node "default:cobble"', 'node "default:cobble"'},
-		{'node "default:cobble"', 'node "default:steel_ingot"', 'node "default:cobble"'},
-		{'node "default:cobble"', 'node "default:cobble"', 'node "default:cobble"'},
-	}
-})
---]]
-
 --
 -- Random stuff
 --
-
---[[
-minetest.register_tool("experimental:horribletool", {
-	image = "default_lava.png",
-	basetime = 2.0
-	dt_weight = 0.2
-	dt_crackiness = 0.2
-	dt_crumbliness = 0.2
-	dt_cuttability = 0.2
-	basedurability = 50
-	dd_weight = -5
-	dd_crackiness = -5
-	dd_crumbliness = -5
-	dd_cuttability = -5
-})
---]]
 
 --
 -- TNT (not functional)
@@ -661,6 +441,56 @@ minetest.register_abm({
         end
     end,
 })--]]
+
+minetest.register_node("experimental:tester_node_1", {
+	description = "Tester Node 1",
+	tile_images = {"wieldhand.png"},
+	groups = {oddly_breakable_by_hand=2},
+	sounds = default.node_sound_wood_defaults(),
+
+	on_construct = function(pos)
+		experimental.print_to_everything("experimental:tester_node_1:on_construct("..minetest.pos_to_string(pos)..")")
+		local meta = minetest.env:get_meta(pos)
+		meta:set_string("mine", "test")
+	end,
+
+    after_place_node = function(pos, placer)
+		experimental.print_to_everything("experimental:tester_node_1:after_place_node("..minetest.pos_to_string(pos)..")")
+		local meta = minetest.env:get_meta(pos)
+		if meta:get_string("mine") == "test" then
+			experimental.print_to_everything("correct metadata found")
+		else
+			experimental.print_to_everything("incorrect metadata found")
+		end
+	end,
+       
+	on_destruct = function(pos)
+		experimental.print_to_everything("experimental:tester_node_1:on_destruct("..minetest.pos_to_string(pos)..")")
+	end,
+ 
+	after_dig_node = function(pos, oldnode, oldmetadata, digger)
+		experimental.print_to_everything("experimental:tester_node_1:after_dig_node("..minetest.pos_to_string(pos)..")")
+	end,
+})
+
+minetest.register_craftitem("experimental:tester_tool_1", {
+	description = "Tester Tool 1",
+	inventory_image = "experimental_tester_tool_1.png",
+    on_use = function(itemstack, user, pointed_thing)
+		--print(dump(pointed_thing))
+		if pointed_thing.type == "node" then
+			if minetest.env:get_node(pointed_thing.under).name == "experimental:tester_node_1" then
+				local p = pointed_thing.under
+				minetest.log("action", "Tester tool used at "..minetest.pos_to_string(p))
+				minetest.env:dig_node(p)
+			else
+				local p = pointed_thing.above
+				minetest.log("action", "Tester tool used at "..minetest.pos_to_string(p))
+				minetest.env:place_node(p, {name="experimental:tester_node_1"})
+			end
+		end
+	end,
+})
 
 minetest.log("experimental modname="..dump(minetest.get_current_modname()))
 minetest.log("experimental modpath="..dump(minetest.get_modpath("experimental")))

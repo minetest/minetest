@@ -250,10 +250,12 @@ function minetest.node_dig(pos, node, digger)
 		wielded:add_wear(dp.wear)
 		digger:set_wielded_item(wielded)
 
-		-- Add dropped items
-		local _, dropped_item
-		for _, dropped_item in ipairs(drops) do
-			digger:get_inventory():add_item("main", dropped_item)
+		-- Add dropped items to object's inventory
+		if digger:get_inventory() then
+			local _, dropped_item
+			for _, dropped_item in ipairs(drops) do
+				digger:get_inventory():add_item("main", dropped_item)
+			end
 		end
 	end
 	

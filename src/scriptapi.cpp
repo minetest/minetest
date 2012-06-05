@@ -2465,7 +2465,11 @@ private:
 	{
 		ObjectRef *ref = checkobject(L, 1);
 		ServerActiveObject *co = getobject(ref);
-		if(co == NULL) return 0;
+		if(co == NULL){
+			// Default hp is 1
+			lua_pushnumber(L, 1);
+			return 1;
+		}
 		int hp = co->getHP();
 		/*infostream<<"ObjectRef::l_get_hp(): id="<<co->getId()
 				<<" hp="<<hp<<std::endl;*/
@@ -2485,7 +2489,7 @@ private:
 		if(get_server(L)->getInventory(loc) != NULL)
 			InvRef::create(L, loc);
 		else
-			lua_pushnil(L);
+			lua_pushnil(L); // An object may have no inventory (nil)
 		return 1;
 	}
 
@@ -2516,7 +2520,11 @@ private:
 	{
 		ObjectRef *ref = checkobject(L, 1);
 		ServerActiveObject *co = getobject(ref);
-		if(co == NULL) return 0;
+		if(co == NULL){
+			// Empty ItemStack
+			LuaItemStack::create(L, ItemStack());
+			return 1;
+		}
 		// Do it
 		LuaItemStack::create(L, co->getWieldedItem());
 		return 1;
@@ -2856,11 +2864,11 @@ const luaL_reg ObjectRef::methods[] = {
 	{0,0}
 };
 
-// Creates a new anonymous reference if id=0
+// Creates a new anonymous reference if cobj=NULL or id=0
 static void objectref_get_or_create(lua_State *L,
 		ServerActiveObject *cobj)
 {
-	if(cobj->getId() == 0){
+	if(cobj == NULL || cobj->getId() == 0){
 		ObjectRef::create(L, cobj);
 	} else {
 		objectref_get(L, cobj->getId());
@@ -3013,7 +3021,6 @@ private:
 	// pos = {x=num, y=num, z=num}
 	static int l_set_node(lua_State *L)
 	{
-		//infostream<<"EnvRef::l_set_node()"<<std::endl;
 		EnvRef *o = checkobject(L, 1);
 		ServerEnvironment *env = o->m_env;
 		if(env == NULL) return 0;
@@ -3043,17 +3050,16 @@ private:
 	// pos = {x=num, y=num, z=num}
 	static int l_remove_node(lua_State *L)
 	{
-		//infostream<<"EnvRef::l_remove_node()"<<std::endl;
 		EnvRef *o = checkobject(L, 1);
 		ServerEnvironment *env = o->m_env;
 		if(env == NULL) return 0;
-		// pos
 		v3s16 pos = read_v3s16(L, 2);
 		// Do it
 		// Call destructor
 		MapNode n = env->getMap().getNodeNoEx(pos);
 		scriptapi_node_on_destruct(L, pos, n);
 		// Replace with air
+		// This is slightly optimized compared to addNodeWithEvent(air)
 		bool succeeded = env->getMap().removeNodeWithEvent(pos);
 		lua_pushboolean(L, succeeded);
 		// Air doesn't require constructor
@@ -3064,7 +3070,6 @@ private:
 	// pos = {x=num, y=num, z=num}
 	static int l_get_node(lua_State *L)
 	{
-		//infostream<<"EnvRef::l_get_node()"<<std::endl;
 		EnvRef *o = checkobject(L, 1);
 		ServerEnvironment *env = o->m_env;
 		if(env == NULL) return 0;
@@ -3081,7 +3086,6 @@ private:
 	// pos = {x=num, y=num, z=num}
 	static int l_get_node_or_nil(lua_State *L)
 	{
-		//infostream<<"EnvRef::l_get_node()"<<std::endl;
 		EnvRef *o = checkobject(L, 1);
 		ServerEnvironment *env = o->m_env;
 		if(env == NULL) return 0;
@@ -3126,6 +3130,82 @@ private:
 			lua_pushnil(L);
 			return 1;
 		}
+	}
+
+	// EnvRef:place_node(pos, node)
+	// pos = {x=num, y=num, z=num}
+	static int l_place_node(lua_State *L)
+	{
+		EnvRef *o = checkobject(L, 1);
+		ServerEnvironment *env = o->m_env;
+		if(env == NULL) return 0;
+		v3s16 pos = read_v3s16(L, 2);
+		MapNode n = readnode(L, 3, env->getGameDef()->ndef());
+
+		// Don't attempt to load non-loaded area as of now
+		MapNode n_old = env->getMap().getNodeNoEx(pos);
+		if(n_old.getContent() == CONTENT_IGNORE){
+			lua_pushboolean(L, false);
+			return 1;
+		}
+		// Create item to place
+		INodeDefManager *ndef = get_server(L)->ndef();
+		IItemDefManager *idef = get_server(L)->idef();
+		ItemStack item(ndef->get(n).name, 1, 0, "", idef);
+		// Make pointed position
+		PointedThing pointed;
+		pointed.type = POINTEDTHING_NODE;
+		pointed.node_abovesurface = pos;
+		pointed.node_undersurface = pos + v3s16(0,-1,0);
+		// Place it with a NULL placer (appears in Lua as a non-functional
+		// ObjectRef)
+		bool success = scriptapi_item_on_place(L, item, NULL, pointed);
+		lua_pushboolean(L, success);
+		return 1;
+	}
+
+	// EnvRef:dig_node(pos)
+	// pos = {x=num, y=num, z=num}
+	static int l_dig_node(lua_State *L)
+	{
+		EnvRef *o = checkobject(L, 1);
+		ServerEnvironment *env = o->m_env;
+		if(env == NULL) return 0;
+		v3s16 pos = read_v3s16(L, 2);
+
+		// Don't attempt to load non-loaded area as of now
+		MapNode n = env->getMap().getNodeNoEx(pos);
+		if(n.getContent() == CONTENT_IGNORE){
+			lua_pushboolean(L, false);
+			return 1;
+		}
+		// Dig it out with a NULL digger (appears in Lua as a
+		// non-functional ObjectRef)
+		bool success = scriptapi_node_on_dig(L, pos, n, NULL);
+		lua_pushboolean(L, success);
+		return 1;
+	}
+
+	// EnvRef:punch_node(pos)
+	// pos = {x=num, y=num, z=num}
+	static int l_punch_node(lua_State *L)
+	{
+		EnvRef *o = checkobject(L, 1);
+		ServerEnvironment *env = o->m_env;
+		if(env == NULL) return 0;
+		v3s16 pos = read_v3s16(L, 2);
+
+		// Don't attempt to load non-loaded area as of now
+		MapNode n = env->getMap().getNodeNoEx(pos);
+		if(n.getContent() == CONTENT_IGNORE){
+			lua_pushboolean(L, false);
+			return 1;
+		}
+		// Punch it with a NULL puncher (appears in Lua as a non-functional
+		// ObjectRef)
+		bool success = scriptapi_node_on_punch(L, pos, n, NULL);
+		lua_pushboolean(L, success);
+		return 1;
 	}
 
 	// EnvRef:add_entity(pos, entityname) -> ObjectRef or nil
@@ -3482,6 +3562,9 @@ const luaL_reg EnvRef::methods[] = {
 	method(EnvRef, get_node),
 	method(EnvRef, get_node_or_nil),
 	method(EnvRef, get_node_light),
+	method(EnvRef, place_node),
+	method(EnvRef, dig_node),
+	method(EnvRef, punch_node),
 	method(EnvRef, add_entity),
 	method(EnvRef, add_item),
 	method(EnvRef, add_rat),
@@ -4351,7 +4434,6 @@ void scriptapi_export(lua_State *L, Server *server)
 	lua_getglobal(L, "minetest");
 
 	// Add tables to minetest
-	
 	lua_newtable(L);
 	lua_setfield(L, -2, "object_refs");
 	lua_newtable(L);

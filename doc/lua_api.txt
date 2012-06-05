@@ -842,13 +842,23 @@ EnvRef: basically ServerEnvironment and ServerMap combined.
 methods:
 - set_node(pos, node)
 - add_node(pos, node): alias set_node(pos, node)
-- remove_node(pos): equivalent to set_node(pos, "air")
+ ^ Set node at position (node = {name="foo", param1=0, param2=0})
+- remove_node(pos)
+  ^ Equivalent to set_node(pos, "air")
 - get_node(pos)
   ^ Returns {name="ignore", ...} for unloaded area
 - get_node_or_nil(pos)
   ^ Returns nil for unloaded area
 - get_node_light(pos, timeofday) -> 0...15 or nil
   ^ timeofday: nil = current time, 0 = night, 0.5 = day
+
+- place_node(pos, node)
+  ^ Place node with the same effects that a player would cause
+- dig_node(pos)
+  ^ Dig node with the same effects that a player would cause
+- punch_node(pos)
+  ^ Punch node with the same effects that a player would cause
+
 - add_entity(pos, name): Spawn Lua-defined entity at position
   ^ Returns ObjectRef, or nil if failed
 - add_item(pos, itemstring): Spawn item
