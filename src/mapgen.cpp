@@ -3,16 +3,16 @@ Minetest-c55
 Copyright (C) 2010-2011 celeron55, Perttu Ahola <celeron55@gmail.com>
 
 This program is free software; you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation; either version 2 of the License, or
+it under the terms of the GNU Lesser General Public License as published by
+the Free Software Foundation; either version 2.1 of the License, or
 (at your option) any later version.
 
 This program is distributed in the hope that it will be useful,
 but WITHOUT ANY WARRANTY; without even the implied warranty of
 MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
+GNU Lesser General Public License for more details.
 
-You should have received a copy of the GNU General Public License along
+You should have received a copy of the GNU Lesser General Public License along
 with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
@@ -2512,19 +2512,7 @@ void make_block(BlockMakeData *data)
 						{
 							if(have_sand)
 							{
-								// Determine whether to have clay in the sand here
-								double claynoise = noise2d_perlin(
-										0.5+(float)p2d.X/500, 0.5+(float)p2d.Y/500,
-										data->seed+4321, 6, 0.95) + 0.5;
-				
-								have_clay = (y <= WATER_LEVEL) && (y >= WATER_LEVEL-2) && (
-									((claynoise > 0) && (claynoise < 0.04) && (current_depth == 0)) ||
-									((claynoise > 0) && (claynoise < 0.12) && (current_depth == 1))
-									);
-								if (have_clay)
-									vmanip.m_data[i] = MapNode(c_clay);
-								else
-									vmanip.m_data[i] = MapNode(c_sand);
+								vmanip.m_data[i] = MapNode(c_sand);
 							}
 							#if 1
 							else if(current_depth==0 && !water_detected
