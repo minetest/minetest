@@ -117,6 +117,9 @@ void ContentFeatures::reset()
 	visual_solidness = 0;
 	backface_culling = true;
 #endif
+	has_on_construct = false;
+	has_on_destruct = false;
+	has_after_destruct = false;
 	/*
 		Actual data
 		

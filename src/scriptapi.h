@@ -86,6 +86,8 @@ bool scriptapi_node_on_dig(lua_State *L, v3s16 p, MapNode node,
 void scriptapi_node_on_construct(lua_State *L, v3s16 p, MapNode node);
 // Node destructor
 void scriptapi_node_on_destruct(lua_State *L, v3s16 p, MapNode node);
+// Node post-destructor
+void scriptapi_node_after_destruct(lua_State *L, v3s16 p, MapNode node);
 // Called when a metadata form returns values
 void scriptapi_node_on_receive_fields(lua_State *L, v3s16 p,
 		const std::string &formname,

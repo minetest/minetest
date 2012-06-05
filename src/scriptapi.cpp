@@ -994,6 +994,18 @@ static ContentFeatures read_content_features(lua_State *L, int index)
 		index = lua_gettop(L) + 1 + index;
 
 	ContentFeatures f;
+	
+	/* Cache existence of some callbacks */
+	lua_getfield(L, index, "on_construct");
+	if(!lua_isnil(L, -1)) f.has_on_construct = true;
+	lua_pop(L, 1);
+	lua_getfield(L, index, "on_destruct");
+	if(!lua_isnil(L, -1)) f.has_on_destruct = true;
+	lua_pop(L, 1);
+	lua_getfield(L, index, "after_destruct");
+	if(!lua_isnil(L, -1)) f.has_after_destruct = true;
+	lua_pop(L, 1);
+
 	/* Name */
 	getstringfield(L, index, "name", f.name);
 
@@ -3024,20 +3036,26 @@ private:
 		EnvRef *o = checkobject(L, 1);
 		ServerEnvironment *env = o->m_env;
 		if(env == NULL) return 0;
-		// pos
+		INodeDefManager *ndef = env->getGameDef()->ndef();
+		// parameters
 		v3s16 pos = read_v3s16(L, 2);
-		// content
-		MapNode n = readnode(L, 3, env->getGameDef()->ndef());
+		MapNode n = readnode(L, 3, ndef);
 		// Do it
-		// Call destructor
 		MapNode n_old = env->getMap().getNodeNoEx(pos);
-		scriptapi_node_on_destruct(L, pos, n_old);
+		// Call destructor
+		if(ndef->get(n_old).has_on_destruct)
+			scriptapi_node_on_destruct(L, pos, n_old);
 		// Replace node
 		bool succeeded = env->getMap().addNodeWithEvent(pos, n);
+		if(succeeded){
+			// Call post-destructor
+			if(ndef->get(n_old).has_after_destruct)
+				scriptapi_node_after_destruct(L, pos, n_old);
+			// Call constructor
+			if(ndef->get(n).has_on_construct)
+				scriptapi_node_on_construct(L, pos, n);
+		}
 		lua_pushboolean(L, succeeded);
-		// Call constructor
-		if(succeeded)
-			scriptapi_node_on_construct(L, pos, n);
 		return 1;
 	}
 
@@ -3053,14 +3071,22 @@ private:
 		EnvRef *o = checkobject(L, 1);
 		ServerEnvironment *env = o->m_env;
 		if(env == NULL) return 0;
+		INodeDefManager *ndef = env->getGameDef()->ndef();
+		// parameters
 		v3s16 pos = read_v3s16(L, 2);
 		// Do it
+		MapNode n_old = env->getMap().getNodeNoEx(pos);
 		// Call destructor
-		MapNode n = env->getMap().getNodeNoEx(pos);
-		scriptapi_node_on_destruct(L, pos, n);
+		if(ndef->get(n_old).has_on_destruct)
+			scriptapi_node_on_destruct(L, pos, n_old);
 		// Replace with air
 		// This is slightly optimized compared to addNodeWithEvent(air)
 		bool succeeded = env->getMap().removeNodeWithEvent(pos);
+		if(succeeded){
+			// Call post-destructor
+			if(ndef->get(n_old).has_after_destruct)
+				scriptapi_node_after_destruct(L, pos, n_old);
+		}
 		lua_pushboolean(L, succeeded);
 		// Air doesn't require constructor
 		return 1;
@@ -5140,6 +5166,25 @@ void scriptapi_node_on_destruct(lua_State *L, v3s16 p, MapNode node)
 	// Call function
 	push_v3s16(L, p);
 	if(lua_pcall(L, 1, 0, 0))
+		script_error(L, "error: %s", lua_tostring(L, -1));
+}
+
+void scriptapi_node_after_destruct(lua_State *L, v3s16 p, MapNode node)
+{
+	realitycheck(L);
+	assert(lua_checkstack(L, 20));
+	StackUnroller stack_unroller(L);
+
+	INodeDefManager *ndef = get_server(L)->ndef();
+
+	// Push callback function on stack
+	if(!get_item_callback(L, ndef->get(node).name.c_str(), "after_destruct"))
+		return;
+
+	// Call function
+	push_v3s16(L, p);
+	pushnode(L, node, ndef);
+	if(lua_pcall(L, 2, 0, 0))
 		script_error(L, "error: %s", lua_tostring(L, -1));
 }
 

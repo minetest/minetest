@@ -144,6 +144,11 @@ struct ContentFeatures
 	bool backface_culling;
 #endif
 
+	// Server-side cached callback existence for fast skipping
+	bool has_on_construct;
+	bool has_on_destruct;
+	bool has_after_destruct;
+
 	/*
 		Actual data
 	*/

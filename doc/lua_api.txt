@@ -1150,15 +1150,18 @@ Node definition (register_node)
     on_destruct = func(pos),
     ^ Node destructor; always called before removing node
     ^ default: nil
+    after_destruct = func(pos, oldnode),
+    ^ Node destructor; always called after removing node
+    ^ default: nil
 
     after_place_node = func(pos, placer),
     ^ Called after constructing node when node was placed using
-      minetest.item_place_node
+      minetest.item_place_node / minetest.env:place_node
     ^ default: nil
     after_dig_node = func(pos, oldnode, oldmetadata, digger),
     ^ oldmetadata is in table format
     ^ Called after destructing node when node was dug using
-      minetest.node_dig
+      minetest.node_dig / minetest.env:dig_node
     ^ default: nil
     can_dig = function(pos,player)
     ^ returns true if node can be dug, or false if not

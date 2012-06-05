@@ -468,6 +468,10 @@ minetest.register_node("experimental:tester_node_1", {
 		experimental.print_to_everything("experimental:tester_node_1:on_destruct("..minetest.pos_to_string(pos)..")")
 	end,
  
+	after_destruct = function(pos)
+		experimental.print_to_everything("experimental:tester_node_1:after_destruct("..minetest.pos_to_string(pos)..")")
+	end,
+ 
 	after_dig_node = function(pos, oldnode, oldmetadata, digger)
 		experimental.print_to_everything("experimental:tester_node_1:after_dig_node("..minetest.pos_to_string(pos)..")")
 	end,
