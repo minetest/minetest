@@ -936,6 +936,7 @@ void mapblock_mesh_generate_special(MeshMakeData *data,
 					angle = -90;
 				break;
 			default:
+				break;
 			}
 
 			TileSpec tile = getNodeTileN(n, p, tileindex, data);
