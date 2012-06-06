@@ -805,6 +805,17 @@ minetest.get_item_group(name, group) -> rating
 ^ Get rating of a group of an item. (0 = not in group)
 minetest.get_node_group(name, group) -> rating
 ^ Deprecated: An alias for the former.
+minetest.serialize(table) -> string
+^ Convert a table containing tables, strings, numbers, booleans and nils
+  into string form readable by minetest.deserialize
+^ Example: serialize({foo='bar'}) -> 'return { ["foo"] = "bar" }'
+minetest.deserialize(string) -> table
+^ Convert a string returned by minetest.deserialize into a table
+^ String is loaded in an empty sandbox environment.
+^ Will load functions, but they cannot access the global environment.
+^ Example: deserialize('return { ["foo"] = "bar" }') -> {foo='bar'}
+^ Example: deserialize('print("foo")') -> nil (function call fails)
+  ^ error:[string "print("foo")"]:1: attempt to call global 'print' (a nil value)
 
 Global objects:
 minetest.env - EnvRef of the server environment and world.

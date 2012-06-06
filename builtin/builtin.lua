@@ -10,6 +10,7 @@ print = minetest.debug
 math.randomseed(os.time())
 
 -- Load other files
+dofile(minetest.get_modpath("__builtin").."/serialize.lua")
 dofile(minetest.get_modpath("__builtin").."/misc_helpers.lua")
 dofile(minetest.get_modpath("__builtin").."/item.lua")
 dofile(minetest.get_modpath("__builtin").."/misc_register.lua")
