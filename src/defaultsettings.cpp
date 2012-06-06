@@ -25,7 +25,6 @@ void set_default_settings(Settings *settings)
 
 	settings->setDefault("port", "");
 	settings->setDefault("name", "");
-	settings->setDefault("footprints", "false");
 
 	// Client stuff
 
