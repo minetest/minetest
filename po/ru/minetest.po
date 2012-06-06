@@ -1,4 +1,4 @@
-# Finnish translation for minetest-c55
+# Russian translation for minetest-c55
 # Copyright (c) 2012 Rosetta Contributors and Canonical Ltd 2012
 # This file is distributed under the same license as the minetest-c55 package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, 2012.
@@ -8,9 +8,9 @@ msgstr ""
 "Project-Id-Version: minetest-c55\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
 "POT-Creation-Date: 2012-06-04 23:25+0300\n"
-"PO-Revision-Date: 2012-06-05 13:04+0000\n"
-"Last-Translator: Juhani Numminen <juhaninumminen0@gmail.com>\n"
-"Language-Team: Finnish <fi@li.org>\n"
+"PO-Revision-Date: 2012-05-06 11:18+0000\n"
+"Last-Translator: Дмитрий <Unknown>\n"
+"Language-Team: Russian <ru@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -19,110 +19,108 @@ msgstr ""
 
 #: src/guiConfirmMenu.cpp:120
 msgid "Yes"
-msgstr "Kyllä"
+msgstr ""
 
 #: src/guiConfirmMenu.cpp:126
 msgid "No"
-msgstr "Ei"
+msgstr ""
 
 #: src/guiCreateWorld.cpp:116
 msgid "World name"
-msgstr "Maailman nimi"
+msgstr ""
 
 #: src/guiCreateWorld.cpp:135
 msgid "Game"
-msgstr "Peli"
+msgstr ""
 
 #: src/guiCreateWorld.cpp:159
 msgid "Create"
-msgstr "Luo"
+msgstr ""
 
 #: src/guiCreateWorld.cpp:165 src/guiKeyChangeMenu.cpp:374 src/keycode.cpp:221
 msgid "Cancel"
-msgstr "Peruuta"
+msgstr "Отмена"
 
 #: src/guiDeathScreen.cpp:96
 msgid "You died."
-msgstr "Kuolit."
+msgstr ""
 
 #: src/guiDeathScreen.cpp:104
 msgid "Respawn"
-msgstr "Herätä henkiin"
+msgstr ""
 
 #: src/guiKeyChangeMenu.cpp:111
 msgid ""
 "Keybindings. (If this menu screws up, remove stuff from minetest.conf)"
 msgstr ""
-"Näppäimet. (Jos tämä valikko ei toimi, poista juttuja asetustiedostosta "
-"minetest.conf)"
 
 #: src/guiKeyChangeMenu.cpp:121
 msgid "Forward"
-msgstr "Eteenpäin"
+msgstr "Вперед"
 
 #: src/guiKeyChangeMenu.cpp:138
 msgid "Backward"
-msgstr "Taaksepäin"
+msgstr "Назад"
 
 #: src/guiKeyChangeMenu.cpp:154 src/keycode.cpp:226
 msgid "Left"
-msgstr "Vasemmalle"
+msgstr "Влево"
 
 #: src/guiKeyChangeMenu.cpp:169 src/keycode.cpp:226
 msgid "Right"
-msgstr "Oikealle"
+msgstr "Вправо"
 
 #: src/guiKeyChangeMenu.cpp:185
 msgid "Use"
-msgstr "Käytä"
+msgstr "Использовать"
 
 #: src/guiKeyChangeMenu.cpp:200
 msgid "Sneak"
-msgstr "Hiivi"
+msgstr ""
 
 #: src/guiKeyChangeMenu.cpp:216
 msgid "Jump"
-msgstr "Hyppää"
+msgstr "Прыжок"
 
 #: src/guiKeyChangeMenu.cpp:231
 msgid "Drop"
-msgstr "Pudota"
+msgstr ""
 
 #: src/guiKeyChangeMenu.cpp:246
 msgid "Inventory"
-msgstr "Tavarat"
+msgstr "Инвентарь"
 
 #: src/guiKeyChangeMenu.cpp:262
 msgid "Chat"
-msgstr "Chat"
+msgstr "Чат"
 
 #: src/guiKeyChangeMenu.cpp:276
 msgid "Command"
-msgstr "Komento"
+msgstr ""
 
 #: src/guiKeyChangeMenu.cpp:290
 msgid "Console"
-msgstr "Konsoli"
+msgstr ""
 
 #: src/guiKeyChangeMenu.cpp:306
 msgid "Toggle fly"
-msgstr "Lentotila"
+msgstr ""
 
 #: src/guiKeyChangeMenu.cpp:321
 msgid "Toggle fast"
-msgstr "Juoksutila"
+msgstr ""
 
 #: src/guiKeyChangeMenu.cpp:336
 msgid "Range select"
-msgstr "Etäisyyden valinta"
+msgstr ""
 
 #: src/guiKeyChangeMenu.cpp:353
 msgid "Print stacks"
-msgstr "Tulosta pinot"
+msgstr ""
 
 #: src/guiKeyChangeMenu.cpp:368
 msgid "Save"
-msgstr "Tallenna"
+msgstr "Сохранить"
 
 #: src/guiKeyChangeMenu.cpp:626 src/guiKeyChangeMenu.cpp:631
 #: src/guiKeyChangeMenu.cpp:636 src/guiKeyChangeMenu.cpp:641
@@ -133,163 +131,163 @@ msgstr "Tallenna"
 #: src/guiKeyChangeMenu.cpp:686 src/guiKeyChangeMenu.cpp:691
 #: src/guiKeyChangeMenu.cpp:696 src/guiKeyChangeMenu.cpp:701
 msgid "press Key"
-msgstr "paina näppäintä"
+msgstr "нажмите Клавишу"
 
 #: src/guiMainMenu.cpp:217
 msgid "Singleplayer"
-msgstr "Yksinpeli"
+msgstr ""
 
 #: src/guiMainMenu.cpp:218
 msgid "Multiplayer"
-msgstr "Moninpeli"
+msgstr ""
 
 #: src/guiMainMenu.cpp:219
 msgid "Advanced"
-msgstr "Lisäasetukset"
+msgstr ""
 
 #: src/guiMainMenu.cpp:220
 msgid "Settings"
-msgstr "Asetukset"
+msgstr ""
 
 #: src/guiMainMenu.cpp:221
 msgid "Credits"
-msgstr "Tekijät"
+msgstr ""
 
 #: src/guiMainMenu.cpp:252
 msgid "Select World:"
-msgstr "Valitse maailma:"
+msgstr ""
 
 #: src/guiMainMenu.cpp:274 src/keycode.cpp:227
 msgid "Delete"
-msgstr "Poista"
+msgstr ""
 
 #: src/guiMainMenu.cpp:281
 msgid "New"
-msgstr "Uusi"
+msgstr ""
 
 #: src/guiMainMenu.cpp:289
 msgid "Configure"
-msgstr "Määritä"
+msgstr ""
 
 #: src/guiMainMenu.cpp:304 src/keycode.cpp:246
 msgid "Play"
-msgstr "Toista"
+msgstr ""
 
 #: src/guiMainMenu.cpp:315 src/guiMainMenu.cpp:492
 msgid "Creative Mode"
-msgstr "Luova tila"
+msgstr "Творческий режим"
 
 #: src/guiMainMenu.cpp:321 src/guiMainMenu.cpp:498
 msgid "Enable Damage"
-msgstr "Vahinko päälle"
+msgstr ""
 
 #: src/guiMainMenu.cpp:341 src/guiMainMenu.cpp:414
 msgid "Name/Password"
-msgstr "Nimi/salasana"
+msgstr "Имя/Пароль"
 
 #: src/guiMainMenu.cpp:368 src/guiMainMenu.cpp:441
 msgid "Address/Port"
-msgstr "Osoite/portti"
+msgstr "Адрес/Порт"
 
 #: src/guiMainMenu.cpp:394 src/guiMainMenu.cpp:473
 msgid "Start Game / Connect"
-msgstr "Aloita peli / yhdistä"
+msgstr "Начать игру / Подключиться"
 
 #: src/guiMainMenu.cpp:464
 msgid "Leave address blank to start a local server."
-msgstr "Jätä osoite tyhjäksi käynnistääksesi paikallisen palvelimen."
+msgstr "Оставьте поле пустым, чтобы создать локальный сервер"
 
 #: src/guiMainMenu.cpp:505 src/guiMainMenu.cpp:833
 msgid "Delete world"
-msgstr "Poista maailma"
+msgstr ""
 
 #: src/guiMainMenu.cpp:512
 msgid "Create world"
-msgstr "Luo maailma"
+msgstr ""
 
 #: src/guiMainMenu.cpp:546
 msgid "Fancy trees"
-msgstr "Heinot puut"
+msgstr "Красивые деревья"
 
 #: src/guiMainMenu.cpp:552
 msgid "Smooth Lighting"
-msgstr "Pehmeä valaistus"
+msgstr "Сглаженное освещение"
 
 #: src/guiMainMenu.cpp:558
 msgid "3D Clouds"
-msgstr "3D-pilvet"
+msgstr ""
 
 #: src/guiMainMenu.cpp:564
 msgid "Opaque water"
-msgstr "Läpinäkymätön vesi"
+msgstr ""
 
 #: src/guiMainMenu.cpp:573
 msgid "Change keys"
-msgstr "Muuta näppäimiä"
+msgstr "Изменить клавиши"
 
 #: src/guiMainMenu.cpp:804
 msgid "Address required."
-msgstr "Osoite tarvitaan."
+msgstr ""
 
 #: src/guiMainMenu.cpp:822
 msgid "Cannot delete world: Nothing selected"
-msgstr "Ei voida poistaa maailmaa: Mitään ei ole valittu"
+msgstr ""
 
 #: src/guiMainMenu.cpp:837
 msgid "Files to be deleted"
-msgstr "Poistettavat tiedostot"
+msgstr ""
 
 #: src/guiMainMenu.cpp:853
 msgid "Cannot create world: No games found"
-msgstr "Ei voida luoda maailmaa: Pelejä ei löytynyt"
+msgstr ""
 
 #: src/guiMainMenu.cpp:866
 msgid "Nothing here"
-msgstr "Ei mitään täällä"
+msgstr ""
 
 #: src/guiMainMenu.cpp:915
 msgid "Failed to delete all world files"
-msgstr "Kaikkien maailmatiedostojen poistaminen epäonnistui"
+msgstr ""
 
 #: src/guiMessageMenu.cpp:109 src/guiTextInputMenu.cpp:123
 msgid "Proceed"
-msgstr "Jatka"
+msgstr "Продолжить"
 
 #: src/guiPasswordChange.cpp:108
 msgid "Old Password"
-msgstr "Vanha salasana"
+msgstr "Старый пароль"
 
 #: src/guiPasswordChange.cpp:125
 msgid "New Password"
-msgstr "Uusi salasana"
+msgstr "Новый пароль"
 
 #: src/guiPasswordChange.cpp:141
 msgid "Confirm Password"
-msgstr "Vahvista salasana"
+msgstr "Подтвердите пароль"
 
 #: src/guiPasswordChange.cpp:158
 msgid "Change"
-msgstr "Vaihda"
+msgstr "Изменить"
 
 #: src/guiPasswordChange.cpp:167
 msgid "Passwords do not match!"
-msgstr "Salasanat eivät täsmää!"
+msgstr "Пароли не совпадают!"
 
 #: src/guiPauseMenu.cpp:118
 msgid "Continue"
-msgstr "Jatka"
+msgstr "Продолжить"
 
 #: src/guiPauseMenu.cpp:127
 msgid "Change Password"
-msgstr "Vaihda salasana"
+msgstr "Изменить пароль"
 
 #: src/guiPauseMenu.cpp:135
 msgid "Exit to Menu"
-msgstr "Poistu valikkoon"
+msgstr ""
 
 #: src/guiPauseMenu.cpp:142
 msgid "Exit to OS"
-msgstr "Poistu käyttöjärjestelmään"
+msgstr "Выход в ОС"
 
 #: src/guiPauseMenu.cpp:149
 msgid ""
@@ -305,185 +303,185 @@ msgid ""
 "- ESC: This menu\n"
 "- T: Chat\n"
 msgstr ""
-"Oletusnäppäimet:\n"
-"- WASD: kävele\n"
-"- Hiiri vasen: kaiva/lyö\n"
-"- Hiiri oikea: aseta/käytä\n"
-"- Hiiren rulla: valitse esine\n"
-"- 0...9: valitse esine\n"
-"- Shift: hiivi\n"
-"- R: näytä kaikki ladatut palikat\n"
-"- I: inventaario\n"
-"- ESC: tämä valikko\n"
-"- T: chat\n"
+"Управление по умолчанию:\n"
+"- WASD: Идти\n"
+"- ЛКМ: копать/бить\n"
+"- ПКМ: поставить/использовать\n"
+"- Колесо мыши: выбрать предмет\n"
+"- 0...9: выбрать предмет\n"
+"- Shift: красться\n"
+"- R: Просмотр загруженных чанков\n"
+"- I: Инвентарь\n"
+"- ESC: Меню\n"
+"- T: Чат\n"
 
 #: src/keycode.cpp:221
 msgid "Left Button"
-msgstr "Vasen painike"
+msgstr "Левая кнопка"
 
 #: src/keycode.cpp:221
 msgid "Middle Button"
-msgstr "Keskipainike"
+msgstr "Средняя кнопка"
 
 #: src/keycode.cpp:221
 msgid "Right Button"
-msgstr "Oikea painike"
+msgstr "Правая кнопка"
 
 #: src/keycode.cpp:221
 msgid "X Button 1"
-msgstr "X-painike 1"
+msgstr ""
 
 #: src/keycode.cpp:222
 msgid "Back"
-msgstr "Takaisin"
+msgstr ""
 
 #: src/keycode.cpp:222
 msgid "Clear"
-msgstr "Tyhjennä"
+msgstr ""
 
 #: src/keycode.cpp:222
 msgid "Return"
-msgstr "Return"
+msgstr ""
 
 #: src/keycode.cpp:222
 msgid "Tab"
-msgstr "Sarkain"
+msgstr ""
 
 #: src/keycode.cpp:222
 msgid "X Button 2"
-msgstr "X-painike 2"
+msgstr ""
 
 #: src/keycode.cpp:223
 msgid "Capital"
-msgstr "Caps Lock"
+msgstr ""
 
 #: src/keycode.cpp:223
 msgid "Control"
-msgstr "Control"
+msgstr ""
 
 #: src/keycode.cpp:223
 msgid "Kana"
-msgstr "Kana"
+msgstr ""
 
 #: src/keycode.cpp:223
 msgid "Menu"
-msgstr "Valikko"
+msgstr ""
 
 #: src/keycode.cpp:223
 msgid "Pause"
-msgstr "Tauko"
+msgstr ""
 
 #: src/keycode.cpp:223
 msgid "Shift"
-msgstr "Shift"
+msgstr ""
 
 #: src/keycode.cpp:224
 msgid "Convert"
-msgstr "Muunna"
+msgstr ""
 
 #: src/keycode.cpp:224
 msgid "Escape"
-msgstr "Escape"
+msgstr ""
 
 #: src/keycode.cpp:224
 msgid "Final"
-msgstr "Lopullinen"
+msgstr ""
 
 #: src/keycode.cpp:224
 msgid "Junja"
-msgstr "Junja"
+msgstr ""
 
 #: src/keycode.cpp:224
 msgid "Kanji"
-msgstr "Kanji"
+msgstr ""
 
 #: src/keycode.cpp:224
 msgid "Nonconvert"
-msgstr "Kääntämättä"
+msgstr ""
 
 #: src/keycode.cpp:225
 msgid "Accept"
-msgstr "Hyväksy"
+msgstr ""
 
 #: src/keycode.cpp:225
 msgid "End"
-msgstr "End"
+msgstr ""
 
 #: src/keycode.cpp:225
 msgid "Home"
-msgstr "Koti"
+msgstr ""
 
 #: src/keycode.cpp:225
 msgid "Mode Change"
-msgstr "Tilan vaihtaminen"
+msgstr ""
 
 #: src/keycode.cpp:225
 msgid "Next"
-msgstr "Seuraava"
+msgstr ""
 
 #: src/keycode.cpp:225
 msgid "Prior"
-msgstr "Edellinen"
+msgstr ""
 
 #: src/keycode.cpp:225
 msgid "Space"
-msgstr "Välilyönti"
+msgstr ""
 
 #: src/keycode.cpp:226
 msgid "Down"
-msgstr "Alas"
+msgstr ""
 
 #: src/keycode.cpp:226
 msgid "Execute"
-msgstr "Suorita"
+msgstr ""
 
 #: src/keycode.cpp:226
 msgid "Print"
-msgstr "Tulosta"
+msgstr ""
 
 #: src/keycode.cpp:226
 msgid "Select"
-msgstr "Valitse"
+msgstr ""
 
 #: src/keycode.cpp:226
 msgid "Up"
-msgstr "Ylös"
+msgstr ""
 
 #: src/keycode.cpp:227
 msgid "Help"
-msgstr "Ohje"
+msgstr ""
 
 #: src/keycode.cpp:227
 msgid "Insert"
-msgstr "Lisää"
+msgstr ""
 
 #: src/keycode.cpp:227
 msgid "Snapshot"
-msgstr "Kuvakaappaus"
+msgstr "Сделать сниок"
 
 #: src/keycode.cpp:230
 msgid "Left Windows"
-msgstr "Vasen Windows"
+msgstr ""
 
 #: src/keycode.cpp:231
 msgid "Apps"
-msgstr "Apps"
+msgstr ""
 
 #: src/keycode.cpp:231
 msgid "Numpad 0"
-msgstr "Numpad 0"
+msgstr ""
 
 #: src/keycode.cpp:231
 msgid "Numpad 1"
-msgstr "Numpad 1"
+msgstr ""
 
 #: src/keycode.cpp:231
 msgid "Right Windows"
-msgstr "Oikea Windows"
+msgstr ""
 
 #: src/keycode.cpp:231
 msgid "Sleep"
-msgstr "Valmiustila"
+msgstr "Заснуть"
 
 #: src/keycode.cpp:232
 msgid "Numpad 2"
@@ -543,101 +541,98 @@ msgstr "Scroll Lock"
 
 #: src/keycode.cpp:238
 msgid "Left Shift"
-msgstr "Vasen Shift"
+msgstr "Левый Shift"
 
 #: src/keycode.cpp:238
 msgid "Right Shift"
-msgstr "Oikea Shift"
+msgstr ""
 
 #: src/keycode.cpp:239
 msgid "Left Control"
-msgstr "Vasen Control"
+msgstr "Левый Ctrl"
 
 #: src/keycode.cpp:239
 msgid "Left Menu"
-msgstr "Vasen valikko"
+msgstr ""
 
 #: src/keycode.cpp:239
 msgid "Right Control"
-msgstr "Oikea Control"
+msgstr "Правый Ctrl"
 
 #: src/keycode.cpp:239
 msgid "Right Menu"
-msgstr "Oikea valikko"
+msgstr ""
 
 #: src/keycode.cpp:241
 msgid "Comma"
-msgstr "Pilkku"
+msgstr "Запятая (,)"
 
 #: src/keycode.cpp:241
 msgid "Minus"
-msgstr "Miinus"
+msgstr "Минус (-)"
 
 #: src/keycode.cpp:241
 msgid "Period"
-msgstr "Piste"
+msgstr "Точка (.)"
 
 #: src/keycode.cpp:241
 msgid "Plus"
-msgstr "Plus"
+msgstr "Плюс (+)"
 
 #: src/keycode.cpp:245
 msgid "Attn"
-msgstr "Yleisö"
+msgstr ""
 
 #: src/keycode.cpp:245
 msgid "CrSel"
-msgstr "CrSel"
+msgstr ""
 
 #: src/keycode.cpp:246
 msgid "Erase OEF"
-msgstr "Pyyhi OEF"
+msgstr ""
 
 #: src/keycode.cpp:246
 msgid "ExSel"
-msgstr "ExSel"
+msgstr ""
 
 #: src/keycode.cpp:246
 msgid "OEM Clear"
-msgstr "OEM Clear"
+msgstr ""
 
 #: src/keycode.cpp:246
 msgid "PA1"
-msgstr "PA1"
+msgstr ""
 
 #: src/keycode.cpp:246
 msgid "Zoom"
-msgstr "Zoomaa"
+msgstr "Приближение"
 
 #: src/main.cpp:1379
 msgid "Main Menu"
-msgstr "Päävalikko"
+msgstr ""
 
 #: src/main.cpp:1601
 msgid "Failed to initialize world"
-msgstr "Maailman alustaminen epäonnistui"
+msgstr ""
 
 #: src/main.cpp:1613
 msgid "No world selected and no address provided. Nothing to do."
 msgstr ""
-"Maailmaa ei ole valittu eikä osoitetta ole annettu. Ei mitään tehtävää."
 
 #: src/main.cpp:1621
 msgid "Could not find or load game \""
-msgstr "Peliä ei löytynyt tai sitä ei voida ladata: \""
+msgstr ""
 
 #: src/main.cpp:1635
 msgid "Invalid gamespec."
-msgstr "Pelin määritystiedosto ei kelpaa."
+msgstr ""
 
 #: src/main.cpp:1675
 msgid "Connection error (timed out?)"
-msgstr "Yhteysvirhe (aikakatkaisu?)"
+msgstr ""
 
 #: src/main.cpp:1686
 msgid ""
 "\n"
 "Check debug.txt for details."
 msgstr ""
-"\n"
-"Katso lisätietoja tiedostosta debug.txt."
