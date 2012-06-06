@@ -27,6 +27,26 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "gamedef.h"
 #include "inventory.h"
 
+// Check if input matches recipe
+// Takes recipe groups into account
+static bool inputItemMatchesRecipe(const std::string &inp_name,
+		const std::string &rec_name, IItemDefManager *idef)
+{
+	// Exact name
+	if(inp_name == rec_name)
+		return true;
+	
+	// Group
+	if(rec_name.substr(0,6) == "group:" && idef->isKnown(inp_name)){
+		std::string rec_group = rec_name.substr(6);
+		const struct ItemDefinition &def = idef->get(inp_name);
+		if(itemgroup_get(def.groups, rec_group) != 0)
+			return true;
+	}
+	
+	// Didn't match
+	return false;
+}
 
 // Deserialize an itemstring then return the name of the item
 static std::string craftGetItemName(const std::string &itemstring, IGameDef *gamedef)
@@ -403,9 +423,9 @@ bool CraftDefinitionShaped::check(const CraftInput &input, IGameDef *gamedef) co
 		unsigned int rec_x = rec_min_x + x;
 		unsigned int rec_y = rec_min_y + y;
 
-		if(
-			inp_names[inp_y * inp_width + inp_x] !=
-			rec_names[rec_y * rec_width + rec_x]
+		if(!inputItemMatchesRecipe(
+				inp_names[inp_y * inp_width + inp_x],
+				rec_names[rec_y * rec_width + rec_x], gamedef->idef())
 		){
 			return false;
 		}

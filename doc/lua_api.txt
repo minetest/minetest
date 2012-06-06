@@ -363,8 +363,7 @@ effective towards.
 
 Groups in crafting recipes
 ---------------------------
-- Not implemented yet. (TODO)
-- Will probably look like this:
+An example:
 {
     output = 'food:meat_soup_raw',
     recipe = {
@@ -372,7 +371,7 @@ Groups in crafting recipes
         {'group:water'},
         {'group:bowl'},
     },
-    preserve = {'group:bowl'},
+    preserve = {'group:bowl'}, -- Not implemented yet (TODO)
 }
 
 Special groups
@@ -1210,19 +1209,19 @@ Node definition (register_node)
     ^ default: minetest.node_metadata_inventory_take_allow_all
 }
 
-Recipe: (register_craft)
+Recipe for register_craft: (shaped)
 {
     output = 'default:pick_stone',
     recipe = {
         {'default:cobble', 'default:cobble', 'default:cobble'},
         {'', 'default:stick', ''},
-        {'', 'default:stick', ''},
+        {'', 'default:stick', ''}, -- Also groups; eg. 'group:crumbly'
     },
     replacements = <optional list of item pairs,
                     replace one input item with another item on crafting>
 }
 
-Recipe (shapeless):
+Recipe for register_craft (shapeless)
 {
     type = "shapeless",
     output = 'mushrooms:mushroom_stew',
@@ -1235,13 +1234,13 @@ Recipe (shapeless):
                     replace one input item with another item on crafting>
 }
 
-Recipe (tool repair):
+Recipe for register_craft (tool repair)
 {
     type = "toolrepair",
     additional_wear = -0.02,
 }
 
-Recipe (cooking):
+Recipe for register_craft (cooking)
 {
     type = "cooking",
     output = "default:glass",
@@ -1249,7 +1248,7 @@ Recipe (cooking):
     cooktime = 3,
 }
 
-Recipe (furnace fuel):
+Recipe for register_craft (furnace fuel)
 {
     type = "fuel",
     recipe = "default:leaves",

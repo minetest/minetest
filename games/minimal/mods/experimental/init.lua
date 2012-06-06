@@ -496,6 +496,14 @@ minetest.register_craftitem("experimental:tester_tool_1", {
 	end,
 })
 
+minetest.register_craft({
+	output = 'experimental:tester_tool_1',
+	recipe = {
+		{'group:crumbly'},
+		{'group:crumbly'},
+	}
+})
+
 minetest.log("experimental modname="..dump(minetest.get_current_modname()))
 minetest.log("experimental modpath="..dump(minetest.get_modpath("experimental")))
 minetest.log("experimental worldpath="..dump(minetest.get_worldpath()))
