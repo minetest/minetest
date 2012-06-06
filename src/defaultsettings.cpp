@@ -119,6 +119,7 @@ void set_default_settings(Settings *settings)
 	settings->setDefault("default_privs", "interact, shout");
 	settings->setDefault("unlimited_player_transfer_distance", "true");
 	settings->setDefault("enable_pvp", "true");
+	settings->setDefault("disallow_empty_password", "false");
 
 	settings->setDefault("profiler_print_interval", "0");
 	settings->setDefault("enable_mapgen_debug_info", "false");

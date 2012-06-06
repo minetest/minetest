@@ -2089,41 +2089,50 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 				<<m_con.GetPeerAddress(peer_id).serializeString()<<std::endl;
 
 		// Get password
-		char password[PASSWORD_SIZE];
+		char given_password[PASSWORD_SIZE];
 		if(datasize < 2+1+PLAYERNAME_SIZE+PASSWORD_SIZE)
 		{
 			// old version - assume blank password
-			password[0] = 0;
+			given_password[0] = 0;
 		}
 		else
 		{
 			for(u32 i=0; i<PASSWORD_SIZE-1; i++)
 			{
-				password[i] = data[23+i];
+				given_password[i] = data[23+i];
 			}
-			password[PASSWORD_SIZE-1] = 0;
+			given_password[PASSWORD_SIZE-1] = 0;
 		}
 
-		if(!base64_is_valid(password)){
-			infostream<<"Server: "<<playername<<" supplied invalid password hash"<<std::endl;
+		if(!base64_is_valid(given_password)){
+			infostream<<"Server: "<<playername
+					<<" supplied invalid password hash"<<std::endl;
 			SendAccessDenied(m_con, peer_id, L"Invalid password hash");
 			return;
 		}
 		
-		std::string checkpwd;
+		std::string checkpwd; // Password hash to check against
 		bool has_auth = scriptapi_get_auth(m_lua, playername, &checkpwd, NULL);
 		
+		// If no authentication info exists for user, create it
 		if(!has_auth){
+			if(!isSingleplayer() &&
+					g_settings->getBool("disallow_empty_password") &&
+					std::string(given_password) == ""){
+				SendAccessDenied(m_con, peer_id, L"Empty passwords are "
+						L"disallowed. Set a password and try again.");
+				return;
+			}
 			std::wstring raw_default_password =
 				narrow_to_wide(g_settings->get("default_password"));
-			std::string use_password =
+			std::string initial_password =
 				translatePassword(playername, raw_default_password);
 
 			// If default_password is empty, allow any initial password
 			if (raw_default_password.length() == 0)
-				use_password = password;
+				initial_password = given_password;
 
-			scriptapi_create_auth(m_lua, playername, use_password);
+			scriptapi_create_auth(m_lua, playername, initial_password);
 		}
 		
 		has_auth = scriptapi_get_auth(m_lua, playername, &checkpwd, NULL);
@@ -2133,7 +2142,7 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 			return;
 		}
 
-		if(password != checkpwd){
+		if(given_password != checkpwd){
 			infostream<<"Server: peer_id="<<peer_id
 					<<": supplied invalid password for "
 					<<playername<<std::endl;

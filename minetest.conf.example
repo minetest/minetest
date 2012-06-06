@@ -152,6 +152,8 @@
 #enable_pvp = true
 # If this is set, players will always (re)spawn at the given position
 #static_spawnpoint = 0, 10, 0
+# If true, new players cannot join with an empty password
+#disallow_empty_password = false
 
 # Profiler data print interval. #0 = disable.
 #profiler_print_interval = 0
