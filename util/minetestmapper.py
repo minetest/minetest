@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python2
 # -*- coding: utf-8 -*-
 
 # This program is free software. It comes without any warranty, to
@@ -30,6 +30,7 @@ import getopt
 import sys
 import array
 import cStringIO
+import traceback
 from PIL import Image, ImageDraw, ImageFont, ImageColor
 
 TRANSLATION_TABLE = {
@@ -108,9 +109,34 @@ def limit(i, l, h):
         i = l
     return i
 
+def readU8(f):
+    return ord(f.read(1))
+
+def readU16(f):
+    return ord(f.read(1))*256 + ord(f.read(1))
+
+def readU32(f):
+    return ord(f.read(1))*256*256*256 + ord(f.read(1))*256*256 + ord(f.read(1))*256 + ord(f.read(1))
+
+def readS32(f):
+    return unsignedToSigned(ord(f.read(1))*256*256*256 + ord(f.read(1))*256*256 + ord(f.read(1))*256 + ord(f.read(1)), 2**31)
+
+usagetext = """minetestmapper.py [options]
+  -i/--input <world_path>
+  -o/--output <output_image.png>
+  --bgcolor <color>
+  --scalecolor <color>
+  --playercolor <color>
+  --origincolor <color>
+  --drawscale
+  --drawplayers
+  --draworigin
+  --drawunderground
+Color format: '#000000'"""
 
 def usage():
-    print("TODO: Help")
+    print(usagetext)
+
 try:
     opts, args = getopt.getopt(sys.argv[1:], "hi:o:", ["help", "input=",
         "output=", "bgcolor=", "scalecolor=", "origincolor=",
@@ -122,7 +148,7 @@ except getopt.GetoptError as err:
     usage()
     sys.exit(2)
 
-path = "../world/"
+path = None
 output = "map.png"
 border = 0
 scalecolor = "black"
@@ -167,6 +193,10 @@ for o, a in opts:
     else:
         assert False, "unhandled option"
 
+if path is None:
+    print("Please select world path (eg. -i ../worlds/yourworld) (or use --help)")
+    sys.exit(1)
+
 if path[-1:] != "/" and path[-1:] != "\\":
     path = path + "/"
 
@@ -178,11 +208,28 @@ except IOError:
     f = file(os.path.join(os.path.dirname(__file__), "colors.txt"))
 for line in f:
     values = string.split(line)
-    colors[int(values[0], 16)] = (
-        int(values[1]),
-        int(values[2]),
-        int(values[3]))
+    if len(values) < 4:
+        continue
+    identifier = values[0]
+    is_hex = True
+    for c in identifier:
+        if c not in "0123456789abcdefABCDEF":
+            is_hex = False
+            break
+    if is_hex:
+        colors[int(values[0], 16)] = (
+            int(values[1]),
+            int(values[2]),
+            int(values[3]))
+    else:
+        colors[values[0]] = (
+            int(values[1]),
+            int(values[2]),
+            int(values[3]))
 f.close()
+
+#print("colors: "+repr(colors))
+#sys.exit(1)
 
 xlist = []
 zlist = []
@@ -236,6 +283,10 @@ if os.path.exists(path + "sectors"):
         xlist.append(x)
         zlist.append(z)
 
+if len(xlist) == 0 or len(zlist) == 0:
+    print("World does not exist.")
+    sys.exit(1)
+
 # Get rid of doubles
 xlist, zlist = zip(*sorted(set(zip(xlist, zlist))))
 
@@ -247,7 +298,8 @@ maxz = max(zlist)
 w = (maxx - minx) * 16 + 16
 h = (maxz - minz) * 16 + 16
 
-print("w=" + str(w) + " h=" + str(h))
+print("Result image (w=" + str(w) + " h=" + str(h) + ") will be written to "
+        + output)
 
 im = Image.new("RGB", (w + border, h + border), bgcolor)
 draw = ImageDraw.Draw(im)
@@ -255,18 +307,24 @@ impix = im.load()
 
 stuff = {}
 
+unknown_node_names = []
+unknown_node_ids = []
+
 starttime = time.time()
 
 CONTENT_WATER = 2
+
+def content_is_ignore(d):
+    return d in [0, "ignore"]
 
 def content_is_water(d):
     return d in [2, 9]
 
 def content_is_air(d):
-    return d in [126, 127, 254]
+    return d in [126, 127, 254, "air"]
 
 def read_content(mapdata, version, datapos):
-    if version == 20:
+    if version >= 20:
         if mapdata[datapos] < 0x80:
             return mapdata[datapos]
         else:
@@ -277,16 +335,10 @@ def read_content(mapdata, version, datapos):
         raise Exception("Unsupported map format: " + str(version))
 
 
-def read_mapdata(f, version, pixellist, water, day_night_differs):
+def read_mapdata(mapdata, version, pixellist, water, day_night_differs, id_to_name):
     global stuff  # oh my :-)
-
-    dec_o = zlib.decompressobj()
-    try:
-        mapdata = array.array("B", dec_o.decompress(f.read()))
-    except:
-        mapdata = []
-
-    f.close()
+    global unknown_node_names
+    global unknown_node_ids
 
     if(len(mapdata) < 4096):
         print("bad: " + xhex + "/" + zhex + "/" + yhex + " " + \
@@ -301,7 +353,15 @@ def read_mapdata(f, version, pixellist, water, day_night_differs):
             for y in reversed(range(16)):
                 datapos = x + y * 16 + z * 256
                 content = read_content(mapdata, version, datapos)
-                if content_is_air(content):
+                # Try to convert id to name
+                try:
+                    content = id_to_name[content]
+                except KeyError:
+                    pass
+
+                if content_is_ignore(content):
+                    pass
+                elif content_is_air(content):
                     pass
                 elif content_is_water(content):
                     water[(x, z)] += 1
@@ -316,8 +376,16 @@ def read_mapdata(f, version, pixellist, water, day_night_differs):
                     pixellist.remove((x, z))
                     break
                 else:
-                    print("strange block: %s/%s/%s x: %d y: %d z: %d \
-block id: %x" % (xhex, zhex, yhex, x, y, z, content))
+                    if type(content) == str:
+                        if content not in unknown_node_names:
+                            unknown_node_names.append(content)
+                        #print("unknown node: %s/%s/%s x: %d y: %d z: %d block name: %s"
+                        #        % (xhex, zhex, yhex, x, y, z, content))
+                    else:
+                        if content not in unknown_node_ids:
+                            unknown_node_ids.append(content)
+                        #print("unknown node: %s/%s/%s x: %d y: %d z: %d block id: %x"
+                        #        % (xhex, zhex, yhex, x, y, z, content))
 
 # Go through all sectors.
 for n in range(len(xlist)):
@@ -405,36 +473,128 @@ for n in range(len(xlist)):
 
     # Go through the Y axis from top to bottom.
     for ypos in reversed(ylist):
+        try:
+            #print("("+str(xpos)+","+str(ypos)+","+str(zpos)+")")
 
-        yhex = int_to_hex4(ypos)
+            yhex = int_to_hex4(ypos)
 
-        if sectortype == "sqlite":
-            ps = getBlockAsInteger((xpos, ypos, zpos))
-            cur.execute("SELECT `data` FROM `blocks` WHERE `pos`==? LIMIT 1", (ps,))
-            r = cur.fetchone()
-            if not r:
-                continue
-            f = cStringIO.StringIO(r[0])
-        else:
-            if sectortype == "old":
-                filename = path + "sectors/" + sector1 + "/" + yhex.lower()
+            if sectortype == "sqlite":
+                ps = getBlockAsInteger((xpos, ypos, zpos))
+                cur.execute("SELECT `data` FROM `blocks` WHERE `pos`==? LIMIT 1", (ps,))
+                r = cur.fetchone()
+                if not r:
+                    continue
+                f = cStringIO.StringIO(r[0])
             else:
-                filename = path + "sectors2/" + sector2 + "/" + yhex.lower()
-            f = file(filename, "rb")
+                if sectortype == "old":
+                    filename = path + "sectors/" + sector1 + "/" + yhex.lower()
+                else:
+                    filename = path + "sectors2/" + sector2 + "/" + yhex.lower()
+                f = file(filename, "rb")
 
-        # Let's just memorize these even though it's not really necessary.
-        version = ord(f.read(1))
-        flags = f.read(1)
+            # Let's just memorize these even though it's not really necessary.
+            version = readU8(f)
+            flags = f.read(1)
+            
+            #print("version="+str(version))
+            #print("flags="+str(version))
 
-        # Checking day and night differs -flag
-        day_night_differs = ((ord(flags) & 2) != 0)
+            # Check flags
+            is_underground = ((ord(flags) & 1) != 0)
+            day_night_differs = ((ord(flags) & 2) != 0)
+            lighting_expired = ((ord(flags) & 4) != 0)
+            generated = ((ord(flags) & 8) != 0)
+            
+            #print("is_underground="+str(is_underground))
+            #print("day_night_differs="+str(day_night_differs))
+            #print("lighting_expired="+str(lighting_expired))
+            #print("generated="+str(generated))
+            
+            if version >= 22:
+                content_width = readU8(f)
+                params_width = readU8(f)
 
-        read_mapdata(f, version, pixellist, water, day_night_differs)
+            # Node data
+            dec_o = zlib.decompressobj()
+            try:
+                mapdata = array.array("B", dec_o.decompress(f.read()))
+            except:
+                mapdata = []
+            
+            # Reuse the unused tail of the file
+            f.close();
+            f = cStringIO.StringIO(dec_o.unused_data)
+            #print("unused data: "+repr(dec_o.unused_data))
 
-        # After finding all the pixels in the sector, we can move on to
-        # the next sector without having to continue the Y axis.
-        if(len(pixellist) == 0):
-            break
+            # zlib-compressed node metadata list
+            dec_o = zlib.decompressobj()
+            try:
+                metaliststr = array.array("B", dec_o.decompress(f.read()))
+                # And do nothing with it
+            except:
+                metaliststr = []
+            
+            # Reuse the unused tail of the file
+            f.close();
+            f = cStringIO.StringIO(dec_o.unused_data)
+            #print("* dec_o.unused_data: "+repr(dec_o.unused_data))
+            data_after_node_metadata = dec_o.unused_data
+
+            if version <= 21:
+                # mapblockobject_count
+                readU16(f)
+
+            if version == 23:
+                readU8(f) # Unused node timer version (always 0)
+
+            static_object_version = readU8(f)
+            static_object_count = readU16(f)
+            for i in range(0, static_object_count):
+                # u8 type (object type-id)
+                object_type = readU8(f)
+                # s32 pos_x_nodes * 10000
+                pos_x_nodes = readS32(f)/10000
+                # s32 pos_y_nodes * 10000
+                pos_y_nodes = readS32(f)/10000
+                # s32 pos_z_nodes * 10000
+                pos_z_nodes = readS32(f)/10000
+                # u16 data_size
+                data_size = readU16(f)
+                # u8[data_size] data
+                data = f.read(data_size)
+            
+            timestamp = readU32(f)
+            #print("* timestamp="+str(timestamp))
+            
+            id_to_name = {}
+            if version >= 22:
+                name_id_mapping_version = readU8(f)
+                num_name_id_mappings = readU16(f)
+                #print("* num_name_id_mappings: "+str(num_name_id_mappings))
+                for i in range(0, num_name_id_mappings):
+                    node_id = readU16(f)
+                    name_len = readU16(f)
+                    name = f.read(name_len)
+                    #print(str(node_id)+" = "+name)
+                    id_to_name[node_id] = name
+
+            read_mapdata(mapdata, version, pixellist, water, day_night_differs, id_to_name)
+
+            # After finding all the pixels in the sector, we can move on to
+            # the next sector without having to continue the Y axis.
+            if(len(pixellist) == 0):
+                break
+        except Exception as e:
+            print("Error at ("+str(xpos)+","+str(ypos)+","+str(zpos)+"): "+str(e))
+            sys.stdout.write("Block data: ")
+            for c in r[0]:
+                sys.stdout.write("%2.2x "%ord(c))
+            sys.stdout.write(os.linesep)
+            sys.stdout.write("Data after node metadata: ")
+            for c in data_after_node_metadata:
+                sys.stdout.write("%2.2x "%ord(c))
+            sys.stdout.write(os.linesep)
+            traceback.print_exc()
 
 print("Drawing image")
 # Drawing the picture
@@ -558,3 +718,15 @@ if drawplayers:
 
 print("Saving")
 im.save(output)
+
+if unknown_node_names:
+    sys.stdout.write("Unknown node names:")
+    for name in unknown_node_names:
+        sys.stdout.write(" "+name)
+    sys.stdout.write(os.linesep)
+if unknown_node_ids:
+    sys.stdout.write("Unknown node ids:")
+    for node_id in unknown_node_ids:
+        sys.stdout.write(" "+str(hex(node_id)))
+    sys.stdout.write(os.linesep)
+
