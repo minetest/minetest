@@ -1,13 +1,13 @@
-=================================================
-Minetest World Format used as of 0.4.dev-20120322
-=================================================
+=============================
+Minetest World Format 22...23
+=============================
 
-This applies to a world format carrying the block serialization version 22
-which is used at least in version 0.4.dev-20120322.
+This applies to a world format carrying the block serialization version
+22...23, used at least in 0.4.dev-20120322 ... 0.4.dev-20120606.
 
-The block serialization version used is 22. It does not fully specify every
-aspect of this format; if compliance with this format is to be checked, it
-needs to be done by detecting if the files and data indeed follows it.
+The block serialization version does not fully specify every aspect of this
+format; if compliance with this format is to be checked, it needs to be
+done by detecting if the files and data indeed follows it.
 
 Legacy stuff
 =============
@@ -20,8 +20,8 @@ Files
 Everything is contained in a directory, the name of which is freeform, but
 often serves as the name of the world.
 
-Currently the authentication and ban data is stored on a per-world basis. It
-can be copied over from an old world to a newly created world.
+Currently the authentication and ban data is stored on a per-world basis.
+It can be copied over from an old world to a newly created world.
 
 World
 |-- auth.txt ----- Authentication data
@@ -283,9 +283,9 @@ zlib-compressed node metadata list
     u16 content_size
     u8[content_size] (content of metadata)
 
-u16 mapblockobject_count
-- Always 0
-- Should be removed in version 23 (TODO)
+- unused node timers (version will be 24 when they are actually used):
+if version == 23:
+  u8 unused version (always 0)
 
 u8 static object version:
 - Always 0
