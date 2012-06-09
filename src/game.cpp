@@ -63,17 +63,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <list>
 
 /*
-	Setting this to 1 enables a special camera mode that forces
-	the renderers to think that the camera statically points from
-	the starting place to a static direction.
-
-	This allows one to move around with the player and see what
-	is actually drawn behind solid things and behind the player.
-*/
-#define FIELD_OF_VIEW_TEST 0
-
-
-/*
 	Text input system
 */
 
