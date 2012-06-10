@@ -1036,7 +1036,9 @@ Definition tables
 
 Object Properties
 {
+    hp_max = 1,
     physical = true,
+    weight = 5,
     collisionbox = {-0.5,-0.5,-0.5, 0.5,0.5,0.5},
     visual = "cube"/"sprite"/"upright_sprite",
     visual_size = {x=1, y=1},
@@ -1045,6 +1047,7 @@ Object Properties
     initial_sprite_basepos = {x=0, y=0},
     is_visible = true,
     makes_footstep_sound = false,
+    automatic_rotate = false,
 }
 
 Entity definition (register_entity)
