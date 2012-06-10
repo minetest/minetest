@@ -67,6 +67,11 @@ struct ItemDefinition
 	ToolCapabilities *tool_capabilities;
 	ItemGroupList groups;
 
+	// Client shall immediately place this node when player places the item.
+	// Server will update the precise end result a moment later.
+	// "" = no prediction
+	std::string node_placement_prediction;
+
 	/*
 		Cached stuff
 	*/

@@ -1100,6 +1100,13 @@ Item definition (register_node, register_craftitem, register_tool)
             choppy={times={[3]=0.90}, maxwear=0.05, maxlevel=0}
         }
     }
+    node_placement_prediction = nil,
+    ^ If nil and item is node, prediction is made automatically
+    ^ If nil and item is not a node, no prediction is made
+    ^ If "" and item is anything, no prediction is made
+    ^ Otherwise should be name of node which the client immediately places
+      on ground when the player places the item. Server will always update
+      actual result to client in a short moment.
 
     on_place = func(itemstack, placer, pointed_thing),
     ^ default: minetest.item_place

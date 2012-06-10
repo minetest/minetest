@@ -70,6 +70,7 @@ ItemDefinition& ItemDefinition::operator=(const ItemDefinition &def)
 				*def.tool_capabilities);
 	}
 	groups = def.groups;
+	node_placement_prediction = def.node_placement_prediction;
 #ifndef SERVER
 	inventory_texture = def.inventory_texture;
 	if(def.wield_mesh)
@@ -115,6 +116,8 @@ void ItemDefinition::reset()
 	}
 	groups.clear();
 
+	node_placement_prediction = "";
+	
 #ifndef SERVER
 	inventory_texture = NULL;
 	if(wield_mesh)
@@ -150,6 +153,7 @@ void ItemDefinition::serialize(std::ostream &os) const
 		os<<serializeString(i->first);
 		writeS16(os, i->second);
 	}
+	os<<serializeString(node_placement_prediction);
 }
 
 void ItemDefinition::deSerialize(std::istream &is)
@@ -184,6 +188,11 @@ void ItemDefinition::deSerialize(std::istream &is)
 		int value = readS16(is);
 		groups[name] = value;
 	}
+	// If you add anything here, insert it primarily inside the try-catch
+	// block to not need to increase the version.
+	try{
+		node_placement_prediction = deSerializeString(is);
+	}catch(SerializationError &e) {};
 }
 
 /*

@@ -633,6 +633,7 @@ public:
 			std::string wrapper = deSerializeString(is2);
 			std::istringstream wrapper_is(wrapper, std::ios::binary);
 			f->deSerialize(wrapper_is);
+			verbosestream<<"deserialized "<<f->name<<std::endl;
 			if(f->name != "")
 				addNameIdMapping(i, f->name);
 		}

@@ -342,6 +342,7 @@ minetest.nodedef_default = {
 	usable = false,
 	liquids_pointable = false,
 	tool_capabilities = nil,
+	node_placement_prediction = nil,
 
 	-- Interaction callbacks
 	on_place = redef_wrapper(minetest, 'item_place'), -- minetest.item_place

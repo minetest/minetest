@@ -2366,8 +2366,41 @@ void the_game(
 				// Otherwise report right click to server
 				else
 				{
+					// Report to server
 					client.interact(3, pointed);
 					camera.setDigging(1);  // right click animation
+					
+					// If the wielded item has node placement prediction,
+					// make that happen
+					const ItemDefinition &def =
+							playeritem.getDefinition(itemdef);
+					if(def.node_placement_prediction != "")
+					do{ // breakable
+						verbosestream<<"Node placement prediction for "
+								<<playeritem.name<<" is "
+								<<def.node_placement_prediction<<std::endl;
+						v3s16 p = neighbourpos;
+						content_t id;
+						bool found =
+							nodedef->getId(def.node_placement_prediction, id);
+						if(!found){
+							errorstream<<"Node placement prediction failed for "
+									<<playeritem.name<<" (places "
+									<<def.node_placement_prediction
+									<<") - Name not known"<<std::endl;
+							break;
+						}
+						MapNode n(id);
+						try{
+							// This triggers the required mesh update too
+							client.addNode(p, n);
+						}catch(InvalidPositionException &e){
+							errorstream<<"Node placement prediction failed for "
+									<<playeritem.name<<" (places "
+									<<def.node_placement_prediction
+									<<") - Position not loaded"<<std::endl;
+						}
+					}while(0);
 				}
 			}
 		}

@@ -930,13 +930,14 @@ static void read_object_properties(lua_State *L, int index,
 	ItemDefinition
 */
 
-static ItemDefinition read_item_definition(lua_State *L, int index)
+static ItemDefinition read_item_definition(lua_State *L, int index,
+		ItemDefinition default_def = ItemDefinition())
 {
 	if(index < 0)
 		index = lua_gettop(L) + 1 + index;
 
 	// Read the item definition
-	ItemDefinition def;
+	ItemDefinition def = default_def;
 
 	def.type = (ItemType)getenumfield(L, index, "type",
 			es_ItemType, ITEM_NONE);
@@ -980,6 +981,12 @@ static ItemDefinition read_item_definition(lua_State *L, int index)
 	lua_getfield(L, index, "groups");
 	read_groups(L, -1, def.groups);
 	lua_pop(L, 1);
+
+	// Client shall immediately place this node when player places the item.
+	// Server will update the precise end result a moment later.
+	// "" = no prediction
+	getstringfield(L, index, "node_placement_prediction",
+			def.node_placement_prediction);
 
 	return def;
 }
@@ -3891,9 +3898,10 @@ static int l_register_item_raw(lua_State *L)
 			get_server(L)->getWritableNodeDefManager();
 
 	// Check if name is defined
+	std::string name;
 	lua_getfield(L, table, "name");
 	if(lua_isstring(L, -1)){
-		std::string name = lua_tostring(L, -1);
+		name = lua_tostring(L, -1);
 		verbosestream<<"register_item_raw: "<<name<<std::endl;
 	} else {
 		throw LuaError(L, "register_item_raw: name is not defined or not a string");
@@ -3901,8 +3909,20 @@ static int l_register_item_raw(lua_State *L)
 
 	// Check if on_use is defined
 
-	// Read the item definition and register it
-	ItemDefinition def = read_item_definition(L, table);
+	ItemDefinition def;
+	// Set a distinctive default value to check if this is set
+	def.node_placement_prediction = "__default";
+
+	// Read the item definition
+	def = read_item_definition(L, table, def);
+
+	// Default to having client-side placement prediction for nodes
+	// ("" in item definition sets it off)
+	if(def.type == ITEM_NODE && def.node_placement_prediction == "__default"){
+		def.node_placement_prediction = name;
+	}
+	
+	// Register item definition
 	idef->registerItem(def);
 
 	// Read the node definition (content features) and register it

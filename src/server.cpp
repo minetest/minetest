@@ -2971,8 +2971,16 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 					<<std::endl;
 			// Re-send block to revert change on client-side
 			RemoteClient *client = getClient(peer_id);
-			v3s16 blockpos = getNodeBlockPos(floatToInt(pointed_pos_under, BS));
-			client->SetBlockNotSent(blockpos);
+			// Digging completed -> under
+			if(action == 2){
+				v3s16 blockpos = getNodeBlockPos(floatToInt(pointed_pos_under, BS));
+				client->SetBlockNotSent(blockpos);
+			}
+			// Placement -> above
+			if(action == 3){
+				v3s16 blockpos = getNodeBlockPos(floatToInt(pointed_pos_above, BS));
+				client->SetBlockNotSent(blockpos);
+			}
 			return;
 		}
 
@@ -3104,7 +3112,14 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 				if(g_settings->getBool("creative_mode") == false)
 					playersao->setWieldedItem(item);
 			}
-
+			
+			// If item has node placement prediction, always send the above
+			// node to make sure the client knows what exactly happened
+			if(item.getDefinition(m_itemdef).node_placement_prediction != ""){
+				RemoteClient *client = getClient(peer_id);
+				v3s16 blockpos = getNodeBlockPos(floatToInt(pointed_pos_above, BS));
+				client->SetBlockNotSent(blockpos);
+			}
 		} // action == 3
 
 		/*
