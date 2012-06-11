@@ -141,6 +141,9 @@ TestSAO proto_TestSAO(NULL, v3f(0,0,0));
 
 /*
 	ItemSAO
+
+	DEPRECATED: New dropped items are implemented in Lua; see
+	            builtin/item_entity.lua.
 */
 
 class ItemSAO : public ServerActiveObject
