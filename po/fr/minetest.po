@@ -8,35 +8,35 @@ msgstr ""
 "Project-Id-Version: 0.0.0\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2012-06-04 23:25+0300\n"
-"PO-Revision-Date: 2012-06-04 22:23+0000\n"
-"Last-Translator: Cisoun <Unknown>\n"
+"PO-Revision-Date: 2012-06-13 15:28+0000\n"
+"Last-Translator: bouchard renaud <Unknown>\n"
 "Language-Team: Français <>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2012-06-06 05:00+0000\n"
-"X-Generator: Launchpad (build 15353)\n"
+"X-Launchpad-Export-Date: 2012-06-16 07:24+0000\n"
+"X-Generator: Launchpad (build 15419)\n"
 "Language: fr\n"
 
 #: src/guiConfirmMenu.cpp:120
 msgid "Yes"
-msgstr ""
+msgstr "Oui"
 
 #: src/guiConfirmMenu.cpp:126
 msgid "No"
-msgstr ""
+msgstr "Non"
 
 #: src/guiCreateWorld.cpp:116
 msgid "World name"
-msgstr ""
+msgstr "Nom du monde"
 
 #: src/guiCreateWorld.cpp:135
 msgid "Game"
-msgstr ""
+msgstr "Jeu"
 
 #: src/guiCreateWorld.cpp:159
 msgid "Create"
-msgstr ""
+msgstr "Créer"
 
 #: src/guiCreateWorld.cpp:165 src/guiKeyChangeMenu.cpp:374 src/keycode.cpp:221
 msgid "Cancel"
@@ -44,16 +44,18 @@ msgstr "Annuler"
 
 #: src/guiDeathScreen.cpp:96
 msgid "You died."
-msgstr ""
+msgstr "Vous êtes mort."
 
 #: src/guiDeathScreen.cpp:104
 msgid "Respawn"
-msgstr ""
+msgstr "Réaparaitre"
 
 #: src/guiKeyChangeMenu.cpp:111
 msgid ""
 "Keybindings. (If this menu screws up, remove stuff from minetest.conf)"
 msgstr ""
+"Configuration des touches. ( Si ce menu est cassé, enlevez des lignes du "
+"minetest.conf)"
 
 #: src/guiKeyChangeMenu.cpp:121
 msgid "Forward"
@@ -85,7 +87,7 @@ msgstr "Sauter"
 
 #: src/guiKeyChangeMenu.cpp:231
 msgid "Drop"
-msgstr ""
+msgstr "Laisser tomber"
 
 #: src/guiKeyChangeMenu.cpp:246
 msgid "Inventory"
@@ -97,11 +99,11 @@ msgstr "Parler"
 
 #: src/guiKeyChangeMenu.cpp:276
 msgid "Command"
-msgstr ""
+msgstr "Commande"
 
 #: src/guiKeyChangeMenu.cpp:290
 msgid "Console"
-msgstr ""
+msgstr "Terminal"
 
 #: src/guiKeyChangeMenu.cpp:306
 msgid "Toggle fly"
@@ -136,27 +138,27 @@ msgstr "Presser une touche"
 
 #: src/guiMainMenu.cpp:217
 msgid "Singleplayer"
-msgstr ""
+msgstr "Solo"
 
 #: src/guiMainMenu.cpp:218
 msgid "Multiplayer"
-msgstr ""
+msgstr "Multijoueur"
 
 #: src/guiMainMenu.cpp:219
 msgid "Advanced"
-msgstr ""
+msgstr "Avancé"
 
 #: src/guiMainMenu.cpp:220
 msgid "Settings"
-msgstr ""
+msgstr "Paramètres"
 
 #: src/guiMainMenu.cpp:221
 msgid "Credits"
-msgstr ""
+msgstr "Crédits"
 
 #: src/guiMainMenu.cpp:252
 msgid "Select World:"
-msgstr ""
+msgstr "Choisissez le Monde :"
 
 #: src/guiMainMenu.cpp:274 src/keycode.cpp:227
 msgid "Delete"
@@ -164,11 +166,11 @@ msgstr "Supprimer"
 
 #: src/guiMainMenu.cpp:281
 msgid "New"
-msgstr ""
+msgstr "Nouveau"
 
 #: src/guiMainMenu.cpp:289
 msgid "Configure"
-msgstr ""
+msgstr "Configurer"
 
 #: src/guiMainMenu.cpp:304 src/keycode.cpp:246
 msgid "Play"
@@ -184,7 +186,7 @@ msgstr "Activer blessures"
 
 #: src/guiMainMenu.cpp:341 src/guiMainMenu.cpp:414
 msgid "Name/Password"
-msgstr "Nom / MdP"
+msgstr "Nom/Mot de passe"
 
 #: src/guiMainMenu.cpp:368 src/guiMainMenu.cpp:441
 msgid "Address/Port"
@@ -200,11 +202,11 @@ msgstr "Laisser l'adresse vide pour lancer un serveur local."
 
 #: src/guiMainMenu.cpp:505 src/guiMainMenu.cpp:833
 msgid "Delete world"
-msgstr ""
+msgstr "Effacer le monde"
 
 #: src/guiMainMenu.cpp:512
 msgid "Create world"
-msgstr ""
+msgstr "Créer un monde"
 
 #: src/guiMainMenu.cpp:546
 msgid "Fancy trees"
@@ -216,11 +218,11 @@ msgstr "Lumière douce"
 
 #: src/guiMainMenu.cpp:558
 msgid "3D Clouds"
-msgstr ""
+msgstr "Nuages en 3D"
 
 #: src/guiMainMenu.cpp:564
 msgid "Opaque water"
-msgstr ""
+msgstr "Eau opaque"
 
 #: src/guiMainMenu.cpp:573
 msgid "Change keys"
@@ -228,27 +230,27 @@ msgstr "Changer touches"
 
 #: src/guiMainMenu.cpp:804
 msgid "Address required."
-msgstr ""
+msgstr "Adresse requise"
 
 #: src/guiMainMenu.cpp:822
 msgid "Cannot delete world: Nothing selected"
-msgstr ""
+msgstr "Monde non effacable: Rien de sélectionné"
 
 #: src/guiMainMenu.cpp:837
 msgid "Files to be deleted"
-msgstr ""
+msgstr "Fichiers à effacer"
 
 #: src/guiMainMenu.cpp:853
 msgid "Cannot create world: No games found"
-msgstr ""
+msgstr "Ne pouvons créer le monde: Pas de parties trouvées"
 
 #: src/guiMainMenu.cpp:866
 msgid "Nothing here"
-msgstr ""
+msgstr "Rien ici"
 
 #: src/guiMainMenu.cpp:915
 msgid "Failed to delete all world files"
-msgstr ""
+msgstr "Echec de l'effacement des fichiers Mondes"
 
 #: src/guiMessageMenu.cpp:109 src/guiTextInputMenu.cpp:123
 msgid "Proceed"
@@ -272,7 +274,7 @@ msgstr "Changer"
 
 #: src/guiPasswordChange.cpp:167
 msgid "Passwords do not match!"
-msgstr "Mauvaise correspondance!"
+msgstr "Les mots de passes ne correspondent pas !"
 
 #: src/guiPauseMenu.cpp:118
 msgid "Continue"
@@ -284,7 +286,7 @@ msgstr "Changer mot de passe"
 
 #: src/guiPauseMenu.cpp:135
 msgid "Exit to Menu"
-msgstr ""
+msgstr "Sortir vers le menu"
 
 #: src/guiPauseMenu.cpp:142
 msgid "Exit to OS"
@@ -422,7 +424,7 @@ msgstr "Suivant"
 
 #: src/keycode.cpp:225
 msgid "Prior"
-msgstr ""
+msgstr "Avant"
 
 #: src/keycode.cpp:225
 msgid "Space"
@@ -546,7 +548,7 @@ msgstr "Shift gauche"
 
 #: src/keycode.cpp:238
 msgid "Right Shift"
-msgstr ""
+msgstr "Maj. droite"
 
 #: src/keycode.cpp:239
 msgid "Left Control"
@@ -610,30 +612,32 @@ msgstr "Zoom"
 
 #: src/main.cpp:1379
 msgid "Main Menu"
-msgstr ""
+msgstr "Menu Principal"
 
 #: src/main.cpp:1601
 msgid "Failed to initialize world"
-msgstr ""
+msgstr "Echec à l'initialisation du monde"
 
 #: src/main.cpp:1613
 msgid "No world selected and no address provided. Nothing to do."
-msgstr ""
+msgstr "Pas de monde sélectionné et pas d'adresse fournie. Rien à faire."
 
 #: src/main.cpp:1621
 msgid "Could not find or load game \""
-msgstr ""
+msgstr "Ne pouvons trouver ou charger de partie \""
 
 #: src/main.cpp:1635
 msgid "Invalid gamespec."
-msgstr ""
+msgstr "Spécifications de jeu invalides"
 
 #: src/main.cpp:1675
 msgid "Connection error (timed out?)"
-msgstr ""
+msgstr "Erreur de connection (Délai d'attente dépassé ?)"
 
 #: src/main.cpp:1686
 msgid ""
 "\n"
 "Check debug.txt for details."
 msgstr ""
+"\n"
+"Vérifiez le fichier debug.txt pour les détails."
