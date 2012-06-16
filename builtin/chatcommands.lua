@@ -193,12 +193,27 @@ minetest.register_chatcommand("setpassword", {
 	description = "set given password",
 	privs = {password=true},
 	func = function(name, param)
-		if param == "" then
-			minetest.chat_send_player(name, "Password field required")
+		local toname, raw_password = string.match(param, "^([^ ]+) +(.+)$")
+		if not toname then
+			toname = string.match(param, "^([^ ]+) *$")
+			raw_password = nil
+		end
+		if not toname then
+			minetest.chat_send_player(name, "Name field required")
 			return
 		end
-		minetest.set_player_password(name, param)
-		minetest.chat_send_player(name, "Password set")
+		local actstr = "?"
+		if not raw_password then
+			minetest.set_player_password(toname, "")
+			actstr = "cleared"
+		else
+			minetest.set_player_password(toname, minetest.get_password_hash(toname, raw_password))
+			actstr = "set"
+		end
+		minetest.chat_send_player(name, "Password of player \""..toname.."\" "..actstr)
+		if toname ~= name then
+			minetest.chat_send_player(toname, "Your password was "..actstr.." by "..name)
+		end
 	end,
 })
 minetest.register_chatcommand("clearpassword", {
@@ -206,8 +221,13 @@ minetest.register_chatcommand("clearpassword", {
 	description = "set empty password",
 	privs = {password=true},
 	func = function(name, param)
-		minetest.set_player_password(name, '')
-		minetest.chat_send_player(name, "Password cleared")
+		toname = param
+		if not toname then
+			minetest.chat_send_player(toname, "Name field required")
+			return
+		end
+		minetest.set_player_password(toname, '')
+		minetest.chat_send_player(name, "Password of player \""..toname.."\" cleared")
 	end,
 })
 
