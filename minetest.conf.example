@@ -52,7 +52,8 @@
 # Some (temporary) keys for debugging
 #keymap_print_debug_stacks = KEY_KEY_P
 
-# The desired FPS
+# Minimum FPS
+# The amount of rendered stuff is dynamically set according to this
 #wanted_fps = 30
 # If FPS would go higher than this, limit it by sleeping
 # (to not waste CPU power for no benefit)
@@ -117,6 +118,8 @@
 # Sound settings
 #enable_sound = true
 #sound_volume = 0.7
+# Whether node texture animations should be desynchronized per MapBlock
+#desynchronize_mapblock_texture_animation = true
 
 #
 # Server stuff
@@ -144,8 +147,9 @@
 #give_initial_stuff = false
 # New users need to input this password
 #default_password = 
-# Available privileges: build, teleport, settime, privs, shout
-#default_privs = build, shout
+# Available privileges: interact, shout, teleport, settime, privs, ...
+# See /privs in game for a full list on your server and mod configuration.
+#default_privs = interact, shout
 # Whether players are shown to clients without any range limit
 #unlimited_player_transfer_distance = true
 # Whether to enable players killing each other

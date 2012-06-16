@@ -103,6 +103,7 @@ void set_default_settings(Settings *settings)
 	settings->setDefault("console_alpha", "200");
 	settings->setDefault("enable_sound", "true");
 	settings->setDefault("sound_volume", "0.8");
+	settings->setDefault("desynchronize_mapblock_texture_animation", "true");
 
 	// Server stuff
 	// "map-dir" doesn't exist by default.

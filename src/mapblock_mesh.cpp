@@ -28,6 +28,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "mesh.h"
 #include "content_mapblock.h"
 #include "noise.h"
+#include "settings.h"
 
 /*
 	MeshMakeData
@@ -996,10 +997,15 @@ MapBlockMesh::MapBlockMesh(MeshMakeData *data):
 			// Add to MapBlockMesh in order to animate these tiles
 			m_animation_tiles[i] = p.tile;
 			m_animation_frames[i] = 0;
-			// Get starting position from noise
-			m_animation_frame_offsets[i] = 100000 * (2.0 + noise3d(
-					data->m_blockpos.X, data->m_blockpos.Y,
-					data->m_blockpos.Z, 0));
+			if(g_settings->getBool("desynchronize_mapblock_texture_animation")){
+				// Get starting position from noise
+				m_animation_frame_offsets[i] = 100000 * (2.0 + noise3d(
+						data->m_blockpos.X, data->m_blockpos.Y,
+						data->m_blockpos.Z, 0));
+			} else {
+				// Play all synchronized
+				m_animation_frame_offsets[i] = 0;
+			}
 			// Replace tile texture with the first animation frame
 			std::ostringstream os(std::ios::binary);
 			os<<tsrc->getTextureName(p.tile.texture.id);
