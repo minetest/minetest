@@ -1226,6 +1226,16 @@ void the_game(
 	Inventory local_inventory(itemdef);
 
 	/*
+		Find out size of crack animation
+	*/
+	int crack_animation_length = 5;
+	{
+		video::ITexture *t = tsrc->getTextureRaw("crack_anylength.png");
+		v2u32 size = t->getOriginalSize();
+		crack_animation_length = size.Y / size.X;
+	}
+
+	/*
 		Add some gui stuff
 	*/
 
@@ -2271,20 +2281,20 @@ void the_game(
 
 				if(dig_time_complete >= 0.001)
 				{
-					dig_index = (u16)((float)CRACK_ANIMATION_LENGTH
+					dig_index = (u16)((float)crack_animation_length
 							* dig_time/dig_time_complete);
 				}
 				// This is for torches
 				else
 				{
-					dig_index = CRACK_ANIMATION_LENGTH;
+					dig_index = crack_animation_length;
 				}
 				
 				// Don't show cracks if not diggable
 				if(dig_time_complete >= 100000.0)
 				{
 				}
-				else if(dig_index < CRACK_ANIMATION_LENGTH)
+				else if(dig_index < crack_animation_length)
 				{
 					//TimeTaker timer("client.setTempMod");
 					//infostream<<"dig_index="<<dig_index<<std::endl;
@@ -2302,7 +2312,7 @@ void the_game(
 					digging = false;
 
 					nodig_delay_timer = dig_time_complete
-							/ (float)CRACK_ANIMATION_LENGTH;
+							/ (float)crack_animation_length;
 
 					// We don't want a corresponding delay to
 					// very time consuming nodes

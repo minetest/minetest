@@ -502,6 +502,11 @@ u32 TextureSource::getTextureId(const std::string &name)
 // Overlay image on top of another image (used for cracks)
 void overlay(video::IImage *image, video::IImage *overlay);
 
+// Draw an image on top of an another one, using the alpha channel of the
+// source image
+static void blit_with_alpha(video::IImage *src, video::IImage *dst,
+		v2s32 src_pos, v2s32 dst_pos, v2u32 size);
+
 // Brighten image
 void brighten(video::IImage *image);
 // Parse a transform name
@@ -1266,7 +1271,8 @@ bool generate_image(std::string part_of_name, video::IImage *& baseimg,
 				It is an image with a number of cracking stages
 				horizontally tiled.
 			*/
-			video::IImage *img_crack = sourcecache->getOrLoad("crack.png", device);
+			video::IImage *img_crack = sourcecache->getOrLoad(
+					"crack_anylength.png", device);
 		
 			if(img_crack && progression >= 0)
 			{
@@ -1305,11 +1311,13 @@ bool generate_image(std::string part_of_name, video::IImage *& baseimg,
 					}
 					else
 					{
-						img_crack_scaled->copyToWithAlpha(
+						/*img_crack_scaled->copyToWithAlpha(
 								baseimg,
 								v2s32(0,0),
 								core::rect<s32>(v2s32(0,0), dim_base),
-								video::SColor(255,255,255,255));
+								video::SColor(255,255,255,255));*/
+						blit_with_alpha(img_crack_scaled, baseimg,
+								v2s32(0,0), v2s32(0,0), dim_base);
 					}
 				}
 
@@ -1718,6 +1726,30 @@ void overlay(video::IImage *image, video::IImage *overlay)
 			c1.setBlue((c1.getBlue()*(255-a2) + c2.getBlue()*a2)/255);
 		}
 		image->setPixel(x,y,c1);
+	}
+}
+
+/*
+	Draw an image on top of an another one, using the alpha channel of the
+	source image
+
+	This exists because IImage::copyToWithAlpha() doesn't seem to always
+	work.
+*/
+static void blit_with_alpha(video::IImage *src, video::IImage *dst,
+		v2s32 src_pos, v2s32 dst_pos, v2u32 size)
+{
+	for(u32 y0=0; y0<size.Y; y0++)
+	for(u32 x0=0; x0<size.X; x0++)
+	{
+		s32 src_x = src_pos.X + x0;
+		s32 src_y = src_pos.Y + y0;
+		s32 dst_x = dst_pos.X + x0;
+		s32 dst_y = dst_pos.Y + y0;
+		video::SColor src_c = src->getPixel(src_x, src_y);
+		video::SColor dst_c = dst->getPixel(dst_x, dst_y);
+		dst_c = src_c.getInterpolated(dst_c, (float)src_c.getAlpha()/255.0f);
+		dst->setPixel(dst_x, dst_y, dst_c);
 	}
 }
 
