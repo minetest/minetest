@@ -34,6 +34,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "nodemetadata.h"
 #include "nodetimer.h"
 #include "modifiedstate.h"
+#include "util/numeric.h" // getContainerPos
 
 class Map;
 class NodeMetadataList;

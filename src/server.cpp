@@ -18,7 +18,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 */
 
 #include "server.h"
-#include "utility.h"
 #include <iostream>
 #include <queue>
 #include "clientserver.h"
@@ -49,10 +48,11 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "sha1.h"
 #include "base64.h"
 #include "tool.h"
-#include "util/string.h"
 #include "sound.h" // dummySoundManager
 #include "event_manager.h"
 #include "hex.h"
+#include "util/string.h"
+#include "util/pointedthing.h"
 
 #define PP(x) "("<<(x).X<<","<<(x).Y<<","<<(x).Z<<")"
 
@@ -676,7 +676,7 @@ void RemoteClient::GetNextBlocks(Server *server, float dtime,
 				FOV setting. The default of 72 degrees is fine.
 			*/
 
-			float camera_fov = (72.0*PI/180) * 4./3.;
+			float camera_fov = (72.0*M_PI/180) * 4./3.;
 			if(isBlockInSight(p, camera_pos, camera_dir, camera_fov, 10000*BS) == false)
 			{
 				continue;

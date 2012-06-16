@@ -36,9 +36,9 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 // For IGameCallback
 #include "guiPauseMenu.h"
 #include "gettext.h"
-#include "utility.h"
 #include "tile.h" // getTexturePath
 #include "filesys.h"
+#include "util/string.h"
 
 struct CreateWorldDestMainMenu : public CreateWorldDest
 {

@@ -30,6 +30,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #endif
 #include "itemgroup.h"
 #include "sound.h" // SimpleSoundSpec
+#include "constants.h" // BS
+
 class IItemDefManager;
 class ITextureSource;
 class IGameDef;

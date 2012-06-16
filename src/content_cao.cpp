@@ -30,13 +30,15 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "clientobject.h"
 #include "content_object.h"
 #include "mesh.h"
-#include "utility.h" // For IntervalLimiter
 #include "itemdef.h"
 #include "tool.h"
 #include "content_cso.h"
 #include "sound.h"
 #include "nodedef.h"
 #include "localplayer.h"
+#include "util/numeric.h" // For IntervalLimiter
+#include "util/serialize.h"
+
 class Settings;
 struct ToolCapabilities;
 
@@ -935,7 +937,7 @@ public:
 			}
 		}
 		if(fabs(m_prop.automatic_rotate) > 0.001){
-			m_yaw += dtime * m_prop.automatic_rotate * 180 / PI;
+			m_yaw += dtime * m_prop.automatic_rotate * 180 / M_PI;
 			updateNodePos();
 		}
 	}
@@ -961,7 +963,7 @@ public:
 				else if(cam_to_entity.Y < -0.75)
 					col += 4;
 				else{
-					float mob_dir = atan2(cam_to_entity.Z, cam_to_entity.X) / PI * 180.;
+					float mob_dir = atan2(cam_to_entity.Z, cam_to_entity.X) / M_PI * 180.;
 					float dir = mob_dir - m_yaw;
 					dir = wrapDegrees_180(dir);
 					//infostream<<"id="<<m_id<<" dir="<<dir<<std::endl;

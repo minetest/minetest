@@ -23,7 +23,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "common_irrlicht.h"
 #include <string>
 #include <sstream>
-#include "utility.h"
+#include "util/serialize.h"
 
 struct StaticObject
 {

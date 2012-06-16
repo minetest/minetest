@@ -33,6 +33,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "gamedef.h"
 #include "sound.h"
 #include "event.h"
+#include "util/numeric.h"
 
 Camera::Camera(scene::ISceneManager* smgr, MapDrawControl& draw_control,
 		IGameDef *gamedef):
@@ -234,17 +235,17 @@ void Camera::update(LocalPlayer* player, f32 frametime, v2u32 screensize,
 
 		#if 1
 		f32 bobknob = 1.2;
-		f32 bobtmp = sin(pow(bobfrac, bobknob) * PI);
-		//f32 bobtmp2 = cos(pow(bobfrac, bobknob) * PI);
+		f32 bobtmp = sin(pow(bobfrac, bobknob) * M_PI);
+		//f32 bobtmp2 = cos(pow(bobfrac, bobknob) * M_PI);
 
 		v3f bobvec = v3f(
-			0.3 * bobdir * sin(bobfrac * PI),
+			0.3 * bobdir * sin(bobfrac * M_PI),
 			-0.28 * bobtmp * bobtmp,
 			0.);
 
 		//rel_cam_pos += 0.2 * bobvec;
 		//rel_cam_target += 0.03 * bobvec;
-		//rel_cam_up.rotateXYBy(0.02 * bobdir * bobtmp * PI);
+		//rel_cam_up.rotateXYBy(0.02 * bobdir * bobtmp * M_PI);
 		float f = 1.0;
 		f *= g_settings->getFloat("view_bobbing_amount");
 		rel_cam_pos += bobvec * f;
@@ -253,10 +254,10 @@ void Camera::update(LocalPlayer* player, f32 frametime, v2u32 screensize,
 		rel_cam_target.Z -= 0.005 * bobvec.Z * f;
 		//rel_cam_target.X -= 0.005 * bobvec.X * f;
 		//rel_cam_target.Y -= 0.005 * bobvec.Y * f;
-		rel_cam_up.rotateXYBy(-0.03 * bobdir * bobtmp * PI * f);
+		rel_cam_up.rotateXYBy(-0.03 * bobdir * bobtmp * M_PI * f);
 		#else
-		f32 angle_deg = 1 * bobdir * sin(bobfrac * PI);
-		f32 angle_rad = angle_deg * PI / 180;
+		f32 angle_deg = 1 * bobdir * sin(bobfrac * M_PI);
+		f32 angle_rad = angle_deg * M_PI / 180;
 		f32 r = 0.05;
 		v3f off = v3f(
 			r * sin(angle_rad),
@@ -289,7 +290,7 @@ void Camera::update(LocalPlayer* player, f32 frametime, v2u32 screensize,
 
 	// FOV and aspect ratio
 	m_aspect = (f32)screensize.X / (f32) screensize.Y;
-	m_fov_y = fov_degrees * PI / 180.0;
+	m_fov_y = fov_degrees * M_PI / 180.0;
 	// Increase vertical FOV on lower aspect ratios (<16:10)
 	m_fov_y *= MYMAX(1.0, MYMIN(1.4, sqrt(16./10. / m_aspect)));
 	// WTF is this? It can't be right
@@ -320,22 +321,22 @@ void Camera::update(LocalPlayer* player, f32 frametime, v2u32 screensize,
 	if (m_digging_button != -1)
 	{
 		f32 digfrac = m_digging_anim;
-		wield_position.X -= 30 * sin(pow(digfrac, 0.8f) * PI);
-		wield_position.Y += 15 * sin(digfrac * 2 * PI);
+		wield_position.X -= 30 * sin(pow(digfrac, 0.8f) * M_PI);
+		wield_position.Y += 15 * sin(digfrac * 2 * M_PI);
 		wield_position.Z += 5 * digfrac;
 
 		// Euler angles are PURE EVIL, so why not use quaternions?
 		core::quaternion quat_begin(wield_rotation * core::DEGTORAD);
 		core::quaternion quat_end(v3f(90, -10, -130) * core::DEGTORAD);
 		core::quaternion quat_slerp;
-		quat_slerp.slerp(quat_begin, quat_end, sin(digfrac * PI));
+		quat_slerp.slerp(quat_begin, quat_end, sin(digfrac * M_PI));
 		quat_slerp.toEuler(wield_rotation);
 		wield_rotation *= core::RADTODEG;
 	}
 	else {
 		f32 bobfrac = my_modf(m_view_bobbing_anim);
-		wield_position.X -= sin(bobfrac*PI*2.0) * 3.0;
-		wield_position.Y += sin(my_modf(bobfrac*2.0)*PI) * 3.0;
+		wield_position.X -= sin(bobfrac*M_PI*2.0) * 3.0;
+		wield_position.Y += sin(my_modf(bobfrac*2.0)*M_PI) * 3.0;
 	}
 	m_wieldnode->setPosition(wield_position);
 	m_wieldnode->setRotation(wield_rotation);
@@ -538,7 +539,7 @@ void Camera::drawWieldedTool()
 	// Draw the wielded node (in a separate scene manager)
 	scene::ICameraSceneNode* cam = m_wieldmgr->getActiveCamera();
 	cam->setAspectRatio(m_cameranode->getAspectRatio());
-	cam->setFOV(72.0*PI/180.0);
+	cam->setFOV(72.0*M_PI/180.0);
 	cam->setNearValue(0.1);
 	cam->setFarValue(100);
 	m_wieldmgr->drawAll();

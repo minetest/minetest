@@ -30,7 +30,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "tile.h"
 #endif
 #include "log.h"
-#include "utility.h"
+#include "util/serialize.h"
 #include <map>
 #include <set>
 

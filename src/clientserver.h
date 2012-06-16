@@ -20,7 +20,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #ifndef CLIENTSERVER_HEADER
 #define CLIENTSERVER_HEADER
 
-#include "utility.h"
+#include "util/serialize.h"
 
 /*
 	changes by PROTOCOL_VERSION:

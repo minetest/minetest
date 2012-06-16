@@ -20,7 +20,9 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "content_nodemeta.h"
 #include "inventory.h"
 #include "log.h"
-#include "utility.h"
+#include "util/serialize.h"
+#include "util/string.h"
+#include "constants.h" // MAP_BLOCKSIZE
 #include <sstream>
 
 #define NODEMETA_GENERIC 1

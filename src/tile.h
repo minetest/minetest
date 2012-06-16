@@ -22,7 +22,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "common_irrlicht.h"
 #include "threads.h"
-#include "utility.h"
 #include <string>
 
 class IGameDef;
@@ -205,11 +204,6 @@ struct TileSpec
 	// Sets everything else except the texture in the material
 	void applyMaterialOptions(video::SMaterial &material) const
 	{
-		if(alpha != 255 && material_type != MATERIAL_ALPHA_VERTEX)
-			dstream<<"WARNING: TileSpec: alpha != 255 "
-					"but not MATERIAL_ALPHA_VERTEX"
-					<<std::endl;
-
 		if(material_type == MATERIAL_ALPHA_NONE)
 			material.MaterialType = video::EMT_SOLID;
 		else if(material_type == MATERIAL_ALPHA_VERTEX)
@@ -230,7 +224,7 @@ struct TileSpec
 	}
 	
 	AtlasPointer texture;
-	// Vertex alpha
+	// Vertex alpha (when MATERIAL_ALPHA_VERTEX is used)
 	u8 alpha;
 	// Material parameters
 	u8 material_type;

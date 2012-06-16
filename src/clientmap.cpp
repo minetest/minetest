@@ -46,7 +46,7 @@ ClientMap::ClientMap(
 	m_control(control),
 	m_camera_position(0,0,0),
 	m_camera_direction(0,0,1),
-	m_camera_fov(PI)
+	m_camera_fov(M_PI)
 {
 	m_camera_mutex.Init();
 	assert(m_camera_mutex.IsInitialized());

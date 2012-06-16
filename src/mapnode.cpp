@@ -20,11 +20,13 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "common_irrlicht.h"
 #include "mapnode.h"
 #include "porting.h"
-#include <string>
 #include "main.h" // For g_settings
 #include "nodedef.h"
 #include "content_mapnode.h" // For mapnode_translate_*_internal
 #include "serialization.h" // For ser_ver_supported
+#include "util/serialize.h"
+#include <string>
+#include <sstream>
 
 /*
 	MapNode

@@ -29,6 +29,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "player.h"
 #include "scriptapi.h"
 #include "genericobject.h"
+#include "util/serialize.h"
 
 core::map<u16, ServerActiveObject::Factory> ServerActiveObject::m_types;
 

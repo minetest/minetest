@@ -43,10 +43,10 @@ extern "C" {
 #include "nodemetadata.h"
 #include "mapblock.h" // For getNodeBlockPos
 #include "content_nodemeta.h"
-#include "utility.h"
 #include "tool.h"
 #include "daynightratio.h"
 #include "noise.h" // PseudoRandom for LuaPseudoRandom
+#include "util/pointedthing.h"
 
 static void stackDump(lua_State *L, std::ostream &o)
 {

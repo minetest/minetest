@@ -18,7 +18,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 */
 
 #include "nameidmapping.h"
-#include "utility.h"
+#include "util/serialize.h"
 
 void NameIdMapping::serialize(std::ostream &os) const
 {

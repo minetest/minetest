@@ -18,10 +18,11 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 */
 
 #include "tool.h"
-#include "utility.h"
 #include "itemdef.h" // For itemgroup_get()
 #include "log.h"
 #include "inventory.h"
+#include "util/serialize.h"
+#include "util/numeric.h"
 
 void ToolCapabilities::serialize(std::ostream &os) const
 {

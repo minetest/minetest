@@ -30,6 +30,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <IGUIFont.h>
 #include "log.h"
 #include "tile.h" // ITextureSource
+#include "util/string.h"
+#include "util/numeric.h"
 
 void drawItemStack(video::IVideoDriver *driver,
 		gui::IGUIFont *font,

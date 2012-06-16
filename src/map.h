@@ -26,12 +26,12 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <iostream>
 #include <sstream>
 
-#include "common_irrlicht.h"
+#include "irrlichttypes.h"
 #include "mapnode.h"
 #include "constants.h"
 #include "voxel.h"
-#include "utility.h" // Needed for UniqueQueue, a member of Map
 #include "modifiedstate.h"
+#include "util/container.h"
 
 extern "C" {
 	#include "sqlite3.h"

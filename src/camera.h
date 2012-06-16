@@ -24,7 +24,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "inventory.h"
 #include "mesh.h"
 #include "tile.h"
-#include "utility.h"
+#include "util/numeric.h"
 #include <ICameraSceneNode.h>
 
 class LocalPlayer;

@@ -199,7 +199,6 @@ set(common_SRCS
 	mapsector.cpp
 	map.cpp
 	player.cpp
-	utility.cpp
 	test.cpp
 	sha1.cpp
 	base64.cpp

@@ -38,8 +38,10 @@ with this program; ifnot, write to the Free Software Foundation, Inc.,
 #endif
 #include <vorbis/vorbisfile.h>
 #include "log.h"
-#include "utility.h" // myrand()
 #include "filesys.h"
+#include "util/numeric.h" // myrand()
+#include "debug.h" // assert()
+#include "porting.h"
 #include <map>
 #include <vector>
 #include <fstream>

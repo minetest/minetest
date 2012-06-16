@@ -22,9 +22,9 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "irrlichttypes.h"
 #include "activeobject.h"
-#include "utility.h"
 #include "inventorymanager.h"
 #include "itemgroup.h"
+#include "util/container.h"
 
 /*
 
@@ -96,8 +96,7 @@ public:
 		{ setBasePosition(pos); }
 	// If object has moved less than this and data has not changed,
 	// saving to disk may be omitted
-	virtual float getMinimumSavedMovement()
-		{ return 2.0*BS; }
+	virtual float getMinimumSavedMovement();
 	
 	virtual bool isPeaceful(){return true;}
 

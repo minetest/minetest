@@ -18,8 +18,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 */
 
 #include "genericobject.h"
-#include "utility.h"
 #include <sstream>
+#include "util/serialize.h"
 
 std::string gob_cmd_set_properties(const ObjectProperties &prop)
 {

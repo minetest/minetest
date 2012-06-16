@@ -25,6 +25,9 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "nodedef.h"
 #include "tile.h"
 #include "gamedef.h"
+#include "util/numeric.h"
+#include "util/serialize.h"
+#include "util/directiontables.h"
 
 // Create a cuboid.
 //  collector - the MeshCollector for the resulting polygons

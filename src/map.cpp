@@ -22,7 +22,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "mapblock.h"
 #include "main.h"
 #include "filesys.h"
-#include "utility.h"
 #include "voxel.h"
 #include "porting.h"
 #include "mapgen.h"
@@ -32,6 +31,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "profiler.h"
 #include "nodedef.h"
 #include "gamedef.h"
+#include "util/directiontables.h"
 
 #define PP(x) "("<<(x).X<<","<<(x).Y<<","<<(x).Z<<")"
 

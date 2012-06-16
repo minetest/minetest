@@ -35,8 +35,9 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "player.h"
 #include "map.h"
 #include <ostream>
-#include "utility.h"
 #include "activeobject.h"
+#include "util/container.h"
+#include "util/numeric.h"
 
 class Server;
 class ServerEnvironment;

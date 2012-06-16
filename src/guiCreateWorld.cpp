@@ -27,8 +27,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <IGUIStaticText.h>
 #include <IGUIFont.h>
 #include <IGUIListBox.h>
-
 #include "gettext.h"
+#include "util/string.h"
 
 enum
 {

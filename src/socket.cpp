@@ -50,7 +50,8 @@ typedef int socket_t;
 #include <iostream>
 #include <stdlib.h>
 #include <errno.h>
-#include "utility.h"
+#include "util/string.h"
+#include "util/numeric.h"
 
 bool socket_enable_debug_output = false;
 #define DP socket_enable_debug_output

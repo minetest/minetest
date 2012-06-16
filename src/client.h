@@ -28,12 +28,12 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <set>
 #include <vector>
 #include "clientobject.h"
-#include "utility.h" // For IntervalLimiter
 #include "gamedef.h"
 #include "inventorymanager.h"
 #include "filesys.h"
 #include "filecache.h"
 #include "localplayer.h"
+#include "util/pointedthing.h"
 
 struct MeshMakeData;
 class MapBlockMesh;

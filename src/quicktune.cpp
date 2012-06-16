@@ -20,7 +20,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "quicktune.h"
 #include <jmutex.h>
 #include <jmutexautolock.h>
-#include "utility.h"
+#include "util/string.h"
 
 std::string QuicktuneValue::getString()
 {

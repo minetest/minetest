@@ -18,7 +18,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 */
 
 #include "client.h"
-#include "utility.h"
 #include <iostream>
 #include "clientserver.h"
 #include "jmutexautolock.h"

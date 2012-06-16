@@ -23,7 +23,6 @@
 #define GUIKEYCHANGEMENU_HEADER
 
 #include "common_irrlicht.h"
-#include "utility.h"
 #include "modalMenu.h"
 #include "client.h"
 #include "gettext.h"

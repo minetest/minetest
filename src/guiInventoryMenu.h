@@ -24,7 +24,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "common_irrlicht.h"
 #include "inventory.h"
 #include "inventorymanager.h"
-#include "utility.h"
 #include "modalMenu.h"
 
 class IGameDef;

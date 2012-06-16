@@ -20,7 +20,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #ifndef SETTINGS_HEADER
 #define SETTINGS_HEADER
 
-#include "common_irrlicht.h"
+#include "irrlichttypes.h"
 #include <string>
 #include <jthread.h>
 #include <jmutex.h>
@@ -30,8 +30,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <fstream>
 #include <sstream>
 #include "debug.h"
-#include "utility.h"
 #include "log.h"
+#include "util/string.h"
 
 enum ValueType
 {

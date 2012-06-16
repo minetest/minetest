@@ -22,10 +22,11 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "common_irrlicht.h"
 #include <string>
-#include "utility.h"
 #include <jmutex.h>
 #include <jmutexautolock.h>
 #include <map>
+#include "util/timetaker.h"
+#include "util/numeric.h" // paging()
 
 /*
 	Time profiler

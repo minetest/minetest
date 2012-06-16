@@ -22,7 +22,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "connection.h"
 #include "environment.h"
-#include "common_irrlicht.h"
+#include "irrlichttypes.h"
 #include <string>
 #include "porting.h"
 #include "map.h"
@@ -34,6 +34,9 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "inventorymanager.h"
 #include "subgame.h"
 #include "sound.h"
+#include "util/thread.h"
+#include "util/string.h"
+
 struct LuaState;
 typedef struct lua_State lua_State;
 class IWritableItemDefManager;

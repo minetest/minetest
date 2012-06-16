@@ -27,6 +27,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "log.h"
 #include "settings.h"
 #include "nameidmapping.h"
+#include "util/serialize.h"
 
 /*
 	NodeBox

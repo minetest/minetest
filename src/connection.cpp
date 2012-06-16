@@ -22,9 +22,21 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "serialization.h"
 #include "log.h"
 #include "porting.h"
+#include "util/serialize.h"
+#include "util/numeric.h"
+#include "util/string.h"
 
 namespace con
 {
+
+static u16 readPeerId(u8 *packetdata)
+{
+	return readU16(&packetdata[4]);
+}
+static u8 readChannel(u8 *packetdata)
+{
+	return readU8(&packetdata[6]);
+}
 
 BufferedPacket makePacket(Address &address, u8 *data, u32 datasize,
 		u32 protocol_id, u16 sender_peer_id, u8 channel)

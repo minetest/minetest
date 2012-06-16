@@ -29,6 +29,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "content_mapblock.h"
 #include "noise.h"
 #include "settings.h"
+#include "util/directiontables.h"
 
 /*
 	MeshMakeData

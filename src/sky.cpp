@@ -3,11 +3,11 @@
 #include "ISceneManager.h"
 #include "ICameraSceneNode.h"
 #include "S3DVertex.h"
-#include "utility.h" // MYMIN
 #include "tile.h" // getTexturePath
 #include "noise.h" // easeCurve
 #include "main.h" // g_profiler
 #include "profiler.h"
+#include "util/numeric.h" // MYMIN
 
 //! constructor
 Sky::Sky(scene::ISceneNode* parent, scene::ISceneManager* mgr, s32 id):

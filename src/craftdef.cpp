@@ -23,9 +23,9 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "log.h"
 #include <sstream>
 #include <set>
-#include "utility.h"
 #include "gamedef.h"
 #include "inventory.h"
+#include "util/serialize.h"
 
 // Check if input matches recipe
 // Takes recipe groups into account

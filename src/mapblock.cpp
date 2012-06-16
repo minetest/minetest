@@ -34,6 +34,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #ifndef SERVER
 #include "mapblock_mesh.h"
 #endif
+#include "util/string.h"
 
 #define PP(x) "("<<(x).X<<","<<(x).Y<<","<<(x).Z<<")"
 
@@ -409,7 +410,7 @@ void MapBlock::actuallyUpdateDayNightDiff()
 
 void MapBlock::expireDayNightDiff()
 {
-	INodeDefManager *nodemgr = m_gamedef->ndef();
+	//INodeDefManager *nodemgr = m_gamedef->ndef();
 
 	if(data == NULL){
 		m_day_night_differs = false;
@@ -976,7 +977,7 @@ void MapBlock::deSerialize_pre22(std::istream &is, u8 version, bool disk)
 					("MapBlock::deSerialize: no enough input data");
 		is_underground = tmp;
 		is.read((char*)*databuf_nodelist, nodecount * ser_length);
-		if(is.gcount() != nodecount * ser_length)
+		if((u32)is.gcount() != nodecount * ser_length)
 			throw SerializationError
 					("MapBlock::deSerialize: no enough input data");
 	}

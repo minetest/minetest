@@ -17,7 +17,6 @@ OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 */
 
 #include "servercommand.h"
-#include "utility.h"
 #include "settings.h"
 #include "main.h" // For g_settings
 #include "content_sao.h"

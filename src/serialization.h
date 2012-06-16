@@ -23,7 +23,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "common_irrlicht.h"
 #include "exceptions.h"
 #include <iostream>
-#include "utility.h"
+#include "util/pointer.h"
 
 /*
 	Map format serialization version

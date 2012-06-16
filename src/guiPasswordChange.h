@@ -21,7 +21,6 @@ OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 
 #include "common_irrlicht.h"
 #include "modalMenu.h"
-#include "utility.h"
 #include "client.h"
 #include <string>
 

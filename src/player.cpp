@@ -19,11 +19,11 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "player.h"
 #include "constants.h"
-#include "utility.h"
 #include "gamedef.h"
 #include "connection.h" // PEER_ID_INEXISTENT
 #include "settings.h"
 #include "content_sao.h"
+#include "util/numeric.h"
 
 Player::Player(IGameDef *gamedef):
 	touching_ground(false),

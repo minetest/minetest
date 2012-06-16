@@ -25,7 +25,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "main.h"
 #include "socket.h"
 #include "connection.h"
-#include "utility.h"
 #include "serialization.h"
 #include "voxel.h"
 #include <sstream>
@@ -38,6 +37,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "util/string.h"
 #include "voxelalgorithms.h"
 #include "inventory.h"
+#include "util/numeric.h"
+#include "util/serialize.h"
 
 /*
 	Asserts that the exception occurs

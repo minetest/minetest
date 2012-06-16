@@ -20,6 +20,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "serverobject.h"
 #include <fstream>
 #include "inventory.h"
+#include "constants.h" // BS
 
 ServerActiveObject::ServerActiveObject(ServerEnvironment *env, v3f pos):
 	ActiveObject(0),
@@ -64,6 +65,11 @@ void ServerActiveObject::registerType(u16 type, Factory f)
 	if(n)
 		return;
 	m_types.insert(type, f);
+}
+
+float ServerActiveObject::getMinimumSavedMovement()
+{
+	return 2.0*BS;
 }
 
 ItemStack ServerActiveObject::getWieldedItem() const

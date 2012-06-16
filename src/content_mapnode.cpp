@@ -22,7 +22,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "irrlichttypes.h"
 #include "mapnode.h"
 #include "nodedef.h"
-#include "utility.h"
 #include "nameidmapping.h"
 #include <map>
 

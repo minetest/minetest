@@ -21,7 +21,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #define QVT_SHORTCUTTER_HEADER
 
 #include "quicktune.h"
-#include "utility.h"
 
 class QuicktuneShortcutter
 {

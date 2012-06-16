@@ -21,7 +21,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #define MAPGEN_HEADER
 
 #include "common_irrlicht.h"
-#include "utility.h" // UniqueQueue
+#include "util/container.h" // UniqueQueue
 
 struct BlockMakeData;
 class MapBlock;

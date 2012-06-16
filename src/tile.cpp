@@ -21,7 +21,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "debug.h"
 #include "main.h" // for g_settings
 #include "filesys.h"
-#include "utility.h"
 #include "settings.h"
 #include "mesh.h"
 #include <ICameraSceneNode.h>
@@ -30,6 +29,9 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "nodedef.h" // For texture atlas making
 #include "gamedef.h"
 #include "util/string.h"
+#include "util/container.h"
+#include "util/thread.h"
+#include "util/numeric.h"
 
 /*
 	A cache from texture name to texture path

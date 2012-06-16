@@ -20,14 +20,15 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #ifndef CONNECTION_HEADER
 #define CONNECTION_HEADER
 
-#include <iostream>
-#include <fstream>
-#include "debug.h"
-#include "common_irrlicht.h"
+#include "irrlichttypes.h"
 #include "socket.h"
-#include "utility.h"
 #include "exceptions.h"
 #include "constants.h"
+#include "util/pointer.h"
+#include "util/container.h"
+#include "util/thread.h"
+#include <iostream>
+#include <fstream>
 
 namespace con
 {
@@ -106,15 +107,6 @@ public:
 		BaseException(s)
 	{}
 };
-
-inline u16 readPeerId(u8 *packetdata)
-{
-	return readU16(&packetdata[4]);
-}
-inline u8 readChannel(u8 *packetdata)
-{
-	return readU8(&packetdata[6]);
-}
 
 #define SEQNUM_MAX 65535
 inline bool seqnum_higher(u16 higher, u16 lower)

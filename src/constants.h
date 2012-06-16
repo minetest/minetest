@@ -28,8 +28,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
     Some things here are legacy crap.
 */
 
-#define PI 3.14159
-
 /*
     Connection
 */
