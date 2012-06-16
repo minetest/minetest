@@ -3976,8 +3976,11 @@ static int l_register_item_raw(lua_State *L)
 
 	// Default to having client-side placement prediction for nodes
 	// ("" in item definition sets it off)
-	if(def.type == ITEM_NODE && def.node_placement_prediction == "__default"){
-		def.node_placement_prediction = name;
+	if(def.node_placement_prediction == "__default"){
+		if(def.type == ITEM_NODE)
+			def.node_placement_prediction = name;
+		else
+			def.node_placement_prediction = "";
 	}
 	
 	// Register item definition
