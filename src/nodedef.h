@@ -95,15 +95,33 @@ struct NodeBox
 struct MapNode;
 class NodeMetadata;
 
-struct MaterialSpec
+/*
+	Stand-alone definition of a TileSpec (basically a server-side TileSpec)
+*/
+enum TileAnimationType{
+	TAT_NONE=0,
+	TAT_VERTICAL_FRAMES=1,
+};
+struct TileDef
 {
-	std::string tname;
-	bool backface_culling;
-	
-	MaterialSpec(const std::string &tname_="", bool backface_culling_=true):
-		tname(tname_),
-		backface_culling(backface_culling_)
-	{}
+	std::string name;
+	bool backface_culling; // Takes effect only in special cases
+	struct{
+		enum TileAnimationType type;
+		int aspect_w; // width for aspect ratio
+		int aspect_h; // height for aspect ratio
+		float length; // seconds
+	} animation;
+
+	TileDef()
+	{
+		name = "";
+		backface_culling = true;
+		animation.type = TAT_NONE;
+		animation.aspect_w = 1;
+		animation.aspect_h = 1;
+		animation.length = 1.0;
+	}
 
 	void serialize(std::ostream &os) const;
 	void deSerialize(std::istream &is);
@@ -159,8 +177,8 @@ struct ContentFeatures
 	// Visual definition
 	enum NodeDrawType drawtype;
 	float visual_scale; // Misc. scale parameter
-	std::string tname_tiles[6];
-	MaterialSpec mspec_special[CF_SPECIAL_COUNT]; // Use setter methods
+	TileDef tiledef[6];
+	TileDef tiledef_special[CF_SPECIAL_COUNT]; // eg. flowing liquid
 	u8 alpha;
 
 	// Post effect color, drawn when the camera is inside the node.

@@ -858,7 +858,7 @@ void TextureSource::buildMainAtlas(class IGameDef *gamedef)
 		const ContentFeatures &f = ndef->get(j);
 		for(u32 i=0; i<6; i++)
 		{
-			std::string name = f.tname_tiles[i];
+			std::string name = f.tiledef[i].name;
 			sourcelist[name] = true;
 		}
 	}
@@ -988,7 +988,7 @@ void TextureSource::buildMainAtlas(class IGameDef *gamedef)
 				src_x = pos_in_atlas.X;
 			}
 			s32 y = y0 + pos_in_atlas.Y;
-			s32 src_y = MYMAX(pos_in_atlas.Y, MYMIN(pos_in_atlas.Y + dim.Height - 1, y));
+			s32 src_y = MYMAX((int)pos_in_atlas.Y, MYMIN((int)pos_in_atlas.Y + (int)dim.Height - 1, y));
 			s32 dst_y = y;
 			video::SColor c = atlas_img->getPixel(src_x, src_y);
 			atlas_img->setPixel(dst_x,dst_y,c);
@@ -1637,6 +1637,48 @@ bool generate_image(std::string part_of_name, video::IImage *& baseimg,
 						&cliprect);
 				img2->drop();
 			}
+		}
+		/*
+			[verticalframe:N:I
+			Crops a frame of a vertical animation.
+			N = frame count, I = frame index
+		*/
+		else if(part_of_name.substr(0,15) == "[verticalframe:")
+		{
+			Strfnd sf(part_of_name);
+			sf.next(":");
+			u32 frame_count = stoi(sf.next(":"));
+			u32 frame_index = stoi(sf.next(":"));
+
+			if(baseimg == NULL){
+				errorstream<<"generate_image(): baseimg!=NULL "
+						<<"for part_of_name=\""<<part_of_name
+						<<"\", cancelling."<<std::endl;
+				return false;
+			}
+			
+			v2u32 frame_size = baseimg->getDimension();
+			frame_size.Y /= frame_count;
+
+			video::IImage *img = driver->createImage(video::ECF_A8R8G8B8,
+					frame_size);
+			if(!img){
+				errorstream<<"generate_image(): Could not create image "
+						<<"for part_of_name=\""<<part_of_name
+						<<"\", cancelling."<<std::endl;
+				return false;
+			}
+
+			core::dimension2d<u32> dim = frame_size;
+			core::position2d<s32> pos_dst(0, 0);
+			core::position2d<s32> pos_src(0, frame_index * frame_size.Y);
+			baseimg->copyToWithAlpha(img, pos_dst,
+					core::rect<s32>(pos_src, dim),
+					video::SColor(255,255,255,255),
+					NULL);
+			// Replace baseimg
+			baseimg->drop();
+			baseimg = img;
 		}
 		else
 		{

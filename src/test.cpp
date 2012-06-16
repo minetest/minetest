@@ -80,7 +80,7 @@ void define_some_nodes(IWritableItemDefManager *idef, IWritableNodeDefManager *n
 	f = ContentFeatures();
 	f.name = itemdef.name;
 	for(int i = 0; i < 6; i++)
-		f.tname_tiles[i] = "default_stone.png";
+		f.tiledef[i].name = "default_stone.png";
 	f.is_ground_content = true;
 	idef->registerItem(itemdef);
 	ndef->set(i, f);
@@ -100,10 +100,10 @@ void define_some_nodes(IWritableItemDefManager *idef, IWritableNodeDefManager *n
 		"{default_dirt.png&default_grass_side.png";
 	f = ContentFeatures();
 	f.name = itemdef.name;
-	f.tname_tiles[0] = "default_grass.png";
-	f.tname_tiles[1] = "default_dirt.png";
+	f.tiledef[0].name = "default_grass.png";
+	f.tiledef[1].name = "default_dirt.png";
 	for(int i = 2; i < 6; i++)
-		f.tname_tiles[i] = "default_dirt.png^default_grass_side.png";
+		f.tiledef[i].name = "default_dirt.png^default_grass_side.png";
 	f.is_ground_content = true;
 	idef->registerItem(itemdef);
 	ndef->set(i, f);

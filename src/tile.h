@@ -162,6 +162,9 @@ enum MaterialType{
 // Should the crack be drawn on transparent pixels (unset) or not (set)?
 // Ignored if MATERIAL_FLAG_CRACK is not set.
 #define MATERIAL_FLAG_CRACK_OVERLAY 0x04
+// Animation made up by splitting the texture to vertical frames, as
+// defined by extra parameters
+#define MATERIAL_FLAG_ANIMATION_VERTICAL_FRAMES 0x08
 
 /*
 	This fully defines the looks of a tile.
@@ -178,7 +181,9 @@ struct TileSpec
 		material_flags(
 			//0 // <- DEBUG, Use the one below
 			MATERIAL_FLAG_BACKFACE_CULLING
-		)
+		),
+		animation_frame_count(1),
+		animation_frame_length_ms(0)
 	{
 	}
 
@@ -227,10 +232,12 @@ struct TileSpec
 	AtlasPointer texture;
 	// Vertex alpha
 	u8 alpha;
-	// Material type
+	// Material parameters
 	u8 material_type;
-	// Material flags
 	u8 material_flags;
+	// Animation parameters
+	u8 animation_frame_count;
+	u16 animation_frame_length_ms;
 };
 
 #endif

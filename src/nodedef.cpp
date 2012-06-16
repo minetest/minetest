@@ -63,19 +63,29 @@ void NodeBox::deSerialize(std::istream &is)
 }
 
 /*
-	MaterialSpec
+	TileDef
 */
-
-void MaterialSpec::serialize(std::ostream &os) const
+	
+void TileDef::serialize(std::ostream &os) const
 {
-	os<<serializeString(tname);
-	writeU8(os, backface_culling);
+	writeU8(os, 0); // version
+	os<<serializeString(name);
+	writeU8(os, animation.type);
+	writeU16(os, animation.aspect_w);
+	writeU16(os, animation.aspect_h);
+	writeF1000(os, animation.length);
 }
 
-void MaterialSpec::deSerialize(std::istream &is)
+void TileDef::deSerialize(std::istream &is)
 {
-	tname = deSerializeString(is);
-	backface_culling = readU8(is);
+	int version = readU8(is);
+	if(version != 0)
+		throw SerializationError("unsupported TileDef version");
+	name = deSerializeString(is);
+	animation.type = (TileAnimationType)readU8(is);
+	animation.aspect_w = readU16(is);
+	animation.aspect_h = readU16(is);
+	animation.length = readF1000(is);
 }
 
 /*
@@ -133,9 +143,9 @@ void ContentFeatures::reset()
 	drawtype = NDT_NORMAL;
 	visual_scale = 1.0;
 	for(u32 i=0; i<6; i++)
-		tname_tiles[i] = "";
+		tiledef[i] = TileDef();
 	for(u16 j=0; j<CF_SPECIAL_COUNT; j++)
-		mspec_special[j] = MaterialSpec();
+		tiledef_special[j] = TileDef();
 	alpha = 255;
 	post_effect_color = video::SColor(0, 0, 0, 0);
 	param_type = CPT_NONE;
@@ -164,7 +174,7 @@ void ContentFeatures::reset()
 
 void ContentFeatures::serialize(std::ostream &os)
 {
-	writeU8(os, 3); // version
+	writeU8(os, 4); // version
 	os<<serializeString(name);
 	writeU16(os, groups.size());
 	for(ItemGroupList::const_iterator
@@ -176,10 +186,10 @@ void ContentFeatures::serialize(std::ostream &os)
 	writeF1000(os, visual_scale);
 	writeU8(os, 6);
 	for(u32 i=0; i<6; i++)
-		os<<serializeString(tname_tiles[i]);
+		tiledef[i].serialize(os);
 	writeU8(os, CF_SPECIAL_COUNT);
 	for(u32 i=0; i<CF_SPECIAL_COUNT; i++){
-		mspec_special[i].serialize(os);
+		tiledef_special[i].serialize(os);
 	}
 	writeU8(os, alpha);
 	writeU8(os, post_effect_color.getAlpha());
@@ -214,7 +224,7 @@ void ContentFeatures::serialize(std::ostream &os)
 void ContentFeatures::deSerialize(std::istream &is)
 {
 	int version = readU8(is);
-	if(version != 3)
+	if(version != 4 && version != 3)
 		throw SerializationError("unsupported ContentFeatures version");
 	name = deSerializeString(is);
 	groups.clear();
@@ -228,12 +238,21 @@ void ContentFeatures::deSerialize(std::istream &is)
 	visual_scale = readF1000(is);
 	if(readU8(is) != 6)
 		throw SerializationError("unsupported tile count");
-	for(u32 i=0; i<6; i++)
-		tname_tiles[i] = deSerializeString(is);
+	for(u32 i=0; i<6; i++){
+		if(version == 4)
+			tiledef[i].deSerialize(is);
+		else if(version == 3) // Allow connecting to older servers
+			tiledef[i].name = deSerializeString(is);
+	}
 	if(readU8(is) != CF_SPECIAL_COUNT)
 		throw SerializationError("unsupported CF_SPECIAL_COUNT");
 	for(u32 i=0; i<CF_SPECIAL_COUNT; i++){
-		mspec_special[i].deSerialize(is);
+		if(version == 4){
+			tiledef_special[i].deSerialize(is);
+		} else if(version == 3){ // Allow connecting to older servers
+			tiledef_special[i].name = deSerializeString(is);
+			tiledef_special[i].backface_culling = readU8(is);
+		}
 	}
 	alpha = readU8(is);
 	post_effect_color.setAlpha(readU8(is));
@@ -260,12 +279,12 @@ void ContentFeatures::deSerialize(std::istream &is)
 	selection_box.deSerialize(is);
 	legacy_facedir_simple = readU8(is);
 	legacy_wallmounted = readU8(is);
+	deSerializeSimpleSoundSpec(sound_footstep, is);
+	deSerializeSimpleSoundSpec(sound_dig, is);
+	deSerializeSimpleSoundSpec(sound_dug, is);
 	// If you add anything here, insert it primarily inside the try-catch
 	// block to not need to increase the version.
 	try{
-		deSerializeSimpleSoundSpec(sound_footstep, is);
-		deSerializeSimpleSoundSpec(sound_dig, is);
-		deSerializeSimpleSoundSpec(sound_dug, is);
 	}catch(SerializationError &e) {};
 }
 
@@ -494,14 +513,15 @@ public:
 		for(u16 i=0; i<=MAX_CONTENT; i++)
 		{
 			ContentFeatures *f = &m_content_features[i];
-
-			std::string tname_tiles[6];
+			
+			// Figure out the actual tiles to use
+			TileDef tiledef[6];
 			for(u32 j=0; j<6; j++)
 			{
-				tname_tiles[j] = f->tname_tiles[j];
-				if(tname_tiles[j] == "")
-					tname_tiles[j] = "unknown_block.png";
-                        }
+				tiledef[j] = f->tiledef[j];
+				if(tiledef[j].name == "")
+					tiledef[j].name = "unknown_block.png";
+			}
 
 			switch(f->drawtype){
 			default:
@@ -547,7 +567,7 @@ public:
 					f->drawtype = NDT_NORMAL;
 					f->solidness = 2;
 					for(u32 i=0; i<6; i++){
-						tname_tiles[i] += std::string("^[noalpha");
+						tiledef[i].name += std::string("^[noalpha");
 					}
 				}
 				break;
@@ -560,29 +580,92 @@ public:
 				break;
 			}
 
-			// Tile textures
+			// Tiles (fill in f->tiles[])
 			for(u16 j=0; j<6; j++){
-				f->tiles[j].texture = tsrc->getTexture(tname_tiles[j]);
+				// Texture
+				f->tiles[j].texture = tsrc->getTexture(tiledef[j].name);
+				// Alpha
 				f->tiles[j].alpha = f->alpha;
 				if(f->alpha == 255)
 					f->tiles[j].material_type = MATERIAL_ALPHA_SIMPLE;
 				else
 					f->tiles[j].material_type = MATERIAL_ALPHA_VERTEX;
+				// Material flags
 				f->tiles[j].material_flags = 0;
 				if(f->backface_culling)
 					f->tiles[j].material_flags |= MATERIAL_FLAG_BACKFACE_CULLING;
+				if(tiledef[j].animation.type == TAT_VERTICAL_FRAMES)
+					f->tiles[j].material_flags |= MATERIAL_FLAG_ANIMATION_VERTICAL_FRAMES;
+				// Animation parameters
+				if(f->tiles[j].material_flags &
+						MATERIAL_FLAG_ANIMATION_VERTICAL_FRAMES)
+				{
+					// Get raw texture size to determine frame count by
+					// aspect ratio
+					video::ITexture *t = tsrc->getTextureRaw(tiledef[j].name);
+					v2u32 size = t->getOriginalSize();
+					int frame_height = (float)size.X /
+							(float)tiledef[j].animation.aspect_w *
+							(float)tiledef[j].animation.aspect_h;
+					int frame_count = size.Y / frame_height;
+					int frame_length_ms = 1000.0 *
+							tiledef[j].animation.length / frame_count;
+					f->tiles[j].animation_frame_count = frame_count;
+					f->tiles[j].animation_frame_length_ms = frame_length_ms;
+
+					// If there are no frames for an animation, switch
+					// animation off (so that having specified an animation
+					// for something but not using it in the texture pack
+					// gives no overhead)
+					if(frame_count == 1){
+						f->tiles[j].material_flags &=
+								~MATERIAL_FLAG_ANIMATION_VERTICAL_FRAMES;
+					}
+				}
 			}
-			// Special tiles
+			// Special tiles (fill in f->special_tiles[])
 			for(u16 j=0; j<CF_SPECIAL_COUNT; j++){
-				f->special_tiles[j].texture = tsrc->getTexture(f->mspec_special[j].tname);
+				// Texture
+				f->special_tiles[j].texture =
+						tsrc->getTexture(f->tiledef_special[j].name);
+				// Alpha
 				f->special_tiles[j].alpha = f->alpha;
 				if(f->alpha == 255)
 					f->special_tiles[j].material_type = MATERIAL_ALPHA_SIMPLE;
 				else
 					f->special_tiles[j].material_type = MATERIAL_ALPHA_VERTEX;
+				// Material flags
 				f->special_tiles[j].material_flags = 0;
-				if(f->mspec_special[j].backface_culling)
+				if(f->tiledef_special[j].backface_culling)
 					f->special_tiles[j].material_flags |= MATERIAL_FLAG_BACKFACE_CULLING;
+				if(f->tiledef_special[j].animation.type == TAT_VERTICAL_FRAMES)
+					f->special_tiles[j].material_flags |= MATERIAL_FLAG_ANIMATION_VERTICAL_FRAMES;
+				// Animation parameters
+				if(f->special_tiles[j].material_flags &
+						MATERIAL_FLAG_ANIMATION_VERTICAL_FRAMES)
+				{
+					// Get raw texture size to determine frame count by
+					// aspect ratio
+					video::ITexture *t = tsrc->getTextureRaw(f->tiledef_special[j].name);
+					v2u32 size = t->getOriginalSize();
+					int frame_height = (float)size.X /
+							(float)f->tiledef_special[j].animation.aspect_w *
+							(float)f->tiledef_special[j].animation.aspect_h;
+					int frame_count = size.Y / frame_height;
+					int frame_length_ms = 1000.0 *
+							f->tiledef_special[j].animation.length / frame_count;
+					f->special_tiles[j].animation_frame_count = frame_count;
+					f->special_tiles[j].animation_frame_length_ms = frame_length_ms;
+
+					// If there are no frames for an animation, switch
+					// animation off (so that having specified an animation
+					// for something but not using it in the texture pack
+					// gives no overhead)
+					if(frame_count == 1){
+						f->special_tiles[j].material_flags &=
+								~MATERIAL_FLAG_ANIMATION_VERTICAL_FRAMES;
+					}
+				}
 			}
 		}
 #endif

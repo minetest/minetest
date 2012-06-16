@@ -1124,17 +1124,29 @@ Item definition (register_node, register_craftitem, register_tool)
     ^ The default functions handle regular use cases.
 }
 
+Tile definition:
+- "image.png"
+- {name="image.png", animation={Tile Animation definition}}
+- {name="image.png", backface_culling=bool}
+  ^ backface culling only supported in special tiles
+- deprecated still supported field names:
+  - image -> name
+
+Tile animation definition:
+- {type="vertical_frames", aspect_w=16, aspect_h=16, length=3.0}
+
 Node definition (register_node)
 {
     <all fields allowed in item definitions>,
 
     drawtype = "normal",
     visual_scale = 1.0,
-    tile_images = {"default_unknown_block.png"},
-    special_materials = {
-        {image="", backface_culling=true},
-        {image="", backface_culling=true},
-    },
+    tiles = {tile definition 1, def2, def3, def4, def5, def6},
+    ^ List can be shortened to needed length
+    ^ Old field name: tile_images
+    special_tiles = {tile definition 1, Tile definition 2},
+    ^ List can be shortened to needed length
+    ^ Old field name: special_materials
     alpha = 255,
     post_effect_color = {a=0, r=0, g=0, b=0},
     paramtype = "none",

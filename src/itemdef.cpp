@@ -451,7 +451,7 @@ public:
 					if(def->inventory_texture == NULL)
 					{
 						def->inventory_texture =
-							tsrc->getTextureRaw(f.tname_tiles[0]);
+							tsrc->getTextureRaw(f.tiledef[0].name);
 					}
 				}
 

@@ -426,6 +426,13 @@ struct EnumString es_CraftMethod[] =
 	{0, NULL},
 };
 
+struct EnumString es_TileAnimationType[] =
+{
+	{TAT_NONE, "none"},
+	{TAT_VERTICAL_FRAMES, "vertical_frames"},
+	{0, NULL},
+};
+
 /*
 	C struct <-> Lua table converter functions
 */
@@ -992,6 +999,50 @@ static ItemDefinition read_item_definition(lua_State *L, int index,
 }
 
 /*
+	TileDef
+*/
+
+static TileDef read_tiledef(lua_State *L, int index)
+{
+	if(index < 0)
+		index = lua_gettop(L) + 1 + index;
+	
+	TileDef tiledef;
+
+	// key at index -2 and value at index
+	if(lua_isstring(L, index)){
+		// "default_lava.png"
+		tiledef.name = lua_tostring(L, index);
+	}
+	else if(lua_istable(L, index))
+	{
+		// {name="default_lava.png", animation={}}
+		tiledef.name = "";
+		getstringfield(L, index, "name", tiledef.name);
+		getstringfield(L, index, "image", tiledef.name); // MaterialSpec compat.
+		tiledef.backface_culling = getboolfield_default(
+					L, index, "backface_culling", true);
+		// animation = {}
+		lua_getfield(L, index, "animation");
+		if(lua_istable(L, -1)){
+			// {type="vertical_frames", aspect_w=16, aspect_h=16, length=2.0}
+			tiledef.animation.type = (TileAnimationType)
+					getenumfield(L, -1, "type", es_TileAnimationType,
+					TAT_NONE);
+			tiledef.animation.aspect_w =
+					getintfield_default(L, -1, "aspect_w", 16);
+			tiledef.animation.aspect_h =
+					getintfield_default(L, -1, "aspect_h", 16);
+			tiledef.animation.length =
+					getfloatfield_default(L, -1, "length", 1.0);
+		}
+		lua_pop(L, 1);
+	}
+
+	return tiledef;
+}
+
+/*
 	ContentFeatures
 */
 
@@ -1026,18 +1077,23 @@ static ContentFeatures read_content_features(lua_State *L, int index)
 	f.drawtype = (NodeDrawType)getenumfield(L, index, "drawtype", es_DrawType,
 			NDT_NORMAL);
 	getfloatfield(L, index, "visual_scale", f.visual_scale);
-
-	lua_getfield(L, index, "tile_images");
+	
+	// tiles = {}
+	lua_getfield(L, index, "tiles");
+	// If nil, try the deprecated name "tile_images" instead
+	if(lua_isnil(L, -1)){
+		lua_pop(L, 1);
+		warn_if_field_exists(L, index, "tile_images",
+				"Deprecated; new name is \"tiles\".");
+		lua_getfield(L, index, "tile_images");
+	}
 	if(lua_istable(L, -1)){
 		int table = lua_gettop(L);
 		lua_pushnil(L);
 		int i = 0;
 		while(lua_next(L, table) != 0){
-			// key at index -2 and value at index -1
-			if(lua_isstring(L, -1))
-				f.tname_tiles[i] = lua_tostring(L, -1);
-			else
-				f.tname_tiles[i] = "";
+			// Read tiledef from value
+			f.tiledef[i] = read_tiledef(L, -1);
 			// removes value, keeps key for next iteration
 			lua_pop(L, 1);
 			i++;
@@ -1048,29 +1104,31 @@ static ContentFeatures read_content_features(lua_State *L, int index)
 		}
 		// Copy last value to all remaining textures
 		if(i >= 1){
-			std::string lastname = f.tname_tiles[i-1];
+			TileDef lasttile = f.tiledef[i-1];
 			while(i < 6){
-				f.tname_tiles[i] = lastname;
+				f.tiledef[i] = lasttile;
 				i++;
 			}
 		}
 	}
 	lua_pop(L, 1);
-
-	lua_getfield(L, index, "special_materials");
+	
+	// special_tiles = {}
+	lua_getfield(L, index, "special_tiles");
+	// If nil, try the deprecated name "special_materials" instead
+	if(lua_isnil(L, -1)){
+		lua_pop(L, 1);
+		warn_if_field_exists(L, index, "special_materials",
+				"Deprecated; new name is \"special_tiles\".");
+		lua_getfield(L, index, "special_materials");
+	}
 	if(lua_istable(L, -1)){
 		int table = lua_gettop(L);
 		lua_pushnil(L);
 		int i = 0;
 		while(lua_next(L, table) != 0){
-			// key at index -2 and value at index -1
-			int smtable = lua_gettop(L);
-			std::string tname = getstringfield_default(
-					L, smtable, "image", "");
-			bool backface_culling = getboolfield_default(
-					L, smtable, "backface_culling", true);
-			MaterialSpec mspec(tname, backface_culling);
-			f.mspec_special[i] = mspec;
+			// Read tiledef from value
+			f.tiledef_special[i] = read_tiledef(L, -1);
 			// removes value, keeps key for next iteration
 			lua_pop(L, 1);
 			i++;

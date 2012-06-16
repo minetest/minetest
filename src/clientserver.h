@@ -54,6 +54,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 	PROTOCOL_VERSION 10:
 		TOCLIENT_PRIVILEGES
 		Version raised to force 'fly' and 'fast' privileges into effect.
+		Node metadata change (came in later; somewhat incompatible)
+		TileDef in ContentFeatures (non-TileDef deserialization is supported)
 */
 
 #define PROTOCOL_VERSION 10

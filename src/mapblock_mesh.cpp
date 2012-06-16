@@ -27,6 +27,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "gamedef.h"
 #include "mesh.h"
 #include "content_mapblock.h"
+#include "noise.h"
 
 /*
 	MeshMakeData
@@ -559,6 +560,11 @@ TileSpec getNodeTileN(MapNode mn, v3s16 p, u8 tileindex, MeshMakeData *data)
 		spec.material_flags |= MATERIAL_FLAG_CRACK;
 		spec.texture = data->m_gamedef->tsrc()->getTextureRawAP(spec.texture);
 	}
+	// If animated, replace tile texture with one without texture atlas
+	if(spec.material_flags & MATERIAL_FLAG_ANIMATION_VERTICAL_FRAMES)
+	{
+		spec.texture = data->m_gamedef->tsrc()->getTextureRawAP(spec.texture);
+	}
 	return spec;
 }
 
@@ -983,6 +989,23 @@ MapBlockMesh::MapBlockMesh(MeshMakeData *data):
 				crack_basename += "^[crack";
 			m_crack_materials.insert(std::make_pair(i, crack_basename));
 		}
+		// - Texture animation
+		if(p.tile.material_flags & MATERIAL_FLAG_ANIMATION_VERTICAL_FRAMES)
+		{
+			ITextureSource *tsrc = data->m_gamedef->tsrc();
+			// Add to MapBlockMesh in order to animate these tiles
+			m_animation_tiles[i] = p.tile;
+			m_animation_frames[i] = 0;
+			// Get starting position from noise
+			m_animation_frame_offsets[i] = 100000 * (2.0 + noise3d(
+					data->m_blockpos.X, data->m_blockpos.Y,
+					data->m_blockpos.Z, 0));
+			// Replace tile texture with the first animation frame
+			std::ostringstream os(std::ios::binary);
+			os<<tsrc->getTextureName(p.tile.texture.id);
+			os<<"^[verticalframe:"<<(int)p.tile.animation_frame_count<<":0";
+			p.tile.texture = tsrc->getTexture(os.str());
+		}
 		// - Lighting
 		for(u32 j = 0; j < p.vertices.size(); j++)
 		{
@@ -1055,7 +1078,8 @@ MapBlockMesh::MapBlockMesh(MeshMakeData *data):
 	// Check if animation is required for this mesh
 	m_has_animation =
 		!m_crack_materials.empty() ||
-		!m_daynight_diffs.empty();
+		!m_daynight_diffs.empty() ||
+		!m_animation_tiles.empty();
 }
 
 MapBlockMesh::~MapBlockMesh()
@@ -1093,6 +1117,34 @@ bool MapBlockMesh::animate(bool faraway, float time, int crack, u32 daynight_rat
 		}
 
 		m_last_crack = crack;
+	}
+	
+	// Texture animation
+	for(std::map<u32, TileSpec>::iterator
+			i = m_animation_tiles.begin();
+			i != m_animation_tiles.end(); i++)
+	{
+		const TileSpec &tile = i->second;
+		// Figure out current frame
+		int frameoffset = m_animation_frame_offsets[i->first];
+		int frame = (int)(time * 1000 / tile.animation_frame_length_ms
+				+ frameoffset) % tile.animation_frame_count;
+		// If frame doesn't change, skip
+		if(frame == m_animation_frames[i->first])
+			continue;
+
+		m_animation_frames[i->first] = frame;
+
+		scene::IMeshBuffer *buf = m_mesh->getMeshBuffer(i->first);
+		ITextureSource *tsrc = m_gamedef->getTextureSource();
+
+		// Create new texture name from original
+		std::ostringstream os(std::ios::binary);
+		os<<tsrc->getTextureName(tile.texture.id);
+		os<<"^[verticalframe:"<<(int)tile.animation_frame_count<<":"<<frame;
+		// Set the texture
+		AtlasPointer ap = tsrc->getTexture(os.str());
+		buf->getMaterial().setTexture(0, ap.atlas);
 	}
 
 	// Day-night transition

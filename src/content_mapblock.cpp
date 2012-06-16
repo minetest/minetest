@@ -471,7 +471,9 @@ void mapblock_mesh_generate_special(MeshMakeData *data,
 							pa_liquid.x0(), pa_liquid.y0()),
 				};
 				
-				// This fixes a strange bug
+				// To get backface culling right, the vertices need to go
+				// clockwise around the front of the face. And we happened to
+				// calculate corner levels in exact reverse order.
 				s32 corner_resolve[4] = {3,2,1,0};
 
 				for(s32 i=0; i<4; i++)
@@ -481,6 +483,52 @@ void mapblock_mesh_generate_special(MeshMakeData *data,
 					s32 j = corner_resolve[i];
 					vertices[i].Pos.Y += corner_levels[j];
 					vertices[i].Pos += intToFloat(p, BS);
+				}
+				
+				// Default downwards-flowing texture animation goes from 
+				// -Z towards +Z, thus the direction is +Z.
+				// Rotate texture to make animation go in flow direction
+				// Positive if liquid moves towards +Z
+				int dz = (corner_levels[side_corners[2][0]] +
+						corner_levels[side_corners[2][1]] <
+						corner_levels[side_corners[3][0]] +
+						corner_levels[side_corners[3][1]]);
+				// Positive if liquid moves towards +X
+				int dx = (corner_levels[side_corners[0][0]] +
+						corner_levels[side_corners[0][1]] <
+						corner_levels[side_corners[1][0]] +
+						corner_levels[side_corners[1][1]]);
+				// -X
+				if(-dx >= abs(dz))
+				{
+					v2f t = vertices[0].TCoords;
+					vertices[0].TCoords = vertices[1].TCoords;
+					vertices[1].TCoords = vertices[2].TCoords;
+					vertices[2].TCoords = vertices[3].TCoords;
+					vertices[3].TCoords = t;
+				}
+				// +X
+				if(dx >= abs(dz))
+				{
+					v2f t = vertices[0].TCoords;
+					vertices[0].TCoords = vertices[3].TCoords;
+					vertices[3].TCoords = vertices[2].TCoords;
+					vertices[2].TCoords = vertices[1].TCoords;
+					vertices[1].TCoords = t;
+				}
+				// -Z
+				if(-dz >= abs(dx))
+				{
+					v2f t = vertices[0].TCoords;
+					vertices[0].TCoords = vertices[3].TCoords;
+					vertices[3].TCoords = vertices[2].TCoords;
+					vertices[2].TCoords = vertices[1].TCoords;
+					vertices[1].TCoords = t;
+					t = vertices[0].TCoords;
+					vertices[0].TCoords = vertices[3].TCoords;
+					vertices[3].TCoords = vertices[2].TCoords;
+					vertices[2].TCoords = vertices[1].TCoords;
+					vertices[1].TCoords = t;
 				}
 
 				u16 indices[] = {0,1,2,2,3,0};
