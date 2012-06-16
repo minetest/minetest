@@ -877,8 +877,9 @@ int main(int argc, char *argv[])
 	init_gettext((porting::path_share+DIR_DELIM+".."+DIR_DELIM+"locale").c_str());
 	
 	// Initialize debug streams
+#define DEBUGFILE "debug.txt"
 #ifdef RUN_IN_PLACE
-	std::string logfile = "debug.txt";
+	std::string logfile = DEBUGFILE;
 #else
 	std::string logfile = porting::path_user+DIR_DELIM+DEBUGFILE;
 #endif
