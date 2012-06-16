@@ -362,10 +362,10 @@ minetest.nodedef_default = {
 	-- Node properties
 	drawtype = "normal",
 	visual_scale = 1.0,
-	tile_images = {""},
-	special_materials = {
-		{image="", backface_culling=true},
-		{image="", backface_culling=true},
+	tiles ={""},
+	special_tiles = {
+		{name="", backface_culling=true},
+		{name="", backface_culling=true},
 	},
 	alpha = 255,
 	post_effect_color = {a=0, r=0, g=0, b=0},

@@ -1113,7 +1113,6 @@ minetest.register_node("default:sign_wall", {
 	paramtype2 = "wallmounted",
 	sunlight_propagates = true,
 	walkable = false,
-	metadata_name = "sign",
 	selection_box = {
 		type = "wallmounted",
 		--wall_top = <default>
