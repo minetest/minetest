@@ -280,6 +280,26 @@ param2 is reserved for the engine when any of these are used:
 
 Nodes can also contain extra data. See "Node Metadata".
 
+Node drawtypes
+---------------
+There are a bunch of different looking node types. These are mostly just
+copied from Minetest 0.3; more may be made in the future.
+
+Look for examples in games/minimal or games/minetest_game.
+
+- normal
+- airlike
+- liquid
+- flowingliquid
+- glasslike
+- allfaces
+- allfaces_optional
+- torchlike
+- signlike
+- plantlike
+- fencelike
+- raillike
+
 Representations of simple things
 --------------------------------
 Position/vector:
@@ -1139,7 +1159,7 @@ Node definition (register_node)
 {
     <all fields allowed in item definitions>,
 
-    drawtype = "normal",
+    drawtype = "normal", -- See "Node drawtypes"
     visual_scale = 1.0,
     tiles = {tile definition 1, def2, def3, def4, def5, def6},
     ^ List can be shortened to needed length
