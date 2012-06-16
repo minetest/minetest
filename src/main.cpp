@@ -878,7 +878,7 @@ int main(int argc, char *argv[])
 	
 	// Initialize debug streams
 #ifdef RUN_IN_PLACE
-	std::string logfile = DEBUGFILE;
+	std::string logfile = "debug.txt";
 #else
 	std::string logfile = porting::path_user+DIR_DELIM+DEBUGFILE;
 #endif
