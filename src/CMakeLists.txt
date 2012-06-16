@@ -204,6 +204,12 @@ set(common_SRCS
 	sha1.cpp
 	base64.cpp
 	ban.cpp
+	util/serialize.cpp
+	util/directiontables.cpp
+	util/numeric.cpp
+	util/pointedthing.cpp
+	util/string.cpp
+	util/timetaker.cpp
 )
 
 # This gives us the icon

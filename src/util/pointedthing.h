@@ -1,6 +1,6 @@
 /*
 Minetest-c55
-Copyright (C) 2010 celeron55, Perttu Ahola <celeron55@gmail.com>
+Copyright (C) 2010-2012 celeron55, Perttu Ahola <celeron55@gmail.com>
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU Lesser General Public License as published by
@@ -17,34 +17,34 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
-#ifndef UTILITY_STRING_HEADER
-#define UTILITY_STRING_HEADER
+#ifndef UTIL_POINTEDTHING_HEADER
+#define UTIL_POINTEDTHING_HEADER
 
-// Note: Some stuff could be moved to here from utility.h
-
+#include "../irrlichttypes.h"
+#include <iostream>
 #include <string>
 
-static inline std::string padStringRight(std::string s, size_t len)
+enum PointedThingType
 {
-	if(len > s.size())
-		s.insert(s.end(), len - s.size(), ' ');
-	return s;
-}
+	POINTEDTHING_NOTHING,
+	POINTEDTHING_NODE,
+	POINTEDTHING_OBJECT
+};
 
-// ends: NULL- or ""-terminated array of strings
-// Returns "" if no end could be removed.
-static inline std::string removeStringEnd(const std::string &s, const char *ends[])
+struct PointedThing
 {
-	const char **p = ends;
-	for(; (*p) && (*p)[0] != '\0'; p++){
-		std::string end = *p;
-		if(s.size() < end.size())
-			continue;
-		if(s.substr(s.size()-end.size(), end.size()) == end)
-			return s.substr(0, s.size() - end.size());
-	}
-	return "";
-}
+	PointedThingType type;
+	v3s16 node_undersurface;
+	v3s16 node_abovesurface;
+	s16 object_id;
+
+	PointedThing();
+	std::string dump() const;
+	void serialize(std::ostream &os) const;
+	void deSerialize(std::istream &is);
+	bool operator==(const PointedThing &pt2) const;
+	bool operator!=(const PointedThing &pt2) const;
+};
 
 #endif
 

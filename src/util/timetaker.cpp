@@ -17,19 +17,45 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
-#ifndef UTILITY_HEADER
-#define UTILITY_HEADER
+#include "timetaker.h"
 
-// Headers whose content was previously here
-#include "util/serialize.h"
-#include "util/directiontables.h"
-#include "util/pointer.h"
-#include "util/string.h"
-#include "util/container.h"
-#include "util/thread.h"
-#include "util/numeric.h"
-#include "util/timetaker.h"
-#include "util/pointedthing.h"
+#include "gettime.h"
+#include "log.h"
+#include <ostream>
 
-#endif
+TimeTaker::TimeTaker(const char *name, u32 *result)
+{
+	m_name = name;
+	m_result = result;
+	m_running = true;
+	m_time1 = getTimeMs();
+}
+
+u32 TimeTaker::stop(bool quiet)
+{
+	if(m_running)
+	{
+		u32 time2 = getTimeMs();
+		u32 dtime = time2 - m_time1;
+		if(m_result != NULL)
+		{
+			(*m_result) += dtime;
+		}
+		else
+		{
+			if(quiet == false)
+				infostream<<m_name<<" took "<<dtime<<"ms"<<std::endl;
+		}
+		m_running = false;
+		return dtime;
+	}
+	return 0;
+}
+
+u32 TimeTaker::getTime()
+{
+	u32 time2 = getTimeMs();
+	u32 dtime = time2 - m_time1;
+	return dtime;
+}
 

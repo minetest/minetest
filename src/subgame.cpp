@@ -22,7 +22,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "filesys.h"
 #include "settings.h"
 #include "log.h"
-#include "utility_string.h"
+#include "util/string.h"
 
 std::string getGameName(const std::string &game_path)
 {

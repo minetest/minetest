@@ -40,7 +40,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "clientmap.h"
 #include "filecache.h"
 #include "sound.h"
-#include "utility_string.h"
+#include "util/string.h"
 #include "hex.h"
 
 static std::string getMediaCacheDir()

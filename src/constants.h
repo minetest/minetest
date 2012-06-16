@@ -31,19 +31,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #define PI 3.14159
 
 /*
-    Build-time stuff
-*/
-
-// Whether to catch all std::exceptions.
-// Assert will be called on such an event.
-// In debug mode, leave these for the debugger and don't catch them.
-#ifdef NDEBUG
-	#define CATCH_UNHANDLED_EXCEPTIONS 1
-#else
-	#define CATCH_UNHANDLED_EXCEPTIONS 0
-#endif
-
-/*
     Connection
 */
 

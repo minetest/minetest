@@ -35,7 +35,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "mapsector.h"
 #include "settings.h"
 #include "log.h"
-#include "utility_string.h"
+#include "util/string.h"
 #include "voxelalgorithms.h"
 #include "inventory.h"
 

@@ -38,10 +38,11 @@ with this program; ifnot, write to the Free Software Foundation, Inc.,
 #endif
 #include <vorbis/vorbisfile.h>
 #include "log.h"
-#include <map>
-#include <vector>
 #include "utility.h" // myrand()
 #include "filesys.h"
+#include <map>
+#include <vector>
+#include <fstream>
 
 #define BUFFER_SIZE 30000
 

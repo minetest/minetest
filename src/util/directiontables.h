@@ -17,19 +17,17 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
-#ifndef UTILITY_HEADER
-#define UTILITY_HEADER
+#ifndef UTIL_DIRECTIONTABLES_HEADER
+#define UTIL_DIRECTIONTABLES_HEADER
 
-// Headers whose content was previously here
-#include "util/serialize.h"
-#include "util/directiontables.h"
-#include "util/pointer.h"
-#include "util/string.h"
-#include "util/container.h"
-#include "util/thread.h"
-#include "util/numeric.h"
-#include "util/timetaker.h"
-#include "util/pointedthing.h"
+#include "../irrlichttypes.h"
+
+extern const v3s16 g_6dirs[6];
+
+extern const v3s16 g_26dirs[26];
+
+// 26th is (0,0,0)
+extern const v3s16 g_27dirs[27];
 
 #endif
 

@@ -24,10 +24,9 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <jmutex.h>
 #include <jmutexautolock.h>
 #include <iostream>
-#include "common_irrlicht.h"
+#include "irrlichttypes.h"
 #include "threads.h"
 #include "gettime.h"
-#include "constants.h"
 #include "exceptions.h"
 
 #ifdef _WIN32
@@ -37,6 +36,15 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 		#include <eh.h>
 	#endif
 #else
+#endif
+
+// Whether to catch all std::exceptions.
+// Assert will be called on such an event.
+// In debug mode, leave these for the debugger and don't catch them.
+#ifdef NDEBUG
+	#define CATCH_UNHANDLED_EXCEPTIONS 1
+#else
+	#define CATCH_UNHANDLED_EXCEPTIONS 0
 #endif
 
 /*

@@ -17,19 +17,27 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
-#ifndef UTILITY_HEADER
-#define UTILITY_HEADER
+#include "string.h"
 
-// Headers whose content was previously here
-#include "util/serialize.h"
-#include "util/directiontables.h"
-#include "util/pointer.h"
-#include "util/string.h"
-#include "util/container.h"
-#include "util/thread.h"
-#include "util/numeric.h"
-#include "util/timetaker.h"
-#include "util/pointedthing.h"
+#include "sha1.h"
+#include "base64.h"
 
-#endif
+// Get an sha-1 hash of the player's name combined with
+// the password entered. That's what the server uses as
+// their password. (Exception : if the password field is
+// blank, we send a blank password - this is for backwards
+// compatibility with password-less players).
+std::string translatePassword(std::string playername, std::wstring password)
+{
+	if(password.length() == 0)
+		return "";
+
+	std::string slt = playername + wide_to_narrow(password);
+	SHA1 sha1;
+	sha1.addBytes(slt.c_str(), slt.length());
+	unsigned char *digest = sha1.getDigest();
+	std::string pwd = base64_encode(digest, 20);
+	free(digest);
+	return pwd;
+}
 

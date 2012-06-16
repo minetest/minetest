@@ -68,7 +68,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "profiler.h"
 #include "log.h"
 #include "mods.h"
-#include "utility_string.h"
+#include "util/string.h"
 #include "subgame.h"
 #include "quicktune.h"
 

@@ -49,7 +49,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "sha1.h"
 #include "base64.h"
 #include "tool.h"
-#include "utility_string.h"
+#include "util/string.h"
 #include "sound.h" // dummySoundManager
 #include "event_manager.h"
 #include "hex.h"

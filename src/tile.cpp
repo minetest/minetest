@@ -29,7 +29,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "mapnode.h" // For texture atlas making
 #include "nodedef.h" // For texture atlas making
 #include "gamedef.h"
-#include "utility_string.h"
+#include "util/string.h"
 
 /*
 	A cache from texture name to texture path

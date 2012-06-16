@@ -22,6 +22,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "irrlichttypes.h"
 #include "inventory.h"
+#include "constants.h" // BS
 
 #define PLAYERNAME_SIZE 20
 

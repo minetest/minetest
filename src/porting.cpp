@@ -28,7 +28,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "debug.h"
 #include "filesys.h"
 #include "log.h"
-#include "utility_string.h"
+#include "util/string.h"
 
 #ifdef __APPLE__
 	#include "CoreFoundation/CoreFoundation.h"

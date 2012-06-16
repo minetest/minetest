@@ -17,19 +17,35 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
-#ifndef UTILITY_HEADER
-#define UTILITY_HEADER
+#ifndef UTIL_TIMETAKER_HEADER
+#define UTIL_TIMETAKER_HEADER
 
-// Headers whose content was previously here
-#include "util/serialize.h"
-#include "util/directiontables.h"
-#include "util/pointer.h"
-#include "util/string.h"
-#include "util/container.h"
-#include "util/thread.h"
-#include "util/numeric.h"
-#include "util/timetaker.h"
-#include "util/pointedthing.h"
+#include "../irrlichttypes.h"
+
+/*
+	TimeTaker
+*/
+
+class TimeTaker
+{
+public:
+	TimeTaker(const char *name, u32 *result=NULL);
+
+	~TimeTaker()
+	{
+		stop();
+	}
+
+	u32 stop(bool quiet=false);
+
+	u32 getTime();
+
+private:
+	const char *m_name;
+	u32 m_time1;
+	bool m_running;
+	u32 *m_result;
+};
 
 #endif
 
