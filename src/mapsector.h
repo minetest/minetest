@@ -17,15 +17,11 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
-/*
-(c) 2010 Perttu Ahola <celeron55@gmail.com>
-*/
-
 #ifndef MAPSECTOR_HEADER
 #define MAPSECTOR_HEADER
 
 #include <jmutex.h>
-#include "common_irrlicht.h"
+#include "irrlichttypes_bloated.h"
 #include "exceptions.h"
 #include <ostream>
 

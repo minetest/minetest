@@ -19,7 +19,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "content_mapnode.h"
 
-#include "irrlichttypes.h"
+#include "irrlichttypes_bloated.h"
 #include "mapnode.h"
 #include "nodedef.h"
 #include "nameidmapping.h"

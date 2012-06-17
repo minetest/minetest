@@ -22,7 +22,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "connection.h"
 #include "environment.h"
-#include "common_irrlicht.h"
+#include "irrlichttypes_extrabloated.h"
 #include "jmutex.h"
 #include <ostream>
 #include <set>

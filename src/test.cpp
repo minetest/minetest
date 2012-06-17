@@ -18,7 +18,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 */
 
 #include "test.h"
-#include "common_irrlicht.h"
+#include "irrlichttypes_extrabloated.h"
 #include "debug.h"
 #include "map.h"
 #include "player.h"

@@ -25,7 +25,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 	distance according to map seed
 */
 
-#include "common_irrlicht.h"
+#include "irrlichttypes_extrabloated.h"
 
 #define FARMESH_MATERIAL_COUNT 2
 

@@ -20,7 +20,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #ifndef CLOUDS_HEADER
 #define CLOUDS_HEADER
 
-#include "common_irrlicht.h"
+#include "irrlichttypes_extrabloated.h"
 #include <iostream>
 
 class Clouds : public scene::ISceneNode

@@ -49,7 +49,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #ifndef QUICKTUNE_HEADER
 #define QUICKTUNE_HEADER
 
-#include "irrlichttypes.h"
 #include <string>
 #include <map>
 #include <vector>

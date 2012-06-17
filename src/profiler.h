@@ -20,7 +20,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #ifndef PROFILER_HEADER
 #define PROFILER_HEADER
 
-#include "common_irrlicht.h"
+#include "irrlichttypes_bloated.h"
 #include <string>
 #include <jmutex.h>
 #include <jmutexautolock.h>

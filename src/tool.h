@@ -20,7 +20,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #ifndef TOOL_HEADER
 #define TOOL_HEADER
 
-#include "common_irrlicht.h"
+#include "irrlichttypes.h"
 #include <string>
 #include <iostream>
 #include <map>

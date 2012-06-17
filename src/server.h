@@ -22,7 +22,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "connection.h"
 #include "environment.h"
-#include "irrlichttypes.h"
+#include "irrlichttypes_bloated.h"
 #include <string>
 #include "porting.h"
 #include "map.h"

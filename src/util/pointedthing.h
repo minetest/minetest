@@ -21,6 +21,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #define UTIL_POINTEDTHING_HEADER
 
 #include "../irrlichttypes.h"
+#include "../irr_v3d.h"
 #include <iostream>
 #include <string>
 

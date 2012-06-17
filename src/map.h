@@ -26,7 +26,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <iostream>
 #include <sstream>
 
-#include "irrlichttypes.h"
+#include "irrlichttypes_bloated.h"
 #include "mapnode.h"
 #include "constants.h"
 #include "voxel.h"

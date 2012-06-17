@@ -22,7 +22,7 @@
 #ifndef GUIKEYCHANGEMENU_HEADER
 #define GUIKEYCHANGEMENU_HEADER
 
-#include "common_irrlicht.h"
+#include "irrlichttypes_extrabloated.h"
 #include "modalMenu.h"
 #include "client.h"
 #include "gettext.h"

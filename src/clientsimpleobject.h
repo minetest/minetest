@@ -20,7 +20,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #ifndef CLIENTSIMPLEOBJECT_HEADER
 #define CLIENTSIMPLEOBJECT_HEADER
 
-#include "irrlichttypes.h"
+#include "irrlichttypes_bloated.h"
 class ClientEnvironment;
 
 class ClientSimpleObject

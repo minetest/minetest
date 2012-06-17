@@ -25,6 +25,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <jmutexautolock.h>
 #include <iostream>
 #include "irrlichttypes.h"
+#include <irrMap.h>
 #include "threads.h"
 #include "gettime.h"
 #include "exceptions.h"

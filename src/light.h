@@ -20,7 +20,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #ifndef LIGHT_HEADER
 #define LIGHT_HEADER
 
-#include "common_irrlicht.h"
+#include "irrlichttypes.h"
 #include "debug.h"
 
 /*

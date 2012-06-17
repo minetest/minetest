@@ -20,7 +20,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #ifndef STATICOBJECT_HEADER
 #define STATICOBJECT_HEADER
 
-#include "common_irrlicht.h"
+#include "irrlichttypes_bloated.h"
 #include <string>
 #include <sstream>
 #include "util/serialize.h"

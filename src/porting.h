@@ -25,8 +25,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #define PORTING_HEADER
 
 #include <string>
-// Included for u32 and such
-#include "common_irrlicht.h"
+#include "irrlichttypes.h" // u32
 #include "debug.h"
 #include "constants.h"
 

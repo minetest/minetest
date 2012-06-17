@@ -47,7 +47,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <iostream>
 #include <fstream>
 #include <locale.h>
-#include "common_irrlicht.h"
+#include "irrlichttypes_extrabloated.h"
 #include "debug.h"
 #include "test.h"
 #include "server.h"

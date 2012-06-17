@@ -20,7 +20,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #ifndef SCRIPTAPI_HEADER
 #define SCRIPTAPI_HEADER
 
-#include "irrlichttypes.h"
+#include "irrlichttypes_bloated.h"
 #include <string>
 #include "mapnode.h"
 #include <set>

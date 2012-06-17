@@ -20,7 +20,11 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #ifndef TILE_HEADER
 #define TILE_HEADER
 
-#include "common_irrlicht.h"
+#include "irrlichttypes.h"
+#include "irr_v2d.h"
+#include "irr_v3d.h"
+#include <ITexture.h>
+#include <IrrlichtDevice.h>
 #include "threads.h"
 #include <string>
 

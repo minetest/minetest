@@ -21,6 +21,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #define VOXEL_HEADER
 
 #include "irrlichttypes.h"
+#include "irr_v3d.h"
+#include <irrList.h>
 #include <iostream>
 #include "debug.h"
 #include "mapnode.h"

@@ -24,7 +24,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <string>
 #include <jthread.h>
 #include <jmutex.h>
-#include "common_irrlicht.h"
 #include "exceptions.h"
 
 class BanManager

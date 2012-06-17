@@ -20,7 +20,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #ifndef CONNECTION_HEADER
 #define CONNECTION_HEADER
 
-#include "irrlichttypes.h"
+#include "irrlichttypes_bloated.h"
 #include "socket.h"
 #include "exceptions.h"
 #include "constants.h"

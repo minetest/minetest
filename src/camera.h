@@ -20,7 +20,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #ifndef CAMERA_HEADER
 #define CAMERA_HEADER
 
-#include "common_irrlicht.h"
+#include "irrlichttypes_extrabloated.h"
 #include "inventory.h"
 #include "mesh.h"
 #include "tile.h"

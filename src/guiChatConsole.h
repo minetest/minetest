@@ -20,7 +20,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #ifndef GUICHATCONSOLE_HEADER
 #define GUICHATCONSOLE_HEADER
 
-#include "common_irrlicht.h"
+#include "irrlichttypes_extrabloated.h"
 #include "chat.h"
 
 class Client;

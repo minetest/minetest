@@ -24,7 +24,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <iostream>
 #include <set>
 #include <map>
-#include "irrlichttypes.h"
+#include "irrlichttypes_bloated.h"
 
 class NameIdMapping
 {

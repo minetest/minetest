@@ -21,7 +21,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #define GENERICOBJECT_HEADER
 
 #include <string>
-#include "irrlichttypes.h"
+#include "irrlichttypes_bloated.h"
 #include <iostream>
 
 #define GENERIC_CMD_SET_PROPERTIES 0

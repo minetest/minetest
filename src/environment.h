@@ -31,7 +31,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 */
 
 #include <set>
-#include "common_irrlicht.h"
+#include "irrlichttypes_extrabloated.h"
 #include "player.h"
 #include "map.h"
 #include <ostream>

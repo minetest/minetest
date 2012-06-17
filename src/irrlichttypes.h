@@ -1,6 +1,6 @@
 /*
 Minetest-c55
-Copyright (C) 2010-2011 celeron55, Perttu Ahola <celeron55@gmail.com>
+Copyright (C) 2010-2012 celeron55, Perttu Ahola <celeron55@gmail.com>
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU Lesser General Public License as published by
@@ -21,25 +21,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #define IRRLICHTTYPES_HEADER
 
 #include <irrTypes.h>
-#include <vector2d.h>
-#include <vector3d.h>
-#include <irrMap.h>
-#include <irrList.h>
-#include <irrArray.h>
-#include <aabbox3d.h>
-#include <SColor.h>
+
 using namespace irr;
-typedef core::vector3df v3f;
-typedef core::vector3d<s16> v3s16;
-typedef core::vector3d<s32> v3s32;
-
-typedef core::vector2d<f32> v2f;
-typedef core::vector2d<s16> v2s16;
-typedef core::vector2d<s32> v2s32;
-typedef core::vector2d<u32> v2u32;
-typedef core::vector2d<f32> v2f32;
-
-typedef core::aabbox3d<f32> aabb3f;
 
 #ifdef _MSC_VER
 	// Windows

@@ -20,7 +20,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #ifndef KEYCODE_HEADER
 #define KEYCODE_HEADER
 
-#include "common_irrlicht.h"
+#include "irrlichttypes.h"
+#include <IEventReceiver.h>
 #include <string>
 
 /* A key press, consisting of either an Irrlicht keycode

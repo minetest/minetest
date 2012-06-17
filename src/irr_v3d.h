@@ -1,6 +1,6 @@
 /*
 Minetest-c55
-Copyright (C) 2012 celeron55, Perttu Ahola <celeron55@gmail.com>
+Copyright (C) 2010-2012 celeron55, Perttu Ahola <celeron55@gmail.com>
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU Lesser General Public License as published by
@@ -17,14 +17,16 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
-#ifndef CONTENT_CSO_HEADER
-#define CONTENT_CSO_HEADER
+#ifndef IRR_V3D_HEADER
+#define IRR_V3D_HEADER
 
-#include "irrlichttypes_extrabloated.h"
-#include "clientsimpleobject.h"
+#include "irrlichttypes.h"
 
-ClientSimpleObject* createSmokePuff(scene::ISceneManager *smgr,
-		ClientEnvironment *env, v3f pos, v2f size);
+#include <vector3d.h>
+
+typedef core::vector3df v3f;
+typedef core::vector3d<s16> v3s16;
+typedef core::vector3d<s32> v3s32;
 
 #endif
 

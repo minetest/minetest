@@ -24,7 +24,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <sstream>
 #include <string>
 #include <vector>
-#include "common_irrlicht.h"
+#include "irrlichttypes_bloated.h"
 #include "debug.h"
 #include "itemdef.h"
 

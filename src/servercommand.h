@@ -21,7 +21,7 @@ OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 
 #include <vector>
 #include <sstream>
-#include "common_irrlicht.h"
+#include "irrlichttypes.h"
 #include "player.h"
 #include "server.h"
 

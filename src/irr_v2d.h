@@ -1,6 +1,6 @@
 /*
 Minetest-c55
-Copyright (C) 2010-2011 celeron55, Perttu Ahola <celeron55@gmail.com>
+Copyright (C) 2010-2012 celeron55, Perttu Ahola <celeron55@gmail.com>
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU Lesser General Public License as published by
@@ -17,26 +17,18 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
-#ifndef COMMON_IRRLICHT_HEADER
-#define COMMON_IRRLICHT_HEADER
-
-#define endSceneX(d){d->draw2DLine(v2s32(0,0),v2s32(1,0),\
-video::SColor(255,30,30,30));d->endScene();}
+#ifndef IRR_V2D_HEADER
+#define IRR_V2D_HEADER
 
 #include "irrlichttypes.h"
 
-#ifndef SERVER
-#include <IMesh.h>
-#include <IImage.h>
-#include <IrrlichtDevice.h>
-#include <IMeshSceneNode.h>
-#include <SMesh.h>
-#include <ISceneManager.h>
-#include <IMeshBuffer.h>
-#include <SMeshBuffer.h>
-#include <IGUIElement.h>
-#include <IGUIEnvironment.h>
-#endif
+#include <vector2d.h>
+
+typedef core::vector2d<f32> v2f;
+typedef core::vector2d<s16> v2s16;
+typedef core::vector2d<s32> v2s32;
+typedef core::vector2d<u32> v2u32;
+typedef core::vector2d<f32> v2f32;
 
 #endif
 

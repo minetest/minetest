@@ -21,7 +21,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #ifndef GUIINVENTORYMENU_HEADER
 #define GUIINVENTORYMENU_HEADER
 
-#include "common_irrlicht.h"
+#include "irrlichttypes_extrabloated.h"
 #include "inventory.h"
 #include "inventorymanager.h"
 #include "modalMenu.h"

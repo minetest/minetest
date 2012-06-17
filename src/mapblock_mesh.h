@@ -20,7 +20,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #ifndef MAPBLOCK_MESH_HEADER
 #define MAPBLOCK_MESH_HEADER
 
-#include "common_irrlicht.h"
+#include "irrlichttypes_extrabloated.h"
 #include "tile.h"
 #include "voxel.h"
 #include <map>

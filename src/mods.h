@@ -21,6 +21,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #define MODS_HEADER
 
 #include "irrlichttypes.h"
+#include <irrList.h>
 #include <set>
 #include <string>
 #include <exception>
