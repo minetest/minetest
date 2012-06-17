@@ -342,6 +342,11 @@ Position/vector:
 Currently the API does not provide any helper functions for addition,
 subtraction and whatever; you can define those that you need yourself.
 
+pointed_thing:
+  {type="nothing"}
+  {type="node", under=pos, above=pos}
+  {type="object", ref=ObjectRef}
+
 Items
 ------
 Node (register_node):
@@ -1167,8 +1172,10 @@ Item definition (register_node, register_craftitem, register_tool)
       actual result to client in a short moment.
 
     on_place = func(itemstack, placer, pointed_thing),
+    ^ Shall place item and return the leftover itemstack
     ^ default: minetest.item_place
     on_drop = func(itemstack, dropper, pos),
+    ^ Shall drop item and return the leftover itemstack
     ^ default: minetest.item_drop
     on_use = func(itemstack, user, pointed_thing),
     ^  default: nil
