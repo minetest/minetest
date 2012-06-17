@@ -19,8 +19,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "string.h"
 
-#include "sha1.h"
-#include "base64.h"
+#include "../sha1.h"
+#include "../base64.h"
 
 // Get an sha-1 hash of the player's name combined with
 // the password entered. That's what the server uses as

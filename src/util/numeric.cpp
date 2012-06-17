@@ -19,8 +19,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "numeric.h"
 
-#include "log.h"
-#include "constants.h" // BS, MAP_BLOCKSIZE
+#include "../log.h"
+#include "../constants.h" // BS, MAP_BLOCKSIZE
 #include <iostream>
 
 // Calculate the borders of a "d-radius" cube
