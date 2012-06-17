@@ -1679,6 +1679,9 @@ bool generate_image(std::string part_of_name, video::IImage *& baseimg,
 				return false;
 			}
 
+			// Fill target image with transparency
+			img->fill(video::SColor(0,0,0,0));
+
 			core::dimension2d<u32> dim = frame_size;
 			core::position2d<s32> pos_dst(0, 0);
 			core::position2d<s32> pos_src(0, frame_index * frame_size.Y);
