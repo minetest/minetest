@@ -299,6 +299,41 @@ Look for examples in games/minimal or games/minetest_game.
 - plantlike
 - fencelike
 - raillike
+- nodebox -- See below. EXPERIMENTAL
+
+Node boxes
+-----------
+Node selection boxes are defined using "node boxes"
+
+The "nodebox" node drawtype allows defining visual of nodes consisting of
+arbitrary number of boxes. It allows defining stuff like stairs. Only the
+"fixed" box type is supported for these.
+^ Please note that this is still experimental, and may be incompatibly
+  changed in the future.
+
+A nodebox is defined as any of:
+{
+    -- A normal cube; the default in most things
+    type = "regular"
+}
+{
+    -- A fixed box (facedir param2 is used, if applicable)
+    type = "fixed",
+    fixed = box OR {box1, box2, ...}
+}
+{
+    -- A box like the selection box for torches
+    -- (wallmounted param2 is used, if applicable)
+    type = "wallmounted",
+    wall_top = box,
+    wall_bottom = box,
+    wall_side = box
+}
+
+A box is defined as:
+  {x1, y1, z1, x2, y2, z2}
+A box of a regular node would look like:
+  {-0.5, -0.5, -0.5, 0.5, 0.5, 0.5},
 
 Representations of simple things
 --------------------------------
@@ -1186,7 +1221,8 @@ Node definition (register_node)
     liquid_viscosity = 0,
     light_source = 0,
     damage_per_second = 0,
-    selection_box = {type="regular"},
+    node_box = {type="regular"}, -- See "Node boxes"
+    selection_box = {type="regular"}, -- See "Node boxes"
     legacy_facedir_simple = false, -- Support maps made in and before January 2012
     legacy_wallmounted = false, -- Support maps made in and before January 2012
     sounds = {
