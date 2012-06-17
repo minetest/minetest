@@ -216,7 +216,7 @@ void ContentFeatures::reset()
 
 void ContentFeatures::serialize(std::ostream &os)
 {
-	writeU8(os, 4); // version
+	writeU8(os, 5); // version
 	os<<serializeString(name);
 	writeU16(os, groups.size());
 	for(ItemGroupList::const_iterator
@@ -267,7 +267,7 @@ void ContentFeatures::serialize(std::ostream &os)
 void ContentFeatures::deSerialize(std::istream &is)
 {
 	int version = readU8(is);
-	if(version != 4 && version != 3)
+	if(version != 5)
 		throw SerializationError("unsupported ContentFeatures version");
 	name = deSerializeString(is);
 	groups.clear();
@@ -281,22 +281,12 @@ void ContentFeatures::deSerialize(std::istream &is)
 	visual_scale = readF1000(is);
 	if(readU8(is) != 6)
 		throw SerializationError("unsupported tile count");
-	for(u32 i=0; i<6; i++){
-		if(version == 4)
-			tiledef[i].deSerialize(is);
-		else if(version == 3) // Allow connecting to older servers
-			tiledef[i].name = deSerializeString(is);
-	}
+	for(u32 i=0; i<6; i++)
+		tiledef[i].deSerialize(is);
 	if(readU8(is) != CF_SPECIAL_COUNT)
 		throw SerializationError("unsupported CF_SPECIAL_COUNT");
-	for(u32 i=0; i<CF_SPECIAL_COUNT; i++){
-		if(version == 4){
-			tiledef_special[i].deSerialize(is);
-		} else if(version == 3){ // Allow connecting to older servers
-			tiledef_special[i].name = deSerializeString(is);
-			tiledef_special[i].backface_culling = readU8(is);
-		}
-	}
+	for(u32 i=0; i<CF_SPECIAL_COUNT; i++)
+		tiledef_special[i].deSerialize(is);
 	alpha = readU8(is);
 	post_effect_color.setAlpha(readU8(is));
 	post_effect_color.setRed(readU8(is));
