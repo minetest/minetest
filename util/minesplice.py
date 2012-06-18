@@ -215,14 +215,14 @@ def parseCoord(coord):
 
 
 def main():
-	parser = OptionParser("""Usage: %prog [-c|-s|-d] source.mt src=X,Y,Z+dX+dY+dZ [destination.mt] [dst=X',Y',Z']
-	source.sqlite is the source world
+	parser = OptionParser("""Usage: %prog [-c|-s|-d] source-map.sqlite src=X,Y,Z+dX+dY+dZ [destination-map.sqlite] [dst=X',Y',Z']
+	source-map.sqlite is the source map
 	X,Y,Z are coordinates for the start of the operation volume
 	+dX is the length (along X-axis) of the operation volume
 	+dY is the height (along Y-axis) of the operation volume
 	+dZ is the width (along Z-axis) of the operation volume
-	destination.sqlite is the destination world (not needed when deleting)
-	X',Y',Z' are the coordinates in the destination world (used when moving blocks)
+	destination-map.sqlite is the destination map (not needed when deleting)
+	X',Y',Z' are the coordinates in the destination map (used when moving blocks)
 	
 	Ideally coordinates should be multiples of 16 (block boundaries).  If not:
 	 X, Y, Z will round down 
