@@ -2955,6 +2955,7 @@ const luaL_reg ObjectRef::methods[] = {
 	method(ObjectRef, get_entity_name),
 	method(ObjectRef, get_luaentity),
 	// Player-only
+	method(ObjectRef, is_player),
 	method(ObjectRef, get_player_name),
 	method(ObjectRef, get_look_dir),
 	method(ObjectRef, get_look_pitch),
