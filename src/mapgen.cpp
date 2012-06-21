@@ -1198,13 +1198,43 @@ bool block_is_underground(u64 seed, v3s16 blockpos)
 
 #define AVERAGE_MUD_AMOUNT 4
 
+//#define FLAT
+
+// plot [x=-1:1] f(b,x) = 1 - g(b,x)*log(b*(x+1)+1),g(b,x)=(1+0)/log(b*(1+1)+1),f(1,x),f(2,x),f(10,x),f(-0.4999999,x),f(1000000,x)
+
+// b>0 = bias toward 0
+// -0.5<b<0 = bias toward 1
+const double biasb = 0x10;
+double biasa;
+
+__attribute__ ((constructor))
+void setupBias() {
+  //a = (1+0)/log(b*(1+1)+1)
+  biasa = 1/log(biasb*2+1);
+}
+
+double bias(double what) {
+  if(what>1) what = 1;
+  if(what<-1) what = -1;
+  double res = 1 - biasa * log(biasb*(what+1)+1);
+  if(res > 1 || res < 0) {
+    std::cerr << "Got res " << what << " => " << res  << std::endl;
+    exit(2);
+  }
+  return res;
+}
+
 double base_rock_level_2d(u64 seed, v2s16 p)
 {
-	// The base ground level
-	double base = (double)WATER_LEVEL - (double)AVERAGE_MUD_AMOUNT
-			+ 20. * noise2d_perlin(
-			0.5+(float)p.X/250., 0.5+(float)p.Y/250.,
-			seed+82341, 5, 0.6);
+#ifdef FLAT
+  return WATER_LEVEL+5;
+#else
+	// Flat ground level
+	double base = (double)WATER_LEVEL - (double)AVERAGE_MUD_AMOUNT +
+          4. * 
+          (1-bias(noise2d_perlin(
+                                 0.5+(float)p.X/0x100, 0.5+(float)p.Y/0x100,
+                                 seed+82341, 5, 0.6))) - 2;
 
 	/*// A bit hillier one
 	double base2 = WATER_LEVEL - 4.0 + 40. * noise2d_perlin(
@@ -1212,18 +1242,16 @@ double base_rock_level_2d(u64 seed, v2s16 p)
 			seed+93413, 6, 0.69);
 	if(base2 > base)
 		base = base2;*/
-#if 1
-	// Higher ground level
-	double higher = (double)WATER_LEVEL + 20. + 16. * noise2d_perlin(
-			0.5+(float)p.X/500., 0.5+(float)p.Y/500.,
-			seed+85039, 5, 0.6);
+	// Mountainous ground level
+	double higher = (double)WATER_LEVEL + 
+          0xc0 * 
+          noise2d_perlin(
+                         0.5+(float)p.X/0x200, 0.5+(float)p.Y/0x200,
+                         seed+85039, 5, 0.6) 
+          - 0x40;
 	//higher = 30; // For debugging
 
-	// Limit higher to at least base
-	if(higher < base)
-		higher = base;
-
-	// Steepness factor of cliffs
+        /*	// Steepness factor of cliffs
 	double b = 0.85 + 0.5 * noise2d_perlin(
 			0.5+(float)p.X/125., 0.5+(float)p.Y/125.,
 			seed-932, 5, 0.7);
@@ -1242,25 +1270,23 @@ double base_rock_level_2d(u64 seed, v2s16 p)
 	//double b = 20;
 	//b = 0.25;
 
-	// Offset to more low
-	double a_off = -0.20;
 	// High/low selector
-	/*double a = 0.5 + b * (a_off + noise2d_perlin(
+	double a = 0.5 + b * (a_off + noise2d_perlin(
 			0.5+(float)p.X/500., 0.5+(float)p.Y/500.,
 			seed+4213, 6, 0.7));*/
-	double a = (double)0.5 + b * (a_off + noise2d_perlin(
-			0.5+(float)p.X/250., 0.5+(float)p.Y/250.,
-			seed+4213, 5, 0.69));
+
+	// bias result
+	double a = bias(noise2d_perlin(0.5+(float)p.X/0x100, 
+                                       0.5+(float)p.Y/0x100,
+                                       seed+4213, 5, 0.69));
 	// Limit
-	a = rangelim(a, 0.0, 1.0);
+	//a = rangelim(a, 0.0, 1.0);
 
 	//dstream<<"a="<<a<<std::endl;
 
 	double h = base*(1.0-a) + higher*a;
-#else
-	double h = base;
-#endif
 	return h;
+#endif
 }
 
 s16 find_ground_level_from_noise(u64 seed, v2s16 p2d, s16 precision)
@@ -1783,7 +1809,7 @@ void make_block(BlockMakeData *data)
 	}//timer1
 #endif
 	
-#if 1
+#ifndef FLAT
 	{
 	// 15ms @cs=8
 	TimeTaker timer1("add mud");
@@ -1865,7 +1891,7 @@ void make_block(BlockMakeData *data)
 	}
 
 	}//timer1
-#endif
+#endif /* FLAT */
 
 	/*
 		Add blobs of dirt and gravel underground
@@ -1910,7 +1936,7 @@ void make_block(BlockMakeData *data)
 	}
 	}
 
-#if 1
+#ifndef FLAT
 	{
 	// 340ms @cs=8
 	TimeTaker timer1("flow mud");
@@ -2078,7 +2104,7 @@ void make_block(BlockMakeData *data)
 	}
 
 	}//timer1
-#endif
+#endif /* FLAT */
 
 	} // Aging loop
 	/***********************
