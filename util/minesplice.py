@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 '''
 minesplice.py: copy, swap, and delete minetest blocks between map files
-Copyright (C) 2012 Corey Edmunds (corey.edmunds@gmail.com)
+Copyright (C) 2012 Bad_Command
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -228,11 +228,11 @@ def main():
 	 X, Y, Z will round down 
 	 dX, dY, dZ will round up""")
 	parser.add_option("-c", "--copy", action="store_true", dest="copy",
-				  help="Copy blocks from source-world to destination-world")
+				  help="Copy blocks from source-map to destination-map")
 	parser.add_option("-s", "--swap", action="store_true", dest="swap",
-				  help="Swap the specified blocks between the source world and destination world")
+				  help="Swap the specified blocks between the source-map and destination-map")
 	parser.add_option("-d", "--delete", action="store_true", dest="delete",
-				  help="Delete blocks from source world")
+				  help="Delete blocks from source-map")
 	(options, args) = parser.parse_args()
 
 	print options;
