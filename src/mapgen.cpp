@@ -1244,11 +1244,11 @@ double base_rock_level_2d(u64 seed, v2s16 p)
 		base = base2;*/
 	// Mountainous ground level
 	double higher = (double)WATER_LEVEL + 
-          0xc0 * 
+          0xa0 * 
           noise2d_perlin(
                          0.5+(float)p.X/0x200, 0.5+(float)p.Y/0x200,
                          seed+85039, 5, 0.6) 
-          - 0x40;
+          + 0x60;
 	//higher = 30; // For debugging
 
         /*	// Steepness factor of cliffs
