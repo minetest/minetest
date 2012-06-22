@@ -917,13 +917,18 @@ void PlayerSAO::step(float dtime, bool send_recommended)
 					<<(d_horiz/age)<<std::endl;*/
 			if(d_horiz <= age * player_max_speed &&
 					(d_vert < 0 || d_vert < age * player_max_speed_up)){
-				m_last_good_position = m_player->getPosition();
+                          m_last_good_position = m_player->getPosition();
 			} else {
 				actionstream<<"Player "<<m_player->getName()
-						<<" moved too fast; resetting position"
-						<<std::endl;
-				m_player->setPosition(m_last_good_position);
-				m_teleported = true;
+                                            <<" moved too fast: "
+                                            << d_horiz << " / " << age 
+                                            << std::endl;
+                                // this causes stupid crazy amounts of lag teleporting
+                                // that kills more people than moving too fast.
+
+				/* m_player->setPosition(m_last_good_position);
+                                   m_teleported = true; */
+                                m_last_good_position = m_player->getPosition();
 			}
 			m_last_good_position_age = 0;
 		}
