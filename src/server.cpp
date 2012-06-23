@@ -53,6 +53,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "hex.h"
 #include "util/string.h"
 #include "util/pointedthing.h"
+#include "util/mathconstants.h"
 
 #define PP(x) "("<<(x).X<<","<<(x).Y<<","<<(x).Z<<")"
 
