@@ -3965,6 +3965,8 @@ void Server::fillMediaCache()
 		paths.push_back(mod.path + DIR_DELIM + "sounds");
 		paths.push_back(mod.path + DIR_DELIM + "media");
 	}
+	std::string path_all = "textures";
+	paths.push_back(path_all + DIR_DELIM + "all");
 	
 	// Collect media file information from paths into cache
 	for(std::list<std::string>::iterator i = paths.begin();
