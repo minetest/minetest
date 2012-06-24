@@ -2280,7 +2280,7 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 				std::wstring message;
 				message += L"*** ";
 				message += name;
-				message += L" joined game";
+				message += L" joined the game.";
 				BroadcastChatMessage(message);
 			}
 		}
@@ -2288,7 +2288,7 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 		// Warnings about protocol version can be issued here
 		if(getClient(peer_id)->net_proto_version < PROTOCOL_VERSION)
 		{
-			SendChatMessage(peer_id, L"# Server: WARNING: YOUR CLIENT IS OLD AND MAY WORK PROPERLY WITH THIS SERVER");
+			SendChatMessage(peer_id, L"# Server: WARNING: YOUR CLIENT IS OLD AND MAY WORK PROPERLY WITH THIS SERVER!");
 		}
 
 		/*
@@ -2710,7 +2710,7 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 				line += message;
 				send_to_others = true;
 			} else {
-				line += L"Server: You are not allowed to shout";
+				line += L"-!- You don't have permission to shout.";
 				send_to_sender = true;
 			}
 		}
@@ -2819,11 +2819,11 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 		bool success = scriptapi_set_password(m_lua, playername, newpwd);
 		if(success){
 			actionstream<<player->getName()<<" changes password"<<std::endl;
-			SendChatMessage(peer_id, L"Password change successful");
+			SendChatMessage(peer_id, L"Password change successful.");
 		} else {
 			actionstream<<player->getName()<<" tries to change password but "
 					<<"it fails"<<std::endl;
-			SendChatMessage(peer_id, L"Password change failed or inavailable");
+			SendChatMessage(peer_id, L"Password change failed or inavailable.");
 		}
 	}
 	else if(command == TOSERVER_PLAYERITEM)
@@ -4685,7 +4685,7 @@ void Server::handlePeerChange(PeerChange &c)
 				std::wstring name = narrow_to_wide(player->getName());
 				message += L"*** ";
 				message += name;
-				message += L" left game";
+				message += L" left the game.";
 				if(c.timeout)
 					message += L" (timed out)";
 			}

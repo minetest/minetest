@@ -41,7 +41,7 @@ end)
 --
 
 -- Register C++ commands without functions
-minetest.register_chatcommand("me", {params = nil, description = "chat action (eg. /me orders a pizza)"})
+minetest.register_chatcommand("me", {params = nil, description = "chat action (eg. /me orders a pizza)", privs = {shout=true}})
 minetest.register_chatcommand("status", {description = "print server status line"})
 minetest.register_chatcommand("shutdown", {params = "", description = "shutdown server", privs = {server=true}})
 minetest.register_chatcommand("clearobjects", {params = "", description = "clear all objects in world", privs = {server=true}})

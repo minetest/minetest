@@ -32,6 +32,12 @@ void cmd_status(std::wostringstream &os,
 void cmd_me(std::wostringstream &os,
 	ServerCommandContext *ctx)
 {
+	if(!ctx->server->checkPriv(ctx->player->getName(), "shout"))
+	{
+		os<<L"-!- You don't have permission to shout.";
+		return;
+	}
+
 	std::wstring name = narrow_to_wide(ctx->player->getName());
 	os << L"* " << name << L" " << ctx->paramstring;
 	ctx->flags |= SEND_TO_OTHERS | SEND_NO_PREFIX;
@@ -48,13 +54,13 @@ void cmd_time(std::wostringstream &os,
 	
 	if(!ctx->server->checkPriv(ctx->player->getName(), "settime"))
 	{
-		os<<L"-!- You don't have permission to do that";
+		os<<L"-!- You don't have permission to do this.";
 		return;
 	}
 
 	u32 time = stoi(wide_to_narrow(ctx->parms[1]));
 	ctx->server->setTimeOfDay(time);
-	os<<L"-!- time_of_day changed.";
+	os<<L"-!- Time of day changed.";
 
 	actionstream<<ctx->player->getName()<<" sets time "
 			<<time<<std::endl;
@@ -65,7 +71,7 @@ void cmd_shutdown(std::wostringstream &os,
 {
 	if(!ctx->server->checkPriv(ctx->player->getName(), "server"))
 	{
-		os<<L"-!- You don't have permission to do that";
+		os<<L"-!- You don't have permission to do this.";
 		return;
 	}
 
@@ -74,7 +80,7 @@ void cmd_shutdown(std::wostringstream &os,
 
 	ctx->server->requestShutdown();
 					
-	os<<L"*** Server shutting down (operator request)";
+	os<<L"*** Server shutting down (operator request).";
 	ctx->flags |= SEND_TO_OTHERS;
 }
 
@@ -82,7 +88,7 @@ void cmd_banunban(std::wostringstream &os, ServerCommandContext *ctx)
 {
 	if(!ctx->server->checkPriv(ctx->player->getName(), "ban"))
 	{
-		os<<L"-!- You don't have permission to do that";
+		os<<L"-!- You don't have permission to do this.";
 		return;
 	}
 
@@ -132,7 +138,7 @@ void cmd_clearobjects(std::wostringstream &os,
 {
 	if(!ctx->server->checkPriv(ctx->player->getName(), "server"))
 	{
-		os<<L"-!- You don't have permission to do that";
+		os<<L"-!- You don't have permission to do this.";
 		return;
 	}
 
@@ -152,7 +158,7 @@ void cmd_clearobjects(std::wostringstream &os,
 					
 	actionstream<<"object clearing done"<<std::endl;
 	
-	os<<L"*** cleared all objects";
+	os<<L"*** Cleared all objects.";
 	ctx->flags |= SEND_TO_OTHERS;
 }
 
