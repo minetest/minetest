@@ -17,6 +17,10 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
+extern "C" {
+#include "portals.h"
+}
+
 #include "server.h"
 #include <iostream>
 #include <queue>
@@ -1004,6 +1008,7 @@ Server::Server(
 	assert(m_lua);
 	// Export API
 	scriptapi_export(m_lua, this);
+        l_portals_register(m_lua);
 	// Load and run builtin.lua
 	infostream<<"Server: Loading builtin.lua [\""
 			<<builtinpath<<"\"]"<<std::endl;

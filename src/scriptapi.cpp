@@ -3933,9 +3933,12 @@ static void read_server_sound_params(lua_State *L, int index,
 // Writes a line to dstream
 static int l_debug(lua_State *L)
 {
-	std::string text = lua_tostring(L, 1);
-	dstream << text << std::endl;
-	return 0;
+  const char* derp = lua_tostring(L, 1);
+  if(!derp)
+    return 1;
+  std::string text(derp);
+  dstream << text << std::endl;
+  return 0;
 }
 
 // log([level,] text)

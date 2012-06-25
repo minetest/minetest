@@ -268,6 +268,7 @@ set(minetest_SRCS
 # Server sources
 set(minetestserver_SRCS
 	${common_SRCS}
+        portals.c
 	main.cpp
 )
 
