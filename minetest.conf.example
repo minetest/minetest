@@ -188,3 +188,5 @@
 #dedicated_server_step = 0.05
 # Can be set to true to disable shutting down on invalid world data
 #ignore_world_load_errors = false
+# Enable/disable /mods command to list mods on server (default: true)
+#enable_mods_command=true

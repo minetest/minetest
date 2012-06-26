@@ -159,6 +159,14 @@ void cmd_clearobjects(std::wostringstream &os,
 
 void cmd_mods(std::wostringstream &os, ServerCommandContext *ctx)
 {
+	// If /mods is disabled, say so and be done
+	if(g_settings->getBool("enable_mods_command") == false)
+	{
+		os << "-!- /mods command disabled";
+		ctx->flags |= SEND_NO_PREFIX;
+		return;
+	}
+	
 	// Get a list of mods
 	core::list<std::string> mods_unsorted, mods_sorted;
 	ctx->server->getModList(mods_unsorted);
