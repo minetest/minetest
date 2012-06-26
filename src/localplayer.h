@@ -95,6 +95,12 @@ private:
 	v3s16 m_sneak_node;
 	// Whether the player is allowed to sneak
 	bool m_sneak_node_exists;
+	// Node below player, used to determine whether it has been removed,
+	// and its old type
+	v3s16 m_old_node_below;
+	std::string m_old_node_below_type;
+	// Whether recalculation of the sneak node is needed
+	bool m_need_to_get_new_sneak_node;
 };
 
 #endif
