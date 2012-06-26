@@ -4439,6 +4439,13 @@ const ModSpec* Server::getModSpec(const std::string &modname)
 	}
 	return NULL;
 }
+void Server::getModList(core::list<std::string> &modlist)
+{
+	for(core::list<ModSpec>::Iterator i = m_mods.begin(); i != m_mods.end(); i++)
+	{
+		modlist.push_back((*i).name);
+	}
+}
 std::string Server::getBuiltinLuaPath()
 {
 	return porting::path_share + DIR_DELIM + "builtin";

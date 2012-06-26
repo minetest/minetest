@@ -48,6 +48,7 @@ minetest.register_chatcommand("clearobjects", {params = "", description = "clear
 minetest.register_chatcommand("time", {params = "<0...24000>", description = "set time of day", privs = {settime=true}})
 minetest.register_chatcommand("ban", {params = "<name>", description = "ban IP of player", privs = {ban=true}})
 minetest.register_chatcommand("unban", {params = "<name/ip>", description = "remove IP ban", privs = {ban=true}})
+minetest.register_chatcommand("mods", {params = "", description = "list mods"})
 
 -- Register other commands
 minetest.register_chatcommand("help", {
