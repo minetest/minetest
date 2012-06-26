@@ -163,7 +163,13 @@ void cmd_mods(std::wostringstream &os, ServerCommandContext *ctx)
 	if(g_settings->getBool("enable_mods_command") == false)
 	{
 		os << "-!- /mods command disabled";
-		ctx->flags |= SEND_NO_PREFIX;
+		return;
+	}
+
+	// If arguments are passed, complain
+	if(ctx->parms.size() != 1)
+	{
+		os << "-!- Command takes no arguments";
 		return;
 	}
 	
@@ -192,6 +198,7 @@ void cmd_mods(std::wostringstream &os, ServerCommandContext *ctx)
 	}
 
 	// Write out the message back to the client
+	os << "-!- Installed mods: ";
 	core::list<std::string>::Iterator i = mods_sorted.begin();
 	while(i != mods_sorted.end())
 	{
@@ -200,9 +207,6 @@ void cmd_mods(std::wostringstream &os, ServerCommandContext *ctx)
 		if(i != mods_sorted.end())
 			os << " ";
 	}
-
-	// Do not prefix "Server:" to the message
-	ctx->flags |= SEND_NO_PREFIX;
 }
 
 std::wstring processServerCommand(ServerCommandContext *ctx)
