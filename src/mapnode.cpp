@@ -44,6 +44,8 @@ MapNode::MapNode(INodeDefManager *ndef, const std::string &name,
 	// Set content (param0 and (param2&0xf0)) after other params
 	// because this needs to override part of param2
 	setContent(id);
+        if(id==CONTENT_IGNORE)
+          std::cerr<<"Node "<<name<<" is CONTENT_IGNORE!"<<std::endl;
 }
 
 void MapNode::setLight(enum LightBank bank, u8 a_light, INodeDefManager *nodemgr)
