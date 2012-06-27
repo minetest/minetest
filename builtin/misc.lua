@@ -21,7 +21,10 @@ minetest.register_globalstep(function(dtime)
 end)
 
 function minetest.after(time, func, param)
-	table.insert(minetest.timers_to_add, {time=time, func=func, param=param})
+   if time == nil then
+      error("after a nil time? probably an error!")
+   end
+   table.insert(minetest.timers_to_add, {time=time, func=func, param=param})
 end
 
 function minetest.check_player_privs(name, privs)
