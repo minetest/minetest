@@ -32,7 +32,7 @@ if minetest.require == nil then
    end
 
    local function minetestRequire(module,name)
-      local key = {module,name}
+      local key = module..'/'..name
       local gotcha = evaluated[key]
       if gotcha ~= nil then
          return gotcha
@@ -54,7 +54,7 @@ if minetest.require == nil then
    end
 
    local function minetestUninit(module,name)
-      local key = {module,name}
+      local key = module..'/'..name
       evaluated[key] = nil
    end
    
@@ -64,7 +64,7 @@ if minetest.require == nil then
    end
 
    local function minetestUnload(module,name)
-      local key = {module,name}
+      local key = module..'/'..name
       evaluated[key] = nil
       loaded[key] = nil
    end
