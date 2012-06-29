@@ -3,7 +3,12 @@ local holdouts = {}
 local named = {}
 local before = {}
 
+local purging = false
+
 local function push(stage,name,beforer)
+   if purging == true then
+      error("stupid programmer wants the last spot in line.")
+   end
    table.insert(holdouts,stage)
    if name == nil then return end
    named[stage] = name
@@ -44,6 +49,8 @@ function isBefore(a,b)
 end
 
 local function purge()
+   if purging then return end
+   purging = true
    table.sort(holdouts,isBefore)
    while #holdouts > 0 do
       local stage
