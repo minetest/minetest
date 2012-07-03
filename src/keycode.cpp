@@ -293,8 +293,7 @@ KeyPress::KeyPress(const irr::SEvent::SKeyInput &in)
 	if (valid_kcode(Key)) {
 		m_name = KeyNames[Key];
 	} else {
-		size_t maxlen = wctomb(NULL, Char);
-		m_name.resize(maxlen+1, '\0');
+		m_name.resize(MB_CUR_MAX+1, '\0');
 		int written = wctomb(&m_name[0], Char);
 		assert (written >= 0 && "unexpected multibyte character");
 	}
