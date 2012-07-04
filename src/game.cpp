@@ -367,6 +367,14 @@ PointedThing getPointedThing(Client *client, v3f player_position,
 	s16 zend = pos_i.Z + (camera_direction.Z>0 ? a : 1);
 	s16 xend = pos_i.X + (camera_direction.X>0 ? a : 1);
 	
+	// Prevent signed number overflow
+	if(yend==32767)
+		yend=32766;
+	if(zend==32767)
+		zend=32766;
+	if(xend==32767)
+		xend=32766;
+
 	for(s16 y = ystart; y <= yend; y++)
 	for(s16 z = zstart; z <= zend; z++)
 	for(s16 x = xstart; x <= xend; x++)
