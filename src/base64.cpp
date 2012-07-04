@@ -40,7 +40,7 @@ static inline bool is_base64(unsigned char c) {
 
 bool base64_is_valid(std::string const& s)
 {
-	for(int i=0; i<s.size(); i++)
+	for(size_t i=0; i<s.size(); i++)
 		if(!is_base64(s[i])) return false;
 	return true;
 }
