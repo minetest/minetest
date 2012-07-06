@@ -1,0 +1,392 @@
+// note: gpgme keeps all private key access in a separate process
+// because for HUGE SECURITY network capable programs should never
+// access or decrypt private keys directly.
+
+#include "gnupg.h"
+#include "log.h"
+#include "debug.h"
+#include "main.h"
+#include "settings.h"
+
+#include "util/numeric.h"
+
+#include "jthread/jmutex.h"
+#include "jthread/jmutexautolock.h"
+#include "jthread/jthread.h"
+
+extern "C" {
+#include <locale.h>
+#include <gpgme.h>
+#include <unistd.h>
+#include <string.h> // memcmp
+#ifndef CLIENT
+#include <termios.h>
+#endif
+}
+
+#include <vector>
+#include <string>
+#include <deque>
+
+class Value {
+  virtual void hateThisLanguage() {}
+};
+
+class Future {
+  JMutex waiter;
+  bool isSet;
+  Value* value;
+public:
+  Future() : isSet(false), value(NULL) {}
+  Value* get() {
+    JMutexAutoLock derp(waiter);
+    while(!isSet) {
+      waiter.Unlock();
+      // why no pthread_cond_t T_T
+      sleep(1);
+      waiter.Lock();
+    }
+    return value;
+  }
+  void set(Value* val) {
+    JMutexAutoLock derp(waiter);
+    if(isSet) return;
+    this->value = val;
+    isSet = true;
+  }
+};
+
+class Response : public virtual Value {
+public:
+  gpgme_data_t data;
+  std::vector<std::string> signers;
+};
+
+class Request : public virtual Response {
+public:
+  Future onResponse;
+  std::vector<std::string> encrypters;
+};
+
+class EncodeRequest : public virtual Request {};
+class DecodeRequest : public virtual Request {};
+
+class GenerateKeyRequest : public virtual Value {
+public:
+  std::string keyID; // out
+  char* passphrase; // in
+  Future onResponse;
+};
+
+class MainThread : JThread {
+public:
+  std::deque<Value*> queue;
+  JMutex queueLock;
+  gpgme_ctx_t ctx;
+
+  void enqueue(Value* what) {
+    JMutexAutoLock derp(queueLock);
+    queue.push_front(what);
+  }
+
+  void requestKey(std::string keyID) {
+    std::cerr << "Requesting key " << keyID << std::endl;
+    throw "BOOP";
+  }
+
+  void* Thread() {
+    ThreadStarted();
+    log_register_thread("PGP stuff");
+    
+    DSTACK(__FUNCTION_NAME);
+    
+    BEGIN_DEBUG_EXCEPTION_HANDLER      
+
+      ;
+
+    assert(GPG_ERR_NO_ERROR==gpgme_new(&ctx));
+
+    assert(GPG_ERR_NO_ERROR==
+           gpgme_ctx_set_engine_info(ctx,GPGME_PROTOCOL_OpenPGP,NULL,NULL));
+
+    // note: since jthread makes them detached
+    // no need to explicitly stop the thread
+    // unless cleanup is needed
+    // that exiting the process won't do automatically.
+    // (which is generally a BAD idea)
+    for(;;) {      
+      Value* what;
+      { JMutexAutoLock derp(queueLock);
+        while(queue.size()==0) {
+          std::cerr << "Queue empty" << std::endl;
+          queueLock.Unlock();
+          sleep(1);
+          queueLock.Lock();
+        }
+        std::cerr << "YOY" << std::endl;
+        what = queue.back();
+        queue.pop_back();
+      }      
+      EncodeRequest* derpEncodeRequest = dynamic_cast<EncodeRequest*>(what);
+      if(derpEncodeRequest) {
+        EncodeRequest& encodeRequest = *derpEncodeRequest;
+        std::cerr << "Encoding something" << std::endl;
+        for(std::vector<std::string>::iterator signer = encodeRequest.signers.begin();
+            signer != encodeRequest.signers.end();
+            ++signer) {
+          gpgme_key_t key;
+          gpgme_get_key(ctx,signer->c_str(),&key,1);
+          if(key)
+            gpgme_signers_add(ctx,key);
+          gpgme_key_unref(key);
+          key = NULL;
+        }
+        gpgme_key_t* ekeys = NULL;
+        if(encodeRequest.encrypters.size()>0) {
+          ekeys = (gpgme_key_t*) alloca(encodeRequest.encrypters.size()*sizeof(gpgme_key_t*)+1);
+          ekeys[encodeRequest.encrypters.size()] = NULL;
+       
+          int i = 0;
+          std::vector<std::string>::iterator encrypter = encodeRequest.encrypters.begin();
+          for(;encrypter != encodeRequest.encrypters.end();
+              ++i,++encrypter) {
+            while(GPG_ERR_NO_ERROR != 
+                  gpgme_get_key(ctx,encrypter->c_str(),ekeys+i,1)) 
+              requestKey(*encrypter);
+          }
+        }
+
+        gpgme_data_t cipher;
+        assert(GPG_ERR_NO_ERROR ==
+               gpgme_data_new(&cipher));
+
+        assert(GPG_ERR_NO_ERROR == 
+               gpgme_op_encrypt(ctx,ekeys,GPGME_ENCRYPT_ALWAYS_TRUST,
+                                encodeRequest.data,cipher));
+        gpgme_signers_clear(ctx);
+        gpgme_data_release(encodeRequest.data);
+        encodeRequest.data = cipher;
+        encodeRequest.onResponse.set(&encodeRequest);        
+        continue;
+      }
+
+      GenerateKeyRequest* derpGenkeyRequest = dynamic_cast<GenerateKeyRequest*>(what);
+      if(derpGenkeyRequest) {
+        GenerateKeyRequest& keyRequest = *(derpGenkeyRequest);
+        char params[0x1000];
+        snprintf(params,0x1000,
+                 " <GnupgKeyParms format=\"internal\">\n"
+                 "Key-Type: DSA\n"
+                 "Key-Length: 1024\n"
+                 "Subkey-Type: ELG-E\n"
+                 "Subkey-Length: 1024\n"
+                 "Name-Real: Minetest\n"
+                 "Name-Comment: generated by minetest\n"
+                 "Expire-Date: 0\n"
+                 "Passphrase: %s\n"
+                 "</GnupgKeyParms>\n",
+                 keyRequest.passphrase);
+        memset(keyRequest.passphrase,0,strlen(keyRequest.passphrase));
+        gpg_error_t res =
+          gpgme_op_genkey(ctx,params,NULL,NULL);
+        memset(params,0,strlen(params));
+
+        switch(res) {          
+        case GPG_ERR_NO_ERROR:
+          break;
+        default:
+          std::cerr << "Um genkey error " << gpgme_strerror(res) <<
+            ": " << gpgme_strsource(res) << std::endl;
+          throw "shit";
+        }
+        gpgme_genkey_result_t result = gpgme_op_genkey_result (ctx);
+        keyRequest.keyID = result->fpr;
+        keyRequest.onResponse.set(&keyRequest);
+        std::cerr << "whee!" << std::endl;
+        continue;
+      }
+               
+      DecodeRequest* derpDecodeRequest = dynamic_cast<DecodeRequest*>(what);
+      assert(derpDecodeRequest); // it has to be one of the two
+      DecodeRequest& decodeRequest = *derpDecodeRequest;
+      gpgme_data_t plain;
+      assert(GPG_ERR_NO_ERROR==
+             gpgme_data_new(&plain));
+      
+      for(;;) {
+        assert(GPG_ERR_NO_ERROR==
+               gpgme_op_decrypt_verify(ctx,decodeRequest.data,plain));
+        // signing no data is meaningless so GPG_ERR_NO_DATA should still fail
+        // gpgme_decrypt_result_t dres = gpgme_op_decrypt_result(ctx);
+        gpgme_verify_result_t vres = gpgme_op_verify_result(ctx);
+        
+        bool tryAgain = false;
+        for(gpgme_signature_t sig = vres->signatures; sig; sig = sig->next) {
+          switch(sig->status) {
+          case GPG_ERR_NO_PUBKEY:
+            requestKey(sig->fpr);
+            tryAgain = true;
+          case GPG_ERR_NO_ERROR:
+            continue;
+          default:
+            throw "Doubleplus ungood signature found!";
+          };
+        }
+        if(tryAgain) continue;
+        gpgme_data_release(decodeRequest.data);
+        decodeRequest.data = plain;
+        for(gpgme_signature_t sig = vres->signatures; sig; sig = sig->next) {
+          decodeRequest.signers.push_back(sig->fpr);
+        }
+        decodeRequest.onResponse.set(&decodeRequest);
+        break;
+      }
+    }
+  }
+
+  MainThread() {
+    /* Initialize the locale environment.  */
+    setlocale (LC_ALL, "");
+    gpgme_check_version (NULL);
+    gpgme_set_locale (NULL, LC_CTYPE, setlocale (LC_CTYPE, NULL));
+#ifdef LC_MESSAGES
+    gpgme_set_locale (NULL, LC_MESSAGES, setlocale (LC_MESSAGES, NULL));
+#endif
+
+    gnupg::pgpEnabled = GPG_ERR_NO_ERROR==gpgme_engine_check_version(GPGME_PROTOCOL_OpenPGP);
+    
+    if(gnupg::pgpEnabled)
+      Start();
+  }
+};
+
+MainThread mainThread;
+
+namespace gnupg {
+  bool PendingChallenge::matches(const std::string& answer) {
+    return answer.size()==NONCE_LENGTH && (0 == memcmp(solution,answer.c_str(),NONCE_LENGTH));
+  }
+
+  std::string mykey;
+  bool pgpEnabled = false;
+
+  class PassPhraseGetter {
+  public:
+    bool gotIt;
+    PassPhraseGetter() : gotIt(false) {}
+
+    void onPassPhrase(char* passphrase) {
+      GenerateKeyRequest request;
+      request.passphrase = passphrase;
+      mainThread.enqueue(&request);
+      request.onResponse.get();
+      g_settings->set("keyID",request.keyID);
+      mykey = request.keyID;
+      gotIt = true;
+    }
+  };
+
+#ifdef CLIENT
+    void assureMyKey(const std::string& configPath, 
+                     IrrlichtDevice* device, IrrlichtDriver* driver)
+#else
+    void assureMyKey(const std::string& configPath, void* device, void* bleh)
+#endif
+    {
+      if(pgpEnabled == false) {
+        std::cerr << "Can't have a key since gpgme doesn't seem to exist here." << std::endl;
+        return;
+      }
+    if (g_settings->exists("keyID"))
+      mykey = g_settings->get("keyID");
+    else {
+      PassPhraseGetter ppg;
+#ifdef CLIENT
+      if(device) {
+        GuiPassPhraseGetter menu (&ppg, guienv, guiroot, -1, g_gamecallback,
+                                  &g_menumgr, simple_singleplayer_mode);
+        menu.drop();
+        
+        while(device->run() && kill == false)
+          {
+            if(ppg.gotIt)
+              break;
+            
+            //driver->beginScene(true, true, video::SColor(255,0,0,0));
+            driver->beginScene(true, true, video::SColor(255,128,128,128));
+            
+            // drawMenuBackground(driver);
+            
+            guienv->drawAll();
+            
+            driver->endScene();
+            
+            // On some computers framerate doesn't seem to be
+            // automatically limited
+            sleep_ms(25);
+          }
+        if(configPath.size() != 0)
+          g_settings->updateConfigFile(configPath.c_str());      
+        std::cerr << "My key: " << mykey << std::endl;
+        return;
+      }
+#endif
+      struct termios t;
+      tcgetattr(0, &t);
+      t.c_lflag &= ~ECHO;
+      tcsetattr(0, TCSANOW, &t);
+      std::cout << "Please type in a passphrase to generate the server key: ";
+      char passphrase[0x1000];
+      std::cin.getline(passphrase,0x1000);      
+      t.c_lflag |= ECHO;
+      tcsetattr(0, TCSANOW, &t);
+      ppg.onPassPhrase(passphrase);
+      assert(ppg.gotIt);
+      if(configPath.size() != 0)
+        g_settings->updateConfigFile(configPath.c_str());      
+      std::cerr << "My key: " << mykey << std::endl;
+    }
+    }
+
+  std::string makeResponse(std::string challenge) {
+    assert(pgpEnabled);
+    DecodeRequest request;
+    assert(GPG_ERR_NO_ERROR==
+           gpgme_data_new_from_mem(&request.data,challenge.c_str(),challenge.size(),0));
+    mainThread.enqueue(&request);
+    assert(&request==request.onResponse.get()); // this is kinda redundant
+    size_t size;
+    char* resp = gpgme_data_release_and_get_mem(request.data,&size);
+    std::string derp(resp,size);
+    gpgme_free(resp);
+    return derp;
+  }
+  PendingChallenge* makeChallenge(std::string who) {
+    PendingChallenge* pc = new PendingChallenge(who);
+    for(int i = 0; i < NONCE_LENGTH; ++i) {
+      pc->solution[i] = myrand() % 0x100;
+    }
+    EncodeRequest request;
+    assert(GPG_ERR_NO_ERROR==
+           gpgme_data_new_from_mem(&request.data,
+                                   (const char*)pc->solution,NONCE_LENGTH,0));
+
+    request.encrypters.push_back(who);
+    mainThread.enqueue(&request);
+    assert(&request==request.onResponse.get());
+    size_t size;
+    char* resp = gpgme_data_release_and_get_mem(request.data,&size);
+    pc->question = std::string(resp,size);
+    gpgme_free(resp);
+    return pc;
+  }
+};
+
+/* the idea is: instead of a user/password, the client sends 
+   their key fingerprint. Upon receiving it, server passes it to makeChallenge,
+   and sends the question to the client, saving the pending challenge for its 
+   nonce. The client decrypts and sends the decrypted nonce. The server 
+   compares and they match. Everything is now hunky dory.
+
+   No passwords needed.
+*/

@@ -22,6 +22,8 @@ extern "C" {
 }
 
 #include "server.h"
+// #include "gnupg.h" can't include this here because c++ sucks
+
 #include <iostream>
 #include <queue>
 #include "clientserver.h"
@@ -1933,6 +1935,144 @@ void Server::Receive()
 	}
 }
 
+#ifdef GPGME_EXISTS
+typedef std::map<u16,gnupg::PendingChallenge*> ChallengeMap;
+ChallengeMap pendingChallenges;
+std::map<u16,u8> deploys;
+#endif
+
+void Server::emergePlayerDerp(const std::string& playername, u16 peer_id, bool gnupg, u8 deployed) {  
+  // Get player
+  PlayerSAO *playersao = emergePlayer(playername.c_str(), peer_id);
+    
+  // If failed, cancel
+  if(playersao == NULL)
+    {
+      errorstream<<"Server: peer_id="<<peer_id
+                 <<": failed to emerge player"<<std::endl;
+      return;
+    }
+    
+  /*
+    Answer with a TOCLIENT_INIT
+  */
+  {
+    SharedBuffer<u8> reply(2+1+6+8);
+    writeU16(&reply[0], TOCLIENT_INIT);
+    writeU8(&reply[2], deployed);
+    writeV3S16(&reply[2+1], floatToInt(playersao->getPlayer()->getPosition()+v3f(0,BS/2,0), BS));
+    writeU64(&reply[2+1+6], m_env->getServerMap().getSeed());
+      
+    // Send as reliable
+    m_con.Send(peer_id, 0, reply, true);
+  }
+
+  /*
+    Send complete position information
+  */
+  SendMovePlayer(peer_id);
+    
+}
+
+u8 Server::getDeployed(u8 client_max, u16 peer_id) {
+  u8 our_max = SER_FMT_VER_HIGHEST;
+  // Use the highest version supported by both
+  u8 deployed = core::min_(client_max, our_max);
+  // If it's lower than the lowest supported, give up.
+  if(deployed < SER_FMT_VER_LOWEST)
+    deployed = SER_FMT_VER_INVALID;
+
+  //peer->serialization_version = deployed;
+  getClient(peer_id)->pending_serialization_version = deployed;
+		
+  if(deployed == SER_FMT_VER_INVALID)
+    {
+      std::string addr_s = m_con.GetPeerAddress(peer_id).serializeString();
+
+
+      actionstream<<"Server: A mismatched client tried to connect from "
+                  <<addr_s<<std::endl;
+      infostream<<"Server: Cannot negotiate serialization version with peer "
+                <<peer_id<<std::endl;
+      SendAccessDenied(m_con, peer_id, std::wstring(
+                                                    L"Your client's version is not supported.\n"
+                                                    L"Server version is ")
+                       + narrow_to_wide(VERSION_STRING) + L"."
+                       );
+    }
+  return deployed;
+}
+
+bool Server::checkNetProtoVersion(u16 net_proto_version, u16 peer_id) {
+  getClient(peer_id)->net_proto_version = net_proto_version;
+
+  if(net_proto_version == 0)
+    {
+      std::string addr_s = m_con.GetPeerAddress(peer_id).serializeString();
+      actionstream<<"Server: An old tried to connect from "<<addr_s
+                  <<std::endl;
+      SendAccessDenied(m_con, peer_id, std::wstring(
+                                                    L"Your client's version is not supported.\n"
+                                                    L"Server version is ")
+                       + narrow_to_wide(VERSION_STRING) + L"."
+                       );
+      return false;
+    }
+		
+  if(g_settings->getBool("strict_protocol_version_checking"))
+    {
+      if(net_proto_version != PROTOCOL_VERSION)
+        {
+          std::string addr_s = m_con.GetPeerAddress(peer_id).serializeString();
+          actionstream<<"Server: A mismatched client tried to connect"
+                      <<" from "<<addr_s<<std::endl;
+          SendAccessDenied(m_con, peer_id, std::wstring(
+                                                        L"Your client's version is not supported.\n"
+                                                        L"Server version is ")
+                           + narrow_to_wide(VERSION_STRING) + L",\n"
+                           + L"server's PROTOCOL_VERSION is "
+                           + narrow_to_wide(itos(PROTOCOL_VERSION))
+                           + L", client's PROTOCOL_VERSION is "
+                           + narrow_to_wide(itos(net_proto_version))
+                           );
+          return false;
+        }
+    }
+  return true;
+}
+
+bool Server::checkSingleModeMultiple(u16 peer_id) {
+  // Do not allow multiple players in simple singleplayer mode.
+  // This isn't a perfect way to do it, but will suffice for now.
+  if(m_simple_singleplayer_mode && m_clients.size() > 1){
+    infostream<<"Server: Not allowing another client to connect in"
+              <<" simple singleplayer mode"<<std::endl;
+    SendAccessDenied(m_con, peer_id,
+                     L"Running in simple singleplayer mode.");
+    return true;
+  }	
+  return false;
+}
+
+bool Server::checkTooManyUsers(const std::string& playername, u16 peer_id) {
+  // Enforce user limit.
+  // Don't enforce for users that have some admin right
+  if(m_clients.size() >= g_settings->getU16("max_users") &&
+     !checkPriv(playername, "server") &&
+     !checkPriv(playername, "ban") &&
+     !checkPriv(playername, "privs") &&
+     !checkPriv(playername, "password") &&
+     playername != g_settings->get("name"))
+    {
+      actionstream<<"Server: "<<playername<<" tried to join, but there"
+                  <<" are already max_users="
+                  <<g_settings->getU16("max_users")<<" players."<<std::endl;
+      SendAccessDenied(m_con, peer_id, L"Too many users.");
+      return true;
+    }	
+  return false;
+}
+  
 void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 {
 	DSTACK(__FUNCTION_NAME);
@@ -1966,8 +2106,6 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 		return;
 	}
 	
-	std::string addr_s = m_con.GetPeerAddress(peer_id).serializeString();
-
 	u8 peer_ser_ver = getClient(peer_id)->serialization_version;
 
 	try
@@ -1977,7 +2115,84 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 		return;
 
 	ToServerCommand command = (ToServerCommand)readU16(&data[0]);
-	
+
+#ifdef GPGME_EXISTS
+        if(command == TOSERVER_ANNOUNCE) {
+          // [0] u16 TOSERVER_ANNOUNCE
+          // [2] u8 SER_FMT_VER_HIGHEST
+          // [3] u16 client network protocol version
+          // [5] u8* (hex) fingerprint
+          if(gnupg::pgpEnabled == false) {
+            std::cerr << "Announce came, but we couldn't find gpgme!" << std::endl;
+            return;
+          }
+          u8 deployed = getDeployed(data[2],peer_id);
+          if(deployed==SER_FMT_VER_INVALID) return;
+
+          if (checkNetProtoVersion(readU16(&data[3]),peer_id) == false) return;
+          if(checkSingleModeMultiple(peer_id)) return;
+
+          if(datasize != gnupg::FINGERPRINT_LENGTH + 5) {
+            infostream<<"Server: peer_id="<<peer_id
+                      <<": supplied bad announce "
+                      << (data + 5) << std::endl;
+            SendAccessDenied(m_con, peer_id, L"Invalid announce");
+            return;
+          }
+          std::string who((const char*)data+5,gnupg::FINGERPRINT_LENGTH);
+          if(checkTooManyUsers(who,peer_id)) return;
+          std::string addr_s = m_con.GetPeerAddress(peer_id).serializeString();
+          infostream<<"Server: New announce: \""<<who<<"\" from "
+                          <<addr_s<<std::endl;
+
+          gnupg::PendingChallenge* pc = pendingChallenges[peer_id] = gnupg::makeChallenge(who);
+          SendChallenge(m_con, peer_id, pc);
+          return;
+        }
+
+        if(command == TOSERVER_CHALLENGE_RESPONSE) {
+          // [0] u16 TOSERVER_CHALLENGE_RESPONSE
+          // [2] u8* RESPONSE
+          ChallengeMap::iterator it = pendingChallenges.find(peer_id);
+          if(it == pendingChallenges.end()) {
+            infostream<<"Server: peer_id="<<peer_id
+                      <<": supplied a response with no challenge on record." << std::endl;
+            SendAccessDenied(m_con, peer_id, L"Invalid challenge response");
+            return;
+          }
+          gnupg::PendingChallenge* pc = it->second;
+          std::map<u16,u8>::iterator dit = deploys.find(peer_id);
+          if(dit == deploys.end()) {
+            std::cerr<<"Server: peer_id="<<peer_id
+                      <<": has a challenge, but no deployed. WTF!" << std::endl;
+            SendAccessDenied(m_con, peer_id, L"The server fucked up");
+            return;
+          }
+          u8 deployed = dit->second;
+          pendingChallenges.erase(peer_id);          
+          deploys.erase(peer_id);
+          if(datasize != gnupg::NONCE_LENGTH + 2) {
+            infostream<<"Server: peer_id="<<peer_id
+                      <<": supplied bad challenge response for "
+                      << (pc ? pc->who : "some hack") << std::endl;
+            SendAccessDenied(m_con, peer_id, L"Invalid challenge response");
+            delete pc;
+            return;
+          }
+          u8* response = data + 2;
+          bool success = pc->matches((const char*)response);
+          if(!success) {
+            infostream<<"Server: peer_id="<<peer_id
+                      <<": challenge failed trying to be " 
+                      <<pc->who << std::endl;
+            delete pc;
+            return;
+          }
+          emergePlayerDerp(pc->who,peer_id,true,deployed);
+          delete pc;
+        }
+#endif /* GPGME_EXISTS */
+
 	if(command == TOSERVER_INIT)
 	{
 		// [0] u16 TOSERVER_INIT
@@ -1993,32 +2208,9 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 
 		// First byte after command is maximum supported
 		// serialization version
-		u8 client_max = data[2];
-		u8 our_max = SER_FMT_VER_HIGHEST;
-		// Use the highest version supported by both
-		u8 deployed = core::min_(client_max, our_max);
-		// If it's lower than the lowest supported, give up.
-		if(deployed < SER_FMT_VER_LOWEST)
-			deployed = SER_FMT_VER_INVALID;
+		u8 deployed = getDeployed(data[2],peer_id);
+		if(deployed==SER_FMT_VER_INVALID) return;
 
-		//peer->serialization_version = deployed;
-		getClient(peer_id)->pending_serialization_version = deployed;
-		
-		if(deployed == SER_FMT_VER_INVALID)
-		{
-			actionstream<<"Server: A mismatched client tried to connect from "
-					<<addr_s<<std::endl;
-			infostream<<"Server: Cannot negotiate "
-					"serialization version with peer "
-					<<peer_id<<std::endl;
-			SendAccessDenied(m_con, peer_id, std::wstring(
-					L"Your client's version is not supported.\n"
-					L"Server version is ")
-					+ narrow_to_wide(VERSION_STRING) + L"."
-			);
-			return;
-		}
-		
 		/*
 			Read and check network protocol version
 		*/
@@ -2029,192 +2221,110 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 			net_proto_version = readU16(&data[2+1+PLAYERNAME_SIZE+PASSWORD_SIZE]);
 		}
 
-		getClient(peer_id)->net_proto_version = net_proto_version;
+                if (checkNetProtoVersion(net_proto_version,peer_id) == false) return;
+                if(checkSingleModeMultiple(peer_id)) return;
 
-		if(net_proto_version == 0)
-		{
-			actionstream<<"Server: An old tried to connect from "<<addr_s
-					<<std::endl;
-			SendAccessDenied(m_con, peer_id, std::wstring(
-					L"Your client's version is not supported.\n"
-					L"Server version is ")
-					+ narrow_to_wide(VERSION_STRING) + L"."
-			);
-			return;
-		}
-		
-		if(g_settings->getBool("strict_protocol_version_checking"))
-		{
-			if(net_proto_version != PROTOCOL_VERSION)
-			{
-				actionstream<<"Server: A mismatched client tried to connect"
-						<<" from "<<addr_s<<std::endl;
-				SendAccessDenied(m_con, peer_id, std::wstring(
-						L"Your client's version is not supported.\n"
-						L"Server version is ")
-						+ narrow_to_wide(VERSION_STRING) + L",\n"
-						+ L"server's PROTOCOL_VERSION is "
-						+ narrow_to_wide(itos(PROTOCOL_VERSION))
-						+ L", client's PROTOCOL_VERSION is "
-						+ narrow_to_wide(itos(net_proto_version))
-				);
-				return;
-			}
-		}
-
-		/*
-			Set up player
-		*/
-		
 		// Get player name
-		char playername[PLAYERNAME_SIZE];
-		for(u32 i=0; i<PLAYERNAME_SIZE-1; i++)
+		char playername[PLAYERNAME_SIZE+1];
+                u32 i = 0;
+		for(; i<PLAYERNAME_SIZE; i++)
 		{
-			playername[i] = data[3+i];
+                  // nice thing about utf-8, no embedded nulls
+                  char c = data[3 + i];
+                  playername[i] = c;
+                  if (c == 0) break;
 		}
-		playername[PLAYERNAME_SIZE-1] = 0;
-		
-		if(playername[0]=='\0')
+                if(i == 0)
 		{
+                  std::string addr_s = m_con.GetPeerAddress(peer_id).serializeString();
 			actionstream<<"Server: Player with an empty name "
 					<<"tried to connect from "<<addr_s<<std::endl;
 			SendAccessDenied(m_con, peer_id,
 					L"Empty name");
 			return;
 		}
+                if(i == PLAYERNAME_SIZE) {
+                  playername[i] = 0;
+                } 
 
-		if(string_allowed(playername, PLAYERNAME_ALLOWED_CHARS)==false)
-		{
-			actionstream<<"Server: Player with an invalid name "
-					<<"tried to connect from "<<addr_s<<std::endl;
-			SendAccessDenied(m_con, peer_id,
-					L"Name contains unallowed characters");
-			return;
-		}
+                if(string_allowed(playername, PLAYERNAME_ALLOWED_CHARS)==false)
+                  {
+                    std::string addr_s = m_con.GetPeerAddress(peer_id).serializeString();
+                    actionstream<<"Server: Player with an invalid name "
+                                <<"tried to connect from "<<addr_s<<std::endl;
+                    SendAccessDenied(m_con, peer_id,
+                                     L"Name contains unallowed characters");
+                    return;
+                  }
 
-		infostream<<"Server: New connection: \""<<playername<<"\" from "
-				<<m_con.GetPeerAddress(peer_id).serializeString()<<std::endl;
-
-		// Get password
-		char given_password[PASSWORD_SIZE];
-		if(datasize < 2+1+PLAYERNAME_SIZE+PASSWORD_SIZE)
-		{
-			// old version - assume blank password
-			given_password[0] = 0;
-		}
-		else
-		{
-			for(u32 i=0; i<PASSWORD_SIZE-1; i++)
-			{
-				given_password[i] = data[23+i];
-			}
-			given_password[PASSWORD_SIZE-1] = 0;
-		}
-
-		if(!base64_is_valid(given_password)){
-			infostream<<"Server: "<<playername
-					<<" supplied invalid password hash"<<std::endl;
-			SendAccessDenied(m_con, peer_id, L"Invalid password hash");
-			return;
-		}
+                if(checkTooManyUsers(playername,peer_id)) return;
+                
+                std::string addr_s = m_con.GetPeerAddress(peer_id).serializeString();
+                infostream<<"Server: New connection: \""<<playername<<"\" from "
+                          <<addr_s<<std::endl;
+                
+                // Get password
+                char given_password[PASSWORD_SIZE];
+                if(datasize < 2+1+PLAYERNAME_SIZE+PASSWORD_SIZE)
+                  {
+                    // old version - assume blank password
+                    given_password[0] = 0;
+                  }
+                else
+                  {
+                    for(u32 i=0; i<PASSWORD_SIZE-1; i++)
+                      {
+                        given_password[i] = data[23+i];
+                      }
+                    given_password[PASSWORD_SIZE-1] = 0;
+                  }
+                
+                if(!base64_is_valid(given_password)){
+                  infostream<<"Server: "<<playername
+                            <<" supplied invalid password hash"<<std::endl;
+                  SendAccessDenied(m_con, peer_id, L"Invalid password hash");
+                  return;
+                }
 		
-		std::string checkpwd; // Password hash to check against
-		bool has_auth = scriptapi_get_auth(m_lua, playername, &checkpwd, NULL);
+                std::string checkpwd; // Password hash to check against
+                bool has_auth = scriptapi_get_auth(m_lua, playername, &checkpwd, NULL);
+                
+                // If no authentication info exists for user, create it
+                if(!has_auth){
+                  if(!isSingleplayer() &&
+                     std::string(given_password) == ""){
+                    SendAccessDenied(m_con, peer_id, L"Empty passwords are "
+                                     L"disallowed. Set a password and try again.");
+                    return;
+                  }
+                  std::wstring raw_default_password =
+                    narrow_to_wide(g_settings->get("default_password"));
+                  std::string initial_password =
+                    translatePassword(playername, raw_default_password);
+                  
+                    // If default_password is empty, allow any initial password
+                  if (raw_default_password.length() == 0)
+                    initial_password = given_password;
+                  
+                  scriptapi_create_auth(m_lua, playername, initial_password);
+                }
 		
-		// If no authentication info exists for user, create it
-		if(!has_auth){
-			if(!isSingleplayer() &&
-					g_settings->getBool("disallow_empty_password") &&
-					std::string(given_password) == ""){
-				SendAccessDenied(m_con, peer_id, L"Empty passwords are "
-						L"disallowed. Set a password and try again.");
-				return;
-			}
-			std::wstring raw_default_password =
-				narrow_to_wide(g_settings->get("default_password"));
-			std::string initial_password =
-				translatePassword(playername, raw_default_password);
-
-			// If default_password is empty, allow any initial password
-			if (raw_default_password.length() == 0)
-				initial_password = given_password;
-
-			scriptapi_create_auth(m_lua, playername, initial_password);
-		}
-		
-		has_auth = scriptapi_get_auth(m_lua, playername, &checkpwd, NULL);
-
-		if(!has_auth){
-			SendAccessDenied(m_con, peer_id, L"Not allowed to login");
-			return;
-		}
-
-		if(given_password != checkpwd){
-			infostream<<"Server: peer_id="<<peer_id
-					<<": supplied invalid password for "
-					<<playername<<std::endl;
-			SendAccessDenied(m_con, peer_id, L"Invalid password");
-			return;
-		}
-
-		// Do not allow multiple players in simple singleplayer mode.
-		// This isn't a perfect way to do it, but will suffice for now.
-		if(m_simple_singleplayer_mode && m_clients.size() > 1){
-			infostream<<"Server: Not allowing another client to connect in"
-					<<" simple singleplayer mode"<<std::endl;
-			SendAccessDenied(m_con, peer_id,
-					L"Running in simple singleplayer mode.");
-			return;
-		}
-		
-		// Enforce user limit.
-		// Don't enforce for users that have some admin right
-		if(m_clients.size() >= g_settings->getU16("max_users") &&
-				!checkPriv(playername, "server") &&
-				!checkPriv(playername, "ban") &&
-				!checkPriv(playername, "privs") &&
-				!checkPriv(playername, "password") &&
-				playername != g_settings->get("name"))
-		{
-			actionstream<<"Server: "<<playername<<" tried to join, but there"
-					<<" are already max_users="
-					<<g_settings->getU16("max_users")<<" players."<<std::endl;
-			SendAccessDenied(m_con, peer_id, L"Too many users.");
-			return;
-		}
-
-		// Get player
-		PlayerSAO *playersao = emergePlayer(playername, peer_id);
-
-		// If failed, cancel
-		if(playersao == NULL)
-		{
-			errorstream<<"Server: peer_id="<<peer_id
-					<<": failed to emerge player"<<std::endl;
-			return;
-		}
-
-		/*
-			Answer with a TOCLIENT_INIT
-		*/
-		{
-			SharedBuffer<u8> reply(2+1+6+8);
-			writeU16(&reply[0], TOCLIENT_INIT);
-			writeU8(&reply[2], deployed);
-			writeV3S16(&reply[2+1], floatToInt(playersao->getPlayer()->getPosition()+v3f(0,BS/2,0), BS));
-			writeU64(&reply[2+1+6], m_env->getServerMap().getSeed());
-			
-			// Send as reliable
-			m_con.Send(peer_id, 0, reply, true);
-		}
-
-		/*
-			Send complete position information
-		*/
-		SendMovePlayer(peer_id);
-
-		return;
-	}
+                has_auth = scriptapi_get_auth(m_lua, playername, &checkpwd, NULL);
+                
+                if(!has_auth){
+                  SendAccessDenied(m_con, peer_id, L"Not allowed to login");
+                  return;
+                }
+                
+                if(given_password != checkpwd){
+                  infostream<<"Server: peer_id="<<peer_id
+                            <<": supplied invalid password for "
+                            <<playername<<std::endl;
+                  SendAccessDenied(m_con, peer_id, L"Invalid password");
+                  return;
+                }
+                emergePlayerDerp(playername,peer_id,false,deployed);
+        }
 
 	if(command == TOSERVER_INIT2)
 	{
@@ -3373,6 +3483,22 @@ void Server::SendHP(con::Connection &con, u16 peer_id, u8 hp)
 	// Send as reliable
 	con.Send(peer_id, 0, data, true);
 }
+
+#ifdef GPGME_EXISTS
+void Server::SendChallenge(con::Connection &con, u16 peer_id,
+                           gnupg::PendingChallenge* pc) {
+  DSTACK(__FUNCTION_NAME);
+  std::ostringstream os(std::ios_base::binary);
+
+  writeU16(os, TOCLIENT_CHALLENGE);
+  os.write(pc->question.c_str(),pc->question.size());
+  // Make data buffer
+  std::string s = os.str();
+  SharedBuffer<u8> data((u8*)s.c_str(), s.size());
+  // Send as reliable
+  con.Send(peer_id, 0, data, true);
+}
+#endif /* GPGME_EXISTS */
 
 void Server::SendAccessDenied(con::Connection &con, u16 peer_id,
 		const std::wstring &reason)
@@ -4611,6 +4737,13 @@ void Server::handlePeerChange(PeerChange &c)
 		/*
 			Delete
 		*/
+
+#ifdef GPGME_EXISTS
+          gnupg::PendingChallenge* pc = pendingChallenges[c.peer_id];
+          pendingChallenges.erase(c.peer_id);
+          delete pc;
+          deploys.erase(c.peer_id);
+#endif /* GPGME_EXISTS */
 
 		// Error check
 		core::map<u16, RemoteClient*>::Node *n;

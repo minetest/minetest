@@ -89,6 +89,25 @@ endif()
 # Use cmake_config.h
 add_definitions ( -DUSE_CMAKE_CONFIG_H )
 
+execute_process(COMMAND gpgme-config --cflags
+                        RESULT_VARIABLE GPGME_EXISTS
+                        OUTPUT_VARIABLE GPGME_CFLAGS)
+
+if(GPGME_EXISTS EQUAL 0)
+        message(STATUS found gpgme yay)
+        set(GPGME_EXISTS 1)
+        set(gnupg_SRCS gnupg.cpp)
+        set(gnupg_client_SRCS guiPassPhraseGetter.cpp)
+
+        string(STRIP ${GPGME_CFLAGS} GPGME_CFLAGS)
+        string(REPLACE "-I" "" GPGME_INCLUDE_DIR ${GPGME_CFLAGS})
+        execute_process(COMMAND gpgme-config --libs
+                                OUTPUT_VARIABLE GPGME_LIBS)
+        string(STRIP ${GPGME_LIBS} GPGME_LIBS)
+else()
+        unset(GPGME_EXISTS)
+endif()
+
 if(WIN32)
 	# Windows
 	if(MSVC) # MSVC Specifics
@@ -155,6 +174,7 @@ configure_file(
 )
 
 set(common_SRCS
+        ${gnupg_SRCS}
 	genericobject.cpp
 	voxelalgorithms.cpp
 	sound.cpp
@@ -233,6 +253,7 @@ endif()
 set(minetest_SRCS
 	${common_SRCS}
 	${sound_SRCS}
+        ${gnupg_client_SRCS}
 	localplayer.cpp
 	sky.cpp
 	clientmap.cpp
@@ -283,6 +304,7 @@ include_directories(
 	${JTHREAD_INCLUDE_DIR}
 	${SQLITE3_INCLUDE_DIR}
 	${LUA_INCLUDE_DIR}
+        ${GPGME_INCLUDE_DIR}
 )
 
 set(EXECUTABLE_OUTPUT_PATH "${CMAKE_SOURCE_DIR}/bin")
@@ -305,6 +327,7 @@ if(BUILD_CLIENT)
 		${LUA_LIBRARY}
 		${PLATFORM_LIBS}
 		${CLIENT_PLATFORM_LIBS}
+                ${GPGME_LIBS}
 	)
 endif(BUILD_CLIENT)
 
@@ -317,6 +340,7 @@ if(BUILD_SERVER)
 		${SQLITE3_LIBRARY}
 		${LUA_LIBRARY}
 		${PLATFORM_LIBS}
+                ${GPGME_LIBS}
 	)
 endif(BUILD_SERVER)
 

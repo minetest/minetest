@@ -20,6 +20,11 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #ifndef SERVER_HEADER
 #define SERVER_HEADER
 
+#include "config.h" 
+#ifdef GPGME_EXISTS
+#include "gnupg.h" // we must include this here because c++ sucks
+#endif
+
 #include "connection.h"
 #include "environment.h"
 #include "irrlichttypes_bloated.h"
@@ -581,6 +586,10 @@ private:
 	static void SendHP(con::Connection &con, u16 peer_id, u8 hp);
 	static void SendAccessDenied(con::Connection &con, u16 peer_id,
 			const std::wstring &reason);
+#ifdef GPGME_EXISTS
+        void SendChallenge(con::Connection &con, u16 peer_id,
+                           gnupg::PendingChallenge* pc);
+#endif
 	static void SendDeathscreen(con::Connection &con, u16 peer_id,
 			bool set_camera_point_target, v3f camera_point_target);
 	static void SendItemDef(con::Connection &con, u16 peer_id,
@@ -663,6 +672,7 @@ private:
 		Call with env and con locked.
 	*/
 	PlayerSAO *emergePlayer(const char *name, u16 peer_id);
+        void emergePlayerDerp(const std::string& playername, u16 peer_id, bool gnupg, u8 deployed);
 	
 	// Locks environment and connection by its own
 	struct PeerChange;
@@ -825,6 +835,14 @@ private:
 	*/
 	std::map<s32, ServerPlayingSound> m_playing_sounds;
 	s32 m_next_sound_id;
+
+ private:
+        /* some common routines for the 2 ways to init */
+        u8 getDeployed(u8 client_max, u16 peer_id);
+        bool checkNetProtoVersion(u16 net_proto_version, u16 peer_id);
+        bool checkSingleModeMultiple(u16 peer_id);
+        bool checkTooManyUsers(const std::string& username, u16 peer_id);
+
 };
 
 /*

@@ -58,6 +58,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 	PROTOCOL_VERSION 11:
 		TileDef in ContentFeatures
 		Nodebox drawtype
+        PROTOCOL VERSION 11+:
+                Pubkey authentication
 */
 
 #define PROTOCOL_VERSION 11
@@ -71,6 +73,13 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 enum ToClientCommand
 {
+  TOCLIENT_CHALLENGE = 0x9,
+  /*
+    Server's reply to TOSERVER_ANNOUNCE
+
+     [0] u16 TOCLIENT_CHALLENGE
+     [2] u8* challenge
+  */
 	TOCLIENT_INIT = 0x10,
 	/*
 		Server's reply to TOSERVER_INIT.
@@ -312,6 +321,21 @@ enum ToClientCommand
 
 enum ToServerCommand
 {
+  TOSERVER_ANNOUNCE = 0x8,
+  /* 
+     Sent first.
+
+     [0] u16 TOSERVER_ANNOUNCE
+     [2] u8 SER_FMT_VER_HIGHEST
+     [3] u16 client network protocol version
+     [5] u8* (hex) fingerprint
+  */
+  TOSERVER_CHALLENGE_RESPONSE = 0x9,
+  /*
+    [0] u16 TOSERVER_CHALLENGE_RESPONSE
+    [2] u8* response
+  */
+    
 	TOSERVER_INIT=0x10,
 	/*
 		Sent first after connected.

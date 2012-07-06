@@ -44,6 +44,12 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "main.h"
 #include "mainmenumanager.h"
+#include "config.h"
+
+#ifdef GNUPG_EXISTS
+#include "gnupg.h"
+#endif
+
 #include <iostream>
 #include <fstream>
 #include <locale.h>
@@ -56,7 +62,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "gettime.h"
 #include "guiMessageMenu.h"
 #include "filesys.h"
-#include "config.h"
 #include "guiMainMenu.h"
 #include "game.h"
 #include "keycode.h"
@@ -1082,11 +1087,14 @@ int main(int argc, char *argv[])
 	bool run_dedicated_server = true;
 #else
 	bool run_dedicated_server = cmd_args.getFlag("server");
-#endif
+#endif        
 	if(run_dedicated_server)
 	{
-		DSTACK("Dedicated server branch");
-		// Create time getter if built with Irrlicht
+          DSTACK("Dedicated server branch");
+#ifdef GNUPG_EXISTS
+          gnupg::assureMyKey(configpath,NULL,NULL);
+#endif /* GPGME_EXISTS */
+          // Create time getter if built with Irrlicht
 #ifndef SERVER
 		g_timegetter = new SimpleTimeGetter();
 #endif
@@ -1356,6 +1364,10 @@ int main(int argc, char *argv[])
 	/*
 		GUI stuff
 	*/
+
+#ifdef GNUPG_EXISTS
+        gnupg::assureMyKey(configpath,device,driver);
+#endif /* GPGME_EXISTS */
 
 	ChatBackend chat_backend;
 

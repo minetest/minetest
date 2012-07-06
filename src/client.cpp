@@ -42,6 +42,10 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "util/string.h"
 #include "hex.h"
 
+#ifdef GPGME_EXISTS
+#include "gnupg.h"
+#endif
+
 static std::string getMediaCacheDir()
 {
 	return porting::path_user + DIR_DELIM + "cache" + DIR_DELIM + "media";
@@ -483,31 +487,44 @@ void Client::step(float dtime)
 			
 			Player *myplayer = m_env.getLocalPlayer();
 			assert(myplayer != NULL);
-	
-			// Send TOSERVER_INIT
-			// [0] u16 TOSERVER_INIT
-			// [2] u8 SER_FMT_VER_HIGHEST
-			// [3] u8[20] player_name
-			// [23] u8[28] password (new in some version)
-			// [51] u16 client network protocol version (new in some version)
-			SharedBuffer<u8> data(2+1+PLAYERNAME_SIZE+PASSWORD_SIZE+2);
-			writeU16(&data[0], TOSERVER_INIT);
-			writeU8(&data[2], SER_FMT_VER_HIGHEST);
+#ifdef GPGME_EXISTS	
+                        if(gnupg::pgpEnabled) {
+                          // Send TOSERVER_ANNOUNCE
+                          // [0] u16 TOSERVER_ANNOUNCE
+                          // [2] u8 SER_FMT_VER_HIGHEST
+                          // [3] u16 client network protocol version (new in some version)
+                          // [4] u8* fingerprint
+                          
+                          SharedBuffer<u8> data(2+1+2+gnupg::FINGERPRINT_LENGTH);
+                          writeU16(&data[0], TOSERVER_INIT);
+                          writeU8(&data[2], SER_FMT_VER_HIGHEST);
+                          writeU16(&data[3], PROTOCOL_VERSION);
+                          memcpy(data+4,gnupg::mykey.c_str(),gnupg::FINGERPRINT_LENGTH);
+                        } else
+#endif /* GPGME_EXISTS */
+                          if(true) {
+                            // Send TOSERVER_INIT
+                            // [0] u16 TOSERVER_INIT
+                            // [2] u8 SER_FMT_VER_HIGHEST
+                            // [3] u8[20] player_name
+                            // [23] u8[28] password (new in some version)
+                            // [51] u16 client network protocol version (new in some version)
+                            SharedBuffer<u8> data(2+1+PLAYERNAME_SIZE+PASSWORD_SIZE+2);
+                            memset((char*)&data[3], 0, PLAYERNAME_SIZE);
+                            snprintf((char*)&data[3], PLAYERNAME_SIZE, "%s", myplayer->getName());
 
-			memset((char*)&data[3], 0, PLAYERNAME_SIZE);
-			snprintf((char*)&data[3], PLAYERNAME_SIZE, "%s", myplayer->getName());
+                            /*infostream<<"Client: sending initial password hash: \""<<m_password<<"\""
+                              <<std::endl;*/
 
-			/*infostream<<"Client: sending initial password hash: \""<<m_password<<"\""
-					<<std::endl;*/
+                            memset((char*)&data[23], 0, PASSWORD_SIZE);
+                            snprintf((char*)&data[23], PASSWORD_SIZE, "%s", m_password.c_str());
+                       
+                            // This should be incremented in each version
+                            writeU16(&data[51], PROTOCOL_VERSION);
+                          }                       
 
-			memset((char*)&data[23], 0, PASSWORD_SIZE);
-			snprintf((char*)&data[23], PASSWORD_SIZE, "%s", m_password.c_str());
-			
-			// This should be incremented in each version
-			writeU16(&data[51], PROTOCOL_VERSION);
-
-			// Send as unreliable
-			Send(0, data, false);
+                       // Send as unreliable
+                       Send(0, data, false);
 		}
 
 		// Not connected, return
@@ -946,6 +963,31 @@ void Client::ProcessData(u8 *data, u32 datasize, u16 sender_peer_id)
 	u8 ser_version = m_server_ser_ver;
 
 	//infostream<<"Client received command="<<(int)command<<std::endl;
+
+#ifdef GPGME_EXISTS
+        if(command == TOCLIENT_CHALLENGE) {
+          // [0] u16 TOCLIENT_CHALLENGE
+          // [2] u8* question
+          if(!gnupg::pgpEnabled) {
+            infostream << "Can't respond without pgp at all!" << std::endl;
+            return;
+          }
+          std::string challenge(data+2,datasize-2);
+          std::string response = gnupg::makeResponse(challenge);
+          if(response.size()==0) {
+            infostream << "We couldn't respond to the server's challenge..." << std::endl;
+            return;
+          }
+
+          u32 replysize = 2 + response.size();
+          SharedBuffer<u8> reply(replysize);
+          writeU16(&reply[0], TOSERVER_CHALLENGE_RESPONSE);
+          memcpy(reply+2,response.c_str(),response.size());
+          // Send as reliable
+          m_con.Send(PEER_ID_SERVER, 1, reply, true);      
+        }    
+#endif /* GPGME_EXISTS */
+
 
 	if(command == TOCLIENT_INIT)
 	{
