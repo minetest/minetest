@@ -40,6 +40,9 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 	#pragma comment(lib, "Shell32.lib")
 #endif
 
+#include <sys/stat.h> // chmod
+
+
 #include "irrlicht.h" // createDevice
 
 #include "main.h"
@@ -1452,7 +1455,7 @@ int main(int argc, char *argv[])
                                   try {
                                     menudata.password = narrow_to_wide(g_settings->get("password"));
                                     // do NOT make password group or world readable!
-                                    chmod(600,configpath.c_str());
+                                    chmod(configpath.c_str(),0600);
                                   } catch(const SettingNotFoundException& ex) {}
                                 }
 				menudata.fancy_trees = g_settings->getBool("new_style_leaves");
