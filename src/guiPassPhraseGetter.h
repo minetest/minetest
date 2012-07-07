@@ -22,6 +22,7 @@ OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 #include "irrlichttypes_extrabloated.h"
 #include "modalMenu.h"
 #include "client.h"
+#include "gnupg.h"
 #include <string>
 
 class GUIPassPhraseGetter : public GUIModalMenu
@@ -41,12 +42,12 @@ public:
   
   void drawMenu();
   
-  bool acceptInput();
+  void acceptInput();
   
   bool OnEvent(const SEvent& event);
   
  private:
-  gnupg::PassPhraseGetter* const getter;
+  gnupg::PassPhraseGetter* const m_getter;
 
 };
 

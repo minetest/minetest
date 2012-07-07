@@ -826,6 +826,8 @@ int main(int argc, char *argv[])
 			_("Set password")));
 	allowed_options.insert("go", ValueSpec(VALUETYPE_FLAG,
 			_("Disable main menu")));
+	allowed_options.insert("nopgp", ValueSpec(VALUETYPE_FLAG,
+			_("Disable PGP")));
 #endif
 
 	Settings cmd_args;
@@ -891,6 +893,11 @@ int main(int argc, char *argv[])
 #else
 	std::string logfile = porting::path_user+DIR_DELIM+DEBUGFILE;
 #endif
+	if(cmd_args.exists("nopgp"))
+          gnupg::pgpEnabled = false;
+
+        gnupg::start();
+
 	if(cmd_args.exists("logfile"))
 		logfile = cmd_args.get("logfile");
 	if(logfile != "")
@@ -1368,8 +1375,10 @@ int main(int argc, char *argv[])
 		GUI stuff
 	*/
 
-#ifdef GNUPG_EXISTS
+#ifdef GPGME_EXISTS
         gnupg::assureMyKey(configpath,device,driver);
+#else 
+#error beepbeep
 #endif /* GPGME_EXISTS */
 
 	ChatBackend chat_backend;

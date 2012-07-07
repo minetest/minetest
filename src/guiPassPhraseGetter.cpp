@@ -19,6 +19,7 @@ OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 #include "guiPassPhraseGetter.h"
 #include "debug.h"
 #include "serialization.h"
+#include "util/string.h"
 #include <string>
 #include <IGUICheckBox.h>
 #include <IGUIEditBox.h>
@@ -31,11 +32,10 @@ OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 const int ID_phrase = 0x100;
 const int ID_change = 0x101;
 
-GUIPassPhraseGetter::GUIPassPhraseGetter(PassPhraseGetter* const getter,
+GUIPassPhraseGetter::GUIPassPhraseGetter(gnupg::PassPhraseGetter* const getter,
                                          gui::IGUIEnvironment* env,
                                          gui::IGUIElement* parent, s32 id,
-                                         IMenuManager *menumgr,
-                                         ):
+                                         IMenuManager *menumgr):
   GUIModalMenu(env, parent, id, menumgr),
   m_getter(getter)
 {
@@ -90,7 +90,7 @@ void GUIPassPhraseGetter::regenerateGui(v2u32 screensize)
 	s32 ypos = 50;
 	changeCtype("");
 	{
-		core::rect<s32> rect(0, 0, 110, 20);
+		core::rect<s32> rect(0, 0, 500, 40);
 		rect += topleft_client + v2s32(35, ypos+6);
 		Environment->addStaticText(wgettext("Please enter a hard to guess (but easy to remember) phrase. You will need to re-enter it to unlock your key now and again."),
                                            rect, false, true, this, -1);
@@ -101,7 +101,7 @@ void GUIPassPhraseGetter::regenerateGui(v2u32 screensize)
 		core::rect<s32> rect(0, 0, 230, 30);
 		rect += topleft_client + v2s32(160, ypos);
 		gui::IGUIEditBox *e = 
-		Environment->addEditBox(L"", rect, true, this, ID_newPassword1);
+		Environment->addEditBox(L"", rect, true, this, ID_phrase);
 		e->setPasswordBox(true);
 	}
 	ypos += 50;
@@ -128,7 +128,7 @@ void GUIPassPhraseGetter::drawMenu()
 	gui::IGUIElement::draw();
 }
 
-bool GUIPassPhraseGetter::acceptInput()
+void GUIPassPhraseGetter::acceptInput()
 {
   std::wstring passphrase;
   gui::IGUIElement *e;
@@ -137,7 +137,9 @@ bool GUIPassPhraseGetter::acceptInput()
     passphrase = e->getText();
     // XXX: strdup? really? ugh...
     // cannot wipe the passphrase from memory because is const arrgh
-    getter->onPassPhrase(strdup(wide_to_narrow(passphrase)));
+    char* dup = strdup(wide_to_narrow(passphrase).c_str());
+    m_getter->onPassPhrase(dup);
+    free(dup);
     quitMenu();
   }
 }

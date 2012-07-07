@@ -101,6 +101,7 @@ void Player::serialize(std::ostream &os)
 	// Utilize a Settings object for storing values
 	Settings args;
 	args.setS32("version", 1);
+	args.set("identifier", m_identifier);
 	args.set("name", m_name);
 	//args.set("password", m_password);
 	args.setFloat("pitch", m_pitch);
@@ -134,6 +135,13 @@ void Player::deSerialize(std::istream &is)
 
 	//args.getS32("version"); // Version field value not used
 	std::string name = args.get("name");
+	std::string id;
+        if(args.exists("identifier")) {
+           id = args.get("identifier");
+           updateIdentifier(id);
+        } else {
+          updateIdentifier(name);
+        }
 	updateName(name.c_str());
 	setPitch(args.getFloat("pitch"));
 	setYaw(args.getFloat("yaw"));

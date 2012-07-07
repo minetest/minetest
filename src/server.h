@@ -25,6 +25,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "gnupg.h" // we must include this here because c++ sucks
 #endif
 
+#include "peer.h"
 #include "connection.h"
 #include "environment.h"
 #include "irrlichttypes_bloated.h"
@@ -440,9 +441,9 @@ private:
 	float m_nothing_to_send_pause_timer;
 };
 
-class Server : public con::PeerHandler, public MapEventReceiver,
-		public InventoryManager, public IGameDef,
-		public IBackgroundBlockEmerger
+class Server : public MapEventReceiver,
+  public IBackgroundBlockEmerger,
+  public Peer
 {
 public:
 	/*
@@ -586,10 +587,6 @@ private:
 	static void SendHP(con::Connection &con, u16 peer_id, u8 hp);
 	static void SendAccessDenied(con::Connection &con, u16 peer_id,
 			const std::wstring &reason);
-#ifdef GPGME_EXISTS
-        void SendChallenge(con::Connection &con, u16 peer_id,
-                           gnupg::PendingChallenge* pc);
-#endif
 	static void SendDeathscreen(con::Connection &con, u16 peer_id,
 			bool set_camera_point_target, v3f camera_point_target);
 	static void SendItemDef(con::Connection &con, u16 peer_id,
@@ -633,6 +630,11 @@ private:
 	void sendMediaAnnouncement(u16 peer_id);
 	void sendRequestedMedia(u16 peer_id,
 			const core::list<MediaRequest> &tosend);
+
+#ifdef GPGME_EXISTS
+        void SendChallenge(con::Connection &con, u16 peer_id,
+                           gnupg::PendingChallenge* pc);
+#endif
 
 	/*
 		Something random
@@ -711,9 +713,6 @@ private:
 	ServerEnvironment *m_env;
 	JMutex m_env_mutex;
 	
-	// Connection
-	con::Connection m_con;
-	JMutex m_con_mutex;
 	// Connected clients (behind the con mutex)
 	core::map<u16, RemoteClient*> m_clients;
 

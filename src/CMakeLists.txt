@@ -175,6 +175,7 @@ configure_file(
 
 set(common_SRCS
         ${gnupg_SRCS}
+        peer.cpp
         portals.c
 	genericobject.cpp
 	voxelalgorithms.cpp

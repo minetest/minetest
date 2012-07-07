@@ -26,7 +26,6 @@ extern "C" {
 
 #include <iostream>
 #include <queue>
-#include "clientserver.h"
 #include "map.h"
 #include "jmutexautolock.h"
 #include "main.h"
@@ -937,7 +936,6 @@ Server::Server(
 	m_simple_singleplayer_mode(simple_singleplayer_mode),
 	m_async_fatal_error(""),
 	m_env(NULL),
-	m_con(PROTOCOL_ID, 512, CONNECTION_TIMEOUT, this),
 	m_banmanager(path_world+DIR_DELIM+"ipban.txt"),
 	m_lua(NULL),
 	m_itemdef(createItemDefManager()),
@@ -1447,7 +1445,7 @@ void Server::AsyncRunStep()
 				Player *player = m_env->getPlayer(client->peer_id);
 				if(player==NULL)
 					continue;
-				infostream<<"* "<<player->getName()<<"\t";
+				infostream<<"* "<<player->getIdentifier()<<"\t";
 				client->PrintInfo(infostream);
 			}
 		}
@@ -1941,9 +1939,9 @@ ChallengeMap pendingChallenges;
 std::map<u16,u8> deploys;
 #endif
 
-void Server::emergePlayerDerp(const std::string& playername, u16 peer_id, bool gnupg, u8 deployed) {  
+void Server::emergePlayerDerp(const std::string& id, u16 peer_id, bool gnupg, u8 deployed) {  
   // Get player
-  PlayerSAO *playersao = emergePlayer(playername.c_str(), peer_id);
+  PlayerSAO *playersao = emergePlayer(id.c_str(), peer_id);
     
   // If failed, cancel
   if(playersao == NULL)
@@ -2054,17 +2052,17 @@ bool Server::checkSingleModeMultiple(u16 peer_id) {
   return false;
 }
 
-bool Server::checkTooManyUsers(const std::string& playername, u16 peer_id) {
+bool Server::checkTooManyUsers(const std::string& id, u16 peer_id) {
   // Enforce user limit.
   // Don't enforce for users that have some admin right
   if(m_clients.size() >= g_settings->getU16("max_users") &&
-     !checkPriv(playername, "server") &&
-     !checkPriv(playername, "ban") &&
-     !checkPriv(playername, "privs") &&
-     !checkPriv(playername, "password") &&
-     playername != g_settings->get("name"))
+     !checkPriv(id, "server") &&
+     !checkPriv(id, "ban") &&
+     !checkPriv(id, "privs") &&
+     !checkPriv(id, "password") &&
+     id != g_settings->get("identifier"))
     {
-      actionstream<<"Server: "<<playername<<" tried to join, but there"
+      actionstream<<"Server: "<<id<<" tried to join, but there"
                   <<" are already max_users="
                   <<g_settings->getU16("max_users")<<" players."<<std::endl;
       SendAccessDenied(m_con, peer_id, L"Too many users.");
@@ -2116,12 +2114,14 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 
 	ToServerCommand command = (ToServerCommand)readU16(&data[0]);
 
-#ifdef GPGME_EXISTS
+        if(peerProcessData(command,data,datasize,peer_id)) return;
+
         if(command == TOSERVER_ANNOUNCE) {
           // [0] u16 TOSERVER_ANNOUNCE
           // [2] u8 SER_FMT_VER_HIGHEST
           // [3] u16 client network protocol version
           // [5] u8* (hex) fingerprint
+          std::cerr << "Announce wheeeee" << std::endl;
           if(gnupg::pgpEnabled == false) {
             std::cerr << "Announce came, but we couldn't find gpgme!" << std::endl;
             return;
@@ -2129,7 +2129,8 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
           u8 deployed = getDeployed(data[2],peer_id);
           if(deployed==SER_FMT_VER_INVALID) return;
 
-          if (checkNetProtoVersion(readU16(&data[3]),peer_id) == false) return;
+          u16 net_proto_version = readU16(&data[3]);
+          if (checkNetProtoVersion(net_proto_version,peer_id) == false) return;
           if(checkSingleModeMultiple(peer_id)) return;
 
           if(datasize != gnupg::FINGERPRINT_LENGTH + 5) {
@@ -2144,9 +2145,14 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
           std::string addr_s = m_con.GetPeerAddress(peer_id).serializeString();
           infostream<<"Server: New announce: \""<<who<<"\" from "
                           <<addr_s<<std::endl;
-
-          gnupg::PendingChallenge* pc = pendingChallenges[peer_id] = gnupg::makeChallenge(who);
-          SendChallenge(m_con, peer_id, pc);
+          
+          m_last_peer_id = peer_id;
+          gnupg::PendingChallenge* pc = gnupg::makeChallenge(who,this);
+          if(pc) {
+            this->SendChallenge(m_con, peer_id, pc);
+            pendingChallenges[peer_id] = pc;
+            deploys[peer_id] = deployed;
+          }
           return;
         }
 
@@ -2182,16 +2188,30 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
           u8* response = data + 2;
           bool success = pc->matches((const char*)response);
           if(!success) {
+            std::cerr << "challenge response FAIL" << std::endl;
+            //std::cerr << std::string((const char*)pc->solution,gnupg::NONCE_LENGTH) << std::endl;
+            //std::cerr << std::string((const char*)response,datasize - 2) << std::endl;
+
             infostream<<"Server: peer_id="<<peer_id
                       <<": challenge failed trying to be " 
                       <<pc->who << std::endl;
+            SendAccessDenied(m_con, peer_id, L"Invalid challenge response");
             delete pc;
             return;
           }
           emergePlayerDerp(pc->who,peer_id,true,deployed);
           delete pc;
+          return;
         }
-#endif /* GPGME_EXISTS */
+
+        if(command == TOSERVER_NICKNAME) {
+          // [0] u16 TOSERVER_NICKNAME
+          // [2] u8* nickname
+          Player* player = m_env->getPlayer(peer_id);
+          if(player != NULL)
+            player->updateName((const char*)&data[2]);
+          return;
+        }
 
 	if(command == TOSERVER_INIT)
 	{
@@ -2423,10 +2443,10 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 				if(!player)
 					continue;
 				// Get name of player
-				os<<player->getName()<<" ";
+				os << player->getFullName() << " ";
 			}
 
-			actionstream<<player->getName()<<" joins game. List of players: "
+			actionstream<<player->getFullName()<<" joins game. List of players: "
 					<<os.str()<<std::endl;
 		}
 
@@ -2594,19 +2614,19 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 		{
 			IMoveAction *ma = (IMoveAction*)a;
 
-			ma->from_inv.applyCurrentPlayer(player->getName());
-			ma->to_inv.applyCurrentPlayer(player->getName());
+			ma->from_inv.applyCurrentPlayer(player->getIdentifier());
+			ma->to_inv.applyCurrentPlayer(player->getIdentifier());
 
 			setInventoryModified(ma->from_inv);
 			setInventoryModified(ma->to_inv);
 
 			bool from_inv_is_current_player =
 				(ma->from_inv.type == InventoryLocation::PLAYER) &&
-				(ma->from_inv.name == player->getName());
+				(ma->from_inv.name == player->getIdentifier());
 
 			bool to_inv_is_current_player =
 				(ma->to_inv.type == InventoryLocation::PLAYER) &&
-				(ma->to_inv.name == player->getName());
+				(ma->to_inv.name == player->getIdentifier());
 
 			/*
 				Disable moving items out of craftpreview
@@ -2636,7 +2656,7 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 
 			// Disallow moving items in elsewhere than player's inventory
 			// if not allowed to interact
-			if(!checkPriv(player->getName(), "interact") &&
+			if(!checkPriv(player->getIdentifier(), "interact") &&
 					(!from_inv_is_current_player ||
 					!to_inv_is_current_player))
 			{
@@ -2647,12 +2667,12 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 			}
 
 			// If player is not an admin, check for ownership of src and dst
-			/*if(!checkPriv(player->getName(), "server"))
+			/*if(!checkPriv(player->getIdentifier(), "server"))
 			{
 				std::string owner_from = getInventoryOwner(ma->from_inv);
-				if(owner_from != "" && owner_from != player->getName())
+				if(owner_from != "" && owner_from != player->getIdentifier())
 				{
-					infostream<<"WARNING: "<<player->getName()
+					infostream<<"WARNING: "<<player->getIdentifier()
 						<<" tried to access an inventory that"
 						<<" belongs to "<<owner_from<<std::endl;
 					delete a;
@@ -2660,9 +2680,9 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 				}
 
 				std::string owner_to = getInventoryOwner(ma->to_inv);
-				if(owner_to != "" && owner_to != player->getName())
+				if(owner_to != "" && owner_to != player->getIdentifier())
 				{
-					infostream<<"WARNING: "<<player->getName()
+					infostream<<"WARNING: "<<player->getIdentifier()
 						<<" tried to access an inventory that"
 						<<" belongs to "<<owner_to<<std::endl;
 					delete a;
@@ -2677,23 +2697,23 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 		{
 			IDropAction *da = (IDropAction*)a;
 
-			da->from_inv.applyCurrentPlayer(player->getName());
+			da->from_inv.applyCurrentPlayer(player->getIdentifier());
 
 			setInventoryModified(da->from_inv);
 
 			// Disallow dropping items if not allowed to interact
-			if(!checkPriv(player->getName(), "interact"))
+			if(!checkPriv(player->getIdentifier(), "interact"))
 			{
 				delete a;
 				return;
 			}
 			// If player is not an admin, check for ownership
-			/*else if(!checkPriv(player->getName(), "server"))
+			/*else if(!checkPriv(player->getIdentifier(), "server"))
 			{
 				std::string owner_from = getInventoryOwner(da->from_inv);
-				if(owner_from != "" && owner_from != player->getName())
+				if(owner_from != "" && owner_from != player->getIdentifier())
 				{
-					infostream<<"WARNING: "<<player->getName()
+					infostream<<"WARNING: "<<player->getIdentifier()
 						<<" tried to access an inventory that"
 						<<" belongs to "<<owner_from<<std::endl;
 					delete a;
@@ -2708,16 +2728,16 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 		{
 			ICraftAction *ca = (ICraftAction*)a;
 
-			ca->craft_inv.applyCurrentPlayer(player->getName());
+			ca->craft_inv.applyCurrentPlayer(player->getIdentifier());
 
 			setInventoryModified(ca->craft_inv);
 
 			//bool craft_inv_is_current_player =
 			//	(ca->craft_inv.type == InventoryLocation::PLAYER) &&
-			//	(ca->craft_inv.name == player->getName());
+			//	(ca->craft_inv.name == player->getIdentifier());
 
 			// Disallow crafting if not allowed to interact
-			if(!checkPriv(player->getName(), "interact"))
+			if(!checkPriv(player->getIdentifier(), "interact"))
 			{
 				infostream<<"Cannot craft: "
 						<<"No interact privilege"<<std::endl;
@@ -2726,12 +2746,12 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 			}
 
 			// If player is not an admin, check for ownership of inventory
-			/*if(!checkPriv(player->getName(), "server"))
+			/*if(!checkPriv(player->getIdentifier(), "server"))
 			{
 				std::string owner_craft = getInventoryOwner(ca->craft_inv);
-				if(owner_craft != "" && owner_craft != player->getName())
+				if(owner_craft != "" && owner_craft != player->getIdentifier())
 				{
-					infostream<<"WARNING: "<<player->getName()
+					infostream<<"WARNING: "<<player->getIdentifier()
 						<<" tried to access an inventory that"
 						<<" belongs to "<<owner_craft<<std::endl;
 					delete a;
@@ -2771,7 +2791,7 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 		std::wstring name = narrow_to_wide(player->getName());
 		
 		// Run script hook
-		bool ate = scriptapi_on_chat_message(m_lua, player->getName(),
+		bool ate = scriptapi_on_chat_message(m_lua, player->getIdentifier(),
 				wide_to_narrow(message));
 		// If script ate the message, don't proceed
 		if(ate)
@@ -2817,7 +2837,7 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 		}
 		else
 		{
-			if(checkPriv(player->getName(), "shout")){
+			if(checkPriv(player->getIdentifier(), "shout")){
 				line += L"<";
 				line += name;
 				line += L"> ";
@@ -2864,7 +2884,7 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 		std::istringstream is(datastring, std::ios_base::binary);
 		u8 damage = readU8(is);
 
-		actionstream<<player->getName()<<" damaged by "
+		actionstream<<player->getIdentifier()<<" damaged by "
 				<<(int)damage<<" hp at "<<PP(player->getPosition()/BS)
 				<<std::endl;
 
@@ -2908,7 +2928,7 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 		}
 
 		if(!base64_is_valid(newpwd)){
-			infostream<<"Server: "<<player->getName()<<" supplied invalid password hash"<<std::endl;
+			infostream<<"Server: "<<player->getIdentifier()<<" supplied invalid password hash"<<std::endl;
 			// Wrong old password supplied!!
 			SendChatMessage(peer_id, L"Invalid new password hash supplied. Password NOT changed.");
 			return;
@@ -2917,10 +2937,10 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 		infostream<<"Server: Client requests a password change from "
 				<<"'"<<oldpwd<<"' to '"<<newpwd<<"'"<<std::endl;
 
-		std::string playername = player->getName();
+		std::string id = player->getIdentifier();
 
 		std::string checkpwd;
-		scriptapi_get_auth(m_lua, playername, &checkpwd, NULL);
+		scriptapi_get_auth(m_lua, id, &checkpwd, NULL);
 
 		if(oldpwd != checkpwd)
 		{
@@ -2930,12 +2950,12 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 			return;
 		}
 
-		bool success = scriptapi_set_password(m_lua, playername, newpwd);
+		bool success = scriptapi_set_password(m_lua, id, newpwd);
 		if(success){
-			actionstream<<player->getName()<<" changes password"<<std::endl;
+			actionstream<<player->getIdentifier()<<" changes password"<<std::endl;
 			SendChatMessage(peer_id, L"Password change successful");
 		} else {
-			actionstream<<player->getName()<<" tries to change password but "
+			actionstream<<player->getIdentifier()<<" tries to change password but "
 					<<"it fails"<<std::endl;
 			SendChatMessage(peer_id, L"Password change failed or inavailable");
 		}
@@ -2955,7 +2975,7 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 		
 		RespawnPlayer(peer_id);
 		
-		actionstream<<player->getName()<<" respawns at "
+		actionstream<<player->getIdentifier()<<" respawns at "
 				<<PP(player->getPosition()/BS)<<std::endl;
 
 		// ActiveObject is added to environment in AsyncRunStep after
@@ -3014,7 +3034,7 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 
 		if(player->hp == 0)
 		{
-			verbosestream<<"TOSERVER_INTERACT: "<<player->getName()
+			verbosestream<<"TOSERVER_INTERACT: "<<player->getIdentifier()
 				<<" tried to interact, but is dead!"<<std::endl;
 			return;
 		}
@@ -3064,7 +3084,7 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 			float d = player_pos.getDistanceFrom(pointed_pos_under);
 			float max_d = BS * 14; // Just some large enough value
 			if(d > max_d){
-				actionstream<<"Player "<<player->getName()
+				actionstream<<"Player "<<player->getIdentifier()
 						<<" tried to access "<<pointed.dump()
 						<<" from too far: "
 						<<"d="<<d<<", max_d="<<max_d
@@ -3081,9 +3101,9 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 		/*
 			Make sure the player is allowed to do it
 		*/
-		if(!checkPriv(player->getName(), "interact"))
+		if(!checkPriv(player->getIdentifier(), "interact"))
 		{
-			actionstream<<player->getName()<<" attempted to interact with "
+			actionstream<<player->getIdentifier()<<" attempted to interact with "
 					<<pointed.dump()<<" without 'interact' privilege"
 					<<std::endl;
 			// Re-send block to revert change on client-side
@@ -3134,7 +3154,7 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 				if(pointed_object->m_removed)
 					return;
 
-				actionstream<<player->getName()<<" punches object "
+				actionstream<<player->getIdentifier()<<" punches object "
 						<<pointed.object_id<<": "
 						<<pointed_object->getDescription()<<std::endl;
 
@@ -3213,7 +3233,7 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 				if(pointed_object->m_removed)
 					return;
 
-				actionstream<<player->getName()<<" right-clicks object "
+				actionstream<<player->getIdentifier()<<" right-clicks object "
 						<<pointed.object_id<<": "
 						<<pointed_object->getDescription()<<std::endl;
 
@@ -3246,7 +3266,7 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 		{
 			ItemStack item = playersao->getWieldedItem();
 
-			actionstream<<player->getName()<<" uses "<<item.name
+			actionstream<<player->getIdentifier()<<" uses "<<item.name
 					<<", pointing at "<<pointed.dump()<<std::endl;
 
 			if(scriptapi_item_on_use(m_lua,
@@ -3429,7 +3449,7 @@ core::list<PlayerInfo> Server::getPlayerInfo()
 			info.avg_rtt = 0.0;
 		}
 
-		snprintf(info.name, PLAYERNAME_SIZE, "%s", player->getName());
+		snprintf(info.name, PLAYERNAME_SIZE, "%s", player->getIdentifier().c_str());
 		info.position = player->getPosition();
 
 		list.push_back(info);
@@ -3485,16 +3505,14 @@ void Server::SendHP(con::Connection &con, u16 peer_id, u8 hp)
 }
 
 #ifdef GPGME_EXISTS
+
 void Server::SendChallenge(con::Connection &con, u16 peer_id,
                            gnupg::PendingChallenge* pc) {
   DSTACK(__FUNCTION_NAME);
-  std::ostringstream os(std::ios_base::binary);
+  SharedBuffer<u8> data(pc->question.size()+2);
+  writeU16(&data[0], TOCLIENT_CHALLENGE);
+  memcpy(&data[2],pc->question.c_str(),pc->question.size());
 
-  writeU16(os, TOCLIENT_CHALLENGE);
-  os.write(pc->question.c_str(),pc->question.size());
-  // Make data buffer
-  std::string s = os.str();
-  SharedBuffer<u8> data((u8*)s.c_str(), s.size());
   // Send as reliable
   con.Send(peer_id, 0, data, true);
 }
@@ -3707,7 +3725,7 @@ void Server::SendPlayerPrivileges(u16 peer_id)
 	Player *player = m_env->getPlayer(peer_id);
 	assert(player);
 	std::set<std::string> privs;
-	scriptapi_get_auth(m_lua, player->getName(), NULL, &privs);
+	scriptapi_get_auth(m_lua, player->getIdentifier(), NULL, &privs);
 	
 	std::ostringstream os(std::ios_base::binary);
 	writeU16(os, TOCLIENT_PRIVILEGES);
@@ -4354,7 +4372,7 @@ void Server::DiePlayer(u16 peer_id)
 	assert(playersao);
 
 	infostream<<"Server::DiePlayer(): Player "
-			<<playersao->getPlayer()->getName()
+			<<playersao->getPlayer()->getIdentifier()
 			<<" dies"<<std::endl;
 
 	playersao->setHP(0);
@@ -4374,7 +4392,7 @@ void Server::RespawnPlayer(u16 peer_id)
 	assert(playersao);
 
 	infostream<<"Server::RespawnPlayer(): Player "
-			<<playersao->getPlayer()->getName()
+			<<playersao->getPlayer()->getIdentifier()
 			<<" respawns"<<std::endl;
 
 	playersao->setHP(PLAYER_MAX_HP);
@@ -4441,7 +4459,7 @@ std::wstring Server::getStatusString()
 		// Get name of player
 		std::wstring name = L"unknown";
 		if(player != NULL)
-			name = narrow_to_wide(player->getName());
+			name = narrow_to_wide(player->getIdentifier());
 		// Add name to information string
 		os<<name<<L",";
 	}
@@ -4474,7 +4492,7 @@ void Server::reportPrivsModified(const std::string &name)
 				i.atEnd() == false; i++){
 			RemoteClient *client = i.getNode()->getValue();
 			Player *player = m_env->getPlayer(client->peer_id);
-			reportPrivsModified(player->getName());
+			reportPrivsModified(player->getIdentifier());
 		}
 	} else {
 		Player *player = m_env->getPlayer(name.c_str());
@@ -4640,7 +4658,7 @@ v3f findSpawnPos(ServerMap &map)
 	return intToFloat(nodepos, BS);
 }
 
-PlayerSAO* Server::emergePlayer(const char *name, u16 peer_id)
+PlayerSAO* Server::emergePlayer(const char *id, u16 peer_id)
 {
 	RemotePlayer *player = NULL;
 	bool newplayer = false;
@@ -4648,7 +4666,7 @@ PlayerSAO* Server::emergePlayer(const char *name, u16 peer_id)
 	/*
 		Try to get an existing player
 	*/
-	player = static_cast<RemotePlayer*>(m_env->getPlayer(name));
+	player = static_cast<RemotePlayer*>(m_env->getPlayer(id));
 
 	// If player is already connected, cancel
 	if(player != NULL && player->peer_id != 0)
@@ -4662,7 +4680,7 @@ PlayerSAO* Server::emergePlayer(const char *name, u16 peer_id)
 	*/
 	if(m_env->getPlayer(peer_id) != NULL)
 	{
-		infostream<<"emergePlayer(): Player with wrong name but same"
+		infostream<<"emergePlayer(): Player with wrong id but same"
 				" peer_id already exists"<<std::endl;
 		return NULL;
 	}
@@ -4674,11 +4692,11 @@ PlayerSAO* Server::emergePlayer(const char *name, u16 peer_id)
 	{
 		newplayer = true;
 		player = new RemotePlayer(this);
-		player->updateName(name);
+		player->updateIdentifier(id);
 
 		/* Set player position */
 		infostream<<"Server: Finding spawn place for player \""
-				<<name<<"\""<<std::endl;
+				<<id<<"\""<<std::endl;
 		v3f pos = findSpawnPos(m_env->getServerMap());
 		player->setPosition(pos);
 
@@ -4690,7 +4708,7 @@ PlayerSAO* Server::emergePlayer(const char *name, u16 peer_id)
 		Create a new player active object
 	*/
 	PlayerSAO *playersao = new PlayerSAO(m_env, player, peer_id,
-			getPlayerEffectivePrivs(player->getName()),
+			getPlayerEffectivePrivs(player->getIdentifier()),
 			isSingleplayer());
 
 	/* Add object to environment */
@@ -4790,7 +4808,7 @@ void Server::handlePeerChange(PeerChange &c)
 		{
 			if(player != NULL)
 			{
-				std::wstring name = narrow_to_wide(player->getName());
+				std::wstring name = narrow_to_wide(player->getIdentifier());
 				message += L"*** ";
 				message += name;
 				message += L" left game";
@@ -4832,10 +4850,10 @@ void Server::handlePeerChange(PeerChange &c)
 					if(!player)
 						continue;
 					// Get name of player
-					os<<player->getName()<<" ";
+					os<<player->getIdentifier()<<" ";
 				}
 
-				actionstream<<player->getName()<<" "
+				actionstream<<player->getIdentifier()<<" "
 						<<(c.timeout?"times out.":"leaves game.")
 						<<" List of players: "
 						<<os.str()<<std::endl;

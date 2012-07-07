@@ -1,7 +1,14 @@
 #ifndef GNUPG_HEADER
 #define GNUPG_HEADER
-#ifdef CLIENT
-#include "irrlicht.h" // devices/drivers
+#include "config.h"
+
+#include "peer.h"
+
+#include "irrlichttypes.h"
+
+#ifdef BUILD_CLIENT
+#include "irrlicht.h" // driver
+#include "irrlichttypes_extrabloated.h" // device
 #endif
 
 #include <stdint.h>
@@ -20,17 +27,30 @@ namespace gnupg {
     bool matches(const std::string& answer);
   };
 
+  class PassPhraseGetter {
+  public:
+    bool gotIt;
+    PassPhraseGetter() : gotIt(false) {}
+
+    void onPassPhrase(char* passphrase);
+  };
+
   extern std::string mykey;
   extern bool pgpEnabled;
 
-#ifdef CLIENT
+  void start();
+
+#ifdef BUILD_CLIENT
     void assureMyKey(const std::string& configPath, 
-                     IrrlichtDevice* device, IrrlichtDriver* driver);
+                     IrrlichtDevice* device, 
+                     video::IVideoDriver* driver);
 #else
     void assureMyKey(const std::string& configPath, void* device, void* bleh);
 #endif
-  std::string makeResponse(std::string challenge);
-  PendingChallenge* makeChallenge(std::string who);
+  std::string exportKey(u8* fpr);
+  void importKey(u8* keyData,size_t size);
+  PendingChallenge* makeChallenge(std::string who, Peer* const self);
+  std::string makeResponse(std::string challenge, Peer* const self);
 };
 
 /* the idea is: instead of a user/password, the client sends 

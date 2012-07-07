@@ -73,14 +73,24 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 enum ToClientCommand
 {
-  TOCLIENT_CHALLENGE = 0x9,
+  TOCLIENT_CHALLENGE = 0x7,
   /*
     Server's reply to TOSERVER_ANNOUNCE
 
      [0] u16 TOCLIENT_CHALLENGE
      [2] u8* challenge
   */
-	TOCLIENT_INIT = 0x10,
+  TOPEER_IMPORT = 0x8,
+  /* 
+     [0] u16 TOPEER_IMPORT
+     [2] u8[40] fingerprint
+  */
+  TOPEER_EXPORT = 0x9,
+  /*
+    [0] u16 TOPEER_EXPORT
+    [2] u8* public key (binary)
+  */
+  TOCLIENT_INIT = 0x10,
 	/*
 		Server's reply to TOSERVER_INIT.
 		Sent second after connected.
@@ -321,7 +331,7 @@ enum ToClientCommand
 
 enum ToServerCommand
 {
-  TOSERVER_ANNOUNCE = 0x8,
+  TOSERVER_ANNOUNCE = 0x6,
   /* 
      Sent first.
 
@@ -330,11 +340,29 @@ enum ToServerCommand
      [3] u16 client network protocol version
      [5] u8* (hex) fingerprint
   */
-  TOSERVER_CHALLENGE_RESPONSE = 0x9,
+  TOSERVER_CHALLENGE_RESPONSE = 0x7,
+
   /*
     [0] u16 TOSERVER_CHALLENGE_RESPONSE
     [2] u8* response
   */
+
+  _TOPEER_IMPORT = TOPEER_IMPORT,
+  /* 
+     [0] u16 TOPEER_IMPORT
+     [2] u8[40] fingerprint
+  */
+  _TOPEER_EXPORT = TOPEER_EXPORT,
+  /*
+    [0] u16 TOPEER_EXPORT
+    [2] u8* public key (binary)
+  */
+  TOSERVER_NICKNAME = 0xa,
+  /*
+    [0] u16 TOSERVER_NICKNAME
+    [2] u8* nickname
+  */
+
     
 	TOSERVER_INIT=0x10,
 	/*

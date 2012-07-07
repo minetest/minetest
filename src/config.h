@@ -13,9 +13,6 @@
 #define USE_SOUND 0
 #define BUILD_INFO "non-cmake"
 
-#define _FILE_OFFSET_BITS 64
-#define LARGEFILE_SOURCE 1
-
 #ifdef USE_CMAKE_CONFIG_H
 	#include "cmake_config.h"
 	#undef PROJECT_NAME

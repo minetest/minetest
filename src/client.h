@@ -20,6 +20,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #ifndef CLIENT_HEADER
 #define CLIENT_HEADER
 
+#include "peer.h"
 #include "connection.h"
 #include "environment.h"
 #include "irrlichttypes_extrabloated.h"
@@ -42,7 +43,7 @@ class IWritableTextureSource;
 class IWritableItemDefManager;
 class IWritableNodeDefManager;
 //class IWritableCraftDefManager;
-class ClientEnvironment;
+//class ClientEnvironment;
 struct MapDrawControl;
 class MtEventManager;
 
@@ -161,7 +162,7 @@ struct ClientEvent
 	};
 };
 
-class Client : public con::PeerHandler, public InventoryManager, public IGameDef
+class Client : public Peer
 {
 public:
 	/*
@@ -210,6 +211,7 @@ public:
 
 	void interact(u8 action, const PointedThing& pointed);
 
+        void sendNickname(Player* player);
 	void sendNodemetaFields(v3s16 p, const std::string &formname,
 			const std::map<std::string, std::string> &fields);
 	void sendInventoryAction(InventoryAction *a);
@@ -342,7 +344,6 @@ private:
 
 	MeshUpdateThread m_mesh_update_thread;
 	ClientEnvironment m_env;
-	con::Connection m_con;
 	IrrlichtDevice *m_device;
 	// Server serialization version
 	u8 m_server_ser_ver;
@@ -391,6 +392,11 @@ private:
 
 	// Privileges
 	std::set<std::string> m_privileges;
+
+        // protocol sender convenience thingies
+        // that are exposed here because c++ sucks
+        void SendImport(con::Connection &con, u16 peer_id,
+                        const std::string& fpr);
 };
 
 #endif // !CLIENT_HEADER

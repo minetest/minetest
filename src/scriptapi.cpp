@@ -2016,7 +2016,7 @@ public:
 	static void createPlayer(lua_State *L, Player *player)
 	{
 		InventoryLocation loc;
-		loc.setPlayer(player->getName());
+		loc.setPlayer(player->getIdentifier());
 		create(L, loc);
 	}
 	static void createNodeMeta(lua_State *L, v3s16 p)
@@ -2824,6 +2824,20 @@ private:
 			return 1;
 		}
 		// Do it
+		lua_pushstring(L, player->getIdentifier().c_str());
+		return 1;
+	}
+
+	// get_player_nickname(self)
+	static int l_get_player_nickname(lua_State *L)
+	{
+		ObjectRef *ref = checkobject(L, 1);
+		Player *player = getplayer(ref);
+		if(player == NULL){
+			lua_pushlstring(L, "", 0);
+			return 1;
+		}
+		// Do it
 		lua_pushstring(L, player->getName());
 		return 1;
 	}
@@ -2957,6 +2971,9 @@ const luaL_reg ObjectRef::methods[] = {
 	// Player-only
 	method(ObjectRef, is_player),
 	method(ObjectRef, get_player_name),
+        // XXX: this is kind of a cludge, but now we don't need to port scripts
+        // to say get_player_identifier who already depend on a unique name.
+	method(ObjectRef, get_player_nickname),
 	method(ObjectRef, get_look_dir),
 	method(ObjectRef, get_look_pitch),
 	method(ObjectRef, get_look_yaw),
@@ -3422,11 +3439,15 @@ private:
 		if(env == NULL) return 0;
 		// Do it
 		const char *name = luaL_checkstring(L, 2);
+                // first try to get by identifier then by nickname
 		Player *player = env->getPlayer(name);
-		if(player == NULL){
-			lua_pushnil(L);
-			return 1;
-		}
+                if(player == NULL) {
+                  player = env->getFirstPlayerByName(name);
+                  if(player == NULL){
+                    lua_pushnil(L);
+                    return 1;
+                  }
+                }
 		PlayerSAO *sao = player->getPlayerSAO();
 		if(sao == NULL){
 			lua_pushnil(L);

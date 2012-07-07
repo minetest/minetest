@@ -17,9 +17,13 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
+#include "config.h"
+#ifdef GPGME_EXISTS
+#include "gnupg.h"
+#endif
+
 #include "client.h"
 #include <iostream>
-#include "clientserver.h"
 #include "jmutexautolock.h"
 #include "main.h"
 #include <sstream>
@@ -41,10 +45,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "sound.h"
 #include "util/string.h"
 #include "hex.h"
-
-#ifdef GPGME_EXISTS
-#include "gnupg.h"
-#endif
 
 static std::string getMediaCacheDir()
 {
@@ -248,7 +248,6 @@ Client::Client(
 		device->getSceneManager(),
 		tsrc, this, device
 	),
-	m_con(PROTOCOL_ID, 512, CONNECTION_TIMEOUT, this),
 	m_device(device),
 	m_server_ser_ver(SER_FMT_VER_INVALID),
 	m_playeritem(0),
@@ -289,8 +288,14 @@ Client::Client(
 	*/
 	{
 		Player *player = new LocalPlayer(this);
-
-		player->updateName(playername);
+#ifdef GPGME_ENABLED
+                if(gnupg::pgpEnabled) {
+                  player->updateIdentifier(gnupg::mykey);
+                  player->updateName(playername);
+                } else
+#endif
+                  // treat the nickname like an identifier if we have no PGP :\
+                  player->updateIdentifier(playername);
 
 		m_env.addPlayer(player);
 	}
@@ -298,10 +303,10 @@ Client::Client(
 
 Client::~Client()
 {
-	{
-		//JMutexAutoLock conlock(m_con_mutex); //bulk comment-out
-		m_con.Disconnect();
-	}
+  {
+    //JMutexAutoLock conlock(m_con_mutex); //bulk comment-out
+    m_con.Disconnect();
+  }
 
 	m_mesh_update_thread.setRun(false);
 	while(m_mesh_update_thread.IsRunning())
@@ -487,7 +492,7 @@ void Client::step(float dtime)
 			
 			Player *myplayer = m_env.getLocalPlayer();
 			assert(myplayer != NULL);
-#ifdef GPGME_EXISTS	
+#ifdef GPGME_EXISTS	                        
                         if(gnupg::pgpEnabled) {
                           // Send TOSERVER_ANNOUNCE
                           // [0] u16 TOSERVER_ANNOUNCE
@@ -496,35 +501,39 @@ void Client::step(float dtime)
                           // [4] u8* fingerprint
                           
                           SharedBuffer<u8> data(2+1+2+gnupg::FINGERPRINT_LENGTH);
-                          writeU16(&data[0], TOSERVER_INIT);
+                          writeU16(&data[0], TOSERVER_ANNOUNCE);
                           writeU8(&data[2], SER_FMT_VER_HIGHEST);
                           writeU16(&data[3], PROTOCOL_VERSION);
-                          memcpy(data+4,gnupg::mykey.c_str(),gnupg::FINGERPRINT_LENGTH);
-                        } else
+                          memcpy(&data[5],gnupg::mykey.c_str(),gnupg::FINGERPRINT_LENGTH);
+                          // Send as unreliable
+                          Send(0, data, false);
+                          return;
+                        } 
 #endif /* GPGME_EXISTS */
-                          if(true) {
-                            // Send TOSERVER_INIT
-                            // [0] u16 TOSERVER_INIT
-                            // [2] u8 SER_FMT_VER_HIGHEST
-                            // [3] u8[20] player_name
-                            // [23] u8[28] password (new in some version)
-                            // [51] u16 client network protocol version (new in some version)
-                            SharedBuffer<u8> data(2+1+PLAYERNAME_SIZE+PASSWORD_SIZE+2);
-                            memset((char*)&data[3], 0, PLAYERNAME_SIZE);
-                            snprintf((char*)&data[3], PLAYERNAME_SIZE, "%s", myplayer->getName());
+                        // Send TOSERVER_INIT
+                        // [0] u16 TOSERVER_INIT
+                        // [2] u8 SER_FMT_VER_HIGHEST
+                        // [3] u8[20] player_name
+                        // [23] u8[28] password (new in some version)
+                        // [51] u16 client network protocol version (new in some version)
+                        SharedBuffer<u8> data(2+1+PLAYERNAME_SIZE+PASSWORD_SIZE+2);
+                        writeU16(&data[0], TOSERVER_INIT);
+                        writeU8(&data[2], SER_FMT_VER_HIGHEST);
 
-                            /*infostream<<"Client: sending initial password hash: \""<<m_password<<"\""
-                              <<std::endl;*/
-
-                            memset((char*)&data[23], 0, PASSWORD_SIZE);
-                            snprintf((char*)&data[23], PASSWORD_SIZE, "%s", m_password.c_str());
-                       
-                            // This should be incremented in each version
-                            writeU16(&data[51], PROTOCOL_VERSION);
-                          }                       
-
-                       // Send as unreliable
-                       Send(0, data, false);
+                        memset((char*)&data[3], 0, PLAYERNAME_SIZE);
+                        snprintf((char*)&data[3], PLAYERNAME_SIZE, "%s", myplayer->getName());
+                        
+                        /*infostream<<"Client: sending initial password hash: \""<<m_password<<"\""
+                          <<std::endl;*/
+                        
+                        memset((char*)&data[23], 0, PASSWORD_SIZE);
+                        snprintf((char*)&data[23], PASSWORD_SIZE, "%s", m_password.c_str());
+                        
+                        // This should be incremented in each version
+                        writeU16(&data[51], PROTOCOL_VERSION);
+                        
+                        // Send as unreliable
+                        Send(0, data, false);
 		}
 
 		// Not connected, return
@@ -944,6 +953,7 @@ void Client::ProcessData(u8 *data, u32 datasize, u16 sender_peer_id)
 	}
 
 	ToClientCommand command = (ToClientCommand)readU16(&data[0]);
+        if(peerProcessData(command,data,datasize,sender_peer_id)) return;
 
 	//infostream<<"Client: received command="<<command<<std::endl;
 	m_packetcounter.add((u16)command);
@@ -972,8 +982,10 @@ void Client::ProcessData(u8 *data, u32 datasize, u16 sender_peer_id)
             infostream << "Can't respond without pgp at all!" << std::endl;
             return;
           }
-          std::string challenge(data+2,datasize-2);
-          std::string response = gnupg::makeResponse(challenge);
+          std::cerr << "Got a challenge!" << std::endl;
+          std::string challenge((const char*)&data[2],datasize-2);
+          m_last_peer_id = PEER_ID_SERVER;
+          std::string response = gnupg::makeResponse(challenge,this);
           if(response.size()==0) {
             infostream << "We couldn't respond to the server's challenge..." << std::endl;
             return;
@@ -982,7 +994,7 @@ void Client::ProcessData(u8 *data, u32 datasize, u16 sender_peer_id)
           u32 replysize = 2 + response.size();
           SharedBuffer<u8> reply(replysize);
           writeU16(&reply[0], TOSERVER_CHALLENGE_RESPONSE);
-          memcpy(reply+2,response.c_str(),response.size());
+          memcpy(&reply[2],response.c_str(),response.size());
           // Send as reliable
           m_con.Send(PEER_ID_SERVER, 1, reply, true);      
         }    
@@ -1022,6 +1034,12 @@ void Client::ProcessData(u8 *data, u32 datasize, u16 sender_peer_id)
 			Player *player = m_env.getLocalPlayer();
 			assert(player != NULL);
 			player->setPosition(playerpos_f);
+
+#ifdef GPGME_ENABLED
+                        if(gnupg::pgpEnabled)
+                          sendNickname(player);                        
+#endif /* GPGME_ENABLED */
+                        
 		}
 		
 		if(datasize >= 2+1+6+8)
@@ -1031,7 +1049,7 @@ void Client::ProcessData(u8 *data, u32 datasize, u16 sender_peer_id)
 			infostream<<"Client: received map seed: "<<m_map_seed<<std::endl;
 		}
 		
-		// Reply to server
+		// Reply to server for some reason
 		u32 replysize = 2;
 		SharedBuffer<u8> reply(replysize);
 		writeU16(&reply[0], TOSERVER_INIT2);
@@ -1781,6 +1799,15 @@ void Client::interact(u8 action, const PointedThing& pointed)
 	Send(0, data, true);
 }
 
+void Client::sendNickname(Player* player) {
+  // Send our nickname
+  const std::string& name = player->getName();
+  SharedBuffer<u8> reply(name.size()+2);
+  writeU16(&reply[0],TOSERVER_NICKNAME);
+  memcpy(&reply[2],name.c_str(),name.size());
+  m_con.Send(PEER_ID_SERVER, 1, reply, true);
+}
+  
 void Client::sendNodemetaFields(v3s16 p, const std::string &formname,
 		const std::map<std::string, std::string> &fields)
 {

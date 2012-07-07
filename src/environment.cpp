@@ -73,9 +73,9 @@ void Environment::addPlayer(Player *player)
 	*/
 	// If peer id is non-zero, it has to be unique.
 	if(player->peer_id != 0)
-		assert(getPlayer(player->peer_id) == NULL);
-	// Name has to be unique.
-	assert(getPlayer(player->getName()) == NULL);
+          assert(getPlayer(player->peer_id) == NULL);
+	// Identifier has to be unique.
+	assert(getPlayer(player->getIdentifier()) == NULL);
 	// Add.
 	m_players.push_back(player);
 }
@@ -111,14 +111,26 @@ Player * Environment::getPlayer(u16 peer_id)
 	return NULL;
 }
 
-Player * Environment::getPlayer(const char *name)
+Player * Environment::getPlayer(const std::string& id)
 {
 	for(core::list<Player*>::Iterator i = m_players.begin();
 			i != m_players.end(); i++)
 	{
 		Player *player = *i;
-		if(strcmp(player->getName(), name) == 0)
+		if(player->getIdentifier() == id)
 			return player;
+	}
+	return NULL;
+}
+
+Player * Environment::getFirstPlayerByName(const char* name)
+{
+	for(core::list<Player*>::Iterator i = m_players.begin();
+			i != m_players.end(); i++)
+	{
+		Player *player = *i;
+		if(strcmp(player->getName(),name)==0)
+                  return player;
 	}
 	return NULL;
 }
@@ -363,7 +375,7 @@ void ServerEnvironment::serializePlayers(const std::string &savedir)
 			continue;
 		
 		// Full path to this file
-		std::string path = players_path + "/" + player_files[i].name;
+		std::string path = players_path + DIR_DELIM + player_files[i].name;
 
 		//infostream<<"Checking player file "<<path<<std::endl;
 
@@ -383,8 +395,8 @@ void ServerEnvironment::serializePlayers(const std::string &savedir)
 		//infostream<<"Loaded test player with name "<<testplayer.getName()<<std::endl;
 		
 		// Search for the player
-		std::string playername = testplayer.getName();
-		Player *player = getPlayer(playername.c_str());
+		std::string id = testplayer.getIdentifier();
+		Player *player = getPlayer(id);
 		if(player == NULL)
 		{
 			infostream<<"Didn't find matching player, ignoring file "<<path<<std::endl;
@@ -417,9 +429,9 @@ void ServerEnvironment::serializePlayers(const std::string &savedir)
 					<<" was already saved."<<std::endl;*/
 			continue;
 		}
-		std::string playername = player->getName();
+		std::string id = player->getIdentifier();
 		// Don't save unnamed player
-		if(playername == "")
+		if(id == "")
 		{
 			//infostream<<"Not saving unnamed player."<<std::endl;
 			continue;
@@ -427,9 +439,7 @@ void ServerEnvironment::serializePlayers(const std::string &savedir)
 		/*
 			Find a sane filename
 		*/
-		if(string_allowed(playername, PLAYERNAME_ALLOWED_CHARS) == false)
-			playername = "player";
-		std::string path = players_path + "/" + playername;
+		std::string path = players_path + "/" + id;
 		bool found = false;
 		for(u32 i=0; i<1000; i++)
 		{
@@ -438,7 +448,7 @@ void ServerEnvironment::serializePlayers(const std::string &savedir)
 				found = true;
 				break;
 			}
-			path = players_path + "/" + playername + itos(i);
+			path = players_path + "/" + id + itos(i);
 		}
 		if(found == false)
 		{
@@ -504,8 +514,8 @@ void ServerEnvironment::deSerializePlayers(const std::string &savedir)
 				<<std::endl;*/
 		
 		// Search for the player
-		std::string playername = testplayer.getName();
-		Player *player = getPlayer(playername.c_str());
+		std::string id = testplayer.getIdentifier();
+		Player *player = getPlayer(id);
 		bool newplayer = false;
 		if(player == NULL)
 		{
@@ -516,7 +526,7 @@ void ServerEnvironment::deSerializePlayers(const std::string &savedir)
 
 		// Load player
 		{
-			verbosestream<<"Reading player "<<testplayer.getName()<<" from "
+			verbosestream<<"Reading player "<<testplayer.getIdentifier()<<" from "
 					<<path<<std::endl;
 			// Open file and deserialize
 			std::ifstream is(path.c_str(), std::ios_base::binary);
