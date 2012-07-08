@@ -15,16 +15,16 @@
 #include <string>
 
 namespace gnupg {
-  const uint8_t FINGERPRINT_LENGTH = 40;
-  const uint8_t NONCE_LENGTH = 0x40;
+  const static u8 FINGERPRINT_LENGTH = 40;
+  const static u8 NONCE_LENGTH = 0x40;
 
   class PendingChallenge {
   public:
-    uint8_t solution[NONCE_LENGTH];
+    u8 solution[NONCE_LENGTH];
     std::string question;
     std::string who;
   PendingChallenge(const std::string& wwho) : who(wwho) {}
-    bool matches(const std::string& answer);
+    bool matches(u8* answer, size_t alen);
   };
 
   class PassPhraseGetter {

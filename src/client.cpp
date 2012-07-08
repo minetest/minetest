@@ -288,13 +288,13 @@ Client::Client(
 	*/
 	{
 		Player *player = new LocalPlayer(this);
-#ifdef GPGME_ENABLED
+#ifdef GPGME_EXISTS
                 if(gnupg::pgpEnabled) {
                   player->updateIdentifier(gnupg::mykey);
-                  player->updateName(playername);
+                  player->updateNickname(playername);
                 } else
 #endif
-                  // treat the nickname like an identifier if we have no PGP :\
+                  // treat the nickname like an identifier if we have no PGP :(
                   player->updateIdentifier(playername);
 
 		m_env.addPlayer(player);
@@ -521,7 +521,7 @@ void Client::step(float dtime)
                         writeU8(&data[2], SER_FMT_VER_HIGHEST);
 
                         memset((char*)&data[3], 0, PLAYERNAME_SIZE);
-                        snprintf((char*)&data[3], PLAYERNAME_SIZE, "%s", myplayer->getName());
+                        strncpy((char*)&data[3],myplayer->getNickname().c_str(),PLAYERNAME_SIZE);
                         
                         /*infostream<<"Client: sending initial password hash: \""<<m_password<<"\""
                           <<std::endl;*/
@@ -1035,10 +1035,10 @@ void Client::ProcessData(u8 *data, u32 datasize, u16 sender_peer_id)
 			assert(player != NULL);
 			player->setPosition(playerpos_f);
 
-#ifdef GPGME_ENABLED
+#ifdef GPGME_EXISTS
                         if(gnupg::pgpEnabled)
                           sendNickname(player);                        
-#endif /* GPGME_ENABLED */
+#endif /* GPGME_EXISTS */
                         
 		}
 		
@@ -1801,7 +1801,7 @@ void Client::interact(u8 action, const PointedThing& pointed)
 
 void Client::sendNickname(Player* player) {
   // Send our nickname
-  const std::string& name = player->getName();
+  const std::string& name = player->getNickname();
   SharedBuffer<u8> reply(name.size()+2);
   writeU16(&reply[0],TOSERVER_NICKNAME);
   memcpy(&reply[2],name.c_str(),name.size());
@@ -1885,7 +1885,7 @@ void Client::sendChangePassword(const std::wstring oldpassword,
 	if(player == NULL)
 		return;
 
-	std::string playername = player->getName();
+	std::string playername = player->getNickname();
 	std::string oldpwd = translatePassword(playername, oldpassword);
 	std::string newpwd = translatePassword(playername, newpassword);
 
@@ -2206,7 +2206,7 @@ core::list<std::wstring> Client::getConnectedPlayerNames()
 			i != players.end(); i++)
 	{
 		Player *player = *i;
-		playerNames.push_back(narrow_to_wide(player->getName()));
+		playerNames.push_back(narrow_to_wide(player->getFullName()));
 	}
 	return playerNames;
 }
@@ -2275,7 +2275,7 @@ void Client::typeChatMessage(const std::wstring &message)
 	{
 		LocalPlayer *player = m_env.getLocalPlayer();
 		assert(player != NULL);
-		std::wstring name = narrow_to_wide(player->getName());
+		std::wstring name = narrow_to_wide(player->getNickname());
 		m_chat_queue.push_back(
 				(std::wstring)L"<"+name+L"> "+message);
 	}

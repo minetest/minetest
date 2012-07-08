@@ -2838,7 +2838,7 @@ private:
 			return 1;
 		}
 		// Do it
-		lua_pushstring(L, player->getName());
+		lua_pushstring(L, player->getNickname().c_str());
 		return 1;
 	}
 	

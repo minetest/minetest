@@ -114,18 +114,19 @@ public:
 		return (m_yaw + 90.) * core::DEGTORAD;
 	}
 
-	void updateName(const char* name)
+	void updateNickname(const std::string& name)
 	{
-          snprintf(m_name, PLAYERNAME_SIZE, "%s", name);
+          if(name.size()<PLAYERNAME_SIZE)
+            m_name = name;
 	}
 
 	void updateIdentifier(const std::string& identifier)
 	{
           m_identifier = identifier;          
-          updateName(identifier.c_str());
+          updateNickname(identifier.c_str());
 	}
 
-        const char* getName() {
+        const std::string& getNickname() {
           return m_name;
         }
 
@@ -177,7 +178,7 @@ protected:
 	IGameDef *m_gamedef;
 
         std::string m_identifier;
-	char m_name[PLAYERNAME_SIZE];
+        std::string m_name;
 	f32 m_pitch;
 	f32 m_yaw;
 	v3f m_speed;

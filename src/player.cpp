@@ -42,7 +42,7 @@ Player::Player(IGameDef *gamedef):
 	m_speed(0,0,0),
 	m_position(0,0,0)
 {
-	updateName("<not set>");
+	updateNickname("<not set>");
 	inventory.clear();
 	inventory.addList("main", PLAYER_INVENTORY_SIZE);
 	inventory.addList("craft", 9);
@@ -140,9 +140,10 @@ void Player::deSerialize(std::istream &is)
            id = args.get("identifier");
            updateIdentifier(id);
         } else {
+          std::cerr << "We sholudn't be deseriaolizing this local arg" << std::endl;
           updateIdentifier(name);
         }
-	updateName(name.c_str());
+	updateNickname(name);
 	setPitch(args.getFloat("pitch"));
 	setYaw(args.getFloat("yaw"));
 	setPosition(args.getV3F("position"));

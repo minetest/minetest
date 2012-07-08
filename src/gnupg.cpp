@@ -361,8 +361,8 @@ public:
 MainThread mainThread;
 
 namespace gnupg {
-  bool PendingChallenge::matches(const std::string& answer) {
-    return answer.size()==NONCE_LENGTH && (0 == memcmp(solution,answer.c_str(),NONCE_LENGTH));
+  bool PendingChallenge::matches(u8* answer, size_t size) {
+    return size==NONCE_LENGTH && (0 == memcmp(solution,answer,NONCE_LENGTH));
   }
 
   void start() {

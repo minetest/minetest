@@ -649,12 +649,12 @@ private:
 	RemoteClient* getClient(u16 peer_id);
 	
 	// When called, environment mutex should be locked
-	std::string getPlayerName(u16 peer_id)
+	std::string getPlayerIdentifier(u16 peer_id)
 	{
 		Player *player = m_env->getPlayer(peer_id);
 		if(player == NULL)
 			return "[id="+itos(peer_id)+"]";
-		return player->getName();
+		return player->getIdentifier();
 	}
 
 	// When called, environment mutex should be locked

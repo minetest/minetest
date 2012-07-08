@@ -117,6 +117,8 @@ Player * Environment::getPlayer(const std::string& id)
 			i != m_players.end(); i++)
 	{
 		Player *player = *i;
+                /* std::cerr << "Checking id <" << player->getIdentifier()
+                   << "> == <" << id << '>' << std::endl; */
 		if(player->getIdentifier() == id)
 			return player;
 	}
@@ -129,7 +131,7 @@ Player * Environment::getFirstPlayerByName(const char* name)
 			i != m_players.end(); i++)
 	{
 		Player *player = *i;
-		if(strcmp(player->getName(),name)==0)
+		if(player->getNickname()==name)
                   return player;
 	}
 	return NULL;
@@ -392,7 +394,7 @@ void ServerEnvironment::serializePlayers(const std::string &savedir)
 			testplayer.deSerialize(is);
 		}
 
-		//infostream<<"Loaded test player with name "<<testplayer.getName()<<std::endl;
+		//infostream<<"Loaded test player with name "<<testplayer.getNickname()<<std::endl;
 		
 		// Search for the player
 		std::string id = testplayer.getIdentifier();
@@ -425,7 +427,7 @@ void ServerEnvironment::serializePlayers(const std::string &savedir)
 		Player *player = *i;
 		if(saved_players.find(player) != NULL)
 		{
-			/*infostream<<"Player "<<player->getName()
+			/*infostream<<"Player "<<player->getNickname()
 					<<" was already saved."<<std::endl;*/
 			continue;
 		}
@@ -457,7 +459,7 @@ void ServerEnvironment::serializePlayers(const std::string &savedir)
 		}
 
 		{
-			/*infostream<<"Saving player "<<player->getName()<<" to "
+			/*infostream<<"Saving player "<<player->getNickname()<<" to "
 					<<path<<std::endl;*/
 			// Open file and serialize
 			std::ofstream os(path.c_str(), std::ios_base::binary);
@@ -504,13 +506,13 @@ void ServerEnvironment::deSerializePlayers(const std::string &savedir)
 			testplayer.deSerialize(is);
 		}
 
-		if(!string_allowed(testplayer.getName(), PLAYERNAME_ALLOWED_CHARS))
+		if(!string_allowed(testplayer.getNickname(), PLAYERNAME_ALLOWED_CHARS))
 		{
 			infostream<<"Not loading player with invalid name: "
-					<<testplayer.getName()<<std::endl;
+					<<testplayer.getNickname()<<std::endl;
 		}
 
-		/*infostream<<"Loaded test player with name "<<testplayer.getName()
+		/*infostream<<"Loaded test player with name "<<testplayer.getNickname()
 				<<std::endl;*/
 		
 		// Search for the player
@@ -2067,6 +2069,7 @@ void ClientEnvironment::step(float dtime)
 		*/
 		if(player->isLocal() == false)
 		{
+                  std::cerr << "PMOVE" << std::endl;
 			// Move
 			player->move(dtime, *m_map, 100*BS);
 
@@ -2244,6 +2247,7 @@ void ClientEnvironment::addActiveObject(u16 id, u8 type,
 		errorstream<<"ClientEnvironment::addActiveObject():"
 				<<" id="<<id<<" type="<<type
 				<<": SerializationError in initialize(),"
+                           << e.what()
 				<<" init_data="<<serializeJsonString(init_data)
 				<<std::endl;
 	}

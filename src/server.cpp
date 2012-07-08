@@ -504,7 +504,7 @@ void RemoteClient::GetNextBlocks(Server *server, float dtime,
 		m_nearest_unsent_reset_timer = 0;
 		m_nearest_unsent_d = 0;
 		//infostream<<"Resetting m_nearest_unsent_d for "
-		//		<<server->getPlayerName(peer_id)<<std::endl;
+		//		<<server->getPlayerIdentifier(peer_id)<<std::endl;
 	}
 
 	//s16 last_nearest_unsent_d = m_nearest_unsent_d;
@@ -564,7 +564,7 @@ void RemoteClient::GetNextBlocks(Server *server, float dtime,
 	for(d = d_start; d <= d_max; d++)
 	{
 		/*errorstream<<"checking d="<<d<<" for "
-				<<server->getPlayerName(peer_id)<<std::endl;*/
+				<<server->getPlayerIdentifier(peer_id)<<std::endl;*/
 		//infostream<<"RemoteClient::SendBlocks(): d="<<d<<std::endl;
 		
 		/*
@@ -808,7 +808,7 @@ void RemoteClient::GetNextBlocks(Server *server, float dtime,
 			*/
 
 			/*errorstream<<"sending from d="<<d<<" to "
-					<<server->getPlayerName(peer_id)<<std::endl;*/
+					<<server->getPlayerIdentifier(peer_id)<<std::endl;*/
 
 			PrioritySortedBlockTransfer q((float)d, p, peer_id);
 
@@ -832,7 +832,7 @@ queue_full_break:
 			new_nearest_unsent_d = 0;
 			m_nothing_to_send_pause_timer = 2.0;
 			/*infostream<<"GetNextBlocks(): d wrapped around for "
-					<<server->getPlayerName(peer_id)
+					<<server->getPlayerIdentifier(peer_id)
 					<<"; setting to 0 and pausing"<<std::endl;*/
 		} else {
 			if(nearest_sent_d != -1)
@@ -2070,6 +2070,15 @@ bool Server::checkTooManyUsers(const std::string& id, u16 peer_id) {
     }	
   return false;
 }
+
+char hexdigits[0x11] = "0123456789abcdef";
+
+static void hexout(u8* what, u32 len) {
+  for(u32 i = 0; i < len; ++i) {
+    std::cerr << hexdigits[what[i] & 0xf]
+              << hexdigits[(what[i] >> 4 ) & 0xf];
+  }
+}
   
 void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 {
@@ -2186,11 +2195,14 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
             return;
           }
           u8* response = data + 2;
-          bool success = pc->matches((const char*)response);
+          bool success = pc->matches(response,datasize-2);
           if(!success) {
             std::cerr << "challenge response FAIL" << std::endl;
-            //std::cerr << std::string((const char*)pc->solution,gnupg::NONCE_LENGTH) << std::endl;
-            //std::cerr << std::string((const char*)response,datasize - 2) << std::endl;
+            std::cerr << "challenge: ";
+            hexout(pc->solution,gnupg::NONCE_LENGTH);
+            std::cerr << std::endl << "response:  ";
+            hexout(response,datasize-2);
+            std::cerr << std::endl;
 
             infostream<<"Server: peer_id="<<peer_id
                       <<": challenge failed trying to be " 
@@ -2206,10 +2218,11 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 
         if(command == TOSERVER_NICKNAME) {
           // [0] u16 TOSERVER_NICKNAME
-          // [2] u8* nickname
+          // [2] u8* nickname          
+          std::cerr << "Updooted nicknoom\n" << std::endl;
           Player* player = m_env->getPlayer(peer_id);
           if(player != NULL)
-            player->updateName((const char*)&data[2]);
+            player->updateNickname(std::string((const char*)&data[2],datasize-2));
           return;
         }
 
@@ -2271,6 +2284,7 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
                   {
                     std::string addr_s = m_con.GetPeerAddress(peer_id).serializeString();
                     actionstream<<"Server: Player with an invalid name "
+                                << playername << " "
                                 <<"tried to connect from "<<addr_s<<std::endl;
                     SendAccessDenied(m_con, peer_id,
                                      L"Name contains unallowed characters");
@@ -2366,7 +2380,7 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 		*/
 
 		infostream<<"Server: Sending content to "
-				<<getPlayerName(peer_id)<<std::endl;
+				<<getPlayerIdentifier(peer_id)<<std::endl;
 
 		// Send item definitions
 		SendItemDef(m_con, peer_id, m_itemdef);
@@ -2409,7 +2423,7 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 				std::wstring name = L"unknown";
 				Player *player = m_env->getPlayer(peer_id);
 				if(player != NULL)
-					name = narrow_to_wide(player->getName());
+					name = narrow_to_wide(player->getFullName());
 				
 				std::wstring message;
 				message += L"*** ";
@@ -2788,7 +2802,7 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 		}
 
 		// Get player name of this client
-		std::wstring name = narrow_to_wide(player->getName());
+		std::wstring name = narrow_to_wide(player->getNickname());
 		
 		// Run script hook
 		bool ate = scriptapi_on_chat_message(m_lua, player->getIdentifier(),
@@ -2989,7 +3003,7 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 		u16 numfiles = readU16(is);
 
 		infostream<<"Sending "<<numfiles<<" files to "
-				<<getPlayerName(peer_id)<<std::endl;
+				<<getPlayerIdentifier(peer_id)<<std::endl;
 		verbosestream<<"TOSERVER_REQUEST_MEDIA: "<<std::endl;
 
 		for(int i = 0; i < numfiles; i++) {
