@@ -658,7 +658,7 @@ public:
 			Player *player = m_env->getPlayer(m_identifier);
 			if(!player) 
 				player = m_env->getFirstPlayerByNickname(m_nickname);
-			std::cerr << m_identifier << (player ? "IS LOCAL" : "not local?") << std::endl;
+			std::cerr << m_identifier << (player ? " IS LOCAL" : " not local?") << std::endl;
 			if(player && player->isLocal()){
 				m_is_local_player = true;
 			}
