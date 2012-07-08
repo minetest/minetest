@@ -3441,13 +3441,13 @@ private:
 		const char *name = luaL_checkstring(L, 2);
                 // first try to get by identifier then by nickname
 		Player *player = env->getPlayer(name);
-                if(player == NULL) {
-                  player = env->getFirstPlayerByName(name);
-                  if(player == NULL){
-                    lua_pushnil(L);
-                    return 1;
-                  }
-                }
+		if(player == NULL) {
+			player = env->getFirstPlayerByNickname(name);
+			if(player == NULL){
+				lua_pushnil(L);
+				return 1;
+			}
+		}
 		PlayerSAO *sao = player->getPlayerSAO();
 		if(sao == NULL){
 			lua_pushnil(L);

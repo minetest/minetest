@@ -125,7 +125,7 @@ Player * Environment::getPlayer(const std::string& id)
 	return NULL;
 }
 
-Player * Environment::getFirstPlayerByName(const char* name)
+Player * Environment::getFirstPlayerByNickname(const std::string& name)
 {
 	for(core::list<Player*>::Iterator i = m_players.begin();
 			i != m_players.end(); i++)

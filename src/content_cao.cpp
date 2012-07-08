@@ -640,19 +640,25 @@ public:
 			processMessage(message);
 		}
 
-                if(m_is_player)
-                  m_nickname = deSerializeString(is);
-                else
-                  m_nickname = "not a player";
-                std::cerr << "got nickname " << m_nickname << std::endl;
-
+		if(m_is_player) {
+			try {
+				m_nickname = deSerializeString(is);
+			} catch(SerializationError e) {
+				m_nickname = m_identifier;
+			}
+		} else {
+			m_nickname = "not a player";
+		}
+		std::cerr << "got nickname " << m_nickname << std::endl;
 
 		pos_translator.init(m_position);
 		updateNodePos();
 		
 		if(m_is_player){
 			Player *player = m_env->getPlayer(m_identifier);
-                        std::cerr << m_identifier << (player ? "IS LOCAL" : "not local?") << std::endl;
+			if(!player) 
+				player = m_env->getFirstPlayerByNickname(m_nickname);
+			std::cerr << m_identifier << (player ? "IS LOCAL" : "not local?") << std::endl;
 			if(player && player->isLocal()){
 				m_is_local_player = true;
 			}
