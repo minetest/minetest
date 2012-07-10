@@ -514,12 +514,15 @@ public:
 			registerItem(def);
 		}
 		u16 num_aliases = readU16(is);
-		for(u16 i=0; i<num_aliases; i++)
-		{
-			std::string name = deSerializeString(is);
-			std::string convert_to = deSerializeString(is);
-			registerAlias(name, convert_to);
-		}
+		try {
+
+			for(u16 i=0; i<num_aliases; i++)
+			{
+				std::string name = deSerializeString(is);
+				std::string convert_to = deSerializeString(is);
+				registerAlias(name, convert_to);
+			}
+		} catch(SerializationError e) {}
 	}
 private:
 	// Key is name
