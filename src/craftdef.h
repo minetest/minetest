@@ -130,6 +130,8 @@ public:
 	// Returns the output structure, meaning depends on crafting method
 	// The implementation can assume that check(input) returns true
 	virtual CraftOutput getOutput(const CraftInput &input, IGameDef *gamedef) const=0;
+	// the inverse of the above
+	virtual CraftInput getInput(const CraftOutput &output, IGameDef *gamedef) const=0;
 	// Decreases count of every input item
 	virtual void decrementInput(CraftInput &input, IGameDef *gamedef) const=0;
 
@@ -164,6 +166,7 @@ public:
 	virtual std::string getName() const;
 	virtual bool check(const CraftInput &input, IGameDef *gamedef) const;
 	virtual CraftOutput getOutput(const CraftInput &input, IGameDef *gamedef) const;
+	virtual CraftInput getInput(const CraftOutput &output, IGameDef *gamedef) const;
 	virtual void decrementInput(CraftInput &input, IGameDef *gamedef) const;
 
 	virtual std::string dump() const;
@@ -205,6 +208,7 @@ public:
 	virtual std::string getName() const;
 	virtual bool check(const CraftInput &input, IGameDef *gamedef) const;
 	virtual CraftOutput getOutput(const CraftInput &input, IGameDef *gamedef) const;
+	virtual CraftInput getInput(const CraftOutput &output, IGameDef *gamedef) const;
 	virtual void decrementInput(CraftInput &input, IGameDef *gamedef) const;
 
 	virtual std::string dump() const;
@@ -242,6 +246,7 @@ public:
 	virtual std::string getName() const;
 	virtual bool check(const CraftInput &input, IGameDef *gamedef) const;
 	virtual CraftOutput getOutput(const CraftInput &input, IGameDef *gamedef) const;
+	virtual CraftInput getInput(const CraftOutput &output, IGameDef *gamedef) const;
 	virtual void decrementInput(CraftInput &input, IGameDef *gamedef) const;
 
 	virtual std::string dump() const;
@@ -281,6 +286,7 @@ public:
 	virtual std::string getName() const;
 	virtual bool check(const CraftInput &input, IGameDef *gamedef) const;
 	virtual CraftOutput getOutput(const CraftInput &input, IGameDef *gamedef) const;
+	virtual CraftInput getInput(const CraftOutput &output, IGameDef *gamedef) const;
 	virtual void decrementInput(CraftInput &input, IGameDef *gamedef) const;
 
 	virtual std::string dump() const;
@@ -320,6 +326,7 @@ public:
 	virtual std::string getName() const;
 	virtual bool check(const CraftInput &input, IGameDef *gamedef) const;
 	virtual CraftOutput getOutput(const CraftInput &input, IGameDef *gamedef) const;
+	virtual CraftInput getInput(const CraftOutput &output, IGameDef *gamedef) const;
 	virtual void decrementInput(CraftInput &input, IGameDef *gamedef) const;
 
 	virtual std::string dump() const;
@@ -349,6 +356,8 @@ public:
 	// The main crafting function
 	virtual bool getCraftResult(CraftInput &input, CraftOutput &output,
 			bool decrementInput, IGameDef *gamedef) const=0;
+	virtual bool getCraftRecipe(CraftInput &input, CraftOutput &output,
+			IGameDef *gamedef) const=0;
 	
 	// Print crafting recipes for debugging
 	virtual std::string dump() const=0;
@@ -365,6 +374,8 @@ public:
 	// The main crafting function
 	virtual bool getCraftResult(CraftInput &input, CraftOutput &output,
 			bool decrementInput, IGameDef *gamedef) const=0;
+	virtual bool getCraftRecipe(CraftInput &input, CraftOutput &output,
+			IGameDef *gamedef) const=0;
 
 	// Print crafting recipes for debugging
 	virtual std::string dump() const=0;

@@ -4558,6 +4558,59 @@ static int l_get_craft_result(lua_State *L)
 	return 2;
 }
 
+// get_craft_recipe(result item)
+static int l_get_craft_recipe(lua_State *L)
+{
+	int k = 0;
+	char tmp[20];
+	int input_i = 1;
+	std::string o_item = luaL_checkstring(L,input_i);
+	
+	IGameDef *gdef = get_server(L);
+	ICraftDefManager *cdef = gdef->cdef();
+	CraftInput input;
+	CraftOutput output(o_item,0);
+	bool got = cdef->getCraftRecipe(input, output, gdef);
+	lua_newtable(L); // output table
+	if(got){
+		lua_newtable(L);
+		for(std::vector<ItemStack>::const_iterator
+			i = input.items.begin();
+			i != input.items.end(); i++, k++)
+		{
+			if (i->empty())
+			{
+				continue;
+			}
+			sprintf(tmp,"%d",k);
+			lua_pushstring(L,tmp);
+			lua_pushstring(L,i->name.c_str());
+			lua_settable(L, -3);
+		}
+		lua_setfield(L, -2, "items");
+		setintfield(L, -1, "width", input.width);
+		switch (input.method) {
+		case CRAFT_METHOD_NORMAL:
+			lua_pushstring(L,"noraml");
+			break;
+		case CRAFT_METHOD_COOKING:
+			lua_pushstring(L,"cooking");
+			break;
+		case CRAFT_METHOD_FUEL:
+			lua_pushstring(L,"fuel");
+			break;
+		default:
+			lua_pushstring(L,"unknown");
+		}
+		lua_setfield(L, -2, "type");
+	} else {
+		lua_pushnil(L);
+		lua_setfield(L, -2, "items");
+		setintfield(L, -1, "width", 0);
+	}
+	return 1;
+}
+
 static const struct luaL_Reg minetest_f [] = {
 	{"debug", l_debug},
 	{"log", l_log},
@@ -4582,6 +4635,7 @@ static const struct luaL_Reg minetest_f [] = {
 	{"get_password_hash", l_get_password_hash},
 	{"notify_authentication_modified", l_notify_authentication_modified},
 	{"get_craft_result", l_get_craft_result},
+	{"get_craft_recipe", l_get_craft_recipe},
 	{NULL, NULL}
 };
 
