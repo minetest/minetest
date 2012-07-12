@@ -3016,6 +3016,13 @@ private:
 		return 0;
 	}
 
+  static int l_getnoise2d(lua_State *L) {
+    LuaPerlinNoise *o = checkobject(L, 1);
+    v2f pos2d = read_v2f(L,2);
+    lua_Number val = noise2d(pos2d.X,pos2d.Y, o->seed);
+    lua_pushnumber(L, val);
+    return 1;
+  }
 	static int l_get2d(lua_State *L)
 	{
 		LuaPerlinNoise *o = checkobject(L, 1);
@@ -3100,6 +3107,7 @@ public:
 };
 const char LuaPerlinNoise::className[] = "PerlinNoise";
 const luaL_reg LuaPerlinNoise::methods[] = {
+	method(LuaPerlinNoise, getnoise2d),
 	method(LuaPerlinNoise, get2d),
 	method(LuaPerlinNoise, get3d),
 	{0,0}
