@@ -22,6 +22,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "irrlichttypes_extrabloated.h"
 
+extern bool paused;
+
 class GUIModalMenu;
 
 class IMenuManager
@@ -100,6 +102,7 @@ public:
 		// This removes Environment's grab on us
 		Environment->removeFocus(this);
 		this->remove();
+		paused = false;
 	}
 
 	void removeChildren()

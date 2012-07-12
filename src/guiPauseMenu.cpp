@@ -31,6 +31,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "gettext.h"
 #include "util/string.h"
 
+extern bool paused;
+
 GUIPauseMenu::GUIPauseMenu(gui::IGUIEnvironment* env,
 		gui::IGUIElement* parent, s32 id,
 		IGameCallback *gamecallback,
@@ -83,6 +85,7 @@ void GUIPauseMenu::removeChildren()
 
 void GUIPauseMenu::regenerateGui(v2u32 screensize)
 {
+	paused = true;
 	/*
 		Remove stuff
 	*/

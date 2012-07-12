@@ -24,6 +24,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <string>
 #include "keycode.h"
 
+extern bool paused;
+
 class KeyList : protected core::list<KeyPress>
 {
 	typedef core::list<KeyPress> super;
