@@ -3,7 +3,6 @@ local inspect = minetest.require('__builtin','inspect')
 function printFiles()
    out = io.open(minetest.get_worldpath().."/nodefilemapping.csv","w")
    for n,node in pairs(minetest.registered_nodes) do
-      print(n)
       local ti = node.tile_images or node.tiles
       if ti then
          ti = ti[1]
