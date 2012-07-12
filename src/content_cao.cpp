@@ -649,7 +649,6 @@ public:
 		} else {
 			m_nickname = "not a player";
 		}
-		std::cerr << "got nickname " << m_nickname << std::endl;
 
 		pos_translator.init(m_position);
 		updateNodePos();
