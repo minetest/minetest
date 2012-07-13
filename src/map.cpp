@@ -1885,9 +1885,8 @@ void Map::removeNodeMetadata(v3s16 p)
 	ServerMap
 */
 
-ServerMap::ServerMap(std::string savedir, IGameDef *gamedef, bool enableWrite):
+ServerMap::ServerMap(std::string savedir, IGameDef *gamedef):
 	Map(dout_server, gamedef),
-        m_enable_write(enableWrite),
 	m_seed(0),
 	m_map_metadata_changed(true),
 	m_database(NULL),
@@ -2656,9 +2655,24 @@ void ServerMap::createDatabase() {
 		infostream<<"ServerMap: Database structure was created";
 }
 
+void ServerMap::tryPrepareWriteStatement() {
+  int d;
+  if(g_settings->getBool("write")==true) {
+    d = sqlite3_prepare(m_database, "REPLACE INTO `blocks` VALUES(?, ?)", -1, &m_database_write, NULL);
+    if(d != SQLITE_OK) {
+      infostream<<"WARNING: Database write statment failed to prepare: "<<sqlite3_errmsg(m_database)<<std::endl;
+      throw FileNotGoodException("Cannot prepare write statement");
+    }
+  }
+}
+  
+
 void ServerMap::verifyDatabase() {
-	if(m_database)
-		return;
+  if(m_database) {
+    if(NULL==m_database_write)
+      tryPrepareWriteStatement();
+    return;
+  }
 	
 	{
 		std::string dbp = m_savedir + DIR_DELIM + "map.sqlite";
@@ -2689,13 +2703,7 @@ void ServerMap::verifyDatabase() {
 			throw FileNotGoodException("Cannot prepare read statement");
 		}
 
-                if(m_enable_write==true) {
-                  d = sqlite3_prepare(m_database, "REPLACE INTO `blocks` VALUES(?, ?)", -1, &m_database_write, NULL);
-                  if(d != SQLITE_OK) {
-                    infostream<<"WARNING: Database write statment failed to prepare: "<<sqlite3_errmsg(m_database)<<std::endl;
-                    throw FileNotGoodException("Cannot prepare write statement");
-                  }
-                }
+                tryPrepareWriteStatement();
 		
 		d = sqlite3_prepare(m_database, "SELECT `pos` FROM `blocks`", -1, &m_database_list, NULL);
 		if(d != SQLITE_OK) {

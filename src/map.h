@@ -349,7 +349,7 @@ public:
 	/*
 		savedir: directory to which map data should be saved
 	*/
-  ServerMap(std::string savedir, IGameDef *gamedef, bool enableWrite = true);
+  ServerMap(std::string savedir, IGameDef *gamedef);
   ~ServerMap();
 
 	s32 mapType() const
@@ -469,6 +469,9 @@ public:
 	u64 getSeed(){ return m_seed; }
 
 private:
+
+        void tryPrepareWriteStatement();
+
 	// Seed used for all kinds of randomness in generation
 	u64 m_seed;
 	

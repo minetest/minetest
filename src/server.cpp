@@ -158,8 +158,6 @@ void * ServerThread::Thread()
 	return NULL;
 }
 
-bool noGenerate = (NULL!=getenv("nogenerate"));
-
 void * EmergeThread::Thread()
 {
 	ThreadStarted();
@@ -270,7 +268,7 @@ void * EmergeThread::Thread()
 				block = map.loadBlock(p);
 			}
 
-                        if(noGenerate) continue;
+                        if(false==g_settings->getBool("generate")) continue;
 			
 			// If could not load and allowed to generate, start generation
 			// inside this same envlock
@@ -1057,7 +1055,7 @@ Server::Server(
 
 	// Initialize Environment
 	
-	m_env = new ServerEnvironment(new ServerMap(path_world, this, getenv("nowrite")==NULL), m_lua,
+	m_env = new ServerEnvironment(new ServerMap(path_world, this), m_lua,
 			this, this);
 
 	// Give environment reference to scripting api
