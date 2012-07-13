@@ -890,7 +890,7 @@ void the_game(
 	
 	MapDrawControl draw_control;
 
-	Client client(device, playername.c_str(), password, draw_control,
+	Client client(device, address, port, playername.c_str(), password, draw_control,
 			tsrc, itemdef, nodedef, sound, &eventmgr);
 	
 	// Client acts as our GameDef

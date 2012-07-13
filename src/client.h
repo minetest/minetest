@@ -35,6 +35,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "filecache.h"
 #include "localplayer.h"
 #include "util/pointedthing.h"
+#include "blockSaver.h"
 
 struct MeshMakeData;
 class MapBlockMesh;
@@ -170,16 +171,18 @@ public:
 	*/
 
 	Client(
-			IrrlichtDevice *device,
-			const char *playername,
-			std::string password,
-			MapDrawControl &control,
-			IWritableTextureSource *tsrc,
-			IWritableItemDefManager *itemdef,
-			IWritableNodeDefManager *nodedef,
-			ISoundManager *sound,
-			MtEventManager *event
-	);
+		IrrlichtDevice *device,
+		const std::string& address,
+		int port,
+		const char *playername,
+		std::string password,
+		MapDrawControl &control,
+		IWritableTextureSource *tsrc,
+		IWritableItemDefManager *itemdef,
+		IWritableNodeDefManager *nodedef,
+		ISoundManager *sound,
+		MtEventManager *event
+		);
 	
 	~Client();
 	/*
@@ -311,6 +314,8 @@ public:
 	virtual bool checkLocalPrivilege(const std::string &priv)
 	{ return checkPrivilege(priv); }
 
+	void reportModified(MapBlock* block);
+
 private:
 	
 	// Insert a media file appropriately into the appropriate manager
@@ -397,6 +402,11 @@ private:
         // that are exposed here because c++ sucks
         void SendImport(con::Connection &con, u16 peer_id,
                         const std::string& fpr);
+
+	BlockSaver m_mirror;
+
+
+
 };
 
 #endif // !CLIENT_HEADER

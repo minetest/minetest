@@ -195,6 +195,8 @@ public:
 	virtual MapBlock * emergeBlock(v3s16 p, bool allow_generate=true)
 	{ return getBlockNoCreateNoEx(p); }
 
+	virtual void reportModified(MapBlock* const) {}
+
 	// Returns InvalidPositionException if not found
 	bool isNodeUnderground(v3s16 p);
 	
@@ -467,6 +469,10 @@ public:
 	bool isSavingEnabled(){ return m_map_saving_enabled; }
 
 	u64 getSeed(){ return m_seed; }
+	void setSeed(u64 seed) {
+		m_seed = seed;
+		saveMapMeta();
+	}
 
 private:
 

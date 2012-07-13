@@ -224,8 +224,19 @@ void * MeshUpdateThread::Thread()
 	return NULL;
 }
 
+static std::string makeWorldPath(const std::string& address, int port) {
+	std::ostringstream out;
+	out << porting::path_user << DIR_DELIM << "mirror";
+	fs::CreateDir(out.str());
+	out << DIR_DELIM << address << ":" << port;
+	fs::CreateDir(out.str());
+	return out.str();
+}
+
 Client::Client(
 		IrrlichtDevice *device,
+		const std::string& address,
+		int port,
 		const char *playername,
 		std::string password,
 		MapDrawControl &control,
@@ -268,7 +279,8 @@ Client::Client(
 	m_time_of_day_set(false),
 	m_last_time_of_day_f(-1),
 	m_time_of_day_update_timer(0),
-	m_removed_sounds_check_timer(0)
+	m_removed_sounds_check_timer(0),
+	m_mirror(makeWorldPath(address,port),this)
 {
 	m_packetcounter_timer = 0.0;
 	//m_delete_unused_sectors_timer = 0.0;
@@ -299,10 +311,15 @@ Client::Client(
 
 		m_env.addPlayer(player);
 	}
+	m_mirror.Start();
 }
 
 Client::~Client()
 {
+	m_mirror.setRun(false);
+	while(m_mirror.IsRunning())
+		sleep(1);
+
   {
     //JMutexAutoLock conlock(m_con_mutex); //bulk comment-out
     m_con.Disconnect();
@@ -313,6 +330,10 @@ Client::~Client()
 		sleep_ms(100);
 
 	delete m_inventory_from_server;
+}
+
+void Client::reportModified(MapBlock* block) {
+	m_mirror.enqueue(*block);
 }
 
 void Client::connect(Address address)
@@ -1047,6 +1068,7 @@ void Client::ProcessData(u8 *data, u32 datasize, u16 sender_peer_id)
 			// Get map seed
 			m_map_seed = readU64(&data[2+1+6]);
 			infostream<<"Client: received map seed: "<<m_map_seed<<std::endl;
+			m_mirror.setSeed(m_map_seed);
 		}
 		
 		// Reply to server for some reason
@@ -1166,7 +1188,7 @@ void Client::ProcessData(u8 *data, u32 datasize, u16 sender_peer_id)
 			block->deSerialize(istr, ser_version, false);
 			sector->insertBlock(block);
 		}
-
+		m_mirror.enqueue(*block);
 #if 0
 		/*
 			Acknowledge block

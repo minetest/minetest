@@ -114,6 +114,8 @@ public:
 		return m_box;
 	}
 
+	virtual void reportModified(MapBlock* block);
+
 	void renderMap(video::IVideoDriver* driver, s32 pass);
 
 	int getBackgroundBrightness(float max_d, u32 daylight_factor,

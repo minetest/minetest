@@ -256,8 +256,10 @@ set(minetest_SRCS
 	${common_SRCS}
 	${sound_SRCS}
         ${gnupg_client_SRCS}
+	blockSaver.cpp
 	localplayer.cpp
 	sky.cpp
+	client.cpp
 	clientmap.cpp
 	content_cso.cpp
 	content_mapblock.cpp
@@ -281,7 +283,6 @@ set(minetest_SRCS
 	guiChatConsole.cpp
 	guiCreateWorld.cpp
 	guiConfirmMenu.cpp
-	client.cpp
 	filecache.cpp
 	tile.cpp
 	game.cpp

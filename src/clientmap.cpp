@@ -737,3 +737,7 @@ void ClientMap::PrintInfo(std::ostream &out)
 }
 
 
+void ClientMap::reportModified(MapBlock* block)
+{
+	m_client->reportModified(block);
+}
