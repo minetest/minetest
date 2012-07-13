@@ -349,8 +349,8 @@ public:
 	/*
 		savedir: directory to which map data should be saved
 	*/
-	ServerMap(std::string savedir, IGameDef *gamedef);
-	~ServerMap();
+  ServerMap(std::string savedir, IGameDef *gamedef, bool enableWrite = true);
+  ~ServerMap();
 
 	s32 mapType() const
 	{
@@ -474,6 +474,7 @@ private:
 	
 	std::string m_savedir;
 	bool m_map_saving_enabled;
+        bool m_enable_write;
 
 #if 0
 	// Chunk size in MapSectors
