@@ -63,6 +63,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <list>
 #include "util/directiontables.h"
 
+bool paused = false;
+
 /*
 	Text input system
 */
@@ -1217,6 +1219,10 @@ void the_game(
 	{
 		if(device->run() == false || kill == true)
 			break;
+
+		if(paused) {
+			device->sleep(500);
+		}
 
 		// Time of frame without fps limit
 		float busytime;
