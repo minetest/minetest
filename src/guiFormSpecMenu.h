@@ -25,15 +25,98 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "inventory.h"
 #include "inventorymanager.h"
 #include "modalMenu.h"
+#include "client.h"
+#include "clientmap.h"
+#include "util/string.h"
+#include "util/numeric.h"
+#include "mainmenumanager.h"
+#include "mapblock.h"
+#include "nodedef.h"
+#include "nodemetadata.h"
+
+#include "gettext.h"
 
 class IGameDef;
 class InventoryManager;
+
+struct TextDest
+{
+	virtual void gotText(std::wstring text) = 0;
+	virtual void gotText(std::map<std::string, std::string> fields) = 0;
+	virtual ~TextDest() {};
+};
+
+struct TextDestChat : public TextDest
+{
+	TextDestChat(Client *client)
+	{
+		m_client = client;
+	}
+	void gotText(std::wstring text)
+	{
+		m_client->typeChatMessage(text);
+	}
+	void gotText(std::map<std::string, std::string> fields)
+	{
+		m_client->typeChatMessage(narrow_to_wide(fields["text"]));
+	}
+
+	Client *m_client;
+};
+
+struct TextDestNodeMetadata : public TextDest
+{
+	TextDestNodeMetadata(v3s16 p, Client *client)
+	{
+		m_p = p;
+		m_client = client;
+	}
+	void gotText(std::wstring text)
+	{
+		std::string ntext = wide_to_narrow(text);
+		infostream<<"Changing text of a sign node: "
+				<<ntext<<std::endl;
+		std::map<std::string, std::string> fields;
+		fields["text"] = ntext;
+		m_client->sendNodemetaFields(m_p, "", fields);
+	}
+	void gotText(std::map<std::string, std::string> fields)
+	{
+		m_client->sendNodemetaFields(m_p, "", fields);
+	}
+
+	v3s16 m_p;
+	Client *m_client;
+};
 
 class IFormSource
 {
 public:
 	virtual ~IFormSource(){}
 	virtual std::string getForm() = 0;
+	v3s16 m_p;
+};
+
+/* Form update callback */
+
+class NodeMetadataFormSource: public IFormSource
+{
+public:
+	NodeMetadataFormSource(ClientMap *map, v3s16 p):
+		m_map(map),
+		m_p(p)
+	{
+	}
+	std::string getForm()
+	{
+		NodeMetadata *meta = m_map->getNodeMetadata(m_p);
+		if(!meta)
+			return "";
+		return meta->getString("formspec");
+	}
+
+	ClientMap *m_map;
+	v3s16 m_p;
 };
 
 void drawItemStack(video::IVideoDriver *driver,
@@ -43,7 +126,7 @@ void drawItemStack(video::IVideoDriver *driver,
 		const core::rect<s32> *clip,
 		IGameDef *gamedef);
 
-class GUIInventoryMenu : public GUIModalMenu
+class GUIFormSpecMenu : public GUIModalMenu
 {
 	struct ItemSpec
 	{
@@ -106,15 +189,33 @@ class GUIInventoryMenu : public GUIModalMenu
 		v2s32 pos;
 		v2s32 geom;
 	};
+	
+	struct FieldSpec
+	{
+		FieldSpec()
+		{
+		}
+		FieldSpec(const std::wstring name, const std::wstring label, const std::wstring fdeflt, int id):
+			fname(name),
+			flabel(label),
+			fdefault(fdeflt),
+			fid(id)
+		{
+		}
+		std::wstring fname;
+		std::wstring flabel;
+		std::wstring fdefault;
+		int fid;
+	};
 
 public:
-	GUIInventoryMenu(gui::IGUIEnvironment* env,
+	GUIFormSpecMenu(gui::IGUIEnvironment* env,
 			gui::IGUIElement* parent, s32 id,
 			IMenuManager *menumgr,
 			InventoryManager *invmgr,
 			IGameDef *gamedef
 			);
-	~GUIInventoryMenu();
+	~GUIFormSpecMenu();
 
 	void setFormSpec(const std::string &formspec_string,
 			InventoryLocation current_inventory_location)
@@ -124,10 +225,11 @@ public:
 		regenerateGui(m_screensize_old);
 	}
 	
-	// form_src is deleted by this GUIInventoryMenu
+	// form_src is deleted by this GUIFormSpecMenu
 	void setFormSource(IFormSource *form_src)
 	{
 		m_form_src = form_src;
+		m_dest = new TextDestNodeMetadata(((NodeMetadataFormSource*)form_src)->m_p,(Client*)m_gamedef);
 	}
 
 	void removeChildren();
@@ -142,6 +244,7 @@ public:
 	void drawMenu();
 	void updateSelectedItem();
 
+	void acceptInput();
 	bool OnEvent(const SEvent& event);
 	
 protected:
@@ -163,6 +266,7 @@ protected:
 
 	core::array<ListDrawSpec> m_inventorylists;
 	core::array<ImageDrawSpec> m_images;
+	core::array<FieldSpec> m_fields;
 
 	ItemSpec *m_selected_item;
 	u32 m_selected_amount;
@@ -170,6 +274,8 @@ protected:
 
 	v2s32 m_pointer;
 	gui::IGUIStaticText *m_tooltip_element;
+private:
+	TextDest *m_dest;
 };
 
 #endif

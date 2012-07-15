@@ -1125,7 +1125,7 @@ minetest.register_node("default:sign_wall", {
 	on_construct = function(pos)
 		--local n = minetest.env:get_node(pos)
 		local meta = minetest.env:get_meta(pos)
-		meta:set_string("formspec", "hack:sign_text_input")
+		meta:set_string("formspec", "field[text;;${text}]")
 		meta:set_string("infotext", "\"\"")
 	end,
 	on_receive_fields = function(pos, formname, fields, sender)

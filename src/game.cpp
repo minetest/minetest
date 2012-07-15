@@ -28,7 +28,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "server.h"
 #include "guiPauseMenu.h"
 #include "guiPasswordChange.h"
-#include "guiInventoryMenu.h"
+#include "guiFormSpecMenu.h"
 #include "guiTextInputMenu.h"
 #include "guiDeathScreen.h"
 #include "tool.h"
@@ -67,41 +67,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 	Text input system
 */
 
-struct TextDestChat : public TextDest
-{
-	TextDestChat(Client *client)
-	{
-		m_client = client;
-	}
-	void gotText(std::wstring text)
-	{
-		m_client->typeChatMessage(text);
-	}
-
-	Client *m_client;
-};
-
-struct TextDestNodeMetadata : public TextDest
-{
-	TextDestNodeMetadata(v3s16 p, Client *client)
-	{
-		m_p = p;
-		m_client = client;
-	}
-	void gotText(std::wstring text)
-	{
-		std::string ntext = wide_to_narrow(text);
-		infostream<<"Changing text of a sign node: "
-				<<ntext<<std::endl;
-		std::map<std::string, std::string> fields;
-		fields["text"] = ntext;
-		m_client->sendNodemetaFields(m_p, "", fields);
-	}
-
-	v3s16 m_p;
-	Client *m_client;
-};
-
 /* Respawn menu callback */
 
 class MainRespawnInitiator: public IRespawnInitiator
@@ -119,44 +84,6 @@ public:
 	}
 private:
 	bool *m_active;
-	Client *m_client;
-};
-
-/* Form update callback */
-
-class NodeMetadataFormSource: public IFormSource
-{
-public:
-	NodeMetadataFormSource(ClientMap *map, v3s16 p):
-		m_map(map),
-		m_p(p)
-	{
-	}
-	std::string getForm()
-	{
-		NodeMetadata *meta = m_map->getNodeMetadata(m_p);
-		if(!meta)
-			return "";
-		return meta->getString("formspec");
-	}
-
-	ClientMap *m_map;
-	v3s16 m_p;
-};
-
-class PlayerInventoryFormSource: public IFormSource
-{
-public:
-	PlayerInventoryFormSource(Client *client):
-		m_client(client)
-	{
-	}
-	std::string getForm()
-	{
-		LocalPlayer* player = m_client->getEnv().getLocalPlayer();
-		return player->inventory_formspec;
-	}
-
 	Client *m_client;
 };
 
@@ -1471,8 +1398,8 @@ void the_game(
 			infostream<<"the_game: "
 					<<"Launching inventory"<<std::endl;
 			
-			GUIInventoryMenu *menu =
-				new GUIInventoryMenu(guienv, guiroot, -1,
+			GUIFormSpecMenu *menu =
+				new GUIFormSpecMenu(guienv, guiroot, -1,
 					&g_menumgr,
 					&client, gamedef);
 
@@ -2234,8 +2161,8 @@ void the_game(
 					
 					/* Create menu */
 
-					GUIInventoryMenu *menu =
-						new GUIInventoryMenu(guienv, guiroot, -1,
+					GUIFormSpecMenu *menu =
+						new GUIFormSpecMenu(guienv, guiroot, -1,
 							&g_menumgr,
 							&client, gamedef);
 					menu->setFormSpec(meta->getString("formspec"),
