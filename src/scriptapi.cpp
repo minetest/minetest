@@ -686,6 +686,8 @@ static NodeBox read_nodebox(lua_State *L, int index)
 static void read_groups(lua_State *L, int index,
 		std::map<std::string, int> &result)
 {
+	if (!lua_istable(L,index))
+		return;
 	result.clear();
 	lua_pushnil(L);
 	if(index < 0)
