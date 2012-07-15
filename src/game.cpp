@@ -28,7 +28,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "server.h"
 #include "guiPauseMenu.h"
 #include "guiPasswordChange.h"
-#include "guiInventoryMenu.h"
+#include "guiFormSpecMenu.h"
 #include "guiTextInputMenu.h"
 #include "guiDeathScreen.h"
 #include "tool.h"
@@ -77,6 +77,10 @@ struct TextDestChat : public TextDest
 	{
 		m_client->typeChatMessage(text);
 	}
+	void gotText(std::map<std::string, std::string> fields)
+	{
+		m_client->typeChatMessage(narrow_to_wide(fields["text"]));
+	}
 
 	Client *m_client;
 };
@@ -88,13 +92,18 @@ struct TextDestNodeMetadata : public TextDest
 		m_p = p;
 		m_client = client;
 	}
+	// This is deprecated I guess? -celeron55
 	void gotText(std::wstring text)
 	{
 		std::string ntext = wide_to_narrow(text);
-		infostream<<"Changing text of a sign node: "
-				<<ntext<<std::endl;
+		infostream<<"Submitting 'text' field of node at ("<<m_p.X<<","
+				<<m_p.Y<<","<<m_p.Z<<"): "<<ntext<<std::endl;
 		std::map<std::string, std::string> fields;
 		fields["text"] = ntext;
+		m_client->sendNodemetaFields(m_p, "", fields);
+	}
+	void gotText(std::map<std::string, std::string> fields)
+	{
 		m_client->sendNodemetaFields(m_p, "", fields);
 	}
 
@@ -138,6 +147,13 @@ public:
 		if(!meta)
 			return "";
 		return meta->getString("formspec");
+	}
+	std::string resolveText(std::string str)
+	{
+		NodeMetadata *meta = m_map->getNodeMetadata(m_p);
+		if(!meta)
+			return str;
+		return meta->resolveString(str);
 	}
 
 	ClientMap *m_map;
@@ -1479,8 +1495,8 @@ void the_game(
 			infostream<<"the_game: "
 					<<"Launching inventory"<<std::endl;
 			
-			GUIInventoryMenu *menu =
-				new GUIInventoryMenu(guienv, guiroot, -1,
+			GUIFormSpecMenu *menu =
+				new GUIFormSpecMenu(guienv, guiroot, -1,
 					&g_menumgr,
 					&client, gamedef);
 
@@ -1490,7 +1506,7 @@ void the_game(
 			PlayerInventoryFormSource *src = new PlayerInventoryFormSource(&client);
 			assert(src);
 			menu->setFormSpec(src->getForm(), inventoryloc);
-			menu->setFormSource(new PlayerInventoryFormSource(&client));
+			menu->setFormSource(src);
 			menu->drop();
 		}
 		else if(input->wasKeyDown(EscapeKey))
@@ -2219,7 +2235,8 @@ void the_game(
 			{
 				infostream<<"Ground right-clicked"<<std::endl;
 				
-				// sign special case, at least until formspec is properly implemented
+				// Sign special case, at least until formspec is properly implemented.
+				// Deprecated?
 				if(meta && meta->getString("formspec") == "hack:sign_text_input" && !random_input)
 				{
 					infostream<<"Launching metadata text input"<<std::endl;
@@ -2244,14 +2261,15 @@ void the_game(
 					
 					/* Create menu */
 
-					GUIInventoryMenu *menu =
-						new GUIInventoryMenu(guienv, guiroot, -1,
+					GUIFormSpecMenu *menu =
+						new GUIFormSpecMenu(guienv, guiroot, -1,
 							&g_menumgr,
 							&client, gamedef);
 					menu->setFormSpec(meta->getString("formspec"),
 							inventoryloc);
 					menu->setFormSource(new NodeMetadataFormSource(
 							&client.getEnv().getClientMap(), nodepos));
+					menu->setTextDest(new TextDestNodeMetadata(nodepos, &client));
 					menu->drop();
 				}
 				// Otherwise report right click to server

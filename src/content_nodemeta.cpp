@@ -63,7 +63,7 @@ static bool content_nodemeta_deserialize_legacy_body(
 		//meta->setString("infotext","\"${text}\"");
 		meta->setString("infotext",
 				std::string("\"") + meta->getString("text") + "\"");
-		meta->setString("formspec","hack:sign_text_input");
+		meta->setString("formspec","field[text;;${text}]");
 		return false;
 	}
 	else if(id == NODEMETA_CHEST) // ChestNodeMetadata
@@ -77,7 +77,7 @@ static bool content_nodemeta_deserialize_legacy_body(
 		}
 		assert(inv->getList("main") && !inv->getList("0"));
 		
-		meta->setString("formspec","invsize[8,9;]"
+		meta->setString("formspec","size[8,9]"
 				"list[current_name;main;0,0;8,4;]"
 				"list[current_player;main;0,5;8,4;]");
 		return false;
@@ -94,7 +94,7 @@ static bool content_nodemeta_deserialize_legacy_body(
 		}
 		assert(inv->getList("main") && !inv->getList("0"));
 		
-		meta->setString("formspec","invsize[8,9;]"
+		meta->setString("formspec","size[8,9]"
 				"list[current_name;main;0,0;8,4;]"
 				"list[current_player;main;0,5;8,4;]");
 		return false;
@@ -115,7 +115,7 @@ static bool content_nodemeta_deserialize_legacy_body(
 		is>>temp;
 		meta->setString("src_time", ftos((float)temp/10));
 
-		meta->setString("formspec","invsize[8,9;]"
+		meta->setString("formspec","size[8,9]"
 			"list[current_name;fuel;2,3;1,1;]"
 			"list[current_name;src;2,1;1,1;]"
 			"list[current_name;dst;5,1;2,2;]"

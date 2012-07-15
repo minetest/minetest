@@ -29,11 +29,21 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 class IGameDef;
 class InventoryManager;
 
+struct TextDest
+{
+	virtual ~TextDest() {};
+	// This is deprecated I guess? -celeron55
+	virtual void gotText(std::wstring text) = 0;
+	virtual void gotText(std::map<std::string, std::string> fields) = 0;
+};
+
 class IFormSource
 {
 public:
 	virtual ~IFormSource(){}
 	virtual std::string getForm() = 0;
+	// Fill in variables in field text
+	virtual std::string resolveText(std::string str){ return str; }
 };
 
 void drawItemStack(video::IVideoDriver *driver,
@@ -43,7 +53,7 @@ void drawItemStack(video::IVideoDriver *driver,
 		const core::rect<s32> *clip,
 		IGameDef *gamedef);
 
-class GUIInventoryMenu : public GUIModalMenu
+class GUIFormSpecMenu : public GUIModalMenu
 {
 	struct ItemSpec
 	{
@@ -106,15 +116,37 @@ class GUIInventoryMenu : public GUIModalMenu
 		v2s32 pos;
 		v2s32 geom;
 	};
+	
+	struct FieldSpec
+	{
+		FieldSpec()
+		{
+		}
+		FieldSpec(const std::wstring name, const std::wstring label, const std::wstring fdeflt, int id):
+			fname(name),
+			flabel(label),
+			fdefault(fdeflt),
+			fid(id)
+		{
+			send = false;
+			is_button = false;
+		}
+		std::wstring fname;
+		std::wstring flabel;
+		std::wstring fdefault;
+		int fid;
+		bool send;
+		bool is_button;
+	};
 
 public:
-	GUIInventoryMenu(gui::IGUIEnvironment* env,
+	GUIFormSpecMenu(gui::IGUIEnvironment* env,
 			gui::IGUIElement* parent, s32 id,
 			IMenuManager *menumgr,
 			InventoryManager *invmgr,
 			IGameDef *gamedef
 			);
-	~GUIInventoryMenu();
+	~GUIFormSpecMenu();
 
 	void setFormSpec(const std::string &formspec_string,
 			InventoryLocation current_inventory_location)
@@ -124,10 +156,16 @@ public:
 		regenerateGui(m_screensize_old);
 	}
 	
-	// form_src is deleted by this GUIInventoryMenu
+	// form_src is deleted by this GUIFormSpecMenu
 	void setFormSource(IFormSource *form_src)
 	{
 		m_form_src = form_src;
+	}
+
+	// text_dst is deleted by this GUIFormSpecMenu
+	void setTextDest(TextDest *text_dst)
+	{
+		m_text_dst = text_dst;
 	}
 
 	void removeChildren();
@@ -142,6 +180,7 @@ public:
 	void drawMenu();
 	void updateSelectedItem();
 
+	void acceptInput();
 	bool OnEvent(const SEvent& event);
 	
 protected:
@@ -160,9 +199,11 @@ protected:
 	std::string m_formspec_string;
 	InventoryLocation m_current_inventory_location;
 	IFormSource *m_form_src;
+	TextDest *m_text_dst;
 
 	core::array<ListDrawSpec> m_inventorylists;
 	core::array<ImageDrawSpec> m_images;
+	core::array<FieldSpec> m_fields;
 
 	ItemSpec *m_selected_item;
 	u32 m_selected_amount;
