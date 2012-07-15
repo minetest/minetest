@@ -583,6 +583,9 @@ void MapBlock::serialize(std::ostream &os, u8 version, bool disk)
 		return;
 	}
 
+	assert(m_gamedef);
+	assert(m_gamedef != 0xf); // XXX: wtf?
+
 	// First byte
 	u8 flags = 0;
 	if(is_underground)
