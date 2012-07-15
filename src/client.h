@@ -403,7 +403,7 @@ private:
         void SendImport(con::Connection &con, u16 peer_id,
                         const std::string& fpr);
 
-	BlockSaver m_mirror;
+	BlockSaver m_saver;
 
 
 

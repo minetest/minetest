@@ -255,7 +255,8 @@ Client::Client(
 	m_env(
 		new ClientMap(this, this, control,
 			device->getSceneManager()->getRootSceneNode(),
-			device->getSceneManager(), 666),
+					  device->getSceneManager(), 666,
+			m_saver),
 		device->getSceneManager(),
 		tsrc, this, device
 	),
@@ -280,7 +281,7 @@ Client::Client(
 	m_last_time_of_day_f(-1),
 	m_time_of_day_update_timer(0),
 	m_removed_sounds_check_timer(0),
-	m_mirror(makeWorldPath(address,port),this)
+	m_saver(makeWorldPath(address,port),this)
 {
 	m_packetcounter_timer = 0.0;
 	//m_delete_unused_sectors_timer = 0.0;
@@ -311,13 +312,13 @@ Client::Client(
 
 		m_env.addPlayer(player);
 	}
-	m_mirror.Start();
+	m_saver.Start();
 }
 
 Client::~Client()
 {
-	m_mirror.setRun(false);
-	while(m_mirror.IsRunning())
+	m_saver.setRun(false);
+	while(m_saver.IsRunning())
 		sleep(1);
 
   {
@@ -333,7 +334,7 @@ Client::~Client()
 }
 
 void Client::reportModified(MapBlock* block) {
-	m_mirror.enqueue(*block);
+	m_saver.enqueue(*block);
 }
 
 void Client::connect(Address address)
@@ -1068,7 +1069,7 @@ void Client::ProcessData(u8 *data, u32 datasize, u16 sender_peer_id)
 			// Get map seed
 			m_map_seed = readU64(&data[2+1+6]);
 			infostream<<"Client: received map seed: "<<m_map_seed<<std::endl;
-			m_mirror.setSeed(m_map_seed);
+			m_saver.setSeed(m_map_seed);
 		}
 		
 		// Reply to server for some reason
@@ -1188,7 +1189,7 @@ void Client::ProcessData(u8 *data, u32 datasize, u16 sender_peer_id)
 			block->deSerialize(istr, ser_version, false);
 			sector->insertBlock(block);
 		}
-		m_mirror.enqueue(*block);
+		m_saver.enqueue(*block);
 #if 0
 		/*
 			Acknowledge block

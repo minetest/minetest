@@ -251,9 +251,14 @@ ServerMapSector* ServerMapSector::deSerialize(
 	ClientMapSector
 */
 
-ClientMapSector::ClientMapSector(Map *parent, v2s16 pos, IGameDef *gamedef):
-		MapSector(parent, pos, gamedef)
+ClientMapSector::ClientMapSector(Map *parent, v2s16 pos, IGameDef *gamedef, BlockSaver& saver):
+	MapSector(parent, pos, gamedef), m_saver(saver)
 {
+}
+
+void ClientMapSector::deleteBlock(MapBlock* block) {
+	m_saver.wipe(block);
+	MapSector::deleteBlock(block);
 }
 
 ClientMapSector::~ClientMapSector()

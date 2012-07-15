@@ -584,7 +584,7 @@ void MapBlock::serialize(std::ostream &os, u8 version, bool disk)
 	}
 
 	assert(m_gamedef);
-	assert(m_gamedef != 0xf); // XXX: wtf?
+	assert(m_gamedef != (void*)0xf); // XXX: "this" was deleted!!
 
 	// First byte
 	u8 flags = 0;

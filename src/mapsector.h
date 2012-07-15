@@ -20,6 +20,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #ifndef MAPSECTOR_HEADER
 #define MAPSECTOR_HEADER
 
+#include "blockSaver.h"
+
 #include <jmutex.h>
 #include "irrlichttypes_bloated.h"
 #include "exceptions.h"
@@ -58,7 +60,7 @@ public:
 
 	void insertBlock(MapBlock *block);
 	
-	void deleteBlock(MapBlock *block);
+	virtual void deleteBlock(MapBlock *block);
 	
 	void getBlocks(core::list<MapBlock*> &dest);
 	
@@ -121,8 +123,10 @@ private:
 class ClientMapSector : public MapSector
 {
 public:
-	ClientMapSector(Map *parent, v2s16 pos, IGameDef *gamedef);
+	ClientMapSector(Map *parent, v2s16 pos, IGameDef *gamedef,BlockSaver&);
 	~ClientMapSector();
+
+	void deleteBlock(MapBlock*);
 	
 	u32 getId() const
 	{
@@ -130,6 +134,7 @@ public:
 	}
 
 private:
+	BlockSaver& m_saver;
 };
 #endif
 	

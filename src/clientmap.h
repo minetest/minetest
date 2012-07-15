@@ -22,6 +22,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "irrlichttypes_extrabloated.h"
 #include "map.h"
+#include "blockSaver.h"
 
 struct MapDrawControl
 {
@@ -66,7 +67,8 @@ public:
 			MapDrawControl &control,
 			scene::ISceneNode* parent,
 			scene::ISceneManager* mgr,
-			s32 id
+			s32 id,
+			BlockSaver& saver
 	);
 
 	~ClientMap();
@@ -134,6 +136,7 @@ public:
 	
 private:
 	Client *m_client;
+	BlockSaver& m_saver;
 	
 	core::aabbox3d<f32> m_box;
 	

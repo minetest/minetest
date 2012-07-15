@@ -1,3 +1,6 @@
+#ifndef BLOCKSAVER_HEADER
+#define BLOCKSAVER_HEADER
+
 #include "gamedef.h"
 #include "map.h"
 #include "mapblock.h"
@@ -22,6 +25,14 @@ BlockSaver(const std::string& path, IGameDef* def) : map(path,def)
 		JMutexAutoLock al(lock);
 		map.setSeed(newseed);
 	}
+
+	void wipe(MapBlock* block) {
+		JMutexAutoLock al(lock);
+		std::map<v3s16,bool>::iterator test = queued.find(block->getPos());
+		if(test==queued.end()) return;
+		queued.erase(test);
+		queue.remove(block);
+	}
 	
 	void enqueue(MapBlock& block) {
 		JMutexAutoLock al(lock);
@@ -32,3 +43,4 @@ BlockSaver(const std::string& path, IGameDef* def) : map(path,def)
 
 	void* Thread();
 };
+#endif /* BLOCKSAVER_HEADER */
