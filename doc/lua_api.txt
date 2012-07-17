@@ -978,12 +978,14 @@ methods:
   ^ Dig node with the same effects that a player would cause
 - punch_node(pos)
   ^ Punch node with the same effects that a player would cause
+  
+- get_meta(pos) -- Get a NodeMetaRef at that position
+- get_node_timer(pos) -- Get NodeTimerRef
 
 - add_entity(pos, name): Spawn Lua-defined entity at position
   ^ Returns ObjectRef, or nil if failed
 - add_item(pos, item): Spawn item
   ^ Returns ObjectRef, or nil if failed
-- get_meta(pos) -- Get a NodeMetaRef at that position
 - get_player_by_name(name) -- Get an ObjectRef to a player
 - get_objects_inside_radius(pos, radius)
 - set_timeofday(val): val: 0...1; 0 = midnight, 0.5 = midday
@@ -1012,6 +1014,26 @@ methods:
 - to_table() -> nil or {fields = {...}, inventory = {list1 = {}, ...}}
 - from_table(nil or {})
   ^ See "Node Metadata"
+  
+NodeTimerRef: Node Timers - a high resolution persistent per-node timer
+- Can be gotten via minetest.env:get_node_timer(pos)
+methods:
+- set(timeout,elapsed)
+  ^ set a timer's state
+  ^ timeout is in seconds, and supports fractional values (0.1 etc)
+  ^ elapsed is in seconds, and supports fractional values (0.1 etc)
+  ^ will trigger the node's on_timer function after timeout-elapsed seconds
+- start(timeout)
+  ^ start a timer
+  ^ equivelent to set(timeout,0)
+- stop()
+  ^ stops the timer
+- get_timeout() -> current timeout in seconds
+  ^ if timeout is 0, timer is inactive
+- get_elapsed() -> current elapsed time in seconds
+  ^ the node's on_timer function will be called after timeout-elapsed seconds
+- is_started() -> boolean state of timer
+  ^ returns true if timer is started, otherwise false
 
 ObjectRef: Moving things in the game are generally these
 (basically reference to a C++ ServerActiveObject)
@@ -1319,9 +1341,15 @@ Node definition (register_node)
     on_punch = func(pos, node, puncher),
     ^ default: minetest.node_punch
     ^ By default: does nothing
-	on_dig = func(pos, node, digger),
+    on_dig = func(pos, node, digger),
     ^ default: minetest.node_dig
     ^ By default: checks privileges, wears out tool and removes node
+    
+    on_timer = function(pos,elapsed),
+    ^ default: nil
+    ^ called by NodeTimers, see EnvRef and NodeTimerRef
+    ^ elapsed is the total time passed since the timer was started
+    ^ return true to run the timer for another cycle with the same timeout value
 
     on_receive_fields = func(pos, formname, fields, sender),
     ^ fields = {name1 = value1, name2 = value2, ...}

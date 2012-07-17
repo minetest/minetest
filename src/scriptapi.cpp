@@ -3119,6 +3119,162 @@ const luaL_reg LuaPerlinNoise::methods[] = {
 };
 
 /*
+	NodeTimerRef
+*/
+
+class NodeTimerRef
+{
+private:
+	v3s16 m_p;
+	ServerEnvironment *m_env;
+
+	static const char className[];
+	static const luaL_reg methods[];
+
+	static int gc_object(lua_State *L) {
+		NodeTimerRef *o = *(NodeTimerRef **)(lua_touserdata(L, 1));
+		delete o;
+		return 0;
+	}
+
+	static NodeTimerRef *checkobject(lua_State *L, int narg)
+	{
+		luaL_checktype(L, narg, LUA_TUSERDATA);
+		void *ud = luaL_checkudata(L, narg, className);
+		if(!ud) luaL_typerror(L, narg, className);
+		return *(NodeTimerRef**)ud;  // unbox pointer
+	}
+	
+	static int l_set(lua_State *L)
+	{
+		NodeTimerRef *o = checkobject(L, 1);
+		ServerEnvironment *env = o->m_env;
+		if(env == NULL) return 0;
+		f32 t = luaL_checknumber(L,2);
+		f32 e = luaL_checknumber(L,3);
+		env->getMap().setNodeTimer(o->m_p,NodeTimer(t,e));
+		return 0;
+	}
+	
+	static int l_start(lua_State *L)
+	{
+		NodeTimerRef *o = checkobject(L, 1);
+		ServerEnvironment *env = o->m_env;
+		if(env == NULL) return 0;
+		f32 t = luaL_checknumber(L,2);
+		env->getMap().setNodeTimer(o->m_p,NodeTimer(t,0));
+		return 0;
+	}
+	
+	static int l_stop(lua_State *L)
+	{
+		NodeTimerRef *o = checkobject(L, 1);
+		ServerEnvironment *env = o->m_env;
+		if(env == NULL) return 0;
+		env->getMap().removeNodeTimer(o->m_p);
+		return 0;
+	}
+	
+	static int l_is_started(lua_State *L)
+	{
+		NodeTimerRef *o = checkobject(L, 1);
+		ServerEnvironment *env = o->m_env;
+		if(env == NULL) return 0;
+
+		NodeTimer t = env->getMap().getNodeTimer(o->m_p);
+		lua_pushboolean(L,(t.timeout != 0));
+		return 1;
+	}
+	
+	static int l_get_timeout(lua_State *L)
+	{
+		NodeTimerRef *o = checkobject(L, 1);
+		ServerEnvironment *env = o->m_env;
+		if(env == NULL) return 0;
+
+		NodeTimer t = env->getMap().getNodeTimer(o->m_p);
+		lua_pushnumber(L,t.timeout);
+		return 1;
+	}
+	
+	static int l_get_elapsed(lua_State *L)
+	{
+		NodeTimerRef *o = checkobject(L, 1);
+		ServerEnvironment *env = o->m_env;
+		if(env == NULL) return 0;
+
+		NodeTimer t = env->getMap().getNodeTimer(o->m_p);
+		lua_pushnumber(L,t.elapsed);
+		return 1;
+	}
+
+public:
+	NodeTimerRef(v3s16 p, ServerEnvironment *env):
+		m_p(p),
+		m_env(env)
+	{
+	}
+
+	~NodeTimerRef()
+	{
+	}
+
+	// Creates an NodeTimerRef and leaves it on top of stack
+	// Not callable from Lua; all references are created on the C side.
+	static void create(lua_State *L, v3s16 p, ServerEnvironment *env)
+	{
+		NodeTimerRef *o = new NodeTimerRef(p, env);
+		*(void **)(lua_newuserdata(L, sizeof(void *))) = o;
+		luaL_getmetatable(L, className);
+		lua_setmetatable(L, -2);
+	}
+
+	static void set_null(lua_State *L)
+	{
+		NodeTimerRef *o = checkobject(L, -1);
+		o->m_env = NULL;
+	}
+	
+	static void Register(lua_State *L)
+	{
+		lua_newtable(L);
+		int methodtable = lua_gettop(L);
+		luaL_newmetatable(L, className);
+		int metatable = lua_gettop(L);
+
+		lua_pushliteral(L, "__metatable");
+		lua_pushvalue(L, methodtable);
+		lua_settable(L, metatable);  // hide metatable from Lua getmetatable()
+
+		lua_pushliteral(L, "__index");
+		lua_pushvalue(L, methodtable);
+		lua_settable(L, metatable);
+
+		lua_pushliteral(L, "__gc");
+		lua_pushcfunction(L, gc_object);
+		lua_settable(L, metatable);
+
+		lua_pop(L, 1);  // drop metatable
+
+		luaL_openlib(L, 0, methods, 0);  // fill methodtable
+		lua_pop(L, 1);  // drop methodtable
+
+		// Cannot be created from Lua
+		//lua_register(L, className, create_object);
+	}
+};
+const char NodeTimerRef::className[] = "NodeTimerRef";
+const luaL_reg NodeTimerRef::methods[] = {
+	method(NodeTimerRef, start),
+	method(NodeTimerRef, set),
+	method(NodeTimerRef, stop),
+	method(NodeTimerRef, is_started),
+	method(NodeTimerRef, get_timeout),
+	method(NodeTimerRef, get_elapsed),
+	{0,0}
+};
+
+/*
 	EnvRef
 */
 
@@ -3351,6 +3507,31 @@ private:
 		return 1;
 	}
 
+	// EnvRef:get_meta(pos)
+	static int l_get_meta(lua_State *L)
+	{
+		//infostream<<"EnvRef::l_get_meta()"<<std::endl;
+		EnvRef *o = checkobject(L, 1);
+		ServerEnvironment *env = o->m_env;
+		if(env == NULL) return 0;
+		// Do it
+		v3s16 p = read_v3s16(L, 2);
+		NodeMetaRef::create(L, p, env);
+		return 1;
+	}
+
+	// EnvRef:get_node_timer(pos)
+	static int l_get_node_timer(lua_State *L)
+	{
+		EnvRef *o = checkobject(L, 1);
+		ServerEnvironment *env = o->m_env;
+		if(env == NULL) return 0;
+		// Do it
+		v3s16 p = read_v3s16(L, 2);
+		NodeTimerRef::create(L, p, env);
+		return 1;
+	}
+
 	// EnvRef:add_entity(pos, entityname) -> ObjectRef or nil
 	// pos = {x=num, y=num, z=num}
 	static int l_add_entity(lua_State *L)
@@ -3429,19 +3610,6 @@ private:
 		infostream<<"EnvRef::l_add_firefly(): C++ mobs have been removed."
 				<<" Doing nothing."<<std::endl;
 		return 0;
-	}
-
-	// EnvRef:get_meta(pos)
-	static int l_get_meta(lua_State *L)
-	{
-		//infostream<<"EnvRef::l_get_meta()"<<std::endl;
-		EnvRef *o = checkobject(L, 1);
-		ServerEnvironment *env = o->m_env;
-		if(env == NULL) return 0;
-		// Do it
-		v3s16 p = read_v3s16(L, 2);
-		NodeMetaRef::create(L, p, env);
-		return 1;
 	}
 
 	// EnvRef:get_player_by_name(name)
@@ -3713,6 +3881,7 @@ const luaL_reg EnvRef::methods[] = {
 	method(EnvRef, add_rat),
 	method(EnvRef, add_firefly),
 	method(EnvRef, get_meta),
+	method(EnvRef, get_node_timer),
 	method(EnvRef, get_player_by_name),
 	method(EnvRef, get_objects_inside_radius),
 	method(EnvRef, set_timeofday),
@@ -4729,6 +4898,7 @@ void scriptapi_export(lua_State *L, Server *server)
 	LuaItemStack::Register(L);
 	InvRef::Register(L);
 	NodeMetaRef::Register(L);
+	NodeTimerRef::Register(L);
 	ObjectRef::Register(L);
 	EnvRef::Register(L);
 	LuaPseudoRandom::Register(L);
@@ -5480,6 +5650,29 @@ void scriptapi_node_after_destruct(lua_State *L, v3s16 p, MapNode node)
 	pushnode(L, node, ndef);
 	if(lua_pcall(L, 2, 0, 0))
 		script_error(L, "error: %s", lua_tostring(L, -1));
+}
+
+bool scriptapi_node_on_timer(lua_State *L, v3s16 p, MapNode node, f32 dtime)
+{
+	realitycheck(L);
+	assert(lua_checkstack(L, 20));
+	StackUnroller stack_unroller(L);
+
+	INodeDefManager *ndef = get_server(L)->ndef();
+
+	// Push callback function on stack
+	if(!get_item_callback(L, ndef->get(node).name.c_str(), "on_timer"))
+		return false;
+
+	// Call function
+	push_v3s16(L, p);
+	lua_pushnumber(L,dtime);
+	if(lua_pcall(L, 2, 1, 0))
+		script_error(L, "error: %s", lua_tostring(L, -1));
+	if(lua_isboolean(L,-1) && lua_toboolean(L,-1) == true)
+		return true;
+	
+	return false;
 }
 
 void scriptapi_node_on_receive_fields(lua_State *L, v3s16 p,

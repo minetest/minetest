@@ -430,6 +430,26 @@ public:
 	{
 		return m_usage_timer;
 	}
+	
+	/*
+		Node Timers
+	*/
+	// Get timer
+	NodeTimer getNodeTimer(v3s16 p){ 
+		return m_node_timers.get(p);
+	}
+	// Deletes timer
+	void removeNodeTimer(v3s16 p){
+		m_node_timers.remove(p);
+	}
+	// Deletes old timer and sets a new one
+	void setNodeTimer(v3s16 p, NodeTimer t){
+		m_node_timers.set(p,t);
+	}
+	// Deletes all timers
+	void clearNodeTimers(){
+		m_node_timers.clear();
+	}
 
 	/*
 		Serialization

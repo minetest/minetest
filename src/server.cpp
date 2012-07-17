@@ -843,7 +843,7 @@ queue_full_break:
 
 	/*timer_result = timer.stop(true);
 	if(timer_result != 0)
-		infostream<<"GetNextBlocks duration: "<<timer_result<<" (!=0)"<<std::endl;*/
+		infostream<<"GetNextBlocks timeout: "<<timer_result<<" (!=0)"<<std::endl;*/
 }
 
 void RemoteClient::GotBlock(v3s16 p)
