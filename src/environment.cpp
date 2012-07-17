@@ -774,10 +774,18 @@ void ServerEnvironment::activateBlock(MapBlock *block, u32 additional_dtime)
 	activateObjects(block);
 
 	// Run node timers
-	std::map<v3s16, f32> elapsed_timers =
+	std::map<v3s16, NodeTimer> elapsed_timers =
 		block->m_node_timers.step((float)dtime_s);
-	if(!elapsed_timers.empty())
-		errorstream<<"Node timers don't work yet!"<<std::endl;
+	if(!elapsed_timers.empty()){
+		MapNode n;
+		for(std::map<v3s16, NodeTimer>::iterator
+				i = elapsed_timers.begin();
+				i != elapsed_timers.end(); i++){
+			n = block->getNodeNoEx(i->first);
+			if(scriptapi_node_on_timer(m_lua,i->first,n,i->second.elapsed))
+				block->setNodeTimer(i->first,NodeTimer(i->second.timeout,0));
+		}
+	}
 
 	/* Handle ActiveBlockModifiers */
 	ABMHandler abmhandler(m_abms, dtime_s, this, false);
@@ -1058,10 +1066,18 @@ void ServerEnvironment::step(float dtime)
 						"Timestamp older than 60s (step)");
 
 			// Run node timers
-			std::map<v3s16, f32> elapsed_timers =
-				block->m_node_timers.step(dtime);
-			if(!elapsed_timers.empty())
-				errorstream<<"Node timers don't work yet!"<<std::endl;
+			std::map<v3s16, NodeTimer> elapsed_timers =
+				block->m_node_timers.step((float)dtime);
+			if(!elapsed_timers.empty()){
+				MapNode n;
+				for(std::map<v3s16, NodeTimer>::iterator
+						i = elapsed_timers.begin();
+						i != elapsed_timers.end(); i++){
+					n = block->getNodeNoEx(i->first);
+					if(scriptapi_node_on_timer(m_lua,i->first,n,i->second.elapsed))
+						block->setNodeTimer(i->first,NodeTimer(i->second.timeout,0));
+				}
+			}
 		}
 	}
 	

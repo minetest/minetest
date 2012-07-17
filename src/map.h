@@ -32,6 +32,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "voxel.h"
 #include "modifiedstate.h"
 #include "util/container.h"
+#include "nodetimer.h"
 
 extern "C" {
 	#include "sqlite3.h"
@@ -309,6 +310,15 @@ public:
 	NodeMetadata* getNodeMetadata(v3s16 p);
 	void setNodeMetadata(v3s16 p, NodeMetadata *meta);
 	void removeNodeMetadata(v3s16 p);
+
+	/*
+		Node Timers
+		These are basically coordinate wrappers to MapBlock
+	*/
+	
+	NodeTimer getNodeTimer(v3s16 p);
+	void setNodeTimer(v3s16 p, NodeTimer t);
+	void removeNodeTimer(v3s16 p);
 
 	/*
 		Misc.

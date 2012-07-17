@@ -35,15 +35,15 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 class NodeTimer
 {
 public:
-	NodeTimer(): duration(0.), elapsed(0.) {}
-	NodeTimer(f32 duration_, f32 elapsed_):
-		duration(duration_), elapsed(elapsed_) {}
+	NodeTimer(): timeout(0.), elapsed(0.) {}
+	NodeTimer(f32 timeout_, f32 elapsed_):
+		timeout(timeout_), elapsed(elapsed_) {}
 	~NodeTimer() {}
 	
 	void serialize(std::ostream &os) const;
 	void deSerialize(std::istream &is);
 	
-	f32 duration;
+	f32 timeout;
 	f32 elapsed;
 };
 
@@ -81,7 +81,7 @@ public:
 	}
 
 	// A step in time. Returns map of elapsed timers.
-	std::map<v3s16, f32> step(float dtime);
+	std::map<v3s16, NodeTimer> step(float dtime);
 
 private:
 	std::map<v3s16, NodeTimer> m_data;

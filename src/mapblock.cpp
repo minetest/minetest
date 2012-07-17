@@ -621,9 +621,9 @@ void MapBlock::serialize(std::ostream &os, u8 version, bool disk)
 		// (this field should have not been added)
 		if(version == 23)
 			writeU8(os, 0);
-		// Node timers (uncomment when node timers are taken into use)
-		/*if(version >= 24)
-			m_node_timers.serialize(os);*/
+		// Node timers are in version 24
+		if(version >= 24)
+			m_node_timers.serialize(os);
 
 		// Static objects
 		m_static_objects.serialize(os);
@@ -703,15 +703,15 @@ void MapBlock::deSerialize(std::istream &is, u8 version, bool disk)
 	if(disk)
 	{
 		// Node timers
-		if(version == 23)
+		if(version == 23){
 			// Read unused zero
 			readU8(is);
-		// Uncomment when node timers are taken into use
-		/*else if(version >= 24){
+		}
+		else if(version >= 24){
 			TRACESTREAM(<<"MapBlock::deSerialize "<<PP(getPos())
 					<<": Node timers"<<std::endl);
 			m_node_timers.deSerialize(is);
-		}*/
+		}
 
 		// Static objects
 		TRACESTREAM(<<"MapBlock::deSerialize "<<PP(getPos())

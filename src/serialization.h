@@ -58,12 +58,13 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 	20: many existing content types translated to extended ones
 	21: dynamic content type allocation
 	22: minerals removed, facedir & wallmounted changed
-	23: NodeTimers, new node metadata format
+	23: new node metadata format
+	24: NodeTimers
 */
 // This represents an uninitialized or invalid format
 #define SER_FMT_VER_INVALID 255
 // Highest supported serialization version
-#define SER_FMT_VER_HIGHEST 23
+#define SER_FMT_VER_HIGHEST 24
 // Lowest supported serialization version
 #define SER_FMT_VER_LOWEST 0
 
