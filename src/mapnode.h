@@ -85,9 +85,9 @@ struct MapNode
 	/*
 		Main content
 		0x00-0x7f: Short content type
-		0x80-0xff: Long content type (param2>>4 makes up low bytes)
+		0x80-0xff: Long content type
 	*/
-	u8 param0;
+	u16 param0;
 
 	/*
 		Misc parameter. Initialized to 0.
@@ -102,7 +102,6 @@ struct MapNode
 	/*
 		The second parameter. Initialized to 0.
 		E.g. direction for torches and flowing water.
-		If param0 >= 0x80, bits 0xf0 of this is extended content type data
 	*/
 	u8 param2;
 
@@ -113,11 +112,9 @@ struct MapNode
 	
 	MapNode(content_t content=CONTENT_AIR, u8 a_param1=0, u8 a_param2=0)
 	{
+		param0 = content;
 		param1 = a_param1;
 		param2 = a_param2;
-		// Set content (param0 and (param2&0xf0)) after other params
-		// because this needs to override part of param2
-		setContent(content);
 	}
 	
 	// Create directly from a nodename
@@ -135,25 +132,11 @@ struct MapNode
 	// To be used everywhere
 	content_t getContent() const
 	{
-		if(param0 < 0x80)
-			return param0;
-		else
-			return (param0<<4) + (param2>>4);
+		return param0;
 	}
 	void setContent(content_t c)
 	{
-		if(c < 0x80)
-		{
-			if(param0 >= 0x80)
-				param2 &= ~(0xf0);
-			param0 = c;
-		}
-		else
-		{
-			param0 = c>>4;
-			param2 &= ~(0xf0);
-			param2 |= (c&0x0f)<<4;
-		}
+		param0 = c;
 	}
 	u8 getParam1() const
 	{
@@ -165,19 +148,11 @@ struct MapNode
 	}
 	u8 getParam2() const
 	{
-		if(param0 < 0x80)
-			return param2;
-		else
-			return param2 & 0x0f;
+		return param2;
 	}
 	void setParam2(u8 p)
 	{
-		if(param0 < 0x80)
-			param2 = p;
-		else{
-			param2 &= 0xf0;
-			param2 |= (p&0x0f);
-		}
+		param2 = p;
 	}
 	
 	void setLight(enum LightBank bank, u8 a_light, INodeDefManager *nodemgr);
