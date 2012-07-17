@@ -1302,6 +1302,38 @@ minetest.register_node("default:furnace", {
 		end
 		return true
 	end,
+	on_timer = function(pos,dtime)
+		minetest.chat_send_all('tick!')
+	end,
+    on_metadata_inventory_move = function(pos, from_list, from_index,
+			to_list, to_index, count, player)
+		local meta = minetest.env:get_meta(pos)
+		local inv = meta:get_inventory()
+		local tmr = minetest.env:get_timer(pos)
+		if true == tmr:is_started() then
+			if inv:is_empty("src") or inv:is_empty("fuel") then
+				tmr:stop()
+			end
+		else
+			if not inv:is_empty("src") and not inv:is_empty("fuel") then
+				tmr:start(10.0)
+			end
+		end
+		return minetest.node_metadata_inventory_move_allow_all(
+				pos, from_list, from_index, to_list, to_index, count, player)
+	end,
+    on_metadata_inventory_offer = function(pos, listname, index, stack, player)
+		local meta = minetest.env:get_meta(pos)
+		local inv = meta:get_inventory()
+		return minetest.node_metadata_inventory_offer_allow_all(
+				pos, listname, index, stack, player)
+	end,
+    on_metadata_inventory_take = function(pos, listname, index, count, player)
+		local meta = minetest.env:get_meta(pos)
+		local inv = meta:get_inventory()
+		return minetest.node_metadata_inventory_take_allow_all(
+				pos, listname, index, count, player)
+	end
 })
 
 minetest.register_node("default:furnace_active", {
