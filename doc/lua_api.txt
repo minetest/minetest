@@ -672,7 +672,7 @@ Examples:
 
 Elements:
 
-invsize[<W>,<H>;]
+size[<W>,<H>]
 ^ Define the size of the menu in inventory slots
 
 list[<inventory location>;<list name>;<X>,<Y>;<W>,<H>;]
@@ -684,14 +684,38 @@ image[<X>,<Y>;<W>,<H>;<texture name>]
 
 field[<X>,<Y>;<W>,<H>;<name>;<label>;<default>]
 ^ Textual field; will be sent to server when a button is clicked
+^ x and y position the field relative to the top left of the menu
+^ w and h are the size of the field
+^ fields are a set height, but will be vertically centred on h
 ^ Position and size units are inventory slots
-^ Not implemented
+^ name is the name of the field as returned in fields to on_receive_fields
+^ label, if not blank, will be text printed on the top left above the field
+^ default is the default value of the field
+  ^ default may contain variable references such as '${text}' which
+     will fill the value from the metadata value 'text'
+
+field[<name>;<label>;<default>]
+^ as above but without position/size units
+^ special field for creating simple forms, such as sign text input
+^ must be used without a size[] element
+^ a 'Proceed' button will be added automatically
+
+label[<X>,<Y>;<label>]
+^ x and y work as per field
+^ label is the text on the label
+^ Position and size units are inventory slots
 
 button[<X>,<Y>;<W>,<H>;<name>;<label>]
 ^ Clickable button. When clicked, fields will be sent.
-^ Button will be visible as a field, with the value "active".
+^ x, y and name work as per field
+^ w and h are the size of the button
+^ label is the text on the button
 ^ Position and size units are inventory slots
-^ Not implemented
+
+image_button[<X>,<Y>;<W>,<H>;<texture name>;<name>;<label>]
+^ x, y, w, h, and name work as per button
+^ image is the filename of an image
+^ Position and size units are inventory slots
 
 Inventory location:
 - "context": Selected node metadata (deprecated: "current_name")
@@ -967,6 +991,8 @@ NodeMetaRef: Node metadata - reference extra data and functionality stored
 - Can be gotten via minetest.env:get_nodemeta(pos)
 methods:
 - set_string(name, value)
+  ^ value may be a variable reference, such as '${text}', in which case
+    get_string will return the value of get_string('text');
 - get_string(name)
 - set_int(name, value)
 - get_int(name)
@@ -1041,6 +1067,9 @@ Player-only: (no-op for other objects)
   ^ Redefine player's inventory form
   ^ Should usually be called in on_joinplayer
 - get_inventory_formspec() -> formspec string
+- register_on_player_receive_fields(func(player,formname,fields,sender))
+  ^ fields = {name1 = value1, name2 = value2, ...}
+  ^ Called when a player inventory returns data
 
 InvRef: Reference to an inventory
 methods:

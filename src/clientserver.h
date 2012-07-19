@@ -513,6 +513,7 @@ enum ToServerCommand
 	TOSERVER_INVENTORY_FIELDS = 0x3c,
 	/*
 		u16 command
+		u8[len] form name (reserved for future use)
 		u16 number of fields
 		for each field:
 			u16 len
