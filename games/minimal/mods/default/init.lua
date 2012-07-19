@@ -1125,8 +1125,13 @@ minetest.register_node("default:sign_wall", {
 	on_construct = function(pos)
 		--local n = minetest.env:get_node(pos)
 		local meta = minetest.env:get_meta(pos)
-		meta:set_string("formspec", "field[text;;${text}]")
-		meta:set_string("infotext", "\"\"")
+		meta:set_string("formspec", "size[6,6]"..
+			"label[2,1.5;This is a label]"..
+			"field[1.5,2;4,1;text;;${text}]"..
+			"image_button[2,3;1,1;default_sign_wall.png;clicky;Save]"..
+			"label[2.2,4;^- That's an image_button,with text]"..
+			"button[1,4;1.8,3;proceed;Proceed]")
+				meta:set_string("infotext", "\"\"")
 	end,
 	on_receive_fields = function(pos, formname, fields, sender)
 		--print("Sign at "..minetest.pos_to_string(pos).." got "..dump(fields))
@@ -1150,7 +1155,7 @@ minetest.register_node("default:chest", {
 	on_construct = function(pos)
 		local meta = minetest.env:get_meta(pos)
 		meta:set_string("formspec",
-				"invsize[8,9;]"..
+				"size[8,9]"..
 				"list[current_name;main;0,0;8,4;]"..
 				"list[current_player;main;0,5;8,4;]")
 		meta:set_string("infotext", "Chest")
@@ -1207,7 +1212,7 @@ minetest.register_node("default:chest_locked", {
 	on_construct = function(pos)
 		local meta = minetest.env:get_meta(pos)
 		meta:set_string("formspec",
-				"invsize[8,9;]"..
+				"size[8,9]"..
 				"list[current_name;main;0,0;8,4;]"..
 				"list[current_player;main;0,5;8,4;]")
 		meta:set_string("infotext", "Locked Chest")
@@ -1266,7 +1271,7 @@ minetest.register_node("default:chest_locked", {
 })
 
 default.furnace_inactive_formspec =
-	"invsize[8,9;]"..
+	"size[8,9]"..
 	"image[2,2;1,1;default_furnace_fire_bg.png]"..
 	"list[current_name;fuel;2,3;1,1;]"..
 	"list[current_name;src;2,1;1,1;]"..
@@ -1405,7 +1410,7 @@ minetest.register_abm({
 			meta:set_string("infotext","Furnace active: "..percent.."%")
 			hacky_swap_node(pos,"default:furnace_active")
 			meta:set_string("formspec",
-				"invsize[8,9;]"..
+				"size[8,9]"..
 				"image[2,2;1,1;default_furnace_fire_bg.png^[lowpart:"..
 						(100-percent)..":default_furnace_fire_fg.png]"..
 				"list[current_name;fuel;2,3;1,1;]"..

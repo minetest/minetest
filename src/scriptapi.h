@@ -109,6 +109,12 @@ ItemStack scriptapi_node_on_metadata_inventory_take(lua_State *L, v3s16 p,
 		const std::string &listname, int index, int count,
 		ServerActiveObject *player);
 
+// Called when a player inventory form returns values
+void scriptapi_player_on_receive_fields(lua_State *L, 
+		const std::string &formname,
+		const std::map<std::string, std::string> &fields,
+		ServerActiveObject *sender);
+
 /* luaentity */
 // Returns true if succesfully added into Lua; false otherwise.
 bool scriptapi_luaentity_add(lua_State *L, u16 id, const char *name);

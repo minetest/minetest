@@ -42,7 +42,7 @@ class InventoryManager;
 struct TextDest
 {
 	virtual void gotText(std::wstring text) = 0;
-	virtual void gotText(std::map<std::string, std::string> fields) = 0;
+	virtual void gotText(std::map<std::string, std::string> &fields) = 0;
 	virtual ~TextDest() {};
 };
 
@@ -52,11 +52,11 @@ struct TextDestChat : public TextDest
 	{
 		m_client = client;
 	}
-	void gotText(std::wstring text)
+	virtual void gotText(std::wstring text)
 	{
 		m_client->typeChatMessage(text);
 	}
-	void gotText(std::map<std::string, std::string> fields)
+	virtual void gotText(std::map<std::string, std::string> &fields)
 	{
 		m_client->typeChatMessage(narrow_to_wide(fields["text"]));
 	}
@@ -71,7 +71,7 @@ struct TextDestNodeMetadata : public TextDest
 		m_p = p;
 		m_client = client;
 	}
-	void gotText(std::wstring text)
+	virtual void gotText(std::wstring text)
 	{
 		std::string ntext = wide_to_narrow(text);
 		infostream<<"Changing text of a sign node: "
@@ -80,9 +80,33 @@ struct TextDestNodeMetadata : public TextDest
 		fields["text"] = ntext;
 		m_client->sendNodemetaFields(m_p, "", fields);
 	}
-	void gotText(std::map<std::string, std::string> fields)
+	virtual void gotText(std::map<std::string, std::string> &fields)
 	{
 		m_client->sendNodemetaFields(m_p, "", fields);
+	}
+
+	v3s16 m_p;
+	Client *m_client;
+};
+
+struct TextDestPlayerInventory : public TextDest
+{
+	TextDestPlayerInventory(Client *client)
+	{
+		m_client = client;
+	}
+	virtual void gotText(std::wstring text)
+	{
+		std::string ntext = wide_to_narrow(text);
+		infostream<<"Changing text of a sign node: "
+				<<ntext<<std::endl;
+		std::map<std::string, std::string> fields;
+		fields["text"] = ntext;
+		m_client->sendInventoryFields("", fields);
+	}
+	virtual void gotText(std::map<std::string, std::string> &fields)
+	{
+		m_client->sendInventoryFields("", fields);
 	}
 
 	v3s16 m_p;
@@ -94,6 +118,10 @@ class IFormSource
 public:
 	virtual ~IFormSource(){}
 	virtual std::string getForm() = 0;
+	virtual std::string getType()
+	{
+		return "IFormSource";
+	}
 	v3s16 m_p;
 };
 
@@ -114,9 +142,33 @@ public:
 			return "";
 		return meta->getString("formspec");
 	}
+	virtual std::string getType()
+	{
+		return "NodeMetadataFormSource";
+	}
 
 	ClientMap *m_map;
 	v3s16 m_p;
+};
+
+class PlayerInventoryFormSource: public IFormSource
+{
+	public:
+	PlayerInventoryFormSource(Client *client):
+		m_client(client)
+	{
+	}
+	std::string getForm()
+	{
+		LocalPlayer* player = m_client->getEnv().getLocalPlayer();
+		return player->inventory_formspec;
+	}
+	virtual std::string getType()
+	{
+		return "PlayerInventoryFormSource";
+	}
+
+	Client *m_client;
 };
 
 void drawItemStack(video::IVideoDriver *driver,
@@ -233,7 +285,10 @@ public:
 	void setFormSource(IFormSource *form_src)
 	{
 		m_form_src = form_src;
-		m_dest = new TextDestNodeMetadata(((NodeMetadataFormSource*)form_src)->m_p,(Client*)m_gamedef);
+		if(form_src->getType() == "PlayerInventoryFormSource")
+			m_dest = new TextDestPlayerInventory(((PlayerInventoryFormSource*)form_src)->m_client);
+		else
+			m_dest = new TextDestNodeMetadata(((NodeMetadataFormSource*)form_src)->m_p,(Client*)m_gamedef);
 	}
 
 	void removeChildren();

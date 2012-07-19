@@ -510,6 +510,17 @@ enum ToServerCommand
 			u8[len] field value
 	*/
 
+	TOSERVER_INVENTORY_FIELDS = 0x3c,
+	/*
+		u16 command
+		u16 number of fields
+		for each field:
+			u16 len
+			u8[len] field name
+			u32 len
+			u8[len] field value
+	*/
+
 	TOSERVER_REQUEST_MEDIA = 0x40,
 	/*
 		u16 command

@@ -2892,6 +2892,25 @@ private:
 		return 1;
 	}
 
+	// register_on_player_receive_fields(self,func) -> formspec
+	static int l_register_on_player_receive_fields(lua_State *L)
+	{
+		ObjectRef *ref = checkobject(L, 1);
+		Player *player = getplayer(ref);
+		if(player == NULL) return 0;
+		if (!lua_isfunction(L,2))
+			luaL_error(L,"`function' expected");
+
+		int func = luaL_ref(L,LUA_REGISTRYINDEX);
+		PlayerSAO* sao = player->getPlayerSAO();
+		if(sao == NULL) return 0;
+		
+		sao->setCallback("on_player_receive_fields",func);
+
+		lua_pushboolean(L, true);
+		return 1;
+	}
+
 public:
 	ObjectRef(ServerActiveObject *object):
 		m_object(object)
@@ -2990,6 +3009,7 @@ const luaL_reg ObjectRef::methods[] = {
 	method(ObjectRef, get_look_yaw),
 	method(ObjectRef, set_inventory_formspec),
 	method(ObjectRef, get_inventory_formspec),
+	method(ObjectRef, register_on_player_receive_fields),
 	{0,0}
 };
 
@@ -5720,6 +5740,45 @@ ItemStack scriptapi_node_on_metadata_inventory_take(lua_State *L, v3s16 p,
 	if(lua_pcall(L, 5, 1, 0))
 		script_error(L, "error: %s", lua_tostring(L, -1));
 	return read_item(L, -1);
+}
+
+/*
+	Player
+*/
+
+void scriptapi_player_on_receive_fields(lua_State *L, 
+		const std::string &formname,
+		const std::map<std::string, std::string> &fields,
+		ServerActiveObject *sender)
+{
+	realitycheck(L);
+	assert(lua_checkstack(L, 20));
+	StackUnroller stack_unroller(L);
+	int func = ((PlayerSAO*)sender)->getCallback("on_player_receive_fields");
+
+	if(!func)
+		return;
+	lua_rawgeti(L,LUA_REGISTRYINDEX,func);
+
+	// Call function
+	// param 1
+	objectref_get_or_create(L, sender);
+	// param 2
+	lua_pushstring(L, formname.c_str());
+	// param 3
+	lua_newtable(L);
+	for(std::map<std::string, std::string>::const_iterator
+			i = fields.begin(); i != fields.end(); i++){
+		const std::string &name = i->first;
+		const std::string &value = i->second;
+		lua_pushstring(L, name.c_str());
+		lua_pushlstring(L, value.c_str(), value.size());
+		lua_settable(L, -3);
+	}
+	// param 4
+	objectref_get_or_create(L, sender);
+	if(lua_pcall(L, 4, 0, 0))
+		script_error(L, "error: %s", lua_tostring(L, -1));
 }
 
 /*
