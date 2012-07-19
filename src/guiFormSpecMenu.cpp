@@ -199,13 +199,20 @@ void GUIFormSpecMenu::regenerateGui(v2u32 screensize)
 	while(f.atend() == false)
 	{
 		std::string type = trim(f.next("["));
-		if(type == "invsize")
+		if(type == "invsize" || type == "size")
 		{
 			v2f invsize;
 			invsize.X = stof(f.next(","));
-			invsize.Y = stof(f.next(";"));
-			infostream<<"invsize ("<<invsize.X<<","<<invsize.Y<<")"<<std::endl;
-			f.next("]");
+			if(type == "size")
+			{
+				invsize.Y = stof(f.next("]"));
+			}
+			else{
+				invsize.Y = stof(f.next(";"));
+				errorstream<<"WARNING: invsize is deprecated, use size"<<std::endl;
+				f.next("]");
+			}
+			infostream<<"size ("<<invsize.X<<","<<invsize.Y<<")"<<std::endl;
 
 			padding = v2s32(screensize.Y/40, screensize.Y/40);
 			spacing = v2s32(screensize.Y/12, screensize.Y/13);
@@ -245,6 +252,8 @@ void GUIFormSpecMenu::regenerateGui(v2u32 screensize)
 					<<", geom=("<<geom.X<<","<<geom.Y<<")"
 					<<std::endl;
 			f.next("]");
+			if(bp_set != 2)
+				errorstream<<"WARNING: invalid use of button without a size[] element"<<std::endl;
 			m_inventorylists.push_back(ListDrawSpec(loc, listname, pos, geom));
 		}
 		else if(type == "image")
@@ -260,28 +269,60 @@ void GUIFormSpecMenu::regenerateGui(v2u32 screensize)
 					<<", pos=("<<pos.X<<","<<pos.Y<<")"
 					<<", geom=("<<geom.X<<","<<geom.Y<<")"
 					<<std::endl;
+			if(bp_set != 2)
+				errorstream<<"WARNING: invalid use of button without a size[] element"<<std::endl;
 			m_images.push_back(ImageDrawSpec(name, pos, geom));
 		}
 		else if(type == "field")
 		{
-			if (!bp_set)
-			{
-				rect = core::rect<s32>(
-					screensize.X/2 - 580/2,
-					screensize.Y/2 - 300/2,
-					screensize.X/2 + 580/2,
-					screensize.Y/2 + 300/2
-				);
-				DesiredRect = rect;
-				recalculateAbsolutePosition(false);
-				basepos = getBasePos();
-				bp_set = 1;
-			}
-
 			std::string fname = f.next(";");
 			std::string flabel = f.next(";");
+			
+			if(fname.find(",") == std::string::npos && flabel.find(",") == std::string::npos)
+			{
+				if(!bp_set)
+				{
+					rect = core::rect<s32>(
+						screensize.X/2 - 580/2,
+						screensize.Y/2 - 300/2,
+						screensize.X/2 + 580/2,
+						screensize.Y/2 + 300/2
+					);
+					DesiredRect = rect;
+					recalculateAbsolutePosition(false);
+					basepos = getBasePos();
+					bp_set = 1;
+				}
+				else if(bp_set == 2)
+					errorstream<<"WARNING: invalid use of unpositioned field in inventory"<<std::endl;
+
+				v2s32 pos = basepos;
+				pos.Y = ((m_fields.size()+2)*60);
+				v2s32 size = DesiredRect.getSize();
+				rect = core::rect<s32>(size.X/2-150, pos.Y, (size.X/2-150)+300, pos.Y+30);
+				errorstream<<"field["<<rect.UpperLeftCorner.X<<","<<rect.UpperLeftCorner.Y<<";"<<rect.LowerRightCorner.X<<","<<rect.LowerRightCorner.Y<<";"<<fname<<";"<<flabel<<";?]"<<std::endl;
+			}
+			else
+			{
+				v2s32 pos;
+				pos.X = stof(fname.substr(0,fname.find(","))) * (float)spacing.X;
+				pos.Y = stof(fname.substr(fname.find(",")+1)) * (float)spacing.Y;
+				v2s32 geom;
+				geom.X = (stof(flabel.substr(0,flabel.find(","))) * (float)spacing.X)-(spacing.X-imgsize.X);
+				pos.Y += (stof(flabel.substr(flabel.find(",")+1)) * (float)imgsize.Y)/2;
+
+				rect = core::rect<s32>(pos.X, pos.Y-15, pos.X+geom.X, pos.Y+15);
+				
+				fname = f.next(";");
+				flabel = f.next(";");
+				if(bp_set != 2)
+					errorstream<<"WARNING: invalid use of positioned field without a size[] element"<<std::endl;
+				
+			}
+
 			std::string odefault = f.next("]");
 			std::string fdefault;
+			
 			// fdefault may contain a variable reference, which
 			// needs to be resolved from the node metadata
 			ClientMap &m = ((Client*)m_gamedef)->getEnv().getClientMap();
@@ -294,21 +335,18 @@ void GUIFormSpecMenu::regenerateGui(v2u32 screensize)
 			{
 				fdefault = odefault;
 			}
-			
+
 			FieldSpec spec = FieldSpec(
 				narrow_to_wide(fname.c_str()),
 				narrow_to_wide(flabel.c_str()),
 				narrow_to_wide(fdefault.c_str()),
 				258+m_fields.size()
 			);
-			v2s32 pos = basepos;
-			pos.Y = ((m_fields.size()+2)*60);
-			v2s32 size = DesiredRect.getSize();
-			rect = core::rect<s32>(size.X/2-150, pos.Y, (size.X/2-150)+300, pos.Y+30);
 			
 			// three cases: field and no label, label and no field, label and field
 			if (flabel == "") 
 			{
+				spec.send = true;
 				gui::IGUIElement *e = Environment->addEditBox(spec.fdefault.c_str(), rect, true, this, spec.fid);
 				Environment->setFocus(e);
 
@@ -321,11 +359,11 @@ void GUIFormSpecMenu::regenerateGui(v2u32 screensize)
 			else if (fname == "")
 			{
 				// set spec field id to 0, this stops submit searching for a value that isn't there
-				spec.fid = 0;
-				Environment->addStaticText(spec.flabel.c_str(), rect, false, true, this, 0);
+				Environment->addStaticText(spec.flabel.c_str(), rect, false, true, this, spec.fid);
 			}
 			else
 			{
+				spec.send = true;
 				gui::IGUIElement *e = Environment->addEditBox(spec.fdefault.c_str(), rect, true, this, spec.fid);
 				Environment->setFocus(e);
 				rect.UpperLeftCorner.Y -= 15;
@@ -338,6 +376,86 @@ void GUIFormSpecMenu::regenerateGui(v2u32 screensize)
 				evt.KeyInput.PressedDown = true;
 				e->OnEvent(evt);
 			}
+			
+			m_fields.push_back(spec);
+		}
+		else if(type == "label")
+		{
+			v2s32 pos;
+			pos.X = stof(f.next(",")) * (float)spacing.X;
+			pos.Y = stof(f.next(";")) * (float)spacing.Y;
+
+			rect = core::rect<s32>(pos.X, pos.Y+((imgsize.Y/2)-15), pos.X+300, pos.Y+((imgsize.Y/2)+15));
+			
+			std::string flabel = f.next("]");
+			if(bp_set != 2)
+				errorstream<<"WARNING: invalid use of label without a size[] element"<<std::endl;
+
+			FieldSpec spec = FieldSpec(
+				narrow_to_wide(""),
+				narrow_to_wide(flabel.c_str()),
+				narrow_to_wide(""),
+				258+m_fields.size()
+			);
+			Environment->addStaticText(spec.flabel.c_str(), rect, false, true, this, spec.fid);
+			m_fields.push_back(spec);
+		}
+		else if(type == "button")
+		{
+			v2s32 pos;
+			pos.X = stof(f.next(",")) * (float)spacing.X;
+			pos.Y = stof(f.next(";")) * (float)spacing.Y;
+			v2s32 geom;
+			geom.X = (stof(f.next(",")) * (float)spacing.X)-(spacing.X-imgsize.X);
+			pos.Y += (stof(f.next(";")) * (float)imgsize.Y)/2;
+
+			rect = core::rect<s32>(pos.X, pos.Y-15, pos.X+geom.X, pos.Y+15);
+			
+			std::string fname = f.next(";");
+			std::string flabel = f.next("]");
+			if(bp_set != 2)
+				errorstream<<"WARNING: invalid use of button without a size[] element"<<std::endl;
+
+			FieldSpec spec = FieldSpec(
+				narrow_to_wide(fname.c_str()),
+				narrow_to_wide(flabel.c_str()),
+				narrow_to_wide(""),
+				258+m_fields.size()
+			);
+			spec.is_button = true;
+			Environment->addButton(rect, this, spec.fid, spec.flabel.c_str());
+			m_fields.push_back(spec);
+		}
+		else if(type == "image_button")
+		{
+			v2s32 pos;
+			pos.X = stof(f.next(",")) * (float)spacing.X;
+			pos.Y = stof(f.next(";")) * (float)spacing.Y;
+			v2s32 geom;
+			geom.X = (stof(f.next(",")) * (float)spacing.X)-(spacing.X-imgsize.X);
+			geom.Y = (stof(f.next(";")) * (float)spacing.Y)-(spacing.Y-imgsize.Y);
+
+			rect = core::rect<s32>(pos.X, pos.Y, pos.X+geom.X, pos.Y+geom.Y);
+			
+			std::string fimage = f.next(";");
+			std::string fname = f.next(";");
+			std::string flabel = f.next("]");
+			if(bp_set != 2)
+				errorstream<<"WARNING: invalid use of image_button without a size[] element"<<std::endl;
+
+			FieldSpec spec = FieldSpec(
+				narrow_to_wide(fname.c_str()),
+				narrow_to_wide(flabel.c_str()),
+				narrow_to_wide(fimage.c_str()),
+				258+m_fields.size()
+			);
+			spec.is_button = true;
+			
+			video::ITexture *texture = m_gamedef->tsrc()->getTextureRaw(fimage);
+			gui::IGUIButton *e = Environment->addButton(rect, this, spec.fid, spec.flabel.c_str());
+			e->setImage(texture);
+			e->setPressedImage(texture);
+			e->setScaleImage(true);
 			
 			m_fields.push_back(spec);
 		}
@@ -362,21 +480,19 @@ void GUIFormSpecMenu::regenerateGui(v2u32 screensize)
 		changeCtype("C");
 	}
 	// If there's fields, add a Proceed button
-	if (m_fields.size()) 
+	if (m_fields.size() && bp_set != 2) 
 	{
-		// if the size wasn't set by an invsize adjust it now to fit all the fields
-		if (bp_set != 2) 
-		{
-			rect = core::rect<s32>(
-				screensize.X/2 - 580/2,
-				screensize.Y/2 - 300/2,
-				screensize.X/2 + 580/2,
-				screensize.Y/2 + 240/2+(m_fields.size()*60)
-			);
-			DesiredRect = rect;
-			recalculateAbsolutePosition(false);
-			basepos = getBasePos();
-		}
+		// if the size wasn't set by an invsize[] or size[] adjust it now to fit all the fields
+		rect = core::rect<s32>(
+			screensize.X/2 - 580/2,
+			screensize.Y/2 - 300/2,
+			screensize.X/2 + 580/2,
+			screensize.Y/2 + 240/2+(m_fields.size()*60)
+		);
+		DesiredRect = rect;
+		recalculateAbsolutePosition(false);
+		basepos = getBasePos();
+
 		changeCtype("");
 		{
 			v2s32 pos = basepos;
@@ -682,12 +798,19 @@ void GUIFormSpecMenu::acceptInput()
 		for(u32 i=0; i<m_fields.size(); i++)
 		{
 			const FieldSpec &s = m_fields[i];
-			if (s.fid > 257) 
+			if(s.send) 
 			{
-				e = getElementFromId(s.fid);
-				if(e != NULL)
+				if(s.is_button)
 				{
-					fields[wide_to_narrow(s.fname.c_str())] = wide_to_narrow(e->getText());
+					fields[wide_to_narrow(s.fname.c_str())] = wide_to_narrow(s.flabel.c_str());
+				}
+				else
+				{
+					e = getElementFromId(s.fid);
+					if(e != NULL)
+					{
+						fields[wide_to_narrow(s.fname.c_str())] = wide_to_narrow(e->getText());
+					}
 				}
 			}
 		}
@@ -1020,6 +1143,20 @@ bool GUIFormSpecMenu::OnEvent(const SEvent& event)
 				quitMenu();
 				// quitMenu deallocates menu
 				return true;
+			}
+			// find the element that was clicked
+			for(u32 i=0; i<m_fields.size(); i++)
+			{
+				FieldSpec &s = m_fields[i];
+				// if its a button, set the send field so 
+				// lua knows which button was pressed
+				if (s.is_button && s.fid == event.GUIEvent.Caller->getID())
+				{
+					s.send = true;
+					acceptInput();
+					quitMenu();
+					return true;
+				}
 			}
 		}
 		if(event.GUIEvent.EventType==gui::EGET_EDITBOX_ENTER)

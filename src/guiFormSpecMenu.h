@@ -201,11 +201,15 @@ class GUIFormSpecMenu : public GUIModalMenu
 			fdefault(fdeflt),
 			fid(id)
 		{
+			send = false;
+			is_button = false;
 		}
 		std::wstring fname;
 		std::wstring flabel;
 		std::wstring fdefault;
 		int fid;
+		bool send;
+		bool is_button;
 	};
 
 public:
