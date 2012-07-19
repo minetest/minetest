@@ -505,6 +505,7 @@ public:
 	std::set<std::string> getPlayerEffectivePrivs(const std::string &name);
 	bool checkPriv(const std::string &name, const std::string &priv);
 	void reportPrivsModified(const std::string &name=""); // ""=all
+	void reportInventoryFormspecModified(const std::string &name);
 
 	// Saves g_settings to configpath given at initialization
 	void saveConfig();
@@ -602,6 +603,7 @@ private:
 	void SendPlayerHP(u16 peer_id);
 	void SendMovePlayer(u16 peer_id);
 	void SendPlayerPrivileges(u16 peer_id);
+	void SendPlayerInventoryFormspec(u16 peer_id);
 	/*
 		Send a node removal/addition event to all clients except ignore_id.
 		Additionally, if far_players!=NULL, players further away than

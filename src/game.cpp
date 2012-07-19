@@ -144,6 +144,22 @@ public:
 	v3s16 m_p;
 };
 
+class PlayerInventoryFormSource: public IFormSource
+{
+public:
+	PlayerInventoryFormSource(Client *client):
+		m_client(client)
+	{
+	}
+	std::string getForm()
+	{
+		LocalPlayer* player = m_client->getEnv().getLocalPlayer();
+		return player->inventory_formspec;
+	}
+
+	Client *m_client;
+};
+
 /*
 	Hotbar draw routine
 */
@@ -1463,14 +1479,10 @@ void the_game(
 			InventoryLocation inventoryloc;
 			inventoryloc.setCurrentPlayer();
 
-			menu->setFormSpec(
-				"invsize[8,7.5;]"
-				//"image[1,0.6;1,2;player.png]"
-				"list[current_player;main;0,3.5;8,4;]"
-				"list[current_player;craft;3,0;3,3;]"
-				"list[current_player;craftpreview;7,1;1,1;]"
-				, inventoryloc);
-
+			PlayerInventoryFormSource *src = new PlayerInventoryFormSource(&client);
+			assert(src);
+			menu->setFormSpec(src->getForm(), inventoryloc);
+			menu->setFormSource(new PlayerInventoryFormSource(&client));
 			menu->drop();
 		}
 		else if(input->wasKeyDown(EscapeKey))

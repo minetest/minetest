@@ -58,6 +58,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 	PROTOCOL_VERSION 11:
 		TileDef in ContentFeatures
 		Nodebox drawtype
+		Added after a release: TOCLIENT_INVENTORY_FORMSPEC
 */
 
 #define PROTOCOL_VERSION 11
@@ -307,6 +308,13 @@ enum ToClientCommand
 		for each privilege
 			u16 len
 			u8[len] privilege
+	*/
+
+	TOCLIENT_INVENTORY_FORMSPEC = 0x42,
+	/*
+		u16 command
+		u32 len
+		u8[len] formspec
 	*/
 };
 

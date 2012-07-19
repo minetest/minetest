@@ -2243,6 +2243,9 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 		// Send privileges
 		SendPlayerPrivileges(peer_id);
 		
+		// Send inventory formspec
+		SendPlayerInventoryFormspec(peer_id);
+
 		// Send inventory
 		UpdateCrafting(peer_id);
 		SendInventory(peer_id);
@@ -3573,6 +3576,9 @@ void Server::SendPlayerPrivileges(u16 peer_id)
 {
 	Player *player = m_env->getPlayer(peer_id);
 	assert(player);
+	if(player->peer_id == PEER_ID_INEXISTENT)
+		return;
+
 	std::set<std::string> privs;
 	scriptapi_get_auth(m_lua, player->getName(), NULL, &privs);
 	
@@ -3583,6 +3589,24 @@ void Server::SendPlayerPrivileges(u16 peer_id)
 			i != privs.end(); i++){
 		os<<serializeString(*i);
 	}
+
+	// Make data buffer
+	std::string s = os.str();
+	SharedBuffer<u8> data((u8*)s.c_str(), s.size());
+	// Send as reliable
+	m_con.Send(peer_id, 0, data, true);
+}
+
+void Server::SendPlayerInventoryFormspec(u16 peer_id)
+{
+	Player *player = m_env->getPlayer(peer_id);
+	assert(player);
+	if(player->peer_id == PEER_ID_INEXISTENT)
+		return;
+
+	std::ostringstream os(std::ios_base::binary);
+	writeU16(os, TOCLIENT_INVENTORY_FORMSPEC);
+	os<<serializeLongString(player->inventory_formspec);
 
 	// Make data buffer
 	std::string s = os.str();
@@ -4355,6 +4379,14 @@ void Server::reportPrivsModified(const std::string &name)
 				getPlayerEffectivePrivs(name),
 				isSingleplayer());
 	}
+}
+
+void Server::reportInventoryFormspecModified(const std::string &name)
+{
+	Player *player = m_env->getPlayer(name.c_str());
+	if(!player)
+		return;
+	SendPlayerInventoryFormspec(player->peer_id);
 }
 
 // Saves g_settings to configpath given at initialization

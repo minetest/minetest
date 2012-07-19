@@ -2864,6 +2864,32 @@ private:
 		return 1;
 	}
 
+	// set_inventory_formspec(self, formspec)
+	static int l_set_inventory_formspec(lua_State *L)
+	{
+		ObjectRef *ref = checkobject(L, 1);
+		Player *player = getplayer(ref);
+		if(player == NULL) return 0;
+		std::string formspec = luaL_checkstring(L, 2);
+
+		player->inventory_formspec = formspec;
+		get_server(L)->reportInventoryFormspecModified(player->getName());
+		lua_pushboolean(L, true);
+		return 1;
+	}
+
+	// get_inventory_formspec(self) -> formspec
+	static int l_get_inventory_formspec(lua_State *L)
+	{
+		ObjectRef *ref = checkobject(L, 1);
+		Player *player = getplayer(ref);
+		if(player == NULL) return 0;
+
+		std::string formspec = player->inventory_formspec;
+		lua_pushlstring(L, formspec.c_str(), formspec.size());
+		return 1;
+	}
+
 public:
 	ObjectRef(ServerActiveObject *object):
 		m_object(object)
@@ -2960,6 +2986,8 @@ const luaL_reg ObjectRef::methods[] = {
 	method(ObjectRef, get_look_dir),
 	method(ObjectRef, get_look_pitch),
 	method(ObjectRef, get_look_yaw),
+	method(ObjectRef, set_inventory_formspec),
+	method(ObjectRef, get_inventory_formspec),
 	{0,0}
 };
 

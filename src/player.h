@@ -157,6 +157,8 @@ public:
 
 	u16 peer_id;
 
+	std::string inventory_formspec;
+
 protected:
 	IGameDef *m_gamedef;
 

@@ -759,6 +759,10 @@ minetest.register_on_respawnplayer(func(ObjectRef))
 ^ Called when player is to be respawned
 ^ Called _before_ repositioning of player occurs
 ^ return true in func to disable regular player placement
+minetest.register_on_joinplayer(func(ObjectRef))
+^ Called when a player joins the game
+minetest.register_on_leaveplayer(func(ObjectRef))
+^ Called when a player leaves the game
 minetest.register_on_chat_message(func(name, message))
 
 Other registration functions:
@@ -993,8 +997,8 @@ LuaEntitySAO-only: (no-op for other objects)
 - settexturemod(mod)
 - setsprite(p={x=0,y=0}, num_frames=1, framelength=0.2,
 -           select_horiz_by_yawpitch=false)
-- ^ Select sprite from spritesheet with optional animation and DM-style
--   texture selection based on yaw relative to camera
+  ^ Select sprite from spritesheet with optional animation and DM-style
+    texture selection based on yaw relative to camera
 - get_entity_name() (DEPRECATED: Will be removed in a future version)
 - get_luaentity()
 Player-only: (no-op for other objects)
@@ -1003,6 +1007,10 @@ Player-only: (no-op for other objects)
 - get_look_dir(): get camera direction as a unit vector
 - get_look_pitch(): pitch in radians
 - get_look_yaw(): yaw in radians (wraps around pretty randomly as of now)
+- set_inventory_formspec(formspec)
+  ^ Redefine player's inventory form
+  ^ Should usually be called in on_joinplayer
+- get_inventory_formspec() -> formspec string
 
 InvRef: Reference to an inventory
 methods:

@@ -1688,6 +1688,16 @@ void Client::ProcessData(u8 *data, u32 datasize, u16 sender_peer_id)
 		}
 		infostream<<std::endl;
 	}
+	else if(command == TOCLIENT_INVENTORY_FORMSPEC)
+	{
+		std::string datastring((char*)&data[2], datasize-2);
+		std::istringstream is(datastring, std::ios_base::binary);
+
+		// Store formspec in LocalPlayer
+		Player *player = m_env.getLocalPlayer();
+		assert(player != NULL);
+		player->inventory_formspec = deSerializeLongString(is);
+	}
 	else
 	{
 		infostream<<"Client: Ignoring unknown command "
