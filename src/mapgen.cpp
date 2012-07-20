@@ -2059,13 +2059,14 @@ void make_block(BlockMakeData *data)
 				
 				bool old_is_water = (n->getContent() == c_water_source);
 				// Move mud to new place
-				if(!dropped_to_unknown)
+				if(!dropped_to_unknown) {
 					*n2 = *n;
-				// Set old place to be air (or water)
-				if(old_is_water)
-					*n = MapNode(c_water_source);
-				else
-					*n = MapNode(CONTENT_AIR);
+					// Set old place to be air (or water)
+					if(old_is_water)
+						*n = MapNode(c_water_source);
+					else
+						*n = MapNode(CONTENT_AIR);
+				}
 
 				// Done
 				break;
