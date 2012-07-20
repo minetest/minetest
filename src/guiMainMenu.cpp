@@ -586,14 +586,14 @@ void GUIMainMenu::regenerateGui(v2u32 screensize)
 			t->setTextAlignment(gui::EGUIA_CENTER, gui::EGUIA_CENTER);
 		}
 		{
-			core::rect<s32> rect(0, 0, 620, 250);
-			rect += m_topleft_client + v2s32(130+14, 50+35);
+			core::rect<s32> rect(0, 0, 454, 250);
+			rect += m_topleft_client + v2s32(110, 50+35);
 			Environment->addStaticText(narrow_to_wide(
 			"Minetest-c55 " VERSION_STRING "\n"
 			"http://minetest.net/\n"
 			"\n"
 			"by Perttu Ahola <celeron55@gmail.com>\n"
-			"and contributors"
+			"and contributors: tango_, kahrl (kaaaaaahrl?), erlehmann (the hippie), SpeedProg, JacobF (sqlite worlds), teddydestodes, marktraceur, darkrose, Jonathan Neuschäfer (who the hell?), Felix Krausse (broke liquids, IIRC), sfan5... and >10 more random people."
 			).c_str(), rect, false, true, this, -1);
 		}
 	}
