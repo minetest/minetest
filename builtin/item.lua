@@ -148,7 +148,7 @@ function minetest.item_place_node(itemstack, placer, pointed_thing)
 			local dir = {x = under.x - above.x, y = under.y - above.y, z = under.z - above.z}
 			newnode.param2 = minetest.dir_to_wallmounted(dir)
 		-- Calculate the direction for furnaces and chests and stuff
-		elseif def.paramtype2 == 'facedir' then
+		elseif def.paramtype2 == 'facedir' and placer then
 			local playerpos = placer:getpos()
 			local dir = {x = pos.x - playerpos.x, y = pos.y - playerpos.y, z = pos.z - playerpos.z}
 			newnode.param2 = minetest.dir_to_facedir(dir)

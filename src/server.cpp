@@ -58,6 +58,7 @@ extern "C" {
 #include "hex.h"
 #include "util/string.h"
 #include "util/pointedthing.h"
+#include "util/mathconstants.h"
 
 #define PP(x) "("<<(x).X<<","<<(x).Y<<","<<(x).Z<<")"
 
@@ -849,7 +850,7 @@ queue_full_break:
 
 	/*timer_result = timer.stop(true);
 	if(timer_result != 0)
-		infostream<<"GetNextBlocks duration: "<<timer_result<<" (!=0)"<<std::endl;*/
+		infostream<<"GetNextBlocks timeout: "<<timer_result<<" (!=0)"<<std::endl;*/
 }
 
 void RemoteClient::GotBlock(v3s16 p)
@@ -2396,6 +2397,9 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 		// Send privileges
 		SendPlayerPrivileges(peer_id);
 		
+		// Send inventory formspec
+		SendPlayerInventoryFormspec(peer_id);
+
 		// Send inventory
 		UpdateCrafting(peer_id);
 		SendInventory(peer_id);
@@ -2430,7 +2434,7 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 				std::wstring message;
 				message += L"*** ";
 				message += name;
-				message += L" joined game";
+				message += L" joined the game.";
 				BroadcastChatMessage(message);
 			}
 		}
@@ -2438,7 +2442,7 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 		// Warnings about protocol version can be issued here
 		if(getClient(peer_id)->net_proto_version < PROTOCOL_VERSION)
 		{
-			SendChatMessage(peer_id, L"# Server: WARNING: YOUR CLIENT IS OLD AND MAY WORK PROPERLY WITH THIS SERVER");
+			SendChatMessage(peer_id, L"# Server: WARNING: YOUR CLIENT IS OLD AND MAY WORK PROPERLY WITH THIS SERVER!");
 		}
 
 		/*
@@ -2860,7 +2864,7 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 				line += message;
 				send_to_others = true;
 			} else {
-				line += L"Server: You are not allowed to shout";
+				line += L"-!- You don't have permission to shout.";
 				send_to_sender = true;
 			}
 		}
@@ -2973,7 +2977,7 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 		} else {
 			actionstream<<player->getIdentifier()<<" tries to change password but "
 					<<"it fails"<<std::endl;
-			SendChatMessage(peer_id, L"Password change failed or inavailable");
+			SendChatMessage(peer_id, L"Password change failed or inavailable.");
 		}
 	}
 	else if(command == TOSERVER_PLAYERITEM)
@@ -3339,6 +3343,22 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 
 		scriptapi_node_on_receive_fields(m_lua, p, formname, fields,
 				playersao);
+	}
+	else if (command == TOSERVER_INVENTORY_FIELDS)
+	{
+		std::string datastring((char*)&data[2], datasize-2);
+		std::istringstream is(datastring, std::ios_base::binary);
+		
+		std::string formname = deSerializeString(is);
+		int num = readU16(is);
+		std::map<std::string, std::string> fields;
+		for(int k=0; k<num; k++){
+			std::string fieldname = deSerializeString(is);
+			std::string fieldvalue = deSerializeLongString(is);
+			fields[fieldname] = fieldvalue;
+		}
+
+		scriptapi_player_on_receive_fields(m_lua, "", fields, playersao);
 	}
 	else
 	{
@@ -3740,6 +3760,9 @@ void Server::SendPlayerPrivileges(u16 peer_id)
 {
 	Player *player = m_env->getPlayer(peer_id);
 	assert(player);
+	if(player->peer_id == PEER_ID_INEXISTENT)
+		return;
+
 	std::set<std::string> privs;
 	scriptapi_get_auth(m_lua, player->getIdentifier(), NULL, &privs);
 	
@@ -3750,6 +3773,24 @@ void Server::SendPlayerPrivileges(u16 peer_id)
 			i != privs.end(); i++){
 		os<<serializeString(*i);
 	}
+
+	// Make data buffer
+	std::string s = os.str();
+	SharedBuffer<u8> data((u8*)s.c_str(), s.size());
+	// Send as reliable
+	m_con.Send(peer_id, 0, data, true);
+}
+
+void Server::SendPlayerInventoryFormspec(u16 peer_id)
+{
+	Player *player = m_env->getPlayer(peer_id);
+	assert(player);
+	if(player->peer_id == PEER_ID_INEXISTENT)
+		return;
+
+	std::ostringstream os(std::ios_base::binary);
+	writeU16(os, TOCLIENT_INVENTORY_FORMSPEC);
+	os<<serializeLongString(player->inventory_formspec);
 
 	// Make data buffer
 	std::string s = os.str();
@@ -4085,7 +4126,7 @@ void Server::SendBlocks(float dtime)
 
 		RemoteClient *client = getClient(q.peer_id);
 
-		SendBlockNoLock(q.peer_id, block, client->serialization_version);
+		SendBlockNoLock(q.peer_id, block, 24);//client->serialization_version);
 
 		client->SentBlock(q.pos);
 
@@ -4108,6 +4149,8 @@ void Server::fillMediaCache()
 		paths.push_back(mod.path + DIR_DELIM + "sounds");
 		paths.push_back(mod.path + DIR_DELIM + "media");
 	}
+	std::string path_all = "textures";
+	paths.push_back(path_all + DIR_DELIM + "all");
 	
 	// Collect media file information from paths into cache
 	for(std::list<std::string>::iterator i = paths.begin();
@@ -4524,6 +4567,14 @@ void Server::reportPrivsModified(const std::string &name)
 	}
 }
 
+void Server::reportInventoryFormspecModified(const std::string &name)
+{
+	Player *player = m_env->getPlayer(name.c_str());
+	if(!player)
+		return;
+	SendPlayerInventoryFormspec(player->peer_id);
+}
+
 // Saves g_settings to configpath given at initialization
 void Server::saveConfig()
 {
@@ -4827,7 +4878,7 @@ void Server::handlePeerChange(PeerChange &c)
 				std::wstring name = narrow_to_wide(player->getIdentifier());
 				message += L"*** ";
 				message += name;
-				message += L" left game";
+				message += L" left the game.";
 				if(c.timeout)
 					message += L" (timed out)";
 			}

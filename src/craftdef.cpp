@@ -35,7 +35,7 @@ static bool inputItemMatchesRecipe(const std::string &inp_name,
 	// Exact name
 	if(inp_name == rec_name)
 		return true;
-	
+
 	// Group
 	if(rec_name.substr(0,6) == "group:" && idef->isKnown(inp_name)){
 		std::string rec_group = rec_name.substr(6);
@@ -43,7 +43,7 @@ static bool inputItemMatchesRecipe(const std::string &inp_name,
 		if(itemgroup_get(def.groups, rec_group) != 0)
 			return true;
 	}
-	
+
 	// Didn't match
 	return false;
 }
@@ -80,6 +80,20 @@ static std::vector<std::string> craftGetItemNames(
 			i != items.end(); i++)
 	{
 		result.push_back(i->name);
+	}
+	return result;
+}
+
+// convert a list of item names, to ItemStacks.
+static std::vector<ItemStack> craftGetItems(
+		const std::vector<std::string> &items, IGameDef *gamedef)
+{
+	std::vector<ItemStack> result;
+	for(std::vector<std::string>::const_iterator
+			i = items.begin();
+			i != items.end(); i++)
+	{
+		result.push_back(ItemStack(std::string(*i),(u16)1,(u16)0,"",gamedef->getItemDefManager()));
 	}
 	return result;
 }
@@ -439,6 +453,11 @@ CraftOutput CraftDefinitionShaped::getOutput(const CraftInput &input, IGameDef *
 	return CraftOutput(output, 0);
 }
 
+CraftInput CraftDefinitionShaped::getInput(const CraftOutput &output, IGameDef *gamedef) const
+{
+	return CraftInput(CRAFT_METHOD_NORMAL,width,craftGetItems(recipe,gamedef));
+}
+
 void CraftDefinitionShaped::decrementInput(CraftInput &input, IGameDef *gamedef) const
 {
 	craftDecrementOrReplaceInput(input, replacements, gamedef);
@@ -505,6 +524,11 @@ bool CraftDefinitionShapeless::check(const CraftInput &input, IGameDef *gamedef)
 CraftOutput CraftDefinitionShapeless::getOutput(const CraftInput &input, IGameDef *gamedef) const
 {
 	return CraftOutput(output, 0);
+}
+
+CraftInput CraftDefinitionShapeless::getInput(const CraftOutput &output, IGameDef *gamedef) const
+{
+	return CraftInput(CRAFT_METHOD_NORMAL,0,craftGetItems(recipe,gamedef));
 }
 
 void CraftDefinitionShapeless::decrementInput(CraftInput &input, IGameDef *gamedef) const
@@ -625,6 +649,13 @@ CraftOutput CraftDefinitionToolRepair::getOutput(const CraftInput &input, IGameD
 	return CraftOutput(repaired.getItemString(), 0);
 }
 
+CraftInput CraftDefinitionToolRepair::getInput(const CraftOutput &output, IGameDef *gamedef) const
+{
+	std::vector<ItemStack> stack;
+	stack.push_back(ItemStack());
+	return CraftInput(CRAFT_METHOD_COOKING,additional_wear,stack);
+}
+
 void CraftDefinitionToolRepair::decrementInput(CraftInput &input, IGameDef *gamedef) const
 {
 	craftDecrementInput(input, gamedef);
@@ -678,6 +709,13 @@ bool CraftDefinitionCooking::check(const CraftInput &input, IGameDef *gamedef) c
 CraftOutput CraftDefinitionCooking::getOutput(const CraftInput &input, IGameDef *gamedef) const
 {
 	return CraftOutput(output, cooktime);
+}
+
+CraftInput CraftDefinitionCooking::getInput(const CraftOutput &output, IGameDef *gamedef) const
+{
+	std::vector<std::string> rec;
+	rec.push_back(recipe);
+	return CraftInput(CRAFT_METHOD_COOKING,cooktime,craftGetItems(rec,gamedef));
 }
 
 void CraftDefinitionCooking::decrementInput(CraftInput &input, IGameDef *gamedef) const
@@ -742,6 +780,13 @@ bool CraftDefinitionFuel::check(const CraftInput &input, IGameDef *gamedef) cons
 CraftOutput CraftDefinitionFuel::getOutput(const CraftInput &input, IGameDef *gamedef) const
 {
 	return CraftOutput("", burntime);
+}
+
+CraftInput CraftDefinitionFuel::getInput(const CraftOutput &output, IGameDef *gamedef) const
+{
+	std::vector<std::string> rec;
+	rec.push_back(recipe);
+	return CraftInput(CRAFT_METHOD_COOKING,(int)burntime,craftGetItems(rec,gamedef));
 }
 
 void CraftDefinitionFuel::decrementInput(CraftInput &input, IGameDef *gamedef) const
@@ -824,6 +869,47 @@ public:
 					output = def->getOutput(input, gamedef);
 					if(decrementInput)
 						def->decrementInput(input, gamedef);
+					return true;
+				}
+			}
+			catch(SerializationError &e)
+			{
+				errorstream<<"getCraftResult: ERROR: "
+						<<"Serialization error in recipe "
+						<<def->dump()<<std::endl;
+				// then go on with the next craft definition
+			}
+		}
+		return false;
+	}
+	virtual bool getCraftRecipe(CraftInput &input, CraftOutput &output,
+			IGameDef *gamedef) const
+	{
+		CraftOutput tmpout;
+		tmpout.item = "";
+		tmpout.time = 0;
+
+		// If output item is empty, abort.
+		if(output.item.empty())
+			return false;
+
+		// Walk crafting definitions from back to front, so that later
+		// definitions can override earlier ones.
+		for(std::vector<CraftDefinition*>::const_reverse_iterator
+				i = m_craft_definitions.rbegin();
+				i != m_craft_definitions.rend(); i++)
+		{
+			CraftDefinition *def = *i;
+
+			/*infostream<<"Checking "<<input.dump()<<std::endl
+					<<" against "<<def->dump()<<std::endl;*/
+
+			try {
+				tmpout = def->getOutput(input, gamedef);
+				if(tmpout.item.substr(0,output.item.length()) == output.item)
+				{
+					// Get output, then decrement input (if requested)
+					input = def->getInput(output, gamedef);
 					return true;
 				}
 			}

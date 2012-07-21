@@ -90,6 +90,6 @@ bucket.register_liquid(
 
 minetest.register_craft({
 	type = "fuel",
-	recipe = "default:bucket_lava",
+	recipe = "bucket:bucket_lava",
 	burntime = 60,
 })

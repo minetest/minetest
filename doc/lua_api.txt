@@ -1,4 +1,4 @@
-Minetest Lua Modding API Reference 0.4.dev
+Minetest Lua Modding API Reference 0.4.0
 ==========================================
 More information at http://c55.me/minetest/
 
@@ -672,7 +672,7 @@ Examples:
 
 Elements:
 
-invsize[<W>,<H>;]
+size[<W>,<H>]
 ^ Define the size of the menu in inventory slots
 
 list[<inventory location>;<list name>;<X>,<Y>;<W>,<H>;]
@@ -684,14 +684,38 @@ image[<X>,<Y>;<W>,<H>;<texture name>]
 
 field[<X>,<Y>;<W>,<H>;<name>;<label>;<default>]
 ^ Textual field; will be sent to server when a button is clicked
+^ x and y position the field relative to the top left of the menu
+^ w and h are the size of the field
+^ fields are a set height, but will be vertically centred on h
 ^ Position and size units are inventory slots
-^ Not implemented
+^ name is the name of the field as returned in fields to on_receive_fields
+^ label, if not blank, will be text printed on the top left above the field
+^ default is the default value of the field
+  ^ default may contain variable references such as '${text}' which
+     will fill the value from the metadata value 'text'
+
+field[<name>;<label>;<default>]
+^ as above but without position/size units
+^ special field for creating simple forms, such as sign text input
+^ must be used without a size[] element
+^ a 'Proceed' button will be added automatically
+
+label[<X>,<Y>;<label>]
+^ x and y work as per field
+^ label is the text on the label
+^ Position and size units are inventory slots
 
 button[<X>,<Y>;<W>,<H>;<name>;<label>]
 ^ Clickable button. When clicked, fields will be sent.
-^ Button will be visible as a field, with the value "active".
+^ x, y and name work as per field
+^ w and h are the size of the button
+^ label is the text on the button
 ^ Position and size units are inventory slots
-^ Not implemented
+
+image_button[<X>,<Y>;<W>,<H>;<texture name>;<name>;<label>]
+^ x, y, w, h, and name work as per button
+^ image is the filename of an image
+^ Position and size units are inventory slots
 
 Inventory location:
 - "context": Selected node metadata (deprecated: "current_name")
@@ -759,6 +783,10 @@ minetest.register_on_respawnplayer(func(ObjectRef))
 ^ Called when player is to be respawned
 ^ Called _before_ repositioning of player occurs
 ^ return true in func to disable regular player placement
+minetest.register_on_joinplayer(func(ObjectRef))
+^ Called when a player joins the game
+minetest.register_on_leaveplayer(func(ObjectRef))
+^ Called when a player leaves the game
 minetest.register_on_chat_message(func(name, message))
 
 Other registration functions:
@@ -825,6 +853,13 @@ minetest.get_craft_result(input) -> output, decremented_input
 ^ output.item = ItemStack, if unsuccessful: empty ItemStack
 ^ output.time = number, if unsuccessful: 0
 ^ decremented_input = like input
+minetest.get_craft_recipe(output) -> input
+^ output is a node or item type such as 'default:torch'
+^ input.method = 'normal' or 'cooking' or 'fuel'
+^ input.width = for example 3
+^ input.items = for example { stack 1, stack 2, stack 3, stack 4,
+                              stack 5, stack 6, stack 7, stack 8, stack 9 }
+^ input.items = nil if no recipe found
 
 Defaults for the on_* item definition functions:
 (These return the leftover itemstack)
@@ -928,6 +963,9 @@ methods:
   ^ Dig node with the same effects that a player would cause
 - punch_node(pos)
   ^ Punch node with the same effects that a player would cause
+  
+- get_timer(pos)
+  ^ Returns NodeTimerRef
 
 - add_entity(pos, name): Spawn Lua-defined entity at position
   ^ Returns ObjectRef, or nil if failed
@@ -953,6 +991,8 @@ NodeMetaRef: Node metadata - reference extra data and functionality stored
 - Can be gotten via minetest.env:get_nodemeta(pos)
 methods:
 - set_string(name, value)
+  ^ value may be a variable reference, such as '${text}', in which case
+    get_string will return the value of get_string('text');
 - get_string(name)
 - set_int(name, value)
 - get_int(name)
@@ -962,6 +1002,26 @@ methods:
 - to_table() -> nil or {fields = {...}, inventory = {list1 = {}, ...}}
 - from_table(nil or {})
   ^ See "Node Metadata"
+  
+NodeTimerRef: Node Timers - a high resolution per-node timer
+- Can be gotten via minetest.env:get_timer(pos)
+methods:
+- set(timeout,elapsed)
+  ^ set a timer's state
+  ^ timeout is in seconds, and supports fractional values (0.1 etc)
+  ^ elapsed is in seconds, and supports fractional values (0.1 etc)
+  ^ will trigger the node's on_timer function after timeout-elapsed seconds
+- start(timeout)
+  ^ start a timer
+  ^ equivelent to set(timeout,0)
+- stop()
+  ^ stops the timer
+- get_timeout() -> current timeout in seconds
+  ^ if timeout is 0, timer is inactive
+- get_elapsed() -> current elapsed time in seconds
+  ^ the node's on_timer function will be called after timeout-elapsed seconds
+- is_started() -> boolean state of timer
+  ^ returns true if timer is started, otherwise false
 
 ObjectRef: Moving things in the game are generally these
 (basically reference to a C++ ServerActiveObject)
@@ -993,8 +1053,8 @@ LuaEntitySAO-only: (no-op for other objects)
 - settexturemod(mod)
 - setsprite(p={x=0,y=0}, num_frames=1, framelength=0.2,
 -           select_horiz_by_yawpitch=false)
-- ^ Select sprite from spritesheet with optional animation and DM-style
--   texture selection based on yaw relative to camera
+  ^ Select sprite from spritesheet with optional animation and DM-style
+    texture selection based on yaw relative to camera
 - get_entity_name() (DEPRECATED: Will be removed in a future version)
 - get_luaentity()
 Player-only: (no-op for other objects)
@@ -1003,6 +1063,13 @@ Player-only: (no-op for other objects)
 - get_look_dir(): get camera direction as a unit vector
 - get_look_pitch(): pitch in radians
 - get_look_yaw(): yaw in radians (wraps around pretty randomly as of now)
+- set_inventory_formspec(formspec)
+  ^ Redefine player's inventory form
+  ^ Should usually be called in on_joinplayer
+- get_inventory_formspec() -> formspec string
+- register_on_player_receive_fields(func(player,formname,fields,sender))
+  ^ fields = {name1 = value1, name2 = value2, ...}
+  ^ Called when a player inventory returns data
 
 InvRef: Reference to an inventory
 methods:
@@ -1265,9 +1332,15 @@ Node definition (register_node)
     on_punch = func(pos, node, puncher),
     ^ default: minetest.node_punch
     ^ By default: does nothing
-	on_dig = func(pos, node, digger),
+    on_dig = func(pos, node, digger),
     ^ default: minetest.node_dig
     ^ By default: checks privileges, wears out tool and removes node
+    
+    on_timer = function(pos,elapsed),
+    ^ default: nil
+    ^ called by NodeTimers, see EnvRef and NodeTimerRef
+    ^ elapsed is the total time passed since the timer was started
+    ^ return true to run the timer for another cycle with the same timeout value
 
     on_receive_fields = func(pos, formname, fields, sender),
     ^ fields = {name1 = value1, name2 = value2, ...}

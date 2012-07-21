@@ -28,13 +28,13 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 void NodeTimer::serialize(std::ostream &os) const
 {
-	writeF1000(os, duration);
+	writeF1000(os, timeout);
 	writeF1000(os, elapsed);
 }
 
 void NodeTimer::deSerialize(std::istream &is)
 {
-	duration = readF1000(is);
+	timeout = readF1000(is);
 	elapsed = readF1000(is);
 }
 
@@ -94,7 +94,7 @@ void NodeTimerList::deSerialize(std::istream &is)
 		NodeTimer t;
 		t.deSerialize(is);
 
-		if(t.duration <= 0)
+		if(t.timeout <= 0)
 		{
 			infostream<<"WARNING: NodeTimerList::deSerialize(): "
 					<<"invalid data at position"
@@ -116,9 +116,9 @@ void NodeTimerList::deSerialize(std::istream &is)
 	}
 }
 
-std::map<v3s16, f32> NodeTimerList::step(float dtime)
+std::map<v3s16, NodeTimer> NodeTimerList::step(float dtime)
 {
-	std::map<v3s16, f32> elapsed_timers;
+	std::map<v3s16, NodeTimer> elapsed_timers;
 	// Increment timers
 	for(std::map<v3s16, NodeTimer>::iterator
 			i = m_data.begin();
@@ -126,13 +126,13 @@ std::map<v3s16, f32> NodeTimerList::step(float dtime)
 		v3s16 p = i->first;
 		NodeTimer t = i->second;
 		t.elapsed += dtime;
-		if(t.elapsed >= t.duration)
-			elapsed_timers.insert(std::make_pair(p, t.elapsed));
+		if(t.elapsed >= t.timeout)
+			elapsed_timers.insert(std::make_pair(p, t));
 		else
 			i->second = t;
 	}
 	// Delete elapsed timers
-	for(std::map<v3s16, f32>::const_iterator
+	for(std::map<v3s16, NodeTimer>::const_iterator
 			i = elapsed_timers.begin();
 			i != elapsed_timers.end(); i++){
 		v3s16 p = i->first;

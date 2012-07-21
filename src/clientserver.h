@@ -58,8 +58,9 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 	PROTOCOL_VERSION 11:
 		TileDef in ContentFeatures
 		Nodebox drawtype
-        PROTOCOL VERSION 11+:
+    PROTOCOL VERSION 11+:
                 Pubkey authentication
+		Added after a release: TOCLIENT_INVENTORY_FORMSPEC
 */
 
 #define PROTOCOL_VERSION 11
@@ -327,6 +328,13 @@ enum ToClientCommand
 			u16 len
 			u8[len] privilege
 	*/
+
+	TOCLIENT_INVENTORY_FORMSPEC = 0x42,
+	/*
+		u16 command
+		u32 len
+		u8[len] formspec
+	*/
 };
 
 enum ToServerCommand
@@ -545,6 +553,18 @@ enum ToServerCommand
 		u16 command
 		v3s16 p
 		u16 len
+		u8[len] form name (reserved for future use)
+		u16 number of fields
+		for each field:
+			u16 len
+			u8[len] field name
+			u32 len
+			u8[len] field value
+	*/
+
+	TOSERVER_INVENTORY_FIELDS = 0x3c,
+	/*
+		u16 command
 		u8[len] form name (reserved for future use)
 		u16 number of fields
 		for each field:

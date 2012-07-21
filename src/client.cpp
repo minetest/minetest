@@ -1771,6 +1771,16 @@ void Client::ProcessData(u8 *data, u32 datasize, u16 sender_peer_id)
 		}
 		infostream<<std::endl;
 	}
+	else if(command == TOCLIENT_INVENTORY_FORMSPEC)
+	{
+		std::string datastring((char*)&data[2], datasize-2);
+		std::istringstream is(datastring, std::ios_base::binary);
+
+		// Store formspec in LocalPlayer
+		Player *player = m_env.getLocalPlayer();
+		assert(player != NULL);
+		player->inventory_formspec = deSerializeLongString(is);
+	}
 	else
 	{
 		infostream<<"Client: Ignoring unknown command "
@@ -1838,6 +1848,29 @@ void Client::sendNodemetaFields(v3s16 p, const std::string &formname,
 
 	writeU16(os, TOSERVER_NODEMETA_FIELDS);
 	writeV3S16(os, p);
+	os<<serializeString(formname);
+	writeU16(os, fields.size());
+	for(std::map<std::string, std::string>::const_iterator
+			i = fields.begin(); i != fields.end(); i++){
+		const std::string &name = i->first;
+		const std::string &value = i->second;
+		os<<serializeString(name);
+		os<<serializeLongString(value);
+	}
+
+	// Make data buffer
+	std::string s = os.str();
+	SharedBuffer<u8> data((u8*)s.c_str(), s.size());
+	// Send as reliable
+	Send(0, data, true);
+}
+
+void Client::sendInventoryFields(const std::string &formname, 
+		const std::map<std::string, std::string> &fields)
+{
+	std::ostringstream os(std::ios_base::binary);
+
+	writeU16(os, TOSERVER_INVENTORY_FIELDS);
 	os<<serializeString(formname);
 	writeU16(os, fields.size());
 	for(std::map<std::string, std::string>::const_iterator
