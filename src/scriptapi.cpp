@@ -4593,7 +4593,7 @@ static int l_get_craft_recipe(lua_State *L)
 		setintfield(L, -1, "width", input.width);
 		switch (input.method) {
 		case CRAFT_METHOD_NORMAL:
-			lua_pushstring(L,"noraml");
+			lua_pushstring(L,"normal");
 			break;
 		case CRAFT_METHOD_COOKING:
 			lua_pushstring(L,"cooking");
