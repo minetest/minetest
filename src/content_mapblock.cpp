@@ -1029,52 +1029,20 @@ void mapblock_mesh_generate_special(MeshMakeData *data,
 		break;}
 		case NDT_NODEBOX:
 		{
+			static const v3s16 tile_dirs[6] = {
+				v3s16(0, 1, 0),
+				v3s16(0, -1, 0),
+				v3s16(1, 0, 0),
+				v3s16(-1, 0, 0),
+				v3s16(0, 0, 1),
+				v3s16(0, 0, -1)
+			};
+
 			TileSpec tiles[6];
 			for(int i = 0; i < 6; i++)
 			{
-				tiles[i] = getNodeTileN(n, p, i, data);
-			}
-
-			// Facedir rotation for textures
-			if(f.node_box.type == NODEBOX_FIXED){
-				int facedir = n.getFaceDir(nodedef);
-				if(facedir == 1){ // -90
-					TileSpec old[6];
-					for(int i=0; i<6; i++)
-						old[i] = tiles[i];
-					// right <- back
-					tiles[2] = old[4];
-					// back <- left
-					tiles[4] = old[3];
-					// left <- front
-					tiles[3] = old[5];
-					// front <- right
-					tiles[5] = old[2];
-				}
-				if(facedir == 2){ // 180
-					TileSpec old[6];
-					for(int i=0; i<6; i++)
-						old[i] = tiles[i];
-					// right <-> left
-					tiles[2] = old[3];
-					tiles[3] = old[2];
-					// back <-> front
-					tiles[4] = old[5];
-					tiles[5] = old[4];
-				}
-				if(facedir == 3){ // 90
-					TileSpec old[6];
-					for(int i=0; i<6; i++)
-						old[i] = tiles[i];
-					// right <- front
-					tiles[2] = old[5];
-					// back <- right
-					tiles[4] = old[2];
-					// left <- back
-					tiles[3] = old[4];
-					// front <- left
-					tiles[5] = old[3];
-				}
+				// Handles facedir rotation for textures
+				tiles[i] = getNodeTile(n, p, tile_dirs[i], data);
 			}
 
 			u16 l = getInteriorLight(n, 0, data);

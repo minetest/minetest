@@ -605,7 +605,46 @@ TileSpec getNodeTile(MapNode mn, v3s16 p, v3s16 dir, MeshMakeData *data)
 		   0,  5,  0,  2,  0,  3,  1,  4,  // facedir = 3
 	};
 	u8 tileindex = dir_to_tile[facedir*8 + dir_i];
-	return getNodeTileN(mn, p, tileindex, data);
+
+	// If not rotated or is side tile, we're done
+	if(facedir == 0 || (tileindex != 0 && tileindex != 1))
+		return getNodeTileN(mn, p, tileindex, data);
+
+	// This is the top or bottom tile, and it shall be rotated; thus rotate it
+	TileSpec spec = getNodeTileN(mn, p, tileindex, data);
+	if(tileindex == 0){
+		if(facedir == 1){ // -90
+			std::string name = data->m_gamedef->tsrc()->getTextureName(spec.texture.id);
+			name += "^[transformR270";
+			spec.texture = data->m_gamedef->tsrc()->getTexture(name);
+		}
+		else if(facedir == 2){ // 180
+			spec.texture.pos += spec.texture.size;
+			spec.texture.size *= -1;
+		}
+		else if(facedir == 3){ // 90
+			std::string name = data->m_gamedef->tsrc()->getTextureName(spec.texture.id);
+			name += "^[transformR90";
+			spec.texture = data->m_gamedef->tsrc()->getTexture(name);
+		}
+	}
+	else if(tileindex == 1){
+		if(facedir == 1){ // -90
+			std::string name = data->m_gamedef->tsrc()->getTextureName(spec.texture.id);
+			name += "^[transformR90";
+			spec.texture = data->m_gamedef->tsrc()->getTexture(name);
+		}
+		else if(facedir == 2){ // 180
+			spec.texture.pos += spec.texture.size;
+			spec.texture.size *= -1;
+		}
+		else if(facedir == 3){ // 90
+			std::string name = data->m_gamedef->tsrc()->getTextureName(spec.texture.id);
+			name += "^[transformR270";
+			spec.texture = data->m_gamedef->tsrc()->getTexture(name);
+		}
+	}
+	return spec;
 }
 
 static void getTileInfo(
