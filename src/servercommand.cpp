@@ -20,6 +20,7 @@ OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 #include "settings.h"
 #include "main.h" // For g_settings
 #include "content_sao.h"
+#include "mods.h"
 
 #define PP(x) "("<<(x).X<<","<<(x).Y<<","<<(x).Z<<")"
 
@@ -162,6 +163,57 @@ void cmd_clearobjects(std::wostringstream &os,
 	ctx->flags |= SEND_TO_OTHERS;
 }
 
+void cmd_mods(std::wostringstream &os, ServerCommandContext *ctx)
+{
+	// If /mods is disabled, say so and be done
+	if(g_settings->getBool("enable_mods_command") == false)
+	{
+		os << "-!- /mods command disabled";
+		return;
+	}
+
+	// If arguments are passed, complain
+	if(ctx->parms.size() != 1)
+	{
+		os << "-!- Command takes no arguments";
+		return;
+	}
+	
+	// Get a list of mods
+	core::list<std::string> mods_unsorted, mods_sorted;
+	ctx->server->getModList(mods_unsorted);
+
+	// Take unsorted items from mods_unsorted and sort them into
+	// mods_sorted
+	for(core::list<std::string>::Iterator i = mods_unsorted.begin();
+	    i != mods_unsorted.end(); i++)
+	{
+		bool added = false;
+		for(core::list<std::string>::Iterator x = mods_sorted.begin();
+		    x != mods_unsorted.end(); x++)
+		{
+			if((*i).compare(*x) <= 0)
+			{
+				mods_sorted.insert_before(x, *i);
+				added = true;
+				break;
+			}
+		}
+		if(!added)
+			mods_sorted.push_back(*i);
+	}
+
+	// Write out the message back to the client
+	os << "-!- Installed mods: ";
+	core::list<std::string>::Iterator i = mods_sorted.begin();
+	while(i != mods_sorted.end())
+	{
+		os << narrow_to_wide(*i);
+		i++;
+		if(i != mods_sorted.end())
+			os << " ";
+	}
+}
 
 std::wstring processServerCommand(ServerCommandContext *ctx)
 {
@@ -182,6 +234,8 @@ std::wstring processServerCommand(ServerCommandContext *ctx)
 		cmd_me(os, ctx);
 	else if(ctx->parms[0] == L"clearobjects")
 		cmd_clearobjects(os, ctx);
+	else if(ctx->parms[0] == L"mods")
+		cmd_mods(os, ctx);
 	else
 		os<<L"-!- Invalid command: " + ctx->parms[0];
 	

@@ -35,7 +35,10 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 LocalPlayer::LocalPlayer(IGameDef *gamedef):
 	Player(gamedef),
 	m_sneak_node(32767,32767,32767),
-	m_sneak_node_exists(false)
+	m_sneak_node_exists(false),
+	m_old_node_below(32767,32767,32767),
+	m_old_node_below_type("air"),
+	m_need_to_get_new_sneak_node(true)
 {
 	// Initialize hp to 0, so that no hearts will be shown if server
 	// doesn't support health points
@@ -189,8 +192,26 @@ void LocalPlayer::move(f32 dtime, Map &map, f32 pos_max_d,
 
 	/*
 		Check the nodes under the player to see from which node the
-		player is sneaking from, if any.
+		player is sneaking from, if any.  If the node from under
+		the player has been removed, the player falls.
 	*/
+	v3s16 current_node = floatToInt(position - v3f(0,BS/2,0), BS);
+	if(m_sneak_node_exists &&
+	   nodemgr->get(map.getNodeNoEx(m_old_node_below)).name == "air" &&
+	   m_old_node_below_type != "air")
+	{
+		// Old node appears to have been removed; that is,
+		// it wasn't air before but now it is
+		m_need_to_get_new_sneak_node = false;
+		m_sneak_node_exists = false;
+	}
+	else if(nodemgr->get(map.getNodeNoEx(current_node)).name != "air")
+	{
+		// We are on something, so make sure to recalculate the sneak
+		// node.
+		m_need_to_get_new_sneak_node = true;
+	}
+	if(m_need_to_get_new_sneak_node)
 	{
 		v3s16 pos_i_bottom = floatToInt(position - v3f(0,BS/2,0), BS);
 		v2f player_p2df(position.X, position.Z);
@@ -240,17 +261,9 @@ void LocalPlayer::move(f32 dtime, Map &map, f32 pos_max_d,
 		}
 		
 		bool sneak_node_found = (min_distance_f < 100000.0*BS*0.9);
-		
-		if(control.sneak && m_sneak_node_exists)
-		{
-			if(sneak_node_found)
-				m_sneak_node = new_sneak_node;
-		}
-		else
-		{
-			m_sneak_node = new_sneak_node;
-			m_sneak_node_exists = sneak_node_found;
-		}
+
+		m_sneak_node = new_sneak_node;
+		m_sneak_node_exists = sneak_node_found;
 
 		/*
 			If sneaking, the player's collision box can be in air, so
@@ -295,6 +308,12 @@ void LocalPlayer::move(f32 dtime, Map &map, f32 pos_max_d,
 			}
 		}
 	}
+
+	/*
+		Update the node last under the player
+	*/
+	m_old_node_below = floatToInt(position - v3f(0,BS/2,0), BS);
+	m_old_node_below_type = nodemgr->get(map.getNodeNoEx(m_old_node_below)).name;
 }
 
 void LocalPlayer::move(f32 dtime, Map &map, f32 pos_max_d)
