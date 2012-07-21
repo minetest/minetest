@@ -1035,6 +1035,48 @@ void mapblock_mesh_generate_special(MeshMakeData *data,
 				tiles[i] = getNodeTileN(n, p, i, data);
 			}
 
+			// Facedir rotation for textures
+			if(f.node_box.type == NODEBOX_FIXED){
+				int facedir = n.getFaceDir(nodedef);
+				if(facedir == 1){ // -90
+					TileSpec old[6];
+					for(int i=0; i<6; i++)
+						old[i] = tiles[i];
+					// right <- back
+					tiles[2] = old[4];
+					// back <- left
+					tiles[4] = old[3];
+					// left <- front
+					tiles[3] = old[5];
+					// front <- right
+					tiles[5] = old[2];
+				}
+				if(facedir == 2){ // 180
+					TileSpec old[6];
+					for(int i=0; i<6; i++)
+						old[i] = tiles[i];
+					// right <-> left
+					tiles[2] = old[3];
+					tiles[3] = old[2];
+					// back <-> front
+					tiles[4] = old[5];
+					tiles[5] = old[4];
+				}
+				if(facedir == 3){ // 90
+					TileSpec old[6];
+					for(int i=0; i<6; i++)
+						old[i] = tiles[i];
+					// right <- front
+					tiles[2] = old[5];
+					// back <- right
+					tiles[4] = old[2];
+					// left <- back
+					tiles[3] = old[4];
+					// front <- left
+					tiles[5] = old[3];
+				}
+			}
+
 			u16 l = getInteriorLight(n, 0, data);
 			video::SColor c = MapBlock_LightColor(255, l);
 
