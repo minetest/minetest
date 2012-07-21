@@ -72,7 +72,8 @@ minetest.register_entity("__builtin:item", {
 		local p = self.object:getpos()
 		p.y = p.y - 0.3
 		local nn = minetest.env:get_node(p).name
-		if minetest.registered_nodes[nn].walkable then
+		-- If node is not registered or node is walkably solid
+		if not minetest.registered_nodes[nn] or minetest.registered_nodes[nn].walkable then
 			if self.physical_state then
 				self.object:setvelocity({x=0,y=0,z=0})
 				self.object:setacceleration({x=0, y=0, z=0})
