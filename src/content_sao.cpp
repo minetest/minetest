@@ -764,6 +764,8 @@ PlayerSAO::PlayerSAO(ServerEnvironment *env_, Player *player_, u16 peer_id_,
 	m_last_good_position(0,0,0),
 	m_last_good_position_age(0),
 	m_time_from_last_punch(0),
+	m_nocheat_dig_pos(32767, 32767, 32767),
+	m_nocheat_dig_time(0),
 	m_wield_index(0),
 	m_position_not_sent(false),
 	m_armor_groups_sent(false),
@@ -874,8 +876,9 @@ void PlayerSAO::step(float dtime, bool send_recommended)
 	}
 
 	m_time_from_last_punch += dtime;
+	m_nocheat_dig_time += dtime;
 	
-	if(m_is_singleplayer)
+	if(m_is_singleplayer || g_settings->getBool("disable_anticheat"))
 	{
 		m_last_good_position = m_player->getPosition();
 		m_last_good_position_age = 0;
@@ -888,7 +891,8 @@ void PlayerSAO::step(float dtime, bool send_recommended)
 			NOTE: Actually the server should handle player physics like the
 			client does and compare player's position to what is calculated
 			on our side. This is required when eg. players fly due to an
-			explosion.
+			explosion. Altough a node-based alternative might be possible
+			too, and much more lightweight.
 		*/
 
 		float player_max_speed = 0;

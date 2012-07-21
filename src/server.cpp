@@ -3014,6 +3014,8 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 				}
 				if(n.getContent() != CONTENT_IGNORE)
 					scriptapi_node_on_punch(m_lua, p_under, n, playersao);
+				// Cheat prevention
+				playersao->noCheatDigStart(p_under);
 			}
 			else if(pointed.type == POINTEDTHING_OBJECT)
 			{
@@ -3051,7 +3053,7 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 		*/
 		else if(action == 2)
 		{
-			// Only complete digging of nodes
+			// Only digging of nodes
 			if(pointed.type == POINTEDTHING_NODE)
 			{
 				MapNode n(CONTENT_IGNORE);
@@ -3067,10 +3069,65 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 					m_emerge_queue.addBlock(peer_id,
 							getNodeBlockPos(p_above), BLOCK_EMERGE_FLAG_FROMDISK);
 				}
-				if(n.getContent() != CONTENT_IGNORE)
+
+				/* Cheat prevention */
+				bool is_valid_dig = true;
+				if(!isSingleplayer() && !g_settings->getBool("disable_anticheat"))
+				{
+					v3s16 nocheat_p = playersao->getNoCheatDigPos();
+					float nocheat_t = playersao->getNoCheatDigTime();
+					playersao->noCheatDigEnd();
+					// If player didn't start digging this, ignore dig
+					if(nocheat_p != p_under){
+						infostream<<"Server: NoCheat: "<<player->getName()
+								<<" started digging "
+								<<PP(nocheat_p)<<" and completed digging "
+								<<PP(p_under)<<"; not digging."<<std::endl;
+						is_valid_dig = false;
+					}
+					// Get player's wielded item
+					ItemStack playeritem;
+					InventoryList *mlist = playersao->getInventory()->getList("main");
+					if(mlist != NULL)
+						playeritem = mlist->getItem(playersao->getWieldIndex());
+					ToolCapabilities playeritem_toolcap =
+							playeritem.getToolCapabilities(m_itemdef);
+					// Get diggability and expected digging time
+					DigParams params = getDigParams(m_nodedef->get(n).groups,
+							&playeritem_toolcap);
+					// If can't dig, try hand
+					if(!params.diggable){
+						const ItemDefinition &hand = m_itemdef->get("");
+						const ToolCapabilities *tp = hand.tool_capabilities;
+						if(tp)
+							params = getDigParams(m_nodedef->get(n).groups, tp);
+					}
+					// If can't dig, ignore dig
+					if(!params.diggable){
+						infostream<<"Server: NoCheat: "<<player->getName()
+								<<" completed digging "<<PP(p_under)
+								<<", which is not diggable with tool. not digging."
+								<<std::endl;
+						is_valid_dig = false;
+					}
+					// If time is considerably too short, ignore dig
+					// Check time only for medium and slow timed digs
+					if(params.diggable && params.time > 0.3 && nocheat_t < 0.5 * params.time){
+						infostream<<"Server: NoCheat: "<<player->getName()
+								<<" completed digging "
+								<<PP(p_under)<<" in "<<nocheat_t<<"s; expected "
+								<<params.time<<"s; not digging."<<std::endl;
+						is_valid_dig = false;
+					}
+				}
+
+				/* Actually dig node */
+
+				if(is_valid_dig && n.getContent() != CONTENT_IGNORE)
 					scriptapi_node_on_dig(m_lua, p_under, n, playersao);
 
-				if (m_env->getMap().getNodeNoEx(p_under).getContent() != CONTENT_AIR)
+				// Send unusual result (that is, node not being removed)
+				if(m_env->getMap().getNodeNoEx(p_under).getContent() != CONTENT_AIR)
 				{
 					// Re-send block to revert change on client-side
 					RemoteClient *client = getClient(peer_id);

@@ -2112,7 +2112,9 @@ void the_game(
 					ldown_for_dig = true;
 				}
 				MapNode n = client.getEnv().getClientMap().getNode(nodepos);
-
+				
+				// NOTE: Similar piece of code exists on the server side for
+				// cheat detection.
 				// Get digging parameters
 				DigParams params = getDigParams(nodedef->get(n).groups,
 						&playeritem_toolcap);
@@ -2160,7 +2162,7 @@ void the_game(
 				{
 					dig_index = crack_animation_length;
 				}
-				
+
 				// Don't show cracks if not diggable
 				if(dig_time_complete >= 100000.0)
 				{

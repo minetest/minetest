@@ -173,6 +173,9 @@ public:
 	{
 		return m_peer_id;
 	}
+
+	// Cheat prevention
+
 	v3f getLastGoodPosition() const
 	{
 		return m_last_good_position;
@@ -183,6 +186,26 @@ public:
 		m_time_from_last_punch = 0.0;
 		return r;
 	}
+	void noCheatDigStart(v3s16 p)
+	{
+		m_nocheat_dig_pos = p;
+		m_nocheat_dig_time = 0;
+	}
+	v3s16 getNoCheatDigPos()
+	{
+		return m_nocheat_dig_pos;
+	}
+	float getNoCheatDigTime()
+	{
+		return m_nocheat_dig_time;
+	}
+	void noCheatDigEnd()
+	{
+		m_nocheat_dig_pos = v3s16(32767, 32767, 32767);
+	}
+
+	// Other
+
 	void updatePrivileges(const std::set<std::string> &privs,
 			bool is_singleplayer)
 	{
@@ -196,9 +219,14 @@ private:
 	Player *m_player;
 	u16 m_peer_id;
 	Inventory *m_inventory;
+
+	// Cheat prevention
 	v3f m_last_good_position;
 	float m_last_good_position_age;
 	float m_time_from_last_punch;
+	v3s16 m_nocheat_dig_pos;
+	float m_nocheat_dig_time;
+
 	int m_wield_index;
 	bool m_position_not_sent;
 	ItemGroupList m_armor_groups;
