@@ -3,7 +3,9 @@ Minetest World Format 22...23
 =============================
 
 This applies to a world format carrying the block serialization version
-22...23, used at least in 0.4.dev-20120322 ... 0.4.dev-20120606.
+22...23, used at least in
+- 0.4.dev-20120322 ... 0.4.dev-20120606
+- 0.4.0.
 
 The block serialization version does not fully specify every aspect of this
 format; if compliance with this format is to be checked, it needs to be
